@@ -2043,29 +2043,29 @@ OBJTRIGGERS [nTrigger].Operate (gameData.multiplayer.players [nPlayer].nObject, 
 
 void MultiDoDropMarker (char *buf)
 {
-	int nPlayer = int (buf [1]);
-	int nMsg = int (buf [2]);
-	int nMarker = nPlayer * 2 + nMsg;
-	CFixVector position;
+	int			nPlayer = int (buf [1]);
+	int			nMsg = int (buf [2]);
+	int			nMarker = nPlayer * 2 + nMsg;
+	CFixVector	vPos;
 
 if (nPlayer == gameData.multiplayer.nLocalPlayer)  // my marker? don't set it down cuz it might screw up the orientation
 	return;
-position [X] = GET_INTEL_INT (buf + 3);
-position [Y] = GET_INTEL_INT (buf + 7);
-position [Z] = GET_INTEL_INT (buf + 11);
-memcpy (gameData.marker.szMessage + 2 * nPlayer + nMsg, buf + 15, 40);
-gameData.marker.position [nMarker] = position;
-if ((gameData.marker.objects [nMarker] != -1) &&
-	 (OBJECTS [gameData.marker.objects [nMarker]].info.nType != OBJ_NONE) &&
-	 (gameData.marker.objects [nMarker] != 0))
-	ReleaseObject (gameData.marker.objects [nMarker]);
-gameData.marker.objects [nPlayer * 2 + nMsg] =
+vPos [X] = GET_INTEL_INT (buf + 3);
+vPos [Y] = GET_INTEL_INT (buf + 7);
+vPos [Z] = GET_INTEL_INT (buf + 11);
+memcpy (markerManager.Message (2 * nPlayer + nMsg), buf + 15, 40);
+markerManager.SetPosition (nMarker, vPos);
+if ((markerManager.Objects (nMarker) != -1) &&
+	 (OBJECTS [markerManager.objects (nMarker)].info.nType != OBJ_NONE) &&
+	 (markerManager.Objects (nMarker) != 0))
+	ReleaseObject (markerManager.Objects (nMarker));
+markerManager.SetObject (nPlayer * 2 + nMsg) =
 	DropMarkerObject (
-		position,
+		vPos,
 		OBJECTS [LOCALPLAYER.nObject].info.nSegment,
-		OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,
+		OBJECTS [LOCALPLAYER.nObject].info.vPos.mOrient,
 		(ubyte) nMarker);
-strcpy (gameData.marker.nOwner [nMarker], gameData.multiplayer.players [nPlayer].callsign);
+markerManager.SetOwner (nMarker, gameData.multiplayer.players [nPlayer].callsign);
 }
 
 //-----------------------------------------------------------------------------

@@ -968,10 +968,7 @@ m_cf.WriteInt (gameStates.app.cheats.bLaserRapidFire);
 m_cf.WriteInt (gameStates.app.bLunacy);		//	Yes, writing this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
 m_cf.WriteInt (gameStates.app.bLunacy);
 // Save automap marker info
-for (i = 0; i < NUM_MARKERS; i++)
-	m_cf.WriteShort (gameData.marker.objects [i]);
-m_cf.Write (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1);
-m_cf.Write (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1);
+markerManager.SaveState (m_cf);
 m_cf.WriteFix (gameData.physics.xAfterburnerCharge);
 //save last was super information
 m_cf.Write (bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
@@ -1974,11 +1971,7 @@ if (gameStates.app.bLunacy)
 	DoLunacyOn ();
 
 IFDBG (fPos = m_cf.Tell ());
-for (i = 0; i < NUM_MARKERS; i++)
-	gameData.marker.objects [i] = m_cf.ReadShort ();
-m_cf.Read (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1);
-m_cf.Read (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1);
-
+markerManager.LoadState ();
 if (m_bSecret != 1)
 	gameData.physics.xAfterburnerCharge = m_cf.ReadFix ();
 else {
@@ -2222,20 +2215,17 @@ if (m_nVersion >= 7) {
 		DoLunacyOn ();
 }
 
-if (m_nVersion >= 17) {
-	gameData.marker.objects.Read (m_cf);
-	m_cf.Read (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1);
-	m_cf.Read (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1);
-}
+if (m_nVersion >= 17)
+	markerManager.LoadState (m_cf, true);
 else {
-	int num,dummy;
+	int num, dummy;
 
 	// skip dummy info
 	m_cf.Read (&num, sizeof (int), 1);       //was NumOfMarkers
 	m_cf.Read (&dummy, sizeof (int), 1);     //was CurMarker
 	m_cf.Seek (num * (sizeof (CFixVector) + 40), SEEK_CUR);
 	for (num = 0; num < NUM_MARKERS; num++)
-		gameData.marker.objects [num] = -1;
+		markerManager.SetObject (num, -1);
 }
 
 if (m_nVersion >= 11) {

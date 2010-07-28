@@ -440,7 +440,7 @@ switch (key) {
 		break;
 
 	case KEY_ENTER:
-		nMarker = (gameData.multiplayer.nLocalPlayer * 2)+m_data.nCurrent;
+		nMarker = (gameData.multiplayer.nLocalPlayer * 2) + m_data.nCurrent;
 		strupr (m_data.szInput);
 		strcpy (m_data.szMessage [nMarker], m_data.szInput);
 		if (IsMultiGame)
@@ -463,6 +463,30 @@ switch (key) {
 			}
 		break;
 		}
+}
+
+//------------------------------------------------------------------------------
+
+void CMarkerManager::SaveState (CFile& cf)
+{
+for (int i = 0; i < NUM_MARKERS; i++)
+	cf.WriteShort (m_Data.objects [i]);
+cf.Write (m_data.nOwner, sizeof (m_data.nOwner), 1);
+cf.Write (m_data.szMessage, sizeof (m_data.szMessage), 1);
+}
+
+//------------------------------------------------------------------------------
+
+void CMarkerManager::LoadState (CFile& cf, bool bBinary)
+{
+if (bBinary)
+	m_data.objects.Read (m_cf);
+else {
+	for (i = 0; i < NUM_MARKERS; i++)
+		m_data.objects [i] = m_cf.ReadShort ();
+	}
+m_cf.Read (m_data.nOwner, sizeof (m_data.nOwner), 1);
+m_cf.Read (m_data.szMessage, sizeof (m_data.szMessage), 1);
 }
 
 //------------------------------------------------------------------------------

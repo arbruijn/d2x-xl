@@ -66,10 +66,10 @@ void NetworkSendMarkers (void)
   int i, j;
 
 for (i = j = 0; i < gameData.multiplayer.nPlayers; i++, j++) {
-   if (gameData.marker.objects [j] != -1)
-		MultiSendDropMarker (i, gameData.marker.position [j], 0, gameData.marker.szMessage [j]);
-   if (gameData.marker.objects [++j] != -1)
-		MultiSendDropMarker (i, gameData.marker.position [j], 1, gameData.marker.szMessage [j]);
+   if (markerManager.Objects (j) != -1)
+		MultiSendDropMarker (i, markerManager.Position (j), 0, markerManager.Message (j));
+   if (markerManager.objects (++j) != -1)
+		MultiSendDropMarker (i, markerManager.Position (j), 0, markerManager.Message (j));
 	}
  }
 

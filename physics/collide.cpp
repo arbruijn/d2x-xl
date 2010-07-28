@@ -1099,16 +1099,17 @@ int CObject::CollidePlayerAndMarker (CObject* markerP, CFixVector& vHitPt)
 console.printf (CON_DBG, "Collided with markerP %d! \n", markerP->info.nId);
 #endif
 if (info.nId == gameData.multiplayer.nLocalPlayer) {
-	int drawn;
+	int bDrawn;
 
 	if (IsMultiGame && !IsCoopGame)
-		drawn = HUDInitMessage (TXT_MARKER_PLRMSG, gameData.multiplayer.players [markerP->info.nId/2].callsign, gameData.marker.szMessage [markerP->info.nId]);
-	else
-		if (gameData.marker.szMessage [markerP->info.nId][0])
-			drawn = HUDInitMessage (TXT_MARKER_IDMSG, markerP->info.nId+1, gameData.marker.szMessage [markerP->info.nId]);
+		bDrawn = HUDInitMessage (TXT_MARKER_PLRMSG, gameData.multiplayer.players [markerP->info.nId / 2].callsign, markerManager.Message (markerP->info.nId));
+	else {
+		if (*markerManager.Message (markerP->info.nId))
+			bDrawn = HUDInitMessage (TXT_MARKER_IDMSG, markerP->info.nId + 1, markerManager.szMessage (markerP->info.nId));
 		else
-			drawn = HUDInitMessage (TXT_MARKER_ID, markerP->info.nId+1);
-	if (drawn)
+			bDrawn = HUDInitMessage (TXT_MARKER_ID, markerP->info.nId + 1);
+		}
+	if (bDrawn)
 		audio.PlaySound (SOUND_MARKER_HIT);
 	DetectEscortGoalAccomplished (OBJ_IDX (markerP));
    }

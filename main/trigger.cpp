@@ -295,7 +295,7 @@ for (i = j = 0; i < MAX_PLAYERS; i++) {
 	}
 // delete any spawn markers that have been set before passing through this trigger to
 // avoid players getting stuck when respawning at that marker
-if (0 <= (gameData.marker.nHighlight = markerManager.SpawnIndex (-1)))
+if (0 <= (markerManager.SetHighlight (markerManager.SpawnIndex (-1))))
 	markerManager.Delete (1);
 return 1;
 }

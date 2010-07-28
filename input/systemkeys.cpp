@@ -850,17 +850,17 @@ void HandleGameKey(int key)
 			break;
 
 		case KEY_F4:
-			if (!gameData.marker.nDefiningMsg)
+			if (!markerManager.DefiningMsg ())
 				markerManager.InitInput ();
 			break;
 
 		case KEY_F4 + KEY_CTRLED:
-			if (!gameData.marker.nDefiningMsg)
+			if (!markerManager.DefiningMsg ())
 				markerManager.InitInput (true);
 			break;
 
 		case KEY_F4 + KEY_CTRLED + KEY_ALTED:
-			if (!gameData.marker.nDefiningMsg)
+			if (!markerManager.DefiningMsg ())
 				markerManager.DropSpawnPoint ();
 			break;
 
@@ -1130,7 +1130,7 @@ void ReadControls (void)
 
 gameStates.app.bPlayerFiredLaserThisFrame = -1;
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
-		if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.marker.nDefiningMsg)
+		if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (markerManager.DefiningMsg ())
 			|| gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining
 			)	 // WATCH OUT!!! WEIRD CODE ABOVE!!!
 			controls.Reset ();
@@ -1168,7 +1168,7 @@ else {
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	UpdateVCRState ();
 while ((key = KeyInKeyTime (&keyTime)) != 0) {
-	if (gameData.marker.nDefiningMsg) {
+	if (markerManager.DefiningMsg ()) {
 		markerManager.InputMessage (key);
 		continue;
 		}

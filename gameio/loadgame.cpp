@@ -821,7 +821,7 @@ gameStates.app.bGameRunning = 0;
 gameStates.app.bPlayerExploded = 0;
 gameData.physics.side.nSegment = -1;
 gameData.physics.side.nSide = -1;
-gameData.marker.Init ();
+markerManager.Init ();
 gameStates.gameplay.bKillBossCheat = 0;
 gameStates.render.nFlashScale = I2X (1);
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded

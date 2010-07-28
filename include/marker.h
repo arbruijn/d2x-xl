@@ -29,12 +29,12 @@ class CMarkerData {
 	public:
 		CStaticArray< CFixVector, NUM_MARKERS >	position; // [NUM_MARKERS];	//three markers (two regular + one spawn) per player in multi
 		char					szMessage [NUM_MARKERS][MARKER_MESSAGE_LEN];
-		char					nOwner [NUM_MARKERS][CALLSIGN_LEN+1];
+		char					szOwner [NUM_MARKERS][CALLSIGN_LEN+1];
 		CStaticArray< short, NUM_MARKERS >			objects; // [NUM_MARKERS];
 		short					viewers [2];
 		int					nHighlight;
 		float					fScale;
-		ubyte					nDefiningMsg;
+		bool					bDefiningMsg;
 		char					szInput [40];
 		int					nIndex;
 		int					nCurrent;
@@ -55,6 +55,7 @@ class CMarkerManager {
 	public:
 		CMarkerManager () {}
 		~CMarkerManager () {}
+		void Init (void) { m_data.Init (); }
 		void Drop (char nPlayerMarker, int bSpawn);
 		void DropForGuidebot (CObject *objP);
 		void DropSpawnPoint (void);
@@ -73,6 +74,26 @@ class CMarkerManager {
 		inline int MaxDrop (void) {
 			return IsMultiGame ? IsCoopGame ? MAX_DROP_COOP : MAX_DROP_MULTI : MAX_DROP_SINGLE;
 			}
+
+		inline int Highlight (void) { return m_data.nHighlight; }
+		inline int SetHighlight (int nHighlight) { 
+			m_data.nHighlight = nHighlight; 
+			return m_data.nHighlight;
+			}
+		inline char* Owner (int nMarker) { return m_data.szOwner [nMarker]; }
+		inline void SetOwner (int nMarker, char* szOwner) { strcpy (m_data.szOwner [nMarker], szOwner); }
+		inline char* Message (int nMarker = -1) { return m_data.szMessage [(nMarker < 0) ? m_data.nHighlight : nMarker]; }
+		inline short Objects (int nMarker) { return m_data.objects [nMarker]; }
+		inline void SetObject (int nMarker, int nObject) { m_data.objects [nMarker] = nObject; }
+		inline bool DefiningMsg (void) { return m_data.bDefiningMsg; }
+		inline char* Input (void) { return m_data.szInput; }
+		inline short Viewer (int nWindow) { return m_data.viewers [nWindow]; }
+		inline void SetViewer (int nWindow, short nViewer) { m_data.viewers [nWindow] = nViewer; }
+		inline CFixVector Position (int nMarker) { return m_data.position [nMarker]; }
+		inline void SetPosition (int nMarker, CFixVector vPos) { m_data.position [nMarker] = vPos; }
+
+		void SaveState (CFile& cf);
+		void LoadState (CFile& cf, bool bBinary = false);
 
 	private:
 		void DrawNumber (int nMarker);

@@ -224,10 +224,10 @@ void CGenericCockpit::DrawMarkerMessage (void)
 {
 	char szTemp [MAX_MARKER_MESSAGE_LEN+25];
 
-if (gameData.marker.nDefiningMsg) {
+if (markerManager.DefiningMsg ()) {
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-   sprintf (szTemp, TXT_DEF_MARKER, gameData.marker.szInput);
-	DrawCenteredText (CCanvas::Current ()->Height ()/2-16, szTemp);
+   sprintf (szTemp, TXT_DEF_MARKER, markerManager.Input ());
+	DrawCenteredText (CCanvas::Current ()->Height () / 2 - 16, szTemp);
    }
 }
 
@@ -1860,14 +1860,14 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 
 		case CV_MARKER: {
 			char label [10];
-			short v = gameData.marker.viewers [w];
-			gameStates.render.nRenderingType = 5+ (w<<4);
-			if ((v == -1) || (gameData.marker.objects [v] == -1)) {
+			short v = markerManager.Viewers (w);
+			gameStates.render.nRenderingType = 5 + (w << 4);
+			if ((v == -1) || (markerManager.Objects (v) == -1)) {
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
 				break;
 				}
-			sprintf (label, "Marker %d", gameData.marker.viewers [w]+1);
-			cockpit->RenderWindow (w, OBJECTS + gameData.marker.objects [gameData.marker.viewers [w]], 0, WBU_MARKER, label);
+			sprintf (label, "Marker %d", markerManager.Viewers (w) + 1);
+			cockpit->RenderWindow (w, OBJECTS + markerManager.Objects (markerManager.Viewers (w)), 0, WBU_MARKER, label);
 			break;
 			}
 

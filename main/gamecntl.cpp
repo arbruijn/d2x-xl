@@ -286,7 +286,7 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 		//fall through
 
 	case CV_COOP:
-		gameData.marker.viewers [nWindow] = -1;
+		markerManager.SetViewer (nWindow, -1);
 		if ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)) {
 			gameStates.render.cockpit.n3DView [nWindow] = CV_COOP;
 			while (1) {
@@ -310,10 +310,10 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 	case_marker:;
 		if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView) {	//anarchy only
 			gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
-			if (gameData.marker.viewers [nWindow] == -1)
-				gameData.marker.viewers [nWindow] = gameData.multiplayer.nLocalPlayer * 3;
-			else if (gameData.marker.viewers [nWindow] < gameData.multiplayer.nLocalPlayer * 3 + MaxDrop ())
-				gameData.marker.viewers [nWindow]++;
+			if (markerManager.Viewer (nWindow) == -1)
+				markerManager.SetViewer (nWindow, gameData.multiplayer.nLocalPlayer * 3);
+			else if (markerManager.Viewer (nWindow) < gameData.multiplayer.nLocalPlayer * 3 + MaxDrop ())
+				markerManager.SetViewer (nWindow, markerManager.Viewer (nWindow) + 1);
 			else
 				gameStates.render.cockpit.n3DView [nWindow] = CV_NONE;
 		}

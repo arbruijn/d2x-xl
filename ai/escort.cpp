@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "headlight.h"
 #include "visibility.h"
 
-void SayEscortGoal (int goal_num);
+void SayEscortGoal (int nGoal);
 void ShowEscortMenu (char *msg);
 
 int nEscortGoalText [MAX_ESCORT_GOALS] = {
@@ -572,11 +572,11 @@ int FindExitSegment (void)
 
 //	-----------------------------------------------------------------------------
 
-void SayEscortGoal (int goal_num)
+void SayEscortGoal (int nGoal)
 {
 if (gameStates.app.bPlayerIsDead)
 	return;
-switch (goal_num) {
+switch (nGoal) {
 	case ESCORT_GOAL_BLUE_KEY:
 		BuddyMessage (TXT_FIND_BLUEKEY);
 		break;
@@ -628,11 +628,11 @@ switch (goal_num) {
 	case ESCORT_GOAL_MARKER7:
 	case ESCORT_GOAL_MARKER8:
 	case ESCORT_GOAL_MARKER9: {
-			char marker_text [BUDDY_MARKER_TEXT_LEN];
+			char szMarkerMsg [BUDDY_MARKER_TEXT_LEN];
 
-		strncpy (marker_text, gameData.marker.szMessage [goal_num-ESCORT_GOAL_MARKER1], BUDDY_MARKER_TEXT_LEN-1);
-		marker_text [BUDDY_MARKER_TEXT_LEN-1] = 0;
-		BuddyMessage (TXT_FIND_MARKER, goal_num-ESCORT_GOAL_MARKER1+1, marker_text);
+		strncpy (marker_text, markerManager.Message (nGoal - ESCORT_GOAL_MARKER1), BUDDY_MARKER_TEXT_LEN-1);
+		szMarkerMsg [BUDDY_MARKER_TEXT_LEN - 1] = 0;
+		BuddyMessage (TXT_FIND_MARKER, nGoal - ESCORT_GOAL_MARKER1 + 1, szMarkerMsg);
 		break;
 		}
 	}
@@ -642,10 +642,10 @@ switch (goal_num) {
 
 void EscortCreatePathToGoal (CObject *objP)
 {
-	short			nGoalSeg = -1;
-	short			nObject = objP->Index ();
-	tAIStaticInfo	*aip = &objP->cType.aiInfo;
-	tAILocalInfo		*ailp = gameData.ai.localInfo + nObject;
+	short				nGoalSeg = -1;
+	short				nObject = objP->Index ();
+	tAIStaticInfo*	aip = &objP->cType.aiInfo;
+	tAILocalInfo*	ailp = gameData.ai.localInfo + nObject;
 
 Assert (nObject >= 0);
 if (gameData.escort.nSpecialGoal != -1)

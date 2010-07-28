@@ -69,6 +69,7 @@
 #include "collide.h"
 #include "lightcluster.h"
 #include "multi.h"
+#include "marker.h"
 #if USE_DACS
 #	include "dialheap.h"
 #endif
@@ -1773,7 +1774,7 @@ if (!(gameData.segs.Create (nSegments, nVertices) &&
 particleManager.Init ();
 particleManager.SetLastType (-1);
 lightningManager.Init ();
-gameData.marker.Init ();
+markerManager.Init ();
 gameData.physics.Init ();
 gameData.bosses.Create ();
 gameData.walls.Reset ();

@@ -236,10 +236,10 @@ glLineWidth (2 * GLfloat (screen.Width ()) / 640.0f);
 DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
 if (!m_bRadar) {
 	markerManager.Render ();
-	if ((gameData.marker.nHighlight > -1) && (gameData.marker.szMessage [gameData.marker.nHighlight][0] != 0)) {
+	if ((markerManager.Highlight () > -1) && (markerManager.Message () [0] != 0)) {
 		char msg [10 + MARKER_MESSAGE_LEN + 1];
-		sprintf (msg, TXT_MARKER_MSG, gameData.marker.nHighlight + 1,
-					gameData.marker.szMessage [(gameData.multiplayer.nLocalPlayer * 2) + gameData.marker.nHighlight]);
+		sprintf (msg, TXT_MARKER_MSG, markerManager.Highlight () + 1,
+					markerManager.Message (gameData.multiplayer.nLocalPlayer * 2 + markerManager.Highlight ()));
 		CCanvas::Current ()->SetColorRGB (196, 0, 0, 255);
 		fontManager.SetCurrent (SMALL_FONT);
 		GrString (5, 20, msg, NULL);
@@ -816,11 +816,11 @@ while ((c = KeyInKey ())) {
 		case KEY_8:
 		case KEY_9:
 		case KEY_0:
-			 nMaxDrop = MaxDrop ();
+			 nMaxDrop = markerManager.MaxDrop ();
 			nMarker = c - KEY_1;
 			if (nMarker <= nMaxDrop) {
-				if (gameData.marker.objects [nMarker] != -1)
-					gameData.marker.nHighlight = nMarker;
+				if (markerManager.Objects (nMarker) != -1)
+					markerManager.SetHighlight (nMarker);
 				}
 		break;
 
@@ -915,17 +915,6 @@ while ((c = KeyInKey ())) {
 
 		case KEY_ALTED + KEY_S:
 			gameOpts->render.automap.bParticles = !gameOpts->render.automap.bParticles;
-			break;
-#endif
-
-#if DBG
-		case KEY_COMMA:
-			if (gameData.marker.fScale > 0.5)
-				gameData.marker.fScale -= 0.5;
-			break;
-		case KEY_PERIOD:
-			if (gameData.marker.fScale < 30.0)
-				gameData.marker.fScale += 0.5;
 			break;
 #endif
 
