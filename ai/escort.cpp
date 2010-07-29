@@ -97,14 +97,14 @@ return AIDoorIsOpenable (NULL, SEGMENTS + curseg, nSide);
 
 //	-----------------------------------------------------------------------------
 //	Create a breadth-first list of segments reachable from current CSegment.
-//	max_segs is maximum number of segments to search.  Use LEVEL_SEGMENTS to search all.
-//	On exit, *length <= max_segs.
+//	nMaxSegs is maximum number of segments to search.  Use LEVEL_SEGMENTS to search all.
+//	On exit, *length <= nMaxSegs.
 //	Input:
-//		start_seg
+//		nStartSeg
 //	Output:
-//		bfs_list:	array of shorts, each reachable CSegment.  Includes start CSegment.
-//		length:		number of elements in bfs_list
-void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs)
+//		bfsList:	array of shorts, each reachable CSegment.  Includes start CSegment.
+//		length:		number of elements in bfsList
+void CreateBfsList (int nStartSeg, short bfsList [], int *length, int nMaxSegs)
 {
 	int		head, tail;
 	sbyte		bVisited [MAX_SEGMENTS_D2X];
@@ -113,30 +113,32 @@ void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs)
 	head = 0;
 	tail = 0;
 
-	bfs_list [head++] = start_seg;
-	bVisited [start_seg] = 1;
+bfsList [head++] = nStartSeg;
+bVisited [nStartSeg] = 1;
+if (nMaxSegs > LEVEL_SEGMENTS)
+	nMaxSegs = LEVEL_SEGMENTS;
 
-while ((head != tail) && (head < max_segs)) {
+while ((head != tail) && (head < nMaxSegs)) {
 	int		i;
 	short		nSegment;
 	CSegment	*segP;
 
-	nSegment = bfs_list [tail++];
+	nSegment = bfsList [tail++];
 	segP = SEGMENTS + nSegment;
 
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
-		int	connected_seg = segP->m_children [i];
-		if (!IS_CHILD (connected_seg))
+		int	nConnSeg = segP->m_children [i];
+		if (!IS_CHILD (nConnSeg))
 			continue;
-		if (bVisited [connected_seg])
+		if (bVisited [nConnSeg])
 			continue;
 		if (!SegmentIsReachable (nSegment, (short) i))
 			continue;
-		bfs_list [head++] = connected_seg;
-		if (head >= max_segs)
+		bfsList [head++] = nConnSeg;
+		if (head >= nMaxSegs)
 			break;
-		bVisited [connected_seg] = 1;
-		Assert (head < LEVEL_SEGMENTS);
+		bVisited [nConnSeg] = 1;
+		//Assert (head < LEVEL_SEGMENTS);
 		}
 	}
 *length = head;
@@ -512,24 +514,24 @@ return -1;
 //	If special == ESCORT_GOAL_PLAYER_SPEW, then looking for any CObject spewed by player.
 //	-1 means CObject does not exist in mine.
 //	-2 means CObject does exist in mine, but buddy-bot can't reach it (eg, behind triggered CWall)
-int ExistsInMine (int start_seg, int objtype, int objid, int special)
+int ExistsInMine (int nStartSeg, int objtype, int objid, int special)
 {
 	int	nSegIdx, nSegment;
-	short	bfs_list [MAX_SEGMENTS_D2X];
+	short	bfsList [MAX_SEGMENTS_D2X];
 	int	length;
 	int	nObject;
 
-CreateBfsList (start_seg, bfs_list, &length, LEVEL_SEGMENTS);
+CreateBfsList (nStartSeg, bfsList, &length, LEVEL_SEGMENTS);
 if (objtype == FUELCEN_CHECK) {
 	for (nSegIdx = 0; nSegIdx < length; nSegIdx++) {
-		nSegment = bfs_list [nSegIdx];
+		nSegment = bfsList [nSegIdx];
 		if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_FUELCEN)
 			return nSegment;
 		}
 	}
 else {
 	for (nSegIdx = 0; nSegIdx < length; nSegIdx++) {
-		nSegment = bfs_list [nSegIdx];
+		nSegment = bfsList [nSegIdx];
 		nObject = ExistsInMine2 (nSegment, objtype, objid, special);
 		if (nObject != -1)
 			return nObject;

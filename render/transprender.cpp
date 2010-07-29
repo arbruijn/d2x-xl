@@ -41,7 +41,7 @@ int nDbgPoly = -1, nDbgItem = -1;
 
 CTransparencyRenderer transparencyRenderer;
 
-#define LAZY_RESET 0
+#define LAZY_RESET 1
 
 static int nAdded = 0, nRendered = 0;
 
@@ -104,18 +104,22 @@ void CTransparencyRenderer::InitBuffer (int zMin, int zMax, int nWindow)
 {
 #if LAZY_RESET
 if (nWindow)
-	m_data.bAllowAdd = 0;
+	m_data.bAllowAdd = 1;
 else if (gameStates.render.cameras.bActive)
 	m_data.bAllowAdd = 1;
 else if (gameOpts->render.stereo.nGlasses && (ogl.StereoSeparation () >= 0))
 	m_data.bAllowAdd = -1;
 else
 	m_data.bAllowAdd = 1;
-if (m_data.bAllowAdd) 
+if (m_data.bAllowAdd > 0) 
 #endif
 	{
 	m_data.zMin = 0;
 	m_data.zMax = zMax;
+#if DBG
+	if (zMax < 0)
+		zMax = zMax;
+#endif
 	m_data.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (m_data.zMax);
 	if (m_data.zScale < 0)
 		m_data.zScale = 1;
@@ -402,7 +406,7 @@ else
 	v /= item.nVertices;
 	CFixVector vPos;
 	vPos.Assign (v);
-	return Add ((faceP || triP) ? tiFace : tiPoly, &item, sizeof (item), vPos, 0, true, (faceP || triP) ? 0 : -1);
+	return Add ((faceP || triP) ? tiFace : tiPoly, &item, sizeof (item), vPos, 0, true);
 	}
 }
 

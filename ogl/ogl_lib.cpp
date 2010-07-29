@@ -614,7 +614,7 @@ if ((x != m_states.nLastX) || (y != m_states.nLastY) || (w != m_states.nLastW) |
 
 void COGL::ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset) 
 {
-if (!bEyeOffset || !gameOpts->render.stereo.nGlasses || gameOpts->render.stereo.bEnhance)
+if (!bEyeOffset || !gameOpts->render.stereo.nGlasses || gameOpts->render.stereo.bEnhance || gameStates.render.nWindow)
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 else if (gameOpts->render.stereo.nGlasses == GLASSES_AMBER_BLUE) {	//colorcode 3-d (amber/blue)
 	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.stereo.bFlipFrames)
