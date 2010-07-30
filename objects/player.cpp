@@ -296,9 +296,18 @@ return this - gameData.multiplayer.players;
 
 //-------------------------------------------------------------------------
 
+bool CPlayerData::IsLocalPlayer (void)
+{
+return Index () == gameData.multiplayer.nLocalPlayer;
+}
+
+//-------------------------------------------------------------------------
+
 float CPlayerData::ShieldScale (void)
 {
-return shieldScale [gameData.multiplayer.weaponStates [Index ()].nShip];
+	ubyte nShip = gameData.multiplayer.weaponStates [Index ()].nShip;
+
+return (nShip < 2) ? shieldScale [nShip] : 1.0f;
 }
 
 //-------------------------------------------------------------------------
@@ -324,7 +333,7 @@ if (bScale)
 if (s > MaxShield ())
 	s = MaxShield ();
 if (shield != s) {
-	if (nObject >= 0)
+	if ((nObject >= 0) && (IsLocalPlayer () || (nObject != LOCALPLAYER.nObject)))
 		OBJECTS [nObject].SetShield (s); 
 	MultiSendShield ();
 	}

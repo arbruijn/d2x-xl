@@ -1535,7 +1535,7 @@ playerP->nPacketsGot = m_cf.ReadInt ();         // How many packets we got from 
 playerP->nPacketsSent = m_cf.ReadInt ();        // How many packets we sent to them
 playerP->flags = (uint) m_cf.ReadInt ();           // Powerup flags, see below...
 playerP->energy = m_cf.ReadFix ();                // Amount of energy remaining.
-playerP->SetShield (m_cf.ReadFix ());               // shield remaining (protection)
+playerP->SetShield (m_cf.ReadFix (), false);               // shield remaining (protection)
 playerP->lives = m_cf.ReadByte ();                // Lives remaining, 0 = game over.
 playerP->level = m_cf.ReadByte ();                // Current level CPlayerData is playing. (must be signed for secret levels)
 playerP->laserLevel = (ubyte) m_cf.ReadByte ();  // Current level of the laser.

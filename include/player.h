@@ -144,6 +144,7 @@ class __pack__ CPlayerData {
 		CObject* Object (void);
 		void SetObject (short n);
 		float ShieldScale (void);
+		bool IsLocalPlayer (void);
 
 	private:
 		int Index (void);

@@ -1809,7 +1809,7 @@ if (gameStates.app.bD1Mission) {
 	if (LOCALPLAYER.Energy () < INITIAL_ENERGY)
 		LOCALPLAYER.SetEnergy (INITIAL_ENERGY);
 	if (LOCALPLAYER.Shield () < INITIAL_SHIELD)
-		LOCALPLAYER.SetShield (LOCALPLAYER.InitialShield ());
+		LOCALPLAYER.SetShield (LOCALPLAYER.InitialShield (), false);
 	}
 }
 
