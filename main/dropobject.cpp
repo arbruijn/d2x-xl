@@ -799,13 +799,14 @@ for (i = 0; i < nThrusters; i++) {
 int MaybeDropPrimaryWeaponEgg (CObject *playerObjP, int nWeapon)
 {
 	int nWeaponFlag = HAS_FLAG (nWeapon);
-	int nPowerup = primaryWeaponToPowerup [nWeapon];
 
-if ((gameData.multiplayer.players [playerObjP->info.nId].primaryWeaponFlags & nWeaponFlag) &&
-	 !(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & nWeaponFlag)))
-	return CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerup);
-else
+if (!(gameData.multiplayer.players [playerObjP->info.nId].primaryWeaponFlags & nWeaponFlag))
 	return -1;
+if ((nWeapon == 4) && gameData.weapons.bTripleFusion)
+	gameData.weapons.bTripleFusion = 0;
+else if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & nWeaponFlag))
+	return -1;
+return CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, primaryWeaponToPowerup [nWeapon]);
 }
 
 //	-----------------------------------------------------------------------------

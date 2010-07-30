@@ -124,9 +124,11 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 		}
 	}
 else {
-	if ((gameData.weapons.nPrimary == 4) && gameData.weapons.bTripleFusion)
+	if ((gameData.weapons.nPrimary == 4) && gameData.weapons.bTripleFusion) {
 		gameData.weapons.bTripleFusion = 0;
-	else if (gameData.weapons.nPrimary && !IsBuiltinWeapon (gameData.weapons.nPrimary)) {//if selected weapon was not the laser
+		nObject = SpitPowerup (gameData.objs.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary]);
+		}
+	else if (gameData.weapons.nPrimary && !IsBuiltinWeapon (gameData.weapons.nPrimary)) { //if selected weapon was not the laser
 		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
 		nObject = SpitPowerup (gameData.objs.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary]);
 		}
