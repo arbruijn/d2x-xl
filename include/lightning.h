@@ -237,7 +237,7 @@ class CLightningManager : public tLightningData {
 		void Render (tLightning *pl, int nBolts, short nDepth);
 		void RenderBuffered (tLightning *plRoot, int nStart, int nBolts, int nDepth, int nThread);
 		void RenderSystem (void);
-		void RenderForDamage (CObject *objP, g3sPoint **pointList, RenderModel::CVertex *pVerts, int nVertices);
+		int RenderForDamage (CObject *objP, g3sPoint **pointList, RenderModel::CVertex *pVerts, int nVertices);
 		void Animate (tLightning *pl, int nStart, int nBolts, int nDepth);
 		int Enable (CObject* objP);
 		int CreateForMissile (CObject *objP);

@@ -90,8 +90,8 @@ CLightningEmitter* emitterP = m_emitters.Pop ();
 if (!emitterP)
 	return -1;
 if (!(emitterP->Create (nBolts, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
-							  nAngle, nOffset, nNodes, nChildren, nDepth, nSteps, nSmoothe, bClamp, bGlow, bSound, bLight,
-							  nStyle, colorP))) {
+							   nAngle, nOffset, nNodes, nChildren, nDepth, nSteps, nSmoothe, bClamp, bGlow, bSound, bLight,
+							   nStyle, colorP))) {
 	m_emitters.Push (emitterP->Id ());
 	emitterP->Destroy ();
 	SEM_LEAVE (SEM_LIGHTNING)
@@ -780,14 +780,14 @@ typedef union tPolyKey {
 	short	s [4];
 } tPolyKey;
 
-void CLightningManager::RenderForDamage (CObject* objP, g3sPoint **pointList, RenderModel::CVertex *vertP, int nVertices)
+int CLightningManager::RenderForDamage (CObject* objP, g3sPoint **pointList, RenderModel::CVertex *vertP, int nVertices)
 {
 	CLightningEmitter*	emitterP;
-	CFloatVector		v, vPosf, vEndf, vNormf, vDeltaf;
-	CFixVector			vPos, vEnd, vNorm, vDelta;
-	int					h, i, j, bUpdate = 0;
-	short					nObject;
-	tPolyKey				key;
+	CFloatVector			v, vPosf, vEndf, vNormf, vDeltaf;
+	CFixVector				vPos, vEnd, vNorm, vDelta;
+	int						h, i, j, bUpdate = 0;
+	short						nObject;
+	tPolyKey					key;
 
 	static short	nLastObject = -1;
 	static float	fDamage;
@@ -796,13 +796,14 @@ void CLightningManager::RenderForDamage (CObject* objP, g3sPoint **pointList, Re
 	static tRgbaColorf color = {0.2f, 0.2f, 1.0f, 1.0f};
 
 if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bDamage))
-	return;
+	return -1;
 if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_PLAYER))
-	return;
+	return -1;
 if (nVertices < 3)
-	return;
+	return -1;
 j = (nVertices > 4) ? 4 : nVertices;
 h = (nVertices + 1) / 2;
+// create a unique key for the lightning using the vertex key/index
 if (pointList) {
 	for (i = 0; i < j; i++)
 		key.s [i] = pointList [i]->p3_key;
@@ -817,6 +818,7 @@ else {
 	}
 i = FindDamageLightning (nObject = objP->Index (), key.i);
 if (i < 0) {
+	// create new lightning stroke
 	if ((nLastObject != nObject) || (nFrameFlipFlop != gameStates.render.nFrameFlipFlop)) {
 		nLastObject = nObject;
 		nFrameFlipFlop = gameStates.render.nFrameFlipFlop;
@@ -824,7 +826,7 @@ if (i < 0) {
 		}
 #if 1
 	if (dbl_rand () > fDamage)
-		return;
+		return 0;
 #endif
 	if (pointList) {
 		vPos = pointList [0]->p3_src;
@@ -853,17 +855,20 @@ if (i < 0) {
 	}
 if (i >= 0) {
 	emitterP = m_emitters + i;
-	ogl.SetFaceCulling (false);
 	if (bUpdate) {
 		emitterP->m_nKey [0] = key.i [0];
 		emitterP->m_nKey [1] = key.i [1];
 		}
 	if (emitterP->Lightning () && (emitterP->m_nBolts = emitterP->Lightning ()->Update (0, 0))) {
+		ogl.SetFaceCulling (false);
 		emitterP->Render (0, -1, -1);
+		ogl.SetFaceCulling (true);
+		return 1;
 		}
-	else
+	else {
 		Destroy (m_emitters + i, NULL);
-	ogl.SetFaceCulling (true);
+		return 0;
+		}
 	}
 }
 

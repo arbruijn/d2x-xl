@@ -779,7 +779,7 @@ ogl.ResetTransform (1);
 //------------------------------------------------------------------------------
 
 void G3RenderDamageLightning (CObject *objP, short nModel, short nSubModel,
-										 CAngleVector *animAnglesP, CFixVector *vOffsetP, int bHires)
+										CAngleVector *animAnglesP, CFixVector *vOffsetP, int bHires)
 {
 if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bDamage))
 	return;
@@ -962,9 +962,26 @@ if (gameOpts->render.debug.bWireFrame)
 #endif
 #if 1 //!DBG
 if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
-	transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
-	G3RenderDamageLightning (objP, nModel, 0, animAnglesP, NULL, bHires);
-	transformation.End ();
+	RenderModel::CModel*		pm = gameData.models.renderModels [bHires] + nModel;
+
+	if (pm->m_bValid < 1) {
+		if (!bHires)
+			pm = NULL;
+		else {
+			pm = gameData.models.renderModels [0] + nModel;
+			if (pm->m_bValid < 1)
+				pm = NULL;
+			}
+		}
+	if (pm) {
+		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
+		RenderModel::CSubModel*	psm = pm->m_subModels.Buffer ();
+		for (int i = 0, j = pm->m_nSubModels; i < j; i++, psm++)
+			if (psm->m_nParent == -1)
+				G3RenderDamageLightning (objP, nModel, i, animAnglesP, NULL, bHires);
+//	G3RenderDamageLightning (objP, nModel, 0, animAnglesP, NULL, bHires);
+		transformation.End ();
+		}
 	}
 #endif
 #if DBG
