@@ -986,7 +986,7 @@ m_cf.WriteFix (gameData.omega.xCharge [0]);
 m_cf.WriteShort (missionManager.nEntryLevel);
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	SaveSpawnPoint (i);
-m_cf.WriteInt (gameOpts->gameplay.nShip);
+m_cf.WriteInt (gameOpts->gameplay.nShip [0]);
 }
 
 //------------------------------------------------------------------------------
@@ -2018,8 +2018,9 @@ if (m_nVersion >= 37) {
 	}
 /*---*/PrintLog ("   initializing sound sources\n");
 if (m_nVersion >= 54) {
-	gameOpts->gameplay.nShip = m_cf.ReadInt ();
-	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip = ubyte (gameOpts->gameplay.nShip);
+	gameOpts->gameplay.nShip [0] = m_cf.ReadInt ();
+	gameOpts->gameplay.nShip [1] = -1;
+	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip = ubyte (gameOpts->gameplay.nShip [0]);
 	}
 SetSoundSources ();
 return 1;

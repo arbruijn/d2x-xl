@@ -457,7 +457,7 @@ typedef struct tGameplayOptions {
 	int nSlowMotionSpeedup;
 	int bUseD1AI;
 	int bNoThief;
-	int nShip;
+	int nShip [2];
 } tGameplayOptions;
 
 //------------------------------------------------------------------------------

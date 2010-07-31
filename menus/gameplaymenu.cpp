@@ -248,7 +248,7 @@ m.AddText (TXT_PLAYERSHIP);
 optShip = m.AddRadio (TXT_PYRO_GX, 0, KEY_G, HTX_PLAYERSHIP);
 m.AddRadio (TXT_PHANTOM_XL, 0, KEY_X, HTX_PLAYERSHIP);
 for (int i = 0; i < 2; i++)
-	m [optShip + i].m_value = (i == gameOpts->gameplay.nShip);
+	m [optShip + i].m_value = (i == gameOpts->gameplay.nShip [1]);
 }
 
 //------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ void GetShipSelection (CMenu& m, int& optShip)
 {
 for (int i = 0; i < 2; i++)
 	if (m [optShip + i].m_value) {
-		gameOpts->gameplay.nShip = i;
+		gameOpts->gameplay.nShip [1] = i;
 		break;
 		}
 }
@@ -273,7 +273,7 @@ void GameplayOptionsMenu (void)
 	int	optSmartWeaponSwitch = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optNoThief = -1, optLoadout = -1;
 	int	optInventory = -1, optShip = -1;
 	int	optReorderPrim, optReorderSec;
-	int	nShip = gameOpts->gameplay.nShip;
+	int	nShip = gameOpts->gameplay.nShip [0];
 	char	szSlider [50];
 
 pszAggressivities [0] = TXT_STANDARD;
@@ -354,9 +354,7 @@ if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
-if (gameStates.app.bGameRunning && (gameOpts->gameplay.nShip != nShip)) {
-	int nNewShip = gameOpts->gameplay.nShip;
-	gameOpts->gameplay.nShip = nShip;
+if (gameStates.app.bGameRunning && (gameOpts->gameplay.nShip [1] != nShip)) {
 	SetChaseCam (0);
 	SetFreeCam (0);
 	SetRearView (0);
@@ -368,7 +366,6 @@ if (gameStates.app.bGameRunning && (gameOpts->gameplay.nShip != nShip)) {
 		LOCALPLAYER.Object ()->Die ();
 	MultiSendShield ();
 	MultiSendPlayerWeapons ();
-	gameOpts->gameplay.nShip = nNewShip;
 	}
 }
 

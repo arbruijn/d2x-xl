@@ -497,6 +497,11 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDRecordPlayerWeapon (1, 0);
 	}
 
+if (gameOpts->gameplay.nShip [1] > -1) {
+	gameOpts->gameplay.nShip [0] = gameOpts->gameplay.nShip [1];
+	gameOpts->gameplay.nShip [1] = -1;
+	}
+
 LOCALPLAYER.SetEnergy (INITIAL_ENERGY);
 LOCALPLAYER.SetShield (gameStates.gameplay.xStartingShield);
 LOCALPLAYER.laserLevel = 0;
