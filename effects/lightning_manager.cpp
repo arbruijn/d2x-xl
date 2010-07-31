@@ -849,6 +849,8 @@ if (i < 0) {
 		vPos.Assign (vPosf);
 		vEnd.Assign (vEndf);
 		}
+	if (CFixVector::Dist (vPos, vEnd) < I2X (1) / 4)
+		return -1;
 	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 1000 + d_rand () % 2000, 0,
 					h, I2X (1) / 2, 0, 0, 20, 0, 1, 5, 0, 1, -1, 0, 0, 1, &color);
 	bUpdate = 1;
@@ -867,9 +869,9 @@ if (i >= 0) {
 		}
 	else {
 		Destroy (m_emitters + i, NULL);
-		return 0;
 		}
 	}
+return 0;
 }
 
 //------------------------------------------------------------------------------

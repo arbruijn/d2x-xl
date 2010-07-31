@@ -126,9 +126,9 @@ if (m_bInPlane && !m_vDelta.IsZero ()) {
 	}
 else {
 	do {
-		VmRandomVector(&vDelta [0]);
+		VmRandomVector (&vDelta [0]);
 	} while (abs (CFixVector::Dot (vDir, vDelta [0])) > I2X (9) / 10);
-	vDelta [1] = CFixVector::Normal (vPos, m_vEnd, *vDelta);
+	vDelta [1] = CFixVector::Normal (vPos, m_vEnd, vDelta [0]);
 	v = vPos + vDelta [1];
 	vDelta [0] = CFixVector::Normal (vPos, m_vEnd, v);
 	}

@@ -355,6 +355,8 @@ if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
 if (gameStates.app.bGameRunning && (gameOpts->gameplay.nShip != nShip)) {
+	int nNewShip = gameOpts->gameplay.nShip;
+	gameOpts->gameplay.nShip = nShip;
 	SetChaseCam (0);
 	SetFreeCam (0);
 	SetRearView (0);
@@ -366,6 +368,7 @@ if (gameStates.app.bGameRunning && (gameOpts->gameplay.nShip != nShip)) {
 		LOCALPLAYER.Object ()->Die ();
 	MultiSendShield ();
 	MultiSendPlayerWeapons ();
+	gameOpts->gameplay.nShip = nNewShip;
 	}
 }
 

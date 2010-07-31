@@ -977,7 +977,7 @@ if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)
 		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 		RenderModel::CSubModel*	psm = pm->m_subModels.Buffer ();
 		for (int i = 0, j = pm->m_nSubModels; i < j; i++, psm++)
-			if (psm->m_nParent == -1)
+			if ((psm->m_nParent == -1) && !G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
 				G3RenderDamageLightning (objP, nModel, i, animAnglesP, NULL, bHires);
 //	G3RenderDamageLightning (objP, nModel, 0, animAnglesP, NULL, bHires);
 		transformation.End ();
