@@ -38,7 +38,7 @@ int NewPlayerConfig ();
 // called once at program startup to get the CPlayerData's name
 int SelectPlayer (void);
 
-int LoadPlayerProfile (int bOnlyWindowSizes);
+int LoadPlayerProfile (int nStage = 2);
 
 // set a new highest level for CPlayerData for this mission
 void SetHighestLevel (ubyte nLevel);
@@ -85,7 +85,7 @@ class CPlayerProfile {
 		void Init (void);
 		void Destroy (void);
 		void Setup (void);
-		int Load (void);
+		int Load (bool bOnlyWindowSizes = false);
 		int Save (void);
 		inline bool Busy (void) { return m_cf.File () != 0; }
 	};

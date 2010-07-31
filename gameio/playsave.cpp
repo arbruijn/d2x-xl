@@ -751,18 +751,22 @@ return Set (szParam, pszValue);
 
 //------------------------------------------------------------------------------
 
-int CPlayerProfile::Load (void)
+int CPlayerProfile::Load (bool bOnlyWindowSizes)
 {
 if (Busy ())
 	return 1;
 
 	char	fn [FILENAME_LEN];
+	int	nParams = 0;
 
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
 if (!m_cf.Open (fn, gameFolders.szProfDir, "rt", 0))
 	return 0;
-while (!m_cf.EoF ())
+while (!m_cf.EoF ()) {
 	LoadParam ();
+	if (bOnlyWindowSizes && (++nParams == 2))
+		break;
+	}
 // call this before closing the file to prevent the profile being overwritten
 audio.SetMaxChannels (NMCLAMP (gameStates.sound.audio.nMaxChannels, MIN_SOUND_CHANNELS, MAX_SOUND_CHANNELS));
 cockpit->Activate (gameStates.render.cockpit.nType);	
@@ -1585,7 +1589,7 @@ return 1;
 ubyte dosControlType,winControlType;
 
 //read in the CPlayerData's saved games.  returns errno (0 == no error)
-int LoadPlayerProfile (int bOnlyWindowSizes)
+int LoadPlayerProfile (int nStage)
 {
 if (profile.Busy ())
 	return 1;
@@ -1638,8 +1642,14 @@ else {
 if (!nHighestLevels)
 	memset (highestLevels, 0, sizeof (highestLevels));
 
-if (!profile.Load ())
+if (nStage < 1)
+	return funcRes;
+
+if (!profile.Load (nStage < 2))
 	funcRes = errno;
+
+if (nStage < 2)
+	return funcRes;
 
 DefaultAllSettings ();
 
@@ -1743,12 +1753,12 @@ return i;
 void SetHighestLevel (ubyte nLevel)
 {
 int ret = LoadPlayerProfile (0);
-if ((ret != EZERO) && (ret != ENOENT))		//if file doesn't exist, that's ok
-	return;
-int i = FindHLIEntry ();
-if (nLevel > highestLevels [i].nLevel)
-	highestLevels [i].nLevel = nLevel;
-SavePlayerProfile ();
+if ((ret == EZERO) || (ret == ENOENT))	{	//if file doesn't exist, that's ok
+	int i = FindHLIEntry ();
+	if (nLevel > highestLevels [i].nLevel)
+		highestLevels [i].nLevel = nLevel;
+	SavePlayerProfile ();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1814,7 +1824,7 @@ return funcRes;
 //update the CPlayerData's highest level.  returns errno (0 == no error)
 int UpdatePlayerFile (void)
 {
-	int ret = LoadPlayerProfile (0);
+	int ret = LoadPlayerProfile (2);
 
 if ((ret != EZERO) && (ret != ENOENT))		//if file doesn't exist, that's ok
 	return ret;
@@ -1953,7 +1963,7 @@ if (filename [0] == '<') { // They selected 'create new pilot'
 	}
 else
 	strncpy (LOCALPLAYER.callsign, filename, CALLSIGN_LEN);
-if (LoadPlayerProfile (0) != EZERO)
+if (LoadPlayerProfile (2) != EZERO)
 	goto callMenu;
 KCSetControls (0);
 SetDisplayMode (gameStates.video.nDefaultDisplayMode, 1);
