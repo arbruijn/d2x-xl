@@ -248,7 +248,7 @@ m.AddText (TXT_PLAYERSHIP);
 optShip = m.AddRadio (TXT_PYRO_GX, 0, KEY_G, HTX_PLAYERSHIP);
 m.AddRadio (TXT_PHANTOM_XL, 0, KEY_X, HTX_PLAYERSHIP);
 for (int i = 0; i < 2; i++)
-	m [optShip + i].m_value = (i == gameOpts->gameplay.nShip [1]);
+	m [optShip + i].m_value = (i == gameOpts->gameplay.nShip [0]);
 }
 
 //------------------------------------------------------------------------------
