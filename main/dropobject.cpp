@@ -1007,6 +1007,8 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 	//	Drop the rest of the primary weapons
 	MaybeDropPrimaryWeaponEgg (playerObjP, SPREADFIRE_INDEX);
 	MaybeDropPrimaryWeaponEgg (playerObjP, PLASMA_INDEX);
+	if (gameData.weapons.bTripleFusion)
+		MaybeDropPrimaryWeaponEgg (playerObjP, FUSION_INDEX);
 	MaybeDropPrimaryWeaponEgg (playerObjP, FUSION_INDEX);
 	MaybeDropPrimaryWeaponEgg (playerObjP, HELIX_INDEX);
 	MaybeDropPrimaryWeaponEgg (playerObjP, PHOENIX_INDEX);
