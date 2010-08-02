@@ -1091,6 +1091,9 @@ if (!bmP)
 else if (texCoordP)
 	RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoordP, colorP, nColors, bmP, 0, nWrap);
 else {
+	if (!BindBitmap (bmP, 0, nWrap, true))
+		return 0;
+
 	GLfloat			u = bmP->Texture ()->U ();
 	GLfloat			v = bmP->Texture ()->V ();
 	tTexCoord2f		texCoords [4] = {{{0,0}},{{u,0}},{{u,v}},{{0,v}}};
