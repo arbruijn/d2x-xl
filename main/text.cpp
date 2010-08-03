@@ -1926,8 +1926,9 @@ const char *defaultGameTexts [][2] = {
  {"Dubois", "Dubois"},
  {"Spielerprofil nicht lesbar.", "Player profile couldn't be read."},
  {"Bild auf~Hellen", "increase brigh~Tness"},
- {"Pyro ~GX", "Pyro ~GX"},
- {"Phantom ~XL", "Phantom ~XL"},
+ {"~Standardschiff", "standard ~Ship"},
+ {"leichter ~Jaeger", "light ~Interceptor"},
+ {"schwerer ~Bomber", "heavy ~Fighter"},
  {"\nSchiffsauswahl:", "\nChose your ship:"},
 #if 0
  {"", ""},

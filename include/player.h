@@ -88,14 +88,18 @@ class CShipEnergy {
 		fix*	m_current;
 
 	public:
+		//default c-tor
 		CShipEnergy () { Setup (0, 0, I2X (100), NULL); }
-
+		// return ship type dependent scaling value
 		float Scale (void);
-
+		// get initial value (which is identical to the max value w/o overcharge)
 		inline fix Initial (void) { return fix (m_init * Scale () + 0.5f); }
+		// get max value
 		inline fix Max (void) { return fix (m_max * Scale () + 0.5f); }
-		inline fix Get (void) { return *m_current; }
-		inline bool Set (fix e, bool bScale = true) { 
+		// get current value
+		inline fix Get (bool bScale = true) { return bScale ? *m_current : fix (*m_current / Scale () + 0.5f); }
+		// set by fixed value
+		inline bool Set (fix e, bool bScale = true) {
 			if (bScale)
 				e = fix (e * Scale () + 0.5f);
 			if (e > Max ())
@@ -105,8 +109,16 @@ class CShipEnergy {
 			*m_current = e;
 			return true;
 			}
-		inline fix Update (fix delta) { return delta ? Set (Get () + delta, false) : Get (); }
-
+		// change by some value
+		inline fix Update (fix delta) { return delta ? Set (Get () + delta, false) : Get (); }	
+		// fill up
+		inline bool Reset (fix e) {	
+			e = fix (e * Scale () + 0.5f);
+			return (Get () < e) ? Set (e, false) : false; 
+			}
+		// fill rate in percent
+		inline int Level (void) { return int (100.0f * float (Get ()) / float (Initial ()) + 0.5f); }	
+		// initialize
 		void Setup (int type, int index, fix init, fix* current) {
 			m_type = type;
 			m_index = index;
@@ -114,7 +126,6 @@ class CShipEnergy {
 			m_max = 2 * init;
 			Set (init);
 			}
-
 	};
 
 
@@ -189,14 +200,18 @@ class __pack__ CPlayerData : public CPlayerInfo {
 #if 1
 		inline fix InitialShield (void) { return m_shield.Initial (); }
 		inline fix InitialEnergy (void) { return m_energy.Initial (); }
-		inline fix Shield (void) { return m_shield.Get (); }
-		inline fix Energy (void) { return m_energy.Get (); }
+		inline fix Shield (bool bScale = true) { return m_shield.Get (bScale); }
+		inline fix Energy (bool bScale = true) { return m_energy.Get (bScale); }
 		fix SetShield (fix s, bool bScale = true);
 		fix SetEnergy (fix e, bool bScale = true);
+		inline fix ResetShield (fix s) { return m_shield.Reset (s); }
+		inline fix ResetEnergy (fix e) { return m_energy.Reset (e); }
 		inline fix UpdateShield (fix delta) { return m_shield.Update (delta); }
 		inline fix UpdateEnergy (fix delta) { return m_energy.Update (delta); }
 		inline fix MaxShield (void) { return m_shield.Max (); }
 		inline fix MaxEnergy (void) { return m_energy.Max (); }
+		inline int ShieldLevel (void) { return m_shield.Level (); }
+		inline int EnergyLevel (void) { return m_energy.Level (); }
 		inline float ShieldScale (void) { return m_shield.Scale (); }
 		inline float EnergyScale (void) { return m_energy.Scale (); }
 #endif

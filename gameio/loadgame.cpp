@@ -352,10 +352,8 @@ else {		// Note link to above if!!!
 
 void InitAmmoAndEnergy (void)
 {
-if (LOCALPLAYER.Energy () < LOCALPLAYER.InitialEnergy ())
-	LOCALPLAYER.SetEnergy (INITIAL_ENERGY);
-if (LOCALPLAYER.Shield () < gameStates.gameplay.xStartingShield)
-	LOCALPLAYER.SetShield (gameStates.gameplay.xStartingShield);
+LOCALPLAYER.ResetEnergy (INITIAL_ENERGY);
+LOCALPLAYER.ResetShield (gameStates.gameplay.InitialShield ());
 if (LOCALPLAYER.primaryWeaponFlags & (1 << OMEGA_INDEX))
 	SetMaxOmegaCharge ();
 if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
@@ -382,7 +380,7 @@ if (bNewGame) {
 	playerP->hoursLevel = 0;
 	playerP->hoursTotal = 0;
 	playerP->SetEnergy (INITIAL_ENERGY);
-	playerP->SetShield (gameStates.gameplay.xStartingShield);
+	playerP->SetShield (gameStates.gameplay.InitialShield ());
 	playerP->nKillerObj = -1;
 	playerP->netKilledTotal = 0;
 	playerP->netKillsTotal = 0;
@@ -504,7 +502,7 @@ if (gameOpts->gameplay.nShip [1] > -1) {
 	}
 
 LOCALPLAYER.SetEnergy (INITIAL_ENERGY);
-LOCALPLAYER.SetShield (gameStates.gameplay.xStartingShield);
+LOCALPLAYER.SetShield (gameStates.gameplay.InitialShield ());
 LOCALPLAYER.laserLevel = 0;
 LOCALPLAYER.nKillerObj = -1;
 LOCALPLAYER.hostages.nOnBoard = 0;
@@ -1812,10 +1810,8 @@ gameData.SetFusionCharge (0);
 gameStates.app.cheats.bRobotsFiring = 1;
 SetD1Sound ();
 if (gameStates.app.bD1Mission) {
-	if (LOCALPLAYER.Energy () < LOCALPLAYER.InitialEnergy ())
-		LOCALPLAYER.SetEnergy (INITIAL_ENERGY);
-	if (LOCALPLAYER.Shield () < LOCALPLAYER.InitialShield ())
-		LOCALPLAYER.SetShield (INITIAL_SHIELD);
+	LOCALPLAYER.ResetEnergy (INITIAL_ENERGY);
+	LOCALPLAYER.ResetShield (INITIAL_SHIELD);
 	}
 }
 
