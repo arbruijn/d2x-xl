@@ -29,6 +29,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
+static void DuplicateWeaponMsg (int nWeaponIndex, int nPlayer)
+{
+if (ISLOCALPLAYER (nPlayer))
+	HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE_THE, PRIMARY_WEAPON_NAMES (nWeaponIndex));
+}
+
+//	-----------------------------------------------------------------------------
+
 //called when a primary weapon is picked up
 //returns true if actually picked up
 int PickupPrimary (int nWeaponIndex, int nPlayer)
@@ -38,24 +46,35 @@ int PickupPrimary (int nWeaponIndex, int nPlayer)
 	ushort flag = 1 << nWeaponIndex;
 	int nCutPoint;
 	int nSupposedWeapon = gameData.weapons.nPrimary;
-	int bTripleFusion = (nWeaponIndex == FUSION_INDEX) 
-							  && (gameData.multiplayer.weaponStates [nPlayer].nShip != 1)
-							  && !gameData.multiplayer.weaponStates [nPlayer].bTripleFusion 
-							  && EGI_FLAG (bTripleFusion, 0, 0, 0);
 
-if ((nWeaponIndex != LASER_INDEX) && (playerP->primaryWeaponFlags & flag) && !bTripleFusion) {
-	if (ISLOCALPLAYER (nPlayer))
-		HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE_THE, PRIMARY_WEAPON_NAMES (nWeaponIndex));
-	return 0;
+if (nWeaponIndex == FUSION_INDEX) {
+	if (gameData.multiplayer.weaponStates [nPlayer].nShip == 1) {
+		DuplicateWeaponMsg (nWeaponIndex, nPlayer);
+		return 0;
+		}
+	if (playerP->primaryWeaponFlags & flag) {
+		if (!EGI_FLAG (bTripleFusion, 0, 0, 0))
+			return 0; // tri-fusion not allowed
+		if (gameData.multiplayer.weaponStates [nPlayer].nShip != 2)
+			return 0; // tri-fusion only allowed on heavy fighter
+		if (gameData.multiplayer.weaponStates [nPlayer].bTripleFusion) {
+			DuplicateWeaponMsg (nWeaponIndex, nPlayer);
+			return 1; // already has tri-fusion
+			}
+		if (nPlayer == gameData.multiplayer.nLocalPlayer)
+   		gameData.weapons.bTripleFusion = 1;
+		else
+			gameData.multiplayer.weaponStates [nPlayer].bTripleFusion = 1;
+		}
 	}
-if (!(playerP->primaryWeaponFlags & flag))
-	playerP->primaryWeaponFlags |= flag;
-else if (bTripleFusion) {
-	if (nPlayer == gameData.multiplayer.nLocalPlayer)
-   	gameData.weapons.bTripleFusion = 1;
-   else
-	   gameData.multiplayer.weaponStates [nPlayer].bTripleFusion = 1;
+else if (nWeaponIndex != LASER_INDEX) {
+	if (playerP->primaryWeaponFlags & flag) {
+		DuplicateWeaponMsg (nWeaponIndex, nPlayer);
+		return 1;
+		}
 	}
+playerP->primaryWeaponFlags |= flag;
+
 if (ISLOCALPLAYER (nPlayer)) {
 	nCutPoint = POrderList (255);
 	if ((gameData.weapons.nPrimary == LASER_INDEX) && 

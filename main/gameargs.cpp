@@ -381,7 +381,7 @@ gameStates.app.bCacheLights = 1;
 
 void EvalShipArgs (void)
 {
-	char*	szShipArgs [] = {"-light_ship", "-medium_ship", "-heavy_ship"};
+	char*	szShipArgs [] = {"-medium_ship", "-light_ship", "-heavy_ship"};
 	int	t;
 	char	*p;
 
@@ -389,7 +389,7 @@ for (int i = 0; i < MAX_SHIP_TYPES; i++) {
 	if ((t = FindArg (szShipArgs [i])) && (p = pszArgList [t+1]) && *p) {
 		strncpy (gameData.models.szShipModels [i], pszArgList [t+1], FILENAME_LEN);
 		strlwr (gameData.models.szShipModels [i]);
-		replacementModels [108 + i].pszHires = gameData.models.szShipModels [i];
+		replacementModels [i].pszHires = gameData.models.szShipModels [i];
 		}
 	}
 }
@@ -488,6 +488,7 @@ EvalRenderArgs ();
 EvalSoundArgs ();
 EvalMusicArgs ();
 EvalDemoArgs ();
+EvalShipArgs ();
 }
 
 // ----------------------------------------------------------------------------

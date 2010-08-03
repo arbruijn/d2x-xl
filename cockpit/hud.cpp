@@ -534,7 +534,7 @@ if (cockpit->Hide ())
 if (gameOpts->render.cockpit.bTextGauges) {
 	int y = CCanvas::Current ()->Height () - (IsMultiGame ? 6 : 2) * LineSpacing ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	nIdShield = GrPrintF (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, int (m_info.nShield * LOCALPLAYER.ShieldScale ()));
+	nIdShield = GrPrintF (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, int (m_info.nShield * LOCALPLAYER.ShieldScale () + 0.5f));
 	}
 }
 

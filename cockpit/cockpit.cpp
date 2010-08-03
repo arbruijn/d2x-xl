@@ -230,7 +230,7 @@ CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
-sprintf (szEnergy, "%d", int (m_info.nEnergy * LOCALPLAYER.EnergyScale ()));
+sprintf (szEnergy, "%d", int (m_info.nEnergy * LOCALPLAYER.EnergyScale () + 0.5f));
 int w, h, aw;
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);

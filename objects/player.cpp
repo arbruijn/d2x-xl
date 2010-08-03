@@ -14,9 +14,9 @@
 #include "marker.h"
 
 tShipModifier shipModifiers [MAX_SHIP_TYPES] = {
-	{{1.1f, 0.9f, 0.9f}},
-	{{0.9f, 1.5f, 1.2f}},
-	{{1.0f, 1.0f, 1.0f}}
+	{{1.0f, 1.0f, 1.0f}},
+	{{0.9f, 0.9f, 1.1f}},
+	{{1.5f, 1.2f, 0.9f}}
 };
 
 //-------------------------------------------------------------------------
@@ -24,8 +24,6 @@ tShipModifier shipModifiers [MAX_SHIP_TYPES] = {
  
 void PlayerShipRead (CPlayerShip *ps, CFile& cf)
 {
-	int i;
-
 ps->nModel = cf.ReadInt ();
 ps->nExplVClip = cf.ReadInt ();
 ps->mass = cf.ReadFix ();
@@ -35,7 +33,7 @@ ps->reverseThrust = cf.ReadFix ();
 ps->brakes = cf.ReadFix ();
 ps->wiggle = cf.ReadFix ();
 ps->maxRotThrust = cf.ReadFix ();
-for (i = 0; i < N_PLAYER_GUNS; i++)
+for (int i = 0; i < N_PLAYER_GUNS; i++)
 	cf.ReadVector (ps->gunPoints[i]);
 }
 
