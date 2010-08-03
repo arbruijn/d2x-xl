@@ -1326,9 +1326,6 @@ void DetachChildObjects (CObject *parentP);
 void InitMultiPlayerObject (int nStage);
 
 extern ubyte bIsMissile [];
-extern float speedScale [];
-extern float shieldScale [];
-extern float energyScale [];
 
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------

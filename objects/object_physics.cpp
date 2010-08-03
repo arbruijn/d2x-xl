@@ -29,29 +29,25 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "input.h"
 
-float speedScale [MAX_SHIP_TYPES] = {1.0f, 1.1f, 0.9f};
-float shieldScale [MAX_SHIP_TYPES] = {1.0f, 0.9f, 1.5f};
-float energyScale [MAX_SHIP_TYPES] = {1.0f, 0.9f, 1.2f};
-
 //------------------------------------------------------------------------------
 
 float CObject::SpeedScale (void)
 {
-return (info.nType == OBJ_PLAYER) ? speedScale [gameData.multiplayer.weaponStates [info.nId].nShip] : 1.0f;
+return (info.nType == OBJ_PLAYER) ? shipModifiers [gameData.multiplayer.weaponStates [info.nId].nShip].v.speed : 1.0f;
 }
 
 //------------------------------------------------------------------------------
 
 float CObject::ShieldScale (void)
 {
-return shieldScale [gameData.multiplayer.weaponStates [info.nId].nShip];
+return shipModifiers [gameData.multiplayer.weaponStates [info.nId].nShip].v.shield;
 }
 
 //------------------------------------------------------------------------------
 
 float CObject::EnergyScale (void)
 {
-return energyScale [gameData.multiplayer.weaponStates [info.nId].nShip];
+return shipModifiers [gameData.multiplayer.weaponStates [info.nId].nShip].v.energy;
 }
 
 // ----------------------------------------------------------------------------
