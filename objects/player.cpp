@@ -293,7 +293,8 @@ return markerP ? &markerP->info.position.mOrient : &gameData.multiplayer.playerI
 
 int CPlayerData::Index (void)
 {
-return int (this - gameData.multiplayer.players);
+int i = int (this - gameData.multiplayer.players);
+return ((i < 0) || (i > MAX_PLAYERS)) ? 0 : i;
 }
 
 //-------------------------------------------------------------------------
