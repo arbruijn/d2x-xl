@@ -762,7 +762,7 @@ class CGfxStates {
 
 //------------------------------------------------------------------------------
 
-class COglStates {
+class CRenderAPIStates {
 	public:
 		int bInitialized;
 		int bRebuilding;
@@ -1246,7 +1246,7 @@ class CGameStates {
 		CMovieStates			movies;
 		CMultiplayerStates	multi;
 		CGfxStates				gfx;
-		COglStates				ogl;
+		CRenderAPIStates		ogl;
 		CRenderStates			render;
 		CZoomStates				zoom;
 		CSoundStates			sound;
