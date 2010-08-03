@@ -1967,10 +1967,10 @@ void LoadGameTexts(void);
 #define TXT_LIGHT_SHIP					GT(1183)
 #define TXT_HEAVY_SHIP					GT(1184)
 #define TXT_PLAYERSHIP					GT(1185)
+#define TXT_FUSION						GT(1186)
 
 #if 0
 
-#define TXT_					GT(1186)
 #define TXT_					GT(1187)
 #define TXT_					GT(1188)
 #define TXT_					GT(1189)

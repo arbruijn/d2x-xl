@@ -48,15 +48,17 @@ int PickupPrimary (int nWeaponIndex, int nPlayer)
 	int nSupposedWeapon = gameData.weapons.nPrimary;
 
 if (nWeaponIndex == FUSION_INDEX) {
-	if (gameData.multiplayer.weaponStates [nPlayer].nShip == 1) {
-		DuplicateWeaponMsg (nWeaponIndex, nPlayer);
+	if (gameData.multiplayer.weaponStates [nPlayer].nShip == 1)
 		return 0;
-		}
 	if (playerP->primaryWeaponFlags & flag) {
-		if (!EGI_FLAG (bTripleFusion, 0, 0, 0))
+		if (!EGI_FLAG (bTripleFusion, 0, 0, 0)) {
+			HUDInitMessage (TXT_MAXED_OUT, TXT_FUSION);
 			return 0; // tri-fusion not allowed
-		if (gameData.multiplayer.weaponStates [nPlayer].nShip != 2)
+			}
+		if (gameData.multiplayer.weaponStates [nPlayer].nShip != 2) {
+			HUDInitMessage (TXT_MAXED_OUT, TXT_FUSION);
 			return 0; // tri-fusion only allowed on heavy fighter
+			}
 		if (gameData.multiplayer.weaponStates [nPlayer].bTripleFusion) {
 			DuplicateWeaponMsg (nWeaponIndex, nPlayer);
 			return 1; // already has tri-fusion
