@@ -352,7 +352,7 @@ else {		// Note link to above if!!!
 
 void InitAmmoAndEnergy (void)
 {
-LOCALPLAYER.ResetEnergy (INITIAL_ENERGY);
+LOCALPLAYER.ResetEnergy (gameStates.gameplay.InitialEnergy ());
 LOCALPLAYER.ResetShield (gameStates.gameplay.InitialShield ());
 if (LOCALPLAYER.primaryWeaponFlags & (1 << OMEGA_INDEX))
 	SetMaxOmegaCharge ();
@@ -379,7 +379,7 @@ if (bNewGame) {
 	playerP->timeTotal = 0;
 	playerP->hoursLevel = 0;
 	playerP->hoursTotal = 0;
-	playerP->SetEnergy (INITIAL_ENERGY);
+	playerP->SetEnergy (gameStates.gameplay.InitialEnergy ());
 	playerP->SetShield (gameStates.gameplay.InitialShield ());
 	playerP->nKillerObj = -1;
 	playerP->netKilledTotal = 0;
@@ -501,7 +501,7 @@ if (gameOpts->gameplay.nShip [1] > -1) {
 	gameOpts->gameplay.nShip [1] = -1;
 	}
 
-LOCALPLAYER.SetEnergy (INITIAL_ENERGY);
+LOCALPLAYER.SetEnergy (gameStates.gameplay.InitialEnergy ());
 LOCALPLAYER.SetShield (gameStates.gameplay.InitialShield ());
 LOCALPLAYER.laserLevel = 0;
 LOCALPLAYER.nKillerObj = -1;

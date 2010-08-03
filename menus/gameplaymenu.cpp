@@ -362,6 +362,7 @@ if (gameStates.app.bGameRunning && (gameOpts->gameplay.nShip [1] != nShip)) {
 	LOCALPLAYER.lives++;
 #endif
 	gameStates.gameplay.xInitialShield [1] = LOCALPLAYER.GetShield (false);
+	gameStates.gameplay.xInitialEnergy [1] = LOCALPLAYER.GetEnergy (false);
 	LOCALPLAYER.SetShield (-1);
 	if (LOCALPLAYER.Object ())
 		LOCALPLAYER.Object ()->Die ();

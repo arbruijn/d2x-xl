@@ -650,7 +650,7 @@ class CGameplayStates {
 		fix xLastAfterburnerCharge;
 		fix nPlayerSpeed;
 		fix xInitialShield [2];
-		fix xInitialEnergy;
+		fix xInitialEnergy [2];
 		CFixVector vTgtDir;
 		int nDirSteps;
 		int nInitialLives;
@@ -663,6 +663,14 @@ class CGameplayStates {
 			if (h < 0)
 				return xInitialShield [0];
 			xInitialShield [1] = -1;
+			return h;
+			}
+
+		fix InitialEnergy (void) {
+			int h = xInitialEnergy [1];
+			if (h < 0)
+				return xInitialEnergy [0];
+			xInitialEnergy [1] = -1;
 			return h;
 			}
 	};
