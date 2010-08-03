@@ -13,7 +13,7 @@
 #include "network.h"
 #include "marker.h"
 
-tShipModifier shipModifier [MAX_SHIP_TYPES] = {
+tShipModifier shipModifiers [MAX_SHIP_TYPES] = {
 	{{1.1f, 0.9f, 0.9f}},
 	{{0.9f, 1.5f, 1.2f}},
 	{{1.0f, 1.0f, 1.0f}}
