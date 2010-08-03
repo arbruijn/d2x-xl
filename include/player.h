@@ -76,10 +76,53 @@ typedef struct tPlayerHostages {
 } __pack__ tPlayerHostages;
 // When this structure changes, increment the constant
 // SAVE_FILE_VERSION in playsave.c
-class __pack__ CPlayerData {
+
+
+
+class CShipEnergy {
+	private:
+		int	m_type;
+		int	m_index;
+		fix	m_init;
+		fix	m_max;
+		fix*	m_current;
+
+	public:
+		CShipEnergy () { Setup (0, 0, I2X (100), NULL); }
+
+		float Scale (void);
+
+		inline fix Initial (void) { return fix (m_init * Scale () + 0.5f); }
+		inline fix Max (void) { return fix (m_max * Scale () + 0.5f); }
+		inline fix Get (void) { return *m_current; }
+		inline bool Set (fix e, bool bScale = true) { 
+			if (bScale)
+				e = fix (e * Scale () + 0.5f);
+			if (e > Max ())
+				e = Max ();
+			if (*m_current == e)
+				return false;
+			*m_current = e;
+			return true;
+			}
+		inline fix Update (fix delta) { return delta ? Set (Get () + delta, false) : Get (); }
+
+		void Setup (int type, int index, fix init, fix* current) {
+			m_type = type;
+			m_index = index;
+			m_current = current;
+			m_max = 2 * init;
+			Set (init);
+			}
+
+	};
+
+
+
+class CPlayerInfo {
 	public:
 		// Who am I data
-		char    callsign[CALLSIGN_LEN+1];   // The callsign of this CPlayerData, for net purposes.
+		char    callsign [CALLSIGN_LEN+1];  // The callsign of this CPlayerData, for net purposes.
 		ubyte   netAddress[6];					// The network address of the CPlayerData.
 		sbyte   connected;						// Is the CPlayerData connected or not?
 		int     nObject;						   // What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
@@ -99,8 +142,8 @@ class __pack__ CPlayerData {
 		short   nKillerObj;					// Who killed me.... (-1 if no one)
 		ushort  primaryWeaponFlags;		// bit set indicates the CPlayerData has this weapon.
 		ushort  secondaryWeaponFlags;		// bit set indicates the CPlayerData has this weapon.
-		ushort  primaryAmmo[MAX_PRIMARY_WEAPONS]; // How much ammo of each nType.
-		ushort  secondaryAmmo[MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
+		ushort  primaryAmmo [MAX_PRIMARY_WEAPONS]; // How much ammo of each nType.
+		ushort  secondaryAmmo [MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
 	#if 1 //for inventory system
 		ubyte	  nInvuls;
 		ubyte   nCloaks;
@@ -129,21 +172,36 @@ class __pack__ CPlayerData {
 		fix     homingObjectDist;     // Distance of nearest homing CObject.
 		sbyte   hoursLevel;           // Hours played (since timeTotal can only go up to 9 hours)
 		sbyte   hoursTotal;           // Hours played (since timeTotal can only go up to 9 hours)
+	} ;
+
+class __pack__ CPlayerData : public CPlayerInfo {
+	public:
+		CShipEnergy	m_shield;
+		CShipEnergy	m_energy;
 
 	public:
-		CPlayerData () { memset (this, 0, sizeof (*this)); }
-		fix InitialShield (void);
-		fix InitialEnergy (void);
-		fix Shield (void);
-		fix Energy (void);
+		CPlayerData () { 
+			memset (this, 0, sizeof (*this)); 
+			m_shield.Setup (0, Index (), INITIAL_SHIELD, &shield);
+			m_energy.Setup (0, Index (), INITIAL_ENERGY, &energy);
+			}
+
+#if 1
+		inline fix InitialShield (void) { return m_shield.Initial (); }
+		inline fix InitialEnergy (void) { return m_energy.Initial (); }
+		inline fix Shield (void) { return m_shield.Get (); }
+		inline fix Energy (void) { return m_energy.Get (); }
 		fix SetShield (fix s, bool bScale = true);
-		fix SetEnergy (fix e);
-		inline fix UpdateShield (fix delta) { return delta ? SetShield (Shield () + delta, false) : Shield (); }
-		inline fix UpdateEnergy (fix delta) { return delta ? SetEnergy (Energy () + delta) : Energy (); }
-		fix MaxShield (void);
+		fix SetEnergy (fix e, bool bScale = true);
+		inline fix UpdateShield (fix delta) { return m_shield.Update (delta); }
+		inline fix UpdateEnergy (fix delta) { return m_energy.Update (delta); }
+		inline fix MaxShield (void) { return m_shield.Max (); }
+		inline fix MaxEnergy (void) { return m_energy.Max (); }
+		inline float ShieldScale (void) { return m_shield.Scale (); }
+		inline float EnergyScale (void) { return m_energy.Scale (); }
+#endif
 		CObject* Object (void);
 		void SetObject (short n);
-		float ShieldScale (void);
 		bool IsLocalPlayer (void);
 
 	private:

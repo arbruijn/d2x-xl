@@ -1529,18 +1529,18 @@ void CSaveGameManager::LoadPlayer (CPlayerData *playerP)
 
 m_cf.Read (playerP->callsign, 1, CALLSIGN_LEN + 1); // The callsign of this CPlayerData, for net purposes.
 m_cf.Read (playerP->netAddress, 1, 6);					// The network address of the player.
-playerP->connected = m_cf.ReadByte ();            // Is the CPlayerData connected or not?
-playerP->nObject = m_cf.ReadInt ();                // What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
-playerP->nPacketsGot = m_cf.ReadInt ();         // How many packets we got from them
-playerP->nPacketsSent = m_cf.ReadInt ();        // How many packets we sent to them
+playerP->connected = m_cf.ReadByte ();					// Is the CPlayerData connected or not?
+playerP->nObject = m_cf.ReadInt ();						// What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
+playerP->nPacketsGot = m_cf.ReadInt ();				// How many packets we got from them
+playerP->nPacketsSent = m_cf.ReadInt ();				// How many packets we sent to them
 playerP->flags = (uint) m_cf.ReadInt ();           // Powerup flags, see below...
-playerP->energy = m_cf.ReadFix ();                // Amount of energy remaining.
-playerP->SetShield (m_cf.ReadFix (), false);               // shield remaining (protection)
-playerP->lives = m_cf.ReadByte ();                // Lives remaining, 0 = game over.
-playerP->level = m_cf.ReadByte ();                // Current level CPlayerData is playing. (must be signed for secret levels)
-playerP->laserLevel = (ubyte) m_cf.ReadByte ();  // Current level of the laser.
-playerP->startingLevel = m_cf.ReadByte ();       // What level the CPlayerData started on.
-playerP->nKillerObj = m_cf.ReadShort ();       // Who killed me.... (-1 if no one)
+playerP->SetEnergy (m_cf.ReadFix (), false);			// Amount of energy remaining.
+playerP->SetShield (m_cf.ReadFix (), false);			// shield remaining (protection)
+playerP->lives = m_cf.ReadByte ();						// Lives remaining, 0 = game over.
+playerP->level = m_cf.ReadByte ();						// Current level CPlayerData is playing. (must be signed for secret levels)
+playerP->laserLevel = (ubyte) m_cf.ReadByte ();		// Current level of the laser.
+playerP->startingLevel = m_cf.ReadByte ();			// What level the CPlayerData started on.
+playerP->nKillerObj = m_cf.ReadShort ();				// Who killed me.... (-1 if no one)
 playerP->primaryWeaponFlags = (ushort) m_cf.ReadShort ();   // bit set indicates the CPlayerData has this weapon.
 playerP->secondaryWeaponFlags = (ushort) m_cf.ReadShort (); // bit set indicates the CPlayerData has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
@@ -1551,14 +1551,14 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 playerP->nInvuls = (ubyte) m_cf.ReadByte ();
 playerP->nCloaks = (ubyte) m_cf.ReadByte ();
 #endif
-playerP->lastScore = m_cf.ReadInt ();           // Score at beginning of current level.
-playerP->score = m_cf.ReadInt ();                // Current score.
-playerP->timeLevel = m_cf.ReadFix ();            // Level time played
-playerP->timeTotal = m_cf.ReadFix ();				// Game time played (high word = seconds)
+playerP->lastScore = m_cf.ReadInt ();					// Score at beginning of current level.
+playerP->score = m_cf.ReadInt ();						// Current score.
+playerP->timeLevel = m_cf.ReadFix ();					// Level time played
+playerP->timeTotal = m_cf.ReadFix ();					// Game time played (high word = seconds)
 playerP->cloakTime = m_cf.ReadFix ();					// Time cloaked
 if (playerP->cloakTime != 0x7fffffff)
 	playerP->cloakTime += gameData.time.xGame;
-playerP->invulnerableTime = m_cf.ReadFix ();      // Time invulnerable
+playerP->invulnerableTime = m_cf.ReadFix ();			// Time invulnerable
 if (playerP->invulnerableTime != 0x7fffffff)
 	playerP->invulnerableTime += gameData.time.xGame;
 playerP->nScoreGoalCount = m_cf.ReadShort ();          // Num of players killed this level
@@ -1572,7 +1572,7 @@ playerP->hostages.nRescued = (ushort) m_cf.ReadShort (); // Total number of host
 playerP->hostages.nTotal = (ushort) m_cf.ReadShort ();         // Total number of hostages.
 playerP->hostages.nOnBoard = (ubyte) m_cf.ReadByte ();      // Number of hostages on ship.
 playerP->hostages.nLevel = (ubyte) m_cf.ReadByte ();         // Number of hostages on this level.
-playerP->homingObjectDist = m_cf.ReadFix ();     // Distance of nearest homing CObject.
+playerP->homingObjectDist = m_cf.ReadFix ();			// Distance of nearest homing CObject.
 playerP->hoursLevel = m_cf.ReadByte ();            // Hours played (since timeTotal can only go up to 9 hours)
 playerP->hoursTotal = m_cf.ReadByte ();            // Hours played (since timeTotal can only go up to 9 hours)
 }

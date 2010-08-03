@@ -288,10 +288,12 @@ return markerP ? &markerP->info.position.mOrient : &gameData.multiplayer.playerI
 }
 
 //-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
 int CPlayerData::Index (void)
 {
-return this - gameData.multiplayer.players;
+return int (this - gameData.multiplayer.players);
 }
 
 //-------------------------------------------------------------------------
@@ -303,69 +305,22 @@ return Index () == gameData.multiplayer.nLocalPlayer;
 
 //-------------------------------------------------------------------------
 
-float CPlayerData::ShieldScale (void)
-{
-	ubyte nShip = gameData.multiplayer.weaponStates [Index ()].nShip;
-
-return (nShip < 2) ? shieldScale [nShip] : 1.0f;
-}
-
-//-------------------------------------------------------------------------
-
-fix CPlayerData::InitialShield (void)
-{
-return fix (INITIAL_SHIELD * ShieldScale ());
-}
-
-//-------------------------------------------------------------------------
-
-fix CPlayerData::Shield (void)
-{
+fix CPlayerData::SetShield (fix s, bool bScale) 
+{ 
+if (m_shield.Set (s, bScale)) {
+	if ((nObject >= 0) && (IsLocalPlayer () || (nObject != LOCALPLAYER.nObject)))
+		OBJECTS [nObject].SetShield (s); 
+	MultiSendShield ();
+	}
 return shield;
 }
 
 //-------------------------------------------------------------------------
 
-fix CPlayerData::SetShield (fix s, bool bScale) 
+fix CPlayerData::SetEnergy (fix e, bool bScale) 
 { 
-if (bScale)
-	s = fix (s * ShieldScale ());
-if (s > MaxShield ())
-	s = MaxShield ();
-if (shield != s) {
-	if ((nObject >= 0) && (IsLocalPlayer () || (nObject != LOCALPLAYER.nObject)))
-		OBJECTS [nObject].SetShield (s); 
-	MultiSendShield ();
-	}
-return shield = s;
-}
-
-//-------------------------------------------------------------------------
-
-fix CPlayerData::MaxShield (void)
-{
-return fix (MAX_SHIELD * ShieldScale ());
-}
-
-//-------------------------------------------------------------------------
-
-fix CPlayerData::InitialEnergy (void)
-{
-return INITIAL_ENERGY;
-}
-
-//-------------------------------------------------------------------------
-
-fix CPlayerData::Energy (void)
-{
+m_energy.Set (e, bScale);
 return energy;
-}
-
-//-------------------------------------------------------------------------
-
-fix CPlayerData::SetEnergy (fix e) 
-{
-return energy = (e > MAX_ENERGY) ? MAX_ENERGY : (e < 0) ? 0 : e;
 }
 
 //-------------------------------------------------------------------------
@@ -382,4 +337,17 @@ CObject* CPlayerData::Object (void)
 return (nObject < 0) ? NULL : OBJECTS + nObject;
 }
 
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+
+float CShipEnergy::Scale (void)
+{
+	ubyte nShip = gameData.multiplayer.weaponStates [m_index].nShip;
+
+return (nShip > 2) ? 1.0f : m_type ? energyScale [nShip] : shieldScale [nShip];
+}
+
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 //-------------------------------------------------------------------------

@@ -1086,6 +1086,9 @@ nSimpleModelThresholdScale = 5;
 nMarkerModel = -1;
 vScale.SetZero ();
 Create ();
+strcpy (szShipModels [0], "pyrogl.ase");
+strcpy (szShipModels [1], "phantomxl.ase");
+strcpy (szShipModels [2], "pyrogl.ase");
 }
 
 // ----------------------------------------------------------------------------

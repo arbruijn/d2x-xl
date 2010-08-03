@@ -352,7 +352,7 @@ else {		// Note link to above if!!!
 
 void InitAmmoAndEnergy (void)
 {
-if (LOCALPLAYER.Energy () < INITIAL_ENERGY)
+if (LOCALPLAYER.Energy () < LOCALPLAYER.InitialEnergy ())
 	LOCALPLAYER.SetEnergy (INITIAL_ENERGY);
 if (LOCALPLAYER.Shield () < gameStates.gameplay.xStartingShield)
 	LOCALPLAYER.SetShield (gameStates.gameplay.xStartingShield);
@@ -381,7 +381,7 @@ if (bNewGame) {
 	playerP->timeTotal = 0;
 	playerP->hoursLevel = 0;
 	playerP->hoursTotal = 0;
-	playerP->energy = INITIAL_ENERGY;
+	playerP->SetEnergy (INITIAL_ENERGY);
 	playerP->SetShield (gameStates.gameplay.xStartingShield);
 	playerP->nKillerObj = -1;
 	playerP->netKilledTotal = 0;
@@ -1812,10 +1812,10 @@ gameData.SetFusionCharge (0);
 gameStates.app.cheats.bRobotsFiring = 1;
 SetD1Sound ();
 if (gameStates.app.bD1Mission) {
-	if (LOCALPLAYER.Energy () < INITIAL_ENERGY)
+	if (LOCALPLAYER.Energy () < LOCALPLAYER.InitialEnergy ())
 		LOCALPLAYER.SetEnergy (INITIAL_ENERGY);
-	if (LOCALPLAYER.Shield () < INITIAL_SHIELD)
-		LOCALPLAYER.SetShield (LOCALPLAYER.InitialShield (), false);
+	if (LOCALPLAYER.Shield () < LOCALPLAYER.InitialShield ())
+		LOCALPLAYER.SetShield (INITIAL_SHIELD);
 	}
 }
 

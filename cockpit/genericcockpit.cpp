@@ -1930,7 +1930,7 @@ m_info.nDamage [1] = gameData.objs.consoleP->DriveDamage ();
 m_info.nDamage [2] = gameData.objs.consoleP->GunDamage ();
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
-m_info.nEnergy = X2IR (LOCALPLAYER.Energy ());
+m_info.nEnergy = int (100.0f * float (LOCALPLAYER.Energy ()) / float (LOCALPLAYER.InitialEnergy ()) + 0.5f);
 if (m_info.nEnergy < 0)
 	m_info.nEnergy  = 0;
 m_info.nShield = int (100.0f * float (LOCALPLAYER.Shield ()) / float (LOCALPLAYER.InitialShield ()) + 0.5f);

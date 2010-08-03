@@ -2317,6 +2317,8 @@ typedef struct tModelSphere {
 
 #include "rendermodel.h"
 
+#define MAX_SHIP_TYPES 3
+
 class CModelData {
 	public:
 		int									nLoresModels;
@@ -2348,6 +2350,7 @@ class CModelData {
 		CArray<tGunInfo>					gunInfo ; //[MAX_POLYGON_MODELS];
 		CArray<tModelSphere>				spheres ; //[MAX_POLYGON_MODELS];
 		CFixVector							vScale;
+		char									szShipModels [MAX_SHIP_TYPES][FILENAME_LEN];
 
 	public:
 		CModelData ();
