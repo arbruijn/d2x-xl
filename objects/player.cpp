@@ -13,6 +13,12 @@
 #include "network.h"
 #include "marker.h"
 
+tShipModifier shipModifier [MAX_SHIP_TYPES] = {
+	{1.1f, 0.9f, 0.9f},
+	{0.9f, 1.5f, 1.2f},
+	{1.0f, 1.0f, 1.0f}
+};
+
 //-------------------------------------------------------------------------
 // reads a CPlayerShip structure from a CFile
  
@@ -346,7 +352,7 @@ float CShipEnergy::Scale (void)
 {
 	ubyte nShip = gameData.multiplayer.weaponStates [m_index].nShip;
 
-return (nShip > 2) ? 1.0f : m_type ? energyScale [nShip] : shieldScale [nShip];
+return (nShip < MAX_SHIP_TYPES) ? shipModifiers [nShip].a [m_type] : 1.0f;
 }
 
 //-------------------------------------------------------------------------

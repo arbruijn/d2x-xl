@@ -2361,8 +2361,6 @@ typedef struct tModelSphere {
 
 #include "rendermodel.h"
 
-#define MAX_SHIP_TYPES 3
-
 class CModelData {
 	public:
 		int									nLoresModels;

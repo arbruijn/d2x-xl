@@ -25,6 +25,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_MULTI_PLAYERS (MAX_PLAYERS + MAX_COOP_PLAYERS)
 #define MAX_PLAYER_COLORS	8
 
+#define MAX_SHIP_TYPES		3
+
 // Initial CPlayerData stat values
 #define INITIAL_ENERGY  I2X(100)    // 100% energy to start
 #define INITIAL_SHIELD	I2X(100)    // 100% shield to start
@@ -77,6 +79,15 @@ typedef struct tPlayerHostages {
 // When this structure changes, increment the constant
 // SAVE_FILE_VERSION in playsave.c
 
+
+typedef union tShipModifier {
+	struct {
+		float	speed;
+		float shield;
+		float	energy;
+		} v;
+	float a [3];
+} tShipModifier;
 
 
 class CShipEnergy {
@@ -308,5 +319,7 @@ int EquippedPlayerGun (CObject *objP);
 int EquippedPlayerBomb (CObject *objP);
 int EquippedPlayerMissile (CObject *objP, int *nMissiles);
 void UpdatePlayerWeaponInfo (void);
+
+extern tShipModifier shipModifiers [MAX_SHIP_TYPES];
 
 #endif

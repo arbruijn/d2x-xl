@@ -29,9 +29,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "input.h"
 
-float speedScale [MAX_SHIP_TYPES] = {1.0f, 1.2f, 0.8f};
-float shieldScale [MAX_SHIP_TYPES] = {1.0f, 0.8f, 1.2f};
-float energyScale [MAX_SHIP_TYPES] = {1.0f, 1.0f, 1.2f};
+float speedScale [MAX_SHIP_TYPES] = {1.0f, 1.1f, 0.9f};
+float shieldScale [MAX_SHIP_TYPES] = {1.0f, 0.9f, 1.5f};
+float energyScale [MAX_SHIP_TYPES] = {1.0f, 0.9f, 1.2f};
 
 //------------------------------------------------------------------------------
 
