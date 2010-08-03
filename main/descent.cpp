@@ -105,7 +105,7 @@ extern int glHWHash;
 #include "vers_id.h"
 
 tGameOptions	gameOptions [2];
-tGameStates		gameStates;
+CGameStates		gameStates;
 CGameData		gameData;
 
 //static const char desc_id_checksum_str[] = DESC_ID_CHKSUM_TAG "0000"; // 4-byte checksum
