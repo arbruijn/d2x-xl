@@ -207,10 +207,10 @@ fix maxThrust = fix (gameData.pig.ship.player->maxThrust * fScale);
 
 //	Note, you must check for ft < I2X (1)/2, else you can get an overflow  on the << 15.
 if ((ft < I2X (1) / 2) && ((ft << 15) <= maxThrust))
-	ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
+	ft = (maxThrust >> 15) + 1;
 mType.physInfo.thrust *= FixDiv (maxThrust, ft);
 if ((ft < I2X (1) / 2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
-	ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
+	ft = (gameData.pig.ship.player->maxRotThrust >> 15) + 1;
 mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
 #endif
 
