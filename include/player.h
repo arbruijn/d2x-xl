@@ -194,7 +194,7 @@ class __pack__ CPlayerData : public CPlayerInfo {
 		CPlayerData () { 
 			memset (this, 0, sizeof (*this)); 
 			m_shield.Setup (0, Index (), INITIAL_SHIELD, &shield);
-			m_energy.Setup (0, Index (), INITIAL_ENERGY, &energy);
+			m_energy.Setup (1, Index (), INITIAL_ENERGY, &energy);
 			}
 
 #if 1
