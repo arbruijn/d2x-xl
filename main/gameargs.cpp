@@ -383,17 +383,13 @@ void EvalShipArgs (void)
 {
 	char*	szShipArgs [] = {"-light_ship", "-medium_ship", "-heavy_ship"};
 	int	t;
-	char	*p, s [FILENAME_LEN];
+	char	*p;
 
 for (int i = 0; i < MAX_SHIP_TYPES; i++) {
-	if ((t = FindArg (szShipArgs [i])) && (p = pszArgList [t+1])) {
-		strncpy (s, pszArgList [t+1], FILENAME_LEN);
-		strlwr (s);
-		int l = int (strlen (s));
-		if ((l > 4) && !strcmp (s + l - 4, ".ase")) { // does it look like a filename with extension ".ase"?
-			strcpy (gameData.models.szShipModels [i], s);
-			replacementModels [108 + i].pszHires = gameData.models.szShipModels [i];
-			}
+	if ((t = FindArg (szShipArgs [i])) && (p = pszArgList [t+1]) && *p) {
+		strncpy (gameData.models.szShipModels [i], pszArgList [t+1], FILENAME_LEN);
+		strlwr (gameData.models.szShipModels [i]);
+		replacementModels [108 + i].pszHires = gameData.models.szShipModels [i];
 		}
 	}
 }
