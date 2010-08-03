@@ -122,6 +122,7 @@ class CShipEnergy {
 		void Setup (int type, int index, fix init, fix* current) {
 			m_type = type;
 			m_index = index;
+			m_init = init;
 			m_max = 2 * init;
 			if (m_current = current)
 				Set (init);
