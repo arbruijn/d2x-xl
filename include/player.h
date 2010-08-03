@@ -82,9 +82,9 @@ typedef struct tPlayerHostages {
 
 typedef union tShipModifier {
 	struct {
-		float	speed;
 		float shield;
 		float	energy;
+		float	speed;
 		} v;
 	float a [3];
 } tShipModifier;

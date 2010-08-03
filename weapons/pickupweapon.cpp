@@ -109,15 +109,21 @@ if ((nWeaponIndex == PROXMINE_INDEX) && IsMultiGame && !COMPETITION && EGI_FLAG 
 else {
 	bSmokeGrens = 0;
 	nMaxAmount = nMaxSecondaryAmmo [nWeaponIndex];
-	if (gameData.multiplayer.weaponStates [nPlayer].nShip != 1) {
+	if (gameData.multiplayer.weaponStates [nPlayer].nShip == 1) {
 		if (nWeaponIndex == EARTHSHAKER_INDEX)
 			nMaxAmount /= 2;
 		else
 			nMaxAmount = 4 * nMaxAmount / 5;
 		}
+	else if (gameData.multiplayer.weaponStates [nPlayer].nShip == 2) 
+		nMaxAmount *= 2;
 	else {
-		if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
-			nMaxAmount *= 2;
+		if (playerP->flags & PLAYER_FLAGS_AMMO_RACK) {
+			if (gameStates.app.bNostalgia)
+				nMaxAmount *= 2;
+			else
+				nMaxAmount = 3 * nMaxAmount / 2;
+			}
 		}
 	if (IsMultiGame && !IsCoopGame && gameStates.app.bHaveExtraGameInfo [1] && (nMaxAmount > extraGameInfo [1].loadout.nMissiles [nWeaponIndex]))
 		nMaxAmount = extraGameInfo [1].loadout.nMissiles [nWeaponIndex];
