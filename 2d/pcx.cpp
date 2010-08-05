@@ -383,11 +383,12 @@ return p;
 
 int PcxReadFullScrImage (const char * filename, int bD1Mission)
 {
-		int		pcxError;
-		CBitmap	bm;
+	int		pcxError;
+	CBitmap	bm;
+	CTGA		tga (&bm);
 
 if (strstr (filename, ".tga"))
-	pcxError = ReadTGA (filename, gameFolders.szDataDir, &bm, -1, 1.0, 0, 0) ? PCX_ERROR_NONE : PCX_ERROR_OPENING;
+	pcxError = tga.Read (filename, gameFolders.szDataDir, -1, 1.0, 0, 0) ? PCX_ERROR_NONE : PCX_ERROR_OPENING;
 else {
 	bm.SetMask (NULL);
 	pcxError = PCXReadBitmap (filename, &bm, BM_LINEAR, bD1Mission);
