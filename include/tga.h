@@ -66,7 +66,7 @@ class CModelTextures {
 
 
 class CTGA {
-	private:
+	protected:
 		CFile			m_cf;
 		CTGAHeader	m_header;
 		CBitmap*		m_bmP;
@@ -100,6 +100,7 @@ class CTGA {
 		int MakeSquare (void);
 		int Compress (void);
 		void ConvertToRGB (void);
+		void PreMultiplyAlpha (void);
 		CBitmap* ReadModelTexture (const char *pszFile, int bCustom);
 
 	private:

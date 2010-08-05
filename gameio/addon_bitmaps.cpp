@@ -72,12 +72,11 @@ if (!*pszName)
 
 if (!m_bAvailable) {
 	char	szFilename [FILENAME_LEN];
-	CFile	cf;
 
 	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [2], pszName);
-	if (!cf.Exist (szFilename, "", 0))
+	if (!m_cf.Exist (szFilename, "", 0))
 		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [0], pszName);
-	m_bmP = CreateAndReadTGA (szFilename);
+	CreateAndRead (szFilename);
 	}
 if (!m_bmP)
 	m_bAvailable = -1;
@@ -111,11 +110,12 @@ int LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP)
 if (!*bHaveP) {
 	char	szFilename [FILENAME_LEN];
 	CFile	cf;
+	CTGA	tga;
 
 	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [2], pszName);
 	if (!cf.Exist (szFilename, "", 0))
 		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [0], pszName);
-	CBitmap *bmP = CreateAndReadTGA (szFilename);
+	CBitmap* bmP = tga.CreateAndRead (szFilename);
 	if (!bmP)
 		*bHaveP = -1;
 	else {

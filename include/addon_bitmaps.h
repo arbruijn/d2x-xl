@@ -5,7 +5,7 @@
 
 //------------------------------------------------------------------------------
 
-class CAddonBitmap {
+class CAddonBitmap : public CTGA {
 	private:
 		int		m_bAvailable;
 		char		m_szName [FILENAME_LEN];
