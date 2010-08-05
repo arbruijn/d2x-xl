@@ -304,7 +304,7 @@ if (!nAlpha)
 
 int CTGA::ReadData (CFile& cf, int alpha, double brightness, int bGrayScale, int bReverse)
 {
-	kint				nBytes = m_header.Bits () / 8;
+	int	nBytes = int (m_header.Bits ()) / 8;
 
 m_bmP->AddFlags (BM_FLAG_TGA);
 m_bmP->SetBPP (nBytes);

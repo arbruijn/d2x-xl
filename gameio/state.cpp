@@ -997,7 +997,7 @@ void CSaveGameManager::SaveImage (void)
 
 if (thumbCanv) {
 		CBitmap	bm;
-		int			i, k, x, y;
+		int		i, k, x, y;
 
 	CCanvas::Push ();
 	CCanvas::SetCurrent (thumbCanv);
@@ -1022,7 +1022,8 @@ if (thumbCanv) {
 	ogl.SetReadBuffer (GL_FRONT, 0);
 	glReadPixels (x, y, bm.Width (), bm.Height (), GL_RGB, GL_UNSIGNED_BYTE, bm.Buffer ());
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
-	ShrinkTGA (&bm, bm.Width () / THUMBNAIL_LW, bm.Height () / THUMBNAIL_LH, 0);
+	CTGA tga (&bm);
+	tga.Shrink (bm.Width () / THUMBNAIL_LW, bm.Height () / THUMBNAIL_LH, 0);
 	//paletteManager.ResumeEffect ();
 	// convert the resized TGA to bmp
 	ubyte *buffer = bm.Buffer ();

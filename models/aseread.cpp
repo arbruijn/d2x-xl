@@ -620,7 +620,8 @@ while ((pszToken = ReadLine (cf))) {
 		if (bmP->Buffer ())	//duplicate
 			return CModel::Error ("duplicate bitmap");
 		CFile::SplitPath (StrTok ("\""), NULL, fn, NULL);
-		if (!ReadModelTGA (::strlwr (fn), bmP, m_bCustom))
+		CTGA tga (bmP);
+		if (!tga.ReadModelTexture (::strlwr (fn), m_bCustom))
 			return CModel::Error ("texture not found");
 		l = (int) strlen (fn) + 1;
 		if (!m_textures.m_names [nBitmap].Create (l))
@@ -1025,7 +1026,8 @@ for (i = 0; i < m_textures.m_nBitmaps; i++) {
 			return 0;
 			}
 		m_textures.m_names [i].Read (cf);
-		if (!ReadModelTGA (m_textures.m_names [i].Buffer (), m_textures.m_bitmaps + i, m_bCustom)) {
+		CTGA tga (m_textures.m_bitmaps + i);
+		if (!tga.ReadModelTexture (m_textures.m_names [i].Buffer (), m_bCustom)) {
 			cf.Close ();
 			Destroy ();
 			return 0;
