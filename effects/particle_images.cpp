@@ -126,14 +126,14 @@ if (j < 2)
 if (!(fFrameBright = new float [j]))
 	return;
 for (i = 0, bmfP = bmP->Frames (); i < j; i++, bmfP++) {
-	CTGA (bmfP);
+	CTGA tga (bmfP);
 	fAvgBright += (fFrameBright [i] = (float) tga.Brightness ());
 	if (fMaxBright < fFrameBright [i])
 		fMaxBright = fFrameBright [i];
 	}
 fAvgBright /= j;
 for (i = 0, bmfP = bmP->Frames (); i < j; i++, bmfP++) {
-	CTGA (bmfP);
+	CTGA tga (bmfP);
 	tga.ChangeBrightness (0, 1, 2 * (int) (255 * fFrameBright [i] * (fAvgBright - fFrameBright [i])), 0);
 	}
 delete[] fFrameBright;
@@ -153,7 +153,7 @@ if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave))
 	return 0;
 
 CTGA tga (pii.bmP);
-tga.PreMultiplayAlpha ();
+tga.PreMultiplyAlpha ();
 
 #if MAKE_SMOKE_IMAGE
 {

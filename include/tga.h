@@ -87,7 +87,7 @@ class CTGA {
 			}
 
 		int Shrink (int xFactor, int yFactor, int bRealloc);
-		int ReadData (int alpha, double brightness, int bGrayScale, int bRedBlueFlip);
+		int ReadData (CFile& cf, int alpha, double brightness, int bGrayScale, int bRedBlueFlip);
 		int WriteData (void);
 		int Load (int alpha, double brightness, int bGrayScale, int bRedBlueFlip);
 		int Read (const char* pszFile, const char* pszFolder, int alpha = -1, double brightness = 1.0, int bGrayScale = 0, int bRedBlueFlip = 0);
@@ -102,6 +102,8 @@ class CTGA {
 		void ConvertToRGB (void);
 		void PreMultiplyAlpha (void);
 		CBitmap* ReadModelTexture (const char *pszFile, int bCustom);
+
+		inline tTGAHeader& Header (void) { return m_header.Data (); }
 
 	private:
 		void SetProperties (int alpha, int bGrayScale, double brightness, bool bSwapRB = true);

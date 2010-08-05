@@ -661,7 +661,10 @@ if ((*bmName && /*!gameStates.app.bDemoData &&*/ ((nIndex < 0) || IsCockpit (bmN
 			altBmP = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
 		else
 			altBmP = &gameData.pig.tex.altBitmaps [bD1][nIndex];
-		if (!ReadTGA (fn [nFile], "", altBmP)) {
+
+		CTGA tga (altBmP);
+
+		if (!tga.Read (fn [nFile], "")) {
 			altBmP = NULL;
 			if (!bDefault)
 				cfP->Close ();
@@ -778,10 +781,11 @@ if (!bmP->Compressed ())
 	else {
 #endif
 		nBestShrinkFactor = BestShrinkFactor (bmP, nShrinkFactor);
-		if ((nBestShrinkFactor > 1) && ShrinkTGA (bmP, nBestShrinkFactor, nBestShrinkFactor, 1)) {
+		CTGA tga (bmP);
+		if ((nBestShrinkFactor > 1) && tga.Shrink (nBestShrinkFactor, nBestShrinkFactor, 1)) {
 			nSize /= (nBestShrinkFactor * nBestShrinkFactor);
 			if (gameStates.app.bCacheTextures) {
-				tTGAHeader	h;
+				tTGAHeader&	h = tga.Header ();
 
 				memset (&h, 0, sizeof (h));
 				h.bits = bmP->BPP () * 8;
@@ -791,7 +795,7 @@ if (!bmP->Compressed ())
 				// nFile < 2: mod level texture folder
 				// nFile < 4: mod texture folder
 				// otherwise standard D1 or D2 texture folder
-				SaveTGA (bmName, gameFolders.szTextureCacheDir [(nFile < 2) ? 3 : (nFile < 4) ? 2 : bD1], &h, bmP);
+				tga.Save (bmName, gameFolders.szTextureCacheDir [(nFile < 2) ? 3 : (nFile < 4) ? 2 : bD1]);
 				}
 			}
 		}
@@ -923,13 +927,14 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			nDbgTexture = nDbgTexture;
 #endif
 		if (bTGA) {
+			CTGA			tga (&bm);
+			tTGAHeader&	h = tga.Header ();
 			int			nFrames = bm.Height () / bm.Width ();
-			tTGAHeader	h;
 
 			h.width = bm.Width ();
 			h.height = bm.Width ();
 			h.bits = 32;
-			if (!ReadTGAImage (cf, &h, &bm, -1, 1.0, 0, 1)) {
+			if (!tga.ReadData (cf, -1, 1.0, 0, 1)) {
 				bm.DestroyBuffer ();
 				break;
 				}

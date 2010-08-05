@@ -302,9 +302,9 @@ if (!nAlpha)
 
 //------------------------------------------------------------------------------
 
-int CTGA::ReadData (int alpha, double brightness, int bGrayScale, int bReverse)
+int CTGA::ReadData (CFile& cf, int alpha, double brightness, int bGrayScale, int bReverse)
 {
-	int				nBytes = m_header.Bits () / 8;
+	kint				nBytes = m_header.Bits () / 8;
 
 m_bmP->AddFlags (BM_FLAG_TGA);
 m_bmP->SetBPP (nBytes);
@@ -315,14 +315,14 @@ memset (m_bmP->TransparentFrames (), 0, 4 * sizeof (int));
 memset (m_bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
 #if 1
 if (bReverse)
-	m_bmP->Read (m_cf);
+	m_bmP->Read (cf);
 else {
 	int		h = m_bmP->Height ();
 	int		w = m_bmP->RowSize ();
 	ubyte*	bufP = m_bmP->Buffer () + w * h;
 	while (h--) {
 		bufP -= w;
-		m_cf.Read (bufP, 1, w);
+		cf.Read (bufP, 1, w);
 		}
 	}
 SetProperties (alpha, bGrayScale, brightness, bReverse == 0);
@@ -342,7 +342,7 @@ if (m_header.Bits () == 24) {
 
 	for (i = h; i; i--) {
 		for (j = w; j; j--, p++) {
-			if (m_cf.Read (&c, 1, 3) != (size_t) 3)
+			if (cf.Read (&c, 1, 3) != (size_t) 3)
 				return 0;
 			if (bGrayScale) {
 				p->red =
@@ -375,7 +375,7 @@ else {
 			n = nFrames - i / w;
 			nSuperTransp = 0;
 			for (j = w; j; j--, p++) {
-				if (m_cf.Read (&c, 1, 4) != (size_t) 4)
+				if (cf.Read (&c, 1, 4) != (size_t) 4)
 					return 0;
 				if (bGrayScale) {
 					p->red =
@@ -432,7 +432,7 @@ else {
 			n = nFrames - i / w;
 			nSuperTransp = 0;
 			for (j = w; j; j--, p++) {
-				if (m_cf.Read (&c, 1, 4) != (size_t) 4)
+				if (cf.Read (&c, 1, 4) != (size_t) 4)
 					return 0;
 				if (bGrayScale) {
 					p->red =
@@ -564,7 +564,7 @@ return 1;
 
 int CTGA::Load (int alpha, double brightness, int bGrayScale, int bReverse)
 {
-return m_header.Read (m_cf, m_bmP) && ReadData (alpha, brightness, bGrayScale, bReverse);
+return m_header.Read (m_cf, m_bmP) && ReadData (m_cf, alpha, brightness, bGrayScale, bReverse);
 }
 
 //---------------------------------------------------------------
