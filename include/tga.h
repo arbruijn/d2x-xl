@@ -20,7 +20,31 @@ typedef struct {
     ushort height;            // image height in pixels
     char   bits;              // image bits per pixel 8,16,24,32
     char   descriptor;        // image descriptor bits (vh flip bits)
-} __pack__ tTgaHeader;
+} __pack__ tTGAHeader;
+
+
+class CTGAHeader {
+	public:
+		tTGAHeader	m_data;
+
+	public:
+		CTGAHeader () { Reset (); }
+		void Reset (void) { memset (&m_data, 0, sizeof (m_data)); }
+		void Setup (const tTGAHeader* headerP) { 
+			if (headerP) 
+				m_data = *headerP; 
+			else
+				Reset ();
+			}
+		
+		int Read (CFile& cf, CBitmap* bmP);
+		int Write (CFile& cf, CBitmap *bmP);
+
+		inline tTGAHeader& Data (void) { return m_data; }
+		inline ushort Width (void) { return m_data.width; }
+		inline ushort Height (void) { return m_data.height; }
+		inline char Bits (void) { return m_data.bits; }
+	};
 
 class CModelTextures {
 	public:
@@ -40,20 +64,49 @@ class CModelTextures {
 		void Destroy (void);
 };
 
-int ShrinkTGA (CBitmap *bm, int xFactor, int yFactor, int bRealloc);
-int ReadTGAHeader (CFile& cf, tTgaHeader *ph, CBitmap *pb);
-int ReadTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *pb, int alpha, 
-						double brightness, int bGrayScale, int bRedBlueFlip);
-int LoadTGA (CFile& cf, CBitmap *pb, int alpha, double brightness, 
-				 int bGrayScale, int bRedBlueFlip);
-int ReadTGA (const char* pszFile, const char* pszFolder, CBitmap* bmP, int alpha = -1, double brightness = 1.0, int bGrayScale = 0, int bRedBlueFlip = 0);
-CBitmap *CreateAndReadTGA (const char *szFile);
-int SaveTGA (const char *pszFile, const char *pszFolder, tTgaHeader *ph, CBitmap *bmP);
-double TGABrightness (CBitmap *bmP);
-void TGAChangeBrightness (CBitmap *bmP, double dScale, int bInverse, int nOffset, int bSkipAlpha);
-int TGAInterpolate (CBitmap *bmP, int nScale);
-int TGAMakeSquare (CBitmap *bmP);
-int ReadModelTGA (const char *pszFile, CBitmap *bmP, int bCustom);
-int CompressTGA (CBitmap *bmP);
+
+class CTGA {
+	private:
+		CFile			m_cf;
+		CTGAHeader	m_header;
+		CBitmap*		m_bmP;
+
+	public:
+		CTGA (CBitmap* bmP = NULL)
+			: m_bmP (bmP)
+			{
+			}
+
+		~CTGA () { m_bmP = NULL; }
+
+		void Setup (CBitmap* bmP = NULL, const tTGAHeader* headerP = NULL) 
+			{ 
+			if (bmP)
+				m_bmP = bmP;
+			m_header.Setup (headerP);
+			}
+
+		int Shrink (int xFactor, int yFactor, int bRealloc);
+		int ReadData (int alpha, double brightness, int bGrayScale, int bRedBlueFlip);
+		int WriteData (void);
+		int Load (int alpha, double brightness, int bGrayScale, int bRedBlueFlip);
+		int Read (const char* pszFile, const char* pszFolder, int alpha = -1, double brightness = 1.0, int bGrayScale = 0, int bRedBlueFlip = 0);
+		int Write (void);
+		CBitmap* CreateAndRead (char* pszFile);
+		int Save (const char *pszFile, const char *pszFolder);
+		double Brightness (void);
+		void ChangeBrightness (double dScale, int bInverse, int nOffset, int bSkipAlpha);
+		int Interpolate (int nScale);
+		int MakeSquare (void);
+		int Compress (void);
+		void ConvertToRGB (void);
+		CBitmap* ReadModelTexture (const char *pszFile, int bCustom);
+
+	private:
+		void SetProperties (int alpha, int bGrayScale, double brightness, bool bSwapRB = true);
+		int ReadImage (const char* pszFile, const char* pszFolder, int alpha, double brightness, int bGrayScale, int bReverse);
+
+	};
+
 
 #endif //_TGA_H

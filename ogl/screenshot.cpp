@@ -75,7 +75,7 @@ if (!f) {
 #endif
 	}
 else {
-		tTgaHeader	hdr;
+		tTGAHeader	hdr;
 		int			i, j, r;
 		tBGR			*outBuf = new tBGR [w * h * sizeof (tBGR)];
 		tBGR			*bgrP;

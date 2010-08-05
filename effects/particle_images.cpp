@@ -151,7 +151,7 @@ if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave))
 	return 0;
 #if MAKE_SMOKE_IMAGE
 {
-	tTgaHeader h;
+	tTGAHeader h;
 
 TGAInterpolate (bmP, 2);
 if (TGAMakeSquare (bmP)) {

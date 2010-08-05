@@ -781,7 +781,7 @@ if (!bmP->Compressed ())
 		if ((nBestShrinkFactor > 1) && ShrinkTGA (bmP, nBestShrinkFactor, nBestShrinkFactor, 1)) {
 			nSize /= (nBestShrinkFactor * nBestShrinkFactor);
 			if (gameStates.app.bCacheTextures) {
-				tTgaHeader	h;
+				tTGAHeader	h;
 
 				memset (&h, 0, sizeof (h));
 				h.bits = bmP->BPP () * 8;
@@ -924,7 +924,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 #endif
 		if (bTGA) {
 			int			nFrames = bm.Height () / bm.Width ();
-			tTgaHeader	h;
+			tTGAHeader	h;
 
 			h.width = bm.Width ();
 			h.height = bm.Width ();

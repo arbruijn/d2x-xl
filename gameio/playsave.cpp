@@ -765,7 +765,7 @@ if (!m_cf.Open (fn, gameFolders.szProfDir, "rt", 0))
 while (!m_cf.EoF ()) {
 	LoadParam ();
 	if (bOnlyWindowSizes && (++nParams == 2))
-		break;
+		return !m_cf.Close ();
 	}
 // call this before closing the file to prevent the profile being overwritten
 audio.SetMaxChannels (NMCLAMP (gameStates.sound.audio.nMaxChannels, MIN_SOUND_CHANNELS, MAX_SOUND_CHANNELS));
@@ -1648,6 +1648,18 @@ if (nStage < 1)
 if (!profile.Load (nStage < 2))
 	funcRes = errno;
 
+if (gameStates.gfx.bOverride) {
+	gameStates.video.nDefaultDisplayMode = nDisplayMode;
+	gameData.render.window.w = gameWindowW;
+	gameData.render.window.h = gameWindowH;
+	}
+else if (gameStates.video.nDefaultDisplayMode < 0) {
+	gameStates.video.nDefaultDisplayMode = CUSTOM_DISPLAY_MODE;
+	}
+else 
+	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.render.window.w, gameData.render.window.h);
+SetCustomDisplayMode (customDisplayMode.w, customDisplayMode.h);
+
 if (nStage < 2)
 	return funcRes;
 
@@ -1669,18 +1681,6 @@ if (gameStates.input.nPlrFileVersion >= 23) {
 		bRewriteIt = 1;
 		}
 	}
-if (gameStates.gfx.bOverride) {
-	gameStates.video.nDefaultDisplayMode = nDisplayMode;
-	gameData.render.window.w = gameWindowW;
-	gameData.render.window.h = gameWindowH;
-	}
-else if (gameStates.video.nDefaultDisplayMode < 0) {
-	gameStates.video.nDefaultDisplayMode = CUSTOM_DISPLAY_MODE;
-	}
-else 
-	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.render.window.w, gameData.render.window.h);
-SetCustomDisplayMode (customDisplayMode.w, customDisplayMode.h);
-
 for (i = 0; i < sizeof (gameData.escort.szName); i++) {
 	if (!gameData.escort.szName [i])
 		break;
