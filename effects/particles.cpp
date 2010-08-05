@@ -128,8 +128,8 @@ m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES)
 				  ? 1 
 				  : (nParticleSystemType == FIRE_PARTICLES) 
 					? 2 
-					: ((nParticleSystemType <= SMOKE_PARTICLES) || (nParticleSystemType <= WATERFALL_PARTICLES))
-						? 3
+					//: ((nParticleSystemType <= SMOKE_PARTICLES) || (nParticleSystemType <= WATERFALL_PARTICLES))
+					//	? 3
 						: 0;
 m_nClass = nClass;
 m_nFadeType = nFadeType;
@@ -144,7 +144,7 @@ m_nDelay = 0; //bStart ? randN (nLife) : 0;
 
 m_color [0] =
 m_color [1] = 
-color = (colorP && (m_bEmissive < 2)) ? *colorP : defaultParticleColor;
+color = (colorP && (m_bEmissive != 2)) ? *colorP : defaultParticleColor;
 
 if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
 	m_bBright = 0;
@@ -153,7 +153,7 @@ if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
 else {
 	m_bBright = (nType <= SMOKE_PARTICLES) ? (rand () % 50) == 0 : 0;
 	if (colorP) {
-		if (!m_bEmissive) {
+		if (!m_bEmissive /*|| (m_bEmissive == 3)*/) {
 			m_color [0].red *= RANDOM_FADE;
 			m_color [0].green *= RANDOM_FADE;
 			m_color [0].blue *= RANDOM_FADE;
@@ -166,7 +166,7 @@ else {
 		m_color [0].blue = 0.0f;
 		m_nFadeState = 2;
 		}
-	if (m_bEmissive && (m_bEmissive < 3))
+	if (m_bEmissive /*&& (m_bEmissive < 3)*/)
 		; // m_color [0].alpha = float (SMOKE_START_ALPHA + 64) / 255.0f;
 	else if (nParticleSystemType != GATLING_PARTICLES) {
 		if (!colorP)
@@ -337,7 +337,7 @@ if (colorP && (colorP->alpha < 0))
 else 
 #endif
 	{
-	if (m_bEmissive && (m_bEmissive < 3))
+	if (m_bEmissive /*&& (m_bEmissive < 3)*/)
 		m_color [0].alpha = 1.0f;
 	else if (nParticleSystemType == SIMPLE_SMOKE_PARTICLES)
 		m_color [0].alpha /= 3.5f - float (gameOpts->render.particles.nQuality) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
