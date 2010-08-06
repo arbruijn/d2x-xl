@@ -389,7 +389,6 @@ if (paletteManager.EffectDisabled ()) {
 	//paletteManager.ResumeEffect ();
 	}
 #endif
-//	messageBox.Show (TXT_LOADING);
 LoadSegmentTextures ();
 LoadWallTextures ();
 LoadPowerupTextures ();

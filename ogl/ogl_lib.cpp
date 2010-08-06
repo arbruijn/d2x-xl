@@ -56,6 +56,7 @@
 #include "cockpit.h"
 #include "renderframe.h"
 #include "automap.h"
+#include "text.h"
 #include "gpgpu_lighting.h"
 
 //#define _WIN32_WINNT		0x0600
@@ -998,7 +999,7 @@ m_data.Initialize ();
 SetupExtensions ();
 backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)
-	messageBox.Show (" Setting up renderer...");
+	messageBox.Show (TXT_PREPARE_FOR_DESCENT);
 ResetClientStates ();
 ResetTextures (1, bGame);
 if (bGame) {

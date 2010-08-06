@@ -479,7 +479,7 @@ else
 #define TXT_ENTER_PILOT_NAME    GAMETEXT (442)
 #define TXT_PLAYER              GAMETEXT (443)
 #define TXT_ALREADY_EXISTS      GAMETEXT (444)
-#define TXT_LOADING             GAMETEXT (445)
+#define TXT_PREPARE_FOR_DESCENT GAMETEXT (445)
 #define TXT_FULL_RESCUE_BONUS   GAMETEXT (446)
 #define TXT_SHIELD_BONUS        GAMETEXT (447)
 #define TXT_ENERGY_BONUS        GAMETEXT (448)
@@ -1968,10 +1968,10 @@ void LoadGameTexts(void);
 #define TXT_HEAVY_SHIP					GT(1184)
 #define TXT_PLAYERSHIP					GT(1185)
 #define TXT_FUSION						GT(1186)
+#define TXT_LOADING						GT(1187)
 
 #if 0
 
-#define TXT_					GT(1187)
 #define TXT_					GT(1188)
 #define TXT_					GT(1189)
 #define TXT_					GT(1190)

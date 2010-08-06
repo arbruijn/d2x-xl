@@ -1931,6 +1931,7 @@ const char *defaultGameTexts [][2] = {
  {"schwerer ~Bomber", "heavy ~Fighter"},
  {"\nSchiffsauswahl:", "\nChose your ship:"},
  {"Fusionskanone", "Fusion gun"},
+ {"Lade...", "Loading..."},
 #if 0
  {"", ""},
 #endif
