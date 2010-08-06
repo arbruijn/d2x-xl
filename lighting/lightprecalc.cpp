@@ -646,7 +646,7 @@ else {
 	gameStates.app.bMultiThreaded = 0;
 #endif
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
-		ProgressBar (TXT_PREP_DESCENT,
+		ProgressBar (TXT_LOADING,
 						 LoadMineGaugeSize () + PagingGaugeSize (),
 						 LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll);
 	else {

@@ -1498,7 +1498,7 @@ const char *defaultGameTexts [][2] = {
  {"Schliessen", "Close"},
  {"Tasten und Hats", "Buttons and Hats"},
  {"Erzeuge Guidebot!", "Creating Guidebot!"},
- {"auf Abstieg vorbereiten", "Prepare for Descent"},
+ {"auf Abstieg vorbereiten...", "Prepare for Descent..."},
  {"Berechne Lightmaps", "Computing Lightmaps"},
  {"Spe~Zielle Aufloesung", "C~Ustom Resolution"},
  {"Mausp~Osition anzeigen", "Display Mouse Indicat~Or"},

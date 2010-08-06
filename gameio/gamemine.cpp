@@ -728,7 +728,7 @@ void LoadSegmentsGauge (CFile& cf)
 loadOp = 0;
 loadIdx = 0;
 mineDataFile = &cf;
-ProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), LoadSegmentsPoll);
+ProgressBar (TXT_LOADING, 0, LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), LoadSegmentsPoll);
 }
 
 //------------------------------------------------------------------------------
