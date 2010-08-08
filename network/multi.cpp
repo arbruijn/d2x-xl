@@ -630,7 +630,7 @@ gameData.multigame.msg.buf [24] = wsP->nThrusters [2];
 gameData.multigame.msg.buf [25] = wsP->nThrusters [3];
 gameData.multigame.msg.buf [26] = wsP->nThrusters [4];
 gameData.multigame.msg.buf [27] = char (gameOpts->gameplay.nShip [0]);
-MultiSendData (gameData.multigame.msg.buf, 26, 0);
+MultiSendData (gameData.multigame.msg.buf, 28, 0);
 }
 
 //-----------------------------------------------------------------------------
