@@ -1969,10 +1969,10 @@ void LoadGameTexts(void);
 #define TXT_PLAYERSHIP					GT(1185)
 #define TXT_FUSION						GT(1186)
 #define TXT_LOADING						GT(1187)
+#define TXT_PREPARING					GT(1188)
 
 #if 0
 
-#define TXT_					GT(1188)
 #define TXT_					GT(1189)
 #define TXT_					GT(1190)
 #define TXT_					GT(1191)

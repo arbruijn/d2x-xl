@@ -295,7 +295,7 @@ else
 		int	xFlip, yFlip, rotLeft, rotRight;
 #if RENDER2TEXTURE
 		int	bHaveBuffer = HaveBuffer (1) == 1;
-		int	bFitToWall = m_info.bTeleport || gameOpts->render.cameras.bFitToWall;
+		int	bFitToWall = 1; //m_info.bTeleport || gameOpts->render.cameras.bFitToWall;
 #endif
 #if DBG
 	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))

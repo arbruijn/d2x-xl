@@ -25,6 +25,7 @@
 #include "dynlight.h"
 #include "lightprecalc.h"
 #include "createmesh.h"
+#include "text.h"
 
 #define SORT_LIGHTS 0
 #define PREFER_GEOMETRY_LIGHTS 1
@@ -784,9 +785,11 @@ void CLightManager::Setup (int nLevel)
 SetMethod ();
 if (!gameStates.app.bNostalgia) {
 	gameData.render.fBrightness = 1.0f;
+	messageBox.Show (TXT_PREPARING);
 	lightManager.AddGeometryLights ();
 	ComputeNearestLights (nLevel);
 	lightmapManager.Setup (nLevel);
+	messageBox.Clear ();
 	}
 GatherStaticLights (nLevel);
 }
