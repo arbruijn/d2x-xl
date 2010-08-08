@@ -322,8 +322,8 @@ else
 		}
 	else {
 		float delta = texCoordP [1].v.u - texCoordP [0].v.u;
-		rotLeft = (delta < -EPS);
-		rotRight = (delta > EPS);
+		rotLeft = (delta > EPS);
+		rotRight = (delta < -EPS);
 		if (rotLeft) {
 			yFlip = (texCoordP [1].v.u - texCoordP [i2].v.u > EPS);
 			xFlip = (texCoordP [i3].v.v - texCoordP [1].v.v < -EPS);
