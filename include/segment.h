@@ -88,6 +88,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SEGMENT_FUNC_REPAIRCEN		2
 #define SEGMENT_FUNC_CONTROLCEN		3
 #define SEGMENT_FUNC_ROBOTMAKER		4
+#define SEGMENT_FUNC_VIRUSMAKER		define SEGMENT_FUNC_ROBOTMAKER
 #define SEGMENT_FUNC_GOAL_BLUE		5
 #define SEGMENT_FUNC_GOAL_RED			6
 #define SEGMENT_FUNC_TEAM_BLUE		7
@@ -303,6 +304,9 @@ class CSegment {
 		void CheckForHoardGoal (void);
 		int CheckFlagDrop (int nTeamId, int nFlagId, int nGoalId);
 		int ConquerCheck (void);
+
+		void ChangeTexture (int oldOwner);
+		void OverrideTextures (short nTexture, short nOldTexture, short nTexture2, int bFullBright, int bForce);
 
 		void CreateGenerator (int nType);
 		void CreateEquipGen (int oldType);

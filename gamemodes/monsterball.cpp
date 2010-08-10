@@ -27,7 +27,7 @@ if (gameData.hoard.monsterballP) {
 
 int CreateMonsterball (void)
 {
-	short			nDropSeg, nObject;
+	short	nDropSeg, nObject;
 
 RemoveMonsterball ();
 if (!(IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))
@@ -149,11 +149,10 @@ short nMonsterballPyroForce;
 
 void SetMonsterballForces (void)
 {
-	int	i;
-	tMonsterballForce *forceP = extraGameInfo [IsMultiGame].monsterball.forces;
+	tMonsterballForce* forceP = extraGameInfo [IsMultiGame].monsterball.forces;
 
 memset (nMonsterballForces, 0, sizeof (nMonsterballForces));
-for (i = 0; i < MAX_MONSTERBALL_FORCES - 1; i++, forceP++)
+for (int i = 0; i < MAX_MONSTERBALL_FORCES - 1; i++, forceP++)
 	nMonsterballForces [forceP->nWeaponId] = forceP->nForce;
 nMonsterballPyroForce = forceP->nForce;
 gameData.objs.pwrUp.info [POW_MONSTERBALL].size =
