@@ -99,7 +99,7 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 			h = fuelP->nSegment;
 			SEGMENTS [h].m_function = gameData.matCens.origStationTypes [uint (fuelP - gameData.matCens.fuelCenters.Buffer ())];
 			SEGMENTS [h].CreateFuelCen (SEGMENTS [h].m_function);
-			ChangeSegmentTexture (h, newOwner);
+			SEGMENTS [h].ChangeTexture (newOwner);
 			}
 		}
 	}
@@ -125,7 +125,7 @@ if (h < 0)
 i = SEGMENTS [h].m_function;
 SEGMENTS [h].m_function = SEGMENT_FUNC_VIRUSMAKER;
 SEGMENTS [h].CreateBotGen (i);
-ChangeSegmentTexture (h, newOwner);
+SEGMENTS [h].ChangeTexture (newOwner);
 }
 
 //	------------------------------------------------------------------------------------------------------

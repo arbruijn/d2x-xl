@@ -548,8 +548,6 @@ extern CAllNetPlayersInfo netPlayers;
 int NetworkIAmMaster (void);
 void ChangePlayerNumTo (int new_pnum);
 
-void ChangeSegmentTexture (int nSegment, int oldOwner);
-
 //how to encode missiles & flares in weapon packets
 #define MISSILE_ADJUST  100
 #define FLARE_ADJUST    127

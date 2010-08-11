@@ -3399,7 +3399,7 @@ void MultiApplyGoalTextures ()
 
 if (!(gameData.app.nGameMode & GM_ENTROPY) || (extraGameInfo [1].entropy.nOverrideTextures == 1))
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
-		ChangeSegmentTexture (i, -1);
+		SEGMENTS [i].ChangeTexture (-1);
 }
 
 //-----------------------------------------------------------------------------
@@ -3945,7 +3945,7 @@ HUDInitMessage (TXT_WINNING_TEAM, t ? TXT_RED : TXT_BLUE);
 for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++) {
 	if (segP->m_owner != t + 1)
 		segP->m_owner = t + 1;
-	ChangeSegmentTexture (i, -1);
+	segP->ChangeTexture (-1);
 	}
 gameStates.entropy.bExitSequence = 1;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
