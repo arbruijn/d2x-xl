@@ -639,7 +639,7 @@ textureManager.Destroy ();
 gameStates.render.bOmegaModded = 0;
 gameOpts->render.textures.bUseHires [0] = gameOpts->render.textures.bUseHires [1];
 gameOpts->render.bHiresModels [0] = gameOpts->render.bHiresModels [1];
-if (gameOpts->sound.bHires [0] != gameOpts->sound.bHires [1]) {
+if (gameOpts->UseHiresSound () != gameOpts->sound.bHires [1]) {
 	gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
 	audio.Reset ();
 	}
@@ -724,7 +724,7 @@ if (nStage == 0) {
 	gameStates.app.bCustomSounds = false;
 	if (gameStates.app.bHaveMod && (gameStates.app.bD1Mission ? LoadD1Sounds (true) : LoadD2Sounds (true))) {
 		gameStates.app.bCustomSounds = true;
-		if (gameOpts->sound.bHires [0] != gameOpts->sound.bHires [1]) {
+		if (gameOpts->UseHiresSound () != gameOpts->sound.bHires [1]) {
 			WaitForSoundThread ();
 			audio.Reset ();
 			songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);

@@ -203,7 +203,7 @@ if (i) {
 	gameOptions [1].render.lightning.bGlow = 0;
 	gameOptions [1].render.lightning.nQuality = 0;
 	gameOptions [1].render.lightning.nStyle = 0;
-	gameOptions [1].render.powerups.b3D = 0;
+	gameOptions [1].render.powerups.b3D = gameStates.app.bStandalone;
 	gameOptions [1].render.powerups.nSpin = 0;
 	gameOptions [1].render.automap.bTextured = 0;
 	gameOptions [1].render.automap.bParticles = 0;
@@ -337,7 +337,7 @@ else {
 	gameOptions [0].render.lightning.bGlow = 1;
 	gameOptions [0].render.lightning.nQuality = 0;
 	gameOptions [0].render.lightning.nStyle = 1;
-	gameOptions [0].render.powerups.b3D = 0;
+	gameOptions [0].render.powerups.b3D = gameStates.app.bStandalone;
 	gameOptions [0].render.powerups.nSpin = 0;
 	gameOptions [0].render.automap.bTextured = 0;
 	gameOptions [0].render.automap.bParticles = 0;
@@ -471,7 +471,7 @@ else {
 	gameOptions [1].sound.bUseSDLMixer = 0;
 #	endif
 #endif
-gameOptions [i].sound.bHires [0] =
+gameOptions [i].sound.bHires [0] = gameStates.app.bStandalone;
 gameOptions [i].sound.bHires [1] = 0;
 gameOptions [i].sound.bLinkVolumes = 1;
 gameOptions [i].sound.bShip = 0;
@@ -669,7 +669,7 @@ else {
 
 // ----------------------------------------------------------------------------
 
-void InitGameOptions (int i)
+void CGameOptions::Init (int i)
 {
 if (i)
 	if (gameStates.app.bNostalgia)
@@ -689,6 +689,18 @@ InitMovieOptions (i);
 InitOglOptions (i);
 InitLegacyOptions (i);
 InitGameplayOptions (i);
+}
+
+// ----------------------------------------------------------------------------
+
+bool CGameOptions::Use3DPowerups (void)
+{
+return !gameStates.app.bNostalgia && (gameStates.app.bStandalone || gameOpts->render.powerups.b3D);
+}
+
+bool CGameOptions::UseHiresSound (void)
+{
+return gameStates.app.bNostalgia ? 0 : gameStates.app.bStandalone ? 2 : gameOpts->sound.bHires [0];
 }
 
 // ----------------------------------------------------------------------------

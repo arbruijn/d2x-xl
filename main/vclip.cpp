@@ -248,7 +248,7 @@ int ConvertVClipToPolymodel (CObject *objP)
 	CAngleVector	a;
 	short				nModel;
 
-if (gameStates.app.bNostalgia || !gameOpts->render.powerups.b3D)
+if (gameStates.app.bNostalgia || !gameOpts->Use3DPowerups ())
 	return 0;
 if (objP->info.renderType == RT_POLYOBJ)
 	return 1;

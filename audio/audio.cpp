@@ -573,10 +573,6 @@ if (gameOpts->sound.bUseSDLMixer) {
 			m_info.mixChunkP = Mix_QuickLoad_WAV (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()));
 			}
 		else {
-#if 0 // yes, we can!
-			if (gameOpts->sound.bHires [0])
-				return -1;	//cannot mix hires and standard sounds
-#endif
 			l = Resample (soundP, (gameStates.sound.bD1Sound || gameStates.app.bDemoData) && (gameOpts->sound.audioSampleRate != SAMPLE_RATE_11K), songManager.MP3 ());
 			if (l <= 0)
 				return -1;
@@ -763,9 +759,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		h = Mix_OpenAudio (int (gameOpts->sound.audioSampleRate / fSlowDown), m_info.nFormat = AUDIO_U8, 2, SOUND_BUFFER_SIZE);
 	else 
 #endif
-	if (gameOpts->sound.bHires [0] == 1)
-		h = Mix_OpenAudio (int ((gameOpts->sound.audioSampleRate = SAMPLE_RATE_22K) / fSlowDown), m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
-	else if (gameOpts->sound.bHires [0] == 2)
+	if (gameOpts->UseHiresSound ())
 		h = Mix_OpenAudio (int ((gameOpts->sound.audioSampleRate = SAMPLE_RATE_44K) / fSlowDown), m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (songManager.MP3 ())
 		h = Mix_OpenAudio (32000, m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);

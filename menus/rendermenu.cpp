@@ -444,7 +444,7 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 				: (gameOpts->render.nLightingMethod == 2)
 					? 3
 					: (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps) + 1;
-nPowerups = gameOpts->render.powerups.b3D ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
+nPowerups = gameOpts->Use3DPowerups () ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
 nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 : 1 : 0;
 xStereoSeparation = gameOpts->render.stereo.xSeparation / (STEREO_SEPARATION_STEP) - 1;
 if (xStereoSeparation < 0)
@@ -594,7 +594,7 @@ do {
 
 	if ((extraGameInfo [0].bUseCameras = (nCameras != 0)))
 		gameOpts->render.cameras.bHires = (nCameras == 2);
-	if ((gameOpts->render.powerups.b3D = (nPowerups != 0)))
+	if ((gameOpts->render.powerups.b3D = (nPowerups != 0) && gameStates.app.bStandalone))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
 	gameOpts->movies.bSubTitles = (m [optSubTitles].m_value != 0);
 

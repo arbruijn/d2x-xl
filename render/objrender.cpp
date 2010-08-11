@@ -108,7 +108,7 @@ int ConvertHostageToModel (CObject *objP)
 {
 if (objP->info.renderType == RT_POLYOBJ)
 	return 1;
-if (gameStates.app.bNostalgia || !gameOpts->render.powerups.b3D)
+if (gameStates.app.bNostalgia || !gameOpts->Use3DPowerups ())
 	return 0;
 if (!HaveReplacementModel (HOSTAGE_MODEL))
 	return 0;
@@ -145,7 +145,7 @@ int CObject::PowerupToDevice (void)
 
 if (gameStates.app.bNostalgia)
 	return 0;
-if (!gameOpts->render.powerups.b3D)
+if (!gameOpts->gameOpts->Use3DPowerups ())
 	return 0;
 if (info.controlType == CT_WEAPON)
 	return 1;
@@ -385,7 +385,7 @@ if (!bmP->Prepared () && bmP->PrepareTexture (1, 0))
 	return;
 #endif
 bool b3DShield = ((nType == OBJ_POWERUP) && ((objP->info.nId == POW_SHIELD_BOOST) || (objP->info.nId == POW_HOARD_ORB)) &&
-					   !gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields);
+					   gameOpts->Use3DPowerups () && gameOpts->render.powerups.b3DShields);
 
 fScale = ObjectBlobColor (objP, bmP, &color, b3DShield);
 if (colorP /*&& (bmi >= 0)*/)
@@ -839,7 +839,7 @@ static int RenderWeaponModel (CObject* objP, int bSpectate)
 {
 if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
-if (!(gameStates.app.bNostalgia || gameOpts->render.powerups.b3D) && WeaponIsMine (objP->info.nId) && (objP->info.nId != SMALLMINE_ID))
+if (!(gameStates.app.bNostalgia || gameOpts->Use3DPowerups ()) && WeaponIsMine (objP->info.nId) && (objP->info.nId != SMALLMINE_ID))
 	ConvertWeaponToVClip (objP);
 else {
 	if (gameData.objs.bIsMissile [objP->info.nId]) {	//make missiles smaller during launch
@@ -908,7 +908,7 @@ static int RenderPowerupModel (CObject* objP, int bSpectate)
 {
 if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
-if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D) {
+if (!gameStates.app.bNostalgia && gameOpts->Use3DPowerups ()) {
 	RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	if (!DrawPolygonObject (objP, 0))
 		ConvertWeaponToPowerup (objP);
@@ -934,7 +934,7 @@ return 1;
 
 static int RenderHostageModel (CObject* objP, int bSpectate)
 {
-if (gameStates.app.bNostalgia || !(gameOpts->render.powerups.b3D && DrawPolygonObject (objP, 0)))
+if (gameStates.app.bNostalgia || !(gameOpts->Use3DPowerups () && DrawPolygonObject (objP, 0)))
 	ConvertModelToHostage (objP);
 #if DBG
 RenderRobotShield (objP);

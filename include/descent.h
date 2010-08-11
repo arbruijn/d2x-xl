@@ -588,19 +588,26 @@ typedef struct tApplicationOptions {
 
 //------------------------------------------------------------------------------
 
-typedef struct tGameOptions {
-	tRenderOptions			render;
-	tGameplayOptions		gameplay;
-	tInputOptions			input;
-	tMenuOptions			menus;
-	tSoundOptions			sound;
-	tMovieOptions			movies;
-	tLegacyOptions			legacy;
-	tOglOptions				ogl;
-	tApplicationOptions	app;
-	tMultiplayerOptions	multi;
-	tDemoOptions			demo;
-} tGameOptions;
+class CGameOptions {
+	public:
+		tRenderOptions			render;
+		tGameplayOptions		gameplay;
+		tInputOptions			input;
+		tMenuOptions			menus;
+		tSoundOptions			sound;
+		tMovieOptions			movies;
+		tLegacyOptions			legacy;
+		tOglOptions				ogl;
+		tApplicationOptions	app;
+		tMultiplayerOptions	multi;
+		tDemoOptions			demo;
+
+	public:
+		CGameOptions () { Init (0); }
+		void Init (int i);
+		bool Use3DPowerups (void);
+		bool UseHiresSound (void);
+};
 
 //------------------------------------------------------------------------------
 // states
@@ -1149,6 +1156,7 @@ class CApplicationStates {
 		int nFunctionMode;
 		int nLastFuncMode;
 		int nCriticalError;
+		int bStandalone;
 		int bNostalgia;
 		int iNostalgia;
 		int bInitialized;
@@ -1258,9 +1266,9 @@ class CGameStates {
 
 //------------------------------------------------------------------------------
 
-extern tGameOptions	gameOptions [2];
+extern CGameOptions	gameOptions [2];
 extern CGameStates	gameStates;
-extern tGameOptions	*gameOpts;
+extern CGameOptions	*gameOpts;
 
 //------------------------------------------------------------------------------
 // data

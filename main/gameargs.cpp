@@ -421,6 +421,11 @@ else if ((t = FindArg ("-nostalgia")))
 else
 	SetNostalgia (0);
 
+if (!gameStates.app.bNostalgia && (t = FindArg ("-standalone")))
+	gameStates.app.bStandalone = NumArg (t, 0);
+else
+	gameStates.app.bStandalone = 0;
+
 #if 1 //MULTI_THREADED
 if ((t = FindArg ("-multithreaded"))) {
 	gameStates.app.nThreads = NumArg (t, 1);

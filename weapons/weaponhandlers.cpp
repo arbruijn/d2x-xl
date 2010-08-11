@@ -87,7 +87,7 @@ int VulcanHandler (CObject *objP, int nLevel, int& nFlags, int nRoundsPerShot)
 #	define VULCAN_SPREAD	(d_rand ()/8 - 32767/16)
 
 	int			bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
-										 (gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling;
+										 (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling;
 	tFiringData *fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
 	short			nFired = 0;
 
@@ -222,7 +222,7 @@ int GaussHandler (CObject *objP, int nLevel, int& nFlags, int nRoundsPerShot)
 #	define GAUSS_SPREAD		(VULCAN_SPREAD / 5)
 
 	int			bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
-										 (gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling;
+										 (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling;
 	tFiringData *fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
 	short			nFired = 0;
 

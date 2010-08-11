@@ -145,7 +145,7 @@ int LoadSoundReplacements (const char *pszFilename)
 	size_t				nHeaderOffs, nDataOffs;
 	char					szFilename [SHORT_FILENAME_LEN];
 
-if (gameOpts->sound.bHires [0])
+if (gameOpts->UseHiresSound ())
 	return -1;
 //first, free up data allocated for old bitmaps
 PrintLog ("   loading replacement sounds\n");
@@ -199,7 +199,7 @@ int LoadHiresSound (CSoundSample* soundP, char* pszSoundName, bool bCustom)
 sprintf (szSoundFile, "%s.wav", pszSoundName);
 if (!((*gameFolders.szSoundDir [5] && cf.Open (szSoundFile, gameFolders.szSoundDir [5], "rb", 0)) ||
 	   (*gameFolders.szSoundDir [4] && cf.Open (szSoundFile, gameFolders.szSoundDir [4], "rb", 0)) ||
-	   ((/*bCustom ||*/ gameOpts->sound.bHires [0]) && cf.Open (szSoundFile, gameFolders.szSoundDir [HIRES_SOUND_FOLDER (gameStates.sound.bD1Sound)], "rb", 0))))
+	   ((/*bCustom ||*/ gameOpts->UseHiresSound ()) && cf.Open (szSoundFile, gameFolders.szSoundDir [HIRES_SOUND_FOLDER (gameStates.sound.bD1Sound)], "rb", 0))))
 	return 0;
 if (0 >= (soundP->nLength [0] = cf.Length ())) {
 	cf.Close ();
@@ -371,7 +371,7 @@ if (bCustom) {
 else {
 	pszFile = DefaultSoundFile ();
 	pszFolder = gameFolders.szDataDir;
-	bUseLowRes = (gameOpts->sound.bHires [0] == 0);
+	bUseLowRes = !gameOpts->UseHiresSound ();
 	}
 
 if (!cf.Open (pszFile, pszFolder, "rb", 0))

@@ -71,6 +71,34 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define PIGGY_MEM_QUOTA	8
 #endif
 
+const char* szPowerupTextures [] = {
+	// guns
+	"fusion#",
+	"gauss#",
+	"helix#",
+	"laser#",
+	"omega#",
+	"plasma#",
+	"phoenix#",
+	"spread#",
+	"suprlasr#",
+	"vulcan#",
+	// ammo
+	"vammo#",
+	// equipment
+	"aftrbrnr#",
+	"allmap#",
+	"ammorack#",
+	"convert#",
+	"headlite#",
+	"quad#",
+	// mines
+	"pbombs#",
+	"spbombs#",
+	"pbomb#",
+	"spbomb#"
+	};
+
 const char *szAddonTextures [MAX_ADDON_BITMAP_FILES] = {
 	"slowmotion#0",
 	"bullettime#0",
@@ -484,6 +512,7 @@ static int ReadLoresBitmap (CBitmap* bmP, int nIndex, int bD1)
 {
 nDescentCriticalError = 0;
 
+PrintLog ("loading lores texture '%s'\n", bmP->Name ());
 CFile* cfP = cfPiggy + bD1;
 if (!cfP->File ())
 	PiggyInitPigFile (NULL);
@@ -655,12 +684,24 @@ static bool HaveHiresAnimation (const char* bmName, int bD1)
 
 if (!ps)
 	return false;
-int l = ps - bmName;
+int l = ps - bmName + 1;
 strncpy (szAnim, bmName, l);
 szAnim [l] = '0';
-szAnim [1] = '\0';
+szAnim [l + 1] = '\0';
 int nFile;
 return HaveHiresBitmap (szAnim, nFile, bD1) != NULL;
+}
+
+//------------------------------------------------------------------------------
+
+static bool HaveHiresModel (const char* bmName)
+{
+if (gameStates.app.bStandalone) {
+	for (int i = 0; i < sizeofa (szPowerupTextures); i++)
+		if (strstr (bmName, szPowerupTextures [i]))
+			return true;
+	}
+return false;
 }
 
 //------------------------------------------------------------------------------
@@ -668,7 +709,7 @@ return HaveHiresBitmap (szAnim, nFile, bD1) != NULL;
 static int ReadHiresBitmap (CBitmap* bmP, const char* bmName, int nIndex, int bD1)
 {
 
-if (gameOpts->render.powerups.b3D && IsWeapon (bmName) && !gameStates.app.bHaveMod)
+if (gameOpts->Use3DPowerups () && IsWeapon (bmName) && !gameStates.app.bHaveMod)
 	return 0;
 
 int	nFile;
@@ -677,7 +718,9 @@ char* pszFile = HaveHiresBitmap (bmName, nFile, bD1);
 if (!pszFile)
 	return (nIndex < 0) ? -1 : 0;
 
+#if 0
 PrintLog ("loading hires texture '%s' (quality: %d)\n", pszFile, min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
+#endif
 if (nFile < 2)	//was level specific mod folder
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);
 
@@ -795,12 +838,11 @@ StopTime ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "force"))
+if (strstr (bmName, "exp18"))
 	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)
 	gameOpts->render.textures.bUseHires [0] = 0;
-
 
 if (bmP->Texture ())
 	bmP->Texture ()->Release ();
@@ -823,7 +865,7 @@ else {
 		}
 	}
 
-if (!(bHaveTGA || HaveHiresAnimation (bmName, bD1))) {	// hires addon texture not loaded
+if (!(bHaveTGA || HaveHiresAnimation (bmName, bD1) || HaveHiresModel (bmName))) {	// hires addon texture not loaded
 	ReadLoresBitmap (bmP, nIndex, bD1);
 	}
 #if DBG

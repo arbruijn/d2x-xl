@@ -315,7 +315,7 @@ volume = I2X (1);
 if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 	int bGatling = (nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID);
 	if (nParent != nViewer) {
-		if (bGatling && (parentP->info.nType == OBJ_PLAYER) && (gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling)
+		if (bGatling && (parentP->info.nType == OBJ_PLAYER) && (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling)
 			audio.CreateSegmentSound (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume, I2X (256),
 											  AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
 		else
@@ -324,7 +324,7 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 	else {
 		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
 			volume = I2X (1) / 2;
-		if (bGatling && (gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling)
+		if (bGatling && (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling)
 			audio.PlaySound (-1, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER, volume, DEFAULT_PAN, 0, -1,
 								  AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
 		else

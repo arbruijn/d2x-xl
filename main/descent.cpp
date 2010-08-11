@@ -104,7 +104,7 @@ extern int glHWHash;
 #endif
 #include "vers_id.h"
 
-tGameOptions	gameOptions [2];
+CGameOptions	gameOptions [2];
 CGameStates		gameStates;
 CGameData		gameData;
 
@@ -114,7 +114,7 @@ void DefaultAllSettings (void);
 void CheckJoystickCalibration (void);
 void ShowOrderForm (void);
 
-tGameOptions *gameOpts = gameOptions;
+CGameOptions* gameOpts = gameOptions;
 
 void EvalArgs (void);
 void GetAppFolders (void);
@@ -773,7 +773,7 @@ InitGameStates ();
 gameData.Init ();
 InitExtraGameInfo ();
 InitNetworkData ();
-InitGameOptions (0);
+gameOptions.Init (0);
 InitArgs (argc, argv);
 EvalArgs ();
 CheckAndFixSetup ();

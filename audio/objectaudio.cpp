@@ -180,7 +180,7 @@ if (distance < maxDistance) {
 		else {
 			angleFromEar = CFixVector::DeltaAngleNorm (mListener.RVec (), vecToSound, &mListener.UVec ());
 			FixSinCos (angleFromEar, &sinang, &cosang);
-			if (gameConfig.bReverseChannels != (gameOpts->sound.bHires [0] != 0))
+			if (gameConfig.bReverseChannels != gameOpts->UseHiresSound ())
 				cosang = -cosang;
 			*pan = (cosang + I2X (1)) / 2;
 			}
@@ -969,7 +969,7 @@ Process ();
 
 void SetD1Sound (void)
 {
-gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameOpts->sound.bUseD1Sounds && (gameStates.app.bHaveD1Data || gameOpts->sound.bHires [0]);
+gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameOpts->sound.bUseD1Sounds && (gameStates.app.bHaveD1Data || gameOpts->UseHiresSound ());
 }
 
 //------------------------------------------------------------------------------
