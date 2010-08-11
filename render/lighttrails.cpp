@@ -74,7 +74,7 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 		}
 	color.alpha = alpha;
 #if 1 //!DBG
-	float fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity];
+	float fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2.0f;
 	color.red *= fScale;
 	color.green *= fScale;
 	color.blue *= fScale;
