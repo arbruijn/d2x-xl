@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-CAddonBitmap explBlast ("explblast.tga");
+CAddonBitmap explBlast ("blast.tga");
 CAddonBitmap corona ("corona.tga");
 CAddonBitmap glare ("glare.tga");
 CAddonBitmap halo ("halo.tga");

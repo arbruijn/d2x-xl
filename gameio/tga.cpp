@@ -686,7 +686,7 @@ if (Read (pszFile, NULL, -1, 1.0, 0, 0)) {
 	}
 m_bmP->SetType (BM_TYPE_ALT);
 delete m_bmP;
-return NULL;
+return m_bmP = NULL;
 }
 
 //	-----------------------------------------------------------------------------
