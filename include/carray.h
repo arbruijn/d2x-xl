@@ -52,7 +52,8 @@ class CArray : public CQuickSort < _T > {
 				_V*			m_p;
 				CArray<_V>&	m_a;
 			public:
-				Iterator (CArray<_V>& a) { m_a = a, m_p = NULL; }
+				Iterator () : m_p (NULL) {}
+				Iterator (CArray<_V>& a) : m_a (a), m_p (NULL) {}
 				operator bool() const { return m_p != NULL; }
 				_V* operator*() const { return m_p; }
 				Iterator& operator++() { 
