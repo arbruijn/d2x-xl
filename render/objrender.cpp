@@ -266,7 +266,7 @@ return xLight;
 
 //------------------------------------------------------------------------------
 
-static float ObjectBlobColor (CObject *objP, CBitmap *bmP, tRgbaColorf *colorP)
+static float ObjectBlobColor (CObject *objP, CBitmap *bmP, tRgbaColorf *colorP, bool bMaxOut = false)
 {
 	float	fScale;
 
@@ -275,6 +275,18 @@ bmP->GetAvgColor (colorP);
 if ((objP->info.nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->info.nId == nDbgObjId)))
 	nDbgObjType = nDbgObjType;
 #endif
+if (bMaxOut) {
+	float h = colorP->red;
+	if (h < colorP->green)
+		h = colorP->green;
+	if (h < colorP->blue)
+		h = colorP->blue;
+	if ((h > 0.0f) && (h < 1.0f)) {
+		colorP->red /= h;
+		colorP->green /= h;
+		colorP->blue /= h;
+		}
+	}
 fScale = colorP->red + colorP->green + colorP->blue;
 if (fScale == 0) {
 	colorP->red =
@@ -372,15 +384,15 @@ if (!bmP || bmP->Bind (1))
 if (!bmP->Prepared () && bmP->PrepareTexture (1, 0))
 	return;
 #endif
-fScale = ObjectBlobColor (objP, bmP, &color);
+bool b3DShield = ((nType == OBJ_POWERUP) && ((objP->info.nId == POW_SHIELD_BOOST) || (objP->info.nId == POW_HOARD_ORB)) &&
+					   !gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields);
+
+fScale = ObjectBlobColor (objP, bmP, &color, b3DShield);
 if (colorP /*&& (bmi >= 0)*/)
 	*colorP = color;
 	//memcpy (colorP, gameData.pig.tex.bitmapColors + bmi, sizeof (tRgbaColorf));
 
 xSize = objP->info.xSize;
-
-int b3DShield = ((nType == OBJ_POWERUP) && ((objP->info.nId == POW_SHIELD_BOOST) || (objP->info.nId == POW_HOARD_ORB)) &&
-					 !gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields);
 
 if (nType == OBJ_POWERUP) {
 	if (/*!b3DShield &&**/ ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))

@@ -439,7 +439,7 @@ for (h = i = m_info.props.w * m_info.props.h; i; i--, p++) {
 		j++;
 		}
 	}
-return j ? m_info.palette->ClosestColor (r / j, g / j, b / j) : 0;
+return m_info.avgColorIndex = j ? m_info.palette->ClosestColor (r / j, g / j, b / j) : 0;
 }
 
 //------------------------------------------------------------------------------
