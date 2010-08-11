@@ -79,7 +79,6 @@ class CArray : public CQuickSort < _T > {
 			};
 
 		CArray () { 
-			memset (&m_data.null, 0, sizeof (m_data.null));
 			Init (); 
 			}
 		
@@ -96,7 +95,7 @@ class CArray : public CQuickSort < _T > {
 			m_data.pos = 0;
 			m_data.nMode = 0;
 			m_data.bWrap = false;
-			memset (&m_data.null, 0, sizeof (_T));
+			memset (&m_data.null, 0, sizeof (m_data.null));
 			}
 
 		void Clear (ubyte filler = 0, uint count = 0xffffffff) { 

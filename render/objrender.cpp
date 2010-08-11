@@ -379,7 +379,7 @@ if (colorP /*&& (bmi >= 0)*/)
 
 xSize = objP->info.xSize;
 
-int b3DShield = ((nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) &&
+int b3DShield = ((nType == OBJ_POWERUP) && ((objP->info.nId == POW_SHIELD_BOOST) || (objP->info.nId == POW_HOARD_ORB)) &&
 					 !gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields);
 
 if (nType == OBJ_POWERUP) {
