@@ -422,7 +422,7 @@ else
 	SetNostalgia (0);
 
 if (!gameStates.app.bNostalgia && (t = FindArg ("-standalone")))
-	gameStates.app.bStandalone = NumArg (t, 0);
+	gameStates.app.bStandalone = NumArg (t, 1);
 else
 	gameStates.app.bStandalone = 0;
 
