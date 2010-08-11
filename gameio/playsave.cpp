@@ -1573,11 +1573,6 @@ networkData.nNetLifeKills = 0;
 networkData.nNetLifeKilled = 0;
 gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 profile.Setup ();
-#if 0
-InitGameOptions (0);
-InitArgs (0, NULL);
-InitGameOptions (1);
-#endif
 return 1;
 }
 

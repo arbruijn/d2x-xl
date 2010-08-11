@@ -145,7 +145,7 @@ int CObject::PowerupToDevice (void)
 
 if (gameStates.app.bNostalgia)
 	return 0;
-if (!gameOpts->gameOpts->Use3DPowerups ())
+if (!gameOpts->Use3DPowerups ())
 	return 0;
 if (info.controlType == CT_WEAPON)
 	return 1;

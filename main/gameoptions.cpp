@@ -68,8 +68,10 @@
 
 //------------------------------------------------------------------------------
 
-void InitRenderOptions (int i)
+void CRenderOptions::Init (int i)
 {
+nLightingMethod = 0;
+
 if (i) {
 	extraGameInfo [0].bPowerupsOnRadar = 0;
 	extraGameInfo [0].bRobotsOnRadar = 0;
@@ -82,277 +84,279 @@ if (i) {
 	extraGameInfo [0].bThrusterFlames = 0;
 	extraGameInfo [0].bShadows = 0;
 	extraGameInfo [0].bShowWeapons = 1;
-	gameOptions [0].render.nPath = 0;
-	gameOptions [1].render.shadows.bPlayers = 0;
-	gameOptions [1].render.shadows.bRobots = 0;
-	gameOptions [1].render.shadows.bMissiles = 0;
-	gameOptions [1].render.shadows.bPowerups = 0;
-	gameOptions [1].render.shadows.bReactors = 0;
-	gameOptions [1].render.shadows.bFast = 1;
-	gameOptions [1].render.shadows.nClip = 1;
-	gameOptions [1].render.shadows.nReach = 1;
-	gameOptions [1].render.ship.nWingtip = 1;
-	gameOptions [1].render.ship.bBullets = 1;
-	gameOptions [1].render.nMaxFPS = 60;
-	gameOptions [1].render.effects.bTransparent = 0;
-	gameOptions [1].render.debug.bDynamicLight = 1;
-	gameOptions [1].render.textures.bUseHires [0] =
-	gameOptions [1].render.textures.bUseHires [1] = 0;
+
+	nPath = 0;
+	shadows.bPlayers = 0;
+	shadows.bRobots = 0;
+	shadows.bMissiles = 0;
+	shadows.bPowerups = 0;
+	shadows.bReactors = 0;
+	shadows.bFast = 1;
+	shadows.nClip = 1;
+	shadows.nReach = 1;
+	ship.nWingtip = 1;
+	ship.bBullets = 1;
+	nMaxFPS = 60;
+	effects.bTransparent = 0;
+	debug.bDynamicLight = 1;
+	textures.bUseHires [0] =
+	textures.bUseHires [1] = 0;
 	if (gameStates.app.bNostalgia > 2)
-		gameOptions [1].render.nImageQuality = 0;
-	gameOptions [1].render.coronas.bUse = 0;
-	gameOptions [1].render.coronas.nStyle = 1;
-	gameOptions [1].render.coronas.bShots = 0;
-	gameOptions [1].render.coronas.bPowerups = 0;
-	gameOptions [1].render.coronas.bWeapons = 0;
-	gameOptions [1].render.coronas.bAdditive = 0;
-	gameOptions [1].render.coronas.bAdditiveObjs = 0;
-	gameOptions [1].render.effects.bRobotShields = 0;
-	gameOptions [1].render.effects.bOnlyShieldHits = 0;
-	gameOptions [1].render.coronas.nIntensity = 1;
-	gameOptions [1].render.coronas.nObjIntensity = 1;
-	gameOptions [1].render.effects.bExplBlasts = 1;
-	gameOptions [1].render.effects.nShrapnels = 1;
-	gameOptions [1].render.particles.bAuxViews = 0;
-	gameOptions [1].render.lightning.bAuxViews = 0;
-	gameOptions [1].render.debug.bWireFrame = 0;
-	gameOptions [1].render.debug.bTextures = 1;
-	gameOptions [1].render.debug.bObjects = 1;
-	gameOptions [1].render.debug.bWalls = 1;
-	gameOptions [1].render.bUseShaders = 1;
-	gameOptions [1].render.bHiresModels [0] =
-	gameOptions [1].render.bHiresModels [1] = 0;
-	gameOptions [1].render.bUseLightmaps = 0;
-	gameOptions [1].render.effects.bAutoTransparency = 0;
-	gameOptions [1].render.nMeshQuality = 0;
-	gameOptions [1].render.nMathFormat = 2;
-	gameOptions [1].render.nDefMathFormat = 2;
-	gameOptions [1].render.nDebrisLife = 0;
-	gameOptions [1].render.shadows.nLights = 0;
-	gameOptions [1].render.cameras.bFitToWall = 0;
-	gameOptions [1].render.cameras.nFPS = 0;
-	gameOptions [1].render.cameras.nSpeed = 0;
-	gameOptions [1].render.cockpit.bHUD = 1;
-	gameOptions [1].render.cockpit.bHUDMsgs = 1;
-	gameOptions [1].render.cockpit.bSplitHUDMsgs = 0;
-	gameOptions [1].render.cockpit.bMouseIndicator = 1;
-	gameOptions [1].render.cockpit.bTextGauges = 1;
-	gameOptions [1].render.cockpit.bObjectTally = 0;
-	gameOptions [1].render.cockpit.bScaleGauges = 1;
-	gameOptions [1].render.cockpit.bFlashGauges = 1;
-	gameOptions [1].render.cockpit.bReticle = 1;
-	gameOptions [1].render.cockpit.bRotateMslLockInd = 0;
-	gameOptions [1].render.cockpit.nWindowSize = 0;
-	gameOptions [1].render.cockpit.nWindowZoom = 0;
-	gameOptions [1].render.cockpit.nWindowPos = 1;
-	gameOptions [1].render.color.bCap = 0;
-	gameOptions [1].render.color.nSaturation = 0;
-	gameOptions [1].render.color.nLevel = 0;
-	gameOptions [1].render.color.bMix = 1;
-	gameOptions [1].render.color.bUseLightmaps = 0;
-	gameOptions [1].render.color.bWalls = 0;
-	gameOptions [1].render.color.nLightmapRange = 5;
-	gameOptions [1].render.weaponIcons.bSmall = 0;
-	gameOptions [1].render.weaponIcons.bShowAmmo = 0;
-	gameOptions [1].render.weaponIcons.bEquipment = 0;
-	gameOptions [1].render.weaponIcons.nSort = 0;
-	gameOptions [1].render.textures.bUseHires [0] =
-	gameOptions [1].render.textures.bUseHires [1] = 0;
-	gameOptions [1].render.textures.nQuality = 0;
-	gameOptions [1].render.cockpit.bMissileView = 1;
-	gameOptions [1].render.cockpit.bGuidedInMainView = 1;
-	gameOptions [1].render.particles.nDens [0] =
-	gameOptions [1].render.particles.nDens [1] =
-	gameOptions [1].render.particles.nDens [2] =
-	gameOptions [1].render.particles.nDens [3] =
-	gameOptions [1].render.particles.nDens [4] = 0;
-	gameOptions [1].render.particles.nSize [0] =
-	gameOptions [1].render.particles.nSize [1] =
-	gameOptions [1].render.particles.nSize [2] =
-	gameOptions [1].render.particles.nSize [3] =
-	gameOptions [1].render.particles.nSize [4] = 0;
-	gameOptions [1].render.particles.nLife [0] =
-	gameOptions [1].render.particles.nLife [1] =
-	gameOptions [1].render.particles.nLife [2] = 0;
-	gameOptions [1].render.particles.nLife [3] = 1;
-	gameOptions [1].render.particles.nLife [4] = 0;
-	gameOptions [1].render.particles.nAlpha [0] =
-	gameOptions [1].render.particles.nAlpha [1] =
-	gameOptions [1].render.particles.nAlpha [2] =
-	gameOptions [1].render.particles.nAlpha [3] =
-	gameOptions [1].render.particles.nAlpha [4] = 0;
-	gameOptions [1].render.particles.bPlayers = 0;
-	gameOptions [1].render.particles.bRobots = 0;
-	gameOptions [1].render.particles.bMissiles = 0;
-	gameOptions [1].render.particles.bDebris = 0;
-	gameOptions [1].render.particles.bStatic = 0;
-	gameOptions [1].render.particles.bBubbles = 0;
-	gameOptions [1].render.particles.bWobbleBubbles = 1;
-	gameOptions [1].render.particles.bWiggleBubbles = 1;
-	gameOptions [1].render.particles.bCollisions = 0;
-	gameOptions [1].render.particles.bDisperse = 0;
-	gameOptions [1].render.particles.bRotate = 0;
-	gameOptions [1].render.particles.bSort = 0;
-	gameOptions [1].render.particles.bDecreaseLag = 0;
-	gameOptions [1].render.lightning.bOmega = 0;
-	gameOptions [1].render.lightning.bDamage = 0;
-	gameOptions [1].render.lightning.bExplosions = 0;
-	gameOptions [1].render.lightning.bPlayers = 0;
-	gameOptions [1].render.lightning.bRobots = 0;
-	gameOptions [1].render.lightning.bStatic = 0;
-	gameOptions [1].render.lightning.bGlow = 0;
-	gameOptions [1].render.lightning.nQuality = 0;
-	gameOptions [1].render.lightning.nStyle = 0;
-	gameOptions [1].render.powerups.b3D = gameStates.app.bStandalone;
-	gameOptions [1].render.powerups.nSpin = 0;
-	gameOptions [1].render.automap.bTextured = 0;
-	gameOptions [1].render.automap.bParticles = 0;
-	gameOptions [1].render.automap.bLightning = 0;
-	gameOptions [1].render.automap.bSkybox = 0;
-	gameOptions [1].render.automap.bBright = 1;
-	gameOptions [1].render.automap.bCoronas = 0;
-	gameOptions [1].render.automap.nColor = 0;
-	gameOptions [1].render.automap.nRange = 2;
+		nImageQuality = 0;
+	coronas.bUse = 0;
+	coronas.nStyle = 1;
+	coronas.bShots = 0;
+	coronas.bPowerups = 0;
+	coronas.bWeapons = 0;
+	coronas.bAdditive = 0;
+	coronas.bAdditiveObjs = 0;
+	effects.bRobotShields = 0;
+	effects.bOnlyShieldHits = 0;
+	coronas.nIntensity = 1;
+	coronas.nObjIntensity = 1;
+	effects.bExplBlasts = 1;
+	effects.nShrapnels = 1;
+	particles.bAuxViews = 0;
+	lightning.bAuxViews = 0;
+	debug.bWireFrame = 0;
+	debug.bTextures = 1;
+	debug.bObjects = 1;
+	debug.bWalls = 1;
+	bUseShaders = 1;
+	bHiresModels [0] =
+	bHiresModels [1] = 0;
+	bUseLightmaps = 0;
+	effects.bAutoTransparency = 0;
+	nMeshQuality = 0;
+	nMathFormat = 2;
+	nDefMathFormat = 2;
+	nDebrisLife = 0;
+	shadows.nLights = 0;
+	cameras.bFitToWall = 0;
+	cameras.nFPS = 0;
+	cameras.nSpeed = 0;
+	cockpit.bHUD = 1;
+	cockpit.bHUDMsgs = 1;
+	cockpit.bSplitHUDMsgs = 0;
+	cockpit.bMouseIndicator = 1;
+	cockpit.bTextGauges = 1;
+	cockpit.bObjectTally = 0;
+	cockpit.bScaleGauges = 1;
+	cockpit.bFlashGauges = 1;
+	cockpit.bReticle = 1;
+	cockpit.bRotateMslLockInd = 0;
+	cockpit.nWindowSize = 0;
+	cockpit.nWindowZoom = 0;
+	cockpit.nWindowPos = 1;
+	color.bCap = 0;
+	color.nSaturation = 0;
+	color.nLevel = 0;
+	color.bMix = 1;
+	color.bUseLightmaps = 0;
+	color.bWalls = 0;
+	color.nLightmapRange = 5;
+	weaponIcons.bSmall = 0;
+	weaponIcons.bShowAmmo = 0;
+	weaponIcons.bEquipment = 0;
+	weaponIcons.nSort = 0;
+	textures.bUseHires [0] =
+	textures.bUseHires [1] = 0;
+	textures.nQuality = 0;
+	cockpit.bMissileView = 1;
+	cockpit.bGuidedInMainView = 1;
+	particles.nDens [0] =
+	particles.nDens [1] =
+	particles.nDens [2] =
+	particles.nDens [3] =
+	particles.nDens [4] = 0;
+	particles.nSize [0] =
+	particles.nSize [1] =
+	particles.nSize [2] =
+	particles.nSize [3] =
+	particles.nSize [4] = 0;
+	particles.nLife [0] =
+	particles.nLife [1] =
+	particles.nLife [2] = 0;
+	particles.nLife [3] = 1;
+	particles.nLife [4] = 0;
+	particles.nAlpha [0] =
+	particles.nAlpha [1] =
+	particles.nAlpha [2] =
+	particles.nAlpha [3] =
+	particles.nAlpha [4] = 0;
+	particles.bPlayers = 0;
+	particles.bRobots = 0;
+	particles.bMissiles = 0;
+	particles.bDebris = 0;
+	particles.bStatic = 0;
+	particles.bBubbles = 0;
+	particles.bWobbleBubbles = 1;
+	particles.bWiggleBubbles = 1;
+	particles.bCollisions = 0;
+	particles.bDisperse = 0;
+	particles.bRotate = 0;
+	particles.bSort = 0;
+	particles.bDecreaseLag = 0;
+	lightning.bOmega = 0;
+	lightning.bDamage = 0;
+	lightning.bExplosions = 0;
+	lightning.bPlayers = 0;
+	lightning.bRobots = 0;
+	lightning.bStatic = 0;
+	lightning.bGlow = 0;
+	lightning.nQuality = 0;
+	lightning.nStyle = 0;
+	powerups.b3D = gameStates.app.bStandalone;
+	powerups.nSpin = 0;
+	automap.bTextured = 0;
+	automap.bParticles = 0;
+	automap.bLightning = 0;
+	automap.bSkybox = 0;
+	automap.bBright = 1;
+	automap.bCoronas = 0;
+	automap.nColor = 0;
+	automap.nRange = 2;
 	}
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
 	extraGameInfo [0].bShadows = 0;
-	gameOptions [0].render.nPath = 1;
-	gameOptions [0].render.shadows.bPlayers = 1;
-	gameOptions [0].render.shadows.bRobots = 0;
-	gameOptions [0].render.shadows.bMissiles = 0;
-	gameOptions [0].render.shadows.bPowerups = 0;
-	gameOptions [0].render.shadows.bReactors = 0;
-	gameOptions [0].render.shadows.bFast = 1;
-	gameOptions [0].render.shadows.nClip = 1;
-	gameOptions [0].render.shadows.nReach = 1;
-	gameOptions [0].render.nMaxFPS = 60;
-	gameOptions [0].render.effects.bTransparent = 1;
-	gameOptions [0].render.debug.bDynamicLight = 1;
-	gameOptions [0].render.nImageQuality = 3;
-	gameOptions [0].render.debug.bWireFrame = 0;
-	gameOptions [0].render.debug.bTextures = 1;
-	gameOptions [0].render.debug.bObjects = 1;
-	gameOptions [0].render.debug.bWalls = 1;
-	gameOptions [0].render.bUseShaders = 1;
-	gameOptions [0].render.bHiresModels [0] =
-	gameOptions [0].render.bHiresModels [1] = 1;
-	gameOptions [0].render.bUseLightmaps = 0;
-	gameOptions [0].render.effects.bAutoTransparency = 1;
-	gameOptions [0].render.nMathFormat = 2;
-	gameOptions [0].render.nDefMathFormat = 2;
-	gameOptions [0].render.nDebrisLife = 0;
-	gameOptions [0].render.particles.bAuxViews = 0;
-	gameOptions [0].render.lightning.bAuxViews = 0;
-	gameOptions [0].render.coronas.bUse = 0;
-	gameOptions [0].render.coronas.nStyle = 1;
-	gameOptions [0].render.coronas.bShots = 0;
-	gameOptions [0].render.coronas.bPowerups = 0;
-	gameOptions [0].render.coronas.bWeapons = 0;
-	gameOptions [0].render.coronas.bAdditive = 0;
-	gameOptions [0].render.coronas.bAdditiveObjs = 0;
-	gameOptions [0].render.coronas.nIntensity = 1;
-	gameOptions [0].render.coronas.nObjIntensity = 1;
-	gameOptions [0].render.effects.bRobotShields = 0;
-	gameOptions [0].render.effects.bOnlyShieldHits = 0;
-	gameOptions [0].render.effects.bExplBlasts = 1;
-	gameOptions [0].render.effects.nShrapnels = 1;
+
+	nPath = 1;
+	shadows.bPlayers = 1;
+	shadows.bRobots = 0;
+	shadows.bMissiles = 0;
+	shadows.bPowerups = 0;
+	shadows.bReactors = 0;
+	shadows.bFast = 1;
+	shadows.nClip = 1;
+	shadows.nReach = 1;
+	nMaxFPS = 60;
+	effects.bTransparent = 1;
+	debug.bDynamicLight = 1;
+	nImageQuality = 3;
+	debug.bWireFrame = 0;
+	debug.bTextures = 1;
+	debug.bObjects = 1;
+	debug.bWalls = 1;
+	bUseShaders = 1;
+	bHiresModels [0] =
+	bHiresModels [1] = 1;
+	bUseLightmaps = 0;
+	effects.bAutoTransparency = 1;
+	nMathFormat = 2;
+	nDefMathFormat = 2;
+	nDebrisLife = 0;
+	particles.bAuxViews = 0;
+	lightning.bAuxViews = 0;
+	coronas.bUse = 0;
+	coronas.nStyle = 1;
+	coronas.bShots = 0;
+	coronas.bPowerups = 0;
+	coronas.bWeapons = 0;
+	coronas.bAdditive = 0;
+	coronas.bAdditiveObjs = 0;
+	coronas.nIntensity = 1;
+	coronas.nObjIntensity = 1;
+	effects.bRobotShields = 0;
+	effects.bOnlyShieldHits = 0;
+	effects.bExplBlasts = 1;
+	effects.nShrapnels = 1;
 #if DBG
-	gameOptions [0].render.shadows.nLights = 1;
+	shadows.nLights = 1;
 #else
-	gameOptions [0].render.shadows.nLights = 3;
+	shadows.nLights = 3;
 #endif
-	gameOptions [0].render.cameras.bFitToWall = 0;
-	gameOptions [0].render.cameras.nFPS = 0;
-	gameOptions [0].render.cameras.nSpeed = 5000;
-	gameOptions [0].render.cockpit.bHUD = 1;
-	gameOptions [0].render.cockpit.bHUDMsgs = 1;
-	gameOptions [0].render.cockpit.bSplitHUDMsgs = 0;
-	gameOptions [0].render.cockpit.bMouseIndicator = 0;
-	gameOptions [0].render.cockpit.bTextGauges = 1;
-	gameOptions [0].render.cockpit.bObjectTally = 1;
-	gameOptions [0].render.cockpit.bScaleGauges = 1;
-	gameOptions [0].render.cockpit.bFlashGauges = 1;
-	gameOptions [0].render.cockpit.bRotateMslLockInd = 0;
-	gameOptions [0].render.cockpit.bReticle = 1;
-	gameOptions [0].render.cockpit.nWindowSize = 0;
-	gameOptions [0].render.cockpit.nWindowZoom = 0;
-	gameOptions [0].render.cockpit.nWindowPos = 1;
-	gameOptions [0].render.color.nLevel = 2;
-	gameOptions [0].render.color.bMix = 1;
-	gameOptions [0].render.color.nSaturation = 0;
-	gameOptions [0].render.color.bUseLightmaps = 0;
-	gameOptions [0].render.color.bWalls = 0;
-	gameOptions [0].render.color.nLightmapRange = 5;
-	gameOptions [0].render.weaponIcons.bSmall = 1;
-	gameOptions [0].render.weaponIcons.bShowAmmo = 1;
-	gameOptions [0].render.weaponIcons.bEquipment = 1;
-	gameOptions [0].render.weaponIcons.nSort = 1;
-	gameOptions [0].render.weaponIcons.alpha = 4;
-	gameOptions [0].render.textures.bUseHires [0] = 
+	cameras.bFitToWall = 1;
+	cameras.nFPS = 0;
+	cameras.nSpeed = 5000;
+	cockpit.bHUD = 1;
+	cockpit.bHUDMsgs = 1;
+	cockpit.bSplitHUDMsgs = 0;
+	cockpit.bMouseIndicator = 0;
+	cockpit.bTextGauges = 1;
+	cockpit.bObjectTally = 1;
+	cockpit.bScaleGauges = 1;
+	cockpit.bFlashGauges = 1;
+	cockpit.bRotateMslLockInd = 0;
+	cockpit.bReticle = 1;
+	cockpit.nWindowSize = 0;
+	cockpit.nWindowZoom = 0;
+	cockpit.nWindowPos = 1;
+	color.nLevel = 2;
+	color.bMix = 1;
+	color.nSaturation = 0;
+	color.bUseLightmaps = 0;
+	color.bWalls = 0;
+	color.nLightmapRange = 5;
+	weaponIcons.bSmall = 1;
+	weaponIcons.bShowAmmo = 1;
+	weaponIcons.bEquipment = 1;
+	weaponIcons.nSort = 1;
+	weaponIcons.alpha = 4;
+	textures.bUseHires [0] = 
 	gameOptions [1].render.textures.bUseHires [1] = 0;
-	gameOptions [0].render.textures.nQuality = 3;
-	gameOptions [0].render.nMeshQuality = 0;
-	gameOptions [0].render.cockpit.bMissileView = 1;
-	gameOptions [0].render.cockpit.bGuidedInMainView = 1;
-	gameOptions [0].render.particles.nDens [0] =
-	gameOptions [0].render.particles.nDens [0] =
-	gameOptions [0].render.particles.nDens [2] =
-	gameOptions [0].render.particles.nDens [3] =
-	gameOptions [0].render.particles.nDens [4] = 2;
-	gameOptions [0].render.particles.nSize [0] =
-	gameOptions [0].render.particles.nSize [0] =
-	gameOptions [0].render.particles.nSize [2] =
-	gameOptions [0].render.particles.nSize [3] =
-	gameOptions [0].render.particles.nSize [4] = 1;
-	gameOptions [0].render.particles.nLife [0] =
-	gameOptions [0].render.particles.nLife [0] =
-	gameOptions [0].render.particles.nLife [2] = 0;
-	gameOptions [0].render.particles.nLife [3] = 1;
-	gameOptions [0].render.particles.nLife [4] = 0;
-	gameOptions [0].render.particles.nAlpha [0] =
-	gameOptions [0].render.particles.nAlpha [0] =
-	gameOptions [0].render.particles.nAlpha [2] =
-	gameOptions [0].render.particles.nAlpha [3] =
-	gameOptions [0].render.particles.nAlpha [4] = 0;
-	gameOptions [0].render.particles.bPlayers = 1;
-	gameOptions [0].render.particles.bRobots = 1;
-	gameOptions [0].render.particles.bMissiles = 1;
-	gameOptions [0].render.particles.bDebris = 1;
-	gameOptions [0].render.particles.bStatic = 1;
-	gameOptions [0].render.particles.bBubbles = 1;
-	gameOptions [0].render.particles.bWobbleBubbles = 1;
-	gameOptions [0].render.particles.bWiggleBubbles = 1;
-	gameOptions [0].render.particles.bCollisions = 0;
-	gameOptions [0].render.particles.bDisperse = 1;
-	gameOptions [0].render.particles.bRotate = 1;
-	gameOptions [0].render.particles.bSort = 1;
-	gameOptions [0].render.particles.bDecreaseLag = 1;
-	gameOptions [0].render.lightning.bOmega = 1;
-	gameOptions [0].render.lightning.bDamage = 1;
-	gameOptions [0].render.lightning.bExplosions = 1;
-	gameOptions [0].render.lightning.bPlayers = 1;
-	gameOptions [0].render.lightning.bRobots = 1;
-	gameOptions [0].render.lightning.bStatic = 1;
-	gameOptions [0].render.lightning.bGlow = 1;
-	gameOptions [0].render.lightning.nQuality = 0;
-	gameOptions [0].render.lightning.nStyle = 1;
-	gameOptions [0].render.powerups.b3D = gameStates.app.bStandalone;
-	gameOptions [0].render.powerups.nSpin = 0;
-	gameOptions [0].render.automap.bTextured = 0;
-	gameOptions [0].render.automap.bParticles = 0;
-	gameOptions [0].render.automap.bLightning = 0;
-	gameOptions [0].render.automap.bSkybox = 0;
-	gameOptions [0].render.automap.bBright = 1;
-	gameOptions [0].render.automap.bCoronas = 0;
-	gameOptions [0].render.automap.nColor = 0;
-	gameOptions [0].render.automap.nRange = 2;
+	textures.nQuality = 3;
+	nMeshQuality = 0;
+	cockpit.bMissileView = 1;
+	cockpit.bGuidedInMainView = 1;
+	particles.nDens [0] =
+	particles.nDens [0] =
+	particles.nDens [2] =
+	particles.nDens [3] =
+	particles.nDens [4] = 2;
+	particles.nSize [0] =
+	particles.nSize [0] =
+	particles.nSize [2] =
+	particles.nSize [3] =
+	particles.nSize [4] = 1;
+	particles.nLife [0] =
+	particles.nLife [0] =
+	particles.nLife [2] = 0;
+	particles.nLife [3] = 1;
+	particles.nLife [4] = 0;
+	particles.nAlpha [0] =
+	particles.nAlpha [0] =
+	particles.nAlpha [2] =
+	particles.nAlpha [3] =
+	particles.nAlpha [4] = 0;
+	particles.bPlayers = 1;
+	particles.bRobots = 1;
+	particles.bMissiles = 1;
+	particles.bDebris = 1;
+	particles.bStatic = 1;
+	particles.bBubbles = 1;
+	particles.bWobbleBubbles = 1;
+	particles.bWiggleBubbles = 1;
+	particles.bCollisions = 0;
+	particles.bDisperse = 1;
+	particles.bRotate = 1;
+	particles.bSort = 1;
+	particles.bDecreaseLag = 1;
+	lightning.bOmega = 1;
+	lightning.bDamage = 1;
+	lightning.bExplosions = 1;
+	lightning.bPlayers = 1;
+	lightning.bRobots = 1;
+	lightning.bStatic = 1;
+	lightning.bGlow = 1;
+	lightning.nQuality = 0;
+	lightning.nStyle = 1;
+	powerups.b3D = gameStates.app.bStandalone;
+	powerups.nSpin = 0;
+	automap.bTextured = 0;
+	automap.bParticles = 0;
+	automap.bLightning = 0;
+	automap.bSkybox = 0;
+	automap.bBright = 1;
+	automap.bCoronas = 0;
+	automap.nColor = 0;
+	automap.nRange = 2;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void InitGameplayOptions (int i)
+void CGameplayOptions::Init (int i)
 {
 if (i) {
 	extraGameInfo [0].nSpawnDelay = 0;
@@ -371,99 +375,73 @@ if (i) {
 	extraGameInfo [0].nHitboxes = 0;
 	extraGameInfo [0].bTripleFusion = 0;
 	extraGameInfo [0].bKillMissiles = 0;
-	gameOptions [1].gameplay.nAutoSelectWeapon = 2;
-	gameOptions [1].gameplay.bSecretSave = 0;
-	gameOptions [1].gameplay.bTurboMode = 0;
-	gameOptions [1].gameplay.bFastRespawn = 0;
-	gameOptions [1].gameplay.nAutoLeveling = 1;
-	gameOptions [1].gameplay.bEscortHotKeys = 1;
-	gameOptions [1].gameplay.bSkipBriefingScreens = 0;
-	gameOptions [1].gameplay.bHeadlightOnWhenPickedUp = 1;
-	gameOptions [1].gameplay.bShieldWarning = 0;
-	gameOptions [1].gameplay.bInventory = 0;
-	gameOptions [1].gameplay.bIdleAnims = 0;
-	gameOptions [1].gameplay.nAIAwareness = 0;
-	gameOptions [1].gameplay.nAIAggressivity = 0;
-	gameOptions [1].gameplay.nShip [0] = 0;
-	gameOptions [1].gameplay.nShip [1] = -1;
+
+	nAutoSelectWeapon = 2;
+	bSecretSave = 0;
+	bTurboMode = 0;
+	bFastRespawn = 0;
+	nAutoLeveling = 1;
+	bEscortHotKeys = 1;
+	bSkipBriefingScreens = 0;
+	bHeadlightOnWhenPickedUp = 1;
+	bShieldWarning = 0;
+	bInventory = 0;
+	bIdleAnims = 0;
+	nAIAwareness = 0;
+	nAIAggressivity = 0;
+	nShip [0] = 0;
+	nShip [1] = -1;
 	}
 else {
-	gameOptions [0].gameplay.nAutoSelectWeapon = 2;
-	gameOptions [0].gameplay.bSecretSave = 0;
-	gameOptions [0].gameplay.bTurboMode = 0;
-	gameOptions [0].gameplay.bFastRespawn = 0;
-	gameOptions [0].gameplay.nAutoLeveling = 1;
-	gameOptions [0].gameplay.bEscortHotKeys = 1;
-	gameOptions [0].gameplay.bSkipBriefingScreens = 0;
-	gameOptions [0].gameplay.bHeadlightOnWhenPickedUp = 0;
-	gameOptions [0].gameplay.bShieldWarning = 0;
-	gameOptions [0].gameplay.bInventory = 0;
-	gameOptions [0].gameplay.bIdleAnims = 0;
-	gameOptions [0].gameplay.nAIAwareness = 0;
-	gameOptions [0].gameplay.nAIAggressivity = 0;
-	gameOptions [0].gameplay.nShip [0] = 0;
-	gameOptions [0].gameplay.nShip [1] = -1;
+	nAutoSelectWeapon = 2;
+	bSecretSave = 0;
+	bTurboMode = 0;
+	bFastRespawn = 0;
+	nAutoLeveling = 1;
+	bEscortHotKeys = 1;
+	bSkipBriefingScreens = 0;
+	bHeadlightOnWhenPickedUp = 0;
+	bShieldWarning = 0;
+	bInventory = 0;
+	bIdleAnims = 0;
+	nAIAwareness = 0;
+	nAIAggressivity = 0;
+	nShip [0] = 0;
+	nShip [1] = -1;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void InitMovieOptions (int i)
+void CMovieOptions::Init (int i)
 {
-if (i) {
-	gameOptions [1].movies.bHires = 1;
-	gameOptions [1].movies.nQuality = 0;
-	gameOptions [1].movies.nLevel = 2;
-	gameOptions [1].movies.bResize = 0;
-	gameOptions [1].movies.bFullScreen = 0;
-	gameOptions [1].movies.bSubTitles = 1;
-	}
-else {
-	gameOptions [0].movies.bHires = 1;
-	gameOptions [0].movies.nQuality = 0;
-	gameOptions [0].movies.nLevel = 2;
-	gameOptions [0].movies.bResize = 1;
-	gameOptions [1].movies.bFullScreen = 1;
-	gameOptions [0].movies.bSubTitles = 1;
-	}
+bHires = 1;
+nQuality = 0;
+nLevel = 2;
+bResize = !i;
+bFullScreen = !i;
+bSubTitles = 1;
 }
 
 //------------------------------------------------------------------------------
 
-void InitLegacyOptions (int i)
+void CLegacyOptions::Init (int i)
 {
-if (i) {
-	gameOptions [1].legacy.bInput = 0;
-	gameOptions [1].legacy.bFuelCens = 0;
-	gameOptions [1].legacy.bMouse = 0;
-	gameOptions [1].legacy.bHomers = 0;
-	gameOptions [1].legacy.bRender = 0;
-	gameOptions [1].legacy.bSwitches = 0;
-	gameOptions [1].legacy.bWalls = 0;
-	}
-else {
-	gameOptions [0].legacy.bInput = 0;
-	gameOptions [0].legacy.bFuelCens = 0;
-	gameOptions [0].legacy.bMouse = 0;
-	gameOptions [0].legacy.bHomers = 0;
-	gameOptions [0].legacy.bRender = 0;
-	gameOptions [0].legacy.bSwitches = 0;
-	gameOptions [0].legacy.bWalls = 0;
-	}
+bInput = 0;
+bFuelCens = 0;
+bMouse = 0;
+bHomers = 0;
+bRender = 0;
+bSwitches = 0;
+bWalls = 0;
 }
 
 //------------------------------------------------------------------------------
 
-void InitSoundOptions (int i)
+void CSoundOptions::Init (int i)
 {
-if (i) {
-	gameOptions [1].sound.bUseRedbook = 1;
-	gameOptions [1].sound.audioSampleRate = SAMPLE_RATE_22K;
-	}
-else {
-	gameOptions [0].sound.bUseRedbook = 1;
-	gameOptions [0].sound.audioSampleRate = SAMPLE_RATE_22K;
-	}
+bUseRedbook = 1;
+audioSampleRate = SAMPLE_RATE_22K;
 #if 0
 #	if USE_SDL_MIXER
 	gameOptions [1].sound.bUseSDLMixer = 1;
@@ -471,89 +449,90 @@ else {
 	gameOptions [1].sound.bUseSDLMixer = 0;
 #	endif
 #endif
-gameOptions [i].sound.bHires [0] = gameStates.app.bStandalone;
-gameOptions [i].sound.bHires [1] = 0;
-gameOptions [i].sound.bLinkVolumes = 1;
-gameOptions [i].sound.bShip = 0;
-gameOptions [i].sound.bMissiles = 0;
-gameOptions [i].sound.bFadeMusic = 1;
-gameOptions [i].sound.bUseD1Sounds = 1;
+bHires [0] = gameStates.app.bStandalone;
+bHires [1] = 0;
+bLinkVolumes = 1;
+bShip = 0;
+bMissiles = 0;
+bFadeMusic = 1;
+bUseD1Sounds = 1;
 }
 
 //------------------------------------------------------------------------------
 
-void InitInputOptions (int i)
+void CInputOptions::Init (int i)
 {
 if (i) {
 	extraGameInfo [0].bMouseLook = 0;
-	gameOptions [1].input.bLimitTurnRate = 1;
-	gameOptions [1].input.nMinTurnRate = 20;	//turn time for a 360 deg rotation around a single ship axis in 1/10 sec units
-	if (gameOptions [1].input.joystick.bUse)
-		gameOptions [1].input.mouse.bUse = 0;
-	gameOptions [1].input.mouse.bSyncAxes = 1;
-	gameOptions [1].input.mouse.bJoystick = 0;
-	gameOptions [1].input.mouse.nDeadzone = 0;
-	gameOptions [1].input.joystick.bSyncAxes = 1;
-	gameOptions [1].input.keyboard.bUse = 1;
-	gameOptions [1].input.bUseHotKeys = 1;
-	gameOptions [1].input.keyboard.nRamp = 100;
-	gameOptions [1].input.keyboard.bRamp [0] =
-	gameOptions [1].input.keyboard.bRamp [1] =
-	gameOptions [1].input.keyboard.bRamp [2] = 0;
-	gameOptions [1].input.joystick.bLinearSens = 1;
-	gameOptions [1].input.mouse.sensitivity [0] =
-	gameOptions [1].input.mouse.sensitivity [1] =
-	gameOptions [1].input.mouse.sensitivity [2] = 8;
-	gameOptions [1].input.joystick.sensitivity [0] =
-	gameOptions [1].input.joystick.sensitivity [1] =
-	gameOptions [1].input.joystick.sensitivity [2] =
-	gameOptions [1].input.joystick.sensitivity [3] = 8;
-	gameOptions [1].input.joystick.deadzones [0] =
-	gameOptions [1].input.joystick.deadzones [1] =
-	gameOptions [1].input.joystick.deadzones [2] =
-	gameOptions [1].input.joystick.deadzones [3] = 1;
+
+	bLimitTurnRate = 1;
+	nMinTurnRate = 20;	//turn time for a 360 deg rotation around a single ship axis in 1/10 sec units
+	if (joystick.bUse)
+		mouse.bUse = 0;
+	mouse.bSyncAxes = 1;
+	mouse.bJoystick = 0;
+	mouse.nDeadzone = 0;
+	joystick.bSyncAxes = 1;
+	keyboard.bUse = 1;
+	bUseHotKeys = 1;
+	keyboard.nRamp = 100;
+	keyboard.bRamp [0] =
+	keyboard.bRamp [1] =
+	keyboard.bRamp [2] = 0;
+	joystick.bLinearSens = 1;
+	mouse.sensitivity [0] =
+	mouse.sensitivity [1] =
+	mouse.sensitivity [2] = 8;
+	joystick.sensitivity [0] =
+	joystick.sensitivity [1] =
+	joystick.sensitivity [2] =
+	joystick.sensitivity [3] = 8;
+	joystick.deadzones [0] =
+	joystick.deadzones [1] =
+	joystick.deadzones [2] =
+	joystick.deadzones [3] = 1;
 	}
 else {
-	gameOptions [0].input.bLimitTurnRate = 1;
-	gameOptions [0].input.nMinTurnRate = 20;	//turn time for a 360 deg rotation around a single ship axis in 1/10 sec units
-	gameOptions [0].input.joystick.bLinearSens = 0;
-	gameOptions [0].input.keyboard.nRamp = 100;
-	gameOptions [0].input.keyboard.bRamp [0] =
-	gameOptions [0].input.keyboard.bRamp [1] =
-	gameOptions [0].input.keyboard.bRamp [2] = 0;
-	gameOptions [0].input.mouse.bUse = 1;
-	gameOptions [0].input.joystick.bUse = 0;
-	gameOptions [0].input.mouse.bSyncAxes = 1;
-	gameOptions [0].input.mouse.nDeadzone = 0;
-	gameOptions [0].input.mouse.bJoystick = 0;
-	gameOptions [0].input.joystick.bSyncAxes = 1;
-	gameOptions [0].input.keyboard.bUse = 1;
-	gameOptions [0].input.bUseHotKeys = 1;
-	gameOptions [0].input.mouse.nDeadzone = 2;
-	gameOptions [0].input.mouse.sensitivity [0] =
-	gameOptions [0].input.mouse.sensitivity [1] =
-	gameOptions [0].input.mouse.sensitivity [2] = 8;
-	gameOptions [0].input.trackIR.nDeadzone = 0;
-	gameOptions [0].input.trackIR.bMove [0] =
-	gameOptions [0].input.trackIR.bMove [1] = 1;
-	gameOptions [0].input.trackIR.bMove [2] = 0;
-	gameOptions [0].input.trackIR.sensitivity [0] =
-	gameOptions [0].input.trackIR.sensitivity [1] =
-	gameOptions [0].input.trackIR.sensitivity [2] = 8;
-	gameOptions [0].input.joystick.sensitivity [0] =
-	gameOptions [0].input.joystick.sensitivity [1] =
-	gameOptions [0].input.joystick.sensitivity [2] =
-	gameOptions [0].input.joystick.sensitivity [3] = 8;
-	gameOptions [0].input.joystick.deadzones [0] =
-	gameOptions [0].input.joystick.deadzones [1] =
-	gameOptions [0].input.joystick.deadzones [2] =
-	gameOptions [0].input.joystick.deadzones [3] = 1;
+	bLimitTurnRate = 1;
+	nMinTurnRate = 20;	//turn time for a 360 deg rotation around a single ship axis in 1/10 sec units
+	joystick.bLinearSens = 0;
+	keyboard.nRamp = 100;
+	keyboard.bRamp [0] =
+	keyboard.bRamp [1] =
+	keyboard.bRamp [2] = 0;
+	mouse.bUse = 1;
+	joystick.bUse = 0;
+	mouse.bSyncAxes = 1;
+	mouse.nDeadzone = 0;
+	mouse.bJoystick = 0;
+	joystick.bSyncAxes = 1;
+	keyboard.bUse = 1;
+	bUseHotKeys = 1;
+	mouse.nDeadzone = 2;
+	mouse.sensitivity [0] =
+	mouse.sensitivity [1] =
+	mouse.sensitivity [2] = 8;
+	trackIR.nDeadzone = 0;
+	trackIR.bMove [0] =
+	trackIR.bMove [1] = 1;
+	trackIR.bMove [2] = 0;
+	trackIR.sensitivity [0] =
+	trackIR.sensitivity [1] =
+	trackIR.sensitivity [2] = 8;
+	joystick.sensitivity [0] =
+	joystick.sensitivity [1] =
+	joystick.sensitivity [2] =
+	joystick.sensitivity [3] = 8;
+	joystick.deadzones [0] =
+	joystick.deadzones [1] =
+	joystick.deadzones [2] =
+	joystick.deadzones [3] = 1;
 	}
 }
 
 // ----------------------------------------------------------------------------
 
-void InitMultiplayerOptions (int i)
+void CMultiplayerOptions::Init (int i)
 {
 if (i) {
 	extraGameInfo [0].bFriendlyFire = 1;
@@ -563,132 +542,98 @@ if (i) {
 	extraGameInfo [0].bAutoBalanceTeams = 0;
 	extraGameInfo [1].bRotateLevels = 0;
 	extraGameInfo [1].bDisableReactor = 0;
-	gameOptions [1].multi.bNoRankings = 0;
-	gameOptions [1].multi.bTimeoutPlayers = 1;
-	gameOptions [1].multi.bUseMacros = 0;
-	gameOptions [1].multi.bNoRedundancy = 1;
 	}
-else {
-	gameOptions [0].multi.bNoRankings = 0;
-	gameOptions [0].multi.bTimeoutPlayers = 1;
-	gameOptions [0].multi.bUseMacros = 0;
-	gameOptions [0].multi.bNoRedundancy = 1;
-	}
+bNoRankings = 0;
+bTimeoutPlayers = 1;
+bUseMacros = 0;
+bNoRedundancy = 1;
 }
 
 // ----------------------------------------------------------------------------
 
-void InitDemoOptions (int i)
+void CDemoOptions::Init (int i)
 {
-if (i)
-	gameOptions [i].demo.bOldFormat = 0;
-else
-	gameOptions [i].demo.bOldFormat = 1;
-gameOptions [i].demo.bRevertFormat = 0;
+bOldFormat = !i;
+bRevertFormat = 0;
 }
 
 // ----------------------------------------------------------------------------
 
-void InitMenuOptions (int i)
+void CMenuOptions::Init (int i)
 {
 if (i) {
-	gameOptions [1].menus.nStyle = 0;
-	gameOptions [1].menus.nFade = 0;
-	gameOptions [1].menus.bFastMenus = 1;
-	gameOptions [1].menus.bSmartFileSearch = 0;
-	gameOptions [1].menus.bShowLevelVersion = 0;
-	gameOptions [1].menus.altBg.alpha = 0;
-	gameOptions [1].menus.altBg.brightness = 0;
-	gameOptions [1].menus.altBg.grayscale = 0;
-	gameOptions [1].menus.nHotKeys = 0;
-	strcpy (gameOptions [0].menus.altBg.szName, "");
+	nStyle = 0;
+	nFade = 0;
+	bFastMenus = 1;
+	bSmartFileSearch = 0;
+	bShowLevelVersion = 0;
+	altBg.alpha = 0;
+	altBg.brightness = 0;
+	altBg.grayscale = 0;
+	nHotKeys = 0;
+	strcpy (altBg.szName, "");
 	}
 else {
-	gameOptions [0].menus.nStyle = 0;
-	gameOptions [1].menus.nFade = 150;
-	gameOptions [0].menus.bFastMenus = 1;
-	gameOptions [0].menus.bSmartFileSearch = 1;
-	gameOptions [0].menus.bShowLevelVersion = 0;
-	gameOptions [0].menus.altBg.alpha = 0.75;
-	gameOptions [0].menus.altBg.brightness = 0.5;
-	gameOptions [0].menus.altBg.grayscale = 0;
-	gameOptions [0].menus.nHotKeys = gameStates.app.bEnglish ? 1 : -1;
-	strcpy (gameOptions [0].menus.altBg.szName, "menubg.tga");
+	nStyle = 0;
+	nFade = 150;
+	bFastMenus = 1;
+	bSmartFileSearch = 1;
+	bShowLevelVersion = 1;
+	altBg.alpha = 0.75;
+	altBg.brightness = 0.5;
+	altBg.grayscale = 0;
+	nHotKeys = gameStates.app.bEnglish ? 1 : -1;
+	strcpy (altBg.szName, "menubg.tga");
 	}
 }
 
 // ----------------------------------------------------------------------------
 
-void InitOglOptions (int i)
+void COglOptions::Init (int i)
 {
-if (i) {
-	gameOptions [1].render.nLightingMethod = 0;
-	gameOptions [1].ogl.bLightObjects = 0;
-	gameOptions [1].ogl.bHeadlight = 0;
-	gameOptions [1].ogl.bLightPowerups = 0;
-	gameOptions [1].ogl.bObjLighting = 0;
-	gameOptions [1].ogl.bSetGammaRamp = 0;
-	gameOptions [1].ogl.bVoodooHack = 0;
-	gameOptions [1].ogl.bGlTexMerge = 1;
-	}
-else {
-#if DBG
-	gameOptions [0].render.nLightingMethod = 0;
-#else
-	gameOptions [0].render.nLightingMethod = 0;
-#endif
-	gameOptions [0].ogl.bLightObjects = 0;
-	gameOptions [0].ogl.bHeadlight = 0;
-	gameOptions [0].ogl.bLightPowerups = 0;
-	gameOptions [0].ogl.bObjLighting = 0;
-	gameOptions [0].ogl.bSetGammaRamp = 0;
-	gameOptions [0].ogl.bVoodooHack = 0;
-	gameOptions [0].ogl.bGlTexMerge = 1;
-	}
+bLightObjects = 0;
+bHeadlight = 0;
+bLightPowerups = 0;
+bObjLighting = 0;
+bSetGammaRamp = 0;
+bVoodooHack = 0;
+bGlTexMerge = 1;
 }
 
 // ----------------------------------------------------------------------------
 
-void InitAppOptions (int i)
+void CApplicationOptions::Init (int i)
 {
-if (i) {
-	gameOptions [1].app.bEnableMods = 0;
-	gameOptions [1].app.nVersionFilter = 2;
-	gameOptions [1].app.bSinglePlayer = 0;
-	gameOptions [1].app.bExpertMode = 0;
-	gameOptions [1].app.nScreenShotInterval = 0;
-	}
-else {
-	gameOptions [1].app.bEnableMods = 0;
-	gameOptions [0].app.nVersionFilter = 2;
-	gameOptions [0].app.bSinglePlayer = 0;
-	gameOptions [0].app.bExpertMode = 1;
-	gameOptions [0].app.nScreenShotInterval = 0;
-	}
+bEnableMods = 0;
+nVersionFilter = 2;
+bSinglePlayer = 0;
+bExpertMode = i;
+nScreenShotInterval = 0;
 }
 
 // ----------------------------------------------------------------------------
 
 void CGameOptions::Init (int i)
 {
-if (i)
+if (i) {
 	if (gameStates.app.bNostalgia)
-		gameOptions [1] = gameOptions [0];
+		*this = gameOptions [0];
 	else
 		return;
+	}
 else
-	memset (gameOptions, 0, sizeof (gameOptions));
-InitInputOptions (i);
-InitGameplayOptions (i);
-InitRenderOptions (i);
-InitMultiplayerOptions (i);
-InitMenuOptions (i);
-InitDemoOptions (i);
-InitSoundOptions (i);
-InitMovieOptions (i);
-InitOglOptions (i);
-InitLegacyOptions (i);
-InitGameplayOptions (i);
+	memset (this, 0, sizeof (*this));
+input.Init (i);
+gameplay.Init (i);
+render.Init (i);
+multi.Init (i);
+menus.Init (i);
+demo.Init (i);
+sound.Init (i);
+movies.Init (i);
+ogl.Init (i);
+legacy.Init (i);
+gameplay.Init (i);
 }
 
 // ----------------------------------------------------------------------------
@@ -698,7 +643,7 @@ bool CGameOptions::Use3DPowerups (void)
 return !gameStates.app.bNostalgia && (gameStates.app.bStandalone || gameOpts->render.powerups.b3D);
 }
 
-bool CGameOptions::UseHiresSound (void)
+int CGameOptions::UseHiresSound (void)
 {
 return gameStates.app.bNostalgia ? 0 : gameStates.app.bStandalone ? 2 : gameOpts->sound.bHires [0];
 }

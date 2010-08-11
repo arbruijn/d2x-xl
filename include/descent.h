@@ -156,15 +156,20 @@ typedef struct tThreadInfo {
 //------------------------------------------------------------------------------
 
 // The version number of the game
-typedef struct tLegacyOptions {
-	int bInput;
-	int bFuelCens;
-	int bMouse;
-	int bHomers;
-	int bRender;
-	int bSwitches;
-	int bWalls;
-} tLegacyOptions;
+class CLegacyOptions {
+	public:
+		int bInput;
+		int bFuelCens;
+		int bMouse;
+		int bHomers;
+		int bRender;
+		int bSwitches;
+		int bWalls;
+
+	public:
+		CLegacyOptions () { Init (); }
+		void Init (int i = 0);
+	};
 
 //------------------------------------------------------------------------------
 
@@ -380,85 +385,105 @@ typedef struct tStereoRenderOptions {
 	fix xSeparation;
 } tStereoRenderOptions;
 
-typedef struct tRenderOptions {
-	int bAllSegs;
-	int nLightingMethod;
-	int bHiresModels [2];
-	int nMeshQuality;
-	int bUseLightmaps;
-	int nLightmapQuality;
-	int bUseShaders;
-	int nMathFormat;
-	int nDefMathFormat;
-	short nMaxFPS;
-	int nPath;
-	int nQuality;
-	int nImageQuality;
-	int nDebrisLife;
-	tCameraOptions cameras;
-	tColorOptions color;
-	tCockpitOptions cockpit;
-	tTextureOptions textures;
-	tWeaponIconOptions weaponIcons;
-	tParticleOptions particles;
-	tLightningOptions lightning;
-	tShadowOptions shadows;
-	tPowerupOptions powerups;
-	tAutomapOptions automap;
-	tShipRenderOptions ship;
-	tCoronaRenderOptions coronas;
-	tEffectRenderOptions effects;
-	tStereoRenderOptions stereo;
-	tDebugRenderOptions debug;
-} tRenderOptions;
+class CRenderOptions {
+	public:
+		int bAllSegs;
+		int nLightingMethod;
+		int bHiresModels [2];
+		int nMeshQuality;
+		int bUseLightmaps;
+		int nLightmapQuality;
+		int bUseShaders;
+		int nMathFormat;
+		int nDefMathFormat;
+		short nMaxFPS;
+		int nPath;
+		int nQuality;
+		int nImageQuality;
+		int nDebrisLife;
+		tCameraOptions cameras;
+		tColorOptions color;
+		tCockpitOptions cockpit;
+		tTextureOptions textures;
+		tWeaponIconOptions weaponIcons;
+		tParticleOptions particles;
+		tLightningOptions lightning;
+		tShadowOptions shadows;
+		tPowerupOptions powerups;
+		tAutomapOptions automap;
+		tShipRenderOptions ship;
+		tCoronaRenderOptions coronas;
+		tEffectRenderOptions effects;
+		tStereoRenderOptions stereo;
+		tDebugRenderOptions debug;
+
+	public:
+		CRenderOptions () { Init (); }
+		void Init (int i = 0);
+	};
 
 //------------------------------------------------------------------------------
 
-typedef struct tOglOptions {
-	int bSetGammaRamp;
-	int bGlTexMerge;
-	int bLightObjects;
-	int bLightPowerups;
-	int bObjLighting;
-	int bHeadlight;
-	int nMaxLightsPerFace;
-	int nMaxLightsPerPass;
-	int nMaxLightsPerObject;
-	int bVoodooHack;
-} tOglOptions;
+class COglOptions {
+	public:
+		int bSetGammaRamp;
+		int bGlTexMerge;
+		int bLightObjects;
+		int bLightPowerups;
+		int bObjLighting;
+		int bHeadlight;
+		int nMaxLightsPerFace;
+		int nMaxLightsPerPass;
+		int nMaxLightsPerObject;
+		int bVoodooHack;
+
+	public:
+		COglOptions () { Init (); }
+		void Init (int i = 0);
+	};
 
 //------------------------------------------------------------------------------
 
-typedef struct tMovieOptions {
-	int bHires;
-	int nQuality;
-	int nLevel;
-	int bResize;
-	int bFullScreen;
-	int bSubTitles;
-} tMovieOptions;
+class CMovieOptions {
+	public:
+		int bHires;
+		int nQuality;
+		int nLevel;
+		int bResize;
+		int bFullScreen;
+		int bSubTitles;
+
+	public:
+		CMovieOptions () { Init (); }
+		void Init (int i = 0);
+	};
 
 //------------------------------------------------------------------------------
 
-typedef struct tGameplayOptions {
-	int nAutoSelectWeapon;
-	int bSecretSave;
-	int bTurboMode;
-	int bFastRespawn;
-	int nAutoLeveling;
-	int bEscortHotKeys;
-	int bSkipBriefingScreens;
-	int bHeadlightOnWhenPickedUp;
-	int bShieldWarning;
-	int bInventory;
-	int bIdleAnims;
-	int nAIAwareness;
-	int nAIAggressivity;
-	int nSlowMotionSpeedup;
-	int bUseD1AI;
-	int bNoThief;
-	int nShip [2];
-} tGameplayOptions;
+class CGameplayOptions {
+	public:
+		int nAutoSelectWeapon;
+		int bSecretSave;
+		int bTurboMode;
+		int bFastRespawn;
+		int nAutoLeveling;
+		int bEscortHotKeys;
+		int bSkipBriefingScreens;
+		int bHeadlightOnWhenPickedUp;
+		int bShieldWarning;
+		int bInventory;
+		int bIdleAnims;
+		int nAIAwareness;
+		int nAIAggressivity;
+		int nSlowMotionSpeedup;
+		int bUseD1AI;
+		int bNoThief;
+		int nShip [2];
+
+	public:
+		CGameplayOptions () { Init (); }
+		void Init (int i = 0);
+	};
 
 //------------------------------------------------------------------------------
 
@@ -505,34 +530,44 @@ typedef struct tKeyboardInputOptions {
 
 //------------------------------------------------------------------------------
 
-typedef struct tInputOptions {
-	int bLimitTurnRate;
-	int nMinTurnRate;
-	int bUseHotKeys;
-	tMouseInputOptions mouse;
-	tJoystickInputOptions joystick;
-	tTrackIRInputOptions trackIR;
-	tKeyboardInputOptions keyboard;
-} tInputOptions;
+class CInputOptions {
+	public:
+		int bLimitTurnRate;
+		int nMinTurnRate;
+		int bUseHotKeys;
+		tMouseInputOptions mouse;
+		tJoystickInputOptions joystick;
+		tTrackIRInputOptions trackIR;
+		tKeyboardInputOptions keyboard;
+
+	public:
+		CInputOptions () { Init (); }
+		void Init (int i = 0);
+	};
 
 //------------------------------------------------------------------------------
 
-typedef struct tSoundOptions {
-	int bUseD1Sounds;
-	int bUseRedbook;
-	int bHires [2];
-	int bUseSDLMixer;
-	int bUseOpenAL;
-	int bFadeMusic;
-	int bLinkVolumes;
-	int audioSampleRate;	// what's used by the audio system
-	int soundSampleRate;	// what the default sounds are in
-	int bShip;
-	int bMissiles;
-	int bGatling;
-	int bSpeedUp;
-	fix xCustomSoundVolume;
-} tSoundOptions;
+class CSoundOptions {
+	public:
+		int bUseD1Sounds;
+		int bUseRedbook;
+		int bHires [2];
+		int bUseSDLMixer;
+		int bUseOpenAL;
+		int bFadeMusic;
+		int bLinkVolumes;
+		int audioSampleRate;	// what's used by the audio system
+		int soundSampleRate;	// what the default sounds are in
+		int bShip;
+		int bMissiles;
+		int bGatling;
+		int bSpeedUp;
+		fix xCustomSoundVolume;
+
+	public:
+		CSoundOptions () { Init (); }
+		void Init (int i = 0);
+	};
 
 //------------------------------------------------------------------------------
 
@@ -546,67 +581,87 @@ typedef struct tAltBgOptions {
 
 //------------------------------------------------------------------------------
 
-typedef struct tMenuOptions {
-	int nStyle;
-	int bFastMenus;
-	uint nFade;
-	int bSmartFileSearch;
-	int bShowLevelVersion;
-	char nHotKeys;
-	tAltBgOptions altBg;
-} tMenuOptions;
+class CMenuOptions {
+	public:
+		int nStyle;
+		int bFastMenus;
+		uint nFade;
+		int bSmartFileSearch;
+		int bShowLevelVersion;
+		char nHotKeys;
+		tAltBgOptions altBg;
+
+	public:
+		CMenuOptions () { Init (); }
+		void Init (int i = 0);
+	};
 
 //------------------------------------------------------------------------------
 
-typedef struct tDemoOptions {
-	int bOldFormat;
-	int bRevertFormat;
-} tDemoOptions;
+class CDemoOptions {
+	public:
+		int bOldFormat;
+		int bRevertFormat;
+
+	public:
+		CDemoOptions () { Init (); }
+		void Init (int i = 0);
+	};
 
 //------------------------------------------------------------------------------
 
-typedef struct tMultiplayerOptions {
-	int bNoRankings;
-	int bTimeoutPlayers;
-	int bUseMacros;
-	int bNoRedundancy;
-} tMultiplayerOptions;
+class CMultiplayerOptions {
+	public:
+		int bNoRankings;
+		int bTimeoutPlayers;
+		int bUseMacros;
+		int bNoRedundancy;
+
+	public:
+		CMultiplayerOptions () { Init (); }
+		void Init (int i = 0);
+	};
 
 //------------------------------------------------------------------------------
 
-typedef struct tApplicationOptions {
-	int bAutoRunMission;
-	int nVersionFilter;
-	int bSinglePlayer;
-	int bEnableMods;
-	int bExpertMode;
-	int bEpilepticFriendly;
-	int bColorblindFriendly;
-	int bNotebookFriendly;
-	int nScreenShotInterval;
-} tApplicationOptions;
+class CApplicationOptions {
+	public:
+		int bAutoRunMission;
+		int nVersionFilter;
+		int bSinglePlayer;
+		int bEnableMods;
+		int bExpertMode;
+		int bEpilepticFriendly;
+		int bColorblindFriendly;
+		int bNotebookFriendly;
+		int nScreenShotInterval;
+
+	public:
+		CApplicationOptions () { Init (); }
+		void Init (int i = 0);
+};
 
 //------------------------------------------------------------------------------
 
 class CGameOptions {
 	public:
-		tRenderOptions			render;
-		tGameplayOptions		gameplay;
-		tInputOptions			input;
-		tMenuOptions			menus;
-		tSoundOptions			sound;
-		tMovieOptions			movies;
-		tLegacyOptions			legacy;
-		tOglOptions				ogl;
-		tApplicationOptions	app;
-		tMultiplayerOptions	multi;
-		tDemoOptions			demo;
+		CRenderOptions			render;
+		CGameplayOptions		gameplay;
+		CInputOptions			input;
+		CMenuOptions			menus;
+		CSoundOptions			sound;
+		CMovieOptions			movies;
+		CLegacyOptions			legacy;
+		COglOptions				ogl;
+		CApplicationOptions	app;
+		CMultiplayerOptions	multi;
+		CDemoOptions			demo;
 
 	public:
-		CGameOptions () { Init (0); }
-		void Init (int i);
+		CGameOptions () { Init (); }
+		void Init (int i = 0);
 		bool Use3DPowerups (void);
-		bool UseHiresSound (void);
+		int UseHiresSound (void);
 };
 
 //------------------------------------------------------------------------------
@@ -3458,7 +3513,6 @@ return gameData.objs.objects.IsElement (objP) ? gameData.objs.objects.Index (obj
 #define FACE_IDX(_faceP)		((int) ((_faceP) - FACES.faces))
 
 void GrabMouse (int bGrab, int bForce);
-void InitGameOptions (int i);
 void SetDataVersion (int v);
 
 //	-----------------------------------------------------------------------------------------------------------

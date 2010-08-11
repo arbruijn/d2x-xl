@@ -773,7 +773,7 @@ InitGameStates ();
 gameData.Init ();
 InitExtraGameInfo ();
 InitNetworkData ();
-gameOptions.Init (0);
+gameOptions [0].Init ();
 InitArgs (argc, argv);
 EvalArgs ();
 CheckAndFixSetup ();
@@ -798,7 +798,7 @@ error_init (NULL, NULL);
 *szAutoHogFile =
 *szAutoMission = '\0';
 EvalArgs ();
-InitGameOptions (1);
+gameOptions [1].Init;
 DefaultAllSettings ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 /*---*/PrintLog ("Loading text resources\n");
