@@ -488,21 +488,15 @@ CFile* cfP = cfPiggy + bD1;
 if (!cfP->File ())
 	PiggyInitPigFile (NULL);
 int nOffset = bitmapOffsets [bD1][nIndex];
-if (cfP->Seek (nOffset, SEEK_SET)) {
-	cfP->Close ();
+if (cfP->Seek (nOffset, SEEK_SET))
 	throw (EX_IO_ERROR);
-	}
-
 bmP->CreateBuffer ();
 if (!bmP->Buffer () || (bitmapCacheUsed > bitmapCacheSize))
 	throw (EX_OUT_OF_MEMORY);
-
-if (0 > ReadBitmap (bmP, bmP->Size (), cfP, bD1 != 0)) {
-	throw (EX_IO_ERROR);
-	}
-
-UseBitmapCache (bmP, int (bmP->FrameSize ()));
 bmP->SetFlags (gameData.pig.tex.bitmapFlags [bD1][nIndex]);
+if (0 > ReadBitmap (bmP, bmP->FrameSize (), cfP, bD1 != 0))
+	throw (EX_IO_ERROR);
+UseBitmapCache (bmP, int (bmP->FrameSize ()));
 
 #ifndef MACDATA
 if (IsMacDataFile (cfP, bD1))
@@ -767,7 +761,7 @@ StopTime ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "invuln#0"))
+if (strstr (bmName, "force"))
 	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)
