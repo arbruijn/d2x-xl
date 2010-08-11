@@ -58,7 +58,6 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 
 	tRgbaColorf color;
 	fix			xSize;
-	float			fScale;
 
 	if ((objP->info.nId >= POW_KEY_BLUE) && (objP->info.nId <= POW_KEY_GOLD)) {
 		int i = objP->info.nId - POW_KEY_BLUE;
@@ -74,10 +73,12 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 		xSize = 2 * objP->info.xSize; //I2X (8);
 		}
 	color.alpha = alpha;
-	fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2;
+#if 1 //!DBG
+	float fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity];
 	color.red *= fScale;
 	color.green *= fScale;
 	color.blue *= fScale;
+#endif
 	glare.Bitmap ()->SetColor (&color);
 	ogl.RenderSprite (glare.Bitmap (), objP->info.position.vPos, xSize, xSize, alpha, LIGHTTRAIL_BLENDMODE, 5);
 	glare.Bitmap ()->SetColor (NULL);

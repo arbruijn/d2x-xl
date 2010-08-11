@@ -239,6 +239,7 @@ else {
 			else
 				SetSuperTransparent (0);
 			}
+		SetTranspType ((Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
 		}
 	m_info.palette = paletteManager.Add (*palette);
 	}
@@ -416,6 +417,8 @@ return h;
 
 //------------------------------------------------------------------------------
 
+inline int sqr(int i) { return i * i; }
+
 int CBitmap::AvgColorIndex (void)
 {
 	ubyte *p = Buffer ();
@@ -430,9 +433,9 @@ if (m_info.avgColorIndex)
 
 for (h = i = m_info.props.w * m_info.props.h; i; i--, p++) {
 	if ((c = *p) && (c != TRANSPARENCY_COLOR) && (c != SUPER_TRANSP_COLOR)) {
-		r += palette->red;
-		g += palette->green;
-		b += palette->blue;
+		r += palette [c].red;
+		g += palette [c].green;
+		b += palette [c].blue;
 		j++;
 		}
 	}

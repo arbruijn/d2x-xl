@@ -437,18 +437,7 @@ return 0;
 // will be computed so that only the part of the buffer containing the image
 // is rendered.
 
-ubyte* CTexture::Convert (
-//	GLubyte		*buffer,
-//	int			width,
-//	int			height,
-	int			dxo,
-	int			dyo,
-//	int			tWidth,
-//	int			tHeight,
-//	int			nFormat,
-	CBitmap		*bmP,
-	int			nTransp,
-	int			bSuperTransp)
+ubyte* CTexture::Convert (int dxo, int dyo, CBitmap* bmP, int nTranspType, int bSuperTransp)
 {
 	tRgbColorb	*colorP;
 	int			x, y, c;
@@ -456,18 +445,18 @@ ubyte* CTexture::Convert (
 	int			bTransp, bpp;
 
 #if DBG
-if (strstr (bmP->Name (), "misc060"))
+if (strstr (bmP->Name (), "hoard"))
 	bmP = bmP;
 #endif
 paletteManager.SetTexture (bmP->Parent () ? bmP->Parent ()->Palette () : bmP->Palette ());
 if (!paletteManager.Texture ())
 	return NULL;
-bTransp = (nTransp || bSuperTransp) && bmP->HasTransparency ();
+bTransp = (nTranspType || bSuperTransp) && bmP->HasTransparency ();
 if (!bTransp)
 	m_info.format = GL_RGB;
 #if DBG
-if (!nTransp)
-	nTransp = 0;
+if (!nTranspType)
+	nTranspType = 0;
 #endif
 colorP = paletteManager.Texture ()->Color ();
 
@@ -506,7 +495,7 @@ for (y = 0; y < m_info.h; y++) {
 			break;
 #endif
 		c = *rawData++;
-		if (nTransp && (c == TRANSPARENCY_COLOR)) {
+		if (nTranspType && (c == TRANSPARENCY_COLOR)) {
 			//bmP->Flags () |= BM_FLAG_TRANSPARENT;
 			switch (m_info.format) {
 				case GL_LUMINANCE:
@@ -525,16 +514,15 @@ for (y = 0; y < m_info.h; y++) {
 					break;
 
 				case GL_RGBA:
-					*reinterpret_cast<GLuint*> (bufP) = (nTransp ? 0 : 0xffffffff);
+					*reinterpret_cast<GLuint*> (bufP) = (nTranspType ? 0 : 0xffffffff);
 					bufP += 4;
 					break;
 
 				case GL_RGBA4:
-					*reinterpret_cast<GLushort*> ( bufP) = (nTransp ? 0 : 0xffff);
+					*reinterpret_cast<GLushort*> ( bufP) = (nTranspType ? 0 : 0xffff);
 					bufP += 2;
 					break;
 				}
-//				 (*(texP++)) = 0;
 			}
 		else {
 			switch (m_info.format) {
@@ -605,16 +593,16 @@ for (y = 0; y < m_info.h; y++) {
 							 (g < ogl.m_states.nTransparencyLimit) &&
 							 (b < ogl.m_states.nTransparencyLimit))
 							a = 0;
-						else if (nTransp == 1) {
+						else if (nTranspType == 1) {
 #if 0 //non-linear formula
 							double da = (double) (r * 3 + g * 5 + b * 2) / (10.0 * 255.0);
 							da *= da;
 							a = (ubyte) (da * 255.0);
 #else
-							a = (r * 3 + g * 5 + b * 2) / 10;	//transparency based on color intensity
+							a = (r * 30 + g * 59 + b * 11) / 100;	//transparency based on color intensity
 #endif
 							}
-						else if (nTransp == 2)	// black is transparent
+						else if (nTranspType == 2)	// black is transparent
 							a = c ? 255 : 0;
 						else
 							a = 255;	//not transparent

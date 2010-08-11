@@ -809,7 +809,7 @@ const char *defaultGameTexts [][2] = {
  {"~Robots treffen einander", "RObots Hit Robots"},
  {"~Multiple Boss-Robots", "Multiple Bosses"},
  {"Fluessigkeiten-Ph~ysik aktivieren", "enable fluid phYsics"},
- {"~intelligente Waffenwahl", "smart Weapon Switch"},
+ {"~Intelligente Waffenwahl", "sMart weapon switch"},
  {"keine ~autom. Waffenwahl", "Never Autoselect Weapon"},
  {"~umschalten wenn Waffe leer", "Auto-select If EmptY"},
  {"~Immer beste Waffe aktivieren", "Always Auto-SelecT"},
