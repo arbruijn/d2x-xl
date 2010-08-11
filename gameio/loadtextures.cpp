@@ -590,25 +590,22 @@ else {
 
 //------------------------------------------------------------------------------
 
-static int OpenBitmapFile (char fn [6][FILENAME_LEN], CFile* cfP)
+static int FindHiresBitmap (char fn [6][FILENAME_LEN])
 {
+	CFile	cf;
+
 for (int i = 0; i < 6; i++)
-	if (*fn [i] && cfP->Open (fn [i], "", "rb", 0))
+	if (*fn [i] && cf.Open (fn [i], "", "rb", 0)) {
+		cf.Close ();
 		return i;
+		}
 return -1;
 }
 
 //------------------------------------------------------------------------------
 
-static int ReadHiresBitmap (CBitmap* bmP, const char* bmName, int nIndex, int bD1)
+static int ShrinkFactor (const char* bmName)
 {
-	CBitmap*	altBmP = NULL;
-	char		fn [6][FILENAME_LEN];
-	CFile		cf, *cfP = &cf;
-
-if (gameOpts->render.powerups.b3D && IsWeapon (bmName) && !gameStates.app.bHaveMod)
-	return 0;
-
 int nShrinkFactor = 8 >> min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
 if (nShrinkFactor < 4) {
 	if (nShrinkFactor == 1)
@@ -616,6 +613,14 @@ if (nShrinkFactor < 4) {
 	else if (IsPowerup (bmName) || IsWeapon (bmName))	// force downscaling of powerup hires textures
 		nShrinkFactor <<= 1;
 	}
+return nShrinkFactor;
+}
+
+//------------------------------------------------------------------------------
+
+static char* HaveHiresBitmap (const char* bmName, int& nFile, int bD1)
+{
+	static char	fn [6][FILENAME_LEN];
 
 if (*gameFolders.szTextureDir [2]) {
 	char szLevelFolder [FILENAME_LEN];
@@ -629,32 +634,62 @@ if (*gameFolders.szTextureDir [2]) {
 else
 	*gameFolders.szTextureDir [3] =
 	*gameFolders.szTextureCacheDir [3] = '\0';
+
+int nShrinkFactor = ShrinkFactor (bmName);
+
 MakeBitmapFilenames (bmName, gameFolders.szTextureDir [3], gameFolders.szTextureCacheDir [3], fn [1], fn [0], nShrinkFactor);
 MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
 MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [5], fn [4], nShrinkFactor);
 
-int nFile = OpenBitmapFile (fn, cfP);
+nFile = FindHiresBitmap (fn);
 
-if (0 > nFile)
+return (nFile < 0) ? NULL : fn [nFile];
+}
+
+//------------------------------------------------------------------------------
+
+static bool HaveHiresAnimation (const char* bmName, int bD1)
+{
+	char			szAnim [FILENAME_LEN];
+	const char*	ps = strchr (bmName, '#');
+
+if (!ps)
+	return false;
+int l = ps - bmName;
+strncpy (szAnim, bmName, l);
+szAnim [l] = '0';
+szAnim [1] = '\0';
+int nFile;
+return HaveHiresBitmap (szAnim, nFile, bD1) != NULL;
+}
+
+//------------------------------------------------------------------------------
+
+static int ReadHiresBitmap (CBitmap* bmP, const char* bmName, int nIndex, int bD1)
+{
+
+if (gameOpts->render.powerups.b3D && IsWeapon (bmName) && !gameStates.app.bHaveMod)
+	return 0;
+
+int	nFile;
+char* pszFile = HaveHiresBitmap (bmName, nFile, bD1);
+
+if (!pszFile)
 	return (nIndex < 0) ? -1 : 0;
 
-cfP->Close ();
-PrintLog ("loading hires texture '%s' (quality: %d)\n", fn [nFile], min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
+PrintLog ("loading hires texture '%s' (quality: %d)\n", pszFile, min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
 if (nFile < 2)	//was level specific mod folder
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);
 
-altBmP = (nIndex < 0) ? &gameData.pig.tex.addonBitmaps [-nIndex - 1] : &gameData.pig.tex.altBitmaps [bD1][nIndex];
+CBitmap*	altBmP = (nIndex < 0) ? &gameData.pig.tex.addonBitmaps [-nIndex - 1] : &gameData.pig.tex.altBitmaps [bD1][nIndex];
 CTGA tga (altBmP);
 
-if (!tga.Read (fn [nFile], "")) {
-	cfP->Close ();
+if (!tga.Read (pszFile, ""))
 	throw (EX_OUT_OF_MEMORY);
-	return (nIndex < 0) ? -1 : 0;
-	}
 
-if (strstr (fn [nFile], "omegblob#") && strstr (fn [nFile], "/mods/") && !strstr (fn [nFile], "/mods/descent2"))
+if (strstr (pszFile, "omegblob#") && strstr (pszFile, "/mods/") && !strstr (pszFile, "/mods/descent2"))
 	gameStates.render.bOmegaModded = 1;
-else if (strstr (fn [nFile], "plasblob#") && strstr (fn [nFile], "/mods/") && !strstr (fn [nFile], "/mods/descent2"))
+else if (strstr (pszFile, "plasblob#") && strstr (pszFile, "/mods/") && !strstr (pszFile, "/mods/descent2"))
 	gameStates.render.bPlasmaModded = 1;
 altBmP->SetType (BM_TYPE_ALT);
 altBmP->SetName (bmName);
@@ -711,7 +746,7 @@ else
 		bmP->SaveS3TC (gameFolders.szTextureCacheDir [(nFile < 2) ? 3 : (nFile < 4) ? 2 : bD1], bmName);
 	else {
 #endif
-		int nBestShrinkFactor = BestShrinkFactor (bmP, nShrinkFactor);
+		int nBestShrinkFactor = BestShrinkFactor (bmP, ShrinkFactor (bmName));
 		CTGA tga (bmP);
 		if ((nBestShrinkFactor > 1) && tga.Shrink (nBestShrinkFactor, nBestShrinkFactor, 1)) {
 			nSize /= (nBestShrinkFactor * nBestShrinkFactor);
@@ -733,7 +768,6 @@ else
 #if TEXTURE_COMPRESSION
 	}
 #endif
-cfP->Close ();
 return 1;
 }
 
@@ -789,7 +823,7 @@ else {
 		}
 	}
 
-if (!bHaveTGA) {	// hires addon texture not loaded
+if (!(bHaveTGA || HaveHiresAnimation (bmName, bD1))) {	// hires addon texture not loaded
 	ReadLoresBitmap (bmP, nIndex, bD1);
 	}
 #if DBG
