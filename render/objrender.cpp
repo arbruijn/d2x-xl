@@ -393,7 +393,7 @@ if (b3DShield) {
 		objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 8);
 		}
 	//the actual shield in the sprite texture has 3/4 of the textures size
-	DrawShieldSphere (objP, color.red / 2, color.green / 2, color.blue / 2, 1.0f, 0, 3 * objP->info.xSize / 4);
+	DrawShieldSphere (objP, color.red, color.green, color.blue, 1.0f, 3, 3 * objP->info.xSize / 4);
 	}
 else if (fAlpha < 1) {
 	if (bAdditive) {

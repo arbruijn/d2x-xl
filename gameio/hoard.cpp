@@ -108,15 +108,19 @@ void SetupHoardBitmapFrames (CFile& cf, CBitmap& bm, tBitmapIndex* frameIndex, C
 	int		nSize = bm.Width () * bm.Height ();
 	int		nFrameSize = bm.Width () * bm.Width ();
 	int		nFrames =  nSize / nFrameSize;
+	char		szName [10];
 
 paletteManager.Game ();
 palette.Read (cf);
 paletteP = paletteManager.Add (palette);
 bm.Read (cf);
+bm.SetName ("hoard");
 bmDataP = bm.Buffer ();
 for (int i = 0; i < nFrames; i++) {
 	CBitmap* bmP = &gameData.pig.tex.bitmaps [0][frameIndex [i].index];
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, flags, bmDataP);
+	sprintf (szName, "hoard#%d", i + 1);
+	bmP->SetName (szName);
 	bmP->Remap (&palette, 255, -1);
 	bmDataP += nFrameSize;
 	}

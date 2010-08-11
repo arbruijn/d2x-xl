@@ -461,7 +461,7 @@ if (m_info.nBPP == 1) {
 		colorP->blue = 0;
 		return colorP;
 		}	
-	pc = m_info.palette->Color () + m_info.avgColorIndex;
+	pc = m_info.palette->Color () + AvgColorIndex ();
 	}
 else
 	pc = &m_info.avgColor;
