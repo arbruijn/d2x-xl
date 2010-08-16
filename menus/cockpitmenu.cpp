@@ -149,21 +149,13 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-void DefaultCockpitSettings (void);
-
-void CockpitOptionsMenu (void)
+static void InitStrings (void)
 {
-	static int choice = 0;
+	static bool bInitialized = false;
 
-	CMenu m;
-	int	i;
-	int	optTextGauges, optHUD, optReticle, optMissiles, optObjTally, optPosition, optAlignment, optZoomType = -1;
-
-	char	szSlider [50];
-
-nWinFuncs = GatherWindowFunctions (winFuncs);
-for (i = 0; i < nWinFuncs; i++)
-	szWindowType [i] = GT (1156 + winFuncs [i]);
+if (bInitialized)
+	return;
+bInitialized = true;
 
 szWindowSize [0] = TXT_AUXWIN_SMALL;
 szWindowSize [1] = TXT_AUXWIN_MEDIUM;
@@ -180,6 +172,27 @@ szWindowAlign [2] = TXT_ALIGN_CENTER;
 szTgtInd [0] = TXT_NONE;
 szTgtInd [1] = TXT_MISSILES;
 szTgtInd [2] = TXT_FULL;
+}
+
+//------------------------------------------------------------------------------
+
+void DefaultCockpitSettings (void);
+
+void CockpitOptionsMenu (void)
+{
+	static int choice = 0;
+
+	CMenu m;
+	int	i;
+	int	optTextGauges, optHUD, optReticle, optMissiles, optObjTally, optPosition, optAlignment, optZoomType = -1;
+
+	char	szSlider [50];
+
+nWinFuncs = GatherWindowFunctions (winFuncs);
+for (i = 0; i < nWinFuncs; i++)
+	szWindowType [i] = GT (1156 + winFuncs [i]);
+
+InitStrings ();
 
 nWindowPos = gameOpts->render.cockpit.nWindowPos / 3;
 nWindowAlign = gameOpts->render.cockpit.nWindowPos % 3;

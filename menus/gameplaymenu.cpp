@@ -265,6 +265,28 @@ for (int i = 0; i < MAX_SHIP_TYPES; i++)
 
 //------------------------------------------------------------------------------
 
+static void InitStrings (void)
+{
+	static bool bInitialized = false;
+
+if (bInitialized)
+	return;
+bInitialized = true;
+
+pszAggressivities [0] = TXT_STANDARD;
+pszAggressivities [1] = TXT_MODERATE;
+pszAggressivities [2] = TXT_MEDIUM;
+pszAggressivities [3] = TXT_HIGH;
+pszAggressivities [4] = TXT_VERY_HIGH;
+pszAggressivities [5] = TXT_EXTREME;
+
+pszWeaponSwitch [0] = TXT_NEVER;
+pszWeaponSwitch [1] = TXT_WHEN_EMPTY;
+pszWeaponSwitch [2] = TXT_CHOSE_BEST;
+}
+
+//------------------------------------------------------------------------------
+
 void GameplayOptionsMenu (void)
 {
 	static int choice = 0;
@@ -277,16 +299,7 @@ void GameplayOptionsMenu (void)
 	int	nShip = gameOpts->gameplay.nShip [0];
 	char	szSlider [50];
 
-pszAggressivities [0] = TXT_STANDARD;
-pszAggressivities [1] = TXT_MODERATE;
-pszAggressivities [2] = TXT_MEDIUM;
-pszAggressivities [3] = TXT_HIGH;
-pszAggressivities [4] = TXT_VERY_HIGH;
-pszAggressivities [5] = TXT_EXTREME;
-
-pszWeaponSwitch [0] = TXT_NEVER;
-pszWeaponSwitch [1] = TXT_WHEN_EMPTY;
-pszWeaponSwitch [2] = TXT_CHOSE_BEST;
+InitStrings ();
 
 nAIAggressivity = (gameOpts->gameplay.nAIAggressivity && gameOpts->gameplay.nAIAwareness) ? 5 :  gameOpts->gameplay.nAIAggressivity;
 do {

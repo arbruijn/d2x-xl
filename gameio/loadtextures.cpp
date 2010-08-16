@@ -619,7 +619,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-static int FindHiresBitmap (char fn [6][FILENAME_LEN])
+static int SearchHiresBitmap (char fn [6][FILENAME_LEN])
 {
 	CFile	cf;
 
@@ -647,7 +647,7 @@ return nShrinkFactor;
 
 //------------------------------------------------------------------------------
 
-static char* HaveHiresBitmap (const char* bmName, int& nFile, int bD1)
+static char* FindHiresBitmap (const char* bmName, int& nFile, int bD1)
 {
 	static char	fn [6][FILENAME_LEN];
 
@@ -670,26 +670,55 @@ MakeBitmapFilenames (bmName, gameFolders.szTextureDir [3], gameFolders.szTexture
 MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
 MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [5], fn [4], nShrinkFactor);
 
-nFile = FindHiresBitmap (fn);
+nFile = SearchHiresBitmap (fn);
 
 return (nFile < 0) ? NULL : fn [nFile];
 }
 
 //------------------------------------------------------------------------------
 
-static bool HaveHiresAnimation (const char* bmName, int bD1)
+static int HaveHiresAnimation (const char* bmName, int bD1)
 {
 	char			szAnim [FILENAME_LEN];
 	const char*	ps = strchr (bmName, '#');
 
 if (!ps)
-	return false;
+	return -1;
 int l = ps - bmName + 1;
 strncpy (szAnim, bmName, l);
 szAnim [l] = '0';
 szAnim [l + 1] = '\0';
 int nFile;
-return HaveHiresBitmap (szAnim, nFile, bD1) != NULL;
+if (FindHiresBitmap (szAnim, nFile, bD1))
+	return 1;
+if (szAnim [l - 2] == 'b')
+	return 0;
+strcpy (szAnim + l - 1, "b#0");
+return FindHiresBitmap (szAnim, nFile, bD1) != NULL;
+}
+
+//------------------------------------------------------------------------------
+
+static bool HaveHiresBitmap (const char* bmName, int bD1)
+{
+	int i = HaveHiresAnimation (bmName, bD1);
+
+if (i >= 0)
+	return i > 0;
+
+char szFile [FILENAME_LEN];
+const char* ps = strstr (bmName, " ");
+if (ps) {
+	strncpy (szFile, bmName, ps - bmName);
+	strcat (szFile, "b");
+	strcat (szFile, ps);
+	}
+else {
+	strcpy (szFile, bmName);
+	strcat (szFile, "b");
+	}
+int nFile;
+return FindHiresBitmap (szFile, nFile, bD1) != NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -713,7 +742,7 @@ if (gameOpts->Use3DPowerups () && IsWeapon (bmName) && !gameStates.app.bHaveMod)
 	return 0;
 
 int	nFile;
-char* pszFile = HaveHiresBitmap (bmName, nFile, bD1);
+char* pszFile = FindHiresBitmap (bmName, nFile, bD1);
 
 if (!pszFile)
 	return (nIndex < 0) ? -1 : 0;
@@ -838,7 +867,7 @@ StopTime ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "exp18"))
+if (strstr (bmName, "targ01"))
 	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)
@@ -865,7 +894,7 @@ else {
 		}
 	}
 
-if (!(bHaveTGA || HaveHiresAnimation (bmName, bD1) || HaveHiresModel (bmName))) {	// hires addon texture not loaded
+if (!(bHaveTGA || HaveHiresBitmap (bmName, bD1) || HaveHiresModel (bmName))) {	// hires addon texture not loaded
 	ReadLoresBitmap (bmP, nIndex, bD1);
 	}
 #if DBG

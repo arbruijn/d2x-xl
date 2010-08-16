@@ -366,18 +366,13 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-void RenderOptionsMenu (void)
+static void InitStrings (void)
 {
-	CMenu	m;
-	int	i;
-#if DBG
-	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
-#endif
-	int nRendQualSave = gameOpts->render.nImageQuality, optSubTitles;
+	static bool bInitialized = false;
 
-	static int choice = 0;
-
-	char szSlider [50];
+if (bInitialized)
+	return;
+bInitialized = true;
 
 pszNoneBasicAdv [0] = TXT_NONE;
 pszNoneBasicAdv [1] = TXT_BASIC;
@@ -437,6 +432,24 @@ pszEnhance3D [3] = TXT_HIGH;
 
 psz3DMethod [0] = TXT_3D_PARALLEL;
 psz3DMethod [1] = TXT_3D_TOE_IN;
+}
+
+//------------------------------------------------------------------------------
+
+void RenderOptionsMenu (void)
+{
+	CMenu	m;
+	int	i;
+#if DBG
+	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
+#endif
+	int nRendQualSave = gameOpts->render.nImageQuality, optSubTitles;
+
+	static int choice = 0;
+
+	char szSlider [50];
+
+InitStrings ();
 
 lightManager.SetMethod ();
 nLighting = (gameOpts->render.nLightingMethod == 0)
@@ -594,7 +607,7 @@ do {
 
 	if ((extraGameInfo [0].bUseCameras = (nCameras != 0)))
 		gameOpts->render.cameras.bHires = (nCameras == 2);
-	if ((gameOpts->render.powerups.b3D = (nPowerups != 0) && gameStates.app.bStandalone))
+	if ((gameOpts->render.powerups.b3D = (nPowerups != 0) || gameStates.app.bStandalone))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
 	gameOpts->movies.bSubTitles = (m [optSubTitles].m_value != 0);
 

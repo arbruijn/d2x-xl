@@ -156,17 +156,13 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-void EffectOptionsMenu (void)
+static void InitStrings (void)
 {
-	static int choice = 0;
+	static bool bInitialized = false;
 
-	CMenu	m;
-	int	i, j;
-	int	optEnableFx, optGatlingTrails, optStaticSmoke, optSoftParticles [3];
-#if 0
-	int	optShockwaves;
-#endif
-	char	szSlider [50];
+if (bInitialized)
+	return;
+bInitialized = true;
 
 pszExplShrapnels [0] = TXT_NONE;
 pszExplShrapnels [1] = TXT_FEW;
@@ -193,6 +189,23 @@ pszThrusters [2] = TXT_3D;
 
 pszOffOn [0] = TXT_OFF;
 pszOffOn [1] = TXT_ON;
+}
+
+//------------------------------------------------------------------------------
+
+void EffectOptionsMenu (void)
+{
+	static int choice = 0;
+
+	CMenu	m;
+	int	i, j;
+	int	optEnableFx, optGatlingTrails, optStaticSmoke, optSoftParticles [3];
+#if 0
+	int	optShockwaves;
+#endif
+	char	szSlider [50];
+
+InitStrings ();
 
 if (gameOpts->render.coronas.nStyle > 1)
 	gameOpts->render.coronas.nStyle = 1;

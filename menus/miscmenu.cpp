@@ -105,6 +105,21 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
+static void InitStrings (void)
+{
+	static bool bInitialized = false;
+
+if (bInitialized)
+	return;
+bInitialized = true;
+
+pszExpertMode [0] = TXT_OFF;
+pszExpertMode [1] = TXT_BASIC;
+pszExpertMode [2] = TXT_FULL;
+}
+
+//------------------------------------------------------------------------------
+
 void DefaultMiscSettings (void);
 
 void MiscellaneousMenu (void)
@@ -116,9 +131,7 @@ void MiscellaneousMenu (void)
 	int	optHeadlight, optAutoLevel, optEpileptic, optColorblind, optNotebook,
 			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
 
-pszExpertMode [0] = TXT_OFF;
-pszExpertMode [1] = TXT_BASIC;
-pszExpertMode [2] = TXT_FULL;
+InitStrings ();
 
 if (gameOpts->app.bExpertMode == SUPERUSER)
 	gameOpts->app.bExpertMode = 2;

@@ -187,17 +187,13 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-void DefaultPhysicsSettings (void);
-
-void PhysicsOptionsMenu (void)
+static void InitStrings (void)
 {
-	static char nDragTable [] = {0, 3, 6, 10};
-	static int choice = 0;
+	static bool bInitialized = false;
 
-	CMenu	m;
-	int	i;
-	int	optWiggle = -1;
-	char	szSlider [50];
+if (bInitialized)
+	return;
+bInitialized = true;
 
 pszMslTurnSpeeds [0] = TXT_SLOW;
 pszMslTurnSpeeds [1] = TXT_MEDIUM;
@@ -220,6 +216,23 @@ pszDrag [0] = TXT_OFF;
 pszDrag [1] = TXT_LOW;
 pszDrag [2] = TXT_MEDIUM;
 pszDrag [3] = TXT_STANDARD;
+}
+
+//------------------------------------------------------------------------------
+
+void DefaultPhysicsSettings (void);
+
+void PhysicsOptionsMenu (void)
+{
+	static char nDragTable [] = {0, 3, 6, 10};
+	static int choice = 0;
+
+	CMenu	m;
+	int	i;
+	int	optWiggle = -1;
+	char	szSlider [50];
+
+InitStrings ();
 
 gameOpts->gameplay.nAutoLeveling = NMCLAMP (gameOpts->gameplay.nAutoLeveling, 0, 3);
 //extraGameInfo [0].nHitboxes = NMCLAMP (extraGameInfo [0].nHitboxes, 0, 2) >> 1;

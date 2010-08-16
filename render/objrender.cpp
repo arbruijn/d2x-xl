@@ -207,7 +207,7 @@ return 1;
 
 void ConvertAllPowerupsToWeapons (void)
 {
-	CObject	*objP;
+	CObject*	objP;
 	//int		i;
 
 FORALL_OBJS (objP, i)

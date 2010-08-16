@@ -201,6 +201,21 @@ return nCurItem;		//kill warning
 
 //------------------------------------------------------------------------------
 
+static void InitStrings (void)
+{
+	static bool bInitialized = false;
+
+if (bInitialized)
+	return;
+bInitialized = true;
+
+pszLowMediumHigh [0] = TXT_LOW;
+pszLowMediumHigh [1] = TXT_MEDIUM;
+pszLowMediumHigh [2] = TXT_HIGH;
+}
+
+//------------------------------------------------------------------------------
+
 void SoundMenu (void)
 {
 	static int choice = 0;
@@ -214,9 +229,7 @@ void SoundMenu (void)
 	int	optReverse, optShipSound = -1, optMissileSound = -1, optSpeedUpSound = -1, optFadeMusic = -1, optShieldWarn = -1;
 	int	bSongPlaying = (gameConfig.nMidiVolume > 0);
 
-pszLowMediumHigh [0] = TXT_LOW;
-pszLowMediumHigh [1] = TXT_MEDIUM;
-pszLowMediumHigh [2] = TXT_HIGH;
+InitStrings ();
 
 gameStates.sound.nSoundChannels = SoundChannelIndex ();
 do {
