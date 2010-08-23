@@ -367,7 +367,7 @@ inline const CFloatVector CFloatVector::Perp (const CFloatVector& p0, const CFlo
 }
 
 inline const CFloatVector CFloatVector::Normal (const CFloatVector& p0, const CFloatVector& p1, const CFloatVector& p2) {
-	CFloatVector v = 2.0f * Perp (p0, p1, p2);
+	CFloatVector v = Perp (p0, p1, p2);
 	Normalize (v);
 	return v;
 }
@@ -576,7 +576,7 @@ inline const CFloatVector3 CFloatVector3::Perp (const CFloatVector3& p0, const C
 }
 
 inline const CFloatVector3 CFloatVector3::Normal (const CFloatVector3& p0, const CFloatVector3& p1, const CFloatVector3& p2) {
-	CFloatVector3 v = 2.0f*Perp (p0, p1, p2);
+	CFloatVector3 v = Perp (p0, p1, p2);
 	Normalize (v);
 	return v;
 }

@@ -242,12 +242,9 @@ const CFloatMatrix CFloatMatrix::Create (float sinp, float cosp, float sinb, flo
 
 const float CFloatMatrix::Det (void) 
 {
-return m_data.mat [RVEC][X] * m_data.mat [UVEC][Y] * m_data.mat [FVEC][Z] -
-		 m_data.mat [RVEC][X] * m_data.mat [UVEC][Z] * m_data.mat [FVEC][Y] -
-		 m_data.mat [RVEC][Y] * m_data.mat [UVEC][X] * m_data.mat [FVEC][Z] +
-		 m_data.mat [RVEC][Y] * m_data.mat [UVEC][Z] * m_data.mat [FVEC][X] +
-		 m_data.mat [RVEC][Z] * m_data.mat [UVEC][X] * m_data.mat [FVEC][Y] -
-		 m_data.mat [RVEC][Z] * m_data.mat [UVEC][Y] * m_data.mat [FVEC][X];
+return m_data.mat [RVEC][X] * (m_data.mat [UVEC][Y] * m_data.mat [FVEC][Z] - m_data.mat [UVEC][Z] * m_data.mat [FVEC][Y]) +
+		 m_data.mat [RVEC][Y] * (m_data.mat [UVEC][Z] * m_data.mat [FVEC][X] - m_data.mat [UVEC][X] * m_data.mat [FVEC][Z]) +
+		 m_data.mat [RVEC][Z] * (m_data.mat [UVEC][X] * m_data.mat [FVEC][Y] - m_data.mat [UVEC][Y] * m_data.mat [FVEC][X]);
 }
 
 // -----------------------------------------------------------------------------
@@ -356,12 +353,9 @@ return m;
 
 const fix CFixMatrix::Det (void) 
 {
-fix xDet = FixMul (m_data.mat [RVEC][X], FixMul (m_data.mat [UVEC][Y], m_data.mat [FVEC][Z]));
-xDet -= FixMul (m_data.mat [RVEC][X], FixMul (m_data.mat [UVEC][Z], m_data.mat [FVEC][Y]));
-xDet -= FixMul (m_data.mat [RVEC][Y], FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC][Z]));
-xDet += FixMul (m_data.mat [RVEC][Y], FixMul (m_data.mat [UVEC][Z], m_data.mat [FVEC][X]));
-xDet += FixMul (m_data.mat [RVEC][Z], FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC][Y]));
-xDet -= FixMul (m_data.mat [RVEC][Z], FixMul (m_data.mat [UVEC][Y], m_data.mat [FVEC][X]));
+fix xDet = FixMul (m_data.mat [RVEC][X], FixMul (m_data.mat [UVEC][Y], m_data.mat [FVEC][Z]) - FixMul (m_data.mat [UVEC][Z], m_data.mat [FVEC][Y]));
+xDet += FixMul (m_data.mat [RVEC][Y], FixMul (m_data.mat [UVEC][Z], m_data.mat [FVEC][X]) - FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC][Z]));
+xDet += FixMul (m_data.mat [RVEC][Z], FixMul (m_data.mat [UVEC][X], m_data.mat [FVEC][Y]) - FixMul (m_data.mat [UVEC][Y], m_data.mat [FVEC][X]));
 return xDet;
 }
 

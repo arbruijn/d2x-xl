@@ -55,7 +55,8 @@ void CSegment::ReadFunction (CFile& cf, ubyte flags)
 if (flags & (1 << MAX_SIDES_PER_SEGMENT)) {
 	m_function = cf.ReadByte ();
 	m_nMatCen = cf.ReadByte ();
-	m_value = char (cf.ReadShort ());
+	m_value = char (cf.ReadByte ());
+	cf.ReadByte (); // skip
 	}
 else {
 	m_function = 0;
@@ -185,12 +186,12 @@ if (gameData.segs.nLevelVersion <= 5) // descent 1 thru d2 SHAREWARE level
 	m_xAvgSegLight	= fix (cf.ReadShort ()) << 4;
 
 // Read the walls as a 6 byte array
-flags = bNewFileFormat ? cf.ReadByte () : 0x3f;
+wallFlags = bNewFileFormat ? cf.ReadByte () : 0x3f;
 
 int i;
 
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
-	m_sides [i].ReadWallNum (cf, (flags & (1 << i)) != 0);
+	m_sides [i].ReadWallNum (cf, (wallFlags & (1 << i)) != 0);
 
 ushort sideVerts [4];
 
