@@ -186,7 +186,7 @@ if (gameData.segs.nLevelVersion <= 5) // descent 1 thru d2 SHAREWARE level
 	m_xAvgSegLight	= fix (cf.ReadShort ()) << 4;
 
 // Read the walls as a 6 byte array
-wallFlags = bNewFileFormat ? cf.ReadByte () : 0x3f;
+byte wallFlags = bNewFileFormat ? cf.ReadByte () : 0x3f;
 
 int i;
 
