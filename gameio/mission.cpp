@@ -1057,15 +1057,17 @@ return szFile;
 
 int CMissionManager::SaveLevelStates (void)
 {
-	CFile		cf;
-	char		szFile [FILENAME_LEN] = {'\0'};
+if (!gameStates.app.bReadOnly) {
+		CFile		cf;
+		char		szFile [FILENAME_LEN] = {'\0'};
 
-sprintf (szFile, "%s.state", list [nCurrentMission].szMissionName);
-if (!cf.Open (szFile, gameFolders.szCacheDir, "wb", 0))
-	return 0;
-for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
-	cf.WriteByte (sbyte (nLevelState [i]));
-cf.Close ();
+	sprintf (szFile, "%s.state", list [nCurrentMission].szMissionName);
+	if (!cf.Open (szFile, gameFolders.szCacheDir, "wb", 0))
+		return 0;
+	for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
+		cf.WriteByte (sbyte (nLevelState [i]));
+	cf.Close ();
+	}
 return 1;
 }
 

@@ -491,6 +491,9 @@ if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 
 int CSaveGameManager::Save (int bBetweenLevels, int bSecret, int bQuick, const char *pszFilenameOverride)
 {
+if (gameStates.app.bReadOnly)
+	return 1;
+
 	int	rval,nSaveSlot = -1;
 
 m_override = pszFilenameOverride;

@@ -493,7 +493,7 @@ if (i >= 0) {
 		return chunkP;
 	pszSoundFile = addonSounds [i].szSoundFile + 3;
 	}
-if (cf.Extract (pszSoundFile, gameFolders.szDataDir, 0, "d2x-temp.wav")) {
+if (!gameStates.app.bReadOnly && cf.Extract (pszSoundFile, gameFolders.szDataDir, 0, "d2x-temp.wav")) {
 	pszFolder = gameFolders.szCacheDir;
 	pszFile = "d2x-temp.wav";
 	}
