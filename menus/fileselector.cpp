@@ -181,7 +181,7 @@ done = 0;
 m_nFileCount = 0;
 
 #if !defined (APPLE_DEMO)		// no new pilots for special apple oem version
-if (m_bPlayerMode) {
+if (m_bPlayerMode && !gameStates.app.bReadOnly) {
 	m_filenames [m_nFileCount] = TXT_CREATE_NEW;
 	m_nFileCount++;
 	}

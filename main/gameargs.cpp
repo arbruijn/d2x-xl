@@ -352,6 +352,7 @@ if ((t = FindArg ("-gl_texcompress")))
 	ogl.m_states.bTextureCompression = NumArg (t, 1);
 #endif
 gameOptions [0].render.bUseShaders = 1;
+gameStates.app.bReadOnly = 0;
 gameStates.app.bCacheTextures = 1;
 gameStates.app.bCacheModelData = 1;
 gameStates.app.bCacheMeshes = 1;
@@ -359,6 +360,7 @@ gameStates.app.bCacheLightmaps = 1;
 gameStates.app.bCacheLights = 1;
 #if 1 //DBG
 if ((t = FindArg ("-readonly"))) {
+	gameStates.app.bReadOnly = 1;
 	gameStates.app.bCacheTextures = 0;
 	gameStates.app.bCacheModelData = 0;
 	gameStates.app.bCacheMeshes = 0;

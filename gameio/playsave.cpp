@@ -1784,7 +1784,7 @@ return i;
 //write out CPlayerData's saved games.  returns errno (0 == no error)
 int SavePlayerProfile (void)
 {
-if (profile.Busy ())
+if (gameStates.app.bReadOnly || profile.Busy ())
 	return 1;
 
 	CFile	cf;

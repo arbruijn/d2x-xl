@@ -1256,6 +1256,7 @@ class CApplicationStates {
 		int bUsingConverter;
 		int bFixModels;
 		int bAltModels;
+		int bReadOnly;
 		int bCacheTextures;
 		int bCacheLights;
 		int bCacheMeshes;
