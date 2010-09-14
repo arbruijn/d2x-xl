@@ -351,7 +351,22 @@ if ((t = FindArg ("-model_quality")) && *pszArgList [t+1])
 if ((t = FindArg ("-gl_texcompress")))
 	ogl.m_states.bTextureCompression = NumArg (t, 1);
 #endif
-#if 0 //DBG
+gameOptions [0].render.bUseShaders = 1;
+gameStates.app.bCacheTextures = 1;
+gameStates.app.bCacheModelData = 1;
+gameStates.app.bCacheMeshes = 1;
+gameStates.app.bCacheLightmaps = 1;
+gameStates.app.bCacheLights = 1;
+#if 1 //DBG
+if ((t = FindArg ("-readonly"))) {
+	gameStates.app.bCacheTextures = 0;
+	gameStates.app.bCacheModelData = 0;
+	gameStates.app.bCacheMeshes = 0;
+	gameStates.app.bCacheLightmaps = 0;
+	gameStates.app.bCacheLights = 0;
+	}
+#else
+	gameStates.app.bCacheTextures = NumArg (t, 1);
 if ((t = FindArg ("-cache_textures")))
 	gameStates.app.bCacheTextures = NumArg (t, 1);
 if ((t = FindArg ("-cache_models")))
@@ -362,19 +377,9 @@ if ((t = FindArg ("-cache_lightmaps")))
 	gameStates.app.bCacheLightmaps = NumArg (t, 1);
 if ((t = FindArg ("-cache_lights")))
 	gameStates.app.bCacheLights = NumArg (t, 1);
-#else
-#	if 1 //DBG
+#endif
 if ((t = FindArg ("-use_shaders")))
 	gameOptions [0].render.bUseShaders = NumArg (t, 1);
-else
-#	endif
-gameOptions [0].render.bUseShaders = 1;
-gameStates.app.bCacheTextures = 1;
-gameStates.app.bCacheModelData = 1;
-gameStates.app.bCacheMeshes = 1;
-gameStates.app.bCacheLightmaps = 1;
-gameStates.app.bCacheLights = 1;
-#endif
 }
 
 // ----------------------------------------------------------------------------
