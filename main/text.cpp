@@ -1932,7 +1932,7 @@ const char *defaultGameTexts [][2] = {
  {"\nSchiffsauswahl:", "\nChose your ship:"},
  {"Fusionskanone", "Fusion gun"},
  {"Lade...", "Loading..."},
- {"Vorbereitung ...", "Preparing ..."},
+ {"Vorbereitung...", "Preparing..."},
 #if 0
  {"", ""},
 #endif
