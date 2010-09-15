@@ -880,6 +880,8 @@ if (!InsertTriangles ()) {
 	gameData.segs.nVertices = m_nVertices;
 	return 0;
 	}
+if (gameStates.app.bReadOnly)
+	return 1;
 Save (nLevel);
 return Load (nLevel, true); //Load will rebuild all face data buffers, reducing their memory footprint
 }
