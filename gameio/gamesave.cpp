@@ -1180,8 +1180,12 @@ for (;;) {
 	networkData.nSegmentCheckSum = CalcSegmentCheckSum ();
 	if (meshBuilder.Build (nLevel))
 		break;
-	if (gameStates.render.nMeshQuality <= 0)
-		return 6;
+	if (gameStates.render.nMeshQuality <= 0) {
+		if (gameStates.render.bPerPixelLighting)
+			gameStates.render.bPerPixelLighting = 0;
+		else
+			return 6;
+		}
 	gameStates.render.nMeshQuality--;
 	}
 gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
