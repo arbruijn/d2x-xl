@@ -306,13 +306,16 @@ return mkdir (pathname, 0755);
 
 int CFile::Open (const char *filename, const char *folder, const char *mode, int nHogType) 
 {
+if (!(filename && *filename))
+	return 0;
+if ((*mode == 'w') && gameStates.app.bReadOnly)
+	return 0;
+
 	int	length = -1;
 	FILE	*fp = NULL;
 	const char	*pszHogExt, *pszFileExt;
 
 m_cf.file = NULL;
-if (!(filename && *filename))
-	return 0;
 if (*filename != '\x01') {
 	fp = GetFileHandle (filename, folder, mode);		// Check for non-hogP file first...
 	if (!fp && 

@@ -832,7 +832,7 @@ bool CTriMeshBuilder::Save (int nLevel)
 	char					szFilename [FILENAME_LEN];
 	uint					nTriVerts = uint (mdh.nTris * 3);
 
-if (!(gameStates.render.bTriangleMesh /*&& gameStates.app.bCacheMeshes*/))
+if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 	return 0;
 if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;

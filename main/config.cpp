@@ -263,6 +263,9 @@ return 0;
 
 int WriteConfigFile (bool bExitProgram)
 {
+if (gameStates.app.bReadOnly)
+	return 0;
+
 	CFile cf;
 	char str [256];
 	int i, j;
