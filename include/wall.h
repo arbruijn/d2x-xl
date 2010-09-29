@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define WALL_CLOSED             5   // Wall.  Used for transparent walls.
 #define WALL_OVERLAY            6   // Goes over an actual solid CSide.  For triggers
 #define WALL_CLOAKED            7   // Can see it, and see through it
-#define WALL_TRANSPARENT        8   // like cloaked, but fixed transparency and colored
+#define WALL_COLORED				  8   // like cloaked, but fixed transparency and colored
 
 // Various CWall flags.
 #define WALL_BLASTED            1   // Blasted out CWall.

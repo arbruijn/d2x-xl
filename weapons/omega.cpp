@@ -302,8 +302,14 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	fq.bCheckVisibility = false;
 	fate = FindHitpoint (&fq, &hitData);
 	if (fate != HIT_NONE) {
-		Assert (hitData.hit.nSegment != -1);		//	How can this be?  We went from inside the mine to outside without hitting anything?
-		vTargetPos = hitData.hit.vPoint;
+		if (hitData.hit.nSegment != -1)		//	How can this be?  We went from inside the mine to outside without hitting anything?
+			vTargetPos = hitData.hit.vPoint;
+		else {
+#if DBG
+			fate = FindHitpoint (&fq, &hitData);
+#endif
+			return;
+			}
 		}
 	}
 //	This is where we create a pile of omega blobs!

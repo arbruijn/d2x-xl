@@ -121,8 +121,6 @@ else {
 	}
 if (gameOpts->ogl.bGlTexMerge) {
 	faceP->bmBot = LoadFaceBitmap (faceP->m_info.nBaseTex, nFrame);
-	if (nFrame)
-		nFrame = nFrame;
 	if (faceP->m_info.nOvlTex)
 		faceP->bmTop = LoadFaceBitmap ((short) (faceP->m_info.nOvlTex), nFrame);
 	else
@@ -496,13 +494,15 @@ if (faceP->m_info.bTransparent || faceP->m_info.bAdditive)
 	return 1;
 if (bmBot->Flags () & BM_FLAG_SEE_THRU)
 	return faceP->m_info.nTransparent = 0;
+if (bmTop && (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT))
+	return 1;
 if (!(bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
 	return 0;
 if (!bmTop)
 	return 1;
 if (bmTop->Flags () & BM_FLAG_SEE_THRU)
 	return 0;
-if (bmTop->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+if (bmTop->Flags () & BM_FLAG_TRANSPARENT)
 	return 1;
 return 0;
 }
@@ -533,6 +533,10 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		if (!faceP->m_info.bVisible)
 			continue;
 		LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
+#if DBG
+		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+			nDbgSeg = nDbgSeg;
+#endif
 		faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmBot, faceP->bmTop);
 		faceP->m_info.nColored = FaceIsColored (faceP);
 		if (nSegment != faceP->m_info.nSegment) {
