@@ -654,6 +654,10 @@ int DrawPolygonObject (CObject *objP, int bForce)
 
 if (objP->info.nType == 255)
 	return 0;
+#if DBG
+if ((objP->info.nType != OBJ_PLAYER) && (objP->info.position.vPos == OBJECTS [0].info.position.vPos))
+	nDbgObj = nDbgObj;
+#endif
 id = (int) objP->info.nId;
 if ((id < 0) || (id == 255))
 	bEnergyWeapon = id = 0;

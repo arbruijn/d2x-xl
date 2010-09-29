@@ -841,7 +841,7 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 				nDbgSeg = nDbgSeg;
 			ogl.SetBlending (true);
 #	endif
-			lightManager.Headlights ().SetupShader (bTextured, 1, bTextured ? NULL : &faceP->m_info.color);
+			lightManager.Headlights ().SetupShader (bTextured ? bmMask ? 3 : bDecal ? 2 : 1 : 0, 1, bTextured ? NULL : &faceP->m_info.color);
 			if (bAdditive != 2) {
 				bAdditive = 2;
 				ogl.SetBlendMode (2);
