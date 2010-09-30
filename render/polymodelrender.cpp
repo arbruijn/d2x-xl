@@ -194,8 +194,7 @@ if (!flags) {	//draw entire object
 		gameData.render.vertP = NULL;
 		return 1;
 		}
-	if (bHires) 
-		{
+	if (bHires) {
 		ogl.SetTransform (0);
 		gameData.render.vertP = NULL;
 		return 0;
@@ -223,6 +222,7 @@ else {
 			if (!G3RenderModel (objP, nModel, i, modelP, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP)) {
 				if (bHires) {
 					ogl.SetTransform (0);
+					gameData.render.vertP = NULL;
 					return 0;
 					}
 #if DBG
