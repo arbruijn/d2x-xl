@@ -364,7 +364,7 @@ for (int i = 1; i < m_nNodes; i++) {
 		nMaxOffset = nOffset;
 	}
 
-nAmplitude = /*3 **/ nAmplitude / 4 + (rand () % (nAmplitude / 4));
+nAmplitude = 4 * nAmplitude / 5 + (rand () % (nAmplitude / 5));
 CFloatVector vStart, vEnd;
 vStart.Assign (m_vPos);
 vEnd.Assign (m_vEnd);
