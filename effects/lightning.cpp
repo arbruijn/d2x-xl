@@ -73,7 +73,7 @@ nSign = VECSIGN (vd);
 do {
 	VmRandomVector (&vr);
 	nDot = CFixVector::Dot (vr, vd);
-	} while (((nDot > nMaxDot) || (nDot < nMinDot)) && (++i < 10));
+	} while (((nDot > nMaxDot) || (nDot < nMinDot)) && (++i < 100));
 *vRand = vr;
 return vRand;
 }
@@ -82,8 +82,8 @@ return vRand;
 
 int CLightning::ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength)
 {
-nLength = 3 * nLength / 4 + int (dbl_rand () * nLength / 4);
-DirectedRandomVector (vDir, vParentDir, I2X (3) / 4, I2X (9) / 10);
+//nLength = 4 * nLength / 5 + int (dbl_rand () * nLength / 5);
+DirectedRandomVector (vDir, vParentDir, I2X (85) / 100, I2X (95) / 100);
 *vEnd = *vPos + *vDir * nLength;
 return nLength;
 }
@@ -229,7 +229,6 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 	int			h, l, n, nNode, nChildNodes;
 	double		nStep, j, scale;
 
-	n = m_nChildren + 1 + (m_nChildren < 2);
 	nStep = double (m_nNodes) / double (m_nChildren);
 	for (h = m_nNodes - int (nStep), j = nStep / 2; j < h; j += nStep) {
 		nNode = int (j) + 2 - d_rand () % 5;
@@ -237,11 +236,14 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 			nNode = int (j);
 		if (!(nChildNodes = m_nNodes - nNode))
 			continue;
-		nChildNodes = 2 * nChildNodes / 4 + rand () % (nChildNodes / 4);
-		scale = double (nChildNodes) / double (m_nNodes);
+		nChildNodes = 3 * nChildNodes / 4 + rand () % (nChildNodes / 4);
+		scale = sqrt (double (nChildNodes) / double (m_nNodes));
 		l = int (m_nLength * scale + 0.5);
+		n = int (m_nSteps * scale + 0.5);
+		if (n == 0)
+			n = (m_nSteps < 0) ? -1 : 1;
 		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, int (m_nAmplitude * scale + 0.5), m_nAngle,
-													 nChildNodes, m_nChildren / 5, nDepth - 1, max (1, int (m_nSteps * scale + 0.5)), m_nSmoothe, m_bClamp, m_bGlow, m_bLight,
+													 nChildNodes, m_nChildren / 5, nDepth - 1, n, m_nSmoothe, m_bClamp, m_bGlow, m_bLight,
 													 m_nStyle, &m_color, this, nNode, nThread))
 			return false;
 		}
@@ -362,7 +364,7 @@ for (int i = 1; i < m_nNodes; i++) {
 		nMaxOffset = nOffset;
 	}
 
-nAmplitude = 3 * nAmplitude / 4 + (rand () % (nAmplitude / 4));
+nAmplitude = /*3 **/ nAmplitude / 4 + (rand () % (nAmplitude / 4));
 CFloatVector vStart, vEnd;
 vStart.Assign (m_vPos);
 vEnd.Assign (m_vEnd);
