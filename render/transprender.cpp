@@ -1004,9 +1004,9 @@ void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 if (item->nType == riSphereShield) {
-	ogl.SelectGlowBuffer (0); // glow
+	//ogl.SelectGlowBuffer (0); // glow
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->bAdditive, item->nSize);
-	glowRenderer.Render ();
+	//glowRenderer.Render ();
 	}
 else if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
@@ -1055,9 +1055,9 @@ if (m_data.nPrevType != m_data.nCurType) {
 	ogl.ResetClientStates ();
 	shaderManager.Deploy (-1);
 	}
-ogl.SelectGlowBuffer (0); // glow
+//ogl.SelectGlowBuffer (0); // glow
 item->lightning->Render (item->nDepth, 0);
-glowRenderer.Render ();
+//glowRenderer.Render ();
 nRendered++;
 ResetBitmaps ();
 }
@@ -1228,6 +1228,10 @@ ogl.SetBlendMode (0);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetFaceCulling (true);
 ogl.CopyDepthTexture ();
+ogl.SelectGlowBuffer (1); // glow
+glClear (GL_COLOR_BUFFER_BIT);
+ogl.SelectGlowBuffer (0); // glow
+glClear (GL_COLOR_BUFFER_BIT);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {
@@ -1288,6 +1292,7 @@ if (bCleanup) {
 	m_data.nMaxOffs = 0;
 	m_data.nFreeItems = ITEM_BUFFER_SIZE;
 	}
+glowRenderer.Render ();
 PROF_END(ptTranspPolys)
 nAdded = nRendered = 0;
 #endif

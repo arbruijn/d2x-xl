@@ -12,29 +12,32 @@ CGlowRenderer glowRenderer;
 
 int hBlurShader = -1;
 
-const char *blurFS =
-	"varying vec2 vCoordinates;\r\n" \
-	"// u_Scale is vec2 (0.0, 1.0/height) for vertical blur and vec2 (1.0/width, 0.0) for horizontal blur.\r\n" \
-	"uniform vec2 uScale;\r\n" \
-	"uniform sampler2D uTexture0;\r\n" \
-	"const vec2 gaussFilter [7] = { \r\n" \
-	"	-3.0,	0.015625,\r\n" \
-	"	-2.0,	0.09375,\r\n" \
-	"	-1.0,	0.234375,\r\n" \
-	"	 0.0,	0.3125,\r\n" \
-	"	 1.0,	0.234375,\r\n" \
-	"	 2.0,	0.09375,\r\n" \
-	"	 3.0,	0.015625\r\n" \
-	"	};\r\n" \
+const char *blurFS = 
+	"uniform sampler2D glowTex;\r\n" \
+	"uniform float scale; // render target width\r\n" \
+	"uniform int direction;\r\n" \
+	"float offset[3] = float[](0.0, 1.3846153846, 3.2307692308);\r\n" \
+	"float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = 0.0;\r\n" \
-	"	for (int i = 0; i < 7; i++)\r\n" \
-	"		color += texture2D (uTexture0, vec2 (vCoordinates.x + gaussFilter [i].x * uScale.x, vCoordinates.y + gaussFilter [i].x * uScale.y)) * gaussFilter [i].y;\r\n" \
-	"  if (length (color) == 0.0)\r\n" \
-	"    discard;\r\n" \
-	"  else\r\n" \
-	"	  gl_FragColor = color;\r\n" \
-	"}"
+	"vec3 tc = vec3(1.0, 0.0, 0.0);\r\n" \
+	"vec2 uv = gl_TexCoord[0].xy;\r\n" \
+	"tc = texture2D(glowTex, uv).rgb * weight[0];\r\n" \
+	"if (direction == 0) {\r\n" \
+	"  for (int i=1; i<3; i++) {\r\n" \
+	"    float h = offset[i]/scale;\r\n" \
+	"    tc += texture2D(glowTex, uv + vec2(0.0, h)).rgb * weight[i];\r\n" \
+	"    tc += texture2D(glowTex, uv - vec2(0.0, h)).rgb * weight[i];\r\n" \
+	"    }\r\n" \
+	"  }\r\n" \
+	"else {\r\n" \
+	"  for (int i=1; i<3; i++) {\r\n" \
+	"    float h = offset[i]/scale;\r\n" \
+	"    tc += texture2D(glowTex, uv + vec2(h, 0.0)).rgb * weight[i];\r\n" \
+	"    tc += texture2D(glowTex, uv - vec2(h, 0.0)).rgb * weight[i];\r\n" \
+	"    }\r\n" \
+	"   }\r\n" \
+	"gl_FragColor = vec4(tc, 1.0);\r\n" \
+	"}\r\n"
 	;
 
 const char *blurVS =
@@ -48,15 +51,16 @@ const char *blurVS =
 
 bool CGlowRenderer::LoadShader (int const direction)
 {
-	float uScale [2][2] = {{ogl.m_data.screenScale.x, 0.0f}, {0.0f, ogl.m_data.screenScale.y}};
+	float fScale [2] = {screen.Height (), screen.Width ()};
 
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader));
 if (!m_shaderProg)
 	return false;
-if (shaderManager.Rebuild (m_shaderProg)) {
-	glUniform1i (glGetUniformLocation (m_shaderProg, "glowTex"), 0);
-	glUniform2fv (glGetUniformLocation (m_shaderProg, "uScale"), 1, reinterpret_cast<GLfloat*> (&uScale [direction]));
-	}
+if (shaderManager.Rebuild (m_shaderProg))
+	;
+glUniform1i (glGetUniformLocation (m_shaderProg, "glowTex"), 0);
+glUniform1i (glGetUniformLocation (m_shaderProg, "direction"), direction);
+glUniform2fv (glGetUniformLocation (m_shaderProg, "scale"), 1, reinterpret_cast<GLfloat*> (&fScale [direction]));
 return true;
 }
 
@@ -91,20 +95,27 @@ void CGlowRenderer::Draw (int const direction)
 	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+#if 0
+ogl.SetTexturing (false);
+#else
 ogl.BindTexture (ogl.DrawBuffer (2 + direction)->ColorBuffer ());
+#endif
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
 glColor3f (1,1,1);
+ogl.SetDepthWrite (false);
 OglDrawArrays (GL_QUADS, 0, 4);
+ogl.BindTexture (0);
 }
 
 //------------------------------------------------------------------------------
 
 bool CGlowRenderer::Blur (int const direction)
 {
-if (!LoadShader (direction)) 
-	return false;
-ogl.SetDrawBuffer (GL_BACK, 3 - direction);
+ogl.SelectGlowBuffer (!direction); // glow render target
+//if (!LoadShader (direction)) 
+//	return false;
+ogl.SetBlendMode (GL_ONE, GL_ZERO);
 Draw (direction);
 return true;
 }
@@ -113,13 +124,28 @@ return true;
 
 void CGlowRenderer::Render (void)
 {
+glMatrixMode (GL_PROJECTION);
+glPushMatrix ();
+glLoadIdentity ();//clear matrix
+glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+glMatrixMode (GL_MODELVIEW);
+glPushMatrix ();
+glLoadIdentity ();//clear matrix
+
+Blur (0);
+//Blur (1);
+//Blur (0);
+//Blur (1);
 //Blur (0);
 //Blur (1);
 shaderManager.Deploy (-1);
 ogl.ChooseDrawBuffer ();
-ogl.SetDepthMode (GL_ALWAYS);
-Draw (0);
-ogl.SetDepthMode (GL_LEQUAL);
+ogl.SetBlendMode (GL_ONE, GL_ONE);
+Draw (1);
+
+glPopMatrix ();
+glMatrixMode (GL_PROJECTION);
+glPopMatrix ();
 }
 
 //------------------------------------------------------------------------------
