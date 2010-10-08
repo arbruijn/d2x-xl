@@ -62,18 +62,32 @@ return vRand;
 
 CFixVector *DirectedRandomVector (CFixVector *vRand, CFixVector *vDir, int nMinDot, int nMaxDot)
 {
-	CFixVector	vr, vd = *vDir, vSign;
-	int			nDot, nSign, i = 0;
+	CFixVector	vr, vd = *vDir;
 
 CFixVector::Normalize (vd);
-vSign [X] = vd [X] ? vd [X] / abs(vd [X]) : 0;
-vSign [Y] = vd [Y] ? vd [Y] / abs(vd [Y]) : 0;
-vSign [Z] = vd [Z] ? vd [Z] / abs(vd [Z]) : 0;
-nSign = VECSIGN (vd);
+#if 1
+do {
+	VmRandomVector (&vr);
+	} while (CFixVector::Dot (vr, vd) > I2X (9) / 10);
+
+vr = CFixVector::Normal (CFixVector::ZERO, vd, vr);
+fix dot = nMinDot + (d_rand () % ((nMaxDot - nMinDot + 1) / 2)) * 2;
+double a = acos (X2D (dot));
+if (fabs (a - Pi * 0.5) > 1e-6) {
+	vr *= F2X (tan (a));
+	vr += vd;
+	CFixVector::Normalize (vr);
+	}
+#if DBG
+dot = CFixVector::Dot (vd, vr);
+#endif
+#else
+fix nDot;
 do {
 	VmRandomVector (&vr);
 	nDot = CFixVector::Dot (vr, vd);
 	} while (((nDot > nMaxDot) || (nDot < nMinDot)) && (++i < 100));
+#endif
 *vRand = vr;
 return vRand;
 }
@@ -83,7 +97,7 @@ return vRand;
 int CLightning::ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength)
 {
 //nLength = 4 * nLength / 5 + int (dbl_rand () * nLength / 5);
-DirectedRandomVector (vDir, vParentDir, I2X (85) / 100, I2X (95) / 100);
+DirectedRandomVector (vDir, vParentDir, I2X (875) / 1000, I2X (925) / 1000);
 *vEnd = *vPos + *vDir * nLength;
 return nLength;
 }
