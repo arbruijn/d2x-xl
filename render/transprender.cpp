@@ -1004,7 +1004,7 @@ void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 if (item->nType == riSphereShield) {
-	ogl.SelectDrawBuffer (2); // glow
+	ogl.SelectGlowBuffer (0); // glow
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->bAdditive, item->nSize);
 	glowRenderer.Render ();
 	}
@@ -1055,7 +1055,7 @@ if (m_data.nPrevType != m_data.nCurType) {
 	ogl.ResetClientStates ();
 	shaderManager.Deploy (-1);
 	}
-ogl.SelectDrawBuffer (2); // glow
+ogl.SelectGlowBuffer (0); // glow
 item->lightning->Render (item->nDepth, 0);
 glowRenderer.Render ();
 nRendered++;

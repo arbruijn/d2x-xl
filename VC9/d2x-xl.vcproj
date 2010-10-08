@@ -8913,10 +8913,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\ogl\ogl_blur.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\ogl\ogl_buffers.cpp"
 						>
 					</File>

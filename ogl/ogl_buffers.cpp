@@ -180,31 +180,6 @@ if (!gameStates.menus.nInMenu || bForce) {
 
 //------------------------------------------------------------------------------
 
-void COGL::CreateGlowBuffer (void)
-{
-if (gameStates.render.bRenderIndirect && m_states.bRender2TextureOk && !GlowBuffer ()->Handle ()) {
-	PrintLog ("creating glow buffer\n");
-	GlowBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, 0);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void COGL::DestroyGlowBuffer (void)
-{
-	static int bSemaphore = 0;
-
-if (bSemaphore)
-	return;
-bSemaphore++;
-if (m_states.bRender2TextureOk && GlowBuffer () && GlowBuffer ()->Handle ()) {
-	GlowwBuffer ()->Destroy ();
-	}
-bSemaphore--;
-}
-
-//------------------------------------------------------------------------------
-
 void COGL::CreateDrawBuffer (void)
 {
 #if FBO_DRAW_BUFFER
@@ -323,6 +298,16 @@ if (nBuffer != nPrevBuffer) {
 CreateDrawBuffer ();
 m_data.drawBufferP->Enable (false);
 return nPrevBuffer;
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::SelectGlowBuffer (int nBuffer) 
+{ 
+gameStates.render.bRenderIndirect++;
+SelectDrawBuffer (nBuffer + 2);
+SetDrawBuffer (GL_BACK, 1);
+gameStates.render.bRenderIndirect--;
 }
 
 //------------------------------------------------------------------------------

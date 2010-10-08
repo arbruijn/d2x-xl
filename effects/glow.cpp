@@ -5,6 +5,8 @@
 #include "ogl_shader.h"
 #include "glow.h"
 
+CGlowRenderer glowRenderer;
+
 //------------------------------------------------------------------------------
 // 7x1 gaussian blur fragment shader
 
@@ -111,6 +113,7 @@ return true;
 
 void CGlowRenderer::Render (void)
 {
+return;
 Blur (0);
 Blur (1);
 shaderManager.Deploy (-1);
