@@ -270,14 +270,14 @@ class COGL {
 		void GetVerInfo (void);
 		GLuint CreateDepthTexture (int nTMU, int bFBO, int bStencil = 0);
 		void DestroyDepthTexture (void);
-		GLuint CopyDepthTexture (void);
+		GLuint CopyDepthTexture (GLuint* hDepthTexture = NULL);
 		GLuint CreateColorTexture (int nTMU, int bFBO);
 		void DestroyColorTexture (void);
 		GLuint CopyColorTexture (void);
 #if 0
 		GLuint CreateStencilTexture (int nTMU, int bFBO);
 #endif
-		void CreateDrawBuffer (void);
+		void CreateDrawBuffer (int nType = 1);
 		void DestroyDrawBuffer (void);
 		void DestroyDrawBuffers (void);
 		void SetDrawBuffer (int nBuffer, int bFBO);

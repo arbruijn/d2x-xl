@@ -90,6 +90,7 @@ void CGlowRenderer::Draw (int const direction)
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
+ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 ogl.BindTexture (ogl.DrawBuffer (2 + direction)->ColorBuffer ());
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
@@ -104,7 +105,6 @@ bool CGlowRenderer::Blur (int const direction)
 if (!LoadShader (direction)) 
 	return false;
 ogl.SetDrawBuffer (GL_BACK, 3 - direction);
-ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 Draw (direction);
 return true;
 }
@@ -113,9 +113,8 @@ return true;
 
 void CGlowRenderer::Render (void)
 {
-return;
-Blur (0);
-Blur (1);
+//Blur (0);
+//Blur (1);
 shaderManager.Deploy (-1);
 ogl.ChooseDrawBuffer ();
 Draw (0);
