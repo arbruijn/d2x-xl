@@ -1227,6 +1227,7 @@ m_data.bHaveParticles = particleImageManager.LoadAll ();
 ogl.SetBlendMode (0);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetFaceCulling (true);
+ogl.CopyDepthTexture ();
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {

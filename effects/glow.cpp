@@ -117,7 +117,9 @@ void CGlowRenderer::Render (void)
 //Blur (1);
 shaderManager.Deploy (-1);
 ogl.ChooseDrawBuffer ();
+ogl.SetDepthMode (GL_ALWAYS);
 Draw (0);
+ogl.SetDepthMode (GL_LEQUAL);
 }
 
 //------------------------------------------------------------------------------

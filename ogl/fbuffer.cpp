@@ -119,8 +119,9 @@ else {
 		}
 #if FBO_STENCIL_BUFFER
 	// depth + stencil buffer
+	m_info.hDepthBuffer = 0;
 	if (((nType == 1) && (m_info.hDepthBuffer = ogl.CreateDepthTexture (0, 1, 1))) ||
-		 ((nType == -1) && (m_info.hDepthBuffer = ogl.CopyDepthTexture (&m_info.hDepthBuffer)))) {
+		 ((nType == -1) && (m_info.hDepthBuffer = ogl.CopyDepthTexture (1)))) {
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hDepthBuffer, 0);
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hStencilBuffer = m_info.hDepthBuffer, 0);
 		if (Available () < 0)
@@ -160,7 +161,8 @@ if (m_info.hFBO) {
 		m_info.nColorBuffers = 0;
 		}
 	if (m_info.hDepthBuffer) {
-		glDeleteRenderbuffersEXT (1, &m_info.hDepthBuffer);
+		if (m_info.nType >= 0)
+			glDeleteRenderbuffersEXT (1, &m_info.hDepthBuffer);
 		m_info.hDepthBuffer =
 		m_info.hStencilBuffer = 0;
 		}
