@@ -244,8 +244,8 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 	double		nProb;
 
 	nProb = double (m_nChildren) / double (m_nNodes);
-	for (nNode = 1 + d_rand () % (m_nNodes / m_nChildren / 2), nBranches = 0; (nNode < m_nNodes) && (nBranches < m_nChildren); nNode++) {
-		if (dbl_rand () < nProb) {
+	for (nNode = 1 + rand () % (m_nNodes / m_nChildren / 2), nBranches = 0; (nNode < m_nNodes) && (nBranches < m_nChildren); nNode++) {
+		if (dbl_rand () <= nProb) {
 			nBranches++;
 			nChildNodes = m_nNodes - nNode;
 			nChildNodes = 4 * nChildNodes / 5 + rand () % (nChildNodes / 5);
