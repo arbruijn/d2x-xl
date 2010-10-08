@@ -22,7 +22,7 @@
 #include "lightmap.h"
 #include "lightning.h"
 #include "sphere.h"
-#include "blur.h"
+#include "glow.h"
 #include "glare.h"
 #include "automap.h"
 #include "transprender.h"
@@ -1006,7 +1006,7 @@ shaderManager.Deploy (-1);
 if (item->nType == riSphereShield) {
 	ogl.SelectDrawBuffer (2); // glow
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->bAdditive, item->nSize);
-	blurRenderer.Render ();
+	glowRenderer.Render ();
 	}
 else if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
@@ -1057,7 +1057,7 @@ if (m_data.nPrevType != m_data.nCurType) {
 	}
 ogl.SelectDrawBuffer (2); // glow
 item->lightning->Render (item->nDepth, 0);
-blurRenderer.Render ();
+glowRenderer.Render ();
 nRendered++;
 ResetBitmaps ();
 }

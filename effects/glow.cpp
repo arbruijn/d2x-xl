@@ -3,7 +3,7 @@
 #include "error.h"
 #include "ogl_lib.h"
 #include "ogl_shader.h"
-#include "blur.h"
+#include "glow.h"
 
 //------------------------------------------------------------------------------
 // 7x1 gaussian blur fragment shader
@@ -44,7 +44,7 @@ const char *blurVS =
 
 //------------------------------------------------------------------------------
 
-bool CBlurRenderer::LoadShader (int const direction)
+bool CGlowRenderer::LoadShader (int const direction)
 {
 	float uScale [2][2] = {{ogl.m_data.screenScale.x, 0.0f}, {0.0f, ogl.m_data.screenScale.y}};
 
@@ -55,11 +55,12 @@ if (shaderManager.Rebuild (m_shaderProg)) {
 	glUniform1i (glGetUniformLocation (m_shaderProg, "glowTex"), 0);
 	glUniform2fv (glGetUniformLocation (m_shaderProg, "uScale"), 1, reinterpret_cast<GLfloat*> (&uScale [direction]));
 	}
+return true;
 }
 
 //-------------------------------------------------------------------------
 
-void CBlurRenderer::InitShader (void)
+void CGlowRenderer::InitShader (void)
 {
 ogl.m_states.bDepthBlending = 0;
 PrintLog ("building glow shader program\n");
@@ -75,14 +76,14 @@ if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
 
 //-------------------------------------------------------------------------
 
-bool CBlurRenderer::ShaderActive (void)
+bool CGlowRenderer::ShaderActive (void)
 {
 return (hBlurShader >= 0) && (shaderManager.Current () == hBlurShader);
 }
 
 //------------------------------------------------------------------------------
 
-void CBlurRenderer::Draw (int const direction)
+void CGlowRenderer::Draw (int const direction)
 {
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
@@ -96,7 +97,7 @@ OglDrawArrays (GL_QUADS, 0, 4);
 
 //------------------------------------------------------------------------------
 
-bool CBlurRenderer::Blur (int const direction)
+bool CGlowRenderer::Blur (int const direction)
 {
 if (!LoadShader (direction)) 
 	return false;
@@ -108,7 +109,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-void CBlurRenderer::Render (void)
+void CGlowRenderer::Render (void)
 {
 Blur (0);
 Blur (1);

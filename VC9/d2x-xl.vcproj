@@ -6497,10 +6497,6 @@
 					Name="Source Files"
 					>
 					<File
-						RelativePath="..\effects\blur.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\effects\fireball.cpp"
 						>
 					</File>
@@ -6511,22 +6507,6 @@
 					<File
 						RelativePath="..\effects\glow.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release-OMP|x64"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\effects\lightning.cpp"
@@ -6589,15 +6569,15 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\effects\blur.h"
-						>
-					</File>
-					<File
 						RelativePath="..\include\fireball.h"
 						>
 					</File>
 					<File
 						RelativePath="..\include\glare.h"
+						>
+					</File>
+					<File
+						RelativePath="..\effects\glow.h"
 						>
 					</File>
 					<File

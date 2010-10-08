@@ -3,14 +3,14 @@
 
 //------------------------------------------------------------------------------
 
-class CBlurRenderer {
+class CGlowRenderer {
 	private:
 		GLhandleARB m_shaderProg;
 
 	public:
 		void InitShader (void);
 		bool ShaderActive (void);
-		CBlurRenderer () : m_shaderProg (0) {}
+		CGlowRenderer () : m_shaderProg (0) {}
 
 	private:
 		bool LoadShader (int const direction);
@@ -19,7 +19,7 @@ class CBlurRenderer {
 		void Render (void);
 	};
 
-extern CBlurRenderer blurRenderer;
+extern CGlowRenderer glowRenderer;
 
 //------------------------------------------------------------------------------
 

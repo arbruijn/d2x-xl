@@ -37,7 +37,7 @@
 #include "ogl_shader.h"
 #include "ogl_fastrender.h"
 #include "glare.h"
-#include "blur.h"
+#include "glow.h"
 #include "sphere.h"
 #include "rendermine.h"
 #include "gpgpu_lighting.h"
@@ -443,7 +443,7 @@ gpgpuLighting.InitShader ();
 ::PrintLog ("   initializing glare shader programs\n");
 glareRenderer.InitShader ();
 ::PrintLog ("   initializing blur shader programs\n");
-blurRenderer.InitShader ();
+glowRenderer.InitShader ();
 ::PrintLog ("   initializing gray scale shader programs\n");
 InitGrayScaleShader ();
 ::PrintLog ("   initializing enhanced 3D shader programs\n");
