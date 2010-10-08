@@ -97,7 +97,7 @@ return vRand;
 int CLightning::ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength)
 {
 //nLength = 4 * nLength / 5 + int (dbl_rand () * nLength / 5);
-DirectedRandomVector (vDir, vParentDir, I2X (875) / 1000, I2X (925) / 1000);
+DirectedRandomVector (vDir, vParentDir, I2X (85) / 100, I2X (95) / 100);
 *vEnd = *vPos + *vDir * nLength;
 return nLength;
 }
@@ -240,26 +240,25 @@ if (m_nAmplitude < 0)
 	m_nAmplitude = m_nLength / 6;
 Setup (true);
 if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
-	int			h, l, n, nNode, nChildNodes;
-	double		nStep, j, scale;
+	int			nNode, nBranches, nChildNodes;
+	double		nProb;
 
-	nStep = double (m_nNodes) / double (m_nChildren);
-	for (h = m_nNodes - int (nStep), j = nStep / 2; j < h; j += nStep) {
-		nNode = int (j) + 2 - d_rand () % 5;
-		if (nNode < 1)
-			nNode = int (j);
-		if (!(nChildNodes = m_nNodes - nNode))
-			continue;
-		nChildNodes = 3 * nChildNodes / 4 + rand () % (nChildNodes / 4);
-		scale = sqrt (double (nChildNodes) / double (m_nNodes));
-		l = int (m_nLength * scale + 0.5);
-		n = int (m_nSteps * scale + 0.5);
-		if (n == 0)
-			n = (m_nSteps < 0) ? -1 : 1;
-		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, int (m_nAmplitude * scale + 0.5), m_nAngle,
-													 nChildNodes, m_nChildren / 5, nDepth - 1, n, m_nSmoothe, m_bClamp, m_bGlow, m_bLight,
-													 m_nStyle, &m_color, this, nNode, nThread))
-			return false;
+	nProb = double (m_nChildren) / double (m_nNodes);
+	for (nNode = 1 + d_rand () % (m_nNodes / m_nChildren / 2), nBranches = 0; (nNode < m_nNodes) && (nBranches < m_nChildren); nNode++) {
+		if (dbl_rand () < nProb) {
+			nBranches++;
+			nChildNodes = m_nNodes - nNode;
+			nChildNodes = 4 * nChildNodes / 5 + rand () % (nChildNodes / 5);
+			double scale = sqrt (double (nChildNodes) / double (m_nNodes));
+			int l = int (m_nLength * scale + 0.5);
+			int n = int (m_nSteps * scale + 0.5);
+			if (n == 0)
+				n = (m_nSteps < 0) ? -1 : 1;
+			if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, int (m_nAmplitude * scale + 0.5), m_nAngle,
+														 nChildNodes, m_nChildren / 5, nDepth - 1, n, m_nSmoothe, m_bClamp, m_bGlow, m_bLight,
+														 m_nStyle, &m_color, this, nNode, nThread))
+				return false;
+			}
 		}
 	}
 return true;
