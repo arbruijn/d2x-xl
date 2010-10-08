@@ -80,9 +80,8 @@ class COglData {
 		float				zFar;
 		CFloatVector3	depthScale;
 		tScreenScale	screenScale;
-		CFBO				drawBuffers [3];
+		CFBO				drawBuffers [4];
 		CFBO*				drawBufferP;
-		CFBO				glowBuffer;
 		int				nPerPixelLights [9];
 		float				lightRads [8];
 		CFloatVector	lightPos [8];
@@ -118,6 +117,7 @@ class COglData {
 		COglData () { Initialize (); }
 		void Initialize (void);
 		inline CFBO* GetDrawBuffer (int nBuffer) { return drawBuffers + nBuffer; }
+		inline CFBO* GetGlowBuffer (int nBuffer) { return drawBuffers + nBuffer + 2; }
 };
 
 
@@ -442,7 +442,11 @@ class COGL {
 
 		int SelectDrawBuffer (int nBuffer);
 
+		inline int SelectGlowBuffer (int nBuffer) { return SelectDrawBuffer (nBuffer + 2); }
+
 		inline CFBO* DrawBuffer (int nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDrawBuffer (nBuffer); }
+
+		inline CFBO* GlowBuffer (int nBuffer) { return m_data.GetDrawBuffer (nBuffer + 2); }
 
 		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);

@@ -85,7 +85,7 @@ void CreateOmegaBlobs (short nFiringSeg, CFixVector *vMuzzle, CFixVector *vTarge
 
 if (IsMultiGame)
 	DeleteOldOmegaBlobs (parentObjP);
-omegaLightnings.Create (vTargetPos, parentObjP, targetObjP);
+omegaLightning.Create (vTargetPos, parentObjP, targetObjP);
 vGoal = *vTargetPos - *vMuzzle;
 xGoalDist = CFixVector::Normalize (vGoal);
 if (xGoalDist < MIN_OMEGA_BLOBS * MIN_OMEGA_DIST) {
@@ -182,19 +182,19 @@ void OmegaChargeFrame (void)
 	fix	xOldOmegaCharge;
 
 if (gameData.omega.xCharge [IsMultiGame] == MAX_OMEGA_CHARGE) {
-	omegaLightnings.Destroy (LOCALPLAYER.nObject);
+	omegaLightning.Destroy (LOCALPLAYER.nObject);
 	return;
 	}
 if (!(PlayerHasWeapon (OMEGA_INDEX, 0, -1, 0) & HAS_WEAPON_FLAG)) {
-	omegaLightnings.Destroy (LOCALPLAYER.nObject);
+	omegaLightning.Destroy (LOCALPLAYER.nObject);
 	return;
 	}
 if (gameStates.app.bPlayerIsDead) {
-	omegaLightnings.Destroy (LOCALPLAYER.nObject);
+	omegaLightning.Destroy (LOCALPLAYER.nObject);
 	return;
 	}
 if ((gameData.weapons.nPrimary == OMEGA_INDEX) && !gameData.omega.xCharge [IsMultiGame] && !LOCALPLAYER.Energy ()) {
-	omegaLightnings.Destroy (LOCALPLAYER.nObject);
+	omegaLightning.Destroy (LOCALPLAYER.nObject);
 	gameData.weapons.nPrimary--;
 	AutoSelectWeapon (0, 1);
 	}
@@ -203,7 +203,7 @@ if ((gameData.omega.nLastFireFrame == gameData.app.nFrameCount) ||
 	 (gameData.omega.nLastFireFrame == gameData.app.nFrameCount - 1))
 	return;
 
-omegaLightnings.Destroy (LOCALPLAYER.nObject);
+omegaLightning.Destroy (LOCALPLAYER.nObject);
 if (LOCALPLAYER.Energy ()) {
 	xOldOmegaCharge = gameData.omega.xCharge [IsMultiGame];
 	gameData.omega.xCharge [IsMultiGame] += (fix) (gameData.time.xFrame / OMEGA_CHARGE_SCALE / gameStates.gameplay.slowmo [0].fSpeed);
@@ -234,7 +234,7 @@ if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 	if (((d_rand () > parentObjP->GunDamage ()) || (gameData.omega.xCharge [IsMultiGame] < MIN_OMEGA_CHARGE)) &&
 		 (!gameData.omega.xCharge [IsMultiGame] || gameData.multiplayer.players [nPlayer].energy)) {
 		ReleaseObject (OBJ_IDX (weaponObjP));
-		omegaLightnings.Destroy (LOCALPLAYER.nObject);
+		omegaLightning.Destroy (LOCALPLAYER.nObject);
 		return;
 		}
 	gameData.omega.xCharge [IsMultiGame] -= gameData.time.xFrame;
@@ -268,7 +268,7 @@ else
 nParentSeg = bSpectate ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment;
 
 if (0 > (nFiringSeg = FindSegByPos (*vMuzzle, nParentSeg, 1, 0))) {
-	omegaLightnings.Destroy (OBJ_IDX (parentObjP));
+	omegaLightning.Destroy (OBJ_IDX (parentObjP));
 	return;
 	}
 //	Play sound.

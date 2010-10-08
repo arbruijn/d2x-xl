@@ -797,7 +797,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		else if ((id == ROBOT_BLUE_ENERGY_ID) || (id == ROBOT_WHITE_ENERGY_ID) || (id == ROBOT_PHASE_ENERGY_ID))
 			nScale = 2;
 		else if (bOmega)
-			nScale = omegaLightnings.Exist () ? 2.0f : 1.0f;
+			nScale = omegaLightning.Exist () ? 2.0f : 1.0f;
 		else
 			nScale = 1;
 		c.alpha = 0.1f + nScale / 10;

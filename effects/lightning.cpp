@@ -240,24 +240,26 @@ if (m_nAmplitude < 0)
 	m_nAmplitude = m_nLength / 6;
 Setup (true);
 if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
-	int			nNode, nBranches, nChildNodes;
-	double		nProb;
-
-	nProb = double (m_nChildren) / double (m_nNodes);
-	for (nNode = 1 + rand () % (m_nNodes / m_nChildren / 2), nBranches = 0; (nNode < m_nNodes) && (nBranches < m_nChildren); nNode++) {
+	int nBranches = 0;
+	double nProb = double (m_nChildren) / double (m_nNodes);
+	int nOffset = m_nNodes / m_nChildren / 2;
+	for (int nNode = 1 + rand () % nOffset; (nNode < m_nNodes - nOffset) && (nBranches < m_nChildren); nNode++) {
 		if (dbl_rand () <= nProb) {
 			nBranches++;
-			nChildNodes = m_nNodes - nNode;
-			nChildNodes = 4 * nChildNodes / 5 + rand () % (nChildNodes / 5);
-			double scale = sqrt (double (nChildNodes) / double (m_nNodes));
-			int l = int (m_nLength * scale + 0.5);
-			int n = int (m_nSteps * scale + 0.5);
-			if (n == 0)
-				n = (m_nSteps < 0) ? -1 : 1;
-			if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, int (m_nAmplitude * scale + 0.5), m_nAngle,
-														 nChildNodes, m_nChildren / 5, nDepth - 1, n, m_nSmoothe, m_bClamp, m_bGlow, m_bLight,
-														 m_nStyle, &m_color, this, nNode, nThread))
-				return false;
+			int nChildNodes = m_nNodes - nNode;
+			if (nChildNodes > 1) {
+				int h = 4 * nChildNodes / 5;
+				nChildNodes = h + rand () % (nChildNodes - h);
+				double scale = sqrt (double (nChildNodes) / double (m_nNodes));
+				int l = int (m_nLength * scale + 0.5);
+				int n = int (m_nSteps * scale + 0.5);
+				if (n == 0)
+					n = (m_nSteps < 0) ? -1 : 1;
+				if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, int (m_nAmplitude * scale + 0.5), m_nAngle,
+															 nChildNodes, m_nChildren / 5, nDepth - 1, n, m_nSmoothe, m_bClamp, m_bGlow, m_bLight,
+															 m_nStyle, &m_color, this, nNode, nThread))
+					return false;
+				}
 			}
 		}
 	}

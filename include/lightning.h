@@ -287,9 +287,12 @@ class COmegaLightning {
 		int							m_nHandles;
 
 	public:
-		COmegaLightning () { m_nHandles = 0; };
+		COmegaLightning () : m_nHandles (0) { Init (); }
 		~COmegaLightning () {};
-		void Init (void) { m_nHandles = 0; };
+		void Init (void) { 
+			m_nHandles = 0; 
+			memset (m_handles, 0xFF, sizeof (m_handles));
+			};
 		int Create (CFixVector *vTargetPos, CObject *parentObjP, CObject *targetObjP);
 		int Update (CObject *parentObjP, CObject *targetObjP, CFixVector* vTargetPos = NULL);
 		void Destroy (short nObject);
@@ -301,7 +304,7 @@ class COmegaLightning {
 		CFixVector *GetGunPoint (CObject *objP, CFixVector *vMuzzle);
 };
 
-extern COmegaLightning	omegaLightnings;
+extern COmegaLightning	omegaLightning;
 
 //------------------------------------------------------------------------------
 

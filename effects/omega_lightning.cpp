@@ -27,7 +27,7 @@
 #	include "tactile.h"
 #endif
 
-COmegaLightning	omegaLightnings;
+COmegaLightning	omegaLightning;
 
 // ---------------------------------------------------------------------------------
 
@@ -45,8 +45,13 @@ return -1;
 
 void COmegaLightning::Delete (short nHandle)
 {
-if (m_nHandles) {
-	lightningManager.Destroy (lightningManager.m_emitters + m_handles [nHandle].nLightning, NULL);
+if (m_nHandles > 0) {
+	if (m_handles [nHandle].nLightning >= 0)
+		lightningManager.Destroy (lightningManager.m_emitters + m_handles [nHandle].nLightning, NULL);
+#if DBG
+	else
+		m_handles [nHandle].nLightning = -1;
+#endif
 	if (nHandle < --m_nHandles)
 		m_handles [nHandle] = m_handles [m_nHandles];
 	memset (m_handles + m_nHandles, 0xff, sizeof (tOmegaLightningHandles));
@@ -60,7 +65,7 @@ void COmegaLightning::Destroy (short nObject)
 	int	nHandle;
 
 if (nObject < 0) {
-	for (nHandle = m_nHandles; nHandle; )
+	for (nHandle = m_nHandles; nHandle > 0; )
 		Delete (--nHandle);
 	}
 else {
@@ -169,7 +174,7 @@ else {
 
 	Destroy (nObject);
 	GetGunPoint (parentObjP, &vMuzzle);
-	handleP = m_handles + m_nHandles++;
+	handleP = m_handles + m_nHandles;
 	handleP->nParentObj = nObject;
 	handleP->nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;
 	vTarget = targetObjP ? &targetObjP->info.position.vPos : vTargetPos;
@@ -178,13 +183,30 @@ else {
 #endif
 	handleP->nLightning =
 		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
-										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (3), 0, 0, 250, 3, 1, 3, 1, 1,
+										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4), 0, 0, 250, 0, 1, 3, 1, 1,
 #if OMEGA_PLASMA
 										 -((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
 #else
 										 -1,
 #endif
 										 1, 1, gameOpts->render.lightning.nStyle, &color);
+	if (handleP->nLightning >= 0)
+		m_nHandles++;
+#if DBG
+	else {
+		handleP->nLightning =
+			lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
+											 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4), 0, 0, 250, 0, 1, 3, 1, 1,
+	#if OMEGA_PLASMA
+											 -((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
+	#else
+											 -1,
+	#endif
+											 1, 1, gameOpts->render.lightning.nStyle, &color);
+		if (handleP->nLightning >= 0)
+			m_nHandles++;
+		}
+#endif
 	}
 return (handleP->nLightning >= 0);
 }

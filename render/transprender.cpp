@@ -22,6 +22,7 @@
 #include "lightmap.h"
 #include "lightning.h"
 #include "sphere.h"
+#include "blur.h"
 #include "glare.h"
 #include "automap.h"
 #include "transprender.h"
@@ -1002,8 +1003,11 @@ void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 {
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
-if (item->nType == riSphereShield)
+if (item->nType == riSphereShield) {
+	ogl.SelectDrawBuffer (2); // glow
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->bAdditive, item->nSize);
+	blurRenderer.Render ();
+	}
 else if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 shaderManager.Deploy (-1);
@@ -1051,7 +1055,9 @@ if (m_data.nPrevType != m_data.nCurType) {
 	ogl.ResetClientStates ();
 	shaderManager.Deploy (-1);
 	}
+ogl.SelectDrawBuffer (2); // glow
 item->lightning->Render (item->nDepth, 0);
+blurRenderer.Render ();
 nRendered++;
 ResetBitmaps ();
 }

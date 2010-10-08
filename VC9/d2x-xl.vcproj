@@ -6497,6 +6497,10 @@
 					Name="Source Files"
 					>
 					<File
+						RelativePath="..\effects\blur.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\effects\fireball.cpp"
 						>
 					</File>
@@ -6584,6 +6588,10 @@
 				<Filter
 					Name="Header Files"
 					>
+					<File
+						RelativePath="..\effects\blur.h"
+						>
+					</File>
 					<File
 						RelativePath="..\include\fireball.h"
 						>
@@ -8925,6 +8933,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\ogl\ogl_blur.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\ogl\ogl_buffers.cpp"
 						>
 					</File>
@@ -10736,11 +10748,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

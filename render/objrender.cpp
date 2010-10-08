@@ -312,7 +312,7 @@ void DrawObjectBitmap (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf
 	fix			xSize;
 	float			fScale;
 
-if ((nType == OBJ_WEAPON) && (objP->info.nId == OMEGA_ID) && omegaLightnings.Exist ())
+if ((nType == OBJ_WEAPON) && (objP->info.nId == OMEGA_ID) && omegaLightning.Exist ())
 	return;
 #if DBG
 if ((nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->info.nId == nDbgObjId)))

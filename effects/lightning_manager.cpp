@@ -497,7 +497,7 @@ if (m_bDestroy) {
 	}
 else {
 	Update ();
-	omegaLightnings.Update (NULL, NULL);
+	omegaLightning.Update (NULL, NULL);
 	StaticFrame ();
 	Cleanup ();
 	}

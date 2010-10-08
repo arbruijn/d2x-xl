@@ -180,6 +180,31 @@ if (!gameStates.menus.nInMenu || bForce) {
 
 //------------------------------------------------------------------------------
 
+void COGL::CreateGlowBuffer (void)
+{
+if (gameStates.render.bRenderIndirect && m_states.bRender2TextureOk && !GlowBuffer ()->Handle ()) {
+	PrintLog ("creating glow buffer\n");
+	GlowBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, 0);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::DestroyGlowBuffer (void)
+{
+	static int bSemaphore = 0;
+
+if (bSemaphore)
+	return;
+bSemaphore++;
+if (m_states.bRender2TextureOk && GlowBuffer () && GlowBuffer ()->Handle ()) {
+	GlowwBuffer ()->Destroy ();
+	}
+bSemaphore--;
+}
+
+//------------------------------------------------------------------------------
+
 void COGL::CreateDrawBuffer (void)
 {
 #if FBO_DRAW_BUFFER
