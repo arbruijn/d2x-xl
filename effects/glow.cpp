@@ -8,38 +8,35 @@
 CGlowRenderer glowRenderer;
 
 //------------------------------------------------------------------------------
-// 7x1 gaussian blur fragment shader
 
 int hBlurShader = -1;
 
 const char *blurFS = 
 	"uniform sampler2D glowSource;\r\n" \
-	"uniform float scale; // render target width\r\n" \
+	"uniform float scale; // render target width/height\r\n" \
 	"uniform int direction;\r\n" \
 	"float offset[3] = float[](0.0, 1.3846153846, 3.2307692308);\r\n" \
 	"float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
 	"void main() {\r\n" \
-	"vec3 tc = vec3(1.0, 0.0, 0.0);\r\n" \
 	"vec2 uv = gl_TexCoord[0].xy;\r\n" \
-	"tc = texture2D(glowSource, uv).rgb * weight[0];\r\n" \
-	"float h = scale * 2.0;\r\n" \
+	"vec3 tc = texture2D(glowSource, uv).rgb * weight[0];\r\n" \
 	"if (direction == 0) {\r\n" \
-	"   vec2 v = vec2 (0.0, offset[1]*h);\r\n" \
+	"   vec2 v = vec2 (0.0, offset[1]*scale);\r\n" \
 	"   tc += texture2D(glowSource, uv + v).rgb * weight[1];\r\n" \
 	"   tc += texture2D(glowSource, uv - v).rgb * weight[1];\r\n" \
-	"   v = vec2 (0.0, offset[2]*h);\r\n" \
+	"   v = vec2 (0.0, offset[2]*scale);\r\n" \
 	"   tc += texture2D(glowSource, uv + v).rgb * weight[2];\r\n" \
 	"   tc += texture2D(glowSource, uv - v).rgb * weight[2];\r\n" \
 	"  }\r\n" \
 	"else {\r\n" \
-	"   vec2 v = vec2 (offset[1]*h, 0.0);\r\n" \
+	"   vec2 v = vec2 (offset[1]*scale, 0.0);\r\n" \
 	"   tc += texture2D(glowSource, uv + v).rgb * weight[1];\r\n" \
 	"   tc += texture2D(glowSource, uv - v).rgb * weight[1];\r\n" \
-	"   v = vec2 (offset[2]*h, 0.0);\r\n" \
+	"   v = vec2 (offset[2]*scale, 0.0);\r\n" \
 	"   tc += texture2D(glowSource, uv + v).rgb * weight[2];\r\n" \
 	"   tc += texture2D(glowSource, uv - v).rgb * weight[2];\r\n" \
 	"   }\r\n" \
-	"gl_FragColor = vec4(tc, 1.0);\r\n" \
+	"gl_FragColor = vec4(tc, 1.0) * 2.0;\r\n" \
 	"}\r\n"
 	;
 
@@ -54,7 +51,7 @@ const char *blurVS =
 
 bool CGlowRenderer::LoadShader (int const direction)
 {
-	float fScale [2] = {ogl.m_data.screenScale.y, ogl.m_data.screenScale.x};
+	float fScale [2] = {ogl.m_data.screenScale.y * 2.0f, ogl.m_data.screenScale.x * 2.0f};
 
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader));
 if (!m_shaderProg)
@@ -92,18 +89,18 @@ return (hBlurShader >= 0) && (shaderManager.Current () == hBlurShader);
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Render (int const direction, bool bBlur)
+void CGlowRenderer::Render (int const source, int const direction)
 {
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-if (bBlur)
+if (direction >= 0)
 	LoadShader (direction);
 #if 0
 ogl.SetTexturing (false);
 #else
-ogl.BindTexture (ogl.BlurBuffer (direction)->ColorBuffer ());
+ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer ());
 #endif
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
@@ -131,17 +128,31 @@ ogl.SetDepthWrite (false);
 #if BLUR
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.SelectBlurBuffer (0); 
-Render (-1, true); // Glow -> Blur 0
+Render (-1, 0); // Glow -> Blur 0
 ogl.SelectBlurBuffer (1); 
-Render (0, true); // Blur 0 -> Blur 1
+Render (0, 1); // Blur 0 -> Blur 1
+#	if BLUR > 1
+ogl.SelectBlurBuffer (0); 
+Render (1, 0); // Blur 1 -> Blur 0
+ogl.SelectBlurBuffer (1); 
+Render (0, 1); // Blur 0 -> Blur 1
+#		if BLUR > 2
+ogl.SelectBlurBuffer (0); 
+Render (1, 0); // Blur 1 -> Blur 0
+ogl.SelectBlurBuffer (1); 
+Render (0, 1); // Blur 0 -> Blur 1
+#		endif
+#	endif
 shaderManager.Deploy (-1);
 #endif
 ogl.ChooseDrawBuffer ();
+ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
-//Render (-1); // Glow -> back buffer
 #if BLUR
-Render (0); // Blur 0 -> back buffer
+Render (1); // Blur 0 -> back buffer
 #endif
+//ogl.SetBlendMode (GL_ONE, GL_ONE);
+//Render (-1); // Glow -> back buffer
 
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);

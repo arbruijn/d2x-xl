@@ -127,16 +127,16 @@ else {
 		if (Available () < 0)
 			return 0;
 		}
-	//else 
+	else 
 #endif
-		//{
-		//// depth buffer
-		//m_info.hStencilBuffer = 0;
-		//glGenRenderbuffersEXT (1, &m_info.hDepthBuffer);
-		//glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
-		//glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, m_info.nWidth, m_info.nHeight);
-		//glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
-		//}
+		{
+		// depth buffer
+		m_info.hStencilBuffer = 0;
+		glGenRenderbuffersEXT (1, &m_info.hDepthBuffer);
+		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
+		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, m_info.nWidth, m_info.nHeight);
+		glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
+		}
 	if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
 		return 0;
 	if (Available () < 0)
