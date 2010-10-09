@@ -140,7 +140,7 @@ ogl.BindTexture (0);
 #define START_RAD 3.0f
 #define RAD_INCR 3.0f
 
-void CGlowRenderer::Flush (bool bReplace)
+void CGlowRenderer::End (bool bReplace)
 {
 glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
@@ -149,11 +149,6 @@ glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
 glLoadIdentity ();//clear matrix
-
-int x = ogl.m_states.nLastX;
-int y = ogl.m_states.nLastY;
-int w = ogl.m_states.nLastW;
-int h = ogl.m_states.nLastH;
 
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetDepthWrite (false);
@@ -189,7 +184,7 @@ Render (1); // Glow -> back buffer
 if (!bReplace)
 	Render (-1); // render the unblurred stuff on top of the blur
 
-ogl.Viewport (x, y, w, h);
+ogl.Viewport (m_x, m_y, m_w, m_h);
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);
 glPopMatrix ();
@@ -216,28 +211,56 @@ else {
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::SetExtent (CFloatVector* vertexP, int nVerts)
+void CGlowRenderer::Activate (void)
+{
+ogl.SelectGlowBuffer ();
+m_x = ogl.m_states.nLastX;
+m_y = ogl.m_states.nLastY;
+m_w = ogl.m_states.nLastW;
+m_h = ogl.m_states.nLastH;
+ogl.Viewport ((GLint) (m_vMin [X]), (GLint) (m_vMin [Y]), (GLint) (m_vMax [X] - m_vMin [X]) + 1, (GLint) (m_vMax [Y] - m_vMin [Y]) + 1);
+glClear (GL_COLOR_BUFFER_BIT);
+}
+
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::Begin (CFloatVector* vertexP, int nVerts)
 {
 CFloatVector vMin, vMax;
 vMin.Create (1e30f, 1e30f, 1e30f);
 vMax.Create (-1e30f, -1e30f, -1e30f);
 
 for (; nVerts; nVerts--, vertexP++) {
-	if (vMin [X] > (*vertexP) [X])
-		vMin [X] = (*vertexP) [X];
-	if (vMin [Y] > (*vertexP) [Y])
-		vMin [Y] = (*vertexP) [Y];
-	if (vMin [Z] > (*vertexP) [Z])
-		vMin [Z] = (*vertexP) [Z];
-	if (vMax [X] < (*vertexP) [X])
-		vMax [X] = (*vertexP) [X];
-	if (vMax [Y] < (*vertexP) [Y])
-		vMax [Y] = (*vertexP) [Y];
-	if (vMax [Z] < (*vertexP) [Z])
-		vMax [Z] = (*vertexP) [Z];
+	CFloatVector v = *vertexP;
+	if (vMin [X] > v [X])
+		vMin [X] = v [X];
+	if (vMin [Y] > v [Y])
+		vMin [Y] = v [Y];
+	if (vMin [Z] > v [Z])
+		vMin [Z] = v [Z];
+	if (vMax [X] < v [X])
+		vMax [X] = v [X];
+	if (vMax [Y] < v [Y])
+		vMax [Y] = v [Y];
+	if (vMax [Z] < v [Z])
+		vMax [Z] = v [Z];
 	}
 Project (vMin);
 Project (vMax);
+Activate ();
+}
+
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::Begin (CFloatVector* pos, float radius)
+{
+CFloatVector r;
+r.Create (radius, radius, radius);
+CFloatVector vMin = *pos - r;
+CFloatVector vMax = *pos + r;
+Project (vMin);
+Project (vMax);
+Activate ();
 }
 
 //------------------------------------------------------------------------------

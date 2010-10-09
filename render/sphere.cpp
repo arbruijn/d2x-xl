@@ -780,10 +780,12 @@ ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 CFixVector vPos;
 transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
+glowRenderer.Begin (vPos, xScale);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
 ogl.ResetTransform (0);
 ogl.SetTransform (0);
+glowRenderer.End ();
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
 #endif //RINGED_SPHERE
