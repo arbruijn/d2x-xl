@@ -176,8 +176,8 @@ Render (0, 1, radius); // Blur 0 -> Blur 1
 #endif
 ogl.ChooseDrawBuffer ();
 ogl.SetDepthMode (GL_LEQUAL);
-ogl.SetBlendMode (GL_ONE, GL_ZERO);
-//ogl.SetBlendMode (2);
+//ogl.SetBlendMode (GL_ONE, GL_ZERO);
+ogl.SetBlendMode (2);
 //Render (-1); // Blur 0 -> back buffer
 #if BLUR
 //ogl.SetBlendMode (2);

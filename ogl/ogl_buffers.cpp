@@ -310,7 +310,7 @@ void COGL::SelectGlowBuffer (void)
 { 
 SelectDrawBuffer (2);
 SetDrawBuffer (GL_BACK, 1);
-glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+glClear (GL_COLOR_BUFFER_BIT/* | GL_DEPTH_BUFFER_BIT*/);
 }
 
 //------------------------------------------------------------------------------
