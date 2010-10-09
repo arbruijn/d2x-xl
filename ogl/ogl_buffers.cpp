@@ -421,11 +421,11 @@ return hBuffer;
 
 // -----------------------------------------------------------------------------------
 
-void COGL::DestroyDepthTexture (void)
+void COGL::DestroyDepthTexture (int bFBO)
 {
-if (ogl.m_states.hDepthBuffer) {
-	ogl.DeleteTextures (1, &ogl.m_states.hDepthBuffer);
-	ogl.m_states.hDepthBuffer = 0;
+if (ogl.m_states.hDepthBuffer [bFBO]) {
+	ogl.DeleteTextures (1, &ogl.m_states.hDepthBuffer [bFBO]);
+	ogl.m_states.hDepthBuffer [bFBO] = 0;
 	}
 }
 
@@ -441,36 +441,25 @@ if (nError)
 #endif
 SelectTMU (GL_TEXTURE1);
 SetTexturing (true);
-if (!m_states.hDepthBuffer)
-	m_states.bHaveDepthBuffer = 0;
-if (m_states.hDepthBuffer || (m_states.hDepthBuffer = CreateDepthTexture (-1, bFBO, bFBO))) {
-	BindTexture (m_states.hDepthBuffer);
-	if (!m_states.bHaveDepthBuffer) {
+if (!m_states.hDepthBuffer [bFBO])
+	m_states.bHaveDepthBuffer [bFBO] = 0;
+if (m_states.hDepthBuffer [bFBO] || (m_states.hDepthBuffer [bFBO] = CreateDepthTexture (-1, bFBO, bFBO))) {
+	BindTexture (m_states.hDepthBuffer [bFBO]);
+	if (!m_states.bHaveDepthBuffer [bFBO]) {
 		if (ogl.Enhance3D () < 0)
 			ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 		else
 			ogl.SetReadBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 		if ((nError = glGetError ())) {
-			DestroyDepthTexture ();
+			DestroyDepthTexture (bFBO);
 			return m_states.hDepthBuffer = 0;
 			}
-		m_states.bHaveDepthBuffer = 1;
+		m_states.bHaveDepthBuffer [bFBO] = 1;
 		gameData.render.nStateChanges++;
 		}
 	}
-return m_states.hDepthBuffer;
-}
-
-// -----------------------------------------------------------------------------------
-
-void COGL::BindDepthTexture (int nTMU)
-{
-if (m_states.hDepthBuffer) {
-	SelectTMU (nTMU);
-	SetTexturing (true);
-	BindTexture (m_states.hDepthBuffer);
-	}
+return m_states.hDepthBuffer [bFBO];
 }
 
 // -----------------------------------------------------------------------------------

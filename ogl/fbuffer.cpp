@@ -121,7 +121,7 @@ else {
 	// depth + stencil buffer
 	m_info.hDepthBuffer = 0;
 	if (((nType == 1) && (m_info.hDepthBuffer = ogl.CreateDepthTexture (0, 1, 1))) ||
-		 ((nType == -1) && (m_info.hDepthBuffer = ogl.m_states.hDepthBuffer))) {
+		 ((nType == -1) && (m_info.hDepthBuffer = ogl.m_states.hDepthBuffer [1]))) {
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hDepthBuffer, 0);
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hStencilBuffer = m_info.hDepthBuffer, 0);
 		if (Available () < 0)

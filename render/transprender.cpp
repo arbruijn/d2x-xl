@@ -1227,7 +1227,7 @@ m_data.bHaveParticles = particleImageManager.LoadAll ();
 ogl.SetBlendMode (0);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetFaceCulling (true);
-ogl.CopyDepthTexture ();
+ogl.CopyDepthTexture (1);
 ogl.SelectGlowBuffer (); // glow
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;

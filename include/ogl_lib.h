@@ -185,7 +185,7 @@ class COglStates {
 		int	bOcclusionQuery;
 		int	bDepthBlending;
 		int	bUseDepthBlending;
-		int	bHaveDepthBuffer;
+		int	bHaveDepthBuffer [2];
 		int	bHaveColorBuffer;
 		int	bHaveBlur;
 		int	nDrawBuffer;
@@ -198,7 +198,7 @@ class COglStates {
 	#endif
 		float	fAlpha;
 		float	fLightRange;
-		GLuint hDepthBuffer;
+		GLuint hDepthBuffer [2];
 		GLuint hColorBuffer;
 
 	public:
@@ -270,9 +270,8 @@ class COGL {
 		void SetScreenMode (void);
 		void GetVerInfo (void);
 		GLuint CreateDepthTexture (int nTMU, int bFBO, int bStencil = 0);
-		void DestroyDepthTexture (void);
+		void DestroyDepthTexture (int bFBO);
 		GLuint CopyDepthTexture (int bFBO = 0);
-		void BindDepthTexture (int nTMU = GL_TEXTURE1);
 		GLuint CreateColorTexture (int nTMU, int bFBO);
 		void DestroyColorTexture (void);
 		GLuint CopyColorTexture (void);
