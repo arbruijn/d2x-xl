@@ -36,7 +36,7 @@ const char *blurFS =
 	"   tc += texture2D(glowSource, uv + v).rgb * weight[2];\r\n" \
 	"   tc += texture2D(glowSource, uv - v).rgb * weight[2];\r\n" \
 	"   }\r\n" \
-	"gl_FragColor = vec4(tc, 1.0) * 2.0;\r\n" \
+	"gl_FragColor = vec4(tc, 1.0) / (weight [0] + weight [1] + weight [2]);\r\n" \
 	"}\r\n"
 	;
 
@@ -51,7 +51,7 @@ const char *blurVS =
 
 bool CGlowRenderer::LoadShader (int const direction)
 {
-	float fScale [2] = {ogl.m_data.screenScale.y * 2.0f, ogl.m_data.screenScale.x * 2.0f};
+	float fScale [2] = {ogl.m_data.screenScale.y * 3.0f, ogl.m_data.screenScale.x * 3.0f};
 
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader));
 if (!m_shaderProg)
@@ -111,7 +111,7 @@ ogl.BindTexture (0);
 
 //------------------------------------------------------------------------------
 
-#define BLUR 1
+#define BLUR 2
 
 void CGlowRenderer::Flush (void)
 {
@@ -147,12 +147,12 @@ shaderManager.Deploy (-1);
 #endif
 ogl.ChooseDrawBuffer ();
 ogl.SetDepthMode (GL_LEQUAL);
-ogl.SetBlendMode (GL_ONE, GL_ZERO);
 #if BLUR
+ogl.SetBlendMode (GL_ONE, GL_ZERO);
 Render (1); // Blur 0 -> back buffer
 #endif
-//ogl.SetBlendMode (GL_ONE, GL_ONE);
-//Render (-1); // Glow -> back buffer
+ogl.SetBlendMode (2);
+Render (-1); // Glow -> back buffer
 
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);
