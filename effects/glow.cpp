@@ -134,7 +134,7 @@ glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
 glLoadIdentity ();//clear matrix
 
-ogl.SetDepthMode (GL_ALWAYS);
+//ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetDepthWrite (false);
 Blur (0);
 Blur (1);
