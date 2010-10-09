@@ -15,7 +15,7 @@ class CGlowRenderer {
 
 	private:
 		bool LoadShader (int const direction);
-		void Render (int const direction);
+		void Render (int const direction, bool bBlur = false);
 		bool Blur (int const direction);
 	};
 

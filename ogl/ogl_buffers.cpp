@@ -183,10 +183,14 @@ if (!gameStates.menus.nInMenu || bForce) {
 void COGL::CreateDrawBuffer (int nType)
 {
 #if FBO_DRAW_BUFFER
-if ((gameStates.render.bRenderIndirect || (nType < 0)) && m_states.bRender2TextureOk && !DrawBuffer ()->Handle ()) {
-	PrintLog ("creating draw buffer\n");
-	DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType);
-	}
+if (!m_states.bRender2TextureOk)
+	return;
+if (!gameStates.render.bRenderIndirect && (nType >= 0))
+	return;
+if (DrawBuffer ()->Handle ())
+	return;
+PrintLog ("creating draw buffer\n");
+DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType);
 #endif
 }
 
