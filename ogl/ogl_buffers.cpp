@@ -310,7 +310,7 @@ void COGL::SelectGlowBuffer (void)
 { 
 SelectDrawBuffer (2);
 SetDrawBuffer (GL_BACK, 1);
-glClear (GL_COLOR_BUFFER_BIT);
+glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 //------------------------------------------------------------------------------
@@ -460,6 +460,17 @@ if (m_states.hDepthBuffer || (m_states.hDepthBuffer = CreateDepthTexture (-1, bF
 		}
 	}
 return m_states.hDepthBuffer;
+}
+
+// -----------------------------------------------------------------------------------
+
+void COGL::BindDepthTexture (int nTMU)
+{
+if (m_states.hDepthBuffer) {
+	SelectTMU (nTMU);
+	SetTexturing (true);
+	BindTexture (m_states.hDepthBuffer);
+	}
 }
 
 // -----------------------------------------------------------------------------------

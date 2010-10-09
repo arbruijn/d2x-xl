@@ -746,7 +746,11 @@ int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float ySc
 {
 	float	fScale = 1.0f;
 	int	bTextured = 0;
+#if DBG
+	int	bEffect = 0;
+#else
 	int	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
+#endif
 
 #if !RINGED_SPHERE
 if (m_nFaceNodes == 3)

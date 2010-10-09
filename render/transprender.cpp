@@ -1290,6 +1290,7 @@ if (bCleanup) {
 	m_data.nFreeItems = ITEM_BUFFER_SIZE;
 	}
 glowRenderer.Flush ();
+ogl.GlowBuffer ()->Destroy ();
 PROF_END(ptTranspPolys)
 nAdded = nRendered = 0;
 #endif

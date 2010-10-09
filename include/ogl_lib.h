@@ -272,6 +272,7 @@ class COGL {
 		GLuint CreateDepthTexture (int nTMU, int bFBO, int bStencil = 0);
 		void DestroyDepthTexture (void);
 		GLuint CopyDepthTexture (int bFBO = 0);
+		void BindDepthTexture (int nTMU = GL_TEXTURE1);
 		GLuint CreateColorTexture (int nTMU, int bFBO);
 		void DestroyColorTexture (void);
 		GLuint CopyColorTexture (void);
@@ -449,7 +450,7 @@ class COGL {
 
 		inline CFBO* DrawBuffer (int nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDrawBuffer (nBuffer); }
 
-		inline CFBO* GlowBuffer (int nBuffer) { return m_data.GetDrawBuffer (nBuffer + 2); }
+		inline CFBO* GlowBuffer () { return m_data.GetDrawBuffer (2); }
 
 		inline CFBO* BlurBuffer (int nBuffer) { return m_data.GetDrawBuffer (nBuffer + 3); }
 

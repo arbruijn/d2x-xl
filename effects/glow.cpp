@@ -36,7 +36,7 @@ const char *blurFS =
 	"   tc += texture2D(glowSource, uv + v).rgb * weight[2];\r\n" \
 	"   tc += texture2D(glowSource, uv - v).rgb * weight[2];\r\n" \
 	"   }\r\n" \
-	"gl_FragColor = vec4(tc, 1.0) / (weight [0] + weight [1] + weight [2]);\r\n" \
+	"gl_FragColor = vec4(tc, 1.0) /*/ (weight [0] + weight [1] + weight [2])*/;\r\n" \
 	"}\r\n"
 	;
 
@@ -49,9 +49,9 @@ const char *blurVS =
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::LoadShader (int const direction)
+bool CGlowRenderer::LoadShader (int const direction, float const radius)
 {
-	float fScale [2] = {ogl.m_data.screenScale.y * 3.0f, ogl.m_data.screenScale.x * 3.0f};
+	float fScale [2] = {ogl.m_data.screenScale.y * radius, ogl.m_data.screenScale.x * radius};
 
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader));
 if (!m_shaderProg)
@@ -89,19 +89,17 @@ return (hBlurShader >= 0) && (shaderManager.Current () == hBlurShader);
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Render (int const source, int const direction)
+void CGlowRenderer::Render (int const source, int const direction, float const radius)
 {
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 if (direction >= 0)
-	LoadShader (direction);
-#if 0
-ogl.SetTexturing (false);
-#else
+	LoadShader (direction, radius);
+else
+	shaderManager.Deploy (-1);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer ());
-#endif
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
 glColor3f (1,1,1);
@@ -111,7 +109,7 @@ ogl.BindTexture (0);
 
 //------------------------------------------------------------------------------
 
-#define BLUR 2
+#define BLUR 3
 
 void CGlowRenderer::Flush (void)
 {
@@ -128,31 +126,33 @@ ogl.SetDepthWrite (false);
 #if BLUR
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.SelectBlurBuffer (0); 
-Render (-1, 0); // Glow -> Blur 0
+float radius = 2.0f;
+Render (-1, 0, radius); // Glow -> Blur 0
 ogl.SelectBlurBuffer (1); 
-Render (0, 1); // Blur 0 -> Blur 1
+Render (0, 1, radius); // Blur 0 -> Blur 1
 #	if BLUR > 1
+radius += 1.0f;
 ogl.SelectBlurBuffer (0); 
-Render (1, 0); // Blur 1 -> Blur 0
+Render (1, 0, radius); // Blur 1 -> Blur 0
 ogl.SelectBlurBuffer (1); 
-Render (0, 1); // Blur 0 -> Blur 1
+Render (0, 1, radius); // Blur 0 -> Blur 1
 #		if BLUR > 2
+radius += 1.0f;
 ogl.SelectBlurBuffer (0); 
-Render (1, 0); // Blur 1 -> Blur 0
+Render (1, 0, radius); // Blur 1 -> Blur 0
 ogl.SelectBlurBuffer (1); 
-Render (0, 1); // Blur 0 -> Blur 1
+Render (0, 1, radius); // Blur 0 -> Blur 1
 #		endif
 #	endif
-shaderManager.Deploy (-1);
 #endif
 ogl.ChooseDrawBuffer ();
 ogl.SetDepthMode (GL_LEQUAL);
-#if BLUR
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
-Render (1); // Blur 0 -> back buffer
+//Render (-1); // Blur 0 -> back buffer
+#if BLUR
+//ogl.SetBlendMode (2);
+Render (1); // Glow -> back buffer
 #endif
-ogl.SetBlendMode (2);
-Render (-1); // Glow -> back buffer
 
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);

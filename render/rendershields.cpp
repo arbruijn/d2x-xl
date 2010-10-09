@@ -213,8 +213,10 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 			}
 		}
 #if !RENDER_HITBOX
+#	if DBG == 0
 	if (gameOpts->render.effects.bOnlyShieldHits && !gameData.multiplayer.bWasHit [i])
 		return;
+#	endif
 #endif
 	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
 		nColor = 2;

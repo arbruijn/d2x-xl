@@ -14,8 +14,8 @@ class CGlowRenderer {
 		CGlowRenderer () : m_shaderProg (0) {}
 
 	private:
-		bool LoadShader (int const direction);
-		void Render (int const source, int const direction = -1);
+		bool LoadShader (int const direction, float const radius);
+		void Render (int const source, int const direction = -1, float const radius = 1.0f);
 		bool Blur (int const direction);
 	};
 
