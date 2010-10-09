@@ -36,6 +36,7 @@ const char *blurFS =
 	"   tc += texture2D(glowSource, uv + v).rgb * weight[2];\r\n" \
 	"   tc += texture2D(glowSource, uv - v).rgb * weight[2];\r\n" \
 	"   }\r\n" \
+	"if (length (tc) > 0.0) tc = vec3 (1.0, 0.5, 0.0) * length (tc);\r\n" \
 	"gl_FragColor = vec4(tc, 1.0) /*/ (weight [0] + weight [1] + weight [2])*/;\r\n" \
 	"}\r\n"
 	;
@@ -148,11 +149,11 @@ Render (0, 1, radius); // Blur 0 -> Blur 1
 ogl.ChooseDrawBuffer ();
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
-//Render (-1); // Blur 0 -> back buffer
 #if BLUR
-//ogl.SetBlendMode (2);
 Render (1); // Glow -> back buffer
 #endif
+ogl.SetBlendMode (2);
+Render (-1); // Blur 0 -> back buffer
 
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);
