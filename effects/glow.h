@@ -15,6 +15,7 @@ class CGlowRenderer {
 		void End (bool bReplace = true);
 		void Begin (CFloatVector* vertexP, int nVerts);
 		void Begin (CFloatVector* pos, float radius);
+		void Begin (CFloatVector* pos, float width, float height);
 		CGlowRenderer () : m_shaderProg (0) {}
 
 	private:

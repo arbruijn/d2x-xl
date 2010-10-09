@@ -20,6 +20,7 @@
 #include "renderthreads.h"
 #include "rendermine.h"
 #include "error.h"
+#include "glow.h"
 #include "light.h"
 #include "dynlight.h"
 #include "ogl_lib.h"
@@ -715,7 +716,7 @@ void CLightning::RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread)
 {
 if (!m_plasmaVerts.Buffer ())
 	return;
-
+glowRenderer.Begin (m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
 	tTexCoord2f*	texCoordP;
 	CFloatVector*	vertexP;
@@ -787,6 +788,7 @@ void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
 if (!m_coreVerts.Buffer ())
 	return;
+glowRenderer.Begin (m_coreVerts.Buffer (), m_nNodes);
 ogl.SetBlendMode (1);
 ogl.SetLineSmooth (true);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
@@ -877,6 +879,7 @@ if (bGlow)
 	RenderGlow (&color, nDepth, nThread);
 else
 	RenderCore (&color, nDepth, nThread);
+glowRenderer.End ();
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif

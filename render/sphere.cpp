@@ -14,6 +14,7 @@
 #include "maths.h"
 #include "u_mem.h"
 #include "glare.h"
+#include "glow.h"
 #include "ogl_lib.h"
 #include "ogl_shader.h"
 #include "objeffects.h"

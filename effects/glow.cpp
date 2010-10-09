@@ -252,15 +252,22 @@ Activate ();
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Begin (CFloatVector* pos, float radius)
+void CGlowRenderer::Begin (CFloatVector* pos, float width, float height)
 {
 CFloatVector r;
-r.Create (radius, radius, radius);
+r.Create (width, height, 0.0);
 CFloatVector vMin = *pos - r;
 CFloatVector vMax = *pos + r;
 Project (vMin);
 Project (vMax);
 Activate ();
+}
+
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::Begin (CFloatVector* pos, float radius)
+{
+Begin (pos, radius, radius);
 }
 
 //------------------------------------------------------------------------------
