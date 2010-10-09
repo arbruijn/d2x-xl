@@ -22,19 +22,22 @@ const char *blurFS =
 	"vec3 tc = vec3(1.0, 0.0, 0.0);\r\n" \
 	"vec2 uv = gl_TexCoord[0].xy;\r\n" \
 	"tc = texture2D(glowTex, uv).rgb * weight[0];\r\n" \
+	"float h = scale * 2.0;\r\n" \
 	"if (direction == 0) {\r\n" \
-	"  for (int i=1; i<3; i++) {\r\n" \
-	"    float h = offset[i]/scale;\r\n" \
-	"    tc += texture2D(glowTex, uv + vec2(0.0, h)).rgb * weight[i];\r\n" \
-	"    tc += texture2D(glowTex, uv - vec2(0.0, h)).rgb * weight[i];\r\n" \
-	"    }\r\n" \
+	"   vec2 v = vec2 (0.0, offset[1]*h);\r\n" \
+	"   tc += texture2D(glowTex, uv + v).rgb * weight[1];\r\n" \
+	"   tc += texture2D(glowTex, uv - v).rgb * weight[1];\r\n" \
+	"   v = vec2 (0.0, offset[2]*h);\r\n" \
+	"   tc += texture2D(glowTex, uv + v).rgb * weight[2];\r\n" \
+	"   tc += texture2D(glowTex, uv - v).rgb * weight[2];\r\n" \
 	"  }\r\n" \
 	"else {\r\n" \
-	"  for (int i=1; i<3; i++) {\r\n" \
-	"    float h = offset[i]/scale;\r\n" \
-	"    tc += texture2D(glowTex, uv + vec2(h, 0.0)).rgb * weight[i];\r\n" \
-	"    tc += texture2D(glowTex, uv - vec2(h, 0.0)).rgb * weight[i];\r\n" \
-	"    }\r\n" \
+	"   vec2 v = vec2 (offset[1]*h, 0.0);\r\n" \
+	"   tc += texture2D(glowTex, uv + v).rgb * weight[1];\r\n" \
+	"   tc += texture2D(glowTex, uv - v).rgb * weight[1];\r\n" \
+	"   v = vec2 (offset[2]*h, 0.0);\r\n" \
+	"   tc += texture2D(glowTex, uv + v).rgb * weight[2];\r\n" \
+	"   tc += texture2D(glowTex, uv - v).rgb * weight[2];\r\n" \
 	"   }\r\n" \
 	"gl_FragColor = vec4(tc, 1.0);\r\n" \
 	"}\r\n"
@@ -51,7 +54,7 @@ const char *blurVS =
 
 bool CGlowRenderer::LoadShader (int const direction)
 {
-	float fScale [2] = {screen.Height (), screen.Width ()};
+	float fScale [2] = {ogl.m_data.screenScale.y, ogl.m_data.screenScale.x};
 
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader));
 if (!m_shaderProg)
@@ -60,7 +63,7 @@ if (shaderManager.Rebuild (m_shaderProg))
 	;
 glUniform1i (glGetUniformLocation (m_shaderProg, "glowTex"), 0);
 glUniform1i (glGetUniformLocation (m_shaderProg, "direction"), direction);
-glUniform2fv (glGetUniformLocation (m_shaderProg, "scale"), 1, reinterpret_cast<GLfloat*> (&fScale [direction]));
+glUniform1f (glGetUniformLocation (m_shaderProg, "scale"), GLfloat (fScale [direction]));
 return true;
 }
 
@@ -103,7 +106,6 @@ ogl.BindTexture (ogl.DrawBuffer (2 + direction)->ColorBuffer ());
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
 glColor3f (1,1,1);
-ogl.SetDepthWrite (false);
 OglDrawArrays (GL_QUADS, 0, 4);
 ogl.BindTexture (0);
 }
@@ -113,8 +115,8 @@ ogl.BindTexture (0);
 bool CGlowRenderer::Blur (int const direction)
 {
 ogl.SelectGlowBuffer (!direction); // glow render target
-//if (!LoadShader (direction)) 
-//	return false;
+if (!LoadShader (direction)) 
+	return false;
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
 Draw (direction);
 return true;
@@ -132,16 +134,14 @@ glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
 glLoadIdentity ();//clear matrix
 
+ogl.SetDepthMode (GL_ALWAYS);
+ogl.SetDepthWrite (false);
 Blur (0);
-//Blur (1);
-//Blur (0);
-//Blur (1);
-//Blur (0);
-//Blur (1);
+Blur (1);
 shaderManager.Deploy (-1);
 ogl.ChooseDrawBuffer ();
-ogl.SetBlendMode (GL_ONE, GL_ONE);
-Draw (1);
+ogl.SetBlendMode (GL_ONE, GL_ZERO);
+Draw (0);
 
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);
