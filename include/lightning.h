@@ -102,6 +102,7 @@ class CLightning : public tLightning {
 		CArray<CFloatVector>		m_plasmaVerts;
 		CArray<tTexCoord2f>		m_plasmaTexCoord;
 		CArray<CFloatVector3>	m_coreVerts;
+		CFloatVector				m_vMin, m_vMax;
 
 	public:
 		CLightning () { m_parent = NULL, m_nodes = NULL, m_nNodes = 0; };
@@ -142,6 +143,7 @@ class CLightning : public tLightning {
 		void Draw (int nDepth, int nThread);
 		void Rotate (int nSteps);
 		void Scale (int nSteps, int nAmplitude);
+		void ComputeExtent (CFloatVector* vertexP);
 };
 
 //------------------------------------------------------------------------------

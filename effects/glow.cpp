@@ -140,7 +140,7 @@ ogl.BindTexture (0);
 #define START_RAD 3.0f
 #define RAD_INCR 3.0f
 
-void CGlowRenderer::Flush (void)
+void CGlowRenderer::Flush (bool bReplace)
 {
 glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
@@ -154,22 +154,22 @@ ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetDepthWrite (false);
 #if BLUR
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
-ogl.SelectBlurBuffer (0); 
 float radius = START_RAD;
+ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
 Render (-1, 0, radius); // Glow -> Blur 0
-ogl.SelectBlurBuffer (1); 
+ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
 Render (0, 1, radius); // Blur 0 -> Blur 1
 #	if BLUR > 1
 radius += RAD_INCR;
-ogl.SelectBlurBuffer (0); 
-Render (1, 0, radius); // Blur 1 -> Blur 0
-ogl.SelectBlurBuffer (1); 
+ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
+Render (-1, 0, radius); // Glow -> Blur 0
+ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
 Render (0, 1, radius); // Blur 0 -> Blur 1
 #		if BLUR > 2
 radius += RAD_INCR;
-ogl.SelectBlurBuffer (0); 
-Render (1, 0, radius); // Blur 1 -> Blur 0
-ogl.SelectBlurBuffer (1); 
+ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
+Render (-1, 0, radius); // Glow -> Blur 0
+ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
 Render (0, 1, radius); // Blur 0 -> Blur 1
 #		endif
 #	endif
@@ -178,15 +178,60 @@ ogl.ChooseDrawBuffer ();
 ogl.SetDepthMode (GL_LEQUAL);
 //ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.SetBlendMode (2);
-//Render (-1); // Blur 0 -> back buffer
 #if BLUR
-//ogl.SetBlendMode (2);
 Render (1); // Glow -> back buffer
 #endif
+if (!bReplace)
+	Render (-1); // render the unblurred stuff on top of the blur
 
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);
 glPopMatrix ();
+}
+
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::Project (CFloatVector& v)
+{
+g3sPoint p;
+CFixVector h;
+h.Assign (v);
+ubyte code = transformation.TransformAndEncode (p.p3_vec, h);
+if (code & CC_OFF_LEFT)
+	v [X] = 0.0f;
+else if (code & CC_OFF_RIGHT)
+	v [X] = screen.Width ();
+else {
+	G3ProjectPoint (&p);
+	v [X] = (float) p.p3_screen.x;
+	v [Y] = (float) p.p3_screen.y;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::SetExtent (CFloatVector* vertexP, int nVerts)
+{
+CFloatVector vMin, vMax;
+vMin.Create (1e30f, 1e30f, 1e30f);
+vMax.Create (-1e30f, -1e30f, -1e30f);
+
+for (; nVerts; nVerts--, vertexP++) {
+	if (vMin [X] > (*vertexP) [X])
+		vMin [X] = (*vertexP) [X];
+	if (vMin [Y] > (*vertexP) [Y])
+		vMin [Y] = (*vertexP) [Y];
+	if (vMin [Z] > (*vertexP) [Z])
+		vMin [Z] = (*vertexP) [Z];
+	if (vMax [X] < (*vertexP) [X])
+		vMax [X] = (*vertexP) [X];
+	if (vMax [Y] < (*vertexP) [Y])
+		vMax [Y] = (*vertexP) [Y];
+	if (vMax [Z] < (*vertexP) [Z])
+		vMax [Z] = (*vertexP) [Z];
+	}
+Project (vMin);
+Project (vMax);
 }
 
 //------------------------------------------------------------------------------

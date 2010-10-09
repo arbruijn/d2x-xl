@@ -445,7 +445,7 @@ class COGL {
 
 		void SelectGlowBuffer (void);
 
-		void SelectBlurBuffer (int nBuffer);
+		void SelectBlurBuffer (int nBuffer, CFloatVector vMin, CFloatVector vMax, float radius);
 
 		inline CFBO* DrawBuffer (int nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDrawBuffer (nBuffer); }
 
