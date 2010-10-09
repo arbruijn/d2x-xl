@@ -150,6 +150,11 @@ glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
 glLoadIdentity ();//clear matrix
 
+int x = ogl.m_states.nLastX;
+int y = ogl.m_states.nLastY;
+int w = ogl.m_states.nLastW;
+int h = ogl.m_states.nLastH;
+
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetDepthWrite (false);
 #if BLUR
@@ -184,6 +189,7 @@ Render (1); // Glow -> back buffer
 if (!bReplace)
 	Render (-1); // render the unblurred stuff on top of the blur
 
+ogl.Viewport (x, y, w, h);
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);
 glPopMatrix ();
