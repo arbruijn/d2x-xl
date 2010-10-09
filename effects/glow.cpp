@@ -92,7 +92,7 @@ return (hBlurShader >= 0) && (shaderManager.Current () == hBlurShader);
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Draw (int const direction)
+void CGlowRenderer::Render (int const direction)
 {
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
@@ -101,7 +101,7 @@ ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 #if 0
 ogl.SetTexturing (false);
 #else
-ogl.BindTexture (ogl.DrawBuffer (2 + direction)->ColorBuffer ());
+ogl.BindTexture (ogl.BlurBuffer (direction)->ColorBuffer ());
 #endif
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
@@ -114,17 +114,17 @@ ogl.BindTexture (0);
 
 bool CGlowRenderer::Blur (int const direction)
 {
-ogl.SelectGlowBuffer (!direction); // glow render target
+ogl.SelectBlurBuffer (!direction); // glow render target
 if (!LoadShader (direction)) 
 	return false;
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
-Draw (direction);
+Render (direction);
 return true;
 }
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Render (void)
+void CGlowRenderer::Flush (void)
 {
 glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
@@ -141,7 +141,8 @@ Blur (1);
 shaderManager.Deploy (-1);
 ogl.ChooseDrawBuffer ();
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
-Draw (0);
+Render (-1);
+Render (0);
 
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);

@@ -295,17 +295,27 @@ if (nBuffer != nPrevBuffer) {
 		m_data.drawBufferP->Disable (false);
 	m_data.drawBufferP = m_data.GetDrawBuffer (nBuffer); 
 	}
-CreateDrawBuffer ((nBuffer < 2) ? 1 : -1);
+CreateDrawBuffer ((nBuffer < 2) ? 1 : (nBuffer < 3) ? -1 : -2);
 m_data.drawBufferP->Enable (false);
 return nPrevBuffer;
 }
 
 //------------------------------------------------------------------------------
 
-void COGL::SelectGlowBuffer (int nBuffer) 
+void COGL::SelectGlowBuffer (void) 
 { 
-SelectDrawBuffer (nBuffer + 2);
+SelectDrawBuffer (2);
 SetDrawBuffer (GL_BACK, 1);
+glClear (GL_COLOR_BUFFER_BIT);
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::SelectBlurBuffer (int nBuffer) 
+{ 
+SelectDrawBuffer (nBuffer + 3);
+SetDrawBuffer (GL_BACK, 1);
+glClear (GL_COLOR_BUFFER_BIT);
 }
 
 //------------------------------------------------------------------------------

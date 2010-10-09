@@ -10,12 +10,12 @@ class CGlowRenderer {
 	public:
 		void InitShader (void);
 		bool ShaderActive (void);
-		void Render (void);
+		void Flush (void);
 		CGlowRenderer () : m_shaderProg (0) {}
 
 	private:
 		bool LoadShader (int const direction);
-		void Draw (int const direction);
+		void Render (int const direction);
 		bool Blur (int const direction);
 	};
 

@@ -1228,10 +1228,7 @@ ogl.SetBlendMode (0);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetFaceCulling (true);
 ogl.CopyDepthTexture ();
-ogl.SelectGlowBuffer (1); // glow
-glClear (GL_COLOR_BUFFER_BIT);
-ogl.SelectGlowBuffer (0); // glow
-glClear (GL_COLOR_BUFFER_BIT);
+ogl.SelectGlowBuffer (); // glow
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {
@@ -1292,7 +1289,7 @@ if (bCleanup) {
 	m_data.nMaxOffs = 0;
 	m_data.nFreeItems = ITEM_BUFFER_SIZE;
 	}
-glowRenderer.Render ();
+glowRenderer.Flush ();
 PROF_END(ptTranspPolys)
 nAdded = nRendered = 0;
 #endif
