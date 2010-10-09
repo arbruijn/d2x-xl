@@ -453,7 +453,7 @@ if (m_states.hDepthBuffer [bFBO] || (m_states.hDepthBuffer [bFBO] = CreateDepthT
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 		if ((nError = glGetError ())) {
 			DestroyDepthTexture (bFBO);
-			return m_states.hDepthBuffer = 0;
+			return m_states.hDepthBuffer [bFBO] = 0;
 			}
 		m_states.bHaveDepthBuffer [bFBO] = 1;
 		gameData.render.nStateChanges++;

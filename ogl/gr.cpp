@@ -119,7 +119,8 @@ if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 	textureManager.Destroy (); 
 	if (lightmapManager.HaveLightmaps ())
 		lightmapManager.Release ();
-	ogl.DestroyDepthTexture ();
+	ogl.DestroyDepthTexture (0);
+	ogl.DestroyDepthTexture (1);
 	if (bReload)
 		fontManager.Remap ();
 	if (bGame) {
