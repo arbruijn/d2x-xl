@@ -14,6 +14,7 @@ int hBlurShader [2] = {-1, -1};
 const char *blurFS [2] = { 
 	"uniform sampler2D glowSource;\r\n" \
 	"uniform float scale; // render target width/height\r\n" \
+	"uniform float brightness; // render target width/height\r\n" \
 	"//float offset[3] = float[](0.0, 1.3846153846, 3.2307692308);\r\n" \
 	"//float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
 	"float offset[5] = float[](0.0, 1.0, 2.0, 3.0, 4.0);\r\n" \
@@ -34,11 +35,12 @@ const char *blurFS [2] = {
 	"tc += texture2D(glowSource, uv + v).rgb * weight[4];\r\n" \
 	"tc += texture2D(glowSource, uv - v).rgb * weight[4];\r\n" \
 	"//if (length (tc) > 0.0) tc = vec3 (1.0, 0.5, 0.0) * length (tc);\r\n" \
-	"gl_FragColor = vec4(tc, 1.0) * 1.1 /*/ sqrt (weight [0] + weight [1] + weight [2])*/;\r\n" \
+	"gl_FragColor = vec4(tc, 1.0) * brightness;\r\n" \
 	"}\r\n"
 	,
 	"uniform sampler2D glowSource;\r\n" \
 	"uniform float scale; // render target width/height\r\n" \
+	"uniform float brightness; // render target width/height\r\n" \
 	"//float offset[3] = float[](0.0, 1.3846153846, 3.2307692308);\r\n" \
 	"//float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
 	"float offset[5] = float[](0.0, 1.0, 2.0, 3.0, 4.0);\r\n" \
@@ -59,7 +61,7 @@ const char *blurFS [2] = {
 	"tc += texture2D(glowSource, uv + v).rgb * weight[4];\r\n" \
 	"tc += texture2D(glowSource, uv - v).rgb * weight[4];\r\n" \
 	"//if (length (tc) > 0.0) tc = vec3 (1.0, 0.5, 0.0) * length (tc);\r\n" \
-	"gl_FragColor = vec4(tc, 1.0) * 1.1 /*/ sqrt (weight [0] + weight [1] + weight [2])*/;\r\n" \
+	"gl_FragColor = vec4(tc, 1.0) * brightness;\r\n" \
 	"}\r\n"
 	};
 
@@ -83,6 +85,7 @@ if (shaderManager.Rebuild (m_shaderProg))
 	;
 glUniform1i (glGetUniformLocation (m_shaderProg, "glowSource"), 0);
 glUniform1f (glGetUniformLocation (m_shaderProg, "scale"), GLfloat (fScale [direction]));
+glUniform1f (glGetUniformLocation (m_shaderProg, "brightness"), GLfloat (m_brightness));
 return true;
 }
 
@@ -179,7 +182,7 @@ if (m_vMax [Z] < v [Z])
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Begin (CFloatVector3* vertexP, int nVerts)
+void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
 {
 m_vMin.Set (1e30f, 1e30f, 1e30f);
 m_vMax.Set (-1e30f, -1e30f, -1e30f);
@@ -188,43 +191,45 @@ for (; nVerts > 0; nVerts--)
 	SetExtent (*vertexP++);
 Project (m_vMin);
 Project (m_vMax);
-Activate ();
 }
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Begin (CFloatVector3* pos, float width, float height)
+void CGlowRenderer::ViewPort (CFloatVector3 pos, float width, float height)
 {
 CFloatVector3 v, r;
-transformation.Transform (v, *pos);
+transformation.Transform (v, pos);
 r.Set (width, height, 0.0);
 m_vMin = v - r;
 m_vMax = v + r;
 Project (m_vMin);
 Project (m_vMax);
-Activate ();
 }
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Begin (CFixVector* pos, float radius)
+void CGlowRenderer::ViewPort (CFixVector pos, float radius)
 {
 CFloatVector3 v;
-v.Assign (*pos);
-Begin (&v, radius, radius);
+v.Assign (pos);
+ViewPort (v, radius, radius);
 }
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Begin (int nStrength, bool bReplace)
+void CGlowRenderer::Begin (int const nStrength, bool const bReplace, float const brightness)
 {
-if ((m_bReplace != bReplace) || (m_nStrength != nStrength))
+if (gameOptions [0].render.nQuality < 3)
+	return;
+if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness)) {
 	End ();
-m_bReplace = bReplace;
-m_nStrength = nStrength;
-m_vMin.Set (0, 0, 0);
-m_vMax.Set (screen.Width (), screen.Height (), 0);
-Activate ();
+	m_bReplace = bReplace;
+	m_nStrength = nStrength;
+	m_brightness = brightness;
+	m_vMin.Set (0, 0, 0);
+	m_vMax.Set (screen.Width (), screen.Height (), 0);
+	Activate ();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -309,7 +314,7 @@ if (!m_bReplace)
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);
 glPopMatrix ();
-m_nStrength = 0;
+m_nStrength = -1;
 }
 
 //------------------------------------------------------------------------------

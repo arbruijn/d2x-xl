@@ -10,16 +10,17 @@ class CGlowRenderer {
 		int m_x, m_y, m_w, m_h;
 		int m_nStrength;
 		bool m_bReplace;
+		float m_brightness;
 
 	public:
 		void InitShader (void);
 		bool ShaderActive (void);
 		void End (void);
-		void Begin (int nStrength = 1, bool bReplace = true);
-		void Begin (CFloatVector3* vertexP, int nVerts);
-		void Begin (CFixVector* pos, float radius);
-		void Begin (CFloatVector3* pos, float width, float height);
-		CGlowRenderer () : m_shaderProg (0), m_nStrength (-1), m_bReplace (true) {}
+		void Begin (int const nStrength = 1, bool const bReplace = true, float const brightness = 1.1f);
+		void ViewPort (CFloatVector3* vertexP, int nVerts);
+		void ViewPort (CFixVector pos, float radius);
+		void ViewPort (CFloatVector3 pos, float width, float height);
+		CGlowRenderer () : m_shaderProg (0), m_nStrength (-1), m_bReplace (true), m_brightness (1.1f) {}
 
 	private:
 		bool LoadShader (int const direction, float const radius);

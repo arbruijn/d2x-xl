@@ -16,6 +16,7 @@
 #include "transprender.h"
 #include "thrusterflames.h"
 #include "addon_bitmaps.h"
+#include "glow.h"
 
 #ifndef fabsf
 #	define fabsf(_f)	(float) fabs (_f)
@@ -441,6 +442,7 @@ else { //3D
 	ogl.SetDepthWrite (false);
 
 	//m_ti.fLength /= 2;
+	glowRenderer.Begin (2, false, 1.0f);
 	for (int i = 0; i < m_nThrusters; i++) {
 		if (IsFiring (ws, i)) {
 			transformation.Begin (m_ti.vPos [i], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : objP->info.position.mOrient);
@@ -457,6 +459,7 @@ else { //3D
 	ogl.SetFaceCulling (true);
 	OglCullFace (0);
 	ogl.SetDepthWrite (true);
+	glowRenderer.End ();
 	}
 ogl.StencilOn (bStencil);
 }

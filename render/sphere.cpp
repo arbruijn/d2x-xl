@@ -787,7 +787,6 @@ RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
 ogl.ResetTransform (0);
 ogl.SetTransform (0);
-glowRenderer.End ();
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
 #endif //RINGED_SPHERE
