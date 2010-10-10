@@ -34,7 +34,7 @@ const char *blurFS [2] = {
 	"tc += texture2D(glowSource, uv + v).rgb * weight[4];\r\n" \
 	"tc += texture2D(glowSource, uv - v).rgb * weight[4];\r\n" \
 	"//if (length (tc) > 0.0) tc = vec3 (1.0, 0.5, 0.0) * length (tc);\r\n" \
-	"gl_FragColor = vec4(tc, 1.0) * 1.3 /*/ sqrt (weight [0] + weight [1] + weight [2])*/;\r\n" \
+	"gl_FragColor = vec4(tc, 1.0) * 1.1 /*/ sqrt (weight [0] + weight [1] + weight [2])*/;\r\n" \
 	"}\r\n"
 	,
 	"uniform sampler2D glowSource;\r\n" \
@@ -59,7 +59,7 @@ const char *blurFS [2] = {
 	"tc += texture2D(glowSource, uv + v).rgb * weight[4];\r\n" \
 	"tc += texture2D(glowSource, uv - v).rgb * weight[4];\r\n" \
 	"//if (length (tc) > 0.0) tc = vec3 (1.0, 0.5, 0.0) * length (tc);\r\n" \
-	"gl_FragColor = vec4(tc, 1.0) * 1.3 /*/ sqrt (weight [0] + weight [1] + weight [2])*/;\r\n" \
+	"gl_FragColor = vec4(tc, 1.0) * 1.1 /*/ sqrt (weight [0] + weight [1] + weight [2])*/;\r\n" \
 	"}\r\n"
 	};
 
@@ -136,21 +136,23 @@ if (code & CC_OFF_TOP)
 else if (code & CC_OFF_BOT)
 	v [Y] = 0.0f;
 else
-	v [Y] = (float) (screen.Height () - p.p3_screen.y);
+	v [Y] = (float) p.p3_screen.y;
 }
 
 //------------------------------------------------------------------------------
 
 void CGlowRenderer::Activate (void)
 {
-ogl.SelectGlowBuffer ();
-m_x = ogl.m_states.nLastX;
-m_y = ogl.m_states.nLastY;
-m_w = ogl.m_states.nLastW;
-m_h = ogl.m_states.nLastH;
-ogl.Viewport ((GLint) (m_vMin [X]), (GLint) (m_vMin [Y]), (GLint) (m_vMax [X] - m_vMin [X]) + 1, (GLint) (m_vMax [Y] - m_vMin [Y]) + 1);
-glClear (GL_COLOR_BUFFER_BIT);
-ogl.Viewport (m_x, m_y, m_w, m_h);
+if (++m_nActivated == 1) {
+	ogl.SelectGlowBuffer ();
+	m_x = ogl.m_states.nLastX;
+	m_y = ogl.m_states.nLastY;
+	m_w = ogl.m_states.nLastW;
+	m_h = ogl.m_states.nLastH;
+	//ogl.Viewport ((GLint) (m_vMin [X]), (GLint) (m_vMin [Y]), (GLint) (m_vMax [X] - m_vMin [X]) + 1, (GLint) (m_vMax [Y] - m_vMin [Y]) + 1);
+	glClear (GL_COLOR_BUFFER_BIT);
+	//ogl.Viewport (m_x, m_y, m_w, m_h);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -195,6 +197,10 @@ m_vMin = *pos - r;
 m_vMax = *pos + r;
 Project (m_vMin);
 Project (m_vMax);
+if (m_vMin [X] > m_vMax [X])
+	Swap (m_vMin [X], m_vMax [X]);
+if (m_vMin [Y] > m_vMax [Y])
+	Swap (m_vMin [Y], m_vMax [Y]);
 Activate ();
 }
 
@@ -220,14 +226,17 @@ Activate ();
 
 void CGlowRenderer::Render (int const source, int const direction, float const radius)
 {
-	//static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
-	//static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+#if 0
+	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
+	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+#else
 	float verts [4][2] = {
 		{m_vMin [X] / (float) screen.Width (), m_vMin [Y] / (float) screen.Height ()},
 		{m_vMin [X] / (float) screen.Width (), m_vMax [Y] / (float) screen.Height ()},
 		{m_vMax [X] / (float) screen.Width (), m_vMax [Y] / (float) screen.Height ()},
 		{m_vMax [X] / (float) screen.Width (), m_vMin [Y] / (float) screen.Height ()}
 	};
+#endif
 
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 if (direction >= 0)
@@ -250,10 +259,13 @@ ogl.BindTexture (0);
 
 void CGlowRenderer::End (bool bReplace, int nStrength)
 {
-glMatrixMode (GL_PROJECTION);
-glPushMatrix ();
-glLoadIdentity ();//clear matrix
-glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+if (!m_nActivated)
+	return;
+m_nActivated = 0;
+//glMatrixMode (GL_PROJECTION);
+//glPushMatrix ();
+//glLoadIdentity ();//clear matrix
+//glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
 glLoadIdentity ();//clear matrix
@@ -270,6 +282,7 @@ Render (-1, 0, radius); // Glow -> Blur 0
 ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
 Render (0, 1, radius); // Blur 0 -> Blur 1
 for (int i = 1; i < nStrength; i++) {
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	radius += RAD_INCR;
 	ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
 	Render (-1, 0, radius); // Glow -> Blur 0
@@ -290,8 +303,8 @@ if (!bReplace)
 	Render (-1); // render the unblurred stuff on top of the blur
 
 glPopMatrix ();
-glMatrixMode (GL_PROJECTION);
-glPopMatrix ();
+//glMatrixMode (GL_PROJECTION);
+//glPopMatrix ();
 }
 
 //------------------------------------------------------------------------------

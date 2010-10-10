@@ -780,8 +780,9 @@ else if (gameOpts->render.bUseShaders && ogl.m_states.bShadersOk) {
 ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 CFixVector vPos;
-transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
-glowRenderer.Begin (&vPos, xScale);
+PolyObjPos (objP, &vPos);
+glowRenderer.Begin (); //&vPos, xScale);
+transformation.Begin (vPos, posP->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
 ogl.ResetTransform (0);

@@ -700,9 +700,11 @@ if (bGlow) {
 
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
+#if 0
 if (gameOpts->render.lightning.bGlow)
 	ComputeGlow (nDepth, nThread);
 else
+#endif
 	ComputeCore ();
 if (extraGameInfo [0].bUseLightning > 1)
 	for (int i = 0; i < m_nNodes; i++)
@@ -791,8 +793,9 @@ ogl.SetBlendMode (1);
 ogl.SetLineSmooth (true);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
-	glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
-	glLineWidth (GLfloat (nDepth ? CORE_WIDTH : CORE_WIDTH * 2));
+	//glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
+	glColor4fv ((GLfloat*) colorP);
+	glLineWidth (GLfloat (nDepth ? CORE_WIDTH : CORE_WIDTH * 1.5));
 	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 	ogl.DisableClientStates (0, 0, 0, -1);
@@ -873,17 +876,14 @@ if (nDepth)
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
+glowRenderer.Begin (); //m_coreVerts.Buffer (), m_nNodes);
 #if 0
 if (bGlow)
 	RenderGlow (&color, nDepth, nThread);
 else
-#else
-	if (bGlow)
-		glowRenderer.Begin (m_coreVerts.Buffer (), m_nNodes);
-	RenderCore (&color, nDepth, nThread);
-	if (bGlow)
-		glowRenderer.End ();
 #endif
+	RenderCore (&color, nDepth, nThread);
+glowRenderer.End (false, 3 - bGlow);
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif

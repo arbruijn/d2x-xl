@@ -8,6 +8,7 @@ class CGlowRenderer {
 		GLhandleARB m_shaderProg;
 		CFloatVector3 m_vMin, m_vMax;
 		int m_x, m_y, m_w, m_h;
+		int m_nActivated;
 
 	public:
 		void InitShader (void);
@@ -17,7 +18,7 @@ class CGlowRenderer {
 		void Begin (CFloatVector3* vertexP, int nVerts);
 		void Begin (CFixVector* pos, float radius);
 		void Begin (CFloatVector3* pos, float width, float height);
-		CGlowRenderer () : m_shaderProg (0) {}
+		CGlowRenderer () : m_shaderProg (0), m_nActivated (0) {}
 
 	private:
 		bool LoadShader (int const direction, float const radius);
