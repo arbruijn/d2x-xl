@@ -910,10 +910,10 @@ item->bmP->SetColor ();
 CFloatVector vPosf;
 transformation.Transform (vPosf, item->position, 0);
 if ((item->bAdditive == 1) || (item->bAdditive == 2))
-	glowRenderer.Begin (vPosf.XYZ (), X2F (item->nWidth), X2F (item->nHeight));
-ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
-if ((item->bAdditive == 1) || (item->bAdditive == 2))
+	glowRenderer.Begin ();
+else
 	glowRenderer.End ();
+ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
 }
 
 //------------------------------------------------------------------------------
@@ -1008,12 +1008,12 @@ void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 if (item->nType == riSphereShield) {
-	//ogl.SelectGlowBuffer (0); // glow
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->bAdditive, item->nSize);
-	//glowRenderer.Render ();
 	}
-else if (item->nType == riMonsterball)
+else if (item->nType == riMonsterball) {
+	glowRenderer.End ();
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
+	}
 shaderManager.Deploy (-1);
 ResetBitmaps ();
 }
@@ -1059,9 +1059,7 @@ if (m_data.nPrevType != m_data.nCurType) {
 	ogl.ResetClientStates ();
 	shaderManager.Deploy (-1);
 	}
-//ogl.SelectGlowBuffer (0); // glow
 item->lightning->Render (item->nDepth, 0);
-//glowRenderer.Render ();
 nRendered++;
 ResetBitmaps ();
 }
@@ -1114,6 +1112,8 @@ if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (part
 
 void CTransparencyRenderer::FlushBuffers (int nType)
 {
+if ((nType != tiLightning) && (nType != tiSphere) && (nType != tiSprite))
+	glowRenderer.End ();
 if ((nType != tiSpark) && (nType != tiParticle))
 	FlushSparkBuffer ();
 FlushParticleBuffer (nType);
@@ -1292,6 +1292,7 @@ if (bCleanup) {
 	m_data.nMaxOffs = 0;
 	m_data.nFreeItems = ITEM_BUFFER_SIZE;
 	}
+glowRenderer.End ();
 PROF_END(ptTranspPolys)
 nAdded = nRendered = 0;
 #endif

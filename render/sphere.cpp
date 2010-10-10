@@ -747,7 +747,7 @@ int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float ySc
 {
 	float	fScale = 1.0f;
 	int	bTextured = 0;
-#if DBG
+#if 0 //DBG
 	int	bEffect = 0;
 #else
 	int	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
@@ -781,7 +781,7 @@ ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 CFixVector vPos;
 PolyObjPos (objP, &vPos);
-glowRenderer.Begin (); //&vPos, xScale);
+glowRenderer.Begin ();
 transformation.Begin (vPos, posP->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();

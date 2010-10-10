@@ -143,20 +143,18 @@ else
 
 void CGlowRenderer::Activate (void)
 {
-if (++m_nActivated == 1) {
-	ogl.SelectGlowBuffer ();
-	m_x = ogl.m_states.nLastX;
-	m_y = ogl.m_states.nLastY;
-	m_w = ogl.m_states.nLastW;
-	m_h = ogl.m_states.nLastH;
-	if (m_vMin [X] > m_vMax [X])
-		Swap (m_vMin [X], m_vMax [X]);
-	if (m_vMin [Y] > m_vMax [Y])
-		Swap (m_vMin [Y], m_vMax [Y]);
-	//ogl.Viewport ((GLint) (m_vMin [X]), (GLint) (m_vMin [Y]), (GLint) (m_vMax [X] - m_vMin [X]) + 1, (GLint) (m_vMax [Y] - m_vMin [Y]) + 1);
-	glClear (GL_COLOR_BUFFER_BIT);
-	//ogl.Viewport (m_x, m_y, m_w, m_h);
-	}
+ogl.SelectGlowBuffer ();
+m_x = ogl.m_states.nLastX;
+m_y = ogl.m_states.nLastY;
+m_w = ogl.m_states.nLastW;
+m_h = ogl.m_states.nLastH;
+if (m_vMin [X] > m_vMax [X])
+	Swap (m_vMin [X], m_vMax [X]);
+if (m_vMin [Y] > m_vMax [Y])
+	Swap (m_vMin [Y], m_vMax [Y]);
+//ogl.Viewport ((GLint) (m_vMin [X]), (GLint) (m_vMin [Y]), (GLint) (m_vMax [X] - m_vMin [X]) + 1, (GLint) (m_vMax [Y] - m_vMin [Y]) + 1);
+glClear (GL_COLOR_BUFFER_BIT);
+//ogl.Viewport (m_x, m_y, m_w, m_h);
 }
 
 //------------------------------------------------------------------------------
@@ -197,10 +195,11 @@ Activate ();
 
 void CGlowRenderer::Begin (CFloatVector3* pos, float width, float height)
 {
-CFloatVector3 r;
+CFloatVector3 v, r;
+transformation.Transform (v, *pos);
 r.Set (width, height, 0.0);
-m_vMin = *pos - r;
-m_vMax = *pos + r;
+m_vMin = v - r;
+m_vMax = v + r;
 Project (m_vMin);
 Project (m_vMax);
 Activate ();
@@ -217,8 +216,12 @@ Begin (&v, radius, radius);
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Begin (void)
+void CGlowRenderer::Begin (int nStrength, bool bReplace)
 {
+if ((m_bReplace != bReplace) || (m_nStrength != nStrength))
+	End ();
+m_bReplace = bReplace;
+m_nStrength = nStrength;
 m_vMin.Set (0, 0, 0);
 m_vMax.Set (screen.Width (), screen.Height (), 0);
 Activate ();
@@ -259,11 +262,10 @@ ogl.BindTexture (0);
 #define START_RAD 3.0f
 #define RAD_INCR 3.0f
 
-void CGlowRenderer::End (bool bReplace, int nStrength)
+void CGlowRenderer::End (void)
 {
-if (!m_nActivated)
+if (m_nStrength < 0)
 	return;
-m_nActivated = 0;
 glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
 glLoadIdentity ();//clear matrix
@@ -283,7 +285,7 @@ ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius);
 Render (-1, 0, radius); // Glow -> Blur 0
 ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
 Render (0, 1, radius); // Blur 0 -> Blur 1
-for (int i = 1; i < nStrength; i++) {
+for (int i = 1; i < m_nStrength; i++) {
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	radius += RAD_INCR;
 	ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
@@ -301,12 +303,13 @@ ogl.SetBlendMode (2);
 #if BLUR
 Render (1); // Glow -> back buffer
 #endif
-if (!bReplace)
+if (!m_bReplace)
 	Render (-1); // render the unblurred stuff on top of the blur
 
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);
 glPopMatrix ();
+m_nStrength = 0;
 }
 
 //------------------------------------------------------------------------------
