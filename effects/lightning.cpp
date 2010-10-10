@@ -716,7 +716,6 @@ void CLightning::RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread)
 {
 if (!m_plasmaVerts.Buffer ())
 	return;
-glowRenderer.Begin (m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
 	tTexCoord2f*	texCoordP;
 	CFloatVector*	vertexP;
@@ -788,7 +787,6 @@ void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
 if (!m_coreVerts.Buffer ())
 	return;
-glowRenderer.Begin (m_coreVerts.Buffer (), m_nNodes);
 ogl.SetBlendMode (1);
 ogl.SetLineSmooth (true);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
@@ -875,11 +873,17 @@ if (nDepth)
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
+#if 0
 if (bGlow)
 	RenderGlow (&color, nDepth, nThread);
 else
+#else
+	if (bGlow)
+		glowRenderer.Begin (m_coreVerts.Buffer (), m_nNodes);
 	RenderCore (&color, nDepth, nThread);
-glowRenderer.End ();
+	if (bGlow)
+		glowRenderer.End ();
+#endif
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif

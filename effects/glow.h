@@ -6,24 +6,26 @@
 class CGlowRenderer {
 	private:
 		GLhandleARB m_shaderProg;
-		CFloatVector	m_vMin, m_vMax;
+		CFloatVector3 m_vMin, m_vMax;
 		int m_x, m_y, m_w, m_h;
 
 	public:
 		void InitShader (void);
 		bool ShaderActive (void);
-		void End (bool bReplace = true);
-		void Begin (CFloatVector* vertexP, int nVerts);
-		void Begin (CFloatVector* pos, float radius);
-		void Begin (CFloatVector* pos, float width, float height);
+		void End (bool bReplace = true, int nStrength = 1);
+		void Begin (void);
+		void Begin (CFloatVector3* vertexP, int nVerts);
+		void Begin (CFixVector* pos, float radius);
+		void Begin (CFloatVector3* pos, float width, float height);
 		CGlowRenderer () : m_shaderProg (0) {}
 
 	private:
 		bool LoadShader (int const direction, float const radius);
 		void Render (int const source, int const direction = -1, float const radius = 1.0f);
 		bool Blur (int const direction);
-		void Project (CFloatVector& v);
+		void Project (CFloatVector3& v);
 		void Activate (void);
+		void SetExtent (CFloatVector3& v);
 	};
 
 extern CGlowRenderer glowRenderer;

@@ -140,7 +140,7 @@ ogl.BindTexture (0);
 #define START_RAD 3.0f
 #define RAD_INCR 3.0f
 
-void CGlowRenderer::End (bool bReplace)
+void CGlowRenderer::End (bool bReplace, int nStrength)
 {
 glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
@@ -152,28 +152,25 @@ glLoadIdentity ();//clear matrix
 
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetDepthWrite (false);
+
 #if BLUR
+
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
 float radius = START_RAD;
 ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
 Render (-1, 0, radius); // Glow -> Blur 0
 ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
 Render (0, 1, radius); // Blur 0 -> Blur 1
-#	if BLUR > 1
-radius += RAD_INCR;
-ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
-Render (-1, 0, radius); // Glow -> Blur 0
-ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
-Render (0, 1, radius); // Blur 0 -> Blur 1
-#		if BLUR > 2
-radius += RAD_INCR;
-ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
-Render (-1, 0, radius); // Glow -> Blur 0
-ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
-Render (0, 1, radius); // Blur 0 -> Blur 1
-#		endif
-#	endif
+for (int i = 1; i < nStrength; i++) {
+	radius += RAD_INCR;
+	ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
+	Render (-1, 0, radius); // Glow -> Blur 0
+	ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
+	Render (0, 1, radius); // Blur 0 -> Blur 1
+	}
+
 #endif
+
 ogl.ChooseDrawBuffer ();
 ogl.SetDepthMode (GL_LEQUAL);
 //ogl.SetBlendMode (GL_ONE, GL_ZERO);
@@ -192,7 +189,7 @@ glPopMatrix ();
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Project (CFloatVector& v)
+void CGlowRenderer::Project (CFloatVector3& v)
 {
 g3sPoint p;
 CFixVector h;
@@ -224,50 +221,65 @@ glClear (GL_COLOR_BUFFER_BIT);
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Begin (CFloatVector* vertexP, int nVerts)
+void CGlowRenderer::SetExtent (CFloatVector3& v)
 {
-CFloatVector vMin, vMax;
-vMin.Create (1e30f, 1e30f, 1e30f);
-vMax.Create (-1e30f, -1e30f, -1e30f);
+if (m_vMin [X] > v [X])
+	m_vMin [X] = v [X];
+if (m_vMin [Y] > v [Y])
+	m_vMin [Y] = v [Y];
+if (m_vMin [Z] > v [Z])
+	m_vMin [Z] = v [Z];
+if (m_vMax [X] < v [X])
+	m_vMax [X] = v [X];
+if (m_vMax [Y] < v [Y])
+	m_vMax [Y] = v [Y];
+if (m_vMax [Z] < v [Z])
+	m_vMax [Z] = v [Z];
+}
 
-for (; nVerts; nVerts--, vertexP++) {
-	CFloatVector v = *vertexP;
-	if (vMin [X] > v [X])
-		vMin [X] = v [X];
-	if (vMin [Y] > v [Y])
-		vMin [Y] = v [Y];
-	if (vMin [Z] > v [Z])
-		vMin [Z] = v [Z];
-	if (vMax [X] < v [X])
-		vMax [X] = v [X];
-	if (vMax [Y] < v [Y])
-		vMax [Y] = v [Y];
-	if (vMax [Z] < v [Z])
-		vMax [Z] = v [Z];
-	}
-Project (vMin);
-Project (vMax);
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::Begin (CFloatVector3* vertexP, int nVerts)
+{
+m_vMin.Create (1e30f, 1e30f, 1e30f);
+m_vMax.Create (-1e30f, -1e30f, -1e30f);
+
+SetExtent (vertexP [0]);
+SetExtent (vertexP [nVerts - 1]);
+Project (m_vMin);
+Project (m_vMax);
 Activate ();
 }
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Begin (CFloatVector* pos, float width, float height)
+void CGlowRenderer::Begin (CFloatVector3* pos, float width, float height)
 {
-CFloatVector r;
+CFloatVector3 r;
 r.Create (width, height, 0.0);
-CFloatVector vMin = *pos - r;
-CFloatVector vMax = *pos + r;
-Project (vMin);
-Project (vMax);
+m_vMin = *pos - r;
+m_vMax = *pos + r;
+Project (m_vMin);
+Project (m_vMax);
 Activate ();
 }
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Begin (CFloatVector* pos, float radius)
+void CGlowRenderer::Begin (CFixVector* pos, float radius)
 {
-Begin (pos, radius, radius);
+CFloatVector3 v;
+v.Assign (*pos);
+Begin (&v, radius, radius);
+}
+
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::Begin (void)
+{
+m_vMin.Create (0, 0, 0);
+m_vMax.Create (screen.Width (), screen.Height (), 0);
+Activate ();
 }
 
 //------------------------------------------------------------------------------
