@@ -876,14 +876,13 @@ if (nDepth)
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
-glowRenderer.Begin (m_coreVerts.Buffer (), m_nNodes);
+glowRenderer.Begin (3 - bGlow, false);
 #if 0
 if (bGlow)
 	RenderGlow (&color, nDepth, nThread);
 else
 #endif
 	RenderCore (&color, nDepth, nThread);
-glowRenderer.End (false, 3 - bGlow);
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
