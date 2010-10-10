@@ -910,7 +910,7 @@ item->bmP->SetColor ();
 CFloatVector vPosf;
 transformation.Transform (vPosf, item->position, 0);
 if ((item->bAdditive == 1) || (item->bAdditive == 2))
-	glowRenderer.Begin (&vPosf, X2F (item->nWidth), X2F (item->nHeight));
+	glowRenderer.Begin (&vPosf.XYZ (), X2F (item->nWidth), X2F (item->nHeight));
 ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
 if ((item->bAdditive == 1) || (item->bAdditive == 2))
 	glowRenderer.End ();
@@ -1232,7 +1232,6 @@ ogl.SetBlendMode (0);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetFaceCulling (true);
 ogl.CopyDepthTexture (1);
-ogl.SelectGlowBuffer (); // glow
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {
@@ -1293,8 +1292,6 @@ if (bCleanup) {
 	m_data.nMaxOffs = 0;
 	m_data.nFreeItems = ITEM_BUFFER_SIZE;
 	}
-glowRenderer.Flush ();
-ogl.GlowBuffer ()->Destroy ();
 PROF_END(ptTranspPolys)
 nAdded = nRendered = 0;
 #endif

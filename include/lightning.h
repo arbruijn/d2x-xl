@@ -101,7 +101,7 @@ class CLightning : public tLightning {
 	private:
 		CArray<CFloatVector>		m_plasmaVerts;
 		CArray<tTexCoord2f>		m_plasmaTexCoord;
-		CArray<CFloatVector>		m_coreVerts;
+		CArray<CFloatVector3>	m_coreVerts;
 		CFloatVector				m_vMin, m_vMax;
 
 	public:
