@@ -396,8 +396,13 @@ class COGL {
 #endif
 			}
 
-		inline void SetBlendMode (int bAdditive) {
-			switch (bAdditive) {
+		inline void GetBlendMode (GLenum& nSrcBlendMode, GLenum& nDestBlendMode) {
+			nSrcBlendMode = m_data.nSrcBlendMode;
+			nDestBlendMode = m_data.nDestBlendMode;
+			}
+
+		inline void SetBlendMode (int nBlendMode) {
+			switch (nBlendMode) {
 				case 0:
 					SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // alpha
 					break;
@@ -424,6 +429,7 @@ class COGL {
 				glDepthFunc (m_data.nDepthMode = nDepthMode);
 			return m_data.nDepthMode;
 			}
+
 		inline GLenum GetDepthMode (void) { return m_data.nDepthMode; }
 
 		inline void SetDepthWrite (bool bDepthWrite) { 
@@ -432,6 +438,8 @@ class COGL {
 #endif
 				glDepthMask (GLboolean (m_data.bDepthWrite = bDepthWrite));
 			}
+
+		inline bool GetDepthWrite (void) { return m_data.bDepthWrite; }
 
 		inline GLenum SetCullMode (GLenum nCullMode) {
 #if DBG_OGL < 2

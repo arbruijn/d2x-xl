@@ -279,6 +279,10 @@ glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
 glLoadIdentity ();//clear matrix
 
+GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
+bool bDepthWrite = ogl.GetDepthWrite ();
+ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
+
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetDepthWrite (false);
 
@@ -314,6 +318,11 @@ if (!m_bReplace)
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);
 glPopMatrix ();
+
+ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
+ogl.SetDepthWrite (bDepthWrite);
+ogl.SetDepthMode (nDepthMode);
+
 m_nStrength = -1;
 }
 

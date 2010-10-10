@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "rendermine.h"
 #include "transprender.h"
 #include "glare.h"
+#include "glow.h"
 #include "sphere.h"
 #include "objsmoke.h"
 #include "fireball.h"
@@ -729,8 +730,10 @@ else {
 			if (bEnergyWeapon) {
 				if (gameOpts->legacy.bRender)
 					gameStates.render.grAlpha = GrAlpha (FADE_LEVELS - 2);
-				else
+				else {
 					ogl.SetBlendMode (GL_ONE, GL_ONE);
+					//glowRenderer.Begin (2, false, 1.0f);
+					}
 				}
 			if (bBlendPolys) {
 #if 0

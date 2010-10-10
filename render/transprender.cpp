@@ -678,6 +678,8 @@ if (LoadImage (bmP, 0, 0, 0, item->nWrap)) {
 	ogl.SetBlendMode (item->bAdditive);
 	if (!(bSoftBlend && glareRenderer.LoadShader (5, item->bAdditive != 0)))
 		shaderManager.Deploy (-1);
+	//if ((item->bAdditive == 1) || (item->bAdditive == 2))
+	//	glowRenderer.Begin (2, false, 1.0f);
 	ogl.SetupTransform (0);
 	OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 	ogl.ResetTransform (0);
