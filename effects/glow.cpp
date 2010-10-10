@@ -121,20 +121,20 @@ void CGlowRenderer::Project (CFloatVector3& v)
 g3sPoint p;
 CFixVector h;
 h.Assign (v);
-ubyte code = transformation.TransformAndEncode (p.p3_vec, h);
+p.p3_vec.Assign (v);
 p.p3_codes = 0;
 G3ProjectPoint (&p);
-if (code & CC_OFF_LEFT)
+if (p.p3_screen.x < 0)
+	v [X] = 0;
+else if (p.p3_screen.x > screen.Width ())
 	v [X] = screen.Width ();
-else if (code & CC_OFF_RIGHT)
-	v [X] = 0.0f;
 else
 	v [X] = (float) p.p3_screen.x;
 
-if (code & CC_OFF_TOP)
-	v [Y] = screen.Height ();
-else if (code & CC_OFF_BOT)
-	v [Y] = 0.0f;
+if (p.p3_screen.y < 0)
+	v [Y] = 0;
+else if (p.p3_screen.y > screen.Width ())
+	v [Y] = screen.Width ();
 else
 	v [Y] = (float) p.p3_screen.y;
 }
@@ -149,6 +149,10 @@ if (++m_nActivated == 1) {
 	m_y = ogl.m_states.nLastY;
 	m_w = ogl.m_states.nLastW;
 	m_h = ogl.m_states.nLastH;
+	if (m_vMin [X] > m_vMax [X])
+		Swap (m_vMin [X], m_vMax [X]);
+	if (m_vMin [Y] > m_vMax [Y])
+		Swap (m_vMin [Y], m_vMax [Y]);
 	//ogl.Viewport ((GLint) (m_vMin [X]), (GLint) (m_vMin [Y]), (GLint) (m_vMax [X] - m_vMin [X]) + 1, (GLint) (m_vMax [Y] - m_vMin [Y]) + 1);
 	glClear (GL_COLOR_BUFFER_BIT);
 	//ogl.Viewport (m_x, m_y, m_w, m_h);
@@ -159,6 +163,8 @@ if (++m_nActivated == 1) {
 
 void CGlowRenderer::SetExtent (CFloatVector3& v)
 {
+CFloatVector3 h;
+transformation.Transform (h, v);
 if (m_vMin [X] > v [X])
 	m_vMin [X] = v [X];
 if (m_vMin [Y] > v [Y])
@@ -180,8 +186,8 @@ void CGlowRenderer::Begin (CFloatVector3* vertexP, int nVerts)
 m_vMin.Set (1e30f, 1e30f, 1e30f);
 m_vMax.Set (-1e30f, -1e30f, -1e30f);
 
-SetExtent (vertexP [0]);
-SetExtent (vertexP [nVerts - 1]);
+for (; nVerts > 0; nVerts--)
+	SetExtent (*vertexP++);
 Project (m_vMin);
 Project (m_vMax);
 Activate ();
@@ -197,10 +203,6 @@ m_vMin = *pos - r;
 m_vMax = *pos + r;
 Project (m_vMin);
 Project (m_vMax);
-if (m_vMin [X] > m_vMax [X])
-	Swap (m_vMin [X], m_vMax [X]);
-if (m_vMin [Y] > m_vMax [Y])
-	Swap (m_vMin [Y], m_vMax [Y]);
 Activate ();
 }
 
@@ -262,10 +264,10 @@ void CGlowRenderer::End (bool bReplace, int nStrength)
 if (!m_nActivated)
 	return;
 m_nActivated = 0;
-//glMatrixMode (GL_PROJECTION);
-//glPushMatrix ();
-//glLoadIdentity ();//clear matrix
-//glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+glMatrixMode (GL_PROJECTION);
+glPushMatrix ();
+glLoadIdentity ();//clear matrix
+glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
 glLoadIdentity ();//clear matrix
@@ -303,8 +305,8 @@ if (!bReplace)
 	Render (-1); // render the unblurred stuff on top of the blur
 
 glPopMatrix ();
-//glMatrixMode (GL_PROJECTION);
-//glPopMatrix ();
+glMatrixMode (GL_PROJECTION);
+glPopMatrix ();
 }
 
 //------------------------------------------------------------------------------

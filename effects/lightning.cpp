@@ -876,7 +876,7 @@ if (nDepth)
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
-glowRenderer.Begin (); //m_coreVerts.Buffer (), m_nNodes);
+glowRenderer.Begin (m_coreVerts.Buffer (), m_nNodes);
 #if 0
 if (bGlow)
 	RenderGlow (&color, nDepth, nThread);
@@ -916,6 +916,9 @@ if ((gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) && (nThread >= 0)) {	/
 else {
 	if (!nDepth)
 		ogl.SetFaceCulling (false);
+#if 0 //DBG
+	nThread = -1;
+#endif
 	if (nThread >= 0)
 		ogl.SetupTransform (1);
 	Draw (0, nThread);
