@@ -116,79 +116,6 @@ return false;
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Render (int const source, int const direction, float const radius)
-{
-	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
-	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
-
-ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-if (direction >= 0)
-	LoadShader (direction, radius);
-else
-	shaderManager.Deploy (-1);
-ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer ());
-OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
-OglVertexPointer (2, GL_FLOAT, 0, verts);
-glColor3f (1,1,1);
-OglDrawArrays (GL_QUADS, 0, 4);
-ogl.BindTexture (0);
-}
-
-//------------------------------------------------------------------------------
-
-#define BLUR 1
-#define START_RAD 3.0f
-#define RAD_INCR 3.0f
-
-void CGlowRenderer::End (bool bReplace, int nStrength)
-{
-glMatrixMode (GL_PROJECTION);
-glPushMatrix ();
-glLoadIdentity ();//clear matrix
-glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-glMatrixMode (GL_MODELVIEW);
-glPushMatrix ();
-glLoadIdentity ();//clear matrix
-
-ogl.SetDepthMode (GL_ALWAYS);
-ogl.SetDepthWrite (false);
-
-#if BLUR
-
-ogl.SetBlendMode (GL_ONE, GL_ZERO);
-float radius = START_RAD;
-ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
-Render (-1, 0, radius); // Glow -> Blur 0
-ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
-Render (0, 1, radius); // Blur 0 -> Blur 1
-for (int i = 1; i < nStrength; i++) {
-	radius += RAD_INCR;
-	ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
-	Render (-1, 0, radius); // Glow -> Blur 0
-	ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
-	Render (0, 1, radius); // Blur 0 -> Blur 1
-	}
-
-#endif
-
-ogl.ChooseDrawBuffer ();
-ogl.SetDepthMode (GL_LEQUAL);
-//ogl.SetBlendMode (GL_ONE, GL_ZERO);
-ogl.SetBlendMode (2);
-#if BLUR
-Render (1); // Glow -> back buffer
-#endif
-if (!bReplace)
-	Render (-1); // render the unblurred stuff on top of the blur
-
-ogl.Viewport (m_x, m_y, m_w, m_h);
-glPopMatrix ();
-glMatrixMode (GL_PROJECTION);
-glPopMatrix ();
-}
-
-//------------------------------------------------------------------------------
-
 void CGlowRenderer::Project (CFloatVector3& v)
 {
 g3sPoint p;
@@ -280,6 +207,85 @@ void CGlowRenderer::Begin (void)
 m_vMin.Create (0, 0, 0);
 m_vMax.Create (screen.Width (), screen.Height (), 0);
 Activate ();
+}
+
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::Render (int const source, int const direction, float const radius)
+{
+	//static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
+	//static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+	float verts [4][2] = {
+		{m_vMin [X] / (float) screen.Width (), m_vMin [Y] / (float) screen.Height ()},
+		{m_vMin [X] / (float) screen.Width (), m_vMax [Y] / (float) screen.Height ()},
+		{m_vMax [X] / (float) screen.Width (), m_vMax [Y] / (float) screen.Height ()},
+		{m_vMax [X] / (float) screen.Width (), m_vMin [Y] / (float) screen.Height ()}
+	};
+
+ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+if (direction >= 0)
+	LoadShader (direction, radius);
+else
+	shaderManager.Deploy (-1);
+ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer ());
+OglTexCoordPointer (2, GL_FLOAT, 0, verts);
+OglVertexPointer (2, GL_FLOAT, 0, verts);
+glColor3f (1,1,1);
+OglDrawArrays (GL_QUADS, 0, 4);
+ogl.BindTexture (0);
+}
+
+//------------------------------------------------------------------------------
+
+#define BLUR 1
+#define START_RAD 3.0f
+#define RAD_INCR 3.0f
+
+void CGlowRenderer::End (bool bReplace, int nStrength)
+{
+glMatrixMode (GL_PROJECTION);
+glPushMatrix ();
+glLoadIdentity ();//clear matrix
+glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+glMatrixMode (GL_MODELVIEW);
+glPushMatrix ();
+glLoadIdentity ();//clear matrix
+
+ogl.SetDepthMode (GL_ALWAYS);
+ogl.SetDepthWrite (false);
+
+#if BLUR
+
+ogl.SetBlendMode (GL_ONE, GL_ZERO);
+float radius = START_RAD;
+ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
+Render (-1, 0, radius); // Glow -> Blur 0
+ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
+Render (0, 1, radius); // Blur 0 -> Blur 1
+for (int i = 1; i < nStrength; i++) {
+	radius += RAD_INCR;
+	ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
+	Render (-1, 0, radius); // Glow -> Blur 0
+	ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
+	Render (0, 1, radius); // Blur 0 -> Blur 1
+	}
+
+#endif
+
+ogl.ChooseDrawBuffer ();
+ogl.SetDepthMode (GL_LEQUAL);
+//ogl.SetBlendMode (GL_ONE, GL_ZERO);
+ogl.SetBlendMode (2);
+#if BLUR
+Render (1); // Glow -> back buffer
+#endif
+if (!bReplace)
+	Render (-1); // render the unblurred stuff on top of the blur
+
+//ogl.Viewport (m_x, m_y, m_w, m_h);
+glPopMatrix ();
+glMatrixMode (GL_PROJECTION);
+glPopMatrix ();
 }
 
 //------------------------------------------------------------------------------

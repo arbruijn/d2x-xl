@@ -910,7 +910,7 @@ item->bmP->SetColor ();
 CFloatVector vPosf;
 transformation.Transform (vPosf, item->position, 0);
 if ((item->bAdditive == 1) || (item->bAdditive == 2))
-	glowRenderer.Begin (&vPosf.XYZ (), X2F (item->nWidth), X2F (item->nHeight));
+	glowRenderer.Begin (vPosf.XYZ (), X2F (item->nWidth), X2F (item->nHeight));
 ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
 if ((item->bAdditive == 1) || (item->bAdditive == 2))
 	glowRenderer.End ();
