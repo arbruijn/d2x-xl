@@ -122,15 +122,21 @@ g3sPoint p;
 CFixVector h;
 h.Assign (v);
 ubyte code = transformation.TransformAndEncode (p.p3_vec, h);
+p.p3_codes = 0;
+G3ProjectPoint (&p);
 if (code & CC_OFF_LEFT)
-	v [X] = 0.0f;
-else if (code & CC_OFF_RIGHT)
 	v [X] = screen.Width ();
-else {
-	G3ProjectPoint (&p);
+else if (code & CC_OFF_RIGHT)
+	v [X] = 0.0f;
+else
 	v [X] = (float) p.p3_screen.x;
-	v [Y] = (float) p.p3_screen.y;
-	}
+
+if (code & CC_OFF_TOP)
+	v [Y] = screen.Height ();
+else if (code & CC_OFF_BOT)
+	v [Y] = 0.0f;
+else
+	v [Y] = (float) (screen.Height () - p.p3_screen.y);
 }
 
 //------------------------------------------------------------------------------
@@ -144,6 +150,7 @@ m_w = ogl.m_states.nLastW;
 m_h = ogl.m_states.nLastH;
 ogl.Viewport ((GLint) (m_vMin [X]), (GLint) (m_vMin [Y]), (GLint) (m_vMax [X] - m_vMin [X]) + 1, (GLint) (m_vMax [Y] - m_vMin [Y]) + 1);
 glClear (GL_COLOR_BUFFER_BIT);
+ogl.Viewport (m_x, m_y, m_w, m_h);
 }
 
 //------------------------------------------------------------------------------
@@ -168,8 +175,8 @@ if (m_vMax [Z] < v [Z])
 
 void CGlowRenderer::Begin (CFloatVector3* vertexP, int nVerts)
 {
-m_vMin.Create (1e30f, 1e30f, 1e30f);
-m_vMax.Create (-1e30f, -1e30f, -1e30f);
+m_vMin.Set (1e30f, 1e30f, 1e30f);
+m_vMax.Set (-1e30f, -1e30f, -1e30f);
 
 SetExtent (vertexP [0]);
 SetExtent (vertexP [nVerts - 1]);
@@ -183,7 +190,7 @@ Activate ();
 void CGlowRenderer::Begin (CFloatVector3* pos, float width, float height)
 {
 CFloatVector3 r;
-r.Create (width, height, 0.0);
+r.Set (width, height, 0.0);
 m_vMin = *pos - r;
 m_vMax = *pos + r;
 Project (m_vMin);
@@ -204,8 +211,8 @@ Begin (&v, radius, radius);
 
 void CGlowRenderer::Begin (void)
 {
-m_vMin.Create (0, 0, 0);
-m_vMax.Create (screen.Width (), screen.Height (), 0);
+m_vMin.Set (0, 0, 0);
+m_vMax.Set (screen.Width (), screen.Height (), 0);
 Activate ();
 }
 
@@ -282,7 +289,6 @@ Render (1); // Glow -> back buffer
 if (!bReplace)
 	Render (-1); // render the unblurred stuff on top of the blur
 
-//ogl.Viewport (m_x, m_y, m_w, m_h);
 glPopMatrix ();
 glMatrixMode (GL_PROJECTION);
 glPopMatrix ();
