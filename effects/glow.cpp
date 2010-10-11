@@ -220,9 +220,9 @@ ViewPort (v, radius, radius);
 
 void CGlowRenderer::Begin (int const nStrength, bool const bReplace, float const brightness)
 {
-if (!ogl.m_states.bDepthBlending)
+if (!ogl.m_states.bGlowRendering)
 	return;
-//if (gameOptions [0].render.nQuality < 3)
+if (gameOptions [0].render.nQuality < 3)
 	return;
 if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness)) {
 	End ();
