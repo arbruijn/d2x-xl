@@ -271,10 +271,9 @@ static int tClamp = -1;
 
 void CGlowRenderer::Render (int const source, int const direction, float const radius)
 {
-	tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
+#if 0 //DBG
 	float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
-#if DBG
 #	if 0
 int t = SDL_GetTicks ();
 if (t - tClamp >= 1000) {
@@ -285,23 +284,30 @@ if (t - tClamp >= 1000) {
 if (bClamp) {
 	float w = radius; // + (float) (m_screenMax.x - m_screenMin.x) / 4.0f;
 	float h = radius; // + (float) (m_screenMax.y - m_screenMin.y) / 4.0f;
-	texCoord [0].v.u = ScreenCoord ((float) m_screenMin.x, -w, (float) screen.Width ());
-	texCoord [0].v.v = ScreenCoord ((float) m_screenMin.y, -h, (float) screen.Height ());
-	texCoord [1].v.u = ScreenCoord ((float) m_screenMax.x, +w, (float) screen.Width ());
-	texCoord [1].v.v = ScreenCoord ((float) m_screenMin.y, -h, (float) screen.Height ());
-	texCoord [2].v.u = ScreenCoord ((float) m_screenMax.x, +w, (float) screen.Width ());
-	texCoord [2].v.v = ScreenCoord ((float) m_screenMax.y, +h, (float) screen.Height ());
-	texCoord [3].v.u = ScreenCoord ((float) m_screenMin.x, -w, (float) screen.Width ());
-	texCoord [3].v.v = ScreenCoord ((float) m_screenMax.y, +h, (float) screen.Height ());
 	verts [0][0] = ScreenCoord ((float) m_screenMin.x, -w, (float) screen.Width ());
 	verts [0][1] = ScreenCoord ((float) m_screenMin.y, -h, (float) screen.Height ());
-	verts [1][0] = ScreenCoord ((float) m_screenMax.x, +w, (float) screen.Width ());
-	verts [1][1] = ScreenCoord ((float) m_screenMin.y, -h, (float) screen.Height ());
+	verts [1][0] = ScreenCoord ((float) m_screenMin.x, -w, (float) screen.Width ());
+	verts [1][1] = ScreenCoord ((float) m_screenMax.y, +h, (float) screen.Height ());
 	verts [2][0] = ScreenCoord ((float) m_screenMax.x, +w, (float) screen.Width ());
 	verts [2][1] = ScreenCoord ((float) m_screenMax.y, +h, (float) screen.Height ());
-	verts [3][0] = ScreenCoord ((float) m_screenMin.x, -w, (float) screen.Width ());
-	verts [3][1] = ScreenCoord ((float) m_screenMax.y, +h, (float) screen.Height ());
+	verts [3][0] = ScreenCoord ((float) m_screenMax.x, +w, (float) screen.Width ());
+	verts [3][1] = ScreenCoord ((float) m_screenMin.y, -h, (float) screen.Height ());
 	}
+
+#else
+
+	radius += 1.0f;
+	float verts [4][2] = {
+		{ScreenCoord ((float) m_screenMin.x, -radius, (float) screen.Width ()),
+		 ScreenCoord ((float) m_screenMin.y, -radius, (float) screen.Height ())},
+		{ScreenCoord ((float) m_screenMin.x, -radius, (float) screen.Width ()),
+		 ScreenCoord ((float) m_screenMax.y, +radius, (float) screen.Height ())},
+		{ScreenCoord ((float) m_screenMax.x, +radius, (float) screen.Width ()),
+		 ScreenCoord ((float) m_screenMax.y, +radius, (float) screen.Height ())},
+		{ScreenCoord ((float) m_screenMax.x, +radius, (float) screen.Width ()),
+		 ScreenCoord ((float) m_screenMin.y, -radius, (float) screen.Height ())}
+		};
+
 #endif
 
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
