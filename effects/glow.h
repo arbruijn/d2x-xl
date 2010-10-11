@@ -15,7 +15,7 @@ class CGlowRenderer {
 	public:
 		void InitShader (void);
 		bool ShaderActive (void);
-		void End (void);
+		bool End (void);
 		void Begin (int const nStrength = 1, bool const bReplace = true, float const brightness = 1.1f);
 		void ViewPort (CFloatVector3* vertexP, int nVerts);
 		void ViewPort (CFixVector pos, float radius);

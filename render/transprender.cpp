@@ -666,6 +666,8 @@ PROF_START
 
 ogl.ResetClientStates (1);
 m_data.bmP [1] = m_data.bmP [2] = NULL;
+//if ((item->bAdditive == 1) || (item->bAdditive == 2))
+//	glowRenderer.Begin (2, false, 1.0f);
 ogl.EnableClientStates (bmP != NULL, item->nColors == item->nVertices, 0, GL_TEXTURE0);
 if (LoadImage (bmP, 0, 0, 0, item->nWrap)) {
 	if (bmP)
@@ -678,8 +680,6 @@ if (LoadImage (bmP, 0, 0, 0, item->nWrap)) {
 	ogl.SetBlendMode (item->bAdditive);
 	if (!(bSoftBlend && glareRenderer.LoadShader (5, item->bAdditive != 0)))
 		shaderManager.Deploy (-1);
-	//if ((item->bAdditive == 1) || (item->bAdditive == 2))
-	//	glowRenderer.Begin (2, false, 1.0f);
 	ogl.SetupTransform (0);
 	OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 	ogl.ResetTransform (0);
@@ -890,6 +890,16 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
+#if 1
+if (item->bAdditive == 1) 
+	glowRenderer.Begin (2, false, 1.0f);
+else if (item->bAdditive == 2)
+	glowRenderer.Begin (1, false, 1.0f);
+else {
+	if glowRenderer.End ())
+		ResetBitmaps ();
+	}
+#endif
 ogl.ResetClientStates (1);
 m_data.bmP [1] = m_data.bmP [2] = NULL;
 m_data.bUseLightmaps = 0;
@@ -911,12 +921,6 @@ if (!(bSoftBlend && glareRenderer.LoadShader (item->fSoftRad, item->bAdditive !=
 item->bmP->SetColor ();
 CFloatVector vPosf;
 transformation.Transform (vPosf, item->position, 0);
-if (item->bAdditive == 1) 
-	glowRenderer.Begin (2, false);
-else if (item->bAdditive == 2)
-	glowRenderer.Begin (1, false);
-else
-	glowRenderer.End ();
 ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
 }
 
@@ -1015,7 +1019,8 @@ if (item->nType == riSphereShield) {
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->bAdditive, item->nSize);
 	}
 else if (item->nType == riMonsterball) {
-	glowRenderer.End ();
+	if (glowRenderer.End ())
+		ResetBitmaps ();
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 	}
 shaderManager.Deploy (-1);
@@ -1078,6 +1083,7 @@ if (m_data.nPrevType != m_data.nCurType) {
 	m_data.bUseLightmaps = 0;
 	shaderManager.Deploy (-1);
 	}
+glowRenderer.Begin (2, false, 1.0f);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 if (LoadImage (item->bmP, 0, 0, 0, GL_CLAMP)) {
 	ogl.SetDepthWrite (true);
@@ -1116,8 +1122,9 @@ if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (part
 
 void CTransparencyRenderer::FlushBuffers (int nType)
 {
-if ((nType != tiLightning) && (nType != tiSphere) && (nType != tiSprite))
-	glowRenderer.End ();
+if ((nType != tiLightning) && (nType != tiSphere) && (nType != tiSprite) && (nType != tiThruster))
+	if (glowRenderer.End ())
+		ResetBitmaps ();
 if ((nType != tiSpark) && (nType != tiParticle))
 	FlushSparkBuffer ();
 FlushParticleBuffer (nType);

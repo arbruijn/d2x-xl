@@ -267,10 +267,10 @@ ogl.BindTexture (0);
 #define START_RAD 3.0f
 #define RAD_INCR 3.0f
 
-void CGlowRenderer::End (void)
+bool CGlowRenderer::End (void)
 {
 if (m_nStrength < 0)
-	return;
+	return false;
 glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
 glLoadIdentity ();//clear matrix
@@ -324,6 +324,7 @@ ogl.SetDepthWrite (bDepthWrite);
 ogl.SetDepthMode (nDepthMode);
 
 m_nStrength = -1;
+return true;
 }
 
 //------------------------------------------------------------------------------
