@@ -153,11 +153,11 @@ void CGlowRenderer::SetExtent (CFloatVector3 v, bool bTransformed)
 if (!bTransformed)
 	transformation.Transform (v, v);
 tScreenPos s;
-//ProjectPoint (v, s);
+
 s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / v [Z] * 2);
 s.y = fix (fxCanvH2 - float (v [Y]) * fxCanvH2 / v [Z] * 2);
 s.y = screen.Height () - s.y;
-//if (h [Z] >= 0.0f) 
+#pragma omp critical (transpRender)
 	{
 	if (m_screenMin.x > s.x)
 		m_screenMin.x = s.x;
@@ -193,8 +193,12 @@ for (; nVerts > 0; nVerts--)
 
 void CGlowRenderer::ViewPort (CFloatVector* vertexP, int nVerts)
 {
-for (; nVerts > 0; nVerts--, vertexP++)
-	SetExtent (*vertexP->XYZ ());
+#pragma omp parallel 
+{
+#pragma omp for
+for (int i = 0; i < nVerts; i++)
+	SetExtent (*vertexP [i].XYZ ());
+}
 }
 
 //------------------------------------------------------------------------------
