@@ -1970,10 +1970,10 @@ void LoadGameTexts(void);
 #define TXT_FUSION						GT(1186)
 #define TXT_LOADING						GT(1187)
 #define TXT_PREPARING					GT(1188)
+#define TXT_EFFECTS_GLOW				GT(1189)
 
 #if 0
 
-#define TXT_					GT(1189)
 #define TXT_					GT(1190)
 #define TXT_					GT(1191)
 #define TXT_					GT(1192)
@@ -2525,10 +2525,10 @@ void LoadGameTexts(void);
 #define HTX_EXPERT_MODE					HT(419)
 #define HTX_BUMP_BRIGHTNESS			HT(420)
 #define HTX_PLAYERSHIP					HT(421)
+#define HTX_EFFECTS_GLOW				HT(422)
 
 #if 0
 
-#define HTX_						HT(422)
 #define HTX_						HT(423)
 #define HTX_						HT(424)
 #define HTX_						HT(425)

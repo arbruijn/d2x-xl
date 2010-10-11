@@ -1933,6 +1933,7 @@ const char *defaultGameTexts [][2] = {
  {"Fusionskanone", "Fusion gun"},
  {"Lade...", "Loading..."},
  {"Vorbereitung...", "Preparing..."},
+ {"le~Uchteffekte", "create gl~Ow"},
 #if 0
  {"", ""},
 #endif
@@ -2645,6 +2646,8 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt wird das Bild aufgehellt, um durch\n3D-Brillen verursachte Helligkeitsverluste\nauszugleichen.", "If checked the image is made brighter to\ncompensate brightness loss caused by 3D glasses."},
  {"Hier kann das Spielerschiff ausgewählt werden.\n\nPyro GX: Standardschiff\nPhantom XL: Schneller, leichter gepanzert und bewaffnet", 
   "Chose the player ship here.\n\nPyro GX: Standard ship\nPhantom XL: Faster, lighter armor and weapons"},
+ {"Wenn angekreuzt, sind helle Leuchteffekte von einem\nLichtschimmer umgeben", "When checked, bright light effects are surrounded by glow."},
+  ""},
 #if 0
  {"", ""},
 #endif

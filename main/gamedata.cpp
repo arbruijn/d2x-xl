@@ -2020,6 +2020,8 @@ gameOptions [0].render.effects.bTransparent = 1;
 gameOptions [0].render.effects.bExplBlasts = 1;
 gameOptions [0].render.effects.bEnergySparks = (gameOptions [0].render.nQuality > 0);
 gameOptions [0].render.effects.bMovingSparks = 1;
+(gameOptions [0].render.nQuality < 2)
+	gameOptions [0].render.effects.bUseGlow = 0;
 extraGameInfo [0].bPlayerShield = 1;
 gameOptions [0].render.effects.bRobotShields = 1;
 gameOptions [0].render.effects.bOnlyShieldHits = 1;

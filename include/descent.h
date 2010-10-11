@@ -350,6 +350,7 @@ typedef struct tEffectRenderOptions {
 	int bTransparent;
 	int bSoftParticles;
 	int bMovingSparks;
+	int bGlow;
 } tEffectRenderOptions;
 
 //------------------------------------------------------------------------------

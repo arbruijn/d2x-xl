@@ -266,6 +266,11 @@ do {
 		optStaticSmoke =
 		optGatlingTrails = -1;
 
+	if (!glowRenderer.Available ())
+		optGlow = -1;
+	else
+		optGlow = m.AddCheck (TXT_EFFECTS_GLOW, gameOpts->render.effects.bGlow, KEY_W, HTX_EFFECTS_GLOW);
+
 	if ((gameOptions [0].render.nQuality < 3) || (gameOpts->app.bExpertMode != SUPERUSER))
 		optSoftParticles [0] = 
 		optSoftParticles [1] = 
