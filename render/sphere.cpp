@@ -753,6 +753,7 @@ int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float ySc
 	int	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
 #endif
 
+glowRenderer.Begin (2, true, 0.9f);
 #if !RINGED_SPHERE
 if (m_nFaceNodes == 3)
 	bmP = NULL;
@@ -781,7 +782,6 @@ ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 CFixVector vPos;
 PolyObjPos (objP, &vPos);
-glowRenderer.Begin (2, true, 1.0f);
 transformation.Begin (vPos, posP->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();

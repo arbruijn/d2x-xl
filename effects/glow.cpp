@@ -325,7 +325,7 @@ for (int i = 1; i < m_nStrength; i++) {
 #endif
 
 ogl.ChooseDrawBuffer ();
-//ogl.SetDepthMode (GL_LEQUAL);
+ogl.SetDepthMode (GL_LEQUAL);
 //ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.SetBlendMode (2);
 #if BLUR
