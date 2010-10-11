@@ -2647,7 +2647,6 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann das Spielerschiff ausgewählt werden.\n\nPyro GX: Standardschiff\nPhantom XL: Schneller, leichter gepanzert und bewaffnet", 
   "Chose the player ship here.\n\nPyro GX: Standard ship\nPhantom XL: Faster, lighter armor and weapons"},
  {"Wenn angekreuzt, sind helle Leuchteffekte von einem\nLichtschimmer umgeben", "When checked, bright light effects are surrounded by glow."},
-  ""},
 #if 0
  {"", ""},
 #endif

@@ -311,6 +311,7 @@ do {
 			}
 		}
 	GET_VAL (gameOpts->render.effects.bEnabled, optEnableFx);
+	GET_VAL (gameOpts->render.effects.bGlow, optGlow);
 	GET_VAL (gameOpts->render.particles.bStatic, optStaticSmoke);
 	GET_VAL (extraGameInfo [0].bGatlingTrails, optGatlingTrails);
 	if ((extraGameInfo [0].bLightTrails = (nLightTrails != 0)))
