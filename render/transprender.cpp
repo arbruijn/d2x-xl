@@ -616,7 +616,7 @@ int CTransparencyRenderer::AddThruster (CObject* objP, CFixVector* vPos)
 	tTranspThruster item;
 
 item.objP = objP;
-return Add (tiLightTrail, &item, sizeof (item), *vPos, 0, false, 0);
+return Add (tiThruster, &item, sizeof (item), *vPos, 0, false, 0);
 }
 
 //------------------------------------------------------------------------------
