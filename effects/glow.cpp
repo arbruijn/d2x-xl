@@ -218,12 +218,12 @@ ViewPort (v, radius, radius);
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Begin (int const nStrength, bool const bReplace, float const brightness)
+bool CGlowRenderer::Begin (int const nStrength, bool const bReplace, float const brightness)
 {
 if (!ogl.m_states.bGlowRendering)
-	return;
+	return false;
 if (gameOptions [0].render.nQuality < 2)
-	return;
+	return false;
 if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness)) {
 	End ();
 	m_bReplace = bReplace;
@@ -233,6 +233,7 @@ if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != b
 	m_vMax.Set (screen.Width (), screen.Height (), 0);
 	Activate ();
 	}
+return true;
 }
 
 //------------------------------------------------------------------------------
