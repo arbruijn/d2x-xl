@@ -32,7 +32,7 @@ class CGlowRenderer {
 		bool Blur (int const direction);
 		void Activate (void);
 		void SetupProjection (void);
-		void SetExtent (CFloatVector3 v);
+		void SetExtent (CFloatVector3 v, bool bTransformed = false);
 		void InitViewPort (void);
 	};
 

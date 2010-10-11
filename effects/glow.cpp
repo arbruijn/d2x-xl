@@ -148,9 +148,10 @@ Swap (m_projection [11], m_projection [14]);
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::SetExtent (CFloatVector3 v)
+void CGlowRenderer::SetExtent (CFloatVector3 v, bool bTransformed)
 {
-transformation.Transform (v, v);
+if (!bTransformed)
+	transformation.Transform (v, v);
 tScreenPos s;
 //ProjectPoint (v, s);
 s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / v [Z] * 2);
@@ -200,10 +201,11 @@ for (; nVerts > 0; nVerts--, vertexP++)
 
 void CGlowRenderer::ViewPort (CFloatVector3 v, float width, float height)
 {
+//transformation.Transform (v, v);
 CFloatVector3 r;
 r.Set (width, height, 0.0);
-SetExtent (v - r);
-SetExtent (v + r);
+SetExtent (v - r, true);
+SetExtent (v + r, true);
 }
 
 //------------------------------------------------------------------------------

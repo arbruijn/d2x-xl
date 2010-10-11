@@ -704,8 +704,10 @@ void CLightning::RenderSetup (int nDepth, int nThread)
 {
 if (gameOpts->render.lightning.bGlow && m_plasmaVerts.Buffer ())
 	ComputeGlow (nDepth, nThread);
-else
+else if (m_coreVerts.Buffer ())
 	ComputeCore ();
+else
+	return;
 if (extraGameInfo [0].bUseLightning > 1)
 	for (int i = 0; i < m_nNodes; i++)
 		if (m_nodes [i].GetChild ())
