@@ -221,9 +221,11 @@ ViewPort (v, radius, radius);
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::Available (void)
+bool CGlowRenderer::Available (bool bForce)
 {
 if (!ogl.m_states.bGlowRendering)
+	return false;
+if (!(bForce || gameOpts->render.bEffects.bGlow))
 	return false;
 if (gameOptions [0].render.nQuality < 2)
 	return false;

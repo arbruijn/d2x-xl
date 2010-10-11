@@ -266,7 +266,7 @@ do {
 		optStaticSmoke =
 		optGatlingTrails = -1;
 
-	if (!glowRenderer.Available ())
+	if (!glowRenderer.Available (true))
 		optGlow = -1;
 	else
 		optGlow = m.AddCheck (TXT_EFFECTS_GLOW, gameOpts->render.effects.bGlow, KEY_W, HTX_EFFECTS_GLOW);
