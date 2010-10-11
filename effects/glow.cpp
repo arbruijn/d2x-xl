@@ -201,9 +201,9 @@ for (; nVerts > 0; nVerts--, vertexP++)
 
 void CGlowRenderer::ViewPort (CFloatVector3 v, float width, float height)
 {
-//transformation.Transform (v, v);
+transformation.Transform (v, v);
 CFloatVector3 r;
-r.Set (width, height, 0.0);
+r.Set (width, height, 0.0f);
 SetExtent (v - r, true);
 SetExtent (v + r, true);
 }

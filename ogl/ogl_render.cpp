@@ -1117,10 +1117,10 @@ verts [1][Y] = vPosf [Y] + height;
 verts [2][Y] =
 verts [3][Y] = vPosf [Y] - height;
 if (nDimensions == 3)
- verts [0][Z] =
- verts [1][Z] =
- verts [2][Z] =
- verts [3][Z] = vPosf [Z];
+	verts [0][Z] =
+	verts [1][Z] =
+	verts [2][Z] =
+	verts [3][Z] = vPosf [Z];
 int nColors = 0;
 tRgbaColorf* colorP = bmP ? bmP->GetColor (&nColors) : NULL;
 return RenderQuad (bmP, verts, nDimensions, bmP ?  bmP->GetTexCoord () : NULL, colorP, nColors, nWrap);

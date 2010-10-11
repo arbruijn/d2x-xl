@@ -909,9 +909,9 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 
 #if 1
 if (item->bAdditive == 1) 
-	glowRenderer.Begin (2, false, 1.0f);
+	glowRenderer.Begin (2, false, 0.9f);
 else if (item->bAdditive == 2)
-	glowRenderer.Begin (1, false, 1.1f);
+	glowRenderer.Begin (1, false, 1.0f);
 else {
 	bGlow = 0;
 	if (glowRenderer.End ())
