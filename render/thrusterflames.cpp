@@ -446,8 +446,8 @@ else { //3D
 	//m_ti.fLength /= 2;
 	for (int i = 0; i < m_nThrusters; i++) {
 		if (IsFiring (ws, i)) {
-			if (gameStates.render.nType 1= RENDER_TYPE_TRANSPARENCY)
-				transparencyRenderer.AddThruster (objP, m_ti.vPos [i]);
+			if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY)
+				transparencyRenderer.AddThruster (objP, &m_ti.vPos [i]);
 			else {
 				if (!bHaveThruster) {
 					bHaveThruster = true;
@@ -461,7 +461,6 @@ else { //3D
 				transformation.End ();
 				transformation.End ();
 				}
-			else
 			}
 		}
 	if (bHaveThruster)
