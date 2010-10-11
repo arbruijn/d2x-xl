@@ -146,8 +146,8 @@ void CGlowRenderer::SetExtent (CFloatVector3 v)
 transformation.Transform (v, v);
 v = m_projection * v;
 tScreenPos s;
-s.x = (fix) v [X];
-s.y = screen.Height () - (fix) v [Y];
+s.x = (fix) (v [X] * screen.Width ());
+s.y = screen.Height () - (fix) (v [Y] * screen.Height ());
 //if (h [Z] >= 0.0f) 
 	{
 	if (m_screenMin.x > s.x)
@@ -276,8 +276,8 @@ if (t - tClamp >= 1000) {
 	bClamp = !bClamp;
 	}
 if (bClamp) {
-	float w = radius + (float) (m_screenMax.x - m_screenMin.x) / 4.0f;
-	float h = radius + (float) (m_screenMax.y - m_screenMin.y) / 4.0f;
+	float w = radius; // + (float) (m_screenMax.x - m_screenMin.x) / 4.0f;
+	float h = radius; // + (float) (m_screenMax.y - m_screenMin.y) / 4.0f;
 	texCoord [0].v.u = ScreenCoord ((float) m_screenMin.x, -w, (float) screen.Width ());
 	texCoord [0].v.v = ScreenCoord ((float) m_screenMin.y, -h, (float) screen.Height ());
 	texCoord [1].v.u = ScreenCoord ((float) m_screenMax.x, +w, (float) screen.Width ());
