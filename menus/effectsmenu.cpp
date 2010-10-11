@@ -40,6 +40,7 @@
 #include "rendermine.h"
 #include "light.h"
 #include "lightmap.h"
+#include "glow.h"
 #include "autodl.h"
 #include "tracker.h"
 #include "omega.h"
@@ -199,7 +200,7 @@ void EffectOptionsMenu (void)
 
 	CMenu	m;
 	int	i, j;
-	int	optEnableFx, optGatlingTrails, optStaticSmoke, optSoftParticles [3];
+	int	optEnableFx, optGlow, optGatlingTrails, optStaticSmoke, optSoftParticles [3];
 #if 0
 	int	optShockwaves;
 #endif
