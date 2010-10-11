@@ -12,6 +12,7 @@ class CGlowRenderer {
 		bool m_bReplace;
 		bool m_bViewPort;
 		float m_brightness;
+		CFloatMatrix m_projection;
 
 	public:
 		bool Available (bool bForce = false);
@@ -29,8 +30,8 @@ class CGlowRenderer {
 		bool LoadShader (int const direction, float const radius);
 		void Render (int const source, int const direction = -1, float const radius = 1.0f);
 		bool Blur (int const direction);
-		void Project (CFloatVector3& v, tScreenPos& screen);
 		void Activate (void);
+		void SetupProjection (void);
 		void SetExtent (CFloatVector3 v);
 		void InitViewPort (void);
 	};

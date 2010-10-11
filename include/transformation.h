@@ -110,9 +110,9 @@ class CTransformation {
 			}
 
 		_INLINE_ CFloatVector3& Transform (CFloatVector3& dest, const CFloatVector3& src, int bUnscaled = 0) {
-			CFloatVector vTrans;
-			vTrans.Assign (src - *m_info.posf [0].XYZ ());
-			dest.Assign (m_info.viewf [bUnscaled] * vTrans);
+			CFloatVector v;
+			v.Assign (src - *m_info.posf [0].XYZ ());
+			dest.Assign (m_info.viewf [bUnscaled] * v);
 			return dest;
 			}
 

@@ -120,31 +120,6 @@ return false;
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Project (CFloatVector3& v, tScreenPos& s)
-{
-g3sPoint p;
-CFixVector h;
-h.Assign (v);
-p.p3_vec.Assign (v);
-p.p3_codes = 0;
-G3ProjectPoint (&p);
-if (p.p3_screen.x < 0)
-	s.x = 0;
-else if (p.p3_screen.x > screen.Width ())
-	s.x = screen.Width ();
-else
-	s.x = p.p3_screen.x;
-
-if (p.p3_screen.y < 0)
-	s.y = 0;
-else if (p.p3_screen.y > screen.Width ())
-	s.y = screen.Width ();
-else
-	s.y = p.p3_screen.y;
-}
-
-//------------------------------------------------------------------------------
-
 void CGlowRenderer::Activate (void)
 {
 ogl.SelectGlowBuffer ();
@@ -159,12 +134,20 @@ glClear (GL_COLOR_BUFFER_BIT);
 
 //------------------------------------------------------------------------------
 
+void CGlowRenderer::SetupProjection (void)
+{
+glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_projection.Vec ());	
+}
+
+//------------------------------------------------------------------------------
+
 void CGlowRenderer::SetExtent (CFloatVector3 v)
 {
 transformation.Transform (v, v);
+v = m_projection * v;
 tScreenPos s;
-ProjectPoint (v, s);
-s.y = screen.Height () - s.y;
+s.x = (fix) v [X];
+s.y = screen.Height () - (fix) v [Y];
 //if (h [Z] >= 0.0f) 
 	{
 	if (m_screenMin.x > s.x)
@@ -193,6 +176,7 @@ if (!m_bViewPort) {
 
 void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
 {
+SetupProjection ();
 for (; nVerts > 0; nVerts--)
 	SetExtent (*vertexP++);
 }
@@ -201,6 +185,7 @@ for (; nVerts > 0; nVerts--)
 
 void CGlowRenderer::ViewPort (CFloatVector* vertexP, int nVerts)
 {
+SetupProjection ();
 for (; nVerts > 0; nVerts--, vertexP++)
 	SetExtent (*vertexP->XYZ ());
 }
@@ -209,6 +194,7 @@ for (; nVerts > 0; nVerts--, vertexP++)
 
 void CGlowRenderer::ViewPort (CFloatVector3 pos, float width, float height)
 {
+SetupProjection ();
 CFloatVector3 v, r;
 transformation.Transform (v, pos);
 r.Set (width, height, 0.0);
@@ -220,6 +206,7 @@ SetExtent (v + r);
 
 void CGlowRenderer::ViewPort (CFixVector pos, float radius)
 {
+SetupProjection ();
 CFloatVector3 v;
 v.Assign (pos);
 ViewPort (v, radius, radius);
