@@ -655,8 +655,11 @@ if (bLighting) {
 else
 	nLights = 1;
 ogl.SetBlending (true);
-if (bEmissive || (bTranspFilter == 2))
+ogl.SetDepthWrite (1);
+if (bEmissive || (bTranspFilter == 2)) {
 	ogl.SetBlendMode (1);
+	ogl.SetDepthWrite (0);
+	}
 else if (gameStates.render.bCloaked)
 	ogl.SetBlendMode (0);
 else if (bTranspFilter) {

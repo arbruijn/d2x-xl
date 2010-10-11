@@ -24,6 +24,7 @@
 #include "sphere.h"
 #include "glow.h"
 #include "glare.h"
+#include "thrusterflames.h"
 #include "automap.h"
 #include "transprender.h"
 #include "renderthreads.h"
@@ -605,7 +606,17 @@ for (i = 0; i < j; i++) {
 		}
 	}
 v.Assign (item.vertices [iMin]);
-return Add (tiThruster, &item, sizeof (item), v, 0, false, 0);
+return Add (tiLightTrail, &item, sizeof (item), v, 0, false, 0);
+}
+
+//------------------------------------------------------------------------------
+
+int CTransparencyRenderer::AddThruster (CObject* objP, CFixVector* vPos)
+{
+	tTranspThruster item;
+
+item.objP = objP;
+return Add (tiLightTrail, &item, sizeof (item), *vPos, 0, false, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -893,7 +904,7 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
-#if 1
+#if 0
 if (item->bAdditive == 1) 
 	glowRenderer.Begin (2, false, 1.0f);
 else if (item->bAdditive == 2)
@@ -1086,7 +1097,7 @@ if (m_data.nPrevType != m_data.nCurType) {
 	m_data.bUseLightmaps = 0;
 	shaderManager.Deploy (-1);
 	}
-glowRenderer.Begin (2, false);
+//glowRenderer.Begin (2, false);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 if (LoadImage (item->bmP, 0, 0, 0, GL_CLAMP)) {
 	ogl.SetDepthWrite (true);
@@ -1101,6 +1112,17 @@ if (LoadImage (item->bmP, 0, 0, 0, GL_CLAMP)) {
 	ogl.SetFaceCulling (true);
 	ogl.SetBlendMode (0);
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void CTransparencyRenderer::RenderThruster (tTranspThruster *item)
+{
+shaderManager.Deploy (-1);
+ogl.ResetClientStates ();
+thrusterFlames.Render (item->objP);
+gameData.models.vScale.SetZero ();
+ResetBitmaps ();
 }
 
 //------------------------------------------------------------------------------
@@ -1125,7 +1147,7 @@ if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (part
 
 void CTransparencyRenderer::FlushBuffers (int nType)
 {
-if ((nType != tiLightning) && (nType != tiSphere) && (nType != tiSprite) && (nType != tiThruster))
+if ((nType != tiLightning) && (nType != tiSphere) && (nType != tiSprite) && (nType != tiLightTrail))
 	if (glowRenderer.End ())
 		ResetBitmaps ();
 if ((nType != tiSpark) && (nType != tiParticle))
@@ -1193,8 +1215,11 @@ if (!pl->bRendered) {
 		else if (m_data.nCurType == tiLightning) {
 			RenderLightning (&pl->item.lightning);
 			}
+		else if (m_data.nCurType == tiLightTrail) {
+			RenderLightTrail (&pl->item.lightTrail);
+			}
 		else if (m_data.nCurType == tiThruster) {
-			RenderLightTrail (&pl->item.thruster);
+			RenderThruster (&pl->item.thruster);
 			}
 		}
 	catch(...) {

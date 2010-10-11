@@ -16,8 +16,9 @@ typedef enum tTranspItemType {
 	tiSphere,
 	tiParticle,
 	tiLightning,
-	tiThruster,
+	tiLightTrail,
 	tiObject,
+	tiThruster,
 	tiFace,
 	tiPoly
 } tTranspItemType;
@@ -95,6 +96,10 @@ typedef struct tTranspLightTrail {
 	char						bTrail;
 } tTranspLightTrail;
 
+typedef struct tTranspThruster {
+	CObject*					objP;
+} tTranspThruster;
+
 typedef struct tTranspItem {
 	struct tTranspItem	*pNextItem;
 	struct tTranspItem	*parentP;
@@ -112,7 +117,8 @@ typedef struct tTranspItem {
 		tTranspParticle			particle;
 		tTranspSphere				sphere;
 		tTranspLightning			lightning;
-		tTranspLightTrail			thruster;
+		tTranspLightTrail			lightTrail;
+		tTranspThruster			thruster;
 	} item;
 } tTranspItem;
 
@@ -193,6 +199,7 @@ class CTransparencyRenderer {
 		int AddParticle (CParticle *particle, float fBrightness, int nThread);
 		int AddLightning (CLightning *lightningP, short nDepth);
 		int AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP);
+		int AddThruster (CObject* objP, CFixVector* vPos);
 		void Render (int nWindow);
 		void StartRenderThreads (void);
 		void EndRenderThreads (void);
@@ -239,6 +246,7 @@ class CTransparencyRenderer {
 		void RenderParticle (tTranspParticle *item);
 		void RenderLightning (tTranspLightning *item);
 		void RenderLightTrail (tTranspLightTrail *item);
+		void RenderThruster (tTranspThruster *item);
 		int RenderItem (struct tTranspItem *pl);
 	};
 

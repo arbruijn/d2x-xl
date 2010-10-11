@@ -185,8 +185,11 @@ if (m_vMax [Z] < v [Z])
 
 void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
 {
-m_vMin.Set (1e30f, 1e30f, 1e30f);
-m_vMax.Set (-1e30f, -1e30f, -1e30f);
+if (!m_bViewPort) {
+	m_bViewPort = true;
+	m_vMin.Set (1e30f, 1e30f, 1e30f);
+	m_vMax.Set (-1e30f, -1e30f, -1e30f);
+	}
 
 for (; nVerts > 0; nVerts--)
 	SetExtent (*vertexP++);
@@ -222,7 +225,7 @@ bool CGlowRenderer::Available (void)
 {
 if (!ogl.m_states.bGlowRendering)
 	return false;
-if (gameOptions [0].render.nQuality < 3)
+if (gameOptions [0].render.nQuality < 2)
 	return false;
 return true;
 }
@@ -238,6 +241,7 @@ if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != b
 	m_bReplace = bReplace;
 	m_nStrength = nStrength;
 	m_brightness = brightness;
+	m_bViewPort = false;
 	m_vMin.Set (0, 0, 0);
 	m_vMax.Set (screen.Width (), screen.Height (), 0);
 	Activate ();
@@ -284,13 +288,13 @@ bool CGlowRenderer::End (void)
 {
 if (m_nStrength < 0)
 	return false;
+glMatrixMode (GL_MODELVIEW);
+glPushMatrix ();
+glLoadIdentity ();//clear matrix
 glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
 glLoadIdentity ();//clear matrix
 glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-glMatrixMode (GL_MODELVIEW);
-glPushMatrix ();
-glLoadIdentity ();//clear matrix
 
 GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
 bool bDepthWrite = ogl.GetDepthWrite ();
@@ -298,9 +302,11 @@ ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
 
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetDepthWrite (false);
+ogl.SetFaceCulling (false);
 
 #if BLUR
 
+ogl.ResetClientStates (1);
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
 float radius = START_RAD;
 ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
@@ -319,7 +325,7 @@ for (int i = 1; i < m_nStrength; i++) {
 #endif
 
 ogl.ChooseDrawBuffer ();
-ogl.SetDepthMode (GL_LEQUAL);
+//ogl.SetDepthMode (GL_LEQUAL);
 //ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.SetBlendMode (2);
 #if BLUR
@@ -329,14 +335,16 @@ if (!m_bReplace)
 	Render (-1); // render the unblurred stuff on top of the blur
 
 glPopMatrix ();
-glMatrixMode (GL_PROJECTION);
+glMatrixMode (GL_MODELVIEW);
 glPopMatrix ();
 
 ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
 ogl.SetDepthWrite (bDepthWrite);
 ogl.SetDepthMode (nDepthMode);
+ogl.SetFaceCulling (true);
 
 m_nStrength = -1;
+m_bViewPort = false;
 return true;
 }
 

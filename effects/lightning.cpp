@@ -230,6 +230,8 @@ if (gameOpts->render.lightning.bGlow) {
 	if (!m_plasmaVerts.Create (h))
 		return false;
 	}
+else
+	m_bGlow = 0;
 if (!m_coreVerts.Create ((m_nNodes + 3) * 4))
 	return false;
 m_nodes.Clear ();
@@ -700,7 +702,7 @@ if (bGlow) {
 
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
-if (gameOpts->render.lightning.bGlow)
+if (gameOpts->render.lightning.bGlow && m_plasmaVerts.Buffer ())
 	ComputeGlow (nDepth, nThread);
 else
 	ComputeCore ();

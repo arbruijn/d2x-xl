@@ -781,7 +781,7 @@ ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 CFixVector vPos;
 PolyObjPos (objP, &vPos);
-glowRenderer.Begin (1, true, 1.1f);
+glowRenderer.Begin (2, true, 1.0f);
 transformation.Begin (vPos, posP->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
