@@ -60,10 +60,10 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c)
 
 #define VIS_CULLING 1
 
-ubyte ProjectPoint (CFloatVector3& v, tScreenPos& s, ubyte flags)
+ubyte ProjectPoint (CFloatVector3& v, tScreenPos& s, ubyte flags, ubyte codes)
 {
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
-	return;
+	return flags;
 s.x = fix (fxCanvW2 + double (v [X]) * fxCanvW2 / (fFOVScale * v [Z]));
 s.y = fix (fxCanvH2 - double (v [Y]) * fxCanvH2 / v [Z]);
 return flags | PF_PROJECTED;
@@ -71,7 +71,7 @@ return flags | PF_PROJECTED;
 
 // -----------------------------------------------------------------------------------
 
-ubyte ProjectPoint (CFixVector3& v, tScreenPos& s, ubyte flags)
+ubyte ProjectPoint (CFixVector& v, tScreenPos& s, ubyte flags, ubyte codes)
 {
 CFloatVector3 h;
 h.Assign (v);
@@ -82,7 +82,7 @@ return ProjectPoint (h, s, flags);
 
 void G3ProjectPoint (g3sPoint *p)
 {
-return (p->p3_flags = ProjectPoint (p->p3_vec, p->p3_screen, p->p3_flags));
+return (p->p3_flags = ProjectPoint (p->p3_vec, p->p3_screen, p->p3_flags, p->p3_codes));
 }
 
 // -----------------------------------------------------------------------------------
