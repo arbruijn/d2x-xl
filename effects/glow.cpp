@@ -136,12 +136,14 @@ glClear (GL_COLOR_BUFFER_BIT);
 
 void CGlowRenderer::SetupProjection (void)
 {
+#if 0
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_projection.Vec ());
 Swap (m_projection [1], m_projection [4]);
 Swap (m_projection [2], m_projection [8]);
 Swap (m_projection [3], m_projection [12]);
 Swap (m_projection [7], m_projection [13]);
 Swap (m_projection [11], m_projection [14]);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -149,10 +151,11 @@ Swap (m_projection [11], m_projection [14]);
 void CGlowRenderer::SetExtent (CFloatVector3 v)
 {
 transformation.Transform (v, v);
-v = m_projection * v;
 tScreenPos s;
-s.x = (fix) (v [X] * screen.Width ());
-s.y = screen.Height () - (fix) (v [Y] * screen.Height ());
+//ProjectPoint (v, s);
+s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / v [Z] * 2);
+s.y = fix (fxCanvH2 - float (v [Y]) * fxCanvH2 / v [Z] * 2);
+s.y = screen.Height () - s.y;
 //if (h [Z] >= 0.0f) 
 	{
 	if (m_screenMin.x > s.x)
@@ -181,7 +184,6 @@ if (!m_bViewPort) {
 
 void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
 {
-SetupProjection ();
 for (; nVerts > 0; nVerts--)
 	SetExtent (*vertexP++);
 }
@@ -190,18 +192,15 @@ for (; nVerts > 0; nVerts--)
 
 void CGlowRenderer::ViewPort (CFloatVector* vertexP, int nVerts)
 {
-SetupProjection ();
 for (; nVerts > 0; nVerts--, vertexP++)
 	SetExtent (*vertexP->XYZ ());
 }
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::ViewPort (CFloatVector3 pos, float width, float height)
+void CGlowRenderer::ViewPort (CFloatVector3 v, float width, float height)
 {
-SetupProjection ();
-CFloatVector3 v, r;
-transformation.Transform (v, pos);
+CFloatVector3 r;
 r.Set (width, height, 0.0);
 SetExtent (v - r);
 SetExtent (v + r);
@@ -211,7 +210,6 @@ SetExtent (v + r);
 
 void CGlowRenderer::ViewPort (CFixVector pos, float radius)
 {
-SetupProjection ();
 CFloatVector3 v;
 v.Assign (pos);
 ViewPort (v, radius, radius);
