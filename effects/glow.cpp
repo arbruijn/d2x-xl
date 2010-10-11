@@ -222,7 +222,7 @@ bool CGlowRenderer::Available (void)
 {
 if (!ogl.m_states.bGlowRendering)
 	return false;
-if (gameOptions [0].render.nQuality < 2)
+if (gameOptions [0].render.nQuality < 3)
 	return false;
 return true;
 }

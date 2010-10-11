@@ -897,7 +897,7 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 if (item->bAdditive == 1) 
 	glowRenderer.Begin (2, false, 1.0f);
 else if (item->bAdditive == 2)
-	glowRenderer.Begin (1, false, 1.0f);
+	glowRenderer.Begin (1, false, 1.1f);
 else {
 	if (glowRenderer.End ())
 		ResetBitmaps ();

@@ -700,7 +700,7 @@ if (bGlow) {
 
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
-if (glowRenderer.Available ())
+if (glowRenderer.Available () || !gameOpts->render.lightning.bGlow)
 	ComputeCore ();
 else
 	ComputeGlow (nDepth, nThread);
@@ -875,7 +875,7 @@ if (nDepth)
 WaitForRenderThread (nThread);
 #endif
 //glowRenderer.ViewPort (m_coreVerts.Buffer (), m_nNodes);
-if (!glowRenderer.Begin (3 - bGlow, false))
+if (!glowRenderer.Begin (3 - bGlow, false) && gameOpts->render.lightning.bGlow)
 	RenderGlow (&color, nDepth, nThread);
 else
 	RenderCore (&color, nDepth, nThread);
