@@ -20,6 +20,7 @@ typedef struct tThrusterInfo {
 	float					fScale;
 	tPathPoint*			pp;
 	CModelThrusters*	mtP;
+	CFixMatrix			mOrient;
 }  tThrusterInfo;
 
 
@@ -48,7 +49,7 @@ class CThrusterFlames {
 		void CalcPosOnShip (CObject *objP, CFixVector *vPos);
 		void RenderCap (int i);
 		void Render3D (int i);
-		bool Setup (CObject *objP);
+		bool Setup (CObject *objP, int nStages = 3);
 		bool IsFiring (CWeaponState* ws, int i);
 };
 

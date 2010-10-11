@@ -330,7 +330,7 @@ glPopMatrix ();
 
 // -----------------------------------------------------------------------------
 
-bool CThrusterFlames::Setup (CObject *objP)
+bool CThrusterFlames::Setup (CObject *objP, int nStages)
 {
 if (gameStates.app.bNostalgia)
 	return false;
@@ -345,54 +345,46 @@ if ((objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->inf
 
 bool bFallback;
 
-if (thruster.Load ()) 
-	bFallback = false;
-else {
-	m_nStyle ^= 3;	// fall back to other style
-	if (!thruster.Load ()) {
-		extraGameInfo [IsMultiGame].bThrusterFlames = 0;	// didn't work either
+if (nStages & 2) {
+	if (thruster.Load ()) 
+		bFallback = false;
+	else {
+		m_nStyle ^= 3;	// fall back to other style
+		if (!thruster.Load ()) {
+			extraGameInfo [IsMultiGame].bThrusterFlames = 0;	// didn't work either
+			return false;
+			}
+		bFallback = true;
+		}
+
+	if (m_nStyle == 2) {
+		ogl.SetTexturing (true);
+		thruster.Bitmap ()->SetTranspType (-1);
+		if (thruster.Bitmap ()->Bind (1)) {
+			extraGameInfo [IsMultiGame].bThrusterFlames = bFallback ? 0 : 1;
+			return false;
+			}
+		thruster.Texture ()->Wrap (GL_CLAMP);
+		}
+	}
+
+if (nStages & 1) {
+	float fSpeed = X2F (objP->mType.physInfo.velocity.Mag ());
+	if (m_pt)
+		m_pt->fSpeed = fSpeed;
+	m_bSpectate = SPECTATOR (objP);
+
+	m_ti.pp = NULL;
+	m_ti.fScale = fSpeed / float (objP->MaxSpeed ()) + 0.5f;
+	//if (m_ti.fScale < m_ti.fSize / 2)
+	//	m_ti.fScale = m_ti.fSize / 2;
+	m_ti.fScale += float (rand () % 100) / 1000.0f;
+	if (!CalcPos (objP))
 		return false;
-		}
-	bFallback = true;
+
+	m_bPlayer = (objP->info.nType == OBJ_PLAYER);
 	}
 
-if (m_nStyle == 2) {
-	ogl.SetTexturing (true);
-	thruster.Bitmap ()->SetTranspType (-1);
-	if (thruster.Bitmap ()->Bind (1)) {
-		extraGameInfo [IsMultiGame].bThrusterFlames = bFallback ? 0 : 1;
-		return false;
-		}
-	thruster.Texture ()->Wrap (GL_CLAMP);
-	}
-
-float fSpeed = X2F (objP->mType.physInfo.velocity.Mag ());
-if (m_pt)
-	m_pt->fSpeed = fSpeed;
-m_bSpectate = SPECTATOR (objP);
-
-m_ti.pp = NULL;
-m_ti.fScale = fSpeed / float (objP->MaxSpeed ()) + 0.5f;
-//if (m_ti.fScale < m_ti.fSize / 2)
-//	m_ti.fScale = m_ti.fSize / 2;
-m_ti.fScale += float (rand () % 100) / 1000.0f;
-if (!CalcPos (objP))
-	return false;
-
-m_bPlayer = (objP->info.nType == OBJ_PLAYER);
-
-#if 0
-if (m_nThrusters > 1) {
-	CFixVector vRot [2];
-	transformation.Rotate (vRot [0], m_ti.vPos [0], 0);
-	transformation.Rotate (vRot [1], m_ti.vPos [1], 0);
-	if (vRot [0][Z] < vRot [1][Z]) {
-		::Swap (m_ti.vPos [0], m_ti.vPos [1]);
-		if (objP->info.nType == OBJ_ROBOT)
-			::Swap (m_ti.vDir [0], m_ti.vDir [1]);
-		}
-	}
-#endif
 return true;
 }
 
@@ -412,14 +404,14 @@ return false;
 
 void CThrusterFlames::Render (CObject *objP, tThrusterInfo* infoP, int nThruster)
 {
-if (!Setup (objP))
-	return;
-
 int bStencil = ogl.StencilOff ();
 
 CWeaponState* ws = (objP->info.nType == OBJ_PLAYER) ? gameData.multiplayer.weaponStates + objP->info.nId : NULL;
 
 if (m_nStyle == 1) {	//2D
+	if (!Setup (objP))
+		return;
+
 		static tRgbaColorf	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
 		static CFloatVector	vEye = CFloatVector::ZERO;
 
@@ -436,13 +428,19 @@ if (m_nStyle == 1) {	//2D
 else { //3D
 	//m_ti.fLength /= 2;
 	if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) {
+		if (!Setup (objP, 1))
+			return;
 		Create ();
+		m_ti.mOrient = objP->info.position.mOrient;
 		for (int i = 0; i < m_nThrusters; i++) {
 			if (IsFiring (ws, i))
 				transparencyRenderer.AddThruster (objP, &m_ti, i);
 			}
 		}
 	else {
+		if (!Setup (objP, 2))
+			return;
+
 		ogl.ResetClientStates (1);
 		ogl.SetFaceCulling (false);
 		ogl.SetBlendMode (1);
@@ -450,8 +448,9 @@ else { //3D
 		ogl.SetDepthWrite (false);
 
 		glowRenderer.Begin (2, false, 1.0f);
-		transformation.Begin (infoP->vPos [nThruster], (infoP->pp && !m_bSpectate) ? infoP->pp->mOrient : objP->info.position.mOrient);
-		transformation.Begin (CFixVector::ZERO, infoP->mRot [nThruster]);
+		m_ti = *infoP;
+		transformation.Begin (m_ti.vPos [nThruster], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : m_ti.mOrient);
+		transformation.Begin (CFixVector::ZERO, m_ti.mRot [nThruster]);
 		// render a cap for the thruster flame at its base
 		RenderCap (nThruster);
 		Render3D (nThruster);
