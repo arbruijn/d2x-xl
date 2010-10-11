@@ -753,7 +753,7 @@ int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float ySc
 	int	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
 #endif
 
-glowRenderer.Begin (2, true, 0.9f);
+glowRenderer.Begin (2, true, 0.75f);
 #if !RINGED_SPHERE
 if (m_nFaceNodes == 3)
 	bmP = NULL;
