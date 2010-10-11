@@ -874,7 +874,7 @@ if (nDepth)
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
-glowRenderer.ViewPort (m_coreVerts.Buffer (), m_nNodes);
+//glowRenderer.ViewPort (m_coreVerts.Buffer (), m_nNodes);
 if (!glowRenderer.Begin (3 - bGlow, false))
 	RenderGlow (&color, nDepth, nThread);
 else

@@ -741,8 +741,11 @@ else {
 	bDecal = 0;
 	}
 
-int bAdditive, nIndex = triP ? triP->nIndex : faceP->m_info.nIndex;
-
+int bAdditive = item->bAdditive, nIndex = triP ? triP->nIndex : faceP->m_info.nIndex;
+#if 0
+if ((bAdditive == 1) || (bAdditive == 2))
+	glowRenderer.Begin (2, false, 1.0f);
+#endif
 #if 0 //DBG
 m_data.bmP [0] = NULL;
 ogl.ResetClientStates (bLightmaps);
@@ -808,7 +811,7 @@ if (gameStates.render.bFullBright)
 	glColor4f (1,1,1,item->color [0].alpha);
 else if (!bColored)
 	glColor4fv (reinterpret_cast<GLfloat*> (item->color));
-ogl.SetBlendMode (bAdditive = item->bAdditive);
+ogl.SetBlendMode (bAdditive);
 
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
