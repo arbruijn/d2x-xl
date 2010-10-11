@@ -252,13 +252,12 @@ return true;
 
 //------------------------------------------------------------------------------
 
-inline float ScreenCoord (float v, float r, float m)
+inline float ScreenCoord (float v, float m)
 {
-v += r;
 if (v < 0.0f)
-	v = 0.0f;
-else if (v > m)
-	v = m;
+	return 0.0f;
+if (v > m)
+	return m;
 return v / m;
 }
 
@@ -296,16 +295,16 @@ if (bClamp) {
 
 #else
 
-	radius += 1.0f;
+	float r = radius + 1.0f;
 	float verts [4][2] = {
-		{ScreenCoord ((float) m_screenMin.x, -radius, (float) screen.Width ()),
-		 ScreenCoord ((float) m_screenMin.y, -radius, (float) screen.Height ())},
-		{ScreenCoord ((float) m_screenMin.x, -radius, (float) screen.Width ()),
-		 ScreenCoord ((float) m_screenMax.y, +radius, (float) screen.Height ())},
-		{ScreenCoord ((float) m_screenMax.x, +radius, (float) screen.Width ()),
-		 ScreenCoord ((float) m_screenMax.y, +radius, (float) screen.Height ())},
-		{ScreenCoord ((float) m_screenMax.x, +radius, (float) screen.Width ()),
-		 ScreenCoord ((float) m_screenMin.y, -radius, (float) screen.Height ())}
+		{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
+		 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())},
+		{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
+		 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
+		{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
+		 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
+		{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
+		 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())}
 		};
 
 #endif
