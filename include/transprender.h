@@ -3,6 +3,7 @@
 
 #include "particles.h"
 #include "lightning.h"
+#include "thrusterflames.h"
 
 //------------------------------------------------------------------------------
 
@@ -201,7 +202,7 @@ class CTransparencyRenderer {
 		int AddParticle (CParticle *particle, float fBrightness, int nThread);
 		int AddLightning (CLightning *lightningP, short nDepth);
 		int AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP);
-		int AddThruster (CObject* objP, CFixVector* vPos);
+		int AddThruster (CObject* objP, tThrusterInfo* infoP, int nThruster);
 		void Render (int nWindow);
 		void StartRenderThreads (void);
 		void EndRenderThreads (void);

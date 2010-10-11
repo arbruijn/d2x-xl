@@ -434,27 +434,27 @@ if (m_nStyle == 1) {	//2D
 		}
 	}
 else { //3D
-	Create ();
-	ogl.ResetClientStates (1);
-	ogl.SetFaceCulling (false);
-	ogl.SetBlendMode (1);
-	ogl.SetTransform (1);
-	ogl.SetDepthWrite (false);
-
 	//m_ti.fLength /= 2;
 	if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) {
+		Create ();
 		for (int i = 0; i < m_nThrusters; i++) {
-			if (IsFiring (ws, i)) {
+			if (IsFiring (ws, i))
 				transparencyRenderer.AddThruster (objP, &m_ti, i);
 			}
 		}
 	else {
+		ogl.ResetClientStates (1);
+		ogl.SetFaceCulling (false);
+		ogl.SetBlendMode (1);
+		ogl.SetTransform (1);
+		ogl.SetDepthWrite (false);
+
 		glowRenderer.Begin (2, false, 1.0f);
-		transformation.Begin (info->vPos [nThruster], (info->pp && !m_bSpectate) ? info->pp->mOrient : objP->info.position.mOrient);
-		transformation.Begin (CFixVector::ZERO, info->mRot [nThruster]);
+		transformation.Begin (infoP->vPos [nThruster], (infoP->pp && !m_bSpectate) ? infoP->pp->mOrient : objP->info.position.mOrient);
+		transformation.Begin (CFixVector::ZERO, infoP->mRot [nThruster]);
 		// render a cap for the thruster flame at its base
-		RenderCap (i);
-		Render3D (i);
+		RenderCap (nThruster);
+		Render3D (nThruster);
 		transformation.End ();
 		transformation.End ();
 		}
