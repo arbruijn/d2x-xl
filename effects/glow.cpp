@@ -120,7 +120,7 @@ return false;
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Project (CFloatVector3& v)
+void CGlowRenderer::Project (CFloatVector3& v, tScreenPos& s)
 {
 g3sPoint p;
 CFixVector h;
@@ -129,18 +129,18 @@ p.p3_vec.Assign (v);
 p.p3_codes = 0;
 G3ProjectPoint (&p);
 if (p.p3_screen.x < 0)
-	v [X] = 0;
+	s.x = 0;
 else if (p.p3_screen.x > screen.Width ())
-	v [X] = screen.Width ();
+	s.x = screen.Width ();
 else
-	v [X] = (float) p.p3_screen.x;
+	s.x = p.p3_screen.x;
 
 if (p.p3_screen.y < 0)
-	v [Y] = 0;
+	s.y = 0;
 else if (p.p3_screen.y > screen.Width ())
-	v [Y] = screen.Width ();
+	s.y = screen.Width ();
 else
-	v [Y] = (float) p.p3_screen.y;
+	s.y = p.p3_screen.y;
 }
 
 //------------------------------------------------------------------------------
@@ -168,14 +168,14 @@ if (h [Z] >= 0.0f) {
 		m_vMin [X] = h [X];
 	if (m_vMin [Y] > h [Y])
 		m_vMin [Y] = h [Y];
-	//if (m_vMin [Z] > h [Z])
-	//	m_vMin [Z] = h [Z];
+	if (m_vMin [Z] > h [Z])
+		m_vMin [Z] = h [Z];
 	if (m_vMax [X] < h [X])
 		m_vMax [X] = h [X];
 	if (m_vMax [Y] < h [Y])
 		m_vMax [Y] = h [Y];
-	//if (m_vMax [Z] < h [Z])
-	//	m_vMax [Z] = h [Z];
+	if (m_vMax [Z] < h [Z])
+		m_vMax [Z] = h [Z];
 	}
 }
 
@@ -185,8 +185,8 @@ void CGlowRenderer::InitViewPort (void)
 {
 if (!m_bViewPort) {
 	m_bViewPort = true;
-	m_vMin.Set (1e30f, 1e30f, 0.0f);
-	m_vMax.Set (-1e30f, -1e30f, 0.0f);
+	m_vMin.Set (1e30f, 1e30f, 1e30f);
+	m_vMax.Set (-1e30f, -1e30f, -1e30f);
 	}
 }
 
@@ -197,8 +197,6 @@ void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
 InitViewPort ();
 for (; nVerts > 0; nVerts--)
 	SetExtent (*vertexP++);
-Project (m_vMin);
-Project (m_vMax);
 }
 
 //------------------------------------------------------------------------------
@@ -208,8 +206,6 @@ void CGlowRenderer::ViewPort (CFloatVector* vertexP, int nVerts)
 InitViewPort ();
 for (; nVerts > 0; nVerts--, vertexP++)
 	SetExtent (*vertexP->XYZ ());
-Project (m_vMin);
-Project (m_vMax);
 }
 
 //------------------------------------------------------------------------------
@@ -221,8 +217,6 @@ transformation.Transform (v, pos);
 r.Set (width, height, 0.0);
 m_vMin = v - r;
 m_vMax = v + r;
-Project (m_vMin);
-Project (m_vMax);
 }
 
 //------------------------------------------------------------------------------
@@ -272,10 +266,12 @@ return true;
 
 void CGlowRenderer::Render (int const source, int const direction, float const radius)
 {
-if (m_vMin [X] > m_vMax [X])
-	Swap (m_vMin [X], m_vMax [X]);
-if (m_vMin [Y] > m_vMax [Y])
-	Swap (m_vMin [Y], m_vMax [Y]);
+Project (m_vMin, m_screenMin);
+Project (m_vMax, m_screenMax);
+if (m_screenMin.x > m_screenMax.x)
+	Swap (m_screenMin.x, m_screenMax.x);
+if (m_screenMin.y > m_screenMax.y)
+	Swap (m_screenMin.y, m_screenMax.y);
 #if 0
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
