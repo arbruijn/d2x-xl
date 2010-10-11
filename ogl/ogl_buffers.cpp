@@ -317,14 +317,10 @@ SetDrawBuffer (GL_BACK, 1);
 
 //------------------------------------------------------------------------------
 
-void COGL::SelectBlurBuffer (int nBuffer, CFloatVector3 vMin, CFloatVector3 vMax, float radius) 
+void COGL::SelectBlurBuffer (int nBuffer) 
 { 
 SelectDrawBuffer (nBuffer + 3);
 SetDrawBuffer (GL_BACK, 1);
-if (nBuffer >= 0) {
-	//Viewport ((GLint) (vMin [X] - radius), (GLint) (vMin [Y] - radius), (GLint) (vMax [X] - vMin [X] + 2 * radius) + 1, (GLint) (vMax [Y] - vMin [Y] + 2 * radius) + 1);
-	//glClear (GL_COLOR_BUFFER_BIT);
-	}
 }
 
 //------------------------------------------------------------------------------

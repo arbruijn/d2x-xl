@@ -159,23 +159,21 @@ glClear (GL_COLOR_BUFFER_BIT);
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::SetExtent (CFloatVector3& v)
+void CGlowRenderer::SetExtent (CFloatVector3 v)
 {
-CFloatVector3 h;
-transformation.Transform (h, v);
-if (h [Z] >= 0.0f) {
-	if (m_vMin [X] > h [X])
-		m_vMin [X] = h [X];
-	if (m_vMin [Y] > h [Y])
-		m_vMin [Y] = h [Y];
-	if (m_vMin [Z] > h [Z])
-		m_vMin [Z] = h [Z];
-	if (m_vMax [X] < h [X])
-		m_vMax [X] = h [X];
-	if (m_vMax [Y] < h [Y])
-		m_vMax [Y] = h [Y];
-	if (m_vMax [Z] < h [Z])
-		m_vMax [Z] = h [Z];
+transformation.Transform (v, v);
+tScreenPos s;
+ProjectPoint (v, s);
+//if (h [Z] >= 0.0f) 
+	{
+	if (m_screenMin.x > s.x)
+		m_screenMax.x = s.x;
+	if (m_screenMax.y > s.y)
+		m_screenMax.y = s.y;
+	if (m_screenMax.x < s.x)
+		m_screenMax.x = s.x;
+	if (m_screenMax.y < s.y)
+		m_screenMax.y = s.y;
 	}
 }
 
@@ -185,8 +183,8 @@ void CGlowRenderer::InitViewPort (void)
 {
 if (!m_bViewPort) {
 	m_bViewPort = true;
-	m_vMin.Set (1e30f, 1e30f, 1e30f);
-	m_vMax.Set (-1e30f, -1e30f, -1e30f);
+	m_screenMin.x = m_screenMin.y = 0x7FFF;
+	m_screenMax.x = m_screenMax.y = -0x7FFF;
 	}
 }
 
@@ -194,7 +192,6 @@ if (!m_bViewPort) {
 
 void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
 {
-InitViewPort ();
 for (; nVerts > 0; nVerts--)
 	SetExtent (*vertexP++);
 }
@@ -203,7 +200,6 @@ for (; nVerts > 0; nVerts--)
 
 void CGlowRenderer::ViewPort (CFloatVector* vertexP, int nVerts)
 {
-InitViewPort ();
 for (; nVerts > 0; nVerts--, vertexP++)
 	SetExtent (*vertexP->XYZ ());
 }
@@ -215,8 +211,8 @@ void CGlowRenderer::ViewPort (CFloatVector3 pos, float width, float height)
 CFloatVector3 v, r;
 transformation.Transform (v, pos);
 r.Set (width, height, 0.0);
-m_vMin = v - r;
-m_vMax = v + r;
+SetExtent (v - r);
+SetExtent (v + r);
 }
 
 //------------------------------------------------------------------------------
@@ -255,8 +251,7 @@ if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != b
 	m_nStrength = nStrength;
 	m_brightness = brightness;
 	m_bViewPort = false;
-	m_vMin.Set (0, 0, 0);
-	m_vMax.Set (screen.Width (), screen.Height (), 0);
+	InitViewPort ();
 	Activate ();
 	}
 return true;
@@ -266,21 +261,35 @@ return true;
 
 void CGlowRenderer::Render (int const source, int const direction, float const radius)
 {
-Project (m_vMin, m_screenMin);
-Project (m_vMax, m_screenMax);
 if (m_screenMin.x > m_screenMax.x)
 	Swap (m_screenMin.x, m_screenMax.x);
 if (m_screenMin.y > m_screenMax.y)
 	Swap (m_screenMin.y, m_screenMax.y);
+if (m_screenMin.x < 0)
+	m_screenMin.x = 0;
+else if (m_screenMin.x >= screen.Width ())
+	m_screenMin.x = screen.Width () - 1;
+if (m_screenMin.y < 0)
+	m_screenMin.y = 0;
+else if (m_screenMin.y >= screen.Height ())
+	m_screenMin.y = screen.Height () - 1;
+if (m_screenMax.x < 0)
+	m_screenMax.x = 0;
+else if (m_screenMax.x >= screen.Width ())
+	m_screenMax.x = screen.Width () - 1;
+if (m_screenMax.y < 0)
+	m_screenMax.y = 0;
+else if (m_screenMax.y >= screen.Height ())
+	m_screenMax.y = screen.Height () - 1;
 #if 0
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 #else
 	float verts [4][2] = {
-		{(m_vMin [X] - radius) / (float) screen.Width (), (m_vMin [Y] - radius) / (float) screen.Height ()},
-		{(m_vMin [X] - radius) / (float) screen.Width (), (m_vMax [Y] + radius) / (float) screen.Height ()},
-		{(m_vMax [X] + radius) / (float) screen.Width (), (m_vMax [Y] + radius) / (float) screen.Height ()},
-		{(m_vMax [X] + radius) / (float) screen.Width (), (m_vMin [Y] - radius) / (float) screen.Height ()}
+		{((float) m_screenMin.x - radius) / (float) screen.Width (), ((float) m_screenMin.y - radius) / (float) screen.Height ()},
+		{((float) m_screenMin.x - radius) / (float) screen.Width (), ((float) m_screenMax.y + radius) / (float) screen.Height ()},
+		{((float) m_screenMax.x + radius) / (float) screen.Width (), ((float) m_screenMax.y + radius) / (float) screen.Height ()},
+		{((float) m_screenMax.x + radius) / (float) screen.Width (), ((float) m_screenMin.y - radius) / (float) screen.Height ()}
 	};
 #endif
 
@@ -307,7 +316,7 @@ bool CGlowRenderer::End (void)
 {
 if (m_nStrength < 0)
 	return false;
-if ((m_vMax [X] > m_vMin [X]) && (m_vMax [Y] > m_vMin [Y])) {
+if ((m_screenMax.x > m_screenMin.x) || (m_screenMax.y > m_screenMin.y)) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
@@ -329,16 +338,16 @@ if ((m_vMax [X] > m_vMin [X]) && (m_vMax [Y] > m_vMin [Y])) {
 	ogl.ResetClientStates (1);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	float radius = START_RAD;
-	ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
+	ogl.SelectBlurBuffer (0); 
 	Render (-1, 0, radius); // Glow -> Blur 0
-	ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
+	ogl.SelectBlurBuffer (1); 
 	Render (0, 1, radius); // Blur 0 -> Blur 1
 	for (int i = 1; i < m_nStrength; i++) {
 		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		radius += RAD_INCR;
-		ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
+		ogl.SelectBlurBuffer (0); 
 		Render (-1, 0, radius); // Glow -> Blur 0
-		ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
+		ogl.SelectBlurBuffer (1); 
 		Render (0, 1, radius); // Blur 0 -> Blur 1
 		}
 

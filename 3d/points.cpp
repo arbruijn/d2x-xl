@@ -60,34 +60,29 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c)
 
 #define VIS_CULLING 1
 
+ubyte ProjectPoint (CFloatVector3& v, tScreenPos& s, ubyte flags)
+{
+if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
+	return;
+s.x = fix (fxCanvW2 + double (v [X]) * fxCanvW2 / (fFOVScale * v [Z]));
+s.y = fix (fxCanvH2 - double (v [Y]) * fxCanvH2 / v [Z]);
+return flags | PF_PROJECTED;
+}
+
+// -----------------------------------------------------------------------------------
+
+ubyte ProjectPoint (CFixVector3& v, tScreenPos& s, ubyte flags)
+{
+CFloatVector3 h;
+h.Assign (v);
+return ProjectPoint (h, s, flags);
+}
+
+// -----------------------------------------------------------------------------------
+
 void G3ProjectPoint (g3sPoint *p)
 {
-#if VIS_CULLING == 2
-if ((p->p3_flags & PF_PROJECTED))
-#else
-if ((p->p3_flags & PF_PROJECTED) || (p->p3_codes & CC_BEHIND))
-#endif
-	return;
-CFloatVector v;
-v.Assign (p->p3_vec);
-#if VIS_CULLING == 2
-v.Scale (transformation.m_info.scalef);
-v [Z] = fabs (v [Z]);
-fix x = fix (fxCanvW2 + double (v [X]) * fxCanvW2 / double (v [Z]));
-fix y = fix (fxCanvH2 - double (v [Y]) * fxCanvH2 / double (v [Z]));
-#if DBG
-if ((x < 0) || (x > CCanvas::Current ()->Width ()))
-	x = x;
-if ((y < 0) || (y > CCanvas::Current ()->Height ()))
-	y = y;
-#endif
-p->p3_screen.x = (x < 0) ? 0 : (x > CCanvas::Current ()->Width ()) ? CCanvas::Current ()->Width () : x;
-p->p3_screen.y = (y < 0) ? 0 : (y > CCanvas::Current ()->Height ()) ? CCanvas::Current ()->Height () : y;
-#else
-p->p3_screen.x = fix (fxCanvW2 + double (v [X]) * fxCanvW2 / (fFOVScale * v [Z]));
-p->p3_screen.y = fix (fxCanvH2 - double (v [Y]) * fxCanvH2 / v [Z]);
-#endif
-p->p3_flags |= PF_PROJECTED;
+return (p->p3_flags = ProjectPoint (p->p3_vec, p->p3_screen, p->p3_flags));
 }
 
 // -----------------------------------------------------------------------------------

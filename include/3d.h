@@ -149,6 +149,8 @@ g3sCodes g3_check_codes (int nv,g3sPoint **pointlist);
 //projects a point
 void G3ProjectPoint (g3sPoint* point);
 
+void ProjectPoint (CFloatVector3& v, tScreenPos& screen, ubyte flags = 0);
+
 //code a point.  fills in the p3_codes field of the point, and returns the codes
 static inline ubyte G3EncodePoint (g3sPoint* p) 
 {
