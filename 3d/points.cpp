@@ -82,7 +82,7 @@ return ProjectPoint (h, s, flags);
 
 void G3ProjectPoint (g3sPoint *p)
 {
-return (p->p3_flags = ProjectPoint (p->p3_vec, p->p3_screen, p->p3_flags, p->p3_codes));
+p->p3_flags = ProjectPoint (p->p3_vec, p->p3_screen, p->p3_flags, p->p3_codes);
 }
 
 // -----------------------------------------------------------------------------------

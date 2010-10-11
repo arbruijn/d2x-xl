@@ -164,12 +164,13 @@ void CGlowRenderer::SetExtent (CFloatVector3 v)
 transformation.Transform (v, v);
 tScreenPos s;
 ProjectPoint (v, s);
+s.y = screen.Height () - s.y;
 //if (h [Z] >= 0.0f) 
 	{
 	if (m_screenMin.x > s.x)
-		m_screenMax.x = s.x;
-	if (m_screenMax.y > s.y)
-		m_screenMax.y = s.y;
+		m_screenMin.x = s.x;
+	if (m_screenMin.y > s.y)
+		m_screenMin.y = s.y;
 	if (m_screenMax.x < s.x)
 		m_screenMax.x = s.x;
 	if (m_screenMax.y < s.y)
@@ -259,8 +260,79 @@ return true;
 
 //------------------------------------------------------------------------------
 
+inline float ScreenCoord (float v, float r, float m)
+{
+v += r * 10;
+if (v < 0.0f)
+	v = 0.0f;
+else if (v > m)
+	v = m;
+return v / m;
+}
+
+//------------------------------------------------------------------------------
+
+#if DBG
+static bool bClamp = true;
+static int tClamp = -1;
+#endif
+
 void CGlowRenderer::Render (int const source, int const direction, float const radius)
 {
+	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
+#if 0
+	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+#else
+	float verts [4][2] = {
+		{ScreenCoord ((float) m_screenMin.x, -radius, (float) screen.Width ()), ScreenCoord ((float) m_screenMin.y, -radius, (float) screen.Height ())},
+		{ScreenCoord ((float) m_screenMin.x, -radius, (float) screen.Width ()), ScreenCoord ((float) m_screenMax.y, +radius, (float) screen.Height ())},
+		{ScreenCoord ((float) m_screenMax.x, +radius, (float) screen.Width ()), ScreenCoord ((float) m_screenMax.y, +radius, (float) screen.Height ())},
+		{ScreenCoord ((float) m_screenMax.x, +radius, (float) screen.Width ()), ScreenCoord ((float) m_screenMin.y, -radius, (float) screen.Height ())}
+	};
+#endif
+
+#if DBG
+int t = SDL_GetTicks ();
+if (t - tClamp >= 1000) {
+	tClamp = t;
+	bClamp = !bClamp;
+	}
+if (!bClamp) {
+	verts [0][0] = 0.0f;
+	verts [0][1] = 0.0f;
+	verts [1][0] = 0.0f;
+	verts [1][1] = 1.0f;
+	verts [2][0] = 1.0f;
+	verts [2][1] = 1.0f;
+	verts [3][0] = 1.0f;
+	verts [3][1] = 0.0f;
+	}
+#endif
+
+ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+if (direction >= 0)
+	LoadShader (direction, radius);
+else
+	shaderManager.Deploy (-1);
+ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer ());
+OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
+OglVertexPointer (2, GL_FLOAT, 0, verts);
+glColor3f (1,1,1);
+OglDrawArrays (GL_QUADS, 0, 4);
+ogl.BindTexture (0);
+}
+
+//------------------------------------------------------------------------------
+
+#define BLUR 1
+#define START_RAD 3.0f
+#define RAD_INCR 3.0f
+
+bool CGlowRenderer::End (void)
+{
+if (m_nStrength < 0)
+	return false;
+
 if (m_screenMin.x > m_screenMax.x)
 	Swap (m_screenMin.x, m_screenMax.x);
 if (m_screenMin.y > m_screenMax.y)
@@ -281,42 +353,8 @@ if (m_screenMax.y < 0)
 	m_screenMax.y = 0;
 else if (m_screenMax.y >= screen.Height ())
 	m_screenMax.y = screen.Height () - 1;
-#if 0
-	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
-	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
-#else
-	float verts [4][2] = {
-		{((float) m_screenMin.x - radius) / (float) screen.Width (), ((float) m_screenMin.y - radius) / (float) screen.Height ()},
-		{((float) m_screenMin.x - radius) / (float) screen.Width (), ((float) m_screenMax.y + radius) / (float) screen.Height ()},
-		{((float) m_screenMax.x + radius) / (float) screen.Width (), ((float) m_screenMax.y + radius) / (float) screen.Height ()},
-		{((float) m_screenMax.x + radius) / (float) screen.Width (), ((float) m_screenMin.y - radius) / (float) screen.Height ()}
-	};
-#endif
 
-ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-if (direction >= 0)
-	LoadShader (direction, radius);
-else
-	shaderManager.Deploy (-1);
-ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer ());
-OglTexCoordPointer (2, GL_FLOAT, 0, verts);
-OglVertexPointer (2, GL_FLOAT, 0, verts);
-glColor3f (1,1,1);
-OglDrawArrays (GL_QUADS, 0, 4);
-ogl.BindTexture (0);
-}
-
-//------------------------------------------------------------------------------
-
-#define BLUR 1
-#define START_RAD 3.0f
-#define RAD_INCR 3.0f
-
-bool CGlowRenderer::End (void)
-{
-if (m_nStrength < 0)
-	return false;
-if ((m_screenMax.x > m_screenMin.x) || (m_screenMax.y > m_screenMin.y)) {
+if ((m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y)) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
