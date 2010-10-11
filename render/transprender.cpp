@@ -1122,7 +1122,7 @@ void CTransparencyRenderer::RenderThruster (tTranspThruster *item)
 {
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
-thrusterFlames.Render (item->objP);
+thrusterFlames.Render (item->objP, &item->info, item->nThruster);
 gameData.models.vScale.SetZero ();
 ResetBitmaps ();
 }

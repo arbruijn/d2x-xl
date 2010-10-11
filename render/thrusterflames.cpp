@@ -435,7 +435,7 @@ if (m_nStyle == 1) {	//2D
 	}
 else { //3D
 	//m_ti.fLength /= 2;
-	if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) {
+	if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) {
 		Create ();
 		for (int i = 0; i < m_nThrusters; i++) {
 			if (IsFiring (ws, i))
