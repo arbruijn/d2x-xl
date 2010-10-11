@@ -152,10 +152,6 @@ m_x = ogl.m_states.nLastX;
 m_y = ogl.m_states.nLastY;
 m_w = ogl.m_states.nLastW;
 m_h = ogl.m_states.nLastH;
-if (m_vMin [X] > m_vMax [X])
-	Swap (m_vMin [X], m_vMax [X]);
-if (m_vMin [Y] > m_vMax [Y])
-	Swap (m_vMin [Y], m_vMax [Y]);
 //ogl.Viewport ((GLint) (m_vMin [X]), (GLint) (m_vMin [Y]), (GLint) (m_vMax [X] - m_vMin [X]) + 1, (GLint) (m_vMax [Y] - m_vMin [Y]) + 1);
 glClear (GL_COLOR_BUFFER_BIT);
 //ogl.Viewport (m_x, m_y, m_w, m_h);
@@ -167,32 +163,51 @@ void CGlowRenderer::SetExtent (CFloatVector3& v)
 {
 CFloatVector3 h;
 transformation.Transform (h, v);
-if (m_vMin [X] > v [X])
-	m_vMin [X] = v [X];
-if (m_vMin [Y] > v [Y])
-	m_vMin [Y] = v [Y];
-if (m_vMin [Z] > v [Z])
-	m_vMin [Z] = v [Z];
-if (m_vMax [X] < v [X])
-	m_vMax [X] = v [X];
-if (m_vMax [Y] < v [Y])
-	m_vMax [Y] = v [Y];
-if (m_vMax [Z] < v [Z])
-	m_vMax [Z] = v [Z];
+if (h [Z] >= 0.0f) {
+	if (m_vMin [X] > h [X])
+		m_vMin [X] = h [X];
+	if (m_vMin [Y] > h [Y])
+		m_vMin [Y] = h [Y];
+	//if (m_vMin [Z] > h [Z])
+	//	m_vMin [Z] = h [Z];
+	if (m_vMax [X] < h [X])
+		m_vMax [X] = h [X];
+	if (m_vMax [Y] < h [Y])
+		m_vMax [Y] = h [Y];
+	//if (m_vMax [Z] < h [Z])
+	//	m_vMax [Z] = h [Z];
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::InitViewPort (void)
+{
+if (!m_bViewPort) {
+	m_bViewPort = true;
+	m_vMin.Set (1e30f, 1e30f, 0.0f);
+	m_vMax.Set (-1e30f, -1e30f, 0.0f);
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
 {
-if (!m_bViewPort) {
-	m_bViewPort = true;
-	m_vMin.Set (1e30f, 1e30f, 1e30f);
-	m_vMax.Set (-1e30f, -1e30f, -1e30f);
-	}
-
+InitViewPort ();
 for (; nVerts > 0; nVerts--)
 	SetExtent (*vertexP++);
+Project (m_vMin);
+Project (m_vMax);
+}
+
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::ViewPort (CFloatVector* vertexP, int nVerts)
+{
+InitViewPort ();
+for (; nVerts > 0; nVerts--, vertexP++)
+	SetExtent (*vertexP->XYZ ());
 Project (m_vMin);
 Project (m_vMax);
 }
@@ -257,15 +272,19 @@ return true;
 
 void CGlowRenderer::Render (int const source, int const direction, float const radius)
 {
+if (m_vMin [X] > m_vMax [X])
+	Swap (m_vMin [X], m_vMax [X]);
+if (m_vMin [Y] > m_vMax [Y])
+	Swap (m_vMin [Y], m_vMax [Y]);
 #if 0
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 #else
 	float verts [4][2] = {
-		{m_vMin [X] / (float) screen.Width (), m_vMin [Y] / (float) screen.Height ()},
-		{m_vMin [X] / (float) screen.Width (), m_vMax [Y] / (float) screen.Height ()},
-		{m_vMax [X] / (float) screen.Width (), m_vMax [Y] / (float) screen.Height ()},
-		{m_vMax [X] / (float) screen.Width (), m_vMin [Y] / (float) screen.Height ()}
+		{(m_vMin [X] - radius) / (float) screen.Width (), (m_vMin [Y] - radius) / (float) screen.Height ()},
+		{(m_vMin [X] - radius) / (float) screen.Width (), (m_vMax [Y] + radius) / (float) screen.Height ()},
+		{(m_vMax [X] + radius) / (float) screen.Width (), (m_vMax [Y] + radius) / (float) screen.Height ()},
+		{(m_vMax [X] + radius) / (float) screen.Width (), (m_vMin [Y] - radius) / (float) screen.Height ()}
 	};
 #endif
 
@@ -292,60 +311,62 @@ bool CGlowRenderer::End (void)
 {
 if (m_nStrength < 0)
 	return false;
-glMatrixMode (GL_MODELVIEW);
-glPushMatrix ();
-glLoadIdentity ();//clear matrix
-glMatrixMode (GL_PROJECTION);
-glPushMatrix ();
-glLoadIdentity ();//clear matrix
-glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+if ((m_vMax [X] > m_vMin [X]) && (m_vMax [Y] > m_vMin [Y])) {
+	glMatrixMode (GL_MODELVIEW);
+	glPushMatrix ();
+	glLoadIdentity ();//clear matrix
+	glMatrixMode (GL_PROJECTION);
+	glPushMatrix ();
+	glLoadIdentity ();//clear matrix
+	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 
-GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
-bool bDepthWrite = ogl.GetDepthWrite ();
-ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
+	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
+	bool bDepthWrite = ogl.GetDepthWrite ();
+	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
 
-ogl.SetDepthMode (GL_ALWAYS);
-ogl.SetDepthWrite (false);
-ogl.SetFaceCulling (false);
+	ogl.SetDepthMode (GL_ALWAYS);
+	ogl.SetDepthWrite (false);
+	ogl.SetFaceCulling (false);
 
-#if BLUR
+	#if BLUR
 
-ogl.ResetClientStates (1);
-ogl.SetBlendMode (GL_ONE, GL_ZERO);
-float radius = START_RAD;
-ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
-Render (-1, 0, radius); // Glow -> Blur 0
-ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
-Render (0, 1, radius); // Blur 0 -> Blur 1
-for (int i = 1; i < m_nStrength; i++) {
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
-	radius += RAD_INCR;
+	ogl.ResetClientStates (1);
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	float radius = START_RAD;
 	ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
 	Render (-1, 0, radius); // Glow -> Blur 0
 	ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
 	Render (0, 1, radius); // Blur 0 -> Blur 1
+	for (int i = 1; i < m_nStrength; i++) {
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
+		radius += RAD_INCR;
+		ogl.SelectBlurBuffer (0, m_vMin, m_vMax, radius); 
+		Render (-1, 0, radius); // Glow -> Blur 0
+		ogl.SelectBlurBuffer (1, m_vMin, m_vMax, radius); 
+		Render (0, 1, radius); // Blur 0 -> Blur 1
+		}
+
+	#endif
+
+	ogl.ChooseDrawBuffer ();
+	ogl.SetDepthMode (GL_LEQUAL);
+	//ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetBlendMode (2);
+	#if BLUR
+	Render (1); // Glow -> back buffer
+	#endif
+	if (!m_bReplace)
+		Render (-1); // render the unblurred stuff on top of the blur
+
+	glPopMatrix ();
+	glMatrixMode (GL_MODELVIEW);
+	glPopMatrix ();
+
+	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
+	ogl.SetDepthWrite (bDepthWrite);
+	ogl.SetDepthMode (nDepthMode);
+	ogl.SetFaceCulling (true);
 	}
-
-#endif
-
-ogl.ChooseDrawBuffer ();
-ogl.SetDepthMode (GL_LEQUAL);
-//ogl.SetBlendMode (GL_ONE, GL_ZERO);
-ogl.SetBlendMode (2);
-#if BLUR
-Render (1); // Glow -> back buffer
-#endif
-if (!m_bReplace)
-	Render (-1); // render the unblurred stuff on top of the blur
-
-glPopMatrix ();
-glMatrixMode (GL_MODELVIEW);
-glPopMatrix ();
-
-ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
-ogl.SetDepthWrite (bDepthWrite);
-ogl.SetDepthMode (nDepthMode);
-ogl.SetFaceCulling (true);
 
 m_nStrength = -1;
 m_bViewPort = false;

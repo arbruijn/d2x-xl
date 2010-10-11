@@ -462,6 +462,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameOptions [i].render.nQuality, i, 0);
 		RP (gameOptions [i].render.effects.bEnabled, i, 0);
+		RP (gameOptions [i].render.effects.bGlow, i, 0);
 		RP (gameOptions [i].render.effects.bSoftParticles, i, 0);
 		RP (gameOptions [i].render.effects.nShrapnels, i, 0);
 		RP (gameOptions [i].render.coronas.bUse, i, 0);
@@ -997,6 +998,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.stereo.bDeghost", "0"},
 	 {"gameOptions[0].render.stereo.bBrighten", "1"},
 	 {"gameOptions[0].render.effects.bEnabled", "1"},
+	 {"gameOptions[0].render.effects.bGlow", "0"},
 	 {"gameOptions[0].render.effects.bSoftParticles", "0"},
 	 {"gameOptions[0].render.effects.bEnergySparks", "1"},
 	 {"gameOptions[0].render.automap.bTextured", "1"},

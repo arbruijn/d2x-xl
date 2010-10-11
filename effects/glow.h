@@ -20,6 +20,7 @@ class CGlowRenderer {
 		bool End (void);
 		bool Begin (int const nStrength = 1, bool const bReplace = true, float const brightness = 1.0f);
 		void ViewPort (CFloatVector3* vertexP, int nVerts);
+		void ViewPort (CFloatVector* vertexP, int nVerts);
 		void ViewPort (CFixVector pos, float radius);
 		void ViewPort (CFloatVector3 pos, float width, float height);
 		CGlowRenderer () : m_shaderProg (0), m_nStrength (-1), m_bReplace (true), m_bViewPort (false), m_brightness (1.1f) {}
@@ -31,6 +32,7 @@ class CGlowRenderer {
 		void Project (CFloatVector3& v);
 		void Activate (void);
 		void SetExtent (CFloatVector3& v);
+		void InitViewPort (void);
 	};
 
 extern CGlowRenderer glowRenderer;
