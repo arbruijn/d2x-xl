@@ -222,7 +222,7 @@ void CGlowRenderer::Begin (int const nStrength, bool const bReplace, float const
 {
 if (!ogl.m_states.bGlowRendering)
 	return;
-if (gameOptions [0].render.nQuality < 3)
+if (gameOptions [0].render.nQuality < 2)
 	return;
 if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness)) {
 	End ();
@@ -309,7 +309,7 @@ for (int i = 1; i < m_nStrength; i++) {
 #endif
 
 ogl.ChooseDrawBuffer ();
-//ogl.SetDepthMode (GL_LEQUAL);
+ogl.SetDepthMode (GL_LEQUAL);
 //ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.SetBlendMode (2);
 #if BLUR
