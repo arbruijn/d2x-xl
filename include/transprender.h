@@ -98,6 +98,8 @@ typedef struct tTranspLightTrail {
 
 typedef struct tTranspThruster {
 	CObject*					objP;
+	tThrusterInfo			info;
+	int						nThruster;
 } tTranspThruster;
 
 typedef struct tTranspItem {

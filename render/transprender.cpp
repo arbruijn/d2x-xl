@@ -611,12 +611,14 @@ return Add (tiLightTrail, &item, sizeof (item), v, 0, false, 0);
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::AddThruster (CObject* objP, CFixVector* vPos)
+int CTransparencyRenderer::AddThruster (CObject* objP, tThrusterInfo* info, int nThruster)
 {
 	tTranspThruster item;
 
 item.objP = objP;
-return Add (tiThruster, &item, sizeof (item), *vPos, 0, false, 0);
+item.info = info;
+item.nThruster = nThruster;
+return Add (tiThruster, &item, sizeof (item), info.vPos [nThruster], 0, false, 0);
 }
 
 //------------------------------------------------------------------------------

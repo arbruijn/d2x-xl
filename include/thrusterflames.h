@@ -39,7 +39,7 @@ class CThrusterFlames {
 
 	public:
 		CThrusterFlames () { m_bHaveFlame = false; }
-		void Render (CObject *objP);
+		void Render (CObject *objP, tThrusterInfo* infoP = NULL, int nThruster = -1);
 		void Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, tRgbaColorf *colorP);
 		int CalcPos (CObject *objP, tThrusterInfo* tiP = NULL, int bAfterburnerBlob = 0);
 

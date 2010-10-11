@@ -410,7 +410,7 @@ return false;
 
 // -----------------------------------------------------------------------------
 
-void CThrusterFlames::Render (CObject *objP)
+void CThrusterFlames::Render (CObject *objP, tThrusterInfo* infoP, int nThruster)
 {
 if (!Setup (objP))
 	return;
@@ -441,30 +441,23 @@ else { //3D
 	ogl.SetTransform (1);
 	ogl.SetDepthWrite (false);
 
-	bool bHaveThruster = false;
-
 	//m_ti.fLength /= 2;
-	for (int i = 0; i < m_nThrusters; i++) {
-		if (IsFiring (ws, i)) {
-			if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY)
-				transparencyRenderer.AddThruster (objP, &m_ti.vPos [i]);
-			else {
-				if (!bHaveThruster) {
-					bHaveThruster = true;
-					glowRenderer.Begin (2, false, 1.0f);
-					}
-				transformation.Begin (m_ti.vPos [i], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : objP->info.position.mOrient);
-				transformation.Begin (CFixVector::ZERO, m_ti.mRot [i]);
-		// render a cap for the thruster flame at its base
-				RenderCap (i);
-				Render3D (i);
-				transformation.End ();
-				transformation.End ();
-				}
+	if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) {
+		for (int i = 0; i < m_nThrusters; i++) {
+			if (IsFiring (ws, i)) {
+				transparencyRenderer.AddThruster (objP, &m_ti, i);
 			}
 		}
-	if (bHaveThruster)
-		glowRenderer.End ();
+	else {
+		glowRenderer.Begin (2, false, 1.0f);
+		transformation.Begin (info->vPos [nThruster], (info->pp && !m_bSpectate) ? info->pp->mOrient : objP->info.position.mOrient);
+		transformation.Begin (CFixVector::ZERO, info->mRot [nThruster]);
+		// render a cap for the thruster flame at its base
+		RenderCap (i);
+		Render3D (i);
+		transformation.End ();
+		transformation.End ();
+		}
 	ogl.SetTransform (0);
 	ogl.SetBlendMode (0);
 	ogl.SetFaceCulling (true);
