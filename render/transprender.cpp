@@ -905,13 +905,15 @@ ResetBitmaps ();
 void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
+	int bGlow = 1;
 
-#if 0
+#if 1
 if (item->bAdditive == 1) 
 	glowRenderer.Begin (2, false, 1.0f);
 else if (item->bAdditive == 2)
 	glowRenderer.Begin (1, false, 1.1f);
 else {
+	bGlow = 0;
 	if (glowRenderer.End ())
 		ResetBitmaps ();
 	}
@@ -937,6 +939,8 @@ if (!(bSoftBlend && glareRenderer.LoadShader (item->fSoftRad, item->bAdditive !=
 item->bmP->SetColor ();
 CFloatVector vPosf;
 transformation.Transform (vPosf, item->position, 0);
+if (bGlow)
+	glowRenderer.ViewPort (*vPosf.XYZ (), X2F (item->nWidth), X2F (item->nHeight));
 ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
 }
 
