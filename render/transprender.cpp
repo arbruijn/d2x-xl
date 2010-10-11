@@ -896,7 +896,7 @@ if (item->bAdditive == 1)
 else if (item->bAdditive == 2)
 	glowRenderer.Begin (1, false, 1.0f);
 else {
-	if glowRenderer.End ())
+	if (glowRenderer.End ())
 		ResetBitmaps ();
 	}
 #endif

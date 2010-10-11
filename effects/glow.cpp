@@ -93,15 +93,16 @@ return true;
 
 void CGlowRenderer::InitShader (void)
 {
-ogl.m_states.bDepthBlending = 0;
+ogl.m_states.bGlowRendering = 0;
 PrintLog ("building glow shader program\n");
 //DeleteShaderProg (NULL);
 if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
+	ogl.m_states.bGlowRendering = 1;
 	m_shaderProg = 0;
 	for (int i = 0; i < 2; i++) {
 		if (!shaderManager.Build (hBlurShader [i], blurFS [i], blurVS)) {
 			ogl.ClearError (0);
-			ogl.m_states.bDepthBlending = 0;
+			ogl.m_states.bGlowRendering = 0;
 			}
 		}
 	}
@@ -219,7 +220,9 @@ ViewPort (v, radius, radius);
 
 void CGlowRenderer::Begin (int const nStrength, bool const bReplace, float const brightness)
 {
-if (gameOptions [0].render.nQuality < 3)
+if (!ogl.m_states.bDepthBlending)
+	return;
+//if (gameOptions [0].render.nQuality < 3)
 	return;
 if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness)) {
 	End ();
@@ -306,7 +309,7 @@ for (int i = 1; i < m_nStrength; i++) {
 #endif
 
 ogl.ChooseDrawBuffer ();
-ogl.SetDepthMode (GL_LEQUAL);
+//ogl.SetDepthMode (GL_LEQUAL);
 //ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.SetBlendMode (2);
 #if BLUR

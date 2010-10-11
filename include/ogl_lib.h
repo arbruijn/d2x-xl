@@ -184,6 +184,7 @@ class COglStates {
 		int	bLuminance4Alpha4;
 		int	bOcclusionQuery;
 		int	bDepthBlending;
+		int	bGlowRendering;
 		int	bUseDepthBlending;
 		int	bHaveDepthBuffer [2];
 		int	bHaveColorBuffer;
