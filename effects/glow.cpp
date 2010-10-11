@@ -136,7 +136,12 @@ glClear (GL_COLOR_BUFFER_BIT);
 
 void CGlowRenderer::SetupProjection (void)
 {
-glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_projection.Vec ());	
+glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_projection.Vec ());
+Swap (m_projection [1], m_projection [4]);
+Swap (m_projection [2], m_projection [8]);
+Swap (m_projection [3], m_projection [12]);
+Swap (m_projection [7], m_projection [13]);
+Swap (m_projection [11], m_projection [14]);
 }
 
 //------------------------------------------------------------------------------
@@ -270,11 +275,13 @@ void CGlowRenderer::Render (int const source, int const direction, float const r
 	float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 #if DBG
+#	if 0
 int t = SDL_GetTicks ();
 if (t - tClamp >= 1000) {
 	tClamp = t;
 	bClamp = !bClamp;
 	}
+#	endif
 if (bClamp) {
 	float w = radius; // + (float) (m_screenMax.x - m_screenMin.x) / 4.0f;
 	float h = radius; // + (float) (m_screenMax.y - m_screenMin.y) / 4.0f;
