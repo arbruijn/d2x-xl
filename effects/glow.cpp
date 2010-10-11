@@ -218,11 +218,20 @@ ViewPort (v, radius, radius);
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::Begin (int const nStrength, bool const bReplace, float const brightness)
+bool CGlowRenderer::Available (void)
 {
 if (!ogl.m_states.bGlowRendering)
 	return false;
 if (gameOptions [0].render.nQuality < 2)
+	return false;
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool CGlowRenderer::Begin (int const nStrength, bool const bReplace, float const brightness)
+{
+if (!Available ())
 	return false;
 if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness)) {
 	End ();

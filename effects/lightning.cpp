@@ -700,10 +700,10 @@ if (bGlow) {
 
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
-if (gameOpts->render.lightning.bGlow && !ogl.m_states.bGlowRendering)
-	ComputeGlow (nDepth, nThread);
-else
+if (glowRenderer.Available ())
 	ComputeCore ();
+else
+	ComputeGlow (nDepth, nThread);
 if (extraGameInfo [0].bUseLightning > 1)
 	for (int i = 0; i < m_nNodes; i++)
 		if (m_nodes [i].GetChild ())
