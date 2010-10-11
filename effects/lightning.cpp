@@ -876,7 +876,7 @@ if (nDepth)
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
-glowRenderer.ViewPort (m_coreVerts.Buffer (), m_nNodes);
+//glowRenderer.ViewPort (m_coreVerts.Buffer (), m_nNodes);
 if (!gameOpts->render.lightning.bGlow) 
 	RenderCore (&color, nDepth, nThread);
 else {
