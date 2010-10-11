@@ -1086,7 +1086,7 @@ if (m_data.nPrevType != m_data.nCurType) {
 	m_data.bUseLightmaps = 0;
 	shaderManager.Deploy (-1);
 	}
-glowRenderer.Begin (2, false, 1.0f);
+glowRenderer.Begin (2, false);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 if (LoadImage (item->bmP, 0, 0, 0, GL_CLAMP)) {
 	ogl.SetDepthWrite (true);
