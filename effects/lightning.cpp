@@ -625,7 +625,7 @@ if (!nodeP)
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
-	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow;
+	bool					bGlow = !nDepth && !glowRenderer.Available () && (m_bGlow > 0) && gameOpts->render.lightning.bGlow;
 	float					fWidth = bGlow ? PLASMA_WIDTH / 2.0f : (m_bGlow > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bGlow < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
 
 if (nThread < 0)
@@ -700,10 +700,10 @@ if (bGlow) {
 
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
-if (glowRenderer.Available () || !gameOpts->render.lightning.bGlow)
-	ComputeCore ();
-else
+if (gameOpts->render.lightning.bGlow)
 	ComputeGlow (nDepth, nThread);
+else
+	ComputeCore ();
 if (extraGameInfo [0].bUseLightning > 1)
 	for (int i = 0; i < m_nNodes; i++)
 		if (m_nodes [i].GetChild ())
@@ -875,10 +875,12 @@ if (nDepth)
 WaitForRenderThread (nThread);
 #endif
 //glowRenderer.ViewPort (m_coreVerts.Buffer (), m_nNodes);
-if (!glowRenderer.Begin (3 - bGlow, false) && gameOpts->render.lightning.bGlow)
-	RenderGlow (&color, nDepth, nThread);
-else
+if (!gameOpts->render.lightning.bGlow) 
 	RenderCore (&color, nDepth, nThread);
+else {
+	glowRenderer.Begin (3 - bGlow, false);
+	RenderGlow (&color, nDepth, nThread);
+	}
 //glowRenderer.End ();
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
