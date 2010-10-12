@@ -154,7 +154,7 @@ if (m_screenMax.y < s.y)
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::InitViewPort (void)
+void CGlowRenderer::InitViewport (void)
 {
 if (!m_bViewPort) {
 	m_bViewPort = true;
@@ -248,7 +248,7 @@ if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != b
 	m_nStrength = nStrength;
 	m_brightness = brightness;
 	m_bViewPort = false;
-	InitViewPort ();
+	InitViewport ();
 	Activate ();
 	}
 --nCalls;
@@ -316,20 +316,16 @@ ogl.BindTexture (0);
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Clear (int nStrength)
+void CGlowRenderer::ClearViewport (void)
 {
-float r = radius * 4 * nStrength; // scale with a bit more than the max. offset from the blur shader
-glViewport (
-float verts [4][2] = {
-	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
-	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())},
-	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
-	 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
-	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
-	 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
-	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
-	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())}
-	};
+ogl.SaveViewport ();
+float r = radius * 4 * m_nStrength; // scale with a bit more than the max. offset from the blur shader
+glViewport (max (m_screenMin.x - r, 0), 
+				max (m_screenMin.y - r, 0), 
+				min (m_screenMax.x - m_screenMin.x + 1 + 2 * r, screen.Width ()), 
+				min (m_screenMax.y - m_screenMin.y + 1 + 2 * r, screen.Height ()));
+glClear (GL_COLOR_BUFFER_BIT);
+ogl.RestoreViewport ();
 }
 
 //------------------------------------------------------------------------------
@@ -372,10 +368,10 @@ else
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	float radius = START_RAD;
 	ogl.SelectBlurBuffer (0); 
-	glClear (GL_COLOR_BUFFER_BIT);
+	ClearViewport ();
 	Render (-1, 0, radius); // Glow -> Blur 0
 	ogl.SelectBlurBuffer (1); 
-	glClear (GL_COLOR_BUFFER_BIT);
+	ClearViewport ();
 	Render (0, 1, radius); // Blur 0 -> Blur 1
 #	if BLUR > 1
 	for (int i = 1; i < m_nStrength; i++) {
