@@ -144,7 +144,6 @@ void CGlowRenderer::SetExtent (CFloatVector3 v, bool bTransformed)
 #if USE_VIEWPORT
 if (!bTransformed)
 	transformation.Transform (v, v);
-CFloatVector w;
 //w.Assign (v);
 //w [3] = 1.0f;
 v = transformation.m_info.projection * v;
