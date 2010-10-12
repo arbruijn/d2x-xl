@@ -584,6 +584,7 @@ m_data.depthScale [Z] = float (ZFAR - ZNEAR);
 m_data.screenScale.x = 1.0f / float (screen.Width ());
 m_data.screenScale.y = 1.0f / float (screen.Height ());
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+transformation.SetupProjection ();
 glMatrixMode (GL_MODELVIEW);
 }
 

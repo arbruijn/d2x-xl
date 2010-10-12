@@ -12,7 +12,6 @@ class CGlowRenderer {
 		bool m_bReplace;
 		bool m_bViewPort;
 		float m_brightness;
-		CFloatMatrix m_projection;
 
 	public:
 		bool Available (bool bForce = false);

@@ -145,29 +145,24 @@ void CGlowRenderer::SetExtent (CFloatVector3 v, bool bTransformed)
 if (!bTransformed)
 	transformation.Transform (v, v);
 CFloatVector w;
-w.Assign (v);
-w [3] = 1.0f;
-w = m_projection * w;
+//w.Assign (v);
+//w [3] = 1.0f;
+v = transformation.m_info.projection * v;
 tScreenPos s;
-
-s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / v [Z]);
-s.y = fix (fxCanvH2 + float (v [Y]) * fxCanvH2 / v [Z]);
-tScreenPos t;
-t.x = fix (fxCanvW2 + float (w [X]) * fxCanvW2 / -w [Z]);
-t.y = fix (fxCanvH2 + float (w [Y]) * fxCanvH2 / -w [Z]);
-//s.y = screen.Height () - s.y;
+s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / -v [Z]);
+s.y = fix (fxCanvH2 + float (v [Y]) * fxCanvH2 / -v [Z]);
 #if DBG == 0
 #pragma omp critical (glowRender)
 #endif
 	{
-	if (m_screenMin.x > t.x)
-		m_screenMin.x = t.x;
-	if (m_screenMin.y > t.y)
-		m_screenMin.y = t.y;
-	if (m_screenMax.x < t.x)
-		m_screenMax.x = t.x;
-	if (m_screenMax.y < t.y)
-		m_screenMax.y = t.y;
+	if (m_screenMin.x > s.x)
+		m_screenMin.x = s.x;
+	if (m_screenMin.y > s.y)
+		m_screenMin.y = s.y;
+	if (m_screenMax.x < s.x)
+		m_screenMax.x = s.x;
+	if (m_screenMax.y < s.y)
+		m_screenMax.y = s.y;
 	}
 #endif
 }
@@ -188,7 +183,7 @@ if (!m_bViewPort) {
 void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
-SetupProjection ();
+//transformation.SetupProjection ();
 for (; nVerts > 0; nVerts--)
 	SetExtent (*vertexP++);
 #endif
@@ -199,7 +194,7 @@ for (; nVerts > 0; nVerts--)
 void CGlowRenderer::ViewPort (CFloatVector* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
-SetupProjection ();
+//transformation.SetupProjection ();
 #if DBG == 0
 #pragma omp parallel 
 #endif

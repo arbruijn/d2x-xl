@@ -64,8 +64,9 @@ ubyte ProjectPoint (CFloatVector3& v, tScreenPos& s, ubyte flags, ubyte codes)
 {
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
-s.x = fix (fxCanvW2 + double (v [X]) * fxCanvW2 / (fFOVScale * v [Z]));
-s.y = fix (fxCanvH2 - double (v [Y]) * fxCanvH2 / v [Z]);
+CFloatVector3 w = transformation.m_info.projection * v;
+s.x = fix (fxCanvW2 + double (w [X]) * fxCanvW2 / w [Z]);
+s.y = fix (fxCanvH2 - double (w [Y]) * fxCanvH2 / w [Z]);
 return flags | PF_PROJECTED;
 }
 
