@@ -7,6 +7,8 @@
 
 CGlowRenderer glowRenderer;
 
+#define USE_VIEWPORT 0
+
 //------------------------------------------------------------------------------
 
 int hBlurShader [2] = {-1, -1};
@@ -128,6 +130,7 @@ m_y = ogl.m_states.nLastY;
 m_w = ogl.m_states.nLastW;
 m_h = ogl.m_states.nLastH;
 //ogl.Viewport ((GLint) (m_vMin [X]), (GLint) (m_vMin [Y]), (GLint) (m_vMax [X] - m_vMin [X]) + 1, (GLint) (m_vMax [Y] - m_vMin [Y]) + 1);
+glClearColor (0,0,0,0);
 glClear (GL_COLOR_BUFFER_BIT);
 //ogl.Viewport (m_x, m_y, m_w, m_h);
 }
@@ -150,6 +153,7 @@ Swap (m_projection [11], m_projection [14]);
 
 void CGlowRenderer::SetExtent (CFloatVector3 v, bool bTransformed)
 {
+#if USE_VIEWPORT
 if (!bTransformed)
 	transformation.Transform (v, v);
 tScreenPos s;
@@ -168,57 +172,68 @@ s.y = screen.Height () - s.y;
 	if (m_screenMax.y < s.y)
 		m_screenMax.y = s.y;
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CGlowRenderer::InitViewPort (void)
 {
+#if USE_VIEWPORT
 if (!m_bViewPort) {
 	m_bViewPort = true;
 	m_screenMin.x = m_screenMin.y = 0x7FFF;
 	m_screenMax.x = m_screenMax.y = -0x7FFF;
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
 {
+#if USE_VIEWPORT
 for (; nVerts > 0; nVerts--)
 	SetExtent (*vertexP++);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CGlowRenderer::ViewPort (CFloatVector* vertexP, int nVerts)
 {
+#if USE_VIEWPORT
 #pragma omp parallel 
 {
-#pragma omp for
+#	pragma omp for
 for (int i = 0; i < nVerts; i++)
 	SetExtent (*vertexP [i].XYZ ());
 }
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CGlowRenderer::ViewPort (CFloatVector3 v, float width, float height)
 {
+#if USE_VIEWPORT
 transformation.Transform (v, v);
 CFloatVector3 r;
 r.Set (width, height, 0.0f);
 SetExtent (v - r, true);
 SetExtent (v + r, true);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CGlowRenderer::ViewPort (CFixVector pos, float radius)
 {
+#if USE_VIEWPORT
 CFloatVector3 v;
 v.Assign (pos);
 ViewPort (v, radius, radius);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -261,7 +276,7 @@ inline float ScreenCoord (float v, float m)
 if (v < 0.0f)
 	return 0.0f;
 if (v > m)
-	return m;
+	return 1.0f;
 return v / m;
 }
 
@@ -274,8 +289,7 @@ static int tClamp = -1;
 
 void CGlowRenderer::Render (int const source, int const direction, float const radius)
 {
-#if 0 //DBG
-	float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+#if USE_VIEWPORT //DBG
 
 #	if 0
 int t = SDL_GetTicks ();
@@ -283,22 +297,10 @@ if (t - tClamp >= 1000) {
 	tClamp = t;
 	bClamp = !bClamp;
 	}
-#	endif
-if (bClamp) {
-	float w = radius; // + (float) (m_screenMax.x - m_screenMin.x) / 4.0f;
-	float h = radius; // + (float) (m_screenMax.y - m_screenMin.y) / 4.0f;
-	verts [0][0] = ScreenCoord ((float) m_screenMin.x, -w, (float) screen.Width ());
-	verts [0][1] = ScreenCoord ((float) m_screenMin.y, -h, (float) screen.Height ());
-	verts [1][0] = ScreenCoord ((float) m_screenMin.x, -w, (float) screen.Width ());
-	verts [1][1] = ScreenCoord ((float) m_screenMax.y, +h, (float) screen.Height ());
-	verts [2][0] = ScreenCoord ((float) m_screenMax.x, +w, (float) screen.Width ());
-	verts [2][1] = ScreenCoord ((float) m_screenMax.y, +h, (float) screen.Height ());
-	verts [3][0] = ScreenCoord ((float) m_screenMax.x, +w, (float) screen.Width ());
-	verts [3][1] = ScreenCoord ((float) m_screenMin.y, -h, (float) screen.Height ());
-	}
+if (bClamp)
+#endif
 
-#else
-
+	{
 	float r = radius + 1.0f;
 	float verts [4][2] = {
 		{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
@@ -310,17 +312,26 @@ if (bClamp) {
 		{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
 		 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())}
 		};
+	}
+
+#else
+
+float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 #endif
 
+//ogl.Viewport ((GLint) (m_screenMin.x - r), 
+//				  (GLint) (m_screenMin.y - r), 
+//				  (GLint) (m_screenMax.x - m_screenMin.x + 1 + 2 * r), 
+//				  (GLint) ((m_screenMax.y - m_screenMin.y + 1 + 2 * r)));
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 if (direction >= 0)
 	LoadShader (direction, radius);
 else
 	shaderManager.Deploy (-1);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer ());
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+//glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+//glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 OglTexCoordPointer (2, GL_FLOAT, 0, verts);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
 glColor3f (1,1,1);
@@ -343,22 +354,6 @@ if (m_screenMin.x > m_screenMax.x)
 	Swap (m_screenMin.x, m_screenMax.x);
 if (m_screenMin.y > m_screenMax.y)
 	Swap (m_screenMin.y, m_screenMax.y);
-if (m_screenMin.x < 0)
-	m_screenMin.x = 0;
-else if (m_screenMin.x >= screen.Width ())
-	m_screenMin.x = screen.Width () - 1;
-if (m_screenMin.y < 0)
-	m_screenMin.y = 0;
-else if (m_screenMin.y >= screen.Height ())
-	m_screenMin.y = screen.Height () - 1;
-if (m_screenMax.x < 0)
-	m_screenMax.x = 0;
-else if (m_screenMax.x >= screen.Width ())
-	m_screenMax.x = screen.Width () - 1;
-if (m_screenMax.y < 0)
-	m_screenMax.y = 0;
-else if (m_screenMax.y >= screen.Height ())
-	m_screenMax.y = screen.Height () - 1;
 
 if ((m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y)) {
 	glMatrixMode (GL_MODELVIEW);
@@ -373,11 +368,11 @@ if ((m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y)) {
 	bool bDepthWrite = ogl.GetDepthWrite ();
 	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
 
-	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetDepthWrite (false);
-	ogl.SetFaceCulling (false);
 
-	#if BLUR
+#if BLUR
+	ogl.SetDepthMode (GL_ALWAYS);
+//	ogl.SetFaceCulling (false);
 
 	ogl.ResetClientStates (1);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
@@ -387,7 +382,7 @@ if ((m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y)) {
 	ogl.SelectBlurBuffer (1); 
 	Render (0, 1, radius); // Blur 0 -> Blur 1
 	for (int i = 1; i < m_nStrength; i++) {
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
+		//ogl.SetBlendMode (GL_ONE, GL_ONE);
 		radius += RAD_INCR;
 		ogl.SelectBlurBuffer (0); 
 		Render (-1, 0, radius); // Glow -> Blur 0
@@ -395,15 +390,14 @@ if ((m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y)) {
 		Render (0, 1, radius); // Blur 0 -> Blur 1
 		}
 
-	#endif
+#endif
 
 	ogl.ChooseDrawBuffer ();
 	ogl.SetDepthMode (GL_LEQUAL);
-	//ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetBlendMode (2);
-	#if BLUR
+#if BLUR
 	Render (1); // Glow -> back buffer
-	#endif
+#endif
 	if (!m_bReplace)
 		Render (-1); // render the unblurred stuff on top of the blur
 
@@ -414,7 +408,7 @@ if ((m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y)) {
 	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
 	ogl.SetDepthWrite (bDepthWrite);
 	ogl.SetDepthMode (nDepthMode);
-	ogl.SetFaceCulling (true);
+//	ogl.SetFaceCulling (true);
 	}
 
 m_nStrength = -1;

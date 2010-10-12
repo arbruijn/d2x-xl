@@ -871,6 +871,7 @@ if (m_nLife > 0) {
 color.red *= (float) (0.9 + dbl_rand () / 5);
 color.green *= (float) (0.9 + dbl_rand () / 5);
 color.blue *= (float) (0.9 + dbl_rand () / 5);
+glowRenderer.Begin (3 - bGlow, false);
 if (!(bGlow = SetupGlow ()))
 	color.alpha *= 1.5f;
 if (nDepth)
@@ -878,10 +879,11 @@ if (nDepth)
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
-if (!gameOpts->render.lightning.bGlow) 
+if (!gameOpts->render.lightning.bGlow) {
+	glowRenderer.ViewPort (m_plasmaVerts.Buffer (), m_nNodes);
 	RenderCore (&color, nDepth, nThread);
+	}
 else {
-	glowRenderer.Begin (3 - bGlow, false);
 	glowRenderer.ViewPort (m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1));
 	RenderGlow (&color, nDepth, nThread);
 	}
