@@ -39,7 +39,6 @@ const char *blurFS [2] = {
 	"v = vec2 (0.0, offset[4]*scale);\r\n" \
 	"tc += texture2D(glowSource, uv + v).rgb * weight[4];\r\n" \
 	"tc += texture2D(glowSource, uv - v).rgb * weight[4];\r\n" \
-	"//if (length (tc) > 0.0) tc = vec3 (1.0, 0.5, 0.0) * length (tc);\r\n" \
 	"gl_FragColor = vec4(tc, 1.0) * brightness;\r\n" \
 	"}\r\n"
 	,
@@ -65,7 +64,6 @@ const char *blurFS [2] = {
 	"v = vec2 (offset[4]*scale, 0.0);\r\n" \
 	"tc += texture2D(glowSource, uv + v).rgb * weight[4];\r\n" \
 	"tc += texture2D(glowSource, uv - v).rgb * weight[4];\r\n" \
-	"//if (length (tc) > 0.0) tc = vec3 (1.0, 0.5, 0.0) * length (tc);\r\n" \
 	"gl_FragColor = vec4(tc, 1.0) * brightness;\r\n" \
 	"}\r\n"
 	};
@@ -142,7 +140,7 @@ v = transformation.m_info.projection * v;
 tScreenPos s;
 s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / -v [Z]);
 s.y = fix (fxCanvH2 + float (v [Y]) * fxCanvH2 / -v [Z]);
-#pragma omp critical
+//#pragma omp critical
 if (m_screenMin.x > s.x)
 	m_screenMin.x = s.x;
 if (m_screenMin.y > s.y)
@@ -170,17 +168,11 @@ if (!m_bViewPort) {
 void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
-#pragma omp parallel 
+//#pragma omp parallel 
 {
-#	pragma omp for
+//#	pragma omp for
 for (int i = 0; i < nVerts; i++) {
-#if 0 //USE_OPENMP > 1
-	CFloatVector3 v;
-	v = vertexP [i];
-	SetExtent (v);
-#else
 	SetExtent (vertexP [i]);
-#endif
 	}
 }
 #endif
@@ -191,17 +183,11 @@ for (int i = 0; i < nVerts; i++) {
 void CGlowRenderer::ViewPort (CFloatVector* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
-#pragma omp parallel 
+//#pragma omp parallel 
 {
-#	pragma omp for
+//#	pragma omp for
 for (int i = 0; i < nVerts; i++) {
-#if 0 //USE_OPENMP > 1
-	CFloatVector3 v;
-	v.Assign (vertexP [i]);
-	SetExtent (v);
-#else
 	SetExtent (*(vertexP [i].XYZ ()));
-#endif
 	}
 }
 #endif
@@ -250,8 +236,12 @@ return true;
 
 bool CGlowRenderer::Begin (int const nStrength, bool const bReplace, float const brightness)
 {
+	static int nCalls = 0;
+
 if (!Available ())
 	return false;
+if (++nCalls > 1)
+	PrintLog ("nested glow renderer call!\n");
 if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness)) {
 	End ();
 	m_bReplace = bReplace;
@@ -261,6 +251,7 @@ if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != b
 	InitViewPort ();
 	Activate ();
 	}
+--nCalls;
 return true;
 }
 
@@ -281,8 +272,18 @@ void CGlowRenderer::Render (int const source, int const direction, float const r
 {
 #if USE_VIEWPORT //DBG
 
-float r = radius + 1.0f;
+float r = radius * 3.25f; // scale with a bit more than the max. offset from the blur shader
 float verts [4][2] = {
+	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())},
+	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())}
+	};
+float texCoord [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())},
 	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
@@ -296,6 +297,7 @@ float verts [4][2] = {
 #else
 
 float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 #endif
 
@@ -305,11 +307,29 @@ if (direction >= 0)
 else
 	shaderManager.Deploy (-1);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer ());
-OglTexCoordPointer (2, GL_FLOAT, 0, verts);
+OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
 glColor3f (1,1,1);
 OglDrawArrays (GL_QUADS, 0, 4);
 ogl.BindTexture (0);
+}
+
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::Clear (int nStrength)
+{
+float r = radius * 4 * nStrength; // scale with a bit more than the max. offset from the blur shader
+glViewport (
+float verts [4][2] = {
+	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())},
+	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())}
+	};
 }
 
 //------------------------------------------------------------------------------
@@ -352,8 +372,10 @@ else
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	float radius = START_RAD;
 	ogl.SelectBlurBuffer (0); 
+	glClear (GL_COLOR_BUFFER_BIT);
 	Render (-1, 0, radius); // Glow -> Blur 0
 	ogl.SelectBlurBuffer (1); 
+	glClear (GL_COLOR_BUFFER_BIT);
 	Render (0, 1, radius); // Blur 0 -> Blur 1
 #	if BLUR > 1
 	for (int i = 1; i < m_nStrength; i++) {

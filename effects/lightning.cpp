@@ -888,7 +888,6 @@ else {
 	glowRenderer.ViewPort (m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1));
 	RenderGlow (&color, nDepth, nThread);
 	}
-//glowRenderer.End ();
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif

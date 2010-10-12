@@ -282,10 +282,8 @@ texMinFilter = GL_NEAREST;
 nTexMagFilterState = -1,
 nTexMinFilterState = -1;
 nTexEnvModeState = -1,
-nLastX =
-nLastY =
-nLastW =
-nLastH = 1;
+viewport [0] = CViewport (),
+viewport [1] = CViewport (),
 nCurWidth =
 nCurHeight = -1;
 bCurFullScreen = -1;
@@ -590,6 +588,21 @@ glMatrixMode (GL_MODELVIEW);
 
 //------------------------------------------------------------------------------
 
+void COGL::SaveViewport (void)
+{
+m_states.viewport [1] = m_states.viewport [0];
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::RestoreViewport (void)
+{
+m_states.viewport [0] = m_states.viewport [1];
+m_states.viewport [0].Apply ();
+}
+
+//------------------------------------------------------------------------------
+
 void COGL::Viewport (int x, int y, int w, int h)
 {
 if (!gameOpts->render.cameras.bHires) {
@@ -598,17 +611,13 @@ if (!gameOpts->render.cameras.bHires) {
 	w >>= gameStates.render.cameras.bActive;
 	h >>= gameStates.render.cameras.bActive;
 	}
-if ((x != m_states.nLastX) || (y != m_states.nLastY) || (w != m_states.nLastW) || (h != m_states.nLastH)) {
-#if !USE_IRRLICHT
-	int t = screen.Canvas ()->Height ();
-	if (!gameOpts->render.cameras.bHires)
-		t >>= gameStates.render.cameras.bActive;
-	glViewport ((GLint) x, (GLint) (t - y - h), (GLsizei) w, (GLsizei) h);
-#endif
-	m_states.nLastX = x;
-	m_states.nLastY = y;
-	m_states.nLastW = w;
-	m_states.nLastH = h;
+int t = screen.Canvas ()->Height ();
+if (!gameOpts->render.cameras.bHires)
+	t >>= gameStates.render.cameras.bActive;
+if (m_states.viewport [0] != CViewport (x, y, w, h, t)) {
+	m_states.viewport [1] = m_states.viewport [0];
+	m_states.viewport [0] = CViewport (x, y, w, h, t);
+	m_states.viewport [0].Apply ();
 	}
 }
 

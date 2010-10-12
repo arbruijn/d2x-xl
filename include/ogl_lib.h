@@ -121,6 +121,30 @@ class COglData {
 		inline CFBO* GetBlurBuffer (int nBuffer) { return drawBuffers + nBuffer + 3; }
 };
 
+class CViewport {
+	public:
+		int m_x, m_y, m_w, m_h, m_t;
+
+		CViewport (int x = 0, int y = 0, int w = 0, int h = 0, int t = 0) : m_x (x), m_y (y), m_w (w), m_h (h), m_t (t) {}
+
+		void Apply (int t = 0) { 
+			m_t = t;
+			glViewport ((GLint) m_x, (GLint) (t - m_y - m_h), (GLsizei) m_w, (GLsizei) m_h); 
+			}
+
+		inline const CViewport& operator= (CViewport const other) {
+			m_x = other.m_x;
+			m_y = other.m_y;
+			m_w = other.m_w;
+			m_h = other.m_h;
+			m_t = other.m_t;
+			return *this;
+			}
+
+		inline const bool operator!= (CViewport const other) {
+			return (m_x != other.m_x) || (m_y != other.m_y) || (m_w != other.m_w) || (m_h != other.m_h) || (m_t != other.m_t);
+			}
+	};
 
 class COglStates {
 	public:
@@ -162,10 +186,7 @@ class COglStates {
 		int	nTexMinFilterState;
 		int	nTexEnvModeState;
 		int	nContrast;
-		int	nLastX;
-		int	nLastY;
-		int	nLastW;
-		int	nLastH;
+		CViewport viewport [2];
 		int	nCurWidth;
 		int	nCurHeight;
 		int	nLights;
@@ -265,6 +286,8 @@ class COGL {
 		void DisableLighting (void);
 		void SetRenderQuality (int nQuality = -1);
 		void Viewport (int x, int y, int w, int h);
+		void SaveViewport (void);
+		void RestoreViewport (void);
 		void SwapBuffers (int bForce, int bClear);
 		void SetupTransform (int bForce);
 		void ResetTransform (int bForce);
