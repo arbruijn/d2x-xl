@@ -144,25 +144,19 @@ void CGlowRenderer::SetExtent (CFloatVector3 v, bool bTransformed)
 #if USE_VIEWPORT
 if (!bTransformed)
 	transformation.Transform (v, v);
-//w.Assign (v);
-//w [3] = 1.0f;
 v = transformation.m_info.projection * v;
 tScreenPos s;
 s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / -v [Z]);
 s.y = fix (fxCanvH2 + float (v [Y]) * fxCanvH2 / -v [Z]);
-#if DBG == 0
-#pragma omp critical (glowRender)
-#endif
-	{
-	if (m_screenMin.x > s.x)
-		m_screenMin.x = s.x;
-	if (m_screenMin.y > s.y)
-		m_screenMin.y = s.y;
-	if (m_screenMax.x < s.x)
-		m_screenMax.x = s.x;
-	if (m_screenMax.y < s.y)
-		m_screenMax.y = s.y;
-	}
+#pragma omp critical
+if (m_screenMin.x > s.x)
+	m_screenMin.x = s.x;
+if (m_screenMin.y > s.y)
+	m_screenMin.y = s.y;
+if (m_screenMax.x < s.x)
+	m_screenMax.x = s.x;
+if (m_screenMax.y < s.y)
+	m_screenMax.y = s.y;
 #endif
 }
 
@@ -182,9 +176,19 @@ if (!m_bViewPort) {
 void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
-//transformation.SetupProjection ();
-for (; nVerts > 0; nVerts--)
-	SetExtent (*vertexP++);
+#pragma omp parallel 
+{
+#	pragma omp for
+for (int i = 0; i < nVerts; i++) {
+#if 0 //USE_OPENMP > 1
+	CFloatVector3 v;
+	v = vertexP [i];
+	SetExtent (v);
+#else
+	SetExtent (vertexP [i]);
+#endif
+	}
+}
 #endif
 }
 
@@ -193,16 +197,18 @@ for (; nVerts > 0; nVerts--)
 void CGlowRenderer::ViewPort (CFloatVector* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
-//transformation.SetupProjection ();
-#if DBG == 0
 #pragma omp parallel 
-#endif
 {
-#if DBG == 0
 #	pragma omp for
+for (int i = 0; i < nVerts; i++) {
+#if 0 //USE_OPENMP > 1
+	CFloatVector3 v;
+	v.Assign (vertexP [i]);
+	SetExtent (v);
+#else
+	SetExtent (*(vertexP [i].XYZ ()));
 #endif
-for (int i = 0; i < nVerts; i++)
-	SetExtent (*vertexP [i].XYZ ());
+	}
 }
 #endif
 }
