@@ -939,8 +939,8 @@ if (!(bSoftBlend && glareRenderer.LoadShader (item->fSoftRad, item->bAdditive !=
 item->bmP->SetColor ();
 CFloatVector vPosf;
 transformation.Transform (vPosf, item->position, 0);
-//if (bGlow)
-//	glowRenderer.ViewPort (*vPosf.XYZ (), X2F (item->nWidth), X2F (item->nHeight));
+if (bGlow)
+	glowRenderer.ViewPort (*vPosf.XYZ (), X2F (item->nWidth), X2F (item->nHeight));
 ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
 }
 
