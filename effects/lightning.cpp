@@ -821,14 +821,16 @@ ogl.ClearError (0);
 
 int CLightning::SetupGlow (void)
 {
-if (!(/*m_bGlow &&*/ gameOpts->render.lightning.bGlow && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)))
-	return 0;
-ogl.SelectTMU (GL_TEXTURE0, true);
-ogl.SetTexturing (true);
-if (corona.Load () && !corona.Bitmap ()->Bind (1)) {
-	corona.Texture ()->Wrap (GL_CLAMP);
-	return 1;
+if (/*m_bGlow &&*/ gameOpts->render.lightning.bGlow && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)) {
+	glowRenderer.Begin (2, false, 1.1f);
+	ogl.SelectTMU (GL_TEXTURE0, true);
+	ogl.SetTexturing (true);
+	if (corona.Load () && !corona.Bitmap ()->Bind (1)) {
+		corona.Texture ()->Wrap (GL_CLAMP);
+		return 1;
+		}
 	}
+glowRenderer.Begin (3, false, 1.1f);
 ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 return 0;
 }
@@ -871,7 +873,6 @@ if (m_nLife > 0) {
 color.red *= (float) (0.9 + dbl_rand () / 5);
 color.green *= (float) (0.9 + dbl_rand () / 5);
 color.blue *= (float) (0.9 + dbl_rand () / 5);
-glowRenderer.Begin (3 - bGlow, false);
 if (!(bGlow = SetupGlow ()))
 	color.alpha *= 1.5f;
 if (nDepth)

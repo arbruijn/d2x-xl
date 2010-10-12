@@ -130,7 +130,6 @@ m_y = ogl.m_states.nLastY;
 m_w = ogl.m_states.nLastW;
 m_h = ogl.m_states.nLastH;
 //ogl.Viewport ((GLint) (m_vMin [X]), (GLint) (m_vMin [Y]), (GLint) (m_vMax [X] - m_vMin [X]) + 1, (GLint) (m_vMax [Y] - m_vMin [Y]) + 1);
-glClearColor (0,0,0,0);
 glClear (GL_COLOR_BUFFER_BIT);
 //ogl.Viewport (m_x, m_y, m_w, m_h);
 }
@@ -179,13 +178,11 @@ s.y = screen.Height () - s.y;
 
 void CGlowRenderer::InitViewPort (void)
 {
-#if USE_VIEWPORT
 if (!m_bViewPort) {
 	m_bViewPort = true;
 	m_screenMin.x = m_screenMin.y = 0x7FFF;
 	m_screenMax.x = m_screenMax.y = -0x7FFF;
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -325,9 +322,9 @@ float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 //				  (GLint) (m_screenMax.x - m_screenMin.x + 1 + 2 * r), 
 //				  (GLint) ((m_screenMax.y - m_screenMin.y + 1 + 2 * r)));
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-if (direction >= 0)
-	LoadShader (direction, radius);
-else
+//if (direction >= 0)
+//	LoadShader (direction, radius);
+//else
 	shaderManager.Deploy (-1);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer ());
 //glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -341,7 +338,7 @@ ogl.BindTexture (0);
 
 //------------------------------------------------------------------------------
 
-#define BLUR 1
+#define BLUR 2
 #define START_RAD 3.0f
 #define RAD_INCR 3.0f
 
@@ -350,12 +347,17 @@ bool CGlowRenderer::End (void)
 if (m_nStrength < 0)
 	return false;
 
+#if USE_VIEWPORT
 if (m_screenMin.x > m_screenMax.x)
 	Swap (m_screenMin.x, m_screenMax.x);
 if (m_screenMin.y > m_screenMax.y)
 	Swap (m_screenMin.y, m_screenMax.y);
 
-if ((m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y)) {
+if ((m_screenMax.x <= m_screenMin.x) || (m_screenMax.y <= m_screenMin.y)) 
+	ogl.ChooseDrawBuffer ();
+else
+#endif
+	{
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
@@ -369,27 +371,28 @@ if ((m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y)) {
 	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
 
 	ogl.SetDepthWrite (false);
+	ogl.ResetClientStates (1);
 
 #if BLUR
 	ogl.SetDepthMode (GL_ALWAYS);
-//	ogl.SetFaceCulling (false);
+	//ogl.SetFaceCulling (false);
 
-	ogl.ResetClientStates (1);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	float radius = START_RAD;
 	ogl.SelectBlurBuffer (0); 
 	Render (-1, 0, radius); // Glow -> Blur 0
 	ogl.SelectBlurBuffer (1); 
 	Render (0, 1, radius); // Blur 0 -> Blur 1
+#	if BLUR > 1
 	for (int i = 1; i < m_nStrength; i++) {
 		//ogl.SetBlendMode (GL_ONE, GL_ONE);
 		radius += RAD_INCR;
 		ogl.SelectBlurBuffer (0); 
-		Render (-1, 0, radius); // Glow -> Blur 0
+		Render (1, 0, radius); // Blur 1 -> Blur 0
 		ogl.SelectBlurBuffer (1); 
 		Render (0, 1, radius); // Blur 0 -> Blur 1
 		}
-
+#	endif
 #endif
 
 	ogl.ChooseDrawBuffer ();
@@ -401,6 +404,7 @@ if ((m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y)) {
 	if (!m_bReplace)
 		Render (-1); // render the unblurred stuff on top of the blur
 
+	glMatrixMode (GL_PROJECTION);
 	glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
@@ -408,7 +412,7 @@ if ((m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y)) {
 	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
 	ogl.SetDepthWrite (bDepthWrite);
 	ogl.SetDepthMode (nDepthMode);
-//	ogl.SetFaceCulling (true);
+	//ogl.SetFaceCulling (true);
 	}
 
 m_nStrength = -1;
