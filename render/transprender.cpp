@@ -165,62 +165,50 @@ else if (nDepth > m_data.zMax) {
 	nDepth = m_data.zMax;
 	}
 
-AllocBuffers ();
-nOffset = int (double (nDepth) * m_data.zScale);
-if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
-	return 0;
-pd = m_data.depthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 #if USE_OPENMP > 1
 #	pragma omp critical (transpRender)
 #elif !USE_OPENMP
 SDL_mutexP (tiRender.semaphore);
 #endif
-if (m_data.nFreeItems > 0) {
-	--m_data.nFreeItems;
-	if (!m_data.freeList.head)
-		ph = m_data.itemLists + m_data.nFreeItems;
-	else {
-		ph = m_data.freeList.head;
-		m_data.freeList.head = ph->pNextItem;
-		}
-	ph->nItem = m_data.nItems [0]++;
-	ph->nType = nType;
-	ph->bRendered = 0;
-	ph->bTransformed = bTransformed;
-	ph->parentP = NULL;
-	ph->z = nDepth;
-	ph->bValid = true;
-	memcpy (&ph->item, itemData, itemSize);
-#if 0
-	if (!(pi = pd->tail) || (pi->z > nDepth) || ((pi->z == nDepth) && (pi->nType > nType))) 
-#endif
-		{
-		for (pi = pd->head; pi; pi = pi->pNextItem) {
-			if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
-				break;
+if (AllocBuffers ()) {
+	nOffset = int (double (nDepth) * m_data.zScale);
+	if (nOffset < ITEM_DEPTHBUFFER_SIZE) {
+		pd = m_data.depthBuffer + nOffset;
+		if (m_data.nFreeItems > 0) {
+			--m_data.nFreeItems;
+			if (!m_data.freeList.head)
+				ph = m_data.itemLists + m_data.nFreeItems;
+			else {
+				ph = m_data.freeList.head;
+				m_data.freeList.head = ph->pNextItem;
+				}
+			ph->nItem = m_data.nItems [0]++;
+			ph->nType = nType;
+			ph->bRendered = 0;
+			ph->bTransformed = bTransformed;
+			ph->parentP = NULL;
+			ph->z = nDepth;
+			ph->bValid = true;
+			memcpy (&ph->item, itemData, itemSize);
+			for (pi = pd->head; pi; pi = pi->pNextItem) {
+				if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
+					break;
+				}
+			if (pi) {
+				ph->pNextItem = pi->pNextItem;
+				pi->pNextItem = ph;
+				}
+			else {
+				ph->pNextItem = pd->head;
+				pd->head = ph;
+				}
+			if (m_data.nMinOffs > nOffset)
+				m_data.nMinOffs = nOffset;
+			if (m_data.nMaxOffs < nOffset)
+				m_data.nMaxOffs = nOffset;
 			}
 		}
-	if (pi) {
-#if 0
-		if (!pi->pNextItem)
-			pd->tail = ph;
-#endif
-		ph->pNextItem = pi->pNextItem;
-		pi->pNextItem = ph;
-		}
-	else {
-#if 0
-		if (!pd->head)
-			pd->tail = ph;
-#endif
-		ph->pNextItem = pd->head;
-		pd->head = ph;
-		}
-	if (m_data.nMinOffs > nOffset)
-		m_data.nMinOffs = nOffset;
-	if (m_data.nMaxOffs < nOffset)
-		m_data.nMaxOffs = nOffset;
 	}
 #if !USE_OPENMP
 SDL_mutexV (tiRender.semaphore);
