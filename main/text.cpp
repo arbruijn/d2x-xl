@@ -1933,7 +1933,7 @@ const char *defaultGameTexts [][2] = {
  {"Fusionskanone", "Fusion gun"},
  {"Lade...", "Loading..."},
  {"Vorbereitung...", "Preparing..."},
- {"le~Uchteffekte", "create glo~W"},
+ {"le~Uchteffekt: %s", "glo~W: %s"},
 #if 0
  {"", ""},
 #endif
