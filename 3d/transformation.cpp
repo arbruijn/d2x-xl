@@ -186,4 +186,16 @@ m_info.aspect [Z] = I2X (1);		//always 1
 }
 
 //------------------------------------------------------------------------------
+
+void CTransformation::SetupProjection (void)
+{
+glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.Vec ());
+Swap (m_info.projection [1], m_info.projection [4]);
+Swap (m_info.projection [2], m_info.projection [8]);
+Swap (m_info.projection [3], m_info.projection [12]);
+Swap (m_info.projection [7], m_info.projection [13]);
+Swap (m_info.projection [11], m_info.projection [14]);
+}
+
+//------------------------------------------------------------------------------
 //eof
