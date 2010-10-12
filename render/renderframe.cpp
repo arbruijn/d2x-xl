@@ -699,14 +699,13 @@ void FillBackground (void)
 if (gameData.render.window.x || gameData.render.window.y) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (CurrentGameScreen ());
-	ogl.m_states.nLastW = CCanvas::Current ()->Width ();
-	ogl.m_states.nLastH = CCanvas::Current ()->Height ();
+	CViewport viewport = ogl.m_states.viewport [0];
+	ogl.m_states.viewport [0] = CViewport (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	ogl.SetDepthWrite (false);
 	bmBackground.Render (CCanvas::Current (), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (), 0, 0, -bmBackground.Width (), -bmBackground.Height ());
 	ogl.SetDepthWrite (true);
 	CCanvas::Pop ();
-	ogl.m_states.nLastW = CCanvas::Current ()->Width ();
-	ogl.m_states.nLastH = CCanvas::Current ()->Height ();
+	ogl.m_states.viewport [0] = viewport;
 	}
 }
 

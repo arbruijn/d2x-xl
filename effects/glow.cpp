@@ -165,7 +165,7 @@ if (!m_bViewPort) {
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
+void CGlowRenderer::SetViewport (CFloatVector3* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
 //#pragma omp parallel 
@@ -180,7 +180,7 @@ for (int i = 0; i < nVerts; i++) {
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::ViewPort (CFloatVector* vertexP, int nVerts)
+void CGlowRenderer::SetViewport (CFloatVector* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
 //#pragma omp parallel 
@@ -195,7 +195,7 @@ for (int i = 0; i < nVerts; i++) {
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::ViewPort (CFloatVector3 v, float width, float height)
+void CGlowRenderer::SetViewport (CFloatVector3 v, float width, float height)
 {
 #if USE_VIEWPORT
 transformation.Transform (v, v);
@@ -208,12 +208,12 @@ SetExtent (v + r, true);
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::ViewPort (CFixVector pos, float radius)
+void CGlowRenderer::SetViewport (CFixVector pos, float radius)
 {
 #if USE_VIEWPORT
 CFloatVector3 v;
 v.Assign (pos);
-ViewPort (v, radius, radius);
+SetViewport (v, radius, radius);
 #endif
 }
 
@@ -316,14 +316,14 @@ ogl.BindTexture (0);
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::ClearViewport (void)
+void CGlowRenderer::ClearViewport (float const radius)
 {
 ogl.SaveViewport ();
 float r = radius * 4 * m_nStrength; // scale with a bit more than the max. offset from the blur shader
-glViewport (max (m_screenMin.x - r, 0), 
-				max (m_screenMin.y - r, 0), 
-				min (m_screenMax.x - m_screenMin.x + 1 + 2 * r, screen.Width ()), 
-				min (m_screenMax.y - m_screenMin.y + 1 + 2 * r, screen.Height ()));
+glViewport ((GLsizei) max (m_screenMin.x - r, 0), 
+				(GLsizei) max (m_screenMin.y - r, 0), 
+				(GLint) min (m_screenMax.x - m_screenMin.x + 1 + 2 * r, screen.Width ()), 
+				(GLint) min (m_screenMax.y - m_screenMin.y + 1 + 2 * r, screen.Height ()));
 glClear (GL_COLOR_BUFFER_BIT);
 ogl.RestoreViewport ();
 }
@@ -368,10 +368,10 @@ else
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	float radius = START_RAD;
 	ogl.SelectBlurBuffer (0); 
-	ClearViewport ();
+	ClearViewport (radius);
 	Render (-1, 0, radius); // Glow -> Blur 0
 	ogl.SelectBlurBuffer (1); 
-	ClearViewport ();
+	ClearViewport (radius);
 	Render (0, 1, radius); // Blur 0 -> Blur 1
 #	if BLUR > 1
 	for (int i = 1; i < m_nStrength; i++) {

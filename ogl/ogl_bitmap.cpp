@@ -86,8 +86,8 @@ if (!h)
 else if (h < 0)
 	h = destP->Height ();
 
-float dx = float (destP->Left ()) / float (ogl.m_states.nLastW);
-float dy = float (destP->Top ()) / float (ogl.m_states.nLastH);
+float dx = float (destP->Left ()) / float (ogl.m_states.viewport [0].m_w);
+float dy = float (destP->Top ()) / float (ogl.m_states.viewport [0].m_h);
 
 if (orient & 1) {
 	::Swap (w, h);
@@ -95,10 +95,10 @@ if (orient & 1) {
 	}
 
 float fScale = X2F (scale);
-m_render.aspect = float (ogl.m_states.nLastW * fScale);
+m_render.aspect = float (ogl.m_states.viewport [0].m_w * fScale);
 m_render.x0 = dx + float (x) / m_render.aspect;
 m_render.x1 = dx + float (x + w) / m_render.aspect;
-m_render.aspect = float (ogl.m_states.nLastH * fScale);
+m_render.aspect = float (ogl.m_states.viewport [0].m_h * fScale);
 m_render.y0 = 1.0f - dy - float (y) / m_render.aspect;
 m_render.y1 = 1.0f - dy - float (y + h) / m_render.aspect;
 m_render.aspect = float (screen.Width ()) / float (screen.Height ());

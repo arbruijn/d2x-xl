@@ -312,8 +312,8 @@ ogl.SetTexturing (false);
 //	glPointSize (X2F (rad);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
-glTranslatef ((X2F (xc1) + CCanvas::Current ()->Left ()) / (float) ogl.m_states.nLastW,
-				  1.0f - (X2F (yc1) + CCanvas::Current ()->Top ()) / (float) ogl.m_states.nLastH, 0);
+glTranslatef ((X2F (xc1) + CCanvas::Current ()->Left ()) / (float) ogl.m_states.viewport [0].m_w,
+				  1.0f - (X2F (yc1) + CCanvas::Current ()->Top ()) / (float) ogl.m_states.viewport [0].m_h, 0);
 glScalef (X2F (r1), X2F (r1), X2F (r1));
 if (r1<=I2X (5)){
 	if (!circleh5)

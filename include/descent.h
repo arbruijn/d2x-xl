@@ -863,10 +863,6 @@ class CRenderAPIStates {
 		int nTexMinFilterState;
 		int nTexEnvModeState;
 		int nContrast;
-		int nLastX;
-		int nLastY;
-		int nLastW;
-		int nLastH;
 		int nCurWidth;
 		int nCurHeight;
 		int nLights;

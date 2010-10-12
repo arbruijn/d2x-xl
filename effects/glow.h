@@ -33,7 +33,7 @@ class CGlowRenderer {
 		void SetupProjection (void);
 		void SetExtent (CFloatVector3 v, bool bTransformed = false);
 		void InitViewport (void);
-		void ClearViewport (void);
+		void ClearViewport (float const radius);
 	};
 
 extern CGlowRenderer glowRenderer;
