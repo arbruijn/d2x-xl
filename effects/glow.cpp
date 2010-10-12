@@ -7,7 +7,10 @@
 
 CGlowRenderer glowRenderer;
 
-#define USE_VIEWPORT 0
+#define USE_VIEWPORT 1
+#define BLUR 2
+#define START_RAD 3.0f
+#define RAD_INCR 3.0f
 
 //------------------------------------------------------------------------------
 
@@ -138,7 +141,7 @@ glClear (GL_COLOR_BUFFER_BIT);
 
 void CGlowRenderer::SetupProjection (void)
 {
-#if 0
+#if 1
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_projection.Vec ());
 Swap (m_projection [1], m_projection [4]);
 Swap (m_projection [2], m_projection [8]);
@@ -155,12 +158,26 @@ void CGlowRenderer::SetExtent (CFloatVector3 v, bool bTransformed)
 #if USE_VIEWPORT
 if (!bTransformed)
 	transformation.Transform (v, v);
+CFloatVector3 w = m_projection * v;
 tScreenPos s;
 
-s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / v [Z] * 2);
-s.y = fix (fxCanvH2 - float (v [Y]) * fxCanvH2 / v [Z] * 2);
-s.y = screen.Height () - s.y;
-#pragma omp critical (transpRender)
+float z = v [Z];
+#if 0
+float sign;
+if (z >= 0.0f)
+	sign = 1.0f;
+else {
+	sign = -1.0f;
+	z = -z;
+	}
+z = sign * ((z < 1.0) ? z * z : sqrt (z));
+#endif
+s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / z);
+s.y = fix (fxCanvH2 + float (v [Y]) * fxCanvH2 / z);
+//s.y = screen.Height () - s.y;
+#if DBG == 0
+#pragma omp critical (glowRender)
+#endif
 	{
 	if (m_screenMin.x > s.x)
 		m_screenMin.x = s.x;
@@ -190,6 +207,7 @@ if (!m_bViewPort) {
 void CGlowRenderer::ViewPort (CFloatVector3* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
+SetupProjection ();
 for (; nVerts > 0; nVerts--)
 	SetExtent (*vertexP++);
 #endif
@@ -200,9 +218,13 @@ for (; nVerts > 0; nVerts--)
 void CGlowRenderer::ViewPort (CFloatVector* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
+#if DBG == 0
 #pragma omp parallel 
+#endif
 {
+#if DBG == 0
 #	pragma omp for
+#endif
 for (int i = 0; i < nVerts; i++)
 	SetExtent (*vertexP [i].XYZ ());
 }
@@ -279,37 +301,21 @@ return v / m;
 
 //------------------------------------------------------------------------------
 
-#if DBG
-static bool bClamp = true;
-static int tClamp = -1;
-#endif
-
 void CGlowRenderer::Render (int const source, int const direction, float const radius)
 {
 #if USE_VIEWPORT //DBG
 
-#	if 0
-int t = SDL_GetTicks ();
-if (t - tClamp >= 1000) {
-	tClamp = t;
-	bClamp = !bClamp;
-	}
-if (bClamp)
-#endif
-
-	{
-	float r = radius + 1.0f;
-	float verts [4][2] = {
-		{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
-		 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())},
-		{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
-		 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
-		{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
-		 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
-		{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
-		 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())}
-		};
-	}
+float r = radius + 1.0f;
+float verts [4][2] = {
+	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())},
+	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())}
+	};
 
 #else
 
@@ -337,10 +343,6 @@ ogl.BindTexture (0);
 }
 
 //------------------------------------------------------------------------------
-
-#define BLUR 2
-#define START_RAD 3.0f
-#define RAD_INCR 3.0f
 
 bool CGlowRenderer::End (void)
 {
