@@ -128,13 +128,7 @@ return false;
 void CGlowRenderer::Activate (void)
 {
 ogl.SelectGlowBuffer ();
-m_x = ogl.m_states.nLastX;
-m_y = ogl.m_states.nLastY;
-m_w = ogl.m_states.nLastW;
-m_h = ogl.m_states.nLastH;
-//ogl.Viewport ((GLint) (m_vMin [X]), (GLint) (m_vMin [Y]), (GLint) (m_vMax [X] - m_vMin [X]) + 1, (GLint) (m_vMax [Y] - m_vMin [Y]) + 1);
 glClear (GL_COLOR_BUFFER_BIT);
-//ogl.Viewport (m_x, m_y, m_w, m_h);
 }
 
 //------------------------------------------------------------------------------
@@ -305,18 +299,12 @@ float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 #endif
 
-//ogl.Viewport ((GLint) (m_screenMin.x - r), 
-//				  (GLint) (m_screenMin.y - r), 
-//				  (GLint) (m_screenMax.x - m_screenMin.x + 1 + 2 * r), 
-//				  (GLint) ((m_screenMax.y - m_screenMin.y + 1 + 2 * r)));
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-//if (direction >= 0)
-//	LoadShader (direction, radius);
-//else
+if (direction >= 0)
+	LoadShader (direction, radius);
+else
 	shaderManager.Deploy (-1);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer ());
-//glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-//glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 OglTexCoordPointer (2, GL_FLOAT, 0, verts);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
 glColor3f (1,1,1);
