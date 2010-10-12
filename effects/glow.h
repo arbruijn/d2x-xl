@@ -22,7 +22,7 @@ class CGlowRenderer {
 		bool SetViewport (CFloatVector3* vertexP, int nVerts);
 		bool SetViewport (CFloatVector* vertexP, int nVerts);
 		bool SetViewport (CFixVector pos, float radius);
-		bool SetViewport (CFloatVector3 pos, float width, float height);
+		bool SetViewport (CFloatVector3 pos, float width, float height, bool bTransformed = false);
 		bool Visible (void);
 		CGlowRenderer () : m_shaderProg (0), m_nStrength (-1), m_bReplace (true), m_bViewPort (false), m_brightness (1.1f) {}
 

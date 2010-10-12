@@ -215,10 +215,11 @@ return Visible ();
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (CFloatVector3 v, float width, float height)
+bool CGlowRenderer::SetViewport (CFloatVector3 v, float width, float height, bool bTransformed)
 {
 #if USE_VIEWPORT
-transformation.Transform (v, v);
+if (!bTransformed)
+	transformation.Transform (v, v);
 CFloatVector3 r;
 r.Set (width, height, 0.0f);
 SetExtent (v - r, true);
@@ -293,7 +294,7 @@ void CGlowRenderer::Render (int const source, int const direction, float const r
 {
 #if USE_VIEWPORT //DBG
 
-float r = radius * 3.25f; // scale with a bit more than the max. offset from the blur shader
+float r = radius * 4.0f; // scale with a bit more than the max. offset from the blur shader
 float verts [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())},
