@@ -306,7 +306,7 @@ void CGlowRenderer::Render (int const source, int const direction, float const r
 {
 #if USE_VIEWPORT //DBG
 
-float r = radius * 10.0f; // scale with a bit more than the max. offset from the blur shader
+float r = radius * 3.25f; // scale with a bit more than the max. offset from the blur shader
 float verts [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())},
@@ -317,6 +317,7 @@ float verts [4][2] = {
 	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())}
 	};
+r += 3.25f;
 float texCoord [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())},
@@ -354,7 +355,7 @@ void CGlowRenderer::ClearViewport (float const radius)
 {
 #if 1
 ogl.SaveViewport ();
-float r = radius * 10 * m_nStrength; // scale with a bit more than the max. offset from the blur shader
+float r = radius * 3.25f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
 glViewport ((GLsizei) max (m_screenMin.x - r, 0), 
 				(GLsizei) max (m_screenMin.y - r, 0), 
 				(GLint) min (m_screenMax.x - m_screenMin.x + 1 + 2 * r, screen.Width ()), 
