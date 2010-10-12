@@ -140,7 +140,7 @@ v = transformation.m_info.projection * v;
 tScreenPos s;
 s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / -v [Z]);
 s.y = fix (fxCanvH2 + float (v [Y]) * fxCanvH2 / -v [Z]);
-//#pragma omp critical
+#pragma omp critical
 if (m_screenMin.x > s.x)
 	m_screenMin.x = s.x;
 if (m_screenMin.y > s.y)
@@ -168,9 +168,9 @@ if (!m_bViewPort) {
 void CGlowRenderer::SetViewport (CFloatVector3* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
-//#pragma omp parallel 
+#pragma omp parallel 
 {
-//#	pragma omp for
+#	pragma omp for
 for (int i = 0; i < nVerts; i++) {
 	SetExtent (vertexP [i]);
 	}
@@ -183,9 +183,9 @@ for (int i = 0; i < nVerts; i++) {
 void CGlowRenderer::SetViewport (CFloatVector* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
-//#pragma omp parallel 
+#pragma omp parallel 
 {
-//#	pragma omp for
+#	pragma omp for
 for (int i = 0; i < nVerts; i++) {
 	SetExtent (*(vertexP [i].XYZ ()));
 	}
