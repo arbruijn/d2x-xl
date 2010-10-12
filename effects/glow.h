@@ -19,10 +19,11 @@ class CGlowRenderer {
 		bool ShaderActive (void);
 		bool End (void);
 		bool Begin (int const nStrength = 1, bool const bReplace = true, float const brightness = 1.0f);
-		void SetViewport (CFloatVector3* vertexP, int nVerts);
-		void SetViewport (CFloatVector* vertexP, int nVerts);
-		void SetViewport (CFixVector pos, float radius);
-		void SetViewport (CFloatVector3 pos, float width, float height);
+		bool SetViewport (CFloatVector3* vertexP, int nVerts);
+		bool SetViewport (CFloatVector* vertexP, int nVerts);
+		bool SetViewport (CFixVector pos, float radius);
+		bool SetViewport (CFloatVector3 pos, float width, float height);
+		bool Visible (void);
 		CGlowRenderer () : m_shaderProg (0), m_nStrength (-1), m_bReplace (true), m_bViewPort (false), m_brightness (1.1f) {}
 
 	private:

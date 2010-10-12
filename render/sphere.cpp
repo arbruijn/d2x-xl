@@ -756,7 +756,8 @@ int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float ySc
 CFixVector vPos;
 PolyObjPos (objP, &vPos);
 glowRenderer.Begin (2, true, 0.75f);
-glowRenderer.SetViewport (vPos, xScale);
+if (!glowRenderer.SetViewport (vPos, xScale))
+	return 0;
 #if !RINGED_SPHERE
 if (m_nFaceNodes == 3)
 	bmP = NULL;

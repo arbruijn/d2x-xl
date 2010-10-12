@@ -881,12 +881,12 @@ if (nDepth)
 WaitForRenderThread (nThread);
 #endif
 if (!gameOpts->render.lightning.bGlow) {
-	glowRenderer.SetViewport (m_plasmaVerts.Buffer (), m_nNodes);
-	RenderCore (&color, nDepth, nThread);
+	if (glowRenderer.SetViewport (m_plasmaVerts.Buffer (), m_nNodes))
+		RenderCore (&color, nDepth, nThread);
 	}
 else {
-	glowRenderer.SetViewport (m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1));
-	RenderGlow (&color, nDepth, nThread);
+	if (glowRenderer.SetViewport (m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1)))
+		RenderGlow (&color, nDepth, nThread);
 	}
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);

@@ -154,6 +154,24 @@ if (m_screenMax.y < s.y)
 
 //------------------------------------------------------------------------------
 
+bool CGlowRenderer::Visible (void)
+{
+#if USE_VIEWPORT
+if (m_screenMin.x > m_screenMax.x)
+	Swap (m_screenMin.x, m_screenMax.x);
+if (m_screenMin.y > m_screenMax.y)
+	Swap (m_screenMin.y, m_screenMax.y);
+
+return (m_screenMax.x > 0) && (m_screenMin.x < screen.Width () - 1) &&
+		 (m_screenMax.y > 0) && (m_screenMin.y < screen.Height () - 1) &&
+		 (m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y);
+#else
+return true;
+#endif
+}
+
+//------------------------------------------------------------------------------
+
 void CGlowRenderer::InitViewport (void)
 {
 if (!m_bViewPort) {
@@ -165,7 +183,7 @@ if (!m_bViewPort) {
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::SetViewport (CFloatVector3* vertexP, int nVerts)
+bool CGlowRenderer::SetViewport (CFloatVector3* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
 #pragma omp parallel 
@@ -176,11 +194,12 @@ for (int i = 0; i < nVerts; i++) {
 	}
 }
 #endif
+return Visible ();
 }
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::SetViewport (CFloatVector* vertexP, int nVerts)
+bool CGlowRenderer::SetViewport (CFloatVector* vertexP, int nVerts)
 {
 #if USE_VIEWPORT
 #pragma omp parallel 
@@ -191,11 +210,12 @@ for (int i = 0; i < nVerts; i++) {
 	}
 }
 #endif
+return Visible ();
 }
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::SetViewport (CFloatVector3 v, float width, float height)
+bool CGlowRenderer::SetViewport (CFloatVector3 v, float width, float height)
 {
 #if USE_VIEWPORT
 transformation.Transform (v, v);
@@ -204,16 +224,17 @@ r.Set (width, height, 0.0f);
 SetExtent (v - r, true);
 SetExtent (v + r, true);
 #endif
+return Visible ();
 }
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::SetViewport (CFixVector pos, float radius)
+bool CGlowRenderer::SetViewport (CFixVector pos, float radius)
 {
 #if USE_VIEWPORT
 CFloatVector3 v;
 v.Assign (pos);
-SetViewport (v, radius, radius);
+return SetViewport (v, radius, radius);
 #endif
 }
 
@@ -318,6 +339,7 @@ ogl.BindTexture (0);
 
 void CGlowRenderer::ClearViewport (float const radius)
 {
+#if 1
 ogl.SaveViewport ();
 float r = radius * 4 * m_nStrength; // scale with a bit more than the max. offset from the blur shader
 glViewport ((GLsizei) max (m_screenMin.x - r, 0), 
@@ -326,6 +348,9 @@ glViewport ((GLsizei) max (m_screenMin.x - r, 0),
 				(GLint) min (m_screenMax.y - m_screenMin.y + 1 + 2 * r, screen.Height ()));
 glClear (GL_COLOR_BUFFER_BIT);
 ogl.RestoreViewport ();
+#else
+glClear (GL_COLOR_BUFFER_BIT);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -336,12 +361,7 @@ if (m_nStrength < 0)
 	return false;
 
 #if USE_VIEWPORT
-if (m_screenMin.x > m_screenMax.x)
-	Swap (m_screenMin.x, m_screenMax.x);
-if (m_screenMin.y > m_screenMax.y)
-	Swap (m_screenMin.y, m_screenMax.y);
-
-if ((m_screenMax.x <= m_screenMin.x) || (m_screenMax.y <= m_screenMin.y)) 
+if (!Visible ())
 	ogl.ChooseDrawBuffer ();
 else
 #endif
