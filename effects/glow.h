@@ -35,6 +35,7 @@ class CGlowRenderer {
 		void SetExtent (CFloatVector3 v, bool bTransformed = false);
 		void InitViewport (void);
 		void ClearViewport (float const radius);
+		void ChooseDrawBuffer (void);
 	};
 
 extern CGlowRenderer glowRenderer;
