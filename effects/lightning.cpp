@@ -804,7 +804,7 @@ while (nVerts-- > 0) {
 	if (zMin > v [Z])
 		zMin = v [Z];
 	}
-return 1.0f - zMin / ZRANGE;
+return 1.0f - zMin / (float) ZRANGE;
 }
 
 //------------------------------------------------------------------------------

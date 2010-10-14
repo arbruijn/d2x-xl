@@ -67,10 +67,10 @@ class CCamera {
 		inline tTexCoord2f* TexCoord (void) { return m_info.texCoord; }
 		inline CObject* GetObject (void) { return m_info.objP; }
 		inline CFBO& FrameBuffer (void) { return m_info.fbo; } 
+		int EnableBuffer (void);
 
 	private:
 		int CreateBuffer (void);
-		int EnableBuffer (void);
 		int DisableBuffer (void);
 		int BindBuffer (void);
 		int ReleaseBuffer (void);
