@@ -613,7 +613,7 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 
 static inline int GlowType (void)
 {
-return (!gameOpts->render.lightning.bGlow || glowRenderer.Available ()) ? 0 : 1;
+return !(gameOpts->render.lightning.bGlow || glowRenderer.Available ()) ? 0 : 1;
 }
 
 //------------------------------------------------------------------------------
@@ -634,7 +634,7 @@ if (!nodeP)
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
-	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow && !glowRenderer.Available ();
+	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow && glowRenderer.Available ();
 	float					fWidth = bGlow ? PLASMA_WIDTH / 2.0f : (m_bGlow > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bGlow < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
 
 if (nThread < 0)
@@ -797,14 +797,16 @@ i = m_nNodes - 1;
 static float ZScale (CFloatVector3* vertexP, int nVerts)
 {
 	CFloatVector3 v;
-	float zMin = 1e30f;
+	float zMin = 1e30f, zMax = -1e30f;
 
 while (nVerts-- > 0) {
 	transformation.Transform (v, *vertexP++);
 	if (zMin > v [Z])
 		zMin = v [Z];
+	if (zMax < v [Z])
+		zMax = v [Z];
 	}
-return 1.0f - zMin / (float) ZRANGE;
+return pow (1.0f - (zMin + zMax) / 2.0f / (float) ZRANGE, 50.0f);
 }
 
 //------------------------------------------------------------------------------
@@ -819,7 +821,10 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
 	//glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
 	glColor4fv ((GLfloat*) colorP);
-	glLineWidth (1.0f + (GLfloat (nDepth ? CORE_WIDTH : CORE_WIDTH * 1.5) - 1.0f) * ZScale (m_coreVerts.Buffer (), m_nNodes));
+	GLfloat w = nDepth ? CORE_WIDTH : CORE_WIDTH * 1.5f;
+	if (glowRenderer.Available ())
+		w *= 2.0f * ZScale (m_coreVerts.Buffer (), m_nNodes);
+	glLineWidth (w);
 	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 	ogl.DisableClientStates (0, 0, 0, -1);

@@ -139,9 +139,10 @@ if (gameOpts->render.effects.bGlow != 1)
 if (!bTransformed)
 	transformation.Transform (v, v);
 v = transformation.m_info.projection * v;
+float z = -v [Z];
 tScreenPos s;
-s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / -v [Z]);
-s.y = fix (fxCanvH2 + float (v [Y]) * fxCanvH2 / -v [Z]);
+s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / z);
+s.y = fix (fxCanvH2 + float (v [Y]) * fxCanvH2 / z);
 #pragma omp critical
 if (m_screenMin.x > s.x)
 	m_screenMin.x = s.x;
@@ -152,6 +153,7 @@ if (m_screenMax.x < s.x)
 if (m_screenMax.y < s.y)
 	m_screenMax.y = s.y;
 #endif
+m_bViewport = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -161,6 +163,8 @@ bool CGlowRenderer::Visible (void)
 #if USE_VIEWPORT
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
+if (m_bViewport != 1)
+	return false;
 if (m_screenMin.x > m_screenMax.x)
 	Swap (m_screenMin.x, m_screenMax.x);
 if (m_screenMin.y > m_screenMax.y)
@@ -178,8 +182,8 @@ return true;
 
 void CGlowRenderer::InitViewport (void)
 {
-if (!m_bViewPort) {
-	m_bViewPort = true;
+if (!m_bViewport) {
+	m_bViewport = -1;
 	m_screenMin.x = m_screenMin.y = 0x7FFF;
 	m_screenMax.x = m_screenMax.y = -0x7FFF;
 	}
@@ -281,7 +285,7 @@ if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != b
 	m_bReplace = bReplace;
 	m_nStrength = nStrength;
 	m_brightness = brightness;
-	m_bViewPort = false;
+	m_bViewport = 0;
 	InitViewport ();
 	Activate ();
 	}
@@ -450,7 +454,7 @@ else
 	}
 
 m_nStrength = -1;
-m_bViewPort = false;
+m_bViewport = 0;
 return true;
 }
 

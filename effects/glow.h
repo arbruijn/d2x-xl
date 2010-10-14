@@ -10,7 +10,7 @@ class CGlowRenderer {
 		int m_x, m_y, m_w, m_h;
 		int m_nStrength;
 		bool m_bReplace;
-		bool m_bViewPort;
+		int m_bViewport;
 		float m_brightness;
 
 	public:
@@ -24,7 +24,7 @@ class CGlowRenderer {
 		bool SetViewport (CFixVector pos, float radius);
 		bool SetViewport (CFloatVector3 pos, float width, float height, bool bTransformed = false);
 		bool Visible (void);
-		CGlowRenderer () : m_shaderProg (0), m_nStrength (-1), m_bReplace (true), m_bViewPort (false), m_brightness (1.1f) {}
+		CGlowRenderer () : m_shaderProg (0), m_nStrength (-1), m_bReplace (true), m_bViewport (0), m_brightness (1.1f) {}
 
 	private:
 		bool LoadShader (int const direction, float const radius);
