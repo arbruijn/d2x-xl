@@ -78,9 +78,7 @@ static DWORD nOglLibFlags [2] = {1680960820, (DWORD) -1};
 
 COGL ogl;
 
-#define ZNEAR		1.0
 #define ZSCREEN	(automap.Display () ? 20.0 : 10.0)
-#define ZFAR		ogl.m_data.zFar
 
 //------------------------------------------------------------------------------
 
