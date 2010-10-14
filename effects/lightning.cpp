@@ -610,6 +610,13 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 	};
 
 //------------------------------------------------------------------------------
+
+static inline int GlowType (void)
+{
+return !(gameOpts->render.lightning.bGlow || glowRenderer.Available ()) ? 0 : 1;
+}
+
+//------------------------------------------------------------------------------
 // Compute billboards around each lightning segment using the normal of the plane
 // spanned by the lightning segment and the vector from the camera (eye) position
 // to one lightning coordinate
@@ -627,7 +634,7 @@ if (!nodeP)
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
-	bool					bGlow = !nDepth && !glowRenderer.Available () && (m_bGlow > 0) && gameOpts->render.lightning.bGlow;
+	bool					bGlow = !nDepth && (m_bGlow > 0) && (GlowType () == 0);
 	float					fWidth = bGlow ? PLASMA_WIDTH / 2.0f : (m_bGlow > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bGlow < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
 
 if (nThread < 0)
@@ -702,7 +709,7 @@ if (bGlow) {
 
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
-if (gameOpts->render.lightning.bGlow && m_plasmaVerts.Buffer ())
+if ((GlowType () == 1) && m_plasmaVerts.Buffer ())
 	ComputeGlow (nDepth, nThread);
 else if (m_coreVerts.Buffer ())
 	ComputeCore ();
@@ -880,8 +887,8 @@ if (nDepth)
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
-if (!gameOpts->render.lightning.bGlow) {
-	if (glowRenderer.SetViewport (m_plasmaVerts.Buffer (), m_nNodes))
+if (GlowType () == 0) {
+	if (glowRenderer.SetViewport (m_coreVerts.Buffer (), m_nNodes))
 		RenderCore (&color, nDepth, nThread);
 	}
 else {
