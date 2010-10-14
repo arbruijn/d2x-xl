@@ -82,19 +82,21 @@ class CCamera {
 class CCameraManager {
 	private:
 		CCamera			m_cameras [MAX_CAMERAS];
+		CCamera*			m_current;
 		short				m_nCameras;
 		CArray<char>	m_faceCameras;
 		CArray<ushort>	m_objectCameras;
 
 	public:
-		CCameraManager () { m_objectCameras = 0, m_nCameras = 0; };
+		CCameraManager () : m_objectCameras (0), m_nCameras (0), m_current (NULL) {}
 		~CCameraManager ();
 		int Create ();
 		void Destroy ();
 		int Render ();
 		void Rotate (CObject *objP);
 		inline CCamera* Cameras (void) { return m_cameras; }
-		inline CCamera* Camera ( short i = 0 ) { return Cameras () + i; }
+		inline CCamera* Camera (short i = 0) { return Cameras () + i; }
+		inline CCamera* Current (void) { return m_current; }
 		CCamera* Camera (CObject *objP);
 		inline int GetObjectCamera (int nObject);
 		inline void SetObjectCamera (int nObject, int i);

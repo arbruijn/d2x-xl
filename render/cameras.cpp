@@ -728,7 +728,6 @@ m_nCameras = 0;
 int CCameraManager::Render (void)
 {
 	int		i;
-	CCamera	*cameraP = NULL;
 	CObject	*viewerSave = gameData.objs.viewerP;
 	time_t	t;
 	int		nCamsRendered;
@@ -748,12 +747,12 @@ for (i = 0; i < m_nCameras; i++) {
 	nWaitFrames = m_cameras [i].Ready (t);
 	if (nWaitFrames && (nMaxWaitFrames < nWaitFrames)) {
 		nMaxWaitFrames = nWaitFrames;
-		cameraP = m_cameras + i;
+		m_current = m_cameras + i;
 		}
 	}
-if (cameraP) {
-	cameraP->Reset ();
-	nCamsRendered += cameraP->Render ();
+if (m_current) {
+	m_current->Reset ();
+	nCamsRendered += m_current->Render ();
 	}
 gameData.objs.viewerP = viewerSave;
 //gameOpts->render.nMaxFPS = frameCap;

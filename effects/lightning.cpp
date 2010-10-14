@@ -797,14 +797,14 @@ i = m_nNodes - 1;
 static float ZScale (CFloatVector3* vertexP, int nVerts)
 {
 	CFloatVector3 v;
-	float zMin = 1e30;
+	float zMin = 1e30f;
 
 while (nVerts-- > 0) {
 	transformation.Transform (v, *vertexP++);
 	if (zMin > v [Z])
 		zMin = v [Z];
 	}
-return 1.0 - zMin / ZRANGE;
+return 1.0f - zMin / ZRANGE;
 }
 
 //------------------------------------------------------------------------------
