@@ -15,6 +15,7 @@ COPYRIGHT 1993-1998PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
+#include "descent.h"
 #include "3d.h"
 #include "globvars.h"
 
@@ -55,18 +56,33 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c)
 #endif
 }
 
+//------------------------------------------------------------------------------
+
+inline int ScreenWidth (void)
+{
+return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? screen.Width () : screen.Width () / 2;
+}
+
+inline int ScreenHeight (void)
+{
+return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? screen.Height () : screen.Height () / 2;
+}
+
 // -----------------------------------------------------------------------------------
 //projects a point
 
 #define VIS_CULLING 1
 
-ubyte ProjectPoint (CFloatVector3& v, tScreenPos& s, ubyte flags, ubyte codes)
+ubyte ProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
 {
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
-CFloatVector3 w = transformation.m_info.projection * v;
-s.x = fix (fxCanvW2 + double (w [X]) * fxCanvW2 / -w [Z]);
-s.y = fix (fxCanvH2 - double (w [Y]) * fxCanvH2 / -w [Z]);
+CFloatVector3 v = transformation.m_info.projection * p;
+float w = (float) ScreenWidth () / 2.0f;
+float h = (float) ScreenHeight () / 2.0f;
+float z = -v [Z];
+s.x = fix (w + float (v [X]) * w / z);
+s.y = fix (h + float (v [Y]) * h / z);
 return flags | PF_PROJECTED;
 }
 
