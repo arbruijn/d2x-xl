@@ -20,8 +20,6 @@ const char *blurFS [2] = {
 	"uniform sampler2D glowSource;\r\n" \
 	"uniform float scale; // render target width/height\r\n" \
 	"uniform float brightness; // render target width/height\r\n" \
-	"//float offset[3] = float[](0.0, 1.3846153846, 3.2307692308);\r\n" \
-	"//float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
 	"float offset[5] = float[](0.0, 1.0, 2.0, 3.0, 4.0);\r\n" \
 	"float weight[5] = float[](0.18, 0.15, 0.12, 0.09, 0.05);\r\n" \
 	"void main() {\r\n" \
@@ -45,8 +43,6 @@ const char *blurFS [2] = {
 	"uniform sampler2D glowSource;\r\n" \
 	"uniform float scale; // render target width/height\r\n" \
 	"uniform float brightness; // render target width/height\r\n" \
-	"//float offset[3] = float[](0.0, 1.3846153846, 3.2307692308);\r\n" \
-	"//float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
 	"float offset[5] = float[](0.0, 1.0, 2.0, 3.0, 4.0);\r\n" \
 	"float weight[5] = float[](0.18, 0.15, 0.12, 0.09, 0.05);\r\n" \
 	"void main() {\r\n" \
@@ -125,8 +121,6 @@ return false;
 
 void CGlowRenderer::Activate (void)
 {
-if (gameStates.render.cameras.bActive)
-	cameraManager.Camera (cameraManager.Current ())->DisableBuffer (false);
 ogl.SelectGlowBuffer ();
 glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -138,16 +132,14 @@ inline int ScreenScale (void)
 return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? 1 : 2;
 }
 
-//------------------------------------------------------------------------------
-
 inline int ScreenWidth (void)
 {
-return screen.Width () / ScreenScale ();
+return screen.Width () /*/ ScreenScale ()*/;
 }
 
 inline int ScreenHeight (void)
 {
-return screen.Height () / ScreenScale ();
+return screen.Height () /*/ ScreenScale ()*/;
 }
 
 //------------------------------------------------------------------------------
@@ -162,8 +154,8 @@ if (!bTransformed)
 v = transformation.m_info.projection * v;
 float z = -v [Z];
 tScreenPos s;
-float w = (float) ScreenWidth () / 2.0f;
-float h = (float) ScreenHeight () / 2.0f;
+float w = (float) screen.Width () / 2.0f;
+float h = (float) screen.Height () / 2.0f;
 s.x = fix (w + float (v [X]) * w / z);
 s.y = fix (h + float (v [Y]) * h / z);
 #pragma omp critical
@@ -364,9 +356,9 @@ void CGlowRenderer::Render (int const source, int const direction, float const r
 {
 #if USE_VIEWPORT //DBG
 
-float r = radius * 3.25f; // scale with a bit more than the max. offset from the blur shader
-float w = (float) ScreenWidth ();
-float h = (float) ScreenHeight ();
+float r = radius * 4.0f; // scale with a bit more than the max. offset from the blur shader
+float w = (float) screen.Width ();
+float h = (float) screen.Height ();
 float verts [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
@@ -377,7 +369,7 @@ float verts [4][2] = {
 	{ScreenCoord ((float) m_screenMax.x + r, (float) w) * scale,
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)}
 	};
-r += 3.25f;
+r += 4.0f;
 float texCoord [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
@@ -415,7 +407,7 @@ void CGlowRenderer::ClearViewport (float const radius)
 {
 #if 1
 ogl.SaveViewport ();
-float r = radius * 3.25f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
+float r = radius * 4.0f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
 glViewport ((GLsizei) max (m_screenMin.x - r, 0), 
 				(GLsizei) max (m_screenMin.y - r, 0), 
 				(GLint) min (m_screenMax.x - m_screenMin.x + 1 + 2 * r, ScreenWidth ()), 
@@ -471,10 +463,9 @@ else
 	float radius = 0.0f;
 #if BLUR
 	ogl.SetDepthMode (GL_ALWAYS);
-	//ogl.SetFaceCulling (false);
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 
 	radius += RAD_INCR;
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SelectBlurBuffer (0); 
 	ClearViewport (radius);
 	Render (-1, 0, radius); // Glow -> Blur 0
@@ -490,18 +481,19 @@ else
 		ogl.SelectBlurBuffer (1); 
 		Render (0, 1, radius); // Blur 0 -> Blur 1
 		}
-	radius += RAD_INCR;
+	//radius += RAD_INCR;
 #	endif
 #endif
 
 	ChooseDrawBuffer ();
-	ogl.SetDepthMode (gameStates.render.cameras.bActive ? GL_ALWAYS : GL_LEQUAL);
+	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetBlendMode (2);
+	float scale = (float) ScreenScale ();
 #if BLUR
-	Render (1, 0, radius, (float) ScreenScale ()); // Glow -> back buffer
+	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 4.0f); // Glow -> back buffer
 	if (!m_bReplace)
 #endif
-		Render (-1, 0, radius, (float) ScreenScale ()); // render the unblurred stuff on top of the blur
+		Render (-1, -1, radius, scale); // render the unblurred stuff on top of the blur
 
 	glMatrixMode (GL_PROJECTION);
 	glPopMatrix ();
@@ -511,7 +503,6 @@ else
 	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
 	ogl.SetDepthWrite (bDepthWrite);
 	ogl.SetDepthMode (nDepthMode);
-	//ogl.SetFaceCulling (true);
 	}
 
 m_nStrength = -1;

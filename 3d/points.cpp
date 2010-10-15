@@ -58,14 +58,19 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c)
 
 //------------------------------------------------------------------------------
 
+inline int ScreenScale (void)
+{
+return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? 1 : 2;
+}
+
 inline int ScreenWidth (void)
 {
-return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? screen.Width () : screen.Width () / 2;
+return screen.Width () /*/ ScreenScale ()*/;
 }
 
 inline int ScreenHeight (void)
 {
-return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? screen.Height () : screen.Height () / 2;
+return screen.Height () /*/ ScreenScale ()*/;
 }
 
 // -----------------------------------------------------------------------------------
@@ -78,11 +83,9 @@ ubyte ProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
 CFloatVector3 v = transformation.m_info.projection * p;
-float w = (float) ScreenWidth () / 2.0f;
-float h = (float) ScreenHeight () / 2.0f;
 float z = -v [Z];
-s.x = fix (w + float (v [X]) * w / z);
-s.y = fix (h + float (v [Y]) * h / z);
+s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / z);
+s.y = fix (fxCanvH2 + float (v [Y]) * fxCanvH2 / z);
 return flags | PF_PROJECTED;
 }
 

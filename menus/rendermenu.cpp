@@ -315,8 +315,10 @@ if (renderOpts.n3DGlasses >= 0) {
 m = menu + renderOpts.nCameras;
 v = m->m_value;
 if (nCameras != v) {
-	if (nCameras = v)
+	if (nCameras = v) {
+		gameOpts->render.cameras.bHires = (nCameras == 2);
 		cameraManager.ReAlign ();
+		}
 	sprintf (m->m_text, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
 	m->m_bRebuild = -1;
 	}
