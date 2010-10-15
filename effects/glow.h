@@ -14,7 +14,7 @@ class CGlowRenderer {
 		float m_brightness;
 
 	public:
-		bool Available (bool bForce = false);
+		bool Available (int const nType, bool bForce = false);
 		void InitShader (void);
 		bool ShaderActive (void);
 		bool End (void);

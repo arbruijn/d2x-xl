@@ -195,7 +195,7 @@ if (!m_bViewport) {
 
 bool CGlowRenderer::SetViewport (int const nType, CFloatVector3* vertexP, int nVerts)
 {
-if (!Available ())
+if (!Available (nType))
 	return true;
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
@@ -217,7 +217,7 @@ return Visible ();
 
 bool CGlowRenderer::SetViewport (int const nType, CFloatVector* vertexP, int nVerts)
 {
-if (!Available ())
+if (!Available (nType))
 	return true;
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
@@ -239,7 +239,7 @@ return Visible ();
 
 bool CGlowRenderer::SetViewport (int const nType, CFloatVector3 v, float width, float height, bool bTransformed)
 {
-if (!Available ())
+if (!Available (nType))
 	return true;
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
@@ -260,7 +260,7 @@ return Visible ();
 
 bool CGlowRenderer::SetViewport (int const nType, CFixVector pos, float radius)
 {
-if (!Available ())
+if (!Available (nType))
 	return true;
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
@@ -269,13 +269,13 @@ if (gameOpts->render.effects.bGlow != 1)
 	return true;
 CFloatVector3 v;
 v.Assign (pos);
-return SetViewport (v, radius, radius);
+return SetViewport (nType, v, radius, radius);
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::Available (bool bForce)
+bool CGlowRenderer::Available (int const nType, bool bForce)
 {
 if ((GLOW_FLAGS & nType) == 0)
 	return false;

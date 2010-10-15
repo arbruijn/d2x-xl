@@ -613,7 +613,7 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 
 static inline int GlowType (void)
 {
-return !(gameOpts->render.lightning.bGlow || glowRenderer.Available ()) ? 0 : 1;
+return !(gameOpts->render.lightning.bGlow || glowRenderer.Available (GLOW_LIGHTNING)) ? 0 : 1;
 }
 
 //------------------------------------------------------------------------------
@@ -634,7 +634,7 @@ if (!nodeP)
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
-	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow && glowRenderer.Available ();
+	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow && glowRenderer.Available (GLOW_LIGHTNING);
 	float					fWidth = bGlow ? PLASMA_WIDTH / 2.0f : (m_bGlow > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bGlow < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
 
 if (nThread < 0)
@@ -822,7 +822,7 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	//glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
 	glColor4fv ((GLfloat*) colorP);
 	GLfloat w = nDepth ? CORE_WIDTH : CORE_WIDTH * 1.5f;
-	if (glowRenderer.Available ())
+	if (glowRenderer.Available (GLOW_LIGHTNING))
 		w *= 2.0f * ZScale (m_coreVerts.Buffer (), m_nNodes);
 	glLineWidth (w);
 	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
