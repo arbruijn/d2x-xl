@@ -200,8 +200,8 @@ if (!Available (nType))
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
 #if USE_VIEWPORT
-if (gameStates.render.cameras.bActive)
-	return true;
+//if (gameStates.render.cameras.bActive)
+//	return true;
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
 #pragma omp parallel 
@@ -224,8 +224,8 @@ if (!Available (nType))
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
 #if USE_VIEWPORT
-if (gameStates.render.cameras.bActive)
-	return true;
+//if (gameStates.render.cameras.bActive)
+//	return true;
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
 #pragma omp parallel 
@@ -248,8 +248,8 @@ if (!Available (nType))
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
 #if USE_VIEWPORT
-if (gameStates.render.cameras.bActive)
-	return true;
+//if (gameStates.render.cameras.bActive)
+//	return true;
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
 if (!bTransformed)
@@ -271,8 +271,8 @@ if (!Available (nType))
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
 #if USE_VIEWPORT
-if (gameStates.render.cameras.bActive)
-	return true;
+//if (gameStates.render.cameras.bActive)
+//	return true;
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
 CFloatVector3 v;
@@ -339,26 +339,32 @@ void CGlowRenderer::Render (int const source, int const direction, float const r
 #if USE_VIEWPORT //DBG
 
 float r = radius * 3.25f; // scale with a bit more than the max. offset from the blur shader
+float w = (float) screen.Width ();
+float h = (float) screen.Height ();
+if (gameStates.render.cameras.bActive && !gameOpts->render.cameras.bHires) {
+	w /= 2.0f;
+	h /= 2.0f;
+	}
 float verts [4][2] = {
-	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
-	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())},
-	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
-	 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
-	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
-	 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
-	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
-	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())}
+	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
+	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) h)},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) w),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) h)},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) w),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) h)}
 	};
 r += 3.25f;
 float texCoord [4][2] = {
-	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
-	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())},
-	{ScreenCoord ((float) m_screenMin.x - r, (float) screen.Width ()),
-	 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
-	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
-	 ScreenCoord ((float) m_screenMax.y + r, (float) screen.Height ())},
-	{ScreenCoord ((float) m_screenMax.x + r, (float) screen.Width ()),
-	 ScreenCoord ((float) m_screenMin.y - r, (float) screen.Height ())}
+	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
+	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) h)},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) w),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) h)},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) w),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) h)}
 	};
 
 #else
