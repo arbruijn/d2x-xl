@@ -293,13 +293,22 @@ glReadBuffer (nBuffer);
 
 int COGL::SelectDrawBuffer (int nBuffer) 
 { 
-int nPrevBuffer = (m_data.drawBufferP && m_data.drawBufferP->Active ()) ? int (m_data.drawBufferP - m_data.drawBuffers) : -1;
-if ((nBuffer < 0) || (nBuffer >= sizeof (m_data.drawBuffers)))
-	return nPrevBuffer;
+int nPrevBuffer = (m_states.nCamera < 0) 
+						? m_states.nCamera 
+						: (m_data.drawBufferP && m_data.drawBufferP->Active ()) 
+							? int (m_data.drawBufferP - m_data.drawBuffers) 
+							: 0x7FFFFFFF;
 if (nBuffer != nPrevBuffer) {
-	if (nPrevBuffer >= 0)
+	if (nPrevBuffer != 0x7FFFFFFF)
 		m_data.drawBufferP->Disable (false);
-	m_data.drawBufferP = m_data.GetDrawBuffer (nBuffer); 
+	if (nBuffer >= 0) {
+		m_states.nCamera = 0;
+		m_data.drawBufferP = m_data.GetDrawBuffer (nBuffer); 
+		}
+	else {
+		m_states.nCamera = nBuffer;
+		m_data.drawBufferP = &cameraManager.Camera (-nBuffer - 1)->FrameBuffer ();
+		}
 	}
 CreateDrawBuffer ((nBuffer < 2) ? 1 : (nBuffer < 3) ? -1 : -2);
 m_data.drawBufferP->Enable (false);
@@ -449,7 +458,7 @@ if (m_states.hDepthBuffer [bFBO] || (m_states.hDepthBuffer [bFBO] = CreateDepthT
 		if (ogl.Enhance3D () < 0)
 			ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 		else
-			ogl.SetReadBuffer (GL_BACK, gameStates.render.bRenderIndirect);
+			ogl.SetReadBuffer (GL_BACK, gameStates.render.bRenderIndirect || gameStates.render.cameras.bActive);
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 		if ((nError = glGetError ())) {
 			DestroyDepthTexture (bFBO);

@@ -213,6 +213,7 @@ class COglStates {
 		int	bHaveBlur;
 		int	nDrawBuffer;
 		int	nStencil;
+		int	nCamera;
 	#ifdef GL_ARB_multitexture
 		int	bArbMultiTexture;
 	#endif

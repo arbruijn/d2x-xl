@@ -103,6 +103,7 @@ class CCameraManager {
 		int GetFaceCamera (int nFace);
 		void ReAlign (void);
 		inline void SetFaceCamera (int nFace, int i);
+		inline int Index (CCamera* cameraP) { return cameraP - m_cameras; }
 	};
 
 extern CCameraManager cameraManager;

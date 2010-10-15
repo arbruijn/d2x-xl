@@ -32,7 +32,7 @@ if (!OglCreatePBuffer (&m_info.pb, m_info.buffer.Width (), m_info.buffer.Height 
 	return 0;
 m_info.glTexId = m_info.pb.texId;
 #elif RENDER2TEXTURE == 2
-if (!m_info.fbo.Create (m_info.buffer.Width (), m_info.buffer.Height (), m_info.bShadowMap))
+if (!m_info.fbo.Create (m_info.buffer.Width (), m_info.buffer.Height (), 1/*m_info.bShadowMap*/))
 	return 0;
 m_info.glTexId = m_info.fbo.ColorBuffer ();
 #endif
@@ -67,6 +67,7 @@ return m_info.buffer.Texture () && ((int) m_info.buffer.Texture ()->Handle () > 
 
 int CCamera::EnableBuffer (void)
 {
+m_info.buffer.ReleaseTexture ();
 #if RENDER2TEXTURE == 1
 if (!OglEnablePBuffer (&m_info.pb))
 	return 0;
@@ -74,7 +75,6 @@ if (!OglEnablePBuffer (&m_info.pb))
 if (!m_info.fbo.Enable ())
 	return 0;
 #endif
-m_info.buffer.ReleaseTexture ();
 return 1;
 }
 
@@ -472,7 +472,7 @@ if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 gameData.objs.viewerP = m_info.objP;
 //gameOpts->render.nMaxFPS = 1;
 #if RENDER2TEXTURE
-if (ReleaseBuffer () && EnableBuffer ()) {
+if (ReleaseBuffer () && ogl.SelectDrawBuffer (-cameraManager.Index (this) - 1)) {
 	//int h = gameOpts->render.stereo.nGlasses;
 	RenderFrame (0, 0);
 	m_info.bValid = 1;

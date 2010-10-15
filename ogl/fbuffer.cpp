@@ -180,10 +180,10 @@ if (m_info.bActive)
 if (Available () <= 0)
 	return 0;
 //if (bFallback) 
-	{
-	glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-	ogl.SetDrawBuffer (GL_BACK, 0);
-	}
+	//{
+	//glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+	//ogl.SetDrawBuffer (GL_BACK, 0);
+	//}
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
 SetDrawBuffers ();
 return m_info.bActive = 1;

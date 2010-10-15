@@ -380,6 +380,8 @@ void CGlowRenderer::ChooseDrawBuffer (void)
 if (gameStates.render.cameras.bActive)
 	cameraManager.Current ()->EnableBuffer ();
 ogl.ChooseDrawBuffer ();
+if (gameStates.render.cameras.bActive)
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 //------------------------------------------------------------------------------
@@ -435,7 +437,7 @@ else
 #endif
 
 	ChooseDrawBuffer ();
-	ogl.SetDepthMode (GL_LEQUAL);
+	ogl.SetDepthMode (gameStates.render.cameras.bActive ? GL_ALWAYS : GL_LEQUAL);
 	ogl.SetBlendMode (2);
 #if BLUR
 	Render (1); // Glow -> back buffer
