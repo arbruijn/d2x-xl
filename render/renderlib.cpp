@@ -541,24 +541,24 @@ int SetupMonitorFace (short nSegment, short nSide, short nCamera, CSegFace *face
 if (!gameStates.render.bDoCameras)
 	return 0;
 bHaveMonitorBg = cameraP->Valid () && /*!cameraP->bShadowMap &&*/
-					  (cameraP->Texture ().Texture () || bCamBufAvail) &&
+					  (cameraP->Texture () || bCamBufAvail) &&
 					  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 if (bHaveMonitorBg) {
 	cameraP->Align (faceP, NULL, FACES.texCoord + faceP->m_info.nIndex, FACES.vertices + faceP->m_info.nIndex);
 	if (bIsTeleCam) {
 #if DBG
-		faceP->bmBot = &cameraP->Texture ();
+		faceP->bmBot = cameraP;
 		gameStates.render.grAlpha = 1.0f;
 #else
-		faceP->bmTop = &cameraP->Texture ();
+		faceP->bmTop = cameraP->Texture ();
 		for (i = 0; i < 4; i++)
 			gameData.render.color.vertices [faceP->m_info.index [i]].color.alpha = 0.7f;
 #endif
 		}
 	else if (/*gameOpts->render.cameras.bFitToWall ||*/ (faceP->m_info.nOvlTex == 0) || !faceP->bmBot)
-		faceP->bmBot = &cameraP->Texture ();
+		faceP->bmBot = cameraP;
 	else
-		faceP->bmTop = &cameraP->Texture ();
+		faceP->bmTop = cameraP;
 	faceP->texCoordP = cameraP->TexCoord ();
 	}
 faceP->m_info.bTeleport = bIsTeleCam;

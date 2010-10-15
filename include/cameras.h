@@ -39,7 +39,7 @@ typedef struct tCamera {
 	time_t			t0;
 } tCamera;
 
-class CCamera : CCanvas {
+class CCamera : public CCanvas {
 	private:
 		tCamera	m_data;
 	public:
