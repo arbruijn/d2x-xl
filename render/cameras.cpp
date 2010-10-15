@@ -472,7 +472,7 @@ if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 gameData.objs.viewerP = m_info.objP;
 //gameOpts->render.nMaxFPS = 1;
 #if RENDER2TEXTURE
-if (ReleaseBuffer () && ogl.SelectDrawBuffer (-cameraManager.Index (this) - 1)) {
+if (ReleaseBuffer () /*&& ogl.SelectDrawBuffer (-cameraManager.Index (this) - 1)*/) {
 	//int h = gameOpts->render.stereo.nGlasses;
 	RenderFrame (0, 0);
 	m_info.bValid = 1;

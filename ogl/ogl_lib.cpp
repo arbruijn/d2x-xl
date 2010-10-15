@@ -655,8 +655,10 @@ if (gameStates.render.bBriefing) {
 	gameStates.render.bRenderIndirect = 0;
 	SetDrawBuffer (GL_BACK, 0);
 	}
-else if (gameStates.render.cameras.bActive)
+else if (gameStates.render.cameras.bActive) {
+	SelectDrawBuffer (-cameraManager.Current () - 1);
 	gameStates.render.bRenderIndirect = 0;
+	}
 else {
 	int i = Enhance3D ();
 	if (i < 0) {

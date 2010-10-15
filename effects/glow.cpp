@@ -403,7 +403,9 @@ glClear (GL_COLOR_BUFFER_BIT);
 
 void CGlowRenderer::ChooseDrawBuffer (void)
 {
-ogl.SelectDrawBuffer (-cameraManager.Current () - 1);
+//if (gameStates.render.cameras.bActive)
+//	cameraManager.Camera (cameraManager.Current ())->EnableBuffer ();
+ogl.ChooseDrawBuffer ();
 //if (gameStates.render.cameras.bActive)
 //	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
