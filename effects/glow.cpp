@@ -200,6 +200,8 @@ if (!Available (nType))
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
 #if USE_VIEWPORT
+if (gameStates.render.cameras.bActive)
+	return true;
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
 #pragma omp parallel 
@@ -222,6 +224,8 @@ if (!Available (nType))
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
 #if USE_VIEWPORT
+if (gameStates.render.cameras.bActive)
+	return true;
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
 #pragma omp parallel 
@@ -244,6 +248,8 @@ if (!Available (nType))
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
 #if USE_VIEWPORT
+if (gameStates.render.cameras.bActive)
+	return true;
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
 if (!bTransformed)
@@ -265,6 +271,8 @@ if (!Available (nType))
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
 #if USE_VIEWPORT
+if (gameStates.render.cameras.bActive)
+	return true;
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
 CFloatVector3 v;
@@ -395,9 +403,7 @@ glClear (GL_COLOR_BUFFER_BIT);
 
 void CGlowRenderer::ChooseDrawBuffer (void)
 {
-if (gameStates.render.cameras.bActive)
-	cameraManager.Current ()->EnableBuffer ();
-ogl.ChooseDrawBuffer ();
+ogl.ChooseDrawBuffer (-cameraManager.Current () - 1);
 //if (gameStates.render.cameras.bActive)
 //	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

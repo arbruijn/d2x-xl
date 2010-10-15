@@ -96,7 +96,7 @@ class CCameraManager {
 		void Rotate (CObject *objP);
 		inline CCamera* Cameras (void) { return m_cameras; }
 		inline CCamera* Camera (short i = 0) { return Cameras () + i; }
-		inline CCamera* Current (void) { return m_current; }
+		inline int Current (void) { return int (m_current - m_cameras); }
 		CCamera* Camera (CObject *objP);
 		inline int GetObjectCamera (int nObject);
 		inline void SetObjectCamera (int nObject, int i);
