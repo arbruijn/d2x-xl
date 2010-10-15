@@ -133,6 +133,18 @@ glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 //------------------------------------------------------------------------------
 
+inline int ScreenWidth (void)
+{
+return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? screen.Width () : screen.Width () / 2;
+}
+
+inline int ScreenHeight (void)
+{
+return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? screen.Height () : screen.Height () / 2;
+}
+
+//------------------------------------------------------------------------------
+
 void CGlowRenderer::SetExtent (CFloatVector3 v, bool bTransformed)
 {
 #if USE_VIEWPORT
@@ -143,8 +155,10 @@ if (!bTransformed)
 v = transformation.m_info.projection * v;
 float z = -v [Z];
 tScreenPos s;
-s.x = fix (fxCanvW2 + float (v [X]) * fxCanvW2 / z);
-s.y = fix (fxCanvH2 + float (v [Y]) * fxCanvH2 / z);
+float w = (float) ScreenWidth () / 2.0f;
+float h = (float) ScreenHeight () / 2.0f;
+s.x = fix (w + float (v [X]) * w / z);
+s.y = fix (h + float (v [Y]) * h / z);
 #pragma omp critical
 if (m_screenMin.x > s.x)
 	m_screenMin.x = s.x;
@@ -172,8 +186,8 @@ if (m_screenMin.x > m_screenMax.x)
 if (m_screenMin.y > m_screenMax.y)
 	Swap (m_screenMin.y, m_screenMax.y);
 
-return (m_screenMax.x > 0) && (m_screenMin.x < screen.Width () - 1) &&
-		 (m_screenMax.y > 0) && (m_screenMin.y < screen.Height () - 1) &&
+return (m_screenMax.x > 0) && (m_screenMin.x < ScreenWidth () - 1) &&
+		 (m_screenMax.y > 0) && (m_screenMin.y < ScreenHeight () - 1) &&
 		 (m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y);
 #else
 return true;
@@ -339,12 +353,8 @@ void CGlowRenderer::Render (int const source, int const direction, float const r
 #if USE_VIEWPORT //DBG
 
 float r = radius * 3.25f; // scale with a bit more than the max. offset from the blur shader
-float w = (float) screen.Width ();
-float h = (float) screen.Height ();
-if (gameStates.render.cameras.bActive && !gameOpts->render.cameras.bHires) {
-	w /= 2.0f;
-	h /= 2.0f;
-	}
+float w = (float) ScreenWidth ();
+float h = (float) ScreenHeight ();
 float verts [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
@@ -396,8 +406,8 @@ ogl.SaveViewport ();
 float r = radius * 3.25f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
 glViewport ((GLsizei) max (m_screenMin.x - r, 0), 
 				(GLsizei) max (m_screenMin.y - r, 0), 
-				(GLint) min (m_screenMax.x - m_screenMin.x + 1 + 2 * r, screen.Width ()), 
-				(GLint) min (m_screenMax.y - m_screenMin.y + 1 + 2 * r, screen.Height ()));
+				(GLint) min (m_screenMax.x - m_screenMin.x + 1 + 2 * r, ScreenWidth ()), 
+				(GLint) min (m_screenMax.y - m_screenMin.y + 1 + 2 * r, ScreenHeight ()));
 glClear (GL_COLOR_BUFFER_BIT);
 ogl.RestoreViewport ();
 #else
