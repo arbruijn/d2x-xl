@@ -8,7 +8,7 @@
 CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT 1
-#define BLUR 0
+#define BLUR 2
 #define START_RAD 3.0f
 #define RAD_INCR 3.0f
 
@@ -360,7 +360,7 @@ return v / m;
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Render (int const source, int const direction, float const radius)
+void CGlowRenderer::Render (int const source, int const direction, float const radius, float const scale)
 {
 #if USE_VIEWPORT //DBG
 
@@ -371,10 +371,10 @@ float verts [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
-	 ScreenCoord ((float) m_screenMax.y + r, (float) h)},
-	{ScreenCoord ((float) m_screenMax.x + r, (float) w),
-	 ScreenCoord ((float) m_screenMax.y + r, (float) h)},
-	{ScreenCoord ((float) m_screenMax.x + r, (float) w),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) h) * scale},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) w) * scale,
+	 ScreenCoord ((float) m_screenMax.y + r, (float) h) * scale},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) w) * scale,
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)}
 	};
 r += 3.25f;
@@ -498,10 +498,10 @@ else
 	ogl.SetDepthMode (gameStates.render.cameras.bActive ? GL_ALWAYS : GL_LEQUAL);
 	ogl.SetBlendMode (2);
 #if BLUR
-	Render (1, 0, radius); // Glow -> back buffer
+	Render (1, 0, radius, (float) ScreenScale ()); // Glow -> back buffer
 	if (!m_bReplace)
 #endif
-		Render (-1, 0, radius); // render the unblurred stuff on top of the blur
+		Render (-1, 0, radius, (float) ScreenScale ()); // render the unblurred stuff on top of the blur
 
 	glMatrixMode (GL_PROJECTION);
 	glPopMatrix ();

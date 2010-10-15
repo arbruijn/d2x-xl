@@ -28,7 +28,7 @@ class CGlowRenderer {
 
 	private:
 		bool LoadShader (int const direction, float const radius);
-		void Render (int const source, int const direction = -1, float const radius = 1.0f);
+		void Render (int const source, int const direction = -1, float const radius = 1.0f, float const scale = 1.0f);
 		bool Blur (int const direction);
 		void Activate (void);
 		void SetupProjection (void);

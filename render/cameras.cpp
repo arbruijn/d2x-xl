@@ -474,8 +474,9 @@ gameData.objs.viewerP = m_data.objP;
 #if RENDER2TEXTURE
 if (ReleaseBuffer () /*&& ogl.SelectDrawBuffer (-cameraManager.Index (this) - 1)*/) {
 	//int h = gameOpts->render.stereo.nGlasses;
-	//CCanvas::SetCurrent (this);
+//	CCanvas::SetCurrent (this);
 	RenderFrame (0, 0);
+//	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 	m_data.bValid = 1;
 	DisableBuffer ();
 	}
