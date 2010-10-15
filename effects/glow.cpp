@@ -8,7 +8,7 @@
 CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT 1
-#define BLUR 2
+#define BLUR 0
 #define START_RAD 3.0f
 #define RAD_INCR 3.0f
 
@@ -128,7 +128,7 @@ void CGlowRenderer::Activate (void)
 if (gameStates.render.cameras.bActive)
 	cameraManager.Current ()->DisableBuffer (false);
 ogl.SelectGlowBuffer ();
-glClear (GL_COLOR_BUFFER_BIT);
+glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 //------------------------------------------------------------------------------
@@ -380,8 +380,8 @@ void CGlowRenderer::ChooseDrawBuffer (void)
 if (gameStates.render.cameras.bActive)
 	cameraManager.Current ()->EnableBuffer ();
 ogl.ChooseDrawBuffer ();
-if (gameStates.render.cameras.bActive)
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//if (gameStates.render.cameras.bActive)
+//	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 //------------------------------------------------------------------------------
@@ -411,13 +411,16 @@ else
 
 	ogl.SetDepthWrite (false);
 	ogl.ResetClientStates (1);
+	//glClearColor (0.0, 0.5, 1.0, 0.5);
+	//glClear (GL_COLOR_BUFFER_BIT);
 
+	float radius = 0.0f;
 #if BLUR
 	ogl.SetDepthMode (GL_ALWAYS);
 	//ogl.SetFaceCulling (false);
 
+	radius += RAD_INCR;
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	float radius = START_RAD;
 	ogl.SelectBlurBuffer (0); 
 	ClearViewport (radius);
 	Render (-1, 0, radius); // Glow -> Blur 0
@@ -433,6 +436,7 @@ else
 		ogl.SelectBlurBuffer (1); 
 		Render (0, 1, radius); // Blur 0 -> Blur 1
 		}
+	radius += RAD_INCR;
 #	endif
 #endif
 
@@ -440,10 +444,10 @@ else
 	ogl.SetDepthMode (gameStates.render.cameras.bActive ? GL_ALWAYS : GL_LEQUAL);
 	ogl.SetBlendMode (2);
 #if BLUR
-	Render (1); // Glow -> back buffer
-#endif
+	Render (1, 0, radius); // Glow -> back buffer
 	if (!m_bReplace)
-		Render (-1); // render the unblurred stuff on top of the blur
+#endif
+		Render (-1, 0, radius); // render the unblurred stuff on top of the blur
 
 	glMatrixMode (GL_PROJECTION);
 	glPopMatrix ();
