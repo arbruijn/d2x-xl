@@ -379,8 +379,7 @@ void CGlowRenderer::ChooseDrawBuffer (void)
 {
 if (gameStates.render.cameras.bActive)
 	cameraManager.Current ()->EnableBuffer ();
-else
-	ogl.ChooseDrawBuffer ();
+ogl.ChooseDrawBuffer ();
 }
 
 //------------------------------------------------------------------------------

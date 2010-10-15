@@ -90,7 +90,7 @@ if (!m_info.buffer.Prepared ())
 #elif RENDER2TEXTURE == 2
 if (!m_info.fbo.Disable ())
 	return 0;
-if (!m_info.buffer.Prepared ()) {
+if (bPrepare && !m_info.buffer.Prepared ()) {
 	m_info.buffer.SetTranspType (-1);
 	m_info.buffer.PrepareTexture (0, 0, &m_info.fbo);
 	}
