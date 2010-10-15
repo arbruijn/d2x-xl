@@ -550,7 +550,7 @@ if (bHaveMonitorBg) {
 		faceP->bmBot = cameraP;
 		gameStates.render.grAlpha = 1.0f;
 #else
-		faceP->bmTop = cameraP->Texture ();
+		faceP->bmTop = cameraP;
 		for (i = 0; i < 4; i++)
 			gameData.render.color.vertices [faceP->m_info.index [i]].color.alpha = 0.7f;
 #endif
