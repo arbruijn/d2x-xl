@@ -732,7 +732,7 @@ else {
 					gameStates.render.grAlpha = GrAlpha (FADE_LEVELS - 2);
 				else {
 					ogl.SetBlendMode (GL_ONE, GL_ONE);
-					//glowRenderer.Begin (2, false, 1.0f);
+					glowRenderer.Begin (GLOW_OBJECTS, 2, false, 1.0f);
 					}
 				}
 			if (bBlendPolys) {

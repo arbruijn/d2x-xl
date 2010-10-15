@@ -447,7 +447,7 @@ else { //3D
 		ogl.SetTransform (1);
 		ogl.SetDepthWrite (false);
 
-		glowRenderer.Begin (2, false, 0.75f);
+		glowRenderer.Begin (GLOW_THRUSTERS, 2, false, 0.75f);
 		m_ti = *infoP;
 		transformation.Begin (m_ti.vPos [nThruster], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : m_ti.mOrient);
 		transformation.Begin (CFixVector::ZERO, m_ti.mRot [nThruster]);

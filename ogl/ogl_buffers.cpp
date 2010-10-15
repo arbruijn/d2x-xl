@@ -299,7 +299,7 @@ int nPrevBuffer = (m_states.nCamera < 0)
 							? int (m_data.drawBufferP - m_data.drawBuffers) 
 							: 0x7FFFFFFF;
 if (nBuffer != nPrevBuffer) {
-	if (nPrevBuffer != 0x7FFFFFFF)
+	if (m_data.drawBufferP)
 		m_data.drawBufferP->Disable (false);
 	if (nBuffer >= 0) {
 		m_states.nCamera = 0;

@@ -193,8 +193,12 @@ if (!m_bViewport) {
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (CFloatVector3* vertexP, int nVerts)
+bool CGlowRenderer::SetViewport (int const nType, CFloatVector3* vertexP, int nVerts)
 {
+if (!Available ())
+	return true;
+if ((GLOW_FLAGS & nType) == 0)
+	return false;
 #if USE_VIEWPORT
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
@@ -211,8 +215,12 @@ return Visible ();
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (CFloatVector* vertexP, int nVerts)
+bool CGlowRenderer::SetViewport (int const nType, CFloatVector* vertexP, int nVerts)
 {
+if (!Available ())
+	return true;
+if ((GLOW_FLAGS & nType) == 0)
+	return false;
 #if USE_VIEWPORT
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
@@ -229,8 +237,12 @@ return Visible ();
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (CFloatVector3 v, float width, float height, bool bTransformed)
+bool CGlowRenderer::SetViewport (int const nType, CFloatVector3 v, float width, float height, bool bTransformed)
 {
+if (!Available ())
+	return true;
+if ((GLOW_FLAGS & nType) == 0)
+	return false;
 #if USE_VIEWPORT
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
@@ -246,8 +258,12 @@ return Visible ();
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (CFixVector pos, float radius)
+bool CGlowRenderer::SetViewport (int const nType, CFixVector pos, float radius)
 {
+if (!Available ())
+	return true;
+if ((GLOW_FLAGS & nType) == 0)
+	return false;
 #if USE_VIEWPORT
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
@@ -261,6 +277,8 @@ return SetViewport (v, radius, radius);
 
 bool CGlowRenderer::Available (bool bForce)
 {
+if ((GLOW_FLAGS & nType) == 0)
+	return false;
 if (!ogl.m_states.bGlowRendering)
 	return false;
 if (!gameOpts->render.effects.bEnabled)
@@ -274,11 +292,11 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::Begin (int const nStrength, bool const bReplace, float const brightness)
+bool CGlowRenderer::Begin (int const nType, int const nStrength, bool const bReplace, float const brightness)
 {
 	static int nCalls = 0;
 
-if (!Available ())
+if (!Available (nType))
 	return false;
 if (++nCalls > 1)
 	PrintLog ("nested glow renderer call!\n");

@@ -667,8 +667,8 @@ PROF_START
 
 ogl.ResetClientStates (1);
 m_data.bmP [1] = m_data.bmP [2] = NULL;
-//if ((item->bAdditive == 1) || (item->bAdditive == 2))
-//	glowRenderer.Begin (2, false, 1.0f);
+if ((item->bAdditive == 1) || (item->bAdditive == 2))
+	glowRenderer.Begin (GLOW_POLYS, 2, false, 1.0f);
 ogl.EnableClientStates (bmP != NULL, item->nColors == item->nVertices, 0, GL_TEXTURE0);
 if (LoadImage (bmP, 0, 0, 0, item->nWrap)) {
 	if (bmP)
@@ -743,10 +743,8 @@ else {
 	}
 
 int bAdditive = item->bAdditive, nIndex = triP ? triP->nIndex : faceP->m_info.nIndex;
-#if 0
 if ((bAdditive == 1) || (bAdditive == 2))
-	glowRenderer.Begin (2, false, 1.0f);
-#endif
+	glowRenderer.Begin (GLOW_FACES, 2, false, 1.0f);
 #if 0 //DBG
 m_data.bmP [0] = NULL;
 ogl.ResetClientStates (bLightmaps);
@@ -895,17 +893,16 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 	int bGlow = 1;
 
-#if 1
 if (item->bAdditive == 1) 
-	glowRenderer.Begin (2, false, 0.9f);
+	glowRenderer.Begin (GLOW_SPRITES, 2, false, 0.9f);
 else if (item->bAdditive == 2)
-	glowRenderer.Begin (1, false, 1.0f);
+	glowRenderer.Begin (GLOW_SPRITES, 1, false, 1.0f);
 else {
 	bGlow = 0;
 	if (glowRenderer.End ())
 		ResetBitmaps ();
 	}
-#endif
+
 ogl.ResetClientStates (1);
 m_data.bmP [1] = m_data.bmP [2] = NULL;
 m_data.bUseLightmaps = 0;
@@ -927,7 +924,7 @@ if (!(bSoftBlend && glareRenderer.LoadShader (item->fSoftRad, item->bAdditive !=
 item->bmP->SetColor ();
 CFloatVector vPosf;
 transformation.Transform (vPosf, item->position, 0);
-if (!bGlow || glowRenderer.SetViewport (*vPosf.XYZ (), X2F (item->nWidth), X2F (item->nHeight), true))
+//if (!bGlow || glowRenderer.SetViewport (*vPosf.XYZ (), X2F (item->nWidth), X2F (item->nHeight), true))
 	ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
 }
 
@@ -1090,7 +1087,7 @@ if (m_data.nPrevType != m_data.nCurType) {
 	m_data.bUseLightmaps = 0;
 	shaderManager.Deploy (-1);
 	}
-//glowRenderer.Begin (2, false);
+glowRenderer.Begin (GLOW_LIGHTTRAILS, 2, false);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 if (LoadImage (item->bmP, 0, 0, 0, GL_CLAMP)) {
 	ogl.SetDepthWrite (true);

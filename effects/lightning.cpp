@@ -849,7 +849,7 @@ ogl.ClearError (0);
 int CLightning::SetupGlow (void)
 {
 if (/*m_bGlow &&*/ gameOpts->render.lightning.bGlow && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)) {
-	glowRenderer.Begin (2, false, 1.1f);
+	glowRenderer.Begin (GLOW_LIGHTNING, 2, false, 1.1f);
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
 	if (corona.Load () && !corona.Bitmap ()->Bind (1)) {
@@ -857,7 +857,7 @@ if (/*m_bGlow &&*/ gameOpts->render.lightning.bGlow && ogl.EnableClientStates (1
 		return 1;
 		}
 	}
-glowRenderer.Begin (3, false, 1.1f);
+glowRenderer.Begin (GLOW_LIGHTNING, 3, false, 1.1f);
 ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 return 0;
 }
@@ -908,11 +908,11 @@ if (nDepth)
 WaitForRenderThread (nThread);
 #endif
 if (GlowType () == 0) {
-	if (glowRenderer.SetViewport (m_coreVerts.Buffer (), m_nNodes))
+	if (glowRenderer.SetViewport (GLOW_LIGHTNING, m_coreVerts.Buffer (), m_nNodes))
 		RenderCore (&color, nDepth, nThread);
 	}
 else {
-	if (glowRenderer.SetViewport (m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1)))
+	if (glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1)))
 		RenderGlow (&color, nDepth, nThread);
 	}
 #if 0 //!USE_OPENMP
