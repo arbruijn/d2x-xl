@@ -309,6 +309,8 @@ if (!ogl.m_states.bGlowRendering)
 	return false;
 if (!gameOpts->render.effects.bEnabled)
 	return false;
+if (gameStates.render.cameras.bActive && !gameOpts->render.cameras.bHires)
+	return false;
 if (!(bForce || gameOpts->render.effects.bGlow))
 	return false;
 if (gameOptions [0].render.nQuality < 2)

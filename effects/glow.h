@@ -45,13 +45,13 @@ extern CGlowRenderer glowRenderer;
 #define GLOW_LIGHTNING		1
 #define GLOW_SHIELDS			2
 #define GLOW_SPRITES			4
-#define GLOW_LIGHTTRAILS	8
-#define GLOW_THRUSTERS		16
+#define GLOW_THRUSTERS		8
+#define GLOW_LIGHTTRAILS	16
 #define GLOW_POLYS			32
 #define GLOW_FACES			64
 #define GLOW_OBJECTS			128
 
-#define GLOW_FLAGS GLOW_LIGHTNING
+#define GLOW_FLAGS (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_THRUSTERS)
 
 //------------------------------------------------------------------------------
 
