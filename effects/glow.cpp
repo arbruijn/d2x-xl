@@ -490,7 +490,7 @@ else
 	ogl.SetBlendMode (2);
 	float scale = (float) ScreenScale ();
 #if BLUR
-	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 4.0f); // Glow -> back buffer
+	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 8.0f); // Glow -> back buffer
 	if (!m_bReplace)
 #endif
 		Render (-1, -1, radius, scale); // render the unblurred stuff on top of the blur
