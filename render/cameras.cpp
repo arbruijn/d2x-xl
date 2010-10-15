@@ -28,17 +28,17 @@ CCameraManager cameraManager;
 int CCamera::CreateBuffer (void)
 {
 #if RENDER2TEXTURE == 1
-if (!OglCreatePBuffer (&m_info.pb, m_info.buffer.Width (), m_info.buffer.Height (), 0))
+if (!OglCreatePBuffer (&m_data.pb, Width (), Height (), 0))
 	return 0;
-m_info.glTexId = m_info.pb.texId;
+m_data.glTexId = m_data.pb.texId;
 #elif RENDER2TEXTURE == 2
-if (!m_info.fbo.Create (m_info.buffer.Width (), m_info.buffer.Height (), 1/*m_info.bShadowMap*/))
+if (!m_data.fbo.Create (Width (), Height (), 1/*m_data.bShadowMap*/))
 	return 0;
-m_info.glTexId = m_info.fbo.ColorBuffer ();
+m_data.glTexId = m_data.fbo.ColorBuffer ();
 #endif
 char szName [20];
-sprintf (szName, "CAM#%04d", m_info.nId);
-m_info.buffer.SetName (szName);
+sprintf (szName, "CAM#%04d", m_data.nId);
+SetName (szName);
 return 1;
 }
 
@@ -48,11 +48,11 @@ int CCamera::HaveBuffer (int bCheckTexture)
 {
 if (bCheckTexture)
 #if RENDER2TEXTURE == 1
-	return m_info.buffer.Texture () ? m_info.Texture ()->PBO ()->Available() : -1;
-return OglPHaveBuffer (&m_info.pb);
+	return Texture () ? m_data.Texture ()->PBO ()->Available() : -1;
+return OglPHaveBuffer (&m_data.pb);
 #elif RENDER2TEXTURE == 2
-	return m_info.buffer.Texture () ? m_info.buffer.Texture ()->FBO ().Available () : -1;
-return m_info.fbo.Available ();
+	return Texture () ? Texture ()->FBO ().Available () : -1;
+return m_data.fbo.Available ();
 #endif
 }
 
@@ -60,19 +60,19 @@ return m_info.fbo.Available ();
 
 int CCamera::HaveTexture (void)
 {
-return m_info.buffer.Texture () && ((int) m_info.buffer.Texture ()->Handle () > 0);
+return Texture () && ((int) Texture ()->Handle () > 0);
 }
 
 //------------------------------------------------------------------------------
 
 int CCamera::EnableBuffer (void)
 {
-m_info.buffer.ReleaseTexture ();
+ReleaseTexture ();
 #if RENDER2TEXTURE == 1
-if (!OglEnablePBuffer (&m_info.pb))
+if (!OglEnablePBuffer (&m_data.pb))
 	return 0;
 #elif RENDER2TEXTURE == 2
-if (!m_info.fbo.Enable ())
+if (!m_data.fbo.Enable ())
 	return 0;
 #endif
 return 1;
@@ -83,16 +83,16 @@ return 1;
 int CCamera::DisableBuffer (bool bPrepare)
 {
 #if RENDER2TEXTURE == 1
-if (!OglDisablePBuffer (&m_info.pb))
+if (!OglDisablePBuffer (&m_data.pb))
 	return 0;
-if (!m_info.buffer.Prepared ())
-	PrepareTexture (&m_info.buffer, 0, -1, 0, &m_info.pb);
+if (!Prepared ())
+	PrepareTexture (&m_data.buffer, 0, -1, 0, &m_data.pb);
 #elif RENDER2TEXTURE == 2
-if (!m_info.fbo.Disable ())
+if (!m_data.fbo.Disable ())
 	return 0;
-if (bPrepare && !m_info.buffer.Prepared ()) {
-	m_info.buffer.SetTranspType (-1);
-	m_info.buffer.PrepareTexture (0, 0, &m_info.fbo);
+if (bPrepare && !Prepared ()) {
+	SetTranspType (-1);
+	PrepareTexture (0, 0, &m_data.fbo);
 	}
 #endif
 return 1;
@@ -104,10 +104,10 @@ int CCamera::BindBuffer (void)
 {
 if ((HaveBuffer (0) != 1) && !CreateBuffer ())
 	return 0;
-ogl.BindTexture (m_info.glTexId);
+ogl.BindTexture (m_data.glTexId);
 #if RENDER2TEXTURE == 1
 #	ifdef _WIN32
-return m_info.pbo.Bind ();
+return m_data.pbo.Bind ();
 #	endif
 #endif
 return 1;
@@ -120,12 +120,12 @@ int CCamera::ReleaseBuffer (void)
 if (HaveBuffer (0) != 1)
 	return 0;
 #if RENDER2TEXTURE == 1
-if (!m_info.pb.bBound)
+if (!m_data.pb.bBound)
 	return 1;
 #endif
-m_info.buffer.ReleaseTexture ();
+ReleaseTexture ();
 #if RENDER2TEXTURE == 1
-m_info.pb.bBound = 0;
+m_data.pb.bBound = 0;
 #endif
 return 1;
 }
@@ -137,9 +137,9 @@ int CCamera::DestroyBuffer (void)
 if (!HaveBuffer (0))
 	return 0;
 #if RENDER2TEXTURE == 1
-OglDestroyPBuffer (&m_info.pb);
+OglDestroyPBuffer (&m_data.pb);
 #elif RENDER2TEXTURE == 2
-m_info.fbo.Destroy ();
+m_data.fbo.Destroy ();
 #endif
 return 1;
 }
@@ -148,7 +148,7 @@ return 1;
 
 void CCamera::Init (void)
 {
-memset (&m_info, 0, sizeof (m_info)); 
+memset (&m_data, 0, sizeof (m_data)); 
 }
 
 //------------------------------------------------------------------------------
@@ -165,43 +165,43 @@ int CCamera::Create (short nId, short srcSeg, short srcSide, short tgtSeg, short
 #endif
 
 Init ();
-m_info.nId = nId;
-m_info.bShadowMap = bShadowMap;
-m_info.buffer.SetWidth (Pow2ize (screen.Width () / (2 - gameOpts->render.cameras.bHires)));
-m_info.buffer.SetHeight (Pow2ize (screen.Height () / (2 - gameOpts->render.cameras.bHires)));
-m_info.buffer.SetBPP (4);
-//m_info.buffer.SetRowSize (max (CCanvas::Current ()->Width (), m_info.buffer.Width ()));
+m_data.nId = nId;
+m_data.bShadowMap = bShadowMap;
+SetWidth (Pow2ize (screen.Width () / (2 - gameOpts->render.cameras.bHires)));
+SetHeight (Pow2ize (screen.Height () / (2 - gameOpts->render.cameras.bHires)));
+SetBPP (4);
+//SetRowSize (max (CCanvas::Current ()->Width (), Width ()));
 #if RENDER2TEXTURE
 if (!CreateBuffer ()) 
 #endif
 {
 #if CAMERA_READPIXELS
-	if (!(m_info.buffer.Create (m_info.buffer.Width () * m_info.buffer.Height () * 4)))
+	if (!(Create (Width () * Height () * 4)))
 		return 0;
-	if (gameOpts->render.cameras.bFitToWall || m_info.bTeleport)
-		m_info.screenBuf = m_info.buffer.Buffer ();
+	if (gameOpts->render.cameras.bFitToWall || m_data.bTeleport)
+		m_data.screenBuf = Buffer ();
 	else {
-		m_info.screenBuf = new ubyte [CCanvas::Current ()->Width () * CCanvas::Current ()->Height () * 4];
-		if (!m_info.screenBuf) {
+		m_data.screenBuf = new ubyte [CCanvas::Current ()->Width () * CCanvas::Current ()->Height () * 4];
+		if (!m_data.screenBuf) {
 			gameOpts->render.cameras.bFitToWall = 1;
-			m_info.screenBuf = m_info.buffer.Buffer ();
+			m_data.screenBuf = Buffer ();
 			}
 		}
-	memset (m_info.buffer.Buffer (), 0, m_info.buffer.Width () * m_info.buffer.Height () * 4);
+	memset (Buffer (), 0, Width () * Height () * 4);
 #else
 	return 0;
 #endif
 	}
 if (objP) {
-	m_info.objP = objP;
-	m_info.orient = objP->info.position.mOrient;
-	m_info.curAngle =
-	m_info.curDelta = 0;
-	m_info.t0 = 0;
+	m_data.objP = objP;
+	m_data.orient = objP->info.position.mOrient;
+	m_data.curAngle =
+	m_data.curDelta = 0;
+	m_data.t0 = 0;
 	cameraManager.SetObjectCamera (objP->Index (), nId);
 	}
 else {
-	m_info.objP = &m_info.obj;
+	m_data.objP = &m_data.obj;
 	if (bTeleport) {
 		CFixVector n = *SEGMENTS [srcSeg].m_sides [srcSide].m_normals;
 		/*
@@ -213,31 +213,31 @@ else {
 		}
 	else
 		a = SEGMENTS [srcSeg].m_sides [srcSide].m_normals [0].ToAnglesVec ();
-	m_info.obj.info.position.mOrient = CFixMatrix::Create(a);
+	m_data.obj.info.position.mOrient = CFixMatrix::Create(a);
 #if 1
 	if (bTeleport)
-		m_info.obj.info.position.vPos = SEGMENTS [srcSeg].Center ();
+		m_data.obj.info.position.vPos = SEGMENTS [srcSeg].Center ();
 	else
-		m_info.obj.info.position.vPos = SEGMENTS [srcSeg].SideCenter (srcSide);
+		m_data.obj.info.position.vPos = SEGMENTS [srcSeg].SideCenter (srcSide);
 #else
 	corners = SEGMENTS [srcSeg].Corners (srcSide);
 	for (i = 0; i < 4; i++) {
 		pv = gameData.segs.vertices + corners [i];
-		m_info.obj.info.position.p.vPos.x += pv->x;
-		m_info.obj.info.position.p.vPos.y += pv->y;
-		m_info.obj.info.position.p.vPos.z += pv->z;
+		m_data.obj.info.position.p.vPos.x += pv->x;
+		m_data.obj.info.position.p.vPos.y += pv->y;
+		m_data.obj.info.position.p.vPos.z += pv->z;
 		}
-	m_info.obj.info.position.p.vPos.x /= 4;
-	m_info.obj.info.position.p.vPos.y /= 4;
-	m_info.obj.info.position.p.vPos.z /= 4;
+	m_data.obj.info.position.p.vPos.x /= 4;
+	m_data.obj.info.position.p.vPos.y /= 4;
+	m_data.obj.info.position.p.vPos.z /= 4;
 #endif
-	m_info.obj.info.nSegment = srcSeg;
-	m_info.bMirror = (tgtSeg == srcSeg) && (tgtSide == srcSide);
+	m_data.obj.info.nSegment = srcSeg;
+	m_data.bMirror = (tgtSeg == srcSeg) && (tgtSide == srcSide);
 	}
-//m_info.obj.nSide = srcSide;
-m_info.nSegment = tgtSeg;
-m_info.nSide = tgtSide;
-m_info.bTeleport = (char) bTeleport;
+//m_data.obj.nSide = srcSide;
+m_data.nSegment = tgtSeg;
+m_data.nSide = tgtSide;
+m_data.bTeleport = (char) bTeleport;
 return 1;
 }
 
@@ -245,14 +245,14 @@ return 1;
 
 void CCamera::Destroy (void)
 {
-m_info.buffer.ReleaseTexture ();
-ogl.DeleteTextures (1, &m_info.glTexId);
-if (m_info.screenBuf && (m_info.screenBuf != m_info.buffer.Buffer ())) {
-	delete m_info.screenBuf;
-	m_info.screenBuf = NULL;
+ReleaseTexture ();
+ogl.DeleteTextures (1, &m_data.glTexId);
+if (m_data.screenBuf && (m_data.screenBuf != Buffer ())) {
+	delete m_data.screenBuf;
+	m_data.screenBuf = NULL;
 	}
-if (m_info.buffer.Buffer ()) {
-	m_info.buffer.DestroyBuffer ();
+if (Buffer ()) {
+	DestroyBuffer ();
 	}
 #if RENDER2TEXTURE
 if (ogl.m_states.bRender2TextureOk)
@@ -283,9 +283,9 @@ else {
 	}
 
 #if !DBG
-if (m_info.bAligned) {
+if (m_data.bAligned) {
 	if (uvlP)
-		memcpy (uvlP, m_info.uvlList, sizeof (m_info.uvlList));
+		memcpy (uvlP, m_data.uvlList, sizeof (m_data.uvlList));
 	}
 else 
 #endif
@@ -295,7 +295,7 @@ else
 		int	xFlip, yFlip, rotLeft, rotRight;
 #if RENDER2TEXTURE
 		int	bHaveBuffer = HaveBuffer (1) == 1;
-		int	bFitToWall = 1; //m_info.bTeleport || gameOpts->render.cameras.bFitToWall;
+		int	bFitToWall = 1; //m_data.bTeleport || gameOpts->render.cameras.bFitToWall;
 #endif
 #if DBG
 	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
@@ -345,8 +345,8 @@ else
 		duFace = 0.0f;
 	du = dv = 0;
 	if (bHaveBuffer) {
-		duImage = (float) CCanvas::Current ()->Width () / (float) m_info.buffer.Width () / nScale;
-		dvImage = (float) CCanvas::Current ()->Height () / (float) m_info.buffer.Height () / nScale;
+		duImage = (float) CCanvas::Current ()->Width () / (float) Width () / nScale;
+		dvImage = (float) CCanvas::Current ()->Height () / (float) Height () / nScale;
 		if (!bFitToWall) {
 			aImage = (float) CCanvas::Current ()->Height () / (float) CCanvas::Current ()->Width ();
 			if (vertexP)
@@ -363,7 +363,7 @@ else
 		duImage = duFace;
 		dvImage = dvFace;
 		}
-	if (m_info.bMirror)
+	if (m_data.bMirror)
 		xFlip = !xFlip;
 	if (uvlP) {
 		uvlP [0].v = 
@@ -378,16 +378,16 @@ else
 			uvlP [i].l = I2X (1);
 		if (rotRight) {
 			for (i = 1; i < 5; i++) {
-				m_info.uvlList [i - 1] = uvlP [i % 4];
+				m_data.uvlList [i - 1] = uvlP [i % 4];
 				}
 			}
 		else if (rotRight) {
 			for (i = 0; i < 4; i++) {
-				m_info.uvlList [i] = uvlP [(i + 1) % 4];
+				m_data.uvlList [i] = uvlP [(i + 1) % 4];
 				}
 			}
 		else
-			memcpy (m_info.uvlList, uvlP, sizeof (m_info.uvlList));
+			memcpy (m_data.uvlList, uvlP, sizeof (m_data.uvlList));
 		}
 	else {
 		tTexCoord2f texCoord [6];
@@ -427,9 +427,9 @@ else
 				texCoord [3] = texCoord [0];
 				}
 			}
-		memcpy (m_info.texCoord, texCoord, sizeof (m_info.texCoord));
+		memcpy (m_data.texCoord, texCoord, sizeof (m_data.texCoord));
 		}
-	m_info.bAligned = 1;
+	m_data.bAligned = 1;
 	}
 }
 
@@ -437,29 +437,29 @@ else
 
 int CCamera::Ready (time_t t)
 {
-m_info.nWaitFrames++;
-if (!m_info.bVisible)
+m_data.nWaitFrames++;
+if (!m_data.bVisible)
 	return 0;
-if (m_info.bTeleport && !EGI_FLAG (bTeleporterCams, 0, 1, 0))
+if (m_data.bTeleport && !EGI_FLAG (bTeleporterCams, 0, 1, 0))
 	return 0;
-if (m_info.objP && (m_info.objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+if (m_data.objP && (m_data.objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	return 0;
-if (gameOpts->render.cameras.nFPS && !m_info.bTimedOut) {
-	if (t - m_info.nTimeout < 1000 / gameOpts->render.cameras.nFPS)
+if (gameOpts->render.cameras.nFPS && !m_data.bTimedOut) {
+	if (t - m_data.nTimeout < 1000 / gameOpts->render.cameras.nFPS)
 		return 0;
-	m_info.bTimedOut = 1;
+	m_data.bTimedOut = 1;
 	}
-return m_info.nWaitFrames;
+return m_data.nWaitFrames;
 }
 
 //------------------------------------------------------------------------------
 
 void CCamera::Reset (void)
 {
-m_info.nWaitFrames = 0;
-m_info.bTimedOut = 0;
-m_info.nTimeout = gameStates.app.nSDLTicks [0]; //SDL_GetTicks ();
-m_info.bVisible = 0;
+m_data.nWaitFrames = 0;
+m_data.bTimedOut = 0;
+m_data.nTimeout = gameStates.app.nSDLTicks [0]; //SDL_GetTicks ();
+m_data.bVisible = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -469,80 +469,81 @@ int CCamera::Render (void)
 gameStates.render.cameras.bActive = 1;
 if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 	cockpit->Activate (CM_FULL_SCREEN);
-gameData.objs.viewerP = m_info.objP;
+gameData.objs.viewerP = m_data.objP;
 //gameOpts->render.nMaxFPS = 1;
 #if RENDER2TEXTURE
 if (ReleaseBuffer () /*&& ogl.SelectDrawBuffer (-cameraManager.Index (this) - 1)*/) {
 	//int h = gameOpts->render.stereo.nGlasses;
+	//CCanvas::SetCurrent (this);
 	RenderFrame (0, 0);
-	m_info.bValid = 1;
+	m_data.bValid = 1;
 	DisableBuffer ();
 	}
 else 
 #	if CAMERA_READPIXELS
-if (m_info.buffer.Buffer ()) 
+if (Buffer ()) 
 #	endif
 #endif
  {
 	RenderFrame (0, 0);
-	m_info.bValid = 1;
-	m_info.buffer.ReleaseTexture ();
+	m_data.bValid = 1;
+	ReleaseTexture ();
 #if CAMERA_READPIXELS
-	memset (m_info.buffer.Buffer (), 0, m_info.buffer.Width () * m_info.buffer.Height () * 4);
+	memset (Buffer (), 0, Width () * Height () * 4);
 	ogl.SetTexturing (false);
 #endif
 	glReadBuffer (GL_BACK);
-	if (gameOpts->render.cameras.bFitToWall || m_info.bTeleport) {
+	if (gameOpts->render.cameras.bFitToWall || m_data.bTeleport) {
 #if CAMERA_READPIXELS == 0
-		m_info.buffer.SetTranspType (-1);
-		m_info.buffer.PrepareTexture (0, 0, NULL);
+		SetTranspType (-1);
+		PrepareTexture (0, 0, NULL);
 		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
-			(CCanvas::Current ()->Width () - m_info.buffer.Width ()) / 2, 
-			(CCanvas::Current ()->Height () - m_info.buffer.Height ()) / 2, 
-			m_info.buffer.Width (), m_info.buffer.Height (), 0);
+			(CCanvas::Current ()->Width () - Width ()) / 2, 
+			(CCanvas::Current ()->Height () - Height ()) / 2, 
+			Width (), Height (), 0);
 #else
 		ogl.SetReadBuffer (GL_FRONT, 0);
 		glReadPixels (
-			(CCanvas::Current ()->Width () - m_info.buffer.Width ()) / 2, 
-			(CCanvas::Current ()->Height () - m_info.buffer.Height ()) / 2, 
-			m_info.buffer.Width (), m_info.buffer.Height (), 
-			GL_RGBA, GL_UNSIGNED_BYTE, m_info.buffer.Buffer ());
-		PrepareTexture (&m_info.buffer, 0, -1, NULL);
+			(CCanvas::Current ()->Width () - Width ()) / 2, 
+			(CCanvas::Current ()->Height () - Height ()) / 2, 
+			Width (), Height (), 
+			GL_RGBA, GL_UNSIGNED_BYTE, Buffer ());
+		PrepareTexture (&m_data.buffer, 0, -1, NULL);
 #endif
 		}
 	else {
 #if CAMERA_READPIXELS == 0
-			m_info.buffer.SetTranspType (-1);
-			m_info.buffer.PrepareTexture (0, 0, NULL);
+			SetTranspType (-1);
+			PrepareTexture (0, 0, NULL);
 			glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
-				-(m_info.buffer.Width () - CCanvas::Current ()->Width ()) / 2,
-				-(m_info.buffer.Height () - CCanvas::Current ()->Height ()) / 2, 
-				m_info.buffer.Width (), m_info.buffer.Height (), 0);
+				-(Width () - CCanvas::Current ()->Width ()) / 2,
+				-(Height () - CCanvas::Current ()->Height ()) / 2, 
+				Width (), Height (), 0);
 #else
 		char	*pSrc, *pDest;
-		int	dxBuf = (m_info.buffer.Width () - CCanvas::Current ()->Width ()) / 2;
-		int	dyBuf = (m_info.buffer.Height () - CCanvas::Current ()->Height ()) / 2;
+		int	dxBuf = (Width () - CCanvas::Current ()->Width ()) / 2;
+		int	dyBuf = (Height () - CCanvas::Current ()->Height ()) / 2;
 		int	wSrc = CCanvas::Current ()->Width () * 4;
-		int	wDest = m_info.buffer.Width () * 4;
+		int	wDest = Width () * 4;
 
-		if (CCanvas::Current ()->Width () == m_info.buffer.Width ()) {
+		if (CCanvas::Current ()->Width () == Width ()) {
 			ogl.SetReadBuffer (GL_FRONT, 0);
 			glReadPixels (
 				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (),
-				GL_RGBA, GL_UNSIGNED_BYTE, m_info.buffer.Buffer () + dyBuf * m_info.buffer.Width () * 4);
+				GL_RGBA, GL_UNSIGNED_BYTE, Buffer () + dyBuf * Width () * 4);
 			}
 		else {
 			ogl.SetReadBuffer (GL_FRONT, 0);
 			glReadPixels (
 				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (),
-				GL_RGBA, GL_UNSIGNED_BYTE, m_info.screenBuf);
-			pSrc = m_info.screenBuf;
-			pDest = m_info.buffer.Buffer () + (dyBuf - 1) * wDest + dxBuf * 4;
+				GL_RGBA, GL_UNSIGNED_BYTE, m_data.screenBuf);
+			pSrc = m_data.screenBuf;
+			pDest = Buffer () + (dyBuf - 1) * wDest + dxBuf * 4;
 #	ifndef _WIN32
 			for (dyBuf = CCanvas::Current ()->Height (); dyBuf; dyBuf--, pSrc += wSrc, pDest += wDest)
 				memcpy (pDest, pSrc, wSrc);
 #	else
-			dxBuf = m_info.buffer.Width () - CCanvas::Current ()->Width ();
+			dxBuf = Width () - CCanvas::Current ()->Width ();
 			dyBuf = CCanvas::Current ()->Height ();
 			wSrc /= 4;
 			__asm {
@@ -568,13 +569,13 @@ if (m_info.buffer.Buffer ())
 				pop	edi
 				}
 #	endif
-			PrepareTexture (&m_info.buffer, 0, -1);
+			PrepareTexture (&m_data.buffer, 0, -1);
 			}
 #endif
 		}
 	}
 gameStates.render.cameras.bActive = 0;
-return m_info.bValid;
+return m_data.bValid;
 }
 
 //--------------------------------------------------------------------
@@ -586,19 +587,19 @@ void CCamera::Rotate (void)
 #define	DEG45		 (I2X (1) / 8)
 #define	DEG1		 (I2X (1) / (4 * 90))
 
-if (!m_info.objP)
+if (!m_data.objP)
 	return;
 
-	fixang	curAngle = m_info.curAngle;
-	fixang	curDelta = m_info.curDelta;
+	fixang	curAngle = m_data.curAngle;
+	fixang	curDelta = m_data.curDelta;
 
 #if 1
-	time_t	t0 = m_info.t0;
+	time_t	t0 = m_data.t0;
 	time_t	t = gameStates.app.nSDLTicks [0];
 
 if ((t0 < 0) || (t - t0 >= 1000 / 90))
 #endif
-	if (m_info.objP->cType.aiInfo.behavior == AIB_NORMAL) {
+	if (m_data.objP->cType.aiInfo.behavior == AIB_NORMAL) {
 		CAngleVector	a;
 		CFixMatrix	r;
 
@@ -609,7 +610,7 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 	if (h != d)
 		curDelta = s * d;
 #if 1
-	m_info.objP->mType.physInfo.brakes = (fix) t;
+	m_data.objP->mType.physInfo.brakes = (fix) t;
 #endif
 	if ((curAngle >= DEG45) || (curAngle <= -DEG45)) {
 		if (curAngle * s - DEG45 >= curDelta * s)
@@ -621,10 +622,10 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 	a [HA] = curAngle;
 	a [BA] = a [PA] = 0;
 	r = CFixMatrix::Create (a);
-	m_info.objP->info.position.mOrient = m_info.orient * r;
-	m_info.objP->info.position.mOrient.CheckAndFix ();
-	m_info.curAngle = curAngle;
-	m_info.curDelta = curDelta;
+	m_data.objP->info.position.mOrient = m_data.orient * r;
+	m_data.objP->info.position.mOrient.CheckAndFix ();
+	m_data.curAngle = curAngle;
+	m_data.curDelta = curDelta;
 	}
 }
 

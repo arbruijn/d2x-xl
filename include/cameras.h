@@ -12,7 +12,6 @@ typedef struct tCamera {
 	short				nId;
 	short				nSegment;
 	short				nSide;
-	CBitmap			buffer;
 	ubyte				*screenBuf;
 	GLuint			glTexId;
 	time_t			nTimeout;
@@ -40,9 +39,9 @@ typedef struct tCamera {
 	time_t			t0;
 } tCamera;
 
-class CCamera {
+class CCamera : CCanvas {
 	private:
-		tCamera	m_info;
+		tCamera	m_data;
 	public:
 		CCamera () { Init (); };
 		~CCamera () { Destroy (); };
@@ -57,16 +56,16 @@ class CCamera {
 		void Destroy (void);
 		int HaveBuffer (int bCheckTexture);
 		int HaveTexture (void);
-		inline void ReAlign (void) { m_info.bAligned = 0; }
-		inline void SetVisible (char bVisible) { m_info.bVisible = bVisible; }
-		inline char GetVisible (void) { return m_info.bVisible; }
-		inline char GetTeleport (void) { return m_info.bTeleport; }
-		inline char Valid (void) { return m_info.bValid; }
-		inline CFixMatrix& Orient (void) { return m_info.orient; }
-		inline CBitmap& Texture (void) { return m_info.buffer; }
-		inline tTexCoord2f* TexCoord (void) { return m_info.texCoord; }
-		inline CObject* GetObject (void) { return m_info.objP; }
-		inline CFBO& FrameBuffer (void) { return m_info.fbo; } 
+		inline void ReAlign (void) { m_data.bAligned = 0; }
+		inline void SetVisible (char bVisible) { m_data.bVisible = bVisible; }
+		inline char GetVisible (void) { return m_data.bVisible; }
+		inline char GetTeleport (void) { return m_data.bTeleport; }
+		inline char Valid (void) { return m_data.bValid; }
+		inline CFixMatrix& Orient (void) { return m_data.orient; }
+		//inline CBitmap& Buffer (void) { return *this; }
+		inline tTexCoord2f* TexCoord (void) { return m_data.texCoord; }
+		inline CObject* GetObject (void) { return m_data.objP; }
+		inline CFBO& FrameBuffer (void) { return m_data.fbo; } 
 		int EnableBuffer (void);
 		int DisableBuffer (bool bPrepare = true);
 

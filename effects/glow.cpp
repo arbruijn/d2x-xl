@@ -133,14 +133,21 @@ glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 //------------------------------------------------------------------------------
 
+inline int ScreenScale (void)
+{
+return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? 1 : 2;
+}
+
+//------------------------------------------------------------------------------
+
 inline int ScreenWidth (void)
 {
-return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? screen.Width () : screen.Width () / 2;
+return screen.Width () / ScreenScale ();
 }
 
 inline int ScreenHeight (void)
 {
-return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? screen.Height () : screen.Height () / 2;
+return screen.Height () / ScreenScale ();
 }
 
 //------------------------------------------------------------------------------
@@ -198,7 +205,12 @@ return true;
 
 void CGlowRenderer::InitViewport (void)
 {
-if (!m_bViewport) {
+if (gameOpts->render.effects.bGlow != 1) {
+	m_screenMin.x = m_screenMin.y = 0;
+	m_screenMax.x = ScreenWidth ();
+	m_screenMax.y = ScreenHeight ();
+	}	
+else if (!m_bViewport) {
 	m_bViewport = -1;
 	m_screenMin.x = m_screenMin.y = 0x7FFF;
 	m_screenMax.x = m_screenMax.y = -0x7FFF;

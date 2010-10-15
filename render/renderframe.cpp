@@ -546,7 +546,8 @@ gameStates.render.vr.buffers.screenPages [0].SetupPane (
 	gameStates.render.vr.buffers.subRender [0].Top (),
 	gameStates.render.vr.buffers.subRender [0].Width (),
 	gameStates.render.vr.buffers.subRender [0].Height ());
-CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
+
+CCanvas::SetCurrent (gameStates.render.cameras.bActive ? cameraManager.Camera (cameraManager.Current ()) : &gameStates.render.vr.buffers.subRender [0]);
 
 if (xStereoSeparation <= 0) {
 	PROF_START
