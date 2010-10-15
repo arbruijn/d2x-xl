@@ -80,7 +80,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CCamera::DisableBuffer (void)
+int CCamera::DisableBuffer (bool bPrepare)
 {
 #if RENDER2TEXTURE == 1
 if (!OglDisablePBuffer (&m_info.pb))

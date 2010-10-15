@@ -68,10 +68,10 @@ class CCamera {
 		inline CObject* GetObject (void) { return m_info.objP; }
 		inline CFBO& FrameBuffer (void) { return m_info.fbo; } 
 		int EnableBuffer (void);
+		int DisableBuffer (bool bPrepare = true);
 
 	private:
 		int CreateBuffer (void);
-		int DisableBuffer (void);
 		int BindBuffer (void);
 		int ReleaseBuffer (void);
 		int DestroyBuffer (void);

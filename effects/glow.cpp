@@ -125,6 +125,8 @@ return false;
 
 void CGlowRenderer::Activate (void)
 {
+if (gameStates.render.cameras.bActive)
+	cameraManager.Current ()->DisableBuffer (false);
 ogl.SelectGlowBuffer ();
 glClear (GL_COLOR_BUFFER_BIT);
 }
