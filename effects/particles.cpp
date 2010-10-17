@@ -134,7 +134,7 @@ m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES)
 m_nClass = nClass;
 m_nFadeType = nFadeType;
 m_nSegment = nSegment;
-m_nBounce = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1 : 2;
+m_nBounce = ((m_nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1 : 2;
 m_bReversed = 0;
 m_nMoved = nCurTime;
 if (nLife < 0)
@@ -146,7 +146,7 @@ m_color [0] =
 m_color [1] = 
 color = (colorP && (m_bEmissive != 2)) ? *colorP : defaultParticleColor;
 
-if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
+if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
 	m_bBright = 0;
 	m_nFadeState = -1;
 	}
@@ -297,6 +297,11 @@ if (nType == BULLET_PARTICLES) {
 	m_nRotFrame = 0;
 	m_nOrient = 3;
 	}
+else if ((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
+	m_iFrame = 0;
+	m_nRotFrame = 0;
+	m_nOrient = 3;
+	}
 else if (nType == BUBBLE_PARTICLES) {
 	m_iFrame = rand () % (m_nFrames * m_nFrames);
 	m_nRotFrame = 0;
@@ -343,7 +348,7 @@ else
 		m_color [0].alpha /= 3.5f - float (gameOpts->render.particles.nQuality) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
 	else if (nParticleSystemType == SMOKE_PARTICLES)
 		m_color [0].alpha /= colorP ? 3.0f - (color.red + color.green + color.blue) / 3.0f : 2.5f;
-	else if (nParticleSystemType == BUBBLE_PARTICLES)
+	else if ((nParticleSystemType == BUBBLE_PARTICLES) || (nParticleSystemType == RAIN_PARTICLES) || (nParticleSystemType == SNOW_PARTICLES)) 
 		m_color [0].alpha /= 2.0f;
 	else if (nParticleSystemType == GATLING_PARTICLES)
 		m_color [0].alpha /= 4.0f;
@@ -505,7 +510,7 @@ SetupColor (fBrightness);
 
 fix CParticle::Drag (void)
 {
-if ((m_nType == BUBBLE_PARTICLES) || (m_nType == FIRE_PARTICLES))
+if ((m_nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES) || (m_nType == FIRE_PARTICLES))
 	return I2X (1); // constant speed
 else if (m_nType == WATERFALL_PARTICLES) {
 	float h = 4.0f - 3.0f * m_decay;
@@ -523,7 +528,7 @@ int CParticle::Bounce (int nThread)
 if (!gameOpts->render.particles.bCollisions)
 	return 1;
 if (!CollideWithWall (nThread)) {
-	m_nBounce = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1 : 2;
+	m_nBounce = ((m_nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1 : 2;
 	return 1;
 	}
 if (!--m_nBounce)
@@ -571,7 +576,7 @@ int nSegment = -1;
 if (m_nSegment < -1)
 	m_nSegment++;
 if (m_nSegment >= -1) {
-	nSegment = FindSegByPos (m_vPos, m_nSegment, 1, -1, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
+	nSegment = FindSegByPos (m_vPos, m_nSegment, 1, -1, ((m_nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) ? 0 : fix (m_nRad), nThread);
 	if (nSegment < 0)
 		m_nSegment = int (--m_nDelayPosUpdate);
 	}
@@ -596,6 +601,10 @@ else if ((m_nType == BUBBLE_PARTICLES) && !SEGMENTS [nSegment].HasWaterProp ()) 
 	m_nLife = -1;
 	return 0;
 	}
+else if (((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) && SEGMENTS [nSegment].HasWaterProp ()) {
+	m_nLife = -1;
+	return 0;
+	}
 m_nSegment = nSegment;
 
 if (!Bounce (nThread))
@@ -608,7 +617,7 @@ return 1;
 
 void CParticle::UpdateDecay (void)
 {
-if ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) 
+if ((m_nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) 
 	m_decay = 1.0f;
 else if (m_nType == FIRE_PARTICLES) {
 #if 1
@@ -991,7 +1000,7 @@ pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + hy;
 pb [(m_nOrient + 2) % 4].texCoord.v.v =
 pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - hy;
 
-if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
+if ((m_nType == SNOW_PARTICLES) || ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles))
 	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 if (m_bRotate && gameOpts->render.particles.bRotate) {
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;

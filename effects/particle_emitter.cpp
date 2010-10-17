@@ -235,7 +235,7 @@ else
 
 	m_nTicks += t;
 	if ((m_nPartsPerPos = (int) (m_fPartsPerTick * m_nTicks)) >= 1) {
-		if (m_nType == BUBBLE_PARTICLES) {
+		if ((m_nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
 			if (rand () % 4)	// create some irregularity in bubble appearance
 				goto funcExit;
 			}

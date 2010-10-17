@@ -403,6 +403,8 @@ class CVClipInfo {
 #define SMOKE_TYPE_BUBBLES		2
 #define SMOKE_TYPE_FIRE			3
 #define SMOKE_TYPE_WATERFALL	4
+#define SMOKE_TYPE_RAIN			5
+#define SMOKE_TYPE_SNOW			6
 
 typedef struct tParticleInfo {
 public:

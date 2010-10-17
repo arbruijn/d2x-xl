@@ -53,11 +53,15 @@ tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
+	 {NULL, "", 1, 0, 0, 0, 0, 0},
+	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0}},
 
 	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
 	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
+	 {NULL, "rain.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "snow.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smokingfire.tga", 2, 0, 0, 1, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
@@ -67,6 +71,8 @@ tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
 	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
 	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
+	 {NULL, "rain.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "snow.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smokingfire.tga", 2, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
@@ -76,6 +82,8 @@ tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
 	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
 	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
+	 {NULL, "rain.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "snow.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smokingfire.tga", 2, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
@@ -174,6 +182,10 @@ pii.yBorder = 0;
 if (nType <= SMOKE_PARTICLES)
 	;//pii.nFrames = 8; 
 else if (nType == BUBBLE_PARTICLES)
+	;//pii.nFrames = 4;
+else if (nType == RAIN_PARTICLES)
+	;//pii.nFrames = 4;
+else if (nType == SNOW_PARTICLES)
 	;//pii.nFrames = 4;
 else if (nType == WATERFALL_PARTICLES)
 	;//pii.nFrames = 8;

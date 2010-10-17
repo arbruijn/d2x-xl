@@ -970,7 +970,7 @@ if (!m_bBetweenLevels) {
 m_cf.WriteInt ((int) gameData.app.nStateGameId);
 m_cf.WriteInt (gameStates.app.cheats.bLaserRapidFire);
 m_cf.WriteInt (gameStates.app.bLunacy);		//	Yes, writing this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
-m_cf.WriteInt (gameStates.app.bLunacy);
+m_cf.WriteInt (gameStates.gameplay.bMineMineCheat);
 // Save automap marker info
 markerManager.SaveState (m_cf);
 m_cf.WriteFix (gameData.physics.xAfterburnerCharge);
@@ -1972,7 +1972,7 @@ gameData.app.nStateGameId = 0;
 gameData.app.nStateGameId = (uint) m_cf.ReadInt ();
 gameStates.app.cheats.bLaserRapidFire = m_cf.ReadInt ();
 gameStates.app.bLunacy = m_cf.ReadInt ();		//	Yes, reading this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
-gameStates.app.bLunacy = m_cf.ReadInt ();
+gameStates.gameplay.bMineMineCheat = m_cf.ReadInt ();
 if (gameStates.app.bLunacy)
 	DoLunacyOn ();
 
