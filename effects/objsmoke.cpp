@@ -658,7 +658,7 @@ else if (objP->rType.particleInfo.nType == SMOKE_TYPE_FIRE) {
 	nFadeType = 3;
 	}
 else if ((objP->rType.particleInfo.nType == SMOKE_TYPE_BUBBLES) ||
-			(objP->rType.particleInfo.nType == SMOKE_TYPE_RAIN)
+			(objP->rType.particleInfo.nType == SMOKE_TYPE_RAIN) ||
 			(objP->rType.particleInfo.nType == SMOKE_TYPE_SNOW)) {
 	nType = 1;
 	nFadeType = -1;
