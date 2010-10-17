@@ -248,7 +248,7 @@ else {
 	m_vPos = *vPos + v + (*mOrient).FVec () * (I2X (1) / 2 - randN (I2X (1)));
 	}
 
-if (nType == BUBBLE_PARTICLES)
+if ((nType == BUBBLE_PARTICLES) || (nType == SNOW_PARTICLES))
 	m_nRad = m_nRad / 20 + float (randN (int (9 * m_nRad / 20)));
 else {
 	if (nType <= SMOKE_PARTICLES) {

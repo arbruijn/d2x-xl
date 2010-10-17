@@ -645,7 +645,7 @@ void DoStaticParticles (CObject *objP)
 					nType, nFadeType;
 	CFixVector	pos, offs, dir;
 
-	static tRgbaColorf defaultColors [6] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}};
+	static tRgbaColorf defaultColors [6] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}};
 	static int particleTypes [6] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES, WATERFALL_PARTICLES, RAIN_PARTICLES, SNOW_PARTICLES};
 
 nObject = (int) objP->Index ();
@@ -658,6 +658,10 @@ else if (objP->rType.particleInfo.nType == SMOKE_TYPE_FIRE) {
 	nFadeType = 3;
 	}
 else if (objP->rType.particleInfo.nType == SMOKE_TYPE_BUBBLES) {
+	nType = 1;
+	nFadeType = -1;
+	}
+else if ((objP->rType.particleInfo.nType == SMOKE_TYPE_RAIN) || (objP->rType.particleInfo.nType == SMOKE_TYPE_SNOW)) {
 	nType = 1;
 	nFadeType = -1;
 	}
