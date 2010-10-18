@@ -149,6 +149,10 @@ color = (colorP && (m_bEmissive != 2)) ? *colorP : defaultParticleColor;
 if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
 	m_bBright = 0;
 	m_nFadeState = -1;
+	if (colorP && (colorP->alpha < 0)) {
+		ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
+		m_color [0].alpha = float (3 * a + randN (2 * a)) / 255.0f;
+		}
 	}
 else {
 	m_bBright = (nType <= SMOKE_PARTICLES) ? (rand () % 50) == 0 : 0;
@@ -207,39 +211,39 @@ if (!vDir) {
 else {
 	m_vDir = *vDir;
 
-	CAngleVector	a;
-	CFixMatrix		m;
-	a [PA] = randN (I2X (1) / 4) - I2X (1) / 8;
-	a [BA] = randN (I2X (1) / 4) - I2X (1) / 8;
-	a [HA] = randN (I2X (1) / 4) - I2X (1) / 8;
-	m = CFixMatrix::Create (a);
-	if (nType == WATERFALL_PARTICLES)
-		CFixVector::Normalize (m_vDir);
-	m_vDrift = m * m_vDir;
-	CFixVector::Normalize (m_vDrift);
-	if (nType == WATERFALL_PARTICLES) {
-		fix dot = CFixVector::Dot (m_vDir, m_vDrift);
-		if (dot < I2X (1) / 2)
-			return 0;
-		}
-	float d = float (CFixVector::DeltaAngle (m_vDrift, m_vDir, NULL));
-	if (d) {
-		d = (float) exp ((I2X (1) / 8) / d);
-		nSpeed = (fix) ((float) nSpeed / d);
-		}
+	if (nType == RAIN_PARTICLES)
+		m_vDrift = m_vDir;
+	else {
+		CAngleVector	a;
+		CFixMatrix		m;
+		a [PA] = randN (I2X (1) / 4) - I2X (1) / 8;
+		a [BA] = randN (I2X (1) / 4) - I2X (1) / 8;
+		a [HA] = randN (I2X (1) / 4) - I2X (1) / 8;
+		m = CFixMatrix::Create (a);
+		if (nType == WATERFALL_PARTICLES)
+			CFixVector::Normalize (m_vDir);
+		m_vDrift = m * m_vDir;
+		CFixVector::Normalize (m_vDrift);
+		if (nType == WATERFALL_PARTICLES) {
+			fix dot = CFixVector::Dot (m_vDir, m_vDrift);
+			if (dot < I2X (1) / 2)
+				return 0;
+			}
+		float d = float (CFixVector::DeltaAngle (m_vDrift, m_vDir, NULL));
+		if (d) {
+			d = (float) exp ((I2X (1) / 8) / d);
+			nSpeed = (fix) ((float) nSpeed / d);
+			}
+		}	
 	m_vDrift *= nSpeed;
 	if (nType <= FIRE_PARTICLES)
 		m_vDir *= (I2X (3) / 4 + I2X (randN (16)) / 64);
-#if DBG
-	if (CFixVector::Dot (m_vDrift, m_vDir) < 0)
-		d = 0;
-#endif
 	m_bHaveDir = 1;
 	}
 
 if (vEmittingFace)
 	m_vPos = *RandomPointOnQuad (vEmittingFace, vPos);
-else if (nType != BUBBLE_PARTICLES)
+else if ((nType != BUBBLE_PARTICLES) && (nType != RAIN_PARTICLES) && (nType != SNOW_PARTICLES))
 	m_vPos = *vPos + m_vDrift * (I2X (1) / 64);
 else {
 	//m_vPos = *vPos + vDrift * (I2X (1) / 32);
@@ -1000,17 +1004,31 @@ pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + hy;
 pb [(m_nOrient + 2) % 4].texCoord.v.v =
 pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - hy;
 
-if ((m_nType == SNOW_PARTICLES) || ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles))
-	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
-if (m_bRotate && gameOpts->render.particles.bRotate) {
-	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-	CFixMatrix mOrient = gameData.render.mine.viewer.mOrient * mRot [i];
-	uVec.Assign (mOrient.UVec ());
-	rVec.Assign (mOrient.RVec ());
+if (m_nType == RAIN_PARTICLES) {
+	uVec.Assign (m_vDir);
+	CFloatVector3::Normalize (uVec);
+	uVec.Neg ();
+	CFloatVector3 v;
+	v.Assign (gameData.render.mine.viewer.vPos);
+	CFloatVector3 u = uVec - v;
+	CFloatVector3 c = vCenter - v;
+	CFloatVector3::Normalize (u);
+	CFloatVector3::Normalize (c);
+	rVec = CFloatVector3::Cross (u, v);
 	}
 else {
-	uVec.Assign (gameData.render.mine.viewer.mOrient.UVec ());
-	rVec.Assign (gameData.render.mine.viewer.mOrient.RVec ());
+	if ((m_nType == SNOW_PARTICLES) || ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles))
+		vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
+	if (m_bRotate && gameOpts->render.particles.bRotate) {
+		int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
+		CFixMatrix mOrient = gameData.render.mine.viewer.mOrient * mRot [i];
+		uVec.Assign (mOrient.UVec ());
+		rVec.Assign (mOrient.RVec ());
+		}
+	else {
+		uVec.Assign (gameData.render.mine.viewer.mOrient.UVec ());
+		rVec.Assign (gameData.render.mine.viewer.mOrient.RVec ());
+		}
 	}
 uVec *= m_nHeight * fScale;
 rVec *= m_nWidth * fScale;

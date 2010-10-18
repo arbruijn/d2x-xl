@@ -59,7 +59,7 @@ vDelta.p.y = FixDiv (vDelta.p.y, transformation.m_info.scale.p.y);
 CFixVector::Normalize (vDelta);
 vTop = topPoint->p3_vec;
 CFixVector::Normalize (vTop);
-vRodNorm = CFixVector::Cross(vDelta, vTop);
+vRodNorm = CFixVector::Cross (vDelta, vTop);
 CFixVector::Normalize (vRodNorm);
 //scale for aspect
 #if RESCALE_ROD
