@@ -560,120 +560,101 @@ static int ReadTriggerInfo (CFile& cf)
 	int		i;
 	CTrigger	*trigP;
 
-if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
-#if TRACE
-	console.printf(CON_DBG, "   loading CTrigger data ...\n");
-#endif
-	if (!gameData.trigs.Create (gameFileInfo.triggers.count, false)) {
-		Error ("Not enough memory for trigger data");
-		return -1;
-		}
-	if (cf.Seek (gameFileInfo.triggers.offset, SEEK_SET)) {
-		Error ("Error seeking to trigger data\n(file damaged or invalid)");
-		return -1;
-		}
-	for (i = 0, trigP = TRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
-		trigP->m_info.flagsD1 = 0;
-		if (gameTopFileInfo.fileinfoVersion >= 31) 
-			trigP->Read (cf, 0);
-		else {
-			tTriggerV30 trig;
-			int t, nType = 0, flags = 0;
-			if (gameTopFileInfo.fileinfoVersion == 30)
-				V30TriggerRead (trig, cf);
-			else {
-				tTriggerV29 trig29;
-				V29TriggerRead (trig29, cf);
-				trigP->m_info.flagsD1 = trig.flags = trig29.flags;
-				trig.nLinks	= (char) trig29.nLinks;
-				trig.value = trig29.value;
-				trig.time = trig29.time;
-				for (t = 0; t < trig.nLinks; t++) {
-					trig.segments [t] = trig29.segments [t];
-					trig.sides [t] = trig29.sides [t];
-					}
-				}
-#if 1
-			if (gameStates.app.bD1Mission)
-				nType = TT_DESCENT1;
-#else
-			//Assert(trig.flags & TRIGGER_ON);
-			trig.flags &= ~TRIGGER_ON;
-			if (trig.flags & TRIGGER_CONTROL_DOORS)
-				nType = TT_OPEN_DOOR;
-			else if (trig.flags & TRIGGER_SHIELD_DAMAGE)
-				nType = TT_SHIELD_DAMAGE;
-			else if (trig.flags & TRIGGER_ENERGY_DRAIN)
-				nType = TT_ENERGY_DRAIN;
-			else if (trig.flags & TRIGGER_EXIT)
-				nType = TT_EXIT;
-			else if (trig.flags & TRIGGER_MATCEN)
-				nType = TT_MATCEN;
-			else if (trig.flags & TRIGGER_ILLUSION_OFF)
-				nType = TT_ILLUSION_OFF;
-			else if (trig.flags & TRIGGER_SECRET_EXIT)
-				nType = TT_SECRET_EXIT;
-			else if (trig.flags & TRIGGER_ILLUSION_ON)
-				nType = TT_ILLUSION_ON;
-#endif
-			else if (trig.flags & TRIGGER_UNLOCK_DOORS)
-				nType = TT_UNLOCK_DOOR;
-			else if (trig.flags & TRIGGER_OPEN_WALL)
-				nType = TT_OPEN_WALL;
-			else if (trig.flags & TRIGGER_CLOSE_WALL)
-				nType = TT_CLOSE_WALL;
-			else if (trig.flags & TRIGGER_ILLUSORY_WALL)
-				nType = TT_ILLUSORY_WALL;
-			else
-				Int3();
-			if (trig.flags & TRIGGER_ONE_SHOT)
-				flags = TF_ONE_SHOT;
-
-			trigP->m_info.nType = nType;
-			trigP->m_info.flags = flags;
-			trigP->m_info.nLinks = trig.nLinks;
-			trigP->m_info.nLinks = trig.nLinks;
-			trigP->m_info.value = trig.value;
-			trigP->m_info.time [0] = trig.time;
-			for (t = 0; t < trig.nLinks; t++) {
-				trigP->m_info.segments [t] = trig.segments [t];
-				trigP->m_info.sides [t] = trig.sides [t];
-				}
-			}
-		}
-	}
-
+gameData.trigs.m_nObjTriggers = 0;
 gameData.trigs.objTriggerRefs.Clear (0xff);
-if (gameTopFileInfo.fileinfoVersion >= 33) {
-	gameData.trigs.m_nObjTriggers = cf.ReadInt ();
-	if (gameData.trigs.m_nObjTriggers) {
-		if (!gameData.trigs.Create (gameData.trigs.m_nObjTriggers, true)) {
-			Error ("Not enough memory for object trigger data");
+if (gameFileInfo.triggers.offset > -1) {
+	if (gameFileInfo.triggers.count) {
+#if TRACE
+		console.printf(CON_DBG, "   loading CTrigger data ...\n");
+#endif
+		if (!gameData.trigs.Create (gameFileInfo.triggers.count, false)) {
+			Error ("Not enough memory for trigger data");
 			return -1;
 			}
-		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
-			OBJTRIGGERS [i].Read (cf, 1);
-		if (gameTopFileInfo.fileinfoVersion >= 40) {
-			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
-				OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
+		if (cf.Seek (gameFileInfo.triggers.offset, SEEK_SET)) {
+			Error ("Error seeking to trigger data\n(file damaged or invalid)");
+			return -1;
 			}
-		else {
-			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
-				cf.Seek (2 * sizeof (short), SEEK_CUR);
-				OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
+		for (i = 0, trigP = TRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
+			trigP->m_info.flagsD1 = 0;
+			if (gameTopFileInfo.fileinfoVersion >= 31) 
+				trigP->Read (cf, 0);
+			else {
+				tTriggerV30 trig;
+				int t, nType = 0, flags = 0;
+				if (gameTopFileInfo.fileinfoVersion == 30)
+					V30TriggerRead (trig, cf);
+				else {
+					tTriggerV29 trig29;
+					V29TriggerRead (trig29, cf);
+					trigP->m_info.flagsD1 = trig.flags = trig29.flags;
+					trig.nLinks	= (char) trig29.nLinks;
+					trig.value = trig29.value;
+					trig.time = trig29.time;
+					for (t = 0; t < trig.nLinks; t++) {
+						trig.segments [t] = trig29.segments [t];
+						trig.sides [t] = trig29.sides [t];
+						}
+					}
+				if (gameStates.app.bD1Mission)
+					nType = TT_DESCENT1;
+				else if (trig.flags & TRIGGER_UNLOCK_DOORS)
+					nType = TT_UNLOCK_DOOR;
+				else if (trig.flags & TRIGGER_OPEN_WALL)
+					nType = TT_OPEN_WALL;
+				else if (trig.flags & TRIGGER_CLOSE_WALL)
+					nType = TT_CLOSE_WALL;
+				else if (trig.flags & TRIGGER_ILLUSORY_WALL)
+					nType = TT_ILLUSORY_WALL;
+				else
+					Int3();
+				if (trig.flags & TRIGGER_ONE_SHOT)
+					flags = TF_ONE_SHOT;
+
+				trigP->m_info.nType = nType;
+				trigP->m_info.flags = flags;
+				trigP->m_info.nLinks = trig.nLinks;
+				trigP->m_info.nLinks = trig.nLinks;
+				trigP->m_info.value = trig.value;
+				trigP->m_info.time [0] = trig.time;
+				for (t = 0; t < trig.nLinks; t++) {
+					trigP->m_info.segments [t] = trig.segments [t];
+					trigP->m_info.sides [t] = trig.sides [t];
+					}
 				}
-			if (gameTopFileInfo.fileinfoVersion < 36) 
-				cf.Seek (700 * sizeof (short), SEEK_CUR);
-			else 
-				cf.Seek (cf.ReadShort () * 2 * sizeof (short), SEEK_CUR);
 			}
 		}
 
-	BuildObjTriggerRef ();
-	}
-else {
-	gameData.trigs.m_nObjTriggers = 0;
-	OBJTRIGGERS.Clear ();
+	if (gameTopFileInfo.fileinfoVersion >= 33) {
+		gameData.trigs.m_nObjTriggers = cf.ReadInt ();
+		if (gameData.trigs.m_nObjTriggers) {
+			if (!gameData.trigs.Create (gameData.trigs.m_nObjTriggers, true)) {
+				Error ("Not enough memory for object trigger data");
+				return -1;
+				}
+			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
+				OBJTRIGGERS [i].Read (cf, 1);
+			if (gameTopFileInfo.fileinfoVersion >= 40) {
+				for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
+					OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
+				}
+			else {
+				for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
+					cf.Seek (2 * sizeof (short), SEEK_CUR);
+					OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
+					}
+				if (gameTopFileInfo.fileinfoVersion < 36) 
+					cf.Seek (700 * sizeof (short), SEEK_CUR);
+				else 
+					cf.Seek (cf.ReadShort () * 2 * sizeof (short), SEEK_CUR);
+				}
+			}
+
+		BuildObjTriggerRef ();
+		}
+	else {
+		OBJTRIGGERS.Clear ();
+		}
 	}
 return 0;
 }
