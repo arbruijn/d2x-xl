@@ -409,7 +409,9 @@ if (InitBuffer ()) {
 #if !TRANSFORM_PARTICLE_VERTICES
 	ogl.SetupTransform (1);
 #endif
+	ogl.SetFaceCulling (false);
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
+	ogl.SetFaceCulling (true);
 #if !TRANSFORM_PARTICLE_VERTICES
 	ogl.ResetTransform (1);
 #endif
