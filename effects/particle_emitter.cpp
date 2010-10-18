@@ -65,7 +65,7 @@ return 0;
 
 inline int CParticleEmitter::MayBeVisible (int nThread)
 {
-return (m_nSegment < 0) || SegmentMayBeVisible (m_nSegment, 5, -1, nThread);
+return (m_nSegment < 0) || (SEGMENTS [m_nSegment].m_function == SEGMENT_FUNC_SKYBOX) || SegmentMayBeVisible (m_nSegment, 5, -1, nThread);
 }
 
 //------------------------------------------------------------------------------
