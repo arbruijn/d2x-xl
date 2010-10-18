@@ -300,7 +300,7 @@ if (nType == BULLET_PARTICLES) {
 else if ((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
 	m_iFrame = 0;
 	m_nRotFrame = 0;
-	m_nOrient = 3;
+	m_nOrient = 1;
 	}
 else if (nType == BUBBLE_PARTICLES) {
 	m_iFrame = rand () % (m_nFrames * m_nFrames);
@@ -332,7 +332,7 @@ m_nTTL = m_nLife;
 
 m_nRenderType = RenderType ();
 m_bAnimate = (nType != FIRE_PARTICLES) && (gameOpts->render.particles.nQuality > 1) && (m_nFrames > 1);
-m_bRotate = (m_nRenderType <= SMOKE_PARTICLES) ? 1 : (m_nRenderType == FIRE_PARTICLES + PARTICLE_TYPES) ? -1 : 0;
+m_bRotate = ((m_nRenderType <= SMOKE_PARTICLES) || (m_nRenderType == SNOW_PARTICLES)) ? 1 : (m_nRenderType == FIRE_PARTICLES + PARTICLE_TYPES) ? -1 : 0;
 
 UpdateDecay ();
 UpdateTexCoord ();
@@ -601,7 +601,7 @@ else if ((m_nType == BUBBLE_PARTICLES) && !SEGMENTS [nSegment].HasWaterProp ()) 
 	m_nLife = -1;
 	return 0;
 	}
-else if (((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) && SEGMENTS [nSegment].HasWaterProp ()) {
+else if (((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) && (SEGMENTS [nSegment].HasWaterProp () || SEGMENTS [nSegment].HasLavaProp ())) {
 	m_nLife = -1;
 	return 0;
 	}
