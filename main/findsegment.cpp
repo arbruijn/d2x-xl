@@ -181,17 +181,22 @@ return -1;
 // -------------------------------------------------------------------------------
 //Find segment containing point vPos.
 
-int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
+int FindSegByPos (const CFixVector& vPos, int nStartSeg, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
 {
 	static ushort bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
 	static ushort bFlags [MAX_THREADS] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
+	int nSegment = -1;
 
-if (nSegment >= 0) {
+if (nStartSeg >= 0) {
+	if (SEGMENTS [nStartSeg].m_function == SEGMENT_FUNC_SKYBOX) {
+		if (0 <= (nSegment = TraceSegs (vPos, nStartSeg, 1, bVisited [nThread], bFlags [nThread], xTolerance))) 
+			return nSegment;
+		}
 	if (!++bFlags [nThread]) {
 		memset (bVisited [nThread], 0, sizeofa (bVisited [nThread]));
 		bFlags [nThread] = 1;
 		}
-	if (0 <= (nSegment = TraceSegs (vPos, nSegment, 0, bVisited [nThread], bFlags [nThread], xTolerance))) 
+	if (0 <= (nSegment = TraceSegs (vPos, nStartSeg, 0, bVisited [nThread], bFlags [nThread], xTolerance))) 
 		return nSegment;
 	}
 
