@@ -1137,7 +1137,7 @@ if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (part
 
 void CTransparencyRenderer::FlushBuffers (int nType)
 {
-if ((nType != tiLightning) && (nType != tiSphere) && (nType != tiSprite) && (nType != tiLightTrail) && (nType != tiThruster)) {
+if ((nType != tiLightning) && (nType != tiSphere) && (nType != tiSprite) && (nType != tiThruster)) {
 	if (glowRenderer.End ())
 		ResetBitmaps ();
 	}

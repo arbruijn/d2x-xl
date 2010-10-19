@@ -24,6 +24,7 @@
 #include "light.h"
 #include "dynlight.h"
 #include "lightning.h"
+#include "glow.h"
 #include "renderthreads.h"
 #include "hiresmodels.h"
 #include "buildmodel.h"
@@ -984,6 +985,7 @@ if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)
 				G3RenderDamageLightning (objP, nModel, i, animAnglesP, NULL, bHires);
 //	G3RenderDamageLightning (objP, nModel, 0, animAnglesP, NULL, bHires);
 		transformation.End ();
+		glowRenderer.End ();
 		}
 	}
 #endif
