@@ -307,6 +307,7 @@ if (thruster.Load ()) {
 		verts [i][Y] *= scale;
 		verts [i][Z] = z;
 		}
+	glowRenderer.SetViewport (GLOW_THRUSTERS, verts, 4);
 	glColor3f (1,1,1);
 	ogl.RenderQuad (thruster.Bitmap (), verts, 3, tcCap [m_bPlayer]);
 	ogl.SetTexturing (true);
@@ -318,6 +319,7 @@ if (thruster.Load ()) {
 
 void CThrusterFlames::Render3D (int i)
 {
+glowRenderer.SetViewport (GLOW_THRUSTERS, m_flameVerts, FLAME_VERT_COUNT);
 glColor3f (1,1,1);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, &m_flameTexCoord [m_bPlayer]);
