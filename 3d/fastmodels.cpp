@@ -486,19 +486,19 @@ if (vOffsetP && (nExclusive < 0)) {
 	}
 #endif
 bAnimate = G3AnimateSubModel (objP, psm, nModel);
-#if G3_DRAW_SUBMODELS
-// render any dependent submodels
-for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, psm++)
-	if (psm->m_nParent == nSubModel)
-		G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, animAnglesP, &vo, bHires,
-							 bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles);
-#endif
 // render the faces
 #if 0
 psm = pm->m_subModels + nSubModel;
 if (psm->m_bBillboard)
 #endif
 if ((nExclusive < 0) || (nSubModel == nExclusive)) {
+#if G3_DRAW_SUBMODELS
+// render any dependent submodels
+	for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, psm++)
+		if (psm->m_nParent == nSubModel)
+			G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, animAnglesP, &vo, bHires,
+								 bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles);
+#endif
 #if 0
 	if (vOffsetP && (nSubModel == nExclusive))
 		transformation.Begin (vOffsetP, NULL);

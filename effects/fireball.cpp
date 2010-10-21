@@ -397,8 +397,8 @@ SetupRandomMovement ();
 info.xLifeLeft = I2X (nDebrisLife [8]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
 #else
 info.xLifeLeft = I2X (nDebrisLife [gameOpts->render.nDebrisLife]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
-//if (nSubObj == 0)
-//	info.xLifeLeft *= 2;
+if (nSubObj == 0)
+	info.xLifeLeft *= 2;
 #endif
 mType.physInfo.mass =
 #if 0
@@ -463,6 +463,7 @@ return VCLIP_SMALL_EXPLOSION;		//default
 void CObject::ExplodePolyModel (void)
 {
 Assert (info.renderType == RT_POLYOBJ);
+#if DBG == 0
 CreateExplBlast ();
 RequestEffects (EXPL_LIGHTNING | SHRAPNEL_SMOKE);
 if (gameData.models.nDyingModels [ModelId ()] != -1)
@@ -472,6 +473,7 @@ if (gameData.models.polyModels [0][ModelId ()].ModelCount () > 1) {
 		if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
 			CreateDebris (i);
 	}
+#endif
 //make parent CObject only draw center part
 SetupDebris (0, ModelId (), rType.polyObjInfo.nTexOverride);
 }
