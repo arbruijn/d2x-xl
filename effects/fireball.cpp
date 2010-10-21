@@ -463,7 +463,7 @@ return VCLIP_SMALL_EXPLOSION;		//default
 void CObject::ExplodePolyModel (void)
 {
 Assert (info.renderType == RT_POLYOBJ);
-#if DBG == 0
+#if 1 //DBG == 0
 CreateExplBlast ();
 RequestEffects (EXPL_LIGHTNING | SHRAPNEL_SMOKE);
 if (gameData.models.nDyingModels [ModelId ()] != -1)
