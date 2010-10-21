@@ -361,15 +361,59 @@ return sqrt (size);
 
 //------------------------------------------------------------------------------
 
+void CObject::SetupRandomMovement (void)
+{
+mType.physInfo.velocity.Set (RAND_MAX / 2 - d_rand (), RAND_MAX / 2 - d_rand (), RAND_MAX / 2 - d_rand ());
+//mType.physInfo.velocity *= (I2X (10));
+CFixVector::Normalize (mType.physInfo.velocity);
+mType.physInfo.velocity *= (I2X (10 + (30 * d_rand () / RAND_MAX)));
+mType.physInfo.velocity += mType.physInfo.velocity;
+// -- used to be: Notice, not random!VmVecMake (&mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
+#if 0//DBG
+VmVecZero (&mType.physInfo.rotVel);
+#else
+mType.physInfo.rotVel = CFixVector::Create(d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
+#endif
+mType.physInfo.rotThrust.SetZero ();
+}
+
+//------------------------------------------------------------------------------
+
 #define DEBRIS_LIFE (I2X (1) * 2)		//lifespan in seconds
 
 fix nDebrisLife [] = {2, 5, 10, 15, 30, 60, 120, 180, 300};
 
+void CObject::SetupDebris (int nSubObj)
+{
+Assert (nSubObj < 32);
+//Set polygon-CObject-specific data
+rType.polyObjInfo.nModel = ModelId ();
+rType.polyObjInfo.nSubObjFlags = 1 << nSubObj;
+//Set physics data for this CObject
+SetupRandomMovement ();
+#if 0 //DBG
+info.xLifeLeft = I2X (nDebrisLife [8]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
+#else
+info.xLifeLeft = I2X (nDebrisLife [gameOpts->render.nDebrisLife]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
+#endif
+mType.physInfo.mass =
+#if 0
+	(fix) ((double) mType.physInfo.mass * ObjectVolume (debrisP) / ObjectVolume (this));
+#else
+	FixMulDiv (mType.physInfo.mass, info.xSize, info.xSize);
+#endif
+mType.physInfo.drag = gameOpts->render.nDebrisLife ? 256 : 0; //F2X (0.2);		//mType.physInfo.drag;
+if (gameOpts->render.nDebrisLife) {
+	mType.physInfo.flags |= PF_FREE_SPINNING;
+	mType.physInfo.rotVel /= 3;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 CObject* CObject::CreateDebris (int nSubObj)
 {
 	int 			nObject;
-	CObject 		*debrisP;
-	CPolyModel 	*po;
 
 Assert ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER));
 nObject = ::CreateDebris (this, nSubObj);
@@ -382,45 +426,8 @@ if ((nObject < 0) && (gameData.objs.nLastObject [0] >= LEVEL_OBJECTS - 1)) {
 	}
 if (nObject < 0)
 	return NULL;				// Not enough debris slots!
-debrisP = OBJECTS + nObject;
-Assert (nSubObj < 32);
-//Set polygon-CObject-specific data
-debrisP->rType.polyObjInfo.nModel = ModelId ();
-debrisP->rType.polyObjInfo.nSubObjFlags = 1 << nSubObj;
-debrisP->rType.polyObjInfo.nTexOverride = rType.polyObjInfo.nTexOverride;
-//Set physics data for this CObject
-po = gameData.models.polyModels [0] + debrisP->ModelId ();
-debrisP->mType.physInfo.velocity[X] = RAND_MAX/2 - d_rand ();
-debrisP->mType.physInfo.velocity[Y] = RAND_MAX/2 - d_rand ();
-debrisP->mType.physInfo.velocity[Z] = RAND_MAX/2 - d_rand ();
-debrisP->mType.physInfo.velocity *= (I2X (10));
-CFixVector::Normalize (debrisP->mType.physInfo.velocity);
-debrisP->mType.physInfo.velocity *= (I2X (10 + (30 * d_rand () / RAND_MAX)));
-debrisP->mType.physInfo.velocity += mType.physInfo.velocity;
-// -- used to be: Notice, not random!VmVecMake (&debrisP->mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
-#if 0//DBG
-VmVecZero (&debrisP->mType.physInfo.rotVel);
-#else
-debrisP->mType.physInfo.rotVel = CFixVector::Create(d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
-#endif
-debrisP->mType.physInfo.rotThrust.SetZero ();
-#if 0 //DBG
-debrisP->info.xLifeLeft = I2X (nDebrisLife [8]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
-#else
-debrisP->info.xLifeLeft = I2X (nDebrisLife [gameOpts->render.nDebrisLife]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
-#endif
-debrisP->mType.physInfo.mass =
-#if 0
-	(fix) ((double) mType.physInfo.mass * ObjectVolume (debrisP) / ObjectVolume (this));
-#else
-	FixMulDiv (mType.physInfo.mass, debrisP->info.xSize, info.xSize);
-#endif
-debrisP->mType.physInfo.drag = gameOpts->render.nDebrisLife ? 256 : 0; //F2X (0.2);		//mType.physInfo.drag;
-if (gameOpts->render.nDebrisLife) {
-	debrisP->mType.physInfo.flags |= PF_FREE_SPINNING;
-	debrisP->mType.physInfo.rotVel /= 3;
-}
-return debrisP;
+OBJECTS [nObject].SetupDebris (nSubObj);
+return OBJECTS + nObject;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -459,9 +466,9 @@ if (gameData.models.polyModels [0][ModelId ()].ModelCount () > 1) {
 	for (int i = 1; i < gameData.models.polyModels [0][ModelId ()].ModelCount (); i++)
 		if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
 			CreateDebris (i);
-	//make parent CObject only draw center part
-	rType.polyObjInfo.nSubObjFlags = 1;
 	}
+//make parent CObject only draw center part
+SetupDebris (0);
 }
 
 //------------------------------------------------------------------------------

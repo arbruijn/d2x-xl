@@ -987,6 +987,8 @@ class CObject : public CObjectInfo {
 		void UpdateEffects (void);
 		int UpdateControl (void);
 		void UpdateMovement (void);
+		void SetupRandomMovement (void);
+		void SetupDebris (int nSubObj);
 };
 
 inline int operator- (CObject* o, CArray<CObject>& a) { return a.Index (o); }
