@@ -386,6 +386,7 @@ fix nDebrisLife [] = {2, 5, 10, 15, 30, 60, 120, 180, 300};
 void CObject::SetupDebris (int nSubObj, int nId, int nTexOverride)
 {
 Assert (nSubObj < 32);
+info.nType = OBJ_DEBRIS;
 //Set polygon-CObject-specific data
 rType.polyObjInfo.nModel = nId;
 rType.polyObjInfo.nSubObjFlags = 1 << nSubObj;
@@ -396,6 +397,8 @@ SetupRandomMovement ();
 info.xLifeLeft = I2X (nDebrisLife [8]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
 #else
 info.xLifeLeft = I2X (nDebrisLife [gameOpts->render.nDebrisLife]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
+//if (nSubObj == 0)
+//	info.xLifeLeft *= 2;
 #endif
 mType.physInfo.mass =
 #if 0
