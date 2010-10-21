@@ -367,7 +367,7 @@ mType.physInfo.velocity.Set (RAND_MAX / 2 - d_rand (), RAND_MAX / 2 - d_rand (),
 //mType.physInfo.velocity *= (I2X (10));
 CFixVector::Normalize (mType.physInfo.velocity);
 mType.physInfo.velocity *= (I2X (10 + (30 * d_rand () / RAND_MAX)));
-mType.physInfo.velocity += mType.physInfo.velocity;
+//mType.physInfo.velocity += mType.physInfo.velocity;
 // -- used to be: Notice, not random!VmVecMake (&mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
 #if 0//DBG
 VmVecZero (&mType.physInfo.rotVel);
@@ -383,12 +383,13 @@ mType.physInfo.rotThrust.SetZero ();
 
 fix nDebrisLife [] = {2, 5, 10, 15, 30, 60, 120, 180, 300};
 
-void CObject::SetupDebris (int nSubObj)
+void CObject::SetupDebris (int nSubObj, int nTexOverride)
 {
 Assert (nSubObj < 32);
 //Set polygon-CObject-specific data
 rType.polyObjInfo.nModel = ModelId ();
 rType.polyObjInfo.nSubObjFlags = 1 << nSubObj;
+rType.polyObjInfo.nTexOverride = nTexOverride;
 //Set physics data for this CObject
 SetupRandomMovement ();
 #if 0 //DBG
@@ -407,6 +408,7 @@ if (gameOpts->render.nDebrisLife) {
 	mType.physInfo.flags |= PF_FREE_SPINNING;
 	mType.physInfo.rotVel /= 3;
 	}
+mType.physInfo.flags &= ~PF_USES_THRUST;
 }
 
 //------------------------------------------------------------------------------
@@ -426,7 +428,7 @@ if ((nObject < 0) && (gameData.objs.nLastObject [0] >= LEVEL_OBJECTS - 1)) {
 	}
 if (nObject < 0)
 	return NULL;				// Not enough debris slots!
-OBJECTS [nObject].SetupDebris (nSubObj);
+OBJECTS [nObject].SetupDebris (nSubObj, rType.polyObjInfo.nTexOverride);
 return OBJECTS + nObject;
 }
 
@@ -468,7 +470,7 @@ if (gameData.models.polyModels [0][ModelId ()].ModelCount () > 1) {
 			CreateDebris (i);
 	}
 //make parent CObject only draw center part
-SetupDebris (0);
+SetupDebris (0, rType.polyObjInfo.nTexOverride);
 }
 
 //------------------------------------------------------------------------------
