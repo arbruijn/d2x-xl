@@ -383,11 +383,11 @@ mType.physInfo.rotThrust.SetZero ();
 
 fix nDebrisLife [] = {2, 5, 10, 15, 30, 60, 120, 180, 300};
 
-void CObject::SetupDebris (int nSubObj, int nTexOverride)
+void CObject::SetupDebris (int nSubObj, int nId, int nTexOverride)
 {
 Assert (nSubObj < 32);
 //Set polygon-CObject-specific data
-rType.polyObjInfo.nModel = ModelId ();
+rType.polyObjInfo.nModel = nId;
 rType.polyObjInfo.nSubObjFlags = 1 << nSubObj;
 rType.polyObjInfo.nTexOverride = nTexOverride;
 //Set physics data for this CObject
@@ -428,7 +428,7 @@ if ((nObject < 0) && (gameData.objs.nLastObject [0] >= LEVEL_OBJECTS - 1)) {
 	}
 if (nObject < 0)
 	return NULL;				// Not enough debris slots!
-OBJECTS [nObject].SetupDebris (nSubObj, rType.polyObjInfo.nTexOverride);
+OBJECTS [nObject].SetupDebris (nSubObj, ModelId (), rType.polyObjInfo.nTexOverride);
 return OBJECTS + nObject;
 }
 
@@ -470,7 +470,7 @@ if (gameData.models.polyModels [0][ModelId ()].ModelCount () > 1) {
 			CreateDebris (i);
 	}
 //make parent CObject only draw center part
-SetupDebris (0, rType.polyObjInfo.nTexOverride);
+SetupDebris (0, ModelId (), rType.polyObjInfo.nTexOverride);
 }
 
 //------------------------------------------------------------------------------
