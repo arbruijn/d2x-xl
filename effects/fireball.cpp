@@ -424,7 +424,7 @@ Assert ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER));
 nObject = ::CreateDebris (this, nSubObj);
 if ((nObject < 0) && (gameData.objs.nLastObject [0] >= LEVEL_OBJECTS - 1)) {
 #if TRACE
-	console.printf (1, "Can't create CObject in ObjectCreateDebris.\n");
+	console.printf (1, "Can't create object in ObjectCreateDebris.\n");
 #endif
 	Int3 ();
 	return NULL;

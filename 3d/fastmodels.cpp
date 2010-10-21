@@ -456,7 +456,7 @@ void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclus
 	CBitmap*						bmP = NULL;
 	CAngleVector				va = animAnglesP ? animAnglesP [psm->m_nAngles] : CAngleVector::ZERO;
 	CFixVector					vo;
-	int							h, i, j, bTranspState, bAnimate, bTextured = gameOpts->render.debug.bTextures && !(gameStates.render.bCloaked /*|| nPass*/),
+	int							h, i, j, bTranspState, bRestoreMatrix, bTextured = gameOpts->render.debug.bTextures && !(gameStates.render.bCloaked /*|| nPass*/),
 									bGetThruster = !(nPass || bTranspFilter) && ObjectHasThruster (objP);
 	short							nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
 
@@ -485,7 +485,7 @@ if (vOffsetP && (nExclusive < 0)) {
 	vo += *vOffsetP;
 	}
 #endif
-bAnimate = G3AnimateSubModel (objP, psm, nModel);
+bRestoreMatrix = G3AnimateSubModel (objP, psm, nModel);
 // render the faces
 #if G3_DRAW_SUBMODELS
 // render any dependent submodels
@@ -506,7 +506,8 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		transformation.Begin (vOffsetP, NULL);
 #endif
 	psm = pm->m_subModels + nSubModel;
-	if (!bAnimate && psm->m_bBillboard) {
+	if (!bRestoreMatrix && psm->m_bBillboard) {
+		bRestoreMatrix = 1;
 		glMatrixMode (GL_MODELVIEW);
 		glPushMatrix ();
 		float modelView [16];
@@ -621,7 +622,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #endif
 		}
 	}
-if (bAnimate || psm->m_bBillboard)
+if (bRestoreMatrix)
 	glPopMatrix ();
 #if 1
 if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
