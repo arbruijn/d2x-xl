@@ -506,10 +506,12 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		transformation.Begin (vOffsetP, NULL);
 #endif
 	psm = pm->m_subModels + nSubModel;
-	if (!bRestoreMatrix && psm->m_bBillboard) {
-		bRestoreMatrix = 1;
-		glMatrixMode (GL_MODELVIEW);
-		glPushMatrix ();
+	if (psm->m_bBillboard) {
+		if (!bRestoreMatrix) {
+			bRestoreMatrix = 1;
+			//glMatrixMode (GL_MODELVIEW);
+			glPushMatrix ();
+			}
 		float modelView [16];
 		glGetFloatv (GL_MODELVIEW_MATRIX, modelView);
 		// undo all rotations
