@@ -234,7 +234,7 @@ class CTransparencyRenderer {
 		int AddFaceTris (CSegFace *faceP);
 		int AddFaceQuads (CSegFace *faceP);
 		void ResetBitmaps (void);
-		int LoadImage (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap);
+		int LoadTexture (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap);
 
 		void FlushSparkBuffer (void);
 		void FlushParticleBuffer (int nType);

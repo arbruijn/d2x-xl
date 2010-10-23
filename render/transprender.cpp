@@ -37,7 +37,7 @@
 #define TI_POLY_OFFSET 0
 #define TI_POLY_CENTER 1
 
-#if DBG
+#if 1 //$DBG
 int nDbgPoly = -1, nDbgItem = -1;
 #endif
 
@@ -118,7 +118,7 @@ if (m_data.bAllowAdd > 0)
 	{
 	m_data.zMin = 0;
 	m_data.zMax = zMax;
-#if DBG
+#if 1 //$DBG
 	if (zMax < 0)
 		zMax = zMax;
 #endif
@@ -411,7 +411,7 @@ int CTransparencyRenderer::AddFaceTris (CSegFace *faceP)
 
 if (bmP)
 	bmP = bmP->Override (-1);
-#if DBG
+#if 1 //$DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	faceP = faceP;
 #endif
@@ -446,7 +446,7 @@ int CTransparencyRenderer::AddFaceQuads (CSegFace *faceP)
 
 if (bmP)
 	bmP = bmP->Override (-1);
-#if DBG
+#if 1 //$DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	faceP = faceP;
 #endif
@@ -624,7 +624,7 @@ m_data.bUseLightmaps = 0;
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::LoadImage (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap)
+int CTransparencyRenderer::LoadTexture (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap)
 {
 if (bmP) {
 #if 0
@@ -670,7 +670,7 @@ m_data.bmP [1] = m_data.bmP [2] = NULL;
 if ((item->bAdditive == 1) || (item->bAdditive == 2))
 	glowRenderer.Begin (GLOW_POLYS, 2, false, 1.0f);
 ogl.EnableClientStates (bmP != NULL, item->nColors == item->nVertices, 0, GL_TEXTURE0);
-if (LoadImage (bmP, 0, 0, 0, item->nWrap)) {
+if (LoadTexture (bmP, 0, 0, 0, item->nWrap)) {
 	if (bmP)
 		OglTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	if (item->nColors == item->nVertices)
@@ -718,7 +718,7 @@ if (!bmBot) {
 faceP = item->faceP;
 triP = item->triP;
 
-#if DBG
+#if 1 //$DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -757,14 +757,14 @@ if (bmTop) {
 #if 0 //DBG
 	m_data.bmP [1] = NULL;
 #endif
-	if (!LoadImage (bmTop, 0, 1, bLightmaps, item->nWrap))
+	if (!LoadTexture (bmTop, 0, 1, bLightmaps, item->nWrap))
 		return;
 	if (bTextured)
 		OglTexCoordPointer (2, GL_FLOAT, 0, FACES.ovlTexCoord + nIndex);
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 	if (bmMask) {
 		ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE2 + bLightmaps);
-		if (!LoadImage (bmMask, 0, 2, bLightmaps, item->nWrap))
+		if (!LoadTexture (bmMask, 0, 2, bLightmaps, item->nWrap))
 			return;
 		if (bTextured)
 			OglTexCoordPointer (2, GL_FLOAT, 0, FACES.ovlTexCoord + nIndex);
@@ -778,8 +778,13 @@ else {
 	}
 
 ogl.EnableClientStates (bTextured, bColored && !bLightmaps, !bLightmaps, GL_TEXTURE0 + bLightmaps);
-if (!LoadImage (bmBot, 0, 0, bLightmaps, item->nWrap))
-	return;
+if (!LoadTexture (bmBot, 0, 0, bLightmaps, item->nWrap))
+		{
+#if 1 //$DBG
+		LoadTexture (bmBot, 0, 0, bLightmaps, item->nWrap);
+#endif
+		return;
+		}
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, (bDecal < 0) ? FACES.ovlTexCoord + nIndex : FACES.texCoord + nIndex);
 if (!bLightmaps) {
@@ -812,7 +817,7 @@ else if (!bColored)
 	glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 ogl.SetBlendMode (bAdditive);
 
-#if DBG
+#if 1 //$DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -908,7 +913,7 @@ m_data.bmP [1] = m_data.bmP [2] = NULL;
 m_data.bUseLightmaps = 0;
 ogl.SelectTMU (GL_TEXTURE0, true);
 #if 1
-if (!LoadImage (item->bmP, 0, 0, 0, GL_CLAMP))
+if (!LoadTexture (item->bmP, 0, 0, 0, GL_CLAMP))
 	return;
 #else
 ogl.SetTexturing (true);
@@ -957,7 +962,7 @@ ogl.ResetClientStates (1);
 m_data.bmP [1] = m_data.bmP [2] = NULL;
 m_data.bUseLightmaps = 0;
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-if (LoadImage (sparks.Bitmap (), 0, 0, 0, GL_CLAMP)) {
+if (LoadTexture (sparks.Bitmap (), 0, 0, 0, GL_CLAMP)) {
 	if (!(bSoftBlend && glareRenderer.LoadShader (3, 1)))
 		shaderManager.Deploy (-1);
 	ogl.SetBlendMode (1);
@@ -1089,7 +1094,7 @@ if (m_data.nPrevType != m_data.nCurType) {
 	}
 glowRenderer.Begin (GLOW_LIGHTTRAILS, 2, false);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-if (LoadImage (item->bmP, 0, 0, 0, GL_CLAMP)) {
+if (LoadTexture (item->bmP, 0, 0, 0, GL_CLAMP)) {
 	ogl.SetDepthWrite (true);
 	ogl.SetFaceCulling (false);
 	ogl.SetBlendMode (1);
@@ -1172,7 +1177,7 @@ if (!pl->bRendered) {
 	//pl->bRendered = true;
 	m_data.nPrevType = m_data.nCurType;
 	m_data.nCurType = pl->nType;
-#if DBG
+#if 1 //$DBG
 	if (gameOpts->render.debug.bTextures && gameOpts->render.debug.bWalls)
 #endif
 	try {
@@ -1272,7 +1277,7 @@ for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (
 		nDepth = 0;
 		prevP = NULL;
 		do {
-#if DBG
+#if 1 //$DBG
 			if (currentP->nItem == nDbgItem)
 				nDbgItem = nDbgItem;
 #endif

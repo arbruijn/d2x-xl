@@ -615,12 +615,10 @@ else if ((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
 			m_nLife = -1;
 			return 0;
 			}	
-		goto skip;
+		nSegment = m_nSegment;
 		}
 	}
 m_nSegment = nSegment;
-
-skip:
 
 if (!Bounce (nThread))
 	return 0;
