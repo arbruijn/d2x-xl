@@ -812,7 +812,7 @@ void CGenericCockpit::DrawWeaponInfo (int nWeaponType, int nIndex, tGaugeBox* bo
 i = ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode)
 	 ? gameData.weapons.info [nIndex].hiresPicture.index
 	 : gameData.weapons.info [nIndex].picture.index;
-LoadBitmap (i, 0);
+LoadTexture (i, 0);
 if (!(bmP = gameData.pig.tex.bitmaps [0] + i))
 	return;
 color = (m_info.weaponBoxStates [nWeaponType] == WS_SET) ? 255 : int (X2F (m_info.weaponBoxFadeValues [nWeaponType]) / float (FADE_LEVELS) * 255);
@@ -968,7 +968,7 @@ if (staticTime [nWindow] >= vc->xTotalTime) {
 	return;
 	}
 framenum = staticTime [nWindow] * vc->nFrameCount / vc->xTotalTime;
-LoadBitmap (vc->frames [framenum].index, 0);
+LoadTexture (vc->frames [framenum].index, 0);
 bmp = gameData.pig.tex.bitmaps [0] + vc->frames [framenum].index;
 //CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 h = boxofs + nWindow;
@@ -1692,7 +1692,7 @@ void CGenericCockpit::DrawCockpit (int nCockpit, int y, bool bAlphaTest)
 if ((gameOpts->render.cockpit.bHUD) || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) {
 	int i = gameData.pig.tex.cockpitBmIndex [nCockpit].index;
 	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + i;
-	LoadBitmap (gameData.pig.tex.cockpitBmIndex [nCockpit].index, 0, true);
+	LoadTexture (gameData.pig.tex.cockpitBmIndex [nCockpit].index, 0, true);
 	if (bmP->HasOverride ())
 		bmP = bmP->Override (-1);
 	ogl.m_states.nTransparencyLimit = 8;	//add transparency to black areas of palettized cockpits (namely the display windows)

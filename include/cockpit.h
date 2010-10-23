@@ -150,7 +150,7 @@ class CGenericCockpit {
 		inline int ScaleY (int v) { return int (float (v) * m_info.yScale + 0.5f); }
 		inline int LHX (int x) { return x << gameStates.render.fonts.bHires; }
 		inline int LHY (int y) { return gameStates.render.fonts.bHires ? 24 * y / 10 : y; }
-		inline void PageInGauge (int nGauge) { LoadBitmap (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0); }
+		inline void PageInGauge (int nGauge) { LoadTexture (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0); }
 		inline ushort GaugeIndex (int nGauge) { return gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index; }
 		CBitmap* BitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL, CBitmap* bmoP = NULL);
 		int _CDECL_ PrintF (int *idP, int x, int y, const char *pszFmt, ...);

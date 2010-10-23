@@ -359,7 +359,7 @@ if (bmi < 0) {
 #endif
 	}
 else {
-	LoadBitmap (bmi, 0);
+	LoadTexture (bmi, 0);
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
 	}
 #else

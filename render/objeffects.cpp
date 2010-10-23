@@ -62,7 +62,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		ogl.SelectTMU (GL_TEXTURE0);
 		ogl.SetTexturing (true);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		LoadBitmap (pf->bmi.index, 0);
+		LoadTexture (pf->bmi.index, 0);
 		bmP = gameData.pig.tex.bitmapP + pf->vcP->frames [pf->vci.nCurFrame].index;
 		bmP->SetTranspType (2);
 		vPos += objP->info.position.mOrient.FVec () * (-objP->info.xSize);

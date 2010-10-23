@@ -65,7 +65,7 @@ if (nVClip) {
 	}
 else
 	bmi = gameData.weapons.info [objP->info.nId].bitmap;
-LoadBitmap (bmi.index, 0);
+LoadTexture (bmi.index, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ())
 	bmP = bmP->Override ();

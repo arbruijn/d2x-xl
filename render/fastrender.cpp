@@ -51,7 +51,7 @@ if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 if (faceP->m_info.nFrame == gameData.app.nMineRenderCount)
 	return 0;
 #endif
-#if 1 //$DBG
+#if DBG
 if (faceP - FACES.faces >= gameData.segs.nFaces)
 	return 0;
 #endif
@@ -71,7 +71,7 @@ if (j < 0) {
 	gameData.render.faceIndex.roots [nKey] = i;
 	}
 else {
-#if 1 //$DBG
+#if DBG
 	if (!i)
 		i = i;
 #endif
@@ -104,7 +104,7 @@ if (faceP->m_info.nCamera >= 0) {
 		return;
 	faceP->m_info.nCamera = -1;
 	}
-#if 1 //$DBG
+#if DBG
 if (FACE_IDX (faceP) == nDbgFace)
 	nDbgFace = nDbgFace;
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
@@ -131,7 +131,7 @@ else {
 		faceP->bmBot = TexMergeGetCachedBitmap (faceP->m_info.nBaseTex, faceP->m_info.nOvlTex, faceP->m_info.nOvlOrient);
 		if (faceP->bmBot)
 			faceP->bmBot->SetupTexture (1, 1);
-#if 1 //$DBG
+#if DBG
 		else
 			faceP->bmBot = TexMergeGetCachedBitmap (faceP->m_info.nBaseTex, faceP->m_info.nOvlTex, faceP->m_info.nOvlOrient);
 #endif
@@ -139,7 +139,7 @@ else {
 		}
 	else {
 		faceP->bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [faceP->m_info.nBaseTex].index;
-		LoadBitmap (gameData.pig.tex.bmIndexP [faceP->m_info.nBaseTex].index, gameStates.app.bD1Mission);
+		LoadTexture (gameData.pig.tex.bmIndexP [faceP->m_info.nBaseTex].index, gameStates.app.bD1Mission);
 		}
 	}
 }
@@ -184,7 +184,7 @@ static pRenderHandler renderHandlers [] = {RenderGeometryFace, RenderCoronaFace,
 
 static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int nType)
 {
-#if 1 //$DBG
+#if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -533,7 +533,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		if (!faceP->m_info.bVisible)
 			continue;
 		LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
-#if 1 //$DBG
+#if DBG
 		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
@@ -541,7 +541,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		faceP->m_info.nColored = FaceIsColored (faceP);
 		if (nSegment != faceP->m_info.nSegment) {
 			nSegment = faceP->m_info.nSegment;
-#if 1 //$DBG
+#if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
@@ -579,7 +579,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 				continue;
 			}
 		if (nPass == 1) {
-#if 1 //$DBG
+#if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #	if 0
@@ -590,7 +590,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			glareRenderer.Visibility (faceP->m_info.nCorona);
 			}
 		else if (nPass == 2) {
-#if 1 //$DBG
+#if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #	if 0
@@ -604,7 +604,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
 			}
 		else {
-#if 1 //$DBG
+#if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #	if 0
@@ -667,7 +667,7 @@ for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 		 (SEGMENTS [nSegment].HasOutdoorsProp ()))
 		continue;
 	segFaceP = SEGFACES + nSegment;
-#if 1 //$DBG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
@@ -693,20 +693,20 @@ if (nSegment < 0)
 	short			nFaces = 0;
 	int			i;
 
-#if 1 //$DBG
+#if DBG
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 if (!(bHeadlight || VisitSegment (nSegment, bAutomap)))
 	return 0;
-#if 1 //$DBG
+#if DBG
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 if (gameStates.render.bPerPixelLighting == 2)
 	lightManager.Index (0,0).nActive = -1;
 for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {
-#if 1 //$DBG
+#if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 		nSegment = nSegment;
 #endif

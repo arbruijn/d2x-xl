@@ -701,6 +701,11 @@ return FindHiresBitmap (szAnim, nFile, bD1) != NULL;
 
 static bool HaveHiresBitmap (const char* bmName, int bD1)
 {
+if (gameStates.app.bNostalgia)
+	return 0;
+if (!gameOpts->render.textures.bUseHires [0])
+	return 0;
+
 	int i = HaveHiresAnimation (bmName, bD1);
 
 if (i >= 0)
@@ -739,7 +744,7 @@ static int ReadHiresBitmap (CBitmap* bmP, const char* bmName, int nIndex, int bD
 {
 
 if (gameOpts->Use3DPowerups () && IsWeapon (bmName) && !gameStates.app.bHaveMod)
-	return 0;
+	return -1;
 
 int	nFile;
 char* pszFile = FindHiresBitmap (bmName, nFile, bD1);
@@ -867,7 +872,7 @@ StopTime ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "targ01"))
+if (strstr (bmName, "slowmotion#0"))
 	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)
@@ -1134,7 +1139,7 @@ return ((texP = bmP->Texture ()) && (texP->Handle ())) || (bmP->Buffer () != 0);
 
 //------------------------------------------------------------------------------
 
-void LoadBitmap (int bmi, int bD1, bool bHires)
+void LoadTexture (int bmi, int bD1, bool bHires)
 {
 #if DBG
 if ((nDbgTexture >= 0) && (bmi == nDbgTexture))

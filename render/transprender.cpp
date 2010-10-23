@@ -37,7 +37,7 @@
 #define TI_POLY_OFFSET 0
 #define TI_POLY_CENTER 1
 
-#if 1 //$DBG
+#if DBG
 int nDbgPoly = -1, nDbgItem = -1;
 #endif
 
@@ -118,7 +118,7 @@ if (m_data.bAllowAdd > 0)
 	{
 	m_data.zMin = 0;
 	m_data.zMax = zMax;
-#if 1 //$DBG
+#if DBG
 	if (zMax < 0)
 		zMax = zMax;
 #endif
@@ -411,7 +411,7 @@ int CTransparencyRenderer::AddFaceTris (CSegFace *faceP)
 
 if (bmP)
 	bmP = bmP->Override (-1);
-#if 1 //$DBG
+#if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	faceP = faceP;
 #endif
@@ -446,7 +446,7 @@ int CTransparencyRenderer::AddFaceQuads (CSegFace *faceP)
 
 if (bmP)
 	bmP = bmP->Override (-1);
-#if 1 //$DBG
+#if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	faceP = faceP;
 #endif
@@ -635,7 +635,7 @@ if (bmP) {
 		gameData.render.nStateChanges++;
 		if (bmP) {
 			if (bmP->Bind (1)) {
-				m_data.bmP [bDecal] = NULL;
+				ResetBitmaps ();
 				return 0;
 				}
 			if (bDecal != 2)
@@ -718,7 +718,7 @@ if (!bmBot) {
 faceP = item->faceP;
 triP = item->triP;
 
-#if 1 //$DBG
+#if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -779,12 +779,7 @@ else {
 
 ogl.EnableClientStates (bTextured, bColored && !bLightmaps, !bLightmaps, GL_TEXTURE0 + bLightmaps);
 if (!LoadTexture (bmBot, 0, 0, bLightmaps, item->nWrap))
-		{
-#if 1 //$DBG
-		LoadTexture (bmBot, 0, 0, bLightmaps, item->nWrap);
-#endif
-		return;
-		}
+	return;
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, (bDecal < 0) ? FACES.ovlTexCoord + nIndex : FACES.texCoord + nIndex);
 if (!bLightmaps) {
@@ -817,7 +812,7 @@ else if (!bColored)
 	glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 ogl.SetBlendMode (bAdditive);
 
-#if 1 //$DBG
+#if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -1177,7 +1172,7 @@ if (!pl->bRendered) {
 	//pl->bRendered = true;
 	m_data.nPrevType = m_data.nCurType;
 	m_data.nCurType = pl->nType;
-#if 1 //$DBG
+#if DBG
 	if (gameOpts->render.debug.bTextures && gameOpts->render.debug.bWalls)
 #endif
 	try {
@@ -1277,7 +1272,7 @@ for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (
 		nDepth = 0;
 		prevP = NULL;
 		do {
-#if 1 //$DBG
+#if DBG
 			if (currentP->nItem == nDbgItem)
 				nDbgItem = nDbgItem;
 #endif

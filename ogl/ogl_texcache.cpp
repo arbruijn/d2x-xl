@@ -63,7 +63,7 @@ for (int i = 0; i < vcP->nFrameCount; i++) {
 	if ((nDbgTexture >= 0) && (h == nDbgTexture))
 		nDbgTexture = nDbgTexture;
 #endif
-	LoadBitmap (h = vcP->frames [i].index, 0);
+	LoadTexture (h = vcP->frames [i].index, 0);
 	bmP = &gameData.pig.tex.bitmaps [0][h];
 	bmP->SetTranspType (nTranspType);
 	bmP->SetupTexture (1, bLoadTextures);
@@ -108,7 +108,7 @@ static CBitmap *OglLoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTex
 	CBitmap*	bmP, * bmoP, * bmfP;
 	int		nFrames;
 
-LoadBitmap (gameData.pig.tex.bmIndexP [nTexture].index, gameStates.app.bD1Mission);
+LoadTexture (gameData.pig.tex.bmIndexP [nTexture].index, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
 bmP->SetStatic (1);
 if (!(bmoP = bmP->Override ()))
@@ -319,7 +319,7 @@ PrintLog ("   caching cockpit textures\n");
 for (i = 0; i < 2; i++)
 	for (j = 0; j < MAX_GAUGE_BMS; j++)
 		if (gameData.cockpit.gauges [i][j].index != 0xffff)
-			LoadBitmap (gameData.cockpit.gauges [i][j].index, 0);
+			LoadTexture (gameData.cockpit.gauges [i][j].index, 0);
 
 ResetSpecialEffects ();
 InitSpecialEffects ();

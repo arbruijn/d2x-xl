@@ -541,7 +541,7 @@ if (*m_info.szBitmapName) {
 	if (0 > short (bmi.index))
 		return;
 	bmP = gameData.pig.tex.bitmaps [gameStates.app.bD1Mission] + bmi.index;
-	LoadBitmap (bmi.index, gameStates.app.bD1Mission);
+	LoadTexture (bmi.index, gameStates.app.bD1Mission);
 	bmP->SetStatic (1);
 
 	GLint	depthFunc;
