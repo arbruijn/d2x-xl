@@ -109,7 +109,6 @@ int CParticle::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 						     float nScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp, char nFadeType,
 							  float fBrightness, CFixVector *vEmittingFace)
 {
-
 	tRgbaColorf	color;
 	int			nType = particleImageManager.GetType (nParticleSystemType);
 
@@ -123,6 +122,7 @@ else
 	m_nRad = float (nScale);
 if (!m_nRad)
 	m_nRad = 1.0f;
+
 m_nType = nType;
 m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES) 
 				  ? 1 
@@ -606,13 +606,21 @@ else if ((m_nType == BUBBLE_PARTICLES) && !SEGMENTS [nSegment].HasWaterProp ()) 
 	return 0;
 	}
 else if ((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
-	if ((SEGMENTS [nSegment].HasWaterProp () || SEGMENTS [nSegment].HasLavaProp ()) ||
-		 ((nSegment != m_nSegment) && SEGMENTS [m_nSegment].HasFunction (SEGMENT_FUNC_SKYBOX))) {
+	if (SEGMENTS [nSegment].HasWaterProp () || SEGMENTS [nSegment].HasLavaProp ()) {
 		m_nLife = -1;
 		return 0;
 		}
+	if ((m_nSegment >= 0) && (nSegment != m_nSegment) && SEGMENTS [m_nSegment].HasFunction (SEGMENT_FUNC_SKYBOX)) {
+		if (m_nTTL - m_nLife > 500) {
+			m_nLife = -1;
+			return 0;
+			}	
+		goto skip;
+		}
 	}
 m_nSegment = nSegment;
+
+skip:
 
 if (!Bounce (nThread))
 	return 0;
