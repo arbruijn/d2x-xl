@@ -383,6 +383,10 @@ class CSegment {
 
 		void OperateTrigger (int nSide, CObject *objP, int bShot);
 
+		inline ubyte Function (void) { return m_function; }
+
+		inline int HasFunction (ubyte function) { return m_function == function; }
+
 		inline int HasProp (ubyte prop) { return (m_props & prop) != 0; }
 		inline int HasBlockedProp (void) { return HasProp (SEGMENT_PROP_BLOCKED); }
 		inline int HasDamageProp (int i = -1) { return (i < 0) ? (m_xDamage [0] | m_xDamage [1]) != 0 : (m_xDamage [i] != 0); }

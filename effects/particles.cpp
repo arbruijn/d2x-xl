@@ -605,9 +605,12 @@ else if ((m_nType == BUBBLE_PARTICLES) && !SEGMENTS [nSegment].HasWaterProp ()) 
 	m_nLife = -1;
 	return 0;
 	}
-else if (((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) && (SEGMENTS [nSegment].HasWaterProp () || SEGMENTS [nSegment].HasLavaProp ())) {
-	m_nLife = -1;
-	return 0;
+else if ((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
+	if ((SEGMENTS [nSegment].HasWaterProp () || SEGMENTS [nSegment].HasLavaProp ()) ||
+		 ((nSegment != m_nSegment) && SEGMENTS [m_nSegment].HasFunction (SEGMENT_FUNC_SKYBOX))) {
+		m_nLife = -1;
+		return 0;
+		}
 	}
 m_nSegment = nSegment;
 
