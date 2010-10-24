@@ -121,7 +121,7 @@ nObject = CreateFireball (nVClip, nSegment, vPos, xSize, RT_FIREBALL);
 
 if (nObject < 0) {
 #if TRACE
-	console.printf (1, "Can'nType create CObject in /*Object*/CreateExplosionSub.\n");
+	console.printf (1, "Can't create object in /*Object*/CreateExplosionSub.\n");
 #endif
 	return NULL;
 	}
@@ -372,7 +372,7 @@ mType.physInfo.velocity *= (I2X (10 + (30 * d_rand () / RAND_MAX)));
 #if 0//DBG
 VmVecZero (&mType.physInfo.rotVel);
 #else
-mType.physInfo.rotVel = CFixVector::Create(d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
+mType.physInfo.rotVel = CFixVector::Create (d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
 #endif
 mType.physInfo.rotThrust.SetZero ();
 }
@@ -431,7 +431,14 @@ if ((nObject < 0) && (gameData.objs.nLastObject [0] >= LEVEL_OBJECTS - 1)) {
 	}
 if (nObject < 0)
 	return NULL;				// Not enough debris slots!
-OBJECTS [nObject].SetupDebris (nSubObj, ModelId (), rType.polyObjInfo.nTexOverride);
+#if 0
+if (nSubObj == 0) {
+	rType.polyObjInfo.nSubObjFlags = 1;
+	OBJECTS [nObject].SetupRandomMovement ();
+	}
+else
+#endif
+	OBJECTS [nObject].SetupDebris (nSubObj, ModelId (), rType.polyObjInfo.nTexOverride);
 return OBJECTS + nObject;
 }
 
