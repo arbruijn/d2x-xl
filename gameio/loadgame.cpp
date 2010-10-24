@@ -451,6 +451,10 @@ else {
 		tactile_set_button_jolt ();
 #endif
 	gameData.objs.missileViewerP = NULL;
+	CObject* objP = OBJECTS + playerP->nObject;
+	objP->info.nType = OBJ_PLAYER;
+	objP->info.xLifeLeft = IMMORTAL_LIFE;
+	objP->info.flags = 0;
 	}
 gameData.bosses.ResetHitTimes ();
 gameData.objs.nSoundPlaying [nPlayer] = 0;

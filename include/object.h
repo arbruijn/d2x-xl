@@ -663,7 +663,7 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 		inline ubyte ControlType () { return info.controlType; }
 		inline ubyte MovementType () { return info.movementType; }
 		inline ubyte RenderType () { return info.renderType; }
-		inline ubyte Flags () { return info.nFlags; }
+		inline ubyte& Flags () { return info.nFlags; }
 		inline CFixVector LastPos () { return info.vLastPos; }
 
 		inline void SetSignature (int nSignature) { info.nSignature = nSignature; }
