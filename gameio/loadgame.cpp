@@ -451,10 +451,14 @@ else {
 		tactile_set_button_jolt ();
 #endif
 	gameData.objs.missileViewerP = NULL;
+	// if ship got blown up, the player ship's root submodel had been converted to a debris object.
+	// Make it a player object again.
 	CObject* objP = OBJECTS + playerP->nObject;
 	objP->info.nType = OBJ_PLAYER;
-	objP->info.xLifeLeft = IMMORTAL_LIFE;
-	objP->info.flags = 0;
+	objP->info.xLifeLeft = IMMORTAL_TIME;
+	objP->info.nFlags = 0;
+	objP->rType.polyObjInfo.nSubObjFlags = 0;
+	objP->mType.physInfo.flags = PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST;
 	}
 gameData.bosses.ResetHitTimes ();
 gameData.objs.nSoundPlaying [nPlayer] = 0;

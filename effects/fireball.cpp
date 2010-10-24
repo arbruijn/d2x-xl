@@ -411,7 +411,7 @@ if (gameOpts->render.nDebrisLife) {
 	mType.physInfo.flags |= PF_FREE_SPINNING;
 	mType.physInfo.rotVel /= 3;
 	}
-mType.physInfo.flags &= ~PF_USES_THRUST;
+mType.physInfo.flags &= ~(PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST);
 }
 
 //------------------------------------------------------------------------------
