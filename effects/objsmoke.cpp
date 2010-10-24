@@ -688,7 +688,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	dir = objP->info.position.mOrient.FVec () * (objP->rType.particleInfo.nSpeed * I2X (2) / 55);
 	nSmoke = particleManager.Create (&objP->info.position.vPos, &dir, &objP->info.position.mOrient,
 												objP->info.nSegment, 1,
-												-objP->rType.particleInfo.nParts / ((nType == SMOKE_TYPE_RAIN) ? 20 : ((nType == SMOKE_TYPE_FIRE) || (nType == SMOKE_TYPE_SNOW)) ? 10 : 1),
+												-objP->rType.particleInfo.nParts / ((nType == SMOKE_TYPE_RAIN) ? 10 : ((nType == SMOKE_TYPE_FIRE) || (nType == SMOKE_TYPE_SNOW)) ? 10 : 1),
 												-PARTICLE_SIZE (objP->rType.particleInfo.nSize [gameOpts->render.particles.bDisperse], (nType == 1) ? 4.0f : 2.0f, 1),
 												-1, 3, (nType == 2) ? FIRE_PART_LIFE * int (sqrt (double (objP->rType.particleInfo.nLife))) : STATIC_SMOKE_PART_LIFE * objP->rType.particleInfo.nLife,
 												(nType == SMOKE_TYPE_RAIN) ? objP->rType.particleInfo.nDrift * 64 : objP->rType.particleInfo.nDrift, 
