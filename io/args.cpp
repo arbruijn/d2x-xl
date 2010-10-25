@@ -157,6 +157,12 @@ if (cf.File()) {
 					PrintLog ("too many program arguments\n");
 					break;
 					}
+				int l;
+				for (l = strlen (pszLine); l > 0; l--) {
+					if (pszLine [l - 1] != '\r')
+						break;
+					}
+				pszLine [l] = '\0';
 				pszArgList [nArgCount++] = *pszLine ? StrDup (pszLine) : NULL;
 				}
 			}
