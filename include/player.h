@@ -87,10 +87,10 @@ typedef union tShipModifier {
 		float	speed;
 		} v;
 	float a [3];
-} tShipModifier;
+} __pack__ tShipModifier;
 
 
-class CShipEnergy {
+class __pack__ CShipEnergy {
 	private:
 		int	m_type;
 		int	m_index;
@@ -135,7 +135,7 @@ class CShipEnergy {
 			m_index = index;
 			m_init = init;
 			m_max = 2 * init;
-			if (m_current = current)
+			if ((m_current = current))
 				Set (init);
 			}
 	};

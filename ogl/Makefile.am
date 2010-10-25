@@ -1,6 +1,6 @@
 noinst_LIBRARIES = libogl.a
 
-INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
+INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/effects -I $(top_srcdir)/input/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
 
 libogl_a_SOURCES = \
 	fbuffer.cpp gr.cpp ogl_bitmap.cpp ogl_buffers.cpp ogl_color.cpp ogl_defs.cpp ogl_draw.cpp ogl_fastrender.cpp \

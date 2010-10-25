@@ -368,13 +368,14 @@ fix GetAvgTerrainLight (int i, int j)
 	fix			light, totalLight;
 	int			n;
 
+pp.SetZero();
 GetTerrainPoint (&pp, i, j);
-GetTerrainPoint (p, i - 1, j);
-GetTerrainPoint (p + 1, i, j - 1);
-GetTerrainPoint (p + 2, i + 1, j - 1);
+GetTerrainPoint (p, i ? i - 1 : 5, j);
+GetTerrainPoint (p + 1, i, j ? j - 1 : 5);
+GetTerrainPoint (p + 2, i + 1, j ? j - 1 : 5);
 GetTerrainPoint (p + 3, i + 1, j);
 GetTerrainPoint (p + 4, i, j + 1);
-GetTerrainPoint (p + 5, i - 1, j + 1);
+GetTerrainPoint (p + 5, i ? i - 1 : 5, j + 1);
 for (n = 0, totalLight = 0; n < 6; n++) {
 	light = abs (GetTerrainFaceLight (&pp, p + n, p + (n + 1) % 6));
 	if (light > 0)

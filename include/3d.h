@@ -50,7 +50,7 @@ typedef struct g3sNormal {
 
 typedef struct tScreenPos {
 	fix			x, y;
-} __pack__ tScreenPos;
+} tScreenPos;
 
 typedef struct g3sPoint {
 	CFixVector	p3_src;			//untransformed point
