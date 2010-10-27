@@ -59,7 +59,7 @@
 #define PART_DEPTHBUFFER_SIZE 100000
 #define PARTLIST_SIZE 1000000
 
-#define PART_BUF_SIZE	50000
+#define PART_BUF_SIZE	25000
 #define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
 
 //------------------------------------------------------------------------------
@@ -75,25 +75,37 @@ class CEffectArea {
 	public:
 		CFloatVector	m_pos;
 		float				m_rad;
-		float				m_size;
 
-	CEffectArea(float rad = 0.0f) : m_rad (rad), m_size (0.0f) { m_pos.SetZero (); }
+	CEffectArea() : m_rad (0.0f) { m_pos.SetZero (); }
 
 	inline CEffectArea& operator= (CEffectArea other) { 
 		m_pos = other.m_pos, m_rad = other.m_rad;
 		return *this;
 		}
 
-	inline CEffectArea& operator+= (CFloatVector pos) {
-		float h = CFloatVector::Dist (m_pos, pos) - m_size;
+	inline CEffectArea& Add (CFloatVector& pos, float rad) {
+		float h = CFloatVector::Dist (m_pos, pos) - rad;
 		if (h > 0.0f)
-			m_size += h;
+			m_rad += h;
 		m_pos = CFloatVector::Avg (m_pos, pos);
 		}
 
-	inline bool const Overlap (CFloatVector pos, float rad) { return CFloatVector::Dist (m_pos, pos) < m_size + rad; }
+	inline CEffectArea& operator+= (CEffectArea other) { return Add (other.m_pos, other.m_rad); }
 
-	inline bool const operator&& (CEffectArea other) { return CFloatVector::Dist (m_pos, other.m_pos) < m_size + other.m_size; }
+	inline bool const Overlap (CFloatVector& pos, float rad) { return CFloatVector::Dist (m_pos, pos) < m_rad + rad; }
+
+	inline bool const Overlap (CFixVector& pos, float rad) { 
+		CFloatVector v;
+		v.Assign (pos);
+		return CFloatVector::Dist (m_pos, v) < m_rad + rad; 
+		}
+
+	inline bool const operator&& (CEffectArea other) { return Overlap (other.m_pos, other.m_rad); }
+
+	inline void Reset (void) {
+		m_pos = CFloatVector::ZERO;
+		m_rad = 0;
+		}
 };
 
 //------------------------------------------------------------------------------
@@ -167,10 +179,16 @@ class CParticle : public tParticle {
 			transformation.Transform (m_vTransPos, m_vPos, bUnscaled);
 			return m_vTransPos [Z];
 			}
+		inline float Rad (void) { return (float) _hypot (m_nWidth, m_nHeight); }
+		inline CFloatVector Posf (void) {
+			CFloatVector pos;
+			pos.Assign (m_vPos);
+			return pos;
+			}
+		inline int RenderType (void);
 
 	private:
 		inline int ChangeDir (int d);
-		inline int RenderType (void);
 		int CollideWithWall (int nThread);
 		void UpdateDecay (void);
 		int UpdateDrift (int t, int nThread);
@@ -315,23 +333,43 @@ typedef struct tRenderParticle {
 	char			nRotFrame;
 } tRenderParticles;
 
+
+class CParticleBuffer : public CEffectArea {
+	public:
+		tRenderParticle m_particles [PART_BUF_SIZE];
+		tParticleVertex m_vertices [VERT_BUF_SIZE];
+		int m_iBuffer;
+		int m_nType;
+		bool m_bEmissive;
+
+		inline int GetType (void) { return m_nType; }
+		inline void SetType (int nType) { m_nType = nType; }
+		void Setup (void);
+		void Setup (int nThread);
+		bool Flush (float brightness, bool bForce = false);
+		bool Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad);
+		void Reset (void) { m_iBuffer = 0, m_nType = -1, m_bEmissive = false; }
+
+		CParticleBuffer : CEffectArea (), m_iBuffer (0), m_nType (-1), m_bEmissive (false) {}
+
+	private:
+		int Init (void);
+	};
+
+//------------------------------------------------------------------------------
+
 class CParticleManager {
 	private:
 		CDataPool<CParticleSystem>	m_systems;
 		CArray<CParticleSystem*>	m_systemList;
 		CArray<short>					m_objectSystems;
 		CArray<time_t>					m_objExplTime;
-		int								m_nLastType;
 		int								m_bAnimate;
 		int								m_bStencil;
-		int								m_iBuffer;
 		int								m_iRenderBuffer;
 
 	public:
-		static tRenderParticle particleBuffer [PART_BUF_SIZE];
-		static tParticleVertex particleRenderBuffer [VERT_BUF_SIZE];
-		float								m_bufferBrightness;
-		int								m_bBufferEmissive;
+		CParticleBuffer				particleBuffer [2];
 
 	public:
 		CParticleManager () {}
@@ -356,15 +394,12 @@ class CParticleManager {
 		int BeginRender (int nType, float fScale);
 		int EndRender (void);
 		int InitBuffer (void);
-		bool FlushBuffer (float brightness, bool bForce = false);
 		int CloseBuffer (void);
 		void SetupParticles (int nThread);
 
 		void AdjustBrightness (CBitmap *bmP);
 
 		inline time_t* ObjExplTime (int i = 0) { return m_objExplTime + i; }
-		inline int LastType (void) { return m_nLastType; }
-		inline void SetLastType (int nLastType) { m_nLastType = nLastType; }
 		inline int Animate (void) { return m_bAnimate; }
 		inline void SetAnimate (int bAnimate) { m_bAnimate = bAnimate; }
 		inline int Stencil (void) { return m_bStencil; }
@@ -442,22 +477,17 @@ class CParticleManager {
 		inline int RemoveEmitter (int i, int j)
 		 { return GetSystem (i).RemoveEmitter (j); }
 
-		inline int BufPtr (void)
-			{ return m_iBuffer; }
-
-		inline void IncBufPtr (int i = 1)
-			{ m_iBuffer += i; }
-
 		inline int RenderBufPtr (void)
 			{ return m_iRenderBuffer; }
 
 		inline void IncRenderBufPtr (int i = 1)
 			{ m_iRenderBuffer += i; }
 
+		bool Add (CParticle* particleP, float brightness);
 
 	private:
 		void RebuildSystemList (void);
-		void SetupRenderBuffer (void);
+		short Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed);
 
 };
 

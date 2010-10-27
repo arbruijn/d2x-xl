@@ -45,9 +45,164 @@
 
 CParticleManager particleManager;
 
-tRenderParticle CParticleManager::particleBuffer [PART_BUF_SIZE];
-tParticleVertex CParticleManager::particleRenderBuffer [VERT_BUF_SIZE];
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
+void CParticleBuffer::Setup (void)
+{
+PROF_START
+#if USE_OPENMP > 1
+#	if (LAZY_RENDER_SETUP < 2)
+if (m_iBuffer <= 1000)
+#	endif
+for (int i = 0; i < m_iBuffer; i++)
+	m_particles [i].particle->Setup (m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
+#	if (LAZY_RENDER_SETUP < 2)
+else
+#	endif
+#	pragma omp parallel
+	{
+	int nThread = omp_get_thread_num();
+#	pragma omp for 
+	for (int i = 0; i < m_iBuffer; i++)
+		m_particles [i].particle->Setup (m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
+	}
+#else
+if ((m_iBuffer < 100) || !RunRenderThreads (rtParticles))
+	for (int i = 0; i < m_iBuffer; i++)
+		m_particles [i].particle->Setup (m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
+#endif
+PROF_END(ptParticles)
+}
+
+//------------------------------------------------------------------------------
+
+void CParticleBuffer::Setup (int nThread)
+{
+int nStep = m_iBuffer / gameStates.app.nThreads;
+int nStart = nStep * nThread;
+int nEnd = (nThread == gameStates.app.nThreads - 1) ? m_iBuffer : nStart + nStep;
+
+for (int i = nStart; i < nEnd; i++)
+	m_particles [i].particle->Setup (m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
+}
+
+//------------------------------------------------------------------------------
+
+bool CParticleBuffer::Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad)
+{
+	bool bFlushed = false;
+
+if (particleP->RenderType () != m_nType) {
+	bFlushed = Flush (brightness);
+	m_nType = particleP->RenderType ();
+	}
+
+	tRenderParticle* pb = m_particles + m_iBuffer++;
+
+pb->particle = particleP;
+pb->fBrightness = brightness;
+pb->nFrame = particleP->m_iFrame;
+pb->nRotFrame = particleP->m_nRotFrame;
+if (m_iBuffer == PART_BUF_SIZE)
+	bFlushed = Flush ();
+return bFlushed;
+}
+
+//------------------------------------------------------------------------------
+
+int CParticleBuffer::Init (void)
+{
+ogl.ResetClientStates (1);
+ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
+OglTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].texCoord);
+OglColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].color);
+OglVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].vertex);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+bool CParticleBuffer::Flush (float fBrightness, bool bForce)
+{
+if (!m_iBuffer)
+	return false;
+if (!gameOpts->render.particles.nQuality) {
+	m_iBuffer = 0;
+	return false;
+	}
+if ((m_nType < 0) && !bForce) {
+	m_iBuffer = 0;
+	return false;
+	}
+
+#if ENABLE_FLUSH
+PROF_START
+if (Init ()) {
+	CBitmap* bmP = ParticleImageInfo (m_nType % PARTICLE_TYPES).bmP;
+	if (!bmP) {
+		PROF_END(ptParticles)
+		return false;
+		}
+	if (bmP->CurFrame ())
+		bmP = bmP->CurFrame ();
+	if (bmP->Bind (0)) {
+		PROF_END(ptParticles)
+		return false;
+		}
+
+#if LAZY_RENDER_SETUP
+	Setup ();
+#endif
+
+	ogl.SetBlendMode ((m_nType < PARTICLE_TYPES) ? m_bEmissive : -1);
+
+	if (ogl.m_states.bShadersOk) {
+#if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
+		if (m_nType <= SMOKE_PARTICLES) {
+			if ((gameOpts->render.particles.nQuality == 3) && !automap.Display () && lightManager.Headlights ().nLights) {
+				tRgbaColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
+				lightManager.Headlights ().SetupShader (1, 0, &color);
+				}
+			else 
+				shaderManager.Deploy (-1);
+			}
+		else
+#endif
+		if ((m_nType <= WATERFALL_PARTICLES) || (m_nType >= PARTICLE_TYPES)) {
+			if (gameStates.render.cameras.bActive || 
+				 !((gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, (m_nType < PARTICLE_TYPES) ? m_bEmissive : -1)))
+				shaderManager.Deploy (-1);
+			}
+		else
+			shaderManager.Deploy (-1);
+		}
+	glNormal3f (0, 0, -1);
+#if !TRANSFORM_PARTICLE_VERTICES
+	ogl.SetupTransform (1);
+#endif
+	ogl.SetFaceCulling (false);
+	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
+	ogl.SetFaceCulling (true);
+#if !TRANSFORM_PARTICLE_VERTICES
+	ogl.ResetTransform (1);
+#endif
+	glNormal3f (1, 1, 1);
+	}
+PROF_END(ptParticles)
+#endif
+m_iBuffer = 0;
+m_nType = -1;
+Reset ();
+if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
+	shaderManager.Deploy (-1);
+m_nType = -1;
+return true;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 void CParticleManager::RebuildSystemList (void)
@@ -109,7 +264,8 @@ int i = 0;
 int nCurrent = m_systems.FreeList ();
 for (CParticleSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 	systemP->Init (i++);
-m_iBuffer = 0;
+particleBuffer [0].Reset ();
+particleBuffer [1].Reset ();
 
 #if TRANSFORM_PARTICLE_VERTICES
 
@@ -141,9 +297,6 @@ for (int i = 0; i < PARTICLE_POSITIONS; i++) {
 	}
 
 #endif
-
-m_bufferBrightness = -1;
-m_bBufferEmissive = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -296,133 +449,10 @@ else
 
 //------------------------------------------------------------------------------
 
-int CParticleManager::InitBuffer (void)
-{
-ogl.ResetClientStates (1);
-ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
-OglTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleRenderBuffer [0].texCoord);
-OglColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleRenderBuffer [0].color);
-OglVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleRenderBuffer [0].vertex);
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
 void CParticleManager::SetupParticles (int nThread)
 {
-int nStep = m_iBuffer / gameStates.app.nThreads;
-int nStart = nStep * nThread;
-int nEnd = (nThread == gameStates.app.nThreads - 1) ? m_iBuffer : nStart + nStep;
-
-for (int i = nStart; i < nEnd; i++)
-	particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
-}
-
-//------------------------------------------------------------------------------
-
-void CParticleManager::SetupRenderBuffer (void)
-{
-PROF_START
-#if USE_OPENMP > 1
-#	if (LAZY_RENDER_SETUP < 2)
-if (m_iBuffer <= 1000)
-#	endif
-for (int i = 0; i < m_iBuffer; i++)
-	particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
-#	if (LAZY_RENDER_SETUP < 2)
-else
-#	endif
-#	pragma omp parallel
-	{
-	int nThread = omp_get_thread_num();
-#	pragma omp for 
-	for (int i = 0; i < m_iBuffer; i++)
-		particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, nThread);
-	}
-#else
-if ((m_iBuffer < 100) || !RunRenderThreads (rtParticles))
-	for (int i = 0; i < m_iBuffer; i++)
-		particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
-#endif
-PROF_END(ptParticles)
-}
-
-//------------------------------------------------------------------------------
-
-bool CParticleManager::FlushBuffer (float fBrightness, bool bForce)
-{
-int nType = particleManager.LastType ();
-
-if (!m_iBuffer)
-	return false;
-if (!gameOpts->render.particles.nQuality) {
-	m_iBuffer = 0;
-	return false;
-	}
-if ((nType < 0) && !bForce) {
-	m_iBuffer = 0;
-	return false;
-	}
-
-#if ENABLE_FLUSH
-PROF_START
-if (InitBuffer ()) {
-	CBitmap* bmP = ParticleImageInfo (nType % PARTICLE_TYPES).bmP;
-	if (!bmP) {
-		PROF_END(ptParticles)
-		return false;
-		}
-	if (bmP->CurFrame ())
-		bmP = bmP->CurFrame ();
-	if (bmP->Bind (0)) {
-		PROF_END(ptParticles)
-		return false;
-		}
-
-#if LAZY_RENDER_SETUP
-	SetupRenderBuffer ();
-#endif
-
-	ogl.SetBlendMode ((nType < PARTICLE_TYPES) ? m_bBufferEmissive : -1);
-
-	if (ogl.m_states.bShadersOk) {
-#if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
-		if (nType <= SMOKE_PARTICLES) {
-			if ((gameOpts->render.particles.nQuality == 3) && !automap.Display () && lightManager.Headlights ().nLights) {
-				tRgbaColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
-				lightManager.Headlights ().SetupShader (1, 0, &color);
-				}
-			else 
-				shaderManager.Deploy (-1);
-			}
-		else
-#endif
-		if ((nType <= WATERFALL_PARTICLES) || (nType >= PARTICLE_TYPES)) {
-			if (gameStates.render.cameras.bActive || 
-				 !((gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, (nType < PARTICLE_TYPES) ? m_bBufferEmissive : -1)))
-				shaderManager.Deploy (-1);
-			}
-		else
-			shaderManager.Deploy (-1);
-		}
-	glNormal3f (0, 0, -1);
-#if !TRANSFORM_PARTICLE_VERTICES
-	ogl.SetupTransform (1);
-#endif
-	ogl.SetFaceCulling (false);
-	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
-	ogl.SetFaceCulling (true);
-#if !TRANSFORM_PARTICLE_VERTICES
-	ogl.ResetTransform (1);
-#endif
-	glNormal3f (1, 1, 1);
-	}
-PROF_END(ptParticles)
-#endif
-m_iBuffer = 0;
-if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
-	shaderManager.Deploy (-1);
-return true;
+particleBuffer [0].Setup (nThread);
+particleBuffer [1].Setup (nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -432,6 +462,46 @@ int CParticleManager::CloseBuffer (void)
 FlushBuffer (-1);
 ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0 + lightmapManager.HaveLightmaps ());
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+bool ParticleManager::Flush (float fBrightness, bool bForce)
+{
+particleBuffer [0].Flush (fBrightness, bForce);
+particleBuffer [1].Flush (fBrightness, bForce);
+}
+
+//------------------------------------------------------------------------------
+
+short ParticleManager::Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed)
+{
+if (particleP->RenderType () != m_vertices [nBuffer].GetType)
+	return -1;
+CFloatVector pos;
+pos.Assign (particleP->m_pos);
+float rad = particleP->Rad ();
+if (m_vertices [!nBuffer].Overlap (pos, rad))
+	bFlushed = m_vertices [!nBuffer].Flush ();
+m_vertices [!nBuffer].Add (particleP, brightness, pos, rad);
+return nBuffer;
+}
+
+//------------------------------------------------------------------------------
+
+bool ParticleManager::Add (CParticle* particleP, float brightness)
+{
+	bool bFlushed = false;
+
+int nBuffer = Add (particleP, brightness, 0, bFlushed);
+if (nBuffer >= 0)
+	return bFlushed;
+nBuffer = Add (particleP, brightness, 1, bFlushed);
+if (nBuffer >= 0)
+	return bFlushed;
+nBuffer = (m_vertices [0].m_iBuffer < m_vertices [1].m_iBuffer);
+m_vertices [nBuffer].Add (particleP, brightness, particleP->Posf (), particleP->Rad (), bFlushed);
+return bFlushed;
 }
 
 //------------------------------------------------------------------------------

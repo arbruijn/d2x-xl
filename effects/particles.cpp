@@ -759,30 +759,13 @@ return 1;
 
 PROF_START
 
-bool bFlushed = false;
-
-if (particleManager.LastType () != m_nRenderType) {
-	PROF_END(ptParticles)
-	bFlushed = particleManager.FlushBuffer (fBrightness);
-	PROF_CONT
-	particleManager.SetLastType (m_nRenderType);
-	particleManager.m_bBufferEmissive = m_bEmissive;
-	}
-else
-	bFlushed = false;
 
 #if LAZY_RENDER_SETUP
-tRenderParticle* pb = particleManager.particleBuffer + particleManager.BufPtr ();
-pb->particle = this;
-pb->fBrightness = fBrightness;
-pb->nFrame = m_iFrame;
-pb->nRotFrame = m_nRotFrame;
+bool bFlushed = particleManager.Add (this, fBrightness);
 #else
+bool bFlushed = false;
 Setup (fBrightness, m_iFrame, m_nRotFrame, particleRenderBuffer + particleManager.BufPtr () * 4, 0);
 #endif
-particleManager.IncBufPtr ();
-if (particleManager.BufPtr () >= PART_BUF_SIZE)
-	particleManager.FlushBuffer (fBrightness);
 
 if (particleManager.Animate ()) {
 	if (m_bAnimate && (m_nFrames > 1)) {
