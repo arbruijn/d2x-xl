@@ -1194,7 +1194,7 @@ if (!itemP->bRendered) {
 	if (gameOpts->render.debug.bTextures && gameOpts->render.debug.bWalls)
 #endif
 	try {
-		FlushBuffers (m_data.nCurType);
+		FlushBuffers (m_data.nCurType, itemP);
 		ogl.SetBlendMode (0);
 		ogl.SetDepthWrite (false);
 		ogl.SetDepthMode (GL_LEQUAL);

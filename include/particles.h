@@ -498,6 +498,7 @@ class CParticleManager {
 				if (particleBuffer [i].GetType () >= 0)
 					return particleBuffer [i].GetType (); 
 				}
+			return -1;
 			}
 
 		inline void SetLastType (int nType) { 
