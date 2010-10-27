@@ -48,6 +48,34 @@ CTransparencyRenderer transparencyRenderer;
 static int nAdded = 0, nRendered = 0;
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+CEffectArea& CEffectArea::Add (CFloatVector& pos, float rad) 
+{
+if (m_rad == 0.0f) {
+	m_pos = pos;
+	m_rad = rad;
+	}
+else {
+	CFloatVector v = pos - m_pos;
+	float d = v.Mag ();
+	float h = rad + d - m_rad;
+	if (h > 0.0f) {
+		h /= 2.0f;
+		v /= d;
+		v *= h;
+		m_pos += v;
+		m_rad += h;
+		}
+	m_pos = CFloatVector::Avg (m_pos, pos);
+	}
+return *this;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 static tTexCoord2f tcDefault [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
@@ -1151,11 +1179,11 @@ if (glowRenderer.Available (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_
 		ResetBitmaps ();
 	}
 if (nType == tiSpark) {
-	if (!itemP || sparkArea.Overlap (itemP->item.particle.particle->Posf (), itemP->item.particle.particle->Rad ()))
+	if (!itemP || particleManager.Overlap (itemP->item.spark.position, X2F (itemP->item.spark.nSize)))
 		FlushParticleBuffer (nType);
 	}
 else if (nType == tiParticle) {
-	if (!itemP || particleManager.Overlap (itemP->item.spark.position, X2F (itemP->item.spark.nSize)))
+	if (!itemP || sparkArea.Overlap (itemP->item.particle.particle->Posf (), itemP->item.particle.particle->Rad ()))
 		FlushSparkBuffer ();
 	}	
 else {

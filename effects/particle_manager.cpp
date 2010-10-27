@@ -470,7 +470,7 @@ bool CParticleManager::Flush (float fBrightness, bool bForce)
 {
 	bool bFlushed = false;
 
-for (int i = 0; i < 2; i++)
+for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++)
 	if (particleBuffer [i].Flush (fBrightness, bForce))
 		bFlushed = true;
 return bFlushed;
@@ -501,11 +501,15 @@ bool CParticleManager::Add (CParticle* particleP, float brightness)
 	int	i, j;
 
 for (i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
-	if (Add (particleP, brightness, 0, bFlushed) >= 0)
+	if (Add (particleP, brightness, i, bFlushed) >= 0)
 		return bFlushed;
 	}
 // flush and reuse the buffer with the most entries
 for (i = 1, j = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+	if (particleBuffer [i].m_nType < 0) {
+		j = i;
+		break;
+		}
 	if (particleBuffer [i].m_iBuffer > particleBuffer [j].m_iBuffer)
 		j = i;
 	}
