@@ -485,9 +485,11 @@ if (particleP->RenderType () != particleBuffer [nBuffer].GetType ())
 CFloatVector pos;
 pos.Assign (particleP->m_vPos);
 float rad = particleP->Rad ();
-if (particleBuffer [!nBuffer].Overlap (pos, rad))
-	bFlushed = particleBuffer [!nBuffer].Flush (brightness, true);
-particleBuffer [!nBuffer].Add (particleP, brightness, pos, rad);
+for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+	if ((i != nBuffer) && particleBuffer [i].Overlap (pos, rad) && particleBuffer [!nBuffer].Flush (brightness, true))
+		bFlushed = true;
+	}
+particleBuffer [nBuffer].Add (particleP, brightness, pos, rad);
 return nBuffer;
 }
 
@@ -495,16 +497,18 @@ return nBuffer;
 
 bool CParticleManager::Add (CParticle* particleP, float brightness)
 {
-	bool bFlushed = false;
+	bool	bFlushed = false;
+	int	i, j;
 
-int nBuffer = Add (particleP, brightness, 0, bFlushed);
-if (nBuffer >= 0)
-	return bFlushed;
-nBuffer = Add (particleP, brightness, 1, bFlushed);
-if (nBuffer >= 0)
-	return bFlushed;
-nBuffer = (particleBuffer [0].m_iBuffer < particleBuffer [1].m_iBuffer);
-return particleBuffer [nBuffer].Add (particleP, brightness, particleP->Posf (), particleP->Rad ());
+for (i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+	if (Add (particleP, brightness, 0, bFlushed) >= 0)
+		return bFlushed;
+	}
+// flush and reuse the buffer with the most entries
+for (i = 1, j = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+	if (particleBuffer [i].m_iBuffer > particleBuffer [j].m_iBuffer)
+		j = i;
+return particleBuffer [j].Add (particleP, brightness, particleP->Posf (), particleP->Rad ());
 }
 
 //------------------------------------------------------------------------------

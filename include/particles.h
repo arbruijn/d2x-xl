@@ -62,6 +62,8 @@
 #define PART_BUF_SIZE	25000
 #define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
 
+#define MAX_PARTICLE_BUFFERS		3
+
 //------------------------------------------------------------------------------
 
 extern int nPartSeg [MAX_THREADS];
@@ -370,7 +372,7 @@ class CParticleManager {
 		int								m_iRenderBuffer;
 
 	public:
-		CParticleBuffer				particleBuffer [2];
+		CParticleBuffer				particleBuffer [MAX_PARTICLE_BUFFERS];
 
 	public:
 		CParticleManager () {}
@@ -491,9 +493,21 @@ class CParticleManager {
 			particleBuffer [1].SetType (nType); 
 			}
 
-		inline bool Overlap (CEffectArea& area) { return (particleBuffer [0] && area) || (particleBuffer [1] && area); }
+		inline bool Overlap (CEffectArea& area) { 
+			for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+				if (particleBuffer [i] && area) 
+					return true;
+				}
+			return false;
+			}
 
-		inline bool Overlap (CFloatVector& pos, float rad) { return particleBuffer [0].Overlap (pos, rad) || particleBuffer [1].Overlap (pos, rad); }
+		inline bool Overlap (CFloatVector& pos, float rad) { 
+			for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+				if (particleBuffer [i].Overlap (pos, rad)) 
+					return true;
+				}
+			return false;
+			}
 
 		bool Add (CParticle* particleP, float brightness);
 
