@@ -350,7 +350,7 @@ class CParticleBuffer : public CEffectArea {
 		bool Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad);
 		void Reset (void) { m_iBuffer = 0, m_nType = -1, m_bEmissive = false; }
 
-		CParticleBuffer : CEffectArea (), m_iBuffer (0), m_nType (-1), m_bEmissive (false) {}
+		CParticleBuffer () : CEffectArea (), m_iBuffer (0), m_nType (-1), m_bEmissive (false) {}
 
 	private:
 		int Init (void);
@@ -483,7 +483,16 @@ class CParticleManager {
 		inline void IncRenderBufPtr (int i = 1)
 			{ m_iRenderBuffer += i; }
 
+		inline int LastType (void) { return particleBuffer [particleBuffer [0].GetType () < 0].GetType (); }
+
+		inline void SetLastType (int nType) { 
+			particleBuffer [0].SetType (nType); 
+			particleBuffer [1].SetType (nType); 
+			}
+
 		bool Add (CParticle* particleP, float brightness);
+
+		bool Flush (float brightness, bool bForce = false);
 
 	private:
 		void RebuildSystemList (void);

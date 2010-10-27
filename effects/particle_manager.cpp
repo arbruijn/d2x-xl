@@ -95,7 +95,7 @@ bool CParticleBuffer::Add (CParticle* particleP, float brightness, CFloatVector&
 	bool bFlushed = false;
 
 if (particleP->RenderType () != m_nType) {
-	bFlushed = Flush (brightness);
+	bFlushed = Flush (brightness, true);
 	m_nType = particleP->RenderType ();
 	}
 
@@ -106,7 +106,7 @@ pb->fBrightness = brightness;
 pb->nFrame = particleP->m_iFrame;
 pb->nRotFrame = particleP->m_nRotFrame;
 if (m_iBuffer == PART_BUF_SIZE)
-	bFlushed = Flush ();
+	bFlushed = Flush (brightness, true);
 return bFlushed;
 }
 
@@ -459,37 +459,41 @@ particleBuffer [1].Setup (nThread);
 
 int CParticleManager::CloseBuffer (void)
 {
-FlushBuffer (-1);
+Flush (-1);
 ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0 + lightmapManager.HaveLightmaps ());
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-bool ParticleManager::Flush (float fBrightness, bool bForce)
+bool CParticleManager::Flush (float fBrightness, bool bForce)
 {
-particleBuffer [0].Flush (fBrightness, bForce);
-particleBuffer [1].Flush (fBrightness, bForce);
+	bool bFlushed = false;
+
+for (int i = 0; i < 2; i++)
+	if (particleBuffer [i].Flush (fBrightness, bForce))
+		bFlushed = true;
+return bFlushed;
 }
 
 //------------------------------------------------------------------------------
 
-short ParticleManager::Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed)
+short CParticleManager::Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed)
 {
-if (particleP->RenderType () != m_vertices [nBuffer].GetType)
+if (particleP->RenderType () != particleBuffer [nBuffer].GetType ())
 	return -1;
 CFloatVector pos;
-pos.Assign (particleP->m_pos);
+pos.Assign (particleP->m_vPos);
 float rad = particleP->Rad ();
-if (m_vertices [!nBuffer].Overlap (pos, rad))
-	bFlushed = m_vertices [!nBuffer].Flush ();
-m_vertices [!nBuffer].Add (particleP, brightness, pos, rad);
+if (particleBuffer [!nBuffer].Overlap (pos, rad))
+	bFlushed = particleBuffer [!nBuffer].Flush (brightness, true);
+particleBuffer [!nBuffer].Add (particleP, brightness, pos, rad);
 return nBuffer;
 }
 
 //------------------------------------------------------------------------------
 
-bool ParticleManager::Add (CParticle* particleP, float brightness)
+bool CParticleManager::Add (CParticle* particleP, float brightness)
 {
 	bool bFlushed = false;
 
@@ -499,9 +503,8 @@ if (nBuffer >= 0)
 nBuffer = Add (particleP, brightness, 1, bFlushed);
 if (nBuffer >= 0)
 	return bFlushed;
-nBuffer = (m_vertices [0].m_iBuffer < m_vertices [1].m_iBuffer);
-m_vertices [nBuffer].Add (particleP, brightness, particleP->Posf (), particleP->Rad (), bFlushed);
-return bFlushed;
+nBuffer = (particleBuffer [0].m_iBuffer < particleBuffer [1].m_iBuffer);
+return particleBuffer [nBuffer].Add (particleP, brightness, particleP->Posf (), particleP->Rad ());
 }
 
 //------------------------------------------------------------------------------
