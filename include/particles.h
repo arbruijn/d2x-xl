@@ -486,7 +486,12 @@ class CParticleManager {
 		inline void IncRenderBufPtr (int i = 1)
 			{ m_iRenderBuffer += i; }
 
-		inline int LastType (void) { return particleBuffer [particleBuffer [0].GetType () < 0].GetType (); }
+		inline int LastType (void) { 
+			for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+				if (particleBuffer [i].GetType () >= 0)
+					return particleBuffer [i].GetType (); 
+				}
+			}
 
 		inline void SetLastType (int nType) { 
 			particleBuffer [0].SetType (nType); 

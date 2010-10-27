@@ -264,8 +264,8 @@ int i = 0;
 int nCurrent = m_systems.FreeList ();
 for (CParticleSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 	systemP->Init (i++);
-particleBuffer [0].Reset ();
-particleBuffer [1].Reset ();
+for (i = 0; i < MAX_PARTICLE_BUFFERS; i++)
+	particleBuffer [i].Reset ();
 
 #if TRANSFORM_PARTICLE_VERTICES
 
@@ -451,8 +451,8 @@ else
 
 void CParticleManager::SetupParticles (int nThread)
 {
-particleBuffer [0].Setup (nThread);
-particleBuffer [1].Setup (nThread);
+for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++)
+	particleBuffer [i].Setup (nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -508,6 +508,7 @@ for (i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 for (i = 1, j = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 	if (particleBuffer [i].m_iBuffer > particleBuffer [j].m_iBuffer)
 		j = i;
+	}
 return particleBuffer [j].Add (particleP, brightness, particleP->Posf (), particleP->Rad ());
 }
 
