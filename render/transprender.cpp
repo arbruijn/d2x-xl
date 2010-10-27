@@ -893,14 +893,16 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 	int bGlow = 1;
 
-if (item->bAdditive == 1) 
-	glowRenderer.Begin (GLOW_SPRITES, 2, false, 0.9f);
-else if (item->bAdditive == 2)
-	glowRenderer.Begin (GLOW_SPRITES, 1, false, 1.0f);
-else {
-	bGlow = 0;
-	if (glowRenderer.End ())
-		ResetBitmaps ();
+if (glowRenderer.Available (GLOW_SPRITES)) {
+	if (item->bAdditive == 1) 
+		glowRenderer.Begin (GLOW_SPRITES, 2, false, 0.9f);
+	else if (item->bAdditive == 2)
+		glowRenderer.Begin (GLOW_SPRITES, 1, false, 1.0f);
+	else {
+		bGlow = 0;
+		if (glowRenderer.End ())
+			ResetBitmaps ();
+		}
 	}
 
 ogl.ResetClientStates (1);
@@ -1137,7 +1139,8 @@ if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (part
 
 void CTransparencyRenderer::FlushBuffers (int nType)
 {
-if ((nType != tiLightning) && (nType != tiSphere) && (nType != tiSprite) && (nType != tiThruster)) {
+if (glowRenderer.Available (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_THRUSTERS) && 
+	 (nType != tiLightning) && (nType != tiSphere) && (nType != tiSprite) && (nType != tiThruster)) {
 	if (glowRenderer.End ())
 		ResetBitmaps ();
 	}

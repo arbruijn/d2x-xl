@@ -71,6 +71,33 @@ extern CFixMatrix mRot [PARTICLE_POSITIONS];
 
 //------------------------------------------------------------------------------
 
+class CEffectArea {
+	public:
+		CFloatVector	m_pos;
+		float				m_rad;
+		float				m_size;
+
+	CEffectArea(float rad = 0.0f) : m_rad (rad), m_size (0.0f) { m_pos.SetZero (); }
+
+	inline CEffectArea& operator= (CEffectArea other) { 
+		m_pos = other.m_pos, m_rad = other.m_rad;
+		return *this;
+		}
+
+	inline CEffectArea& operator+= (CFloatVector pos) {
+		float h = CFloatVector::Dist (m_pos, pos) - m_size;
+		if (h > 0.0f)
+			m_size += h;
+		m_pos = CFloatVector::Avg (m_pos, pos);
+		}
+
+	inline bool const Overlap (CFloatVector pos, float rad) { return CFloatVector::Dist (m_pos, pos) < m_size + rad; }
+
+	inline bool const operator&& (CEffectArea other) { return CFloatVector::Dist (m_pos, other.m_pos) < m_size + other.m_size; }
+};
+
+//------------------------------------------------------------------------------
+
 typedef struct tPartPos {
 	float		x, y, z;
 } __pack__ tPartPos;
