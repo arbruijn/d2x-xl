@@ -88,6 +88,7 @@ class CEffectArea {
 		if (h > 0.0f)
 			m_rad += h;
 		m_pos = CFloatVector::Avg (m_pos, pos);
+		return *this;
 		}
 
 	inline CEffectArea& operator+= (CEffectArea other) { return Add (other.m_pos, other.m_rad); }
@@ -491,6 +492,8 @@ class CParticleManager {
 			}
 
 		inline bool Overlap (CEffectArea& area) { return (particleBuffer [0] && area) || (particleBuffer [1] && area); }
+
+		inline bool Overlap (CFloatVector& pos, float rad) { return particleBuffer [0].Overlap (pos, rad) || particleBuffer [1].Overlap (pos, rad); }
 
 		bool Add (CParticle* particleP, float brightness);
 

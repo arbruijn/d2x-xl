@@ -238,7 +238,7 @@ class CTransparencyRenderer {
 
 		void FlushSparkBuffer (void);
 		void FlushParticleBuffer (int nType);
-		void FlushBuffers (int nType);
+		void FlushBuffers (int nType, struct tTranspItem *itemP = NULL);
 		void RenderFace (tTranspPoly *item);
 		void RenderPoly (tTranspPoly *item);
 		void RenderObject (tTranspObject *item);

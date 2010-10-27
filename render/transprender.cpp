@@ -1127,7 +1127,7 @@ ResetBitmaps ();
 
 void CTransparencyRenderer::FlushParticleBuffer (int nType)
 {
-if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0)))) {
+if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))) {
 	ResetBitmaps ();
 	if (sparkBuffer.nSparks && particleManager.Overlap (sparkArea))
 		FlushSparkBuffer ();
@@ -1143,7 +1143,7 @@ if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (part
 
 //------------------------------------------------------------------------------
 
-void CTransparencyRenderer::FlushBuffers (int nType)
+void CTransparencyRenderer::FlushBuffers (int nType, struct tTranspItem *itemP)
 {
 if (glowRenderer.Available (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_THRUSTERS) && 
 	 (nType != tiLightning) && (nType != tiSphere) && (nType != tiSprite) && (nType != tiThruster)) {
@@ -1151,11 +1151,11 @@ if (glowRenderer.Available (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_
 		ResetBitmaps ();
 	}
 if (nType == tiSpark) {
-	if (particleManager.Overlap (sparkArea))
+	if (!itemP || sparkArea.Overlap (itemP->item.particle.particle->Posf (), itemP->item.particle.particle->Rad ()))
 		FlushParticleBuffer (nType);
 	}
 else if (nType == tiParticle) {
-	if (particleManager.Overlap (sparkArea))
+	if (!itemP || particleManager.Overlap (itemP->item.spark.position, X2F (itemP->item.spark.nSize)))
 		FlushSparkBuffer ();
 	}	
 else {
@@ -1184,12 +1184,12 @@ return parentP;
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::RenderItem (struct tTranspItem *pl)
+int CTransparencyRenderer::RenderItem (struct tTranspItem *itemP)
 {
-if (!pl->bRendered) {
-	//pl->bRendered = true;
+if (!itemP->bRendered) {
+	//itemP->bRendered = true;
 	m_data.nPrevType = m_data.nCurType;
-	m_data.nCurType = pl->nType;
+	m_data.nCurType = itemP->nType;
 #if DBG
 	if (gameOpts->render.debug.bTextures && gameOpts->render.debug.bWalls)
 #endif
@@ -1200,42 +1200,42 @@ if (!pl->bRendered) {
 		ogl.SetDepthMode (GL_LEQUAL);
 		ogl.SetDepthTest (true);
 		if (m_data.nCurType == tiFace) {
-			RenderFace (&pl->item.poly);
+			RenderFace (&itemP->item.poly);
 			}
 		if (m_data.nCurType == tiPoly) {
-			RenderPoly (&pl->item.poly);
+			RenderPoly (&itemP->item.poly);
 			}
 		else if (m_data.nCurType == tiObject) {
-			RenderObject (&pl->item.object);
+			RenderObject (&itemP->item.object);
 			}
 		else if (m_data.nCurType == tiSprite) {
-			RenderSprite (&pl->item.sprite);
+			RenderSprite (&itemP->item.sprite);
 			}
 		else if (m_data.nCurType == tiSpark) {
-			RenderSpark (&pl->item.spark);
+			RenderSpark (&itemP->item.spark);
 			}
 		else if (m_data.nCurType == tiSphere) {
-			RenderSphere (&pl->item.sphere);
+			RenderSphere (&itemP->item.sphere);
 			}
 		else if (m_data.nCurType == tiParticle) {
 			if (m_data.bHaveParticles)
-				RenderParticle (&pl->item.particle);
+				RenderParticle (&itemP->item.particle);
 			}
 		else if (m_data.nCurType == tiLightning) {
-			RenderLightning (&pl->item.lightning);
+			RenderLightning (&itemP->item.lightning);
 			}
 		else if (m_data.nCurType == tiLightTrail) {
-			RenderLightTrail (&pl->item.lightTrail);
+			RenderLightTrail (&itemP->item.lightTrail);
 			}
 		else if (m_data.nCurType == tiThruster) {
-			RenderThruster (&pl->item.thruster);
+			RenderThruster (&itemP->item.thruster);
 			}
 		}
 	catch(...) {
 		PrintLog ("invalid transparent render item (type: %d)\n", m_data.nCurType);
 		}
-	if (pl->parentP)
-		RenderItem (pl->parentP);
+	if (itemP->parentP)
+		RenderItem (itemP->parentP);
 	}
 return m_data.nCurType;
 }
