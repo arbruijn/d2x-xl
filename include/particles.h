@@ -490,6 +490,8 @@ class CParticleManager {
 			particleBuffer [1].SetType (nType); 
 			}
 
+		inline bool Overlap (CEffectArea& area) { return (particleBuffer [0] && area) || (particleBuffer [1] && area); }
+
 		bool Add (CParticle* particleP, float brightness);
 
 		bool Flush (float brightness, bool bForce = false);

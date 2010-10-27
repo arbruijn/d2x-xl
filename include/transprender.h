@@ -60,7 +60,7 @@ typedef struct tTranspSprite {
 } tTranspSprite;
 
 typedef struct tTranspSpark {
-	CFloatVector				position;
+	CFloatVector		position;
 	int					nSize;
 	char					nFrame;
 	char					nType;

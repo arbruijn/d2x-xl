@@ -945,6 +945,7 @@ typedef struct tSparkBuffer {
 } tSparkBuffer;
 
 tSparkBuffer sparkBuffer;
+CEffectArea sparkArea;
 
 //------------------------------------------------------------------------------
 
@@ -952,6 +953,8 @@ void CTransparencyRenderer::FlushSparkBuffer (void)
 {
 if (!sparkBuffer.nSparks)
 	return;
+
+sparkArea.Reset ();
 
 	int bSoftBlend = !gameStates.render.cameras.bActive && ((gameOpts->render.effects.bSoftParticles & 2) != 0);
 
@@ -980,11 +983,14 @@ void CTransparencyRenderer::RenderSpark (tTranspSpark *item)
 if (sparkBuffer.nSparks >= SPARK_BUF_SIZE)
 	FlushSparkBuffer ();
 
+
 	tSparkVertex	*infoP = sparkBuffer.info + 4 * sparkBuffer.nSparks;
 	CFloatVector	vPos;
 	float				nSize = X2F (item->nSize);
 	float				nCol = (float) (item->nFrame / 8);
 	float				nRow = (float) (item->nFrame % 8);
+
+sparkArea.Add (item->position, nSize);
 
 transformation.Transform (vPos, item->position, 0);
 if (!item->nType)
@@ -1123,9 +1129,9 @@ void CTransparencyRenderer::FlushParticleBuffer (int nType)
 {
 if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0)))) {
 	ResetBitmaps ();
-	if (sparkBuffer.nSparks)
+	if (sparkBuffer.nSparks && particleManager.Overlap (sparkArea))
 		FlushSparkBuffer ();
-	if (particleManager.FlushBuffer (-1.0f, true)) {
+	if (particleManager.Flush (-1.0f, true)) {
 		if (nType < 0)
 			particleManager.CloseBuffer ();
 		particleManager.SetLastType (-1);
@@ -1144,9 +1150,18 @@ if (glowRenderer.Available (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_
 	if (glowRenderer.End ())
 		ResetBitmaps ();
 	}
-if ((nType != tiSpark) && (nType != tiParticle))
+if (nType == tiSpark) {
+	if (particleManager.Overlap (sparkArea))
+		FlushParticleBuffer (nType);
+	}
+else if (nType == tiParticle) {
+	if (particleManager.Overlap (sparkArea))
+		FlushSparkBuffer ();
+	}	
+else {
 	FlushSparkBuffer ();
-FlushParticleBuffer (nType);
+	FlushParticleBuffer (nType);
+	}
 }
 
 //------------------------------------------------------------------------------
