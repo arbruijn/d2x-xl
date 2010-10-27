@@ -86,9 +86,16 @@ class CEffectArea {
 		}
 
 	inline CEffectArea& Add (CFloatVector& pos, float rad) {
-		float h = CFloatVector::Dist (m_pos, pos) - rad;
-		if (h > 0.0f)
+		CFloatVector v = pos - m_pos;
+		float d = v.Mag ();
+		float h = rad + d - m_rad;
+		if (h > 0.0f) {
+			h /= 2.0f;
+			v /= d;
+			v *= h;
+			m_pos += v;
 			m_rad += h;
+			}
 		m_pos = CFloatVector::Avg (m_pos, pos);
 		return *this;
 		}
