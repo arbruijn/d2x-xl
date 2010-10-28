@@ -634,6 +634,10 @@ int CTransparencyRenderer::AddThruster (CObject* objP, tThrusterInfo* infoP, int
 item.objP = objP;
 item.info = *infoP;
 item.nThruster = nThruster;
+#if DBG
+if (Add (tiThruster, &item, sizeof (item), infoP->vPos [nThruster], 0, false, 0))
+	return 1;
+#endif
 return Add (tiThruster, &item, sizeof (item), infoP->vPos [nThruster], 0, false, 0);
 }
 

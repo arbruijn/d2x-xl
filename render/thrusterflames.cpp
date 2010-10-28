@@ -368,13 +368,13 @@ if (nStages & 2) {
 			}
 		thruster.Texture ()->Wrap (GL_CLAMP);
 		}
+	m_bSpectate = SPECTATOR (objP);
 	}
 
 if (nStages & 1) {
 	float fSpeed = X2F (objP->mType.physInfo.velocity.Mag ());
 	if (m_pt)
 		m_pt->fSpeed = fSpeed;
-	m_bSpectate = SPECTATOR (objP);
 
 	m_ti.pp = NULL;
 	m_ti.fScale = fSpeed / float (objP->MaxSpeed ()) + 0.5f;

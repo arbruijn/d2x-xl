@@ -32,7 +32,7 @@ static int bErrMsg = 0;
 
 using namespace ASE;
 
-#define MODEL_DATA_VERSION 1006	//must start with something bigger than the biggest model number
+#define MODEL_DATA_VERSION 1007	//must start with something bigger than the biggest model number
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -492,6 +492,8 @@ while ((pszToken = ReadLine (cf))) {
 			else
 				m_bThruster |= LATERAL_THRUSTER;
 			}
+		else if (strstr (m_szName, "$THRUSTER") != NULL) 
+			m_bThruster = REAR_THRUSTER;
 		else if (strstr (m_szName, "$WINGTIP") != NULL) {
 			m_bWeapon = 1;
 			m_nGun = 0;

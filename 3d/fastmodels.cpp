@@ -259,7 +259,7 @@ mtP->vPos [nCount].Assign (v);
 if (vOffsetP)
 	v -= vo;
 mtP->vDir [nCount] = *vNormal;
-mtP->vDir [nCount] = -mtP->vDir [nCount];
+mtP->vDir [nCount].Neg ();
 mtP->nType [nCount] = nType;
 //if (!nCount) 
 	{
