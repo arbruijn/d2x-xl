@@ -97,6 +97,7 @@ bool CParticleBuffer::Add (CParticle* particleP, float brightness, CFloatVector&
 if (particleP->RenderType () != m_nType) {
 	bFlushed = Flush (brightness, true);
 	m_nType = particleP->RenderType ();
+	m_bEmissive = particleP->m_bEmissive != 0;
 	}
 
 	tRenderParticle* pb = m_particles + m_iBuffer++;

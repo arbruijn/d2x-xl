@@ -245,7 +245,7 @@ if (!gameOpts->render.effects.nShrapnels)
 	return 0;
 if (objP->info.nFlags & OF_ARMAGEDDON)
 	return 0;
-if ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_ROBOT))
+if ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_DEBRIS))
 	return 0;
 short nObject = CreateFireball (0, objP->info.nSegment, objP->info.position.vPos, 1, RT_SHRAPNELS);
 if (0 > nObject)
