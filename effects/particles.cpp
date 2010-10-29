@@ -730,9 +730,13 @@ return 1;
 
 inline int CParticle::RenderType (void)
 {
+#if 0
+return m_nType;
+#else
 if ((m_nType != FIRE_PARTICLES) || /*(gameOpts->render.particles.nQuality < 2) ||*/ (m_iFrame < m_nFrames))
 	return (m_nType == SNOW_PARTICLES) ? SIMPLE_SMOKE_PARTICLES : m_nType;
 return PARTICLE_TYPES + m_nType;
+#endif
 }
 
 //------------------------------------------------------------------------------

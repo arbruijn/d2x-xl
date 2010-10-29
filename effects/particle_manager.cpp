@@ -106,6 +106,7 @@ pb->particle = particleP;
 pb->fBrightness = brightness;
 pb->nFrame = particleP->m_iFrame;
 pb->nRotFrame = particleP->m_nRotFrame;
+CEffectArea::Add (pos, rad);
 if (m_iBuffer == PART_BUF_SIZE)
 	bFlushed = Flush (brightness, true);
 return bFlushed;
@@ -481,13 +482,13 @@ return bFlushed;
 
 short CParticleManager::Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed)
 {
-if (particleP->RenderType () != particleBuffer [nBuffer].GetType ())
+if ((particleP->RenderType () != particleBuffer [nBuffer].GetType ()) || (particleP->m_bEmissive != particleBuffer [nBuffer].m_bEmissive))
 	return -1;
 CFloatVector pos;
 pos.Assign (particleP->m_vPos);
 float rad = particleP->Rad ();
 for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
-	if ((i != nBuffer) && particleBuffer [i].Overlap (pos, rad) && particleBuffer [!nBuffer].Flush (brightness, true))
+	if ((i != nBuffer) && particleBuffer [i].Overlap (pos, rad) && particleBuffer [i].Flush (brightness, true))
 		bFlushed = true;
 	}
 particleBuffer [nBuffer].Add (particleP, brightness, pos, rad);
