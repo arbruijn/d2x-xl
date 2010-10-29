@@ -338,6 +338,7 @@ class CParticleBuffer : public CEffectArea {
 		int m_iBuffer;
 		int m_nType;
 		char m_bEmissive;
+		float m_dMax; // max. distance from viewer
 
 		inline int GetType (void) { return m_nType; }
 		inline void SetType (int nType) { m_nType = nType; }
@@ -347,7 +348,7 @@ class CParticleBuffer : public CEffectArea {
 		bool Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad);
 		void Reset (void) { m_iBuffer = 0, m_nType = -1, m_bEmissive = false; }
 
-		CParticleBuffer () : CEffectArea (), m_iBuffer (0), m_nType (-1), m_bEmissive (false) {}
+		CParticleBuffer () : CEffectArea (), m_iBuffer (0), m_nType (-1), m_bEmissive (false), m_dMax (0.0f) {}
 
 	private:
 		int Init (void);

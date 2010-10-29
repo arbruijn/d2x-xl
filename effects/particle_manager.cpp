@@ -107,6 +107,9 @@ pb->fBrightness = brightness;
 pb->nFrame = particleP->m_iFrame;
 pb->nRotFrame = particleP->m_nRotFrame;
 CEffectArea::Add (pos, rad);
+float d = CFloatVector::Dist (pos, transformation.m_info.posf [0]);
+if (m_dMax < d)
+	m_dMax = d;
 if (m_iBuffer == PART_BUF_SIZE)
 	bFlushed = Flush (brightness, true);
 return bFlushed;
@@ -196,6 +199,7 @@ PROF_END(ptParticles)
 #endif
 m_iBuffer = 0;
 m_nType = -1;
+m_dMax = 0.0f;
 Reset ();
 if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
 	shaderManager.Deploy (-1);
@@ -472,9 +476,19 @@ bool CParticleManager::Flush (float fBrightness, bool bForce)
 {
 	bool bFlushed = false;
 
-for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++)
-	if (particleBuffer [i].Flush (fBrightness, bForce))
+for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+	float d = 0;
+	int h = 0;
+	// flush most distant particles first
+	for (int j = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+		if (d < particleBuffer [i].m_dMax) {
+			d = particleBuffer [i].m_dMax;
+			h = j;
+			}
+		}
+	if (particleBuffer [h].Flush (fBrightness, bForce))
 		bFlushed = true;
+	}
 return bFlushed;
 }
 
@@ -488,7 +502,15 @@ CFloatVector pos;
 pos.Assign (particleP->m_vPos);
 float rad = particleP->Rad ();
 for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
-	if ((i != nBuffer) && particleBuffer [i].Overlap (pos, rad) && particleBuffer [i].Flush (brightness, true))
+	if (i == nBuffer) 
+		continue;
+	if (!particleBuffer [i].Overlap (pos, rad))
+		continue;
+#if 0
+	if ((particleBuffer [nBuffer].m_dMax > particleBuffer [i].m_dMax) && particleBuffer [nBuffer].Flush (brightness, true))
+		bFlushed = true;
+#endif
+	if (particleBuffer [i].Flush (brightness, true))
 		bFlushed = true;
 	}
 particleBuffer [nBuffer].Add (particleP, brightness, pos, rad);
