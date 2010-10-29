@@ -59,6 +59,16 @@ static tRgbaColorf smokeColors [] = {
 
 #define REACTOR_MAX_PARTS			500
 
+#define PLAYER_SMOKE					0
+#define ROBOT_SMOKE					0
+#define MISSILE_SMOKE				0
+#define REACTOR_SMOKE				0
+#define GATLING_SMOKE				0
+#define DEBRIS_SMOKE					0
+#define BOMB_SMOKE					0
+#define STATIC_SMOKE					0
+#define PARTICLE_TRAIL				0
+
 //------------------------------------------------------------------------------
 
 #if DBG
@@ -254,6 +264,7 @@ if (gameOpts->render.ship.bBullets) {
 
 void DoGatlingSmoke (CObject *objP)
 {
+#if GATLING_SMOKE
 	int	nModel = objP->ModelId ();
 	int	bHires = G3HaveModel (nModel) - 1;
 
@@ -303,13 +314,14 @@ if (bHires >= 0) {
 			}
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void DoPlayerSmoke (CObject *objP, int nPlayer)
 {
-#if 1
+#if PLAYER_SMOKE
 	int					nObject, nSmoke, d, nParts, nType;
 	float					nScale;
 	CParticleEmitter	*emitterP;
@@ -436,6 +448,7 @@ KillGatlingSmoke (objP);
 
 void DoRobotSmoke (CObject *objP)
 {
+#if ROBOT_SMOKE
 	int			h = -1, nObject, nSmoke, nShield = 0, nParts;
 	float			nScale;
 	CFixVector	pos, vDir;
@@ -495,12 +508,14 @@ if (nParts > 0) {
 	}
 else
 	KillObjectSmoke (nObject);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void DoReactorSmoke (CObject *objP)
 {
+#if REACTOR_SMOKE
 	int			h = -1, nObject, nSmoke, nShield = 0, nParts;
 	CFixVector	vDir, vPos;
 
@@ -542,12 +557,14 @@ if (nParts > 0) {
 	}
 else
 	KillObjectSmoke (nObject);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void DoMissileSmoke (CObject *objP)
 {
+#if MISSILE_SMOKE
 	int				nParts, nSpeed, nLife, nObject, nSmoke;
 	float				nScale = 1.5f + float (gameOpts->render.particles.nQuality) / 2.0f;
 
@@ -597,12 +614,14 @@ if (nParts) {
 	}
 else
 	KillObjectSmoke (nObject);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void DoDebrisSmoke (CObject *objP)
 {
+#if DEBRIS_SMOKE
 	int			nParts, nObject, nSmoke;
 	float			nScale = 2;
 	CFixVector	pos;
@@ -635,12 +654,14 @@ if (nParts) {
 	}
 else
 	KillObjectSmoke (nObject);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void DoStaticParticles (CObject *objP)
 {
+#if STATIC_SMOKE
 	int			i, j, nObject, nSmoke, 
 					nType, nFadeType;
 	CFixVector	pos, offs, dir;
@@ -716,12 +737,14 @@ if (objP->rType.particleInfo.nSide <= 0) {	//don't vary emitter position for smo
 	pos = objP->info.position.vPos + offs;
 	particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void DoBombSmoke (CObject *objP)
 {
+#if BOMB_SMOKE
 	int			nParts, nObject, nSmoke;
 	CFixVector	pos, offs;
 
@@ -748,12 +771,14 @@ if (nParts) {
 	}
 else
 	KillObjectSmoke (nObject);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void DoParticleTrail (CObject *objP)
 {
+#if PARTICLE_TRAIL
 	int			nParts, nObject, nSmoke, id = objP->info.nId, 
 					bGatling = (id == VULCAN_ID) || (id == GAUSS_ID),
 					bOmega = (id == OMEGA_ID);
@@ -821,6 +846,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	}
 pos = objP->RenderPos () + objP->info.position.mOrient.FVec () * (-objP->info.xSize / 2);
 particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
+#endif
 }
 
 //------------------------------------------------------------------------------
