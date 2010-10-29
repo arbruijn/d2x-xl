@@ -123,6 +123,7 @@ typedef struct tParticle {
 #endif
 	CFixMatrix	m_mOrient;
 	CFixVector	m_vPos;				//position
+	CFloatVector m_vPosf;
 	CFixVector	m_vStartPos;		//initial position
 	CFixVector	m_vTransPos;		//transformed position
 	CFixVector	m_vDir;				//movement direction
@@ -176,13 +177,16 @@ class CParticle : public tParticle {
 			transformation.Transform (m_vTransPos, m_vPos, bUnscaled);
 			return m_vTransPos [Z];
 			}
+#ifdef _WINDOWS
 		inline float Rad (void) { return (float) _hypot (m_nWidth, m_nHeight); }
-		inline CFloatVector Posf (void) {
-			CFloatVector pos;
-			pos.Assign (m_vPos);
-			return pos;
+#else
+		inline float Rad (void) { return (float) hypot (m_nWidth, m_nHeight); }
+#endif
+		inline CFloatVector& Posf (void) {
+			m_vPosf.Assign (m_vPos);
+			return m_vPosf;
 			}
-		inline int RenderType (void);
+		int RenderType (void);
 
 	private:
 		inline int ChangeDir (int d);

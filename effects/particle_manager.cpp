@@ -537,14 +537,13 @@ for (i = 1, j = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 	if (particleBuffer [i].m_iBuffer > particleBuffer [j].m_iBuffer)
 		j = i;
 	}
-return particleBuffer [j].Add (particleP, brightness, particleP->Posf (), particleP->Rad ());
+return particleBuffer [j].Add (&(*particleP), brightness, particleP->Posf (), particleP->Rad ());
 }
 
 //------------------------------------------------------------------------------
 
 int CParticleManager::BeginRender (int nType, float nScale)
 {
-	int				bLightmaps = lightmapManager.HaveLightmaps ();
 	static time_t	t0 = 0;
 
 particleManager.SetLastType (-1);
