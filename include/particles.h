@@ -337,7 +337,7 @@ class CParticleBuffer : public CEffectArea {
 		tParticleVertex m_vertices [VERT_BUF_SIZE];
 		int m_iBuffer;
 		int m_nType;
-		bool m_bEmissive;
+		char m_bEmissive;
 
 		inline int GetType (void) { return m_nType; }
 		inline void SetType (int nType) { m_nType = nType; }
