@@ -177,7 +177,7 @@ class CParticle : public tParticle {
 			transformation.Transform (m_vTransPos, m_vPos, bUnscaled);
 			return m_vTransPos [Z];
 			}
-#ifdef _WINDOWS
+#ifdef _WIN32
 		inline float Rad (void) { return (float) _hypot (m_nWidth, m_nHeight); }
 #else
 		inline float Rad (void) { return (float) hypot (m_nWidth, m_nHeight); }
@@ -350,7 +350,7 @@ class CParticleBuffer : public CEffectArea {
 		void Setup (int nThread);
 		bool Flush (float brightness, bool bForce = false);
 		bool Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad);
-		void Reset (void) { m_iBuffer = 0, m_nType = -1, m_bEmissive = false; }
+		void Reset (void);
 
 		CParticleBuffer () : CEffectArea (), m_iBuffer (0), m_nType (-1), m_bEmissive (false), m_dMax (0.0f) {}
 

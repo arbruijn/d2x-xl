@@ -78,6 +78,17 @@ PROF_END(ptParticles)
 
 //------------------------------------------------------------------------------
 
+void CParticleBuffer::Reset (void)
+{
+m_iBuffer = 0;
+m_nType = -1;
+m_bEmissive = false;
+m_dMax = 0.0f;
+CEffectArea::Reset ();
+}
+
+//------------------------------------------------------------------------------
+
 void CParticleBuffer::Setup (int nThread)
 {
 int nStep = m_iBuffer / gameStates.app.nThreads;
@@ -134,11 +145,11 @@ bool CParticleBuffer::Flush (float fBrightness, bool bForce)
 if (!m_iBuffer)
 	return false;
 if (!gameOpts->render.particles.nQuality) {
-	m_iBuffer = 0;
+	Reset ();
 	return false;
 	}
 if ((m_nType < 0) && !bForce) {
-	m_iBuffer = 0;
+	Reset ();
 	return false;
 	}
 
@@ -148,12 +159,14 @@ if (Init ()) {
 	CBitmap* bmP = ParticleImageInfo (m_nType % PARTICLE_TYPES).bmP;
 	if (!bmP) {
 		PROF_END(ptParticles)
+		Reset ();
 		return false;
 		}
 	if (bmP->CurFrame ())
 		bmP = bmP->CurFrame ();
 	if (bmP->Bind (0)) {
 		PROF_END(ptParticles)
+		Reset ();
 		return false;
 		}
 
@@ -197,13 +210,9 @@ if (Init ()) {
 	}
 PROF_END(ptParticles)
 #endif
-m_iBuffer = 0;
-m_nType = -1;
-m_dMax = 0.0f;
 Reset ();
 if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
 	shaderManager.Deploy (-1);
-m_nType = -1;
 return true;
 }
 
