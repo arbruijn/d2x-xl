@@ -148,7 +148,7 @@ if (!gameOpts->render.particles.nQuality) {
 	Reset ();
 	return false;
 	}
-if ((m_nType < 0) && !bForce) {
+if ((m_nType < 0) /*&& !bForce*/) {
 	Reset ();
 	return false;
 	}
@@ -489,9 +489,9 @@ for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 	float d = 0;
 	int h = 0;
 	// flush most distant particles first
-	for (int j = 0; i < MAX_PARTICLE_BUFFERS; i++) {
-		if (d < particleBuffer [i].m_dMax) {
-			d = particleBuffer [i].m_dMax;
+	for (int j = 0; j < MAX_PARTICLE_BUFFERS; j++) {
+		if (d < particleBuffer [j].m_dMax) {
+			d = particleBuffer [j].m_dMax;
 			h = j;
 			}
 		}
