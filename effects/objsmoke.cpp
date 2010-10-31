@@ -59,15 +59,15 @@ static tRgbaColorf smokeColors [] = {
 
 #define REACTOR_MAX_PARTS			500
 
-#define PLAYER_SMOKE					0
-#define ROBOT_SMOKE					0
-#define MISSILE_SMOKE				0
-#define REACTOR_SMOKE				0
-#define GATLING_SMOKE				0
-#define DEBRIS_SMOKE					0
-#define BOMB_SMOKE					0
+#define PLAYER_SMOKE					1
+#define ROBOT_SMOKE					1
+#define MISSILE_SMOKE				1
+#define REACTOR_SMOKE				1
+#define GATLING_SMOKE				1
+#define DEBRIS_SMOKE					1
+#define BOMB_SMOKE					1
 #define STATIC_SMOKE					1
-#define PARTICLE_TRAIL				0
+#define PARTICLE_TRAIL				1
 
 //------------------------------------------------------------------------------
 
