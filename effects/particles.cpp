@@ -555,6 +555,7 @@ return 1;
 int CParticle::UpdateDrift (int nCurTime, int nThread) 
 {
 fix t = nCurTime - m_nUpdated;
+m_nUpdated = nCurTime;
 m_vPos += m_vDrift * t; // (I2X (t) / 1000);
 
 #if 0 //DBG
@@ -580,9 +581,9 @@ if (m_bHaveDir) {
 	m_vPos += m_vDir * drag;
 	}
 
-if (nCurTime - m_nUpdated < 250) 
+if (nCurTime - m_nMoved < 250) 
 	return 1;
-m_nUpdated = nCurTime;
+m_nMoved = nCurTime;
 
 int nSegment = m_nSegment;
 
@@ -675,7 +676,6 @@ if ((m_nLife <= 0) /*|| (m_color [0].alpha < 0.01f)*/)
 	return 0;
 
 fix t = nCurTime - m_nUpdated;
-m_nUpdated = nCurTime;
 
 #if !ENABLE_UPDATE 
 m_nLife -= t;
@@ -684,6 +684,7 @@ m_decay = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 
 UpdateColor (fBrightness, nThread);
 
 if (m_nDelay > 0) {
+	m_nUpdated = nCurTime;
 	m_nDelay -= t;
 	return 1;
 	}
