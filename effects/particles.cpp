@@ -552,8 +552,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CParticle::UpdateDrift (int t, int nThread) 
+int CParticle::UpdateDrift (int nCurTime, int nThread) 
 {
+fix t = nCurTime - m_nUpdated;
 m_vPos += m_vDrift * t; // (I2X (t) / 1000);
 
 #if 0 //DBG
@@ -578,6 +579,10 @@ if (m_bHaveDir) {
 		drag = -drag;
 	m_vPos += m_vDir * drag;
 	}
+
+if (nCurTime - m_nUpdated < 250) 
+	return 1;
+m_nUpdated = nCurTime;
 
 int nSegment = m_nSegment;
 
@@ -683,11 +688,8 @@ if (m_nDelay > 0) {
 	return 1;
 	}
 
-if ((nCurTime - m_nUpdated >= 100) {
-	m_nUpdated = nCurTime;
-	if (!UpdateDrift (t, nThread))
-		return 0;
-	}
+if (!UpdateDrift (nCurTime, nThread))
+	return 0;
 
 if (m_nTTL < 0)
 	return 1;
