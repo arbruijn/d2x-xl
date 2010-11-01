@@ -555,7 +555,7 @@ return gameData.reactor.nReactors;
 
 int ReadReactorTriggers (CFile& cf)
 {
-	int i, j;
+	int i;
 
 for (i = 0; i < gameFileInfo.control.count; i++) {
 	gameData.reactor.triggers.m_nLinks = cf.ReadShort ();
