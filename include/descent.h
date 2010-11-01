@@ -2904,7 +2904,7 @@ typedef struct tReactorStates {
 class CReactorData {
 	public:
 		CStaticArray< tReactorProps, MAX_REACTORS >	props; // [MAX_REACTORS];
-		tReactorTriggers	triggers;
+		CTriggerTargets	triggers;
 		CStaticArray< tReactorStates, MAX_BOSS_COUNT >	states; // [MAX_BOSS_COUNT];
 		tCountdownData		countdown;
 		int					nReactors;

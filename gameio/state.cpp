@@ -765,15 +765,10 @@ m_cf.WriteVector(fuelcenP->vCenter);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::SaveReactorTrigger (tReactorTriggers *triggerP)
+void CSaveGameManager::SaveReactorTrigger (CTriggerTargets *triggerP)
 {
-	int	i;
-
-m_cf.WriteShort (triggerP->nLinks);
-for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
-	m_cf.WriteShort (triggerP->segments [i]);
-	m_cf.WriteShort (triggerP->sides [i]);
-	}
+m_cf.WriteShort (triggerP->m_nLinks);
+triggerP->SaveState (m_cf);
 }
 
 //------------------------------------------------------------------------------
@@ -1622,15 +1617,10 @@ m_cf.ReadVector (fuelcenP->vCenter);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::LoadReactorTrigger (tReactorTriggers *triggerP)
+void CSaveGameManager::LoadReactorTrigger (CTriggerTargets *triggerP)
 {
-	int	i;
-
-triggerP->nLinks = m_cf.ReadShort ();
-for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
-	triggerP->segments [i] = m_cf.ReadShort ();
-	triggerP->sides [i] = m_cf.ReadShort ();
-	}
+triggerP->m_nLinks = m_cf.ReadShort ();
+triggerP->LoadState (m_cf);
 }
 
 //------------------------------------------------------------------------------
@@ -2184,7 +2174,7 @@ if (!m_bBetweenLevels) {
 		m_cf.Read (&gameData.matCens.botGens [i].xHitPoints, 
 						sizeof (tMatCenInfo) - (reinterpret_cast<char*> (&gameData.matCens.botGens [i].xHitPoints) - reinterpret_cast<char*> (&gameData.matCens.botGens [i])), 1);
 		}
-	m_cf.Read (&gameData.reactor.triggers, sizeof (tReactorTriggers), 1);
+	m_cf.Read (&gameData.reactor.triggers, sizeof (CTriggerTargets), 1);
 	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters))
 		return 0;
 	gameData.matCens.fuelCenters.Read (m_cf, gameData.matCens.nFuelCenters);

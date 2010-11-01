@@ -670,13 +670,13 @@ if (gameData.trigs.m_nTriggers) {
 			continue;
 		triggerP = TRIGGERS + t;
 		if (triggerP->m_info.nType == TT_CAMERA) {
-			for (j = 0; j < triggerP->m_info.nLinks; j++)
-				if (m_cameras [m_nCameras].Create (m_nCameras, (short) wallP->nSegment, (short) wallP->nSide, triggerP->m_info.segments [j], triggerP->m_info.sides [j], NULL, 0, 0))
-					SetFaceCamera (triggerP->m_info.segments [j] * 6 + triggerP->m_info.sides [j], (char) m_nCameras++);
+			for (j = 0; j < triggerP->m_nLinks; j++)
+				if (m_cameras [m_nCameras].Create (m_nCameras, (short) wallP->nSegment, (short) wallP->nSide, triggerP->m_segments [j], triggerP->m_sides [j], NULL, 0, 0))
+					SetFaceCamera (triggerP->m_segments [j] * 6 + triggerP->m_sides [j], (char) m_nCameras++);
 			}
 #if TELEPORT_CAMERAS
 		else if (/*EGI_FLAG (bTeleporterCams, 0, 0) &&*/ (triggerP->m_info.nType == TT_TELEPORT)) {
-			if (m_cameras [m_nCameras].Create (m_nCameras, triggerP->m_info.segments [0], triggerP->m_info.sides [0], (short) wallP->nSegment, (short) wallP->nSide, NULL, 0, 1))
+			if (m_cameras [m_nCameras].Create (m_nCameras, triggerP->m_segments [0], triggerP->m_sides [0], (short) wallP->nSegment, (short) wallP->nSide, NULL, 0, 1))
 				SetFaceCamera (wallP->nSegment * 6 + wallP->nSide, (char) m_nCameras++);
 			}
 #endif
@@ -695,9 +695,9 @@ if (gameData.trigs.m_nObjTriggers) {
 #endif
 		for (; j && (m_nCameras < MAX_CAMERAS); j--, triggerP++) {
 			if (triggerP->m_info.nType == TT_CAMERA) {
-				for (k = 0; k < triggerP->m_info.nLinks; k++)
-					if (m_cameras [m_nCameras].Create (m_nCameras, -1, -1, triggerP->m_info.segments [k], triggerP->m_info.sides [k], objP, 0, 0))
-						SetFaceCamera (triggerP->m_info.segments [k] * 6 + triggerP->m_info.sides [k], (char) m_nCameras++);
+				for (k = 0; k < triggerP->m_nLinks; k++)
+					if (m_cameras [m_nCameras].Create (m_nCameras, -1, -1, triggerP->m_segments [k], triggerP->m_sides [k], objP, 0, 0))
+						SetFaceCamera (triggerP->m_segments [k] * 6 + triggerP->m_sides [k], (char) m_nCameras++);
 				}
 			}
 		}

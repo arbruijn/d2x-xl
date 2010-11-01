@@ -121,13 +121,10 @@ typedef struct tTriggerV30 {
 class __pack__ CTriggerInfo {
 	public:
 		ubyte		nType;   //what this CTrigger does
-		sbyte		nLinks;  //how many doors, etc. linked to this
 		short		flags;   
 		short		flagsD1;
 		fix		value;
 		fix		time [2];
-		short		segments [MAX_TRIGGER_TARGETS];
-		short		sides [MAX_TRIGGER_TARGETS];
 
 		short		nSegment;
 		int		nChannel;
@@ -137,7 +134,21 @@ class __pack__ CTriggerInfo {
 		fix		tOperated;
 	};
 
-class CTrigger {
+class CTriggerTargets {
+	public:
+		short		m_nLinks;
+		short		m_segments [MAX_TRIGGER_TARGETS];
+		short		m_sides [MAX_TRIGGER_TARGETS];
+
+		void Read (CFile& cf);
+		void SaveState (CFile& cf);
+		void LoadState (CFile& cf);
+
+	private:	
+		void Check (void);
+	};
+
+class CTrigger : public CTriggerTargets {
 	public:
 		CTriggerInfo	m_info;
 

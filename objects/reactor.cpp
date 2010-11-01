@@ -219,8 +219,8 @@ if (bFinalCountdown ||
 	if (bFinalCountdown) {
 		//if (extraGameInfo [0].nBossCount)
 			KillAllBossRobots (0);
-		for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
-			SEGMENTS [gameData.reactor.triggers.segments [i]].ToggleWall (gameData.reactor.triggers.sides [i]);
+		for (i = 0; i < gameData.reactor.triggers.m_nLinks; i++)
+			SEGMENTS [gameData.reactor.triggers.m_segments [i]].ToggleWall (gameData.reactor.triggers.m_sides [i]);
 		if (missionManager.nCurrentLevel < 0)
 			CFile::Delete ("secret.sgc", gameFolders.szSaveDir);
 		}
@@ -558,11 +558,8 @@ int ReadReactorTriggers (CFile& cf)
 	int i, j;
 
 for (i = 0; i < gameFileInfo.control.count; i++) {
-	gameData.reactor.triggers.nLinks = cf.ReadShort ();
-	for (j = 0; j < MAX_CONTROLCEN_LINKS; j++)
-		gameData.reactor.triggers.segments [j] = cf.ReadShort ();
-	for (j = 0; j < MAX_CONTROLCEN_LINKS; j++)
-		gameData.reactor.triggers.sides [j] = cf.ReadShort ();
+	gameData.reactor.triggers.m_nLinks = cf.ReadShort ();
+	gameData.reactor.triggers.Read (cf);
 	}
 return gameFileInfo.control.count;
 }

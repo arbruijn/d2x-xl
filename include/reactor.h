@@ -23,14 +23,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define CONTROLCEN_WEAPON_NUM   6
 
-#define MAX_CONTROLCEN_LINKS    10
-
-typedef struct tReactorTriggers {
-	short   nLinks;
-	short   segments [MAX_CONTROLCEN_LINKS];
-	short   sides [MAX_CONTROLCEN_LINKS];
-} __pack__ tReactorTriggers;
-
 typedef struct tReactorProps {
 	int nModel;
 	int nGuns;
