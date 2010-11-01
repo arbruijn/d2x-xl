@@ -148,8 +148,11 @@ return (segP->Masks (vPos, 0).m_center == 0);
 
 // -------------------------------------------------------------------------------
 
-static int FindSegByPosExhaustive (const CFixVector& vPos, int bSkyBox)
+int FindSegByPosExhaustive (const CFixVector& vPos, int bSkyBox, int nStartSeg)
 {
+if ((nStartSeg >= 0) && (PointInSeg (SEGMENTS + nStartSeg, vPos)))
+	return nStartSeg;
+
 	int			i;
 	short*		segListP;
 	CSegment*	segP;
@@ -188,6 +191,8 @@ int FindSegByPos (const CFixVector& vPos, int nStartSeg, int bExhaustive, int bS
 	int nSegment = -1;
 
 if (nStartSeg >= 0) {
+	if (PointInSeg (SEGMENTS + nStartSeg, vPos))
+		return nStartSeg;
 	if (SEGMENTS [nStartSeg].m_function == SEGMENT_FUNC_SKYBOX) {
 		if (0 <= (nSegment = TraceSegs (vPos, nStartSeg, 1, bVisited [nThread], bFlags [nThread], xTolerance))) 
 			return nSegment;

@@ -132,9 +132,14 @@ m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES) ? 1
 m_nClass = nClass;
 m_nFadeType = nFadeType;
 m_nSegment = nSegment;
+m_bSkybox = SEGMENTS [nSegment].Function () == SEGMENT_FUNC_SKYBOX;
+#if DBG
+if (nSegment < 0)
+	nSegment = nSegment;
+#endif
 m_nBounce = ((m_nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1 : 2;
 m_bReversed = 0;
-m_nMoved = nCurTime;
+m_nUpdated = m_nMoved = nCurTime;
 if (nLife < 0)
 	nLife = -nLife;
 m_nLife = nLife;
@@ -378,7 +383,11 @@ for (int i = 6; i; i--, childP++) {
 	if ((*childP >= 0) && (gameData.render.mine.bVisible [*childP] == gameData.render.mine.nVisible))
 		return true;
 	}
+#if 1
+int nSegment = FindSegByPosExhaustive (m_vPos, m_bSkybox, m_nSegment);
+#else
 int nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 0, nThread);
+#endif
 if (nSegment < 0)
 	return false;
 m_nSegment = nSegment;
@@ -547,7 +556,7 @@ int CParticle::UpdateDrift (int t, int nThread)
 {
 m_vPos += m_vDrift * t; // (I2X (t) / 1000);
 
-#if DBG
+#if 0 //DBG
 CFixVector vDrift = m_vDrift;
 CFixVector::Normalize (vDrift);
 if (CFixVector::Dot (vDrift, m_vDir) < 0)
@@ -570,42 +579,49 @@ if (m_bHaveDir) {
 	m_vPos += m_vDir * drag;
 	}
 
-int nSegment = -1;
+int nSegment = m_nSegment;
 
 if (m_nSegment < -1)
 	m_nSegment++;
 if (m_nSegment >= -1) {
+#if 1 
+	nSegment = FindSegByPosExhaustive (m_vPos, m_bSkybox, m_nSegment);
+#else
 	nSegment = FindSegByPos (m_vPos, m_nSegment, 1, -1, ((m_nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) ? 0 : fix (m_nRad), nThread);
+#endif
 	if (nSegment < 0)
 		m_nSegment = int (--m_nDelayPosUpdate);
 	}
-if ((nSegment < 0) && ((m_nType != WATERFALL_PARTICLES) || m_bChecked)) {
+
+if (nSegment < 0) {
 	if (m_nType == WATERFALL_PARTICLES) {
-		CFixVector vDir = m_vPos - m_vStartPos;
-		if ((CFixVector::Normalize (vDir) >= I2X (1)) && (CFixVector::Dot (vDir, m_vDir) < I2X (1) / 2)) {
-			m_nLife = -1;
-			return 0;
-			}
-		if (SEGMENTS [nSegment].HasWaterProp ()) {
+		if (!m_bChecked) {
+			CFixVector vDir = m_vPos - m_vStartPos;
+			if ((CFixVector::Normalize (vDir) >= I2X (1)) && (CFixVector::Dot (vDir, m_vDir) < I2X (1) / 2)) {
+				m_nLife = -1;
+				return 0;
+				}
 			m_bChecked = 1;
 			m_nLife = 500;
 			}
 		}
-	else if (m_nTTL - m_nLife > 500) {
+	if (m_nTTL - m_nLife > 500) {
 		m_nLife = -1;
 		return 0;
+		}
 	}
-	}
-else if ((m_nType == BUBBLE_PARTICLES) && !SEGMENTS [nSegment].HasWaterProp ()) {
-	m_nLife = -1;
-	return 0;
+else if (m_nType == BUBBLE_PARTICLES) {
+	if (!SEGMENTS [nSegment].HasWaterProp ()) {
+		m_nLife = -1;
+		return 0;
+		}
 	}
 else if ((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
 	if (SEGMENTS [nSegment].HasWaterProp () || SEGMENTS [nSegment].HasLavaProp ()) {
 		m_nLife = -1;
 		return 0;
 		}
-#if 0
+#if 1
 	if ((m_nSegment >= 0) && (nSegment != m_nSegment) && SEGMENTS [m_nSegment].HasFunction (SEGMENT_FUNC_SKYBOX)) {
 		if (m_nTTL - m_nLife > 500) {
 			m_nLife = -1;
@@ -653,8 +669,8 @@ int CParticle::Update (int nCurTime, float fBrightness, int nThread)
 if ((m_nLife <= 0) /*|| (m_color [0].alpha < 0.01f)*/)
 	return 0;
 
-fix t = nCurTime - m_nMoved;
-m_nMoved = nCurTime;
+fix t = nCurTime - m_nUpdated;
+m_nUpdated = nCurTime;
 
 #if !ENABLE_UPDATE 
 m_nLife -= t;
@@ -665,10 +681,13 @@ UpdateColor (fBrightness, nThread);
 if (m_nDelay > 0) {
 	m_nDelay -= t;
 	return 1;
-}
+	}
 
-if (!UpdateDrift (t, nThread))
-	return 0;
+if ((nCurTime - m_nUpdated >= 100) {
+	m_nUpdated = nCurTime;
+	if (!UpdateDrift (t, nThread))
+		return 0;
+	}
 
 if (m_nTTL < 0)
 	return 1;

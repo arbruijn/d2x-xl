@@ -132,6 +132,7 @@ typedef struct tParticle {
 	int			m_nLife;				//remaining life time
 	float			m_decay;
 	int			m_nDelay;			//time between creation and appearance
+	int			m_nUpdated;
 	int			m_nMoved;			//time last moved
 	float			m_nWidth;
 	float			m_nHeight;
@@ -158,6 +159,7 @@ typedef struct tParticle {
 	char			m_nRotFrame;
 	char			m_nOrient;
 	char			m_bChecked;
+	char			m_bSkybox;
 	char			m_bAnimate;
 	char			m_bRotate;
 	char			m_nDelayPosUpdate;

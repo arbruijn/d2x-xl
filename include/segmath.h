@@ -28,6 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
 int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance = 0, int nThread = 0);
+int FindSegByPosExhaustive (const CFixVector& vPos, int bSkyBox, int nStartSeg = -1);
 short FindClosestSeg (CFixVector& vPos);
 
 // -----------------------------------------------------------------------------

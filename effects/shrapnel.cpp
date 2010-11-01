@@ -99,7 +99,9 @@ void CShrapnel::Draw (void)
 if (m_info.xTTL > 0) {
 	fix xSize = I2X (1) / 2 + d_rand () % (I2X (1) / 4);
 	explBlast.Bitmap ()->SetColor ();
+#if 0
 	ogl.RenderSprite (explBlast.Bitmap (), m_info.vPos, xSize, xSize, X2F (m_info.xTTL) / X2F (m_info.xLife) / 2, 0, 0);
+#endif
 	}
 }
 
