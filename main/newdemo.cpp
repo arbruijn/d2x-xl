@@ -1891,9 +1891,9 @@ void NDPopCtrlCenTriggers ()
 	short		side, nConnSide;
 	CSegment *segP, *connSegP;
 
-for (i = 0; i < gameData.reactor.triggers.nLinks; i++) {
-	segP = SEGMENTS + gameData.reactor.triggers.segments [i];
-	side = gameData.reactor.triggers.sides [i];
+for (i = 0; i < gameData.reactor.triggers.m_nLinks; i++) {
+	segP = SEGMENTS + gameData.reactor.triggers.m_segments [i];
+	side = gameData.reactor.triggers.m_sides [i];
 	connSegP = SEGMENTS + segP->m_children [side];
 	nConnSide = segP->ConnectedSide (connSegP);
 	anim_num = segP->Wall (side)->nClip;
