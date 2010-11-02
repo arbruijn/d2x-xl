@@ -97,11 +97,11 @@ void CTriggerTargets::Check (void)
 
 if (m_nLinks > MAX_TRIGGER_TARGETS) {
 	m_nLinks = MAX_TRIGGER_TARGETS;
-	PrintLog ("Invalid trigger target count (trigger #%d)\n", this - (CTriggerTargets *) gameData.trigs.triggers.Buffer ());
+	PrintLog ("Invalid trigger target count (trigger #%d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer ());
 	}
 for (i = j = 0; i < m_nLinks; i++) {
 	if ((m_segments [i] < 0) || (m_segments [i] >= gameData.segs.nSegments) || (m_sides [i] < 0) || (m_sides [i] > 5)) {
-		PrintLog ("Invalid trigger target (trigger #%d, target %d)\n", this - (CTriggerTargets *) gameData.trigs.triggers.Buffer (), i);
+		PrintLog ("Invalid trigger target (trigger #%d, target %d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer (), i);
 		continue;
 		}
 	if (j < i) {
