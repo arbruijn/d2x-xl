@@ -4734,20 +4734,20 @@ void MultiSendRobotControls (char nPlayer)
 
 gameData.multigame.msg.buf [0] = MULTI_ROBOT_CONTROLS;
 gameData.multigame.msg.buf [1] = nPlayer;
-memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.controlled, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
-memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.agitation, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
-memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.controlledTime, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
-memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.lastSendTime, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
-memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.lastMsgTime, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
-memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.sendPending, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
-memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.fired, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
+memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.controlled, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
+memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.agitation, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
+memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.controlledTime, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
+memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.lastSendTime, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
+memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.lastMsgTime, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
+memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.sendPending, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
+memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.fired, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
 NetworkSendNakedPacket (gameData.multigame.msg.buf, 1
 , nPlayer);
 }
@@ -4762,20 +4762,20 @@ if (buf [1]!=gameData.multiplayer.nLocalPlayer) {
 	Int3 (); // Get Jason!  Recieved a coop_sync that wasn't ours!
 	return;
 	}
-memcpy (&gameData.multigame.robots.controlled, buf + count, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
-memcpy (&gameData.multigame.robots.agitation, buf + count, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
-memcpy (&gameData.multigame.robots.controlledTime, buf + count, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
-memcpy (&gameData.multigame.robots.lastSendTime, buf + count, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
-memcpy (&gameData.multigame.robots.lastMsgTime, buf + count, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
-memcpy (&gameData.multigame.robots.sendPending, buf + count, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
-memcpy (&gameData.multigame.robots.fired, buf + count, MAX_ROBOTS_CONTROLLED*4);
-count +=  (MAX_ROBOTS_CONTROLLED*4);
+memcpy (&gameData.multigame.robots.controlled, buf + count, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
+memcpy (&gameData.multigame.robots.agitation, buf + count, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
+memcpy (&gameData.multigame.robots.controlledTime, buf + count, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
+memcpy (&gameData.multigame.robots.lastSendTime, buf + count, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
+memcpy (&gameData.multigame.robots.lastMsgTime, buf + count, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
+memcpy (&gameData.multigame.robots.sendPending, buf + count, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
+memcpy (&gameData.multigame.robots.fired, buf + count, MAX_ROBOTS_CONTROLLED * 4);
+count +=  (MAX_ROBOTS_CONTROLLED * 4);
 }
 
 //-----------------------------------------------------------------------------

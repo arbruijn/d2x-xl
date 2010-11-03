@@ -268,6 +268,32 @@ if (nObject != -1) {
 return 0;
 }
 
+//	----------------------------------------------------------------------------------------------------------
+
+int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags, int maxType)
+{
+	int	i, nObjIndex, nTypes = 0;
+	uint	flags;
+	ubyte	objTypes [64];
+
+memset (objTypes, 0, sizeof (objTypes));
+for (i = 0; i < 3; i++) {
+	nObjIndex = i * 32;
+	flags = (uint) objFlags [i];
+	while (flags && (nObjIndex < maxType)) {
+		if (flags & 1)
+			objTypes [nTypes++] = nObjIndex;
+		flags >>= 1;
+		nObjIndex++;
+		}
+	}
+if (!nTypes)
+	return -1;
+if (nTypes == 1)
+	return objTypes [0];
+return objTypes [(d_rand () * nTypes) / 32768];
+}
+
 //------------------------------------------------------------
 //	Trigger (enable) the materialization center in CSegment nSegment
 void OperateBotGen (CObject *objP, short nSegment)
@@ -280,7 +306,7 @@ if (nSegment < 0)
 	nType = 255;
 else {
 	matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [segP->m_nMatCen].nFuelCen;
-	nType = GetMatCenObjType (matCenP, gameData.matCens.botGens [segP->m_nMatCen].objFlags);
+	nType = GetMatCenObjType (matCenP, gameData.matCens.botGens [segP->m_nMatCen].objFlags, MAX_ROBOT_TYPES);
 	if (nType < 0)
 		nType = 255;
 	}
@@ -352,32 +378,6 @@ if (objP) {
 
 //	----------------------------------------------------------------------------------------------------------
 
-int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags)
-{
-	int				i, nObjIndex, nTypes = 0;
-	uint	flags;
-	sbyte				objTypes [64];
-
-memset (objTypes, 0, sizeof (objTypes));
-for (i = 0; i < 3; i++) {
-	nObjIndex = i * 32;
-	flags = (uint) objFlags [i];
-	while (flags) {
-		if (flags & 1)
-			objTypes [nTypes++] = nObjIndex;
-		flags >>= 1;
-		nObjIndex++;
-		}
-	}
-if (!nTypes)
-	return -1;
-if (nTypes == 1)
-	return objTypes [0];
-return objTypes [(d_rand () * nTypes) / 32768];
-}
-
-//	----------------------------------------------------------------------------------------------------------
-
 void EquipGenHandler (tFuelCenInfo * matCenP)
 {
 	int			nObject, nMatCen, nType;
@@ -415,7 +415,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 		return;
 	matCenP->bFlag = 0;
 	matCenP->xTimer = 0;
-	nType = GetMatCenObjType (matCenP, gameData.matCens.equipGens [nMatCen].objFlags);
+	nType = GetMatCenObjType (matCenP, gameData.matCens.equipGens [nMatCen].objFlags, MAX_POWERUP_TYPES);
 	if (nType < 0)
 		return;
 	vPos = SEGMENTS [matCenP->nSegment].Center ();
@@ -624,7 +624,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	matCenP->xTimer = 0;
 	vPos = SEGMENTS [matCenP->nSegment].Center ();
 	// If this is the first materialization, set to valid robot.
-	nType = (int) GetMatCenObjType (matCenP, gameData.matCens.botGens [nMatCen].objFlags);
+	nType = (int) GetMatCenObjType (matCenP, gameData.matCens.botGens [nMatCen].objFlags, MAX_ROBOT_TYPES);
 	if (nType < 0)
 		return;
 #if TRACE

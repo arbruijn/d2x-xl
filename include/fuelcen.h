@@ -124,7 +124,6 @@ int StartMatCen (short nSegment);
 void DisableMatCens (void);
 void InitAllMatCens (void);
 void OperateBotGen (CObject *objP, short nSegment);
-int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags);
 void SetEquipGenStates (void);
 
 #if 0
