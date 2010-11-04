@@ -107,8 +107,8 @@ for (i = j = 0; i < m_nLinks; i++) {
 	if (j < i) {
 		m_segments [j] = m_segments [i];
 		m_sides [j] = m_sides [i];
-		j++;
 		}
+	j++;
 	}
 m_nLinks = j;
 }
