@@ -544,6 +544,7 @@ if (objP->info.nType == OBJ_DEBRIS)
 OBJECTS [nObject].UnlinkFromSeg ();
 Assert (OBJECTS [0].info.nNextInSeg != 0);
 if ((objP->info.nType == OBJ_ROBOT) ||
+	 (objP->info.nType == OBJ_DEBRIS) ||	// exploded robot
 	 (objP->info.nType == OBJ_REACTOR) ||
 	 (objP->info.nType == OBJ_POWERUP) ||
 	 (objP->info.nType == OBJ_HOSTAGE))

@@ -93,6 +93,7 @@ int PSecretLevelDestroyed (void);
 
 void CTriggerTargets::Check (void)
 {
+#if DBG
 	int i, j;
 
 if (m_nLinks > MAX_TRIGGER_TARGETS) {
@@ -111,6 +112,7 @@ for (i = j = 0; i < m_nLinks; i++) {
 	j++;
 	}
 m_nLinks = j;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1083,6 +1085,7 @@ else {
 	nPlayer = -1;
 	if (objP &&
 		 (objP->info.nType != OBJ_ROBOT) &&
+		 (objP->info.nType != OBJ_DEBRIS) && // exploded robot
 		 (objP->info.nType != OBJ_REACTOR) &&
 		 (objP->info.nType != OBJ_HOSTAGE) &&
 		 (objP->info.nType != OBJ_POWERUP))	{		
