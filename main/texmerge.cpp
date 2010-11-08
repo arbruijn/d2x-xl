@@ -411,6 +411,7 @@ switch (nType) {
 int tmShaderProgs [6] = {-1,-1,-1,-1,-1,-1};
 
 const char *texMergeFS [6] = {
+	// grayscale
 	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"uniform float grAlpha;\r\n" \
 	"void main(void){" \
@@ -446,6 +447,7 @@ const char *texMergeFS [6] = {
 	"gl_FragColor = bMask * vec4 (l, l, l, color.a);\r\n" \
 	"}"
 ,
+	// colored
 	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"uniform float grAlpha;\r\n" \
 	"void main(void){" \

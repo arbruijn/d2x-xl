@@ -179,7 +179,7 @@ typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CSegFace *faceP);
 typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP);
 #endif
 
-static pRenderHandler renderHandlers [] = {RenderGeometryFace, RenderCoronaFace, RenderSkyBoxFace};
+static pRenderHandler renderHandlers [] = {RenderGeometryFace, RenderGeometryFace, RenderCoronaFace, RenderSkyBoxFace};
 
 
 static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int nType)
@@ -322,15 +322,35 @@ gameStates.render.bQueryCoronas = 0;
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
-ogl.ColorMask (1,1,1,1,1);
 CTexture::Wrap (GL_REPEAT);
-ogl.SetDepthMode (GL_LEQUAL); 
-if (nType == RENDER_TYPE_CORONAS) {
-	if (glareRenderer.Style ())
-		glareRenderer.LoadShader (10, 1);
-	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
-	return 0;
+#if 0
+if (nType == RENDER_TYPE_ZCULL) {
+	ogl.ColorMask (0,0,0,0,1);
+	glDepthMask (1);
+	ogl.SetDepthMode (GL_LEQUAL); 
+	}
+else 
+#endif
+	{
+	ogl.ColorMask (1,1,1,1,1);
+#if 0
+	glDepthMask (0);
+#endif
+	if (nType == RENDER_TYPE_CORONAS) {
+		if (glareRenderer.Style ())
+			glareRenderer.LoadShader (10, 1);
+		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
+#if 0
+		ogl.SetDepthMode (GL_LEQUAL); 
+#endif
+		return 0;
+		}
+#if 0
+	ogl.SetDepthMode (GL_EQUAL); 
+#else
+	ogl.SetDepthMode (GL_LEQUAL); 
+#endif
 	}
 
 #if GEOMETRY_VBOS

@@ -190,6 +190,11 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 	nDbgSeg = nDbgSeg;
 #endif
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
+#if 0
+if ((gameStates.render.nType == RENDER_TYPE_ZCULL) && (nType > 1))
+	nShader = SetupTexMergeShader (bColorKey, bColored, nType);
+else 
+#endif
 if (!bColored && gameOpts->render.automap.bGrayOut)
 	nShader = SetupGrayScaleShader (nType, colorP);
 else if (faceP && (gameStates.render.bPerPixelLighting == 2))
@@ -427,7 +432,16 @@ if (bTransparent && (gameStates.render.nType < RENDER_TYPE_SKYBOX) && !bMonitor)
 	return 0;
 	}
 
+#if 1
 SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored, bLightmaps);
+#else
+SetRenderStates (faceP, bmBot, bmTop, ((gameStates.render.nType == RENDER_TYPE_ZCULL) && !(bColorKey || (bmBot->Flags () & BM_FLAG_SEE_THRU))) ? 0 : bTextured, bColorKey, bColored, bLightmaps);
+if (gameStates.render.nType == RENDER_TYPE_ZCULL) {
+	DrawFace (faceP);
+	return 1;
+	}
+#endif
+
 #if DBG
 RenderWireFrame (faceP, bTextured);
 if (!gameOpts->render.debug.bTextures)

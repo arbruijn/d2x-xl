@@ -602,6 +602,11 @@ PROF_START
 SetupMineRenderer ();
 PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
+#if 0
+++gameStates.render.bFullBright;
+RenderSegmentList (RENDER_TYPE_ZCULL);	// render depth only
+--gameStates.render.bFullBright;
+#endif
 RenderSegmentList (RENDER_TYPE_GEOMETRY);	// render opaque geometry
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameStates.app.bNostalgia &&

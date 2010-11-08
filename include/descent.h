@@ -1292,12 +1292,13 @@ class CLimitFPSStates {
 
 //------------------------------------------------------------------------------
 
-#define RENDER_TYPE_GEOMETRY			0
-#define RENDER_TYPE_CORONAS			1
-#define RENDER_TYPE_SKYBOX				2
-#define RENDER_TYPE_OBJECTS			3
-#define RENDER_TYPE_TRANSPARENCY		4
-#define RENDER_PASSES					5
+#define RENDER_TYPE_ZCULL				0
+#define RENDER_TYPE_GEOMETRY			1
+#define RENDER_TYPE_CORONAS			2
+#define RENDER_TYPE_SKYBOX				3
+#define RENDER_TYPE_OBJECTS			4
+#define RENDER_TYPE_TRANSPARENCY		5
+#define RENDER_PASSES					6
 
 class CGameStates {
 	public:
