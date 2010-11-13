@@ -31,7 +31,7 @@ using namespace RenderModel;
 
 //------------------------------------------------------------------------------
 
-int CModel::CountPOFModelItems (void *modelDataP, short *pnSubModels, short *pnVerts, short *pnFaces, short *pnFaceVerts)
+int CModel::CountPOFModelItems (void *modelDataP, ushort *pnSubModels, ushort *pnVerts, ushort *pnFaces, ushort *pnFaceVerts)
 {
 	ubyte *p = reinterpret_cast<ubyte*> (modelDataP);
 

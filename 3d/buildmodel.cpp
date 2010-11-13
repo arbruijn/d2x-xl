@@ -512,7 +512,7 @@ fix CModel::Radius (CObject *objP)
 	CArray<CFloatVector3>	vertices;
 	CFloatVector3				vCenter, vOffset, v, vMin, vMax;
 	float							fRad = 0, r;
-	short							h, i, j, k;
+	ushort						h, i, j, k;
 
 tModelSphere *sP = gameData.models.spheres + m_nModel;
 if (m_nType >= 0) {

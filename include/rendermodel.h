@@ -51,7 +51,7 @@ class CVertex {
 		CFloatVector3			m_vertex;
 		CFloatVector3			m_normal;
 		tRgbaColorf				m_baseColor;
-		short						m_nIndex;
+		ushort					m_nIndex;
 		char						m_bTextured;
 	};
 
@@ -60,11 +60,11 @@ inline int operator- (RenderModel::CVertex* f, CArray<RenderModel::CVertex>& a) 
 class CFace {
 	public:
 		CFixVector				m_vNormal;
-		short						m_nVerts;
-		short						m_nBitmap;
+		ushort					m_nVerts;
+		ushort					m_nBitmap;
 		CBitmap*					m_textureP;
-		short						m_nIndex;
-		short						m_nId;
+		ushort					m_nIndex;
+		ushort					m_nId;
 		ubyte						m_nSubModel;
 		ubyte						m_bThruster;
 		ubyte						m_bGlow :2;
@@ -166,18 +166,18 @@ class CModel {
 		short										m_nGunSubModels [MAX_GUNS];
 		float										m_fScale;
 		short										m_nType; //-1: custom mode, 0: default model, 1: alternative model, 2: hires model
-		short										m_nFaces;
-		short										m_iFace;
-		short										m_nVerts;
-		short										m_nFaceVerts;
-		short										m_iFaceVert;
-		short										m_nSubModels;
-		short										m_nTextures;
-		short										m_iSubModel;
+		ushort									m_nFaces;
+		ushort									m_iFace;
+		ushort									m_nVerts;
+		ushort									m_nFaceVerts;
+		ushort									m_iFaceVert;
+		ushort									m_nSubModels;
+		ushort									m_nTextures;
+		ushort									m_iSubModel;
 		short										m_bHasTransparency;
 		short										m_bValid;
 		short										m_bRendered;
-		short										m_bBullets;
+		ushort									m_bBullets;
 		CFixVector								m_vBullets;
 		GLuint									m_vboDataHandle;
 		GLuint									m_vboIndexHandle;
@@ -212,7 +212,7 @@ class CModel {
 		void GetOOFModelItems (int nModel, OOF::CModel *po, float fScale);
 
 		void AssignPOFFaces (void);
-		int CountPOFModelItems (void* modelDataP, short* pnSubModels, short* pnVerts, short* pnFaces, short* pnFaceVerts);
+		int CountPOFModelItems (void* modelDataP, ushort* pnSubModels, ushort* pnVerts, ushort* pnFaces, ushort* pnFaceVerts);
 		CFace* AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CArray<CBitmap*>& modelBitmaps, tRgbaColorf* objColorP, bool bTextured = true);
 		int GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int nThis, int nParent,
 									 int bSubObject, CArray<CBitmap*>& modelBitmaps, tRgbaColorf *objColorP);

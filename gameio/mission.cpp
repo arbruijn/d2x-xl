@@ -1061,7 +1061,7 @@ if (!gameStates.app.bReadOnly) {
 		CFile		cf;
 		char		szFile [FILENAME_LEN] = {'\0'};
 
-	sprintf (szFile, "%s.state", list [nCurrentMission].szMissionName);
+	sprintf (szFile, "%s.state", list [nCurrentMission].szMissionName + ((list [nCurrentMission].szMissionName [0] == '[') ? 4 : 0));
 	if (!cf.Open (szFile, gameFolders.szCacheDir, "wb", 0))
 		return 0;
 	for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
@@ -1078,7 +1078,7 @@ int CMissionManager::LoadLevelStates (void)
 	CFile		cf;
 	char		szFile [FILENAME_LEN] = {'\0'};
 
-sprintf (szFile, "%s.state", list [nCurrentMission].szMissionName);
+sprintf (szFile, "%s.state", list [nCurrentMission].szMissionName + ((list [nCurrentMission].szMissionName [0] == '[') ? 4 : 0));
 if (!cf.Open (szFile, gameFolders.szCacheDir, "rb", 0))
 	return 0;
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
