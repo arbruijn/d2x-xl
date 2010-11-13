@@ -95,8 +95,8 @@ class CSubModel {
 		CFloatVector3			m_vMax;
 		CFace*					m_faces;
 		short						m_nParent;
-		short						m_nFaces;
-		short						m_nIndex;
+		ushort					m_nFaces;
+		ushort					m_nIndex;
 		short						m_nBitmap;
 		short						m_nHitbox;
 		int						m_nRad;
@@ -162,7 +162,7 @@ class CModel {
 		CArray<CSubModel>						m_subModels;
 		CArray<CFace>							m_faces;
 		CArray<CRenderVertex>				m_vertBuf [2];
-		CArray<short>							m_index [2];
+		CArray<ushort>							m_index [2];
 		short										m_nGunSubModels [MAX_GUNS];
 		float										m_fScale;
 		short										m_nType; //-1: custom mode, 0: default model, 1: alternative model, 2: hires model
@@ -189,7 +189,7 @@ class CModel {
 		void Setup (int bHires, int bSort);
 		bool Create (void);
 		void Destroy (void);
-		short FilterVertices (CArray<CFloatVector3>& vertices, short nVertices);
+		ushort FilterVertices (CArray<CFloatVector3>& vertices, ushort nVertices);
 		fix Radius (CObject* objP);
 		fix Size (CObject *objP, int bHires);
 		int Shift (CObject *objP, int bHires, CFloatVector3 *vOffsetfP);

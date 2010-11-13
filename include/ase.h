@@ -12,8 +12,8 @@ class CVertex {
 class CFace {
 	public:
 		CFloatVector3			m_vNormal;
-		short						m_nVerts [3];	// indices of vertices 
-		short						m_nTexCoord [3];
+		ushort					m_nVerts [3];	// indices of vertices 
+		ushort					m_nTexCoord [3];
 		short						m_nBitmap;
 };
 
@@ -25,10 +25,10 @@ class CSubModel {
 		short						m_nSubModel;
 		short						m_nParent;
 		short						m_nBitmap;
-		short						m_nFaces;
-		short						m_nVerts;
-		short						m_nTexCoord;
-		short						m_nIndex;
+		ushort					m_nFaces;
+		ushort					m_nVerts;
+		ushort					m_nTexCoord;
+		ushort					m_nIndex;
 		ubyte						m_bRender;
 		ubyte						m_bGlow;
 		ubyte						m_bFlare;

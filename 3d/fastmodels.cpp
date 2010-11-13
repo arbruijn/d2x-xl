@@ -55,7 +55,7 @@ extern int bZPass;
 
 //------------------------------------------------------------------------------
 
-void G3DynLightModel (CObject *objP, RenderModel::CModel *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts)
+void G3DynLightModel (CObject *objP, RenderModel::CModel *pm, ushort iVerts, ushort nVerts, ushort iFaceVerts, ushort nFaceVerts)
 {
 	CFloatVector				vPos, vVertex;
 	CFloatVector3*				pv, * pn;
@@ -285,6 +285,8 @@ int G3FilterSubModel (CObject *objP, RenderModel::CSubModel *psm, int nGunId, in
 
 if (!psm->m_bRender)
 	return 0;
+if (psm->m_bFlare)
+	return 1;
 if (psm->m_nGunPoint >= 0)
 	return 1;
 if (psm->m_bBullets)
@@ -458,7 +460,8 @@ void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclus
 	CFixVector					vo;
 	int							h, i, j, bTranspState, bRestoreMatrix, bTextured = gameOpts->render.debug.bTextures && !(gameStates.render.bCloaked /*|| nPass*/),
 									bGetThruster = !(nPass || bTranspFilter) && ObjectHasThruster (objP);
-	short							nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
+	short							nId, nBitmap = -1, nTeamColor;
+	ushort						nFaceVerts, nVerts, nIndex;
 
 if (objP->info.nType == OBJ_PLAYER)
 	nTeamColor = IsMultiGame ? IsTeamGame ? GetTeam (objP->info.nId) + 1 : PlayerColor (objP->Index ()) : gameOpts->render.ship.nColor;

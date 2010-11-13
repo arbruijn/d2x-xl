@@ -96,7 +96,7 @@ m_faces.Clear (0);
 m_index [0].Clear (0);
 m_sortedVerts.Clear (0);
 
-for (short i = 0; i < m_nSubModels; i++)
+for (ushort i = 0; i < m_nSubModels; i++)
 	m_subModels [i].m_nSubModel = i;
 
 if (ogl.m_states.bHaveVBOs) {
@@ -310,7 +310,7 @@ void CModel::Setup (int bHires, int bSort)
 	tRgbaColorf*	pc;
 	CBitmap*			textureP = bHires ? m_textures.Buffer () : NULL;
 	int				i, j;
-	short				nId;
+	ushort			nId;
 
 m_fScale = 1;
 for (i = 0, j = m_nFaceVerts; i < j; i++)
@@ -492,14 +492,14 @@ return 0;
 //------------------------------------------------------------------------------
 // remove duplicates
 
-short CModel::FilterVertices (CArray<CFloatVector3>& vertices, short nVertices)
+ushort CModel::FilterVertices (CArray<CFloatVector3>& vertices, ushort nVertices)
 {
 	CFloatVector3	*pi, *pj;
 
 for (pi = vertices.Buffer (), pj = pi + 1, --nVertices; nVertices; nVertices--, pj++)
 	if (CmpVerts (pi, pj))
 		*++pi = *pj;
-return (short) (pi - vertices) + 1;
+return (ushort) (pi - vertices) + 1;
 }
 
 //------------------------------------------------------------------------------
@@ -534,7 +534,7 @@ if (vertices.Create (m_nFaceVerts)) {
 				}
 			}
 		}
-	h = (short) (pv - vertices.Buffer ()) - 1;
+	h = (ushort) (pv - vertices.Buffer ()) - 1;
 
 	CQuickSort<CFloatVector3>	qs;
 	qs.SortAscending (vertices.Buffer (), 0, h, &RenderModel::CModel::CmpVerts);
