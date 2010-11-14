@@ -285,7 +285,7 @@ int G3FilterSubModel (CObject *objP, RenderModel::CSubModel *psm, int nGunId, in
 
 if (!psm->m_bRender)
 	return 0;
-#if 0
+#if 1
 if (psm->m_bFlare)
 	return 1;
 #endif
