@@ -61,7 +61,7 @@ class CFace {
 	public:
 		CFixVector				m_vNormal;
 		ushort					m_nVerts;
-		ushort					m_nBitmap;
+		short						m_nBitmap;
 		CBitmap*					m_textureP;
 		ushort					m_nIndex;
 		ushort					m_nId;

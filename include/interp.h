@@ -26,8 +26,8 @@
 
 #define MAX_POINTS_PER_POLY 25
 
-#define WORDVAL(_p)	(*(reinterpret_cast<short *> (_p)))
-#define WORDPTR(_p)	(reinterpret_cast<short *> (_p))
+#define WORDPTR(_p)	(reinterpret_cast<ushort *> (_p))
+#define WORDVAL(_p)	(*WORDPTR (_p))
 #define FIXPTR(_p)	((fix *) (_p))
 #define VECPTR(_p)	((CFixVector *) (_p))
 
@@ -140,6 +140,13 @@ return 0;
 static inline void ShortSwap (short *s)
 {
 *s = SWAPSHORT (*s);
+}
+
+//------------------------------------------------------------------------------
+
+static inline void UShortSwap (ushort *s)
+{
+*s = SWAPUSHORT (*s);
 }
 
 //------------------------------------------------------------------------------

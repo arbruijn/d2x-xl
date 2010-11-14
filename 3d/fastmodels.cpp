@@ -285,18 +285,16 @@ int G3FilterSubModel (CObject *objP, RenderModel::CSubModel *psm, int nGunId, in
 
 if (!psm->m_bRender)
 	return 0;
+#if 0
 if (psm->m_bFlare)
 	return 1;
+#endif
 if (psm->m_nGunPoint >= 0)
 	return 1;
 if (psm->m_bBullets)
 	return 1;
 #if 1
 if (psm->m_bThruster && ((psm->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) != (REAR_THRUSTER | FRONTAL_THRUSTER)))
-	return 1;
-#endif
-#if 0
-if (psm->m_bFlare)
 	return 1;
 #endif
 if (psm->m_bHeadlight)

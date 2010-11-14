@@ -163,13 +163,13 @@ void G3SwapPolyModelData (ubyte *dataP)
 	tUVL*	uvl_val;
 
 for (;;) {
-	ShortSwap (WORDPTR (dataP));
+	UShortSwap (WORDPTR (dataP));
 	switch (WORDVAL (dataP)) {
 		case OP_EOF:
 			return;
 
 		case OP_DEFPOINTS:
-			ShortSwap (WORDPTR (dataP + 2));
+			UShortSwap (WORDPTR (dataP + 2));
 			n = WORDVAL (dataP + 2);
 			for (i = 0; i < n; i++)
 				VmsVectorSwap (*VECPTR ((dataP + 4) + (i * sizeof (CFixVector))));
@@ -177,8 +177,8 @@ for (;;) {
 			break;
 
 		case OP_DEFP_START:
-			ShortSwap (WORDPTR (dataP + 2));
-			ShortSwap (WORDPTR (dataP + 4));
+			UShortSwap (WORDPTR (dataP + 2));
+			UShortSwap (WORDPTR (dataP + 4));
 			n = WORDVAL (dataP + 2);
 			for (i = 0; i < n; i++)
 				VmsVectorSwap (*VECPTR ((dataP + 8) + (i * sizeof (CFixVector))));
@@ -186,18 +186,18 @@ for (;;) {
 			break;
 
 		case OP_FLATPOLY:
-			ShortSwap (WORDPTR (dataP + 2));
+			UShortSwap (WORDPTR (dataP + 2));
 			n = WORDVAL (dataP + 2);
 			VmsVectorSwap (*VECPTR (dataP + 4));
 			VmsVectorSwap (*VECPTR (dataP + 16));
-			ShortSwap (WORDPTR (dataP + 28));
+			UShortSwap (WORDPTR (dataP + 28));
 			for (i=0; i < n; i++)
-				ShortSwap (WORDPTR (dataP + 30 + (i * 2)));
+				UShortSwap (WORDPTR (dataP + 30 + (i * 2)));
 			dataP += 30 + ((n & ~1) + 1) * 2;
 			break;
 
 		case OP_TMAPPOLY:
-			ShortSwap (WORDPTR (dataP + 2));
+			UShortSwap (WORDPTR (dataP + 2));
 			n = WORDVAL (dataP + 2);
 			VmsVectorSwap (*VECPTR (dataP + 4));
 			VmsVectorSwap (*VECPTR (dataP + 16));
@@ -206,17 +206,17 @@ for (;;) {
 				FixSwap (&uvl_val->u);
 				FixSwap (&uvl_val->v);
 			}
-			ShortSwap (WORDPTR (dataP + 28));
+			UShortSwap (WORDPTR (dataP + 28));
 			for (i=0;i<n;i++)
-				ShortSwap (WORDPTR (dataP + 30 + (i * 2)));
+				UShortSwap (WORDPTR (dataP + 30 + (i * 2)));
 			dataP += 30 + ((n & ~1) + 1) * 2 + n * 12;
 			break;
 
 		case OP_SORTNORM:
 			VmsVectorSwap (*VECPTR (dataP + 4));
 			VmsVectorSwap (*VECPTR (dataP + 16));
-			ShortSwap (WORDPTR (dataP + 28));
-			ShortSwap (WORDPTR (dataP + 30));
+			UShortSwap (WORDPTR (dataP + 28));
+			UShortSwap (WORDPTR (dataP + 30));
 			G3SwapPolyModelData (dataP + WORDVAL (dataP + 28));
 			G3SwapPolyModelData (dataP + WORDVAL (dataP + 30));
 			dataP += 32;
@@ -225,22 +225,22 @@ for (;;) {
 		case OP_RODBM:
 			VmsVectorSwap (*VECPTR (dataP + 20));
 			VmsVectorSwap (*VECPTR (dataP + 4));
-			ShortSwap (WORDPTR (dataP + 2));
+			UShortSwap (WORDPTR (dataP + 2));
 			FixSwap (FIXPTR (dataP + 16));
 			FixSwap (FIXPTR (dataP + 32));
 			dataP += 36;
 			break;
 
 		case OP_SUBCALL:
-			ShortSwap (WORDPTR (dataP + 2));
+			UShortSwap (WORDPTR (dataP + 2));
 			VmsVectorSwap (*VECPTR (dataP + 4));
-			ShortSwap (WORDPTR (dataP + 16));
+			UShortSwap (WORDPTR (dataP + 16));
 			G3SwapPolyModelData (dataP + WORDVAL (dataP + 16));
 			dataP += 20;
 			break;
 
 		case OP_GLOW:
-			ShortSwap (WORDPTR (dataP + 2));
+			UShortSwap (WORDPTR (dataP + 2));
 			dataP += 4;
 			break;
 

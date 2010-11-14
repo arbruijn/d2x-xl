@@ -14,8 +14,8 @@ class CModel;
 
 class CFace {
 	public:
-		short					m_nVerts;
-		short*				m_verts;
+		ushort				m_nVerts;
+		ushort*				m_verts;
 		CFixVector			m_vCenter;
 		CFixVector			m_vNorm;
 		CFixVector			m_vRotNorm;
@@ -27,7 +27,7 @@ class CFace {
 		ubyte					m_bGlow :1;
 		ubyte					m_bTest :1;
 		ubyte					m_bIgnore :1;
-		short					m_nAdjFaces;
+		ushort				m_nAdjFaces;
 
 	public:
 		CFace () { Init (); }
@@ -50,14 +50,14 @@ inline int operator- (CFace* f, CArray<CFace>& a) { return a.Index (f); }
 class CSubModel {
 	public:
 		CFace*				m_faces;		//points at submodel's first face in model's face list (which is sorted by submodels)
-		short					m_nFaces;
+		ushort				m_nFaces;
 		CFace**				m_litFaces;	//submodel faces facing the current light source
-		short					m_nLitFaces;
+		ushort				m_nLitFaces;
 		CFixVector			m_vPos;
 		CAngleVector		m_vAngles;
 		float					m_fClipDist;
 		short					m_nParent;
-		short*				m_adjFaces;
+		ushort*				m_adjFaces;
 		short					m_nRenderFlipFlop;
 		short					m_bCalcClipDist;
 
@@ -84,11 +84,11 @@ class CModel {
 	public:
 		CArray<CSubModel>		m_subModels;
 		short						m_nSubModels;
-		short						m_nVerts;
-		short						m_nFaces;
-		short						m_nFaceVerts;
-		short						m_nLitFaces;
-		short						m_nAdjFaces;
+		ushort					m_nVerts;
+		ushort					m_nFaces;
+		ushort					m_nFaceVerts;
+		ushort					m_nLitFaces;
+		ushort					m_nAdjFaces;
 		CArray<CFixVector>	m_verts;
 		CArray<CFloatVector>	m_vertsf;
 		CArray<float>			m_fClipDist;
@@ -98,13 +98,13 @@ class CModel {
 		CArray<CFixVector>	m_rotVerts;
 		CArray<CFace>			m_faces;
 		CStack<CFace*>			m_litFaces;
-		CArray<short>			m_adjFaces;
-		CArray<short>			m_faceVerts;
-		CArray<short>			m_vertMap;
+		CArray<ushort>			m_adjFaces;
+		CArray<ushort>			m_faceVerts;
+		CArray<ushort>			m_vertMap;
 		short						m_iSubObj;
-		short						m_iVert;
-		short						m_iFace;
-		short						m_iFaceVert;
+		ushort					m_iVert;
+		ushort					m_iFace;
+		ushort					m_iFaceVert;
 		char						m_nState;
 		ubyte						m_nVertFlag;
 
@@ -113,8 +113,8 @@ class CModel {
 		~CModel () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		inline void AddTriangle (CFace *pf, short v0, short v1, short v2);
-		int FindFace (short *p, int nVerts);
+		inline void AddTriangle (CFace *pf, ushort v0, ushort v1, ushort v2);
+		int FindFace (ushort *p, int nVerts);
 		CFace* AddFace (CSubModel* pso, CFace* pf, CFixVector *pn, ubyte *p, int bShadowData);
 		CFloatVector* VertsToFloat (void);
 		int GatherAdjFaces (void);

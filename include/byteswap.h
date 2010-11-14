@@ -154,6 +154,29 @@ return SWAPSHORT (i);
 
 // ----------------------------------------------------------------------------
 
+typedef union usSwap {
+	ushort	s;
+	byte		b [2];
+} usSwap;
+
+#define USSWAP(_s)	(reinterpret_cast<usSwap *> (&(_s)))
+
+static inline short SWAPUSHORT (ushort i)
+{
+byte h;
+SWAP (h, USSWAP (i)->b [0], USSWAP (i)->b [1]);
+return USSWAP (i)->s;
+}
+
+static inline int SwapUShort (ushort i, int bEndian)
+{
+if (gameStates.app.bLittleEndian == bEndian)
+	return i;
+return SWAPUSHORT (i);
+}
+
+// ----------------------------------------------------------------------------
+
 static inline CFixVector& SwapVector (CFixVector& v, int bEndian)
 {
 if (gameStates.app.bLittleEndian != bEndian) 

@@ -223,7 +223,7 @@ void CFace::CalcNormal (CModel* po)
 {
 if (bTriangularize) {
 	CFixVector	*pv = po->m_verts.Buffer ();
-	short			*pfv = m_verts;
+	ushort		*pfv = m_verts;
 
 	m_vNorm = CFixVector::Normal (pv [pfv [0]], pv [pfv [1]], pv [pfv [2]]);
 	}
@@ -236,7 +236,7 @@ else
 CFloatVector CFace::CalcCenterf (CModel* po)
 {
 	CFloatVector	*pv = po->m_vertsf.Buffer ();
-	short				*pfv = m_verts;
+	ushort			*pfv = m_verts;
 	int				i;
 
 	CFloatVector	c;
@@ -262,9 +262,9 @@ return c;
 
 //------------------------------------------------------------------------------
 
-inline void CModel::AddTriangle (CFace* pf, short v0, short v1, short v2)
+inline void CModel::AddTriangle (CFace* pf, ushort v0, ushort v1, ushort v2)
 {
-	short	*pfv = m_faceVerts + m_iFaceVert;
+	ushort *pfv = m_faceVerts + m_iFaceVert;
 
 pf->m_verts = pfv;
 pf->m_nVerts = 3;
@@ -300,10 +300,10 @@ return -1;
 #else
 //------------------------------------------------------------------------------
 
-int CModel::FindFace (short *p, int nVerts)
+int CModel::FindFace (ushort *p, int nVerts)
 {
 	CFace*	pf;
-	short*	pfv;
+	ushort*	pfv;
 	int		h, i, j, k;
 
 for (i = m_iFace, pf = m_faces.Buffer (); i; i--, pf++) {
@@ -339,10 +339,10 @@ return 0;
 
 CFace* CModel::AddFace (CSubModel* pso, CFace* pf, CFixVector *pn, ubyte *p, int bShadowData)
 {
-	short			nVerts = WORDVAL (p+2);
+	ushort		nVerts = WORDVAL (p+2);
 	CFixVector	*pv = m_verts.Buffer (), v;
-	short			*pfv;
-	short			i, v0;
+	ushort		*pfv;
+	ushort		i, v0;
 
 //if (G3FindPolyModelFace (po, WORDPTR (p+30), nVerts))
 //	return pf;
@@ -404,7 +404,7 @@ if (bShadowData) {
 	else { //if (nVerts < 5) {
 		pfv = pf->m_verts = m_faceVerts + m_iFaceVert;
 		pf->m_nVerts = nVerts;
-		memcpy (pfv, WORDPTR (p+30), nVerts * sizeof (short));
+		memcpy (pfv, WORDPTR (p+30), nVerts * sizeof (ushort));
 		pf->m_bGlow = (nGlow >= 0);
 		pf->CalcNormal (this);
 #if 0
@@ -426,10 +426,10 @@ if (bShadowData) {
 		}
 #if 0
 	else {
-		short h = (nVerts + 1) / 2;
+		ushort h = (nVerts + 1) / 2;
 		pfv = pf->m_verts = m_faceVerts + m_iFaceVert;
 		pf->m_nVerts = h;
-		memcpy (pfv, WORDPTR (p+30), h * sizeof (short));
+		memcpy (pfv, WORDPTR (p+30), h * sizeof (ushort));
 		pf->m_bGlow = (nGlow >= 0);
 		G3CalcFaceNormal (po, pf);
 		m_iFaceVert += h;
@@ -439,7 +439,7 @@ if (bShadowData) {
 		pso->m_nFaces++;
 		pfv = pf->m_verts = m_faceVerts + m_iFaceVert;
 		pf->m_nVerts = h;
-		memcpy (pfv, WORDPTR (p + 30) + nVerts / 2, h * sizeof (short));
+		memcpy (pfv, WORDPTR (p + 30) + nVerts / 2, h * sizeof (ushort));
 		pf->m_bGlow = (nGlow >= 0);
 		G3CalcFaceNormal (po, pf);
 		pf->m_bTest = 1;
@@ -495,7 +495,7 @@ int CSubModel::FindEdge (CFace* pf0, int v0, int v1)
 {
 	int		h, i, j, n;
 	CFace*	pf1;
-	short*	pfv;
+	ushort*	pfv;
 
 for (i = m_nFaces, pf1 = m_faces; i; i--, pf1++) {
 	if (pf1 != pf0) {
@@ -513,10 +513,10 @@ return -1;
 
 int CModel::GatherAdjFaces (void)
 {
-	short			h, i, j, n;
+	ushort		h, i, j, n;
 	CSubModel*	pso = m_subModels.Buffer ();
 	CFace*		pf;
-	short*		pfv;
+	ushort*		pfv;
 
 m_nAdjFaces = 0;
 VertsToFloat ();
@@ -535,7 +535,7 @@ return 1;
 
 int CSubModel::CalcFacing (CModel* po)
 {
-	short		i;
+	ushort	i;
 
 RotateNormals ();
 for (i = 0; i < m_nFaces; i++) {
@@ -551,7 +551,7 @@ return m_nFaces;
 
 int CSubModel::GatherLitFaces (CModel* po)
 {
-	short		i;
+	ushort	i;
 	CFace		*pf;
 
 CalcFacing (po);
@@ -570,7 +570,7 @@ return 1;
 
 void CModel::CalcCenters (void)
 {
-	short			i, j;
+	ushort		i, j;
 	CSubModel*	pso = m_subModels.Buffer ();
 	CFace*		pf;
 
@@ -825,8 +825,8 @@ int CSubModel::RenderShadowVolume (CModel* po, int bCullFront)
 {
 	CFloatVector*	pvf, v [4];
 	CFace*			pf, ** ppf;
-	short*			pfv, * paf;
-	short				h, i, j, n, nVerts = 0;
+	ushort*			pfv, * paf;
+	ushort			h, i, j, n, nVerts = 0;
 	float				fClipDist;
 	int				nClip;
 
@@ -930,7 +930,7 @@ return 1;
 
 int LineHitsFace (CFixVector *pHit, CFixVector *p0, CFixVector *p1, short nSegment, short nSide)
 {
-	short			i, nFaces, nVerts;
+	ushort		i, nFaces, nVerts;
 	CSegment*	segP = SEGMENTS + nSegment;
 
 nFaces = segP->Side (nSide)->FaceCount ();
@@ -1087,7 +1087,7 @@ return NearestShadowedWallDist (objP->Index (), objP->info.nSegment, &vCenter, 0
 float CSubModel::ClipDistByFaceCenters (CObject *objP, CModel* po, int i, int incr)
 {
 	CFace*	pf, ** ppf;
-	short		h;
+	ushort	h;
 	float		fClipDist, fMaxDist = 0;
 
 for (h = m_nLitFaces, ppf = m_litFaces + i; i < h; i += incr, ppf += incr) {
@@ -1111,7 +1111,7 @@ float CSubModel::ClipDistByFaceVerts (CObject *objP, CModel* po, float fMaxDist,
 	CFixVector		v;
 	float*			pfc;
 	CFace*			pf, ** ppf;
-	short*			pfv, h, j, m, n;
+	ushort*			pfv, h, j, m, n;
 	short				nObject = objP->Index ();
 	short				nPointSeg, nSegment = objP->info.nSegment;
 	float				fClipDist;
@@ -1147,7 +1147,7 @@ float G3ClipDistByLitVerts (CObject *objP, CModel* po, float fMaxDist, int i, in
 	CFloatVector	*pv;
 	CFixVector	v;
 	float			*pfc;
-	short			j;
+	ushort		j;
 	ubyte			*pvf;
 	short			nObject = objP->Index ();
 	short			nPointSeg, nSegment = objP->info.nSegment;
@@ -1209,10 +1209,10 @@ return 0;
 
 void G3GetLitVertices (CModel* po, CSubModel* pso)
 {
-	CFace	*pf, **ppf;
-	short			*pfv, i, j;
-	ubyte			*pvf;
-	ubyte			nVertFlag = po->m_nVertFlag++;
+	CFace		*pf, **ppf;
+	ushort	*pfv, i, j;
+	ubyte		*pvf;
+	ubyte		nVertFlag = po->m_nVertFlag++;
 
 if (!nVertFlag)
 	po->m_vertFlags.Clear ();
@@ -1268,7 +1268,7 @@ int CSubModel::RenderShadowCaps (CObject *objP, CModel* po, int bCullFront)
 {
 	CFloatVector*	pvf, v0, v1;
 	CFace*			pf, ** ppf;
-	short*			pfv, i, j, nVerts;
+	ushort*			pfv, i, j, nVerts;
 	float				fClipDist;
 	int				nClip;
 
@@ -1404,7 +1404,7 @@ if (!gameStates.render.bShadowMaps) {
 ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetTexturing (false);
 ogl.EnableClientState (GL_VERTEX_ARRAY);
-pnl = lightManager.NearestSegLights  () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
+pnl = lightManager.NearestSegLights () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
 	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {

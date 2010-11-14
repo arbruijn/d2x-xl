@@ -112,13 +112,13 @@ return 1;
 
 CFace* CModel::AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CArray<CBitmap*>& modelBitmaps, tRgbaColorf* objColorP, bool bTextured)
 {
-	short					nVerts = WORDVAL (p+2);
+	ushort				nVerts = WORDVAL (p+2);
 	CVertex*				pmv;
-	short*				pfv;
+	ushort*				pfv;
 	tUVL*					uvl;
 	tRgbaColorf			baseColor;
 	CFloatVector3		n, * pvn;
-	short					i, j;
+	ushort				i, j;
 	ushort				c;
 
 if (!psm->m_faces)
@@ -158,7 +158,7 @@ pmf->m_vNormal = *pn;
 pmf->m_nIndex = m_iFaceVert;
 pmv = m_faceVerts + m_iFaceVert;
 pvn = m_vertNorms + m_iFaceVert;
-if (psm->m_nIndex < 0)
+if (psm->m_nIndex == (ushort) -1)
 	psm->m_nIndex = m_iFaceVert;
 pmf->m_nVerts = nVerts;
 if ((pmf->m_bGlow = (nGlow >= 0)))
@@ -201,7 +201,7 @@ G3CheckAndSwap (modelDataP);
 nGlow = -1;
 if (bSubObject) {
 	psm->InitMinMax ();
-	psm->m_nIndex = -1;
+	psm->m_nIndex = (ushort) -1;
 	psm->m_nParent = nParent;
 	psm->m_nBomb = -1;
 	psm->m_nMissile = -1;
