@@ -122,7 +122,7 @@ return false;
 void CGlowRenderer::Activate (void)
 {
 ogl.SelectGlowBuffer ();
-glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+glClear (GL_COLOR_BUFFER_BIT /*| GL_DEPTH_BUFFER_BIT*/);
 }
 
 //------------------------------------------------------------------------------
@@ -178,8 +178,19 @@ bool CGlowRenderer::Visible (void)
 #if USE_VIEWPORT
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
+#if 0
 if (m_bViewport != 1)
 	return false;
+#else
+if (m_bViewport == 0)
+	return false;
+if (m_bViewport == -1) {
+	m_screenMin.x = m_screenMin.y = 0;
+	m_screenMax.x = ScreenWidth ();
+	m_screenMax.y = ScreenHeight ();
+	return true;
+	}
+#endif
 if (m_screenMin.x > m_screenMax.x)
 	Swap (m_screenMin.x, m_screenMax.x);
 if (m_screenMin.y > m_screenMax.y)

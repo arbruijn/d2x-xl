@@ -584,26 +584,27 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				i--;
 				} while (i && (pmf->m_nId == nId));
 			}
-#if 1 //!DBG
+		//if ((gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) && psm->m_bGlow)
+		//	glowRenderer.Begin (GLOW_HEADLIGHT, 2, false, 1.0f);
 #ifdef _WIN32
 		if (glDrawRangeElements)
 #endif
 #if DBG
 			if (bUseVBO)
-#if 1
+#	if 1
 				glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 											0, pm->m_nFaceVerts - 1, nVerts, GL_UNSIGNED_SHORT,
 											G3_BUFFER_OFFSET (nIndex * sizeof (short)));
-#else
+#	else
 				glDrawElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 									 nVerts, GL_UNSIGNED_SHORT,
 									 G3_BUFFER_OFFSET (nIndex * sizeof (short)));
-#endif
+#	endif
 			else
 				glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
 											pm->m_index [0] + nIndex);
-#else
+#else // DBG
 			if (bUseVBO)
 				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 											0, pm->m_nFaceVerts - 1, nVerts, GL_UNSIGNED_SHORT,
@@ -612,7 +613,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
 											pm->m_index [0] + nIndex);
-#endif
+#endif // DBG
 #ifdef _WIN32
 		else
 			if (bUseVBO)
@@ -621,8 +622,9 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			else
 				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 									 nVerts, GL_UNSIGNED_SHORT, pm->m_index + nIndex);
-#endif
-#endif
+#endif //_WIN32
+		//if ((gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) && psm->m_bGlow)
+		//	glowRenderer.End ();
 		}
 	}
 if (bRestoreMatrix)
@@ -662,17 +664,13 @@ if (bLighting) {
 else
 	nLights = 1;
 ogl.SetBlending (true);
-ogl.SetDepthWrite (1);
-if (bEmissive || (bTranspFilter == 2)) {
+ogl.SetDepthWrite (false);
+if (bEmissive || (bTranspFilter == 2))
 	ogl.SetBlendMode (1);
-	ogl.SetDepthWrite (0);
-	}
 else if (gameStates.render.bCloaked)
 	ogl.SetBlendMode (0);
-else if (bTranspFilter) {
+else if (bTranspFilter)
 	ogl.SetBlendMode (0);
-	ogl.SetDepthWrite (false);
-	}
 else {
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthWrite (true);
@@ -942,26 +940,36 @@ if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 	else
 		gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
 	}
-#if 1 //!DBG
-G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles);
-pm->m_bRendered = 1;
-if (gameData.models.thrusters [nModel].nCount < 0)
-	gameData.models.thrusters [nModel].nCount = -gameData.models.thrusters [nModel].nCount;
-if ((objP->info.nType != OBJ_DEBRIS) && bHires) {
-	if (pm->m_bHasTransparency & 1)
-		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
-#if 1
-	if (pm->m_bHasTransparency & 2) {
-		ogl.SetFaceCulling (false);
-		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 2, nGunId, nBombId, nMissileId, nMissiles);
-		ogl.SetFaceCulling (true);
+if (bHires && (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)) {
+	if ((objP->info.nType != OBJ_DEBRIS) && pm->m_bHasTransparency) {
+		if (pm->m_bHasTransparency & 1)
+			G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
+		if (pm->m_bHasTransparency & 2) {
+			CFixVector vPos;
+			PolyObjPos (objP, &vPos);
+			glowRenderer.Begin (GLOW_HEADLIGHT, 2, true, 0.666f);
+			if (glowRenderer.SetViewport (GLOW_HEADLIGHT, vPos, X2F (objP->info.xSize))) {
+				ogl.SetFaceCulling (false);
+				G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 2, nGunId, nBombId, nMissileId, nMissiles);
+				ogl.SetFaceCulling (true);
+				glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
+				glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+				glowRenderer.End ();
+				}
+			}
 		}
-#endif
 	}
-#endif
-ogl.SetTexturing (false);
+else {
+	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles);
+	pm->m_bRendered = 1;
+	if (gameData.models.thrusters [nModel].nCount < 0)
+		gameData.models.thrusters [nModel].nCount = -gameData.models.thrusters [nModel].nCount;
+	if ((objP->info.nType != OBJ_DEBRIS) && bHires && pm->m_bHasTransparency)
+		transparencyRenderer.AddObject (objP);
+	}
 glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+ogl.SetTexturing (false);
 if (gameStates.render.bCloaked)
 	ogl.DisableClientStates (0, 0, 0, -1);
 else
@@ -971,27 +979,29 @@ if (gameOpts->render.debug.bWireFrame)
 	glLineWidth (3.0f);
 #endif
 #if 1 //!DBG
-if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
-	RenderModel::CModel*		pm = gameData.models.renderModels [bHires] + nModel;
+if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) {
+	if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
+		RenderModel::CModel*	pm = gameData.models.renderModels [bHires] + nModel;
 
-	if (pm->m_bValid < 1) {
-		if (!bHires)
-			pm = NULL;
-		else {
-			pm = gameData.models.renderModels [0] + nModel;
-			if (pm->m_bValid < 1)
+		if (pm->m_bValid < 1) {
+			if (!bHires)
 				pm = NULL;
+			else {
+				pm = gameData.models.renderModels [0] + nModel;
+				if (pm->m_bValid < 1)
+					pm = NULL;
+				}
 			}
-		}
-	if (pm) {
-		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
-		RenderModel::CSubModel*	psm = pm->m_subModels.Buffer ();
-		for (int i = 0, j = pm->m_nSubModels; i < j; i++, psm++)
-			if ((psm->m_nParent == -1) && !G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
-				G3RenderDamageLightning (objP, nModel, i, animAnglesP, NULL, bHires);
-//	G3RenderDamageLightning (objP, nModel, 0, animAnglesP, NULL, bHires);
-		transformation.End ();
-		glowRenderer.End ();
+		if (pm) {
+			transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
+			RenderModel::CSubModel*	psm = pm->m_subModels.Buffer ();
+			for (int i = 0, j = pm->m_nSubModels; i < j; i++, psm++)
+				if ((psm->m_nParent == -1) && !G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
+					G3RenderDamageLightning (objP, nModel, i, animAnglesP, NULL, bHires);
+	//	G3RenderDamageLightning (objP, nModel, 0, animAnglesP, NULL, bHires);
+			transformation.End ();
+			glowRenderer.End ();
+			}
 		}
 	}
 #endif

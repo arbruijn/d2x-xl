@@ -32,7 +32,7 @@ static int bErrMsg = 0;
 
 using namespace ASE;
 
-#define MODEL_DATA_VERSION 1008	//must start with something bigger than the biggest model number
+#define MODEL_DATA_VERSION 1009	//must start with something bigger than the biggest model number
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -531,8 +531,8 @@ while ((pszToken = ReadLine (cf))) {
 			}
 		else if (strstr (m_szName, "$LIGHTBEAM") != NULL) {
 			m_bHeadlight = 1;
-			m_bGlow = 
-			m_bFlare = 1;
+			m_bGlow = 1;
+			m_bFlare = 0;
 			}
 		}
 	else if (!strcmp (pszToken, "*NODE_PARENT")) {

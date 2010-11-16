@@ -50,8 +50,9 @@ extern CGlowRenderer glowRenderer;
 #define GLOW_POLYS			32
 #define GLOW_FACES			64
 #define GLOW_OBJECTS			128
+#define GLOW_HEADLIGHT		256
 
-#define GLOW_FLAGS (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_THRUSTERS)
+#define GLOW_FLAGS (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_THRUSTERS | GLOW_HEADLIGHT)
 
 //------------------------------------------------------------------------------
 
