@@ -154,6 +154,10 @@ return SWAPSHORT (i);
 
 // ----------------------------------------------------------------------------
 
+#ifndef _WINDOWS
+#	define byte unsigned char
+#endif
+
 typedef union usSwap {
 	ushort	s;
 	byte		b [2];
