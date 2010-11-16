@@ -541,7 +541,7 @@ short RenderFaceList (CFaceListIndex& flx, int nType, int bHeadlight)
 	tFaceListItem*	fliP = &gameData.render.faceList [0];
 	CSegFace*		faceP;
 	int				i, j, nFaces = 0, nSegment = -1;
-	int				bAutomap = (nType == 0);
+	int				bAutomap = (nType == RENDER_TYPE_GEOMETRY);
 
 #if 1
 if (automap.Display ())
@@ -745,7 +745,7 @@ return nFaces;
 
 short RenderSegments (int nType, int bHeadlight)
 {
-	int	i, nFaces = 0, bAutomap = (nType == 0);
+	int	i, nFaces = 0, bAutomap = (nType == RENDER_TYPE_GEOMETRY);
 
 if (nType == RENDER_TYPE_CORONAS) {
 	// render mine segment by segment

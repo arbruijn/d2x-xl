@@ -948,7 +948,7 @@ if (bHires && (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)) {
 			CFixVector vPos;
 			PolyObjPos (objP, &vPos);
 			glowRenderer.Begin (GLOW_HEADLIGHT, 2, true, 0.666f);
-			if (glowRenderer.SetViewport (GLOW_HEADLIGHT, vPos, X2F (objP->info.xSize))) {
+			if (glowRenderer.SetViewport (GLOW_HEADLIGHT, vPos, 2 * X2F (objP->info.xSize))) {
 				ogl.SetFaceCulling (false);
 				G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 2, nGunId, nBombId, nMissileId, nMissiles);
 				ogl.SetFaceCulling (true);

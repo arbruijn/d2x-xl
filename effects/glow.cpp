@@ -3,6 +3,7 @@
 #include "error.h"
 #include "ogl_lib.h"
 #include "ogl_shader.h"
+#include "automap.h"
 #include "glow.h"
 
 CGlowRenderer glowRenderer;
@@ -336,6 +337,8 @@ bool CGlowRenderer::Begin (int const nType, int const nStrength, bool const bRep
 	static int nCalls = 0;
 
 if (!Available (nType))
+	return false;
+if (automap.Display ())
 	return false;
 if (++nCalls > 1)
 	PrintLog ("nested glow renderer call!\n");
