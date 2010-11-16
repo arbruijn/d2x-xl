@@ -468,7 +468,6 @@ if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTex
 		m_states.bHaveDepthBuffer [nId] = 1;
 		gameData.render.nStateChanges++;
 		}
-	BindTexture (0);
 	}
 return m_states.hDepthBuffer [nId];
 }
