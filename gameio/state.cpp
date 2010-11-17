@@ -1533,6 +1533,7 @@ playerP->nObject = m_cf.ReadInt ();						// What CObject number this CPlayerData
 playerP->nPacketsGot = m_cf.ReadInt ();				// How many packets we got from them
 playerP->nPacketsSent = m_cf.ReadInt ();				// How many packets we sent to them
 playerP->flags = (uint) m_cf.ReadInt ();           // Powerup flags, see below...
+playerP->Setup ();
 playerP->SetEnergy (m_cf.ReadFix (), false);			// Amount of energy remaining.
 playerP->SetShield (m_cf.ReadFix (), false);			// shield remaining (protection)
 playerP->lives = m_cf.ReadByte ();						// Lives remaining, 0 = game over.

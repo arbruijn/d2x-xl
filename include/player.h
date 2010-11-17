@@ -204,7 +204,13 @@ class __pack__ CPlayerData : public CPlayerInfo {
 
 	public:
 		CPlayerData () { 
-			memset (this, 0, sizeof (*this)); 
+			Reset ();
+			Setup (); 
+			}
+
+		void Reset (void) { memset (this, 0, sizeof (*this)); }
+
+		void Setup (void) {
 			m_shield.Setup (0, Index (), INITIAL_SHIELD, &shield);
 			m_energy.Setup (1, Index (), INITIAL_ENERGY, &energy);
 			}
