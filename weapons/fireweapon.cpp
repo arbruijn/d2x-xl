@@ -382,8 +382,8 @@ if (gameData.objs.bIsMissile [nLaserType] && (nLaserType != GUIDEDMSL_ID)) {
 		gameData.objs.missileViewerP = laserP;
 	}
 //	If this weapon is supposed to be silent, set that bit!
-if (!bMakeSound)
-	laserP->info.nFlags |= OF_SILENT;
+//if (!bMakeSound)
+//	laserP->info.nFlags |= OF_SILENT;
 //	If this weapon is supposed to be silent, set that bit!
 if (bHarmless)
 	laserP->info.nFlags |= OF_HARMLESS;
