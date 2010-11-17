@@ -2028,9 +2028,7 @@ gameOptions [0].render.effects.bOnlyShieldHits = 1;
 extraGameInfo [0].bTracers = 1;
 extraGameInfo [0].bShockwaves = 0; 
 extraGameInfo [0].bDamageExplosions = 0;
-if (gameOptions [0].render.nQuality == 3)
-	gameOptions [0].render.effects.bSoftParticles = 7;
-if (gameOpts->app.bExpertMode != SUPERUSER)
+if (!gameOpts->app.bExpertMode)
 	gameOptions [0].render.effects.bSoftParticles = (gameOptions [0].render.nQuality == 3) ? 7 : 0;
 else if (gameOptions [0].render.nQuality < 3)
 	gameOptions [0].render.effects.bSoftParticles = 0;
