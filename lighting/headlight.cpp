@@ -767,8 +767,9 @@ void DeleteHeadlightShader (void)
 {
 for (int i = 0; i < 2; i++) {
 	for (int j = 0; j < HEADLIGHT_SHADER_COUNT / 2; j++) {
-		if (headlightShaderProgs [i][j]) {
+		if (headlightShaderProgs [i][j] > 0) {
 			shaderManager.Delete (headlightShaderProgs [i][j]);
+			headlightShaderProgs [i][j] = -1;
 			}
 		}
 	}
@@ -788,8 +789,9 @@ if (nLights < 0) {
 if (nLights == ogl.m_data.nHeadlights)
 	return;
 gameStates.render.bHaveDynLights = 0;
+DeleteHeadlightShader ();
 PrintLog ("building lighting shader programs\n");
-if ((ogl.m_states.bHeadlight = (ogl.m_states.bShadersOk))) {
+if ((ogl.m_states.bHeadlight = ogl.m_states.bShadersOk)) {
 	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 2; i++) {
 		for (j = 0; j < HEADLIGHT_SHADER_COUNT / 2; j++) {
