@@ -1310,7 +1310,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 	if ((bShowName || bHasFlag) && CanSeeObject (nObject, 1)) {
 		g3sPoint		vPlayerPos;
 
-#if 0
+#if 1
 		G3TransformAndEncodePoint (&vPlayerPos, OBJECTS [nObject].info.position.vPos);
 #else
 		//transformation.Push ();
@@ -1323,7 +1323,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 			G3ProjectPoint (&vPlayerPos);
 			if (!(vPlayerPos.p3_flags & PF_OVERFLOW)) {
 				fix x = vPlayerPos.p3_screen.x;
-				fix y = vPlayerPos.p3_screen.y;
+				fix y = screen.Height () - vPlayerPos.p3_screen.y;
 				if (bShowName) {				// Draw callsign on HUD
 					if (nState) {
 						int t = gameStates.app.nSDLTicks [0];

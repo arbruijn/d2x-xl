@@ -1,4 +1,5 @@
-# -*- mode: shell-script -*-
+# 
+-*- mode: shell-script -*-
 
 define([D2X_MAJOR],1)
 define([D2X_MINOR],15)

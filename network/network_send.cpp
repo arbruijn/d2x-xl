@@ -369,6 +369,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		SendInternetExtraGameInfoPacket (their->player.network.ipx.server, their->player.network.ipx.node);
 	} 
 SetMonsterballForces ();
+MultiSendPlayerWeapons ();
 }
 
 //------------------------------------------------------------------------------
