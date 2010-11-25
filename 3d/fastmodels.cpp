@@ -940,8 +940,8 @@ if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 	else
 		gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
 	}
-if (bHires && (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)) {
-	if ((objP->info.nType != OBJ_DEBRIS) && pm->m_bHasTransparency) {
+if (bHires && (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) && pm->m_bHasTransparency) {
+	if ((objP->info.nType != OBJ_DEBRIS)) {
 		if (pm->m_bHasTransparency & 1)
 			G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
 		if (pm->m_bHasTransparency & 2) {
