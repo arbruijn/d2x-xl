@@ -382,8 +382,13 @@ if (gameData.objs.bIsMissile [nLaserType] && (nLaserType != GUIDEDMSL_ID)) {
 		gameData.objs.missileViewerP = laserP;
 	}
 //	If this weapon is supposed to be silent, set that bit!
-//if (!bMakeSound)
-//	laserP->info.nFlags |= OF_SILENT;
+#if 0 
+// the following code prevents sound from cutting out due to too many sound sources (e.g. laser bolts)
+// the backside is that only one laser bolt from a round creates an impact sound
+// turn on if sound cuts out during intense firefights
+if (!bMakeSound)
+	laserP->info.nFlags |= OF_SILENT;
+#endif
 //	If this weapon is supposed to be silent, set that bit!
 if (bHarmless)
 	laserP->info.nFlags |= OF_HARMLESS;
