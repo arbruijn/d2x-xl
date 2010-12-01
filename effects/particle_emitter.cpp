@@ -230,7 +230,7 @@ else
 			m_nFirstPart = (m_nFirstPart + 1) % m_nPartLimit;
 			m_nParts--;
 			}
-		j = ++j % m_nPartLimit;
+		j = (j + 1) % m_nPartLimit;
 		}
 
 	m_nTicks += t;

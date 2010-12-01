@@ -361,7 +361,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 #define AFTERBURNER_LOOP_START	 ((gameOpts->sound.audioSampleRate==SAMPLE_RATE_22K)?32027: (32027/2))		//20098
 #define AFTERBURNER_LOOP_END		 ((gameOpts->sound.audioSampleRate==SAMPLE_RATE_22K)?48452: (48452/2))		//25776
 
-static int abScale = 4;
+//static int abScale = 4;
 
 void DoAfterburnerStuff (void)
 {

@@ -1048,7 +1048,7 @@ for (i = 0; i < m_nSubModels; i++) {
 	if (!(smP = new CSubModel)) {
 		cf.Close ();
 		Destroy ();
-		return NULL;
+		return 0;
 		}
 	if (m_subModels)
 		tailP->m_next = smP;

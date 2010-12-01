@@ -183,7 +183,7 @@ typedef struct tSegScanData {
 
 static tSegScanInfo scanInfo = {0xFFFFFFFF, 0, 0, 3, -1};
 static tSegScanData scanData [2];
-static SDL_mutex* semaphore = NULL;
+//static SDL_mutex* semaphore = NULL;
 
 //	-----------------------------------------------------------------------------
 

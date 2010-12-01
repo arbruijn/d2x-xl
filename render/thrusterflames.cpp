@@ -16,7 +16,7 @@
 #include "transprender.h"
 #include "thrusterflames.h"
 #include "addon_bitmaps.h"
-#include "glow.h"
+#include "../effects/glow.h"
 
 #ifndef fabsf
 #	define fabsf(_f)	(float) fabs (_f)
@@ -50,7 +50,7 @@ static CFloatVector	vRingVerts [RING_SEGS] = {
 	CFloatVector::Create (-0.2706f, -0.6533f, 0.0f, 1.0f)
 };
 
-static int nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
+//static int nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
 
 void CThrusterFlames::Create (void)
 {
@@ -258,7 +258,7 @@ if (gameOpts->render.stereo.nGlasses && (ogl.StereoSeparation () >= 0))
 	static CFloatVector	vEye;
 
 	CFloatVector	v, vPosf, vNormf, vTrail [4], vCap [4], vTrailTip, vDirf;
-	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCap;
+	float		/*c = 1.0f 0.7f + 0.03f * fPulse,*/ dotTrail, dotCap;
 
 #if DBG
 if (fSize > 5.0f)

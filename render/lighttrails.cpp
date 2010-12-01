@@ -154,7 +154,7 @@ else if (gameOpts->render.coronas.bShots && corona.Load ()) {
 	fix			xSize;
 	tRgbaColorf	color;
 
-	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
+	//static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
 	CFixVector	vPos = objP->info.position.vPos;
 	xSize = (fix) (WeaponBlobSize (objP->info.nId) * F2X (fScale));
@@ -190,7 +190,7 @@ static CFloatVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{
 void RenderLightTrail (CObject *objP)
 {
 	tRgbaColorf		color, *colorP;
-	int				nTrailItem = -1, /*nCoronaItem = -1,*/ bGatling = 0; 
+	int				/*nTrailItem = -1, nCoronaItem = -1,*/ bGatling = 0;
 
 if (!SHOW_OBJ_FX)
 	return;

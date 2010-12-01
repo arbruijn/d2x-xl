@@ -236,7 +236,6 @@ if (nState)
 m = menu + nOptDifficulty;
 v = m->m_value;
 if (gameStates.app.nDifficultyLevel != v) {
-	gameStates.app.nDifficultyLevel = 
 	gameStates.app.nDifficultyLevel = v;
 	gameData.bosses.InitGateIntervals ();
 	sprintf (m->m_text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));

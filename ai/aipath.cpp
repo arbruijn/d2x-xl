@@ -765,12 +765,6 @@ void MoveObjectToGoal (CObject *objP, CFixVector *vGoalPoint, short nGoalSeg)
 if (aiP->nPathLength < 2)
 	return;
 Assert (objP->info.nSegment != -1);
-#if DBG
-if (objP->info.nSegment != nGoalSeg)
-	if (SEGMENTS [objP->info.nSegment].ConnectedSide (SEGMENTS + nGoalSeg) == -1) {
-		fix dist = PathLength (objP->info.position.vPos, objP->info.nSegment, *vGoalPoint, nGoalSeg, 30, WID_FLY_FLAG, 1);
-		}
-#endif
 Assert (aiP->nPathLength >= 2);
 if (aiP->nCurPathIndex <= 0) {
 	if (aiP->behavior == AIB_STATION) {

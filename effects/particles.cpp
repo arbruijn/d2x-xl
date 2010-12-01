@@ -1005,11 +1005,11 @@ else {
 pb [0].color = pb [1].color = pb [2].color = pb [3].color = m_renderColor;
 
 float hx = ParticleImageInfo (m_nType).xBorder;
-pb [m_nOrient].texCoord.v.u = pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + hx;
-pb [(m_nOrient + 1) % 4].texCoord.v.u = pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - hx;
+pb [(int) m_nOrient].texCoord.v.u = pb [int (m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + hx;
+pb [int (m_nOrient + 1) % 4].texCoord.v.u = pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - hx;
 float hy = ParticleImageInfo (m_nType).yBorder;
-pb [m_nOrient].texCoord.v.v = pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + hy;
-pb [(m_nOrient + 2) % 4].texCoord.v.v = pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - hy;
+pb [(int) m_nOrient].texCoord.v.v = pb [int (m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + hy;
+pb [int (m_nOrient + 2) % 4].texCoord.v.v = pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - hy;
 
 if (m_nType == RAIN_PARTICLES) {
 	uVec.Assign (m_vDir);

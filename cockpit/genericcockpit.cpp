@@ -1438,13 +1438,14 @@ x1 = x0 + nameLen;
 y0 = y;
 
 if (gameStates.render.cockpit.bShowPingStats) {
-	if (faw < 0)
+	if (faw < 0) {
 		if (gameData.multigame.kills.bShowList == 2)
 			xo = faw * 24;//was +25;
 		else if (IsCoopGame)
 			xo = faw * 14;//was +30;
 		else
 			xo = faw * 8; //was +20;
+		}
 	}
 for (i = 0; i < nPlayers; i++) {
 	int nPlayer;

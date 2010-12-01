@@ -388,7 +388,7 @@ if ((t = FindArg ("-use_shaders")))
 
 void EvalShipArgs (void)
 {
-	char*	szShipArgs [] = {"-medium_ship", "-light_ship", "-heavy_ship"};
+	const char*	szShipArgs [] = {"-medium_ship", "-light_ship", "-heavy_ship"};
 	int	t;
 	char	*p;
 

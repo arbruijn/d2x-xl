@@ -767,7 +767,7 @@ signal (SIGTERM, D2SignalHandler);
 #if 0 //def _WIN32
 SDL_SetSpecialKeyHandling (0);
 #endif
-SDL_putenv ("SDL_DISABLE_LOCK_KEYS=1");
+SDL_putenv (const_cast<char*>("SDL_DISABLE_LOCK_KEYS=1"));
 hogFileManager.Init ("", "");
 InitGameStates ();
 gameData.Init ();

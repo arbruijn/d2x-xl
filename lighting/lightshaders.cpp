@@ -1199,9 +1199,9 @@ return nLights;
 int SetupPerPixelLightingShader (CSegFace *faceP, int nType, bool bHeadlight)
 {
 PROF_START
-	static CBitmap	*nullBmP = NULL;
+	//static CBitmap	*nullBmP = NULL;
 
-	int	nLights, bStart = (ogl.m_states.iLight == 0);
+	int	nLights;//, bStart = (ogl.m_states.iLight == 0);
 
 if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
 	return 0;

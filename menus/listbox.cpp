@@ -400,7 +400,7 @@ if (!FFF (filespec, &ffs, 0)) {
 		} while (!FFN (&ffs, 0));
 	FFC (&ffs);
 	}
-i = lb.ListBox (pszTitle, filenames, 1, NULL);
+i = lb.ListBox (pszTitle, filenames, 0, 1, NULL);
 if (i < 0) 
 	return 0;
 strcpy (filename, filenames [i]);

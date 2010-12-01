@@ -1442,7 +1442,7 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 
 CCanvas::Push ();
 CCanvas::SetCurrent (NULL);
-CFont* font = CCanvas::Current ()->Font ();
+//CFont* font = CCanvas::Current ()->Font ();
 controls.FlushInput ();
 backgroundManager.Setup (NULL, m_xOffs, m_yOffs, 640, 480);
 //paletteManager.ResumeEffect ();

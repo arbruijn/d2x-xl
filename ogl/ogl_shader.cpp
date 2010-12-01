@@ -37,7 +37,7 @@
 #include "ogl_shader.h"
 #include "ogl_fastrender.h"
 #include "glare.h"
-#include "glow.h"
+#include "../effects/glow.h"
 #include "sphere.h"
 #include "rendermine.h"
 #include "gpgpu_lighting.h"
@@ -108,7 +108,6 @@ m_nCurrent = -1;
 void CShaderManager::Destroy (bool bAll)
 {
 for (int i = 0; i < int (m_shaders.ToS ()); i++) {
-	tShaderData& shader = m_shaders [i];
 	Delete (i);
 	if (bAll)
 		Reset (i);
@@ -320,7 +319,7 @@ tShaderData& shader = m_shaders [nShader];
 if (!shader.program) {
 	if (!Create (nShader))
 		return 0;
-	int	i;
+	int	i = 0;
 	if (gameOpts->ogl.bGlTexMerge)
 		i |= 1;
 	if (gameStates.render.nLightingMethod)

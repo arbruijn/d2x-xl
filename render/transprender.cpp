@@ -22,7 +22,7 @@
 #include "lightmap.h"
 #include "lightning.h"
 #include "sphere.h"
-#include "glow.h"
+#include "../effects/glow.h"
 #include "glare.h"
 #include "thrusterflames.h"
 #include "automap.h"

@@ -874,7 +874,7 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_ALTED + KEY_F:
-			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
+			gameStates.render.bShowFrameRate = (gameStates.render.bShowFrameRate + 1) % (6 + (gameStates.render.bPerPixelLighting == 2));
 			break;
 
 #if PROFILING

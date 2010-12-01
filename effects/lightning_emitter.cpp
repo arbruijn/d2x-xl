@@ -61,7 +61,7 @@ m_lightning.Clear ();
 CLightning l;
 l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 		  nAngle, nOffset, nNodes, nChildren, nSteps,
-		  nSmoothe, bClamp, bGlow, bLight, nStyle, colorP, false, -1);
+		  nSmoothe, bClamp, bGlow, bLight, nStyle, colorP, NULL, -1);
 
 int bChildren = (gameOpts->render.lightning.nStyle > 1);
 

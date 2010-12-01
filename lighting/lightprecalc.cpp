@@ -28,7 +28,7 @@
 #if !USE_OPENMP
 #include "SDL_mutex.h"
 
-static SDL_mutex* semaphore;
+//static SDL_mutex* semaphore;
 #endif
 
 //------------------------------------------------------------------------------

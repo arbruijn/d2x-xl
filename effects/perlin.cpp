@@ -5,7 +5,7 @@
 #include "maths.h"
 #include "perlin.h"
 
-static long randSeed = 0;
+//static long randSeed = 0;
 
 CPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
 

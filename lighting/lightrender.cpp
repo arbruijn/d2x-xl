@@ -755,7 +755,7 @@ void CLightManager::ResetAllUsed (int bVariable, int nThread)
 
 if (bVariable) {
 	while (i) {
-		if (prl = m_data.renderLights [--i]) {
+		if ((prl = m_data.renderLights [--i])) {
 			if (prl->info.nType < 2)
 				break;
 			ResetUsed (prl, nThread);
@@ -764,7 +764,7 @@ if (bVariable) {
 	}
 else {
 	while (i) {
-		if (prl = m_data.renderLights [--i]) {
+		if ((prl = m_data.renderLights [--i])) {
 			ResetUsed (prl, nThread);
 			}
 		}

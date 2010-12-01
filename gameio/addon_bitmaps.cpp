@@ -27,17 +27,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-CAddonBitmap explBlast ("blast.tga");
-CAddonBitmap corona ("corona.tga");
-CAddonBitmap glare ("glare.tga");
-CAddonBitmap halo ("halo.tga");
-CAddonBitmap thruster ("thruster.tga");
-CAddonBitmap shield ("shield.tga");
-CAddonBitmap deadzone ("deadzone.tga");
+CAddonBitmap explBlast (const_cast<char*>("blast.tga"));
+CAddonBitmap corona (const_cast<char*>("corona.tga"));
+CAddonBitmap glare (const_cast<char*>("glare.tga"));
+CAddonBitmap halo (const_cast<char*>("halo.tga"));
+CAddonBitmap thruster (const_cast<char*>("thruster.tga"));
+CAddonBitmap shield (const_cast<char*>("shield.tga"));
+CAddonBitmap deadzone (const_cast<char*>("deadzone.tga"));
 CAddonBitmap damageIcon [3];
-CAddonBitmap scope ("scope.tga");
-CAddonBitmap sparks ("sparks.tga");
-CAddonBitmap joyMouse ("joymouse.tga");
+CAddonBitmap scope (const_cast<char*>("scope.tga"));
+CAddonBitmap sparks (const_cast<char*>("sparks.tga"));
+CAddonBitmap joyMouse (const_cast<char*>("joymouse.tga"));
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -153,9 +153,9 @@ deadzone.Load ();
 PrintLog ("   Loading zoom image\n");
 scope.Load ();
 PrintLog ("   Loading damage icons\n");
-damageIcon [0].Load ("aimdmg.tga");
-damageIcon [1].Load ("drivedmg.tga");
-damageIcon [2].Load ("gundmg.tga");
+damageIcon [0].Load (const_cast<char*>("aimdmg.tga"));
+damageIcon [1].Load (const_cast<char*>("drivedmg.tga"));
+damageIcon [2].Load (const_cast<char*>("gundmg.tga"));
 PrintLog ("   Loading joystick emulator image\n");
 joyMouse.Load ();
 }

@@ -94,7 +94,7 @@ int CheckForUpdate (void)
 	int		nVersion [3], nLocation;
 	char		szMsg [1000];
 
-	static char* pszSource [2] = {
+	static const char* pszSource [2] = {
 		"http://www.descent2.de/downloads", 
 		"http://sourceforge.net/projects/d2x-xl/files"
 	};

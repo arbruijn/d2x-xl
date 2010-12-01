@@ -157,7 +157,7 @@ void ResetLightmapShaders (void)
 int SetupLightmapShader (CSegFace *faceP, int nType, bool bHeadlight)
 {
 PROF_START
-	static CBitmap	*nullBmP = NULL;
+	//static CBitmap	*nullBmP = NULL;
 
 if (!CreateLightmapShader (nType))
 	return 0;

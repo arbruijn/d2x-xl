@@ -116,7 +116,7 @@ if (pii.bAnimate && (pii.nFrames > 1)) {
 			return;
 		bmP->SetCurFrame (pii.iFrame);
 		t0 [nType] = gameStates.app.nSDLTicks [0];
-		pii.iFrame = ++pii.iFrame % pii.nFrames;
+		pii.iFrame = (pii.iFrame + 1) % pii.nFrames;
 		}
 	}
 }

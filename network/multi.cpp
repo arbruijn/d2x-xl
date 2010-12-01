@@ -2364,7 +2364,7 @@ bufI += 2;
 PUT_INTEL_INT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.flags);
 bufI += 4;
 #if 1
-if (multiMessageLengths [nType][1] > 0) {
+if (multiMessageLengths [(int) nType][1] > 0) {
 	if (gameStates.multi.nGameType == UDP_GAME) {
 		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameStates.app.nRandSeed);
 		bufI += 2;

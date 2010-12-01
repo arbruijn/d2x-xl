@@ -40,7 +40,7 @@
 #include "rendermine.h"
 #include "light.h"
 #include "lightmap.h"
-#include "glow.h"
+#include "../effects/glow.h"
 #include "autodl.h"
 #include "tracker.h"
 #include "omega.h"

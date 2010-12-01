@@ -1397,7 +1397,7 @@ gameData.segs.points.Resize (LEVEL_VERTICES + LEVEL_SIDES);
 
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
 	m_bColoredSeg = ((m_segP->m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA)) ||
-						  (m_segP->m_function >= SEGMENT_FUNC_TEAM_BLUE) && (m_segP->m_function <= SEGMENT_FUNC_TEAM_RED)) ||
+						  ((m_segP->m_function >= SEGMENT_FUNC_TEAM_BLUE) && (m_segP->m_function <= SEGMENT_FUNC_TEAM_RED))) ||
 					     (m_segP->m_group >= 0);
 #if DBG
 	if (nSegment == nDbgSeg)

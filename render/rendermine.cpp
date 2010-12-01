@@ -373,7 +373,7 @@ while (nThreads > 0) {
 		nListPos [i] += (gameStates.app.nThreads - 1);
 		bSemaphore [i] = 0;
 		}
-	i = ++i % (gameStates.app.nThreads - 1);
+	i = (i + 1) % (gameStates.app.nThreads - 1);
 	}
 }
 

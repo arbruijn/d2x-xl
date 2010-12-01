@@ -1302,7 +1302,7 @@ if (m_info.bOnlyRobots) {
 	*m_info.szBriefScreen = *m_info.szBriefScreenB = '\0';
 	while (m_info.message && !PageHasRobot (m_info.message))
 		if (!SkipPage ())
-			return NULL;
+			return 0;
 	if (!m_info.message)
 		return 0;
 	}

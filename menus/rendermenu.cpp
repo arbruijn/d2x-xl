@@ -315,7 +315,7 @@ if (renderOpts.n3DGlasses >= 0) {
 m = menu + renderOpts.nCameras;
 v = m->m_value;
 if (nCameras != v) {
-	if (nCameras = v) {
+	if ((nCameras = v)) {
 		gameOpts->render.cameras.bHires = (nCameras == 2);
 		cameraManager.ReAlign ();
 		}
@@ -464,7 +464,7 @@ nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 :
 xStereoSeparation = gameOpts->render.stereo.xSeparation / (STEREO_SEPARATION_STEP) - 1;
 if (xStereoSeparation < 0)
 	xStereoSeparation = 0;
-else if (xStereoSeparation >= sizeofa (pszStereoSeparation))
+else if (xStereoSeparation >= (int) sizeofa (pszStereoSeparation))
 	xStereoSeparation = sizeofa (pszStereoSeparation) - 1;
 
 do {

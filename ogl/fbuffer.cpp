@@ -157,7 +157,6 @@ if (m_info.hFBO) {
 	if (m_info.nColorBuffers) {
 		ogl.DeleteTextures (m_info.nColorBuffers, m_info.hColorBuffer);
 		memset (m_info.hColorBuffer, 0, sizeof (m_info.hColorBuffer));
-		m_info.nColorBuffers = 
 		m_info.nColorBuffers = 0;
 		}
 	if (m_info.hDepthBuffer) {
