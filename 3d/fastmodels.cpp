@@ -24,7 +24,7 @@
 #include "light.h"
 #include "dynlight.h"
 #include "lightning.h"
-#include "glow.h"
+#include "../effects/glow.h"
 #include "renderthreads.h"
 #include "hiresmodels.h"
 #include "buildmodel.h"
@@ -398,7 +398,7 @@ if ((psm->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) == (REAR_THRUSTER | 
 	glTranslatef (-vCenter [X], -vCenter [Y], -vCenter [Z]);
 	if (gameStates.app.nSDLTicks [0] - psm->m_tFrame > nTimeout) {
 		psm->m_tFrame = gameStates.app.nSDLTicks [0];
-		psm->m_iFrame = ++psm->m_iFrame % psm->m_nFrames;
+		psm->m_iFrame = (psm->m_iFrame + 1) % psm->m_nFrames;
 		}
 	}
 else {
@@ -426,7 +426,7 @@ else {
 	glTranslatef (0, -y, 0);
 	if (gameStates.app.nSDLTicks [0] - psm->m_tFrame > nTimeout) {
 		psm->m_tFrame = gameStates.app.nSDLTicks [0];
-		psm->m_iFrame = ++psm->m_iFrame % psm->m_nFrames;
+		psm->m_iFrame = (psm->m_iFrame + 1) % psm->m_nFrames;
 		}
 	}
 return 1;
