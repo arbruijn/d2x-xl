@@ -90,6 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ipx.h"
 #include "gr.h"
 #include "marker.h"
+#include "hogfile.h"
 
 #if DBG
 #	define IFDBG(_expr)	_expr
@@ -97,7 +98,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define IFDBG(_expr)
 #endif
 
-#define STATE_VERSION				54
+#define STATE_VERSION				55
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -804,6 +805,8 @@ void CSaveGameManager::SaveGameData (void)
 m_cf.WriteInt (gameData.segs.nMaxSegments);
 // Save the Between levels flag...
 m_cf.WriteInt (m_bBetweenLevels);
+if (STATE_VERSION >= 55)
+	m_cf.WriteInt (gameOpts->app.bEnableMods);
 // Save the mission info...
 m_cf.Write (missionManager.list + missionManager.nCurrentMission, sizeof (char), 9);
 //Save level info
@@ -833,7 +836,8 @@ m_cf.WriteByte (gameData.weapons.nSecondary);
 m_cf.WriteInt (gameStates.app.nDifficultyLevel);
 // Save cheats enabled
 m_cf.WriteInt (gameStates.app.cheats.bEnabled);
-m_cf.WriteInt (gameOpts->app.bEnableMods);
+if (STATE_VERSION < 55)
+	m_cf.WriteInt (gameOpts->app.bEnableMods);
 for (i = 0; i < 2; i++) {
 	m_cf.WriteInt (F2X (gameStates.gameplay.slowmo [i].fSpeed));
 	m_cf.WriteInt (gameStates.gameplay.slowmo [i].nState);
@@ -1676,6 +1680,8 @@ if (m_nVersion >= 39) {
 m_bBetweenLevels = m_cf.ReadInt ();
 Assert (m_bBetweenLevels == 0);	//between levels save ripped out
 // Read the mission info...
+if (m_nVersion >= 55)
+	gameOpts->app.bEnableMods = m_cf.ReadInt ();
 if (!LoadMission ())
 	return 0;
 //Read level info
@@ -1743,7 +1749,7 @@ SelectWeapon (gameData.weapons.nSecondary, 1, 0, 0);
 gameStates.app.nDifficultyLevel = m_cf.ReadInt ();
 // Restore the cheats enabled flag
 gameStates.app.cheats.bEnabled = m_cf.ReadInt ();
-if (m_nVersion >= 52)
+if ((m_nVersion >= 52) && (m_nVersion <= 54))
 	gameOpts->app.bEnableMods = m_cf.ReadInt ();
 for (i = 0; i < 2; i++) {
 	if (m_nVersion < 33) {

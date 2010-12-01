@@ -1279,7 +1279,7 @@ void move_object_to_legal_spot(CObject *objP)
 			CFixVector	vSegCenter, goal_dir;
 			fix			dist_to_center;
 
-			vSegCenter = SEGMENTS [objP->info.nSegment].Center ();
+			vSegCenter = SEGMENTS [segP->m_children [i]].Center ();
 			goal_dir = vSegCenter - objP->info.position.vPos;
 			dist_to_center = CFixVector::Normalize (goal_dir);
 			goal_dir *= objP->info.xSize;
