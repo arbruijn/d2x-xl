@@ -1332,7 +1332,7 @@ void AttemptToResumePath (CObject *objP)
 	//int				nObject = objP->Index ();
 	tAIStaticInfo		*aiP = &objP->cType.aiInfo;
 //	int				nGoalSegnum, object_segnum,
-	int				nAbsIndex, nNewPathIndex;
+//	int				nAbsIndex, nNewPathIndex;
 
 if ((aiP->behavior == AIB_STATION) && (ROBOTINFO (objP->info.nId).companion != 1))
 	if (d_rand () > 8192) {
