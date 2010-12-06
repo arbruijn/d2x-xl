@@ -45,6 +45,7 @@ void AICollectPathGarbage (void);
 void ValidateAllPaths (void);
 int ValidatePath (int debugFlag, tPointSeg* pointSegP, int numPoints);
 #endif
+bool MoveObjectToLegalSpot (CObject *objP, int bMoveToCenter);
 
 //	------------------------------------------------------------------------
 
@@ -841,16 +842,19 @@ void AIFollowPath (CObject *objP, int nTargetVisibility, int nPrevVisibility, CF
 {
 	tAIStaticInfo*	aiP = &objP->cType.aiInfo;
 
-	CFixVector		vGoalPoint, vNewGoalPoint;
+	CFixVector		vGoalPoint;
 	fix				xDistToGoal;
 	tRobotInfo*		botInfoP = &ROBOTINFO (objP->info.nId);
-	int				forced_break, original_dir, original_index;
+	int				originalDir, originalIndex;
 	fix				xDistToTarget;
 	short				nGoalSeg;
 	tAILocalInfo*	ailP = gameData.ai.localInfo + objP->Index ();
 	fix				thresholdDistance;
 
-
+#if DBG
+if (objP->Index () == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 if ((aiP->nHideIndex == -1) || (aiP->nPathLength == 0)) {
 	if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 		CreateNSegmentPath (objP, 5, -1);
@@ -989,12 +993,10 @@ else if (aiP->nCurPathIndex >= aiP->nPathLength) {
 	}
 vGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 //	If near goal, pick another goal point.
-forced_break = 0;		//	Gets set for short paths.
-original_dir = aiP->PATH_DIR;
-original_index = aiP->nCurPathIndex;
+originalDir = aiP->PATH_DIR;
+originalIndex = aiP->nCurPathIndex;
 thresholdDistance = FixMul (objP->mType.physInfo.velocity.Mag (), gameData.time.xFrame) * 2 + I2X (2);
-vNewGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
-while ((xDistToGoal < thresholdDistance) && !forced_break) {
+while (xDistToGoal < thresholdDistance) {
 	//	Advance to next point on path.
 	aiP->nCurPathIndex += aiP->PATH_DIR;
 	//	See if next point wraps past end of path (in either direction), and if so, deal with it based on mode.p.
@@ -1110,23 +1112,17 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 		break;
 		}
 	else {
-		vNewGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
-		vGoalPoint = vNewGoalPoint;
+		vGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 		xDistToGoal = CFixVector::Dist(vGoalPoint, objP->info.position.vPos);
-		//--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 		}
 	//	If went all the way around to original point, in same direction, then get out of here!
-	if ((aiP->nCurPathIndex == original_index) && (aiP->PATH_DIR == original_dir)) {
+	if ((aiP->nCurPathIndex == originalIndex) && (aiP->PATH_DIR == originalDir)) {
 		CreatePathToTarget (objP, 3, 1);
-		//--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
-		forced_break = 1;
+		break;
 		}
-		//--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 	}	//	end while
 //	Set velocity (objP->mType.physInfo.velocity) and orientation (objP->info.position.mOrient) for this CObject.
-//--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 AIPathSetOrientAndVel (objP, &vGoalPoint, nTargetVisibility, vecToTarget);
-//--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 }
 
 //	----------------------------------------------------------------------------------------------------------
@@ -1340,7 +1336,7 @@ void AttemptToResumePath (CObject *objP)
 
 if ((aiP->behavior == AIB_STATION) && (ROBOTINFO (objP->info.nId).companion != 1))
 	if (d_rand () > 8192) {
-		tAILocalInfo			*ailP = &gameData.ai.localInfo [objP->Index ()];
+		tAILocalInfo *ailP = &gameData.ai.localInfo [objP->Index ()];
 
 		aiP->nHideSegment = objP->info.nSegment;
 //Int3 ();
@@ -1349,19 +1345,19 @@ if ((aiP->behavior == AIB_STATION) && (ROBOTINFO (objP->info.nId).companion != 1
 		console.printf (1, "Note: Bashing hide CSegment of robot %i to current CSegment because he's lost.\n", objP->Index ());
 #endif
 		}
-
-//	object_segnum = objP->info.nSegment;
+#if 0
 nAbsIndex = aiP->nHideIndex+aiP->nCurPathIndex;
-//	nGoalSegnum = gameData.ai.routeSegs [nAbsIndex].nSegment;
-
 nNewPathIndex = aiP->nCurPathIndex - aiP->PATH_DIR;
-
 if ((nNewPathIndex >= 0) && (nNewPathIndex < aiP->nPathLength)) {
 	aiP->nCurPathIndex = nNewPathIndex;
 	}
-else {
+else 
+#endif
+	{
 	//	At end of line and have nowhere to go.
-	MoveTowardsSegmentCenter (objP);
+	//MoveTowardsSegmentCenter (objP);
+	//if (!MoveObjectToLegalSpot (objP, 1))
+		MoveObjectToLegalSpot (objP, 0);
 	CreatePathToStation (objP, 15);
 	}
 }

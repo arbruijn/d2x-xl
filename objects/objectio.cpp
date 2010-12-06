@@ -297,6 +297,8 @@ info.contains.nId = cf.ReadByte ();
 info.contains.nCount = cf.ReadByte ();
 info.nCreator = cf.ReadByte ();
 info.xLifeLeft = cf.ReadFix ();   
+if (info.nType == OBJ_PLAYER)
+	info.xLifeLeft = IMMORTAL_TIME;
 if (info.movementType == MT_PHYSICS) {
 	cf.ReadVector (mType.physInfo.velocity);   
 	cf.ReadVector (mType.physInfo.thrust);     

@@ -448,29 +448,37 @@ return xDistToGoal;
 // -----------------------------------------------------------------------------
 //	Move the CObject objP to a spot in which it doesn't intersect a CWall.
 //	It might mean moving it outside its current CSegment.
-void MoveObjectToLegalSpot (CObject *objP, int bMoveToCenter)
+bool MoveObjectToLegalSpot (CObject *objP, int bMoveToCenter)
 {
 	CFixVector	vSegCenter, vOrigPos = objP->info.position.vPos;
 	int			i;
 	CSegment		*segP = SEGMENTS + objP->info.nSegment;
 
+#if DBG
+if (objP - OBJECTS == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 if (bMoveToCenter) {
 	vSegCenter = SEGMENTS [objP->info.nSegment].Center ();
 	MoveObjectToLegalPoint (objP, &vSegCenter);
-	return;
+	return !ObjectIntersectsWall (objP);
 	}
 else {
 	for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 		if (segP->IsDoorWay ((short) i, objP) & WID_FLY_FLAG) {
 			vSegCenter = SEGMENTS [segP->m_children [i]].Center ();
-			MoveObjectToLegalPoint (objP, &vSegCenter);
+			objP->info.position.vPos = vSegCenter;
 			if (ObjectIntersectsWall (objP))
 				objP->info.position.vPos = vOrigPos;
 			else {
+				objP->info.position.vPos = vOrigPos;
+				MoveObjectToLegalPoint (objP, &vSegCenter);
+				if (ObjectIntersectsWall (objP))
+					objP->ApplyDamageToRobot (FixMul (objP->info.xShield / 5, gameData.time.xFrame), objP->Index ());
 				int nNewSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
-				if (nNewSeg != -1) {
+				if ((nNewSeg != -1) && (nNewSeg != objP->info.nSegment)) {
 					objP->RelinkToSeg (nNewSeg);
-					return;
+					return true;
 					}
 				}
 			}
@@ -480,13 +488,15 @@ else {
 if (ROBOTINFO (objP->info.nId).bossFlag) {
 	Int3 ();		//	Note: Boss is poking outside mine.  Will try to resolve.
 	TeleportBoss (objP);
+	return true;
 	}
 	else {
 #if TRACE
 		console.printf (CON_DBG, "Note: Killing robot #%i because he's badly stuck outside the mine.\n", objP->Index ());
 #endif
-		objP->ApplyDamageToRobot (objP->info.xShield*2, objP->Index ());
+		objP->ApplyDamageToRobot (FixMul (objP->info.xShield / 5, gameData.time.xFrame), objP->Index ());
 	}
+return false;
 }
 
 // -----------------------------------------------------------------------------
