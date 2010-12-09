@@ -496,10 +496,10 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	}
 
 if (gameOpts->gameplay.nShip [1] > -1) {
-	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip = 
 	gameOpts->gameplay.nShip [0] = gameOpts->gameplay.nShip [1];
 	gameOpts->gameplay.nShip [1] = -1;
 	}
+gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip = gameOpts->gameplay.nShip [0];
 
 LOCALPLAYER.SetEnergy (gameStates.gameplay.InitialEnergy ());
 LOCALPLAYER.SetShield (gameStates.gameplay.InitialShield ());

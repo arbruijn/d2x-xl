@@ -514,14 +514,17 @@ void CLightManager::DeleteLightnings (void)
 {
 	CDynLight* pl = &m_data.lights [0];
 
-for (short i = 0; i < m_data.nLights [0]; )
-	if ((pl->info.nSegment >= 0) && (pl->info.nSide < 0)) {
-		DeleteFromList (pl, i);
+if (pl != NULL) {
+	for (short i = 0; i < m_data.nLights [0]; ) {
+		if ((pl->info.nSegment >= 0) && (pl->info.nSide < 0)) {
+			DeleteFromList (pl, i);
+			}
+		else {
+			i++;
+			pl++;
+			}
 		}
-	else {
-		i++;
-		pl++;
-		}
+	}
 }
 
 //------------------------------------------------------------------------------
