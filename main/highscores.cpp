@@ -376,25 +376,93 @@ if ((missionManager.nCurrentLevel >= missionManager.nLastLevel) &&
 
 //-----------------------------------------------------------------------------
 
+#define LAST_OEM_LEVEL	IS_D2_OEM && (missionManager.nCurrentLevel == 8)
+
+bool ScoreTableFinish (void)
+{
+if (LAST_OEM_LEVEL) {
+	ScoreTableQuit (1, (gameData.app.nGameMode & GM_NETWORK) != 0);
+	return true;
+	}
+LOCALPLAYER.connected = 7;
+if ((gameData.app.nGameMode & GM_NETWORK) != 0)
+	NetworkSendEndLevelPacket ();
+return false;
+}
+
+//-----------------------------------------------------------------------------
+
+int ScoreTableInput (void)
+{
+	int i;
+
+for (i = 0; i < 4; i++)
+	if (JoyGetButtonDownCnt (i) && ScoreTableFinish ())
+		return -1;
+
+for (i = 0; i < 3; i++)
+	if (MouseButtonDownCount (i) && ScoreTableFinish ())
+		return -1;
+
+//see if redbook song needs to be restarted
+int k = KeyInKey ();
+switch (k) {
+	case KEY_ENTER:
+	case KEY_SPACEBAR:
+		if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))
+			return 1;
+		if (ScoreTableFinish ())
+			return -1;
+		break;
+
+	case KEY_ESC:
+		if (gameData.app.nGameMode & GM_NETWORK) {
+			gameData.multiplayer.xStartAbortMenuTime = TimerGetApproxSeconds ();
+			int nInMenu = gameStates.menus.nInMenu;
+			gameStates.menus.nInMenu = 0;
+			MsgBox (NULL, NetworkEndLevelPoll3, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+			gameStates.menus.nInMenu = nInMenu;
+			}
+		else {
+			int nInMenu = gameStates.menus.nInMenu;
+			gameStates.menus.nInMenu = 0;
+			int choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+			gameStates.menus.nInMenu = nInMenu;
+			if (choice == 0) {
+				ScoreTableQuit (1, (gameData.app.nGameMode & GM_NETWORK) != 0);
+				return -1;
+				}
+			gameData.score.nKillsChanged = 1;
+			}
+		break;
+
+	case KEY_PRINT_SCREEN:
+		SaveScreenShot (NULL, 0);
+		break;
+
+	default:
+		break;
+	}
+return 0;
+}
+
+//-----------------------------------------------------------------------------
+
 #define MAX_VIEW_TIME   	15000
 #define ENDLEVEL_IDLE_TIME	10000
 
-#define LAST_OEM_LEVEL	IS_D2_OEM && (missionManager.nCurrentLevel == 8)
-
 void ScoreTableView (int bNetwork)
 {											 
-   int	i, k, done, choice, nInMenu;
+   int	i, done;
 	uint	entryTime = SDL_GetTicks ();
 	int	key;
-   int	oldstates [MAX_PLAYERS];
-   int	previousSeconds_left = -1;
-   int	nReady,nEscaped;
+   int	oldStates [MAX_PLAYERS];
+   int	nPrevSecsLeft = -1;
+   int	nReady, nEscaped;
 	int	bRedraw = 0;
 
 gameStates.menus.nInMenu++;
 gameStates.app.bGameRunning = 0;
-
-bNetwork = gameData.app.nGameMode & GM_NETWORK;
 
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	audio.DestroyObjectSound (gameData.multiplayer.players [i].nObject);
@@ -405,7 +473,7 @@ gameData.score.bWaitingForOthers = 0;
 GameFlushInputs ();
 done = 0;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	oldstates  [i] = gameData.multiplayer.players [i].connected;
+	oldStates [i] = gameData.multiplayer.players [i].connected;
 if (bNetwork)
 	NetworkEndLevel (&key);
 backgroundManager.LoadStars (true);
@@ -416,80 +484,17 @@ while (!done) {
 		bRedraw = 1;
 		}
 	gameData.score.nKillsChanged = 0;
-	for (i = 0; i < 4; i++)
-		if (JoyGetButtonDownCnt (i)) {
-			if (LAST_OEM_LEVEL) {
-				ScoreTableQuit (1, bNetwork);
-				return;
-				}
-			LOCALPLAYER.connected = 7;
-			if (bNetwork)
-				NetworkSendEndLevelPacket ();
-			break;
-			} 		
-	for (i = 0; i < 3; i++)
-		if (MouseButtonDownCount (i)) {
-			if (LAST_OEM_LEVEL) {
-				ScoreTableQuit (1, bNetwork);
-				return;
-				}
-			LOCALPLAYER.connected=7;
-			if (bNetwork)
-				NetworkSendEndLevelPacket ();
-			break;
-			}		
-	//see if redbook song needs to be restarted
 	redbook.CheckRepeat ();
-	k = KeyInKey ();
-	switch (k) {
-		case KEY_ENTER:
-		case KEY_SPACEBAR:
-			if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM)) {
-				done=1;
-				break;
-				}
-			if (LAST_OEM_LEVEL) {
-				ScoreTableQuit (1, bNetwork);
-				return;
-				}
-			gameData.multiplayer.players  [gameData.multiplayer.nLocalPlayer].connected = 7;
-			if (bNetwork)
-				NetworkSendEndLevelPacket ();
-			break;
-
-		case KEY_ESC:
-			if (gameData.app.nGameMode & GM_NETWORK) {
-				gameData.multiplayer.xStartAbortMenuTime = TimerGetApproxSeconds ();
-				nInMenu = gameStates.menus.nInMenu;
-				gameStates.menus.nInMenu = 0;
-				choice = MsgBox (NULL, NetworkEndLevelPoll3, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
-				gameStates.menus.nInMenu = nInMenu;
-				}
-			else
-				nInMenu = gameStates.menus.nInMenu;
-				gameStates.menus.nInMenu = 0;
-				choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
-				gameStates.menus.nInMenu = nInMenu;
-				if (choice == 0) {
-					ScoreTableQuit (1, bNetwork);
-					return;
-					}
-				gameData.score.nKillsChanged = 1;
-				break;
-
-		case KEY_PRINT_SCREEN:
-			SaveScreenShot (NULL, 0);
-			break;
-
-		case KEY_BACKSPACE:
-			Int3 ();
-			break;
-
+	switch (ScoreTableInput ()) {
+		case -1:
+			return;
+		case 1:
+			done = 1;
 		default:
 			break;
 		}
-	if ((SDL_GetTicks () >= entryTime + MAX_VIEW_TIME) && 
-		 (LOCALPLAYER.connected != 7)) {
+
+	if ((SDL_GetTicks () >= entryTime + MAX_VIEW_TIME) && (LOCALPLAYER.connected != 7)) {
 		if (LAST_OEM_LEVEL) {
 			ScoreTableQuit (1, bNetwork);
 			return;
@@ -502,43 +507,45 @@ while (!done) {
 		if (bNetwork)
 			NetworkSendEndLevelPacket ();
 		}
-	if (bNetwork && (gameData.app.nGameMode & GM_NETWORK)) {
+	if ((gameData.app.nGameMode & GM_NETWORK) != 0) {
 		CMenu m (1);
 		m.AddGauge ("", -1, 1000); //dummy for NetworkEndLevelPoll2()
-		NetworkEndLevelPoll2 (m, key, 0, 0);
+		NetworkEndLevelPoll2 (m, key, 0, 0); // check the states of the other players
 		for (nEscaped = 0, nReady = 0, i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if (gameData.multiplayer.players [i].connected && (i != gameData.multiplayer.nLocalPlayer)) {
 			// Check timeout for idle players
-			if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ENDLEVEL_IDLE_TIME) {
-	#if TRACE
-				console.printf (CON_DBG, "idle timeout for CPlayerData %d.\n", i);
-	#endif
-				gameData.multiplayer.players [i].connected = 0;
-				NetworkSendEndLevelSub (i);
+				if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ENDLEVEL_IDLE_TIME) {
+					gameData.multiplayer.players [i].connected = 0;
+					//if (NetworkIAmMaster ())
+						NetworkSendEndLevelSub (i);
+					}
 				}
-			}
-		if (gameData.multiplayer.players [i].connected != oldstates [i]) {
-			if (szConditionLetters [gameData.multiplayer.players [i].connected] != szConditionLetters [oldstates [i]])
-				gameData.score.nKillsChanged = 1;
-				oldstates [i] = gameData.multiplayer.players [i].connected;
+
+			if (gameData.multiplayer.players [i].connected != oldStates [i]) {
+				if (szConditionLetters [gameData.multiplayer.players [i].connected] != szConditionLetters [oldStates [i]])
+					gameData.score.nKillsChanged = 1;
+				oldStates [i] = gameData.multiplayer.players [i].connected;
 				NetworkSendEndLevelPacket ();
 				}
-			if ((gameData.multiplayer.players [i].connected == 0) || (gameData.multiplayer.players [i].connected == 7))
-				nReady++;
-			if (gameData.multiplayer.players [i].connected != 1)
+
+			if (gameData.multiplayer.players [i].connected != 1) {
 				nEscaped++;
-			}
-		if (nReady >= gameData.multiplayer.nPlayers)
-			done = 1;
-		if (nEscaped >= gameData.multiplayer.nPlayers)
-			gameData.reactor.countdown.nSecsLeft = -1;
-		if (previousSeconds_left != gameData.reactor.countdown.nSecsLeft) {
-			previousSeconds_left = gameData.reactor.countdown.nSecsLeft;
-			gameData.score.nKillsChanged=1;
-			}
-		if (gameData.score.nKillsChanged) {
-			ScoreTableRedraw ();
-			gameData.score.nKillsChanged = 0;
+				if ((gameData.multiplayer.players [i].connected == 0) || (gameData.multiplayer.players [i].connected == 7))
+					nReady++;
+				}
+
+			if (nReady >= gameData.multiplayer.nPlayers)
+				done = 1;
+			if (nEscaped >= gameData.multiplayer.nPlayers)
+				gameData.reactor.countdown.nSecsLeft = -1;
+			if (nPrevSecsLeft != gameData.reactor.countdown.nSecsLeft) {
+				nPrevSecsLeft = gameData.reactor.countdown.nSecsLeft;
+				gameData.score.nKillsChanged = 1;
+				}
+			if (gameData.score.nKillsChanged) {
+				ScoreTableRedraw ();
+				gameData.score.nKillsChanged = 0;
+				}
 			}
 		}
 	}

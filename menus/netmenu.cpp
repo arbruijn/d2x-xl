@@ -222,8 +222,8 @@ if (nState)
 
 	static fix t1 = 0;
 	int i = 0;
-	int num_ready = 0;
-	int goto_secret = 0;
+	int nReady = 0;
+	int bSecret = 0;
 	fix t;
 
 	// Send our endlevel packet at regular intervals
@@ -235,13 +235,14 @@ NetworkListen ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((gameData.multiplayer.players [i].connected != 1) && 
 		 (gameData.multiplayer.players [i].connected != 5) && 
-		 (gameData.multiplayer.players [i].connected != 6))
-		num_ready++;
-	if (gameData.multiplayer.players [i].connected == 4)
-		goto_secret = 1;                                        
+		 (gameData.multiplayer.players [i].connected != 6)) {
+		nReady++;
+		if (gameData.multiplayer.players [i].connected == 4)
+			bSecret = 1;                                        
+		}
 	}
-if (num_ready == gameData.multiplayer.nPlayers) {// All players have checked in or are disconnected
-	if (goto_secret)
+if (nReady == gameData.multiplayer.nPlayers) {// All players have checked in or are disconnected
+	if (bSecret)
 		key = -3;
 	else
 		key = -2;
@@ -257,7 +258,7 @@ if (nState)
 	return nCurItem;
 
 	// Polling loop for End-of-level menu
-   int num_ready = 0, i;
+   int nReady = 0, i;
  
 if (TimerGetApproxSeconds () > (gameData.multiplayer.xStartAbortMenuTime + (I2X (8))))
 	key = -2;
@@ -266,8 +267,8 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if ((gameData.multiplayer.players [i].connected != 1) && 
 		 (gameData.multiplayer.players [i].connected != 5) && 
 		 (gameData.multiplayer.players [i].connected != 6))
-		num_ready++;
-if (num_ready == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected
+		nReady++;
+if (nReady == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected
 	key = -2;
 return nCurItem;
 }

@@ -238,9 +238,7 @@ if (gameData.multiplayer.players [nPlayer].connected == 1) {// Still playing
 	*end.SecondsLeft () = gameData.reactor.countdown.nSecsLeft;
 	}
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {       
-	if ((i != gameData.multiplayer.nLocalPlayer) && 
-		 (i != nPlayer) && 
-		 (gameData.multiplayer.players [i].connected)) {
+	if ((i != gameData.multiplayer.nLocalPlayer) && (i != nPlayer) && (gameData.multiplayer.players [i].connected)) {
 		if (gameData.multiplayer.players [i].connected == 1)
 			NetworkSendEndLevelShortSub (nPlayer, i);
 		else if (gameStates.multi.nGameType >= IPX_GAME)
@@ -261,29 +259,31 @@ NetworkSendEndLevelSub (gameData.multiplayer.nLocalPlayer);
 }
 
 //------------------------------------------------------------------------------
+// Tell player nDestPlayer that player nSrcPlayer is out of the level
 
-/* Send an endlevel packet for a CPlayerData */
 void NetworkSendEndLevelShortSub (int nSrcPlayer, int nDestPlayer)
 {
+if (gameStates.multi.nGameType < IPX_GAME)
+	return;
+if (!gameData.multiplayer.players [nDestPlayer].connected)
+	return;
+if (nDestPlayer == gameData.multiplayer.nLocalPlayer)
+	return;
+if (nDestPlayer == nSrcPlayer)
+	return;
+if ((gameStates.multi.nGameType == UDP_GAME) && (nSrcPlayer != gameData.multiplayer.nLocalPlayer) && !NetworkIAmMaster ())
+	return;
+
 	tEndLevelInfoShort eli;
 
 eli.nType = PID_ENDLEVEL_SHORT;
 eli.nPlayer = nSrcPlayer;
 eli.connected = gameData.multiplayer.players [nSrcPlayer].connected;
 eli.secondsLeft = gameData.reactor.countdown.nSecsLeft;
-
-if (gameData.multiplayer.players [nSrcPlayer].connected == 1) {// Still playing
-	Assert (gameData.reactor.bDestroyed);
-	}
-if ((nDestPlayer != gameData.multiplayer.nLocalPlayer) && 
-	 (nDestPlayer != nSrcPlayer) && 
-	 (gameData.multiplayer.players [nDestPlayer].connected)) {
-	if (gameStates.multi.nGameType >= IPX_GAME)
-		IPXSendPacketData (
-			reinterpret_cast<ubyte*> (&eli), sizeof (tEndLevelInfoShort), 
-			netPlayers.m_info.players [nDestPlayer].network.ipx.server, 
-			netPlayers.m_info.players [nDestPlayer].network.ipx.node, gameData.multiplayer.players [nDestPlayer].netAddress);
-	}
+IPXSendPacketData (
+	reinterpret_cast<ubyte*> (&eli), sizeof (tEndLevelInfoShort), 
+	netPlayers.m_info.players [nDestPlayer].network.ipx.server, 
+	netPlayers.m_info.players [nDestPlayer].network.ipx.node, gameData.multiplayer.players [nDestPlayer].netAddress);
 }
 
 //------------------------------------------------------------------------------
@@ -377,7 +377,7 @@ MultiSendPlayerWeapons ();
 void NetworkSendLiteInfo (tSequencePacket *their)
 {
 	// Send game info to someone who requested it
-	char oldType, oldStatus, oldstatus;
+	char oldType, oldStatus;
 
 NetworkUpdateNetGame (); // Update the values in the netgame struct
 oldType = netGame.m_info.nType;
@@ -388,13 +388,13 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 // If hoard mode, make this game look closed even if it isn't
 if (HoardEquipped ()) {
 	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
-		oldstatus = netGame.m_info.gameStatus;
+		char oldStatus = netGame.m_info.gameStatus;
 		netGame.m_info.gameStatus = NETSTAT_ENDLEVEL;
 		netGame.m_info.gameMode = NETGAME_CAPTURE_FLAG;
-		if (oldstatus == NETSTAT_ENDLEVEL)
-			netGame.m_info.gameFlags|= NETGAME_FLAG_REALLY_ENDLEVEL;
-		if (oldstatus == NETSTAT_STARTING)
-			netGame.m_info.gameFlags|= NETGAME_FLAG_REALLY_FORMING;
+		if (oldStatus == NETSTAT_ENDLEVEL)
+			netGame.m_info.gameFlags |= NETGAME_FLAG_REALLY_ENDLEVEL;
+		if (oldStatus == NETSTAT_STARTING)
+			netGame.m_info.gameFlags |= NETGAME_FLAG_REALLY_FORMING;
 		}
 	}
 if (gameStates.multi.nGameType >= IPX_GAME) {
