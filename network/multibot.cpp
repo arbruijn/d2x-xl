@@ -529,7 +529,7 @@ vSwapped[Y] = (fix)INTEL_INT ((int) delObjP->info.position.vPos[Y]);
 vSwapped[Z] = (fix)INTEL_INT ((int) delObjP->info.position.vPos[Z]);
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (CFixVector));     
 #endif
-bufP += 12;
+bufP += sizeof (CFixVector);
 if (gameStates.multi.nGameType == UDP_GAME) {
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameStates.app.nRandSeed);
 	bufP += 2;
@@ -917,16 +917,18 @@ delObjP.info.contains.nType = buf [bufP++];
 delObjP.info.contains.nId = buf [bufP++]; 					
 delObjP.info.nSegment = GET_INTEL_SHORT (buf + bufP);            
 bufP += 2;
-memcpy (&delObjP.info.position.vPos, buf+bufP, sizeof (CFixVector));      
-bufP += 12;
+memcpy (&delObjP.info.position.vPos, buf + bufP, sizeof (CFixVector));      
+bufP += sizeof (CFixVector);
 delObjP.mType.physInfo.velocity.SetZero ();
 delObjP.info.position.vPos [X] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [X]);
 delObjP.info.position.vPos [Y] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [Y]);
 delObjP.info.position.vPos [Z] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [Z]);
-if (gameStates.multi.nGameType == UDP_GAME)
-	gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufP);
-else
+if (gameStates.multi.nGameType != UDP_GAME)
 	gameStates.app.nRandSeed = 8321L;
+else {
+	gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufP);
+	bufP += 2;
+	}
 d_srand (gameStates.app.nRandSeed);
 Assert ((nPlayer >= 0) && (nPlayer < gameData.multiplayer.nPlayers));
 Assert (nPlayer != gameData.multiplayer.nLocalPlayer); // What? How'd we send ourselves this?
