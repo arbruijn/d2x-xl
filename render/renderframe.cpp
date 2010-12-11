@@ -819,6 +819,8 @@ if (!ogl.Enhance3D () || !(gameData.app.nFrameCount & 1)) {
 if (!gameOpts->render.stereo.nGlasses)
 	RenderMonoFrame ();
 else {
+	if (gameOpts->render.stereo.xSeparation == 0)
+		gameOpts->render.stereo.xSeparation = 3 * I2X (1) / 4;
 	fix xStereoSeparation = automap.Display () ? 2 * gameOpts->render.stereo.xSeparation : gameOpts->render.stereo.xSeparation;
 	if (gameStates.menus.nInMenu && ogl.Enhance3D ()) {
 		RenderMonoFrame ((gameData.app.nFrameCount & 1) ? xStereoSeparation : -xStereoSeparation);
