@@ -271,7 +271,7 @@ if (nDestPlayer == gameData.multiplayer.nLocalPlayer)
 	return;
 if (nDestPlayer == nSrcPlayer)
 	return;
-if ((gameStates.multi.nGameType == UDP_GAME) && (nSrcPlayer != gameData.multiplayer.nLocalPlayer) && !NetworkIAmMaster ())
+if (/*(gameStates.multi.nGameType == UDP_GAME) &&*/ (nSrcPlayer != gameData.multiplayer.nLocalPlayer) && !NetworkIAmMaster ())
 	return;
 
 	tEndLevelInfoShort eli;

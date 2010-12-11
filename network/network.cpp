@@ -148,8 +148,6 @@ NetworkListen ();
 NetworkSendEndLevelPacket ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) 
 	ResetPlayerTimeout (i, t);
-NetworkSendEndLevelPacket ();
-NetworkSendEndLevelPacket ();
 networkData.bSyncPackInited = 0;
 NetworkUpdateNetGame ();
 return 0;

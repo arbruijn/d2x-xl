@@ -1681,9 +1681,9 @@ CScoreData::CScoreData ()
 {
 nKillsChanged = 0;
 bNoMovieMessage = 0;
-nPhallicLimit = 0;
+nHighscore = 0;
 bWaitingForOthers = 0;
-nPhallicMan = -1;
+nChampion = -1;
 }
 
 // ----------------------------------------------------------------------------

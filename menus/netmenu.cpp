@@ -228,7 +228,7 @@ if (nState)
 
 	// Send our endlevel packet at regular intervals
 if ((t = SDL_GetTicks ()) > (t1 + ENDLEVEL_SEND_INTERVAL)) {
-	NetworkSendEndLevelPacket ();
+	NetworkSendEndLevelPacket (); // tell other players that I have left the level and am waiting in the score screen
 	t1 = t;
 	}
 NetworkListen ();

@@ -105,10 +105,10 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (eff < 0)
 		eff = 0;
 	if (gameData.app.nGameMode & GM_HOARD) {
-		if (gameData.score.nPhallicMan == -1)
+		if (gameData.score.nChampion == -1)
 			sprintf (szText, TXT_NO_RECORD2);
 		else
-			sprintf (szText, TXT_RECORD3, gameData.multiplayer.players [gameData.score.nPhallicMan].callsign, gameData.score.nPhallicLimit);
+			sprintf (szText, TXT_RECORD3, gameData.multiplayer.players [gameData.score.nChampion].callsign, gameData.score.nHighscore);
 		}
 	else if (!gameOpts->multi.bNoRankings) {
 		sprintf (szText, TXT_EFF_LIFETIME, eff);

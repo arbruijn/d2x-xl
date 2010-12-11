@@ -3320,8 +3320,8 @@ class CScoreData {
 	public:
 		int nKillsChanged;
 		int bNoMovieMessage;
-		int nPhallicLimit;
-		int nPhallicMan;
+		int nHighscore;
+		int nChampion;
 		int bWaitingForOthers;
 
 	public:

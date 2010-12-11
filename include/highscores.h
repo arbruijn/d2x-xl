@@ -14,7 +14,34 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _HIGHSCORES_H
 #define _HIGHSCORES_H
 
-void ScoreTableView (int bNetwork);
+class CScoreTable {
+	private:
+		int	m_nReady;
+		int	m_nEscaped;
+		int	m_nPrevSecsLeft;
+		int	m_oldStates [MAX_PLAYERS];
+		int	m_sorted [MAX_PLAYERS];
+		int	m_bNetwork;
 
+	public:
+		void Display (void);
+
+	private:
+		void DrawItem (int  i);
+		void DrawCoopItem (int  i);
+		void DrawNames (void);
+		void DrawCoopNames (void);
+		void DrawCoop (void);
+		void DrawDeaths (void);
+		void DrawCoopDeaths (void);
+		void DrawReactor (const char *message);
+		void DrawChampion (void);
+		void Render (void);
+		void RenderCoop (void);
+		void Cleanup (int bQuit);
+		bool Exit (void);
+		int Input (void);
+		int WaitForPlayers (void);
+	};
 
 #endif //_HIGHSCORES_H

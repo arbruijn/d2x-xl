@@ -580,7 +580,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	}
 // Do the actual screen we wish to show
 SetFunctionMode (FMODE_MENU);
-ScoreTableView (gameData.app.nGameMode & GM_NETWORK);
+scoreTable.Display ();
 SetFunctionMode (FMODE_GAME);
 // Restore connect state
 if (gameData.app.nGameMode & GM_NETWORK)
@@ -3097,8 +3097,8 @@ void MultiPrepLevel (void)
 
 Assert (gameData.app.nGameMode & GM_MULTI);
 Assert (gameData.multiplayer.nPlayerPositions > 0);
-gameData.score.nPhallicLimit = 0;
-gameData.score.nPhallicMan = -1;
+gameData.score.nHighscore = 0;
+gameData.score.nChampion = -1;
 gameStates.render.bDropAfterburnerBlob = 0;
 networkData.nConsistencyErrorCount = 0;
 memset (gameData.multigame.kills.pFlags, 0, MAX_NUM_NET_PLAYERS * sizeof (gameData.multigame.kills.pFlags [0]));
@@ -4503,14 +4503,14 @@ else if (gameData.app.nGameMode & GM_TEAM) {
 	}
 else
 	audio.PlaySound (SOUND_OPPONENT_HAS_SCORED, SOUNDCLASS_GENERIC, I2X (2));
-if (bonus>gameData.score.nPhallicLimit) {
+if (bonus > gameData.score.nHighscore) {
 	if (nPlayer == gameData.multiplayer.nLocalPlayer)
 		HUDInitMessage (TXT_RECORD, bonus);
 	else
 		HUDInitMessage (TXT_RECORD2, gameData.multiplayer.players [nPlayer].callsign, bonus);
 	audio.PlaySound (SOUND_BUDDY_MET_GOAL, SOUNDCLASS_GENERIC, I2X (2));
-	gameData.score.nPhallicMan = nPlayer;
-	gameData.score.nPhallicLimit = bonus;
+	gameData.score.nChampion = nPlayer;
+	gameData.score.nHighscore = bonus;
 	}
 gameData.multiplayer.players [nPlayer].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear orb flag
 gameData.multiplayer.players [nPlayer].netKillsTotal += bonus;
