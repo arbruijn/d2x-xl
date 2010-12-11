@@ -136,10 +136,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 
 int NetworkEndLevel (int *secret)
 {
-	// Do whatever needs to be done between levels
-
-	int	i;
-
+// Do whatever needs to be done between levels
 *secret = 0;
 //NetworkFlush ();
 networkData.nStatus = NETSTAT_ENDLEVEL; // We are between levels
