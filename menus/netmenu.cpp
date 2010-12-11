@@ -210,7 +210,7 @@ WF (netGame.m_info.invul, 27);
 
 //------------------------------------------------------------------------------
 
-#define ENDLEVEL_SEND_INTERVAL  2000
+#define ENDLEVEL_SEND_INTERVAL  1000
 #define ENDLEVEL_IDLE_TIME      20000
 
 int NetworkEndLevelPoll2 (CMenu& menu, int& key, int nCurItem, int nState)

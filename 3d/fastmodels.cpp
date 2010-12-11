@@ -557,7 +557,8 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			}
 		nIndex = pmf->m_nIndex;
 		if (bHires) {
-			bTranspState = !bmP ? 0 : psm->m_bThruster ? 0 : (psm->m_bGlow || psm->m_bFlare) ? 2 : ((bmP->Flags () & BM_FLAG_TRANSPARENT) != 0) ? 1 : 0;
+			if (!(bTranspState = (pm->m_bHasTransparency >> 2)))
+				bTranspState = !bmP ? 0 : psm->m_bThruster ? 0 : (psm->m_bGlow || psm->m_bFlare) ? 2 : ((bmP->Flags () & BM_FLAG_TRANSPARENT) != 0) ? 1 : 0;
 			if (bTranspState != bTranspFilter) {
 				if (bTranspState)
 					pm->m_bHasTransparency |= bTranspState;
@@ -842,6 +843,7 @@ if (objP && (objP->info.nType == OBJ_PLAYER))
 	int						i, 
 								bHires = 1, 
 								bUseVBO = ogl.m_states.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
+								bEmissive = (objP != NULL) && (objP->info.nType == OBJ_WEAPON) && (objP->info.nId <= MAX_WEAPON_ID) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId],
 								nGunId, nBombId, nMissileId, nMissiles;
 
 if (!objP)
@@ -886,6 +888,8 @@ if (pm->m_bValid < 1) {
 			}
 		}
 	}
+
+pm->m_bHasTransparency |= (bEmissive << 2);
 
 //#pragma omp critical (fastModelRender)
 {
@@ -942,9 +946,9 @@ if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 	}
 if (bHires && (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) && pm->m_bHasTransparency) {
 	if ((objP->info.nType != OBJ_DEBRIS)) {
-		if (pm->m_bHasTransparency & 1)
+		if (pm->m_bHasTransparency & 5)
 			G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
-		if (pm->m_bHasTransparency & 2) {
+		if (pm->m_bHasTransparency & 10) {
 			CFixVector vPos;
 			PolyObjPos (objP, &vPos);
 			glowRenderer.Begin (GLOW_HEADLIGHT, 2, true, 0.666f);

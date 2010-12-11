@@ -1000,6 +1000,10 @@ CBitmap* CTGA::ReadModelTexture (const char *pszFile, int bCustom)
 if (!pszFile)
 	return NULL;
 CFile::SplitPath (pszFile, NULL, fn, NULL);
+#if DBG
+if (!strcmp (fn, "fusionblobouter2"))
+	pszFile = pszFile;
+#endif
 if (nShrinkFactor > 1) {
 	sprintf (fnBase, "%s.tga", fn);
 	sprintf (szShrunkFolder, "%s/%d", gameFolders.szModelCacheDir [bCustom], 512 / nShrinkFactor);

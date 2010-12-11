@@ -82,6 +82,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SMINEPACK_ID						69
 #define PMINEPACK_ID						70
 
+#define MAX_WEAPON_ID					70
+
 #define OMEGA_MULTI_LIFELEFT    (I2X (1)/6)
 
 // These are new defines for the value of 'flags' passed to FireWeapon.
