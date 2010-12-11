@@ -32,7 +32,7 @@ if (!OglCreatePBuffer (&m_data.pb, Width (), Height (), 0))
 	return 0;
 m_data.glTexId = m_data.pb.texId;
 #elif RENDER2TEXTURE == 2
-if (!m_data.fbo.Create (Width (), Height (), 3/*m_data.bShadowMap*/))
+if (!m_data.fbo.Create (Width (), Height (), 1/*m_data.bShadowMap*/))
 	return 0;
 m_data.glTexId = m_data.fbo.ColorBuffer ();
 #endif
