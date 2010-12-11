@@ -126,10 +126,10 @@ tNetworkData networkData;
 
 void ResetAllPlayerTimeouts (void)
 {
-	int	i;
+	int	i, t = SDL_GetTicks ();
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	ResetPlayerTimeout (i, -1);
+	ResetPlayerTimeout (i, t);
 }
 
 //------------------------------------------------------------------------------
@@ -139,15 +139,13 @@ int NetworkEndLevel (int *secret)
 	// Do whatever needs to be done between levels
 
 	int	i;
-	fix	t = TimerGetApproxSeconds ();
 
-*secret=0;
+*secret = 0;
 //NetworkFlush ();
 networkData.nStatus = NETSTAT_ENDLEVEL; // We are between levels
 NetworkListen ();
 NetworkSendEndLevelPacket ();
-for (i = 0; i < gameData.multiplayer.nPlayers; i++) 
-	ResetPlayerTimeout (i, t);
+ResetAllPlayerTimeouts ();
 networkData.bSyncPackInited = 0;
 NetworkUpdateNetGame ();
 return 0;

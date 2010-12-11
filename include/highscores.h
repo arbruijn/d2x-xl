@@ -44,4 +44,6 @@ class CScoreTable {
 		int WaitForPlayers (void);
 	};
 
+extern CScoreTable scoreTable;
+
 #endif //_HIGHSCORES_H
