@@ -87,7 +87,10 @@ class CCameraManager {
 		CArray<ushort>	m_objectCameras;
 
 	public:
-		CCameraManager () : m_current (NULL), m_nCameras (0), m_objectCameras (0) {}
+		int				m_fboType;
+
+	public:
+		CCameraManager () : m_current (NULL), m_nCameras (0), m_objectCameras (0), m_fboType (1) {}
 		~CCameraManager ();
 		int Create ();
 		void Destroy ();
