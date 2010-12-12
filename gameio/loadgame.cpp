@@ -1369,7 +1369,7 @@ void PlayerFinishedLevel (int bSecret)
 
 LOCALPLAYER.hostages.nRescued += LOCALPLAYER.hostages.nOnBoard;
 if (gameData.app.nGameMode & GM_NETWORK)
-	LOCALPLAYER.connected = 2; // Finished but did not die
+	LOCALPLAYER.connected = CONNECT_WAITING; // Finished but did not die
 gameStates.render.cockpit.nLastDrawn [0] =
 gameStates.render.cockpit.nLastDrawn [1] = -1;
 if (missionManager.nCurrentLevel < 0)
@@ -2311,7 +2311,7 @@ if (gameData.reactor.bDestroyed) {
 	LOCALPLAYER.hostages.nOnBoard = 0;
 	LOCALPLAYER.SetEnergy (0);
 	LOCALPLAYER.SetShield (0);
-	LOCALPLAYER.connected = 3;
+	LOCALPLAYER.connected = CONNECT_DIED_IN_MINE;
 	DiedInMineMessage (); // Give them some indication of what happened
 	}
 if (bSecret && !gameStates.app.bD1Mission) {

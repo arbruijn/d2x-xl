@@ -25,7 +25,6 @@
 
 fix xPingReturnTime;
 
-extern void NetworkSendPing (ubyte);
 extern int NetworkWhoIsMaster ();
 extern char bNameReturning;
 
@@ -255,7 +254,7 @@ if (gameData.multigame.msg.szMsg [name_index] == '#' && ::isdigit (gameData.mult
 	int players [MAX_PLAYERS];
 	int listpos = gameData.multigame.msg.szMsg [name_index+1] - '0';
 
-	if (gameData.multigame.kills.bShowList == 1 || gameData.multigame.kills.bShowList == 2) {
+	if (gameData.multigame.score.bShowList == 1 || gameData.multigame.score.bShowList == 2) {
 		if (listpos == 0 || listpos  >= gameData.multiplayer.nPlayers) {
 			HUDInitMessage (TXT_KICK_PLR, pszKick);
 			MultiSendMsgQuit ();

@@ -213,7 +213,7 @@ for (i = 0; i < nSavePlayers; i++) {
 			ClipRank (reinterpret_cast<char*> (&netPlayers.m_info.players [gameData.multiplayer.nPlayers].rank));
 			NetworkCheckForOldVersion ((char)i);
 			}
-		gameData.multiplayer.players [gameData.multiplayer.nPlayers].connected = 1;
+		gameData.multiplayer.players [gameData.multiplayer.nPlayers].connected = CONNECT_PLAYING;
 		gameData.multiplayer.nPlayers++;
 		}
 	else {

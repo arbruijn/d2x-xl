@@ -2594,7 +2594,7 @@ class CMultiMenuData {
 		CMultiMenuData () { memset (this, 0, sizeof (*this)); }
 };
 
-class CMultiKillData {
+class CMultiScoreData {
 	public:
 		char					pFlags [MAX_PLAYERS];
 		int					nSorted [MAX_PLAYERS];
@@ -2604,7 +2604,7 @@ class CMultiKillData {
 		fix					xShowListTimer;
 
 	public:
-		CMultiKillData () { memset (this, 0, sizeof (*this)); }
+		CMultiScoreData () { memset (this, 0, sizeof (*this)); }
 };
 
 class CMultiGameData {
@@ -2617,7 +2617,7 @@ class CMultiGameData {
 		CMultiLaserData	laser;
 		CMultiMsgData		msg;
 		CMultiMenuData		menu;
-		CMultiKillData		kills;
+		CMultiScoreData	score;
 		tMultiRobotData	robots;
 		CArray<short>		remoteToLocal;  // Remote CObject number for each local CObject
 		CArray<short>		localToRemote;

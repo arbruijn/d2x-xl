@@ -2572,14 +2572,14 @@ while (!bDone) {
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				gameData.multiplayer.players [nPlayer].netKillsTotal -= kill;
 				if (IsTeamGame)
-					gameData.multigame.kills.nTeam [GetTeam (nPlayer)] -= kill;
+					gameData.multigame.score.nTeam [GetTeam (nPlayer)] -= kill;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				gameData.multiplayer.players [nPlayer].netKillsTotal += kill;
 				if (IsTeamGame)
-					gameData.multigame.kills.nTeam [GetTeam (nPlayer)] += kill;
+					gameData.multigame.score.nTeam [GetTeam (nPlayer)] += kill;
 				}
 			gameData.app.nGameMode = gameData.demo.nGameMode;
 			MultiSortKillList ();
@@ -2602,7 +2602,7 @@ while (!bDone) {
 			NDReadString (pszNewCallsign);
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multiplayer.players [nPlayer].connected = 0;
+				gameData.multiplayer.players [nPlayer].connected = CONNECT_DISCONNECTED;
 				if (!nNewPlayer) {
 					memcpy (gameData.multiplayer.players [nPlayer].callsign, old_callsign, CALLSIGN_LEN+1);
 					gameData.multiplayer.players [nPlayer].netKilledTotal = killedTotal;
@@ -2614,7 +2614,7 @@ while (!bDone) {
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multiplayer.players [nPlayer].connected = 1;
+				gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
 				gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
 				gameData.multiplayer.players [nPlayer].netKilledTotal = 0;
 				memcpy (gameData.multiplayer.players [nPlayer].callsign, pszNewCallsign, CALLSIGN_LEN+1);
@@ -2628,11 +2628,11 @@ while (!bDone) {
 			sbyte nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multiplayer.players [nPlayer].connected = 0;
+				gameData.multiplayer.players [nPlayer].connected = CONNECT_DISCONNECTED;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multiplayer.players [nPlayer].connected = 1;
+				gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
 			}
 			break;
 
@@ -2640,11 +2640,11 @@ while (!bDone) {
 			sbyte nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multiplayer.players [nPlayer].connected = 1;
+				gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multiplayer.players [nPlayer].connected = 0;
+				gameData.multiplayer.players [nPlayer].connected = CONNECT_DISCONNECTED;
 			}
 			break;
 

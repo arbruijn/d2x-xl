@@ -569,12 +569,12 @@ SetPathPoint (&gameData.pig.flags [0].path, OBJECTS + playerP->nObject);
 
 void MultiEndLevelScore (void)
 {
-	int old_connect = 0;
+	int oldConnect = 0;
 	int i;
 
 if (gameData.app.nGameMode & GM_NETWORK) {
-	old_connect = LOCALPLAYER.connected;
-	if (LOCALPLAYER.connected != 3)
+	oldConnect = LOCALPLAYER.connected;
+	if (LOCALPLAYER.connected != CONNECT_DIED_IN_MINE)
 		LOCALPLAYER.connected = CONNECT_END_MENU;
 	networkData.nStatus = NETSTAT_ENDLEVEL;
 	}
@@ -584,7 +584,7 @@ scoreTable.Display ();
 SetFunctionMode (FMODE_GAME);
 // Restore connect state
 if (gameData.app.nGameMode & GM_NETWORK)
-	LOCALPLAYER.connected = old_connect;
+	LOCALPLAYER.connected = oldConnect;
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	for (i = 0; i < gameData.multiplayer.nMaxPlayers; i++) // Reset keys
 		gameData.multiplayer.players [i].flags &= ~(PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY);
@@ -851,9 +851,9 @@ void MultiNewGame (void)
 {
 	int i;
 
-memset (gameData.multigame.kills.matrix, 0, MAX_NUM_NET_PLAYERS*MAX_NUM_NET_PLAYERS*2); // Clear kill matrix
+memset (gameData.multigame.score.matrix, 0, MAX_NUM_NET_PLAYERS*MAX_NUM_NET_PLAYERS*2); // Clear kill matrix
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-	gameData.multigame.kills.nSorted [i] = i;
+	gameData.multigame.score.nSorted [i] = i;
 	gameData.multiplayer.players [i].netKilledTotal = 0;
 	gameData.multiplayer.players [i].netKillsTotal = 0;
 	gameData.multiplayer.players [i].flags = 0;
@@ -864,14 +864,14 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 	gameData.multigame.robots.agitation [i] = 0;
 	gameData.multigame.robots.fired [i] = 0;
 	}
-gameData.multigame.kills.nTeam [0] = gameData.multigame.kills.nTeam [1] = 0;
+gameData.multigame.score.nTeam [0] = gameData.multigame.score.nTeam [1] = 0;
 gameStates.app.bEndLevelSequence = 0;
 gameStates.app.bPlayerIsDead = 0;
 gameData.multigame.nWhoKilledCtrlcen = -1;  // -1 = noone
 //do we draw the kill list on the HUD?
-gameData.multigame.kills.bShowList = 1;
+gameData.multigame.score.bShowList = 1;
 gameData.multigame.bShowReticleName = 1;
-gameData.multigame.kills.xShowListTimer = 0;
+gameData.multigame.score.xShowListTimer = 0;
 gameData.multigame.bIsGuided = 0;
 gameData.multigame.create.nCount = 0;       // pointer into previous array
 gameData.multigame.laser.bFired = 0;  // How many times we shot
@@ -926,37 +926,37 @@ MultiResetPlayerObject (objP);
 //-----------------------------------------------------------------------------
 // Returns the number of active net players and their sorted order of kills
 
-int MultiGetKillList (int *plist)
+int MultiGetKillList (int *listP)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
-	plist [i] = gameData.multigame.kills.nSorted [i];
+	listP [i] = gameData.multigame.score.nSorted [i];
 return  gameData.multiplayer.nPlayers;
 }
 
 //-----------------------------------------------------------------------------
 
-static void QSortKillList (int* kills, int left, int right)
+static void QSortScoreList (int* score, int left, int right)
 {
 	int	l = left,
 			r = right,
-			m = kills [(l + r) / 2];
+			m = score [(l + r) / 2];
 
 do {
-	while (kills [l] > m)
+	while (score [l] > m)
 		l++;
-	while (kills [r] < m)
+	while (score [r] < m)
 		r--;
 	if (l <= r) {
 		if (l < r)
-			Swap (kills [l], kills [r]);
+			Swap (score [l], score [r]);
 		l++;
 		r--;
 		}
 	} while (l <= r);
 if (l < right)
-	QSortKillList (kills, l, right);
+	QSortScoreList (score, l, right);
 if (left < r)
-	QSortKillList (kills, left, r);
+	QSortScoreList (score, left, r);
 };
 
 //-----------------------------------------------------------------------------
@@ -965,23 +965,23 @@ if (left < r)
 void MultiSortKillList (void)
 {
 
-	int kills [MAX_PLAYERS];
+	int score [MAX_PLAYERS];
 	int i;
 
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	if (gameData.app.nGameMode & GM_MULTI_COOP)
-		kills [i] = gameData.multiplayer.players [i].score;
-	else if (gameData.multigame.kills.bShowList != 2) 
-		kills [i] = gameData.multiplayer.players [i].netKillsTotal;
+		score [i] = gameData.multiplayer.players [i].score;
+	else if (gameData.multigame.score.bShowList != 2) 
+		score [i] = gameData.multiplayer.players [i].netKillsTotal;
 	else {
 		if (gameData.multiplayer.players [i].netKilledTotal + gameData.multiplayer.players [i].netKillsTotal)
-			kills [i] = int (double (gameData.multiplayer.players [i].netKillsTotal) / 
-								  (double (gameData.multiplayer.players [i].netKilledTotal + gameData.multiplayer.players [i].netKillsTotal)) * 100.0);
+			score [i] = int (double (gameData.multiplayer.players [i].netKillsTotal) / 
+								  double (gameData.multiplayer.players [i].netKilledTotal + gameData.multiplayer.players [i].netKillsTotal) / 100.0);
 		else
-			kills [i] = -1;  // always draw the ones without any ratio last
+			score [i] = -1;  // always draw the ones without any ratio last
 		}
 	}
-QSortKillList (kills, 0, gameData.multiplayer.nPlayers - 1);
+QSortScoreList (score, 0, gameData.multiplayer.nPlayers - 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -1027,7 +1027,7 @@ if ((killedType != OBJ_PLAYER) && (killedType != OBJ_GHOST)) {
 	return;
 	}
 killedP = gameData.multiplayer.players + nKilledPlayer;
-gameData.multigame.kills.pFlags [nKilledPlayer] = 1;
+gameData.multigame.score.pFlags [nKilledPlayer] = 1;
 Assert ((nKilledPlayer >= 0) &&(nKilledPlayer < gameData.multiplayer.nPlayers));
 if (gameData.app.nGameMode & GM_TEAM)
 	sprintf (szKilled, "%s (%s)", killedP->callsign, netGame.m_info.szTeamName [GetTeam (nKilledPlayer)]);
@@ -1037,7 +1037,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiDeath (nKilledPlayer);
 audio.PlaySound (SOUND_HUD_KILL, SOUNDCLASS_GENERIC, I2X (3));
 if (gameData.reactor.bDestroyed)
-	killedP->connected = 3;
+	killedP->connected = CONNECT_DIED_IN_MINE;
 if (killerType == OBJ_REACTOR) {
 	killedP->netKilledTotal++;
 	killedP->netKillsTotal--;
@@ -1086,13 +1086,13 @@ t1 = GetTeam (nKillerPlayer);
 if (nKillerPlayer == nKilledPlayer) {
 	if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY))) {
 		if (gameData.app.nGameMode & GM_TEAM)
-			gameData.multigame.kills.nTeam [GetTeam (nKilledPlayer)]--;
+			gameData.multigame.score.nTeam [GetTeam (nKilledPlayer)]--;
 		gameData.multiplayer.players [nKilledPlayer].netKilledTotal++;
 		gameData.multiplayer.players [nKilledPlayer].netKillsTotal--;
 		if (gameData.demo.nState == ND_STATE_RECORDING)
 			NDRecordMultiKill (nKilledPlayer, -1);
 		}
-	gameData.multigame.kills.matrix [nKilledPlayer][nKilledPlayer]++; // # of suicides
+	gameData.multigame.score.matrix [nKilledPlayer][nKilledPlayer]++; // # of suicides
 	if (nKillerPlayer == gameData.multiplayer.nLocalPlayer) {
 		HUDInitMessage ("%s %s %s!", TXT_YOU, TXT_KILLED, TXT_YOURSELF);
 		bMultiSuicide = 1;
@@ -1122,12 +1122,12 @@ else {
 		}
 	else if (IsTeamGame) {
 		if (t0 == t1) {
-			gameData.multigame.kills.nTeam [t0]--;
+			gameData.multigame.score.nTeam [t0]--;
 			killerP->netKillsTotal--;
 			killerP->nScoreGoalCount--;
 			}
 		else {
-			gameData.multigame.kills.nTeam [t1]++;
+			gameData.multigame.score.nTeam [t1]++;
 			killerP->netKillsTotal++;
 			killerP->nScoreGoalCount++;
 			}
@@ -1146,7 +1146,7 @@ else {
 		}
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiKill (nKillerPlayer, 1);
-	gameData.multigame.kills.matrix [nKillerPlayer][nKilledPlayer]++;
+	gameData.multigame.score.matrix [nKillerPlayer][nKilledPlayer]++;
 	killedP->netKilledTotal++;
 	if (nKillerPlayer == gameData.multiplayer.nLocalPlayer) {
 		HUDInitMessage ("%s %s %s!", TXT_YOU, TXT_KILLED, szKilled);
@@ -1339,10 +1339,10 @@ void MultiShowPlayerList (void)
 {
 if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_COOP))
 	return;
-if (gameData.multigame.kills.bShowList)
+if (gameData.multigame.score.bShowList)
 	return;
-gameData.multigame.kills.xShowListTimer = I2X (5); // 5 second timer
-gameData.multigame.kills.bShowList = 1;
+gameData.multigame.score.xShowListTimer = I2X (5); // 5 second timer
+gameData.multigame.score.bShowList = 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -1486,7 +1486,7 @@ void MultiDoReappear (char *buf)
 Assert (nObject >= 0);
 MultiMakeGhostPlayer (objP->info.nId);
 objP->CreateAppearanceEffect ();
-gameData.multigame.kills.pFlags [objP->info.nId] = 0;
+gameData.multigame.score.pFlags [objP->info.nId] = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -2324,7 +2324,7 @@ else if (!gameData.multigame.bGotoSecret)
 	gameData.multigame.bGotoSecret = 2;
 MultiSendData (gameData.multigame.msg.buf, 3, 1);
 if (gameData.app.nGameMode & GM_NETWORK) {
-	LOCALPLAYER.connected = 5;
+	LOCALPLAYER.connected = CONNECT_ESCAPE_TUNNEL;
 	NetworkSendEndLevelPacket ();
 	}
 }
@@ -2545,7 +2545,7 @@ void MultiSendReappear (void)
 gameData.multigame.msg.buf [0] = (char) MULTI_REAPPEAR;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + 1, LOCALPLAYER.nObject);
 MultiSendData (gameData.multigame.msg.buf, 3, 2);
-gameData.multigame.kills.pFlags [gameData.multiplayer.nLocalPlayer] = 0;
+gameData.multigame.score.pFlags [gameData.multiplayer.nLocalPlayer] = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -3101,7 +3101,7 @@ gameData.score.nHighscore = 0;
 gameData.score.nChampion = -1;
 gameStates.render.bDropAfterburnerBlob = 0;
 networkData.nConsistencyErrorCount = 0;
-memset (gameData.multigame.kills.pFlags, 0, MAX_NUM_NET_PLAYERS * sizeof (gameData.multigame.kills.pFlags [0]));
+memset (gameData.multigame.score.pFlags, 0, MAX_NUM_NET_PLAYERS * sizeof (gameData.multigame.score.pFlags [0]));
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	objP = OBJECTS + gameData.multiplayer.players [i].nObject;
 	if (i != gameData.multiplayer.nLocalPlayer)
@@ -3470,7 +3470,7 @@ int MultiAllPlayersAlive (void)
 	int i;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multigame.kills.pFlags [i] && gameData.multiplayer.players [i].connected)
+	if (gameData.multigame.score.pFlags [i] && gameData.multiplayer.players [i].connected)
 		return 0;
 return 1;
 }
@@ -4439,7 +4439,7 @@ if (nPlayer == gameData.multiplayer.nLocalPlayer)
 	HUDInitMessage (TXT_SCORED);
 else
 	HUDInitMessage (TXT_SCORED2, gameData.multiplayer.players [nPlayer].callsign);
-gameData.multigame.kills.nTeam [nTeam] += bonus;
+gameData.multigame.score.nTeam [nTeam] += bonus;
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
 	audio.PlaySound (SOUND_HUD_YOU_GOT_GOAL, SOUNDCLASS_GENERIC, I2X (2));
 else if (GetTeam (nPlayer) == TEAM_RED)
@@ -4451,7 +4451,7 @@ if (penalty) {
 #if 0
 	gameData.multiplayer.players [nPlayer].netKillsTotal -= bonus;
 	gameData.multiplayer.players [nPlayer].nScoreGoalCount -= bonus;
-	if (gameData.multigame.kills.nTeam [nTeam] >= ScoreGoal ()) {
+	if (gameData.multigame.score.nTeam [nTeam] >= ScoreGoal ()) {
 		sprintf (szTeam, "%s Team", nTeam ? TXT_RED : TXT_BLUE);
 		HUDInitMessage (TXT_REACH_SCOREGOAL, szTeam);
 		HUDInitMessage (TXT_CTRLCEN_DEAD);
@@ -4517,8 +4517,8 @@ gameData.multiplayer.players [nPlayer].netKillsTotal += bonus;
 gameData.multiplayer.players [nPlayer].netKillsTotal %= 1000;
 gameData.multiplayer.players [nPlayer].nScoreGoalCount += bonus;
 gameData.multiplayer.players [nPlayer].nScoreGoalCount %= 1000;
-gameData.multigame.kills.nTeam [nTeam] += bonus;
-gameData.multigame.kills.nTeam [nTeam] %= 1000;
+gameData.multigame.score.nTeam [nTeam] += bonus;
+gameData.multigame.score.nTeam [nTeam] %= 1000;
 CheckScoreGoal (nPlayer);
 MultiSortKillList ();
 MultiShowPlayerList ();

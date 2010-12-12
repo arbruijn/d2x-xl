@@ -521,7 +521,7 @@ void CGenericCockpit::DrawTime (void)
 if (Hide ())
 	return;
 
-if (gameStates.render.bShowTime && !(IsMultiGame && gameData.multigame.kills.bShowList)) {
+if (gameStates.render.bShowTime && !(IsMultiGame && gameData.multigame.score.bShowList)) {
 		int secs = X2I (LOCALPLAYER.timeLevel) % 60;
 		int mins = X2I (LOCALPLAYER.timeLevel) / 60;
 
@@ -1402,7 +1402,7 @@ void CGenericCockpit::DrawKillList (int x, int y)
 {
 if (Hide ())
 	return;
-if (!(IsMultiGame && gameData.multigame.kills.bShowList))
+if (!(IsMultiGame && gameData.multigame.score.bShowList))
 	return;
 
 	int	nPlayers, playerList [MAX_PLAYERS];
@@ -1417,12 +1417,12 @@ if (!(IsMultiGame && gameData.multigame.kills.bShowList))
 
 if (bGetPing)
 	networkData.tLastPingStat = t;
-if (gameData.multigame.kills.xShowListTimer > 0) {
-	gameData.multigame.kills.xShowListTimer -= gameData.time.xFrame;
-	if (gameData.multigame.kills.xShowListTimer < 0)
-		gameData.multigame.kills.bShowList = 0;
+if (gameData.multigame.score.xShowListTimer > 0) {
+	gameData.multigame.score.xShowListTimer -= gameData.time.xFrame;
+	if (gameData.multigame.score.xShowListTimer < 0)
+		gameData.multigame.score.bShowList = 0;
 	}
-nPlayers = (gameData.multigame.kills.bShowList == 3) ? 2 : MultiGetKillList (playerList);
+nPlayers = (gameData.multigame.score.bShowList == 3) ? 2 : MultiGetKillList (playerList);
 nLeft = /*(nPlayers <= MAXPLAYERS / 2) ? nPlayers :*/ (nPlayers + 1) / 2;
 fScale = float (CCanvas::Current ()->Height ()) / 640.0f;
 if (fScale < 1.0f)
@@ -1433,13 +1433,13 @@ fth = GAME_FONT->Height ();
 y -= nLeft * (fth + 1);
 x = CCanvas::Current ()->Width () - LHX (x);
 x0 = LHX (1);
-nameLen = (9 + (gameData.multigame.kills.bShowList == 3)) * faw;
+nameLen = (9 + (gameData.multigame.score.bShowList == 3)) * faw;
 x1 = x0 + nameLen;
 y0 = y;
 
 if (gameStates.render.cockpit.bShowPingStats) {
 	if (faw < 0) {
-		if (gameData.multigame.kills.bShowList == 2)
+		if (gameData.multigame.score.bShowList == 2)
 			xo = faw * 24;//was +25;
 		else if (IsCoopGame)
 			xo = faw * 14;//was +30;
@@ -1470,8 +1470,8 @@ for (i = 0; i < nPlayers; i++) {
 	else if (netGame.GetScoreGoal () || netGame.GetPlayTimeAllowed ())
 		 x1 = int (LHX (43) * fScale - LHX (18));
 #endif
-	nPlayer = (gameData.multigame.kills.bShowList == 3) ? i : playerList [i];
-	if ((gameData.multigame.kills.bShowList == 1) || (gameData.multigame.kills.bShowList == 2)) {
+	nPlayer = (gameData.multigame.score.bShowList == 3) ? i : playerList [i];
+	if ((gameData.multigame.score.bShowList == 1) || (gameData.multigame.score.bShowList == 2)) {
 		if (gameData.multiplayer.players [nPlayer].connected != 1)
 			fontManager.SetColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
 		else {
@@ -1481,7 +1481,7 @@ for (i = 0; i < nPlayers; i++) {
 		}
 	else
 		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [nPlayer].red, playerColors [nPlayer].green, playerColors [nPlayer].blue), 1, 0, 0);
-	if (gameData.multigame.kills.bShowList == 3) {
+	if (gameData.multigame.score.bShowList == 3) {
 		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
 #if 0//DBG
 			sprintf (name, "%c%-8s %d.%d.%d.%d:%d",
@@ -1538,7 +1538,7 @@ for (i = 0; i < nPlayers; i++) {
 #endif
 	nIdKillList [0][i] = GrPrintF (nIdKillList [0] + i, x0 + indent, y0, "%s", name);
 
-	if (gameData.multigame.kills.bShowList == 2) {
+	if (gameData.multigame.score.bShowList == 2) {
 		if (gameData.multiplayer.players [nPlayer].netKilledTotal + gameData.multiplayer.players [nPlayer].netKillsTotal <= 0)
 			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, TXT_NOT_AVAIL);
 		else
@@ -1547,13 +1547,13 @@ for (i = 0; i < nPlayers; i++) {
 															 ((double) gameData.multiplayer.players [nPlayer].netKilledTotal +
 															  (double) gameData.multiplayer.players [nPlayer].netKillsTotal) * 100.0));
 		}
-	else if (gameData.multigame.kills.bShowList == 3) {
+	else if (gameData.multigame.score.bShowList == 3) {
 		if (gameData.app.nGameMode & GM_ENTROPY)
 			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d [%d/%d]",
-													 gameData.multigame.kills.nTeam [i], gameData.entropy.nTeamRooms [i + 1],
+													 gameData.multigame.score.nTeam [i], gameData.entropy.nTeamRooms [i + 1],
 													 gameData.entropy.nTotalRooms);
 		else
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d", gameData.multigame.kills.nTeam [i]);
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d", gameData.multigame.score.nTeam [i]);
 		}
 	else if (IsCoopGame)
 		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%-6d", gameData.multiplayer.players [nPlayer].score);

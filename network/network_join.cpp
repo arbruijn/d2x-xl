@@ -157,13 +157,13 @@ if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 	Int3 (); // Weird, see Rob
 	return;
 	}
-gameData.multiplayer.players [nPlayer].connected = 0;
+gameData.multiplayer.players [nPlayer].connected = CONNECT_DISCONNECTED;
 KillPlayerSmoke (nPlayer);
 gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
 gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
 KillPlayerBullets (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 KillGatlingSmoke (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
-netPlayers.m_info.players [nPlayer].connected = 0;
+netPlayers.m_info.players [nPlayer].connected = CONNECT_DISCONNECTED;
 for (short i = 0; i < networkData.nJoining; i++)
 	if (networkData.sync [i].nPlayer == nPlayer)
 		DeleteSyncData (i);
@@ -207,10 +207,10 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	}
 memcpy (&netPlayers.m_info.players [nPlayer].network, &their->player.network, sizeof (tNetworkInfo));
 gameData.multiplayer.players [nPlayer].nPacketsGot = 0;
-gameData.multiplayer.players [nPlayer].connected = 1;
+gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
 gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
 gameData.multiplayer.players [nPlayer].netKilledTotal = 0;
-memset (gameData.multigame.kills.matrix [nPlayer], 0, MAX_NUM_NET_PLAYERS * sizeof (short)); 
+memset (gameData.multigame.score.matrix [nPlayer], 0, MAX_NUM_NET_PLAYERS * sizeof (short)); 
 gameData.multiplayer.players [nPlayer].score = 0;
 gameData.multiplayer.players [nPlayer].flags = 0;
 gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
@@ -450,7 +450,7 @@ else {
 if (IsTeamGame)
 	ChoseTeam (nPlayer, true);
 gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
-gameData.multiplayer.players [nPlayer].connected = 0;
+gameData.multiplayer.players [nPlayer].connected = CONNECT_DISCONNECTED;
 // Send updated OBJECTS data to the new/returning CPlayerData
 syncP->player [0] = 
 syncP->player [1] = *player;
@@ -479,10 +479,10 @@ memcpy (npiP->callsign, player->player.callsign, CALLSIGN_LEN + 1);
 npiP->versionMajor = player->player.versionMajor;
 npiP->versionMinor = player->player.versionMinor;
 npiP->rank = player->player.rank;
-npiP->connected = 1;
+npiP->connected = CONNECT_PLAYING;
 NetworkCheckForOldVersion ((char) gameData.multiplayer.nPlayers);
 gameData.multiplayer.players [gameData.multiplayer.nPlayers].nScoreGoalCount = 0;
-gameData.multiplayer.players [gameData.multiplayer.nPlayers].connected = 1;
+gameData.multiplayer.players [gameData.multiplayer.nPlayers].connected = CONNECT_PLAYING;
 ResetPlayerTimeout (gameData.multiplayer.nPlayers, -1);
 gameData.multiplayer.nPlayers++;
 netGame.m_info.nNumPlayers = gameData.multiplayer.nPlayers;

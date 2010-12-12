@@ -228,7 +228,7 @@ else
 
 void NetworkSetGameMode (int gameMode)
 {
-	gameData.multigame.kills.bShowList = 1;
+	gameData.multigame.score.bShowList = 1;
 
 if (gameMode == NETGAME_ANARCHY)
 	;
@@ -254,7 +254,7 @@ else
 	Int3 ();
 gameData.app.nGameMode |= GM_NETWORK;
 if (gameData.app.nGameMode & GM_TEAM)
-	gameData.multigame.kills.bShowList = 3;
+	gameData.multigame.score.bShowList = 3;
 }
 
 //------------------------------------------------------------------------------

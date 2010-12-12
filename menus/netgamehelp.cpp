@@ -93,8 +93,8 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 				sprintf (szText, "%s%s %d/%d",
 							pszRankStrings[netPlayers.m_info.players [i].rank],
 							gameData.multiplayer.players [i].callsign,
-							gameData.multigame.kills.matrix[gameData.multiplayer.nLocalPlayer][i],
-							gameData.multigame.kills.matrix[i][gameData.multiplayer.nLocalPlayer]);
+							gameData.multigame.score.matrix[gameData.multiplayer.nLocalPlayer][i],
+							gameData.multigame.score.matrix[i][gameData.multiplayer.nLocalPlayer]);
 			}
 		else
 			sprintf (szText, "%s", gameData.multiplayer.players [i].callsign);

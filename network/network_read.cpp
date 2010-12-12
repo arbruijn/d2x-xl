@@ -61,7 +61,7 @@ if (nPlayer >= gameData.multiplayer.nPlayers) {
 if ((networkData.nStatus == NETSTAT_PLAYING) && (*eli.Connected () != 0))
 	return; // Only accept disconnect packets if we're not out of the level yet
 gameData.multiplayer.players [nPlayer].connected = *eli.Connected ();
-memcpy (&gameData.multigame.kills.matrix [nPlayer][0], eli.ScoreMatrix (), MAX_NUM_NET_PLAYERS * sizeof (short));
+memcpy (&gameData.multigame.score.matrix [nPlayer][0], eli.ScoreMatrix (), MAX_NUM_NET_PLAYERS * sizeof (short));
 gameData.multiplayer.players [nPlayer].netKillsTotal = *eli.Kills ();
 gameData.multiplayer.players [nPlayer].netKilledTotal = *eli.Killed ();
 if ((gameData.multiplayer.players [nPlayer].connected == 1) && (*eli.SecondsLeft () < gameData.reactor.countdown.nSecsLeft))
@@ -199,7 +199,7 @@ for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPla
 	if (networkData.nJoinState || (i != gameData.multiplayer.nLocalPlayer))
 		gameData.multiplayer.players [i].score = *sp->PlayerScore (i);
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
-		gameData.multigame.kills.matrix [i][j] = *sp->Kills (i, j);
+		gameData.multigame.score.matrix [i][j] = *sp->Kills (i, j);
 	}
 
 if (gameData.multiplayer.nLocalPlayer < 0) {
@@ -213,10 +213,10 @@ if (networkData.nJoinState) {
 	NetworkProcessMonitorVector (sp->GetMonitorVector ());
 	LOCALPLAYER.timeLevel = sp->GetLevelTime ();
 	}
-gameData.multigame.kills.nTeam [0] = *sp->TeamKills (0);
-gameData.multigame.kills.nTeam [1] = *sp->TeamKills (1);
-LOCALPLAYER.connected = 1;
-netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].connected = 1;
+gameData.multigame.score.nTeam [0] = *sp->TeamKills (0);
+gameData.multigame.score.nTeam [1] = *sp->TeamKills (1);
+LOCALPLAYER.connected = CONNECT_PLAYING;
+netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].connected = CONNECT_PLAYING;
 netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
 if (!networkData.nJoinState) {
 	int	j, bGotTeamSpawnPos = (IsTeamGame) && GotTeamSpawnPos ();
@@ -354,7 +354,7 @@ if (objP->info.movementType == MT_PHYSICS)
 	objP->SetThrustFromVelocity ();
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multiplayer.players [nPlayer].connected) {
-	gameData.multiplayer.players [nPlayer].connected = 1;
+	gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);
 	MultiMakeGhostPlayer (nPlayer);
@@ -468,7 +468,7 @@ if (objP->info.movementType == MT_PHYSICS)
 	objP->SetThrustFromVelocity ();
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multiplayer.players [nPlayer].connected) {
-	gameData.multiplayer.players [nPlayer].connected = 1;
+	gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);
 	MultiMakeGhostPlayer (nPlayer);

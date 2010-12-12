@@ -362,7 +362,7 @@ switch (key) {
 		break;
 
 	case KEY_F7:
-		gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList+1) % ((gameData.demo.nGameMode & GM_TEAM) ? 4 : 3);
+		gameData.multigame.score.bShowList = (gameData.multigame.score.bShowList+1) % ((gameData.demo.nGameMode & GM_TEAM) ? 4 : 3);
 		break;
 
 	case KEY_CTRLED + KEY_F7:
@@ -543,7 +543,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			gameData.multigame.bShowReticleName = (gameData.multigame.bShowReticleName + 1) % 2;
 
 		case KEY_F7:
-			gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList + 1) % (IsTeamGame ? 4 : 3);
+			gameData.multigame.score.bShowList = (gameData.multigame.score.bShowList + 1) % (IsTeamGame ? 4 : 3);
 			if (IsMultiGame)
 				MultiSortKillList ();
 			bStopPlayerMovement = 0;

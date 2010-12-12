@@ -244,7 +244,7 @@ if ((NetworkIAmMaster ())) {
 	NetworkSendGameInfo (NULL);
 	gameData.multiplayer.nPlayers = nsave;
 	}
-LOCALPLAYER.connected = 0;
+LOCALPLAYER.connected = CONNECT_DISCONNECTED;
 NetworkSendEndLevelPacket ();
 ChangePlayerNumTo (0);
 gameData.app.nGameMode = GM_GAME_OVER;
@@ -545,9 +545,9 @@ pingStats [nPlayer].received++;
 
 //------------------------------------------------------------------------------
 
-void NetworkSendPing (ubyte pnum)
+void NetworkSendPing (ubyte nPlayer)
 {
-NetworkPing (PID_PING_SEND, pnum);
+NetworkPing (PID_PING_SEND, nPlayer);
 }  
 
 //------------------------------------------------------------------------------

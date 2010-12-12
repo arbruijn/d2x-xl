@@ -80,7 +80,7 @@ void NetworkSendRejoinSync (int nPlayer, tNetworkSyncData *syncP)
 {
 	int i, j;
 
-gameData.multiplayer.players [nPlayer].connected = 1; // connect the new guy
+gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING; // connect the new guy
 ResetPlayerTimeout (nPlayer, -1);
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	// Endlevel started before we finished sending the goods, we'll
@@ -119,7 +119,7 @@ NetworkUpdateNetGame ();
 // Fill in the kill list
 for (j = 0; j < MAX_PLAYERS; j++) {
 	for (i = 0; i < MAX_PLAYERS; i++)
-		*netGame.Kills (j, i) = gameData.multigame.kills.matrix [j][i];
+		*netGame.Kills (j, i) = gameData.multigame.score.matrix [j][i];
 	*netGame.Killed (j) = gameData.multiplayer.players [j].netKilledTotal;
 	*netGame.PlayerKills (j) = gameData.multiplayer.players [j].netKillsTotal;
 	*netGame.PlayerScore (j) = gameData.multiplayer.players [j].score;
@@ -145,7 +145,7 @@ NetworkUpdateNetGame ();
 // Fill in the kill list
 for (j = 0; j < MAX_PLAYERS; j++) {
 	for (i = 0; i < MAX_PLAYERS; i++)
-		*netGame.Kills () [j][i] = gameData.multigame.kills.matrix [j][i];
+		*netGame.Kills () [j][i] = gameData.multigame.score.matrix [j][i];
 	*netGame.Killed () [j] = gameData.multiplayer.players [j].netKilledTotal;
 	*netGame.PlayerKills () [j] = gameData.multiplayer.players [j].netKillsTotal;
 	*netGame.PlayerScore () [j] = gameData.multiplayer.players [j].score;
@@ -227,7 +227,7 @@ void NetworkSendEndLevelSub (int nPlayer)
 *end.Connected () = gameData.multiplayer.players [nPlayer].connected;
 *end.Kills () = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKillsTotal);
 *end.Killed () = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKilledTotal);
-memcpy (end.ScoreMatrix (), gameData.multigame.kills.matrix [nPlayer], MAX_NUM_NET_PLAYERS * sizeof (short));
+memcpy (end.ScoreMatrix (), gameData.multigame.score.matrix [nPlayer], MAX_NUM_NET_PLAYERS * sizeof (short));
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 for (i = 0; i < MAX_PLAYERS; i++)
 	for (int j = 0; j < MAX_PLAYERS; j++)
@@ -492,7 +492,7 @@ d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
 	// Randomize their starting locations...
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
 	if (gameData.multiplayer.players [i].connected)
-		gameData.multiplayer.players [i].connected = 1; // Get rid of endlevel connect statuses
+		gameData.multiplayer.players [i].connected = CONNECT_PLAYING; // Get rid of endlevel connect statuses
 if (IsCoopGame) {
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
 		*netGame.Locations (i) = i;

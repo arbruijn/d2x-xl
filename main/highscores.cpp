@@ -72,23 +72,23 @@ GrPrintF (NULL, LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)) + xOffs, 
 for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
 	x = LHX (70 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + j * 25) + xOffs;
 	if (m_sorted [i] == m_sorted [j]) {
-		if (gameData.multigame.kills.matrix [m_sorted [i]][m_sorted [j]] == 0) {
+		if (gameData.multigame.score.matrix [m_sorted [i]][m_sorted [j]] == 0) {
 			fontManager.SetColorRGBi (RGBA_PAL2 (10,10,10), 1, 0, 0);
-			GrPrintF (NULL, x, y, "%d", gameData.multigame.kills.matrix [m_sorted [i]][m_sorted [j]]);
+			GrPrintF (NULL, x, y, "%d", gameData.multigame.score.matrix [m_sorted [i]][m_sorted [j]]);
 			} 
 		else {
 			fontManager.SetColorRGBi (RGBA_PAL2 (25,25,25), 1, 0, 0);
-			GrPrintF (NULL, x, y, "-%d", gameData.multigame.kills.matrix [m_sorted [i]][m_sorted [j]]);
+			GrPrintF (NULL, x, y, "-%d", gameData.multigame.score.matrix [m_sorted [i]][m_sorted [j]]);
 			}
 		} 
 	else {
-		if (gameData.multigame.kills.matrix [m_sorted [i]][m_sorted [j]] <= 0) {
+		if (gameData.multigame.score.matrix [m_sorted [i]][m_sorted [j]] <= 0) {
 			fontManager.SetColorRGBi (RGBA_PAL2 (10,10,10), 1, 0, 0);
-			GrPrintF (NULL, x, y, "%d", gameData.multigame.kills.matrix [m_sorted [i]][m_sorted [j]]);
+			GrPrintF (NULL, x, y, "%d", gameData.multigame.score.matrix [m_sorted [i]][m_sorted [j]]);
 			} 
 		else {
 			fontManager.SetColorRGBi (RGBA_PAL2 (25,25,25), 1, 0, 0);
-			GrPrintF (NULL, x, y, "%d", gameData.multigame.kills.matrix [m_sorted [i]][m_sorted [j]]);
+			GrPrintF (NULL, x, y, "%d", gameData.multigame.score.matrix [m_sorted [i]][m_sorted [j]]);
 			}
 		}
 	}
@@ -141,7 +141,7 @@ for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
 	if (gameData.multiplayer.players [m_sorted [j]].connected == 0)
 		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
    else
-      fontManager.SetColorRGBi (RGBA_PAL2 (playerColors  [color].red, playerColors  [color].green, playerColors  [color].blue), 1, 0, 0);
+      fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue), 1, 0, 0);
 	GrPrintF (NULL, x, LHY (40) + yOffs, "%c", gameData.multiplayer.players [m_sorted [j]].callsign [0]);
 	}
 x = LHX (72 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + gameData.multiplayer.nPlayers*25) + xOffs;
@@ -216,8 +216,8 @@ y = LHY (55 + gameData.multiplayer.nPlayers * 9) + yOffs;
 fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 x = CENTERSCREEN+LHX (50) + xOffs;
 GrPrintF (NULL, x, y, TXT_DEATHS);
-for (j=0; j<gameData.multiplayer.nPlayers; j++) {
-	x = CENTERSCREEN+LHX (50) + xOffs;
+for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
+	x = CENTERSCREEN + LHX (50) + xOffs;
 	GrPrintF (NULL, x, y, "%d", gameData.multiplayer.players [m_sorted [j]].netKilledTotal);
 	}
 y = LHY (55 + 72 + 35) + yOffs;
@@ -313,7 +313,7 @@ GrString (0x8000, LHY (10), TXT_KILL_MATRIX_TITLE, NULL);
 fontManager.SetCurrent (SMALL_FONT);
 MultiGetKillList (m_sorted);
 DrawNames ();
-for ( i =0; i<gameData.multiplayer.nPlayers; i++) {
+for (i= 0; i<gameData.multiplayer.nPlayers; i++) {
 	if (gameData.app.nGameMode & GM_TEAM)
 		color = GetTeam (m_sorted [i]);
 	else
@@ -321,7 +321,7 @@ for ( i =0; i<gameData.multiplayer.nPlayers; i++) {
 	if (!gameData.multiplayer.players [m_sorted [i]].connected)
 		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else
-		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors  [color].red, playerColors  [color].green, playerColors  [color].blue), 1, 0, 0);
+		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue), 1, 0, 0);
 	DrawItem (i);
 	}
 DrawDeaths ();
@@ -334,7 +334,6 @@ GrUpdate (1);
 void CScoreTable::RenderCoop (void)
 {
 	int i, color;
-	int m_sorted [MAX_PLAYERS];
 
 MultiSortKillList ();
 fontManager.SetCurrent (MEDIUM3_FONT);
@@ -347,7 +346,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players [m_sorted [i]].connected == 0)
 		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else
-		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors  [color].red, playerColors  [color].green, playerColors  [color].blue), 1, 0, 0);
+		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue), 1, 0, 0);
 	DrawCoopItem (i);
 	}
 DrawDeaths ();
@@ -363,7 +362,7 @@ void CScoreTable::Cleanup (int bQuit)
 if (m_bNetwork)
 	NetworkSendEndLevelPacket ();
 if (bQuit) {
-	LOCALPLAYER.connected = 0;
+	LOCALPLAYER.connected = CONNECT_DISCONNECTED;
 	MultiLeaveGame ();
 	}
 gameData.score.bNoMovieMessage = 0;
@@ -384,7 +383,7 @@ if (LAST_OEM_LEVEL) {
 	Cleanup (1);
 	return true;
 	}
-LOCALPLAYER.connected = 7; // 7 means "I have arrived at the score screen and want to proceed"
+LOCALPLAYER.connected = CONNECT_ADVANCE_LEVEL; // 7 means "I have arrived at the score screen and want to proceed"
 if (m_bNetwork)
 	NetworkSendEndLevelPacket ();
 return false;
@@ -455,8 +454,8 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players [i].connected && (i != gameData.multiplayer.nLocalPlayer)) {
 	// Check timeout for idle players
 		if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ENDLEVEL_IDLE_TIME) {
-			gameData.multiplayer.players [i].connected = 0;
-			//if (NetworkIAmMaster ())
+			gameData.multiplayer.players [i].connected = CONNECT_DISCONNECTED;
+			if (NetworkIAmMaster ())
 				NetworkSendEndLevelSub (i);
 			}
 		}
@@ -537,12 +536,11 @@ while (true) {
 			}
 		if ((gameData.app.nGameMode & (GM_SERIAL | GM_MODEM)) != 0) 
 			break;
-		if (LOCALPLAYER.connected != 7) {
-			LOCALPLAYER.connected = 7; // player is idling in score screen for MAX_VIEW_TIMES secs 
-			NetworkSendEndLevelPacket (); // tell others I am ready (repeat telling them every second while waiting)
-			}
-		else if (t >= t0 + 2 * MAX_VIEW_TIME) // player wants to proceed and has waited for MAX_VIEW_TIME secs, so proceed
+		LOCALPLAYER.connected = CONNECT_ADVANCE_LEVEL; // player is idling in score screen for MAX_VIEW_TIMES secs 
+#if 1
+		if (t >= t0 + 2 * MAX_VIEW_TIME) // player wants to proceed and has waited for MAX_VIEW_TIME secs, so proceed
 			break;
+#endif
 		}
 	if (m_bNetwork) {
 		CMenu m (1);
@@ -552,7 +550,7 @@ while (true) {
 			break;
 		}
 	}
-LOCALPLAYER.connected = 7;
+LOCALPLAYER.connected = CONNECT_ADVANCE_LEVEL;
 // Restore background and exit
 paletteManager.DisableEffect ();
 GameFlushInputs ();

@@ -344,14 +344,14 @@ netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	netPlayers.m_info.players [i].connected = gameData.multiplayer.players [i].connected;
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
-		*netGame.Kills (i, j) = gameData.multigame.kills.matrix [i][j];
+		*netGame.Kills (i, j) = gameData.multigame.score.matrix [i][j];
 	*netGame.Killed (i) = gameData.multiplayer.players [i].netKilledTotal;
 	*netGame.PlayerKills (i) = gameData.multiplayer.players [i].netKillsTotal;
 	*netGame.PlayerScore (i) = gameData.multiplayer.players [i].score;
 	*netGame.PlayerFlags (i) = (gameData.multiplayer.players [i].flags & (PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY));
 	}
-*netGame.TeamKills (0) = gameData.multigame.kills.nTeam [0];
-*netGame.TeamKills (1) = gameData.multigame.kills.nTeam [1];
+*netGame.TeamKills (0) = gameData.multigame.score.nTeam [0];
+*netGame.TeamKills (1) = gameData.multigame.score.nTeam [1];
 netGame.m_info.SetLevel (missionManager.nCurrentLevel);
 }
 
@@ -387,6 +387,10 @@ SpecialResetObjects ();
  */
 int NetworkSyncPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (gameData.multiplayer.nPlayers && NetworkIAmMaster ()) {
+	key = -3;
+	return nCurItem;
+	}
 if (nState)
 	return nCurItem;
 
@@ -441,8 +445,10 @@ if (i < 0) {
 sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers.m_info.players [i].callsign, TXT_NET_TO_ENTER);
 networkData.toSyncPoll = 0;
 do {
-	choice = m.Menu (NULL, TXT_WAIT, NetworkSyncPoll);
+	choice = m.Menu (NULL, TXT_HOST_WAIT, NetworkSyncPoll);
 	} while (choice > -1);
+if (choice == -3)
+	return 0;
 if (networkData.nStatus == NETSTAT_PLAYING)  
 	return 0;
 else if (networkData.nStatus == NETSTAT_AUTODL)
@@ -674,12 +680,21 @@ while (0 < (size = IpxGetPacketData (packet))) {
 
 int NetworkRequestPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
+if (!NetworkIAmMaster ()) {
+	key = -2;
+	return nCurItem;
+	}
 if (nState)
 	return nCurItem;
 
 	int i = 0;
 	int nReady = 0;
 
+// tell other players that I am here
+for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	if (i != gameData.multiplayer.nLocalPlayer)
+		NetworkSendPing (i); 
+	}
 NetworkListen ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((ubyte) gameData.multiplayer.players [i].connected < 2)
@@ -701,10 +716,10 @@ void NetworkWaitForRequests (void)
 networkData.nStatus = NETSTAT_WAITING;
 m.AddText (const_cast<char*> (TXT_NET_LEAVE));
 NetworkFlush ();
-LOCALPLAYER.connected = 1;
+LOCALPLAYER.connected = CONNECT_PLAYING;
 
 for (;;) {
-	choice = m.Menu (NULL, TXT_WAIT, NetworkRequestPoll);        
+	choice = m.Menu (NULL, TXT_CLIENT_WAIT, NetworkRequestPoll);        
 	if (choice == -1) {
 		// User aborted
 		choice = MsgBox (NULL, NULL, 3, TXT_YES, TXT_NO, TXT_START_NOWAIT, TXT_QUITTING_NOW);
@@ -737,17 +752,23 @@ int NetworkLevelSync (void)
 	networkData.bSyncPackInited = 0;
 
 NetworkFlush (); // Flush any old packets
-if (!gameData.multiplayer.nPlayers)
-	result = NetworkWaitForSync ();
-else if (NetworkIAmMaster ()) {
-	NetworkWaitForRequests ();
-	NetworkSendSync ();
-	result = (gameData.multiplayer.nLocalPlayer < 0) ? -1 : 0;
+for (;;) {
+	if (gameData.multiplayer.nPlayers && NetworkIAmMaster ()) {
+		NetworkWaitForRequests ();
+		if (NetworkIAmMaster ()) {
+			NetworkSendSync ();
+			result = (gameData.multiplayer.nLocalPlayer < 0) ? -1 : 0;
+			break;
+			}
+		}
+	else {
+		result = NetworkWaitForSync ();
+		if (!(gameData.multiplayer.nPlayers && NetworkIAmMaster ()))
+			break;
+		}
 	}
-else
-	result = NetworkWaitForSync ();
 if (result < 0) {
-	LOCALPLAYER.connected = 0;
+	LOCALPLAYER.connected = CONNECT_DISCONNECTED;
 	NetworkSendEndLevelPacket ();
 	longjmp (gameExitPoint, 0);
 	}

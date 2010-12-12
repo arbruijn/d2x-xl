@@ -104,8 +104,8 @@ typedef struct tNetworkData {
 	int					nTotalPacketsGot;
 	int					nMissedPackets;
 	int					nConsistencyErrorCount;
-	tFrameInfoLong			syncPack;
-	tFrameInfoLong			urgentSyncPack;
+	tFrameInfoLong		syncPack;
+	tFrameInfoLong		urgentSyncPack;
 	ubyte					bSyncPackInited;       
 	ushort				nSegmentCheckSum;
 	tSequencePacket	thisPlayer;

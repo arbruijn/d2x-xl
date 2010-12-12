@@ -1934,6 +1934,8 @@ const char *defaultGameTexts [][2] = {
  {"Lade...", "Loading..."},
  {"Vorbereitung...", "Preparing..."},
  {"le~Uchteffekt: %s", "glo~W: %s"},
+ {"Warte auf Mitspieler...", "Waiting for other players..."},
+ {"Warte auf Gastgeber...", "Waiting for game host..."},
 #if 0
  {"", ""},
 #endif
@@ -1959,7 +1961,7 @@ const char *defaultHelpTexts [][2] = {
  {"Ein Lied aus Descent 2 spielen.", "Play a Descent 2 song."},
  {"Abspann abspielen.", "Show credits."},
  {"Programm verlassen.", "Quit program."},
- {"Hier kann eingestellt werden, ob nur Descent 1- oder nur Descent 2- oder alle Missionen zur Auswahl angeboten werden sollen.",
+ {"Hier kann eingestellt werden, ob nur Descent 1, oder nur Descent 2, oder alle Missionen zur Auswahl angeboten werden sollen.",
 	 "Select whether only Descent 1, only Descent 2, or all missions can be chosen for playing."},
  {"(keine Hilfe verfuegbar)", "(no help available)"},
 	//controls configuration menu

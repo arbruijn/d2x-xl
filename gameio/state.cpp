@@ -1315,7 +1315,7 @@ for (i = 0; i < nPlayers; i++) {
 					memcpy (netPlayers.m_info.players [i].network.ipx.node, gameData.multiplayer.players [j].netAddress, 
 							  sizeof (gameData.multiplayer.players [j].netAddress));
 					}
-				restoredPlayers [i].connected = 1;
+				restoredPlayers [i].connected = CONNECT_PLAYING;
 				break;
 				}
 			}
@@ -1333,7 +1333,7 @@ if (NetworkIAmMaster ()) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (i == gameData.multiplayer.nLocalPlayer)
 			continue;
-   	gameData.multiplayer.players [i].connected = 0;
+   	gameData.multiplayer.players [i].connected = CONNECT_DISCONNECTED;
 		}
 	}
 }
@@ -1705,7 +1705,7 @@ if (IsMultiGame) {
 	gameData.multiplayer.nLocalPlayer = m_cf.ReadInt ();
 	for (i = 0; i < nPlayers; i++) {
 		CSaveGameManager::LoadPlayer (restoredPlayers + i);
-		restoredPlayers [i].connected = 0;
+		restoredPlayers [i].connected = CONNECT_DISCONNECTED;
 		}
 	IFDBG (fPos = m_cf.Tell ());
 	// make sure the current game host is in CPlayerData slot #0
