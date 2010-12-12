@@ -169,7 +169,7 @@ void DeleteActiveNetGame (int i);
 int NetworkWhoIsMaster (void);
 void NetworkConsistencyError (void);
 void NetworkPing (ubyte flag, int nPlayer);
-void NetworkHandlePingReturn (ubyte nPlayer);
+void NetworkHandlePingReturn (ubyte* dataP);
 void DoRefuseStuff (tSequencePacket *their);
 int GotTeamSpawnPos (void);
 int TeamSpawnPos (int i);

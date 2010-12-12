@@ -354,7 +354,7 @@ return 1;
 
 int PingReturnHandler (ubyte *dataP, int nLength)
 {
-NetworkHandlePingReturn (dataP [1]);  // dataP [1] is CPlayerData who told us of THEIR ping time
+NetworkHandlePingReturn (dataP);  // dataP [1] is CPlayerData who told us of THEIR ping time
 return 1;
 }
 

@@ -513,29 +513,33 @@ SetFunctionMode (FMODE_MENU);
 
 void NetworkPing (ubyte flag, int nPlayer)
 {
-	ubyte mybuf [2];
-
-mybuf [0] = flag;
-mybuf [1] = gameData.multiplayer.nLocalPlayer;
-if (gameStates.multi.nGameType >= IPX_GAME)
+if (gameStates.multi.nGameType >= IPX_GAME) {
+	ubyte mybuf [3];
+	mybuf [0] = flag;
+	mybuf [1] = gameData.multiplayer.nLocalPlayer;
+	if (gameStates.multi.nGameType == UDP_GAME)
+		mybuf [2] = LOCALPLAYER.connected;
 	IPXSendPacketData (
-		reinterpret_cast<ubyte*> (mybuf), 2, 
+		reinterpret_cast<ubyte*> (mybuf), (gameStates.multi.nGameType == UDP_GAME) ? 3 : 2, 
 		netPlayers.m_info.players [nPlayer].network.ipx.server, 
 		netPlayers.m_info.players [nPlayer].network.ipx.node, 
 		gameData.multiplayer.players [nPlayer].netAddress);
+	}
 }
 
 //------------------------------------------------------------------------------
 
-void NetworkHandlePingReturn (ubyte nPlayer)
+void NetworkHandlePingReturn (ubyte* dataP)
 {
+	ubyte nPlayer = *dataP;
+
 if ((nPlayer >= gameData.multiplayer.nPlayers) || !pingStats [nPlayer].launchTime) {
 #if 1			
 	 console.printf (CON_DBG, "Got invalid PING RETURN from %s!\n", gameData.multiplayer.players [nPlayer].callsign);
 #endif
    return;
 	}
-gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
+gameData.multiplayer.players [nPlayer].connected = (gameStates.multi.nGameType == UDP_GAME) ? dataP [1] : CONNECT_PLAYING;
 if (pingStats [nPlayer].launchTime > 0) {
 	xPingReturnTime = TimerGetFixedSeconds ();
 	pingStats [nPlayer].ping = X2I (FixMul (xPingReturnTime - pingStats [nPlayer].launchTime, I2X (1000)));
