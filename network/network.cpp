@@ -515,11 +515,11 @@ void NetworkPing (ubyte flag, int nPlayer)
 {
 	ubyte mybuf [2];
 
-mybuf [0]=flag;
-mybuf [1]=gameData.multiplayer.nLocalPlayer;
+mybuf [0] = flag;
+mybuf [1] = gameData.multiplayer.nLocalPlayer;
 if (gameStates.multi.nGameType >= IPX_GAME)
 	IPXSendPacketData (
-			reinterpret_cast<ubyte*> (mybuf), 2, 
+		reinterpret_cast<ubyte*> (mybuf), 2, 
 		netPlayers.m_info.players [nPlayer].network.ipx.server, 
 		netPlayers.m_info.players [nPlayer].network.ipx.node, 
 		gameData.multiplayer.players [nPlayer].netAddress);
@@ -535,12 +535,15 @@ if ((nPlayer >= gameData.multiplayer.nPlayers) || !pingStats [nPlayer].launchTim
 #endif
    return;
 	}
-xPingReturnTime = TimerGetFixedSeconds ();
-pingStats [nPlayer].ping = X2I (FixMul (xPingReturnTime - pingStats [nPlayer].launchTime, I2X (1000)));
-if (!gameStates.render.cockpit.bShowPingStats)
-	HUDInitMessage ("Ping time for %s is %d ms!", gameData.multiplayer.players [nPlayer].callsign, pingStats [nPlayer].ping);
-pingStats [nPlayer].launchTime = 0;
-pingStats [nPlayer].received++;
+gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
+if (pingStats [nPlayer].launchTime > 0) {
+	xPingReturnTime = TimerGetFixedSeconds ();
+	pingStats [nPlayer].ping = X2I (FixMul (xPingReturnTime - pingStats [nPlayer].launchTime, I2X (1000)));
+	if (!gameStates.render.cockpit.bShowPingStats)
+		HUDInitMessage ("Ping time for %s is %d ms!", gameData.multiplayer.players [nPlayer].callsign, pingStats [nPlayer].ping);
+	pingStats [nPlayer].received++;
+	pingStats [nPlayer].launchTime = 0;
+	}
 }
 
 //------------------------------------------------------------------------------

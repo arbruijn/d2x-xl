@@ -692,8 +692,10 @@ if (nState)
 
 // tell other players that I am here
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (i != gameData.multiplayer.nLocalPlayer)
+	if (i != gameData.multiplayer.nLocalPlayer) {
+		pingStats [i].launchTime = -1; //TimerGetFixedSeconds ();
 		NetworkSendPing (i); 
+		}
 	}
 NetworkListen ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {

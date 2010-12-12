@@ -247,6 +247,8 @@ int NetworkObjnumIsPast(int nObject, tNetworkSyncData *syncP);
 
 void InitAddressFilter (void);
 
+void NetworkSendPing (ubyte);
+
 //------------------------------------------------------------------------------
 
 static inline void ResetPlayerTimeout (int nPlayer, fix t)

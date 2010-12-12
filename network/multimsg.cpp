@@ -20,6 +20,7 @@
 #include "text.h"
 #include "playsave.h"
 #include "multimsg.h"
+#include "network_lib.h"
 
 //-----------------------------------------------------------------------------
 
