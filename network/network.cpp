@@ -511,7 +511,7 @@ SetFunctionMode (FMODE_MENU);
 
 //------------------------------------------------------------------------------
 
-void NetworkPing (ubyte flag, int nPlayer)
+void NetworkPing (ubyte flag, ubyte nPlayer)
 {
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	ubyte mybuf [3];
@@ -529,17 +529,14 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 
 //------------------------------------------------------------------------------
 
-void NetworkHandlePingReturn (ubyte* dataP)
+void NetworkHandlePingReturn (ubyte nPlayer)
 {
-	ubyte nPlayer = *dataP;
-
 if ((nPlayer >= gameData.multiplayer.nPlayers) || !pingStats [nPlayer].launchTime) {
 #if 1			
 	 console.printf (CON_DBG, "Got invalid PING RETURN from %s!\n", gameData.multiplayer.players [nPlayer].callsign);
 #endif
    return;
 	}
-gameData.multiplayer.players [nPlayer].connected = (gameStates.multi.nGameType == UDP_GAME) ? dataP [1] : CONNECT_PLAYING;
 if (pingStats [nPlayer].launchTime > 0) {
 	xPingReturnTime = TimerGetFixedSeconds ();
 	pingStats [nPlayer].ping = X2I (FixMul (xPingReturnTime - pingStats [nPlayer].launchTime, I2X (1000)));
