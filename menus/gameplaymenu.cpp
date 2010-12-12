@@ -327,7 +327,7 @@ do {
 	m.AddText ("");
 	optReorderPrim = m.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
 	optReorderSec = m.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
-	if (gameStates.app.bGameRunning)
+	//if (gameStates.app.bGameRunning)
 		AddShipSelection (m, optShip);
 	if (gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)
 		optLoadout = -1;

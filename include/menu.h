@@ -374,9 +374,6 @@ void SoundMenu (void);
 void LoadoutOptionsMenu (void);
 
 int MainMenu (void);
-void ConfigMenu (void);
-void RenderOptionsMenu (void);
-void GameplayOptionsMenu (void);
 int QuitSaveLoadMenu (void);
 int SelectAndLoadMission (int bMulti, int *bAnarchyOnly);
 

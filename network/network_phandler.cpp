@@ -333,9 +333,7 @@ if (networkData.nStatus == NETSTAT_PLAYING) {
 		memcpy (&netGame, dataP, sizeof (tNetGameInfoLite));
 	}
 if (IsTeamGame) {
-	int i;
-
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected)
 		   MultiSetObjectTextures (OBJECTS + gameData.multiplayer.players [i].nObject);
 	}

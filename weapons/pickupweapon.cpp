@@ -61,7 +61,7 @@ if (nWeaponIndex == FUSION_INDEX) {
 			}
 		if (gameData.multiplayer.weaponStates [nPlayer].bTripleFusion) {
 			DuplicateWeaponMsg (nWeaponIndex, nPlayer);
-			return 1; // already has tri-fusion
+			return 0; // already has tri-fusion
 			}
 		if (nPlayer == gameData.multiplayer.nLocalPlayer)
    		gameData.weapons.bTripleFusion = 1;
@@ -72,7 +72,7 @@ if (nWeaponIndex == FUSION_INDEX) {
 else if (nWeaponIndex != LASER_INDEX) {
 	if (playerP->primaryWeaponFlags & flag) {
 		DuplicateWeaponMsg (nWeaponIndex, nPlayer);
-		return 1;
+		return 0;
 		}
 	}
 playerP->primaryWeaponFlags |= flag;
