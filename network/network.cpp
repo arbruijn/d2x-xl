@@ -299,8 +299,7 @@ int NetworkListen (void)
 	int i, t, nPackets = 0, nMaxLoops = 999;
 
 downloadManager.CleanUp ();
-if (NetworkIAmMaster ())
-	tracker.AddServer ();
+tracker.AddServer ();
 if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.GetShortPackets () && !networkData.nJoining)
 	nMaxLoops = gameData.multiplayer.nPlayers * PacketsPerSec ();
 
@@ -487,8 +486,7 @@ if ((networkData.sync.nPlayer != -1) && !(gameData.app.nFrameCount & 63))
 	ResendSyncDueToPacketLoss (); // This will resend to network_player_rejoining
 #endif
 NetworkDoSyncFrame ();
-if (NetworkIAmMaster ())
-	tracker.AddServer ();
+tracker.AddServer ();
 }
 
 //------------------------------------------------------------------------------

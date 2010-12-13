@@ -68,6 +68,8 @@ return gameData.multiplayer.nLocalPlayer;
 
 int NetworkIAmMaster (void)
 {
+if (!gameStates.app.bGameRunning)
+	return gameStates.multi.bServer;
 return NetworkWhoIsMaster () == gameData.multiplayer.nLocalPlayer;
 }
 

@@ -222,7 +222,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{31, -1}, // MULTI_CREATE_WEAPON
 	{6, -1},  // MULTI_AMMO
 	{6, -1},  // MULTI_FUSION_CHARGE
-	{5, -1}   // MULTI_PLAYER_THRUST
+	{7, -1}   // MULTI_PLAYER_THRUST
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
@@ -641,10 +641,8 @@ void MultiSendPlayerThrust (void)
 
 gameData.multigame.msg.buf [0] = char (MULTI_PLAYER_THRUST);
 gameData.multigame.msg.buf [1] = char (gameData.multiplayer.nLocalPlayer);
-gameData.multigame.msg.buf [2] = wsP->nThrusters [0];
-gameData.multigame.msg.buf [3] = wsP->nThrusters [1];
-gameData.multigame.msg.buf [4] = wsP->nThrusters [2];
-MultiSendData (gameData.multigame.msg.buf, 5, 0);
+memcpy (gameData.multigame.msg.buf + 2, wsP->nThrusters, sizeof (wsP->nThrusters));
+MultiSendData (gameData.multigame.msg.buf, 2 + sizeof (wsP->nThrusters), 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -703,9 +701,7 @@ void MultiDoPlayerThrust (char *buf)
 {
 	CWeaponState	*wsP = gameData.multiplayer.weaponStates + int (buf [1]);
 
-wsP->nThrusters [0] = buf [2];
-wsP->nThrusters [1] = buf [3];
-wsP->nThrusters [2] = buf [4];
+memcpy (wsP->nThrusters, buf + 2, sizeof (wsP->nThrusters));
 }
 
 //-----------------------------------------------------------------------------

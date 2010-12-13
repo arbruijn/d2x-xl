@@ -216,17 +216,10 @@ mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
 
 CWeaponState& ws = gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer];
 
-ubyte nOldThrusters [3];
+ubyte nOldThrusters [5];
 
-nOldThrusters [0] = ws.nThrusters [0];
-nOldThrusters [1] = ws.nThrusters [1];
-nOldThrusters [2] = ws.nThrusters [2];
-
-ws.nThrusters [0] = 
-ws.nThrusters [1] = 
-ws.nThrusters [2] = 
-ws.nThrusters [3] = 
-ws.nThrusters [4] = 0;
+memcpy (nOldThrusters, ws.nThrusters, sizeof (nOldThrusters));
+memset (ws.nThrusters, 0, sizeof (ws.nThrusters));
 
 if (controls [0].forwardThrustTime < 0)
 	ws.nThrusters [0] = FRONT_THRUSTER | FRONTAL_THRUSTER;
@@ -258,7 +251,7 @@ else if (controls [0].bankTime < 0)
 if (!(ws.nThrusters [0] | ws.nThrusters [1] | ws.nThrusters [2] | ws.nThrusters [3] | ws.nThrusters [4]))
 	ws.nThrusters [0] = REAR_THRUSTER | FRONTAL_THRUSTER;	// always on
 
-if (IsMultiGame && ((nOldThrusters [0] != ws.nThrusters [0]) || (nOldThrusters [1] != ws.nThrusters [1]) || (nOldThrusters [2] != ws.nThrusters [2])))
+if (IsMultiGame && memcmp (nOldThrusters, ws.nThrusters, sizeof (nOldThrusters)))
 	MultiSendPlayerThrust ();
 
 #if DBG

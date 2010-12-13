@@ -1554,7 +1554,7 @@ int CObject::ModelId (bool bRaw)
 {
 return (bRaw || (info.nType != OBJ_PLAYER))
 		 ? rType.polyObjInfo.nModel
-		 : rType.polyObjInfo.nModel + gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip;
+		 : rType.polyObjInfo.nModel + gameData.multiplayer.weaponStates [info.nId].nShip;
 }
 
 //------------------------------------------------------------------------------

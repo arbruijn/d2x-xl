@@ -104,7 +104,7 @@ gameStates.multi.bTrackerCall = 0;
 
 int CTracker::AddServer (void)
 {
-if ((gameStates.multi.bServer || bTestTracker) && tracker.m_bUse) {
+if ((NetworkIAmMaster () || bTestTracker) && tracker.m_bUse) {
 		int					i, t;
 		static int			nTimeout = 0;
 		ubyte					id = 'S';
