@@ -631,7 +631,7 @@ objP->info.nSegment = INTEL_SHORT(objP->info.nSegment);
 INTEL_VECTOR (objP->info.position.vPos);
 INTEL_MATRIX (objP->info.position.mOrient);
 objP->info.xSize = INTEL_INT (objP->info.xSize);
-objP->info.xShields = INTEL_INT (objP->info.xShields);
+objP->info.xShield = INTEL_INT (objP->info.xShield);
 INTEL_VECTOR (objP->info.vLastPos);
 objP->info.xLifeLeft = INTEL_INT (objP->info.xLifeLeft);
 switch (objP->info.movementType) {
