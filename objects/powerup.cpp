@@ -258,7 +258,6 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
 LOCALPLAYER.SetEnergy (I2X (200));
 LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield ());
-MultiSendShield ();
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;
 if (gameData.app.nGameMode & GM_HOARD)

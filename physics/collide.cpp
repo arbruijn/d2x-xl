@@ -1748,7 +1748,6 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlaye
 			damage = 1;
 		}
 	playerP->UpdateShield (-damage);
-	MultiSendShield ();
 	paletteManager.BumpEffect (X2I (damage) * 4, -X2I (damage / 2), -X2I (damage / 2));	//flash red
 	if (playerP->Shield () < 0) {
   		playerP->nKillerObj = OBJ_IDX (killerObjP);

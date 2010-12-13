@@ -380,7 +380,6 @@ if (gameStates.app.bGameRunning && (gameOpts->gameplay.nShip [1] != nShip)) {
 	LOCALPLAYER.SetShield (-1);
 	if (LOCALPLAYER.Object ())
 		LOCALPLAYER.Object ()->Die ();
-	MultiSendShield ();
 	MultiSendPlayerWeapons ();
 	}
 }

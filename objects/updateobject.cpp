@@ -246,7 +246,6 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 		fix shield = segP->Repair (fix (playerP->InitialShield ()) - playerP->Shield ());
 		if (shield > 0) {
 			playerP->UpdateShield (shield);
-			MultiSendShield ();
 			}
 		}
 	}

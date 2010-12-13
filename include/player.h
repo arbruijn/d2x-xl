@@ -66,6 +66,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define PLAYER_STRUCT_VERSION   17  // increment this every time CPlayerData struct changes
 
+void MultiSendShield (void);
+
 // defines for teams
 #define TEAM_BLUE   0
 #define TEAM_RED    1
@@ -224,7 +226,11 @@ class __pack__ CPlayerData : public CPlayerInfo {
 		fix SetEnergy (fix e, bool bScale = true);
 		inline fix ResetShield (fix s) { return m_shield.Reset (s); }
 		inline fix ResetEnergy (fix e) { return m_energy.Reset (e); }
-		inline fix UpdateShield (fix delta) { return m_shield.Update (delta); }
+		inline fix UpdateShield (fix delta) { 
+			fix shield = m_shield.Update (delta); 
+			MultiSendShield ();
+			return shield;
+			}
 		inline fix UpdateEnergy (fix delta) { return m_energy.Update (delta); }
 		inline fix MaxShield (void) { return m_shield.Max (); }
 		inline fix MaxEnergy (void) { return m_energy.Max (); }

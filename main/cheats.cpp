@@ -67,7 +67,6 @@ void MultiDoCheatPenalty ()
 {
 DoCheatPenalty ();
 LOCALPLAYER.SetShield (I2X (1));
-MultiSendShield ();
 LOCALPLAYER.SetEnergy (I2X (1));
 if (gameData.app.nGameMode & GM_MULTI) {
 	gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
@@ -506,7 +505,6 @@ void GasolineCheat (int bVerbose)
 {
 LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield (), false);
 OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
-MultiSendShield ();
 LOCALPLAYER.SetEnergy (MAX_ENERGY);
 if (bVerbose)
 	HUDInitMessage (TXT_SLURP);

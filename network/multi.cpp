@@ -2023,7 +2023,7 @@ if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == 
 	Int3 (); // Got CTrigger from illegal nPlayer
 	return;
 	}
-gameData.multiplayer.players [nPlayer].SetShield (shield);
+gameData.multiplayer.players [nPlayer].SetShield (shield, false);
 }
 
 //-----------------------------------------------------------------------------
@@ -4158,6 +4158,7 @@ if (bForce || (t - nTimeout > 1000)) {
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed);
 	bufP += 2;
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
+	MultiSendShield ();
 	}
 }
 
@@ -4530,7 +4531,7 @@ void MultiSendShield (void)
 {
 gameData.multigame.msg.buf [0] = MULTI_PLAYER_SHIELDS;
 gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
-PUT_INTEL_INT (gameData.multigame.msg.buf+2, LOCALPLAYER.Shield ());
+PUT_INTEL_INT (gameData.multigame.msg.buf+2, LOCALPLAYER.Shield (false));
 MultiSendData (gameData.multigame.msg.buf, 6, 1);
 }
 

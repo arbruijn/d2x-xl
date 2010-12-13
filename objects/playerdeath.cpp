@@ -303,7 +303,6 @@ playerObjP->info.nFlags &= ~OF_SHOULD_BE_DEAD;
 playerObjP->info.controlType = CT_NONE;
 if (!gameStates.entropy.bExitSequence) {
 	playerObjP->SetShield (I2X (1000));
-	MultiSendShield ();
 	}
 paletteManager.SetEffect (0, 0, 0);
 }
