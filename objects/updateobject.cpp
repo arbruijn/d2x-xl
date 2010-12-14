@@ -403,6 +403,8 @@ nOldLevel = missionManager.nCurrentLevel;
 for (i = 0; i < gameData.physics.nSegments - 1; i++) {
 	if (gameData.physics.segments [i] < 0)
 		continue;
+	if (gameData.physics.segments [i + 1] < 0)
+		continue;
 #if DBG
 	if (gameData.physics.segments [i] > gameData.segs.nLastSegment)
 		PrintLog ("invalid segment in gameData.physics.segments\n");
@@ -412,7 +414,7 @@ for (i = 0; i < gameData.physics.nSegments - 1; i++) {
 		SEGMENTS [gameData.physics.segments [i]].OperateTrigger (nConnSide, this, 0);
 #if DBG
 	else	// segments are not directly connected, so do binary subdivision until you find connected segments.
-		PrintLog ("UNCONNECTED SEGMENTS %d, %d\n", gameData.physics.segments [i+1], gameData.physics.segments [i]);
+		PrintLog ("UNCONNECTED SEGMENTS %d, %d\n", gameData.physics.segments [i + 1], gameData.physics.segments [i]);
 #endif
 	//maybe we've gone on to the next level.  if so, bail!
 	if (missionManager.nCurrentLevel != nOldLevel)

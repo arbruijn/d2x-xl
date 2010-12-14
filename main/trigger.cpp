@@ -369,9 +369,15 @@ int CTrigger::DoMasterTrigger (short nObject, int nPlayer, bool bObjTrigger)
 {
 	CTrigger*	trigP;
 
-for (int i = 0; i < m_nLinks; i++)
+for (int i = 0; i < m_nLinks; i++) {
+#if DBG
+	if ((m_segments [i] < 0) || (m_segments [i] >= gameData.segs.nSegments))
+		continue;
+#endif
 	if ((trigP = SEGMENTS [m_segments [i]].Trigger (m_sides [i])))
-		trigP->Operate (nObject, nPlayer, 0, bObjTrigger);
+		if (trigP->Operate (nObject, nPlayer, 0, bObjTrigger) < 0)
+			return -1;
+	}
 return 1;
 }
 
@@ -1139,14 +1145,14 @@ switch (m_info.nType) {
 	case TT_EXIT:
 		if (DoExit (nPlayer)) {
 			nDepth--;
-			return 1;
+			return -1;
 			}
 		break;
 
 	case TT_SECRET_EXIT:
 		if (DoSecretExit (nPlayer)) {
 			nDepth--;
-			return 1;
+			return -1;
 			}
 		break;
 
@@ -1306,7 +1312,8 @@ switch (m_info.nType) {
 		break;
 
 	case TT_MASTER:
-		DoMasterTrigger (nObject, nPlayer, bObjTrigger);
+		if (DoMasterTrigger (nObject, nPlayer, bObjTrigger) < 0)
+			return -1;
 		break;
 
 	case TT_ENABLE_TRIGGER:
