@@ -327,15 +327,16 @@ else { // Old method, no server info.
 
 //------------------------------------------------------------------------------
 
-int IpxChangeDefaultSocket (ushort socket_number)
+int IpxChangeDefaultSocket (ushort socket_number, int bKeepClients)
 {
-	if (!bIpxInstalled) return -3;
-
-	driver->CloseSocket (&ipxSocketData);
-	if (driver->OpenSocket (&ipxSocketData, socket_number)) {
-		return -3;
-	}
-	return 0;
+if (!bIpxInstalled)
+	return -3;
+gameStates.multi.bKeepClients = bKeepClients;
+driver->CloseSocket (&ipxSocketData);
+gameStates.multi.bKeepClients = 0;
+if (driver->OpenSocket (&ipxSocketData, socket_number))
+	return -3;
+return 0;
 }
 
 //------------------------------------------------------------------------------
