@@ -425,7 +425,9 @@ else {
 	playerP->hostages.nOnBoard = 0;
 	if (!bSecret) {
 		InitAmmoAndEnergy ();
-		playerP->flags &=	~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_FULLMAP | KEY_BLUE | KEY_RED | KEY_GOLD);
+		playerP->flags &=	~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | KEY_BLUE | KEY_RED | KEY_GOLD);
+		if (!(extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_FULLMAP))
+			playerP->flags &=	~PLAYER_FLAGS_FULLMAP;
 		playerP->cloakTime = 0;
 		playerP->invulnerableTime = 0;
 		if (IsMultiGame && !IsCoopGame) {
