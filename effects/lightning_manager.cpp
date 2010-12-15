@@ -827,7 +827,7 @@ if (i < 0) {
 	if ((nLastObject != nObject) || (nFrameFlipFlop != gameStates.render.nFrameFlipFlop)) {
 		nLastObject = nObject;
 		nFrameFlipFlop = gameStates.render.nFrameFlipFlop;
-		fDamage = (0.5f - objP->Damage ()) / 250.0f;
+		fDamage = (0.5f - objP->Damage ()) / 500.0f;
 		}
 #if 1
 	if (dbl_rand () > fDamage)
