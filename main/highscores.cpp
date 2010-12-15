@@ -455,7 +455,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	// Check timeout for idle players
 		if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ENDLEVEL_IDLE_TIME) {
 			gameData.multiplayer.players [i].connected = CONNECT_DISCONNECTED;
-			if ((gameStates.multi.nGameType != UDP_GAME) || NetworkIAmMaster ())
+			if ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ())
 				NetworkSendEndLevelSub (i);
 			}
 		}

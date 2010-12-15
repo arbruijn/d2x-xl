@@ -1536,7 +1536,7 @@ for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
 
 trigP = OBJTRIGGERS.Buffer ();
 for (i = gameData.trigs.m_nObjTriggers; i > 0; i--, trigP++) {
-	if ((trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.nObject >= 0) && (trigP->m_info.tOperated < 0) && (!IsMultiGame || NetworkIAmMaster ())) {
+	if ((trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.nObject >= 0) && (trigP->m_info.tOperated < 0) && (!IsMultiGame || IAmGameHost ())) {
 		trigP->Operate (trigP->m_info.nObject, -1, 0, true);
 		trigP->m_info.flags |= TF_DISABLED;
 		}

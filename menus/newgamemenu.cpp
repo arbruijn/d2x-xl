@@ -436,8 +436,9 @@ else if ((nChoice != multiOpts.nJoinIpx) && (nChoice != multiOpts.nJoinKali) && 
 	return 0;
 gameOpts->app.bSinglePlayer = 0;
 missionManager.Load (missionManager.nLastMission);
-gameStates.multi.bServer = (nChoice & 1) == 0;
-gameStates.app.bHaveExtraGameInfo [1] = gameStates.multi.bServer;
+gameStates.multi.bServer [0] = 
+gameStates.multi.bServer [1] = (nChoice & 1) == 0;
+gameStates.app.bHaveExtraGameInfo [1] = gameStates.multi.bServer [0];
 if (bUDP) {
 	if (!(InitAutoNetGame () || NetworkGetIpAddr (bStart != 0)))
 		return 0;

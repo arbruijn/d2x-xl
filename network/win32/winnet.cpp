@@ -193,9 +193,8 @@ if ((i = FindArg ("-ipxnetwork")) && pszArgList [i + 1]) {
 	for (i = 3; i >= 0; i--, n >>= 8)
 		ipx_MyAddress [i] = (ubyte) n & 0xff; 
 	}
-if ((nSocket >= 0) && driver->OpenSocket (&ipxSocketData, nSocket)) {
+if ((nSocket >= 0) && driver->OpenSocket (&ipxSocketData, nSocket))
 	return IPX_NOT_INSTALLED;
-	}
 driver->GetMyAddress ();
 memcpy (&ipx_network, ipx_MyAddress, 4);
 nIpxNetworks = 0;
@@ -340,11 +339,13 @@ else {
 
 								/*---------------------------*/
 
-int IpxChangeDefaultSocket (ushort nSocket)
+int IpxChangeDefaultSocket (ushort nSocket, int bKeepClients)
 {
 if (!bIpxInstalled) 
 	return -3;
+gameStates.multi.bKeepClients = bKeepClients;
 driver->CloseSocket (&ipxSocketData);
+gameStates.multi.bKeepClients = 0;
 return (driver->OpenSocket (&ipxSocketData, nSocket)) ? -3 : 0;
 }
 

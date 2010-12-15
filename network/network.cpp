@@ -226,7 +226,7 @@ NetworkDoFrame (1, 1);
 fclose (SendLogFile);
 	fclose (ReceiveLogFile);
 #endif
-if ((NetworkIAmMaster ())) {
+if ((IAmGameHost ())) {
 	bool bSyncExtras = true;
 
 	while (bSyncExtras) {

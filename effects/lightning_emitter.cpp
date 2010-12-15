@@ -189,7 +189,9 @@ if (!m_bValid)
 	return 0;
 
 if (gameStates.app.nSDLTicks [0] - m_tUpdate >= 25) {
-	if (!(m_nKey [0] || m_nKey [1])) {
+	if (m_nKey [0] || m_nKey [1])
+		m_bDestroy = 1;
+	else {
 		m_tUpdate = gameStates.app.nSDLTicks [0];
 		Animate (0, m_nBolts, nThread);
 		if (!(m_nBolts = SetLife ()))

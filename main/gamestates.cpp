@@ -146,7 +146,8 @@ void InitMultiplayerStates (void)
 gameStates.multi.nGameType = 0;
 gameStates.multi.nGameSubType = 0;
 tracker.m_bUse = 0;
-gameStates.multi.bServer = 1;
+gameStates.multi.bServer [0] =
+gameStates.multi.bServer [1] = 1;
 gameStates.multi.bTryAutoDL = 0;
 gameStates.multi.bHaveLocalAddress = 0;
 gameStates.multi.bSurfingNet = 0;

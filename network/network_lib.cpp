@@ -50,7 +50,7 @@ if ((*rank < 0) || (*rank > 9))
 
 //------------------------------------------------------------------------------
 
-int NetworkWhoIsMaster (void)
+int WhoIsGameHost (void)
 {
 	// Who is the master of this game?
 
@@ -66,11 +66,17 @@ return gameData.multiplayer.nLocalPlayer;
 
 //------------------------------------------------------------------------------
 
-int NetworkIAmMaster (void)
+int IAmGameHost (void)
 {
-if (!gameStates.app.bGameRunning)
-	return gameStates.multi.bServer;
-return NetworkWhoIsMaster () == gameData.multiplayer.nLocalPlayer;
+if (gameStates.app.bGameRunning) {
+	gameStates.multi.bServer [0] = (WhoIsGameHost () == gameData.multiplayer.nLocalPlayer);
+	if (gameStates.multi.bServer [0] && !gameStates.multi.bServer [1]) {
+		gameStates.multi.bServer [1] = 1;
+		if (mpParams.udpPorts [0] + networkData.nSocket != mpParams.udpPorts [1])
+			IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket), 1);
+		}
+	}
+return gameStates.multi.bServer [0];
 }
 
 //------------------------------------------------------------------------------

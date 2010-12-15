@@ -148,7 +148,7 @@ gameData.objs.consoleP->mType.physInfo.rotVel [Z] += (FixMul (d_rand () - 16384,
 oldTime = gameData.reactor.countdown.nTimer;
 if (!TimeStopped ())
 	gameData.reactor.countdown.nTimer -= cdtFrameTime;
-if (IsMultiGame &&  NetworkIAmMaster ())
+if (IsMultiGame &&  IAmGameHost ())
 	MultiSendCountdown ();
 cdtFrameTime = 0;
 gameData.reactor.countdown.nSecsLeft = X2I (gameData.reactor.countdown.nTimer + I2X (7) / 8);

@@ -545,7 +545,7 @@ typedef struct tMultiRobotData {
 extern CNetGameInfo netGame;
 extern CAllNetPlayersInfo netPlayers;
 
-int NetworkIAmMaster (void);
+int IAmGameHost (void);
 void ChangePlayerNumTo (int new_pnum);
 
 //how to encode missiles & flares in weapon packets

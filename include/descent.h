@@ -801,7 +801,8 @@ class CMultiplayerStates {
 	public:
 		int bUseTracker;
 		int bTrackerCall;
-		int bServer;
+		int bServer [2];
+		int bKeepClients;
 		int bHaveLocalAddress;
 		int nGameType;
 		int nGameSubType;

@@ -1568,7 +1568,7 @@ void do_super_boss_stuff(CObject *objP, fix dist_to_player, int player_visibilit
 	do_boss_stuff(objP);
 
 	// Only master playerP can cause gating to occur.
-	if ((IsMultiGame) && !NetworkIAmMaster())
+	if ((IsMultiGame) && !IAmGameHost())
 		return;
 
 	if ((dist_to_player < BOSS_TO_PLAYER_GATE_DISTANCE) || player_visibility || (IsMultiGame)) {

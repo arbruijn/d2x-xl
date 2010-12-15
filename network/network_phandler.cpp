@@ -147,7 +147,7 @@ int GameListHandler (ubyte *dataP, int nLength)
 {
 if (banList.Find (THEIR->player.callsign))
 	return 0;
-if (!NetworkIAmMaster ())
+if (!IAmGameHost ())
 	return 0;
 NetworkSendLiteInfo (THEIR);
 return 1;
@@ -159,7 +159,7 @@ int AllGameInfoHandler (ubyte *dataP, int nLength)
 {
 if (NetworkBadSecurity (THEIR->nSecurity, "PID_SEND_ALL_GAMEINFO"))
 	return 0;
-if (!NetworkIAmMaster ())
+if (!IAmGameHost ())
 	return 0;
 NetworkSendGameInfo (THEIR);
 return 1;
@@ -256,7 +256,7 @@ return 1;
 
 int UploadHandler (ubyte *dataP, int nLength)
 {
-if (NetworkIAmMaster ())
+if (IAmGameHost ())
 	downloadManager.Upload (dataP);
 return 1;
 }
@@ -371,7 +371,7 @@ return 1;
 
 int GamePlayersHandler (ubyte *dataP, int nLength)
 {
-if (NetworkIAmMaster () && 
+if (IAmGameHost () && 
 	 !NetworkBadSecurity (THEIR->nSecurity, "PID_GAME_PLAYERS"))
 	NetworkSendPlayerNames (THEIR);
 return 1;

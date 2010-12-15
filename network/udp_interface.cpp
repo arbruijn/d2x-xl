@@ -808,7 +808,8 @@ return 0;
 
 static void UDPCloseSocket (ipx_socket_t *mysock)
 {
-clientManager.Destroy ();
+if (!gameStates.multi.bKeepClients)
+	clientManager.Destroy ();
 gameStates.multi.bHaveLocalAddress = 0;
 if (!nOpenSockets) {
 	PrintLog ("UDP interface: close w/o open\n");

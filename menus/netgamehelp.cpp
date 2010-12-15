@@ -36,7 +36,7 @@
 
 //------------------------------------------------------------------------------
 
-extern int NetworkWhoIsMaster(), NetworkHowManyConnected(), GetMyNetRanking();
+extern int WhoIsGameHost(), NetworkHowManyConnected(), GetMyNetRanking();
 extern char bPauseableMenu;
 //char *NetworkModeNames[]={"Anarchy", "Team Anarchy", "Robo Anarchy", "Cooperative", "Capture the Flag", "Hoard", "Team Hoard", "Unknown"};
 
@@ -60,7 +60,7 @@ sprintf (szText, TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT (netGame.m_info.difficulty
 m.AddText (szText);
 sprintf (szText, TXT_INFO_MODE, GT (537 + netGame.m_info.gameMode));
 m.AddText (szText);
-sprintf (szText, TXT_INFO_SERVER, gameData.multiplayer.players [NetworkWhoIsMaster()].callsign);
+sprintf (szText, TXT_INFO_SERVER, gameData.multiplayer.players [WhoIsGameHost()].callsign);
 m.AddText (szText);
 sprintf (szText, TXT_INFO_PLRNUM, NetworkHowManyConnected (), netGame.m_info.nMaxPlayers);
 m.AddText (szText);

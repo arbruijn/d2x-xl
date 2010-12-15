@@ -26,7 +26,7 @@
 
 fix xPingReturnTime;
 
-extern int NetworkWhoIsMaster ();
+extern int WhoIsGameHost ();
 extern char bNameReturning;
 
 //-----------------------------------------------------------------------------
@@ -240,8 +240,8 @@ if (strlen (gameData.multigame.msg.szMsg) > 5)
 	while (gameData.multigame.msg.szMsg [name_index] == ' ')
 		name_index++;
 
-if (!NetworkIAmMaster ()) {
-	HUDInitMessage (TXT_KICK_RIGHTS, gameData.multiplayer.players [NetworkWhoIsMaster ()].callsign, pszKick);
+if (!IAmGameHost ()) {
+	HUDInitMessage (TXT_KICK_RIGHTS, gameData.multiplayer.players [WhoIsGameHost ()].callsign, pszKick);
 	MultiSendMsgQuit ();
 	return 1;
 	}
@@ -366,8 +366,8 @@ if ((gameData.app.nGameMode & GM_NETWORK) && (gameData.app.nGameMode & GM_TEAM))
 		while (gameData.multigame.msg.szMsg [name_index] == ' ')
 			name_index++;
 
-	if (!NetworkIAmMaster ()) {
-		HUDInitMessage (TXT_MOVE_RIGHTS, gameData.multiplayer.players [NetworkWhoIsMaster ()].callsign);
+	if (!IAmGameHost ()) {
+		HUDInitMessage (TXT_MOVE_RIGHTS, gameData.multiplayer.players [WhoIsGameHost ()].callsign);
 		return 1;
 		}
 	if (strlen (gameData.multigame.msg.szMsg) <= (size_t) name_index) {

@@ -166,7 +166,7 @@ int NetworkWaitForPlayerInfo (void);
 void NetworkCountPowerupsInMine (void);
 int FindActiveNetGame (char *pszGameName, int nSecurity);
 void DeleteActiveNetGame (int i);
-int NetworkWhoIsMaster (void);
+int WhoIsGameHost (void);
 void NetworkConsistencyError (void);
 void NetworkPing (ubyte flag, ubyte nPlayer);
 void NetworkHandlePingReturn (ubyte nPlayer);

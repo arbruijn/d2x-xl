@@ -687,7 +687,7 @@ if (IsCoopGame && (robotP->info.contains.nCount > 0) && (robotP->info.contains.n
 	MultiDropRobotPowerups (nRobot);
 	MultiDeleteControlledRobot (nRobot);
 	}
-else if ((robotP->cType.aiInfo.REMOTE_OWNER == -1) && NetworkIAmMaster ()) {
+else if ((robotP->cType.aiInfo.REMOTE_OWNER == -1) && IAmGameHost ()) {
 	robotP->cType.aiInfo.REMOTE_OWNER = gameData.multiplayer.nLocalPlayer;
 	MultiDropRobotPowerups (robotP->Index ());
 	robotP->cType.aiInfo.REMOTE_OWNER = -1;

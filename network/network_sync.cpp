@@ -220,7 +220,7 @@ syncP->nExtrasPlayer = nPlayer;
 void NetworkSyncExtras (tNetworkSyncData *syncP)
 {
 Assert (syncP->nExtrasPlayer > -1);
-if (!NetworkIAmMaster ()) {
+if (!IAmGameHost ()) {
 #if 1			
   console.printf (CON_DBG, "Hey! I'm not the master and I was gonna send info!\n");
 #endif
@@ -387,7 +387,7 @@ SpecialResetObjects ();
  */
 int NetworkSyncPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
-if (gameData.multiplayer.nPlayers && NetworkIAmMaster ()) {
+if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
 	key = -3;
 	return nCurItem;
 	}
@@ -680,7 +680,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 
 int NetworkRequestPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
-if (!NetworkIAmMaster ()) {
+if (!IAmGameHost ()) {
 	key = -2;
 	return nCurItem;
 	}
@@ -755,9 +755,9 @@ int NetworkLevelSync (void)
 
 NetworkFlush (); // Flush any old packets
 for (;;) {
-	if (gameData.multiplayer.nPlayers && NetworkIAmMaster ()) {
+	if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
 		NetworkWaitForRequests ();
-		if (NetworkIAmMaster ()) {
+		if (IAmGameHost ()) {
 			NetworkSendSync ();
 			result = (gameData.multiplayer.nLocalPlayer < 0) ? -1 : 0;
 			break;
@@ -765,7 +765,7 @@ for (;;) {
 		}
 	else {
 		result = NetworkWaitForSync ();
-		if (!(gameData.multiplayer.nPlayers && NetworkIAmMaster ()))
+		if (!(gameData.multiplayer.nPlayers && IAmGameHost ()))
 			break;
 		}
 	}

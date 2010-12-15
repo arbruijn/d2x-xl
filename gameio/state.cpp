@@ -1259,7 +1259,7 @@ int CSaveGameManager::SetServerPlayer (
 			nServerObjNum = -1;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if (gameStates.multi.bServer || NetworkIAmMaster ())
+	if (IAmGameHost ())
 		nServerPlayer = gameData.multiplayer.nLocalPlayer;
 	else {
 		nServerPlayer = -1;
@@ -1282,7 +1282,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		restoredPlayers [0] = restoredPlayers [nServerPlayer];
 		restoredPlayers [nServerPlayer] = h;
 		}
-		if (gameStates.multi.bServer || NetworkIAmMaster ())
+		if (IAmGameHost ())
 			gameData.multiplayer.nLocalPlayer = 0;
 		else if (!gameData.multiplayer.nLocalPlayer)
 			gameData.multiplayer.nLocalPlayer = nServerPlayer;
@@ -1329,7 +1329,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	}
 memcpy (gameData.multiplayer.players, restoredPlayers, sizeof (CPlayerData) * nPlayers);
 gameData.multiplayer.nPlayers = nPlayers;
-if (NetworkIAmMaster ()) {
+if (IAmGameHost ()) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (i == gameData.multiplayer.nLocalPlayer)
 			continue;

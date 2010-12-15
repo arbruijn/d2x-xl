@@ -134,7 +134,7 @@ static int ipx_mcast4_OpenSocket (ipx_socket_t *sk, int port)
 
 #if 0 //DBG
 	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nSocket,
-				nLocalPort = gameStates.multi.bServer ? nServerPort : mpParams.udpPorts [1];
+				nLocalPort = gameStates.multi.bServer [0] ? nServerPort : mpParams.udpPorts [1];
 #endif
 
 if (int (sk->fd = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
@@ -201,7 +201,7 @@ static int ipx_mcast4_SendPacket (ipx_socket_t *sk, IPXPacket_t *IPXHeader, u_ch
 	struct sockaddr_in toaddr;
 #if 0 //DBG
 	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nSocket,
-				nLocalPort = gameStates.multi.bServer ? nServerPort : mpParams.udpPorts [1];
+				nLocalPort = gameStates.multi.bServer [0] ? nServerPort : mpParams.udpPorts [1];
 #endif
 
 if ((dataLen < 0) || (dataLen > MAX_PACKETSIZE_MCAST4))
@@ -353,7 +353,7 @@ static int ipx_mcast4_SendGamePacket (ipx_socket_t *sk, ubyte *data, int dataLen
 	struct sockaddr_in toaddr;
 #if 0 //DBG
 	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nSocket,
-				nLocalPort = gameStates.multi.bServer ? nServerPort : mpParams.udpPorts [1];
+				nLocalPort = gameStates.multi.bServer [0] ? nServerPort : mpParams.udpPorts [1];
 #endif
 
 memset (&toaddr, 0, sizeof (toaddr));

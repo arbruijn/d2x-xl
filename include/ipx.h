@@ -52,7 +52,7 @@ extern int IpxInit(int socket_number);
 
 void _CDECL_ IpxClose(void);
 
-int IpxChangeDefaultSocket( ushort socket_number );
+int IpxChangeDefaultSocket (ushort nSocket, int bKeepClients = 0);
 
 // Returns a pointer to 6-byte address
 ubyte * IpxGetMyLocalAddress();

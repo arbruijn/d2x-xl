@@ -63,7 +63,7 @@ if (nDropSeg >= 0) {
 #if !DBG
 Warning (TXT_NO_MONSTERBALL);
 #endif
-if (NetworkIAmMaster ())
+if (IAmGameHost ())
 	gameData.app.nGameMode &= ~GM_MONSTERBALL;
 return 0;
 }
@@ -106,7 +106,7 @@ FORALL_STATIC_OBJS (objP, i)
 		ReleaseObject (objP->Index ());
 		}
 #if 1 //!DBG
-if (!NetworkIAmMaster ())
+if (!IAmGameHost ())
 	return 0;
 #endif
 if (bCreate) {

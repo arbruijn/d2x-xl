@@ -532,7 +532,7 @@ if (matCenP->xDisableTime > 0) {
 		}
 	}
 //	No robot making in multiplayer mode.
-if (IsMultiGame && (!(gameData.app.nGameMode & GM_MULTI_ROBOTS) || !NetworkIAmMaster ()))
+if (IsMultiGame && (!(gameData.app.nGameMode & GM_MULTI_ROBOTS) || !IAmGameHost ()))
 	return;
 // Wait until transmorgafier has capacity to make a robot...
 if (matCenP->xCapacity <= 0)

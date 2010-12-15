@@ -190,7 +190,7 @@ if (their->player.connected != 7)
 else {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (!stricmp (their->player.callsign, gameData.multiplayer.players [i].callsign)) {
-			if (i!=NetworkWhoIsMaster ()) 
+			if (i!=WhoIsGameHost ()) 
 				HUDInitMessage (TXT_KICK_ATTEMPT, their->player.callsign);
 			else {
 				sprintf (temp, TXT_KICKED_YOU, their->player.callsign);

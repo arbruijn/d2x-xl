@@ -232,7 +232,7 @@ if (!networkData.nJoinState) {
 		}
 	}
 OBJECTS [LOCALPLAYER.nObject].SetType (OBJ_PLAYER);
-networkData.nStatus = (NetworkIAmMaster () || (networkData.nJoinState >= 4)) ? NETSTAT_PLAYING : NETSTAT_WAITING;
+networkData.nStatus = (IAmGameHost () || (networkData.nJoinState >= 4)) ? NETSTAT_PLAYING : NETSTAT_WAITING;
 SetFunctionMode (FMODE_GAME);
 networkData.bHaveSync = 1;
 MultiSortKillList ();

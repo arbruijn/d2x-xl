@@ -775,7 +775,7 @@ if (gameStates.app.bHaveExtraGameInfo [1] &&(!extraGameInfo [1].bAutoBalanceTeam
 
 void ChoseTeam (int nPlayer, bool bForce)
 {
-if (gameStates.app.bHaveExtraGameInfo && (bForce || extraGameInfo [1].bAutoBalanceTeams) && IsTeamGame && NetworkIAmMaster ()) {
+if (gameStates.app.bHaveExtraGameInfo && (bForce || extraGameInfo [1].bAutoBalanceTeams) && IsTeamGame && IAmGameHost ()) {
 	int	h, i, t, teamScore [2] = {0, 0}, teamSize [2] = {0, 0};
 
 	for (h = i = 0; i < gameData.multiplayer.nPlayers; i++) {
@@ -794,7 +794,7 @@ if (gameStates.app.bHaveExtraGameInfo && (bForce || extraGameInfo [1].bAutoBalan
 
 void AutoBalanceTeams (void)
 {
-if (gameStates.app.bHaveExtraGameInfo && extraGameInfo [1].bAutoBalanceTeams && IsTeamGame && NetworkIAmMaster ()) {
+if (gameStates.app.bHaveExtraGameInfo && extraGameInfo [1].bAutoBalanceTeams && IsTeamGame && IAmGameHost ()) {
 
 		static int nTimeout = 0;
 
@@ -1173,7 +1173,7 @@ killedP->flags &= (~(PLAYER_FLAGS_HEADLIGHT_ON));  // clear the nKilled guys fla
 
 void MultiSyncMonsterball (void)
 {
-if ((gameData.app.nGameMode & GM_MONSTERBALL) && gameData.hoard.monsterballP && NetworkIAmMaster ()) {
+if ((gameData.app.nGameMode & GM_MONSTERBALL) && gameData.hoard.monsterballP && IAmGameHost ()) {
 	static time_t	t0 = 0;
 
 	if (gameStates.app.nSDLTicks [0] - t0 > 250) {
@@ -1203,7 +1203,7 @@ if ((gameData.app.nGameMode & GM_MONSTERBALL) && gameData.hoard.monsterballP && 
 
 void MultiDoSyncMonsterball (char* buf)
 {
-if ((gameData.app.nGameMode & GM_MONSTERBALL) && !NetworkIAmMaster ()) {
+if ((gameData.app.nGameMode & GM_MONSTERBALL) && !IAmGameHost ()) {
 	CFixVector	vPos;
 	bool			bSync = false;
 	int			i = 1;
@@ -3283,7 +3283,7 @@ if (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	}
 if (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	MultiApplyGoalTextures ();
-ResetMonsterball (NetworkIAmMaster () != 0);	//will simply delete all Monsterballs for non-Monsterball games
+ResetMonsterball (IAmGameHost () != 0);	//will simply delete all Monsterballs for non-Monsterball games
 MultiSortKillList ();
 MultiShowPlayerList ();
 gameData.objs.consoleP->info.controlType = CT_FLYING;

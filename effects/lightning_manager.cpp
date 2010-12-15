@@ -251,6 +251,7 @@ if (SHOW_LIGHTNING) {
 			m_emitterList [nSystems++] = emitterP;
 			nextP = m_emitters.GetNext (nCurrent);
 			}
+		if (nSystems > 0)
 #	pragma omp parallel
 			{
 			int nThread = omp_get_thread_num ();
@@ -327,6 +328,10 @@ if (m_objects [i] >= 0) {
 	Destroy (m_emitters + m_objects [i], NULL);
 	m_objects [i] = -1;
 	}
+int nCurrent = -1, nObject = objP->Index ();
+for (CLightningEmitter* emitterP = m_emitters.GetFirst (nCurrent); emitterP; emitterP = m_emitters.GetNext (nCurrent))
+	if (emitterP->m_nObject == nObject)
+		Destroy (emitterP, NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -785,7 +790,7 @@ int CLightningManager::RenderForDamage (CObject* objP, g3sPoint **pointList, Ren
 	CLightningEmitter*	emitterP;
 	CFloatVector			v, vPosf, vEndf, vNormf, vDeltaf;
 	CFixVector				vPos, vEnd, vNorm, vDelta;
-	int						h, i, j, bUpdate = 0;
+	int						h, i, j, nLife = -1, bUpdate = 0;
 	short						nObject;
 	tPolyKey					key;
 
@@ -851,7 +856,8 @@ if (i < 0) {
 		}
 	if (CFixVector::Dist (vPos, vEnd) < I2X (1) / 4)
 		return -1;
-	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 1000 + d_rand () % 2000, 0,
+	nLife = 1000 + d_rand () % 2000;
+	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, nLife, 0,
 					h, I2X (1) / 2, 0, 0, 20, 0, 1, 5, 0, 1, -1, 0, 0, 1, &color);
 	bUpdate = 1;
 	}
@@ -862,6 +868,8 @@ if (i >= 0) {
 		emitterP->m_nKey [1] = key.i [1];
 		}
 	if (emitterP->Lightning () && (emitterP->m_nBolts = emitterP->Lightning ()->Update (0, 0))) {
+		if (nLife > 0)
+			emitterP->m_tUpdate = gameStates.app.nSDLTicks [0] + nLife;
 		ogl.SetFaceCulling (false);
 		emitterP->Render (0, -1, -1);
 		ogl.SetFaceCulling (true);
