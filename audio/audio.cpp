@@ -283,7 +283,7 @@ infoP->data.chunkSize = nLength;
 static int ResampleFormat (ushort *destP, ubyte* srcP, int nSrcLen)
 {
 for (int i = nSrcLen; i; i--)
-	*destP++ = ushort (32767.0f / 255.0f * float (*srcP++));
+	*destP++ = ushort (float (*srcP++) * 32767.0f / 255.0f);
 return nSrcLen;
 }
 
@@ -361,14 +361,14 @@ if (soundP->bCustom)
 l = soundP->nLength [soundP->bCustom];
 i = gameOpts->sound.audioSampleRate / gameOpts->sound.soundSampleRate;
 h = l * 2 * i;
-if (audio.Format () == AUDIO_S16LSB)
+if (audio.Format () == AUDIO_U16LSB)
 	h *= 2;
 
 if (!m_info.sample.Create (h + WAVINFO_SIZE))
 	return -1;
 m_info.bResampled = 1;
 
-if (audio.Format () == AUDIO_S16LSB) {
+if (audio.Format () == AUDIO_U16LSB) {
 	ushort* bufP = reinterpret_cast<ushort*> (m_info.sample.Buffer () + WAVINFO_SIZE);
 	l = ResampleFormat (bufP, soundP->data [soundP->bCustom].Buffer (), l);
 	for (; i > 1; i >>= 1)
@@ -670,7 +670,7 @@ CAudio::CAudio ()
 {
 memset (&m_info, 0, sizeof (m_info));
 #if 0
-m_info.nFormat = AUDIO_S16LSB; 
+m_info.nFormat = AUDIO_U16LSB; 
 #else
 m_info.nFormat = AUDIO_U8;
 #endif
@@ -760,9 +760,9 @@ if (gameOpts->sound.bUseSDLMixer) {
 	else 
 #endif
 	if (gameOpts->UseHiresSound ())
-		h = Mix_OpenAudio (int ((gameOpts->sound.audioSampleRate = SAMPLE_RATE_44K) / fSlowDown), m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int ((gameOpts->sound.audioSampleRate = SAMPLE_RATE_44K) / fSlowDown), m_info.nFormat = AUDIO_U16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (songManager.MP3 ())
-		h = Mix_OpenAudio (32000, m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
+		h = Mix_OpenAudio (32000, m_info.nFormat = AUDIO_U16LSB, 2, SOUND_BUFFER_SIZE * 10);
 	else 
 		h = Mix_OpenAudio (int (gameOpts->sound.audioSampleRate / fSlowDown), m_info.nFormat, 2, SOUND_BUFFER_SIZE);
 	if (h < 0) {
