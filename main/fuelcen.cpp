@@ -736,7 +736,7 @@ fix CSegment::Refuel (fix nMaxFuel)
 {
 	fix	amount;
 
-	static fix last_playTime = 0;
+	static fix lastPlayTime = 0;
 
 gameData.matCens.playerSegP = this;
 if ((gameData.app.nGameMode & GM_ENTROPY) && ((m_owner < 0) ||
@@ -763,13 +763,13 @@ else
 	amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount);
 if (amount > nMaxFuel)
 	amount = nMaxFuel;
-if (last_playTime > gameData.time.xGame)
-	last_playTime = 0;
-if (gameData.time.xGame > last_playTime + FUELCEN_SOUND_DELAY) {
+if (lastPlayTime > gameData.time.xGame)
+	lastPlayTime = 0;
+if (gameData.time.xGame > lastPlayTime + FUELCEN_SOUND_DELAY) {
 	audio.PlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, SOUNDCLASS_GENERIC, I2X (1) / 2);
 	if (IsMultiGame)
 		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, I2X (1) / 2);
-	last_playTime = gameData.time.xGame;
+	lastPlayTime = gameData.time.xGame;
 	}
 //HUDInitMessage ("Fuelcen %d has %d/%d fuel", segP->value,X2I (gameData.matCens.fuelCenters [segP->value].xCapacity),X2I (gameData.matCens.fuelCenters [segP->value].xMaxCapacity));
 return amount;
@@ -781,7 +781,7 @@ return amount;
 // use same values as fuel centers
 fix CSegment::Repair (fix nMaxShield)
 {
-	static fix last_playTime=0;
+	static fix lastPlayTime=0;
 	fix amount;
 
 if (gameOpts->legacy.bFuelCens)
@@ -798,13 +798,13 @@ if (nMaxShield <= 0) {
 amount = FixMul (gameData.time.xFrame, I2X (extraGameInfo [IsMultiGame].entropy.nShieldFillRate));
 if (amount > nMaxShield)
 	amount = nMaxShield;
-if (last_playTime > gameData.time.xGame)
-	last_playTime = 0;
-if (gameData.time.xGame > last_playTime + FUELCEN_SOUND_DELAY) {
+if (lastPlayTime > gameData.time.xGame)
+	lastPlayTime = 0;
+if (gameData.time.xGame > lastPlayTime + FUELCEN_SOUND_DELAY) {
 	audio.PlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, SOUNDCLASS_GENERIC, I2X (1)/2);
 	if (IsMultiGame)
 		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, I2X (1)/2);
-	last_playTime = gameData.time.xGame;
+	lastPlayTime = gameData.time.xGame;
 	}
 return amount;
 }

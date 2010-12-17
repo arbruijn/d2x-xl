@@ -240,9 +240,9 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 	else {
 		segP->ConquerCheck ();
 		//CObject* objP = OBJECTS + playerP->nObject;
-		fix energy = segP->Refuel (INITIAL_ENERGY - playerP->energy);
+		fix energy = segP->Refuel (fix (playerP->InitialEnergy ()) - playerP->Energy ());
 		if (energy > 0)
-			playerP->energy += energy;
+			playerP->UpdateEnergy (energy);
 		fix shield = segP->Repair (fix (playerP->InitialShield ()) - playerP->Shield ());
 		if (shield > 0) {
 			playerP->UpdateShield (shield);
