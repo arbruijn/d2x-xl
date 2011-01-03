@@ -382,6 +382,8 @@ if ((t = FindArg ("-cache_lights")))
 #endif
 if ((t = FindArg ("-use_shaders")))
 	gameOptions [0].render.bUseShaders = NumArg (t, 1);
+if ((t = FindArg ("-enable_freecan")))
+	gameStates.render.bEnableFreeCam = NumArg (t, 1);
 }
 
 // ----------------------------------------------------------------------------

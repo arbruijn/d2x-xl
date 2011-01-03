@@ -1017,6 +1017,7 @@ class CRenderStates {
 	public:
 		int bChaseCam;
 		int bFreeCam;
+		int bEnableFreeCam;
 		int bQueryOcclusion;
 		int bVertexArrays;
 		int bAutoMap;
@@ -3582,7 +3583,7 @@ extern fix nDebrisLife [];
 #define FACES			gameData.segs.faces
 #define TRIANGLES		FACES.tris
 
-#define SPECTATOR(_objP)	(gameStates.render.bFreeCam && OBJECTS.IsElement (_objP) && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))
+#define SPECTATOR(_objP)	((gameStates.render.bFreeCam > 0) && OBJECTS.IsElement (_objP) && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))
 #define OBJPOS(_objP)		(SPECTATOR (_objP) ? &gameStates.app.playerPos : &(_objP)->info.position)
 #define OBJSEG(_objP)		(SPECTATOR (_objP) ? gameStates.app.nPlayerSegment : (_objP)->info.nSegment)
 

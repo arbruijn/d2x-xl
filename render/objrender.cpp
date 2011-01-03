@@ -1082,7 +1082,7 @@ if (nObject != LOCALPLAYER.nObject) {
 		return 0;
 	 }
 else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !automap.Display ()) {
-	if ((bSpectate = (gameStates.render.bFreeCam && !nWindow)))
+	if ((bSpectate = ((gameStates.render.bFreeCam > 0) && !nWindow)))
 		;
 #if DBG
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&

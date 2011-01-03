@@ -185,7 +185,7 @@ else {
 		lightningManager.Create (10, &vMuzzle, vTarget, NULL, nObject,
 										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4), 0, 0, 250, 0, 1, 3, 1, 1,
 #if OMEGA_PLASMA
-										 -((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
+										 -((parentObjP != gameData.objs.viewerP) || (gameStates.render.bFreeCam > 0) || gameStates.render.bChaseCam),
 #else
 										 -1,
 #endif
@@ -198,7 +198,7 @@ else {
 			lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
 											 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4), 0, 0, 250, 0, 1, 3, 1, 1,
 	#if OMEGA_PLASMA
-											 -((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
+											 -((parentObjP != gameData.objs.viewerP) || (gameStates.render.bFreeCam > 0) || gameStates.render.bChaseCam),
 	#else
 											 -1,
 	#endif

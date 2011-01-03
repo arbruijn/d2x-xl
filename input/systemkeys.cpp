@@ -220,6 +220,8 @@ return SetChaseCam (!gameStates.render.bChaseCam);
 
 int SetFreeCam (int bOn)
 {
+if (gameStates.render.bFreeCam < 0)
+	return 0;
 if (gameStates.render.bFreeCam == bOn)
 	return 0;
 if ((gameStates.render.bFreeCam = bOn)) {
@@ -343,7 +345,7 @@ if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION))
 	return;
 switch (key) {
 	case KEY_F3:
-		 if (!(GuidedInMainView () || gameStates.render.bChaseCam || gameStates.render.bFreeCam))
+		 if (!(GuidedInMainView () || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0)))
 			cockpit->Toggle ();
 		 break;
 

@@ -1134,7 +1134,7 @@ if (!gameOpts->render.cockpit.bReticle
 	 || gameStates.render.bRearView 
 	 || gameStates.app.bPlayerIsDead 
 	 || gameStates.render.bChaseCam 
-	 || gameStates.render.bFreeCam
+	 || (gameStates.render.bFreeCam > 0)
 	 || automap.Display ())
 	return;
 
@@ -1896,7 +1896,7 @@ void CGenericCockpit::Render (int bExtraInfo, fix xStereoSeparation)
 {
 if (Hide ())
 	return;
-if (gameStates.render.bChaseCam || gameStates.render.bFreeCam) {
+if (gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0)) {
 #if DBG
 	HUDRenderMessageFrame ();
 #endif
@@ -1957,7 +1957,7 @@ CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
-bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam);
+bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
 
 //if (!(transformation.m_info.bUsePlayerHeadAngles || gameOpts->render.stereo.nGlasses))
 	DrawReticle (0);

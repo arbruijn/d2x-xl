@@ -833,7 +833,7 @@ srand (SDL_GetTicks ());
 gameData.time.tLast = 0;
 gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
 gameStates.app.bBetweenLevels = 1;
-gameStates.render.bFreeCam = 0;
+gameStates.render.bFreeCam = (gameStates.render.bEnableFreeCam ? 0 : -1);
 gameStates.app.bGameRunning = 0;
 gameStates.app.bPlayerExploded = 0;
 gameData.physics.side.nSegment = -1;

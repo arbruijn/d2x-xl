@@ -618,7 +618,7 @@ if (m_bDisplay < 0) {
 	m_bDisplay = 0;
 	if ((m_bChaseCam = gameStates.render.bChaseCam))
 		SetChaseCam (0);
-	if ((m_bFreeCam = gameStates.render.bFreeCam))
+	if ((m_bFreeCam = (gameStates.render.bFreeCam > 0)))
 		SetFreeCam (0);
 
 	ogl.m_states.nContrast = 8;
