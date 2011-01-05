@@ -496,7 +496,7 @@ if (bAutomap) {
 			return 0;
 		}
 	else
-		automap.m_visited [0][nSegment] = gameData.render.mine.bSetAutomapVisited;
+		automap.m_visited [nSegment] = gameData.render.mine.bSetAutomapVisited;
 	}
 if (VISITED (nSegment))
 	return 0;
@@ -531,7 +531,7 @@ return 0;
 
 static inline int FaceIsColored (CSegFace *faceP)
 {
-return !automap.Display () || automap.m_visited [0][faceP->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
+return !automap.Display () || automap.m_visited [faceP->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
 }
 
 //------------------------------------------------------------------------------

@@ -291,7 +291,7 @@ if (m_bValid < 1)
 
 if (automap.Display () && !(gameStates.render.bAllVisited || automap.m_bFull)) {
 	if (m_nObject >= 0) {
-		if (!automap.m_visited [0][OBJECTS [m_nObject].Segment ()])
+		if (!automap.m_visited [OBJECTS [m_nObject].Segment ()])
 			return;
 		}
 	else if (!automap.m_bFull) {

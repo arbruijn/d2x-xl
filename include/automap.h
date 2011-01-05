@@ -101,7 +101,7 @@ class CAutomap {
 		int						m_nVerts;
 
 	public:
-		CArray<ushort>			m_visited [2];
+		CArray<ushort>			m_visited;
 		CArray<ushort>			m_visible;
 		int						m_bRadar;
 		bool						m_bFull;
@@ -125,12 +125,12 @@ class CAutomap {
 		inline int Radar (void) { return m_bRadar; }
 		inline int SegmentLimit (void) { return m_nSegmentLimit; }
 		inline int MaxSegsAway (void) { return m_nMaxSegsAway; }
-		inline int Visible (int nSegment) { return m_bFull || m_visited [0][nSegment]; }
+		inline int Visible (int nSegment) { return m_bFull || m_visited [nSegment]; }
 		inline int Display (void) { return m_bDisplay; }
 
 	private:
 		int SetSegmentDepths (int nStartSeg, ushort *depthBufP);
-		void AdjustSegmentLimit (int nSegmentLimit, CArray<ushort>& visited);
+		void AdjustSegmentLimit (void);
 		void DrawEdges (void);
 		void DrawPlayer (CObject* objP);
 		void DrawObjects (void);

@@ -149,11 +149,9 @@ m_data.nZoom = 0x9000;
 m_data.viewer.vPos.SetZero ();
 m_data.viewTarget.SetZero ();
 m_data.viewer.mOrient = CFixMatrix::IDENTITY;
-for (int i = 0; i < 2; i++) {
-	if (!m_visited [i].Buffer ())
-		m_visited [i].Create (MAX_SEGMENTS_D2X);
-	m_visited [i].Clear ();
-	}
+if (!m_visited.Buffer ())
+	m_visited.Create (MAX_SEGMENTS_D2X);
+m_visited.Clear ();
 if (!m_visible.Buffer ())
 	m_visible.Create (MAX_SEGMENTS_D2X);
 m_visible.Clear ();
@@ -169,7 +167,7 @@ InitColors ();
 
 void CAutomap::ClearVisited ()
 {
-m_visited [0].Clear ();
+m_visited.Clear ();
 markerManager.Clear ();
 }
 
@@ -282,7 +280,7 @@ FORALL_OBJS (objP, i) {
 			break;
 
 		case OBJ_ROBOT:
-			if (AM_SHOW_ROBOTS && ((gameStates.render.bAllVisited && bTextured) || m_visited [0][objP->info.nSegment])) {
+			if (AM_SHOW_ROBOTS && ((gameStates.render.bAllVisited && bTextured) || m_visited [objP->info.nSegment])) {
 				static int t = 0;
 				static int d = 1;
 				int h = SDL_GetTicks ();
@@ -325,7 +323,7 @@ FORALL_OBJS (objP, i) {
 					size *= 4;
 					break;
 				default:
-					if (!(AM_SHOW_POWERUPS (1) && (gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment])))
+					if (!(AM_SHOW_POWERUPS (1) && (gameStates.render.bAllVisited || m_visited [objP->info.nSegment])))
 						continue;
 					CCanvas::Current ()->SetColorRGBi (ORANGE_RGBA); //orange
 					break;
@@ -539,7 +537,7 @@ else
 	strcpy (m_szLevelName, " ");
 strcat (m_szLevelName, missionManager.szCurrentLevel);
 for (h = i = 0; i < gameData.segs.nSegments; i++)
-	if (m_visited [0][i])
+	if (m_visited [i])
 		h++;
 sprintf (szExplored, " (%1.1f %s)", (float) (h * 100) / (float) gameData.segs.nSegments, TXT_PERCENT_EXPLORED);
 strcat (m_szLevelName, szExplored);
@@ -679,11 +677,11 @@ else if (m_bFull) {
 		m_visible [i] = 1;
 	}
 else
-	memcpy (m_visible.Buffer (), m_visited [0].Buffer (), m_visited [0].Size ());
-//m_visited [0][OBJECTS [LOCALPLAYER.nObject].nSegment] = 1;
+	memcpy (m_visible.Buffer (), m_visited.Buffer (), m_visited.Size ());
+//m_visited [OBJECTS [LOCALPLAYER.nObject].nSegment] = 1;
 m_nSegmentLimit =
 m_nMaxSegsAway = SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, m_visible.Buffer ());
-AdjustSegmentLimit (m_nSegmentLimit, m_visible);
+AdjustSegmentLimit ();
 m_bDisplay++;
 return gameData.app.bGamePaused;
 }
@@ -779,9 +777,8 @@ while ((c = KeyInKey ())) {
 				automap.m_visible [i] = 1;
 			BuildEdgeList ();
 			m_nSegmentLimit =
-			m_nMaxSegsAway =
-				SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
-			AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
+			m_nMaxSegsAway = SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
+			AdjustSegmentLimit ();
 			}
 			break;
 #endif
@@ -792,7 +789,7 @@ while ((c = KeyInKey ())) {
 				m_nSegmentLimit -= ViewDistStep ();
 				if (!m_nSegmentLimit)
 					m_nSegmentLimit = 1;
-				AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
+				AdjustSegmentLimit ();
 				}
 			break;
 
@@ -802,7 +799,7 @@ while ((c = KeyInKey ())) {
 				m_nSegmentLimit += ViewDistStep ();
 				if (m_nSegmentLimit > m_nMaxSegsAway)
 					m_nSegmentLimit = m_nMaxSegsAway;
-				AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
+				AdjustSegmentLimit ();
 				}
 			break;
 
@@ -1030,7 +1027,7 @@ if (!--m_bDisplay) {
 
 //------------------------------------------------------------------------------
 
-void CAutomap::AdjustSegmentLimit (int nSegmentLimit, CArray<ushort>& visible)
+void CAutomap::AdjustSegmentLimit (void)
 {
 	int i,e1;
 	tEdgeInfo * e;
@@ -1039,7 +1036,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 	e = m_edges + i;
 	e->flags |= EF_TOO_FAR;
 	for (e1 = 0; e1 < e->nFaces; e1++) {
-		if (visible [e->nSegment [e1]] <= nSegmentLimit) {
+		if (m_visible [e->nSegment [e1]] <= m_nSegmentLimit) {
 			e->flags &= ~EF_TOO_FAR;
 			break;
 			}
@@ -1438,7 +1435,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	if (color != WHITE_RGBA) {
 		// If they have a map powerup, draw unvisited areas in dark blue.
 		if ((LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP) &&
-				!(gameStates.render.bAllVisited || m_visited [0][nSegment]))
+				!(gameStates.render.bAllVisited || m_visited [nSegment]))
 			color = m_colors.walls.nRevealed;
 
 addEdge:
@@ -1501,12 +1498,12 @@ if (m_data.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP)) {
 else {
 	// Not cheating, add visited edges, and then unvisited edges
 	for (s = 0; s <= gameData.segs.nLastSegment; s++)
-		if (m_visited [0][s]) {
+		if (m_visited [s]) {
 			h++;
 			AddSegmentEdges (&SEGMENTS [s]);
 			}
 		for (s = 0; s <= gameData.segs.nLastSegment; s++)
-			if (!m_visited [0][s]) {
+			if (!m_visited [s]) {
 				AddUnknownSegmentEdges (&SEGMENTS [s]);
 				}
 		}
