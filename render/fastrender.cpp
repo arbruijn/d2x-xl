@@ -495,8 +495,13 @@ if (bAutomap) {
 		if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX))
 			return 0;
 		}
-	else
+	else if (gameData.objs.viewerP == gameData.objs.consoleP) {
+#if DBG
+		if (gameStates.render.nWindow)
+			nDbgSeg = nDbgSeg;
+#endif
 		automap.m_visited [nSegment] = gameData.render.mine.bSetAutomapVisited;
+		}
 	}
 if (VISITED (nSegment))
 	return 0;
