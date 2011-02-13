@@ -379,7 +379,6 @@ void CTracker::CreateList (void)
 ResetList ();
 if (!(a = FindArg ("-internal_tracker")) || atoi (pszArgList [a + 1])) {
 	Add (&d2xTracker);
-	Add (&kbTracker);
 	}
 AddFromCmdLine ();
 }
