@@ -95,12 +95,12 @@ int CheckForUpdate (void)
 	char		szMsg [1000];
 
 	static const char* pszSource [2] = {
-		"http://www.descent2.de/downloads", 
+		"http://www.descent2.de/files", 
 		"http://sourceforge.net/projects/d2x-xl/files"
 	};
 
 sprintf (szDest, "%s/d2x-xl-version.txt", gameFolders.szDownloadDir);
-if (!DownloadFile ("http://www.descent2.de/downloads/d2x-xl-version.txt", szDest))
+if (!DownloadFile ("http://www.descent2.de/files/d2x-xl-version.txt", szDest))
 	nLocation = 0;
 else if (!DownloadFile ("http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest))
 	nLocation = 1;
