@@ -38,8 +38,7 @@ static int bTestTracker = 0;
 static tUdpAddress testServer;
 #endif
 
-static tUdpAddress	d2xTracker = {85,119,152,28,0,0};
-static tUdpAddress	kbTracker = {207,210,100,66,0,0};
+static tUdpAddress	d2xTracker = {87,106,88,224,0,0};
 
 tServerListTable *serverListTable = NULL;
 tServerList trackerList;
