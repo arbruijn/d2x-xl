@@ -261,7 +261,7 @@ void IPXSendPacketData
 	IPXPacket_t ipxHeader;
 	
 if (dataSize > MAX_PAYLOAD_SIZE) 
-	PrintLog ("outgoing data package too large (%d bytes)\n", dataSize);
+	PrintLog ("IpxSendPacketData: packet too large (%d bytes)\n", dataSize);
 else {
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
@@ -472,13 +472,16 @@ if (driver->HandleLeaveGame)
 // Send a packet to every member of the game.
 int IpxSendGamePacket (ubyte *data, int dataSize)
 {
-if ((driver->SendGamePacket) && (dataSize <= MAX_PACKET_SIZE - 4)) {
-	static u_char buf [MAX_PACKET_SIZE];
-
-	*reinterpret_cast<uint*> (buf) = nIpxPacket++;
-	memcpy (buf + 4, data, dataSize);
-	*reinterpret_cast<uint*> (data) = nIpxPacket++;
-	return driver->SendGamePacket (&ipxSocketData, buf, dataSize + 4);
+if (driver->SendGamePacket) {
+	if (dataSize > MAX_PACKET_SIZE - 4)
+		PrintLog ("IpxSendGamePacket: packet too large (%d bytes)\n", dataSize);
+	else {
+		static u_char buf [MAX_PACKET_SIZE];
+		*reinterpret_cast<uint*> (buf) = nIpxPacket++;
+		memcpy (buf + 4, data, dataSize);
+		*reinterpret_cast<uint*> (data) = nIpxPacket++;
+		return driver->SendGamePacket (&ipxSocketData, buf, dataSize + 4);
+		}
 	} 
 else {
 	// Loop through all the players unicasting the packet.
