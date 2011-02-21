@@ -279,26 +279,34 @@ if (SHOW_LIGHTNING) {
 		if (h & EXPL_LIGHTNING) {
 			if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_DEBRIS) || (objP->info.nType == OBJ_REACTOR))
 				CreateForBlowup (objP);
+#if DBG
 			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
+#endif
 			}
 		else if (h & MISSILE_LIGHTNING) {
 			if ((objP->info.nType == OBJ_WEAPON) || gameData.objs.bIsMissile [objP->info.nId])
 				CreateForMissile (objP);
+#if DBG
 			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
+#endif
 			}
 		else if (h & ROBOT_LIGHTNING) {
 			if (objP->info.nType == OBJ_ROBOT)
 				CreateForRobot (objP, LightningColor (objP));
+#if DBG
 			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
+#endif
 			}
 		else if (h & PLAYER_LIGHTNING) {
 			if (objP->info.nType == OBJ_PLAYER)
 				CreateForPlayer (objP, LightningColor (objP));
+#if DBG
 			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
+#endif
 			}
 		else if (h & MOVE_LIGHTNING) {
 			if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))
