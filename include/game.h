@@ -124,7 +124,7 @@ extern int Game_suspended;          // if non-zero, nothing moves but CPlayerDat
 // from game.c
 bool InitGame(int nSegments, int nVertices);
 void RunGame (void);
-void CleanupAfterGame (void);
+void CleanupAfterGame (bool bHaveLevel = true);
 void _CDECL_ CloseGame(void);
 void CalcFrameTime(void);
 

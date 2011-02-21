@@ -1305,8 +1305,6 @@ else if (gameData.app.nGameMode & GM_NETWORK)
 
 void MultiLeaveGame (void)
 {
-	fix	shield;
-
 if (!IsMultiGame)
 	return;
 if (gameData.app.nGameMode & GM_NETWORK) {
@@ -1314,7 +1312,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	AdjustMineSpawn ();
 	MultiCapObjects ();
 	d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
-	shield = LOCALPLAYER.Shield ();
+	fix shield = LOCALPLAYER.Shield ();
 	LOCALPLAYER.SetShield (-1);
 	DropPlayerEggs (gameData.objs.consoleP);
 	LOCALPLAYER.SetShield (shield);

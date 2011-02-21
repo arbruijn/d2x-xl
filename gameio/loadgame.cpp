@@ -1693,7 +1693,7 @@ catch (...) {
 ClearWarnFunc (ShowInGameWarning);
 if (!funcRes) {
 	try {
-		CleanupAfterGame ();
+		CleanupAfterGame (false);
 		}
 	catch (...) {
 		Warning ("Internal error when cleaning up.");

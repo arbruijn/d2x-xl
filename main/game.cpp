@@ -555,7 +555,7 @@ if (gameStates.app.nFunctionMode != newFuncMode) {
 
 //	------------------------------------------------------------------------------------
 
-void CleanupAfterGame (void)
+void CleanupAfterGame (bool bHaveLevel)
 {
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
@@ -570,7 +570,8 @@ if (gameStates.sound.bD1Sound) {
 	}
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
-MultiLeaveGame ();
+if (bHaveLevel)
+	MultiLeaveGame ();
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
 transparencyRenderer.ResetBuffers ();

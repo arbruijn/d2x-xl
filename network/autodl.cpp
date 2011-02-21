@@ -31,7 +31,7 @@
 CDownloadManager downloadManager;
 
 #define DL_HEADER_SIZE	10
-#define DL_PAYLOAD_SIZE	(MAX_PAYLOAD_SIZE - DL_HEADER_SIZE)	// file transfer header size is 10 bytes (transfer type, packet type, packet id, packet length)
+#define DL_PAYLOAD_SIZE	512 //(MAX_PAYLOAD_SIZE - DL_HEADER_SIZE)	// file transfer header size is 10 bytes (transfer type, packet type, packet id, packet length)
 
 //------------------------------------------------------------------------------
 
