@@ -257,12 +257,12 @@ return 0;
 void IPXSendPacketData
 	 (ubyte *data, int dataSize, ubyte *network, ubyte *source, ubyte *dest)
 {
-	static u_char buf [MAX_PACKET_SIZE];
-	IPXPacket_t ipxHeader;
-	
 if (dataSize > MAX_PAYLOAD_SIZE) 
 	PrintLog ("IpxSendPacketData: packet too large (%d bytes)\n", dataSize);
 else {
+		static u_char buf [MAX_PACKET_SIZE];
+		IPXPacket_t ipxHeader;
+	
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
 	*reinterpret_cast<u_short*> (ipxHeader.Destination.Socket) = htons (ipxSocketData.socket);

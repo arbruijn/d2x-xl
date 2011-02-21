@@ -908,7 +908,7 @@ static int UDPSendPacket
 #ifdef UDPDEBUG
 PrintLog ("UDP interface: SendPacket enter, dataLen=%d",dataLen);
 #endif
-if ((dataLen < 0) || (dataLen > MAX_PAYLOAD_SIZE))
+if ((dataLen < 0) || (dataLen > MAX_PAYLOAD_SIZE + 4))
 	return -1;
 if (gameStates.multi.bTrackerCall)
 	memcpy (buf, data, dataLen);

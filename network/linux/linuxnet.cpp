@@ -248,17 +248,21 @@ return best_size;
 
 void IPXSendPacketData (ubyte * data, int dataSize, ubyte *network, ubyte *address, ubyte *immediate_address)
 {
-	u_char buf [MAX_PACKET_SIZE];
-	IPXPacket_t ipxHeader;
+if (dataSize > MAX_PAYLOAD_SIZE) 
+	PrintLog ("IpxSendPacketData: packet too large (%d bytes)\n", dataSize);
+else {
+		u_char buf [MAX_PACKET_SIZE];
+		IPXPacket_t ipxHeader;
 
-memcpy (ipxHeader.Destination.Network, network, 4);
-memcpy (ipxHeader.Destination.Node, immediate_address, 6);
-*reinterpret_cast<u_short*> (ipxHeader.Destination.Socket) = htons (ipxSocketData.socket);
-ipxHeader.PacketType = 4; /* Packet Exchange */
-*reinterpret_cast<uint*> (buf) = INTEL_INT (nIpxPacket);
-nIpxPacket++;
-memcpy (buf + 4, data, dataSize);
-driver->SendPacket (&ipxSocketData, &ipxHeader, buf, dataSize + 4);
+	memcpy (ipxHeader.Destination.Network, network, 4);
+	memcpy (ipxHeader.Destination.Node, immediate_address, 6);
+	*reinterpret_cast<u_short*> (ipxHeader.Destination.Socket) = htons (ipxSocketData.socket);
+	ipxHeader.PacketType = 4; /* Packet Exchange */
+	*reinterpret_cast<uint*> (buf) = INTEL_INT (nIpxPacket);
+	nIpxPacket++;
+	memcpy (buf + 4, data, dataSize);
+	driver->SendPacket (&ipxSocketData, &ipxHeader, buf, dataSize + 4);
+	}
 }
 
 #endif
@@ -486,12 +490,15 @@ void IpxHandleLeaveGame (void)
 int IpxSendGamePacket (ubyte *data, int dataSize)
 {
 if (driver->SendGamePacket) {
-		u_char buf[IPX_PACKET_SIZE];
-
-	*reinterpret_cast<uint*> (buf) = nIpxPacket++;
-	memcpy (buf + 4, data, dataSize);
-	*reinterpret_cast<uint*> (data) = nIpxPacket++;
-	return driver->SendGamePacket (&ipxSocketData, buf, dataSize + 4);
+	if (dataSize > MAX_PACKET_SIZE - 4)
+		PrintLog ("IpxSendGamePacket: packet too large (%d bytes)\n", dataSize);
+	else {
+		static u_char buf [MAX_PACKET_SIZE];
+		*reinterpret_cast<uint*> (buf) = nIpxPacket++;
+		memcpy (buf + 4, data, dataSize);
+		*reinterpret_cast<uint*> (data) = nIpxPacket++;
+		return driver->SendGamePacket (&ipxSocketData, buf, dataSize + 4);
+		}
 	}
 else {
 	// Loop through all the players unicasting the packet.
@@ -499,8 +506,11 @@ else {
 	//printf ("Sending game packet: gameData.multiplayer.nPlayers = %i\n", gameData.multiplayer.nPlayers);
 	for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 		if (gameData.multiplayer.players [i].connected && (i != gameData.multiplayer.nLocalPlayer))
-			IPXSendPacketData (data, dataSize, netPlayers.m_info.players [i].network.ipx.server, 
-									 netPlayers.m_info.players [i].network.ipx.node, gameData.multiplayer.players[i].netAddress);
+			IPXSendPacketData (
+				data, dataSize, 
+				netPlayers.m_info.players [i].network.ipx.server, 
+				netPlayers.m_info.players [i].network.ipx.node, 
+				gameData.multiplayer.players[i].netAddress);
 		}
 	return dataSize;
 	}
