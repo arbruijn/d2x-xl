@@ -277,7 +277,7 @@ if (SHOW_LIGHTNING) {
 		i = objP->Index ();
 		h = gameData.objs.bWantEffect [i];
 		if (h & EXPL_LIGHTNING) {
-			if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))
+			if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_DEBRIS) || (objP->info.nType == OBJ_REACTOR))
 				CreateForBlowup (objP);
 			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");

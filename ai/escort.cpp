@@ -104,37 +104,30 @@ return AIDoorIsOpenable (NULL, SEGMENTS + curseg, nSide);
 //	Output:
 //		bfsList:	array of shorts, each reachable CSegment.  Includes start CSegment.
 //		length:		number of elements in bfsList
-void CreateBfsList (int nStartSeg, short bfsList [], int *length, int nMaxSegs)
+void CreateBfsList (int nStartSeg, short segList [], int *length, int nMaxSegs)
 {
-	int		head, tail;
+	int		head = 0, tail = 0;
 	sbyte		bVisited [MAX_SEGMENTS_D2X];
 
-	memset (bVisited, 0, LEVEL_SEGMENTS * sizeof (sbyte));
-	head = 0;
-	tail = 0;
-
-bfsList [head++] = nStartSeg;
+memset (bVisited, 0, LEVEL_SEGMENTS * sizeof (sbyte));
+segList [head++] = nStartSeg;
 bVisited [nStartSeg] = 1;
 if (nMaxSegs > LEVEL_SEGMENTS)
 	nMaxSegs = LEVEL_SEGMENTS;
 
 while ((head != tail) && (head < nMaxSegs)) {
-	int		i;
-	short		nSegment;
-	CSegment	*segP;
+	short nSegment = segList [tail++];
+	CSegment	*segP = SEGMENTS + nSegment;
 
-	nSegment = bfsList [tail++];
-	segP = SEGMENTS + nSegment;
-
-	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
-		int	nConnSeg = segP->m_children [i];
+	for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+		int nConnSeg = segP->m_children [i];
 		if (!IS_CHILD (nConnSeg))
 			continue;
 		if (bVisited [nConnSeg])
 			continue;
 		if (!SegmentIsReachable (nSegment, (short) i))
 			continue;
-		bfsList [head++] = nConnSeg;
+		segList [head++] = nConnSeg;
 		if (head >= nMaxSegs)
 			break;
 		bVisited [nConnSeg] = 1;
@@ -472,37 +465,31 @@ int GetBossId (void)
 }
 
 //	-----------------------------------------------------------------------------
-//	Return CObject index if CObject of objtype, objid exists in mine, else return -1
+//	Return bject index if CObject of objType, objId exists in mine, else return -1
 //	"special" is used to find OBJECTS spewed by CPlayerData which is hacked into flags field of powerup.
-int ExistsInMine2 (int nSegment, int objtype, int objid, int special)
+int ExistsInMine2 (int nSegment, int objType, int objId, int special)
 {
 	int nObject = SEGMENTS [nSegment].m_objects;
 	
 if (nObject != -1) {
-	int		id;
-
 	while (nObject != -1) {
 		CObject	*curObjP = OBJECTS + nObject;
 
-		if (special == ESCORT_GOAL_PLAYER_SPEW) {
-			if (curObjP->info.nFlags & OF_PLAYER_DROPPED)
-				return nObject;
-			}
-		if (curObjP->info.nType == objtype) {
+		if ((special == ESCORT_GOAL_PLAYER_SPEW) && (curObjP->info.nFlags & OF_PLAYER_DROPPED))
+			return nObject;
+		if (curObjP->info.nType == objType) {
 			//	Don't find escort robots if looking for robot!
 			if (IS_GUIDEBOT (curObjP))
 				;
-			else if (objid == -1) {
-				id = curObjP->info.nId;
+			else if (objId == -1)
 				return nObject;
-				}
-			else if (curObjP->info.nId == objid)
+			else if (curObjP->info.nId == objId)
 				return nObject;
-		}
-
-		if (objtype == OBJ_POWERUP)
-			if (curObjP->info.contains.nCount && (curObjP->info.contains.nType == OBJ_POWERUP) && (curObjP->info.contains.nId == objid))
+			}
+		if (objType == OBJ_POWERUP) {
+			if (curObjP->info.contains.nCount && (curObjP->info.contains.nType == OBJ_POWERUP) && (curObjP->info.contains.nId == objId))
 				return nObject;
+			}
 		nObject = curObjP->info.nNextInSeg;
 		}
 	}
@@ -510,11 +497,11 @@ return -1;
 }
 
 //	-----------------------------------------------------------------------------
-//	Return nearest CObject of interest.
+//	Return nearest object of interest.
 //	If special == ESCORT_GOAL_PLAYER_SPEW, then looking for any CObject spewed by player.
 //	-1 means CObject does not exist in mine.
 //	-2 means CObject does exist in mine, but buddy-bot can't reach it (eg, behind triggered CWall)
-int ExistsInMine (int nStartSeg, int objtype, int objid, int special)
+int ExistsInMine (int nStartSeg, int objType, int objId, int special)
 {
 	int	nSegIdx, nSegment;
 	short	bfsList [MAX_SEGMENTS_D2X];
@@ -522,7 +509,7 @@ int ExistsInMine (int nStartSeg, int objtype, int objid, int special)
 	int	nObject;
 
 CreateBfsList (nStartSeg, bfsList, &length, LEVEL_SEGMENTS);
-if (objtype == FUELCEN_CHECK) {
+if (objType == FUELCEN_CHECK) {
 	for (nSegIdx = 0; nSegIdx < length; nSegIdx++) {
 		nSegment = bfsList [nSegIdx];
 		if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_FUELCEN)
@@ -532,22 +519,22 @@ if (objtype == FUELCEN_CHECK) {
 else {
 	for (nSegIdx = 0; nSegIdx < length; nSegIdx++) {
 		nSegment = bfsList [nSegIdx];
-		nObject = ExistsInMine2 (nSegment, objtype, objid, special);
+		nObject = ExistsInMine2 (nSegment, objType, objId, special);
 		if (nObject != -1)
 			return nObject;
 		}
 	}
 //	Couldn't find what we're looking for by looking at connectivity.
-//	See if it's in the mine.  It could be hidden behind a CTrigger or switch
+//	See if it's in the mine.  It could be hidden behind a trigger or switch
 //	which the buddybot doesn't understand.
-if (objtype == FUELCEN_CHECK) {
+if (objType == FUELCEN_CHECK) {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
 		if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_FUELCEN)
 			return -2;
 	}
 else {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
-		nObject = ExistsInMine2 (nSegment, objtype, objid, special);
+		nObject = ExistsInMine2 (nSegment, objType, objId, special);
 		if (nObject != -1)
 			return -2;
 		}
@@ -559,16 +546,12 @@ return -1;
 //	Return true if it happened, else return false.
 int FindExitSegment (void)
 {
-	int	i,j;
-
-	//	---------- Find exit doors ----------
-	for (i=0; i<=gameData.segs.nLastSegment; i++)
-		for (j=0; j<MAX_SIDES_PER_SEGMENT; j++)
-			if (SEGMENTS [i].m_children [j] == -2) {
-				return i;
-			}
-
-	return -1;
+for (int i = 0; i <= gameData.segs.nLastSegment; i++)
+	for (int j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
+		if (SEGMENTS [i].m_children [j] == -2) {
+			return i;
+		}
+return -1;
 }
 
 #define	BUDDY_MARKER_TEXT_LEN	25
@@ -643,6 +626,37 @@ switch (nGoal) {
 
 //	-----------------------------------------------------------------------------
 
+#if 0
+typedef struct tEscortGoal {
+	short	nType, nId, special;
+} tEscortGoal;
+
+static tEscortGoal escortGoals [MAX_ESCORT_GOALS] = {
+	{0, 0, -1},
+	{OBJ_POWERUP, POW_KEY_BLUE, -1},
+	{OBJ_POWERUP, POW_KEY_GOD, -1},
+	{OBJ_POWERUP, POW_KEY_RED, -1},
+	{OBJ_REACTOR, -1, -1},
+	{-1, -1, -1},
+	{OBJ_POWERUP, POW_ENERGY, -1},
+	{-1, -1, -1},
+	{FUELCEN_CHECK, -1, -1},
+	{OBJ_POWERUP, POW_SHIELD_BOOST, -1},
+	{OBJ_POWERUP, -1, -1},
+	{OBJ_ROBOT, -1, -1},
+	{OBJ_HOSTAGE, -1, -1},
+	{-1, -1, ESCORT_GOAL_PLAYER_SPEW},
+	{OBJ_POWERUP, POW_, -1},
+	{OBJ_POWERUP, POW_, -1},
+	{OBJ_POWERUP, POW_, -1},
+	{OBJ_POWERUP, POW_, -1},
+	{OBJ_POWERUP, POW_, -1},
+	{OBJ_POWERUP, POW_, -1},
+	{OBJ_POWERUP, POW_, -1},
+	{OBJ_POWERUP, POW_, -1},
+	{OBJ_POWERUP, POW_, -1},
+#endif
+
 void EscortCreatePathToGoal (CObject *objP)
 {
 	short				nGoalSeg = -1;
@@ -655,7 +669,7 @@ if (gameData.escort.nSpecialGoal != -1)
 	gameData.escort.nGoalObject = gameData.escort.nSpecialGoal;
 gameData.escort.nKillObject = -1;
 if (gameData.escort.bSearchingMarker != -1) {
-	gameData.escort.nGoalIndex = ExistsInMine (objP->info.nSegment, OBJ_MARKER, gameData.escort.nGoalObject-ESCORT_GOAL_MARKER1, -1);
+	gameData.escort.nGoalIndex = ExistsInMine (objP->info.nSegment, OBJ_MARKER, gameData.escort.nGoalObject - ESCORT_GOAL_MARKER1, -1);
 	if (gameData.escort.nGoalIndex > -1)
 		nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].info.nSegment;
 	}
@@ -773,7 +787,7 @@ else {
 			gameData.escort.bSearchingMarker = -1;
 			gameData.escort.nGoalObject = ESCORT_GOAL_SCRAM;
 			xDistToPlayer = PathLength (objP->info.position.vPos, objP->info.nSegment, gameData.ai.target.vBelievedPos, 
-																gameData.ai.target.nBelievedSeg, 100, WID_FLY_FLAG, 1);
+												 gameData.ai.target.nBelievedSeg, 100, WID_FLY_FLAG, 1);
 			if (xDistToPlayer > MIN_ESCORT_DISTANCE)
 				CreatePathToTarget (objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
 			else {

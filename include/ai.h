@@ -137,8 +137,6 @@ typedef struct tAwarenessEvent {
 #define AIE_MAX 5
 
 #define ESCORT_GOAL_UNSPECIFIED -1
-
-#define ESCORT_GOAL_UNSPECIFIED -1
 #define ESCORT_GOAL_BLUE_KEY    1
 #define ESCORT_GOAL_GOLD_KEY    2
 #define ESCORT_GOAL_RED_KEY     3
