@@ -1510,7 +1510,9 @@ if (gameData.reactor.bDestroyed)
 	missionManager.SetLevelState (missionManager.nCurrentLevel, -1);
 missionManager.SaveLevelStates ();
 
-if ((missionManager.nCurrentLevel == missionManager.nLastLevel) && (missionManager.NextLevel (1) < 1) &&
+if ((missionManager.NextLevel () > 0) && 
+	 (missionManager.NextLevel () > missionManager.LastLevel ()) && 
+	 (missionManager.NextLevel (1) < 1) &&
 	 !extraGameInfo [IsMultiGame].bRotateLevels) //CPlayerData has finished the game!
 	DoEndGame ();
 else {
@@ -2324,6 +2326,7 @@ if (bSecret && !gameStates.app.bD1Mission) {
 	}
 else {
 	if (gameData.reactor.bDestroyed) {
+		FindNextLevel ();
 		AdvanceLevel (0, bSecret);
 		ResetShipData ();
 		}

@@ -1760,5 +1760,28 @@ for (int i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
 return nExits;
 }
 
+//	-----------------------------------------------------------------------------
+
+int FindNextLevel (void)
+{
+missionManager.SetNextLevel (missionManager.nCurrentLevel + 1);
+
+if (gameData.segs.nLevelVersion > 20) {
+	CTrigger *trigP = TRIGGERS.Buffer ();
+	int		nNextLevel = 0x7FFFFFFF;
+
+	for (int i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
+		if (trigP->m_info.nType == TT_EXIT) {
+			int h = (X2I (trigP->m_info.value) > 0) ? X2I (trigP->m_info.value) : missionManager.nCurrentLevel + 1;
+			if ((h < nNextLevel) && missionManager.GetLevelState (h) >= 0)
+				nNextLevel = h;
+			}
+		}
+	if (nNextLevel < 0x7FFFFFFF)
+		missionManager.SetNextLevel (nNextLevel);
+	}
+return missionManager.NextLevel ();
+}
+
 //------------------------------------------------------------------------------
 //eof

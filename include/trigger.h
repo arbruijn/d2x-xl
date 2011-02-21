@@ -245,6 +245,7 @@ CTrigger *FindObjTrigger (short nObject, short nType, short nTrigger);
 int OpenExits (void);
 void StartTriggeredSounds (void);
 void StopTriggeredSounds (void);
+int FindNextLevel (void);
 
 extern CFixVector	speedBoostSrc, speedBoostDest;
 
