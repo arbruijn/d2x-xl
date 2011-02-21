@@ -429,6 +429,7 @@ if (!((bmpInventory = PiggyLoadBitmap ("inventry.bmp")) ||
 memset (bmInvItems, 0, sizeof (bmInvItems));
 h = bmpInventory->Width () * bmpInventory->Width ();
 buffer = bmpInventory->Buffer ();
+CPalette* palette = paletteManager.Load ("groupa.256", NULL);
 for (i = 0; i < NUM_INV_ITEMS; i++) {
 	bmInvItems [i] = *bmpInventory;
 	bmInvItems [i].SetName ("Inventory");
@@ -436,7 +437,7 @@ for (i = 0; i < NUM_INV_ITEMS; i++) {
 	bmInvItems [i].SetBuffer (buffer + h * i, 1, h);
 	bmInvItems [i].SetTranspType (3);
 	bmInvItems [i].ResetTexture ();
-	bmInvItems [i].SetPalette (paletteManager.Game ());
+	bmInvItems [i].SetPalette (palette ? palette : paletteManager.Game ());
 	}
 return bHaveInvBms = 1;
 }
