@@ -1776,8 +1776,9 @@ if (gameData.segs.nLevelVersion > 20) {
 			int l = (X2I (trigP->m_info.value) > 0) ? X2I (trigP->m_info.value) : missionManager.nCurrentLevel + 1;
 			int s = missionManager.GetLevelState (l);
 			if ((s >= 0) && ((s < nLevelState) || ((s == nLevelState) && (l < nNextLevel)))) {
-				nNextLevel = l;
 				nLevelState = s;
+				if (0 == (nNextLevel = l))
+					break;
 				}
 			}
 		}
