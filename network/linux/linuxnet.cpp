@@ -179,7 +179,7 @@ struct ipx_recv_data ipx_udpSrc;
 
 int IpxGetPacketData (ubyte * data)
 {
-	static char buf [MAX_PACKETSIZE];
+	static char buf [MAX_PACKET_SIZE];
 	int dataSize, dataOffs;
 
 while (driver->PacketReady (&ipxSocketData)) {
@@ -189,7 +189,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 	if (dataSize < 6)
 		continue;
 	dataOffs = tracker.IsTracker (*reinterpret_cast<uint*> (ipx_udpSrc.src_node), *reinterpret_cast<ushort*> (ipx_udpSrc.src_node + 4)) ? 0 : 4;
-	if (dataSize > D2X_DATALIMIT + dataOffs) {
+	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
 		PrintLog ("incoming data package too large (%d bytes)\n", dataSize);
 		continue;
 		}
@@ -204,10 +204,10 @@ return 0;
 void IPXSendPacketData
 	 (ubyte * data, int dataSize, ubyte *network, ubyte *source, ubyte *dest)
 {
-	static u_char buf [UDP_DATALIMIT + 4];
+	static u_char buf [MAX_PACKET_SIZE];
 	IPXPacket_t ipxHeader;
 
-if (dataSize > D2X_DATALIMIT)
+if (dataSize > MAX_PAYLOAD_SIZE)
 	PrintLog ("outgoing data package too large (%d bytes)\n", dataSize);
 else {
 	memcpy (ipxHeader.Destination.Network, network, 4);
@@ -248,7 +248,7 @@ return best_size;
 
 void IPXSendPacketData (ubyte * data, int dataSize, ubyte *network, ubyte *address, ubyte *immediate_address)
 {
-	u_char buf [UDP_DATALIMIT + 4];
+	u_char buf [MAX_PACKET_SIZE];
 	IPXPacket_t ipxHeader;
 
 memcpy (ipxHeader.Destination.Network, network, 4);
@@ -486,7 +486,7 @@ void IpxHandleLeaveGame (void)
 int IpxSendGamePacket (ubyte *data, int dataSize)
 {
 if (driver->SendGamePacket) {
-		u_char buf[MAX_PACKETSIZE];
+		u_char buf[IPX_PACKET_SIZE];
 
 	*reinterpret_cast<uint*> (buf) = nIpxPacket++;
 	memcpy (buf + 4, data, dataSize);

@@ -472,8 +472,8 @@ if (driver->HandleLeaveGame)
 // Send a packet to every member of the game.
 int IpxSendGamePacket (ubyte *data, int dataSize)
 {
-if ((driver->SendGamePacket) && (dataSize <= IPX_PACKET_SIZE - 4)) {
-	static u_char buf [IPX_PACKET_SIZE];
+if ((driver->SendGamePacket) && (dataSize <= MAX_PACKET_SIZE - 4)) {
+	static u_char buf [MAX_PACKET_SIZE];
 
 	*reinterpret_cast<uint*> (buf) = nIpxPacket++;
 	memcpy (buf + 4, data, dataSize);
