@@ -903,7 +903,7 @@ class CObject : public CObjectInfo {
 
 		int FindSegment (void);
 		void SetTurnRoll (void);
-		void DoPhysicsSimRot (void);
+		int DoPhysicsSimRot (void);
 		void DoPhysicsSim (void);
 		void Spin (void);
 		int Update (void);

@@ -51,6 +51,8 @@ for (i = 0; i < 8; i++) {
 
 #if RENDER_HITBOX
 
+static int nDbgBox = -1, nDbgBoxFace = -1;
+
 void RenderHitbox (CObject *objP, float red, float green, float blue, float alpha)
 {
 if (objP->rType.polyObjInfo.nModel < 0)
@@ -117,7 +119,10 @@ for (; iBox <= nBoxes; iBox++) {
 		transformation.Begin (pmhb [iBox].vOffset, CAngleVector::ZERO);
 	TransformHitboxf (objP, vertList, iBox);
 #endif
-	glColor4f (red, green, blue, alpha / 2);
+	if ((objP->info.nType == OBJ_PLAYER) && (iBox == nDbgBox))
+		glColor4f (1.0f, 0, 0, alpha);
+	else
+		glColor4f (red, green, blue, alpha / 2);
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
 		for (j = 0; j < 4; j++) {
@@ -129,11 +134,17 @@ for (; iBox <= nBoxes; iBox++) {
 		}
 	glEnd ();
 	glLineWidth (3);
-	glColor4f (red, green, blue, alpha);
+	if ((objP->info.nType == OBJ_PLAYER) && (iBox == 1))
+		glColor4f (1.0f, 0, 0, alpha);
+	else
+		glColor4f (red, green, blue, alpha);
 	for (i = 0; i < 6; i++) {
 		CFixVector c;
 		c.SetZero ();
-		glColor4f (red, green, blue, alpha / 2);
+		if ((objP->info.nType == OBJ_PLAYER) && (iBox == 1))
+			glColor4f (1.0f, 0, 0, alpha);
+		else
+			glColor4f (red, green, blue, alpha);
 		glBegin (GL_LINES);
 		for (j = 0; j < 4; j++) {
 			c += hb [iBox].faces [i].v [j];
@@ -147,7 +158,7 @@ for (; iBox <= nBoxes; iBox++) {
 		glColor4f (1.0f, 0.5f, 0.0f, alpha);
 		transformation.Transform (v, v, 0);
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v));
-		v.Assign (c + hb [iBox].faces [i].n [1] * I2X (5));
+		v.Assign (c + hb [iBox].faces [i].n [1] * I2X (2));
 		transformation.Transform (v, v, 0);
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 		glEnd ();

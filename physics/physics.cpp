@@ -173,15 +173,15 @@ extern int bSimpleFVI;
 //	-----------------------------------------------------------------------------------------------------------
 // add rotational velocity & acceleration
 
-void CObject::DoPhysicsSimRot (void)
+int CObject::DoPhysicsSimRot (void)
 {
 	CAngleVector	turnAngles;
 	CFixMatrix		mRotate, mNewOrient;
 
 if (gameData.physics.xTime <= 0)
-	return;
+	return 0;
 if (mType.physInfo.rotVel.IsZero () && mType.physInfo.rotThrust.IsZero ())
-	return;
+	return 0;
 if (mType.physInfo.drag) {
 	CFixVector	accel;
 	int			nTries = gameData.physics.xTime / FT;
@@ -251,6 +251,7 @@ if (mType.physInfo.turnRoll) {
 	info.position.mOrient = m;
 	}
 info.position.mOrient.CheckAndFix ();
+return 1;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -416,7 +417,7 @@ else
 
 void CObject::DoPhysicsSim (void)
 {
-	short					nIgnoreObjs;
+	short					nIgnoreObjs = 0;
 	int					iSeg, i;
 	int					bRetry;
 	int					fviResult = 0;
@@ -425,9 +426,10 @@ void CObject::DoPhysicsSim (void)
 	int					nTries = 0;
 	short					nObject = OBJ_IDX (this);
 	short					nWallHitSeg, nWallHitSide;
-	CHitData		hi;
-	CHitQuery	fq;
+	CHitData				hi;
+	CHitQuery			fq;
 	CFixVector			vSavePos;
+	CFixMatrix			mSaveOrient;
 	int					nSaveSeg;
 	fix					xSimTime, xOldSimTime, xTimeScale;
 	CFixVector			vStartPos;
@@ -452,9 +454,33 @@ if (bDontMoveAIObjects)
 if (bInitialize)
 	gameData.physics.xTime = I2X (1);
 CATCH_OBJ (this, mType.physInfo.velocity [Y] == 0);
-DoPhysicsSimRot ();
 gameData.physics.nSegments = 0;
-nIgnoreObjs = 0;
+
+mSaveOrient = info.position.mOrient;
+if (DoPhysicsSimRot () && EGI_FLAG (nHitboxes, 0, 0, 0)) {
+	gameData.physics.ignoreObjs [0] = -1;
+	fq.p0 = 
+	fq.p1 = &info.position.vPos;
+	fq.startSeg = info.nSegment;
+	fq.radP0 = 
+	fq.radP1 = info.xSize;
+	fq.thisObjNum = nObject;
+	fq.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
+	fq.flags = FQ_CHECK_OBJS;
+	fq.bCheckVisibility = false;
+
+	if (info.nType == OBJ_WEAPON)
+		fq.flags |= FQ_TRANSPOINT;
+
+	memset (&hi, 0, sizeof (hi));
+#if DBG
+	if (Index () == nDbgObj)
+		nDbgObj = nDbgObj;
+#endif
+	if (FindHitpoint (&fq, &hi) != HIT_NONE)
+		info.position.mOrient = mSaveOrient;
+	}
+
 xSimTime = gameData.physics.xTime;
 bSimpleFVI = (info.nType != OBJ_PLAYER);
 vStartPos = info.position.vPos;

@@ -812,7 +812,7 @@ gameData.models.vScale.SetZero ();
 if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
-#if !RENDER_HITBOX
+#if 1 //!RENDER_HITBOX
 if (!DrawPolygonObject (objP, 0))
 	return 0;
 #endif
@@ -824,6 +824,10 @@ if (objP->info.controlType) {
 		SetRobotLocationInfo (objP);
 		}
 	}
+#if RENDER_HITBOX
+else 
+	RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+#endif
 return 1;
 }
 

@@ -323,9 +323,11 @@ memset (hb2, 0, sizeof (hb2));
 #endif
 TransformHitboxes (objP1, p1, hb1);
 TransformHitboxes (objP2, &vRef, hb2);
-for (; iModel1 <= nModels1; iModel1++) {
-	for (; iModel2 <= nModels2; iModel2++) {
-		if (FindHitboxIntersection (vHit, hb1 + iModel1, hb2 + iModel2, p0)) {
+
+int i, j;
+for (i = iModel1; i <= nModels1; i++) {
+	for (j = iModel2; j <= nModels2; j++) {
+		if (FindHitboxIntersection (vHit, hb1 + i, hb2 + j, p0)) {
 			xDist = RegisterHit (&intersection, &vHit, &vRef, dMin);
 			if (dMin > xDist) {
 				nHits++;
@@ -336,8 +338,8 @@ for (; iModel1 <= nModels1; iModel1++) {
 		}
 	}
 if (!nHits) {
-	for (; iModel2 <= nModels2; iModel2++) {
-		if (FindLineHitboxIntersection (vHit, hb2 + iModel2, p0, p1, p0, 0)) {
+	for (j = iModel2; j <= nModels2; j++) {
+		if (FindLineHitboxIntersection (vHit, hb2 + j, p0, p1, p0, 0)) {
 			xDist = RegisterHit (&intersection, &vHit, &vRef, dMin);
 			if (dMin > xDist) {
 				nHits++;
