@@ -419,7 +419,7 @@ int nLastScoreGoal;
 
 int optSetPower, optPlayTime, optScoreGoal, optSocket, optMarkerView, optLight;
 int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
-int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optAutoDL, optDLTimeout;
+int optDarkness, optTeamDoors, optMultiCheats, optTgtInd;
 int optHeadlights, optPowerupLights, optSpotSize, optSmokeGrenades, optMaxSmokeGrens;
 int optShowNames, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPenalty;
@@ -449,26 +449,6 @@ if ((optScoreGoal >= 0) && (menu [optScoreGoal].m_value != nLastScoreGoal)) {
 	mpParams.nScoreGoal = menu [optScoreGoal].m_value;
 	sprintf (menu [optScoreGoal].m_text, TXT_SCOREGOAL, mpParams.nScoreGoal * 5);
 	menu [optScoreGoal].m_bRebuild = 1;
-	}
-
-if (optAutoDL >= 0) {
-	CMenuItem* m = menu + optAutoDL;
-	int v = m->m_value;
-	if (extraGameInfo [0].bAutoDownload != v) {
-		extraGameInfo [0].bAutoDownload = v;
-		key = -2;
-		return nCurItem;
-		}
-
-	if (extraGameInfo [0].bAutoDownload && (optDLTimeout >= 0)) {
-		m = menu + optDLTimeout;
-		v = m->m_value;
-		if (downloadManager.GetTimeoutIndex () != v) {
-			v = downloadManager.SetTimeoutIndex (v);
-			sprintf (m->m_text, TXT_AUTODL_TO, downloadManager.GetTimeoutSecs ());
-			m->m_bRebuild = 1;
-			}
-		}
 	}
 
 return nCurItem;
@@ -525,18 +505,6 @@ do {
 	sprintf (szPPS, "%d", mpParams.nPPS);
 	m.AddText (TXT_PPS, KEY_P);
 	optPPS = m.AddInput (szPPS, 2, HTX_MULTI2_PPS);
-
-	optAutoDL = optDLTimeout = -1;
-	if (gameStates.app.bNostalgia < 2) {
-		char szSlider [50];
-		m.AddText ("", 0);
-		optAutoDL = m.AddCheck (TXT_AUTODL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_A, HTX_MISC_AUTODL);
-		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode) {
-			sprintf (szSlider + 1, TXT_AUTODL_TO, downloadManager.GetTimeoutSecs ());
-			*szSlider = *(TXT_AUTODL_TO - 1);
-			optDLTimeout = m.AddSlider (szSlider + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_AUTODLTO);  
-			}
-		}
 
 	nLastScoreGoal = netGame.GetScoreGoal ();
 	nLastPTA = mpParams.nMaxTime;

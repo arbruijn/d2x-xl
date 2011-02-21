@@ -100,6 +100,27 @@ if (miscOpts.nScreenshots >= 0) {
 		return nCurItem;
 		}
 	}
+
+if (miscOpts.nAutoDl >= 0) {
+	CMenuItem* m = menu + miscOpts.nAutoDl;
+	int v = m->m_value;
+	if (extraGameInfo [0].bAutoDownload != v) {
+		extraGameInfo [0].bAutoDownload = v;
+		key = -2;
+		return nCurItem;
+		}
+
+	if (extraGameInfo [0].bAutoDownload && (miscOpts.nDlTimeout >= 0)) {
+		m = menu + miscOpts.nDlTimeout;
+		v = m->m_value;
+		if (downloadManager.GetTimeoutIndex () != v) {
+			v = downloadManager.SetTimeoutIndex (v);
+			sprintf (m->m_text, TXT_DL_TIMEOUT, downloadManager.GetTimeoutSecs ());
+			m->m_bRebuild = 1;
+			}
+		}
+	}
+
 return nCurItem;
 }
 
@@ -167,7 +188,11 @@ do {
 		optHeadlight = 
 		optAutoLevel = -1;
 		}
-	if (gameOpts->app.bExpertMode && (gameStates.app.bNostalgia < 2)) {
+
+	miscOpts.nAutoDl = 
+	miscOpts.nDlTimeout = 
+	miscOpts.nScreenshots = -1;
+	if ((gameStates.app.bNostalgia < 2) && gameOpts->app.bExpertMode) {
 		m.AddText ("", 0);
 		if (gameOpts->app.nScreenShotInterval)
 			sprintf (szSlider + 1, TXT_SCREENSHOTS, screenShotIntervals [gameOpts->app.nScreenShotInterval]);
@@ -175,9 +200,15 @@ do {
 			strcpy (szSlider + 1, TXT_NO_SCREENSHOTS);
 		*szSlider = *(TXT_SCREENSHOTS - 1);
 		miscOpts.nScreenshots = m.AddSlider (szSlider + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
+
+		m.AddText ("", 0);
+		miscOpts.nAutoDl = m.AddCheck (TXT_DL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_A, HTX_MISC_MISSIONDL);
+		if (extraGameInfo [0].bAutoDownload) {
+			sprintf (szSlider + 1, TXT_DL_TIMEOUT, downloadManager.GetTimeoutSecs ());
+			*szSlider = *(TXT_DL_TIMEOUT - 1);
+			miscOpts.nDlTimeout = m.AddSlider (szSlider + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_DLTIMEOUT);  
+			}
 		}
-	else
-		miscOpts.nScreenshots = -1;
 
 	do {
 		i = m.Menu (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, MiscellaneousCallback, &choice);
