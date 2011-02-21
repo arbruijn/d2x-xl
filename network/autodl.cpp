@@ -30,6 +30,9 @@
 
 CDownloadManager downloadManager;
 
+#define DL_HEADER_SIZE	10
+#define DL_PAYLOAD_SIZE	(MAX_PAYLOAD_SIZE - DL_HEADER_SIZE)	// file transfer header size is 10 bytes (transfer type, packet type, packet id, packet length)
+
 //------------------------------------------------------------------------------
 
 extern ubyte ipx_ServerAddress [10];
@@ -59,7 +62,7 @@ m_timeouts [5] = 15;
 m_timeouts [6] = 20;
 m_timeouts [7] = 30;
 m_timeouts [8] = 45;
-m_timeouts [8] = 60;
+m_timeouts [9] = 60;
 m_nPollTime = -1;
 #if DBG
 m_iTimeout = 5;
@@ -201,10 +204,12 @@ if (pIdFn == PID_DL_DATA) {
 	nSize += 4;
 	m_nPacketTimeout = SDL_GetTicks ();
 	}
-if ((pId == PID_UPLOAD) && (gameStates.multi.nGameType == IPX_GAME))
-	IPXSendBroadcastData (m_uploadBuf, nSize + 2);
-else if (pId == PID_UPLOAD)
-	IPXSendInternetPacketData (m_uploadBuf, nSize + 2, ipx_ServerAddress, ipx_ServerAddress + 4);
+if (pId == PID_UPLOAD) {
+	if (gameStates.multi.nGameType == IPX_GAME)
+		IPXSendBroadcastData (m_uploadBuf, nSize + 2);
+	else
+		IPXSendInternetPacketData (m_uploadBuf, nSize + 2, ipx_ServerAddress, ipx_ServerAddress + 4);
+	}
 else
 	IPXSendInternetPacketData (m_uploadBuf, nSize + 2, ipx_udpSrc.src_network, ipx_udpSrc.src_node);
 return 1;
@@ -280,8 +285,8 @@ if ((h < 0) || (h > 1))
 if (!h || (m_uploadDests [i].fLen > 0)) {
 	if (h) {	// send next data packet
 		l = (int) m_uploadDests [i].fLen;
-		if (l > 512) //DL_BUFSIZE - 6)
-			l = 512; //DL_BUFSIZE - 6;
+		if (l > DL_PAYLOAD_SIZE) 
+			l = DL_PAYLOAD_SIZE;
 		if ((int) m_uploadDests [i].cf.Read (m_uploadBuf + 10, 1, l) != l)
 			return UploadError ();
 		PUT_INTEL_INT (m_uploadBuf + 2, nPacketId);
@@ -452,7 +457,7 @@ switch (pId) {
 	case PID_DL_DATA:
 		if (m_nState != PID_DL_DATA)
 			return DownloadError (1);
-	 {
+			{
 			int id = GET_INTEL_INT (data + 2),
 				 h = id - m_nPacketId;
 

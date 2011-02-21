@@ -30,11 +30,9 @@ typedef struct tUploadDest {
 // m_uploadBuf [2..11] == <source address>
 // m_uploadBuf [12..1035] == <data (max. DL_BUFSIZE bytes)>
 
-#define DL_BUFSIZE UDP_DATALIMIT
-
 class CDownloadManager {
 	private:
-		ubyte			m_uploadBuf [MAX_PACKETSIZE];
+		ubyte			m_uploadBuf [MAX_PACKET_SIZE];
 		tUploadDest m_uploadDests [MAX_PLAYERS];
 		int			m_nUploadDests;
 		int			m_nPacketId;

@@ -89,7 +89,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-ubyte objBuf [MAX_PACKETSIZE];
+ubyte objBuf [MAX_PACKET_SIZE];
 
 void NetworkSyncObjects (tNetworkSyncData *syncP)
 {
@@ -105,7 +105,7 @@ objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
 for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try to speed it up without
 																// over-stressing the receiver.
 	nObjFrames = 0;
-	memset (objBuf, 0, D2X_DATALIMIT);
+	memset (objBuf, 0, MAX_PAYLOAD_SIZE);
 	objBuf [0] = PID_OBJECT_DATA;
 	bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
 
@@ -132,7 +132,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 			if ((gameData.multigame.nObjOwner [i] == -1) || (gameData.multigame.nObjOwner [i] == nPlayer))
 				continue;
 			}
-		if ((D2X_DATALIMIT - bufI - 1) < int (sizeof (tBaseObject)) + 5)
+		if ((MAX_PAYLOAD_SIZE - bufI - 1) < int (sizeof (tBaseObject)) + 5)
 			break; // Not enough room for another CObject
 		nObjFrames++;
 		syncP->objs.nSent++;
@@ -156,7 +156,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 				*reinterpret_cast<short*> (objBuf + 2) = INTEL_SHORT (syncP->objs.nFrame);
 			else
 				objBuf [2] = (ubyte) syncP->objs.nFrame;
-			Assert (bufI <= D2X_DATALIMIT);
+			Assert (bufI <= MAX_PAYLOAD_SIZE);
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				IPXSendInternetPacketData (
 					objBuf, bufI, 
@@ -537,7 +537,7 @@ return 0;
 int NetworkWaitForPlayerInfo (void)
 {
 	int						size = 0, retries = 0;
-	ubyte						packet [MAX_PACKETSIZE];
+	ubyte						packet [MAX_PACKET_SIZE];
 	CAllNetPlayersInfo	tempPlayer;
 	uint						xTimeout;
 	ubyte						id = 0;
@@ -601,7 +601,7 @@ return 0;
 void NetworkDoBigWait (int choice)
 {
 	int						size;
-	ubyte						packet [MAX_PACKETSIZE], *data;
+	ubyte						packet [MAX_PACKET_SIZE], *data;
 	CAllNetPlayersInfo	tempPlayer;
   
 while (0 < (size = IpxGetPacketData (packet))) {

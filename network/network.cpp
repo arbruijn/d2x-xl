@@ -155,7 +155,7 @@ int NetworkStartGame (void)
 	int i, bAutoRun;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	Assert (FRAME_INFO_SIZE < D2X_DATALIMIT);
+	Assert (FRAME_INFO_SIZE < MAX_PAYLOAD_SIZE);
 	if (!networkData.bActive) {
 		MsgBox (NULL, NULL, 1, TXT_OK, TXT_IPX_NOT_FOUND);
 		return 0;
@@ -258,7 +258,7 @@ NetworkFlush ();
 
 void NetworkFlush (void)
 {
-	ubyte packet [MAX_PACKETSIZE];
+	ubyte packet [MAX_PACKET_SIZE];
 
 if (gameStates.multi.nGameType >= IPX_GAME)
 	if (!networkData.bActive) 
@@ -295,7 +295,7 @@ if (n == 1)
 int NetworkListen (void)
 {
 	int size;
-	ubyte packet [MAX_PACKETSIZE];
+	ubyte packet [MAX_PACKET_SIZE];
 	int i, t, nPackets = 0, nMaxLoops = 999;
 
 downloadManager.CleanUp ();
@@ -393,7 +393,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 			networkData.xLastSendTime = 0;
 			if (netGame.GetShortPackets ()) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-				ubyte send_data [MAX_PACKETSIZE];
+				ubyte send_data [MAX_PACKET_SIZE];
 #endif
 				memset (&shortSyncPack, 0, sizeof (shortSyncPack));
 				CreateShortPos (&shortSyncPack.objPos, OBJECTS + nObject, 0);

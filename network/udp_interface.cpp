@@ -147,7 +147,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 
 #define MAX_BUF_PACKETS		100
 
-#define PACKET_BUF_SIZE		(MAX_BUF_PACKETS * MAX_PACKETSIZE)
+#define PACKET_BUF_SIZE		(MAX_BUF_PACKETS * MAX_PACKET_SIZE)
 
 //------------------------------------------------------------------------------
 
@@ -902,13 +902,13 @@ static int UDPSendPacket
 	tPacketProps	*ppp;
 	int				j;
 #endif
-	static ubyte	buf [MAX_PACKETSIZE];
+	static ubyte	buf [MAX_PACKET_SIZE];
 	ubyte*			bufP = buf;
 
 #ifdef UDPDEBUG
 PrintLog ("UDP interface: SendPacket enter, dataLen=%d",dataLen);
 #endif
-if ((dataLen < 0) || (dataLen > D2X_DATALIMIT))
+if ((dataLen < 0) || (dataLen > MAX_PAYLOAD_SIZE))
 	return -1;
 if (gameStates.multi.bTrackerCall)
 	memcpy (buf, data, dataLen);
@@ -971,7 +971,7 @@ for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 				j = (clientP->firstPacket + clientP->numPackets - 1) % MAX_BUF_PACKETS;
 				ppp = clientP->packetProps + j;
 				ppp->len = dataLen + extraDataLen;
-				ppp->data = clientP->packetBuf + j * MAX_PACKETSIZE;
+				ppp->data = clientP->packetBuf + j * MAX_PACKET_SIZE;
 				*(reinterpret_cast<int*> (buf + dataLen + 8)) = INTEL_INT (clientP->nSent);
 				memcpy (buf + dataLen + 12, "SAFE", 4);
 				memcpy (ppp->data, buf, ppp->len);
