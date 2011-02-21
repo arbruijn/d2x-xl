@@ -1603,16 +1603,16 @@ if (profile.Busy ())
 	char		filename [FILENAME_LEN];
 	int		id;
 
+memset (highestLevels, 0, sizeof (highestLevels));
+nHighestLevels = 0;
 sprintf (filename, "%.8s.plr", LOCALPLAYER.callsign);
 if (!cf.Open (filename, gameFolders.szProfDir, "rb", 0)) {
 	PrintLog ("   couldn't read player file '%s'\n", filename);
-	nHighestLevels = 0;
 	}
 else {
 	id = cf.ReadInt ();
 	if (nCFileError || ((id != SAVE_FILE_ID) && (id != SWAPINT (SAVE_FILE_ID)))) {
 		PrintLog ("Player profile '%s' is invalid\r\n", filename);
-		nHighestLevels = 0;
 		}
 	else {
 		gameStates.input.nPlrFileVersion = cf.ReadShort ();
@@ -1620,7 +1620,6 @@ else {
 			 ((gameStates.input.nPlrFileVersion > D2W95_PLAYER_FILE_VERSION) &&
 			  (gameStates.input.nPlrFileVersion < D2XW32_PLAYER_FILE_VERSION))) {
 			PrintLog ("Player profile '%s' is invalid\r\n", filename);
-			nHighestLevels = 0;
 			}
 		else {
 			if (gameStates.input.nPlrFileVersion < 161)
