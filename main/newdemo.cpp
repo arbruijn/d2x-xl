@@ -64,7 +64,12 @@ void DoJasonInterpolate (fix xRecordedTime);
 static sbyte	bNDBadRead;
 static int		bRevertFormat = -1;
 
-#define	CATCH_BAD_READ				if (bNDBadRead) {bDone = -1; break;}
+void DemoError (void)
+{
+PrintLog ("Error in demo playback\n");
+}
+
+#define	CATCH_BAD_READ				if (bNDBadRead) {DemoError (); bDone = -1; break;}
 
 #define ND_EVENT_EOF                0   // EOF
 #define ND_EVENT_START_DEMO         1   // Followed by 16 character, NULL terminated filename of .SAV file to use
@@ -322,7 +327,7 @@ ndOutFile.WriteFixAng (f);
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDWriteVector(const CFixVector& v)
+static inline void NDWriteVector (const CFixVector& v)
 {
 gameData.demo.nFrameBytesWritten += sizeof (v);
 gameData.demo.nWritten += sizeof (v);
@@ -378,9 +383,9 @@ if (bOldFormat) {
 	NDWriteShort (sp.vel [Z]);
 	}
 else {
-	NDWriteVector(objP->info.position.vPos);
+	NDWriteVector (objP->info.position.vPos);
 	NDWriteShort (objP->info.nSegment);
-	NDWriteVector(objP->mType.physInfo.velocity);
+	NDWriteVector (objP->mType.physInfo.velocity);
 	}
 }
 
@@ -469,11 +474,11 @@ return ndInFile.ReadFixAng ();
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDReadVector(CFixVector& v)
+static inline void NDReadVector (CFixVector& v)
 {
-ndInFile.ReadVector(v);
+ndInFile.ReadVector (v);
 if (bRevertFormat > 0)
-	NDWriteVector(v);
+	NDWriteVector (v);
 }
 
 //	-----------------------------------------------------------------------------
@@ -487,7 +492,7 @@ if (bRevertFormat > 0)
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDReadMatrix(CFixMatrix& m)
+static inline void NDReadMatrix (CFixMatrix& m)
 {
 ndInFile.ReadMatrix(m);
 if (bRevertFormat > 0)
@@ -523,9 +528,9 @@ if (gameData.demo.bUseShortPos) {
 	my_extract_shortpos (objP, &sp);
 	}
 else {
-	NDReadVector(objP->info.position.vPos);
+	NDReadVector (objP->info.position.vPos);
 	objP->info.nSegment = NDReadShort ();
-	NDReadVector(objP->mType.physInfo.velocity);
+	NDReadVector (objP->mType.physInfo.velocity);
 	}
 if ((objP->info.nId == VCLIP_MORPHING_ROBOT) && 
 	 (renderType == RT_FIREBALL) && 
@@ -637,7 +642,7 @@ switch (objP->info.nType) {
 		break;
 	}
 
-NDReadVector(objP->info.vLastPos);
+NDReadVector (objP->info.vLastPos);
 if ((objP->info.nType == OBJ_WEAPON) && (objP->info.renderType == RT_WEAPON_VCLIP))
 	objP->info.xLifeLeft = NDReadFix ();
 else {
@@ -655,12 +660,12 @@ if (objP->info.nType == OBJ_ROBOT) {
 
 switch (objP->info.movementType) {
 	case MT_PHYSICS:
-		NDReadVector(objP->mType.physInfo.velocity);
-		NDReadVector(objP->mType.physInfo.thrust);
+		NDReadVector (objP->mType.physInfo.velocity);
+		NDReadVector (objP->mType.physInfo.thrust);
 		break;
 
 	case MT_SPINNING:
-		NDReadVector(objP->mType.spinRate);
+		NDReadVector (objP->mType.spinRate);
 		break;
 
 	case MT_NONE:
@@ -818,19 +823,19 @@ if (vciP->nClipIndex >= 0) {
 
 //	-----------------------------------------------------------------------------
 
-void NDWriteObject (CObject *objP)
+int NDWriteObject (CObject *objP)
 {
 	int		life;
 	CObject	o = *objP;
 
 if ((o.info.renderType > RT_WEAPON_VCLIP) && ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat)))
-	return;
+	return 0;
 #if DBG
 if ((o.info.nType == OBJ_ROBOT) && (o.info.nId == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
 #endif
 if (o.info.nType == OBJ_EFFECT)
-	return;
+	return 0;
 if (o.cType.aiInfo.behavior == AIB_STATIC)
 	o.info.movementType = MT_PHYSICS;
 // Do renderType first so on read, we can make determination of
@@ -842,7 +847,7 @@ if ((o.info.nType == OBJ_POWERUP) && (o.info.renderType == RT_POLYOBJ)) {
 NDWriteByte (o.info.renderType);
 NDWriteByte (o.info.nType);
 if ((o.info.renderType == RT_NONE) && (o.info.nType != OBJ_CAMERA))
-	return;
+	return 1;
 NDWriteByte (o.info.nId);
 if (!(gameStates.app.bNostalgia || gameOpts->demo.bOldFormat))
 	NDWriteFix (o.info.xShield);
@@ -857,7 +862,7 @@ if ((o.info.nType != OBJ_HOSTAGE) && (o.info.nType != OBJ_ROBOT) && (o.info.nTyp
 	}
 else if (o.info.nType == OBJ_POWERUP)
 	NDWriteByte (o.info.movementType);
-NDWriteVector(o.info.vLastPos);
+NDWriteVector (o.info.vLastPos);
 if ((o.info.nType == OBJ_WEAPON) && (o.info.renderType == RT_WEAPON_VCLIP))
 	NDWriteFix (o.info.xLifeLeft);
 else {
@@ -879,12 +884,12 @@ if (o.info.nType == OBJ_ROBOT) {
 	}
 switch (o.info.movementType) {
 	case MT_PHYSICS:
-		NDWriteVector(o.mType.physInfo.velocity);
-		NDWriteVector(o.mType.physInfo.thrust);
+		NDWriteVector (o.mType.physInfo.velocity);
+		NDWriteVector (o.mType.physInfo.thrust);
 		break;
 
 	case MT_SPINNING:
-		NDWriteVector(o.mType.spinRate);
+		NDWriteVector (o.mType.spinRate);
 		break;
 
 	case MT_NONE:
@@ -1014,6 +1019,7 @@ switch (o.info.renderType) {
 	default:
 		Int3 ();
 	}
+return 1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1110,7 +1116,8 @@ if (gameData.demo.bViewWasRecorded [objP->Index ()])
 //	return;
 StopTime ();
 NDWriteByte (ND_EVENT_RENDER_OBJECT);
-NDWriteObject (objP);
+if (!NDWriteObject (objP))
+	ndOutFile.Seek (-1, SEEK_CUR);
 StartTime (0);
 }
 
@@ -1130,12 +1137,13 @@ if (h && (h - 1 == gameStates.render.nRenderingType))
 //	return;
 if (gameData.demo.bRenderingWasRecorded [gameStates.render.nRenderingType])
 	return;
-gameData.demo.bViewWasRecorded [i]=gameStates.render.nRenderingType+1;
-gameData.demo.bRenderingWasRecorded [gameStates.render.nRenderingType]=1;
+gameData.demo.bViewWasRecorded [i] = gameStates.render.nRenderingType + 1;
+gameData.demo.bRenderingWasRecorded [gameStates.render.nRenderingType] = 1;
 StopTime ();
 NDWriteByte (ND_EVENT_VIEWER_OBJECT);
 NDWriteByte (gameStates.render.nRenderingType);
-NDWriteObject (objP);
+if (!NDWriteObject (objP))
+	ndOutFile.Seek (-2, SEEK_CUR);
 StartTime (0);
 }
 
@@ -2372,7 +2380,7 @@ while (!bDone) {
 			dummy.cType.laserInfo.parent.nType = OBJ_PLAYER;
 			nSegment = NDReadShort ();
 			nSide = NDReadByte ();
-			NDReadVector(pnt);
+			NDReadVector (pnt);
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
 				SEGMENTS [nSegment].CheckEffectBlowup (nSide, pnt, &dummy, 0);
 			}

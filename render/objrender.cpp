@@ -1204,6 +1204,7 @@ switch (objP->info.renderType) {
 	case RT_SMOKE:
 	case RT_LIGHTNING:
 	case RT_SOUND:
+		return 0;
 		break;
 
 	default:
