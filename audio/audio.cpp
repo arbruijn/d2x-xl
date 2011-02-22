@@ -872,7 +872,7 @@ void CAudio::UnregisterChannel (int nIndex)
 if ((nIndex >= 0) && (nIndex < int (m_usedChannels.ToS ()))) {
 	m_usedChannels.Delete (nIndex);
 	if (nIndex < int (m_usedChannels.ToS ())) {
-#if DBG
+#if 0 //DBG
 		if (!m_channels [m_usedChannels [nIndex]].Playing ())
 			ArrayError ("error in audio channel registry\n");
 		else

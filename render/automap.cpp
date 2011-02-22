@@ -449,7 +449,7 @@ if (bAutomapFrame) {
 	//GrUpdate (0);
 	}
 #endif
-if (!gameOpts->render.automap.bTextured)
+if (!gameOpts->render.automap.bTextured || gameStates.app.bNostalgia)
 	gameOpts->render.automap.bTextured = 1;
 G3StartFrame (m_bRadar /*|| !(gameOpts->render.automap.bTextured & 1)*/, !m_bRadar, xStereoSeparation);
 ogl.ResetClientStates ();
@@ -826,48 +826,58 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_CTRLED + KEY_R:
-			markerManager.Rotate ();
+			if (!gameStates.app.bNostalgia)
+				markerManager.Rotate ();
 			break;
 
 		case KEY_F1:
-			if (gameOpts->render.automap.bTextured == 1)
-				gameOpts->render.automap.bTextured = 3;
-			else if (gameOpts->render.automap.bTextured == 3)
-				gameOpts->render.automap.bTextured = 2;
-			else
-				gameOpts->render.automap.bTextured = 1;
+			if (!gameStates.app.bNostalgia) {
+				if (gameOpts->render.automap.bTextured == 1)
+					gameOpts->render.automap.bTextured = 3;
+				else if (gameOpts->render.automap.bTextured == 3)
+					gameOpts->render.automap.bTextured = 2;
+				else
+					gameOpts->render.automap.bTextured = 1;
+				}
 			break;
 
 		case KEY_F2:
-			if (gameOpts->render.automap.bTextured & 1) {
-				nColor = (nColor + 1) % 3;
-				gameOpts->render.automap.bBright = (nColor & 1) != 0;
-				gameOpts->render.automap.bGrayOut = (nColor & 2) != 0;
+			if (!gameStates.app.bNostalgia) {
+				if (gameOpts->render.automap.bTextured & 1) {
+					nColor = (nColor + 1) % 3;
+					gameOpts->render.automap.bBright = (nColor & 1) != 0;
+					gameOpts->render.automap.bGrayOut = (nColor & 2) != 0;
+					}
 				}
 			break;
 
 		case KEY_F3:
-			gameOpts->render.automap.bCoronas =
-			gameOpts->render.automap.bLightning =
-			gameOpts->render.automap.bParticles =
-				!(gameOpts->render.automap.bCoronas ||
-				  gameOpts->render.automap.bLightning ||
-				  gameOpts->render.automap.bParticles);
-			gameOpts->render.automap.bSparks =
-				gameOpts->render.automap.bCoronas &&
-				gameOpts->render.automap.bLightning &&
-				gameOpts->render.automap.bParticles &&
-				(gameOptions [0].render.nQuality > 0);
+			if (!gameStates.app.bNostalgia) {
+				gameOpts->render.automap.bCoronas =
+				gameOpts->render.automap.bLightning =
+				gameOpts->render.automap.bParticles =
+					!(gameOpts->render.automap.bCoronas ||
+					  gameOpts->render.automap.bLightning ||
+					  gameOpts->render.automap.bParticles);
+				gameOpts->render.automap.bSparks =
+					gameOpts->render.automap.bCoronas &&
+					gameOpts->render.automap.bLightning &&
+					gameOpts->render.automap.bParticles &&
+					(gameOptions [0].render.nQuality > 0);
+				}
 			break;
 
 		case KEY_F4:
-			extraGameInfo [IsMultiGame].bPowerupsOnRadar =
-			extraGameInfo [IsMultiGame].bRobotsOnRadar =
-				!(extraGameInfo [IsMultiGame].bPowerupsOnRadar || extraGameInfo [IsMultiGame].bRobotsOnRadar);
+			if (!gameStates.app.bNostalgia) {
+				extraGameInfo [IsMultiGame].bPowerupsOnRadar =
+				extraGameInfo [IsMultiGame].bRobotsOnRadar =
+					!(extraGameInfo [IsMultiGame].bPowerupsOnRadar || extraGameInfo [IsMultiGame].bRobotsOnRadar);
+				}
 			break;
 
 		case KEY_F9:
-			markerManager.Teleport ();
+			if (!gameStates.app.bNostalgia)
+				markerManager.Teleport ();
 			break;
 
 		case KEY_ALTED + KEY_F:

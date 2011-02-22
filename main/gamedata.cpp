@@ -224,7 +224,7 @@ memset (&globalDynColor, 0, sizeof (globalDynColor));
 
 bool CLightData::Create (void)
 {
-if (!(gameStates.app.bNostalgia || lightManager.Create ()))
+if (!(/*gameStates.app.bNostalgia ||*/ lightManager.Create ()))
 	return false;
 CREATE (segDeltas, LEVEL_SEGMENTS * 6, 0);
 CREATE (subtracted, LEVEL_SEGMENTS, 0);
@@ -245,7 +245,7 @@ return true;
 
 bool CLightData::Resize (void)
 {
-if (!(gameStates.app.bNostalgia || lightManager.Create ()))
+if (!(/*gameStates.app.bNostalgia ||*/ lightManager.Create ()))
 	return false;
 return dynamicLight.Resize (LEVEL_VERTICES) &&
 		 dynamicColor.Resize (LEVEL_VERTICES) &&

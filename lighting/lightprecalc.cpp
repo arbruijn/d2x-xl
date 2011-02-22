@@ -478,8 +478,8 @@ return nCurItem;
 
 int SortLightsGaugeSize (void)
 {
-if (gameStates.app.bNostalgia)
-	return 0;
+//if (gameStates.app.bNostalgia)
+//	return 0;
 if (gameStates.app.bMultiThreaded)
 	return 0;
 return PROGRESS_STEPS (gameData.segs.nSegments) * 2 + 
@@ -616,8 +616,8 @@ for (i = 0; i < 2; i++) {
 
 void ComputeNearestLights (int nLevel)
 {
-if (gameStates.app.bNostalgia)
-	return;
+//if (gameStates.app.bNostalgia)
+//	return;
 if (!(SHOW_DYN_LIGHT ||
 	  (gameStates.render.bAmbientColor && !gameStates.render.bColored) ||
 	   !COMPETITION))

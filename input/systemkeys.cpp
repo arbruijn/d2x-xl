@@ -91,13 +91,13 @@ void UpdateVCRState(void)
 {
 if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION))
 	return;
-if ((gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[KEY_RSHIFT]) && gameStates.input.keys.pressed[KEY_RIGHT])
+if ((gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT]) && gameStates.input.keys.pressed [KEY_RIGHT])
 	gameData.demo.nVcrState = ND_STATE_FASTFORWARD;
-else if ((gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[KEY_RSHIFT]) && gameStates.input.keys.pressed[KEY_LEFT])
+else if ((gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT]) && gameStates.input.keys.pressed [KEY_LEFT])
 	gameData.demo.nVcrState = ND_STATE_REWINDING;
-else if (!(gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL]) && gameStates.input.keys.pressed[KEY_RIGHT] && ((TimerGetFixedSeconds () - newdemo_single_frameTime) >= I2X (1)))
+else if (!(gameStates.input.keys.pressed [KEY_LCTRL] || gameStates.input.keys.pressed [KEY_RCTRL]) && gameStates.input.keys.pressed [KEY_RIGHT] && ((TimerGetFixedSeconds () - newdemo_single_frameTime) >= I2X (1)))
 	gameData.demo.nVcrState = ND_STATE_ONEFRAMEFORWARD;
-else if (!(gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL]) && gameStates.input.keys.pressed[KEY_LEFT] && ((TimerGetFixedSeconds () - newdemo_single_frameTime) >= I2X (1)))
+else if (!(gameStates.input.keys.pressed [KEY_LCTRL] || gameStates.input.keys.pressed [KEY_RCTRL]) && gameStates.input.keys.pressed [KEY_LEFT] && ((TimerGetFixedSeconds () - newdemo_single_frameTime) >= I2X (1)))
 	gameData.demo.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
 #if 0
 else if ((gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demo.nVcrState == ND_STATE_REWINDING))

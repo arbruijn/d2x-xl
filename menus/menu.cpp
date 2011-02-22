@@ -541,7 +541,7 @@ gameStates.render.grAlpha = 1.0f;
 
 void CMenu::FadeIn (void)
 {
-if (gameOpts->menus.nFade) {
+if (gameOpts->menus.nFade && !gameStates.app.bNostalgia) {
 	if (m_tEnter == uint (-1))
 		m_tEnter = SDL_GetTicks ();
 	int t = int (SDL_GetTicks () - m_tEnter);
@@ -559,7 +559,7 @@ else {
 
 void CMenu::FadeOut (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
-if (gameOpts->menus.nFade) {
+if (gameOpts->menus.nFade && !gameStates.app.bNostalgia) {
 	int t = int (gameOpts->menus.nFade * gameStates.render.grAlpha);
 	int t0 = SDL_GetTicks ();
 	int t1, dt;

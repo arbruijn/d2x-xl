@@ -689,8 +689,8 @@ extern int nDbgVertex;
 
 void CLightManager::GatherStaticLights (int nLevel)
 {
-if (gameStates.app.bNostalgia)
-	return;
+//if (gameStates.app.bNostalgia)
+//	return;
 
 int i, j, bColorize = !gameStates.render.nLightingMethod;
 
@@ -786,7 +786,8 @@ return gameStates.render.bPerPixelLighting;
 void CLightManager::Setup (int nLevel)
 {
 SetMethod ();
-if (!gameStates.app.bNostalgia) {
+//if (!gameStates.app.bNostalgia) 
+	{
 	gameData.render.fBrightness = 1.0f;
 	messageBox.Show (TXT_PREPARING);
 	lightManager.AddGeometryLights ();

@@ -441,14 +441,17 @@ if (bFromHog) {
 
 // try the missions mod music folder next
 if (*gameFolders.szMusicDir) {
+	if (nLevel < 0)
+		sprintf (szFilename, "%s/slevel%02d.ogg", gameFolders.szMusicDir, -nLevel);
+	else
+		sprintf (szFilename, "%s/level%02d.ogg", gameFolders.szMusicDir, nLevel);
+	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
+		return;
 	if (m_user.nLevelSongs [1]) {
 		sprintf (szFilename, "%s/%s", gameFolders.szMusicDir, m_user.levelSongs [1][nSong % m_user.nLevelSongs [1]]);
 		if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 			return;
 		}
-	sprintf (szFilename, "%s/level%02d.ogg", gameFolders.szMusicDir, nLevel);
-	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
-		return;
 	}
 
 // try the standard music
