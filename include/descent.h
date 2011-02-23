@@ -1267,6 +1267,7 @@ class CApplicationStates {
 		int bShowError;
 		int bClearMessage;
 		int iDownloadTimeout;
+		int bHaveSDLNet;
 		bool bCustomData;
 		bool bCustomSounds;
 		fix xThisLevelTime;

@@ -350,6 +350,7 @@ gameStates.limitFPS.bCountDown = 1;
 gameStates.limitFPS.bSeismic = 1;
 gameStates.limitFPS.bHomers = 1;
 gameStates.limitFPS.bOmega = 1;
+gameStates.app.bHaveSDLNet = (SDLNet_Init () == 0);
 }
 
 // ----------------------------------------------------------------------------

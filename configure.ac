@@ -218,6 +218,12 @@ else
         	LIBS="-lSDL_mixer $LIBS";
          AC_DEFINE(USE_SDL_MIXER,1,[Define to enable MIDI playback using SDL_mixer]))
 
+  	# Check for SDL_net
+   	AC_CHECK_LIB(
+			SDL_net, SDLNet_Init,
+        	LIBS="-lSDL_net $LIBS";
+         AC_DEFINE(USE_SDL_NET,1,[Define to enable usage of TCP networking functions]))
+
   # Check for libpng
     have_libpng=no
     #PKG_CHECK_MODULES(LIBPNG, libpng,

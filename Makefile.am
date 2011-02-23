@@ -11,7 +11,7 @@ bin_PROGRAMS = @TARGETS@
 EXTRA_PROGRAMS = d2x-xl 
 
 if MINGW32
-LD_KLUDGE = main/inferno.o
+LD_KLUDGE = main/descent.o
 endif
 
 if MACOSX

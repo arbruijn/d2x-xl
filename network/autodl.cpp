@@ -368,6 +368,8 @@ return 1;
 
 int CDownloadManager::InitUpload (ubyte *data)
 {
+if (!gameStates.app.bHaveSDLNet)
+	return -1;
 if (!extraGameInfo [0].bAutoDownload)
 	return -1;
 if (data [1] != PID_DL_START)
@@ -433,6 +435,8 @@ return 0;
 
 int CDownloadManager::InitDownload (ubyte *data)
 {
+if (!gameStates.app.bHaveSDLNet)
+	return -1;
 if (!extraGameInfo [0].bAutoDownload)
 	return -1;
 if (data [1] != PID_DL_START)
@@ -584,6 +588,9 @@ return downloadManager.Poll (menu, key, nCurItem);
 
 int CDownloadManager::DownloadMission (char *pszMission)
 {
+if (!gameStates.app.bHaveSDLNet)
+	return 0;
+
 	CMenu	m (3);
 	char	szTitle [30];
 	char	szProgress [30];

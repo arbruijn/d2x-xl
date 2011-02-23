@@ -32,10 +32,12 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #ifdef __macosx__
 #	include "SDL/SDL_main.h"
 #	include "SDL/SDL_keyboard.h"
+#	include "SDL/SDL_net.h"
 #	include "FolderDetector.h"
 #else
 #	include "SDL_main.h"
 #	include "SDL_keyboard.h"
+#	include "SDL_net.h"
 #endif
 #include "descent.h"
 #include "u_mem.h"
