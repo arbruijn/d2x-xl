@@ -441,6 +441,23 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
+// Client receiving data from game host
+
+int CDownloadManager::DownloadError (int nReason)
+{
+if (nReason == 1)
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_SYNC);
+else if (nReason == 2)
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_MISSPKTS);
+else if (nReason == 3)
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FILEIO);
+else
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FAILED);
+m_nResult = 0;
+return -1;
+}
+
+//------------------------------------------------------------------------------
 
 int CDownloadManager::InitDownload (ubyte *data)
 {
@@ -523,28 +540,9 @@ switch (m_nState = m_data [0]) {
 
 	case DL_ERROR:
 	default:
-		for (int i = 0; i < m_nFiles; i++)
-			CFile::Delete (m_files [i], "");
 		return DownloadError (1);
 	}
 return 1;
-}
-
-//------------------------------------------------------------------------------
-// Client receiving data from game host
-
-int CDownloadManager::DownloadError (int nReason)
-{
-if (nReason == 1)
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_SYNC);
-else if (nReason == 2)
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_MISSPKTS);
-else if (nReason == 3)
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FILEIO);
-else
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FAILED);
-m_nResult = 0;
-return -1;
 }
 
 //------------------------------------------------------------------------------
@@ -669,7 +667,12 @@ if (m_socket) {
 	m_socket = 0;
 	}
 m_nState = DL_DONE;
-return (i == -3);
+if (i != -3) {
+	for (int i = 0; i < m_nFiles; i++)
+		CFile::Delete (m_files [i], "");
+	return 0;
+	}
+return 1;
 }
 
 //------------------------------------------------------------------------------
