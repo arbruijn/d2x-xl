@@ -506,12 +506,10 @@ switch (m_nState = m_data [0]) {
 		}
 
 	case DL_FINISH:
-		m_cf.Close ();
 		return 0;
 
 	case DL_ERROR:
 	default:
-		m_cf.Close ();
 		return DownloadError (1);
 	}
 return 1;
@@ -530,7 +528,6 @@ else if (nReason == 3)
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FILEIO);
 else
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FAILED);
-m_cf.Close ();
 m_nResult = 0;
 return -1;
 }
@@ -651,6 +648,10 @@ do {
 	i = m.Menu (NULL, szTitle, DownloadPoll);
 	} while (i >= 0);
 m_cf.Close ();
+if (m_socket) {
+	SDLNet_TCP_Close (m_socket);
+	m_socket = 0;
+	}
 m_nState = DL_DONE;
 return (i == -3);
 }
