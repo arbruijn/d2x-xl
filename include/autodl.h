@@ -62,6 +62,8 @@ class CDownloadManager {
 		int			m_nOptProgress;
 		int			m_nOptPercentage;
 		CFile			m_cf;
+		char			m_files [2][PATHNAME_LEN];
+		int			m_nFiles;
 
 	public:
 		CDownloadManager () { Init (); }

@@ -503,6 +503,7 @@ switch (m_nState = m_data [0]) {
 			}
 		if (!m_cf.File ())
 			return DownloadError (3);
+		strcpy (m_files [m_nFiles++], szDest);
 		m_nSrcLen = GET_INTEL_INT (m_data + 1);
 		m_nProgress = 0;
 		m_nDestLen = 0;
@@ -522,6 +523,8 @@ switch (m_nState = m_data [0]) {
 
 	case DL_ERROR:
 	default:
+		for (int i = 0; i < m_nFiles; i++)
+			CFile::Delete (m_files [i], "");
 		return DownloadError (1);
 	}
 return 1;
@@ -651,6 +654,7 @@ m [m_nOptPercentage].m_x = (short) 0x8000;	//centered
 m [m_nOptPercentage].m_bCentered = 1;
 m_nOptProgress = m.AddGauge ("                    ", -1, 100);
 m_socket = 0;
+m_nFiles = 0;
 m_nResult = 1;
 m_nPollTime = SDL_GetTicks ();
 m_nRequestTime = m_nPollTime - 3000;
