@@ -201,12 +201,14 @@ do {
 		*szSlider = *(TXT_SCREENSHOTS - 1);
 		miscOpts.nScreenshots = m.AddSlider (szSlider + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
 
-		m.AddText ("", 0);
+		if (gameStates.app.bHaveSDLNet)
+			m.AddText ("", 0);
 		miscOpts.nAutoDl = m.AddCheck (TXT_DL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_M, HTX_MISC_MISSIONDL);
-		if (extraGameInfo [0].bAutoDownload) {
-			sprintf (szSlider + 1, TXT_DL_TIMEOUT, downloadManager.GetTimeoutSecs ());
-			*szSlider = *(TXT_DL_TIMEOUT - 1);
-			miscOpts.nDlTimeout = m.AddSlider (szSlider + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_DLTIMEOUT);  
+			if (extraGameInfo [0].bAutoDownload) {
+				sprintf (szSlider + 1, TXT_DL_TIMEOUT, downloadManager.GetTimeoutSecs ());
+				*szSlider = *(TXT_DL_TIMEOUT - 1);
+				miscOpts.nDlTimeout = m.AddSlider (szSlider + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_DLTIMEOUT);
+				}
 			}
 		}
 
