@@ -100,6 +100,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include "../win32/include/ipx_udp.h"
 #include "../win32/include/ipx_mcast4.h"
 #include "network.h"
+#include "network_lib.h"
 #include "player.h"	/* for gameData.multiplayer.players */
 #include "multi.h"	/* for netPlayers */
 #include "tracker.h"
