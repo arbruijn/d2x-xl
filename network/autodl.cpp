@@ -187,17 +187,17 @@ if (i < 0)
 
 tClient& client = m_clients [i];
 
-SDLNet_TCP_Close (client.socket);
-client.cf.Close ();
-if (client.thread) {
-	client.nState = DL_FINISH;
+SetDownloadFlag (i, 0);
+if (client.thread && (client.nState != DL_DONE)) {
+	client.nState = DL_CANCEL;
 	do {
 		G3_SLEEP (1);
 	} while (client.nState != DL_DONE);
 }
+SDLNet_TCP_Close (client.socket);
+client.cf.Close ();
 memset (&client, 0, sizeof (client));
 m_freeList [MAX_PLAYERS - m_nClients--] = i;
-SetDownloadFlag (i, 0);
 if (!m_nClients && m_socket) {
 	SDLNet_TCP_Close (m_socket);
 	m_socket = 0;
@@ -420,6 +420,10 @@ while (client.nState != DL_DONE) {
 					break;
 				}
 			break;
+
+		case DL_CANCEL:
+			client.nState = DL_DONE;
+			return 0;
 
 		case DL_FINISH:
 		case DL_ERROR:

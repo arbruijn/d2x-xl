@@ -19,6 +19,7 @@
 #define DL_DONE			8
 #define DL_CREATE_FILE	9
 #define DL_DATA			10
+#define DL_CANCEL			254
 #define DL_ERROR			255
 
 // upload buffer
