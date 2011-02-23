@@ -162,16 +162,16 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CTracker::SetServerFromList (tServerList *psl, int i)
+void CTracker::SetServerFromList (tServerList *psl, int i, ubyte* serverAddress)
 {
-memcpy (ipx_ServerAddress + 4, psl->servers + i, 4);
-*reinterpret_cast<ushort*> (ipx_ServerAddress + 8) = (ushort) htons (UDP_PORT (psl->servers + i));
+memcpy (serverAddress + 4, psl->servers + i, 4);
+*reinterpret_cast<ushort*> (serverAddress + 8) = (ushort) htons (UDP_PORT (psl->servers + i));
 //udpBasePort = psl->servers [i].port;
 }
 
 //------------------------------------------------------------------------------
 
-int CTracker::GetServerFromList (int i)
+int CTracker::GetServerFromList (int i, ubyte* serverAddress)
 {
 if (!m_bUse)
 	return 0;
@@ -180,7 +180,7 @@ if (!m_bUse)
 
 while (pslt) {
 	if (i < pslt->serverList.nServers) {
-		SetServerFromList (&pslt->serverList, i);
+		SetServerFromList (&pslt->serverList, i, serverAddress);
 		return 1;
 		}
 	i -= pslt->serverList.nServers;

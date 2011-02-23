@@ -44,9 +44,9 @@ class CTracker {
 		int AddServer (void);
 		int RequestServerList (void);
 		int ReceiveServerList (ubyte *data);
-		void SetServerFromList (tServerList *psl, int i);
+		void SetServerFromList (tServerList *psl, int i, ubyte* serverAddress);
 		int IsTracker (uint addr, ushort port);
-		int GetServerFromList (int i);
+		int GetServerFromList (int i, ubyte* serverAddress);
 		int CountActive (void);
 		int ActiveCount (int bQueryTrackers);
 

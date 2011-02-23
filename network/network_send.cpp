@@ -183,11 +183,12 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		SendBroadcastSequencePacket (me);
 	else {
 		console.printf (0, "looking for netgames\n");
+		ubyte serverAddress [10];
 		if (tracker.m_bUse) {
 			if (!tracker.RequestServerList ())
 				return 0;
-			for (int i = 0; tracker.GetServerFromList (i); i++)
-				SendInternetSequencePacket (me, ipx_ServerAddress, ipx_ServerAddress + 4);
+			for (int i = 0; tracker.GetServerFromList (i, serverAddress); i++)
+				SendInternetSequencePacket (me, serverAddress, serverAddress + 4);
 			}
 		else {
 			SendInternetSequencePacket (me, ipx_ServerAddress, ipx_ServerAddress + 4);

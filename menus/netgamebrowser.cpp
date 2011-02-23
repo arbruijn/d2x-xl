@@ -372,7 +372,7 @@ if (AGI.m_info.protocolVersion != MULTI_PROTO_VERSION) {
 
 if (tracker.m_bUse) {
 	//PrintLog ("   getting server lists from trackers\n");
-	tracker.GetServerFromList (choice);
+	tracker.GetServerFromList (choice, ipx_ServerAddress);
 	}
 // Check for valid mission name
 console.printf (CON_DBG, TXT_LOADING_MSN, AGI.m_info.szMissionName);
