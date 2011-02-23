@@ -158,26 +158,20 @@ int CDownloadManager::AcceptClient (void)
 {
 	int	i = FindClient ();
 
-if (i >= 0) {
-	if (m_clients [i].nState && m_clients [i].cf.File ()) {
-		m_clients [i].cf.Close ();
-		}
-	m_clients [i].nState = DL_OPEN_HOG;
-	}
-else {
-	if (m_nClients >= MAX_PLAYERS)
-		return -1;
-	i = m_freeList [MAX_PLAYERS - ++m_nClients];
-	memcpy (&m_clients [i].addr.server, ipx_udpSrc.src_network, 4);
-	memcpy (&m_clients [i].addr.node, ipx_udpSrc.src_node, 6);
-	SetDownloadFlag (i, 1);
-	m_clients [i].nTimeout = SDL_GetTicks ();
-	m_clients [i].nState = DL_CONNECT;
-	m_clients [i].cf.File () = NULL;
-	if (!(m_clients [i].thread = SDL_CreateThread (UploadThread, &i))) {
-		RemoveClient (i);
-		return -1;
-		}
+if (i >= 0)
+	RemoveClient (i);
+else if (m_nClients >= MAX_PLAYERS)
+	return -1;
+i = m_freeList [MAX_PLAYERS - ++m_nClients];
+memcpy (&m_clients [i].addr.server, ipx_udpSrc.src_network, 4);
+memcpy (&m_clients [i].addr.node, ipx_udpSrc.src_node, 6);
+SetDownloadFlag (i, 1);
+m_clients [i].nTimeout = SDL_GetTicks ();
+m_clients [i].nState = DL_CONNECT;
+m_clients [i].cf.File () = NULL;
+if (!(m_clients [i].thread = SDL_CreateThread (UploadThread, &i))) {
+	RemoveClient (i);
+	return -1;
 	}
 return i;
 }
@@ -470,6 +464,7 @@ if (l <= 0)
 switch (m_nState = m_data [0]) {
 	case DL_CREATE_FILE: {
 		char	szDest [FILENAME_LEN];
+		char	szFolder [FILENAME_LEN];
 		char	szFile [2][FILENAME_LEN];
 		char	szExt [FILENAME_LEN];
 		char	*pszFile = reinterpret_cast<char*> (m_data + 5);
@@ -480,13 +475,21 @@ switch (m_nState = m_data [0]) {
 			return DownloadError (2);
 		strlwr (pszFile);
 		CFile::SplitPath (pszFile, NULL, szFile [0], szExt);
-		CFile::SplitPath (hogFileManager.m_files.MsnHogFiles.szName, NULL, szFile [1], NULL);
+		CFile::SplitPath (hogFileManager.m_files.MsnHogFiles.szName, szFolder, szFile [1], NULL);
 		strlwr (szFile [1]);
-		if (strcmp (szFile [0], szFile [1]))
-			sprintf (szDest, "%s/%s%s", gameFolders.szMissionDownloadDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
-		else
-			sprintf (szDest, "%s/%s%s", hogFileManager.m_files.MsnHogFiles.szName, szFile [0], szExt);
-		if (!m_cf.Open (szDest, "", "wb", 0))
+		for (int i = 1 + (strcmp (szFile [0], szFile [1]) == 0); i > 0; i--) {
+			if (i == 2)
+#if DBG
+				;
+#else
+				sprintf (szDest, "%s/%s%s", szFolder, szFile [0], szExt);
+#endif
+			else
+				sprintf (szDest, "%s/%s%s", gameFolders.szMissionDownloadDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
+			if (m_cf.Open (szDest, "", "wb", 0))
+				break;
+			}
+		if (!m_cf.File ())
 			return DownloadError (3);
 		m_nSrcLen = GET_INTEL_INT (m_data + 1);
 		m_nProgress = 0;
