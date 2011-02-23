@@ -484,6 +484,7 @@ typedef struct tNetGameInfo : tNetGameInfoLite {
 class CNetGameInfo {
 	public:
 		tNetGameInfo	m_info;
+		ubyte				m_server [10];
 
 	public:
 		CNetGameInfo() { memset (&m_info, 0, sizeof (m_info)); }

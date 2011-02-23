@@ -370,11 +370,12 @@ if (AGI.m_info.protocolVersion != MULTI_PROTO_VERSION) {
 	goto doMenu;
 	}
 
-if (tracker.m_bUse) {
+//if (tracker.m_bUse) {
 	//PrintLog ("   getting server lists from trackers\n");
-	tracker.GetServerFromList (choice, ipx_ServerAddress);
-	}
+	//tracker.GetServerFromList (choice, ipx_ServerAddress);
+//	}
 // Check for valid mission name
+memcpy (ipx_ServerAddress, activeNetGames [choice].m_server, sizeof (ipx_ServerAddress));
 console.printf (CON_DBG, TXT_LOADING_MSN, AGI.m_info.szMissionName);
 if (!(missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	
 	   (downloadManager.DownloadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, -1)))) {
