@@ -249,12 +249,12 @@ return SendRequest (PID_DOWNLOAD, PID_DL_START, clientP);
 int CDownloadManager::ConnectToClient (tClient& client)
 {
 if (!m_socket) {
-		IPaddress ip;
+	IPaddress ip;
 
-		if (SDLNet_ResolveHost (&ip, NULL, 28342) < 0)
-			return DL_DONE;
-		if (!(m_socket = SDLNet_TCP_Open (&ip)))
-			return DL_DONE;
+	if (SDLNet_ResolveHost (&ip, NULL, 28342) < 0)
+		return DL_DONE;
+	if (!(m_socket = SDLNet_TCP_Open (&ip)))
+		return DL_DONE;
 	}
 RequestDownload (&client);
 for (CTimeout to1 (30000), to2 (5000); !to1.Expired ();) {
@@ -368,6 +368,11 @@ return 1;
 
 int CDownloadManager::InitUpload (ubyte *data)
 {
+	static int semaphore = 0;
+
+if (semaphore)
+	return 0;
+semaphore++;
 if (!gameStates.app.bHaveSDLNet)
 	return -1;
 if (!extraGameInfo [0].bAutoDownload)
@@ -376,6 +381,7 @@ if (data [1] != PID_DL_START)
 	return -1;
 if (0 > AcceptClient ())
 	return -1;
+semaphore--;
 return 0;
 }
 

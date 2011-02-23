@@ -298,7 +298,7 @@ int NetworkListen (void)
 	ubyte packet [MAX_PACKET_SIZE];
 	int i, t, nPackets = 0, nMaxLoops = 999;
 
-downloadManager.CleanUp ();
+//downloadManager.CleanUp ();
 tracker.AddServer ();
 if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.GetShortPackets () && !networkData.nJoining)
 	nMaxLoops = gameData.multiplayer.nPlayers * PacketsPerSec ();
