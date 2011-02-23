@@ -124,7 +124,7 @@ return 0;
 
 #define LOCAL_NODE \
 	((gameStates.multi.bHaveLocalAddress && (gameStates.multi.nGameType == UDP_GAME)) ? \
-	 ipx_LocalAddress + 4 : networkData.thisPlayer.player.network.ipx.node)
+	 networkData.localAddress + 4 : networkData.thisPlayer.player.network.ipx.node)
 
 
 int CmpLocalPlayer (tNetworkInfo *pNetwork, char *pszNetCallSign, char *pszLocalCallSign)

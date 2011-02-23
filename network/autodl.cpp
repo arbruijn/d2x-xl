@@ -18,11 +18,11 @@
 # include <SDL_net.h>
 #endif
 #include "descent.h"
+#include "network.h"
+#include "network_lib.h"
 #include "cfile.h"
 #include "ipx.h"
 #include "key.h"
-#include "network.h"
-#include "network_lib.h"
 #include "menu.h"
 #include "menu.h"
 #include "byteswap.h"
@@ -39,9 +39,6 @@ CDownloadManager downloadManager;
 #define DL_PAYLOAD_SIZE		(MAX_PAYLOAD_SIZE - DL_HEADER_SIZE)	// file transfer header size is 10 bytes (transfer type, packet type, packet id, packet length)
 
 //------------------------------------------------------------------------------
-
-extern ubyte ipx_ServerAddress [10];
-extern ubyte ipx_LocalAddress [10];
 
 #if 0
 static char *sznStates [] = {
@@ -144,8 +141,8 @@ int CDownloadManager::FindClient (void)
 {
 for (int i = 0; i < m_nClients; i++)
 	if (m_clients [i].nState &&
-		 !memcmp (&m_clients [i].addr.server, ipx_udpSrc.src_network, 4) &&
-		 !memcmp (&m_clients [i].addr.node, ipx_udpSrc.src_node, 6)) {
+		 !memcmp (&m_clients [i].addr.server, networkData.packetSource.src_network, 4) &&
+		 !memcmp (&m_clients [i].addr.node, networkData.packetSource.src_node, 6)) {
 		m_clients [i].nTimeout = SDL_GetTicks ();
 		return i;
 		}
@@ -163,8 +160,8 @@ if (i >= 0)
 else if (m_nClients >= MAX_PLAYERS)
 	return -1;
 i = m_freeList [MAX_PLAYERS - ++m_nClients];
-memcpy (&m_clients [i].addr.server, ipx_udpSrc.src_network, 4);
-memcpy (&m_clients [i].addr.node, ipx_udpSrc.src_node, 6);
+memcpy (&m_clients [i].addr.server, networkData.packetSource.src_network, 4);
+memcpy (&m_clients [i].addr.node, networkData.packetSource.src_node, 6);
 SetDownloadFlag (i, 1);
 m_clients [i].nTimeout = SDL_GetTicks ();
 m_clients [i].nState = DL_CONNECT;
@@ -215,7 +212,7 @@ if (pId == PID_UPLOAD) {
 	if (gameStates.multi.nGameType == IPX_GAME)
 		IPXSendBroadcastData (m_data, 2);
 	else
-		IPXSendInternetPacketData (m_data, 2, ipx_ServerAddress, ipx_ServerAddress + 4);
+		IPXSendInternetPacketData (m_data, 2, networkData.serverAddress, networkData.serverAddress + 4);
 	}
 else
 	IPXSendInternetPacketData (m_data, 2, clientP->addr.server, clientP->addr.node);
@@ -274,7 +271,7 @@ if (m_socket) {
 	m_socket = 0;
 	}
 sprintf (szIp, "%d.%d.%d.%d",
-			 ipx_ServerAddress [4], ipx_ServerAddress [5], ipx_ServerAddress [6], ipx_ServerAddress [7]);
+			 networkData.serverAddress [4], networkData.serverAddress [5], networkData.serverAddress [6], networkData.serverAddress [7]);
 if (SDLNet_ResolveHost (&ip, szIp, 28342) < 0)
 	return 0;
 

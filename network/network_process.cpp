@@ -135,7 +135,7 @@ if (i == networkData.nActiveGames) {
 	}
 actGameP = activeNetGames + i;
 memcpy (actGameP, reinterpret_cast<ubyte*> (newInfo), sizeof (tNetGameInfoLite));
-memcpy (actGameP->m_server, ipx_udpSrc.src_network, sizeof (actGameP->m_server));
+memcpy (actGameP->m_server, networkData.packetSource.src_network, sizeof (actGameP->m_server));
 nLastNetGameUpdate [i] = SDL_GetTicks ();
 // See if this is really a Hoard/Entropy/Monsterball game
 // If so, adjust all the dataP accordingly

@@ -61,7 +61,7 @@ This happens in UDPSendPacket() in the following two lines:
 
 The receiver that way gets to know the IP + port it is sending on. These are not always to be determined by 
 the sender itself, as it may sit behind a NAT or proxy, or be using port 0 (in which case the OS will chose 
-a port for it). The sender's IP + port are stored in the global variable ipx_udpSrc (happens in 
+a port for it). The sender's IP + port are stored in the global variable networkData.packetSource (happens in 
 ipx_udp.c::UDPReceivePacket()), which is needed on some special occasions.
 
 That's my mechanism to make every participant in a game reliably know about its own IP + port.
@@ -81,7 +81,7 @@ all participants of the game. When the server subsequently sends data to the cli
 This however takes only part after the client has sent a game info request and received a game info from 
 the server. When the server sends that game info, it hasn't added that client to the participants table. 
 Therefore, some game data contains client address data. Unfortunately, this address data is not valid in 
-UDP/IP communications, and this is where we need ipx_udpSrc from above: It's contents is patched into the
+UDP/IP communications, and this is where we need networkData.packetSource from above: It's contents is patched into the
 game data address (happens in main/network.c::NetworkProcessPacket()) and now is used by the function 
 returning the game info.
 */

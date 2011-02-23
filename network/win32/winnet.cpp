@@ -32,7 +32,7 @@ packet. This happens in UDPSendPacket in the following two lines:
 The receiver that way gets to know the IP + port it is sending on. These are not always to be 
 determined by the sender itself, as it may sit behind a NAT or proxy, or be using port 0 
 (in which case the OS will chose a port for it). The sender's IP + port are stored in the global 
-variable ipx_udpSrc (happens in ipx_udp.c::UDPReceivePacket()), which is needed on some special 
+variable networkData.packetSource (happens in ipx_udp.c::UDPReceivePacket()), which is needed on some special 
 occasions.
 
 That's my mechanism to make every participant in a game reliably know about its own IP + port.
@@ -53,7 +53,7 @@ it uses that IP + port.
 This however takes only part after the client has sent a game info request and received a game 
 info from the server. When the server sends that game info, it hasn't added that client to the 
 participants table. Therefore, some game data contains client address data. Unfortunately, this 
-address data is not valid in UDP/IP communications, and this is where we need ipx_udpSrc from 
+address data is not valid in UDP/IP communications, and this is where we need networkData.packetSource from 
 above: It's contents is patched into the game data address. This happens in 
 main/network.c::NetworkProcessPacket()) and now is used by the function returning the game info.
 
@@ -78,7 +78,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 		(pid != PID_TRACKER_ADD_SERVER)
 	)
  {
-	memcpy (&their->player.network.ipx.server, &ipx_udpSrc.src_network, 10);
+	memcpy (&their->player.network.ipx.server, &networkData.packetSource.src_network, 10);
 	}
 */
 //------------------------------------------------------------------------------
@@ -218,8 +218,6 @@ bIpxInstalled = 0;
 
 								/*---------------------------*/
 
-struct ipx_recv_data ipx_udpSrc;
-
 int IpxGetPacketData (ubyte *data)
 {
 	static ubyte	buf [MAX_PACKET_SIZE];
@@ -227,21 +225,21 @@ int IpxGetPacketData (ubyte *data)
 	int dataSize, dataOffs;
 
 while (driver->PacketReady (&ipxSocketData)) {
-	dataSize = driver->ReceivePacket (reinterpret_cast<ipx_socket_t*> (&ipxSocketData), buf, sizeof (buf), &ipx_udpSrc);
+	dataSize = driver->ReceivePacket (reinterpret_cast<ipx_socket_t*> (&ipxSocketData), buf, sizeof (buf), &networkData.packetSource);
 #if 0//DBG
 	HUDMessage (0, "received %d bytes from %d.%d.%d.%d:%u", 
 					size,
-					ipx_udpSrc.src_node [0],
-					ipx_udpSrc.src_node [1],
-					ipx_udpSrc.src_node [2],
-					ipx_udpSrc.src_node [3],
-					*(reinterpret_cast<ushort*> (ipx_udpSrc.src_node + 4)));
+					networkData.packetSource.src_node [0],
+					networkData.packetSource.src_node [1],
+					networkData.packetSource.src_node [2],
+					networkData.packetSource.src_node [3],
+					*(reinterpret_cast<ushort*> (networkData.packetSource.src_node + 4)));
 #endif
 	if (dataSize < 0)
 		break;
 	if (dataSize < 6)
 		continue;
-	dataOffs = tracker.IsTracker (*reinterpret_cast<uint*> (ipx_udpSrc.src_node), *reinterpret_cast<ushort*> (ipx_udpSrc.src_node + 4)) ? 0 : 4;
+	dataOffs = tracker.IsTracker (*reinterpret_cast<uint*> (networkData.packetSource.src_node), *reinterpret_cast<ushort*> (networkData.packetSource.src_node + 4)) ? 0 : 4;
 	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
 		PrintLog ("incoming data package too large (%d bytes)\n", dataSize);
 		continue;

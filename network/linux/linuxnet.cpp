@@ -175,7 +175,7 @@ bIpxInstalled = 0;
 
 //------------------------------------------------------------------------------
 
-struct ipx_recv_data ipx_udpSrc;
+IPXRecvData_t networkData.packetSource;
 
 int IpxGetPacketData (ubyte * data)
 {
@@ -183,12 +183,12 @@ int IpxGetPacketData (ubyte * data)
 	int dataSize, dataOffs;
 
 while (driver->PacketReady (&ipxSocketData)) {
-	dataSize = driver->ReceivePacket (&ipxSocketData, buf, sizeof (buf), &ipx_udpSrc);
+	dataSize = driver->ReceivePacket (&ipxSocketData, buf, sizeof (buf), &networkData.packetSource);
 	if (dataSize < 0)
 		break;
 	if (dataSize < 6)
 		continue;
-	dataOffs = tracker.IsTracker (*reinterpret_cast<uint*> (ipx_udpSrc.src_node), *reinterpret_cast<ushort*> (ipx_udpSrc.src_node + 4)) ? 0 : 4;
+	dataOffs = tracker.IsTracker (*reinterpret_cast<uint*> (networkData.packetSource.src_node), *reinterpret_cast<ushort*> (networkData.packetSource.src_node + 4)) ? 0 : 4;
 	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
 		PrintLog ("incoming data package too large (%d bytes)\n", dataSize);
 		continue;
@@ -228,7 +228,7 @@ else {
 
 int IpxGetPacketData (ubyte * data)
 {
-	struct ipx_recv_data rd;
+	IPXRecvData_t rd;
 	char buf[MAX_PACKETSIZE];
 	int size;
 	int best_size = 0;

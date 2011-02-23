@@ -212,7 +212,7 @@ static int ipx_bsd_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
 	              reinterpret_cast<struct sockaddr*> (&ipxs), sizeof (ipxs));
 }
 
-static int ipx_bsd_ReceivePacket (ipx_socket_t *s, char *buffer, int bufsize, struct ipx_recv_data *rd) {
+static int ipx_bsd_ReceivePacket (ipx_socket_t *s, char *buffer, int bufsize, IPXRecvData_t *rd) {
 	uint sz, size;
 	struct sockaddr_ipx ipxs;
 

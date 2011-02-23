@@ -106,7 +106,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		*reinterpret_cast<ushort*> (networkData.thisPlayer.player.network.ipx.node + 4) = 
 			htons (*reinterpret_cast<ushort*> (networkData.thisPlayer.player.network.ipx.node + 4));
 //		if (gameStates.multi.nGameType == UDP_GAME)
-//			memcpy (networkData.thisPlayer.player.network.ipx.node, ipx_LocalAddress + 4, 4);
+//			memcpy (networkData.thisPlayer.player.network.ipx.node, networkData.localAddress + 4, 4);
 	memcpy (networkData.thisPlayer.player.network.ipx.server, IpxGetMyServerAddress (), 4);
 }
 networkData.thisPlayer.player.computerType = DOS;
@@ -387,7 +387,7 @@ if (gameData.multiplayer.autoNG.bHost) {
 	mpParams.nGameType = mpParams.nGameMode;
 	}
 else {
-	memcpy (ipx_ServerAddress + 4, gameData.multiplayer.autoNG.ipAddr, sizeof (gameData.multiplayer.autoNG.ipAddr));
+	memcpy (networkData.serverAddress + 4, gameData.multiplayer.autoNG.ipAddr, sizeof (gameData.multiplayer.autoNG.ipAddr));
 	mpParams.udpPorts [1] = gameData.multiplayer.autoNG.nPort;
 	}
 return 1;

@@ -14,9 +14,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _NETWORK_LIB_H
 #define _NETWORK_LIB_H
 
-#include "ipx_udp.h"
-#include "ipx_drv.h"
-
 //------------------------------------------------------------------------------
 
 #define SECURITY_CHECK		1
@@ -76,7 +73,13 @@ typedef struct tNetworkSyncData {
 	tSyncObjectsData	objs;
 } __pack__ tNetworkSyncData;
 
+#include "ipx_drv.h"
+#include "ipx_udp.h"
+
 typedef struct tNetworkData {
+	ubyte					localAddress [10];
+	ubyte					serverAddress [10];
+	IPXRecvData_t		packetSource;
 	int					nActiveGames;
 	int					nLastActiveGames;
 	int					nNamesInfoSecurity;
@@ -143,8 +146,6 @@ extern tNakedData	nakedData;
 extern CNetGameInfo tempNetInfo;
 
 extern const char *pszRankStrings [];
-
-extern struct ipx_recv_data ipx_udpSrc;
 
 extern int nLastNetGameUpdate [MAX_ACTIVE_NETGAMES];
 #if 1

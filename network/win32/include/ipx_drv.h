@@ -58,21 +58,21 @@ typedef struct ipx_socket_struct {
 	UINT_PTR	fd;
 } ipx_socket_t;
 
-struct ipx_recv_data {
+struct IPXRecvData {
 	/* all network order */
 	u_char src_network[4];
-	u_char src_node[6];
+	u_char src_node [6];
 	u_short src_socket;
 	u_short dst_socket;
 	int pktType;
-};
+} IPXRecvData_t;
 
 struct ipx_driver {
 	int (*GetMyAddress)();
 	int (*OpenSocket)(ipx_socket_t *, int);
 	void (*CloseSocket)(ipx_socket_t *);
 	int (*SendPacket)(ipx_socket_t *, IPXPacket_t *, u_char *, int);
-	int (*ReceivePacket)(ipx_socket_t *, ubyte *, int, struct ipx_recv_data *);
+	int (*ReceivePacket)(ipx_socket_t *, ubyte *, int, IPXRecvData_t *);
 	int (*PacketReady)(ipx_socket_t *s);
 	void (*InitNetGameAuxData)(ipx_socket_t *, u_char []);
 	int (*HandleNetGameAuxData)(ipx_socket_t *, const u_char []);

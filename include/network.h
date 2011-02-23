@@ -14,10 +14,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _NETWORK_H
 #define _NETWORK_H
 
-#include "loadgame.h"
+#include "ipx_drv.h"
+#include "ipx.h"
 #include "multi.h"
 #include "menu.h"
-#include "ipx.h"
+#include "loadgame.h"
 
 #define NETWORK_OEM						0x10
 

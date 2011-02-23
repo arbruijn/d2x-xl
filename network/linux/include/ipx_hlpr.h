@@ -12,7 +12,7 @@
 
 #define IPX_MANUAL_ADDRESS
 
-struct ipx_recv_data {
+IPXRecvData_t {
 	/* all network order */
 	u_char src_network[4];
 	u_char src_node[6];
@@ -28,7 +28,7 @@ struct ipx_helper {
 	int (*SendPacket)(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
 	 u_char *data, int dataLen);
 	int (*ReceivePacket)(ipx_socket_t *s, char *buffer, int bufsize, 
-	 struct ipx_recv_data *rec);
+	 IPXRecvData_t *rec);
 	int (*PacketReady)(ipx_socket_t *s);
 };
 

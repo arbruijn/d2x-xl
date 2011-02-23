@@ -12,7 +12,7 @@ packet. This happens in UDPSendPacket in the following two lines:
 The receiver that way gets to know the IP + port it is sending on. These are not always to be
 determined by the sender itself, as it may sit behind a NAT or proxy, or be using port 0
 (in which case the OS will chose a port for it). The sender's IP + port are stored in the global
-variable ipx_udpSrc (happens in ipx_udp.c::UDPReceivePacket()), which is needed on some special
+variable networkData.packetSource (happens in ipx_udp.c::UDPReceivePacket()), which is needed on some special
 occasions.
 
 That's my mechanism to make every participant in a game reliably know about its own IP + port.
@@ -33,7 +33,7 @@ it uses that IP + port.
 This however takes only part after the client has sent a game info request and received a game
 info from the server. When the server sends that game info, it hasn't added that client to the
 participants table. Therefore, some game data contains client address data. Unfortunately, this
-address data is not valid in UDP/IP communications, and this is where we need ipx_udpSrc from
+address data is not valid in UDP/IP communications, and this is where we need networkData.packetSource from
 above: It's contents is patched into the game data address. This happens in
 main/network.c::NetworkProcessPacket()) and now is used by the function returning the game info.
 
@@ -58,7 +58,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 		(pid != PID_TRACKER_ADD_SERVER)
 	)
  {
-	memcpy (&their->player.network.ipx.server, &ipx_udpSrc.src_network, 10);
+	memcpy (&their->player.network.ipx.server, &networkData.packetSource.src_network, 10);
 	}
 */
 //------------------------------------------------------------------------------
@@ -155,8 +155,8 @@ static int nOpenSockets = 0;
 static const int val_one=1;
 static ubyte qhbuf [6];
 
-ubyte ipx_LocalAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
-ubyte ipx_ServerAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
+//ubyte networkData.localAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
+//ubyte networkData.serverAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
 
 //------------------------------------------------------------------------------
 // OUR port. Can be changed by "@X[+=]..." argument (X is the shift value)
@@ -753,8 +753,8 @@ if (!gameStates.multi.bServer) {		//set up server address and add it to destinat
 	if (!clientManager.CheckClientSize ())
 		FAIL ("error allocating client table");
 	sin.sin_family = AF_INET;
-	*(reinterpret_cast<u_short*> (ipx_ServerAddress + 8)) = htons (nServerPort);
-	memcpy (&sin.sin_addr.s_addr, ipx_ServerAddress + 4, 4);
+	*(reinterpret_cast<u_short*> (networkData.serverAddress + 8)) = htons (nServerPort);
+	memcpy (&sin.sin_addr.s_addr, networkData.serverAddress + 4, 4);
 	sin.sin_port = htons (nServerPort);
 	if (!tracker.m_bUse)
 		clientManager.Add (&sin);
@@ -784,7 +784,7 @@ if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_
 #endif
 if (gameStates.multi.bServer || mpParams.udpPorts [1]) {
 	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = htonl (INADDR_ANY); //ipx_ServerAddress + 4);
+	sin.sin_addr.s_addr = htonl (INADDR_ANY); //networkData.serverAddress + 4);
 	sin.sin_port = htons (ushort (nLocalPort));
 	if (bind (sk->fd, reinterpret_cast<struct sockaddr*> (&sin), sizeof (sin))) {
 #ifdef _WIN32
@@ -1114,7 +1114,7 @@ return 1;
 // Here we will receive a new packet and place it in the buffer passed.
 
 static int UDPReceivePacket
-	(ipx_socket_t *s, ubyte *outBuf, int outBufSize, struct ipx_recv_data *rd)
+	(ipx_socket_t *s, ubyte *outBuf, int outBufSize, IPXRecvData_t *rd)
 {
 	struct sockaddr_in	fromAddr;
 	int						i, dataLen, bTracker;
@@ -1157,10 +1157,10 @@ if (!(bTracker
 	rd->dst_socket = s->socket;
 	srcPort = ntohs (fromAddr.sin_port);
 	// check if we already have sender of this packet in broadcast list
-	memcpy (ipx_LocalAddress + 4, outBuf + dataLen - 6, 6);
+	memcpy (networkData.localAddress + 4, outBuf + dataLen - 6, 6);
 	// add sender to client list if the packet is not from ourself
-	if (!memcmp (&fromAddr.sin_addr, ipx_LocalAddress + 4, 4) &&
-		 !memcmp (&srcPort, ipx_LocalAddress + 8, 2))
+	if (!memcmp (&fromAddr.sin_addr, networkData.localAddress + 4, 4) &&
+		 !memcmp (&srcPort, networkData.localAddress + 8, 2))
 		return -1;
 	i = clientManager.Add (&fromAddr);
 	if (i < 0)
@@ -1191,7 +1191,7 @@ if (!(bTracker
 		}
 #endif //UDP_SAFEMODE
 	gameStates.multi.bHaveLocalAddress = 1;
-	memcpy (netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, ipx_LocalAddress + 4, 6);
+	memcpy (netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, networkData.localAddress + 4, 6);
 #if UDP_SAFEMODE
 	dataLen -= (bSafeMode ? 22 : 14);
 #else

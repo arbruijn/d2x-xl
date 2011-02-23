@@ -102,7 +102,7 @@ int ipx_kali_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
 }
 
 int ipx_kali_ReceivePacket(ipx_socket_t *s, char *outbuf, int outbufsize,
- struct ipx_recv_data *rd)
+ IPXRecvData_t *rd)
 {
 	int size;
 	kaliaddr_ipx fromaddr;
