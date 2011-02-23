@@ -343,6 +343,7 @@ sprintf (szFile, "%s%s", netGame.m_info.szMissionName, pszExt);
 PUT_INTEL_INT (client.data + 1, client.fLen);
 memcpy (client.data + 5, szFile, (int) strlen (szFile) + 1);
 return SendData (DL_CREATE_FILE, client);
+G3_SLEEP (100);
 }
 
 //------------------------------------------------------------------------------
