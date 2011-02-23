@@ -309,6 +309,15 @@ if ((t = SDL_GetTicks ()) - nTimeout > m_nTimeout) {
 
 int CDownloadManager::SendData (ubyte nIdFn, tClient& client)
 {
+	static time_t t0 = 0;
+
+time_t t = SDL_GetTicks (), dt = t - t0;
+if (dt < 10) {
+	G3_SLEEP (10 - dt);
+	t0 += 10;
+	}
+else
+	t0 = t;
 client.data [0] = nIdFn;
 return SDLNet_TCP_Send (client.socket, (void *) client.data, MAX_PACKET_SIZE) == MAX_PACKET_SIZE;
 
