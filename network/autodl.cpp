@@ -460,7 +460,11 @@ return 1;
 
 int CDownloadManager::Download (void)
 {
-if (!m_socket || SDLNet_TCP_Recv (m_socket, m_data, MAX_PACKET_SIZE) <= 0)
+
+if (!m_socket)
+	return 0;
+int l =  SDLNet_TCP_Recv (m_socket, m_data, MAX_PACKET_SIZE);
+if (l <= 0)
 	return 0;
 
 switch (m_nState = m_data [0]) {
@@ -500,7 +504,7 @@ switch (m_nState = m_data [0]) {
 
 	case DL_FINISH:
 		m_cf.Close ();
-		return 1;
+		return 0;
 
 	case DL_ERROR:
 	default:
@@ -552,13 +556,15 @@ if (m_nState == DL_CONNECT)
 	NetworkListen ();
 else {
 	m_nResult = Download ();
-
 	if (m_nResult == -1) {
+		key = -2;
+		return nCurItem;
+		}
+	else if (m_nResult == -0) {
 		key = -3;
 		return nCurItem;
 		}
-
-	if (m_nResult == 1) {
+	else if (m_nResult == 1) {
 		m_nPollTime = SDL_GetTicks ();
 		if ((m_nState == DL_CREATE_FILE) || (m_nState == DL_DATA)) {
 			if (m_nSrcLen && m_nDestLen) {
