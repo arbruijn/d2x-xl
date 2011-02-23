@@ -443,14 +443,14 @@ if (data [1] != PID_DL_START)
 	return -1;
 if (!ConnectToServer ())
 	return -1;
-return Download ();
+return 1;
 }
 
 //------------------------------------------------------------------------------
 
 int CDownloadManager::Download (void)
 {
-if (SDLNet_TCP_Recv (m_socket, m_data, MAX_PACKET_SIZE) <= 0)
+if (!m_socket || SDLNet_TCP_Recv (m_socket, m_data, MAX_PACKET_SIZE) <= 0)
 	return 0;
 
 switch (m_nState = m_data [0]) {
