@@ -376,7 +376,8 @@ if (tracker.m_bUse) {
 	}
 // Check for valid mission name
 console.printf (CON_DBG, TXT_LOADING_MSN, AGI.m_info.szMissionName);
-if (!(missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	(downloadManager.DownLoadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, -1)))) {
+if (!(missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	
+	   (downloadManager.DownloadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, -1)))) {
 	PrintLog ("Mission '%s' not found%s\n", AGI.m_info.szMissionName);
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;
