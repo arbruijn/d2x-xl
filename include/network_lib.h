@@ -122,7 +122,7 @@ typedef struct tNetworkData {
 	short					nPrevFrame;
 	int					bTraceFrames;
 	tRefuseData			refuse;
-	time_t				toSyncPoll;
+	time_t				toSyncPoll [2];
 	time_t				toWaitAllPoll;
 	tNetworkSyncData	sync [MAX_JOIN_REQUESTS];
 	short					nJoining;

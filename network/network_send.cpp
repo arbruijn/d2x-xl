@@ -154,11 +154,11 @@ netGame.LevelTime () = LOCALPLAYER.timeLevel;
 netGame.MonitorVector () = NetworkCreateMonitorVector ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (
-		networkData.sync.player [1].player.network.ipx.server, 
-		networkData.sync.player [1].player.network.ipx.node);
+		networkData.sync [0].player [1].player.network.ipx.server, 
+		networkData.sync [0].player [1].player.network.ipx.node);
 	SendNetPlayersPacket (
-		networkData.sync.player [1].player.network.ipx.server, 
-		networkData.sync.player [1].player.network.ipx.node);
+		networkData.sync [0].player [1].player.network.ipx.server, 
+		networkData.sync [0].player [1].player.network.ipx.node);
 	}
 }
 
@@ -476,6 +476,7 @@ networkData.bHaveSync = 0;
 networkData.sync [0].objs.nFrame = 0;
 networkData.sync [0].objs.missingFrames.nFrame = 0;
 networkData.bTraceFrames = 1;
+ResetWalls (); // may have been changed by players transmitting game state changes like doors opening or exploding etc.
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetSequencePacket (networkData.thisPlayer, netPlayers.m_info.players [i].network.ipx.server, netPlayers.m_info.players [i].network.ipx.node);
 	}

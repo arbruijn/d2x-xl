@@ -629,8 +629,11 @@ nClip = -1;
 // Tidy up WALLS array for load/save purposes.
 void ResetWalls (void)
 {
-for (int i = 0; i < gameData.walls.nWalls; i++)
-	WALLS [i].Init ();
+//for (int i = 0; i < gameData.walls.nWalls; i++)
+//	WALLS [i].Init ();
+gameData.walls.cloaking.Reset ();
+gameData.walls.exploding.Reset ();
+gameData.walls.activeDoors.Reset ();
 }
 
 //------------------------------------------------------------------------------

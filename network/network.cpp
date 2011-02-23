@@ -482,7 +482,7 @@ if (!bListen) {
 	}
 NetworkListen ();
 #if 0
-if ((networkData.sync.nPlayer != -1) && !(gameData.app.nFrameCount & 63))
+if ((networkData.sync [0].nPlayer != -1) && !(gameData.app.nFrameCount & 63))
 	ResendSyncDueToPacketLoss (); // This will resend to network_player_rejoining
 #endif
 NetworkDoSyncFrame ();

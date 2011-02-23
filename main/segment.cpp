@@ -738,7 +738,7 @@ if (IS_WALL (wallP->nLinkedWall) && IS_WALL (nConnWall) && (wallP->nLinkedWall =
 else
 	doorP->nPartCount = 1;
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	if (gameData.walls.animP [wallP->nClip].openSound > -1)
+	if ((wallP->nClip >= 0) && (gameData.walls.animP [wallP->nClip].openSound > -1))
 		CreateSound (gameData.walls.animP [wallP->nClip].openSound, nSide);
 	}
 }
