@@ -3685,7 +3685,6 @@ while (gameData.app.semaphores [sem]) {
 	}
 }
 
-
 #if DBG
 
 static inline void SemEnter (uint sem, const char *pszFile, int nLine)
