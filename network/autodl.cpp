@@ -36,7 +36,9 @@
 CDownloadManager downloadManager;
 
 #define DL_HEADER_SIZE		5
-#define DL_PAYLOAD_SIZE		1024 //(MAX_PAYLOAD_SIZE - DL_HEADER_SIZE)	// file transfer header size is 10 bytes (transfer type, packet type, packet id, packet length)
+//#define DL_PAYLOAD_SIZE		1024 //(MAX_PAYLOAD_SIZE - DL_HEADER_SIZE)	// file transfer header size is 10 bytes (transfer type, packet type, packet id, packet length)
+#define DL_PACKET_SIZE		1024
+#define DL_PAYLOAD_SIZE		(DL_PACKET_SIZE - DL_HEADER_SIZE)
 
 //------------------------------------------------------------------------------
 
@@ -311,7 +313,7 @@ int CDownloadManager::SendData (ubyte nIdFn, tClient& client)
 // slow down to about 100 KB/sec
 to.Throttle ();
 client.data [0] = nIdFn;
-return SDLNet_TCP_Send (client.socket, (void *) client.data, MAX_PACKET_SIZE) == MAX_PACKET_SIZE;
+return SDLNet_TCP_Send (client.socket, (void *) client.data, DL_PACKET_SIZE) == DL_PACKET_SIZE;
 
 }
 
@@ -466,7 +468,7 @@ if (!m_socket)
 	return 0;
 
 to.Throttle ();
-int l =  SDLNet_TCP_Recv (m_socket, m_data, MAX_PACKET_SIZE);
+int l =  SDLNet_TCP_Recv (m_socket, m_data, DL_PACKET_SIZE);
 if (l <= 0) {
 	return 0;
 	}
