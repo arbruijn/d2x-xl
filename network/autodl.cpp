@@ -308,7 +308,7 @@ if ((t = SDL_GetTicks ()) - nTimeout > m_nTimeout) {
 
 int CDownloadManager::SendData (ubyte nIdFn, tClient& client)
 {
-	static CTimeout to (10);
+	static CTimeout to (2);
 
 // slow down to about 100 KB/sec
 to.Throttle ();
@@ -462,7 +462,7 @@ return 1;
 
 int CDownloadManager::Download (void)
 {
-	static CTimeout to (5);
+	static CTimeout to (1);
 
 if (!m_socket)
 	return 0;
