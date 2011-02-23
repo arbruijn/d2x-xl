@@ -452,6 +452,7 @@ if (m_nState != DL_CONNECT)
 	return -1;
 if (!ConnectToServer ())
 	return -1;
+m_nState = DL_CONNECTED;
 return 1;
 }
 
@@ -547,26 +548,30 @@ if (int (SDL_GetTicks ()) - m_nPollTime > m_nTimeout) {
 	return nCurItem;
 	}
 
-m_nResult = Download ();
+if (m_nState == DL_CONNECT)
+	NetworkListen ();
+else {
+	m_nResult = Download ();
 
-if (m_nResult == -1) {
-	key = -3;
-	return nCurItem;
-	}
+	if (m_nResult == -1) {
+		key = -3;
+		return nCurItem;
+		}
 
-if (m_nResult == 1) {
-	m_nPollTime = SDL_GetTicks ();
-	if ((m_nState == DL_CREATE_FILE) || (m_nState == DL_DATA)) {
-		if (m_nSrcLen && m_nDestLen) {
-			int h = m_nDestLen * 100 / m_nSrcLen;
-			if (h != m_nProgress) {
-				m_nProgress = h;
-				sprintf (menu [m_nOptPercentage].m_text, TXT_PROGRESS, m_nProgress, '%');
-				menu [m_nOptPercentage].m_bRebuild = 1;
-				h = m_nProgress;
-				if (menu [m_nOptProgress].m_value != h) {
-					menu [m_nOptProgress].m_value = h;
-					menu [m_nOptProgress].m_bRebuild = 1;
+	if (m_nResult == 1) {
+		m_nPollTime = SDL_GetTicks ();
+		if ((m_nState == DL_CREATE_FILE) || (m_nState == DL_DATA)) {
+			if (m_nSrcLen && m_nDestLen) {
+				int h = m_nDestLen * 100 / m_nSrcLen;
+				if (h != m_nProgress) {
+					m_nProgress = h;
+					sprintf (menu [m_nOptPercentage].m_text, TXT_PROGRESS, m_nProgress, '%');
+					menu [m_nOptPercentage].m_bRebuild = 1;
+					h = m_nProgress;
+					if (menu [m_nOptProgress].m_value != h) {
+						menu [m_nOptProgress].m_value = h;
+						menu [m_nOptProgress].m_bRebuild = 1;
+						}
 					}
 				}
 			}

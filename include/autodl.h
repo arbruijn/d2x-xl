@@ -10,14 +10,15 @@
 
 #define	DL_AVAILABLE	0
 #define DL_CONNECT		1
-#define	DL_OPEN_HOG		2
-#define	DL_SEND_HOG		3
-#define	DL_OPEN_MSN		4
-#define	DL_SEND_MSN		5
-#define	DL_FINISH		6
-#define DL_DONE			7
-#define DL_CREATE_FILE	8
-#define DL_DATA			9
+#define DL_CONNECTED		2
+#define	DL_OPEN_HOG		3
+#define	DL_SEND_HOG		4
+#define	DL_OPEN_MSN		5
+#define	DL_SEND_MSN		6
+#define	DL_FINISH		7
+#define DL_DONE			8
+#define DL_CREATE_FILE	9
+#define DL_DATA			10
 #define DL_ERROR			255
 
 // upload buffer
