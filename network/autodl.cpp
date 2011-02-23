@@ -309,7 +309,7 @@ int CDownloadManager::SendData (ubyte nIdFn, tClient& client)
 	static time_t t0 = 0;
 
 time_t t = SDL_GetTicks (), dt = t - t0;
-if (dt < 10) {
+if (dt < (time_t) 10) {
 	G3_SLEEP (10 - dt);
 	t0 += 10;
 	}

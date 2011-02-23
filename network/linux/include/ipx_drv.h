@@ -45,7 +45,7 @@ typedef struct ipx_socket_struct {
 	int fd;
 } ipx_socket_t;
 
-struct IPXRecvData {
+typedef struct IPXRecvData {
 	/* all network order */
 	u_char src_network[4];
 	u_char src_node [6];
