@@ -30,6 +30,17 @@ class CTimeout {
 				m_t0 += m_duration;
 			return true;
 			}
+
+		void Throttle (void) {
+			time_t t = SDL_GetTicks ();
+			time_t dt = t - m_t0;
+			if (dt < m_duration) {
+				G3_SLEEP (10 - (int) dt);
+				m_t0 += m_duration;
+				}
+			else
+				m_t0 = t;
+			}
 	};
 
 

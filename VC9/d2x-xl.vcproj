@@ -11672,6 +11672,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\timeout.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\u_dpmi.h"
 				>
 			</File>

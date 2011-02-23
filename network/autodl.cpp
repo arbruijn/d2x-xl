@@ -36,7 +36,7 @@
 CDownloadManager downloadManager;
 
 #define DL_HEADER_SIZE		5
-#define DL_PAYLOAD_SIZE		(MAX_PAYLOAD_SIZE - DL_HEADER_SIZE)	// file transfer header size is 10 bytes (transfer type, packet type, packet id, packet length)
+#define DL_PAYLOAD_SIZE		1024 //(MAX_PAYLOAD_SIZE - DL_HEADER_SIZE)	// file transfer header size is 10 bytes (transfer type, packet type, packet id, packet length)
 
 //------------------------------------------------------------------------------
 
@@ -306,17 +306,10 @@ if ((t = SDL_GetTicks ()) - nTimeout > m_nTimeout) {
 
 int CDownloadManager::SendData (ubyte nIdFn, tClient& client)
 {
-	static time_t t0 = 0;
+	static CTimeout to (10);
 
 // slow down to about 100 KB/sec
-time_t t = SDL_GetTicks ();
-int dt = (int) (t - t0);
-if (dt < 14) {
-	G3_SLEEP (14 - dt);
-	t0 += 14;
-	}
-else
-	t0 = t;
+to.Throttle ();
 client.data [0] = nIdFn;
 return SDLNet_TCP_Send (client.socket, (void *) client.data, MAX_PACKET_SIZE) == MAX_PACKET_SIZE;
 
@@ -467,20 +460,12 @@ return 1;
 
 int CDownloadManager::Download (void)
 {
-	static time_t t0 = 0;
+	static CTimeout to (5);
 
 if (!m_socket)
 	return 0;
 
-time_t t = SDL_GetTicks ();
-int dt = (int) (t - t0);
-if (dt < 10) {
-	G3_SLEEP (10 - dt);
-	t0 += 10;
-	}
-else
-	t0 = t;
-
+to.Throttle ();
 int l =  SDLNet_TCP_Recv (m_socket, m_data, MAX_PACKET_SIZE);
 if (l <= 0) {
 	return 0;
@@ -545,7 +530,6 @@ return 1;
 
 int CDownloadManager::DownloadError (int nReason)
 {
-#if !DBG
 if (nReason == 1)
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_SYNC);
 else if (nReason == 2)
@@ -554,7 +538,6 @@ else if (nReason == 3)
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FILEIO);
 else
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FAILED);
-#endif
 m_nResult = 0;
 return -1;
 }
@@ -666,10 +649,9 @@ m [m_nOptPercentage].m_x = (short) 0x8000;	//centered
 m [m_nOptPercentage].m_bCentered = 1;
 m_nOptProgress = m.AddGauge ("                    ", -1, 100);
 m_socket = 0;
-m_nState = DL_CONNECT;
 m_nResult = 1;
 m_nPollTime = SDL_GetTicks ();
-m_nRequestTime = m_nPollTime - 4000;
+m_nRequestTime = m_nPollTime - 3000;
 sprintf (szTitle, "Downloading <%s>", pszMission);
 *gameFolders.szMsnSubDir = '\0';
 do {
