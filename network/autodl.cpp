@@ -564,6 +564,7 @@ if (m_nState == DL_CONNECT) {
 			return 0;
 		m_nRequestTime = t;
 		}
+	G3_SLEEP (10);
 	NetworkListen ();
 	}
 else {
