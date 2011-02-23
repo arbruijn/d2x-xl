@@ -10,8 +10,12 @@
 
 #ifdef __macosx__
 # include <SDL/SDL.h>
+# include <SDL/SDL_thread.h>
+# include <SDL_net.h>
 #else
 # include <SDL.h>
+# include <SDL_thread.h>
+# include <SDL_net.h>
 #endif
 #include "descent.h"
 #include "cfile.h"
@@ -26,12 +30,13 @@
 #include "strutil.h"
 #include "error.h"
 #include "hogfile.h"
+#include "timeout.h"
 #include "autodl.h"
 
 CDownloadManager downloadManager;
 
-#define DL_HEADER_SIZE	10
-#define DL_PAYLOAD_SIZE	512 //(MAX_PAYLOAD_SIZE - DL_HEADER_SIZE)	// file transfer header size is 10 bytes (transfer type, packet type, packet id, packet length)
+#define DL_HEADER_SIZE		5
+#define DL_PAYLOAD_SIZE		(MAX_PAYLOAD_SIZE - DL_HEADER_SIZE)	// file transfer header size is 10 bytes (transfer type, packet type, packet id, packet length)
 
 //------------------------------------------------------------------------------
 
@@ -50,9 +55,22 @@ static char *sznStates [] = {
 #endif
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+int _CDECL_ UploadThread (void *pThreadId)
+{
+return downloadManager.Upload (*((int*) pThreadId));
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void CDownloadManager::Init (void)
 {
+for (int i = 0; i < MAX_PLAYERS; i++)
+	m_freeList [i] = i;
 m_timeouts [0] = 1;
 m_timeouts [1] = 2;
 m_timeouts [2] = 3;
@@ -69,11 +87,10 @@ m_iTimeout = 5;
 #else
 m_iTimeout = 4;
 #endif
-memset (m_uploadDests, 0, sizeof (m_uploadDests));
-m_nUploadDests = 0;
-m_nPacketId = -1;
-m_nPacketTimeout = -1;
-m_nState = PID_DL_OPEN;
+memset (m_clients, 0, sizeof (m_clients));
+m_nClients = 0;
+m_socket = 0;
+m_nState = DL_CONNECT;
 m_nResult = 1;
 }
 
@@ -113,8 +130,8 @@ return m_iTimeout;
 void CDownloadManager::SetDownloadFlag (int nPlayer, bool bFlag)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (!memcmp (&m_uploadDests [nPlayer].addr.server, &netPlayers.m_info.players [i].network.ipx.server, 4) &&
-		 !memcmp (&m_uploadDests [nPlayer].addr.node, &netPlayers.m_info.players [i].network.ipx.node, 6)) {
+	if (!memcmp (&m_clients [nPlayer].addr.server, &netPlayers.m_info.players [i].network.ipx.server, 4) &&
+		 !memcmp (&m_clients [nPlayer].addr.node, &netPlayers.m_info.players [i].network.ipx.node, 6)) {
 		m_bDownloading [i] = bFlag;
 		return;
 		}
@@ -123,12 +140,13 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::FindUploadDest (void)
+int CDownloadManager::FindClient (void)
 {
-for (int i = 0; i < m_nUploadDests; i++)
-	if (!memcmp (&m_uploadDests [i].addr.server, ipx_udpSrc.src_network, 4) &&
-		 !memcmp (&m_uploadDests [i].addr.node, ipx_udpSrc.src_node, 6)) {
-		m_uploadDests [i].nTimeout = SDL_GetTicks ();
+for (int i = 0; i < m_nClients; i++)
+	if (m_clients [i].nState &&
+		 !memcmp (&m_clients [i].addr.server, ipx_udpSrc.src_network, 4) &&
+		 !memcmp (&m_clients [i].addr.node, ipx_udpSrc.src_node, 6)) {
+		m_clients [i].nTimeout = SDL_GetTicks ();
 		return i;
 		}
 return -1;
@@ -136,42 +154,141 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::AddUploadDest (void)
+int CDownloadManager::AcceptClient (void)
 {
-	int	i = FindUploadDest ();
+	int	i = FindClient ();
 
 if (i >= 0) {
-	if (m_uploadDests [i].nState && m_uploadDests [i].cf.File ()) {
-		m_uploadDests [i].cf.Close ();
+	if (m_clients [i].nState && m_clients [i].cf.File ()) {
+		m_clients [i].cf.Close ();
 		}
+	m_clients [i].nState = DL_OPEN_HOG;
 	}
 else {
-	if (m_nUploadDests >= MAX_PLAYERS)
-		return 0;
-	i = m_nUploadDests++;
-	memcpy (&m_uploadDests [i].addr.server, ipx_udpSrc.src_network, 4);
-	memcpy (&m_uploadDests [i].addr.node, ipx_udpSrc.src_node, 6);
+	if (m_nClients >= MAX_PLAYERS)
+		return -1;
+	i = m_freeList [MAX_PLAYERS - ++m_nClients];
+	memcpy (&m_clients [i].addr.server, ipx_udpSrc.src_network, 4);
+	memcpy (&m_clients [i].addr.node, ipx_udpSrc.src_node, 6);
 	SetDownloadFlag (i, 1);
-	m_uploadDests [i].nTimeout = SDL_GetTicks ();
+	m_clients [i].nTimeout = SDL_GetTicks ();
+	m_clients [i].nState = DL_CONNECT;
+	m_clients [i].cf.File () = NULL;
+	if (!(m_clients [i].thread = SDL_CreateThread (UploadThread, &i))) {
+		RemoveClient (i);
+		return -1;
+		}
 	}
-m_uploadDests [i].nState = DL_OPEN_HOG;
-m_uploadDests [i].cf.File () = NULL;
+return i;
+}
+
+//------------------------------------------------------------------------------
+
+int CDownloadManager::RemoveClient (int i)
+{
+if (i < 0)
+	i = FindClient ();
+if (i < 0)
+	return 0;
+
+tClient& client = m_clients [i];
+
+SDLNet_TCP_Close (client.socket);
+client.cf.Close ();
+if (client.thread) {
+	client.nState = DL_FINISH;
+	do {
+		G3_SLEEP (1);
+	} while (client.nState != DL_DONE);
+}
+memset (&client, 0, sizeof (client));
+m_freeList [MAX_PLAYERS - m_nClients--] = i;
+SetDownloadFlag (i, 0);
+if (!m_nClients && m_socket) {
+	SDLNet_TCP_Close (m_socket);
+	m_socket = 0;
+	}
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::DelUploadDest (int i)
+int CDownloadManager::SendRequest (ubyte pId, ubyte pIdFn, tClient* clientP)
 {
-if (i < 0)
-	i = FindUploadDest ();
-if (i < 0)
-	return 0;
-m_uploadDests [i].cf.Close ();
-SetDownloadFlag (i, 0);
-if (i < --m_nUploadDests)
-	memcpy (m_uploadDests + i, m_uploadDests + i + 1, (m_nUploadDests - i) * sizeof (tUploadDest));
+m_data [0] = pId;
+m_data [1] = pIdFn;
+if (pId == PID_UPLOAD) {
+	if (gameStates.multi.nGameType == IPX_GAME)
+		IPXSendBroadcastData (m_data, 2);
+	else
+		IPXSendInternetPacketData (m_data, 2, ipx_ServerAddress, ipx_ServerAddress + 4);
+	}
+else
+	IPXSendInternetPacketData (m_data, 2, clientP->addr.server, clientP->addr.node);
 return 1;
+}
+
+//------------------------------------------------------------------------------
+// ask the game host for the next data packet
+
+int CDownloadManager::RequestUpload (void)
+{
+return SendRequest (PID_UPLOAD, PID_DL_START);
+}
+
+//------------------------------------------------------------------------------
+// tell the client the game host is ready to send more data
+
+int CDownloadManager::RequestDownload (tClient* clientP)
+{
+return SendRequest (PID_DOWNLOAD, PID_DL_START, clientP);
+}
+
+//------------------------------------------------------------------------------
+
+int CDownloadManager::ConnectToClient (tClient& client)
+{
+if (!m_socket) {
+		IPaddress ip;
+
+		if (SDLNet_ResolveHost (&ip, NULL, 28342) < 0)
+			return DL_DONE;
+		if (!(m_socket = SDLNet_TCP_Open (&ip)))
+			return DL_DONE;
+	}
+RequestDownload (&client);
+for (CTimeout to1 (30000), to2 (5000); !to1.Expired ();) {
+	if ((client.socket = SDLNet_TCP_Accept (m_socket)))
+		return DL_OPEN_HOG;
+	G3_SLEEP (10);
+	if (to2.Expired ())
+		RequestDownload (&client);
+	}
+return DL_DONE;
+}
+
+//------------------------------------------------------------------------------
+
+int CDownloadManager::ConnectToServer (void)
+{
+	IPaddress ip;
+	char szIp [16];
+
+if (m_socket) {
+	SDLNet_TCP_Close (m_socket);
+	m_socket = 0;
+	}
+sprintf (szIp, "%d.%d.%d.%d",
+			 ipx_ServerAddress [4], ipx_ServerAddress [5], ipx_ServerAddress [6], ipx_ServerAddress [7]);
+if (SDLNet_ResolveHost (&ip, szIp, 28342) < 0)
+	return 0;
+
+for (CTimeout to (30000); !to.Expired (); ) {
+	if ((m_socket = SDLNet_TCP_Open (&ip)))
+		return 1;
+	G3_SLEEP (10);
+	}
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -185,9 +302,9 @@ if (m_nTimeout < 0)
 	SetTimeoutIndex (-1);
 if ((t = SDL_GetTicks ()) - nTimeout > m_nTimeout) {
 	nTimeout = t;
-	while (i < m_nUploadDests)
-		if ((int) SDL_GetTicks () - m_uploadDests [i].nTimeout > m_nTimeout)
-			DelUploadDest (i);
+	while (i < m_nClients)
+		if ((int) SDL_GetTicks () - m_clients [i].nTimeout > m_nTimeout)
+			RemoveClient (i);
 		else
 			i++;
 	}
@@ -195,63 +312,17 @@ if ((t = SDL_GetTicks ()) - nTimeout > m_nTimeout) {
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::SendRequest (ubyte pId, ubyte pIdFn, int nSize, int nPacketId)
+int CDownloadManager::SendData (ubyte nIdFn, tClient& client)
 {
-m_uploadBuf [0] = pId;
-m_uploadBuf [1] = pIdFn;
-if (pIdFn == PID_DL_DATA) {
-	PUT_INTEL_INT (m_uploadBuf + 2, nPacketId);
-	nSize += 4;
-	m_nPacketTimeout = SDL_GetTicks ();
-	}
-if (pId == PID_UPLOAD) {
-	if (gameStates.multi.nGameType == IPX_GAME)
-		IPXSendBroadcastData (m_uploadBuf, nSize + 2);
-	else
-		IPXSendInternetPacketData (m_uploadBuf, nSize + 2, ipx_ServerAddress, ipx_ServerAddress + 4);
-	}
-else
-	IPXSendInternetPacketData (m_uploadBuf, nSize + 2, ipx_udpSrc.src_network, ipx_udpSrc.src_node);
-return 1;
-}
+m_data [0] = nIdFn;
+return SDLNet_TCP_Send (client.socket, (void *) client.data, MAX_PACKET_SIZE) == MAX_PACKET_SIZE;
 
-//------------------------------------------------------------------------------
-// ask the game host for the next data packet
-
-int CDownloadManager::RequestUpload (ubyte pIdFn, int nSize)
-{
-return SendRequest (PID_UPLOAD, pIdFn, nSize, m_nPacketId);
-}
-
-//------------------------------------------------------------------------------
-// tell the client the game host is ready to send more data
-
-int CDownloadManager::RequestDownload (ubyte pIdFn, int nSize, int nPacketId)
-{
-return SendRequest (PID_DOWNLOAD, pIdFn, nSize, nPacketId);
-}
-
-//------------------------------------------------------------------------------
-
-void CDownloadManager::ResendRequest (void)
-{
-if ((m_nState == PID_DL_DATA) && (m_nPacketId > -1) && (SDL_GetTicks () - m_nPacketTimeout > 500)) 
-	RequestUpload (PID_DL_DATA, 0);
-}
-
-//------------------------------------------------------------------------------
-
-int CDownloadManager::UploadError (void)
-{
-DelUploadDest (-1);
-RequestDownload (PID_DL_ERROR, 0, -1);
-return 0;
 }
 
 //------------------------------------------------------------------------------
 // open a file on the game host
 
-int CDownloadManager::UploadOpenFile (int i, const char *pszExt)
+int CDownloadManager::OpenFile (tClient& client, const char *pszExt)
 {
 	char	szFile [FILENAME_LEN];
 	int	l = (int) strlen (gameFolders.szMissionDirs [0]);
@@ -259,122 +330,170 @@ int CDownloadManager::UploadOpenFile (int i, const char *pszExt)
 sprintf (szFile, "%s%s%s%s", 
 			gameFolders.szMissionDirs [0], (l && (gameFolders.szMissionDirs [0][l-1] != '/')) ? "/" : "", 
 			netGame.m_info.szMissionName, pszExt);
-if (m_uploadDests [i].cf.File ())
-	m_uploadDests [i].cf.Close ();
-if (!m_uploadDests [i].cf.Open (szFile, "", "rb", 0))
-	return UploadError ();
-m_uploadDests [i].fLen = m_uploadDests [i].cf.Length ();
-PUT_INTEL_INT (m_uploadBuf + 2, m_uploadDests [i].fLen);
+if (client.cf.File ())
+	client.cf.Close ();
+if (!client.cf.Open (szFile, "", "rb", 0))
+	return 0;
+client.fLen = client.cf.Length ();
 sprintf (szFile, "%s%s", netGame.m_info.szMissionName, pszExt);
-l = (int) strlen (szFile) + 1;
-memcpy (m_uploadBuf + 6, szFile, l);
-m_uploadDests [i].nPacketId = -1;
-RequestDownload (PID_DL_OPEN, l + 4, -1);
-return 1;
+PUT_INTEL_INT (client.data + 1, client.fLen);
+memcpy (client.data + 5, szFile, (int) strlen (szFile) + 1);
+return SendData (DL_CREATE_FILE, client);
 }
 
 //------------------------------------------------------------------------------
 // send a file from the game host
+// returns -1: error, 0: more data to read and send, 1: complete file transmitted
 
-int CDownloadManager::UploadSendFile (int i, int nPacketId)
+int CDownloadManager::SendFile (tClient& client)
 {
-	int	l, h = nPacketId - m_uploadDests [i].nPacketId;
+	int l = (int) client.fLen;
 
-if ((h < 0) || (h > 1))
+if (l > DL_PAYLOAD_SIZE)
+	l = DL_PAYLOAD_SIZE;
+PUT_INTEL_INT (client.data + 1, l);
+if ((int) client.cf.Read (client.data + 5, 1, l) != l)
 	return -1;
-if (!h || (m_uploadDests [i].fLen > 0)) {
-	if (h) {	// send next data packet
-		l = (int) m_uploadDests [i].fLen;
-		if (l > DL_PAYLOAD_SIZE) 
-			l = DL_PAYLOAD_SIZE;
-		if ((int) m_uploadDests [i].cf.Read (m_uploadBuf + 10, 1, l) != l)
-			return UploadError ();
-		PUT_INTEL_INT (m_uploadBuf + 2, nPacketId);
-		PUT_INTEL_INT (m_uploadBuf + 6, l);
-		m_uploadDests [i].nPacketId = nPacketId;
-		}
-	else
-		l = 0;	// resend last packet
-	RequestDownload (PID_DL_DATA, l + 8, nPacketId);
-	m_uploadDests [i].fLen -= l;
-	}
-else {
-	m_uploadDests [i].cf.Close ();
-	RequestDownload (PID_DL_CLOSE, 0, -1);
+client.fLen -= l;
+if (!SendData (DL_DATA, client))
 	return -1;
-	}
+if (0 < client.fLen)
+	return 0;
+client.cf.Close ();
 return 1;
+}
+
+//------------------------------------------------------------------------------
+// Initialize file upload via TCP.
+
+int CDownloadManager::InitUpload (ubyte *data)
+{
+if (!extraGameInfo [0].bAutoDownload)
+	return -1;
+if (data [1] != PID_DL_START)
+	return -1;
+if (0 > AcceptClient ())
+	return -1;
+return 0;
 }
 
 //------------------------------------------------------------------------------
 // Game host sending data to client
 
-int CDownloadManager::Upload (ubyte *data)
+int CDownloadManager::Upload (int nClient)
 {
-	int	i;
-	ubyte pId = data [1];
+tClient& client = Client (nClient);
 
-switch (pId) {
-	case PID_DL_START:
-		if (!(/*gameStates.app.bHaveExtraGameInfo [1] &&*/ extraGameInfo [0].bAutoDownload) || !AddUploadDest ()) {
-			RequestDownload (PID_DL_ERROR, 0, -1);
-			return 0;
-			}
+while (client.nState != DL_DONE) {
+	switch (client.nState) {
+		case DL_CONNECT:
+			client.nState = ConnectToClient (client);
+			break;
 
-	case PID_DL_DATA:
-		if (0 > (i = FindUploadDest ()))
-			return UploadError ();
+		case DL_OPEN_HOG:	// try all possible level file types
+			if (OpenFile (client, ".hog") || OpenFile (client, ".rl2") || OpenFile (client, ".rdl"))
+				client.nState = DL_SEND_HOG;
+			else
+				client.nState = DL_ERROR;
+			break;
 
-		switch (m_uploadDests [i].nState) {
-			case DL_OPEN_HOG:
-				if (!(UploadOpenFile (i, ".hog") || 
-						UploadOpenFile (i, ".rl2") || 
-						UploadOpenFile (i, ".rdl")))
-					return 0;
-				m_uploadDests [i].nState = DL_SEND_HOG;
-				return 1;
+		case DL_OPEN_MSN:
+			if (OpenFile (client, ".mn2") || OpenFile (client, ".msn"))
+				client.nState = DL_SEND_MSN;
+			else
+				client.nState = DL_ERROR;
+			break;
 
-			case DL_SEND_HOG:
-				switch (UploadSendFile (i, GET_INTEL_INT (data + 2))) {
-					case 0:
-						return 0;
-					case -1:
-						m_uploadDests [i].nState = DL_OPEN_MSN;
-					case 1:
-						return 1;
-					}
-				break;
+		case DL_SEND_HOG:
+		case DL_SEND_MSN:
+			switch (SendFile (client)) {
+				case -1:
+					client.nState = DL_ERROR;
+					break;
+				case 1:
+					client.nState = (client.nState == DL_SEND_HOG) ? DL_OPEN_MSN : DL_FINISH;
+					break;
+				default:
+					break;
+				}
+			break;
 
-			case DL_OPEN_MSN:
-				if (!(UploadOpenFile (i, ".mn2") || UploadOpenFile (i, ".msn")))
-					return 0;
-				m_uploadDests [i].nState = DL_SEND_MSN;
-				return 1;
-				break;
-
-			case DL_SEND_MSN:
-				switch (UploadSendFile (i, GET_INTEL_INT (data + 2))) {
-					case 0:
-						return 0;
-					case -1:
-						m_uploadDests [i].nState = DL_FINISH;
-					case 1:
-						return 1;
-					}
-				break;
-
-			case DL_FINISH:
-				RequestDownload (PID_DL_END, 0, -1);
-				DelUploadDest (i);
-				return -1;
-			}
-		break;
-
-	case PID_DL_ERROR:
-		DelUploadDest (-1);
-		return 0;
+		case DL_FINISH:
+		case DL_ERROR:
+			SendData (client.nState, client);
+			client.nState = DL_DONE;
+			break;
+		}
 	}
+RemoveClient (nClient);
 return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CDownloadManager::InitDownload (ubyte *data)
+{
+if (!extraGameInfo [0].bAutoDownload)
+	return -1;
+if (data [1] != PID_DL_START)
+	return -1;
+if (!ConnectToServer ())
+	return -1;
+return Download ();
+}
+
+//------------------------------------------------------------------------------
+
+int CDownloadManager::Download (void)
+{
+if (SDLNet_TCP_Recv (m_socket, m_data, MAX_PACKET_SIZE) <= 0)
+	return 0;
+
+switch (m_nState = m_data [0]) {
+	case DL_CREATE_FILE: {
+		char	szDest [FILENAME_LEN];
+		char	szFile [2][FILENAME_LEN];
+		char	szExt [FILENAME_LEN];
+		char	*pszFile = reinterpret_cast<char*> (m_data + 5);
+
+		if (m_cf.File ())
+			m_cf.Close ();
+		if (!pszFile)
+			return DownloadError (2);
+		strlwr (pszFile);
+		CFile::SplitPath (pszFile, NULL, szFile [0], szExt);
+		CFile::SplitPath (hogFileManager.m_files.MsnHogFiles.szName, NULL, szFile [1], NULL);
+		strlwr (szFile [1]);
+		if (strcmp (szFile [0], szFile [1]))
+			sprintf (szDest, "%s/%s%s", gameFolders.szMissionDownloadDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
+		else
+			sprintf (szDest, "%s/%s%s", hogFileManager.m_files.MsnHogFiles.szName, szFile [0], szExt);
+		if (!m_cf.Open (szDest, "", "wb", 0))
+			return DownloadError (3);
+		m_nSrcLen = GET_INTEL_INT (m_data + 1);
+		m_nProgress = 0;
+		m_nDestLen = 0;
+		break;
+		}
+
+	case DL_DATA: {
+		int l = GET_INTEL_INT (m_data + 1);
+		if (m_cf.Write (m_data + 5, 1, l) != l)
+			return DownloadError (3);
+		m_nDestLen += l;
+		break;
+		}
+
+	case DL_FINISH:
+		m_cf.Close ();
+		return 1;
+
+	case DL_ERROR:
+	default:
+		m_cf.Close ();
+		return DownloadError (1);
+	}
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -391,107 +510,8 @@ else if (nReason == 3)
 else
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FAILED);
 m_cf.Close ();
-RequestUpload (PID_DL_ERROR, 0);
 m_nResult = 0;
-m_nState = PID_DL_OPEN;
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int CDownloadManager::Download (ubyte *data)
-{
-	ubyte pId = data [1];
-
-m_nPollTime = SDL_GetTicks ();
-switch (pId) {
-	case PID_DL_START:
-		if (m_nState != PID_DL_START)
-			return DownloadError (1);
-		m_nPacketId = -1;
-		RequestUpload (PID_DL_DATA, 0);
-		m_nResult = 1;
-		m_nState = PID_DL_OPEN;
-		return 1;
-		break;
-
-	case PID_DL_ERROR:
-		if (m_cf.File ()) {
-			m_cf.Close ();
-			m_nResult = 0;
-			m_nState = PID_DL_OPEN;
-			}
-		return 0;
-
-	case PID_DL_OPEN:
-		if (m_nState != PID_DL_OPEN)
-			return DownloadError (1);
-	 {
-			char	szDest [FILENAME_LEN];
-			char	szFile [2][FILENAME_LEN];
-			char	szExt [FILENAME_LEN];
-			char	*pszFile = reinterpret_cast<char*> (data + 6);
-			;
-
-		if (!pszFile)
-			return DownloadError (2);
-		strlwr (pszFile);
-		CFile::SplitPath (pszFile, NULL, szFile [0], szExt);
-		CFile::SplitPath (hogFileManager.m_files.MsnHogFiles.szName, NULL, szFile [1], NULL);
-		strlwr (szFile [1]);
-		if (strcmp (szFile [0], szFile [1]))
-			sprintf (szDest, "%s/%s%s", gameFolders.szMissionDownloadDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
-		else
-			sprintf (szDest, "%s/%s%s", hogFileManager.m_files.MsnHogFiles.szName, szFile [0], szExt);
-		if (!m_cf.Open (szDest, "", "wb", 0))
-			return DownloadError (2);
-		m_nSrcLen = GET_INTEL_INT (data + 2);
-		m_nProgress = 0;
-		m_nDestLen = 0;
-		m_nPacketId = 0;
-		RequestUpload (PID_DL_DATA, 0);
-		m_nState = PID_DL_DATA;
-		return 1;
-		}
-
-	case PID_DL_DATA:
-		if (m_nState != PID_DL_DATA)
-			return DownloadError (1);
-			{
-			int id = GET_INTEL_INT (data + 2),
-				 h = id - m_nPacketId;
-
-			if (!h) {	// receiving the requested packet
-				int l = GET_INTEL_INT (data + 6);
-
-				if (m_cf.Write (data + 10, 1, l) != l)
-					return DownloadError (2);
-				m_nPacketId++;
-				m_nDestLen += l;
-				}
-			else if (h != -1)	// host has been resending the last packet; probably due to request and reply crossing each other
-				return DownloadError (3);
-			}
-		RequestUpload (PID_DL_DATA, 0);
-		return 1;
-
-	case PID_DL_CLOSE:
-		if (m_nState != PID_DL_DATA)
-			return DownloadError (1);
-		if (m_cf.File ())
-			m_cf.Close ();
-		m_nState = PID_DL_OPEN;
-		m_nPacketId = -1;
-		RequestUpload (PID_DL_DATA, 0);
-		return 1;
-
-	case PID_DL_END:
-		if (m_nState != PID_DL_OPEN)
-			return DownloadError (1);
-		m_nResult = -1;
-		return -1;
-	}
-return 1;
+return -1;
 }
 
 //------------------------------------------------------------------------------
@@ -504,8 +524,7 @@ if (key == KEY_ESC) {
 	key = -2;
 	return nCurItem;
 	}
-ResendRequest ();
-NetworkListen ();
+
 if (m_nTimeout < 0)
 	SetTimeoutIndex (-1);
 if (int (SDL_GetTicks ()) - m_nPollTime > m_nTimeout) {
@@ -514,12 +533,17 @@ if (int (SDL_GetTicks ()) - m_nPollTime > m_nTimeout) {
 	key = -2;
 	return nCurItem;
 	}
+
+m_nResult = Download ();
+
 if (m_nResult == -1) {
 	key = -3;
 	return nCurItem;
 	}
+
 if (m_nResult == 1) {
-	if ((m_nState == PID_DL_OPEN) || (m_nState == PID_DL_DATA)) {
+	m_nPollTime = SDL_GetTicks ();
+	if ((m_nState == DL_CREATE_FILE) || (m_nState == DL_DATA)) {
 		if (m_nSrcLen && m_nDestLen) {
 			int h = m_nDestLen * 100 / m_nSrcLen;
 			if (h != m_nProgress) {
@@ -534,13 +558,17 @@ if (m_nResult == 1) {
 				}
 			}
 		}
-	key = 0;
-	return nCurItem;
 	}
+
+key = 0;
+return nCurItem;
+
+#if 0
 menu [m_nOptPercentage].SetText ("download failed");
 menu [m_nOptPercentage].m_bRedraw = 1;
 key = -2;
 return nCurItem;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -554,7 +582,7 @@ return downloadManager.Poll (menu, key, nCurItem);
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::DownLoadMission (char *pszMission)
+int CDownloadManager::DownloadMission (char *pszMission)
 {
 	CMenu	m (3);
 	char	szTitle [30];
@@ -573,10 +601,11 @@ m_nOptPercentage = m.AddText (szProgress, 0);
 m [m_nOptPercentage].m_x = (short) 0x8000;	//centered
 m [m_nOptPercentage].m_bCentered = 1;
 m_nOptProgress = m.AddGauge ("                    ", -1, 100);
-if (!RequestUpload (PID_DL_START, 0))
+m_socket = 0;
+if (!RequestUpload ())
 	return 0;
 m_nResult = 1;
-m_nState = PID_DL_OPEN;
+m_nState = DL_CONNECT;
 m_nPollTime = SDL_GetTicks ();
 sprintf (szTitle, "Downloading <%s>", pszMission);
 *gameFolders.szMsnSubDir = '\0';
@@ -584,7 +613,7 @@ do {
 	i = m.Menu (NULL, szTitle, DownloadPoll);
 	} while (i >= 0);
 m_cf.Close ();
-m_nState = PID_DL_END;
+m_nState = DL_DONE;
 return (i == -3);
 }
 

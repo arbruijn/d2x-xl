@@ -257,7 +257,7 @@ return 1;
 int UploadHandler (ubyte *dataP, int nLength)
 {
 if (IAmGameHost ())
-	downloadManager.Upload (dataP);
+	downloadManager.InitUpload (dataP);
 return 1;
 }
 
@@ -266,7 +266,7 @@ return 1;
 int DownloadHandler (ubyte *dataP, int nLength)
 {
 if (extraGameInfo [0].bAutoDownload) 
-	downloadManager.Download (dataP);
+	downloadManager.InitDownload (dataP);
 return 1;
 }
 
