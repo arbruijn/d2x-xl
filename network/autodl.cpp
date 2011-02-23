@@ -233,6 +233,7 @@ return 1;
 
 int CDownloadManager::RequestUpload (void)
 {
+m_nState = DL_CONNECT;
 return SendRequest (PID_UPLOAD, PID_DL_START);
 }
 
@@ -447,6 +448,8 @@ if (!extraGameInfo [0].bAutoDownload)
 	return -1;
 if (data [1] != PID_DL_START)
 	return -1;
+if (m_nState != DL_CONNECT)
+	return -1;
 if (!ConnectToServer ())
 	return -1;
 return 1;
@@ -618,7 +621,6 @@ m_socket = 0;
 if (!RequestUpload ())
 	return 0;
 m_nResult = 1;
-m_nState = DL_CONNECT;
 m_nPollTime = SDL_GetTicks ();
 sprintf (szTitle, "Downloading <%s>", pszMission);
 *gameFolders.szMsnSubDir = '\0';
