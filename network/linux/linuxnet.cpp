@@ -175,7 +175,7 @@ bIpxInstalled = 0;
 
 //------------------------------------------------------------------------------
 
-IPXRecvData_t networkData.packetSource;
+//IPXRecvData_t networkData.packetSource;
 
 int IpxGetPacketData (ubyte * data)
 {
