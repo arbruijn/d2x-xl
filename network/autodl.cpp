@@ -249,7 +249,7 @@ if (!m_socket) {
 		return DL_DONE;
 	}
 RequestDownload (&client);
-for (CTimeout to1 (30000), to2 (5000); !to1.Expired ();) {
+for (CTimeout to1 (30000), to2 (3000); !to1.Expired ();) {
 	if ((client.socket = SDLNet_TCP_Accept (m_socket)))
 		return DL_OPEN_HOG;
 	G3_SLEEP (10);
@@ -308,11 +308,12 @@ int CDownloadManager::SendData (ubyte nIdFn, tClient& client)
 {
 	static time_t t0 = 0;
 
+// slow down to about 100 KB/sec
 time_t t = SDL_GetTicks ();
 int dt = (int) (t - t0);
-if (dt < 10) {
-	G3_SLEEP (10 - dt);
-	t0 += 10;
+if (dt < 14) {
+	G3_SLEEP (14 - dt);
+	t0 += 14;
 	}
 else
 	t0 = t;
@@ -341,7 +342,7 @@ sprintf (szFile, "%s%s", netGame.m_info.szMissionName, pszExt);
 PUT_INTEL_INT (client.data + 1, client.fLen);
 memcpy (client.data + 5, szFile, (int) strlen (szFile) + 1);
 return SendData (DL_CREATE_FILE, client);
-G3_SLEEP (100);
+G3_SLEEP (50);
 }
 
 //------------------------------------------------------------------------------
@@ -466,12 +467,24 @@ return 1;
 
 int CDownloadManager::Download (void)
 {
+	static time_t t0 = 0;
 
 if (!m_socket)
 	return 0;
+
+time_t t = SDL_GetTicks ();
+int dt = (int) (t - t0);
+if (dt < 10) {
+	G3_SLEEP (10 - dt);
+	t0 += 10;
+	}
+else
+	t0 = t;
+
 int l =  SDLNet_TCP_Recv (m_socket, m_data, MAX_PACKET_SIZE);
-if (l <= 0)
+if (l <= 0) {
 	return 0;
+	}
 
 switch (m_nState = m_data [0]) {
 	case DL_CREATE_FILE: {
