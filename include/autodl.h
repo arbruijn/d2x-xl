@@ -53,6 +53,7 @@ class CDownloadManager {
 		int			m_nDestLen;
 		int			m_nProgress;
 		int			m_nPollTime;
+		int			m_nRequestTime;
 		bool			m_bDownloading [MAX_PLAYERS];
 		int			m_timeouts [10];
 		int			m_iTimeout;

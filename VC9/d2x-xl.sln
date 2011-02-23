@@ -1447,7 +1447,8 @@ Global
 		{8AB3504F-5E58-4910-AFE8-7A1E595AC3F4}.Release-Intel|x64.ActiveCfg = Release|Win32
 		{8AB3504F-5E58-4910-AFE8-7A1E595AC3F4}.Release-OMP|Win32.ActiveCfg = Release|Win32
 		{8AB3504F-5E58-4910-AFE8-7A1E595AC3F4}.Release-OMP|Win32.Build.0 = Release|Win32
-		{8AB3504F-5E58-4910-AFE8-7A1E595AC3F4}.Release-OMP|x64.ActiveCfg = Release|Win32
+		{8AB3504F-5E58-4910-AFE8-7A1E595AC3F4}.Release-OMP|x64.ActiveCfg = Release|x64
+		{8AB3504F-5E58-4910-AFE8-7A1E595AC3F4}.Release-OMP|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

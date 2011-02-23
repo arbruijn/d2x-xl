@@ -309,7 +309,7 @@ if ((t = SDL_GetTicks ()) - nTimeout > m_nTimeout) {
 
 int CDownloadManager::SendData (ubyte nIdFn, tClient& client)
 {
-m_data [0] = nIdFn;
+client.data [0] = nIdFn;
 return SDLNet_TCP_Send (client.socket, (void *) client.data, MAX_PACKET_SIZE) == MAX_PACKET_SIZE;
 
 }
@@ -548,14 +548,22 @@ if (key == KEY_ESC) {
 
 if (m_nTimeout < 0)
 	SetTimeoutIndex (-1);
-if (int (SDL_GetTicks ()) - m_nPollTime > m_nTimeout) {
+
+int t = (int) SDL_GetTicks ();
+
+if (t - m_nPollTime > m_nTimeout) {
 	menu [1].SetText ("download timed out");
 	menu [1].m_bRedraw = 1;
 	key = -2;
 	return nCurItem;
 	}
 
-if (m_nState == DL_CONNECT)
+if (m_nState == DL_CONNECT) {
+	if (t - m_nRequestTime > 3000) {
+		if (!RequestUpload ())
+			return 0;
+		m_nRequestTime = t;
+		}
 	NetworkListen ();
 else {
 	m_nResult = Download ();
@@ -568,7 +576,7 @@ else {
 		return nCurItem;
 		}
 	else if (m_nResult == 1) {
-		m_nPollTime = SDL_GetTicks ();
+		m_nPollTime = t;
 		if ((m_nState == DL_CREATE_FILE) || (m_nState == DL_DATA)) {
 			if (m_nSrcLen && m_nDestLen) {
 				int h = m_nDestLen * 100 / m_nSrcLen;
@@ -632,10 +640,9 @@ m [m_nOptPercentage].m_x = (short) 0x8000;	//centered
 m [m_nOptPercentage].m_bCentered = 1;
 m_nOptProgress = m.AddGauge ("                    ", -1, 100);
 m_socket = 0;
-if (!RequestUpload ())
-	return 0;
 m_nResult = 1;
 m_nPollTime = SDL_GetTicks ();
+m_nRequestTime = m_nPollTime - 3000;
 sprintf (szTitle, "Downloading <%s>", pszMission);
 *gameFolders.szMsnSubDir = '\0';
 do {
