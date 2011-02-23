@@ -545,6 +545,7 @@ return 1;
 
 int CDownloadManager::DownloadError (int nReason)
 {
+#if !DBG
 if (nReason == 1)
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_SYNC);
 else if (nReason == 2)
@@ -553,6 +554,7 @@ else if (nReason == 3)
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FILEIO);
 else
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FAILED);
+#endif
 m_nResult = 0;
 return -1;
 }
@@ -664,9 +666,10 @@ m [m_nOptPercentage].m_x = (short) 0x8000;	//centered
 m [m_nOptPercentage].m_bCentered = 1;
 m_nOptProgress = m.AddGauge ("                    ", -1, 100);
 m_socket = 0;
+m_nState = DL_CONNECT;
 m_nResult = 1;
 m_nPollTime = SDL_GetTicks ();
-m_nRequestTime = m_nPollTime - 3000;
+m_nRequestTime = m_nPollTime - 4000;
 sprintf (szTitle, "Downloading <%s>", pszMission);
 *gameFolders.szMsnSubDir = '\0';
 do {
