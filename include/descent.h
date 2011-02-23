@@ -103,9 +103,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef __macosx__
 # include <SDL/SDL.h>
 # include <SDL/SDL_thread.h>
+# include <SDL/SDL_net.h>
 #else
 # include <SDL.h>
 # include <SDL_thread.h>
+# include <SDL_net.h>
 #endif
 
 /**
