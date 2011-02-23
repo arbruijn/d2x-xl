@@ -565,6 +565,7 @@ if (m_nState == DL_CONNECT) {
 		m_nRequestTime = t;
 		}
 	NetworkListen ();
+	}
 else {
 	m_nResult = Download ();
 	if (m_nResult == -1) {
