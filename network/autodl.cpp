@@ -651,6 +651,7 @@ m_nOptProgress = m.AddGauge ("                    ", -1, 100);
 m_socket = 0;
 m_nFiles = 0;
 m_nResult = 1;
+m_nState = DL_CONNECT;
 m_nPollTime = SDL_GetTicks ();
 m_nRequestTime = m_nPollTime - 3000;
 sprintf (szTitle, "Downloading <%s>", pszMission);
