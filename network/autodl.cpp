@@ -626,6 +626,8 @@ return downloadManager.Poll (menu, key, nCurItem);
 
 int CDownloadManager::DownloadMission (char *pszMission)
 {
+	static CTimeout to (3500);
+
 if (!gameStates.app.bHaveSDLNet)
 	return 0;
 
@@ -653,9 +655,11 @@ m_nPollTime = SDL_GetTicks ();
 m_nRequestTime = m_nPollTime - 3000;
 sprintf (szTitle, "Downloading <%s>", pszMission);
 *gameFolders.szMsnSubDir = '\0';
+to.Throttle ();
 do {
 	i = m.Menu (NULL, szTitle, DownloadPoll);
 	} while (i >= 0);
+to.Start ();
 m_cf.Close ();
 if (m_socket) {
 	SDLNet_TCP_Close (m_socket);
