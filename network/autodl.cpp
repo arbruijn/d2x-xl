@@ -35,10 +35,6 @@
 
 CDownloadManager downloadManager;
 
-#define DL_HEADER_SIZE		5
-#define DL_PACKET_SIZE		1413 // 1024 + 256 + 128 + DL_HEADER_SIZE; data transfer will be unstable at larger sizes for me (?)
-#define DL_PAYLOAD_SIZE		(DL_PACKET_SIZE - DL_HEADER_SIZE)
-
 //------------------------------------------------------------------------------
 
 #if 0

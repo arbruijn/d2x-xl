@@ -22,17 +22,21 @@
 #define DL_CANCEL			254
 #define DL_ERROR			255
 
+#define DL_HEADER_SIZE		5
+#define DL_PACKET_SIZE		1413 // 1024 + 256 + 128 + DL_HEADER_SIZE; data transfer will be unstable at larger sizes for me (?)
+#define DL_PAYLOAD_SIZE		(DL_PACKET_SIZE - DL_HEADER_SIZE)
+
 // upload buffer
 // format:
 // m_uploadBuf [0] == {PID_UPLOAD | PID_DOWNLOAD}
-// m_uploadBuf [1] == {PID_DL_START | ... | PID_DL_ERROR}
-// m_uploadBuf [2..11] == <source address>
-// m_uploadBuf [12..1035] == <data (max. DL_BUFSIZE bytes)>
+// m_uploadBuf [0] == {PID_DL_START | ... | PID_DL_ERROR}
+// m_uploadBuf [1..4] == <data length>
+// m_uploadBuf [5..1413] == <data (max. DL_PAYLOAD_SIZE bytes)>
 
 class CDownloadManager {
 	public:
 		typedef struct tClient {
-			ubyte			data [MAX_PACKET_SIZE];
+			ubyte			data [DL_PACKET_SIZE];
 			ipx_addr		addr;
 			ubyte			nState;
 			CFile			cf;
@@ -43,7 +47,7 @@ class CDownloadManager {
 		} tUploadDest;
 
 	private:
-		ubyte			m_data [MAX_PACKET_SIZE];
+		ubyte			m_data [DL_PACKET_SIZE];
 		tClient 		m_clients [MAX_PLAYERS];
 		int			m_nClients;
 		ushort		m_freeList [MAX_PLAYERS];
