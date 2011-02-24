@@ -35,7 +35,7 @@ class CTimeout {
 			time_t t = SDL_GetTicks ();
 			time_t dt = t - m_t0;
 			if (dt < m_duration) {
-				G3_SLEEP (10 - (int) dt);
+				G3_SLEEP (m_duration - (int) dt);
 				m_t0 += m_duration;
 				}
 			else
