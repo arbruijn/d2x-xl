@@ -186,7 +186,7 @@ if (client.thread && (client.nState != DL_DONE)) {
 	client.nState = DL_CANCEL;
 	do {
 		G3_SLEEP (1);
-	} while (client.nState != DL_DONE);
+	} while (client.thread && (client.nState != DL_DONE));
 }
 SDLNet_TCP_Close (client.socket);
 client.cf.Close ();
