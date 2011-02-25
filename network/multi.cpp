@@ -99,7 +99,7 @@ extern void SetFunctionMode (int);
 
 CNetGameInfo netGame;
 
-CAllNetPlayersInfo netPlayers [2];
+extern CAllNetPlayersInfo netPlayers [2];
 
 tBitmapIndex mpTextureIndex [MAX_PLAYERS][N_PLAYER_SHIP_TEXTURES];
 
