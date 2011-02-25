@@ -310,7 +310,7 @@ if (gameData.multiplayer.nPlayerPositions != (bCoop ? 4 : 8)) {
 #endif
 if (IS_D2_OEM && IsMultiGame && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && (missionManager.nCurrentLevel == 8)) {
 	for (i = 0; i < nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected && !(netPlayers.m_info.players [i].versionMinor & 0xF0)) {
+		if (gameData.multiplayer.players [i].connected && !(netPlayers [0].m_info.players [i].versionMinor & 0xF0)) {
 			MsgBox ("Warning!", NULL, 1, TXT_OK,
 								 "This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
@@ -318,7 +318,7 @@ if (IS_D2_OEM && IsMultiGame && (missionManager.nCurrentMission == missionManage
 	}
 if (IS_MAC_SHARE && IsMultiGame && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && (missionManager.nCurrentLevel == 4)) {
 	for (i = 0; i < nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected && !(netPlayers.m_info.players [i].versionMinor & 0xF0)) {
+		if (gameData.multiplayer.players [i].connected && !(netPlayers [0].m_info.players [i].versionMinor & 0xF0)) {
 			MsgBox ("Warning!", NULL, 1 , TXT_OK,
 								 "This shareware version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;

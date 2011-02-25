@@ -94,7 +94,7 @@ gameData.multiplayer.powerupsInMine.Clear (0);
 networkData.nTotalMissedPackets = 0; 
 networkData.nTotalPacketsGot = 0;
 memset (&netGame, 0, sizeof (netGame));
-memset (&netPlayers, 0, sizeof (netPlayers));
+memset (&netPlayers [0], 0, sizeof (netPlayers [0]));
 networkData.thisPlayer.nType = PID_REQUEST;
 memcpy (networkData.thisPlayer.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 networkData.thisPlayer.player.versionMajor=D2X_MAJOR;

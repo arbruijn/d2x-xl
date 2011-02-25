@@ -124,8 +124,8 @@ return m_iTimeout;
 void CDownloadManager::SetDownloadFlag (int nPlayer, bool bFlag)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (!memcmp (&m_clients [nPlayer].addr.server, &netPlayers.m_info.players [i].network.ipx.server, 4) &&
-		 !memcmp (&m_clients [nPlayer].addr.node, &netPlayers.m_info.players [i].network.ipx.node, 6)) {
+	if (!memcmp (&m_clients [nPlayer].addr.server, &netPlayers [0].m_info.players [i].network.ipx.server, 4) &&
+		 !memcmp (&m_clients [nPlayer].addr.node, &netPlayers [0].m_info.players [i].network.ipx.node, 6)) {
 		m_bDownloading [i] = bFlag;
 		return;
 		}

@@ -102,7 +102,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include "network.h"
 #include "network_lib.h"
 #include "player.h"	/* for gameData.multiplayer.players */
-#include "multi.h"	/* for netPlayers */
+#include "multi.h"	/* for netPlayers [0] */
 #include "tracker.h"
 #include "hudmsgs.h"
 
@@ -490,8 +490,8 @@ else {
 		if (gameData.multiplayer.players [i].connected && (i != gameData.multiplayer.nLocalPlayer))
 			IPXSendPacketData (
 				data, dataSize, 
-				netPlayers.m_info.players [i].network.ipx.server, 
-				netPlayers.m_info.players [i].network.ipx.node,
+				netPlayers [0].m_info.players [i].network.ipx.server, 
+				netPlayers [0].m_info.players [i].network.ipx.node,
 				gameData.multiplayer.players [i].netAddress);
 		}
 	return dataSize;

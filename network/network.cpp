@@ -96,7 +96,7 @@ int nLastNetGameUpdate [MAX_ACTIVE_NETGAMES];
 CNetGameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 tExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
 CAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
-CAllNetPlayersInfo *playerInfoP, tmpPlayersBase;
+CAllNetPlayersInfo *playerInfoP, netPlayers [2];
 
 int nCoopPenalties [10] = {0, 1, 2, 3, 5, 10, 25, 50, 75, 90};
 
@@ -369,8 +369,8 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		Assert (nakedData.nDestPlayer >- 1);
 		if (gameStates.multi.nGameType >= IPX_GAME) 
 			IPXSendPacketData (reinterpret_cast<ubyte*> (nakedData.buf), nakedData.nLength, 
-									netPlayers.m_info.players [nakedData.nDestPlayer].network.ipx.server, 
-									netPlayers.m_info.players [nakedData.nDestPlayer].network.ipx.node, 
+									netPlayers [0].m_info.players [nakedData.nDestPlayer].network.ipx.server, 
+									netPlayers [0].m_info.players [nakedData.nDestPlayer].network.ipx.node, 
 									gameData.multiplayer.players [nakedData.nDestPlayer].netAddress);
 		nakedData.nLength = 0;
 		nakedData.nDestPlayer = -1;
@@ -519,8 +519,8 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		mybuf [2] = LOCALPLAYER.connected;
 	IPXSendPacketData (
 		reinterpret_cast<ubyte*> (mybuf), (gameStates.multi.nGameType == UDP_GAME) ? 3 : 2, 
-		netPlayers.m_info.players [nPlayer].network.ipx.server, 
-		netPlayers.m_info.players [nPlayer].network.ipx.node, 
+		netPlayers [0].m_info.players [nPlayer].network.ipx.server, 
+		netPlayers [0].m_info.players [nPlayer].network.ipx.node, 
 		gameData.multiplayer.players [nPlayer].netAddress);
 	}
 }
@@ -609,9 +609,9 @@ return (rank+1);
 
 void NetworkCheckForOldVersion (char pnum)
 {  
-if ((netPlayers.m_info.players [(int) pnum].versionMajor == 1) && 
-	 !(netPlayers.m_info.players [(int) pnum].versionMinor & 0x0F))
-	netPlayers.m_info.players [ (int) pnum].rank = 0;
+if ((netPlayers [0].m_info.players [(int) pnum].versionMajor == 1) && 
+	 !(netPlayers [0].m_info.players [(int) pnum].versionMinor & 0x0F))
+	netPlayers [0].m_info.players [ (int) pnum].rank = 0;
 }
 
 //------------------------------------------------------------------------------

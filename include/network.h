@@ -509,7 +509,7 @@ class CEndLevelInfo {
 
 
 #define NETGAME_INFO_SIZE       int (netGameInfo.Size ())
-#define ALLNETPLAYERSINFO_SIZE  int (netPlayers.Size ())
+#define ALLNETPLAYERSINFO_SIZE  int (netPlayers [0].Size ())
 #define LITE_INFO_SIZE          sizeof (tNetGameInfoLite)
 #define SEQUENCE_PACKET_SIZE    sizeof (tSequencePacket)
 #define FRAME_INFO_SIZE         sizeof (tFrameInfoLong)
@@ -552,7 +552,7 @@ char *iptos (char *pszIP, char *addr);
 
 extern CNetGameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 extern CAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
-extern CAllNetPlayersInfo *playerInfoP, tmpPlayersBase;
+extern CAllNetPlayersInfo* playerInfoP, netPlayers [2];
 extern int nCoopPenalties [10];
 
 #define COMPETITION	 (IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)

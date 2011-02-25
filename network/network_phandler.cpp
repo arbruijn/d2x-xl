@@ -121,12 +121,12 @@ return 1;
 int PlayersInfoHandler (ubyte *dataP, int nLength)
 {
 if (gameStates.multi.nGameType >= IPX_GAME)
-	ReceiveNetPlayersPacket (dataP, &tmpPlayersBase);
+	ReceiveNetPlayersPacket (dataP, &netPlayers [1]);
 else
-	memcpy (&tmpPlayersBase.m_info, dataP, tmpPlayersBase.Size ());
-if (NetworkBadSecurity (tmpPlayersBase.m_info.nSecurity, "PID_PLAYERSINFO"))
+	memcpy (&netPlayers [1].m_info, dataP, netPlayers [1].Size ());
+if (NetworkBadSecurity (netPlayers [1].m_info.nSecurity, "PID_PLAYERSINFO"))
 	return 0;
-playerInfoP = &tmpPlayersBase;
+playerInfoP = &netPlayers [1];
 networkData.bWaitingForPlayerInfo = 0;
 networkData.nSecurityNum = playerInfoP->m_info.nSecurity;
 networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_SYNC;

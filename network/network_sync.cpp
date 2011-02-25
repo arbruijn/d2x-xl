@@ -341,7 +341,7 @@ netGame.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
 netGame.m_info.gameStatus = networkData.nStatus;
 netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-	netPlayers.m_info.players [i].connected = gameData.multiplayer.players [i].connected;
+	netPlayers [0].m_info.players [i].connected = gameData.multiplayer.players [i].connected;
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
 		*netGame.Kills (i, j) = gameData.multigame.score.matrix [i][j];
 	*netGame.Killed (i) = gameData.multiplayer.players [i].netKilledTotal;
@@ -455,7 +455,7 @@ if (i < 0) {
 #endif
 	return -1;
 	}
-sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers.m_info.players [i].callsign, TXT_NET_TO_ENTER);
+sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers [0].m_info.players [i].callsign, TXT_NET_TO_ENTER);
 ResetSyncTimeout (true);
 //networkData.toSyncPoll [0] = 0;
 //networkData.toSyncPoll [1] = SDL_GetTicks ();
@@ -477,8 +477,8 @@ memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (me.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
 	memcpy (me.player.network.ipx.server, IpxGetMyServerAddress (), 4);
-	SendInternetSequencePacket (me, netPlayers.m_info.players [0].network.ipx.server, 
-										 netPlayers.m_info.players [0].network.ipx.node);
+	SendInternetSequencePacket (me, netPlayers [0].m_info.players [0].network.ipx.server, 
+										 netPlayers [0].m_info.players [0].network.ipx.node);
 }
 gameData.multiplayer.nPlayers = 0;
 SetFunctionMode (FMODE_MENU);
@@ -553,7 +553,7 @@ int NetworkWaitForPlayerInfo (void)
 {
 	int						size = 0, retries = 0;
 	ubyte						packet [MAX_PACKET_SIZE];
-	CAllNetPlayersInfo	tempPlayer;
+	CAllNetPlayersInfo	playerData;
 	uint						xTimeout;
 	ubyte						id = 0;
 
@@ -580,32 +580,27 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) && (SDL_GetTicks () <
 		}
 	if ((size > 0) && (id == PID_PLAYERSINFO)) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-		ReceiveNetPlayersPacket (packet, &info_struct);
-		tempPlayer = info_struct;
+		ReceiveNetPlayersPacket (packet, &playerData);
 #else
-		tempPlayer = *(reinterpret_cast<tAllNetPlayersInfo*> (packet));
+		playerData = *(reinterpret_cast<tAllNetPlayersInfo*> (packet));
 #endif
 		retries++;
 		if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_PLAYERS) {
 #if SECURITY_CHECK
-			if (networkData.nSecurityNum != tempPlayer.m_info.nSecurity)
+			if (networkData.nSecurityNum != playerData.m_info.nSecurity)
 				continue;
 #endif
-			tmpPlayersBase = tempPlayer;
-			playerInfoP = &tmpPlayersBase;
 			networkData.nSecurityFlag = NETSECURITY_OFF;
 			networkData.nSecurityNum = 0;
-			networkData.bWaitingForPlayerInfo = 0;
-			return 1;
 			}
 		else {
-			networkData.nSecurityNum = tempPlayer.m_info.nSecurity;
 			networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_GAMEINFO;
-			tmpPlayersBase = tempPlayer;
-			playerInfoP = &tmpPlayersBase;
-			networkData.bWaitingForPlayerInfo = 0;
-			return 1;
+			networkData.nSecurityNum = playerData.m_info.nSecurity;
 			}
+		netPlayers [1] = playerData;
+		playerInfoP = &netPlayers [1];
+		networkData.bWaitingForPlayerInfo = 0;
+		return 1;
 		}
 	}
 return 0;
@@ -617,7 +612,7 @@ void NetworkDoBigWait (int choice)
 {
 	int						size;
 	ubyte						packet [MAX_PACKET_SIZE], *data;
-	CAllNetPlayersInfo	tempPlayer;
+	CAllNetPlayersInfo	playerData;
   
 while (0 < (size = IpxGetPacketData (packet))) {
 	data = &packet [0];
@@ -666,22 +661,22 @@ while (0 < (size = IpxGetPacketData (packet))) {
 
 		case PID_PLAYERSINFO:
 			if (gameStates.multi.nGameType < IPX_GAME)
-				tempPlayer = *(reinterpret_cast<tAllNetPlayersInfo*> (data));
+				playerData = *(reinterpret_cast<tAllNetPlayersInfo*> (data));
 			else {
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-				tempPlayer = *(reinterpret_cast<tAllNetPlayersInfo*> (data));
+				playerData = *(reinterpret_cast<tAllNetPlayersInfo*> (data));
 #else
-				ReceiveNetPlayersPacket (data, &tempPlayer);
+				ReceiveNetPlayersPacket (data, &playerData);
 #endif
 				}
 #if SECURITY_CHECK
-			if (tempPlayer.m_info.nSecurity != networkData.nSecurityCheck) 
+			if (playerData.m_info.nSecurity != networkData.nSecurityCheck) 
 				break;     // If this isn't the guy we're looking for, move on
 #endif
-			tmpPlayersBase = tempPlayer;
-			playerInfoP = &tmpPlayersBase;
+			netPlayers [1] = playerData;
+			playerInfoP = &netPlayers [1];
 			networkData.bWaitingForPlayerInfo = 0;
-			networkData.nSecurityNum = tmpPlayersBase.m_info.nSecurity;
+			networkData.nSecurityNum = netPlayers [1].m_info.nSecurity;
 			networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_GAMEINFO;
 			break;
 
@@ -755,7 +750,7 @@ for (;;) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((gameData.multiplayer.players [i].connected != 0) && (i != gameData.multiplayer.nLocalPlayer)) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
-					NetworkDumpPlayer (netPlayers.m_info.players [i].network.ipx.server, netPlayers.m_info.players [i].network.ipx.node, DUMP_ABORTED);
+					NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.ipx.server, netPlayers [0].m_info.players [i].network.ipx.node, DUMP_ABORTED);
 				}
 			}
 			longjmp (gameExitPoint, 0);  

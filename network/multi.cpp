@@ -99,7 +99,7 @@ extern void SetFunctionMode (int);
 
 CNetGameInfo netGame;
 
-CAllNetPlayersInfo netPlayers;
+CAllNetPlayersInfo netPlayers [2];
 
 tBitmapIndex mpTextureIndex [MAX_PLAYERS][N_PLAYER_SHIP_TEXTURES];
 
@@ -4987,7 +4987,7 @@ if (oldrank!=GetMyNetRanking ()) {
 	if (!gameOpts->multi.bNoRankings) {
 		HUDInitMessage (TXT_PROMOTED, pszRankStrings [GetMyNetRanking ()]);
 		audio.PlaySound (SOUND_BUDDY_MET_GOAL, SOUNDCLASS_GENERIC, I2X (2));
-		netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
+		netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
 		}
 	}
 if (gameStates.multi.nGameType != UDP_GAME)
@@ -5009,7 +5009,7 @@ oldrank = GetMyNetRanking ();
 networkData.nNetLifeKilled++;
 if (oldrank != GetMyNetRanking ()) {
 	MultiSendRanking ();
-	netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
+	netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
 	if (!gameOpts->multi.bNoRankings)
 		HUDInitMessage (TXT_DEMOTED, pszRankStrings [GetMyNetRanking ()]);
 	}
@@ -5036,14 +5036,14 @@ void MultiDoRanking (char *buf)
 	int nPlayer = int (buf [1]);
 	char rank = buf [2];
 
-	if (netPlayers.m_info.players [nPlayer].rank<rank)
+	if (netPlayers [0].m_info.players [nPlayer].rank<rank)
 		strcpy (rankstr, TXT_RANKUP);
-	else if (netPlayers.m_info.players [nPlayer].rank>rank)
+	else if (netPlayers [0].m_info.players [nPlayer].rank>rank)
 		strcpy (rankstr, TXT_RANKDOWN);
 	else
 		return;
 
-	netPlayers.m_info.players [nPlayer].rank = rank;
+	netPlayers [0].m_info.players [nPlayer].rank = rank;
 
 	if (!gameOpts->multi.bNoRankings)
 		HUDInitMessage (TXT_RANKCHANGE2, gameData.multiplayer.players [nPlayer].callsign,

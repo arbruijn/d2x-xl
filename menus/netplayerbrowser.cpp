@@ -63,14 +63,14 @@ for (;;) {
 	m.AddInput (teamNames [0], CALLSIGN_LEN);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (!(teamVector & (1 << i))) {
-			m.AddMenu (netPlayers.m_info.players [i].callsign);
+			m.AddMenu (netPlayers [0].m_info.players [i].callsign);
 			playerIds [m.ToS () - 1] = i;
 			}
 		}
 	opt_team_b = m.AddInput (teamNames [1], CALLSIGN_LEN); 
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (teamVector & (1 << i)) {
-			m.AddMenu (netPlayers.m_info.players [i].callsign);
+			m.AddMenu (netPlayers [0].m_info.players [i].callsign);
 			playerIds [m.ToS () - 1] = i;
 			}
 		}
@@ -143,8 +143,8 @@ int AbortPlayerSelection (int nSavePlayers)
 for (int i = 1; i < nSavePlayers; i++) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			netPlayers.m_info.players [i].network.ipx.server, 
-			netPlayers.m_info.players [i].network.ipx.node, 
+			netPlayers [0].m_info.players [i].network.ipx.server, 
+			netPlayers [0].m_info.players [i].network.ipx.node, 
 			DUMP_ABORTED);
 	}
 
@@ -173,7 +173,7 @@ m [0].m_value = 1;                         // Assume server will play...
 if (gameOpts->multi.bNoRankings)
 	sprintf (text [0], "%d. %-20s", 1, LOCALPLAYER.callsign);
 else
-	sprintf (text [0], "%d. %s%-20s", 1, pszRankStrings [netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].rank], LOCALPLAYER.callsign);
+	sprintf (text [0], "%d. %s%-20s", 1, pszRankStrings [netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].rank], LOCALPLAYER.callsign);
 m.AddCheck (text [0], 0);
 for (i = 1; i < MAX_PLAYERS + 4; i++) {
 	sprintf (text [i], "%d.  %-20s", i + 1, "");
@@ -194,23 +194,23 @@ for (i = 0; i < nSavePlayers; i++) {
 	if (m [i].m_value) {
 		if (i > gameData.multiplayer.nPlayers) {
 			if (gameStates.multi.nGameType >= IPX_GAME) {
-				memcpy (netPlayers.m_info.players [gameData.multiplayer.nPlayers].network.ipx.node, 
-				netPlayers.m_info.players [i].network.ipx.node, 6);
-				memcpy (netPlayers.m_info.players [gameData.multiplayer.nPlayers].network.ipx.server, 
-				netPlayers.m_info.players [i].network.ipx.server, 4);
+				memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.ipx.node, 
+				netPlayers [0].m_info.players [i].network.ipx.node, 6);
+				memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.ipx.server, 
+				netPlayers [0].m_info.players [i].network.ipx.server, 4);
 				}
 			else {
-				netPlayers.m_info.players [gameData.multiplayer.nPlayers].network.appletalk.node = netPlayers.m_info.players [i].network.appletalk.node;
-				netPlayers.m_info.players [gameData.multiplayer.nPlayers].network.appletalk.net = netPlayers.m_info.players [i].network.appletalk.net;
-				netPlayers.m_info.players [gameData.multiplayer.nPlayers].network.appletalk.socket = netPlayers.m_info.players [i].network.appletalk.socket;
+				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.appletalk.node = netPlayers [0].m_info.players [i].network.appletalk.node;
+				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.appletalk.net = netPlayers [0].m_info.players [i].network.appletalk.net;
+				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.appletalk.socket = netPlayers [0].m_info.players [i].network.appletalk.socket;
 				}
 			memcpy (
-				netPlayers.m_info.players [gameData.multiplayer.nPlayers].callsign, 
-				netPlayers.m_info.players [i].callsign, CALLSIGN_LEN+1);
-			netPlayers.m_info.players [gameData.multiplayer.nPlayers].versionMajor = netPlayers.m_info.players [i].versionMajor;
-			netPlayers.m_info.players [gameData.multiplayer.nPlayers].versionMinor = netPlayers.m_info.players [i].versionMinor;
-			netPlayers.m_info.players [gameData.multiplayer.nPlayers].rank = netPlayers.m_info.players [i].rank;
-			ClipRank (reinterpret_cast<char*> (&netPlayers.m_info.players [gameData.multiplayer.nPlayers].rank));
+				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].callsign, 
+				netPlayers [0].m_info.players [i].callsign, CALLSIGN_LEN+1);
+			netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].versionMajor = netPlayers [0].m_info.players [i].versionMajor;
+			netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].versionMinor = netPlayers [0].m_info.players [i].versionMinor;
+			netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].rank = netPlayers [0].m_info.players [i].rank;
+			ClipRank (reinterpret_cast<char*> (&netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].rank));
 			NetworkCheckForOldVersion ((char)i);
 			}
 		gameData.multiplayer.players [gameData.multiplayer.nPlayers].connected = CONNECT_PLAYING;
@@ -218,24 +218,24 @@ for (i = 0; i < nSavePlayers; i++) {
 		}
 	else {
 		if (gameStates.multi.nGameType >= IPX_GAME)
-			NetworkDumpPlayer (netPlayers.m_info.players [i].network.ipx.server, netPlayers.m_info.players [i].network.ipx.node, DUMP_DORK);
+			NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.ipx.server, netPlayers [0].m_info.players [i].network.ipx.node, DUMP_DORK);
 		}
 	}
 
 for (i = gameData.multiplayer.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
 	if (gameStates.multi.nGameType >= IPX_GAME) {
-		memset (netPlayers.m_info.players [i].network.ipx.node, 0, 6);
-		memset (netPlayers.m_info.players [i].network.ipx.server, 0, 4);
+		memset (netPlayers [0].m_info.players [i].network.ipx.node, 0, 6);
+		memset (netPlayers [0].m_info.players [i].network.ipx.server, 0, 4);
 	   }
 	else {
-		netPlayers.m_info.players [i].network.appletalk.node = 0;
-		netPlayers.m_info.players [i].network.appletalk.net = 0;
-		netPlayers.m_info.players [i].network.appletalk.socket = 0;
+		netPlayers [0].m_info.players [i].network.appletalk.node = 0;
+		netPlayers [0].m_info.players [i].network.appletalk.net = 0;
+		netPlayers [0].m_info.players [i].network.appletalk.socket = 0;
 	   }
-	memset (netPlayers.m_info.players [i].callsign, 0, CALLSIGN_LEN+1);
-	netPlayers.m_info.players [i].versionMajor = 0;
-	netPlayers.m_info.players [i].versionMinor = 0;
-	netPlayers.m_info.players [i].rank = 0;
+	memset (netPlayers [0].m_info.players [i].callsign, 0, CALLSIGN_LEN+1);
+	netPlayers [0].m_info.players [i].versionMajor = 0;
+	netPlayers [0].m_info.players [i].versionMinor = 0;
+	netPlayers [0].m_info.players [i].rank = 0;
 	}
 #if 1			
 console.printf (CON_DBG, "Select teams: Game mode is %d\n", netGame.m_info.gameMode);

@@ -326,12 +326,12 @@ if (n < netGame.m_info.nNumPlayers) {
 	if (gameOpts->multi.bNoRankings)
 	   sprintf (menu [gameData.multiplayer.nPlayers - 1].m_text, "%d. %-20s", 
 					gameData.multiplayer.nPlayers, 
-					netPlayers.m_info.players [gameData.multiplayer.nPlayers-1].callsign);
+					netPlayers [0].m_info.players [gameData.multiplayer.nPlayers-1].callsign);
 	else
 	   sprintf (menu [gameData.multiplayer.nPlayers - 1].m_text, "%d. %s%-20s", 
 					gameData.multiplayer.nPlayers, 
-					pszRankStrings [netPlayers.m_info.players [gameData.multiplayer.nPlayers-1].rank], 
-					netPlayers.m_info.players [gameData.multiplayer.nPlayers-1].callsign);
+					pszRankStrings [netPlayers [0].m_info.players [gameData.multiplayer.nPlayers-1].rank], 
+					netPlayers [0].m_info.players [gameData.multiplayer.nPlayers-1].callsign);
 	menu [gameData.multiplayer.nPlayers - 1].m_bRebuild = 1;
 	if (gameData.multiplayer.nPlayers <= gameData.multiplayer.nMaxPlayers)
 		menu [gameData.multiplayer.nPlayers - 1].m_value = 1;
@@ -341,9 +341,9 @@ else if (n > netGame.m_info.nNumPlayers) {
    audio.PlaySound (SOUND_HUD_KILL);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (gameOpts->multi.bNoRankings)
-			sprintf (menu [i].m_text, "%d. %-20s", i+1, netPlayers.m_info.players [i].callsign);
+			sprintf (menu [i].m_text, "%d. %-20s", i+1, netPlayers [0].m_info.players [i].callsign);
 		else
-			sprintf (menu [i].m_text, "%d. %s%-20s", i+1, pszRankStrings [netPlayers.m_info.players [i].rank], netPlayers.m_info.players [i].callsign);
+			sprintf (menu [i].m_text, "%d. %s%-20s", i+1, pszRankStrings [netPlayers [0].m_info.players [i].rank], netPlayers [0].m_info.players [i].callsign);
 		menu [i].m_value = (i < gameData.multiplayer.nMaxPlayers);
 		menu [i].m_bRebuild = 1;
 		}

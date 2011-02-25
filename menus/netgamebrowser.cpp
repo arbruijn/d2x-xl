@@ -407,7 +407,7 @@ networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 	}
 // Choice is valid, prepare to join in
 netGame = activeNetGames [choice];
-netPlayers = activeNetPlayers [choice];
+netPlayers [0] = activeNetPlayers [choice];
 gameStates.app.nDifficultyLevel = netGame.m_info.difficulty;
 gameData.multiplayer.nMaxPlayers = netGame.m_info.nMaxPlayers;
 ChangePlayerNumTo (1);

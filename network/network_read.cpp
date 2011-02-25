@@ -111,7 +111,7 @@ if ((gameStates.multi.nGameType >= IPX_GAME) && (sp != &netGame)) { // for macin
 #endif
 
 if (rsinit)
-	playerInfoP = &netPlayers;
+	playerInfoP = &netPlayers [0];
 	// This function is now called by all people entering the netgame.
 if (sp != &netGame) {
 	char *p = reinterpret_cast<char*> (sp);
@@ -129,7 +129,7 @@ if (sp != &netGame) {
 			}
 		}
 	netGame = *sp;
-	netPlayers = *playerInfoP;
+	netPlayers [0] = *playerInfoP;
 	}
 gameData.multiplayer.nPlayers = sp->m_info.nNumPlayers;
 gameStates.app.nDifficultyLevel = sp->m_info.difficulty;
@@ -216,8 +216,8 @@ if (networkData.nJoinState) {
 gameData.multigame.score.nTeam [0] = *sp->TeamKills (0);
 gameData.multigame.score.nTeam [1] = *sp->TeamKills (1);
 LOCALPLAYER.connected = CONNECT_PLAYING;
-netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].connected = CONNECT_PLAYING;
-netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
+netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].connected = CONNECT_PLAYING;
+netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
 if (!networkData.nJoinState) {
 	int	j, bGotTeamSpawnPos = (IsTeamGame) && GotTeamSpawnPos ();
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
@@ -360,12 +360,12 @@ if (!gameData.multiplayer.players [nPlayer].connected) {
 	MultiMakeGhostPlayer (nPlayer);
 	OBJECTS [theirObjNum].CreateAppearanceEffect ();
 	audio.PlaySound (SOUND_HUD_MESSAGE);
-	ClipRank (reinterpret_cast<char*> (&netPlayers.m_info.players [nPlayer].rank));
+	ClipRank (reinterpret_cast<char*> (&netPlayers [0].m_info.players [nPlayer].rank));
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	else
 		HUDInitMessage ("%s'%s' %s",
-							 pszRankStrings [netPlayers.m_info.players [nPlayer].rank],
+							 pszRankStrings [netPlayers [0].m_info.players [nPlayer].rank],
 							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	MultiSendScore ();
 	}
@@ -474,12 +474,12 @@ if (!gameData.multiplayer.players [nPlayer].connected) {
 	MultiMakeGhostPlayer (nPlayer);
 	OBJECTS [nObject].CreateAppearanceEffect ();
 	audio.PlaySound (SOUND_HUD_MESSAGE);
-	ClipRank (reinterpret_cast<char*> (&netPlayers.m_info.players [nPlayer].rank));
+	ClipRank (reinterpret_cast<char*> (&netPlayers [0].m_info.players [nPlayer].rank));
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	else
 		HUDInitMessage ("%s'%s' %s",
-							 pszRankStrings [netPlayers.m_info.players [nPlayer].rank],
+							 pszRankStrings [netPlayers [0].m_info.players [nPlayer].rank],
 							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	MultiSendScore ();
 	}

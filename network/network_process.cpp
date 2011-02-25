@@ -216,8 +216,8 @@ void NetworkProcessRequest (tSequencePacket *their)
 	int i;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (!CmpNetPlayers (their->player.callsign, netPlayers.m_info.players [i].callsign, 
-								&their->player.network, &netPlayers.m_info.players [i].network)) {
+	if (!CmpNetPlayers (their->player.callsign, netPlayers [0].m_info.players [i].callsign, 
+								&their->player.network, &netPlayers [0].m_info.players [i].network)) {
 		gameData.multiplayer.players [i].connected = CONNECT_PLAYING;
 		break;
 		}

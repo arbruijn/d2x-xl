@@ -42,7 +42,7 @@ int NetworkFindPlayer (tNetPlayerInfo *playerP)
 	int	i;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (!CmpNetPlayers (NULL, NULL, &netPlayers.m_info.players [i].network, &playerP->network))
+	if (!CmpNetPlayers (NULL, NULL, &netPlayers [0].m_info.players [i].network, &playerP->network))
 		return i;         // already got them
 return -1;
 }
@@ -163,7 +163,7 @@ gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
 gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
 KillPlayerBullets (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 KillGatlingSmoke (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
-netPlayers.m_info.players [nPlayer].connected = CONNECT_DISCONNECTED;
+netPlayers [0].m_info.players [nPlayer].connected = CONNECT_DISCONNECTED;
 for (short i = 0; i < networkData.nJoining; i++)
 	if (networkData.sync [i].nPlayer == nPlayer)
 		DeleteSyncData (i);
@@ -189,11 +189,11 @@ nObject = gameData.multiplayer.players [nPlayer].nObject;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiConnect (nPlayer, nPlayer == gameData.multiplayer.nPlayers, their->player.callsign);
 memcpy (gameData.multiplayer.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN + 1);
-memcpy (netPlayers.m_info.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN + 1);
+memcpy (netPlayers [0].m_info.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN + 1);
 ClipRank (reinterpret_cast<char*> (&their->player.rank));
-netPlayers.m_info.players [nPlayer].rank = their->player.rank;
-netPlayers.m_info.players [nPlayer].versionMajor = their->player.versionMajor;
-netPlayers.m_info.players [nPlayer].versionMinor = their->player.versionMinor;
+netPlayers [0].m_info.players [nPlayer].rank = their->player.rank;
+netPlayers [0].m_info.players [nPlayer].versionMajor = their->player.versionMajor;
+netPlayers [0].m_info.players [nPlayer].versionMinor = their->player.versionMinor;
 NetworkCheckForOldVersion ((char) nPlayer);
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -205,7 +205,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	else
 		memcpy (gameData.multiplayer.players [nPlayer].netAddress, their->player.network.ipx.node, 6);
 	}
-memcpy (&netPlayers.m_info.players [nPlayer].network, &their->player.network, sizeof (tNetworkInfo));
+memcpy (&netPlayers [0].m_info.players [nPlayer].network, &their->player.network, sizeof (tNetworkInfo));
 gameData.multiplayer.players [nPlayer].nPacketsGot = 0;
 gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
 gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
@@ -251,7 +251,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		if (!memcmp (gameData.multiplayer.players [i].netAddress, anyAddress, 6) &&
 			 !stricmp (gameData.multiplayer.players [i].callsign, player->player.callsign)) {
 			memcpy (gameData.multiplayer.players [i].netAddress, newAddress, 6);
-			memcpy (netPlayers.m_info.players [i].network.ipx.node, newAddress, 6);
+			memcpy (netPlayers [0].m_info.players [i].network.ipx.node, newAddress, 6);
 			return i;
 			}
 		}
@@ -444,7 +444,7 @@ else {
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	else
-		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.m_info.players [nPlayer].rank], 
+		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers [0].m_info.players [nPlayer].rank], 
 							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	}
 if (IsTeamGame)
@@ -472,7 +472,7 @@ void NetworkAddPlayer (tSequencePacket *player)
 
 if (NetworkFindPlayer (&player->player) > -1)
 	return;
-npiP = netPlayers.m_info.players + gameData.multiplayer.nPlayers;
+npiP = netPlayers [0].m_info.players + gameData.multiplayer.nPlayers;
 memcpy (&npiP->network, &player->player.network, sizeof (tNetworkInfo));
 ClipRank (reinterpret_cast<char*> (&player->player.rank));
 memcpy (npiP->callsign, player->player.callsign, CALLSIGN_LEN + 1);
@@ -503,13 +503,13 @@ if (pn < 0)
 
 for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
 	j = i++;
-	memcpy (&netPlayers.m_info.players [j].network, &netPlayers.m_info.players [i].network.ipx.node, 
+	memcpy (&netPlayers [0].m_info.players [j].network, &netPlayers [0].m_info.players [i].network.ipx.node, 
 			  sizeof (tNetworkInfo));
-	memcpy (netPlayers.m_info.players [j].callsign, netPlayers.m_info.players [i].callsign, CALLSIGN_LEN + 1);
-	netPlayers.m_info.players [j].versionMajor = netPlayers.m_info.players [i].versionMajor;
-	netPlayers.m_info.players [j].versionMinor = netPlayers.m_info.players [i].versionMinor;
-   netPlayers.m_info.players [j].rank = netPlayers.m_info.players [i].rank;
-	ClipRank (reinterpret_cast<char*> (&netPlayers.m_info.players [j].rank));
+	memcpy (netPlayers [0].m_info.players [j].callsign, netPlayers [0].m_info.players [i].callsign, CALLSIGN_LEN + 1);
+	netPlayers [0].m_info.players [j].versionMajor = netPlayers [0].m_info.players [i].versionMajor;
+	netPlayers [0].m_info.players [j].versionMinor = netPlayers [0].m_info.players [i].versionMinor;
+   netPlayers [0].m_info.players [j].rank = netPlayers [0].m_info.players [i].rank;
+	ClipRank (reinterpret_cast<char*> (&netPlayers [0].m_info.players [j].rank));
    NetworkCheckForOldVersion ((char) i);
 	}
 gameData.multiplayer.nPlayers--;

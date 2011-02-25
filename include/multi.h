@@ -544,7 +544,7 @@ typedef struct tMultiRobotData {
 } __pack__ tMultiRobotData;
 
 extern CNetGameInfo netGame;
-extern CAllNetPlayersInfo netPlayers;
+extern CAllNetPlayersInfo netPlayers [2];
 
 int IAmGameHost (void);
 void ChangePlayerNumTo (int new_pnum);

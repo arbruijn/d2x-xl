@@ -101,11 +101,11 @@ void BESwapObject (CObject *obj);
 #else
 
 #define ReceiveNetPlayersPacket(data, pinfo) \
-	memcpy (pinfo, data, int (netPlayers.Size ()))
+	memcpy (pinfo, data, int (netPlayers [0].Size ()))
 #define SendNetPlayersPacket(server, node) \
-	IPXSendInternetPacketData((ubyte *)&netPlayers, int (netPlayers.Size ()), server, node)
+	IPXSendInternetPacketData((ubyte *)&netPlayers [0], int (netPlayers [0].Size ()), server, node)
 #define SendBroadcastNetPlayersPacket() \
-	IPXSendBroadcastData((ubyte *)&netPlayers, int (netPlayers.Size ()))
+	IPXSendBroadcastData((ubyte *)&netPlayers [0], int (netPlayers [0].Size ()))
 
 #define SendSequencePacket(seq, server, node, netAddress) \
 	IPXSendPacketData((ubyte *)&seq, sizeof(tSequencePacket), server, node, netAddress)
