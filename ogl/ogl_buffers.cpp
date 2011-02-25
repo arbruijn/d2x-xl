@@ -444,7 +444,7 @@ if (ogl.m_states.hDepthBuffer [bFBO]) {
 
 GLuint COGL::CopyDepthTexture (int nId)
 {
-	static int nSamples = 0;
+	static int nSamples = -1;
 	static int nDuration = 0;
 
 	GLenum nError = glGetError ();
@@ -480,12 +480,14 @@ if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTex
 		}
 	}
 if (t > 0) {
-	nDuration += SDL_GetTicks () - t;
-	if ((++nSamples >= 5) && (nDuration / nSamples > 10)) {
-		PrintLog ("Disabling depth buffer reads (average read time: %d ms)\n", nDuration / nSamples);
-		ogl.m_states.bDepthBlending = -1;
-		DestroyDepthTexture (nId);
-		m_states.hDepthBuffer [nId] = 0;
+	if (++nSamples > 0) {
+		nDuration += SDL_GetTicks () - t;
+		if ((nSamples >= 5) && (nDuration / nSamples > 10)) {
+			PrintLog ("Disabling depth buffer reads (average read time: %d ms)\n", nDuration / nSamples);
+			ogl.m_states.bDepthBlending = -1;
+			DestroyDepthTexture (nId);
+			m_states.hDepthBuffer [nId] = 0;
+			}
 		}
 	}
 return m_states.hDepthBuffer [nId];
