@@ -40,7 +40,7 @@ CGlareRenderer glareRenderer;
 
 int CGlareRenderer::Style (void)
 {
-return ogl.m_states.bDepthBlending && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle && !gameStates.render.cameras.bActive;
+return (ogl.m_states.bDepthBlending > 0) && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle && !gameStates.render.cameras.bActive;
 }
 
 // -----------------------------------------------------------------------------------
@@ -641,7 +641,7 @@ ogl.ClearError (0);
 ogl.m_states.bUseDepthBlending = 0;
 if (!gameOpts->render.bUseShaders)
 	return false;
-if (!ogl.m_states.bDepthBlending) 
+if (ogl.m_states.bDepthBlending < 1)
 	return false;
 if (!ogl.CopyDepthTexture ())
 	return false;
@@ -727,16 +727,16 @@ const char *glareVS =
 
 void CGlareRenderer::InitShader (void)
 {
-ogl.m_states.bDepthBlending = 0;
+if (ogl.m_states.bDepthBlending > -1) {
 #if SHADER_SOFT_CORONAS
-PrintLog ("building corona blending shader program\n");
-//DeleteShaderProg (NULL);
-if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
-	ogl.m_states.bDepthBlending = 1;
-	m_shaderProg = 0;
-	if (!shaderManager.Build (hGlareShader, glareFS, glareVS)) {
-		ogl.ClearError (0);
-		ogl.m_states.bDepthBlending = 0;
+	PrintLog ("building corona blending shader program\n");
+	if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
+		ogl.m_states.bDepthBlending = 1;
+		m_shaderProg = 0;
+		if (!shaderManager.Build (hGlareShader, glareFS, glareVS)) {
+			ogl.ClearError (0);
+			ogl.m_states.bDepthBlending = -1;
+			}
 		}
 	}
 #endif
