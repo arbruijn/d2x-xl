@@ -891,10 +891,10 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 		}
 	}
 else {
-	SetupShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL,
-						(item->nSegment < 0) || !automap.Display () || automap.m_visited [item->nSegment],
-						bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
-	OglDrawArrays (item->nPrimitive, 0, item->nVertices);
+	if (0 >= (SetupShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL,
+								  (item->nSegment < 0) || !automap.Display () || automap.m_visited [item->nSegment],
+								  bTextured ? NULL : faceP ? &faceP->m_info.color : item->color)))
+		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
 ogl.ResetTransform (faceP != NULL);
 gameData.render.nTotalFaces++;
@@ -924,7 +924,7 @@ ResetBitmaps ();
 
 void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
-return;
+
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 	int bGlow = 1;
 

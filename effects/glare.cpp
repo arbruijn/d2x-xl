@@ -639,6 +639,8 @@ bool CGlareRenderer::LoadShader (float dMax, int nBlendMode)
 
 ogl.ClearError (0);
 ogl.m_states.bUseDepthBlending = 0;
+if (!gameOpts->render.bUseShaders)
+	return false;
 if (!ogl.m_states.bDepthBlending) 
 	return false;
 if (!ogl.CopyDepthTexture ())

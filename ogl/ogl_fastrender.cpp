@@ -425,7 +425,7 @@ if (bmTop) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
 gameStates.render.history.nType = (bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL));
-if (gameOpts->render.bUseShaders && bTransparent && (gameStates.render.nType < RENDER_TYPE_SKYBOX) && !bMonitor) {
+if (/*gameOpts->render.bUseShaders &&*/ bTransparent && (gameStates.render.nType < RENDER_TYPE_SKYBOX) && !bMonitor) {
 	faceP->m_info.nRenderType = gameStates.render.history.nType;
 	faceP->m_info.bColored = bColored;
 	transparencyRenderer.AddFace (faceP);

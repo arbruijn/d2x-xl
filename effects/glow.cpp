@@ -317,6 +317,8 @@ bool CGlowRenderer::Available (int const nType, bool bForce)
 {
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
+if (!gameOpts->render.bUseShaders)
+	return false;
 if (!ogl.m_states.bGlowRendering)
 	return false;
 if (!gameOpts->render.effects.bEnabled)
