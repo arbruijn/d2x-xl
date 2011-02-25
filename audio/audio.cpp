@@ -697,6 +697,7 @@ m_info.fSlowDown = 1.0f;
 m_channels.Resize (m_info.nMaxChannels);
 m_usedChannels.Resize (m_info.nMaxChannels);
 m_objects.Resize (MAX_SOUND_OBJECTS);
+m_bSDLInitialized = false;
 InitSounds ();
 }
 
@@ -710,24 +711,35 @@ m_objects.Destroy ();
 }
 
 //------------------------------------------------------------------------------
-/* Initialise audio devices. */
-int CAudio::Setup (float fSlowDown, int nFormat)
-{
-	static bool bSDLInitialized = false;
 
+int CAudio::AudioError (void)
+{
+SDL_QuitSubSystem (SDL_INIT_AUDIO);
+PrintLog (TXT_SDL_INIT_AUDIO, SDL_GetError ()); PrintLog ("\n");
+Error (TXT_SDL_INIT_AUDIO, SDL_GetError ());
+Destroy ();
+m_bSDLInitialized = false;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+/* Initialise audio devices. */
+int CAudio::Setup (float fSlowDown, int nFormat, const char* driver)
+{
 if (!gameStates.app.bUseSound)
 	return 1;
 
-if (bSDLInitialized) {
-	SDL_QuitSubSystem (SDL_INIT_AUDIO);
-	Destroy ();
+if (!m_bSDLInitialized) {
+	if (driver && *driver) {
+		char szEnvVar [100];
+		sprintf (szEnvVar, "SDL_AUDIODRIVER=%s", driver);
+		SDL_putenv (szEnvVar);
+		}
+	if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0)
+		return AudioError ();
+	m_bSDLInitialized = true;
 	}
-if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0) {
-	PrintLog (TXT_SDL_INIT_AUDIO, SDL_GetError ()); PrintLog ("\n");
-	Error (TXT_SDL_INIT_AUDIO, SDL_GetError ());
-	return 1;
-	}
-bSDLInitialized = true;
+
 Init ();
 if (nFormat >= 0)
 	m_info.nFormat = nFormat;
@@ -786,6 +798,7 @@ else
 	waveSpec.samples = SOUND_BUFFER_SIZE * (gameOpts->sound.audioSampleRate / SAMPLE_RATE_11K);
 	waveSpec.callback = CAudio::MixCallback;
 	if (SDL_OpenAudio (&waveSpec, NULL) < 0) {
+		SDL_QuitSubSystem (SDL_INIT_AUDIO);
 		PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
 		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
 		return 1;

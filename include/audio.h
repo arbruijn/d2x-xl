@@ -272,6 +272,11 @@ class CAudio {
 		CArray<CAudioChannel>	m_channels;
 		CStack<CSoundObject>		m_objects;
 		CStack<int>					m_usedChannels;
+		bool							m_bSDLInitialized;
+
+	private:
+		int AudioError (void);
+		int Setup (float fSlowDown, int nFormat, const char* driver);
 
 	public:
 		CAudio ();
@@ -281,7 +286,9 @@ class CAudio {
 		int InitThread (void);
 #endif
 		void Destroy (void);
-		int Setup (float fSlowDown, int nFormat = -1);
+		inline int Setup (float fSlowDown, int nFormat = -1) {
+			return Setup (fSlowDown, nFormat, NULL) ? Setup (fSlowDown, nFormat, "alsa") : 0;
+			}
 		void Cleanup (void);
 		void Shutdown (void);
 		void Close (void);

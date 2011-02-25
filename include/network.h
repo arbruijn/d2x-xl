@@ -100,9 +100,9 @@ typedef struct tSequencePacket {
 // frame info is aligned -- 01/18/96 -- MWA
 // if you change this structure -- be sure to keep
 // alignment:
-//      bytes on byte boundries
-//      shorts on even byte boundries
-//      ints on even byte boundries
+//      bytes on byte boundaries
+//      shorts on even byte boundaries
+//      ints on even byte boundaries
 
 typedef struct tFrameInfoLong {
 	ubyte       nType;                   // What nType of packet
