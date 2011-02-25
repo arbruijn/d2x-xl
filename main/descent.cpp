@@ -890,7 +890,7 @@ if (gameConfig.nTotalTime > (20 * 60)) {	// played for more than 25 hours
 
 void HardwareCheck (void)
 {
-if (glHWHash == 0xf825fcfe) {
+if (glHWHash == (int) 0xf825fcfe) {
 	SetScreenMode (SCREEN_MENU);
 	int nFade = gameOpts->menus.nFade;
 	for (int h = 0; ; h++) {

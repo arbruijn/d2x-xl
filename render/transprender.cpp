@@ -197,7 +197,8 @@ else if (nDepth > m_data.zMax) {
 #if USE_OPENMP > 1
 #	pragma omp critical (transpRender)
 #elif !USE_OPENMP
-SDL_mutexP (tiRender.semaphore);
+if (gameStates.app.bMultiThreaded)
+	SDL_mutexP (tiRender.semaphore);
 #endif
 if (AllocBuffers ()) {
 	nOffset = int (double (nDepth) * m_data.zScale);
@@ -239,7 +240,8 @@ if (AllocBuffers ()) {
 		}
 	}
 #if !USE_OPENMP
-SDL_mutexV (tiRender.semaphore);
+if (gameStates.app.bMultiThreaded)
+	SDL_mutexV (tiRender.semaphore);
 #endif
 
 return m_data.nFreeItems;
@@ -922,6 +924,7 @@ ResetBitmaps ();
 
 void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
+return;
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 	int bGlow = 1;
 
@@ -1291,7 +1294,6 @@ PROF_START
 gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
 shaderManager.Deploy (-1);
 bStencil = ogl.StencilOff ();
-ogl.ResetClientStates ();
 ResetBitmaps ();
 m_data.bTextured = -1;
 m_data.bUseLightmaps = 0;
@@ -1314,6 +1316,7 @@ ogl.SetFaceCulling (true);
 ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
+
 for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {
 	if ((currentP = listP->head)) {
 		if (bCleanup)
@@ -1347,6 +1350,7 @@ for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (
 			} while (currentP);
 		}
 	}
+
 #if 0 //DBG
 if (bCleanup) {
 	currentP = m_data.itemLists.Buffer ();

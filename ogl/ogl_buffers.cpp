@@ -450,6 +450,8 @@ GLuint COGL::CopyDepthTexture (int nId)
 if (nError)
 	nError = nError;
 #endif
+if (!gameOpts->render.bUseShaders)
+	return m_states.hDepthBuffer [nId] = 0;
 SelectTMU (GL_TEXTURE1);
 SetTexturing (true);
 if (!m_states.hDepthBuffer [nId])
