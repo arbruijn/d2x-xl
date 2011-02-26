@@ -413,7 +413,7 @@ gameData.multiplayer.nMaxPlayers = netGame.m_info.nMaxPlayers;
 
 if (SetLocalPlayer (&netPlayers [0], netGame.m_info.nNumPlayers, 1) < 0)
 	return 0;
-ChangePlayerNumTo (1);
+
 memcpy (LOCALPLAYER.callsign, callsign, sizeof (callsign));
 // Handle the extra data for the network driver
 // For the mcast4 driver, this is the game's multicast address, to
