@@ -45,8 +45,6 @@ CTransparencyRenderer transparencyRenderer;
 
 #define LAZY_RESET 1
 
-static int nAdded = 0, nRendered = 0;
-
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -160,6 +158,8 @@ if (m_data.bAllowAdd > 0)
 	m_data.vViewerf [0].Assign (m_data.vViewer [0]);
 	m_data.vViewerf [1].Assign (m_data.vViewer [1]);
 	}
+m_data.bRenderGlow =
+m_data.bSoftBlend = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -426,6 +426,10 @@ else
 	v /= item.nVertices;
 	CFixVector vPos;
 	vPos.Assign (v);
+	if (bAdditive & 3)
+		m_data.bRenderGlow = 1;
+	if ((gameOpts->render.effects.bSoftParticles & 1) != 0)
+		m_data.bSoftBlend = 1;
 	return Add ((faceP || triP) ? tiFace : tiPoly, &item, sizeof (item), vPos, 0, true);
 	}
 }
@@ -513,6 +517,10 @@ item.nFrame = nFrame;
 item.bAdditive = bAdditive;
 item.fSoftRad = fSoftRad;
 item.position.Assign (position);
+if (bAdditive & 3)
+	m_data.bRenderGlow = 1;
+if ((gameOpts->render.effects.bSoftParticles & 1) != 0)
+	m_data.bSoftBlend = 1;
 return Add (tiSprite, &item, sizeof (item), position);
 }
 
@@ -527,7 +535,8 @@ item.nSize = nSize;
 item.nFrame = nFrame;
 item.nType = nType;
 item.position.Assign (position);
-//transformation.Transform (vPos, position, 0);
+if (gameOpts->render.effects.bSoftParticles & 2)
+	m_data.bSoftBlend = 1;
 return Add (tiSpark, &item, sizeof (item), position);
 }
 
@@ -546,6 +555,8 @@ item.color.alpha = alpha;
 item.nSize = nSize;
 item.bAdditive = bAdditive;
 item.objP = objP;
+if (nType != riMonsterball)
+	m_data.bRenderGlow = 1;
 //transformation.Transform (vPos, objP->info.position.vPos, 0);
 return Add (tiSphere, &item, sizeof (item), objP->info.position.vPos);
 }
@@ -562,7 +573,9 @@ if ((particle->m_nType < 0) || (particle->m_nType >= PARTICLE_TYPES))
 item.particle = particle;
 item.fBrightness = fBrightness;
 //particle->Transform (gameStates.render.bPerPixelLighting == 2);
-return Add (tiParticle, &item, sizeof (item), particle->m_vPos, 10); //(gameOpts->render.effects.bSoftParticles & 1) ? -10 : 0);
+if (gameOpts->render.effects.bSoftParticles & 4)
+	m_data.bSoftBlend = 1;
+return Add (tiParticle, &item, sizeof (item), particle->m_vPos, 10);
 }
 
 //------------------------------------------------------------------------------
@@ -590,9 +603,9 @@ if (d2 > m_data.zMax)
 	return 0;
 if (d1 < m_data.zMin)
 	return 0;
+m_data.bRenderGlow = 1;
 if (!Add (tiLightning, &item, sizeof (item), bSwap ? lightningP->m_vEnd : lightningP->m_vPos /*CFixVector::Avg (lightningP->m_vPos, lightningP->m_vEnd)*/, 0, true, 0)) // -1))
 	return 0;
-nAdded++;
 return 1;
 }
 
@@ -624,6 +637,7 @@ for (i = 0; i < j; i++) {
 		}
 	}
 v.Assign (item.vertices [iMin]);
+m_data.bRenderGlow = 1;
 return Add (tiLightTrail, &item, sizeof (item), v, 0, false, 0);
 }
 
@@ -640,6 +654,7 @@ item.nThruster = nThruster;
 if (Add (tiThruster, &item, sizeof (item), infoP->vPos [nThruster], 0, false, 0))
 	return 1;
 #endif
+m_data.bRenderGlow = 1;
 return Add (tiThruster, &item, sizeof (item), infoP->vPos [nThruster], 0, false, 0);
 }
 
@@ -697,11 +712,11 @@ void CTransparencyRenderer::RenderPoly (tTranspPoly *item)
 {
 PROF_START
 	CBitmap*		bmP = item->bmP;
-	int			bSoftBlend = (gameOpts->render.effects.bSoftParticles & 1) != 0;
+	int			bSoftBlend = SoftBlend (1);
 
 ogl.ResetClientStates (1);
 m_data.bmP [1] = m_data.bmP [2] = NULL;
-if ((item->bAdditive == 1) || (item->bAdditive == 2))
+if (item->bAdditive & 3)
 	glowRenderer.Begin (GLOW_POLYS, 2, false, 1.0f);
 ogl.EnableClientStates (bmP != NULL, item->nColors == item->nVertices, 0, GL_TEXTURE0);
 if (LoadTexture (bmP, 0, 0, 0, item->nWrap)) {
@@ -777,7 +792,7 @@ else {
 	}
 
 int bAdditive = item->bAdditive, nIndex = triP ? triP->nIndex : faceP->m_info.nIndex;
-if ((bAdditive == 1) || (bAdditive == 2))
+if (bAdditive & 3)
 	glowRenderer.Begin (GLOW_FACES, 2, false, 1.0f);
 #if 0 //DBG
 m_data.bmP [0] = NULL;
@@ -925,7 +940,7 @@ ResetBitmaps ();
 void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
 
-	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
+	int bSoftBlend = (item->fSoftRad > 0) && SoftBlend (1);
 	int bGlow = 1;
 
 if (glowRenderer.Available (GLOW_SPRITES)) {
@@ -991,7 +1006,7 @@ if (!sparkBuffer.nSparks)
 
 sparkArea.Reset ();
 
-	int bSoftBlend = !gameStates.render.cameras.bActive && ((gameOpts->render.effects.bSoftParticles & 2) != 0);
+	int bSoftBlend = SoftBlend (2);
 
 ogl.ResetClientStates (1);
 m_data.bmP [1] = m_data.bmP [2] = NULL;
@@ -1116,7 +1131,6 @@ if (m_data.nPrevType != m_data.nCurType) {
 	shaderManager.Deploy (-1);
 	}
 item->lightning->Render (item->nDepth, 0);
-nRendered++;
 ResetBitmaps ();
 }
 
@@ -1277,6 +1291,28 @@ return m_data.nCurType;
 
 //------------------------------------------------------------------------------
 
+int CTransparencyRenderer::NeedDepthBuffer (void)
+{
+if (!gameOpts->render.bUseShaders)
+	return 0;
+if (!gameOpts->render.effects.bEnabled)
+	return 0;
+if (!ogl.m_states.bGlowRendering)
+	return true;
+if (gameStates.render.cameras.bActive)
+	return 0;
+return int (m_data.bRenderGlow || m_data.bSoftBlend);
+}
+
+//------------------------------------------------------------------------------
+
+int CTransparencyRenderer::SoftBlend (int nFlag)
+{
+return m_data.bHaveDepthBuffer && !gameStates.render.cameras.bActive && ((gameOpts->render.effects.bSoftParticles & nFlag) != 0);
+}
+
+//------------------------------------------------------------------------------
+
 extern int bLog;
 
 void CTransparencyRenderer::Render (int nWindow)
@@ -1304,6 +1340,10 @@ m_data.nWrap = 0;
 m_data.nFrame = -1;
 m_data.bmP [0] =
 m_data.bmP [1] = NULL;
+if (!glowRenderer.Available (0xFFFFFFFF))
+	m_data.bRenderGlow = 0;
+if (gameOptions [0].render.nQuality < 3)
+	m_data.bSoftBlend = 0;
 sparkBuffer.nSparks = 0;
 ogl.DisableLighting ();
 ogl.ResetClientStates ();
@@ -1313,7 +1353,7 @@ m_data.bHaveParticles = particleImageManager.LoadAll ();
 ogl.SetBlendMode (0);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetFaceCulling (true);
-ogl.CopyDepthTexture (1);
+m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 
@@ -1378,7 +1418,6 @@ if (bCleanup) {
 	}
 glowRenderer.End ();
 PROF_END(ptTranspPolys)
-nAdded = nRendered = 0;
 #endif
 }
 

@@ -156,6 +156,9 @@ typedef struct tTranspItemBuffer {
 	char					bDecal;
 	char					bSplitPolys;
 	char					bAllowAdd;
+	char					bHaveDepthBuffer;
+	char					bRenderGlow;
+	char					bSoftBlend;
 	CBitmap*				bmP [3];
 	CFixVector			vViewer [2];
 	CFloatVector		vViewerf [2];
@@ -235,6 +238,9 @@ class CTransparencyRenderer {
 		int AddFaceQuads (CSegFace *faceP);
 		void ResetBitmaps (void);
 		int LoadTexture (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap);
+
+		int CTransparencyRenderer::NeedDepthBuffer (void);
+		int CTransparencyRenderer::SoftBlend (int nFlag);
 
 		void FlushSparkBuffer (void);
 		void FlushParticleBuffer (int nType);
