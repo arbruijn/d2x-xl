@@ -669,7 +669,8 @@ wsP->nThrusters [1] = buf [23];
 wsP->nThrusters [2] = buf [24];
 wsP->nThrusters [3] = buf [25];
 wsP->nThrusters [4] = buf [26];
-wsP->nShip = buf [27];
+if (2 < (wsP->nShip = buf [27]))
+ wsP->nShip = 1;
 for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
 	if (fP->nDuration) {
 		if (fP->nStart <= 0) {
