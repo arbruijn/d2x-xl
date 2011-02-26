@@ -21,7 +21,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define IPX_PACKET_SIZE		576
 #define IPX_PAYLOAD_SIZE	542
-#define UDP_PACKET_SIZE		1426	// 1024 + 256 + 128 + UDP_HEADER_SIZE; data transfer may be unstable at larger sizes for me (?); was previously 1492	(PPPoE MTU)
+#define PPPoE_MTU				1492	// typical PPPoE based DSL MTU (MTUs can differ depending on protocols used for DSL connection)
+#define UDP_PACKET_SIZE		PPPoE_MTU
 #define UDP_HEADER_SIZE		18		//4 bytes for general networking, 14 bytes for udp stuff
 #define UDP_PAYLOAD_SIZE	(UDP_PACKET_SIZE - UDP_HEADER_SIZE)		
 

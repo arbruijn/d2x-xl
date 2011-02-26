@@ -8,23 +8,27 @@
 #define PID_DL_END		72
 #define PID_DL_ERROR		73
 
-#define	DL_AVAILABLE	0
+#define DL_AVAILABLE		0
 #define DL_CONNECT		1
 #define DL_CONNECTED		2
-#define	DL_OPEN_HOG		3
-#define	DL_SEND_HOG		4
-#define	DL_OPEN_MSN		5
-#define	DL_SEND_MSN		6
-#define	DL_FINISH		7
+#define DL_OPEN_HOG		3
+#define DL_SEND_HOG		4
+#define DL_OPEN_MSN		5
+#define DL_SEND_MSN		6
+#define DL_FINISH			7
 #define DL_DONE			8
 #define DL_CREATE_FILE	9
 #define DL_DATA			10
 #define DL_CANCEL			254
 #define DL_ERROR			255
 
+// Actually using some MTU as packet size for TCP isn't necessary as TCP will properly packetize outgoing data depending on the actual
+// local MTU. Some meaningful packet size should be used anyway though, and using a common MTU here shouldn't be the worst idea.
+
 #define DL_HEADER_SIZE		5
-#define DL_PACKET_SIZE		(5 * 1413) // 1024 + 256 + 128 + DL_HEADER_SIZE; data transfer will be unstable at larger sizes for me (?)
+#define DL_PACKET_SIZE		PPPoE_MTU // 1024 + 256 + 128 + DL_HEADER_SIZE; data transfer will be unstable at larger sizes for me (?)
 #define DL_PAYLOAD_SIZE		(DL_PACKET_SIZE - DL_HEADER_SIZE)
+
 
 // upload buffer
 // format:
