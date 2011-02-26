@@ -96,22 +96,23 @@ ResetPlayerTimeout (nPlayer, -1);
 
 //------------------------------------------------------------------------------
 
-int SetLocalPlayer (CAllNetPlayersInfo* playerInfoP)
+int SetLocalPlayer (CAllNetPlayersInfo* playerInfoP, int nDefault)
 {
-	tNetPlayerInfo*	playerP;
+	tNetPlayerInfo*	playerP = playerInfoP->m_info.players;
+	int					nLocalPlayer = -1;
 
-for (int i = 0, j = -1, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPlayers; i++, playerP++) {
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if (!CmpLocalPlayer (&playerP->network, playerP->callsign, szLocalCallSign)) {
-		if (j != -1) {
+		if (nLocalPlayer != -1) {
 			MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
 			console.printf (CON_DBG, TXT_FOUND_TWICE);
 			networkData.nStatus = NETSTAT_MENU;
 			return -1;
 			}
-		ChangePlayerNumTo (j = i);
+		ChangePlayerNumTo (nLocalPlayer = i);
 		}
 	}
-return j;
+return (nLocalPlayer < 0) ? nDefault : nLocalPlayer;
 }
 
 //------------------------------------------------------------------------------

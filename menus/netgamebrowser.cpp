@@ -411,7 +411,7 @@ netPlayers [0] = activeNetPlayers [choice];
 gameStates.app.nDifficultyLevel = netGame.m_info.difficulty;
 gameData.multiplayer.nMaxPlayers = netGame.m_info.nMaxPlayers;
 
-if (SetLocalPlayer (&netPlayers [0]) < 0)
+if (SetLocalPlayer (&netPlayers [0], 1) < 0)
 	return 0;
 
 memcpy (LOCALPLAYER.callsign, callsign, sizeof (callsign));

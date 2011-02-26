@@ -548,7 +548,7 @@ extern CAllNetPlayersInfo netPlayers [2];
 
 int IAmGameHost (void);
 void ChangePlayerNumTo (int nPlayer);
-int SetLocalPlayer (CAllNetPlayersInfo* playerInfoP);
+int SetLocalPlayer (CAllNetPlayersInfo* playerInfoP, int nDefault = -1);
 
 //how to encode missiles & flares in weapon packets
 #define MISSILE_ADJUST  100
