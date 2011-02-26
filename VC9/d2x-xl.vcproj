@@ -6269,15 +6269,15 @@
 						>
 					</File>
 					<File
-						RelativePath="..\network\include\win32\ipx_drv.h"
+						RelativePath="..\network\win32\include\ipx_drv.h"
 						>
 					</File>
 					<File
-						RelativePath="..\network\include\win32\ipx_mcast4.h"
+						RelativePath="..\network\win32\include\ipx_mcast4.h"
 						>
 					</File>
 					<File
-						RelativePath="..\network\include\win32\ipx_udp.h"
+						RelativePath="..\network\win32\include\ipx_udp.h"
 						>
 					</File>
 					<File
@@ -10724,11 +10724,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

@@ -10,8 +10,6 @@
 #ifndef _IPX_DOSEMU
 #define _IPX_DOSEMU
 
-#define MAX_PACKET_DATA		1500
-
 typedef struct IPXAddressStruct {
   u_char Network[4] __attribute__((packed));
   u_char Node[6] __attribute__((packed));

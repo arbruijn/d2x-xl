@@ -16,14 +16,12 @@
 #define IPX_MANUAL_ADDRESS
 
 #ifdef _WIN32
-#	include <winsock.h>
+//#	include <winsock.h>
 #else
 #	include <sys/socket.h>
 #endif
 
 #include "pstypes.h"
-
-#define MAX_PACKET_DATA 1500
 
 #ifdef _WIN32
 #pragma pack (push, 1)
