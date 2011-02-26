@@ -99,8 +99,10 @@ ResetPlayerTimeout (nPlayer, -1);
 int SetLocalPlayer (CAllNetPlayersInfo* playerInfoP, int nDefault)
 {
 	tNetPlayerInfo*	playerP = playerInfoP->m_info.players;
+	char					szLocalCallSign [CALLSIGN_LEN+1];
 	int					nLocalPlayer = -1;
 
+memcpy (szLocalCallSign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if (!CmpLocalPlayer (&playerP->network, playerP->callsign, szLocalCallSign)) {
 		if (nLocalPlayer != -1) {
@@ -120,7 +122,6 @@ return (nLocalPlayer < 0) ? nDefault : nLocalPlayer;
 void NetworkProcessSyncPacket (CNetGameInfo * netGameInfoP, int rsinit)
 {
 	tNetPlayerInfo*	playerP;
-	char					szLocalCallSign [CALLSIGN_LEN+1];
 	int					i, j;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
@@ -176,14 +177,13 @@ if (netGame.GetSegmentCheckSum () != networkData.nSegmentCheckSum) {
 		return;
 #endif
 	}
-// Discover my CPlayerData number
-memcpy (szLocalCallSign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
-gameData.multiplayer.nLocalPlayer = -1;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	gameData.multiplayer.players [i].netKillsTotal = 0;
 
+// Discover my CPlayerData number
+gameData.multiplayer.nLocalPlayer = -1;
 if (SetLocalPlayer (playerInfoP) < 0)
-	return 0;
+	return;
 
 for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	memcpy (gameData.multiplayer.players [i].callsign, playerP->callsign, CALLSIGN_LEN+1);
