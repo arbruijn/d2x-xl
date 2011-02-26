@@ -239,8 +239,8 @@ class CTransparencyRenderer {
 		void ResetBitmaps (void);
 		int LoadTexture (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap);
 
-		int CTransparencyRenderer::NeedDepthBuffer (void);
-		int CTransparencyRenderer::SoftBlend (int nFlag);
+		int NeedDepthBuffer (void);
+		int SoftBlend (int nFlag);
 
 		void FlushSparkBuffer (void);
 		void FlushParticleBuffer (int nType);
