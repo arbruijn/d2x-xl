@@ -109,7 +109,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 			MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
 			console.printf (CON_DBG, TXT_FOUND_TWICE);
 			networkData.nStatus = NETSTAT_MENU;
-			return -1;
+			return -2;
 			}
 		ChangePlayerNumTo (nLocalPlayer = i);
 		}
@@ -182,7 +182,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 
 // Discover my CPlayerData number
 gameData.multiplayer.nLocalPlayer = -1;
-if (SetLocalPlayer (playerInfoP) < 0)
+if (SetLocalPlayer (playerInfoP) < -1)
 	return;
 
 for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPlayers; i++, playerP++) {
