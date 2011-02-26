@@ -73,8 +73,8 @@ if (gameStates.app.bGameRunning) {
 	// if player wasn't host, but is host now (probably because the former host disconnected)
 	// then make sure he is now using the server port, or the other players won't be able to
 	// reach him
-	if (gameStates.multi.bServer [0] && !gameStates.multi.bServer [1]) {
-		gameStates.multi.bServer [1] = 1; 
+	if (gameStates.multi.bServer [0] != gameStates.multi.bServer [1]) {
+		gameStates.multi.bServer [1] = gameStates.multi.bServer [0]; 
 		// check whether the client port (mpParams.updPorts [1]) differs from the server port (mpParams.udpPorts [0] + networkData.nPortOffset)
 		if (mpParams.udpPorts [0] + networkData.nPortOffset != mpParams.udpPorts [1])
 			IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nPortOffset), 1);
