@@ -493,6 +493,8 @@ switch (m_nState = m_data [0]) {
 		char	szExt [FILENAME_LEN];
 		char	*pszFile = reinterpret_cast<char*> (m_data + 5);
 
+		if (strlen (pszFile) > FILENAME_LEN)
+			return DownloadError (1);
 		if (m_cf.File ())
 			m_cf.Close ();
 		if (!pszFile)
@@ -524,6 +526,8 @@ switch (m_nState = m_data [0]) {
 
 	case DL_DATA: {
 		int l = GET_INTEL_INT (m_data + 1);
+		if (l > DL_PAYLOAD_SIZE)
+			return DownloadError (1);
 		if (m_cf.Write (m_data + 5, 1, l) != l)
 			return DownloadError (3);
 		m_nDestLen += l;

@@ -163,6 +163,7 @@ gameData.hoard.goal.nFrames = cf.ReadShort ();
 cf.Seek (fPos, SEEK_SET);
 
 if (!gameData.hoard.bInitialized) {
+	gameData.hoard.bInitialized = 1;
 	gameData.hoard.goal.nWidth  = 
 	gameData.hoard.goal.nHeight = 64;
 	CalcHoardItemSizes (gameData.hoard.goal);
@@ -318,7 +319,6 @@ if (!gameData.hoard.bInitialized) {
 	gameData.pig.sound.nSoundFiles [0] += 4;
 	}
 cf.Close ();
-gameData.hoard.bInitialized = 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -366,6 +366,7 @@ for (i = 1; i <= 4; i++) {
 gameData.eff.vClips [0][gameData.hoard.monsterball.nClip].nFrameCount = 
 gameData.eff.vClips [0][gameData.hoard.orb.nClip].nFrameCount = 0;
 gameData.eff.nClips [0] = gameData.hoard.orb.nClip;
+gameData.eff.nEffects [0] = gameData.hoard.goal.nClip;
 gameData.pig.tex.nTextures [0] = gameData.hoard.nTextures;
 gameData.hoard.bInitialized = 0;
 }
