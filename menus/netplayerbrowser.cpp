@@ -49,8 +49,7 @@ int NetworkSelectTeams (void)
 	int		i;
 	int		playerIds [MAX_PLAYERS+2];
 
-	// One-time initialization
-
+// one time initialization
 for (i = gameData.multiplayer.nPlayers / 2; i < gameData.multiplayer.nPlayers; i++) // Put first half of players on team A
 	teamVector |= (1 << i);
 sprintf (teamNames [0], "%s", TXT_BLUE);

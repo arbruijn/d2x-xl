@@ -91,7 +91,7 @@ typedef struct tNetworkData {
 	int					bActive;
 	int					nStatus;
 	int					bGamesChanged;
-	int					nSocket;
+	int					nPortOffset;
 	int					bAllowSocketChanges;
 	int					nSecurityFlag;
 	int					nSecurityNum;

@@ -741,15 +741,15 @@ static int UDPOpenSocket (ipx_socket_t *sk, int port)
 #if 0 //for testing only
 	static ubyte inAddrLoopBack [4] = {127,0,0,1};
 #endif
-	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nSocket,
-				nLocalPort = gameStates.multi.bServer ? nServerPort : mpParams.udpPorts [1];
+	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nPortOffset,
+				nLocalPort = gameStates.multi.bServer [0] ? nServerPort : mpParams.udpPorts [1];
 
 gameStates.multi.bHaveLocalAddress = 0;
 if (!nOpenSockets && (UDPGetMyAddress () < 0)) {
 	FAIL ("couldn't get my address");
 	}
 
-if (!gameStates.multi.bServer) {		//set up server address and add it to destination list
+if (!gameStates.multi.bServer [0]) {		//set up server address and add it to destination list
 	if (!clientManager.CheckClientSize ())
 		FAIL ("error allocating client table");
 	sin.sin_family = AF_INET;
@@ -782,7 +782,7 @@ if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_
 	FAIL ("setting broadcast socket option failed");
 	}
 #endif
-if (gameStates.multi.bServer || mpParams.udpPorts [1]) {
+if (gameStates.multi.bServer [0] || mpParams.udpPorts [1]) {
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = htonl (INADDR_ANY); //networkData.serverAddress + 4);
 	sin.sin_port = htons (ushort (nLocalPort));

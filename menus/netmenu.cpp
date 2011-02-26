@@ -496,7 +496,7 @@ do {
 	m.AddText ("", 0);
 	optSetPower = m.AddMenu (TXT_WAOBJECTS_MENU, KEY_O, HTX_MULTI2_OBJECTS);
 	m.AddText ("", 0);
-	sprintf (szSocket, "%d", (gameStates.multi.nGameType == UDP_GAME) ? mpParams.udpPorts [0] + networkData.nSocket : networkData.nSocket);
+	sprintf (szSocket, "%d", (gameStates.multi.nGameType == UDP_GAME) ? mpParams.udpPorts [0] + networkData.nPortOffset : networkData.nPortOffset);
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		m.AddText (TXT_SOCKET2, KEY_N);
 		optSocket = m.AddInput (szSocket, 5, HTX_MULTI2_SOCKET);
@@ -546,10 +546,10 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	int newSocket = atoi (szSocket);
 	if ((newSocket < -0xFFFF) || (newSocket > 0xFFFF))
 		MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_INV_SOCKET, 
-				  (gameStates.multi.nGameType == UDP_GAME) ? mpParams.udpPorts [0] + networkData.nSocket : networkData.nSocket);
-	else if (newSocket != networkData.nSocket) {
-		networkData.nSocket = (gameStates.multi.nGameType == UDP_GAME) ? newSocket - mpParams.udpPorts [0] : newSocket;
-		IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
+				  (gameStates.multi.nGameType == UDP_GAME) ? mpParams.udpPorts [0] + networkData.nPortOffset : networkData.nPortOffset);
+	else if (newSocket != networkData.nPortOffset) {
+		networkData.nPortOffset = (gameStates.multi.nGameType == UDP_GAME) ? newSocket - mpParams.udpPorts [0] : newSocket;
+		IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
 		}
 	}
 
@@ -1210,7 +1210,7 @@ else
 	netGame.m_info.gameFlags &= ~NETGAME_FLAG_SHOW_MAP;
 gameStates.app.nDifficultyLevel = mpParams.nDifficulty;
 NetworkAdjustMaxDataSize ();
-IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
+IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
 return key;
 }
 

@@ -139,33 +139,33 @@ if (tracker.m_bUse) {
 	}
 
 if ((gameStates.multi.nGameType >= IPX_GAME) && networkData.bAllowSocketChanges) {
-	osocket = networkData.nSocket;
+	osocket = networkData.nPortOffset;
 	if (key == KEY_PAGEDOWN) { 
-		networkData.nSocket--; 
+		networkData.nPortOffset--; 
 		key = 0; 
 		}
 	else if (key == KEY_PAGEUP) { 
-		networkData.nSocket++; 
+		networkData.nPortOffset++; 
 		key = 0; 
 		}
-	if (networkData.nSocket > 99)
-		networkData.nSocket = -99;
-	else if (networkData.nSocket < -99)
-		networkData.nSocket = 99;
-	if (networkData.nSocket + IPX_DEFAULT_SOCKET > 0x8000)
-		networkData.nSocket = 0x8000 - IPX_DEFAULT_SOCKET;
-	if (networkData.nSocket + IPX_DEFAULT_SOCKET < 0)
-		networkData.nSocket = IPX_DEFAULT_SOCKET;
-	if (networkData.nSocket != osocket) {
+	if (networkData.nPortOffset > 99)
+		networkData.nPortOffset = -99;
+	else if (networkData.nPortOffset < -99)
+		networkData.nPortOffset = 99;
+	if (networkData.nPortOffset + IPX_DEFAULT_SOCKET > 0x8000)
+		networkData.nPortOffset = 0x8000 - IPX_DEFAULT_SOCKET;
+	if (networkData.nPortOffset + IPX_DEFAULT_SOCKET < 0)
+		networkData.nPortOffset = IPX_DEFAULT_SOCKET;
+	if (networkData.nPortOffset != osocket) {
 		sprintf (menu [0].m_text, TXT_CURR_SOCK, 
 					 (gameStates.multi.nGameType == IPX_GAME) ? "IPX" : "UDP", 
-					 networkData.nSocket);
+					 networkData.nPortOffset);
 		menu [0].m_bRebuild = 1;
 #if 1			
-		console.printf (0, TXT_CHANGE_SOCK, networkData.nSocket);
+		console.printf (0, TXT_CHANGE_SOCK, networkData.nPortOffset);
 #endif
 		NetworkListen ();
-		IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
+		IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
 		RestartNetSearching (menu);
 		NetworkSendGameListRequest ();
 		return nCurItem;
@@ -278,7 +278,7 @@ setjmp (gameExitPoint);
 networkData.nJoining = 0; 
 networkData.nJoinState = 0;
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
-IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
+IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
 //PrintLog ("   NetworkFlush\n");
 NetworkFlush ();
 //PrintLog ("   NetworkListen\n");
@@ -296,7 +296,7 @@ if (!bAutoRun) {
 	menu.Top ()->m_x = (short) 0x8000;	//centered
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		if (networkData.bAllowSocketChanges)
-			sprintf (menu.Top ()->m_text, TXT_CURR_SOCK, (gameStates.multi.nGameType == IPX_GAME) ? "IPX" : "UDP", networkData.nSocket);
+			sprintf (menu.Top ()->m_text, TXT_CURR_SOCK, (gameStates.multi.nGameType == IPX_GAME) ? "IPX" : "UDP", networkData.nPortOffset);
 		else
 			*menu.Top ()->m_text = '\0';
 		}
