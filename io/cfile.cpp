@@ -897,7 +897,7 @@ i = l;
 #ifdef _WIN32
 while ((i >= 0) && (szFullPath [i] != '/') && (szFullPath [i] != '\\') && (szFullPath [i] != ':'))
 #else
-while ((i >= 0) && (szFullPath [i] != '/'))
+while ((i >= 0) && (szFullPath [i] != '/') && (szFullPath [i] != '\\'))
 #endif
 	i--;
 i++;
