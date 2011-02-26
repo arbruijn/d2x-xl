@@ -410,7 +410,10 @@ netGame = activeNetGames [choice];
 netPlayers [0] = activeNetPlayers [choice];
 gameStates.app.nDifficultyLevel = netGame.m_info.difficulty;
 gameData.multiplayer.nMaxPlayers = netGame.m_info.nMaxPlayers;
-ChangePlayerNumTo (1);
+
+if (SetLocalPlayer (&netPlayers [0]) < 0)
+	return 0;
+
 memcpy (LOCALPLAYER.callsign, callsign, sizeof (callsign));
 // Handle the extra data for the network driver
 // For the mcast4 driver, this is the game's multicast address, to
