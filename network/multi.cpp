@@ -3451,9 +3451,7 @@ return nnp;
 void ChangePlayerNumTo (int nLocalPlayer)
 {
 if ((gameData.multiplayer.nLocalPlayer > -1) &&(gameData.multiplayer.nLocalPlayer != nLocalPlayer))
-	memcpy (gameData.multiplayer.players [nLocalPlayer].callsign,
-			  LOCALPLAYER.callsign,
-			  CALLSIGN_LEN+1);
+	memcpy (gameData.multiplayer.players [nLocalPlayer].callsign, LOCALPLAYER.callsign, CALLSIGN_LEN + 1);
 gameData.multiplayer.nLocalPlayer = nLocalPlayer;
 }
 
