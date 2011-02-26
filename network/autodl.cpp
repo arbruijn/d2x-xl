@@ -480,10 +480,12 @@ if (!m_socket)
 	return 0;
 
 to.Throttle ();
-int l =  SDLNet_TCP_Recv (m_socket, m_data, DL_PACKET_SIZE);
-if (l <= 0) {
-	return 0;
-	}
+int h, l = 0;
+do {
+	if (0 >= (h = SDLNet_TCP_Recv (m_socket, m_data + l, DL_PACKET_SIZE - l)))
+		return 0;
+	l += h;
+	} while (l < DL_PACKET_SIZE);
 
 switch (m_nState = m_data [0]) {
 	case DL_CREATE_FILE: {
