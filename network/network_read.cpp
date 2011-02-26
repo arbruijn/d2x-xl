@@ -119,25 +119,24 @@ return (nLocalPlayer < 0) ? nDefault : nLocalPlayer;
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessSyncPacket (CNetGameInfo * netGameInfoP, int rsinit)
+void NetworkProcessSyncPacket (CNetGameInfo * sp, int rsinit)
 {
-	tNetPlayerInfo*	playerP;
 	int					i, j;
-
+	tNetPlayerInfo*	playerP;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	CNetGameInfo		gameInfoData;
+	CNetGameInfo		tmp_info;
 
-if ((gameStates.multi.nGameType >= IPX_GAME) && (netGameInfoP != &netGame)) { // for macintosh -- get the values unpacked to our structure format
-	ReceiveFullNetGamePacket (reinterpret_cast<ubyte*> (netGameInfoP), &gameInfoData);
-	netGameInfoP = &gameInfoData;
+if ((gameStates.multi.nGameType >= IPX_GAME) && (sp != &netGame)) { // for macintosh -- get the values unpacked to our structure format
+	ReceiveFullNetGamePacket (reinterpret_cast<ubyte*> (sp), &tmp_info);
+	sp = &tmp_info;
 	}
 #endif
 
 if (rsinit)
 	playerInfoP = &netPlayers [0];
 	// This function is now called by all people entering the netgame.
-if (netGameInfoP != &netGame) {
-	char *p = reinterpret_cast<char*> (netGameInfoP);
+if (sp != &netGame) {
+	char *p = reinterpret_cast<char*> (sp);
 	ushort h;
 	int i, j = (int) netGame.Size () - 1, s;
 	for (i = 0, h = -1; i < j; i++, p++) {
@@ -151,12 +150,12 @@ if (netGameInfoP != &netGame) {
 			break;
 			}
 		}
-	netGame = *netGameInfoP;
+	netGame = *sp;
 	netPlayers [0] = *playerInfoP;
 	}
-gameData.multiplayer.nPlayers = netGameInfoP->m_info.nNumPlayers;
-gameStates.app.nDifficultyLevel = netGameInfoP->m_info.difficulty;
-networkData.nStatus = netGameInfoP->m_info.gameStatus;
+gameData.multiplayer.nPlayers = sp->m_info.nNumPlayers;
+gameStates.app.nDifficultyLevel = sp->m_info.difficulty;
+networkData.nStatus = sp->m_info.gameStatus;
 //Assert (gameStates.app.nFunctionMode != FMODE_GAME);
 // New code, 11/27
 #if 1
@@ -177,15 +176,32 @@ if (netGame.GetSegmentCheckSum () != networkData.nSegmentCheckSum) {
 		return;
 #endif
 	}
+// Discover my CPlayerData number
+#if 1
+if (SetLocalPlayer (playerInfoP, -1) < -1)
+	return;
+#else
+char szLocalCallSign [CALLSIGN_LEN+1];
+memcpy (szLocalCallSign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
+gameData.multiplayer.nLocalPlayer = -1;
+#endif
+
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	gameData.multiplayer.players [i].netKillsTotal = 0;
 
-// Discover my CPlayerData number
-gameData.multiplayer.nLocalPlayer = -1;
-if (SetLocalPlayer (playerInfoP) < -1)
-	return;
-
 for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPlayers; i++, playerP++) {
+#if 0
+	if (!CmpLocalPlayer (&playerP->network, playerP->callsign, szLocalCallSign)) {
+		if (gameData.multiplayer.nLocalPlayer != -1) {
+			Int3 (); // Hey, we've found ourselves twice
+			MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
+			console.printf (CON_DBG, TXT_FOUND_TWICE);
+			networkData.nStatus = NETSTAT_MENU;
+			return;
+			}
+		ChangePlayerNumTo (i);
+		}
+#endif
 	memcpy (gameData.multiplayer.players [i].callsign, playerP->callsign, CALLSIGN_LEN+1);
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 #ifdef WORDS_NEED_ALIGNMENT
@@ -209,12 +225,12 @@ for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPla
 	gameData.multiplayer.players [i].nPacketsGot = -1;                             // How many packets we got from them
 	gameData.multiplayer.players [i].nPacketsSent = 0;                            // How many packets we sent to them
 	gameData.multiplayer.players [i].connected = playerP->connected;
-	gameData.multiplayer.players [i].netKillsTotal = *netGameInfoP->PlayerKills (i);
-	gameData.multiplayer.players [i].netKilledTotal = *netGameInfoP->Killed (i);
+	gameData.multiplayer.players [i].netKillsTotal = *sp->PlayerKills (i);
+	gameData.multiplayer.players [i].netKilledTotal = *sp->Killed (i);
 	if (networkData.nJoinState || (i != gameData.multiplayer.nLocalPlayer))
-		gameData.multiplayer.players [i].score = *netGameInfoP->PlayerScore (i);
+		gameData.multiplayer.players [i].score = *sp->PlayerScore (i);
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
-		gameData.multigame.score.matrix [i][j] = *netGameInfoP->Kills (i, j);
+		gameData.multigame.score.matrix [i][j] = *sp->Kills (i, j);
 	}
 
 if (gameData.multiplayer.nLocalPlayer < 0) {
@@ -224,12 +240,12 @@ if (gameData.multiplayer.nLocalPlayer < 0) {
 	}
 if (networkData.nJoinState) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-		gameData.multiplayer.players [i].netKilledTotal = *netGameInfoP->Killed (i);
-	NetworkProcessMonitorVector (netGameInfoP->GetMonitorVector ());
-	LOCALPLAYER.timeLevel = netGameInfoP->GetLevelTime ();
+		gameData.multiplayer.players [i].netKilledTotal = *sp->Killed (i);
+	NetworkProcessMonitorVector (sp->GetMonitorVector ());
+	LOCALPLAYER.timeLevel = sp->GetLevelTime ();
 	}
-gameData.multigame.score.nTeam [0] = *netGameInfoP->TeamKills (0);
-gameData.multigame.score.nTeam [1] = *netGameInfoP->TeamKills (1);
+gameData.multigame.score.nTeam [0] = *sp->TeamKills (0);
+gameData.multigame.score.nTeam [1] = *sp->TeamKills (1);
 LOCALPLAYER.connected = CONNECT_PLAYING;
 netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].connected = CONNECT_PLAYING;
 netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
