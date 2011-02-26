@@ -96,14 +96,14 @@ ResetPlayerTimeout (nPlayer, -1);
 
 //------------------------------------------------------------------------------
 
-int SetLocalPlayer (CAllNetPlayersInfo* playerInfoP, int nDefault)
+int SetLocalPlayer (CAllNetPlayersInfo* playerInfoP, int nPlayers, int nDefault)
 {
 	tNetPlayerInfo*	playerP = playerInfoP->m_info.players;
 	char					szLocalCallSign [CALLSIGN_LEN+1];
 	int					nLocalPlayer = -1;
 
 memcpy (szLocalCallSign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
+for (int i = 0; i < nPlayers; i++, playerP++) {
 	if (!CmpLocalPlayer (&playerP->network, playerP->callsign, szLocalCallSign)) {
 		if (nLocalPlayer != -1) {
 			MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
@@ -178,7 +178,7 @@ if (netGame.GetSegmentCheckSum () != networkData.nSegmentCheckSum) {
 	}
 // Discover my CPlayerData number
 #if 1
-if (SetLocalPlayer (playerInfoP, -1) < -1)
+if (SetLocalPlayer (playerInfoP, gameData.multiplayer.nPlayers, -1) < -1)
 	return;
 #else
 char szLocalCallSign [CALLSIGN_LEN+1];

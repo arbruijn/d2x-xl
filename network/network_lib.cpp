@@ -127,7 +127,7 @@ return 0;
 	 networkData.localAddress + 4 : networkData.thisPlayer.player.network.ipx.node)
 
 
-int CmpLocalPlayer (tNetworkInfo *pNetwork, char *pszNetCallSign, char *pszLocalCallSign)
+int CmpLocalPlayer (tNetworkInfo *networkP, char *pszNetCallSign, char *pszLocalCallSign)
 {
 if (stricmp (pszNetCallSign, pszLocalCallSign))
 	return 1;
@@ -141,10 +141,10 @@ if (gameStates.multi.nGameType == UDP_GAME)
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if ((gameStates.multi.nGameType < UDP_GAME) && (LOCAL_NODE [0] == 127))
 		return 0;
-	return memcmp (pNetwork->ipx.node, LOCAL_NODE, ((gameStates.multi.nGameType > IPX_GAME) && extraGameInfo [1].bCheckUDPPort) ? 6 : 4) ? 1 : 0;
+	return memcmp (networkP->ipx.node, LOCAL_NODE, ((gameStates.multi.nGameType > IPX_GAME) && extraGameInfo [1].bCheckUDPPort) ? 6 : 4) ? 1 : 0;
 	}
 #ifdef MACINTOSH
-if (pNetwork->appletalk.node != networkData.thisPlayer.player.network.appletalk.node)
+if (networkP->appletalk.node != networkData.thisPlayer.player.network.appletalk.node)
 	return 1;
 #endif
 return 0;
