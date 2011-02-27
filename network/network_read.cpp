@@ -114,7 +114,7 @@ for (int i = 0; i < nPlayers; i++, playerP++) {
 		ChangePlayerNumTo (nLocalPlayer = i);
 		}
 	}
-return (nLocalPlayer < 0) ? nDefault : nLocalPlayer;
+return gameData.multiplayer.nLocalPlayer = ((nLocalPlayer < 0) ? nDefault : nLocalPlayer);
 }
 
 //------------------------------------------------------------------------------
