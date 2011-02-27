@@ -59,7 +59,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players [i].connected) {
 		if (gameStates.multi.nGameType == IPX_GAME)
 			return i;
-		if (netPlayers [0].m_info.players [i].network.Port () == ushort (mpParams.udpPorts [0] + networkData.nPortOffset))
+		if (*netPlayers [0].m_info.players [i].network.Port () == ushort (mpParams.udpPorts [0] + networkData.nPortOffset))
 			return i;
 		}
 	}
@@ -151,7 +151,7 @@ if (gameStates.multi.nGameType == UDP_GAME)
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if ((gameStates.multi.nGameType < UDP_GAME) && (LOCAL_NODE [0] == 127))
 		return 0;
-	return memcmp (networkP->ipx.node.v, LOCAL_NODE, ((gameStates.multi.nGameType > IPX_GAME) && extraGameInfo [1].bCheckUDPPort) ? 6 : 4) ? 1 : 0;
+	return memcmp (networkP->Node (), LOCAL_NODE, ((gameStates.multi.nGameType > IPX_GAME) && extraGameInfo [1].bCheckUDPPort) ? 6 : 4) ? 1 : 0;
 	}
 #ifdef MACINTOSH
 if (networkP->appletalk.node != networkData.thisPlayer.player.network.AppleTalk ().node)

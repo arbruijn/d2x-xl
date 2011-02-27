@@ -103,7 +103,7 @@ networkData.thisPlayer.player.rank=GetMyNetRanking ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (networkData.thisPlayer.player.network.Node (), IpxGetMyLocalAddress (), 6);
 	if (gameStates.multi.nGameType == UDP_GAME)
-		networkData.thisPlayer.player.network.Port () = htons (networkData.thisPlayer.player.network.Port ());
+		*networkData.thisPlayer.player.network.Port () = htons (*networkData.thisPlayer.player.network.Port ());
 //		if (gameStates.multi.nGameType == UDP_GAME)
 //			memcpy (networkData.thisPlayer.player.network.Node (), networkData.localAddress + 4, 4);
 	memcpy (networkData.thisPlayer.player.network.Server (), IpxGetMyServerAddress (), 4);
