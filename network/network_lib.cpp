@@ -154,7 +154,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	return memcmp (networkP->ipx.node.v, LOCAL_NODE, ((gameStates.multi.nGameType > IPX_GAME) && extraGameInfo [1].bCheckUDPPort) ? 6 : 4) ? 1 : 0;
 	}
 #ifdef MACINTOSH
-if (networkP->appletalk.node != networkData.thisPlayer.player.network.appletalk.node)
+if (networkP->appletalk.node != networkData.thisPlayer.player.network.AppleTalk ().node)
 	return 1;
 #endif
 return 0;
