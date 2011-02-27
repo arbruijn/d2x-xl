@@ -193,8 +193,8 @@ for (i = 0; i < nSavePlayers; i++) {
 	if (m [i].m_value) {
 		if (i > gameData.multiplayer.nPlayers) {
 			if (gameStates.multi.nGameType >= IPX_GAME) {
-				memcpy (&netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.Node (), 
-						  &netPlayers [0].m_info.players [i].network.Node (), 6);
+				memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.Node (), 
+						  netPlayers [0].m_info.players [i].network.Node (), 6);
 				memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.Server (), 
 						  netPlayers [0].m_info.players [i].network.Server (), 4);
 				}
