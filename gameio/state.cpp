@@ -1312,7 +1312,7 @@ for (i = 0; i < nPlayers; i++) {
 				if (gameStates.multi.nGameType == UDP_GAME) {
 					memcpy (restoredPlayers [i].netAddress, gameData.multiplayer.players [j].netAddress, 
 							  sizeof (gameData.multiplayer.players [j].netAddress));
-					memcpy (&netPlayers [0].m_info.players [i].network.Node (), gameData.multiplayer.players [j].netAddress, 
+					memcpy (netPlayers [0].m_info.players [i].network.Node (), gameData.multiplayer.players [j].netAddress, 
 							  sizeof (gameData.multiplayer.players [j].netAddress));
 					}
 				restoredPlayers [i].connected = CONNECT_PLAYING;
@@ -1324,7 +1324,7 @@ for (i = 0; i < nPlayers; i++) {
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	if (!restoredPlayers [i].connected) {
 		memset (restoredPlayers [i].netAddress, 0xFF, sizeof (restoredPlayers [i].netAddress));
-		memset (&netPlayers [0].m_info.players [i].network.Node (), 0xFF, sizeof (netPlayers [0].m_info.players [i].network.Node ()));
+		memset (netPlayers [0].m_info.players [i].network.Node (), 0xFF, 6);
 		}
 	}
 memcpy (gameData.multiplayer.players, restoredPlayers, sizeof (CPlayerData) * nPlayers);
@@ -1514,7 +1514,7 @@ netPlayers [0].m_info.nSecurity = m_cf.ReadInt ();
 for (int i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
 	m_cf.Read (netPlayers [0].m_info.players [i].callsign, 1, CALLSIGN_LEN + 1);
 	m_cf.Read (netPlayers [0].m_info.players [i].network.Server (), 1, 4);
-	m_cf.Read (&netPlayers [0].m_info.players [i].network.Node (), 1, 6);
+	m_cf.Read (netPlayers [0].m_info.players [i].network.Node (), 1, 6);
 	netPlayers [0].m_info.players [i].versionMajor = (ubyte) m_cf.ReadByte ();
 	netPlayers [0].m_info.players [i].versionMinor = (ubyte) m_cf.ReadByte ();
 	netPlayers [0].m_info.players [i].computerType = m_cf.ReadByte ();
