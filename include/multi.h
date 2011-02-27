@@ -282,39 +282,60 @@ enum compType {DOS,WIN_32,WIN_95,MAC} __pack__ ;
 #pragma pack (push, 1)
 #endif
 
-typedef struct ipx_addr {
+typedef union tPort {
+	ubyte b [2];
+	ushort s;
+} __pack__ tPort;
+
+typedef struct tIP {
+	ubyte	ip [4];
+	tPort	port;
+} __pack__ tIP;
+
+typedef union tNetworkNode {
+	tIP	a;
+	ubyte	v [6];
+} tNetworkNode;
+
+typedef struct tIpxAddr {
 	ubyte   server [4];
-	union tNode {
-		struct tIP {
-			ubyte	ip [4];
-			union tPort {
-				byte b [2];
-				ushort s;
-			} port;
-		} a;
-		ubyte v [6];
-	} node;
-} __pack__ ipx_addr;
+	tNetworkNode	node;
+} __pack__ tIpxAddr;
 
 
-typedef struct appletalk_addr {
+typedef struct tAppleTalkAddr {
 	ushort  net;
 	ubyte   node;
 	ubyte   socket;
-} __pack__ appletalk_addr;
+} __pack__ tAppleTalkAddr;
 
 
 typedef union {
 	public:
-		ipx_addr			ipx;
-		appletalk_addr	appletalk;
+		tIpxAddr			ipx;
+		tAppleTalkAddr	appletalk;
 
-	inline ubyte* Server (void) { return ipx.server; }
-	inline ubyte* Node (void) { return ipx.node.v; }
-	inline ubyte* IP (void) { return ipx.node.a.ip; }
-	inline ushort& Port (void) { return ipx.node.a.port.s; }
 } __pack__ tNetworkInfo;
 
+class CNetworkInfo {
+	public:
+		tNetworkInfo	m_info;
+
+	public:
+		inline ubyte* Server (void) { return m_info.ipx.server; }
+		inline ubyte* Node (void) { return m_info.ipx.node.v; }
+		inline ubyte* IP (void) { return m_info.ipx.node.a.ip; }
+		inline ushort& Port (void) { return m_info.ipx.node.a.port.s; }
+		inline tNetworkInfo& operator= (tNetworkInfo& other) {
+			m_info = other;
+			return m_info;
+			}
+	};
+
+//inline tNetworkInfo& operator= (tNetworkInfo& i, CNetworkInfo& j) { 
+//	i = j.m_info;
+//	return i;
+//	}
 
 #ifdef _WIN32
 #pragma pack (pop)
@@ -322,7 +343,7 @@ typedef union {
 
 typedef struct tNetPlayerInfo {
 	char    callsign [CALLSIGN_LEN+1];
-	tNetworkInfo network;
+	CNetworkInfo network;
 	ubyte   versionMajor;
 	ubyte   versionMinor;
 	ubyte   computerType;

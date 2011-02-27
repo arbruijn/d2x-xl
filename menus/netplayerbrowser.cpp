@@ -201,7 +201,7 @@ for (i = 0; i < nSavePlayers; i++) {
 			else {
 				memcpy (&netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.appletalk, 
 						  &netPlayers [0].m_info.players [i].network.appletalk, 
-						  sizeof (appletalk_addr));
+						  sizeof (tAppleTalkAddr));
 				}
 			memcpy (
 				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].callsign, 

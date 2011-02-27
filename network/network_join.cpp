@@ -205,7 +205,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	else
 		memcpy (gameData.multiplayer.players [nPlayer].netAddress, their->player.network.Node (), 6);
 	}
-memcpy (&netPlayers [0].m_info.players [nPlayer].network, &their->player.network, sizeof (tNetworkInfo));
+memcpy (&netPlayers [0].m_info.players [nPlayer].network, &their->player.network, sizeof (CNetworkInfo));
 gameData.multiplayer.players [nPlayer].nPacketsGot = 0;
 gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
 gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
@@ -473,7 +473,7 @@ void NetworkAddPlayer (tSequencePacket *player)
 if (NetworkFindPlayer (&player->player) > -1)
 	return;
 npiP = netPlayers [0].m_info.players + gameData.multiplayer.nPlayers;
-memcpy (&npiP->network, &player->player.network, sizeof (tNetworkInfo));
+memcpy (&npiP->network, &player->player.network, sizeof (CNetworkInfo));
 ClipRank (reinterpret_cast<char*> (&player->player.rank));
 memcpy (npiP->callsign, player->player.callsign, CALLSIGN_LEN + 1);
 npiP->versionMajor = player->player.versionMajor;
@@ -503,7 +503,7 @@ if (pn < 0)
 
 for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
 	j = i++;
-	memcpy (&netPlayers [0].m_info.players [j].network, &netPlayers [0].m_info.players [i].network, sizeof (tNetworkInfo));
+	memcpy (&netPlayers [0].m_info.players [j].network, &netPlayers [0].m_info.players [i].network, sizeof (CNetworkInfo));
 	memcpy (netPlayers [0].m_info.players [j].callsign, netPlayers [0].m_info.players [i].callsign, CALLSIGN_LEN + 1);
 	netPlayers [0].m_info.players [j].versionMajor = netPlayers [0].m_info.players [i].versionMajor;
 	netPlayers [0].m_info.players [j].versionMinor = netPlayers [0].m_info.players [i].versionMinor;

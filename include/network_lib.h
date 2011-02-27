@@ -161,8 +161,8 @@ void InitPacketHandlers (void);
 void LogExtraGameInfo (void);
 int NetworkCreateMonitorVector (void);
 
-int CmpNetPlayers (char *callsign1, char *callsign2, tNetworkInfo *network1, tNetworkInfo *network2);
-int CmpLocalPlayer (tNetworkInfo *pNetwork, char *pszNetCallSign, char *pszLocalCallSign);
+int CmpNetPlayers (char *callsign1, char *callsign2, CNetworkInfo *network1, CNetworkInfo *network2);
+int CmpLocalPlayer (CNetworkInfo *pNetwork, char *pszNetCallSign, char *pszLocalCallSign);
 int NetworkWaitForPlayerInfo (void);
 void NetworkCountPowerupsInMine (void);
 int FindActiveNetGame (char *pszGameName, int nSecurity);

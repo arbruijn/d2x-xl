@@ -103,15 +103,15 @@ return n;
 
 //------------------------------------------------------------------------------
 
-int CmpNetPlayers (char *callsign1, char *callsign2, tNetworkInfo *network1, tNetworkInfo *network2)
+int CmpNetPlayers (char *callsign1, char *callsign2, CNetworkInfo *network1, CNetworkInfo *network2)
 {
 if ((gameStates.multi.nGameType == IPX_GAME) ||
 	 ((gameStates.multi.nGameType == UDP_GAME) && extraGameInfo [0].bCheckUDPPort)) {
-	if (memcmp (network1, network2, sizeof (tNetworkInfo)))
+	if (memcmp (network1, network2, sizeof (CNetworkInfo)))
 		return 1;
 	}
 else if (gameStates.multi.nGameType == UDP_GAME) {
-	if (memcmp (network1, network2, extraGameInfo [1].bCheckUDPPort ? sizeof (tNetworkInfo) : sizeof (tNetworkInfo) - 2))	//bCheck the port too
+	if (memcmp (network1, network2, extraGameInfo [1].bCheckUDPPort ? sizeof (CNetworkInfo) : sizeof (CNetworkInfo) - 2))	//bCheck the port too
 		return 1;
 	}
 #ifdef MACINTOSH
@@ -137,7 +137,7 @@ return 0;
 	 networkData.localAddress + 4 : networkData.thisPlayer.player.network.Node ())
 
 
-int CmpLocalPlayer (tNetworkInfo *networkP, char *pszNetCallSign, char *pszLocalCallSign)
+int CmpLocalPlayer (CNetworkInfo *networkP, char *pszNetCallSign, char *pszLocalCallSign)
 {
 if (stricmp (pszNetCallSign, pszLocalCallSign))
 	return 1;
