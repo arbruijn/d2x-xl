@@ -491,7 +491,7 @@ else {
 			IPXSendPacketData (
 				data, dataSize, 
 				netPlayers [0].m_info.players [i].network.ipx.server, 
-				netPlayers [0].m_info.players [i].network.ipx.node,
+				netPlayers [0].m_info.players [i].network.ipx.node.v,
 				gameData.multiplayer.players [i].netAddress);
 		}
 	return dataSize;

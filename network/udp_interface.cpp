@@ -1191,7 +1191,7 @@ if (!(bTracker
 		}
 #endif //UDP_SAFEMODE
 	gameStates.multi.bHaveLocalAddress = 1;
-	memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, networkData.localAddress + 4, 6);
+	memcpy (&netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, networkData.localAddress + 4, 6);
 #if UDP_SAFEMODE
 	dataLen -= (bSafeMode ? 22 : 14);
 #else

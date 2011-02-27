@@ -143,7 +143,7 @@ for (int i = 1; i < nSavePlayers; i++) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
 			netPlayers [0].m_info.players [i].network.ipx.server, 
-			netPlayers [0].m_info.players [i].network.ipx.node, 
+			netPlayers [0].m_info.players [i].network.ipx.node.v, 
 			DUMP_ABORTED);
 	}
 
@@ -193,10 +193,10 @@ for (i = 0; i < nSavePlayers; i++) {
 	if (m [i].m_value) {
 		if (i > gameData.multiplayer.nPlayers) {
 			if (gameStates.multi.nGameType >= IPX_GAME) {
-				memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.ipx.node, 
-				netPlayers [0].m_info.players [i].network.ipx.node, 6);
+				memcpy (&netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.ipx.node, 
+						  &netPlayers [0].m_info.players [i].network.ipx.node, 6);
 				memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.ipx.server, 
-				netPlayers [0].m_info.players [i].network.ipx.server, 4);
+						  netPlayers [0].m_info.players [i].network.ipx.server, 4);
 				}
 			else {
 				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.appletalk.node = netPlayers [0].m_info.players [i].network.appletalk.node;
@@ -217,13 +217,13 @@ for (i = 0; i < nSavePlayers; i++) {
 		}
 	else {
 		if (gameStates.multi.nGameType >= IPX_GAME)
-			NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.ipx.server, netPlayers [0].m_info.players [i].network.ipx.node, DUMP_DORK);
+			NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.ipx.server, netPlayers [0].m_info.players [i].network.ipx.node.v, DUMP_DORK);
 		}
 	}
 
 for (i = gameData.multiplayer.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
 	if (gameStates.multi.nGameType >= IPX_GAME) {
-		memset (netPlayers [0].m_info.players [i].network.ipx.node, 0, 6);
+		memset (netPlayers [0].m_info.players [i].network.ipx.node.v, 0, 6);
 		memset (netPlayers [0].m_info.players [i].network.ipx.server, 0, 4);
 	   }
 	else {

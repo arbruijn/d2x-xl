@@ -43,24 +43,26 @@ return pszIP;
 
 void ClipRank (char *rank)
 {
- // This function insures no crashes when dealing with D2 1.0
-if ((*rank < 0) || (*rank > 9))
+// This function ensures no crashes when dealing with D2 1.0
+if (*((ubyte*) rank) > 9)
 	*rank = 0;
  }
 
 //------------------------------------------------------------------------------
+// Who is the master of this game?
 
 int WhoIsGameHost (void)
 {
-	// Who is the master of this game?
-
-	int i;
-
 if (!IsMultiGame)
 	return gameData.multiplayer.nLocalPlayer;
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].connected)
-		return i;
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	if (gameData.multiplayer.players [i].connected) {
+		if (gameStates.multi.nGameType == IPX_GAME)
+			return i;
+		if (netPlayers [0].m_info.players [i].network.ipx.node.a.port.s == ushort (mpParams.udpPorts [0] + networkData.nPortOffset))
+			return i;
+		}
+	}
 return gameData.multiplayer.nLocalPlayer;
 }
 
@@ -73,12 +75,14 @@ if (gameStates.app.bGameRunning) {
 	// if player wasn't host, but is host now (probably because the former host disconnected)
 	// then make sure he is now using the server port, or the other players won't be able to
 	// reach him
+#if 0
 	if (gameStates.multi.bServer [0] != gameStates.multi.bServer [1]) {
 		gameStates.multi.bServer [1] = gameStates.multi.bServer [0]; 
 		// check whether the client port (mpParams.updPorts [1]) differs from the server port (mpParams.udpPorts [0] + networkData.nPortOffset)
 		if (mpParams.udpPorts [0] + networkData.nPortOffset != mpParams.udpPorts [1])
 			IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nPortOffset), 1);
 		}
+#endif
 	}
 return gameStates.multi.bServer [0];
 }
@@ -87,12 +91,12 @@ return gameStates.multi.bServer [0];
 
 int NetworkHowManyConnected (void)
  {
-  int num = 0, i;
+  int n = 0, i;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].connected)
-		num++;
-return num;
+		n++;
+return n;
 }
 
 //------------------------------------------------------------------------------
@@ -128,7 +132,7 @@ return 0;
 
 #define LOCAL_NODE \
 	((gameStates.multi.bHaveLocalAddress && (gameStates.multi.nGameType == UDP_GAME)) ? \
-	 networkData.localAddress + 4 : networkData.thisPlayer.player.network.ipx.node)
+	 networkData.localAddress + 4 : networkData.thisPlayer.player.network.ipx.node.v)
 
 
 int CmpLocalPlayer (tNetworkInfo *networkP, char *pszNetCallSign, char *pszLocalCallSign)
@@ -145,7 +149,7 @@ if (gameStates.multi.nGameType == UDP_GAME)
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if ((gameStates.multi.nGameType < UDP_GAME) && (LOCAL_NODE [0] == 127))
 		return 0;
-	return memcmp (networkP->ipx.node, LOCAL_NODE, ((gameStates.multi.nGameType > IPX_GAME) && extraGameInfo [1].bCheckUDPPort) ? 6 : 4) ? 1 : 0;
+	return memcmp (networkP->ipx.node.v, LOCAL_NODE, ((gameStates.multi.nGameType > IPX_GAME) && extraGameInfo [1].bCheckUDPPort) ? 6 : 4) ? 1 : 0;
 	}
 #ifdef MACINTOSH
 if (networkP->appletalk.node != networkData.thisPlayer.player.network.appletalk.node)

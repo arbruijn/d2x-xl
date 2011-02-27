@@ -212,7 +212,7 @@ if (pId == PID_UPLOAD) {
 		IPXSendInternetPacketData (m_data, 2, networkData.serverAddress, networkData.serverAddress + 4);
 	}
 else
-	IPXSendInternetPacketData (m_data, 2, clientP->addr.server, clientP->addr.node);
+	IPXSendInternetPacketData (m_data, 2, clientP->addr.server, clientP->addr.node.v);
 return 1;
 }
 

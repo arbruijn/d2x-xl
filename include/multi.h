@@ -278,10 +278,24 @@ enum compType {DOS,WIN_32,WIN_95,MAC} __pack__ ;
 // the server and node members since I cannot change the order ot these
 // members.
 
+#ifdef _WIN32
+#pragma pack (push, 1)
+#endif
+
 typedef struct ipx_addr {
-	ubyte   server[4];
-	ubyte   node [6];
+	ubyte   server [4];
+	union tIP {
+		struct tPort {
+			ubyte	ip [4];
+			union {
+				byte b [2];
+				ushort s;
+			} port;
+		} a;
+		ubyte v [6];
+	} node;
 } __pack__ ipx_addr;
+
 
 typedef struct appletalk_addr {
 	ushort  net;
@@ -289,11 +303,16 @@ typedef struct appletalk_addr {
 	ubyte   socket;
 } __pack__ appletalk_addr;
 
+
 typedef union {
 	ipx_addr			ipx;
 	appletalk_addr	appletalk;
 } __pack__ tNetworkInfo;
 
+
+#ifdef _WIN32
+#pragma pack (pop)
+#endif
 
 typedef struct tNetPlayerInfo {
 	char    callsign [CALLSIGN_LEN+1];

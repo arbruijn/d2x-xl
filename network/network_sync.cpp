@@ -160,7 +160,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 				IPXSendInternetPacketData (
 					objBuf, bufI, 
 					syncP->player [1].player.network.ipx.server, 
-					syncP->player [1].player.network.ipx.node);
+					syncP->player [1].player.network.ipx.node.v);
 			 }
 		}
 	if (i > gameData.objs.nLastObject [0]) {
@@ -202,7 +202,7 @@ void NetworkSyncPlayer (tNetworkSyncData *syncP)
 if (gameStates.multi.nGameType >= IPX_GAME)
 	IPXSendInternetPacketData (objBuf, 8, 
 										syncP->player [1].player.network.ipx.server, 
-										syncP->player [1].player.network.ipx.node);
+										syncP->player [1].player.network.ipx.node.v);
 // Send sync packet which tells the CPlayerData who he is and to start!
 NetworkSendRejoinSync (nPlayer, syncP);
 
@@ -475,10 +475,10 @@ console.printf (CON_DBG, "Aborting join.\n");
 me.nType = PID_QUIT_JOINING;
 memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	memcpy (me.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
+	memcpy (me.player.network.ipx.node.v, IpxGetMyLocalAddress (), 6);
 	memcpy (me.player.network.ipx.server, IpxGetMyServerAddress (), 4);
 	SendInternetSequencePacket (me, netPlayers [0].m_info.players [0].network.ipx.server, 
-										 netPlayers [0].m_info.players [0].network.ipx.node);
+										 netPlayers [0].m_info.players [0].network.ipx.node.v);
 }
 gameData.multiplayer.nPlayers = 0;
 SetFunctionMode (FMODE_MENU);
@@ -750,7 +750,7 @@ for (;;) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((gameData.multiplayer.players [i].connected != 0) && (i != gameData.multiplayer.nLocalPlayer)) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
-					NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.ipx.server, netPlayers [0].m_info.players [i].network.ipx.node, DUMP_ABORTED);
+					NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.ipx.server, netPlayers [0].m_info.players [i].network.ipx.node.v, DUMP_ABORTED);
 				}
 			}
 			longjmp (gameExitPoint, 0);  

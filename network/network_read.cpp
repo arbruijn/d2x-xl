@@ -216,11 +216,11 @@ for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPla
 		if (*reinterpret_cast<uint*> (playerInfoP->m_info.players [i].network.ipx.server) != 0)
 			IpxGetLocalTarget (
 				playerInfoP->m_info.players [i].network.ipx.server,
-				playerInfoP->m_info.players [i].network.ipx.node,
+				playerInfoP->m_info.players [i].network.ipx.node.v,
 				gameData.multiplayer.players [i].netAddress);
 #endif // WORDS_NEED_ALIGNMENT
 		else
-			memcpy (gameData.multiplayer.players [i].netAddress, playerInfoP->m_info.players [i].network.ipx.node, 6);
+			memcpy (gameData.multiplayer.players [i].netAddress, playerInfoP->m_info.players [i].network.ipx.node.v, 6);
 		}
 	gameData.multiplayer.players [i].nPacketsGot = -1;                             // How many packets we got from them
 	gameData.multiplayer.players [i].nPacketsSent = 0;                            // How many packets we sent to them
