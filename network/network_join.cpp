@@ -503,7 +503,7 @@ if (pn < 0)
 
 for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
 	j = i++;
-	memcpy (&netPlayers [0].m_info.players [j].network, &netPlayers [0].m_info.players [i].network.Node (), sizeof (tNetworkInfo));
+	memcpy (&netPlayers [0].m_info.players [j].network, &netPlayers [0].m_info.players [i].network, sizeof (tNetworkInfo));
 	memcpy (netPlayers [0].m_info.players [j].callsign, netPlayers [0].m_info.players [i].callsign, CALLSIGN_LEN + 1);
 	netPlayers [0].m_info.players [j].versionMajor = netPlayers [0].m_info.players [i].versionMajor;
 	netPlayers [0].m_info.players [j].versionMinor = netPlayers [0].m_info.players [i].versionMinor;
