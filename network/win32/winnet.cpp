@@ -78,7 +78,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 		(pid != PID_TRACKER_ADD_SERVER)
 	)
  {
-	memcpy (&their->player.network.ipx.server, &networkData.packetSource.src_network, 10);
+	memcpy (&their->player.network.Server (), &networkData.packetSource.src_network, 10);
 	}
 */
 //------------------------------------------------------------------------------
@@ -490,8 +490,8 @@ else {
 		if (gameData.multiplayer.players [i].connected && (i != gameData.multiplayer.nLocalPlayer))
 			IPXSendPacketData (
 				data, dataSize, 
-				netPlayers [0].m_info.players [i].network.ipx.server, 
-				netPlayers [0].m_info.players [i].network.ipx.node.v,
+				netPlayers [0].m_info.players [i].network.Server (), 
+				netPlayers [0].m_info.players [i].network.Node ().v,
 				gameData.multiplayer.players [i].netAddress);
 		}
 	return dataSize;

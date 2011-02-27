@@ -277,8 +277,8 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 kick_player:;
 		if (gameStates.multi.nGameType  >= IPX_GAME)
 			NetworkDumpPlayer (
-				netPlayers [0].m_info.players [i].network.ipx.server, 
-				netPlayers [0].m_info.players [i].network.ipx.node, 
+				netPlayers [0].m_info.players [i].network.Server (), 
+				netPlayers [0].m_info.players [i].network.Node (), 
 				7);
 
 		HUDInitMessage (TXT_DUMPING, gameData.multiplayer.players [i].callsign);

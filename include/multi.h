@@ -309,8 +309,9 @@ typedef union {
 		ipx_addr			ipx;
 		appletalk_addr	appletalk;
 
-	inline ubyte* IP (void) { return ipx.node.a.ip; }
+	inline ubyte* Server (void) { return ipx.server; }
 	inline ubyte* Node (void) { return ipx.node.v; }
+	inline ubyte* IP (void) { return ipx.node.a.ip; }
 	inline ushort& Port (void) { return ipx.node.a.port.s; }
 } __pack__ tNetworkInfo;
 

@@ -206,21 +206,21 @@ for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPla
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 #ifdef WORDS_NEED_ALIGNMENT
 		uint server;
-		memcpy (&server, playerP->network.ipx.server, 4);
+		memcpy (&server, playerP->network.Server (), 4);
 		if (server != 0)
 			IpxGetLocalTarget (
 				reinterpret_cast<ubyte*> (&server),
-				playerInfoP->m_info.players [i].network.ipx.node,
+				playerInfoP->m_info.players [i].network.Node (),
 				gameData.multiplayer.players [i].netAddress);
 #else // WORDS_NEED_ALIGNMENT
-		if (*reinterpret_cast<uint*> (playerInfoP->m_info.players [i].network.ipx.server) != 0)
+		if (*reinterpret_cast<uint*> (playerInfoP->m_info.players [i].network.Server ()) != 0)
 			IpxGetLocalTarget (
-				playerInfoP->m_info.players [i].network.ipx.server,
-				playerInfoP->m_info.players [i].network.ipx.node.v,
+				playerInfoP->m_info.players [i].network.Server (),
+				playerInfoP->m_info.players [i].network.Node (),
 				gameData.multiplayer.players [i].netAddress);
 #endif // WORDS_NEED_ALIGNMENT
 		else
-			memcpy (gameData.multiplayer.players [i].netAddress, playerInfoP->m_info.players [i].network.ipx.node.v, 6);
+			memcpy (gameData.multiplayer.players [i].netAddress, playerInfoP->m_info.players [i].network.Node (), 6);
 		}
 	gameData.multiplayer.players [i].nPacketsGot = -1;                             // How many packets we got from them
 	gameData.multiplayer.players [i].nPacketsSent = 0;                            // How many packets we sent to them

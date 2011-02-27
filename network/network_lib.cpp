@@ -59,7 +59,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players [i].connected) {
 		if (gameStates.multi.nGameType == IPX_GAME)
 			return i;
-		if (netPlayers [0].m_info.players [i].network.ipx.node.a.port.s == ushort (mpParams.udpPorts [0] + networkData.nPortOffset))
+		if (netPlayers [0].m_info.players [i].network.Port () == ushort (mpParams.udpPorts [0] + networkData.nPortOffset))
 			return i;
 		}
 	}
@@ -134,7 +134,7 @@ return 0;
 
 #define LOCAL_NODE \
 	((gameStates.multi.bHaveLocalAddress && (gameStates.multi.nGameType == UDP_GAME)) ? \
-	 networkData.localAddress + 4 : networkData.thisPlayer.player.network.ipx.node.v)
+	 networkData.localAddress + 4 : networkData.thisPlayer.player.network.Node ())
 
 
 int CmpLocalPlayer (tNetworkInfo *networkP, char *pszNetCallSign, char *pszLocalCallSign)

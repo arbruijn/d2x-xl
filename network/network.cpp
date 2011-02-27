@@ -369,8 +369,8 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		Assert (nakedData.nDestPlayer >- 1);
 		if (gameStates.multi.nGameType >= IPX_GAME) 
 			IPXSendPacketData (reinterpret_cast<ubyte*> (nakedData.buf), nakedData.nLength, 
-									netPlayers [0].m_info.players [nakedData.nDestPlayer].network.ipx.server, 
-									netPlayers [0].m_info.players [nakedData.nDestPlayer].network.ipx.node.v, 
+									netPlayers [0].m_info.players [nakedData.nDestPlayer].network.Server (), 
+									netPlayers [0].m_info.players [nakedData.nDestPlayer].network.Node (), 
 									gameData.multiplayer.players [nakedData.nDestPlayer].netAddress);
 		nakedData.nLength = 0;
 		nakedData.nDestPlayer = -1;
@@ -519,8 +519,8 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		mybuf [2] = LOCALPLAYER.connected;
 	IPXSendPacketData (
 		reinterpret_cast<ubyte*> (mybuf), (gameStates.multi.nGameType == UDP_GAME) ? 3 : 2, 
-		netPlayers [0].m_info.players [nPlayer].network.ipx.server, 
-		netPlayers [0].m_info.players [nPlayer].network.ipx.node, 
+		netPlayers [0].m_info.players [nPlayer].network.Server (), 
+		netPlayers [0].m_info.players [nPlayer].network.Node (), 
 		gameData.multiplayer.players [nPlayer].netAddress);
 	}
 }

@@ -197,13 +197,13 @@ netPlayers [0].m_info.players [nPlayer].versionMinor = their->player.versionMino
 NetworkCheckForOldVersion ((char) nPlayer);
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if (*reinterpret_cast<uint*> (their->player.network.ipx.server) != 0)
+	if (*reinterpret_cast<uint*> (their->player.network.Server ()) != 0)
 		IpxGetLocalTarget (
-			their->player.network.ipx.server, 
-			their->player.network.ipx.node.v, 
+			their->player.network.Server (), 
+			their->player.network.Node (), 
 			gameData.multiplayer.players [nPlayer].netAddress);
 	else
-		memcpy (gameData.multiplayer.players [nPlayer].netAddress, their->player.network.ipx.node.v, 6);
+		memcpy (gameData.multiplayer.players [nPlayer].netAddress, their->player.network.Node (), 6);
 	}
 memcpy (&netPlayers [0].m_info.players [nPlayer].network, &their->player.network, sizeof (tNetworkInfo));
 gameData.multiplayer.players [nPlayer].nPacketsGot = 0;
@@ -251,7 +251,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		if (!memcmp (gameData.multiplayer.players [i].netAddress, anyAddress, 6) &&
 			 !stricmp (gameData.multiplayer.players [i].callsign, player->player.callsign)) {
 			memcpy (gameData.multiplayer.players [i].netAddress, newAddress, 6);
-			memcpy (netPlayers [0].m_info.players [i].network.ipx.node.v, newAddress, 6);
+			memcpy (netPlayers [0].m_info.players [i].network.Node (), newAddress, 6);
 			return i;
 			}
 		}
@@ -276,8 +276,8 @@ if (netGame.m_info.gameFlags & NETGAME_FLAG_CLOSED) {
 	// Slots are open but game is closed
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			player->player.network.ipx.server, 
-			player->player.network.ipx.node.v, 
+			player->player.network.Server (), 
+			player->player.network.Node (), 
 			DUMP_CLOSED);
 	return -1;
 	}
@@ -301,8 +301,8 @@ if (oldestPlayer == -1) {
 	// Everyone is still connected 
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			player->player.network.ipx.server, 
-			player->player.network.ipx.node.v, 
+			player->player.network.Server (), 
+			player->player.network.Node (), 
 			DUMP_FULL);
 	return -1;
 	}
@@ -350,8 +350,8 @@ console.printf (CON_DBG, "Ignored request from new player to join during endgame
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			player->player.network.ipx.server, 
-			player->player.network.ipx.node.v, 
+			player->player.network.Server (), 
+			player->player.network.Node (), 
 			DUMP_ENDLEVEL);
 	return NULL; 
 	}
@@ -362,8 +362,8 @@ if (player->player.connected != missionManager.nCurrentLevel) {
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			player->player.network.ipx.server, 
-			player->player.network.ipx.node.v, 
+			player->player.network.Server (), 
+			player->player.network.Node (), 
 			DUMP_LEVEL);
 	return NULL;
 	}
@@ -398,8 +398,8 @@ networkData.refuse.bWaitForAnswer = 0;
 if (FindArg ("-NoMatrixCheat")) {
 	if ((player->player.versionMinor & 0x0F) < 3) {
 		NetworkDumpPlayer (
-			player->player.network.ipx.server, 
-			player->player.network.ipx.node.v, 
+			player->player.network.Server (), 
+			player->player.network.Node (), 
 			DUMP_DORK);
 		return;
 		}
@@ -409,8 +409,8 @@ if (HoardEquipped ()) {
 	if ((gameData.app.nGameMode & GM_HOARD) && ((player->player.versionMinor & 0x0F) < 2)) {
 		if (gameStates.multi.nGameType >= IPX_GAME)
 			NetworkDumpPlayer (
-				player->player.network.ipx.server, 
-				player->player.network.ipx.node.v, 
+				player->player.network.Server (), 
+				player->player.network.Node (), 
 				DUMP_DORK);
 		return;
 		}
@@ -420,13 +420,13 @@ if (!(syncP = AcceptJoinRequest (player)))
 memset (&syncP->player [1], 0, sizeof (tSequencePacket));
 networkData.bPlayerAdded = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if (*reinterpret_cast<uint*> (player->player.network.ipx.server) != 0)
+	if (*reinterpret_cast<uint*> (player->player.network.Server ()) != 0)
 		IpxGetLocalTarget (
-			player->player.network.ipx.server, 
-			player->player.network.ipx.node.v, 
+			player->player.network.Server (), 
+			player->player.network.Node (), 
 			newAddress);
 	else
-		memcpy (newAddress, player->player.network.ipx.node.v, 6);
+		memcpy (newAddress, player->player.network.Node (), 6);
 	}
 if (0 > (nPlayer = FindNetworkPlayer (player, newAddress))) {
 	// Player is new to this game
@@ -503,7 +503,7 @@ if (pn < 0)
 
 for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
 	j = i++;
-	memcpy (&netPlayers [0].m_info.players [j].network, &netPlayers [0].m_info.players [i].network.ipx.node.v, sizeof (tNetworkInfo));
+	memcpy (&netPlayers [0].m_info.players [j].network, &netPlayers [0].m_info.players [i].network.Node (), sizeof (tNetworkInfo));
 	memcpy (netPlayers [0].m_info.players [j].callsign, netPlayers [0].m_info.players [i].callsign, CALLSIGN_LEN + 1);
 	netPlayers [0].m_info.players [j].versionMajor = netPlayers [0].m_info.players [i].versionMajor;
 	netPlayers [0].m_info.players [j].versionMinor = netPlayers [0].m_info.players [i].versionMinor;
@@ -608,8 +608,8 @@ else {
 		if (!strcmp (their->player.callsign, networkData.refuse.szPlayer)) {
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				NetworkDumpPlayer (
-					their->player.network.ipx.server, 
-					their->player.network.ipx.node.v, 
+					their->player.network.Server (), 
+					their->player.network.Node (), 
 					DUMP_DORK);
 			}
 		return;

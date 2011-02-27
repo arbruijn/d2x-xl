@@ -1486,12 +1486,12 @@ for (i = 0; i < nPlayers; i++) {
 #if 0//DBG
 			sprintf (name, "%c%-8s %d.%d.%d.%d:%d",
 						teamInd [0], netGame.m_info.szTeamName [i],
-						netPlayers [0].m_info.players [i].network.ipx.node [0],
-						netPlayers [0].m_info.players [i].network.ipx.node [1],
-						netPlayers [0].m_info.players [i].network.ipx.node [2],
-						netPlayers [0].m_info.players [i].network.ipx.node [3],
-						netPlayers [0].m_info.players [i].network.ipx.node [5] +
-						 (unsigned) netPlayers [0].m_info.players [i].network.ipx.node [4] * 256);
+						netPlayers [0].m_info.players [i].network.Node () [0],
+						netPlayers [0].m_info.players [i].network.Node () [1],
+						netPlayers [0].m_info.players [i].network.Node () [2],
+						netPlayers [0].m_info.players [i].network.Node () [3],
+						netPlayers [0].m_info.players [i].network.Node () [5] +
+						 (unsigned) netPlayers [0].m_info.players [i].network.Node () [4] * 256);
 #else
 			sprintf (name, "%c%s", teamInd [0], netGame.m_info.szTeamName [i]);
 #endif
@@ -1501,12 +1501,12 @@ for (i = 0; i < nPlayers; i++) {
 #if SHOW_PLAYER_IP
 			sprintf (name, "%-8s %d.%d.%d.%d:%d",
 						netGame.m_info.szTeamName [i],
-						netPlayers [0].m_info.players [i].network.ipx.node [0],
-						netPlayers [0].m_info.players [i].network.ipx.node [1],
-						netPlayers [0].m_info.players [i].network.ipx.node [2],
-						netPlayers [0].m_info.players [i].network.ipx.node [3],
-						netPlayers [0].m_info.players [i].network.ipx.node [5] +
-						 (unsigned) netPlayers [0].m_info.players [i].network.ipx.node [4] * 256);
+						netPlayers [0].m_info.players [i].network.Node () [0],
+						netPlayers [0].m_info.players [i].network.Node () [1],
+						netPlayers [0].m_info.players [i].network.Node () [2],
+						netPlayers [0].m_info.players [i].network.Node () [3],
+						netPlayers [0].m_info.players [i].network.Node () [5] +
+						 (unsigned) netPlayers [0].m_info.players [i].network.Node () [4] * 256);
 #else
 			strcpy (name, netGame.m_info.szTeamName [i]);
 #endif
@@ -1517,12 +1517,12 @@ for (i = 0; i < nPlayers; i++) {
 #if 0//DBG
 		sprintf (name, "%-8s %d.%d.%d.%d:%d",
 					gameData.multiplayer.players [nPlayer].callsign,
-					netPlayers [0].m_info.players [nPlayer].network.ipx.node [0],
-					netPlayers [0].m_info.players [nPlayer].network.ipx.node [1],
-					netPlayers [0].m_info.players [nPlayer].network.ipx.node [2],
-					netPlayers [0].m_info.players [nPlayer].network.ipx.node [3],
-					netPlayers [0].m_info.players [nPlayer].network.ipx.node [5] +
-					 (unsigned) netPlayers [0].m_info.players [nPlayer].network.ipx.node [4] * 256);
+					netPlayers [0].m_info.players [nPlayer].network.Node () [0],
+					netPlayers [0].m_info.players [nPlayer].network.Node () [1],
+					netPlayers [0].m_info.players [nPlayer].network.Node () [2],
+					netPlayers [0].m_info.players [nPlayer].network.Node () [3],
+					netPlayers [0].m_info.players [nPlayer].network.Node () [5] +
+					 (unsigned) netPlayers [0].m_info.players [nPlayer].network.Node () [4] * 256);
 #else
 		strcpy (name, gameData.multiplayer.players [nPlayer].callsign);	// Note link to above if!!
 #endif

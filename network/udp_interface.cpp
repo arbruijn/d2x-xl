@@ -58,7 +58,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 		(pid != PID_TRACKER_ADD_SERVER)
 	)
  {
-	memcpy (&their->player.network.ipx.server, &networkData.packetSource.src_network, 10);
+	memcpy (&their->player.network.Server (), &networkData.packetSource.src_network, 10);
 	}
 */
 //------------------------------------------------------------------------------
@@ -1191,7 +1191,7 @@ if (!(bTracker
 		}
 #endif //UDP_SAFEMODE
 	gameStates.multi.bHaveLocalAddress = 1;
-	memcpy (&netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, networkData.localAddress + 4, 6);
+	memcpy (&netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node (), networkData.localAddress + 4, 6);
 #if UDP_SAFEMODE
 	dataLen -= (bSafeMode ? 22 : 14);
 #else
