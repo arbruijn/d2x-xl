@@ -101,10 +101,9 @@ networkData.thisPlayer.player.versionMajor=D2X_MAJOR;
 networkData.thisPlayer.player.versionMinor=D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 0);
 networkData.thisPlayer.player.rank=GetMyNetRanking ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	memcpy (networkData.thisPlayer.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
+	memcpy (&networkData.thisPlayer.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
 	if (gameStates.multi.nGameType == UDP_GAME)
-		*reinterpret_cast<ushort*> (networkData.thisPlayer.player.network.ipx.node + 4) = 
-			htons (*reinterpret_cast<ushort*> (networkData.thisPlayer.player.network.ipx.node + 4));
+		networkData.thisPlayer.player.network.ipx.node.a.port.s = htons (networkData.thisPlayer.player.network.ipx.node.a.port.s);
 //		if (gameStates.multi.nGameType == UDP_GAME)
 //			memcpy (networkData.thisPlayer.player.network.ipx.node, networkData.localAddress + 4, 4);
 	memcpy (networkData.thisPlayer.player.network.ipx.server, IpxGetMyServerAddress (), 4);

@@ -370,7 +370,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		if (gameStates.multi.nGameType >= IPX_GAME) 
 			IPXSendPacketData (reinterpret_cast<ubyte*> (nakedData.buf), nakedData.nLength, 
 									netPlayers [0].m_info.players [nakedData.nDestPlayer].network.ipx.server, 
-									netPlayers [0].m_info.players [nakedData.nDestPlayer].network.ipx.node, 
+									netPlayers [0].m_info.players [nakedData.nDestPlayer].network.ipx.node.v, 
 									gameData.multiplayer.players [nakedData.nDestPlayer].netAddress);
 		nakedData.nLength = 0;
 		nakedData.nDestPlayer = -1;

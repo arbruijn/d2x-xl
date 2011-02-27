@@ -72,10 +72,12 @@ int IAmGameHost (void)
 {
 if (gameStates.app.bGameRunning) {
 	gameStates.multi.bServer [0] = (WhoIsGameHost () == gameData.multiplayer.nLocalPlayer);
+	// the following code is obsolete; Only a player with a local port identical to the server port can become new game host
+#if 0
 	// if player wasn't host, but is host now (probably because the former host disconnected)
 	// then make sure he is now using the server port, or the other players won't be able to
 	// reach him
-#if 0
+
 	if (gameStates.multi.bServer [0] != gameStates.multi.bServer [1]) {
 		gameStates.multi.bServer [1] = gameStates.multi.bServer [0]; 
 		// check whether the client port (mpParams.updPorts [1]) differs from the server port (mpParams.udpPorts [0] + networkData.nPortOffset)

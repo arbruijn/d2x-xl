@@ -200,10 +200,10 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (*reinterpret_cast<uint*> (their->player.network.ipx.server) != 0)
 		IpxGetLocalTarget (
 			their->player.network.ipx.server, 
-			their->player.network.ipx.node, 
+			their->player.network.ipx.node.v, 
 			gameData.multiplayer.players [nPlayer].netAddress);
 	else
-		memcpy (gameData.multiplayer.players [nPlayer].netAddress, their->player.network.ipx.node, 6);
+		memcpy (gameData.multiplayer.players [nPlayer].netAddress, their->player.network.ipx.node.v, 6);
 	}
 memcpy (&netPlayers [0].m_info.players [nPlayer].network, &their->player.network, sizeof (tNetworkInfo));
 gameData.multiplayer.players [nPlayer].nPacketsGot = 0;
@@ -251,7 +251,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		if (!memcmp (gameData.multiplayer.players [i].netAddress, anyAddress, 6) &&
 			 !stricmp (gameData.multiplayer.players [i].callsign, player->player.callsign)) {
 			memcpy (gameData.multiplayer.players [i].netAddress, newAddress, 6);
-			memcpy (netPlayers [0].m_info.players [i].network.ipx.node, newAddress, 6);
+			memcpy (netPlayers [0].m_info.players [i].network.ipx.node.v, newAddress, 6);
 			return i;
 			}
 		}
@@ -277,7 +277,7 @@ if (netGame.m_info.gameFlags & NETGAME_FLAG_CLOSED) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
 			player->player.network.ipx.server, 
-			player->player.network.ipx.node, 
+			player->player.network.ipx.node.v, 
 			DUMP_CLOSED);
 	return -1;
 	}
@@ -302,7 +302,7 @@ if (oldestPlayer == -1) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
 			player->player.network.ipx.server, 
-			player->player.network.ipx.node, 
+			player->player.network.ipx.node.v, 
 			DUMP_FULL);
 	return -1;
 	}
@@ -351,7 +351,7 @@ console.printf (CON_DBG, "Ignored request from new player to join during endgame
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
 			player->player.network.ipx.server, 
-			player->player.network.ipx.node, 
+			player->player.network.ipx.node.v, 
 			DUMP_ENDLEVEL);
 	return NULL; 
 	}
@@ -363,7 +363,7 @@ if (player->player.connected != missionManager.nCurrentLevel) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
 			player->player.network.ipx.server, 
-			player->player.network.ipx.node, 
+			player->player.network.ipx.node.v, 
 			DUMP_LEVEL);
 	return NULL;
 	}
@@ -399,7 +399,7 @@ if (FindArg ("-NoMatrixCheat")) {
 	if ((player->player.versionMinor & 0x0F) < 3) {
 		NetworkDumpPlayer (
 			player->player.network.ipx.server, 
-			player->player.network.ipx.node, 
+			player->player.network.ipx.node.v, 
 			DUMP_DORK);
 		return;
 		}
@@ -410,7 +410,7 @@ if (HoardEquipped ()) {
 		if (gameStates.multi.nGameType >= IPX_GAME)
 			NetworkDumpPlayer (
 				player->player.network.ipx.server, 
-				player->player.network.ipx.node, 
+				player->player.network.ipx.node.v, 
 				DUMP_DORK);
 		return;
 		}
@@ -423,10 +423,10 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (*reinterpret_cast<uint*> (player->player.network.ipx.server) != 0)
 		IpxGetLocalTarget (
 			player->player.network.ipx.server, 
-			player->player.network.ipx.node, 
+			player->player.network.ipx.node.v, 
 			newAddress);
 	else
-		memcpy (newAddress, player->player.network.ipx.node, 6);
+		memcpy (newAddress, player->player.network.ipx.node.v, 6);
 	}
 if (0 > (nPlayer = FindNetworkPlayer (player, newAddress))) {
 	// Player is new to this game
@@ -503,7 +503,7 @@ if (pn < 0)
 
 for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
 	j = i++;
-	memcpy (&netPlayers [0].m_info.players [j].network, &netPlayers [0].m_info.players [i].network.ipx.node, sizeof (tNetworkInfo));
+	memcpy (&netPlayers [0].m_info.players [j].network, &netPlayers [0].m_info.players [i].network.ipx.node.v, sizeof (tNetworkInfo));
 	memcpy (netPlayers [0].m_info.players [j].callsign, netPlayers [0].m_info.players [i].callsign, CALLSIGN_LEN + 1);
 	netPlayers [0].m_info.players [j].versionMajor = netPlayers [0].m_info.players [i].versionMajor;
 	netPlayers [0].m_info.players [j].versionMinor = netPlayers [0].m_info.players [i].versionMinor;
@@ -609,7 +609,7 @@ else {
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				NetworkDumpPlayer (
 					their->player.network.ipx.server, 
-					their->player.network.ipx.node, 
+					their->player.network.ipx.node.v, 
 					DUMP_DORK);
 			}
 		return;

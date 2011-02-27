@@ -284,10 +284,10 @@ enum compType {DOS,WIN_32,WIN_95,MAC} __pack__ ;
 
 typedef struct ipx_addr {
 	ubyte   server [4];
-	union tIP {
-		struct tPort {
+	union tNode {
+		struct tIP {
 			ubyte	ip [4];
-			union {
+			union tPort {
 				byte b [2];
 				ushort s;
 			} port;
@@ -305,8 +305,13 @@ typedef struct appletalk_addr {
 
 
 typedef union {
-	ipx_addr			ipx;
-	appletalk_addr	appletalk;
+	public:
+		ipx_addr			ipx;
+		appletalk_addr	appletalk;
+
+	inline ubyte* IP (void) { return ipx.node.a.ip; }
+	inline ubyte* Node (void) { return ipx.node.v; }
+	inline ushort& Port (void) { return ipx.node.a.port.s; }
 } __pack__ tNetworkInfo;
 
 
