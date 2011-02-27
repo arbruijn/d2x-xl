@@ -199,7 +199,9 @@ for (i = 0; i < nSavePlayers; i++) {
 						  netPlayers [0].m_info.players [i].network.Server (), 4);
 				}
 			else {
-				memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.appletalk, netPlayers [0].m_info.players [i].network.appletalk, sizeof (appletalk_addr));
+				memcpy (&netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.appletalk, 
+						  &netPlayers [0].m_info.players [i].network.appletalk, 
+						  sizeof (appletalk_addr));
 				}
 			memcpy (
 				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].callsign, 
@@ -215,13 +217,13 @@ for (i = 0; i < nSavePlayers; i++) {
 		}
 	else {
 		if (gameStates.multi.nGameType >= IPX_GAME)
-			NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Server (), netPlayers [0].m_info.players [i].network.Node ().v, DUMP_DORK);
+			NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Server (), netPlayers [0].m_info.players [i].network.Node (), DUMP_DORK);
 		}
 	}
 
 for (i = gameData.multiplayer.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
 	if (gameStates.multi.nGameType >= IPX_GAME) {
-		memset (netPlayers [0].m_info.players [i].network.Node ().v, 0, 6);
+		memset (netPlayers [0].m_info.players [i].network.Node (), 0, 6);
 		memset (netPlayers [0].m_info.players [i].network.Server (), 0, 4);
 	   }
 	else {
