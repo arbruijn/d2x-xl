@@ -130,7 +130,7 @@ class __pack__ CShipEnergy {
 			return (Get () < e) ? Set (e, false) : false; 
 			}
 		// fill rate in percent
-		inline int Level (void) { return int (100.0f * float (Get (false)) / float (Initial ()) + 0.5f); }
+		inline int Level (void) { return int (100.0f * float (Get ()) / float (Initial ()) + 0.5f); }
 		// initialize
 		void Setup (int type, int index, fix init, fix* current) {
 			m_type = type;
