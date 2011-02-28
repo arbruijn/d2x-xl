@@ -1025,7 +1025,7 @@ if ((killedType != OBJ_PLAYER) && (killedType != OBJ_GHOST)) {
 	}
 killedP = gameData.multiplayer.players + nKilledPlayer;
 gameData.multigame.score.pFlags [nKilledPlayer] = 1;
-Assert ((nKilledPlayer >= 0) &&(nKilledPlayer < gameData.multiplayer.nPlayers));
+Assert ((nKilledPlayer >= 0) && (nKilledPlayer < gameData.multiplayer.nPlayers));
 if (gameData.app.nGameMode & GM_TEAM)
 	sprintf (szKilled, "%s (%s)", killedP->callsign, netGame.m_info.szTeamName [GetTeam (nKilledPlayer)]);
 else
@@ -1255,7 +1255,7 @@ void MultiDoFrame (void)
 	static int lasttime = 0;
 	int i;
 
-if (!(gameData.app.nGameMode & GM_MULTI)) {
+if (!IsMultiGame) {
 	Int3 ();
 	return;
 	}
@@ -1332,7 +1332,7 @@ if (gameStates.app.nFunctionMode != FMODE_EXIT)
 
 void MultiShowPlayerList (void)
 {
-if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_COOP))
+if (!IsMultiGame || IsCoopGame)
 	return;
 if (gameData.multigame.score.bShowList)
 	return;
@@ -1393,7 +1393,7 @@ return 0;
 
 void MultiDoDeath (int nObject)
 {
-if (!(gameData.app.nGameMode & GM_MULTI_COOP))
+if (!IsCoopGame)
 	LOCALPLAYER.flags |= (PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_GOLD_KEY);
 }
 
@@ -1609,7 +1609,7 @@ void MultiDoDestroyReactor (char *buf)
 short nObject = GET_INTEL_SHORT (buf + 1);
 sbyte who = buf [3];
 if (gameData.reactor.bDestroyed != 1) {
-	if ((who < gameData.multiplayer.nPlayers) &&(who != gameData.multiplayer.nLocalPlayer))
+	if ((who < gameData.multiplayer.nPlayers) && (who != gameData.multiplayer.nLocalPlayer))
 		HUDInitMessage ("%s %s", gameData.multiplayer.players [who].callsign, TXT_HAS_DEST_CONTROL);
 	else if (who == gameData.multiplayer.nLocalPlayer)
 		HUDInitMessage (TXT_YOU_DEST_CONTROL);
@@ -1636,20 +1636,20 @@ void MultiDoEscape (char *buf)
 {
 	int nObject;
 
-nObject = gameData.multiplayer.players [(int)buf [1]].nObject;
+nObject = gameData.multiplayer.players [(int) buf [1]].nObject;
 audio.PlaySound (SOUND_HUD_MESSAGE);
 audio.DestroyObjectSound (nObject);
 if (buf [2] == 0) {
-	HUDInitMessage ("%s %s", gameData.multiplayer.players [(int)buf [1]].callsign, TXT_HAS_ESCAPED);
+	HUDInitMessage ("%s %s", gameData.multiplayer.players [(int) buf [1]].callsign, TXT_HAS_ESCAPED);
 	if (gameData.app.nGameMode & GM_NETWORK)
-		gameData.multiplayer.players [(int)buf [1]].connected = CONNECT_ESCAPE_TUNNEL;
+		gameData.multiplayer.players [(int) buf [1]].connected = CONNECT_ESCAPE_TUNNEL;
 	if (!gameData.multigame.bGotoSecret)
 		gameData.multigame.bGotoSecret = 2;
 	}
 else if (buf [2] == 1) {
-	HUDInitMessage ("%s %s", gameData.multiplayer.players [(int)buf [1]].callsign, TXT_HAS_FOUND_SECRET);
+	HUDInitMessage ("%s %s", gameData.multiplayer.players [(int) buf [1]].callsign, TXT_HAS_FOUND_SECRET);
 	if (gameData.app.nGameMode & GM_NETWORK)
-		gameData.multiplayer.players [(int)buf [1]].connected = CONNECT_FOUND_SECRET;
+		gameData.multiplayer.players [(int) buf [1]].connected = CONNECT_FOUND_SECRET;
 	if (!gameData.multigame.bGotoSecret)
 		gameData.multigame.bGotoSecret = 1;
 	}
@@ -1663,16 +1663,16 @@ void MultiDoRemoveObj (char *buf)
 {
 	short nObject; // which CObject to remove
 	short nLocalObj;
-	sbyte obj_owner; // which remote list is it entered in
+	sbyte nObjOwner; // which remote list is it entered in
 	int	id;
 
 nObject = GET_INTEL_SHORT (buf + 1);
-obj_owner = buf [3];
+nObjOwner = buf [3];
 
 Assert (nObject >= 0);
 if (nObject < 1)
 	return;
-nLocalObj = ObjnumRemoteToLocal (nObject, obj_owner); // translate to local nObject
+nLocalObj = ObjnumRemoteToLocal (nObject, nObjOwner); // translate to local nObject
 if (nLocalObj < 0)
 	return;
 CObject* objP = OBJECTS + nLocalObj;
