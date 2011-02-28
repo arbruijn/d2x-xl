@@ -1992,7 +1992,7 @@ void MultiDoTrigger (char *buf)
 	int nTrigger = (int) ((ubyte) buf [2]);
 	short nObject;
 
-if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
+if ((nPlayer < 0) || (nPlayer >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
 	Int3 (); // Got nTrigger from illegal nPlayer
 	return;
 	}
@@ -2060,7 +2060,9 @@ if ((markerManager.Objects (nMarker) != -1) &&
 	 (markerManager.Objects (nMarker) != 0))
 	ReleaseObject (markerManager.Objects (nMarker));
 markerManager.SetObject (nPlayer * 2 + nMsg, 
-								 DropMarkerObject (vPos, OBJECTS [LOCALPLAYER.nObject].info.nSegment, OBJECTS [LOCALPLAYER.nObject].info.position.mOrient, (ubyte) nMarker));
+								 DropMarkerObject (vPos, OBJECTS [LOCALPLAYER.nObject].info.nSegment, 
+								 OBJECTS [LOCALPLAYER.nObject].info.position.mOrient, 
+								 (ubyte) nMarker));
 markerManager.SetOwner (nMarker, gameData.multiplayer.players [nPlayer].callsign);
 }
 
@@ -2111,11 +2113,11 @@ MultiRestoreGame (slot, id);
 
 void MultiDoReqPlayer (char *buf)
 {
-tNetPlayerStats ps;
-ubyte player_n;
-// Send my tNetPlayerStats to everyone!
-player_n = *reinterpret_cast<ubyte*> (buf+1);
-if ((player_n == gameData.multiplayer.nLocalPlayer) || (player_n == 255)) {
+	ubyte nPlayer = *reinterpret_cast<ubyte*> (buf+1);
+
+if ((nPlayer == gameData.multiplayer.nLocalPlayer) || (nPlayer == 255)) {
+		tNetPlayerStats ps;
+
 	ExtractNetPlayerStats (&ps, gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
 	ps.nLocalPlayer = gameData.multiplayer.nLocalPlayer;
 	ps.messageType = MULTI_SEND_PLAYER;            // SET
