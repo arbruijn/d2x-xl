@@ -572,7 +572,7 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 		CCanvas::Current ()->SetColorRGB (0, ubyte ((h > 100) ? 224 : 64), 224, 128);
 		if (h > 100)
 			h -= (h / 100) * 100;
-		OglDrawFilledRect (6, y, 6 + h * m_info.xGaugeScale, y + int (9 * m_info.yGaugeScale));
+		OglDrawFilledRect (6, y, 6 + int (h * m_info.xGaugeScale), y + int (9 * m_info.yGaugeScale));
 		}
 	}
 if (gameStates.render.cockpit.nShieldFlash) {
