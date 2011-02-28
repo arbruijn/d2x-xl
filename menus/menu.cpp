@@ -445,6 +445,8 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 {
 	static	int t0 = 0;
 
+	int y;
+
 if (!MenuRenderTimeout (t0, m_tEnter))
 	return;
 
@@ -484,14 +486,16 @@ if (BeginRenderMenu ()) {
 		m_bRedraw = 1;
 		if (Item (i).m_bRebuild && Item (i).m_bCentered)
 			Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
-		if (i >= m_props.nScrollOffset)
-			Item (i).m_y -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+		if (i >= m_props.nScrollOffset) {
+			y = Item (i).m_y;
+			Item (i).m_y = Item (i - m_props.nScrollOffset + m_props.nMaxNoScroll).m_y;
+			}
 		Item (i).Draw ((i == m_nChoice) && !m_bAllText, m_props.bTinyMode);
 		Item (i).m_bRedraw = 0;
 		if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING)
 			SDL_ShowCursor (1);
 		if (i >= m_props.nScrollOffset)
-			Item (i).m_y += ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+			Item (i).m_y = y;
 		if ((i == m_nChoice) && 
 			 ((Item (i).m_nType == NM_TYPE_INPUT) || 
 			 ((Item (i).m_nType == NM_TYPE_INPUT_MENU) && Item (i).m_group)))

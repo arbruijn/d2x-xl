@@ -337,6 +337,7 @@ else {
 //	backgroundManager.Remove ();
 	gameStates.multi.bSurfingNet = 0;
 	}
+
 if (choice == -1) {
 	ChangePlayerNumTo (0);
 	memcpy (LOCALPLAYER.callsign, callsign, sizeof (callsign));
