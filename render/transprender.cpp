@@ -906,7 +906,7 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 		}
 	}
 else {
-	if (0 >= (SetupShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL,
+	if (0 <= (SetupShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL,
 								  (item->nSegment < 0) || !automap.Display () || automap.m_visited [item->nSegment],
 								  bTextured ? NULL : faceP ? &faceP->m_info.color : item->color)))
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);

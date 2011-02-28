@@ -2658,11 +2658,11 @@ void MultiSendRemoveObj (int nObject)
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return;
 
-	sbyte obj_owner;
+	sbyte nObjOwner;
 	short nRemoteObj;
 	int	id;
 
-if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) &&(gameData.app.nGameMode & GM_NETWORK)) {
+if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) && (gameData.app.nGameMode & GM_NETWORK)) {
 	id = OBJECTS [nObject].info.nId;
 	if (gameData.multiplayer.powerupsInMine [id] > 0) {
 		gameData.multiplayer.powerupsInMine [id]--;
@@ -2675,9 +2675,9 @@ if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) &&(gameData.app.nGameMode & GM
 		}
 	}
 gameData.multigame.msg.buf [0] = char (MULTI_REMOVE_OBJECT);
-nRemoteObj = ObjnumLocalToRemote (short (nObject), &obj_owner);
+nRemoteObj = ObjnumLocalToRemote (short (nObject), &nObjOwner);
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nRemoteObj); // Map to network objnums
-gameData.multigame.msg.buf [3] = obj_owner;
+gameData.multigame.msg.buf [3] = nObjOwner;
 MultiSendData (gameData.multigame.msg.buf, 4, 0);
 NetworkResetObjSync (nObject);
 }
