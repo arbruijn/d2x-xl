@@ -798,7 +798,7 @@ if (bAdditive & 3)
 m_data.bmP [0] = NULL;
 ogl.ResetClientStates (bLightmaps);
 #else
-ogl.ResetClientStates (1 + bLightmaps + (bmTop != NULL) + (bmMask != NULL));
+ogl.ResetClientStates (bTextured + bLightmaps + (bmTop != NULL) + (bmMask != NULL));
 #endif
 
 if (bmTop) {
@@ -847,13 +847,13 @@ if (bLightmaps) {
 	OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 	}
-
+#if 1
 if (!bTextured) {
 	ogl.BindTexture (0);
 	ogl.SetTexturing (false);
 	m_data.bmP [0] = NULL;
 	}
-
+#endif
 ogl.SetupTransform (1);
 if (gameStates.render.bFullBright)
 	glColor4f (1,1,1,item->color [0].alpha);
@@ -906,10 +906,10 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 		}
 	}
 else {
-	if (0 <= (SetupShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL,
-								  (item->nSegment < 0) || !automap.Display () || automap.m_visited [item->nSegment],
-								  bTextured ? NULL : faceP ? &faceP->m_info.color : item->color)))
-		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
+	SetupShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL,
+				    (item->nSegment < 0) || !automap.Display () || automap.m_visited [item->nSegment],
+					 bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
+	OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
 ogl.ResetTransform (faceP != NULL);
 gameData.render.nTotalFaces++;
