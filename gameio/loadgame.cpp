@@ -390,8 +390,11 @@ if (bNewGame) {
 	playerP->numRobotsTotal = 0;
 	playerP->nScoreGoalCount = 0;
 	playerP->hostages.nRescued = 0;
-	playerP->hostages.nLevel = 0;
-	playerP->hostages.nTotal = 0;
+	playerP->numRobotsLevel = CountRobotsInLevel ();
+	playerP->numRobotsTotal += playerP->numRobotsLevel;
+	playerP->hostages.nLevel = CountHostagesInLevel ();
+	playerP->hostages.nTotal += playerP->hostages.nLevel;
+	playerP->hostages.nOnBoard = 0;
 	playerP->laserLevel = 0;
 	playerP->flags = 0;
 	playerP->nCloaks =
@@ -418,10 +421,6 @@ else {
 		}
 	playerP->nKillerObj = -1;
 	playerP->numKillsLevel = 0;
-	playerP->numRobotsLevel = CountRobotsInLevel ();
-	playerP->numRobotsTotal += playerP->numRobotsLevel;
-	playerP->hostages.nLevel = CountHostagesInLevel ();
-	playerP->hostages.nTotal += playerP->hostages.nLevel;
 	playerP->hostages.nOnBoard = 0;
 	if (!bSecret) {
 		InitAmmoAndEnergy ();
@@ -773,18 +772,14 @@ if (nStage == 0) {
 			movieManager.InitExtraRobotLib (szFile);
 			}
 		}
-	}
-else {
-	ResetPogEffects ();
 	if (gameStates.app.bD1Mission) {
 		/*---*/PrintLog ("   loading Descent 1 textures\n");
 		LoadD1Textures ();
-#if 0
-		if (bLoadTextures)
-			LoadLevelTextures ();
-#endif
 		}
-	else {
+	}
+else {
+	ResetPogEffects ();
+	if (!gameStates.app.bD1Mission) {
 		if (bLoadTextures)
 			LoadLevelTextures ();
 		LoadTextData (pszLevelName, ".msg", gameData.messages);
