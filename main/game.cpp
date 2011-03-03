@@ -870,7 +870,9 @@ PrintLog ("unloading custom background data\n");
 banList.Save ();
 banList.Destroy ();
 //PrintLog ("peak memory consumption: %ld bytes\n", nMaxAllocd);
-SDL_Quit ();
+#if !defined(__unix__)
+SDL_Quit (); // hangs on Linux
+#endif
 #if 0
 if (fErr) {
 	fclose (fErr);
