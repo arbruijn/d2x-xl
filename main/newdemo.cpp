@@ -646,7 +646,7 @@ NDReadVector (objP->info.vLastPos);
 if ((objP->info.nType == OBJ_WEAPON) && (objP->info.renderType == RT_WEAPON_VCLIP))
 	objP->SetLife (NDReadFix ());
 else {
-	fix lifeLeft = (fix) bNDReadByte ();
+	fix lifeLeft = (fix) NDReadByte ();
 	objP->SetLife (lifeLeft << 12);
 	}
 if (objP->info.nType == OBJ_ROBOT) {

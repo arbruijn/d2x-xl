@@ -95,8 +95,8 @@ class CHitQuery {
 
 	public:
 		CHitQuery () { memset (this, 0xff, sizeof (*this)); }
-		CHitQuery (CFixVector* p0, CFixVector* p1, fix radP0, fix radP1, short thisObjNum, short* ignoreObjList, int flags, bool bCheckVisibility)
-			: p0 (p0), p1 (p1), radP0 (radP0), radP1 (radP1), thisObjNum (thisObjNum), ignoreObjList (ignoreObjList), flags (flags), bCheckVisibility (bCheckVisibility)
+		CHitQuery (CFixVector* p0, CFixVector* p1, short startSeg, fix radP0, fix radP1, short thisObjNum, short* ignoreObjList, int flags, bool bCheckVisibility)
+			: p0 (p0), p1 (p1), startSeg (startSeg), radP0 (radP0), radP1 (radP1), thisObjNum (thisObjNum), ignoreObjList (ignoreObjList), flags (flags), bCheckVisibility (bCheckVisibility)
 			{}
 	};
 
