@@ -700,6 +700,8 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 void CObject::SetLife (fix xLife)
 {
 info.xLifeLeft = xLife;
+if (Index () == nDbgObj)
+	nDbgObj = nDbgObj;
 }
 #endif
 
