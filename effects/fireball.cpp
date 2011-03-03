@@ -482,7 +482,8 @@ if (gameData.models.polyModels [0][ModelId ()].ModelCount () > 1) {
 	}
 #endif
 //make parent CObject only draw center part
-SetupDebris (0, ModelId (), rType.polyObjInfo.nTexOverride);
+if (info.nType != OBJ_REACTOR)
+	SetupDebris (0, ModelId (), rType.polyObjInfo.nTexOverride);
 }
 
 //------------------------------------------------------------------------------
