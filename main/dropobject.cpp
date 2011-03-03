@@ -623,13 +623,13 @@ switch (nType) {
 				case POW_CONCUSSION_4:
 				case POW_SHIELD_BOOST:
 				case POW_ENERGY:
-					objP->info.xLifeLeft = (d_rand () + I2X (3)) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
-					if (gameData.app.nGameMode & GM_MULTI)
+					objP->SetLife ((d_rand () + I2X (3)) * 64);		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
+					if (IsMultiGame)
 						objP->info.xLifeLeft /= 2;
 					break;
 				default:
-//						if (gameData.app.nGameMode & GM_MULTI)
-//							objP->info.xLifeLeft = (d_rand () + I2X (3)) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
+//						if (IsMultiGame)
+//							objP->SetLife ((d_rand () + I2X (3)) * 64);		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
 					break;
 				}
 			}
@@ -785,7 +785,7 @@ for (i = 0; i < nThrusters; i++) {
 		blobObjP->rType.vClipInfo.xTotalTime = xLifeTime;
 		blobObjP->rType.vClipInfo.xFrameTime = FixMulDiv (gameData.eff.vClips [0][VCLIP_AFTERBURNER_BLOB].xFrameTime,
 																		  xLifeTime, blobObjP->info.xLifeLeft);
-		blobObjP->info.xLifeLeft = xLifeTime;
+		blobObjP->SetLife (xLifeTime);
 		}
 	AddChildObjectP (pParent, blobObjP);
 	blobObjP->info.renderType = RT_THRUSTER;

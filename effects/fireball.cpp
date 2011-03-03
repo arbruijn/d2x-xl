@@ -61,7 +61,7 @@ nObject = CreateFireball (0, info.nSegment, info.position.vPos, 2 * info.xSize, 
 if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
-objP->info.xLifeLeft = BLAST_LIFE;
+objP->SetLife (BLAST_LIFE);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
@@ -70,7 +70,7 @@ objP->info.xSize /= 3;
 if ((info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = info.nId])) {
 	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID)) {
 		objP->info.xSize = I2X (5) / 2;
-//		objP->info.xLifeLeft = 3 * BLAST_LIFE / 2;
+//		objP->SetLife (3 * BLAST_LIFE / 2);
 		}
 	else if ((id == MEGAMSL_ID) || (id == ROBOT_MEGAMSL_ID) || (id == EARTHSHAKER_MEGA_ID))
 		objP->info.xSize = I2X (2);
@@ -97,7 +97,7 @@ nObject = CreateFireball (0, parentObjP->info.nSegment, parentObjP->info.positio
 if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
-objP->info.xLifeLeft = IMMORTAL_TIME;
+objP->SetLife (IMMORTAL_TIME);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
@@ -128,7 +128,7 @@ if (nObject < 0) {
 
 explObjP = OBJECTS + nObject;
 //now set explosion-specific data
-explObjP->info.xLifeLeft = gameData.eff.vClips [0][nVClip].xTotalTime;
+explObjP->SetLife (gameData.eff.vClips [0][nVClip].xTotalTime);
 explObjP->cType.explInfo.nSpawnTime = -1;
 explObjP->cType.explInfo.nDeleteObj = -1;
 explObjP->cType.explInfo.nDeleteTime = -1;
@@ -394,9 +394,9 @@ rType.polyObjInfo.nTexOverride = nTexOverride;
 //Set physics data for this CObject
 SetupRandomMovement ();
 #if 0 //DBG
-info.xLifeLeft = I2X (nDebrisLife [8]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
+SetLife (I2X (nDebrisLife [8]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE));	//	Some randomness, so they don't all go away at the same time.
 #else
-info.xLifeLeft = I2X (nDebrisLife [gameOpts->render.nDebrisLife]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
+SetLife (I2X (nDebrisLife [gameOpts->render.nDebrisLife]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE));	//	Some randomness, so they don't all go away at the same time.
 if (nSubObj == 0)
 	info.xLifeLeft *= 2;
 #endif
@@ -520,7 +520,7 @@ if (delayTime) {		//wait a little while before creating explosion
 		}
 	CObject *objP = OBJECTS + nObject;
 	//now set explosion-specific data
-	objP->info.xLifeLeft = delayTime;
+	objP->SetLife (delayTime);
 	objP->cType.explInfo.nDeleteObj = OBJ_IDX (this);
 #if DBG
 	if (objP->cType.explInfo.nDeleteObj < 0)
@@ -576,8 +576,8 @@ void CObject::DoExplosionSequence (void)
 Assert (info.controlType == CT_EXPLOSION);
 //See if we should die of old age
 if (info.xLifeLeft <= 0) {	// We died of old age
+	SetLife (0);
 	Die ();
-	info.xLifeLeft = 0;
 	}
 if (info.renderType == RT_EXPLBLAST)
 	return;

@@ -1953,7 +1953,7 @@ if (!gameData.weapons.info [info.nId].xDamageRadius)
 	return 0;
 fix xDist = CFixVector::Dist (info.position.vPos, otherP->info.position.vPos);
 if (xDist >= I2X (5))
-	info.xLifeLeft = min (xDist / 64, I2X (1));
+	SetLife (min (xDist / 64, I2X (1)));
 else {
 	MaybeKillWeapon (otherP);
 	if (info.nFlags & OF_SHOULD_BE_DEAD) {

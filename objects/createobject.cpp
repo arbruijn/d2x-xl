@@ -255,12 +255,12 @@ objP->info.position.vPos = vPos;
 objP->SetOrigin (vPos);
 objP->info.xSize = xSize;
 objP->info.nCreator = sbyte (nCreator);
-objP->info.xLifeLeft = IMMORTAL_TIME;
+objP->SetLife (IMMORTAL_TIME);
 if (IsMultiGame && (gameData.app.nGameMode & GM_ENTROPY) && (nType == OBJ_POWERUP) && (nId == POW_ENTROPY_VIRUS)) {
 	if ((nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER))
 		objP->info.nCreator = sbyte (GetTeam (OBJECTS [nCreator].info.nId) + 1);
 	if (extraGameInfo [1].entropy.nVirusLifespan > 0)
-		objP->info.xLifeLeft = I2X (extraGameInfo [1].entropy.nVirusLifespan);
+		objP->SetLife (I2X (extraGameInfo [1].entropy.nVirusLifespan));
 	}
 objP->info.position.mOrient = mOrient;
 objP->info.controlType = cType;
@@ -506,7 +506,7 @@ if (nObject >= 0) {
 	objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
 	objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 2);
 	//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all OBJECTS.
-	objP->info.xLifeLeft = IMMORTAL_TIME;
+	objP->SetLife (IMMORTAL_TIME);
 	}
 return nObject;
 }

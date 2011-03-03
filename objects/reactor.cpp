@@ -229,6 +229,7 @@ if (bFinalCountdown ||
 if (bReactor) {
 	ExecObjTriggers (objP->Index (), 0);
 	if (0 <= (i = FindReactor (objP))) {
+		objP->SetLife (IMMORTAL_TIME);
 		gameData.reactor.states [i].nDeadObj = objP->Index ();
 		gameStates.gameplay.nReactorCount [0]--;
 		}

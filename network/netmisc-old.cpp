@@ -633,7 +633,7 @@ INTEL_MATRIX (objP->info.position.mOrient);
 objP->info.xSize = INTEL_INT (objP->info.xSize);
 objP->info.xShield = INTEL_INT (objP->info.xShield);
 INTEL_VECTOR (objP->info.vLastPos);
-objP->info.xLifeLeft = INTEL_INT (objP->info.xLifeLeft);
+objP->SetLife (INTEL_INT (objP->info.xLifeLeft));
 switch (objP->info.movementType) {
 	case MT_PHYSICS:
 		INTEL_VECTOR (objP->mType.physInfo.velocity);

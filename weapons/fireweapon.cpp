@@ -480,14 +480,14 @@ void DoWeaponSequence (CObject *objP)
 Assert (objP->info.controlType == CT_WEAPON);
 //	Ok, this is a big hack by MK.
 //	If you want an CObject to last for exactly one frame, then give it a lifeleft of ONE_FRAME_TIME
-if (objP->info.xLifeLeft == ONE_FRAME_TIME) {
+if (objP->LifeLeft () == ONE_FRAME_TIME) {
 	if (IsMultiGame)
-		objP->info.xLifeLeft = OMEGA_MULTI_LIFELEFT;
+		objP->SetLife (OMEGA_MULTI_LIFELEFT);
 	else
-		objP->info.xLifeLeft = 0;
+		objP->SetLife (0);
 	objP->info.renderType = RT_NONE;
 	}
-if (objP->info.xLifeLeft < 0) {		// We died of old age
+if (objP->LifeLeft () < 0) {		// We died of old age
 	objP->Die ();
 	if (WI_damage_radius (objP->info.nId))
 		objP->ExplodeBadassWeapon (objP->info.position.vPos);

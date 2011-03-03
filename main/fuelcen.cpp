@@ -262,7 +262,7 @@ delta = gameData.segs.vertices[SEGMENTS [nSegment].m_verts [0]] - matCenP->vCent
 pos += delta * (I2X (1)/2);
 nObject = CreateLight (SINGLE_LIGHT_ID, nSegment, pos);
 if (nObject != -1) {
-	OBJECTS [nObject].info.xLifeLeft = MATCEN_LIFE;
+	OBJECTS [nObject].SetLife (MATCEN_LIFE);
 	OBJECTS [nObject].cType.lightInfo.intensity = I2X (8);	//	Light cast by a fuelcen.
 	}
 return 0;
@@ -432,7 +432,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 	objP->rType.vClipInfo.nCurFrame = 0;
 	objP->info.nCreator = SEGMENTS [matCenP->nSegment].m_owner;
-	objP->info.xLifeLeft = IMMORTAL_TIME;
+	objP->SetLife (IMMORTAL_TIME);
 	}
 else {
 	matCenP->bFlag = 0;
@@ -490,7 +490,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 		objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 		objP->rType.vClipInfo.nCurFrame = 0;
 		objP->info.nCreator = SEGMENTS [matCenP->nSegment].m_owner;
-		objP->info.xLifeLeft = IMMORTAL_TIME;
+		objP->SetLife (IMMORTAL_TIME);
 		}
 	}
 else {

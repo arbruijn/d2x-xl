@@ -724,7 +724,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 /* Initialise audio devices. */
-int CAudio::Setup (float fSlowDown, int nFormat, const char* driver)
+int CAudio::InternalSetup (float fSlowDown, int nFormat, const char* driver)
 {
 if (!gameStates.app.bUseSound)
 	return 1;
@@ -799,8 +799,6 @@ else
 	waveSpec.callback = CAudio::MixCallback;
 	if (SDL_OpenAudio (&waveSpec, NULL) < 0) {
 		SDL_QuitSubSystem (SDL_INIT_AUDIO);
-		PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
-		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
 		return 1;
 		}
 	SDL_PauseAudio (0);
@@ -810,6 +808,18 @@ SetFxVolume (Volume ());
 m_info.bInitialized =
 m_info.bAvailable = 1;
 return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CAudio::Setup (float fSlowDown, int nFormat)
+{
+if (!InternalSetup (fSlowDown, nFormat, NULL))
+	return 0;
+if (!InternalSetup (fSlowDown, nFormat, "alsa"))
+	return 0;
+PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
+Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
 }
 
 //------------------------------------------------------------------------------

@@ -76,7 +76,7 @@ switch (objP->info.nId) {
 	case POW_CONCUSSION_4:
 	case POW_SHIELD_BOOST:
 	case POW_ENERGY:
-		objP->info.xLifeLeft = (d_rand() + I2X (3)) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
+		objP->SetLife ((d_rand() + I2X (3)) * 64);		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
 		if (IsMultiGame)
 			objP->info.xLifeLeft /= 2;
 		break;

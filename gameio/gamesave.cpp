@@ -99,7 +99,7 @@ char szSavePOFNames [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
 void VerifyObject (CObject * objP)
 {
-objP->info.xLifeLeft = IMMORTAL_TIME;		//all loaded CObject are immortal, for now
+objP->LifeLeft (IMMORTAL_TIME);		//all loaded CObject are immortal, for now
 if (objP->info.nType == OBJ_ROBOT) {
 	nGameSaveOrgRobots++;
 	// Make sure valid id...

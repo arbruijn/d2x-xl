@@ -278,7 +278,7 @@ objP->info.xSize = FixDiv (gameData.models.polyModels [0][objP->rType.polyObjInf
 #endif
 objP->rType.polyObjInfo.nTexOverride = -1;
 if (objP->info.nType == OBJ_POWERUP)
-	objP->info.xLifeLeft = IMMORTAL_TIME;
+	objP->SetLife (IMMORTAL_TIME);
 return 1;
 }
 

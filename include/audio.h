@@ -276,7 +276,7 @@ class CAudio {
 
 	private:
 		int AudioError (void);
-		int Setup (float fSlowDown, int nFormat, const char* driver);
+		int InternalSetup (float fSlowDown, int nFormat, const char* driver);
 
 	public:
 		CAudio ();
@@ -286,9 +286,7 @@ class CAudio {
 		int InitThread (void);
 #endif
 		void Destroy (void);
-		inline int Setup (float fSlowDown, int nFormat = -1) {
-			return Setup (fSlowDown, nFormat, NULL) ? Setup (fSlowDown, nFormat, "alsa") : 0;
-			}
+		int Setup (float fSlowDown, int nFormat = -1);
 		void Cleanup (void);
 		void Shutdown (void);
 		void Close (void);

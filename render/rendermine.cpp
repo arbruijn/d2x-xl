@@ -283,6 +283,10 @@ void RenderObjectsST (void)
 
 for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
 	nSegment = gameData.render.mine.segRenderList [1][i];
+#if DBG
+	if (nSegment == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
 	if (gameStates.render.bApplyDynLight) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
 		lightManager.SetNearestStatic (nSegment, 1, 1, 0);

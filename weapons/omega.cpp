@@ -153,7 +153,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 			break;
 		nLastCreatedObj = nBlobObj;
 		objP = OBJECTS + nBlobObj;
-		objP->info.xLifeLeft = ONE_FRAME_TIME;
+		objP->SetLife (ONE_FRAME_TIME);
 		objP->mType.physInfo.velocity = vGoal;
 		//	Only make the last one move fast, else multiple blobs might collide with target.
 		objP->mType.physInfo.velocity *= (I2X (4));

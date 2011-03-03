@@ -875,7 +875,7 @@ if (IS_WALL (nWall) &&
 	 ((WALLS [nWall].state != WALL_DOOR_CLOSED) ||
 	  (objP->info.nSignature != stuckObjP->nSignature))) {
 	nStuckObjects--;
-	objP->info.xLifeLeft = I2X (1)/8;
+	objP->SetLife (I2X (1) / 8);
 	stuckObjP->nWall = NO_WALL;
 	}
 }
@@ -896,7 +896,7 @@ for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++)
 	if (stuckObjP->nWall == nWall) {
 		objP = OBJECTS + stuckObjP->nObject;
 		if (objP->info.nType == OBJ_WEAPON)
-			objP->info.xLifeLeft = I2X (1)/8;
+			objP->SetLife (I2X (1) / 8);
 		else {
 #if TRACE
 			console.printf (1,
@@ -934,7 +934,7 @@ for (int i = 0; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
 	if (IS_WALL (stuckObjP->nWall)) {
 		objP = OBJECTS + stuckObjP->nObject;
 		if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID))
-			objP->info.xLifeLeft = I2X (1)/8;
+			objP->SetLife (I2X (1) / 8);
 		stuckObjP->nWall = NO_WALL;
 		nStuckObjects--;
 		}

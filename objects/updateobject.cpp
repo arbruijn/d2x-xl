@@ -109,6 +109,8 @@ if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME)) {
 	}
 #endif
 #if DBG
+if (Index () == nDbgObj)
+	nDbgObj = nDbgObj;
 if (this == dbgObjP)
 	dbgObjP = dbgObjP;
 #endif
@@ -141,6 +143,7 @@ new_pm = info.position.mOrient * rotmat;
 info.position.mOrient = new_pm;
 info.position.mOrient.CheckAndFix();
 }
+
 // -----------------------------------------------------------------------------
 
 void CObject::RotateCamera (void)
@@ -434,7 +437,7 @@ if ((this == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].obj
 		if (nConnSide != -1) {
 			CTrigger* trigP = SEGMENTS [nPrevSegment].Trigger (nConnSide);
 			if (trigP && (trigP->m_info.nType == TT_EXIT))
-				gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP->info.xLifeLeft = 0;
+				gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP->SetLife (0);
 			}
 		}
 	}
@@ -551,7 +554,7 @@ if (info.nType == OBJ_ROBOT) {
 		ApplyDamageToRobot (info.xShield + I2X (1), -1);
 #else
 		SetShield (0);
-		info.xLifeLeft = 0;
+		SetLife (0);
 		Die ();
 #endif
 		}
@@ -690,6 +693,15 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 		}
 	}
 }
+
+//	-----------------------------------------------------------------------------------------------------------
+
+#if DBG
+void CObject::SetLife (fix xLife)
+{
+info.xLifeLeft = xLife;
+}
+#endif
 
 //	-----------------------------------------------------------------------------------------------------------
 //eof

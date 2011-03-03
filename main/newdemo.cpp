@@ -644,12 +644,10 @@ switch (objP->info.nType) {
 
 NDReadVector (objP->info.vLastPos);
 if ((objP->info.nType == OBJ_WEAPON) && (objP->info.renderType == RT_WEAPON_VCLIP))
-	objP->info.xLifeLeft = NDReadFix ();
+	objP->SetLife (NDReadFix ());
 else {
-	ubyte b = NDReadByte ();
-	objP->info.xLifeLeft = (fix) b;
-	// MWA old way -- won't work with big endian machines       NDReadByte (reinterpret_cast<sbyte*> (reinterpret_cast<ubyte*> (&(objP->info.xLifeLeft);
-	objP->info.xLifeLeft = (fix) ((int) objP->info.xLifeLeft << 12);
+	fix lifeLeft = (fix) bNDReadByte ();
+	objP->SetLife (lifeLeft << 12);
 	}
 if (objP->info.nType == OBJ_ROBOT) {
 	if (ROBOTINFO (objP->info.nId).bossFlag) {

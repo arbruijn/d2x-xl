@@ -818,6 +818,15 @@ class CObject : public CObjectInfo {
 		inline CFixVector Origin (void) { return m_vOrigin; }
 		inline void SetOrigin (CFixVector vOrigin) { m_vOrigin = vOrigin; }
 
+		inline CFixVector& Position (void) { return info.position.vPos; }
+		inline CFixMatrix& Orientation (void) { return info.position.mOrient; }
+		inline short Segment (void) { return info.nSegment; }
+#if DBG
+		void SetLife (fix xLife);
+#else
+		inline void SetLife (fix xLife) { info.xLifeLeft = xLife; }
+#endif
+		inline fix LifeLeft (void) { return info.xLifeLeft; }
 		inline void InitLinks (void) { memset (m_links, 0, sizeof (m_links)); }
 
 		void Read (CFile& cf);

@@ -556,7 +556,7 @@ gameData.objs.missileViewerP = NULL;		///reset missile camera if out there
 // Make it a player object again.
 CObject* objP = OBJECTS + LOCALPLAYER.nObject;
 objP->info.nType = OBJ_PLAYER;
-objP->info.xLifeLeft = IMMORTAL_TIME;
+objP->SetLife (IMMORTAL_TIME);
 objP->info.nFlags = 0;
 objP->rType.polyObjInfo.nSubObjFlags = 0;
 objP->mType.physInfo.flags = PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST;

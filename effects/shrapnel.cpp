@@ -47,7 +47,7 @@ m_info.nSmoke =
 	particleManager.Create (&m_info.vPos, NULL, NULL, objP->info.nSegment, 1, -SHRAPNEL_MAX_PARTS * max (gameOpts->render.particles.nQuality, 2),
 								   -PARTICLE_SIZE (1, fScale, 1), -1, 1, SHRAPNEL_PART_LIFE, SHRAPNEL_PART_SPEED, SIMPLE_SMOKE_PARTICLES, 0x7fffffff, &color, 1, -1);
 if (objP->info.xLifeLeft < m_info.xLife)
-	objP->info.xLifeLeft = m_info.xLife;
+	objP->SetLife (m_info.xLife);
 }
 
 // -----------------------------------------------------------------------------
@@ -172,7 +172,7 @@ int CShrapnelCloud::Create (CObject* parentObjP, CObject* objP)
 	int		i, 
 				h = int (fScale * fShrapnelScale [gameOpts->render.effects.nShrapnels] + 0.5);
 
-objP->info.xLifeLeft = 0;
+objP->SetLife (0);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;

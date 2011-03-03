@@ -1254,7 +1254,7 @@ for (i = 1; i < player_path_length; i++) {
 	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 	objP->rType.vClipInfo.nCurFrame = 0;
-	objP->info.xLifeLeft = I2X (100) + d_rand () * 4;
+	objP->SetLife (I2X (100) + d_rand () * 4);
 	}
 return 1;
 }

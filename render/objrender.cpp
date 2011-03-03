@@ -200,7 +200,7 @@ if (bHasModel)
 	info.xSize = gameData.models.polyModels [0][ModelId ()].Rad ();
 #endif
 rType.polyObjInfo.nTexOverride = -1;
-info.xLifeLeft = IMMORTAL_TIME;
+SetLife (IMMORTAL_TIME);
 return 1;
 }
 

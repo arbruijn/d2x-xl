@@ -50,7 +50,7 @@ if (!m_bUse)
 
 FORALL_LIGHT_OBJS (objP, i)
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
-		objP->info.xLifeLeft = 0;
+		objP->SetLife (0);
 		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
 		}
 }
@@ -108,7 +108,7 @@ if (!m_bUse)
 	return -1;
 short nObject = CreateLight (CLUSTER_LIGHT_ID, objP->info.nSegment, OBJPOS (objP)->vPos);
 if (nObject >= 0)
-	OBJECTS [nObject].info.xLifeLeft = IMMORTAL_TIME;
+	OBJECTS [nObject].SetLife (IMMORTAL_TIME);
 return nObject;
 }
 
@@ -133,16 +133,16 @@ if (lightObjP->info.nSignature != m_objects [nObject].nSignature) {
 	return 0;
 	}
 CObject *objP = OBJECTS + nObject;
-if (lightObjP->info.xLifeLeft < objP->info.xLifeLeft)
-	lightObjP->info.xLifeLeft = objP->info.xLifeLeft;
+if (lightObjP->LifeLeft () < objP->LifeLeft ())
+	lightObjP->SetLife (objP->LifeLeft ());
 if (!lightObjP->cType.lightInfo.nObjects++) {
-	lightObjP->info.position.vPos = objP->info.position.vPos;
-	lightObjP->cType.lightInfo.nSegment = objP->info.nSegment;
+	lightObjP->Position () = objP->Position ();
+	lightObjP->cType.lightInfo.nSegment = objP->Segment ();
 	}
 else {
-	lightObjP->info.position.vPos += objP->info.position.vPos;
-	if (lightObjP->cType.lightInfo.nSegment != objP->info.nSegment)
-		lightObjP->cType.lightInfo.nSegment = -lightObjP->info.nSegment;
+	lightObjP->Position () += objP->Position ();
+	if (lightObjP->cType.lightInfo.nSegment != objP->Segment ())
+		lightObjP->cType.lightInfo.nSegment = -lightObjP->Segment ();
 	}
 lightObjP->cType.lightInfo.intensity += xObjIntensity;
 if (color) {
