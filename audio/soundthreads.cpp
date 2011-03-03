@@ -9,6 +9,7 @@
 #include "maths.h"
 #include "songs.h"
 #include "soundthreads.h"
+#include "timeout.h"
 #include "config.h"
 
 tSoundThreadInfo tiSound;
@@ -57,10 +58,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void WaitForSoundThread (void)
+void WaitForSoundThread (time_t nTimeout)
 {
-//time_t t1 = SDL_GetTicks ();
-while (tiSound.ti.pThread && tiSound.ti.bExec /*&& (SDL_GetTicks () - t1 < 1000)*/)
+	time_t t0;
+
+if (nTimeout >= 0)
+	t0 = SDL_GetTicks ();
+while (tiSound.ti.pThread && tiSound.ti.bExec && ((nTimeout < 0) || (SDL_GetTicks () - t0 < nTimeout)))
 	G3_SLEEP (1);
 }
 
@@ -87,12 +91,14 @@ if (!tiSound.ti.pThread) {
 void EndSoundThread (void)
 {
 if (tiSound.ti.pThread) {
-	WaitForSoundThread ();
+	WaitForSoundThread (1000);
 	tiSound.ti.bDone = 1;
+	CTimeout to (1000);
 	do {
 		G3_SLEEP (1);
-		} while (tiSound.ti.bDone);
-	//SDL_KillThread (tiSound.ti.pThread);
+		} while (tiSound.ti.bDone && !to.Expired ());
+	if (tiSound.ti.bDone)
+		SDL_KillThread (tiSound.ti.pThread);
 	tiSound.ti.pThread = NULL;
 	}	
 }

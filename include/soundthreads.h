@@ -33,7 +33,7 @@ typedef struct tSoundThreadInfo {
 void StartSoundThread (void);
 void EndSoundThread (void);
 void ControlSoundThread (void);
-void WaitForSoundThread (void);
+void WaitForSoundThread (time_t nTimeout = -1);
 int RunSoundThread (tSoundTask nTask);
 bool HaveSoundThread (void);
 
