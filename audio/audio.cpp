@@ -715,8 +715,8 @@ m_objects.Destroy ();
 int CAudio::AudioError (void)
 {
 SDL_QuitSubSystem (SDL_INIT_AUDIO);
-PrintLog (TXT_SDL_INIT_AUDIO, SDL_GetError ()); PrintLog ("\n");
-Error (TXT_SDL_INIT_AUDIO, SDL_GetError ());
+//PrintLog (TXT_SDL_INIT_AUDIO, SDL_GetError ()); PrintLog ("\n");
+//Error (TXT_SDL_INIT_AUDIO, SDL_GetError ());
 Destroy ();
 m_bSDLInitialized = false;
 return 1;
@@ -777,11 +777,8 @@ if (gameOpts->sound.bUseSDLMixer) {
 		h = Mix_OpenAudio (32000, m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
 	else 
 		h = Mix_OpenAudio (int (gameOpts->sound.audioSampleRate / fSlowDown), m_info.nFormat, 2, SOUND_BUFFER_SIZE);
-	if (h < 0) {
-		PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
-		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
+	if (h < 0)
 		return 1;
-		}
 #if 1
 	Mix_Resume (-1);
 	Mix_ResumeMusic ();
@@ -816,10 +813,13 @@ int CAudio::Setup (float fSlowDown, int nFormat)
 {
 if (!InternalSetup (fSlowDown, nFormat, NULL))
 	return 0;
+SDL_QuitSubSystem (SDL_INIT_AUDIO);
 if (!InternalSetup (fSlowDown, nFormat, "alsa"))
 	return 0;
+SDL_QuitSubSystem (SDL_INIT_AUDIO);
 PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
 Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
+return 1;
 }
 
 //------------------------------------------------------------------------------
