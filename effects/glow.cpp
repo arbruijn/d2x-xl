@@ -123,7 +123,12 @@ return false;
 void CGlowRenderer::Activate (void)
 {
 ogl.SelectGlowBuffer ();
+#if 0 //DBG
+glClearColor (0.0, 0.375, 0.75, 0.5);
+glClear (GL_COLOR_BUFFER_BIT);
+#else
 glClear (GL_COLOR_BUFFER_BIT /*| GL_DEPTH_BUFFER_BIT*/);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -132,6 +137,9 @@ inline int ScreenScale (void)
 {
 return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? 1 : 2;
 }
+
+#if 1
+
 
 inline int ScreenWidth (void)
 {
@@ -142,6 +150,20 @@ inline int ScreenHeight (void)
 {
 return screen.Height () /*/ ScreenScale ()*/;
 }
+
+#else
+
+inline int ScreenWidth (void)
+{
+return CCanvas::Current ()->Width (); 
+}
+
+inline int ScreenHeight (void)
+{
+return CCanvas::Current ()->Height ();
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -155,8 +177,8 @@ if (!bTransformed)
 v = transformation.m_info.projection * v;
 float z = -v [Z];
 tScreenPos s;
-float w = (float) screen.Width () / 2.0f;
-float h = (float) screen.Height () / 2.0f;
+float w = (float) ScreenWidth () / 2.0f;
+float h = (float) ScreenHeight () / 2.0f;
 s.x = fix (w + float (v [X]) * w / z);
 s.y = fix (h + float (v [Y]) * h / z);
 #pragma omp critical
@@ -361,11 +383,12 @@ return true;
 
 inline float ScreenCoord (float v, float m)
 {
-if (v < 0.0f)
+float c = v / m;
+if (c < 0.0f)
 	return 0.0f;
-if (v > m)
+if (c > 1.0f)
 	return 1.0f;
-return v / m;
+return c;
 }
 
 //------------------------------------------------------------------------------
@@ -375,8 +398,8 @@ void CGlowRenderer::Render (int const source, int const direction, float const r
 #if USE_VIEWPORT //DBG
 
 float r = radius * 4.0f; // scale with a bit more than the max. offset from the blur shader
-float w = (float) screen.Width ();
-float h = (float) screen.Height ();
+float w = (float) ScreenWidth ();
+float h = (float) ScreenHeight ();
 float verts [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
@@ -388,6 +411,8 @@ float verts [4][2] = {
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)}
 	};
 r += 4.0f;
+w = (float) screen.Width ();
+h = (float) screen.Height ();
 float texCoord [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
@@ -407,9 +432,11 @@ float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 #endif
 
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+#if !DBG
 if (direction >= 0)
 	LoadShader (direction, radius);
 else
+#endif
 	shaderManager.Deploy (-1);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer ());
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
@@ -468,6 +495,7 @@ else
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
 	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+	ogl.Viewport (0, 0, ScreenWidth (), ScreenHeight ());
 
 	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
 	bool bDepthWrite = ogl.GetDepthWrite ();
@@ -475,7 +503,7 @@ else
 
 	ogl.SetDepthWrite (false);
 	ogl.ResetClientStates (1);
-	//glClearColor (0.0, 0.5, 1.0, 0.5);
+	//glClearColor (0.0, 0.375, 0.75, 0.5);
 	//glClear (GL_COLOR_BUFFER_BIT);
 
 	float radius = 0.0f;
@@ -505,7 +533,8 @@ else
 
 	ChooseDrawBuffer ();
 	ogl.SetDepthMode (GL_ALWAYS);
-	ogl.SetBlendMode (2);
+	//ogl.SetBlendMode (2);
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	float scale = (float) ScreenScale ();
 #if BLUR
 	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 8.0f); // Glow -> back buffer
@@ -517,7 +546,7 @@ else
 	glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
-
+	ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
 	ogl.SetDepthWrite (bDepthWrite);
 	ogl.SetDepthMode (nDepthMode);

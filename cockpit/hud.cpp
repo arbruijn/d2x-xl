@@ -280,8 +280,8 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 		bShow = 1;
 	c = (h > 100) ? 224 : 224;
 	CCanvas::Current ()->SetColorRGB (c, c, (ubyte) ((h > 100) ? c : 0), 128);
-	if (h > 100)
-		h -= (h / 100) * 100;
+	while (h > 100)
+		h -= 100;
 	OglDrawFilledRect (6, y, 6 + (int) (h * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
 	}
 }
@@ -570,8 +570,8 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 	OglDrawEmptyRect (6, y, 6 + int (100 * m_info.xGaugeScale), y + int (9 * m_info.yGaugeScale));
 	if (bShow) {
 		CCanvas::Current ()->SetColorRGB (0, ubyte ((h > 100) ? 224 : 64), 224, 128);
-		if (h > 100)
-			h -= (h / 100) * 100;
+		while (h > 100)
+			h -= 100;
 		OglDrawFilledRect (6, y, 6 + int (h * m_info.xGaugeScale), y + int (9 * m_info.yGaugeScale));
 		}
 	}

@@ -1966,7 +1966,9 @@ if (!bLimited) {
 	DrawPlayerNames ();
 	RenderWindows ();
 	}
+#if 1 //!DBG
 DrawCockpit (false);
+#endif
 #if 1
 if (bExtraInfo) {
 #if DBG
