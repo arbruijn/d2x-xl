@@ -411,8 +411,6 @@ float verts [4][2] = {
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)}
 	};
 r += 4.0f;
-w = (float) screen.Width ();
-h = (float) screen.Height ();
 float texCoord [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
