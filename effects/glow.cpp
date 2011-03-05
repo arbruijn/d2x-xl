@@ -25,8 +25,8 @@ const char *blurFS =
 	"uniform float direction;\r\n" \
 	"uniform float scale; // render target width/height\r\n" \
 	"uniform float brightness; // render target width/height\r\n" \
-	"float offset[5] = float[](0.0, 1.0, 2.0, 3.0, 4.0);\r\n" \
-	"float weight[5] = float[](0.18, 0.15, 0.12, 0.09, 0.05);\r\n" \
+	"float offset[5] = float[5](0.0, 1.0, 2.0, 3.0, 4.0);\r\n" \
+	"float weight[5] = float[5](0.18, 0.15, 0.12, 0.09, 0.05);\r\n" \
 	"void main() {\r\n" \
 	"float xScale = (1.0 - direction) * scale, yScale = direction * scale;\r\n" \
 	"vec2 uv = gl_TexCoord [0].xy;\r\n" \
@@ -34,13 +34,13 @@ const char *blurFS =
 	"vec2 v = vec2 (offset [1] * xScale, offset [1] * yScale);\r\n" \
 	"tc += texture2D (glowSource, uv + v).rgb * weight [1];\r\n" \
 	"tc += texture2D (glowSource, uv - v).rgb * weight [1];\r\n" \
-	"vec2 v = vec2 (offset [2] * xScale, offset [2] * yScale);\r\n" \
+	"v = vec2 (offset [2] * xScale, offset [2] * yScale);\r\n" \
 	"tc += texture2D (glowSource, uv + v).rgb * weight [2];\r\n" \
 	"tc += texture2D (glowSource, uv - v).rgb * weight [2];\r\n" \
-	"vec2 v = vec2 (offset [3] * xScale, offset [3] * yScale);\r\n" \
+	"v = vec2 (offset [3] * xScale, offset [3] * yScale);\r\n" \
 	"tc += texture2D (glowSource, uv + v).rgb * weight [3];\r\n" \
 	"tc += texture2D (glowSource, uv - v).rgb * weight [3];\r\n" \
-	"vec2 v = vec2 (offset [4] * xScale, offset [4] * yScale);\r\n" \
+	"v = vec2 (offset [4] * xScale, offset [4] * yScale);\r\n" \
 	"tc += texture2D (glowSource, uv + v).rgb * weight [4];\r\n" \
 	"tc += texture2D (glowSource, uv - v).rgb * weight [4];\r\n" \
 	"gl_FragColor = vec4 (tc, 1.0) * brightness;\r\n" \
