@@ -393,7 +393,50 @@ if (nObject == nDbgObj)
 pi->nNextItem = gameData.render.mine.objRenderList.ref [nSegment];
 gameData.render.mine.objRenderList.ref [nSegment] = gameData.render.mine.objRenderList.nUsed++;
 pi->nObject = nObject;
-pi->xDist = CFixVector::Dist (OBJECTS [nObject].info.position.vPos, gameData.render.mine.viewer.vPos);
+pi->xDist = CFixVector::Dist (OBJECTS [nObject].Position (), gameData.render.mine.viewer.vPos);
+OBJECTS [nObject].SetFrame (gameData.app.nFrameCount);
+}
+
+//------------------------------------------------------------------------------
+
+short CObject::Visible (void)
+{
+	short	segList [MAX_SEGMENTS_D2X];
+	short	head = 0, tail = 0;
+
+segList [tail++] = Segment ();
+while (head != tail) {
+	CSegment* segP = &SEGMENTS [segList [head++]];
+	for (int i = 0; i < 6; i++) {
+		short nSegment = segP->m_children [i];
+		if (nSegment < 0)
+			continue;
+		CSegment* childSegP = &SEGMENTS [nSegment];
+		if (CFixVector::Dist (Position (), childSegP->Center ()) >= info.xSize + childSegP->MaxRad ())
+			continue;
+		if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible)
+			return nSegment;
+		segList [tail++] = nSegment;
+		}
+	}
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+void GatherLeftoutVisibleObjects (void)
+{
+	CObject*	objP;
+	//int		i;
+
+FORALL_OBJS (objP, i) {
+	if (objP->Frame () == gameData.app.nFrameCount)
+		continue;
+	short nSegment = objP->Visible ();
+	if (nSegment < 0)
+		continue;
+	AddObjectToSegList (objP->Index (), nSegment);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -447,6 +490,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		AddObjectToSegList (nObject, nNewSeg);
 		}
 	}
+GatherLeftoutVisibleObjects ();
 PROF_END(ptBuildObjList)
 }
 

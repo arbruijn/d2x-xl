@@ -760,6 +760,7 @@ class CObject : public CObjectInfo {
 		CObjDamageInfo	m_damage;
 		bool				m_bMultiplayer;
 		bool				m_bRotate;
+		int				m_nFrame;
 
 	public:
 		CObject ();
@@ -817,6 +818,8 @@ class CObject : public CObjectInfo {
 		inline void SetRenderPos (CFixVector& vRenderPos) { m_vRenderPos = vRenderPos; }
 		inline CFixVector Origin (void) { return m_vOrigin; }
 		inline void SetOrigin (CFixVector vOrigin) { m_vOrigin = vOrigin; }
+		inline void SetFrame (int nFrame) { m_nFrame = nFrame; }
+		inline int Frame (void) { return m_nFrame; }
 
 		inline CFixVector& Position (void) { return info.position.vPos; }
 		inline CFixMatrix& Orientation (void) { return info.position.mOrient; }
@@ -987,6 +990,8 @@ class CObject : public CObjectInfo {
 		inline int MaxSpeed (void) { return int (60 * SpeedScale ()); }
 		inline fix MaxShield (void) { return fix (I2X (100) * ShieldScale ()); }
 		inline fix MaxEnergy (void) { return fix (I2X (100) * EnergyScale ()); }
+
+		short Visible (void);
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);

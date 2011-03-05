@@ -282,8 +282,8 @@ int CreatePathPoints (CObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	CSegment*			segP;
 	CFixVector			vCenter;
 	int					nParentSeg, nDestSeg;
-	CHitQuery	fq;
-	CHitData		hitData;
+	CHitQuery			fq;
+	CHitData				hitData;
 	int					hitType;
 	int					bAvoidTarget;
 
