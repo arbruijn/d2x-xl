@@ -495,7 +495,8 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		AddObjectToSegList (nObject, nNewSeg);
 		}
 	}
-GatherLeftoutVisibleObjects ();
+if (EGI_FLAG (nHitboxes, 0, 0, 0))
+	GatherLeftoutVisibleObjects ();
 PROF_END(ptBuildObjList)
 }
 
