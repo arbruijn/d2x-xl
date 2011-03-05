@@ -15,6 +15,39 @@ CGlowRenderer glowRenderer;
 
 //------------------------------------------------------------------------------
 
+
+#if 1
+
+int hBlurShader = -1;
+
+const char *blurFS = 
+	"uniform sampler2D glowSource;\r\n" \
+	"uniform float direction;\r\n" \
+	"uniform float scale; // render target width/height\r\n" \
+	"uniform float brightness; // render target width/height\r\n" \
+	"float offset[5] = float[](0.0, 1.0, 2.0, 3.0, 4.0);\r\n" \
+	"float weight[5] = float[](0.18, 0.15, 0.12, 0.09, 0.05);\r\n" \
+	"void main() {\r\n" \
+	"float xScale = (1.0 - direction) * scale, yScale = direction * scale;\r\n" \
+	"vec2 uv = gl_TexCoord [0].xy;\r\n" \
+	"vec3 tc = texture2D (glowSource, uv).rgb * weight [0];\r\n" \
+	"vec2 v = vec2 (offset [1] * xScale, offset [1] * yScale);\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * weight [1];\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * weight [1];\r\n" \
+	"vec2 v = vec2 (offset [2] * xScale, offset [2] * yScale);\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * weight [2];\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * weight [2];\r\n" \
+	"vec2 v = vec2 (offset [3] * xScale, offset [3] * yScale);\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * weight [3];\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * weight [3];\r\n" \
+	"vec2 v = vec2 (offset [4] * xScale, offset [4] * yScale);\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * weight [4];\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * weight [4];\r\n" \
+	"gl_FragColor = vec4 (tc, 1.0) * brightness;\r\n" \
+	"}\r\n";
+	
+#else
+
 int hBlurShader [2] = {-1, -1};
 
 const char *blurFS [2] = { 
@@ -65,6 +98,8 @@ const char *blurFS [2] = {
 	"}\r\n"
 	};
 
+#endif
+
 const char *blurVS =
 	"void main (void){\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
@@ -78,12 +113,13 @@ bool CGlowRenderer::LoadShader (int const direction, float const radius)
 {
 	float fScale [2] = {ogl.m_data.screenScale.y * radius, ogl.m_data.screenScale.x * radius};
 
-m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader [direction]));
+m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader /*[direction]*/));
 if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg))
 	;
 glUniform1i (glGetUniformLocation (m_shaderProg, "glowSource"), 0);
+glUniform1f (glGetUniformLocation (m_shaderProg, "direction"), GLfloat (direction));
 glUniform1f (glGetUniformLocation (m_shaderProg, "scale"), GLfloat (fScale [direction]));
 glUniform1f (glGetUniformLocation (m_shaderProg, "brightness"), GLfloat (m_brightness));
 return true;
@@ -99,12 +135,19 @@ PrintLog ("building glow shader program\n");
 if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
 	ogl.m_states.bGlowRendering = 1;
 	m_shaderProg = 0;
+#if 1
+	if (!shaderManager.Build (hBlurShader, blurFS, blurVS)) {
+		ogl.ClearError (0);
+		ogl.m_states.bGlowRendering = 0;
+		}
+#else
 	for (int i = 0; i < 2; i++) {
 		if (!shaderManager.Build (hBlurShader [i], blurFS [i], blurVS)) {
 			ogl.ClearError (0);
 			ogl.m_states.bGlowRendering = 0;
 			}
 		}
+#endif
 	}
 }
 
@@ -112,9 +155,14 @@ if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
 
 bool CGlowRenderer::ShaderActive (void)
 {
+#if 1
+if ((hBlurShader >= 0) && (shaderManager.Current () == hBlurShader))
+	return true;
+#else
 for (int i = 0; i < 2; i++)
 	if ((hBlurShader [i] >= 0) && (shaderManager.Current () == hBlurShader [i]))
 		return true;
+#endif
 return false;
 }
 
