@@ -402,8 +402,10 @@ OBJECTS [nObject].SetFrame (gameData.app.nFrameCount);
 short CObject::Visible (void)
 {
 	short	segList [MAX_SEGMENTS_D2X];
+	ubyte bVisited [MAX_SEGMENTS_D2X];
 	short	head = 0, tail = 0;
 
+memset (bVisited, 0, sizeof (bVisited [0]) * gameData.segs.nSegments);
 segList [tail++] = Segment ();
 while (head != tail) {
 	CSegment* segP = &SEGMENTS [segList [head++]];
@@ -411,12 +413,15 @@ while (head != tail) {
 		short nSegment = segP->m_children [i];
 		if (nSegment < 0)
 			continue;
+		if (bVisited [nSegment])
+			continue;
 		CSegment* childSegP = &SEGMENTS [nSegment];
 		if (CFixVector::Dist (Position (), childSegP->Center ()) >= info.xSize + childSegP->MaxRad ())
 			continue;
 		if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible)
 			return nSegment;
 		segList [tail++] = nSegment;
+		bVisited [nSegment] = 1;
 		}
 	}
 return -1;

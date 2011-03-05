@@ -885,6 +885,9 @@ return SaveBinary (szFilename);
 
 int CModel::SaveBinary (const char* szFilename)
 {
+if (!*gameFolders.szModelDir [m_bCustom])
+	return 0;
+
 	CFile		cf;
 	char		szBin [FILENAME_LEN];
 
