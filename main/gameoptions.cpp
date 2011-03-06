@@ -671,7 +671,7 @@ int CMissionConfig::Load (char* szFilename)
 	CFile			cf;
 	char			szConfig [FILENAME_LEN];
 
-	static char* szShipArgs [3] = {"-light_ship", "-medium_ship", "-heavy_ship"};
+	static char* szShipArgs [MAX_SHIP_TYPES] = {"-light_ship", "-medium_ship", "-heavy_ship"};
 
 if (szFilename && *szFilename)
 	CFile::ChangeFilenameExtension (szConfig + 1, szFilename, ".ini");
@@ -681,13 +681,25 @@ szConfig [0] = '\x01'; // only read from mission file
 if (!cf.Open (szConfig, gameFolders.szDataDir, "rb", 0))
 	return 0;
 if (args.Parse (&cf)) {
-	for (int i = 0; i < 3; i++)
-		m_ships [i] = args.Value (szShipArgs [i], 1);
+	int h = 0, i;
+	for (i = 0; i < MAX_SHIP_TYPES; i++) {
+		if (m_ships [i] = args.Value (szShipArgs [i], 1))
+			h++;
+		}
+	if (!h)
+		m_ships [1] = 1;
 	m_playerShip = args.Value ("-player_ship", -1);
 	if (m_playerShip > 2)
 		m_playerShip = 1;
 	else if (m_playerShip < -1)
 		m_playerShip = -1;
+	if (m_playerShip > -1) {
+		for (i = 0; i < MAX_SHIP_TYPES; i++) {
+			if (m_ships [m_playerShip])
+				break;
+			m_playerShip = (m_playerShip + 1) % MAX_SHIP_TYPES;
+			}
+		}
 	m_bTeleport = args.Value ("-teleport", 1);
 	m_bSecretSave = args.Value ("-secret_save", 1);
 	}

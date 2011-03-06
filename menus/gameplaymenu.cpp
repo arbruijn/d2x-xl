@@ -244,23 +244,44 @@ return nCurItem;
 
 void AddShipSelection (CMenu& m, int& optShip)
 {
-m.AddText (TXT_PLAYERSHIP);
-optShip = m.AddRadio (TXT_STANDARD_SHIP, 0, KEY_S, HTX_PLAYERSHIP);
-m.AddRadio (TXT_LIGHT_SHIP, 0, KEY_I, HTX_PLAYERSHIP);
-m.AddRadio (TXT_HEAVY_SHIP, 0, KEY_F, HTX_PLAYERSHIP);
-for (int i = 0; i < MAX_SHIP_TYPES; i++)
-	m [optShip + i].m_value = (i == gameOpts->gameplay.nShip [0]);
+	int h, i;
+
+for (h = i = 0; i < 3; i++) {
+	if (missionConfig.m_ships [i])
+		h++;
+	}
+if (h > 1) { // more than one ship to chose from
+	m.AddText (TXT_PLAYERSHIP);
+	optShip = -1;
+	if (missionConfig.m_ships [1])
+		optShip = m.AddRadio (TXT_STANDARD_SHIP, 0, KEY_S, HTX_PLAYERSHIP);
+	if (missionConfig.m_ships [0]) {
+		h = m.AddRadio (TXT_LIGHT_SHIP, 0, KEY_I, HTX_PLAYERSHIP);
+		if (optShip < 0)
+			optShip = h;
+		}
+	if (missionConfig.m_ships [2]) {
+		h = m.AddRadio (TXT_HEAVY_SHIP, 0, KEY_F, HTX_PLAYERSHIP);
+		if (optShip < 0)
+			optShip = h;
+		}
+	for (i = 0; i < MAX_SHIP_TYPES; i++)
+		m [optShip + i].m_value = (i == gameOpts->gameplay.nShip [0]);
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void GetShipSelection (CMenu& m, int& optShip)
 {
-for (int i = 0; i < MAX_SHIP_TYPES; i++)
-	if (m [optShip + i].m_value) {
-		gameOpts->gameplay.nShip [1] = i;
-		break;
+for (int i = 0, j = -1; i < MAX_SHIP_TYPES; i++) {
+	if (missionConfig.m_ships [i]) {
+		if (m [optShip + ++j].m_value) {
+			gameOpts->gameplay.nShip [1] = i;
+			break;
+			}
 		}
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -876,7 +876,7 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_F9:
-			if (!gameStates.app.bNostalgia)
+			if (!gameStates.app.bNostalgia && missionConfig.m_bTeleport)
 				markerManager.Teleport ();
 			break;
 

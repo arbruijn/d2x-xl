@@ -508,7 +508,7 @@ if (IsMultiGame) {
 	}
 
 m_cf.Init ();
-if ((missionManager.nCurrentLevel < 0) && !((m_bSecret > 0) || gameOpts->gameplay.bSecretSave || gameStates.app.bD1Mission)) {
+if ((missionManager.nCurrentLevel < 0) && !((m_bSecret > 0) || (gameOpts->gameplay.bSecretSave && missionConfig.m_bSecretSave) || gameStates.app.bD1Mission)) {
 	HUDInitMessage (TXT_SECRET_SAVE_ERROR);
 	return 0;
 	}

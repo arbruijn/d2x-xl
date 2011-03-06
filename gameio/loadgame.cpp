@@ -496,6 +496,8 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDRecordPlayerWeapon (1, 0);
 	}
 
+if (gameOpts->gameplay.nShip [1] < 0)
+	gameOpts->gameplay.nShip [1] = missionConfig.m_playerShip;
 if (gameOpts->gameplay.nShip [1] > -1) {
 	gameOpts->gameplay.nShip [0] = gameOpts->gameplay.nShip [1];
 	gameOpts->gameplay.nShip [1] = -1;
