@@ -1459,7 +1459,7 @@ if (!FindArg ("-nonetwork")) {
 	int socket = 0, t;
 
 	if ((t = FindArg ("-socket")))
-		socket = atoi (pszArgList [t + 1]);
+		socket = atoi (appArgs [t + 1]);
 	ArchIpxSetDriver (ipx_driver);
 	if ((nIpxError = IpxInit (IPX_DEFAULT_SOCKET + socket)) == IPX_INIT_OK) {
 		networkData.bActive = 1;

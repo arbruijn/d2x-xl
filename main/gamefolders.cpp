@@ -136,12 +136,12 @@ void GetAppFolders (void)
 *gameFolders.szGameDir =
 *gameFolders.szDataDir =
 *szDataRootDir = '\0';
-if ((i = FindArg ("-userdir")) && pszArgList [i + 1] && *pszArgList [i + 1]) {
-	sprintf (gameFolders.szGameDir, "%s\\%s\\", pszArgList [i + 1], DATADIR);
+if ((i = FindArg ("-userdir")) && appArgs [i + 1] && *appArgs [i + 1]) {
+	sprintf (gameFolders.szGameDir, "%s\\%s\\", appArgs [i + 1], DATADIR);
 	if (GetAppFolder ("", gameFolders.szGameDir, gameFolders.szGameDir, "*.hog"))
 		*gameFolders.szGameDir = '\0';
 	else {
-		strcpy (gameFolders.szGameDir, pszArgList [i + 1]);
+		strcpy (gameFolders.szGameDir, appArgs [i + 1]);
 		int j = (int) strlen (gameFolders.szGameDir);
 		if (j && (gameFolders.szGameDir [j-1] != '\\') && (gameFolders.szGameDir [j-1] != '/'))
 			strcat (gameFolders.szGameDir, "/");
@@ -151,7 +151,7 @@ if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, getenv (
 	*gameFolders.szGameDir = '\0';
 #ifdef _WIN32
 if (!*gameFolders.szGameDir) {
-	psz = pszArgList [0];
+	psz = appArgs [0];
 	for (int j = (int) strlen (psz); j; ) {
 		c = psz [--j];
 		if ((c == '\\') || (c == '/')) {
@@ -196,8 +196,8 @@ strcpy (szDataRootDir, gameFolders.szGameDir);
 if (*gameFolders.szGameDir)
 	chdir (gameFolders.szGameDir);
 #endif //Linux, OS X
-if ((i = FindArg ("-hogdir")) && !GetAppFolder ("", gameFolders.szDataDir, pszArgList [i + 1], "descent2.hog"))
-	strcpy (szDataRootDir, pszArgList [i + 1]);
+if ((i = FindArg ("-hogdir")) && !GetAppFolder ("", gameFolders.szDataDir, appArgs [i + 1], "descent2.hog"))
+	strcpy (szDataRootDir, appArgs [i + 1]);
 else {
 	sprintf (gameFolders.szDataDir, "%s%s", gameFolders.szGameDir, DATADIR);
 	if (GetAppFolder ("", gameFolders.szDataDir, gameFolders.szDataDir, "descent2.hog") &&
@@ -316,7 +316,7 @@ sprintf (gameFolders.szMissionDir, "%s%s", gameFolders.szGameDir, BASE_MISSION_D
 sprintf (gameFolders.szMissionDir, "%s/%s", gameFolders.szGameDir, BASE_MISSION_DIR);
 #endif
 //if (i = FindArg ("-hogdir"))
-//	CFUseAltHogDir (pszArgList [i + 1]);
+//	CFUseAltHogDir (appArgs [i + 1]);
 for (i = 0; i < 2; i++)
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [i]);
 MakeTexSubFolders (gameFolders.szModelCacheDir [0]);

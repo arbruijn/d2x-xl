@@ -30,14 +30,14 @@
 #include "strutil.h"
 #include "args.h"
 
-extern CArgManager appArgs;
+CArgManager appArgs;
 
 //------------------------------------------------------------------------------
 
 void CArgManager::Destroy (void)
 {
-for (int i = 0; i < nArgCount; i++) {
-	if (m_argList [i])
+for (int i = ArgCount (); i > 0; i) {
+	if (m_argList [--i])
 		delete[] m_argList [i];
 	}
 m_argList.Destroy ();
@@ -49,7 +49,7 @@ int CArgManager::Find (const char * s)
 {
 	int i;
   
-for (i = 0; i < nArgCount; i++)
+for (i = 0; i < ArgCount (); i++)
 	if (m_argList [i] && *m_argList [i] && !stricmp (m_argList [i], s))
 		return i;
 return 0;
@@ -132,7 +132,7 @@ return ArgCount ();
 void CArgManager::PrintLog (void)
 {
 ::PrintLog ("   ");
-for (int i = 0, j = 0; i < nArgCount; i++, j++) {
+for (int i = 0, j = 0; i < ArgCount (); i++, j++) {
 	if (!m_argList [i]) 
 		continue;
 	if ((m_argList [i][0] == '-') && (isalpha (m_argList [i][1]) || (j == 2))) {

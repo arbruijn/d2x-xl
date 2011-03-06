@@ -675,7 +675,7 @@ switch (loadOp) {
 	case 5:
 		int i;
 		if ((i = FindArg ("-xcontrol")) > 0)
-			externalControls.Init (strtol (pszArgList [i+1], NULL, 0), strtol (pszArgList [i+2], NULL, 0));
+			externalControls.Init (strtol (appArgs [i+1], NULL, 0), strtol (appArgs [i+2], NULL, 0));
 		break;
 	case 6:
 		/*---*/PrintLog ("Initializing movies\n");

@@ -1620,7 +1620,7 @@ void CExternalControls::Init (int intno, int address)
 
 	i = FindArg ("-xname");
 	if (i)
-		m_name = StrDup (pszArgList [i + 1]);
+		m_name = StrDup (appArgs [i + 1]);
 	else
 		m_name = StrDup ("External Controller");
 
@@ -1630,7 +1630,7 @@ void CExternalControls::Init (int intno, int address)
 
 	i = FindArg ("-xver");
 	if (i)
-		m_version = atoi (pszArgList [i+1]);
+		m_version = atoi (appArgs [i+1]);
 }
 
 //------------------------------------------------------------------------------

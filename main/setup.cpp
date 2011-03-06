@@ -345,8 +345,8 @@ if (!gameStates.app.bCheckAndFixSetup)
 	bool	bDemoData = false;
 	char	szMsg [10000];
 
-if ((i = FindArg ("-userdir")) && pszArgList [i + 1] && *pszArgList [i + 1]) {
-	strcpy (szRootFolder, pszArgList [i + 1]);
+if ((i = FindArg ("-userdir")) && appArgs [i + 1] && *appArgs [i + 1]) {
+	strcpy (szRootFolder, appArgs [i + 1]);
 	i = int (strlen (szRootFolder));
 #if defined(__unix__)
 	if (szRootFolder [i - 1] != '/')

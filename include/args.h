@@ -15,8 +15,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _ARGS_H
 #define _ARGS_H
 
-extern int nArgCount;					
-extern char * pszArgList[];					
 extern int Inferno_verbose;
 
 class CArgManager {
@@ -39,6 +37,8 @@ class CArgManager {
 		void PrintLog (void);
 		int Find (const char* s);
 		int Value (int t, int nDefault);
+		inline char* Arg (int i) { return (i < ArgCount ()) ? m_argList [i] : ""; }
+		inline char* operator[] (int i) { return Arg (i); }
 };
 
 extern CArgManager appArgs;
