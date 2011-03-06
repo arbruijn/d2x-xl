@@ -1338,7 +1338,7 @@ class CMissionConfig {
 		int	bSecretSave;
 
 	public:
-		CMissionSettings () { Init (); }
+		CMissionConfig () { Init (); }
 		void Init (void);
 		int Load (char* szFilename);
 };

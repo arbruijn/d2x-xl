@@ -654,6 +654,7 @@ return gameStates.app.bNostalgia ? 0 : gameStates.app.bStandalone ? 2 : gameOpts
 
 int CMissionConfig::Load (char* szFilename)
 {
+return 1;
 }
 
 // ----------------------------------------------------------------------------

@@ -761,7 +761,7 @@ appArgs.Init ();
 PrintLog ("Loading program arguments\n");
 appArgs.Load (argC, argV); 
 appArgs.Load (appArgs.Filename (DBG != 0));
-appArgs.Log ();
+appArgs.PrintLog ();
 }
 
 // ----------------------------------------------------------------------------
