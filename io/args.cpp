@@ -36,7 +36,7 @@ CArgManager appArgs;
 
 void CArgManager::Destroy (void)
 {
-for (int i = ArgCount (); i > 0; i) {
+for (int i = Count (); i > 0; i) {
 	if (m_argList [--i])
 		delete[] m_argList [i];
 	}
@@ -49,7 +49,7 @@ int CArgManager::Find (const char * s)
 {
 	int i;
   
-for (i = 0; i < ArgCount (); i++)
+for (i = 0; i < Count (); i++)
 	if (m_argList [i] && *m_argList [i] && !stricmp (m_argList [i], s))
 		return i;
 return 0;
@@ -63,7 +63,7 @@ char* CArgManager::Filename (int bDebug)
 	char*	p;
 	CFile	cf;
 
-if ((i = FindArg ("-ini")))
+if ((i = Find ("-ini")))
 	strncpy (m_filename, m_argList [i + 1], sizeof (m_filename) - 1);
 else {
 #if defined(__unix__)
@@ -124,7 +124,7 @@ while (!cfP->EoF ()) {
 		}
 	delete[] pszLine; 
 	}
-return ArgCount ();
+return Count ();
 }
 
 //------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ return ArgCount ();
 void CArgManager::PrintLog (void)
 {
 ::PrintLog ("   ");
-for (int i = 0, j = 0; i < ArgCount (); i++, j++) {
+for (int i = 0, j = 0; i < Count (); i++, j++) {
 	if (!m_argList [i]) 
 		continue;
 	if ((m_argList [i][0] == '-') && (isalpha (m_argList [i][1]) || (j == 2))) {
@@ -191,6 +191,15 @@ if (psz && isdigit (*psz))
 if (((*psz == '-') || (*psz == '+')) && isdigit (*psz + 1))
 	return atoi (psz);
 return nDefault;
+}
+
+// ----------------------------------------------------------------------------
+
+int CArgManager::Value (char* szArg, int nDefault)
+{
+	int t = Find (szArg);
+
+return t ? Value (t, nDefault) : nDefault;
 }
 
 //------------------------------------------------------------------------------

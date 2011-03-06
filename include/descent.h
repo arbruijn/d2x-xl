@@ -1333,15 +1333,18 @@ extern CGameOptions	*gameOpts;
 
 class CMissionConfig {
 	public:
-		int	bShips [3];
-		int	bMarkerTeleport;
-		int	bSecretSave;
+		int	m_ships [3];
+		int	m_playerShip;
+		int	m_bTeleport;
+		int	m_bSecretSave;
 
 	public:
 		CMissionConfig () { Init (); }
 		void Init (void);
 		int Load (char* szFilename);
 };
+
+extern CMissionConfig missionConfig;
 
 //------------------------------------------------------------------------------
 // data

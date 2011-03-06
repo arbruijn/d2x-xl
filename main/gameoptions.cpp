@@ -652,8 +652,47 @@ return gameStates.app.bNostalgia ? 0 : gameStates.app.bStandalone ? 2 : gameOpts
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
+CMissionConfig missionConfig;
+
+void CMissionConfig::Init (void)
+{
+for (int i = 0; i < 3; i++)
+	m_ships [i] = 1;
+m_playerShip = -1;
+m_bTeleport = 1;
+m_bSecretSave = 1;
+}
+
+// ----------------------------------------------------------------------------
+
 int CMissionConfig::Load (char* szFilename)
 {
+	CArgManager args;
+	CFile			cf;
+	char			szConfig [FILENAME_LEN];
+	int			t;
+
+	static char* szShipArgs [3] = {"-light_ship", "-medium_ship", "-heavy_ship"};
+
+if (szFilename && *szFilename)
+	CFile::ChangeFilenameExtension (szConfig + 1, szFilename, ".ini");
+else
+	strcpy (szConfig + 1, "global.ini");
+szConfig [0] = '\x01'; // only read from mission file
+if (!cf.Open (szConfig, gameFolders.szDataDir, "rb", 0))
+	return 0;
+if (args.Parse (&cf)) {
+	for (int i = 0; i < 3; i++)
+		m_ships [i] = args.Value (szShipArgs [i], 1);
+	m_playerShip = args.Value ("-player_ship", -1);
+	if (m_playerShip > 2)
+		m_playerShip = 1;
+	else if (m_playerShip < -1)
+		m_playerShip = -1;
+	m_bTeleport = args.Value ("-teleport", 1);
+	m_bSecretSave = args.Value ("-secret_save", 1);
+	}
+cf.Close ();
 return 1;
 }
 

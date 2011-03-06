@@ -23,7 +23,7 @@ class CArgManager {
 		CFile				m_cf;
 		char				m_filename [FILENAME_LEN];
 
-		inline int ArgCount (void) { return (m_argList.Buffer () == NULL) ? NULL : int (m_argList.ToS ()); }
+		inline int Count (void) { return (m_argList.Buffer () == NULL) ? NULL : int (m_argList.ToS ()); }
 
 	public:
 		CArgManager () { Init (); }
@@ -37,7 +37,8 @@ class CArgManager {
 		void PrintLog (void);
 		int Find (const char* s);
 		int Value (int t, int nDefault);
-		inline char* Arg (int i) { return (i < ArgCount ()) ? m_argList [i] : ""; }
+		int Value (char* szArg, int nDefault);
+		inline char* Arg (int i) { return (i < Count ()) ? m_argList [i] : ""; }
 		inline char* operator[] (int i) { return Arg (i); }
 };
 
