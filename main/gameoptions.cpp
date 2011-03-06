@@ -684,7 +684,7 @@ if (!cf.Open (szConfig, gameFolders.szDataDir, "rb", 0))
 if (args.Parse (&cf)) {
 	int h = 0, i;
 	for (i = 0; i < MAX_SHIP_TYPES; i++) {
-		if (m_ships [i] = args.Value (szShipArgs [i], bLocal ? m_ships [i] : 1))
+		if (m_ships [i] = args.Value (szShipArgs [i], bLocal ? m_ships [i] : 1)) // use the global setting as default when parsing a level config
 			h++;
 		}
 	if (!h)
