@@ -1341,7 +1341,7 @@ class CMissionConfig {
 	public:
 		CMissionConfig () { Init (); }
 		void Init (void);
-		int Load (char* szFilename);
+		int Load (char* szFilename = NULL);
 };
 
 extern CMissionConfig missionConfig;

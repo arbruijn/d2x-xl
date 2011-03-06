@@ -950,6 +950,9 @@ memcpy (gameData.pig.tex.brightness.Buffer (),
 LoadTextureBrightness (pszLevelName, NULL);
 gameData.render.color.textures = gameData.render.color.defaultTextures [gameStates.app.bD1Mission];
 LoadTextureColors (pszLevelName, NULL);
+missionConfig.Init ();
+missionConfig.Load ();
+missionConfig.Load (pszLevelName);
 InitTexColors ();
 
 for (;;) {
