@@ -670,7 +670,6 @@ int CMissionConfig::Load (char* szFilename)
 	CArgManager args;
 	CFile			cf;
 	char			szConfig [FILENAME_LEN];
-	int			t;
 
 	static char* szShipArgs [3] = {"-light_ship", "-medium_ship", "-heavy_ship"};
 
