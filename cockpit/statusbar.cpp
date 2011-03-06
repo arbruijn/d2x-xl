@@ -270,13 +270,13 @@ void CStatusBar::DrawEnergy (void)
 CCanvas::Push ();
 fontManager.SetScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 CCanvas::SetCurrent (CurrentGameScreen ());
-sprintf (szEnergy, "%d", m_info.nEnergy);
+sprintf (szEnergy, "%d", m_info.nEnergy * LOCALPLAYER.EnergyScale ());
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 nIdEnergy = PrintF (&nIdEnergy, 
 						  -(ScaleX (SB_ENERGY_GAUGE_X) + (ScaleX (SB_ENERGY_GAUGE_W) - w) / 2), 
 						  -(ScaleY (SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - m_info.nLineSpacing) + HeightPad ()), 
-						  "%d", m_info.nEnergy);
+						  "%d", m_info.nEnergy * LOCALPLAYER.EnergyScale ());
 fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
@@ -381,7 +381,7 @@ fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 nIdShield = PrintF (&nIdShield, 
 						  -(ScaleX (SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 13 : 6)) - w / 2), 
 						  -(ScaleY (SB_SHIELD_NUM_Y) + HeightPad ()), 
-						  "%d", m_info.nShield);
+						  "%d", m_info.nShield * LOCALPLAYER.ShieldScale ());
 fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
