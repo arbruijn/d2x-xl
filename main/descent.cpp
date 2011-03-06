@@ -754,6 +754,18 @@ ProgressBar (TXT_INITIALIZING, 0, InitGaugeSize (), InitializePoll);
 
 // ----------------------------------------------------------------------------
 
+void InitArgs (int argC, char **argV) 
+{ 
+appArgs.Destroy ();
+appArgs.Init ();
+PrintLog ("Loading program arguments\n");
+appArgs.Load (argC, argV); 
+appArgs.Load (appArgs.Filename (DBG != 0));
+appArgs.Log ();
+}
+
+// ----------------------------------------------------------------------------
+
 int Initialize (int argc, char *argv[])
 {
 /*---*/PrintLog ("Initializing data\n");

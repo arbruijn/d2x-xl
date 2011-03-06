@@ -1330,6 +1330,20 @@ extern CGameStates	gameStates;
 extern CGameOptions	*gameOpts;
 
 //------------------------------------------------------------------------------
+
+class CMissionConfig {
+	public:
+		int	bShips [3];
+		int	bMarkerTeleport;
+		int	bSecretSave;
+
+	public:
+		CMissionSettings () { Init (); }
+		void Init (void);
+		int Load (char* szFilename);
+};
+
+//------------------------------------------------------------------------------
 // data
 //------------------------------------------------------------------------------
 

@@ -19,8 +19,31 @@ extern int nArgCount;
 extern char * pszArgList[];					
 extern int Inferno_verbose;
 
-int FindArg (const char * s);
-void InitArgs (int argc, char **argv);
-int NumArg (int t, int nDefault);
+class CArgManager {
+	private:
+		CStack<char*>	m_argList;
+		CFile				m_cf;
+		char				m_filename [FILENAME_LEN];
 
-#endif
+		inline int ArgCount (void) { return (m_argList.Buffer () == NULL) ? NULL : int (m_argList.ToS ()); }
+
+	public:
+		CArgManager () { Init (); }
+		~CArgManager () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+		char* Filename (int bDebug = 0);
+		void Load (int argC, char** argV);
+		void Load (char* filename);
+		int Parse (CFile* cfP = NULL);
+		void PrintLog (void);
+		int Find (const char* s);
+		int Value (int t, int nDefault);
+};
+
+extern CArgManager appArgs;
+
+static inline int FindArg (const char * s) { return appArgs.Find (s); }
+static inline int NumArg (int t, int nDefault) { return appArgs.Value (t, nDefault); }
+
+#endif //_ARGS_H

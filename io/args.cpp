@@ -28,168 +28,161 @@
 #include "error.h"
 #include "findfile.h"
 #include "strutil.h"
+#include "args.h"
 
-int nArgCount = 0;
-
-#define MAX_ARGS	1000
-
-char * pszArgList [MAX_ARGS], *ps;
+extern CArgManager appArgs;
 
 //------------------------------------------------------------------------------
 
-int FindArg (const char * s)
+void CArgManager::Destroy (void)
+{
+for (int i = 0; i < nArgCount; i++) {
+	if (m_argList [i])
+		delete[] m_argList [i];
+	}
+m_argList.Destroy ();
+}
+
+//------------------------------------------------------------------------------
+
+int CArgManager::Find (const char * s)
 {
 	int i;
   
 for (i = 0; i < nArgCount; i++)
-	if (pszArgList [i] && *pszArgList [i] && !stricmp (pszArgList [i], s))
+	if (m_argList [i] && *m_argList [i] && !stricmp (m_argList [i], s))
 		return i;
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ args_exit (void)
-{
-	int i;
-
-PrintLog ("unloading program arguments\n");
-for (i = 0; i < nArgCount; i++)
-	if (pszArgList [i])
-		delete[] pszArgList [i];
-memset (pszArgList, 0, sizeof (pszArgList));
-nArgCount = 0;
-}
-
-//------------------------------------------------------------------------------
-
-char *GetIniFileName (char *fnIni, int bDebug)
+char* CArgManager::Filename (int bDebug)
 {
 	int	i;
-	char	*p;
+	char*	p;
 	CFile	cf;
 
 if ((i = FindArg ("-ini")))
-	strncpy (fnIni, pszArgList [i + 1], sizeof (fnIni) - 1);
+	strncpy (m_filename, m_argList [i + 1], sizeof (m_filename) - 1);
 else {
 #if defined(__unix__)
 	FFS		ffs;
-	strcpy (fnIni, gameFolders.szHomeDir);
-	strcat (fnIni, "/.d2x-xl");
-	if (FFF (fnIni, &ffs, 0) <= 0) {
+	strcpy (m_filename, gameFolders.szHomeDir);
+	strcat (m_filename, "/.d2x-xl");
+	if (FFF (m_filename, &ffs, 0) <= 0) {
 #endif
-	strcpy (fnIni, gameFolders.szConfigDir);
-	i = int (strlen (fnIni));
+	strcpy (m_filename, gameFolders.szConfigDir);
+	i = int (strlen (m_filename));
 	if (i) {
-		p = fnIni + i - 1;
+		p = m_filename + i - 1;
 		if ((*p == '\\') || (*p == '/'))
 			p++;
 		else {
-			strcat (fnIni, "/");
+			strcat (m_filename, "/");
 			p += 2;
 			}
 		}
 	else
-		p = fnIni;
+		p = m_filename;
 	strcpy (p, bDebug ? "d2xdebug.ini" : "d2x.ini");
-	if (!cf.Exist (fnIni, "", false)) 
+	if (!cf.Exist (m_filename, "", false)) 
 		strcpy (p, bDebug ? "d2xdebug-default.ini" : "d2x-default.ini");
 #if defined(__unix__)
    }
 #endif //!__unix__
 	}
-return fnIni;
+return m_filename;
 }
 
 //------------------------------------------------------------------------------
 
-void InitArgs (int argc, char **argv)
+int CArgManager::Parse (CFile* cfP)
 {
-	int 		i, j;
-	CFile 	cf;
-	char 		*pszLine, *pszToken, fnIni [FILENAME_LEN];
-	static	char **pszArgs = NULL;
-	static	int  nArgs = 0;
+	char 		*pszLine, *pszToken;
 
-if (argv) {
-	pszArgs = argv;
-	nArgs = argc;
-	}
-else if (pszArgs) {
-	argv = pszArgs;
-	argc = nArgs;
-	}
-else
-	return;
-PrintLog ("Loading program arguments\n");
-args_exit ();
-for (i = 0; i < argc; i++)
-	pszArgList [nArgCount++] = StrDup (argv [i]);
-
-for (i = 0; i < nArgCount; i++)
-	if (pszArgList [i][0] == '-')
-		strlwr (pszArgList [i]);  // Convert all args to lowercase
-
-// look for the ini file
-// for unix, allow both ~/.d2x-xl and <config dir>/d2x.ini
-#if DBG
-GetIniFileName (fnIni, 1);
-#else
-GetIniFileName (fnIni, 0);
-#endif
-cf.Open (fnIni, "", "rt", 0);
-#if DBG
-if (!cf.File()) {
-	GetIniFileName (fnIni, 0);
-	cf.Open (fnIni, "", "rt", 0);
-	}
-#endif
-if (cf.File()) {
-	while (!cf.EoF ()) {
-		pszLine = fsplitword (cf, '\n');
-		if (*pszLine && (*pszLine != ';')) {
-			pszToken = splitword (pszLine, ' ');
-			if (nArgCount >= MAX_ARGS)
-				break;
-			pszArgList [nArgCount++] = pszToken;
-			if (pszLine) {
-				if (nArgCount >= MAX_ARGS) {
-					PrintLog ("too many program arguments\n");
+if (cfP == NULL)
+	cfP = &m_cf;
+while (!cfP->EoF ()) {
+	pszLine = fsplitword (*cfP, '\n');
+	if (*pszLine && (*pszLine != ';')) {
+		pszToken = splitword (pszLine, ' ');
+		if (!m_argList.Push (pszToken))
+			break;
+		if (pszLine) {
+			int l;
+			for (l = strlen (pszLine); l > 0; l--) {
+				if (pszLine [l - 1] != '\r')
 					break;
-					}
-				int l;
-				for (l = strlen (pszLine); l > 0; l--) {
-					if (pszLine [l - 1] != '\r')
-						break;
-					}
-				pszLine [l] = '\0';
-				pszArgList [nArgCount++] = *pszLine ? StrDup (pszLine) : NULL;
+				}
+			pszLine [l] = '\0';
+			if (!m_argList.Push (*pszLine ? StrDup (pszLine) : NULL)) {
+				m_argList.Pop ();
+				break;
 				}
 			}
-		delete[] pszLine; 
 		}
-	cf.Close ();
+	delete[] pszLine; 
 	}
-PrintLog ("   ");
-for (i = j = 0; i < nArgCount; i++, j++) {
-	if (!pszArgList [i]) 
+return ArgCount ();
+}
+
+//------------------------------------------------------------------------------
+
+void CArgManager::PrintLog (void)
+{
+::PrintLog ("   ");
+for (int i = 0, j = 0; i < nArgCount; i++, j++) {
+	if (!m_argList [i]) 
 		continue;
-	if ((pszArgList [i][0] == '-') && (isalpha (pszArgList [i][1]) || (j == 2))) {
-		PrintLog ("\n   ");
+	if ((m_argList [i][0] == '-') && (isalpha (m_argList [i][1]) || (j == 2))) {
+		::PrintLog ("\n   ");
 		j = 0;
 		}
-	PrintLog (pszArgList [i]);
-	PrintLog (" ");
+	::PrintLog (m_argList [i]);
+	::PrintLog (" ");
 	}
-PrintLog ("\n");
-atexit (args_exit);
+::PrintLog ("\n");
+}
+
+//------------------------------------------------------------------------------
+
+void CArgManager::Init (void)
+{
+m_argList.Create (100);
+m_argList.SetGrowth (100);
+m_filename [0] = '\0';
+}
+
+//------------------------------------------------------------------------------
+
+void CArgManager::Load (int argC, char **argV)
+{
+for (int i = 0; i < argC; i++) {
+	m_argList.Push (StrDup (argV [i]));
+	if (*m_argList [i]== '-')
+		strlwr (m_argList [i]);  // Convert all args to lowercase
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CArgManager::Load (char* filename)
+{
+if (filename == NULL)
+	filename = m_filename;
+
+if (m_cf.Open (filename, "", "rt", 0)) {
+	Parse ();
+	m_cf.Close ();
+	}
 }
 
 // ----------------------------------------------------------------------------
 
-int NumArg (int t, int nDefault)
+int CArgManager::Value (int t, int nDefault)
 {
-	char *psz = pszArgList [t+1];
+	char *psz = m_argList [t+1];
 
 if (!psz)
 	return nDefault;
