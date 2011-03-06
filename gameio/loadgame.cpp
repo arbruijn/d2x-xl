@@ -953,6 +953,7 @@ LoadTextureColors (pszLevelName, NULL);
 missionConfig.Init ();
 missionConfig.Load ();
 missionConfig.Load (pszLevelName);
+missionConfig.Apply ();
 InitTexColors ();
 
 for (;;) {

@@ -1342,6 +1342,7 @@ class CMissionConfig {
 		CMissionConfig () { Init (); }
 		void Init (void);
 		int Load (char* szFilename = NULL);
+		void Apply (void);
 };
 
 extern CMissionConfig missionConfig;

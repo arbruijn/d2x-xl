@@ -252,19 +252,14 @@ for (h = i = 0; i < 3; i++) {
 	}
 if (h > 1) { // more than one ship to chose from
 	m.AddText (TXT_PLAYERSHIP);
-	optShip = -1;
-	if (missionConfig.m_ships [1])
-		optShip = m.AddRadio (TXT_STANDARD_SHIP, 0, KEY_S, HTX_PLAYERSHIP);
-	if (missionConfig.m_ships [0]) {
+	optShip = missionConfig.m_ships [0] ? m.AddRadio (TXT_STANDARD_SHIP, 0, KEY_S, HTX_PLAYERSHIP) : -1;
+	if (missionConfig.m_ships [1]) {
 		h = m.AddRadio (TXT_LIGHT_SHIP, 0, KEY_I, HTX_PLAYERSHIP);
 		if (optShip < 0)
 			optShip = h;
 		}
-	if (missionConfig.m_ships [2]) {
-		h = m.AddRadio (TXT_HEAVY_SHIP, 0, KEY_F, HTX_PLAYERSHIP);
-		if (optShip < 0)
-			optShip = h;
-		}
+	if (missionConfig.m_ships [2])
+		m.AddRadio (TXT_HEAVY_SHIP, 0, KEY_F, HTX_PLAYERSHIP);
 	for (i = 0; i < MAX_SHIP_TYPES; i++)
 		m [optShip + i].m_value = (i == gameOpts->gameplay.nShip [0]);
 	}

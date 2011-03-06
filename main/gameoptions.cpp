@@ -670,10 +670,11 @@ int CMissionConfig::Load (char* szFilename)
 	CArgManager args;
 	CFile			cf;
 	char			szConfig [FILENAME_LEN];
+	bool			bLocal;
 
-	static char* szShipArgs [MAX_SHIP_TYPES] = {"-light_ship", "-medium_ship", "-heavy_ship"};
+	static char* szShipArgs [MAX_SHIP_TYPES] = {"-medium_ship", "-light_ship", "-heavy_ship"};
 
-if (szFilename && *szFilename)
+if (bLocal = (szFilename && *szFilename))
 	CFile::ChangeFilenameExtension (szConfig + 1, szFilename, ".ini");
 else
 	strcpy (szConfig + 1, "global.ini");
@@ -683,12 +684,12 @@ if (!cf.Open (szConfig, gameFolders.szDataDir, "rb", 0))
 if (args.Parse (&cf)) {
 	int h = 0, i;
 	for (i = 0; i < MAX_SHIP_TYPES; i++) {
-		if (m_ships [i] = args.Value (szShipArgs [i], 1))
+		if (m_ships [i] = args.Value (szShipArgs [i], bLocal ? m_ships [i] : 1))
 			h++;
 		}
 	if (!h)
-		m_ships [1] = 1;
-	m_playerShip = args.Value ("-player_ship", -1);
+		m_ships [0] = 1; // medium ship, the standard ship
+	m_playerShip = args.Value ("-player_ship", bLocal ? m_playerShip : -1);
 	if (m_playerShip > 2)
 		m_playerShip = 1;
 	else if (m_playerShip < -1)
@@ -700,11 +701,35 @@ if (args.Parse (&cf)) {
 			m_playerShip = (m_playerShip + 1) % MAX_SHIP_TYPES;
 			}
 		}
-	m_bTeleport = args.Value ("-teleport", 1);
-	m_bSecretSave = args.Value ("-secret_save", 1);
+	m_bTeleport = args.Value ("-teleport", bLocal ? m_bTeleport : 1);
+	m_bSecretSave = args.Value ("-secret_save", bLocal ? m_bSecretSave : 1);
 	}
 cf.Close ();
 return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+void CMissionConfig::Apply (void)
+{
+if ((m_playerShip > -1) && (gameOpts->gameplay.nShip [0] != m_playerShip)) {
+	float fShield = (float) LOCALPLAYER.Shield (false) / (float) LOCALPLAYER.MaxShield ();
+	float fEnergy = (float) LOCALPLAYER.Energy (false) / (float) LOCALPLAYER.MaxEnergy ();
+	gameOpts->gameplay.nShip [0] = m_playerShip;
+	LOCALPLAYER.SetEnergy (fix (fShield * LOCALPLAYER.MaxShield ()));
+	LOCALPLAYER.SetShield (fix (fShield * LOCALPLAYER.MaxEnergy ()));
+	if (m_playerShip == 0) {
+		gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion = 0;
+		}
+	else if (m_playerShip == 1) {
+		LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (FUSION_INDEX));
+		gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion = 0;
+	   LOCALPLAYER.flags &= ~(PLAYER_FLAGS_AMMO_RACK);
+		}
+	else if (m_playerShip == 2) {
+	   LOCALPLAYER.flags &= ~(PLAYER_FLAGS_AFTERBURNER);
+		}
+	}
 }
 
 // ----------------------------------------------------------------------------
