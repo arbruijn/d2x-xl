@@ -270,13 +270,13 @@ void CStatusBar::DrawEnergy (void)
 CCanvas::Push ();
 fontManager.SetScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 CCanvas::SetCurrent (CurrentGameScreen ());
-sprintf (szEnergy, "%d", m_info.nEnergy * LOCALPLAYER.EnergyScale ());
+sprintf (szEnergy, "%d", int (m_info.nEnergy * LOCALPLAYER.EnergyScale () + 0.5f));
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 nIdEnergy = PrintF (&nIdEnergy, 
 						  -(ScaleX (SB_ENERGY_GAUGE_X) + (ScaleX (SB_ENERGY_GAUGE_W) - w) / 2), 
 						  -(ScaleY (SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - m_info.nLineSpacing) + HeightPad ()), 
-						  "%d", m_info.nEnergy * LOCALPLAYER.EnergyScale ());
+						  "%d", int (m_info.nEnergy * LOCALPLAYER.EnergyScale () + 0.5f));
 fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
@@ -375,13 +375,13 @@ CCanvas::SetCurrent (CurrentGameScreen ());
 //LoadTexture (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
 fontManager.SetColorRGBi (BLACK_RGBA, 1, 0, 0);
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
-sprintf (szShield, "%d", int (m_info.nShield * LOCALPLAYER.ShieldScale ()));
+sprintf (szShield, "%d", int (m_info.nShield * LOCALPLAYER.ShieldScale () + 0.5f));
 fontManager.Current ()->StringSize (szShield, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 nIdShield = PrintF (&nIdShield, 
 						  -(ScaleX (SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 13 : 6)) - w / 2), 
 						  -(ScaleY (SB_SHIELD_NUM_Y) + HeightPad ()), 
-						  "%d", m_info.nShield * LOCALPLAYER.ShieldScale ());
+						  "%d", int (m_info.nShield * LOCALPLAYER.ShieldScale () + 0.5f));
 fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
