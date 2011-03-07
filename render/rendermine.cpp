@@ -459,7 +459,7 @@ if (automap.Display () && !(gameOpts->render.automap.bTextured & 1))
 
 gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
-gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
+gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects && gameStates.render.bFullBright;
 
 	int	i;
 	short nSegment;
