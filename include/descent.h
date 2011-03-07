@@ -2796,6 +2796,7 @@ typedef enum tProfilerTags {
 	ptTransform,
 	ptVertexColor,
 	ptFaceList,
+	ptUpdateObjects,
 	ptAux,
 	ptTagCount
 	} tProfilerTags;

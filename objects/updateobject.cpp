@@ -601,6 +601,7 @@ return 1;
 
 int UpdateAllObjects (void)
 {
+PROF_START
 	CObject*	objP, * nextObjP;
 
 if (gameData.objs.nLastObject [0] > gameData.objs.nMaxUsedObjects)
@@ -619,9 +620,12 @@ UpdatePlayerOrient ();
 //WaitForEffectsThread ();
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;
-	if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ())
+	if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ()) {
 		return 0;
+		PROF_END(ptUpdateObjects)
+		}
 	}
+PROF_END(ptUpdateObjects)
 return 1;
 }
 

@@ -196,7 +196,7 @@ class CArray : public CQuickSort < _T > {
 				return Create (length);
 			_T* p;
 			try {
-			p = new _T [length];
+				p = new _T [length];
 				}
 			catch(...) {
 #if DBG_ARRAYS

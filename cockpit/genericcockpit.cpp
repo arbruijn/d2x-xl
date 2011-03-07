@@ -367,6 +367,11 @@ if (IsMultiGame && networkData.nTotalMissedPackets && !automap.Display ()) {
 
 //------------------------------------------------------------------------------
 
+#if DBG
+static float nDbgFrameRate = -1.0f;
+static int nFrameCount = 0;
+#endif
+
 void CGenericCockpit::DrawFrameRate (void)
 {
 	static fix frameTimeList [8] = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -393,6 +398,14 @@ if (gameStates.render.bShowFrameRate) {
 			xRate = frameTimeTotal ? FixDiv (I2X (1) * 8, frameTimeTotal) : 0;
 			}
 		sprintf (szItem, "FPS: %s", ftoa (szRate, xRate));
+#if DBG
+		if ((nDbgFrameRate > 0) && (X2F (xRate) < nDbgFrameRate)) {
+			if (++nFrameCount > 5)
+				nDbgFrameRate = nDbgFrameRate;
+			}
+		else
+			nFrameCount = 0;
+#endif
 		}
 	else if (gameStates.render.bShowFrameRate == 2) {
 		sprintf (szItem, "Faces: %d ", gameData.render.nTotalFaces);

@@ -200,25 +200,44 @@ return nBestObj;
 //	Can track two kinds of OBJECTS.  If you are only interested in one nType, set trackObjType2 to NULL
 //	Always track proximity bombs.  --MK, 06/14/95
 //	Make homing OBJECTS not track parent's prox bombs.
+
+class CTarget {
+	public:
+		fix		m_xDot;
+		CObject*	m_objP;
+
+		CTarget (fix xDot = 0, CObject* objP = null) : m_xDot(xDot), m_objP(objP) {}
+
+		inline bool operator< (CTarget& other) { return m_xDot < other.m_xDot; }
+		inline bool operator> (CTarget& other) { return m_xDot > other.m_xDot; }
+		inline bool operator<= (CTarget& other) { return m_xDot <= other.m_xDot; }
+		inline bool operator>= (CTarget& other) { return m_xDot >= other.m_xDot; }
+	};
+
 int FindHomingObjectComplete (CFixVector *vCurPos, CObject *trackerP, int trackObjType1, int trackObjType2)
 {
-	fix		maxDot = -I2X (2);
 	int		nBestObj = -1;
+	fix		xBestDot;
 	fix		maxTrackableDist;
-	fix		minTrackableDot;
-	CObject	*curObjP;
+	CObject*	curObjP;
+
+	static CStack<class CTarget>	targets;
+
+if ((targets.Length () < uint (gameData.objs.nObjects)) && !targets.Resize (uint (gameData.objs.nObjects), false))
+	return -1;
+targets.Reset ();
 
 maxTrackableDist = MAX_TRACKABLE_DIST;
 if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == EARTHSHAKER_MEGA_ID)) {
 	maxTrackableDist *= 2;
-	minTrackableDot = -I2X (1);
+	xBestDot = -I2X (1);
 	}
 else
-	minTrackableDot = MIN_TRACKABLE_DOT;
+	xBestDot = MIN_TRACKABLE_DOT;
 
 if ((trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == OMEGA_ID)) {
 	maxTrackableDist = OMEGA_MAX_TRACKABLE_DIST;
-	minTrackableDot = OMEGA_MIN_TRACKABLE_DOT;
+	xBestDot = OMEGA_MIN_TRACKABLE_DOT;
 	}
 
 FORALL_ACTOR_OBJS (curObjP, nObject) {
@@ -271,16 +290,30 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 	dot = CFixVector::Dot (vecToCurObj, trackerP->info.position.mOrient.FVec ());
 	if (bIsProximity)
 		dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...
-
+	if (dot < xBestDot)
+		continue;
+	targets.Push (CTarget (fix (dist * (1.0f - X2F (dot) / 2.0f)), curObjP));
+#if 0
 	//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 	//	to determine if an CObject is initially trackable.  FindHomingObject is called on subsequent
 	//	frames to determine if the CObject remains trackable.
-	if ((dot > minTrackableDot) && (dot > maxDot) && (ObjectToObjectVisibility (trackerP, curObjP, FQ_TRANSWALL))) {
-		maxDot = dot;
-		nBestObj = OBJ_IDX (curObjP);
-		}
+	if (!ObjectToObjectVisibility (trackerP, curObjP, FQ_TRANSWALL))
+		continue;
+
+	xBestDot = dot;
+	nBestObj = OBJ_IDX (curObjP);
+#endif
 	}
-return nBestObj;
+if (targets.ToS () < 1)
+	return -1;
+if (targets.ToS () > 1)
+	targets.SortDescending ();
+
+for (uint i = 0; i < targets.ToS (); i++) {
+	if (ObjectToObjectVisibility (trackerP, targets [i].m_objP, FQ_TRANSWALL))
+		return targets [i].m_objP->Index ();
+	}
+return -1;
 }
 
 //	------------------------------------------------------------------------------------------------------------
