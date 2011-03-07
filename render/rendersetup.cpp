@@ -258,61 +258,59 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		gameStates.render.nThreads = GetNumThreads ();
 		lightManager.ResetSegmentLights ();
 		lightManager.ResetIndex ();
-		if (!gameStates.render.bFullBright) {
-			if ((gameStates.render.bPerPixelLighting == 2) || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)
+		if ((gameStates.render.bPerPixelLighting == 2) || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)
 #	if !USE_OPENMP
-				 || !RunRenderThreads (rtComputeFaceLight, gameStates.app.nThreads)
+			 || !RunRenderThreads (rtComputeFaceLight, gameStates.app.nThreads)
 #	endif
-				)
-				{
-				gameStates.render.nThreads = 1;
-				if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs [0] < gameData.segs.nSegments))
-					ComputeFaceLight (0, gameData.render.mine.nRenderSegs [0], 0);
-				else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
-					ComputeFaceLight (0, gameData.segs.nFaces, 0);
-				else
-					ComputeFaceLight (0, gameData.segs.nSegments, 0);
-				}
+			)
+			{
+			gameStates.render.nThreads = 1;
+			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs [0] < gameData.segs.nSegments))
+				ComputeFaceLight (0, gameData.render.mine.nRenderSegs [0], 0);
+			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
+				ComputeFaceLight (0, gameData.segs.nFaces, 0);
+			else
+				ComputeFaceLight (0, gameData.segs.nSegments, 0);
+			}
 #if USE_OPENMP > 1
-			else {
-					int	nStart, nEnd, nMax;
+		else {
+				int	nStart, nEnd, nMax;
 
-				if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs [0] < gameData.segs.nSegments))
-					nMax = gameData.render.mine.nRenderSegs [0];
-				else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
-					nMax = gameData.segs.nFaces;
-				else
-					nMax = gameData.segs.nSegments;
-				if (gameStates.app.nThreads & 1) {
+			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs [0] < gameData.segs.nSegments))
+				nMax = gameData.render.mine.nRenderSegs [0];
+			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
+				nMax = gameData.segs.nFaces;
+			else
+				nMax = gameData.segs.nSegments;
+			if (gameStates.app.nThreads & 1) {
+#			pragma omp parallel
+				{
+#				pragma omp for private (nStart, nEnd)
+					for (int i = 0; i < gameStates.app.nThreads; i++) {
+						ComputeThreadRange (i, nMax, nStart, nEnd);
+						ComputeFaceLight (nStart, nEnd, i);
+						}
+					}
+				}
+			else {
+				int	nPivot = gameStates.app.nThreads / 2;
 #				pragma omp parallel
 					{
 #				pragma omp for private (nStart, nEnd)
-						for (int i = 0; i < gameStates.app.nThreads; i++) {
-							ComputeThreadRange (i, nMax, nStart, nEnd);
+					for (int i = 0; i < gameStates.app.nThreads; i++) {
+						if (i < nPivot) {
+							ComputeThreadRange (i, tiRender.nMiddle, nStart, nEnd, nPivot);
 							ComputeFaceLight (nStart, nEnd, i);
 							}
-						}
-					}
-				else {
-					int	nPivot = gameStates.app.nThreads / 2;
-#					pragma omp parallel
-						{
-#					pragma omp for private (nStart, nEnd)
-						for (int i = 0; i < gameStates.app.nThreads; i++) {
-							if (i < nPivot) {
-								ComputeThreadRange (i, tiRender.nMiddle, nStart, nEnd, nPivot);
-								ComputeFaceLight (nStart, nEnd, i);
-								}
-							else {
-								ComputeThreadRange (i - nPivot, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
-								ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, i);
-								}
+						else {
+							ComputeThreadRange (i - nPivot, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
+							ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, i);
 							}
 						}
 					}
 				}
-#endif //_OPENMP
 			}
+#endif //_OPENMP
 		if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
 			meshBuilder.BuildVBOs ();
 		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && 
