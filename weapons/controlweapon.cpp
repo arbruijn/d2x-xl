@@ -894,7 +894,7 @@ void TactileSetButtonJolt ()
 if (TactileStick) {
 	if (stickmag==-1) {
 		if (t=FindArg ("-stickmag"))
-			stickmag=atoi (appArgs [t+1]);
+			stickmag=atoi (appConfig [t+1]);
 		else
 			stickmag=50;
 		infile=reinterpret_cast<FILE*> (fopen ("stick.val","rt"));

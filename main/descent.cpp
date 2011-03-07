@@ -675,7 +675,7 @@ switch (loadOp) {
 	case 5:
 		int i;
 		if ((i = FindArg ("-xcontrol")) > 0)
-			externalControls.Init (strtol (appArgs [i+1], NULL, 0), strtol (appArgs [i+2], NULL, 0));
+			externalControls.Init (strtol (appConfig [i+1], NULL, 0), strtol (appConfig [i+2], NULL, 0));
 		break;
 	case 6:
 		/*---*/PrintLog ("Initializing movies\n");
@@ -756,12 +756,12 @@ ProgressBar (TXT_INITIALIZING, 0, InitGaugeSize (), InitializePoll);
 
 void InitArgs (int argC, char **argV) 
 { 
-appArgs.Destroy ();
-appArgs.Init ();
+appConfig.Destroy ();
+appConfig.Init ();
 PrintLog ("Loading program arguments\n");
-appArgs.Load (argC, argV); 
-appArgs.Load (appArgs.Filename (DBG != 0));
-appArgs.PrintLog ();
+appConfig.Load (argC, argV); 
+appConfig.Load (appConfig.Filename (DBG != 0));
+appConfig.PrintLog ();
 }
 
 // ----------------------------------------------------------------------------

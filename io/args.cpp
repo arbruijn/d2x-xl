@@ -30,11 +30,11 @@
 #include "strutil.h"
 #include "args.h"
 
-CArgManager appArgs;
+CConfigManager appConfig;
 
 //------------------------------------------------------------------------------
 
-void CArgManager::Destroy (void)
+void CConfigManager::Destroy (void)
 {
 for (int i = Count (); i > 0; i) {
 	if (m_argList [--i])
@@ -45,7 +45,7 @@ m_argList.Destroy ();
 
 //------------------------------------------------------------------------------
 
-int CArgManager::Find (const char * s)
+int CConfigManager::Find (const char * s)
 {
 	int i;
   
@@ -57,7 +57,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-char* CArgManager::Filename (int bDebug)
+char* CConfigManager::Filename (int bDebug)
 {
 	int	i;
 	char*	p;
@@ -97,7 +97,7 @@ return m_filename;
 
 //------------------------------------------------------------------------------
 
-int CArgManager::Parse (CFile* cfP)
+int CConfigManager::Parse (CFile* cfP)
 {
 	char 		*pszLine, *pszToken;
 
@@ -129,7 +129,7 @@ return Count ();
 
 //------------------------------------------------------------------------------
 
-void CArgManager::PrintLog (void)
+void CConfigManager::PrintLog (void)
 {
 ::PrintLog ("   ");
 for (int i = 0, j = 0; i < Count (); i++, j++) {
@@ -147,7 +147,7 @@ for (int i = 0, j = 0; i < Count (); i++, j++) {
 
 //------------------------------------------------------------------------------
 
-void CArgManager::Init (void)
+void CConfigManager::Init (void)
 {
 m_argList.Create (100);
 m_argList.SetGrowth (100);
@@ -157,7 +157,7 @@ m_null [0] = '\0';
 
 //------------------------------------------------------------------------------
 
-void CArgManager::Load (int argC, char **argV)
+void CConfigManager::Load (int argC, char **argV)
 {
 for (int i = 0; i < argC; i++) {
 	m_argList.Push (StrDup (argV [i]));
@@ -168,7 +168,7 @@ for (int i = 0; i < argC; i++) {
 
 //------------------------------------------------------------------------------
 
-void CArgManager::Load (char* filename)
+void CConfigManager::Load (char* filename)
 {
 if (filename == NULL)
 	filename = m_filename;
@@ -181,7 +181,7 @@ if (m_cf.Open (filename, "", "rt", 0)) {
 
 // ----------------------------------------------------------------------------
 
-int CArgManager::Value (int t, int nDefault)
+int CConfigManager::Value (int t, int nDefault)
 {
 	char *psz = m_argList [t+1];
 
@@ -196,7 +196,7 @@ return nDefault;
 
 // ----------------------------------------------------------------------------
 
-int CArgManager::Value (char* szArg, int nDefault)
+int CConfigManager::Value (char* szArg, int nDefault)
 {
 	int t = Find (szArg);
 

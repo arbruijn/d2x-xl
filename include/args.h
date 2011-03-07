@@ -17,7 +17,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern int Inferno_verbose;
 
-class CArgManager {
+class CConfigManager {
 	private:
 		CStack<char*>	m_argList;
 		CFile				m_cf;
@@ -27,8 +27,8 @@ class CArgManager {
 		inline int Count (void) { return (m_argList.Buffer () == NULL) ? NULL : int (m_argList.ToS ()); }
 
 	public:
-		CArgManager () { Init (); }
-		~CArgManager () { Destroy (); }
+		CConfigManager () { Init (); }
+		~CConfigManager () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
 		char* Filename (int bDebug = 0);
@@ -39,13 +39,13 @@ class CArgManager {
 		int Find (const char* s);
 		int Value (int t, int nDefault);
 		int Value (char* szArg, int nDefault);
-		inline char* Arg (int i) { return (i < Count ()) ? m_argList [i] : m_null; }
-		inline char* operator[] (int i) { return Arg (i); }
+		inline char* Property (int i) { return (i < Count ()) ? m_argList [i] : m_null; }
+		inline char* operator[] (int i) { return Property (i); }
 };
 
-extern CArgManager appArgs;
+extern CConfigManager appConfig;
 
-static inline int FindArg (const char * s) { return appArgs.Find (s); }
-static inline int NumArg (int t, int nDefault) { return appArgs.Value (t, nDefault); }
+static inline int FindArg (const char * s) { return appConfig.Find (s); }
+static inline int NumArg (int t, int nDefault) { return appConfig.Value (t, nDefault); }
 
 #endif //_ARGS_H

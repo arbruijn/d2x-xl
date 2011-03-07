@@ -136,12 +136,12 @@ void GetAppFolders (void)
 *gameFolders.szGameDir =
 *gameFolders.szDataDir =
 *szDataRootDir = '\0';
-if ((i = FindArg ("-userdir")) && appArgs [i + 1] && *appArgs [i + 1]) {
-	sprintf (gameFolders.szGameDir, "%s\\%s\\", appArgs [i + 1], DATADIR);
+if ((i = FindArg ("-userdir")) && appConfig [i + 1] && *appConfig [i + 1]) {
+	sprintf (gameFolders.szGameDir, "%s\\%s\\", appConfig [i + 1], DATADIR);
 	if (GetAppFolder ("", gameFolders.szGameDir, gameFolders.szGameDir, "*.hog"))
 		*gameFolders.szGameDir = '\0';
 	else {
-		strcpy (gameFolders.szGameDir, appArgs [i + 1]);
+		strcpy (gameFolders.szGameDir, appConfig [i + 1]);
 		int j = (int) strlen (gameFolders.szGameDir);
 		if (j && (gameFolders.szGameDir [j-1] != '\\') && (gameFolders.szGameDir [j-1] != '/'))
 			strcat (gameFolders.szGameDir, "/");
@@ -151,7 +151,7 @@ if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, getenv (
 	*gameFolders.szGameDir = '\0';
 #ifdef _WIN32
 if (!*gameFolders.szGameDir) {
-	psz = appArgs [0];
+	psz = appConfig [0];
 	for (int j = (int) strlen (psz); j; ) {
 		c = psz [--j];
 		if ((c == '\\') || (c == '/')) {
@@ -196,8 +196,8 @@ strcpy (szDataRootDir, gameFolders.szGameDir);
 if (*gameFolders.szGameDir)
 	chdir (gameFolders.szGameDir);
 #endif //Linux, OS X
-if ((i = FindArg ("-hogdir")) && !GetAppFolder ("", gameFolders.szDataDir, appArgs [i + 1], "descent2.hog"))
-	strcpy (szDataRootDir, appArgs [i + 1]);
+if ((i = FindArg ("-hogdir")) && !GetAppFolder ("", gameFolders.szDataDir, appConfig [i + 1], "descent2.hog"))
+	strcpy (szDataRootDir, appConfig [i + 1]);
 else {
 	sprintf (gameFolders.szDataDir, "%s%s", gameFolders.szGameDir, DATADIR);
 	if (GetAppFolder ("", gameFolders.szDataDir, gameFolders.szDataDir, "descent2.hog") &&

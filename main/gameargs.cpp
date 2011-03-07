@@ -93,29 +93,29 @@ void EvalAutoNetGameArgs (void)
 	static const char	*pszConnect [] = {"ipx", "udp", "", "multicast", NULL};
 
 memset (&gameData.multiplayer.autoNG, 0, sizeof (gameData.multiplayer.autoNG));
-if ((t = FindArg ("-ng_player")) && (p = appArgs [t+1])) {
-	strncpy (gameData.multiplayer.autoNG.szPlayer, appArgs [t+1], 8);
+if ((t = FindArg ("-ng_player")) && (p = appConfig [t+1])) {
+	strncpy (gameData.multiplayer.autoNG.szPlayer, appConfig [t+1], 8);
 	gameData.multiplayer.autoNG.szPlayer [8] = '\0';
 	}
-if ((t = FindArg ("-ng_file")) && (p = appArgs [t+1])) {
-	strncpy (gameData.multiplayer.autoNG.szFile, appArgs [t+1], FILENAME_LEN - 1);
+if ((t = FindArg ("-ng_file")) && (p = appConfig [t+1])) {
+	strncpy (gameData.multiplayer.autoNG.szFile, appConfig [t+1], FILENAME_LEN - 1);
 	gameData.multiplayer.autoNG.szFile [FILENAME_LEN - 1] = '\0';
 	}
-if ((t = FindArg ("-ng_mission")) && (p = appArgs [t+1])) {
-	strncpy (gameData.multiplayer.autoNG.szMission, appArgs [t+1], 12);
+if ((t = FindArg ("-ng_mission")) && (p = appConfig [t+1])) {
+	strncpy (gameData.multiplayer.autoNG.szMission, appConfig [t+1], 12);
 	gameData.multiplayer.autoNG.szMission [12] = '\0';
 	}
 if ((t = FindArg ("-ngLevel")))
 	gameData.multiplayer.autoNG.nLevel = NumArg (t, 1);
 else
 	gameData.multiplayer.autoNG.nLevel = 1;
-if ((t = FindArg ("-ng_name")) && (p = appArgs [t+1])) {
-	strncpy (gameData.multiplayer.autoNG.szName, appArgs [t+1], 80);
+if ((t = FindArg ("-ng_name")) && (p = appConfig [t+1])) {
+	strncpy (gameData.multiplayer.autoNG.szName, appConfig [t+1], 80);
 	gameData.multiplayer.autoNG.szName [80] = '\0';
 	}
-if ((t = FindArg ("-ng_ipaddr")) && (p = appArgs [t+1]))
-	bHaveIp = stoip (appArgs [t+1], gameData.multiplayer.autoNG.ipAddr);
-if ((t = FindArg ("-ng_connect")) && (p = appArgs [t+1])) {
+if ((t = FindArg ("-ng_ipaddr")) && (p = appConfig [t+1]))
+	bHaveIp = stoip (appConfig [t+1], gameData.multiplayer.autoNG.ipAddr);
+if ((t = FindArg ("-ng_connect")) && (p = appConfig [t+1])) {
 	strlwr (p);
 	for (t = 0; pszTypes [t]; t++)
 		if (*pszConnect [t] && !strcmp (p, pszConnect [t])) {
@@ -123,11 +123,11 @@ if ((t = FindArg ("-ng_connect")) && (p = appArgs [t+1])) {
 			break;
 			}
 	}
-if ((t = FindArg ("-ng_join")) && (p = appArgs [t+1])) {
+if ((t = FindArg ("-ng_join")) && (p = appConfig [t+1])) {
 	strlwr (p);
 	gameData.multiplayer.autoNG.bHost = !strcmp (p, "host");
 	}
-if ((t = FindArg ("-ngType")) && (p = appArgs [t+1])) {
+if ((t = FindArg ("-ngType")) && (p = appConfig [t+1])) {
 	strlwr (p);
 	for (t = 0; pszTypes [t]; t++)
 		if (!strcmp (p, pszTypes [t])) {
@@ -225,15 +225,15 @@ void EvalMusicArgs (void)
 
 if ((t = FindArg ("-nomusic")))
 	gameStates.sound.audio.bNoMusic = NumArg (t, 0) == 0;
-if ((t = FindArg ("-playlist")) && (p = appArgs [t+1]))
+if ((t = FindArg ("-playlist")) && (p = appConfig [t+1]))
 	songManager.LoadPlayList (p);
-if ((t = FindArg ("-introsong")) && (p = appArgs [t+1]))
+if ((t = FindArg ("-introsong")) && (p = appConfig [t+1]))
 	strncpy (songManager.IntroSong (), p, FILENAME_LEN);
-if ((t = FindArg ("-briefingsong")) && (p = appArgs [t+1]))
+if ((t = FindArg ("-briefingsong")) && (p = appConfig [t+1]))
 	strncpy (songManager.BriefingSong (), p, FILENAME_LEN);
-if ((t = FindArg ("-creditssong")) && (p = appArgs [t+1]))
+if ((t = FindArg ("-creditssong")) && (p = appConfig [t+1]))
 	strncpy (songManager.CreditsSong (), p, FILENAME_LEN);
-if ((t = FindArg ("-menusong")) && (p = appArgs [t+1]))
+if ((t = FindArg ("-menusong")) && (p = appConfig [t+1]))
 	strncpy (songManager.MenuSong (), p, FILENAME_LEN);
 }
 
@@ -251,22 +251,22 @@ if (!gameStates.app.bNostalgia) {
 	}
 if ((t = FindArg ("-fademenus")))
 	gameOptions [0].menus.nFade = NumArg (t, 0);
-if ((t = FindArg ("-altbg_alpha")) && *appArgs [t+1]) {
-	gameOptions [0].menus.altBg.alpha = atof (appArgs [t+1]);
+if ((t = FindArg ("-altbg_alpha")) && *appConfig [t+1]) {
+	gameOptions [0].menus.altBg.alpha = atof (appConfig [t+1]);
 	if (gameOptions [0].menus.altBg.alpha < 0)
 		gameOptions [0].menus.altBg.alpha = -1.0;
 	else if ((gameOptions [0].menus.altBg.alpha == 0) || (gameOptions [0].menus.altBg.alpha > 1.0))
 		gameOptions [0].menus.altBg.alpha = 1.0;
 	}
-if ((t = FindArg ("-altbg_brightness")) && *appArgs [t+1]) {
-	gameOptions [0].menus.altBg.brightness = atof (appArgs [t+1]);
+if ((t = FindArg ("-altbg_brightness")) && *appConfig [t+1]) {
+	gameOptions [0].menus.altBg.brightness = atof (appConfig [t+1]);
 	if ((gameOptions [0].menus.altBg.brightness <= 0) || (gameOptions [0].menus.altBg.brightness > 1.0))
 		gameOptions [0].menus.altBg.brightness = 1.0;
 	}
 if ((t = FindArg ("-altbg_grayscale")))
 	gameOptions [0].menus.altBg.grayscale = NumArg (t, 1);
-if ((t = FindArg ("-altbg_name")) && *appArgs [t+1])
-	strncpy (gameOptions [0].menus.altBg.szName, appArgs [t+1], sizeof (gameOptions [0].menus.altBg.szName));
+if ((t = FindArg ("-altbg_name")) && *appConfig [t+1])
+	strncpy (gameOptions [0].menus.altBg.szName, appConfig [t+1], sizeof (gameOptions [0].menus.altBg.szName));
 if ((t = FindArg ("-use_swapfile")))
 	gameStates.app.bUseSwapFile = NumArg (t, 1);
 }
@@ -345,7 +345,7 @@ if ((t = FindArg ("-hires_textures")))
 if ((t = FindArg ("-hires_models")))
 	gameOptions [0].render.bHiresModels [0] =
 	gameOptions [0].render.bHiresModels [1] = NumArg (t, 1);
-if ((t = FindArg ("-model_quality")) && *appArgs [t+1])
+if ((t = FindArg ("-model_quality")) && *appConfig [t+1])
 	gameStates.render.nModelQuality = NumArg (t, 3);
 #if 0
 if ((t = FindArg ("-gl_texcompress")))
@@ -395,8 +395,8 @@ void EvalShipArgs (void)
 	char	*p;
 
 for (int i = 0; i < MAX_SHIP_TYPES; i++) {
-	if ((t = FindArg (szShipArgs [i])) && (p = appArgs [t+1]) && *p) {
-		strncpy (gameData.models.szShipModels [i], appArgs [t+1], FILENAME_LEN);
+	if ((t = FindArg (szShipArgs [i])) && (p = appConfig [t+1]) && *p) {
+		strncpy (gameData.models.szShipModels [i], appConfig [t+1], FILENAME_LEN);
 		strlwr (gameData.models.szShipModels [i]);
 		replacementModels [i].pszHires = gameData.models.szShipModels [i];
 		}
@@ -426,7 +426,7 @@ if ((t = FindArg ("-expertmode")))
 if ((t = FindArg ("-pured2")))
 	SetNostalgia (3);
 else if ((t = FindArg ("-nostalgia")))
-	SetNostalgia (appArgs [t+1] ? NumArg (t, 0) : 1);
+	SetNostalgia (appConfig [t+1] ? NumArg (t, 0) : 1);
 else
 	SetNostalgia (0);
 
@@ -456,15 +456,15 @@ if ((t = FindArg ("-altLanguage")))
 
 if ((t = FindArg ("-auto_hogfile"))) {
 	strcpy (szAutoHogFile, "missions/");
-	strcat (szAutoHogFile, appArgs [t+1]);
+	strcat (szAutoHogFile, appConfig [t+1]);
 	if (*szAutoHogFile && !strchr (szAutoHogFile, '.'))
 		strcat (szAutoHogFile, ".hog");
 	}
 if ((t = FindArg ("-auto_mission"))) {
-	char	c = *appArgs [++t];
+	char	c = *appConfig [++t];
 	int		bDelim = ((c == '\'') || (c == '"'));
 
-	strcpy (szAutoMission, &appArgs [t][bDelim]);
+	strcpy (szAutoMission, &appConfig [t][bDelim]);
 	if (bDelim)
 		szAutoMission [strlen (szAutoMission) - 1] = '\0';
 	if (*szAutoMission && !strchr (szAutoMission, '.'))
@@ -478,7 +478,7 @@ else
 	CCvar::Register (const_cast<char*>("con_threshold"), -1.0);
 if ((t = FindArg ("-autodemo"))) {
 	gameData.demo.bAuto = 1;
-	strncpy (gameData.demo.fnAuto, *appArgs [t+1] ? appArgs [t+1] : "descent.dem", sizeof (gameData.demo.fnAuto));
+	strncpy (gameData.demo.fnAuto, *appConfig [t+1] ? appConfig [t+1] : "descent.dem", sizeof (gameData.demo.fnAuto));
 	}
 else
 	gameData.demo.bAuto = 0;

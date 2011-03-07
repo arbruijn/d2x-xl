@@ -667,7 +667,7 @@ m_bSecretSave = 1;
 
 int CMissionConfig::Load (char* szFilename)
 {
-	CArgManager args;
+	CConfigManager args;
 	CFile			cf;
 	char			szConfig [FILENAME_LEN];
 	bool			bLocal;

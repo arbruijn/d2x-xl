@@ -236,7 +236,7 @@ Widget XmMessageDialog (const char* pszMsg, int nRows, int nCols, bool bError)
     Widget       msgBox, pane, msgText, form, /*sep, label,*/ widget;
     void         DestroyShell(Widget, XtPointer, XtPointer);
     //Pixmap       pixmap;
-    Arg          args [10];
+    Property          args [10];
     int          n = 0;
     int          i;
     Dimension    h;
@@ -352,7 +352,7 @@ if ((nRows > 3) || (nCols > 360))
 else { // use the built-in message box
 	topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
 	// setup message box text
-	Arg args [1];
+	Property args [1];
 	XmString xmString = XmStringCreateLocalized (const_cast<char*>(pszMsg));
 	XtSetArg (args [0], XmNmessageString, xmString);
 	// create and label message box

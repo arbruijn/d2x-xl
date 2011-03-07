@@ -2921,7 +2921,7 @@ for (i = 0; *GT (i); i++)
 fclose (fTxt);
 #endif
 if ((i = FindArg ("-text")))
-	filename = appArgs [i+1];
+	filename = appConfig [i+1];
 if (!tFile.Open (filename, gameFolders.szDataDir, "rt", 0)) {
 	filename = "descent.txb";
 	if (!iFile.Open (filename, gameFolders.szDataDir, "rb", 0)) {

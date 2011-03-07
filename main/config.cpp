@@ -205,7 +205,7 @@ cf.Close ();
 
 i = FindArg ("-volume");
 if (i > 0) {
-	i = atoi (appArgs [i + 1]);
+	i = atoi (appConfig [i + 1]);
 	if (i < 0)
 		i = 0;
 	else if (i > 100)

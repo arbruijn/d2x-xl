@@ -77,11 +77,11 @@ if ((j = SDL_CDNumDrives ()) == 0) {
 	}
 
 d = 0;
-if ((i = FindArg ("-cdrom")) && *appArgs [++i]) {
+if ((i = FindArg ("-cdrom")) && *appConfig [++i]) {
 #ifdef _WIN32
-	sprintf (szDrive, "%c:\\", *appArgs [i]);
+	sprintf (szDrive, "%c:\\", *appConfig [i]);
 #else
-	strncpy (szDrive, appArgs [i], sizeof (szDrive));
+	strncpy (szDrive, appConfig [i], sizeof (szDrive));
 #endif
 	strlwr (szDrive);
 	for (i = 0; i < j; i++) {
