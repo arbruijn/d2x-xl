@@ -152,6 +152,7 @@ void CArgManager::Init (void)
 m_argList.Create (100);
 m_argList.SetGrowth (100);
 m_filename [0] = '\0';
+m_null [0] = '\0';
 }
 
 //------------------------------------------------------------------------------

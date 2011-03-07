@@ -22,6 +22,7 @@ class CArgManager {
 		CStack<char*>	m_argList;
 		CFile				m_cf;
 		char				m_filename [FILENAME_LEN];
+		char				m_null [1];
 
 		inline int Count (void) { return (m_argList.Buffer () == NULL) ? NULL : int (m_argList.ToS ()); }
 
@@ -38,7 +39,7 @@ class CArgManager {
 		int Find (const char* s);
 		int Value (int t, int nDefault);
 		int Value (char* szArg, int nDefault);
-		inline char* Arg (int i) { return (i < Count ()) ? m_argList [i] : ""; }
+		inline char* Arg (int i) { return (i < Count ()) ? m_argList [i] : m_null; }
 		inline char* operator[] (int i) { return Arg (i); }
 };
 
