@@ -19,12 +19,12 @@ extern int Inferno_verbose;
 
 class CConfigManager {
 	private:
-		CStack<char*>	m_argList;
+		CStack<char*>	m_properties;
 		CFile				m_cf;
 		char				m_filename [FILENAME_LEN];
 		char				m_null [1];
 
-		inline int Count (void) { return (m_argList.Buffer () == NULL) ? NULL : int (m_argList.ToS ()); }
+		inline int Count (void) { return (m_properties.Buffer () == NULL) ? NULL : int (m_properties.ToS ()); }
 
 	public:
 		CConfigManager () { Init (); }
@@ -39,7 +39,7 @@ class CConfigManager {
 		int Find (const char* s);
 		int Value (int t, int nDefault);
 		int Value (char* szArg, int nDefault);
-		inline char* Property (int i) { return (i < Count ()) ? m_argList [i] : m_null; }
+		inline char* Property (int i) { return (i < Count ()) ? m_properties [i] : m_null; }
 		inline char* operator[] (int i) { return Property (i); }
 };
 

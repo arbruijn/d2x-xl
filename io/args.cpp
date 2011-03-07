@@ -37,10 +37,10 @@ CConfigManager appConfig;
 void CConfigManager::Destroy (void)
 {
 for (int i = Count (); i > 0; i) {
-	if (m_argList [--i])
-		delete[] m_argList [i];
+	if (m_properties [--i])
+		delete[] m_properties [i];
 	}
-m_argList.Destroy ();
+m_properties.Destroy ();
 }
 
 //------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ int CConfigManager::Find (const char * s)
 	int i;
   
 for (i = 0; i < Count (); i++)
-	if (m_argList [i] && *m_argList [i] && !stricmp (m_argList [i], s))
+	if (m_properties [i] && *m_properties [i] && !stricmp (m_properties [i], s))
 		return i;
 return 0;
 }
@@ -64,7 +64,7 @@ char* CConfigManager::Filename (int bDebug)
 	CFile	cf;
 
 if ((i = Find ("-ini")))
-	strncpy (m_filename, m_argList [i + 1], sizeof (m_filename) - 1);
+	strncpy (m_filename, m_properties [i + 1], sizeof (m_filename) - 1);
 else {
 #if defined(__unix__)
 	FFS		ffs;
@@ -107,7 +107,7 @@ while (!cfP->EoF ()) {
 	pszLine = fsplitword (*cfP, '\n');
 	if (*pszLine && (*pszLine != ';')) {
 		pszToken = splitword (pszLine, ' ');
-		if (!m_argList.Push (pszToken))
+		if (!m_properties.Push (pszToken))
 			break;
 		if (pszLine) {
 			int l;
@@ -116,8 +116,8 @@ while (!cfP->EoF ()) {
 					break;
 				}
 			pszLine [l] = '\0';
-			if (!m_argList.Push (*pszLine ? StrDup (pszLine) : NULL)) {
-				m_argList.Pop ();
+			if (!m_properties.Push (*pszLine ? StrDup (pszLine) : NULL)) {
+				m_properties.Pop ();
 				break;
 				}
 			}
@@ -133,13 +133,13 @@ void CConfigManager::PrintLog (void)
 {
 ::PrintLog ("   ");
 for (int i = 0, j = 0; i < Count (); i++, j++) {
-	if (!m_argList [i]) 
+	if (!m_properties [i]) 
 		continue;
-	if ((m_argList [i][0] == '-') && (isalpha (m_argList [i][1]) || (j == 2))) {
+	if ((m_properties [i][0] == '-') && (isalpha (m_properties [i][1]) || (j == 2))) {
 		::PrintLog ("\n   ");
 		j = 0;
 		}
-	::PrintLog (m_argList [i]);
+	::PrintLog (m_properties [i]);
 	::PrintLog (" ");
 	}
 ::PrintLog ("\n");
@@ -149,8 +149,8 @@ for (int i = 0, j = 0; i < Count (); i++, j++) {
 
 void CConfigManager::Init (void)
 {
-m_argList.Create (100);
-m_argList.SetGrowth (100);
+m_properties.Create (100);
+m_properties.SetGrowth (100);
 m_filename [0] = '\0';
 m_null [0] = '\0';
 }
@@ -160,9 +160,9 @@ m_null [0] = '\0';
 void CConfigManager::Load (int argC, char **argV)
 {
 for (int i = 0; i < argC; i++) {
-	m_argList.Push (StrDup (argV [i]));
-	if (*m_argList [i]== '-')
-		strlwr (m_argList [i]);  // Convert all args to lowercase
+	m_properties.Push (StrDup (argV [i]));
+	if (*m_properties [i]== '-')
+		strlwr (m_properties [i]);  // Convert all args to lowercase
 	}
 }
 
@@ -183,7 +183,7 @@ if (m_cf.Open (filename, "", "rt", 0)) {
 
 int CConfigManager::Value (int t, int nDefault)
 {
-	char *psz = m_argList [t+1];
+	char *psz = m_properties [t+1];
 
 if (!psz)
 	return nDefault;
