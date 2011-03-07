@@ -792,16 +792,8 @@ CheckLineToLine (&edge_t, &move_t, edge_v0, &vEdge, p0, &vMove);
 //make sure t values are in valid range
 if ((move_t < 0) || (move_t > move_len + rad))
 	return IT_NONE;
-if (move_t > move_len)
-	move_t2 = move_len;
-else
-	move_t2 = move_t;
-if (edge_t < 0)		//clamp at points
-	edge_t2 = 0;
-else
-	edge_t2 = edge_t;
-if (edge_t2 > edge_len)		//clamp at points
-	edge_t2 = edge_len;
+move_t2 = (move_t > move_len) ? move_len : move_t;
+edge_t2 = (edge_t < 0) ? 0 : (edge_t > edge_len) ? edge_len : edge_t;
 //now, edge_t & move_t determine closest points.  calculate the points.
 vClosestEdgePoint = *edge_v0 + vEdge * edge_t2;
 vClosestMovePoint = *p0 + vMove * move_t2;
