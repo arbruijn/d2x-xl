@@ -206,7 +206,7 @@ class CTarget {
 		fix		m_xDot;
 		CObject*	m_objP;
 
-		CTarget (fix xDot = 0, CObject* objP = null) : m_xDot(xDot), m_objP(objP) {}
+		CTarget (fix xDot = 0, CObject* objP = NULL) : m_xDot(xDot), m_objP(objP) {}
 
 		inline bool operator< (CTarget& other) { return m_xDot < other.m_xDot; }
 		inline bool operator> (CTarget& other) { return m_xDot > other.m_xDot; }
