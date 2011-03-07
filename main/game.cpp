@@ -589,6 +589,7 @@ shaderManager.Destroy (true);
 meshBuilder.DestroyVBOs ();
 UnloadLevelData ();
 gameData.Destroy ();
+missionConfig.Init ();
 PiggyCloseFile ();
 SavePlayerProfile ();
 SetFunctionMode (FMODE_MENU);	

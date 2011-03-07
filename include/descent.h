@@ -1333,7 +1333,7 @@ extern CGameOptions	*gameOpts;
 
 class CMissionConfig {
 	public:
-		int	m_ships [3];
+		int	m_ships [MAX_SHIP_TYPES];
 		int	m_playerShip;
 		int	m_bTeleport;
 		int	m_bSecretSave;

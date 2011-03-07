@@ -656,7 +656,7 @@ CMissionConfig missionConfig;
 
 void CMissionConfig::Init (void)
 {
-for (int i = 0; i < 3; i++)
+for (int i = 0; i < MAX_SHIP_TYPES; i++)
 	m_ships [i] = 1;
 m_playerShip = -1;
 m_bTeleport = 1;
