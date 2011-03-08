@@ -326,8 +326,8 @@ TransformGunPoint (objP, vGunPoints, nGun, xDelay, nLaserType, &vLaserPos, &m);
 
 //--------------- Find vLaserPos and nLaserSeg ------------------
 CHitQuery			fq (FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS, &posP->vPos, &vLaserPos,
-							 (bSpectate ? gameStates.app.nPlayerSegment : objP->info.nSegment),
-							 0x10, 0x10, objP->Index ());
+							 (bSpectate ? gameStates.app.nPlayerSegment : objP->info.nSegment), objP->Index (),
+							 0x10, 0x10);
 CHitData				hitData;
 
 nFate = FindHitpoint (&fq, &hitData);

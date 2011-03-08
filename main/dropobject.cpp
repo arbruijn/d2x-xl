@@ -903,7 +903,7 @@ else {
 
 void DropPlayerEggs (CObject *playerObjP)
 {
-if (playerObjP && (playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHOST)) {
+if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHOST))) {
 	int				nPlayer = playerObjP->info.nId;
 	short				nObject;
 	int				nVulcanAmmo = 0;

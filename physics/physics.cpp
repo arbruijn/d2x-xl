@@ -333,7 +333,7 @@ if (objP->info.nType == OBJ_WEAPON)
 if (objP->info.nType != OBJ_MONSTERBALL)
 	return;
 #endif
-CHitQuery fq (0, &objP->info.position.vPos, &objP->info.position.vPos, objP->info.nSegment, 0, objP->info.xSize, objP->Index ());
+CHitQuery fq (0, &objP->info.position.vPos, &objP->info.position.vPos, objP->info.nSegment, objP->Index (), 0, objP->info.xSize);
 int fviResult = FindHitpoint (&fq, &hi);
 if (fviResult == HIT_WALL)
 #if 1
@@ -452,10 +452,10 @@ if (DoPhysicsSimRot () && EGI_FLAG (nHitboxes, 0, 0, 0)) {
 	gameData.physics.ignoreObjs [0] = -1;
 	fq.p0 = 
 	fq.p1 = &info.position.vPos;
-	fq.startSeg = info.nSegment;
+	fq.nSegment = info.nSegment;
 	fq.radP0 = 
 	fq.radP1 = info.xSize;
-	fq.thisObjNum = nObject;
+	fq.nObject = nObject;
 	fq.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
 	fq.flags = FQ_CHECK_OBJS;
 
@@ -612,11 +612,11 @@ retryMove:
 	vNewPos = info.position.vPos + vFrame;
 	gameData.physics.ignoreObjs [nIgnoreObjs] = -1;
 	fq.p0 = &info.position.vPos;
-	fq.startSeg = info.nSegment;
+	fq.nSegment = info.nSegment;
 	fq.p1 = &vNewPos;
 	fq.radP0 = 
 	fq.radP1 = info.xSize;
-	fq.thisObjNum = nObject;
+	fq.nObject = nObject;
 	fq.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
 	fq.flags = FQ_CHECK_OBJS;
 
@@ -643,8 +643,8 @@ retryMove:
 #endif
 		memset (&hi, 0, sizeof (hi));
 		fviResult = FindHitpoint (&fq, &hi);
-		fq.startSeg = FindSegByPos (vNewPos, info.nSegment, 1, 0);
-		if ((fq.startSeg < 0) || (fq.startSeg == info.nSegment)) {
+		fq.nSegment = FindSegByPos (vNewPos, info.nSegment, 1, 0);
+		if ((fq.nSegment < 0) || (fq.nSegment == info.nSegment)) {
 			info.position.vPos = vSavePos;
 			break;
 			}

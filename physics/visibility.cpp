@@ -124,12 +124,12 @@ return nTranspType;
 
 int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment, fix xRad)
 {
-	CHitQuery	fq (FQ_TRANSWALL, vSource, vDest, -1, 1, xRad, objP ? objP->Index () : -1);
+	CHitQuery	fq (FQ_TRANSWALL, vSource, vDest, -1, objP ? objP->Index () : -1, 1, xRad);
 	CHitData		hitData;
 if (SPECTATOR (objP))
-	fq.startSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
+	fq.nSegment = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 else
-	fq.startSeg = objP ? objP->info.nSegment : nSegment;
+	fq.nSegment = objP ? objP->info.nSegment : nSegment;
 
 int nHitType = FindHitpoint (&fq, &hitData);
 return nHitType != HIT_WALL;
@@ -144,7 +144,6 @@ int CanSeeObject (int nObject, int bCheckObjs)
 						 &gameData.objs.viewerP->info.position.vPos,
 						 &OBJECTS [nObject].info.position.vPos,
 						 gameData.objs.viewerP->info.nSegment,
-						 0, 0,
 						 gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP)
 						);
 	CHitData		hitData;
@@ -167,18 +166,18 @@ do {
 		fq.flags = transType;
 		fq.p0 = bSpectate ? &gameStates.app.playerPos.vPos : &objP1->info.position.vPos;
 		fq.p1 = SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->info.position.vPos;
-		fq.startSeg	= bSpectate ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) :
+		fq.nSegment	= bSpectate ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) :
 						  FindSegByPos (objP1->info.position.vPos, objP1->info.nSegment, 1, 0);
 		fq.radP0 =
 		fq.radP1 = 0x10;
-		fq.thisObjNum = OBJ_IDX (objP1);
-		if (fq.startSeg < 0) {
+		fq.nObject = OBJ_IDX (objP1);
+		if (fq.nSegment < 0) {
 			fate = HIT_BAD_P0;
 			return false;
 			}
 		}
 	else
-		fq.startSeg	= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
+		fq.nSegment	= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
 	fate = FindHitpoint (&fq, &hitData);
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));
@@ -200,7 +199,6 @@ CHitQuery fq (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TRANSWAL
 				  &gameData.objs.viewerP->info.position.vPos,
 				  &vEndPos,
 				  gameData.objs.viewerP->info.nSegment,
-				  0, 0,
 				  OBJ_IDX (gameData.objs.viewerP)
 				 );
 

@@ -216,7 +216,7 @@ class CTarget {
 
 int FindHomingObjectComplete (CFixVector *vCurPos, CObject *trackerP, int trackObjType1, int trackObjType2)
 {
-	int		nBestObj = -1;
+	//int		nBestObj = -1;
 	fix		xBestDot;
 	fix		maxTrackableDist;
 	CObject*	curObjP;

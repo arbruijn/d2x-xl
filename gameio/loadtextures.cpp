@@ -731,7 +731,7 @@ return FindHiresBitmap (szFile, nFile, bD1) != NULL;
 static bool HaveHiresModel (const char* bmName)
 {
 if (gameStates.app.bStandalone) {
-	for (int i = 0; i < sizeofa (szPowerupTextures); i++)
+	for (int i = 0; i < (int) sizeofa (szPowerupTextures); i++)
 		if (strstr (bmName, szPowerupTextures [i]))
 			return true;
 	}

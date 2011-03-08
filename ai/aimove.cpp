@@ -171,7 +171,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 				if (!((segP->IsDoorWay (nSide, NULL) & WID_FLY_FLAG) || (AIDoorIsOpenable (objP, segP, nSide))))
 					continue;
 
-				CHitQuery fq (0, &objP->info.position.vPos, &vNewPos, nStartSeg, objP->info.xSize, objP->info.xSize, objP->Index ());
+				CHitQuery fq (0, &objP->info.position.vPos, &vNewPos, nStartSeg, objP->Index (), objP->info.xSize, objP->info.xSize);
 				hitType = FindHitpoint (&fq, &hitData);
 				if (hitType != HIT_NONE)
 					continue;

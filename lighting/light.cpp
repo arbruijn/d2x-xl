@@ -126,7 +126,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 		return 0;		//	Done processing this CObject.
 	}
 #endif
-	CHitQuery	fq (FQ_TRANSWALL, vObjPos, vVertPos, nObjSeg, 0, 0, nObject);
+	CHitQuery	fq (FQ_TRANSWALL, vObjPos, vVertPos, nObjSeg, nObject);
 	CHitData		hitData;
 
 	int hitType = FindHitpoint (&fq, &hitData);
@@ -315,7 +315,7 @@ if (xObjIntensity) {
 				if (objP->info.nId != gameData.multiplayer.nLocalPlayer) {
 					CFixVector tVec = *vObjPos + objP->info.position.mOrient.m.dir.f * I2X (200);
 
-					CHitQuery	fq (FQ_TRANSWALL, vObjPos, &tVec, objP->info.nSegment, 0, 0, nObject);
+					CHitQuery	fq (FQ_TRANSWALL, vObjPos, &tVec, objP->info.nSegment, nObject);
 					CHitData		hitData;
 
 					int fate = FindHitpoint (&fq, &hitData);

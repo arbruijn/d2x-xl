@@ -215,7 +215,7 @@ for (i = 1, --j; i < j; i++) {
 	vGoalPos = ptSegs [i].point + e * (xSegSize/4);
 	count = 3;
 	while (count) {
-		CHitQuery fq (0, &ptSegs [i].point, &vGoalPos, ptSegs [i].nSegment, objP->info.xSize, objP->info.xSize, objP->Index ());
+		CHitQuery fq (0, &ptSegs [i].point, &vGoalPos, ptSegs [i].nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
 		nHitType = FindHitpoint (&fq, &hitData);
 		if (nHitType == HIT_NONE)
 			count = 0;
@@ -329,7 +329,7 @@ while (nCurSeg != nEndSeg) {
 			continue;
 		if (bAvoidTarget && ((nCurSeg == nAvoidSeg) || (nDestSeg == nAvoidSeg))) {
 			vCenter = segP->SideCenter (hSide);
-			CHitQuery fq (0, &objP->info.position.vPos, &vCenter, objP->info.nSegment, objP->info.xSize, objP->info.xSize, objP->Index ());
+			CHitQuery fq (0, &objP->info.position.vPos, &vCenter, objP->info.nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
 			hitType = FindHitpoint (&fq, &hitData);
 			if (hitType != HIT_NONE)
 				continue;
@@ -1062,7 +1062,7 @@ while (xDistToGoal < thresholdDistance) {
 			//--Int3_if (( (nOppositeEndIndex >= 0) && (nOppositeEndIndex < aiP->nPathLength));
 			vOppositeEndPoint = &gameData.ai.routeSegs [aiP->nHideIndex + nOppositeEndIndex].point;
 
-			CHitQuery fq (0, &objP->info.position.vPos, vOppositeEndPoint, objP->info.nSegment, objP->info.xSize, objP->info.xSize, objP->Index ());
+			CHitQuery fq (0, &objP->info.position.vPos, vOppositeEndPoint, objP->info.nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
 			fate = FindHitpoint (&fq, &hitData);
 			if (fate != HIT_WALL) {
 				//	We can be circular! Do it!

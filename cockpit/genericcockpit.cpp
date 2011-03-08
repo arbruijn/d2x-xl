@@ -1251,7 +1251,6 @@ if (nObject < 0)
 					  &gameData.objs.viewerP->info.position.vPos,
 					  &OBJECTS [nObject].info.position.vPos,
 					  gameData.objs.viewerP->info.nSegment,
-					  0, 0,
 					  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP)
 					 );
 

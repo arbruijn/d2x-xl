@@ -875,13 +875,13 @@ int FindHitpoint (CHitQuery *fq, CHitData *hitData)
 Assert(fq->ignoreObjList != reinterpret_cast<short*> (-1));
 gameData.collisions.hitData.vNormal.SetZero ();
 gameData.collisions.hitData.nNormals = 0;
-Assert((fq->startSeg <= gameData.segs.nLastSegment) && (fq->startSeg >= 0));
-if ((fq->startSeg > gameData.segs.nLastSegment) || (fq->startSeg < 0)) {
-	fq->startSeg = FindSegByPos (*fq->p0, -1, 0, 0);
-	if (fq->startSeg < 0) {
+Assert((fq->nSegment <= gameData.segs.nLastSegment) && (fq->nSegment >= 0));
+if ((fq->nSegment > gameData.segs.nLastSegment) || (fq->nSegment < 0)) {
+	fq->nSegment = FindSegByPos (*fq->p0, -1, 0, 0);
+	if (fq->nSegment < 0) {
 		hitData->hit.nType = HIT_BAD_P0;
 		hitData->hit.vPoint = *fq->p0;
-		hitData->hit.nSegment = fq->startSeg;
+		hitData->hit.nSegment = fq->nSegment;
 		hitData->hit.nSide = 0;
 		hitData->hit.nObject = 0;
 		hitData->hit.nSideSegment = -1;
@@ -898,32 +898,32 @@ gameData.collisions.hitData.nObject = -1;
 //Assert(check_point_in_seg(p0, startseg, 0).m_center==0);	//start refP not in seg
 
 // gameData.objs.viewerP is not in CSegment as claimed, so say there is no hit.
-masks = SEGMENTS [fq->startSeg].Masks (*fq->p0, 0);
+masks = SEGMENTS [fq->nSegment].Masks (*fq->p0, 0);
 if (masks.m_center) {
 	hitData->hit.nType = HIT_BAD_P0;
 	hitData->hit.vPoint = *fq->p0;
-	hitData->hit.nSegment = fq->startSeg;
+	hitData->hit.nSegment = fq->nSegment;
 	hitData->hit.nSide = 0;
 	hitData->hit.nObject = 0;
 	hitData->hit.nSideSegment = -1;
 	hitData->nSegments = 0;
 	return hitData->hit.nType;
 	}
-gameData.collisions.segsVisited [0] = fq->startSeg;
+gameData.collisions.segsVisited [0] = fq->nSegment;
 gameData.collisions.nSegsVisited = 1;
 gameData.collisions.hitData.nNestCount = 0;
 nHitSegment2 = gameData.collisions.hitData.nSegment2 = -1;
 if (fq->flags & FQ_VISIBILITY)
 	extraGameInfo [IsMultiGame].nHitboxes = 0;
-nHitType = ComputeHitpoint (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1,
-									 fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags,
+nHitType = ComputeHitpoint (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->nSegment, fq->p1,
+									 fq->radP0, fq->radP1, (short) fq->nObject, fq->ignoreObjList, fq->flags,
 									 hitData->segList, &hitData->nSegments, -2);
 extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 
 if ((nHitSegment2 != -1) && !SEGMENTS [nHitSegment2].Masks (vHitPoint, 0).m_center)
 	nHitSegment = nHitSegment2;
 else
-	nHitSegment = FindSegByPos (vHitPoint, fq->startSeg, 1, 0);
+	nHitSegment = FindSegByPos (vHitPoint, fq->nSegment, 1, 0);
 
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 if ((nHitType == HIT_WALL) && (nHitSegment == -1))
@@ -939,8 +939,8 @@ if (nHitSegment == -1) {
 	//problems, try using zero radius and see if we hit a wall
 	if (fq->flags & FQ_VISIBILITY)
 		extraGameInfo [IsMultiGame].nHitboxes = 0;
-	nNewHitType = ComputeHitpoint (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->startSeg, fq->p1, 0, 0,
-								     (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, hitData->segList,
+	nNewHitType = ComputeHitpoint (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->nSegment, fq->p1, 0, 0,
+								     (short) fq->nObject, fq->ignoreObjList, fq->flags, hitData->segList,
 									  &hitData->nSegments, -2);
 	extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 	if (nNewHitSeg2 != -1) {

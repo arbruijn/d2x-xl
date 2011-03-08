@@ -555,26 +555,26 @@ int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfVie
 
 	CHitQuery	fq (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER | FQ_VISIBILITY,
 						 pos, &gameData.ai.target.vBelievedPos,
-						 -1, 0, I2X (1) / 4, objP->Index ());
+						 -1, objP->Index (), 0, I2X (1) / 4);
 
 if ((*pos) == objP->info.position.vPos)
-	fq.startSeg	= objP->info.nSegment;
+	fq.nSegment	= objP->info.nSegment;
 else {
 	int nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
 	if (nSegment != -1)
-		fq.startSeg = nSegment;
+		fq.nSegment = nSegment;
 	else {
-		fq.startSeg = objP->info.nSegment;
+		fq.nSegment = objP->info.nSegment;
 		*pos = objP->info.position.vPos;
 		move_towards_segment_center (objP);
 		}
 	}
 #if DBG
-if (fq.startSeg == nDbgSeg)
+if (fq.nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 #if DBG
-if (fq.thisObjNum == nDbgObj)
+if (fq.nObject == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 hitType = FindHitpoint (&fq, &hitData);

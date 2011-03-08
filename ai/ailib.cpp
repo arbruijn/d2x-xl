@@ -46,14 +46,14 @@ int AICanSeeTarget (CObject *objP, CFixVector *vPos, fix fieldOfView, CFixVector
 {
 	fix			dot;
 	CHitQuery	fq (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER | FQ_VISIBILITY,
-						 vPos, &gameData.ai.target.vBelievedPos, -1, I2X (1) / 4, I2X (1) / 4, objP->Index ());
+						 vPos, &gameData.ai.target.vBelievedPos, -1, objP->Index (), I2X (1) / 4, I2X (1) / 4);
 
 //	Assume that robot's gun tip is in same CSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 if ((*vPos) != objP->info.position.vPos) {
 	short nSegment = FindSegByPos (*vPos, objP->info.nSegment, 1, 0);
 	if (nSegment == -1) {
-		fq.startSeg = objP->info.nSegment;
+		fq.nSegment = objP->info.nSegment;
 		*vPos = objP->info.position.vPos;
 #if TRACE
 		console.printf (1, "Object %i, gun is outside mine, moving towards center.\n", objP->Index ());
@@ -63,11 +63,11 @@ if ((*vPos) != objP->info.position.vPos) {
 	else {
 		if (nSegment != objP->info.nSegment)
 			objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
-		fq.startSeg = nSegment;
+		fq.nSegment = nSegment;
 		}
 	}
 else
-	fq.startSeg	= objP->info.nSegment;
+	fq.nSegment	= objP->info.nSegment;
 
 gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitData);
 gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
@@ -105,19 +105,19 @@ if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 
 CHitQuery fq (FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_VISIBILITY,
-				  vGun, vTarget, -1, I2X (1), I2X (1), objP->Index (), ignoreObjs);
+				  vGun, vTarget, -1, objP->Index (), I2X (1), I2X (1), ignoreObjs);
 
 if (((*vGun).v.coord.x == objP->info.position.vPos.v.coord.x) &&
 	 ((*vGun).v.coord.y == objP->info.position.vPos.v.coord.y) &&
 	 ((*vGun).v.coord.z == objP->info.position.vPos.v.coord.z))
-	fq.startSeg	= objP->info.nSegment;
+	fq.nSegment	= objP->info.nSegment;
 else {
 	short nSegment = FindSegByPos (*vGun, objP->info.nSegment, 1, 0);
 	if (nSegment == -1)
 		return -1;
 	if (nSegment != objP->info.nSegment)
 		objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
-	fq.startSeg = nSegment;
+	fq.nSegment = nSegment;
 	}
 h = CFixVector::Dist (*vGun, objP->info.position.vPos);
 h = CFixVector::Dist (*vGun, *vTarget);

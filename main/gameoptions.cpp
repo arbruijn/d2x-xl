@@ -674,7 +674,7 @@ int CMissionConfig::Load (char* szFilename)
 
 	static char* szShipArgs [MAX_SHIP_TYPES] = {"-medium_ship", "-light_ship", "-heavy_ship"};
 
-if (bLocal = (szFilename && *szFilename))
+if ((bLocal = (szFilename && *szFilename)))
 	CFile::ChangeFilenameExtension (szConfig + 1, szFilename, ".ini");
 else
 	strcpy (szConfig + 1, "global.ini");
@@ -684,7 +684,7 @@ if (!cf.Open (szConfig, gameFolders.szDataDir, "rb", 0))
 if (args.Parse (&cf)) {
 	int h = 0, i;
 	for (i = 0; i < MAX_SHIP_TYPES; i++) {
-		if (m_ships [i] = args.Value (szShipArgs [i], bLocal ? m_ships [i] : 1)) // use the global setting as default when parsing a level config
+		if ((m_ships [i] = args.Value (szShipArgs [i], bLocal ? m_ships [i] : 1))) // use the global setting as default when parsing a level config
 			h++;
 		}
 	if (!h)
@@ -716,7 +716,7 @@ if ((m_playerShip > -1) && (gameOpts->gameplay.nShip [0] != m_playerShip)) {
 	float fShield = (float) LOCALPLAYER.Shield (false) / (float) LOCALPLAYER.MaxShield ();
 	float fEnergy = (float) LOCALPLAYER.Energy (false) / (float) LOCALPLAYER.MaxEnergy ();
 	gameOpts->gameplay.nShip [0] = m_playerShip;
-	LOCALPLAYER.SetEnergy (fix (fShield * LOCALPLAYER.MaxShield ()));
+	LOCALPLAYER.SetEnergy (fix (fEnergy * LOCALPLAYER.MaxShield ()));
 	LOCALPLAYER.SetShield (fix (fShield * LOCALPLAYER.MaxEnergy ()));
 	if (m_playerShip == 0) {
 		gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion = 0;

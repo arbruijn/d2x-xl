@@ -396,7 +396,7 @@ if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
 if (nState)
 	return nCurItem;
 
-	int	nPackets = NetworkListen ();
+	int nPackets = NetworkListen ();
 
 if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit the menu
 	if (NetworkVerifyPlayers ())

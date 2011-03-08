@@ -238,7 +238,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		}
 	else {
 		//	Well, they are not directly connected, so use FindHitpoint to see if they are unobstructed.
-		CHitQuery	fq (FQ_TRANSWALL, &objP->info.position.vPos, vFirePoint, objP->info.nSegment, 0, 0, objP->Index ());
+		CHitQuery	fq (FQ_TRANSWALL, &objP->info.position.vPos, vFirePoint, objP->info.nSegment, objP->Index ());
 		CHitData		hitData;
 		int fate = FindHitpoint (&fq, &hitData);
 		if (fate != HIT_NONE) {
