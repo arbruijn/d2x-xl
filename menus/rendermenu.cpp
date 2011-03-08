@@ -472,7 +472,7 @@ do {
 	m.Create (50);
 #if !DBG
 	if (!gameOpts->app.bNotebookFriendly)
-		renderOpts.nFrameCap = mat.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
+		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
 #endif
 	if (!gameStates.app.bNostalgia)
 		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
@@ -615,7 +615,7 @@ do {
 
 #if !DBG
 	if (!gameOpts->app.bNotebookFriendly)
-		gameOpts->render.nMaxFPS = mat [renderOpts.nFrameCap].m_value ? 1 : 120;
+		gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 1 : 120;
 #endif
 	if (!gameStates.app.bNostalgia)
 		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);
