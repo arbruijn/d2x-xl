@@ -202,6 +202,7 @@ class __pack__ CFloatVector {
 
 		static const float Dist (const CFloatVector& v0, const CFloatVector& v1);
 		static const float Dot (const CFloatVector& v0, const CFloatVector& v1);
+		static const float CFloatVector::Dot (const float x, const float y, const float z, const CFloatVector& v);
 		static const float Normalize (CFloatVector& vec);
 		static const CFloatVector Perp (const CFloatVector& p0, const CFloatVector& p1, const CFloatVector& p2);
 		static CFloatVector& Perp (CFloatVector& dest, const CFloatVector& p0, const CFloatVector& p1, const CFloatVector& p2);
@@ -408,6 +409,10 @@ inline const float CFloatVector::Dot (const CFloatVector& v0, const CFloatVector
 	return v0.v.coord.x * v1.v.coord.x + v0.v.coord.y * v1.v.coord.y + v0.v.coord.z * v1.v.coord.z;
 }
 
+inline const float CFloatVector::Dot (const float x, const float y, const float z, const CFloatVector& v) {
+	return x * v.v.coord.x + y * v.v.coord.y + z * v.v.coord.z;
+}
+
 inline const float CFloatVector::Normalize (CFloatVector& vec) {
 	float m = vec.Mag ();
 	if (m)
@@ -565,9 +570,13 @@ inline const CFloatVector CFloatVector::operator- (const CFixVector& other) cons
 
 inline const float CFloatVector::DistToPlane (const CFloatVector& n, const CFloatVector& p) const
 {
+#if 0
 CFloatVector t = *this;
 t -= p;
 return CFloatVector::Dot (t, n);
+#else
+return CFloatVector::Dot (v.coord.x - p.v.coord.x, v.coord.y - p.v.coord.y, v.coord.z - p.v.coord.z, n);
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -1107,9 +1116,13 @@ return i;
 //distance is signed, so Negative Dist is on the back of the plane
 inline const fix CFixVector::DistToPlane (const CFixVector& n, const CFixVector& p) const
 {
+#if 0
 CFixVector t = *this;
 t -= p;
 return CFixVector::Dot (t, n);
+#else
+return CFixVector::Dot (v.coord.x - p.v.coord.x, v.coord.y - p.v.coord.y, v.coord.z - p.v.coord.z, n);
+#endif
 }
 
 //extract heading and pitch from a vector, assuming bank==0
@@ -1326,9 +1339,9 @@ return m;
 
 inline CFixVector CFixMatrix::operator* (const CFixVector& v)
 {
-return CFixVector::Create (CFixVector::Dot (v, m.dir.r),
-									CFixVector::Dot (v, m.dir.u),
-									CFixVector::Dot (v, m.dir.f));
+	CFixVector vec;
+	vec.Set (CFixVector::Dot (v, m.dir.r), CFixVector::Dot (v, m.dir.u), CFixVector::Dot (v, m.dir.f));
+	return vec;
 }
 
 inline CFixMatrix CFixMatrix::operator* (const CFixMatrix& other) { return Mul (other); }
@@ -1452,16 +1465,16 @@ inline CFloatMatrix& CFloatMatrix::Transpose (CFloatMatrix& m) {
 
 inline const CFloatVector CFloatMatrix::operator* (const CFloatVector& v)
 {
-return CFloatVector::Create (CFloatVector::Dot (v, m.dir.r),
-									  CFloatVector::Dot (v, m.dir.u),
-									  CFloatVector::Dot (v, m.dir.f));
+	CFloatVector vec;
+	vec.Set (CFloatVector::Dot (v, m.dir.r), CFloatVector::Dot (v, m.dir.u), CFloatVector::Dot (v, m.dir.f));
+	return vec;
 }
 
 inline const CFloatVector3 CFloatMatrix::operator* (const CFloatVector3& v)
 {
-return CFloatVector3::Create (CFloatVector3::Dot (v, *m.dir.r.XYZ ()),
-										CFloatVector3::Dot (v, *m.dir.u.XYZ ()),
-										CFloatVector3::Dot (v, *m.dir.f.XYZ ()));
+	CFloatVector3 vec;
+	vec.Set (CFloatVector3::Dot (v, *m.dir.r.XYZ ()), CFloatVector3::Dot (v, *m.dir.u.XYZ ()), CFloatVector3::Dot (v, *m.dir.f.XYZ ()));
+	return vec;
 }
 
 inline const CFloatMatrix CFloatMatrix::Transpose (void)
