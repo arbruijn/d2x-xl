@@ -407,7 +407,6 @@ return nObject;
 //	Calls CreateNewWeapon, but takes care of the CSegment and point computation for you.
 int CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, short parent, ubyte nWeaponType, int bMakeSound)
 {
-	CHitQuery	fq;
 	CHitData		hitData;
 	CObject*		parentObjP = OBJECTS + parent;
 	int			fate;
@@ -419,16 +418,7 @@ int CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, short 
 	//	Note that while FindHitpoint is pretty slow, it is not terribly slow if the destination point is
 	//	in the same CSegment as the source point.
 
-fq.p0					= &parentObjP->info.position.vPos;
-fq.startSeg			= parentObjP->info.nSegment;
-fq.p1					= vPosition;
-fq.radP0				=
-fq.radP1				= 0;
-fq.thisObjNum		= OBJ_IDX (parentObjP);
-fq.ignoreObjList	= NULL;
-fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
-fq.bCheckVisibility = false;
-
+CHitQuery fq (FQ_TRANSWALL | FQ_CHECK_OBJS, &parentObjP->info.position.vPos, vPosition, parentObjP->info.nSegment, 0, 0, OBJ_IDX (parentObjP));
 fate = FindHitpoint (&fq, &hitData);
 if ((fate != HIT_NONE)  || (hitData.hit.nSegment == -1))
 	return -1;
@@ -443,7 +433,6 @@ if (!hitData.hit.nSegment) {
 	fq.thisObjNum		= OBJ_IDX (parentObjP);
 	fq.ignoreObjList	= NULL;
 	fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
-	fq.bCheckVisibility = false;
 
 	fate = FindHitpoint (&fq, &hitData);
 	}

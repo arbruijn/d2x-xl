@@ -1247,22 +1247,17 @@ int CGenericCockpit::CanSeeObject (int nObject, int bCheckObjs)
 if (nObject < 0)
 	return 0;
 
-	CHitQuery fq;
-	int nHitType;
+	CHitQuery fq ((bCheckObjs ? FQ_VISIBILITY | FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_VISIBILITY | FQ_TRANSWALL),
+					  &gameData.objs.viewerP->info.position.vPos,
+					  &OBJECTS [nObject].info.position.vPos,
+					  gameData.objs.viewerP->info.nSegment,
+					  0, 0,
+					  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP)
+					 );
+
 	CHitData hitData;
 
-	//see if we can see this CPlayerData
-
-fq.p0 = &gameData.objs.viewerP->info.position.vPos;
-fq.p1 = &OBJECTS [nObject].info.position.vPos;
-fq.radP0 =
-fq.radP1 = 0;
-fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP);
-fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
-fq.startSeg = gameData.objs.viewerP->info.nSegment;
-fq.ignoreObjList = NULL;
-fq.bCheckVisibility = true;
-nHitType = FindHitpoint (&fq, &hitData);
+int nHitType = FindHitpoint (&fq, &hitData);
 return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitData.hit.nObject == nObject) : (nHitType != HIT_WALL);
 }
 

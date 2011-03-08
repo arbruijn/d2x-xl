@@ -134,7 +134,6 @@ void MoveAwayFromOtherRobots (CObject *objP, CFixVector& vVecToTarget)
 	short				nStartSeg, nDestSeg, nObject, nSide, nAvoidObjs;
 	CObject			*avoidObjP;
 	CSegment			*segP;
-	CHitQuery		fq;
 	CHitData			hitData;
 	int				hitType;
 
@@ -171,15 +170,8 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 					continue;
 				if (!((segP->IsDoorWay (nSide, NULL) & WID_FLY_FLAG) || (AIDoorIsOpenable (objP, segP, nSide))))
 					continue;
-				fq.p0					= &objP->info.position.vPos;
-				fq.startSeg			= nStartSeg;
-				fq.p1					= &vNewPos;
-				fq.radP0				=
-				fq.radP1				= objP->info.xSize;
-				fq.thisObjNum		= objP->Index ();
-				fq.ignoreObjList	= NULL;
-				fq.flags				= 0;
-				fq.bCheckVisibility = false;
+
+				CHitQuery fq (0, &objP->info.position.vPos, &vNewPos, nStartSeg, objP->info.xSize, objP->info.xSize, objP->Index ());
 				hitType = FindHitpoint (&fq, &hitData);
 				if (hitType != HIT_NONE)
 					continue;

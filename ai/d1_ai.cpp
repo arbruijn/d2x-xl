@@ -552,9 +552,11 @@ void john_cheat_func_4(int key)
 int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player)
 {
 	fix			dot;
-	CHitQuery	fq;
 
-fq.p0 = pos;
+	CHitQuery	fq (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER | FQ_VISIBILITY,
+						 pos, &gameData.ai.target.vBelievedPos,
+						 -1, 0, I2X (1) / 4, objP->Index ());
+
 if ((*pos) == objP->info.position.vPos)
 	fq.startSeg	= objP->info.nSegment;
 else {
@@ -571,13 +573,6 @@ else {
 if (fq.startSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-fq.p1					= &gameData.ai.target.vBelievedPos;
-fq.radP0				= 0;
-fq.radP1				= I2X (1) / 4;
-fq.thisObjNum		= objP->Index ();
-fq.ignoreObjList	= NULL;
-fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER;		//what about trans walls???
-fq.bCheckVisibility = true;
 #if DBG
 if (fq.thisObjNum == nDbgObj)
 	nDbgObj = nDbgObj;

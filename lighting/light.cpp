@@ -117,27 +117,19 @@ int LightingCacheVisible (int nVertex, int nSegment, int nObject, CFixVector *vO
 nCacheLookups++;
 if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFrameCount)) {
 	int			bApplyLight = 0;
-	CHitQuery	fq;
-	CHitData		hitData;
-	int			nSegment, hitType;
+	int			nSegment;
 	nSegment = -1;
-	#if DBG
+#if DBG
 	nSegment = FindSegByPos (*vObjPos, nObjSeg, 1, 0);
 	if (nSegment == -1) {
 		Int3 ();		//	Obj_pos is not in nObjSeg!
 		return 0;		//	Done processing this CObject.
 	}
-	#endif
-	fq.p0					= vObjPos;
-	fq.startSeg			= nObjSeg;
-	fq.p1					= vVertPos;
-	fq.radP0				=
-	fq.radP1				= 0;
-	fq.thisObjNum		= nObject;
-	fq.ignoreObjList	= NULL;
-	fq.flags				= FQ_TRANSWALL;
-	fq.bCheckVisibility = false;
-	hitType = FindHitpoint (&fq, &hitData);
+#endif
+	CHitQuery	fq (FQ_TRANSWALL, vObjPos, vVertPos, nObjSeg, 0, 0, nObject);
+	CHitData		hitData;
+
+	int hitType = FindHitpoint (&fq, &hitData);
 	// gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 	// gameData.ai.nHitSeg = gameData.ai.hitData.hit_seg;
 	if (hitType == HIT_OBJECT)
@@ -321,25 +313,15 @@ if (xObjIntensity) {
 					color->red = color->green = color->blue = 1.0;
 					}
 				if (objP->info.nId != gameData.multiplayer.nLocalPlayer) {
-					CFixVector	tvec;
-					CHitQuery	fq;
-					CHitData		hitData;
-					int			fate;
+					CFixVector tVec = *vObjPos + objP->info.position.mOrient.m.dir.f * I2X (200);
 
-					tvec = *vObjPos + objP->info.position.mOrient.m.dir.f * I2X (200);
-					fq.startSeg			= objP->info.nSegment;
-					fq.p0					= vObjPos;
-					fq.p1					= &tvec;
-					fq.radP0				=
-					fq.radP1				= 0;
-					fq.thisObjNum		= nObject;
-					fq.ignoreObjList	= NULL;
-					fq.flags				= FQ_TRANSWALL;
-					fq.bCheckVisibility = false;
-					fate = FindHitpoint (&fq, &hitData);
+					CHitQuery	fq (FQ_TRANSWALL, vObjPos, &tVec, objP->info.nSegment, 0, 0, nObject);
+					CHitData		hitData;
+
+					int fate = FindHitpoint (&fq, &hitData);
 					if (fate != HIT_NONE) {
-						tvec = hitData.hit.vPoint - *vObjPos;
-						maxHeadlightDist = tvec.Mag() + I2X (4);
+						tVec = hitData.hit.vPoint - *vObjPos;
+						maxHeadlightDist = tVec.Mag() + I2X (4);
 					}
 				}
 			}

@@ -302,8 +302,6 @@ int FireWeaponDelayedWithSpread (
 	short					nLaserSeg;
 	int					nFate;
 	CFixVector			vLaserPos, vLaserDir, *vGunPoints;
-	CHitQuery			fq;
-	CHitData				hitData;
 	int					nObject;
 	CObject*				laserP;
 #if FULL_COCKPIT_OFFS
@@ -327,15 +325,11 @@ if (!(vGunPoints = GetGunPoints (objP, nGun)))
 TransformGunPoint (objP, vGunPoints, nGun, xDelay, nLaserType, &vLaserPos, &m);
 
 //--------------- Find vLaserPos and nLaserSeg ------------------
-fq.p0					= &posP->vPos;
-fq.startSeg			= bSpectate ? gameStates.app.nPlayerSegment : objP->info.nSegment;
-fq.p1					= &vLaserPos;
-fq.radP0				=
-fq.radP1				= 0x10;
-fq.thisObjNum		= objP->Index ();
-fq.ignoreObjList	= NULL;
-fq.flags				= FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS;
-fq.bCheckVisibility = false;
+CHitQuery			fq (FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS, &posP->vPos, &vLaserPos,
+							 (bSpectate ? gameStates.app.nPlayerSegment : objP->info.nSegment),
+							 0x10, 0x10, objP->Index ());
+CHitData				hitData;
+
 nFate = FindHitpoint (&fq, &hitData);
 nLaserSeg = hitData.hit.nSegment;
 if (nLaserSeg == -1) {	//some sort of annoying error

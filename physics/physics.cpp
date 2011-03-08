@@ -322,8 +322,6 @@ return 0;
 void UnstickObject (CObject *objP)
 {
 	CHitData			hi;
-	CHitQuery		fq;
-	int				fviResult;
 
 if ((objP->info.nType == OBJ_PLAYER) &&
 	 (objP->info.nId == gameData.multiplayer.nLocalPlayer) &&
@@ -335,15 +333,8 @@ if (objP->info.nType == OBJ_WEAPON)
 if (objP->info.nType != OBJ_MONSTERBALL)
 	return;
 #endif
-fq.p0 = fq.p1 = &objP->info.position.vPos;
-fq.startSeg = objP->info.nSegment;
-fq.radP0 = 0;
-fq.radP1 = objP->info.xSize;
-fq.thisObjNum = objP->Index ();
-fq.ignoreObjList = NULL;
-fq.flags = 0;
-fq.bCheckVisibility = false;
-fviResult = FindHitpoint (&fq, &hi);
+CHitQuery fq (0, &objP->info.position.vPos, &objP->info.position.vPos, objP->info.nSegment, 0, objP->info.xSize, objP->Index ());
+int fviResult = FindHitpoint (&fq, &hi);
 if (fviResult == HIT_WALL)
 #if 1
 #	if 0
@@ -467,7 +458,6 @@ if (DoPhysicsSimRot () && EGI_FLAG (nHitboxes, 0, 0, 0)) {
 	fq.thisObjNum = nObject;
 	fq.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
 	fq.flags = FQ_CHECK_OBJS;
-	fq.bCheckVisibility = false;
 
 	if (info.nType == OBJ_WEAPON)
 		fq.flags |= FQ_TRANSPOINT;
@@ -629,7 +619,6 @@ retryMove:
 	fq.thisObjNum = nObject;
 	fq.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
 	fq.flags = FQ_CHECK_OBJS;
-	fq.bCheckVisibility = false;
 
 	if (info.nType == OBJ_WEAPON)
 		fq.flags |= FQ_TRANSPOINT;

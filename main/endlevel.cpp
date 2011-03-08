@@ -503,9 +503,7 @@ if (!gameStates.render.bOutsideMine) {
 //do little explosions on walls
 if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndLevelSequence < EL_OUTSIDE))
 	if ((explosion_wait2 -= gameData.time.xFrame) < 0) {
-		CFixVector tpnt;
-		CHitQuery fq;
-		CHitData hitData;
+		CFixVector	tpnt;
 		//create little explosion on CWall
 		tpnt = gameData.objs.consoleP->info.position.mOrient.m.dir.r * ((d_rand () - RAND_MAX / 2) * 100);
 		tpnt += gameData.objs.consoleP->info.position.mOrient.m.dir.u * ((d_rand () - RAND_MAX / 2) * 100);
@@ -514,16 +512,11 @@ if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndL
 			tpnt += gameData.objs.consoleP->info.position.mOrient.m.dir.f * (d_rand ()*200);
 		else
 			tpnt += gameData.objs.consoleP->info.position.mOrient.m.dir.f * (d_rand ()*60);
+
 		//find hit point on CWall
-		fq.p0					= &gameData.objs.consoleP->info.position.vPos;
-		fq.p1					= &tpnt;
-		fq.startSeg			= gameData.objs.consoleP->info.nSegment;
-		fq.radP0				=
-		fq.radP1				= 0;
-		fq.thisObjNum		= 0;
-		fq.ignoreObjList	= NULL;
-		fq.flags				= 0;
-		fq.bCheckVisibility = false;
+		CHitQuery	fq (0, &gameData.objs.consoleP->info.position.vPos, &tpnt, gameData.objs.consoleP->info.nSegment);
+		CHitData		hitData;
+
 		FindHitpoint (&fq, &hitData);
 		if ((hitData.hit.nType == HIT_WALL) && (hitData.hit.nSegment != -1))
 			/*Object*/CreateExplosion ((short) hitData.hit.nSegment, hitData.hit.vPoint, I2X (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);

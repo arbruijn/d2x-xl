@@ -149,7 +149,6 @@ void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, CObject *objP, int bRa
 	CFixVector	vGoalPos;
 	int			count;
 	int			nTempSeg;
-	CHitQuery	fq;
 	CHitData		hitData;
 	int			nHitType;
 
@@ -216,15 +215,7 @@ for (i = 1, --j; i < j; i++) {
 	vGoalPos = ptSegs [i].point + e * (xSegSize/4);
 	count = 3;
 	while (count) {
-		fq.p0					= &ptSegs [i].point;
-		fq.startSeg			= ptSegs [i].nSegment;
-		fq.p1					= &vGoalPos;
-		fq.radP0				=
-		fq.radP1				= objP->info.xSize;
-		fq.thisObjNum		= objP->Index ();
-		fq.ignoreObjList	= NULL;
-		fq.flags				= 0;
-		fq.bCheckVisibility = false;
+		CHitQuery fq (0, &ptSegs [i].point, &vGoalPos, ptSegs [i].nSegment, objP->info.xSize, objP->info.xSize, objP->Index ());
 		nHitType = FindHitpoint (&fq, &hitData);
 		if (nHitType == HIT_NONE)
 			count = 0;
@@ -282,7 +273,6 @@ int CreatePathPoints (CObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	CSegment*			segP;
 	CFixVector			vCenter;
 	int					nParentSeg, nDestSeg;
-	CHitQuery			fq;
 	CHitData				hitData;
 	int					hitType;
 	int					bAvoidTarget;
@@ -339,15 +329,7 @@ while (nCurSeg != nEndSeg) {
 			continue;
 		if (bAvoidTarget && ((nCurSeg == nAvoidSeg) || (nDestSeg == nAvoidSeg))) {
 			vCenter = segP->SideCenter (hSide);
-			fq.p0					= &objP->info.position.vPos;
-			fq.startSeg			= objP->info.nSegment;
-			fq.p1					= &vCenter;
-			fq.radP0				=
-			fq.radP1				= objP->info.xSize;
-			fq.thisObjNum		= objP->Index ();
-			fq.ignoreObjList	= NULL;
-			fq.flags				= 0;
-			fq.bCheckVisibility = false;
+			CHitQuery fq (0, &objP->info.position.vPos, &vCenter, objP->info.nSegment, objP->info.xSize, objP->info.xSize, objP->Index ());
 			hitType = FindHitpoint (&fq, &hitData);
 			if (hitType != HIT_NONE)
 				continue;
@@ -468,7 +450,6 @@ int SmoothPath (CObject *objP, tPointSeg *pointSegP, int numPoints)
 return numPoints;
 #else
 	int			i, nFirstPoint = 0;
-	CHitQuery	fq;
 	CHitData		hitData;
 	int			hitType;
 
@@ -482,14 +463,7 @@ if (ROBOTINFO (objP->info.nId).companion) {
 		return numPoints;
 	Last_buddy_polish_path_frame = gameData.app.nFrameCount;
 	}
-fq.p0					= &objP->info.position.vPos;
-fq.startSeg			= objP->info.nSegment;
-fq.radP0				=
-fq.radP1				= objP->info.xSize;
-fq.thisObjNum		= objP->Index ();
-fq.ignoreObjList	= NULL;
-fq.flags				= 0;
-fq.bCheckVisibility = false;
+CHitQuery fq (0, &objP->info.position.vPos, NULL, objP->info.nSegment, objP->info.xSize, objP->info.xSize, objP->Index ());
 for (i = 0; i < 2; i++) {
 	fq.p1 = &pointSegP [i].point;
 	hitType = FindHitpoint (&fq, &hitData);
@@ -1075,7 +1049,6 @@ while (xDistToGoal < thresholdDistance) {
 			CFixVector	*vOppositeEndPoint;
 			CHitData		hitData;
 			int			fate;
-			CHitQuery	fq;
 
 			// See which end we're nearer and look at the opposite end point.
 			if (abs (aiP->nCurPathIndex - aiP->nPathLength) < aiP->nCurPathIndex) {
@@ -1088,15 +1061,8 @@ while (xDistToGoal < thresholdDistance) {
 				}
 			//--Int3_if (( (nOppositeEndIndex >= 0) && (nOppositeEndIndex < aiP->nPathLength));
 			vOppositeEndPoint = &gameData.ai.routeSegs [aiP->nHideIndex + nOppositeEndIndex].point;
-			fq.p0					= &objP->info.position.vPos;
-			fq.startSeg			= objP->info.nSegment;
-			fq.p1					= vOppositeEndPoint;
-			fq.radP0				=
-			fq.radP1				= objP->info.xSize;
-			fq.thisObjNum		= objP->Index ();
-			fq.ignoreObjList	= NULL;
-			fq.flags				= 0; 				//what about trans walls???
-			fq.bCheckVisibility = false;
+
+			CHitQuery fq (0, &objP->info.position.vPos, vOppositeEndPoint, objP->info.nSegment, objP->info.xSize, objP->info.xSize, objP->Index ());
 			fate = FindHitpoint (&fq, &hitData);
 			if (fate != HIT_WALL) {
 				//	We can be circular! Do it!

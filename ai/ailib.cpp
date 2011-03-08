@@ -44,12 +44,12 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
 int AICanSeeTarget (CObject *objP, CFixVector *vPos, fix fieldOfView, CFixVector *vVecToTarget)
 {
-	fix					dot;
-	CHitQuery	fq;
+	fix			dot;
+	CHitQuery	fq (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER | FQ_VISIBILITY,
+						 vPos, &gameData.ai.target.vBelievedPos, -1, I2X (1) / 4, I2X (1) / 4, objP->Index ());
 
-	//	Assume that robot's gun tip is in same CSegment as robot's center.
+//	Assume that robot's gun tip is in same CSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
-fq.p0	= vPos;
 if ((*vPos) != objP->info.position.vPos) {
 	short nSegment = FindSegByPos (*vPos, objP->info.nSegment, 1, 0);
 	if (nSegment == -1) {
@@ -68,13 +68,7 @@ if ((*vPos) != objP->info.position.vPos) {
 	}
 else
 	fq.startSeg	= objP->info.nSegment;
-fq.p1					= &gameData.ai.target.vBelievedPos;
-fq.radP0				=
-fq.radP1				= I2X (1) / 4;
-fq.thisObjNum		= objP->Index ();
-fq.ignoreObjList	= NULL;
-fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER;
-fq.bCheckVisibility = true;
+
 gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitData);
 gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
@@ -100,7 +94,6 @@ return 1;
 
 int AICanFireAtTarget (CObject *objP, CFixVector *vGun, CFixVector *vTarget)
 {
-	CHitQuery	fq;
 	fix			nSize, h;
 	short			nModel, ignoreObjs [2] = {OBJ_IDX (TARGETOBJ), -1};
 
@@ -110,6 +103,10 @@ if (vGun->IsZero ())
 if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
 	return 1;
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
+
+CHitQuery fq (FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_VISIBILITY,
+				  vGun, vTarget, -1, I2X (1), I2X (1), objP->Index (), ignoreObjs);
+
 if (((*vGun).v.coord.x == objP->info.position.vPos.v.coord.x) &&
 	 ((*vGun).v.coord.y == objP->info.position.vPos.v.coord.y) &&
 	 ((*vGun).v.coord.z == objP->info.position.vPos.v.coord.z))
@@ -128,14 +125,7 @@ nModel = objP->rType.polyObjInfo.nModel;
 nSize = objP->info.xSize;
 objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested
 objP->info.xSize = I2X (2);						//chose some meaningful small size to simulate a weapon
-fq.p0					= vGun;
-fq.p1					= vTarget;
-fq.radP0				=
-fq.radP1				= I2X (1);
-fq.thisObjNum		= objP->Index ();
-fq.ignoreObjList	= ignoreObjs;
-fq.flags				= FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS | FQ_TRANSPOINT;		//what about trans walls???
-fq.bCheckVisibility = true;
+
 gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitData);
 #if DBG
 if (gameData.ai.nHitType == 0)

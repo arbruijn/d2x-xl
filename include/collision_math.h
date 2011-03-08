@@ -86,17 +86,17 @@ class CHitData {
 //this data contains the parms to fvi()
 class CHitQuery {
 	public:
+		int			flags;
 		CFixVector	*p0, *p1;
 		short			startSeg;
 		fix			radP0, radP1;
 		short			thisObjNum;
 		short			*ignoreObjList;
-		int			flags;
 
 	public:
 		CHitQuery () { memset (this, 0xff, sizeof (*this)); }
-		CHitQuery (CFixVector* p0, CFixVector* p1, short startSeg, fix radP0, fix radP1, short thisObjNum, short* ignoreObjList, int flags)
-			: p0 (p0), p1 (p1), startSeg (startSeg), radP0 (radP0), radP1 (radP1), thisObjNum (thisObjNum), ignoreObjList (ignoreObjList), flags (flags)
+		CHitQuery (int flags, CFixVector* p0, CFixVector* p1, short startSeg, fix radP0 = 0, fix radP1 = 0, short thisObjNum = -1, short* ignoreObjList = NULL)
+			: flags (flags), p0 (p0), p1 (p1), startSeg (startSeg), radP0 (radP0), radP1 (radP1), thisObjNum (thisObjNum), ignoreObjList (ignoreObjList)
 			{}
 	};
 

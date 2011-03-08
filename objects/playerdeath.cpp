@@ -85,7 +85,6 @@ void SetCameraPos (CFixVector *vCameraPos, CObject *objP)
 xCameraPlayerDist = vPlayerCameraOffs.Mag ();
 if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 	//	Camera is too close to CPlayerData CObject, so move it away.
-	CHitQuery	fq;
 	CHitData		hitData;
 	CFixVector	local_p1;
 
@@ -100,21 +99,13 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 		CFixVector::Normalize (vPlayerCameraOffs);
 		vPlayerCameraOffs *= xCameraToPlayerDistGoal;
 
-		fq.p0 = &objP->info.position.vPos;
 		closer_p1 = objP->info.position.vPos + vPlayerCameraOffs;	//	This is the actual point we want to put the camera at.
 		vPlayerCameraOffs *= xFarScale;				//	...but find a point 50% further away...
 		local_p1 = objP->info.position.vPos + vPlayerCameraOffs;		//	...so we won't have to do as many cuts.
 
-		fq.p1					= &local_p1;
-		fq.startSeg			= objP->info.nSegment;
-		fq.radP0				=
-		fq.radP1				= 0;
-		fq.thisObjNum		= objP->Index ();
-		fq.ignoreObjList	= NULL;
-		fq.flags				= 0;
-		fq.bCheckVisibility = false;
-		FindHitpoint (&fq, &hitData);
+		CHitQuery fq (0, &objP->info.position.vPos, &local_p1, objP->info.nSegment, 0, 0, objP->Index ());
 
+		FindHitpoint (&fq, &hitData);
 		if (hitData.hit.nType == HIT_NONE)
 			*vCameraPos = closer_p1;
 		else {

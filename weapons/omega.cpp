@@ -282,25 +282,15 @@ ReleaseObject (OBJ_IDX (weaponObjP));
 if (nTargetObj != -1)
 	vTargetPos = OBJECTS [nTargetObj].info.position.vPos;
 else {	//	If couldn't lock on anything, fire straight ahead.
-	CHitQuery	fq;
-	CHitData		hitData;
-	int			fate;
 	CFixVector	vPerturb, perturbed_fvec;
 
 	vPerturb = CFixVector::Random();
 	perturbed_fvec = bSpectate ? gameStates.app.playerPos.mOrient.m.dir.f : parentObjP->info.position.mOrient.m.dir.f
 	               + vPerturb * (I2X (1) / 16);
 	vTargetPos = *vMuzzle + perturbed_fvec * MAX_OMEGA_DIST;
-	fq.startSeg = nFiringSeg;
-	fq.p0 = vMuzzle;
-	fq.p1	= &vTargetPos;
-	fq.radP0 =
-	fq.radP1 = 0;
-	fq.thisObjNum = OBJ_IDX (parentObjP);
-	fq.ignoreObjList = NULL;
-	fq.flags = FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS;		//what about trans walls???
-	fq.bCheckVisibility = false;
-	fate = FindHitpoint (&fq, &hitData);
+	CHitQuery	fq (FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS, vMuzzle, &vTargetPos, nFiringSeg, 0, 0, OBJ_IDX (parentObjP));
+	CHitData		hitData;
+	int fate = FindHitpoint (&fq, &hitData);
 	if (fate != HIT_NONE) {
 		if (hitData.hit.nSegment != -1)		//	How can this be?  We went from inside the mine to outside without hitting anything?
 			vTargetPos = hitData.hit.vPoint;

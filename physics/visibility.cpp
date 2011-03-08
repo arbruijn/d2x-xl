@@ -124,25 +124,14 @@ return nTranspType;
 
 int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment, fix xRad)
 {
-	CHitQuery	fq;
-	int					nHitType;
+	CHitQuery	fq (FQ_TRANSWALL, vSource, vDest, -1, 1, xRad, objP ? objP->Index () : -1);
 	CHitData		hitData;
-
-	//see if we can see this CPlayerData
-
-fq.p0 = vSource;
-fq.p1 = vDest;
-fq.radP0 = 1;
-fq.radP1 = xRad;
-fq.thisObjNum = objP ? objP->Index () : -1;
-fq.flags = FQ_TRANSWALL;
 if (SPECTATOR (objP))
 	fq.startSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 else
 	fq.startSeg = objP ? objP->info.nSegment : nSegment;
-fq.ignoreObjList = NULL;
-fq.bCheckVisibility = false;
-nHitType = FindHitpoint (&fq, &hitData);
+
+int nHitType = FindHitpoint (&fq, &hitData);
 return nHitType != HIT_WALL;
 }
 
@@ -151,22 +140,16 @@ return nHitType != HIT_WALL;
 
 int CanSeeObject (int nObject, int bCheckObjs)
 {
-	CHitQuery	fq;
-	int					nHitType;
+	CHitQuery	fq (bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL,
+						 &gameData.objs.viewerP->info.position.vPos,
+						 &OBJECTS [nObject].info.position.vPos,
+						 gameData.objs.viewerP->info.nSegment,
+						 0, 0,
+						 gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP)
+						);
 	CHitData		hitData;
 
-	//see if we can see this CPlayerData
-
-fq.p0 = &gameData.objs.viewerP->info.position.vPos;
-fq.p1 = &OBJECTS [nObject].info.position.vPos;
-fq.radP0 =
-fq.radP1 = 0;
-fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP);
-fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
-fq.startSeg = gameData.objs.viewerP->info.nSegment;
-fq.ignoreObjList = NULL;
-fq.bCheckVisibility = false;
-nHitType = FindHitpoint (&fq, &hitData);
+int nHitType = FindHitpoint (&fq, &hitData);
 return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitData.hit.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
@@ -181,23 +164,21 @@ int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType)
 
 do {
 	if (nTries++) {
-		fq.startSeg		= bSpectate ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) :
-							  FindSegByPos (objP1->info.position.vPos, objP1->info.nSegment, 1, 0);
+		fq.flags = transType;
+		fq.p0 = bSpectate ? &gameStates.app.playerPos.vPos : &objP1->info.position.vPos;
+		fq.p1 = SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->info.position.vPos;
+		fq.startSeg	= bSpectate ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) :
+						  FindSegByPos (objP1->info.position.vPos, objP1->info.nSegment, 1, 0);
+		fq.radP0 =
+		fq.radP1 = 0x10;
+		fq.thisObjNum = OBJ_IDX (objP1);
 		if (fq.startSeg < 0) {
 			fate = HIT_BAD_P0;
 			return false;
 			}
 		}
 	else
-		fq.startSeg		= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
-	fq.p0					= bSpectate ? &gameStates.app.playerPos.vPos : &objP1->info.position.vPos;
-	fq.p1					= SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->info.position.vPos;
-	fq.radP0				=
-	fq.radP1				= 0x10;
-	fq.thisObjNum		= OBJ_IDX (objP1);
-	fq.ignoreObjList	= NULL;
-	fq.flags				= transType;
-	fq.bCheckVisibility = false;
+		fq.startSeg	= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
 	fate = FindHitpoint (&fq, &hitData);
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));
@@ -208,25 +189,22 @@ return (fate == HIT_NONE) || (fate == HIT_BAD_P0);
 
 int TargetInLineOfFire (void)
 {
-	CHitQuery	fq;
-	int					nHitType, nType;
+	int			nType;
 	CHitData		hitData;
-	CFixVector			vEndPos;
-	CObject*				objP;
+	CObject*		objP;
 
 	//see if we can see this CPlayerData
 
-fq.p0 = &gameData.objs.viewerP->info.position.vPos;
-vEndPos = *fq.p0 + gameData.objs.viewerP->info.position.mOrient.m.dir.f * I2X (2000);
-fq.p1 = &vEndPos;
-fq.radP0 = 0;
-fq.radP1 = 0;
-fq.thisObjNum = OBJ_IDX (gameData.objs.viewerP);
-fq.flags = FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TRANSWALL;
-fq.startSeg = gameData.objs.viewerP->info.nSegment;
-fq.ignoreObjList = NULL;
-fq.bCheckVisibility = true;
-nHitType = FindHitpoint (&fq, &hitData);
+CFixVector vEndPos = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.m.dir.f * I2X (2000);
+CHitQuery fq (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TRANSWALL | FQ_VISIBILITY,
+				  &gameData.objs.viewerP->info.position.vPos,
+				  &vEndPos,
+				  gameData.objs.viewerP->info.nSegment,
+				  0, 0,
+				  OBJ_IDX (gameData.objs.viewerP)
+				 );
+
+int nHitType = FindHitpoint (&fq, &hitData);
 if (nHitType != HIT_OBJECT)
 	return 0;
 objP = OBJECTS + hitData.hit.nObject;

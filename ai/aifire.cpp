@@ -238,21 +238,9 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		}
 	else {
 		//	Well, they are not directly connected, so use FindHitpoint to see if they are unobstructed.
-		CHitQuery	fq;
+		CHitQuery	fq (FQ_TRANSWALL, &objP->info.position.vPos, vFirePoint, objP->info.nSegment, 0, 0, objP->Index ());
 		CHitData		hitData;
-		int					fate;
-
-		fq.startSeg			= objP->info.nSegment;
-		fq.p0					= &objP->info.position.vPos;
-		fq.p1					= vFirePoint;
-		fq.radP0				=
-		fq.radP1				= 0;
-		fq.thisObjNum		= objP->Index ();
-		fq.ignoreObjList	= NULL;
-		fq.flags				= FQ_TRANSWALL;
-		fq.bCheckVisibility = false;
-
-		fate = FindHitpoint (&fq, &hitData);
+		int fate = FindHitpoint (&fq, &hitData);
 		if (fate != HIT_NONE) {
 			Int3 ();		//	This bot's gun is poking through a CWall, so don't fire.
 			MoveTowardsSegmentCenter (objP);		//	And decrease chances it will happen again.
