@@ -56,18 +56,18 @@ for (;;)
 			v = VECPTR (p + 4);
 			for (i = n; i; i--, v++) {
 				hv = *v;
-				if (hb.vMin [X] > hv [X])
-					hb.vMin [X] = hv [X];
-				else if (hb.vMax [X] < hv [X])
-					hb.vMax [X] = hv [X];
-				if (hb.vMin [Y] > hv [Y])
-					hb.vMin [Y] = hv [Y];
-				else if (hb.vMax [Y] < hv [Y])
-					hb.vMax [Y] = hv [Y];
-				if (hb.vMin [Z] > hv [Z])
-					hb.vMin [Z] = hv [Z];
-				else if (hb.vMax [Z] < hv [Z])
-					hb.vMax [Z] = hv [Z];
+				if (hb.vMin.v.c.x > hv.v.c.x)
+					hb.vMin.v.c.x = hv.v.c.x;
+				else if (hb.vMax.v.c.x < hv.v.c.x)
+					hb.vMax.v.c.x = hv.v.c.x;
+				if (hb.vMin.v.c.y > hv.v.c.y)
+					hb.vMin.v.c.y = hv.v.c.y;
+				else if (hb.vMax.v.c.y < hv.v.c.y)
+					hb.vMax.v.c.y = hv.v.c.y;
+				if (hb.vMin.v.c.z > hv.v.c.z)
+					hb.vMin.v.c.z = hv.v.c.z;
+				else if (hb.vMax.v.c.z < hv.v.c.z)
+					hb.vMax.v.c.z = hv.v.c.z;
 				}
 			p += n * sizeof (CFixVector) + 4;
 			break;
@@ -77,18 +77,18 @@ for (;;)
 			v = VECPTR (p + 8);
 			for (i = n; i; i--, v++) {
 				hv = *v;
-				if (hb.vMin [X] > hv [X])
-					hb.vMin [X] = hv [X];
-				else if (hb.vMax [X] < hv [X])
-					hb.vMax [X] = hv [X];
-				if (hb.vMin [Y] > hv [Y])
-					hb.vMin [Y] = hv [Y];
-				else if (hb.vMax [Y] < hv [Y])
-					hb.vMax [Y] = hv [Y];
-				if (hb.vMin [Z] > hv [Z])
-					hb.vMin [Z] = hv [Z];
-				else if (hb.vMax [Z] < hv [Z])
-					hb.vMax [Z] = hv [Z];
+				if (hb.vMin.v.c.x > hv.v.c.x)
+					hb.vMin.v.c.x = hv.v.c.x;
+				else if (hb.vMax.v.c.x < hv.v.c.x)
+					hb.vMax.v.c.x = hv.v.c.x;
+				if (hb.vMin.v.c.y > hv.v.c.y)
+					hb.vMin.v.c.y = hv.v.c.y;
+				else if (hb.vMax.v.c.y < hv.v.c.y)
+					hb.vMax.v.c.y = hv.v.c.y;
+				if (hb.vMin.v.c.z > hv.v.c.z)
+					hb.vMin.v.c.z = hv.v.c.z;
+				else if (hb.vMax.v.c.z < hv.v.c.z)
+					hb.vMax.v.c.z = hv.v.c.z;
 				}
 			p += n * sizeof (CFixVector) + 8;
 			break;
@@ -180,9 +180,9 @@ void ComputeHitbox (int nModel, int iHitbox)
 	int				i;
 
 for (i = 0; i < 8; i++) {
-	pv [i][X] = (hitBoxOffsets [i][X] ? vMin [X] : vMax [X]) + vOffset [X];
-	pv [i][Y] = (hitBoxOffsets [i][Y] ? vMin [Y] : vMax [Y]) + vOffset [Y];
-	pv [i][Z] = (hitBoxOffsets [i][Z] ? vMin [Z] : vMax [Z]) + vOffset [Z];
+	pv [i][X] = (hitBoxOffsets [i][X] ? vMin.v.c.x : vMax.v.c.x) + vOffset.v.c.x;
+	pv [i][Y] = (hitBoxOffsets [i][Y] ? vMin.v.c.y : vMax.v.c.y) + vOffset.v.c.y;
+	pv [i][Z] = (hitBoxOffsets [i][Z] ? vMin.v.c.z : vMax.v.c.z) + vOffset.v.c.z;
 	}
 for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
 	*pf->n = CFixVector::Normal (pv [hitboxFaceVerts [i][0]], pv [hitboxFaceVerts [i][1]], pv [hitboxFaceVerts [i][2]]);

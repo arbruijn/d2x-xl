@@ -56,82 +56,82 @@ if (!vEye) {
 	//CFloatVector::Normalize (vEye, vCenter);
 	*vEye = *vCenter; CFloatVector::Normalize (*vEye);
 	}
-v [X] = v [Z] = 0;
-v [Y] = (*vCenter) [Y] ? d / (*vCenter) [Y] : 1;
+v.v.c.x = v.v.c.z = 0;
+v.v.c.y = (*vCenter).v.c.y ? d / (*vCenter).v.c.y : 1;
 v -= *vCenter;
 CFloatVector::Normalize (v);
 vdx = CFloatVector::Cross (v, *vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
 vdx = vdx * dx;
-v [Y] = v [Z] = 0;
-v [X] = (*vCenter) [X] ? d / (*vCenter) [X] : 1;
+v.v.c.y = v.v.c.z = 0;
+v.v.c.x = (*vCenter).v.c.x ? d / (*vCenter).v.c.x : 1;
 v -= *vCenter;
 CFloatVector::Normalize (v);
 vdy = CFloatVector::Cross (v, *vEye);
 if (r) {
-	if ((*vCenter) [X] >= 0) {
+	if ((*vCenter).v.c.x >= 0) {
 		vdy = vdy * dy;
-		v [X] = +vdx [X] + vdy [X];
-		v [Y] = +vdx [Y] + vdy [Y];
-		v [Z] = -vdx [Z] - vdy [Z];
+		v.v.c.x = +vdx.v.c.x + vdy.v.c.x;
+		v.v.c.y = +vdx.v.c.y + vdy.v.c.y;
+		v.v.c.z = -vdx.v.c.z - vdy.v.c.z;
 		*vSprite = *r * v;
 		vSprite [0] += *vCenter;
-		v [X] = v [Y] = v [Z] = 0;
-		v [X] = -vdx [X] + vdy [X];
-		v [Y] = +vdx [Y] + vdy [Y];
-		v [Z] = +vdx [Z] - vdy [Z];
+		v.v.c.x = v.v.c.y = v.v.c.z = 0;
+		v.v.c.x = -vdx.v.c.x + vdy.v.c.x;
+		v.v.c.y = +vdx.v.c.y + vdy.v.c.y;
+		v.v.c.z = +vdx.v.c.z - vdy.v.c.z;
 		vSprite [1] = *r * v;
 		vSprite [1] += *vCenter;
-		v [X] = v [Y] = v [Z] = 0;
-		v [X] = -vdx [X] - vdy [X];
-		v [Y] = -vdx [Y] - vdy [Y];
-		v [Z] = +vdx [Z] + vdy [Z];
+		v.v.c.x = v.v.c.y = v.v.c.z = 0;
+		v.v.c.x = -vdx.v.c.x - vdy.v.c.x;
+		v.v.c.y = -vdx.v.c.y - vdy.v.c.y;
+		v.v.c.z = +vdx.v.c.z + vdy.v.c.z;
 		vSprite [2] =  *r * v;
 		vSprite [2] += *vCenter;
-		v [X] = +vdx [X] - vdy [X];
-		v [Y] = -vdx [Y] - vdy [Y];
-		v [Z] = -vdx [Z] + vdy [Z];
+		v.v.c.x = +vdx.v.c.x - vdy.v.c.x;
+		v.v.c.y = -vdx.v.c.y - vdy.v.c.y;
+		v.v.c.z = -vdx.v.c.z + vdy.v.c.z;
 		vSprite [3] = *r * v;
 		vSprite [3] += *vCenter;
 		}
 	else {
 		vdy = vdy * dy;
-		v [X] = -vdx [X] - vdy [X];
-		v [Y] = -vdx [Y] - vdy [Y];
-		v [Z] = -vdx [Z] - vdy [Z];
+		v.v.c.x = -vdx.v.c.x - vdy.v.c.x;
+		v.v.c.y = -vdx.v.c.y - vdy.v.c.y;
+		v.v.c.z = -vdx.v.c.z - vdy.v.c.z;
 		*vSprite = *r * v;
 		vSprite [0] += *vCenter;
-		v [X] = v [Y] = v [Z] = 0;
-		v [X] = +vdx [X] - vdy [X];
-		v [Y] = -vdx [Y] - vdy [Y];
-		v [Z] = +vdx [Z] - vdy [Z];
+		v.v.c.x = v.v.c.y = v.v.c.z = 0;
+		v.v.c.x = +vdx.v.c.x - vdy.v.c.x;
+		v.v.c.y = -vdx.v.c.y - vdy.v.c.y;
+		v.v.c.z = +vdx.v.c.z - vdy.v.c.z;
 		vSprite [1] = *r * v;
 		vSprite [1] += *vCenter;
-		v [X] = v [Y] = v [Z] = 0;
-		v [X] = +vdx [X] + vdy [X];
-		v [Y] = +vdx [Y] + vdy [Y];
-		v [Z] = +vdx [Z] + vdy [Z];
+		v.v.c.x = v.v.c.y = v.v.c.z = 0;
+		v.v.c.x = +vdx.v.c.x + vdy.v.c.x;
+		v.v.c.y = +vdx.v.c.y + vdy.v.c.y;
+		v.v.c.z = +vdx.v.c.z + vdy.v.c.z;
 		vSprite [2] = *r * v;
 		vSprite [2] += *vCenter;
-		v [X] = -vdx [X] + vdy [X];
-		v [Y] = +vdx [Y] + vdy [Y];
-		v [Z] = -vdx [Z] + vdy [Z];
+		v.v.c.x = -vdx.v.c.x + vdy.v.c.x;
+		v.v.c.y = +vdx.v.c.y + vdy.v.c.y;
+		v.v.c.z = -vdx.v.c.z + vdy.v.c.z;
 		vSprite [3] = *r * v;
 		vSprite [3] += *vCenter;
 		}
 	}
 else {
-	vSprite [0][X] = -vdx [X] - vdy [X];
-	vSprite [0][Y] = -vdx [Y] - vdy [Y];
-	vSprite [0][Z] = -vdx [Z] - vdy [Z];
-	vSprite [1][X] = +vdx [X] - vdy [X];
-	vSprite [1][Y] = +vdx [Y] - vdy [Y];
-	vSprite [1][Z] = +vdx [Z] - vdy [Z];
-	vSprite [2][X] = +vdx [X] + vdy [X];
-	vSprite [2][Y] = +vdx [Y] + vdy [Y];
-	vSprite [2][Z] = +vdx [Z] + vdy [Z];
-	vSprite [3][X] = -vdx [X] + vdy [X];
-	vSprite [3][Y] = -vdx [Y] + vdy [Y];
-	vSprite [3][Z] = -vdx [Z] + vdy [Z];
+	vSprite [0][X] = -vdx.v.c.x - vdy.v.c.x;
+	vSprite [0][Y] = -vdx.v.c.y - vdy.v.c.y;
+	vSprite [0][Z] = -vdx.v.c.z - vdy.v.c.z;
+	vSprite [1][X] = +vdx.v.c.x - vdy.v.c.x;
+	vSprite [1][Y] = +vdx.v.c.y - vdy.v.c.y;
+	vSprite [1][Z] = +vdx.v.c.z - vdy.v.c.z;
+	vSprite [2][X] = +vdx.v.c.x + vdy.v.c.x;
+	vSprite [2][Y] = +vdx.v.c.y + vdy.v.c.y;
+	vSprite [2][Z] = +vdx.v.c.z + vdy.v.c.z;
+	vSprite [3][X] = -vdx.v.c.x + vdy.v.c.x;
+	vSprite [3][Y] = -vdx.v.c.y + vdy.v.c.y;
+	vSprite [3][Z] = -vdx.v.c.z + vdy.v.c.z;
 	for (i = 0; i < 4; i++)
 		vSprite [i] += *vCenter;
 	}
@@ -327,14 +327,14 @@ float CGlareRenderer::MoveSpriteIn (CFloatVector *sprite, CFloatVector *vCenter,
 
 ComputeSpriteZRange (sprite, &zRange);
 if (zRange.fMin > 0)
-	*vCenter = *vCenter * (zRange.fMin / (*vCenter) [Z]);
+	*vCenter = *vCenter * (zRange.fMin / (*vCenter).v.c.z);
 else {
 	if (zRange.fMin < -zRange.fRad)
 		return 0;
 	fIntensity *= 1 + zRange.fMin / zRange.fRad * 2;
-	 (*vCenter) [X] /= (*vCenter) [Z];
-	 (*vCenter) [Y] /= (*vCenter) [Y];
-	 (*vCenter) [Z] = 1;
+	 (*vCenter).v.c.x /= (*vCenter).v.c.z;
+	 (*vCenter).v.c.y /= (*vCenter).v.c.y;
+	 (*vCenter).v.c.z = 1;
 	}
 *zRangeP = zRange;
 return fIntensity;

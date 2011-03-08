@@ -113,9 +113,9 @@ tExitFlightData *exitFlightDataP;
 
 void InitEndLevelData (void)
 {
-gameData.endLevel.station.vPos [X] = 0xf8c4 << 10;
-gameData.endLevel.station.vPos [Y] = 0x3c1c << 12;
-gameData.endLevel.station.vPos [Z] = 0x0372 << 10;
+gameData.endLevel.station.vPos.v.c.x = 0xf8c4 << 10;
+gameData.endLevel.station.vPos.v.c.y = 0x3c1c << 12;
+gameData.endLevel.station.vPos.v.c.z = 0x0372 << 10;
 }
 
 //------------------------------------------------------------------------------
@@ -910,9 +910,9 @@ songManager.Play (SONG_INTER, 0);
 
 static CAngleVector *angvec_add2_scale (CAngleVector *dest, CFixVector *src, fix s)
 {
-(*dest).v.c.p += (fixang) FixMul ((*src) [X], s);
-(*dest).v.c.b += (fixang) FixMul ((*src) [Z], s);
-(*dest).v.c.h += (fixang) FixMul ((*src) [Y], s);
+(*dest).v.c.p += (fixang) FixMul ((*src).v.c.x, s);
+(*dest).v.c.b += (fixang) FixMul ((*src).v.c.z, s);
+(*dest).v.c.h += (fixang) FixMul ((*src).v.c.y, s);
 return dest;
 }
 
@@ -1008,9 +1008,9 @@ if (UpdateObjectSeg (objP, false)) {
 				exitFlightDataP->angles = objP->info.position.mOrient.ExtractAnglesVec ();
 			xSegTime = FixDiv (xStepSize, exitFlightDataP->speed);	//how long through seg
 			if (xSegTime) {
-				exitFlightDataP->angstep [X] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.c.p, aDest.v.c.p), xSegTime)));
-				exitFlightDataP->angstep [Z] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.c.b, aDest.v.c.b), xSegTime)));
-				exitFlightDataP->angstep [Y] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.c.h, aDest.v.c.h), xSegTime)));
+				exitFlightDataP->angstep.v.c.x = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.c.p, aDest.v.c.p), xSegTime)));
+				exitFlightDataP->angstep.v.c.z = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.c.b, aDest.v.c.b), xSegTime)));
+				exitFlightDataP->angstep.v.c.y = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.c.h, aDest.v.c.h), xSegTime)));
 				}
 			else {
 				exitFlightDataP->angles = aDest;

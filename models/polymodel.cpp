@@ -291,11 +291,11 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 			POF_ReadVecs (&pmmax, 1, modelBuf);
 			if (FindArg ("-bspgen")) {
 				CFixVector v = pmmax - pmmin;
-				fix l = v [X];
-				if (v [Y] > l)
-					l = v [Y];
-				if (v [Z] > l)
-					l = v [Z];
+				fix l = v.v.c.x;
+				if (v.v.c.y > l)
+					l = v.v.c.y;
+				if (v.v.c.z > l)
+					l = v.v.c.z;
 				//printf (" -l%.3f", X2F (l));
 				}
 			break;
@@ -413,18 +413,18 @@ for (int i = 0; i < m_info.nModels; i++) {
 	if (i == 0)
 		big_mn = big_mx = mn;
 	while (nVerts--) {
-		if ((*vp) [X] > mx [X]) mx [X] = (*vp) [X];
-		if ((*vp) [Y] > mx [Y]) mx [Y] = (*vp) [Y];
-		if ((*vp) [Z] > mx [Z]) mx [Z] = (*vp) [Z];
-		if ((*vp) [X] < mn [X]) mn [X] = (*vp) [X];
-		if ((*vp) [Y] < mn [Y]) mn [Y] = (*vp) [Y];
-		if ((*vp) [Z] < mn [Z]) mn [Z] = (*vp) [Z];
-		if ((*vp) [X] + ofs [X] > big_mx [X]) big_mx [X] = (*vp) [X] + ofs [X];
-		if ((*vp) [Y] + ofs [Y] > big_mx [Y]) big_mx [Y] = (*vp) [Y] + ofs [Y];
-		if ((*vp) [Z] + ofs [Z] > big_mx [Z]) big_mx [Z] = (*vp) [Z] + ofs [Z];
-		if ((*vp) [X] + ofs [X] < big_mn [X]) big_mn [X] = (*vp) [X] + ofs [X];
-		if ((*vp) [Y] + ofs [Y] < big_mn [Y]) big_mn [Y] = (*vp) [Y] + ofs [Y];
-		if ((*vp) [Z] + ofs [Z] < big_mn [Z]) big_mn [Z] = (*vp) [Z] + ofs [Z];
+		if ((*vp).v.c.x > mx.v.c.x) mx.v.c.x = (*vp).v.c.x;
+		if ((*vp).v.c.y > mx.v.c.y) mx.v.c.y = (*vp).v.c.y;
+		if ((*vp).v.c.z > mx.v.c.z) mx.v.c.z = (*vp).v.c.z;
+		if ((*vp).v.c.x < mn.v.c.x) mn.v.c.x = (*vp).v.c.x;
+		if ((*vp).v.c.y < mn.v.c.y) mn.v.c.y = (*vp).v.c.y;
+		if ((*vp).v.c.z < mn.v.c.z) mn.v.c.z = (*vp).v.c.z;
+		if ((*vp).v.c.x + ofs.v.c.x > big_mx.v.c.x) big_mx.v.c.x = (*vp).v.c.x + ofs.v.c.x;
+		if ((*vp).v.c.y + ofs.v.c.y > big_mx.v.c.y) big_mx.v.c.y = (*vp).v.c.y + ofs.v.c.y;
+		if ((*vp).v.c.z + ofs.v.c.z > big_mx.v.c.z) big_mx.v.c.z = (*vp).v.c.z + ofs.v.c.z;
+		if ((*vp).v.c.x + ofs.v.c.x < big_mn.v.c.x) big_mn.v.c.x = (*vp).v.c.x + ofs.v.c.x;
+		if ((*vp).v.c.y + ofs.v.c.y < big_mn.v.c.y) big_mn.v.c.y = (*vp).v.c.y + ofs.v.c.y;
+		if ((*vp).v.c.z + ofs.v.c.z < big_mn.v.c.z) big_mn.v.c.z = (*vp).v.c.z + ofs.v.c.z;
 		vp++;
 		}
 	}
@@ -458,40 +458,40 @@ fix CPolyModel::Size (void)
 	double		dx, dy, dz;
 
 for (i = 0; i <= MAX_HITBOXES; i++) {
-	phb [i].vMin [X] = phb [i].vMin [Y] = phb [i].vMin [Z] = 0x7fffffff;
-	phb [i].vMax [X] = phb [i].vMax [Y] = phb [i].vMax [Z] = -0x7fffffff;
-	phb [i].vOffset [X] = phb [i].vOffset [Y] = phb [i].vOffset [Z] = 0;
+	phb [i].vMin.v.c.x = phb [i].vMin.v.c.y = phb [i].vMin.v.c.z = 0x7fffffff;
+	phb [i].vMax.v.c.x = phb [i].vMax.v.c.y = phb [i].vMax.v.c.z = -0x7fffffff;
+	phb [i].vOffset.v.c.x = phb [i].vOffset.v.c.y = phb [i].vOffset.v.c.z = 0;
 	}
 if (!(nSubModels = G3ModelMinMax (m_info.nId, phb + 1)))
 	nSubModels = GetPolyModelMinMax (reinterpret_cast<void*> (Buffer ()), phb + 1, 0) + 1;
 for (i = 1; i <= nSubModels; i++) {
-	dx = (phb [i].vMax [X] - phb [i].vMin [X]) / 2;
-	dy = (phb [i].vMax [Y] - phb [i].vMin [Y]) / 2;
-	dz = (phb [i].vMax [Z] - phb [i].vMin [Z]) / 2;
-	phb [i].vSize [X] = (fix) dx;
-	phb [i].vSize [Y] = (fix) dy;
-	phb [i].vSize [Z] = (fix) dz;
+	dx = (phb [i].vMax.v.c.x - phb [i].vMin.v.c.x) / 2;
+	dy = (phb [i].vMax.v.c.y - phb [i].vMin.v.c.y) / 2;
+	dz = (phb [i].vMax.v.c.z - phb [i].vMin.v.c.z) / 2;
+	phb [i].vSize.v.c.x = (fix) dx;
+	phb [i].vSize.v.c.y = (fix) dy;
+	phb [i].vSize.v.c.z = (fix) dz;
 	hv = phb [i].vMin + phb [i].vOffset;
-	if (phb [0].vMin [X] > hv [X])
-		phb [0].vMin [X] = hv [X];
-	if (phb [0].vMin [Y] > hv [Y])
-		phb [0].vMin [Y] = hv [Y];
-	if (phb [0].vMin [Z] > hv [Z])
-		phb [0].vMin [Z] = hv [Z];
+	if (phb [0].vMin.v.c.x > hv.v.c.x)
+		phb [0].vMin.v.c.x = hv.v.c.x;
+	if (phb [0].vMin.v.c.y > hv.v.c.y)
+		phb [0].vMin.v.c.y = hv.v.c.y;
+	if (phb [0].vMin.v.c.z > hv.v.c.z)
+		phb [0].vMin.v.c.z = hv.v.c.z;
 	hv = phb [i].vMax + phb [i].vOffset;
-	if (phb [0].vMax [X] < hv [X])
-		phb [0].vMax [X] = hv [X];
-	if (phb [0].vMax [Y] < hv [Y])
-		phb [0].vMax [Y] = hv [Y];
-	if (phb [0].vMax [Z] < hv [Z])
-		phb [0].vMax [Z] = hv [Z];
+	if (phb [0].vMax.v.c.x < hv.v.c.x)
+		phb [0].vMax.v.c.x = hv.v.c.x;
+	if (phb [0].vMax.v.c.y < hv.v.c.y)
+		phb [0].vMax.v.c.y = hv.v.c.y;
+	if (phb [0].vMax.v.c.z < hv.v.c.z)
+		phb [0].vMax.v.c.z = hv.v.c.z;
 	}
-dx = (phb [0].vMax [X] - phb [0].vMin [X]) / 2;
-dy = (phb [0].vMax [Y] - phb [0].vMin [Y]) / 2;
-dz = (phb [0].vMax [Z] - phb [0].vMin [Z]) / 2;
-phb [0].vSize [X] = (fix) dx;
-phb [0].vSize [Y] = (fix) dy;
-phb [0].vSize [Z] = (fix) dz;
+dx = (phb [0].vMax.v.c.x - phb [0].vMin.v.c.x) / 2;
+dy = (phb [0].vMax.v.c.y - phb [0].vMin.v.c.y) / 2;
+dz = (phb [0].vMax.v.c.z - phb [0].vMin.v.c.z) / 2;
+phb [0].vSize.v.c.x = (fix) dx;
+phb [0].vSize.v.c.y = (fix) dy;
+phb [0].vSize.v.c.z = (fix) dz;
 gameData.models.hitboxes [m_info.nId].nHitboxes = nSubModels;
 for (i = 0; i <= nSubModels; i++)
 	ComputeHitbox (m_info.nId, i);

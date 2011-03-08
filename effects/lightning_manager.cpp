@@ -620,9 +620,9 @@ if (SHOW_LIGHTNING) {
 			nDbgSeg = nDbgSeg;
 #endif
 		n = llP->nLights;
-		llP->vPos [X] /= n;
-		llP->vPos [Y] /= n;
-		llP->vPos [Z] /= n;
+		llP->vPos.v.c.x /= n;
+		llP->vPos.v.c.y /= n;
+		llP->vPos.v.c.z /= n;
 		llP->color.red /= n;
 		llP->color.green /= n;
 		llP->color.blue /= n;

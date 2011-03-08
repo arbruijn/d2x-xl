@@ -86,10 +86,10 @@ return f;
 
 static void OOF_ReadVector (CFile& cf, CFloatVector *pv, const char *pszIdent)
 {
-(*pv) [X] = cf.ReadFloat ();
-(*pv) [Y] = cf.ReadFloat ();
-(*pv) [Z] = cf.ReadFloat ();
-OOF_PrintLog ("      %s = %1.4f,%1.4f,%1.4f\n", pszIdent, (*pv) [X], (*pv) [Y], (*pv) [Z]);
+(*pv).v.c.x = cf.ReadFloat ();
+(*pv).v.c.y = cf.ReadFloat ();
+(*pv).v.c.z = cf.ReadFloat ();
+OOF_PrintLog ("      %s = %1.4f,%1.4f,%1.4f\n", pszIdent, (*pv).v.c.x, (*pv).v.c.y, (*pv).v.c.z);
 }
 
 //------------------------------------------------------------------------------
@@ -165,12 +165,12 @@ return -1;
 static void OOF_InitMinMax (CFloatVector *pvMin, CFloatVector *pvMax)
 {
 if (pvMin && pvMax) {
-	(*pvMin) [X] =
-	(*pvMin) [Y] =
-	(*pvMin) [Z] = 1000000;
-	(*pvMax) [X] =
-	(*pvMax) [Y] =
-	(*pvMax) [Z] = -1000000;
+	(*pvMin).v.c.x =
+	(*pvMin).v.c.y =
+	(*pvMin).v.c.z = 1000000;
+	(*pvMax).v.c.x =
+	(*pvMax).v.c.y =
+	(*pvMax).v.c.z = -1000000;
 	}
 }
 
@@ -179,18 +179,18 @@ if (pvMin && pvMax) {
 static void OOF_GetMinMax (CFloatVector *pv, CFloatVector *pvMin, CFloatVector *pvMax)
 {
 if (pvMin && pvMax) {
-	if ((*pvMin) [X] > (*pv) [X])
-		(*pvMin) [X] = (*pv) [X];
-	if ((*pvMax) [X] < (*pv) [X])
-		(*pvMax) [X] = (*pv) [X];
-	if ((*pvMin) [Y] > (*pv) [Y])
-		(*pvMin) [Y] = (*pv) [Y];
-	if ((*pvMax) [Y] < (*pv) [Y])
-		(*pvMax) [Y] = (*pv) [Y];
-	if ((*pvMin) [Z] > (*pv) [Z])
-		(*pvMin) [Z] = (*pv) [Z];
-	if ((*pvMax) [Z] < (*pv) [Z])
-		(*pvMax) [Z] = (*pv) [Z];
+	if ((*pvMin).v.c.x > (*pv).v.c.x)
+		(*pvMin).v.c.x = (*pv).v.c.x;
+	if ((*pvMax).v.c.x < (*pv).v.c.x)
+		(*pvMax).v.c.x = (*pv).v.c.x;
+	if ((*pvMin).v.c.y > (*pv).v.c.y)
+		(*pvMin).v.c.y = (*pv).v.c.y;
+	if ((*pvMax).v.c.y < (*pv).v.c.y)
+		(*pvMax).v.c.y = (*pv).v.c.y;
+	if ((*pvMin).v.c.z > (*pv).v.c.z)
+		(*pvMin).v.c.z = (*pv).v.c.z;
+	if ((*pvMax).v.c.z < (*pv).v.c.z)
+		(*pvMax).v.c.z = (*pv).v.c.z;
 	}
 }
 
@@ -329,9 +329,9 @@ return 1;
 
 void CRotAnim::BuildAngleMatrix (CFloatMatrix *pm, int a, CFloatVector *pAxis)
 {
-float x = (*pAxis) [X];
-float y = (*pAxis) [Y];
-float z = (*pAxis) [Z];
+float x = (*pAxis).v.c.x;
+float y = (*pAxis).v.c.y;
+float z = (*pAxis).v.c.z;
 float s = (float) sin ((float) a);
 float c = (float) cos ((float) a);
 float t = 1.0f - c;
@@ -867,7 +867,7 @@ int CSubModel::FindVertex (int i)
 pv = m_verts.Buffer ();
 v = pv [i];
 for (j = 0; j < i; j++, pv++)
-	if ((v [X] == (*pv) [X]) && (v [Y] == (*pv) [Y]) && (v [Z] == (*pv) [Z]))
+	if ((v.v.c.x == (*pv).v.c.x) && (v.v.c.y == (*pv).v.c.y) && (v.v.c.z == (*pv).v.c.z))
 		return j;
 return i;
 }
@@ -895,11 +895,11 @@ for (i = 0; i < m_edges.m_nEdges; i++) {
 	h = m_edges.m_list [i];
 	hv0 = m_verts [h.m_v0 [0]]; 
 	hv1 = m_verts [h.m_v1 [0]]; 
-	if ((hv0 [X] == v0 [X]) && (hv0 [Y] == v0 [Y]) && (hv0 [Z] == v0 [Z]) &&
-		 (hv1 [X] == v1 [X]) && (hv1 [Y] == v1 [Y]) && (hv1 [Z] == v1 [Z]))
+	if ((hv0.v.c.x == v0.v.c.x) && (hv0.v.c.y == v0.v.c.y) && (hv0.v.c.z == v0.v.c.z) &&
+		 (hv1.v.c.x == v1.v.c.x) && (hv1.v.c.y == v1.v.c.y) && (hv1.v.c.z == v1.v.c.z))
 		return i;
-	if ((hv1 [X] == v0 [X]) && (hv1 [Y] == v0 [Y]) && (hv1 [Z] == v0 [Z]) &&
-		 (hv0 [X] == v1 [X]) && (hv0 [Y] == v1 [Y]) && (hv0 [Z] == v1 [Z]))
+	if ((hv1.v.c.x == v0.v.c.x) && (hv1.v.c.y == v0.v.c.y) && (hv1.v.c.z == v0.v.c.z) &&
+		 (hv0.v.c.x == v1.v.c.x) && (hv0.v.c.y == v1.v.c.y) && (hv0.v.c.z == v1.v.c.z))
 		return i;
 	}
 for (i = 0; i < m_edges.m_nEdges; i++) {
@@ -1524,18 +1524,18 @@ void CModel::GetSubModelBounds (CSubModel *pso, CFloatVector vo)
 	float	h;
 
 vo += pso->m_vOffset;
-if (m_vMax [X] < (h = pso->m_vMax [X] + vo [X]))
-	 m_vMax [X] = h;
-if (m_vMax [Y] < (h = pso->m_vMax [Y] + vo [Y]))
-	 m_vMax [Y] = h;
-if (m_vMax [Z] < (h = pso->m_vMax [Z] + vo [Z]))
-	 m_vMax [Z] = h;
-if (m_vMin [X] > (h = pso->m_vMin [X] + vo [X]))
-	 m_vMin [X] = h;
-if (m_vMin [Y] > (h = pso->m_vMin [Y] + vo [Y]))
-	 m_vMin [Y] = h;
-if (m_vMin [Z] > (h = pso->m_vMin [Z] + vo [Z]))
-	 m_vMin [Z] = h;
+if (m_vMax.v.c.x < (h = pso->m_vMax.v.c.x + vo.v.c.x))
+	 m_vMax.v.c.x = h;
+if (m_vMax.v.c.y < (h = pso->m_vMax.v.c.y + vo.v.c.y))
+	 m_vMax.v.c.y = h;
+if (m_vMax.v.c.z < (h = pso->m_vMax.v.c.z + vo.v.c.z))
+	 m_vMax.v.c.z = h;
+if (m_vMin.v.c.x > (h = pso->m_vMin.v.c.x + vo.v.c.x))
+	 m_vMin.v.c.x = h;
+if (m_vMin.v.c.y > (h = pso->m_vMin.v.c.y + vo.v.c.y))
+	 m_vMin.v.c.y = h;
+if (m_vMin.v.c.z > (h = pso->m_vMin.v.c.z + vo.v.c.z))
+	 m_vMin.v.c.z = h;
 for (i = 0; i < pso->m_nChildren; i++)
 	GetSubModelBounds (m_subModels + pso->m_children [i], vo);
 }

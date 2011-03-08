@@ -193,15 +193,15 @@ CFixVector	vNormal;
 #if 1
 if (pvNormal) {
 	if (ogl.UseTransform ())
-		glNormal3f ((GLfloat) X2F ((*pvNormal) [X]),
-						(GLfloat) X2F ((*pvNormal) [Y]),
-						(GLfloat) X2F ((*pvNormal) [Z]));
+		glNormal3f ((GLfloat) X2F ((*pvNormal).v.c.x),
+						(GLfloat) X2F ((*pvNormal).v.c.y),
+						(GLfloat) X2F ((*pvNormal).v.c.z));
 		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->p3_vec);
 	else {
 		transformation.Rotate (vNormal, *pvNormal, 0);
-		glNormal3f ((GLfloat) X2F (vNormal [X]),
-						(GLfloat) X2F (vNormal [Y]),
-						(GLfloat) X2F (vNormal [Z]));
+		glNormal3f ((GLfloat) X2F (vNormal.v.c.x),
+						(GLfloat) X2F (vNormal.v.c.y),
+						(GLfloat) X2F (vNormal.v.c.z));
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
 		}
 //	glNormal3f ((GLfloat) X2F (vNormal.x), (GLfloat) X2F (vNormal.y), (GLfloat) X2F (vNormal.z));
@@ -216,7 +216,7 @@ else
 	v [2] = pointList [2]->p3_index;
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
 		vNormal = CFixVector::Normal (pointList [0]->p3_vec, pointList [1]->p3_vec, pointList [2]->p3_vec);
-		glNormal3f ((GLfloat) X2F (vNormal [X]), (GLfloat) X2F (vNormal [Y]), (GLfloat) X2F (vNormal [Z]));
+		glNormal3f ((GLfloat) X2F (vNormal.v.c.x), (GLfloat) X2F (vNormal.v.c.y), (GLfloat) X2F (vNormal.v.c.z));
 		}
 	else {
 		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted);
@@ -227,7 +227,7 @@ else
 			vNormal = -vNormal;
 		if (!ogl.UseTransform ())
 			transformation.Rotate (vNormal, vNormal, 0);
-		glNormal3f ((GLfloat) X2F (vNormal [X]), (GLfloat) X2F (vNormal [Y]), (GLfloat) X2F (vNormal [Z]));
+		glNormal3f ((GLfloat) X2F (vNormal.v.c.x), (GLfloat) X2F (vNormal.v.c.y), (GLfloat) X2F (vNormal.v.c.z));
 		}
 	}
 }

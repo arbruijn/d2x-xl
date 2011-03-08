@@ -399,9 +399,9 @@ bufP += sizeof (CFixVector); // 12
 // --------------------------
 //      Total = 18
 #else
-vSwapped [X] = (fix) INTEL_INT ((int) (*vFire) [X]);
-vSwapped [Y] = (fix) INTEL_INT ((int) (*vFire) [Y]);
-vSwapped [Z] = (fix) INTEL_INT ((int) (*vFire) [Z]);
+vSwapped.v.c.x = (fix) INTEL_INT ((int) (*vFire).v.c.x);
+vSwapped.v.c.y = (fix) INTEL_INT ((int) (*vFire).v.c.y);
+vSwapped.v.c.z = (fix) INTEL_INT ((int) (*vFire).v.c.z);
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (CFixVector)); 
 bufP += sizeof (CFixVector);
 #endif
@@ -651,9 +651,9 @@ nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [bufP+2]);
 bufP += 3;
 nGun = (sbyte)buf [bufP++];                                      
 memcpy (&vFire, buf+bufP, sizeof (CFixVector));
-vFire [X] = (fix)INTEL_INT ((int)vFire [X]);
-vFire [Y] = (fix)INTEL_INT ((int)vFire [Y]);
-vFire [Z] = (fix)INTEL_INT ((int)vFire [Z]);
+vFire.v.c.x = (fix)INTEL_INT ((int)vFire.v.c.x);
+vFire.v.c.y = (fix)INTEL_INT ((int)vFire.v.c.y);
+vFire.v.c.z = (fix)INTEL_INT ((int)vFire.v.c.z);
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]) || 
 	 (OBJECTS [nRobot].info.nType != OBJ_ROBOT) || 
 	 (OBJECTS [nRobot].info.nFlags & OF_EXPLODING))
@@ -920,9 +920,9 @@ bufP += 2;
 memcpy (&delObjP.info.position.vPos, buf + bufP, sizeof (CFixVector));      
 bufP += sizeof (CFixVector);
 delObjP.mType.physInfo.velocity.SetZero ();
-delObjP.info.position.vPos [X] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [X]);
-delObjP.info.position.vPos [Y] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [Y]);
-delObjP.info.position.vPos [Z] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [Z]);
+delObjP.info.position.vPos.v.c.x = (fix) INTEL_INT ((int) delObjP.info.position.vPos.v.c.x);
+delObjP.info.position.vPos.v.c.y = (fix) INTEL_INT ((int) delObjP.info.position.vPos.v.c.y);
+delObjP.info.position.vPos.v.c.z = (fix) INTEL_INT ((int) delObjP.info.position.vPos.v.c.z);
 if (gameStates.multi.nGameType != UDP_GAME)
 	gameStates.app.nRandSeed = 8321L;
 else {

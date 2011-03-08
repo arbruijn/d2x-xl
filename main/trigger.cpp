@@ -653,8 +653,8 @@ if (nStep <= 0) {
 	n = *SEGMENTS [nSegment].m_sides [nSide].m_normals;
 	n = -n;
 	/*
-	n [Y] = -n [Y];
-	n [Z] = -n [Z];
+	n.v.c.y = -n.v.c.y;
+	n.v.c.z = -n.v.c.z;
 	*/
 	gameStates.gameplay.vTgtDir = n;
 	if (nStep < 0)
@@ -688,8 +688,8 @@ TriggerSetOrient (&objP->info.position, nSegment, nSide, bSetPos, nStep);
 if (nStep <= 0) {
 	n = *SEGMENTS [nSegment].m_sides [nSide].m_normals;
 	/*
-	n [X] = -n [X];
-	n [Y] = -n [Y];
+	n.v.c.x = -n.v.c.x;
+	n.v.c.y = -n.v.c.y;
 	*/
 	n = -n;
 	gameStates.gameplay.vTgtDir = n;
@@ -801,8 +801,8 @@ if (sbd.bBoosted) {
 		// turn the ship so that it is facing the destination nSide of the destination CSegment
 		// Invert the Normal as it points into the CSegment
 			/*
-			n [X] = -n [X];
-			n [Y] = -n [Y];
+			n.v.c.x = -n.v.c.x;
+			n.v.c.y = -n.v.c.y;
 			*/
 			n = -n;
 			}
@@ -812,62 +812,62 @@ if (sbd.bBoosted) {
 	// turn the ship so that it is facing the destination nSide of the destination CSegment
 	// Invert the Normal as it points into the CSegment
 		/*
-		n [X] = -n [X];
-		n [Y] = -n [Y];
+		n.v.c.x = -n.v.c.x;
+		n.v.c.y = -n.v.c.y;
 		*/
 		n = -n;
 		}
-	sbd.vVel [X] = n [X] * v;
-	sbd.vVel [Y] = n [Y] * v;
-	sbd.vVel [Z] = n [Z] * v;
+	sbd.vVel.v.c.x = n.v.c.x * v;
+	sbd.vVel.v.c.y = n.v.c.y * v;
+	sbd.vVel.v.c.z = n.v.c.z * v;
 #if 0
-	d = (double) (labs (n [X]) + labs (n [Y]) + labs (n [Z])) / ((double) I2X (60));
-	h [X] = n [X] ? (fix) ((double) n [X] / d) : 0;
-	h [Y] = n [Y] ? (fix) ((double) n [Y] / d) : 0;
-	h [Z] = n [Z] ? (fix) ((double) n [Z] / d) : 0;
+	d = (double) (labs (n.v.c.x) + labs (n.v.c.y) + labs (n.v.c.z)) / ((double) I2X (60));
+	h.v.c.x = n.v.c.x ? (fix) ((double) n.v.c.x / d) : 0;
+	h.v.c.y = n.v.c.y ? (fix) ((double) n.v.c.y / d) : 0;
+	h.v.c.z = n.v.c.z ? (fix) ((double) n.v.c.z / d) : 0;
 #else
 #	if 1
-	h [X] =
-	h [Y] =
-	h [Z] = I2X (60);
+	h.v.c.x =
+	h.v.c.y =
+	h.v.c.z = I2X (60);
 #	else
-	h [X] = (n [X] ? n [X] : I2X (1)) * 60;
-	h [Y] = (n [Y] ? n [Y] : I2X (1)) * 60;
-	h [Z] = (n [Z] ? n [Z] : I2X (1)) * 60;
+	h.v.c.x = (n.v.c.x ? n.v.c.x : I2X (1)) * 60;
+	h.v.c.y = (n.v.c.y ? n.v.c.y : I2X (1)) * 60;
+	h.v.c.z = (n.v.c.z ? n.v.c.z : I2X (1)) * 60;
 #	endif
 #endif
 	sbd.vMinVel = sbd.vVel - h;
 /*
-	if (!sbd.vMinVel [X])
-		sbd.vMinVel [X] = -I2X (60);
-	if (!sbd.vMinVel [Y])
-		sbd.vMinVel [Y] = -I2X (60);
-	if (!sbd.vMinVel [Z])
-		sbd.vMinVel [Z] = -I2X (60);
+	if (!sbd.vMinVel.v.c.x)
+		sbd.vMinVel.v.c.x = -I2X (60);
+	if (!sbd.vMinVel.v.c.y)
+		sbd.vMinVel.v.c.y = -I2X (60);
+	if (!sbd.vMinVel.v.c.z)
+		sbd.vMinVel.v.c.z = -I2X (60);
 */
 	sbd.vMaxVel = sbd.vVel + h;
 /*
-	if (!sbd.vMaxVel [X])
-		sbd.vMaxVel [X] = I2X (60);
-	if (!sbd.vMaxVel [Y])
-		sbd.vMaxVel [Y] = I2X (60);
-	if (!sbd.vMaxVel [Z])
-		sbd.vMaxVel [Z] = I2X (60);
+	if (!sbd.vMaxVel.v.c.x)
+		sbd.vMaxVel.v.c.x = I2X (60);
+	if (!sbd.vMaxVel.v.c.y)
+		sbd.vMaxVel.v.c.y = I2X (60);
+	if (!sbd.vMaxVel.v.c.z)
+		sbd.vMaxVel.v.c.z = I2X (60);
 */
-	if (sbd.vMinVel [X] > sbd.vMaxVel [X]) {
-		fix h = sbd.vMinVel [X];
-		sbd.vMinVel [X] = sbd.vMaxVel [X];
-		sbd.vMaxVel [X] = h;
+	if (sbd.vMinVel.v.c.x > sbd.vMaxVel.v.c.x) {
+		fix h = sbd.vMinVel.v.c.x;
+		sbd.vMinVel.v.c.x = sbd.vMaxVel.v.c.x;
+		sbd.vMaxVel.v.c.x = h;
 		}
-	if (sbd.vMinVel [Y] > sbd.vMaxVel [Y]) {
-		fix h = sbd.vMinVel [Y];
-		sbd.vMinVel [Y] = sbd.vMaxVel [Y];
-		sbd.vMaxVel [Y] = h;
+	if (sbd.vMinVel.v.c.y > sbd.vMaxVel.v.c.y) {
+		fix h = sbd.vMinVel.v.c.y;
+		sbd.vMinVel.v.c.y = sbd.vMaxVel.v.c.y;
+		sbd.vMaxVel.v.c.y = h;
 		}
-	if (sbd.vMinVel [Z] > sbd.vMaxVel [Z]) {
-		fix h = sbd.vMinVel [Z];
-		sbd.vMinVel [Z] = sbd.vMaxVel [Z];
-		sbd.vMaxVel [Z] = h;
+	if (sbd.vMinVel.v.c.z > sbd.vMaxVel.v.c.z) {
+		fix h = sbd.vMinVel.v.c.z;
+		sbd.vMinVel.v.c.z = sbd.vMaxVel.v.c.z;
+		sbd.vMaxVel.v.c.z = h;
 		}
 	objP->mType.physInfo.velocity = sbd.vVel;
 	if (bSetOrient) {
@@ -877,9 +877,9 @@ if (sbd.bBoosted) {
 	gameData.objs.speedBoost [nObject] = sbd;
 	}
 else {
-	objP->mType.physInfo.velocity [X] = objP->mType.physInfo.velocity [X] / v * 60;
-	objP->mType.physInfo.velocity [Y] = objP->mType.physInfo.velocity [Y] / v * 60;
-	objP->mType.physInfo.velocity [Z] = objP->mType.physInfo.velocity [Z] / v * 60;
+	objP->mType.physInfo.velocity.v.c.x = objP->mType.physInfo.velocity.v.c.x / v * 60;
+	objP->mType.physInfo.velocity.v.c.y = objP->mType.physInfo.velocity.v.c.y / v * 60;
+	objP->mType.physInfo.velocity.v.c.z = objP->mType.physInfo.velocity.v.c.z / v * 60;
 	}
 }
 

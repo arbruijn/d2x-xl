@@ -258,9 +258,9 @@ G3StartFrame (0, 0, 0);
 ogl.SetBlending (false);
 G3SetViewMatrix (p, o, gameStates.render.xZoom, 1);
 if (gameData.models.polyModels [0][nModel].Rad ())
-	p [Z] = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [0][nModel].Rad (), BASE_MODEL_SIZE);
+	p.v.c.z = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [0][nModel].Rad (), BASE_MODEL_SIZE);
 else
-	p [Z] = DEFAULT_VIEW_DIST;
+	p.v.c.z = DEFAULT_VIEW_DIST;
 o = CFixMatrix::Create (*orientAngles);
 DrawPolyModel (NULL, &p, &o, NULL, nModel, 0, I2X (1), NULL, NULL, NULL);
 G3EndFrame ();

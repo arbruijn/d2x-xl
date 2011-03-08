@@ -418,7 +418,7 @@ if ((m_bRadar = m_bRadar) == 2) {
 #if 1
 	mRadar.m.v.r = po.m.v.r;
 	mRadar.m.v.f = po.m.v.u;
-	mRadar.m.v.f [Y] = -mRadar.m.v.f [Y];
+	mRadar.m.v.f.v.c.y = -mRadar.m.v.f.v.c.y;
 	mRadar.m.v.u = po.m.v.f;
 #else
 	mRadar.rVec.p.x = po->rVec.p.x;
@@ -1134,7 +1134,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 		}
 
 	cc = RotateVertexList (2, edgeP->verts);
-	distance = gameData.segs.points [edgeP->verts [1]].p3_vec [Z];
+	distance = gameData.segs.points [edgeP->verts [1]].p3_vec.v.c.z;
 	if (minDistance > distance)
 		minDistance = distance;
 	if (!cc.ccAnd)  {	//all off screen?
@@ -1186,7 +1186,7 @@ while (incr > 0) {
 			v1 = m_brightEdges [j]->verts [0];
 			v2 = m_brightEdges [j + incr]->verts [0];
 
-			if (gameData.segs.points [v1].p3_vec [Z] < gameData.segs.points [v2].p3_vec [Z]) {
+			if (gameData.segs.points [v1].p3_vec.v.c.z < gameData.segs.points [v2].p3_vec.v.c.z) {
 				// If not in correct order, them swap 'em
 				Swap (m_brightEdges [j + incr], m_brightEdges [j]);
 				j -= incr;
@@ -1204,7 +1204,7 @@ for (i = 0; i < nbright; i++) {
 	edgeP = m_brightEdges [i];
 	p1 = gameData.segs.points + edgeP->verts [0];
 	p2 = gameData.segs.points + edgeP->verts [1];
-	fix xDist = p1->p3_vec [Z] - minDistance;
+	fix xDist = p1->p3_vec.v.c.z - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
 	if (xDist < 0)
 		xDist = 0;

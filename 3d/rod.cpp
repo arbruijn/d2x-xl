@@ -69,7 +69,7 @@ vRodNorm.p.y = FixMul (vRodNorm.p.y, transformation.m_info.scale.p.y);
 //now we have the usable edge.  generate four points
 //vTop points
 vTemp = vRodNorm * xTopWidth;
-vTemp [Z] = 0;
+vTemp.v.c.z = 0;
 rodPoints [0].p3_vec = topPoint->p3_vec + vTemp;
 rodPoints [1].p3_vec = topPoint->p3_vec - vTemp;
 vTemp = vRodNorm * xBtmWidth;

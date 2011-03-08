@@ -582,9 +582,9 @@ switch (nType) {
 				nRandScale = 2;
 			xNewMag = xOldMag + I2X (32);
 			nOffset = 16384 * nRandScale;
-			vNewVel [X] += FixMul (xNewMag, d_rand () * nRandScale - nOffset);
-			vNewVel [Y] += FixMul (xNewMag, d_rand () * nRandScale - nOffset);
-			vNewVel [Z] += FixMul (xNewMag, d_rand () * nRandScale - nOffset);
+			vNewVel.v.c.x += FixMul (xNewMag, d_rand () * nRandScale - nOffset);
+			vNewVel.v.c.y += FixMul (xNewMag, d_rand () * nRandScale - nOffset);
+			vNewVel.v.c.z += FixMul (xNewMag, d_rand () * nRandScale - nOffset);
 			// Give keys zero velocity so they can be tracked better in multi
 			if (IsMultiGame && (((nId >= POW_KEY_BLUE) && (nId <= POW_KEY_GOLD)) || (nId == POW_MONSTERBALL)))
 				vNewVel.SetZero ();
@@ -643,9 +643,9 @@ switch (nType) {
 			CFixVector::Normalize (vNewVel);
 			//	We want powerups to move more in network mode.
 			nRandScale = 2;
-			vNewVel [X] += (d_rand () - 16384) * 2;
-			vNewVel [Y] += (d_rand () - 16384) * 2;
-			vNewVel [Z] += (d_rand () - 16384) * 2;
+			vNewVel.v.c.x += (d_rand () - 16384) * 2;
+			vNewVel.v.c.y += (d_rand () - 16384) * 2;
+			vNewVel.v.c.z += (d_rand () - 16384) * 2;
 			CFixVector::Normalize (vNewVel);
 			vNewVel *= ((I2X (32) + xOldMag) * nRandScale);
 			vNewPos = vPos;

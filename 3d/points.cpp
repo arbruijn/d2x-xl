@@ -112,9 +112,9 @@ void G3Point2Vec (CFixVector *v,short sx,short sy)
 	CFixVector h;
 	CFixMatrix m;
 
-h [X] =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2, xCanvW2), transformation.m_info.scale [Z], transformation.m_info.scale [X]);
-h [Y] = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2, xCanvH2), transformation.m_info.scale [Z], transformation.m_info.scale [Y]);
-h [Z] = I2X (1);
+h.v.c.x =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2, xCanvW2), transformation.m_info.scale.v.c.z, transformation.m_info.scale.v.c.x);
+h.v.c.y = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2, xCanvH2), transformation.m_info.scale.v.c.z, transformation.m_info.scale.v.c.y);
+h.v.c.z = I2X (1);
 CFixVector::Normalize (h);
 m = transformation.m_info.view [1].Transpose();
 *v = m * h;
@@ -134,17 +134,17 @@ return G3EncodePoint (dest);
 fix G3CalcPointDepth (const CFixVector& pnt)
 {
 #ifdef _WIN32
-	QLONG q = mul64 (pnt [X] - transformation.m_info.pos [X], transformation.m_info.view [0].m.v.f [X]);
-	q += mul64 (pnt [Y] - transformation.m_info.pos [Y], transformation.m_info.view [0].m.v.f [Y]);
-	q += mul64 (pnt [Z] - transformation.m_info.pos [Z], transformation.m_info.view [0].m.v.f [Z]);
+	QLONG q = mul64 (pnt.v.c.x - transformation.m_info.pos.v.c.x, transformation.m_info.view [0].m.v.f.v.c.x);
+	q += mul64 (pnt.v.c.y - transformation.m_info.pos.v.c.y, transformation.m_info.view [0].m.v.f.v.c.y);
+	q += mul64 (pnt.v.c.z - transformation.m_info.pos.v.c.z, transformation.m_info.view [0].m.v.f.v.c.z);
 	return (fix) (q >> 16);
 #else
 	tQuadInt q;
 
 	q.low=q.high=0;
-	FixMulAccum (&q, (pnt [X] - transformation.m_info.pos [X]),transformation.m_info.view [0].m.v.f [X]);
-	FixMulAccum (&q, (pnt [Y] - transformation.m_info.pos [Y]),transformation.m_info.view [0].m.v.f [Y]);
-	FixMulAccum (&q, (pnt [Z] - transformation.m_info.pos [Z]),transformation.m_info.view [0].m.v.f [Z]);
+	FixMulAccum (&q, (pnt.v.c.x - transformation.m_info.pos.v.c.x),transformation.m_info.view [0].m.v.f.v.c.x);
+	FixMulAccum (&q, (pnt.v.c.y - transformation.m_info.pos.v.c.y),transformation.m_info.view [0].m.v.f.v.c.y);
+	FixMulAccum (&q, (pnt.v.c.z - transformation.m_info.pos.v.c.z),transformation.m_info.view [0].m.v.f.v.c.z);
 	return FixQuadAdjust (&q);
 #endif
 }

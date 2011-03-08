@@ -175,28 +175,28 @@ for (i = 1, --j; i < j; i++) {
 	if (abs (CFixVector::Dot (a, b)) > I2X (3)/4) {
 		if (abs (a[Z]) < I2X (1)/2) {
 			if (bRandom) {
-				e [X] = (d_rand ()- 16384) / 2;
-				e [Y] = (d_rand ()- 16384) / 2;
-				e [Z] = abs (e [X]) + abs (e [Y]) + 1;
+				e.v.c.x = (d_rand ()- 16384) / 2;
+				e.v.c.y = (d_rand ()- 16384) / 2;
+				e.v.c.z = abs (e.v.c.x) + abs (e.v.c.y) + 1;
 				CFixVector::Normalize (e);
 				}
 			else {
-				e [X] =
-				e [Y] = 0;
-				e [Z] = I2X (1);
+				e.v.c.x =
+				e.v.c.y = 0;
+				e.v.c.z = I2X (1);
 				}
 			}
 		else {
 			if (bRandom) {
-				e [Y] = (d_rand ()-16384)/2;
-				e [Z] = (d_rand ()-16384)/2;
-				e [X] = abs (e [Y]) + abs (e [Z]) + 1;
+				e.v.c.y = (d_rand ()-16384)/2;
+				e.v.c.z = (d_rand ()-16384)/2;
+				e.v.c.x = abs (e.v.c.y) + abs (e.v.c.z) + 1;
 				CFixVector::Normalize (e);
 				}
 			else {
-				e [X] = I2X (1);
-				e [Y] =
-				e [Z] = 0;
+				e.v.c.x = I2X (1);
+				e.v.c.y =
+				e.v.c.z = 0;
 				}
 			}
 		}

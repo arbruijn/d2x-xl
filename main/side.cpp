@@ -50,9 +50,9 @@ m_vCenter = VERTICES [m_vertices [0]];
 m_vCenter += VERTICES [m_vertices [1]];
 m_vCenter += VERTICES [m_vertices [2]];
 m_vCenter += VERTICES [m_vertices [3]];
-m_vCenter [X] /= 4;
-m_vCenter [Y] /= 4;
-m_vCenter [Z] /= 4;
+m_vCenter.v.c.x /= 4;
+m_vCenter.v.c.y /= 4;
+m_vCenter.v.c.z /= 4;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -585,15 +585,15 @@ uint CSide::CheckPointToFace (CFixVector& intersection, short iFace, CFixVector 
 
 //now do 2d check to see if refP is in CSide
 //project polygon onto plane by finding largest component of Normal
-t [X] = labs (vNormal [0]);
-t [Y] = labs (vNormal [1]);
-t [Z] = labs (vNormal [2]);
-if (t [X] > t [Y])
-	if (t [X] > t [Z])
+t.v.c.x = labs (vNormal [0]);
+t.v.c.y = labs (vNormal [1]);
+t.v.c.z = labs (vNormal [2]);
+if (t.v.c.x > t.v.c.y)
+	if (t.v.c.x > t.v.c.z)
 		biggest = 0;
 	else
 		biggest = 2;
-else if (t [Y] > t [Z])
+else if (t.v.c.y > t.v.c.z)
 	biggest = 1;
 else
 	biggest = 2;

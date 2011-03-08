@@ -191,15 +191,15 @@ if ((mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [Index ()].b
 #if 0
 if (!mType.physInfo.thrust.IsZero ()) {
 	float fScale = float (gameData.pig.ship.player->maxThrust) / float (gameData.time.xFrame);
-	mType.physInfo.thrust [X] = fix (float (mType.physInfo.thrust [X]) * fScale);
-	mType.physInfo.thrust [Y] = fix (float (mType.physInfo.thrust [Y]) * fScale);
-	mType.physInfo.thrust [Z] = fix (float (mType.physInfo.thrust [Z]) * fScale);
+	mType.physInfo.thrust.v.c.x = fix (float (mType.physInfo.thrust.v.c.x) * fScale);
+	mType.physInfo.thrust.v.c.y = fix (float (mType.physInfo.thrust.v.c.y) * fScale);
+	mType.physInfo.thrust.v.c.z = fix (float (mType.physInfo.thrust.v.c.z) * fScale);
 	}
 if (!mType.physInfo.rotThrust.IsZero ()) {
 	float fScale = float (gameData.pig.ship.player->maxRotThrust) / float (gameData.time.xFrame);
-	mType.physInfo.rotThrust [X] = fix (float (mType.physInfo.rotThrust [X]) * fScale);
-	mType.physInfo.rotThrust [Y] = fix (float (mType.physInfo.rotThrust [Y]) * fScale);
-	mType.physInfo.rotThrust [Z] = fix (float (mType.physInfo.rotThrust [Z]) * fScale);
+	mType.physInfo.rotThrust.v.c.x = fix (float (mType.physInfo.rotThrust.v.c.x) * fScale);
+	mType.physInfo.rotThrust.v.c.y = fix (float (mType.physInfo.rotThrust.v.c.y) * fScale);
+	mType.physInfo.rotThrust.v.c.z = fix (float (mType.physInfo.rotThrust.v.c.z) * fScale);
 	}
 #else
 fix ft = gameData.time.xFrame;

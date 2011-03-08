@@ -236,9 +236,9 @@ if (nWeaponType == OMEGA_ID) {
 else if (nWeaponType == FUSION_ID) {
 	static int nRotDir = 0;
 	nRotDir = !nRotDir;
-	objP->mType.physInfo.rotVel [X] =
-	objP->mType.physInfo.rotVel [Y] = 0;
-	objP->mType.physInfo.rotVel [Z] = nRotDir ? -I2X (1) : I2X (1);
+	objP->mType.physInfo.rotVel.v.c.x =
+	objP->mType.physInfo.rotVel.v.c.y = 0;
+	objP->mType.physInfo.rotVel.v.c.z = nRotDir ? -I2X (1) : I2X (1);
 	}
 if (parentP && (parentP->info.nType == OBJ_PLAYER)) {
 	if (nWeaponType == FUSION_ID) {

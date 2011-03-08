@@ -186,16 +186,16 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 			double mq;
 
 			mq = double (otherObjP->mType.physInfo.mass) / (double (mType.physInfo.mass) * double (nMonsterballPyroForce));
-			vForce [X] = (fix) (double (vForce [X] * mq));
-			vForce [Y] = (fix) (double (vForce [Y] * mq));
-			vForce [Z] = (fix) (double (vForce [Z] * mq));
+			vForce.v.c.x = (fix) (double (vForce.v.c.x * mq));
+			vForce.v.c.y = (fix) (double (vForce.v.c.y * mq));
+			vForce.v.c.z = (fix) (double (vForce.v.c.z * mq));
 			ApplyForce (vForce);
 			}
 		else {
 			CFixVector force2;
-			force2 [X] = vForce [X] / 4;
-			force2 [Y] = vForce [Y] / 4;
-			force2 [Z] = vForce [Z] / 4;
+			force2.v.c.x = vForce.v.c.x / 4;
+			force2.v.c.y = vForce.v.c.y / 4;
+			force2.v.c.z = vForce.v.c.z / 4;
 			ApplyForce (force2);
 			if (bDamage && ((otherObjP->info.nType != OBJ_ROBOT) || !ROBOTINFO (otherObjP->info.nId).companion)) {
 				xForceMag = force2.Mag ();
@@ -208,16 +208,16 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 		if (info.nType == OBJ_ROBOT) {
 			if (ROBOTINFO (info.nId).bossFlag)
 				return;
-			vRotForce [X] = vForce [X] / h;
-			vRotForce [Y] = vForce [Y] / h;
-			vRotForce [Z] = vForce [Z] / h;
+			vRotForce.v.c.x = vForce.v.c.x / h;
+			vRotForce.v.c.y = vForce.v.c.y / h;
+			vRotForce.v.c.z = vForce.v.c.z / h;
 			ApplyForce (vForce);
 			ApplyRotForce (vRotForce);
 			}
 		else if ((info.nType == OBJ_CLUTTER) || (info.nType == OBJ_DEBRIS) || (info.nType == OBJ_REACTOR)) {
-			vRotForce [X] = vForce [X] / h;
-			vRotForce [Y] = vForce [Y] / h;
-			vRotForce [Z] = vForce [Z] / h;
+			vRotForce.v.c.x = vForce.v.c.x / h;
+			vRotForce.v.c.y = vForce.v.c.y / h;
+			vRotForce.v.c.z = vForce.v.c.z / h;
 			ApplyForce (vForce);
 			ApplyRotForce (vRotForce);
 			}
@@ -232,12 +232,12 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 				gameData.hoard.nLastHitter = otherObjP->cType.laserInfo.parent.nObject;
 				mq = double (I2X (nMonsterballForces [otherObjP->info.nId]) / 100) / double (mType.physInfo.mass);
 				}
-			vForce [X] = (fix) (double (vForce [X]) * mq);
-			vForce [Y] = (fix) (double (vForce [Y]) * mq);
-			vForce [Z] = (fix) (double (vForce [Z]) * mq);
-			vRotForce [X] = vForce [X] / h;
-			vRotForce [Y] = vForce [Y] / h;
-			vRotForce [Z] = vForce [Z] / h;
+			vForce.v.c.x = (fix) (double (vForce.v.c.x) * mq);
+			vForce.v.c.y = (fix) (double (vForce.v.c.y) * mq);
+			vForce.v.c.z = (fix) (double (vForce.v.c.z) * mq);
+			vRotForce.v.c.x = vForce.v.c.x / h;
+			vRotForce.v.c.y = vForce.v.c.y / h;
+			vRotForce.v.c.z = vForce.v.c.z / h;
 			ApplyForce (vForce);
 			ApplyRotForce (vRotForce);
 			if (gameData.hoard.nLastHitter == LOCALPLAYER.nObject)
@@ -445,9 +445,9 @@ if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
 	CFixVector vForce;
 	paletteManager.BumpEffect (0, 0, 60);	//flash blue
 	//knock CPlayerData around
-	vForce [X] = 40 * (d_rand () - 16384);
-	vForce [Y] = 40 * (d_rand () - 16384);
-	vForce [Z] = 40 * (d_rand () - 16384);
+	vForce.v.c.x = 40 * (d_rand () - 16384);
+	vForce.v.c.y = 40 * (d_rand () - 16384);
+	vForce.v.c.z = 40 * (d_rand () - 16384);
 	ApplyRotForce (vForce);
 #ifdef TACTILE
 	if (TactileStick)
@@ -463,9 +463,9 @@ else {
 #ifdef TACTILE
 	CFixVector vForce;
 	if (TactileStick) {
-		vForce [X] = -mType.physInfo.velocity[X];
-		vForce [Y] = -mType.physInfo.velocity[Y];
-		vForce [Z] = -mType.physInfo.velocity[Z];
+		vForce.v.c.x = -mType.physInfo.velocity[X];
+		vForce.v.c.y = -mType.physInfo.velocity[Y];
+		vForce.v.c.z = -mType.physInfo.velocity[Z];
 		Tactile_do_collide (&vForce, &info.position.mOrient);
 	}
 #endif
@@ -533,8 +533,8 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {
 		paletteManager.BumpEffect (X2I (xDamage * 4), 0, 0);	//flash red
 		}
 	if (xDamage || !mType.physInfo.thrust.IsZero ()) {
-		mType.physInfo.rotVel [X] = (d_rand () - 16384) / 2;
-		mType.physInfo.rotVel [Z] = (d_rand () - 16384) / 2;
+		mType.physInfo.rotVel.v.c.x = (d_rand () - 16384) / 2;
+		mType.physInfo.rotVel.v.c.z = (d_rand () - 16384) / 2;
 		}
 	}
 return nType;
@@ -571,14 +571,14 @@ if (xDamage > 0) {
 	if ((info.nType == OBJ_PLAYER) && (info.nId == gameData.multiplayer.nLocalPlayer))
 		paletteManager.BumpEffect (X2I (xDamage * 4), 0, 0);	//flash red
 	if ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) {
-		mType.physInfo.rotVel [X] = (d_rand () - 16384) / 4;
-		mType.physInfo.rotVel [Z] = (d_rand () - 16384) / 4;
+		mType.physInfo.rotVel.v.c.x = (d_rand () - 16384) / 4;
+		mType.physInfo.rotVel.v.c.z = (d_rand () - 16384) / 4;
 		}
 	return nType;
 	}
 if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && !mType.physInfo.thrust.IsZero ()) {
-	mType.physInfo.rotVel [X] = (d_rand () - 16384) / 8;
-	mType.physInfo.rotVel [Z] = (d_rand () - 16384) / 8;
+	mType.physInfo.rotVel.v.c.x = (d_rand () - 16384) / 8;
+	mType.physInfo.rotVel.v.c.z = (d_rand () - 16384) / 8;
 	}
 return nType;
 }
@@ -1847,9 +1847,9 @@ for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
 		vExitDir = segP->SideCenter (nSide) - info.position.vPos;
 		CFixVector::Normalize (vExitDir);
 		CFixVector vRand = CFixVector::Random();
-		vRand [X] /= 4;
-		vRand [Y] /= 4;
-		vRand [Z] /= 4;
+		vRand.v.c.x /= 4;
+		vRand.v.c.y /= 4;
+		vRand.v.c.z /= 4;
 		vExitDir += vRand;
 		CFixVector::Normalize (vExitDir);
 		}

@@ -203,9 +203,9 @@ else
 #endif
 nSpeed *= I2X (1);
 if (!vDir) {
-	m_vDrift [X] = nSpeed - randN (2 * nSpeed);
-	m_vDrift [Y] = nSpeed - randN (2 * nSpeed);
-	m_vDrift [Z] = nSpeed - randN (2 * nSpeed);
+	m_vDrift.v.c.x = nSpeed - randN (2 * nSpeed);
+	m_vDrift.v.c.y = nSpeed - randN (2 * nSpeed);
+	m_vDrift.v.c.z = nSpeed - randN (2 * nSpeed);
 	m_vDir.SetZero ();
 	m_bHaveDir = 1;
 	}
@@ -566,9 +566,9 @@ if (CFixVector::Dot (vDrift, m_vDir) < 0)
 #endif
 
 if ((m_nType <= SMOKE_PARTICLES) || (m_nType == FIRE_PARTICLES)) {
-	m_vDrift [X] = ChangeDir (m_vDrift [X]);
-	m_vDrift [Y] = ChangeDir (m_vDrift [Y]);
-	m_vDrift [Z] = ChangeDir (m_vDrift [Z]);
+	m_vDrift.v.c.x = ChangeDir (m_vDrift.v.c.x);
+	m_vDrift.v.c.y = ChangeDir (m_vDrift.v.c.y);
+	m_vDrift.v.c.z = ChangeDir (m_vDrift.v.c.z);
 	}
 
 if (m_bHaveDir) {
@@ -916,14 +916,14 @@ if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
 							? (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.3333333f))
 							: 1.0f / float (pow (m_decay, 0.3333333f));
 #endif
-	vOffset [X] = m_nWidth * fFade;
-	vOffset [Y] = m_nHeight * fFade;
+	vOffset.v.c.x = m_nWidth * fFade;
+	vOffset.v.c.y = m_nHeight * fFade;
 	}
 else {
-	vOffset [X] = m_nWidth * m_decay;
-	vOffset [Y] = m_nHeight * m_decay;
+	vOffset.v.c.x = m_nWidth * m_decay;
+	vOffset.v.c.y = m_nHeight * m_decay;
 	}
-vOffset [Z] = 0;
+vOffset.v.c.z = 0;
 
 float h = ParticleImageInfo (m_nType).xBorder;
 pb [m_nOrient].texCoord.v.u =
@@ -942,35 +942,35 @@ pb [2].color =
 pb [3].color = m_renderColor;
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
-vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
+vCenter.v.c.x += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 if (m_bRotate && gameOpts->render.particles.bRotate) {
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-	vOffset [X] *= vRot [i] [X];
-	vOffset [Y] *= vRot [i] [Y];
+	vOffset.v.c.x *= vRot [i].v.c.x;
+	vOffset.v.c.y *= vRot [i].v.c.y;
 
-	pb [0].vertex [X] = vCenter [X] - vOffset [X];
-	pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
-	pb [1].vertex [X] = vCenter [X] + vOffset [Y];
-	pb [1].vertex [Y] = vCenter [Y] + vOffset [X];
-	pb [2].vertex [X] = vCenter [X] + vOffset [X];
-	pb [2].vertex [Y] = vCenter [Y] - vOffset [Y];
-	pb [3].vertex [X] = vCenter [X] - vOffset [Y];
-	pb [3].vertex [Y] = vCenter [Y] - vOffset [X];
+	pb [0].vertex.v.c.x = vCenter.v.c.x - vOffset.v.c.x;
+	pb [0].vertex.v.c.y = vCenter.v.c.y + vOffset.v.c.y;
+	pb [1].vertex.v.c.x = vCenter.v.c.x + vOffset.v.c.y;
+	pb [1].vertex.v.c.y = vCenter.v.c.y + vOffset.v.c.x;
+	pb [2].vertex.v.c.x = vCenter.v.c.x + vOffset.v.c.x;
+	pb [2].vertex.v.c.y = vCenter.v.c.y - vOffset.v.c.y;
+	pb [3].vertex.v.c.x = vCenter.v.c.x - vOffset.v.c.y;
+	pb [3].vertex.v.c.y = vCenter.v.c.y - vOffset.v.c.x;
 	}
 else {
-	pb [0].vertex [X] =
-	pb [3].vertex [X] = vCenter [X] - vOffset [X];
-	pb [1].vertex [X] =
-	pb [2].vertex [X] = vCenter [X] + vOffset [X];
-	pb [0].vertex [Y] =
-	pb [1].vertex [Y] = vCenter [Y] + vOffset [Y];
-	pb [2].vertex [Y] =
-	pb [3].vertex [Y] = vCenter [Y] - vOffset [Y];
+	pb [0].vertex.v.c.x =
+	pb [3].vertex.v.c.x = vCenter.v.c.x - vOffset.v.c.x;
+	pb [1].vertex.v.c.x =
+	pb [2].vertex.v.c.x = vCenter.v.c.x + vOffset.v.c.x;
+	pb [0].vertex.v.c.y =
+	pb [1].vertex.v.c.y = vCenter.v.c.y + vOffset.v.c.y;
+	pb [2].vertex.v.c.y =
+	pb [3].vertex.v.c.y = vCenter.v.c.y - vOffset.v.c.y;
 	}
-pb [0].vertex [Z] =
-pb [1].vertex [Z] =
-pb [2].vertex [Z] =
-pb [3].vertex [Z] = vCenter [Z];
+pb [0].vertex.v.c.z =
+pb [1].vertex.v.c.z =
+pb [2].vertex.v.c.z =
+pb [3].vertex.v.c.z = vCenter.v.c.z;
 }
 
 #else // -----------------------------------------------------------------------

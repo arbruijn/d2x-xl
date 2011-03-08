@@ -78,9 +78,9 @@ FORALL_LIGHT_OBJS (objP, i) {
 			}
 		else {
 			if (h > 1) {
-				objP->info.position.vPos [X] /= h;
-				objP->info.position.vPos [Y] /= h;
-				objP->info.position.vPos [Z] /= h;
+				objP->info.position.vPos.v.c.x /= h;
+				objP->info.position.vPos.v.c.y /= h;
+				objP->info.position.vPos.v.c.z /= h;
 #if 1
 				objP->cType.lightInfo.color.red /= h;
 				objP->cType.lightInfo.color.green /= h;

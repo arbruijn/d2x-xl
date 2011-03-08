@@ -43,9 +43,9 @@ int SpitPowerup (CObject *spitterP, ubyte id, int seed)
 
 d_srand (gameStates.app.nRandSeed = (seed < 0) ? d_rand () : seed);
 newVelocity = spitterP->mType.physInfo.velocity + spitterP->info.position.mOrient.m.v.f * I2X (SPIT_SPEED);
-newVelocity [X] += (d_rand() - 16384) * SPIT_SPEED * 2;
-newVelocity [Y] += (d_rand() - 16384) * SPIT_SPEED * 2;
-newVelocity [Z] += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity.v.c.x += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity.v.c.y += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity.v.c.z += (d_rand() - 16384) * SPIT_SPEED * 2;
 // Give keys zero velocity so they can be tracked better in multi
 if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 	newVelocity.SetZero ();

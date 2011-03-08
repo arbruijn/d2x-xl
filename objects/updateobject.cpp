@@ -135,9 +135,9 @@ void CObject::Spin (void)
 	CFixMatrix rotmat, new_pm;
 
 Assert (info.movementType == MT_SPINNING);
-rotangs = CAngleVector::Create((fixang) FixMul (mType.spinRate [X], gameData.time.xFrame),
-										 (fixang) FixMul (mType.spinRate [Y], gameData.time.xFrame),
-										 (fixang) FixMul (mType.spinRate [Z], gameData.time.xFrame));
+rotangs = CAngleVector::Create((fixang) FixMul (mType.spinRate.v.c.x, gameData.time.xFrame),
+										 (fixang) FixMul (mType.spinRate.v.c.y, gameData.time.xFrame),
+										 (fixang) FixMul (mType.spinRate.v.c.z, gameData.time.xFrame));
 rotmat = CFixMatrix::Create (rotangs);
 new_pm = info.position.mOrient * rotmat;
 info.position.mOrient = new_pm;

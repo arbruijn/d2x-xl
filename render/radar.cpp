@@ -48,8 +48,8 @@ if ((m = n.Mag ()) > I2X (RADAR_RANGE))
 	return;
 if (m) {
 	//HUDMessage (0, "%1.2f", X2F (m));
-	v [0][X] = FixDiv (n [X], m) * 15; // /= RADAR_RANGE;
-	v [0][Y] = FixDiv (n [Y], m) * 20; // /= RADAR_RANGE;
+	v [0][X] = FixDiv (n.v.c.x, m) * 15; // /= RADAR_RANGE;
+	v [0][Y] = FixDiv (n.v.c.y, m) * 20; // /= RADAR_RANGE;
 	v [0][Z] = n[X] / RADAR_RANGE;
 	//VmVecNormalize (&n);
 	}
@@ -97,7 +97,7 @@ else {
 	return;
 	}
 v [0] *= FixDiv (1, 3);
-h = X2F (n [Z]) / RADAR_RANGE;
+h = X2F (n.v.c.z) / RADAR_RANGE;
 glPushMatrix ();
 glTranslatef (0, yRadar + h * fRadius / 3.0f, 50);
 glPushMatrix ();
@@ -164,7 +164,7 @@ if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 bStencil = ogl.StencilOff ();
 InitShipColors ();
 yRadar = ((i == 1) || (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR)) ? yOffs : -yOffs;
-fRadius = 5.0f / transformation.m_info.scalef [X];
+fRadius = 5.0f / transformation.m_info.scalef.v.c.x;
 fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
 mRadar = CFixMatrix::Create (aRadar);
 ogl.SelectTMU (GL_TEXTURE3);

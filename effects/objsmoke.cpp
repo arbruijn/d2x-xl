@@ -731,9 +731,9 @@ if (objP->rType.particleInfo.nSide <= 0) {	//don't vary emitter position for smo
 	if (!(j = i - i / 2))
 		j = 2;
 	i /= 2;
-	offs [X] = (I2X (1) / 4 - d_rand ()) * (d_rand () % j + i);
-	offs [Y] = (I2X (1) / 4 - d_rand ()) * (d_rand () % j + i);
-	offs [Z] = (I2X (1) / 4 - d_rand ()) * (d_rand () % j + i);
+	offs.v.c.x = (I2X (1) / 4 - d_rand ()) * (d_rand () % j + i);
+	offs.v.c.y = (I2X (1) / 4 - d_rand ()) * (d_rand () % j + i);
+	offs.v.c.z = (I2X (1) / 4 - d_rand ()) * (d_rand () % j + i);
 	pos = objP->info.position.vPos + offs;
 	particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 	}
@@ -763,9 +763,9 @@ if (nParts) {
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
 		}
-	offs [X] = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
-	offs [Y] = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
-	offs [Z] = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
+	offs.v.c.x = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
+	offs.v.c.y = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
+	offs.v.c.z = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
 	pos = objP->info.position.vPos + offs;
 	particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 	}

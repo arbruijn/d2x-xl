@@ -139,7 +139,7 @@ void CObject::SetTurnRoll (void)
 {
 //if (!gameStates.app.bD1Mission)
 {
-	fixang desired_bank = (fixang) -FixMul (mType.physInfo.rotVel [Y], TURNROLL_SCALE);
+	fixang desired_bank = (fixang) -FixMul (mType.physInfo.rotVel.v.c.y, TURNROLL_SCALE);
 	if (mType.physInfo.turnRoll != desired_bank) {
 		fixang delta_ang, max_roll;
 		max_roll = (fixang) FixMul (ROLL_RATE, gameData.physics.xTime);
@@ -223,9 +223,9 @@ if (mType.physInfo.turnRoll) {
 	mOrient = info.position.mOrient * mRotate;
 	info.position.mOrient = mOrient;
 }
-turnAngles.v.c.p = fixang (FixMul (mType.physInfo.rotVel [X], gameData.physics.xTime));
-turnAngles.v.c.h = fixang (FixMul (mType.physInfo.rotVel [Y], gameData.physics.xTime));
-turnAngles.v.c.b = fixang (FixMul (mType.physInfo.rotVel [Z], gameData.physics.xTime));
+turnAngles.v.c.p = fixang (FixMul (mType.physInfo.rotVel.v.c.x, gameData.physics.xTime));
+turnAngles.v.c.h = fixang (FixMul (mType.physInfo.rotVel.v.c.y, gameData.physics.xTime));
+turnAngles.v.c.b = fixang (FixMul (mType.physInfo.rotVel.v.c.z, gameData.physics.xTime));
 if (!IsMultiGame) {
 	int i = (this != gameData.objs.consoleP) ? 0 : 1;
 	float fSpeed = gameStates.gameplay.slowmo [i].fSpeed;
@@ -296,9 +296,9 @@ if (/*(0 <= xSideDist) && */
 	xSideDist = objP->info.xSize - xSideDist;
 	r = ((float) xSideDist / (float) objP->info.xSize) * X2F (objP->info.xSize);
 #	endif
-	objP->info.position.vPos [X] += (fix) ((float) hi.hit.vNormal [X] * fOffs);
-	objP->info.position.vPos [Y] += (fix) ((float) hi.hit.vNormal [Y] * fOffs);
-	objP->info.position.vPos [Z] += (fix) ((float) hi.hit.vNormal [Z] * fOffs);
+	objP->info.position.vPos.v.c.x += (fix) ((float) hi.hit.vNormal.v.c.x * fOffs);
+	objP->info.position.vPos.v.c.y += (fix) ((float) hi.hit.vNormal.v.c.y * fOffs);
+	objP->info.position.vPos.v.c.z += (fix) ((float) hi.hit.vNormal.v.c.z * fOffs);
 #endif
 	nSegment = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments)) {
@@ -453,7 +453,7 @@ if (bDontMoveAIObjects)
 #endif
 if (bInitialize)
 	gameData.physics.xTime = I2X (1);
-CATCH_OBJ (this, mType.physInfo.velocity [Y] == 0);
+CATCH_OBJ (this, mType.physInfo.velocity.v.c.y == 0);
 gameData.physics.nSegments = 0;
 
 mSaveOrient = info.position.mOrient;
@@ -538,18 +538,18 @@ if (mType.physInfo.drag) {
 			if (xDrag)
 				vel *= (I2X (1) - FixMul (k, xDrag));
 			if (bDoSpeedBoost) {
-				if (vel [X] < sbd.vMinVel [X])
-					vel [X] = sbd.vMinVel [X];
-				else if (vel [X] > sbd.vMaxVel [X])
-					vel [X] = sbd.vMaxVel [X];
-				if (vel [Y] < sbd.vMinVel [Y])
-					vel [Y] = sbd.vMinVel [Y];
-				else if (vel [Y] > sbd.vMaxVel [Y])
-					vel [Y] = sbd.vMaxVel [Y];
-				if (vel [Z] < sbd.vMinVel [Z])
-					vel [Z] = sbd.vMinVel [Z];
-				else if (vel [Z] > sbd.vMaxVel [Z])
-					vel [Z] = sbd.vMaxVel [Z];
+				if (vel.v.c.x < sbd.vMinVel.v.c.x)
+					vel.v.c.x = sbd.vMinVel.v.c.x;
+				else if (vel.v.c.x > sbd.vMaxVel.v.c.x)
+					vel.v.c.x = sbd.vMaxVel.v.c.x;
+				if (vel.v.c.y < sbd.vMinVel.v.c.y)
+					vel.v.c.y = sbd.vMinVel.v.c.y;
+				else if (vel.v.c.y > sbd.vMaxVel.v.c.y)
+					vel.v.c.y = sbd.vMaxVel.v.c.y;
+				if (vel.v.c.z < sbd.vMinVel.v.c.z)
+					vel.v.c.z = sbd.vMinVel.v.c.z;
+				else if (vel.v.c.z > sbd.vMaxVel.v.c.z)
+					vel.v.c.z = sbd.vMaxVel.v.c.z;
 				}
 			}
 		}
@@ -945,7 +945,7 @@ if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
 			}
 		else {
 			info.position.vPos = SEGMENTS [info.nSegment].Center ();
-			info.position.vPos [X] += nObject;
+			info.position.vPos.v.c.x += nObject;
 			}
 		if (info.nType == OBJ_WEAPON)
 			Die ();
@@ -954,7 +954,7 @@ if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
 
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
-CATCH_OBJ (this, mType.physInfo.velocity [Y] == 0);
+CATCH_OBJ (this, mType.physInfo.velocity.v.c.y == 0);
 #if UNSTICK_OBJS
 UnstickObject (this);
 #endif
@@ -1052,9 +1052,9 @@ if (!IsMultiGame) {
 		delta_h = (fix) (delta_h / gameStates.gameplay.slowmo [i].fSpeed);
 		}
 	}
-PhysicsSetRotVelAndSaturate (&pvRotVel [X], delta_p);
-PhysicsSetRotVelAndSaturate (&pvRotVel [Y], delta_h);
-pvRotVel [Z] = 0;
+PhysicsSetRotVelAndSaturate (&pvRotVel.v.c.x, delta_p);
+PhysicsSetRotVelAndSaturate (&pvRotVel.v.c.y, delta_h);
+pvRotVel.v.c.z = 0;
 }
 
 //	-----------------------------------------------------------------------------

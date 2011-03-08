@@ -283,9 +283,9 @@ if (gameStates.app.bNostalgia) {
 	count = 4;			//	Don't want to sit in this loop foreverd:\temp\dm_test.
 	i = (NDL - gameStates.app.nDifficultyLevel - 1) * 4 * aim;
 	do {
-		vRandTargetPos [X] = (*vBelievedTargetPos)[X] + FixMul ((d_rand () - 16384), aim);
-		vRandTargetPos [Y] = (*vBelievedTargetPos)[Y] + FixMul ((d_rand () - 16384), aim);
-		vRandTargetPos [Z] = (*vBelievedTargetPos)[Z] + FixMul ((d_rand () - 16384), aim);
+		vRandTargetPos.v.c.x = (*vBelievedTargetPos)[X] + FixMul ((d_rand () - 16384), aim);
+		vRandTargetPos.v.c.y = (*vBelievedTargetPos)[Y] + FixMul ((d_rand () - 16384), aim);
+		vRandTargetPos.v.c.z = (*vBelievedTargetPos)[Z] + FixMul ((d_rand () - 16384), aim);
 		CFixVector::NormalizedDir (vFire, vRandTargetPos, *vFirePoint);
 		dot = CFixVector::Dot (objP->info.position.mOrient.m.v.f, vFire);
 		} while (--count && (dot < I2X (1) / 4));
@@ -294,9 +294,9 @@ if (gameStates.app.bNostalgia) {
 else {	// this way it should always work
 	count = 10;
 	CFixVector	vRand;
-	vRand [X] = FixMul ((d_rand () - 16384), aim);
-	vRand [Y] = FixMul ((d_rand () - 16384), aim);
-	vRand [Z] = FixMul ((d_rand () - 16384), aim);
+	vRand.v.c.x = FixMul ((d_rand () - 16384), aim);
+	vRand.v.c.y = FixMul ((d_rand () - 16384), aim);
+	vRand.v.c.z = FixMul ((d_rand () - 16384), aim);
 	CFixVector vOffs = vRand * I2X (1) / 10;
 	do {
 		CFixVector::NormalizedDir (vFire, *vBelievedTargetPos + vRand, *vFirePoint);

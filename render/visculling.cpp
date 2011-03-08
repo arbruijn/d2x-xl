@@ -566,12 +566,12 @@ for (; i < j; i++, ps++) {
 #else
 	CFixVector v = segP->Center ();
 	transformation.Transform (v, v, 0);
-	v [Z] += segP->MaxRad ();
-	if (zMin > v [Z])
-		zMin = v [Z];
-	if (zMax < v [Z])
-		zMax = v [Z];
-	ps->z = v [Z];
+	v.v.c.z += segP->MaxRad ();
+	if (zMin > v.v.c.z)
+		zMin = v.v.c.z;
+	if (zMax < v.v.c.z)
+		zMax = v.v.c.z;
+	ps->z = v.v.c.z;
 #endif
 	ps->nSegment = gameData.render.mine.segRenderList [0][i];
 	}
@@ -666,7 +666,7 @@ if (d1 < d2)
 	d1 = d2;
 fix r = gameData.segs.segRads [1][gameData.objs.viewerP->info.nSegment];
 gameData.render.zMin = 0;
-gameData.render.zMax = vCenter [Z] + d1 + r;
+gameData.render.zMax = vCenter.v.c.z + d1 + r;
 }
 
 //-----------------------------------------------------------------

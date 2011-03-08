@@ -338,14 +338,14 @@ else {
 
 //------------------------------------------------------------------------------
 
-//#define G3_DOTF(_v0,_v1)	((_v0) [X] * (_v1) [X] + (_v0) [Y] * (_v1) [Y] + (_v0) [Z] * (_v1) [Z])
+//#define G3_DOTF(_v0,_v1)	((_v0).v.c.x * (_v1).v.c.x + (_v0).v.c.y * (_v1).v.c.y + (_v0).v.c.z * (_v1).v.c.z)
 /*
 #define G3_REFLECT(_vr,_vl,_vn) \
  { \
 	float	LdotN = 2 * G3_DOTF(_vl, _vn); \
-	(_vr) [X] = (_vn) [X] * LdotN - (_vl) [X]; \
-	(_vr) [Y] = (_vn) [Y] * LdotN - (_vl) [Y]; \
-	(_vr) [Z] = (_vn) [Z] * LdotN - (_vl) [Z]; \
+	(_vr).v.c.x = (_vn).v.c.x * LdotN - (_vl).v.c.x; \
+	(_vr).v.c.y = (_vn).v.c.y * LdotN - (_vl).v.c.y; \
+	(_vr).v.c.z = (_vn).v.c.z * LdotN - (_vl).v.c.z; \
 	}
 */
 //------------------------------------------------------------------------------
@@ -539,8 +539,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		CFloatVector3::Normalize (spotDir);
 		lightDir = -lightDir;
 		/*
-		lightDir [Y] = -lightDir [Y];
-		lightDir [Z] = -lightDir [Z];
+		lightDir.v.c.y = -lightDir.v.c.y;
+		lightDir.v.c.z = -lightDir.v.c.z;
 		*/
 		//spotEffect = G3_DOTF (spotDir, lightDir);
 		spotEffect = CFloatVector3::Dot (spotDir, lightDir);

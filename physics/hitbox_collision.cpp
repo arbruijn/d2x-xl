@@ -44,17 +44,17 @@ bool PointIsInQuad (CFixVector vRef, CFixVector* vertP, CFixVector vNormal)
 
 //now do 2d check to see if vRef is in side
 //project polygon onto plane by finding largest component of Normal
-t [X] = labs (vNormal [0]);
-t [Y] = labs (vNormal [1]);
-t [Z] = labs (vNormal [2]);
-if (t [X] > t [Y]) {
-	if (t [X] > t [Z])
+t.v.c.x = labs (vNormal [0]);
+t.v.c.y = labs (vNormal [1]);
+t.v.c.z = labs (vNormal [2]);
+if (t.v.c.x > t.v.c.y) {
+	if (t.v.c.x > t.v.c.z)
 		biggest = 0;
 	else
 		biggest = 2;
 	}
 else {
-	if (t [Y] > t [Z])
+	if (t.v.c.y > t.v.c.z)
 		biggest = 1;
 	else
 		biggest = 2;
@@ -116,7 +116,7 @@ p1.Assign (*pv1);
 p2.Assign (*pv2);
 p3.Assign (*pv3);
 d21 = p2 - p1;
-if (!(m = d21 [X] * d21 [X] + d21 [Y] * d21 [Y] + d21 [Z] * d21 [Z]))
+if (!(m = d21.v.c.x * d21.v.c.x + d21.v.c.y * d21.v.c.y + d21.v.c.z * d21.v.c.z))
 	return 0;
 d31 = p3 - p1;
 u = CFloatVector::Dot (d31, d21);

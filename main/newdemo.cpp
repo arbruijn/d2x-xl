@@ -202,12 +202,12 @@ objP->info.position.mOrient.m.v.f[Z] = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
 objP->info.nSegment = nSegment;
 const CFixVector& v = gameData.segs.vertices [SEGMENTS [nSegment].m_verts [0]];
-objP->info.position.vPos [X] = (spp->pos [X] << RELPOS_PRECISION) + v [X];
-objP->info.position.vPos [Y] = (spp->pos [Y] << RELPOS_PRECISION) + v [Y];
-objP->info.position.vPos [Z] = (spp->pos [Z] << RELPOS_PRECISION) + v [Z];
-objP->mType.physInfo.velocity [X] = (spp->vel [X] << VEL_PRECISION);
-objP->mType.physInfo.velocity [Y] = (spp->vel [Y] << VEL_PRECISION);
-objP->mType.physInfo.velocity [Z] = (spp->vel [Z] << VEL_PRECISION);
+objP->info.position.vPos.v.c.x = (spp->pos [0] << RELPOS_PRECISION) + v.v.c.x;
+objP->info.position.vPos.v.c.y = (spp->pos [1] << RELPOS_PRECISION) + v.v.c.y;
+objP->info.position.vPos.v.c.z = (spp->pos [2] << RELPOS_PRECISION) + v.v.c.z;
+objP->mType.physInfo.velocity.v.c.x = (spp->vel [0] << VEL_PRECISION);
+objP->mType.physInfo.velocity.v.c.y = (spp->vel [1] << VEL_PRECISION);
+objP->mType.physInfo.velocity.v.c.z = (spp->vel [2] << VEL_PRECISION);
 }
 
 //	-----------------------------------------------------------------------------
@@ -374,13 +374,13 @@ if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == R
 		NDWriteMatrix(objP->info.position.mOrient);
 	}
 if (bOldFormat) {
-	NDWriteShort (sp.pos [X]);
-	NDWriteShort (sp.pos [Y]);
-	NDWriteShort (sp.pos [Z]);
+	NDWriteShort (sp.pos [0]);
+	NDWriteShort (sp.pos [1]);
+	NDWriteShort (sp.pos [2]);
 	NDWriteShort (sp.nSegment);
-	NDWriteShort (sp.vel [X]);
-	NDWriteShort (sp.vel [Y]);
-	NDWriteShort (sp.vel [Z]);
+	NDWriteShort (sp.vel [0]);
+	NDWriteShort (sp.vel [1]);
+	NDWriteShort (sp.vel [2]);
 	}
 else {
 	NDWriteVector (objP->info.position.vPos);
@@ -518,13 +518,13 @@ if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == R
 		ndInFile.ReadMatrix(objP->info.position.mOrient);
 	}
 if (gameData.demo.bUseShortPos) {
-	sp.pos [X] = NDReadShort ();
-	sp.pos [Y] = NDReadShort ();
-	sp.pos [Z] = NDReadShort ();
+	sp.pos [0] = NDReadShort ();
+	sp.pos [1] = NDReadShort ();
+	sp.pos [2] = NDReadShort ();
 	sp.nSegment = NDReadShort ();
-	sp.vel [X] = NDReadShort ();
-	sp.vel [Y] = NDReadShort ();
-	sp.vel [Z] = NDReadShort ();
+	sp.vel [0] = NDReadShort ();
+	sp.vel [1] = NDReadShort ();
+	sp.vel [2] = NDReadShort ();
 	my_extract_shortpos (objP, &sp);
 	}
 else {

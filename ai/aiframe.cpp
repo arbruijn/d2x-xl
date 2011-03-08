@@ -1352,9 +1352,9 @@ si.ailP->nextActionTime -= gameData.time.xFrame;
 if (si.aiP->SKIP_AI_COUNT) {
 	si.aiP->SKIP_AI_COUNT--;
 	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
-		objP->mType.physInfo.rotThrust [X] = 15 * objP->mType.physInfo.rotThrust [X] / 16;
-		objP->mType.physInfo.rotThrust [Y] = 15 * objP->mType.physInfo.rotThrust [Y] / 16;
-		objP->mType.physInfo.rotThrust [Z] = 15 * objP->mType.physInfo.rotThrust [Z] / 16;
+		objP->mType.physInfo.rotThrust.v.c.x = 15 * objP->mType.physInfo.rotThrust.v.c.x / 16;
+		objP->mType.physInfo.rotThrust.v.c.y = 15 * objP->mType.physInfo.rotThrust.v.c.y / 16;
+		objP->mType.physInfo.rotThrust.v.c.z = 15 * objP->mType.physInfo.rotThrust.v.c.z / 16;
 		if (!si.aiP->SKIP_AI_COUNT)
 			objP->mType.physInfo.flags &= ~PF_USES_THRUST;
 		}

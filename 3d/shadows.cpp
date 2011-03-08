@@ -141,7 +141,7 @@ return m_bFrontFace = IsFacingViewer ();
 
 int G3GetFaceWinding (CFloatVector *v0, CFloatVector *v1, CFloatVector *v2)
 {
-return (((*v1) [X] - (*v0) [X]) * ((*v2) [Y] - (*v1) [Y]) < 0) ? GL_CW : GL_CCW;
+return (((*v1).v.c.x - (*v0).v.c.x) * ((*v2).v.c.y - (*v1).v.c.y) < 0) ? GL_CW : GL_CCW;
 }
 
 //------------------------------------------------------------------------------

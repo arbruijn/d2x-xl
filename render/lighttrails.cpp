@@ -95,7 +95,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 if (gameOpts->render.coronas.bShots && glare.Load ()) {
 	tHitbox*			phb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
-	float				fLength = X2F (phb->vMax [Z] - phb->vMin [Z]) / 2;
+	float				fLength = X2F (phb->vMax.v.c.z - phb->vMin.v.c.z) / 2;
 	tRgbaColorf		color;
 
 	static CFloatVector	vEye = CFloatVector::ZERO;
@@ -232,9 +232,9 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		vOffs.Assign (objP->info.position.mOrient.m.v.f);
 		if (objP->info.renderType == RT_POLYOBJ) {
 			tHitbox*	phb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
-			l = X2F (phb->vMax [Z] - phb->vMin [Z]);
-			dx = X2F (phb->vMax [X] - phb->vMin [X]);
-			dy = X2F (phb->vMax [Y] - phb->vMin [Y]);
+			l = X2F (phb->vMax.v.c.z - phb->vMin.v.c.z);
+			dx = X2F (phb->vMax.v.c.x - phb->vMin.v.c.x);
+			dy = X2F (phb->vMax.v.c.y - phb->vMin.v.c.y);
 			r = float (sqrt (dx * dx + dy * dy)) * ((objP->info.nId == FUSION_ID) ? 1.5f : 3.0f);
 			vCenter += vOffs * (l / 2.0f);
 			}

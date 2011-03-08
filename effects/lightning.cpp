@@ -44,9 +44,9 @@ CFixVector *VmRandomVector (CFixVector *vRand)
 	CFixVector	vr;
 
 do {
-	vr [X] = (90 - d_rand () % 181) * (I2X (1) / 90);
-	vr [Y] = (90 - d_rand () % 181) * (I2X (1) / 90);
-	vr [Z] = (90 - d_rand () % 181) * (I2X (1) / 90);
+	vr.v.c.x = (90 - d_rand () % 181) * (I2X (1) / 90);
+	vr.v.c.y = (90 - d_rand () % 181) * (I2X (1) / 90);
+	vr.v.c.z = (90 - d_rand () % 181) * (I2X (1) / 90);
 } while (vr.IsZero ());
 CFixVector::Normalize (vr);
 *vRand = vr;
@@ -57,7 +57,7 @@ return vRand;
 
 #define SIGN(_i)	(((_i) < 0) ? -1 : 1)
 
-#define VECSIGN(_v)	(SIGN ((_v) [X]) * SIGN ((_v) [Y]) * SIGN ((_v) [Z]))
+#define VECSIGN(_v)	(SIGN ((_v).v.c.x) * SIGN ((_v).v.c.y) * SIGN ((_v).v.c.z))
 
 //------------------------------------------------------------------------------
 
@@ -305,9 +305,9 @@ for (i = m_nNodes - 1, j = 0, pfi = m_nodes.Buffer (), plh = NULL; j < i; j++) {
 	pfj = plh;
 	plh = pfi++;
 	if (j) {
-		plh->m_vNewPos [X] = pfj->m_vNewPos [X] / 4 + plh->m_vNewPos [X] / 2 + pfi->m_vNewPos [X] / 4;
-		plh->m_vNewPos [Y] = pfj->m_vNewPos [Y] / 4 + plh->m_vNewPos [Y] / 2 + pfi->m_vNewPos [Y] / 4;
-		plh->m_vNewPos [Z] = pfj->m_vNewPos [Z] / 4 + plh->m_vNewPos [Z] / 2 + pfi->m_vNewPos [Z] / 4;
+		plh->m_vNewPos.v.c.x = pfj->m_vNewPos.v.c.x / 4 + plh->m_vNewPos.v.c.x / 2 + pfi->m_vNewPos.v.c.x / 4;
+		plh->m_vNewPos.v.c.y = pfj->m_vNewPos.v.c.y / 4 + plh->m_vNewPos.v.c.y / 2 + pfi->m_vNewPos.v.c.y / 4;
+		plh->m_vNewPos.v.c.z = pfj->m_vNewPos.v.c.z / 4 + plh->m_vNewPos.v.c.z / 2 + pfi->m_vNewPos.v.c.z / 4;
 		}
 	}
 }

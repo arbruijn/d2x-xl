@@ -2050,9 +2050,9 @@ void MultiDoDropMarker (char *buf)
 
 if (nPlayer == gameData.multiplayer.nLocalPlayer)  // my marker? don't set it down cuz it might screw up the orientation
 	return;
-vPos [X] = GET_INTEL_INT (buf + 3);
-vPos [Y] = GET_INTEL_INT (buf + 7);
-vPos [Z] = GET_INTEL_INT (buf + 11);
+vPos.v.c.x = GET_INTEL_INT (buf + 3);
+vPos.v.c.y = GET_INTEL_INT (buf + 7);
+vPos.v.c.z = GET_INTEL_INT (buf + 11);
 memcpy (markerManager.Message (2 * nPlayer + nMsg), buf + 15, 40);
 markerManager.SetPosition (nMarker, vPos);
 if ((markerManager.Objects (nMarker) != -1) &&
@@ -2300,9 +2300,9 @@ if (nPlayer < gameData.multiplayer.nPlayers) {
 	gameData.multigame.msg.buf [0] = (char) MULTI_MARKER;
 	gameData.multigame.msg.buf [1] = (char) nPlayer;
 	gameData.multigame.msg.buf [2] = nMessage;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + 3, position [X]);
-	PUT_INTEL_INT (gameData.multigame.msg.buf + 7, position [Y]);
-	PUT_INTEL_INT (gameData.multigame.msg.buf + 11, position [Z]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + 3, position.v.c.x);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + 7, position.v.c.y);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + 11, position.v.c.z);
 	memcpy (gameData.multigame.msg.buf + 15, text, 40);
 	MultiSendData (gameData.multigame.msg.buf, 55, 1);
 	}
@@ -2794,9 +2794,9 @@ gameData.multigame.msg.buf [count++] = MULTI_CONTROLCEN_FIRE;
 memcpy (gameData.multigame.msg.buf + count, vGoal, 12);
 count += 12;
 #else
-vSwapped [X] = (fix) INTEL_INT ((int) (*vGoal) [X]);
-vSwapped [Y] = (fix) INTEL_INT ((int) (*vGoal) [Y]);
-vSwapped [Z] = (fix) INTEL_INT ((int) (*vGoal) [Z]);
+vSwapped.v.c.x = (fix) INTEL_INT ((int) (*vGoal).v.c.x);
+vSwapped.v.c.y = (fix) INTEL_INT ((int) (*vGoal).v.c.y);
+vSwapped.v.c.z = (fix) INTEL_INT ((int) (*vGoal).v.c.z);
 memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
 #endif
@@ -2832,14 +2832,14 @@ count += sizeof (CFixVector);
 memcpy (gameData.multigame.msg.buf + count, &OBJECTS [nObject].mType.physInfo.velocity, sizeof (CFixVector));
 count += sizeof (CFixVector);
 #else
-vSwapped [X] = (fix)INTEL_INT (int (OBJECTS [nObject].info.position.vPos [X]));
-vSwapped [Y] = (fix)INTEL_INT (int (OBJECTS [nObject].info.position.vPos [Y]));
-vSwapped [Z] = (fix)INTEL_INT (int (OBJECTS [nObject].info.position.vPos [Z]));
+vSwapped.v.c.x = (fix)INTEL_INT (int (OBJECTS [nObject].info.position.vPos.v.c.x));
+vSwapped.v.c.y = (fix)INTEL_INT (int (OBJECTS [nObject].info.position.vPos.v.c.y));
+vSwapped.v.c.z = (fix)INTEL_INT (int (OBJECTS [nObject].info.position.vPos.v.c.z));
 memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
-vSwapped [X] = (fix)INTEL_INT (int (OBJECTS [nObject].mType.physInfo.velocity [X]));
-vSwapped [Y] = (fix)INTEL_INT (int (OBJECTS [nObject].mType.physInfo.velocity [Y]));
-vSwapped [Z] = (fix)INTEL_INT (int (OBJECTS [nObject].mType.physInfo.velocity [Z]));
+vSwapped.v.c.x = (fix)INTEL_INT (int (OBJECTS [nObject].mType.physInfo.velocity.v.c.x));
+vSwapped.v.c.y = (fix)INTEL_INT (int (OBJECTS [nObject].mType.physInfo.velocity.v.c.y));
+vSwapped.v.c.z = (fix)INTEL_INT (int (OBJECTS [nObject].mType.physInfo.velocity.v.c.z));
 memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
 #endif
@@ -2872,9 +2872,9 @@ count += 2;
 memcpy (gameData.multigame.msg.buf + count, vPos, sizeof (CFixVector));
 count += sizeof (CFixVector);
 #else
-vSwapped[X] = (fix)INTEL_INT ((int) (*vPos) [X]);
-vSwapped[Y] = (fix)INTEL_INT ((int) (*vPos) [Y]);
-vSwapped[Z] = (fix)INTEL_INT ((int) (*vPos) [Z]);
+vSwapped[X] = (fix)INTEL_INT ((int) (*vPos).v.c.x);
+vSwapped[Y] = (fix)INTEL_INT ((int) (*vPos).v.c.y);
+vSwapped[Z] = (fix)INTEL_INT ((int) (*vPos).v.c.z);
 memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
 #endif
@@ -2909,14 +2909,14 @@ count += sizeof (CFixVector);
 memcpy (gameData.multigame.msg.buf + count, vVel, sizeof (CFixVector));
 count += sizeof (CFixVector);
 #else
-vSwapped[X] = (fix)INTEL_INT ((int) (*vPos) [X]);
-vSwapped[Y] = (fix)INTEL_INT ((int) (*vPos) [Y]);
-vSwapped[Z] = (fix)INTEL_INT ((int) (*vPos) [Z]);
+vSwapped[X] = (fix)INTEL_INT ((int) (*vPos).v.c.x);
+vSwapped[Y] = (fix)INTEL_INT ((int) (*vPos).v.c.y);
+vSwapped[Z] = (fix)INTEL_INT ((int) (*vPos).v.c.z);
 memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
-vSwapped[X] = (fix)INTEL_INT ((int) (*vVel) [X]);
-vSwapped[Y] = (fix)INTEL_INT ((int) (*vVel) [Y]);
-vSwapped[Z] = (fix)INTEL_INT ((int) (*vVel) [Z]);
+vSwapped[X] = (fix)INTEL_INT ((int) (*vVel).v.c.x);
+vSwapped[Y] = (fix)INTEL_INT ((int) (*vVel).v.c.y);
+vSwapped[Z] = (fix)INTEL_INT ((int) (*vVel).v.c.z);
 memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
 #endif
@@ -4202,11 +4202,11 @@ void MultiDoMonsterball (char *buf)
 bCreate = (int) buf [bufP++];
 nSegment = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
-v [X] = GET_INTEL_INT (buf + bufP);
+v.v.c.x = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v [Y] = GET_INTEL_INT (buf + bufP);
+v.v.c.y = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v [Z] = GET_INTEL_INT (buf + bufP);
+v.v.c.z = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 if (bCreate || !gameData.hoard.monsterballP) {
 	gameData.hoard.nMonsterballSeg = FindSegByPos (v, nSegment, 1, 0);
@@ -4214,18 +4214,18 @@ if (bCreate || !gameData.hoard.monsterballP) {
 	CreateMonsterball ();
 	gameData.hoard.monsterballP->info.position.vPos = v;
 	}
-v [X] = GET_INTEL_INT (buf + bufP);
+v.v.c.x = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v [Y] = GET_INTEL_INT (buf + bufP);
+v.v.c.y = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v [Z] = GET_INTEL_INT (buf + bufP);
+v.v.c.z = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 gameData.hoard.monsterballP->ApplyForce (v);
-v [X] = GET_INTEL_INT (buf + bufP);
+v.v.c.x = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v [Y] = GET_INTEL_INT (buf + bufP);
+v.v.c.y = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v [Z] = GET_INTEL_INT (buf + bufP);
+v.v.c.z = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 gameData.hoard.monsterballP->ApplyRotForce (v);
 }
@@ -4250,23 +4250,23 @@ if (bForce || (t - nTimeout > 1000)) {
 	gameData.multigame.msg.buf [bufP++] = (char) bCreate;
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->info.nSegment);
 	bufP += 2;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->info.position.vPos [X]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->info.position.vPos.v.c.x);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->info.position.vPos [Y]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->info.position.vPos.v.c.y);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->info.position.vPos [Z]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->info.position.vPos.v.c.z);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity [X]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity.v.c.x);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity [Y]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity.v.c.y);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity [Z]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity.v.c.z);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel [X]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel.v.c.x);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel [Y]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel.v.c.y);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel [Z]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel.v.c.z);
 	bufP += 4;
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 	}

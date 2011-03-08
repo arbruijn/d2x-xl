@@ -536,9 +536,9 @@ void CTriMeshBuilder::SetupVertexNormals (void)
 
 for (i = gameData.segs.nVertices, pointP = gameData.segs.points.Buffer (); i; i--, pointP++) {
 /*
-	(*pointP->p3_normal.vNormal.XYZ ()) [X] =
-	(*pointP->p3_normal.vNormal.XYZ ()) [Y] =
-	(*pointP->p3_normal.vNormal.XYZ ()) [Z] = 0;
+	(*pointP->p3_normal.vNormal.XYZ ()).v.c.x =
+	(*pointP->p3_normal.vNormal.XYZ ()).v.c.y =
+	(*pointP->p3_normal.vNormal.XYZ ()).v.c.z = 0;
 */
 	pointP->p3_normal.vNormal.XYZ ()->SetZero ();
 

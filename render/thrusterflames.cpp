@@ -68,7 +68,7 @@ if (!m_bHaveFlame) {
 		sinPhi = (1 + sin (phi) / 2) * fScale;
 		for (j = 0; j < RING_SEGS; j++, pv++) {
 			*pv = vRingVerts [j] * float (sinPhi);
-			(*pv) [Z] = z;
+			(*pv).v.c.z = z;
 			}
 		}
 	// second part with decreasing diameter
@@ -77,7 +77,7 @@ if (!m_bHaveFlame) {
 		sinPhi = (1 + sin (phi) / 2) * fScale /** m / n*/;
 		for (j = 0; j < RING_SEGS; j++, pv++) {
 			*pv = vRingVerts [j] * float (sinPhi);
-			(*pv) [Z] = z;
+			(*pv).v.c.z = z;
 			}
 		}
 
@@ -155,7 +155,7 @@ if (gameOpts->render.bHiresModels [0] && (objP->info.nType == OBJ_PLAYER) && !Ge
 	}
 else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
 		tHitbox	*phb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
-		fix		nObjRad = (phb->vMax [Z] - phb->vMin [Z]) / 2;
+		fix		nObjRad = (phb->vMax.v.c.z - phb->vMin.v.c.z) / 2;
 
 	if (bAfterburnerBlob)
 		nObjRad *= 2;
@@ -422,7 +422,7 @@ if (m_nStyle == 1) {	//2D
 		if (IsFiring (ws, i)) {
 			m_ti.fSize [i] *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->ModelId ())) ? 1.2f : 1.5f;
 			if (!gameData.models.vScale.IsZero ())
-				m_ti.fSize [i] *= X2F (gameData.models.vScale [Z]);
+				m_ti.fSize [i] *= X2F (gameData.models.vScale.v.c.z);
 			Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize [i], m_ti.fLength [i], &tcColor);
 			}
 		}

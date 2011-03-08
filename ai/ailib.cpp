@@ -110,9 +110,9 @@ if (vGun->IsZero ())
 if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
 	return 1;
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
-if (((*vGun) [X] == objP->info.position.vPos [X]) &&
-	 ((*vGun) [Y] == objP->info.position.vPos [Y]) &&
-	 ((*vGun) [Z] == objP->info.position.vPos [Z]))
+if (((*vGun).v.c.x == objP->info.position.vPos.v.c.x) &&
+	 ((*vGun).v.c.y == objP->info.position.vPos.v.c.y) &&
+	 ((*vGun).v.c.z == objP->info.position.vPos.v.c.z))
 	fq.startSeg	= objP->info.nSegment;
 else {
 	short nSegment = FindSegByPos (*vGun, objP->info.nSegment, 1, 0);
@@ -202,7 +202,7 @@ else {
 		//	Compute expensive stuff -- gameData.ai.target.vDir and gameData.ai.nTargetVisibility
 		CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, *pos);
 		if (gameData.ai.target.vDir.IsZero ()) {
-			gameData.ai.target.vDir [X] = I2X (1);
+			gameData.ai.target.vDir.v.c.x = I2X (1);
 			}
 		gameData.ai.nTargetVisibility = AICanSeeTarget (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.target.vDir);
 		LimitTargetVisibility (xMaxVisibleDist, ailP);

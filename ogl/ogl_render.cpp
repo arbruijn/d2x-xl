@@ -215,7 +215,7 @@ int G3DrawSphere (g3sPoint *pnt, fix rad, int bBigSphere)
 ogl.SetTexturing (false);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
-glTranslatef (X2F (pnt->p3_vec [X]), X2F (pnt->p3_vec [Y]), X2F (pnt->p3_vec [Z]));
+glTranslatef (X2F (pnt->p3_vec.v.c.x), X2F (pnt->p3_vec.v.c.y), X2F (pnt->p3_vec.v.c.z));
 r = X2F (rad);
 glScaled (r, r, r);
 if (bBigSphere) {
@@ -254,15 +254,15 @@ int G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
 if (ogl.SizeVertexBuffer (nSides + 1)) {
 	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
-	x = X2F (p.p3_vec [X]);
-	y = X2F (p.p3_vec [Y]);
-	z = X2F (p.p3_vec [Z]);
+	x = X2F (p.p3_vec.v.c.x);
+	y = X2F (p.p3_vec.v.c.y);
+	z = X2F (p.p3_vec.v.c.z);
 	r = X2F (rad);
-	v [Z] = z;
+	v.v.c.z = z;
 	for (i = 0; i <= nSides; i++) {
 		ang = 2.0f * float (Pi * (i % nSides) / nSides);
-		v [X] = x + float (cos (ang) * r);
-		v [Y] = y + float (sin (ang) * r);
+		v.v.c.x = x + float (cos (ang) * r);
+		v.v.c.y = y + float (sin (ang) * r);
 		ogl.VertexBuffer () [i] = v;
 		}
 	ogl.FlushBuffers (GL_POLYGON, nSides + 1);
@@ -285,15 +285,15 @@ int G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 if (ogl.SizeVertexBuffer (2 * (nSides + 1))) {
 	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
-	x = X2F (p.p3_vec [X]);
-	y = X2F (p.p3_vec [Y]);
-	v[Z] = X2F (p.p3_vec [Z]);
+	x = X2F (p.p3_vec.v.c.x);
+	y = X2F (p.p3_vec.v.c.y);
+	v[Z] = X2F (p.p3_vec.v.c.z);
 	r = X2F (rad);
 	for (i = 0; i <= nSides; i++) {
 		for (j = i; j <= i + 1; j++) {
 			ang = 2.0f * (float) Pi * (j % nSides) / nSides;
-			v [X] = x + (float) cos (ang) * r;
-			v [Y] = y + (float) sin (ang) * r;
+			v.v.c.x = x + (float) cos (ang) * r;
+			v.v.c.y = y + (float) sin (ang) * r;
 			ogl.VertexBuffer () [i] = v;
 			}
 		}
@@ -1109,18 +1109,18 @@ int COGL::RenderQuad (CBitmap* bmP, CFloatVector& vPosf, float width, float heig
 {
 CFloatVector verts [4];
 verts [0][X] =
-verts [3][X] = vPosf [X] - width;
+verts [3][X] = vPosf.v.c.x - width;
 verts [1][X] =
-verts [2][X] = vPosf [X] + width;
+verts [2][X] = vPosf.v.c.x + width;
 verts [0][Y] =
-verts [1][Y] = vPosf [Y] + height;
+verts [1][Y] = vPosf.v.c.y + height;
 verts [2][Y] =
-verts [3][Y] = vPosf [Y] - height;
+verts [3][Y] = vPosf.v.c.y - height;
 if (nDimensions == 3)
 	verts [0][Z] =
 	verts [1][Z] =
 	verts [2][Z] =
-	verts [3][Z] = vPosf [Z];
+	verts [3][Z] = vPosf.v.c.z;
 int nColors = 0;
 tRgbaColorf* colorP = bmP ? bmP->GetColor (&nColors) : NULL;
 return RenderQuad (bmP, verts, nDimensions, bmP ?  bmP->GetTexCoord () : NULL, colorP, nColors, nWrap);

@@ -605,13 +605,13 @@ if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) {
 	if (gameData.render.zMax < d)
 		gameData.render.zMax = d;
 #else
-	if (gameData.render.zMax < p->p3_vec [Z])
-		gameData.render.zMax = p->p3_vec [Z];
+	if (gameData.render.zMax < p->p3_vec.v.c.z)
+		gameData.render.zMax = p->p3_vec.v.c.z;
 #endif
 	if (!ogl.m_states.bUseTransform) {
-		gameData.segs.fVertices [i][X] = X2F (p->p3_vec [X]);
-		gameData.segs.fVertices [i][Y] = X2F (p->p3_vec [Y]);
-		gameData.segs.fVertices [i][Z] = X2F (p->p3_vec [Z]);
+		gameData.segs.fVertices [i][X] = X2F (p->p3_vec.v.c.x);
+		gameData.segs.fVertices [i][Y] = X2F (p->p3_vec.v.c.y);
+		gameData.segs.fVertices [i][Z] = X2F (p->p3_vec.v.c.z);
 		}
 	p->p3_index = i;
 	gameData.render.mine.nRotatedLast [i] = gameStates.render.nFrameCount;

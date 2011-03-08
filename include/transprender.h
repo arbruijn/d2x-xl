@@ -218,7 +218,7 @@ class CTransparencyRenderer {
 #else
 			if (bTransformed < 1)
 				transformation.Transform (vPos, vPos);
-			return vPos [Z];
+			return vPos.v.c.z;
 #endif
 			}
 
@@ -228,7 +228,7 @@ class CTransparencyRenderer {
 #else
 			if (bTransformed < 1)
 				transformation.Transform (vPos, vPos);
-			return vPos [Z];
+			return vPos.v.c.z;
 #endif
 			}
 

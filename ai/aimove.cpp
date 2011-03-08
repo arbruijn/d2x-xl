@@ -102,16 +102,16 @@ if (bDotBased && (dot < I2X (3)/4)) {
 	//	This funny code is supposed to slow down the robot and move his velocity towards his direction
 	//	more quickly than the general code
 	t = gameData.time.xFrame * 32;
-	pptr->velocity [X] = pptr->velocity [X] / 2 + FixMul ((*vGoalVec) [X], t);
-	pptr->velocity [Y] = pptr->velocity [Y] / 2 + FixMul ((*vGoalVec) [Y], t);
-	pptr->velocity [Z] = pptr->velocity [Z] / 2 + FixMul ((*vGoalVec) [Z], t);
+	pptr->velocity.v.c.x = pptr->velocity.v.c.x / 2 + FixMul ((*vGoalVec).v.c.x, t);
+	pptr->velocity.v.c.y = pptr->velocity.v.c.y / 2 + FixMul ((*vGoalVec).v.c.y, t);
+	pptr->velocity.v.c.z = pptr->velocity.v.c.z / 2 + FixMul ((*vGoalVec).v.c.z, t);
 	}
 else {
 	t = gameData.time.xFrame * 64;
 	d = (gameStates.app.nDifficultyLevel + 5) / 4;
-	pptr->velocity [X] += FixMul ((*vGoalVec) [X], t) * d;
-	pptr->velocity [Y] += FixMul ((*vGoalVec) [Y], t) * d;
-	pptr->velocity [Z] += FixMul ((*vGoalVec) [Z], t) * d;
+	pptr->velocity.v.c.x += FixMul ((*vGoalVec).v.c.x, t) * d;
+	pptr->velocity.v.c.y += FixMul ((*vGoalVec).v.c.y, t) * d;
+	pptr->velocity.v.c.z += FixMul ((*vGoalVec).v.c.z, t) * d;
 	}
 speed = pptr->velocity.Mag();
 xMaxSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel];
@@ -119,9 +119,9 @@ xMaxSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel];
 if ((botInfoP->attackType == 1) || botInfoP->thief || botInfoP->kamikaze)
 	xMaxSpeed *= 2;
 if (speed > xMaxSpeed) {
-	pptr->velocity [X] = (pptr->velocity [X] * 3) / 4;
-	pptr->velocity [Y] = (pptr->velocity [Y] * 3) / 4;
-	pptr->velocity [Z] = (pptr->velocity [Z] * 3) / 4;
+	pptr->velocity.v.c.x = (pptr->velocity.v.c.x * 3) / 4;
+	pptr->velocity.v.c.y = (pptr->velocity.v.c.y * 3) / 4;
+	pptr->velocity.v.c.z = (pptr->velocity.v.c.z * 3) / 4;
 	}
 }
 
@@ -237,24 +237,24 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int fastFlag)
 	ft = gameData.time.xFrame * 32;
 	switch (dir) {
 		case 0:
-			vEvade [X] = FixMul (gameData.ai.target.vDir [Z], ft);
-			vEvade [Y] = FixMul (gameData.ai.target.vDir [Y], ft);
-			vEvade [Z] = FixMul (-gameData.ai.target.vDir [X], ft);
+			vEvade.v.c.x = FixMul (gameData.ai.target.vDir.v.c.z, ft);
+			vEvade.v.c.y = FixMul (gameData.ai.target.vDir.v.c.y, ft);
+			vEvade.v.c.z = FixMul (-gameData.ai.target.vDir.v.c.x, ft);
 			break;
 		case 1:
-			vEvade [X] = FixMul (-gameData.ai.target.vDir [Z], ft);
-			vEvade [Y] = FixMul (gameData.ai.target.vDir [Y], ft);
-			vEvade [Z] = FixMul (gameData.ai.target.vDir [X], ft);
+			vEvade.v.c.x = FixMul (-gameData.ai.target.vDir.v.c.z, ft);
+			vEvade.v.c.y = FixMul (gameData.ai.target.vDir.v.c.y, ft);
+			vEvade.v.c.z = FixMul (gameData.ai.target.vDir.v.c.x, ft);
 			break;
 		case 2:
-			vEvade [X] = FixMul (-gameData.ai.target.vDir [Y], ft);
-			vEvade [Y] = FixMul (gameData.ai.target.vDir [X], ft);
-			vEvade [Z] = FixMul (gameData.ai.target.vDir [Z], ft);
+			vEvade.v.c.x = FixMul (-gameData.ai.target.vDir.v.c.y, ft);
+			vEvade.v.c.y = FixMul (gameData.ai.target.vDir.v.c.x, ft);
+			vEvade.v.c.z = FixMul (gameData.ai.target.vDir.v.c.z, ft);
 			break;
 		case 3:
-			vEvade [X] = FixMul (gameData.ai.target.vDir [Y], ft);
-			vEvade [Y] = FixMul (-gameData.ai.target.vDir [X], ft);
-			vEvade [Z] = FixMul (gameData.ai.target.vDir [Z], ft);
+			vEvade.v.c.x = FixMul (gameData.ai.target.vDir.v.c.y, ft);
+			vEvade.v.c.y = FixMul (-gameData.ai.target.vDir.v.c.x, ft);
+			vEvade.v.c.z = FixMul (gameData.ai.target.vDir.v.c.z, ft);
 			break;
 		default:
 			Error ("Function MoveAroundPlayer: Bad case.");

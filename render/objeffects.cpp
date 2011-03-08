@@ -70,17 +70,17 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		transformation.Begin (vPos, pp->mOrient);
 		glColor3f (1.0f, 1.0f, 1.0f);
 		for (i = 0; i < 4; i++) {
-			vPosf [X] = 0;
-			vPosf [Y] = fVerts [i][Y] * r;
-			vPosf [Z] = fVerts [i][Z] * r;
+			vPosf.v.c.x = 0;
+			vPosf.v.c.y = fVerts [i][Y] * r;
+			vPosf.v.c.z = fVerts [i][Z] * r;
 			transformation.Transform (verts [i], vPosf, 0);
 			}
 		bmP->SetTexCoord (texCoordList [0]);
 		ogl.RenderQuad (bmP, verts, 3);
 		for (i = 3; i >= 0; i--) {
-			vPosf [X] = 0;
-			vPosf [Y] = fVerts [i][Y] * r;
-			vPosf [Z] = fVerts [i][Z] * r;
+			vPosf.v.c.x = 0;
+			vPosf.v.c.y = fVerts [i][Y] * r;
+			vPosf.v.c.z = fVerts [i][Z] * r;
 			transformation.Transform (verts [3 - i], vPosf, 0);
 			}
 		bmP->SetTexCoord (texCoordList [1]);

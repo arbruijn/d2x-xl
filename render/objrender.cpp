@@ -927,9 +927,9 @@ if (!gameStates.app.bNostalgia && gameOpts->Use3DPowerups ()) {
 		objP->mType.physInfo.mass = I2X (1);
 		objP->mType.physInfo.drag = 512;
 		if (gameOpts->render.powerups.nSpin !=
-			((objP->mType.physInfo.rotVel [Y] | objP->mType.physInfo.rotVel [Z]) != 0))
-			objP->mType.physInfo.rotVel [Y] =
-			objP->mType.physInfo.rotVel [Z] = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+			((objP->mType.physInfo.rotVel.v.c.y | objP->mType.physInfo.rotVel.v.c.z) != 0))
+			objP->mType.physInfo.rotVel.v.c.y =
+			objP->mType.physInfo.rotVel.v.c.z = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 		}
 #if DBG
 	RenderRobotShield (objP);

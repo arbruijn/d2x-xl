@@ -56,17 +56,17 @@ bool PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex,
 
 //now do 2d check to see if refP is in side
 //project polygon onto plane by finding largest component of Normal
-t [X] = float (fabs (vNormal [0]));
-t [Y] = float (fabs (vNormal [1]));
-t [Z] = float (fabs (vNormal [2]));
-if (t [X] > t [Y]) {
-	if (t [X] > t [Z])
+t.v.c.x = float (fabs (vNormal [0]));
+t.v.c.y = float (fabs (vNormal [1]));
+t.v.c.z = float (fabs (vNormal [2]));
+if (t.v.c.x > t.v.c.y) {
+	if (t.v.c.x > t.v.c.z)
 		biggest = 0;
 	else
 		biggest = 2;
 	}
 else {
-	if (t [Y] > t [Z])
+	if (t.v.c.y > t.v.c.z)
 		biggest = 1;
 	else
 		biggest = 2;
@@ -189,15 +189,15 @@ uint CheckPointToFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixV
 
 //now do 2d check to see if refP is in side
 //project polygon onto plane by finding largest component of Normal
-t [X] = labs ((*vNormal) [0]);
-t [Y] = labs ((*vNormal) [1]);
-t [Z] = labs ((*vNormal) [2]);
-if (t [X] > t [Y])
-	if (t [X] > t [Z])
+t.v.c.x = labs ((*vNormal) [0]);
+t.v.c.y = labs ((*vNormal) [1]);
+t.v.c.z = labs ((*vNormal) [2]);
+if (t.v.c.x > t.v.c.y)
+	if (t.v.c.x > t.v.c.z)
 		biggest = 0;
 	else
 		biggest = 2;
-else if (t [Y] > t [Z])
+else if (t.v.c.y > t.v.c.z)
 	biggest = 1;
 else
 	biggest = 2;

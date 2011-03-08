@@ -263,9 +263,9 @@ mType.physInfo.rotVel = morph_rotvel;
 pmP = gameData.models.polyModels [0] + ModelId ();
 G3CheckAndSwap (reinterpret_cast<void*> (pmP->Data ()));
 MorphFindModelBounds (pmP, 0, pmmin, pmmax);
-vBoxSize [X] = max (-pmmin [X], pmmax [X]) / 2;
-vBoxSize [Y] = max (-pmmin [Y], pmmax [Y]) / 2;
-vBoxSize [Z] = max (-pmmin [Z], pmmax [Z]) / 2;
+vBoxSize.v.c.x = max (-pmmin.v.c.x, pmmax.v.c.x) / 2;
+vBoxSize.v.c.y = max (-pmmin.v.c.y, pmmax.v.c.y) / 2;
+vBoxSize.v.c.z = max (-pmmin.v.c.z, pmmax.v.c.z) / 2;
 for (i = 0; i < MAX_VECS; i++)		//clear all points
 	mdP->times [i] = 0;
 for (i = 1; i < MAX_SUBMODELS; i++)		//clear all parts

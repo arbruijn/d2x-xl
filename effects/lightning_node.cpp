@@ -226,7 +226,7 @@ CFixVector CLightningNode::CreateJaggy (CFixVector *vPos, CFixVector *vDest, CFi
 Create (&vOffs, &vAttract, nDist, nAmplitude);
 if (vPrevOffs)
 	Smoothe (&vOffs, vPrevOffs, nDist, nSmoothe);
-else if (m_vOffs [X] || m_vOffs [Z] || m_vOffs [Z]) {
+else if (m_vOffs.v.c.x || m_vOffs.v.c.z || m_vOffs.v.c.z) {
 	vOffs += m_vOffs * (I2X (2));
 	vOffs /= 3;
 	}
@@ -324,9 +324,9 @@ VmPointLineIntersection (vi, vOldPos, vOldEnd, m_vPos, 0);
 float fOffset = X2F (CFixVector::Dist (vi, vOldPos)) * fScale;
 vo = vNewEnd - vNewPos;
 fOffset /= X2F (vo.Mag ());
-vo [X] = fix (vo [X] * fOffset);
-vo [Y] = fix (vo [Y] * fOffset);
-vo [Z] = fix (vo [Z] * fOffset);
+vo.v.c.x = fix (vo.v.c.x * fOffset);
+vo.v.c.y = fix (vo.v.c.y * fOffset);
+vo.v.c.z = fix (vo.v.c.z * fOffset);
 vj = vNewPos + vo;
 Move (vj - vi, nSegment, nThread);
 }

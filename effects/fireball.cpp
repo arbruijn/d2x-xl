@@ -193,15 +193,15 @@ FORALL_OBJS (objP, i) {
 				aip->SKIP_AI_COUNT--;
 			else {
 				aip->SKIP_AI_COUNT += nForce;
-				objP->mType.physInfo.rotThrust [X] = ((d_rand () - 16384) * nForce) / 16;
-				objP->mType.physInfo.rotThrust [Y] = ((d_rand () - 16384) * nForce) / 16;
-				objP->mType.physInfo.rotThrust [Z] = ((d_rand () - 16384) * nForce) / 16;
+				objP->mType.physInfo.rotThrust.v.c.x = ((d_rand () - 16384) * nForce) / 16;
+				objP->mType.physInfo.rotThrust.v.c.y = ((d_rand () - 16384) * nForce) / 16;
+				objP->mType.physInfo.rotThrust.v.c.z = ((d_rand () - 16384) * nForce) / 16;
 				objP->mType.physInfo.flags |= PF_USES_THRUST;
 				}
 			}
-		vNegForce [X] = vForce [X] * xScale;
-		vNegForce [Y] = vForce [Y] * xScale;
-		vNegForce [Z] = vForce [Z] * xScale;
+		vNegForce.v.c.x = vForce.v.c.x * xScale;
+		vNegForce.v.c.y = vForce.v.c.y * xScale;
+		vNegForce.v.c.z = vForce.v.c.z * xScale;
 		objP->ApplyRotForce (vNegForce);
 		if (objP->info.xShield >= 0) {
 			if (ROBOTINFO (objP->info.nId).bossFlag &&
@@ -249,13 +249,13 @@ FORALL_OBJS (objP, i) {
 		if (nParent > -1) {
 			killerP = OBJECTS + nParent;
 			if (killerP != gameData.objs.consoleP)		// if someone else whacks you, cut force by 2x
-				vRotForce [X] /= 2;
-				vRotForce [Y] /= 2;
-				vRotForce [Z] /= 2;
+				vRotForce.v.c.x /= 2;
+				vRotForce.v.c.y /= 2;
+				vRotForce.v.c.z /= 2;
 			}
-		vRotForce [X] /= 2;
-		vRotForce [Y] /= 2;
-		vRotForce [Z] /= 2;
+		vRotForce.v.c.x /= 2;
+		vRotForce.v.c.y /= 2;
+		vRotForce.v.c.z /= 2;
 		objP->ApplyForce (vForce);
 		objP->ApplyRotForce (vRotForce);
 		if (gameStates.app.nDifficultyLevel == 0)

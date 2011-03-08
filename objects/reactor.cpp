@@ -142,8 +142,8 @@ xScale = 1;
 if (gameStates.app.nDifficultyLevel == 0)
 	xScale = 4;
 h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
-gameData.objs.consoleP->mType.physInfo.rotVel [X] += (FixMul (d_rand () - 16384, h)) / xScale;
-gameData.objs.consoleP->mType.physInfo.rotVel [Z] += (FixMul (d_rand () - 16384, h)) / xScale;
+gameData.objs.consoleP->mType.physInfo.rotVel.v.c.x += (FixMul (d_rand () - 16384, h)) / xScale;
+gameData.objs.consoleP->mType.physInfo.rotVel.v.c.z += (FixMul (d_rand () - 16384, h)) / xScale;
 //	Hook in the rumble sound effect here.
 oldTime = gameData.reactor.countdown.nTimer;
 if (!TimeStopped ())
