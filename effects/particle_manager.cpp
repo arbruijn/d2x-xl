@@ -287,18 +287,18 @@ for (i = 0; i < MAX_PARTICLE_BUFFERS; i++)
 tSinCosf sinCosPart [PARTICLE_POSITIONS];
 ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
 CFloatMatrix m;
-m.RVec ()[Z] =
-m.UVec ()[Z] =
-m.FVec ()[X] =
-m.FVec ()[Y] = 0;
-m.FVec ()[Z] = 1;
+m.m.v.r[Z] =
+m.m.v.u[Z] =
+m.m.v.f[X] =
+m.m.v.f[Y] = 0;
+m.m.v.f[Z] = 1;
 CFloatVector v;
 v.Set (1.0f, 1.0f, 0.0f, 1.0f);
 for (int i = 0; i < PARTICLE_POSITIONS; i++) {
-	m.RVec ()[X] =
-	m.UVec ()[Y] = sinCosPart [i].fCos;
-	m.UVec ()[X] = sinCosPart [i].fSin;
-	m.RVec ()[Y] = -m.UVec ()[X];
+	m.m.v.r[X] =
+	m.m.v.u[Y] = sinCosPart [i].fCos;
+	m.m.v.u[X] = sinCosPart [i].fSin;
+	m.m.v.r[Y] = -m.m.v.u[X];
 	vRot [i] = m * v;
 	}
 
@@ -307,7 +307,7 @@ for (int i = 0; i < PARTICLE_POSITIONS; i++) {
 CAngleVector vRotAngs;
 vRotAngs.SetZero ();
 for (int i = 0; i < PARTICLE_POSITIONS; i++) {
-	vRotAngs [BA] = i * (I2X (1) / PARTICLE_POSITIONS);
+	vRotAngs.v.c.b = i * (I2X (1) / PARTICLE_POSITIONS);
 	mRot [i] = CFixMatrix::Create (vRotAngs);
 	}
 

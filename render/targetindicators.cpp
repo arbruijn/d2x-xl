@@ -169,15 +169,15 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 		ComputeSinCosTable (sizeofa (sinCosInd), sinCosInd);
 		bInitSinCos = 0;
 		}
-	mRot.RVec ()[X] =
-	mRot.UVec ()[Y] = sinCosInd [nMslLockIndPos [bMarker]].fCos;
-	mRot.UVec ()[X] = sinCosInd [nMslLockIndPos [bMarker]].fSin;
-	mRot.RVec ()[Y] = -mRot.UVec ()[X];
-	mRot.RVec ()[Z] =
-	mRot.UVec ()[Z] =
-	mRot.FVec ()[X] =
-	mRot.FVec ()[Y] = 0;
-	mRot.FVec ()[Z] = 1;
+	mRot.m.v.r[X] =
+	mRot.m.v.u[Y] = sinCosInd [nMslLockIndPos [bMarker]].fCos;
+	mRot.m.v.u[X] = sinCosInd [nMslLockIndPos [bMarker]].fSin;
+	mRot.m.v.r[Y] = -mRot.m.v.u[X];
+	mRot.m.v.r[Z] =
+	mRot.m.v.u[Z] =
+	mRot.m.v.f[X] =
+	mRot.m.v.f[Y] = 0;
+	mRot.m.v.f[Z] = 1;
 
 	fVerts [0][Z] =
 	fVerts [1][Z] =
@@ -214,10 +214,10 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 		if (bMarker)
 			glLineWidth (1);
 		if (!j) {	//now rotate by 90 degrees
-			mRot.RVec ()[X] =
-			mRot.UVec ()[Y] = 0;
-			mRot.UVec ()[X] = 1;
-			mRot.RVec ()[Y] = -1;
+			mRot.m.v.r[X] =
+			mRot.m.v.u[Y] = 0;
+			mRot.m.v.u[X] = 1;
+			mRot.m.v.r[Y] = -1;
 			}
 		}
 	}

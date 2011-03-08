@@ -178,7 +178,7 @@ if (distance < maxDistance) {
 		if (*nVolume <= 0)
 			*nVolume = 0;
 		else {
-			angleFromEar = CFixVector::DeltaAngleNorm (mListener.RVec (), vecToSound, &mListener.UVec ());
+			angleFromEar = CFixVector::DeltaAngleNorm (mListener.m.v.r, vecToSound, &mListener.m.v.u);
 			FixSinCos (angleFromEar, &sinang, &cosang);
 			if (gameConfig.bReverseChannels != gameOpts->UseHiresSound ())
 				cosang = -cosang;

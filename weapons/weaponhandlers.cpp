@@ -179,9 +179,9 @@ if (!nFired) {
 		OBJECTS [nLightObj].Die ();
 	return 0;
 	}
-vForce [X] = -(objP->info.position.mOrient.FVec ()[X] << 7);
-vForce [Y] = -(objP->info.position.mOrient.FVec ()[Y] << 7);
-vForce [Z] = -(objP->info.position.mOrient.FVec ()[Z] << 7);
+vForce [X] = -(objP->info.position.mOrient.m.v.f[X] << 7);
+vForce [Y] = -(objP->info.position.mOrient.m.v.f[Y] << 7);
+vForce [Z] = -(objP->info.position.mOrient.m.v.f[Z] << 7);
 objP->ApplyForce (vForce);
 vForce [X] = (vForce [X] >> 4) + d_rand () - 16384;
 vForce [Y] = (vForce [Y] >> 4) + d_rand () - 16384;

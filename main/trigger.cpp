@@ -700,18 +700,18 @@ else
 	n = gameStates.gameplay.vTgtDir;
 an = n.ToAnglesVec ();
 av = objP->mType.physInfo.velocity.ToAnglesVec ();
-av [PA] -= an [PA];
-av [BA] -= an [BA];
-av [HA] -= an [HA];
+av.v.c.p -= an.v.c.p;
+av.v.c.b -= an.v.c.b;
+av.v.c.h -= an.v.c.h;
 if (nStep) {
 	if (nStep > 1) {
-		av [PA] /= nStep;
-		av [BA] /= nStep;
-		av [HA] /= nStep;
+		av.v.c.p /= nStep;
+		av.v.c.b /= nStep;
+		av.v.c.h /= nStep;
 		ad = objP->info.position.mOrient.ExtractAnglesVec ();
-		ad [PA] += (an [PA] - ad [PA]) / nStep;
-		ad [BA] += (an [BA] - ad [BA]) / nStep;
-		ad [HA] += (an [HA] - ad [HA]) / nStep;
+		ad.v.c.p += (an.v.c.p - ad.v.c.p) / nStep;
+		ad.v.c.b += (an.v.c.b - ad.v.c.b) / nStep;
+		ad.v.c.h += (an.v.c.h - ad.v.c.h) / nStep;
 		objP->info.position.mOrient = CFixMatrix::Create (ad);
 		}
 	else

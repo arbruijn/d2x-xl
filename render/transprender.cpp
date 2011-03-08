@@ -590,10 +590,10 @@ item.lightning = lightningP;
 item.nDepth = nDepth;
 #if 0
 transformation.Transform (vPos, lightningP->m_vPos, 0);
-z = vPos [Z];
+z = vPos.v.c.z;
 transformation.Transform (vPos, lightningP->m_vEnd, 0);
-if (z < vPos [Z])
-	z = vPos [Z];
+if (z < vPos.v.c.z)
+	z = vPos.v.c.z;
 #endif
 fix d1 = Depth (lightningP->m_vPos, false);
 fix d2 = Depth (lightningP->m_vEnd, false);
@@ -1045,27 +1045,27 @@ sparkArea.Add (item->position, nSize);
 transformation.Transform (vPos, item->position, 0);
 if (!item->nType)
 	nCol += 4;
-infoP->vPos [X] = vPos [X] - nSize;
-infoP->vPos [Y] = vPos [Y] + nSize;
-infoP->vPos [Z] = vPos [Z];
+infoP->vPos.v.c.x = vPos.v.c.x - nSize;
+infoP->vPos.v.c.y = vPos.v.c.y + nSize;
+infoP->vPos.v.c.z = vPos.v.c.z;
 infoP->texCoord.v.u = nCol / 8.0f;
 infoP->texCoord.v.v = (nRow + 1) / 8.0f;
 infoP++;
-infoP->vPos [X] = vPos [X] + nSize;
-infoP->vPos [Y] = vPos [Y] + nSize;
-infoP->vPos [Z] = vPos [Z];
+infoP->vPos.v.c.x = vPos.v.c.x + nSize;
+infoP->vPos.v.c.y = vPos.v.c.y + nSize;
+infoP->vPos.v.c.z = vPos.v.c.z;
 infoP->texCoord.v.u = (nCol + 1) / 8.0f;
 infoP->texCoord.v.v = (nRow + 1) / 8.0f;
 infoP++;
-infoP->vPos [X] = vPos [X] + nSize;
-infoP->vPos [Y] = vPos [Y] - nSize;
-infoP->vPos [Z] = vPos [Z];
+infoP->vPos.v.c.x = vPos.v.c.x + nSize;
+infoP->vPos.v.c.y = vPos.v.c.y - nSize;
+infoP->vPos.v.c.z = vPos.v.c.z;
 infoP->texCoord.v.u = (nCol + 1) / 8.0f;
 infoP->texCoord.v.v = nRow / 8.0f;
 infoP++;
-infoP->vPos [X] = vPos [X] - nSize;
-infoP->vPos [Y] = vPos [Y] - nSize;
-infoP->vPos [Z] = vPos [Z];
+infoP->vPos.v.c.x = vPos.v.c.x - nSize;
+infoP->vPos.v.c.y = vPos.v.c.y - nSize;
+infoP->vPos.v.c.z = vPos.v.c.z;
 infoP->texCoord.v.u = nCol / 8.0f;
 infoP->texCoord.v.v = nRow / 8.0f;
 sparkBuffer.nSparks++;

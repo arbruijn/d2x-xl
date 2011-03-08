@@ -65,7 +65,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		LoadTexture (pf->bmi.index, 0);
 		bmP = gameData.pig.tex.bitmapP + pf->vcP->frames [pf->vci.nCurFrame].index;
 		bmP->SetTranspType (2);
-		vPos += objP->info.position.mOrient.FVec () * (-objP->info.xSize);
+		vPos += objP->info.position.mOrient.m.v.f * (-objP->info.xSize);
 		r = X2F (objP->info.xSize);
 		transformation.Begin (vPos, pp->mOrient);
 		glColor3f (1.0f, 1.0f, 1.0f);
@@ -102,7 +102,7 @@ void CObject::CreateAppearanceEffect (void)
 	CFixVector	vPos = info.position.vPos;
 
 if (this == gameData.objs.viewerP)
-	vPos += info.position.mOrient.FVec () * FixMul (info.xSize, flashDist);
+	vPos += info.position.mOrient.m.v.f * FixMul (info.xSize, flashDist);
 CObject* effectObjP = /*Object*/CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
 if (effectObjP) {
 	effectObjP->info.position.mOrient = info.position.mOrient;

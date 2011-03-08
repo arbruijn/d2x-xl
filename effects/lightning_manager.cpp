@@ -481,14 +481,14 @@ FORALL_EFFECT_OBJS (objP, i) {
 	else if ((vEnd = FindTargetPos (objP, pli->nTarget)))
 		pli->nLength = CFixVector::Dist (objP->info.position.vPos, *vEnd) / I2X (1);
 	else {
-		v = objP->info.position.vPos + objP->info.position.mOrient.FVec () * I2X (pli->nLength);
+		v = objP->info.position.vPos + objP->info.position.mOrient.m.v.f * I2X (pli->nLength);
 		vEnd = &v;
 		}
 	color.red = float (pli->color.red) / 255.0f;
 	color.green = float (pli->color.green) / 255.0f;
 	color.blue = float (pli->color.blue) / 255.0f;
 	color.alpha = float (pli->color.alpha) / 255.0f;
-	vDelta = pli->bInPlane ? &objP->info.position.mOrient.RVec () : NULL;
+	vDelta = pli->bInPlane ? &objP->info.position.mOrient.m.v.r : NULL;
 	h = Create (pli->nBolts, &objP->info.position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, I2X (pli->nLength),
 				   I2X (pli->nAmplitude), pli->nAngle, I2X (pli->nOffset), pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
 				   pli->nSmoothe, pli->bClamp, pli->bGlow, pli->bSound, 1, pli->nStyle, &color);

@@ -324,14 +324,14 @@ int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVecto
 	CFixMatrix det;
 	fix d, crossMag2;		//mag squared Cross product
 
-det.RVec () = *p2 - *p1;
-det.FVec () = CFixVector::Cross (*v1, *v2);
-if (!(crossMag2 = CFixVector::Dot (det.FVec (), det.FVec ())))
+det.m.v.r = *p2 - *p1;
+det.m.v.f = CFixVector::Cross (*v1, *v2);
+if (!(crossMag2 = CFixVector::Dot (det.m.v.f, det.m.v.f)))
 	return 0;			//lines are parallel
-det.UVec () = *v2;
+det.m.v.u = *v2;
 d = det.Det();
 *t1 = FixDiv (d, crossMag2);
-det.UVec () = *v1;
+det.m.v.u = *v1;
 d = det.Det();
 *t2 = FixDiv (d, crossMag2);
 return 1;		//found refP

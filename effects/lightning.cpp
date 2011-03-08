@@ -801,10 +801,10 @@ static float ZScale (CFloatVector3* vertexP, int nVerts)
 
 while (nVerts-- > 0) {
 	transformation.Transform (v, *vertexP++);
-	if (zMin > v [Z])
-		zMin = v [Z];
-	if (zMax < v [Z])
-		zMax = v [Z];
+	if (zMin > v.v.c.z)
+		zMin = v.v.c.z;
+	if (zMax < v.v.c.z)
+		zMax = v.v.c.z;
 	}
 return pow (1.0f - (zMin + zMax) / 2.0f / (float) ZRANGE, 50.0f);
 }

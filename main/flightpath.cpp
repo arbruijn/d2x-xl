@@ -36,8 +36,8 @@ if (m_nSize && ((m_tUpdate < 0) || (t >= m_tRefresh))) {
 	m_path [m_nEnd].vOrgPos = objP->info.position.vPos;
 	m_path [m_nEnd].vPos = objP->info.position.vPos;
 	m_path [m_nEnd].mOrient = objP->info.position.mOrient;
-	m_path [m_nEnd].vPos += objP->info.position.mOrient.FVec () * 0;
-	m_path [m_nEnd].vPos += objP->info.position.mOrient.UVec () * 0;
+	m_path [m_nEnd].vPos += objP->info.position.mOrient.m.v.f * 0;
+	m_path [m_nEnd].vPos += objP->info.position.mOrient.m.v.u * 0;
 //	if (!memcmp (m_path + h, m_path + m_nEnd, sizeof (tMovementPath)))
 //		m_nEnd = h;
 //	else
@@ -76,11 +76,11 @@ void CFlightPath::GetViewPoint (void)
 	tPathPoint		*p = GetPoint ();
 
 if (!p)
-	gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.FVec () * PP_DELTAZ;
+	gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.v.f * PP_DELTAZ;
 else {
 	gameData.render.mine.viewer.vPos = p->vPos;
-	gameData.render.mine.viewer.vPos += p->mOrient.FVec () * (PP_DELTAZ * 2 / 3);
-	gameData.render.mine.viewer.vPos += p->mOrient.UVec () * (PP_DELTAY * 2 / 3);
+	gameData.render.mine.viewer.vPos += p->mOrient.m.v.f * (PP_DELTAZ * 2 / 3);
+	gameData.render.mine.viewer.vPos += p->mOrient.m.v.u * (PP_DELTAY * 2 / 3);
 	}
 }
 

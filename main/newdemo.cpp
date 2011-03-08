@@ -190,15 +190,15 @@ void my_extract_shortpos (CObject *objP, tShortPos *spp)
 	sbyte *sp;
 
 sp = spp->orient;
-objP->info.position.mOrient.RVec ()[X] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.UVec ()[X] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.FVec ()[X] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.RVec ()[Y] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.UVec ()[Y] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.FVec ()[Y] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.RVec ()[Z] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.UVec ()[Z] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.FVec ()[Z] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.r[X] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.u[X] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.f[X] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.r[Y] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.u[Y] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.f[Y] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.r[Z] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.u[Z] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.f[Z] = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
 objP->info.nSegment = nSegment;
 const CFixVector& v = gameData.segs.vertices [SEGMENTS [nSegment].m_verts [0]];
@@ -3045,16 +3045,16 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 					(renderType != RT_THRUSTER) && 
 					(renderType != RT_POWERUP)) {
 
-				fvec1 = curObjP->info.position.mOrient.FVec ();
+				fvec1 = curObjP->info.position.mOrient.m.v.f;
 				fvec1 *= (I2X (1)-factor);
-				fvec2 = objP->info.position.mOrient.FVec ();
+				fvec2 = objP->info.position.mOrient.m.v.f;
 				fvec2 *= factor;
 				fvec1 += fvec2;
 				mag1 = CFixVector::Normalize (fvec1);
 				if (mag1 > I2X (1)/256) {
-					rvec1 = curObjP->info.position.mOrient.RVec ();
+					rvec1 = curObjP->info.position.mOrient.m.v.r;
 					rvec1 *= (I2X (1)-factor);
-					rvec2 = objP->info.position.mOrient.RVec ();
+					rvec2 = objP->info.position.mOrient.m.v.r;
 					rvec2 *= factor;
 					rvec1 += rvec2;
 					CFixVector::Normalize (rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1

@@ -326,7 +326,7 @@ if (xObjIntensity) {
 					CHitData		hitData;
 					int			fate;
 
-					tvec = *vObjPos + objP->info.position.mOrient.FVec () * I2X (200);
+					tvec = *vObjPos + objP->info.position.mOrient.m.v.f * I2X (200);
 					fq.startSeg			= objP->info.nSegment;
 					fq.p0					= vObjPos;
 					fq.p1					= &tvec;
@@ -376,7 +376,7 @@ if (xObjIntensity) {
 							CFixVector	vecToPoint;
 							vecToPoint = *vVertPos - *vObjPos;
 							CFixVector::Normalize (vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
-							dot = CFixVector::Dot (vecToPoint, objP->info.position.mOrient.FVec ());
+							dot = CFixVector::Dot (vecToPoint, objP->info.position.mOrient.m.v.f);
 							maxDot = I2X (1) / (gameData.render.vertColor.bDarkness ? spotSize : 2);
 							if (dot < maxDot)
 								gameData.render.lights.dynamicLight [nVertex] += FixDiv (xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.

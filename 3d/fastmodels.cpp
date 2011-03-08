@@ -140,7 +140,7 @@ else {
 		else if (bEmissive)
 			l = I2X (1);
 		else {
-			l = -CFixVector::Dot (transformation.m_info.view [0].FVec (), pmf->m_vNormal);
+			l = -CFixVector::Dot (transformation.m_info.view [0].m.v.f, pmf->m_vNormal);
 			l = 3 * I2X (1) / 4 + l / 4;
 			l = FixMul (l, xModelLight);
 			}

@@ -383,7 +383,7 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 				TeleportBoss (objP);
 				if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewBotsTeleport) {
 					CFixVector	spewPoint;
-					spewPoint = objP->info.position.mOrient.FVec () * (objP->info.xSize * 2);
+					spewPoint = objP->info.position.mOrient.m.v.f * (objP->info.xSize * 2);
 					spewPoint += objP->info.position.vPos;
 					if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewMore && (d_rand () > 16384) &&
 						 (objP->BossSpewRobot (&spewPoint, -1, 0) != -1))

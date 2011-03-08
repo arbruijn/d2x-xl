@@ -878,7 +878,7 @@ vVecToRobot = buddyObjP->info.position.vPos - objP->info.position.vPos;
 dist = CFixVector::Normalize (vVecToRobot);
 if (dist > I2X (100))
 	return 0;
-dot = CFixVector::Dot (vVecToRobot, buddyObjP->info.position.mOrient.FVec ());
+dot = CFixVector::Dot (vVecToRobot, buddyObjP->info.position.mOrient.m.v.f);
 if (dot < I2X (1)/2)
 	return 0;
 if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
@@ -894,7 +894,7 @@ if (gameData.weapons.info [MEGAMSL_ID].renderType == 0) {
 console.printf (CON_DBG, "Buddy firing mega in frame %i\n", gameData.app.nFrameCount);
 #endif
 BuddyMessage (TXT_BUDDY_GAHOOGA);
-nWeaponObj = CreateNewWeaponSimple (&buddyObjP->info.position.mOrient.FVec (), &buddyObjP->info.position.vPos, nObject, MEGAMSL_ID, 1);
+nWeaponObj = CreateNewWeaponSimple (&buddyObjP->info.position.mOrient.m.v.f, &buddyObjP->info.position.vPos, nObject, MEGAMSL_ID, 1);
 if (nWeaponObj != -1)
 	BashBuddyWeaponInfo (nWeaponObj);
 return 1;
@@ -918,7 +918,7 @@ if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
 console.printf (CON_DBG, "Buddy firing smart missile in frame %i\n", gameData.app.nFrameCount);
 #endif
 BuddyMessage (TXT_BUDDY_WHAMMO);
-nWeaponObj = CreateNewWeaponSimple (&buddyObjP->info.position.mOrient.FVec (), &buddyObjP->info.position.vPos, nObject, SMARTMSL_ID, 1);
+nWeaponObj = CreateNewWeaponSimple (&buddyObjP->info.position.mOrient.m.v.f, &buddyObjP->info.position.vPos, nObject, SMARTMSL_ID, 1);
 if (nWeaponObj != -1)
 	BashBuddyWeaponInfo (nWeaponObj);
 return 1;

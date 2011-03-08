@@ -574,9 +574,9 @@ else {
 	}
 if (gameStates.render.bRearView < 0)
 	glScalef (-1.0f, 1.0f, 1.0f);
-m_data.depthScale [X] = float (ZFAR / (ZFAR - ZNEAR));
-m_data.depthScale [Y] = float (ZNEAR * ZFAR / (ZNEAR - ZFAR));
-m_data.depthScale [Z] = float (ZFAR - ZNEAR);
+m_data.depthScale.v.c.x = float (ZFAR / (ZFAR - ZNEAR));
+m_data.depthScale.v.c.y = float (ZNEAR * ZFAR / (ZNEAR - ZFAR));
+m_data.depthScale.v.c.z = float (ZFAR - ZNEAR);
 m_data.screenScale.x = 1.0f / float (screen.Width ());
 m_data.screenScale.y = 1.0f / float (screen.Height ());
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);

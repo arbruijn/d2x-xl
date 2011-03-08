@@ -80,7 +80,7 @@ void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale)
 
 gameData.render.mine.viewer = gameData.objs.viewerP->info.position;
 if (xStereoSeparation && bPlayer)
-	gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
+	gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.v.r * xStereoSeparation;
 
 externalView.SetPos (NULL);
 if (gameStates.render.cameras.bActive) {
@@ -100,8 +100,8 @@ else {
 		CFixMatrix mView;
 
 		mView = gameData.objs.viewerP->info.position.mOrient;
-		mView.FVec ().Neg ();
-		mView.RVec ().Neg ();
+		mView.m.v.f.Neg ();
+		mView.m.v.r.Neg ();
 #else
 		CFixMatrix mHead, mView;
 
@@ -126,7 +126,7 @@ else {
 #endif
 			externalView.GetViewPoint ();
 			if (xStereoSeparation)
-				gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
+				gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.v.r * xStereoSeparation;
 			G3SetViewMatrix (gameData.render.mine.viewer.vPos,
 								  externalView.GetPos () ? externalView.GetPos ()->mOrient : gameData.objs.viewerP->info.position.mOrient,
 								  gameStates.render.xZoom, bOglScale, xStereoSeparation);

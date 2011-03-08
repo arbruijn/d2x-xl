@@ -623,8 +623,8 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 		}
 
 	curAngle += curDelta;
-	a [HA] = curAngle;
-	a [BA] = a [PA] = 0;
+	a.v.c.h = curAngle;
+	a.v.c.b = a.v.c.p = 0;
 	r = CFixMatrix::Create (a);
 	m_data.objP->info.position.mOrient = m_data.orient * r;
 	m_data.objP->info.position.mOrient.CheckAndFix ();

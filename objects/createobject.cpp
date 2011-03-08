@@ -504,7 +504,7 @@ nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, vPos, orient,
 if (nObject >= 0) {
 	CObject *objP = OBJECTS + nObject;
 	objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
-	objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 2);
+	objP->mType.spinRate = objP->info.position.mOrient.m.v.u * (I2X (1) / 2);
 	//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all OBJECTS.
 	objP->SetLife (IMMORTAL_TIME);
 	}

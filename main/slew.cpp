@@ -64,15 +64,15 @@ void slew_reset_orient()
 {
 if (!slewObjP || slewObjP->info.controlType!=CT_SLEW) 
 	return;
-slewObjP->info.position.mOrient.RVec ()[X] = 
-slewObjP->info.position.mOrient.UVec ()[Y] = 
-slewObjP->info.position.mOrient.FVec ()[Z] = I2X (1);
-slewObjP->info.position.mOrient.RVec ()[Y] = 
-slewObjP->info.position.mOrient.RVec ()[Z] = 
-slewObjP->info.position.mOrient.UVec ()[X] =
-slewObjP->info.position.mOrient.UVec ()[Z] = 
-slewObjP->info.position.mOrient.FVec ()[X] = 
-slewObjP->info.position.mOrient.FVec ()[Y] = 0;
+slewObjP->info.position.mOrient.m.v.r[X] = 
+slewObjP->info.position.mOrient.m.v.u[Y] = 
+slewObjP->info.position.mOrient.m.v.f[Z] = I2X (1);
+slewObjP->info.position.mOrient.m.v.r[Y] = 
+slewObjP->info.position.mOrient.m.v.r[Z] = 
+slewObjP->info.position.mOrient.m.v.u[X] =
+slewObjP->info.position.mOrient.m.v.u[Z] = 
+slewObjP->info.position.mOrient.m.v.f[X] = 
+slewObjP->info.position.mOrient.m.v.f[Y] = 0;
 }
 
 int do_slew_movement(CObject *objP, int check_keys, int check_joy )

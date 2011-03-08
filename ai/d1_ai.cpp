@@ -416,19 +416,19 @@ void ai_turn_towards_vector (CFixVector *vGoal, CObject *objP, fix rate)
 
 	new_fVec = *vGoal;
 
-	dot = CFixVector::Dot (*vGoal, objP->info.position.mOrient.FVec ());
+	dot = CFixVector::Dot (*vGoal, objP->info.position.mOrient.m.v.f);
 
 	if (dot < (I2X (1) - gameData.time.xFrame/2)) {
 		fix	mag;
 		fix	new_scale = FixDiv(gameData.time.xFrame * D1_AI_TURN_SCALE, rate);
 		new_fVec *= new_scale;
-		new_fVec += objP->info.position.mOrient.FVec ();
+		new_fVec += objP->info.position.mOrient.m.v.f;
 		mag = CFixVector::Normalize (new_fVec);
 		if (mag < I2X (1)/256) {
 			new_fVec = *vGoal;		//	if degenerate vector, go right to goal
 		}
 	}
-objP->info.position.mOrient = CFixMatrix::CreateFR (new_fVec, objP->info.position.mOrient.RVec ());
+objP->info.position.mOrient = CFixMatrix::CreateFR (new_fVec, objP->info.position.mOrient.m.v.r);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -586,7 +586,7 @@ hitType = FindHitpoint (&fq, &hitData);
 Hit_pos = hitData.hit.vPoint;
 Hit_seg = hitData.hit.nSegment;
 if (/*(hitType == HIT_NONE) ||*/ ((hitType == HIT_OBJECT) && (hitData.hit.nObject == LOCALPLAYER.nObject))) {
-	dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.FVec ());
+	dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.m.v.f);
 	return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 	}
 return 0;
@@ -628,11 +628,11 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 		CAngleVector*	objAngles = &polyObjInfo->animAngles [jointnum];
 
 		for (int nAngle = 0; nAngle < 3; nAngle++) {
-			if ((*jointAngles)[nAngle] != (*objAngles)[nAngle]) {
+			if (jointAngles->v.a [nAngle] != objAngles->v.a [nAngle]) {
 				if (nGun == 0)
 					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles [jointnum][nAngle] = (*jointAngles)[nAngle];
-				fix delta2, deltaAngle = (*jointAngles)[nAngle] - (*objAngles)[nAngle];
+				gameData.ai.localInfo [nObject].goalAngles [jointnum].v.a [nAngle] = jointAngles->v.a [nAngle];
+				fix delta2, deltaAngle = jointAngles->v.a [nAngle] - objAngles->v.a [nAngle];
 				if (deltaAngle >= I2X (1) / 2)
 					delta2 = -ANIM_RATE;
 				else if (deltaAngle >= 0)
@@ -643,7 +643,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 					delta2 = ANIM_RATE;
 				if (nFlinchAttackScale != 1)
 					delta2 *= nFlinchAttackScale;
-				gameData.ai.localInfo [nObject].deltaAngles [jointnum][nAngle] = delta2 / DELTA_ANG_SCALE;		// complete revolutions per second
+				gameData.ai.localInfo [nObject].deltaAngles [jointnum].v.a [nAngle] = delta2 / DELTA_ANG_SCALE;		// complete revolutions per second
 				}
 			}
 		}
@@ -677,22 +677,22 @@ nJointCount = gameData.models.polyModels [0][objP->ModelId ()].ModelCount ();
 for (int joint = 1; joint < nJointCount; joint++) {
 	fix			delta_to_goal;
 	fix			scaled_delta_angle;
-	CAngleVector	*curangp = &objP->rType.polyObjInfo.animAngles [joint];
-	CAngleVector	*goalangp = &gameData.ai.localInfo [nObject].goalAngles [joint];
-	CAngleVector	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [joint];
+	CAngleVector	*curAngP = &objP->rType.polyObjInfo.animAngles [joint];
+	CAngleVector	*goalAngP = &gameData.ai.localInfo [nObject].goalAngles [joint];
+	CAngleVector	*deltaAngP = &gameData.ai.localInfo [nObject].deltaAngles [joint];
 
 	for (int nAngle = 0; nAngle < 3; nAngle++) {
-		delta_to_goal = (*goalangp) [nAngle] - (*curangp) [nAngle];
+		delta_to_goal = goalAngP->v.a [nAngle] - curAngP->v.a [nAngle];
 		if (delta_to_goal > 32767)
 			delta_to_goal -= 65536;
 		else if (delta_to_goal < -32767)
 			delta_to_goal += 65536;
 
 		if (delta_to_goal) {
-			scaled_delta_angle = FixMul((*deltaangp) [nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			(*curangp) [nAngle] += (fixang) scaled_delta_angle;
+			scaled_delta_angle = FixMul (deltaAngP->v.a [nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
+			curAngP->v.a [nAngle] += (fixang) scaled_delta_angle;
 			if (abs(delta_to_goal) < abs(scaled_delta_angle))
-				(*curangp) [nAngle] = (*goalangp) [nAngle];
+				curAngP->v.a [nAngle] = goalAngP->v.a [nAngle];
 			}
 		}
 	}
@@ -857,7 +857,7 @@ void move_towards_vector (CObject *objP, CFixVector *vec_goal)
 
 	vel = piP->velocity;
 	CFixVector::Normalize (vel);
-	dot = CFixVector::Dot (vel, objP->info.position.mOrient.FVec ());
+	dot = CFixVector::Dot (vel, objP->info.position.mOrient.m.v.f);
 
 	if (dot < I2X (3)/4) {
 		//	This funny code is supposed to slow down the robotP and move his velocity towards his direction
@@ -957,7 +957,7 @@ void move_around_player(CObject *objP, CFixVector *vec_to_player, int fast_flag)
 		//	Only take evasive action if looking at playerP.
 		//	Evasion speed is scaled by percentage of shield left so wounded robots evade less effectively.
 
-		dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.FVec ());
+		dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.m.v.f);
 		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !(gameData.objs.consoleP->info.nFlags & PLAYER_FLAGS_CLOAKED)) {
 			fix	damage_scale;
 
@@ -997,10 +997,10 @@ void move_away_from_player(CObject *objP, CFixVector *vec_to_player, int attackT
 		objref = (objP->Index () ^ ((gameData.app.nFrameCount + 3*objP->Index ()) >> 5)) & 3;
 
 		switch (objref) {
-			case 0:	piP->velocity += objP->info.position.mOrient.UVec () * ( gameData.time.xFrame << 5);	break;
-			case 1:	piP->velocity += objP->info.position.mOrient.UVec () * (-gameData.time.xFrame << 5);	break;
-			case 2:	piP->velocity += objP->info.position.mOrient.RVec () * ( gameData.time.xFrame << 5);	break;
-			case 3:	piP->velocity += objP->info.position.mOrient.RVec () * (-gameData.time.xFrame << 5);	break;
+			case 0:	piP->velocity += objP->info.position.mOrient.m.v.u * ( gameData.time.xFrame << 5);	break;
+			case 1:	piP->velocity += objP->info.position.mOrient.m.v.u * (-gameData.time.xFrame << 5);	break;
+			case 2:	piP->velocity += objP->info.position.mOrient.m.v.r * ( gameData.time.xFrame << 5);	break;
+			case 3:	piP->velocity += objP->info.position.mOrient.m.v.r * (-gameData.time.xFrame << 5);	break;
 			default:	Int3();	//	Impossible, bogus value on objref, must be in 0..3
 		}
 	}
@@ -1020,7 +1020,7 @@ void move_away_from_player(CObject *objP, CFixVector *vec_to_player, int attackT
 //--old--
 //--old--	//	Trying to move away from playerP.  If forward vector much different than velocity vector,
 //--old--	//	bash velocity vector twice as much away from playerP as usual.
-//--old--	dot = VmVecDot (&piP->velocity, &objP->info.position.mOrient.FVec ());
+//--old--	dot = VmVecDot (&piP->velocity, &objP->info.position.mOrient.m.v.f);
 //--old--	if (dot > -I2X (3)/4) {
 //--old--		//	This funny code is supposed to slow down the robotP and move his velocity towards his direction
 //--old--		//	more quickly than the general code
@@ -1065,7 +1065,7 @@ void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_p
 
 			vec_to_laser = dangerObjP->info.position.vPos - objP->info.position.vPos;
 			dist_to_laser = CFixVector::Normalize (vec_to_laser);
-			dot = CFixVector::Dot (vec_to_laser, objP->info.position.mOrient.FVec ());
+			dot = CFixVector::Dot (vec_to_laser, objP->info.position.mOrient.m.v.f);
 
 			if (dot > fieldOfView) {
 				fix			laser_robot_dot;
@@ -1074,9 +1074,9 @@ void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_p
 				//	The laser is seen by the robotP, see if it might hit the robotP.
 				//	Get the laser's direction.  If it's a polyobj, it can be gotten cheaply from the orientation matrix.
 				if (dangerObjP->info.renderType == RT_POLYOBJ)
-					laser_fVec = dangerObjP->info.position.mOrient.FVec ();
+					laser_fVec = dangerObjP->info.position.mOrient.m.v.f;
 				else {		//	Not a polyobj, get velocity and Normalize.
-					laser_fVec = dangerObjP->mType.physInfo.velocity;	//dangerObjP->info.position.mOrient.FVec ();
+					laser_fVec = dangerObjP->mType.physInfo.velocity;	//dangerObjP->info.position.mOrient.m.v.f;
 					CFixVector::Normalize (laser_fVec);
 				}
 				laser_vec_to_robot = objP->info.position.vPos - dangerObjP->info.position.vPos;
@@ -1135,7 +1135,7 @@ void do_firing_stuff(CObject *objP, int player_visibility, CFixVector *vec_to_pl
 {
 	if (player_visibility >= 1) {
 		//	Now, if in robotP's field of view, lock onto playerP
-		fix	dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), *vec_to_player);
+		fix	dot = CFixVector::Dot (objP->info.position.mOrient.m.v.f, *vec_to_player);
 		if ((dot >= I2X (7)/8) || (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 			tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 			tAILocalInfo		*ailP = &gameData.ai.localInfo [objP->Index ()];
@@ -1629,7 +1629,7 @@ void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *
 		//	Changed by mk, 01/04/94, onearm would take about 9 seconds until he can fire at you.
 		// if (((!object_animates) || (ailP->achievedState [aiP->CURRENT_GUN] == D1_AIS_FIRE)) && (ailP->nextPrimaryFire <= 0)) {
 		if (!object_animates || (ailP->nextPrimaryFire <= 0)) {
-			dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), *vec_to_player);
+			dot = CFixVector::Dot (objP->info.position.mOrient.m.v.f, *vec_to_player);
 			if (dot >= I2X (7)/8) {
 
 				if (aiP->CURRENT_GUN < gameData.bots.info [1][objP->info.nId].nGuns) {
@@ -2138,7 +2138,7 @@ if (DoAnyRobotDyingFrame (objP))
 				if (!ai_multiplayer_awareness(objP, 75))
 					return;
 
-				vFire = objP->info.position.mOrient.FVec ();
+				vFire = objP->info.position.mOrient.m.v.f;
 				vFire = -vFire;
 				fire_pos = objP->info.position.vPos + vFire;
 
@@ -2359,7 +2359,7 @@ if (DoAnyRobotDyingFrame (objP))
 		switch (aiP->CURRENT_STATE) {
 			case D1_AIS_NONE:
 				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
-				dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), vec_to_player);
+				dot = CFixVector::Dot (objP->info.position.mOrient.m.v.f, vec_to_player);
 				if (dot >= I2X (1)/2)
 					if (aiP->GOAL_STATE == D1_AIS_REST)
 						aiP->GOAL_STATE = D1_AIS_SRCH;

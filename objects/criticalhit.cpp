@@ -73,7 +73,7 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks [0] > m_damage
 #if DBG
 		if (nModel < 2)
 			HUDMessage (0, "crit. hit AIM\n");
-		else if (CFixVector::Dot (info.position.mOrient.FVec (), vDir) < -I2X (1) / 8)
+		else if (CFixVector::Dot (info.position.mOrient.m.v.f, vDir) < -I2X (1) / 8)
 			HUDMessage (0, "crit. hit DRIVES\n");
 		else
 			HUDMessage (0, "crit. hit GUNS\n");
@@ -81,7 +81,7 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks [0] > m_damage
 #if 1
 		if (nModel < 2)
 			m_damage.nHits [0]++;
-		else if (CFixVector::Dot (info.position.mOrient.FVec (), vDir) < -I2X (1) / 8)
+		else if (CFixVector::Dot (info.position.mOrient.m.v.f, vDir) < -I2X (1) / 8)
 			m_damage.nHits [1]++;
 		else
 			m_damage.nHits [2]++;

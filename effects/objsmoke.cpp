@@ -148,7 +148,7 @@ void CreateThrusterFlames (CObject *objP)
 {
 	static int nThrusters = -1;
 
-	CFixVector	pos, dir = objP->info.position.mOrient.FVec ();
+	CFixVector	pos, dir = objP->info.position.mOrient.m.v.f;
 	int			d, j;
 	tParticleEmitter		*emitterP;
 
@@ -165,9 +165,9 @@ else
 d = 8 * objP->info.xSize / 40;
 for (j = 0; j < 2; j++)
 	if (emitterP = GetParticleEmitter (nThrusters, j)) {
-		VmVecScaleAdd (&pos, &objP->info.position.vPos, &objP->info.position.mOrient.FVec (), -objP->info.xSize);
-		VmVecScaleInc (&pos, &objP->info.position.mOrient.RVec (), j ? d : -d);
-		VmVecScaleInc (&pos, &objP->info.position.mOrient.UVec (),  -objP->info.xSize / 25);
+		VmVecScaleAdd (&pos, &objP->info.position.vPos, &objP->info.position.mOrient.m.v.f, -objP->info.xSize);
+		VmVecScaleInc (&pos, &objP->info.position.mOrient.m.v.r, j ? d : -d);
+		VmVecScaleInc (&pos, &objP->info.position.mOrient.m.v.u,  -objP->info.xSize / 25);
 		SetParticleEmitterPos (emitterP, &pos, NULL, objP->info.nSegment);
 		}
 }
@@ -233,7 +233,7 @@ if (gameOpts->render.ship.bBullets) {
 					viewP = objP->View ();
 				vEmitter = *viewP * pm->m_vBullets;
 				vEmitter += posP->vPos;
-				vDir = posP->mOrient.UVec ();
+				vDir = posP->mOrient.m.v.u;
 				vDir.Neg ();
 				if (i < 0) {
 					gameData.multiplayer.bulletEmitters [nPlayer] =
@@ -295,8 +295,8 @@ if (bHires >= 0) {
 				viewP = objP->View ();
 			vEmitter = *viewP * vGunPoints[nGun];
 			vEmitter += posP->vPos;
-			//vDir = posP->mOrient.FVec ();
-			vDir = posP->mOrient.FVec () * (I2X (1) / 8);
+			//vDir = posP->mOrient.m.v.f;
+			vDir = posP->mOrient.m.v.f * (I2X (1) / 8);
 			if (i < 0) {
 				gameData.multiplayer.gatlingSmoke [nPlayer] =
 					particleManager.Create (&vEmitter, &vDir, &posP->mOrient, objP->info.nSegment, 1, GATLING_MAX_PARTS, I2X (1) / 2, 1,
@@ -339,7 +339,7 @@ if ((gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED) ||
 	}
 nObject = objP->Index ();
 if (gameOpts->render.particles.bDecreaseLag && (nPlayer == gameData.multiplayer.nLocalPlayer)) {
-	fn = objP->info.position.mOrient.FVec ();
+	fn = objP->info.position.mOrient.m.v.f;
 	mn = objP->info.position.vPos - objP->info.vLastPos;
 	CFixVector::Normalize (fn);
 	CFixVector::Normalize (mn);
@@ -407,7 +407,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 				nScale /= 2;
 			else
 				nType = 4;
-			vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 8);
+			vDir = OBJPOS (objP)->mOrient.m.v.f * -(I2X (1) / 8);
 			}
 		else if (nType == 2)
 			nParts /= 2;
@@ -472,7 +472,7 @@ if (nParts > 0) {
 	CFixVector* vDirP = objP->mType.physInfo.velocity.IsZero () ? &vDir : NULL;
 
 	if (vDirP) // if the robot is standing still, let the smoke move away from it
-		vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 12);
+		vDir = OBJPOS (objP)->mOrient.m.v.f * -(I2X (1) / 12);
 
 	if (nShield > 4000)
 		nShield = 4000;
@@ -503,7 +503,7 @@ if (nParts > 0) {
 		particleManager.SetDensity (nSmoke, nParts, gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [2]);
 		particleManager.SetSpeed (nSmoke, !objP->mType.physInfo.velocity.IsZero () ? BOT_PART_SPEED : BOT_PART_SPEED * 2 / 3);
 		}
-	pos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (-objP->info.xSize / 2);
+	pos = objP->info.position.vPos + objP->info.position.mOrient.m.v.f * (-objP->info.xSize / 2);
 	particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 	}
 else
@@ -649,7 +649,7 @@ if (nParts) {
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
 		}
-	pos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (-objP->info.xSize);
+	pos = objP->info.position.vPos + objP->info.position.mOrient.m.v.f * (-objP->info.xSize);
 	particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 	}
 else
@@ -706,7 +706,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	color.blue = (float) objP->rType.particleInfo.color.blue / 255.0f;
 	if ((bColor = (color.red + color.green + color.blue > 0)))
 		color.alpha = (float) -objP->rType.particleInfo.color.alpha / 255.0f;
-	dir = objP->info.position.mOrient.FVec () * (objP->rType.particleInfo.nSpeed * I2X (2) / 55);
+	dir = objP->info.position.mOrient.m.v.f * (objP->rType.particleInfo.nSpeed * I2X (2) / 55);
 	nSmoke = particleManager.Create (&objP->info.position.vPos, &dir, &objP->info.position.mOrient,
 												objP->info.nSegment, 1,
 												-objP->rType.particleInfo.nParts / ((nType == SMOKE_TYPE_RAIN) ? 10 : ((nType == SMOKE_TYPE_FIRE) || (nType == SMOKE_TYPE_SNOW)) ? 10 : 1),
@@ -844,7 +844,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	particleManager.SetObjectSystem (nObject, nSmoke);
 	particleManager.SetFadeType (nSmoke, bGatling ? 0 : 4);
 	}
-pos = objP->RenderPos () + objP->info.position.mOrient.FVec () * (-objP->info.xSize / 2);
+pos = objP->RenderPos () + objP->info.position.mOrient.m.v.f * (-objP->info.xSize / 2);
 particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 #endif
 }

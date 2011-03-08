@@ -567,7 +567,7 @@ int CWall::ProcessHit (int nPlayer, CObject* objP)
 	bool bShowMessage;
 
 if (objP->info.nType == OBJ_PLAYER)
-	bShowMessage = (CFixVector::Dot (objP->info.position.mOrient.FVec (), objP->mType.physInfo.velocity) > 0);
+	bShowMessage = (CFixVector::Dot (objP->info.position.mOrient.m.v.f, objP->mType.physInfo.velocity) > 0);
 else if (objP->info.nType == OBJ_ROBOT)
 	bShowMessage = false;
 else if ((objP->info.nType == OBJ_WEAPON) && (objP->cType.laserInfo.parent.nType == OBJ_ROBOT))

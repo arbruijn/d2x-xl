@@ -645,36 +645,36 @@ return (fixang) INTEL_SHORT ((int) f);
 
 void CFile::ReadVector (CFixVector& v) 
 {
-v [X] = ReadFix ();
-v [Y] = ReadFix ();
-v [Z] = ReadFix ();
+v.v.c.x = ReadFix ();
+v.v.c.y = ReadFix ();
+v.v.c.z = ReadFix ();
 }
 
 // ----------------------------------------------------------------------------
 
 void CFile::ReadVector (CFloatVector3& v) 
 {
-v [X] = ReadFloat ();
-v [Y] = ReadFloat ();
-v [Z] = ReadFloat ();
+v.v.c.x = ReadFloat ();
+v.v.c.y = ReadFloat ();
+v.v.c.z = ReadFloat ();
 }
 
 // ----------------------------------------------------------------------------
 
 void CFile::ReadAngVec (CAngleVector& v)
 {
-v [PA] = ReadFixAng ();
-v [BA] = ReadFixAng ();
-v [HA] = ReadFixAng ();
+v.v.c.p = ReadFixAng ();
+v.v.c.b = ReadFixAng ();
+v.v.c.h = ReadFixAng ();
 }
 
 // ----------------------------------------------------------------------------
 
 void CFile::ReadMatrix (CFixMatrix& m)
 {
-ReadVector (m.RVec ());
-ReadVector (m.UVec ());
-ReadVector (m.FVec ());
+ReadVector (m.m.v.r);
+ReadVector (m.m.v.u);
+ReadVector (m.m.v.f);
 }
 
 
@@ -754,36 +754,36 @@ return Write (&a, sizeof (a), 1);
 
 void CFile::WriteVector (const CFixVector& v)
 {
-WriteFix (v [X]);
-WriteFix (v [Y]);
-WriteFix (v [Z]);
+WriteFix (v.v.c.x);
+WriteFix (v.v.c.y);
+WriteFix (v.v.c.z);
 }
 
 // ----------------------------------------------------------------------------
 
 void CFile::WriteVector (const CFloatVector3& v)
 {
-WriteFloat (v [X]);
-WriteFloat (v [Y]);
-WriteFloat (v [Z]);
+WriteFloat (v.v.c.x);
+WriteFloat (v.v.c.y);
+WriteFloat (v.v.c.z);
 }
 
 // ----------------------------------------------------------------------------
 
 void CFile::WriteAngVec (const CAngleVector& v)
 {
-WriteFixAng (v [PA]);
-WriteFixAng (v [BA]);
-WriteFixAng (v [HA]);
+WriteFixAng (v.v.c.p);
+WriteFixAng (v.v.c.b);
+WriteFixAng (v.v.c.h);
 }
 
 // ----------------------------------------------------------------------------
 
 void CFile::WriteMatrix (const CFixMatrix& m)
 {
-WriteVector (m.RVec ());
-WriteVector (m.UVec ());
-WriteVector (m.FVec ());
+WriteVector (m.m.v.r);
+WriteVector (m.m.v.u);
+WriteVector (m.m.v.f);
 }
 
 

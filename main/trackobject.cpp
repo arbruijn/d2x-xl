@@ -43,10 +43,10 @@ if (objP->info.nType == OBJ_ROBOT) {
 	}
 vGoal = objP->info.position.vPos - trackerP->info.position.vPos;
 CFixVector::Normalize (vGoal);
-*xDot = CFixVector::Dot (vGoal, trackerP->info.position.mOrient.FVec ());
+*xDot = CFixVector::Dot (vGoal, trackerP->info.position.mOrient.m.v.f);
 if ((*xDot < xMinTrackableDot) && (*xDot > I2X (9) / 10)) {
 	CFixVector::Normalize (vGoal);
-	*xDot = CFixVector::Dot (vGoal, trackerP->info.position.mOrient.FVec ());
+	*xDot = CFixVector::Dot (vGoal, trackerP->info.position.mOrient.m.v.f);
 	}
 
 if ((*xDot >= xMinTrackableDot) || 
@@ -163,7 +163,7 @@ else {
 		vecToCurObj = curObjP->info.position.vPos - *vTrackerPos;
 		dist = CFixVector::Normalize (vecToCurObj);
 		if (dist < maxTrackableDist) {
-			dot = CFixVector::Dot (vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient.FVec () : trackerP->info.position.mOrient.FVec ());
+			dot = CFixVector::Dot (vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient.m.v.f : trackerP->info.position.mOrient.m.v.f);
 
 			//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 			//	to determine if an CObject is initially trackable.  FindHomingObject is called on subsequent
@@ -178,7 +178,7 @@ else {
 				} 
 			else if (dot > I2X (1) - (I2X (1) - curMinTrackableDot) * 2) {
 				CFixVector::Normalize (vecToCurObj);
-				dot = CFixVector::Dot (vecToCurObj, trackerP->info.position.mOrient.FVec ());
+				dot = CFixVector::Dot (vecToCurObj, trackerP->info.position.mOrient.m.v.f);
 				if (dot > curMinTrackableDot) {
 					if (dot > maxDot) {
 						if (ObjectToObjectVisibility (trackerP, OBJECTS + nObject, FQ_TRANSWALL)) {
@@ -287,7 +287,7 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 	if (dist >= maxTrackableDist)
 		continue;
 	CFixVector::Normalize (vecToCurObj);
-	dot = CFixVector::Dot (vecToCurObj, trackerP->info.position.mOrient.FVec ());
+	dot = CFixVector::Dot (vecToCurObj, trackerP->info.position.mOrient.m.v.f);
 	if (bIsProximity)
 		dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...
 	if (dot < xBestDot)

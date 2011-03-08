@@ -128,7 +128,7 @@ if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
 	bmP->SetupTexture (1, 0);
 	bmP = bmP->Override (iFrame);
 	}
-CFixVector delta = objP->info.position.mOrient.UVec () * objP->info.xSize;
+CFixVector delta = objP->info.position.mOrient.m.v.u * objP->info.xSize;
 CFixVector vTop = objP->info.position.vPos + delta;
 CFixVector vBottom = objP->info.position.vPos - delta;
 G3TransformAndEncodePoint (&pTop, vTop);

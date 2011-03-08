@@ -194,23 +194,23 @@ if (ogl.SizeVertexBuffer (3)) {
 	arrowPoint.p3_index = -1;
 	ogl.VertexBuffer () [1].Assign (spherePoint.p3_vec);
 	// Draw CPlayerData's up vector
-	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.UVec () * (size*2);
+	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.v.u * (size*2);
 	G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
 	ogl.VertexBuffer () [0].Assign (arrowPoint.p3_vec);
 	// Draw shaft of arrow
-	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size * 3);
+	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.v.f * (size * 3);
 	G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
 	ogl.VertexBuffer () [2].Assign (arrowPoint.p3_vec);
 	ogl.FlushBuffers (GL_LINE_STRIP, 3);
 	ogl.VertexBuffer () [1].Assign (arrowPoint.p3_vec);
 	// Draw right head of arrow
-	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*2);
-	vHeadPos += objP->info.position.mOrient.RVec () * (size*1);
+	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.v.f * (size*2);
+	vHeadPos += objP->info.position.mOrient.m.v.r * (size*1);
 	G3TransformAndEncodePoint (&headPoint, vHeadPos);
 	ogl.VertexBuffer () [0].Assign (headPoint.p3_vec);
 	// Draw left head of arrow
-	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*2);
-	vHeadPos += objP->info.position.mOrient.RVec () * (size* (-1));
+	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.v.f * (size*2);
+	vHeadPos += objP->info.position.mOrient.m.v.r * (size* (-1));
 	G3TransformAndEncodePoint (&headPoint, vHeadPos);
 	ogl.VertexBuffer () [2].Assign (headPoint.p3_vec);
 	ogl.FlushBuffers (GL_LINE_STRIP, 3);
@@ -416,10 +416,10 @@ automap.m_bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAG
 if ((m_bRadar = m_bRadar) == 2) {
 	CFixMatrix& po = gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient;
 #if 1
-	mRadar.RVec () = po.RVec ();
-	mRadar.FVec () = po.UVec ();
-	mRadar.FVec () [Y] = -mRadar.FVec () [Y];
-	mRadar.UVec () = po.FVec ();
+	mRadar.m.v.r = po.m.v.r;
+	mRadar.m.v.f = po.m.v.u;
+	mRadar.m.v.f [Y] = -mRadar.m.v.f [Y];
+	mRadar.m.v.u = po.m.v.f;
 #else
 	mRadar.rVec.p.x = po->rVec.p.x;
 	mRadar.rVec.p.y = po->rVec.p.y;
@@ -459,14 +459,14 @@ if (bAutomapFrame)
 	ogl.Viewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
 RenderStartFrame ();
 if (m_bRadar == 2) {
-	m_data.viewer.vPos = m_data.viewTarget + mRadar.FVec () * (-m_data.nViewDist);
+	m_data.viewer.vPos = m_data.viewTarget + mRadar.m.v.f * (-m_data.nViewDist);
 	G3SetViewMatrix (m_data.viewer.vPos, mRadar, m_data.nZoom * 2, 1);
 	}
 else {
-	m_data.viewer.vPos = m_data.viewTarget + m_data.viewer.mOrient.FVec () * -m_data.nViewDist;
+	m_data.viewer.vPos = m_data.viewTarget + m_data.viewer.mOrient.m.v.f * -m_data.nViewDist;
 	if (!m_bRadar && xStereoSeparation) {
 		//glClear (GL_COLOR_BUFFER_BIT);
-		m_data.viewer.vPos += m_data.viewer.mOrient.RVec () * xStereoSeparation;
+		m_data.viewer.vPos += m_data.viewer.mOrient.m.v.r * xStereoSeparation;
 		}
 	G3SetViewMatrix (m_data.viewer.vPos, m_data.viewer.mOrient, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
 	}
@@ -658,9 +658,9 @@ if (m_bDisplay < 0) {
 	playerP = OBJECTS + LOCALPLAYER.nObject;
 	m_data.viewer.mOrient = playerP->info.position.mOrient;
 
-	m_vTAngles [PA] = PITCH_DEFAULT;
-	m_vTAngles [HA] = 0;
-	m_vTAngles [BA] = 0;
+	m_vTAngles.v.c.p = PITCH_DEFAULT;
+	m_vTAngles.v.c.h = 0;
+	m_vTAngles.v.c.b = 0;
 
 	m_data.viewTarget = playerP->info.position.vPos;
 	t1 = xEntryTime = TimerGetFixedSeconds ();
@@ -696,22 +696,22 @@ int CAutomap::Update (void)
 if (controls [0].firePrimaryDownCount) {
 	// Reset orientation
 	m_data.nViewDist = ZOOM_DEFAULT;
-	m_vTAngles [PA] = PITCH_DEFAULT;
-	m_vTAngles [HA] = 0;
-	m_vTAngles [BA] = 0;
+	m_vTAngles.v.c.p = PITCH_DEFAULT;
+	m_vTAngles.v.c.h = 0;
+	m_vTAngles.v.c.b = 0;
 	m_data.viewTarget = playerP->info.position.vPos;
 	}
 if (controls [0].forwardThrustTime)
-	m_data.viewTarget += m_data.viewer.mOrient.FVec () * (controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR);
-m_vTAngles [PA] += (fixang) FixDiv (controls [0].pitchTime, ROT_SPEED_DIVISOR);
-m_vTAngles [HA] += (fixang) FixDiv (controls [0].headingTime, ROT_SPEED_DIVISOR);
-m_vTAngles [BA] += (fixang) FixDiv (controls [0].bankTime, ROT_SPEED_DIVISOR*2);
+	m_data.viewTarget += m_data.viewer.mOrient.m.v.f * (controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR);
+m_vTAngles.v.c.p += (fixang) FixDiv (controls [0].pitchTime, ROT_SPEED_DIVISOR);
+m_vTAngles.v.c.h += (fixang) FixDiv (controls [0].headingTime, ROT_SPEED_DIVISOR);
+m_vTAngles.v.c.b += (fixang) FixDiv (controls [0].bankTime, ROT_SPEED_DIVISOR*2);
 
 m = CFixMatrix::Create (m_vTAngles);
 if (controls [0].verticalThrustTime || controls [0].sidewaysThrustTime) {
 	m_data.viewer.mOrient = playerP->info.position.mOrient * m;
-	m_data.viewTarget += m_data.viewer.mOrient.UVec () * (controls [0].verticalThrustTime * SLIDE_SPEED);
-	m_data.viewTarget += m_data.viewer.mOrient.RVec () * (controls [0].sidewaysThrustTime * SLIDE_SPEED);
+	m_data.viewTarget += m_data.viewer.mOrient.m.v.u * (controls [0].verticalThrustTime * SLIDE_SPEED);
+	m_data.viewTarget += m_data.viewer.mOrient.m.v.r * (controls [0].sidewaysThrustTime * SLIDE_SPEED);
 	}
 m_data.viewer.mOrient = playerP->info.position.mOrient * m;
 if (m_data.nViewDist < ZOOM_MIN_VALUE)

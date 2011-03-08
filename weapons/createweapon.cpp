@@ -137,9 +137,9 @@ if (damage > 0) {
 	CAngleVector	v;
 	CFixMatrix		m;
 
-	v [PA] = fixang (damage / 2 - d_rand () % damage);
-	v [BA] = 0;
-	v [HA] = fixang (damage / 2 - d_rand () % damage);
+	v.v.c.p = fixang (damage / 2 - d_rand () % damage);
+	v.v.c.b = 0;
+	v.v.c.h = fixang (damage / 2 - d_rand () % damage);
 	m = CFixMatrix::Create (v);
 	vDir = m * vDir;
 	CFixVector::Normalize (vDir);
@@ -223,8 +223,8 @@ weaponInfoP = gameData.weapons.info + nWeaponType;
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
 	int bSpectator = SPECTATOR (parentP);
-	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, bSpectator ? gameStates.app.playerPos.mOrient.UVec () : parentP->info.position.mOrient.UVec ());
-//	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, bSpectator ? &gameStates.app.playerPos.mOrient.UVec () : &parentP->info.position.mOrient.UVec (), NULL);
+	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, bSpectator ? gameStates.app.playerPos.mOrient.m.v.u : parentP->info.position.mOrient.m.v.u);
+//	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, bSpectator ? &gameStates.app.playerPos.mOrient.m.v.u : &parentP->info.position.mOrient.m.v.u, NULL);
 	if (((nParent != nViewer) || bSpectator) && (parentP->info.nType != OBJ_WEAPON)) {
 		// Muzzle flash
 		if ((weaponInfoP->nFlashVClip > -1) && ((nWeaponType != OMEGA_ID) || !gameOpts->render.lightning.bOmega || gameStates.render.bOmegaModded))
@@ -304,8 +304,8 @@ if (parentP && (parentP->info.nType == OBJ_WEAPON)) {
 // Create orientation matrix so we can look from this pov
 //	Homing missiles also need an orientation matrix so they know if they can make a turn.
 //if ((objP->info.renderType == RT_POLYOBJ) || (WI_homingFlag (objP->info.nId)))
-	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, parentP->info.position.mOrient.UVec ());
-//	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, &parentP->info.position.mOrient.UVec (), NULL);
+	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, parentP->info.position.mOrient.m.v.u);
+//	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, &parentP->info.position.mOrient.m.v.u, NULL);
 if (((nParent != nViewer) || SPECTATOR (parentP)) && (parentP->info.nType != OBJ_WEAPON)) {
 	// Muzzle flash
 	if (weaponInfoP->nFlashVClip > -1)
@@ -349,7 +349,7 @@ if (!WeaponIsMine (nWeaponType))
 	xParentSpeed = 0;
 else {
 	xParentSpeed = parentP->mType.physInfo.velocity.Mag ();
-	if (CFixVector::Dot (parentP->mType.physInfo.velocity, parentP->info.position.mOrient.FVec ()) < 0)
+	if (CFixVector::Dot (parentP->mType.physInfo.velocity, parentP->info.position.mOrient.m.v.f) < 0)
 		xParentSpeed = -xParentSpeed;
 	}
 

@@ -687,7 +687,7 @@ void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors, int nT
 	CSegment*	segP;
 	CFixVector	viewDir, viewPos;
 
-viewDir = transformation.m_info.view [0].FVec ();
+viewDir = transformation.m_info.view [0].m.v.f;
 viewPos = transformation.m_info.pos;
 gameData.render.zMin = 0x7fffffff;
 gameData.render.zMax = -0x7fffffff;

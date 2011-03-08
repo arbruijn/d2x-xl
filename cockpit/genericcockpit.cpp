@@ -1078,19 +1078,19 @@ tUVL [2].u =
 tUVL [2].v =
 tUVL [3].v = I2X (1);
 
-v1 = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.FVec () * (I2X (4));
-v1 += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec () * (-I2X (1));
-v2 += gameData.objs.viewerP->info.position.mOrient.UVec () * (I2X (1));
+v1 = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.m.v.f * (I2X (4));
+v1 += gameData.objs.viewerP->info.position.mOrient.m.v.r * xStereoSeparation;
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.m.v.r * (-I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.m.v.u * (I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [0], v2);
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec () * (+I2X (1));
-v2 += gameData.objs.viewerP->info.position.mOrient.UVec () * (I2X (1));
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.m.v.r * (+I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.m.v.u * (I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [1], v2);
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec () * (+I2X (1));
-v2 += gameData.objs.viewerP->info.position.mOrient.UVec () * (-I2X (1));
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.m.v.r * (+I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.m.v.u * (-I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [2], v2);
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec () * (-I2X (1));
-v2 += gameData.objs.viewerP->info.position.mOrient.UVec () * (-I2X (1));
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.m.v.r * (-I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.m.v.u * (-I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [3], v2);
 
 if ( reticleCanvas == NULL) {

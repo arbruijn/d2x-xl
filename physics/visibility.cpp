@@ -217,7 +217,7 @@ int TargetInLineOfFire (void)
 	//see if we can see this CPlayerData
 
 fq.p0 = &gameData.objs.viewerP->info.position.vPos;
-vEndPos = *fq.p0 + gameData.objs.viewerP->info.position.mOrient.FVec () * I2X (2000);
+vEndPos = *fq.p0 + gameData.objs.viewerP->info.position.mOrient.m.v.f * I2X (2000);
 fq.p1 = &vEndPos;
 fq.radP0 = 0;
 fq.radP1 = 0;

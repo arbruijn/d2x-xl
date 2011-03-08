@@ -80,7 +80,7 @@ gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
 if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitData.hit.nObject != TARGETOBJ->Index ()))
 	return 0;
-dot = CFixVector::Dot (*vVecToTarget, objP->info.position.mOrient.FVec ());
+dot = CFixVector::Dot (*vVecToTarget, objP->info.position.mOrient.m.v.f);
 if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9))
 	return 2;
 if (gameOpts->gameplay.nAIAggressivity) {	// player visible at raised AI aggressivity when having headlight on

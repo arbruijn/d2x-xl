@@ -47,10 +47,10 @@ if (rate == 0)
 	return 0;
 if ((objP->info.nId == BABY_SPIDER_ID) && (objP->info.nType == OBJ_ROBOT)) {
 	objP->TurnTowardsVector (*vGoal, rate);
-	return CFixVector::Dot (*vGoal, objP->info.position.mOrient.FVec ());
+	return CFixVector::Dot (*vGoal, objP->info.position.mOrient.m.v.f);
 	}
 new_fvec = *vGoal;
-dot = CFixVector::Dot (*vGoal, objP->info.position.mOrient.FVec ());
+dot = CFixVector::Dot (*vGoal, objP->info.position.mOrient.m.v.f);
 if (!IsMultiGame)
 	dot = (fix) (dot / gameStates.gameplay.slowmo [0].fSpeed);
 if (dot < (I2X (1) - gameData.time.xFrame/2)) {
@@ -58,7 +58,7 @@ if (dot < (I2X (1) - gameData.time.xFrame/2)) {
 	if (!IsMultiGame)
 		new_scale = (fix) (new_scale / gameStates.gameplay.slowmo [0].fSpeed);
 	new_fvec *= new_scale;
-	new_fvec += objP->info.position.mOrient.FVec ();
+	new_fvec += objP->info.position.mOrient.m.v.f;
 	mag = CFixVector::Normalize (new_fvec);
 	if (mag < I2X (1)/256) {
 #if TRACE
@@ -74,7 +74,7 @@ if (gameStates.gameplay.seismic.nMagnitude) {
 	scale = FixDiv (2*gameStates.gameplay.seismic.nMagnitude, ROBOTINFO (objP->info.nId).mass);
 	new_fvec += rand_vec * scale;
 	}
-objP->info.position.mOrient = CFixMatrix::CreateFR(new_fvec, objP->info.position.mOrient.RVec ());
+objP->info.position.mOrient = CFixMatrix::CreateFR(new_fvec, objP->info.position.mOrient.m.v.r);
 return dot;
 }
 
@@ -93,7 +93,7 @@ void MoveTowardsVector (CObject *objP, CFixVector *vGoalVec, int bDotBased)
 
 vel = pptr->velocity;
 CFixVector::Normalize (vel);
-dot = CFixVector::Dot (vel, objP->info.position.mOrient.FVec ());
+dot = CFixVector::Dot (vel, objP->info.position.mOrient.m.v.f);
 
 if (botInfoP->thief)
 	dot = (I2X (1)+dot)/2;
@@ -267,7 +267,7 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int fastFlag)
 		//	Only take evasive action if looking at player.
 		//	Evasion speed is scaled by percentage of shield left so wounded robots evade less effectively.
 
-		dot = CFixVector::Dot (gameData.ai.target.vDir, objP->info.position.mOrient.FVec ());
+		dot = CFixVector::Dot (gameData.ai.target.vDir, objP->info.position.mOrient.m.v.f);
 		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !TARGETOBJ->Cloaked ()) {
 			fix	xDamageScale;
 
@@ -309,16 +309,16 @@ void MoveAwayFromTarget (CObject *objP, CFixVector *vVecToTarget, int attackType
 
 		switch (objref) {
 			case 0:
-				pptr->velocity += objP->info.position.mOrient.UVec () * (gameData.time.xFrame << 5);
+				pptr->velocity += objP->info.position.mOrient.m.v.u * (gameData.time.xFrame << 5);
 				break;
 			case 1:
-				pptr->velocity += objP->info.position.mOrient.UVec () * (-gameData.time.xFrame << 5);
+				pptr->velocity += objP->info.position.mOrient.m.v.u * (-gameData.time.xFrame << 5);
 				break;
 			case 2:
-				pptr->velocity += objP->info.position.mOrient.RVec () * (gameData.time.xFrame << 5);
+				pptr->velocity += objP->info.position.mOrient.m.v.r * (gameData.time.xFrame << 5);
 				break;
 			case 3:
-				pptr->velocity += objP->info.position.mOrient.RVec () * ( -gameData.time.xFrame << 5);
+				pptr->velocity += objP->info.position.mOrient.m.v.r * ( -gameData.time.xFrame << 5);
 				break;
 			default:
 				Int3 ();	//	Impossible, bogus value on objref, must be in 0d:\temp\dm_test3
@@ -361,7 +361,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 		fieldOfView = ROBOTINFO (objP->info.nId).fieldOfView [gameStates.app.nDifficultyLevel];
 		vVecToLaser = dObjP->info.position.vPos - objP->info.position.vPos;
 		xDistToLaser = CFixVector::Normalize (vVecToLaser);
-		dot = CFixVector::Dot (vVecToLaser, objP->info.position.mOrient.FVec ());
+		dot = CFixVector::Dot (vVecToLaser, objP->info.position.mOrient.m.v.f);
 
 		if ((dot > fieldOfView) || (botInfoP->companion)) {
 			fix			dotLaserRobot;
@@ -370,9 +370,9 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 			//	The laser is seen by the robot, see if it might hit the robot.
 			//	Get the laser's direction.  If it's a polyobjP, it can be gotten cheaply from the orientation matrix.
 			if (dObjP->info.renderType == RT_POLYOBJ)
-				fVecLaser = dObjP->info.position.mOrient.FVec ();
+				fVecLaser = dObjP->info.position.mOrient.m.v.f;
 			else {		//	Not a polyobjP, get velocity and Normalize.
-				fVecLaser = dObjP->mType.physInfo.velocity;	//dObjP->info.position.mOrient.FVec ();
+				fVecLaser = dObjP->mType.physInfo.velocity;	//dObjP->info.position.mOrient.m.v.f;
 				CFixVector::Normalize (fVecLaser);
 				}
 			vLaserToRobot = objP->info.position.vPos - dObjP->info.position.vPos;

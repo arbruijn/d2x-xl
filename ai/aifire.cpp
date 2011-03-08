@@ -162,12 +162,12 @@ xProjectedTime = FixDiv (xDistToTarget, xMaxWeaponSpeed);
 (*vFire)[Y] = ComputeLeadComponent ((*vBelievedTargetPos)[Y], (*vFirePoint)[Y], TARGETOBJ->mType.physInfo.velocity[Y], xProjectedTime);
 (*vFire)[Z] = ComputeLeadComponent ((*vBelievedTargetPos)[Z], (*vFirePoint)[Z], TARGETOBJ->mType.physInfo.velocity[Z], xProjectedTime);
 CFixVector::Normalize (*vFire);
-Assert (CFixVector::Dot (*vFire, objP->info.position.mOrient.FVec ()) < I2X (3) / 2);
+Assert (CFixVector::Dot (*vFire, objP->info.position.mOrient.m.v.f) < I2X (3) / 2);
 //	Make sure not firing at especially strange angle.  If so, try to correct.  If still bad, give up after one try.
-if (CFixVector::Dot (*vFire, objP->info.position.mOrient.FVec ()) < I2X (1) / 2) {
+if (CFixVector::Dot (*vFire, objP->info.position.mOrient.m.v.f) < I2X (1) / 2) {
 	*vFire += vVecToTarget;
 	*vFire *= I2X (1) / 2;
-	if (CFixVector::Dot (*vFire, objP->info.position.mOrient.FVec ()) < I2X (1) / 2) {
+	if (CFixVector::Dot (*vFire, objP->info.position.mOrient.m.v.f) < I2X (1) / 2) {
 		return 0;
 		}
 	}
@@ -287,7 +287,7 @@ if (gameStates.app.bNostalgia) {
 		vRandTargetPos [Y] = (*vBelievedTargetPos)[Y] + FixMul ((d_rand () - 16384), aim);
 		vRandTargetPos [Z] = (*vBelievedTargetPos)[Z] + FixMul ((d_rand () - 16384), aim);
 		CFixVector::NormalizedDir (vFire, vRandTargetPos, *vFirePoint);
-		dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), vFire);
+		dot = CFixVector::Dot (objP->info.position.mOrient.m.v.f, vFire);
 		} while (--count && (dot < I2X (1) / 4));
 #if 0
 	}
@@ -300,7 +300,7 @@ else {	// this way it should always work
 	CFixVector vOffs = vRand * I2X (1) / 10;
 	do {
 		CFixVector::NormalizedDir (vFire, *vBelievedTargetPos + vRand, *vFirePoint);
-		dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), vFire);
+		dot = CFixVector::Dot (objP->info.position.mOrient.m.v.f, vFire);
 		vRand -= vOffs;
 		} while (--count && (dot < I2X (1) / 4));
 	}
@@ -343,7 +343,7 @@ void DoFiringStuff (CObject *objP, int nTargetVisibility, CFixVector *vVecToTarg
 if ((gameData.ai.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) ||
 	 (gameData.ai.nTargetVisibility >= 1)) {
 	//	Now, if in robot's field of view, lock onto CPlayerData
-	fix dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), gameData.ai.target.vDir);
+	fix dot = CFixVector::Dot (objP->info.position.mOrient.m.v.f, gameData.ai.target.vDir);
 	if ((dot >= I2X (7) / 8) || TARGETOBJ->Cloaked ()) {
 		tAIStaticInfo*	aiP = &objP->cType.aiInfo;
 		tAILocalInfo*	ailP = gameData.ai.localInfo + objP->Index ();
@@ -438,7 +438,7 @@ if ((gameData.ai.nTargetVisibility == 2) ||
 	//	Above comment corrected.  Date changed from 1994, to 1995.  Should fix some very subtle bugs, 
 	// as well as not cause me to wonder, in the future, why I was writing AI code for onearm ten months before he existed.
 	if (!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailP)) {
-		dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), gameData.ai.target.vDir);
+		dot = CFixVector::Dot (objP->info.position.mOrient.m.v.f, gameData.ai.target.vDir);
 		if ((dot >= I2X (7) / 8) || ((dot > I2X (1) / 4) && botInfoP->bossFlag)) {
 			if (nGun < botInfoP->nGuns) {
 				if (botInfoP->attackType == 1) {
@@ -530,7 +530,7 @@ else {	//	---------------------------------------------------------------
 		if ((!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailP)) &&
 			 (gameData.ai.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
 			CFixVector::NormalizedDir(vLastPos, gameData.ai.target.vBelievedPos, objP->info.position.vPos);
-			dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), vLastPos);
+			dot = CFixVector::Dot (objP->info.position.mOrient.m.v.f, vLastPos);
 			if (dot >= I2X (7) / 8) {
 				if (aiP->CURRENT_GUN < botInfoP->nGuns) {
 					if (botInfoP->attackType == 1) {

@@ -127,7 +127,7 @@ else {
 
 //	Create Random perturbation vector, but favor _not_ going up in CPlayerData's reference.
 vPerturb = CFixVector::Random ();
-vPerturb += parentObjP->info.position.mOrient.UVec () * (-I2X (1) / 2);
+vPerturb += parentObjP->info.position.mOrient.m.v.u * (-I2X (1) / 2);
 for (i = 0; i < nOmegaBlobs; i++) {
 	CFixVector	vTempPos;
 	short			nBlobObj, nSegment;
@@ -288,7 +288,7 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	CFixVector	vPerturb, perturbed_fvec;
 
 	vPerturb = CFixVector::Random();
-	perturbed_fvec = bSpectate ? gameStates.app.playerPos.mOrient.FVec () : parentObjP->info.position.mOrient.FVec ()
+	perturbed_fvec = bSpectate ? gameStates.app.playerPos.mOrient.m.v.f : parentObjP->info.position.mOrient.m.v.f
 	               + vPerturb * (I2X (1) / 16);
 	vTargetPos = *vMuzzle + perturbed_fvec * MAX_OMEGA_DIST;
 	fq.startSeg = nFiringSeg;

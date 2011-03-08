@@ -108,19 +108,19 @@ void CThrusterFlames::CalcPosOnShip (CObject *objP, CFixVector *vPos)
 	tObjTransformation	*pPos = OBJPOS (objP);
 
 if (gameOpts->render.bHiresModels [0]) {
-	vPos [0] = pPos->vPos + pPos->mOrient.FVec () * (-objP->info.xSize);
-	vPos [0] += pPos->mOrient.RVec () * (-(8 * objP->info.xSize / 44));
-	vPos [1] = vPos [0] + pPos->mOrient.RVec () * (8 * objP->info.xSize / 22);
+	vPos [0] = pPos->vPos + pPos->mOrient.m.v.f * (-objP->info.xSize);
+	vPos [0] += pPos->mOrient.m.v.r * (-(8 * objP->info.xSize / 44));
+	vPos [1] = vPos [0] + pPos->mOrient.m.v.r * (8 * objP->info.xSize / 22);
 	}
 else {
-	vPos [0] = pPos->vPos + pPos->mOrient.FVec () * (-objP->info.xSize / 10 * 9);
+	vPos [0] = pPos->vPos + pPos->mOrient.m.v.f * (-objP->info.xSize / 10 * 9);
 	if (gameStates.app.bFixModels)
-		vPos [0] += pPos->mOrient.UVec () * (objP->info.xSize / 40);
+		vPos [0] += pPos->mOrient.m.v.u * (objP->info.xSize / 40);
 	else
-		vPos [0] += pPos->mOrient.UVec () * (-objP->info.xSize / 20);
+		vPos [0] += pPos->mOrient.m.v.u * (-objP->info.xSize / 20);
 	vPos [1] = vPos [0];
-	vPos [0] += pPos->mOrient.RVec () * (-8 * objP->info.xSize / 49);
-	vPos [1] += pPos->mOrient.RVec () * (8 * objP->info.xSize / 49);
+	vPos [0] += pPos->mOrient.m.v.r * (-8 * objP->info.xSize / 49);
+	vPos [1] += pPos->mOrient.m.v.r * (8 * objP->info.xSize / 49);
 	}
 }
 
@@ -173,7 +173,7 @@ else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
 		ti.fLength [0] /= 2;
 	if (!gameData.models.vScale.IsZero ())
 		ti.vPos [0] *= gameData.models.vScale;
-	*ti.vPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (-nObjRad);
+	*ti.vPos = objP->info.position.vPos + objP->info.position.mOrient.m.v.f * (-nObjRad);
 	ti.nType [0] = 
 	ti.nType [1] = 1;
 	ti.mtP = NULL;
@@ -224,7 +224,7 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 				ti.vPos [i] *= gameData.models.vScale;
 			ti.vPos [i] += posP->vPos;
 			ti.vDir [i] = *viewP * ti.mtP->vDir [i];
-			//CAngleVector a1 = objP->info.position.mOrient.FVec ().ToAnglesVec ();
+			//CAngleVector a1 = objP->info.position.mOrient.m.v.f.ToAnglesVec ();
 			CFixVector v = ti.mtP->vDir [i];
 			CAngleVector a = v.ToAnglesVec ();
 			//CAngleVector a;

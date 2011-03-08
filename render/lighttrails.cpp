@@ -108,7 +108,7 @@ if (gameOpts->render.coronas.bShots && glare.Load ()) {
 	color.green *= fScale;
 	color.blue *= fScale;
 	glare.Bitmap ()->SetColor (colorP);
-	ogl.RenderSprite (glare.Bitmap (), objP->info.position.vPos + objP->info.position.mOrient.FVec () * (F2X (fLength - 0.5f)), I2X (1), I2X (1), alpha, LIGHTTRAIL_BLENDMODE, 1);
+	ogl.RenderSprite (glare.Bitmap (), objP->info.position.vPos + objP->info.position.mOrient.m.v.f * (F2X (fLength - 0.5f)), I2X (1), I2X (1), alpha, LIGHTTRAIL_BLENDMODE, 1);
 	glare.Bitmap ()->SetColor (NULL);
 	}
 }
@@ -165,7 +165,7 @@ else if (gameOpts->render.coronas.bShots && corona.Load ()) {
 			vPos += o * xOffset;
 			}
 		else
-			vPos += objP->info.position.mOrient.FVec () * xOffset;
+			vPos += objP->info.position.mOrient.m.v.f * xOffset;
 		}
 	if (xSize < I2X (1))
 		xSize = I2X (1);
@@ -229,7 +229,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				};
 
 		vCenter.Assign (objP->info.position.vPos);
-		vOffs.Assign (objP->info.position.mOrient.FVec ());
+		vOffs.Assign (objP->info.position.mOrient.m.v.f);
 		if (objP->info.renderType == RT_POLYOBJ) {
 			tHitbox*	phb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
 			l = X2F (phb->vMax [Z] - phb->vMin [Z]);

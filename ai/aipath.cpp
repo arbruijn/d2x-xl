@@ -1156,7 +1156,7 @@ vNormToGoal = *vGoalPoint - vCurPos;
 CFixVector::Normalize (vNormToGoal);
 vNormCurVel = vCurVel;
 CFixVector::Normalize (vNormCurVel);
-vNormFwd = objP->info.position.mOrient.FVec ();
+vNormFwd = objP->info.position.mOrient.m.v.f;
 CFixVector::Normalize (vNormFwd);
 dot = CFixVector::Dot (vNormToGoal, vNormFwd);
 //	If very close to facing opposite desired vector, perturb vector

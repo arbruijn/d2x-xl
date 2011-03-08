@@ -94,9 +94,9 @@ if (bOglScale) {
 #endif
 	}
 else {
-	transformation.m_info.view [0].RVec () *= (transformation.m_info.scale [X]);
-	transformation.m_info.view [0].UVec () *= (transformation.m_info.scale [Y]);
-	transformation.m_info.view [0].FVec () *= (transformation.m_info.scale [Z]);
+	transformation.m_info.view [0].m.v.r *= (transformation.m_info.scale [X]);
+	transformation.m_info.view [0].m.v.u *= (transformation.m_info.scale [Y]);
+	transformation.m_info.view [0].m.v.f *= (transformation.m_info.scale [Z]);
 	transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
 	glScalef (1, 1, -1);
 	}

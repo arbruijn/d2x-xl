@@ -167,9 +167,9 @@ if (!bHasModel && ((info.nType != OBJ_WEAPON) || !gameData.objs.bIsMissile [info
 		return 0;
 
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	a[PA] = (rand () % I2X (1)) - I2X (1) / 2;
-	a[BA] = (rand () % I2X (1)) - I2X (1) / 2;
-	a[HA] = (rand () % I2X (1)) - I2X (1) / 2;
+	a.v.c.p = (rand () % I2X (1)) - I2X (1) / 2;
+	a.v.c.b = (rand () % I2X (1)) - I2X (1) / 2;
+	a.v.c.h = (rand () % I2X (1)) - I2X (1) / 2;
 	info.position.mOrient = CFixMatrix::Create(a);
 	}
 mType.physInfo.mass = I2X (1);
@@ -403,7 +403,7 @@ if (nType == OBJ_POWERUP) {
 if (b3DShield) {
 	if ((objP->mType.physInfo.velocity.IsZero ()) && (objP->info.movementType != MT_SPINNING)) {
 		objP->info.movementType = MT_SPINNING;
-		objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 8);
+		objP->mType.spinRate = objP->info.position.mOrient.m.v.u * (I2X (1) / 8);
 		}
 	//the actual shield in the sprite texture has 3/4 of the textures size
 	DrawShieldSphere (objP, color.red, color.green, color.blue, 1.0f, 0, 3 * objP->info.xSize / 4);
@@ -432,7 +432,7 @@ else if (fAlpha < 1) {
 #if 0
 	if (!IsMultiGame && (nType == OBJ_WEAPON) && (objP->info.nId == PLASMA_ID) && !gameStates.render.bPlasmaModded) {
 		double angle = X2F ((6 * (gameData.time.xGame - objP->CreationTime ())) % I2X (2)) * Pi;
-		vPos += objP->info.position.mOrient.RVec () * F2X (sin (angle) / 2.0f) + objP->info.position.mOrient.UVec () * F2X (cos (angle) / 2.0f);
+		vPos += objP->info.position.mOrient.m.v.r * F2X (sin (angle) / 2.0f) + objP->info.position.mOrient.m.v.u * F2X (cos (angle) / 2.0f);
 		objP->SetRenderPos (vPos);
 		}
 #endif
@@ -896,7 +896,7 @@ else {
 					RenderLightTrail (objP);
 					gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (3) / 2);
 					CFixVector vSavedPos = objP->info.position.vPos;
-					objP->info.position.vPos += objP->info.position.mOrient.FVec ();
+					objP->info.position.vPos += objP->info.position.mOrient.m.v.f;
 					DrawPolygonObject (objP, 0);
 					objP->info.position.vPos = vSavedPos;
 					}

@@ -479,7 +479,7 @@ for (;;) {
 
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
-				l = -CFixVector::Dot (transformation.m_info.view[0].FVec (), *VECPTR(p+16));
+				l = -CFixVector::Dot (transformation.m_info.view[0].m.v.f, *VECPTR(p+16));
 				l = I2X (1) / 4 + (l * 3) / 4;
 				l = FixMul (l, xModelLight);
 				}
@@ -628,7 +628,7 @@ for (;;) {
 			fix light;
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
-				light = -CFixVector::Dot (transformation.m_info.view [0].FVec (), *VECPTR (p+16));
+				light = -CFixVector::Dot (transformation.m_info.view [0].m.v.f, *VECPTR (p+16));
 				light = I2X (1)/4 + (light*3)/4;
 				light = FixMul (light, xModelLight);
 				}

@@ -136,7 +136,7 @@ CFixVector *get_dy_vec (int h)
 
 dyp = yCache + h;
 if (!ycFlags [h]) {
-	CFixVector tv = mSurfaceOrient.UVec () * (h * TERRAIN_HEIGHT_SCALE);
+	CFixVector tv = mSurfaceOrient.m.v.u * (h * TERRAIN_HEIGHT_SCALE);
 	transformation.RotateScaled (*dyp, tv);
 	ycFlags [h] = 1;
 	}
@@ -168,19 +168,19 @@ jLow = 0;
 jHigh = gameData.render.terrain.nGridH - 1;
 memset (ycFlags, 0, sizeof (ycFlags));
 gameStates.render.nInterpolationMethod = im;
-tv = mSurfaceOrient.RVec () * TERRAIN_GRID_SCALE;
+tv = mSurfaceOrient.m.v.r * TERRAIN_GRID_SCALE;
 transformation.RotateScaled (delta_i, tv);
-tv = mSurfaceOrient.FVec () * TERRAIN_GRID_SCALE;
+tv = mSurfaceOrient.m.v.f * TERRAIN_GRID_SCALE;
 transformation.RotateScaled (delta_j, tv);
-gameData.render.terrain.vStartPoint = *vOrgPoint + mSurfaceOrient.RVec () *
+gameData.render.terrain.vStartPoint = *vOrgPoint + mSurfaceOrient.m.v.r *
 					(-(gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE);
-gameData.render.terrain.vStartPoint += mSurfaceOrient.FVec () *
+gameData.render.terrain.vStartPoint += mSurfaceOrient.m.v.f *
 					(-(gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
 tv = gameData.objs.viewerP->info.position.vPos - gameData.render.terrain.vStartPoint;
-iViewer = CFixVector::Dot (tv, mSurfaceOrient.RVec ()) / TERRAIN_GRID_SCALE;
+iViewer = CFixVector::Dot (tv, mSurfaceOrient.m.v.r) / TERRAIN_GRID_SCALE;
 if (iViewer > iHigh)
 	iViewer = iHigh;
-jViewer = CFixVector::Dot (tv, mSurfaceOrient.FVec ()) / TERRAIN_GRID_SCALE;
+jViewer = CFixVector::Dot (tv, mSurfaceOrient.m.v.f) / TERRAIN_GRID_SCALE;
 if (jViewer > jHigh)
 	jViewer = jHigh;
 G3TransformAndEncodePoint (&pLast, gameData.render.terrain.vStartPoint);
@@ -223,7 +223,7 @@ for (i = iLow; i < iViewer; i++) {
 	}
 //now do i from other end
 delta_i = -delta_i;		//going the other way now...
-gameData.render.terrain.vStartPoint += mSurfaceOrient.RVec () *
+gameData.render.terrain.vStartPoint += mSurfaceOrient.m.v.r *
 						((iHigh-iLow)*TERRAIN_GRID_SCALE);
 G3TransformAndEncodePoint (&pLast, gameData.render.terrain.vStartPoint);
 pLowSave = pLast;

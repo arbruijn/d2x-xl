@@ -265,7 +265,7 @@ if (nGun < 0) {	// use center between gunPoints nGun and nGun + 1
 else {
 	v [0] = vGunPoints [nGun];
 	if (bLaserOffs)
-		v [0] += posP->mOrient.UVec () * LASER_OFFS;
+		v [0] += posP->mOrient.m.v.u * LASER_OFFS;
 	}
 if (!mP)
 	mP = &m;
@@ -278,11 +278,11 @@ else
 v[1] = *viewP * v [0];
 memcpy (mP, &posP->mOrient, sizeof (CFixMatrix));
 if (nGun < 0)
-	v[1] += (*mP).UVec () * (-2 * v->Mag ());
+	v[1] += (*mP).m.v.u * (-2 * v->Mag ());
 (*vMuzzle) = posP->vPos + v [1];
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
-	*vMuzzle += mP->FVec () * (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
+	*vMuzzle += mP->m.v.f * (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
 return vMuzzle;
 }
 
@@ -359,13 +359,13 @@ if (nFate == HIT_OBJECT) {
 	}
 #endif
 //	Now, make laser spread out.
-vLaserDir = m.FVec ();
+vLaserDir = m.m.v.f;
 if (xSpreadR || xSpreadU) {
-	vLaserDir += m.RVec () * xSpreadR;
-	vLaserDir += m.UVec () * xSpreadU;
+	vLaserDir += m.m.v.r * xSpreadR;
+	vLaserDir += m.m.v.u * xSpreadU;
 	}
 if (bLaserOffs)
-	vLaserDir += m.UVec () * LASER_OFFS;
+	vLaserDir += m.m.v.u * LASER_OFFS;
 nObject = CreateNewWeapon (&vLaserDir, &vLaserPos, nLaserSeg, objP->Index (), nLaserType, bMakeSound);
 //	Omega cannon is a hack, not surprisingly.  Don't want to do the rest of this stuff.
 if (nLaserType == OMEGA_ID)
@@ -454,7 +454,7 @@ void HomingMissileTurnTowardsVelocity (CObject *objP, CFixVector *vNormVel)
 frameTime = gameStates.limitFPS.bHomers ? MSEC2X (gameStates.app.tick40fps.nTime) : gameData.time.xFrame;
 vNewDir = *vNormVel;
 vNewDir *= ((fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
-vNewDir += objP->info.position.mOrient.FVec ();
+vNewDir += objP->info.position.mOrient.m.v.f;
 CFixVector::Normalize (vNewDir);
 objP->info.position.mOrient = CFixMatrix::CreateF(vNewDir);
 }
@@ -941,9 +941,9 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	else if ((gameData.weapons.nSecondary == MEGA_INDEX) || (gameData.weapons.nSecondary == EARTHSHAKER_INDEX)) {
 		CFixVector vForce;
 
-	vForce [X] = - (gameData.objs.consoleP->info.position.mOrient.FVec ()[X] << 7);
-	vForce [Y] = - (gameData.objs.consoleP->info.position.mOrient.FVec ()[Y] << 7);
-	vForce [Z] = - (gameData.objs.consoleP->info.position.mOrient.FVec ()[Z] << 7);
+	vForce [X] = - (gameData.objs.consoleP->info.position.mOrient.m.v.f[X] << 7);
+	vForce [Y] = - (gameData.objs.consoleP->info.position.mOrient.m.v.f[Y] << 7);
+	vForce [Z] = - (gameData.objs.consoleP->info.position.mOrient.m.v.f[Z] << 7);
 	gameData.objs.consoleP->ApplyForce (vForce);
 	vForce [X] = (vForce [X] >> 4) + d_rand () - 16384;
 	vForce [Y] = (vForce [Y] >> 4) + d_rand () - 16384;

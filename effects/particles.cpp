@@ -217,9 +217,9 @@ else {
 	else {
 		CAngleVector a;
 		CFixMatrix m;
-		a [PA] = randN (I2X (1) / 4) - I2X (1) / 8;
-		a [BA] = randN (I2X (1) / 4) - I2X (1) / 8;
-		a [HA] = randN (I2X (1) / 4) - I2X (1) / 8;
+		a.v.c.p = randN (I2X (1) / 4) - I2X (1) / 8;
+		a.v.c.b = randN (I2X (1) / 4) - I2X (1) / 8;
+		a.v.c.h = randN (I2X (1) / 4) - I2X (1) / 8;
 		m = CFixMatrix::Create (a);
 		if (nType == WATERFALL_PARTICLES)
 			CFixVector::Normalize (m_vDir);
@@ -249,8 +249,8 @@ else if ((nType != BUBBLE_PARTICLES) && (nType != RAIN_PARTICLES) && (nType != S
 else {
 	//m_vPos = *vPos + vDrift * (I2X (1) / 32);
 	nSpeed = m_vDrift.Mag () / 16;
-	CFixVector v = CFixVector::Avg ((*mOrient).RVec () * (nSpeed - randN (2 * nSpeed)), (*mOrient).UVec () * (nSpeed - randN (2 * nSpeed)));
-	m_vPos = *vPos + v + (*mOrient).FVec () * (I2X (1) / 2 - randN (I2X (1)));
+	CFixVector v = CFixVector::Avg ((*mOrient).m.v.r * (nSpeed - randN (2 * nSpeed)), (*mOrient).m.v.u * (nSpeed - randN (2 * nSpeed)));
+	m_vPos = *vPos + v + (*mOrient).m.v.f * (I2X (1) / 2 - randN (I2X (1)));
 	}
 
 if ((nType == BUBBLE_PARTICLES) || (nType == SNOW_PARTICLES))
@@ -272,9 +272,9 @@ else {
 		CAngleVector vRot;
 		CFixMatrix mRot;
 
-		vRot [BA] = 0;
-		vRot [PA] = 2048 - ((d_rand () % 9) * 512);
-		vRot [HA] = 2048 - ((d_rand () % 9) * 512);
+		vRot.v.c.b = 0;
+		vRot.v.c.p = 2048 - ((d_rand () % 9) * 512);
+		vRot.v.c.h = 2048 - ((d_rand () % 9) * 512);
 		mRot = CFixMatrix::Create (vRot);
 		m_mOrient = *mOrient * mRot;
 		}
@@ -1026,16 +1026,16 @@ if (m_nType == RAIN_PARTICLES) {
 else {
 	if ((m_nType == SNOW_PARTICLES) || ((m_nType == BUBBLE_PARTICLES)
 			&& gameOpts->render.particles.bWiggleBubbles))
-		vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
+		vCenter.v.c.x += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 	if (m_bRotate && gameOpts->render.particles.bRotate) {
 		int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
 		CFixMatrix mOrient = gameData.render.mine.viewer.mOrient * mRot [i];
-		uVec.Assign (mOrient.UVec ());
-		rVec.Assign (mOrient.RVec ());
+		uVec.Assign (mOrient.m.v.u);
+		rVec.Assign (mOrient.m.v.r);
 		}
 	else {
-		uVec.Assign (gameData.render.mine.viewer.mOrient.UVec ());
-		rVec.Assign (gameData.render.mine.viewer.mOrient.RVec ());
+		uVec.Assign (gameData.render.mine.viewer.mOrient.m.v.u);
+		rVec.Assign (gameData.render.mine.viewer.mOrient.m.v.r);
 		}
 	}
 uVec *= m_nHeight * fScale;
