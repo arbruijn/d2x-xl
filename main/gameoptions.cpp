@@ -701,34 +701,43 @@ return 1;
 
 void CMissionConfig::Apply (void)
 {
-if ((m_playerShip > -1) && (gameOpts->gameplay.nShip [0] != m_playerShip)) {
-	if (m_playerShip > 2)
-		m_playerShip = 1;
-	else if (m_playerShip < -1)
-		m_playerShip = -1;
-	if (m_playerShip > -1) {
-		for (int i = 0; i < MAX_SHIP_TYPES; i++) {
-			if (m_ships [m_playerShip])
-				break;
-			m_playerShip = (m_playerShip + 1) % MAX_SHIP_TYPES;
-			}
-		}
-	float fShield = (float) LOCALPLAYER.Shield (false) / (float) LOCALPLAYER.MaxShield ();
-	float fEnergy = (float) LOCALPLAYER.Energy (false) / (float) LOCALPLAYER.MaxEnergy ();
-	gameOpts->gameplay.nShip [0] = m_playerShip;
-	LOCALPLAYER.SetEnergy (fix (fEnergy * LOCALPLAYER.MaxShield ()));
-	LOCALPLAYER.SetShield (fix (fShield * LOCALPLAYER.MaxEnergy ()));
-	if (m_playerShip == 0) {
-		gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion = 0;
-		}
-	else if (m_playerShip == 1) {
-		LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (FUSION_INDEX));
-		gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion = 0;
-	   LOCALPLAYER.flags &= ~(PLAYER_FLAGS_AMMO_RACK);
-		}
-	else if (m_playerShip == 2) {
-	   LOCALPLAYER.flags &= ~(PLAYER_FLAGS_AFTERBURNER);
-		}
+if (gameOpts->gameplay.nShip [gameOpts->gameplay.nShip [1] >= 0] == m_playerShip)
+	return;
+
+if (m_playerShip > 2)
+	m_playerShip = 1;
+else if (m_playerShip < -1)
+	m_playerShip = -1;
+if (m_playerShip == -1) {
+	m_playerShip = gameOpts->gameplay.nShip [1];
+	if (m_playerShip == -1)
+		m_playerShip = gameOpts->gameplay.nShip [0];
+	}
+for (int i = 0; i < MAX_SHIP_TYPES; i++) {
+	if (m_ships [m_playerShip])
+		break;
+	m_playerShip = (m_playerShip + 1) % MAX_SHIP_TYPES;
+	}
+
+if (gameOpts->gameplay.nShip [gameOpts->gameplay.nShip [1] >= 0] == m_playerShip)
+	return;
+
+float fShield = (float) LOCALPLAYER.Shield (false) / (float) LOCALPLAYER.MaxShield ();
+float fEnergy = (float) LOCALPLAYER.Energy (false) / (float) LOCALPLAYER.MaxEnergy ();
+gameOpts->gameplay.nShip [0] =
+gameOpts->gameplay.nShip [1] = m_playerShip;
+LOCALPLAYER.SetEnergy (fix (fEnergy * LOCALPLAYER.MaxShield ()));
+LOCALPLAYER.SetShield (fix (fShield * LOCALPLAYER.MaxEnergy ()));
+if (m_playerShip == 0) {
+	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion = 0;
+	}
+else if (m_playerShip == 1) {
+	LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (FUSION_INDEX));
+	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion = 0;
+	LOCALPLAYER.flags &= ~(PLAYER_FLAGS_AMMO_RACK);
+	}
+else if (m_playerShip == 2) {
+	LOCALPLAYER.flags &= ~(PLAYER_FLAGS_AFTERBURNER);
 	}
 }
 

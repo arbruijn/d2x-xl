@@ -260,8 +260,11 @@ if (h > 1) { // more than one ship to chose from
 		}
 	if (missionConfig.m_ships [2])
 		m.AddRadio (TXT_HEAVY_SHIP, 0, KEY_F, HTX_PLAYERSHIP);
-	for (i = 0; i < MAX_SHIP_TYPES; i++)
-		m [optShip + i].m_value = (i == gameOpts->gameplay.nShip [0]);
+
+	for (h = i = 0; i < MAX_SHIP_TYPES; i++) {
+		if (missionConfig.m_ships [i])
+			m [optShip + h++].m_value = (i == gameOpts->gameplay.nShip [0]);
+		}	
 	}
 }
 
@@ -269,11 +272,13 @@ if (h > 1) { // more than one ship to chose from
 
 void GetShipSelection (CMenu& m, int& optShip)
 {
-for (int i = 0, j = -1; i < MAX_SHIP_TYPES; i++) {
-	if (missionConfig.m_ships [i]) {
-		if (m [optShip + ++j].m_value) {
-			gameOpts->gameplay.nShip [1] = i;
-			break;
+if (optShip >= 0) {
+	for (int i = 0, j = -1; i < MAX_SHIP_TYPES; i++) {
+		if (missionConfig.m_ships [i]) {
+			if (m [optShip + ++j].m_value) {
+				gameOpts->gameplay.nShip [1] = i;
+				break;
+				}
 			}
 		}
 	}
