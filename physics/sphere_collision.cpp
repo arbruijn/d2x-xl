@@ -71,7 +71,7 @@ else {
 	else
 		biggest = 2;
 	}
-if (vNormal [biggest] > 0) {
+if (vNormal.v.a [biggest] > 0) {
 	i = ijTable [biggest][0];
 	j = ijTable [biggest][1];
 	}
@@ -80,8 +80,8 @@ else {
 	j = ijTable [biggest][0];
 	}
 //now do the 2d problem in the i, j plane
-check_i = (*refP) [i];
-check_j = (*refP) [j];
+check_i = refP->v.a [i];
+check_j = refP->v.a [j];
 for (nEdge = 0; nEdge < nVerts; nEdge++) {
 	v0 = FVERTICES + nVertIndex [nEdge];
 	v1 = FVERTICES + nVertIndex [(nEdge + 1) % nVerts];

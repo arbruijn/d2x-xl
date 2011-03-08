@@ -209,9 +209,9 @@ class __pack__ CFloatVector {
 		inline float& Y (void) { return v.c.y; }
 		inline float& Z (void) { return v.c.z; }
 		// access op for assignment
-		float& operator[] (size_t i);
+		//float& operator[] (size_t i);
 		// read-only access op
-		const float operator[] (size_t i) const;
+		//const float operator[] (size_t i) const;
 
 		bool IsZero (void) const;
 
