@@ -91,7 +91,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	fVerts [0].v.c.y = fVerts [1].v.c.y = vPosf.v.c.y;
 	fVerts [2].v.c.y = fVerts [3].v.c.y = vPosf.v.c.y - r2;
 	fVerts [0].v.c.z = fVerts [1].v.c.z = fVerts [2].v.c.z = fVerts [3].v.c.z = vPosf.v.c.z;
-	fVerts [0][W] = fVerts [1][W] = fVerts [2][W] = fVerts [3][W] = 1;
+	fVerts [0].v.c.w = fVerts [1].v.c.w = fVerts [2].v.c.w = fVerts [3].v.c.w = 1;
 	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
 	ogl.SetTexturing (false);
 	ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
@@ -182,9 +182,9 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 	fVerts [0].v.c.z =
 	fVerts [1].v.c.z =
 	fVerts [2].v.c.z = 0;
-	rotVerts [0][W] =
-	rotVerts [1][W] =
-	rotVerts [2][W] = 0;
+	rotVerts [0].v.c.w =
+	rotVerts [1].v.c.w =
+	rotVerts [2].v.c.w = 0;
 	fVerts [0].v.c.x = -r2;
 	fVerts [1].v.c.x = +r2;
 	fVerts [2].v.c.x = 0;
@@ -225,9 +225,9 @@ else {
 	fVerts [0].v.c.z =
 	fVerts [1].v.c.z =
 	fVerts [2].v.c.z = fPos.v.c.z;
-	fVerts [0][W] =
-	fVerts [1][W] =
-	fVerts [2][W] = 1;
+	fVerts [0].v.c.w =
+	fVerts [1].v.c.w =
+	fVerts [2].v.c.w = 1;
 	fVerts [0].v.c.x = fPos.v.c.x - r2;
 	fVerts [1].v.c.x = fPos.v.c.x + r2;
 	fVerts [2].v.c.x = fPos.v.c.x;
@@ -306,7 +306,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	transformation.Transform (fPos, fPos, 0);
 	r = X2F (objP->info.xSize);
 	glColor3fv (reinterpret_cast<GLfloat*> (pc));
-	fVerts [0][W] = fVerts [1][W] = fVerts [2][W] = fVerts [3][W] = 1;
+	fVerts [0].v.c.w = fVerts [1].v.c.w = fVerts [2].v.c.w = fVerts [3].v.c.w = 1;
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	if (extraGameInfo [IsMultiGame].bTargetIndicators == 1) {	//square brackets
 		r2 = r * 2 / 3;

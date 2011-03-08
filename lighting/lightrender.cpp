@@ -44,9 +44,9 @@ for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 		pl->render.vPosf [1] = pl->render.vPosf [0];
 	else {
 		transformation.Transform (pl->render.vPosf [1], pl->render.vPosf [0], 0);
-		pl->render.vPosf [1][W] = 1;
+		pl->render.vPosf [1].v.c.w = 1;
 		}
-	pl->render.vPosf [0][W] = 1;
+	pl->render.vPosf [0].v.c.w = 1;
 	pl->render.nType = pl->info.nType;
 	pl->render.bState = pl->info.bState && (pl->info.color.red + pl->info.color.green + pl->info.color.blue > 0.0);
 	pl->render.bLightning = (pl->info.nObject < 0) && (pl->info.nSide < 0);

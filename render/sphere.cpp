@@ -153,7 +153,7 @@ for (int i = 0; i < 3; i++) {
 		float h = (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)));
 		if (h > 1.0f / 1e6f) {
 			fScale [i] = 1.0f / h;
-			vHitf [i][W] = 0.0f;
+			vHitf [i].v.c.w = 0.0f;
 			if (ogl.UseTransform ()) {
 				vHitf [i].Assign (m * hitInfo.v [i]);
 				CFloatVector::Normalize (vHitf [i]);

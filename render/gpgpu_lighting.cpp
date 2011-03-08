@@ -100,9 +100,9 @@ for (i = 0; i < m_vld.nLights; i++) {
 	vertNorm = m_vld.buffers [1] + i;
 	lightPos = m_vld.buffers [2] + i;
 	lightColor = m_vld.buffers [3][i];
-	nType = (*vertNorm) [W];
-	radius = (*lightPos) [W];
-	brightness = lightColor [W];
+	nType = vertNorm->v.c.w;
+	radius = lightPos->v.c.w;
+	brightness = lightColor.v.c.w;
 	lightDir = *lightPos - *vertPos;
 	lightDist = lightDir.Mag() / lightRange;
 	CFloatVector::Normalize (lightDir);
@@ -338,10 +338,10 @@ else if (nState == 1) {
 		m_vld.buffers [1][i] = vNormal;
 		m_vld.buffers [2][i] = psl->render.vPosf [0];
 		m_vld.buffers [3][i] = *(reinterpret_cast<CFloatVector*> (&psl->info.color));
-		m_vld.buffers [0][i][W] = 1.0f;
-		m_vld.buffers [1][i][W] = (psl->info.nType < 2) ? 1.0f : 0.0f;
-		m_vld.buffers [2][i][W] = psl->info.fRad;
-		m_vld.buffers [3][i][W] = psl->info.fBrightness;
+		m_vld.buffers [0][i].v.c.w = 1.0f;
+		m_vld.buffers [1][i].v.c.w = (psl->info.nType < 2) ? 1.0f : 0.0f;
+		m_vld.buffers [2][i].v.c.w = psl->info.fRad;
+		m_vld.buffers [3][i].v.c.w = psl->info.fBrightness;
 		nLights++;
 		}
 	if (nLights) {
