@@ -236,13 +236,13 @@ if (!IsPlayerShip (nModel) && (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f)
 if (pmf) {
 	for (i = 0, j = pmf->m_nVerts, pmv = pm->m_faceVerts + pmf->m_nIndex; i < j; i++)
 		v += pmv [i].m_vertex;
-	v[X] /= j;
-	v[Y] /= j;
-	v[Z] /= j;
+	v.v.c.x /= j;
+	v.v.c.y /= j;
+	v.v.c.z /= j;
 	}
 else
 	v.SetZero ();
-v[Z] -= 1.0f / 16.0f;
+v.v.c.z -= 1.0f / 16.0f;
 #if 0
 transformation.Transform (&v, &v, 0);
 #else
@@ -253,7 +253,7 @@ if (vOffsetP) {
 	}
 #endif
 #endif
-if (nCount && (v[X] == mtP->vPos [0][X]) && (v[Y] == mtP->vPos [0][Y]) && (v[Z] == mtP->vPos [0][Z]))
+if (nCount && (v.v.c.x == mtP->vPos [0].v.c.x) && (v.v.c.y == mtP->vPos [0].v.c.y) && (v.v.c.z == mtP->vPos [0].v.c.z))
 	return;
 mtP->vPos [nCount].Assign (v);
 if (vOffsetP)
@@ -393,9 +393,9 @@ if ((psm->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) == (REAR_THRUSTER | 
 	glPushMatrix ();
 	CFloatVector vCenter;
 	vCenter.Assign (psm->m_vCenter);
-	glTranslatef (vCenter [X], vCenter [Y], vCenter [Z]);
+	glTranslatef (vCenter .v.c.x, vCenter .v.c.y, vCenter .v.c.z);
 	glRotatef (-360.0f * 5.0f * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
-	glTranslatef (-vCenter [X], -vCenter [Y], -vCenter [Z]);
+	glTranslatef (-vCenter .v.c.x, -vCenter .v.c.y, -vCenter .v.c.z);
 	if (gameStates.app.nSDLTicks [0] - psm->m_tFrame > nTimeout) {
 		psm->m_tFrame = gameStates.app.nSDLTicks [0];
 		psm->m_iFrame = (psm->m_iFrame + 1) % psm->m_nFrames;
@@ -420,7 +420,7 @@ else {
 	else
 		return 0;
 	glPushMatrix ();
-	y = X2F (psm->m_vCenter [Y]);
+	y = X2F (psm->m_vCenter .v.c.y);
 	glTranslatef (0, y, 0);
 	glRotatef (360 * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
 	glTranslatef (0, -y, 0);

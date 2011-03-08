@@ -288,9 +288,9 @@ class __pack__ CFloatVector3 {
 		static const CFloatVector3 Reflect (const CFloatVector3& d, const CFloatVector3& n);
 
 		// access op for assignment
-		//float& operator[] (size_t i);
+		float& operator[] (size_t i);
 		// read-only access op
-		//const float operator[] (size_t i) const;
+		const float operator[] (size_t i) const;
 
 		bool IsZero (void) const;
 		void SetZero (void);
@@ -349,9 +349,9 @@ public:
 		return a;
 	}
 	// access op for assignment
-	//fixang& operator[] (size_t i) { return a [i]; }
+	fixang& operator[] (size_t i) { return v.a [i]; }
 	// read-only access op
-	//const fixang operator[] (size_t i) const { return a [i]; }
+	const fixang operator[] (size_t i) const { return v.a [i]; }
 
 	bool IsZero (void) const { return ! (v.c.p || v.c.h || v.c.b); }
 	void SetZero (void) { memset (&v, 0, sizeof (v)); }

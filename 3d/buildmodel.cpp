@@ -256,22 +256,22 @@ void CSubModel::SetMinMax (CFloatVector3 *vertexP)
 	CFloatVector3	v = *vertexP;
 
 #if 0
-v [X] += X2F (psm->m_vOffset [X]);
-v [Y] += X2F (psm->m_vOffset [Y]);
-v [Z] += X2F (psm->m_vOffset [Z]);
+v.v.c.x += X2F (psm->m_vOffset.v.c.x);
+v.v.c.y += X2F (psm->m_vOffset.v.c.y);
+v.v.c.z += X2F (psm->m_vOffset.v.c.z);
 #endif
-if (m_vMin [X] > v [X])
-	m_vMin [X] = v [X];
-if (m_vMin [Y] > v [Y])
-	m_vMin [Y] = v [Y];
-if (m_vMin [Z] > v [Z])
-	m_vMin [Z] = v [Z];
-if (m_vMax [X] < v [X])
-	m_vMax [X] = v [X];
-if (m_vMax [Y] < v [Y])
-	m_vMax [Y] = v [Y];
-if (m_vMax [Z] < v [Z])
-	m_vMax [Z] = v [Z];
+if (m_vMin.v.c.x > v.v.c.x)
+	m_vMin.v.c.x = v.v.c.x;
+if (m_vMin.v.c.y > v.v.c.y)
+	m_vMin.v.c.y = v.v.c.y;
+if (m_vMin.v.c.z > v.v.c.z)
+	m_vMin.v.c.z = v.v.c.z;
+if (m_vMax.v.c.x < v.v.c.x)
+	m_vMax.v.c.x = v.v.c.x;
+if (m_vMax.v.c.y < v.v.c.y)
+	m_vMax.v.c.y = v.v.c.y;
+if (m_vMax.v.c.z < v.v.c.z)
+	m_vMax.v.c.z = v.v.c.z;
 }
 
 //------------------------------------------------------------------------------
@@ -410,23 +410,23 @@ if (vOffsetfP)
 	vOffsetf = *vOffsetfP;
 else
 	vOffsetf.Assign (gameData.models.offsets [m_nModel]);
-if (!(vOffsetf [X] || vOffsetf [Y] || vOffsetf [Z]))
+if (!(vOffsetf.v.c.x || vOffsetf.v.c.y || vOffsetf.v.c.z))
 	return 0;
 if (vOffsetfP) {
 	for (i = m_nFaceVerts, pmv = m_faceVerts; i; i--, pmv++) {
-		pmv->m_vertex [X] += vOffsetf [X];
-		pmv->m_vertex [Y] += vOffsetf [Y];
-		pmv->m_vertex [Z] += vOffsetf [Z];
+		pmv->m_vertex.v.c.x += vOffsetf.v.c.x;
+		pmv->m_vertex.v.c.y += vOffsetf.v.c.y;
+		pmv->m_vertex.v.c.z += vOffsetf.v.c.z;
 		}
 	}
 else {
 	for (i = m_nSubModels, psm = m_subModels; i; i--, psm++) {
-		psm->m_vMin [X] += vOffsetf [X];
-		psm->m_vMin [Y] += vOffsetf [Y];
-		psm->m_vMin [Z] += vOffsetf [Z];
-		psm->m_vMax [X] += vOffsetf [X];
-		psm->m_vMax [Y] += vOffsetf [Y];
-		psm->m_vMax [Z] += vOffsetf [Z];
+		psm->m_vMin.v.c.x += vOffsetf.v.c.x;
+		psm->m_vMin.v.c.y += vOffsetf.v.c.y;
+		psm->m_vMin.v.c.z += vOffsetf.v.c.z;
+		psm->m_vMax.v.c.x += vOffsetf.v.c.x;
+		psm->m_vMax.v.c.y += vOffsetf.v.c.y;
+		psm->m_vMax.v.c.z += vOffsetf.v.c.z;
 		}
 	}
 return 1;
@@ -448,12 +448,12 @@ else
 	vOffs = m_vOffset;
 if (phb)
 	phb->vOffset = vOffs;
-vMin [X] = F2X (m_vMin [X]);
-vMin [Y] = F2X (m_vMin [Y]);
-vMin [Z] = F2X (m_vMin [Z]);
-vMax [X] = F2X (m_vMax [X]);
-vMax [Y] = F2X (m_vMax [Y]);
-vMax [Z] = F2X (m_vMax [Z]);
+vMin.v.c.x = F2X (m_vMin.v.c.x);
+vMin.v.c.y = F2X (m_vMin.v.c.y);
+vMin.v.c.z = F2X (m_vMin.v.c.z);
+vMax.v.c.x = F2X (m_vMax.v.c.x);
+vMax.v.c.y = F2X (m_vMax.v.c.y);
+vMax.v.c.z = F2X (m_vMax.v.c.z);
 m_vCenter = CFixVector::Avg (vMin, vMax);
 if (m_bBullets) {
 	pm->m_bBullets = 1;
@@ -471,17 +471,17 @@ int CModel::CmpVerts (const CFloatVector3* pv, const CFloatVector3* pm)
 {
 	float h;
 
-h = (*pv) [X] - (*pm) [X];
+h = pv->v.c.x - pm->v.c.x;
 if (h < 0)
 	return -1;
 if (h > 0)
 	return 1;
-h = (*pv) [Y] - (*pm) [Y];
+h = pv->v.c.y - pm->v.c.y;
 if (h < 0)
 	return -1;
 if (h > 0)
 	return 1;
-h = (*pv) [Z] - (*pm) [Z];
+h = pv->v.c.z - pm->v.c.z;
 if (h < 0)
 	return -1;
 if (h > 0)
@@ -626,9 +626,9 @@ else {
 do {
 	// initialize
 	for (i = 0; i <= MAX_HITBOXES; i++) {
-		phb [i].vMin [X] = phb [i].vMin [Y] = phb [i].vMin [Z] = 0x7fffffff;
-		phb [i].vMax [X] = phb [i].vMax [Y] = phb [i].vMax [Z] = -0x7fffffff;
-		phb [i].vOffset [X] = phb [i].vOffset [Y] = phb [i].vOffset [Z] = 0;
+		phb [i].vMin.v.c.x = phb [i].vMin.v.c.y = phb [i].vMin.v.c.z = 0x7fffffff;
+		phb [i].vMax.v.c.x = phb [i].vMax.v.c.y = phb [i].vMax.v.c.z = -0x7fffffff;
+		phb [i].vOffset.v.c.x = phb [i].vOffset.v.c.y = phb [i].vOffset.v.c.z = 0;
 		}
 	// walk through all submodels, getting their sizes
 	if (bHires) {
@@ -643,27 +643,27 @@ do {
 		if (0 < (j = psm->m_nHitbox)) {
 			phb [j].vMin.Assign(psm->m_vMin);
 			phb [j].vMax.Assign (psm->m_vMax);
-			dx = (phb [j].vMax [X] - phb [j].vMin [X]) / 2;
-			dy = (phb [j].vMax [Y] - phb [j].vMin [Y]) / 2;
-			dz = (phb [j].vMax [Z] - phb [j].vMin [Z]) / 2;
+			dx = (phb [j].vMax.v.c.x - phb [j].vMin.v.c.x) / 2;
+			dy = (phb [j].vMax.v.c.y - phb [j].vMin.v.c.y) / 2;
+			dz = (phb [j].vMax.v.c.z - phb [j].vMin.v.c.z) / 2;
 			r = sqrt (dx * dx + dy * dy + dz * dz) / 2;
-			phb [j].vSize [X] = (fix) dx;
-			phb [j].vSize [Y] = (fix) dy;
-			phb [j].vSize [Z] = (fix) dz;
+			phb [j].vSize.v.c.x = (fix) dx;
+			phb [j].vSize.v.c.y = (fix) dy;
+			phb [j].vSize.v.c.z = (fix) dz;
 			hv = phb [j].vMin + phb [j].vOffset;
-			if (phb [0].vMin [X] > hv [X])
-				phb [0].vMin [X] = hv [X];
-			if (phb [0].vMin [Y] > hv [Y])
-				phb [0].vMin [Y] = hv [Y];
-			if (phb [0].vMin [Z] > hv [Z])
-				phb [0].vMin [Z] = hv [Z];
+			if (phb [0].vMin.v.c.x > hv.v.c.x)
+				phb [0].vMin.v.c.x = hv.v.c.x;
+			if (phb [0].vMin.v.c.y > hv.v.c.y)
+				phb [0].vMin.v.c.y = hv.v.c.y;
+			if (phb [0].vMin.v.c.z > hv.v.c.z)
+				phb [0].vMin.v.c.z = hv.v.c.z;
 			hv = phb [j].vMax + phb [j].vOffset;
-			if (phb [0].vMax [X] < hv [X])
-				phb [0].vMax [X] = hv [X];
-			if (phb [0].vMax [Y] < hv [Y])
-				phb [0].vMax [Y] = hv [Y];
-			if (phb [0].vMax [Z] < hv [Z])
-				phb [0].vMax [Z] = hv [Z];
+			if (phb [0].vMax.v.c.x < hv.v.c.x)
+				phb [0].vMax.v.c.x = hv.v.c.x;
+			if (phb [0].vMax.v.c.y < hv.v.c.y)
+				phb [0].vMax.v.c.y = hv.v.c.y;
+			if (phb [0].vMax.v.c.z < hv.v.c.z)
+				phb [0].vMax.v.c.z = hv.v.c.z;
 			}
 		}
 	if (IsMultiGame)
@@ -671,9 +671,9 @@ do {
 		gameData.models.offsets [m_nModel][Y] =
 		gameData.models.offsets [m_nModel][Z] = 0;
 	else {
-		gameData.models.offsets [m_nModel][X] = (phb [0].vMin [X] + phb [0].vMax [X]) / -2;
-		gameData.models.offsets [m_nModel][Y] = (phb [0].vMin [Y] + phb [0].vMax [Y]) / -2;
-		gameData.models.offsets [m_nModel][Z] = (phb [0].vMin [Z] + phb [0].vMax [Z]) / -2;
+		gameData.models.offsets [m_nModel][X] = (phb [0].vMin.v.c.x + phb [0].vMax.v.c.x) / -2;
+		gameData.models.offsets [m_nModel][Y] = (phb [0].vMin.v.c.y + phb [0].vMax.v.c.y) / -2;
+		gameData.models.offsets [m_nModel][Z] = (phb [0].vMin.v.c.z + phb [0].vMax.v.c.z) / -2;
 		}
 	} while (Shift (objP, bHires, NULL));
 
@@ -706,12 +706,12 @@ int CModel::MinMax (tHitbox *phb)
 
 for (i = m_nSubModels, psm = m_subModels.Buffer (); i; i--, psm++) {
 	if (!psm->m_bThruster && (psm->m_nGunPoint < 0)) {
-		phb->vMin [X] = F2X (psm->m_vMin [X]);
-		phb->vMin [Y] = F2X (psm->m_vMin [Y]);
-		phb->vMin [Z] = F2X (psm->m_vMin [Z]);
-		phb->vMax [X] = F2X (psm->m_vMax [X]);
-		phb->vMax [Y] = F2X (psm->m_vMax [Y]);
-		phb->vMax [Z] = F2X (psm->m_vMax [Z]);
+		phb->vMin.v.c.x = F2X (psm->m_vMin.v.c.x);
+		phb->vMin.v.c.y = F2X (psm->m_vMin.v.c.y);
+		phb->vMin.v.c.z = F2X (psm->m_vMin.v.c.z);
+		phb->vMax.v.c.x = F2X (psm->m_vMax.v.c.x);
+		phb->vMax.v.c.y = F2X (psm->m_vMax.v.c.y);
+		phb->vMax.v.c.z = F2X (psm->m_vMax.v.c.z);
 		phb++;
 		}
 	}
@@ -733,17 +733,17 @@ for (uint i = 0; i < po->m_gunPoints.Length (); i++, pp++) {
 		continue;
 	m_nGunSubModels [i] = nGunSubModels [i];
 	psm = m_subModels + nGunSubModels [i];
-	pp->m_vPos [X] = (psm->m_vMax [X] + psm->m_vMin [X]) / 2;
+	pp->m_vPos.v.c.x = (psm->m_vMax.v.c.x + psm->m_vMin.v.c.x) / 2;
 	if (3 == (pp->m_nParent = nGunSubModels [i])) {
-		pp->m_vPos [Y] = (psm->m_vMax [Y] + 3 * psm->m_vMin [Y]) / 4;
-		pp->m_vPos [Z] = 7 * (psm->m_vMax [Z] + psm->m_vMin [Z]) / 8;
+		pp->m_vPos.v.c.y = (psm->m_vMax.v.c.y + 3 * psm->m_vMin.v.c.y) / 4;
+		pp->m_vPos.v.c.z = 7 * (psm->m_vMax.v.c.z + psm->m_vMin.v.c.z) / 8;
 		}
 	else {
-		pp->m_vPos [Y] = (psm->m_vMax [Y] + psm->m_vMin [Y]) / 2;
+		pp->m_vPos.v.c.y = (psm->m_vMax.v.c.y + psm->m_vMin.v.c.y) / 2;
 		if (i < 4)
-      	pp->m_vPos [Z] = psm->m_vMax [Z];
+      	pp->m_vPos.v.c.z = psm->m_vMax.v.c.z;
 		else
-			pp->m_vPos [Z] = (psm->m_vMax [Z] + psm->m_vMin [Z]) / 2;
+			pp->m_vPos.v.c.z = (psm->m_vMax.v.c.z + psm->m_vMin.v.c.z) / 2;
 		}
 	}
 }
@@ -759,9 +759,9 @@ void CModel::SetRobotGunPoints (OOF::CModel *po)
 for (i = 0, pp = po->m_gunPoints.Buffer (); i < j; i++, pp++) {
 	m_nGunSubModels [i] = pp->m_nParent;
 	psm = m_subModels + pp->m_nParent;
-	pp->m_vPos [X] = (psm->m_vMax [X] + psm->m_vMin [X]) / 2;
-	pp->m_vPos [Y] = (psm->m_vMax [Y] + psm->m_vMin [Y]) / 2;
-  	pp->m_vPos [Z] = psm->m_vMax [Z];
+	pp->m_vPos.v.c.x = (psm->m_vMax.v.c.x + psm->m_vMin.v.c.x) / 2;
+	pp->m_vPos.v.c.y = (psm->m_vMax.v.c.y + psm->m_vMin.v.c.y) / 2;
+  	pp->m_vPos.v.c.z = psm->m_vMax.v.c.z;
 	}
 }
 
@@ -775,12 +775,12 @@ int NearestGunPoint (CFixVector *vGunPoints, CFixVector *vGunPoint, int nGuns, i
 	int			h = 0, i;
 	CFixVector	vi, v0 = *vGunPoint;
 
-v0 [Z] = 0;
+v0.v.c.z = 0;
 for (i = 0; i < nGuns; i++) {
 	if (nUsedGuns [i])
 		continue;
 	vi = vGunPoints [i];
-	vi [Z] = 0;
+	vi.v.c.z = 0;
 	xDist = CFixVector::Dist(vi, v0);
 	if (xMinDist > xDist) {
 		xMinDist = xDist;
@@ -862,9 +862,9 @@ else {
 		gameData.models.gunInfo [m_nModel].nGuns = j;
 		vGunPoints = gameData.models.gunInfo [m_nModel].vGunPoints;
 		for (i = 0; i < j; i++, pp++, vGunPoints++) {
-			(*vGunPoints) [X] = F2X (pp->m_vPos [X]);
-			(*vGunPoints) [Y] = F2X (pp->m_vPos [Y]);
-			(*vGunPoints) [Z] = F2X (pp->m_vPos [Z]);
+			(*vGunPoints).v.c.x = F2X (pp->m_vPos.v.c.x);
+			(*vGunPoints).v.c.y = F2X (pp->m_vPos.v.c.y);
+			(*vGunPoints).v.c.z = F2X (pp->m_vPos.v.c.z);
 			for (nParent = pp->m_nParent; nParent >= 0; nParent = pso->m_nParent) {
 				pso = po->m_subModels + nParent;
 				(*vGunPoints) += m_subModels [nParent].m_vOffset;
