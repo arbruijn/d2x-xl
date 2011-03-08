@@ -699,17 +699,15 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 				nDbgSeg = nDbgSeg;
 #endif
 			widResult = segP->IsDoorWay (nSide, (nThisObject < 0) ? NULL : OBJECTS + nThisObject);
-			//PrintLog ("done\n");
-			//if what we have hit is a door, check the adjoining segP
-			if ((nThisObject == LOCALPLAYER.nObject) && (gameStates.app.cheats.bPhysics == 0xBADA55) && (nChildSide >= 0)) {
-				if (SEGMENTS [nChildSide].HasBlockedProp () ||
-					 (gameData.objs.speedBoost [nThisObject].bBoosted &&
-					  ((SEGMENTS [nStartSeg].m_function != SEGMENT_FUNC_SPEEDBOOST) || (SEGMENTS [nChildSide].m_function == SEGMENT_FUNC_SPEEDBOOST))))
-					widResult |= WID_FLY_FLAG;
-				}
-			if ((widResult & WID_FLY_FLAG) ||
+			if (((widResult & WID_FLY_FLAG) ||
 				 (((widResult & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) == (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) &&
-				  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && segP->CheckForTranspPixel (vHitPoint, nSide, iFace))))) {
+				  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && segP->CheckForTranspPixel (vHitPoint, nSide, iFace))))) ||
+				 // check whether a cheat code allowing passing through walls is enabled. If so, allow player to pass through blocked segments
+			    (!(widResult & WID_FLY_FLAG) && (nChildSide >= 0) && (gameStates.app.cheats.bPhysics == 0xBADA55) && (nThisObject == LOCALPLAYER.nObject) &&
+				  (SEGMENTS [nChildSide].HasBlockedProp () ||
+				   (gameData.objs.speedBoost [nThisObject].bBoosted &&
+				   ((SEGMENTS [nStartSeg].m_function != SEGMENT_FUNC_SPEEDBOOST) || (SEGMENTS [nChildSide].m_function == SEGMENT_FUNC_SPEEDBOOST))))))
+			{
 
 				int			i, nNewSeg, subHitType;
 				short			subHitSeg, nSaveHitObj = gameData.collisions.hitData.nObject;
