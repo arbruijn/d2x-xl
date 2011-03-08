@@ -565,7 +565,8 @@ inline const CFloatVector CFloatVector::operator- (const CFixVector& other) cons
 
 inline const float CFloatVector::DistToPlane (const CFloatVector& n, const CFloatVector& p) const
 {
-CFloatVector t = *this - p;
+CFloatVector t = *this;
+t -= p;
 return CFloatVector::Dot (t, n);
 }
 
@@ -1106,7 +1107,8 @@ return i;
 //distance is signed, so Negative Dist is on the back of the plane
 inline const fix CFixVector::DistToPlane (const CFixVector& n, const CFixVector& p) const
 {
-CFixVector t = *this - p;
+CFixVector t = *this;
+t -= p;
 return CFixVector::Dot (t, n);
 }
 
