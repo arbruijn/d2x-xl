@@ -98,7 +98,7 @@ if (ogl.m_states.bUseTransform) {
 	else {
 		glLoadIdentity ();
 #if 0
-		glScalef (transformation.m_info.scalef [X], transformation.m_info.scalef [Y], -transformation.m_info.scalef [Z]);
+		glScalef (transformation.m_info.scalef.v.c.x, transformation.m_info.scalef.v.c.y, -transformation.m_info.scalef.v.c.z);
 #else
 		glScalef (1, 1, -1);
 #endif
@@ -109,7 +109,7 @@ if (ogl.m_states.bUseTransform) {
 		if (!gameData.models.vScale.IsZero ()) {
 			CFloatVector fScale;
 			fScale.Assign (gameData.models.vScale);
-			glScalef (fScale [X], fScale [Y], fScale [Z]);
+			glScalef (fScale.v.c.x, fScale.v.c.y, fScale.v.c.z);
 			}
 		}
 	}
@@ -132,9 +132,9 @@ m_info.posf [0].Assign (m_info.pos);
 //delta rotation functions
 CFixVector CTransformation::RotateScaledX (CFixVector& dest, fix scale)
 {
-dest [X] = m_info.view [0].RVec () [X];
-dest [Y] = m_info.view [0].UVec () [X];
-dest [Z] = m_info.view [0].FVec () [X];
+dest.v.c.x = m_info.view [0].m.v.r.v.c.x;
+dest.v.c.y = m_info.view [0].m.v.u.v.c.x;
+dest.v.c.z = m_info.view [0].m.v.f.v.c.x;
 dest *= scale;
 return dest;
 }
@@ -143,9 +143,9 @@ return dest;
 
 CFixVector CTransformation::RotateScaledY (CFixVector& dest, fix scale)
 {
-dest [X] = m_info.view [0].RVec () [Y];
-dest [Y] = m_info.view [0].UVec () [Y];
-dest [Z] = m_info.view [0].FVec () [Y];
+dest.v.c.x = m_info.view [0].m.v.r.v.c.y;
+dest.v.c.y = m_info.view [0].m.v.u.v.c.y;
+dest.v.c.z = m_info.view [0].m.v.f.v.c.y;
 dest *= scale;
 return dest;
 }
@@ -154,9 +154,9 @@ return dest;
 
 CFixVector CTransformation::RotateScaledZ (CFixVector& dest, fix scale)
 {
-dest [X] = m_info.view [0].RVec () [Z];
-dest [Y] = m_info.view [0].UVec () [Z];
-dest [Z] = m_info.view [0].FVec () [Z];
+dest.v.c.x = m_info.view [0].m.v.r.v.c.z;
+dest.v.c.y = m_info.view [0].m.v.u.v.c.z;
+dest.v.c.z = m_info.view [0].m.v.f.v.c.z;
 dest *= scale;
 return dest;
 }
@@ -175,14 +175,14 @@ void CTransformation::ComputeAspect (void)
 {
 fix s = FixMulDiv (screen.Aspect (), CCanvas::Current ()->Height (), CCanvas::Current ()->Width ());
 if (s <= I2X (1)) {	   //scale x
-	m_info.aspect [X] = s;
-	m_info.aspect [Y] = I2X (1);
+	m_info.aspect.v.c.x = s;
+	m_info.aspect.v.c.y = I2X (1);
 	}
 else {
-	m_info.aspect [Y] = FixDiv (I2X (1), s);
-	m_info.aspect [X] = I2X (1);
+	m_info.aspect.v.c.y = FixDiv (I2X (1), s);
+	m_info.aspect.v.c.x = I2X (1);
 	}
-m_info.aspect [Z] = I2X (1);		//always 1
+m_info.aspect.v.c.z = I2X (1);		//always 1
 }
 
 //------------------------------------------------------------------------------

@@ -183,11 +183,10 @@ return SWAPUSHORT (i);
 
 static inline CFixVector& SwapVector (CFixVector& v, int bEndian)
 {
-if (gameStates.app.bLittleEndian != bEndian) 
- {
-	v[X] = (fix) SWAPINT ((int) v[X]);
-	v[Y] = (fix) SWAPINT ((int) v[Y]);
-	v[Z] = (fix) SWAPINT ((int) v[Z]);
+if (gameStates.app.bLittleEndian != bEndian) {
+	v.v.c.x = (fix) SWAPINT ((int) v.v.c.x);
+	v.v.c.y = (fix) SWAPINT ((int) v.v.c.y);
+	v.v.c.z = (fix) SWAPINT ((int) v.v.c.z);
 	}
 return v;
 }
@@ -196,11 +195,10 @@ return v;
 
 static inline CAngleVector& SwapAngVec (CAngleVector& v, int bEndian)
 {
-if (gameStates.app.bLittleEndian != bEndian) 
- {
-	v[PA] = (fixang) SWAPSHORT ((short) v[PA]);
-	v[BA] = (fixang) SWAPSHORT ((short) v[BA]);
-	v[HA] = (fixang) SWAPSHORT ((short) v[HA]);
+if (gameStates.app.bLittleEndian != bEndian) {
+	v.v.c.p = (fixang) SWAPSHORT ((short) v.v.c.p);
+	v.v.c.b = (fixang) SWAPSHORT ((short) v.v.c.b);
+	v.v.c.h = (fixang) SWAPSHORT ((short) v.v.c.h);
 	}
 return v;
 }
@@ -210,9 +208,9 @@ return v;
 static inline CFixMatrix& SwapMatrix (CFixMatrix& m, int bEndian)
 {
 if (gameStates.app.bLittleEndian != bEndian) {
-	SwapVector (m.RVec (), bEndian);
-	SwapVector (m.UVec (), bEndian);
-	SwapVector (m.FVec (), bEndian);
+	SwapVector (m.m.v.r, bEndian);
+	SwapVector (m.m.v.u, bEndian);
+	SwapVector (m.m.v.f, bEndian);
 	}
 return m;
 }
