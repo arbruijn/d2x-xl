@@ -445,25 +445,25 @@ for (y = yMin; y < yMax; y++) {
 			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
 			G3AccumVertColor (-1, &color, &vcd, nThread);
-			if ((color.v.vec [R] > 0.001f) || (color.v.vec [G] > 0.001f) || (color.v.vec [B] > 0.001f)) {
+			if ((color.v.color.r > 0.001f) || (color.v.color.g > 0.001f) || (color.v.color.b > 0.001f)) {
 					bBlack = false;
-				if (color.v.vec [R] >= 0.999f)
-					color.v.vec [R] = 1;
+				if (color.v.color.r >= 0.999f)
+					color.v.color.r = 1;
 				else
 					bWhite = false;
-				if (color.v.vec [G] >= 0.999f)
-					color.v.vec [G] = 1;
+				if (color.v.color.g >= 0.999f)
+					color.v.color.g = 1;
 				else
 					bWhite = false;
-				if (color.v.vec [B] >= 0.999f)
-					color.v.vec [B] = 1;
+				if (color.v.color.b >= 0.999f)
+					color.v.color.b = 1;
 				else
 					bWhite = false;
 				}
 			texColorP = m_data.texColor + x * w + y;
-			texColorP->red = (ubyte) (255 * color.v.vec [R]);
-			texColorP->green = (ubyte) (255 * color.v.vec [G]);
-			texColorP->blue = (ubyte) (255 * color.v.vec [B]);
+			texColorP->red = (ubyte) (255 * color.v.color.r);
+			texColorP->green = (ubyte) (255 * color.v.color.g);
+			texColorP->blue = (ubyte) (255 * color.v.color.b);
 			}
 		}
 	}

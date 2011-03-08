@@ -81,9 +81,9 @@ else {
 pl->info.color.alpha = 1.0;
 pl->info.fBrightness = fBrightness;
 pl->info.fRange = (float) sqrt (fBrightness / 2.0f);
-pl->fSpecular.v.vec [R] = red;
-pl->fSpecular.v.vec [G] = green;
-pl->fSpecular.v.vec [B] = blue;
+pl->fSpecular.v.color.r = red;
+pl->fSpecular.v.color.g = green;
+pl->fSpecular.v.color.b = blue;
 for (i = 0; i < 3; i++) {
 #if USE_OGL_LIGHTS
 	pl->info.fAmbient.dir [i] = pl->info.fDiffuse [i] * 0.01f;

@@ -29,9 +29,9 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c)
 {
 #ifdef _WIN32
 	QLONG	q;
-	if (!coord)
+	if (!c)
 		return 0;
-	q = mul64 (vec, b) / (QLONG) coord;
+	q = mul64 (a, b) / (QLONG) c;
 	if ((q > 0x7fffffff) || (q < -0x7fffffff))
 		return 0;
 	*r = (fix) q;
@@ -134,9 +134,9 @@ return G3EncodePoint (dest);
 fix G3CalcPointDepth (const CFixVector& pnt)
 {
 #ifdef _WIN32
-	QLONG q = mul64 (pnt.dir.coord.x - transformation.m_info.coord.dir.coord.x, transformation.m_info.view [0].mat.dir.f.dir.coord.x);
-	q += mul64 (pnt.dir.coord.y - transformation.m_info.coord.dir.coord.y, transformation.m_info.view [0].mat.dir.f.dir.coord.y);
-	q += mul64 (pnt.dir.coord.z - transformation.m_info.coord.dir.coord.z, transformation.m_info.view [0].mat.dir.f.dir.coord.z);
+	QLONG q = mul64 (pnt.v.coord.x - transformation.m_info.pos.v.coord.x, transformation.m_info.view [0].m.dir.f.v.coord.x);
+	q += mul64 (pnt.v.coord.y - transformation.m_info.pos.v.coord.y, transformation.m_info.view [0].m.dir.f.v.coord.y);
+	q += mul64 (pnt.v.coord.z - transformation.m_info.pos.v.coord.z, transformation.m_info.view [0].m.dir.f.v.coord.z);
 	return (fix) (q >> 16);
 #else
 	tQuadInt q;

@@ -292,9 +292,9 @@ t.m.dir.r.v.coord.z = CFloatVector::Dot (v, other.m.dir.r);
 t.m.dir.u.v.coord.z = CFloatVector::Dot (v, other.m.dir.u);
 t.m.dir.f.v.coord.z = CFloatVector::Dot (v, other.m.dir.f);
 #if 0
-CFloatVector::Normalize (mat.mat.dir.r);
-CFloatVector::Normalize (mat.mat.dir.u);
-CFloatVector::Normalize (mat.mat.dir.f);
+CFloatVector::Normalize (m.m.dir.r);
+CFloatVector::Normalize (m.m.dir.u);
+CFloatVector::Normalize (m.m.dir.f);
 #endif
 return t;
 }
@@ -343,9 +343,9 @@ t.m.dir.r.v.coord.z = CFixVector::Dot (v, other.m.dir.r);
 t.m.dir.u.v.coord.z = CFixVector::Dot (v, other.m.dir.u);
 t.m.dir.f.v.coord.z = CFixVector::Dot (v, other.m.dir.f);
 #if 0
-CFixVector::Normalize (mat.mat.dir.r);
-CFixVector::Normalize (mat.mat.dir.u);
-CFixVector::Normalize (mat.mat.dir.f);
+CFixVector::Normalize (m.m.dir.r);
+CFixVector::Normalize (m.m.dir.u);
+CFixVector::Normalize (m.m.dir.f);
 #endif
 return t;
 }
@@ -423,7 +423,7 @@ const CFixMatrix CFixMatrix::CreateF (const CFixVector& fVec)
 
 	m.m.dir.f = fVec;
 	CFixVector::Normalize (m.m.dir.f);
-	assert (mat.mat.dir.f.Mag () != 0);
+	assert (m.m.dir.f.Mag () != 0);
 
 	//just forward vec
 	if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
@@ -450,7 +450,7 @@ const CFixMatrix CFixMatrix::CreateFU (const CFixVector& fVec, const CFixVector&
 
 m.m.dir.f = fVec;
 CFixVector::Normalize (m.m.dir.f);
-assert (mat.mat.dir.f.Mag () != 0);
+assert (m.m.dir.f.Mag () != 0);
 
 m.m.dir.u = uVec;
 if (CFixVector::Normalize (m.m.dir.u) == 0) {
@@ -501,7 +501,7 @@ const CFixMatrix CFixMatrix::CreateFR (const CFixVector& fVec, const CFixVector&
 
 m.m.dir.f = fVec;
 CFixVector::Normalize (m.m.dir.f);
-assert (mat.mat.dir.f.Mag () != 0);
+assert (m.m.dir.f.Mag () != 0);
 
 //use right vec
 m.m.dir.r = rVec;
@@ -553,7 +553,7 @@ const CFloatMatrix CFloatMatrix::CreateFU (const CFloatVector& fVec, const CFloa
 
 m.m.dir.f = fVec;
 CFloatVector::Normalize (m.m.dir.f);
-assert (mat.mat.dir.f.Mag () != 0);
+assert (m.m.dir.f.Mag () != 0);
 
 m.m.dir.u = uVec;
 if (CFloatVector::Normalize (m.m.dir.u) == 0) {
@@ -600,7 +600,7 @@ const CFloatMatrix CFloatMatrix::CreateFR (const CFloatVector& fVec, const CFloa
 
 m.m.dir.f = fVec;
 CFloatVector::Normalize (m.m.dir.f);
-assert (mat.mat.dir.f.Mag () != 0);
+assert (m.m.dir.f.Mag () != 0);
 
 //use right vec
 m.m.dir.r = rVec;

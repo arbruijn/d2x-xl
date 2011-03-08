@@ -181,7 +181,7 @@ if (gameOpts->app.bNotebookFriendly)
 			sprintf (m->m_text, TXT_NO_FRAMECAP);
 #if _WIN32
 		if (gameStates.render.bVSyncOk)
-			wglSwapIntervalEXT (dir < 0);
+			wglSwapIntervalEXT (v < 0);
 #endif
 		gameOpts->render.nMaxFPS = v;
 		gameStates.render.bVSync = (v < 0);

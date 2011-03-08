@@ -718,9 +718,9 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (prl->nObject >= 0) ? -prl->nObject : prl->nSegment);
 				fBrightness = prl->info.fBrightness * fLightScale;
 				color = *(reinterpret_cast<CFloatVector*> (&prl->info.color));
-				color.v.vec [R] *= fLightScale;
-				color.v.vec [G] *= fLightScale;
-				color.v.vec [B] *= fLightScale;
+				color.v.color.r *= fLightScale;
+				color.v.color.g *= fLightScale;
+				color.v.color.b *= fLightScale;
 				glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (prl->render.vPosf));
 				glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&color));
 				glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&color));

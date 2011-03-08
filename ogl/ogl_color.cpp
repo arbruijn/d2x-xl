@@ -583,33 +583,33 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 	else {	//use max. color components
 		vertColor = vertColor * fAttenuation;
-		nBrightness = sqri ((int) (vertColor.v.vec [R] * 1000)) + sqri ((int) (vertColor.v.vec [G] * 1000)) + sqri ((int) (vertColor.v.vec [B] * 1000));
+		nBrightness = sqri ((int) (vertColor.v.color.r * 1000)) + sqri ((int) (vertColor.v.color.g * 1000)) + sqri ((int) (vertColor.v.color.b * 1000));
 		if (nMaxBrightness < nBrightness) {
 			nMaxBrightness = nBrightness;
 			colorSum = vertColor;
 			}
 		else if (nMaxBrightness == nBrightness) {
-			if (colorSum.v.vec [R] < vertColor.v.vec [R])
-				colorSum.v.vec [R] = vertColor.v.vec [R];
-			if (colorSum.v.vec [G] < vertColor.v.vec [G])
-				colorSum.v.vec [G] = vertColor.v.vec [G];
-			if (colorSum.v.vec [B] < vertColor.v.vec [B])
-				colorSum.v.vec [B] = vertColor.v.vec [B];
+			if (colorSum.v.color.r < vertColor.v.color.r)
+				colorSum.v.color.r = vertColor.v.color.r;
+			if (colorSum.v.color.g < vertColor.v.color.g)
+				colorSum.v.color.g = vertColor.v.color.g;
+			if (colorSum.v.color.b < vertColor.v.color.b)
+				colorSum.v.color.b = vertColor.v.color.b;
 			}
 		}
 	j++;
 	}
 if (j) {
 	if ((nSaturation == 1) || gameStates.render.bHaveLightmaps) { //if a color component is > 1, cap color components using highest component value
-		float	cMax = colorSum.v.vec [R];
-		if (cMax < colorSum.v.vec [G])
-			cMax = colorSum.v.vec [G];
-		if (cMax < colorSum.v.vec [B])
-			cMax = colorSum.v.vec [B];
+		float	cMax = colorSum.v.color.r;
+		if (cMax < colorSum.v.color.g)
+			cMax = colorSum.v.color.g;
+		if (cMax < colorSum.v.color.b)
+			cMax = colorSum.v.color.b;
 		if (cMax > 1) {
-			colorSum.v.vec [R] /= cMax;
-			colorSum.v.vec [G] /= cMax;
-			colorSum.v.vec [B] /= cMax;
+			colorSum.v.color.r /= cMax;
+			colorSum.v.color.g /= cMax;
+			colorSum.v.color.b /= cMax;
 			}
 		}
 	*pColorSum = colorSum;
@@ -634,18 +634,18 @@ vcd.bMatEmissive = 0;
 vcd.nMatLight = -1;
 if (lightManager.Material ().bValid) {
 #if 0
-	if (lightManager.Material ().emissive.dir.vec [R] ||
-		 lightManager.Material ().emissive.dir.vec [G] ||
-		 lightManager.Material ().emissive.dir.vec [B]) {
+	if (lightManager.Material ().emissive.dir.color.r ||
+		 lightManager.Material ().emissive.dir.color.g ||
+		 lightManager.Material ().emissive.dir.color.b) {
 		vcd.bMatEmissive = 1;
 		vcd.nMatLight = lightManager.Material ().nLight;
 		colorSum = lightManager.Material ().emissive;
 		}
 #endif
 	vcd.bMatSpecular =
-		lightManager.Material ().specular.v.vec [R] ||
-		lightManager.Material ().specular.v.vec [G] ||
-		lightManager.Material ().specular.v.vec [B];
+		lightManager.Material ().specular.v.color.r ||
+		lightManager.Material ().specular.v.color.g ||
+		lightManager.Material ().specular.v.color.b;
 	if (vcd.bMatSpecular) {
 		vcd.matSpecular = lightManager.Material ().specular;
 		vcd.fMatShininess = (float) lightManager.Material ().shininess;
@@ -758,9 +758,9 @@ else
 #endif
 #if 1
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
-	colorSum.v.vec [R] =
-	colorSum.v.vec [G] =
-	colorSum.v.vec [B] = 1;
+	colorSum.v.color.r =
+	colorSum.v.color.g =
+	colorSum.v.color.b = 1;
 	}
 else
 #endif
@@ -776,40 +776,40 @@ else
 		}
 	if ((nVertex >= 0) && !(gameStates.render.nState || gameData.render.vertColor.bDarkness)) {
 		tFaceColor *pfc = gameData.render.color.ambient + nVertex;
-		colorSum.v.vec [R] += pfc->color.red * fScale;
-		colorSum.v.vec [G] += pfc->color.green * fScale;
-		colorSum.v.vec [B] += pfc->color.blue * fScale;
+		colorSum.v.color.r += pfc->color.red * fScale;
+		colorSum.v.color.g += pfc->color.green * fScale;
+		colorSum.v.color.b += pfc->color.blue * fScale;
 #if DBG
-		if (!gameStates.render.nState && (nVertex == nDbgVertex) && (colorSum.v.vec [R] + colorSum.v.vec [G] + colorSum.v.vec [B] < 0.1f))
+		if (!gameStates.render.nState && (nVertex == nDbgVertex) && (colorSum.v.color.r + colorSum.v.color.g + colorSum.v.color.b < 0.1f))
 			nVertex = nVertex;
 #endif
 		}
-	if (colorSum.v.vec [R] > 1.0)
-		colorSum.v.vec [R] = 1.0;
-	if (colorSum.v.vec [G] > 1.0)
-		colorSum.v.vec [G] = 1.0;
-	if (colorSum.v.vec [B] > 1.0)
-		colorSum.v.vec [B] = 1.0;
+	if (colorSum.v.color.r > 1.0)
+		colorSum.v.color.r = 1.0;
+	if (colorSum.v.color.g > 1.0)
+		colorSum.v.color.g = 1.0;
+	if (colorSum.v.color.b > 1.0)
+		colorSum.v.color.b = 1.0;
 	}
 #if ONLY_HEADLIGHT
 if (gameData.render.lights.dynamic.headlights.nLights)
-	colorSum.dir.vec [R] = colorSum.dir.vec [G] = colorSum.dir.vec [B] = 0;
+	colorSum.dir.color.r = colorSum.dir.color.g = colorSum.dir.color.b = 0;
 #endif
 colorSum *= gameData.render.fBrightness;
 if (bSetColor)
-	OglColor4sf (colorSum.v.vec [R] * fScale, colorSum.v.vec [G] * fScale, colorSum.v.vec [B] * fScale, 1.0);
+	OglColor4sf (colorSum.v.color.r * fScale, colorSum.v.color.g * fScale, colorSum.v.color.b * fScale, 1.0);
 #if 1
 if (!vcd.bMatEmissive && pc) {
 	pc->index = gameStates.render.nFrameFlipFlop + 1;
-	pc->color.red = colorSum.v.vec [R];
-	pc->color.green = colorSum.v.vec [G];
-	pc->color.blue = colorSum.v.vec [B];
+	pc->color.red = colorSum.v.color.r;
+	pc->color.green = colorSum.v.color.g;
+	pc->color.blue = colorSum.v.color.b;
 	}
 if (pVertColor) {
 	pVertColor->index = gameStates.render.nFrameFlipFlop + 1;
-	pVertColor->color.red = colorSum.v.vec [R] * fScale;
-	pVertColor->color.green = colorSum.v.vec [G] * fScale;
-	pVertColor->color.blue = colorSum.v.vec [B] * fScale;
+	pVertColor->color.red = colorSum.v.color.r * fScale;
+	pVertColor->color.green = colorSum.v.color.g * fScale;
+	pVertColor->color.blue = colorSum.v.color.b * fScale;
 	pVertColor->color.alpha = 1;
 	}
 #endif
