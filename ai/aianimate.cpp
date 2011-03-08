@@ -115,11 +115,11 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 		CAngleVector*	objAngles = &polyObjInfo->animAngles [jointnum];
 
 		for (int nAngle = 0; nAngle < 3; nAngle++) {
-			if ((*jointAngles)[nAngle] != (*objAngles)[nAngle]) {
+			if (jointAngles->v.a [nAngle] != objAngles->v.a [nAngle]) {
 				if (nGun == 0)
 					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles [jointnum][nAngle] = (*jointAngles)[nAngle];
-				fix delta2, deltaAngle = (*jointAngles)[nAngle] - (*objAngles)[nAngle];
+				gameData.ai.localInfo [nObject].goalAngles [jointnum].v.a [nAngle] = jointAngles->v.a [nAngle];
+				fix delta2, deltaAngle = jointAngles->v.a [nAngle] - objAngles->v.a [nAngle];
 				if (deltaAngle >= I2X (1) / 2)
 					delta2 = -ANIM_RATE;
 				else if (deltaAngle >= 0)
@@ -130,7 +130,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 					delta2 = ANIM_RATE;
 				if (nFlinchAttackScale != 1)
 					delta2 *= nFlinchAttackScale;
-				gameData.ai.localInfo [nObject].deltaAngles [jointnum][nAngle] = delta2 / DELTA_ANG_SCALE;		// complete revolutions per second
+				gameData.ai.localInfo [nObject].deltaAngles [jointnum].v.a [nAngle] = delta2 / DELTA_ANG_SCALE;		// complete revolutions per second
 				}
 			}
 		}
@@ -170,17 +170,17 @@ for (nJoint = 1; nJoint < nJoints; nJoint++) {
 
 	Assert (nObject >= 0);
 	for (int nAngle = 0; nAngle < 3; nAngle++) {
-		deltaToGoal = (*goalAngP)[nAngle] - (*curAngP)[nAngle];
+		deltaToGoal = goalAngP->v.a [nAngle] - curAngP->v.a [nAngle];
 		if (deltaToGoal > 32767)
 			deltaToGoal -= 65536;
 		else if (deltaToGoal < -32767)
 			deltaToGoal += deltaToGoal;
 
 		if (deltaToGoal) {
-			scaledDeltaAngle = FixMul ((*deltaAngP)[nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			(*curAngP)[nAngle] += (fixang) scaledDeltaAngle;
+			scaledDeltaAngle = FixMul (deltaAngP->v.a [nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
+			curAngP->v.a [nAngle] += (fixang) scaledDeltaAngle;
 			if (abs (deltaToGoal) < abs (scaledDeltaAngle))
-				(*curAngP)[nAngle] = (*goalAngP)[nAngle];
+				curAngP->v.a [nAngle] = goalAngP->v.a [nAngle];
 			}
 		}
 	}

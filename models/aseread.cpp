@@ -218,7 +218,7 @@ while ((pszToken = ReadLine (cf))) {
 		return 1;
 	if (!strcmp (pszToken, "*TM_POS")) {
 		for (i = 0; i < 3; i++)
-			m_vOffset [i] = 0; //FloatTok (" \t");
+			m_vOffset.v.a [i] = 0; //FloatTok (" \t");
 		}
 	}
 return CModel::Error ("unexpected end of file");
