@@ -172,7 +172,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	ogl.SetTransform (0);
 	lightManager.Transform (0, 1);
 	}
-#if DBG
+#if 0 //DBG
 gameStates.render.bFullBright = 1;
 #else
 gameStates.render.bFullBright = automap.Display () && gameOpts->render.automap.bBright;
