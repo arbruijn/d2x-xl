@@ -132,10 +132,17 @@ void GetAppFolders (void)
 	char	c;
 #endif
 
+#if DBG && defined (WIN32)
+strcpy (gameFolders.szHomeDir, "d:\\programs\\d2\\");
+strcpy (gameFolders.szGameDir, "d:\\programs\\d2\\");
+strcpy (gameFolders.szDataDir, "d:\\programs\\d2\\");
+strcpy (szDataRootDir, "d:\\programs\\d2\\");
+#else
 *gameFolders.szHomeDir =
 *gameFolders.szGameDir =
 *gameFolders.szDataDir =
 *szDataRootDir = '\0';
+#endif
 if ((i = FindArg ("-userdir")) && appConfig [i + 1] && *appConfig [i + 1]) {
 	sprintf (gameFolders.szGameDir, "%s\\%s\\", appConfig [i + 1], DATADIR);
 	if (GetAppFolder ("", gameFolders.szGameDir, gameFolders.szGameDir, "*.hog"))
