@@ -778,6 +778,12 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
 	SetDataVersion (1);
 	SetD1Sound ();
 	if ((gameData.pig.sound.nType != 1) || gameStates.app.bCustomSounds || bCustom) {
+		if (bCustom) {
+			if (missionManager.nCurrentLevel < 0)
+				sprintf (gameFolders.szSoundDir [5], "%s/slevel%02d", gameFolders.szSoundDir [4], -missionManager.nCurrentLevel);
+			else
+				sprintf (gameFolders.szSoundDir [5], "%s/level%02d", gameFolders.szSoundDir [4], missionManager.nCurrentLevel);
+			}
 		SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
 		LoadSounds (cfPiggy [1]);
 		gameData.pig.sound.nType = 1;
