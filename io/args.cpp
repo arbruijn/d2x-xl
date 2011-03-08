@@ -52,7 +52,7 @@ int CConfigManager::Find (const char * s)
 for (i = 0; i < Count (); i++)
 	if (m_properties [i] && *m_properties [i] && !stricmp (m_properties [i], s))
 		return i;
-return 0;
+return -1;
 }
 
 //------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ char* CConfigManager::Filename (int bDebug)
 	char*	p;
 	CFile	cf;
 
-if ((i = Find ("-ini")))
+if (0 >= (i = Find ("-ini")))
 	strncpy (m_filename, m_properties [i + 1], sizeof (m_filename) - 1);
 else {
 #if defined(__unix__)
@@ -200,7 +200,7 @@ int CConfigManager::Value (const char* szArg, int nDefault)
 {
 	int t = Find (szArg);
 
-return t ? Value (t, nDefault) : nDefault;
+return (t < 0) ? nDefault : Value (t, nDefault);
 }
 
 //------------------------------------------------------------------------------

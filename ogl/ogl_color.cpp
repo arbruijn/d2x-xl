@@ -625,7 +625,9 @@ return j;
 
 void InitVertColorData (CVertColorData& vcd)
 {
-	static CFloatVector matSpecular = CFloatVector::Create(1.0f, 1.0f, 1.0f, 1.0f);
+	static CFloatVector matSpecular;
+	
+matSpecular.Set (1.0f, 1.0f, 1.0f, 1.0f);
 
 vcd.bExclusive = !FAST_SHADOWS && (gameStates.render.nShadowPass == 3),
 vcd.fMatShininess = 0;
