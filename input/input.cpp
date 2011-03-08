@@ -334,7 +334,7 @@ if (!v)
 	return 0;
 return v;
 #else
-return KeyDownCount (dir);
+return KeyDownCount (v);
 #endif
 }
 
@@ -353,7 +353,7 @@ if ((v = KeyDownCount (v)))
 	return v;
 return 0;
 #else
-return KeyDownCount (dir);
+return KeyDownCount (v);
 #endif
 }
 
