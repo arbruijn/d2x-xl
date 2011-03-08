@@ -339,21 +339,21 @@ int ChaseAngles (CAngleVector *cur_angles, CAngleVector *desired_angles)
 	fix			frame_turn;
 	int			mask = 0;
 
-delta_angs [PA] = (*desired_angles) [PA] - (*cur_angles) [PA];
-delta_angs [HA] = (*desired_angles) [HA] - (*cur_angles) [HA];
-delta_angs [BA] = (*desired_angles) [BA] - (*cur_angles) [BA];
-total_delta = abs (delta_angs [PA]) + abs (delta_angs [BA]) + abs (delta_angs [HA]);
+delta_angs.v.c.p = desired_angles->v.c.p - cur_angles->v.c.p;
+delta_angs.v.c.h = desired_angles->v.c.h - cur_angles->v.c.h;
+delta_angs.v.c.b = desired_angles->v.c.b - cur_angles->v.c.b;
+total_delta = abs (delta_angs.v.c.p) + abs (delta_angs.v.c.b) + abs (delta_angs.v.c.h);
 
-alt_angles [PA] = I2X (1)/2 - (*cur_angles) [PA];
-alt_angles [BA] = (*cur_angles) [BA] + I2X (1)/2;
-alt_angles [HA] = (*cur_angles) [HA] + I2X (1)/2;
+alt_angles.v.c.p = I2X (1)/2 - cur_angles->v.c.p;
+alt_angles.v.c.b = cur_angles->v.c.b + I2X (1)/2;
+alt_angles.v.c.h = cur_angles->v.c.h + I2X (1)/2;
 
-alt_delta_angs [PA] = (*desired_angles) [PA] - alt_angles [PA];
-alt_delta_angs [HA] = (*desired_angles) [HA] - alt_angles [HA];
-alt_delta_angs [BA] = (*desired_angles) [BA] - alt_angles [BA];
+alt_delta_angs.v.c.p = desired_angles->v.c.p - alt_angles.v.c.p;
+alt_delta_angs.v.c.h = desired_angles->v.c.h - alt_angles.v.c.h;
+alt_delta_angs.v.c.b = desired_angles->v.c.b - alt_angles.v.c.b;
 //alt_delta_angs.b = 0;
 
-altTotal_delta = abs (alt_delta_angs [PA]) + abs (alt_delta_angs [BA]) + abs (alt_delta_angs [HA]);
+altTotal_delta = abs (alt_delta_angs.v.c.p) + abs (alt_delta_angs.v.c.b) + abs (alt_delta_angs.v.c.h);
 
 ////printf ("Total delta = %x, alt total_delta = %x\n", total_delta, altTotal_delta);
 
@@ -365,34 +365,34 @@ if (altTotal_delta < total_delta) {
 
 frame_turn = FixMul (gameData.time.xFrame, CHASE_TURN_RATE);
 
-if (abs (delta_angs [PA]) < frame_turn) {
-	(*cur_angles) [PA] = (*desired_angles) [PA];
+if (abs (delta_angs.v.c.p) < frame_turn) {
+	cur_angles->v.c.p = desired_angles->v.c.p;
 	mask |= 1;
 	}
 else
-	if (delta_angs [PA] > 0)
-		(*cur_angles) [PA] += (fixang) frame_turn;
+	if (delta_angs.v.c.p > 0)
+		cur_angles->v.c.p += (fixang) frame_turn;
 	else
-		(*cur_angles) [PA] -= (fixang) frame_turn;
+		cur_angles->v.c.p -= (fixang) frame_turn;
 
-if (abs (delta_angs [BA]) < frame_turn) {
-	(*cur_angles) [BA] = (fixang) (*desired_angles) [BA];
+if (abs (delta_angs.v.c.b) < frame_turn) {
+	cur_angles->v.c.b = (fixang) desired_angles->v.c.b;
 	mask |= 2;
 	}
 else
-	if (delta_angs [BA] > 0)
-		(*cur_angles) [BA] += (fixang) frame_turn;
+	if (delta_angs.v.c.b > 0)
+		cur_angles->v.c.b += (fixang) frame_turn;
 	else
-		(*cur_angles) [BA] -= (fixang) frame_turn;
-if (abs (delta_angs [HA]) < frame_turn) {
-	(*cur_angles) [HA] = (fixang) (*desired_angles) [HA];
+		cur_angles->v.c.b -= (fixang) frame_turn;
+if (abs (delta_angs.v.c.h) < frame_turn) {
+	cur_angles->v.c.h = (fixang) desired_angles->v.c.h;
 	mask |= 4;
 	}
 else
-	if (delta_angs [HA] > 0)
-		(*cur_angles) [HA] += (fixang) frame_turn;
+	if (delta_angs.v.c.h > 0)
+		cur_angles->v.c.h += (fixang) frame_turn;
 	else
-		(*cur_angles) [HA] -= (fixang) frame_turn;
+		cur_angles->v.c.h -= (fixang) frame_turn;
 return mask;
 }
 
@@ -579,7 +579,7 @@ switch (gameStates.app.bEndLevelSequence) {
 			gameData.objs.endLevelCamera->info.position.mOrient.m.v.r = -gameData.objs.endLevelCamera->info.position.mOrient.m.v.r;
 			cam_angles = gameData.objs.endLevelCamera->info.position.mOrient.ExtractAnglesVec ();
 			exit_seg_angles = gameData.endLevel.exit.mOrient.ExtractAnglesVec ();
-			bank_rate = (-exit_seg_angles [BA] - cam_angles [BA])/2;
+			bank_rate = (-exit_seg_angles.v.c.b - cam_angles.v.c.b)/2;
 			gameData.objs.consoleP->info.controlType = gameData.objs.endLevelCamera->info.controlType = CT_NONE;
 #ifdef SLEW_ON
 			slewObjP = gameData.objs.endLevelCamera;
@@ -601,7 +601,7 @@ switch (gameStates.app.bEndLevelSequence) {
 							gameData.objs.endLevelCamera->info.position.mOrient.m.v.u *
 							(FixMul (gameData.time.xFrame, -gameData.endLevel.xCurFlightSpeed/10));
 		cam_angles = gameData.objs.endLevelCamera->info.position.mOrient.ExtractAnglesVec ();
-		cam_angles [BA] += (fixang) FixMul (bank_rate, gameData.time.xFrame);
+		cam_angles.v.c.b += (fixang) FixMul (bank_rate, gameData.time.xFrame);
 		gameData.objs.endLevelCamera->info.position.mOrient = CFixMatrix::Create (cam_angles);
 #endif
 		timer -= gameData.time.xFrame;
@@ -910,9 +910,9 @@ songManager.Play (SONG_INTER, 0);
 
 static CAngleVector *angvec_add2_scale (CAngleVector *dest, CFixVector *src, fix s)
 {
-(*dest) [PA] += (fixang) FixMul ((*src) [X], s);
-(*dest) [BA] += (fixang) FixMul ((*src) [Z], s);
-(*dest) [HA] += (fixang) FixMul ((*src) [Y], s);
+(*dest).v.c.p += (fixang) FixMul ((*src) [X], s);
+(*dest).v.c.b += (fixang) FixMul ((*src) [Z], s);
+(*dest).v.c.h += (fixang) FixMul ((*src) [Y], s);
 return dest;
 }
 
@@ -1008,9 +1008,9 @@ if (UpdateObjectSeg (objP, false)) {
 				exitFlightDataP->angles = objP->info.position.mOrient.ExtractAnglesVec ();
 			xSegTime = FixDiv (xStepSize, exitFlightDataP->speed);	//how long through seg
 			if (xSegTime) {
-				exitFlightDataP->angstep [X] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [PA], aDest [PA]), xSegTime)));
-				exitFlightDataP->angstep [Z] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [BA], aDest [BA]), xSegTime)));
-				exitFlightDataP->angstep [Y] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [HA], aDest [HA]), xSegTime)));
+				exitFlightDataP->angstep [X] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.c.p, aDest.v.c.p), xSegTime)));
+				exitFlightDataP->angstep [Z] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.c.b, aDest.v.c.b), xSegTime)));
+				exitFlightDataP->angstep [Y] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.c.h, aDest.v.c.h), xSegTime)));
 				}
 			else {
 				exitFlightDataP->angles = aDest;
@@ -1034,7 +1034,7 @@ int DoSlewMovement (CObject *objP, int check_keys, int check_joy)
 	int joyx_moved, joyy_moved;
 	CAngleVector rotang;
 
-if (gameStates.input.keys [PA]ressed [KEY_PAD5])
+if (gameStates.input.keys.v.c.pressed [KEY_PAD5])
 	VmVecZero (&objP->physInfo.velocity);
 
 if (check_keys) {
@@ -1042,12 +1042,12 @@ if (check_keys) {
 	objP->physInfo.velocity.y += VEL_SPEED * (KeyDownTime (KEY_PADMINUS) - KeyDownTime (KEY_PADPLUS);
 	objP->physInfo.velocity.z += VEL_SPEED * (KeyDownTime (KEY_PAD8) - KeyDownTime (KEY_PAD2);
 
-	rotang [PA]itch = (KeyDownTime (KEY_LBRACKET) - KeyDownTime (KEY_RBRACKET))/ROT_SPEED;
+	rotang.v.c.pitch = (KeyDownTime (KEY_LBRACKET) - KeyDownTime (KEY_RBRACKET))/ROT_SPEED;
 	rotang.bank  = (KeyDownTime (KEY_PAD1) - KeyDownTime (KEY_PAD3))/ROT_SPEED;
 	rotang.head  = (KeyDownTime (KEY_PAD6) - KeyDownTime (KEY_PAD4))/ROT_SPEED;
 	}
 	else
-		rotang [PA]itch = rotang.bank  = rotang.head  = 0;
+		rotang.v.c.pitch = rotang.bank  = rotang.head  = 0;
 //check for joystick movement
 if (check_joy && bJoyPresent) {
 	JoyGetpos (&joy_x, &joy_y);
@@ -1057,7 +1057,7 @@ if (check_joy && bJoyPresent) {
 	if (abs (joy_x) < JOY_NULL) joy_x = 0;
 	if (abs (joy_y) < JOY_NULL) joy_y = 0;
 	if (btns)
-		if (!rotang [PA]itch) rotang [PA]itch = FixMul (-joy_y * 512, gameData.time.xFrame); else;
+		if (!rotang.v.c.pitch) rotang.v.c.pitch = FixMul (-joy_y * 512, gameData.time.xFrame); else;
 	else
 		if (joyy_moved) objP->physInfo.velocity.z = -joy_y * 8192;
 	if (!rotang.head) rotang.head = FixMul (joy_x * 512, gameData.time.xFrame);
@@ -1066,7 +1066,7 @@ if (check_joy && bJoyPresent) {
 	if (joyy_moved)
 		old_joy_y = joy_y;
 	}
-moved = rotang [PA]itch | rotang.bank | rotang.head;
+moved = rotang.v.c.pitch | rotang.bank | rotang.head;
 VmAngles2Matrix (&rotmat, &rotang);
 VmMatMul (&new_pm, &objP->info.position.mOrient, &rotmat);
 objP->info.position.mOrient = new_pm;
@@ -1202,7 +1202,7 @@ while (cf.GetS (line, LINE_LEN)) {
 
 		case 3:							//exit heading
 			PrintLog ("         loading exit angle\n");
-			vExitAngles [HA] = I2X (atoi (p))/360;
+			vExitAngles.v.c.h = I2X (atoi (p))/360;
 			break;
 
 		case 4: {						//planet bitmap
@@ -1233,9 +1233,9 @@ while (cf.GetS (line, LINE_LEN)) {
 
 			PrintLog ("         loading satellite and station position\n");
 			sscanf (p, "%d, %d", &head, &pitch);
-			ta [HA] = I2X (head)/360;
-			ta [PA] = -I2X (pitch)/360;
-			ta [BA] = 0;
+			ta.v.c.h = I2X (head)/360;
+			ta.v.c.p = -I2X (pitch)/360;
+			ta.v.c.b = 0;
 			tm = CFixMatrix::Create(ta);
 			if (var == 5)
 				gameData.endLevel.satellite.vPos = tm.m.v.f;
