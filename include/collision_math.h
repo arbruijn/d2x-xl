@@ -74,6 +74,7 @@ class CHitData {
 #define FQ_VISIBLE_OBJS		32
 #define FQ_ANY_OBJECT		64
 #define FQ_CHECK_PLAYER		128
+#define FQ_VISIBILITY		256
 
 //intersection types
 #define IT_ERROR	-1
@@ -91,12 +92,11 @@ class CHitQuery {
 		short			thisObjNum;
 		short			*ignoreObjList;
 		int			flags;
-		bool			bCheckVisibility;
 
 	public:
 		CHitQuery () { memset (this, 0xff, sizeof (*this)); }
-		CHitQuery (CFixVector* p0, CFixVector* p1, short startSeg, fix radP0, fix radP1, short thisObjNum, short* ignoreObjList, int flags, bool bCheckVisibility)
-			: p0 (p0), p1 (p1), startSeg (startSeg), radP0 (radP0), radP1 (radP1), thisObjNum (thisObjNum), ignoreObjList (ignoreObjList), flags (flags), bCheckVisibility (bCheckVisibility)
+		CHitQuery (CFixVector* p0, CFixVector* p1, short startSeg, fix radP0, fix radP1, short thisObjNum, short* ignoreObjList, int flags)
+			: p0 (p0), p1 (p1), startSeg (startSeg), radP0 (radP0), radP1 (radP1), thisObjNum (thisObjNum), ignoreObjList (ignoreObjList), flags (flags)
 			{}
 	};
 

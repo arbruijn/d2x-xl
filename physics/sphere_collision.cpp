@@ -499,19 +499,132 @@ return (t == nObject);
 
 //	-----------------------------------------------------------------------------
 
+void ComputeObjectHitpoint (short nThisObject, short nStartSeg, CFixVector *p0, CFixVector *p1, fix radP0, fix radP1, int flags,
+										 short* ignoreObjList, CFixVector& vClosestHitPoint, int &nHitType)
+{
+	CObject		* thisObjP = (nThisObject < 0) ? NULL : OBJECTS + nThisObject,
+			 		* otherObjP;
+	int			nThisType = (nThisObject < 0) ? -1 : OBJECTS [nThisObject].info.nType;
+	int			nObjSegList [7], nObjSegs = 1, i;
+	fix			dMin = 0x7FFFFFFF;
+	bool			bCheckVisibility = ((flags & FQ_VISIBILITY) != 0);
+	CFixVector	vHitPoint;
+
+nObjSegList [0] = nStartSeg;
+#	if DBG
+if ((thisObjP->info.nType == OBJ_WEAPON) && (thisObjP->info.nSegment == gameData.objs.consoleP->info.nSegment))
+	flags = flags;
+if (nStartSeg == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#	endif
+#if 1
+CSegment* segP = SEGMENTS + nStartSeg;
+for (int iObjSeg = 0; iObjSeg < 6; iObjSeg++) {
+	short nSegment = segP->m_children [iObjSeg];
+	if (0 > nSegment)
+		continue;
+	for (i = 0; i < gameData.collisions.nSegsVisited && (nSegment != gameData.collisions.segsVisited [i]); i++)
+		;
+	if (i == gameData.collisions.nSegsVisited)
+		nObjSegList [nObjSegs++] = nSegment;
+	}
+#endif
+for (int iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
+	short nSegment = nObjSegList [iObjSeg];
+	segP = SEGMENTS + nSegment;
+#if DBG
+restart:
+#endif
+	if (nSegment == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+	short nSegObjs = gameData.objs.nObjects;
+	short nFirstObj = SEGMENTS [nSegment].m_objects;
+	for (short nObject = nFirstObj; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
+		otherObjP = OBJECTS + nObject;
+#if DBG
+		if (nObject == nDbgObj)
+			nDbgObj = nDbgObj;
+		if ((nSegObjs < 0) || !CheckSegObjList (otherObjP, nObject, nFirstObj)) {
+			RelinkAllObjsToSegs ();
+			goto restart;
+			}
+#endif
+		int nOtherType = otherObjP->info.nType;
+		if ((flags & FQ_CHECK_PLAYER) && (nOtherType != OBJ_PLAYER))
+			continue;
+		if (otherObjP->info.nFlags & OF_SHOULD_BE_DEAD)
+			continue;
+		if (nThisObject == nObject)
+			continue;
+		if (ignoreObjList && ObjectInList (nObject, ignoreObjList))
+			continue;
+		if (LasersAreRelated (nObject, nThisObject))
+			continue;
+		if (nThisObject > -1) {
+			if ((gameData.objs.collisionResult [nThisType][nOtherType] == RESULT_NOTHING) &&
+				 (gameData.objs.collisionResult [nOtherType][nThisType] == RESULT_NOTHING))
+				continue;
+			}
+		int nFudgedRad = radP1;
+
+		//	If this is a powerup, don't do collision if flag FQ_IGNORE_POWERUPS is set
+		if ((nOtherType == OBJ_POWERUP) && (flags & FQ_IGNORE_POWERUPS))
+			continue;
+		//	If this is a robot:robot collision, only do it if both of them have attackType != 0 (eg, green guy)
+		if (nThisType == OBJ_ROBOT) {
+			if ((flags & FQ_ANY_OBJECT) ? (nOtherType != OBJ_ROBOT) : (nOtherType == OBJ_ROBOT))
+				continue;
+			if (ROBOTINFO (thisObjP->info.nId).attackType)
+				nFudgedRad = (radP1 * 3) / 4;
+			}
+		//if obj is CPlayerData, and bumping into other CPlayerData or a weapon of another coop CPlayerData, reduce radius
+		if (nThisType == OBJ_PLAYER) {
+			if (nOtherType == OBJ_ROBOT) {
+				if ((flags & FQ_VISIBLE_OBJS) && otherObjP->Cloaked ())
+					continue;
+				}
+			else if (nOtherType == OBJ_PLAYER) {
+				if (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parent.nType == OBJ_PLAYER))
+					nFudgedRad = radP1 / 2;
+				}
+			}
+#if DBG
+		if (nObject == nDbgObj)
+			nDbgObj = nDbgObj;
+#endif
+		fix d = CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
+		if (d && (d < dMin)) {
+#if DBG
+			CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
+#endif
+			gameData.collisions.hitData.nObject = nObject;
+			Assert(gameData.collisions.hitData.nObject != -1);
+			dMin = d;
+			vClosestHitPoint = vHitPoint;
+			nHitType = HIT_OBJECT;
+#if DBG
+			CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
+#endif
+			if (flags & FQ_ANY_OBJECT)
+				return;
+			}
+		}
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
 #define FVI_NEWCODE 2
 
 int ComputeHitpoint (CFixVector *vIntP, short *nHitSegP, CFixVector *p0, short nStartSeg, CFixVector *p1,
 							fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList,
-							short *nSegments, int nEntrySeg, bool bCheckVisibility)
+							short *nSegments, int nEntrySeg)
 {
 	CSegment		*segP;				//the CSegment we're looking at
 	int			startMask, endMask, centerMask;	//mask of faces
-	short			nObject, nFirstObj, nSegment, nSegObjs;
 	CSegMasks	masks;
 	CFixVector	vHitPoint, vClosestHitPoint; 	//where we hit
 	fix			d, dMin = 0x7fffffff;					//distance to hit refP
-	int			nObjSegList [7], nObjSegs, iObjSeg, i;
 	int			nHitType = HIT_NONE;							//what sort of hit
 	int			nHitSegment = -1;
 	int			nHitNoneSegment = -1;
@@ -520,16 +633,13 @@ int ComputeHitpoint (CFixVector *vIntP, short *nHitSegP, CFixVector *p0, short n
 	int			nCurNestLevel = gameData.collisions.hitData.nNestCount;
 	int			nChildSide;
 #if FVI_NEWCODE
-	int			nFudgedRad;
 	int			nFaces;
 #if 1
 	int			nFaceHitType;
 #endif
 	int			widResult;
-	int			nThisType, nOtherType;
-	CObject		*otherObjP,
-					*thisObjP = (nThisObject < 0) ? NULL : OBJECTS + nThisObject;
 #endif
+	bool			bCheckVisibility = ((flags & FQ_VISIBILITY) != 0);
 
 vClosestHitPoint.SetZero ();
 //PrintLog ("Entry ComputeHitpoint\n");
@@ -538,116 +648,15 @@ if (flags & FQ_GET_SEGLIST)
 *nSegments = 1;
 gameData.collisions.hitData.nNestCount++;
 //first, see if vector hit any objects in this CSegment
-nThisType = (nThisObject < 0) ? -1 : OBJECTS [nThisObject].info.nType;
 #if 1
 if (flags & FQ_CHECK_OBJS) {
 	//PrintLog ("   checking objects...");
-	nObjSegList [0] = nStartSeg;
-	nObjSegs = 1;
-#	if DBG
-	if ((thisObjP->info.nType == OBJ_WEAPON) && (thisObjP->info.nSegment == gameData.objs.consoleP->info.nSegment))
-		flags = flags;
-	if (nStartSeg == nDbgSeg)
-		nDbgSeg = nDbgSeg;
-#	endif
-#if 1
-	segP = SEGMENTS + nStartSeg;
-	for (iObjSeg = 0; iObjSeg < 6; iObjSeg++) {
-		if (0 > (nSegment = segP->m_children [iObjSeg]))
-			continue;
-		for (i = 0; i < gameData.collisions.nSegsVisited && (nSegment != gameData.collisions.segsVisited [i]); i++)
-			;
-		if (i == gameData.collisions.nSegsVisited)
-			nObjSegList [nObjSegs++] = nSegment;
-		}
-#endif
-	for (iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
-		short nSegment = nObjSegList [iObjSeg];
-		segP = SEGMENTS + nSegment;
-#if DBG
-restart:
-#endif
-		if (nSegment == nDbgSeg)
-			nDbgSeg = nDbgSeg;
-		nSegObjs = gameData.objs.nObjects;
-		for (nObject = nFirstObj = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
-			otherObjP = OBJECTS + nObject;
-#if DBG
-			if (nObject == nDbgObj)
-				nDbgObj = nDbgObj;
-			if ((nSegObjs < 0) || !CheckSegObjList (otherObjP, nObject, nFirstObj)) {
-				RelinkAllObjsToSegs ();
-				goto restart;
-				}
-#endif
-			nOtherType = otherObjP->info.nType;
-			if ((flags & FQ_CHECK_PLAYER) && (nOtherType != OBJ_PLAYER))
-				continue;
-			if (otherObjP->info.nFlags & OF_SHOULD_BE_DEAD)
-				continue;
-			if (nThisObject == nObject)
-				continue;
-			if (ignoreObjList && ObjectInList (nObject, ignoreObjList))
-				continue;
-			if (LasersAreRelated (nObject, nThisObject))
-				continue;
-			if (nThisObject > -1) {
-				if ((gameData.objs.collisionResult [nThisType][nOtherType] == RESULT_NOTHING) &&
-					 (gameData.objs.collisionResult [nOtherType][nThisType] == RESULT_NOTHING))
-					continue;
-				}
-			nFudgedRad = radP1;
-
-			//	If this is a powerup, don't do collision if flag FQ_IGNORE_POWERUPS is set
-			if ((nOtherType == OBJ_POWERUP) && (flags & FQ_IGNORE_POWERUPS))
-				continue;
-			//	If this is a robot:robot collision, only do it if both of them have attackType != 0 (eg, green guy)
-			if (nThisType == OBJ_ROBOT) {
-				if ((flags & FQ_ANY_OBJECT) ? (nOtherType != OBJ_ROBOT) : (nOtherType == OBJ_ROBOT))
-					continue;
-				if (ROBOTINFO (thisObjP->info.nId).attackType)
-					nFudgedRad = (radP1 * 3) / 4;
-				}
-			//if obj is CPlayerData, and bumping into other CPlayerData or a weapon of another coop CPlayerData, reduce radius
-			if (nThisType == OBJ_PLAYER) {
-				if (nOtherType == OBJ_ROBOT) {
-					if ((flags & FQ_VISIBLE_OBJS) && otherObjP->Cloaked ())
-						continue;
-					}
-				else if (nOtherType == OBJ_PLAYER) {
-					if (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parent.nType == OBJ_PLAYER))
-						nFudgedRad = radP1 / 2;
-					}
-				}
-#if DBG
-			if (nObject == nDbgObj)
-				nDbgObj = nDbgObj;
-#endif
-			d = CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
-			if (d && (d < dMin)) {
-#if DBG
-				CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
-#endif
-				gameData.collisions.hitData.nObject = nObject;
-				Assert(gameData.collisions.hitData.nObject != -1);
-				dMin = d;
-				vClosestHitPoint = vHitPoint;
-				nHitType = HIT_OBJECT;
-#if DBG
-				CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
-#endif
-				if (flags & FQ_ANY_OBJECT)
-					goto fviObjsDone;
-				}
-			}
-		}
+	ComputeObjectHitpoint (nThisObject, nStartSeg, p0, p1, radP0, radP1, flags, ignoreObjList, vClosestHitPoint, nHitType);
 	}
 #endif
 
-fviObjsDone:
-
 segP = SEGMENTS + nStartSeg;
-if ((nThisObject > -1) && (gameData.objs.collisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
+if ((nThisObject > -1) && (gameData.objs.collisionResult [OBJECTS [nThisObject].info.nType][OBJ_WALL] == RESULT_NOTHING))
 	radP1 = 0;		//HACK - ignore when edges hit walls
 //now, check segment walls
 #if DBG
@@ -721,7 +730,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 					gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nNewSeg;
 					subHitType = ComputeHitpoint (&subHitPoint, &subHitSeg, p0, (short) nNewSeg,
 															p1, radP0, radP1, nThisObject, ignoreObjList, flags,
-															tempSegList, &nTempSegs, nStartSeg, bCheckVisibility);
+															tempSegList, &nTempSegs, nStartSeg);
 					if (subHitType != HIT_NONE) {
 						d = CFixVector::Dist(subHitPoint, *p0);
 						if (d < dMin) {
@@ -904,11 +913,11 @@ gameData.collisions.segsVisited [0] = fq->startSeg;
 gameData.collisions.nSegsVisited = 1;
 gameData.collisions.hitData.nNestCount = 0;
 nHitSegment2 = gameData.collisions.hitData.nSegment2 = -1;
-if (fq->bCheckVisibility)
+if (fq->flags & FQ_VISIBILITY)
 	extraGameInfo [IsMultiGame].nHitboxes = 0;
 nHitType = ComputeHitpoint (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1,
 									 fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags,
-									 hitData->segList, &hitData->nSegments, -2, fq->bCheckVisibility);
+									 hitData->segList, &hitData->nSegments, -2);
 extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 
 if ((nHitSegment2 != -1) && !SEGMENTS [nHitSegment2].Masks (vHitPoint, 0).m_center)
@@ -928,11 +937,11 @@ if (nHitSegment == -1) {
 
 	//because the code that deals with objects with non-zero radius has
 	//problems, try using zero radius and see if we hit a wall
-	if (fq->bCheckVisibility)
+	if (fq->flags & FQ_VISIBILITY)
 		extraGameInfo [IsMultiGame].nHitboxes = 0;
 	nNewHitType = ComputeHitpoint (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->startSeg, fq->p1, 0, 0,
 								     (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, hitData->segList,
-									  &hitData->nSegments, -2, fq->bCheckVisibility);
+									  &hitData->nSegments, -2);
 	extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 	if (nNewHitSeg2 != -1) {
 		nHitType = nNewHitType;
