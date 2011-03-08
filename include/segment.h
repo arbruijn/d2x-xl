@@ -345,7 +345,7 @@ class CSegment {
 #endif
 		inline int CheckSphereToFace (CFixVector& intersection, fix rad, int nSide, short iFace)
 		 { return m_sides [nSide].CheckSphereToFace (intersection, rad, iFace, Normal (nSide, iFace)); }
-		inline int CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, short iFace)
+		inline int CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, short iFace)
 		 { return m_sides [nSide].CheckLineToFaceRegular (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 		inline int CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, int iFace)
 		 { return m_sides [nSide].CheckLineToFaceSpecial (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }

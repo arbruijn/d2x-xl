@@ -766,7 +766,7 @@ vMove = *p1 - *p0;
 //PrintLog ("      CheckPointToSegFace ...\n");
 if (!(nEdgeMask = CheckPointToFace (*p0, iFace, vNormal))) {
 	//PrintLog ("      CheckLineToSegFace ...");
-	return CheckLineToFace (intersection, p0, p1, rad, iFace, vNormal);
+	return CheckLineToFaceRegular (intersection, p0, p1, rad, iFace, vNormal);
 	//PrintLog ("done\n");
 	}
 for (nEdge = 0; !(nEdgeMask & 1); nEdgeMask >>= 1, nEdge++)
