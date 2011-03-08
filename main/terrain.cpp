@@ -136,7 +136,7 @@ CFixVector *get_dy_vec (int h)
 
 dyp = yCache + h;
 if (!ycFlags [h]) {
-	CFixVector tv = mSurfaceOrient.m.v.u * (h * TERRAIN_HEIGHT_SCALE);
+	CFixVector tv = mSurfaceOrient.m.dir.u * (h * TERRAIN_HEIGHT_SCALE);
 	transformation.RotateScaled (*dyp, tv);
 	ycFlags [h] = 1;
 	}
@@ -168,19 +168,19 @@ jLow = 0;
 jHigh = gameData.render.terrain.nGridH - 1;
 memset (ycFlags, 0, sizeof (ycFlags));
 gameStates.render.nInterpolationMethod = im;
-tv = mSurfaceOrient.m.v.r * TERRAIN_GRID_SCALE;
+tv = mSurfaceOrient.m.dir.r * TERRAIN_GRID_SCALE;
 transformation.RotateScaled (delta_i, tv);
-tv = mSurfaceOrient.m.v.f * TERRAIN_GRID_SCALE;
+tv = mSurfaceOrient.m.dir.f * TERRAIN_GRID_SCALE;
 transformation.RotateScaled (delta_j, tv);
-gameData.render.terrain.vStartPoint = *vOrgPoint + mSurfaceOrient.m.v.r *
+gameData.render.terrain.vStartPoint = *vOrgPoint + mSurfaceOrient.m.dir.r *
 					(-(gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE);
-gameData.render.terrain.vStartPoint += mSurfaceOrient.m.v.f *
+gameData.render.terrain.vStartPoint += mSurfaceOrient.m.dir.f *
 					(-(gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
 tv = gameData.objs.viewerP->info.position.vPos - gameData.render.terrain.vStartPoint;
-iViewer = CFixVector::Dot (tv, mSurfaceOrient.m.v.r) / TERRAIN_GRID_SCALE;
+iViewer = CFixVector::Dot (tv, mSurfaceOrient.m.dir.r) / TERRAIN_GRID_SCALE;
 if (iViewer > iHigh)
 	iViewer = iHigh;
-jViewer = CFixVector::Dot (tv, mSurfaceOrient.m.v.f) / TERRAIN_GRID_SCALE;
+jViewer = CFixVector::Dot (tv, mSurfaceOrient.m.dir.f) / TERRAIN_GRID_SCALE;
 if (jViewer > jHigh)
 	jViewer = jHigh;
 G3TransformAndEncodePoint (&pLast, gameData.render.terrain.vStartPoint);
@@ -223,7 +223,7 @@ for (i = iLow; i < iViewer; i++) {
 	}
 //now do i from other end
 delta_i = -delta_i;		//going the other way now...
-gameData.render.terrain.vStartPoint += mSurfaceOrient.m.v.r *
+gameData.render.terrain.vStartPoint += mSurfaceOrient.m.dir.r *
 						((iHigh-iLow)*TERRAIN_GRID_SCALE);
 G3TransformAndEncodePoint (&pLast, gameData.render.terrain.vStartPoint);
 pLowSave = pLast;
@@ -404,9 +404,9 @@ void ComputeTerrainPoints (void)
 for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 	for (j = 0; j < gameData.render.terrain.nGridH; j++) {
 		p = gameData.render.terrain.points + GRID_OFFS (i, j);
-		(*p).v.c.x = TERRAIN_GRID_SCALE * i;
-		(*p).v.c.z = TERRAIN_GRID_SCALE * j;
-		(*p).v.c.y = (fix) HEIGHT (i, j) * TERRAIN_HEIGHT_SCALE;
+		(*p).v.coord.x = TERRAIN_GRID_SCALE * i;
+		(*p).v.coord.z = TERRAIN_GRID_SCALE * j;
+		(*p).v.coord.y = (fix) HEIGHT (i, j) * TERRAIN_HEIGHT_SCALE;
 		}
 	}
 }

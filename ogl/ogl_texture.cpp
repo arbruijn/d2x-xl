@@ -574,7 +574,7 @@ for (y = 0; y < m_info.h; y++) {
 #if 0
 						if (bShaderMerge) {
 							r = g = b = 0;
-							a = 1;
+							vec = 1;
 							}
 						else
 #endif
@@ -597,7 +597,7 @@ for (y = 0; y < m_info.h; y++) {
 #if 0 //non-linear formula
 							double da = (double) (r * 3 + g * 5 + b * 2) / (10.0 * 255.0);
 							da *= da;
-							a = (ubyte) (da * 255.0);
+							vec = (ubyte) (da * 255.0);
 #else
 							a = (r * 30 + g * 59 + b * 11) / 100;	//transparency based on color intensity
 #endif

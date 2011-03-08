@@ -265,7 +265,7 @@ if (nGun < 0) {	// use center between gunPoints nGun and nGun + 1
 else {
 	v [0] = vGunPoints [nGun];
 	if (bLaserOffs)
-		v [0] += posP->mOrient.m.v.u * LASER_OFFS;
+		v [0] += posP->mOrient.m.dir.u * LASER_OFFS;
 	}
 if (!mP)
 	mP = &m;
@@ -278,11 +278,11 @@ else
 v[1] = *viewP * v [0];
 memcpy (mP, &posP->mOrient, sizeof (CFixMatrix));
 if (nGun < 0)
-	v[1] += (*mP).m.v.u * (-2 * v->Mag ());
+	v[1] += (*mP).m.dir.u * (-2 * v->Mag ());
 (*vMuzzle) = posP->vPos + v [1];
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
-	*vMuzzle += mP->m.v.f * (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
+	*vMuzzle += mP->m.dir.f * (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
 return vMuzzle;
 }
 
@@ -359,13 +359,13 @@ if (nFate == HIT_OBJECT) {
 	}
 #endif
 //	Now, make laser spread out.
-vLaserDir = m.m.v.f;
+vLaserDir = m.m.dir.f;
 if (xSpreadR || xSpreadU) {
-	vLaserDir += m.m.v.r * xSpreadR;
-	vLaserDir += m.m.v.u * xSpreadU;
+	vLaserDir += m.m.dir.r * xSpreadR;
+	vLaserDir += m.m.dir.u * xSpreadU;
 	}
 if (bLaserOffs)
-	vLaserDir += m.m.v.u * LASER_OFFS;
+	vLaserDir += m.m.dir.u * LASER_OFFS;
 nObject = CreateNewWeapon (&vLaserDir, &vLaserPos, nLaserSeg, objP->Index (), nLaserType, bMakeSound);
 //	Omega cannon is a hack, not surprisingly.  Don't want to do the rest of this stuff.
 if (nLaserType == OMEGA_ID)
@@ -454,7 +454,7 @@ void HomingMissileTurnTowardsVelocity (CObject *objP, CFixVector *vNormVel)
 frameTime = gameStates.limitFPS.bHomers ? MSEC2X (gameStates.app.tick40fps.nTime) : gameData.time.xFrame;
 vNewDir = *vNormVel;
 vNewDir *= ((fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
-vNewDir += objP->info.position.mOrient.m.v.f;
+vNewDir += objP->info.position.mOrient.m.dir.f;
 CFixVector::Normalize (vNewDir);
 objP->info.position.mOrient = CFixMatrix::CreateF(vNewDir);
 }
@@ -941,13 +941,13 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	else if ((gameData.weapons.nSecondary == MEGA_INDEX) || (gameData.weapons.nSecondary == EARTHSHAKER_INDEX)) {
 		CFixVector vForce;
 
-	vForce.v.c.x = - (gameData.objs.consoleP->info.position.mOrient.m.v.f.v.c.x << 7);
-	vForce.v.c.y = - (gameData.objs.consoleP->info.position.mOrient.m.v.f.v.c.y << 7);
-	vForce.v.c.z = - (gameData.objs.consoleP->info.position.mOrient.m.v.f.v.c.z << 7);
+	vForce.v.coord.x = - (gameData.objs.consoleP->info.position.mOrient.m.dir.f.v.coord.x << 7);
+	vForce.v.coord.y = - (gameData.objs.consoleP->info.position.mOrient.m.dir.f.v.coord.y << 7);
+	vForce.v.coord.z = - (gameData.objs.consoleP->info.position.mOrient.m.dir.f.v.coord.z << 7);
 	gameData.objs.consoleP->ApplyForce (vForce);
-	vForce.v.c.x = (vForce.v.c.x >> 4) + d_rand () - 16384;
-	vForce.v.c.y = (vForce.v.c.y >> 4) + d_rand () - 16384;
-	vForce.v.c.z = (vForce.v.c.z >> 4) + d_rand () - 16384;
+	vForce.v.coord.x = (vForce.v.coord.x >> 4) + d_rand () - 16384;
+	vForce.v.coord.y = (vForce.v.coord.y >> 4) + d_rand () - 16384;
+	vForce.v.coord.z = (vForce.v.coord.z >> 4) + d_rand () - 16384;
 	gameData.objs.consoleP->ApplyRotForce (vForce);
 	break; //no dual mega/smart missile launch
 	}

@@ -145,8 +145,8 @@ int IpxInit (int socket_number)
 {
 	int i;
 
-if ((i = FindArg ("-ipxnetwork")) && appArgs [i + 1]) {
-	ulong n = strtol (appArgs [i + 1], NULL, 16);
+if ((i = FindArg ("-ipxnetwork")) && appConfig [i + 1]) {
+	ulong n = strtol (appConfig [i + 1], NULL, 16);
 	for (i = 3; i >= 0; i--, n >>= 8)
 		ipx_MyAddress [i] = n & 0xff; 
 	}

@@ -194,23 +194,23 @@ if (ogl.SizeVertexBuffer (3)) {
 	arrowPoint.p3_index = -1;
 	ogl.VertexBuffer () [1].Assign (spherePoint.p3_vec);
 	// Draw CPlayerData's up vector
-	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.v.u * (size*2);
+	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.u * (size*2);
 	G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
 	ogl.VertexBuffer () [0].Assign (arrowPoint.p3_vec);
 	// Draw shaft of arrow
-	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.v.f * (size * 3);
+	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size * 3);
 	G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
 	ogl.VertexBuffer () [2].Assign (arrowPoint.p3_vec);
 	ogl.FlushBuffers (GL_LINE_STRIP, 3);
 	ogl.VertexBuffer () [1].Assign (arrowPoint.p3_vec);
 	// Draw right head of arrow
-	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.v.f * (size*2);
-	vHeadPos += objP->info.position.mOrient.m.v.r * (size*1);
+	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size*2);
+	vHeadPos += objP->info.position.mOrient.m.dir.r * (size*1);
 	G3TransformAndEncodePoint (&headPoint, vHeadPos);
 	ogl.VertexBuffer () [0].Assign (headPoint.p3_vec);
 	// Draw left head of arrow
-	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.v.f * (size*2);
-	vHeadPos += objP->info.position.mOrient.m.v.r * (size* (-1));
+	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size*2);
+	vHeadPos += objP->info.position.mOrient.m.dir.r * (size* (-1));
 	G3TransformAndEncodePoint (&headPoint, vHeadPos);
 	ogl.VertexBuffer () [2].Assign (headPoint.p3_vec);
 	ogl.FlushBuffers (GL_LINE_STRIP, 3);
@@ -416,10 +416,10 @@ automap.m_bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAG
 if ((m_bRadar = m_bRadar) == 2) {
 	CFixMatrix& po = gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient;
 #if 1
-	mRadar.m.v.r = po.m.v.r;
-	mRadar.m.v.f = po.m.v.u;
-	mRadar.m.v.f.v.c.y = -mRadar.m.v.f.v.c.y;
-	mRadar.m.v.u = po.m.v.f;
+	mRadar.m.dir.r = po.m.dir.r;
+	mRadar.m.dir.f = po.m.dir.u;
+	mRadar.m.dir.f.v.coord.y = -mRadar.m.dir.f.v.coord.y;
+	mRadar.m.dir.u = po.m.dir.f;
 #else
 	mRadar.rVec.p.x = po->rVec.p.x;
 	mRadar.rVec.p.y = po->rVec.p.y;
@@ -459,14 +459,14 @@ if (bAutomapFrame)
 	ogl.Viewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
 RenderStartFrame ();
 if (m_bRadar == 2) {
-	m_data.viewer.vPos = m_data.viewTarget + mRadar.m.v.f * (-m_data.nViewDist);
+	m_data.viewer.vPos = m_data.viewTarget + mRadar.m.dir.f * (-m_data.nViewDist);
 	G3SetViewMatrix (m_data.viewer.vPos, mRadar, m_data.nZoom * 2, 1);
 	}
 else {
-	m_data.viewer.vPos = m_data.viewTarget + m_data.viewer.mOrient.m.v.f * -m_data.nViewDist;
+	m_data.viewer.vPos = m_data.viewTarget + m_data.viewer.mOrient.m.dir.f * -m_data.nViewDist;
 	if (!m_bRadar && xStereoSeparation) {
 		//glClear (GL_COLOR_BUFFER_BIT);
-		m_data.viewer.vPos += m_data.viewer.mOrient.m.v.r * xStereoSeparation;
+		m_data.viewer.vPos += m_data.viewer.mOrient.m.dir.r * xStereoSeparation;
 		}
 	G3SetViewMatrix (m_data.viewer.vPos, m_data.viewer.mOrient, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
 	}
@@ -658,9 +658,9 @@ if (m_bDisplay < 0) {
 	playerP = OBJECTS + LOCALPLAYER.nObject;
 	m_data.viewer.mOrient = playerP->info.position.mOrient;
 
-	m_vTAngles.v.c.p = PITCH_DEFAULT;
-	m_vTAngles.v.c.h = 0;
-	m_vTAngles.v.c.b = 0;
+	m_vTAngles.v.coord.p = PITCH_DEFAULT;
+	m_vTAngles.v.coord.h = 0;
+	m_vTAngles.v.coord.b = 0;
 
 	m_data.viewTarget = playerP->info.position.vPos;
 	t1 = xEntryTime = TimerGetFixedSeconds ();
@@ -696,22 +696,22 @@ int CAutomap::Update (void)
 if (controls [0].firePrimaryDownCount) {
 	// Reset orientation
 	m_data.nViewDist = ZOOM_DEFAULT;
-	m_vTAngles.v.c.p = PITCH_DEFAULT;
-	m_vTAngles.v.c.h = 0;
-	m_vTAngles.v.c.b = 0;
+	m_vTAngles.v.coord.p = PITCH_DEFAULT;
+	m_vTAngles.v.coord.h = 0;
+	m_vTAngles.v.coord.b = 0;
 	m_data.viewTarget = playerP->info.position.vPos;
 	}
 if (controls [0].forwardThrustTime)
-	m_data.viewTarget += m_data.viewer.mOrient.m.v.f * (controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR);
-m_vTAngles.v.c.p += (fixang) FixDiv (controls [0].pitchTime, ROT_SPEED_DIVISOR);
-m_vTAngles.v.c.h += (fixang) FixDiv (controls [0].headingTime, ROT_SPEED_DIVISOR);
-m_vTAngles.v.c.b += (fixang) FixDiv (controls [0].bankTime, ROT_SPEED_DIVISOR*2);
+	m_data.viewTarget += m_data.viewer.mOrient.m.dir.f * (controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR);
+m_vTAngles.v.coord.p += (fixang) FixDiv (controls [0].pitchTime, ROT_SPEED_DIVISOR);
+m_vTAngles.v.coord.h += (fixang) FixDiv (controls [0].headingTime, ROT_SPEED_DIVISOR);
+m_vTAngles.v.coord.b += (fixang) FixDiv (controls [0].bankTime, ROT_SPEED_DIVISOR*2);
 
 m = CFixMatrix::Create (m_vTAngles);
 if (controls [0].verticalThrustTime || controls [0].sidewaysThrustTime) {
 	m_data.viewer.mOrient = playerP->info.position.mOrient * m;
-	m_data.viewTarget += m_data.viewer.mOrient.m.v.u * (controls [0].verticalThrustTime * SLIDE_SPEED);
-	m_data.viewTarget += m_data.viewer.mOrient.m.v.r * (controls [0].sidewaysThrustTime * SLIDE_SPEED);
+	m_data.viewTarget += m_data.viewer.mOrient.m.dir.u * (controls [0].verticalThrustTime * SLIDE_SPEED);
+	m_data.viewTarget += m_data.viewer.mOrient.m.dir.r * (controls [0].sidewaysThrustTime * SLIDE_SPEED);
 	}
 m_data.viewer.mOrient = playerP->info.position.mOrient * m;
 if (m_data.nViewDist < ZOOM_MIN_VALUE)
@@ -1134,7 +1134,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 		}
 
 	cc = RotateVertexList (2, edgeP->verts);
-	distance = gameData.segs.points [edgeP->verts [1]].p3_vec.v.c.z;
+	distance = gameData.segs.points [edgeP->verts [1]].p3_vec.v.coord.z;
 	if (minDistance > distance)
 		minDistance = distance;
 	if (!cc.ccAnd)  {	//all off screen?
@@ -1186,7 +1186,7 @@ while (incr > 0) {
 			v1 = m_brightEdges [j]->verts [0];
 			v2 = m_brightEdges [j + incr]->verts [0];
 
-			if (gameData.segs.points [v1].p3_vec.v.c.z < gameData.segs.points [v2].p3_vec.v.c.z) {
+			if (gameData.segs.points [v1].p3_vec.v.coord.z < gameData.segs.points [v2].p3_vec.v.coord.z) {
 				// If not in correct order, them swap 'em
 				Swap (m_brightEdges [j + incr], m_brightEdges [j]);
 				j -= incr;
@@ -1204,7 +1204,7 @@ for (i = 0; i < nbright; i++) {
 	edgeP = m_brightEdges [i];
 	p1 = gameData.segs.points + edgeP->verts [0];
 	p2 = gameData.segs.points + edgeP->verts [1];
-	fix xDist = p1->p3_vec.v.c.z - minDistance;
+	fix xDist = p1->p3_vec.v.coord.z - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
 	if (xDist < 0)
 		xDist = 0;

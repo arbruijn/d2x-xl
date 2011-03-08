@@ -76,27 +76,27 @@ void ScaleMatrix (int bOglScale)
 
 transformation.m_info.scale = transformation.m_info.aspect;
 if (transformation.m_info.zoom <= I2X (1)) 		//xZoom in by scaling z
-	transformation.m_info.scale.v.c.z = FixMul (transformation.m_info.scale.v.c.z, transformation.m_info.zoom);
+	transformation.m_info.scale.v.coord.z = FixMul (transformation.m_info.scale.v.coord.z, transformation.m_info.zoom);
 else {			//xZoom out by scaling x&y
 	fix s = FixDiv (I2X (1), transformation.m_info.zoom);
 
-	transformation.m_info.scale.v.c.x = FixMul (transformation.m_info.scale.v.c.x, s);
-	transformation.m_info.scale.v.c.y = FixMul (transformation.m_info.scale.v.c.y, s);
+	transformation.m_info.scale.v.coord.x = FixMul (transformation.m_info.scale.v.coord.x, s);
+	transformation.m_info.scale.v.coord.y = FixMul (transformation.m_info.scale.v.coord.y, s);
 	}
 transformation.m_info.scalef.Assign (transformation.m_info.scale);
 //transformation.m_info.scale.v.c.x = transformation.m_info.scale.v.c.y = transformation.m_info.scale.v.c.z = I2X (1);
 //now scale matrix elements
 if (bOglScale) {
 #if 0
-	glScalef (transformation.m_info.scalef.v.c.x, transformation.m_info.scalef.v.c.y, -transformation.m_info.scalef.v.c.z);
+	glScalef (transformation.m_info.scalef.dir.coord.x, transformation.m_info.scalef.dir.coord.y, -transformation.m_info.scalef.dir.coord.z);
 #else
 	glScalef (1, 1, -1);
 #endif
 	}
 else {
-	transformation.m_info.view [0].m.v.r *= (transformation.m_info.scale.v.c.x);
-	transformation.m_info.view [0].m.v.u *= (transformation.m_info.scale.v.c.y);
-	transformation.m_info.view [0].m.v.f *= (transformation.m_info.scale.v.c.z);
+	transformation.m_info.view [0].m.dir.r *= (transformation.m_info.scale.v.coord.x);
+	transformation.m_info.view [0].m.dir.u *= (transformation.m_info.scale.v.coord.y);
+	transformation.m_info.view [0].m.dir.f *= (transformation.m_info.scale.v.coord.z);
 	transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
 	glScalef (1, 1, -1);
 	}

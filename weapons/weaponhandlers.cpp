@@ -179,13 +179,13 @@ if (!nFired) {
 		OBJECTS [nLightObj].Die ();
 	return 0;
 	}
-vForce.v.c.x = -(objP->info.position.mOrient.m.v.f.v.c.x << 7);
-vForce.v.c.y = -(objP->info.position.mOrient.m.v.f.v.c.y << 7);
-vForce.v.c.z = -(objP->info.position.mOrient.m.v.f.v.c.z << 7);
+vForce.v.coord.x = -(objP->info.position.mOrient.m.dir.f.v.coord.x << 7);
+vForce.v.coord.y = -(objP->info.position.mOrient.m.dir.f.v.coord.y << 7);
+vForce.v.coord.z = -(objP->info.position.mOrient.m.dir.f.v.coord.z << 7);
 objP->ApplyForce (vForce);
-vForce.v.c.x = (vForce.v.c.x >> 4) + d_rand () - 16384;
-vForce.v.c.y = (vForce.v.c.y >> 4) + d_rand () - 16384;
-vForce.v.c.z = (vForce.v.c.z >> 4) + d_rand () - 16384;
+vForce.v.coord.x = (vForce.v.coord.x >> 4) + d_rand () - 16384;
+vForce.v.coord.y = (vForce.v.coord.y >> 4) + d_rand () - 16384;
+vForce.v.coord.z = (vForce.v.coord.z >> 4) + d_rand () - 16384;
 objP->ApplyRotForce (vForce);
 return nRoundsPerShot;
 }

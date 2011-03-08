@@ -178,7 +178,7 @@ if (distance < maxDistance) {
 		if (*nVolume <= 0)
 			*nVolume = 0;
 		else {
-			angleFromEar = CFixVector::DeltaAngleNorm (mListener.m.v.r, vecToSound, &mListener.m.v.u);
+			angleFromEar = CFixVector::DeltaAngleNorm (mListener.m.dir.r, vecToSound, &mListener.m.dir.u);
 			FixSinCos (angleFromEar, &sinang, &cosang);
 			if (gameConfig.bReverseChannels != gameOpts->UseHiresSound ())
 				cosang = -cosang;
@@ -703,7 +703,7 @@ while (i) {
 				if (soundObjP->m_volume != nVolume)
 					GetVolPan (
 						mListenerOrient, vListenerPos, nListenerSeg,
-						soundObjP->m_linkType.pos.position, soundObjP->m_linkType.pos.nSegment, soundObjP->m_maxVolume,
+						soundObjP->m_linkType.coord.position, soundObjP->m_linkType.coord.nSegment, soundObjP->m_maxVolume,
 						&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
 #	endif
 				}

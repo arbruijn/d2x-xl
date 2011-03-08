@@ -190,24 +190,24 @@ void my_extract_shortpos (CObject *objP, tShortPos *spp)
 	sbyte *sp;
 
 sp = spp->orient;
-objP->info.position.mOrient.m.v.r.v.c.x = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.u.v.c.x = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.f.v.c.x = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.r.v.c.y = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.u.v.c.y = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.f.v.c.y = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.r.v.c.z = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.u.v.c.z = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.f.v.c.z = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.dir.r.v.coord.x = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.dir.u.v.coord.x = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.dir.f.v.coord.x = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.dir.r.v.coord.y = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.dir.u.v.coord.y = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.dir.f.v.coord.y = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.dir.r.v.coord.z = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.dir.u.v.coord.z = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.dir.f.v.coord.z = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
 objP->info.nSegment = nSegment;
 const CFixVector& v = gameData.segs.vertices [SEGMENTS [nSegment].m_verts [0]];
-objP->info.position.vPos.v.c.x = (spp->pos [0] << RELPOS_PRECISION) + v.v.c.x;
-objP->info.position.vPos.v.c.y = (spp->pos [1] << RELPOS_PRECISION) + v.v.c.y;
-objP->info.position.vPos.v.c.z = (spp->pos [2] << RELPOS_PRECISION) + v.v.c.z;
-objP->mType.physInfo.velocity.v.c.x = (spp->vel [0] << VEL_PRECISION);
-objP->mType.physInfo.velocity.v.c.y = (spp->vel [1] << VEL_PRECISION);
-objP->mType.physInfo.velocity.v.c.z = (spp->vel [2] << VEL_PRECISION);
+objP->info.position.vPos.v.coord.x = (spp->pos [0] << RELPOS_PRECISION) + v.v.coord.x;
+objP->info.position.vPos.v.coord.y = (spp->pos [1] << RELPOS_PRECISION) + v.v.coord.y;
+objP->info.position.vPos.v.coord.z = (spp->pos [2] << RELPOS_PRECISION) + v.v.coord.z;
+objP->mType.physInfo.velocity.v.coord.x = (spp->vel [0] << VEL_PRECISION);
+objP->mType.physInfo.velocity.v.coord.y = (spp->vel [1] << VEL_PRECISION);
+objP->mType.physInfo.velocity.v.coord.z = (spp->vel [2] << VEL_PRECISION);
 }
 
 //	-----------------------------------------------------------------------------
@@ -3045,16 +3045,16 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 					(renderType != RT_THRUSTER) && 
 					(renderType != RT_POWERUP)) {
 
-				fvec1 = curObjP->info.position.mOrient.m.v.f;
+				fvec1 = curObjP->info.position.mOrient.m.dir.f;
 				fvec1 *= (I2X (1)-factor);
-				fvec2 = objP->info.position.mOrient.m.v.f;
+				fvec2 = objP->info.position.mOrient.m.dir.f;
 				fvec2 *= factor;
 				fvec1 += fvec2;
 				mag1 = CFixVector::Normalize (fvec1);
 				if (mag1 > I2X (1)/256) {
-					rvec1 = curObjP->info.position.mOrient.m.v.r;
+					rvec1 = curObjP->info.position.mOrient.m.dir.r;
 					rvec1 *= (I2X (1)-factor);
-					rvec2 = objP->info.position.mOrient.m.v.r;
+					rvec2 = objP->info.position.mOrient.m.dir.r;
 					rvec2 *= factor;
 					rvec1 += rvec2;
 					CFixVector::Normalize (rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
@@ -3064,15 +3064,15 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 				}
 			// Interpolate the CObject position.  This is just straight linear
 			// interpolation.
-			delta_x = objP->info.position.vPos.v.c.x - curObjP->info.position.vPos.v.c.x;
-			delta_y = objP->info.position.vPos.v.c.y - curObjP->info.position.vPos.v.c.y;
-			delta_z = objP->info.position.vPos.v.c.z - curObjP->info.position.vPos.v.c.z;
+			delta_x = objP->info.position.vPos.v.coord.x - curObjP->info.position.vPos.v.coord.x;
+			delta_y = objP->info.position.vPos.v.coord.y - curObjP->info.position.vPos.v.coord.y;
+			delta_z = objP->info.position.vPos.v.coord.z - curObjP->info.position.vPos.v.coord.z;
 			delta_x = FixMul (delta_x, factor);
 			delta_y = FixMul (delta_y, factor);
 			delta_z = FixMul (delta_z, factor);
-			curObjP->info.position.vPos.v.c.x += delta_x;
-			curObjP->info.position.vPos.v.c.y += delta_y;
-			curObjP->info.position.vPos.v.c.z += delta_z;
+			curObjP->info.position.vPos.v.coord.x += delta_x;
+			curObjP->info.position.vPos.v.coord.y += delta_y;
+			curObjP->info.position.vPos.v.coord.z += delta_z;
 				// -- old fashioned way --// stuff the new angles back into the CObject structure
 				// -- old fashioned way --				VmAngles2Matrix (&(curObjs [i].info.position.mOrient), &cur_angles);
 			}

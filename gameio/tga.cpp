@@ -332,27 +332,27 @@ SetProperties (alpha, bGrayScale, brightness, bReverse == 0);
 	int				w = m_bmP->Width ();
 	tRgbColorf		avgColor;
 	tRgbColorb		avgColorb;
-	float				a, avgAlpha = 0;
+	float				vec, avgAlpha = 0;
 
 avgColor.red = avgColor.green = avgColor.blue = 0;
 m_bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 if (m_header.Bits () == 24) {
-	tBGRA	c;
+	tBGRA	coord;
 	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (m_bmP->Buffer ()) + w * (h - 1);
 
 	for (i = h; i; i--) {
 		for (j = w; j; j--, p++) {
-			if (cf.Read (&c, 1, 3) != (size_t) 3)
+			if (cf.Read (&coord, 1, 3) != (size_t) 3)
 				return 0;
 			if (bGrayScale) {
 				p->red =
 				p->green =
-				p->blue = (ubyte) (((int) c.r + (int) c.g + (int) c.b) / 3 * brightness);
+				p->blue = (ubyte) (((int) coord.r + (int) coord.g + (int) coord.b) / 3 * brightness);
 				}
 			else {
-				p->red = (ubyte) (c.r * brightness);
-				p->green = (ubyte) (c.g * brightness);
-				p->blue = (ubyte) (c.b * brightness);
+				p->red = (ubyte) (coord.r * brightness);
+				p->green = (ubyte) (coord.g * brightness);
+				p->blue = (ubyte) (coord.b * brightness);
 				}
 			avgColor.red += p->red;
 			avgColor.green += p->green;
@@ -366,7 +366,7 @@ if (m_header.Bits () == 24) {
 else {
 	m_bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
 	if (bReverse) {
-		tRGBA	c;
+		tRGBA	coord;
 		tRgbaColorb	*p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ());
 		int nSuperTransp;
 
@@ -375,24 +375,24 @@ else {
 			n = nFrames - i / w;
 			nSuperTransp = 0;
 			for (j = w; j; j--, p++) {
-				if (cf.Read (&c, 1, 4) != (size_t) 4)
+				if (cf.Read (&coord, 1, 4) != (size_t) 4)
 					return 0;
 				if (bGrayScale) {
 					p->red =
 					p->green =
-					p->blue = (ubyte) (((int) c.r + (int) c.g + (int) c.b) / 3 * brightness);
+					p->blue = (ubyte) (((int) coord.r + (int) coord.g + (int) coord.b) / 3 * brightness);
 					}
-				else if (c.a) {
-					p->red = (ubyte) (c.r * brightness);
-					p->green = (ubyte) (c.g * brightness);
-					p->blue = (ubyte) (c.b * brightness);
+				else if (coord.vec) {
+					p->red = (ubyte) (coord.r * brightness);
+					p->green = (ubyte) (coord.g * brightness);
+					p->blue = (ubyte) (coord.b * brightness);
 					}
-				if ((c.r == 120) && (c.g == 88) && (c.b == 128)) {
+				if ((coord.r == 120) && (coord.g == 88) && (coord.b == 128)) {
 					nSuperTransp++;
 					p->alpha = 0;
 					}
 				else {
-					p->alpha = (alpha < 0) ? c.a : alpha;
+					p->alpha = (alpha < 0) ? coord.vec : alpha;
 					if (!p->alpha)
 						p->red =		//avoid colored transparent areas interfering with visible image edges
 						p->green =
@@ -410,10 +410,10 @@ else {
 					nAlpha++;
 					}
 				nVisible += p->alpha;
-				a = (float) p->alpha / 255;
-				avgColor.red += p->red * a;
-				avgColor.green += p->green * a;
-				avgColor.blue += p->blue * a;
+				vec = (float) p->alpha / 255;
+				avgColor.red += p->red * vec;
+				avgColor.green += p->green * vec;
+				avgColor.blue += p->blue * vec;
 				}
 			if (nSuperTransp > 50) {
 				if (!n)
@@ -423,7 +423,7 @@ else {
 			}
 		}
 	else {
-		tBGRA	c;
+		tBGRA	coord;
 		tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ()) + w * (h - 1);
 		int nSuperTransp;
 
@@ -432,24 +432,24 @@ else {
 			n = nFrames - i / w;
 			nSuperTransp = 0;
 			for (j = w; j; j--, p++) {
-				if (cf.Read (&c, 1, 4) != (size_t) 4)
+				if (cf.Read (&coord, 1, 4) != (size_t) 4)
 					return 0;
 				if (bGrayScale) {
 					p->red =
 					p->green =
-					p->blue = (ubyte) (((int) c.r + (int) c.g + (int) c.b) / 3 * brightness);
+					p->blue = (ubyte) (((int) coord.r + (int) coord.g + (int) coord.b) / 3 * brightness);
 					}
 				else {
-					p->red = (ubyte) (c.r * brightness);
-					p->green = (ubyte) (c.g * brightness);
-					p->blue = (ubyte) (c.b * brightness);
+					p->red = (ubyte) (coord.r * brightness);
+					p->green = (ubyte) (coord.g * brightness);
+					p->blue = (ubyte) (coord.b * brightness);
 					}
-				if ((c.r == 120) && (c.g == 88) && (c.b == 128)) {
+				if ((coord.r == 120) && (coord.g == 88) && (coord.b == 128)) {
 					nSuperTransp++;
 					p->alpha = 0;
 					}
 				else {
-					p->alpha = (alpha < 0) ? c.a : alpha;
+					p->alpha = (alpha < 0) ? coord.vec : alpha;
 					if (!p->alpha)
 						p->red =		//avoid colored transparent areas interfering with visible image edges
 						p->green =
@@ -466,10 +466,10 @@ else {
 					nAlpha++;
 					}
 				nVisible += p->alpha;
-				a = (float) p->alpha / 255;
-				avgColor.red += p->red * a;
-				avgColor.green += p->green * a;
-				avgColor.blue += p->blue * a;
+				vec = (float) p->alpha / 255;
+				avgColor.red += p->red * vec;
+				avgColor.green += p->green * vec;
+				avgColor.blue += p->blue * vec;
 				}
 			if (nSuperTransp > w * w / 2000) {
 				if (!n)
@@ -480,10 +480,10 @@ else {
 			}
 		}
 	}
-a = (float) nVisible / 255.0f;
-avgColorb.red = (ubyte) (avgColor.red / a);
-avgColorb.green = (ubyte) (avgColor.green / a);
-avgColorb.blue = (ubyte) (avgColor.blue / a);
+vec = (float) nVisible / 255.0f;
+avgColorb.red = (ubyte) (avgColor.red / vec);
+avgColorb.green = (ubyte) (avgColor.green / vec);
+avgColorb.blue = (ubyte) (avgColor.blue / vec);
 m_bmP->SetAvgColor (avgColorb);
 if (!nAlpha)
 	ConvertToRGB (bmP);

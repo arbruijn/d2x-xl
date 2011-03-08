@@ -91,8 +91,8 @@ if ((bSpectate || (objP->info.nId != gameData.multiplayer.nLocalPlayer)) &&
 	TransformGunPoint (objP, vGunPoints, 6, 0, 0, vMuzzle, NULL);
 	}
 else {
-	*vMuzzle = posP->vPos - posP->mOrient.m.v.u;
-	*vMuzzle += posP->mOrient.m.v.f * (objP->info.xSize / 4);
+	*vMuzzle = posP->vPos - posP->mOrient.m.dir.u;
+	*vMuzzle += posP->mOrient.m.dir.f * (objP->info.xSize / 4);
 	}
 return vMuzzle;
 }

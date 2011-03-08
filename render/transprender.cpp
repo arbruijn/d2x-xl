@@ -260,7 +260,7 @@ int CTransparencyRenderer::SplitPoly (tTranspPoly *item, int nDepth)
 	CFloatVector		vSplit;
 	tRgbaColorf	color;
 	int			i, l, i0, i1, i2, i3, nMinLen = 0x7fff, nMaxLen = 0;
-	float			z, zMin, zMax, *c, *c0, *c1;
+	float			z, zMin, zMax, *coord, *c0, *c1;
 
 split [0] = split [1] = *item;
 for (i = i0 = 0; i < split [0].nVertices; i++) {
@@ -274,7 +274,7 @@ for (i = i0 = 0; i < split [0].nVertices; i++) {
 	}
 if ((nDepth > 1) || !nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0].nVertices == 3) || (nMaxLen <= nMinLen / 2 * 3)))) {
 	for (i = 0, zMax = 0, zMin = 1e30f; i < split [0].nVertices; i++) {
-		z = split [0].vertices [i].v.c.z;
+		z = split [0].vertices [i].dir.coord.z;
 		if (zMax < z)
 			zMax = z;
 		if (zMin > z)
@@ -294,14 +294,14 @@ if (split [0].nVertices == 3) {
 	split [0].sideLength [i0] =
 	split [1].sideLength [i0] = nMaxLen / 2;
 	if (split [0].bmP) {
-		split [0].texCoord [i0].v.u =
-		split [1].texCoord [i1].v.u = (split [0].texCoord [i1].v.u + split [0].texCoord [i0].v.u) / 2;
-		split [0].texCoord [i0].v.v =
-		split [1].texCoord [i1].v.v = (split [0].texCoord [i1].v.v + split [0].texCoord [i0].v.v) / 2;
+		split [0].texCoord [i0].dir.u =
+		split [1].texCoord [i1].dir.u = (split [0].texCoord [i1].dir.u + split [0].texCoord [i0].dir.u) / 2;
+		split [0].texCoord [i0].dir.dir =
+		split [1].texCoord [i1].dir.dir = (split [0].texCoord [i1].dir.dir + split [0].texCoord [i0].dir.dir) / 2;
 		}
 	if (split [0].nColors == 3) {
-		for (i = 4, c = reinterpret_cast<float*> (&color, c0 = reinterpret_cast<float*> (split [0].color + i0), c1 = reinterpret_cast<float*> (split [0].color + i1); i; i--)
-			*c++ = (*c0++ + *c1++) / 2;
+		for (i = 4, coord = reinterpret_cast<float*> (&color, c0 = reinterpret_cast<float*> (split [0].color + i0), c1 = reinterpret_cast<float*> (split [0].color + i1); i; i--)
+			*coord++ = (*c0++ + *c1++) / 2;
 		split [0].color [i0] =
 		split [1].color [i1] = color;
 		}
@@ -317,22 +317,22 @@ else {
 	split [0].vertices [i2] =
 	split [1].vertices [i3] = vSplit;
 	if (split [0].bmP) {
-		split [0].texCoord [i1].v.u =
-		split [1].texCoord [i0].v.u = (split [0].texCoord [i1].v.u + split [0].texCoord [i0].v.u) / 2;
-		split [0].texCoord [i1].v.v =
-		split [1].texCoord [i0].v.v = (split [0].texCoord [i1].v.v + split [0].texCoord [i0].v.v) / 2;
-		split [0].texCoord [i2].v.u =
-		split [1].texCoord [i3].v.u = (split [0].texCoord [i3].v.u + split [0].texCoord [i2].v.u) / 2;
-		split [0].texCoord [i2].v.v =
-		split [1].texCoord [i3].v.v = (split [0].texCoord [i3].v.v + split [0].texCoord [i2].v.v) / 2;
+		split [0].texCoord [i1].dir.u =
+		split [1].texCoord [i0].dir.u = (split [0].texCoord [i1].dir.u + split [0].texCoord [i0].dir.u) / 2;
+		split [0].texCoord [i1].dir.dir =
+		split [1].texCoord [i0].dir.dir = (split [0].texCoord [i1].dir.dir + split [0].texCoord [i0].dir.dir) / 2;
+		split [0].texCoord [i2].dir.u =
+		split [1].texCoord [i3].dir.u = (split [0].texCoord [i3].dir.u + split [0].texCoord [i2].dir.u) / 2;
+		split [0].texCoord [i2].dir.dir =
+		split [1].texCoord [i3].dir.dir = (split [0].texCoord [i3].dir.dir + split [0].texCoord [i2].dir.dir) / 2;
 		}
 	if (split [0].nColors == 4) {
-		for (i = 4, c = reinterpret_cast<float*> (&color, c0 = reinterpret_cast<float*> (split [0].color + i0), c1 = reinterpret_cast<float*> (split [0].color + i1); i; i--)
-			*c++ = (*c0++ + *c1++) / 2;
+		for (i = 4, coord = reinterpret_cast<float*> (&color, c0 = reinterpret_cast<float*> (split [0].color + i0), c1 = reinterpret_cast<float*> (split [0].color + i1); i; i--)
+			*coord++ = (*c0++ + *c1++) / 2;
 		split [0].color [i1] =
 		split [1].color [i0] = color;
-		for (i = 4, c = reinterpret_cast<float*> (&color, c0 = reinterpret_cast<float*> (split [0].color + i2), c1 = reinterpret_cast<float*> (split [0].color + i3); i; i--)
-			*c++ = (*c0++ + *c1++) / 2;
+		for (i = 4, coord = reinterpret_cast<float*> (&color, c0 = reinterpret_cast<float*> (split [0].color + i2), c1 = reinterpret_cast<float*> (split [0].color + i3); i; i--)
+			*coord++ = (*c0++ + *c1++) / 2;
 		split [0].color [i2] =
 		split [1].color [i3] = color;
 		}
@@ -590,10 +590,10 @@ item.lightning = lightningP;
 item.nDepth = nDepth;
 #if 0
 transformation.Transform (vPos, lightningP->m_vPos, 0);
-z = vPos.v.c.z;
+z = vPos.dir.coord.z;
 transformation.Transform (vPos, lightningP->m_vEnd, 0);
-if (z < vPos.v.c.z)
-	z = vPos.v.c.z;
+if (z < vPos.dir.coord.z)
+	z = vPos.dir.coord.z;
 #endif
 fix d1 = Depth (lightningP->m_vPos, false);
 fix d2 = Depth (lightningP->m_vEnd, false);
@@ -1045,27 +1045,27 @@ sparkArea.Add (item->position, nSize);
 transformation.Transform (vPos, item->position, 0);
 if (!item->nType)
 	nCol += 4;
-infoP->vPos.v.c.x = vPos.v.c.x - nSize;
-infoP->vPos.v.c.y = vPos.v.c.y + nSize;
-infoP->vPos.v.c.z = vPos.v.c.z;
+infoP->vPos.v.coord.x = vPos.v.coord.x - nSize;
+infoP->vPos.v.coord.y = vPos.v.coord.y + nSize;
+infoP->vPos.v.coord.z = vPos.v.coord.z;
 infoP->texCoord.v.u = nCol / 8.0f;
 infoP->texCoord.v.v = (nRow + 1) / 8.0f;
 infoP++;
-infoP->vPos.v.c.x = vPos.v.c.x + nSize;
-infoP->vPos.v.c.y = vPos.v.c.y + nSize;
-infoP->vPos.v.c.z = vPos.v.c.z;
+infoP->vPos.v.coord.x = vPos.v.coord.x + nSize;
+infoP->vPos.v.coord.y = vPos.v.coord.y + nSize;
+infoP->vPos.v.coord.z = vPos.v.coord.z;
 infoP->texCoord.v.u = (nCol + 1) / 8.0f;
 infoP->texCoord.v.v = (nRow + 1) / 8.0f;
 infoP++;
-infoP->vPos.v.c.x = vPos.v.c.x + nSize;
-infoP->vPos.v.c.y = vPos.v.c.y - nSize;
-infoP->vPos.v.c.z = vPos.v.c.z;
+infoP->vPos.v.coord.x = vPos.v.coord.x + nSize;
+infoP->vPos.v.coord.y = vPos.v.coord.y - nSize;
+infoP->vPos.v.coord.z = vPos.v.coord.z;
 infoP->texCoord.v.u = (nCol + 1) / 8.0f;
 infoP->texCoord.v.v = nRow / 8.0f;
 infoP++;
-infoP->vPos.v.c.x = vPos.v.c.x - nSize;
-infoP->vPos.v.c.y = vPos.v.c.y - nSize;
-infoP->vPos.v.c.z = vPos.v.c.z;
+infoP->vPos.v.coord.x = vPos.v.coord.x - nSize;
+infoP->vPos.v.coord.y = vPos.v.coord.y - nSize;
+infoP->vPos.v.coord.z = vPos.v.coord.z;
 infoP->texCoord.v.u = nCol / 8.0f;
 infoP->texCoord.v.v = nRow / 8.0f;
 sparkBuffer.nSparks++;

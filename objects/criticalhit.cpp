@@ -73,7 +73,7 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks [0] > m_damage
 #if DBG
 		if (nModel < 2)
 			HUDMessage (0, "crit. hit AIM\n");
-		else if (CFixVector::Dot (info.position.mOrient.m.v.f, vDir) < -I2X (1) / 8)
+		else if (CFixVector::Dot (info.position.mOrient.m.dir.f, vDir) < -I2X (1) / 8)
 			HUDMessage (0, "crit. hit DRIVES\n");
 		else
 			HUDMessage (0, "crit. hit GUNS\n");
@@ -81,7 +81,7 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks [0] > m_damage
 #if 1
 		if (nModel < 2)
 			m_damage.nHits [0]++;
-		else if (CFixVector::Dot (info.position.mOrient.m.v.f, vDir) < -I2X (1) / 8)
+		else if (CFixVector::Dot (info.position.mOrient.m.dir.f, vDir) < -I2X (1) / 8)
 			m_damage.nHits [1]++;
 		else
 			m_damage.nHits [2]++;
@@ -108,7 +108,7 @@ m_damage.tShield = gameStates.app.nSDLTicks [0];
 for (int i = 0; i < 3; i++)
 #if 1
 #	if 0
-	if (CFixVector::Dot (m_hitInfo.v [i], vHit) > I2X (1) - I2X (1) / 32) {
+	if (CFixVector::Dot (m_hitInfo.dir [i], vHit) > I2X (1) - I2X (1) / 32) {
 #	else
 	if (CFixVector::Dist (m_hitInfo.v [i], vHit) < I2X (1) / 16) {
 #	endif

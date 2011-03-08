@@ -44,22 +44,22 @@ bool PointIsInQuad (CFixVector vRef, CFixVector* vertP, CFixVector vNormal)
 
 //now do 2d check to see if vRef is in side
 //project polygon onto plane by finding largest component of Normal
-t.v.c.x = labs (vNormal.v.c.x);
-t.v.c.y = labs (vNormal.v.c.y);
-t.v.c.z = labs (vNormal.v.c.z);
-if (t.v.c.x > t.v.c.y) {
-	if (t.v.c.x > t.v.c.z)
+t.v.coord.x = labs (vNormal.v.coord.x);
+t.v.coord.y = labs (vNormal.v.coord.y);
+t.v.coord.z = labs (vNormal.v.coord.z);
+if (t.v.coord.x > t.v.coord.y) {
+	if (t.v.coord.x > t.v.coord.z)
 		biggest = 0;
 	else
 		biggest = 2;
 	}
 else {
-	if (t.v.c.y > t.v.c.z)
+	if (t.v.coord.y > t.v.coord.z)
 		biggest = 1;
 	else
 		biggest = 2;
 	}
-if (vNormal.v.a [biggest] > 0) {
+if (vNormal.v.vec [biggest] > 0) {
 	i = ijTable [biggest][0];
 	j = ijTable [biggest][1];
 	}
@@ -68,15 +68,15 @@ else {
 	j = ijTable [biggest][0];
 	}
 //now do the 2d problem in the i, j plane
-check_i = vRef.v.a [i];
-check_j = vRef.v.a [j];
+check_i = vRef.v.vec [i];
+check_j = vRef.v.vec [j];
 for (iEdge = 0; iEdge < 4; ) {
 	v0 = vertP [iEdge++];
 	v1 = vertP [iEdge % 4];
-	vEdge.i = v1.v.a [i] - v0.v.a [i];
-	vEdge.j = v1.v.a [j] - v0.v.a [j];
-	vCheck.i = check_i - v0.v.a [i];
-	vCheck.j = check_j - v0.v.a [j];
+	vEdge.i = v1.v.vec [i] - v0.v.vec [i];
+	vEdge.j = v1.v.vec [j] - v0.v.vec [j];
+	vCheck.i = check_i - v0.v.vec [i];
+	vCheck.j = check_j - v0.v.vec [j];
 	if (FixMul (vCheck.i, vEdge.j) - FixMul (vCheck.j, vEdge.i) < 0)
 		return false;
 	}
@@ -116,7 +116,7 @@ p1.Assign (*pv1);
 p2.Assign (*pv2);
 p3.Assign (*pv3);
 d21 = p2 - p1;
-if (!(m = d21.v.c.x * d21.v.c.x + d21.v.c.y * d21.v.c.y + d21.v.c.z * d21.v.c.z))
+if (!(m = d21.v.coord.x * d21.v.coord.x + d21.v.coord.y * d21.v.coord.y + d21.v.coord.z * d21.v.coord.z))
 	return 0;
 d31 = p3 - p1;
 u = CFloatVector::Dot (d31, d21);
@@ -162,9 +162,9 @@ d *= FixDiv (num, den);
 intersection = (*p0) + d;
 #else
 num /= den;
-intersection.v.c.x = fix (double (p0->v.c.x) + double (d.v.c.x) * num);
-intersection.v.c.y = fix (double (p0->v.c.y) + double (d.v.c.y) * num);
-intersection.v.c.z = fix (double (p0->v.c.z) + double (d.v.c.z) * num);
+intersection.v.coord.x = fix (double (p0->v.coord.x) + double (d.v.coord.x) * num);
+intersection.v.coord.y = fix (double (p0->v.coord.y) + double (d.v.coord.y) * num);
+intersection.v.coord.z = fix (double (p0->v.coord.z) + double (d.v.coord.z) * num);
 #endif
 return 1;
 }

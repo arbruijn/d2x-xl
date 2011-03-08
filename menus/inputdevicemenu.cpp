@@ -693,7 +693,7 @@ do {
 	nJoystickOpt = m.AddMenu (TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
 #else
 	if (gameStates.input.nJoysticks)
-		nJoystickOpt = m.AddMenu (TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
+		nJoystickOpt = mat.AddMenu (TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
 	else
 		nJoystickOpt = -1;
 #endif

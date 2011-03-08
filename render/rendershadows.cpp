@@ -290,16 +290,16 @@ for (i = 0; i < 4; i++)
 for (i = 0; i < 4; i++)
 	glTexGenfv (nTexCoord [i], GL_EYE_PLANE, mPlanef + 4 * i);
 
-glGetFloatv (GL_PROJECTION_MATRIX, mProjection.Vec ());
+glGetFloatv (GL_PROJECTION_MATRIX, mProjection.m.vec);
 glMatrixMode (GL_TEXTURE);
 for (i = 0, cameraP = gameData.render.shadows.shadowMaps; i < 1/*gameData.render.shadows.nShadowMaps*/; i++) {
 	ogl.BindTexture (cameraP->FrameBuffer ().ColorBuffer ());
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
 	glLoadMatrixf (mTexBiasf);
-	glMultMatrixf (mProjection.Vec ());
+	glMultMatrixf (mProjection.m.vec);
 	CFixMatrix::Transpose (mModelView, cameraP->GetObject ()->info.position.mOrient);
-	glMultMatrixf (mModelView.Vec ());
+	glMultMatrixf (mModelView.m.vec);
 	}
 glMatrixMode (GL_MODELVIEW);
 #endif

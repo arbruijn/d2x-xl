@@ -56,22 +56,22 @@ bool PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex,
 
 //now do 2d check to see if refP is in side
 //project polygon onto plane by finding largest component of Normal
-t.v.c.x = float (fabs (vNormal.v.c.x));
-t.v.c.y = float (fabs (vNormal.v.c.y));
-t.v.c.z = float (fabs (vNormal.v.c.z));
-if (t.v.c.x > t.v.c.y) {
-	if (t.v.c.x > t.v.c.z)
+t.v.coord.x = float (fabs (vNormal.v.coord.x));
+t.v.coord.y = float (fabs (vNormal.v.coord.y));
+t.v.coord.z = float (fabs (vNormal.v.coord.z));
+if (t.v.coord.x > t.v.coord.y) {
+	if (t.v.coord.x > t.v.coord.z)
 		biggest = 0;
 	else
 		biggest = 2;
 	}
 else {
-	if (t.v.c.y > t.v.c.z)
+	if (t.v.coord.y > t.v.coord.z)
 		biggest = 1;
 	else
 		biggest = 2;
 	}
-if (vNormal.v.a [biggest] > 0) {
+if (vNormal.v.vec [biggest] > 0) {
 	i = ijTable [biggest][0];
 	j = ijTable [biggest][1];
 	}
@@ -80,15 +80,15 @@ else {
 	j = ijTable [biggest][0];
 	}
 //now do the 2d problem in the i, j plane
-check_i = refP->v.a [i];
-check_j = refP->v.a [j];
+check_i = refP->v.vec [i];
+check_j = refP->v.vec [j];
 for (nEdge = 0; nEdge < nVerts; nEdge++) {
 	v0 = FVERTICES + nVertIndex [nEdge];
 	v1 = FVERTICES + nVertIndex [(nEdge + 1) % nVerts];
-	vEdge.i = v1->v.a [i] - v0->v.a [i];
-	vEdge.j = v1->v.a [j] - v0->v.a [j];
-	vCheck.i = check_i - v0->v.a [i];
-	vCheck.j = check_j - v0->v.a [j];
+	vEdge.i = v1->v.vec [i] - v0->v.vec [i];
+	vEdge.j = v1->v.vec [j] - v0->v.vec [j];
+	vCheck.i = check_i - v0->v.vec [i];
+	vCheck.j = check_j - v0->v.vec [j];
 	if (vCheck.i * vEdge.j - vCheck.j * vEdge.i < -0.005f)
 		return false;
 	}
@@ -189,19 +189,19 @@ uint CheckPointToFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixV
 
 //now do 2d check to see if refP is in side
 //project polygon onto plane by finding largest component of Normal
-t.v.c.x = labs (vNormal->v.c.z);
-t.v.c.y = labs (vNormal->v.c.z);
-t.v.c.z = labs (vNormal->v.c.z);
-if (t.v.c.x > t.v.c.y)
-	if (t.v.c.x > t.v.c.z)
+t.v.coord.x = labs (vNormal->v.coord.z);
+t.v.coord.y = labs (vNormal->v.coord.z);
+t.v.coord.z = labs (vNormal->v.coord.z);
+if (t.v.coord.x > t.v.coord.y)
+	if (t.v.coord.x > t.v.coord.z)
 		biggest = 0;
 	else
 		biggest = 2;
-else if (t.v.c.y > t.v.c.z)
+else if (t.v.coord.y > t.v.coord.z)
 	biggest = 1;
 else
 	biggest = 2;
-if (vNormal->v.a [biggest] > 0) {
+if (vNormal->v.vec [biggest] > 0) {
 	i = ijTable [biggest][0];
 	j = ijTable [biggest][1];
 	}
@@ -210,15 +210,15 @@ else {
 	j = ijTable [biggest][0];
 	}
 //now do the 2d problem in the i, j plane
-check_i = refP->v.a [i];
-check_j = refP->v.a [j];
+check_i = refP->v.vec [i];
+check_j = refP->v.vec [j];
 for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
 	v0 = vertList + nEdge;
 	v1 = vertList + ((nEdge + 1) % nVerts);
-	vEdge.i = v1->v.a [i] - v0->v.a [i];
-	vEdge.j = v1->v.a [j] - v0->v.a [j];
-	vCheck.i = check_i - v0->v.a [i];
-	vCheck.j = check_j - v0->v.a [j];
+	vEdge.i = v1->v.vec [i] - v0->v.vec [i];
+	vEdge.j = v1->v.vec [j] - v0->v.vec [j];
+	vCheck.i = check_i - v0->v.vec [i];
+	vCheck.j = check_j - v0->v.vec [j];
 	d = FixMul (vCheck.i, vEdge.j) - FixMul (vCheck.j, vEdge.i);
 	if (d < 0)              		//we are outside of triangle
 		nEdgeMask |= (1 << nEdge);
@@ -324,14 +324,14 @@ int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVecto
 	CFixMatrix det;
 	fix d, crossMag2;		//mag squared Cross product
 
-det.m.v.r = *p2 - *p1;
-det.m.v.f = CFixVector::Cross (*v1, *v2);
-if (!(crossMag2 = CFixVector::Dot (det.m.v.f, det.m.v.f)))
+det.m.dir.r = *p2 - *p1;
+det.m.dir.f = CFixVector::Cross (*v1, *v2);
+if (!(crossMag2 = CFixVector::Dot (det.m.dir.f, det.m.dir.f)))
 	return 0;			//lines are parallel
-det.m.v.u = *v2;
+det.m.dir.u = *v2;
 d = det.Det();
 *t1 = FixDiv (d, crossMag2);
-det.m.v.u = *v1;
+det.m.dir.u = *v1;
 d = det.Det();
 *t2 = FixDiv (d, crossMag2);
 return 1;		//found refP

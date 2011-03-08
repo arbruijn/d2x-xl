@@ -398,30 +398,30 @@ void stop_all()
 	}    
 }
 
-int get_dtime(ubyte *data, int *pos)
+int get_dtime(ubyte *data, int *coord)
 {
 	char buf;
 	int result;
 	result =0;
 
-	buf = data[*pos];
-	*pos +=1;
+	buf = data[*coord];
+	*coord +=1;
 	result = (0x7f & buf);
 
 	if (!(buf & 0x80))
 	{
-		buf = data[*pos];
-		*pos +=1;
+		buf = data[*coord];
+		*coord +=1;
 		result |=(int) (((int) 0x7f & (int) buf)<<7);
 		if (!(buf & 0x80))
 		{
-			buf = data[*pos];
-			*pos +=1;
+			buf = data[*coord];
+			*coord +=1;
 			result |=(int) (((int) 0x7f & (int) buf)<<14);
 			if (!(buf & 0x80))
 			{
-				buf = data[*pos];
-				*pos +=1;
+				buf = data[*coord];
+				*coord +=1;
 				result |=(int) (((int) 0x7f & (int) buf)<<21);
 			}
 		}
@@ -430,13 +430,13 @@ int get_dtime(ubyte *data, int *pos)
 	return result;
 }
 
-int do_track_event(ubyte *data, int *pos)
+int do_track_event(ubyte *data, int *coord)
 {
 	char channel;
 	ubyte buf[5];
 
-	buf[0]=data[*pos];
-	*pos +=1;
+	buf[0]=data[*coord];
+	*coord +=1;
 	channel = buf[0] & 0xf;
 #ifdef WANT_MPU401
 	if (card_info.synthType==SYNTH_TYPE_MIDI) {
@@ -446,13 +446,13 @@ int do_track_event(ubyte *data, int *pos)
 		 case 0xa0:
 		 case 0xb0:
 		 case 0xe0:
-			buf[1]=data[*pos]; *pos+=1;
-			buf[2]=data[*pos]; *pos+=1;
+			buf[1]=data[*coord]; *coord+=1;
+			buf[2]=data[*coord]; *coord+=1;
 			MIDI_MESSAGE3(buf[0],buf[1],buf[2]);
 			break;
 		 case 0xc0:
 		 case 0xd0:
-			buf[1]=data[*pos]; *pos+=1;
+			buf[1]=data[*coord]; *coord+=1;
 			MIDI_MESSAGE3(buf[0],0,buf[1]);
 			break;
 		 case 0xf0:
@@ -468,17 +468,17 @@ int do_track_event(ubyte *data, int *pos)
 	switch((buf[0] & 0xf0))
 	{
 	 case 0x80:
-		buf[1]=data[*pos];
-		*pos +=1;
-		buf[2]=data[*pos];
-		*pos +=1;
+		buf[1]=data[*coord];
+		*coord +=1;
+		buf[2]=data[*coord];
+		*coord +=1;
 		stop_note((int) channel, (int) buf[1], (int) buf[2]);
 		break;
 	 case 0x90:
-		buf[1]=data[*pos];
-		*pos +=1;
-		buf[2]=data[*pos];
-		*pos +=1;
+		buf[1]=data[*coord];
+		*coord +=1;
+		buf[2]=data[*coord];
+		*coord +=1;
 		if(buf[2] == 0)
 		{
 			stop_note((int) channel, (int) buf[1], (int) buf[2]);
@@ -489,34 +489,34 @@ int do_track_event(ubyte *data, int *pos)
 		}
 		break;
 	 case 0xa0:
-		buf[1]=data[*pos];
-		*pos +=1;
-		buf[2]=data[*pos];
-		*pos +=1;
+		buf[1]=data[*coord];
+		*coord +=1;
+		buf[2]=data[*coord];
+		*coord +=1;
 		set_key_pressure((int) channel, (int) buf[1], (int) buf[2]);
 		break;
 	 case 0xb0:
-		buf[1]=data[*pos];
-		*pos +=1;
-		buf[2]=data[*pos];
-		*pos +=1;
+		buf[1]=data[*coord];
+		*coord +=1;
+		buf[2]=data[*coord];
+		*coord +=1;
 		set_control((int) channel, (int) buf[1], (int) buf[2]);
 		break;
 	 case 0xe0:
-		buf[1]=data[*pos];
-		*pos +=1;
-		buf[2]=data[*pos];
-		*pos +=1;
+		buf[1]=data[*coord];
+		*coord +=1;
+		buf[2]=data[*coord];
+		*coord +=1;
 		set_pitchbend((int) channel, (int) ((buf[2] << 7) + buf[1]);
 		break;
 	 case 0xc0:
-		buf[1]=data[*pos];
-		*pos +=1;
+		buf[1]=data[*coord];
+		*coord +=1;
 		set_program((int) channel, (int) buf[1] );
 		break;
 	 case 0xd0:
-		buf[1]=data[*pos];
-		*pos +=1;
+		buf[1]=data[*coord];
+		*coord +=1;
 		set_chn_pressure((int) channel, (int) buf[1]);
 		break;
 	 case 0xf0:
@@ -607,7 +607,7 @@ int do_ipc(int qid, struct msgbuf *buf, int flags)
 void play_hmi (void * arg)
 {
 	int i;
-	int pos = 0x308;
+	int coord = 0x308;
 	int n_chunks = 0;
 	int low_dtime;
 	int low_chunk;
@@ -672,10 +672,10 @@ void play_hmi (void * arg)
 	
 		for(i=0;i<n_chunks;i++)
 		{
-			t_info[i].info.position.vPosition = pos + 12;
+			t_info[i].info.position.vPosition = coord + 12;
 			t_info[i].status = PLAYING;
 			t_info[i].time = get_dtime(data,&t_info[i].info.position.vPosition);
-			pos += (( (0xff & data[pos + 5]) << 8 ) + (0xff & data[pos + 4]);
+			coord += (( (0xff & data[coord + 5]) << 8 ) + (0xff & data[coord + 4]);
 		}
 	
 		SEQ_START_TIMER();
@@ -761,7 +761,7 @@ void play_hmi (void * arg)
 			t_info = realloc(t_info,sizeof(Track_info)*n_chunks);
 			stop = 0;
 		}
-		pos=0x308;
+		coord=0x308;
 	}
 	delete[] data;
 	delete[] t_info;

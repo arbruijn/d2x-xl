@@ -1138,7 +1138,7 @@ for (;;) {
 	else {
 		gameData.segs.secret.nReturnSegment = cf.ReadInt ();
 		for (int i = 0; i < 9; i++)
-			gameData.segs.secret.returnOrient [i] = cf.ReadInt ();
+			gameData.segs.secret.returnOrient.m.vec [i] = cf.ReadInt ();
 		}
 
 	//NOTE LINK TO ABOVE!!

@@ -44,9 +44,9 @@ CFixVector *VmRandomVector (CFixVector *vRand)
 	CFixVector	vr;
 
 do {
-	vr.v.c.x = (90 - d_rand () % 181) * (I2X (1) / 90);
-	vr.v.c.y = (90 - d_rand () % 181) * (I2X (1) / 90);
-	vr.v.c.z = (90 - d_rand () % 181) * (I2X (1) / 90);
+	vr.v.coord.x = (90 - d_rand () % 181) * (I2X (1) / 90);
+	vr.v.coord.y = (90 - d_rand () % 181) * (I2X (1) / 90);
+	vr.v.coord.z = (90 - d_rand () % 181) * (I2X (1) / 90);
 } while (vr.IsZero ());
 CFixVector::Normalize (vr);
 *vRand = vr;
@@ -305,9 +305,9 @@ for (i = m_nNodes - 1, j = 0, pfi = m_nodes.Buffer (), plh = NULL; j < i; j++) {
 	pfj = plh;
 	plh = pfi++;
 	if (j) {
-		plh->m_vNewPos.v.c.x = pfj->m_vNewPos.v.c.x / 4 + plh->m_vNewPos.v.c.x / 2 + pfi->m_vNewPos.v.c.x / 4;
-		plh->m_vNewPos.v.c.y = pfj->m_vNewPos.v.c.y / 4 + plh->m_vNewPos.v.c.y / 2 + pfi->m_vNewPos.v.c.y / 4;
-		plh->m_vNewPos.v.c.z = pfj->m_vNewPos.v.c.z / 4 + plh->m_vNewPos.v.c.z / 2 + pfi->m_vNewPos.v.c.z / 4;
+		plh->m_vNewPos.v.coord.x = pfj->m_vNewPos.v.coord.x / 4 + plh->m_vNewPos.v.coord.x / 2 + pfi->m_vNewPos.v.coord.x / 4;
+		plh->m_vNewPos.v.coord.y = pfj->m_vNewPos.v.coord.y / 4 + plh->m_vNewPos.v.coord.y / 2 + pfi->m_vNewPos.v.coord.y / 4;
+		plh->m_vNewPos.v.coord.z = pfj->m_vNewPos.v.coord.z / 4 + plh->m_vNewPos.v.coord.z / 2 + pfi->m_vNewPos.v.coord.z / 4;
 		}
 	}
 }
@@ -801,10 +801,10 @@ static float ZScale (CFloatVector3* vertexP, int nVerts)
 
 while (nVerts-- > 0) {
 	transformation.Transform (v, *vertexP++);
-	if (zMin > v.v.c.z)
-		zMin = v.v.c.z;
-	if (zMax < v.v.c.z)
-		zMax = v.v.c.z;
+	if (zMin > v.v.coord.z)
+		zMin = v.v.coord.z;
+	if (zMax < v.v.coord.z)
+		zMax = v.v.coord.z;
 	}
 return pow (1.0f - (zMin + zMax) / 2.0f / (float) ZRANGE, 50.0f);
 }

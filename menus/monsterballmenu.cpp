@@ -211,7 +211,7 @@ for (;;) {
 #if 0
 pf = extraGameInfo [0].monsterball.forces;
 for (i = 0; i < h; i++, pf++)
-	pf->nForce = nOptionToForce [m [i].m_value];
+	pf->nForce = nOptionToForce [mat [i].m_value];
 #endif
 pf->nForce = m [nPyroForceOpt].m_value + 1;
 extraGameInfo [0].monsterball.nSizeMod = m [nSizeModOpt].m_value + 2;

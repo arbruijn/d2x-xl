@@ -68,7 +68,7 @@ if (!m_bHaveFlame) {
 		sinPhi = (1 + sin (phi) / 2) * fScale;
 		for (j = 0; j < RING_SEGS; j++, pv++) {
 			*pv = vRingVerts [j] * float (sinPhi);
-			(*pv).v.c.z = z;
+			(*pv).v.coord.z = z;
 			}
 		}
 	// second part with decreasing diameter
@@ -77,7 +77,7 @@ if (!m_bHaveFlame) {
 		sinPhi = (1 + sin (phi) / 2) * fScale /** m / n*/;
 		for (j = 0; j < RING_SEGS; j++, pv++) {
 			*pv = vRingVerts [j] * float (sinPhi);
-			(*pv).v.c.z = z;
+			(*pv).v.coord.z = z;
 			}
 		}
 
@@ -108,19 +108,19 @@ void CThrusterFlames::CalcPosOnShip (CObject *objP, CFixVector *vPos)
 	tObjTransformation	*pPos = OBJPOS (objP);
 
 if (gameOpts->render.bHiresModels [0]) {
-	vPos [0] = pPos->vPos + pPos->mOrient.m.v.f * (-objP->info.xSize);
-	vPos [0] += pPos->mOrient.m.v.r * (-(8 * objP->info.xSize / 44));
-	vPos [1] = vPos [0] + pPos->mOrient.m.v.r * (8 * objP->info.xSize / 22);
+	vPos [0] = pPos->vPos + pPos->mOrient.m.dir.f * (-objP->info.xSize);
+	vPos [0] += pPos->mOrient.m.dir.r * (-(8 * objP->info.xSize / 44));
+	vPos [1] = vPos [0] + pPos->mOrient.m.dir.r * (8 * objP->info.xSize / 22);
 	}
 else {
-	vPos [0] = pPos->vPos + pPos->mOrient.m.v.f * (-objP->info.xSize / 10 * 9);
+	vPos [0] = pPos->vPos + pPos->mOrient.m.dir.f * (-objP->info.xSize / 10 * 9);
 	if (gameStates.app.bFixModels)
-		vPos [0] += pPos->mOrient.m.v.u * (objP->info.xSize / 40);
+		vPos [0] += pPos->mOrient.m.dir.u * (objP->info.xSize / 40);
 	else
-		vPos [0] += pPos->mOrient.m.v.u * (-objP->info.xSize / 20);
+		vPos [0] += pPos->mOrient.m.dir.u * (-objP->info.xSize / 20);
 	vPos [1] = vPos [0];
-	vPos [0] += pPos->mOrient.m.v.r * (-8 * objP->info.xSize / 49);
-	vPos [1] += pPos->mOrient.m.v.r * (8 * objP->info.xSize / 49);
+	vPos [0] += pPos->mOrient.m.dir.r * (-8 * objP->info.xSize / 49);
+	vPos [1] += pPos->mOrient.m.dir.r * (8 * objP->info.xSize / 49);
 	}
 }
 
@@ -155,7 +155,7 @@ if (gameOpts->render.bHiresModels [0] && (objP->info.nType == OBJ_PLAYER) && !Ge
 	}
 else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
 		tHitbox	*phb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
-		fix		nObjRad = (phb->vMax.v.c.z - phb->vMin.v.c.z) / 2;
+		fix		nObjRad = (phb->vMax.v.coord.z - phb->vMin.v.coord.z) / 2;
 
 	if (bAfterburnerBlob)
 		nObjRad *= 2;
@@ -173,7 +173,7 @@ else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
 		ti.fLength [0] /= 2;
 	if (!gameData.models.vScale.IsZero ())
 		ti.vPos [0] *= gameData.models.vScale;
-	*ti.vPos = objP->info.position.vPos + objP->info.position.mOrient.m.v.f * (-nObjRad);
+	*ti.vPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (-nObjRad);
 	ti.nType [0] = 
 	ti.nType [1] = 1;
 	ti.mtP = NULL;
@@ -297,15 +297,15 @@ void CThrusterFlames::RenderCap (int i)
 {
 if (thruster.Load ()) {
 	CFloatVector	verts [4];
-	float				z = (m_vFlame [0][0].v.c.z + m_vFlame [1][0].v.c.z) / 2.0f * m_ti.fLength [i];
+	float				z = (m_vFlame [0][0].v.coord.z + m_vFlame [1][0].v.coord.z) / 2.0f * m_ti.fLength [i];
 	float				scale = m_ti.fSize [i] * 1.6666667f;
 
 	// choose 4 vertices from the widest ring of the flame
 	for (int i = 0; i < 4; i++) {
 		verts [i] = m_vFlame [5][4 * i];
-		verts [i].v.c.x *= scale;
-		verts [i].v.c.y *= scale;
-		verts [i].v.c.z = z;
+		verts [i].v.coord.x *= scale;
+		verts [i].v.coord.y *= scale;
+		verts [i].v.coord.z = z;
 		}
 	glowRenderer.SetViewport (GLOW_THRUSTERS, verts, 4);
 	glColor3f (1,1,1);
@@ -422,7 +422,7 @@ if (m_nStyle == 1) {	//2D
 		if (IsFiring (ws, i)) {
 			m_ti.fSize [i] *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->ModelId ())) ? 1.2f : 1.5f;
 			if (!gameData.models.vScale.IsZero ())
-				m_ti.fSize [i] *= X2F (gameData.models.vScale.v.c.z);
+				m_ti.fSize [i] *= X2F (gameData.models.vScale.v.coord.z);
 			Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize [i], m_ti.fLength [i], &tcColor);
 			}
 		}

@@ -54,26 +54,26 @@ void CreateShortPos (tShortPos *spp, CObject *objP, int swap_bytes)
 	sbyte   *segP = spp->orient;
 	CFixVector *pv;
 
-*segP++ = ConvertToByte(orient.m.v.r.v.c.x);
-*segP++ = ConvertToByte(orient.m.v.u.v.c.x);
-*segP++ = ConvertToByte(orient.m.v.f.v.c.x);
-*segP++ = ConvertToByte(orient.m.v.r.v.c.y);
-*segP++ = ConvertToByte(orient.m.v.u.v.c.y);
-*segP++ = ConvertToByte(orient.m.v.f.v.c.y);
-*segP++ = ConvertToByte(orient.m.v.r.v.c.z);
-*segP++ = ConvertToByte(orient.m.v.u.v.c.z);
-*segP++ = ConvertToByte(orient.m.v.f.v.c.z);
+*segP++ = ConvertToByte(orient.m.dir.r.v.coord.x);
+*segP++ = ConvertToByte(orient.m.dir.u.v.coord.x);
+*segP++ = ConvertToByte(orient.m.dir.f.v.coord.x);
+*segP++ = ConvertToByte(orient.m.dir.r.v.coord.y);
+*segP++ = ConvertToByte(orient.m.dir.u.v.coord.y);
+*segP++ = ConvertToByte(orient.m.dir.f.v.coord.y);
+*segP++ = ConvertToByte(orient.m.dir.r.v.coord.z);
+*segP++ = ConvertToByte(orient.m.dir.u.v.coord.z);
+*segP++ = ConvertToByte(orient.m.dir.f.v.coord.z);
 
 pv = gameData.segs.vertices + SEGMENTS [objP->info.nSegment].m_verts [0];
-spp->pos [0] = (short) ((objP->info.position.vPos.v.c.x - pv->v.c.x) >> RELPOS_PRECISION);
-spp->pos [1] = (short) ((objP->info.position.vPos.v.c.y - pv->v.c.y) >> RELPOS_PRECISION);
-spp->pos [2] = (short) ((objP->info.position.vPos.v.c.z - pv->v.c.z) >> RELPOS_PRECISION);
+spp->pos [0] = (short) ((objP->info.position.vPos.v.coord.x - pv->v.coord.x) >> RELPOS_PRECISION);
+spp->pos [1] = (short) ((objP->info.position.vPos.v.coord.y - pv->v.coord.y) >> RELPOS_PRECISION);
+spp->pos [2] = (short) ((objP->info.position.vPos.v.coord.z - pv->v.coord.z) >> RELPOS_PRECISION);
 
 spp->nSegment = objP->info.nSegment;
 
-spp->vel [0] = (short) ((objP->mType.physInfo.velocity.v.c.x) >> VEL_PRECISION);
-spp->vel [1] = (short) ((objP->mType.physInfo.velocity.v.c.y) >> VEL_PRECISION);
-spp->vel [2] = (short) ((objP->mType.physInfo.velocity.v.c.z) >> VEL_PRECISION);
+spp->vel [0] = (short) ((objP->mType.physInfo.velocity.v.coord.x) >> VEL_PRECISION);
+spp->vel [1] = (short) ((objP->mType.physInfo.velocity.v.coord.y) >> VEL_PRECISION);
+spp->vel [2] = (short) ((objP->mType.physInfo.velocity.v.coord.z) >> VEL_PRECISION);
 
 // swap the short values for the big-endian machines.
 
@@ -98,15 +98,15 @@ void ExtractShortPos (CObject *objP, tShortPos *spp, int swap_bytes)
 
 	segP = spp->orient;
 
-	objP->info.position.mOrient.m.v.r.v.c.x = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.v.u.v.c.x = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.v.f.v.c.x = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.v.r.v.c.y = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.v.u.v.c.y = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.v.f.v.c.y = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.v.r.v.c.z = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.v.u.v.c.z = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.v.f.v.c.z = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.m.dir.r.v.coord.x = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.m.dir.u.v.coord.x = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.m.dir.f.v.coord.x = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.m.dir.r.v.coord.y = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.m.dir.u.v.coord.y = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.m.dir.f.v.coord.y = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.m.dir.r.v.coord.z = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.m.dir.u.v.coord.z = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient.m.dir.f.v.coord.z = *segP++ << MATRIX_PRECISION;
 
 	if (swap_bytes) {
 		spp->pos [0] = INTEL_SHORT (spp->pos [0]);
@@ -123,13 +123,13 @@ void ExtractShortPos (CObject *objP, tShortPos *spp, int swap_bytes)
 	Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 
 	pv = gameData.segs.vertices + SEGMENTS [nSegment].m_verts [0];
-	objP->info.position.vPos.v.c.x = (spp->pos [0] << RELPOS_PRECISION) + pv->v.c.x;
-	objP->info.position.vPos.v.c.y = (spp->pos [1] << RELPOS_PRECISION) + pv->v.c.y;
-	objP->info.position.vPos.v.c.z = (spp->pos [2] << RELPOS_PRECISION) + pv->v.c.z;
+	objP->info.position.vPos.v.coord.x = (spp->pos [0] << RELPOS_PRECISION) + pv->v.coord.x;
+	objP->info.position.vPos.v.coord.y = (spp->pos [1] << RELPOS_PRECISION) + pv->v.coord.y;
+	objP->info.position.vPos.v.coord.z = (spp->pos [2] << RELPOS_PRECISION) + pv->v.coord.z;
 
-	objP->mType.physInfo.velocity.v.c.x = (spp->vel [0] << VEL_PRECISION);
-	objP->mType.physInfo.velocity.v.c.y = (spp->vel [1] << VEL_PRECISION);
-	objP->mType.physInfo.velocity.v.c.z = (spp->vel [2] << VEL_PRECISION);
+	objP->mType.physInfo.velocity.v.coord.x = (spp->vel [0] << VEL_PRECISION);
+	objP->mType.physInfo.velocity.v.coord.y = (spp->vel [1] << VEL_PRECISION);
+	objP->mType.physInfo.velocity.v.coord.z = (spp->vel [2] << VEL_PRECISION);
 
 	objP->RelinkToSeg (nSegment);
 

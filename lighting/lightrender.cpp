@@ -44,9 +44,9 @@ for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 		pl->render.vPosf [1] = pl->render.vPosf [0];
 	else {
 		transformation.Transform (pl->render.vPosf [1], pl->render.vPosf [0], 0);
-		pl->render.vPosf [1].v.c.w = 1;
+		pl->render.vPosf [1].v.coord.w = 1;
 		}
-	pl->render.vPosf [0].v.c.w = 1;
+	pl->render.vPosf [0].v.coord.w = 1;
 	pl->render.nType = pl->info.nType;
 	pl->render.bState = pl->info.bState && (pl->info.color.red + pl->info.color.green + pl->info.color.blue > 0.0);
 	pl->render.bLightning = (pl->info.nObject < 0) && (pl->info.nSide < 0);
@@ -76,12 +76,12 @@ static void QSortDynamicLights (int left, int right, int nThread)
 	CDynLight**	activeLightsP = m_data.active [nThread];
 	int			l = left,
 					r = right,
-					m = activeLightsP [(l + r) / 2]->xDistance;
+					mat = activeLightsP [(l + r) / 2]->xDistance;
 
 do {
-	while (activeLightsP [l]->xDistance < m)
+	while (activeLightsP [l]->xDistance < mat)
 		l++;
-	while (activeLightsP [r]->xDistance > m)
+	while (activeLightsP [r]->xDistance > mat)
 		r--;
 	if (l <= r) {
 		if (l < r) {
@@ -656,7 +656,7 @@ else {
 				//transformation.Transform (&vVertex, &vVertex);
 				fLightDist = VmVecDist (prl->render.vPosf, &vPosf) / fLightRange;
 				fAttenuation = fLightDist / prl->info.fBrightness;
-				VmVecScaleAdd (reinterpret_cast<CFloatVector*> (&c.color), reinterpret_cast<CFloatVector*> (&c.color, reinterpret_cast<CFloatVector*> (&prl->render.color, 1.0f / fAttenuation);
+				VmVecScaleAdd (reinterpret_cast<CFloatVector*> (&coord.color), reinterpret_cast<CFloatVector*> (&coord.color, reinterpret_cast<CFloatVector*> (&prl->render.color, 1.0f / fAttenuation);
 				}
 			else
 #endif

@@ -160,9 +160,9 @@ static inline void FixSwap (fix *f)
 
 static inline void VmsVectorSwap(CFixVector& v)
 {
-FixSwap (FIXPTR (&v.v.c.x));
-FixSwap (FIXPTR (&v.v.c.y));
-FixSwap (FIXPTR (&v.v.c.z));
+FixSwap (FIXPTR (&v.v.coord.x));
+FixSwap (FIXPTR (&v.v.coord.y));
+FixSwap (FIXPTR (&v.v.coord.z));
 }
 
 //------------------------------------------------------------------------------
@@ -176,9 +176,9 @@ static inline void FixAngSwap (fixang *f)
 
 static inline void VmsAngVecSwap (CAngleVector& v)
 {
-FixAngSwap (&v.v.c.p);
-FixAngSwap (&v.v.c.b);
-FixAngSwap (&v.v.c.h);
+FixAngSwap (&v.v.coord.p);
+FixAngSwap (&v.v.coord.b);
+FixAngSwap (&v.v.coord.h);
 }
 
 //------------------------------------------------------------------------------

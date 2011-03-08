@@ -45,14 +45,14 @@ if (gameOpts->gameplay.bIdleAnims) {
 
 	for (i = 0; i < 8; i++) {
 		vVertex = gameData.segs.vertices + segP->m_verts [i];
-		if ((vGoal.v.c.x == (*vVertex).v.c.x) && (vGoal.v.c.y == (*vVertex).v.c.y) && (vGoal.v.c.z == (*vVertex).v.c.z))
+		if ((vGoal.v.coord.x == (*vVertex).v.coord.x) && (vGoal.v.coord.y == (*vVertex).v.coord.y) && (vGoal.v.coord.z == (*vVertex).v.coord.z))
 			break;
 		}
 	vVecToGoal = vGoal - objP->info.position.vPos; CFixVector::Normalize (vVecToGoal);
 	if (i == 8)
 		h = 1;
 	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->info.nId).turnTime [2]) < I2X (1) - I2X (1) / 5) {
-		if (CFixVector::Dot (vVecToGoal, objP->info.position.mOrient.m.v.f) > I2X (1) - I2X (1) / 5)
+		if (CFixVector::Dot (vVecToGoal, objP->info.position.mOrient.m.dir.f) > I2X (1) - I2X (1) / 5)
 			h = rand () % 2 == 0;
 		else
 			h = 0;
@@ -115,11 +115,11 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 		CAngleVector*	objAngles = &polyObjInfo->animAngles [jointnum];
 
 		for (int nAngle = 0; nAngle < 3; nAngle++) {
-			if (jointAngles->v.a [nAngle] != objAngles->v.a [nAngle]) {
+			if (jointAngles->v.vec [nAngle] != objAngles->v.vec [nAngle]) {
 				if (nGun == 0)
 					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles [jointnum].v.a [nAngle] = jointAngles->v.a [nAngle];
-				fix delta2, deltaAngle = jointAngles->v.a [nAngle] - objAngles->v.a [nAngle];
+				gameData.ai.localInfo [nObject].goalAngles [jointnum].v.vec [nAngle] = jointAngles->v.vec [nAngle];
+				fix delta2, deltaAngle = jointAngles->v.vec [nAngle] - objAngles->v.vec [nAngle];
 				if (deltaAngle >= I2X (1) / 2)
 					delta2 = -ANIM_RATE;
 				else if (deltaAngle >= 0)
@@ -130,7 +130,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 					delta2 = ANIM_RATE;
 				if (nFlinchAttackScale != 1)
 					delta2 *= nFlinchAttackScale;
-				gameData.ai.localInfo [nObject].deltaAngles [jointnum].v.a [nAngle] = delta2 / DELTA_ANG_SCALE;		// complete revolutions per second
+				gameData.ai.localInfo [nObject].deltaAngles [jointnum].v.vec [nAngle] = delta2 / DELTA_ANG_SCALE;		// complete revolutions per second
 				}
 			}
 		}
@@ -170,17 +170,17 @@ for (nJoint = 1; nJoint < nJoints; nJoint++) {
 
 	Assert (nObject >= 0);
 	for (int nAngle = 0; nAngle < 3; nAngle++) {
-		deltaToGoal = goalAngP->v.a [nAngle] - curAngP->v.a [nAngle];
+		deltaToGoal = goalAngP->v.vec [nAngle] - curAngP->v.vec [nAngle];
 		if (deltaToGoal > 32767)
 			deltaToGoal -= 65536;
 		else if (deltaToGoal < -32767)
 			deltaToGoal += deltaToGoal;
 
 		if (deltaToGoal) {
-			scaledDeltaAngle = FixMul (deltaAngP->v.a [nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			curAngP->v.a [nAngle] += (fixang) scaledDeltaAngle;
+			scaledDeltaAngle = FixMul (deltaAngP->v.vec [nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
+			curAngP->v.vec [nAngle] += (fixang) scaledDeltaAngle;
 			if (abs (deltaToGoal) < abs (scaledDeltaAngle))
-				curAngP->v.a [nAngle] = goalAngP->v.a [nAngle];
+				curAngP->v.vec [nAngle] = goalAngP->v.vec [nAngle];
 			}
 		}
 	}
@@ -201,14 +201,14 @@ if (!xRollDuration)
 
 xRollVal = FixDiv (gameData.time.xGame - StartTime, xRollDuration);
 
-FixSinCos (FixMul (xRollVal, xRollVal), &temp, &objP->mType.physInfo.rotVel.v.c.x);
-FixSinCos (xRollVal, &temp, &objP->mType.physInfo.rotVel.v.c.y);
-FixSinCos (xRollVal-I2X (1)/8, &temp, &objP->mType.physInfo.rotVel.v.c.z);
+FixSinCos (FixMul (xRollVal, xRollVal), &temp, &objP->mType.physInfo.rotVel.v.coord.x);
+FixSinCos (xRollVal, &temp, &objP->mType.physInfo.rotVel.v.coord.y);
+FixSinCos (xRollVal-I2X (1)/8, &temp, &objP->mType.physInfo.rotVel.v.coord.z);
 
 temp = gameData.time.xGame - StartTime;
-objP->mType.physInfo.rotVel.v.c.x = temp / 9;
-objP->mType.physInfo.rotVel.v.c.y = temp / 5;
-objP->mType.physInfo.rotVel.v.c.z = temp / 7;
+objP->mType.physInfo.rotVel.v.coord.x = temp / 9;
+objP->mType.physInfo.rotVel.v.coord.y = temp / 5;
+objP->mType.physInfo.rotVel.v.coord.z = temp / 7;
 if (gameOpts->sound.audioSampleRate) {
 	soundP = gameData.pig.sound.soundP + audio.XlatSound (deathSound);
 	xSoundDuration = FixDiv (soundP->nLength [soundP->bHires], gameOpts->sound.audioSampleRate);

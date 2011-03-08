@@ -218,8 +218,8 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
 				short nSegment = WALLS [j].nSegment;
 				gameData.objs.consoleP->info.position.vPos = SEGMENTS [nSegment].Center ();
 				gameData.objs.consoleP->RelinkToSeg (nSegment);
-				gameData.objs.consoleP->info.position.mOrient.m.v.f = SEGMENTS [nSegment].m_sides [WALLS [j].nSide].m_normals [0];
-				gameData.objs.consoleP->info.position.mOrient.m.v.f.Neg ();
+				gameData.objs.consoleP->info.position.mOrient.m.dir.f = SEGMENTS [nSegment].m_sides [WALLS [j].nSide].m_normals [0];
+				gameData.objs.consoleP->info.position.mOrient.m.dir.f.Neg ();
 				return;
 				}
 			}

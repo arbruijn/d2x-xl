@@ -111,9 +111,9 @@ while (n--) {
 #if 1
 	if (norms) {
 		if (norms->nFaces > 1) {
-			norms->vNormal.v.c.x /= norms->nFaces;
-			norms->vNormal.v.c.y /= norms->nFaces;
-			norms->vNormal.v.c.z /= norms->nFaces;
+			norms->vNormal.v.coord.x /= norms->nFaces;
+			norms->vNormal.v.coord.y /= norms->nFaces;
+			norms->vNormal.v.coord.z /= norms->nFaces;
 			norms->nFaces = 1;
 			CFloatVector::Normalize (norms->vNormal);
 			}
@@ -134,7 +134,7 @@ while (n--) {
 #if 1
 			transformation.Transform (dest->p3_vec, v, 0);
 #else
-			G3TransformAndEncodePoint (dest, &v);
+			G3TransformAndEncodePoint (dest, &dir);
 #endif
 			}
 		else {
@@ -351,13 +351,13 @@ if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -I2X (1)))
 	return;
 for (i = 1, v = pointList [0]->p3_src; i < nPoints; i++)
 	v += pointList [i]->p3_src;
-v.v.c.x /= nPoints;
-v.v.c.y /= nPoints;
-v.v.c.z /= nPoints;
-v.v.c.z -= I2X (1) / 8;
+v.v.coord.x /= nPoints;
+v.v.coord.y /= nPoints;
+v.v.coord.z /= nPoints;
+v.v.coord.z -= I2X (1) / 8;
 if (vOffset)
 	v += *vOffset;
-if (mtP->nCount && (v.v.c.x == mtP->vPos [0].v.c.x) && (v.v.c.y == mtP->vPos [0].v.c.y) && (v.v.c.z == mtP->vPos [0].v.c.z))
+if (mtP->nCount && (v.v.coord.x == mtP->vPos [0].v.coord.x) && (v.v.coord.y == mtP->vPos [0].v.coord.y) && (v.v.coord.z == mtP->vPos [0].v.coord.z))
 	return;
 mtP->vPos [mtP->nCount] = v;
 if (vOffset)
@@ -479,7 +479,7 @@ for (;;) {
 
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
-				l = -CFixVector::Dot (transformation.m_info.view[0].m.v.f, *VECPTR(p+16));
+				l = -CFixVector::Dot (transformation.m_info.view[0].m.dir.f, *VECPTR(p+16));
 				l = I2X (1) / 4 + (l * 3) / 4;
 				l = FixMul (l, xModelLight);
 				}
@@ -628,7 +628,7 @@ for (;;) {
 			fix light;
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
-				light = -CFixVector::Dot (transformation.m_info.view [0].m.v.f, *VECPTR (p+16));
+				light = -CFixVector::Dot (transformation.m_info.view [0].m.dir.f, *VECPTR (p+16));
 				light = I2X (1)/4 + (light*3)/4;
 				light = FixMul (light, xModelLight);
 				}

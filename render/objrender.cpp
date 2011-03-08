@@ -167,9 +167,9 @@ if (!bHasModel && ((info.nType != OBJ_WEAPON) || !gameData.objs.bIsMissile [info
 		return 0;
 
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	a.v.c.p = (rand () % I2X (1)) - I2X (1) / 2;
-	a.v.c.b = (rand () % I2X (1)) - I2X (1) / 2;
-	a.v.c.h = (rand () % I2X (1)) - I2X (1) / 2;
+	a.v.coord.p = (rand () % I2X (1)) - I2X (1) / 2;
+	a.v.coord.b = (rand () % I2X (1)) - I2X (1) / 2;
+	a.v.coord.h = (rand () % I2X (1)) - I2X (1) / 2;
 	info.position.mOrient = CFixMatrix::Create(a);
 	}
 mType.physInfo.mass = I2X (1);
@@ -179,15 +179,15 @@ mType.physInfo.brakes = 0;
 if ((info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [info.nId])
 #endif
  {
-	mType.physInfo.rotVel.v.c.x = 0;
-	mType.physInfo.rotVel.v.c.y =
-	mType.physInfo.rotVel.v.c.z = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+	mType.physInfo.rotVel.v.coord.x = 0;
+	mType.physInfo.rotVel.v.coord.y =
+	mType.physInfo.rotVel.v.coord.z = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 	}
 #if 0
 else {
-	mType.physInfo.rotVel.v.c.x =
-	mType.physInfo.rotVel.v.c.z = 0;
-	mType.physInfo.rotVel.v.c.y = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+	mType.physInfo.rotVel.dir.coord.x =
+	mType.physInfo.rotVel.dir.coord.z = 0;
+	mType.physInfo.rotVel.dir.coord.y = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 	}
 #endif
 info.controlType = CT_WEAPON;
@@ -231,7 +231,7 @@ if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 		return;
 	//the code below to check for CObject near the center of the screen
 	//completely ignores z, which may not be good
-	if ((abs (temp.p3_vec.v.c.x) < I2X (4)) && (abs (temp.p3_vec.v.c.y) < I2X (4))) {
+	if ((abs (temp.p3_vec.v.coord.x) < I2X (4)) && (abs (temp.p3_vec.v.coord.y) < I2X (4))) {
 		objP->cType.aiInfo.nDangerLaser = gameStates.app.bPlayerFiredLaserThisFrame;
 		objP->cType.aiInfo.nDangerLaserSig = OBJECTS [gameStates.app.bPlayerFiredLaserThisFrame].info.nSignature;
 		}
@@ -403,7 +403,7 @@ if (nType == OBJ_POWERUP) {
 if (b3DShield) {
 	if ((objP->mType.physInfo.velocity.IsZero ()) && (objP->info.movementType != MT_SPINNING)) {
 		objP->info.movementType = MT_SPINNING;
-		objP->mType.spinRate = objP->info.position.mOrient.m.v.u * (I2X (1) / 8);
+		objP->mType.spinRate = objP->info.position.mOrient.m.dir.u * (I2X (1) / 8);
 		}
 	//the actual shield in the sprite texture has 3/4 of the textures size
 	DrawShieldSphere (objP, color.red, color.green, color.blue, 1.0f, 0, 3 * objP->info.xSize / 4);
@@ -432,7 +432,7 @@ else if (fAlpha < 1) {
 #if 0
 	if (!IsMultiGame && (nType == OBJ_WEAPON) && (objP->info.nId == PLASMA_ID) && !gameStates.render.bPlasmaModded) {
 		double angle = X2F ((6 * (gameData.time.xGame - objP->CreationTime ())) % I2X (2)) * Pi;
-		vPos += objP->info.position.mOrient.m.v.r * F2X (sin (angle) / 2.0f) + objP->info.position.mOrient.m.v.u * F2X (cos (angle) / 2.0f);
+		vPos += objP->info.position.mOrient.mat.dir.r * F2X (sin (angle) / 2.0f) + objP->info.position.mOrient.mat.dir.u * F2X (cos (angle) / 2.0f);
 		objP->SetRenderPos (vPos);
 		}
 #endif
@@ -896,7 +896,7 @@ else {
 					RenderLightTrail (objP);
 					gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (3) / 2);
 					CFixVector vSavedPos = objP->info.position.vPos;
-					objP->info.position.vPos += objP->info.position.mOrient.m.v.f;
+					objP->info.position.vPos += objP->info.position.mOrient.m.dir.f;
 					DrawPolygonObject (objP, 0);
 					objP->info.position.vPos = vSavedPos;
 					}
@@ -927,9 +927,9 @@ if (!gameStates.app.bNostalgia && gameOpts->Use3DPowerups ()) {
 		objP->mType.physInfo.mass = I2X (1);
 		objP->mType.physInfo.drag = 512;
 		if (gameOpts->render.powerups.nSpin !=
-			((objP->mType.physInfo.rotVel.v.c.y | objP->mType.physInfo.rotVel.v.c.z) != 0))
-			objP->mType.physInfo.rotVel.v.c.y =
-			objP->mType.physInfo.rotVel.v.c.z = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+			((objP->mType.physInfo.rotVel.v.coord.y | objP->mType.physInfo.rotVel.v.coord.z) != 0))
+			objP->mType.physInfo.rotVel.v.coord.y =
+			objP->mType.physInfo.rotVel.v.coord.z = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 		}
 #if DBG
 	RenderRobotShield (objP);

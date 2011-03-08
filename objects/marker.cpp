@@ -121,17 +121,17 @@ if (ogl.SizeVertexBuffer (nPoints [nMarker])) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 15, 0));
 	G3TransformAndEncodePoint (&basePoint, GetObject (-1, nMarker)->info.position.vPos);
 	glPushMatrix ();
-	glTranslatef (X2F (basePoint.p3_vec.v.c.x), X2F (basePoint.p3_vec.v.c.y), X2F (basePoint.p3_vec.v.c.z));
+	glTranslatef (X2F (basePoint.p3_vec.v.coord.x), X2F (basePoint.p3_vec.v.coord.y), X2F (basePoint.p3_vec.v.coord.z));
 	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
 	px = xCoord [nMarker];
 	py = yCoord [nMarker];
 	for (i = nPoints [nMarker] / 2, j = 0; i; i--) {
-		ogl.VertexBuffer () [j].v.c.x = *px++ * m_data.fScale;
-		ogl.VertexBuffer () [j].v.c.y = *py++ * m_data.fScale;
+		ogl.VertexBuffer () [j].v.coord.x = *px++ * m_data.fScale;
+		ogl.VertexBuffer () [j].v.coord.y = *py++ * m_data.fScale;
 		j++;
-		ogl.VertexBuffer () [j].v.c.x = *px++ * m_data.fScale;
-		ogl.VertexBuffer () [j].v.c.y = *py++ * m_data.fScale;
+		ogl.VertexBuffer () [j].v.coord.x = *px++ * m_data.fScale;
+		ogl.VertexBuffer () [j].v.coord.y = *py++ * m_data.fScale;
 		j++;
 		}
 	ogl.FlushBuffers (GL_LINES, nPoints [nMarker], 2);

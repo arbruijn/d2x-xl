@@ -81,21 +81,21 @@ else {
 pl->info.color.alpha = 1.0;
 pl->info.fBrightness = fBrightness;
 pl->info.fRange = (float) sqrt (fBrightness / 2.0f);
-pl->fSpecular.v.a [R] = red;
-pl->fSpecular.v.a [G] = green;
-pl->fSpecular.v.a [B] = blue;
+pl->fSpecular.v.vec [R] = red;
+pl->fSpecular.v.vec [G] = green;
+pl->fSpecular.v.vec [B] = blue;
 for (i = 0; i < 3; i++) {
 #if USE_OGL_LIGHTS
-	pl->info.fAmbient.v [i] = pl->info.fDiffuse [i] * 0.01f;
-	pl->info.fDiffuse.v [i] =
+	pl->info.fAmbient.dir [i] = pl->info.fDiffuse [i] * 0.01f;
+	pl->info.fDiffuse.dir [i] =
 #endif
-	pl->fEmissive.v.a [i] = pl->fSpecular.v.a [i] * fBrightness;
+	pl->fEmissive.v.vec [i] = pl->fSpecular.v.vec [i] * fBrightness;
 	}
 // light alphas
 #if USE_OGL_LIGHTS
-pl->info.fAmbient.v [3] = 1.0f;
-pl->info.fDiffuse.v [3] = 1.0f;
-pl->fSpecular.v [3] = 1.0f;
+pl->info.fAmbient.dir [3] = 1.0f;
+pl->info.fDiffuse.dir [3] = 1.0f;
+pl->fSpecular.dir [3] = 1.0f;
 glLightfv (pl->info.handle, GL_AMBIENT, pl->info.fAmbient);
 glLightfv (pl->info.handle, GL_DIFFUSE, pl->info.fDiffuse);
 glLightfv (pl->info.handle, GL_SPECULAR, pl->fSpecular);
@@ -214,16 +214,16 @@ void CLightManager::Register (tFaceColor *colorP, short nSegment, short nSide)
 if (!colorP || colorP->index) {
 	tLightInfo	*pli = gameData.render.shadows.lightInfo + gameData.render.shadows.nLights++;
 #if DBG
-	CAngleVector	a;
+	CAngleVector	vec;
 #endif
 	pli->nIndex = (int) nSegment * 6 + nSide;
-	pli->pos = SEGMENTS [nSegment].m_SideCenter (nSide);
-	OOF_VecVms2Gl (pli->glPos, &pli->pos);
+	pli->coord = SEGMENTS [nSegment].m_SideCenter (nSide);
+	OOF_VecVms2Gl (pli->glPos, &pli->coord);
 	pli->nSegNum = nSegment;
 	pli->nSideNum = (ubyte) nSide;
 #if DBG
-	VmExtractAnglesVector (&a, SEGMENTS [nSegment].m_sides [nSide].m_normals);
-	VmAngles2Matrix (&pli->position.mOrient, &a);
+	VmExtractAnglesVector (&vec, SEGMENTS [nSegment].m_sides [nSide].m_normals);
+	VmAngles2Matrix (&pli->position.mOrient, &vec);
 #endif
 	}
 #endif

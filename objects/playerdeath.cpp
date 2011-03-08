@@ -90,7 +90,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 	CFixVector	local_p1;
 
 	if (vPlayerCameraOffs.IsZero ())
-		vPlayerCameraOffs.v.c.x += I2X (1)/16;
+		vPlayerCameraOffs.v.coord.x += I2X (1)/16;
 
 	hitData.hit.nType = HIT_WALL;
 	xFarScale = I2X (1);

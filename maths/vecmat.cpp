@@ -71,14 +71,14 @@ const CFloatMatrix CFloatMatrix::IDENTITY = CFloatMatrix::Create (CFloatVector::
 fix CFixVector::Mag (void) const 
 {
 if (gameOpts->render.nMathFormat == 2)
-	return fix (sqrt (double (v.c.x) * double (v.c.x) + double (v.c.y) * double (v.c.y) + double (v.c.z) * double (v.c.z)));
+	return fix (sqrt (double (v.coord.x) * double (v.coord.x) + double (v.coord.y) * double (v.coord.y) + double (v.coord.z) * double (v.coord.z)));
 // The following code is vital for backwards compatibility: Side normals get computed after loading a level using this fixed
 // math. D2X-XL temporarily switches to math format 0 to enforce that. Otherwise level checksums would differ from
 // those of other Descent 2 versions, breaking multiplayer compatibility.
 tQuadInt q = {0, 0};
-FixMulAccum (&q, v.c.x, v.c.x);
-FixMulAccum (&q, v.c.y, v.c.y);
-FixMulAccum (&q, v.c.z, v.c.z);
+FixMulAccum (&q, v.coord.x, v.coord.x);
+FixMulAccum (&q, v.coord.y, v.coord.y);
+FixMulAccum (&q, v.coord.z, v.coord.z);
 return QuadSqrt (q.low, q.high);
 }
 
@@ -86,7 +86,7 @@ return QuadSqrt (q.low, q.high);
 
 void CFixVector::Check (void)
 {
-fix check = labs (v.c.x) | labs(v.c.y) | labs(v.c.z);
+fix check = labs (v.coord.x) | labs(v.coord.y) | labs(v.coord.z);
 
 if (check == 0)
 	return;
@@ -102,9 +102,9 @@ if (check & 0xfffc0000) {		//too big
 		cnt += 2;
 		check >>= 2;
 		}
-	v.c.x >>= cnt;
-	v.c.y >>= cnt;
-	v.c.z >>= cnt;
+	v.coord.x >>= cnt;
+	v.coord.y >>= cnt;
+	v.coord.z >>= cnt;
 	}
 else if ((check & 0xffff8000) == 0) {		//too small
 	while ((check & 0xfffff000) == 0) {
@@ -115,9 +115,9 @@ else if ((check & 0xffff8000) == 0) {		//too small
 		cnt += 2;
 		check <<= 2;
 		}
-	v.c.x >>= cnt;
-	v.c.y >>= cnt;
-	v.c.z >>= cnt;
+	v.coord.x >>= cnt;
+	v.coord.y >>= cnt;
+	v.coord.z >>= cnt;
 	}
 }
 
@@ -126,9 +126,9 @@ else if ((check & 0xffff8000) == 0) {		//too small
 CFixVector& CFixVector::Cross (CFixVector& dest, const CFixVector& v0, const CFixVector& v1)
 {
 #if 0
-	double x = (double (v0.v.c.y) * double (v1.v.c.z) - double (v0.v.c.z) * double (v1.v.c.y)) / 65536.0;
-	double y = (double (v0.v.c.z) * double (v1.v.c.x) - double (v0.v.c.x) * double (v1.v.c.z)) / 65536.0;
-	double z = (double (v0.v.c.x) * double (v1.v.c.y) - double (v0.v.c.y) * double (v1.v.c.x)) / 65536.0;
+	double x = (double (v0.dir.coord.y) * double (v1.dir.coord.z) - double (v0.dir.coord.z) * double (v1.dir.coord.y)) / 65536.0;
+	double y = (double (v0.dir.coord.z) * double (v1.dir.coord.x) - double (v0.dir.coord.x) * double (v1.dir.coord.z)) / 65536.0;
+	double z = (double (v0.dir.coord.x) * double (v1.dir.coord.y) - double (v0.dir.coord.y) * double (v1.dir.coord.x)) / 65536.0;
 
 if (x > double (0x7fffffff))
 	x = double (0x7fffffff);
@@ -147,12 +147,12 @@ dest.Set (fix (x), fix (y), fix (z));
 #else
 QLONG x, y, z;
 
-x = mul64 (v0.v.c.y, v1.v.c.z);
-x += mul64 (-v0.v.c.z, v1.v.c.y);
-y = mul64 (v0.v.c.z, v1.v.c.x);
-y += mul64 (-v0.v.c.x, v1.v.c.z);
-z = mul64 (v0.v.c.x, v1.v.c.y);
-z += mul64 (-v0.v.c.y, v1.v.c.x);
+x = mul64 (v0.v.coord.y, v1.v.coord.z);
+x += mul64 (-v0.v.coord.z, v1.v.coord.y);
+y = mul64 (v0.v.coord.z, v1.v.coord.x);
+y += mul64 (-v0.v.coord.x, v1.v.coord.z);
+z = mul64 (v0.v.coord.x, v1.v.coord.y);
+z += mul64 (-v0.v.coord.y, v1.v.coord.x);
 dest.Set (fix (x / 65536), fix (y / 65536), fix (z / 65536));
 #endif
 return dest;
@@ -168,9 +168,9 @@ return fix ((q >> 32) <<16) + fix ((q & 0xffffffff) >>16);
 const CFixVector CFixVector::Cross (const CFixVector& v0, const CFixVector& v1) 
 {
 #if 0
-	double x = (double (v0.v.c.y) * double (v1.v.c.z) - double (v0.v.c.z) * double (v1.v.c.y)) / 65536.0;
-	double y = (double (v0.v.c.z) * double (v1.v.c.x) - double (v0.v.c.x) * double (v1.v.c.z)) / 65536.0;
-	double z = (double (v0.v.c.x) * double (v1.v.c.y) - double (v0.v.c.y) * double (v1.v.c.x)) / 65536.0;
+	double x = (double (v0.dir.coord.y) * double (v1.dir.coord.z) - double (v0.dir.coord.z) * double (v1.dir.coord.y)) / 65536.0;
+	double y = (double (v0.dir.coord.z) * double (v1.dir.coord.x) - double (v0.dir.coord.x) * double (v1.dir.coord.z)) / 65536.0;
+	double z = (double (v0.dir.coord.x) * double (v1.dir.coord.y) - double (v0.dir.coord.y) * double (v1.dir.coord.x)) / 65536.0;
 
 if (x > double (0x7fffffff))
 	x = double (0x7fffffff);
@@ -189,12 +189,12 @@ return Create (fix (x), fix (y), fix (z));
 #else
 QLONG x, y, z;
 
-x = mul64 (v0.v.c.y, v1.v.c.z);
-x += mul64 (-v0.v.c.z, v1.v.c.y);
-y = mul64 (v0.v.c.z, v1.v.c.x);
-y += mul64 (-v0.v.c.x, v1.v.c.z);
-z = mul64 (v0.v.c.x, v1.v.c.y);
-z += mul64 (-v0.v.c.y, v1.v.c.x);
+x = mul64 (v0.v.coord.y, v1.v.coord.z);
+x += mul64 (-v0.v.coord.z, v1.v.coord.y);
+y = mul64 (v0.v.coord.z, v1.v.coord.x);
+y += mul64 (-v0.v.coord.x, v1.v.coord.z);
+z = mul64 (v0.v.coord.x, v1.v.coord.y);
+z += mul64 (-v0.v.coord.y, v1.v.coord.x);
 return Create (FixQuadAdjust (x), FixQuadAdjust (y), FixQuadAdjust (z));
 #endif
 }
@@ -209,10 +209,10 @@ return Create (FixQuadAdjust (x), FixQuadAdjust (y), FixQuadAdjust (z));
 
 const CFloatMatrix CFloatMatrix::Create (const CFloatVector& r, const CFloatVector& u, const CFloatVector& f, const CFloatVector& w) {
 	CFloatMatrix m;
-	m.m.v.r = r;
-	m.m.v.u = u;
-	m.m.v.f = f;
-	m.m.v.h = w;
+	m.m.dir.r = r;
+	m.m.dir.u = u;
+	m.m.dir.f = f;
+	m.m.dir.h = w;
 	return m;
 }
 
@@ -226,15 +226,15 @@ const CFloatMatrix CFloatMatrix::Create (float sinp, float cosp, float sinb, flo
 	cbch = cosb * cosh;
 	cbsh = cosb * sinh;
 	sbch = sinb * cosh;
-	m.m.v.r.v.c.x = cbch + sinp * sbsh;	//m1
-	m.m.v.u.v.c.z = sbsh + sinp * cbch;	//m8
-	m.m.v.u.v.c.x = sinp * cbsh - sbch;	//m2
-	m.m.v.r.v.c.z = sinp * sbch - cbsh;	//m7
-	m.m.v.f.v.c.x = sinh * cosp;		//m3
-	m.m.v.r.v.c.y = sinb * cosp;		//m4
-	m.m.v.u.v.c.y = cosb * cosp;		//m5
-	m.m.v.f.v.c.z = cosh * cosp;		//m9
-	m.m.v.f.v.c.y = -sinp;				//m6
+	m.m.dir.r.v.coord.x = cbch + sinp * sbsh;	//m1
+	m.m.dir.u.v.coord.z = sbsh + sinp * cbch;	//m8
+	m.m.dir.u.v.coord.x = sinp * cbsh - sbch;	//m2
+	m.m.dir.r.v.coord.z = sinp * sbch - cbsh;	//m7
+	m.m.dir.f.v.coord.x = sinh * cosp;		//m3
+	m.m.dir.r.v.coord.y = sinb * cosp;		//m4
+	m.m.dir.u.v.coord.y = cosb * cosp;		//m5
+	m.m.dir.f.v.coord.z = cosh * cosp;		//m9
+	m.m.dir.f.v.coord.y = -sinp;				//m6
 	return m;
 }
 
@@ -242,9 +242,9 @@ const CFloatMatrix CFloatMatrix::Create (float sinp, float cosp, float sinb, flo
 
 const float CFloatMatrix::Det (void) 
 {
-return m.v.r.v.c.x * (m.v.u.v.c.y * m.v.f.v.c.z - m.v.u.v.c.z * m.v.f.v.c.y) +
-		 m.v.r.v.c.y * (m.v.u.v.c.z * m.v.f.v.c.x - m.v.u.v.c.x * m.v.f.v.c.z) +
-		 m.v.r.v.c.z * (m.v.u.v.c.x * m.v.f.v.c.y - m.v.u.v.c.y * m.v.f.v.c.x);
+return m.dir.r.v.coord.x * (m.dir.u.v.coord.y * m.dir.f.v.coord.z - m.dir.u.v.coord.z * m.dir.f.v.coord.y) +
+		 m.dir.r.v.coord.y * (m.dir.u.v.coord.z * m.dir.f.v.coord.x - m.dir.u.v.coord.x * m.dir.f.v.coord.z) +
+		 m.dir.r.v.coord.z * (m.dir.u.v.coord.x * m.dir.f.v.coord.y - m.dir.u.v.coord.y * m.dir.f.v.coord.x);
 }
 
 // -----------------------------------------------------------------------------
@@ -254,15 +254,15 @@ const CFloatMatrix CFloatMatrix::Inverse (void)
 	float fDet = Det ();
 	CFloatMatrix	m = *this;
 
-m.m.v.r.v.c.x = (m.m.v.u.v.c.y * m.m.v.f.v.c.z - m.m.v.u.v.c.z * m.m.v.f.v.c.y) / fDet;
-m.m.v.r.v.c.y = (m.m.v.r.v.c.z * m.m.v.f.v.c.y - m.m.v.r.v.c.y * m.m.v.f.v.c.z) / fDet;
-m.m.v.r.v.c.z = (m.m.v.r.v.c.y * m.m.v.u.v.c.z - m.m.v.r.v.c.z * m.m.v.u.v.c.y) / fDet;
-m.m.v.u.v.c.x = (m.m.v.u.v.c.z * m.m.v.f.v.c.x - m.m.v.u.v.c.x * m.m.v.f.v.c.z) / fDet;
-m.m.v.u.v.c.y = (m.m.v.r.v.c.x * m.m.v.f.v.c.z - m.m.v.r.v.c.z * m.m.v.f.v.c.x) / fDet;
-m.m.v.u.v.c.z = (m.m.v.r.v.c.z * m.m.v.u.v.c.x - m.m.v.r.v.c.x * m.m.v.u.v.c.z) / fDet;
-m.m.v.f.v.c.x = (m.m.v.u.v.c.x * m.m.v.f.v.c.y - m.m.v.u.v.c.y * m.m.v.f.v.c.x) / fDet;
-m.m.v.f.v.c.y = (m.m.v.r.v.c.y * m.m.v.f.v.c.x - m.m.v.r.v.c.x * m.m.v.f.v.c.y) / fDet;
-m.m.v.f.v.c.z = (m.m.v.r.v.c.x * m.m.v.u.v.c.y - m.m.v.r.v.c.y * m.m.v.u.v.c.x) / fDet;
+m.m.dir.r.v.coord.x = (m.m.dir.u.v.coord.y * m.m.dir.f.v.coord.z - m.m.dir.u.v.coord.z * m.m.dir.f.v.coord.y) / fDet;
+m.m.dir.r.v.coord.y = (m.m.dir.r.v.coord.z * m.m.dir.f.v.coord.y - m.m.dir.r.v.coord.y * m.m.dir.f.v.coord.z) / fDet;
+m.m.dir.r.v.coord.z = (m.m.dir.r.v.coord.y * m.m.dir.u.v.coord.z - m.m.dir.r.v.coord.z * m.m.dir.u.v.coord.y) / fDet;
+m.m.dir.u.v.coord.x = (m.m.dir.u.v.coord.z * m.m.dir.f.v.coord.x - m.m.dir.u.v.coord.x * m.m.dir.f.v.coord.z) / fDet;
+m.m.dir.u.v.coord.y = (m.m.dir.r.v.coord.x * m.m.dir.f.v.coord.z - m.m.dir.r.v.coord.z * m.m.dir.f.v.coord.x) / fDet;
+m.m.dir.u.v.coord.z = (m.m.dir.r.v.coord.z * m.m.dir.u.v.coord.x - m.m.dir.r.v.coord.x * m.m.dir.u.v.coord.z) / fDet;
+m.m.dir.f.v.coord.x = (m.m.dir.u.v.coord.x * m.m.dir.f.v.coord.y - m.m.dir.u.v.coord.y * m.m.dir.f.v.coord.x) / fDet;
+m.m.dir.f.v.coord.y = (m.m.dir.r.v.coord.y * m.m.dir.f.v.coord.x - m.m.dir.r.v.coord.x * m.m.dir.f.v.coord.y) / fDet;
+m.m.dir.f.v.coord.z = (m.m.dir.r.v.coord.x * m.m.dir.u.v.coord.y - m.m.dir.r.v.coord.y * m.m.dir.u.v.coord.x) / fDet;
 return m;
 }
 
@@ -273,28 +273,28 @@ const CFloatMatrix CFloatMatrix::Mul (CFloatMatrix& other)
 CFloatVector v;
 CFloatMatrix t;
 
-v.v.c.x = m.v.r.v.c.x;
-v.v.c.y = m.v.u.v.c.x;
-v.v.c.z = m.v.f.v.c.x;
-t.m.v.r.v.c.x = CFloatVector::Dot (v, other.m.v.r);
-t.m.v.u.v.c.x = CFloatVector::Dot (v, other.m.v.u);
-t.m.v.f.v.c.x = CFloatVector::Dot (v, other.m.v.f);
-v.v.c.x = m.v.r.v.c.y;
-v.v.c.y = m.v.u.v.c.y;
-v.v.c.z = m.v.f.v.c.y;
-t.m.v.r.v.c.y = CFloatVector::Dot (v, other.m.v.r);
-t.m.v.u.v.c.y = CFloatVector::Dot (v, other.m.v.u);
-t.m.v.f.v.c.y = CFloatVector::Dot (v, other.m.v.f);
-v.v.c.x = m.v.r.v.c.z;
-v.v.c.y = m.v.u.v.c.z;
-v.v.c.z = m.v.f.v.c.z;
-t.m.v.r.v.c.z = CFloatVector::Dot (v, other.m.v.r);
-t.m.v.u.v.c.z = CFloatVector::Dot (v, other.m.v.u);
-t.m.v.f.v.c.z = CFloatVector::Dot (v, other.m.v.f);
+v.v.coord.x = m.dir.r.v.coord.x;
+v.v.coord.y = m.dir.u.v.coord.x;
+v.v.coord.z = m.dir.f.v.coord.x;
+t.m.dir.r.v.coord.x = CFloatVector::Dot (v, other.m.dir.r);
+t.m.dir.u.v.coord.x = CFloatVector::Dot (v, other.m.dir.u);
+t.m.dir.f.v.coord.x = CFloatVector::Dot (v, other.m.dir.f);
+v.v.coord.x = m.dir.r.v.coord.y;
+v.v.coord.y = m.dir.u.v.coord.y;
+v.v.coord.z = m.dir.f.v.coord.y;
+t.m.dir.r.v.coord.y = CFloatVector::Dot (v, other.m.dir.r);
+t.m.dir.u.v.coord.y = CFloatVector::Dot (v, other.m.dir.u);
+t.m.dir.f.v.coord.y = CFloatVector::Dot (v, other.m.dir.f);
+v.v.coord.x = m.dir.r.v.coord.z;
+v.v.coord.y = m.dir.u.v.coord.z;
+v.v.coord.z = m.dir.f.v.coord.z;
+t.m.dir.r.v.coord.z = CFloatVector::Dot (v, other.m.dir.r);
+t.m.dir.u.v.coord.z = CFloatVector::Dot (v, other.m.dir.u);
+t.m.dir.f.v.coord.z = CFloatVector::Dot (v, other.m.dir.f);
 #if 0
-CFloatVector::Normalize (m.m.v.r);
-CFloatVector::Normalize (m.m.v.u);
-CFloatVector::Normalize (m.m.v.f);
+CFloatVector::Normalize (mat.mat.dir.r);
+CFloatVector::Normalize (mat.mat.dir.u);
+CFloatVector::Normalize (mat.mat.dir.f);
 #endif
 return t;
 }
@@ -303,17 +303,17 @@ return t;
 
 CFloatMatrix& CFloatMatrix::Transpose (CFloatMatrix& dest, CFloatMatrix& src)
 {
-dest [0] = src [0];
-dest [4] = src [1];
-dest [8] = src [2];
-dest [1] = src [4];
-dest [5] = src [5];
-dest [9] = src [6];
-dest [2] = src [8];
-dest [6] = src [9];
-dest [10] = src [10];
-dest [11] = dest [12] = dest [13] = dest [14] = 0;
-dest [15] = 1.0f;
+dest.m.vec [0] = src.m.vec [0];
+dest.m.vec [4] = src.m.vec [1];
+dest.m.vec [8] = src.m.vec [2];
+dest.m.vec [1] = src.m.vec [4];
+dest.m.vec [5] = src.m.vec [5];
+dest.m.vec [9] = src.m.vec [6];
+dest.m.vec [2] = src.m.vec [8];
+dest.m.vec [6] = src.m.vec [9];
+dest.m.vec [10] = src.m.vec [10];
+dest.m.vec [11] = dest.m.vec [12] = dest.m.vec [13] = dest.m.vec [14] = 0;
+dest.m.vec [15] = 1.0f;
 return dest;
 }
 
@@ -324,28 +324,28 @@ CFixMatrix CFixMatrix::Mul (const CFixMatrix& other)
 CFixVector v;
 CFixMatrix t;
 
-v.v.c.x = m.v.r.v.c.x;
-v.v.c.y = m.v.u.v.c.x;
-v.v.c.z = m.v.f.v.c.x;
-t.m.v.r.v.c.x = CFixVector::Dot (v, other.m.v.r);
-t.m.v.u.v.c.x = CFixVector::Dot (v, other.m.v.u);
-t.m.v.f.v.c.x = CFixVector::Dot (v, other.m.v.f);
-v.v.c.x = m.v.r.v.c.y;
-v.v.c.y = m.v.u.v.c.y;
-v.v.c.z = m.v.f.v.c.y;
-t.m.v.r.v.c.y = CFixVector::Dot (v, other.m.v.r);
-t.m.v.u.v.c.y = CFixVector::Dot (v, other.m.v.u);
-t.m.v.f.v.c.y = CFixVector::Dot (v, other.m.v.f);
-v.v.c.x = m.v.r.v.c.z;
-v.v.c.y = m.v.u.v.c.z;
-v.v.c.z = m.v.f.v.c.z;
-t.m.v.r.v.c.z = CFixVector::Dot (v, other.m.v.r);
-t.m.v.u.v.c.z = CFixVector::Dot (v, other.m.v.u);
-t.m.v.f.v.c.z = CFixVector::Dot (v, other.m.v.f);
+v.v.coord.x = m.dir.r.v.coord.x;
+v.v.coord.y = m.dir.u.v.coord.x;
+v.v.coord.z = m.dir.f.v.coord.x;
+t.m.dir.r.v.coord.x = CFixVector::Dot (v, other.m.dir.r);
+t.m.dir.u.v.coord.x = CFixVector::Dot (v, other.m.dir.u);
+t.m.dir.f.v.coord.x = CFixVector::Dot (v, other.m.dir.f);
+v.v.coord.x = m.dir.r.v.coord.y;
+v.v.coord.y = m.dir.u.v.coord.y;
+v.v.coord.z = m.dir.f.v.coord.y;
+t.m.dir.r.v.coord.y = CFixVector::Dot (v, other.m.dir.r);
+t.m.dir.u.v.coord.y = CFixVector::Dot (v, other.m.dir.u);
+t.m.dir.f.v.coord.y = CFixVector::Dot (v, other.m.dir.f);
+v.v.coord.x = m.dir.r.v.coord.z;
+v.v.coord.y = m.dir.u.v.coord.z;
+v.v.coord.z = m.dir.f.v.coord.z;
+t.m.dir.r.v.coord.z = CFixVector::Dot (v, other.m.dir.r);
+t.m.dir.u.v.coord.z = CFixVector::Dot (v, other.m.dir.u);
+t.m.dir.f.v.coord.z = CFixVector::Dot (v, other.m.dir.f);
 #if 0
-CFixVector::Normalize (m.m.v.r);
-CFixVector::Normalize (m.m.v.u);
-CFixVector::Normalize (m.m.v.f);
+CFixVector::Normalize (mat.mat.dir.r);
+CFixVector::Normalize (mat.mat.dir.u);
+CFixVector::Normalize (mat.mat.dir.f);
 #endif
 return t;
 }
@@ -354,9 +354,9 @@ return t;
 
 const fix CFixMatrix::Det (void) 
 {
-fix xDet = FixMul (m.v.r.v.c.x, FixMul (m.v.u.v.c.y, m.v.f.v.c.z) - FixMul (m.v.u.v.c.z, m.v.f.v.c.y));
-xDet += FixMul (m.v.r.v.c.y, FixMul (m.v.u.v.c.z, m.v.f.v.c.x) - FixMul (m.v.u.v.c.x, m.v.f.v.c.z));
-xDet += FixMul (m.v.r.v.c.z, FixMul (m.v.u.v.c.x, m.v.f.v.c.y) - FixMul (m.v.u.v.c.y, m.v.f.v.c.x));
+fix xDet = FixMul (m.dir.r.v.coord.x, FixMul (m.dir.u.v.coord.y, m.dir.f.v.coord.z) - FixMul (m.dir.u.v.coord.z, m.dir.f.v.coord.y));
+xDet += FixMul (m.dir.r.v.coord.y, FixMul (m.dir.u.v.coord.z, m.dir.f.v.coord.x) - FixMul (m.dir.u.v.coord.x, m.dir.f.v.coord.z));
+xDet += FixMul (m.dir.r.v.coord.z, FixMul (m.dir.u.v.coord.x, m.dir.f.v.coord.y) - FixMul (m.dir.u.v.coord.y, m.dir.f.v.coord.x));
 return xDet;
 }
 
@@ -367,15 +367,15 @@ const CFixMatrix CFixMatrix::Inverse (void)
 	fix xDet = Det ();
 	CFixMatrix i;
 
-i.m.v.r.v.c.x = FixDiv (FixMul (m.v.u.v.c.y, m.v.f.v.c.z) - FixMul (m.v.u.v.c.z, m.v.f.v.c.y), xDet);
-i.m.v.r.v.c.y = FixDiv (FixMul (m.v.r.v.c.z, m.v.f.v.c.y) - FixMul (m.v.r.v.c.y, m.v.f.v.c.z), xDet);
-i.m.v.r.v.c.z = FixDiv (FixMul (m.v.r.v.c.y, m.v.u.v.c.z) - FixMul (m.v.r.v.c.z, m.v.u.v.c.y), xDet);
-i.m.v.u.v.c.x = FixDiv (FixMul (m.v.u.v.c.z, m.v.f.v.c.x) - FixMul (m.v.u.v.c.x, m.v.f.v.c.z), xDet);
-i.m.v.u.v.c.y = FixDiv (FixMul (m.v.r.v.c.x, m.v.f.v.c.z) - FixMul (m.v.r.v.c.z, m.v.f.v.c.x), xDet);
-i.m.v.u.v.c.z = FixDiv (FixMul (m.v.r.v.c.z, m.v.u.v.c.x) - FixMul (m.v.r.v.c.x, m.v.u.v.c.z), xDet);
-i.m.v.f.v.c.x = FixDiv (FixMul (m.v.u.v.c.x, m.v.f.v.c.y) - FixMul (m.v.u.v.c.y, m.v.f.v.c.x), xDet);
-i.m.v.f.v.c.y = FixDiv (FixMul (m.v.r.v.c.y, m.v.f.v.c.x) - FixMul (m.v.r.v.c.x, m.v.f.v.c.y), xDet);
-i.m.v.f.v.c.z = FixDiv (FixMul (m.v.r.v.c.x, m.v.u.v.c.y) - FixMul (m.v.r.v.c.y, m.v.u.v.c.x), xDet);
+i.m.dir.r.v.coord.x = FixDiv (FixMul (m.dir.u.v.coord.y, m.dir.f.v.coord.z) - FixMul (m.dir.u.v.coord.z, m.dir.f.v.coord.y), xDet);
+i.m.dir.r.v.coord.y = FixDiv (FixMul (m.dir.r.v.coord.z, m.dir.f.v.coord.y) - FixMul (m.dir.r.v.coord.y, m.dir.f.v.coord.z), xDet);
+i.m.dir.r.v.coord.z = FixDiv (FixMul (m.dir.r.v.coord.y, m.dir.u.v.coord.z) - FixMul (m.dir.r.v.coord.z, m.dir.u.v.coord.y), xDet);
+i.m.dir.u.v.coord.x = FixDiv (FixMul (m.dir.u.v.coord.z, m.dir.f.v.coord.x) - FixMul (m.dir.u.v.coord.x, m.dir.f.v.coord.z), xDet);
+i.m.dir.u.v.coord.y = FixDiv (FixMul (m.dir.r.v.coord.x, m.dir.f.v.coord.z) - FixMul (m.dir.r.v.coord.z, m.dir.f.v.coord.x), xDet);
+i.m.dir.u.v.coord.z = FixDiv (FixMul (m.dir.r.v.coord.z, m.dir.u.v.coord.x) - FixMul (m.dir.r.v.coord.x, m.dir.u.v.coord.z), xDet);
+i.m.dir.f.v.coord.x = FixDiv (FixMul (m.dir.u.v.coord.x, m.dir.f.v.coord.y) - FixMul (m.dir.u.v.coord.y, m.dir.f.v.coord.x), xDet);
+i.m.dir.f.v.coord.y = FixDiv (FixMul (m.dir.r.v.coord.y, m.dir.f.v.coord.x) - FixMul (m.dir.r.v.coord.x, m.dir.f.v.coord.y), xDet);
+i.m.dir.f.v.coord.z = FixDiv (FixMul (m.dir.r.v.coord.x, m.dir.u.v.coord.y) - FixMul (m.dir.r.v.coord.y, m.dir.u.v.coord.x), xDet);
 return i;
 }
 
@@ -383,15 +383,15 @@ return i;
 
 CFixMatrix& CFixMatrix::Transpose (CFixMatrix& dest, CFixMatrix& src)
 {
-dest.m.a [0] = src.m.a [0];
-dest.m.a [3] = src.m.a [1];
-dest.m.a [6] = src.m.a [2];
-dest.m.a [1] = src.m.a [3];
-dest.m.a [4] = src.m.a [4];
-dest.m.a [7] = src.m.a [5];
-dest.m.a [2] = src.m.a [6];
-dest.m.a [5] = src.m.a [7];
-dest.m.a [8] = src.m.a [8];
+dest.m.vec [0] = src.m.vec [0];
+dest.m.vec [3] = src.m.vec [1];
+dest.m.vec [6] = src.m.vec [2];
+dest.m.vec [1] = src.m.vec [3];
+dest.m.vec [4] = src.m.vec [4];
+dest.m.vec [7] = src.m.vec [5];
+dest.m.vec [2] = src.m.vec [6];
+dest.m.vec [5] = src.m.vec [7];
+dest.m.vec [8] = src.m.vec [8];
 return dest;
 }
 
@@ -399,17 +399,17 @@ return dest;
 
 CFloatMatrix& CFixMatrix::Transpose (CFloatMatrix& dest, CFixMatrix& src)
 {
-dest.m.a [0] = X2F (src.m.a [0]);
-dest.m.a [4] = X2F (src.m.a [1]);
-dest.m.a [8] = X2F (src.m.a [2]);
-dest.m.a [1] = X2F (src.m.a [3]);
-dest.m.a [5] = X2F (src.m.a [4]);
-dest.m.a [9] = X2F (src.m.a [5]);
-dest.m.a [2] = X2F (src.m.a [6]);
-dest.m.a [6] = X2F (src.m.a [7]);
-dest.m.a [10] = X2F (src.m.a [8]);
-dest.m.a [11] = dest.m.a [12] = dest.m.a [13] = dest.m.a [14] = 0;
-dest.m.a [15] = 1.0f;
+dest.m.vec [0] = X2F (src.m.vec [0]);
+dest.m.vec [4] = X2F (src.m.vec [1]);
+dest.m.vec [8] = X2F (src.m.vec [2]);
+dest.m.vec [1] = X2F (src.m.vec [3]);
+dest.m.vec [5] = X2F (src.m.vec [4]);
+dest.m.vec [9] = X2F (src.m.vec [5]);
+dest.m.vec [2] = X2F (src.m.vec [6]);
+dest.m.vec [6] = X2F (src.m.vec [7]);
+dest.m.vec [10] = X2F (src.m.vec [8]);
+dest.m.vec [11] = dest.m.vec [12] = dest.m.vec [13] = dest.m.vec [14] = 0;
+dest.m.vec [15] = 1.0f;
 return dest;
 }
 
@@ -421,22 +421,22 @@ const CFixMatrix CFixMatrix::CreateF (const CFixVector& fVec)
 {
 	CFixMatrix m;
 
-	m.m.v.f = fVec;
-	CFixVector::Normalize (m.m.v.f);
-	assert (m.m.v.f.Mag () != 0);
+	m.m.dir.f = fVec;
+	CFixVector::Normalize (m.m.dir.f);
+	assert (mat.mat.dir.f.Mag () != 0);
 
 	//just forward vec
-	if ((m.m.v.f.v.c.x == 0) && (m.m.v.f.v.c.z == 0)) {		//forward vec is straight up or down
-		m.m.v.r.v.c.x = I2X (1);
-		m.m.v.u.v.c.z = (m.m.v.f.v.c.z < 0) ? I2X (1) : -I2X (1);
-		m.m.v.r.v.c.y = m.m.v.r.v.c.z = m.m.v.u.v.c.x = m.m.v.u.v.c.y = 0;
+	if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
+		m.m.dir.r.v.coord.x = I2X (1);
+		m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.z < 0) ? I2X (1) : -I2X (1);
+		m.m.dir.r.v.coord.y = m.m.dir.r.v.coord.z = m.m.dir.u.v.coord.x = m.m.dir.u.v.coord.y = 0;
 	}
 	else { 		//not straight up or down
-		m.m.v.r.v.c.x = m.m.v.f.v.c.z;
-		m.m.v.r.v.c.y = 0;
-		m.m.v.r.v.c.z = -m.m.v.f.v.c.x;
-		CFixVector::Normalize (m.m.v.r);
-		m.m.v.u = CFixVector::Cross (m.m.v.f, m.m.v.r);
+		m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
+		m.m.dir.r.v.coord.y = 0;
+		m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
+		CFixVector::Normalize (m.m.dir.r);
+		m.m.dir.u = CFixVector::Cross (m.m.dir.f, m.m.dir.r);
 	}
 	return m;
 }
@@ -448,48 +448,48 @@ const CFixMatrix CFixMatrix::CreateFU (const CFixVector& fVec, const CFixVector&
 {
 	CFixMatrix	m;
 
-m.m.v.f = fVec;
-CFixVector::Normalize (m.m.v.f);
-assert (m.m.v.f.Mag () != 0);
+m.m.dir.f = fVec;
+CFixVector::Normalize (m.m.dir.f);
+assert (mat.mat.dir.f.Mag () != 0);
 
-m.m.v.u = uVec;
-if (CFixVector::Normalize (m.m.v.u) == 0) {
-	if ((m.m.v.f.v.c.x == 0) && (m.m.v.f.v.c.z == 0)) {		//forward vec is straight up or down
-		m.m.v.r.v.c.x = I2X (1);
-		m.m.v.u.v.c.z = (m.m.v.f.v.c.y < 0) ? I2X (1) : -I2X (1);
-		m.m.v.r.v.c.y = m.m.v.r.v.c.z = m.m.v.u.v.c.x = m.m.v.u.v.c.y = 0;
+m.m.dir.u = uVec;
+if (CFixVector::Normalize (m.m.dir.u) == 0) {
+	if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
+		m.m.dir.r.v.coord.x = I2X (1);
+		m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.y < 0) ? I2X (1) : -I2X (1);
+		m.m.dir.r.v.coord.y = m.m.dir.r.v.coord.z = m.m.dir.u.v.coord.x = m.m.dir.u.v.coord.y = 0;
 		}
 	else { 		//not straight up or down
-		m.m.v.r.v.c.x = m.m.v.f.v.c.z;
-		m.m.v.r.v.c.y = 0;
-		m.m.v.r.v.c.z = -m.m.v.f.v.c.x;
-		CFixVector::Normalize (m.m.v.r);
-		m.m.v.u = CFixVector::Cross (m.m.v.f, m.m.v.r);
+		m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
+		m.m.dir.r.v.coord.y = 0;
+		m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
+		CFixVector::Normalize (m.m.dir.r);
+		m.m.dir.u = CFixVector::Cross (m.m.dir.f, m.m.dir.r);
 		}
 	}
-m.m.v.r = CFixVector::Cross (m.m.v.u, m.m.v.f);
+m.m.dir.r = CFixVector::Cross (m.m.dir.u, m.m.dir.f);
 //Normalize new perpendicular vector
-if (CFixVector::Normalize (m.m.v.r) == 0) {
-	if ((m.m.v.f.v.c.x == 0) && (m.m.v.f.v.c.z == 0)) {		//forward vec is straight up or down
-		m.m.v.r.v.c.x = I2X (1);
-		m.m.v.u.v.c.z = (m.m.v.f.v.c.y < 0) ? I2X (1) : -I2X (1);
-		m.m.v.r.v.c.y = 
-		m.m.v.r.v.c.z = 
-		m.m.v.u.v.c.x = 
-		m.m.v.u.v.c.y = 0;
+if (CFixVector::Normalize (m.m.dir.r) == 0) {
+	if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
+		m.m.dir.r.v.coord.x = I2X (1);
+		m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.y < 0) ? I2X (1) : -I2X (1);
+		m.m.dir.r.v.coord.y = 
+		m.m.dir.r.v.coord.z = 
+		m.m.dir.u.v.coord.x = 
+		m.m.dir.u.v.coord.y = 0;
 		}
 	else { 		//not straight up or down
-		m.m.v.r.v.c.x = m.m.v.f.v.c.z;
-		m.m.v.r.v.c.y = 0;
-		m.m.v.r.v.c.z = -m.m.v.f.v.c.x;
-		CFixVector::Normalize (m.m.v.r);
-		m.m.v.u = CFixVector::Cross (m.m.v.f, m.m.v.r);
+		m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
+		m.m.dir.r.v.coord.y = 0;
+		m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
+		CFixVector::Normalize (m.m.dir.r);
+		m.m.dir.u = CFixVector::Cross (m.m.dir.f, m.m.dir.r);
 		}
 	}
 
 //	-----------------------------------------------------------------------------
 //now recompute up vector, in case it wasn't entirely perpendiclar
-m.m.v.u = CFixVector::Cross (m.m.v.f, m.m.v.r);
+m.m.dir.u = CFixVector::Cross (m.m.dir.f, m.m.dir.r);
 return m;
 }
 
@@ -499,48 +499,48 @@ return m;
 const CFixMatrix CFixMatrix::CreateFR (const CFixVector& fVec, const CFixVector& rVec) {
 	CFixMatrix m;
 
-m.m.v.f = fVec;
-CFixVector::Normalize (m.m.v.f);
-assert (m.m.v.f.Mag () != 0);
+m.m.dir.f = fVec;
+CFixVector::Normalize (m.m.dir.f);
+assert (mat.mat.dir.f.Mag () != 0);
 
 //use right vec
-m.m.v.r = rVec;
-if (CFixVector::Normalize (m.m.v.r) == 0) {
-	if ((m.m.v.f.v.c.x == 0) && (m.m.v.f.v.c.z == 0)) {		//forward vec is straight up or down
-		m.m.v.r.v.c.x = I2X (1);
-		m.m.v.u.v.c.z = (m.m.v.f.v.c.y < 0) ? I2X (1) : -I2X (1);
-		m.m.v.r.v.c.y = 
-		m.m.v.r.v.c.z = 
-		m.m.v.u.v.c.x = 
-		m.m.v.u.v.c.y = 0;
+m.m.dir.r = rVec;
+if (CFixVector::Normalize (m.m.dir.r) == 0) {
+	if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
+		m.m.dir.r.v.coord.x = I2X (1);
+		m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.y < 0) ? I2X (1) : -I2X (1);
+		m.m.dir.r.v.coord.y = 
+		m.m.dir.r.v.coord.z = 
+		m.m.dir.u.v.coord.x = 
+		m.m.dir.u.v.coord.y = 0;
 		}
 	else { 		//not straight up or down
-		m.m.v.r.v.c.x = m.m.v.f.v.c.z;
-		m.m.v.r.v.c.y = 0;
-		m.m.v.r.v.c.z = -m.m.v.f.v.c.x;
-		CFixVector::Normalize (m.m.v.r);
-		m.m.v.u = CFixVector::Cross (m.m.v.f, m.m.v.r);
+		m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
+		m.m.dir.r.v.coord.y = 0;
+		m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
+		CFixVector::Normalize (m.m.dir.r);
+		m.m.dir.u = CFixVector::Cross (m.m.dir.f, m.m.dir.r);
 		}
 	}
 
-m.m.v.u = CFixVector::Cross (m.m.v.f, m.m.v.r);
+m.m.dir.u = CFixVector::Cross (m.m.dir.f, m.m.dir.r);
 //Normalize new perpendicular vector
-if (CFixVector::Normalize (m.m.v.u) == 0) {
-	if ((m.m.v.f.v.c.x == 0) && (m.m.v.f.v.c.z == 0)) {		//forward vec is straight up or down
-		m.m.v.r.v.c.x = I2X (1);
-		m.m.v.u.v.c.z = (m.m.v.f.v.c.y < 0) ? I2X (1) : -I2X (1);
-		m.m.v.r.v.c.y = m.m.v.r.v.c.z = m.m.v.u.v.c.x = m.m.v.u.v.c.y = 0;
+if (CFixVector::Normalize (m.m.dir.u) == 0) {
+	if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
+		m.m.dir.r.v.coord.x = I2X (1);
+		m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.y < 0) ? I2X (1) : -I2X (1);
+		m.m.dir.r.v.coord.y = m.m.dir.r.v.coord.z = m.m.dir.u.v.coord.x = m.m.dir.u.v.coord.y = 0;
 		}
 	else { 		//not straight up or down
-		m.m.v.r.v.c.x = m.m.v.f.v.c.z;
-		m.m.v.r.v.c.y = 0;
-		m.m.v.r.v.c.z = -m.m.v.f.v.c.x;
-		CFixVector::Normalize (m.m.v.r);
-		m.m.v.u = CFixVector::Cross (m.m.v.f, m.m.v.r);
+		m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
+		m.m.dir.r.v.coord.y = 0;
+		m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
+		CFixVector::Normalize (m.m.dir.r);
+		m.m.dir.u = CFixVector::Cross (m.m.dir.f, m.m.dir.r);
 		}
 	}
 //now recompute right vector, in case it wasn't entirely perpendiclar
-m.m.v.r = CFixVector::Cross (m.m.v.u, m.m.v.f);
+m.m.dir.r = CFixVector::Cross (m.m.dir.u, m.m.dir.f);
 return m;
 }
 
@@ -551,43 +551,43 @@ const CFloatMatrix CFloatMatrix::CreateFU (const CFloatVector& fVec, const CFloa
 {
 	CFloatMatrix m;
 
-m.m.v.f = fVec;
-CFloatVector::Normalize (m.m.v.f);
-assert (m.m.v.f.Mag () != 0);
+m.m.dir.f = fVec;
+CFloatVector::Normalize (m.m.dir.f);
+assert (mat.mat.dir.f.Mag () != 0);
 
-m.m.v.u = uVec;
-if (CFloatVector::Normalize (m.m.v.u) == 0) {
-	if ((m.m.v.f.v.c.x == 0) && (m.m.v.f.v.c.z == 0)) {		//forward vec is straight up or down
-		m.m.v.r.v.c.x = 1;
-		m.m.v.u.v.c.z = (m.m.v.f.v.c.y < 0) ? 1.0f : -1.0f;
-		m.m.v.r.v.c.y = m.m.v.r.v.c.z = m.m.v.u.v.c.x = m.m.v.u.v.c.y = 0;
+m.m.dir.u = uVec;
+if (CFloatVector::Normalize (m.m.dir.u) == 0) {
+	if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
+		m.m.dir.r.v.coord.x = 1;
+		m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.y < 0) ? 1.0f : -1.0f;
+		m.m.dir.r.v.coord.y = m.m.dir.r.v.coord.z = m.m.dir.u.v.coord.x = m.m.dir.u.v.coord.y = 0;
 		}
 	else { 		//not straight up or down
-		m.m.v.r.v.c.x = m.m.v.f.v.c.z;
-		m.m.v.r.v.c.y = 0;
-		m.m.v.r.v.c.z = -m.m.v.f.v.c.x;
-		CFloatVector::Normalize (m.m.v.r);
-		m.m.v.u = CFloatVector::Cross (m.m.v.f, m.m.v.r);
+		m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
+		m.m.dir.r.v.coord.y = 0;
+		m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
+		CFloatVector::Normalize (m.m.dir.r);
+		m.m.dir.u = CFloatVector::Cross (m.m.dir.f, m.m.dir.r);
 		}
 	}
-m.m.v.r = CFloatVector::Cross (m.m.v.u, m.m.v.f);
+m.m.dir.r = CFloatVector::Cross (m.m.dir.u, m.m.dir.f);
 //Normalize new perpendicular vector
-if (CFloatVector::Normalize (m.m.v.r) == 0) {
-	if ((m.m.v.f.v.c.x == 0) && (m.m.v.f.v.c.z == 0)) {		//forward vec is straight up or down
-		m.m.v.r.v.c.x = 1;
-		m.m.v.u.v.c.z = (m.m.v.f.v.c.y < 0) ? 1.0f : -1.0f;
-		m.m.v.r.v.c.y = m.m.v.r.v.c.z = m.m.v.u.v.c.x = m.m.v.u.v.c.y = 0;
+if (CFloatVector::Normalize (m.m.dir.r) == 0) {
+	if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
+		m.m.dir.r.v.coord.x = 1;
+		m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.y < 0) ? 1.0f : -1.0f;
+		m.m.dir.r.v.coord.y = m.m.dir.r.v.coord.z = m.m.dir.u.v.coord.x = m.m.dir.u.v.coord.y = 0;
 	}
 	else { 		//not straight up or down
-		m.m.v.r.v.c.x = m.m.v.f.v.c.z;
-		m.m.v.r.v.c.y = 0;
-		m.m.v.r.v.c.z = -m.m.v.f.v.c.x;
-		CFloatVector::Normalize (m.m.v.r);
-		m.m.v.u = CFloatVector::Cross (m.m.v.f, m.m.v.r);
+		m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
+		m.m.dir.r.v.coord.y = 0;
+		m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
+		CFloatVector::Normalize (m.m.dir.r);
+		m.m.dir.u = CFloatVector::Cross (m.m.dir.f, m.m.dir.r);
 		}
 	}
 //now recompute up vector, in case it wasn't entirely perpendiclar
-m.m.v.u = CFloatVector::Cross (m.m.v.f, m.m.v.r);
+m.m.dir.u = CFloatVector::Cross (m.m.dir.f, m.m.dir.r);
 return m;
 }
 
@@ -598,45 +598,45 @@ const CFloatMatrix CFloatMatrix::CreateFR (const CFloatVector& fVec, const CFloa
 {
 	CFloatMatrix m;
 
-m.m.v.f = fVec;
-CFloatVector::Normalize (m.m.v.f);
-assert (m.m.v.f.Mag () != 0);
+m.m.dir.f = fVec;
+CFloatVector::Normalize (m.m.dir.f);
+assert (mat.mat.dir.f.Mag () != 0);
 
 //use right vec
-m.m.v.r = rVec;
-if (CFloatVector::Normalize (m.m.v.r) == 0) {
-	if ((m.m.v.f.v.c.x == 0) && (m.m.v.f.v.c.z == 0)) {		//forward vec is straight up or down
-		m.m.v.r.v.c.x = 1;
-		m.m.v.u.v.c.z = (m.m.v.f.v.c.y < 0) ? 1.0f : -1.0f;
-		m.m.v.r.v.c.y = m.m.v.r.v.c.z = m.m.v.u.v.c.x = m.m.v.u.v.c.y = 0;
+m.m.dir.r = rVec;
+if (CFloatVector::Normalize (m.m.dir.r) == 0) {
+	if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
+		m.m.dir.r.v.coord.x = 1;
+		m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.y < 0) ? 1.0f : -1.0f;
+		m.m.dir.r.v.coord.y = m.m.dir.r.v.coord.z = m.m.dir.u.v.coord.x = m.m.dir.u.v.coord.y = 0;
 		}
 	else { 		//not straight up or down
-		m.m.v.r.v.c.x = m.m.v.f.v.c.z;
-		m.m.v.r.v.c.y = 0;
-		m.m.v.r.v.c.z = -m.m.v.f.v.c.x;
-		CFloatVector::Normalize (m.m.v.r);
-		m.m.v.u = CFloatVector::Cross (m.m.v.f, m.m.v.r);
+		m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
+		m.m.dir.r.v.coord.y = 0;
+		m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
+		CFloatVector::Normalize (m.m.dir.r);
+		m.m.dir.u = CFloatVector::Cross (m.m.dir.f, m.m.dir.r);
 		}
 	}
 
-m.m.v.u = CFloatVector::Cross (m.m.v.f, m.m.v.r);
+m.m.dir.u = CFloatVector::Cross (m.m.dir.f, m.m.dir.r);
 //Normalize new perpendicular vector
-if (CFloatVector::Normalize (m.m.v.u) == 0) {
-	if ((m.m.v.f.v.c.x == 0) && (m.m.v.f.v.c.z == 0)) {		//forward vec is straight up or down
-		m.m.v.r.v.c.x = 1;
-		m.m.v.u.v.c.z = (m.m.v.f.v.c.y < 0) ? 1.0f : -1.0f;
-		m.m.v.r.v.c.y = m.m.v.r.v.c.z = m.m.v.u.v.c.x = m.m.v.u.v.c.y = 0;
+if (CFloatVector::Normalize (m.m.dir.u) == 0) {
+	if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
+		m.m.dir.r.v.coord.x = 1;
+		m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.y < 0) ? 1.0f : -1.0f;
+		m.m.dir.r.v.coord.y = m.m.dir.r.v.coord.z = m.m.dir.u.v.coord.x = m.m.dir.u.v.coord.y = 0;
 		}
 	else { 		//not straight up or down
-		m.m.v.r.v.c.x = m.m.v.f.v.c.z;
-		m.m.v.r.v.c.y = 0;
-		m.m.v.r.v.c.z = -m.m.v.f.v.c.x;
-		CFloatVector::Normalize (m.m.v.r);
-		m.m.v.u = CFloatVector::Cross (m.m.v.f, m.m.v.r);
+		m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
+		m.m.dir.r.v.coord.y = 0;
+		m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
+		CFloatVector::Normalize (m.m.dir.r);
+		m.m.dir.u = CFloatVector::Cross (m.m.dir.f, m.m.dir.r);
 		}
 	}
 //now recompute right vector, in case it wasn't entirely perpendiclar
-m.m.v.r = CFloatVector::Cross (m.m.v.u, m.m.v.f);
+m.m.dir.r = CFloatVector::Cross (m.m.dir.u, m.m.dir.f);
 return m;
 }
 
@@ -647,30 +647,30 @@ const CAngleVector CFixMatrix::ExtractAnglesVec (void) const
 	CAngleVector a;
 	fix sinh, cosh, cosp;
 
-if ((m.v.f.v.c.x == 0) && (m.v.f.v.c.z == 0))		//zero head
-	a.v.c.h = 0;
+if ((m.dir.f.v.coord.x == 0) && (m.dir.f.v.coord.z == 0))		//zero head
+	a.v.coord.h = 0;
 else
-	a.v.c.h = FixAtan2 (m.v.f.v.c.z, m.v.f.v.c.x);
-FixSinCos (a.v.c.h, &sinh, &cosh);
+	a.v.coord.h = FixAtan2 (m.dir.f.v.coord.z, m.dir.f.v.coord.x);
+FixSinCos (a.v.coord.h, &sinh, &cosh);
 if (abs (sinh) > abs (cosh))				//sine is larger, so use it
-	cosp = FixDiv (m.v.f.v.c.x, sinh);
+	cosp = FixDiv (m.dir.f.v.coord.x, sinh);
 else											//cosine is larger, so use it
-	cosp = FixDiv (m.v.f.v.c.z, cosh);
-if (cosp==0 && m.v.f.v.c.y==0)
-	a.v.c.p = 0;
+	cosp = FixDiv (m.dir.f.v.coord.z, cosh);
+if (cosp==0 && m.dir.f.v.coord.y==0)
+	a.v.coord.p = 0;
 else
-	a.v.c.p = FixAtan2 (cosp, -m.v.f.v.c.y);
+	a.v.coord.p = FixAtan2 (cosp, -m.dir.f.v.coord.y);
 if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
-	a.v.c.b = 0;
+	a.v.coord.b = 0;
 else {
 	fix sinb, cosb;
 
-	sinb = FixDiv (m.v.r.v.c.y, cosp);
-	cosb = FixDiv (m.v.u.v.c.y, cosp);
+	sinb = FixDiv (m.dir.r.v.coord.y, cosp);
+	cosb = FixDiv (m.dir.u.v.coord.y, cosp);
 	if (sinb==0 && cosb==0)
-		a.v.c.b = 0;
+		a.v.coord.b = 0;
 	else
-		a.v.c.b = FixAtan2 (cosb, sinb);
+		a.v.coord.b = FixAtan2 (cosb, sinb);
 	}
 return a;
 }
@@ -704,14 +704,14 @@ const int VmPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const
 	int			bClamped = 0;
 
 d21 = p2 - p1;
-m = fabs (double (d21.v.c.x) * double (d21.v.c.x) + double (d21.v.c.y) * double (d21.v.c.y) + double (d21.v.c.z) * double (d21.v.c.z));
+m = fabs (double (d21.v.coord.x) * double (d21.v.coord.x) + double (d21.v.coord.y) * double (d21.v.coord.y) + double (d21.v.coord.z) * double (d21.v.coord.z));
 if (!m) {
 	//	if (hitP)
 	hitP = p1;
 	return 0;
 }
 d31 = p3 - p1;
-u = double (d31.v.c.x) * double (d21.v.c.x) + double (d31.v.c.y) * double (d21.v.c.y) + double (d31.v.c.z) * double (d21.v.c.z);
+u = double (d31.v.coord.x) * double (d21.v.coord.x) + double (d31.v.coord.y) * double (d21.v.coord.y) + double (d31.v.coord.z) * double (d21.v.coord.z);
 u /= m;
 if (u < 0)
 	bClamped = bClampToFarthest ? 2 : 1;
@@ -724,9 +724,9 @@ if (bClamped == 2)
 else if (bClamped == 1)
 	hitP = p1;
 else {
-	hitP.v.c.x = p1.v.c.x + (fix) (u * d21.v.c.x);
-	hitP.v.c.y = p1.v.c.y + (fix) (u * d21.v.c.y);
-	hitP.v.c.z = p1.v.c.z + (fix) (u * d21.v.c.z);
+	hitP.v.coord.x = p1.v.coord.x + (fix) (u * d21.v.coord.x);
+	hitP.v.coord.y = p1.v.coord.y + (fix) (u * d21.v.coord.y);
+	hitP.v.coord.z = p1.v.coord.z + (fix) (u * d21.v.coord.z);
 	}
 return bClamped;
 }
@@ -942,12 +942,12 @@ num = d1343 * d4321 - d1321 * d4343;
 mua = num / den;
 mub = (d1343 + d4321 * mua) / d4343;
 /*
-va->x () = v1->x () + mua * v21.v.c.x;
-va->y () = v1->y () + mua * v21.v.c.y;
-va->z () = v1->z () + mua * v21.v.c.z;
-vb->x () = v3->x () + mub * v43.v.c.x;
-vb->y () = v3->y () + mub * v43.v.c.y;
-vb->z () = v3->z () + mub * v43.v.c.z;
+va->x () = v1->x () + mua * v21.v.coord.x;
+va->y () = v1->y () + mua * v21.v.coord.y;
+va->z () = v1->z () + mua * v21.v.coord.z;
+vb->x () = v3->x () + mub * v43.v.coord.x;
+vb->y () = v3->y () + mub * v43.v.coord.y;
+vb->z () = v3->z () + mub * v43.v.coord.z;
 */
 va = v1 + mua * v21;
 vb = v3 + mub * v43;
@@ -1006,19 +1006,19 @@ const CFixVector CFixVector::Random (void)
 	int i = d_rand () % 3;
 
 if (i == 2) {
-	v.v.c.x = (16384 - d_rand ()) | 1;	// make sure we don't create null vector
-	v.v.c.y = 16384 - d_rand ();
-	v.v.c.z = 16384 - d_rand ();
+	v.v.coord.x = (16384 - d_rand ()) | 1;	// make sure we don't create null vector
+	v.v.coord.y = 16384 - d_rand ();
+	v.v.coord.z = 16384 - d_rand ();
 	}
 else if (i == 1) {
-	v.v.c.y = (16384 - d_rand ()) | 1;
-	v.v.c.z = 16384 - d_rand ();
-	v.v.c.x = 16384 - d_rand ();	// make sure we don't create null vector
+	v.v.coord.y = (16384 - d_rand ()) | 1;
+	v.v.coord.z = 16384 - d_rand ();
+	v.v.coord.x = 16384 - d_rand ();	// make sure we don't create null vector
 	}
 else {
-	v.v.c.z = (16384 - d_rand ()) | 1;
-	v.v.c.x = 16384 - d_rand ();	// make sure we don't create null vector
-	v.v.c.y = 16384 - d_rand ();
+	v.v.coord.z = (16384 - d_rand ()) | 1;
+	v.v.coord.x = 16384 - d_rand ();	// make sure we don't create null vector
+	v.v.coord.y = 16384 - d_rand ();
 	}
 Normalize (v);
 return v;
@@ -1044,17 +1044,17 @@ CFloatVector vLine = vOrigin - vCenter;
 if (vDir.IsZero ())
 	vDir = vCenter - vOrigin;
 
-float a = vDir.v.c.x * vDir.v.c.x / vScale.v.c.x +
-			 vDir.v.c.y * vDir.v.c.y / vScale.v.c.y +
-			 vDir.v.c.z * vDir.v.c.z / vScale.v.c.z;
+float a = vDir.v.coord.x * vDir.v.coord.x / vScale.v.coord.x +
+			 vDir.v.coord.y * vDir.v.coord.y / vScale.v.coord.y +
+			 vDir.v.coord.z * vDir.v.coord.z / vScale.v.coord.z;
 
-float b = (vLine.v.c.x * vDir.v.c.x / vScale.v.c.x +
-			  vLine.v.c.y * vDir.v.c.y / vScale.v.c.y +
-			  vLine.v.c.z * vDir.v.c.z / vScale.v.c.z) * 2.0f;
+float b = (vLine.v.coord.x * vDir.v.coord.x / vScale.v.coord.x +
+			  vLine.v.coord.y * vDir.v.coord.y / vScale.v.coord.y +
+			  vLine.v.coord.z * vDir.v.coord.z / vScale.v.coord.z) * 2.0f;
 
-float c = vLine.v.c.x * vLine.v.c.x / vScale.v.c.x +
-			 vLine.v.c.y * vLine.v.c.y / vScale.v.c.y +
-			 vLine.v.c.z * vLine.v.c.z / vScale.v.c.z - 1.0f;
+float c = vLine.v.coord.x * vLine.v.coord.x / vScale.v.coord.x +
+			 vLine.v.coord.y * vLine.v.coord.y / vScale.v.coord.y +
+			 vLine.v.coord.z * vLine.v.coord.z / vScale.v.coord.z - 1.0f;
 
 float det = b * b - 4.0f * a * c;
 

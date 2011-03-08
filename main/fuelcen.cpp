@@ -641,7 +641,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	objP->info.nCreator = (FUELCEN_IDX (matCenP)) | 0x80;
 	// Make object face player...
 	vDir = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
-	objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, objP->info.position.mOrient.m.v.u);
+	objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, objP->info.position.mOrient.m.dir.u);
 	//objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, &objP->info.position.mOrient.m.v.u, NULL);
 	objP->MorphStart ();
 	}

@@ -42,10 +42,10 @@ int SpitPowerup (CObject *spitterP, ubyte id, int seed)
 	tObjTransformation	*posP = OBJPOS (spitterP);
 
 d_srand (gameStates.app.nRandSeed = (seed < 0) ? d_rand () : seed);
-newVelocity = spitterP->mType.physInfo.velocity + spitterP->info.position.mOrient.m.v.f * I2X (SPIT_SPEED);
-newVelocity.v.c.x += (d_rand() - 16384) * SPIT_SPEED * 2;
-newVelocity.v.c.y += (d_rand() - 16384) * SPIT_SPEED * 2;
-newVelocity.v.c.z += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity = spitterP->mType.physInfo.velocity + spitterP->info.position.mOrient.m.dir.f * I2X (SPIT_SPEED);
+newVelocity.v.coord.x += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity.v.coord.y += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity.v.coord.z += (d_rand() - 16384) * SPIT_SPEED * 2;
 // Give keys zero velocity so they can be tracked better in multi
 if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 	newVelocity.SetZero ();
@@ -53,7 +53,7 @@ if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 //the distance between him and the powerup is less than 2 time their
 //combined radii.  So we need to create powerups pretty far out from
 //the player.
-newPos = posP->vPos + posP->mOrient.m.v.f * spitterP->info.xSize;
+newPos = posP->vPos + posP->mOrient.m.dir.f * spitterP->info.xSize;
 if (IsMultiGame && (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS))
 	return -1;
 nObject = CreatePowerup (id, short (GetTeam (gameData.multiplayer.nLocalPlayer) + 1), short (OBJSEG (spitterP)), newPos, 0);

@@ -52,9 +52,9 @@ m_tCreate = gameStates.app.nSDLTicks [0];
 if (d_rand () % m_nProb)
 	m_nProb--;
 else {
-	vOffs.v.c.x = F2X (vRadf.v.c.x - (2 * f_rand ()) * vRadf.v.c.x);
-	vOffs.v.c.y = F2X (vRadf.v.c.y - (2 * f_rand ()) * vRadf.v.c.y);
-	vOffs.v.c.z = F2X (vRadf.v.c.z - (2 * f_rand ()) * vRadf.v.c.z);
+	vOffs.v.coord.x = F2X (vRadf.v.coord.x - (2 * f_rand ()) * vRadf.v.coord.x);
+	vOffs.v.coord.y = F2X (vRadf.v.coord.y - (2 * f_rand ()) * vRadf.v.coord.y);
+	vOffs.v.coord.z = F2X (vRadf.v.coord.z - (2 * f_rand ()) * vRadf.v.coord.z);
 	m_vPos = segP->Center () + vOffs;
 	if ((vOffs.Mag () > segP->MinRad ()) && segP->Masks (m_vPos, 0).m_center)
 		m_nProb = 1;
@@ -65,9 +65,9 @@ else {
 		m_bRendered = 0;
 		m_nProb = SPARK_MIN_PROB;
 		if (gameOpts->render.effects.bMovingSparks) {
-			m_vDir.v.c.x = (I2X (1) / 4) - d_rand ();
-			m_vDir.v.c.y = (I2X (1) / 4) - d_rand ();
-			m_vDir.v.c.z = (I2X (1) / 4) - d_rand ();
+			m_vDir.v.coord.x = (I2X (1) / 4) - d_rand ();
+			m_vDir.v.coord.y = (I2X (1) / 4) - d_rand ();
+			m_vDir.v.coord.z = (I2X (1) / 4) - d_rand ();
 			CFixVector::Normalize (m_vDir);
 			m_vDir *= ((I2X (1) / (16 + d_rand () % 16)));
 			}

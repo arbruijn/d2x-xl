@@ -141,7 +141,7 @@ return m_bFrontFace = IsFacingViewer ();
 
 int G3GetFaceWinding (CFloatVector *v0, CFloatVector *v1, CFloatVector *v2)
 {
-return (((*v1).v.c.x - (*v0).v.c.x) * ((*v2).v.c.y - (*v1).v.c.y) < 0) ? GL_CW : GL_CCW;
+return (((*v1).v.coord.x - (*v0).v.coord.x) * ((*v2).v.coord.y - (*v1).v.coord.y) < 0) ? GL_CW : GL_CCW;
 }
 
 //------------------------------------------------------------------------------
@@ -771,8 +771,8 @@ v [2] = v [1] - gameData.render.shadows.vLightPos;
 v [3] *= fInf / v [3].Mag ();
 v [2] *= fInf / v [2].Mag ();
 #else
-v [3] /= fInf;
-v [2] /= fInf;
+dir [3] /= fInf;
+dir [2] /= fInf;
 #endif
 v [2] += v [1];
 v [3] += v [0];
@@ -894,12 +894,12 @@ if (!bCullFront)
 					v [3] *= fClipDist / v [3].Mag ();
 					v [2] *= fClipDist / v [2].Mag ();
 #else
-					v [3] *= fClipDist;
-					v [2] *= fClipDist;
+					dir [3] *= fClipDist;
+					dir [2] *= fClipDist;
 #endif
 #if 0
-					v [2] += v [1];
-					v [3] += v [0];
+					dir [2] += dir [1];
+					dir [3] += dir [0];
 					OglDrawArrays (GL_QUADS, 0, 4);
 #else
 					ogl.VertexBuffer () [nVerts++] = v [0];
@@ -911,8 +911,8 @@ if (!bCullFront)
 					}
 				else {
 					glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
-					glVertex3fv (reinterpret_cast<GLfloat*> (v));
-					glVertex3fv (reinterpret_cast<GLfloat*> (v + 1));
+					glVertex3fv (reinterpret_cast<GLfloat*> (dir));
+					glVertex3fv (reinterpret_cast<GLfloat*> (dir + 1));
 					}
 #endif
 				}
@@ -999,9 +999,9 @@ for (;;) {
 		nChild = segP->m_children [nSide];
 		if ((nChild < 0) || (bVisited [nChild] == nVisited))
 			continue;
-		xDist = VmLinePointDist (vPos, &v, gameData.segs.segCenters [1] + nChild);
+		xDist = VmLinePointDist (vPos, &dir, gameData.segs.segCenters [1] + nChild);
 		if (xDist <= gameData.segs.segRads [0][nChild]) {
-			nHitSide = LineHitsFace (&vHit, vPos, &v, nSegment, nSide);
+			nHitSide = LineHitsFace (&vHit, vPos, &dir, nSegment, nSide);
 			break;
 			}
 		}
@@ -1047,18 +1047,18 @@ return G3_INFINITY;
 
 	CHitQuery	fq;
 	CHitData		fi;
-	CFixVector	v;
+	CFixVector	dir;
 
 if (!gameOpts->render.shadows.nClip)
 	return G3_INFINITY;
 if (0 > (nSegment = FindSegByPos (vPos, nSegment, 1, 0)))
 	return G3_INFINITY;
 fq.p0				  = vPos;
-VmVecSub (&v, fq.p0, &vLightPos);
-CFixVector::Normalize (v);
-VmVecScale (&v, I2X (G3_INFINITY));
+VmVecSub (&dir, fq.p0, &vLightPos);
+CFixVector::Normalize (dir);
+VmVecScale (&dir, I2X (G3_INFINITY));
 fq.startSeg		  = nSegment;
-fq.p1				  = &v;
+fq.p1				  = &dir;
 fq.rad			  = 0;
 fq.thisObjNum	  = nObject;
 fq.ignoreObjList = NULL;

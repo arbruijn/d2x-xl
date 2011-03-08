@@ -80,7 +80,7 @@ gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
 if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitData.hit.nObject != TARGETOBJ->Index ()))
 	return 0;
-dot = CFixVector::Dot (*vVecToTarget, objP->info.position.mOrient.m.v.f);
+dot = CFixVector::Dot (*vVecToTarget, objP->info.position.mOrient.m.dir.f);
 if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9))
 	return 2;
 if (gameOpts->gameplay.nAIAggressivity) {	// player visible at raised AI aggressivity when having headlight on
@@ -110,9 +110,9 @@ if (vGun->IsZero ())
 if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
 	return 1;
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
-if (((*vGun).v.c.x == objP->info.position.vPos.v.c.x) &&
-	 ((*vGun).v.c.y == objP->info.position.vPos.v.c.y) &&
-	 ((*vGun).v.c.z == objP->info.position.vPos.v.c.z))
+if (((*vGun).v.coord.x == objP->info.position.vPos.v.coord.x) &&
+	 ((*vGun).v.coord.y == objP->info.position.vPos.v.coord.y) &&
+	 ((*vGun).v.coord.z == objP->info.position.vPos.v.coord.z))
 	fq.startSeg	= objP->info.nSegment;
 else {
 	short nSegment = FindSegByPos (*vGun, objP->info.nSegment, 1, 0);
@@ -202,7 +202,7 @@ else {
 		//	Compute expensive stuff -- gameData.ai.target.vDir and gameData.ai.nTargetVisibility
 		CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, *pos);
 		if (gameData.ai.target.vDir.IsZero ()) {
-			gameData.ai.target.vDir.v.c.x = I2X (1);
+			gameData.ai.target.vDir.v.coord.x = I2X (1);
 			}
 		gameData.ai.nTargetVisibility = AICanSeeTarget (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.target.vDir);
 		LimitTargetVisibility (xMaxVisibleDist, ailP);

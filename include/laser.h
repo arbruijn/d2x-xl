@@ -160,7 +160,7 @@ CFixVector *TransformGunPoint (CObject *objP, CFixVector *vGunPoints, int nGun,
 typedef struct tMuzzleInfo {
 	fix         createTime;
 	short       nSegment;
-	CFixVector  pos;
+	CFixVector  coord;
 } __pack__ tMuzzleInfo;
 
 // Omega cannon stuff.

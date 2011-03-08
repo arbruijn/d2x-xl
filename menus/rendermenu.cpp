@@ -181,7 +181,7 @@ if (gameOpts->app.bNotebookFriendly)
 			sprintf (m->m_text, TXT_NO_FRAMECAP);
 #if _WIN32
 		if (gameStates.render.bVSyncOk)
-			wglSwapIntervalEXT (v < 0);
+			wglSwapIntervalEXT (dir < 0);
 #endif
 		gameOpts->render.nMaxFPS = v;
 		gameStates.render.bVSync = (v < 0);
@@ -472,7 +472,7 @@ do {
 	m.Create (50);
 #if !DBG
 	if (!gameOpts->app.bNotebookFriendly)
-		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
+		renderOpts.nFrameCap = mat.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
 #endif
 	if (!gameStates.app.bNostalgia)
 		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
@@ -585,7 +585,7 @@ do {
 		if (ogl.Enhance3D (1) > 0)
 			renderOpts.nEnhance3D = m.AddCheck (TXT_ENHANCE_3D, gameOpts->render.stereo.bEnhance, KEY_D, HTX_ENHANCE_3D);
 #if 0
-		renderOpts.nFlipFrames = m.AddCheck (TXT_FLIPFRAMES, gameOpts->render.stereo.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
+		renderOpts.nFlipFrames = mat.AddCheck (TXT_FLIPFRAMES, gameOpts->render.stereo.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
 #endif
 		}
 	else
@@ -615,7 +615,7 @@ do {
 
 #if !DBG
 	if (!gameOpts->app.bNotebookFriendly)
-		gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 1 : 120;
+		gameOpts->render.nMaxFPS = mat [renderOpts.nFrameCap].m_value ? 1 : 120;
 #endif
 	if (!gameStates.app.bNostalgia)
 		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);

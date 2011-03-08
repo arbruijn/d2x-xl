@@ -193,15 +193,15 @@ FORALL_OBJS (objP, i) {
 				aip->SKIP_AI_COUNT--;
 			else {
 				aip->SKIP_AI_COUNT += nForce;
-				objP->mType.physInfo.rotThrust.v.c.x = ((d_rand () - 16384) * nForce) / 16;
-				objP->mType.physInfo.rotThrust.v.c.y = ((d_rand () - 16384) * nForce) / 16;
-				objP->mType.physInfo.rotThrust.v.c.z = ((d_rand () - 16384) * nForce) / 16;
+				objP->mType.physInfo.rotThrust.v.coord.x = ((d_rand () - 16384) * nForce) / 16;
+				objP->mType.physInfo.rotThrust.v.coord.y = ((d_rand () - 16384) * nForce) / 16;
+				objP->mType.physInfo.rotThrust.v.coord.z = ((d_rand () - 16384) * nForce) / 16;
 				objP->mType.physInfo.flags |= PF_USES_THRUST;
 				}
 			}
-		vNegForce.v.c.x = vForce.v.c.x * xScale;
-		vNegForce.v.c.y = vForce.v.c.y * xScale;
-		vNegForce.v.c.z = vForce.v.c.z * xScale;
+		vNegForce.v.coord.x = vForce.v.coord.x * xScale;
+		vNegForce.v.coord.y = vForce.v.coord.y * xScale;
+		vNegForce.v.coord.z = vForce.v.coord.z * xScale;
 		objP->ApplyRotForce (vNegForce);
 		if (objP->info.xShield >= 0) {
 			if (ROBOTINFO (objP->info.nId).bossFlag &&
@@ -249,13 +249,13 @@ FORALL_OBJS (objP, i) {
 		if (nParent > -1) {
 			killerP = OBJECTS + nParent;
 			if (killerP != gameData.objs.consoleP)		// if someone else whacks you, cut force by 2x
-				vRotForce.v.c.x /= 2;
-				vRotForce.v.c.y /= 2;
-				vRotForce.v.c.z /= 2;
+				vRotForce.v.coord.x /= 2;
+				vRotForce.v.coord.y /= 2;
+				vRotForce.v.coord.z /= 2;
 			}
-		vRotForce.v.c.x /= 2;
-		vRotForce.v.c.y /= 2;
-		vRotForce.v.c.z /= 2;
+		vRotForce.v.coord.x /= 2;
+		vRotForce.v.coord.y /= 2;
+		vRotForce.v.coord.z /= 2;
 		objP->ApplyForce (vForce);
 		objP->ApplyRotForce (vRotForce);
 		if (gameStates.app.nDifficultyLevel == 0)
@@ -328,9 +328,9 @@ return ExplodeBadass (I2X (50), I2X (40), I2X (150));
 
 inline double VectorVolume (const CFixVector& vMin, const CFixVector& vMax)
 {
-return fabs (X2F (vMax.v.c.x - vMin.v.c.x)) *
-		 fabs (X2F (vMax.v.c.y - vMin.v.c.y)) *
-		 fabs (X2F (vMax.v.c.z - vMin.v.c.z));
+return fabs (X2F (vMax.v.coord.x - vMin.v.coord.x)) *
+		 fabs (X2F (vMax.v.coord.y - vMin.v.coord.y)) *
+		 fabs (X2F (vMax.v.coord.z - vMin.v.coord.z));
 }
 
 //------------------------------------------------------------------------------

@@ -255,16 +255,16 @@ else
 			if (m_bHavePrevPos && (fDist > 0)) {
 				vPosf.Assign (m_vPrevPos);
 				vDeltaf.Assign (vDelta);
-				vDeltaf.v.c.x /= (float) h;
-				vDeltaf.v.c.y /= (float) h;
-				vDeltaf.v.c.z /= (float) h;
+				vDeltaf.v.coord.x /= (float) h;
+				vDeltaf.v.coord.y /= (float) h;
+				vDeltaf.v.coord.z /= (float) h;
 				}
 			else {
 				vPosf.Assign (m_vPrevPos);
 				vDeltaf.Assign (vDelta);
-				vDeltaf.v.c.x /= (float) h;
-				vDeltaf.v.c.y /= (float) h;
-				vDeltaf.v.c.z /= (float) h;
+				vDeltaf.v.coord.x /= (float) h;
+				vDeltaf.v.coord.y /= (float) h;
+				vDeltaf.v.coord.z /= (float) h;
 				}
 			j = (m_nFirstPart + m_nParts) % m_nPartLimit;
 			for (i = 0; i < h; i++) {

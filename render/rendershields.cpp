@@ -40,9 +40,9 @@ void TransformHitboxf (CObject *objP, CFloatVector *vertList, int iSubObj)
 	int					i;
 
 for (i = 0; i < 8; i++) {
-	hv.v.c.x = X2F (hitBoxOffsets [i].v.c.x ? vMin.v.c.x : vMax.v.c.x);
-	hv.v.c.y = X2F (hitBoxOffsets [i].v.c.y ? vMin.v.c.y : vMax.v.c.y);
-	hv.v.c.z = X2F (hitBoxOffsets [i].v.c.z ? vMin.v.c.z : vMax.v.c.z);
+	hv.v.coord.x = X2F (hitBoxOffsets [i].v.coord.x ? vMin.v.coord.x : vMax.v.coord.x);
+	hv.v.coord.y = X2F (hitBoxOffsets [i].v.coord.y ? vMin.v.coord.y : vMax.v.coord.y);
+	hv.v.coord.z = X2F (hitBoxOffsets [i].v.coord.z ? vMin.v.coord.z : vMax.v.coord.z);
 	transformation.Transform (vertList [i], hv, 0);
 	}
 }
@@ -58,7 +58,7 @@ void RenderHitbox (CObject *objP, float red, float green, float blue, float alph
 if (objP->rType.polyObjInfo.nModel < 0)
 	return;
 
-	CFloatVector	v;
+	CFloatVector	dir;
 	tHitbox*			pmhb = gameData.models.hitboxes [objP->ModelId ()].hitboxes.Buffer ();
 	tCloakInfo		ci = {0, FADE_LEVELS, 0, 0, 0, 0, 0};
 	int				i, j, iBox, nBoxes, bHit = 0;
@@ -126,9 +126,9 @@ for (; iBox <= nBoxes; iBox++) {
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
 		for (j = 0; j < 4; j++) {
-			v.Assign (hb [iBox].faces [i].v [j]);
-			transformation.Transform (v, v, 0);
-			glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+			dir.Assign (hb [iBox].faces [i].dir [j]);
+			transformation.Transform (dir, dir, 0);
+			glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
 		//	glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));
 			}
 		}
@@ -139,28 +139,28 @@ for (; iBox <= nBoxes; iBox++) {
 	else
 		glColor4f (red, green, blue, alpha);
 	for (i = 0; i < 6; i++) {
-		CFixVector c;
-		c.SetZero ();
+		CFixVector coord;
+		coord.SetZero ();
 		if ((objP->info.nType == OBJ_PLAYER) && (iBox == 1))
 			glColor4f (1.0f, 0, 0, alpha);
 		else
 			glColor4f (red, green, blue, alpha);
 		glBegin (GL_LINES);
 		for (j = 0; j < 4; j++) {
-			c += hb [iBox].faces [i].v [j];
-			v.Assign (hb [iBox].faces [i].v [j]);
-			transformation.Transform (v, v, 0);
-			glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+			coord += hb [iBox].faces [i].dir [j];
+			dir.Assign (hb [iBox].faces [i].dir [j]);
+			transformation.Transform (dir, dir, 0);
+			glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
 			//glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));
 			}
-		c /= I2X (4);
-		v.Assign (c);
+		coord /= I2X (4);
+		dir.Assign (coord);
 		glColor4f (1.0f, 0.5f, 0.0f, alpha);
-		transformation.Transform (v, v, 0);
-		glVertex3fv (reinterpret_cast<GLfloat*> (&v));
-		v.Assign (c + hb [iBox].faces [i].n [1] * I2X (2));
-		transformation.Transform (v, v, 0);
-		glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+		transformation.Transform (dir, dir, 0);
+		glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
+		dir.Assign (coord + hb [iBox].faces [i].n [1] * I2X (2));
+		transformation.Transform (dir, dir, 0);
+		glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
 		glEnd ();
 		}
 	glLineWidth (1);

@@ -277,7 +277,7 @@ do {
 #if 0
 	sprintf (szSlider + 1, TXT_HIT_DETECTION, pszStdAdv [extraGameInfo [0].nHitboxes]);
 	*szSlider = *(TXT_HIT_DETECTION - 1);
-	physOpts.nHitDetection = m.AddSlider (szSlider + 1, extraGameInfo [0].nHitboxes, 0, 1, KEY_H, HTX_GPLAY_HITBOXES);
+	physOpts.nHitDetection = mat.AddSlider (szSlider + 1, extraGameInfo [0].nHitboxes, 0, 1, KEY_H, HTX_GPLAY_HITBOXES);
 #else
 	physOpts.nHitDetection = -1;
 #endif

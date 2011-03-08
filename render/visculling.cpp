@@ -287,14 +287,14 @@ int QuickSortSegChildren (CSegment *segP, short left, short right, short *childL
 	short	h,
 			l = left,
 			r = right,
-			m = (l + r) / 2,
-			median = childList [m],
+			mat = (l + r) / 2,
+			median = childList [mat],
 			bSwap = 0;
 
 do {
-	while ((l < m) && CompareChildren (segP, childList [l], median) >= 0)
+	while ((l < mat) && CompareChildren (segP, childList [l], median) >= 0)
 		l++;
-	while ((r > m) && CompareChildren (segP, childList [r], median) <= 0)
+	while ((r > mat) && CompareChildren (segP, childList [r], median) <= 0)
 		r--;
 	if (l <= r) {
 		if (l < r) {
@@ -564,14 +564,14 @@ for (; i < j; i++, ps++) {
 		zMin = z - r;
 	ps->z = z;
 #else
-	CFixVector v = segP->Center ();
-	transformation.Transform (v, v, 0);
-	v.v.c.z += segP->MaxRad ();
-	if (zMin > v.v.c.z)
-		zMin = v.v.c.z;
-	if (zMax < v.v.c.z)
-		zMax = v.v.c.z;
-	ps->z = v.v.c.z;
+	CFixVector dir = segP->Center ();
+	transformation.Transform (dir, dir, 0);
+	dir.dir.coord.z += segP->MaxRad ();
+	if (zMin > dir.dir.coord.z)
+		zMin = dir.dir.coord.z;
+	if (zMax < dir.dir.coord.z)
+		zMax = dir.dir.coord.z;
+	ps->z = dir.dir.coord.z;
 #endif
 	ps->nSegment = gameData.render.mine.segRenderList [0][i];
 	}
@@ -666,7 +666,7 @@ if (d1 < d2)
 	d1 = d2;
 fix r = gameData.segs.segRads [1][gameData.objs.viewerP->info.nSegment];
 gameData.render.zMin = 0;
-gameData.render.zMax = vCenter.v.c.z + d1 + r;
+gameData.render.zMax = vCenter.v.coord.z + d1 + r;
 }
 
 //-----------------------------------------------------------------
@@ -687,7 +687,7 @@ void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors, int nT
 	CSegment*	segP;
 	CFixVector	viewDir, viewPos;
 
-viewDir = transformation.m_info.view [0].m.v.f;
+viewDir = transformation.m_info.view [0].m.dir.f;
 viewPos = transformation.m_info.pos;
 gameData.render.zMin = 0x7fffffff;
 gameData.render.zMax = -0x7fffffff;

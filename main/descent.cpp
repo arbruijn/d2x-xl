@@ -523,18 +523,18 @@ if (gameStates.app.bMultiThreaded) {
 #endif
 		}
 	}
-gameData.render.vertColor.matAmbient.v.a [R] =
-gameData.render.vertColor.matAmbient.v.a [G] =
-gameData.render.vertColor.matAmbient.v.a [B] = AMBIENT_LIGHT;
-gameData.render.vertColor.matAmbient.v.a [A] = 1.0f;
-gameData.render.vertColor.matDiffuse.v.a [R] =
-gameData.render.vertColor.matDiffuse.v.a [G] =
-gameData.render.vertColor.matDiffuse.v.a [B] = DIFFUSE_LIGHT;
-gameData.render.vertColor.matDiffuse.v.a [A] = 1.0f;
-gameData.render.vertColor.matSpecular.v.a [R] =
-gameData.render.vertColor.matSpecular.v.a [G] =
-gameData.render.vertColor.matSpecular.v.a [B] = 0.0f;
-gameData.render.vertColor.matSpecular.v.a [A] = 1.0f;
+gameData.render.vertColor.matAmbient.v.vec [R] =
+gameData.render.vertColor.matAmbient.v.vec [G] =
+gameData.render.vertColor.matAmbient.v.vec [B] = AMBIENT_LIGHT;
+gameData.render.vertColor.matAmbient.v.vec [A] = 1.0f;
+gameData.render.vertColor.matDiffuse.v.vec [R] =
+gameData.render.vertColor.matDiffuse.v.vec [G] =
+gameData.render.vertColor.matDiffuse.v.vec [B] = DIFFUSE_LIGHT;
+gameData.render.vertColor.matDiffuse.v.vec [A] = 1.0f;
+gameData.render.vertColor.matSpecular.v.vec [R] =
+gameData.render.vertColor.matSpecular.v.vec [G] =
+gameData.render.vertColor.matSpecular.v.vec [B] = 0.0f;
+gameData.render.vertColor.matSpecular.v.vec [A] = 1.0f;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -1010,7 +1010,7 @@ return 0;		//presumably successful exit
 void CheckJoystickCalibration (void)
 {
 #if 0//ndef _WIN32
-	int x1, y1, x2, y2, c;
+	int x1, y1, x2, y2, coord;
 	fix t1;
 
 	if ((gameConfig.nControlType!=CONTROL_JOYSTICK) &&
@@ -1026,8 +1026,8 @@ void CheckJoystickCalibration (void)
 	// If joystick hasn't moved...
 	if ((abs (x2-x1)<30) &&  (abs (y2-y1)<30)) {
 		if ((abs (x1)>30) || (abs (x2)>30) ||  (abs (y1)>30) || (abs (y2)>30)) {
-			c = MsgBox (NULL, NULL, 2, TXT_CALIBRATE, TXT_SKIP, TXT_JOYSTICK_NOT_CEN);
-			if (c==0) {
+			coord = MsgBox (NULL, NULL, 2, TXT_CALIBRATE, TXT_SKIP, TXT_JOYSTICK_NOT_CEN);
+			if (coord==0) {
 				JoyDefsCalibrate ();
 			}
 		}

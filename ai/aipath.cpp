@@ -74,9 +74,9 @@ tPointSeg *InsertTransitPoint (tPointSeg *curSegP, tPointSeg *predSegP, tPointSe
 
 vCenter = SEGMENTS [predSegP->nSegment].SideCenter (nConnSide);
 vPoint = predSegP->point - vCenter;
-vPoint.v.c.x /= 16;
-vPoint.v.c.y /= 16;
-vPoint.v.c.z /= 16;
+vPoint.v.coord.x /= 16;
+vPoint.v.coord.y /= 16;
+vPoint.v.coord.z /= 16;
 curSegP->point = vCenter - vPoint;
 nSegment = FindSegByPos (curSegP->point, succSegP->nSegment, 1, 0);
 if (nSegment == -1) {
@@ -173,30 +173,30 @@ for (i = 1, --j; i < j; i++) {
 	c = ptSegs [i + 1].point - ptSegs [i-1].point;
 	CFixVector::Normalize (b);
 	if (abs (CFixVector::Dot (a, b)) > I2X (3)/4) {
-		if (abs (a.v.c.z) < I2X (1)/2) {
+		if (abs (a.v.coord.z) < I2X (1)/2) {
 			if (bRandom) {
-				e.v.c.x = (d_rand ()- 16384) / 2;
-				e.v.c.y = (d_rand ()- 16384) / 2;
-				e.v.c.z = abs (e.v.c.x) + abs (e.v.c.y) + 1;
+				e.v.coord.x = (d_rand ()- 16384) / 2;
+				e.v.coord.y = (d_rand ()- 16384) / 2;
+				e.v.coord.z = abs (e.v.coord.x) + abs (e.v.coord.y) + 1;
 				CFixVector::Normalize (e);
 				}
 			else {
-				e.v.c.x =
-				e.v.c.y = 0;
-				e.v.c.z = I2X (1);
+				e.v.coord.x =
+				e.v.coord.y = 0;
+				e.v.coord.z = I2X (1);
 				}
 			}
 		else {
 			if (bRandom) {
-				e.v.c.y = (d_rand ()-16384)/2;
-				e.v.c.z = (d_rand ()-16384)/2;
-				e.v.c.x = abs (e.v.c.y) + abs (e.v.c.z) + 1;
+				e.v.coord.y = (d_rand ()-16384)/2;
+				e.v.coord.z = (d_rand ()-16384)/2;
+				e.v.coord.x = abs (e.v.coord.y) + abs (e.v.coord.z) + 1;
 				CFixVector::Normalize (e);
 				}
 			else {
-				e.v.c.x = I2X (1);
-				e.v.c.y =
-				e.v.c.z = 0;
+				e.v.coord.x = I2X (1);
+				e.v.coord.y =
+				e.v.coord.z = 0;
 				}
 			}
 		}
@@ -231,9 +231,9 @@ for (i = 1, --j; i < j; i++) {
 		else {
 			if ((count == 3) && (nHitType == HIT_BAD_P0))
 				return;
-			vGoalPos.v.c.x = ((*fq.p0).v.c.x + hitData.hit.vPoint.v.c.x)/2;
-			vGoalPos.v.c.y = ((*fq.p0).v.c.y + hitData.hit.vPoint.v.c.y)/2;
-			vGoalPos.v.c.z = ((*fq.p0).v.c.z + hitData.hit.vPoint.v.c.z)/2;
+			vGoalPos.v.coord.x = ((*fq.p0).v.coord.x + hitData.hit.vPoint.v.coord.x)/2;
+			vGoalPos.v.coord.y = ((*fq.p0).v.coord.y + hitData.hit.vPoint.v.coord.y)/2;
+			vGoalPos.v.coord.z = ((*fq.p0).v.coord.z + hitData.hit.vPoint.v.coord.z)/2;
 			if (!--count)	//	Couldn't move towards outside, that's ok, sometimes things can't be moved.
 				vGoalPos = ptSegs [i].point;
 			}
@@ -1156,7 +1156,7 @@ vNormToGoal = *vGoalPoint - vCurPos;
 CFixVector::Normalize (vNormToGoal);
 vNormCurVel = vCurVel;
 CFixVector::Normalize (vNormCurVel);
-vNormFwd = objP->info.position.mOrient.m.v.f;
+vNormFwd = objP->info.position.mOrient.m.dir.f;
 CFixVector::Normalize (vNormFwd);
 dot = CFixVector::Dot (vNormToGoal, vNormFwd);
 //	If very close to facing opposite desired vector, perturb vector

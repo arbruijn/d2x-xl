@@ -74,7 +74,7 @@ for (int nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 		vecToObj = objP->info.position.vPos - lightObjP->info.position.vPos;
 		dist = CFixVector::Normalize (vecToObj);
 		if (dist > 0) {
-			dot = CFixVector::Dot (lightObjP->info.position.mOrient.m.v.f, vecToObj);
+			dot = CFixVector::Dot (lightObjP->info.position.mOrient.m.dir.f, vecToObj);
 			if (dot < I2X (1)/2)
 				light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
 			else
@@ -184,7 +184,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 		pl = lightManager.Lights () + lightIds [nPlayer];
 		objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 		pl->info.vPos = OBJPOS (objP)->vPos;
-		pl->vDir = OBJPOS (objP)->mOrient.m.v.f;
+		pl->vDir = OBJPOS (objP)->mOrient.m.dir.f;
 		pl->info.vPos += pl->vDir * (objP->info.xSize / 4);
 		}
 	}

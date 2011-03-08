@@ -291,11 +291,11 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 			POF_ReadVecs (&pmmax, 1, modelBuf);
 			if (FindArg ("-bspgen")) {
 				CFixVector v = pmmax - pmmin;
-				fix l = v.v.c.x;
-				if (v.v.c.y > l)
-					l = v.v.c.y;
-				if (v.v.c.z > l)
-					l = v.v.c.z;
+				fix l = v.v.coord.x;
+				if (v.v.coord.y > l)
+					l = v.v.coord.y;
+				if (v.v.coord.z > l)
+					l = v.v.coord.z;
 				//printf (" -l%.3f", X2F (l));
 				}
 			break;
@@ -413,18 +413,18 @@ for (int i = 0; i < m_info.nModels; i++) {
 	if (i == 0)
 		big_mn = big_mx = mn;
 	while (nVerts--) {
-		if ((*vp).v.c.x > mx.v.c.x) mx.v.c.x = (*vp).v.c.x;
-		if ((*vp).v.c.y > mx.v.c.y) mx.v.c.y = (*vp).v.c.y;
-		if ((*vp).v.c.z > mx.v.c.z) mx.v.c.z = (*vp).v.c.z;
-		if ((*vp).v.c.x < mn.v.c.x) mn.v.c.x = (*vp).v.c.x;
-		if ((*vp).v.c.y < mn.v.c.y) mn.v.c.y = (*vp).v.c.y;
-		if ((*vp).v.c.z < mn.v.c.z) mn.v.c.z = (*vp).v.c.z;
-		if ((*vp).v.c.x + ofs.v.c.x > big_mx.v.c.x) big_mx.v.c.x = (*vp).v.c.x + ofs.v.c.x;
-		if ((*vp).v.c.y + ofs.v.c.y > big_mx.v.c.y) big_mx.v.c.y = (*vp).v.c.y + ofs.v.c.y;
-		if ((*vp).v.c.z + ofs.v.c.z > big_mx.v.c.z) big_mx.v.c.z = (*vp).v.c.z + ofs.v.c.z;
-		if ((*vp).v.c.x + ofs.v.c.x < big_mn.v.c.x) big_mn.v.c.x = (*vp).v.c.x + ofs.v.c.x;
-		if ((*vp).v.c.y + ofs.v.c.y < big_mn.v.c.y) big_mn.v.c.y = (*vp).v.c.y + ofs.v.c.y;
-		if ((*vp).v.c.z + ofs.v.c.z < big_mn.v.c.z) big_mn.v.c.z = (*vp).v.c.z + ofs.v.c.z;
+		if ((*vp).v.coord.x > mx.v.coord.x) mx.v.coord.x = (*vp).v.coord.x;
+		if ((*vp).v.coord.y > mx.v.coord.y) mx.v.coord.y = (*vp).v.coord.y;
+		if ((*vp).v.coord.z > mx.v.coord.z) mx.v.coord.z = (*vp).v.coord.z;
+		if ((*vp).v.coord.x < mn.v.coord.x) mn.v.coord.x = (*vp).v.coord.x;
+		if ((*vp).v.coord.y < mn.v.coord.y) mn.v.coord.y = (*vp).v.coord.y;
+		if ((*vp).v.coord.z < mn.v.coord.z) mn.v.coord.z = (*vp).v.coord.z;
+		if ((*vp).v.coord.x + ofs.v.coord.x > big_mx.v.coord.x) big_mx.v.coord.x = (*vp).v.coord.x + ofs.v.coord.x;
+		if ((*vp).v.coord.y + ofs.v.coord.y > big_mx.v.coord.y) big_mx.v.coord.y = (*vp).v.coord.y + ofs.v.coord.y;
+		if ((*vp).v.coord.z + ofs.v.coord.z > big_mx.v.coord.z) big_mx.v.coord.z = (*vp).v.coord.z + ofs.v.coord.z;
+		if ((*vp).v.coord.x + ofs.v.coord.x < big_mn.v.coord.x) big_mn.v.coord.x = (*vp).v.coord.x + ofs.v.coord.x;
+		if ((*vp).v.coord.y + ofs.v.coord.y < big_mn.v.coord.y) big_mn.v.coord.y = (*vp).v.coord.y + ofs.v.coord.y;
+		if ((*vp).v.coord.z + ofs.v.coord.z < big_mn.v.coord.z) big_mn.v.coord.z = (*vp).v.coord.z + ofs.v.coord.z;
 		vp++;
 		}
 	}
@@ -458,40 +458,40 @@ fix CPolyModel::Size (void)
 	double		dx, dy, dz;
 
 for (i = 0; i <= MAX_HITBOXES; i++) {
-	phb [i].vMin.v.c.x = phb [i].vMin.v.c.y = phb [i].vMin.v.c.z = 0x7fffffff;
-	phb [i].vMax.v.c.x = phb [i].vMax.v.c.y = phb [i].vMax.v.c.z = -0x7fffffff;
-	phb [i].vOffset.v.c.x = phb [i].vOffset.v.c.y = phb [i].vOffset.v.c.z = 0;
+	phb [i].vMin.v.coord.x = phb [i].vMin.v.coord.y = phb [i].vMin.v.coord.z = 0x7fffffff;
+	phb [i].vMax.v.coord.x = phb [i].vMax.v.coord.y = phb [i].vMax.v.coord.z = -0x7fffffff;
+	phb [i].vOffset.v.coord.x = phb [i].vOffset.v.coord.y = phb [i].vOffset.v.coord.z = 0;
 	}
 if (!(nSubModels = G3ModelMinMax (m_info.nId, phb + 1)))
 	nSubModels = GetPolyModelMinMax (reinterpret_cast<void*> (Buffer ()), phb + 1, 0) + 1;
 for (i = 1; i <= nSubModels; i++) {
-	dx = (phb [i].vMax.v.c.x - phb [i].vMin.v.c.x) / 2;
-	dy = (phb [i].vMax.v.c.y - phb [i].vMin.v.c.y) / 2;
-	dz = (phb [i].vMax.v.c.z - phb [i].vMin.v.c.z) / 2;
-	phb [i].vSize.v.c.x = (fix) dx;
-	phb [i].vSize.v.c.y = (fix) dy;
-	phb [i].vSize.v.c.z = (fix) dz;
+	dx = (phb [i].vMax.v.coord.x - phb [i].vMin.v.coord.x) / 2;
+	dy = (phb [i].vMax.v.coord.y - phb [i].vMin.v.coord.y) / 2;
+	dz = (phb [i].vMax.v.coord.z - phb [i].vMin.v.coord.z) / 2;
+	phb [i].vSize.v.coord.x = (fix) dx;
+	phb [i].vSize.v.coord.y = (fix) dy;
+	phb [i].vSize.v.coord.z = (fix) dz;
 	hv = phb [i].vMin + phb [i].vOffset;
-	if (phb [0].vMin.v.c.x > hv.v.c.x)
-		phb [0].vMin.v.c.x = hv.v.c.x;
-	if (phb [0].vMin.v.c.y > hv.v.c.y)
-		phb [0].vMin.v.c.y = hv.v.c.y;
-	if (phb [0].vMin.v.c.z > hv.v.c.z)
-		phb [0].vMin.v.c.z = hv.v.c.z;
+	if (phb [0].vMin.v.coord.x > hv.v.coord.x)
+		phb [0].vMin.v.coord.x = hv.v.coord.x;
+	if (phb [0].vMin.v.coord.y > hv.v.coord.y)
+		phb [0].vMin.v.coord.y = hv.v.coord.y;
+	if (phb [0].vMin.v.coord.z > hv.v.coord.z)
+		phb [0].vMin.v.coord.z = hv.v.coord.z;
 	hv = phb [i].vMax + phb [i].vOffset;
-	if (phb [0].vMax.v.c.x < hv.v.c.x)
-		phb [0].vMax.v.c.x = hv.v.c.x;
-	if (phb [0].vMax.v.c.y < hv.v.c.y)
-		phb [0].vMax.v.c.y = hv.v.c.y;
-	if (phb [0].vMax.v.c.z < hv.v.c.z)
-		phb [0].vMax.v.c.z = hv.v.c.z;
+	if (phb [0].vMax.v.coord.x < hv.v.coord.x)
+		phb [0].vMax.v.coord.x = hv.v.coord.x;
+	if (phb [0].vMax.v.coord.y < hv.v.coord.y)
+		phb [0].vMax.v.coord.y = hv.v.coord.y;
+	if (phb [0].vMax.v.coord.z < hv.v.coord.z)
+		phb [0].vMax.v.coord.z = hv.v.coord.z;
 	}
-dx = (phb [0].vMax.v.c.x - phb [0].vMin.v.c.x) / 2;
-dy = (phb [0].vMax.v.c.y - phb [0].vMin.v.c.y) / 2;
-dz = (phb [0].vMax.v.c.z - phb [0].vMin.v.c.z) / 2;
-phb [0].vSize.v.c.x = (fix) dx;
-phb [0].vSize.v.c.y = (fix) dy;
-phb [0].vSize.v.c.z = (fix) dz;
+dx = (phb [0].vMax.v.coord.x - phb [0].vMin.v.coord.x) / 2;
+dy = (phb [0].vMax.v.coord.y - phb [0].vMin.v.coord.y) / 2;
+dz = (phb [0].vMax.v.coord.z - phb [0].vMin.v.coord.z) / 2;
+phb [0].vSize.v.coord.x = (fix) dx;
+phb [0].vSize.v.coord.y = (fix) dy;
+phb [0].vSize.v.coord.z = (fix) dz;
 gameData.models.hitboxes [m_info.nId].nHitboxes = nSubModels;
 for (i = 0; i <= nSubModels; i++)
 	ComputeHitbox (m_info.nId, i);

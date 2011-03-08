@@ -646,10 +646,10 @@ ubyte *QueryHost (char *buf)
 {
 	struct hostent *he;
 	char*	s;
-	char	c = 0;
+	char	coord = 0;
 
 if ((s = strrchr (buf, ':'))) {
-	c = *s;
+	coord = *s;
 	*s = '\0';
 	PortShift (s + 1);
 	}
@@ -657,7 +657,7 @@ else
 	memset (qhbuf + 4, 0, 2);
 he = gethostbyname (reinterpret_cast<char*> (buf));
 if (s)
-	*s = c;
+	*s = coord;
 if (!he) {
 	PrintLog ("Error resolving my hostname \"%s\"\n", buf);
 	return NULL;
@@ -681,13 +681,13 @@ return qhbuf;
 
 #if 0
 
-static void DumpRawAddr (ubyte *a)
+static void DumpRawAddr (ubyte *vec)
 {
 short port;
 
-PrintLog ("[%u.%u.%u.%u]", a[0], a[1], a[2], a[3]);
-console.printf (0, "[%u.%u.%u.%u]", a[0], a[1], a[2], a[3]);
-port=(signed short)ntohs (*reinterpret_cast<ushort*> (a+4));
+PrintLog ("[%u.%u.%u.%u]", vec[0], vec[1], vec[2], vec[3]);
+console.printf (0, "[%u.%u.%u.%u]", vec[0], vec[1], vec[2], vec[3]);
+port=(signed short)ntohs (*reinterpret_cast<ushort*> (vec+4));
 if (port) {
 	PrintLog (":%+d", port);
 	console.printf (0, ":%+d", port);

@@ -255,17 +255,17 @@ if (objP->info.renderType == RT_POLYOBJ)
 nModel = WeaponToModel (objP->info.nId);
 if (!(nModel && HaveReplacementModel (nModel)))
 	return 0;
-a.v.c.p = (rand () % I2X (1)) - I2X (1) / 2;
-a.v.c.b = (rand () % I2X (1)) - I2X (1) / 2;
-a.v.c.h = (rand () % I2X (1)) - I2X (1) / 2;
+a.v.coord.p = (rand () % I2X (1)) - I2X (1) / 2;
+a.v.coord.b = (rand () % I2X (1)) - I2X (1) / 2;
+a.v.coord.h = (rand () % I2X (1)) - I2X (1) / 2;
 objP->info.position.mOrient = CFixMatrix::Create(a);
 #if 0
 objP->mType.physInfo.mass = I2X (1);
 objP->mType.physInfo.drag = 512;
 #endif
-objP->mType.physInfo.rotVel.v.c.z =
-objP->mType.physInfo.rotVel.v.c.y = 0;
-objP->mType.physInfo.rotVel.v.c.x = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+objP->mType.physInfo.rotVel.v.coord.z =
+objP->mType.physInfo.rotVel.v.coord.y = 0;
+objP->mType.physInfo.rotVel.v.coord.x = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 //objP->info.controlType = CT_WEAPON;
 objP->info.renderType = RT_POLYOBJ;
 objP->info.movementType = MT_PHYSICS;

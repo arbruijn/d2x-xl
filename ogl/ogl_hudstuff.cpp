@@ -86,8 +86,8 @@ else {
 		glTranslatef (0.5f, 0.5f, 0);
 		glColor4f (1.0f, 1.0f, 1.0f, 0.8f / (float) gameOpts->input.mouse.nDeadzone);
 		CFloatVector vPosf;
-		vPosf.v.c.x =
-		vPosf.v.c.y = 0;
+		vPosf.v.coord.x =
+		vPosf.v.coord.y = 0;
 		tTexCoord2f texCoord [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 		deadzone.Bitmap ()->SetTexCoord (texCoord);
 		ogl.RenderQuad (deadzone.Bitmap (), vPosf, w, h);

@@ -461,8 +461,8 @@ y = yStart = pos [i].y;
 do {
 	if (--i < 0)
 		i = m_nItems - 1;
-	if ((r >= pos [i].l) && (l <= pos [i].r))
-		return pos [i].i;
+	if ((r >= coord [i].l) && (l <= coord [i].r))
+		return coord [i].i;
 	} while (i != j);
 #endif
 dMin = 0x7fffffff;
@@ -503,8 +503,8 @@ y = yStart = pos [i].y;
 #if 0
 do {
 	i = (i + 1) % m_nItems;
-	if ((r >= pos [i].l) && (l <= pos [i].r))
-		return pos [i].i;
+	if ((r >= coord [i].l) && (l <= coord [i].r))
+		return coord [i].i;
 	} while (i != j);
 #endif
 dMin = 0x7fffffff;

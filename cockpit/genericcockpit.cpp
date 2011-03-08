@@ -1070,27 +1070,27 @@ for (i = 0; i < 4; i++) {
 	tUVL [i].l = MAX_LIGHT;
 	}
 tUVL [0].u =
-tUVL [0].v =
-tUVL [1].v =
+tUVL [0].dir =
+tUVL [1].dir =
 tUVL [3].u = 0;
 tUVL [1].u =
 tUVL [2].u =
-tUVL [2].v =
-tUVL [3].v = I2X (1);
+tUVL [2].dir =
+tUVL [3].dir = I2X (1);
 
-v1 = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.m.v.f * (I2X (4));
-v1 += gameData.objs.viewerP->info.position.mOrient.m.v.r * xStereoSeparation;
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient.m.v.r * (-I2X (1));
-v2 += gameData.objs.viewerP->info.position.mOrient.m.v.u * (I2X (1));
+v1 = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.mat.dir.f * (I2X (4));
+v1 += gameData.objs.viewerP->info.position.mOrient.mat.dir.r * xStereoSeparation;
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.mat.dir.r * (-I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.mat.dir.u * (I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [0], v2);
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient.m.v.r * (+I2X (1));
-v2 += gameData.objs.viewerP->info.position.mOrient.m.v.u * (I2X (1));
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.mat.dir.r * (+I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.mat.dir.u * (I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [1], v2);
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient.m.v.r * (+I2X (1));
-v2 += gameData.objs.viewerP->info.position.mOrient.m.v.u * (-I2X (1));
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.mat.dir.r * (+I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.mat.dir.u * (-I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [2], v2);
-v2 = v1 + gameData.objs.viewerP->info.position.mOrient.m.v.r * (-I2X (1));
-v2 += gameData.objs.viewerP->info.position.mOrient.m.v.u * (-I2X (1));
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.mat.dir.r * (-I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.mat.dir.u * (-I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [3], v2);
 
 if ( reticleCanvas == NULL) {
@@ -1365,7 +1365,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 					}
 
 				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
-					fix dy = -FixMulDiv (OBJECTS [nObject].info.xSize, I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.p3_vec.v.c.z);
+					fix dy = -FixMulDiv (OBJECTS [nObject].info.xSize, I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.p3_vec.v.coord.z);
 //					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, transformation.m_info.scale.y), I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.p3_z);
 					fix dx = FixMul (dy, screen.Aspect ());
 					fix w = dx / 4;

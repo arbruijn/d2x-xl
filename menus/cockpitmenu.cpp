@@ -84,10 +84,10 @@ if (nState)
 	int			v;
 
 #if WEAPON_ICONS
-m = menu + optWeaponIcons;
-v = m->m_value;
-if (v != bShowWeaponIcons) {
-	bShowWeaponIcons = v;
+mat = menu + optWeaponIcons;
+dir = mat->m_value;
+if (dir != bShowWeaponIcons) {
+	bShowWeaponIcons = dir;
 	key = -2;
 	return nCurItem;
 	}
@@ -217,21 +217,21 @@ do {
 	optObjTally = m.AddCheck (TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY);
 	optZoomType = m.AddCheck (TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_O, HTX_GPLAY_ZOOMSMOOTH);
 #if 0
-	optTgtInd = m.AddCheck (TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
+	optTgtInd = mat.AddCheck (TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 #else
 	m.AddText ("", 0);
 	sprintf (szSlider, TXT_TARGET_INDICATORS, szTgtInd [nTgtInd]);
 	optTgtInd = m.AddSlider (szSlider, nTgtInd, 0, 2, KEY_T, HTX_CPIT_TGTIND);
 #endif
 #if WEAPON_ICONS
-	m.AddText ("", 0);
-	optWeaponIcons = m.AddCheck (TXT_SHOW_WEAPONICONS, bShowWeaponIcons, KEY_W, HTX_CPIT_WPNICONS);
+	mat.AddText ("", 0);
+	optWeaponIcons = mat.AddCheck (TXT_SHOW_WEAPONICONS, bShowWeaponIcons, KEY_W, HTX_CPIT_WPNICONS);
 	if (bShowWeaponIcons) {
-		optIconPos = m.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS);
-		m.AddRadio (TXT_WPNICONS_BTM, 0, KEY_I, HTX_CPIT_ICONPOS);
-		m.AddRadio (TXT_WPNICONS_LRB, 0, KEY_I, HTX_CPIT_ICONPOS);
-		m.AddRadio (TXT_WPNICONS_LRT, 0, KEY_I, HTX_CPIT_ICONPOS);
-		m [optIconPos + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].m_value = 1;
+		optIconPos = mat.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS);
+		mat.AddRadio (TXT_WPNICONS_BTM, 0, KEY_I, HTX_CPIT_ICONPOS);
+		mat.AddRadio (TXT_WPNICONS_LRB, 0, KEY_I, HTX_CPIT_ICONPOS);
+		mat.AddRadio (TXT_WPNICONS_LRT, 0, KEY_I, HTX_CPIT_ICONPOS);
+		mat [optIconPos + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].m_value = 1;
 		}
 	else
 		optIconPos = -1;
@@ -266,7 +266,7 @@ do {
 #if WEAPON_ICONS
 		if (bShowWeaponIcons && (optIconPos >= 0)) {
 			for (int j = 0; j < 4; j++)
-				if (m [optIconPos + j].m_value) {
+				if (mat [optIconPos + j].m_value) {
 					extraGameInfo [0].nWeaponIcons = j + 1;
 					break;
 					}
@@ -287,7 +287,7 @@ do {
 	if (bShowWeaponIcons) {
 		if (optIconPos >= 0) {
 			for (int j = 0; j < 4; j++)
-				if (m [optIconPos + j].m_value) {
+				if (mat [optIconPos + j].m_value) {
 					extraGameInfo [0].nWeaponIcons = j + 1;
 					break;
 					}

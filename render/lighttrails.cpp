@@ -95,7 +95,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 if (gameOpts->render.coronas.bShots && glare.Load ()) {
 	tHitbox*			phb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
-	float				fLength = X2F (phb->vMax.v.c.z - phb->vMin.v.c.z) / 2;
+	float				fLength = X2F (phb->vMax.v.coord.z - phb->vMin.v.coord.z) / 2;
 	tRgbaColorf		color;
 
 	static CFloatVector	vEye = CFloatVector::ZERO;
@@ -108,7 +108,7 @@ if (gameOpts->render.coronas.bShots && glare.Load ()) {
 	color.green *= fScale;
 	color.blue *= fScale;
 	glare.Bitmap ()->SetColor (colorP);
-	ogl.RenderSprite (glare.Bitmap (), objP->info.position.vPos + objP->info.position.mOrient.m.v.f * (F2X (fLength - 0.5f)), I2X (1), I2X (1), alpha, LIGHTTRAIL_BLENDMODE, 1);
+	ogl.RenderSprite (glare.Bitmap (), objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (F2X (fLength - 0.5f)), I2X (1), I2X (1), alpha, LIGHTTRAIL_BLENDMODE, 1);
 	glare.Bitmap ()->SetColor (NULL);
 	}
 }
@@ -165,7 +165,7 @@ else if (gameOpts->render.coronas.bShots && corona.Load ()) {
 			vPos += o * xOffset;
 			}
 		else
-			vPos += objP->info.position.mOrient.m.v.f * xOffset;
+			vPos += objP->info.position.mOrient.m.dir.f * xOffset;
 		}
 	if (xSize < I2X (1))
 		xSize = I2X (1);
@@ -229,12 +229,12 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				};
 
 		vCenter.Assign (objP->info.position.vPos);
-		vOffs.Assign (objP->info.position.mOrient.m.v.f);
+		vOffs.Assign (objP->info.position.mOrient.m.dir.f);
 		if (objP->info.renderType == RT_POLYOBJ) {
 			tHitbox*	phb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
-			l = X2F (phb->vMax.v.c.z - phb->vMin.v.c.z);
-			dx = X2F (phb->vMax.v.c.x - phb->vMin.v.c.x);
-			dy = X2F (phb->vMax.v.c.y - phb->vMin.v.c.y);
+			l = X2F (phb->vMax.v.coord.z - phb->vMin.v.coord.z);
+			dx = X2F (phb->vMax.v.coord.x - phb->vMin.v.coord.x);
+			dy = X2F (phb->vMax.v.coord.y - phb->vMin.v.coord.y);
 			r = float (sqrt (dx * dx + dy * dy)) * ((objP->info.nId == FUSION_ID) ? 1.5f : 3.0f);
 			vCenter += vOffs * (l / 2.0f);
 			}

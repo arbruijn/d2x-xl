@@ -547,7 +547,7 @@ if (*m_info.szBitmapName) {
 	GLint	depthFunc;
 	G3StartFrame (1, 0, 0);
 	G3SetViewMatrix (p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
-	p.v.c.z = 2 * I2X (w);
+	p.v.coord.z = 2 * I2X (w);
 	depthFunc = ogl.GetDepthMode ();
 	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.RenderBitmap (bmP, p, I2X (w), I2X (h), NULL, 1.0, 0);
@@ -619,7 +619,7 @@ DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
 ogl.m_states.bEnableScissor = 0;
 gameStates.render.bFullBright = 0;
 CCanvas::Pop ();
-m_info.vRobotAngles.v.c.h += 15 * (t - m_info.tAnimate);
+m_info.vRobotAngles.v.coord.h += 15 * (t - m_info.tAnimate);
 m_info.tAnimate = t;
 }
 

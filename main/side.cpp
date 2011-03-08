@@ -50,9 +50,9 @@ m_vCenter = VERTICES [m_vertices [0]];
 m_vCenter += VERTICES [m_vertices [1]];
 m_vCenter += VERTICES [m_vertices [2]];
 m_vCenter += VERTICES [m_vertices [3]];
-m_vCenter.v.c.x /= 4;
-m_vCenter.v.c.y /= 4;
-m_vCenter.v.c.z /= 4;
+m_vCenter.v.coord.x /= 4;
+m_vCenter.v.coord.y /= 4;
+m_vCenter.v.coord.z /= 4;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -576,19 +576,19 @@ uint CSide::CheckPointToFace (CFixVector& intersection, short iFace, CFixVector 
 
 //now do 2d check to see if refP is in CSide
 //project polygon onto plane by finding largest component of Normal
-t.v.c.x = labs (vNormal.v.c.x);
-t.v.c.y = labs (vNormal.v.c.y);
-t.v.c.z = labs (vNormal.v.c.z);
-if (t.v.c.x > t.v.c.y)
-	if (t.v.c.x > t.v.c.z)
+t.v.coord.x = labs (vNormal.v.coord.x);
+t.v.coord.y = labs (vNormal.v.coord.y);
+t.v.coord.z = labs (vNormal.v.coord.z);
+if (t.v.coord.x > t.v.coord.y)
+	if (t.v.coord.x > t.v.coord.z)
 		biggest = 0;
 	else
 		biggest = 2;
-else if (t.v.c.y > t.v.c.z)
+else if (t.v.coord.y > t.v.coord.z)
 	biggest = 1;
 else
 	biggest = 2;
-if (vNormal.v.a [biggest] > 0) {
+if (vNormal.v.vec [biggest] > 0) {
 	i = ijTable [biggest][0];
 	j = ijTable [biggest][1];
 	}
@@ -597,8 +597,8 @@ else {
 	j = ijTable [biggest][0];
 	}
 //now do the 2d problem in the i, j plane
-check_i = intersection.v.a [i];
-check_j = intersection.v.a [j];
+check_i = intersection.v.vec [i];
+check_j = intersection.v.vec [j];
 nVerts = 5 - m_nFaces;
 h = iFace * 3;
 for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
@@ -610,10 +610,10 @@ for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
 		v0 = VERTICES + m_vertices [h + nEdge];
 		v1 = VERTICES + m_vertices [h + ((nEdge + 1) % nVerts)];
 		}
-	vEdge.i = v1->v.a [i] - v0->v.a [i];
-	vEdge.j = v1->v.a [j] - v0->v.a [j];
-	vCheck.i = check_i - v0->v.a [i];
-	vCheck.j = check_j - v0->v.a [j];
+	vEdge.i = v1->v.vec [i] - v0->v.vec [i];
+	vEdge.j = v1->v.vec [j] - v0->v.vec [j];
+	vCheck.i = check_i - v0->v.vec [i];
+	vCheck.j = check_j - v0->v.vec [j];
 	d = FixMul64 (vCheck.i, vEdge.j) - FixMul64 (vCheck.j, vEdge.i);
 	if (d < 0)              		//we are outside of triangle
 		nEdgeMask |= (1 << nEdge);
@@ -822,9 +822,9 @@ if (iFace >= m_nFaces) {
 //1. find what plane to project this CWall onto to make it a 2d case
 vNormal = m_normals [iFace];
 biggest = 0;
-if (abs (vNormal.v.c.y) > abs (vNormal.v.a [biggest]))
+if (abs (vNormal.v.coord.y) > abs (vNormal.v.vec [biggest]))
 	biggest = 1;
-if (abs (vNormal.v.c.z) > abs (vNormal.v.a [biggest]))
+if (abs (vNormal.v.coord.z) > abs (vNormal.v.vec [biggest]))
 	biggest = 2;
 ii = (biggest == 0);
 jj = (biggest == 2) ? 1 : 2;
@@ -832,22 +832,22 @@ jj = (biggest == 2) ? 1 : 2;
 //vec from 1 -> 0
 h = iFace * 3;
 vPoints = VERTICES + m_vertices [h+1];
-p1.i = vPoints->v.a [ii];
-p1.j = vPoints->v.a [jj];
+p1.i = vPoints->v.vec [ii];
+p1.j = vPoints->v.vec [jj];
 
 vPoints = VERTICES + m_vertices [h];
-vec0.i = vPoints->v.a [ii] - p1.i;
-vec0.j = vPoints->v.a [jj] - p1.j;
+vec0.i = vPoints->v.vec [ii] - p1.i;
+vec0.j = vPoints->v.vec [jj] - p1.j;
 
 //vec from 1 -> 2
 vPoints = VERTICES + m_vertices [h+2];
-vec1.i = vPoints->v.a [ii] - p1.i;
-vec1.j = vPoints->v.a [jj] - p1.j;
+vec1.i = vPoints->v.vec [ii] - p1.i;
+vec1.j = vPoints->v.vec [jj] - p1.j;
 
 //vec from 1 -> checkPoint
 //vPoints = reinterpret_cast<CFixVector*> (refP);
-vHit.i = intersection.v.a [ii];
-vHit.j = intersection.v.a [jj];
+vHit.i = intersection.v.vec [ii];
+vHit.j = intersection.v.vec [jj];
 
 #if 1 // the MSVC 9 optimizer doesn't like the code in the else branch ...
 ii = Cross2D (vHit, vec0) + Cross2D (vec0, p1);

@@ -29,9 +29,9 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c)
 {
 #ifdef _WIN32
 	QLONG	q;
-	if (!c)
+	if (!coord)
 		return 0;
-	q = mul64 (a, b) / (QLONG) c;
+	q = mul64 (vec, b) / (QLONG) coord;
 	if ((q > 0x7fffffff) || (q < -0x7fffffff))
 		return 0;
 	*r = (fix) q;
@@ -83,9 +83,9 @@ ubyte ProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
 CFloatVector3 v = transformation.m_info.projection * p;
-float z = -v.v.c.z;
-s.x = fix (fxCanvW2 + float (v.v.c.x) * fxCanvW2 / z);
-s.y = fix (fxCanvH2 + float (v.v.c.y) * fxCanvH2 / z);
+float z = -v.v.coord.z;
+s.x = fix (fxCanvW2 + float (v.v.coord.x) * fxCanvW2 / z);
+s.y = fix (fxCanvH2 + float (v.v.coord.y) * fxCanvH2 / z);
 return flags | PF_PROJECTED;
 }
 
@@ -112,9 +112,9 @@ void G3Point2Vec (CFixVector *v,short sx,short sy)
 	CFixVector h;
 	CFixMatrix m;
 
-h.v.c.x =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2, xCanvW2), transformation.m_info.scale.v.c.z, transformation.m_info.scale.v.c.x);
-h.v.c.y = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2, xCanvH2), transformation.m_info.scale.v.c.z, transformation.m_info.scale.v.c.y);
-h.v.c.z = I2X (1);
+h.v.coord.x =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2, xCanvW2), transformation.m_info.scale.v.coord.z, transformation.m_info.scale.v.coord.x);
+h.v.coord.y = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2, xCanvH2), transformation.m_info.scale.v.coord.z, transformation.m_info.scale.v.coord.y);
+h.v.coord.z = I2X (1);
 CFixVector::Normalize (h);
 m = transformation.m_info.view [1].Transpose();
 *v = m * h;
@@ -134,17 +134,17 @@ return G3EncodePoint (dest);
 fix G3CalcPointDepth (const CFixVector& pnt)
 {
 #ifdef _WIN32
-	QLONG q = mul64 (pnt.v.c.x - transformation.m_info.pos.v.c.x, transformation.m_info.view [0].m.v.f.v.c.x);
-	q += mul64 (pnt.v.c.y - transformation.m_info.pos.v.c.y, transformation.m_info.view [0].m.v.f.v.c.y);
-	q += mul64 (pnt.v.c.z - transformation.m_info.pos.v.c.z, transformation.m_info.view [0].m.v.f.v.c.z);
+	QLONG q = mul64 (pnt.dir.coord.x - transformation.m_info.coord.dir.coord.x, transformation.m_info.view [0].mat.dir.f.dir.coord.x);
+	q += mul64 (pnt.dir.coord.y - transformation.m_info.coord.dir.coord.y, transformation.m_info.view [0].mat.dir.f.dir.coord.y);
+	q += mul64 (pnt.dir.coord.z - transformation.m_info.coord.dir.coord.z, transformation.m_info.view [0].mat.dir.f.dir.coord.z);
 	return (fix) (q >> 16);
 #else
 	tQuadInt q;
 
 	q.low=q.high=0;
-	FixMulAccum (&q, (pnt.v.c.x - transformation.m_info.pos.v.c.x),transformation.m_info.view [0].m.v.f.v.c.x);
-	FixMulAccum (&q, (pnt.v.c.y - transformation.m_info.pos.v.c.y),transformation.m_info.view [0].m.v.f.v.c.y);
-	FixMulAccum (&q, (pnt.v.c.z - transformation.m_info.pos.v.c.z),transformation.m_info.view [0].m.v.f.v.c.z);
+	FixMulAccum (&q, (pnt.v.coord.x - transformation.m_info.pos.v.coord.x),transformation.m_info.view [0].m.dir.f.v.coord.x);
+	FixMulAccum (&q, (pnt.v.coord.y - transformation.m_info.pos.v.coord.y),transformation.m_info.view [0].m.dir.f.v.coord.y);
+	FixMulAccum (&q, (pnt.v.coord.z - transformation.m_info.pos.v.coord.z),transformation.m_info.view [0].m.dir.f.v.coord.z);
 	return FixQuadAdjust (&q);
 #endif
 }

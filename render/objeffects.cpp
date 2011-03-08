@@ -65,22 +65,22 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		LoadTexture (pf->bmi.index, 0);
 		bmP = gameData.pig.tex.bitmapP + pf->vcP->frames [pf->vci.nCurFrame].index;
 		bmP->SetTranspType (2);
-		vPos += objP->info.position.mOrient.m.v.f * (-objP->info.xSize);
+		vPos += objP->info.position.mOrient.m.dir.f * (-objP->info.xSize);
 		r = X2F (objP->info.xSize);
 		transformation.Begin (vPos, pp->mOrient);
 		glColor3f (1.0f, 1.0f, 1.0f);
 		for (i = 0; i < 4; i++) {
-			vPosf.v.c.x = 0;
-			vPosf.v.c.y = fVerts [i].v.c.y * r;
-			vPosf.v.c.z = fVerts [i].v.c.z * r;
+			vPosf.v.coord.x = 0;
+			vPosf.v.coord.y = fVerts [i].v.coord.y * r;
+			vPosf.v.coord.z = fVerts [i].v.coord.z * r;
 			transformation.Transform (verts [i], vPosf, 0);
 			}
 		bmP->SetTexCoord (texCoordList [0]);
 		ogl.RenderQuad (bmP, verts, 3);
 		for (i = 3; i >= 0; i--) {
-			vPosf.v.c.x = 0;
-			vPosf.v.c.y = fVerts [i].v.c.y * r;
-			vPosf.v.c.z = fVerts [i].v.c.z * r;
+			vPosf.v.coord.x = 0;
+			vPosf.v.coord.y = fVerts [i].v.coord.y * r;
+			vPosf.v.coord.z = fVerts [i].v.coord.z * r;
 			transformation.Transform (verts [3 - i], vPosf, 0);
 			}
 		bmP->SetTexCoord (texCoordList [1]);
@@ -102,7 +102,7 @@ void CObject::CreateAppearanceEffect (void)
 	CFixVector	vPos = info.position.vPos;
 
 if (this == gameData.objs.viewerP)
-	vPos += info.position.mOrient.m.v.f * FixMul (info.xSize, flashDist);
+	vPos += info.position.mOrient.m.dir.f * FixMul (info.xSize, flashDist);
 CObject* effectObjP = /*Object*/CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
 if (effectObjP) {
 	effectObjP->info.position.mOrient = info.position.mOrient;

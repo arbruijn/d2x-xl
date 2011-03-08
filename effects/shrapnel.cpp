@@ -78,9 +78,9 @@ for (; nTicks >= 25; nTicks -= 25) {
 	else {
 		m_info.nTurn = ((m_info.xTTL > I2X (1) / 2) ? 2 : 4) + d_rand () % 4;
 		vOffs = m_info.vDir;
-		vOffs.v.c.x = FixMul (vOffs.v.c.x, 2 * d_rand ());
-		vOffs.v.c.y = FixMul (vOffs.v.c.y, 2 * d_rand ());
-		vOffs.v.c.z = FixMul (vOffs.v.c.z, 2 * d_rand ());
+		vOffs.v.coord.x = FixMul (vOffs.v.coord.x, 2 * d_rand ());
+		vOffs.v.coord.y = FixMul (vOffs.v.coord.y, 2 * d_rand ());
+		vOffs.v.coord.z = FixMul (vOffs.v.coord.z, 2 * d_rand ());
 		CFixVector::Normalize (vOffs);
 		m_info.vOffs = vOffs;
 		}

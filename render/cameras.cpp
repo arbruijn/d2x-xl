@@ -208,8 +208,8 @@ else {
 	if (bTeleport) {
 		CFixVector n = *SEGMENTS [srcSeg].m_sides [srcSide].m_normals;
 		/*
-		n.v.c.x = -n.v.c.x;
-		n.v.c.y = -n.v.c.y;
+		n.v.coord.x = -n.v.coord.x;
+		n.v.coord.y = -n.v.coord.y;
 		*/
 		n.Neg ();
 		a = n.ToAnglesVec ();
@@ -623,8 +623,8 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 		}
 
 	curAngle += curDelta;
-	a.v.c.h = curAngle;
-	a.v.c.b = a.v.c.p = 0;
+	a.v.coord.h = curAngle;
+	a.v.coord.b = a.v.coord.p = 0;
 	r = CFixMatrix::Create (a);
 	m_data.objP->info.position.mOrient = m_data.orient * r;
 	m_data.objP->info.position.mOrient.CheckAndFix ();

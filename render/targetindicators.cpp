@@ -83,22 +83,22 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	r2 = r / 10;
 	r = r2 * 9;
 	w = 2 * r;
-	vPosf.v.c.x -= r;
-	vPosf.v.c.y += r;
+	vPosf.v.coord.x -= r;
+	vPosf.v.coord.y += r;
 	w *= objP->Damage ();
-	fVerts [0].v.c.x = fVerts [3].v.c.x = vPosf.v.c.x;
-	fVerts [1].v.c.x = fVerts [2].v.c.x = vPosf.v.c.x + w;
-	fVerts [0].v.c.y = fVerts [1].v.c.y = vPosf.v.c.y;
-	fVerts [2].v.c.y = fVerts [3].v.c.y = vPosf.v.c.y - r2;
-	fVerts [0].v.c.z = fVerts [1].v.c.z = fVerts [2].v.c.z = fVerts [3].v.c.z = vPosf.v.c.z;
-	fVerts [0].v.c.w = fVerts [1].v.c.w = fVerts [2].v.c.w = fVerts [3].v.c.w = 1;
+	fVerts [0].v.coord.x = fVerts [3].v.coord.x = vPosf.v.coord.x;
+	fVerts [1].v.coord.x = fVerts [2].v.coord.x = vPosf.v.coord.x + w;
+	fVerts [0].v.coord.y = fVerts [1].v.coord.y = vPosf.v.coord.y;
+	fVerts [2].v.coord.y = fVerts [3].v.coord.y = vPosf.v.coord.y - r2;
+	fVerts [0].v.coord.z = fVerts [1].v.coord.z = fVerts [2].v.coord.z = fVerts [3].v.coord.z = vPosf.v.coord.z;
+	fVerts [0].v.coord.w = fVerts [1].v.coord.w = fVerts [2].v.coord.w = fVerts [3].v.coord.w = 1;
 	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
 	ogl.SetTexturing (false);
 	ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	OglDrawArrays (GL_QUADS, 0, 4);
 	w = 2 * r;
-	fVerts [1].v.c.x = fVerts [2].v.c.x = vPosf.v.c.x + w;
+	fVerts [1].v.coord.x = fVerts [2].v.coord.x = vPosf.v.coord.x + w;
 	glColor3fv (reinterpret_cast<GLfloat*> (pc));
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	OglDrawArrays (GL_LINE_LOOP, 0, 4);
@@ -169,28 +169,28 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 		ComputeSinCosTable (sizeofa (sinCosInd), sinCosInd);
 		bInitSinCos = 0;
 		}
-	mRot.m.v.r.v.c.x =
-	mRot.m.v.u.v.c.y = sinCosInd [nMslLockIndPos [bMarker]].fCos;
-	mRot.m.v.u.v.c.x = sinCosInd [nMslLockIndPos [bMarker]].fSin;
-	mRot.m.v.r.v.c.y = -mRot.m.v.u.v.c.x;
-	mRot.m.v.r.v.c.z =
-	mRot.m.v.u.v.c.z =
-	mRot.m.v.f.v.c.x =
-	mRot.m.v.f.v.c.y = 0;
-	mRot.m.v.f.v.c.z = 1;
+	mRot.m.dir.r.v.coord.x =
+	mRot.m.dir.u.v.coord.y = sinCosInd [nMslLockIndPos [bMarker]].fCos;
+	mRot.m.dir.u.v.coord.x = sinCosInd [nMslLockIndPos [bMarker]].fSin;
+	mRot.m.dir.r.v.coord.y = -mRot.m.dir.u.v.coord.x;
+	mRot.m.dir.r.v.coord.z =
+	mRot.m.dir.u.v.coord.z =
+	mRot.m.dir.f.v.coord.x =
+	mRot.m.dir.f.v.coord.y = 0;
+	mRot.m.dir.f.v.coord.z = 1;
 
-	fVerts [0].v.c.z =
-	fVerts [1].v.c.z =
-	fVerts [2].v.c.z = 0;
-	rotVerts [0].v.c.w =
-	rotVerts [1].v.c.w =
-	rotVerts [2].v.c.w = 0;
-	fVerts [0].v.c.x = -r2;
-	fVerts [1].v.c.x = +r2;
-	fVerts [2].v.c.x = 0;
-	fVerts [0].v.c.y =
-	fVerts [1].v.c.y = +r;
-	fVerts [2].v.c.y = +r - r2;
+	fVerts [0].v.coord.z =
+	fVerts [1].v.coord.z =
+	fVerts [2].v.coord.z = 0;
+	rotVerts [0].v.coord.w =
+	rotVerts [1].v.coord.w =
+	rotVerts [2].v.coord.w = 0;
+	fVerts [0].v.coord.x = -r2;
+	fVerts [1].v.coord.x = +r2;
+	fVerts [2].v.coord.x = 0;
+	fVerts [0].v.coord.y =
+	fVerts [1].v.coord.y = +r;
+	fVerts [2].v.coord.y = +r - r2;
 	if (bVertexArrays)
 		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), rotVerts);
 	for (j = 0; j < 4; j++) {
@@ -214,48 +214,48 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 		if (bMarker)
 			glLineWidth (1);
 		if (!j) {	//now rotate by 90 degrees
-			mRot.m.v.r.v.c.x =
-			mRot.m.v.u.v.c.y = 0;
-			mRot.m.v.u.v.c.x = 1;
-			mRot.m.v.r.v.c.y = -1;
+			mRot.m.dir.r.v.coord.x =
+			mRot.m.dir.u.v.coord.y = 0;
+			mRot.m.dir.u.v.coord.x = 1;
+			mRot.m.dir.r.v.coord.y = -1;
 			}
 		}
 	}
 else {
-	fVerts [0].v.c.z =
-	fVerts [1].v.c.z =
-	fVerts [2].v.c.z = fPos.v.c.z;
-	fVerts [0].v.c.w =
-	fVerts [1].v.c.w =
-	fVerts [2].v.c.w = 1;
-	fVerts [0].v.c.x = fPos.v.c.x - r2;
-	fVerts [1].v.c.x = fPos.v.c.x + r2;
-	fVerts [2].v.c.x = fPos.v.c.x;
+	fVerts [0].v.coord.z =
+	fVerts [1].v.coord.z =
+	fVerts [2].v.coord.z = fPos.v.coord.z;
+	fVerts [0].v.coord.w =
+	fVerts [1].v.coord.w =
+	fVerts [2].v.coord.w = 1;
+	fVerts [0].v.coord.x = fPos.v.coord.x - r2;
+	fVerts [1].v.coord.x = fPos.v.coord.x + r2;
+	fVerts [2].v.coord.x = fPos.v.coord.x;
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	nTgtInd = extraGameInfo [IsMultiGame].bTargetIndicators;
 	bHasDmg = !EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) | (objP->Damage () < 1);
 	if (!nTgtInd ||
 		 ((nTgtInd == 1) && (!EGI_FLAG (bDamageIndicators, 0, 1, 0) || !bHasDmg)) ||
 		 ((nTgtInd == 2) && !bHasDmg)) {
-		fVerts [0].v.c.y =
-		fVerts [1].v.c.y = fPos.v.c.y + r;
-		fVerts [2].v.c.y = fPos.v.c.y + r - r2;
+		fVerts [0].v.coord.y =
+		fVerts [1].v.coord.y = fPos.v.coord.y + r;
+		fVerts [2].v.coord.y = fPos.v.coord.y + r - r2;
 		OglDrawArrays (GL_TRIANGLES, 0, 3);
 		}
-	fVerts [0].v.c.y =
-	fVerts [1].v.c.y = fPos.v.c.y - r;
-	fVerts [2].v.c.y = fPos.v.c.y - r + r2;
+	fVerts [0].v.coord.y =
+	fVerts [1].v.coord.y = fPos.v.coord.y - r;
+	fVerts [2].v.coord.y = fPos.v.coord.y - r + r2;
 	OglDrawArrays (GL_TRIANGLES, 0, 3);
-	fVerts [0].v.c.x =
-	fVerts [1].v.c.x = fPos.v.c.x + r;
-	fVerts [2].v.c.x = fPos.v.c.x + r - r2;
-	fVerts [0].v.c.y = fPos.v.c.y + r2;
-	fVerts [1].v.c.y = fPos.v.c.y - r2;
-	fVerts [2].v.c.y = fPos.v.c.y;
+	fVerts [0].v.coord.x =
+	fVerts [1].v.coord.x = fPos.v.coord.x + r;
+	fVerts [2].v.coord.x = fPos.v.coord.x + r - r2;
+	fVerts [0].v.coord.y = fPos.v.coord.y + r2;
+	fVerts [1].v.coord.y = fPos.v.coord.y - r2;
+	fVerts [2].v.coord.y = fPos.v.coord.y;
 	OglDrawArrays (GL_TRIANGLES, 0, 3);
-	fVerts [0].v.c.x =
-	fVerts [1].v.c.x = fPos.v.c.x - r;
-	fVerts [2].v.c.x = fPos.v.c.x - r + r2;
+	fVerts [0].v.coord.x =
+	fVerts [1].v.coord.x = fPos.v.coord.x - r;
+	fVerts [2].v.coord.x = fPos.v.coord.x - r + r2;
 	OglDrawArrays (GL_TRIANGLES, 0, 3);
 	}
 ogl.DisableClientState (GL_VERTEX_ARRAY);
@@ -306,18 +306,18 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	transformation.Transform (fPos, fPos, 0);
 	r = X2F (objP->info.xSize);
 	glColor3fv (reinterpret_cast<GLfloat*> (pc));
-	fVerts [0].v.c.w = fVerts [1].v.c.w = fVerts [2].v.c.w = fVerts [3].v.c.w = 1;
+	fVerts [0].v.coord.w = fVerts [1].v.coord.w = fVerts [2].v.coord.w = fVerts [3].v.coord.w = 1;
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	if (extraGameInfo [IsMultiGame].bTargetIndicators == 1) {	//square brackets
 		r2 = r * 2 / 3;
-		fVerts [0].v.c.x = fVerts [3].v.c.x = fPos.v.c.x - r2;
-		fVerts [1].v.c.x = fVerts [2].v.c.x = fPos.v.c.x - r;
-		fVerts [0].v.c.y = fVerts [1].v.c.y = fPos.v.c.y - r;
-		fVerts [2].v.c.y = fVerts [3].v.c.y = fPos.v.c.y + r;
-		fVerts [0].v.c.z =
-		fVerts [1].v.c.z =
-		fVerts [2].v.c.z =
-		fVerts [3].v.c.z = fPos.v.c.z;
+		fVerts [0].v.coord.x = fVerts [3].v.coord.x = fPos.v.coord.x - r2;
+		fVerts [1].v.coord.x = fVerts [2].v.coord.x = fPos.v.coord.x - r;
+		fVerts [0].v.coord.y = fVerts [1].v.coord.y = fPos.v.coord.y - r;
+		fVerts [2].v.coord.y = fVerts [3].v.coord.y = fPos.v.coord.y + r;
+		fVerts [0].v.coord.z =
+		fVerts [1].v.coord.z =
+		fVerts [2].v.coord.z =
+		fVerts [3].v.coord.z = fPos.v.coord.z;
 		if ((bDrawArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0)))
 			OglDrawArrays (GL_LINE_STRIP, 0, 4);
 #if GL_FALLBACK
@@ -328,8 +328,8 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 			glEnd ();
 			}
 #endif
-		fVerts [0].v.c.x = fVerts [3].v.c.x = fPos.v.c.x + r2;
-		fVerts [1].v.c.x = fVerts [2].v.c.x = fPos.v.c.x + r;
+		fVerts [0].v.coord.x = fVerts [3].v.coord.x = fPos.v.coord.x + r2;
+		fVerts [1].v.coord.x = fVerts [2].v.coord.x = fPos.v.coord.x + r;
 		if (bDrawArrays) {
 			OglDrawArrays (GL_LINE_STRIP, 0, 4);
 			ogl.DisableClientState (GL_VERTEX_ARRAY);
@@ -345,14 +345,14 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		}
 	else {	//triangle
 		r2 = r / 3;
-		fVerts [0].v.c.x = fPos.v.c.x - r2;
-		fVerts [1].v.c.x = fPos.v.c.x + r2;
-		fVerts [2].v.c.x = fPos.v.c.x;
-		fVerts [0].v.c.y = fVerts [1].v.c.y = fPos.v.c.y + r;
-		fVerts [2].v.c.y = fPos.v.c.y + r - r2;
-		fVerts [0].v.c.z =
-		fVerts [1].v.c.z =
-		fVerts [2].v.c.z = fPos.v.c.z;
+		fVerts [0].v.coord.x = fPos.v.coord.x - r2;
+		fVerts [1].v.coord.x = fPos.v.coord.x + r2;
+		fVerts [2].v.coord.x = fPos.v.coord.x;
+		fVerts [0].v.coord.y = fVerts [1].v.coord.y = fPos.v.coord.y + r;
+		fVerts [2].v.coord.y = fPos.v.coord.y + r - r2;
+		fVerts [0].v.coord.z =
+		fVerts [1].v.coord.z =
+		fVerts [2].v.coord.z = fPos.v.coord.z;
 		if ((bDrawArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0)))
 			OglDrawArrays (GL_LINE_LOOP, 0, 3);
 #if GL_FALLBACK
@@ -369,10 +369,10 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 			if (r3 < 1.0f) {
 				if (r3 < 0.0f)
 					r3 = 0.0f;
-				fVerts [0].v.c.x = fPos.v.c.x - r2 * r3;
-				fVerts [1].v.c.x = fPos.v.c.x + r2 * r3;
-				fVerts [2].v.c.x = fPos.v.c.x;
-				fVerts [0].v.c.y = fVerts [1].v.c.y = fPos.v.c.y + r - r2 * (1.0f - r3);
+				fVerts [0].v.coord.x = fPos.v.coord.x - r2 * r3;
+				fVerts [1].v.coord.x = fPos.v.coord.x + r2 * r3;
+				fVerts [2].v.coord.x = fPos.v.coord.x;
+				fVerts [0].v.coord.y = fVerts [1].v.coord.y = fPos.v.coord.y + r - r2 * (1.0f - r3);
 				//fVerts [2].v.c.y = fPos.v.c.y + r - r2;
 				}
 			}

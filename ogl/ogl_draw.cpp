@@ -53,8 +53,8 @@ if (ogl.SizeVertexBuffer (1)) {
 	if (!colorP)
 		colorP = &COLOR;
 	OglCanvasColor (colorP);
-	ogl.VertexBuffer () [0].v.c.x = float (x + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);
-	ogl.VertexBuffer () [0].v.c.y = 1.0f - float (y + CCanvas::Current ()->Top ()) / float (ogl.m_states.viewport [0].m_w);
+	ogl.VertexBuffer () [0].v.coord.x = float (x + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);
+	ogl.VertexBuffer () [0].v.coord.y = 1.0f - float (y + CCanvas::Current ()->Top ()) / float (ogl.m_states.viewport [0].m_w);
 	ogl.FlushBuffers (GL_POINT, 1, 2);
 	}
 }
@@ -73,8 +73,8 @@ if (!colorP)
 	colorP = &COLOR;
 OglCanvasColor (colorP);
 CFloatVector vPosf;
-vPosf.v.c.x = (x0 + x1) / 2;
-vPosf.v.c.y = (y0 + y1) / 2;
+vPosf.v.coord.x = (x0 + x1) / 2;
+vPosf.v.coord.y = (y0 + y1) / 2;
 ogl.RenderQuad (NULL, vPosf, (x1 - x0) / 2, (y1 - y0) / 2, 2);
 //if (colorP->rgb || (gameStates.render.grAlpha < 1.0f))
 //	ogl.SetBlending (false);
@@ -97,8 +97,8 @@ if (ogl.SizeBuffers (nVerts + 1)) {
 		j = i % nVerts;
 		if (bColor)
 			OglCanvasColor (colorP + j, ogl.ColorBuffer () + i);
-		ogl.VertexBuffer () [i].v.c.x = GLfloat (x [j] + left) / GLfloat (ogl.m_states.viewport [0].m_w);
-		ogl.VertexBuffer () [i].v.c.y = 1.0f - GLfloat (y [j] + top) / GLfloat (ogl.m_states.viewport [0].m_h);
+		ogl.VertexBuffer () [i].v.coord.x = GLfloat (x [j] + left) / GLfloat (ogl.m_states.viewport [0].m_w);
+		ogl.VertexBuffer () [i].v.coord.y = 1.0f - GLfloat (y [j] + top) / GLfloat (ogl.m_states.viewport [0].m_h);
 		}
 	ogl.FlushBuffers (GL_POLYGON, nVerts + 1, 2);
 	}
@@ -117,10 +117,10 @@ if (ogl.SizeVertexBuffer (2)) {
 	if (!colorP)
 		colorP = &COLOR;
 	OglCanvasColor (colorP);
-	ogl.VertexBuffer () [0].v.c.x = x0;
-	ogl.VertexBuffer () [0].v.c.y = y0;
-	ogl.VertexBuffer () [1].v.c.x = x1;
-	ogl.VertexBuffer () [1].v.c.y = y1;
+	ogl.VertexBuffer () [0].v.coord.x = x0;
+	ogl.VertexBuffer () [0].v.coord.y = y0;
+	ogl.VertexBuffer () [1].v.coord.x = x1;
+	ogl.VertexBuffer () [1].v.coord.y = y1;
 	ogl.FlushBuffers (GL_LINES, 2, 2);
 	}
 }
@@ -138,14 +138,14 @@ if (ogl.SizeVertexBuffer (4)) {
 	if (!colorP)
 		colorP = &COLOR;
 	OglCanvasColor (colorP);
-	ogl.VertexBuffer () [0].v.c.x = x0;
-	ogl.VertexBuffer () [0].v.c.y = y0;
-	ogl.VertexBuffer () [1].v.c.x = x1;
-	ogl.VertexBuffer () [1].v.c.y = y0;
-	ogl.VertexBuffer () [2].v.c.x = x1;
-	ogl.VertexBuffer () [2].v.c.y = y1;
-	ogl.VertexBuffer () [3].v.c.x = x0;
-	ogl.VertexBuffer () [3].v.c.y = y1;
+	ogl.VertexBuffer () [0].v.coord.x = x0;
+	ogl.VertexBuffer () [0].v.coord.y = y0;
+	ogl.VertexBuffer () [1].v.coord.x = x1;
+	ogl.VertexBuffer () [1].v.coord.y = y0;
+	ogl.VertexBuffer () [2].v.coord.x = x1;
+	ogl.VertexBuffer () [2].v.coord.y = y1;
+	ogl.VertexBuffer () [3].v.coord.x = x0;
+	ogl.VertexBuffer () [3].v.coord.y = y1;
 	ogl.FlushBuffers (GL_LINE_LOOP, 4, 2);
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}

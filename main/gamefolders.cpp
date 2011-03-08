@@ -129,7 +129,7 @@ void GetAppFolders (void)
 	char	szDataRootDir [FILENAME_LEN];
 	char	*psz;
 #ifdef _WIN32
-	char	c;
+	char	coord;
 #endif
 
 #if DBG && defined (WIN32)
@@ -160,8 +160,8 @@ if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, getenv (
 if (!*gameFolders.szGameDir) {
 	psz = appConfig [0];
 	for (int j = (int) strlen (psz); j; ) {
-		c = psz [--j];
-		if ((c == '\\') || (c == '/')) {
+		coord = psz [--j];
+		if ((coord == '\\') || (coord == '/')) {
 			memcpy (gameFolders.szGameDir, psz, ++j);
 			gameFolders.szGameDir [j] = '\0';
 			break;

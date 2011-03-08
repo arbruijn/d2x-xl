@@ -218,7 +218,7 @@ while ((pszToken = ReadLine (cf))) {
 		return 1;
 	if (!strcmp (pszToken, "*TM_POS")) {
 		for (i = 0; i < 3; i++)
-			m_vOffset.v.a [i] = 0; //FloatTok (" \t");
+			m_vOffset.v.vec [i] = 0; //FloatTok (" \t");
 		}
 	}
 return CModel::Error ("unexpected end of file");
@@ -316,7 +316,7 @@ while ((pszToken = ReadLine (cf))) {
 		pt->v.v = -FloatTok (" \t");
 #else
 		for (i = 0; i < 2; i++)
-			pt->a [i] = FloatTok (" \t");
+			pt->vec [i] = FloatTok (" \t");
 #endif
 		}
 	}

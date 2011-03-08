@@ -48,9 +48,9 @@ if ((m = n.Mag ()) > I2X (RADAR_RANGE))
 	return;
 if (m) {
 	//HUDMessage (0, "%1.2f", X2F (m));
-	v [0].v.c.x = FixDiv (n.v.c.x, m) * 15; // /= RADAR_RANGE;
-	v [0].v.c.y = FixDiv (n.v.c.y, m) * 20; // /= RADAR_RANGE;
-	v [0].v.c.z = n.v.c.x / RADAR_RANGE;
+	v [0].v.coord.x = FixDiv (n.v.coord.x, m) * 15; // /= RADAR_RANGE;
+	v [0].v.coord.y = FixDiv (n.v.coord.y, m) * 20; // /= RADAR_RANGE;
+	v [0].v.coord.z = n.v.coord.x / RADAR_RANGE;
 	//VmVecNormalize (&n);
 	}
 else {
@@ -58,7 +58,7 @@ else {
 	glColor4f (r, g, b, a);
 	glTranslatef (0, yRadar, 50);
 #if 0
-	glColor4f (r, g, b, a / 2);
+	glColor4f (r, g, b, vec / 2);
  	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, 10, 0, 7.5f, 0, sinCosRadar);
 #endif
 	glColor4f (r, g, b, a);
@@ -76,19 +76,19 @@ else {
 	if (ogl.SizeVertexBuffer (6)) {
 		float x = fRadius * 0.707f + 0.333f;
 		float y = fRadius / 3.0f;
-		ogl.VertexBuffer () [0].v.c.x = 0;
-		ogl.VertexBuffer () [0].v.c.y = y + 1;
-		ogl.VertexBuffer () [1].v.c.x = 0;
-		ogl.VertexBuffer () [1].v.c.y = -y - 1;
+		ogl.VertexBuffer () [0].v.coord.x = 0;
+		ogl.VertexBuffer () [0].v.coord.y = y + 1;
+		ogl.VertexBuffer () [1].v.coord.x = 0;
+		ogl.VertexBuffer () [1].v.coord.y = -y - 1;
 		y -= 0.333f;
-		ogl.VertexBuffer () [2].v.c.x = -x;
-		ogl.VertexBuffer () [2].v.c.y = -y;
-		ogl.VertexBuffer () [3].v.c.x = x;
-		ogl.VertexBuffer () [3].v.c.y = y;
-		ogl.VertexBuffer () [4].v.c.x = -x;
-		ogl.VertexBuffer () [4].v.c.y = y;
-		ogl.VertexBuffer () [5].v.c.x = x;
-		ogl.VertexBuffer () [5].v.c.y = -y;
+		ogl.VertexBuffer () [2].v.coord.x = -x;
+		ogl.VertexBuffer () [2].v.coord.y = -y;
+		ogl.VertexBuffer () [3].v.coord.x = x;
+		ogl.VertexBuffer () [3].v.coord.y = y;
+		ogl.VertexBuffer () [4].v.coord.x = -x;
+		ogl.VertexBuffer () [4].v.coord.y = y;
+		ogl.VertexBuffer () [5].v.coord.x = x;
+		ogl.VertexBuffer () [5].v.coord.y = -y;
 		ogl.FlushBuffers (GL_LINES, 6, 2);
 		}
 	//ogl.SetLineSmooth (false);
@@ -97,7 +97,7 @@ else {
 	return;
 	}
 v [0] *= FixDiv (1, 3);
-h = X2F (n.v.c.z) / RADAR_RANGE;
+h = X2F (n.v.coord.z) / RADAR_RANGE;
 glPushMatrix ();
 glTranslatef (0, yRadar + h * fRadius / 3.0f, 50);
 glPushMatrix ();
@@ -105,12 +105,12 @@ s = 1.0f - (float) fabs (X2F (m) / RADAR_RANGE);
 h = 3 * s;
 a += a * h;
 glColor4f (r + r * h, g + g * h, b + b * h, (float) sqrt (a));
-glTranslatef (X2F (v [0].v.c.x), X2F (v [0].v.c.y), X2F (v [0].v.c.z));
+glTranslatef (X2F (v [0].v.coord.x), X2F (v [0].v.coord.y), X2F (v [0].v.coord.z));
 OglDrawEllipse (BLIP_SLICES, GL_POLYGON, 0.33f + 0.33f * s, 0, 0.33f + 0.33f * s, 0, sinCosBlip);
 glPopMatrix ();
 #if 1
 v [1] = v [0];
-v [1].v.c.y = 0;
+v [1].v.coord.y = 0;
 if (ogl.SizeVertexBuffer (2)) {
 	ogl.VertexBuffer () [0].Assign (v [0]);
 	ogl.VertexBuffer () [1].Assign (v [1]);
@@ -164,7 +164,7 @@ if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 bStencil = ogl.StencilOff ();
 InitShipColors ();
 yRadar = ((i == 1) || (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR)) ? yOffs : -yOffs;
-fRadius = 5.0f / transformation.m_info.scalef.v.c.x;
+fRadius = 5.0f / transformation.m_info.scalef.v.coord.x;
 fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
 mRadar = CFixMatrix::Create (aRadar);
 ogl.SelectTMU (GL_TEXTURE3);

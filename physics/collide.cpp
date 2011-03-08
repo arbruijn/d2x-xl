@@ -186,16 +186,16 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 			double mq;
 
 			mq = double (otherObjP->mType.physInfo.mass) / (double (mType.physInfo.mass) * double (nMonsterballPyroForce));
-			vForce.v.c.x = (fix) (double (vForce.v.c.x * mq));
-			vForce.v.c.y = (fix) (double (vForce.v.c.y * mq));
-			vForce.v.c.z = (fix) (double (vForce.v.c.z * mq));
+			vForce.v.coord.x = (fix) (double (vForce.v.coord.x * mq));
+			vForce.v.coord.y = (fix) (double (vForce.v.coord.y * mq));
+			vForce.v.coord.z = (fix) (double (vForce.v.coord.z * mq));
 			ApplyForce (vForce);
 			}
 		else {
 			CFixVector force2;
-			force2.v.c.x = vForce.v.c.x / 4;
-			force2.v.c.y = vForce.v.c.y / 4;
-			force2.v.c.z = vForce.v.c.z / 4;
+			force2.v.coord.x = vForce.v.coord.x / 4;
+			force2.v.coord.y = vForce.v.coord.y / 4;
+			force2.v.coord.z = vForce.v.coord.z / 4;
 			ApplyForce (force2);
 			if (bDamage && ((otherObjP->info.nType != OBJ_ROBOT) || !ROBOTINFO (otherObjP->info.nId).companion)) {
 				xForceMag = force2.Mag ();
@@ -208,16 +208,16 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 		if (info.nType == OBJ_ROBOT) {
 			if (ROBOTINFO (info.nId).bossFlag)
 				return;
-			vRotForce.v.c.x = vForce.v.c.x / h;
-			vRotForce.v.c.y = vForce.v.c.y / h;
-			vRotForce.v.c.z = vForce.v.c.z / h;
+			vRotForce.v.coord.x = vForce.v.coord.x / h;
+			vRotForce.v.coord.y = vForce.v.coord.y / h;
+			vRotForce.v.coord.z = vForce.v.coord.z / h;
 			ApplyForce (vForce);
 			ApplyRotForce (vRotForce);
 			}
 		else if ((info.nType == OBJ_CLUTTER) || (info.nType == OBJ_DEBRIS) || (info.nType == OBJ_REACTOR)) {
-			vRotForce.v.c.x = vForce.v.c.x / h;
-			vRotForce.v.c.y = vForce.v.c.y / h;
-			vRotForce.v.c.z = vForce.v.c.z / h;
+			vRotForce.v.coord.x = vForce.v.coord.x / h;
+			vRotForce.v.coord.y = vForce.v.coord.y / h;
+			vRotForce.v.coord.z = vForce.v.coord.z / h;
 			ApplyForce (vForce);
 			ApplyRotForce (vRotForce);
 			}
@@ -232,12 +232,12 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 				gameData.hoard.nLastHitter = otherObjP->cType.laserInfo.parent.nObject;
 				mq = double (I2X (nMonsterballForces [otherObjP->info.nId]) / 100) / double (mType.physInfo.mass);
 				}
-			vForce.v.c.x = (fix) (double (vForce.v.c.x) * mq);
-			vForce.v.c.y = (fix) (double (vForce.v.c.y) * mq);
-			vForce.v.c.z = (fix) (double (vForce.v.c.z) * mq);
-			vRotForce.v.c.x = vForce.v.c.x / h;
-			vRotForce.v.c.y = vForce.v.c.y / h;
-			vRotForce.v.c.z = vForce.v.c.z / h;
+			vForce.v.coord.x = (fix) (double (vForce.v.coord.x) * mq);
+			vForce.v.coord.y = (fix) (double (vForce.v.coord.y) * mq);
+			vForce.v.coord.z = (fix) (double (vForce.v.coord.z) * mq);
+			vRotForce.v.coord.x = vForce.v.coord.x / h;
+			vRotForce.v.coord.y = vForce.v.coord.y / h;
+			vRotForce.v.coord.z = vForce.v.coord.z / h;
 			ApplyForce (vForce);
 			ApplyRotForce (vRotForce);
 			if (gameData.hoard.nLastHitter == LOCALPLAYER.nObject)
@@ -445,9 +445,9 @@ if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
 	CFixVector vForce;
 	paletteManager.BumpEffect (0, 0, 60);	//flash blue
 	//knock CPlayerData around
-	vForce.v.c.x = 40 * (d_rand () - 16384);
-	vForce.v.c.y = 40 * (d_rand () - 16384);
-	vForce.v.c.z = 40 * (d_rand () - 16384);
+	vForce.v.coord.x = 40 * (d_rand () - 16384);
+	vForce.v.coord.y = 40 * (d_rand () - 16384);
+	vForce.v.coord.z = 40 * (d_rand () - 16384);
 	ApplyRotForce (vForce);
 #ifdef TACTILE
 	if (TactileStick)
@@ -463,9 +463,9 @@ else {
 #ifdef TACTILE
 	CFixVector vForce;
 	if (TactileStick) {
-		vForce.v.c.x = -mType.physInfo.velocity.v.c.x;
-		vForce.v.c.y = -mType.physInfo.velocity.v.c.y;
-		vForce.v.c.z = -mType.physInfo.velocity.v.c.z;
+		vForce.dir.coord.x = -mType.physInfo.velocity.dir.coord.x;
+		vForce.dir.coord.y = -mType.physInfo.velocity.dir.coord.y;
+		vForce.dir.coord.z = -mType.physInfo.velocity.dir.coord.z;
 		Tactile_do_collide (&vForce, &info.position.mOrient);
 	}
 #endif
@@ -533,8 +533,8 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {
 		paletteManager.BumpEffect (X2I (xDamage * 4), 0, 0);	//flash red
 		}
 	if (xDamage || !mType.physInfo.thrust.IsZero ()) {
-		mType.physInfo.rotVel.v.c.x = (d_rand () - 16384) / 2;
-		mType.physInfo.rotVel.v.c.z = (d_rand () - 16384) / 2;
+		mType.physInfo.rotVel.v.coord.x = (d_rand () - 16384) / 2;
+		mType.physInfo.rotVel.v.coord.z = (d_rand () - 16384) / 2;
 		}
 	}
 return nType;
@@ -571,14 +571,14 @@ if (xDamage > 0) {
 	if ((info.nType == OBJ_PLAYER) && (info.nId == gameData.multiplayer.nLocalPlayer))
 		paletteManager.BumpEffect (X2I (xDamage * 4), 0, 0);	//flash red
 	if ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) {
-		mType.physInfo.rotVel.v.c.x = (d_rand () - 16384) / 4;
-		mType.physInfo.rotVel.v.c.z = (d_rand () - 16384) / 4;
+		mType.physInfo.rotVel.v.coord.x = (d_rand () - 16384) / 4;
+		mType.physInfo.rotVel.v.coord.z = (d_rand () - 16384) / 4;
 		}
 	return nType;
 	}
 if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && !mType.physInfo.thrust.IsZero ()) {
-	mType.physInfo.rotVel.v.c.x = (d_rand () - 16384) / 8;
-	mType.physInfo.rotVel.v.c.z = (d_rand () - 16384) / 8;
+	mType.physInfo.rotVel.v.coord.x = (d_rand () - 16384) / 8;
+	mType.physInfo.rotVel.v.coord.z = (d_rand () - 16384) / 8;
 	}
 return nType;
 }
@@ -681,7 +681,7 @@ if (info.nId == OMEGA_ID)
 
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (info.nId == GUIDEDMSL_ID) {
-	fix dot = CFixVector::Dot (info.position.mOrient.m.v.f, sideP->m_normals[0]);
+	fix dot = CFixVector::Dot (info.position.mOrient.m.dir.f, sideP->m_normals[0]);
 #if TRACE
 	console.printf (CON_DBG, "Guided missile dot = %7.3f \n", X2F (dot));
 #endif
@@ -692,7 +692,7 @@ if (info.nId == GUIDEDMSL_ID) {
 		mType.physInfo.flags &= ~PF_BOUNCE;
 		}
 	else {
-		CFixVector vReflect = CFixVector::Reflect (info.position.mOrient.m.v.f, sideP->m_normals[0]);
+		CFixVector vReflect = CFixVector::Reflect (info.position.mOrient.m.dir.f, sideP->m_normals[0]);
 		CAngleVector va = vReflect.ToAnglesVec ();
 		info.position.mOrient = CFixMatrix::Create (va);
 		}
@@ -1362,7 +1362,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 	//	Boss only vulnerable in back.  See if hit there.
 	tvec1 = vHitPt - robotP->info.position.vPos;
 	CFixVector::Normalize (tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to I2X (1) (in magnitude), then should probably use non-quick version.
-	dot = CFixVector::Dot (tvec1, robotP->info.position.mOrient.m.v.f);
+	dot = CFixVector::Dot (tvec1, robotP->info.position.mOrient.m.dir.f);
 #if TRACE
 	console.printf (CON_DBG, "Boss hit vec dot = %7.3f \n", X2F (dot));
 #endif
@@ -1597,9 +1597,9 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 
 			if (aip->SKIP_AI_COUNT * gameData.time.xFrame < I2X (1)) {
 				aip->SKIP_AI_COUNT++;
-				robotP->mType.physInfo.rotThrust.v.c.x = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
-				robotP->mType.physInfo.rotThrust.v.c.y = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
-				robotP->mType.physInfo.rotThrust.v.c.z = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robotP->mType.physInfo.rotThrust.v.coord.x = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robotP->mType.physInfo.rotThrust.v.coord.y = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robotP->mType.physInfo.rotThrust.v.coord.z = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
 				robotP->mType.physInfo.flags |= PF_USES_THRUST;
 				}
 			}
@@ -1847,9 +1847,9 @@ for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
 		vExitDir = segP->SideCenter (nSide) - info.position.vPos;
 		CFixVector::Normalize (vExitDir);
 		CFixVector vRand = CFixVector::Random();
-		vRand.v.c.x /= 4;
-		vRand.v.c.y /= 4;
-		vRand.v.c.z /= 4;
+		vRand.v.coord.x /= 4;
+		vRand.v.coord.y /= 4;
+		vRand.v.coord.z /= 4;
 		vExitDir += vRand;
 		CFixVector::Normalize (vExitDir);
 		}

@@ -2953,8 +2953,8 @@ else {
 	do {
 		i = CFGetC (&tFile);
 		if (i != 13)
-			*p++ = c;
-	} while (c != EOF);
+			*p++ = coord;
+	} while (coord != EOF);
 #endif
 	tFile.Close ();
 	}

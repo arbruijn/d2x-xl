@@ -91,9 +91,6 @@
 /* Define if you want D2X to use Z-buffering */
 #undef OGL_ZBUF
 
-/* Define to enable openmp code */
-#undef OPENMP
-
 /* Name of package */
 #undef PACKAGE
 
@@ -108,6 +105,9 @@
 
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
@@ -129,6 +129,9 @@
 
 /* Define to enable MIDI playback using SDL_mixer */
 #undef USE_SDL_MIXER
+
+/* Define to enable usage of TCP networking functions */
+#undef USE_SDL_NET
 
 /* Version number of package */
 #undef VERSION

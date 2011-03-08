@@ -67,8 +67,8 @@ class CTransformation {
 			Begin (pos, m); 
 			}
 		_INLINE_ void End (void) { Pop (); }
-		_INLINE_ void Move (CFloatVector& v) { glTranslatef (-v.v.c.x, -v.v.c.y, -v.v.c.z); }
-		_INLINE_ void Rotate (CFloatMatrix& m) { glMultMatrixf (m.Vec ()); }
+		_INLINE_ void Move (CFloatVector& v) { glTranslatef (-v.v.coord.x, -v.v.coord.y, -v.v.coord.z); }
+		_INLINE_ void Rotate (CFloatMatrix& m) { glMultMatrixf (m.m.vec); }
 
 		_INLINE_ void Move (const CFixVector& v) {
 			CFloatVector vf;
@@ -125,16 +125,16 @@ class CTransformation {
 
 		_INLINE_ ubyte Codes (CFixVector& v) {
 			ubyte codes = 0;
-			fix z = v.v.c.z;
-			fix x = FixMulDiv (v.v.c.x, m_info.scale.v.c.x, m_info.zoom);
+			fix z = v.v.coord.z;
+			fix x = FixMulDiv (v.v.coord.x, m_info.scale.v.coord.x, m_info.zoom);
 
 			if (x > z)
 				codes |= CC_OFF_RIGHT;
 			if (x < -z)
 				codes |= CC_OFF_LEFT;
-			if (v.v.c.y > z)
+			if (v.v.coord.y > z)
 				codes |= CC_OFF_TOP;
-			if (v.v.c.y < -z)
+			if (v.v.coord.y < -z)
 				codes |= CC_OFF_BOT;
 			if (z < 0)
 				codes |= CC_BEHIND;

@@ -100,9 +100,9 @@ for (i = 0; i < m_vld.nLights; i++) {
 	vertNorm = m_vld.buffers [1] + i;
 	lightPos = m_vld.buffers [2] + i;
 	lightColor = m_vld.buffers [3][i];
-	nType = vertNorm->v.c.w;
-	radius = lightPos->v.c.w;
-	brightness = lightColor.v.c.w;
+	nType = vertNorm->v.coord.w;
+	radius = lightPos->v.coord.w;
+	brightness = lightColor.v.coord.w;
 	lightDir = *lightPos - *vertPos;
 	lightDist = lightDir.Mag() / lightRange;
 	CFloatVector::Normalize (lightDir);
@@ -121,9 +121,9 @@ for (i = 0; i < m_vld.nLights; i++) {
 			NdotL = 0.0f;
 		}	
 	attenuation = lightDist / brightness;
-	vertColor.v.a [R] = (matAmbient.v.a [R] + NdotL) * lightColor.v.a [R];
-	vertColor.v.a [G] = (matAmbient.v.a [G] + NdotL) * lightColor.v.a [G];
-	vertColor.v.a [B] = (matAmbient.v.a [B] + NdotL) * lightColor.v.a [B];
+	vertColor.v.vec [R] = (matAmbient.v.vec [R] + NdotL) * lightColor.v.vec [R];
+	vertColor.v.vec [G] = (matAmbient.v.vec [G] + NdotL) * lightColor.v.vec [G];
+	vertColor.v.vec [B] = (matAmbient.v.vec [B] + NdotL) * lightColor.v.vec [B];
 	if (NdotL > 0.0f) {
 		vReflect = CFloatVector::Reflect (lightDir.Neg (), *vertNorm);
 		CFloatVector::Normalize (vReflect);
@@ -133,13 +133,13 @@ for (i = 0; i < m_vld.nLights; i++) {
 		if (RdotE < 0.0f)
 			RdotE = 0.0f;
 		specular = (float) pow (RdotE, shininess);
-		vertColor.v.a [R] += lightColor.v.a [R] * specular;
-		vertColor.v.a [G] += lightColor.v.a [G] * specular;
-		vertColor.v.a [B] += lightColor.v.a [B] * specular;
+		vertColor.v.vec [R] += lightColor.v.vec [R] * specular;
+		vertColor.v.vec [G] += lightColor.v.vec [G] * specular;
+		vertColor.v.vec [B] += lightColor.v.vec [B] * specular;
 		}	
-	m_vld.colors [i].v.a [R] = vertColor.v.a [R] / attenuation;
-	m_vld.colors [i].v.a [G] = vertColor.v.a [G] / attenuation;
-	m_vld.colors [i].v.a [B] = vertColor.v.a [B] / attenuation;
+	m_vld.colors [i].v.vec [R] = vertColor.v.vec [R] / attenuation;
+	m_vld.colors [i].v.vec [G] = vertColor.v.vec [G] / attenuation;
+	m_vld.colors [i].v.vec [B] = vertColor.v.vec [B] / attenuation;
 	}
 }
 
@@ -209,19 +209,19 @@ for (i = 0, pc = m_vld.colors; i < m_vld.nVertices; i++) {
 	vertColor.blue += gameData.render.color.ambient [nVertex].color.blue;
 	if (gameOpts->render.color.nSaturation == 2) {
 		for (j = 0, nLights = m_vld.index [i].nLights; j < nLights; j++, pc++) {
-			if (vertColor.red < (*pc).v.a [R])
-				vertColor.red = (*pc).v.a [R];
-			if (vertColor.green < (*pc).v.a [G])
-				vertColor.green = (*pc).v.a [G];
-			if (vertColor.blue < (*pc).v.a [B])
-				vertColor.blue = (*pc).v.a [B];
+			if (vertColor.red < (*pc).v.vec [R])
+				vertColor.red = (*pc).v.vec [R];
+			if (vertColor.green < (*pc).v.vec [G])
+				vertColor.green = (*pc).v.vec [G];
+			if (vertColor.blue < (*pc).v.vec [B])
+				vertColor.blue = (*pc).v.vec [B];
 			}
 		}
 	else {
 		for (j = 0, nLights = m_vld.index [i].nLights; j < nLights; j++, pc++) {
-			vertColor.red += (*pc).v.a [R];
-			vertColor.green += (*pc).v.a [G];
-			vertColor.blue += (*pc).v.a [B];
+			vertColor.red += (*pc).v.vec [R];
+			vertColor.green += (*pc).v.vec [G];
+			vertColor.blue += (*pc).v.vec [B];
 			}
 		if (gameOpts->render.color.nSaturation) {	//if a color component is > 1, cap color components using highest component value
 			float	cMax = vertColor.red;
@@ -338,10 +338,10 @@ else if (nState == 1) {
 		m_vld.buffers [1][i] = vNormal;
 		m_vld.buffers [2][i] = psl->render.vPosf [0];
 		m_vld.buffers [3][i] = *(reinterpret_cast<CFloatVector*> (&psl->info.color));
-		m_vld.buffers [0][i].v.c.w = 1.0f;
-		m_vld.buffers [1][i].v.c.w = (psl->info.nType < 2) ? 1.0f : 0.0f;
-		m_vld.buffers [2][i].v.c.w = psl->info.fRad;
-		m_vld.buffers [3][i].v.c.w = psl->info.fBrightness;
+		m_vld.buffers [0][i].v.coord.w = 1.0f;
+		m_vld.buffers [1][i].v.coord.w = (psl->info.nType < 2) ? 1.0f : 0.0f;
+		m_vld.buffers [2][i].v.coord.w = psl->info.fRad;
+		m_vld.buffers [3][i].v.coord.w = psl->info.fBrightness;
 		nLights++;
 		}
 	if (nLights) {

@@ -98,7 +98,7 @@ if (ogl.m_states.bUseTransform) {
 	else {
 		glLoadIdentity ();
 #if 0
-		glScalef (transformation.m_info.scalef.v.c.x, transformation.m_info.scalef.v.c.y, -transformation.m_info.scalef.v.c.z);
+		glScalef (transformation.m_info.scalef.dir.coord.x, transformation.m_info.scalef.dir.coord.y, -transformation.m_info.scalef.dir.coord.z);
 #else
 		glScalef (1, 1, -1);
 #endif
@@ -109,7 +109,7 @@ if (ogl.m_states.bUseTransform) {
 		if (!gameData.models.vScale.IsZero ()) {
 			CFloatVector fScale;
 			fScale.Assign (gameData.models.vScale);
-			glScalef (fScale.v.c.x, fScale.v.c.y, fScale.v.c.z);
+			glScalef (fScale.v.coord.x, fScale.v.coord.y, fScale.v.coord.z);
 			}
 		}
 	}
@@ -132,9 +132,9 @@ m_info.posf [0].Assign (m_info.pos);
 //delta rotation functions
 CFixVector CTransformation::RotateScaledX (CFixVector& dest, fix scale)
 {
-dest.v.c.x = m_info.view [0].m.v.r.v.c.x;
-dest.v.c.y = m_info.view [0].m.v.u.v.c.x;
-dest.v.c.z = m_info.view [0].m.v.f.v.c.x;
+dest.v.coord.x = m_info.view [0].m.dir.r.v.coord.x;
+dest.v.coord.y = m_info.view [0].m.dir.u.v.coord.x;
+dest.v.coord.z = m_info.view [0].m.dir.f.v.coord.x;
 dest *= scale;
 return dest;
 }
@@ -143,9 +143,9 @@ return dest;
 
 CFixVector CTransformation::RotateScaledY (CFixVector& dest, fix scale)
 {
-dest.v.c.x = m_info.view [0].m.v.r.v.c.y;
-dest.v.c.y = m_info.view [0].m.v.u.v.c.y;
-dest.v.c.z = m_info.view [0].m.v.f.v.c.y;
+dest.v.coord.x = m_info.view [0].m.dir.r.v.coord.y;
+dest.v.coord.y = m_info.view [0].m.dir.u.v.coord.y;
+dest.v.coord.z = m_info.view [0].m.dir.f.v.coord.y;
 dest *= scale;
 return dest;
 }
@@ -154,9 +154,9 @@ return dest;
 
 CFixVector CTransformation::RotateScaledZ (CFixVector& dest, fix scale)
 {
-dest.v.c.x = m_info.view [0].m.v.r.v.c.z;
-dest.v.c.y = m_info.view [0].m.v.u.v.c.z;
-dest.v.c.z = m_info.view [0].m.v.f.v.c.z;
+dest.v.coord.x = m_info.view [0].m.dir.r.v.coord.z;
+dest.v.coord.y = m_info.view [0].m.dir.u.v.coord.z;
+dest.v.coord.z = m_info.view [0].m.dir.f.v.coord.z;
 dest *= scale;
 return dest;
 }
@@ -175,26 +175,26 @@ void CTransformation::ComputeAspect (void)
 {
 fix s = FixMulDiv (screen.Aspect (), CCanvas::Current ()->Height (), CCanvas::Current ()->Width ());
 if (s <= I2X (1)) {	   //scale x
-	m_info.aspect.v.c.x = s;
-	m_info.aspect.v.c.y = I2X (1);
+	m_info.aspect.v.coord.x = s;
+	m_info.aspect.v.coord.y = I2X (1);
 	}
 else {
-	m_info.aspect.v.c.y = FixDiv (I2X (1), s);
-	m_info.aspect.v.c.x = I2X (1);
+	m_info.aspect.v.coord.y = FixDiv (I2X (1), s);
+	m_info.aspect.v.coord.x = I2X (1);
 	}
-m_info.aspect.v.c.z = I2X (1);		//always 1
+m_info.aspect.v.coord.z = I2X (1);		//always 1
 }
 
 //------------------------------------------------------------------------------
 
 void CTransformation::SetupProjection (void)
 {
-glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.Vec ());
-Swap (m_info.projection [1], m_info.projection [4]);
-Swap (m_info.projection [2], m_info.projection [8]);
-Swap (m_info.projection [3], m_info.projection [12]);
-Swap (m_info.projection [7], m_info.projection [13]);
-Swap (m_info.projection [11], m_info.projection [14]);
+glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);
+Swap (m_info.projection.m.vec [1], m_info.projection.m.vec [4]);
+Swap (m_info.projection.m.vec [2], m_info.projection.m.vec [8]);
+Swap (m_info.projection.m.vec [3], m_info.projection.m.vec [12]);
+Swap (m_info.projection.m.vec [7], m_info.projection.m.vec [13]);
+Swap (m_info.projection.m.vec [11], m_info.projection.m.vec [14]);
 }
 
 //------------------------------------------------------------------------------

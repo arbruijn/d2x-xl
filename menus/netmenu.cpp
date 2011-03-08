@@ -689,12 +689,12 @@ do {
 		optMultiCheats = -1;
 	optRotateLevels = m.AddCheck (TXT_MSN_CYCLE, extraGameInfo [1].bRotateLevels, KEY_Y, HTX_MULTI2_MSNCYCLE); 
 #if 0
-		optDisableReactor = m.AddCheck (TXT_NO_REACTOR, extraGameInfo [1].bDisableReactor, KEY_R, HTX_MULTI2_NOREACTOR); 
+		optDisableReactor = mat.AddCheck (TXT_NO_REACTOR, extraGameInfo [1].bDisableReactor, KEY_R, HTX_MULTI2_NOREACTOR); 
 #else
 		optDisableReactor = -1;
 #endif
 #if UDP_SAFEMODE
-	optSafeUDP = m.AddCheck (TXT_UDP_QUAL, extraGameInfo [0].bSafeUDP, KEY_Q, HTX_MULTI2_UDPQUAL);
+	optSafeUDP = mat.AddCheck (TXT_UDP_QUAL, extraGameInfo [0].bSafeUDP, KEY_Q, HTX_MULTI2_UDPQUAL);
 #endif
 	optCheckPort = m.AddCheck (TXT_CHECK_PORT, extraGameInfo [0].bCheckUDPPort, KEY_P, HTX_MULTI2_CHECKPORT);
 	if (extraGameInfo [1].bDarkness)
@@ -761,7 +761,7 @@ do {
 	if (optAutoTeams >= 0)
 		extraGameInfo [0].bAutoBalanceTeams = (m [optAutoTeams].m_value != 0);
 	#if UDP_SAFEMODE
-	extraGameInfo [0].bSafeUDP = (m [optSafeUDP].m_value != 0);
+	extraGameInfo [0].bSafeUDP = (mat [optSafeUDP].m_value != 0);
 	#endif
 	extraGameInfo [0].bCheckUDPPort = (m [optCheckPort].m_value != 0);
 	extraGameInfo [1].bRotateLevels = m [optRotateLevels].m_value;
@@ -1179,7 +1179,7 @@ if (gameStates.app.bNostalgia) {
 	extraGameInfo [0].bInhibitSuicide = 0;
 	extraGameInfo [0].bAutoBalanceTeams = 0;
 #if UDP_SAFEMODE
-	extraGameInfo [0].bSafeUDP = (m [optSafeUDP].m_value != 0);
+	extraGameInfo [0].bSafeUDP = (mat [optSafeUDP].m_value != 0);
 #endif
 	extraGameInfo [1].bMouseLook = 0;
 	extraGameInfo [1].bFastPitch = 2;

@@ -62,18 +62,18 @@ void MorphFindModelBounds (CPolyModel* pmP, int nSubModel, CFixVector& minv, CFi
 	minv = maxv = *vp++;
 	nVerts--;
 	while (nVerts--) {
-		if ((*vp).v.c.x > maxv.v.c.x)
-			maxv.v.c.x = (*vp).v.c.x;
-		else if((*vp).v.c.x < minv.v.c.x)
-			minv.v.c.x = (*vp).v.c.x;
-		if ((*vp).v.c.y > maxv.v.c.y)
-			maxv.v.c.y = (*vp).v.c.y;
-		else if ((*vp).v.c.y < minv.v.c.y)
-			minv.v.c.y = (*vp).v.c.y;
-		if ((*vp).v.c.z > maxv.v.c.z)
-			maxv.v.c.z = (*vp).v.c.z;
-		else if ((*vp).v.c.z < minv.v.c.z)
-			minv.v.c.z = (*vp).v.c.z;
+		if ((*vp).v.coord.x > maxv.v.coord.x)
+			maxv.v.coord.x = (*vp).v.coord.x;
+		else if((*vp).v.coord.x < minv.v.coord.x)
+			minv.v.coord.x = (*vp).v.coord.x;
+		if ((*vp).v.coord.y > maxv.v.coord.y)
+			maxv.v.coord.y = (*vp).v.coord.y;
+		else if ((*vp).v.coord.y < minv.v.coord.y)
+			minv.v.coord.y = (*vp).v.coord.y;
+		if ((*vp).v.coord.z > maxv.v.coord.z)
+			maxv.v.coord.z = (*vp).v.coord.z;
+		else if ((*vp).v.coord.z < minv.v.coord.z)
+			minv.v.coord.z = (*vp).v.coord.z;
 		vp++;
 	}
 }
@@ -113,11 +113,11 @@ while (nVerts--) {
 	if (vBoxSize) {
 		fix t;
 		k = 0x7fffffff;
-		if (v.v.c.x && X2I ((*vBoxSize).v.c.x) < abs (v.v.c.x)/2 && (t = FixDiv ((*vBoxSize).v.c.x, abs (v.v.c.x))) < k)
+		if (v.v.coord.x && X2I ((*vBoxSize).v.coord.x) < abs (v.v.coord.x)/2 && (t = FixDiv ((*vBoxSize).v.coord.x, abs (v.v.coord.x))) < k)
 			k = t;
-		if (v.v.c.y && X2I ((*vBoxSize).v.c.y) < abs (v.v.c.y)/2 && (t = FixDiv ((*vBoxSize).v.c.y, abs (v.v.c.y))) < k)
+		if (v.v.coord.y && X2I ((*vBoxSize).v.coord.y) < abs (v.v.coord.y)/2 && (t = FixDiv ((*vBoxSize).v.coord.y, abs (v.v.coord.y))) < k)
 			k = t;
-		if (v.v.c.z && X2I ((*vBoxSize).v.c.z) < abs (v.v.c.z)/2 && (t = FixDiv ((*vBoxSize).v.c.z, abs (v.v.c.z))) < k)
+		if (v.v.coord.z && X2I ((*vBoxSize).v.coord.z) < abs (v.v.coord.z)/2 && (t = FixDiv ((*vBoxSize).v.coord.z, abs (v.v.coord.z))) < k)
 			k = t;
 		if (k == 0x7fffffff)
 			k = 0;
@@ -263,9 +263,9 @@ mType.physInfo.rotVel = morph_rotvel;
 pmP = gameData.models.polyModels [0] + ModelId ();
 G3CheckAndSwap (reinterpret_cast<void*> (pmP->Data ()));
 MorphFindModelBounds (pmP, 0, pmmin, pmmax);
-vBoxSize.v.c.x = max (-pmmin.v.c.x, pmmax.v.c.x) / 2;
-vBoxSize.v.c.y = max (-pmmin.v.c.y, pmmax.v.c.y) / 2;
-vBoxSize.v.c.z = max (-pmmin.v.c.z, pmmax.v.c.z) / 2;
+vBoxSize.v.coord.x = max (-pmmin.v.coord.x, pmmax.v.coord.x) / 2;
+vBoxSize.v.coord.y = max (-pmmin.v.coord.y, pmmax.v.coord.y) / 2;
+vBoxSize.v.coord.z = max (-pmmin.v.coord.z, pmmax.v.coord.z) / 2;
 for (i = 0; i < MAX_VECS; i++)		//clear all points
 	mdP->times [i] = 0;
 for (i = 1; i < MAX_SUBMODELS; i++)		//clear all parts

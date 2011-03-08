@@ -177,7 +177,7 @@ class CParticle : public tParticle {
 		bool IsVisible (int nThread);
 		inline fix Transform (bool bUnscaled) {
 			transformation.Transform (m_vTransPos, m_vPos, bUnscaled);
-			return m_vTransPos.v.c.z;
+			return m_vTransPos.v.coord.z;
 			}
 #ifdef _WIN32
 		inline float Rad (void) { return (float) _hypot (m_nWidth, m_nHeight); }

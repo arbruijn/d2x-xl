@@ -196,17 +196,17 @@ xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
 for (i = 0; i < 4; i++) {
 	v = gameData.segs.vertices +sideVerts [i];
-	h = (*v).v.c.x;
+	h = (*v).v.coord.x;
 	if (xMin > h)
 		xMin = h;
 	if (xMax < h)
 		xMax = h;
-	h = (*v).v.c.y;
+	h = (*v).v.coord.y;
 	if (yMin > h)
 		yMin = h;
 	if (yMax < h)
 		yMax = h;
-	h = (*v).v.c.z;
+	h = (*v).v.coord.z;
 	if (zMin > h)
 		zMin = h;
 	if (zMax < h)
@@ -445,25 +445,25 @@ for (y = yMin; y < yMax; y++) {
 			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
 			G3AccumVertColor (-1, &color, &vcd, nThread);
-			if ((color.v.a [R] > 0.001f) || (color.v.a [G] > 0.001f) || (color.v.a [B] > 0.001f)) {
+			if ((color.v.vec [R] > 0.001f) || (color.v.vec [G] > 0.001f) || (color.v.vec [B] > 0.001f)) {
 					bBlack = false;
-				if (color.v.a [R] >= 0.999f)
-					color.v.a [R] = 1;
+				if (color.v.vec [R] >= 0.999f)
+					color.v.vec [R] = 1;
 				else
 					bWhite = false;
-				if (color.v.a [G] >= 0.999f)
-					color.v.a [G] = 1;
+				if (color.v.vec [G] >= 0.999f)
+					color.v.vec [G] = 1;
 				else
 					bWhite = false;
-				if (color.v.a [B] >= 0.999f)
-					color.v.a [B] = 1;
+				if (color.v.vec [B] >= 0.999f)
+					color.v.vec [B] = 1;
 				else
 					bWhite = false;
 				}
 			texColorP = m_data.texColor + x * w + y;
-			texColorP->red = (ubyte) (255 * color.v.a [R]);
-			texColorP->green = (ubyte) (255 * color.v.a [G]);
-			texColorP->blue = (ubyte) (255 * color.v.a [B]);
+			texColorP->red = (ubyte) (255 * color.v.vec [R]);
+			texColorP->green = (ubyte) (255 * color.v.vec [G]);
+			texColorP->blue = (ubyte) (255 * color.v.vec [B]);
 			}
 		}
 	}

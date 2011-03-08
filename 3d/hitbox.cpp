@@ -56,18 +56,18 @@ for (;;)
 			v = VECPTR (p + 4);
 			for (i = n; i; i--, v++) {
 				hv = *v;
-				if (hb.vMin.v.c.x > hv.v.c.x)
-					hb.vMin.v.c.x = hv.v.c.x;
-				else if (hb.vMax.v.c.x < hv.v.c.x)
-					hb.vMax.v.c.x = hv.v.c.x;
-				if (hb.vMin.v.c.y > hv.v.c.y)
-					hb.vMin.v.c.y = hv.v.c.y;
-				else if (hb.vMax.v.c.y < hv.v.c.y)
-					hb.vMax.v.c.y = hv.v.c.y;
-				if (hb.vMin.v.c.z > hv.v.c.z)
-					hb.vMin.v.c.z = hv.v.c.z;
-				else if (hb.vMax.v.c.z < hv.v.c.z)
-					hb.vMax.v.c.z = hv.v.c.z;
+				if (hb.vMin.v.coord.x > hv.v.coord.x)
+					hb.vMin.v.coord.x = hv.v.coord.x;
+				else if (hb.vMax.v.coord.x < hv.v.coord.x)
+					hb.vMax.v.coord.x = hv.v.coord.x;
+				if (hb.vMin.v.coord.y > hv.v.coord.y)
+					hb.vMin.v.coord.y = hv.v.coord.y;
+				else if (hb.vMax.v.coord.y < hv.v.coord.y)
+					hb.vMax.v.coord.y = hv.v.coord.y;
+				if (hb.vMin.v.coord.z > hv.v.coord.z)
+					hb.vMin.v.coord.z = hv.v.coord.z;
+				else if (hb.vMax.v.coord.z < hv.v.coord.z)
+					hb.vMax.v.coord.z = hv.v.coord.z;
 				}
 			p += n * sizeof (CFixVector) + 4;
 			break;
@@ -77,18 +77,18 @@ for (;;)
 			v = VECPTR (p + 8);
 			for (i = n; i; i--, v++) {
 				hv = *v;
-				if (hb.vMin.v.c.x > hv.v.c.x)
-					hb.vMin.v.c.x = hv.v.c.x;
-				else if (hb.vMax.v.c.x < hv.v.c.x)
-					hb.vMax.v.c.x = hv.v.c.x;
-				if (hb.vMin.v.c.y > hv.v.c.y)
-					hb.vMin.v.c.y = hv.v.c.y;
-				else if (hb.vMax.v.c.y < hv.v.c.y)
-					hb.vMax.v.c.y = hv.v.c.y;
-				if (hb.vMin.v.c.z > hv.v.c.z)
-					hb.vMin.v.c.z = hv.v.c.z;
-				else if (hb.vMax.v.c.z < hv.v.c.z)
-					hb.vMax.v.c.z = hv.v.c.z;
+				if (hb.vMin.v.coord.x > hv.v.coord.x)
+					hb.vMin.v.coord.x = hv.v.coord.x;
+				else if (hb.vMax.v.coord.x < hv.v.coord.x)
+					hb.vMax.v.coord.x = hv.v.coord.x;
+				if (hb.vMin.v.coord.y > hv.v.coord.y)
+					hb.vMin.v.coord.y = hv.v.coord.y;
+				else if (hb.vMax.v.coord.y < hv.v.coord.y)
+					hb.vMax.v.coord.y = hv.v.coord.y;
+				if (hb.vMin.v.coord.z > hv.v.coord.z)
+					hb.vMin.v.coord.z = hv.v.coord.z;
+				else if (hb.vMax.v.coord.z < hv.v.coord.z)
+					hb.vMax.v.coord.z = hv.v.coord.z;
 				}
 			p += n * sizeof (CFixVector) + 8;
 			break;
@@ -180,9 +180,9 @@ void ComputeHitbox (int nModel, int iHitbox)
 	int				i;
 
 for (i = 0; i < 8; i++) {
-	pv [i].v.c.x = (hitBoxOffsets [i].v.c.x ? vMin.v.c.x : vMax.v.c.x) + vOffset.v.c.x;
-	pv [i].v.c.y = (hitBoxOffsets [i].v.c.y ? vMin.v.c.y : vMax.v.c.y) + vOffset.v.c.y;
-	pv [i].v.c.z = (hitBoxOffsets [i].v.c.z ? vMin.v.c.z : vMax.v.c.z) + vOffset.v.c.z;
+	pv [i].v.coord.x = (hitBoxOffsets [i].v.coord.x ? vMin.v.coord.x : vMax.v.coord.x) + vOffset.v.coord.x;
+	pv [i].v.coord.y = (hitBoxOffsets [i].v.coord.y ? vMin.v.coord.y : vMax.v.coord.y) + vOffset.v.coord.y;
+	pv [i].v.coord.z = (hitBoxOffsets [i].v.coord.z ? vMin.v.coord.z : vMax.v.coord.z) + vOffset.v.coord.z;
 	}
 for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
 	*pf->n = CFixVector::Normal (pv [hitboxFaceVerts [i][0]], pv [hitboxFaceVerts [i][1]], pv [hitboxFaceVerts [i][2]]);
@@ -217,8 +217,8 @@ for (; iModel <= nModels; iModel++, phb++, pmhb++) {
 		transformation.Transform (rotVerts + i, pmhb->box.vertices + i, 0);
 	for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
 		for (j = 0; j < 4; j++)
-			pf->v [j] = rotVerts [hitboxFaceVerts [i][j]];
-		VmVecNormal (pf->n + 1, pf->v, pf->v + 1, pf->v + 2);
+			pf->dir [j] = rotVerts [hitboxFaceVerts [i][j]];
+		VmVecNormal (pf->n + 1, pf->dir, pf->dir + 1, pf->dir + 2);
 		}
 	}
 transformation.End ();

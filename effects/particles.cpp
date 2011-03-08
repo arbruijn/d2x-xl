@@ -203,9 +203,9 @@ else
 #endif
 nSpeed *= I2X (1);
 if (!vDir) {
-	m_vDrift.v.c.x = nSpeed - randN (2 * nSpeed);
-	m_vDrift.v.c.y = nSpeed - randN (2 * nSpeed);
-	m_vDrift.v.c.z = nSpeed - randN (2 * nSpeed);
+	m_vDrift.v.coord.x = nSpeed - randN (2 * nSpeed);
+	m_vDrift.v.coord.y = nSpeed - randN (2 * nSpeed);
+	m_vDrift.v.coord.z = nSpeed - randN (2 * nSpeed);
 	m_vDir.SetZero ();
 	m_bHaveDir = 1;
 	}
@@ -217,9 +217,9 @@ else {
 	else {
 		CAngleVector a;
 		CFixMatrix m;
-		a.v.c.p = randN (I2X (1) / 4) - I2X (1) / 8;
-		a.v.c.b = randN (I2X (1) / 4) - I2X (1) / 8;
-		a.v.c.h = randN (I2X (1) / 4) - I2X (1) / 8;
+		a.v.coord.p = randN (I2X (1) / 4) - I2X (1) / 8;
+		a.v.coord.b = randN (I2X (1) / 4) - I2X (1) / 8;
+		a.v.coord.h = randN (I2X (1) / 4) - I2X (1) / 8;
 		m = CFixMatrix::Create (a);
 		if (nType == WATERFALL_PARTICLES)
 			CFixVector::Normalize (m_vDir);
@@ -249,8 +249,8 @@ else if ((nType != BUBBLE_PARTICLES) && (nType != RAIN_PARTICLES) && (nType != S
 else {
 	//m_vPos = *vPos + vDrift * (I2X (1) / 32);
 	nSpeed = m_vDrift.Mag () / 16;
-	CFixVector v = CFixVector::Avg ((*mOrient).m.v.r * (nSpeed - randN (2 * nSpeed)), (*mOrient).m.v.u * (nSpeed - randN (2 * nSpeed)));
-	m_vPos = *vPos + v + (*mOrient).m.v.f * (I2X (1) / 2 - randN (I2X (1)));
+	CFixVector v = CFixVector::Avg ((*mOrient).m.dir.r * (nSpeed - randN (2 * nSpeed)), (*mOrient).m.dir.u * (nSpeed - randN (2 * nSpeed)));
+	m_vPos = *vPos + v + (*mOrient).m.dir.f * (I2X (1) / 2 - randN (I2X (1)));
 	}
 
 if ((nType == BUBBLE_PARTICLES) || (nType == SNOW_PARTICLES))
@@ -272,9 +272,9 @@ else {
 		CAngleVector vRot;
 		CFixMatrix mRot;
 
-		vRot.v.c.b = 0;
-		vRot.v.c.p = 2048 - ((d_rand () % 9) * 512);
-		vRot.v.c.h = 2048 - ((d_rand () % 9) * 512);
+		vRot.v.coord.b = 0;
+		vRot.v.coord.p = 2048 - ((d_rand () % 9) * 512);
+		vRot.v.coord.h = 2048 - ((d_rand () % 9) * 512);
 		mRot = CFixMatrix::Create (vRot);
 		m_mOrient = *mOrient * mRot;
 		}
@@ -566,9 +566,9 @@ if (CFixVector::Dot (vDrift, m_vDir) < 0)
 #endif
 
 if ((m_nType <= SMOKE_PARTICLES) || (m_nType == FIRE_PARTICLES)) {
-	m_vDrift.v.c.x = ChangeDir (m_vDrift.v.c.x);
-	m_vDrift.v.c.y = ChangeDir (m_vDrift.v.c.y);
-	m_vDrift.v.c.z = ChangeDir (m_vDrift.v.c.z);
+	m_vDrift.v.coord.x = ChangeDir (m_vDrift.v.coord.x);
+	m_vDrift.v.coord.y = ChangeDir (m_vDrift.v.coord.y);
+	m_vDrift.v.coord.z = ChangeDir (m_vDrift.v.coord.z);
 	}
 
 if (m_bHaveDir) {
@@ -916,25 +916,25 @@ if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
 							? (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.3333333f))
 							: 1.0f / float (pow (m_decay, 0.3333333f));
 #endif
-	vOffset.v.c.x = m_nWidth * fFade;
-	vOffset.v.c.y = m_nHeight * fFade;
+	vOffset.dir.coord.x = m_nWidth * fFade;
+	vOffset.dir.coord.y = m_nHeight * fFade;
 	}
 else {
-	vOffset.v.c.x = m_nWidth * m_decay;
-	vOffset.v.c.y = m_nHeight * m_decay;
+	vOffset.dir.coord.x = m_nWidth * m_decay;
+	vOffset.dir.coord.y = m_nHeight * m_decay;
 	}
-vOffset.v.c.z = 0;
+vOffset.dir.coord.z = 0;
 
 float h = ParticleImageInfo (m_nType).xBorder;
-pb [m_nOrient].texCoord.v.u =
-pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + h;
-pb [(m_nOrient + 1) % 4].texCoord.v.u =
-pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - h;
+pb [m_nOrient].texCoord.dir.u =
+pb [(m_nOrient + 3) % 4].texCoord.dir.u = m_texCoord.dir.u + h;
+pb [(m_nOrient + 1) % 4].texCoord.dir.u =
+pb [(m_nOrient + 2) % 4].texCoord.dir.u = m_texCoord.dir.u + m_deltaUV - h;
 h = ParticleImageInfo (m_nType).yBorder;
-pb [m_nOrient].texCoord.v.v =
-pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + h;
-pb [(m_nOrient + 2) % 4].texCoord.v.v =
-pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - h;
+pb [m_nOrient].texCoord.dir.dir =
+pb [(m_nOrient + 1) % 4].texCoord.dir.dir = m_texCoord.dir.dir + h;
+pb [(m_nOrient + 2) % 4].texCoord.dir.dir =
+pb [(m_nOrient + 3) % 4].texCoord.dir.dir = m_texCoord.dir.dir + m_deltaUV - h;
 
 pb [0].color =
 pb [1].color =
@@ -942,35 +942,35 @@ pb [2].color =
 pb [3].color = m_renderColor;
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
-vCenter.v.c.x += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
+vCenter.dir.coord.x += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 if (m_bRotate && gameOpts->render.particles.bRotate) {
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-	vOffset.v.c.x *= vRot [i].v.c.x;
-	vOffset.v.c.y *= vRot [i].v.c.y;
+	vOffset.dir.coord.x *= vRot [i].dir.coord.x;
+	vOffset.dir.coord.y *= vRot [i].dir.coord.y;
 
-	pb [0].vertex.v.c.x = vCenter.v.c.x - vOffset.v.c.x;
-	pb [0].vertex.v.c.y = vCenter.v.c.y + vOffset.v.c.y;
-	pb [1].vertex.v.c.x = vCenter.v.c.x + vOffset.v.c.y;
-	pb [1].vertex.v.c.y = vCenter.v.c.y + vOffset.v.c.x;
-	pb [2].vertex.v.c.x = vCenter.v.c.x + vOffset.v.c.x;
-	pb [2].vertex.v.c.y = vCenter.v.c.y - vOffset.v.c.y;
-	pb [3].vertex.v.c.x = vCenter.v.c.x - vOffset.v.c.y;
-	pb [3].vertex.v.c.y = vCenter.v.c.y - vOffset.v.c.x;
+	pb [0].vertex.dir.coord.x = vCenter.dir.coord.x - vOffset.dir.coord.x;
+	pb [0].vertex.dir.coord.y = vCenter.dir.coord.y + vOffset.dir.coord.y;
+	pb [1].vertex.dir.coord.x = vCenter.dir.coord.x + vOffset.dir.coord.y;
+	pb [1].vertex.dir.coord.y = vCenter.dir.coord.y + vOffset.dir.coord.x;
+	pb [2].vertex.dir.coord.x = vCenter.dir.coord.x + vOffset.dir.coord.x;
+	pb [2].vertex.dir.coord.y = vCenter.dir.coord.y - vOffset.dir.coord.y;
+	pb [3].vertex.dir.coord.x = vCenter.dir.coord.x - vOffset.dir.coord.y;
+	pb [3].vertex.dir.coord.y = vCenter.dir.coord.y - vOffset.dir.coord.x;
 	}
 else {
-	pb [0].vertex.v.c.x =
-	pb [3].vertex.v.c.x = vCenter.v.c.x - vOffset.v.c.x;
-	pb [1].vertex.v.c.x =
-	pb [2].vertex.v.c.x = vCenter.v.c.x + vOffset.v.c.x;
-	pb [0].vertex.v.c.y =
-	pb [1].vertex.v.c.y = vCenter.v.c.y + vOffset.v.c.y;
-	pb [2].vertex.v.c.y =
-	pb [3].vertex.v.c.y = vCenter.v.c.y - vOffset.v.c.y;
+	pb [0].vertex.dir.coord.x =
+	pb [3].vertex.dir.coord.x = vCenter.dir.coord.x - vOffset.dir.coord.x;
+	pb [1].vertex.dir.coord.x =
+	pb [2].vertex.dir.coord.x = vCenter.dir.coord.x + vOffset.dir.coord.x;
+	pb [0].vertex.dir.coord.y =
+	pb [1].vertex.dir.coord.y = vCenter.dir.coord.y + vOffset.dir.coord.y;
+	pb [2].vertex.dir.coord.y =
+	pb [3].vertex.dir.coord.y = vCenter.dir.coord.y - vOffset.dir.coord.y;
 	}
-pb [0].vertex.v.c.z =
-pb [1].vertex.v.c.z =
-pb [2].vertex.v.c.z =
-pb [3].vertex.v.c.z = vCenter.v.c.z;
+pb [0].vertex.dir.coord.z =
+pb [1].vertex.dir.coord.z =
+pb [2].vertex.dir.coord.z =
+pb [3].vertex.dir.coord.z = vCenter.dir.coord.z;
 }
 
 #else // -----------------------------------------------------------------------
@@ -1026,16 +1026,16 @@ if (m_nType == RAIN_PARTICLES) {
 else {
 	if ((m_nType == SNOW_PARTICLES) || ((m_nType == BUBBLE_PARTICLES)
 			&& gameOpts->render.particles.bWiggleBubbles))
-		vCenter.v.c.x += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
+		vCenter.v.coord.x += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 	if (m_bRotate && gameOpts->render.particles.bRotate) {
 		int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
 		CFixMatrix mOrient = gameData.render.mine.viewer.mOrient * mRot [i];
-		uVec.Assign (mOrient.m.v.u);
-		rVec.Assign (mOrient.m.v.r);
+		uVec.Assign (mOrient.m.dir.u);
+		rVec.Assign (mOrient.m.dir.r);
 		}
 	else {
-		uVec.Assign (gameData.render.mine.viewer.mOrient.m.v.u);
-		rVec.Assign (gameData.render.mine.viewer.mOrient.m.v.r);
+		uVec.Assign (gameData.render.mine.viewer.mOrient.m.dir.u);
+		rVec.Assign (gameData.render.mine.viewer.mOrient.m.dir.r);
 		}
 	}
 uVec *= m_nHeight * fScale;

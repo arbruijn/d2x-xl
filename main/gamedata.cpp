@@ -681,9 +681,9 @@ return (v >= 0) ? Floor (v + 0xFFFF) : -Floor (-v);
 
 inline CFixVector& Floor (CFixVector& v)
 {
-v.v.c.x = Floor (v.v.c.x);
-v.v.c.y = Floor (v.v.c.y);
-v.v.c.z = Floor (v.v.c.z);
+v.v.coord.x = Floor (v.v.coord.x);
+v.v.coord.y = Floor (v.v.coord.y);
+v.v.coord.z = Floor (v.v.coord.z);
 return v;
 }
 
@@ -691,9 +691,9 @@ return v;
 
 inline CFixVector& Ceil (CFixVector& v)
 {
-v.v.c.x = Ceil (v.v.c.x);
-v.v.c.y = Ceil (v.v.c.y);
-v.v.c.z = Ceil (v.v.c.z);
+v.v.coord.x = Ceil (v.v.coord.x);
+v.v.coord.y = Ceil (v.v.coord.y);
+v.v.coord.z = Ceil (v.v.coord.z);
 return v;
 }
 
@@ -701,9 +701,9 @@ return v;
 
 inline CFixVector& ToInt (CFixVector& v)
 {
-v.v.c.x = X2I (v.v.c.x);
-v.v.c.y = X2I (v.v.c.y);
-v.v.c.z = X2I (v.v.c.z);
+v.v.coord.x = X2I (v.v.coord.x);
+v.v.coord.y = X2I (v.v.coord.y);
+v.v.coord.z = X2I (v.v.coord.z);
 return v;
 }
 
@@ -711,12 +711,12 @@ return v;
 
 inline int CSegmentGrid::GridIndex (int x, int y, int z)
 {
-return z * m_vDim.v.c.y * m_vDim.v.c.x + y * m_vDim.v.c.x + x;
+return z * m_vDim.v.coord.y * m_vDim.v.coord.x + y * m_vDim.v.coord.x + x;
 }
 
 // ----------------------------------------------------------------------------
 
-#define GRID_INDEX(_x,_y,_z)	(((_z) * m_vDim.v.c.y + (_y)) * m_vDim.v.c.x + (_x))
+#define GRID_INDEX(_x,_y,_z)	(((_z) * m_vDim.v.coord.y + (_y)) * m_vDim.v.coord.x + (_x))
 
 bool CSegmentGrid::Create (int nGridSize, int bSkyBox)
 {
@@ -734,18 +734,18 @@ for (i = gameData.segs.nSegments, j = 0; i; i--, segP++) {
 		j++;
 		v0 = segP->m_extents [0];
 		v1 = segP->m_extents [1];
-		if (m_vMin.v.c.x > v0.v.c.x)
-			m_vMin.v.c.x = v0.v.c.x;
-		if (m_vMin.v.c.y > v0.v.c.y)
-			m_vMin.v.c.y = v0.v.c.y;
-		if (m_vMin.v.c.z > v0.v.c.z)
-			m_vMin.v.c.z = v0.v.c.z;
-		if (m_vMax.v.c.x < v1.v.c.x)
-			m_vMax.v.c.x = v1.v.c.x;
-		if (m_vMax.v.c.y < v1.v.c.y)
-			m_vMax.v.c.y = v1.v.c.y;
-		if (m_vMax.v.c.z < v1.v.c.z)
-			m_vMax.v.c.z = v1.v.c.z;
+		if (m_vMin.v.coord.x > v0.v.coord.x)
+			m_vMin.v.coord.x = v0.v.coord.x;
+		if (m_vMin.v.coord.y > v0.v.coord.y)
+			m_vMin.v.coord.y = v0.v.coord.y;
+		if (m_vMin.v.coord.z > v0.v.coord.z)
+			m_vMin.v.coord.z = v0.v.coord.z;
+		if (m_vMax.v.coord.x < v1.v.coord.x)
+			m_vMax.v.coord.x = v1.v.coord.x;
+		if (m_vMax.v.coord.y < v1.v.coord.y)
+			m_vMax.v.coord.y = v1.v.coord.y;
+		if (m_vMax.v.coord.z < v1.v.coord.z)
+			m_vMax.v.coord.z = v1.v.coord.z;
 		}
 	}
 
@@ -756,7 +756,7 @@ m_nGridSize = nGridSize;
 m_vDim = m_vMax - m_vMin;
 m_vDim /= I2X (m_nGridSize);
 ToInt (Ceil (m_vDim));
-size = ++m_vDim.v.c.x * ++m_vDim.v.c.y * ++m_vDim.v.c.z;
+size = ++m_vDim.v.coord.x * ++m_vDim.v.coord.y * ++m_vDim.v.coord.z;
 
 if (!m_index.Create (size))
 	return false;
@@ -775,10 +775,10 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 		v1 /= I2X (m_nGridSize);
 		ToInt (Floor (v0));
 		ToInt (Floor (v1));
-		for (z = v0.v.c.z; z <= v1.v.c.z; z++) {
-			for (y = v0.v.c.y; y <= v1.v.c.y; y++) {
-				indexP = &m_index [GridIndex (v0.v.c.x, y, z)];
-				for (x = v0.v.c.x; x <= v1.v.c.x; x++, indexP++) {
+		for (z = v0.v.coord.z; z <= v1.v.coord.z; z++) {
+			for (y = v0.v.coord.y; y <= v1.v.coord.y; y++) {
+				indexP = &m_index [GridIndex (v0.v.coord.x, y, z)];
+				for (x = v0.v.coord.x; x <= v1.v.coord.x; x++, indexP++) {
 					indexP->nSegments++;
 					}
 				}
@@ -817,10 +817,10 @@ for (i = 0; i < gameData.segs.nSegments; i++, segP++) {
 		v1 /= I2X (m_nGridSize);
 		ToInt (Floor (v0));
 		ToInt (Floor (v1));
-		for (z = v0.v.c.z; z <= v1.v.c.z; z++) {
-			for (y = v0.v.c.y; y <= v1.v.c.y; y++) {
-				indexP = &m_index [GridIndex (v0.v.c.x, y, z)];
-				for (x = v0.v.c.x; x <= v1.v.c.x; x++, indexP++)
+		for (z = v0.v.coord.z; z <= v1.v.coord.z; z++) {
+			for (y = v0.v.coord.y; y <= v1.v.coord.y; y++) {
+				indexP = &m_index [GridIndex (v0.v.coord.x, y, z)];
+				for (x = v0.v.coord.x; x <= v1.v.coord.x; x++, indexP++)
 					m_segments [indexP->nIndex + indexP->nSegments++] = i;
 				}
 			}
@@ -847,7 +847,7 @@ if (!Available ())
 vPos -= m_vMin;
 vPos /= I2X (m_nGridSize);
 ToInt (Floor (vPos));
-int i = GRID_INDEX (vPos.v.c.x, vPos.v.c.y, vPos.v.c.z);
+int i = GRID_INDEX (vPos.v.coord.x, vPos.v.coord.y, vPos.v.coord.z);
 if ((i < 0) || (i >= int (m_index.Length ())))
 	return 0;
 listP = &m_segments [m_index [i].nIndex];

@@ -389,7 +389,7 @@ if ((siP->ailP->nextPrimaryFire <= 0) && (gameData.ai.nTargetVisibility)) {
 
 	if (!AIMultiplayerAwareness (objP, 75))
 		return 1;
-	fire_vec = objP->info.position.mOrient.m.v.f;
+	fire_vec = objP->info.position.mOrient.m.dir.f;
 	fire_vec = -fire_vec;
 	fire_pos = objP->info.position.vPos + fire_vec;
 	CreateNewWeaponSimple (&fire_vec, &fire_pos, objP->Index (), (aiP->SUB_FLAGS & SUB_FLAGS_SPROX) ? ROBOT_SMARTMINE_ID : PROXMINE_ID, 1);
@@ -495,15 +495,15 @@ if (gameData.ai.nTargetVisibility == 2) {
 	CFixVector  goal_point, vGoal, vec_to_goal, vRand;
 	fix         dot;
 
-	dot = CFixVector::Dot (OBJPOS (TARGETOBJ)->mOrient.m.v.f, gameData.ai.target.vDir);
+	dot = CFixVector::Dot (OBJPOS (TARGETOBJ)->mOrient.m.dir.f, gameData.ai.target.vDir);
 	if (dot > 0) {          // Remember, we're interested in the rear vector dot being < 0.
-		vGoal = OBJPOS (TARGETOBJ)->mOrient.m.v.f;
+		vGoal = OBJPOS (TARGETOBJ)->mOrient.m.dir.f;
 		vGoal = -vGoal;
 		}
 	else {
 		fix dot;
-		dot = CFixVector::Dot (OBJPOS (TARGETOBJ)->mOrient.m.v.r, gameData.ai.target.vDir);
-		vGoal = OBJPOS (TARGETOBJ)->mOrient.m.v.r;
+		dot = CFixVector::Dot (OBJPOS (TARGETOBJ)->mOrient.m.dir.r, gameData.ai.target.vDir);
+		vGoal = OBJPOS (TARGETOBJ)->mOrient.m.dir.r;
 		if (dot > 0) {
 			vGoal = -vGoal;
 			}
@@ -637,7 +637,7 @@ int AISNoneHandler1 (CObject *objP, tAIStateInfo *siP)
 	fix	dot;
 
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
-dot = CFixVector::Dot (objP->info.position.mOrient.m.v.f, gameData.ai.target.vDir);
+dot = CFixVector::Dot (objP->info.position.mOrient.m.dir.f, gameData.ai.target.vDir);
 if ((dot >= I2X (1)/2) && (siP->aiP->GOAL_STATE == AIS_REST))
 	siP->aiP->GOAL_STATE = AIS_SEARCH;
 return 0;
@@ -865,8 +865,8 @@ if (siP->botInfoP->companion) {
 		else
 			;
 
-		if (bDoStuff && (CFixVector::Dot (objP->info.position.mOrient.m.v.f, gameData.ai.target.vDir) < I2X (1) / 2)) {
-			CreateNewWeaponSimple (&objP->info.position.mOrient.m.v.f, &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
+		if (bDoStuff && (CFixVector::Dot (objP->info.position.mOrient.m.dir.f, gameData.ai.target.vDir) < I2X (1) / 2)) {
+			CreateNewWeaponSimple (&objP->info.position.mOrient.m.dir.f, &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = I2X (1)/2;
 			if (!gameData.escort.bMayTalk) // If buddy not talking, make him fire flares less often.
 				siP->ailP->nextPrimaryFire += d_rand ()*4;
@@ -899,7 +899,7 @@ if (siP->botInfoP->thief) {
 			}
 		if (bDoStuff) {
 			// @mk, 05/08/95: Firing flare from center of CObject, this is dumb...
-			CreateNewWeaponSimple (&objP->info.position.mOrient.m.v.f, &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
+			CreateNewWeaponSimple (&objP->info.position.mOrient.m.dir.f, &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = I2X (1) / 2;
 			if (gameData.thief.nStolenItem == 0)     // If never stolen an item, fire flares less often (bad: gameData.thief.nStolenItem wraps, but big deal)
 				siP->ailP->nextPrimaryFire += d_rand ()*4;
@@ -1352,9 +1352,9 @@ si.ailP->nextActionTime -= gameData.time.xFrame;
 if (si.aiP->SKIP_AI_COUNT) {
 	si.aiP->SKIP_AI_COUNT--;
 	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
-		objP->mType.physInfo.rotThrust.v.c.x = 15 * objP->mType.physInfo.rotThrust.v.c.x / 16;
-		objP->mType.physInfo.rotThrust.v.c.y = 15 * objP->mType.physInfo.rotThrust.v.c.y / 16;
-		objP->mType.physInfo.rotThrust.v.c.z = 15 * objP->mType.physInfo.rotThrust.v.c.z / 16;
+		objP->mType.physInfo.rotThrust.v.coord.x = 15 * objP->mType.physInfo.rotThrust.v.coord.x / 16;
+		objP->mType.physInfo.rotThrust.v.coord.y = 15 * objP->mType.physInfo.rotThrust.v.coord.y / 16;
+		objP->mType.physInfo.rotThrust.v.coord.z = 15 * objP->mType.physInfo.rotThrust.v.coord.z / 16;
 		if (!si.aiP->SKIP_AI_COUNT)
 			objP->mType.physInfo.flags &= ~PF_USES_THRUST;
 		}

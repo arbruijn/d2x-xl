@@ -239,9 +239,9 @@ m_vCenter += gameData.segs.vertices [m_verts [4]];
 m_vCenter += gameData.segs.vertices [m_verts [5]];
 m_vCenter += gameData.segs.vertices [m_verts [6]];
 m_vCenter += gameData.segs.vertices [m_verts [7]];
-m_vCenter.v.c.x /= 8;
-m_vCenter.v.c.y /= 8;
-m_vCenter.v.c.z /= 8;
+m_vCenter.v.coord.x /= 8;
+m_vCenter.v.coord.y /= 8;
+m_vCenter.v.coord.z /= 8;
 }
 
 // -----------------------------------------------------------------------------
@@ -268,22 +268,22 @@ void CSegment::ComputeRads (fix xMinDist)
 
 m_rads [0] = xMinDist;
 m_rads [1] = 0;
-vMin.v.c.x = vMin.v.c.y = vMin.v.c.z = 0x7FFFFFFF;
-vMax.v.c.x = vMax.v.c.y = vMax.v.c.z = -0x7FFFFFFF;
+vMin.v.coord.x = vMin.v.coord.y = vMin.v.coord.z = 0x7FFFFFFF;
+vMax.v.coord.x = vMax.v.coord.y = vMax.v.coord.z = -0x7FFFFFFF;
 for (int i = 0; i < 8; i++) {
 	v = gameData.segs.vertices [m_verts [i]];
-	if (vMin.v.c.x > v.v.c.x)
-		vMin.v.c.x = v.v.c.x;
-	if (vMin.v.c.y > v.v.c.y)
-		vMin.v.c.y = v.v.c.y;
-	if (vMin.v.c.z > v.v.c.z)
-		vMin.v.c.z = v.v.c.z;
-	if (vMax.v.c.x < v.v.c.x)
-		vMax.v.c.x = v.v.c.x;
-	if (vMax.v.c.y < v.v.c.y)
-		vMax.v.c.y = v.v.c.y;
-	if (vMax.v.c.z < v.v.c.z)
-		vMax.v.c.z = v.v.c.z;
+	if (vMin.v.coord.x > v.v.coord.x)
+		vMin.v.coord.x = v.v.coord.x;
+	if (vMin.v.coord.y > v.v.coord.y)
+		vMin.v.coord.y = v.v.coord.y;
+	if (vMin.v.coord.z > v.v.coord.z)
+		vMin.v.coord.z = v.v.coord.z;
+	if (vMax.v.coord.x < v.v.coord.x)
+		vMax.v.coord.x = v.v.coord.x;
+	if (vMax.v.coord.y < v.v.coord.y)
+		vMax.v.coord.y = v.v.coord.y;
+	if (vMax.v.coord.z < v.v.coord.z)
+		vMax.v.coord.z = v.v.coord.z;
 	xDist = CFixVector::Dist (v, m_vCenter);
 	if (m_rads [1] < xDist)
 		m_rads [1] = xDist;

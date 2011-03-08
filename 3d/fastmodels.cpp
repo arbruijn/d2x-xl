@@ -140,7 +140,7 @@ else {
 		else if (bEmissive)
 			l = I2X (1);
 		else {
-			l = -CFixVector::Dot (transformation.m_info.view [0].m.v.f, pmf->m_vNormal);
+			l = -CFixVector::Dot (transformation.m_info.view [0].m.dir.f, pmf->m_vNormal);
 			l = 3 * I2X (1) / 4 + l / 4;
 			l = FixMul (l, xModelLight);
 			}
@@ -236,15 +236,15 @@ if (!IsPlayerShip (nModel) && (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f)
 if (pmf) {
 	for (i = 0, j = pmf->m_nVerts, pmv = pm->m_faceVerts + pmf->m_nIndex; i < j; i++)
 		v += pmv [i].m_vertex;
-	v.v.c.x /= j;
-	v.v.c.y /= j;
-	v.v.c.z /= j;
+	v.v.coord.x /= j;
+	v.v.coord.y /= j;
+	v.v.coord.z /= j;
 	}
 else
 	v.SetZero ();
-v.v.c.z -= 1.0f / 16.0f;
+v.v.coord.z -= 1.0f / 16.0f;
 #if 0
-transformation.Transform (&v, &v, 0);
+transformation.Transform (&dir, &dir, 0);
 #else
 #if 1
 if (vOffsetP) {
@@ -253,7 +253,7 @@ if (vOffsetP) {
 	}
 #endif
 #endif
-if (nCount && (v.v.c.x == mtP->vPos [0].v.c.x) && (v.v.c.y == mtP->vPos [0].v.c.y) && (v.v.c.z == mtP->vPos [0].v.c.z))
+if (nCount && (v.v.coord.x == mtP->vPos [0].v.coord.x) && (v.v.coord.y == mtP->vPos [0].v.coord.y) && (v.v.coord.z == mtP->vPos [0].v.coord.z))
 	return;
 mtP->vPos [nCount].Assign (v);
 if (vOffsetP)
@@ -393,9 +393,9 @@ if ((psm->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) == (REAR_THRUSTER | 
 	glPushMatrix ();
 	CFloatVector vCenter;
 	vCenter.Assign (psm->m_vCenter);
-	glTranslatef (vCenter .v.c.x, vCenter .v.c.y, vCenter .v.c.z);
+	glTranslatef (vCenter .v.coord.x, vCenter .v.coord.y, vCenter .v.coord.z);
 	glRotatef (-360.0f * 5.0f * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
-	glTranslatef (-vCenter .v.c.x, -vCenter .v.c.y, -vCenter .v.c.z);
+	glTranslatef (-vCenter .v.coord.x, -vCenter .v.coord.y, -vCenter .v.coord.z);
 	if (gameStates.app.nSDLTicks [0] - psm->m_tFrame > nTimeout) {
 		psm->m_tFrame = gameStates.app.nSDLTicks [0];
 		psm->m_iFrame = (psm->m_iFrame + 1) % psm->m_nFrames;
@@ -420,7 +420,7 @@ else {
 	else
 		return 0;
 	glPushMatrix ();
-	y = X2F (psm->m_vCenter .v.c.y);
+	y = X2F (psm->m_vCenter .v.coord.y);
 	glTranslatef (0, y, 0);
 	glRotatef (360 * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
 	glTranslatef (0, -y, 0);
@@ -718,9 +718,9 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (prl->nObject >= 0) ? -prl->nObject : prl->nSegment);
 				fBrightness = prl->info.fBrightness * fLightScale;
 				color = *(reinterpret_cast<CFloatVector*> (&prl->info.color));
-				color.v.a [R] *= fLightScale;
-				color.v.a [G] *= fLightScale;
-				color.v.a [B] *= fLightScale;
+				color.v.vec [R] *= fLightScale;
+				color.v.vec [G] *= fLightScale;
+				color.v.vec [B] *= fLightScale;
 				glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (prl->render.vPosf));
 				glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&color));
 				glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&color));

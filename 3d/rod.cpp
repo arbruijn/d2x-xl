@@ -69,11 +69,11 @@ vRodNorm.p.y = FixMul (vRodNorm.p.y, transformation.m_info.scale.p.y);
 //now we have the usable edge.  generate four points
 //vTop points
 vTemp = vRodNorm * xTopWidth;
-vTemp.v.c.z = 0;
+vTemp.v.coord.z = 0;
 rodPoints [0].p3_vec = topPoint->p3_vec + vTemp;
 rodPoints [1].p3_vec = topPoint->p3_vec - vTemp;
 vTemp = vRodNorm * xBtmWidth;
-vTemp.v.c.z = 0;
+vTemp.v.coord.z = 0;
 rodPoints [2].p3_vec = btmPoint->p3_vec - vTemp;
 rodPoints [3].p3_vec = btmPoint->p3_vec + vTemp;
 
@@ -128,7 +128,7 @@ if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
 	bmP->SetupTexture (1, 0);
 	bmP = bmP->Override (iFrame);
 	}
-CFixVector delta = objP->info.position.mOrient.m.v.u * objP->info.xSize;
+CFixVector delta = objP->info.position.mOrient.m.dir.u * objP->info.xSize;
 CFixVector vTop = objP->info.position.vPos + delta;
 CFixVector vBottom = objP->info.position.vPos - delta;
 G3TransformAndEncodePoint (&pTop, vTop);

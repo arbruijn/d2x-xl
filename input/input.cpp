@@ -151,7 +151,7 @@ else {
 #if 1//!DBG
 	d = dMaxAxis * pow (fabs ((double) a / dMaxAxis), (double) joy_sens_mod [nAxis % 4] / 16.0);
 #else
-	h = fabs ((double) a / dMaxAxis);
+	h = fabs ((double) vec / dMaxAxis);
 	e = (double) joy_sens_mod [nAxis % 4] / 16.0;
 	p = pow (h, e);
 	d = dMaxAxis * p;
@@ -334,7 +334,7 @@ if (!v)
 	return 0;
 return v;
 #else
-return KeyDownCount (v);
+return KeyDownCount (dir);
 #endif
 }
 
@@ -353,7 +353,7 @@ if ((v = KeyDownCount (v)))
 	return v;
 return 0;
 #else
-return KeyDownCount (v);
+return KeyDownCount (dir);
 #endif
 }
 
@@ -622,10 +622,10 @@ return h;
 inline int DeltaAxis (int v)
 {
 #if 0 //DBG
-int a = gameOpts->input.joystick.bLinearSens ? joyAxis [v] * 16 / joy_sens_mod [v % 4] : joyAxis [v];
-if (a)
-	HUDMessage (0, "%d", a);
-return a;
+int vec = gameOpts->input.joystick.bLinearSens ? joyAxis [dir] * 16 / joy_sens_mod [dir % 4] : joyAxis [dir];
+if (vec)
+	HUDMessage (0, "%d", vec);
+return vec;
 #else
 return gameOpts->input.joystick.bLinearSens ? joyAxis [v] * 16 / joy_sens_mod [v % 4] : joyAxis [v];
 #endif
@@ -1080,16 +1080,16 @@ else if (gameOpts->input.trackIR.nMode == 1) {
 else {
 	transformation.m_info.bUsePlayerHeadAngles = 1;
 	if (gameOpts->input.trackIR.bMove [0]) {
-		transformation.m_info.playerHeadAngles.v.c.h = fixang (-tirInfo.fvRot.z / 4 * (gameOpts->input.trackIR.sensitivity [0] + 1));
-		transformation.m_info.playerHeadAngles.v.c.p = fixang (tirInfo.fvRot.y / 4 * (gameOpts->input.trackIR.sensitivity [1] + 1));
+		transformation.m_info.playerHeadAngles.dir.coord.h = fixang (-tirInfo.fvRot.z / 4 * (gameOpts->input.trackIR.sensitivity [0] + 1));
+		transformation.m_info.playerHeadAngles.dir.coord.p = fixang (tirInfo.fvRot.y / 4 * (gameOpts->input.trackIR.sensitivity [1] + 1));
 		}
 	else
-		transformation.m_info.playerHeadAngles.v.c.h =
-		transformation.m_info.playerHeadAngles.v.c.p = 0;
+		transformation.m_info.playerHeadAngles.dir.coord.h =
+		transformation.m_info.playerHeadAngles.dir.coord.p = 0;
 	if (gameOpts->input.trackIR.bMove [1])
-		transformation.m_info.playerHeadAngles.v.c.b = (fixang) tirInfo.fvRot.x / 4 * (gameOpts->input.trackIR.sensitivity [2] + 1);
+		transformation.m_info.playerHeadAngles.dir.coord.b = (fixang) tirInfo.fvRot.x / 4 * (gameOpts->input.trackIR.sensitivity [2] + 1);
 	else
-		transformation.m_info.playerHeadAngles.v.c.b = 0;
+		transformation.m_info.playerHeadAngles.dir.coord.b = 0;
 	}
 fDeadzone = 256.0f * gameOpts->input.trackIR.nDeadzone;
 fScale = 16384.0f / (16384.0f - fDeadzone);

@@ -554,11 +554,11 @@ for (i = 0; i < 4; i++) {
 	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, sum1, sum2);
 	}
 for (i = 0; i < 2; i++) {
-	h = INTEL_INT (int (m_normals [i].v.c.x));
+	h = INTEL_INT (int (m_normals [i].v.coord.x));
 	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, sum1, sum2);
-	h = INTEL_INT (int (m_normals [i].v.c.y));
+	h = INTEL_INT (int (m_normals [i].v.coord.y));
 	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, sum1, sum2);
-	h = INTEL_INT (int (m_normals [i].v.c.z));
+	h = INTEL_INT (int (m_normals [i].v.coord.z));
 	CalcCheckSum (reinterpret_cast<ubyte*> (&h), 4, sum1, sum2);
 	}
 }

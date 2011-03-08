@@ -140,19 +140,19 @@ void hmp_stop(hmp_file *hmp)
 static int get_var_num_hmi(ubyte *data, int datalen, ulong *value) 
 {
 	ubyte *p;
-	ulong v = 0;
+	ulong dir = 0;
 	int shift = 0;
 
 	p = data;
 	while ((datalen > 0) && !(*p & 0x80)) {
-		v += *(p++) << shift;
+		dir += *(p++) << shift;
 		shift += 7;
 		datalen --;
     }
 	if (!datalen)
 		return 0;
-    v += (*(p++) & 0x7f) << shift;
-	if (value) *value = v;
+    dir += (*(p++) & 0x7f) << shift;
+	if (value) *value = dir;
     return (int) (p - data);
 }
 
@@ -163,14 +163,14 @@ static int get_var_num_hmi(ubyte *data, int datalen, ulong *value)
 static int get_var_num(ubyte *data, int datalen, ulong *value) 
 {
 	ubyte *orgdata = data;
-	ulong v = 0;
+	ulong dir = 0;
 
 	while ((datalen > 0) && (*data & 0x80))
-		v = (v << 7) + (*(data++) & 0x7f);
+		dir = (dir << 7) + (*(data++) & 0x7f);
 	if (!datalen)
 		return 0;
-    v = (v << 7) + *(data++);
-    if (value) *value = v;
+    dir = (dir << 7) + *(data++);
+    if (value) *value = dir;
     return (int) (data - orgdata);
 }
 

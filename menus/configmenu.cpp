@@ -59,7 +59,7 @@
 
 void MultiThreadingOptionsMenu (void)
 {
-	CMenu	m (10);
+	CMenu	mat (10);
 	int	h, i, bSound = gameData.app.bUseMultiThreading [rtSound], choice = 0;
 
 	static int	menuToTask [rtTaskCount] = {0, 1, 1, 2, 2, 3, 4, 5};	//map menu entries to tasks
@@ -67,11 +67,11 @@ void MultiThreadingOptionsMenu (void)
 
 h = gameStates.app.bMultiThreaded ? 6 : 1;
 for (i = 0; i < h; i++)
-	m.AddCheck (GT (1060 + i), gameData.app.bUseMultiThreading [taskToMenu [i]], -1, HT (359 + i));
-i = m.Menu (NULL, TXT_MT_MENU_TITLE, NULL, &choice);
+	mat.AddCheck (GT (1060 + i), gameData.app.bUseMultiThreading [taskToMenu [i]], -1, HT (359 + i));
+i = mat.Menu (NULL, TXT_MT_MENU_TITLE, NULL, &choice);
 h = gameStates.app.bMultiThreaded ? rtTaskCount : rtSound + 1;
 for (i = rtSound; i < h; i++)
-	gameData.app.bUseMultiThreading [i] = (m [menuToTask [i]].m_value != 0);
+	gameData.app.bUseMultiThreading [i] = (mat [menuToTask [i]].m_value != 0);
 if (gameStates.app.bGameRunning) {
 	ControlRenderThreads ();
 	ControlSoundThread ();

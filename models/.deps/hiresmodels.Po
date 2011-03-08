@@ -1,0 +1,478 @@
+hiresmodels.o: hiresmodels.cpp ../conf.h ../include/descent.h \
+ /usr/include/math.h /usr/include/features.h /usr/include/sys/cdefs.h \
+ /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+ /usr/include/gnu/stubs-32.h /usr/include/bits/huge_val.h \
+ /usr/include/bits/huge_valf.h /usr/include/bits/huge_vall.h \
+ /usr/include/bits/inf.h /usr/include/bits/nan.h \
+ /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
+ /usr/include/bits/mathinline.h ../include/carray.h /usr/include/string.h \
+ /usr/lib/gcc/i586-suse-linux/4.5/include/stddef.h /usr/include/xlocale.h \
+ /usr/include/stdlib.h /usr/include/bits/waitflags.h \
+ /usr/include/bits/waitstatus.h /usr/include/endian.h \
+ /usr/include/bits/endian.h /usr/include/bits/byteswap.h \
+ /usr/include/sys/types.h /usr/include/bits/types.h \
+ /usr/include/bits/typesizes.h /usr/include/time.h \
+ /usr/include/sys/select.h /usr/include/bits/select.h \
+ /usr/include/bits/sigset.h /usr/include/bits/time.h \
+ /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h \
+ /usr/include/alloca.h ../include/pstypes.h ../include/cquicksort.h \
+ ../include/cquicksort.cpp ../include/cfile.h /usr/include/stdio.h \
+ /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
+ /usr/lib/gcc/i586-suse-linux/4.5/include/stdarg.h \
+ /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
+ /usr/include/bits/stdio.h /usr/include/unistd.h \
+ /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+ /usr/include/bits/confname.h /usr/include/getopt.h /usr/include/errno.h \
+ /usr/include/bits/errno.h /usr/include/linux/errno.h \
+ /usr/include/asm/errno.h /usr/include/asm-generic/errno.h \
+ /usr/include/asm-generic/errno-base.h ../include/maths.h \
+ /usr/include/c++/4.5/cmath \
+ /usr/include/c++/4.5/i586-suse-linux/bits/c++config.h \
+ /usr/include/c++/4.5/i586-suse-linux/bits/os_defines.h \
+ /usr/include/c++/4.5/i586-suse-linux/bits/cpu_defines.h \
+ /usr/include/c++/4.5/bits/cpp_type_traits.h \
+ /usr/include/c++/4.5/ext/type_traits.h \
+ /usr/include/c++/4.5/bits/cmath.tcc ../include/vecmat.h \
+ /usr/include/c++/4.5/cstdlib /usr/include/c++/4.5/cstddef \
+ /usr/lib/gcc/i586-suse-linux/4.5/include/omp.h ../include/vers_id.h \
+ ../include/3d.h ../include/fix.h ../include/globvars.h ../include/gr.h \
+ ../include/palette.h ../include/color.h ../include/cstack.h \
+ ../include/bitmap.h ../include/ogl_defs.h /usr/include/GL/glew.h \
+ /usr/lib/gcc/i586-suse-linux/4.5/include/stdint.h /usr/include/stdint.h \
+ /usr/include/bits/wchar.h /usr/include/GL/glu.h /usr/include/GL/gl.h \
+ /usr/include/GL/glxew.h /usr/include/X11/Xlib.h /usr/include/X11/X.h \
+ /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h \
+ /usr/include/X11/Xutil.h /usr/include/X11/keysym.h \
+ /usr/include/X11/keysymdef.h /usr/include/X11/Xmd.h \
+ /usr/include/GL/glx.h ../include/pbuffer.h ../include/fbuffer.h \
+ ../include/ogl_texture.h ../include/cdatapool.h ../include/canvas.h \
+ ../include/font.h ../include/gamefont.h ../include/transformation.h \
+ ../include/loadgamedata.h ../include/piggy.h ../include/audio.h \
+ /usr/local/include/SDL/SDL.h /usr/local/include/SDL/SDL_main.h \
+ /usr/local/include/SDL/SDL_stdinc.h /usr/local/include/SDL/SDL_config.h \
+ /usr/local/include/SDL/SDL_platform.h /usr/include/strings.h \
+ /usr/include/inttypes.h /usr/include/ctype.h /usr/include/iconv.h \
+ /usr/local/include/SDL/begin_code.h /usr/local/include/SDL/close_code.h \
+ /usr/local/include/SDL/SDL_audio.h /usr/local/include/SDL/SDL_error.h \
+ /usr/local/include/SDL/SDL_endian.h /usr/local/include/SDL/SDL_mutex.h \
+ /usr/local/include/SDL/SDL_thread.h /usr/local/include/SDL/SDL_rwops.h \
+ /usr/local/include/SDL/SDL_cdrom.h /usr/local/include/SDL/SDL_cpuinfo.h \
+ /usr/local/include/SDL/SDL_events.h /usr/local/include/SDL/SDL_active.h \
+ /usr/local/include/SDL/SDL_keyboard.h \
+ /usr/local/include/SDL/SDL_keysym.h /usr/local/include/SDL/SDL_mouse.h \
+ /usr/local/include/SDL/SDL_video.h /usr/local/include/SDL/SDL_joystick.h \
+ /usr/local/include/SDL/SDL_quit.h /usr/local/include/SDL/SDL_loadso.h \
+ /usr/local/include/SDL/SDL_timer.h /usr/local/include/SDL/SDL_version.h \
+ /usr/local/include/SDL/SDL_mixer.h /usr/local/include/SDL/SDL_types.h \
+ ../include/sounds.h ../include/tga.h ../include/hash.h \
+ ../include/segment.h ../include/aistruct.h ../include/d1_aistruct.h \
+ ../include/descent.h ../include/object.h ../include/trigger.h \
+ ../include/robot.h ../include/game.h /usr/include/setjmp.h \
+ /usr/include/bits/setjmp.h ../include/wall.h ../include/powerup.h \
+ ../include/vclip.h ../include/effects.h ../include/oof.h \
+ ../include/ase.h ../include/console.h ../input/include/key.h \
+ ../include/pstypes.h ../include/fix.h \
+ /usr/local/include/SDL/SDL_keysym.h ../include/cvar.h \
+ /usr/local/include/SDL/SDL_thread.h /usr/local/include/SDL/SDL_net.h \
+ /usr/local/include/SDL/SDL.h ../include/player.h ../include/weapon.h \
+ ../include/cameras.h ../include/dynlight.h ../include/morph.h \
+ ../include/flightpath.h ../include/sphere.h ../include/pof.h \
+ ../include/fireweapon.h ../include/polymodel.h ../include/rendermodel.h \
+ ../include/multi.h ../include/loadgame.h ../include/mission.h \
+ ../include/reactor.h ../include/ai.h ../include/collision_math.h \
+ ../include/fuelcen.h ../include/hudmsgs.h ../include/error.h \
+ ../include/text.h ../include/error.h ../include/u_mem.h \
+ ../include/interp.h ../include/byteswap.h ../include/menu.h \
+ ../include/hiresmodels.h
+
+../conf.h:
+
+../include/descent.h:
+
+/usr/include/math.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-32.h:
+
+/usr/include/bits/huge_val.h:
+
+/usr/include/bits/huge_valf.h:
+
+/usr/include/bits/huge_vall.h:
+
+/usr/include/bits/inf.h:
+
+/usr/include/bits/nan.h:
+
+/usr/include/bits/mathdef.h:
+
+/usr/include/bits/mathcalls.h:
+
+/usr/include/bits/mathinline.h:
+
+../include/carray.h:
+
+/usr/include/string.h:
+
+/usr/lib/gcc/i586-suse-linux/4.5/include/stddef.h:
+
+/usr/include/xlocale.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/bits/waitflags.h:
+
+/usr/include/bits/waitstatus.h:
+
+/usr/include/endian.h:
+
+/usr/include/bits/endian.h:
+
+/usr/include/bits/byteswap.h:
+
+/usr/include/sys/types.h:
+
+/usr/include/bits/types.h:
+
+/usr/include/bits/typesizes.h:
+
+/usr/include/time.h:
+
+/usr/include/sys/select.h:
+
+/usr/include/bits/select.h:
+
+/usr/include/bits/sigset.h:
+
+/usr/include/bits/time.h:
+
+/usr/include/sys/sysmacros.h:
+
+/usr/include/bits/pthreadtypes.h:
+
+/usr/include/alloca.h:
+
+../include/pstypes.h:
+
+../include/cquicksort.h:
+
+../include/cquicksort.cpp:
+
+../include/cfile.h:
+
+/usr/include/stdio.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/wchar.h:
+
+/usr/lib/gcc/i586-suse-linux/4.5/include/stdarg.h:
+
+/usr/include/bits/stdio_lim.h:
+
+/usr/include/bits/sys_errlist.h:
+
+/usr/include/bits/stdio.h:
+
+/usr/include/unistd.h:
+
+/usr/include/bits/posix_opt.h:
+
+/usr/include/bits/environments.h:
+
+/usr/include/bits/confname.h:
+
+/usr/include/getopt.h:
+
+/usr/include/errno.h:
+
+/usr/include/bits/errno.h:
+
+/usr/include/linux/errno.h:
+
+/usr/include/asm/errno.h:
+
+/usr/include/asm-generic/errno.h:
+
+/usr/include/asm-generic/errno-base.h:
+
+../include/maths.h:
+
+/usr/include/c++/4.5/cmath:
+
+/usr/include/c++/4.5/i586-suse-linux/bits/c++config.h:
+
+/usr/include/c++/4.5/i586-suse-linux/bits/os_defines.h:
+
+/usr/include/c++/4.5/i586-suse-linux/bits/cpu_defines.h:
+
+/usr/include/c++/4.5/bits/cpp_type_traits.h:
+
+/usr/include/c++/4.5/ext/type_traits.h:
+
+/usr/include/c++/4.5/bits/cmath.tcc:
+
+../include/vecmat.h:
+
+/usr/include/c++/4.5/cstdlib:
+
+/usr/include/c++/4.5/cstddef:
+
+/usr/lib/gcc/i586-suse-linux/4.5/include/omp.h:
+
+../include/vers_id.h:
+
+../include/3d.h:
+
+../include/fix.h:
+
+../include/globvars.h:
+
+../include/gr.h:
+
+../include/palette.h:
+
+../include/color.h:
+
+../include/cstack.h:
+
+../include/bitmap.h:
+
+../include/ogl_defs.h:
+
+/usr/include/GL/glew.h:
+
+/usr/lib/gcc/i586-suse-linux/4.5/include/stdint.h:
+
+/usr/include/stdint.h:
+
+/usr/include/bits/wchar.h:
+
+/usr/include/GL/glu.h:
+
+/usr/include/GL/gl.h:
+
+/usr/include/GL/glxew.h:
+
+/usr/include/X11/Xlib.h:
+
+/usr/include/X11/X.h:
+
+/usr/include/X11/Xfuncproto.h:
+
+/usr/include/X11/Xosdefs.h:
+
+/usr/include/X11/Xutil.h:
+
+/usr/include/X11/keysym.h:
+
+/usr/include/X11/keysymdef.h:
+
+/usr/include/X11/Xmd.h:
+
+/usr/include/GL/glx.h:
+
+../include/pbuffer.h:
+
+../include/fbuffer.h:
+
+../include/ogl_texture.h:
+
+../include/cdatapool.h:
+
+../include/canvas.h:
+
+../include/font.h:
+
+../include/gamefont.h:
+
+../include/transformation.h:
+
+../include/loadgamedata.h:
+
+../include/piggy.h:
+
+../include/audio.h:
+
+/usr/local/include/SDL/SDL.h:
+
+/usr/local/include/SDL/SDL_main.h:
+
+/usr/local/include/SDL/SDL_stdinc.h:
+
+/usr/local/include/SDL/SDL_config.h:
+
+/usr/local/include/SDL/SDL_platform.h:
+
+/usr/include/strings.h:
+
+/usr/include/inttypes.h:
+
+/usr/include/ctype.h:
+
+/usr/include/iconv.h:
+
+/usr/local/include/SDL/begin_code.h:
+
+/usr/local/include/SDL/close_code.h:
+
+/usr/local/include/SDL/SDL_audio.h:
+
+/usr/local/include/SDL/SDL_error.h:
+
+/usr/local/include/SDL/SDL_endian.h:
+
+/usr/local/include/SDL/SDL_mutex.h:
+
+/usr/local/include/SDL/SDL_thread.h:
+
+/usr/local/include/SDL/SDL_rwops.h:
+
+/usr/local/include/SDL/SDL_cdrom.h:
+
+/usr/local/include/SDL/SDL_cpuinfo.h:
+
+/usr/local/include/SDL/SDL_events.h:
+
+/usr/local/include/SDL/SDL_active.h:
+
+/usr/local/include/SDL/SDL_keyboard.h:
+
+/usr/local/include/SDL/SDL_keysym.h:
+
+/usr/local/include/SDL/SDL_mouse.h:
+
+/usr/local/include/SDL/SDL_video.h:
+
+/usr/local/include/SDL/SDL_joystick.h:
+
+/usr/local/include/SDL/SDL_quit.h:
+
+/usr/local/include/SDL/SDL_loadso.h:
+
+/usr/local/include/SDL/SDL_timer.h:
+
+/usr/local/include/SDL/SDL_version.h:
+
+/usr/local/include/SDL/SDL_mixer.h:
+
+/usr/local/include/SDL/SDL_types.h:
+
+../include/sounds.h:
+
+../include/tga.h:
+
+../include/hash.h:
+
+../include/segment.h:
+
+../include/aistruct.h:
+
+../include/d1_aistruct.h:
+
+../include/descent.h:
+
+../include/object.h:
+
+../include/trigger.h:
+
+../include/robot.h:
+
+../include/game.h:
+
+/usr/include/setjmp.h:
+
+/usr/include/bits/setjmp.h:
+
+../include/wall.h:
+
+../include/powerup.h:
+
+../include/vclip.h:
+
+../include/effects.h:
+
+../include/oof.h:
+
+../include/ase.h:
+
+../include/console.h:
+
+../input/include/key.h:
+
+../include/pstypes.h:
+
+../include/fix.h:
+
+/usr/local/include/SDL/SDL_keysym.h:
+
+../include/cvar.h:
+
+/usr/local/include/SDL/SDL_thread.h:
+
+/usr/local/include/SDL/SDL_net.h:
+
+/usr/local/include/SDL/SDL.h:
+
+../include/player.h:
+
+../include/weapon.h:
+
+../include/cameras.h:
+
+../include/dynlight.h:
+
+../include/morph.h:
+
+../include/flightpath.h:
+
+../include/sphere.h:
+
+../include/pof.h:
+
+../include/fireweapon.h:
+
+../include/polymodel.h:
+
+../include/rendermodel.h:
+
+../include/multi.h:
+
+../include/loadgame.h:
+
+../include/mission.h:
+
+../include/reactor.h:
+
+../include/ai.h:
+
+../include/collision_math.h:
+
+../include/fuelcen.h:
+
+../include/hudmsgs.h:
+
+../include/error.h:
+
+../include/text.h:
+
+../include/error.h:
+
+../include/u_mem.h:
+
+../include/interp.h:
+
+../include/byteswap.h:
+
+../include/menu.h:
+
+../include/hiresmodels.h:

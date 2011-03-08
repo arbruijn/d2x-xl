@@ -785,18 +785,18 @@ for (i = 0; i < gameData.segs.nVertices; i++) {
 #if !FLOAT_COORD
 	gameData.segs.fVertices [i].Assign (v);
 #endif
-	if (gameData.segs.vMin.v.c.x > v.v.c.x)
-		gameData.segs.vMin.v.c.x = v.v.c.x;
-	if (gameData.segs.vMin.v.c.y > v.v.c.y)
-		gameData.segs.vMin.v.c.y = v.v.c.y;
-	if (gameData.segs.vMin.v.c.z > v.v.c.z)
-		gameData.segs.vMin.v.c.z = v.v.c.z;
-	if (gameData.segs.vMax.v.c.x < v.v.c.x)
-		gameData.segs.vMax.v.c.x = v.v.c.x;
-	if (gameData.segs.vMax.v.c.y < v.v.c.y)
-		gameData.segs.vMax.v.c.y = v.v.c.y;
-	if (gameData.segs.vMax.v.c.z < v.v.c.z)
-		gameData.segs.vMax.v.c.z = v.v.c.z;
+	if (gameData.segs.vMin.v.coord.x > v.v.coord.x)
+		gameData.segs.vMin.v.coord.x = v.v.coord.x;
+	if (gameData.segs.vMin.v.coord.y > v.v.coord.y)
+		gameData.segs.vMin.v.coord.y = v.v.coord.y;
+	if (gameData.segs.vMin.v.coord.z > v.v.coord.z)
+		gameData.segs.vMin.v.coord.z = v.v.coord.z;
+	if (gameData.segs.vMax.v.coord.x < v.v.coord.x)
+		gameData.segs.vMax.v.coord.x = v.v.coord.x;
+	if (gameData.segs.vMax.v.coord.y < v.v.coord.y)
+		gameData.segs.vMax.v.coord.y = v.v.coord.y;
+	if (gameData.segs.vMax.v.coord.z < v.v.coord.z)
+		gameData.segs.vMax.v.coord.z = v.v.coord.z;
 	}
 
 gameData.segs.xDistScale = X2I (CFixVector::Dist (gameData.segs.vMin, gameData.segs.vMax));

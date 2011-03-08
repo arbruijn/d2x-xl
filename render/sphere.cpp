@@ -153,7 +153,7 @@ for (int i = 0; i < 3; i++) {
 		float h = (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)));
 		if (h > 1.0f / 1e6f) {
 			fScale [i] = 1.0f / h;
-			vHitf [i].v.c.w = 0.0f;
+			vHitf [i].v.coord.w = 0.0f;
 			if (ogl.UseTransform ()) {
 				vHitf [i].Assign (m * hitInfo.v [i]);
 				CFloatVector::Normalize (vHitf [i]);
@@ -215,8 +215,8 @@ m_nFrame = 0;
 
 CFloatVector *OOF_TriangleCenter (OOF::CTriangle *pt)
 {
-pt->c = (pt->p [0] + pt->p [1] + pt->p [2]) / 3.0f;
-return &pt->c;
+pt->coord = (pt->p [0] + pt->p [1] + pt->p [2]) / 3.0f;
+return &pt->coord;
 }
 
 // -----------------------------------------------------------------------------
@@ -224,7 +224,7 @@ return &pt->c;
 static int SplitTriangle (OOF::CTriangle *pDest, OOF::CTriangle *pSrc)
 {
 	int	i, j;
-	CFloatVector	c = pSrc->c;
+	CFloatVector	coord = pSrc->coord;
 	CFloatVector	h [6];
 
 for (i = 0; i < 3; i++)
@@ -234,7 +234,7 @@ for (i = 1; i < 6; i += 2)
 for (i = 0; i < 6; i++, pDest++) {
 	pDest->p [0] = h [i];
 	pDest->p [1] = h [(i + 1) % 6];
-	pDest->p [2] = c;
+	pDest->p [2] = coord;
 	for (j = 0; j < 3; j++)
 		CFloatVector::Normalize (pDest->p [j]);
 	OOF_TriangleCenter (pDest);
@@ -280,8 +280,8 @@ return !j;
 
 static CFloatVector *OOF_QuadCenter (OOF::CQuad *pt)
 {
-pt->c = (pt->p [0] + pt->p [1] + pt->p [2] + pt->p [3]) / 4.0f;
-return &pt->c;
+pt->coord = (pt->p [0] + pt->p [1] + pt->p [2] + pt->p [3]) / 4.0f;
+return &pt->coord;
 }
 
 // -----------------------------------------------------------------------------
@@ -289,7 +289,7 @@ return &pt->c;
 static int SplitQuad (OOF::CQuad *pDest, OOF::CQuad *pSrc)
 {
 	int	i, j;
-	CFloatVector	c = pSrc->c;
+	CFloatVector	coord = pSrc->coord;
 	CFloatVector	h [8];
 
 for (i = 0; i < 4; i++)
@@ -300,7 +300,7 @@ for (i = 0; i < 8; i += 2, pDest++) {
 	pDest->p [0] = h [i ? i - 1 : 7];
 	pDest->p [1] = h [i];
 	pDest->p [2] = h [(i + 1) % 8];
-	pDest->p [3] = c;
+	pDest->p [3] = coord;
 	for (j = 0; j < 4; j++)
 		CFloatVector::Normalize (pDest->p [j]);
 	OOF_QuadCenter (pDest);
@@ -383,20 +383,20 @@ return nFaces;
 
 OOF::CTriangle *RotateSphere (CFloatVector *rotSphereP, CFloatVector *vPosP, float xScale, float yScale, float zScale)
 {
-	CFloatMatrix	m;
-	CFloatVector	h, v, p,
+	CFloatMatrix	mat;
+	CFloatVector	h, dir, p,
 					*vertP = m_vertices.Buffer (),
 					*s = rotSphereP;
 	int			nFaces;
 
-OOF_MatVms2Oof (&m, transformation.m_info.view[0]);
-OOF_VecVms2Oof (&p, transformation.m_info.pos);
+OOF_MatVms2Oof (&mat, transformation.m_info.view[0]);
+OOF_VecVms2Oof (&p, transformation.m_info.coord);
 for (nFaces = m_nFaces * (m_nFaceNodes + 1); nFaces; nFaces--, vertP++, rotSphereP++) {
-	v = *vertP;
-	v.x *= xScale;
-	v.y *= yScale;
-	v.z *= zScale;
-	rotSphereP = m * (h = v - p);
+	dir = *vertP;
+	dir.x *= xScale;
+	dir.y *= yScale;
+	dir.z *= zScale;
+	rotSphereP = mat * (h = dir - p);
 	}
 return (OOF::CTriangle *) s;
 }
@@ -407,12 +407,12 @@ OOF::CTriangle *SortSphere (OOF::CTriangle *sphereP, int left, int right)
 {
 	int	l = left,
 			r = right;
-	float	m = sphereP [(l + r) / 2].c.z;
+	float	mat = sphereP [(l + r) / 2].coord.z;
 
 do {
-	while (sphereP [l].c.z < m)
+	while (sphereP [l].coord.z < mat)
 		l++;
-	while (sphereP [r].c.z > m)
+	while (sphereP [r].coord.z > mat)
 		r--;
 	if (l <= r) {
 		if (l < r) {
@@ -544,15 +544,15 @@ for (j = 0; j < h; j++) {
 		t3 = i * a;
 		sint3 = float (sin (t3));
 		cost3 = float (cos (t3));
-		svP->vPos.v.c.x = cost2 * cost3;
-		svP->vPos.v.c.y = sint2;
-		svP->vPos.v.c.z = cost2 * sint3;
+		svP->vPos.v.coord.x = cost2 * cost3;
+		svP->vPos.v.coord.y = sint2;
+		svP->vPos.v.coord.z = cost2 * sint3;
 		svP->uv.v.u =(1.0f - float (i) / nRings) * nTiles * UV_SCALE;
 		svP->uv.v.v = (float (2 * j + 2) / nRings) * nTiles * UV_SCALE;
 		svP++;
-		svP->vPos.v.c.x = cost1 * cost3;
-		svP->vPos.v.c.y = sint1;
-		svP->vPos.v.c.z = cost1 * sint3;
+		svP->vPos.v.coord.x = cost1 * cost3;
+		svP->vPos.v.coord.y = sint1;
+		svP->vPos.v.coord.z = cost1 * sint3;
 		svP->uv.v.u = (1.0f - float (i) / nRings) * nTiles * UV_SCALE;
 		svP->uv.v.v = (float (2 * j) / nRings) * nTiles * UV_SCALE;
 		svP++;
@@ -633,8 +633,8 @@ if (ogl.UseTransform ()) {
 				for (i = 0; i < nQuads; i++, svP [1]++) {
 					p [i] = svP [1]->vPos;
 					if (bTextured) {
-						tc [i].v.u = svP [1]->uv.v.u * nTiles;
-						tc [i].v.v = svP [1]->uv.v.v * nTiles;
+						tc [i].dir.u = svP [1]->uv.dir.u * nTiles;
+						tc [i].dir.dir = svP [1]->uv.dir.dir * nTiles;
 						}
 					}
 				glLineWidth (2);
@@ -664,8 +664,8 @@ else {
 					VmVecScale (p + i, p + i, fRadius);
 					transformation.Transform (p + i, p + i, 0);
 					if (bTextured) {
-						tc [i].v.u = svP [1]->uv.v.u * nTiles;
-						tc [i].v.v = svP [1]->uv.v.v * nTiles;
+						tc [i].dir.u = svP [1]->uv.dir.u * nTiles;
+						tc [i].dir.dir = svP [1]->uv.dir.dir * nTiles;
 						}
 					}
 				glLineWidth (2);

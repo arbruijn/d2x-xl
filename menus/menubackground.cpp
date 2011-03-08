@@ -453,7 +453,7 @@ if (PCXGetDimensions (filename, &width, &height) != PCX_ERROR_NONE) {
 	}
 CBitmap* bmP;
 if (!(bmP = CBitmap::Create (0, width, height, 1))) {
-	Error ("Not enough memory for menu backgroun\n");
+	Error ("Not enough memory for menu background\n");
 	return NULL;
 	}
 if (PCXReadBitmap (filename, bmP, bmP->Mode (), 0) != PCX_ERROR_NONE) {

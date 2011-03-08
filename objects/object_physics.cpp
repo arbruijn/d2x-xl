@@ -71,11 +71,11 @@ FixFastSinCos (fix (gameData.time.xGame / gameStates.gameplay.slowmo [1].fSpeed)
 if (gameData.time.xFrame < I2X (1))// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
 	xWiggle = FixMul (xWiggle * 20, gameData.time.xFrame); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 if (SPECTATOR (this))
-	OBJPOS (this)->vPos += (OBJPOS (this)->mOrient.m.v.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle)) * (I2X (1) / 20);
+	OBJPOS (this)->vPos += (OBJPOS (this)->mOrient.m.dir.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle)) * (I2X (1) / 20);
 else if ((info.nType == OBJ_PLAYER) || !parentP)
-	mType.physInfo.velocity += info.position.mOrient.m.v.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
+	mType.physInfo.velocity += info.position.mOrient.m.dir.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
 else {
-	mType.physInfo.velocity += parentP->info.position.mOrient.m.v.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
+	mType.physInfo.velocity += parentP->info.position.mOrient.m.dir.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
 	info.position.vPos += mType.physInfo.velocity * gameData.time.xFrame;
 	}
 }
@@ -116,14 +116,14 @@ if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
 	//this is a horrible hack.  guided missile stuff should not be
 	//handled in the middle of a routine that is dealing with the CPlayerData
 	mType.physInfo.rotThrust.SetZero ();
-	vRotAngs.v.c.p = controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
-	vRotAngs.v.c.b = controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude / 16;
-	vRotAngs.v.c.h = controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
+	vRotAngs.v.coord.p = controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
+	vRotAngs.v.coord.b = controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude / 16;
+	vRotAngs.v.coord.h = controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
 	mRot = CFixMatrix::Create (vRotAngs);
 	mOrient = gmObjP->info.position.mOrient * mRot;
 	gmObjP->info.position.mOrient = mOrient;
 	speed = WI_speed (gmObjP->info.nId, gameStates.app.nDifficultyLevel);
-	gmObjP->mType.physInfo.velocity = gmObjP->info.position.mOrient.m.v.f * speed;
+	gmObjP->mType.physInfo.velocity = gmObjP->info.position.mOrient.m.dir.f * speed;
 	if(IsMultiGame)
 		MultiSendGuidedInfo (gmObjP, 0);
 	}
@@ -168,11 +168,11 @@ float fScale = SpeedScale ();
 
 forwardThrustTime = fix (forwardThrustTime * fScale);
 // Set object's thrust vector for forward/backward
-mType.physInfo.thrust = info.position.mOrient.m.v.f * forwardThrustTime;
+mType.physInfo.thrust = info.position.mOrient.m.dir.f * forwardThrustTime;
 // slide left/right
-mType.physInfo.thrust += info.position.mOrient.m.v.r * fix (controls [0].sidewaysThrustTime * fScale);
+mType.physInfo.thrust += info.position.mOrient.m.dir.r * fix (controls [0].sidewaysThrustTime * fScale);
 // slide up/down
-mType.physInfo.thrust += info.position.mOrient.m.v.u * fix (controls [0].verticalThrustTime * fScale);
+mType.physInfo.thrust += info.position.mOrient.m.dir.u * fix (controls [0].verticalThrustTime * fScale);
 mType.physInfo.thrust *= 2 * DriveDamage ();
 if (!gameStates.input.bSkipControls)
 	memcpy (&gameData.physics.playerThrust, &mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
@@ -191,15 +191,15 @@ if ((mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [Index ()].b
 #if 0
 if (!mType.physInfo.thrust.IsZero ()) {
 	float fScale = float (gameData.pig.ship.player->maxThrust) / float (gameData.time.xFrame);
-	mType.physInfo.thrust.v.c.x = fix (float (mType.physInfo.thrust.v.c.x) * fScale);
-	mType.physInfo.thrust.v.c.y = fix (float (mType.physInfo.thrust.v.c.y) * fScale);
-	mType.physInfo.thrust.v.c.z = fix (float (mType.physInfo.thrust.v.c.z) * fScale);
+	mType.physInfo.thrust.dir.coord.x = fix (float (mType.physInfo.thrust.dir.coord.x) * fScale);
+	mType.physInfo.thrust.dir.coord.y = fix (float (mType.physInfo.thrust.dir.coord.y) * fScale);
+	mType.physInfo.thrust.dir.coord.z = fix (float (mType.physInfo.thrust.dir.coord.z) * fScale);
 	}
 if (!mType.physInfo.rotThrust.IsZero ()) {
 	float fScale = float (gameData.pig.ship.player->maxRotThrust) / float (gameData.time.xFrame);
-	mType.physInfo.rotThrust.v.c.x = fix (float (mType.physInfo.rotThrust.v.c.x) * fScale);
-	mType.physInfo.rotThrust.v.c.y = fix (float (mType.physInfo.rotThrust.v.c.y) * fScale);
-	mType.physInfo.rotThrust.v.c.z = fix (float (mType.physInfo.rotThrust.v.c.z) * fScale);
+	mType.physInfo.rotThrust.dir.coord.x = fix (float (mType.physInfo.rotThrust.dir.coord.x) * fScale);
+	mType.physInfo.rotThrust.dir.coord.y = fix (float (mType.physInfo.rotThrust.dir.coord.y) * fScale);
+	mType.physInfo.rotThrust.dir.coord.z = fix (float (mType.physInfo.rotThrust.dir.coord.z) * fScale);
 	}
 #else
 fix ft = gameData.time.xFrame;

@@ -178,9 +178,9 @@ if (nObject != -1) {
 	int		force_val = I2X (1) / (gameData.time.xFrame ? gameData.time.xFrame : 1);
 	if (force_val) {
 		newObjP->cType.aiInfo.SKIP_AI_COUNT += force_val;
-		newObjP->mType.physInfo.rotThrust.v.c.x = ((d_rand () - 16384) * force_val)/16;
-		newObjP->mType.physInfo.rotThrust.v.c.y = ((d_rand () - 16384) * force_val)/16;
-		newObjP->mType.physInfo.rotThrust.v.c.z = ((d_rand () - 16384) * force_val)/16;
+		newObjP->mType.physInfo.rotThrust.v.coord.x = ((d_rand () - 16384) * force_val)/16;
+		newObjP->mType.physInfo.rotThrust.v.coord.y = ((d_rand () - 16384) * force_val)/16;
+		newObjP->mType.physInfo.rotThrust.v.coord.z = ((d_rand () - 16384) * force_val)/16;
 		newObjP->mType.physInfo.flags |= PF_USES_THRUST;
 
 		//	Now, give a big initial velocity to get moving away from boss.
@@ -383,7 +383,7 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 				TeleportBoss (objP);
 				if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewBotsTeleport) {
 					CFixVector	spewPoint;
-					spewPoint = objP->info.position.mOrient.m.v.f * (objP->info.xSize * 2);
+					spewPoint = objP->info.position.mOrient.m.dir.f * (objP->info.xSize * 2);
 					spewPoint += objP->info.position.vPos;
 					if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewMore && (d_rand () > 16384) &&
 						 (objP->BossSpewRobot (&spewPoint, -1, 0) != -1))

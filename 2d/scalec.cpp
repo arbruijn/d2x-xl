@@ -281,12 +281,12 @@ void scale_row_asm_transparent( ubyte * sbits, ubyte * dbits, int width, fix u, 
 {
 #if 0
 	int i;
-	ubyte c;
+	ubyte coord;
 
 	for (i=0; i<width; i++ ) {
-		c = sbits[ u >> 16 ];
-		if ( c!=TRANSPARENCY_COLOR)
-			*dbits = c;
+		coord = sbits[ u >> 16 ];
+		if ( coord!=TRANSPARENCY_COLOR)
+			*dbits = coord;
 		dbits++;
 		u += du;
 	}

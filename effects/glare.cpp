@@ -56,82 +56,82 @@ if (!vEye) {
 	//CFloatVector::Normalize (vEye, vCenter);
 	*vEye = *vCenter; CFloatVector::Normalize (*vEye);
 	}
-v.v.c.x = v.v.c.z = 0;
-v.v.c.y = (*vCenter).v.c.y ? d / (*vCenter).v.c.y : 1;
+v.v.coord.x = v.v.coord.z = 0;
+v.v.coord.y = (*vCenter).v.coord.y ? d / (*vCenter).v.coord.y : 1;
 v -= *vCenter;
 CFloatVector::Normalize (v);
 vdx = CFloatVector::Cross (v, *vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
 vdx = vdx * dx;
-v.v.c.y = v.v.c.z = 0;
-v.v.c.x = (*vCenter).v.c.x ? d / (*vCenter).v.c.x : 1;
+v.v.coord.y = v.v.coord.z = 0;
+v.v.coord.x = (*vCenter).v.coord.x ? d / (*vCenter).v.coord.x : 1;
 v -= *vCenter;
 CFloatVector::Normalize (v);
 vdy = CFloatVector::Cross (v, *vEye);
 if (r) {
-	if ((*vCenter).v.c.x >= 0) {
+	if ((*vCenter).v.coord.x >= 0) {
 		vdy = vdy * dy;
-		v.v.c.x = +vdx.v.c.x + vdy.v.c.x;
-		v.v.c.y = +vdx.v.c.y + vdy.v.c.y;
-		v.v.c.z = -vdx.v.c.z - vdy.v.c.z;
+		v.v.coord.x = +vdx.v.coord.x + vdy.v.coord.x;
+		v.v.coord.y = +vdx.v.coord.y + vdy.v.coord.y;
+		v.v.coord.z = -vdx.v.coord.z - vdy.v.coord.z;
 		*vSprite = *r * v;
 		vSprite [0] += *vCenter;
-		v.v.c.x = v.v.c.y = v.v.c.z = 0;
-		v.v.c.x = -vdx.v.c.x + vdy.v.c.x;
-		v.v.c.y = +vdx.v.c.y + vdy.v.c.y;
-		v.v.c.z = +vdx.v.c.z - vdy.v.c.z;
+		v.v.coord.x = v.v.coord.y = v.v.coord.z = 0;
+		v.v.coord.x = -vdx.v.coord.x + vdy.v.coord.x;
+		v.v.coord.y = +vdx.v.coord.y + vdy.v.coord.y;
+		v.v.coord.z = +vdx.v.coord.z - vdy.v.coord.z;
 		vSprite [1] = *r * v;
 		vSprite [1] += *vCenter;
-		v.v.c.x = v.v.c.y = v.v.c.z = 0;
-		v.v.c.x = -vdx.v.c.x - vdy.v.c.x;
-		v.v.c.y = -vdx.v.c.y - vdy.v.c.y;
-		v.v.c.z = +vdx.v.c.z + vdy.v.c.z;
+		v.v.coord.x = v.v.coord.y = v.v.coord.z = 0;
+		v.v.coord.x = -vdx.v.coord.x - vdy.v.coord.x;
+		v.v.coord.y = -vdx.v.coord.y - vdy.v.coord.y;
+		v.v.coord.z = +vdx.v.coord.z + vdy.v.coord.z;
 		vSprite [2] =  *r * v;
 		vSprite [2] += *vCenter;
-		v.v.c.x = +vdx.v.c.x - vdy.v.c.x;
-		v.v.c.y = -vdx.v.c.y - vdy.v.c.y;
-		v.v.c.z = -vdx.v.c.z + vdy.v.c.z;
+		v.v.coord.x = +vdx.v.coord.x - vdy.v.coord.x;
+		v.v.coord.y = -vdx.v.coord.y - vdy.v.coord.y;
+		v.v.coord.z = -vdx.v.coord.z + vdy.v.coord.z;
 		vSprite [3] = *r * v;
 		vSprite [3] += *vCenter;
 		}
 	else {
 		vdy = vdy * dy;
-		v.v.c.x = -vdx.v.c.x - vdy.v.c.x;
-		v.v.c.y = -vdx.v.c.y - vdy.v.c.y;
-		v.v.c.z = -vdx.v.c.z - vdy.v.c.z;
+		v.v.coord.x = -vdx.v.coord.x - vdy.v.coord.x;
+		v.v.coord.y = -vdx.v.coord.y - vdy.v.coord.y;
+		v.v.coord.z = -vdx.v.coord.z - vdy.v.coord.z;
 		*vSprite = *r * v;
 		vSprite [0] += *vCenter;
-		v.v.c.x = v.v.c.y = v.v.c.z = 0;
-		v.v.c.x = +vdx.v.c.x - vdy.v.c.x;
-		v.v.c.y = -vdx.v.c.y - vdy.v.c.y;
-		v.v.c.z = +vdx.v.c.z - vdy.v.c.z;
+		v.v.coord.x = v.v.coord.y = v.v.coord.z = 0;
+		v.v.coord.x = +vdx.v.coord.x - vdy.v.coord.x;
+		v.v.coord.y = -vdx.v.coord.y - vdy.v.coord.y;
+		v.v.coord.z = +vdx.v.coord.z - vdy.v.coord.z;
 		vSprite [1] = *r * v;
 		vSprite [1] += *vCenter;
-		v.v.c.x = v.v.c.y = v.v.c.z = 0;
-		v.v.c.x = +vdx.v.c.x + vdy.v.c.x;
-		v.v.c.y = +vdx.v.c.y + vdy.v.c.y;
-		v.v.c.z = +vdx.v.c.z + vdy.v.c.z;
+		v.v.coord.x = v.v.coord.y = v.v.coord.z = 0;
+		v.v.coord.x = +vdx.v.coord.x + vdy.v.coord.x;
+		v.v.coord.y = +vdx.v.coord.y + vdy.v.coord.y;
+		v.v.coord.z = +vdx.v.coord.z + vdy.v.coord.z;
 		vSprite [2] = *r * v;
 		vSprite [2] += *vCenter;
-		v.v.c.x = -vdx.v.c.x + vdy.v.c.x;
-		v.v.c.y = +vdx.v.c.y + vdy.v.c.y;
-		v.v.c.z = -vdx.v.c.z + vdy.v.c.z;
+		v.v.coord.x = -vdx.v.coord.x + vdy.v.coord.x;
+		v.v.coord.y = +vdx.v.coord.y + vdy.v.coord.y;
+		v.v.coord.z = -vdx.v.coord.z + vdy.v.coord.z;
 		vSprite [3] = *r * v;
 		vSprite [3] += *vCenter;
 		}
 	}
 else {
-	vSprite [0].v.c.x = -vdx.v.c.x - vdy.v.c.x;
-	vSprite [0].v.c.y = -vdx.v.c.y - vdy.v.c.y;
-	vSprite [0].v.c.z = -vdx.v.c.z - vdy.v.c.z;
-	vSprite [1].v.c.x = +vdx.v.c.x - vdy.v.c.x;
-	vSprite [1].v.c.y = +vdx.v.c.y - vdy.v.c.y;
-	vSprite [1].v.c.z = +vdx.v.c.z - vdy.v.c.z;
-	vSprite [2].v.c.x = +vdx.v.c.x + vdy.v.c.x;
-	vSprite [2].v.c.y = +vdx.v.c.y + vdy.v.c.y;
-	vSprite [2].v.c.z = +vdx.v.c.z + vdy.v.c.z;
-	vSprite [3].v.c.x = -vdx.v.c.x + vdy.v.c.x;
-	vSprite [3].v.c.y = -vdx.v.c.y + vdy.v.c.y;
-	vSprite [3].v.c.z = -vdx.v.c.z + vdy.v.c.z;
+	vSprite [0].v.coord.x = -vdx.v.coord.x - vdy.v.coord.x;
+	vSprite [0].v.coord.y = -vdx.v.coord.y - vdy.v.coord.y;
+	vSprite [0].v.coord.z = -vdx.v.coord.z - vdy.v.coord.z;
+	vSprite [1].v.coord.x = +vdx.v.coord.x - vdy.v.coord.x;
+	vSprite [1].v.coord.y = +vdx.v.coord.y - vdy.v.coord.y;
+	vSprite [1].v.coord.z = +vdx.v.coord.z - vdy.v.coord.z;
+	vSprite [2].v.coord.x = +vdx.v.coord.x + vdy.v.coord.x;
+	vSprite [2].v.coord.y = +vdx.v.coord.y + vdy.v.coord.y;
+	vSprite [2].v.coord.z = +vdx.v.coord.z + vdy.v.coord.z;
+	vSprite [3].v.coord.x = -vdx.v.coord.x + vdy.v.coord.x;
+	vSprite [3].v.coord.y = -vdx.v.coord.y + vdy.v.coord.y;
+	vSprite [3].v.coord.z = -vdx.v.coord.z + vdy.v.coord.z;
 	for (i = 0; i < 4; i++)
 		vSprite [i] += *vCenter;
 	}
@@ -308,7 +308,7 @@ void CGlareRenderer::ComputeSpriteZRange (CFloatVector *sprite, tIntervalf *zRan
 	int			i;
 
 for (i = 0; i < 4; i++) {
-	z = sprite [i].v.c.z;
+	z = sprite [i].v.coord.z;
 	if (zRange.fMin > z)
 		zRange.fMin = z;
 	if (zRange.fMax < z)
@@ -327,14 +327,14 @@ float CGlareRenderer::MoveSpriteIn (CFloatVector *sprite, CFloatVector *vCenter,
 
 ComputeSpriteZRange (sprite, &zRange);
 if (zRange.fMin > 0)
-	*vCenter = *vCenter * (zRange.fMin / (*vCenter).v.c.z);
+	*vCenter = *vCenter * (zRange.fMin / (*vCenter).v.coord.z);
 else {
 	if (zRange.fMin < -zRange.fRad)
 		return 0;
 	fIntensity *= 1 + zRange.fMin / zRange.fRad * 2;
-	 (*vCenter).v.c.x /= (*vCenter).v.c.z;
-	 (*vCenter).v.c.y /= (*vCenter).v.c.y;
-	 (*vCenter).v.c.z = 1;
+	 (*vCenter).v.coord.x /= (*vCenter).v.coord.z;
+	 (*vCenter).v.coord.y /= (*vCenter).v.coord.y;
+	 (*vCenter).v.coord.z = 1;
 	}
 *zRangeP = zRange;
 return fIntensity;
@@ -503,10 +503,10 @@ s = s * 1.8f;
 t = t * 1.8f;
 v = *vLight;
 for (i = 0; i < 3; i++) {
-	sprite [0].v.a [i] = v.v.a [i] + s.v.a [i] + t.v.a [i];
-	sprite [1].v.a [i] = v.v.a [i] + s.v.a [i] - t.v.a [i];
-	sprite [2].v.a [i] = v.v.a [i] - s.v.a [i] - t.v.a [i];
-	sprite [3].v.a [i] = v.v.a [i] - s.v.a [i] + t.v.a [i];
+	sprite [0].v.vec [i] = v.v.vec [i] + s.v.vec [i] + t.v.vec [i];
+	sprite [1].v.vec [i] = v.v.vec [i] + s.v.vec [i] - t.v.vec [i];
+	sprite [2].v.vec [i] = v.v.vec [i] - s.v.vec [i] - t.v.vec [i];
+	sprite [3].v.vec [i] = v.v.vec [i] - s.v.vec [i] + t.v.vec [i];
 	}
 cosine = CFloatVector::Dot (e, n);
 return float (sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nIntensity]);

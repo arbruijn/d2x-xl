@@ -195,7 +195,7 @@ void CConsole::AlphaGL (SDL_Surface *s, int alpha) {
 	ubyte val;
 	int x, y, w, h;
 	uint pixel;
-	ubyte r, g, b, a;
+	ubyte r, g, b, vec;
 	SDL_PixelFormat *format;
 	static char errorPrinted = 0;
 
@@ -259,9 +259,9 @@ void CConsole::AlphaGL (SDL_Surface *s, int alpha) {
 				pixel = DT_GetPixel (s, x, y);
 				if (x == 0 && y == 0)
 					print = 1;
-				SDL_GetRGBA (pixel, format, &r, &g, &b, &a);
+				SDL_GetRGBA (pixel, format, &r, &g, &b, &vec);
 				pixel = SDL_MapRGBA (format, r, g, b, val);
-				SDL_GetRGBA (pixel, format, &r, &g, &b, &a);
+				SDL_GetRGBA (pixel, format, &r, &g, &b, &vec);
 				DT_PutPixel (s, x, y, pixel);
 
 				/* unlock surface again */

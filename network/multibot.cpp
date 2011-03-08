@@ -342,7 +342,7 @@ bufP += sizeof (tShortPos);
 CreateShortPos (&sp, OBJECTS+nObject, 1);
 memcpy (gameData.multigame.msg.buf + bufP, reinterpret_cast<ubyte*> (sp.orient), 9);
 bufP += 9;
-memcpy (gameData.multigame.msg.buf + bufP, reinterpret_cast<ubyte*> (&sp.pos), 14);
+memcpy (gameData.multigame.msg.buf + bufP, reinterpret_cast<ubyte*> (&sp.coord), 14);
 bufP += 14;
 #endif
 MultiSendData (reinterpret_cast<char*> (gameData.multigame.msg.buf), bufP, 1);
@@ -399,9 +399,9 @@ bufP += sizeof (CFixVector); // 12
 // --------------------------
 //      Total = 18
 #else
-vSwapped.v.c.x = (fix) INTEL_INT ((int) (*vFire).v.c.x);
-vSwapped.v.c.y = (fix) INTEL_INT ((int) (*vFire).v.c.y);
-vSwapped.v.c.z = (fix) INTEL_INT ((int) (*vFire).v.c.z);
+vSwapped.dir.coord.x = (fix) INTEL_INT ((int) (*vFire).dir.coord.x);
+vSwapped.dir.coord.y = (fix) INTEL_INT ((int) (*vFire).dir.coord.y);
+vSwapped.dir.coord.z = (fix) INTEL_INT ((int) (*vFire).dir.coord.z);
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (CFixVector)); 
 bufP += sizeof (CFixVector);
 #endif
@@ -524,9 +524,9 @@ bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 memcpy (gameData.multigame.msg.buf + bufP, &delObjP->info.position.vPos, sizeof (CFixVector));
 #else
-vSwapped.v.c.x = (fix)INTEL_INT ((int) delObjP->info.position.vPos.v.c.x);
-vSwapped.v.c.y = (fix)INTEL_INT ((int) delObjP->info.position.vPos.v.c.y);
-vSwapped.v.c.z = (fix)INTEL_INT ((int) delObjP->info.position.vPos.v.c.z);
+vSwapped.dir.coord.x = (fix)INTEL_INT ((int) delObjP->info.position.vPos.dir.coord.x);
+vSwapped.dir.coord.y = (fix)INTEL_INT ((int) delObjP->info.position.vPos.dir.coord.y);
+vSwapped.dir.coord.z = (fix)INTEL_INT ((int) delObjP->info.position.vPos.dir.coord.z);
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (CFixVector));     
 #endif
 bufP += sizeof (CFixVector);
@@ -628,7 +628,7 @@ ExtractShortPos (&OBJECTS [nRobot], reinterpret_cast<tShortPos*> (buf+bufP), 0);
 #else
 memcpy (reinterpret_cast<ubyte*>(sp.orient), reinterpret_cast<ubyte*>(buf + bufP), 9);	
 bufP += 9;
-memcpy (reinterpret_cast<ubyte*> (&(sp.pos)), reinterpret_cast<ubyte*>(buf + bufP), 14);
+memcpy (reinterpret_cast<ubyte*> (&(sp.coord)), reinterpret_cast<ubyte*>(buf + bufP), 14);
 ExtractShortPos (&OBJECTS [nRobot], &sp, 1);
 #endif
 }
@@ -651,9 +651,9 @@ nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [bufP+2]);
 bufP += 3;
 nGun = (sbyte)buf [bufP++];                                      
 memcpy (&vFire, buf+bufP, sizeof (CFixVector));
-vFire.v.c.x = (fix)INTEL_INT ((int)vFire.v.c.x);
-vFire.v.c.y = (fix)INTEL_INT ((int)vFire.v.c.y);
-vFire.v.c.z = (fix)INTEL_INT ((int)vFire.v.c.z);
+vFire.v.coord.x = (fix)INTEL_INT ((int)vFire.v.coord.x);
+vFire.v.coord.y = (fix)INTEL_INT ((int)vFire.v.coord.y);
+vFire.v.coord.z = (fix)INTEL_INT ((int)vFire.v.coord.z);
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]) || 
 	 (OBJECTS [nRobot].info.nType != OBJ_ROBOT) || 
 	 (OBJECTS [nRobot].info.nFlags & OF_EXPLODING))
@@ -793,7 +793,7 @@ if (! (objP = CreateMorphRobot (SEGMENTS + robotGenP->nSegment, &vObjPos, nType)
 objP->info.nCreator = ((short) (robotGenP - gameData.matCens.fuelCenters.Buffer ())) | 0x80;
 //	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotGenP->nSegment]);
 direction = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
-objP->info.position.mOrient = CFixMatrix::CreateFU(direction, objP->info.position.mOrient.m.v.u);
+objP->info.position.mOrient = CFixMatrix::CreateFU(direction, objP->info.position.mOrient.m.dir.u);
 //objP->info.position.mOrient = CFixMatrix::CreateFU(direction, &objP->info.position.mOrient.m.v.u, NULL);
 objP->MorphStart ();
 MapObjnumLocalToRemote (objP->Index (), nObject, nPlayer);
@@ -920,9 +920,9 @@ bufP += 2;
 memcpy (&delObjP.info.position.vPos, buf + bufP, sizeof (CFixVector));      
 bufP += sizeof (CFixVector);
 delObjP.mType.physInfo.velocity.SetZero ();
-delObjP.info.position.vPos.v.c.x = (fix) INTEL_INT ((int) delObjP.info.position.vPos.v.c.x);
-delObjP.info.position.vPos.v.c.y = (fix) INTEL_INT ((int) delObjP.info.position.vPos.v.c.y);
-delObjP.info.position.vPos.v.c.z = (fix) INTEL_INT ((int) delObjP.info.position.vPos.v.c.z);
+delObjP.info.position.vPos.v.coord.x = (fix) INTEL_INT ((int) delObjP.info.position.vPos.v.coord.x);
+delObjP.info.position.vPos.v.coord.y = (fix) INTEL_INT ((int) delObjP.info.position.vPos.v.coord.y);
+delObjP.info.position.vPos.v.coord.z = (fix) INTEL_INT ((int) delObjP.info.position.vPos.v.coord.z);
 if (gameStates.multi.nGameType != UDP_GAME)
 	gameStates.app.nRandSeed = 8321L;
 else {

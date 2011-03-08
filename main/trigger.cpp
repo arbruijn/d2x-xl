@@ -653,8 +653,8 @@ if (nStep <= 0) {
 	n = *SEGMENTS [nSegment].m_sides [nSide].m_normals;
 	n = -n;
 	/*
-	n.v.c.y = -n.v.c.y;
-	n.v.c.z = -n.v.c.z;
+	n.v.coord.y = -n.v.coord.y;
+	n.v.coord.z = -n.v.coord.z;
 	*/
 	gameStates.gameplay.vTgtDir = n;
 	if (nStep < 0)
@@ -688,8 +688,8 @@ TriggerSetOrient (&objP->info.position, nSegment, nSide, bSetPos, nStep);
 if (nStep <= 0) {
 	n = *SEGMENTS [nSegment].m_sides [nSide].m_normals;
 	/*
-	n.v.c.x = -n.v.c.x;
-	n.v.c.y = -n.v.c.y;
+	n.v.coord.x = -n.v.coord.x;
+	n.v.coord.y = -n.v.coord.y;
 	*/
 	n = -n;
 	gameStates.gameplay.vTgtDir = n;
@@ -700,18 +700,18 @@ else
 	n = gameStates.gameplay.vTgtDir;
 an = n.ToAnglesVec ();
 av = objP->mType.physInfo.velocity.ToAnglesVec ();
-av.v.c.p -= an.v.c.p;
-av.v.c.b -= an.v.c.b;
-av.v.c.h -= an.v.c.h;
+av.v.coord.p -= an.v.coord.p;
+av.v.coord.b -= an.v.coord.b;
+av.v.coord.h -= an.v.coord.h;
 if (nStep) {
 	if (nStep > 1) {
-		av.v.c.p /= nStep;
-		av.v.c.b /= nStep;
-		av.v.c.h /= nStep;
+		av.v.coord.p /= nStep;
+		av.v.coord.b /= nStep;
+		av.v.coord.h /= nStep;
 		ad = objP->info.position.mOrient.ExtractAnglesVec ();
-		ad.v.c.p += (an.v.c.p - ad.v.c.p) / nStep;
-		ad.v.c.b += (an.v.c.b - ad.v.c.b) / nStep;
-		ad.v.c.h += (an.v.c.h - ad.v.c.h) / nStep;
+		ad.v.coord.p += (an.v.coord.p - ad.v.coord.p) / nStep;
+		ad.v.coord.b += (an.v.coord.b - ad.v.coord.b) / nStep;
+		ad.v.coord.h += (an.v.coord.h - ad.v.coord.h) / nStep;
 		objP->info.position.mOrient = CFixMatrix::Create (ad);
 		}
 	else
@@ -801,8 +801,8 @@ if (sbd.bBoosted) {
 		// turn the ship so that it is facing the destination nSide of the destination CSegment
 		// Invert the Normal as it points into the CSegment
 			/*
-			n.v.c.x = -n.v.c.x;
-			n.v.c.y = -n.v.c.y;
+			n.v.coord.x = -n.v.coord.x;
+			n.v.coord.y = -n.v.coord.y;
 			*/
 			n = -n;
 			}
@@ -812,62 +812,62 @@ if (sbd.bBoosted) {
 	// turn the ship so that it is facing the destination nSide of the destination CSegment
 	// Invert the Normal as it points into the CSegment
 		/*
-		n.v.c.x = -n.v.c.x;
-		n.v.c.y = -n.v.c.y;
+		n.v.coord.x = -n.v.coord.x;
+		n.v.coord.y = -n.v.coord.y;
 		*/
 		n = -n;
 		}
-	sbd.vVel.v.c.x = n.v.c.x * v;
-	sbd.vVel.v.c.y = n.v.c.y * v;
-	sbd.vVel.v.c.z = n.v.c.z * v;
+	sbd.vVel.v.coord.x = n.v.coord.x * v;
+	sbd.vVel.v.coord.y = n.v.coord.y * v;
+	sbd.vVel.v.coord.z = n.v.coord.z * v;
 #if 0
-	d = (double) (labs (n.v.c.x) + labs (n.v.c.y) + labs (n.v.c.z)) / ((double) I2X (60));
-	h.v.c.x = n.v.c.x ? (fix) ((double) n.v.c.x / d) : 0;
-	h.v.c.y = n.v.c.y ? (fix) ((double) n.v.c.y / d) : 0;
-	h.v.c.z = n.v.c.z ? (fix) ((double) n.v.c.z / d) : 0;
+	d = (double) (labs (n.dir.coord.x) + labs (n.dir.coord.y) + labs (n.dir.coord.z)) / ((double) I2X (60));
+	h.dir.coord.x = n.dir.coord.x ? (fix) ((double) n.dir.coord.x / d) : 0;
+	h.dir.coord.y = n.dir.coord.y ? (fix) ((double) n.dir.coord.y / d) : 0;
+	h.dir.coord.z = n.dir.coord.z ? (fix) ((double) n.dir.coord.z / d) : 0;
 #else
 #	if 1
-	h.v.c.x =
-	h.v.c.y =
-	h.v.c.z = I2X (60);
+	h.v.coord.x =
+	h.v.coord.y =
+	h.v.coord.z = I2X (60);
 #	else
-	h.v.c.x = (n.v.c.x ? n.v.c.x : I2X (1)) * 60;
-	h.v.c.y = (n.v.c.y ? n.v.c.y : I2X (1)) * 60;
-	h.v.c.z = (n.v.c.z ? n.v.c.z : I2X (1)) * 60;
+	h.dir.coord.x = (n.dir.coord.x ? n.dir.coord.x : I2X (1)) * 60;
+	h.dir.coord.y = (n.dir.coord.y ? n.dir.coord.y : I2X (1)) * 60;
+	h.dir.coord.z = (n.dir.coord.z ? n.dir.coord.z : I2X (1)) * 60;
 #	endif
 #endif
 	sbd.vMinVel = sbd.vVel - h;
 /*
-	if (!sbd.vMinVel.v.c.x)
-		sbd.vMinVel.v.c.x = -I2X (60);
-	if (!sbd.vMinVel.v.c.y)
-		sbd.vMinVel.v.c.y = -I2X (60);
-	if (!sbd.vMinVel.v.c.z)
-		sbd.vMinVel.v.c.z = -I2X (60);
+	if (!sbd.vMinVel.v.coord.x)
+		sbd.vMinVel.v.coord.x = -I2X (60);
+	if (!sbd.vMinVel.v.coord.y)
+		sbd.vMinVel.v.coord.y = -I2X (60);
+	if (!sbd.vMinVel.v.coord.z)
+		sbd.vMinVel.v.coord.z = -I2X (60);
 */
 	sbd.vMaxVel = sbd.vVel + h;
 /*
-	if (!sbd.vMaxVel.v.c.x)
-		sbd.vMaxVel.v.c.x = I2X (60);
-	if (!sbd.vMaxVel.v.c.y)
-		sbd.vMaxVel.v.c.y = I2X (60);
-	if (!sbd.vMaxVel.v.c.z)
-		sbd.vMaxVel.v.c.z = I2X (60);
+	if (!sbd.vMaxVel.v.coord.x)
+		sbd.vMaxVel.v.coord.x = I2X (60);
+	if (!sbd.vMaxVel.v.coord.y)
+		sbd.vMaxVel.v.coord.y = I2X (60);
+	if (!sbd.vMaxVel.v.coord.z)
+		sbd.vMaxVel.v.coord.z = I2X (60);
 */
-	if (sbd.vMinVel.v.c.x > sbd.vMaxVel.v.c.x) {
-		fix h = sbd.vMinVel.v.c.x;
-		sbd.vMinVel.v.c.x = sbd.vMaxVel.v.c.x;
-		sbd.vMaxVel.v.c.x = h;
+	if (sbd.vMinVel.v.coord.x > sbd.vMaxVel.v.coord.x) {
+		fix h = sbd.vMinVel.v.coord.x;
+		sbd.vMinVel.v.coord.x = sbd.vMaxVel.v.coord.x;
+		sbd.vMaxVel.v.coord.x = h;
 		}
-	if (sbd.vMinVel.v.c.y > sbd.vMaxVel.v.c.y) {
-		fix h = sbd.vMinVel.v.c.y;
-		sbd.vMinVel.v.c.y = sbd.vMaxVel.v.c.y;
-		sbd.vMaxVel.v.c.y = h;
+	if (sbd.vMinVel.v.coord.y > sbd.vMaxVel.v.coord.y) {
+		fix h = sbd.vMinVel.v.coord.y;
+		sbd.vMinVel.v.coord.y = sbd.vMaxVel.v.coord.y;
+		sbd.vMaxVel.v.coord.y = h;
 		}
-	if (sbd.vMinVel.v.c.z > sbd.vMaxVel.v.c.z) {
-		fix h = sbd.vMinVel.v.c.z;
-		sbd.vMinVel.v.c.z = sbd.vMaxVel.v.c.z;
-		sbd.vMaxVel.v.c.z = h;
+	if (sbd.vMinVel.v.coord.z > sbd.vMaxVel.v.coord.z) {
+		fix h = sbd.vMinVel.v.coord.z;
+		sbd.vMinVel.v.coord.z = sbd.vMaxVel.v.coord.z;
+		sbd.vMaxVel.v.coord.z = h;
 		}
 	objP->mType.physInfo.velocity = sbd.vVel;
 	if (bSetOrient) {
@@ -877,9 +877,9 @@ if (sbd.bBoosted) {
 	gameData.objs.speedBoost [nObject] = sbd;
 	}
 else {
-	objP->mType.physInfo.velocity.v.c.x = objP->mType.physInfo.velocity.v.c.x / v * 60;
-	objP->mType.physInfo.velocity.v.c.y = objP->mType.physInfo.velocity.v.c.y / v * 60;
-	objP->mType.physInfo.velocity.v.c.z = objP->mType.physInfo.velocity.v.c.z / v * 60;
+	objP->mType.physInfo.velocity.v.coord.x = objP->mType.physInfo.velocity.v.coord.x / v * 60;
+	objP->mType.physInfo.velocity.v.coord.y = objP->mType.physInfo.velocity.v.coord.y / v * 60;
+	objP->mType.physInfo.velocity.v.coord.z = objP->mType.physInfo.velocity.v.coord.z / v * 60;
 	}
 }
 

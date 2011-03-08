@@ -82,7 +82,7 @@ nBestSide = 0;
 // bank CPlayerData according to CSegment orientation
 //find CSide of CSegment that CPlayerData is most aligned with
 for (i = 0; i < 6; i++) {
-	dot = CFixVector::Dot (SEGMENTS [objP->info.nSegment].m_sides [i].m_normals [0], objP->info.position.mOrient.m.v.u);
+	dot = CFixVector::Dot (SEGMENTS [objP->info.nSegment].m_sides [i].m_normals [0], objP->info.position.mOrient.m.dir.u);
 	if (maxDot < dot) {
 		maxDot = dot; 
 		nBestSide = i;
@@ -100,17 +100,17 @@ else if (gameOpts->gameplay.nAutoLeveling == 2) {	 // new CPlayerData leveling c
 		desiredUpVec = SEGMENTS [objP->info.nSegment].m_sides [nBestSide].m_normals [0];
 	}
 else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
-	desiredUpVec = (*PlayerSpawnOrient (gameData.multiplayer.nLocalPlayer)).m.v.u;
+	desiredUpVec = (*PlayerSpawnOrient (gameData.multiplayer.nLocalPlayer)).m.dir.u;
 else
 	return;
-if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.m.v.f)) < I2X (1)/2) {
+if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.m.dir.f)) < I2X (1)/2) {
 	fixang save_delta_ang;
 	CAngleVector turnAngles;
 
-	temp_matrix = CFixMatrix::CreateFU(objP->info.position.mOrient.m.v.f, desiredUpVec);
+	temp_matrix = CFixMatrix::CreateFU(objP->info.position.mOrient.m.dir.f, desiredUpVec);
 //	temp_matrix = CFixMatrix::CreateFU(objP->info.position.mOrient.m.v.f, &desiredUpVec, NULL);
 	save_delta_ang =
-	delta_ang = CFixVector::DeltaAngle(objP->info.position.mOrient.m.v.u, temp_matrix.m.v.u, &objP->info.position.mOrient.m.v.f);
+	delta_ang = CFixVector::DeltaAngle(objP->info.position.mOrient.m.dir.u, temp_matrix.m.dir.u, &objP->info.position.mOrient.m.dir.f);
 	delta_ang += objP->mType.physInfo.turnRoll;
 	if (abs (delta_ang) > DAMP_ANG) {
 		CFixMatrix mRotate, new_pm;
@@ -120,8 +120,8 @@ if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.m.v.f)) < I
 			roll_ang = delta_ang;
 		else if (delta_ang < 0)
 			roll_ang = -roll_ang;
-		turnAngles.v.c.p = turnAngles.v.c.h = 0;
-		turnAngles.v.c.b = roll_ang;
+		turnAngles.v.coord.p = turnAngles.v.coord.h = 0;
+		turnAngles.v.coord.b = roll_ang;
 		mRotate = CFixMatrix::Create(turnAngles);
 		new_pm = objP->info.position.mOrient * mRotate;
 		objP->info.position.mOrient = new_pm;
@@ -139,7 +139,7 @@ void CObject::SetTurnRoll (void)
 {
 //if (!gameStates.app.bD1Mission)
 {
-	fixang desired_bank = (fixang) -FixMul (mType.physInfo.rotVel.v.c.y, TURNROLL_SCALE);
+	fixang desired_bank = (fixang) -FixMul (mType.physInfo.rotVel.v.coord.y, TURNROLL_SCALE);
 	if (mType.physInfo.turnRoll != desired_bank) {
 		fixang delta_ang, max_roll;
 		max_roll = (fixang) FixMul (ROLL_RATE, gameData.physics.xTime);
@@ -217,22 +217,22 @@ if (mType.physInfo.drag) {
 if (mType.physInfo.turnRoll) {
 	CFixMatrix mOrient;
 
-	turnAngles.v.c.p = turnAngles.v.c.h = 0;
-	turnAngles.v.c.b = -mType.physInfo.turnRoll;
+	turnAngles.v.coord.p = turnAngles.v.coord.h = 0;
+	turnAngles.v.coord.b = -mType.physInfo.turnRoll;
 	mRotate = CFixMatrix::Create (turnAngles);
 	mOrient = info.position.mOrient * mRotate;
 	info.position.mOrient = mOrient;
 }
-turnAngles.v.c.p = fixang (FixMul (mType.physInfo.rotVel.v.c.x, gameData.physics.xTime));
-turnAngles.v.c.h = fixang (FixMul (mType.physInfo.rotVel.v.c.y, gameData.physics.xTime));
-turnAngles.v.c.b = fixang (FixMul (mType.physInfo.rotVel.v.c.z, gameData.physics.xTime));
+turnAngles.v.coord.p = fixang (FixMul (mType.physInfo.rotVel.v.coord.x, gameData.physics.xTime));
+turnAngles.v.coord.h = fixang (FixMul (mType.physInfo.rotVel.v.coord.y, gameData.physics.xTime));
+turnAngles.v.coord.b = fixang (FixMul (mType.physInfo.rotVel.v.coord.z, gameData.physics.xTime));
 if (!IsMultiGame) {
 	int i = (this != gameData.objs.consoleP) ? 0 : 1;
 	float fSpeed = gameStates.gameplay.slowmo [i].fSpeed;
 	if (fSpeed != 1) {
-		turnAngles.v.c.p = fixang (turnAngles.v.c.p / fSpeed);
-		turnAngles.v.c.h = fixang (turnAngles.v.c.h / fSpeed);
-		turnAngles.v.c.b = fixang (turnAngles.v.c.b / fSpeed);
+		turnAngles.v.coord.p = fixang (turnAngles.v.coord.p / fSpeed);
+		turnAngles.v.coord.h = fixang (turnAngles.v.coord.h / fSpeed);
+		turnAngles.v.coord.b = fixang (turnAngles.v.coord.b / fSpeed);
 		}
 	}
 mRotate = CFixMatrix::Create (turnAngles);
@@ -244,8 +244,8 @@ if (mType.physInfo.flags & PF_TURNROLL)
 if (mType.physInfo.turnRoll) {
 	CFixMatrix m;
 
-	turnAngles.v.c.p = turnAngles.v.c.h = 0;
-	turnAngles.v.c.b = mType.physInfo.turnRoll;
+	turnAngles.v.coord.p = turnAngles.v.coord.h = 0;
+	turnAngles.v.coord.b = mType.physInfo.turnRoll;
 	mRotate = CFixMatrix::Create(turnAngles);
 	m = info.position.mOrient * mRotate;
 	info.position.mOrient = m;
@@ -296,9 +296,9 @@ if (/*(0 <= xSideDist) && */
 	xSideDist = objP->info.xSize - xSideDist;
 	r = ((float) xSideDist / (float) objP->info.xSize) * X2F (objP->info.xSize);
 #	endif
-	objP->info.position.vPos.v.c.x += (fix) ((float) hi.hit.vNormal.v.c.x * fOffs);
-	objP->info.position.vPos.v.c.y += (fix) ((float) hi.hit.vNormal.v.c.y * fOffs);
-	objP->info.position.vPos.v.c.z += (fix) ((float) hi.hit.vNormal.v.c.z * fOffs);
+	objP->info.position.vPos.v.coord.x += (fix) ((float) hi.hit.vNormal.v.coord.x * fOffs);
+	objP->info.position.vPos.v.coord.y += (fix) ((float) hi.hit.vNormal.v.coord.y * fOffs);
+	objP->info.position.vPos.v.coord.z += (fix) ((float) hi.hit.vNormal.v.coord.z * fOffs);
 #endif
 	nSegment = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments)) {
@@ -453,7 +453,7 @@ if (bDontMoveAIObjects)
 #endif
 if (bInitialize)
 	gameData.physics.xTime = I2X (1);
-CATCH_OBJ (this, mType.physInfo.velocity.v.c.y == 0);
+CATCH_OBJ (this, mType.physInfo.velocity.v.coord.y == 0);
 gameData.physics.nSegments = 0;
 
 mSaveOrient = info.position.mOrient;
@@ -538,18 +538,18 @@ if (mType.physInfo.drag) {
 			if (xDrag)
 				vel *= (I2X (1) - FixMul (k, xDrag));
 			if (bDoSpeedBoost) {
-				if (vel.v.c.x < sbd.vMinVel.v.c.x)
-					vel.v.c.x = sbd.vMinVel.v.c.x;
-				else if (vel.v.c.x > sbd.vMaxVel.v.c.x)
-					vel.v.c.x = sbd.vMaxVel.v.c.x;
-				if (vel.v.c.y < sbd.vMinVel.v.c.y)
-					vel.v.c.y = sbd.vMinVel.v.c.y;
-				else if (vel.v.c.y > sbd.vMaxVel.v.c.y)
-					vel.v.c.y = sbd.vMaxVel.v.c.y;
-				if (vel.v.c.z < sbd.vMinVel.v.c.z)
-					vel.v.c.z = sbd.vMinVel.v.c.z;
-				else if (vel.v.c.z > sbd.vMaxVel.v.c.z)
-					vel.v.c.z = sbd.vMaxVel.v.c.z;
+				if (vel.v.coord.x < sbd.vMinVel.v.coord.x)
+					vel.v.coord.x = sbd.vMinVel.v.coord.x;
+				else if (vel.v.coord.x > sbd.vMaxVel.v.coord.x)
+					vel.v.coord.x = sbd.vMaxVel.v.coord.x;
+				if (vel.v.coord.y < sbd.vMinVel.v.coord.y)
+					vel.v.coord.y = sbd.vMinVel.v.coord.y;
+				else if (vel.v.coord.y > sbd.vMaxVel.v.coord.y)
+					vel.v.coord.y = sbd.vMaxVel.v.coord.y;
+				if (vel.v.coord.z < sbd.vMinVel.v.coord.z)
+					vel.v.coord.z = sbd.vMinVel.v.coord.z;
+				else if (vel.v.coord.z > sbd.vMaxVel.v.coord.z)
+					vel.v.coord.z = sbd.vMaxVel.v.coord.z;
 				}
 			}
 		}
@@ -589,7 +589,7 @@ do {	//Move the object
 	if (fScale < 1) {
 		CFixVector vStartVel = StartVel ();
 		CFixVector::Normalize (vStartVel);
-		fix xDot = CFixVector::Dot (info.position.mOrient.m.v.f, vStartVel);
+		fix xDot = CFixVector::Dot (info.position.mOrient.m.dir.f, vStartVel);
 		vFrame = mType.physInfo.velocity + StartVel ();
 		vFrame *= F2X (fScale * fScale);
 		vFrame += StartVel () * ((xDot > 0) ? -xDot : xDot);
@@ -836,7 +836,7 @@ retryMove:
 						mType.physInfo.velocity *= (FixDiv (MAX_OBJECT_VEL, vel));
 					}
 				if (bBounced && (info.nType == OBJ_WEAPON)) {
-					info.position.mOrient = CFixMatrix::CreateFU (mType.physInfo.velocity, info.position.mOrient.m.v.u);
+					info.position.mOrient = CFixMatrix::CreateFU (mType.physInfo.velocity, info.position.mOrient.m.dir.u);
 					SetOrigin (hi.hit.vPoint);
 					}
 				bRetry = 1;
@@ -945,7 +945,7 @@ if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
 			}
 		else {
 			info.position.vPos = SEGMENTS [info.nSegment].Center ();
-			info.position.vPos.v.c.x += nObject;
+			info.position.vPos.v.coord.x += nObject;
 			}
 		if (info.nType == OBJ_WEAPON)
 			Die ();
@@ -954,7 +954,7 @@ if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
 
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
-CATCH_OBJ (this, mType.physInfo.velocity.v.c.y == 0);
+CATCH_OBJ (this, mType.physInfo.velocity.v.coord.y == 0);
 #if UNSTICK_OBJS
 UnstickObject (this);
 #endif
@@ -1030,17 +1030,17 @@ if (info.controlType == CT_MORPH)
 	rate *= 2;
 
 dest_angles = vGoal.ToAnglesVec ();
-cur_angles = info.position.mOrient.m.v.f.ToAnglesVec ();
-delta_p = (dest_angles.v.c.p - cur_angles.v.c.p);
-delta_h = (dest_angles.v.c.h - cur_angles.v.c.h);
+cur_angles = info.position.mOrient.m.dir.f.ToAnglesVec ();
+delta_p = (dest_angles.v.coord.p - cur_angles.v.coord.p);
+delta_h = (dest_angles.v.coord.h - cur_angles.v.coord.h);
 if (delta_p > I2X (1)/2)
-	delta_p = dest_angles.v.c.p - cur_angles.v.c.p - I2X (1);
+	delta_p = dest_angles.v.coord.p - cur_angles.v.coord.p - I2X (1);
 if (delta_p < -I2X (1)/2)
-	delta_p = dest_angles.v.c.p - cur_angles.v.c.p + I2X (1);
+	delta_p = dest_angles.v.coord.p - cur_angles.v.coord.p + I2X (1);
 if (delta_h > I2X (1)/2)
-	delta_h = dest_angles.v.c.h - cur_angles.v.c.h - I2X (1);
+	delta_h = dest_angles.v.coord.h - cur_angles.v.coord.h - I2X (1);
 if (delta_h < -I2X (1)/2)
-	delta_h = dest_angles.v.c.h - cur_angles.v.c.h + I2X (1);
+	delta_h = dest_angles.v.coord.h - cur_angles.v.coord.h + I2X (1);
 delta_p = FixDiv (delta_p, rate);
 delta_h = FixDiv (delta_h, rate);
 if (abs (delta_p) < I2X (1)/16) delta_p *= 4;
@@ -1052,9 +1052,9 @@ if (!IsMultiGame) {
 		delta_h = (fix) (delta_h / gameStates.gameplay.slowmo [i].fSpeed);
 		}
 	}
-PhysicsSetRotVelAndSaturate (&pvRotVel.v.c.x, delta_p);
-PhysicsSetRotVelAndSaturate (&pvRotVel.v.c.y, delta_h);
-pvRotVel.v.c.z = 0;
+PhysicsSetRotVelAndSaturate (&pvRotVel.v.coord.x, delta_p);
+PhysicsSetRotVelAndSaturate (&pvRotVel.v.coord.y, delta_h);
+pvRotVel.v.coord.z = 0;
 }
 
 //	-----------------------------------------------------------------------------

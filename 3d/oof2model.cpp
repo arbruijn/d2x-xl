@@ -67,9 +67,9 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 	psm->m_nParent = pso->m_nParent;
 	if (psm->m_nParent < 0)
 		m_iSubModel = (short) (psm - m_subModels);
-	psm->m_vOffset.v.c.x = F2X (pso->m_vOffset.v.c.x * fScale);
-	psm->m_vOffset.v.c.y = F2X (pso->m_vOffset.v.c.y * fScale);
-	psm->m_vOffset.v.c.z = F2X (pso->m_vOffset.v.c.z * fScale);
+	psm->m_vOffset.v.coord.x = F2X (pso->m_vOffset.v.coord.x * fScale);
+	psm->m_vOffset.v.coord.y = F2X (pso->m_vOffset.v.coord.y * fScale);
+	psm->m_vOffset.v.coord.z = F2X (pso->m_vOffset.v.coord.z * fScale);
 	psm->m_nAngles = 0;
 	psm->m_nBomb = -1;
 	psm->m_nMissile = -1;

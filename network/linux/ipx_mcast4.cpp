@@ -91,12 +91,12 @@ return 1;
 #ifdef IPX_MCAST4DBG
 /* Dump raw form of IP address/port by fancy output to user
  */
-static void dumpraddr(ubyte *a)
+static void dumpraddr(ubyte *vec)
 {
 	short port;
 
 //printf("[%u.%u.%u.%u]", a[0], a[1], a[2], a[3]);
-port = (signed short) ntohs (*reinterpret_cast<ushort*> (a+4));
+port = (signed short) ntohs (*reinterpret_cast<ushort*> (vec+4));
 //if (port) printf(":%+d",port);
 }
 

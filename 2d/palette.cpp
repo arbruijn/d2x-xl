@@ -430,7 +430,7 @@ CPalette *CPaletteManager::Load (const char *pszFile, const char *pszLevel)
 	int		i = 0, fsize;
 	CPalette	palette;
 #ifdef SWAP_0_255
-	ubyte		c;
+	ubyte		coord;
 #endif
 
 if (pszLevel) {

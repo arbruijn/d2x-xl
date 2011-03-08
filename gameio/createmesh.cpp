@@ -1094,13 +1094,13 @@ int i = (*pf)->m_info.nKey;
 int m = (*pm)->m_info.nKey;
 #else
 short i = (*pf)->m_info.nBaseTex;
-short m = (*pm)->m_info.nBaseTex;
-if (i < m) 
+short mat = (*pm)->m_info.nBaseTex;
+if (i < mat) 
 	return -1;
-if (i > m)
+if (i > mat)
 	return 1;
 i = (*pf)->m_info.nOvlTex;
-m = (*pm)->m_info.nOvlTex;
+mat = (*pm)->m_info.nOvlTex;
 #endif
 return (i < m) ? -1 : (i > m) ? 1 : 0;
 }

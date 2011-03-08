@@ -1,0 +1,3 @@
+hmiplay.o: linux/hmiplay.cpp ../conf.h
+
+../conf.h:

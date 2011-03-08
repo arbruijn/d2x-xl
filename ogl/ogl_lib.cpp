@@ -193,15 +193,15 @@ CFixVector	vNormal;
 #if 1
 if (pvNormal) {
 	if (ogl.UseTransform ())
-		glNormal3f ((GLfloat) X2F ((*pvNormal).v.c.x),
-						(GLfloat) X2F ((*pvNormal).v.c.y),
-						(GLfloat) X2F ((*pvNormal).v.c.z));
+		glNormal3f ((GLfloat) X2F ((*pvNormal).v.coord.x),
+						(GLfloat) X2F ((*pvNormal).v.coord.y),
+						(GLfloat) X2F ((*pvNormal).v.coord.z));
 		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->p3_vec);
 	else {
 		transformation.Rotate (vNormal, *pvNormal, 0);
-		glNormal3f ((GLfloat) X2F (vNormal.v.c.x),
-						(GLfloat) X2F (vNormal.v.c.y),
-						(GLfloat) X2F (vNormal.v.c.z));
+		glNormal3f ((GLfloat) X2F (vNormal.v.coord.x),
+						(GLfloat) X2F (vNormal.v.coord.y),
+						(GLfloat) X2F (vNormal.v.coord.z));
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
 		}
 //	glNormal3f ((GLfloat) X2F (vNormal.x), (GLfloat) X2F (vNormal.y), (GLfloat) X2F (vNormal.z));
@@ -216,7 +216,7 @@ else
 	v [2] = pointList [2]->p3_index;
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
 		vNormal = CFixVector::Normal (pointList [0]->p3_vec, pointList [1]->p3_vec, pointList [2]->p3_vec);
-		glNormal3f ((GLfloat) X2F (vNormal.v.c.x), (GLfloat) X2F (vNormal.v.c.y), (GLfloat) X2F (vNormal.v.c.z));
+		glNormal3f ((GLfloat) X2F (vNormal.v.coord.x), (GLfloat) X2F (vNormal.v.coord.y), (GLfloat) X2F (vNormal.v.coord.z));
 		}
 	else {
 		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted);
@@ -227,7 +227,7 @@ else
 			vNormal = -vNormal;
 		if (!ogl.UseTransform ())
 			transformation.Rotate (vNormal, vNormal, 0);
-		glNormal3f ((GLfloat) X2F (vNormal.v.c.x), (GLfloat) X2F (vNormal.v.c.y), (GLfloat) X2F (vNormal.v.c.z));
+		glNormal3f ((GLfloat) X2F (vNormal.v.coord.x), (GLfloat) X2F (vNormal.v.coord.y), (GLfloat) X2F (vNormal.v.coord.z));
 		}
 	}
 }
@@ -574,9 +574,9 @@ else {
 	}
 if (gameStates.render.bRearView < 0)
 	glScalef (-1.0f, 1.0f, 1.0f);
-m_data.depthScale.v.c.x = float (ZFAR / (ZFAR - ZNEAR));
-m_data.depthScale.v.c.y = float (ZNEAR * ZFAR / (ZNEAR - ZFAR));
-m_data.depthScale.v.c.z = float (ZFAR - ZNEAR);
+m_data.depthScale.v.coord.x = float (ZFAR / (ZFAR - ZNEAR));
+m_data.depthScale.v.coord.y = float (ZNEAR * ZFAR / (ZNEAR - ZFAR));
+m_data.depthScale.v.coord.z = float (ZFAR - ZNEAR);
 m_data.screenScale.x = 1.0f / float (screen.Width ());
 m_data.screenScale.y = 1.0f / float (screen.Height ());
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -966,8 +966,8 @@ if (!m_states.nTransformCalls && (m_states.bUseTransform || bForce)) {
 	glPushMatrix ();
 	glLoadIdentity ();
 	glScalef (1, 1, -1);
-	glMultMatrixf (reinterpret_cast<GLfloat*> (transformation.m_info.viewf [2].m.a));
-	glTranslatef (-transformation.m_info.posf [1].v.c.x, -transformation.m_info.posf [1].v.c.y, -transformation.m_info.posf [1].v.c.z);
+	glMultMatrixf (reinterpret_cast<GLfloat*> (transformation.m_info.viewf [2].m.vec));
+	glTranslatef (-transformation.m_info.posf [1].v.coord.x, -transformation.m_info.posf [1].v.coord.y, -transformation.m_info.posf [1].v.coord.z);
 	++m_states.nTransformCalls;
 	}
 }

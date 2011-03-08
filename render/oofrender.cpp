@@ -429,7 +429,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 				ogl.SetTexturing (true);
 				}
 
-			fl = *fLight * (0.75f - 0.25f * (pf->m_vNormal * mView.m.v.f));
+			fl = *fLight * (0.75f - 0.25f * (pf->m_vNormal * mView.m.dir.f));
 			if (fl > 1)
 				fl = 1;
 			if (m_nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {

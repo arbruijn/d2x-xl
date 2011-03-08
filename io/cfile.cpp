@@ -645,36 +645,36 @@ return (fixang) INTEL_SHORT ((int) f);
 
 void CFile::ReadVector (CFixVector& v) 
 {
-v.v.c.x = ReadFix ();
-v.v.c.y = ReadFix ();
-v.v.c.z = ReadFix ();
+v.v.coord.x = ReadFix ();
+v.v.coord.y = ReadFix ();
+v.v.coord.z = ReadFix ();
 }
 
 // ----------------------------------------------------------------------------
 
 void CFile::ReadVector (CFloatVector3& v) 
 {
-v.v.c.x = ReadFloat ();
-v.v.c.y = ReadFloat ();
-v.v.c.z = ReadFloat ();
+v.v.coord.x = ReadFloat ();
+v.v.coord.y = ReadFloat ();
+v.v.coord.z = ReadFloat ();
 }
 
 // ----------------------------------------------------------------------------
 
 void CFile::ReadAngVec (CAngleVector& v)
 {
-v.v.c.p = ReadFixAng ();
-v.v.c.b = ReadFixAng ();
-v.v.c.h = ReadFixAng ();
+v.v.coord.p = ReadFixAng ();
+v.v.coord.b = ReadFixAng ();
+v.v.coord.h = ReadFixAng ();
 }
 
 // ----------------------------------------------------------------------------
 
 void CFile::ReadMatrix (CFixMatrix& m)
 {
-ReadVector (m.m.v.r);
-ReadVector (m.m.v.u);
-ReadVector (m.m.v.f);
+ReadVector (m.m.dir.r);
+ReadVector (m.m.dir.u);
+ReadVector (m.m.dir.f);
 }
 
 
@@ -754,36 +754,36 @@ return Write (&a, sizeof (a), 1);
 
 void CFile::WriteVector (const CFixVector& v)
 {
-WriteFix (v.v.c.x);
-WriteFix (v.v.c.y);
-WriteFix (v.v.c.z);
+WriteFix (v.v.coord.x);
+WriteFix (v.v.coord.y);
+WriteFix (v.v.coord.z);
 }
 
 // ----------------------------------------------------------------------------
 
 void CFile::WriteVector (const CFloatVector3& v)
 {
-WriteFloat (v.v.c.x);
-WriteFloat (v.v.c.y);
-WriteFloat (v.v.c.z);
+WriteFloat (v.v.coord.x);
+WriteFloat (v.v.coord.y);
+WriteFloat (v.v.coord.z);
 }
 
 // ----------------------------------------------------------------------------
 
 void CFile::WriteAngVec (const CAngleVector& v)
 {
-WriteFixAng (v.v.c.p);
-WriteFixAng (v.v.c.b);
-WriteFixAng (v.v.c.h);
+WriteFixAng (v.v.coord.p);
+WriteFixAng (v.v.coord.b);
+WriteFixAng (v.v.coord.h);
 }
 
 // ----------------------------------------------------------------------------
 
 void CFile::WriteMatrix (const CFixMatrix& m)
 {
-WriteVector (m.m.v.r);
-WriteVector (m.m.v.u);
-WriteVector (m.m.v.f);
+WriteVector (m.m.dir.r);
+WriteVector (m.m.dir.u);
+WriteVector (m.m.dir.f);
 }
 
 

@@ -186,7 +186,7 @@ typedef struct tMenuProps {
 
 class CMenu;
 
-typedef int (*pMenuCallback) (CMenu& m, int& lastKey, int nItem, int nState);
+typedef int (*pMenuCallback) (CMenu& mat, int& lastKey, int nItem, int nState);
 
 class CMenu : public CStack<CMenuItem> {
 	private:
