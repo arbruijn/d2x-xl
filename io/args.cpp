@@ -63,7 +63,7 @@ char* CConfigManager::Filename (int bDebug)
 	char*	p;
 	CFile	cf;
 
-if (0 >= (i = Find ("-ini")))
+if (0 <= (i = Find ("-ini")))
 	strncpy (m_filename, m_properties [i + 1], sizeof (m_filename) - 1);
 else {
 #if defined(__unix__)
