@@ -619,7 +619,7 @@ DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
 ogl.m_states.bEnableScissor = 0;
 gameStates.render.bFullBright = 0;
 CCanvas::Pop ();
-m_info.vRobotAngles [HA] += 15 * (t - m_info.tAnimate);
+m_info.vRobotAngles.v.c.h += 15 * (t - m_info.tAnimate);
 m_info.tAnimate = t;
 }
 
