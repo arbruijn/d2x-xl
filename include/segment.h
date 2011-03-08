@@ -188,8 +188,8 @@ class CSide {
 		void CheckSum (uint& sum1, uint& sum2);
 
 		int CheckTransparency (void);
-		int SpecialCheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
-		int CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
+		int CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
+		int CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
 		int CheckSphereToFace (CFixVector& intersection, fix rad, short iFace, CFixVector vNormal);
 		uint CheckPointToFace (CFixVector& intersection, short iFace, CFixVector vNormal);
 
@@ -345,10 +345,10 @@ class CSegment {
 #endif
 		inline int CheckSphereToFace (CFixVector& intersection, fix rad, int nSide, short iFace)
 		 { return m_sides [nSide].CheckSphereToFace (intersection, rad, iFace, Normal (nSide, iFace)); }
-		inline int CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, short iFace)
-		 { return m_sides [nSide].CheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
-		inline int SpecialCheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, int iFace)
-		 { return m_sides [nSide].SpecialCheckLineToFace (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
+		inline int CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, short iFace)
+		 { return m_sides [nSide].CheckLineToFaceRegular (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
+		inline int CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, int iFace)
+		 { return m_sides [nSide].CheckLineToFaceSpecial (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 
 		inline int FaceCount (int nSide) { return m_sides [nSide].FaceCount (); }
 		CSegMasks Masks (const CFixVector& refP, fix xRad);

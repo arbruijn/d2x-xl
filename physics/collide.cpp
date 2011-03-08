@@ -406,7 +406,7 @@ else {
 		return 0;
 	vForce *= impulse;
 	otherP->Bump (thisP, vForce, 0);
-	vForce = -vForce;
+	vForce.Neg ();
 	thisP->Bump (otherP, vForce, 0);
 	}
 

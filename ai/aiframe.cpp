@@ -498,14 +498,14 @@ if (gameData.ai.nTargetVisibility == 2) {
 	dot = CFixVector::Dot (OBJPOS (TARGETOBJ)->mOrient.m.dir.f, gameData.ai.target.vDir);
 	if (dot > 0) {          // Remember, we're interested in the rear vector dot being < 0.
 		vGoal = OBJPOS (TARGETOBJ)->mOrient.m.dir.f;
-		vGoal = -vGoal;
+		vGoal.Neg ();
 		}
 	else {
 		fix dot;
 		dot = CFixVector::Dot (OBJPOS (TARGETOBJ)->mOrient.m.dir.r, gameData.ai.target.vDir);
 		vGoal = OBJPOS (TARGETOBJ)->mOrient.m.dir.r;
 		if (dot > 0) {
-			vGoal = -vGoal;
+			vGoal.Neg ();
 			}
 		else
 			;

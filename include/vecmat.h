@@ -140,9 +140,9 @@ class __pack__ CFixVector {
 		// read-only access op
 		const fix operator[] (size_t i) const;
 
-		inline fix& X (void) { return v.coord.x; }
-		inline fix& Y (void) { return v.coord.y; }
-		inline fix& Z (void) { return v.coord.z; }
+		inline fix& X (void) { return vec.coord.x; }
+		inline fix& Y (void) { return vec.coord.y; }
+		inline fix& Z (void) { return vec.coord.z; }
 #endif
 		// compute intersection of a line through a point a, with the line being orthogonal relative
 		// to the plane given by the Normal n and a point p lieing in the plane, and store it in i.
@@ -209,9 +209,9 @@ class __pack__ CFloatVector {
 		static const CFloatVector Reflect (const CFloatVector& d, const CFloatVector& n);
 
 #if 0
-		inline float& X (void) { return v.coord.x; }
-		inline float& Y (void) { return v.coord.y; }
-		inline float& Z (void) { return v.coord.z; }
+		inline float& X (void) { return vec.coord.x; }
+		inline float& Y (void) { return vec.coord.y; }
+		inline float& Z (void) { return vec.coord.z; }
 		// access op for assignment
 		float& operator[] (size_t i);
 		// read-only access op
@@ -360,9 +360,9 @@ public:
 		}
 #if 0
 	// access op for assignment
-	fixang& operator[] (size_t i) { return v.vec [i]; }
+	fixang& operator[] (size_t i) { return vec.vec [i]; }
 	// read-only access op
-	const fixang operator[] (size_t i) const { return v.vec [i]; }
+	const fixang operator[] (size_t i) const { return vec.vec [i]; }
 #endif
 	bool IsZero (void) const { return ! (v.coord.p || v.coord.h || v.coord.b); }
 	void SetZero (void) { memset (&v, 0, sizeof (v)); }
@@ -380,10 +380,9 @@ inline const CFloatVector CFloatVector::Create (float f0, float f1, float f2, fl
 }
 
 inline const CFloatVector CFloatVector::Avg (const CFloatVector& src0, const CFloatVector& src1) {
-	return Create ((src0.v.coord.x + src1.v.coord.x) / 2,
-	               (src0.v.coord.y + src1.v.coord.y) / 2,
-	               (src0.v.coord.z + src1.v.coord.z) / 2,
-	               1);
+	CFloatVector vec;
+	vec.Set ((src0.v.coord.x + src1.v.coord.x) / 2, (src0.v.coord.y + src1.v.coord.y) / 2, (src0.v.coord.z + src1.v.coord.z) / 2, 1.0);
+	return vec;
 }
 
 inline CFloatVector& CFloatVector::Cross (CFloatVector& dest, const CFloatVector& v0, const CFloatVector& v1) {
@@ -394,13 +393,15 @@ inline CFloatVector& CFloatVector::Cross (CFloatVector& dest, const CFloatVector
 }
 
 inline const CFloatVector CFloatVector::Cross (const CFloatVector& v0, const CFloatVector& v1) {
-	return Create (v0.v.coord.y * v1.v.coord.z - v0.v.coord.z * v1.v.coord.y,
-	               v0.v.coord.z * v1.v.coord.x - v0.v.coord.x * v1.v.coord.z,
-	               v0.v.coord.x * v1.v.coord.y - v0.v.coord.y * v1.v.coord.x);
+	CFloatVector vec;
+	vec.Set (v0.v.coord.y * v1.v.coord.z - v0.v.coord.z * v1.v.coord.y,
+	       v0.v.coord.z * v1.v.coord.x - v0.v.coord.x * v1.v.coord.z,
+	       v0.v.coord.x * v1.v.coord.y - v0.v.coord.y * v1.v.coord.x);
+	return vec;
 }
 
 inline const float CFloatVector::Dist (const CFloatVector& v0, const CFloatVector& v1) {
-	return (v0-v1).Mag ();
+	return (v0 - v1).Mag ();
 }
 
 inline const float CFloatVector::Dot (const CFloatVector& v0, const CFloatVector& v1) {
@@ -423,9 +424,9 @@ inline const CFloatVector CFloatVector::Perp (const CFloatVector& p0, const CFlo
 }
 
 inline const CFloatVector CFloatVector::Normal (const CFloatVector& p0, const CFloatVector& p1, const CFloatVector& p2) {
-	CFloatVector v = Perp (p0, p1, p2);
-	Normalize (v);
-	return v;
+	CFloatVector vec = Perp (p0, p1, p2);
+	Normalize (vec);
+	return vec;
 }
 
 inline const CFloatVector CFloatVector::Reflect (const CFloatVector& d, const CFloatVector& n) {
@@ -435,9 +436,9 @@ inline const CFloatVector CFloatVector::Reflect (const CFloatVector& d, const CF
 // -----------------------------------------------------------------------------
 // CFloatVector member inlines
 
-//inline float& CFloatVector::operator[] (size_t i) { return v [i]; }
+//inline float& CFloatVector::operator[] (size_t i) { return vec [i]; }
 
-//inline const float CFloatVector::operator[] (size_t i) const { return v [i]; }
+//inline const float CFloatVector::operator[] (size_t i) const { return vec [i]; }
 
 inline bool CFloatVector::IsZero (void) const { return (v.coord.x == 0.0f) && (v.coord.y == 0.0f) && (v.coord.z == 0.0f) && (v.coord.w == 0.0f); }
 
@@ -448,7 +449,7 @@ inline void CFloatVector::Set (const float f0, const float f1, const float f2, c
 }
 
 inline void CFloatVector::Set (const float *vec) {
-	v.coord.x = vec [0]; v.coord.y = vec [1]; v.coord.z = vec [2]; v.coord.w = 1.0f;
+	v.coord.x = vec [0], v.coord.y = vec [1], v.coord.z = vec [2], v.coord.w = 1.0f;
 }
 
 inline const float CFloatVector::SqrMag (void) const {
@@ -472,7 +473,9 @@ inline CFloatVector& CFloatVector::Neg (void) {
 inline CFloatVector3* CFloatVector::XYZ (void) { return reinterpret_cast<CFloatVector3*> (&v.coord.x); }
 
 inline const CFloatVector CFloatVector::operator- (void) const {
-	return Create (-v.coord.x, -v.coord.y, -v.coord.z);
+	CFloatVector vec;
+	vec.Set (-v.coord.x, -v.coord.y, -v.coord.z);
+	return vec;
 }
 
 inline CFloatVector& CFloatVector::Assign (const CFloatVector3& other) {
@@ -537,19 +540,27 @@ inline const CFloatVector& CFloatVector::operator/= (const float s) {
 }
 
 inline const CFloatVector CFloatVector::operator+ (const CFloatVector& other) const {
-	return Create (v.coord.x + other.v.coord.x, v.coord.y + other.v.coord.y, v.coord.z + other.v.coord.z, 1);
+	CFloatVector vec;
+	vec.Set (v.coord.x + other.v.coord.x, v.coord.y + other.v.coord.y, v.coord.z + other.v.coord.z, 1);
+	return vec;
 }
 
 inline const CFloatVector CFloatVector::operator+ (const CFixVector& other) const {
-	return Create (v.coord.x + X2F (other.v.coord.x), v.coord.y + X2F (other.v.coord.y), v.coord.z + X2F (other.v.coord.z), 1);
+	CFloatVector vec;
+	vec.Set (v.coord.x + X2F (other.v.coord.x), v.coord.y + X2F (other.v.coord.y), v.coord.z + X2F (other.v.coord.z), 1);
+	return vec;
 }
 
 inline const CFloatVector CFloatVector::operator- (const CFloatVector& other) const {
-	return Create (v.coord.x - other.v.coord.x, v.coord.y - other.v.coord.y, v.coord.z - other.v.coord.z, 1);
+	CFloatVector vec;
+	vec.Set (v.coord.x - other.v.coord.x, v.coord.y - other.v.coord.y, v.coord.z - other.v.coord.z, 1);
+	return vec;
 }
 
 inline const CFloatVector CFloatVector::operator- (const CFixVector& other) const {
-	return Create (v.coord.x - X2F (other.v.coord.x), v.coord.y - X2F (other.v.coord.y), v.coord.z - X2F (other.v.coord.z), 1);
+	CFloatVector vec;
+	vec.Set (v.coord.x - X2F (other.v.coord.x), v.coord.y - X2F (other.v.coord.y), v.coord.z - X2F (other.v.coord.z), 1);
+	return vec;
 }
 
 inline const float CFloatVector::DistToPlane (const CFloatVector& n, const CFloatVector& p) const
@@ -566,15 +577,21 @@ inline const float operator* (const CFloatVector& v0, const CFloatVector& v1) {
 }
 
 inline const CFloatVector operator* (const CFloatVector& v, const float s) {
-	return CFloatVector::Create (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s, 1);
+	CFloatVector vec;
+	vec.Set (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s, 1.0f);
+	return vec;
 }
 
 inline const CFloatVector operator* (const float s, const CFloatVector& v) {
-	return CFloatVector::Create (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s, 1);
+	CFloatVector vec;
+	vec.Set (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s, 1.0f);
+	return vec;
 }
 
 inline const CFloatVector operator/ (const CFloatVector& v, const float s) {
-	return CFloatVector::Create (v.v.coord.x / s, v.v.coord.y / s, v.v.coord.z / s, 1);
+	CFloatVector vec;
+	vec.Set (v.v.coord.x / s, v.v.coord.y / s, v.v.coord.z / s, 1.0);
+	return vec;
 }
 
 
@@ -590,9 +607,9 @@ inline const CFloatVector3 CFloatVector3::Create (float f0, float f1, float f2) 
 }
 
 inline const CFloatVector3 CFloatVector3::Avg (const CFloatVector3& src0, const CFloatVector3& src1) {
-	return Create ((src0.v.coord.x + src1.v.coord.x) / 2,
-	               (src0.v.coord.y + src1.v.coord.y) / 2,
-	               (src0.v.coord.z + src1.v.coord.z) / 2);
+	CFloatVector3 vec;
+	vec.Set ((src0.v.coord.x + src1.v.coord.x) / 2, (src0.v.coord.y + src1.v.coord.y) / 2, (src0.v.coord.z + src1.v.coord.z) / 2);
+	return vec;
 }
 
 inline CFloatVector3& CFloatVector3::Cross (CFloatVector3& dest, const CFloatVector3& v0, const CFloatVector3& v1) {
@@ -603,9 +620,11 @@ inline CFloatVector3& CFloatVector3::Cross (CFloatVector3& dest, const CFloatVec
 }
 
 inline const CFloatVector3 CFloatVector3::Cross (const CFloatVector3& v0, const CFloatVector3& v1) {
-	return Create (v0.v.coord.y * v1.v.coord.z - v0.v.coord.z * v1.v.coord.y,
-	               v0.v.coord.z * v1.v.coord.x - v0.v.coord.x * v1.v.coord.z,
-	               v0.v.coord.x * v1.v.coord.y - v0.v.coord.y * v1.v.coord.x);
+	CFloatVector3 vec;
+	vec.Set (v0.v.coord.y * v1.v.coord.z - v0.v.coord.z * v1.v.coord.y,
+	       v0.v.coord.z * v1.v.coord.x - v0.v.coord.x * v1.v.coord.z,
+	       v0.v.coord.x * v1.v.coord.y - v0.v.coord.y * v1.v.coord.x);
+	return vec;
 }
 
 inline const float CFloatVector3::Dist (const CFloatVector3& v0, const CFloatVector3& v1) {
@@ -632,9 +651,9 @@ inline const CFloatVector3 CFloatVector3::Perp (const CFloatVector3& p0, const C
 }
 
 inline const CFloatVector3 CFloatVector3::Normal (const CFloatVector3& p0, const CFloatVector3& p1, const CFloatVector3& p2) {
-	CFloatVector3 v = Perp (p0, p1, p2);
-	Normalize (v);
-	return v;
+	CFloatVector3 vec = Perp (p0, p1, p2);
+	Normalize (vec);
+	return vec;
 }
 
 inline const CFloatVector3 CFloatVector3::Reflect (const CFloatVector3& d, const CFloatVector3& n) {
@@ -644,9 +663,9 @@ inline const CFloatVector3 CFloatVector3::Reflect (const CFloatVector3& d, const
 // -----------------------------------------------------------------------------
 // CFloatVector3 member inlines
 
-//inline float& CFloatVector3::operator[] (size_t i) { return v [i]; }
+//inline float& CFloatVector3::operator[] (size_t i) { return vec [i]; }
 
-//inline const float CFloatVector3::operator[] (size_t i) const { return v [i]; }
+//inline const float CFloatVector3::operator[] (size_t i) const { return vec [i]; }
 
 inline bool CFloatVector3::IsZero (void) const { return ! (v.coord.x || v.coord.y || v.coord.z); }
 
@@ -702,7 +721,9 @@ inline const bool CFloatVector3::operator!= (const CFloatVector3& other) {
 }
 
 inline const CFloatVector3 CFloatVector3::operator- (void) const {
-	return Create (-v.coord.x, -v.coord.y, -v.coord.z);
+	CFloatVector3 vec;
+	vec.Set (-v.coord.x, -v.coord.y, -v.coord.z);
+	return vec;
 }
 
 inline const CFloatVector3& CFloatVector3::operator+= (const CFloatVector3& other) {
@@ -731,11 +752,15 @@ inline const CFloatVector3& CFloatVector3::operator/= (const float s) {
 }
 
 inline const CFloatVector3 CFloatVector3::operator+ (const CFloatVector3& other) const {
-	return Create (v.coord.x + other.v.coord.x, v.coord.y + other.v.coord.y, v.coord.z + other.v.coord.z);
+	CFloatVector3 vec;
+	vec.Set (v.coord.x + other.v.coord.x, v.coord.y + other.v.coord.y, v.coord.z + other.v.coord.z);
+	return vec;
 }
 
 inline const CFloatVector3 CFloatVector3::operator- (const CFloatVector3& other) const {
-	return Create (v.coord.x - other.v.coord.x, v.coord.y - other.v.coord.y, v.coord.z - other.v.coord.z);
+	CFloatVector3 vec;
+	vec.Set (v.coord.x - other.v.coord.x, v.coord.y - other.v.coord.y, v.coord.z - other.v.coord.z);
+	return vec;
 }
 
 
@@ -747,15 +772,21 @@ inline const float operator* (const CFloatVector3& v0, const CFloatVector3& v1) 
 }
 
 inline const CFloatVector3 operator* (const CFloatVector3& v, float s) {
-	return CFloatVector3::Create (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s);
+	CFloatVector3 vec;
+	vec.Set (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s);
+	return vec;
 }
 
 inline const CFloatVector3 operator* (float s, const CFloatVector3& v) {
-	return CFloatVector3::Create (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s);
+	CFloatVector3 vec;
+	vec.Set (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s);
+	return vec;
 }
 
 inline const CFloatVector3 operator/ (const CFloatVector3& v, float s) {
-	return CFloatVector3::Create (v.v.coord.x / s, v.v.coord.y / s, v.v.coord.z / s);
+	CFloatVector3 vec;
+	vec.Set (v.v.coord.x / s, v.v.coord.y / s, v.v.coord.z / s);
+	return vec;
 }
 
 // -----------------------------------------------------------------------------
@@ -770,16 +801,17 @@ inline const CFixVector CFixVector::Create (fix f0, fix f1, fix f2) {
 }
 
 inline const CFixVector CFixVector::Avg (const CFixVector& src0, const CFixVector& src1) {
-	return Create ((src0.v.coord.x + src1.v.coord.x) / 2,
-	               (src0.v.coord.y + src1.v.coord.y) / 2,
-	               (src0.v.coord.z + src1.v.coord.z) / 2);
+	CFixVector vec;
+	vec.Set ((src0.v.coord.x + src1.v.coord.x) / 2, (src0.v.coord.y + src1.v.coord.y) / 2, (src0.v.coord.z + src1.v.coord.z) / 2);
+	return vec;
 }
 
 inline const CFixVector CFixVector::Avg (CFixVector& src0, CFixVector& src1, CFixVector& src2, CFixVector& src3) {
-	return Create ((src0.v.coord.x + src1.v.coord.x + src2.v.coord.x + src3.v.coord.x) / 4,
-					   (src0.v.coord.y + src1.v.coord.y + src2.v.coord.y + src3.v.coord.y) / 4,
-						(src0.v.coord.z + src1.v.coord.z + src2.v.coord.z + src3.v.coord.z) / 4);
-
+	CFixVector vec;
+	vec.Set ((src0.v.coord.x + src1.v.coord.x + src2.v.coord.x + src3.v.coord.x) / 4,
+			   (src0.v.coord.y + src1.v.coord.y + src2.v.coord.y + src3.v.coord.y) / 4,
+				(src0.v.coord.z + src1.v.coord.z + src2.v.coord.z + src3.v.coord.z) / 4);
+	return vec;
 }
 
 //computes the delta angle between two vectors.
@@ -856,9 +888,9 @@ inline const CFixVector CFixVector::Perp (const CFixVector& p0, const CFixVector
 }
 
 inline const CFixVector CFixVector::Normal (const CFixVector& p0, const CFixVector& p1, const CFixVector& p2) {
-	CFixVector v = Perp (p0, p1, p2);
-	Normalize (v);
-	return v;
+	CFixVector vec = Perp (p0, p1, p2);
+	Normalize (vec);
+	return vec;
 }
 
 inline const CFixVector CFixVector::Reflect (const CFixVector& d, const CFixVector& n) {
@@ -881,9 +913,9 @@ inline const fix CFixVector::NormalizedDir (CFixVector& dest, const CFixVector& 
 // -----------------------------------------------------------------------------
 // CFixVector member inlines
 
-//inline fix& CFixVector::operator[] (size_t i) { return v [i]; }
+//inline fix& CFixVector::operator[] (size_t i) { return vec [i]; }
 
-//inline const fix CFixVector::operator[] (size_t i) const { return v [i]; }
+//inline const fix CFixVector::operator[] (size_t i) const { return vec [i]; }
 
 inline CFixVector& CFixVector::Assign (const CFloatVector3& other)
 {
@@ -957,7 +989,9 @@ return *this;
 
 inline const CFixVector CFixVector::operator- (void) const
 {
-return Create (-v.coord.x, -v.coord.y, -v.coord.z);
+	CFixVector vec;
+	vec.Set (-v.coord.x, -v.coord.y, -v.coord.z);
+	return vec;
 }
 
 inline const bool CFixVector::operator== (const CFixVector& vec)
@@ -1026,22 +1060,30 @@ return *this;
 }
 
 inline const CFixVector CFixVector::operator+ (const CFixVector& other) const {
-	return Create (v.coord.x + other.v.coord.x, v.coord.y + other.v.coord.y, v.coord.z + other.v.coord.z);
+	CFixVector vec;
+	vec.Set (v.coord.x + other.v.coord.x, v.coord.y + other.v.coord.y, v.coord.z + other.v.coord.z);
+	return vec;
 }
 
 inline const CFixVector CFixVector::operator+ (const CFloatVector& other) const
 {
-return Create (v.coord.x + F2X (other.v.coord.x), v.coord.y + F2X (other.v.coord.y), v.coord.z + F2X (other.v.coord.z));
+	CFixVector vec;
+	vec.Set (v.coord.x + F2X (other.v.coord.x), v.coord.y + F2X (other.v.coord.y), v.coord.z + F2X (other.v.coord.z));
+	return vec;
 }
 
 inline const CFixVector CFixVector::operator- (const CFixVector& other) const
 {
-return Create (v.coord.x - other.v.coord.x, v.coord.y - other.v.coord.y, v.coord.z - other.v.coord.z);
+	CFixVector vec;
+	vec.Set (v.coord.x - other.v.coord.x, v.coord.y - other.v.coord.y, v.coord.z - other.v.coord.z);
+	return vec;
 }
 
 inline const CFixVector CFixVector::operator- (const CFloatVector& other) const
 {
-return Create (v.coord.x - F2X (other.v.coord.x), v.coord.y - F2X (other.v.coord.y), v.coord.z - F2X (other.v.coord.z));
+	CFixVector vec;
+	vec.Set (v.coord.x - F2X (other.v.coord.x), v.coord.y - F2X (other.v.coord.y), v.coord.z - F2X (other.v.coord.z));
+	return vec;
 }
 
 
@@ -1097,15 +1139,21 @@ inline const fix operator* (const CFixVector& v0, const CFixVector& v1) {
 }
 
 inline const CFixVector operator* (const CFixVector& v, const fix s) {
-	return CFixVector::Create (FixMul (v.v.coord.x, s), FixMul (v.v.coord.y, s), FixMul (v.v.coord.z, s));
+	CFixVector vec;
+	vec.Set (FixMul (v.v.coord.x, s), FixMul (v.v.coord.y, s), FixMul (v.v.coord.z, s));
+	return vec;
 }
 
 inline const CFixVector operator* (const fix s, const CFixVector& v) {
-	return CFixVector::Create (FixMul (v.v.coord.x, s), FixMul (v.v.coord.y, s), FixMul (v.v.coord.z, s));
+	CFixVector vec;
+	vec.Set (FixMul (v.v.coord.x, s), FixMul (v.v.coord.y, s), FixMul (v.v.coord.z, s));
+	return vec;
 }
 
 inline const CFixVector operator/ (const CFixVector& v, const fix d) {
-	return CFixVector::Create (FixDiv (v.v.coord.x, d), FixDiv (v.v.coord.y, d), FixDiv (v.v.coord.z, d));
+	CFixVector vec;
+	vec.Set (FixDiv (v.v.coord.x, d), FixDiv (v.v.coord.y, d), FixDiv (v.v.coord.z, d));
+	return vec;
 }
 
 // -----------------------------------------------------------------------------

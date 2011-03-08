@@ -224,7 +224,7 @@ else
 												gameData.segs.vertices [vSorted [1]],
 												gameData.segs.vertices [vSorted [2]]);
 		if (bFlip)
-			vNormal = -vNormal;
+			vNormal.Neg ();
 		if (!ogl.UseTransform ())
 			transformation.Rotate (vNormal, vNormal, 0);
 		glNormal3f ((GLfloat) X2F (vNormal.v.coord.x), (GLfloat) X2F (vNormal.v.coord.y), (GLfloat) X2F (vNormal.v.coord.z));

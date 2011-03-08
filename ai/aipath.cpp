@@ -1149,7 +1149,7 @@ if ((gameData.ai.localInfo [objP->Index ()].mode == AIM_RUN_FROM_OBJECT) || (bot
 		if ((nTargetVisibility) && (vecToTarget != NULL))
 			vNormToGoal = *vecToTarget;
 		else
-			vNormToGoal = -vNormToGoal;
+			vNormToGoal.Neg ();
 		}
 	AITurnTowardsVector (&vNormToGoal, objP, botInfoP->turnTime [NDL-1]/2);
 	}

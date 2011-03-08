@@ -276,8 +276,8 @@ return IT_NONE;
 //refP on plane, whether or not line intersects CSide
 //iFace determines which of four possible faces we have
 //note: the seg parm is temporary, until the face itself has a refP field
-int CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad,
-							CFixVector *vertList, int nVerts, CFixVector *vNormal)
+int CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad,
+									 CFixVector *vertList, int nVerts, CFixVector *vNormal)
 {
 	CFixVector	v1, vHit;
 	int			pli, bCheckRad = 0;
@@ -688,8 +688,8 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 				continue;
 			//did we go through this wall/door?
 			nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check
-				segP->SpecialCheckLineToFace (vHitPoint, p0, p1, radP1, nSide, iFace) :
-				segP->CheckLineToFace (vHitPoint, p0, p1, radP1, nSide, iFace);
+				segP->CheckLineToFaceSpecial (vHitPoint, p0, p1, radP1, nSide, iFace) :
+				segP->CheckLineToFaceRegular (vHitPoint, p0, p1, radP1, nSide, iFace);
 #if 1
 			if (bCheckVisibility && !nFaceHitType)
 					continue;

@@ -680,13 +680,13 @@ return IT_NONE;
 //refP on plane, whether or not line intersects CSide
 //iFace determines which of four possible faces we have
 //note: the seg parm is temporary, until the face itself has a refP field
-int CSide::CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal)
+int CSide::CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal)
 {
 	CFixVector	v1;
 	int			pli, nVertex, bCheckRad = 0;
 
 //use lowest refP number
-#if 1 //DBG
+#if DBG
 if (m_nFaces <= iFace) {
 	Error ("invalid face number in CSegment::CheckLineToFace()");
 	return IT_ERROR;
@@ -751,7 +751,7 @@ return IT_NONE;
 //this version is for when the start and end positions both poke through
 //the plane of a CSide.  In this case, we must do checks against the edge
 //of faces
-int CSide::SpecialCheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal)
+int CSide::CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal)
 {
 	CFixVector	vMove;
 	fix			edge_t, move_t, edge_t2, move_t2, closestDist;
