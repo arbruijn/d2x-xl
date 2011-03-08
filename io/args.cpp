@@ -36,7 +36,7 @@ CConfigManager appConfig;
 
 void CConfigManager::Destroy (void)
 {
-for (int i = Count (); i > 0; i) {
+for (int i = Count (); i > 0; ) {
 	if (m_properties [--i])
 		delete[] m_properties [i];
 	}
@@ -196,7 +196,7 @@ return nDefault;
 
 // ----------------------------------------------------------------------------
 
-int CConfigManager::Value (char* szArg, int nDefault)
+int CConfigManager::Value (const char* szArg, int nDefault)
 {
 	int t = Find (szArg);
 

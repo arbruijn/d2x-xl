@@ -672,7 +672,7 @@ int CMissionConfig::Load (char* szFilename)
 	char			szConfig [FILENAME_LEN];
 	bool			bLocal;
 
-	static char* szShipArgs [MAX_SHIP_TYPES] = {"-medium_ship", "-light_ship", "-heavy_ship"};
+	static const char* szShipArgs [MAX_SHIP_TYPES] = {"-medium_ship", "-light_ship", "-heavy_ship"};
 
 if ((bLocal = (szFilename && *szFilename)))
 	CFile::ChangeFilenameExtension (szConfig + 1, szFilename, ".ini");
