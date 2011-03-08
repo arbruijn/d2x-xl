@@ -81,15 +81,15 @@ else {
 pl->info.color.alpha = 1.0;
 pl->info.fBrightness = fBrightness;
 pl->info.fRange = (float) sqrt (fBrightness / 2.0f);
-pl->fSpecular[0] = red;
-pl->fSpecular[1] = green;
-pl->fSpecular[2] = blue;
+pl->fSpecular.v.a [R] = red;
+pl->fSpecular.v.a [G] = green;
+pl->fSpecular.v.a [B] = blue;
 for (i = 0; i < 3; i++) {
 #if USE_OGL_LIGHTS
 	pl->info.fAmbient.v [i] = pl->info.fDiffuse [i] * 0.01f;
 	pl->info.fDiffuse.v [i] =
 #endif
-	pl->fEmissive [i] = pl->fSpecular[i] * fBrightness;
+	pl->fEmissive.v.a [i] = pl->fSpecular.v.a [i] * fBrightness;
 	}
 // light alphas
 #if USE_OGL_LIGHTS

@@ -121,9 +121,9 @@ for (i = 0; i < m_vld.nLights; i++) {
 			NdotL = 0.0f;
 		}	
 	attenuation = lightDist / brightness;
-	vertColor [R] = (matAmbient [R] + NdotL) * lightColor [R];
-	vertColor [G] = (matAmbient [G] + NdotL) * lightColor [G];
-	vertColor [B] = (matAmbient [B] + NdotL) * lightColor [B];
+	vertColor.v.a [R] = (matAmbient.v.a [R] + NdotL) * lightColor.v.a [R];
+	vertColor.v.a [G] = (matAmbient.v.a [G] + NdotL) * lightColor.v.a [G];
+	vertColor.v.a [B] = (matAmbient.v.a [B] + NdotL) * lightColor.v.a [B];
 	if (NdotL > 0.0f) {
 		vReflect = CFloatVector::Reflect (lightDir.Neg (), *vertNorm);
 		CFloatVector::Normalize (vReflect);
@@ -133,13 +133,13 @@ for (i = 0; i < m_vld.nLights; i++) {
 		if (RdotE < 0.0f)
 			RdotE = 0.0f;
 		specular = (float) pow (RdotE, shininess);
-		vertColor [R] += lightColor [R] * specular;
-		vertColor [G] += lightColor [G] * specular;
-		vertColor [B] += lightColor [B] * specular;
+		vertColor.v.a [R] += lightColor.v.a [R] * specular;
+		vertColor.v.a [G] += lightColor.v.a [G] * specular;
+		vertColor.v.a [B] += lightColor.v.a [B] * specular;
 		}	
-	m_vld.colors [i][R] = vertColor [R] / attenuation;
-	m_vld.colors [i][G] = vertColor [G] / attenuation;
-	m_vld.colors [i][B] = vertColor [B] / attenuation;
+	m_vld.colors [i].v.a [R] = vertColor.v.a [R] / attenuation;
+	m_vld.colors [i].v.a [G] = vertColor.v.a [G] / attenuation;
+	m_vld.colors [i].v.a [B] = vertColor.v.a [B] / attenuation;
 	}
 }
 
@@ -209,19 +209,19 @@ for (i = 0, pc = m_vld.colors; i < m_vld.nVertices; i++) {
 	vertColor.blue += gameData.render.color.ambient [nVertex].color.blue;
 	if (gameOpts->render.color.nSaturation == 2) {
 		for (j = 0, nLights = m_vld.index [i].nLights; j < nLights; j++, pc++) {
-			if (vertColor.red < (*pc) [R])
-				vertColor.red = (*pc) [R];
-			if (vertColor.green < (*pc) [G])
-				vertColor.green = (*pc) [G];
-			if (vertColor.blue < (*pc) [B])
-				vertColor.blue = (*pc) [B];
+			if (vertColor.red < (*pc).v.a [R])
+				vertColor.red = (*pc).v.a [R];
+			if (vertColor.green < (*pc).v.a [G])
+				vertColor.green = (*pc).v.a [G];
+			if (vertColor.blue < (*pc).v.a [B])
+				vertColor.blue = (*pc).v.a [B];
 			}
 		}
 	else {
 		for (j = 0, nLights = m_vld.index [i].nLights; j < nLights; j++, pc++) {
-			vertColor.red += (*pc) [R];
-			vertColor.green += (*pc) [G];
-			vertColor.blue += (*pc) [B];
+			vertColor.red += (*pc).v.a [R];
+			vertColor.green += (*pc).v.a [G];
+			vertColor.blue += (*pc).v.a [B];
 			}
 		if (gameOpts->render.color.nSaturation) {	//if a color component is > 1, cap color components using highest component value
 			float	cMax = vertColor.red;

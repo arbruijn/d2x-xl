@@ -503,10 +503,10 @@ s = s * 1.8f;
 t = t * 1.8f;
 v = *vLight;
 for (i = 0; i < 3; i++) {
-	sprite [0][i] = v [i] + s [i] + t [i];
-	sprite [1][i] = v [i] + s [i] - t [i];
-	sprite [2][i] = v [i] - s [i] - t [i];
-	sprite [3][i] = v [i] - s [i] + t [i];
+	sprite [0].v.a [i] = v.v.a [i] + s.v.a [i] + t.v.a [i];
+	sprite [1].v.a [i] = v.v.a [i] + s.v.a [i] - t.v.a [i];
+	sprite [2].v.a [i] = v.v.a [i] - s.v.a [i] - t.v.a [i];
+	sprite [3].v.a [i] = v.v.a [i] - s.v.a [i] + t.v.a [i];
 	}
 cosine = CFloatVector::Dot (e, n);
 return float (sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nIntensity]);

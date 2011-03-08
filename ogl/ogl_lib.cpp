@@ -966,8 +966,8 @@ if (!m_states.nTransformCalls && (m_states.bUseTransform || bForce)) {
 	glPushMatrix ();
 	glLoadIdentity ();
 	glScalef (1, 1, -1);
-	glMultMatrixf (reinterpret_cast<GLfloat*> (transformation.m_info.viewf [2].Vec ()));
-	glTranslatef (-transformation.m_info.posf [1][0], -transformation.m_info.posf [1][1], -transformation.m_info.posf [1][2]);
+	glMultMatrixf (reinterpret_cast<GLfloat*> (transformation.m_info.viewf [2].m.a));
+	glTranslatef (-transformation.m_info.posf [1].v.c.x, -transformation.m_info.posf [1].v.c.y, -transformation.m_info.posf [1].v.c.z);
 	++m_states.nTransformCalls;
 	}
 }

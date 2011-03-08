@@ -56,9 +56,9 @@ bool PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex,
 
 //now do 2d check to see if refP is in side
 //project polygon onto plane by finding largest component of Normal
-t.v.c.x = float (fabs (vNormal [0]));
-t.v.c.y = float (fabs (vNormal [1]));
-t.v.c.z = float (fabs (vNormal [2]));
+t.v.c.x = float (fabs (vNormal.v.c.x));
+t.v.c.y = float (fabs (vNormal.v.c.y));
+t.v.c.z = float (fabs (vNormal.v.c.z));
 if (t.v.c.x > t.v.c.y) {
 	if (t.v.c.x > t.v.c.z)
 		biggest = 0;
@@ -85,10 +85,10 @@ check_j = (*refP) [j];
 for (nEdge = 0; nEdge < nVerts; nEdge++) {
 	v0 = FVERTICES + nVertIndex [nEdge];
 	v1 = FVERTICES + nVertIndex [(nEdge + 1) % nVerts];
-	vEdge.i = (*v1) [i] - (*v0) [i];
-	vEdge.j = (*v1) [j] - (*v0) [j];
-	vCheck.i = check_i - (*v0) [i];
-	vCheck.j = check_j - (*v0) [j];
+	vEdge.i = v1->v.a [i] - v0->v.a [i];
+	vEdge.j = v1->v.a [j] - v0->v.a [j];
+	vCheck.i = check_i - v0->v.a [i];
+	vCheck.j = check_j - v0->v.a [j];
 	if (vCheck.i * vEdge.j - vCheck.j * vEdge.i < -0.005f)
 		return false;
 	}
@@ -189,9 +189,9 @@ uint CheckPointToFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixV
 
 //now do 2d check to see if refP is in side
 //project polygon onto plane by finding largest component of Normal
-t.v.c.x = labs ((*vNormal) [0]);
-t.v.c.y = labs ((*vNormal) [1]);
-t.v.c.z = labs ((*vNormal) [2]);
+t.v.c.x = labs (vNormal->v.c.z);
+t.v.c.y = labs (vNormal->v.c.z);
+t.v.c.z = labs (vNormal->v.c.z);
 if (t.v.c.x > t.v.c.y)
 	if (t.v.c.x > t.v.c.z)
 		biggest = 0;
@@ -215,10 +215,10 @@ check_j = (*refP) [j];
 for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
 	v0 = vertList + nEdge;
 	v1 = vertList + ((nEdge + 1) % nVerts);
-	vEdge.i = (*v1) [i] - (*v0) [i];
-	vEdge.j = (*v1) [j] - (*v0) [j];
-	vCheck.i = check_i - (*v0) [i];
-	vCheck.j = check_j - (*v0) [j];
+	vEdge.i = v1->v.a [i] - v0->v.a [i];
+	vEdge.j = v1->v.a [j] - v0->v.a [j];
+	vCheck.i = check_i - v0->v.a [i];
+	vCheck.j = check_j - v0->v.a [j];
 	d = FixMul (vCheck.i, vEdge.j) - FixMul (vCheck.j, vEdge.i);
 	if (d < 0)              		//we are outside of triangle
 		nEdgeMask |= (1 << nEdge);
