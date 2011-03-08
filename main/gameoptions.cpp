@@ -682,25 +682,14 @@ szConfig [0] = '\x01'; // only read from mission file
 if (!cf.Open (szConfig, gameFolders.szDataDir, "rb", 0))
 	return 0;
 if (args.Parse (&cf)) {
-	int h = 0, i;
-	for (i = 0; i < MAX_SHIP_TYPES; i++) {
+	int h = 0;
+	for (int i = 0; i < MAX_SHIP_TYPES; i++) {
 		if ((m_ships [i] = args.Value (szShipArgs [i], bLocal ? m_ships [i] : 1))) // use the global setting as default when parsing a level config
 			h++;
 		}
 	if (!h)
 		m_ships [0] = 1; // medium ship, the standard ship
 	m_playerShip = args.Value ("-player_ship", bLocal ? m_playerShip : -1);
-	if (m_playerShip > 2)
-		m_playerShip = 1;
-	else if (m_playerShip < -1)
-		m_playerShip = -1;
-	if (m_playerShip > -1) {
-		for (i = 0; i < MAX_SHIP_TYPES; i++) {
-			if (m_ships [m_playerShip])
-				break;
-			m_playerShip = (m_playerShip + 1) % MAX_SHIP_TYPES;
-			}
-		}
 	m_bTeleport = args.Value ("-teleport", bLocal ? m_bTeleport : 1);
 	m_bSecretSave = args.Value ("-secret_save", bLocal ? m_bSecretSave : 1);
 	}
@@ -713,6 +702,17 @@ return 1;
 void CMissionConfig::Apply (void)
 {
 if ((m_playerShip > -1) && (gameOpts->gameplay.nShip [0] != m_playerShip)) {
+	if (m_playerShip > 2)
+		m_playerShip = 1;
+	else if (m_playerShip < -1)
+		m_playerShip = -1;
+	if (m_playerShip > -1) {
+		for (int i = 0; i < MAX_SHIP_TYPES; i++) {
+			if (m_ships [m_playerShip])
+				break;
+			m_playerShip = (m_playerShip + 1) % MAX_SHIP_TYPES;
+			}
+		}
 	float fShield = (float) LOCALPLAYER.Shield (false) / (float) LOCALPLAYER.MaxShield ();
 	float fEnergy = (float) LOCALPLAYER.Energy (false) / (float) LOCALPLAYER.MaxEnergy ();
 	gameOpts->gameplay.nShip [0] = m_playerShip;
