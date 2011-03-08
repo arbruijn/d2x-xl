@@ -162,15 +162,15 @@ int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType)
 	int			fate, nTries = 0, bSpectate = SPECTATOR (objP1);
 
 do {
+	fq.flags = transType;
+	fq.p0 = bSpectate ? &gameStates.app.playerPos.vPos : &objP1->info.position.vPos;
+	fq.p1 = SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->info.position.vPos;
+	fq.radP0 =
+	fq.radP1 = 0x10;
+	fq.nObject = OBJ_IDX (objP1);
 	if (nTries++) {
-		fq.flags = transType;
-		fq.p0 = bSpectate ? &gameStates.app.playerPos.vPos : &objP1->info.position.vPos;
-		fq.p1 = SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->info.position.vPos;
 		fq.nSegment	= bSpectate ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) :
 						  FindSegByPos (objP1->info.position.vPos, objP1->info.nSegment, 1, 0);
-		fq.radP0 =
-		fq.radP1 = 0x10;
-		fq.nObject = OBJ_IDX (objP1);
 		if (fq.nSegment < 0) {
 			fate = HIT_BAD_P0;
 			return false;
