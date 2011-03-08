@@ -168,6 +168,7 @@ do {
 	fq.radP0 =
 	fq.radP1 = 0x10;
 	fq.nObject = OBJ_IDX (objP1);
+	fq.ignoreObjList = NULL;
 	if (nTries++) {
 		fq.nSegment	= bSpectate ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) :
 						  FindSegByPos (objP1->info.position.vPos, objP1->info.nSegment, 1, 0);
