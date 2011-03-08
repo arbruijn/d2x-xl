@@ -297,15 +297,15 @@ void CThrusterFlames::RenderCap (int i)
 {
 if (thruster.Load ()) {
 	CFloatVector	verts [4];
-	float				z = (m_vFlame [0][0][Z] + m_vFlame [1][0][Z]) / 2.0f * m_ti.fLength [i];
+	float				z = (m_vFlame [0][0].v.c.z + m_vFlame [1][0].v.c.z) / 2.0f * m_ti.fLength [i];
 	float				scale = m_ti.fSize [i] * 1.6666667f;
 
 	// choose 4 vertices from the widest ring of the flame
 	for (int i = 0; i < 4; i++) {
 		verts [i] = m_vFlame [5][4 * i];
-		verts [i][X] *= scale;
-		verts [i][Y] *= scale;
-		verts [i][Z] = z;
+		verts [i].v.c.x *= scale;
+		verts [i].v.c.y *= scale;
+		verts [i].v.c.z = z;
 		}
 	glowRenderer.SetViewport (GLOW_THRUSTERS, verts, 4);
 	glColor3f (1,1,1);

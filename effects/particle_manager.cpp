@@ -287,18 +287,18 @@ for (i = 0; i < MAX_PARTICLE_BUFFERS; i++)
 tSinCosf sinCosPart [PARTICLE_POSITIONS];
 ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
 CFloatMatrix m;
-m.m.v.r[Z] =
-m.m.v.u[Z] =
-m.m.v.f[X] =
-m.m.v.f[Y] = 0;
-m.m.v.f[Z] = 1;
+m.m.v.r.v.c.z =
+m.m.v.u.v.c.z =
+m.m.v.f.v.c.x =
+m.m.v.f.v.c.y = 0;
+m.m.v.f.v.c.z = 1;
 CFloatVector v;
 v.Set (1.0f, 1.0f, 0.0f, 1.0f);
 for (int i = 0; i < PARTICLE_POSITIONS; i++) {
-	m.m.v.r[X] =
-	m.m.v.u[Y] = sinCosPart [i].fCos;
-	m.m.v.u[X] = sinCosPart [i].fSin;
-	m.m.v.r[Y] = -m.m.v.u[X];
+	m.m.v.r.v.c.x =
+	m.m.v.u.v.c.y = sinCosPart [i].fCos;
+	m.m.v.u.v.c.x = sinCosPart [i].fSin;
+	m.m.v.r.v.c.y = -m.m.v.u.v.c.x;
 	vRot [i] = m * v;
 	}
 

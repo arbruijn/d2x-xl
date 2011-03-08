@@ -66,12 +66,12 @@ g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 	//use x or y as appropriate, and negate x/y value as appropriate
 
 	if (planeFlag & (CC_OFF_RIGHT | CC_OFF_LEFT)) {
-		a = on_pnt->p3_vec[X];
-		b = off_pnt->p3_vec[X];
+		a = on_pnt->p3_vec.v.c.x;
+		b = off_pnt->p3_vec.v.c.x;
 	}
 	else {
-		a = on_pnt->p3_vec[Y];
-		b = off_pnt->p3_vec[Y];
+		a = on_pnt->p3_vec.v.c.y;
+		b = off_pnt->p3_vec.v.c.y;
 	}
 
 	if (planeFlag & (CC_OFF_LEFT | CC_OFF_BOT)) {
@@ -79,8 +79,8 @@ g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 		b = -b;
 	}
 
-	kn = a - on_pnt->p3_vec[Z];						//xs-zs
-	kd = kn - b + off_pnt->p3_vec[Z];				//xs-zs-xe+ze
+	kn = a - on_pnt->p3_vec.v.c.z;						//xs-zs
+	kd = kn - b + off_pnt->p3_vec.v.c.z;				//xs-zs-xe+ze
 
 	tmp = get_temp_point();
 
@@ -88,19 +88,19 @@ g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 
 
 // PSX_HACK!!!!
-//	tmp->p3_vec[X] = on_pnt->p3_vec[X] + FixMulDiv(off_pnt->p3_vec[X]-on_pnt->p3_vec[X],kn,kd);
-//	tmp->p3_vec[Y] = on_pnt->p3_vec[Y] + FixMulDiv(off_pnt->p3_vec[Y]-on_pnt->p3_vec[Y],kn,kd);
+//	tmp->p3_vec.v.c.x = on_pnt->p3_vec.v.c.x + FixMulDiv(off_pnt->p3_vec.v.c.x-on_pnt->p3_vec.v.c.x,kn,kd);
+//	tmp->p3_vec.v.c.y = on_pnt->p3_vec.v.c.y + FixMulDiv(off_pnt->p3_vec.v.c.y-on_pnt->p3_vec.v.c.y,kn,kd);
 
-	tmp->p3_vec[X] = on_pnt->p3_vec[X] + FixMul( (off_pnt->p3_vec[X]-on_pnt->p3_vec[X]), psx_ratio);
-	tmp->p3_vec[Y] = on_pnt->p3_vec[Y] + FixMul( (off_pnt->p3_vec[Y]-on_pnt->p3_vec[Y]), psx_ratio);
+	tmp->p3_vec.v.c.x = on_pnt->p3_vec.v.c.x + FixMul( (off_pnt->p3_vec.v.c.x-on_pnt->p3_vec.v.c.x), psx_ratio);
+	tmp->p3_vec.v.c.y = on_pnt->p3_vec.v.c.y + FixMul( (off_pnt->p3_vec.v.c.y-on_pnt->p3_vec.v.c.y), psx_ratio);
 
 	if (planeFlag & (CC_OFF_TOP|CC_OFF_BOT))
-		tmp->p3_vec[Z] = tmp->p3_vec[Y];
+		tmp->p3_vec.v.c.z = tmp->p3_vec.v.c.y;
 	else
-		tmp->p3_vec[Z] = tmp->p3_vec[X];
+		tmp->p3_vec.v.c.z = tmp->p3_vec.v.c.x;
 
 	if (planeFlag & (CC_OFF_LEFT|CC_OFF_BOT))
-		tmp->p3_vec[Z] = -tmp->p3_vec[Z];
+		tmp->p3_vec.v.c.z = -tmp->p3_vec.v.c.z;
 
 	if (on_pnt->p3_flags & PF_UVS) {
 // PSX_HACK!!!!

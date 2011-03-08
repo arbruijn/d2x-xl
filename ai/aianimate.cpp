@@ -45,7 +45,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 
 	for (i = 0; i < 8; i++) {
 		vVertex = gameData.segs.vertices + segP->m_verts [i];
-		if ((vGoal[X] == (*vVertex)[X]) && (vGoal[Y] == (*vVertex)[Y]) && (vGoal[Z] == (*vVertex)[Z]))
+		if ((vGoal.v.c.x == (*vVertex).v.c.x) && (vGoal.v.c.y == (*vVertex).v.c.y) && (vGoal.v.c.z == (*vVertex).v.c.z))
 			break;
 		}
 	vVecToGoal = vGoal - objP->info.position.vPos; CFixVector::Normalize (vVecToGoal);
@@ -201,14 +201,14 @@ if (!xRollDuration)
 
 xRollVal = FixDiv (gameData.time.xGame - StartTime, xRollDuration);
 
-FixSinCos (FixMul (xRollVal, xRollVal), &temp, &objP->mType.physInfo.rotVel[X]);
-FixSinCos (xRollVal, &temp, &objP->mType.physInfo.rotVel[Y]);
-FixSinCos (xRollVal-I2X (1)/8, &temp, &objP->mType.physInfo.rotVel[Z]);
+FixSinCos (FixMul (xRollVal, xRollVal), &temp, &objP->mType.physInfo.rotVel.v.c.x);
+FixSinCos (xRollVal, &temp, &objP->mType.physInfo.rotVel.v.c.y);
+FixSinCos (xRollVal-I2X (1)/8, &temp, &objP->mType.physInfo.rotVel.v.c.z);
 
 temp = gameData.time.xGame - StartTime;
-objP->mType.physInfo.rotVel[X] = temp / 9;
-objP->mType.physInfo.rotVel[Y] = temp / 5;
-objP->mType.physInfo.rotVel[Z] = temp / 7;
+objP->mType.physInfo.rotVel.v.c.x = temp / 9;
+objP->mType.physInfo.rotVel.v.c.y = temp / 5;
+objP->mType.physInfo.rotVel.v.c.z = temp / 7;
 if (gameOpts->sound.audioSampleRate) {
 	soundP = gameData.pig.sound.soundP + audio.XlatSound (deathSound);
 	xSoundDuration = FixDiv (soundP->nLength [soundP->bHires], gameOpts->sound.audioSampleRate);

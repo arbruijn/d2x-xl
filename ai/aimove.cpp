@@ -329,9 +329,9 @@ void MoveAwayFromTarget (CObject *objP, CFixVector *vVecToTarget, int attackType
 	speed = pptr->velocity.Mag();
 
 	if (speed > botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel]) {
-		pptr->velocity[X] = (pptr->velocity[X]*3)/4;
-		pptr->velocity[Y] = (pptr->velocity[Y]*3)/4;
-		pptr->velocity[Z] = (pptr->velocity[Z]*3)/4;
+		pptr->velocity.v.c.x = (pptr->velocity.v.c.x*3)/4;
+		pptr->velocity.v.c.y = (pptr->velocity.v.c.y*3)/4;
+		pptr->velocity.v.c.z = (pptr->velocity.v.c.z*3)/4;
 	}
 }
 

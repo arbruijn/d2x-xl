@@ -74,9 +74,9 @@ tPointSeg *InsertTransitPoint (tPointSeg *curSegP, tPointSeg *predSegP, tPointSe
 
 vCenter = SEGMENTS [predSegP->nSegment].SideCenter (nConnSide);
 vPoint = predSegP->point - vCenter;
-vPoint[X] /= 16;
-vPoint[Y] /= 16;
-vPoint[Z] /= 16;
+vPoint.v.c.x /= 16;
+vPoint.v.c.y /= 16;
+vPoint.v.c.z /= 16;
 curSegP->point = vCenter - vPoint;
 nSegment = FindSegByPos (curSegP->point, succSegP->nSegment, 1, 0);
 if (nSegment == -1) {
@@ -173,7 +173,7 @@ for (i = 1, --j; i < j; i++) {
 	c = ptSegs [i + 1].point - ptSegs [i-1].point;
 	CFixVector::Normalize (b);
 	if (abs (CFixVector::Dot (a, b)) > I2X (3)/4) {
-		if (abs (a[Z]) < I2X (1)/2) {
+		if (abs (a.v.c.z) < I2X (1)/2) {
 			if (bRandom) {
 				e.v.c.x = (d_rand ()- 16384) / 2;
 				e.v.c.y = (d_rand ()- 16384) / 2;
@@ -231,9 +231,9 @@ for (i = 1, --j; i < j; i++) {
 		else {
 			if ((count == 3) && (nHitType == HIT_BAD_P0))
 				return;
-			vGoalPos[X] = ((*fq.p0)[X] + hitData.hit.vPoint[X])/2;
-			vGoalPos[Y] = ((*fq.p0)[Y] + hitData.hit.vPoint[Y])/2;
-			vGoalPos[Z] = ((*fq.p0)[Z] + hitData.hit.vPoint[Z])/2;
+			vGoalPos.v.c.x = ((*fq.p0).v.c.x + hitData.hit.vPoint.v.c.x)/2;
+			vGoalPos.v.c.y = ((*fq.p0).v.c.y + hitData.hit.vPoint.v.c.y)/2;
+			vGoalPos.v.c.z = ((*fq.p0).v.c.z + hitData.hit.vPoint.v.c.z)/2;
 			if (!--count)	//	Couldn't move towards outside, that's ok, sometimes things can't be moved.
 				vGoalPos = ptSegs [i].point;
 			}

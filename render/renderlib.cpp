@@ -127,9 +127,9 @@ for (i = 0; i < nVertices; i++) {
 	center.p3_vec += pointList [i]->p3_vec;
 	nf = &pointList [i]->p3_normal.vNormal;
 /*
-	n[X] = (fix) (nf->x() * 65536.0f);
-	n[Y] = (fix) (nf->y() * 65536.0f);
-	n[Z] = (fix) (nf->z() * 65536.0f);
+	n.v.c.x = (fix) (nf->x() * 65536.0f);
+	n.v.c.y = (fix) (nf->y() * 65536.0f);
+	n.v.c.z = (fix) (nf->z() * 65536.0f);
 */
 	n.Assign (*nf);
 	transformation.Rotate(n, n, 0);
@@ -609,9 +609,9 @@ if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) {
 		gameData.render.zMax = p->p3_vec.v.c.z;
 #endif
 	if (!ogl.m_states.bUseTransform) {
-		gameData.segs.fVertices [i][X] = X2F (p->p3_vec.v.c.x);
-		gameData.segs.fVertices [i][Y] = X2F (p->p3_vec.v.c.y);
-		gameData.segs.fVertices [i][Z] = X2F (p->p3_vec.v.c.z);
+		gameData.segs.fVertices [i].v.c.x = X2F (p->p3_vec.v.c.x);
+		gameData.segs.fVertices [i].v.c.y = X2F (p->p3_vec.v.c.y);
+		gameData.segs.fVertices [i].v.c.z = X2F (p->p3_vec.v.c.z);
 		}
 	p->p3_index = i;
 	gameData.render.mine.nRotatedLast [i] = gameStates.render.nFrameCount;

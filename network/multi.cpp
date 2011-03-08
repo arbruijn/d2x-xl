@@ -1841,9 +1841,9 @@ void MultiDoCtrlcenFire (char *buf)
 memcpy (&vTarget, buf + count, 12);
 count += 12;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)  // swap the vector to_target
-vTarget[X] = (fix)INTEL_INT ((int) vTarget[X]);
-vTarget[Y] = (fix)INTEL_INT ((int) vTarget[Y]);
-vTarget[Z] = (fix)INTEL_INT ((int) vTarget[Z]);
+vTarget.v.c.x = (fix)INTEL_INT ((int) vTarget.v.c.x);
+vTarget.v.c.y = (fix)INTEL_INT ((int) vTarget.v.c.y);
+vTarget.v.c.z = (fix)INTEL_INT ((int) vTarget.v.c.z);
 #endif
 nGun = buf [count++];
 nObject = GET_INTEL_SHORT (buf + count);
@@ -2872,9 +2872,9 @@ count += 2;
 memcpy (gameData.multigame.msg.buf + count, vPos, sizeof (CFixVector));
 count += sizeof (CFixVector);
 #else
-vSwapped[X] = (fix)INTEL_INT ((int) (*vPos).v.c.x);
-vSwapped[Y] = (fix)INTEL_INT ((int) (*vPos).v.c.y);
-vSwapped[Z] = (fix)INTEL_INT ((int) (*vPos).v.c.z);
+vSwapped.v.c.x = (fix)INTEL_INT ((int) (*vPos).v.c.x);
+vSwapped.v.c.y = (fix)INTEL_INT ((int) (*vPos).v.c.y);
+vSwapped.v.c.z = (fix)INTEL_INT ((int) (*vPos).v.c.z);
 memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
 #endif
@@ -2909,14 +2909,14 @@ count += sizeof (CFixVector);
 memcpy (gameData.multigame.msg.buf + count, vVel, sizeof (CFixVector));
 count += sizeof (CFixVector);
 #else
-vSwapped[X] = (fix)INTEL_INT ((int) (*vPos).v.c.x);
-vSwapped[Y] = (fix)INTEL_INT ((int) (*vPos).v.c.y);
-vSwapped[Z] = (fix)INTEL_INT ((int) (*vPos).v.c.z);
+vSwapped.v.c.x = (fix)INTEL_INT ((int) (*vPos).v.c.x);
+vSwapped.v.c.y = (fix)INTEL_INT ((int) (*vPos).v.c.y);
+vSwapped.v.c.z = (fix)INTEL_INT ((int) (*vPos).v.c.z);
 memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
-vSwapped[X] = (fix)INTEL_INT ((int) (*vVel).v.c.x);
-vSwapped[Y] = (fix)INTEL_INT ((int) (*vVel).v.c.y);
-vSwapped[Z] = (fix)INTEL_INT ((int) (*vVel).v.c.z);
+vSwapped.v.c.x = (fix)INTEL_INT ((int) (*vVel).v.c.x);
+vSwapped.v.c.y = (fix)INTEL_INT ((int) (*vVel).v.c.y);
+vSwapped.v.c.z = (fix)INTEL_INT ((int) (*vVel).v.c.z);
 memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
 #endif

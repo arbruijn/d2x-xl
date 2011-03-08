@@ -73,7 +73,7 @@ vTemp.v.c.z = 0;
 rodPoints [0].p3_vec = topPoint->p3_vec + vTemp;
 rodPoints [1].p3_vec = topPoint->p3_vec - vTemp;
 vTemp = vRodNorm * xBtmWidth;
-vTemp[Z] = 0;
+vTemp.v.c.z = 0;
 rodPoints [2].p3_vec = btmPoint->p3_vec - vTemp;
 rodPoints [3].p3_vec = btmPoint->p3_vec + vTemp;
 

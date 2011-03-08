@@ -48,9 +48,9 @@ if ((m = n.Mag ()) > I2X (RADAR_RANGE))
 	return;
 if (m) {
 	//HUDMessage (0, "%1.2f", X2F (m));
-	v [0][X] = FixDiv (n.v.c.x, m) * 15; // /= RADAR_RANGE;
-	v [0][Y] = FixDiv (n.v.c.y, m) * 20; // /= RADAR_RANGE;
-	v [0][Z] = n[X] / RADAR_RANGE;
+	v [0].v.c.x = FixDiv (n.v.c.x, m) * 15; // /= RADAR_RANGE;
+	v [0].v.c.y = FixDiv (n.v.c.y, m) * 20; // /= RADAR_RANGE;
+	v [0].v.c.z = n.v.c.x / RADAR_RANGE;
 	//VmVecNormalize (&n);
 	}
 else {
@@ -76,19 +76,19 @@ else {
 	if (ogl.SizeVertexBuffer (6)) {
 		float x = fRadius * 0.707f + 0.333f;
 		float y = fRadius / 3.0f;
-		ogl.VertexBuffer () [0][X] = 0;
-		ogl.VertexBuffer () [0][Y] = y + 1;
-		ogl.VertexBuffer () [1][X] = 0;
-		ogl.VertexBuffer () [1][Y] = -y - 1;
+		ogl.VertexBuffer () [0].v.c.x = 0;
+		ogl.VertexBuffer () [0].v.c.y = y + 1;
+		ogl.VertexBuffer () [1].v.c.x = 0;
+		ogl.VertexBuffer () [1].v.c.y = -y - 1;
 		y -= 0.333f;
-		ogl.VertexBuffer () [2][X] = -x;
-		ogl.VertexBuffer () [2][Y] = -y;
-		ogl.VertexBuffer () [3][X] = x;
-		ogl.VertexBuffer () [3][Y] = y;
-		ogl.VertexBuffer () [4][X] = -x;
-		ogl.VertexBuffer () [4][Y] = y;
-		ogl.VertexBuffer () [5][X] = x;
-		ogl.VertexBuffer () [5][Y] = -y;
+		ogl.VertexBuffer () [2].v.c.x = -x;
+		ogl.VertexBuffer () [2].v.c.y = -y;
+		ogl.VertexBuffer () [3].v.c.x = x;
+		ogl.VertexBuffer () [3].v.c.y = y;
+		ogl.VertexBuffer () [4].v.c.x = -x;
+		ogl.VertexBuffer () [4].v.c.y = y;
+		ogl.VertexBuffer () [5].v.c.x = x;
+		ogl.VertexBuffer () [5].v.c.y = -y;
 		ogl.FlushBuffers (GL_LINES, 6, 2);
 		}
 	//ogl.SetLineSmooth (false);
@@ -105,12 +105,12 @@ s = 1.0f - (float) fabs (X2F (m) / RADAR_RANGE);
 h = 3 * s;
 a += a * h;
 glColor4f (r + r * h, g + g * h, b + b * h, (float) sqrt (a));
-glTranslatef (X2F (v [0][X]), X2F (v [0][Y]), X2F (v [0][Z]));
+glTranslatef (X2F (v [0].v.c.x), X2F (v [0].v.c.y), X2F (v [0].v.c.z));
 OglDrawEllipse (BLIP_SLICES, GL_POLYGON, 0.33f + 0.33f * s, 0, 0.33f + 0.33f * s, 0, sinCosBlip);
 glPopMatrix ();
 #if 1
 v [1] = v [0];
-v [1][Y] = 0;
+v [1].v.c.y = 0;
 if (ogl.SizeVertexBuffer (2)) {
 	ogl.VertexBuffer () [0].Assign (v [0]);
 	ogl.VertexBuffer () [1].Assign (v [1]);

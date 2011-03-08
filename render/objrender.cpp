@@ -179,15 +179,15 @@ mType.physInfo.brakes = 0;
 if ((info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [info.nId])
 #endif
  {
-	mType.physInfo.rotVel[X] = 0;
-	mType.physInfo.rotVel[Y] =
-	mType.physInfo.rotVel[Z] = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+	mType.physInfo.rotVel.v.c.x = 0;
+	mType.physInfo.rotVel.v.c.y =
+	mType.physInfo.rotVel.v.c.z = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 	}
 #if 0
 else {
-	mType.physInfo.rotVel[X] =
-	mType.physInfo.rotVel[Z] = 0;
-	mType.physInfo.rotVel[Y] = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+	mType.physInfo.rotVel.v.c.x =
+	mType.physInfo.rotVel.v.c.z = 0;
+	mType.physInfo.rotVel.v.c.y = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 	}
 #endif
 info.controlType = CT_WEAPON;
@@ -231,7 +231,7 @@ if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 		return;
 	//the code below to check for CObject near the center of the screen
 	//completely ignores z, which may not be good
-	if ((abs (temp.p3_vec[X]) < I2X (4)) && (abs (temp.p3_vec[Y]) < I2X (4))) {
+	if ((abs (temp.p3_vec.v.c.x) < I2X (4)) && (abs (temp.p3_vec.v.c.y) < I2X (4))) {
 		objP->cType.aiInfo.nDangerLaser = gameStates.app.bPlayerFiredLaserThisFrame;
 		objP->cType.aiInfo.nDangerLaserSig = OBJECTS [gameStates.app.bPlayerFiredLaserThisFrame].info.nSignature;
 		}

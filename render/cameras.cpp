@@ -208,8 +208,8 @@ else {
 	if (bTeleport) {
 		CFixVector n = *SEGMENTS [srcSeg].m_sides [srcSide].m_normals;
 		/*
-		n[X] = -n[X];
-		n[Y] = -n[Y];
+		n.v.c.x = -n.v.c.x;
+		n.v.c.y = -n.v.c.y;
 		*/
 		n.Neg ();
 		a = n.ToAnglesVec ();

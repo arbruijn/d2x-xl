@@ -810,9 +810,9 @@ void GenerateStarfield (void)
 	int i;
 
 for (i = 0; i < MAX_STARS; i++) {
-	stars [i][X] = (d_rand () - RAND_MAX/2) << 14;
-	stars [i][Z] = (d_rand () - RAND_MAX/2) << 14;
-	stars [i][Y] = (d_rand ()/2) << 14;
+	stars [i].v.c.x = (d_rand () - RAND_MAX/2) << 14;
+	stars [i].v.c.z = (d_rand () - RAND_MAX/2) << 14;
+	stars [i].v.c.y = (d_rand ()/2) << 14;
 	}
 }
 

@@ -40,9 +40,9 @@ void TransformHitboxf (CObject *objP, CFloatVector *vertList, int iSubObj)
 	int					i;
 
 for (i = 0; i < 8; i++) {
-	hv.v.c.x = X2F (hitBoxOffsets [i][X] ? vMin.v.c.x : vMax.v.c.x);
-	hv.v.c.y = X2F (hitBoxOffsets [i][Y] ? vMin.v.c.y : vMax.v.c.y);
-	hv.v.c.z = X2F (hitBoxOffsets [i][Z] ? vMin.v.c.z : vMax.v.c.z);
+	hv.v.c.x = X2F (hitBoxOffsets [i].v.c.x ? vMin.v.c.x : vMax.v.c.x);
+	hv.v.c.y = X2F (hitBoxOffsets [i].v.c.y ? vMin.v.c.y : vMax.v.c.y);
+	hv.v.c.z = X2F (hitBoxOffsets [i].v.c.z ? vMin.v.c.z : vMax.v.c.z);
 	transformation.Transform (vertList [i], hv, 0);
 	}
 }

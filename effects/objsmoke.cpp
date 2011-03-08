@@ -547,9 +547,9 @@ if (nParts > 0) {
 	else {
 		particleManager.SetScale (nSmoke, F2X (-4.0));
 		particleManager.SetDensity (nSmoke, nParts, -1);
-		vDir[X] = d_rand () - I2X (1) / 4;
-		vDir[Y] = d_rand () - I2X (1) / 4;
-		vDir[Z] = d_rand () - I2X (1) / 4;
+		vDir.v.c.x = d_rand () - I2X (1) / 4;
+		vDir.v.c.y = d_rand () - I2X (1) / 4;
+		vDir.v.c.z = d_rand () - I2X (1) / 4;
 		CFixVector::Normalize (vDir);
 		vPos = objP->info.position.vPos + vDir * (-objP->info.xSize / 2);
 		particleManager.SetPos (nSmoke, &vPos, NULL, objP->info.nSegment);

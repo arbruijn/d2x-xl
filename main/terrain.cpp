@@ -404,9 +404,9 @@ void ComputeTerrainPoints (void)
 for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 	for (j = 0; j < gameData.render.terrain.nGridH; j++) {
 		p = gameData.render.terrain.points + GRID_OFFS (i, j);
-		(*p)[X] = TERRAIN_GRID_SCALE * i;
-		(*p)[Z] = TERRAIN_GRID_SCALE * j;
-		(*p)[Y] = (fix) HEIGHT (i, j) * TERRAIN_HEIGHT_SCALE;
+		(*p).v.c.x = TERRAIN_GRID_SCALE * i;
+		(*p).v.c.z = TERRAIN_GRID_SCALE * j;
+		(*p).v.c.y = (fix) HEIGHT (i, j) * TERRAIN_HEIGHT_SCALE;
 		}
 	}
 }

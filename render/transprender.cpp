@@ -274,7 +274,7 @@ for (i = i0 = 0; i < split [0].nVertices; i++) {
 	}
 if ((nDepth > 1) || !nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0].nVertices == 3) || (nMaxLen <= nMinLen / 2 * 3)))) {
 	for (i = 0, zMax = 0, zMin = 1e30f; i < split [0].nVertices; i++) {
-		z = split [0].vertices [i][Z];
+		z = split [0].vertices [i].v.c.z;
 		if (zMax < z)
 			zMax = z;
 		if (zMin > z)

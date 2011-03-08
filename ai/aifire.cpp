@@ -158,9 +158,9 @@ if (wiP->matter) {
 		xMaxWeaponSpeed *= (NDL-gameStates.app.nDifficultyLevel);
    }
 xProjectedTime = FixDiv (xDistToTarget, xMaxWeaponSpeed);
-(*vFire)[X] = ComputeLeadComponent ((*vBelievedTargetPos)[X], (*vFirePoint)[X], TARGETOBJ->mType.physInfo.velocity[X], xProjectedTime);
-(*vFire)[Y] = ComputeLeadComponent ((*vBelievedTargetPos)[Y], (*vFirePoint)[Y], TARGETOBJ->mType.physInfo.velocity[Y], xProjectedTime);
-(*vFire)[Z] = ComputeLeadComponent ((*vBelievedTargetPos)[Z], (*vFirePoint)[Z], TARGETOBJ->mType.physInfo.velocity[Z], xProjectedTime);
+(*vFire).v.c.x = ComputeLeadComponent ((*vBelievedTargetPos).v.c.x, (*vFirePoint).v.c.x, TARGETOBJ->mType.physInfo.velocity.v.c.x, xProjectedTime);
+(*vFire).v.c.y = ComputeLeadComponent ((*vBelievedTargetPos).v.c.y, (*vFirePoint).v.c.y, TARGETOBJ->mType.physInfo.velocity.v.c.y, xProjectedTime);
+(*vFire).v.c.z = ComputeLeadComponent ((*vBelievedTargetPos).v.c.z, (*vFirePoint).v.c.z, TARGETOBJ->mType.physInfo.velocity.v.c.z, xProjectedTime);
 CFixVector::Normalize (*vFire);
 Assert (CFixVector::Dot (*vFire, objP->info.position.mOrient.m.v.f) < I2X (3) / 2);
 //	Make sure not firing at especially strange angle.  If so, try to correct.  If still bad, give up after one try.
@@ -283,9 +283,9 @@ if (gameStates.app.bNostalgia) {
 	count = 4;			//	Don't want to sit in this loop foreverd:\temp\dm_test.
 	i = (NDL - gameStates.app.nDifficultyLevel - 1) * 4 * aim;
 	do {
-		vRandTargetPos.v.c.x = (*vBelievedTargetPos)[X] + FixMul ((d_rand () - 16384), aim);
-		vRandTargetPos.v.c.y = (*vBelievedTargetPos)[Y] + FixMul ((d_rand () - 16384), aim);
-		vRandTargetPos.v.c.z = (*vBelievedTargetPos)[Z] + FixMul ((d_rand () - 16384), aim);
+		vRandTargetPos.v.c.x = (*vBelievedTargetPos).v.c.x + FixMul ((d_rand () - 16384), aim);
+		vRandTargetPos.v.c.y = (*vBelievedTargetPos).v.c.y + FixMul ((d_rand () - 16384), aim);
+		vRandTargetPos.v.c.z = (*vBelievedTargetPos).v.c.z + FixMul ((d_rand () - 16384), aim);
 		CFixVector::NormalizedDir (vFire, vRandTargetPos, *vFirePoint);
 		dot = CFixVector::Dot (objP->info.position.mOrient.m.v.f, vFire);
 		} while (--count && (dot < I2X (1) / 4));

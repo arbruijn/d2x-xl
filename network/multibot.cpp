@@ -524,9 +524,9 @@ bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 memcpy (gameData.multigame.msg.buf + bufP, &delObjP->info.position.vPos, sizeof (CFixVector));
 #else
-vSwapped[X] = (fix)INTEL_INT ((int) delObjP->info.position.vPos[X]);
-vSwapped[Y] = (fix)INTEL_INT ((int) delObjP->info.position.vPos[Y]);
-vSwapped[Z] = (fix)INTEL_INT ((int) delObjP->info.position.vPos[Z]);
+vSwapped.v.c.x = (fix)INTEL_INT ((int) delObjP->info.position.vPos.v.c.x);
+vSwapped.v.c.y = (fix)INTEL_INT ((int) delObjP->info.position.vPos.v.c.y);
+vSwapped.v.c.z = (fix)INTEL_INT ((int) delObjP->info.position.vPos.v.c.z);
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (CFixVector));     
 #endif
 bufP += sizeof (CFixVector);

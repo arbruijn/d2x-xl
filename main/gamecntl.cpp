@@ -371,9 +371,9 @@ void SpeedtestFrame(void)
 	gameData.speedtest.nSide=gameData.speedtest.nSegment % MAX_SIDES_PER_SEGMENT;
 
 	gameData.objs.viewerP->info.position.vPos = SEGMENTS [gameData.speedtest.nSegment].Center ();
-	gameData.objs.viewerP->info.position.vPos[X] += 0x10;	
-	gameData.objs.viewerP->info.position.vPos[Y] -= 0x10;	
-	gameData.objs.viewerP->info.position.vPos[Z] += 0x17;
+	gameData.objs.viewerP->info.position.vPos.v.c.x += 0x10;	
+	gameData.objs.viewerP->info.position.vPos.v.c.y -= 0x10;	
+	gameData.objs.viewerP->info.position.vPos.v.c.z += 0x17;
 
 	gameData.objs.viewerP->RelinkToSeg (gameData.speedtest.nSegment);
 	center_point = SEGMENTS [gameData.speedtest.nSegment].SideCenter (gameData.speedtest.nSide);

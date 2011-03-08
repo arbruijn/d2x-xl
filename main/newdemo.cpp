@@ -190,15 +190,15 @@ void my_extract_shortpos (CObject *objP, tShortPos *spp)
 	sbyte *sp;
 
 sp = spp->orient;
-objP->info.position.mOrient.m.v.r[X] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.u[X] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.f[X] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.r[Y] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.u[Y] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.f[Y] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.r[Z] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.u[Z] = *sp++ << MATRIX_PRECISION;
-objP->info.position.mOrient.m.v.f[Z] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.r.v.c.x = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.u.v.c.x = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.f.v.c.x = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.r.v.c.y = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.u.v.c.y = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.f.v.c.y = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.r.v.c.z = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.u.v.c.z = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient.m.v.f.v.c.z = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
 objP->info.nSegment = nSegment;
 const CFixVector& v = gameData.segs.vertices [SEGMENTS [nSegment].m_verts [0]];
@@ -3064,15 +3064,15 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 				}
 			// Interpolate the CObject position.  This is just straight linear
 			// interpolation.
-			delta_x = objP->info.position.vPos[X] - curObjP->info.position.vPos[X];
-			delta_y = objP->info.position.vPos[Y] - curObjP->info.position.vPos[Y];
-			delta_z = objP->info.position.vPos[Z] - curObjP->info.position.vPos[Z];
+			delta_x = objP->info.position.vPos.v.c.x - curObjP->info.position.vPos.v.c.x;
+			delta_y = objP->info.position.vPos.v.c.y - curObjP->info.position.vPos.v.c.y;
+			delta_z = objP->info.position.vPos.v.c.z - curObjP->info.position.vPos.v.c.z;
 			delta_x = FixMul (delta_x, factor);
 			delta_y = FixMul (delta_y, factor);
 			delta_z = FixMul (delta_z, factor);
-			curObjP->info.position.vPos[X] += delta_x;
-			curObjP->info.position.vPos[Y] += delta_y;
-			curObjP->info.position.vPos[Z] += delta_z;
+			curObjP->info.position.vPos.v.c.x += delta_x;
+			curObjP->info.position.vPos.v.c.y += delta_y;
+			curObjP->info.position.vPos.v.c.z += delta_z;
 				// -- old fashioned way --// stuff the new angles back into the CObject structure
 				// -- old fashioned way --				VmAngles2Matrix (&(curObjs [i].info.position.mOrient), &cur_angles);
 			}

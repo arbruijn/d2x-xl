@@ -146,22 +146,22 @@ if (nType == GL_LINES) {	// implies a dashed circle
 	if (ogl.SizeVertexBuffer (nSides * 2)) {
 		if (sinCosP) {
 			for (i = 0; i < nSides; i++, sinCosP++) {
-				ogl.VertexBuffer () [i][X] = sinCosP->fCos;
-				ogl.VertexBuffer () [i][Y] = sinCosP->fSin;
+				ogl.VertexBuffer () [i].v.c.x = sinCosP->fCos;
+				ogl.VertexBuffer () [i].v.c.y = sinCosP->fSin;
 				i++, sinCosP++;
-				ogl.VertexBuffer () [i][X] = sinCosP->fCos;
-				ogl.VertexBuffer () [i][Y] = sinCosP->fSin;
+				ogl.VertexBuffer () [i].v.c.x = sinCosP->fCos;
+				ogl.VertexBuffer () [i].v.c.y = sinCosP->fSin;
 				}
 			}
 		else {
 			for (i = 0; i < nSides; i++) {
 				ang = 2.0 * Pi * i / nSides;
-				ogl.VertexBuffer () [i][X] = float (cos (ang));
-				ogl.VertexBuffer () [i][Y] = float (sin (ang));
+				ogl.VertexBuffer () [i].v.c.x = float (cos (ang));
+				ogl.VertexBuffer () [i].v.c.y = float (sin (ang));
 				i++;
 				ang = 2.0 * Pi * i / nSides;
-				ogl.VertexBuffer () [i][X] = float (cos (ang));
-				ogl.VertexBuffer () [i][Y] = float (sin (ang));
+				ogl.VertexBuffer () [i].v.c.x = float (cos (ang));
+				ogl.VertexBuffer () [i].v.c.y = float (sin (ang));
 				}
 			}
 		ogl.FlushBuffers (GL_LINES, nSides * 2, 2);
@@ -178,8 +178,8 @@ else {
 		if (ogl.SizeVertexBuffer (nSides)) {
 			for (i = 0; i < nSides; i++) {
 				ang = 2.0 * Pi * i / nSides;
-				ogl.VertexBuffer () [i][X] = float (cos (ang));
-				ogl.VertexBuffer () [i][Y] = float (sin (ang));
+				ogl.VertexBuffer () [i].v.c.x = float (cos (ang));
+				ogl.VertexBuffer () [i].v.c.y = float (sin (ang));
 				}
 			ogl.FlushBuffers (nType, nSides, 2);
 			}
@@ -199,8 +199,8 @@ void OglDrawCircle (int nSides, int nType)
 if (ogl.SizeVertexBuffer (nSides)) {
 	for (i = 0; i < nSides; i++) {
 		ang = 2.0 * Pi * i / nSides;
-		ogl.VertexBuffer () [i][X] = float (cos (ang));
-		ogl.VertexBuffer () [i][Y] = float (sin (ang));
+		ogl.VertexBuffer () [i].v.c.x = float (cos (ang));
+		ogl.VertexBuffer () [i].v.c.y = float (sin (ang));
 		}
 	ogl.FlushBuffers (nType, nSides, 2);
 	}
@@ -287,7 +287,7 @@ if (ogl.SizeVertexBuffer (2 * (nSides + 1))) {
 	OglCanvasColor (&CCanvas::Current ()->Color ());
 	x = X2F (p.p3_vec.v.c.x);
 	y = X2F (p.p3_vec.v.c.y);
-	v[Z] = X2F (p.p3_vec.v.c.z);
+	v.v.c.z = X2F (p.p3_vec.v.c.z);
 	r = X2F (rad);
 	for (i = 0; i <= nSides; i++) {
 		for (j = i; j <= i + 1; j++) {
@@ -1108,19 +1108,19 @@ return 0;
 int COGL::RenderQuad (CBitmap* bmP, CFloatVector& vPosf, float width, float height, int nDimensions, int nWrap)
 {
 CFloatVector verts [4];
-verts [0][X] =
-verts [3][X] = vPosf.v.c.x - width;
-verts [1][X] =
-verts [2][X] = vPosf.v.c.x + width;
-verts [0][Y] =
-verts [1][Y] = vPosf.v.c.y + height;
-verts [2][Y] =
-verts [3][Y] = vPosf.v.c.y - height;
+verts [0].v.c.x =
+verts [3].v.c.x = vPosf.v.c.x - width;
+verts [1].v.c.x =
+verts [2].v.c.x = vPosf.v.c.x + width;
+verts [0].v.c.y =
+verts [1].v.c.y = vPosf.v.c.y + height;
+verts [2].v.c.y =
+verts [3].v.c.y = vPosf.v.c.y - height;
 if (nDimensions == 3)
-	verts [0][Z] =
-	verts [1][Z] =
-	verts [2][Z] =
-	verts [3][Z] = vPosf.v.c.z;
+	verts [0].v.c.z =
+	verts [1].v.c.z =
+	verts [2].v.c.z =
+	verts [3].v.c.z = vPosf.v.c.z;
 int nColors = 0;
 tRgbaColorf* colorP = bmP ? bmP->GetColor (&nColors) : NULL;
 return RenderQuad (bmP, verts, nDimensions, bmP ?  bmP->GetTexCoord () : NULL, colorP, nColors, nWrap);
@@ -1199,14 +1199,14 @@ void COGL::RenderScreenQuad (int bTextured)
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 
 CFloatVector verts [4];
-verts [0][X] =
-verts [1][X] = 0;
-verts [2][X] =
-verts [3][X] = 1;
-verts [0][Y] =
-verts [3][Y] = 0;
-verts [1][Y] =
-verts [2][Y] = 1;
+verts [0].v.c.x =
+verts [1].v.c.x = 0;
+verts [2].v.c.x =
+verts [3].v.c.x = 1;
+verts [0].v.c.y =
+verts [3].v.c.y = 0;
+verts [1].v.c.y =
+verts [2].v.c.y = 1;
 RenderQuad (NULL, verts, 2, bTextured ? texCoord : NULL);
 }
 

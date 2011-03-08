@@ -741,14 +741,14 @@ int LoadMineSegmentsCompiled (CFile& cf)
 	CFixVector	v;
 
 gameData.segs.vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
-/*	[X] =
-gameData.segs.vMin[Y] =
-gameData.segs.vMin[Y] = 0x7fffffff;*/
+/*	.v.c.x =
+gameData.segs.vMin.v.c.y =
+gameData.segs.vMin.v.c.y = 0x7fffffff;*/
 gameData.segs.vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
-/*[X] =
-gameData.segs.vMax[X] =
-gameData.segs.vMax[Y] =
-gameData.segs.vMax[Y] = -0x7fffffff;*/
+/*.v.c.x =
+gameData.segs.vMax.v.c.x =
+gameData.segs.vMax.v.c.y =
+gameData.segs.vMax.v.c.y = -0x7fffffff;*/
 gameStates.render.bColored = 0;
 bD1PigPresent = CFile::Exist (D1_PIGFILE, gameFolders.szDataDir, 0);
 psz = strchr (gameData.segs.szLevelFilename, '.');

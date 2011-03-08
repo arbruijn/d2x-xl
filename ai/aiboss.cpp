@@ -178,9 +178,9 @@ if (nObject != -1) {
 	int		force_val = I2X (1) / (gameData.time.xFrame ? gameData.time.xFrame : 1);
 	if (force_val) {
 		newObjP->cType.aiInfo.SKIP_AI_COUNT += force_val;
-		newObjP->mType.physInfo.rotThrust[X] = ((d_rand () - 16384) * force_val)/16;
-		newObjP->mType.physInfo.rotThrust[Y] = ((d_rand () - 16384) * force_val)/16;
-		newObjP->mType.physInfo.rotThrust[Z] = ((d_rand () - 16384) * force_val)/16;
+		newObjP->mType.physInfo.rotThrust.v.c.x = ((d_rand () - 16384) * force_val)/16;
+		newObjP->mType.physInfo.rotThrust.v.c.y = ((d_rand () - 16384) * force_val)/16;
+		newObjP->mType.physInfo.rotThrust.v.c.z = ((d_rand () - 16384) * force_val)/16;
 		newObjP->mType.physInfo.flags |= PF_USES_THRUST;
 
 		//	Now, give a big initial velocity to get moving away from boss.

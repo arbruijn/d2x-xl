@@ -120,18 +120,18 @@ if (r) {
 		}
 	}
 else {
-	vSprite [0][X] = -vdx.v.c.x - vdy.v.c.x;
-	vSprite [0][Y] = -vdx.v.c.y - vdy.v.c.y;
-	vSprite [0][Z] = -vdx.v.c.z - vdy.v.c.z;
-	vSprite [1][X] = +vdx.v.c.x - vdy.v.c.x;
-	vSprite [1][Y] = +vdx.v.c.y - vdy.v.c.y;
-	vSprite [1][Z] = +vdx.v.c.z - vdy.v.c.z;
-	vSprite [2][X] = +vdx.v.c.x + vdy.v.c.x;
-	vSprite [2][Y] = +vdx.v.c.y + vdy.v.c.y;
-	vSprite [2][Z] = +vdx.v.c.z + vdy.v.c.z;
-	vSprite [3][X] = -vdx.v.c.x + vdy.v.c.x;
-	vSprite [3][Y] = -vdx.v.c.y + vdy.v.c.y;
-	vSprite [3][Z] = -vdx.v.c.z + vdy.v.c.z;
+	vSprite [0].v.c.x = -vdx.v.c.x - vdy.v.c.x;
+	vSprite [0].v.c.y = -vdx.v.c.y - vdy.v.c.y;
+	vSprite [0].v.c.z = -vdx.v.c.z - vdy.v.c.z;
+	vSprite [1].v.c.x = +vdx.v.c.x - vdy.v.c.x;
+	vSprite [1].v.c.y = +vdx.v.c.y - vdy.v.c.y;
+	vSprite [1].v.c.z = +vdx.v.c.z - vdy.v.c.z;
+	vSprite [2].v.c.x = +vdx.v.c.x + vdy.v.c.x;
+	vSprite [2].v.c.y = +vdx.v.c.y + vdy.v.c.y;
+	vSprite [2].v.c.z = +vdx.v.c.z + vdy.v.c.z;
+	vSprite [3].v.c.x = -vdx.v.c.x + vdy.v.c.x;
+	vSprite [3].v.c.y = -vdx.v.c.y + vdy.v.c.y;
+	vSprite [3].v.c.z = -vdx.v.c.z + vdy.v.c.z;
 	for (i = 0; i < 4; i++)
 		vSprite [i] += *vCenter;
 	}
@@ -308,7 +308,7 @@ void CGlareRenderer::ComputeSpriteZRange (CFloatVector *sprite, tIntervalf *zRan
 	int			i;
 
 for (i = 0; i < 4; i++) {
-	z = sprite [i][Z];
+	z = sprite [i].v.c.z;
 	if (zRange.fMin > z)
 		zRange.fMin = z;
 	if (zRange.fMax < z)

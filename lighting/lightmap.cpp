@@ -196,17 +196,17 @@ xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
 for (i = 0; i < 4; i++) {
 	v = gameData.segs.vertices +sideVerts [i];
-	h = (*v)[X];
+	h = (*v).v.c.x;
 	if (xMin > h)
 		xMin = h;
 	if (xMax < h)
 		xMax = h;
-	h = (*v)[Y];
+	h = (*v).v.c.y;
 	if (yMin > h)
 		yMin = h;
 	if (yMax < h)
 		yMax = h;
-	h = (*v)[Z];
+	h = (*v).v.c.z;
 	if (zMin > h)
 		zMin = h;
 	if (zMax < h)

@@ -180,9 +180,9 @@ void ComputeHitbox (int nModel, int iHitbox)
 	int				i;
 
 for (i = 0; i < 8; i++) {
-	pv [i][X] = (hitBoxOffsets [i][X] ? vMin.v.c.x : vMax.v.c.x) + vOffset.v.c.x;
-	pv [i][Y] = (hitBoxOffsets [i][Y] ? vMin.v.c.y : vMax.v.c.y) + vOffset.v.c.y;
-	pv [i][Z] = (hitBoxOffsets [i][Z] ? vMin.v.c.z : vMax.v.c.z) + vOffset.v.c.z;
+	pv [i].v.c.x = (hitBoxOffsets [i].v.c.x ? vMin.v.c.x : vMax.v.c.x) + vOffset.v.c.x;
+	pv [i].v.c.y = (hitBoxOffsets [i].v.c.y ? vMin.v.c.y : vMax.v.c.y) + vOffset.v.c.y;
+	pv [i].v.c.z = (hitBoxOffsets [i].v.c.z ? vMin.v.c.z : vMax.v.c.z) + vOffset.v.c.z;
 	}
 for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
 	*pf->n = CFixVector::Normal (pv [hitboxFaceVerts [i][0]], pv [hitboxFaceVerts [i][1]], pv [hitboxFaceVerts [i][2]]);

@@ -667,13 +667,13 @@ do {
 			}
 		}
 	if (IsMultiGame)
-		gameData.models.offsets [m_nModel][X] =
-		gameData.models.offsets [m_nModel][Y] =
-		gameData.models.offsets [m_nModel][Z] = 0;
+		gameData.models.offsets [m_nModel].v.c.x =
+		gameData.models.offsets [m_nModel].v.c.y =
+		gameData.models.offsets [m_nModel].v.c.z = 0;
 	else {
-		gameData.models.offsets [m_nModel][X] = (phb [0].vMin.v.c.x + phb [0].vMax.v.c.x) / -2;
-		gameData.models.offsets [m_nModel][Y] = (phb [0].vMin.v.c.y + phb [0].vMax.v.c.y) / -2;
-		gameData.models.offsets [m_nModel][Z] = (phb [0].vMin.v.c.z + phb [0].vMax.v.c.z) / -2;
+		gameData.models.offsets [m_nModel].v.c.x = (phb [0].vMin.v.c.x + phb [0].vMax.v.c.x) / -2;
+		gameData.models.offsets [m_nModel].v.c.y = (phb [0].vMin.v.c.y + phb [0].vMax.v.c.y) / -2;
+		gameData.models.offsets [m_nModel].v.c.z = (phb [0].vMin.v.c.z + phb [0].vMax.v.c.z) / -2;
 		}
 	} while (Shift (objP, bHires, NULL));
 

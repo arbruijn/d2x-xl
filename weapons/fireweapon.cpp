@@ -941,9 +941,9 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	else if ((gameData.weapons.nSecondary == MEGA_INDEX) || (gameData.weapons.nSecondary == EARTHSHAKER_INDEX)) {
 		CFixVector vForce;
 
-	vForce.v.c.x = - (gameData.objs.consoleP->info.position.mOrient.m.v.f[X] << 7);
-	vForce.v.c.y = - (gameData.objs.consoleP->info.position.mOrient.m.v.f[Y] << 7);
-	vForce.v.c.z = - (gameData.objs.consoleP->info.position.mOrient.m.v.f[Z] << 7);
+	vForce.v.c.x = - (gameData.objs.consoleP->info.position.mOrient.m.v.f.v.c.x << 7);
+	vForce.v.c.y = - (gameData.objs.consoleP->info.position.mOrient.m.v.f.v.c.y << 7);
+	vForce.v.c.z = - (gameData.objs.consoleP->info.position.mOrient.m.v.f.v.c.z << 7);
 	gameData.objs.consoleP->ApplyForce (vForce);
 	vForce.v.c.x = (vForce.v.c.x >> 4) + d_rand () - 16384;
 	vForce.v.c.y = (vForce.v.c.y >> 4) + d_rand () - 16384;

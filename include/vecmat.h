@@ -20,15 +20,16 @@
 
 //namespace VecMat {
 
-const size_t X = 0;
-const size_t Y = 1;
-const size_t Z = 2;
-const size_t W = 3;
-
 const size_t R = 0;
 const size_t G = 1;
 const size_t B = 2;
 const size_t A = 3;
+
+#if 0
+const size_t X = 0;
+const size_t Y = 1;
+const size_t Z = 2;
+const size_t W = 3;
 
 const size_t PA = 0;
 const size_t BA = 1;
@@ -38,6 +39,7 @@ const size_t RVEC = 0;
 const size_t UVEC = 1;
 const size_t FVEC = 2;
 const size_t HVEC = 3;
+#endif
 
 class CFixVector;
 class CFloatVector;

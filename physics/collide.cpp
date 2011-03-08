@@ -463,9 +463,9 @@ else {
 #ifdef TACTILE
 	CFixVector vForce;
 	if (TactileStick) {
-		vForce.v.c.x = -mType.physInfo.velocity[X];
-		vForce.v.c.y = -mType.physInfo.velocity[Y];
-		vForce.v.c.z = -mType.physInfo.velocity[Z];
+		vForce.v.c.x = -mType.physInfo.velocity.v.c.x;
+		vForce.v.c.y = -mType.physInfo.velocity.v.c.y;
+		vForce.v.c.z = -mType.physInfo.velocity.v.c.z;
 		Tactile_do_collide (&vForce, &info.position.mOrient);
 	}
 #endif
@@ -1597,9 +1597,9 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 
 			if (aip->SKIP_AI_COUNT * gameData.time.xFrame < I2X (1)) {
 				aip->SKIP_AI_COUNT++;
-				robotP->mType.physInfo.rotThrust[X] = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
-				robotP->mType.physInfo.rotThrust[Y] = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
-				robotP->mType.physInfo.rotThrust[Z] = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robotP->mType.physInfo.rotThrust.v.c.x = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robotP->mType.physInfo.rotThrust.v.c.y = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robotP->mType.physInfo.rotThrust.v.c.z = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
 				robotP->mType.physInfo.flags |= PF_USES_THRUST;
 				}
 			}

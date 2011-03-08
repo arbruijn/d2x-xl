@@ -328,9 +328,9 @@ return ExplodeBadass (I2X (50), I2X (40), I2X (150));
 
 inline double VectorVolume (const CFixVector& vMin, const CFixVector& vMax)
 {
-return fabs (X2F (vMax[X] - vMin[X])) *
-		 fabs (X2F (vMax[Y] - vMin[Y])) *
-		 fabs (X2F (vMax[Z] - vMin[Z]));
+return fabs (X2F (vMax.v.c.x - vMin.v.c.x)) *
+		 fabs (X2F (vMax.v.c.y - vMin.v.c.y)) *
+		 fabs (X2F (vMax.v.c.z - vMin.v.c.z));
 }
 
 //------------------------------------------------------------------------------

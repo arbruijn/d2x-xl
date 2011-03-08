@@ -111,9 +111,9 @@ while (n--) {
 #if 1
 	if (norms) {
 		if (norms->nFaces > 1) {
-			norms->vNormal[X] /= norms->nFaces;
-			norms->vNormal[Y] /= norms->nFaces;
-			norms->vNormal[Z] /= norms->nFaces;
+			norms->vNormal.v.c.x /= norms->nFaces;
+			norms->vNormal.v.c.y /= norms->nFaces;
+			norms->vNormal.v.c.z /= norms->nFaces;
 			norms->nFaces = 1;
 			CFloatVector::Normalize (norms->vNormal);
 			}
@@ -351,13 +351,13 @@ if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -I2X (1)))
 	return;
 for (i = 1, v = pointList [0]->p3_src; i < nPoints; i++)
 	v += pointList [i]->p3_src;
-v[X] /= nPoints;
-v[Y] /= nPoints;
-v[Z] /= nPoints;
-v[Z] -= I2X (1) / 8;
+v.v.c.x /= nPoints;
+v.v.c.y /= nPoints;
+v.v.c.z /= nPoints;
+v.v.c.z -= I2X (1) / 8;
 if (vOffset)
 	v += *vOffset;
-if (mtP->nCount && (v[X] == mtP->vPos [0][X]) && (v[Y] == mtP->vPos [0][Y]) && (v[Z] == mtP->vPos [0][Z]))
+if (mtP->nCount && (v.v.c.x == mtP->vPos [0].v.c.x) && (v.v.c.y == mtP->vPos [0].v.c.y) && (v.v.c.z == mtP->vPos [0].v.c.z))
 	return;
 mtP->vPos [mtP->nCount] = v;
 if (vOffset)

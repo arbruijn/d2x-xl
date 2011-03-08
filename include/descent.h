@@ -3557,7 +3557,7 @@ if (v) {
 	}
 else {
 	if (p->p3_index < 0)
-		OglVertex3x (p->p3_vec[X], p->p3_vec[Y], p->p3_vec[Z]);
+		OglVertex3x (p->p3_vec.v.c.x, p->p3_vec.v.c.y, p->p3_vec.v.c.z);
 	else
 		glVertex3fv (reinterpret_cast<GLfloat *> (gameData.render.vertP + p->p3_index));
 	}

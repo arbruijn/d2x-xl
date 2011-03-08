@@ -62,18 +62,18 @@ void MorphFindModelBounds (CPolyModel* pmP, int nSubModel, CFixVector& minv, CFi
 	minv = maxv = *vp++;
 	nVerts--;
 	while (nVerts--) {
-		if ((*vp)[X] > maxv[X])
-			maxv[X] = (*vp)[X];
-		else if((*vp)[X] < minv[X])
-			minv[X] = (*vp)[X];
-		if ((*vp)[Y] > maxv[Y])
-			maxv[Y] = (*vp)[Y];
-		else if ((*vp)[Y] < minv[Y])
-			minv[Y] = (*vp)[Y];
-		if ((*vp)[Z] > maxv[Z])
-			maxv[Z] = (*vp)[Z];
-		else if ((*vp)[Z] < minv[Z])
-			minv[Z] = (*vp)[Z];
+		if ((*vp).v.c.x > maxv.v.c.x)
+			maxv.v.c.x = (*vp).v.c.x;
+		else if((*vp).v.c.x < minv.v.c.x)
+			minv.v.c.x = (*vp).v.c.x;
+		if ((*vp).v.c.y > maxv.v.c.y)
+			maxv.v.c.y = (*vp).v.c.y;
+		else if ((*vp).v.c.y < minv.v.c.y)
+			minv.v.c.y = (*vp).v.c.y;
+		if ((*vp).v.c.z > maxv.v.c.z)
+			maxv.v.c.z = (*vp).v.c.z;
+		else if ((*vp).v.c.z < minv.v.c.z)
+			minv.v.c.z = (*vp).v.c.z;
 		vp++;
 	}
 }
@@ -113,11 +113,11 @@ while (nVerts--) {
 	if (vBoxSize) {
 		fix t;
 		k = 0x7fffffff;
-		if (v[X] && X2I ((*vBoxSize)[X]) < abs (v[X])/2 && (t = FixDiv ((*vBoxSize)[X], abs (v[X]))) < k)
+		if (v.v.c.x && X2I ((*vBoxSize).v.c.x) < abs (v.v.c.x)/2 && (t = FixDiv ((*vBoxSize).v.c.x, abs (v.v.c.x))) < k)
 			k = t;
-		if (v[Y] && X2I ((*vBoxSize)[Y]) < abs (v[Y])/2 && (t = FixDiv ((*vBoxSize)[Y], abs (v[Y]))) < k)
+		if (v.v.c.y && X2I ((*vBoxSize).v.c.y) < abs (v.v.c.y)/2 && (t = FixDiv ((*vBoxSize).v.c.y, abs (v.v.c.y))) < k)
 			k = t;
-		if (v[Z] && X2I ((*vBoxSize)[Z]) < abs (v[Z])/2 && (t = FixDiv ((*vBoxSize)[Z], abs (v[Z]))) < k)
+		if (v.v.c.z && X2I ((*vBoxSize).v.c.z) < abs (v.v.c.z)/2 && (t = FixDiv ((*vBoxSize).v.c.z, abs (v.v.c.z))) < k)
 			k = t;
 		if (k == 0x7fffffff)
 			k = 0;
