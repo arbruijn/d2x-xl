@@ -559,13 +559,13 @@ if ((gameData.laser.xUpdateTime >= I2X (1) / 40) &&
 				if (gameData.weapons.info [objP->info.nId].renderType != WEAPON_RENDER_POLYMODEL)
 					vNewVel += vVecToObject;
 				CFixVector::Normalize (vNewVel);
-				CFixVector vOldVel = objP->mType.physInfo.velocity;
-				objP->mType.physInfo.velocity = vNewVel;
-				objP->mType.physInfo.velocity *= speed;
+				//CFixVector vOldVel = objP->mType.physInfo.velocity;
 				CFixVector vTest = objP->info.position.vPos + vNewVel * xDist;
-				if (!CanSeePoint (NULL, &objP->info.position.vPos, &vTest, objP->info.nSegment, 3 * objP->info.xSize / 2))
-					objP->mType.physInfo.velocity = vOldVel;
-				else {	//	Subtract off life proportional to amount turned. For hardest turn, it will lose 2 seconds per second.
+				if (CanSeePoint (NULL, &objP->info.position.vPos, &vTest, objP->info.nSegment, 3 * objP->info.xSize / 2))
+					/*objP->mType.physInfo.velocity = vOldVel;
+				else*/ {	//	Subtract off life proportional to amount turned. For hardest turn, it will lose 2 seconds per second.
+					objP->mType.physInfo.velocity = vNewVel;
+					objP->mType.physInfo.velocity *= speed;
 					dot = abs (I2X (1) - dot);
 					objP->info.xLifeLeft -= FixMul (dot * 32, I2X (1) / 40);
 					}
