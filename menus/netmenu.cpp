@@ -1458,7 +1458,7 @@ if (!FindArg ("-nonetwork")) {
 	int nIpxError;
 	int socket = 0, t;
 
-	if ((t = FindArg ("-socket")))
+	if (0 <= (t = FindArg ("-socket")))
 		socket = atoi (appConfig [t + 1]);
 	ArchIpxSetDriver (ipx_driver);
 	if ((nIpxError = IpxInit (IPX_DEFAULT_SOCKET + socket)) == IPX_INIT_OK) {

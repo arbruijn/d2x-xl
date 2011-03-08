@@ -47,12 +47,10 @@ m_properties.Destroy ();
 
 int CConfigManager::Find (const char * s)
 {
-	int i;
-  
-for (i = 0; i < Count (); i++)
+for (int i = 0; i < Count (); i++)
 	if (m_properties [i] && *m_properties [i] && !stricmp (m_properties [i], s))
-		return i;
-return -1;
+		return i + 1;
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -63,7 +61,7 @@ char* CConfigManager::Filename (int bDebug)
 	char*	p;
 	CFile	cf;
 
-if (0 <= (i = Find ("-ini")))
+if ((i = Find ("-ini")))
 	strncpy (m_filename, m_properties [i + 1], sizeof (m_filename) - 1);
 else {
 #if defined(__unix__)
@@ -183,7 +181,7 @@ if (m_cf.Open (filename, "", "rt", 0)) {
 
 int CConfigManager::Value (int t, int nDefault)
 {
-	char *psz = m_properties [t+1];
+	char *psz = m_properties [t];
 
 if (!psz)
 	return nDefault;
@@ -200,7 +198,7 @@ int CConfigManager::Value (const char* szArg, int nDefault)
 {
 	int t = Find (szArg);
 
-return (t < 0) ? nDefault : Value (t, nDefault);
+return t ? Value (t, nDefault) : nDefault;
 }
 
 //------------------------------------------------------------------------------

@@ -39,7 +39,7 @@ class CConfigManager {
 		int Find (const char* s);
 		int Value (int t, int nDefault);
 		int Value (const char* szArg, int nDefault);
-		inline char* Property (int i) { return (i < Count ()) ? m_properties [i] : m_null; }
+		inline char* Property (int i) { return (--i < Count ()) ? m_properties [i] : m_null; }
 		inline char* operator[] (int i) { return Property (i); }
 };
 

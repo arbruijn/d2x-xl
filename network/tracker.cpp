@@ -344,7 +344,7 @@ void CTracker::AddFromCmdLine (void)
 	char			szKwd [20];
 	tUdpAddress	tracker;
 
-if ((t = FindArg ("-test_tracker")))
+if (0 <= (t = FindArg ("-test_tracker")))
 	bTestTracker = 1;
 if (!(t = FindArg ("-num_trackers")))
 	return;

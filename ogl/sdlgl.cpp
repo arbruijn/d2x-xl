@@ -102,7 +102,7 @@ SdlGlSetAttribute ("-gl_blue", "SDL_GL_BLUE_SIZE", SDL_GL_BLUE_SIZE, 8);
 SdlGlSetAttribute ("-gl_alpha", "SDL_GL_ALPHA_SIZE", SDL_GL_ALPHA_SIZE, 8);
 SdlGlSetAttribute ("-gl_buffer", "SDL_GL_BUFFER_SIZE", SDL_GL_BUFFER_SIZE, 32);
 SdlGlSetAttribute ("-gl_stencil", "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
-if ((t = FindArg ("-gl_depth")) && appConfig [t+1]) {
+if (0 <= (t = FindArg ("-gl_depth")) && appConfig [t+1]) {
 	ogl.m_states.nDepthBits = atoi (appConfig [t + 1]);
 	if (ogl.m_states.nDepthBits <= 0)
 		ogl.m_states.nDepthBits = 24;
