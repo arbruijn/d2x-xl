@@ -44,9 +44,9 @@ bool PointIsInQuad (CFixVector vRef, CFixVector* vertP, CFixVector vNormal)
 
 //now do 2d check to see if vRef is in side
 //project polygon onto plane by finding largest component of Normal
-t.v.c.x = labs (vNormal [0]);
-t.v.c.y = labs (vNormal [1]);
-t.v.c.z = labs (vNormal [2]);
+t.v.c.x = labs (vNormal.v.c.x);
+t.v.c.y = labs (vNormal.v.c.y);
+t.v.c.z = labs (vNormal.v.c.z);
 if (t.v.c.x > t.v.c.y) {
 	if (t.v.c.x > t.v.c.z)
 		biggest = 0;
@@ -59,7 +59,7 @@ else {
 	else
 		biggest = 2;
 	}
-if (vNormal [biggest] > 0) {
+if (vNormal.v.a [biggest] > 0) {
 	i = ijTable [biggest][0];
 	j = ijTable [biggest][1];
 	}
@@ -68,15 +68,15 @@ else {
 	j = ijTable [biggest][0];
 	}
 //now do the 2d problem in the i, j plane
-check_i = vRef [i];
-check_j = vRef [j];
+check_i = vRef.v.a [i];
+check_j = vRef.v.a [j];
 for (iEdge = 0; iEdge < 4; ) {
 	v0 = vertP [iEdge++];
 	v1 = vertP [iEdge % 4];
-	vEdge.i = v1 [i] - v0 [i];
-	vEdge.j = v1 [j] - v0 [j];
-	vCheck.i = check_i - v0 [i];
-	vCheck.j = check_j - v0 [j];
+	vEdge.i = v1.v.a [i] - v0.v.a [i];
+	vEdge.j = v1.v.a [j] - v0.v.a [j];
+	vCheck.i = check_i - v0.v.a [i];
+	vCheck.j = check_j - v0.v.a [j];
 	if (FixMul (vCheck.i, vEdge.j) - FixMul (vCheck.j, vEdge.i) < 0)
 		return false;
 	}
@@ -162,9 +162,9 @@ d *= FixDiv (num, den);
 intersection = (*p0) + d;
 #else
 num /= den;
-intersection [0] = fix (double ((*p0) [0]) + double (d [0]) * num);
-intersection [1] = fix (double ((*p0) [1]) + double (d [1]) * num);
-intersection [2] = fix (double ((*p0) [2]) + double (d [2]) * num);
+intersection.v.c.x = fix (double (p0->v.c.x) + double (d.v.c.x) * num);
+intersection.v.c.y = fix (double (p0->v.c.y) + double (d.v.c.y) * num);
+intersection.v.c.z = fix (double (p0->v.c.z) + double (d.v.c.z) * num);
 #endif
 return 1;
 }

@@ -240,15 +240,11 @@ else {
 		m_nType = SIDE_IS_TRI_02;
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
 		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 32767, vSorted);
-		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]], 
-														VERTICES [vSorted [1]], 
-														VERTICES [vSorted [2]]);
+		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [0].Neg ();
 		bFlip = GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 32767, vSorted);
-		m_normals [1] = CFixVector::Normal (VERTICES [vSorted [0]],
-														VERTICES [vSorted [1]],
-														VERTICES [vSorted [2]]);
+		m_normals [1] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [1].Neg ();
 		GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 32767, vSorted);
@@ -257,16 +253,11 @@ else {
 		m_nType = SIDE_IS_TRI_13;
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
 		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [3], 32767, vSorted);
-		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]],
-														VERTICES [vSorted [1]],
-														VERTICES [vSorted [2]]);
+		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [0].Neg ();
 		bFlip = GetVertsForNormal (m_corners [1], m_corners [2], m_corners [3], 32767, vSorted);
-		m_normals [1] = CFixVector::Normal (
-						 VERTICES [vSorted [0]],
-						 VERTICES [vSorted [1]],
-						 VERTICES [vSorted [2]]);
+		m_normals [1] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [1].Neg ();
 		}
@@ -585,9 +576,9 @@ uint CSide::CheckPointToFace (CFixVector& intersection, short iFace, CFixVector 
 
 //now do 2d check to see if refP is in CSide
 //project polygon onto plane by finding largest component of Normal
-t.v.c.x = labs (vNormal [0]);
-t.v.c.y = labs (vNormal [1]);
-t.v.c.z = labs (vNormal [2]);
+t.v.c.x = labs (vNormal.v.c.x);
+t.v.c.y = labs (vNormal.v.c.y);
+t.v.c.z = labs (vNormal.v.c.z);
 if (t.v.c.x > t.v.c.y)
 	if (t.v.c.x > t.v.c.z)
 		biggest = 0;
@@ -597,7 +588,7 @@ else if (t.v.c.y > t.v.c.z)
 	biggest = 1;
 else
 	biggest = 2;
-if (vNormal [biggest] > 0) {
+if (vNormal.v.a [biggest] > 0) {
 	i = ijTable [biggest][0];
 	j = ijTable [biggest][1];
 	}
@@ -606,8 +597,8 @@ else {
 	j = ijTable [biggest][0];
 	}
 //now do the 2d problem in the i, j plane
-check_i = intersection [i];
-check_j = intersection [j];
+check_i = intersection.v.a [i];
+check_j = intersection.v.a [j];
 nVerts = 5 - m_nFaces;
 h = iFace * 3;
 for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
@@ -619,10 +610,10 @@ for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
 		v0 = VERTICES + m_vertices [h + nEdge];
 		v1 = VERTICES + m_vertices [h + ((nEdge + 1) % nVerts)];
 		}
-	vEdge.i = (*v1) [i] - (*v0) [i];
-	vEdge.j = (*v1) [j] - (*v0) [j];
-	vCheck.i = check_i - (*v0) [i];
-	vCheck.j = check_j - (*v0) [j];
+	vEdge.i = v1->v.a [i] - v0->v.a [i];
+	vEdge.j = v1->v.a [j] - v0->v.a [j];
+	vCheck.i = check_i - v0->v.a [i];
+	vCheck.j = check_j - v0->v.a [j];
 	d = FixMul64 (vCheck.i, vEdge.j) - FixMul64 (vCheck.j, vEdge.i);
 	if (d < 0)              		//we are outside of triangle
 		nEdgeMask |= (1 << nEdge);
@@ -831,9 +822,9 @@ if (iFace >= m_nFaces) {
 //1. find what plane to project this CWall onto to make it a 2d case
 vNormal = m_normals [iFace];
 biggest = 0;
-if (abs (vNormal [1]) > abs (vNormal [biggest]))
+if (abs (vNormal.v.c.y) > abs (vNormal.v.a [biggest]))
 	biggest = 1;
-if (abs (vNormal [2]) > abs (vNormal [biggest]))
+if (abs (vNormal.v.c.z) > abs (vNormal.v.a [biggest]))
 	biggest = 2;
 ii = (biggest == 0);
 jj = (biggest == 2) ? 1 : 2;
@@ -841,22 +832,22 @@ jj = (biggest == 2) ? 1 : 2;
 //vec from 1 -> 0
 h = iFace * 3;
 vPoints = VERTICES + m_vertices [h+1];
-p1.i = (*vPoints) [ii];
-p1.j = (*vPoints) [jj];
+p1.i = vPoints->v.a [ii];
+p1.j = vPoints->v.a [jj];
 
 vPoints = VERTICES + m_vertices [h];
-vec0.i = (*vPoints) [ii] - p1.i;
-vec0.j = (*vPoints) [jj] - p1.j;
+vec0.i = vPoints->v.a [ii] - p1.i;
+vec0.j = vPoints->v.a [jj] - p1.j;
 
 //vec from 1 -> 2
 vPoints = VERTICES + m_vertices [h+2];
-vec1.i = (*vPoints) [ii] - p1.i;
-vec1.j = (*vPoints) [jj] - p1.j;
+vec1.i = vPoints->v.a [ii] - p1.i;
+vec1.j = vPoints->v.a [jj] - p1.j;
 
 //vec from 1 -> checkPoint
 //vPoints = reinterpret_cast<CFixVector*> (refP);
-vHit.i = intersection [ii];
-vHit.j = intersection [jj];
+vHit.i = intersection.v.a [ii];
+vHit.j = intersection.v.a [jj];
 
 #if 1 // the MSVC 9 optimizer doesn't like the code in the else branch ...
 ii = Cross2D (vHit, vec0) + Cross2D (vec0, p1);

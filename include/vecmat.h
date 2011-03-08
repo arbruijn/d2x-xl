@@ -104,9 +104,9 @@ class __pack__ CFixVector {
 		static const fix NormalizedDir (CFixVector& dest, const CFixVector& end, const CFixVector& start);
 
 		// access op for assignment
-		fix& operator[] (size_t i);
+		//fix& operator[] (size_t i);
 		// read-only access op
-		const fix operator[] (size_t i) const;
+		//const fix operator[] (size_t i) const;
 
 		bool operator== (const CFixVector& rhs) const;
 
