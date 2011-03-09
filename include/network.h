@@ -537,6 +537,7 @@ void DeleteTimedOutNetGames (void);
 void InitMonsterballSettings (tMonsterballInfo *monsterballP);
 void InitEntropySettings (int i);
 void NetworkSendExtraGameInfo (tSequencePacket *their);
+void NetworkSendXMLGameInfo (void);
 void NetworkResetSyncStates (void);
 void NetworkResetObjSync (short nObject);
 void DeleteSyncData (short nConnection);

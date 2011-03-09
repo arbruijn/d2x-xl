@@ -11,7 +11,7 @@ int NetworkFindGame (void);
 int NetworkGetIpAddr (bool bServer = false, bool bUDP = true);
 void ShowNetGameInfo (int choice);
 void ShowExtraNetGameInfo (int choice);
-char* XMLGameInfo ();
+char* XMLGameInfo (void);
 int NetworkStartPoll (CMenu& menu, int& key, int nCurItem, int nState);
 int NetworkEndLevelPoll3 (CMenu& menu, int& key, int nCurItem, int nState);
 

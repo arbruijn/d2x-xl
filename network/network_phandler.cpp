@@ -30,6 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "autodl.h"
 #include "tracker.h"
 #include "banlist.h"
+#include "timeout.h"
 
 //------------------------------------------------------------------------------
 
@@ -122,7 +123,7 @@ int XMLGameInfoHandler (ubyte *dataP, int nLength)
 {
 	static CTimeout to (1000);
 
-if (to.Expired () && (!strcmp (dataP + 1, "Descent Game Info Request"))
+if (to.Expired () && (!strcmp ((char*) dataP + 1, "Descent Game Info Request"))
 	NetworkSendXMLGameInfo ();
 return 1;
 }

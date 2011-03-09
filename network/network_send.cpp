@@ -377,9 +377,11 @@ MultiSendPlayerWeapons ();
 
 //------------------------------------------------------------------------------
 
+char* XMLGameInfo (void);
+
 void NetworkSendXMLGameInfo (void)
 {
-SendInternetXMLGameInfoPacket (XMLGameInfo (), networkData.packetSource.src_network, networkData.packetSource.src_nodework);
+SendInternetXMLGameInfoPacket (XMLGameInfo (), networkData.packetSource.src_network, networkData.packetSource.src_node);
 }
 
 //------------------------------------------------------------------------------
