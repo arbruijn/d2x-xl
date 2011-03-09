@@ -123,7 +123,7 @@ int XMLGameInfoHandler (ubyte *dataP, int nLength)
 {
 	static CTimeout to (1000);
 
-if (to.Expired () && (!strcmp ((char*) dataP + 1, "Descent Game Info Request"))
+if (to.Expired () && !strcmp ((char*) dataP + 1, "Descent Game Info Request"))
 	NetworkSendXMLGameInfo ();
 return 1;
 }

@@ -220,7 +220,7 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Status>%s</Status>\n",
 				? "forming"
 				: szGameState [mpParams.nGameAccess]);
 strcat (xmlGameInfo, "  </Descent>\n  <D2X-XL>\n");
-
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <CompetitionMode>%d</CompetitionMode>\n", AXI.bCompetition);
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GraphicsFx Shadows=\"%d\" Smoke=\"%d\" Lightning=\"%d\" />\n",
 			AXI.bShadows, 
 			AXI.bUseParticles, 
