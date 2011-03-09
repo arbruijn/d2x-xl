@@ -219,40 +219,40 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Status>%s</Status>\n",
 			: (networkData.nStatus == NETSTAT_STARTING)
 				? "forming"
 				: szGameState [mpParams.nGameAccess]);
-strcat (xmlGameInfo, "  </Descent>\n  <D2X-XL>\n");
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <CompetitionMode>%d</CompetitionMode>\n", AXI.bCompetition);
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GraphicsFx Shadows=\"%d\" Smoke=\"%d\" Lightning=\"%d\" />\n",
+strcat (xmlGameInfo, "  </Descent>\n  <Extensions>\n    <D2X-XL>\n");
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "      <CompetitionMode>%d</CompetitionMode>\n", AXI.bCompetition);
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "      <GraphicsFx Shadows=\"%d\" Smoke=\"%d\" Lightning=\"%d\" />\n",
 			AXI.bShadows, 
 			AXI.bUseParticles, 
 			!AXI.bCompetition && AXI.bUseLightning);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <WeaponFx LightTrails=\"%d\" Tracers=\"%d\" />\n",
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "      <WeaponFx LightTrails=\"%d\" Tracers=\"%d\" />\n",
 			!AXI.bCompetition && AXI.bLightTrails, 
 			!AXI.bCompetition && AXI.bTracers);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <ShipFx Shield=\"%d\" Damage=\"%d\" Weapons=\"%d\" GatlingSpeedup=\"%d\" />\n",
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "      <ShipFx Shield=\"%d\" Damage=\"%d\" Weapons=\"%d\" GatlingSpeedup=\"%d\" />\n",
 			!AXI.bCompetition && AXI.bPlayerShield, 
 			!AXI.bCompetition && AXI.bDamageExplosions, 
 			!AXI.bCompetition && AXI.bShowWeapons, 
 			!AXI.bCompetition && AXI.bGatlingSpeedUp);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <HUD Icons=\"%d\" TgtInd=\"%d\" DmgInd=\"%d\" TrkInd=\"%d\" />\n",
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "      <HUD Icons=\"%d\" TgtInd=\"%d\" DmgInd=\"%d\" TrkInd=\"%d\" />\n",
 			AXI.nWeaponIcons != 0,
 			!AXI.bCompetition && AXI.bTargetIndicators, 
 			!AXI.bCompetition && AXI.bDamageIndicators, 
 			!AXI.bCompetition && AXI.bMslLockIndicators);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Radar Players=\"%d\" Powerups=\"%d\" Robots=\"%d\"  HUD=\"%d\" />\n",
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "      <Radar Players=\"%d\" Powerups=\"%d\" Robots=\"%d\"  HUD=\"%d\" />\n",
 			!AXI.bCompetition && AXI.bRadarEnabled && ((AGI.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0),
 			!AXI.bCompetition && AXI.bRadarEnabled && AXI.bPowerupsOnRadar,
 			!AXI.bCompetition && AXI.bRadarEnabled && AXI.bRobotsOnRadar,
 			!AXI.bCompetition && AXI.bRadarEnabled && (AXI.nRadar != 0));
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Controls MouseLook=\"%d\" FastPitch=\"%d\" />\n",
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "      <Controls MouseLook=\"%d\" FastPitch=\"%d\" />\n",
 			!AXI.bCompetition && AXI.bMouseLook, 
 			!AXI.bCompetition && AXI.bFastPitch);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GamePlay Cheats=\"%d\" Darkness=\"%d\" SmokeGrenades=\"%d\" DualMissiles=\"%d\" FusionRamp=\"%d\" FriendlyFire=\"%d\" Suicide=\"%d\" KillMissiles=\"%d\" TriFusion=\"%d\" BetterShakers=\"%d\" HitBoxes=\"%d\" />\n",
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "      <GamePlay Cheats=\"%d\" Darkness=\"%d\" SmokeGrenades=\"%d\" DualMissiles=\"%d\" FusionRamp=\"%d\" FriendlyFire=\"%d\" Suicide=\"%d\" KillMissiles=\"%d\" TriFusion=\"%d\" BetterShakers=\"%d\" HitBoxes=\"%d\" />\n",
 			!AXI.bCompetition && AXI.bEnableCheats,
 			!AXI.bCompetition && AXI.bDarkness, 
 			!AXI.bCompetition && AXI.bSmokeGrenades,
@@ -265,7 +265,7 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GamePlay Cheats=\"%d\" Darkne
 			!AXI.bCompetition && AXI.bEnhancedShakers,
 			!AXI.bCompetition && AXI.nHitboxes);
 
-strcat (xmlGameInfo, "  </D2X-XL>\n</GameInfo>\n");
+strcat (xmlGameInfo, "    </D2X-XL>\n  </Extensions>\n</GameInfo>\n");
 PrintLog ("\nXML game info:\n\n");
 PrintLog (xmlGameInfo);
 PrintLog ("\n");

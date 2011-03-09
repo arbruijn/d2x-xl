@@ -132,7 +132,7 @@ void GetAppFolders (void)
 	char	coord;
 #endif
 
-#if DBG && defined (WIN32)
+#if 0 //DBG && defined (WIN32)
 strcpy (gameFolders.szHomeDir, "d:\\programs\\d2\\");
 strcpy (gameFolders.szGameDir, "d:\\programs\\d2\\");
 strcpy (gameFolders.szDataDir, "d:\\programs\\d2\\");
