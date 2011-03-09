@@ -109,7 +109,7 @@ while (!cfP->EoF ()) {
 			break;
 		if (pszLine) {
 			int l;
-			for (l = strlen (pszLine); l > 0; l--) {
+			for (l = (int) strlen (pszLine); l > 0; l--) {
 				if (pszLine [l - 1] != '\r')
 					break;
 				}

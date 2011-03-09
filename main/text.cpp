@@ -1612,7 +1612,7 @@ const char *defaultGameTexts [][2] = {
  {"Rauchgranaten", "Smoke Grenades"},
  {"max. Rauch~Granaten: %d", "max. smoke ~Grenades: %d"},
  {"~Wendigkeit von Raketen: %s", "missile ~Turn speed: %s"},
- {"Ctrl+P\t  Pause", "Ctrl+P\t  Pause"},
+ {"Pause\t  Pause", "Pause\t  Pause"},
  {"Druck\t  Bildschirmabzug speichern", "PrtScrn\t  save screenshot"},
  {"st~Atische Partikeleffect", "st~Atic particle fx"},
  {"~Aufmerksamkeit der Roboter erhoehen", "increase robot ~Awareness"},
