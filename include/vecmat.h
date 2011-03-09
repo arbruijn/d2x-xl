@@ -202,7 +202,7 @@ class __pack__ CFloatVector {
 
 		static const float Dist (const CFloatVector& v0, const CFloatVector& v1);
 		static const float Dot (const CFloatVector& v0, const CFloatVector& v1);
-		static const float CFloatVector::Dot (const float x, const float y, const float z, const CFloatVector& v);
+		static const float Dot (const float x, const float y, const float z, const CFloatVector& v);
 		static const float Normalize (CFloatVector& vec);
 		static const CFloatVector Perp (const CFloatVector& p0, const CFloatVector& p1, const CFloatVector& p2);
 		static CFloatVector& Perp (CFloatVector& dest, const CFloatVector& p0, const CFloatVector& p1, const CFloatVector& p2);
