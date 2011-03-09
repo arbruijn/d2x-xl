@@ -377,6 +377,13 @@ MultiSendPlayerWeapons ();
 
 //------------------------------------------------------------------------------
 
+void NetworkSendXMLGameInfo (void)
+{
+SendInternetXMLGameInfoPacket (XMLGameInfo (), networkData.packetSource.src_network, networkData.packetSource.src_nodework);
+}
+
+//------------------------------------------------------------------------------
+
 void NetworkSendLiteInfo (tSequencePacket *their)
 {
 	// Send game info to someone who requested it

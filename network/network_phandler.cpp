@@ -118,6 +118,17 @@ return 1;
 
 //-------------------------------------------
 
+int XMLGameInfoHandler (ubyte *dataP, int nLength)
+{
+	static CTimeout to (1000);
+
+if (to.Expired () && (!strcmp (dataP + 1, "Descent Game Info Request"))
+	NetworkSendXMLGameInfo ();
+return 1;
+}
+
+//-------------------------------------------
+
 int PlayersInfoHandler (ubyte *dataP, int nLength)
 {
 if (gameStates.multi.nGameType >= IPX_GAME)
@@ -404,6 +415,7 @@ piP->nStatusFilter = nStatusFilter;
 
 void InitPacketHandlers (void)
 {
+PHINIT (PID_XML_GAMEINFO, XMLGameInfoHandler, 0, (short) 0xFFFF);
 PHINIT (PID_GAME_INFO, GameInfoHandler, 0, (short) 0xFFFF);
 PHINIT (PID_PLAYERSINFO, PlayersInfoHandler, ALLNETPLAYERSINFO_SIZE, (1 << NETSTAT_WAITING) | (1 << NETSTAT_PLAYING));
 PHINIT (PID_LITE_INFO, LiteInfoHandler, LITE_INFO_SIZE, 1 << NETSTAT_BROWSING);

@@ -69,7 +69,7 @@ char szHighlight [] = {1, (char) 255, (char) 192, (char) 128, 0};
 //------------------------------------------------------------------------------
 
 void ShowNetGameInfo (int choice)
- {
+{
 	CMenu	m (30);
    char	mTexts [30][200];
 	int	i, j, nInMenu, opt = 0;
@@ -95,24 +95,21 @@ if (!*AXI.szGameName) {
 	}
 else 
 #endif
- {
-	if (AXI.bShadows || AXI.bUseParticles || AXI.bBrightObjects || (!AXI.bCompetition && AXI.bUseLightning)) {
+	{
+	if (AXI.bShadows || AXI.bUseParticles || (!AXI.bCompetition && AXI.bUseLightning)) {
 		INITFLAGS ("Graphics Fx: "); 
 		ADDFLAG (AXI.bShadows, "Shadows");
 		ADDFLAG (AXI.bUseParticles, "Smoke");
 		if (!AXI.bCompetition)
-			ADDFLAG (AXI.bUseLightning, "Lightnings");
-		ADDFLAG (AXI.bBrightObjects, "Bright Objects");
+			ADDFLAG (AXI.bUseLightning, "Lightning");
 		}
 	else
 		strcpy (mTexts [opt], "Graphics Fx: None");
 	opt++;
-	if (!AXI.bCompetition && (AXI.bLightTrails || AXI.bShockwaves || AXI.bTracers)) {
+	if (!AXI.bCompetition && (AXI.bLightTrails || AXI.bTracers)) {
 		INITFLAGS ("Weapon Fx: ");
 		ADDFLAG (AXI.bLightTrails, "Light trails");
-		ADDFLAG (AXI.bShockwaves, "Shockwaves");
 		ADDFLAG (AXI.bTracers, "Tracers");
-		ADDFLAG (AXI.bShowWeapons, "Weapons");
 		}
 	else
 		sprintf (mTexts [opt], "Weapon Fx: None");
@@ -121,6 +118,7 @@ else
 		INITFLAGS ("Ship Fx: ");
 		ADDFLAG (AXI.bPlayerShield, "Shield");
 		ADDFLAG (AXI.bDamageExplosions, "Damage");
+		ADDFLAG (AXI.bShowWeapons, "Weapons");
 		ADDFLAG (AXI.bGatlingSpeedUp, "Gatling speedup");
 		}
 	else
@@ -186,6 +184,93 @@ gameStates.app.bGameRunning = 0;
 gameStates.menus.nInMenu = nInMenu;
 bAlreadyShowingInfo = 0;
  }
+
+//------------------------------------------------------------------------------
+
+#undef AGI
+#undef AXI
+
+#define AGI netGame.m_info
+#define AXI	extraGameInfo [0]
+
+char* XMLGameInfo (void)
+{
+	static char xmlGameInfo [UDP_PAYLOAD_SIZE];
+
+	static char* szGameType [2][9] = {
+		{"Anarchy", "Anarchy", "Anarchy", "Coop", "CTF", "Hoard", "Hoard", "Monsterball", "Entropy"},
+		{"Anarchy", "Anarchy", "Anarchy", "Coop", "CTF+", "Hoard", "Hoard", "Monsterball", "Entropy"}
+		};
+	static char* szGameState [] = {"open", "closed", "restricted"};
+
+sprintf (xmlGameInfo, "<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n");
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host>%s</Host>\n",gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mission name=\"%s\" level=\"%d\" />\n", AGI.szMissionTitle, AGI.nLevel);
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player current=\"%d\" max=\"%d\" />\n", AGI.nNumPlayers, AGI.nMaxPlayers);
+if (IsCoopGame || (mpParams.nGameMode & NETGAME_ROBOT_ANARCHY))
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Difficulty>%d<Difficulty>\n", AGI.difficulty);
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mode type=\"%s\" team=\"%d\" robots=\"%d\" />\n",
+			szGameType [extraGameInfo [0].bEnhancedCTF][mpParams.nGameMode],
+			(mpParams.nGameMode != NETGAME_ANARCHY) && (mpParams.nGameMode != NETGAME_ROBOT_ANARCHY) && (mpParams.nGameMode != NETGAME_HOARD),
+			(mpParams.nGameMode == NETGAME_ROBOT_ANARCHY) || (mpParams.nGameMode == NETGAME_COOPERATIVE));
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Status>%s</Status>\n",
+			(AGI.nNumPlayers == AGI.nMaxPlayers)
+			? "full"
+			: (networkData.nStatus == NETSTAT_STARTING)
+				? "forming"
+				: szGameState [mpParams.nGameAccess]);
+strcat (xmlGameInfo, "  </Descent>\n  <D2X-XL>\n");
+
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GraphicsFx Shadows=\"%d\" Smoke=\"%d\" Lightning=\"%d\" />\n",
+			AXI.bShadows, 
+			AXI.bUseParticles, 
+			!AXI.bCompetition && AXI.bUseLightning);
+
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <WeaponFx LightTrails=\"%d\" Tracers=\"%d\" />\n",
+			!AXI.bCompetition && AXI.bLightTrails, 
+			!AXI.bCompetition && AXI.bTracers);
+
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <ShipFx Shield=\"%d\" Damage=\"%d\" Weapons=\"%d\" GatlingSpeedup=\"%d\" />\n",
+			!AXI.bCompetition && AXI.bPlayerShield, 
+			!AXI.bCompetition && AXI.bDamageExplosions, 
+			!AXI.bCompetition && AXI.bShowWeapons, 
+			!AXI.bCompetition && AXI.bGatlingSpeedUp);
+
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <HUD Icons=\"%d\" TgtInd=\"%d\" DmgInd=\"%d\" TrkInd=\"%d\" />\n",
+			AXI.nWeaponIcons != 0,
+			!AXI.bCompetition && AXI.bTargetIndicators, 
+			!AXI.bCompetition && AXI.bDamageIndicators, 
+			!AXI.bCompetition && AXI.bMslLockIndicators);
+
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Radar Players=\"%d\" Powerups=\"%d\" Robots=\"%d\"  HUD=\"%d\" />\n",
+			!AXI.bCompetition && AXI.bRadarEnabled && ((AGI.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0),
+			!AXI.bCompetition && AXI.bRadarEnabled && AXI.bPowerupsOnRadar,
+			!AXI.bCompetition && AXI.bRadarEnabled && AXI.bRobotsOnRadar,
+			!AXI.bCompetition && AXI.bRadarEnabled && (AXI.nRadar != 0));
+
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Controls MouseLook=\"%d\" FastPitch=\"%d\" />\n",
+			!AXI.bCompetition && AXI.bMouseLook, 
+			!AXI.bCompetition && AXI.bFastPitch);
+
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GamePlay Cheats=\"%d\" Darkness=\"%d\" SmokeGrenades=\"%d\" DualMissiles=\"%d\" FusionRamp=\"%d\" FriendlyFire=\"%d\" Suicide=\"%d\" KillMissiles=\"%d\" TriFusion=\"%d\" BetterShakers=\"%d\" HitBoxes=\"%d\" />\n",
+			!AXI.bCompetition && AXI.bEnableCheats,
+			!AXI.bCompetition && AXI.bDarkness, 
+			!AXI.bCompetition && AXI.bSmokeGrenades,
+			!AXI.bCompetition && AXI.bDualMissileLaunch,
+			!AXI.bCompetition && (AXI.nFusionRamp != 2), 
+			AXI.bCompetition || AXI.bFriendlyFire,
+			AXI.bCompetition || !AXI.bInhibitSuicide, 
+			!AXI.bCompetition && AXI.bKillMissiles, 
+			!AXI.bCompetition && AXI.bTripleFusion, 
+			!AXI.bCompetition && AXI.bEnhancedShakers,
+			!AXI.bCompetition && AXI.nHitboxes);
+
+strcat (xmlGameInfo, "  </D2X-XL>\n</GameInfo>\n");
+PrintLog ("\nXML game info:\n\n");
+PrintLog (xmlGameInfo);
+PrintLog ("\n");
+return xmlGameInfo;
+}
 
 //------------------------------------------------------------------------------
 

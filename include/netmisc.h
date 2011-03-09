@@ -140,6 +140,9 @@ void BESwapObject (CObject *obj);
 #define ReceiveExtraGameInfoPacket(data, _extraGameInfo) \
 	memcpy ((ubyte *)(_extraGameInfo), data, sizeof(tExtraGameInfo)); AddPlayerLoadout (false)
 
+#define SendInternetXMLGameInfoPacket(xmlGameInfo, server, node) \
+	IPXSendInternetPacketData((ubyte *) xmlGameInfo, strlen(xmlGameInfo) + 1, server, node)
+
 #define SendMissingObjFramesPacket(server, node, netAddress) \
 	IPXSendPacketData((ubyte *) &networkData.sync [0].objs.missingFrames, sizeof(tMissingObjFrames), server, node, netAddress)
 #define SendInternetMissingObjFramesPacket(server, node) \
