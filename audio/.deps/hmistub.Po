@@ -1,3 +1,0 @@
-hmistub.o: linux/hmistub.cpp ../conf.h
-
-../conf.h:
