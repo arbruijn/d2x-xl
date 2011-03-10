@@ -67,8 +67,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL_net", "..\..\..\Librari
 		{59A1CFE7-1A93-41C9-BEFB-4A33FE2D997C} = {59A1CFE7-1A93-41C9-BEFB-4A33FE2D997C}
 	EndProjectSection
 EndProject
-Project("{4CAA2610-1955-4629-BDC1-8133FE0B2087}") = "AQ-D2X", "..\AQ-D2X\AQ-D2X.aqt", "{72B1F053-58B1-4B5D-9FA4-F009C1F093A3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		ACM debug|Win32 = ACM debug|Win32

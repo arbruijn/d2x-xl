@@ -245,7 +245,7 @@ if (j > 1)
 }
 
 //	-----------------------------------------------------------------------------------------------------------
-//	Create a path from objP->info.position.vPos to the center of nEndSeg.
+//	Create a path from objP->Position () to the center of nEndSeg.
 //	Return a list of (segment_num, point_locations) at pointSegP
 //	Return number of points in *numPoints.
 //	if nMaxDepth == -1, then there is no maximum depth.
@@ -329,7 +329,7 @@ while (nCurSeg != nEndSeg) {
 			continue;
 		if (bAvoidTarget && ((nCurSeg == nAvoidSeg) || (nDestSeg == nAvoidSeg))) {
 			vCenter = segP->SideCenter (hSide);
-			CHitQuery fq (0, &objP->info.position.vPos, &vCenter, objP->info.nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
+			CHitQuery fq (0, &objP->Position (), &vCenter, objP->info.nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
 			hitType = FindHitpoint (&fq, &hitData);
 			if (hitType != HIT_NONE)
 				continue;
@@ -463,7 +463,7 @@ if (ROBOTINFO (objP->info.nId).companion) {
 		return numPoints;
 	Last_buddy_polish_path_frame = gameData.app.nFrameCount;
 	}
-CHitQuery fq (0, &objP->info.position.vPos, NULL, objP->info.nSegment, objP->info.xSize, objP->info.xSize, objP->Index ());
+CHitQuery fq (0, &objP->Position (), NULL, objP->info.nSegment, objP->info.xSize, objP->info.xSize, objP->Index ());
 for (i = 0; i < 2; i++) {
 	fq.p1 = &pointSegP [i].point;
 	hitType = FindHitpoint (&fq, &hitData);
@@ -764,7 +764,7 @@ else if (aiP->nCurPathIndex >= aiP->nPathLength - 1) {
 	}
 else
 	aiP->nCurPathIndex += aiP->PATH_DIR;
-objP->info.position.vPos = *vGoalPoint;
+objP->Position () = *vGoalPoint;
 nSegment = objP->FindSegment ();
 #if TRACE
 if (nSegment != nGoalSeg)
@@ -774,7 +774,7 @@ if (nSegment == -1) {
 	Int3 ();	//	Oops, CObject is not in any CSegment.
 				// Contact Mike: This is impossible.p.
 	//	Hack, move CObject to center of CSegment it used to be in.
-	objP->info.position.vPos = SEGMENTS [objP->info.nSegment].Center ();
+	objP->Position () = SEGMENTS [objP->info.nSegment].Center ();
 	}
 else
 	objP->RelinkToSeg (nSegment);
@@ -794,9 +794,9 @@ else
 // -- too much work --
 // -- too much work -- 	kill_objp = &OBJECTS [gameData.escort.nKillObject];
 // -- too much work --
-// -- too much work -- 	fq.p0						= &objP->info.position.vPos;
+// -- too much work -- 	fq.p0						= &objP->Position ();
 // -- too much work -- 	fq.startSeg				= objP->info.nSegment;
-// -- too much work -- 	fq.p1						= &kill_objP->info.position.vPos;
+// -- too much work -- 	fq.p1						= &kill_objP->Position ();
 // -- too much work -- 	fq.rad					= objP->info.xSize;
 // -- too much work -- 	fq.thisObjNum			= objP->Index ();
 // -- too much work -- 	fq.ignoreObjList	= NULL;
@@ -889,12 +889,12 @@ if (i < 0)
 else {
 	vGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 	nGoalSeg = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].nSegment;
-	xDistToGoal = CFixVector::Dist (vGoalPoint, objP->info.position.vPos);
+	xDistToGoal = CFixVector::Dist (vGoalPoint, objP->Position ());
 	}
 if (gameStates.app.bPlayerIsDead)
-	xDistToTarget = CFixVector::Dist (objP->info.position.vPos, gameData.objs.viewerP->info.position.vPos);
+	xDistToTarget = CFixVector::Dist (objP->Position (), gameData.objs.viewerP->Position ());
 else
-	xDistToTarget = CFixVector::Dist (objP->info.position.vPos, OBJPOS (TARGETOBJ)->vPos);
+	xDistToTarget = CFixVector::Dist (objP->Position (), OBJPOS (TARGETOBJ)->vPos);
 	//	Efficiency hack: If far away from CPlayerData, move in big quantized jumps.
 if (!(nTargetVisibility || nPrevVisibility) && (xDistToTarget > I2X (200)) && !IsMultiGame) {
 	if (xDistToGoal && (xDistToGoal < I2X (2))) {
@@ -965,7 +965,7 @@ else if (aiP->nCurPathIndex >= aiP->nPathLength) {
 		aiP->nHideIndex = aiP->nHideIndex;
 #endif
 	}
-vGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
+vGoalPoint = (aiP->nHideIndex < 0) ? objP->Position () : gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 //	If near goal, pick another goal point.
 originalDir = aiP->PATH_DIR;
 originalIndex = aiP->nCurPathIndex;
@@ -1062,7 +1062,7 @@ while (xDistToGoal < thresholdDistance) {
 			//--Int3_if (( (nOppositeEndIndex >= 0) && (nOppositeEndIndex < aiP->nPathLength));
 			vOppositeEndPoint = &gameData.ai.routeSegs [aiP->nHideIndex + nOppositeEndIndex].point;
 
-			CHitQuery fq (0, &objP->info.position.vPos, vOppositeEndPoint, objP->info.nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
+			CHitQuery fq (0, &objP->Position (), vOppositeEndPoint, objP->info.nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
 			fate = FindHitpoint (&fq, &hitData);
 			if (fate != HIT_WALL) {
 				//	We can be circular! Do it!
@@ -1079,7 +1079,7 @@ while (xDistToGoal < thresholdDistance) {
 		}
 	else {
 		vGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
-		xDistToGoal = CFixVector::Dist(vGoalPoint, objP->info.position.vPos);
+		xDistToGoal = CFixVector::Dist(vGoalPoint, objP->Position ());
 		}
 	//	If went all the way around to original point, in same direction, then get out of here!
 	if ((aiP->nCurPathIndex == originalIndex) && (aiP->PATH_DIR == originalDir)) {
@@ -1107,7 +1107,7 @@ void AIPathSetOrientAndVel (CObject *objP, CFixVector *vGoalPoint, int nTargetVi
 	CFixVector	vCurVel = objP->mType.physInfo.velocity;
 	CFixVector	vNormCurVel;
 	CFixVector	vNormToGoal;
-	CFixVector	vCurPos = objP->info.position.vPos;
+	CFixVector	vCurPos = objP->Position ();
 	CFixVector	vNormFwd;
 	fix			xSpeedScale;
 	fix			xMaxSpeed;

@@ -957,15 +957,15 @@ if (Buddy_last_missileTime + I2X (2) < gameData.time.xGame) {
 
 //	-----------------------------------------------------------------------------
 //	Called every frame (or something).
-void DoEscortFrame (CObject *objP, fix xDistToPlayer, int player_visibility)
+void DoEscortFrame (CObject *objP, fix xDistToPlayer, int nPlayerVisibility)
 {
-	int			nObject = objP->Index ();
-	tAIStaticInfo	*aip = &objP->cType.aiInfo;
-	tAILocalInfo		*ailp = gameData.ai.localInfo + nObject;
+	int				nObject = objP->Index ();
+	tAIStaticInfo*	aip = &objP->cType.aiInfo;
+	tAILocalInfo*	ailp = gameData.ai.localInfo + nObject;
 
 Assert (nObject >= 0);
 gameData.escort.nObjNum = nObject;
-if (player_visibility) {
+if (nPlayerVisibility) {
 	xBuddyLastSeenPlayer = gameData.time.xGame;
 	if ((PlayerHasHeadlight (-1) && EGI_FLAG (headlight.bDrainPower, 0, 0, 1))	&&
 		 (X2I (LOCALPLAYER.Energy ()) < 40) && ((X2I (LOCALPLAYER.Energy ()) / 2) & 2) && (!gameStates.app.bPlayerIsDead))
@@ -987,12 +987,12 @@ if (!gameData.escort.bMayTalk)
 //	It means the CObject has been told to get lost and has come to the end of its path.
 //	If the CPlayerData is now visible, then create a path.
 if (ailp->mode == AIM_WANDER)
-	if (player_visibility) {
+	if (nPlayerVisibility) {
 		CreateNSegmentPath (objP, 16 + d_rand () * 16, -1);
 		aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 		}
 if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
-	if (player_visibility)
+	if (nPlayerVisibility)
 		if (gameData.escort.xLastPathCreated + I2X (3) < gameData.time.xGame) {
 #if TRACE
 			console.printf (CON_DBG, "Frame %i: Buddy creating new scram path.\n", gameData.app.nFrameCount);
@@ -1014,7 +1014,7 @@ if ((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && TimeToVisitPlayer (ob
 
 	Buddy_last_player_path_created = gameData.time.xGame;
 	ailp->mode = AIM_GOTO_PLAYER;
-	if (!player_visibility) {
+	if (!nPlayerVisibility) {
 		if ((Last_come_back_messageTime + I2X (1) < gameData.time.xGame) || (Last_come_back_messageTime > gameData.time.xGame)) {
 			BuddyMessage (TXT_COMING_BACK);
 			Last_come_back_messageTime = gameData.time.xGame;
@@ -1025,8 +1025,10 @@ if ((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && TimeToVisitPlayer (ob
 	if (!gameData.escort.bMayTalk)
 		nMaxLen = 3;
 	CreatePathToTarget (objP, nMaxLen, 1);	//	MK!: Last parm used to be 1!
-	aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
-	ailp->mode = AIM_GOTO_PLAYER;
+	if (aip->nPathLength > 0) {
+		aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
+		ailp->mode = AIM_GOTO_PLAYER;
+		}
 	}
 else if (gameData.time.xGame - xBuddyLastSeenPlayer > MAX_ESCORT_TIME_AWAY) {
 	//	This is to prevent buddy from looking for a goal, which he will do because we only allow path creation once/second.
@@ -1036,20 +1038,24 @@ else if ((ailp->mode == AIM_GOTO_PLAYER) && (xDistToPlayer < MIN_ESCORT_DISTANCE
 	gameData.escort.nGoalObject = EscortSetGoalObject ();
 	ailp->mode = AIM_GOTO_OBJECT;		//	May look stupid to be before path creation, but AIDoorIsOpenable uses mode to determine what doors can be got through
 	EscortCreatePathToGoal (objP);
-	aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
-	if (aip->nPathLength < 3)
-		CreateNSegmentPath (objP, 5, gameData.ai.target.nBelievedSeg);
-	ailp->mode = AIM_GOTO_OBJECT;
+	if (aip->nPathLength > 0) {
+		aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
+		if (aip->nPathLength < 3)
+			CreateNSegmentPath (objP, 5, gameData.ai.target.nBelievedSeg);
+		ailp->mode = AIM_GOTO_OBJECT;
+		}
 	}
 else if (gameData.escort.nGoalObject == ESCORT_GOAL_UNSPECIFIED) {
 	if ((ailp->mode != AIM_GOTO_PLAYER) || (xDistToPlayer < MIN_ESCORT_DISTANCE)) {
 		gameData.escort.nGoalObject = EscortSetGoalObject ();
 		ailp->mode = AIM_GOTO_OBJECT;		//	May look stupid to be before path creation, but AIDoorIsOpenable uses mode to determine what doors can be got through
 		EscortCreatePathToGoal (objP);
-		aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
-		if (aip->nPathLength < 3)
-			CreateNSegmentPath (objP, 5, gameData.ai.target.nBelievedSeg);
-		ailp->mode = AIM_GOTO_OBJECT;
+		if (aip->nPathLength > 0) {
+			aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
+			if (aip->nPathLength < 3)
+				CreateNSegmentPath (objP, 5, gameData.ai.target.nBelievedSeg);
+			ailp->mode = AIM_GOTO_OBJECT;
+			}
 		}
 	}
 }
