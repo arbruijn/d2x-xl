@@ -421,9 +421,10 @@ int optSetPower, optPlayTime, optScoreGoal, optSocket, optMarkerView, optLight;
 int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
 int optDarkness, optTeamDoors, optMultiCheats, optTgtInd;
 int optHeadlights, optPowerupLights, optSpotSize, optSmokeGrenades, optMaxSmokeGrens;
-int optShowNames, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
+int optShowNames, optAutoTeams, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPenalty;
 int optFixedSpawn, optSpawnDelay;
+//int optDualMiss;
 
 //------------------------------------------------------------------------------
 
@@ -664,7 +665,7 @@ do {
 		optSuicide = m.AddCheck (TXT_NO_SUICIDE, extraGameInfo [0].bInhibitSuicide, KEY_U, HTX_MULTI2_SUICIDE);
 		optMouseLook = m.AddCheck (TXT_MOUSELOOK, extraGameInfo [1].bMouseLook, KEY_O, HTX_MULTI2_MOUSELOOK);
 		optFastPitch = m.AddCheck (TXT_FASTPITCH, (extraGameInfo [1].bFastPitch == 1) ? 1 : 0, KEY_P, HTX_MULTI2_FASTPITCH);
-		optDualMiss = m.AddCheck (TXT_DUAL_LAUNCH, extraGameInfo [1].bDualMissileLaunch, KEY_M, HTX_GPLAY_DUALLAUNCH);
+		//optDualMiss = m.AddCheck (TXT_DUAL_LAUNCH, extraGameInfo [1].bDualMissileLaunch, KEY_M, HTX_GPLAY_DUALLAUNCH);
 		}
 	else
 		optFF =
@@ -773,7 +774,7 @@ do {
 		GET_VAL (extraGameInfo [1].bMouseLook, optMouseLook);
 		if (optFastPitch >= 0)
 			extraGameInfo [1].bFastPitch = m [optFastPitch].m_value ? 1 : 2;
-		GET_VAL (extraGameInfo [1].bDualMissileLaunch, optDualMiss);
+		//GET_VAL (extraGameInfo [1].bDualMissileLaunch, optDualMiss);
 		GET_VAL (extraGameInfo [1].bDisableReactor, optDisableReactor);
 		GET_VAL (extraGameInfo [1].bTargetIndicators, optTgtInd);
 		GET_VAL (extraGameInfo [1].bFixedRespawns, optFixedSpawn);

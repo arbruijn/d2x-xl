@@ -193,15 +193,76 @@ bAlreadyShowingInfo = 0;
 #define AGI netGame.m_info
 #define AXI	extraGameInfo [0]
 
+static int GraphicsFxCompMode (void)
+{
+return (!AXI.bCompetition && AXI.bUseLightning) ? 2 : (AXI.bShadows || AXI.bUseParticles) ? 1 : 0;
+}
+
+//------------------------------------------------------------------------------
+
+static int WeaponFxCompMode (void)
+{
+return (!AXI.bCompetition && (AXI.bLightTrails || AXI.bTracers)) ? 2 : 0;
+}
+
+//------------------------------------------------------------------------------
+
+static int ShipFxCompMode (void)
+{
+return (!AXI.bCompetition && (AXI.bPlayerShield || AXI.bDamageExplosions || AXI.bShowWeapons || AXI.bGatlingSpeedUp)) ? 2 : 0;
+}
+
+//------------------------------------------------------------------------------
+
+static int HUDCompMode (void)
+{
+return (!AXI.bCompetition && (AXI.bTargetIndicators || AXI.bDamageIndicators || AXI.bMslLockIndicators)) ? 2 : (AXI.nWeaponIcons != 0) ? 1 : 0;
+}
+
+//------------------------------------------------------------------------------
+
+static int RadarCompMode (void)
+{
+return (!AXI.bCompetition && AXI.bRadarEnabled) &&
+		  (((AGI.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0) || AXI.bPowerupsOnRadar || AXI.bRobotsOnRadar || (AXI.nRadar != 0)) ? 2 : 0;
+}
+
+//------------------------------------------------------------------------------
+
+static int ControlsCompMode (void)
+{
+return (!AXI.bCompetition && (AXI.bMouseLook || AXI.bFastPitch)) ? 2 : 0;
+}
+
+//------------------------------------------------------------------------------
+
+static int GameplayCompMode (void)
+{
+return (!AXI.bCompetition && (AXI.bEnableCheats || AXI.bDarkness || AXI.bSmokeGrenades || (AXI.nFusionRamp != 2) || !AXI.bFriendlyFire ||
+										 AXI.bInhibitSuicide || AXI.bKillMissiles || AXI.bTripleFusion || AXI.bEnhancedShakers || AXI.nHitboxes)) ? 2 : 0;
+}
+
+//------------------------------------------------------------------------------
+// 2: no competition mode
+// 1: competition mode, some uncritical D2X-XL extensions enabled
+// 0: full competition mode
+
+static int CompetitionMode (void)
+{
+return GraphicsFxCompMode () | WeaponFxCompMode () | ShipFxCompMode () | HUDCompMode () | RadarCompMode () | ControlsCompMode() | GameplayCompMode ();
+}
+
+//------------------------------------------------------------------------------
+
 char* XMLGameInfo (void)
 {
 	static char xmlGameInfo [UDP_PAYLOAD_SIZE];
 
-	static char* szGameType [2][9] = {
+	static const char* szGameType [2][9] = {
 		{"Anarchy", "Anarchy", "Anarchy", "Coop", "CTF", "Hoard", "Hoard", "Monsterball", "Entropy"},
 		{"Anarchy", "Anarchy", "Anarchy", "Coop", "CTF+", "Hoard", "Hoard", "Monsterball", "Entropy"}
 		};
-	static char* szGameState [] = {"open", "closed", "restricted"};
+	static const char* szGameState [] = {"open", "closed", "restricted"};
 
 sprintf (xmlGameInfo, "<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n");
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host>%s</Host>\n",gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
@@ -210,7 +271,7 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player current=\"%d\" max=\"%
 if (IsCoopGame || (mpParams.nGameMode & NETGAME_ROBOT_ANARCHY))
 	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Difficulty>%d<Difficulty>\n", AGI.difficulty);
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mode type=\"%s\" team=\"%d\" robots=\"%d\" />\n",
-			szGameType [extraGameInfo [0].bEnhancedCTF][mpParams.nGameMode],
+			szGameType [(int) extraGameInfo [0].bEnhancedCTF][(int) mpParams.nGameMode],
 			(mpParams.nGameMode != NETGAME_ANARCHY) && (mpParams.nGameMode != NETGAME_ROBOT_ANARCHY) && (mpParams.nGameMode != NETGAME_HOARD),
 			(mpParams.nGameMode == NETGAME_ROBOT_ANARCHY) || (mpParams.nGameMode == NETGAME_COOPERATIVE));
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Status>%s</Status>\n",
@@ -219,8 +280,11 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Status>%s</Status>\n",
 			: (networkData.nStatus == NETSTAT_STARTING)
 				? "forming"
 				: szGameState [mpParams.nGameAccess]);
-strcat (xmlGameInfo, "  </Descent>\n  <D2X-XL>\n");
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <CompetitionMode>%d</CompetitionMode>\n", AXI.bCompetition);
+strcat (xmlGameInfo, "  </Descent>\n");
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "  <Program name=\"D2X-XL\" version=\"%s\" />\n", VERSION);
+strcat (xmlGameInfo, "  <D2X-XL>\n");
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Competition Mode=\"%d\" />\n", 1 - CompetitionMode ());
+
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GraphicsFx Shadows=\"%d\" Smoke=\"%d\" Lightning=\"%d\" />\n",
 			AXI.bShadows, 
 			AXI.bUseParticles, 
@@ -236,7 +300,7 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <ShipFx Shield=\"%d\" Damage=\
 			!AXI.bCompetition && AXI.bShowWeapons, 
 			!AXI.bCompetition && AXI.bGatlingSpeedUp);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <HUD Icons=\"%d\" TgtInd=\"%d\" DmgInd=\"%d\" TrkInd=\"%d\" />\n",
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <HUD Icons=\"%d\" TargetInd=\"%d\" DamageInd=\"%d\" LockInd=\"%d\" />\n",
 			AXI.nWeaponIcons != 0,
 			!AXI.bCompetition && AXI.bTargetIndicators, 
 			!AXI.bCompetition && AXI.bDamageIndicators, 
@@ -252,11 +316,10 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Controls MouseLook=\"%d\" Fas
 			!AXI.bCompetition && AXI.bMouseLook, 
 			!AXI.bCompetition && AXI.bFastPitch);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GamePlay Cheats=\"%d\" Darkness=\"%d\" SmokeGrenades=\"%d\" DualMissiles=\"%d\" FusionRamp=\"%d\" FriendlyFire=\"%d\" Suicide=\"%d\" KillMissiles=\"%d\" TriFusion=\"%d\" BetterShakers=\"%d\" HitBoxes=\"%d\" />\n",
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GamePlay Cheats=\"%d\" Darkness=\"%d\" SmokeGrenades=\"%d\" FusionRamp=\"%d\" FriendlyFire=\"%d\" Suicide=\"%d\" KillMissiles=\"%d\" TriFusion=\"%d\" BetterShakers=\"%d\" HitBoxes=\"%d\" />\n",
 			!AXI.bCompetition && AXI.bEnableCheats,
 			!AXI.bCompetition && AXI.bDarkness, 
 			!AXI.bCompetition && AXI.bSmokeGrenades,
-			!AXI.bCompetition && AXI.bDualMissileLaunch,
 			!AXI.bCompetition && (AXI.nFusionRamp != 2), 
 			AXI.bCompetition || AXI.bFriendlyFire,
 			AXI.bCompetition || !AXI.bInhibitSuicide, 
@@ -264,6 +327,7 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GamePlay Cheats=\"%d\" Darkne
 			!AXI.bCompetition && AXI.bTripleFusion, 
 			!AXI.bCompetition && AXI.bEnhancedShakers,
 			!AXI.bCompetition && AXI.nHitboxes);
+			//!AXI.bCompetition && AXI.bDualMissileLaunch,
 
 strcat (xmlGameInfo, "  </D2X-XL>\n</GameInfo>\n");
 PrintLog ("\nXML game info:\n\n");
