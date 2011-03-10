@@ -671,8 +671,8 @@ do {
 		optFF =
 		optSuicide =
 		optMouseLook =
-		optFastPitch =
-		optDualMiss = -1;
+		optFastPitch = -1;
+		//optDualMiss = -1;
 	if (IsTeamGame) {
 		optAutoTeams = m.AddCheck (TXT_AUTOBALANCE, extraGameInfo [0].bAutoBalanceTeams, KEY_B, HTX_MULTI2_BALANCE);
 		optTeamDoors = m.AddCheck (TXT_TEAMDOORS, mpParams.bTeamDoors, KEY_T, HTX_TEAMDOORS);

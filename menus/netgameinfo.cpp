@@ -263,6 +263,7 @@ char* XMLGameInfo (void)
 		{"Anarchy", "Anarchy", "Anarchy", "Coop", "CTF+", "Hoard", "Hoard", "Monsterball", "Entropy"}
 		};
 	static const char* szGameState [] = {"open", "closed", "restricted"};
+	static const char* szCompMode [] = {"full", "basic", "no"};
 
 sprintf (xmlGameInfo, "<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n");
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host>%s</Host>\n",gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
@@ -283,7 +284,7 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Status>%s</Status>\n",
 strcat (xmlGameInfo, "  </Descent>\n");
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "  <Program name=\"D2X-XL\" version=\"%s\" />\n", VERSION);
 strcat (xmlGameInfo, "  <D2X-XL>\n");
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Competition Mode=\"%d\" />\n", 1 - CompetitionMode ());
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Competition Mode=\"%s\" />\n", szCompMode [CompetitionMode ()]);
 
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GraphicsFx Shadows=\"%d\" Smoke=\"%d\" Lightning=\"%d\" />\n",
 			AXI.bShadows, 
