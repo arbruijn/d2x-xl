@@ -267,11 +267,11 @@ char* XMLGameInfo (void)
 
 sprintf (xmlGameInfo, "<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n");
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host>%s</Host>\n",gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mission name=\"%s\" level=\"%d\" />\n", AGI.szMissionTitle, AGI.nLevel);
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player current=\"%d\" max=\"%d\" />\n", AGI.nNumPlayers, AGI.nMaxPlayers);
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mission Name=\"%s\" Level=\"%d\" />\n", AGI.szMissionTitle, AGI.nLevel);
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player Current=\"%d\" Max=\"%d\" />\n", AGI.nNumPlayers, AGI.nMaxPlayers);
 if (IsCoopGame || (mpParams.nGameMode & NETGAME_ROBOT_ANARCHY))
 	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Difficulty>%d<Difficulty>\n", AGI.difficulty);
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mode type=\"%s\" team=\"%d\" robots=\"%d\" />\n",
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mode Type=\"%s\" Team=\"%d\" Robots=\"%d\" />\n",
 			szGameType [(int) extraGameInfo [0].bEnhancedCTF][(int) mpParams.nGameMode],
 			(mpParams.nGameMode != NETGAME_ANARCHY) && (mpParams.nGameMode != NETGAME_ROBOT_ANARCHY) && (mpParams.nGameMode != NETGAME_HOARD),
 			(mpParams.nGameMode == NETGAME_ROBOT_ANARCHY) || (mpParams.nGameMode == NETGAME_COOPERATIVE));
