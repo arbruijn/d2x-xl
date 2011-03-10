@@ -266,9 +266,12 @@ char* XMLGameInfo (void)
 	static const char* szCompMode [] = {"full", "basic", "no"};
 
 sprintf (xmlGameInfo, "<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n");
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host>%s</Host>\n",gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mission Name=\"%s\" Level=\"%d\" />\n", AGI.szMissionTitle, AGI.nLevel);
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player Current=\"%d\" Max=\"%d\" />\n", AGI.nNumPlayers, AGI.nMaxPlayers);
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host>%s</Host>\n",
+			 gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mission Type=\"%s\" Name=\"%s\" Level=\"%d\" />\n",
+			 gameStates.app.bD1Mission ? "D1" : gameStates.app.bD2XLevel ? "D2X" : "D2", AGI.szMissionTitle, AGI.nLevel);
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player Current=\"%d\" Max=\"%d\" />\n",
+			 AGI.nNumPlayers, AGI.nMaxPlayers);
 if (IsCoopGame || (mpParams.nGameMode & NETGAME_ROBOT_ANARCHY))
 	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Difficulty>%d<Difficulty>\n", AGI.difficulty);
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mode Type=\"%s\" Team=\"%d\" Robots=\"%d\" />\n",
