@@ -282,7 +282,8 @@ void CSubModel::SortFaces (CBitmap* textureP)
 
 for (int i = 0; i < m_nFaces; i++)
 	m_faces [i].SetTexture (textureP);
-qs.SortAscending (m_faces, 0, static_cast<uint> (m_nFaces - 1), &RenderModel::CFace::Compare);
+if (m_nFaces > 1)
+	qs.SortAscending (m_faces, 0, static_cast<uint> (m_nFaces - 1), &RenderModel::CFace::Compare);
 }
 
 //------------------------------------------------------------------------------
@@ -317,25 +318,27 @@ for (i = 0, j = m_nFaceVerts; i < j; i++)
 	m_index [0][i] = i;
 //sort each submodel's faces
 for (i = 0; i < m_nSubModels; i++) {
-	if (bSort) {
-		psm = &m_subModels [i];
-		psm->SortFaces (textureP);
-		psm->GatherVertices (m_faceVerts, m_sortedVerts);
-		}
-	pfi = psm->m_faces;
-	pfi->SetTexture (textureP);
-	for (nId = 0, j = psm->m_nFaces - 1; j; j--) {
-		pfi->m_nId = nId;
-		pfj = pfi++;
+	psm = &m_subModels [i];
+	if (psm->m_nFaces) {
+		if (bSort) {
+			psm->SortFaces (textureP);
+			psm->GatherVertices (m_faceVerts, m_sortedVerts);
+			}
+		pfi = psm->m_faces;
 		pfi->SetTexture (textureP);
-		if (*pfi != *pfj)
-			nId++;
+		for (nId = 0, j = psm->m_nFaces - 1; j; j--) {
+			pfi->m_nId = nId;
+			pfj = pfi++;
+			pfi->SetTexture (textureP);
+			if (*pfi != *pfj)
+				nId++;
 #if G3_ALLOW_TRANSPARENCY
-		if (textureP && (textureP [pfi->nBitmap].props.flags & BM_FLAG_TRANSPARENT))
+			if (textureP && (textureP [pfi->nBitmap].props.flags & BM_FLAG_TRANSPARENT))
 			m_bHasTransparency = 1;
 #endif
 		}
-	pfi->m_nId = nId;
+		pfi->m_nId = nId;
+		}
 	}
 m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (m_vertBuf [0].Buffer ()), 1, m_vertBuf [0].Length ());
 m_vbNormals.SetBuffer (m_vbVerts.Buffer () + m_nFaceVerts, true, m_vertBuf [0].Length ());

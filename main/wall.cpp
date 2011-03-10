@@ -335,6 +335,9 @@ return doorP;
 
 int CWall::AnimateOpeningDoor (fix xElapsedTime)
 {
+if (nClip < 0)
+	return 3;
+
 int nFrames = AnimFrameCount (gameData.walls.animP + nClip);
 if (!nFrames)
 	return 3;

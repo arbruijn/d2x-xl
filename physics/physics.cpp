@@ -489,9 +489,9 @@ if (Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 
-Assert (mType.physInfo.brakes == 0);		//brakes not used anymore?
+//Assert (mType.physInfo.brakes == 0);		//brakes not used anymore?
 //if uses thrust, cannot have zero xDrag
-Assert (!(mType.physInfo.flags & PF_USES_THRUST) || mType.physInfo.drag);
+//Assert (!(mType.physInfo.flags & PF_USES_THRUST) || mType.physInfo.drag);
 //do thrust & xDrag
 if (mType.physInfo.drag) {
 	CFixVector accel, &vel = mType.physInfo.velocity;

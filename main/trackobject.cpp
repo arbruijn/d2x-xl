@@ -292,7 +292,11 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 		dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...
 	if (dot < xBestDot)
 		continue;
+#if 1
+	targets.Push (CTarget (dot, curObjP));
+#else
 	targets.Push (CTarget (fix (dist * (1.0f - X2F (dot) / 2.0f)), curObjP));
+#endif
 #if 0
 	//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 	//	to determine if an CObject is initially trackable.  FindHomingObject is called on subsequent
