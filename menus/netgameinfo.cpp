@@ -263,7 +263,9 @@ char* XMLGameInfo (void)
 		{"Anarchy", "Anarchy", "Anarchy", "Coop", "CTF+", "Hoard", "Hoard", "Monsterball", "Entropy"}
 		};
 	static const char* szGameState [] = {"open", "closed", "restricted"};
-	static const char* szCompMode [] = {"full", "basic", "no"};
+	static const char* szCompMode [] = {"none", "basic", "critical"};
+
+	int nExtensions;
 
 sprintf (xmlGameInfo, "<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n");
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host>%s</Host>\n",
@@ -285,55 +287,61 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Status>%s</Status>\n",
 				? "forming"
 				: szGameState [mpParams.nGameAccess]);
 strcat (xmlGameInfo, "  </Descent>\n");
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "  <Program name=\"D2X-XL\" version=\"%s\" />\n", VERSION);
-strcat (xmlGameInfo, "  <D2X-XL>\n");
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Competition Mode=\"%s\" />\n", szCompMode [CompetitionMode ()]);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GraphicsFx Shadows=\"%d\" Smoke=\"%d\" Lightning=\"%d\" />\n",
-			AXI.bShadows, 
-			AXI.bUseParticles, 
-			!AXI.bCompetition && AXI.bUseLightning);
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "  <Agent Name=\"D2X-XL\" Version=\"%s\" Extensions=\"%s\" />\n",
+			 VERSION, szCompMode [nExtensions = CompetitionMode ()]);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <WeaponFx LightTrails=\"%d\" Tracers=\"%d\" />\n",
-			!AXI.bCompetition && AXI.bLightTrails, 
-			!AXI.bCompetition && AXI.bTracers);
+if (nExtensions) {
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "  <Extensions>\n");
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <ShipFx Shield=\"%d\" Damage=\"%d\" Weapons=\"%d\" GatlingSpeedup=\"%d\" />\n",
-			!AXI.bCompetition && AXI.bPlayerShield, 
-			!AXI.bCompetition && AXI.bDamageExplosions, 
-			!AXI.bCompetition && AXI.bShowWeapons, 
-			!AXI.bCompetition && AXI.bGatlingSpeedUp);
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GraphicsFx Shadows=\"%d\" Smoke=\"%d\" Lightning=\"%d\" />\n",
+				AXI.bShadows,
+				AXI.bUseParticles,
+				!AXI.bCompetition && AXI.bUseLightning);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <HUD Icons=\"%d\" TargetInd=\"%d\" DamageInd=\"%d\" LockInd=\"%d\" />\n",
-			AXI.nWeaponIcons != 0,
-			!AXI.bCompetition && AXI.bTargetIndicators, 
-			!AXI.bCompetition && AXI.bDamageIndicators, 
-			!AXI.bCompetition && AXI.bMslLockIndicators);
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <WeaponFx LightTrails=\"%d\" Tracers=\"%d\" />\n",
+				!AXI.bCompetition && AXI.bLightTrails,
+				!AXI.bCompetition && AXI.bTracers);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Radar Players=\"%d\" Powerups=\"%d\" Robots=\"%d\"  HUD=\"%d\" />\n",
-			!AXI.bCompetition && AXI.bRadarEnabled && ((AGI.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0),
-			!AXI.bCompetition && AXI.bRadarEnabled && AXI.bPowerupsOnRadar,
-			!AXI.bCompetition && AXI.bRadarEnabled && AXI.bRobotsOnRadar,
-			!AXI.bCompetition && AXI.bRadarEnabled && (AXI.nRadar != 0));
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <ShipFx Shield=\"%d\" Damage=\"%d\" Weapons=\"%d\" GatlingSpeedup=\"%d\" />\n",
+				!AXI.bCompetition && AXI.bPlayerShield,
+				!AXI.bCompetition && AXI.bDamageExplosions,
+				!AXI.bCompetition && AXI.bShowWeapons,
+				!AXI.bCompetition && AXI.bGatlingSpeedUp);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Controls MouseLook=\"%d\" FastPitch=\"%d\" />\n",
-			!AXI.bCompetition && AXI.bMouseLook, 
-			!AXI.bCompetition && AXI.bFastPitch);
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <HUD Icons=\"%d\" TargetInd=\"%d\" DamageInd=\"%d\" LockInd=\"%d\" />\n",
+				AXI.nWeaponIcons != 0,
+				!AXI.bCompetition && AXI.bTargetIndicators,
+				!AXI.bCompetition && AXI.bDamageIndicators,
+				!AXI.bCompetition && AXI.bMslLockIndicators);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GamePlay Cheats=\"%d\" Darkness=\"%d\" SmokeGrenades=\"%d\" FusionRamp=\"%d\" FriendlyFire=\"%d\" Suicide=\"%d\" KillMissiles=\"%d\" TriFusion=\"%d\" BetterShakers=\"%d\" HitBoxes=\"%d\" />\n",
-			!AXI.bCompetition && AXI.bEnableCheats,
-			!AXI.bCompetition && AXI.bDarkness, 
-			!AXI.bCompetition && AXI.bSmokeGrenades,
-			!AXI.bCompetition && (AXI.nFusionRamp != 2), 
-			AXI.bCompetition || AXI.bFriendlyFire,
-			AXI.bCompetition || !AXI.bInhibitSuicide, 
-			!AXI.bCompetition && AXI.bKillMissiles, 
-			!AXI.bCompetition && AXI.bTripleFusion, 
-			!AXI.bCompetition && AXI.bEnhancedShakers,
-			!AXI.bCompetition && AXI.nHitboxes);
-			//!AXI.bCompetition && AXI.bDualMissileLaunch,
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Radar Players=\"%d\" Powerups=\"%d\" Robots=\"%d\"  HUD=\"%d\" />\n",
+				!AXI.bCompetition && AXI.bRadarEnabled && ((AGI.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0),
+				!AXI.bCompetition && AXI.bRadarEnabled && AXI.bPowerupsOnRadar,
+				!AXI.bCompetition && AXI.bRadarEnabled && AXI.bRobotsOnRadar,
+				!AXI.bCompetition && AXI.bRadarEnabled && (AXI.nRadar != 0));
 
-strcat (xmlGameInfo, "  </D2X-XL>\n</GameInfo>\n");
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Controls MouseLook=\"%d\" FastPitch=\"%d\" />\n",
+				!AXI.bCompetition && AXI.bMouseLook,
+				!AXI.bCompetition && AXI.bFastPitch);
+
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <GamePlay Cheats=\"%d\" Darkness=\"%d\" SmokeGrenades=\"%d\" FusionRamp=\"%d\" FriendlyFire=\"%d\" Suicide=\"%d\" KillMissiles=\"%d\" TriFusion=\"%d\" BetterShakers=\"%d\" HitBoxes=\"%d\" />\n",
+				!AXI.bCompetition && AXI.bEnableCheats,
+				!AXI.bCompetition && AXI.bDarkness,
+				!AXI.bCompetition && AXI.bSmokeGrenades,
+				!AXI.bCompetition && (AXI.nFusionRamp != 2),
+				AXI.bCompetition || AXI.bFriendlyFire,
+				AXI.bCompetition || !AXI.bInhibitSuicide,
+				!AXI.bCompetition && AXI.bKillMissiles,
+				!AXI.bCompetition && AXI.bTripleFusion,
+				!AXI.bCompetition && AXI.bEnhancedShakers,
+				!AXI.bCompetition && AXI.nHitboxes);
+				//!AXI.bCompetition && AXI.bDualMissileLaunch,
+
+	strcat (xmlGameInfo, "  </Extensions>\n");
+	}
+strcat (xmlGameInfo, "</GameInfo>\n");
+
 PrintLog ("\nXML game info:\n\n");
 PrintLog (xmlGameInfo);
 PrintLog ("\n");
