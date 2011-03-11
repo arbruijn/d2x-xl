@@ -268,18 +268,24 @@ char* XMLGameInfo (void)
 	int nExtensions;
 
 sprintf (xmlGameInfo, "<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n");
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host>%s</Host>\n",
+
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host Name=\"%s\" />\n",
 			 gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mission Type=\"%s\" Name=\"%s\" Level=\"%d\" />\n",
+
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mission Type=\"%s\" Name=\"%s\" Level=\"%d\" \n",
 			 gameStates.app.bD1Mission ? "D1" : gameStates.app.bD2XLevel ? "D2X" : "D2", AGI.szMissionTitle, AGI.nLevel);
+if (IsCoopGame || (mpParams.nGameMode & NETGAME_ROBOT_ANARCHY))
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "Difficulty=\"%d\" ", AGI.difficulty);
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "/>\n");
+
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player Current=\"%d\" Max=\"%d\" />\n",
 			 AGI.nNumPlayers, AGI.nMaxPlayers);
-if (IsCoopGame || (mpParams.nGameMode & NETGAME_ROBOT_ANARCHY))
-	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Difficulty>%d<Difficulty>\n", AGI.difficulty);
+
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mode Type=\"%s\" Team=\"%d\" Robots=\"%d\" />\n",
 			szGameType [(int) extraGameInfo [0].bEnhancedCTF][(int) mpParams.nGameMode],
 			(mpParams.nGameMode != NETGAME_ANARCHY) && (mpParams.nGameMode != NETGAME_ROBOT_ANARCHY) && (mpParams.nGameMode != NETGAME_HOARD),
 			(mpParams.nGameMode == NETGAME_ROBOT_ANARCHY) || (mpParams.nGameMode == NETGAME_COOPERATIVE));
+
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Status>%s</Status>\n",
 			(AGI.nNumPlayers == AGI.nMaxPlayers)
 			? "full"
@@ -288,7 +294,7 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Status>%s</Status>\n",
 				: szGameState [mpParams.nGameAccess]);
 strcat (xmlGameInfo, "  </Descent>\n");
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "  <Server Name=\"D2X-XL\" Version=\"%s\" Extensions=\"%s\" />\n",
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "  <Server Type=\"D2X-XL\" Version=\"%s\" Extensions=\"%s\" />\n",
 			 VERSION, szCompMode [nExtensions = CompetitionMode ()]);
 
 if (nExtensions) {
