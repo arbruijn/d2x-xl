@@ -288,7 +288,7 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Status>%s</Status>\n",
 				: szGameState [mpParams.nGameAccess]);
 strcat (xmlGameInfo, "  </Descent>\n");
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "  <Agent Name=\"D2X-XL\" Version=\"%s\" Extensions=\"%s\" />\n",
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "  <Server Name=\"D2X-XL\" Version=\"%s\" Extensions=\"%s\" />\n",
 			 VERSION, szCompMode [nExtensions = CompetitionMode ()]);
 
 if (nExtensions) {
