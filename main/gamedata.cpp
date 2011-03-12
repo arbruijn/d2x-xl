@@ -55,7 +55,7 @@
 #include "gamepal.h"
 #include "movie.h"
 #include "compbit.h"
-#include "playsave.h"
+#include "playerprofile.h"
 #include "tracker.h"
 #include "rendermine.h"
 #include "sphere.h"

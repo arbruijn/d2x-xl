@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 #include "ogl_render.h"
 #include "endlevel.h"
-#include "playsave.h"
+#include "playerprofile.h"
 #include "automap.h"
 #include "gamepal.h"
 #include "visibility.h"

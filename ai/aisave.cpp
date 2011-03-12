@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "descent.h"
 #include "error.h"
-#include "state.h"
+#include "savegame.h"
 
 #include "string.h"
 

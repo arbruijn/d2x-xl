@@ -47,7 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "config.h"
 #include "text.h"
 #include "mono.h"
-#include "state.h"
+#include "savegame.h"
 #include "cockpit.h"
 #include "screens.h"
 #include "powerup.h"
@@ -65,7 +65,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "dynlight.h"
 #include "cockpit.h"
-#include "playsave.h"
+#include "playerprofile.h"
 #include "tracker.h"
 #include "gr.h"
 

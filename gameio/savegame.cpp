@@ -83,7 +83,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "multibot.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
-#include "state.h"
+#include "savegame.h"
 #include "strutil.h"
 #include "light.h"
 #include "dynlight.h"

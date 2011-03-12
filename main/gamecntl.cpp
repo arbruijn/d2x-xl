@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamepal.h"
 #include "kconfig.h"
 #include "mouse.h"
-#include "playsave.h"
+#include "playerprofile.h"
 #include "piggy.h"
 #include "ai.h"
 #include "rbaudio.h"

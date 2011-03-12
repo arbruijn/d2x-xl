@@ -56,7 +56,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "briefings.h"
 #include "gamecntl.h"
 #include "systemkeys.h"
-#include "state.h"
+#include "savegame.h"
 #include "escort.h"
 #include "cheats.h"
 #include "input.h"

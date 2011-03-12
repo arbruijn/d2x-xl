@@ -83,7 +83,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "banlist.h"
 #include "songs.h"
 #include "headlight.h"
-#include "playsave.h"
+#include "playerprofile.h"
 #include "addon_bitmaps.h"
 
 u_int32_t nCurrentVGAMode;

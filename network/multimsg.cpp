@@ -18,7 +18,7 @@
 #include "key.h"
 #include "banlist.h"
 #include "text.h"
-#include "playsave.h"
+#include "playerprofile.h"
 #include "multimsg.h"
 #include "network_lib.h"
 

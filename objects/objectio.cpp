@@ -41,7 +41,7 @@
 #include "loadgame.h"
 #include "gamesave.h"
 #include "multi.h"
-#include "state.h"
+#include "savegame.h"
 #include "strutil.h"
 #ifdef TACTILE
 #	include "tactile.h"

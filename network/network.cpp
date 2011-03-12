@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "netmenu.h"
 #include "autodl.h"
 #include "tracker.h"
-#include "playsave.h"
+#include "playerprofile.h"
 #include "gamecntl.h"
 #include "text.h"
 

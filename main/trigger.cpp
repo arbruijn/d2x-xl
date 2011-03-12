@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "lightning.h"
 #include "gamesave.h"
-#include "state.h"
+#include "savegame.h"
 #include "playerdeath.h"
 
 #define MAX_ORIENT_STEPS	10
