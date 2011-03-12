@@ -17,7 +17,7 @@
 #include "textures.h"
 #include "wall.h"
 #include "object.h"
-#include "gamemine.h"
+#include "loadgeometry.h"
 #include "segmath.h"
 #include "trigger.h"
 #include "ogl_defs.h"
@@ -39,7 +39,7 @@
 #include "piggy.h"
 
 #include "byteswap.h"
-#include "gamesave.h"
+#include "loadobjects.h"
 #include "u_mem.h"
 #include "vecmat.h"
 #include "gamepal.h"

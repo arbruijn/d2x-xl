@@ -10,7 +10,7 @@
 #include "segmath.h"
 #include "network.h"
 #include "network_lib.h"
-#include "gamesave.h"
+#include "loadobjects.h"
 #include "objeffects.h"
 #include "fireball.h"
 #include "dropobject.h"

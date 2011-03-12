@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "trigger.h"
 #include "cheats.h"
-#include "gamesave.h"
+#include "loadobjects.h"
 
 //@@CFixVector controlcen_gun_points[MAX_CONTROLCEN_GUNS];
 //@@CFixVector controlcen_gun_dirs[MAX_CONTROLCEN_GUNS];

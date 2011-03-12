@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "cockpit.h"
 #include "fireball.h"
-#include "gamesave.h"
+#include "loadobjects.h"
 #include "collide.h"
 #include "network.h"
 #include "multibot.h"

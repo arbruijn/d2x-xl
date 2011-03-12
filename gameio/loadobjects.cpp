@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "game.h"
 #include "screens.h"
 #include "wall.h"
-#include "gamemine.h"
+#include "loadgeometry.h"
 #include "robot.h"
 #include "fireball.h"
 
@@ -50,7 +50,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "polymodel.h"
 #include "text.h"
 #include "gamefont.h"
-#include "gamesave.h"
+#include "loadobjects.h"
 #include "gamepal.h"
 #include "fireweapon.h"
 #include "byteswap.h"

@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "rle.h"
 #include "screens.h"
 #include "piggy.h"
-#include "gamemine.h"
+#include "loadgeometry.h"
 #include "textures.h"
 #include "texmerge.h"
 #include "paging.h"

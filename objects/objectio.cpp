@@ -39,7 +39,7 @@
 #include "marker.h"
 #include "hiresmodels.h"
 #include "loadgame.h"
-#include "gamesave.h"
+#include "loadobjects.h"
 #include "multi.h"
 #include "savegame.h"
 #include "strutil.h"

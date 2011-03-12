@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "fireball.h"
 #include "objeffects.h"
-#include "gamesave.h"
+#include "loadobjects.h"
 #include "endlevel.h"
 #include "playerprofile.h"
 #include "timer.h"

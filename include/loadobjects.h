@@ -19,8 +19,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  */
 
 
-#ifndef _GAMESAVE_H
-#define _GAMESAVE_H
+#ifndef _LOADOBJECTS_H
+#define _LOADOBJECTS_H
 
 typedef struct {
 	ushort  fileinfo_signature;
@@ -51,4 +51,4 @@ extern int Errors_in_mine;
 
 void BuildObjTriggerRef (void);
 
-#endif /* _GAMESAVE_H */
+#endif /* _LOADOBJECTS_H */

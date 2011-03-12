@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "light.h"
 #include "segment.h"
 #include "dynlight.h"
-#include "gamesave.h"
+#include "loadobjects.h"
 #include "savegame.h"
 
 //	Special door on boss level which is locked if not in multiplayer...sorry for this awful solution --MK.

@@ -11,8 +11,8 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-#ifndef _GAMEMINE_H
-#define _GAMEMINE_H
+#ifndef _LOADGEOMETRY_H
+#define _LOADGEOMETRY_H
 
 #define MINE_VERSION        20  // Current version expected
 #define COMPATIBLE_VERSION  16  // Oldest version that can safely be loaded.
@@ -130,4 +130,4 @@ extern int d1_tmap_num_unique(short d1_tmap_num); //is d1_tmap_num's texture onl
 int LoadMineGaugeSize ();
 int SortLightsGaugeSize ();
 
-#endif /* _GAMEMINE_H */
+#endif /* _LOADGEOMETRY_H */

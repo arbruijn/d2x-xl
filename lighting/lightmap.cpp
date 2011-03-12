@@ -29,7 +29,7 @@
 #include "text.h"
 #include "netmisc.h"
 #include "gamepal.h"
-#include "gamemine.h"
+#include "loadgeometry.h"
 #include "renderthreads.h"
 #include "createmesh.h"
 

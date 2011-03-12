@@ -12,7 +12,7 @@
 
 #include "descent.h"
 #include "text.h"
-#include "gamemine.h"
+#include "loadgeometry.h"
 #include "error.h"
 #include "lightmap.h"
 #include "rendermine.h"

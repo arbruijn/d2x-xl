@@ -30,7 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "wall.h"
 #include "object.h"
 #include "objrender.h"
-#include "gamemine.h"
+#include "loadgeometry.h"
 #include "error.h"
 #include "segmath.h"
 #include "game.h"
@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "mission.h"
 #include "menu.h"
 #include "menu.h"
-#include "gamesave.h"
+#include "loadobjects.h"
 #include "gamepal.h"
 #include "sphere.h"
 

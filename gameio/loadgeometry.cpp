@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "textures.h"
 #include "wall.h"
 #include "object.h"
-#include "gamemine.h"
+#include "loadgeometry.h"
 #include "error.h"
 #include "segmath.h"
 #include "trigger.h"
@@ -53,7 +53,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "piggy.h"
 
 #include "byteswap.h"
-#include "gamesave.h"
+#include "loadobjects.h"
 #include "u_mem.h"
 #include "vecmat.h"
 #include "gamepal.h"
