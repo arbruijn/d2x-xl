@@ -73,7 +73,7 @@ return m_posP = m_path + i;
 
 void CFlightPath::GetViewPoint (void)
 {
-	tPathPoint		*p = GetPoint ();
+	tPathPoint* p = GetPoint ();
 
 if (!p)
 	gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.f * PP_DELTAZ;
