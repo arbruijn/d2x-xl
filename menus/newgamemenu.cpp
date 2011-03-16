@@ -485,60 +485,59 @@ void MultiplayerMenu (void)
 
 if ((gameStates.app.bNostalgia < 2) && gameData.multiplayer.autoNG.bValid) {
 	i = MultiChoice (gameData.multiplayer.autoNG.uConnect, !gameData.multiplayer.autoNG.bHost);
-	if (i >= 0)
-		ExecMultiMenuOption (i);
+	if ((i >= 0) && ExecMultiMenuOption (i))
+		return;
 	}
-else {
-	do {
-		nOldGameMode = gameData.app.nGameMode;
-		m.Destroy ();
-		m.Create (15);
-		if (gameStates.app.bNostalgia < 2) {
-			optCreate = m.AddMenu (TXT_CREATE_GAME, KEY_S, HTX_NETWORK_SERVER);
-			optJoin = m.AddMenu (TXT_JOIN_GAME, KEY_J, HTX_NETWORK_CLIENT);
-			m.AddText ("", 0);
-			optConn = m.AddRadio (TXT_NGTYPE_IPX, 0, KEY_I, HTX_NETWORK_IPX);
-			m.AddRadio (TXT_NGTYPE_UDP, 0, KEY_U, HTX_NETWORK_UDP);
-			m.AddRadio (TXT_NGTYPE_TRACKER, 0, KEY_T, HTX_NETWORK_TRACKER);
-			m.AddRadio (TXT_NGTYPE_MCAST4, 0, KEY_M, HTX_NETWORK_MCAST);
+
+do {
+	nOldGameMode = gameData.app.nGameMode;
+	m.Destroy ();
+	m.Create (15);
+	if (gameStates.app.bNostalgia < 2) {
+		optCreate = m.AddMenu (TXT_CREATE_GAME, KEY_S, HTX_NETWORK_SERVER);
+		optJoin = m.AddMenu (TXT_JOIN_GAME, KEY_J, HTX_NETWORK_CLIENT);
+		m.AddText ("", 0);
+		optConn = m.AddRadio (TXT_NGTYPE_IPX, 0, KEY_I, HTX_NETWORK_IPX);
+		m.AddRadio (TXT_NGTYPE_UDP, 0, KEY_U, HTX_NETWORK_UDP);
+		m.AddRadio (TXT_NGTYPE_TRACKER, 0, KEY_T, HTX_NETWORK_TRACKER);
+		m.AddRadio (TXT_NGTYPE_MCAST4, 0, KEY_M, HTX_NETWORK_MCAST);
 #ifdef KALINIX
-			m.AddRadio (TXT_NGTYPE_KALI, 0, KEY_K, HTX_NETWORK_KALI);
+		m.AddRadio (TXT_NGTYPE_KALI, 0, KEY_K, HTX_NETWORK_KALI);
 #endif
-			nConnections = m.ToS ();
-			m [optConn + NMCLAMP (gameStates.multi.nConnection, 0, nConnections - optConn)].m_value = 1;
-			}
-		else {
+		nConnections = m.ToS ();
+		m [optConn + NMCLAMP (gameStates.multi.nConnection, 0, nConnections - optConn)].m_value = 1;
+		}
+	else {
 #ifdef NATIVE_IPX
-			multiOpts.nStartIpx = m.AddMenu (TXT_START_IPX_NET_GAME,  -1, HTX_NETWORK_IPX);
-			multiOpts.nJoinIpx = m.AddMenu (TXT_JOIN_IPX_NET_GAME, -1, HTX_NETWORK_IPX);
+		multiOpts.nStartIpx = m.AddMenu (TXT_START_IPX_NET_GAME,  -1, HTX_NETWORK_IPX);
+		multiOpts.nJoinIpx = m.AddMenu (TXT_JOIN_IPX_NET_GAME, -1, HTX_NETWORK_IPX);
 #endif //NATIVE_IPX
-			multiOpts.nStartMCast4 = m.AddMenu (TXT_MULTICAST_START, KEY_M, HTX_NETWORK_MCAST);
-			multiOpts.nJoinMCast4 = m.AddMenu (TXT_MULTICAST_JOIN, KEY_N, HTX_NETWORK_MCAST);
+		multiOpts.nStartMCast4 = m.AddMenu (TXT_MULTICAST_START, KEY_M, HTX_NETWORK_MCAST);
+		multiOpts.nJoinMCast4 = m.AddMenu (TXT_MULTICAST_JOIN, KEY_N, HTX_NETWORK_MCAST);
 #ifdef KALINIX
-			multiOpts.nStartKali = m.AddMenu (TXT_KALI_START, KEY_K, HTX_NETWORK_KALI);
-			multiOpts.nJoinKali = m.AddMenu (TXT_KALI_JOIN, KEY_I, HTX_NETWORK_KALI);
+		multiOpts.nStartKali = m.AddMenu (TXT_KALI_START, KEY_K, HTX_NETWORK_KALI);
+		multiOpts.nJoinKali = m.AddMenu (TXT_KALI_JOIN, KEY_I, HTX_NETWORK_KALI);
 #endif // KALINIX
-			if (gameStates.app.bNostalgia > 2)
-				multiOpts.nSerial = m.AddMenu (TXT_MODEM_GAME2, KEY_G, HTX_NETWORK_MODEM);
+		if (gameStates.app.bNostalgia > 2)
+			multiOpts.nSerial = m.AddMenu (TXT_MODEM_GAME2, KEY_G, HTX_NETWORK_MODEM);
+		}
+	i = m.Menu (NULL, TXT_MULTIPLAYER, NULL, &choice);
+	if (i > -1) {      
+		if (gameStates.app.bNostalgia > 1)
+			i = choice;
+		else {
+			for (gameStates.multi.nConnection = 0; 
+				  gameStates.multi.nConnection < nConnections; 
+				  gameStates.multi.nConnection++)
+				if (m [optConn + gameStates.multi.nConnection].m_value)
+					break;
+			i = MultiChoice (gameStates.multi.nConnection, choice == optJoin);
 			}
-		i = m.Menu (NULL, TXT_MULTIPLAYER, NULL, &choice);
-		if (i > -1) {      
-			if (gameStates.app.bNostalgia > 1)
-				i = choice;
-			else {
-				for (gameStates.multi.nConnection = 0; 
-					  gameStates.multi.nConnection < nConnections; 
-					  gameStates.multi.nConnection++)
-					if (m [optConn + gameStates.multi.nConnection].m_value)
-						break;
-				i = MultiChoice (gameStates.multi.nConnection, choice == optJoin);
-				}
-			ExecMultiMenuOption (i);
-			}
-		if (nOldGameMode != gameData.app.nGameMode)
-			break;          // leave menu
-		} while (i > -1);
-	}
+		ExecMultiMenuOption (i);
+		}
+	if (nOldGameMode != gameData.app.nGameMode)
+		break;          // leave menu
+	} while (i > -1);
 }
 
 //------------------------------------------------------------------------------

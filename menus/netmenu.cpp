@@ -1455,44 +1455,36 @@ void IpxSetDriver (int ipx_driver)
 {
 	IpxClose ();
 
-if (!FindArg ("-nonetwork")) {
 	int nIpxError;
 	int socket = 0, t;
 
-	if (0 <= (t = FindArg ("-socket")))
-		socket = atoi (appConfig [t + 1]);
-	ArchIpxSetDriver (ipx_driver);
-	if ((nIpxError = IpxInit (IPX_DEFAULT_SOCKET + socket)) == IPX_INIT_OK) {
-		networkData.bActive = 1;
-		} 
-	else {
-#if 1 //TRACE
-	switch (nIpxError) {
-		case IPX_NOT_INSTALLED: 
-			console.printf (CON_VERBOSE, "%s\n", TXT_NO_NETWORK); 
-			break;
-		case IPX_SOCKET_TABLE_FULL: 
-			console.printf (CON_VERBOSE, "%s 0x%x.\n", TXT_SOCKET_ERROR, IPX_DEFAULT_SOCKET + socket); 
-			break;
-		case IPX_NO_LOW_DOS_MEM: 
-			console.printf (CON_VERBOSE, "%s\n", TXT_MEMORY_IPX); 
-			break;
-		default: 
-			console.printf (CON_VERBOSE, "%s %d", TXT_ERROR_IPX, nIpxError);
-		}
-		console.printf (CON_VERBOSE, "%s\n", TXT_NETWORK_DISABLED);
-#endif
-		networkData.bActive = 0;		// Assume no network
-	}
-	IpxReadUserFile ("descent.usr");
-	IpxReadNetworkFile ("descent.net");
-	} 
+if ((t = FindArg ("-socket")))
+	socket = atoi (appConfig [t + 1]);
+ArchIpxSetDriver (ipx_driver);
+if ((nIpxError = IpxInit (IPX_DEFAULT_SOCKET + socket)) == IPX_INIT_OK)
+	networkData.bActive = 1;
 else {
 #if 1 //TRACE
+switch (nIpxError) {
+	case IPX_NOT_INSTALLED: 
+		console.printf (CON_VERBOSE, "%s\n", TXT_NO_NETWORK); 
+		break;
+	case IPX_SOCKET_TABLE_FULL: 
+		console.printf (CON_VERBOSE, "%s 0x%x.\n", TXT_SOCKET_ERROR, IPX_DEFAULT_SOCKET + socket); 
+		break;
+	case IPX_NO_LOW_DOS_MEM: 
+		console.printf (CON_VERBOSE, "%s\n", TXT_MEMORY_IPX); 
+		break;
+	default: 
+		console.printf (CON_VERBOSE, "%s %d", TXT_ERROR_IPX, nIpxError);
+	}
 	console.printf (CON_VERBOSE, "%s\n", TXT_NETWORK_DISABLED);
 #endif
 	networkData.bActive = 0;		// Assume no network
 	}
+IpxReadUserFile ("descent.usr");
+IpxReadNetworkFile ("descent.net");
+networkData.bActive = 0;		// Assume no network
 }
 
 //------------------------------------------------------------------------------

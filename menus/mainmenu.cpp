@@ -202,9 +202,10 @@ if (!LOCALPLAYER.callsign [0]) {
 	return 0;
 	}
 if (gameData.multiplayer.autoNG.bValid) {
-	ExecMultiMenuOption (mainOpts.nMulti);
+	MultiplayerMenu ();
 	return 0;
 	}
+
 PrintLog ("launching main menu\n");
 do {
 	nOptions = SetupMainMenu (m); // may have to change, eg, maybe selected pilot and no save games.
