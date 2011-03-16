@@ -313,8 +313,8 @@ return CountActive ();
 
 //------------------------------------------------------------------------------
 
-extern int stoip (char *szServerIpAddr, ubyte *ipAddrP);
-int stoport (char *szPort, int *pPort, int *pSign);
+//int stoip (char *szServerIpAddr, ubyte *ipAddrP, int* portP = NULL);
+//int stoport (char *szPort, int *pPort, int *pSign);
 
 int CTracker::ParseIpAndPort (char *pszAddr, tUdpAddress *addr)
 {

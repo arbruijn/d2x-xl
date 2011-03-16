@@ -2496,7 +2496,7 @@ class CAutoNetGame {
 		char					szName [81];		//game name
 		int					nLevel;
 		ubyte					ipAddr [4];
-		ushort				nPort;
+		int					nPort;
 		ubyte					uConnect;
 		ubyte					uType;
 		ubyte					bHost;

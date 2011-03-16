@@ -34,6 +34,7 @@
 #include "gamefont.h"
 #include "menubackground.h"
 #include "netmenu.h"
+#include "timeout.h"
 
 #define LHX(x)      (gameStates.menus.bHires?2* (x):x)
 #define LHY(y)      (gameStates.menus.bHires? (24* (y))/10:y)
@@ -259,7 +260,7 @@ return nCurItem;
 int NetworkBrowseGames (void)
 {
 	CMenu	menu (MAX_ACTIVE_NETGAMES + 5);
-	int	choice, bAutoRun = gameData.multiplayer.autoNG.bValid;
+	int	choice, bAutoLaunch = gameData.multiplayer.autoNG.bValid;
 	char	callsign [CALLSIGN_LEN+1];
 
 //PrintLog ("launching netgame browser\n");
@@ -289,7 +290,7 @@ networkData.nActiveGames = 0;
 networkData.nLastActiveGames = 0;
 memset (activeNetGames, 0, sizeof (activeNetGames));
 memset (activeNetPlayers, 0, sizeof (activeNetPlayers));
-if (!bAutoRun) {
+if (!bAutoLaunch) {
 	fontManager.SetColorRGBi (RGB_PAL (15, 15, 23), 1, 0, 0);
 	menu.AddText (szGameList [0]);
 	menu.Top ()->m_bNoScroll = 1;
@@ -316,13 +317,12 @@ networkData.bGamesChanged = 1;
 doMenu:
 
 gameStates.app.nExtGameStatus = GAMESTAT_JOIN_NETGAME;
-if (bAutoRun) {
-	fix t, t0 = 0;
+if (bAutoLaunch) {
+	static CTimeout to (I2X (1));
+
 	do {
-		if ((t = SDL_GetTicks ()) > t0 + I2X (1)) {
-			t0 = t;
-			NetworkSendGameListRequest ();
-			}
+		if (to.Expired ())
+			NetworkSendGameListRequest (bAutoLaunch);
 		NetworkListen ();
 		if (KeyInKey () == KEY_ESC)
 			return 0;

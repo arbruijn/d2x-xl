@@ -112,7 +112,7 @@ if ((t = FindArg ("-ng_level")))
 else
 	gameData.multiplayer.autoNG.nLevel = 1;
 if ((t = FindArg ("-ng_server")) && (p = appConfig [t+1]))
-	bHaveIp = stoip (appConfig [t+1], gameData.multiplayer.autoNG.ipAddr, gameData.multiplayer.autoNG.nPort);
+	bHaveIp = stoip (appConfig [t+1], gameData.multiplayer.autoNG.ipAddr, &gameData.multiplayer.autoNG.nPort);
 
 if ((t = FindArg ("-ng_team")))
 	gameData.multiplayer.autoNG.bTeam = NumArg (t, 1);

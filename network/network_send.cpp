@@ -167,7 +167,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 //------------------------------------------------------------------------------
 // Send a broadcast request for game info
 
-int NetworkSendGameListRequest (void)
+int NetworkSendGameListRequest (int bAutoLaunch)
 {
 	tSequencePacket me;
 
@@ -184,7 +184,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	else {
 		console.printf (0, "looking for netgames\n");
 		ubyte serverAddress [10];
-		if (tracker.m_bUse) {
+		if (tracker.m_bUse && !bAutoLaunch) {
 			if (!tracker.RequestServerList ())
 				return 0;
 			for (int i = 0; tracker.GetServerFromList (i, serverAddress); i++)

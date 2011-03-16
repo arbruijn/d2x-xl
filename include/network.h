@@ -521,7 +521,7 @@ class CEndLevelInfo {
 
 int  NetworkSendRequest (void);
 int  NetworkChooseConnect (void);
-int  NetworkSendGameListRequest (void);
+int  NetworkSendGameListRequest (int bAutoLaunch = 0);
 void NetworkAddPlayer (tSequencePacket *p);
 void NetworkSendGameInfo (tSequencePacket *their);
 void ClipRank (char *rank);

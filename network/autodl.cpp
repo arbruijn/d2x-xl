@@ -240,7 +240,7 @@ int CDownloadManager::ConnectToClient (tClient& client)
 if (!m_socket) {
 	IPaddress ip;
 
-	if (SDLNet_ResolveHost (&ip, NULL, 28342) < 0)
+	if (SDLNet_ResolveHost (&ip, NULL, UDP_BASEPORT) < 0)
 		return DL_DONE;
 	if (!(m_socket = SDLNet_TCP_Open (&ip)))
 		return DL_DONE;
@@ -269,7 +269,7 @@ if (m_socket) {
 	}
 sprintf (szIp, "%d.%d.%d.%d",
 			 networkData.serverAddress [4], networkData.serverAddress [5], networkData.serverAddress [6], networkData.serverAddress [7]);
-if (SDLNet_ResolveHost (&ip, szIp, 28342) < 0)
+if (SDLNet_ResolveHost (&ip, szIp, UDP_BASEPORT) < 0)
 	return 0;
 
 for (CTimeout to (30000); !to.Expired (); ) {

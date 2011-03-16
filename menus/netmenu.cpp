@@ -1316,7 +1316,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int stoip (char *szServerIpAddr, ubyte *ipAddrP, ushort* portP)
+int stoip (char *szServerIpAddr, ubyte *ipAddrP, int* portP)
 {
 	char	*pi, *pj, *pFields [5], tmp [22];
 	int	h, i, j;
@@ -1484,7 +1484,6 @@ switch (nIpxError) {
 	}
 IpxReadUserFile ("descent.usr");
 IpxReadNetworkFile ("descent.net");
-networkData.bActive = 0;		// Assume no network
 }
 
 //------------------------------------------------------------------------------

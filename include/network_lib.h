@@ -221,7 +221,6 @@ void NetworkSendMarkers (void);
 void NetworkSendRejoinSync (int nPlayer, tNetworkSyncData *syncP);
 void ResendSyncDueToPacketLoss (void);
 void NetworkSendFlyThruTriggers (int nPlayer); 
-int NetworkSendGameListRequest (void);
 void NetworkSendAllInfoRequest (char nType, int nSecurity);
 void NetworkSendEndLevelSub (int nPlayer);
 void NetworkSendEndLevelPacket (void);
