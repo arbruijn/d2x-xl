@@ -158,7 +158,7 @@ if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, getenv (
 	*gameFolders.szGameDir = '\0';
 #ifdef _WIN32
 if (!*gameFolders.szGameDir) {
-	psz = appConfig [0];
+	psz = appConfig [1];
 	for (int j = (int) strlen (psz); j; ) {
 		coord = psz [--j];
 		if ((coord == '\\') || (coord == '/')) {
