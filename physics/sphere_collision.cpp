@@ -499,7 +499,7 @@ return (t == nObject);
 
 //	-----------------------------------------------------------------------------
 
-void ComputeObjectHitpoint (short nThisObject, short nStartSeg, CFixVector *p0, CFixVector *p1, fix radP0, fix radP1, int flags,
+int ComputeObjectHitpoint (short nThisObject, short nStartSeg, CFixVector *p0, CFixVector *p1, fix radP0, fix radP1, int flags,
 										 short* ignoreObjList, CFixVector& vClosestHitPoint, int &nHitType)
 {
 	CObject		* thisObjP = (nThisObject < 0) ? NULL : OBJECTS + nThisObject,
@@ -606,10 +606,11 @@ restart:
 			CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
 #endif
 			if (flags & FQ_ANY_OBJECT)
-				return;
+				return dMin;
 			}
 		}
 	}
+return dMin;
 }
 
 //	-----------------------------------------------------------------------------
@@ -651,7 +652,7 @@ gameData.collisions.hitData.nNestCount++;
 #if 1
 if (flags & FQ_CHECK_OBJS) {
 	//PrintLog ("   checking objects...");
-	ComputeObjectHitpoint (nThisObject, nStartSeg, p0, p1, radP0, radP1, flags, ignoreObjList, vClosestHitPoint, nHitType);
+	dMin = ComputeObjectHitpoint (nThisObject, nStartSeg, p0, p1, radP0, radP1, flags, ignoreObjList, vClosestHitPoint, nHitType);
 	}
 #endif
 

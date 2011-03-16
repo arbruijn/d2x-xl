@@ -1182,8 +1182,7 @@ bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1, 1);
 bMissileAmmo = PlayerHasWeapon (gameData.weapons.nSecondary, 1, -1, 1);
 nPrimaryBm = bLaserReady && (bLaserAmmo == HAS_ALL);
 nSecondaryBm = bMissileReady && (bMissileAmmo == HAS_ALL);
-if (nPrimaryBm && (gameData.weapons.nPrimary == LASER_INDEX) &&
-	 (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS))
+if (nPrimaryBm && (gameData.weapons.nPrimary == LASER_INDEX) && (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS))
 	nPrimaryBm++;
 
 if (secondaryWeaponToGunNum [gameData.weapons.nSecondary] == 7)
