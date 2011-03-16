@@ -52,10 +52,16 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 
 #if 1
 
-#define FixMul64(_a, _b)		(QLONG (double (_b) / 65536.0 * double (_a)))
-#define FixMul(_a, _b)			(fix (double (_b) / 65536.0 * double (_a)))
-#define FixDiv(_a, _b)			(fix ((_b) ? (double (_a) / double (_b) * 65536.0) : 1))
-#define FixMulDiv(_a, _b, _c) (fix ((_c) ? double (_a) / double (_c) * double (_b) : 1))
+#	if 1
+#	define Round(_v)					(_v)
+#	else
+#	define Round(_v)					(((_v) < 0.0) ? (_v) - 0.5 : (_v) + 0.5)
+#endif
+
+#define FixMul64(_a, _b)		((QLONG) Round (double (_b) / 65536.0 * double (_a)))
+#define FixMul(_a, _b)			((fix) Round (double (_b) / 65536.0 * double (_a)))
+#define FixDiv(_a, _b)			((fix) Round ((_b) ? (double (_a) / double (_b) * 65536.0) : 1))
+#define FixMulDiv(_a, _b, _c) ((fix) Round ((_c) ? double (_a) / double (_c) * double (_b) : 1))
 
 #else
 
