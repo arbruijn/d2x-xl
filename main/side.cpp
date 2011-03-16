@@ -626,7 +626,7 @@ return nEdgeMask;
 int CSide::CheckSphereToFace (CFixVector& intersection, fix rad, short iFace, CFixVector vNormal)
 {
 	CFixVector	vEdge, vCheck;            //this time, real 3d vectors
-	CFixVector	vClosestPoint;
+	CFixVector	vNearest;
 	fix			xEdgeLen, d, dist;
 	CFixVector	*v0, *v1;
 	int			iType;
@@ -642,13 +642,14 @@ if (nEdgeMask == 0)
 for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
 	;
 nVerts = 5 - m_nFaces;
+iFace *= 3;
 if (gameStates.render.bRendering) {
-	v0 = &gameData.segs.points [m_vertices [iFace * 3 + nEdge]].p3_vec;
-	v1 = &gameData.segs.points [m_vertices [iFace * 3 + ((nEdge + 1) % nVerts)]].p3_vec;
+	v0 = &gameData.segs.points [m_vertices [iFace + nEdge]].p3_vec;
+	v1 = &gameData.segs.points [m_vertices [iFace + ((nEdge + 1) % nVerts)]].p3_vec;
 	}
 else {
-	v0 = VERTICES + m_vertices [iFace * 3 + nEdge];
-	v1 = VERTICES + m_vertices [iFace * 3 + ((nEdge + 1) % nVerts)];
+	v0 = VERTICES + m_vertices [iFace + nEdge];
+	v1 = VERTICES + m_vertices [iFace + ((nEdge + 1) % nVerts)];
 	}
 //check if we are touching an edge or refP
 vCheck = intersection - *v0;
@@ -662,14 +663,20 @@ if (d - rad > xEdgeLen)
 //find closest refP on edge to check refP
 iType = IT_POINT;
 if (d < 0)
-	vClosestPoint = *v0;
+	vNearest = *v0;
 else if (d > xEdgeLen)
-	vClosestPoint = *v1;
+	vNearest = *v1;
 else {
 	iType = IT_EDGE;
-	vClosestPoint = *v0 + vEdge * d;
+#if 0
+	vNearest = *v0 + (vEdge * d);
+#else
+	vNearest = vEdge;
+	vNearest *= d;
+	vNearest += *v0;
+#endif
 	}
-dist = CFixVector::Dist (intersection, vClosestPoint);
+dist = CFixVector::Dist (intersection, vNearest);
 if (dist <= rad)
 	return (iType == IT_POINT) ? IT_NONE : iType;
 return IT_NONE;

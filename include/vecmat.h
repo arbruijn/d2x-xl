@@ -118,19 +118,22 @@ class __pack__ CFixVector {
 		CFixVector& Scale (CFixVector& scale);
 		CFixVector& Neg (void);
 		const CFixVector operator- (void) const;
-		const bool operator== (const CFixVector& vec);
-		const bool operator!= (const CFixVector& vec);
-		const CFixVector& operator+= (const CFixVector& vec);
-		const CFixVector& operator+= (const CFloatVector& vec);
-		const CFixVector& operator-= (const CFloatVector& vec);
-		const CFixVector& operator-= (const CFixVector& vec);
+		const bool operator== (const CFixVector& other);
+		const bool operator!= (const CFixVector& other);
+		const CFixVector& operator+= (const CFixVector& other);
+		const CFixVector& operator+= (const CFloatVector& other);
+		const CFixVector& operator-= (const CFloatVector& other);
+		const CFixVector& operator-= (const CFixVector& other);
 		const CFixVector& operator*= (const CFixVector& other);
 		const CFixVector& operator*= (const fix s);
 		const CFixVector& operator/= (const fix s);
-		const CFixVector operator+ (const CFixVector& vec) const;
-		const CFixVector operator+ (const CFloatVector& vec) const;
-		const CFixVector operator- (const CFixVector& vec) const;
-		const CFixVector operator- (const CFloatVector& vec) const;
+		const CFixVector operator+ (const CFixVector& other) const;
+		const CFixVector operator+ (const CFloatVector& other) const;
+		const CFixVector operator- (const CFixVector& other) const;
+		const CFixVector operator- (const CFloatVector& other) const;
+		const fix operator* (const CFixVector& other) const;
+		const CFixVector operator* (const fix s) const;
+		const CFixVector operator/ (const fix s) const;
 		CFixVector& Assign (const CFloatVector3& other);
 		CFixVector& Assign (const CFloatVector& other);
 		CFixVector& Assign (const CFixVector& other);
@@ -158,10 +161,10 @@ class __pack__ CFixVector {
 		const CAngleVector ToAnglesVec (void) const;
 };
 
-inline const fix operator* (const CFixVector& v0, const CFixVector& v1);
-inline const CFixVector operator* (const CFixVector& v, const fix s);
-inline const CFixVector operator* (const fix s, const CFixVector& v);
-inline const CFixVector operator/ (const CFixVector& v, const fix d);
+//inline const fix operator* (const CFixVector& v0, const CFixVector& v1);
+//inline const CFixVector operator* (const CFixVector& v, const fix s);
+//inline const CFixVector operator* (const fix s, const CFixVector& v);
+//inline const CFixVector operator/ (const CFixVector& v, const fix d);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -244,16 +247,19 @@ class __pack__ CFloatVector {
 		const CFloatVector  operator+ (const CFixVector& other) const;
 		const CFloatVector  operator- (const CFloatVector& other) const;
 		const CFloatVector  operator- (const CFixVector& other) const;
+		const float operator* (const CFloatVector& other) const;
+		const CFloatVector operator* (const float s) const;
+		const CFloatVector operator/ (const float s) const;
 		CFloatVector& Assign (const CFloatVector3& other);
 		CFloatVector& Assign (const CFloatVector& other);
 		CFloatVector& Assign (const CFixVector& other);
 		const float DistToPlane (const CFloatVector& n, const CFloatVector& p) const;
 };
 
-const float operator* (const CFloatVector& v0, const CFloatVector& v1);
-const CFloatVector operator* (const CFloatVector& v, const float s);
-const CFloatVector operator* (const float s, const CFloatVector& v);
-const CFloatVector operator/ (const CFloatVector& v, const float s);
+//const float operator* (const CFloatVector& v0, const CFloatVector& v1);
+//const CFloatVector operator* (const CFloatVector& v, const float s);
+//const CFloatVector operator* (const float s, const CFloatVector& v);
+//const CFloatVector operator/ (const CFloatVector& v, const float s);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -323,15 +329,18 @@ class __pack__ CFloatVector3 {
 		const CFloatVector3& operator/= (const float s);
 		const CFloatVector3 operator+ (const CFloatVector3& other) const;
 		const CFloatVector3 operator- (const CFloatVector3& other) const;
+		const float operator* (const CFloatVector3& other) const;
+		const CFloatVector3 operator* (const float s) const;
+		const CFloatVector3 operator/ (const float s) const;
 		CFloatVector3& Assign (const CFloatVector3& other);
 		CFloatVector3& Assign (const CFloatVector& other);
 		CFloatVector3& Assign (const CFixVector& other);
 };
 
-const float operator* (const CFloatVector3& v0, const CFloatVector3& v1);
-const CFloatVector3 operator* (const CFloatVector3& v, float s);
-const CFloatVector3 operator* (float s, const CFloatVector3& v);
-const CFloatVector3 operator/ (const CFloatVector3& v, float s);
+//const float operator* (const CFloatVector3& v0, const CFloatVector3& v1);
+//const CFloatVector3 operator* (const CFloatVector3& v, float s);
+//const CFloatVector3 operator* (float s, const CFloatVector3& v);
+//const CFloatVector3 operator/ (const CFloatVector3& v, float s);
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -435,7 +444,7 @@ inline const CFloatVector CFloatVector::Normal (const CFloatVector& p0, const CF
 }
 
 inline const CFloatVector CFloatVector::Reflect (const CFloatVector& d, const CFloatVector& n) {
-	return -2.0f * Dot (d, n) * n + d;
+	return n * (Dot (d, n) * -2.0f) + d;
 }
 
 // -----------------------------------------------------------------------------
@@ -582,25 +591,25 @@ return CFloatVector::Dot (v.coord.x - p.v.coord.x, v.coord.y - p.v.coord.y, v.co
 // -----------------------------------------------------------------------------
 // CFloatVector-related non-member ops
 
-inline const float operator* (const CFloatVector& v0, const CFloatVector& v1) {
-	return CFloatVector::Dot (v0, v1);
+inline const float CFloatVector::operator* (const CFloatVector& other) const {
+	return v.coord.x * other.v.coord.x + v.coord.y * other.v.coord.y + v.coord.z * other.v.coord.z;
 }
 
-inline const CFloatVector operator* (const CFloatVector& v, const float s) {
+inline const CFloatVector CFloatVector::operator* (const float s) const {
 	CFloatVector vec;
-	vec.Set (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s, 1.0f);
+	vec.Set (v.coord.x * s, v.coord.y * s, v.coord.z * s, 1.0f);
 	return vec;
 }
 
-inline const CFloatVector operator* (const float s, const CFloatVector& v) {
-	CFloatVector vec;
-	vec.Set (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s, 1.0f);
-	return vec;
-}
+//inline const CFloatVector operator* (const float s, const CFloatVector& v) {
+//	CFloatVector vec;
+//	vec.Set (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s, 1.0f);
+//	return vec;
+//}
 
-inline const CFloatVector operator/ (const CFloatVector& v, const float s) {
+inline const CFloatVector CFloatVector::operator/ (const float s) const {
 	CFloatVector vec;
-	vec.Set (v.v.coord.x / s, v.v.coord.y / s, v.v.coord.z / s, 1.0);
+	vec.Set (v.coord.x / s, v.coord.y / s, v.coord.z / s, 1.0);
 	return vec;
 }
 
@@ -667,7 +676,7 @@ inline const CFloatVector3 CFloatVector3::Normal (const CFloatVector3& p0, const
 }
 
 inline const CFloatVector3 CFloatVector3::Reflect (const CFloatVector3& d, const CFloatVector3& n) {
-	return -2.0f * Dot (d, n) * n + d;
+	return n * (Dot (d, n) * -2.0f) + d;
 }
 
 // -----------------------------------------------------------------------------
@@ -777,25 +786,25 @@ inline const CFloatVector3 CFloatVector3::operator- (const CFloatVector3& other)
 // -----------------------------------------------------------------------------
 // CFloatVector3-related non-member ops
 
-inline const float operator* (const CFloatVector3& v0, const CFloatVector3& v1) {
-	return CFloatVector3::Dot (v0, v1);
+inline const float CFloatVector3::operator* (const CFloatVector3& other) const {
+	return v.coord.x * other.v.coord.x + v.coord.y * other.v.coord.y + v.coord.z * other.v.coord.z;
 }
 
-inline const CFloatVector3 operator* (const CFloatVector3& v, float s) {
+inline const CFloatVector3 CFloatVector3::operator* (float s) const {
 	CFloatVector3 vec;
-	vec.Set (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s);
+	vec.Set (v.coord.x * s, v.coord.y * s, v.coord.z * s);
 	return vec;
 }
 
-inline const CFloatVector3 operator* (float s, const CFloatVector3& v) {
-	CFloatVector3 vec;
-	vec.Set (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s);
-	return vec;
-}
+//inline const CFloatVector3 operator* (float s, const CFloatVector3& v) {
+//	CFloatVector3 vec;
+//	vec.Set (v.v.coord.x * s, v.v.coord.y * s, v.v.coord.z * s);
+//	return vec;
+//}
 
-inline const CFloatVector3 operator/ (const CFloatVector3& v, float s) {
+inline const CFloatVector3 CFloatVector3::operator/ (float s) const {
 	CFloatVector3 vec;
-	vec.Set (v.v.coord.x / s, v.v.coord.y / s, v.v.coord.z / s);
+	vec.Set (v.coord.x / s, v.coord.y / s, v.coord.z / s);
 	return vec;
 }
 
@@ -1149,25 +1158,25 @@ return t.ToAnglesVecNorm ();
 // -----------------------------------------------------------------------------
 // CFixVector-related non-member ops
 
-inline const fix operator* (const CFixVector& v0, const CFixVector& v1) {
-	return CFixVector::Dot (v0, v1);
+inline const fix CFixVector::operator* (const CFixVector& other) const {
+	return fix ((double (v.coord.x) * double (other.v.coord.x) + double (v.coord.y) * double (other.v.coord.y) + double (v.coord.z) * double (other.v.coord.z)) / 65536.0);
 }
 
-inline const CFixVector operator* (const CFixVector& v, const fix s) {
+inline const CFixVector CFixVector::operator* (const fix s) const {
 	CFixVector vec;
-	vec.Set (FixMul (v.v.coord.x, s), FixMul (v.v.coord.y, s), FixMul (v.v.coord.z, s));
+	vec.Set (FixMul (v.coord.x, s), FixMul (v.coord.y, s), FixMul (v.coord.z, s));
 	return vec;
 }
 
-inline const CFixVector operator* (const fix s, const CFixVector& v) {
-	CFixVector vec;
-	vec.Set (FixMul (v.v.coord.x, s), FixMul (v.v.coord.y, s), FixMul (v.v.coord.z, s));
-	return vec;
-}
+//static inline const CFixVector operator* (const fix s, const CFixVector& v) {
+//	CFixVector vec;
+//	vec.Set (FixMul (v.v.coord.x, s), FixMul (v.v.coord.y, s), FixMul (v.v.coord.z, s));
+//	return vec;
+//}
 
-inline const CFixVector operator/ (const CFixVector& v, const fix d) {
+inline const CFixVector CFixVector::operator/ (const fix d) const {
 	CFixVector vec;
-	vec.Set (FixDiv (v.v.coord.x, d), FixDiv (v.v.coord.y, d), FixDiv (v.v.coord.z, d));
+	vec.Set (FixDiv (v.coord.x, d), FixDiv (v.coord.y, d), FixDiv (v.coord.z, d));
 	return vec;
 }
 

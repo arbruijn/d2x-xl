@@ -762,7 +762,7 @@ if (bClamp && bClamped) {
 	hitP = (bClamped == 1) ? p1 : p2;
 	}
 else
-	hitP = p1 + u * d21;
+	hitP = p1 + d21 * u;
 return bClamped;
 }
 
@@ -793,7 +793,7 @@ else
 if (bClamp && bClamped)
 	hitP = (bClamped == 1) ? p1 : p2; //(CFloatVector::Dist (p3, p1) < CFloatVector::Dist (p3, p2)) ? p1 : p2;
 else
-	hitP = p1 + u * d21;
+	hitP = p1 + d21 * u;
 return bClamped;
 }
 
@@ -827,7 +827,7 @@ if (bClamp && bClamped) {
 	hitP = (bClamped == 1) ? p1 : p2;
 	}
 else {
-	hitP = p1 + u * d21;
+	hitP = p1 + d21 * u;
 	}
 return bClamped;
 }
@@ -899,8 +899,8 @@ num = d1343 * d4321 - d1321 * d4343;
 mua = num / den;
 mub = (d1343 + d4321 * mua) / d4343;
 
-va = v1 + mua * v21;
-vb = v3 + mub * v43;
+va = v1 + v21 * mua;
+vb = v3 + v43 * mub;
 
 return CFloatVector3::Dist (va, vb);
 }
@@ -949,8 +949,8 @@ vb->x () = v3->x () + mub * v43.v.coord.x;
 vb->y () = v3->y () + mub * v43.v.coord.y;
 vb->z () = v3->z () + mub * v43.v.coord.z;
 */
-va = v1 + mua * v21;
-vb = v3 + mub * v43;
+va = v1 + v21 * mua;
+vb = v3 + v43 * mub;
 
 return CFloatVector::Dist (va, vb);
 }

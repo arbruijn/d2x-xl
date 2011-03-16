@@ -975,10 +975,12 @@ int SphereIntersectsWall (CFixVector *vPoint, short nSegment, fix rad)
 	int		faceMask;
 	CSegment *segP;
 
+#if DBG
 if (nSegment == -1) {
 	Error("nSegment == -1 in SphereIntersectsWall()");
 	return 0;
 	}
+#endif
 if ((gameData.collisions.nSegsVisited < 0) || (gameData.collisions.nSegsVisited > MAX_SEGS_VISITED))
 	gameData.collisions.nSegsVisited = 0;
 gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nSegment;
