@@ -643,7 +643,7 @@ else {
 	}
 i = NetworkCheckMissingFrames (nFrame);
 if (!i) {
-	networkData.toSyncPoll [0] = 0;
+	networkData.toSyncPoll.Start (0);
 	return;
 	}
 else if (i < 0)

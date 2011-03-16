@@ -16,6 +16,8 @@ class CTimeout {
 	public:
 		CTimeout (time_t duration = 1000) : m_duration(duration) { Start (); }
 
+		inline void Setup (time_t duration) { m_duration = duration; }
+
 		inline void Start (time_t t = -1) { m_t0 = (t < 0) ? SDL_GetTicks () : t; }
 
 		inline time_t Progress (void) { return m_t0 - SDL_GetTicks (); }

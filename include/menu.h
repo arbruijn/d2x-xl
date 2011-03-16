@@ -15,6 +15,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _MENU_H
 
 #include "pstypes.h"
+#include "timeout.h"
 // returns number of item chosen
 
 //------------------------------------------------------------------------------
@@ -192,6 +193,7 @@ class CMenu : public CStack<CMenuItem> {
 	private:
 		tMenuProps	m_props;
 		int			m_nGroup;
+		CTimeout		m_to;
 
 	protected:
 		int				m_bStart;
@@ -214,7 +216,9 @@ class CMenu : public CStack<CMenuItem> {
 		inline void Init (void) {
 			SetGrowth (10);
 			m_nGroup = 0;
+			m_to.Setup (5);
 			}
+
 		inline int NewGroup (int nGroup = 0) {
 			if (!nGroup)
 				m_nGroup++;
@@ -224,6 +228,7 @@ class CMenu : public CStack<CMenuItem> {
 				m_nGroup--;
 			return m_nGroup;
 			}
+
 		int AddCheck (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
 		int AddRadio (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
 		int AddMenu (const char* szText, int nKey = 0, const char* szHelp = NULL);
@@ -248,6 +253,8 @@ class CMenu : public CStack<CMenuItem> {
 		static void DrawCloseBox (int x, int y);
 		void FadeIn (void);
 		void FadeOut (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
+
+		inline void SetThrottle (time_t t) { m_to.Setup (t); }
 
 		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 

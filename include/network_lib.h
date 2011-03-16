@@ -75,6 +75,7 @@ typedef struct tNetworkSyncData {
 
 #include "ipx_drv.h"
 #include "ipx_udp.h"
+#include "timeout.h"
 
 typedef struct tNetworkData {
 	ubyte					localAddress [10];
@@ -125,7 +126,7 @@ typedef struct tNetworkData {
 	short					nPrevFrame;
 	int					bTraceFrames;
 	tRefuseData			refuse;
-	time_t				toSyncPoll [2];
+	CTimeout				toSyncPoll;
 	time_t				toWaitAllPoll;
 	tNetworkSyncData	sync [MAX_JOIN_REQUESTS];
 	short					nJoining;

@@ -369,12 +369,9 @@ return 3000;
 
 //------------------------------------------------------------------------------
 
-void ResetSyncTimeout (bool bAll = false)
+void ResetSyncTimeout (void)
 {
-networkData.toSyncPoll [0] = SDL_GetTicks ();
-if (bAll)
-	networkData.toSyncPoll [1] = networkData.toSyncPoll [0] + 10000;
-networkData.toSyncPoll [0] += SyncPollTimeout ();
+networkData.toSyncPoll.Start ();
 }
 
 //------------------------------------------------------------------------------
@@ -410,29 +407,16 @@ if (networkData.nStatus == NETSTAT_PLAYING) {
 	ResetSyncTimeout ();
 	return nCurItem;
 	}
-#if 0
-time_t t = (time_t) SDL_GetTicks ();
-if (t < networkData.toSyncPoll [1]) 
-	{
-	if (nPackets && networkData.nJoinState) {
-		ResetSyncTimeout ();
-		return nCurItem;
-		}
-	if (t < networkData.toSyncPoll [0]) // Poll time expired, re-send request
-		return nCurItem;
-	}
-#endif
-if (SDL_GetTicks () < networkData.toSyncPoll [0]) // Poll time expired, re-send request
-	return nCurItem;
+if (networkData.toSyncPoll.Expired ()) {	// Poll time expired, re-send request
 #if 1			
-console.printf (CON_DBG, "Re-sending join request.\n");
+	console.printf (CON_DBG, "Re-sending join request.\n");
 #endif
 #if DBG
 	audio.PlaySound (SOUND_HUD_MESSAGE, SOUNDCLASS_GENERIC, I2X (1) / 2);
 #endif
-ResetSyncTimeout (true);
-if (NetworkSendRequest () < 0)
-	key = -2;
+	if (NetworkSendRequest () < 0)
+		key = -2;
+	}
 return nCurItem;
 }
 
@@ -457,9 +441,8 @@ if (i < 0) {
 	return -1;
 	}
 sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers [0].m_info.players [i].callsign, TXT_NET_TO_ENTER);
-ResetSyncTimeout (true);
-//networkData.toSyncPoll [0] = 0;
-//networkData.toSyncPoll [1] = SDL_GetTicks ();
+networkData.toSyncPoll.Setup (SyncPollTimeout ());
+ResetSyncTimeout ();
 do {
 	choice = m.Menu (NULL, TXT_HOST_WAIT, NetworkSyncPoll);
 	} while (choice > -1);
@@ -701,12 +684,9 @@ if (nState)
 	int i = 0;
 	int nReady = 0;
 
-//static CTimeout to;
-static time_t t0 = 0;
-time_t t = SDL_GetTicks ();
+static CTimeout to (500);
 // tell other players that I am here
-if (t - t0 > 500) {
-	t0 = t;
+if (to.Expired ()) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (i != gameData.multiplayer.nLocalPlayer) {
 			pingStats [i].launchTime = -1; //TimerGetFixedSeconds ();

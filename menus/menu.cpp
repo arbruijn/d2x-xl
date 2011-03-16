@@ -673,6 +673,8 @@ if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING) {
 	}
 GrabMouse (0, 0);
 while (!done) {
+	m_to.Throttle ();	// give the CPU some time to breathe
+
 	if (nCurItemP)
 		*nCurItemP = m_nChoice;
 	if (gameStates.app.bGameRunning && IsMultiGame) {
