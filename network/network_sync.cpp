@@ -369,8 +369,10 @@ return 3000;
 
 //------------------------------------------------------------------------------
 
-void ResetSyncTimeout (void)
+void ResetSyncTimeout (bool bInit = false)
 {
+if (bInit)
+	networkData.toSyncPoll.Setup (SyncPollTimeout ());
 networkData.toSyncPoll.Start ();
 }
 
@@ -441,8 +443,7 @@ if (i < 0) {
 	return -1;
 	}
 sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers [0].m_info.players [i].callsign, TXT_NET_TO_ENTER);
-networkData.toSyncPoll.Setup (SyncPollTimeout ());
-ResetSyncTimeout ();
+ResetSyncTimeout (true);
 do {
 	choice = m.Menu (NULL, TXT_HOST_WAIT, NetworkSyncPoll);
 	} while (choice > -1);

@@ -615,7 +615,7 @@ return false;
 
 //------------------------------------------------------------------------------
 
-void ResetSyncTimeout (bool bAll = false);
+void ResetSyncTimeout (bool bInit = false);
 
 void NetworkReadObjectPacket (ubyte *dataP)
 {
