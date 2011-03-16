@@ -338,7 +338,7 @@ void ProgressBar (const char *szCaption, int nCurProgress, int nMaxProgress, pMe
 
 int FileList (const char *pszTitle, const char *filespec, char *filename);
 
-int stoip (char *szServerIpAddr, ubyte *pIpAddr);
+int stoip (char *szServerIpAddr, ubyte *ipAddrP, ushort* portP);
 int stoport (char *szPort, int *pPort, int *pSign);
 int SetCustomDisplayMode (int x, int y);
 

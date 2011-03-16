@@ -1316,7 +1316,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int stoip (char *szServerIpAddr, ubyte *pIpAddr)
+int stoip (char *szServerIpAddr, ubyte *ipAddrP, ushort* portP)
 {
 	char	*pi, *pj, *pFields [5], tmp [22];
 	int	h, i, j;
@@ -1354,12 +1354,12 @@ for (j = 0; j < i; j++) {
 	if (!pFields [j])
 		return 0;
 	if (j == 4)
-		return stoport (pFields [j], mpParams.udpPorts, NULL); 
+		return stoport (pFields [j], portP ? portP : mpParams.udpPorts, NULL); 
 	else {
 		h = atol (pFields [j]);
 		if ((h < 0) || (h > 255))
 			return 0;
-		pIpAddr [j] = (ubyte) h;
+		ipAddrP [j] = (ubyte) h;
 		}
 	}
 return 1;
