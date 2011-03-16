@@ -121,7 +121,7 @@ if (!(m = d21.v.coord.x * d21.v.coord.x + d21.v.coord.y * d21.v.coord.y + d21.v.
 d31 = p3 - p1;
 u = CFloatVector::Dot (d31, d21);
 u /= m;
-h = p1 + u * d21;
+h = p1 + d21 * u;
 // limit the intersection to [p1,p2]
 v [0] = p1 - h;
 v [1] = p2 - h;
