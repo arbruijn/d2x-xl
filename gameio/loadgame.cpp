@@ -613,7 +613,7 @@ FORALL_ROBOT_OBJS (objP, i)
 
 char *LevelName (int nLevel)
 {
-return gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ?
+return (gameStates.app.bAutoRunMission && *szAutoMission) ? szAutoMission : (nLevel < 0) ?
 		 missionManager.szSecretLevelNames [-nLevel-1] :
 		 missionManager.szLevelNames [nLevel-1];
 }

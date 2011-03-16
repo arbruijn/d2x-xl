@@ -349,6 +349,8 @@ int InitAutoNetGame (void)
 {
 if (!gameData.multiplayer.autoNG.bValid)
 	return 0;
+if (!missionManager.FindByName (gameData.multiplayer.autoNG.szFile, -1))
+	return 0;
 if (gameData.multiplayer.autoNG.bHost) {
 	hogFileManager.UseMission (gameData.multiplayer.autoNG.szFile);
 	strcpy (szAutoMission, gameData.multiplayer.autoNG.szMission);

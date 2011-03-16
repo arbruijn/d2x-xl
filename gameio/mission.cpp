@@ -1022,7 +1022,7 @@ for (i = 0; i < n; i++)
 		MoveFolderUp ();
 		n = BuildList (1, -1);
 		}
-return 0;		//couldn't ffs mission
+return 0;		//couldn't find mission
 }
 
 //------------------------------------------------------------------------------

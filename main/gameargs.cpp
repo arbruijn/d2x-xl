@@ -97,37 +97,34 @@ if ((t = FindArg ("-ng_player")) && (p = appConfig [t+1])) {
 	strncpy (gameData.multiplayer.autoNG.szPlayer, appConfig [t+1], 8);
 	gameData.multiplayer.autoNG.szPlayer [8] = '\0';
 	}
-if ((t = FindArg ("-ng_file")) && (p = appConfig [t+1])) {
+if ((t = FindArg ("-ng_mission")) && (p = appConfig [t+1])) { // was -ng_file
 	strncpy (gameData.multiplayer.autoNG.szFile, appConfig [t+1], FILENAME_LEN - 1);
 	gameData.multiplayer.autoNG.szFile [FILENAME_LEN - 1] = '\0';
 	}
+#if 0
 if ((t = FindArg ("-ng_mission")) && (p = appConfig [t+1])) {
 	strncpy (gameData.multiplayer.autoNG.szMission, appConfig [t+1], 12);
 	gameData.multiplayer.autoNG.szMission [12] = '\0';
 	}
-if ((t = FindArg ("-ngLevel")))
+#endif
+if ((t = FindArg ("-ng_level")))
 	gameData.multiplayer.autoNG.nLevel = NumArg (t, 1);
 else
 	gameData.multiplayer.autoNG.nLevel = 1;
+if ((t = FindArg ("-ng_server")) && (p = appConfig [t+1]))
+	bHaveIp = stoip (appConfig [t+1], gameData.multiplayer.autoNG.ipAddr);
+
+if ((t = FindArg ("-ng_team")))
+	gameData.multiplayer.autoNG.bTeam = NumArg (t, 1);
+
+#if 0 // game host parameters
 if ((t = FindArg ("-ng_name")) && (p = appConfig [t+1])) {
 	strncpy (gameData.multiplayer.autoNG.szName, appConfig [t+1], 80);
 	gameData.multiplayer.autoNG.szName [80] = '\0';
 	}
-if ((t = FindArg ("-ng_ipaddr")) && (p = appConfig [t+1]))
-	bHaveIp = stoip (appConfig [t+1], gameData.multiplayer.autoNG.ipAddr);
-if ((t = FindArg ("-ng_connect")) && (p = appConfig [t+1])) {
-	strlwr (p);
-	for (t = 0; pszTypes [t]; t++)
-		if (*pszConnect [t] && !strcmp (p, pszConnect [t])) {
-			gameData.multiplayer.autoNG.uConnect = t;
-			break;
-			}
-	}
-if ((t = FindArg ("-ng_join")) && (p = appConfig [t+1])) {
-	strlwr (p);
+if ((t = FindArg ("-ng_host")))
 	gameData.multiplayer.autoNG.bHost = !strcmp (p, "host");
-	}
-if ((t = FindArg ("-ngType")) && (p = appConfig [t+1])) {
+if ((t = FindArg ("-ng_type")) && (p = appConfig [t+1])) {
 	strlwr (p);
 	for (t = 0; pszTypes [t]; t++)
 		if (!strcmp (p, pszTypes [t])) {
@@ -135,8 +132,18 @@ if ((t = FindArg ("-ngType")) && (p = appConfig [t+1])) {
 			break;
 			}
 	}
-if ((t = FindArg ("-ng_team")))
-	gameData.multiplayer.autoNG.bTeam = NumArg (t, 1);
+if ((t = FindArg ("-ng_protocol")) && (p = appConfig [t+1])) {
+	strlwr (p);
+	for (t = 0; pszTypes [t]; t++)
+		if (*pszConnect [t] && !strcmp (p, pszConnect [t])) {
+			gameData.multiplayer.autoNG.uConnect = t;
+			break;
+			}
+	}
+else
+#endif
+	gameData.multiplayer.autoNG.uConnect = 1;
+
 if (gameData.multiplayer.autoNG.bHost)
 	gameData.multiplayer.autoNG.bValid =
 		*gameData.multiplayer.autoNG.szPlayer &&
@@ -146,7 +153,10 @@ if (gameData.multiplayer.autoNG.bHost)
 else
 	gameData.multiplayer.autoNG.bValid =
 		*gameData.multiplayer.autoNG.szPlayer &&
+		*gameData.multiplayer.autoNG.szFile &&
+		gameData.multiplayer.autoNG.nLevel &&
 		bHaveIp;
+
 if (gameData.multiplayer.autoNG.bValid)
 	gameOptions [0].movies.nLevel = 0;
 }
