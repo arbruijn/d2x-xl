@@ -75,6 +75,7 @@ memset (addressFilter, 0, sizeof (addressFilter));
 	 addressFilter [PID_EXTRA_GAMEINFO] =
 	 addressFilter [PID_DOWNLOAD] =
 	 addressFilter [PID_UPLOAD] =
+	 addressFilter [PID_XML_GAMEINFO] =
 	 addressFilter [(int) PID_TRACKER_ADD_SERVER] =
 	 addressFilter [(int) PID_TRACKER_GET_SERVERLIST] = 1;
 }
