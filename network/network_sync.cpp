@@ -788,9 +788,10 @@ for (;;) {
 if (result < 0) {
 	LOCALPLAYER.connected = CONNECT_DISCONNECTED;
 	NetworkSendEndLevelPacket ();
-	longjmp (gameExitPoint, 0);
+	//longjmp (gameExitPoint, 0);
 	}
-NetworkCountPowerupsInMine ();
+else
+	NetworkCountPowerupsInMine ();
 return result;
 }
 

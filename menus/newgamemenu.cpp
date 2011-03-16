@@ -469,9 +469,12 @@ else if ((nChoice == multiOpts.nStartMCast4) || (nChoice == multiOpts.nJoinMCast
 	gameStates.multi.nGameType = IPX_GAME;
 	IpxSetDriver (IPX_DRIVER_MCAST4); 
 	}
-if (bStart ? NetworkStartGame () : NetworkBrowseGames ())
+if (bStart ? NetworkStartGame () : NetworkBrowseGames ()) {
+	gameData.multiplayer.autoNG.bValid = 0;
 	return 1;
+	}
 IpxClose ();
+gameData.multiplayer.autoNG.bValid = 0;
 return 0;
 }
 
@@ -485,8 +488,10 @@ void MultiplayerMenu (void)
 
 if ((gameStates.app.bNostalgia < 2) && gameData.multiplayer.autoNG.bValid) {
 	i = MultiChoice (gameData.multiplayer.autoNG.uConnect, !gameData.multiplayer.autoNG.bHost);
-	if ((i >= 0) && ExecMultiMenuOption (i))
+	if (i >= 0) {
+		ExecMultiMenuOption (i);
 		return;
+		}
 	}
 
 do {

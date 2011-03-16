@@ -186,8 +186,10 @@ void NetworkProcessDump (tSequencePacket *their)
 	char temp [40];
 	int i;
 
-if (their->player.connected != 7)
+if (their->player.connected != 7) {
 	MsgBox (NULL, NULL, 1, TXT_OK, NET_DUMP_STRINGS (their->player.connected));
+	networkData.nStatus = NETSTAT_MENU;
+	}
 else {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (!stricmp (their->player.callsign, gameData.multiplayer.players [i].callsign)) {
@@ -197,7 +199,7 @@ else {
 				sprintf (temp, TXT_KICKED_YOU, their->player.callsign);
 				MsgBox (NULL, NULL, 1, TXT_OK, &temp);
 				if (networkData.nStatus == NETSTAT_PLAYING) {
-					gameStates.multi.bIWasKicked=1;
+					gameStates.multi.bIWasKicked = 1;
 					MultiLeaveGame ();     
 					}
 				else

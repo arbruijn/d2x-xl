@@ -474,8 +474,8 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 				//SetRenderQuality (0);
 				MainMenu ();
 				}
-			if (gameData.multiplayer.autoNG.bValid && (gameStates.app.nFunctionMode != FMODE_GAME))
-				gameStates.app.nFunctionMode = FMODE_EXIT;
+			//if (gameData.multiplayer.autoNG.bValid && (gameStates.app.nFunctionMode != FMODE_GAME))
+			//	gameStates.app.nFunctionMode = FMODE_EXIT;
 			break;
 
 		case FMODE_GAME:
