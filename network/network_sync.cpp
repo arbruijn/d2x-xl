@@ -11,6 +11,8 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
+// The code in this file sends a game host's game data to a client connecting to the host
+
 #ifdef HAVE_CONFIG_H
 #	include <conf.h>
 #endif
@@ -384,9 +386,8 @@ SpecialResetObjects ();
 }                               
 
 //------------------------------------------------------------------------------
-/* Polling loop waiting for sync packet to start game
- * after having sent request
- */
+// wait for sync packets from the game host after having sent join request
+
 int NetworkSyncPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
@@ -709,7 +710,7 @@ if (t - t0 > 500) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (i != gameData.multiplayer.nLocalPlayer) {
 			pingStats [i].launchTime = -1; //TimerGetFixedSeconds ();
-			NetworkSendPing (i); 
+			NetworkSendPing (i); // tell clients already connected server is still alive
 			}
 		}
 	}

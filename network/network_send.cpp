@@ -192,6 +192,12 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 			}
 		else {
 			SendInternetSequencePacket (me, networkData.serverAddress, networkData.serverAddress + 4);
+#if DBG
+			gameStates.multi.bTrackerCall = 2;
+			IPXSendInternetPacketData((ubyte *) "FDescent Game Info Request", strlen ("FDescent Game Info Request") + 1, 
+											  networkData.serverAddress, networkData.serverAddress + 4);
+			gameStates.multi.bTrackerCall = 0;
+#endif
 			}
 		}
 	}

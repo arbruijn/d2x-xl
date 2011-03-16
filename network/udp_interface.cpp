@@ -1139,7 +1139,7 @@ if (0 > dataLen) {
 #endif
 	return -1;
 	}
-bTracker = tracker.IsTracker (*reinterpret_cast<ulong*> (&fromAddr.sin_addr), *reinterpret_cast<ushort*> (&fromAddr.sin_port));
+bTracker = tracker.IsTracker (*reinterpret_cast<ulong*> (&fromAddr.sin_addr), *reinterpret_cast<ushort*> (&fromAddr.sin_port), (char*) outBuf);
 if (fromAddr.sin_family != AF_INET)
 	return -1;
 if ((dataLen < 6) || (!bTracker && (memcmp (outBuf, D2XUDP, 6)
