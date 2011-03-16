@@ -216,7 +216,7 @@ class CMenu : public CStack<CMenuItem> {
 		inline void Init (void) {
 			SetGrowth (10);
 			m_nGroup = 0;
-			m_to.Setup (5);
+			m_to.Setup (10);
 			}
 
 		inline int NewGroup (int nGroup = 0) {

@@ -3676,11 +3676,13 @@ extern tpfnTIRQuery	pfnTIRQuery;
 int TIRLoad (void);
 int TIRUnload (void);
 
-#ifdef _WIN32
-#	define	G3_SLEEP(_t)	Sleep (_t)
-#else
-#	include <unistd.h>
-#	define	G3_SLEEP(_t)	usleep ((_t) * 1000)
+#ifndef G3_SLEEP
+#	ifdef _WIN32
+#		define	G3_SLEEP(_t)	Sleep (_t)
+#	else
+#		include <unistd.h>
+#		define	G3_SLEEP(_t)	usleep ((_t) * 1000)
+#	endif
 #endif
 
 #define HW_GEO_LIGHTING 0 //gameOpts->ogl.bGeoLighting

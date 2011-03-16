@@ -8,6 +8,22 @@
 #ifndef TIMEOUT_H_
 #define TIMEOUT_H_
 
+#ifdef __macosx__
+# include <SDL/SDL.h>
+#else
+# include <SDL.h>
+#endif
+
+#ifndef G3_SLEEP
+#	ifdef _WIN32
+#		include <windows.h>
+#		define	G3_SLEEP(_t)	Sleep (_t)
+#	else
+#		include <unistd.h>
+#		define	G3_SLEEP(_t)	usleep ((_t) * 1000)
+#	endif
+#endif
+
 class CTimeout {
 	private:
 		time_t	m_t0;
