@@ -86,27 +86,6 @@ return objP;
 
 //------------------------------------------------------------------------------
 
-CObject *CreateLighting (CObject *parentObjP)
-{
-	short		nObject;
-	CObject	*objP;
-
-if (!EGI_FLAG (bUseLightning, 0, 0, 1))
-	return NULL;
-nObject = CreateFireball (0, parentObjP->info.nSegment, parentObjP->info.position.vPos, 2 * parentObjP->info.xSize, RT_LIGHTNING);
-if (nObject < 0)
-	return NULL;
-objP = OBJECTS + nObject;
-objP->SetLife (IMMORTAL_TIME);
-objP->cType.explInfo.nSpawnTime = -1;
-objP->cType.explInfo.nDeleteObj = -1;
-objP->cType.explInfo.nDeleteTime = -1;
-objP->info.xSize = 1;
-return objP;
-}
-
-//------------------------------------------------------------------------------
-
 CObject* CreateExplosion (CObject* parentP, short nSegment, CFixVector& vPos, fix xSize,
 								  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent)
 {

@@ -27,8 +27,8 @@ const char *blurFS =
 	"uniform float direction;\r\n" \
 	"uniform float scale; // render target width/height\r\n" \
 	"uniform float brightness; // render target width/height\r\n" \
-	"float offset[5] = float[3](0.0, 1.3846153846, 3.2307692308);\r\n" \
-	"float weight[5] = float[3](0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
+	"float offset[3] = float[3](0.0, 1.3846153846, 3.2307692308);\r\n" \
+	"float weight[3] = float[3](0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
 	"void main() {\r\n" \
 	"float xScale = (1.0 - direction) * scale, yScale = direction * scale;\r\n" \
 	"vec2 uv = gl_TexCoord [0].xy;\r\n" \
