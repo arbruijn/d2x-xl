@@ -1227,4 +1227,29 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
+// shockwave effect
+
+const char* shockwaveVS = 
+	"void main(void) {\r\n" \
+	"gl_Position = ftransform();\r\n" \
+	"gl_TexCoord[0] = gl_MultiTexCoord0;\r\n" \
+	"}";
+
+const char* shockwaveFS = 
+	"uniform sampler2D sceneTex;\r\n" \
+	"uniform vec2 center; // explosion center\r\n" \
+	"uniform float time; // effect elapsed time\r\n" \
+	"uniform vec3 shockParams; // 10.0, 0.8, 0.1\r\n" \
+	"void main() {\r\n" \
+	"vec2 texCoord = gl_TexCoord [0].xy;\r\n" \
+	"float distance = distance (texCoord, center);\r\n" \
+	"if ((distance <= (time + shockParams.z)) && (distance >= (time - shockParams.z))) {\r\n" \
+	"  float diff = (distance - time);\r\n" \
+	"  float powDiff = 1.0 - pow (abs (diff * shockParams.x), shockParams.y);\r\n" \
+	"  texCoord += normalize (texCoord - center) * diff * powDiff;\r\n" \
+	"  }\r\n" \
+	"gl_FragColor = texture2D (sceneTex, texCoord);\r\n" \
+	"}\r\n";
+
+//------------------------------------------------------------------------------
 //eof

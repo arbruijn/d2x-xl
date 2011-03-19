@@ -59,6 +59,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+void CObject::SetCreationTime (fix xCreationTime) 
+{ 
+m_xCreationTime = ((xCreationTime < 0) ? gameData.time.xGame : xCreationTime); 
+}
+
+//------------------------------------------------------------------------------
+
+fix CObject::LifeTime (void) 
+{ 
+return gameData.time.xGame - m_xCreationTime; 
+}
+
+//------------------------------------------------------------------------------
+
 void CObject::Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos,
 								  const CFixMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType)
 {
@@ -246,6 +260,7 @@ if (0 > (nObject = AllocObject ()))
 	return -1;
 objP = OBJECTS + nObject;
 objP->SetId (nObject);
+objP->SetCreationTime ();
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
 objP->info.nSignature = gameData.objs.nNextSignature++;
 objP->info.nType = nType;

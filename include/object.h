@@ -812,7 +812,8 @@ class CObject : public CObjectInfo {
 		inline void SetNext (CObject* next) { m_next = next; }
 		inline void SetLinkedType (ubyte nLinkedType) { m_nLinkedType = nLinkedType; }
 		inline void SetTracers (ubyte nTracers) { m_nTracers = nTracers; }
-		inline void SetCreationTime (fix xCreationTime) { m_xCreationTime = xCreationTime; }
+		void SetCreationTime (fix xCreationTime = -1);
+		fix LifeTime (void);
 		inline void SetTimeLastHit (fix xTimeLastHit) { m_xTimeLastHit = xTimeLastHit; }
 		inline void SetStartVel (CFixVector* vStartVel) { m_vStartVel = *vStartVel; }
 		inline void SetRenderPos (CFixVector& vRenderPos) { m_vRenderPos = vRenderPos; }

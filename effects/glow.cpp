@@ -15,18 +15,43 @@ CGlowRenderer glowRenderer;
 
 //------------------------------------------------------------------------------
 
-
 #if 1
 
 int hBlurShader = -1;
 
+#	if 1
+
+// linear sampling
+const char *blurFS = 
+	"uniform sampler2D glowSource;\r\n" \
+	"uniform float direction;\r\n" \
+	"uniform float scale; // render target width/height\r\n" \
+	"uniform float brightness; // render target width/height\r\n" \
+	"float offset[5] = float[3](0.0, 1.3846153846, 3.2307692308);\r\n" \
+	"float weight[5] = float[3](0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
+	"void main() {\r\n" \
+	"float xScale = (1.0 - direction) * scale, yScale = direction * scale;\r\n" \
+	"vec2 uv = gl_TexCoord [0].xy;\r\n" \
+	"vec3 tc = texture2D (glowSource, uv).rgb * weight [0];\r\n" \
+	"vec2 v = vec2 (offset [1] * xScale, offset [1] * yScale);\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * weight [1];\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * weight [1];\r\n" \
+	"v = vec2 (offset [2] * xScale, offset [2] * yScale);\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * weight [2];\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * weight [2];\r\n" \
+	"gl_FragColor = vec4 (tc, 1.0) * brightness;\r\n" \
+	"}\r\n";
+
+#	else
+
+// discrete sampling
 const char *blurFS = 
 	"uniform sampler2D glowSource;\r\n" \
 	"uniform float direction;\r\n" \
 	"uniform float scale; // render target width/height\r\n" \
 	"uniform float brightness; // render target width/height\r\n" \
 	"float offset[5] = float[5](0.0, 1.0, 2.0, 3.0, 4.0);\r\n" \
-	"float weight[5] = float[5](0.18, 0.15, 0.12, 0.09, 0.05);\r\n" \
+	"float weight[5] = float[5](0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162);\r\n" \
 	"void main() {\r\n" \
 	"float xScale = (1.0 - direction) * scale, yScale = direction * scale;\r\n" \
 	"vec2 uv = gl_TexCoord [0].xy;\r\n" \
@@ -45,6 +70,8 @@ const char *blurFS =
 	"tc += texture2D (glowSource, uv - v).rgb * weight [4];\r\n" \
 	"gl_FragColor = vec4 (tc, 1.0) * brightness;\r\n" \
 	"}\r\n";
+
+#	endif
 	
 #else
 
