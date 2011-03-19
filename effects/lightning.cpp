@@ -613,7 +613,7 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 
 static inline int GlowType (void)
 {
-return !(gameOpts->render.lightning.bGlow || glowRenderer.Available (GLOW_LIGHTNING)) ? 0 : 1;
+return (gameOpts->render.lightning.bGlow || glowRenderer.Available (GLOW_LIGHTNING)) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------
@@ -709,8 +709,11 @@ if (bGlow) {
 
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
-if ((GlowType () == 1) && m_plasmaVerts.Buffer ())
+if ((GlowType () == 1) && m_plasmaVerts.Buffer ()) {
 	ComputeGlow (nDepth, nThread);
+	if (m_coreVerts.Buffer ())
+		ComputeCore ();
+	}
 else if (m_coreVerts.Buffer ())
 	ComputeCore ();
 else
@@ -821,7 +824,7 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
 	//glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
 	glColor4fv ((GLfloat*) colorP);
-	GLfloat w = nDepth ? CORE_WIDTH : CORE_WIDTH * 1.5f;
+	GLfloat w = nDepth ? CORE_WIDTH / 2.0f : CORE_WIDTH; // CORE_WIDTH : CORE_WIDTH * 1.5f;
 	if (glowRenderer.Available (GLOW_LIGHTNING))
 		w *= 2.0f * ZScale (m_coreVerts.Buffer (), m_nNodes);
 	glLineWidth (w);
@@ -849,7 +852,7 @@ ogl.ClearError (0);
 int CLightning::SetupGlow (void)
 {
 if (/*m_bGlow &&*/ gameOpts->render.lightning.bGlow && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)) {
-	glowRenderer.Begin (GLOW_LIGHTNING, 2, false, 1.1f);
+	glowRenderer.Begin (GLOW_LIGHTNING, 2, false, 1.05f);
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
 	if (corona.Load () && !corona.Bitmap ()->Bind (1)) {
@@ -914,8 +917,10 @@ if (GlowType () == 0) {
 		RenderCore (&color, nDepth, nThread);
 	}
 else {
-	if (glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1)))
+	if (glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1))) {
 		RenderGlow (&color, nDepth, nThread);
+		RenderCore (&color, nDepth, nThread);
+		}
 	}
 if (bGlow)
 	glBlendEquation (GL_FUNC_ADD);
