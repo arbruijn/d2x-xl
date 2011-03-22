@@ -1,7 +1,7 @@
 #ifndef POSTPROCESS_H
 #define POSTPROCESS_H
 
-#define PP_EFFECT_EXPLOSION	1
+#define PP_EFFECT_SHOCKWAVE	1
 
 //------------------------------------------------------------------------------
 
@@ -49,31 +49,32 @@ class CPostEffect {
 
 //------------------------------------------------------------------------------
 
-bool CPostEffectExplosion::bRendered;
-int CPostEffectExplosion::nExplosions;
+bool CPostEffectShockwave::m_bRendered;
+int CPostEffectShockwave::m_nExplosions;
+GLhandleARB CPostEffectShockwave::m_shaderProg;
 
-class CPostEffectExplosion : public CPostEffect {
+class CPostEffectShockwave : public CPostEffect {
 	private:
-		int	m_nStart;
-		int	m_nLife;
-		int	m_nSize;
-		int	m_x;
-		int	m_y;
+		int			m_nStart;
+		int			m_nLife;
+		int			m_nSize;
+		CFixVector	m_pos;
 
 
 	public:
-		static bool bRendered;
-		static int nExplosions;
+		static bool m_bRendered;
+		static int m_nExplosions;
+		static GLhandleARB m_shaderProg;
 
 	public:
-		CPostEffectExplosion (int nStart = 0, int nLife = 0, int nSize = 0, int x = 0, int y = 0) :
-			CPostEffect (PP_EFFECT_EXPLOSION, next), 
-			m_nStart (nStart), m_nLife (nLife), m_nSize (nSize), m_x (x), m_y (y)
-			{}
+		CPostEffectShockwave (int nStart = 0, int nLife = 0, int nSize = 0) :
+			CPostEffect (PP_EFFECT_SHOCKWAVE, next), 
+			m_nStart (nStart), m_nLife (nLife), m_nSize (nSize)
+			{ m_pos.SetZero (); }
 
-		void Setup (int nStart, int nLife, int nSize, int x, int y) {
-			CPostEffect::Setup (PP_EFFECT_EXPLOSION);
-			m_nStart = nStart, m_nLife = nLife, m_nSize = nSize, m_x = x, m_y = y;
+		void Setup (int nStart, int nLife, int nSize, CFixVector pos) {
+			CPostEffect::Setup (PP_EFFECT_SHOCKWAVE);
+			m_nStart = nStart, m_nLife = nLife, m_nSize = nSize, m_pos = pos;
 			}
 
 		virtual bool Terminate (void) { return SDL_GetTicks () - m_nStart >= m_nLife; }
