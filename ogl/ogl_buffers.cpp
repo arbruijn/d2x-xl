@@ -387,7 +387,6 @@ if (HaveDrawBuffer ()) {
 		ogl.DisableClientStates (1, 0, 0, GL_TEXTURE1);
 		ogl.BindTexture (DrawBuffer (2)->ColorBuffer ());
 		postProcessManager.Render ();
-		OglDrawArrays (GL_QUADS, 0, 4);
 		}
 	ResetClientStates (0);
 	SelectDrawBuffer (0);

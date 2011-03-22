@@ -36,9 +36,9 @@ const char* shockwaveFS =
 	"vec2 texCoord = gl_TexCoord [0].xy;\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
-	"  vec2 v = texCoord - gl_LightSource [i].xy;\r\n" \
+	"  vec2 v = texCoord - gl_LightSource [i].position.xy;\r\n" \
 	"  float r = length (v);\r\n" \
-	"  float d = r - gl_LightSource [i].z;\r\n" \
+	"  float d = r - gl_LightSource [i].position.z;\r\n" \
 	"  if (abs (d) <= effectStrength.z) {\r\n" \
 	"    d *= 1.0 - pow (abs (d) * effectStrength.x, effectStrength.y) * sqrt (gl_LightSource [i].quadraticAttenuation);\r\n" \
 	"    texCoord += v / (r * d);\r\n" \
@@ -170,6 +170,11 @@ if (n == 0)
 	return true;
 
 if (m_nShockwaves == 0) {
+	if (hShockwaveShader < 0) {
+		InitShader ();
+		if (hShockwaveShader < 0)
+			return false;
+		}
 	m_shaderProg = GLhandleARB (shaderManager.Deploy (hShockwaveShader /*[direction]*/));
 	if (!m_shaderProg)
 		return false;
@@ -201,8 +206,12 @@ LoadShader (m_pos, m_nSize, float (m_nLife) / float (SDL_GetTicks () - m_nStart)
 
 void CPostEffectShockwave::Render (void)
 {
+// render current render target
+OglDrawArrays (GL_QUADS, 0, 4);
 if (m_nShockwaves > 0) {
-	// render current render target
+	for (int i = 0; i < m_nShockwaves; i++)
+		glDisable (GL_LIGHT0 + i);
+	ogl.EnableLighting (false);
 	m_nShockwaves = 0;
 	}
 }
