@@ -6558,6 +6558,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\effects\postprocessing.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\effects\shrapnel.cpp"
 						>
 					</File>
@@ -6595,6 +6599,10 @@
 					</File>
 					<File
 						RelativePath="..\include\perlin.h"
+						>
+					</File>
+					<File
+						RelativePath="..\effects\postprocessing.h"
 						>
 					</File>
 					<File
@@ -10469,11 +10477,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

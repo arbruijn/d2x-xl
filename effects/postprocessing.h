@@ -50,7 +50,7 @@ class CPostEffect {
 //------------------------------------------------------------------------------
 
 bool CPostEffectShockwave::m_bRendered;
-int CPostEffectShockwave::m_nExplosions;
+int CPostEffectShockwave::m_nShockwaves;
 GLhandleARB CPostEffectShockwave::m_shaderProg;
 
 class CPostEffectShockwave : public CPostEffect {
@@ -63,11 +63,11 @@ class CPostEffectShockwave : public CPostEffect {
 
 	public:
 		static bool m_bRendered;
-		static int m_nExplosions;
+		static int m_nShockwaves;
 		static GLhandleARB m_shaderProg;
 
 	public:
-		CPostEffectShockwave (int nStart = 0, int nLife = 0, int nSize = 0) :
+		CPostEffectShockwave (int nStart = 0, int nLife = 0, int nSize = 0, CFixVector pos = CFixVector::ZERO) :
 			CPostEffect (PP_EFFECT_SHOCKWAVE, next), 
 			m_nStart (nStart), m_nLife (nLife), m_nSize (nSize)
 			{ m_pos.SetZero (); }

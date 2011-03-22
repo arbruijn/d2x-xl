@@ -41,6 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dropobject.h"
 #include "cockpit.h"
 #include "visibility.h"
+#include "postprocessing.h"
 
 #define EXPLOSION_SCALE (I2X (5)/2)		//explosion is the obj size times this
 
@@ -70,17 +71,18 @@ objP->info.xSize /= 3;
 if ((info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = info.nId])) {
 	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID)) {
 		objP->info.xSize = I2X (5) / 2;
-//		objP->SetLife (3 * BLAST_LIFE / 2);
+		//	objP->SetLife (3 * BLAST_LIFE / 2);
 		}
 	else if ((id == MEGAMSL_ID) || (id == ROBOT_MEGAMSL_ID) || (id == EARTHSHAKER_MEGA_ID))
 		objP->info.xSize = I2X (2);
 	else if ((id == SMARTMSL_ID) || (id == ROBOT_SMARTMSL_ID))
 		objP->info.xSize = I2X (3) / 2;
 	else {
-		//objP->info.xLifeLeft /= 2;
+		// objP->info.xLifeLeft /= 2;
 		objP->info.xSize = I2X (1);
 		}
 	}
+postEffectManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, objP->info.xSize, objP->Position ()));
 return objP;
 }
 
@@ -252,8 +254,11 @@ CObject* CreateBadassExplosion (CObject* objP, short nSegment, CFixVector& posit
 										  fix maxDamage, fix maxDistance, fix maxForce, short parent)
 {
 CObject* explObjP = CreateExplosion (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
-if (explObjP && objP && (objP->info.nType == OBJ_WEAPON))
-	CreateSmartChildren (objP, NUM_SMART_CHILDREN);
+if (explObjP) {
+	postEffectManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, explObjP->info.xSize, explObjP->Position ()));
+	if (objP && (objP->info.nType == OBJ_WEAPON))
+		CreateSmartChildren (objP, NUM_SMART_CHILDREN);
+	}
 return explObjP;
 }
 
@@ -272,7 +277,7 @@ CFixVector v;
 if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall
 	v = info.vLastPos - info.position.vPos;
 	CFixVector::Normalize (v);
-//VmVecScale (&v, I2X (10));
+	//VmVecScale (&v, I2X (10));
 	v += vPos;
 	}
 else
