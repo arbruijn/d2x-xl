@@ -57,6 +57,7 @@
 #include "renderframe.h"
 #include "automap.h"
 #include "gpgpu_lighting.h"
+#include "postprocess.h"
 
 //#define _WIN32_WINNT		0x0600
 
@@ -343,7 +344,10 @@ if (HaveDrawBuffer ()) {
 
 	int bStereo = 0;
 
-	SetDrawBuffer (GL_BACK, 0);
+	if (postProcessManager.Effects ())
+		SelectGlowBuffer (); // use as temporary render buffer
+	else
+		SetDrawBuffer (GL_BACK, 0);
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 	OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
@@ -378,6 +382,7 @@ if (HaveDrawBuffer ()) {
 
 	glColor3f (1,1,1);
 	OglDrawArrays (GL_QUADS, 0, 4);
+	postProcessManager.Update ();
 	ResetClientStates (0);
 	SelectDrawBuffer (0);
 	if (bStereo)

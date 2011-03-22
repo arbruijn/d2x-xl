@@ -368,7 +368,8 @@ ogl.SetStereoSeparation (xStereoSeparation);
 void FlushFrame (fix xStereoSeparation)
 {
 if (!(gameOpts->render.stereo.nGlasses && xStereoSeparation)) {	//no stereo or shutter glasses
-	Draw2DFrameElements ();
+	if (!gameStates.render.bRenderIndirect)
+		Draw2DFrameElements ();
 	ogl.SwapBuffers (0, 0);
 	}
 else {

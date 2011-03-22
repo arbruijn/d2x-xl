@@ -668,7 +668,7 @@ else {
 			gameOpts->render.stereo.nGlasses = 0;
 		}	
 	else {
-		gameStates.render.bRenderIndirect = m_data.xStereoSeparation && (i > 0);
+		gameStates.render.bRenderIndirect = 1; //m_data.xStereoSeparation && (i > 0);
 		if (gameStates.render.bRenderIndirect)
 			SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
 		else
