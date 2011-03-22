@@ -68,7 +68,7 @@ class CPostEffectShockwave : public CPostEffect {
 		CPostEffectShockwave (int nStart = 0, int nLife = 0, int nSize = 0, CFixVector pos = CFixVector::ZERO) :
 			CPostEffect (PP_EFFECT_SHOCKWAVE), 
 			m_nStart (nStart), m_nLife (nLife), m_nSize (nSize)
-			{ m_pos.SetZero (); }
+			{ m_pos = pos; }
 
 		void Setup (int nStart, int nLife, int nSize, CFixVector pos) {
 			CPostEffect::Setup (PP_EFFECT_SHOCKWAVE);

@@ -91,8 +91,12 @@ void CPostProcessManager::Update (void)
 for (CPostEffect* e = m_effects; e; ) {
 	CPostEffect* h = e;
 	e = e->Next ();
-	if (h->Terminate ())
+	if (h->Terminate ()) {
+		if (m_effects == h)
+			m_effects = m_effects->Next ();
 		h->Unlink ();
+		delete h;
+		}
 	else
 		h->Update ();
 	}
@@ -136,6 +140,10 @@ p [2].v.coord.x =
 p [3].v.coord.x = p [0].v.coord.x + size;
 p [3].v.coord.y = 
 p [4].v.coord.y = p [0].v.coord.y + size;
+p [1].v.coord.z =
+p [2].v.coord.z =
+p [3].v.coord.z =
+p [4].v.coord.z = p [0].v.coord.z;
 
 int i;
 
@@ -158,7 +166,7 @@ for (int i = 1; i < 5; i++) {
 		n += 2;
 		}
 	}
-if (i == 5)
+if (n == 0)
 	return true;
 
 if (m_nShockwaves == 0) {
