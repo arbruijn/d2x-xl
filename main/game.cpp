@@ -85,6 +85,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "headlight.h"
 #include "playerprofile.h"
 #include "addon_bitmaps.h"
+#include "postprocessing.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -574,6 +575,7 @@ if (bHaveLevel)
 	MultiLeaveGame ();
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
+postProcessManager.Destroy ();
 transparencyRenderer.ResetBuffers ();
 CGenericCockpit::Rewind (false);
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore

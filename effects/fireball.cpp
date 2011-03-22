@@ -82,7 +82,7 @@ if ((info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = info.nId])) {
 		objP->info.xSize = I2X (1);
 		}
 	}
-postEffectManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, objP->info.xSize, objP->Position ()));
+postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, objP->info.xSize, objP->Position ()));
 return objP;
 }
 
@@ -255,7 +255,7 @@ CObject* CreateBadassExplosion (CObject* objP, short nSegment, CFixVector& posit
 {
 CObject* explObjP = CreateExplosion (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
 if (explObjP) {
-	postEffectManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, explObjP->info.xSize, explObjP->Position ()));
+	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, explObjP->info.xSize, explObjP->Position ()));
 	if (objP && (objP->info.nType == OBJ_WEAPON))
 		CreateSmartChildren (objP, NUM_SMART_CHILDREN);
 	}

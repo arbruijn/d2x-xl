@@ -57,7 +57,7 @@
 #include "renderframe.h"
 #include "automap.h"
 #include "gpgpu_lighting.h"
-#include "postprocess.h"
+#include "postprocessing.h"
 
 //#define _WIN32_WINNT		0x0600
 
@@ -344,10 +344,7 @@ if (HaveDrawBuffer ()) {
 
 	int bStereo = 0;
 
-	if (postProcessManager.Effects ())
-		SelectGlowBuffer (); // use as temporary render buffer
-	else
-		SetDrawBuffer (GL_BACK, 0);
+	SetDrawBuffer (GL_BACK, 0);
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 	OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
@@ -361,6 +358,8 @@ if (HaveDrawBuffer ()) {
 		if ((bStereo = ((j >= 0) && (j <= 2))) && ((h < 4) || (j == 1))) {
 			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][j]));
 			if (shaderProg) {
+				if (postProcessManager.Effects ())
+					SelectGlowBuffer (); // use as temporary render buffer
 				shaderManager.Rebuild (shaderProg);
 				ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
 				ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
@@ -383,9 +382,16 @@ if (HaveDrawBuffer ()) {
 	glColor3f (1,1,1);
 	OglDrawArrays (GL_QUADS, 0, 4);
 	postProcessManager.Update ();
+	if (postProcessManager.Effects ()) {
+		SetDrawBuffer (GL_BACK, 0);
+		ogl.DisableClientStates (1, 0, 0, GL_TEXTURE1);
+		ogl.BindTexture (DrawBuffer (2)->ColorBuffer ());
+		postProcessManager.Render ();
+		OglDrawArrays (GL_QUADS, 0, 4);
+		}
 	ResetClientStates (0);
 	SelectDrawBuffer (0);
-	if (bStereo)
+	//if (bStereo)
 		shaderManager.Deploy (-1);
 	}
 #endif

@@ -96,8 +96,6 @@ for (CPostEffect* e = m_effects; e; ) {
 	else
 		h->Update ();
 	}
-for (CPostEffect* e = m_effects; e; )
-	e->Render ();
 }
 
 //------------------------------------------------------------------------------
@@ -151,9 +149,14 @@ if (i == 5)
 tScreenPos s [5];
 for (int i = 1; i < 5; i++)
 	ProjectPoint (p [i], s [i], 0, 0);
+
+int d = 0;
+int n = 0;
 for (int i = 1; i < 5; i++) {
-	if ((s [i].x >= 0) && (s [i].x < screen.Width ()) && (s [i].y >= 0) && (s [i].y < screen.Height ()))
-		break;
+	if ((s [i].x >= 0) && (s [i].x < screen.Width ()) && (s [i].y >= 0) && (s [i].y < screen.Height ())) {
+		d += labs (s [0].x - s [i].x) + labs (s [0].y - s [i].y);
+		n += 2;
+		}
 	}
 if (i == 5)
 	return true;
@@ -171,7 +174,7 @@ if (m_nShockwaves == 0) {
 
 CFloatVector3 f;
 f.Assign (p [0]);
-f.v.coord.z = X2F (size);
+f.v.coord.z = X2F (d / n);
 glEnable (GL_LIGHT0 + m_nShockwaves);
 glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&f));
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, ttl);

@@ -115,5 +115,6 @@ class CPostProcessManager {
 		inline CPostEffect* Effects (void) { return m_effects; }
 	};
 
+extern CPostProcessManager postProcessManager;
 
 #endif //POSTPROCESS_H
