@@ -13,7 +13,7 @@ class CPostEffect {
 
 	public:
 		CPostEffect (int nType = 0) : 
-			m_nType (nType), m_prev (NULL), m_next (NULL) 
+			m_nType (nType), m_prev (0), m_next (0) 
 			{}
 
 		inline CPostEffect* Prev (void) { return m_prev; }
@@ -39,24 +39,22 @@ class CPostEffect {
 				m_prev->Link (m_prev->Prev (), m_next);
 			if (m_next)
 				m_next->Link (m_prev, m_next->Next ());
-			m_prev = m_next = NULL;
+			m_prev = m_next = 0;
 			}
 
 		virtual bool Terminate (void) = 0;
 
 		virtual void Update (void) = 0;
+
+		virtual void Render (void) = 0;
 };
 
 //------------------------------------------------------------------------------
 
-bool CPostEffectShockwave::m_bRendered;
-int CPostEffectShockwave::m_nShockwaves;
-GLhandleARB CPostEffectShockwave::m_shaderProg;
-
 class CPostEffectShockwave : public CPostEffect {
 	private:
-		int			m_nStart;
-		int			m_nLife;
+		uint			m_nStart;
+		uint			m_nLife;
 		int			m_nSize;
 		CFixVector	m_pos;
 
@@ -68,7 +66,7 @@ class CPostEffectShockwave : public CPostEffect {
 
 	public:
 		CPostEffectShockwave (int nStart = 0, int nLife = 0, int nSize = 0, CFixVector pos = CFixVector::ZERO) :
-			CPostEffect (PP_EFFECT_SHOCKWAVE, next), 
+			CPostEffect (PP_EFFECT_SHOCKWAVE), 
 			m_nStart (nStart), m_nLife (nLife), m_nSize (nSize)
 			{ m_pos.SetZero (); }
 
@@ -82,6 +80,11 @@ class CPostEffectShockwave : public CPostEffect {
 		virtual void Update (void);
 
 		virtual void Render (void);
+
+	private:
+		void InitShader (void);
+
+		bool LoadShader (const CFixVector pos, const int size, const float ttl);
 	};
 
 //------------------------------------------------------------------------------
@@ -107,7 +110,9 @@ class CPostProcessManager {
 
 		void Update (void);
 
-		inline void CPostEffect* Effects (void) { return m_effects; }
+		void Render (void);
+
+		inline CPostEffect* Effects (void) { return m_effects; }
 	};
 
 

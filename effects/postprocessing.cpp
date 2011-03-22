@@ -3,6 +3,14 @@
 	22.3.2011
 */
 
+#include "descent.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
+#include "ogl_tmu.h"
+#include "ogl_color.h"
+#include "ogl_shader.h"
+#include "ogl_render.h"
+#include "transformation.h"
 #include "postprocessing.h"
 
 CPostProcessManager postProcessManager;
@@ -72,6 +80,8 @@ m_effects = e;
 
 void CPostProcessManager::Render (void)
 {
+for (CPostEffect* e = m_effects; e; e = e->Next ()) 
+	e->Render ();
 }
 
 //------------------------------------------------------------------------------
@@ -94,6 +104,9 @@ for (CPostEffect* e = m_effects; e; )
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+int CPostEffectShockwave::m_nShockwaves = 0;
+GLhandleARB CPostEffectShockwave::m_shaderProg;
+
 void CPostEffectShockwave::InitShader (void)
 {
 PrintLog ("building shockwave shader program\n");
@@ -115,8 +128,8 @@ if (m_nShockwaves >= 8)
 	return true;
 
 CFixVector p [5];
-if (TransformAndEncode (p, pos) | CC_BEHIND)
-	return;
+if (transformation.TransformAndEncode (p [0], pos) & CC_BEHIND)
+	return true;
 p [1].v.coord.x = 
 p [4].v.coord.x = p [0].v.coord.x - size;
 p [1].v.coord.y = 
@@ -125,22 +138,25 @@ p [2].v.coord.x =
 p [3].v.coord.x = p [0].v.coord.x + size;
 p [3].v.coord.y = 
 p [4].v.coord.y = p [0].v.coord.y + size;
-for (int i = 1; i < 5; i++) {
-	if (!TransformAndEncode (p + i, pos) | CC_BEHIND)
+
+int i;
+
+for (i = 1; i < 5; i++) {
+	if (!(transformation.Codes (p [i]) & CC_BEHIND))
 		break;
 	}	
 if (i == 5)
-	return;
+	return true;
 
 tScreenPos s [5];
 for (int i = 1; i < 5; i++)
-	ProjectPoint (p + i, s + i);
+	ProjectPoint (p [i], s [i], 0, 0);
 for (int i = 1; i < 5; i++) {
-	if ((s [i].x >= 0) && (s [i].x < screen.Width ()) && (s [i].y >= 0) && (s [i].y < screen.Height ())
+	if ((s [i].x >= 0) && (s [i].x < screen.Width ()) && (s [i].y >= 0) && (s [i].y < screen.Height ()))
 		break;
 	}
 if (i == 5)
-	return;
+	return true;
 
 if (m_nShockwaves == 0) {
 	m_shaderProg = GLhandleARB (shaderManager.Deploy (hShockwaveShader /*[direction]*/));
@@ -149,18 +165,35 @@ if (m_nShockwaves == 0) {
 	if (shaderManager.Rebuild (m_shaderProg))
 		;
 	glUniform1i (glGetUniformLocation (m_shaderProg, "renderSource"), 0);
-	glUniform3fv (glGetUniformLocation (m_shaderProg, "effectStrength"), reinterpret_cast<GLfloat*> (effectStrength));
+	glUniform3fv (glGetUniformLocation (m_shaderProg, "effectStrength"), 1, reinterpret_cast<GLfloat*> (&effectStrength));
 	ogl.SetLighting (true);
 	}
 
 CFloatVector3 f;
 f.Assign (p [0]);
 f.v.coord.z = X2F (size);
-glEnable (GL_LIGHT0 + nExplosions);
-glLightfv (GL_LIGHT0 + nExplosions, GL_POSITION, reinterpret_cast<GLfloat*> (f));
-glLightf (GL_LIGHT0 + nExplosions, GL_QUADRATIC_ATTENUATION, ttl);
+glEnable (GL_LIGHT0 + m_nShockwaves);
+glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&f));
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, ttl);
 glUniform1i (glGetUniformLocation (m_shaderProg, "nShockWaves"), ++m_nShockwaves);
 return true;
+}
+
+//------------------------------------------------------------------------------
+
+void CPostEffectShockwave::Update (void)
+{
+LoadShader (m_pos, m_nSize, float (m_nLife) / float (SDL_GetTicks () - m_nStart));
+}
+
+//------------------------------------------------------------------------------
+
+void CPostEffectShockwave::Render (void)
+{
+if (m_nShockwaves > 0) {
+	// render current render target
+	m_nShockwaves = 0;
+	}
 }
 
 //------------------------------------------------------------------------------
