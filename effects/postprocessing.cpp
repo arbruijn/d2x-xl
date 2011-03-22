@@ -180,7 +180,7 @@ if (m_nShockwaves == 0) {
 		return false;
 	if (shaderManager.Rebuild (m_shaderProg))
 		;
-	glUniform1i (glGetUniformLocation (m_shaderProg, "renderSource"), 0);
+	glUniform1i (glGetUniformLocation (m_shaderProg, "sceneTex"), 0);
 	glUniform3fv (glGetUniformLocation (m_shaderProg, "effectStrength"), 1, reinterpret_cast<GLfloat*> (&effectStrength));
 	ogl.SetLighting (true);
 	}
