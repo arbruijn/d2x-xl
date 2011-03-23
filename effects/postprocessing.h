@@ -50,6 +50,7 @@ class CPostEffect {
 
 		virtual bool Enabled (void) = 0;
 
+		virtual float Life (void) = 0;
 };
 
 //------------------------------------------------------------------------------
@@ -79,13 +80,15 @@ class CPostEffectShockwave : public CPostEffect {
 			m_nStart = nStart, m_nLife = nLife, m_nSize = nSize, m_nBias = nBias, m_pos = pos;
 			}
 
-		virtual bool Terminate (void) { return SDL_GetTicks () - m_nStart >= m_nLife; }
+		virtual bool Terminate (void) { return SDL_GetTicks () - m_nStart >= (uint) Life (); }
 
 		virtual void Update (void);
 
 		virtual void Render (void);
 
 		virtual bool Enabled (void);
+
+		virtual float Life (void);
 
 	private:
 		void InitShader (void);

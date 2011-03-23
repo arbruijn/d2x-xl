@@ -206,9 +206,16 @@ return true;
 
 //------------------------------------------------------------------------------
 
+float CPostEffectShockwave::Life (void)
+{
+return float (m_nLife) * gameStates.gameplay.slowmo [0].fSpeed;
+}
+	 
+//------------------------------------------------------------------------------
+
 void CPostEffectShockwave::Update (void)
 {
-LoadShader (m_pos, m_nSize, float (SDL_GetTicks () - m_nStart) / float (m_nLife), m_nBias);
+LoadShader (m_pos, m_nSize, float (SDL_GetTicks () - m_nStart) / Life (), m_nBias);
 }
 
 //------------------------------------------------------------------------------
