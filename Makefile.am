@@ -60,7 +60,7 @@ d2x_LDADD = \
 
 if MINGW32
 if USE_NETWORK
-d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm -lwsock32 -lcurl -lGLEW -lXm -lXt -lX11
+d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm -lwsock32 -lcurl -lGLEW -lXm -lXt -lX11 -stdc++
 else
 d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm -lcurl -lGLEW -lXm -lXt -lX11
 endif
