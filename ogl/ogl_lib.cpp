@@ -1149,9 +1149,11 @@ if ((*hTextures == DrawBuffer ()->ColorBuffer ()) &&
 
 void COGL::DeleteTextures (GLsizei n, GLuint *hTextures)
 {
+#if 0
 if ((*hTextures == DrawBuffer ()->ColorBuffer ()) &&
 	 (hTextures != &DrawBuffer ()->ColorBuffer ()))
 	DestroyDrawBuffers ();
+#endif
 #if DBG
 for (int i = 0; i < n;)
 	if (int (hTextures [i]) < 0)

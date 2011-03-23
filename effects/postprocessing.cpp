@@ -36,7 +36,7 @@ const char* shockwaveFS =
 	"void main() {\r\n" \
 	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
 	"vec2 tcDest = tcSrc; //vec2 (0.0, 0.0);\r\n" \
-	"int i, h = 0;\r\n" \
+	"int i;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
 	"  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
 	"  float r = length (v);\r\n" \
@@ -44,10 +44,10 @@ const char* shockwaveFS =
 	"  if (abs (d) <= effectStrength.z) {\r\n" \
 	"    d /= screenSize.x;\r\n" \
 	"    d *= (1.0 - pow (abs (d) * effectStrength.x, effectStrength.y)) * pow (gl_LightSource [i].quadraticAttenuation, 0.25);\r\n" \
-	"    tcDest += /*tcSrc +*/ v * (d / r) * screenSize; h = 1;\r\n" \
+	"    tcDest -= v * (d / r) * screenSize;\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
-	"gl_FragColor = /*(h == 1) ? vec4 (1.0, 0.5, 0.0, 1.0) :*/ texture2D (sceneTex, tcDest / screenSize);\r\n" \
+	"gl_FragColor = texture2D (sceneTex, tcDest / screenSize);\r\n" \
 	"}\r\n";
 
 //------------------------------------------------------------------------------
