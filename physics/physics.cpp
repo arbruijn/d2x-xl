@@ -448,7 +448,7 @@ CATCH_OBJ (this, mType.physInfo.velocity.v.coord.y == 0);
 gameData.physics.nSegments = 0;
 
 mSaveOrient = info.position.mOrient;
-if (DoPhysicsSimRot () && EGI_FLAG (nHitboxes, 0, 0, 0)) {
+if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && EGI_FLAG (nHitboxes, 0, 0, 0)) {
 	gameData.physics.ignoreObjs [0] = -1;
 	fq.p0 = 
 	fq.p1 = &info.position.vPos;
@@ -457,7 +457,7 @@ if (DoPhysicsSimRot () && EGI_FLAG (nHitboxes, 0, 0, 0)) {
 	fq.radP1 = info.xSize;
 	fq.nObject = nObject;
 	fq.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
-	fq.flags = FQ_CHECK_OBJS;
+	fq.flags = FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS;
 
 	if (info.nType == OBJ_WEAPON)
 		fq.flags |= FQ_TRANSPOINT;
