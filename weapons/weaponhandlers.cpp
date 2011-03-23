@@ -41,6 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dropobject.h"
 #include "lightcluster.h"
 #include "visibility.h"
+#include "postprocessing.h"
 
 #ifdef TACTILE
 #include "tactile.h"
