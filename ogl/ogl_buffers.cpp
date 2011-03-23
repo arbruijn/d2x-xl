@@ -478,8 +478,7 @@ if (!m_states.hDepthBuffer [nId])
 	m_states.bHaveDepthBuffer [nId] = 0;
 if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTexture (-1, nId, nId))) {
 	BindTexture (m_states.hDepthBuffer [nId]);
-	if (!m_states.bHaveDepthBuffer [nId])
-		{
+	if (!m_states.bHaveDepthBuffer [nId]) {
 		if (ogl.Enhance3D () < 0)
 			ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 		else
