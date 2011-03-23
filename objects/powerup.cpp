@@ -188,7 +188,7 @@ if (info.renderType != RT_POLYOBJ) {
 	UpdatePowerupClip (vcP, vciP, i);
 	}
 if (info.xLifeLeft <= 0) {
-	/*Object*/CreateExplosion (info.nSegment, info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
+	/*Object*/CreateExplosion (this, info.nSegment, info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
 	if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound > -1)
 		audio.CreateObjectSound (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound, SOUNDCLASS_GENERIC, i);
 	}

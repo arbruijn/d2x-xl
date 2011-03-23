@@ -82,14 +82,14 @@ if ((info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = info.nId])) {
 		objP->info.xSize = I2X (1);
 		}
 	}
-postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, objP->info.xSize, objP->Position ()));
+postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, objP->info.xSize, 1, objP->Position ()));
 return objP;
 }
 
 //------------------------------------------------------------------------------
 
 CObject* CreateExplosion (CObject* parentP, short nSegment, CFixVector& vPos, fix xSize,
-								  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent)
+								  ubyte nVClip, fix xMaxDamage = 0, fix xMaxDistance = 0, fix xMaxForce = 0, short nParent = -1)
 {
 	short			nObject;
 	CObject		*explObjP, *objP;
@@ -113,6 +113,9 @@ explObjP->SetLife (gameData.eff.vClips [0][nVClip].xTotalTime);
 explObjP->cType.explInfo.nSpawnTime = -1;
 explObjP->cType.explInfo.nDeleteObj = -1;
 explObjP->cType.explInfo.nDeleteTime = -1;
+
+if (parentP && (nVClip == VCLIP_POWERUP_DISAPPEARANCE))
+	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), explObjP->LifeLeft (), explObjP->info.xSize, -1, explObjP->Position ()));
 
 if (xMaxDamage <= 0)
 	return explObjP;
@@ -255,7 +258,7 @@ CObject* CreateBadassExplosion (CObject* objP, short nSegment, CFixVector& posit
 {
 CObject* explObjP = CreateExplosion (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
 if (explObjP) {
-	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, explObjP->info.xSize, explObjP->Position ()));
+	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, explObjP->info.xSize, 1, explObjP->Position ()));
 	if (objP && (objP->info.nType == OBJ_WEAPON))
 		CreateSmartChildren (objP, NUM_SMART_CHILDREN);
 	}

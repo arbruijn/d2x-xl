@@ -646,7 +646,7 @@ if (gameStates.app.nDifficultyLevel < 2)
 	xEnergyUsed = FixMul (xEnergyUsed, I2X (gameStates.app.nDifficultyLevel + 2) / 4);
 //	MK, 01/26/96, Helix use 2x energy in multiplayer.  bitmaps.tbl parm should have been reduced for single player.
 if (nWeaponIndex == FUSION_ID)
-	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 3, objP->info.xSize, OBJPOS (objP)->vPos + OBJPOS (objP)->mOrient.m.dir.f * objP->info.xSize));
+	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 3, objP->info.xSize, 1, OBJPOS (objP)->vPos + OBJPOS (objP)->mOrient.m.dir.f * objP->info.xSize));
 else if (nWeaponIndex == HELIX_ID) {
 	if (IsMultiGame)
 		xEnergyUsed *= 2;

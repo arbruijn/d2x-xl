@@ -408,7 +408,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (!bFixedPos)
 		OBJECTS [nObject].info.position.vPos = vNewPos;
 	OBJECTS [nObject].RelinkToSeg (nSegment);
-	/*Object*/CreateExplosion (nSegment, vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
+	/*Object*/CreateExplosion (&OBJECTS [nObject], nSegment, vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 	return 1;
 	}
 return 0;

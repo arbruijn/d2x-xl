@@ -30,9 +30,10 @@ const char* shockwaveVS =
 
 const char* shockwaveFS = 
 	"uniform sampler2D sceneTex;\r\n" \
-	"uniform int nShockwaves; // explosion center\r\n" \
-	"uniform vec2 screenSize; // 10.0, 0.8, 0.1\r\n" \
-	"uniform vec3 effectStrength; // 10.0, 0.8, 0.1\r\n" \
+	"uniform int nBias;\r\n" \
+	"uniform int nShockwaves;\r\n" \
+	"uniform vec2 screenSize;\r\n" \
+	"uniform vec3 effectStrength;\r\n" \
 	"void main() {\r\n" \
 	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
 	"vec2 tcDest = tcSrc; //vec2 (0.0, 0.0);\r\n" \
@@ -44,7 +45,7 @@ const char* shockwaveFS =
 	"  if (abs (d) <= effectStrength.z) {\r\n" \
 	"    d /= screenSize.x;\r\n" \
 	"    d *= (1.0 - pow (abs (d) * effectStrength.x, effectStrength.y)) * pow (gl_LightSource [i].quadraticAttenuation, 0.25);\r\n" \
-	"    tcDest -= v * (d / r) * screenSize;\r\n" \
+	"    tcDest -= v * (nBias * d / r) * screenSize;\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
 	"gl_FragColor = texture2D (sceneTex, tcDest / screenSize);\r\n" \
@@ -125,7 +126,7 @@ if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
 
 //------------------------------------------------------------------------------
 
-bool CPostEffectShockwave::LoadShader (const CFixVector pos, int size, const float ttl)
+bool CPostEffectShockwave::LoadShader (const CFixVector pos, int size, const float ttl, const int nBias)
 {
 	static CFloatVector3 effectStrength = {10.0f, 0.8f, screen.Width () * 0.1f};
 
@@ -194,7 +195,7 @@ if (m_nShockwaves == 0) {
 
 CFloatVector3 f;
 f.v.coord.x = float (s [0].x)/* / float (screen.Width ())*/;
-f.v.coord.y = float (s [0].y) /*/ float (screen.Height ())*/;
+f.v.coord.y = float (s [0].y)/*/ float (screen.Height ())*/;
 f.v.coord.z = float (d) / float (n)/* / float (screen.Width ())*/;
 glEnable (GL_LIGHT0 + m_nShockwaves);
 glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&f));

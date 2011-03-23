@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define VCLIP_AFTERBURNER_BLOB      95
 #define VCLIP_MONITOR_STATIC        99
 
-#define MAX_VCLIPS                110
+#define MAX_VCLIPS                 110
 #define D1_VCLIP_MAXNUM             70
 #define VCLIP_MAX_FRAMES            30
 
