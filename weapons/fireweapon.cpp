@@ -41,6 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dropobject.h"
 #include "lightcluster.h"
 #include "visibility.h"
+#include "postprocessing.h"
 
 #ifdef TACTILE
 #include "tactile.h"
@@ -622,6 +623,7 @@ controls.StopSecondaryFire ();
 int LocalPlayerFireGun (void)
 {
 	CPlayerData*	playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+	CObject*			objP = &OBJECTS [playerP->nObject];
 	fix				xEnergyUsed;
 	int				nAmmoUsed, nPrimaryAmmo;
 	int				nWeaponIndex;
@@ -634,7 +636,7 @@ int LocalPlayerFireGun (void)
 
 if (gameStates.app.bPlayerIsDead)
 	return 0;
-if (gameStates.app.bD2XLevel && (SEGMENTS [OBJECTS [playerP->nObject].info.nSegment].HasNoDamageProp ()))
+if (gameStates.app.bD2XLevel && (SEGMENTS [objP->info.nSegment].HasNoDamageProp ()))
 	return 0;
 nWeaponIndex = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
 xEnergyUsed = WI_energy_usage (nWeaponIndex);
@@ -643,9 +645,12 @@ if (gameData.weapons.nPrimary == OMEGA_INDEX)
 if (gameStates.app.nDifficultyLevel < 2)
 	xEnergyUsed = FixMul (xEnergyUsed, I2X (gameStates.app.nDifficultyLevel + 2) / 4);
 //	MK, 01/26/96, Helix use 2x energy in multiplayer.  bitmaps.tbl parm should have been reduced for single player.
-if (nWeaponIndex == HELIX_INDEX)
+if (nWeaponIndex == FUSION_ID)
+	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 2, objP->info.xSize, OBJPOS (objP)->vPos + OBJPOS (objP)->mOrient.m.dir.f * objP->info.xSize));
+else if (nWeaponIndex == HELIX_ID) {
 	if (IsMultiGame)
 		xEnergyUsed *= 2;
+	}
 nAmmoUsed = WI_ammo_usage (nWeaponIndex);
 addval = 2 * gameData.time.xFrame;
 if (addval > I2X (1))

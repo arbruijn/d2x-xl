@@ -111,7 +111,7 @@ if (effectObjP) {
 	effectObjP->info.position.mOrient = info.position.mOrient;
 	if (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
 		audio.CreateObjectSound (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
-	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 2, info.xSize, OBJPOS (this)->vPos));
+	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP->LifeLeft (), info.xSize, OBJPOS (this)->vPos));
 	}
 }
 
