@@ -31,20 +31,23 @@ const char* shockwaveVS =
 const char* shockwaveFS = 
 	"uniform sampler2D sceneTex;\r\n" \
 	"uniform int nShockwaves; // explosion center\r\n" \
+	"uniform vec2 screenSize; // 10.0, 0.8, 0.1\r\n" \
 	"uniform vec3 effectStrength; // 10.0, 0.8, 0.1\r\n" \
 	"void main() {\r\n" \
-	"vec2 texCoord = gl_TexCoord [0].xy;\r\n" \
+	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
+	"vec2 tcDest = tcSrc; //vec2 (0.0, 0.0);\r\n" \
 	"int i, h = 0;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
-	"  vec2 v = texCoord - gl_LightSource [i].position.xy;\r\n" \
+	"  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
 	"  float r = length (v);\r\n" \
 	"  float d = r - gl_LightSource [i].position.z;\r\n" \
 	"  if (abs (d) <= effectStrength.z) {\r\n" \
-	"    d *= 1.0 - pow (abs (d) * effectStrength.x, effectStrength.y) * sqrt (gl_LightSource [i].quadraticAttenuation);\r\n" \
-	"    texCoord += v / (r * d); h = 1;\r\n" \
+	"    d /= screenSize.x;\r\n" \
+	"    d *= (1.0 - pow (abs (d) * effectStrength.x, effectStrength.y)) * pow (gl_LightSource [i].quadraticAttenuation, 0.25);\r\n" \
+	"    tcDest += /*tcSrc +*/ v * (d / r) * screenSize; h = 1;\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
-	"gl_FragColor = vec4 (1.0, 0.5, 0.0, 1.0); //(h == 1) ? vec4 (1.0, 0.5, 0.0, 1.0) : texture2D (sceneTex, texCoord);\r\n" \
+	"gl_FragColor = /*(h == 1) ? vec4 (1.0, 0.5, 0.0, 1.0) :*/ texture2D (sceneTex, tcDest / screenSize);\r\n" \
 	"}\r\n";
 
 //------------------------------------------------------------------------------
@@ -124,7 +127,7 @@ if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
 
 bool CPostEffectShockwave::LoadShader (const CFixVector pos, int size, const float ttl)
 {
-	static CFloatVector3 effectStrength = {10.0f, 0.8f, 0.1f};
+	static CFloatVector3 effectStrength = {10.0f, 0.8f, screen.Width () * 0.1f};
 
 if (m_nShockwaves >= 8)
 	return true;
@@ -184,16 +187,18 @@ if (m_nShockwaves == 0) {
 		;
 	glUniform1i (glGetUniformLocation (m_shaderProg, "sceneTex"), 0);
 	glUniform3fv (glGetUniformLocation (m_shaderProg, "effectStrength"), 1, reinterpret_cast<GLfloat*> (&effectStrength));
+	float screenSize [2] = {screen.Width (), screen.Height () };
+	glUniform2fv (glGetUniformLocation (m_shaderProg, "screenSize"), 1, reinterpret_cast<GLfloat*> (screenSize));
 	ogl.SetLighting (true);
 	}
 
 CFloatVector3 f;
-f.v.coord.x = float (s [0].x) / float (screen.Width ());
-f.v.coord.y = float (s [0].y) / float (screen.Height ());
-f.v.coord.z = float (d) / float (n) / float (screen.Width ());
+f.v.coord.x = float (s [0].x)/* / float (screen.Width ())*/;
+f.v.coord.y = float (s [0].y) /*/ float (screen.Height ())*/;
+f.v.coord.z = float (d) / float (n)/* / float (screen.Width ())*/;
 glEnable (GL_LIGHT0 + m_nShockwaves);
 glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&f));
-glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, 1.0f); //1.0f - ttl);
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, 1.0f - ttl);
 glUniform1i (glGetUniformLocation (m_shaderProg, "nShockwaves"), ++m_nShockwaves);
 return true;
 }
