@@ -939,7 +939,7 @@ ResetBitmaps ();
 
 void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
-
+#if !DBG
 	int bSoftBlend = (item->fSoftRad > 0) && SoftBlend (1);
 	int bGlow = 1;
 
@@ -978,6 +978,7 @@ CFloatVector vPosf;
 transformation.Transform (vPosf, item->position, 0);
 if (!bGlow || glowRenderer.SetViewport (GLOW_SPRITES, *vPosf.XYZ (), X2F (item->nWidth), X2F (item->nHeight), true))
 	ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
+#endif
 }
 
 //------------------------------------------------------------------------------

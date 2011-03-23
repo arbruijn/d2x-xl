@@ -34,17 +34,17 @@ const char* shockwaveFS =
 	"uniform vec3 effectStrength; // 10.0, 0.8, 0.1\r\n" \
 	"void main() {\r\n" \
 	"vec2 texCoord = gl_TexCoord [0].xy;\r\n" \
-	"int i;\r\n" \
+	"int i, h = 0;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
 	"  vec2 v = texCoord - gl_LightSource [i].position.xy;\r\n" \
 	"  float r = length (v);\r\n" \
 	"  float d = r - gl_LightSource [i].position.z;\r\n" \
 	"  if (abs (d) <= effectStrength.z) {\r\n" \
 	"    d *= 1.0 - pow (abs (d) * effectStrength.x, effectStrength.y) * sqrt (gl_LightSource [i].quadraticAttenuation);\r\n" \
-	"    texCoord += v / (r * d);\r\n" \
+	"    texCoord += v / (r * d); h = 1;\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
-	"gl_FragColor = texture2D (sceneTex, texCoord);\r\n" \
+	"gl_FragColor = vec4 (1.0, 0.5, 0.0, 1.0); //(h == 1) ? vec4 (1.0, 0.5, 0.0, 1.0) : texture2D (sceneTex, texCoord);\r\n" \
 	"}\r\n";
 
 //------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
 
 //------------------------------------------------------------------------------
 
-bool CPostEffectShockwave::LoadShader (const CFixVector pos, const int size, const float ttl)
+bool CPostEffectShockwave::LoadShader (const CFixVector pos, int size, const float ttl)
 {
 	static CFloatVector3 effectStrength = {10.0f, 0.8f, 0.1f};
 
@@ -132,6 +132,8 @@ if (m_nShockwaves >= 8)
 CFixVector p [5];
 if (transformation.TransformAndEncode (p [0], pos) & CC_BEHIND)
 	return true;
+
+size = int (float (size) * ttl);
 p [1].v.coord.x = 
 p [4].v.coord.x = p [0].v.coord.x - size;
 p [1].v.coord.y = 
@@ -155,7 +157,7 @@ if (i == 5)
 	return true;
 
 tScreenPos s [5];
-for (int i = 1; i < 5; i++)
+for (int i = 0; i < 5; i++)
 	ProjectPoint (p [i], s [i], 0, 0);
 
 int d = 0;
@@ -163,7 +165,7 @@ int n = 0;
 for (int i = 1; i < 5; i++) {
 	if ((s [i].x >= 0) && (s [i].x < screen.Width ()) && (s [i].y >= 0) && (s [i].y < screen.Height ())) {
 		d += labs (s [0].x - s [i].x) + labs (s [0].y - s [i].y);
-		n += 2;
+		n += 1;
 		}
 	}
 if (n == 0)
@@ -186,12 +188,13 @@ if (m_nShockwaves == 0) {
 	}
 
 CFloatVector3 f;
-f.Assign (p [0]);
-f.v.coord.z = X2F (d / n);
+f.v.coord.x = float (s [0].x) / float (screen.Width ());
+f.v.coord.y = float (s [0].y) / float (screen.Height ());
+f.v.coord.z = float (d) / float (n) / float (screen.Width ());
 glEnable (GL_LIGHT0 + m_nShockwaves);
 glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&f));
-glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, ttl);
-glUniform1i (glGetUniformLocation (m_shaderProg, "nShockWaves"), ++m_nShockwaves);
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, 1.0f); //1.0f - ttl);
+glUniform1i (glGetUniformLocation (m_shaderProg, "nShockwaves"), ++m_nShockwaves);
 return true;
 }
 
@@ -199,7 +202,7 @@ return true;
 
 void CPostEffectShockwave::Update (void)
 {
-LoadShader (m_pos, m_nSize, float (m_nLife) / float (SDL_GetTicks () - m_nStart));
+LoadShader (m_pos, m_nSize, float (SDL_GetTicks () - m_nStart) / float (m_nLife));
 }
 
 //------------------------------------------------------------------------------
@@ -211,7 +214,7 @@ OglDrawArrays (GL_QUADS, 0, 4);
 if (m_nShockwaves > 0) {
 	for (int i = 0; i < m_nShockwaves; i++)
 		glDisable (GL_LIGHT0 + i);
-	ogl.EnableLighting (false);
+	ogl.SetLighting (false);
 	m_nShockwaves = 0;
 	}
 }
