@@ -468,6 +468,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.coronas.bUse, i, 0);
 		RP (gameOptions [i].render.coronas.nStyle, i, 0);
 		RP (gameOptions [i].render.effects.bEnergySparks, i, 0);
+		RP (gameOptions [i].render.effects.nShockwaves, i, 0);
 		RP (gameOptions [i].render.automap.bTextured, i, 0);
 		RP (gameOptions [i].render.automap.bBright, i, 0);
 
@@ -560,7 +561,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.nDebrisLife, i, 0);
 		RP (gameOptions [i].render.effects.bAutoTransparency, i, 0);
 		RP (gameOptions [i].render.effects.bMovingSparks, i, 0);
-		RP (gameOptions [i].render.effects.bExplBlasts, i, 0);
 		RP (gameOptions [i].render.coronas.bShots, i, 0);
 		RP (gameOptions [i].render.coronas.bPowerups, i, 0);
 		RP (gameOptions [i].render.coronas.bWeapons, i, 0);
@@ -1001,6 +1001,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.effects.bGlow", "0"},
 	 {"gameOptions[0].render.effects.bSoftParticles", "0"},
 	 {"gameOptions[0].render.effects.bEnergySparks", "1"},
+	 {"gameOptions[0].render.effects.nShockwaves", "1"},
 	 {"gameOptions[0].render.automap.bTextured", "1"},
 	 {"gameOptions[0].render.automap.bBright", "0"},
 	 {"gameOptions[0].render.automap.nRange", "0"},
@@ -1404,7 +1405,6 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.nDebrisLife", "0"},
 	 {"gameOptions[0].render.effects.bAutoTransparency", "1"},
 	 {"gameOptions[0].render.effects.bMovingSparks", "0"},
-	 {"gameOptions[0].render.effects.bExplBlasts", "1"},
 	 {"gameOptions[0].render.effects.nShrapnels", "1"},
 	 {"gameOptions[0].render.coronas.bUse", "1"},
 	 {"gameOptions[0].render.coronas.nStyle", "1"},

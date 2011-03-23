@@ -56,7 +56,7 @@ CObject *CObject::CreateExplBlast (void)
 	short		nObject, id;
 	CObject	*objP;
 
-if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.bExplBlasts))
+if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves))
 	return NULL;
 nObject = CreateFireball (0, info.nSegment, info.position.vPos, 2 * info.xSize, RT_EXPLBLAST);
 if (nObject < 0)
@@ -82,7 +82,8 @@ if ((info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = info.nId])) {
 		objP->info.xSize = I2X (1);
 		}
 	}
-postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, objP->info.xSize, 1, objP->Position ()));
+if (gameOpts->render.effects.nShockwaves == 2)
+	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, objP->info.xSize, 1, objP->Position ()));
 return objP;
 }
 

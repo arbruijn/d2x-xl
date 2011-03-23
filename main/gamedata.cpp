@@ -2017,7 +2017,7 @@ void DefaultEffectSettings (void)
 {
 gameOptions [0].render.effects.bAutoTransparency = 1;
 gameOptions [0].render.effects.bTransparent = 1;
-gameOptions [0].render.effects.bExplBlasts = 1;
+gameOptions [0].render.effects.nShockwaves = 1;
 gameOptions [0].render.effects.bEnergySparks = (gameOptions [0].render.nQuality > 0);
 gameOptions [0].render.effects.bMovingSparks = 1;
 if (gameOptions [0].render.nQuality < 2)

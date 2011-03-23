@@ -668,8 +668,7 @@ else {
 			gameOpts->render.stereo.nGlasses = 0;
 		}	
 	else {
-		gameStates.render.bRenderIndirect = 1; //m_data.xStereoSeparation && (i > 0);
-		if (gameStates.render.bRenderIndirect)
+		if ((gameStates.render.bRenderIndirect = postProcessManager.Effects ())) //m_data.xStereoSeparation && (i > 0);
 			SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
 		else
 			SetDrawBuffer (GL_BACK, 0);

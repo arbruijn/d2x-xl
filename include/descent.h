@@ -343,7 +343,7 @@ typedef struct tCoronaRenderOptions {
 
 typedef struct tEffectRenderOptions {
 	int bEnabled;
-	int bExplBlasts;
+	int nShockwaves;
 	int nShrapnels;
 	int bEnergySparks;
 	int bRobotShields;

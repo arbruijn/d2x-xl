@@ -63,6 +63,7 @@ static struct {
 	int	nShadows;
 	int	nLightning;
 	int	nCoronas;
+	int	nShockwaves;
 	int	nExplShrapnels;
 	int	nLightTrails;
 	int	nSparks;
@@ -89,6 +90,16 @@ if (nState)
 
 	CMenuItem	*m;
 	int			v;
+
+if (effectOpts.nShockwaves >= 0) {
+	m = menu + effectOpts.nShockwaves;
+	v = m->m_value;
+	if (gameOpts->render.effects.nShockwaves != v) {
+		gameOpts->render.effects.nShockwaves = v;
+		sprintf (m->m_text, TXT_EXPLOSION_BLASTS, pszNoneBasicFull [v]);
+		m->m_bRebuild = 1;
+		}
+	}
 
 if (effectOpts.nExplShrapnels >= 0) {
 	m = menu + effectOpts.nExplShrapnels;
@@ -266,6 +277,10 @@ do {
 		}
 	else
 		effectOpts.nExplShrapnels = -1;
+
+	sprintf (szSlider + 1, TXT_LIGHTTRAIL_QUAL, pszNoneBasicFull [gameOpts->render.effects.nShockwaves]);
+	*szSlider = *(TXT_EXPLOSION_BLASTS - 1);
+	effectOpts.nShockwaves = m.AddSlider (szSlider + 1, gameOpts->render.effects.nShockwaves, 0, 2, KEY_K, HTX_EXPLOSION_BLASTS);
 
 	sprintf (szSlider + 1, TXT_LIGHTTRAIL_QUAL, pszNoneBasicAdv [nLightTrails]);
 	*szSlider = *(TXT_LIGHTTRAIL_QUAL - 1);

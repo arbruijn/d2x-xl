@@ -55,11 +55,6 @@ const char* shockwaveFS =
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
 void CPostProcessManager::Destroy (void) 
 {
 while (m_effects) {
@@ -74,10 +69,14 @@ m_nEffects = 0;
 
 void CPostProcessManager::Add (CPostEffect* e) 
 {
-e->Link (NULL, m_effects);
-if (m_effects)
-	m_effects->Link (e, m_effects->Next ());
-m_effects = e;
+if (!(ogl.HaveDrawBuffer () && e->Enabled ()))
+	delete e;
+else {
+	e->Link (NULL, m_effects);
+	if (m_effects)
+		m_effects->Link (e, m_effects->Next ());
+	m_effects = e;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -224,6 +223,13 @@ if (m_nShockwaves > 0) {
 	ogl.SetLighting (false);
 	m_nShockwaves = 0;
 	}
+}
+
+//------------------------------------------------------------------------------
+
+bool CPostEffectShockwave::Enabled (void)
+{
+return gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves;
 }
 
 //------------------------------------------------------------------------------

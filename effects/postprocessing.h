@@ -47,6 +47,9 @@ class CPostEffect {
 		virtual void Update (void) = 0;
 
 		virtual void Render (void) = 0;
+
+		virtual bool Enabled (void) = 0;
+
 };
 
 //------------------------------------------------------------------------------
@@ -81,6 +84,8 @@ class CPostEffectShockwave : public CPostEffect {
 		virtual void Update (void);
 
 		virtual void Render (void);
+
+		virtual bool Enabled (void);
 
 	private:
 		void InitShader (void);
@@ -117,5 +122,7 @@ class CPostProcessManager {
 	};
 
 extern CPostProcessManager postProcessManager;
+
+//------------------------------------------------------------------------------
 
 #endif //POSTPROCESS_H
