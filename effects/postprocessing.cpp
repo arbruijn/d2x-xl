@@ -168,7 +168,7 @@ int n = 0;
 for (int i = 1; i < 5; i++) {
 	if ((s [i].x >= 0) && (s [i].x < screen.Width ()) && (s [i].y >= 0) && (s [i].y < screen.Height ())) {
 		d += labs (s [0].x - s [i].x) + labs (s [0].y - s [i].y);
-		n += 2;
+		n += 4;
 		}
 	}
 if (n == 0)
