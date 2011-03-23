@@ -89,7 +89,7 @@ return objP;
 //------------------------------------------------------------------------------
 
 CObject* CreateExplosion (CObject* parentP, short nSegment, CFixVector& vPos, fix xSize,
-								  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForcd, short nParent)
+								  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent)
 {
 	short			nObject;
 	CObject		*explObjP, *objP;
