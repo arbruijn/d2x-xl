@@ -187,6 +187,7 @@ if (m_nShockwaves == 0) {
 	if (shaderManager.Rebuild (m_shaderProg))
 		;
 	glUniform1i (glGetUniformLocation (m_shaderProg, "sceneTex"), 0);
+	glUniform1i (glGetUniformLocation (m_shaderProg, "nBias"), nBias);
 	glUniform3fv (glGetUniformLocation (m_shaderProg, "effectStrength"), 1, reinterpret_cast<GLfloat*> (&effectStrength));
 	float screenSize [2] = {screen.Width (), screen.Height () };
 	glUniform2fv (glGetUniformLocation (m_shaderProg, "screenSize"), 1, reinterpret_cast<GLfloat*> (screenSize));

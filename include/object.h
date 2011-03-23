@@ -1353,7 +1353,7 @@ extern ubyte bIsMissile [];
 #define	OBJ_CLOAKED(_objP)	((_objP)->ctype.aiInfo.flags [6])
 
 #define	SHOW_SHADOWS \
-			(!gameStates.render.bRenderIndirect && \
+			(/*!gameStates.render.bRenderIndirect &&*/ \
 			 EGI_FLAG (bShadows, 0, 1, 0) && \
 			 !COMPETITION)
 
