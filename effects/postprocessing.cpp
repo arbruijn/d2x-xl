@@ -69,7 +69,7 @@ m_nEffects = 0;
 
 void CPostProcessManager::Add (CPostEffect* e) 
 {
-if (!(ogl.HaveDrawBuffer () && e->Enabled ()))
+if (!(ogl.m_states.bRender2TextureOk && e->Enabled ()))
 	delete e;
 else {
 	e->Link (NULL, m_effects);
