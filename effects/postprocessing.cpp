@@ -30,25 +30,34 @@ const char* shockwaveVS =
 
 const char* shockwaveFS = 
 	"uniform sampler2D sceneTex;\r\n" \
+	"uniform sampler2D depthTex;\r\n" \
 	"uniform int nBias;\r\n" \
 	"uniform int nShockwaves;\r\n" \
 	"uniform vec2 screenSize;\r\n" \
 	"uniform vec3 effectStrength;\r\n" \
+	"#define LinearDepth(_z) 10000.0 / (5001.0 - (_z) * 4999.0)\r\n" \
 	"void main() {\r\n" \
 	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
 	"vec2 tcDest = tcSrc; //vec2 (0.0, 0.0);\r\n" \
-	"int i;\r\n" \
+	"int i, h = 0;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
 	"  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
-	"  float r = length (v);\r\n" \
-	"  float d = r - gl_LightSource [i].position.z;\r\n" \
-	"  if (abs (d) <= effectStrength.z) {\r\n" \
-	"    d /= screenSize.x;\r\n" \
-	"    d *= (1.0 - pow (abs (d) * effectStrength.x, effectStrength.y)) * pow (gl_LightSource [i].quadraticAttenuation, 0.25);\r\n" \
-	"    tcDest -= v * (nBias * d / r) * screenSize;\r\n" \
+	"  float d = length (v);\r\n" \
+	"  float r = gl_LightSource [i].constantAttenuation;\r\n" \
+	"  float offset = d - r;\r\n" \
+	"  if (abs (offset) <= effectStrength.z) {\r\n" \
+	"    if (LinearDepth (texture2D (depthTex, gl_TexCoord [0].xy).r) <= 50.0) h = 1;\r\n" \
+	"    if (gl_LightSource [i].position.z <= LinearDepth (texture2D (depthTex, gl_TexCoord [0].xy).r)) {\r\n" \
+	"      offset /= screenSize.x;\r\n" \
+	"      offset *= (1.0 - pow (abs (offset) * effectStrength.x, effectStrength.y)) * pow (gl_LightSource [i].quadraticAttenuation, 0.25);\r\n" \
+	"      tcDest -= v * (nBias * offset / d) * screenSize;\r\n" \
+	"      }\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
-	"gl_FragColor = texture2D (sceneTex, tcDest / screenSize);\r\n" \
+	"gl_FragColor = (h == 1) ? vec4 (1.0, 0.5, 0.0, 1.0) : texture2D (sceneTex, tcDest / screenSize);\r\n" \
+	"/*float r = 1.0 - LinearDepth (texture2D (depthTex, gl_TexCoord [0].xy).r) / 5000.0;\r\n" \
+	"float r = (1.0 + texture2D (depthTex, gl_TexCoord [0].xy).r) / 2.0;\r\n" \
+	"gl_FragColor = vec4 (r, r, r, 1.0);*/\r\n" \
 	"}\r\n";
 
 //------------------------------------------------------------------------------
@@ -132,7 +141,14 @@ bool CPostEffectShockwave::LoadShader (const CFixVector pos, int size, const flo
 if (m_nShockwaves >= 8)
 	return true;
 
+int i;
 CFixVector p [5];
+
+for (i = 0; i < 2; i++)
+	transformation.TransformAndEncode (p [i], VERTICES [56 + i]);
+for (; i < 4; i++)
+	transformation.TransformAndEncode (p [i], VERTICES [599 + i]);
+	
 if (transformation.TransformAndEncode (p [0], pos) & CC_BEHIND)
 	return true;
 
@@ -149,8 +165,6 @@ p [1].v.coord.z =
 p [2].v.coord.z =
 p [3].v.coord.z =
 p [4].v.coord.z = p [0].v.coord.z;
-
-int i;
 
 for (i = 1; i < 5; i++) {
 	if (!(transformation.Codes (p [i]) & CC_BEHIND))
@@ -180,12 +194,15 @@ if (m_nShockwaves == 0) {
 		if (hShockwaveShader < 0)
 			return false;
 		}
+	if (!ogl.CopyDepthTexture (1))
+		return false;
 	m_shaderProg = GLhandleARB (shaderManager.Deploy (hShockwaveShader /*[direction]*/));
 	if (!m_shaderProg)
 		return false;
 	if (shaderManager.Rebuild (m_shaderProg))
 		;
 	glUniform1i (glGetUniformLocation (m_shaderProg, "sceneTex"), 0);
+	glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
 	glUniform1i (glGetUniformLocation (m_shaderProg, "nBias"), nBias);
 	glUniform3fv (glGetUniformLocation (m_shaderProg, "effectStrength"), 1, reinterpret_cast<GLfloat*> (&effectStrength));
 	float screenSize [2] = {screen.Width (), screen.Height () };
@@ -196,9 +213,10 @@ if (m_nShockwaves == 0) {
 CFloatVector3 f;
 f.v.coord.x = float (s [0].x)/* / float (screen.Width ())*/;
 f.v.coord.y = float (s [0].y)/*/ float (screen.Height ())*/;
-f.v.coord.z = float (d) / float (n)/* / float (screen.Width ())*/;
+f.v.coord.z = X2F (p [0].v.coord.z); /* / float (screen.Width ())*/;
 glEnable (GL_LIGHT0 + m_nShockwaves);
 glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&f));
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, float (d) / float (n));
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, 1.0f - ttl);
 glUniform1i (glGetUniformLocation (m_shaderProg, "nShockwaves"), ++m_nShockwaves);
 return true;

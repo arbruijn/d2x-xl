@@ -215,7 +215,7 @@ else {
 #endif
 
 ogl.m_states.bHaveDepthBuffer [0] =
-ogl.m_states.bHaveDepthBuffer [1] =
+ogl.m_states.bHaveDepthBuffer [1] = 0;
 gameData.render.nUsedFaces =
 gameData.render.nTotalFaces =
 gameData.render.nTotalObjects =

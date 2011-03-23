@@ -700,9 +700,9 @@ const char *glareFS =
 	"//#define LinearDepth(_z) (2.0 * ZFAR) / (ZFAR + ZNEAR - (_z) * (ZFAR - ZNEAR))\r\n" \
 	"#define LinearDepth(_z) 10000.0 / (5001.0 - (_z) * 4999.0)\r\n" \
 	"void main (void) {\r\n" \
-	"//float texZ = LinearDepth (texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
+	"//float sceneZ = LinearDepth (texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
 	"//float fragZ = LinearDepth (gl_FragCoord.z);\r\n" \
-	"//float dz = clamp (fragZ - texZ, 0.0, dMax);\r\n" \
+	"//float dz = clamp (fragZ - sceneZ, 0.0, dMax);\r\n" \
 	"float dz = clamp (LinearDepth (gl_FragCoord.z) - LinearDepth (texture2D (depthTex, screenScale * gl_FragCoord.xy).r), 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 texColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
