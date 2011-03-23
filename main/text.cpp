@@ -1691,7 +1691,7 @@ const char *defaultGameTexts [][2] = {
  {"~Reibung Spielerschiff: %S", "~Player ship friction: %s"},
  {"~Solide Leuchtspuren", "~Solid light trails"},
  {"~Partikel-Leuchtspuren", "~Particle light trails"},
- {"Explosions-~schoc~Kwellen", "explosion shoc~Kwaves"},
+ {"Explosions-~schoc~Kwellen: %s", "explosion shoc~Kwaves: %s"},
  {"r~Oboter-Schilde zeichnen", "render r~Obot shields"},
  {"~Volle Farbsaettigung", "~Full color saturation"},
  {"~Begrenzte Farbsaettigung", "~Limit color saturation"},

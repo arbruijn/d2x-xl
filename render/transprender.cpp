@@ -939,7 +939,7 @@ ResetBitmaps ();
 
 void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
-#if !DBG
+#if 1 //!DBG
 	int bSoftBlend = (item->fSoftRad > 0) && SoftBlend (1);
 	int bGlow = 1;
 
