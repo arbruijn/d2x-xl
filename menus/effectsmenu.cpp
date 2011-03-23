@@ -278,7 +278,7 @@ do {
 	else
 		effectOpts.nExplShrapnels = -1;
 
-	sprintf (szSlider + 1, TXT_LIGHTTRAIL_QUAL, pszNoneBasicFull [gameOpts->render.effects.nShockwaves]);
+	sprintf (szSlider + 1, TXT_EXPLOSION_BLASTS, pszNoneBasicFull [gameOpts->render.effects.nShockwaves]);
 	*szSlider = *(TXT_EXPLOSION_BLASTS - 1);
 	effectOpts.nShockwaves = m.AddSlider (szSlider + 1, gameOpts->render.effects.nShockwaves, 0, 2, KEY_K, HTX_EXPLOSION_BLASTS);
 
