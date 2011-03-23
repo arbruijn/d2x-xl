@@ -229,7 +229,7 @@ if (m_nShockwaves > 0) {
 
 bool CPostEffectShockwave::Enabled (void)
 {
-return gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves;
+return gameOpts->render.effects.bEnabled && (gameOpts->render.effects.nShockwaves > 1);
 }
 
 //------------------------------------------------------------------------------
