@@ -85,7 +85,7 @@ class CPostEffectShockwave : public CPostEffect {
 	private:
 		void InitShader (void);
 
-		bool LoadShader (const CFixVector pos, const int size, const float ttl);
+		bool LoadShader (const CFixVector pos, const int size, const float ttl, int nBias);
 	};
 
 //------------------------------------------------------------------------------

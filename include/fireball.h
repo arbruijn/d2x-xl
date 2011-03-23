@@ -32,7 +32,7 @@ CObject *CreateBadassExplosion (CObject* parentObjP, short nSegment,
 void DoDebrisFrame (CObject* objP);      // deal with debris for this frame
 void DrawFireball (CObject* objP);
 CObject* CreateExplosion (CObject* parentP, short nSegment, CFixVector& vPos, fix xSize, ubyte nVClip, 
-								  fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent);
+                          fix xMaxDamage = 0, fix xMaxDistance = 0, fix xMaxForce = 0, short nParent = -1);
 
 
 short GetExplosionVClip (CObject *obj, int stage);

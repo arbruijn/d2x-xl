@@ -208,7 +208,7 @@ return true;
 
 void CPostEffectShockwave::Update (void)
 {
-LoadShader (m_pos, m_nSize, float (SDL_GetTicks () - m_nStart) / float (m_nLife));
+LoadShader (m_pos, m_nSize, float (SDL_GetTicks () - m_nStart) / float (m_nLife), m_nBias);
 }
 
 //------------------------------------------------------------------------------
