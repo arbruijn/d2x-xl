@@ -57,6 +57,7 @@
 #include "renderframe.h"
 #include "automap.h"
 #include "text.h"
+#include "postprocessing.h"
 #include "gpgpu_lighting.h"
 
 //#define _WIN32_WINNT		0x0600
