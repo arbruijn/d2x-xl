@@ -874,6 +874,9 @@ void COGL::EndFrame (void)
 //	glViewport (0, 0, screen.Width (), screen.Height ());
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+if (postProcessManager.Effects ())
+	ogl.CopyDepthTexture (1);
+
 if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
 	if (gameStates.render.bRenderIndirect)
 		SelectDrawBuffer (0);

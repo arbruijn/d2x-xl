@@ -39,7 +39,7 @@ const char* shockwaveFS =
 	"void main() {\r\n" \
 	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
 	"vec2 tcDest = tcSrc; //vec2 (0.0, 0.0);\r\n" \
-	"int i, h = 0;\r\n" \
+	"int i;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
 	"  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
 	"  float r = gl_LightSource [i].constantAttenuation;\r\n" \
@@ -50,16 +50,17 @@ const char* shockwaveFS =
 	"    float z = sqrt (r * r - d * d) / r * gl_LightSource [i].linearAttenuation;\r\n" \
 	"    if (gl_LightSource [i].position.z - z <= LinearDepth (texture2D (depthTex, gl_TexCoord [0].xy).r)) {\r\n" \
 	"      offset /= screenSize.x;\r\n" \
-	"      offset *= (1.0 - pow (abs (offset) * effectStrength.x, effectStrength.y)) * pow (gl_LightSource [i].quadraticAttenuation, 0.25);\r\n" \
+	"      offset *= (1.0 - pow (abs (offset) * effectStrength.x, effectStrength.y));\r\n" \
+	"      offset *= pow (gl_LightSource [i].quadraticAttenuation, 0.25);\r\n" \
 	"      tcDest -= v * (nBias * offset / d) * screenSize;\r\n" \
 	"      }\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
 	"gl_FragColor = texture2D (sceneTex, tcDest / screenSize);\r\n" \
-	"/*float r = 1.0 - LinearDepth (texture2D (depthTex, gl_TexCoord [0].xy).r) / 5000.0;\r\n" \
-	"float r = (1.0 + texture2D (depthTex, gl_TexCoord [0].xy).r) / 2.0;\r\n" \
-	"gl_FragColor = vec4 (r, r, r, 1.0);*/\r\n" \
-	"}\r\n";
+	"/*float r = (1.0 + texture2D (depthTex, gl_TexCoord [0].xy).r) / 2.0;\r\n" \
+	"float r = pow (1.0 - LinearDepth (texture2D (depthTex, gl_TexCoord [0].xy).r) / 5000.0, 8);\r\n" \
+	"gl_FragColor = vec4 (r, r, r, 1.0);\r\n" \
+	"*/}\r\n";
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -196,6 +197,9 @@ if (m_nShockwaves == 0) {
 		if (hShockwaveShader < 0)
 			return false;
 		}
+#if DBG
+//	ogl.m_states.bHaveDepthBuffer [1] = 0;
+#endif
 	if (!ogl.CopyDepthTexture (1))
 		return false;
 	m_shaderProg = GLhandleARB (shaderManager.Deploy (hShockwaveShader /*[direction]*/));
