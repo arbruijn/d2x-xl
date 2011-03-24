@@ -13,7 +13,7 @@ class CPostEffect {
 
 	public:
 		CPostEffect (int nType = 0) : 
-			m_nType (nType), m_prev (0), m_next (0) 
+			m_prev (0), m_next (0), m_nType (nType)
 			{}
 
 		inline CPostEffect* Prev (void) { return m_prev; }
