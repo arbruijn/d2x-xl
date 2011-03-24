@@ -33,7 +33,11 @@
 # include <SDL.h>
 #endif
 
+#if DBG
 static int bTestTracker = 0;
+#else
+#	define bTestTracker	0
+#endif
 #if 0
 static tUdpAddress testServer;
 #endif
@@ -128,8 +132,10 @@ int CTracker::RequestServerList (void)
 
 if (!tracker.m_bUse)
 	return 0;
+#if DBG
 if (bTestTracker)
 	AddServer ();
+#endif
 if ((t = SDL_GetTicks ()) - nTimeout < R_TIMEOUT)
 	return 0;
 nTimeout = t;
