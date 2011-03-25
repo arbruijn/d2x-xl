@@ -131,8 +131,9 @@ m_bValid = false;
 if (transformation.TransformAndEncode (p [0], m_pos) & CC_BEHIND)
 	return false;
 
-float m_ttl = float (SDL_GetTicks () - m_nStart) / Life ();
-float m_rad = X2F (m_nSize) * m_ttl;
+m_ttl = float (SDL_GetTicks () - m_nStart) / Life ();
+m_rad = X2F (m_nSize) * m_ttl;
+
 int size = int (float (m_nSize) * m_ttl);
 p [1].v.coord.x = 
 p [4].v.coord.x = p [0].v.coord.x - size;
@@ -268,7 +269,8 @@ for (CPostEffect* e = m_effects; e; ) {
 void CPostProcessManager::Setup (void)
 {
 for (CPostEffect* e = m_effects; e; e = e->Next ()) 
-	e->Setup ();
+	if (e->Valid ())
+		e->Setup ();
 }
 
 //------------------------------------------------------------------------------
@@ -276,7 +278,8 @@ for (CPostEffect* e = m_effects; e; e = e->Next ())
 void CPostProcessManager::Render (void)
 {
 for (CPostEffect* e = m_effects; e; e = e->Next ()) 
-	e->Render ();
+	if (e->Valid ())
+		e->Render ();
 }
 
 //------------------------------------------------------------------------------
