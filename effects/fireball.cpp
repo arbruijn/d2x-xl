@@ -259,7 +259,8 @@ CObject* CreateBadassExplosion (CObject* objP, short nSegment, CFixVector& posit
 {
 CObject* explObjP = CreateExplosion (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
 if (explObjP) {
-	if ((objP->info.nType == OBJ_PLAYER) || 
+	if (!objP ||
+		 (objP->info.nType == OBJ_PLAYER) || 
 		 (objP->info.nType == OBJ_ROBOT) || 
 		 ((objP->info.nType == OBJ_WEAPON) && 
 		  ((objP->info.nId == MEGAMSL_ID) || 
