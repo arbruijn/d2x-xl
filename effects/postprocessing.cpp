@@ -31,7 +31,6 @@ const char* shockwaveVS =
 const char* shockwaveFS = 
 	"uniform sampler2D sceneTex;\r\n" \
 	"uniform sampler2D depthTex;\r\n" \
-	"uniform int nBias;\r\n" \
 	"uniform int nShockwaves;\r\n" \
 	"uniform vec2 screenSize;\r\n" \
 	"uniform vec3 effectStrength;\r\n" \
@@ -53,7 +52,7 @@ const char* shockwaveFS =
 	"      offset /= screenSize.x;\r\n" \
 	"      offset *= (1.0 - pow (abs (offset) * effectStrength.x, effectStrength.y));\r\n" \
 	"      offset *= pow (gl_LightSource [i].quadraticAttenuation, 0.25);\r\n" \
-	"      tcDest -= v * (nBias * offset / d) * screenSize;\r\n" \
+	"      tcDest -= v * (gl_LightSource [i].spotExponent * offset / d) * screenSize;\r\n" \
 	"      }\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
@@ -62,6 +61,161 @@ const char* shockwaveFS =
 	"//float r = pow (1.0 - z / 5000.0, 8);\r\n" \
 	"//gl_FragColor = (z < 240.0) ? vec4 (1.0, 0.5, 0.0, 1.0) : vec4 (r, r, r, 1.0);\r\n" \
 	"}\r\n";
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+int CPostEffectShockwave::m_nShockwaves = 0;
+GLhandleARB CPostEffectShockwave::m_shaderProg;
+
+void CPostEffectShockwave::InitShader (void)
+{
+PrintLog ("building shockwave shader program\n");
+if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
+	m_shaderProg = 0;
+	if (!shaderManager.Build (hShockwaveShader, shockwaveFS, shockwaveVS)) {
+		ogl.ClearError (0);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+bool CPostEffectShockwave::SetupShader (void)
+{
+	static CFloatVector3 effectStrength = {10.0f, 0.8f, screen.Width () * 0.1f};
+
+if (m_nShockwaves > 0)
+	return true;
+if (hShockwaveShader < 0) {
+	InitShader ();
+	if (hShockwaveShader < 0)
+		return false;
+	}
+#if DBG
+//	ogl.m_states.bHaveDepthBuffer [1] = 0;
+#endif
+if (!ogl.CopyDepthTexture (1))
+	return false;
+m_shaderProg = GLhandleARB (shaderManager.Deploy (hShockwaveShader /*[direction]*/));
+if (!m_shaderProg)
+	return false;
+if (shaderManager.Rebuild (m_shaderProg))
+	;
+glUniform1i (glGetUniformLocation (m_shaderProg, "sceneTex"), 0);
+glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
+glUniform3fv (glGetUniformLocation (m_shaderProg, "effectStrength"), 1, reinterpret_cast<GLfloat*> (&effectStrength));
+float screenSize [2] = {screen.Width (), screen.Height () };
+glUniform2fv (glGetUniformLocation (m_shaderProg, "screenSize"), 1, reinterpret_cast<GLfloat*> (screenSize));
+ogl.SetLighting (true);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+float CPostEffectShockwave::Life (void)
+{
+return float (m_nLife) * gameStates.gameplay.slowmo [0].fSpeed;
+}
+	 
+//------------------------------------------------------------------------------
+
+bool CPostEffectShockwave::Update (void)
+{
+int i;
+CFixVector p [5];
+
+m_bValid = false;
+
+if (transformation.TransformAndEncode (p [0], m_pos) & CC_BEHIND)
+	return false;
+
+float m_ttl = float (SDL_GetTicks () - m_nStart) / Life ();
+float m_rad = X2F (m_nSize) * m_ttl;
+int size = int (float (m_nSize) * m_ttl);
+p [1].v.coord.x = 
+p [4].v.coord.x = p [0].v.coord.x - size;
+p [1].v.coord.y = 
+p [2].v.coord.y = p [0].v.coord.y - size;
+p [2].v.coord.x = 
+p [3].v.coord.x = p [0].v.coord.x + size;
+p [3].v.coord.y = 
+p [4].v.coord.y = p [0].v.coord.y + size;
+p [1].v.coord.z =
+p [2].v.coord.z =
+p [3].v.coord.z =
+p [4].v.coord.z = p [0].v.coord.z;
+
+for (i = 1; i < 5; i++) {
+	if (!(transformation.Codes (p [i]) & CC_BEHIND))
+		break;
+	}	
+if (i == 5)
+	return false;
+
+tScreenPos s [5];
+for (int i = 0; i < 5; i++)
+	ProjectPoint (p [i], s [i], 0, 0);
+
+int d = 0;
+int n = 0;
+for (int i = 1; i < 5; i++) {
+	if ((s [i].x >= 0) && (s [i].x < screen.Width ()) && (s [i].y >= 0) && (s [i].y < screen.Height ())) {
+		d += labs (s [0].x - s [i].x) + labs (s [0].y - s [i].y);
+		n += 4;
+		}
+	}
+if (n == 0)
+	return false;
+
+m_renderPos.v.coord.x = float (s [0].x);
+m_renderPos.v.coord.y = float (s [0].y);
+m_renderPos.v.coord.z = X2F (p [0].v.coord.z);
+m_effectRad = float (d) / float (n);
+return m_bValid = true;
+}
+
+//------------------------------------------------------------------------------
+
+bool CPostEffectShockwave::Setup (void)
+{
+if (m_nShockwaves >= 8)
+	return true;
+
+if (!SetupShader ())
+	return false;
+
+glEnable (GL_LIGHT0 + m_nShockwaves);
+glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&m_renderPos));
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, m_effectRad);
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_LINEAR_ATTENUATION, m_rad);
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, 1.0f - m_ttl);
+glLighti (GL_LIGHT0 + m_nShockwaves, GL_SPOT_EXPONENT, m_nBias);
+glUniform1i (glGetUniformLocation (m_shaderProg, "nShockwaves"), ++m_nShockwaves);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+void CPostEffectShockwave::Render (void)
+{
+// render current render target
+OglDrawArrays (GL_QUADS, 0, 4);
+if (m_nShockwaves > 0) {
+	for (int i = 0; i < m_nShockwaves; i++)
+		glDisable (GL_LIGHT0 + i);
+	ogl.SetLighting (false);
+	m_nShockwaves = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+bool CPostEffectShockwave::Enabled (void)
+{
+return gameOpts->render.effects.bEnabled && (gameOpts->render.effects.nShockwaves > 1);
+}
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -93,14 +247,6 @@ else {
 
 //------------------------------------------------------------------------------
 
-void CPostProcessManager::Render (void)
-{
-for (CPostEffect* e = m_effects; e; e = e->Next ()) 
-	e->Render ();
-}
-
-//------------------------------------------------------------------------------
-
 void CPostProcessManager::Update (void)
 {
 for (CPostEffect* e = m_effects; e; ) {
@@ -118,146 +264,19 @@ for (CPostEffect* e = m_effects; e; ) {
 }
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 
-int CPostEffectShockwave::m_nShockwaves = 0;
-GLhandleARB CPostEffectShockwave::m_shaderProg;
-
-void CPostEffectShockwave::InitShader (void)
+void CPostProcessManager::Setup (void)
 {
-PrintLog ("building shockwave shader program\n");
-if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
-	m_shaderProg = 0;
-	if (!shaderManager.Build (hShockwaveShader, shockwaveFS, shockwaveVS)) {
-		ogl.ClearError (0);
-		}
-	}
+for (CPostEffect* e = m_effects; e; e = e->Next ()) 
+	e->Setup ();
 }
 
 //------------------------------------------------------------------------------
 
-bool CPostEffectShockwave::LoadShader (const CFixVector pos, int size, const float ttl, const int nBias)
+void CPostProcessManager::Render (void)
 {
-	static CFloatVector3 effectStrength = {10.0f, 0.8f, screen.Width () * 0.1f};
-
-if (m_nShockwaves >= 8)
-	return true;
-
-int i;
-CFixVector p [5];
-
-if (transformation.TransformAndEncode (p [0], pos) & CC_BEHIND)
-	return true;
-
-float rad = X2F (size) * ttl;
-size = int (float (size) * ttl);
-p [1].v.coord.x = 
-p [4].v.coord.x = p [0].v.coord.x - size;
-p [1].v.coord.y = 
-p [2].v.coord.y = p [0].v.coord.y - size;
-p [2].v.coord.x = 
-p [3].v.coord.x = p [0].v.coord.x + size;
-p [3].v.coord.y = 
-p [4].v.coord.y = p [0].v.coord.y + size;
-p [1].v.coord.z =
-p [2].v.coord.z =
-p [3].v.coord.z =
-p [4].v.coord.z = p [0].v.coord.z;
-
-for (i = 1; i < 5; i++) {
-	if (!(transformation.Codes (p [i]) & CC_BEHIND))
-		break;
-	}	
-if (i == 5)
-	return true;
-
-tScreenPos s [5];
-for (int i = 0; i < 5; i++)
-	ProjectPoint (p [i], s [i], 0, 0);
-
-int d = 0;
-int n = 0;
-for (int i = 1; i < 5; i++) {
-	if ((s [i].x >= 0) && (s [i].x < screen.Width ()) && (s [i].y >= 0) && (s [i].y < screen.Height ())) {
-		d += labs (s [0].x - s [i].x) + labs (s [0].y - s [i].y);
-		n += 4;
-		}
-	}
-if (n == 0)
-	return true;
-
-if (m_nShockwaves == 0) {
-	if (hShockwaveShader < 0) {
-		InitShader ();
-		if (hShockwaveShader < 0)
-			return false;
-		}
-#if DBG
-//	ogl.m_states.bHaveDepthBuffer [1] = 0;
-#endif
-	if (!ogl.CopyDepthTexture (1))
-		return false;
-	m_shaderProg = GLhandleARB (shaderManager.Deploy (hShockwaveShader /*[direction]*/));
-	if (!m_shaderProg)
-		return false;
-	if (shaderManager.Rebuild (m_shaderProg))
-		;
-	glUniform1i (glGetUniformLocation (m_shaderProg, "sceneTex"), 0);
-	glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
-	glUniform1i (glGetUniformLocation (m_shaderProg, "nBias"), nBias);
-	glUniform3fv (glGetUniformLocation (m_shaderProg, "effectStrength"), 1, reinterpret_cast<GLfloat*> (&effectStrength));
-	float screenSize [2] = {screen.Width (), screen.Height () };
-	glUniform2fv (glGetUniformLocation (m_shaderProg, "screenSize"), 1, reinterpret_cast<GLfloat*> (screenSize));
-	ogl.SetLighting (true);
-	}
-
-CFloatVector3 f;
-f.v.coord.x = float (s [0].x)/* / float (screen.Width ())*/;
-f.v.coord.y = float (s [0].y)/*/ float (screen.Height ())*/;
-f.v.coord.z = X2F (p [0].v.coord.z); /* / float (screen.Width ())*/;
-glEnable (GL_LIGHT0 + m_nShockwaves);
-glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&f));
-glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, float (d) / float (n));
-glLightf (GL_LIGHT0 + m_nShockwaves, GL_LINEAR_ATTENUATION, rad);
-glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, 1.0f - ttl);
-glUniform1i (glGetUniformLocation (m_shaderProg, "nShockwaves"), ++m_nShockwaves);
-return true;
-}
-
-//------------------------------------------------------------------------------
-
-float CPostEffectShockwave::Life (void)
-{
-return float (m_nLife) * gameStates.gameplay.slowmo [0].fSpeed;
-}
-	 
-//------------------------------------------------------------------------------
-
-void CPostEffectShockwave::Update (void)
-{
-LoadShader (m_pos, m_nSize, float (SDL_GetTicks () - m_nStart) / Life (), m_nBias);
-}
-
-//------------------------------------------------------------------------------
-
-void CPostEffectShockwave::Render (void)
-{
-// render current render target
-OglDrawArrays (GL_QUADS, 0, 4);
-if (m_nShockwaves > 0) {
-	for (int i = 0; i < m_nShockwaves; i++)
-		glDisable (GL_LIGHT0 + i);
-	ogl.SetLighting (false);
-	m_nShockwaves = 0;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-bool CPostEffectShockwave::Enabled (void)
-{
-return gameOpts->render.effects.bEnabled && (gameOpts->render.effects.nShockwaves > 1);
+for (CPostEffect* e = m_effects; e; e = e->Next ()) 
+	e->Render ();
 }
 
 //------------------------------------------------------------------------------

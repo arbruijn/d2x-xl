@@ -874,12 +874,11 @@ nError = glGetError ();
 
 void COGL::EndFrame (int nWindow)
 {
-//	Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), );
-//	glViewport (0, 0, screen.Width (), screen.Height ());
-//OglFlushDrawBuffer ();
-//glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-if ((nWindow == 0) && postProcessManager.Effects ())
-	ogl.CopyDepthTexture (1);
+if (nWindow == 0) {
+	postProcessManager.Update ();
+	if (postProcessManager.Effects ())
+		ogl.CopyDepthTexture (1);
+	}
 
 if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
 	if (gameStates.render.bRenderIndirect)
@@ -888,11 +887,6 @@ if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
 	}
 if (m_states.bShadersOk)
 	shaderManager.Deploy (-1);
-#if 0
-// There's a weird effect of string pooling causing the renderer to stutter every time a
-// new string texture is uploaded to the OpenGL driver when depth textures are used.
-DestroyGlareDepthTexture ();
-#endif
 ogl.SetTexturing (true);
 DisableClientStates (1, 1, 1, GL_TEXTURE3);
 ogl.BindTexture (0);
@@ -904,10 +898,6 @@ DisableClientStates (1, 1, 1, GL_TEXTURE0);
 ogl.BindTexture (0);
 SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 Viewport (0, 0, screen.Width (), screen.Height ());
-#ifndef NMONO
-//	merge_textures_stats ();
-//	ogl_texture_stats ();
-#endif
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
@@ -923,7 +913,6 @@ if (SHOW_DYN_LIGHT) {
 	glDisable (GL_COLOR_MATERIAL);
 	}
 ogl.SetDepthWrite (true);
-//SetStereoSeparation (0);
 ColorMask (1,1,1,1,0);
 if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
 	glDisable (GL_MULTISAMPLE_ARB);

@@ -11,9 +11,12 @@ class CPostEffect {
 		class CPostEffect*	m_next;
 		int						m_nType;
 
+	protected:
+		bool						m_bValid;
+
 	public:
 		CPostEffect (int nType = 0) : 
-			m_prev (0), m_next (0), m_nType (nType)
+			m_prev (0), m_next (0), m_nType (nType), m_bValid (false)
 			{}
 
 		inline CPostEffect* Prev (void) { return m_prev; }
@@ -44,25 +47,33 @@ class CPostEffect {
 
 		virtual bool Terminate (void) = 0;
 
-		virtual void Update (void) = 0;
+		virtual bool Setup (void) = 0;
+
+		virtual bool Update (void) = 0;
 
 		virtual void Render (void) = 0;
 
 		virtual bool Enabled (void) = 0;
 
 		virtual float Life (void) = 0;
+
+		inline bool Valid (void) { return m_bValid; }
 };
 
 //------------------------------------------------------------------------------
 
 class CPostEffectShockwave : public CPostEffect {
 	private:
-		uint			m_nStart;
-		uint			m_nLife;
-		int			m_nSize;
-		int			m_nBias;
-		CFixVector	m_pos;
+		uint				m_nStart;
+		uint				m_nLife;
+		int				m_nSize;
+		int				m_nBias;
+		CFixVector		m_pos;
+		CFloatVector3	m_renderPos;
 
+		float				m_rad;
+		float				m_ttl;
+		float				m_effectRad;
 
 	public:
 		static bool m_bRendered;
@@ -82,7 +93,9 @@ class CPostEffectShockwave : public CPostEffect {
 
 		virtual bool Terminate (void) { return SDL_GetTicks () - m_nStart >= (uint) Life (); }
 
-		virtual void Update (void);
+		virtual bool Setup (void);
+
+		virtual bool Update (void);
 
 		virtual void Render (void);
 
@@ -93,7 +106,7 @@ class CPostEffectShockwave : public CPostEffect {
 	private:
 		void InitShader (void);
 
-		bool LoadShader (const CFixVector pos, const int size, const float ttl, int nBias);
+		bool SetupShader (void);
 	};
 
 //------------------------------------------------------------------------------
@@ -118,6 +131,8 @@ class CPostProcessManager {
 		void Add (CPostEffect* e);
 
 		void Update (void);
+
+		void Setup (void);
 
 		void Render (void);
 

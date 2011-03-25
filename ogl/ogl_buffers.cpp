@@ -382,7 +382,7 @@ if (HaveDrawBuffer ()) {
 
 	glColor3f (1,1,1);
 	OglDrawArrays (GL_QUADS, 0, 4);
-	postProcessManager.Update ();
+	postProcessManager.Setup ();
 	if (postProcessManager.Effects ()) {
 		//ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
 		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
