@@ -259,7 +259,15 @@ CObject* CreateBadassExplosion (CObject* objP, short nSegment, CFixVector& posit
 {
 CObject* explObjP = CreateExplosion (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
 if (explObjP) {
-	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, explObjP->info.xSize, 1, explObjP->Position ()));
+	if ((objP->info.nType == OBJ_PLAYER) || 
+		 (objP->info.nType == OBJ_ROBOT) || 
+		 ((objP->info.nType == OBJ_WEAPON) && 
+		  ((objP->info.nId == MEGAMSL_ID) || 
+		   (objP->info.nId == EARTHSHAKER_ID) || 
+			(objP->info.nId == EARTHSHAKER_MEGA_ID) || 
+			(objP->info.nId == ROBOT_EARTHSHAKER_ID) || 
+			(objP->info.nId == ROBOT_SHAKER_MEGA_ID))))
+		postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, explObjP->info.xSize, 1, explObjP->Position ()));
 	if (objP && (objP->info.nType == OBJ_WEAPON))
 		CreateSmartChildren (objP, NUM_SMART_CHILDREN);
 	}
