@@ -343,8 +343,9 @@ if (HaveDrawBuffer ()) {
 	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 	int bStereo = 0;
+	bool bHaveEffects = postProcessManager.HaveEffects ();
 
-	if (postProcessManager.Effects ())
+	if (bHaveEffects)
 		SelectGlowBuffer (); // use as temporary render buffer
 	else
 		SetDrawBuffer (GL_BACK, 0);
@@ -382,9 +383,9 @@ if (HaveDrawBuffer ()) {
 
 	glColor3f (1,1,1);
 	OglDrawArrays (GL_QUADS, 0, 4);
-	postProcessManager.Setup ();
-	if (postProcessManager.Effects ()) {
+	if (bHaveEffects) {
 		//ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
+		postProcessManager.Setup ();
 		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		ogl.BindTexture (DrawBuffer (2)->ColorBuffer ());
 		OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);

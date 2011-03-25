@@ -266,11 +266,26 @@ for (CPostEffect* e = m_effects; e; ) {
 
 //------------------------------------------------------------------------------
 
-void CPostProcessManager::Setup (void)
+bool CPostProcessManager::HaveEffects (void)
 {
 for (CPostEffect* e = m_effects; e; e = e->Next ()) 
 	if (e->Valid ())
+		return true;
+return false;
+}
+
+//------------------------------------------------------------------------------
+
+bool CPostProcessManager::Setup (void)
+{
+	bool bHaveEffect = false;
+
+for (CPostEffect* e = m_effects; e; e = e->Next ()) 
+	if (e->Valid ()) {
 		e->Setup ();
+		bHaveEffect = true;
+	}
+return bHaveEffect;
 }
 
 //------------------------------------------------------------------------------

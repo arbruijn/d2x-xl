@@ -132,9 +132,11 @@ class CPostProcessManager {
 
 		void Update (void);
 
-		void Setup (void);
+		bool Setup (void);
 
 		void Render (void);
+
+		bool HaveEffects (void);
 
 		inline CPostEffect* Effects (void) { return m_effects; }
 	};
