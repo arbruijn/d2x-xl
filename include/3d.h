@@ -109,7 +109,7 @@ void G3SetViewAngles (const CFixVector& view_pos, const CAngleVector& view_orien
 void G3SetViewMatrix (const CFixVector& view_pos, const CFixMatrix& view_matrix,fix zoom, int bOglScale, fix xStereoSeparation = 0);
 
 //end the frame
-void G3EndFrame (void);
+void G3EndFrame (int nWindow);
 
 //draw a horizon
 void g3_draw_horizon (int sky_color,int ground_color);

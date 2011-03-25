@@ -57,9 +57,9 @@ gameStates.render.bDepthSort = 1;
 
 //------------------------------------------------------------------------------
 //this doesn't do anything, but is here for completeness
-void G3EndFrame (void)
+void G3EndFrame (int nWindow)
 {
-ogl.EndFrame ();
+ogl.EndFrame (nWindow);
 nFreePoints = 0;
 }
 

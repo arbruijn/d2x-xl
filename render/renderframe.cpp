@@ -346,7 +346,7 @@ ogl.SetDepthTest (true);
 
 void Draw2DFrameElements (void)
 {
-if (ogl.Enhance3D () >= 0)
+if (gameStates.render.bRenderIndirect)
 	ogl.SetDrawBuffer (GL_BACK, 0);
 fix xStereoSeparation = ogl.StereoSeparation ();
 ogl.SetStereoSeparation (0);
@@ -444,7 +444,7 @@ SetRenderView (xStereoSeparation, &nStartSeg, 1);
 PROF_END(ptAux)
 }
 if (0 > (gameStates.render.nStartSeg = nStartSeg)) {
-	G3EndFrame ();
+	G3EndFrame (nWindow);
 	gameStates.render.xStereoSeparation = nEyeOffsetSave;
 	return;
 	}
@@ -527,7 +527,7 @@ if (transformation.m_info.bUsePlayerHeadAngles)
 #endif
 gameStates.render.nShadowPass = 0;
 //PrintLog ("G3EndFrame\n");
-G3EndFrame ();
+G3EndFrame (nWindow);
 if (nWindow)
 	ogl.SetStereoSeparation (gameStates.render.xStereoSeparation = nEyeOffsetSave);
 if (!ShowGameMessage (gameData.messages, -1, -1))

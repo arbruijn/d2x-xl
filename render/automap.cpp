@@ -480,7 +480,7 @@ if (m_bRadar || (gameOpts->render.automap.bTextured & 2)) {
 	DrawEdges ();
 	DrawObjects ();
 	}
-G3EndFrame ();
+G3EndFrame (0);
 
 if (m_bRadar) {
 	ogl.m_states.bEnableScissor = 0;

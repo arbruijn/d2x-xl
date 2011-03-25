@@ -431,7 +431,7 @@ if (gameStates.app.bGameRunning && ogl.Enhance3D () && (ogl.StereoSeparation () 
 	return false;
 if (gameStates.app.bGameRunning && gameStates.render.bRenderIndirect) {
 	ogl.FlushDrawBuffer ();
-	if (ogl.StereoSeparation () > 0)
+	if (gameStates.render.bRenderIndirect)
 		Draw2DFrameElements ();
 	else
 		ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect = 0);

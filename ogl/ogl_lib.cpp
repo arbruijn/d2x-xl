@@ -669,15 +669,19 @@ else {
 			gameOpts->render.stereo.nGlasses = 0;
 		}	
 	else {
-#if 0
-		gameStates.render.bRenderIndirect = ogl.m_states.bRender2TextureOk; 
+#if 1
+		gameStates.render.bRenderIndirect = (ogl.m_states.bRender2TextureOk > 0); 
+		if (gameStates.render.bRenderIndirect) 
+			SelectDrawBuffer (m_data.xStereoSeparation > 0);
+		else
+			SetDrawBuffer (GL_BACK, 0);
 #else
 		gameStates.render.bRenderIndirect = (postProcessManager.Effects () != NULL) || (m_data.xStereoSeparation && (i > 0));
-#endif
 		if (gameStates.render.bRenderIndirect) 
 			SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
 		else
 			SetDrawBuffer (GL_BACK, 0);
+#endif
 		}
 	}
 }
@@ -868,13 +872,13 @@ nError = glGetError ();
 
 //------------------------------------------------------------------------------
 
-void COGL::EndFrame (void)
+void COGL::EndFrame (int nWindow)
 {
 //	Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), );
 //	glViewport (0, 0, screen.Width (), screen.Height ());
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-if (postProcessManager.Effects ())
+if ((nWindow == 0) && postProcessManager.Effects ())
 	ogl.CopyDepthTexture (1);
 
 if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {

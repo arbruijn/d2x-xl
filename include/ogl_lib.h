@@ -283,7 +283,7 @@ class COGL {
 		void DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);
 		void ResetClientStates (int nFirst = 0);
 		void StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation);
-		void EndFrame (void);
+		void EndFrame (int nWindow);
 		void EnableLighting (int bSpecular);
 		void DisableLighting (void);
 		void SetRenderQuality (int nQuality = -1);

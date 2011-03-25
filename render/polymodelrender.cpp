@@ -263,7 +263,7 @@ else
 	p.v.coord.z = DEFAULT_VIEW_DIST;
 o = CFixMatrix::Create (*orientAngles);
 DrawPolyModel (NULL, &p, &o, NULL, nModel, 0, I2X (1), NULL, NULL, NULL);
-G3EndFrame ();
+G3EndFrame (0);
 if (ogl.m_states.nDrawBuffer != GL_BACK)
 	GrUpdate (0);
 }

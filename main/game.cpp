@@ -562,7 +562,7 @@ void CleanupAfterGame (bool bHaveLevel)
 ProfilerSetStatus (0);
 #endif
 gameData.time.xGameTotal = (SDL_GetTicks () - gameData.time.xGameStart) / 1000;
-G3EndFrame ();
+G3EndFrame (0);
 audio.StopAll ();
 if (gameStates.sound.bD1Sound) {
 	gameStates.sound.bD1Sound = 0;
