@@ -72,7 +72,7 @@ class CPostEffectShockwave : public CPostEffect {
 	public:
 		CPostEffectShockwave (int nStart = 0, int nLife = 0, int nSize = 0, int nBias = 1, CFixVector pos = CFixVector::ZERO) :
 			CPostEffect (PP_EFFECT_SHOCKWAVE), 
-			m_nStart (nStart), m_nLife (int (1000 * X2F (nLife))), m_nSize (nSize), m_nBias (nBias)
+			m_nStart (nStart), m_nLife (int (5000 * X2F (nLife))), m_nSize (nSize), m_nBias (nBias)
 			{ m_pos = pos; }
 
 		void Setup (int nStart, int nLife, int nSize, int nBias, CFixVector pos) {

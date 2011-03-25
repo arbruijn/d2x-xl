@@ -35,7 +35,8 @@ const char* shockwaveFS =
 	"uniform int nShockwaves;\r\n" \
 	"uniform vec2 screenSize;\r\n" \
 	"uniform vec3 effectStrength;\r\n" \
-	"#define LinearDepth(_z) 10000.0 / (5001.0 - (_z) * 4999.0)\r\n" \
+	"//#define LinearDepth(_z) 10000.0 / (5001.0 - (_z) * 4999.0)\r\n" \
+	"#define LinearDepth(_z) (5000.0 / 4999.0) / ((5000.0 / 4999.0) - (_z))\r\n" \
 	"void main() {\r\n" \
 	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
 	"vec2 tcDest = tcSrc; //vec2 (0.0, 0.0);\r\n" \
@@ -57,10 +58,10 @@ const char* shockwaveFS =
 	"    }\r\n" \
 	"  }\r\n" \
 	"gl_FragColor = texture2D (sceneTex, tcDest / screenSize);\r\n" \
-	"/*float r = (1.0 + texture2D (depthTex, gl_TexCoord [0].xy).r) / 2.0;\r\n" \
-	"float r = pow (1.0 - LinearDepth (texture2D (depthTex, gl_TexCoord [0].xy).r) / 5000.0, 8);\r\n" \
-	"gl_FragColor = vec4 (r, r, r, 1.0);\r\n" \
-	"*/}\r\n";
+	"//float z = LinearDepth (texture2D (depthTex, gl_TexCoord [0].xy).r);\r\n" \
+	"//float r = pow (1.0 - z / 5000.0, 8);\r\n" \
+	"//gl_FragColor = (z < 240.0) ? vec4 (1.0, 0.5, 0.0, 1.0) : vec4 (r, r, r, 1.0);\r\n" \
+	"}\r\n";
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -147,9 +148,9 @@ int i;
 CFixVector p [5];
 
 for (i = 0; i < 2; i++)
-	transformation.TransformAndEncode (p [i], VERTICES [56 + i]);
+	transformation.TransformAndEncode (p [i], VERTICES [571 + i]);
 for (; i < 4; i++)
-	transformation.TransformAndEncode (p [i], VERTICES [599 + i]);
+	transformation.TransformAndEncode (p [i], VERTICES [572 + i]);
 	
 if (transformation.TransformAndEncode (p [0], pos) & CC_BEHIND)
 	return true;
