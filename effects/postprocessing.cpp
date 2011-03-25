@@ -147,11 +147,6 @@ if (m_nShockwaves >= 8)
 int i;
 CFixVector p [5];
 
-for (i = 0; i < 2; i++)
-	transformation.TransformAndEncode (p [i], VERTICES [571 + i]);
-for (; i < 4; i++)
-	transformation.TransformAndEncode (p [i], VERTICES [572 + i]);
-	
 if (transformation.TransformAndEncode (p [0], pos) & CC_BEHIND)
 	return true;
 
