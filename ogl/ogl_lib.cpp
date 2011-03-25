@@ -652,7 +652,7 @@ else //GLASSES_SHUTTER or NONE
 
 void COGL::ChooseDrawBuffer (void)
 {
-if (gameStates.render.bBriefing) {
+if (gameStates.render.bBriefing || gameStates.render.nWindow) {
 	gameStates.render.bRenderIndirect = 0;
 	SetDrawBuffer (GL_BACK, 0);
 	}
@@ -669,7 +669,7 @@ else {
 			gameOpts->render.stereo.nGlasses = 0;
 		}	
 	else {
-#if 1
+#if 0
 		gameStates.render.bRenderIndirect = (ogl.m_states.bRender2TextureOk > 0); 
 		if (gameStates.render.bRenderIndirect) 
 			SelectDrawBuffer (m_data.xStereoSeparation > 0);

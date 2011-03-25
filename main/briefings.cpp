@@ -552,7 +552,7 @@ if (*m_info.szBitmapName) {
 	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.RenderBitmap (bmP, p, I2X (w), I2X (h), NULL, 1.0, 0);
 	ogl.SetDepthMode (depthFunc);
-	G3EndFrame ();
+	G3EndFrame (0);
 	//paletteManager.ResumeEffect ();
 	CCanvas::SetCurrent (curCanvSave);
 	delete bitmapCanv;

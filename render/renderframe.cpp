@@ -346,7 +346,7 @@ ogl.SetDepthTest (true);
 
 void Draw2DFrameElements (void)
 {
-if (gameStates.render.bRenderIndirect)
+//if (gameStates.render.bRenderIndirect)
 	ogl.SetDrawBuffer (GL_BACK, 0);
 fix xStereoSeparation = ogl.StereoSeparation ();
 ogl.SetStereoSeparation (0);
