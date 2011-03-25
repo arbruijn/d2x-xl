@@ -872,7 +872,7 @@ G3StartFrame (0, !nWindow, xStereoSeparation);
 //gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
 	RenderEndLevelMine (xStereoSeparation, nWindow);
-else if (!nWindowNum)
+else if (!nWindow)
 	RenderExternalScene (xStereoSeparation);
 G3EndFrame (nWindow);
 }
