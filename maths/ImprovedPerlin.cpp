@@ -46,7 +46,7 @@ return Lerp (v, Lerp (u, Grad (m_random [A], x, y), Grad (m_random [B], x - 1, y
 }
 
 //------------------------------------------------------------------------------
-#if 1
+#if 0
 double CImprovedPerlin::Noise (double x, double y, double z) 
 {
 int X = (int) floor (x) & 255;

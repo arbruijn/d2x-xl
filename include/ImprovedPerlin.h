@@ -23,7 +23,7 @@ class CImprovedPerlin : public CPerlin {
 
 		virtual double Noise (double x);
 		virtual double Noise (double x, double y);
-		virtual double Noise (double x, double y, double z);
+		//virtual double Noise (double x, double y, double z);
 	};
 
 #endif //__improved_perlin_h

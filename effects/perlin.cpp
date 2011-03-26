@@ -36,8 +36,10 @@ double CPerlin::Noise (double x)
 return Random (x);
 #else
 uint i = (uint) x + 1;
-if (!m_valid [i])
+if (!m_valid [i]) {
+	m_valid [i] = 1;
 	m_random [i] = Random ();
+	}
 return m_random [i];
 #endif
 }
@@ -93,7 +95,7 @@ return CosineInterpolate (v1, v2, x - xInt);
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise (double x, double persistence, long octaves)
+double CPerlin::ComputeNoise (double x, double persistence, long octaves)
 {
 double total = 0, frequency = 1.0, amplitude = 1.0;
 for (int i = 0; i < octaves; i++) {
@@ -146,7 +148,7 @@ return CosineInterpolate (i1, i2, yFrac);
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise (double x, double y, double persistence, long octaves)
+double CPerlin::ComputeNoise (double x, double y, double persistence, long octaves)
 {
 double total = 0, frequency = 1.0, amplitude = 1.0;
 for (int i = 0; i < octaves; i++) {

@@ -29,7 +29,11 @@
 #	include "tactile.h"
 #endif
 
+#if 1
 CPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
+#else
+CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -289,8 +293,8 @@ return m_vOffs;
 
 void CLightningNode::CreatePerlin (int nAmplitude, double phi, int i, int nThread)
 {
-double dx = perlinX [nThread].Noise (double (i) * 0.03125, 0.6, 6);
-double dy = perlinY [nThread].Noise (double (i) * 0.03125, 0.6, 6);
+double dx = perlinX [nThread].ComputeNoise (double (i) * 0.03125, 0.6, 6);
+double dy = perlinY [nThread].ComputeNoise (double (i) * 0.03125, 0.6, 6);
 static double dx0 [MAX_THREADS], dy0 [MAX_THREADS];
 if (!i) {
 	dx0 [nThread] = dx;
