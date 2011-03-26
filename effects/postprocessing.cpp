@@ -128,6 +128,8 @@ CFixVector p [5];
 
 m_bValid = false;
 
+if (m_nObject >= 0)
+	m_pos = OBJECTS [m_nObject].FrontPosition ();
 if (transformation.TransformAndEncode (p [0], m_pos) & CC_BEHIND)
 	return false;
 

@@ -69,8 +69,9 @@ class CPostEffectShockwave : public CPostEffect {
 		int				m_nSize;
 		int				m_nBias;
 		CFixVector		m_pos;
-		CFloatVector3	m_renderPos;
+		int				m_nObject;
 
+		CFloatVector3	m_renderPos;
 		float				m_rad;
 		float				m_ttl;
 		float				m_effectRad;
@@ -81,14 +82,14 @@ class CPostEffectShockwave : public CPostEffect {
 		static GLhandleARB m_shaderProg;
 
 	public:
-		CPostEffectShockwave (int nStart = 0, int nLife = 0, int nSize = 0, int nBias = 1, CFixVector pos = CFixVector::ZERO) :
+		CPostEffectShockwave (int nStart = 0, int nLife = 0, int nSize = 0, int nBias = 1, CFixVector pos = CFixVector::ZERO, int nObject = -1) :
 			CPostEffect (PP_EFFECT_SHOCKWAVE), 
-			m_nStart (nStart), m_nLife (int (1000 * X2F (nLife))), m_nSize (nSize), m_nBias (nBias)
+			m_nStart (nStart), m_nLife (int (1000 * X2F (nLife))), m_nSize (nSize), m_nBias (nBias), m_nObject (nObject)
 			{ m_pos = pos; }
 
-		void Setup (int nStart, int nLife, int nSize, int nBias, CFixVector pos) {
+		void Setup (int nStart, int nLife, int nSize, int nBias, CFixVector pos, int nObject) {
 			CPostEffect::Setup (PP_EFFECT_SHOCKWAVE);
-			m_nStart = nStart, m_nLife = nLife, m_nSize = nSize, m_nBias = nBias, m_pos = pos;
+			m_nStart = nStart, m_nLife = nLife, m_nSize = nSize, m_nBias = nBias, m_pos = pos, m_nObject = nObject;
 			}
 
 		virtual bool Terminate (void) { return SDL_GetTicks () - m_nStart >= (uint) Life (); }

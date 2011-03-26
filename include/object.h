@@ -823,6 +823,7 @@ class CObject : public CObjectInfo {
 		inline int Frame (void) { return m_nFrame; }
 
 		inline CFixVector& Position (void) { return info.position.vPos; }
+		CFixVector FrontPosition (void);
 		inline CFixMatrix& Orientation (void) { return info.position.mOrient; }
 		inline short Segment (void) { return info.nSegment; }
 #if DBG
