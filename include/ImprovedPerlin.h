@@ -26,7 +26,7 @@ class CImprovedPerlinCore {
 	};
 
 
-class CImprovedPerlin : CPerlin {
+class CImprovedPerlin : public CPerlin {
 	private:
 		CArray<CImprovedPerlinCore>	m_cores;
 
@@ -34,8 +34,6 @@ class CImprovedPerlin : CPerlin {
 		virtual bool Setup (int nNodes, int nOctaves, int nDimensions = 1);
 
 	protected:
-		virtual void Initialize (void);
-
 		virtual double InterpolatedNoise (double x, int octave) { return m_cores [octave].Noise (x); }
 		virtual double InterpolatedNoise (double x, double y, int octave) { return m_cores [octave].Noise (x, y); }
 		//virtual double Noise (double x, double y, double z);

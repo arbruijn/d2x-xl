@@ -168,24 +168,8 @@ return total;
 
 //------------------------------------------------------------------------------
 
-void CPerlin::Initialize (void)
-{
-#	if CUSTOM_RAND
-int x = rand ();
-for (int i = 0; i < m_nNodes + 1; i++, x++) 
-	m_random [i] = Random (x);
-#	else
-//for (int i = 0; i < m_nNodes + 1; i++) 
-//	m_random [i] = Random ();
-m_valid.Clear ();
-#	endif
-}
-
-//------------------------------------------------------------------------------
-
 bool CPerlin::Setup (int nNodes, int nOctaves, int nDimensions)
 {
-#if CUSTOM_RAND < 2
 m_nNodes = nNodes << nOctaves;
 m_nNodes += 2;
 m_nNodes *= nDimensions;
@@ -195,8 +179,9 @@ if (m_random.Buffer () && (int (m_random.Length ()) < m_nNodes)) {
 	}
 if (!(m_random.Buffer () || (m_random.Create (m_nNodes) && m_valid.Create (m_nNodes))))
 	return false;
-#endif
-Initialize ();
+//for (int i = 0; i < m_nNodes + 1; i++) 
+//	m_random [i] = Random ();
+m_valid.Clear ();
 return true;
 }
 

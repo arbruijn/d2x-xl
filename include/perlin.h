@@ -17,7 +17,6 @@ class CPerlin {
 		double ComputeNoise (double x, double y, double persistence, long octaves);
 
 	protected:	
-		virtual void Initialize (void);
 #if CUSTOM_RAND
 		inline double Random (int x);
 #else
