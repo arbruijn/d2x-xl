@@ -85,12 +85,19 @@ return Noise (x) / 2  +  Noise (x-1) / 4  +  Noise (x+1) / 4;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::InterpolatedNoise (double x)
+double CPerlin::InterpolatedNoise (double x, int octave)
 {
+x *= 1 << octave;
 int xInt = int (x);
 double v1 = SmoothedNoise (xInt);
 double v2 = SmoothedNoise (xInt + 1);
+#if 0
 return CosineInterpolate (v1, v2, x - xInt);
+#else
+double v0 = SmoothedNoise (xInt - 1);
+double v3 = SmoothedNoise (xInt + 2);
+return CubicInterpolate (v0, v1, v2, v3, x - xInt);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -99,8 +106,7 @@ double CPerlin::ComputeNoise (double x, double persistence, long octaves)
 {
 double total = 0, frequency = 1.0, amplitude = 1.0;
 for (int i = 0; i < octaves; i++) {
-	total += InterpolatedNoise (x * frequency) * amplitude;
-	frequency *= 2.0;
+	total += InterpolatedNoise (x, i) * amplitude;
 	amplitude *= persistence;
 	}
 return total;
@@ -125,11 +131,13 @@ return corners + sides + center;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::InterpolatedNoise (double x, double y)
+double CPerlin::InterpolatedNoise (double x, double y, int octave)
 {
 #if 1
+x *= 1 << octave;
 int xInt = int (x);
 double xFrac = x - xInt;
+y *= 1 << octave;
 int yInt = int (y);
 double yFrac = y - yInt;
 #else
@@ -152,8 +160,7 @@ double CPerlin::ComputeNoise (double x, double y, double persistence, long octav
 {
 double total = 0, frequency = 1.0, amplitude = 1.0;
 for (int i = 0; i < octaves; i++) {
-	total += InterpolatedNoise (x * frequency) * amplitude;
-	frequency *= 2.0;
+	total += InterpolatedNoise (x, y, i) * amplitude;
 	amplitude *= persistence;
 	}
 return total;

@@ -5,16 +5,10 @@
 #include "ImprovedPerlin.h"
 
 //------------------------------------------------------------------------------
-
-bool CImprovedPerlin::Setup (int nNodes, int nOctaves, int nDimensions)
-{
-Initialize ();
-return true;
-}
-
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CImprovedPerlin::Initialize (void) 
+void CImprovedPerlinCore::Initialize (void) 
 {
 for (int i = 0; i < PERLIN_RANDOM_SIZE; i++)
 	m_random [i + PERLIN_RANDOM_SIZE] = m_random [i] = (int) (rand () % 256);
@@ -22,7 +16,7 @@ for (int i = 0; i < PERLIN_RANDOM_SIZE; i++)
       
 //------------------------------------------------------------------------------
 
-double CImprovedPerlin::Noise (double x) 
+double CImprovedPerlinCore::Noise (double x) 
 {
 int X = (int) floor (x) & 255;
 x -= (double) floor (x);
@@ -32,7 +26,7 @@ return Lerp (u, Grad (m_random [X], x), Grad (m_random [X+1], x - 1));
 
 //------------------------------------------------------------------------------
 
-double CImprovedPerlin::Noise (double x, double y) 
+double CImprovedPerlinCore::Noise (double x, double y) 
 {
 int X = (int) floor (x) & 255;
 int Y = (int) floor (y) & 255;
@@ -47,7 +41,7 @@ return Lerp (v, Lerp (u, Grad (m_random [A], x, y), Grad (m_random [B], x - 1, y
 
 //------------------------------------------------------------------------------
 #if 0
-double CImprovedPerlin::Noise (double x, double y, double z) 
+double CImprovedPerlinCore::Noise (double x, double y, double z) 
 {
 int X = (int) floor (x) & 255;
 int Y = (int) floor (y) & 255;
@@ -72,7 +66,7 @@ return Lerp (w, Lerp (v, Lerp (u, Grad (m_random [AA], x, y, z), Grad (m_random 
 #endif
 //------------------------------------------------------------------------------
 
-double CImprovedPerlin::Grad (int hash, double x, double y, double z) 
+double CImprovedPerlinCore::Grad (int hash, double x, double y, double z) 
 {
 int h = hash & 15;
 double u = (h < 8) ? x : y;
@@ -80,4 +74,24 @@ double v = (h < 4) ? y : ((h == 12) || (h == 14)) ? x : z;
 return (((h & 1) == 0) ? u : -u) + (((h & 2) == 0) ? v : -v);
 }
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+bool CImprovedPerlin::Setup (int nNodes, int nOctaves, int nDimensions)
+{
+if (m_cores.Buffer () && (int (m_cores.Length ()) < nOctaves))
+	m_cores.Destroy ();
+if (!(m_cores.Buffer () || m_cores.Create (nOctaves)))
+	return false;
+for (int i = 0; i < nOctaves; i++)
+	m_cores [i].Initialize ();
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
