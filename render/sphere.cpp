@@ -755,9 +755,6 @@ int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float ySc
 
 CFixVector vPos;
 PolyObjPos (objP, &vPos);
-glowRenderer.Begin (GLOW_SHIELDS, 2, true, 0.75f);
-if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, xScale))
-	return 0;
 #if !RINGED_SPHERE
 if (m_nFaceNodes == 3)
 	bmP = NULL;
@@ -782,6 +779,9 @@ else if (gameOpts->render.bUseShaders && ogl.m_states.bShadersOk) {
 	if (!SetupSphereShader (objP, alpha))
 		return 0;
 	}
+glowRenderer.Begin (GLOW_SHIELDS, 2, true, 0.75f);
+if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, xScale))
+	return 0;
 ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 transformation.Begin (vPos, posP->mOrient);

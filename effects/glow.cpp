@@ -19,7 +19,7 @@ CGlowRenderer glowRenderer;
 
 int hBlurShader = -1;
 
-#	if 0
+#	if 1
 
 // linear sampling
 const char *blurFS = 
@@ -505,7 +505,7 @@ float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 #endif
 
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-#if !DBG
+#if 1 //!DBG
 if (direction >= 0)
 	LoadShader (direction, radius);
 else

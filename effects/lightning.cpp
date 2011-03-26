@@ -28,7 +28,7 @@
 #include "automap.h"
 #include "addon_bitmaps.h"
 
-extern CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
+extern CPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
 
 #define RENDER_LIGHTNING_OUTLINE 0
 

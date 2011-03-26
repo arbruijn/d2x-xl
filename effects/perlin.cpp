@@ -35,7 +35,10 @@ double CPerlin::Noise (double x)
 #if CUSTOM_RAND > 1
 return Random (x);
 #else
-return m_random [int (x) + 1];
+uint i = (uint) x + 1;
+if (!m_valid [i])
+	m_random [i] = Random ();
+return m_random [i];
 #endif
 }
 
@@ -90,7 +93,7 @@ return CosineInterpolate (v1, v2, x - xInt);
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise1D (double x, double persistence, long octaves)
+double CPerlin::Noise (double x, double persistence, long octaves)
 {
 double total = 0, frequency = 1.0, amplitude = 1.0;
 for (int i = 0; i < octaves; i++) {
@@ -143,7 +146,7 @@ return CosineInterpolate (i1, i2, yFrac);
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise2D (double x, double y, double persistence, long octaves)
+double CPerlin::Noise (double x, double y, double persistence, long octaves)
 {
 double total = 0, frequency = 1.0, amplitude = 1.0;
 for (int i = 0; i < octaves; i++) {
@@ -163,8 +166,9 @@ int x = rand ();
 for (int i = 0; i < m_nNodes + 1; i++, x++) 
 	m_random [i] = Random (x);
 #	else
-for (int i = 0; i < m_nNodes + 1; i++) 
-	m_random [i] = Random ();
+//for (int i = 0; i < m_nNodes + 1; i++) 
+//	m_random [i] = Random ();
+m_valid.Clear ();
 #	endif
 }
 
@@ -176,11 +180,14 @@ bool CPerlin::Setup (int nNodes, int nOctaves, int nDimensions)
 m_nNodes = nNodes << nOctaves;
 m_nNodes += 2;
 m_nNodes *= nDimensions;
-if (m_random.Buffer () && (int (m_random.Length ()) < m_nNodes))
+if (m_random.Buffer () && (int (m_random.Length ()) < m_nNodes)) {
 	m_random.Destroy ();
-if (!(m_random.Buffer () || m_random.Create (m_nNodes)))
+	m_valid.Destroy ();
+	}
+if (!(m_random.Buffer () || (m_random.Create (m_nNodes) && m_valid.Create (m_nNodes))))
 	return false;
 #endif
+Initialize ();
 return true;
 }
 
