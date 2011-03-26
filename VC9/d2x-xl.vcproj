@@ -6554,10 +6554,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\effects\perlin.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\effects\postprocessing.cpp"
 						>
 					</File>
@@ -6595,10 +6591,6 @@
 					</File>
 					<File
 						RelativePath="..\include\particles.h"
-						>
-					</File>
-					<File
-						RelativePath="..\include\perlin.h"
 						>
 					</File>
 					<File
@@ -8806,7 +8798,15 @@
 						>
 					</File>
 					<File
+						RelativePath="..\include\ImprovedPerlin.h"
+						>
+					</File>
+					<File
 						RelativePath="..\include\maths.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\perlin.h"
 						>
 					</File>
 					<File
@@ -8884,6 +8884,14 @@
 								ObjectFile="$(IntDir)/$(InputName)1.obj"
 							/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\maths\ImprovedPerlin.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\effects\perlin.cpp"
+						>
 					</File>
 					<File
 						RelativePath="..\maths\tables.cpp"
@@ -10477,11 +10485,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

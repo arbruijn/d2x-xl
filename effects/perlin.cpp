@@ -32,7 +32,7 @@ return (double (rand ()) - RAND_HALF) / RAND_HALF;
 
 //------------------------------------------------------------------------------
 
-inline double CPerlin::Noise1D (int x)
+inline double CPerlin::Noise (int x)
 {
 #if CUSTOM_RAND > 1
 return Random (x);
@@ -75,28 +75,28 @@ return v1 + (v2 - v0) * x + (v0 - v1 - p) * x2 + p * x2 * x;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::SmoothedNoise1D (int x)
+double CPerlin::SmoothedNoise (int x)
 {
-return Noise1D (x) / 2  +  Noise1D (x-1) / 4  +  Noise1D (x+1) / 4;
+return Noise (x) / 2  +  Noise (x-1) / 4  +  Noise (x+1) / 4;
 }
 
 //------------------------------------------------------------------------------
 
-double CPerlin::InterpolatedNoise1D (double x)
+double CPerlin::InterpolatedNoise (double x)
 {
 int xInt = int (x);
-double v1 = SmoothedNoise1D (xInt);
-double v2 = SmoothedNoise1D (xInt + 1);
+double v1 = SmoothedNoise (xInt);
+double v2 = SmoothedNoise (xInt + 1);
 return CosineInterpolate (v1, v2, x - xInt);
 }
 
 //------------------------------------------------------------------------------
 
-double CPerlin::PerlinNoise1D (double x, double persistence, long octaves)
+double CPerlin::Noise (double x, double persistence, long octaves)
 {
 double total = 0, frequency = 1.0, amplitude = 1.0;
 for (int i = 0; i < octaves; i++) {
-	total += InterpolatedNoise1D (x * frequency) * amplitude;
+	total += InterpolatedNoise (x * frequency) * amplitude;
 	frequency *= 2.0;
 	amplitude *= persistence;
 	}
@@ -105,24 +105,24 @@ return total;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise2D (int x, int y)
+double CPerlin::Noise (int x, int y)
 {
-return (Noise1D (x) + Noise1D (y)) / 2.0;
+return (Noise (x) + Noise (y)) / 2.0;
 }
 
 //------------------------------------------------------------------------------
 
-double CPerlin::SmoothedNoise2D (int x, int y)
+double CPerlin::SmoothedNoise (int x, int y)
 {
-double corners = (Noise2D (x-1, y-1) + Noise2D (x+1, y-1) + Noise2D (x-1, y+1) + Noise2D (x+1, y+1)) / 16;
-double sides = (Noise2D (x-1, y) + Noise2D (x+1, y) + Noise2D (x, y-1) + Noise2D (x, y+1)) / 8;
-double center = Noise2D (x, y) / 4;
+double corners = (Noise (x-1, y-1) + Noise (x+1, y-1) + Noise (x-1, y+1) + Noise (x+1, y+1)) / 16;
+double sides = (Noise (x-1, y) + Noise (x+1, y) + Noise (x, y-1) + Noise (x, y+1)) / 8;
+double center = Noise (x, y) / 4;
 return corners + sides + center;
 }
 
 //------------------------------------------------------------------------------
 
-double CPerlin::InterpolatedNoise2D (double x, double y)
+double CPerlin::InterpolatedNoise (double x, double y)
 {
 #if 1
 int xInt = int (x);
@@ -134,10 +134,10 @@ double xInt, yInt,
 		 xFrac = modf (x, &xInt),
 		 yFrac = modf (x, &yInt);
 #endif
-double v1 = SmoothedNoise2D (xInt, yInt);
-double v2 = SmoothedNoise2D (xInt+1, yInt);
-double v3 = SmoothedNoise2D (xInt, yInt+1);
-double v4 = SmoothedNoise2D (xInt+1, yInt+1);
+double v1 = SmoothedNoise (xInt, yInt);
+double v2 = SmoothedNoise (xInt+1, yInt);
+double v3 = SmoothedNoise (xInt, yInt+1);
+double v4 = SmoothedNoise (xInt+1, yInt+1);
 double i1 = CosineInterpolate (v1, v2, xFrac);
 double i2 = CosineInterpolate (v3, v4, xFrac);
 return CosineInterpolate (i1, i2, yFrac);
@@ -145,15 +145,29 @@ return CosineInterpolate (i1, i2, yFrac);
 
 //------------------------------------------------------------------------------
 
-double CPerlin::PerlinNoise2D (double x, double y, double persistence, long octaves)
+double CPerlin::Noise (double x, double y, double persistence, long octaves)
 {
 double total = 0, frequency = 1.0, amplitude = 1.0;
 for (int i = 0; i < octaves; i++) {
-	total += InterpolatedNoise1D (x * frequency) * amplitude;
+	total += InterpolatedNoise (x * frequency) * amplitude;
 	frequency *= 2.0;
 	amplitude *= persistence;
 	}
 return total;
+}
+
+//------------------------------------------------------------------------------
+
+void CPerlin::Initialize (void)
+{
+#	if CUSTOM_RAND
+int x = rand ();
+for (int i = 0; i < m_nNodes + 1; i++, x++) 
+	m_noise [i] = Random (x);
+#	else
+for (int i = 0; i < m_nNodes + 1; i++) 
+	m_noise [i] = Random ();
+#	endif
 }
 
 //------------------------------------------------------------------------------
@@ -168,14 +182,6 @@ if (m_noise.Buffer () && (int (m_noise.Length ()) < m_nNodes))
 	m_noise.Destroy ();
 if (!(m_noise.Buffer () || m_noise.Create (m_nNodes)))
 	return false;
-#	if CUSTOM_RAND
-int x = rand ();
-for (int i = 0; i < m_nNodes + 1; i++, x++) 
-	m_noise [i] = Random (x);
-#	else
-for (int i = 0; i < m_nNodes + 1; i++) 
-	m_noise [i] = Random ();
-#	endif
 #endif
 return true;
 }
