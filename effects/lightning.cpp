@@ -13,6 +13,7 @@
 
 #include "descent.h"
 #include "perlin.h"
+#include "ImprovedPerlin.h"
 #include "segmath.h"
 
 #include "objsmoke.h"
@@ -26,6 +27,8 @@
 #include "ogl_lib.h"
 #include "automap.h"
 #include "addon_bitmaps.h"
+
+extern CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
 
 #define RENDER_LIGHTNING_OUTLINE 0
 

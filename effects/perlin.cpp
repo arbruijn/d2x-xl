@@ -7,8 +7,6 @@
 
 //static long randSeed = 0;
 
-CPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
-
 //------------------------------------------------------------------------------
 
 #define RAND_HALF	((double (RAND_MAX) + 1) / 2)
@@ -32,12 +30,12 @@ return (double (rand ()) - RAND_HALF) / RAND_HALF;
 
 //------------------------------------------------------------------------------
 
-inline double CPerlin::Noise (int x)
+double CPerlin::Noise (double x)
 {
 #if CUSTOM_RAND > 1
 return Random (x);
 #else
-return m_noise [x + 1];
+return m_random [int (x) + 1];
 #endif
 }
 
@@ -92,7 +90,7 @@ return CosineInterpolate (v1, v2, x - xInt);
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise (double x, double persistence, long octaves)
+double CPerlin::Noise1D (double x, double persistence, long octaves)
 {
 double total = 0, frequency = 1.0, amplitude = 1.0;
 for (int i = 0; i < octaves; i++) {
@@ -105,7 +103,7 @@ return total;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise (int x, int y)
+double CPerlin::Noise (double x, double y)
 {
 return (Noise (x) + Noise (y)) / 2.0;
 }
@@ -145,7 +143,7 @@ return CosineInterpolate (i1, i2, yFrac);
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise (double x, double y, double persistence, long octaves)
+double CPerlin::Noise2D (double x, double y, double persistence, long octaves)
 {
 double total = 0, frequency = 1.0, amplitude = 1.0;
 for (int i = 0; i < octaves; i++) {
@@ -163,10 +161,10 @@ void CPerlin::Initialize (void)
 #	if CUSTOM_RAND
 int x = rand ();
 for (int i = 0; i < m_nNodes + 1; i++, x++) 
-	m_noise [i] = Random (x);
+	m_random [i] = Random (x);
 #	else
 for (int i = 0; i < m_nNodes + 1; i++) 
-	m_noise [i] = Random ();
+	m_random [i] = Random ();
 #	endif
 }
 
@@ -178,9 +176,9 @@ bool CPerlin::Setup (int nNodes, int nOctaves, int nDimensions)
 m_nNodes = nNodes << nOctaves;
 m_nNodes += 2;
 m_nNodes *= nDimensions;
-if (m_noise.Buffer () && (int (m_noise.Length ()) < m_nNodes))
-	m_noise.Destroy ();
-if (!(m_noise.Buffer () || m_noise.Create (m_nNodes)))
+if (m_random.Buffer () && (int (m_random.Length ()) < m_nNodes))
+	m_random.Destroy ();
+if (!(m_random.Buffer () || m_random.Create (m_nNodes)))
 	return false;
 #endif
 return true;

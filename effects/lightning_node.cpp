@@ -13,6 +13,7 @@
 
 #include "descent.h"
 #include "perlin.h"
+#include "ImprovedPerlin.h"
 #include "segmath.h"
 
 #include "objsmoke.h"
@@ -27,6 +28,8 @@
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
+
+CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
 
 //------------------------------------------------------------------------------
 
@@ -286,8 +289,8 @@ return m_vOffs;
 
 void CLightningNode::CreatePerlin (int nAmplitude, double phi, int i, int nThread)
 {
-double dx = perlinX [nThread].PerlinNoise1D (double (i) * 0.03125, 0.6, 6);
-double dy = perlinY [nThread].PerlinNoise1D (double (i) * 0.03125, 0.6, 6);
+double dx = perlinX [nThread].Noise1D (double (i) * 0.03125, 0.6, 6);
+double dy = perlinY [nThread].Noise1D (double (i) * 0.03125, 0.6, 6);
 static double dx0 [MAX_THREADS], dy0 [MAX_THREADS];
 if (!i) {
 	dx0 [nThread] = dx;

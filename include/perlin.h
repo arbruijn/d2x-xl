@@ -7,7 +7,7 @@
 
 class CPerlin {
 	private:
-		CArray<double>	m_noise;
+		CArray<double>	m_random;
 		int m_nNodes;
 
 	public:
@@ -18,11 +18,10 @@ class CPerlin {
 #endif
 		virtual bool Setup (int nNodes, int nOctaves, int nDimensions = 1);
 
-		double Noise (double x, double persistence, long octaves);
-		double Noise (double x, double y, double persistence, long octaves);
+		double Noise1D (double x, double persistence, long octaves);
+		double Noise2D (double x, double y, double persistence, long octaves);
 
-
-	private:
+	protected:
 		virtual void Initialize (void);
 
 		double LinearInterpolate (double a, double b, double x);
@@ -34,11 +33,9 @@ class CPerlin {
 		double SmoothedNoise (int x, int y);
 		double InterpolatedNoise (double x, double y);
 
-		virtual double Noise (int x);			 
-		virtual double Noise (int x, int y);
+		virtual double Noise (double x);			 
+		virtual double Noise (double x, double y);
 	};
-
-extern CPerlin perlinX [], perlinY [];
 
 #endif //__PERLIN_H
 
