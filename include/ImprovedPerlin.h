@@ -34,8 +34,8 @@ class CImprovedPerlin : public CPerlin {
 		virtual bool Setup (int nNodes, int nOctaves, int nDimensions = 1);
 
 	protected:
-		virtual double InterpolatedNoise (double x, int octave) { return m_cores [octave].Noise (x); }
-		virtual double InterpolatedNoise (double x, double y, int octave) { return m_cores [octave].Noise (x, y); }
+		virtual double InterpolatedNoise (double x, int octave) { return m_cores [octave].Noise (x * (1 << octave)); }
+		virtual double InterpolatedNoise (double x, double y, int octave) { return m_cores [octave].Noise (x * (1 << octave), y * (1 << octave)); }
 		//virtual double Noise (double x, double y, double z);
 	};
 

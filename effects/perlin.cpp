@@ -35,11 +35,13 @@ double CPerlin::Noise (double x)
 #if CUSTOM_RAND > 1
 return Random (x);
 #else
-uint i = (uint) x + 1;
+uint i = (uint) x + 2;
+#	if 0
 if (!m_valid [i]) {
 	m_valid [i] = 1;
 	m_random [i] = Random ();
 	}
+#	endif
 return m_random [i];
 #endif
 }
@@ -88,11 +90,12 @@ return Noise (x) / 2  +  Noise (x-1) / 4  +  Noise (x+1) / 4;
 double CPerlin::InterpolatedNoise (double x, int octave)
 {
 x *= 1 << octave;
-int xInt = int (x);
-double v1 = SmoothedNoise (xInt);
-double v2 = SmoothedNoise (xInt + 1);
-#if 0
-return CosineInterpolate (v1, v2, x - xInt);
+int xi = int (x);
+//int xi = int (x * (m_nNodes - 1) + m_nNodes * octave);
+double v1 = SmoothedNoise (xi);
+double v2 = SmoothedNoise (xi + 1);
+#if 1
+return CosineInterpolate (v1, v2, x - xi);
 #else
 double v0 = SmoothedNoise (xInt - 1);
 double v3 = SmoothedNoise (xInt + 2);
@@ -106,7 +109,12 @@ double CPerlin::ComputeNoise (double x, double persistence, long octaves)
 {
 double total = 0, frequency = 1.0, amplitude = 1.0;
 for (int i = 0; i < octaves; i++) {
+#if DBG
+	double n = InterpolatedNoise (x, i);
+	total += n * amplitude;
+#else
 	total += InterpolatedNoise (x, i) * amplitude;
+#endif
 	amplitude *= persistence;
 	}
 return total;
@@ -170,18 +178,20 @@ return total;
 
 bool CPerlin::Setup (int nNodes, int nOctaves, int nDimensions)
 {
-m_nNodes = nNodes << nOctaves;
-m_nNodes += 2;
-m_nNodes *= nDimensions;
-if (m_random.Buffer () && (int (m_random.Length ()) < m_nNodes)) {
+m_nNodes = nNodes;
+nNodes = ((nNodes + 4) << nOctaves) * nDimensions;
+if (m_random.Buffer () && (int (m_random.Length ()) < nNodes)) {
 	m_random.Destroy ();
 	m_valid.Destroy ();
 	}
-if (!(m_random.Buffer () || (m_random.Create (m_nNodes) && m_valid.Create (m_nNodes))))
+if (!(m_random.Buffer () || (m_random.Create (nNodes) && m_valid.Create (nNodes))))
 	return false;
-//for (int i = 0; i < m_nNodes + 1; i++) 
-//	m_random [i] = Random ();
+#if 1
+for (int i = 0; i < nNodes; i++) 
+	m_random [i] = Random ();
+#else
 m_valid.Clear ();
+#endif
 return true;
 }
 
