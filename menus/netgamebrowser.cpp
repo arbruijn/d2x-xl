@@ -260,7 +260,7 @@ return nCurItem;
 int NetworkBrowseGames (void)
 {
 	CMenu	menu (MAX_ACTIVE_NETGAMES + 5);
-	int	choice, bAutoLaunch = gameData.multiplayer.autoNG.bValid;
+	int	choice, bAutoLaunch = (gameData.multiplayer.autoNG.bValid > 0);
 	char	callsign [CALLSIGN_LEN+1];
 
 //PrintLog ("launching netgame browser\n");

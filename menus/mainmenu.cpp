@@ -201,7 +201,7 @@ if (!LOCALPLAYER.callsign [0]) {
 	SelectPlayer ();
 	return 0;
 	}
-if (gameData.multiplayer.autoNG.bValid) {
+if (gameData.multiplayer.autoNG.bValid > 0) {
 	if (!MultiplayerMenu ())
 		gameStates.app.nFunctionMode = FMODE_EXIT;
 	return 0;

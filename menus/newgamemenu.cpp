@@ -470,7 +470,7 @@ else if ((nChoice == multiOpts.nStartMCast4) || (nChoice == multiOpts.nJoinMCast
 	IpxSetDriver (IPX_DRIVER_MCAST4); 
 	}
 if (bStart ? NetworkStartGame () : NetworkBrowseGames ()) {
-	gameData.multiplayer.autoNG.bValid = 0;
+	gameData.multiplayer.autoNG.bValid = -1;
 	return 1;
 	}
 IpxClose ();
@@ -486,7 +486,7 @@ int MultiplayerMenu (void)
 	int	choice = 0, i, optCreate, optJoin = -1, optConn = -1, nConnections = 0;
 	int	nOldGameMode;
 
-if ((gameStates.app.bNostalgia < 2) && gameData.multiplayer.autoNG.bValid) {
+if ((gameStates.app.bNostalgia < 2) && (gameData.multiplayer.autoNG.bValid > 0)) {
 	i = MultiChoice (gameData.multiplayer.autoNG.uConnect, !gameData.multiplayer.autoNG.bHost);
 	if (i >= 0)
 		return ExecMultiMenuOption (i);

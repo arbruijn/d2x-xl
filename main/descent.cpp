@@ -474,7 +474,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 				//SetRenderQuality (0);
 				MainMenu ();
 				}
-			//if (gameData.multiplayer.autoNG.bValid && (gameStates.app.nFunctionMode != FMODE_GAME))
+			//if ((gameData.multiplayer.autoNG.bValid > 0) && (gameStates.app.nFunctionMode != FMODE_GAME))
 			//	gameStates.app.nFunctionMode = FMODE_EXIT;
 			break;
 
@@ -486,7 +486,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			gameStates.app.bD1Mission = 0;
 			if (gameData.multiplayer.autoNG.bValid)
 				gameStates.app.nFunctionMode = FMODE_EXIT;
-			if (gameStates.app.nFunctionMode == FMODE_MENU) {
+			else if (gameStates.app.nFunctionMode == FMODE_MENU) {
 				audio.StopAllChannels ();
 				songManager.Play (SONG_TITLE, 1);
 				}

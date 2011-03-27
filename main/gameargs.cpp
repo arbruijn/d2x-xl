@@ -187,7 +187,7 @@ if (FindArg ("-subtitles"))
 	gameOptions [0].movies.bSubTitles = NumArg (t, 1);
 if ((t = FindArg ("-movie_quality")))
 	gameOptions [0].movies.nQuality = NumArg (t, 0);
-if (gameData.multiplayer.autoNG.bValid)
+if (gameData.multiplayer.autoNG.bValid > 0)
 	gameOptions [0].movies.nLevel = 0;
 }
 

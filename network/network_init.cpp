@@ -347,7 +347,7 @@ for (i = 0; i < 2; i++) {
 
 int InitAutoNetGame (void)
 {
-if (!gameData.multiplayer.autoNG.bValid)
+if (gameData.multiplayer.autoNG.bValid <= 0)
 	return 0;
 if (!missionManager.FindByName (gameData.multiplayer.autoNG.szFile, -1))
 	return 0;
