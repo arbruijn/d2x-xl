@@ -158,8 +158,10 @@ if (i == 5)
 	return false;
 
 tScreenPos s [5];
-for (int i = 0; i < 5; i++)
+for (int i = 0; i < 5; i++) {
 	ProjectPoint (p [i], s [i], 0, 0);
+	s [i].y = screen.Height () - s [i].y;
+	}
 
 int d = 0;
 int n = 0;
