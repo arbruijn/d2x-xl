@@ -364,7 +364,7 @@ void LightningOptionsMenu (void);
 void MainOptionsMenu (void);
 void MiscellaneousMenu (void);
 void MovieOptionsMenu (void);
-void MultiplayerMenu (void);
+int MultiplayerMenu (void);
 void NewGameMenu (void);
 void LegacyNewGameMenu (void);
 void PhysicsOptionsMenu (void);

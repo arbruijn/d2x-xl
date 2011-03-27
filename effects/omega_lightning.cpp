@@ -155,12 +155,12 @@ return 1;
 #define OMEGA_PLASMA 0
 #if 0
 #	define OMEGA_BOLTS 1
-#	define OMEGA_NODES 100
+#	define OMEGA_NODES 150
 #	define OMEGA_STEPS 30
 #	define OMEGA_LIFE -50000
 #else
 #	define OMEGA_BOLTS 10
-#	define OMEGA_NODES 100
+#	define OMEGA_NODES 150
 #	define OMEGA_STEPS 3
 #	define OMEGA_LIFE -5000
 #endif

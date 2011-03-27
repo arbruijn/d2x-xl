@@ -202,8 +202,9 @@ if (!LOCALPLAYER.callsign [0]) {
 	return 0;
 	}
 if (gameData.multiplayer.autoNG.bValid) {
-	MultiplayerMenu ();
-	gameStates.app.nFunctionMode = FMODE_EXIT;
+	if (!MultiplayerMenu ())
+		;
+		gameStates.app.nFunctionMode = FMODE_EXIT;
 	return 0;
 	}
 

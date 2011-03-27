@@ -480,7 +480,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void MultiplayerMenu (void)
+int MultiplayerMenu (void)
 {
 	CMenu	m;
 	int	choice = 0, i, optCreate, optJoin = -1, optConn = -1, nConnections = 0;
@@ -488,10 +488,8 @@ void MultiplayerMenu (void)
 
 if ((gameStates.app.bNostalgia < 2) && gameData.multiplayer.autoNG.bValid) {
 	i = MultiChoice (gameData.multiplayer.autoNG.uConnect, !gameData.multiplayer.autoNG.bHost);
-	if (i >= 0) {
-		ExecMultiMenuOption (i);
-		return;
-		}
+	if (i >= 0)
+		return ExecMultiMenuOption (i);
 	}
 
 do {
@@ -543,6 +541,7 @@ do {
 	if (nOldGameMode != gameData.app.nGameMode)
 		break;          // leave menu
 	} while (i > -1);
+return 0;
 }
 
 //------------------------------------------------------------------------------

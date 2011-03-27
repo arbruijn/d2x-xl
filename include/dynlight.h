@@ -209,7 +209,7 @@ class CLightManager {
 		int Add (CSegFace* faceP, tRgbaColorf *colorP, fix xBrightness, short nSegment,
 				   short nSide, short nObject, short nTexture, CFixVector *vPos, ubyte bAmbient = 0);
 		void Delete (short nLight);
-		void DeleteLightnings (void);
+		void DeleteLightning (void);
 		int Delete (short nSegment, short nSide, short nObject);
 		void Reset (void);
 		void SetMaterial (short nSegment, short nSide, short nObject);
@@ -256,7 +256,7 @@ class CLightManager {
 		static int IsTriggered (short nSegment, short nSide, bool bOppSide = false);
 		static int IsFlickering (short nSegment, short nSide);
 		int IsDestructible (short nTexture);
-		void DeleteFromList (CDynLight* pl, short nLight);
+		bool DeleteFromList (CDynLight* pl, short nLight);
 		void Sort (void);
 	};
 

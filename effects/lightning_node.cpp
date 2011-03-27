@@ -299,8 +299,8 @@ void CLightningNode::CreatePerlin (int nAmplitude, double phi, int i, int nThrea
 double dx = perlinX [nThread].ComputeNoise (phi, 0.75, 6);
 double dy = perlinY [nThread].ComputeNoise (phi, 0.75, 6);
 #else
-double dx = perlinX [nThread].ComputeNoise (phi, 0.5, 6);
-double dy = perlinY [nThread].ComputeNoise (phi, 0.5, 6);
+double dx = perlinX [nThread].ComputeNoise (phi, 0.25, 6);
+double dy = perlinY [nThread].ComputeNoise (phi, 0.25, 6);
 //double dx = perlinX [nThread].ComputeNoise (double (i) /** 0.03125*/, 0.6, 6);
 //double dy = perlinY [nThread].ComputeNoise (double (i) /** 0.03125*/, 0.6, 6);
 #endif

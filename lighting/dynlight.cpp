@@ -461,18 +461,19 @@ return m_data.nLights [0]++;
 
 //------------------------------------------------------------------------------
 
-void CLightManager::DeleteFromList (CDynLight* pl, short nLight)
+bool CLightManager::DeleteFromList (CDynLight* pl, short nLight)
 {
 //PrintLog ("removing light %d,%d\n", nLight, pl - m_data.lights [0]);
 // if not removing last light in list, move last light down to the now free list entry
 // and keep the freed light handle thus avoiding gaps in used handles
-if (m_data.lights.Buffer () && (nLight < --m_data.nLights [0])) {
-	*pl = m_data.lights [m_data.nLights [0]];
-	if (pl->info.nObject >= 0)
-		m_data.owners [pl->info.nObject] = nLight;
-	if (pl->info.nPlayer < MAX_PLAYERS)
-		m_headlights.lightIds [pl->info.nPlayer] = nLight;
-	}
+if (!m_data.lights.Buffer () || (nLight >= m_data.nLights [0]))
+	return false;
+*pl = m_data.lights [--m_data.nLights [0]];
+if (pl->info.nObject >= 0)
+	m_data.owners [pl->info.nObject] = nLight;
+if (pl->info.nPlayer < MAX_PLAYERS)
+	m_headlights.lightIds [pl->info.nPlayer] = nLight;
+return true;
 }
 
 //------------------------------------------------------------------------------
@@ -510,16 +511,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CLightManager::DeleteLightnings (void)
+void CLightManager::DeleteLightning (void)
 {
 	CDynLight* pl = &m_data.lights [0];
 
 if (pl != NULL) {
 	for (short i = 0; i < m_data.nLights [0]; ) {
-		if ((pl->info.nSegment >= 0) && (pl->info.nSide < 0)) {
-			DeleteFromList (pl, i);
-			}
-		else {
+		if (!((pl->info.nSegment >= 0) && (pl->info.nSide < 0) && DeleteFromList (pl, i))) {
 			i++;
 			pl++;
 			}
