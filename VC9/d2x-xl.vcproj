@@ -8888,16 +8888,9 @@
 					<File
 						RelativePath="..\maths\ImprovedPerlin.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\effects\perlin.cpp"
+						RelativePath="..\maths\perlin.cpp"
 						>
 					</File>
 					<File
@@ -10492,11 +10485,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
