@@ -17,10 +17,10 @@ class CImprovedPerlinCore {
 	protected:
 
 		inline double Lerp (double t, double a, double b) { return a + t * (b - a); }
-		inline double Fade (double t) { return t * t * t * (t * (t * 6 - 15) + 10); }
-		inline double Grad (int hash, double x) { return ((hash & 1) == 0) ? x : -x; }
-		inline double Grad (int hash, double x, double y) { return (((hash & 2) == 0) ? x : -x) + (((hash & 1) == 0) ? y : -y); }
-		double Grad (int hash, double x, double y, double z);
+		inline double Fade (double t) { return t * t * t * (t * (t * 6.0 - 15.0) + 10.0); }
+		inline double Grad (int bias, double x) { return ((bias & 1) == 0) ? x : -x; }
+		inline double Grad (int bias, double x, double y) { return (((bias & 2) == 0) ? x : -x) + (((bias & 1) == 0) ? y : -y); }
+		double Grad (int bias, double x, double y, double z);
 
 		//virtual double Noise (double x, double y, double z);
 	};
@@ -34,8 +34,8 @@ class CImprovedPerlin : public CPerlin {
 		virtual bool Setup (int nNodes, int nOctaves, int nDimensions = 1);
 
 	protected:
-		virtual double InterpolatedNoise (double x, int octave) { return m_cores [octave].Noise (x * (1 << octave)); }
-		virtual double InterpolatedNoise (double x, double y, int octave) { return m_cores [octave].Noise (x * (1 << octave), y * (1 << octave)); }
+		virtual double InterpolatedNoise (double x, int octave) { return m_cores [0].Noise (x * double (1 << octave)); }
+		virtual double InterpolatedNoise (double x, double y, int octave) { return m_cores [0].Noise (x * double (1 << octave), y * double (1 << octave)); }
 		//virtual double Noise (double x, double y, double z);
 	};
 

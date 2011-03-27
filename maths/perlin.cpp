@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-#define RAND_HALF	((double (RAND_MAX) + 1) / 2)
+#define RAND_HALF	double ((RAND_MAX + 1) / 2)
 
 #if CUSTOM_RAND
 
@@ -23,7 +23,15 @@ return 1.0 - ((x * (x * x * 15731 + 789221) + 1376312589) & 0x7fffffff) / 107374
 
 inline double CPerlin::Random (void)
 {
-return (double (rand ()) - RAND_HALF) / RAND_HALF;
+//return (double (rand ()) - RAND_HALF) / RAND_HALF;
+#if DBG
+double r = rand ();
+r /= RAND_HALF;
+r -= 1.0;
+return r;
+#else
+return double (rand ()) / RAND_HALF - 1.0;
+#endif
 }
 
 #endif
@@ -36,10 +44,11 @@ double CPerlin::Noise (double x)
 return Random (x);
 #else
 uint i = (uint) x + 2;
-#	if 0
+#	if 1
 if (!m_valid [i]) {
 	m_valid [i] = 1;
 	m_random [i] = Random ();
+	++m_nValues;
 	}
 #	endif
 return m_random [i];
@@ -89,17 +98,17 @@ return Noise (x) / 2  +  Noise (x-1) / 4  +  Noise (x+1) / 4;
 
 double CPerlin::InterpolatedNoise (double x, int octave)
 {
-x *= 1 << octave;
+x *= m_scale;
+x *= double (1 << octave);
 int xi = int (x);
-//int xi = int (x * (m_nNodes - 1) + m_nNodes * octave);
 double v1 = SmoothedNoise (xi);
 double v2 = SmoothedNoise (xi + 1);
 #if 1
 return CosineInterpolate (v1, v2, x - xi);
 #else
-double v0 = SmoothedNoise (xInt - 1);
-double v3 = SmoothedNoise (xInt + 2);
-return CubicInterpolate (v0, v1, v2, v3, x - xInt);
+double v0 = SmoothedNoise (xi - 1);
+double v3 = SmoothedNoise (xi + 2);
+return CubicInterpolate (v0, v1, v2, v3, x - int (x));
 #endif
 }
 
@@ -108,6 +117,9 @@ return CubicInterpolate (v0, v1, v2, v3, x - xInt);
 double CPerlin::ComputeNoise (double x, double persistence, long octaves)
 {
 double total = 0, frequency = 1.0, amplitude = 1.0;
+#if 0 //DBG
+octaves = 1;
+#endif
 for (int i = 0; i < octaves; i++) {
 #if DBG
 	double n = InterpolatedNoise (x, i);
@@ -142,10 +154,10 @@ return corners + sides + center;
 double CPerlin::InterpolatedNoise (double x, double y, int octave)
 {
 #if 1
-x *= 1 << octave;
+x *= double (1 << octave);
 int xInt = int (x);
 double xFrac = x - xInt;
-y *= 1 << octave;
+y *= double (1 << octave);
 int yInt = int (y);
 double yFrac = y - yInt;
 #else
@@ -179,18 +191,20 @@ return total;
 bool CPerlin::Setup (int nNodes, int nOctaves, int nDimensions)
 {
 m_nNodes = nNodes;
-nNodes = ((nNodes + 4) << nOctaves) * nDimensions;
+m_scale = sqrt (double (m_nNodes));
+nNodes = ((nNodes + 4) * (1 << nOctaves)) * nDimensions;
 if (m_random.Buffer () && (int (m_random.Length ()) < nNodes)) {
 	m_random.Destroy ();
 	m_valid.Destroy ();
 	}
 if (!(m_random.Buffer () || (m_random.Create (nNodes) && m_valid.Create (nNodes))))
 	return false;
-#if 1
+#if 0
 for (int i = 0; i < nNodes; i++) 
 	m_random [i] = Random ();
 #else
 m_valid.Clear ();
+m_nValues = 0;
 #endif
 return true;
 }

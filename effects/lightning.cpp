@@ -28,7 +28,7 @@
 #include "automap.h"
 #include "addon_bitmaps.h"
 
-#if 0
+#if 1
 extern CPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
 #else
 extern CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
@@ -641,7 +641,7 @@ if (!nodeP)
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
-	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow && glowRenderer.Available (GLOW_LIGHTNING);
+	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow; // && glowRenderer.Available (GLOW_LIGHTNING);
 	float					fWidth = bGlow ? PLASMA_WIDTH / 2.0f : (m_bGlow > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bGlow < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
 
 if (nThread < 0)
@@ -910,7 +910,7 @@ if (m_nLife > 0) {
 color.red *= (float) (0.9 + dbl_rand () / 5);
 color.green *= (float) (0.9 + dbl_rand () / 5);
 color.blue *= (float) (0.9 + dbl_rand () / 5);
-if (bGlow = SetupGlow ())
+if (bGlow = SetupGlow () && glowRenderer.Available (GLOW_LIGHTNING))
 	glBlendEquation (GL_MAX);
 else
 	color.alpha *= 1.5f;

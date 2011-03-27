@@ -29,7 +29,7 @@
 #	include "tactile.h"
 #endif
 
-#define IMPROVED_PERLIN 1
+#define IMPROVED_PERLIN 0
 
 #if IMPROVED_PERLIN
 CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
@@ -295,12 +295,14 @@ return m_vOffs;
 
 void CLightningNode::CreatePerlin (int nAmplitude, double phi, int i, int nThread)
 {
-#if 1 //IMPROVED_PERLIN
+#if IMPROVED_PERLIN
 double dx = perlinX [nThread].ComputeNoise (phi, 0.75, 6);
 double dy = perlinY [nThread].ComputeNoise (phi, 0.75, 6);
 #else
-double dx = perlinX [nThread].ComputeNoise (double (i) /** 0.03125*/, 0.6, 6);
-double dy = perlinY [nThread].ComputeNoise (double (i) /** 0.03125*/, 0.6, 6);
+double dx = perlinX [nThread].ComputeNoise (phi, 0.5, 6);
+double dy = perlinY [nThread].ComputeNoise (phi, 0.5, 6);
+//double dx = perlinX [nThread].ComputeNoise (double (i) /** 0.03125*/, 0.6, 6);
+//double dy = perlinY [nThread].ComputeNoise (double (i) /** 0.03125*/, 0.6, 6);
 #endif
 static double dx0 [MAX_THREADS], dy0 [MAX_THREADS];
 if (!i) {
@@ -308,9 +310,13 @@ if (!i) {
 	dy0 [nThread] = dy;
 	}
 dx -= dx0 [nThread];
-dy -= dy0 [nThread];
 dx *= nAmplitude;
+#if 0 //DBG
+dy = 0;
+#else
+dy -= dy0 [nThread];
 dy *= nAmplitude;
+#endif
 m_vNewPos = m_vBase + m_vDelta [0] * int (dx);
 m_vNewPos += m_vDelta [1] * int (dy);
 }

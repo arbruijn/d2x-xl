@@ -153,6 +153,17 @@ return 1;
 // ---------------------------------------------------------------------------------
 
 #define OMEGA_PLASMA 0
+#if 0
+#	define OMEGA_BOLTS 1
+#	define OMEGA_NODES 100
+#	define OMEGA_STEPS 30
+#	define OMEGA_LIFE -50000
+#else
+#	define OMEGA_BOLTS 10
+#	define OMEGA_NODES 100
+#	define OMEGA_STEPS 3
+#	define OMEGA_LIFE -5000
+#endif
 
 int COmegaLightning::Create (CFixVector *vTargetPos, CObject* parentObjP, CObject* targetObjP)
 {
@@ -182,8 +193,8 @@ else {
 	color.alpha = gameOpts->render.lightning.bGlow ? 0.5f : 0.3f;
 #endif
 	handleP->nLightning =
-		lightningManager.Create (10, &vMuzzle, vTarget, NULL, nObject,
-										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4), 0, 0, 250, 0, 1, 3, 1, 1,
+		lightningManager.Create (OMEGA_BOLTS, &vMuzzle, vTarget, NULL, nObject,
+										 OMEGA_LIFE, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4), 0, 0, OMEGA_NODES, 0, 1, OMEGA_STEPS, 1, 1,
 #if OMEGA_PLASMA
 										 -((parentObjP != gameData.objs.viewerP) || (gameStates.render.bFreeCam > 0) || gameStates.render.bChaseCam),
 #else
@@ -195,8 +206,8 @@ else {
 #if DBG
 	else {
 		handleP->nLightning =
-			lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
-											 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4), 0, 0, 250, 0, 1, 3, 1, 1,
+			lightningManager.Create (OMEGA_BOLTS, &vMuzzle, vTarget, NULL, -nObject - 1,
+											 OMEGA_LIFE, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4), 0, 0, OMEGA_NODES, 0, 1, OMEGA_STEPS, 1, 1,
 	#if OMEGA_PLASMA
 											 -((parentObjP != gameData.objs.viewerP) || (gameStates.render.bFreeCam > 0) || gameStates.render.bChaseCam),
 	#else

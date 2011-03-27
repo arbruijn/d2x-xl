@@ -10,6 +10,8 @@ class CPerlin {
 		CArray<double>	m_random;
 		CArray<ubyte>	m_valid;
 		int m_nNodes;
+		int m_nValues;
+		double m_scale;
 
 	public:
 		bool Setup (int nNodes, int nOctaves, int nDimensions = 1);

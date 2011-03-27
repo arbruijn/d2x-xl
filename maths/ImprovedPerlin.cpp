@@ -18,24 +18,33 @@ for (int i = 0; i < PERLIN_RANDOM_SIZE; i++)
 
 double CImprovedPerlinCore::Noise (double x) 
 {
-int X = (int) floor (x) & 255;
-x -= (double) floor (x);
+int xi = int (floor (x)) & 255;
+x -= floor (x);
 double u = Fade (x);
-return Lerp (u, Grad (m_random [X], x), Grad (m_random [X+1], x - 1));
+#if DBG
+double g1 = Grad (m_random [xi], x);
+double g2 = Grad (m_random [xi+1], x - 1);
+double l = Lerp (u, g1, g2);
+return l;
+#else
+return Lerp (u, Grad (m_random [xi], x), Grad (m_random [xi+1], x - 1));
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 double CImprovedPerlinCore::Noise (double x, double y) 
 {
-int X = (int) floor (x) & 255;
-int Y = (int) floor (y) & 255;
-x -= (double) floor (x);
-y -= (double) floor (y);
+int xi = (int) floor (x);
+int yi = (int) floor (y);
+x -= (double) xi;
+y -= (double) yi;
+xi &= 255;
+yi &= 255;
 double u = Fade (x);
 double v = Fade (y);
-int A = m_random [X] + Y;
-int B = m_random [X + 1] + Y;
+int A = m_random [xi] + yi;
+int B = m_random [xi + 1] + yi;
 return Lerp (v, Lerp (u, Grad (m_random [A], x, y), Grad (m_random [B], x - 1, y)), Lerp (u, Grad (m_random [A + 1], x, y - 1), Grad (m_random [B + 1], x - 1, y - 1)));
 }
 
@@ -66,9 +75,9 @@ return Lerp (w, Lerp (v, Lerp (u, Grad (m_random [AA], x, y, z), Grad (m_random 
 #endif
 //------------------------------------------------------------------------------
 
-double CImprovedPerlinCore::Grad (int hash, double x, double y, double z) 
+double CImprovedPerlinCore::Grad (int bias, double x, double y, double z) 
 {
-int h = hash & 15;
+int h = bias & 15;
 double u = (h < 8) ? x : y;
 double v = (h < 4) ? y : ((h == 12) || (h == 14)) ? x : z;
 return (((h & 1) == 0) ? u : -u) + (((h & 2) == 0) ? v : -v);
