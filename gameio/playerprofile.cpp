@@ -1926,7 +1926,7 @@ if (LOCALPLAYER.callsign [0] == 0) {
 	if (gameConfig.szLastPlayer [0] == 0)
 		bAllowAbort = 0;
 	}
-if ((bAutoPlr = (gameData.multiplayer.autoNG.bValid > 0)))
+if ((bAutoPlr = (gameData.multiplayer.autoNG.bValid > 0) && *gameData.multiplayer.autoNG.szPlayer))
 	strncpy (filename, gameData.multiplayer.autoNG.szPlayer, 8);
 else if ((bAutoPlr = bStartup && (i = FindArg ("-player")) && *appConfig [++i]))
 	strncpy (filename, appConfig [i], 8);

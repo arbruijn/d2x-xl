@@ -152,9 +152,9 @@ if (gameData.multiplayer.autoNG.bHost)
 		*gameData.multiplayer.autoNG.szMission;
 else
 	gameData.multiplayer.autoNG.bValid =
-		*gameData.multiplayer.autoNG.szPlayer &&
-		*gameData.multiplayer.autoNG.szFile &&
-		gameData.multiplayer.autoNG.nLevel &&
+		//*gameData.multiplayer.autoNG.szPlayer &&
+		//*gameData.multiplayer.autoNG.szFile &&
+		//gameData.multiplayer.autoNG.nLevel &&
 		bHaveIp;
 
 if (gameData.multiplayer.autoNG.bValid)

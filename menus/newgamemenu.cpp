@@ -470,7 +470,8 @@ else if ((nChoice == multiOpts.nStartMCast4) || (nChoice == multiOpts.nJoinMCast
 	IpxSetDriver (IPX_DRIVER_MCAST4); 
 	}
 if (bStart ? NetworkStartGame () : NetworkBrowseGames ()) {
-	gameData.multiplayer.autoNG.bValid = -1;
+	if (gameData.multiplayer.autoNG.bValid > 0)
+		gameData.multiplayer.autoNG.bValid = -1;
 	return 1;
 	}
 IpxClose ();
