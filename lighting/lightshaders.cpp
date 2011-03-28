@@ -1200,8 +1200,10 @@ int SetupPerPixelLightingShader (CSegFace *faceP, int nType, bool bHeadlight)
 {
 PROF_START
 	//static CBitmap	*nullBmP = NULL;
+	static int nLastType = -1;
 
 	int	nLights;//, bStart = (ogl.m_states.iLight == 0);
+	
 
 if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
 	return 0;
@@ -1220,7 +1222,8 @@ if (!shaderProg) {
 	return -1;
 	}
 
-if (shaderManager.Rebuild (shaderProg)) {
+if (shaderManager.Rebuild (shaderProg) || (nType != nLastType)) {
+	nLastType = nType;
 	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
 	if (nType) {
 		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 1);
