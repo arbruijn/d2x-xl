@@ -318,11 +318,12 @@ doMenu:
 
 gameStates.app.nExtGameStatus = GAMESTAT_JOIN_NETGAME;
 if (bAutoLaunch) {
-	static CTimeout to (I2X (1));
+	static CTimeout to (1000, true);
 
 	do {
 		if (to.Expired ())
 			NetworkSendGameListRequest (bAutoLaunch);
+		G3_SLEEP (5);
 		NetworkListen ();
 		if (KeyInKey () == KEY_ESC)
 			return 0;

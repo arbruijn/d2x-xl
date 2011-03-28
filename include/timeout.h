@@ -30,11 +30,15 @@ class CTimeout {
 		time_t	m_duration;
 
 	public:
-		CTimeout (time_t duration = 1000) : m_duration(duration) { Start (); }
+		CTimeout (time_t duration = 1000, bool bImmediate = false) : m_duration(duration) { Start (bImmediate); }
 
 		inline void Setup (time_t duration) { m_duration = duration; }
 
-		inline void Start (time_t t = -1) { m_t0 = (t < 0) ? SDL_GetTicks () : t; }
+		inline void Start (time_t t = -1, bool bImmediate = false) { 
+			m_t0 = (t < 0) ? SDL_GetTicks () : t; 
+			if (bImmediate)
+				m_t0 -= m_duration + 1;
+			}
 
 		inline time_t Progress (void) { return m_t0 - SDL_GetTicks (); }
 
