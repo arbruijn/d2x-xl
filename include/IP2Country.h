@@ -33,5 +33,6 @@ class CIP2Country {
 extern CStack<CIP2Country> ip2country;
 
 int LoadIP2Country (void);
+char* CountryFromIP (int ip);
 
 #endif __IP2Country_h

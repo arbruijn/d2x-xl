@@ -67,7 +67,7 @@ char* CountryFromIP (int ip)
 {
 CIP2Country key (ip, ip, "");
 int i = ip2country.BinSearch (key);
-return (i < 0) ? "" : ip2country [i].m_country;
+return (i < 0) ? "n/a" : ip2country [i].m_country;
 }
 
 //------------------------------------------------------------------------------

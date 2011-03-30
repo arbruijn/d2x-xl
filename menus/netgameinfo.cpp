@@ -32,6 +32,7 @@
 #include "autodl.h"
 #include "tracker.h"
 #include "gamefont.h"
+#include "IP2Country.h"
 #include "menubackground.h"
 
 #define LHX(x)      (gameStates.menus.bHires ? 2 * (x) : x)
@@ -361,20 +362,24 @@ char* XMLGameStatus (void)
 	static char xmlGameStatus [UDP_PAYLOAD_SIZE];
 
 sprintf (xmlGameStatus, "<?xml version=\"1.0\"?>\n<GameStatus>\n  <Descent>\n");
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <PlayerCount=%d>\n", gameData.multiplayer.nPlayers);
-	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player%d ping=");
-		if (pingStats [i].ping < 0)
-			strcat (xmlGameInfo, "n/a");
-		else
-			sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <%d", pingStats [i].ping);
-		sprintf (xmlGameInfo + strlen (xmlGameInfo), "score=%d kills=%d deaths=%d />\n", 
-					gameData.multiplayer.players [i].score,
-					gameData.multiplayer.players [i].netKillsTotal,
-					gameData.multiplayer.players [i].netKilledTotal);
-
+sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <PlayerCount=%d>\n", gameData.multiplayer.nPlayers);
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <Player%d ping=");
+	if (pingStats [i].ping < 0)
+		strcat (xmlGameStatus, "n/a");
+	else
+		sprintf (xmlGameStatus + strlen (xmlGameStatus), "\"%d\"", pingStats [i].ping);
+	sprintf (xmlGameStatus + strlen (xmlGameStatus), " score=\"%d\" kills=\"%d\" deaths=\"%d\" country=\"%s\"/>\n", 
+				gameData.multiplayer.players [i].score,
+				gameData.multiplayer.players [i].netKillsTotal,
+				gameData.multiplayer.players [i].netKilledTotal,
+				CountryFromIP (*((int*) gameData.multiplayer.players [i].netAddress)));
 	}
-strcat (xmlGameInfo, "</GameInfo>\n");
+strcat (xmlGameStatus, "  </Descent>\n</GameStatus>\n");
+PrintLog ("\nXML game status:\n\n");
+PrintLog (xmlGameStatus);
+PrintLog ("\n");
+return xmlGameStatus;
 }
 
 //------------------------------------------------------------------------------
