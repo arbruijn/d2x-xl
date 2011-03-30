@@ -153,7 +153,7 @@ if (!ipToCountry.Create ((uint) nRecords))
 if (!cf.Open ("IpToCountry.csv", gameFolders.szDataDir [1], "rb", 0))
 	return -1;
 
-#if 0
+#if 0 //slows it down too much
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 	nProgressStep = (nRecords + 99) / 100;
 	ProgressBar (TXT_LOADING_IPTOCOUNTRY, 0, nRecords, LoadIpToCountryPoll); 
