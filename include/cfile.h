@@ -57,7 +57,7 @@ class CFile {
 	private:
 		CFILE	m_cf;
 
-		int FillBuffer (void);
+		inline int FillBuffer (void);
 
 	public:
 		CFile () { Init (); }
@@ -74,7 +74,8 @@ class CFile {
 		int EoF (void);
 		int Error (void);
 		int Write (const void *buf, int elsize, int nelem);
-		int GetC (void);
+		inline int GetC (void) { return (FillBuffer () == EOF) ? EOF : m_cf.buffer [m_cf.bufPos++]; }
+
 		int PutC (int c);
 		int PutS (const char *str);
 

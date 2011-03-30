@@ -10,16 +10,16 @@ CStack<CIpToCountry> ipToCountry;
 
 static inline bool ParseIP (char* buffer, uint& ip)
 {
-#if DBG
 char* token = strtok (buffer, ",") + 1;
+if (!token)
+	return false;
+#if 1 //DBG
 for (ip = 0; isdigit (*token); token++)
 	ip = 10 * ip + uint (*token - '0');
-if (ip == 0x7FFFFFFF)
-	ip = ip;
 #else
-ip = strtoul (strtok (buffer, "#") + 1, NULL, 10);
+ip = strtoul (token, NULL, 10);
 #endif
-return (ip > 0);
+return true;
 }
 
 //------------------------------------------------------------------------------
@@ -95,6 +95,7 @@ char country [4];
 country [3] = '\0';
 if (!cf.GetS (lineBuf, sizeof (lineBuf)))
 	return 0;
+#if 1
 if ((lineBuf [0] == '\0') || (lineBuf [0] == '#'))
 	return 1;
 if (!(ParseIP (lineBuf, minIP) && ParseIP (NULL, maxIP)))
@@ -109,11 +110,14 @@ if (!strncmp (country, "ZZ", 2))
 	return 1;
 //if (!strcmp (country, "ZZZ"))
 //	return 1;
-if ((token = strtok (NULL, ",")) && !strcmp (token, "\"Reserved\""))
+if (!(token = strtok (NULL, ",")))
+	return 1;
+if (!strcmp (token, "\"Reserved\""))
 	return 1;
 if (minIP > maxIP)
 	Swap (minIP, maxIP);
 ipToCountry.Push (CIpToCountry (minIP, maxIP, country));
+#endif
 return 1;
 }
 
@@ -149,8 +153,16 @@ if (!ipToCountry.Create ((uint) nRecords))
 if (!cf.Open ("IpToCountry.csv", gameFolders.szDataDir [1], "rb", 0))
 	return -1;
 
-nProgressStep = (nRecords + 99) / 100;
-ProgressBar (TXT_LOADING_IPTOCOUNTRY, 0, nRecords, LoadIpToCountryPoll); 
+#if 0
+if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
+	nProgressStep = (nRecords + 99) / 100;
+	ProgressBar (TXT_LOADING_IPTOCOUNTRY, 0, nRecords, LoadIpToCountryPoll); 
+	}
+#endif
+else {
+	while (ReadIpToCountryRecord ())
+		;
+	}
 
 cf.Close ();
 if (ipToCountry.ToS ())

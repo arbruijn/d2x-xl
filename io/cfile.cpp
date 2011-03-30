@@ -401,7 +401,7 @@ return char_written;
 
 // ----------------------------------------------------------------------------
 
-int CFile::FillBuffer (void)
+inline int CFile::FillBuffer (void)
 {
 if (m_cf.bufPos >= m_cf.bufLen) {
 	if (m_cf.rawPosition >= m_cf.size) 
@@ -420,10 +420,10 @@ return m_cf.bufPos;
 
 // ----------------------------------------------------------------------------
 
-int CFile::GetC (void) 
-{
-return (FillBuffer () == EOF) ? EOF : m_cf.buffer [m_cf.bufPos++];
-}
+//int CFile::GetC (void) 
+//{
+//return (FillBuffer () == EOF) ? EOF : m_cf.buffer [m_cf.bufPos++];
+//}
 
 // ----------------------------------------------------------------------------
 // CFile::PutS () writes a string to a file
