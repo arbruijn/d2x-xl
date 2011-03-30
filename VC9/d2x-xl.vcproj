@@ -6830,7 +6830,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\gameio\IP2Country.cpp"
+						RelativePath="..\gameio\IpToCountry.cpp"
 						>
 					</File>
 					<File
@@ -7290,7 +7290,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\include\IP2Country.h"
+						RelativePath="..\include\IpToCountry.h"
 						>
 					</File>
 					<File

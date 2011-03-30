@@ -1,12 +1,27 @@
 #include "descent.h"
 #include "cfile.h"
-#include "IP2Country.h"
+#include "IpToCountry.h"
 
-CStack<CIP2Country> ip2country;
+CStack<CIpToCountry> ipToCountry;
 
 //------------------------------------------------------------------------------
 
-int LoadIP2Country (void)
+static inline bool ParseIP (char* buffer, int& ip)
+{
+#if DBG
+char* token = strtok (buffer, ",");
+ip = atoi (token);
+if (ip == 0x7FFFFFFF)
+	ip = ip;
+#else
+ip = atoi (strtok (buffer, "#"));
+#endif
+return (ip > 0) && (ip < 0x7FFFFFFF);
+}
+
+//------------------------------------------------------------------------------
+
+int LoadIpToCountry (void)
 {
 	CFile	cf;
 
@@ -15,7 +30,7 @@ int LoadIP2Country (void)
 if (nRecords <= 0)
 	return nRecords;
 
-if (!ip2country.Create ((uint) nRecords))
+if (!ipToCountry.Create ((uint) nRecords))
 	return -1;
 
 char lineBuf [1024];
@@ -30,15 +45,10 @@ char* bufP;
 nRecords = 0;
 country [3] = '\0';
 while (cf.GetS (lineBuf, sizeof (lineBuf))) {
+	++nRecords;
 	if ((lineBuf [0] == '\0') || (lineBuf [0] == '#'))
 		continue;
-	if (!(bufP = strtok (lineBuf, ",")))
-		continue;
-	if (!(minIP = atoi (bufP + 1)))
-		continue;
-	if (!(bufP = strtok (NULL, ",")))
-		continue;
-	if (!(maxIP = atoi (bufP + 1)))
+	if (!(ParseIP (lineBuf, minIP) && ParseIP (NULL, maxIP)))
 		continue;
 	// skip 3 fields
 	if (!strtok (NULL, ","))
@@ -54,21 +64,21 @@ while (cf.GetS (lineBuf, sizeof (lineBuf))) {
 		continue;
 	if ((bufP = strtok (NULL, ",")) && !strcmp (bufP, "Reserved"))
 		continue;
-	ip2country.Push (CIP2Country (minIP, maxIP, country));
+	ipToCountry.Push (CIpToCountry (minIP, maxIP, country));
 	}
 cf.Close ();
-if (ip2country.ToS ())
-	ip2country.SortAscending ();
-return (int) ip2country.ToS ();
+if (ipToCountry.ToS ())
+	ipToCountry.SortAscending ();
+return (int) ipToCountry.ToS ();
 }
 
 //------------------------------------------------------------------------------
 
 char* CountryFromIP (int ip)
 {
-CIP2Country key (ip, ip, "");
-int i = ip2country.BinSearch (key);
-return (i < 0) ? "n/a" : ip2country [i].m_country;
+CIpToCountry key (ip, ip, "");
+int i = ipToCountry.BinSearch (key);
+return (i < 0) ? "n/a" : ipToCountry [i].m_country;
 }
 
 //------------------------------------------------------------------------------

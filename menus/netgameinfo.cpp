@@ -32,7 +32,7 @@
 #include "autodl.h"
 #include "tracker.h"
 #include "gamefont.h"
-#include "IP2Country.h"
+#include "IpToCountry.h"
 #include "menubackground.h"
 
 #define LHX(x)      (gameStates.menus.bHires ? 2 * (x) : x)
