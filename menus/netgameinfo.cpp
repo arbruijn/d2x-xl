@@ -348,7 +348,7 @@ if (nExtensions) {
 	strcat (xmlGameInfo, "  </Extensions>\n");
 	}
 strcat (xmlGameInfo, "</GameInfo>\n");
-#if DBG
+#if 0 //DBG
 PrintLog ("\nXML game info:\n\n");
 PrintLog (xmlGameInfo);
 PrintLog ("\n");
@@ -363,18 +363,18 @@ char* XMLGameStatus (void)
 	static char xmlGameStatus [UDP_PAYLOAD_SIZE];
 
 sprintf (xmlGameStatus, "<?xml version=\"1.0\"?>\n<GameStatus>\n  <Descent>\n");
-sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <PlayerCount=%d>\n", gameData.multiplayer.nPlayers);
+sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <PlayerCount>=%d</PlayerCount>\n", gameData.multiplayer.nPlayers);
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <Player%d ping=");
+	sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <Player%d name=\"%s\" ping=\"", i, netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].callsign);
 	if (pingStats [i].ping < 0)
-		strcat (xmlGameStatus, "\"n/a\"");
+		strcat (xmlGameStatus, (i == gameData.multiplayer.nLocalPlayer) ? "0" : "n/a");
 	else
 		sprintf (xmlGameStatus + strlen (xmlGameStatus), "\"%d\"", pingStats [i].ping);
 
 	ubyte* node = netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node ();
 	uint ip = (uint (node [0]) << 24) + (uint (node [1]) << 16) + (uint (node [2]) << 8) + uint (node [3]);
 
-	sprintf (xmlGameStatus + strlen (xmlGameStatus), " score=\"%d\" kills=\"%d\" deaths=\"%d\" country=\"%s\" />\n", 
+	sprintf (xmlGameStatus + strlen (xmlGameStatus), "\" score=\"%d\" kills=\"%d\" deaths=\"%d\" country=\"%s\" />\n", 
 				gameData.multiplayer.players [i].score,
 				gameData.multiplayer.players [i].netKillsTotal,
 				gameData.multiplayer.players [i].netKilledTotal,

@@ -117,7 +117,7 @@ while (cf.GetS (lineBuf, sizeof (lineBuf))) {
 		continue;
 	if (!(bufP = strtok (NULL, ",")))
 		continue;
-	strncpy (country, bufP, sizeof (country) - 1);
+	strncpy (country, bufP + 1, sizeof (country) - 1);
 	if (!strncmp (country, "ZZ", 2))
 		continue;
 	//if (!strcmp (country, "ZZZ"))
