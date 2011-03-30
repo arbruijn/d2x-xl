@@ -9,12 +9,13 @@ CStack<CIpToCountry> ipToCountry;
 static inline bool ParseIP (char* buffer, uint& ip)
 {
 #if DBG
-char* token = strtok (buffer, ",");
-ip = atoi (token + 1);
+char* token = strtok (buffer, ",") + 1;
+for (ip = 0; isdigit (*token); token++)
+	ip = 10 * ip + uint (*token - '0');
 if (ip == 0x7FFFFFFF)
 	ip = ip;
 #else
-ip = atoi (strtok (buffer, "#") + 1);
+ip = strtoul (strtok (buffer, "#") + 1, NULL, 10);
 #endif
 return (ip > 0);
 }
@@ -138,14 +139,12 @@ return (int) ipToCountry.ToS ();
 
 //------------------------------------------------------------------------------
 
-char* CountryFromIP (int ip)
+char* CountryFromIP (uint ip)
 {
 CIpToCountry key (ip, ip, "");
 int i = ipToCountry.BinSearch (key);
 return (i < 0) ? "n/a" : ipToCountry [i].m_country;
 }
-
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 
