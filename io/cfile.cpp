@@ -951,11 +951,13 @@ if (!Open (filename, folder, "rb", 0))
 
 bool bNewl = true;
 char buf [16384];
-int i = sizeof (buf), lineC = 0;
+uint 	h = m_cf.size - m_cf.rawPosition,
+		i = h + 1, 
+		lineC = 0;
 
-while (!EoF ()) {
-	if (i >= sizeof (buf)) {
-		int h = m_cf.size - m_cf.rawPosition;
+while (!EoF () || (i < h)) {
+	if (i >= h) {
+		h = m_cf.size - m_cf.rawPosition;
 		if (h > sizeof (buf))
 			h = sizeof (buf);
 		Read (buf, h, 1);
@@ -963,8 +965,7 @@ while (!EoF ()) {
 		}
 	if (bNewl && !strchr (delims, buf [i]))
 		lineC++;
-	bNewl = (buf [i] == '\n');
-	++i;
+	bNewl = (buf [i++] == '\n');
 	}
 Close ();
 return lineC;

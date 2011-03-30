@@ -6,7 +6,7 @@ CStack<CIpToCountry> ipToCountry;
 
 //------------------------------------------------------------------------------
 
-static inline bool ParseIP (char* buffer, int& ip)
+static inline bool ParseIP (char* buffer, uint& ip)
 {
 #if DBG
 char* token = strtok (buffer, ",");
@@ -16,7 +16,7 @@ if (ip == 0x7FFFFFFF)
 #else
 ip = atoi (strtok (buffer, "#") + 1);
 #endif
-return (ip > 0) && (ip < 0x7FFFFFFF);
+return (ip > 0);
 }
 
 //------------------------------------------------------------------------------
@@ -42,12 +42,12 @@ if (cf.Date ("IpToCountry.csv", gameFolders.szDataDir [1], 0) > cf.Date ("IpToCo
 if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "wb", 0))
 	return false;
 
-int nRecords = cf.Size () / sizeof (CIpToCountry);
+int nRecords = (uint) cf.ReadInt ();
 
 if (!ipToCountry.Create ((uint) nRecords))
 	return false;
 
-bool bSuccess = (ipToCountry.Read (cf, nRecords) == cf.Size ());
+bool bSuccess = (ipToCountry.Read (cf, nRecords) == nRecords);
 if (bSuccess)
 	ipToCountry.Grow ((uint) nRecords);
 else
@@ -65,7 +65,8 @@ static bool SaveBinary (void)
 
 if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "wb", 0))
 	return false;
-bool bSuccess = (ipToCountry.Write (cf) == ipToCountry.Size ());
+cf.WriteInt ((int) ipToCountry.ToS ());
+bool bSuccess = (ipToCountry.Write (cf) == ipToCountry.Length ());
 if (!cf.Close ())
 	bSuccess = false;
 return bSuccess;
@@ -93,7 +94,7 @@ char lineBuf [1024];
 if (!cf.Open ("IpToCountry.csv", gameFolders.szDataDir [1], "rt", 0))
 	return -1;
 
-int minIP, maxIP;
+uint minIP, maxIP;
 char country [4];
 char* bufP;
 
@@ -111,10 +112,14 @@ while (cf.GetS (lineBuf, sizeof (lineBuf))) {
 	if (!(bufP = strtok (NULL, ",")))
 		continue;
 	strncpy (country, bufP, sizeof (country) - 1);
-	if (!strcmp (country, "ZZZ"))
+	if (!strncmp (country, "ZZ", 2))
 		continue;
+	//if (!strcmp (country, "ZZZ"))
+	//	continue;
 	if ((bufP = strtok (NULL, ",")) && !strcmp (bufP, "Reserved"))
 		continue;
+	if (minIP > maxIP)
+		Swap (minIP, maxIP);
 	ipToCountry.Push (CIpToCountry (minIP, maxIP, country));
 	}
 cf.Close ();

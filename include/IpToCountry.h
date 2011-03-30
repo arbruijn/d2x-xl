@@ -5,17 +5,17 @@
 
 class CIpToCountry {
 	public:
-		int	m_min;
-		int	m_max;
+		uint	m_min;
+		uint	m_max;
 		char	m_country [4];
 
 	public:
-		CIpToCountry (const int minIP = 0, const int maxIP = 0, const char* country = "")
+		CIpToCountry (const uint minIP = 0, const uint maxIP = 0, const char* country = "")
 			: m_min (minIP), m_max (maxIP)
 			{ strncpy (m_country, country, sizeof (m_country)); }
 
-		inline int Min (void) { return m_min; }
-		inline int Max (void) { return m_max; }
+		inline uint Min (void) { return m_min; }
+		inline uint Max (void) { return m_max; }
 
 		inline CIpToCountry& operator= (const CIpToCountry& other) { 
 			m_min = other.m_min, m_max = other.m_max;
@@ -23,11 +23,11 @@ class CIpToCountry {
 			return *this;
 			}
 
-		inline bool operator< (const CIpToCountry& other) { return other.m_min < m_max; }
-		inline bool operator> (const CIpToCountry& other) { return other.m_max < m_min; }
-		inline bool operator<= (const CIpToCountry& other) { return other.m_min <= m_max; }
-		inline bool operator>= (const CIpToCountry& other) { return other.m_max <= m_min; }
-		inline bool operator== (const int ip) { return (ip >= m_min) && (ip <= m_max); }
+		inline bool operator< (const CIpToCountry& other) { return m_max < other.m_min; }
+		inline bool operator> (const CIpToCountry& other) { return m_min > other.m_max; }
+		inline bool operator<= (const CIpToCountry& other) { return m_max <= other.m_min; }
+		inline bool operator>= (const CIpToCountry& other) { return m_min >= other.m_max; }
+		inline bool operator== (const uint ip) { return (ip >= m_min) && (ip <= m_max); }
 	};
 
 extern CStack<CIpToCountry> ipToCountry;
