@@ -36,22 +36,23 @@ while (cf.GetS (lineBuf, sizeof (lineBuf))) {
 		continue;
 	if (!(minIP = atoi (bufP + 1)))
 		continue;
-	if (!(bufP = strtok (lineBuf, ",")))
+	if (!(bufP = strtok (NULL, ",")))
+		continue;
 	if (!(maxIP = atoi (bufP + 1)))
 		continue;
 	// skip 3 fields
-	if (!strtok (lineBuf, ","))
+	if (!strtok (NULL, ","))
 		continue;
-	if (!strtok (lineBuf, ","))
+	if (!strtok (NULL, ","))
 		continue;
-	if (!strtok (lineBuf, ","))
+	if (!strtok (NULL, ","))
 		continue;
-	if (!(bufP = strtok (lineBuf, ",")))
+	if (!(bufP = strtok (NULL, ",")))
 		continue;
 	strncpy (country, bufP, sizeof (country) - 1);
 	if (!strcmp (country, "ZZZ"))
 		continue;
-	if ((bufP = strtok (lineBuf, ",")) && !strcmp (bufP, "Reserved"))
+	if ((bufP = strtok (NULL, ",")) && !strcmp (bufP, "Reserved"))
 		continue;
 	ip2country.Push (CIP2Country (minIP, maxIP, country));
 	}
