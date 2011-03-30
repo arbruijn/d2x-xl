@@ -199,8 +199,12 @@ return 0;
 
 int CTracker::IsTracker (uint addr, ushort port, char* msg)
 {
-if (msg && !(strcmp (msg, "FDescent Game Info Request") && strcmp (msg, "GDescent Game Status Request")))
-	return 2;
+if (msg) { 
+	if (!strcmp (msg, "FDescent Game Info Request"))
+		return 2;
+	 if (!strcmp (msg, "GDescent Game Status Request"))
+		return 2;
+	}
 
 if (!m_bUse)
 	return 0;

@@ -76,6 +76,7 @@ memset (addressFilter, 0, sizeof (addressFilter));
 	 addressFilter [PID_DOWNLOAD] =
 	 addressFilter [PID_UPLOAD] =
 	 addressFilter [PID_XML_GAMEINFO] =
+	 addressFilter [PID_XML_GAMESTATUS] =
 	 addressFilter [(int) PID_TRACKER_ADD_SERVER] =
 	 addressFilter [(int) PID_TRACKER_GET_SERVERLIST] = 1;
 }
@@ -145,7 +146,7 @@ if (dataP && (networkData.xmlGameStatusRequestTime <= 0)) {
 			}
 		}
 	}
-else {
+else if (networkData.xmlGameStatusRequestTime > 0) {
 	// check whether all players have returned a ping response
 	int i;
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
