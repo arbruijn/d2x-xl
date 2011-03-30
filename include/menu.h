@@ -205,6 +205,7 @@ class CMenu : public CStack<CMenuItem> {
 		uint				m_tEnter;
 		int				m_nChoice;
 		int				m_nKey;
+		bool				m_bThrottle;
 		pMenuCallback	m_callback;
 
 	public:
@@ -217,6 +218,7 @@ class CMenu : public CStack<CMenuItem> {
 			SetGrowth (10);
 			m_nGroup = 0;
 			m_to.Setup (10);
+			m_bThrottle = true;
 			}
 
 		inline int NewGroup (int nGroup = 0) {

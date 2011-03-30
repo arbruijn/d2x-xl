@@ -673,7 +673,8 @@ if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING) {
 	}
 GrabMouse (0, 0);
 while (!done) {
-	m_to.Throttle ();	// give the CPU some time to breathe
+	if (m_bThrottle)
+		m_to.Throttle ();	// give the CPU some time to breathe
 
 	if (nCurItemP)
 		*nCurItemP = m_nChoice;
@@ -1548,6 +1549,7 @@ item.m_nTextLen = *szText ? (int) strlen (szText) : 20;
 item.m_value = NMCLAMP (nValue, 0, nMax);
 item.m_maxValue = nMax;
 Push (item);
+m_bThrottle = false;
 return ToS () - 1;
 }
 
