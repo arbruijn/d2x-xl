@@ -41,8 +41,13 @@ if (cf.Date ("IpToCountry.csv", gameFolders.szDataDir [1], 0) > cf.Date ("IpToCo
 	return false;
 if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "wb", 0))
 	return false;
+int h = cf.Size () - sizeof (int);
+if ((h < 0) || (h / sizeof (CIpToCountry) < 1) || (h % sizeof (CIpToCountry) != 0)) {
+	cf.Close ();
+	return false;
+	}
 
-int nRecords = (uint) cf.ReadInt ();
+uint nRecords = (uint) cf.ReadInt ();
 
 if (!ipToCountry.Create ((uint) nRecords))
 	return false;
