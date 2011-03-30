@@ -1,5 +1,7 @@
 #include "descent.h"
 #include "cfile.h"
+#include "text.h"
+#include "menu.h"
 #include "IpToCountry.h"
 
 CStack<CIpToCountry> ipToCountry;
@@ -80,12 +82,59 @@ return bSuccess;
 
 //------------------------------------------------------------------------------
 
+static CFile cf;
+
+int ReadIpToCountryRecord (void)
+{
+char lineBuf [1024];
+char* token;
+uint minIP, maxIP;
+char country [4];
+
+country [3] = '\0';
+if (!cf.GetS (lineBuf, sizeof (lineBuf)))
+	return 0;
+if ((lineBuf [0] == '\0') || (lineBuf [0] == '#'))
+	return 1;
+if (!(ParseIP (lineBuf, minIP) && ParseIP (NULL, maxIP)))
+	return 1;
+// skip 3 fields
+if (!Skip (3))
+	return 1;
+if (!(token = strtok (NULL, ",")))
+	return 1;
+strncpy (country, token + 1, sizeof (country) - 1);
+if (!strncmp (country, "ZZ", 2))
+	return 1;
+//if (!strcmp (country, "ZZZ"))
+//	return 1;
+if ((token = strtok (NULL, ",")) && !strcmp (token, "\"Reserved\""))
+	return 1;
+if (minIP > maxIP)
+	Swap (minIP, maxIP);
+ipToCountry.Push (CIpToCountry (minIP, maxIP, country));
+}
+
+//------------------------------------------------------------------------------
+
+static int LoadIpToCountryPoll (CMenu& menu, int& key, int nCurItem, int nState)
+{
+if (!ReadIpToCountryRecord ())
+	key = -1;
+else {
+	menu [0].m_value++;
+	menu [0].m_bRebuild = 1;
+	key = 0;
+	}
+return nCurItem;
+}
+
+//------------------------------------------------------------------------------
+
 int LoadIpToCountry (void)
 {
 if (LoadBinary ())
 	return ipToCountry.Length ();
-
-	CFile	cf;
 
 	int nRecords = cf.LineCount ("IpToCountry.csv", gameFolders.szDataDir [1], "#");
 
@@ -95,39 +144,11 @@ if (nRecords <= 0)
 if (!ipToCountry.Create ((uint) nRecords))
 	return -1;
 
-char lineBuf [1024];
-
 if (!cf.Open ("IpToCountry.csv", gameFolders.szDataDir [1], "rt", 0))
 	return -1;
 
-uint minIP, maxIP;
-char country [4];
-char* bufP;
+ProgressBar (TXT_LOADING_IPTOCOUNTRY, 0, ModelsGaugeSize (), LoadIpToCountryPoll); 
 
-nRecords = 0;
-country [3] = '\0';
-while (cf.GetS (lineBuf, sizeof (lineBuf))) {
-	++nRecords;
-	if ((lineBuf [0] == '\0') || (lineBuf [0] == '#'))
-		continue;
-	if (!(ParseIP (lineBuf, minIP) && ParseIP (NULL, maxIP)))
-		continue;
-	// skip 3 fields
-	if (!Skip (3))
-		continue;
-	if (!(bufP = strtok (NULL, ",")))
-		continue;
-	strncpy (country, bufP + 1, sizeof (country) - 1);
-	if (!strncmp (country, "ZZ", 2))
-		continue;
-	//if (!strcmp (country, "ZZZ"))
-	//	continue;
-	if ((bufP = strtok (NULL, ",")) && !strcmp (bufP, "\"Reserved\""))
-		continue;
-	if (minIP > maxIP)
-		Swap (minIP, maxIP);
-	ipToCountry.Push (CIpToCountry (minIP, maxIP, country));
-	}
 cf.Close ();
 if (ipToCountry.ToS ())
 	ipToCountry.SortAscending ();

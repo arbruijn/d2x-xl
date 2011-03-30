@@ -1973,6 +1973,7 @@ void LoadGameTexts(void);
 #define TXT_EFFECTS_GLOW				GT(1189)
 #define TXT_CLIENT_WAIT					GT(1190)
 #define TXT_HOST_WAIT					GT(1191)
+#define TXT_LOADING_IPTOCOUNTRY		GT(1192)
 
 #if 0
 
