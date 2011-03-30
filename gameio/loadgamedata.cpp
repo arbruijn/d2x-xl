@@ -106,7 +106,7 @@ for (i = 0;i < n;i++) {
 return i;
 }
 
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Read data from piggy.
 // This is called when the editor is OUT.
 // If editor is in, bm_init_use_table () is called.

@@ -914,7 +914,7 @@ switch (list [nMission].location) {
 		sprintf (szFolder, "%s%s", gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "");
 		break;
 	case ML_DATADIR:
-		sprintf (szFolder, "%s%s", gameFolders.szDataDir, *gameFolders.szDataDir ? "/" : "");
+		sprintf (szFolder, "%s%s", gameFolders.szDataDir, *gameFolders.szDataDir [0] ? "/" : "");
 		break;
 	}
 sprintf (szFile, "%s%s", 

@@ -6830,6 +6830,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\gameio\IP2Country.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\gameio\loadgame.cpp"
 						>
 						<FileConfiguration
@@ -7283,6 +7287,10 @@
 					</File>
 					<File
 						RelativePath="..\include\iff.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\IP2Country.h"
 						>
 					</File>
 					<File
@@ -10485,11 +10493,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

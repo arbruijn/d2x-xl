@@ -535,9 +535,9 @@ if ((nPlayer >= gameData.multiplayer.nPlayers) || !pingStats [nPlayer].launchTim
 #endif
    return;
 	}
-if (pingStats [nPlayer].launchTime > 0) {
-	xPingReturnTime = TimerGetFixedSeconds ();
-	pingStats [nPlayer].ping = X2I (FixMul (xPingReturnTime - pingStats [nPlayer].launchTime, I2X (1000)));
+if (pingStats [nPlayer].launchTime > 0) { // negative value suppresses display of returned ping on HUD
+	//xPingReturnTime = TimerGetFixedSeconds ();
+	pingStats [nPlayer].ping = SDL_GetTicks () - pingStats [nPlayer].launchTime; //X2I (FixMul (xPingReturnTime - pingStats [nPlayer].launchTime, I2X (1000)));
 	if (!gameStates.render.cockpit.bShowPingStats)
 		HUDInitMessage ("Ping time for %s is %d ms!", gameData.multiplayer.players [nPlayer].callsign, pingStats [nPlayer].ping);
 	pingStats [nPlayer].received++;

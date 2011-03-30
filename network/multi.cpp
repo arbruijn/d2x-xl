@@ -5071,11 +5071,11 @@ MultiSendData (gameData.multigame.msg.buf, 1, 1);
 
 void  MultiDoModemPingReturn (char *buf)
 {
-if (pingStats [0].launchTime)
+if (pingStats [0].launchTime <= 0)
 	return;
 xPingReturnTime = TimerGetFixedSeconds ();
-HUDInitMessage (TXT_PINGTIME,
-					 X2I (FixMul (xPingReturnTime - pingStats [0].launchTime, I2X (1000))));
+HUDInitMessage (TXT_PINGTIME, SDL_GetTicks () - pingStats [0].launchTime);
+					 //X2I (FixMul (xPingReturnTime - pingStats [0].launchTime, I2X (1000))));
 pingStats [0].launchTime = 0;
 }
 

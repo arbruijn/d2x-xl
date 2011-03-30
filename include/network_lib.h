@@ -130,9 +130,17 @@ typedef struct tNetworkData {
 	time_t				toWaitAllPoll;
 	tNetworkSyncData	sync [MAX_JOIN_REQUESTS];
 	short					nJoining;
+	int					xmlGameStatusRequestTime;
 } __pack__ tNetworkData;
 
 extern tNetworkData networkData;
+
+//------------------------------------------------------------------------------
+
+typedef struct tIPToCountry {
+	int	minIP, maxIP;
+	char  country [4];
+} tIPToCountry;
 
 //------------------------------------------------------------------------------
 
@@ -229,6 +237,11 @@ void NetworkSendEndLevelShortSub (int from_player_num, int to_player);
 void NetworkSendGameInfo (tSequencePacket *their);
 void NetworkSendExtraGameInfo (tSequencePacket *their);
 void NetworkSendLiteInfo (tSequencePacket *their);
+void NetworkSendXMLGameInfo (void);
+void NetworkSendXMLGameStatus (void);
+char* XMLGameInfo (void);
+char* XMLGameStatus (void);
+void HandleXMLGameStatusRequest (void);
 void NetworkSendNetGameUpdate (void);
 int NetworkSendRequest (void);
 void NetworkSendSync (void);

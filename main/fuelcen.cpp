@@ -550,9 +550,7 @@ if (!(gameData.matCens.botGens [nMatCen].objFlags [0] ||
 	return;
 
 // Wait until we have a free slot for this puppy...
-if ((LOCALPLAYER.numRobotsLevel -
-	  LOCALPLAYER.numKillsLevel) >=
-	 (nGameSaveOrgRobots + Num_extryRobots)) {
+if ((LOCALPLAYER.numRobotsLevel - LOCALPLAYER.numKillsLevel) >= (nGameSaveOrgRobots + Num_extryRobots)) {
 #if DBG
 	if (gameData.app.nFrameCount > FrameCount_last_msg + 20) {
 #if TRACE

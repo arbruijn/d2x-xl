@@ -140,7 +140,7 @@ strcpy (szDataRootDir, "d:\\programs\\d2\\");
 #else
 *gameFolders.szHomeDir =
 *gameFolders.szGameDir =
-*gameFolders.szDataDir =
+*gameFolders.szDataDir [0] =
 *szDataRootDir = '\0';
 #endif
 if ((i = FindArg ("-userdir")) && appConfig [i + 1] && *appConfig [i + 1]) {
@@ -328,6 +328,7 @@ for (i = 0; i < 2; i++)
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [i]);
 MakeTexSubFolders (gameFolders.szModelCacheDir [0]);
 sprintf (gameFolders.szMissionDownloadDir, "%s/%s", gameFolders.szMissionDir, DOWNLOADDIR);
+sprintf (gameFolders.szDataDir [1], "%s/d2-xl", gameFolders.szDataDir [0]);
 CFile::MkDir (gameFolders.szMissionDownloadDir);
 }
 

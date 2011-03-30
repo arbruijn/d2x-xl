@@ -120,6 +120,7 @@ class CFile {
 
 		inline FILE*& File () { return m_cf.file; }
 		inline char* Name () { return m_cf.filename; }
+		int LineCount (const char* filename, const char* folder, char* delims);
 	};
 
 
@@ -131,7 +132,7 @@ typedef struct tGameFolders {
 	char szAltHogDir [FILENAME_LEN];
 	char szCacheDir [FILENAME_LEN];
 	char szConfigDir [FILENAME_LEN];
-	char szDataDir [FILENAME_LEN];
+	char szDataDir [2][FILENAME_LEN];
 	char szDemoDir [FILENAME_LEN];
 	char szDownloadDir [FILENAME_LEN];
 	char szGameDir [FILENAME_LEN];

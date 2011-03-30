@@ -217,7 +217,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 
 //-----------------------------------------------------------------------------
 
-void MultiSendMsgQuit ()
+void MultiSendMsgQuit (void)
 {
 gameData.multigame.msg.bSending = 0;
 gameData.multigame.msg.bDefining = 0;
@@ -295,8 +295,8 @@ return 0;
 int PingPlayer (int i)
 {
 if (gameData.app.nGameMode & GM_NETWORK) {
-	if (i  >= 0) {
-		pingStats [i].launchTime = TimerGetFixedSeconds ();
+	if (i >= 0) {
+		pingStats [i].launchTime = SDL_GetTicks (); //TimerGetFixedSeconds ();
 		NetworkSendPing ((ubyte) i);
 		MultiSendMsgQuit ();
 		pingStats [i].sent++;
@@ -313,7 +313,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((!strnicmp (gameData.multiplayer.players [i].callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && 
 				 (i != gameData.multiplayer.nLocalPlayer) && (gameData.multiplayer.players [i].connected)) {
-				pingStats [i].launchTime = TimerGetFixedSeconds ();
+				pingStats [i].launchTime = SDL_GetTicks (); //TimerGetFixedSeconds ();
 				NetworkSendPing ((ubyte) i);
 				HUDInitMessage (TXT_PINGING, gameData.multiplayer.players [i].callsign);
 				MultiSendMsgQuit ();
@@ -323,7 +323,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 		}
 	}
 else {// Modem/Serial ping
-	pingStats [0].launchTime = TimerGetFixedSeconds ();
+	pingStats [0].launchTime = SDL_GetTicks (); //TimerGetFixedSeconds ();
 	MultiSendModemPing ();
 	HUDInitMessage (TXT_PING_OTHER);
 	MultiSendMsgQuit ();

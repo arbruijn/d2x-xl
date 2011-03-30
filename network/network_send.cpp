@@ -383,8 +383,6 @@ MultiSendPlayerWeapons ();
 
 //------------------------------------------------------------------------------
 
-char* XMLGameInfo (void);
-
 void NetworkSendXMLGameInfo (void)
 {
 if (IAmGameHost ()) {

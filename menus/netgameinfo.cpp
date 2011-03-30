@@ -356,3 +356,41 @@ return xmlGameInfo;
 
 //------------------------------------------------------------------------------
 
+char* XMLGameStatus (void)
+{
+	static char xmlGameStatus [UDP_PAYLOAD_SIZE];
+
+sprintf (xmlGameStatus, "<?xml version=\"1.0\"?>\n<GameStatus>\n  <Descent>\n");
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <PlayerCount=%d>\n", gameData.multiplayer.nPlayers);
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player%d ping=");
+		if (pingStats [i].ping < 0)
+			strcat (xmlGameInfo, "n/a");
+		else
+			sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <%d", pingStats [i].ping);
+		sprintf (xmlGameInfo + strlen (xmlGameInfo), "score=%d kills=%d deaths=%d />\n", 
+					gameData.multiplayer.players [i].score,
+					gameData.multiplayer.players [i].netKillsTotal,
+					gameData.multiplayer.players [i].netKilledTotal);
+
+	}
+strcat (xmlGameInfo, "</GameInfo>\n");
+}
+
+//------------------------------------------------------------------------------
+
+void HandleXMLGameStatusRequest (void)
+{
+if (networkData.xmlGameStatusRequestTime <= 0) {
+	networkData.xmlGameStatusRequestTime = SDL_GetTicks ();
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		pingStats [i].ping = -1;
+		pingStats [i].launchTime = -networkData.xmlGameStatusRequestTime; // negative value suppresses display of returned ping on HUD
+		NetworkSendPing (i);
+		}
+	}
+else if (SDL_GetTicks () - networkData.xmlGameStatusRequestTime > 1500) {
+	}
+}
+
+//------------------------------------------------------------------------------
