@@ -198,6 +198,12 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 											  networkData.serverAddress, networkData.serverAddress + 4);
 			gameStates.multi.bTrackerCall = 0;
 #endif
+#if 1 //DBG
+			gameStates.multi.bTrackerCall = 2;
+			IPXSendInternetPacketData((ubyte *) "GDescent Game Status Request", strlen ("GDescent Game Status Request") + 1, 
+											  networkData.serverAddress, networkData.serverAddress + 4);
+			gameStates.multi.bTrackerCall = 0;
+#endif
 			}
 		}
 	}
@@ -388,6 +394,18 @@ void NetworkSendXMLGameInfo (void)
 if (IAmGameHost ()) {
 	gameStates.multi.bTrackerCall = 2;
 	char* szInfo = XMLGameInfo ();
+	SendInternetXMLGameInfoPacket (szInfo, networkData.packetSource.src_network, networkData.packetSource.src_node);
+	gameStates.multi.bTrackerCall = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void NetworkSendXMLGameStatus (void)
+{
+if (IAmGameHost ()) {
+	gameStates.multi.bTrackerCall = 2;
+	char* szInfo = XMLGameStatus ();
 	SendInternetXMLGameInfoPacket (szInfo, networkData.packetSource.src_network, networkData.packetSource.src_node);
 	gameStates.multi.bTrackerCall = 0;
 	}

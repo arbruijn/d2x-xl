@@ -122,10 +122,38 @@ return 1;
 
 int XMLGameInfoHandler (ubyte *dataP, int nLength)
 {
-	static CTimeout to (1000);
+	static CTimeout to (200);
 
 if (to.Expired () && !strcmp ((char*) dataP + 1, "Descent Game Info Request"))
 	NetworkSendXMLGameInfo ();
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int XMLGameStatusHandler (void)
+{
+	static CTimeout to (200);
+
+if (to.Expired &&  && !strcmp ((char*) dataP + 1, "Descent Game Status Request") && (networkData.xmlGameStatusRequestTime <= 0)) {
+	networkData.xmlGameStatusRequestTime = SDL_GetTicks ();
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		pingStats [i].ping = -1;
+		pingStats [i].launchTime = -networkData.xmlGameStatusRequestTime; // negative value suppresses display of returned ping on HUD
+		NetworkSendPing (i);
+		}
+	}
+else {
+	// check whether all players have returned a ping response
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
+		if (pingStats [i].ping < 0)
+			break;
+	// send XML game status when all players have returned a ping response or 1 second has passed since the XML game status request has arrived
+	if ((i == gameData.multiplayer.nPlayers) || (SDL_GetTicks () - networkData.xmlGameStatusRequestTime > 1000)) { 
+		NetworkSendXMLGameStatus ();
+		networkData.xmlGameStatusRequestTime = -1;
+		}
+	}
 return 1;
 }
 
@@ -418,6 +446,7 @@ piP->nStatusFilter = nStatusFilter;
 void InitPacketHandlers (void)
 {
 PHINIT (PID_XML_GAMEINFO, XMLGameInfoHandler, 0, (short) 0xFFFF);
+PHINIT (PID_XML_GAMESTATUS, XMLGameStatusHandler, 0, (short) 0xFFFF);
 PHINIT (PID_GAME_INFO, GameInfoHandler, 0, (short) 0xFFFF);
 PHINIT (PID_PLAYERSINFO, PlayersInfoHandler, ALLNETPLAYERSINFO_SIZE, (1 << NETSTAT_WAITING) | (1 << NETSTAT_PLAYING));
 PHINIT (PID_LITE_INFO, LiteInfoHandler, LITE_INFO_SIZE, 1 << NETSTAT_BROWSING);

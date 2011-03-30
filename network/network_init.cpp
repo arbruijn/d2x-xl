@@ -43,6 +43,7 @@ networkData.tLastPingStat = 0;
 void InitNetworkData (void)
 {
 memset (&networkData, 0, sizeof (networkData));
+networkData.xmlGameStatusRequestTime = -1;
 networkData.nActiveGames = 0;
 networkData.nActiveGames = 0;
 networkData.nLastActiveGames = 0;

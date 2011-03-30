@@ -383,19 +383,3 @@ return xmlGameStatus;
 }
 
 //------------------------------------------------------------------------------
-
-void HandleXMLGameStatusRequest (void)
-{
-if (networkData.xmlGameStatusRequestTime <= 0) {
-	networkData.xmlGameStatusRequestTime = SDL_GetTicks ();
-	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		pingStats [i].ping = -1;
-		pingStats [i].launchTime = -networkData.xmlGameStatusRequestTime; // negative value suppresses display of returned ping on HUD
-		NetworkSendPing (i);
-		}
-	}
-else if (SDL_GetTicks () - networkData.xmlGameStatusRequestTime > 1500) {
-	}
-}
-
-//------------------------------------------------------------------------------
