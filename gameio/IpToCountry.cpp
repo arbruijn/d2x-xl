@@ -21,6 +21,16 @@ return (ip > 0) && (ip < 0x7FFFFFFF);
 
 //------------------------------------------------------------------------------
 
+static inline bool Skip (int nFields)
+{
+while (nFields--)
+	if (!strtok (NULL, ","))
+		return false;
+return true;
+}
+
+//------------------------------------------------------------------------------
+
 int LoadIpToCountry (void)
 {
 	CFile	cf;
@@ -51,11 +61,7 @@ while (cf.GetS (lineBuf, sizeof (lineBuf))) {
 	if (!(ParseIP (lineBuf, minIP) && ParseIP (NULL, maxIP)))
 		continue;
 	// skip 3 fields
-	if (!strtok (NULL, ","))
-		continue;
-	if (!strtok (NULL, ","))
-		continue;
-	if (!strtok (NULL, ","))
+	if (!Skip (3))
 		continue;
 	if (!(bufP = strtok (NULL, ",")))
 		continue;
