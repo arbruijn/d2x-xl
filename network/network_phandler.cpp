@@ -131,11 +131,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int XMLGameStatusHandler (void)
+int XMLGameStatusHandler (ubyte *dataP, int nLength)
 {
 	static CTimeout to (200);
 
-if (to.Expired &&  && !strcmp ((char*) dataP + 1, "Descent Game Status Request") && (networkData.xmlGameStatusRequestTime <= 0)) {
+if (dataP && to.Expired && !strcmp ((char*) dataP + 1, "Descent Game Status Request") && (networkData.xmlGameStatusRequestTime <= 0)) {
 	networkData.xmlGameStatusRequestTime = SDL_GetTicks ();
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		pingStats [i].ping = -1;
@@ -152,6 +152,7 @@ else {
 	if ((i == gameData.multiplayer.nPlayers) || (SDL_GetTicks () - networkData.xmlGameStatusRequestTime > 1000)) { 
 		NetworkSendXMLGameStatus ();
 		networkData.xmlGameStatusRequestTime = -1;
+		to.Start ();
 		}
 	}
 return 1;

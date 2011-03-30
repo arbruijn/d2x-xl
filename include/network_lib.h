@@ -259,8 +259,8 @@ void NetworkSyncExtras (tNetworkSyncData *syncP);
 tNetworkSyncData *FindJoiningPlayer (short nPlayer);
 int NetworkObjnumIsPast(int nObject, tNetworkSyncData *syncP);
 
-int XMLGameInfoHandler (void);
-int XMLGameStatusHandler (void);
+int XMLGameInfoHandler (ubyte *dataP, int nLength);
+int XMLGameStatusHandler (ubyte *dataP = NULL, int nLength = 0);
 
 void InitAddressFilter (void);
 
