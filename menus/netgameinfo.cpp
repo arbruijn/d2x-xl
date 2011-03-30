@@ -363,7 +363,7 @@ char* XMLGameStatus (void)
 	static char xmlGameStatus [UDP_PAYLOAD_SIZE];
 
 sprintf (xmlGameStatus, "<?xml version=\"1.0\"?>\n<GameStatus>\n  <Descent>\n");
-sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <PlayerCount>=%d</PlayerCount>\n", gameData.multiplayer.nPlayers);
+sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <PlayerCount>%d</PlayerCount>\n", gameData.multiplayer.nPlayers);
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <Player%d name=\"%s\" ping=\"", i, netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].callsign);
 	if (pingStats [i].ping < 0)
