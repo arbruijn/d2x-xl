@@ -10,11 +10,11 @@ static inline bool ParseIP (char* buffer, int& ip)
 {
 #if DBG
 char* token = strtok (buffer, ",");
-ip = atoi (token);
+ip = atoi (token + 1);
 if (ip == 0x7FFFFFFF)
 	ip = ip;
 #else
-ip = atoi (strtok (buffer, "#"));
+ip = atoi (strtok (buffer, "#") + 1);
 #endif
 return (ip > 0) && (ip < 0x7FFFFFFF);
 }
@@ -31,8 +31,53 @@ return true;
 
 //------------------------------------------------------------------------------
 
+static bool LoadBinary (void)
+{
+	CFile	cf;
+
+if (!cf.Exist ("IpToCountry.bin", gameFolders.szCacheDir, 0))
+	return false;
+if (cf.Date ("IpToCountry.csv", gameFolders.szDataDir [1], 0) > cf.Date ("IpToCountry.bin", gameFolders.szCacheDir, 0))
+	return false;
+if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "wb", 0))
+	return false;
+
+int nRecords = cf.Size () / sizeof (CIpToCountry);
+
+if (!ipToCountry.Create ((uint) nRecords))
+	return false;
+
+bool bSuccess = (ipToCountry.Read (cf, nRecords) == cf.Size ());
+if (bSuccess)
+	ipToCountry.Grow ((uint) nRecords);
+else
+	ipToCountry.Destroy ();
+
+cf.Close ();
+return bSuccess;
+}
+
+//------------------------------------------------------------------------------
+
+static bool SaveBinary (void)
+{
+	CFile	cf;
+
+if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "rb", 0))
+	return false;
+bool bSuccess = (ipToCountry.Write (cf) == ipToCountry.Size ());
+if (!cf.Close ())
+	bSuccess = false;
+return bSuccess;
+}
+
+//------------------------------------------------------------------------------
+
 int LoadIpToCountry (void)
 {
+if (LoadBinary ())
+	return ipToCountry.Length ();
+
 	CFile	cf;
 
 	int nRecords = cf.LineCount ("IpToCountry.csv", gameFolders.szDataDir [1], "#");
@@ -75,6 +120,9 @@ while (cf.GetS (lineBuf, sizeof (lineBuf))) {
 cf.Close ();
 if (ipToCountry.ToS ())
 	ipToCountry.SortAscending ();
+
+SaveBinary ();
+
 return (int) ipToCountry.ToS ();
 }
 
