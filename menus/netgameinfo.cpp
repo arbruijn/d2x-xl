@@ -273,7 +273,7 @@ sprintf (xmlGameInfo, "<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n");
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host Name=\"%s\" />\n",
 			 gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
 
-sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mission Type=\"%s\" Name=\"%s\" Level=\"%d\" \n",
+sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mission Type=\"%s\" Name=\"%s\" Level=\"%d\" ",
 			 gameStates.app.bD1Mission ? "D1" : gameStates.app.bD2XLevel ? "D2X" : "D2", AGI.szMissionTitle, AGI.nLevel);
 if (IsCoopGame || (mpParams.nGameMode & NETGAME_ROBOT_ANARCHY))
 	sprintf (xmlGameInfo + strlen (xmlGameInfo), "Difficulty=\"%d\" ", AGI.difficulty);
@@ -373,7 +373,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	ubyte* node = netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node ();
 	uint ip = (uint (node [0]) << 24) + (uint (node [1]) << 16) + (uint (node [2]) << 8) + uint (node [3]);
 
-	sprintf (xmlGameStatus + strlen (xmlGameStatus), " score=\"%d\" kills=\"%d\" deaths=\"%d\" country=\"%s\"/>\n", 
+	sprintf (xmlGameStatus + strlen (xmlGameStatus), " score=\"%d\" kills=\"%d\" deaths=\"%d\" country=\"%s\" />\n", 
 				gameData.multiplayer.players [i].score,
 				gameData.multiplayer.players [i].netKillsTotal,
 				gameData.multiplayer.players [i].netKilledTotal,
