@@ -83,6 +83,7 @@ return bSuccess;
 //------------------------------------------------------------------------------
 
 static CFile cf;
+static int nProgressStep;
 
 int ReadIpToCountryRecord (void)
 {
@@ -123,8 +124,8 @@ static int LoadIpToCountryPoll (CMenu& menu, int& key, int nCurItem, int nState)
 if (!ReadIpToCountryRecord ())
 	key = -1;
 else {
-	menu [0].m_value++;
-	menu [0].m_bRebuild = 1;
+	if (++menu [0].m_value % nProgressStep == 0)
+		menu [0].m_bRebuild = 1;
 	key = 0;
 	}
 return nCurItem;
@@ -148,6 +149,7 @@ if (!ipToCountry.Create ((uint) nRecords))
 if (!cf.Open ("IpToCountry.csv", gameFolders.szDataDir [1], "rt", 0))
 	return -1;
 
+nProgressStep = (nRecords + 99) / 100;
 ProgressBar (TXT_LOADING_IPTOCOUNTRY, 0, nRecords, LoadIpToCountryPoll); 
 
 cf.Close ();
