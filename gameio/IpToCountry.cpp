@@ -122,9 +122,9 @@ return 1;
 static int LoadIpToCountryPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (!ReadIpToCountryRecord ())
-	key = -1;
+	key = -2;
 else {
-	if (++menu [0].m_value % nProgressStep == 0)
+	if (++(menu [0].m_value) % nProgressStep == 0)
 		menu [0].m_bRebuild = 1;
 	key = 0;
 	}
