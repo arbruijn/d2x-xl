@@ -362,10 +362,10 @@ char* XMLGameStatus (void)
 {
 	static char xmlGameStatus [UDP_PAYLOAD_SIZE];
 
-sprintf (xmlGameStatus, "<?xml version=\"1.0\"?>\n<GameStatus>\n  <Descent>\n");
-sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <PlayerCount>%d</PlayerCount>\n", gameData.multiplayer.nPlayers);
+sprintf (xmlGameStatus, "<?xml version=\"1.0\"?>\n<GameStatus>\n");
+sprintf (xmlGameStatus + strlen (xmlGameStatus), "  <PlayerCount>%d</PlayerCount>\n", gameData.multiplayer.nPlayers);
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <Player%d name=\"%s\" ping=\"", i, netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].callsign);
+	sprintf (xmlGameStatus + strlen (xmlGameStatus), "  <Player%d name=\"%s\" ping=\"", i, netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].callsign);
 	if (pingStats [i].ping < 0)
 		strcat (xmlGameStatus, (i == gameData.multiplayer.nLocalPlayer) ? "0" : "n/a");
 	else
@@ -384,7 +384,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 				CountryFromIP (*((uint*) netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node ())));
 #endif
 	}
-strcat (xmlGameStatus, "  </Descent>\n</GameStatus>\n");
+strcat (xmlGameStatus, "</GameStatus>\n");
 #if DBG
 PrintLog ("\nXML game status:\n\n");
 PrintLog (xmlGameStatus);

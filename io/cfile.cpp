@@ -410,7 +410,7 @@ if (m_cf.bufPos >= m_cf.bufLen) {
 	if (h > sizeof (m_cf.buffer))
 		h = sizeof (m_cf.buffer);
 	m_cf.bufPos = 0;
-	m_cf.bufLen = Read (m_cf.buffer, 1, h);
+	m_cf.bufLen = int (Read (m_cf.buffer, 1, h));
 	m_cf.rawPosition = ftell (m_cf.file) - m_cf.libOffset;
 	if (m_cf.bufLen < h)
 		m_cf.size = m_cf.rawPosition;
