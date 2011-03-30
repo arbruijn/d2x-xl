@@ -113,6 +113,7 @@ if ((token = strtok (NULL, ",")) && !strcmp (token, "\"Reserved\""))
 if (minIP > maxIP)
 	Swap (minIP, maxIP);
 ipToCountry.Push (CIpToCountry (minIP, maxIP, country));
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -147,7 +148,7 @@ if (!ipToCountry.Create ((uint) nRecords))
 if (!cf.Open ("IpToCountry.csv", gameFolders.szDataDir [1], "rt", 0))
 	return -1;
 
-ProgressBar (TXT_LOADING_IPTOCOUNTRY, 0, ModelsGaugeSize (), LoadIpToCountryPoll); 
+ProgressBar (TXT_LOADING_IPTOCOUNTRY, 0, nRecords, LoadIpToCountryPoll); 
 
 cf.Close ();
 if (ipToCountry.ToS ())
