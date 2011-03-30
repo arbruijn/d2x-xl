@@ -104,6 +104,32 @@ class CStack : public CArray< _T > {
 		inline uint Growth (void) { return m_growth; }
 
 		inline void SetGrowth (uint growth) { m_growth = growth; }
+
+		inline void SortAscending (int left = 0, int right = -1) { 
+			if (m_data.buffer) 
+				CQuickSort<_T>::SortAscending (m_data.buffer, left, (right >= 0) ? right : m_tos - 1); 
+				}
+
+		inline void SortDescending (int left = 0, int right = -1) {
+			if (m_data.buffer) 
+				CQuickSort<_T>::SortDescending (m_data.buffer, left, (right >= 0) ? right : m_tos - 1);
+			}
+#ifdef _WIN32
+		inline void SortAscending (comparator compare, int left = 0, int right = -1) {
+			if (m_data.buffer) 
+				CQuickSort<_T>::SortAscending (m_data.buffer, left, (right >= 0) ? right : m_tos - 1, compare);
+			}
+
+		inline void SortDescending (comparator compare, int left = 0, int right = -1) {
+			if (m_data.buffer) 
+				CQuickSort<_T>::SortDescending (m_data.buffer, left, (right >= 0) ? right : m_tos - 1, compare);
+			}
+#endif
+
+		inline int BinSearch (_T key, int left = 0, int right = -1) {
+			return m_data.buffer ? CQuickSort<_T>::BinSearch (m_data.buffer, left, (right >= 0) ? right : m_tos - 1, key) : -1;
+			}
+
 	};
 
 //-----------------------------------------------------------------------------

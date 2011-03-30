@@ -365,6 +365,7 @@ class CArray : public CQuickSort < _T > {
 			if (m_data.buffer) 
 				CQuickSort<_T>::SortDescending (m_data.buffer, left, (right >= 0) ? right : m_data.length - 1);
 			}
+
 #ifdef _WIN32
 		inline void SortAscending (comparator compare, int left = 0, int right = -1) {
 			if (m_data.buffer) 
@@ -376,6 +377,10 @@ class CArray : public CQuickSort < _T > {
 				CQuickSort<_T>::SortDescending (m_data.buffer, left, (right >= 0) ? right : m_data.length - 1, compare);
 			}
 #endif
+
+		inline int BinSearch (_T key, int left = 0, int right = -1) {
+			return m_data.buffer ? CQuickSort<_T>::BinSearch (m_data.buffer, left, (right >= 0) ? right : m_data.length - 1, key) : -1;
+			}
 	};
 
 //-----------------------------------------------------------------------------

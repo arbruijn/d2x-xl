@@ -118,6 +118,25 @@ if (left < r)
 	SortDescending (buffer, left, r, compare);
 };
 
+// ----------------------------------------------------------------------------
+
+template <typename _T>
+int CQuickSort< _T >::BinSearch (_T* buffer, int l, int r, _T key)
+{
+	int	m;
+
+do {
+	m = (l + r) / 2;
+	if (key < buffer [m])
+		r = m - 1;
+	else if (key > buffer [m])
+		l = m + 1;
+	else
+		return m;
+	} while (l <= r);
+return -1;
+}
+
 //-----------------------------------------------------------------------------
 
 #endif //_CQUICKSORT_H

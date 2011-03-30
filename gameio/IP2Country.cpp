@@ -56,10 +56,19 @@ while (cf.GetS (lineBuf, sizeof (lineBuf))) {
 	ip2country.Push (CIP2Country (minIP, maxIP, country));
 	}
 cf.Close ();
+if (ip2country.ToS ())
+	ip2country.SortAscending ();
 return (int) ip2country.ToS ();
 }
 
 //------------------------------------------------------------------------------
+
+char* CountryFromIP (int ip)
+{
+CIP2Country key (ip, ip, "");
+int i = ip2country.BinSearch (key);
+return (i < 0) ? "" : ip2country [i].m_country;
+}
 
 //------------------------------------------------------------------------------
 
