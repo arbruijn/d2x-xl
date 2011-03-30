@@ -328,7 +328,7 @@ for (i = 0; i < 2; i++)
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [i]);
 MakeTexSubFolders (gameFolders.szModelCacheDir [0]);
 sprintf (gameFolders.szMissionDownloadDir, "%s/%s", gameFolders.szMissionDir, DOWNLOADDIR);
-sprintf (gameFolders.szDataDir [1], "%s/d2-xl", gameFolders.szDataDir [0]);
+sprintf (gameFolders.szDataDir [1], "%s/d2x-xl", gameFolders.szDataDir [0]);
 CFile::MkDir (gameFolders.szMissionDownloadDir);
 }
 
