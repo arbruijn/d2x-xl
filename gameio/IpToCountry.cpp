@@ -63,7 +63,7 @@ static bool SaveBinary (void)
 {
 	CFile	cf;
 
-if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "rb", 0))
+if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "wb", 0))
 	return false;
 bool bSuccess = (ipToCountry.Write (cf) == ipToCountry.Size ());
 if (!cf.Close ())
