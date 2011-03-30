@@ -119,7 +119,7 @@ gameConfig.bReverseChannels = 0;
 bHiresMoviesSave = gameOpts->movies.bHires;
 bRedbookEnabledSave = redbook.Enabled ();
 
-if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "rt", 0))
+if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "rb", 0))
 	return 1;
 while (!cf.EoF ()) {
 	memset (line, 0, 80);
@@ -226,7 +226,7 @@ if (gameConfig.nRedbookVolume > 8)
 	gameConfig.nRedbookVolume = 8;
 audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32768) / 8, 1);
 audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
-if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
+if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rb", 0)) {
 	while (!cf.EoF ()) {
 		memset (line, 0, 80);
 		cf.GetS (line, 80);

@@ -508,7 +508,7 @@ for (l = (int) strlen (pszPlayList) - 1; (l >= 0) && isspace (pszPlayList [l]); 
 	;
 pszPlayList [++l] = '\0';
 for (bRead = 0; bRead < 2; bRead++) {
-	if (!cf.Open (pszPlayList, bMod ? szListFolder : "", "rt", 0))
+	if (!cf.Open (pszPlayList, bMod ? szListFolder : "", "rb", 0))
 		return 0;
 	nSongs = 0;
 	while (cf.GetS (szSong, sizeof (szSong))) {

@@ -46,7 +46,7 @@ int CBanList::Load (void)
 	tBanListEntry	szPlayer;
 	uint i;
 
-if (!cf.Open ("banlist.txt", gameFolders.szDataDir [0], "rt", 0))
+if (!cf.Open ("banlist.txt", gameFolders.szDataDir [0], "rb", 0))
 	return 0;
 while (!feof (cf.File ())) {
 	fgets (reinterpret_cast<char*> (szPlayer), sizeof (szPlayer), cf.File ());

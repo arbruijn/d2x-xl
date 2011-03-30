@@ -897,7 +897,7 @@ if (TactileStick) {
 			stickmag=atoi (appConfig [t+1]);
 		else
 			stickmag=50;
-		infile=reinterpret_cast<FILE*> (fopen ("stick.val","rt"));
+		infile=reinterpret_cast<FILE*> (fopen ("stick.val","rb"));
 		if (infile!=NULL) {
 			for (i=0;i<10;i++) {
 				fscanf (infile,"%d %d\n",&tactile_fire_duration [i],&tactile_fire_repeat [i]);

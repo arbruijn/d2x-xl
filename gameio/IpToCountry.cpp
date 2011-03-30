@@ -146,7 +146,7 @@ if (nRecords <= 0)
 if (!ipToCountry.Create ((uint) nRecords))
 	return -1;
 
-if (!cf.Open ("IpToCountry.csv", gameFolders.szDataDir [1], "rt", 0))
+if (!cf.Open ("IpToCountry.csv", gameFolders.szDataDir [1], "rb", 0))
 	return -1;
 
 nProgressStep = (nRecords + 99) / 100;

@@ -360,7 +360,7 @@ void IpxReadUserFile (const char * filename)
 if (!filename) 
 	return;
 nIpxUsers = 0;
-if (!(fp = fopen (filename, "rt")))
+if (!(fp = fopen (filename, "rb")))
 	return;
 //printf ("Broadcast Users:\n");
 while (fgets (szTemp, sizeof (szTemp), fp)) {
@@ -408,7 +408,7 @@ void IpxReadNetworkFile (const char * filename)
 
 if (!(filename && *filename)) 
 	return;
-if (!(fp = fopen (filename, "rt")))
+if (!(fp = fopen (filename, "rb")))
 	return;
 
 while (fgets (szTemp, sizeof (szTemp), fp)) {

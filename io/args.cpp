@@ -171,7 +171,7 @@ void CConfigManager::Load (char* filename)
 if (filename == NULL)
 	filename = m_filename;
 
-if (m_cf.Open (filename, "", "rt", 0)) {
+if (m_cf.Open (filename, "", "rb", 0)) {
 	Parse ();
 	m_cf.Close ();
 	}

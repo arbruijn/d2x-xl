@@ -761,7 +761,7 @@ if (Busy ())
 	int	nParams = 0;
 
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
-if (!m_cf.Open (fn, gameFolders.szProfDir, "rt", 0))
+if (!m_cf.Open (fn, gameFolders.szProfDir, "rb", 0))
 	return 0;
 while (!m_cf.EoF ()) {
 	LoadParam ();

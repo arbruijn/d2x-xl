@@ -142,7 +142,7 @@ if (fSize <= 0)
 	return NULL;	// empty file or seek error
 #endif
 
-if (!(fp = fopen (fn, "rt")))
+if (!(fp = fopen (fn, "rb")))
 	return NULL;	// couldn't open file
 
 #ifndef _WIN32

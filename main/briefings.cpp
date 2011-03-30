@@ -1456,7 +1456,7 @@ int CBriefing::LoadImageText (char* filename, CCharArray& textBuffer)
 	int	bHaveBinary;
 	char	*bufP;
 	
-	static char fileModes [2][3] = {"rt", "rb"};
+	static char fileModes [2][3] = {"rb", "rb"};
 
 if (!strstr (filename, ".t"))
 	strcat (filename, ".tex");

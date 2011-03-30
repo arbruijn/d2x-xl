@@ -108,7 +108,7 @@ else {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 	return -1;
 	}
-if (!cf.Open ("d2x-xl-version.txt", gameFolders.szDownloadDir, "rt", -1)) {
+if (!cf.Open ("d2x-xl-version.txt", gameFolders.szDownloadDir, "rb", -1)) {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 	return -1;
 	}
