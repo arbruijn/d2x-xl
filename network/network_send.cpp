@@ -166,6 +166,8 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 
 //------------------------------------------------------------------------------
 
+#if DBG
+
 void TestXMLInfoRequest (ubyte* serverAddress)
 {
 #if 0 //DBG
@@ -181,6 +183,8 @@ IPXSendInternetPacketData((ubyte *) "GDescent Game Status Request", strlen ("GDe
 gameStates.multi.bTrackerCall = 0;
 #endif
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 // Send a broadcast request for game info
@@ -207,7 +211,9 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 				return 0;
 			for (int i = 0; tracker.GetServerFromList (i, serverAddress); i++) {
 				SendInternetSequencePacket (me, serverAddress, serverAddress + 4);
+#if DBG
 				TestXMLInfoRequest (serverAddress);
+#endif
 				}
 			}
 		else {
