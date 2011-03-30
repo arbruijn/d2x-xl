@@ -39,7 +39,7 @@ if (!cf.Exist ("IpToCountry.bin", gameFolders.szCacheDir, 0))
 	return false;
 if (cf.Date ("IpToCountry.csv", gameFolders.szDataDir [1], 0) > cf.Date ("IpToCountry.bin", gameFolders.szCacheDir, 0))
 	return false;
-if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "wb", 0))
+if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "rb", 0))
 	return false;
 int h = cf.Size () - sizeof (int);
 if ((h < 0) || (h / sizeof (CIpToCountry) < 1) || (h % sizeof (CIpToCountry) != 0)) {
@@ -72,7 +72,7 @@ if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "wb", 0))
 	return false;
 cf.WriteInt ((int) ipToCountry.ToS ());
 bool bSuccess = (ipToCountry.Write (cf) == ipToCountry.Length ());
-if (!cf.Close ())
+if (cf.Close ())
 	bSuccess = false;
 return bSuccess;
 }
@@ -121,7 +121,7 @@ while (cf.GetS (lineBuf, sizeof (lineBuf))) {
 		continue;
 	//if (!strcmp (country, "ZZZ"))
 	//	continue;
-	if ((bufP = strtok (NULL, ",")) && !strcmp (bufP, "Reserved"))
+	if ((bufP = strtok (NULL, ",")) && !strcmp (bufP, "\"Reserved\""))
 		continue;
 	if (minIP > maxIP)
 		Swap (minIP, maxIP);
