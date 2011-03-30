@@ -946,7 +946,7 @@ return statbuf.st_mtime;
 
 int CFile::LineCount (const char* filename, const char* folder, char* delims)
 {
-if (!Open (filename, folder, "rb", 0))
+if (!Open (filename, folder, "rt", 0))
 	return -1;
 
 bool bNewl = true;
