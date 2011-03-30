@@ -342,6 +342,7 @@ m_cf.rawPosition = 0;
 m_cf.size = (length < 0) ? ffilelength (fp) : length;
 m_cf.libOffset = (length < 0) ? 0 : ftell (fp);
 m_cf.filename = const_cast<char*> (filename);
+m_cf.bufPos = m_cf.bufLen = 0;
 return 1;
 }
 
@@ -400,13 +401,26 @@ return char_written;
 
 // ----------------------------------------------------------------------------
 
+int CFile::FillBuffer (void)
+{
+if (m_cf.bufPos >= m_cf.bufLen) {
+	if (m_cf.rawPosition >= m_cf.size) 
+		return EOF;
+	int h = m_cf.size - m_cf.rawPosition;
+	if (h > sizeof (m_cf.buffer))
+		h = sizeof (m_cf.buffer);
+	m_cf.bufLen = Read (m_cf.buffer, 1, h);
+	m_cf.bufPos = 0;
+	}
+return m_cf.bufPos;
+}
+
+// ----------------------------------------------------------------------------
+
 int CFile::GetC (void) 
 {
-	int c;
-
-if (m_cf.rawPosition >= m_cf.size) 
-	return EOF;
-c = getc (m_cf.file);
+FillBuffer ();
+int c = m_cf.buffer [m_cf.bufPos++];
 if (c != EOF)
 	m_cf.rawPosition = ftell (m_cf.file) - m_cf.libOffset;
 return c;

@@ -48,11 +48,16 @@ typedef struct CFILE {
 	int		size;
 	int		libOffset;
 	int		rawPosition;
+	char		buffer [16384];
+	int		bufLen;
+	int		bufPos;
 } CFILE;
 
 class CFile {
 	private:
 		CFILE	m_cf;
+
+		int FillBuffer (void);
 
 	public:
 		CFile () { Init (); }
