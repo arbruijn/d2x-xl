@@ -135,7 +135,7 @@ int XMLGameStatusHandler (ubyte *dataP, int nLength)
 {
 	static CTimeout to (200);
 
-if (dataP && to.Expired && !strcmp ((char*) dataP + 1, "Descent Game Status Request") && (networkData.xmlGameStatusRequestTime <= 0)) {
+if (dataP && to.Expired () && !strcmp ((char*) dataP + 1, "Descent Game Status Request") && (networkData.xmlGameStatusRequestTime <= 0)) {
 	networkData.xmlGameStatusRequestTime = SDL_GetTicks ();
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		pingStats [i].ping = -1;
@@ -145,7 +145,8 @@ if (dataP && to.Expired && !strcmp ((char*) dataP + 1, "Descent Game Status Requ
 	}
 else {
 	// check whether all players have returned a ping response
-	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
+	int i;
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (pingStats [i].ping < 0)
 			break;
 	// send XML game status when all players have returned a ping response or 1 second has passed since the XML game status request has arrived
