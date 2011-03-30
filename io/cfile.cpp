@@ -946,17 +946,25 @@ return statbuf.st_mtime;
 
 int CFile::LineCount (const char* filename, const char* folder, char* delims)
 {
-if (!Open (filename, folder, "rt", 0))
+if (!Open (filename, folder, "rb", 0))
 	return -1;
 
 bool bNewl = true;
-int lineC = 0;
+char buf [16384];
+int i = sizeof (buf), lineC = 0;
 
 while (!EoF ()) {
-	char c = GetC ();
-	if (bNewl && !strchr (delims, c))
+	if (i >= sizeof (buf)) {
+		int h = m_cf.size - m_cf.rawPosition;
+		if (h > sizeof (buf))
+			h = sizeof (buf);
+		Read (buf, h, 1);
+		i = 0;
+		}
+	if (bNewl && !strchr (delims, buf [i]))
 		lineC++;
-	bNewl = (c == '\n');
+	bNewl = (buf [i] == '\n');
+	++i;
 	}
 Close ();
 return lineC;
