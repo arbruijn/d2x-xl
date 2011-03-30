@@ -348,10 +348,11 @@ if (nExtensions) {
 	strcat (xmlGameInfo, "  </Extensions>\n");
 	}
 strcat (xmlGameInfo, "</GameInfo>\n");
-
+#if DBG
 PrintLog ("\nXML game info:\n\n");
 PrintLog (xmlGameInfo);
 PrintLog ("\n");
+#endif
 return xmlGameInfo;
 }
 
@@ -384,9 +385,11 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 #endif
 	}
 strcat (xmlGameStatus, "  </Descent>\n</GameStatus>\n");
+#if DBG
 PrintLog ("\nXML game status:\n\n");
 PrintLog (xmlGameStatus);
 PrintLog ("\n");
+#endif
 return xmlGameStatus;
 }
 
