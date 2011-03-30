@@ -141,9 +141,36 @@ return (int) ipToCountry.ToS ();
 
 char* CountryFromIP (uint ip)
 {
-CIpToCountry key (ip, ip, "");
-int i = ipToCountry.BinSearch (key);
-return (i < 0) ? "n/a" : ipToCountry [i].m_country;
+uint l = 0, r = ipToCountry.ToS () - 1, i;
+do {
+	i = (l + r) / 2;
+	if (ipToCountry [i] < ip)
+		l = i + 1;
+	if (ipToCountry [i] > ip)
+		r = i - 1;
+	else
+		break;
+	} while (l <= r);
+
+if (l > r)
+	return "n/a";
+
+// find first record with equal key
+for (; i > 0; i--)
+	if (ipToCountry [i - 1] != ip)
+		break;
+
+int h = i;
+int dMin = ipToCountry [i].Range ();
+// Find smallest IP range containing key
+while (ipToCountry [++i] == ip) {
+	int d = ipToCountry [i].Range ();
+	if (dMin > d) {
+		dMin = d;
+		h = i;
+		}
+	}
+return ipToCountry [h].m_country;
 }
 
 //------------------------------------------------------------------------------

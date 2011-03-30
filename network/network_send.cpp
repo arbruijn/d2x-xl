@@ -165,24 +165,30 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 #endif
 
 //------------------------------------------------------------------------------
+
+void TestXMLInfoRequest (ubyte* serverAddress)
+{
+#if 0 //DBG
+gameStates.multi.bTrackerCall = 2;
+IPXSendInternetPacketData((ubyte *) "FDescent Game Info Request", strlen ("FDescent Game Info Request") + 1, 
+								  serverAddress, serverAddress + 4);
+gameStates.multi.bTrackerCall = 0;
+#endif
+#if 1 //DBG
+gameStates.multi.bTrackerCall = 2;
+IPXSendInternetPacketData((ubyte *) "GDescent Game Status Request", strlen ("GDescent Game Status Request") + 1, 
+								  serverAddress, serverAddress + 4);
+gameStates.multi.bTrackerCall = 0;
+#endif
+}
+
+//------------------------------------------------------------------------------
 // Send a broadcast request for game info
 
 int NetworkSendGameListRequest (int bAutoLaunch)
 {
 	tSequencePacket me;
 
-#if 0 //DBG
-gameStates.multi.bTrackerCall = 2;
-IPXSendInternetPacketData((ubyte *) "FDescent Game Info Request", strlen ("FDescent Game Info Request") + 1, 
-								  networkData.serverAddress, networkData.serverAddress + 4);
-gameStates.multi.bTrackerCall = 0;
-#endif
-#if 1 //DBG
-gameStates.multi.bTrackerCall = 2;
-IPXSendInternetPacketData((ubyte *) "GDescent Game Status Request", strlen ("GDescent Game Status Request") + 1, 
-								  networkData.serverAddress, networkData.serverAddress + 4);
-gameStates.multi.bTrackerCall = 0;
-#endif
 #if DBG
 memset (&me, 0, sizeof (me));
 #endif
@@ -199,8 +205,10 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		if (tracker.m_bUse && !bAutoLaunch) {
 			if (!tracker.RequestServerList ())
 				return 0;
-			for (int i = 0; tracker.GetServerFromList (i, serverAddress); i++)
+			for (int i = 0; tracker.GetServerFromList (i, serverAddress); i++) {
 				SendInternetSequencePacket (me, serverAddress, serverAddress + 4);
+				TestXMLInfoRequest (serverAddress);
+				}
 			}
 		else {
 			SendInternetSequencePacket (me, networkData.serverAddress, networkData.serverAddress + 4);

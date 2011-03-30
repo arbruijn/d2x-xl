@@ -16,6 +16,7 @@ class CIpToCountry {
 
 		inline uint Min (void) { return m_min; }
 		inline uint Max (void) { return m_max; }
+		inline uint Range (void) { return m_max - m_min - 1; }
 
 		inline CIpToCountry& operator= (const CIpToCountry& other) { 
 			m_min = other.m_min, m_max = other.m_max;
@@ -23,10 +24,14 @@ class CIpToCountry {
 			return *this;
 			}
 
-		inline bool operator< (const CIpToCountry& other) { return m_max < other.m_min; }
-		inline bool operator> (const CIpToCountry& other) { return m_min > other.m_max; }
+		inline bool operator< (const CIpToCountry& other) { return m_min < other.m_min; }
+		inline bool operator> (const CIpToCountry& other) { return m_min > other.m_min; }
 		inline bool operator<= (const CIpToCountry& other) { return m_max <= other.m_min; }
 		inline bool operator>= (const CIpToCountry& other) { return m_min >= other.m_max; }
+
+		inline bool operator< (const uint ip) { return m_max < ip; }
+		inline bool operator> (const uint ip) { return m_min > ip; }
+		inline bool operator!= (const uint ip) { return (ip < m_min) || (ip > m_max); }
 		inline bool operator== (const uint ip) { return (ip >= m_min) && (ip <= m_max); }
 	};
 

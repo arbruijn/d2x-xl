@@ -373,7 +373,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 				gameData.multiplayer.players [i].score,
 				gameData.multiplayer.players [i].netKillsTotal,
 				gameData.multiplayer.players [i].netKilledTotal,
-				CountryFromIP (*((uint*) gameData.multiplayer.players [i].netAddress)));
+				CountryFromIP (*((uint*) netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node ())));
 	}
 strcat (xmlGameStatus, "  </Descent>\n</GameStatus>\n");
 PrintLog ("\nXML game status:\n\n");

@@ -116,7 +116,7 @@ if (l < right)
 	SortDescending (buffer, l, right, compare);
 if (left < r)
 	SortDescending (buffer, left, r, compare);
-};
+}
 
 // ----------------------------------------------------------------------------
 
@@ -131,8 +131,13 @@ do {
 		r = m - 1;
 	else if (key > buffer [m])
 		l = m + 1;
-	else
+	else {
+		// find first record with equal key
+		for (; m > 0; m--)
+			if (key > buffer [m - 1])
+				break;
 		return m;
+		}
 	} while (l <= r);
 return -1;
 }
