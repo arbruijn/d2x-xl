@@ -143,7 +143,7 @@ if (dataP && to.Expired () && !strcmp ((char*) dataP + 1, "Descent Game Status R
 		NetworkSendPing (i);
 		}
 	}
-else {
+else if (networkData.xmlGameStatusRequestTime > 0) {
 	// check whether all players have returned a ping response
 	int i;
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
