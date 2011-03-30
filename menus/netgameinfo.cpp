@@ -366,14 +366,22 @@ sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <PlayerCount=%d>\n", gameD
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	sprintf (xmlGameStatus + strlen (xmlGameStatus), "    <Player%d ping=");
 	if (pingStats [i].ping < 0)
-		strcat (xmlGameStatus, "n/a");
+		strcat (xmlGameStatus, "\"n/a\"");
 	else
 		sprintf (xmlGameStatus + strlen (xmlGameStatus), "\"%d\"", pingStats [i].ping);
+
+	ubyte* node = netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node ();
+	uint ip = (uint (node [0]) << 24) + (uint (node [1]) << 16) + (uint (node [2]) << 8) + uint (node [3]);
+
 	sprintf (xmlGameStatus + strlen (xmlGameStatus), " score=\"%d\" kills=\"%d\" deaths=\"%d\" country=\"%s\"/>\n", 
 				gameData.multiplayer.players [i].score,
 				gameData.multiplayer.players [i].netKillsTotal,
 				gameData.multiplayer.players [i].netKilledTotal,
+#if 1
+				CountryFromIP (ip));
+#else
 				CountryFromIP (*((uint*) netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node ())));
+#endif
 	}
 strcat (xmlGameStatus, "  </Descent>\n</GameStatus>\n");
 PrintLog ("\nXML game status:\n\n");

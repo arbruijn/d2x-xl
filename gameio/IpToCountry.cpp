@@ -146,7 +146,7 @@ do {
 	i = (l + r) / 2;
 	if (ipToCountry [i] < ip)
 		l = i + 1;
-	if (ipToCountry [i] > ip)
+	else if (ipToCountry [i] > ip)
 		r = i - 1;
 	else
 		break;
