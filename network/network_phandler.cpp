@@ -135,15 +135,17 @@ int XMLGameStatusHandler (ubyte *dataP, int nLength)
 {
 	static CTimeout to (200);
 
-if (dataP && to.Expired () && !strcmp ((char*) dataP + 1, "Descent Game Status Request") && (networkData.xmlGameStatusRequestTime <= 0)) {
-	networkData.xmlGameStatusRequestTime = SDL_GetTicks ();
-	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		pingStats [i].ping = -1;
-		pingStats [i].launchTime = -networkData.xmlGameStatusRequestTime; // negative value suppresses display of returned ping on HUD
-		NetworkSendPing (i);
+if (dataP && (networkData.xmlGameStatusRequestTime <= 0)) {
+	if (to.Expired () && !strcmp ((char*) dataP + 1, "Descent Game Status Request")) {
+		networkData.xmlGameStatusRequestTime = SDL_GetTicks ();
+		for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+			pingStats [i].ping = -1;
+			pingStats [i].launchTime = -networkData.xmlGameStatusRequestTime; // negative value suppresses display of returned ping on HUD
+			NetworkSendPing (i);
+			}
 		}
 	}
-else if (networkData.xmlGameStatusRequestTime > 0) {
+else {
 	// check whether all players have returned a ping response
 	int i;
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
