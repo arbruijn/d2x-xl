@@ -388,7 +388,7 @@ int HoardEquipped ()
 	static int checked=-1;
 
 if (checked == -1) {
-	if (CFile::Exist ("hoard.ham", gameFolders.szDataDir, 0))
+	if (CFile::Exist ("hoard.ham", gameFolders.szDataDir [0], 0))
 		checked=1;
 	else
 		checked=0;

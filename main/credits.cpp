@@ -94,8 +94,8 @@ typedef struct box {
 } box;
 
 #define CREDITS_FILE    \
-		  (CFile::Exist("mcredits.tex",gameFolders.szDataDir,0)?"mcredits.tex":\
-			CFile::Exist("ocredits.tex",gameFolders.szDataDir,0)?"ocredits.tex":"credits.tex")
+		  (CFile::Exist("mcredits.tex",gameFolders.szDataDir [0],0)?"mcredits.tex":\
+			CFile::Exist("ocredits.tex",gameFolders.szDataDir [0],0)?"ocredits.tex":"credits.tex")
 
 #define cr_gr_printf(x,y,s)	//GrPrintF (NULL, (x) == 0x8000 ? (x) : (x), (y), s)
 
@@ -220,7 +220,7 @@ if (creditsFilename) {
 	strcpy (filename, creditsFilename);
 	m_bBinary = 1;
 	}
-if (!m_cf.Open (filename, gameFolders.szDataDir, "rb", 0)) {
+if (!m_cf.Open (filename, gameFolders.szDataDir [0], "rb", 0)) {
 	if (creditsFilename)
 		return false;		//ok to not find special filename
 
@@ -229,7 +229,7 @@ if (!m_cf.Open (filename, gameFolders.szDataDir, "rb", 0)) {
 	if (pszTemp)
 		*pszTemp = '\0';
 	sprintf (nfile, "%s.txb", filename);
-	if (!m_cf.Open (nfile, gameFolders.szDataDir, "rb", 0)) {
+	if (!m_cf.Open (nfile, gameFolders.szDataDir [0], "rb", 0)) {
 		Error ("Missing CREDITS.TEX and CREDITS.TXB &m_cf\n");
 		return false;
 		}

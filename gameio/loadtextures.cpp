@@ -213,7 +213,7 @@ if (!m_info.compressed.bCompressed)
 	return 0;
 
 if (!pszFolder)
-	pszFolder = gameFolders.szDataDir;
+	pszFolder = gameFolders.szDataDir [0];
 CFile::SplitPath (pszFile, NULL, szFilename, NULL);
 sprintf (szFolder, "%s/dxt/", pszFolder);
 strcat (szFilename, ".dxt");
@@ -247,7 +247,7 @@ if (!m_info.compressed.bCompressed)
 	return 0;
 
 if (!pszFolder)
-	pszFolder = gameFolders.szDataDir;
+	pszFolder = gameFolders.szDataDir [0];
 CFile::SplitPath (pszFile, NULL, szFilename, NULL);
 sprintf (szFolder, "%s/dxt/", pszFolder);
 strcat (szFilename, ".dxt");
@@ -973,7 +973,7 @@ void LoadReplacementBitmaps (const char *pszLevelName)
 //first, free up data allocated for old bitmaps
 PrintLog ("   loading replacement textures\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".pog");
-if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
+if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 	int					id, version, nBitmapNum, bHaveTGA;
 	int					bmDataSize, bmDataOffset, bmOffset;
 	ushort				*indices;
@@ -1110,7 +1110,7 @@ void LoadTextureColors (const char *pszLevelName, tFaceColor *colorP)
 //first, free up data allocated for old bitmaps
 PrintLog ("   loading texture colors\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".clr");
-if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
+if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 	if (!colorP)
 		colorP = gameData.render.color.textures.Buffer ();
 	for (i = MAX_WALL_TEXTURES; i; i--, colorP++) {

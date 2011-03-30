@@ -377,9 +377,9 @@ void CMissionManager::AddBuiltinD1Mission (int *count)
 {
 	CFile	cf;
 
-if (!cf.Exist ("descent.hog", gameFolders.szDataDir, 1))
+if (!cf.Exist ("descent.hog", gameFolders.szDataDir [0], 1))
 	return;
-nBuiltInHogSize [1] = cf.Size ("descent.hog", gameFolders.szDataDir, 0);
+nBuiltInHogSize [1] = cf.Size ("descent.hog", gameFolders.szDataDir [0], 0);
 switch (nBuiltInHogSize [1]) {
 	case D1_SHAREWARE_MISSION_HOGSIZE:
 	case D1_SHAREWARE_10_MISSION_HOGSIZE:
@@ -448,9 +448,9 @@ void CMissionManager::AddBuiltinMission (int *count)
 {
 	CFile	cf;
 
-nBuiltInHogSize [0] = cf.Size ("descent2.hog", gameFolders.szDataDir, 0);
+nBuiltInHogSize [0] = cf.Size ("descent2.hog", gameFolders.szDataDir [0], 0);
 if (nBuiltInHogSize [0] == -1)
-	nBuiltInHogSize [0] = cf.Size ("d2demo.hog", gameFolders.szDataDir, 0);
+	nBuiltInHogSize [0] = cf.Size ("d2demo.hog", gameFolders.szDataDir [0], 0);
 
 switch (nBuiltInHogSize [0]) {
 	case SHAREWARE_MISSION_HOGSIZE:
@@ -914,7 +914,7 @@ switch (list [nMission].location) {
 		sprintf (szFolder, "%s%s", gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "");
 		break;
 	case ML_DATADIR:
-		sprintf (szFolder, "%s%s", gameFolders.szDataDir, *gameFolders.szDataDir [0] ? "/" : "");
+		sprintf (szFolder, "%s%s", gameFolders.szDataDir [0], *gameFolders.szDataDir [0] ? "/" : "");
 		break;
 	}
 sprintf (szFile, "%s%s", 

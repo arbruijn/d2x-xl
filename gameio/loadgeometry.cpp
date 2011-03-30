@@ -750,7 +750,7 @@ gameData.segs.vMax.v.c.x =
 gameData.segs.vMax.v.c.y =
 gameData.segs.vMax.v.c.y = -0x7fffffff;*/
 gameStates.render.bColored = 0;
-bD1PigPresent = CFile::Exist (D1_PIGFILE, gameFolders.szDataDir, 0);
+bD1PigPresent = CFile::Exist (D1_PIGFILE, gameFolders.szDataDir [0], 0);
 psz = strchr (gameData.segs.szLevelFilename, '.');
 bNewFileFormat = !psz || strcmp (psz, ".sdl");
 //	For compiled levels, textures map to themselves, prevent nTexOverride always being gray,

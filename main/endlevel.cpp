@@ -1121,9 +1121,9 @@ else					//Normal level
 	strcpy (filename, missionManager.szLevelNames [nLevel-1]);
 if (!ConvertExt (filename, "end"))
 	Error ("Error converting filename\n'<%s>'\nfor endlevel data\n", filename);
-if (!cf.Open (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) {
+if (!cf.Open (filename, gameFolders.szDataDir [0], "rb", gameStates.app.bD1Mission)) {
 	ConvertExt (filename, "txb");
-	if (!cf.Open (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) {
+	if (!cf.Open (filename, gameFolders.szDataDir [0], "rb", gameStates.app.bD1Mission)) {
 		if (nLevel == 1) {
 #if TRACE
 			console.printf (CON_DBG, "Cannot load file text\nof binary version of\n'<%s>'\n", filename);

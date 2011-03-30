@@ -96,11 +96,11 @@ const char* menuBgNames [4][2] = {
 
 char* MenuPCXName (void)
 {
-if (CFile::Exist (MENU_PCX_FULL, gameFolders.szDataDir, 0))
+if (CFile::Exist (MENU_PCX_FULL, gameFolders.szDataDir [0], 0))
 	return const_cast<char*> (MENU_PCX_FULL);
-if (CFile::Exist (MENU_PCX_OEM, gameFolders.szDataDir, 0))
+if (CFile::Exist (MENU_PCX_OEM, gameFolders.szDataDir [0], 0))
 	return const_cast<char*> (MENU_PCX_OEM);
-if (CFile::Exist (MENU_PCX_SHAREWARE, gameFolders.szDataDir, 0))
+if (CFile::Exist (MENU_PCX_SHAREWARE, gameFolders.szDataDir [0], 0))
 	return const_cast<char*> (MENU_PCX_SHAREWARE);
 return const_cast<char*> (MENU_PCX_MAC_SHARE);
 }

@@ -190,7 +190,7 @@ int CFile::Size (const char *hogname, const char *folder, int bUseD1Hog)
 	struct stat statbuf;
 
 //	sprintf (fn, "%s/%s", folder, hogname);
-if (!Open (hogname, gameFolders.szDataDir, "rb", bUseD1Hog))
+if (!Open (hogname, gameFolders.szDataDir [0], "rb", bUseD1Hog))
 	return -1;
 #ifdef _WIN32
 fstat (_fileno (m_cf.file), &statbuf);
@@ -203,7 +203,7 @@ return statbuf.st_size;
 	DWORD size;
 
 //sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", hogname);
-if (!Open (hogname, gameFolders.szDataDir, "rb", bUseD1Hog))
+if (!Open (hogname, gameFolders.szDataDir [0], "rb", bUseD1Hog))
 	return -1;
 size = m_cf.size;
 Close ();

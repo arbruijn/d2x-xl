@@ -524,7 +524,7 @@ int CIFF::Open (const char *cfname)
 	int	ret;
 
 Data() = NULL;
-if (!cf.Open (cfname, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission))
+if (!cf.Open (cfname, gameFolders.szDataDir [0], "rb", gameStates.app.bD1Mission))
 	return IFF_NO_FILE;
 SetLen (cf.Length ());
 Data() = new ubyte [Len ()];

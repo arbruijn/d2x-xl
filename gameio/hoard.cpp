@@ -148,7 +148,7 @@ if (gameStates.app.bDemoData || gameStates.app.bD1Mission) {
 #endif
 	return;
 	}
-if (!cf.Open ("hoard.ham", gameFolders.szDataDir, "rb", 0)) {
+if (!cf.Open ("hoard.ham", gameFolders.szDataDir [0], "rb", 0)) {
 	Warning ("Cannot open hoard data file <hoard.ham>.");
 	return;
 	}

@@ -135,7 +135,7 @@ void GetAppFolders (void)
 #if 0 //DBG && defined (WIN32)
 strcpy (gameFolders.szHomeDir, "d:\\programs\\d2\\");
 strcpy (gameFolders.szGameDir, "d:\\programs\\d2\\");
-strcpy (gameFolders.szDataDir, "d:\\programs\\d2\\");
+strcpy (gameFolders.szDataDir [0], "d:\\programs\\d2\\");
 strcpy (szDataRootDir, "d:\\programs\\d2\\");
 #else
 *gameFolders.szHomeDir =
@@ -203,30 +203,30 @@ strcpy (szDataRootDir, gameFolders.szGameDir);
 if (*gameFolders.szGameDir)
 	chdir (gameFolders.szGameDir);
 #endif //Linux, OS X
-if ((i = FindArg ("-hogdir")) && !GetAppFolder ("", gameFolders.szDataDir, appConfig [i + 1], "descent2.hog"))
+if ((i = FindArg ("-hogdir")) && !GetAppFolder ("", gameFolders.szDataDir [0], appConfig [i + 1], "descent2.hog"))
 	strcpy (szDataRootDir, appConfig [i + 1]);
 else {
-	sprintf (gameFolders.szDataDir, "%s%s", gameFolders.szGameDir, DATADIR);
-	if (GetAppFolder ("", gameFolders.szDataDir, gameFolders.szDataDir, "descent2.hog") &&
-		 GetAppFolder ("", gameFolders.szDataDir, gameFolders.szDataDir, "d2demo.hog") &&
-		 GetAppFolder (szDataRootDir, gameFolders.szDataDir, DATADIR, "descent2.hog") &&
-		 GetAppFolder (szDataRootDir, gameFolders.szDataDir, DATADIR, "d2demo.hog"))
+	sprintf (gameFolders.szDataDir [0], "%s%s", gameFolders.szGameDir, DATADIR);
+	if (GetAppFolder ("", gameFolders.szDataDir [0], gameFolders.szDataDir [0], "descent2.hog") &&
+		 GetAppFolder ("", gameFolders.szDataDir [0], gameFolders.szDataDir [0], "d2demo.hog") &&
+		 GetAppFolder (szDataRootDir, gameFolders.szDataDir [0], DATADIR, "descent2.hog") &&
+		 GetAppFolder (szDataRootDir, gameFolders.szDataDir [0], DATADIR, "d2demo.hog"))
 	Error (TXT_NO_HOG2);
 	}
-psz = strstr (gameFolders.szDataDir, DATADIR);
+psz = strstr (gameFolders.szDataDir [0], DATADIR);
 if (psz && !*(psz + 4)) {
-	if (psz == gameFolders.szDataDir)
-		sprintf (gameFolders.szDataDir, "%s%s", gameFolders.szGameDir, DATADIR);
+	if (psz == gameFolders.szDataDir [0])
+		sprintf (gameFolders.szDataDir [0], "%s%s", gameFolders.szGameDir, DATADIR);
 	else {
 		*(psz - 1) = '\0';
-		strcpy (szDataRootDir, gameFolders.szDataDir);
+		strcpy (szDataRootDir, gameFolders.szDataDir [0]);
 		*(psz - 1) = '/';
 		}
 	}
 else
-	strcpy (szDataRootDir, gameFolders.szDataDir);
+	strcpy (szDataRootDir, gameFolders.szDataDir [0]);
 /*---*/PrintLog ("expected game app folder = '%s'\n", gameFolders.szGameDir);
-/*---*/PrintLog ("expected game data folder = '%s'\n", gameFolders.szDataDir);
+/*---*/PrintLog ("expected game data folder = '%s'\n", gameFolders.szDataDir [0]);
 if (GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.ase"))
 	GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.oof");
 GetAppFolder (szDataRootDir, gameFolders.szSoundDir [0], SOUNDDIR1, "*.wav");
@@ -328,7 +328,7 @@ for (i = 0; i < 2; i++)
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [i]);
 MakeTexSubFolders (gameFolders.szModelCacheDir [0]);
 sprintf (gameFolders.szMissionDownloadDir, "%s/%s", gameFolders.szMissionDir, DOWNLOADDIR);
-sprintf (gameFolders.szDataDir [1], "%s/d2-xl", gameFolders.szDataDir [0]);
+sprintf (gameFolders.szDataDir [1], "%s/d2-xl", gameFolders.szDataDir [0] [0]);
 CFile::MkDir (gameFolders.szMissionDownloadDir);
 }
 

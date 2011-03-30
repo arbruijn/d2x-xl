@@ -585,7 +585,7 @@ int CTGA::ReadImage (const char* pszFile, const char* pszFolder, int alpha, doub
 
 m_cf.SplitPath (pszFile, szFolder, szFile, szExt);
 if (!pszFolder)
-	pszFolder = gameFolders.szDataDir;
+	pszFolder = gameFolders.szDataDir [0];
 if (!*szFolder)
 	strcpy (szFolder, pszFolder);
 int l = int (strlen (szFolder));
@@ -640,7 +640,7 @@ if (ReadImage (pszFile, pszFolder, alpha, brightness, bGrayScale, bReverse))
 if (!pszFolder) {
 	m_cf.SplitPath (pszFile, szFile, NULL, NULL);
 	if (!*szFile)
-		pszFolder = gameFolders.szDataDir;
+		pszFolder = gameFolders.szDataDir [0];
 	}
 
 #if TEXTURE_COMPRESSION
@@ -697,7 +697,7 @@ int CTGA::Save (const char *pszFile, const char *pszFolder)
 	int	r;
 
 if (!pszFolder)
-	pszFolder = gameFolders.szDataDir;
+	pszFolder = gameFolders.szDataDir [0];
 CFile::SplitPath (pszFile, NULL, fn, NULL);
 sprintf (szFolder, "%s/%d/", pszFolder, m_bmP->Width ());
 strcat (fn, ".tga");

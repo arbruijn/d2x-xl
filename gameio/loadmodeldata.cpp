@@ -223,7 +223,7 @@ int LoadRobotReplacements (const char* szLevel, const char* szFolder, int bAddBo
 	char			szFile [FILENAME_LEN];
 
 CFile::ChangeFilenameExtension (szFile, szLevel, ".hxm");
-if (!cf.Open (szFile, szFolder ? szFolder : gameFolders.szDataDir, "rb", bUseHog ? 0 : -1))		//no robot replacement file
+if (!cf.Open (szFile, szFolder ? szFolder : gameFolders.szDataDir [0], "rb", bUseHog ? 0 : -1))		//no robot replacement file
 	return 0;
 t = cf.ReadInt ();			//read id "HXM!"
 if (t!= MAKE_SIG ('!','X','M','H'))
@@ -474,7 +474,7 @@ int LoadExitModels (void)
 		return 0;
 		}
 
-	if (cf.Open ("exit.ham", gameFolders.szDataDir, "rb", 0)) {
+	if (cf.Open ("exit.ham", gameFolders.szDataDir [0], "rb", 0)) {
 		gameData.endLevel.exit.nModel = gameData.models.nPolyModels++;
 		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
 		CPolyModel& exitModel = gameData.models.polyModels [0][gameData.endLevel.exit.nModel];
@@ -491,17 +491,17 @@ int LoadExitModels (void)
 		destrModel.ReadData (NULL, cf);
 		cf.Close ();
 		}
-	else if (cf.Exist ("exit01.pof", gameFolders.szDataDir, 0) && 
-				cf.Exist ("exit01d.pof", gameFolders.szDataDir, 0)) {
+	else if (cf.Exist ("exit01.pof", gameFolders.szDataDir [0], 0) && 
+				cf.Exist ("exit01d.pof", gameFolders.szDataDir [0], 0)) {
 		gameData.endLevel.exit.nModel = LoadPolyModel ("exit01.pof", 3, start_num, NULL);
 		gameData.endLevel.exit.nDestroyedModel = LoadPolyModel ("exit01d.pof", 3, start_num + 3, NULL);
 		OglCachePolyModelTextures (gameData.endLevel.exit.nModel);
 		OglCachePolyModelTextures (gameData.endLevel.exit.nDestroyedModel);
 	}
-	else if (cf.Exist (D1_PIGFILE,gameFolders.szDataDir,0)) {
+	else if (cf.Exist (D1_PIGFILE,gameFolders.szDataDir [0],0)) {
 		int offset, offset2;
 
-		cf.Open (D1_PIGFILE, gameFolders.szDataDir, "rb",0);
+		cf.Open (D1_PIGFILE, gameFolders.szDataDir [0], "rb",0);
 		switch (cf.Length ()) { //total hack for loading models
 		case D1_PIGSIZE:
 			offset = 91848;/* and 92582  */

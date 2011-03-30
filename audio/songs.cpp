@@ -287,8 +287,8 @@ hogFileManager.UseD1 ("descent.hog");
 for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 		if (!FindArg ("-nomixer"))
 			CD_blast_mixer ();   // Crank it!
-	if (CFile::Exist ("descent.sng", gameFolders.szDataDir, bD1Songs)) {   // mac (demo?) datafiles don't have the .sng file
-		if (!cf.Open ("descent.sng", gameFolders.szDataDir, "rb", bD1Songs)) {
+	if (CFile::Exist ("descent.sng", gameFolders.szDataDir [0], bD1Songs)) {   // mac (demo?) datafiles don't have the .sng file
+		if (!cf.Open ("descent.sng", gameFolders.szDataDir [0], "rb", bD1Songs)) {
 			if (bD1Songs)
 				break;
 			else
@@ -430,7 +430,7 @@ redbook.Register ();
 if (bFromHog) {
 	CFile	cf;
 	strcpy (szFilename, LevelSongName (nSong));
-	if (*szFilename && cf.Extract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
+	if (*szFilename && cf.Extract (szFilename, gameFolders.szDataDir [0], 0, szFilename)) {
 		char	szSong [FILENAME_LEN];
 
 		sprintf (szSong, "%s%s%s", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "", szFilename);

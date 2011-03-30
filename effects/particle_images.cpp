@@ -171,7 +171,7 @@ if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave))
 TGAInterpolate (bmP, 2);
 if (TGAMakeSquare (bmP)) {
 	memset (&h, 0, sizeof (h));
-	SaveTGA (ParticleImageInfo (nType).szName, gameFolders.szDataDir, &h, bmP);
+	SaveTGA (ParticleImageInfo (nType).szName, gameFolders.szDataDir [0], &h, bmP);
 	}
 }
 #endif

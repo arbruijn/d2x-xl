@@ -102,7 +102,7 @@ void scores_read ()
 	// clear score array...
 	memset (&Scores, 0, sizeof (all_scores));
 
-	if (!cf.Open (GetScoresFilename (), gameFolders.szDataDir, "rb", 0)) {
+	if (!cf.Open (GetScoresFilename (), gameFolders.szDataDir [0], "rb", 0)) {
 		int i;
 	 	// No error message needed, code will work without a scores file
 		sprintf (Scores.cool_saying, COOL_SAYING);
@@ -144,7 +144,7 @@ void scores_write ()
 {
 	CFile cf;
 
-if (!cf.Open (GetScoresFilename (), gameFolders.szDataDir, "wb", 0)) {
+if (!cf.Open (GetScoresFilename (), gameFolders.szDataDir [0], "wb", 0)) {
 	MsgBox (TXT_WARNING, NULL, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, GetScoresFilename () );
 	return;
 	}
@@ -430,7 +430,7 @@ ReshowScores:
 			if (nCurItem < 0)	 {
 				// Reset scores...
 				if (MsgBox (NULL, NULL, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES)==1) {
-					CFile::Delete (GetScoresFilename (), gameFolders.szDataDir);
+					CFile::Delete (GetScoresFilename (), gameFolders.szDataDir [0]);
 					paletteManager.DisableEffect ();
 					goto ReshowScores;
 				}

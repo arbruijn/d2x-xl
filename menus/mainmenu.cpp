@@ -278,7 +278,7 @@ static void PlayMenuSong (void)
 
 m.Push (szSongTitles [0]);
 for (i = 0; i < songManager.TotalCount (); i++) {
-	if (cf.Open (reinterpret_cast<char*> (songManager.SongData (i).filename), gameFolders.szDataDir, "rb", i >= songManager.Count (0))) {
+	if (cf.Open (reinterpret_cast<char*> (songManager.SongData (i).filename), gameFolders.szDataDir [0], "rb", i >= songManager.Count (0))) {
 		cf.Close ();
 		if (i == songManager.Count (0))
 			m.Push (szSongTitles [1]);

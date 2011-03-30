@@ -416,7 +416,7 @@ else if ((ps = strstr (szImg, ".pcx"))) {
 if (strstr (szImg, ".tga")) {
 	CBitmap	bm;
 	CTGA		tga (&bm);
-	if (!tga.Read (szImg, gameFolders.szDataDir, -1, 1.0, 0, 0))
+	if (!tga.Read (szImg, gameFolders.szDataDir [0], -1, 1.0, 0, 0))
 		return PCX_ERROR_OPENING;
 	bm.RenderFullScreen ();
 	return PCX_ERROR_NONE;
@@ -1142,8 +1142,8 @@ for (i = 0; m_info.szBriefScreen [i] != '.'; i++)
 	m_info.szBriefScreenB [i] = m_info.szBriefScreen [i];
 memcpy (m_info.szBriefScreenB + i, "b.pcx", sizeof ("b.pcx"));
 i += sizeof ("b.pcx");
-if ((gameStates.menus.bHires && CFile::Exist (m_info.szBriefScreenB, gameFolders.szDataDir, 0)) || 
-	 !CFile::Exist (m_info.szBriefScreen, gameFolders.szDataDir, 0))
+if ((gameStates.menus.bHires && CFile::Exist (m_info.szBriefScreenB, gameFolders.szDataDir [0], 0)) || 
+	 !CFile::Exist (m_info.szBriefScreen, gameFolders.szDataDir [0], 0))
 	LoadImage (m_info.szBriefScreenB);
 else
 	LoadImage (m_info.szBriefScreen);
@@ -1462,11 +1462,11 @@ if (!strstr (filename, ".t"))
 	strcat (filename, ".tex");
 bHaveBinary = (strstr (filename, ".txb") != NULL);
 if (!(cf.Open (filename, gameFolders.szModDir [1], fileModes [bHaveBinary], gameStates.app.bD1Mission) ||
-	   cf.Open (filename, gameFolders.szDataDir, fileModes [bHaveBinary], gameStates.app.bD1Mission))) {
+	   cf.Open (filename, gameFolders.szDataDir [0], fileModes [bHaveBinary], gameStates.app.bD1Mission))) {
 	bHaveBinary = !bHaveBinary;
 	strcpy (strstr (filename, ".t"), bHaveBinary ? ".txb" : ".tex");
 	if (!(cf.Open (filename, gameFolders.szModDir [1], fileModes [bHaveBinary], gameStates.app.bD1Mission) ||
-			cf.Open (filename, gameFolders.szDataDir, fileModes [bHaveBinary], gameStates.app.bD1Mission))) {
+			cf.Open (filename, gameFolders.szDataDir [0], fileModes [bHaveBinary], gameStates.app.bD1Mission))) {
 		PrintLog ("can't open briefing '%s'!\n", filename);
 		return 0;
 		}

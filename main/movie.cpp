@@ -113,10 +113,10 @@ int CSubTitles::Init (const char* filename)
 m_nCaptions = 0;
 if (!gameOpts->movies.bSubTitles)
 	return 0;
-if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0)) { // first try text version
+if (!cf.Open (filename, gameFolders.szDataDir [0], "rb", 0)) { // first try text version
 	char filename2 [FILENAME_LEN];	//no text version, try binary version
 	CFile::ChangeFilenameExtension (filename2, filename, ".txb");
-	if (!cf.Open (filename2, gameFolders.szDataDir, "rb", 0))
+	if (!cf.Open (filename2, gameFolders.szDataDir [0], "rb", 0))
 		return 0;
 	bHaveBinary = 1;
 	}
@@ -660,7 +660,7 @@ int CMovieManager::Run (char* filename, int bHires, int bRequired, int dx, int d
 
 result = 1;
 // Open Movie file.  If it doesn't exist, no movie, just return.
-if (!(cf.Open (filename, gameFolders.szDataDir, "rb", 0) || (movieP = Open (filename, bRequired)))) {
+if (!(cf.Open (filename, gameFolders.szDataDir [0], "rb", 0) || (movieP = Open (filename, bRequired)))) {
 	if (bRequired) {
 #if TRACE
 		console.printf (CON_NORMAL, "movie: RunMovie: Cannot open movie <%s>\n", filename);

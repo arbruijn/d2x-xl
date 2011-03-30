@@ -344,7 +344,7 @@ void PrintVersion (void)
 	FILE	*f;
 	char	fn [FILENAME_LEN];
 
-sprintf (fn, "%s%sd2x-xl-version.txt", gameFolders.szDataDir, *gameFolders.szDataDir [0] ? "/" : "");
+sprintf (fn, "%s%sd2x-xl-version.txt", gameFolders.szDataDir [0], *gameFolders.szDataDir [0] ? "/" : "");
 if ((f = fopen (fn, "wa"))) {
 	fprintf (f, "%s\n", VERSION);
 	fclose (f);
@@ -412,11 +412,11 @@ else {
 	console.printf(CON_DBG, "\nShowing loading screen...\n"); fflush (fErr);
 #endif
 	strcpy (filename, gameStates.menus.bHires ? "descentb.pcx" : "descent.pcx");
-	if (!CFile::Exist (filename, gameFolders.szDataDir, 0))
+	if (!CFile::Exist (filename, gameFolders.szDataDir [0], 0))
 		strcpy (filename, gameStates.menus.bHires ? "descntob.pcx" : "descento.pcx"); // OEM
-	if (!CFile::Exist (filename, gameFolders.szDataDir, 0))
+	if (!CFile::Exist (filename, gameFolders.szDataDir [0], 0))
 		strcpy (filename, "descentd.pcx"); // SHAREWARE
-	if (!CFile::Exist (filename, gameFolders.szDataDir, 0))
+	if (!CFile::Exist (filename, gameFolders.szDataDir [0], 0))
 		strcpy (filename, "descentb.pcx"); // MAC SHAREWARE
 	GrSetMode (
 		gameStates.menus.bHires 
@@ -817,8 +817,8 @@ DefaultAllSettings ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 /*---*/PrintLog ("Loading text resources\n");
 /*---*/PrintLog ("Loading main hog file\n");
-if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir) ||
-	  (gameStates.app.bDemoData = hogFileManager.Init ("d2demo.hog", gameFolders.szDataDir)))) {
+if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir [0]) ||
+	  (gameStates.app.bDemoData = hogFileManager.Init ("d2demo.hog", gameFolders.szDataDir [0])))) {
 	/*---*/PrintLog ("Descent 2 data not found\n");
 	Error (TXT_NO_HOG2);
 	}
@@ -1044,13 +1044,13 @@ void ShowOrderForm (void)
 CCanvas::SetCurrent (NULL);
 KeyFlush ();
 strcpy (szExitScreen, gameStates.menus.bHires ? "ordrd2ob.pcx" : "ordrd2o.pcx"); // OEM
-if (! CFile::Exist (szExitScreen, gameFolders.szDataDir, 0))
+if (! CFile::Exist (szExitScreen, gameFolders.szDataDir [0], 0))
 	strcpy (szExitScreen, gameStates.menus.bHires ? "orderd2b.pcx" : "orderd2.pcx"); // SHAREWARE, prefer mac if hires
-if (! CFile::Exist (szExitScreen, gameFolders.szDataDir, 0))
+if (! CFile::Exist (szExitScreen, gameFolders.szDataDir [0], 0))
 	strcpy (szExitScreen, gameStates.menus.bHires ? "orderd2.pcx" : "orderd2b.pcx"); // SHAREWARE, have to rescale
-if (! CFile::Exist (szExitScreen, gameFolders.szDataDir, 0))
+if (! CFile::Exist (szExitScreen, gameFolders.szDataDir [0], 0))
 	strcpy (szExitScreen, gameStates.menus.bHires ? "warningb.pcx" : "warning.pcx"); // D1
-if (! CFile::Exist (szExitScreen, gameFolders.szDataDir, 0))
+if (! CFile::Exist (szExitScreen, gameFolders.szDataDir [0], 0))
 	return; // D2 registered
 
 int pcxResult = PcxReadFullScrImage (szExitScreen, 0);

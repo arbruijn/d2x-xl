@@ -234,8 +234,8 @@ short LoadLoresModel (short i)
 
 sprintf (szModel, "model%d.pol", replacementModels [i].nModel);
 if (!(replacementModels [i].pszLores && 
-	  (cf.Open (replacementModels [i].pszLores, gameFolders.szDataDir, "rb", 0) ||
-	   cf.Open (szModel, gameFolders.szDataDir, "rb", 0))))
+	  (cf.Open (replacementModels [i].pszLores, gameFolders.szDataDir [0], "rb", 0) ||
+	   cf.Open (szModel, gameFolders.szDataDir [0], "rb", 0))))
 	return ++i;
 nModel = replacementModels [i].nModel;
 modelP = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.polyModels [2] : gameData.models.polyModels [0]) + nModel;

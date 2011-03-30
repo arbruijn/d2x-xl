@@ -151,7 +151,7 @@ if (gameOpts->UseHiresSound ())
 PrintLog ("   loading replacement sounds\n");
 //FreeSoundReplacements ();
 CFile::ChangeFilenameExtension (szFilename, pszFilename, ".dtx");
-if (!cf.Open (szFilename, gameFolders.szDataDir, "rb", 0))
+if (!cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0))
 	return -1;
 if (cf.Read (szId, 1, sizeof (szId)) != sizeof (szId)) {
 	cf.Close ();
@@ -361,7 +361,7 @@ if (bCustom) {
 	pszFolder = gameFolders.szModDir [1];
 	if (!(bUseLowRes = cf.Exist (pszFile, pszFolder, 0) != 0)) {
 		pszFile = DefaultSoundFile ();
-		pszFolder = gameFolders.szDataDir;
+		pszFolder = gameFolders.szDataDir [0];
 		if (missionManager.nCurrentLevel < 0)
 			sprintf (gameFolders.szSoundDir [5], "%s/slevel%02d", gameFolders.szSoundDir [4], -missionManager.nCurrentLevel);
 		else
@@ -370,7 +370,7 @@ if (bCustom) {
 	}
 else {
 	pszFile = DefaultSoundFile ();
-	pszFolder = gameFolders.szDataDir;
+	pszFolder = gameFolders.szDataDir [0];
 	bUseLowRes = !gameOpts->UseHiresSound ();
 	}
 
@@ -493,7 +493,7 @@ if (i >= 0) {
 		return chunkP;
 	pszSoundFile = addonSounds [i].szSoundFile + 3;
 	}
-if (!gameStates.app.bReadOnly && cf.Extract (pszSoundFile, gameFolders.szDataDir, 0, "d2x-temp.wav")) {
+if (!gameStates.app.bReadOnly && cf.Extract (pszSoundFile, gameFolders.szDataDir [0], 0, "d2x-temp.wav")) {
 	pszFolder = gameFolders.szCacheDir;
 	pszFile = "d2x-temp.wav";
 	}

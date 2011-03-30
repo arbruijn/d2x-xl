@@ -647,7 +647,7 @@ void LoadTextureBrightness (const char *pszLevel, int *brightnessP)
 if (!brightnessP)
 	brightnessP = gameData.pig.tex.brightness.Buffer ();
 CFile::ChangeFilenameExtension (szFile, pszLevel, ".lgt");
-if (cf.Open (szFile, gameFolders.szDataDir, "rb", 0) &&
+if (cf.Open (szFile, gameFolders.szDataDir [0], "rb", 0) &&
 	 (cf.Read (brightnessP, sizeof (*brightnessP) * MAX_WALL_TEXTURES, 1) == 1)) {
 	for (i = MAX_WALL_TEXTURES, pb = gameData.pig.tex.brightness.Buffer (); i; i--, pb++)
 		*pb = INTEL_INT (*pb);
