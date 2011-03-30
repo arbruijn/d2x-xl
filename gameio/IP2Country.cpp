@@ -10,7 +10,7 @@ int LoadIP2Country (void)
 {
 	CFile	cf;
 
-	int nRecords = cf.LineCount ("ip2country.csv", gameFolders.szDataDir [1], "#");
+	int nRecords = cf.LineCount ("IpToCountry.csv", gameFolders.szDataDir [1], "#");
 
 if (nRecords <= 0)
 	return nRecords;
@@ -20,7 +20,7 @@ if (!ip2country.Create ((uint) nRecords))
 
 char lineBuf [1024];
 
-if (!cf.Open ("ip2country.csv", gameFolders.szDataDir [1], "rt", 0))
+if (!cf.Open ("IpToCountry.csv", gameFolders.szDataDir [1], "rt", 0))
 	return -1;
 
 int minIP, maxIP;
