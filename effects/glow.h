@@ -8,6 +8,7 @@ class CGlowRenderer {
 		GLhandleARB m_shaderProg;
 		tScreenPos m_screenMin, m_screenMax;
 		int m_x, m_y, m_w, m_h;
+		int m_nType;
 		int m_nStrength;
 		bool m_bReplace;
 		int m_bViewport;
@@ -24,7 +25,7 @@ class CGlowRenderer {
 		bool SetViewport (int const nType, CFixVector pos, float radius);
 		bool SetViewport (int const nType, CFloatVector3 pos, float width, float height, bool bTransformed = false);
 		bool Visible (void);
-		CGlowRenderer () : m_shaderProg (0), m_nStrength (-1), m_bReplace (true), m_bViewport (0), m_brightness (1.1f) {}
+		CGlowRenderer () : m_shaderProg (0), m_nType (-1), m_nStrength (-1), m_bReplace (true), m_bViewport (0), m_brightness (1.1f) {}
 
 	private:
 		bool LoadShader (int const direction, float const radius);
@@ -52,7 +53,7 @@ extern CGlowRenderer glowRenderer;
 #define GLOW_OBJECTS			128
 #define GLOW_HEADLIGHT		256
 
-#if DBG
+#if 0 //DBG
 #	define GLOW_FLAGS (GLOW_SHIELDS)
 #else
 #	define GLOW_FLAGS (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_THRUSTERS | GLOW_HEADLIGHT)

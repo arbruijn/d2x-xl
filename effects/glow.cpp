@@ -441,8 +441,11 @@ if (automap.Display ())
 	return false;
 if (++nCalls > 1)
 	PrintLog ("nested glow renderer call!\n");
-if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness)) {
+if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness) || 
+	 ((nType != m_nType) && ((nType == GLOW_LIGHTNING) || (m_nType == GLOW_LIGHTNING)))) {
 	End ();
+	if ((m_nType = nType) == GLOW_LIGHTNING)
+		glBlendEquation (GL_MAX);
 	m_bReplace = bReplace;
 	m_nStrength = nStrength;
 	m_brightness = brightness;
@@ -625,6 +628,8 @@ else
 	ogl.SetDepthMode (nDepthMode);
 	}
 
+if (m_nType == GLOW_LIGHTNING)
+	glBlendEquation (GL_FUNC_ADD);
 m_nStrength = -1;
 m_bViewport = 0;
 return true;
