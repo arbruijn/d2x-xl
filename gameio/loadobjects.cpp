@@ -343,17 +343,20 @@ static int ReadLevelInfo (CFile& cf)
 {
 if (gameTopFileInfo.fileinfoVersion >= 31) { //load mine filename
 	// read newline-terminated string, not sure what version this changed.
-	cf.GetS (missionManager.szCurrentLevel, sizeof (missionManager.szCurrentLevel));
-
-	if (missionManager.szCurrentLevel [strlen (missionManager.szCurrentLevel) - 1] == '\n')
-		missionManager.szCurrentLevel [strlen (missionManager.szCurrentLevel) - 1] = 0;
-}
+	for (int i = 0; i < sizeof (missionManager.szCurrentLevel); i++) {
+		missionManager.szCurrentLevel [i] = (char) cf.ReadByte ();
+		if (missionManager.szCurrentLevel [i] == '\n')
+			missionManager.szCurrentLevel [i] = '\0';
+		if (missionManager.szCurrentLevel [i] == '\0')
+			break;
+		}
+	}
 else if (gameTopFileInfo.fileinfoVersion >= 14) { //load mine filename
 	// read null-terminated string
 	char *p = missionManager.szCurrentLevel;
 	//must do read one char at a time, since no cf.GetS()
 	do {
-		*p = cf.GetC ();
+		*p = (char) cf.ReadByte ();
 		} while (*p++);
 }
 else
