@@ -556,26 +556,31 @@ void CMissionManager::Add (int bAnarchy, int bD1Mission, int bSubFolder, int bHa
 }
 
 //------------------------------------------------------------------------------
-/* move <szMissionName> to <place> on mission m_list, increment <place> */
-void CMissionManager::Promote (const char * szMissionName, int * nTopPlace, int nMissionCount)
-{
-	int i;
-	char name [FILENAME_LEN], * t;
-	strcpy (name, szMissionName);
-	if ((t = strchr(name,'.')) != NULL)
-		*t = 0; //kill extension
-	////printf("promoting: %s\n", name);
-	for (i = *nTopPlace; i < nMissionCount; i++)
-		if (!stricmp(m_list [i].filename, name)) {
-			//swap mission positions
-			tMsnListEntry temp;
+// Purpose: Promote mission szMissionName to the proper place in the mission 
+// list (i.e. put built in missions to the top of the list)
+// nTopPlace: Index of mission list where szMissionName should be shown
+// Find the mission szMissionName in the mission list and move it to that place
+// Increase nTopList for the next mission to be promoted
 
-			temp = m_list [*nTopPlace];
-			m_list [*nTopPlace] = m_list [i];
-			m_list [i] = temp;
-			++(*nTopPlace);
-			break;
+void CMissionManager::Promote (const char * szMissionName, int& nTopPlace)
+{
+	char name [FILENAME_LEN];
+
+strcpy (name, szMissionName);
+
+for (int h = 0; h < 2; h++) {
+	for (int i = nTopPlace; i < m_nCount; i++) {
+		if (!stricmp (m_list [i].filename, name)) {
+			if (i != nTopPlace)
+				Swap (m_list [nTopPlace], m_list [i]);
+			++nTopPlace;
+			return;
+			}
 		}
+	char* t = strchr (name, '.');
+	if (t != NULL)
+		*t = 0; //remove extension
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -669,16 +674,16 @@ if (bSubFolder) {
 	nBuiltInMission [1] = -1;
 	}
 else {
-	Promote ("descent", &nTopPlace, m_nCount); // original descent 1 mission
+	Promote ("descent", nTopPlace); // original descent 1 mission
 	nBuiltInMission [1] = nTopPlace - 1;
-	Promote (szBuiltinMissionFilename [0], &nTopPlace, m_nCount); // d2 or d2demo
+	Promote (szBuiltinMissionFilename [0], nTopPlace); // d2 or d2demo
 	nBuiltInMission [0] = nTopPlace - 1;
-	Promote ("d2x", &nTopPlace, m_nCount); // vertigo
+	Promote ("d2x", nTopPlace); // vertigo
 	}
 if (m_nCount > nTopPlace)
 	qsort (m_list + nTopPlace, m_nCount - nTopPlace, sizeof (*m_list), (int (_CDECL_ *)(const void *, const void *)) MLSortFunc);
-if (m_nCount > nTopPlace)
-	qsort(m_list + nTopPlace, m_nCount - nTopPlace, sizeof (*m_list), (int (_CDECL_ *) (const void *, const void * )) MLSortFunc);
+//if (m_nCount > nTopPlace)
+//	qsort(m_list + nTopPlace, m_nCount - nTopPlace, sizeof (*m_list), (int (_CDECL_ *) (const void *, const void * )) MLSortFunc);
 nMissionCount = m_nCount;
 return m_nCount;
 }

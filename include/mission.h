@@ -159,7 +159,7 @@ class CMissionManager : public CMissionData {
 		void AddBuiltinD2XMission (void);
 		void AddBuiltinMission (void);
 		void Add (int anarchy_mode, int bD1Mission, int bSubFolder, int bHaveSubFolders, int nLocation);
-		void Promote (const char * szMissionName, int * nTopPlace, int nMissionCount);
+		void Promote (const char* szMissionName, int& nTopPlace);
 		void MoveFolderUp (void);
 		void MoveFolderDown (int nSubFolder);
 		int Parse (CFile& cf);
