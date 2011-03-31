@@ -367,7 +367,7 @@ sprintf (xmlGameStatus + strlen (xmlGameStatus), "  <PlayerCount>%d</PlayerCount
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	sprintf (xmlGameStatus + strlen (xmlGameStatus), "  <Player%d name=\"%s\" ping=\"", i, netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].callsign);
 	if (pingStats [i].ping < 0)
-		strcat (xmlGameStatus, (i == gameData.multiplayer.nLocalPlayer) ? "0" : "n/a");
+		strcat (xmlGameStatus, (i == gameData.multiplayer.nLocalPlayer) ? "0" : "> 1s");
 	else
 		sprintf (xmlGameStatus + strlen (xmlGameStatus), "\"%d\"", pingStats [i].ping);
 
