@@ -447,29 +447,22 @@ return ret;
 
 char * CFile::GetS (char * buf, size_t n) 
 {
-	size_t i = 0;
-	int c;
+	size_t	i = 0;
+	int		c;
 
 --n;
 while (i < n) {
 	c = GetC ();
 	if (c == EOF) {
-		*buf = 0;
+		buf [i] = 0;
 		return i ? buf : NULL;
 		}
-	if ((c == 0) || (c == 10))       // Unix line ending
+	if (c == 0)      // Unix line ending
 		break;
-	if (c == 13) 
-#if 1
-		continue;
-#else
-		{				// Mac or DOS line ending
-		if (GetC () == 10)	// DOS/Windows line ending
-			break;
-		continue;
-		}
-#endif
-	buf [i++] = c;
+	if (c == 10)
+		break;
+	if (c != 13) 
+		buf [i++] = c;
 	}
 buf [i] = 0;
 return buf;

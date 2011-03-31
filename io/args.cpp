@@ -47,7 +47,7 @@ m_properties.Destroy ();
 
 int CConfigManager::Find (const char * s)
 {
-for (int i = 0; i < Count (); i++)
+for (int i = 0, j = Count (); i < j; i++) 
 	if (m_properties [i] && *m_properties [i] && !stricmp (m_properties [i], s))
 		return i + 1;
 return 0;
@@ -95,32 +95,26 @@ return m_filename;
 
 //------------------------------------------------------------------------------
 
+char* Trim (char* s);
+
 int CConfigManager::Parse (CFile* cfP)
 {
-	char 		*pszLine, *pszToken;
+	char 		lineBuf [1024], *token;
 
 if (cfP == NULL)
 	cfP = &m_cf;
 while (!cfP->EoF ()) {
-	pszLine = fsplitword (*cfP, '\n');
-	if (*pszLine && (*pszLine != ';')) {
-		pszToken = splitword (pszLine, ' ');
-		if (!m_properties.Push (pszToken))
+	cfP->GetS (lineBuf, sizeof (lineBuf));
+	if (*lineBuf && (*lineBuf != ';')) {
+		token = strtok (lineBuf, " ");
+		if (!m_properties.Push (StrDup (Trim (token))))
 			break;
-		if (pszLine) {
-			int l;
-			for (l = (int) strlen (pszLine); l > 0; l--) {
-				if (pszLine [l - 1] != '\r')
-					break;
-				}
-			pszLine [l] = '\0';
-			if (!m_properties.Push (*pszLine ? StrDup (pszLine) : NULL)) {
-				m_properties.Pop ();
-				break;
-				}
+		token = strtok (NULL, " ");
+		if (!m_properties.Push ((token && *token) ? StrDup (Trim (token)) : NULL)) {
+			m_properties.Pop ();
+			break;
 			}
 		}
-	delete[] pszLine; 
 	}
 return Count ();
 }
