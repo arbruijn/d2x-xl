@@ -185,8 +185,10 @@ if (!nHits)
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (sphereShaderProg));
 if (shaderProg) {
 	if (shaderManager.Rebuild (shaderProg))
-		glUniform1i (glGetUniformLocation (shaderProg, "shaderTex"), 0);
-	if (shaderProg) {
+		;
+		glUniform1i (glGetUniformLocation (shaderProg, "sphereTex"), 0);
+	//if (shaderProg) 
+		{
 		glUniform4fv (glGetUniformLocation (shaderProg, "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
 		glUniform3fv (glGetUniformLocation (shaderProg, "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
 		}
@@ -767,6 +769,9 @@ ogl.SetBlendMode (bAdditive);
 #else
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
+glowRenderer.Begin (GLOW_SHIELDS, 2, true, 0.75f);
+if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, xScale))
+	return 0;
 #if RINGED_SPHERE
 #if 1
 ogl.SetTransform (1);
@@ -779,9 +784,6 @@ else if (gameOpts->render.bUseShaders && ogl.m_states.bShadersOk) {
 	if (!SetupSphereShader (objP, alpha))
 		return 0;
 	}
-glowRenderer.Begin (GLOW_SHIELDS, 2, true, 0.75f);
-if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, xScale))
-	return 0;
 ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 transformation.Begin (vPos, posP->mOrient);

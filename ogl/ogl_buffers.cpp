@@ -38,6 +38,7 @@
 #include "lightmap.h"
 #include "network.h"
 #include "gr.h"
+#include "glow.h"
 #include "gamefont.h"
 #include "screens.h"
 #include "interp.h"
@@ -160,6 +161,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 	if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
 		paletteManager.RenderEffect ();
 #endif
+	glowRenderer.End ();
 	if (gameStates.render.bRenderIndirect && !gameStates.menus.nInMenu) {
 		FlushDrawBuffer ();
 		//SelectDrawBuffer (0);

@@ -412,6 +412,10 @@ return SetViewport (nType, v, radius, radius);
 
 bool CGlowRenderer::Available (int const nType, bool bForce)
 {
+#if 0 //DBG
+if (nType == GLOW_SHIELDS)
+	return false;
+#endif
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
 if (!gameOpts->render.bUseShaders)
@@ -433,16 +437,16 @@ return true;
 
 bool CGlowRenderer::Begin (int const nType, int const nStrength, bool const bReplace, float const brightness)
 {
-	static int nCalls = 0;
-
 if (!Available (nType))
 	return false;
 if (automap.Display ())
 	return false;
-if (++nCalls > 1)
-	PrintLog ("nested glow renderer call!\n");
+#if 0
+if (nType != m_nType) {
+#else
 if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness) || 
-	 ((nType != m_nType) && ((nType == GLOW_LIGHTNING) || (m_nType == GLOW_LIGHTNING)))) {
+	 ((nType == GLOW_LIGHTNING) != (m_nType == GLOW_LIGHTNING))) {
+#endif
 	End ();
 	if ((m_nType = nType) == GLOW_LIGHTNING)
 		glBlendEquation (GL_MAX);
@@ -453,7 +457,6 @@ if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != b
 	InitViewport ();
 	Activate ();
 	}
---nCalls;
 return true;
 }
 
@@ -576,6 +579,8 @@ else
 	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
 	bool bDepthWrite = ogl.GetDepthWrite ();
 	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
+	//if (m_nType == GLOW_LIGHTNING)
+		glBlendEquation (GL_FUNC_ADD);
 
 	ogl.SetDepthWrite (false);
 	ogl.ResetClientStates (1);
@@ -628,8 +633,7 @@ else
 	ogl.SetDepthMode (nDepthMode);
 	}
 
-if (m_nType == GLOW_LIGHTNING)
-	glBlendEquation (GL_FUNC_ADD);
+m_nType = -1;
 m_nStrength = -1;
 m_bViewport = 0;
 return true;
