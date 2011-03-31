@@ -56,8 +56,10 @@ typedef struct CFILE {
 class CFile {
 	private:
 		CFILE	m_cf;
-
-		inline int FillBuffer (void);
+#ifdef _WIN32
+		inline // g++ can be such a PITA
+#endif
+		int FillBuffer (void);
 
 	public:
 		CFile () { Init (); }

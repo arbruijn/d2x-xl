@@ -401,7 +401,10 @@ return char_written;
 
 // ----------------------------------------------------------------------------
 
-inline int CFile::FillBuffer (void)
+#ifdef _WIN32
+inline 
+#endif
+int CFile::FillBuffer (void)
 {
 if (m_cf.bufPos >= m_cf.bufLen) {
 	if (m_cf.rawPosition >= m_cf.size) 
