@@ -363,7 +363,7 @@ if (gameStates.app.bDemoData)
 	return;
 
 if ((bDefault = (*pszMission == '\0')))
-	pszMission = missionManager.list [missionManager.nCurrentMission].szMissionName;
+	pszMission = missionManager [missionManager.nCurrentMission].szMissionName;
 else
 	CFile::SplitPath (pszMission, NULL, gameFolders.szModName, NULL);
 

@@ -409,7 +409,7 @@ void CSongManager::PlayLevelSong (int nLevel, int bFromHog, bool bWaitForThread)
 {
 	int	nSong;
 	int	nTracks;
-	int	bD1Song = (missionManager.list [missionManager.nCurrentMission].nDescentVersion == 1);
+	int	bD1Song = (missionManager [missionManager.nCurrentMission].nDescentVersion == 1);
 	char	szFilename [FILENAME_LEN];
 
 if (!nLevel)

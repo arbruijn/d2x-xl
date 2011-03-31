@@ -310,7 +310,7 @@ if (IsMultiGame) {
 	NetworkDoFrame (1, 1);
 	}
 Assert (nLastSeg == gameData.endLevel.exit.nSegNum);
-if (missionManager.list [missionManager.nCurrentMission].nDescentVersion == 1)
+if (missionManager [missionManager.nCurrentMission].nDescentVersion == 1)
 	songManager.Play (SONG_ENDLEVEL, 0);
 gameStates.app.bEndLevelSequence = EL_FLYTHROUGH;
 gameData.objs.consoleP->info.movementType = MT_NONE;			//movement handled by flythrough

@@ -1009,13 +1009,13 @@ if (!gameStates.app.bNostalgia) {
 
 int GameParamsMenu (CMenu& m, int& key, int& choice, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, int& nNewMission)
 {
-	int i, bAnarchyOnly = (nNewMission < 0) ? 0 : missionManager.list [nNewMission].bAnarchyOnly;
+	int i, bAnarchyOnly = (nNewMission < 0) ? 0 : missionManager [nNewMission].bAnarchyOnly;
 
 if (m [optMissionName].m_bRebuild) {
 	strncpy (netGame.m_info.szMissionName, 
-				(nNewMission < 0) ? "" : missionManager.list [nNewMission].filename, 
+				(nNewMission < 0) ? "" : missionManager [nNewMission].filename, 
 				sizeof (netGame.m_info.szMissionName) - 1);
-	m [optMissionName].SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager.list [nNewMission].szMissionName));
+	m [optMissionName].SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nNewMission].szMissionName));
 	if ((nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, missionManager.nLastLevel);
 		Assert (strlen (szLevelText) < 32);
@@ -1194,7 +1194,7 @@ if (gameStates.app.bNostalgia) {
 	extraGameInfo [1].bTagOnlyHitObjs = 0;
 	}
 netGame.m_info.szMissionName [sizeof (netGame.m_info.szMissionName) - 1] = '\0';
-strncpy (netGame.m_info.szMissionTitle, missionManager.list [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0), sizeof (netGame.m_info.szMissionTitle));
+strncpy (netGame.m_info.szMissionTitle, missionManager [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0), sizeof (netGame.m_info.szMissionTitle));
 netGame.m_info.szMissionTitle [sizeof (netGame.m_info.szMissionTitle) - 1] = '\0';
 netGame.SetControlInvulTime (mpParams.nReactorLife * 5 * I2X (60));
 netGame.SetPlayTimeAllowed (mpParams.nMaxTime);

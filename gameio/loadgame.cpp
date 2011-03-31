@@ -894,7 +894,7 @@ int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 CleanupBeforeGame (nLevel, bRestore);
 /*---*/PrintLog ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
-									 (missionManager.list [missionManager.nCurrentMission].nDescentVersion == 1);
+									 (missionManager [missionManager.nCurrentMission].nDescentVersion == 1);
 MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
 if (!(gameStates.app.bHaveMod || missionManager.IsBuiltIn (hogFileManager.m_files.MsnHogFiles.szName)))
 	 MakeModFolders (gameStates.app.bD1Mission ? "Descent: First Strike" : "Descent 2: Counterstrike!");
@@ -2046,7 +2046,7 @@ if (!IsMultiGame) {
 			}
 		}
 	else {	//not the built-in mission.  check for add-on briefing
-		if ((missionManager.list [missionManager.nCurrentMission].nDescentVersion == 1) &&
+		if ((missionManager [missionManager.nCurrentMission].nDescentVersion == 1) &&
 			 (missionManager.nCurrentMission == missionManager.nBuiltInMission [1])) {
 			if (movieManager.m_bHaveExtras && (nLevel == 1)) {
 				if (movieManager.Play ("briefa.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) != MOVIE_ABORTED)

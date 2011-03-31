@@ -93,12 +93,15 @@ class CMissionData {
 		char					szCurrentLevel [LEVEL_NAME_LEN];
 		char					szBuiltinMissionFilename [2][9];
 		char					szBriefingFilename [2][13];
-		tMsnListEntry		list [MAX_MISSIONS + 1];
 		char					szLevelNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
 		char					szSecretLevelNames [MAX_SECRET_LEVELS_PER_MISSION][FILENAME_LEN];
 		int					secretLevelTable [MAX_SECRET_LEVELS_PER_MISSION];
 		char					szSongNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
 		char					nLevelState [MAX_LEVELS_PER_MISSION];
+
+	protected:
+		tMsnListEntry		m_list [MAX_MISSIONS + 1];
+		int					m_nCount;
 
 	public:
 		CMissionData ();
@@ -145,15 +148,17 @@ class CMissionManager : public CMissionData {
 
 		char* LevelStateName (char* szFile, int nLevel = 0); 
 
+		inline tMsnListEntry& operator[] (const int i) { return m_list [i]; }
+
 	private:
 		int LoadD1 (int nMission);
 		int LoadShareware (int nMission);
 		int LoadOEM (int nMission);
 		int ReadFile (const char *filename, int count, int location);
-		void AddBuiltinD1Mission (int *count);
-		void AddBuiltinD2XMission (int *count);
-		void AddBuiltinMission (int *count);
-		void Add (int *count, int anarchy_mode, int bD1Mission, int bSubFolder, int bHaveSubFolders, int nLocation);
+		void AddBuiltinD1Mission (void);
+		void AddBuiltinD2XMission (void);
+		void AddBuiltinMission (void);
+		void Add (int anarchy_mode, int bD1Mission, int bSubFolder, int bHaveSubFolders, int nLocation);
 		void Promote (const char * szMissionName, int * nTopPlace, int nMissionCount);
 		void MoveFolderUp (void);
 		void MoveFolderDown (int nSubFolder);

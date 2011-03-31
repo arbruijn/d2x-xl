@@ -808,7 +808,7 @@ m_cf.WriteInt (m_bBetweenLevels);
 if (STATE_VERSION >= 55)
 	m_cf.WriteInt (gameOpts->app.bEnableMods);
 // Save the mission info...
-m_cf.Write (missionManager.list + missionManager.nCurrentMission, sizeof (char), 9);
+m_cf.Write (missionManager [missionManager.nCurrentMission].filename, sizeof (char), 9);
 //Save level info
 m_cf.WriteInt (missionManager.nCurrentLevel);
 m_cf.WriteInt (missionManager.NextLevel ());

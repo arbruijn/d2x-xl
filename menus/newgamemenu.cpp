@@ -91,7 +91,7 @@ do {
 		return -1;
 	nDefaultMission = 0;
 	for (i = 0; i < nMissions; i++) {
-		msnNames.Push (missionManager.list [i].szMissionName);
+		msnNames.Push (missionManager [i].szMissionName);
 		j = MsnHasGameVer (msnNames [i]) ? 4 : 0;
 		if (!stricmp (msnNames [i] + j, gameConfig.szLastMission))
 			nDefaultMission = i;
@@ -102,17 +102,17 @@ do {
 	GameFlushInputs ();
 	if (nNewMission == -1)
 		return -1;      //abort!
-	} while (!missionManager.list [nNewMission].nDescentVersion);
+	} while (!missionManager [nNewMission].nDescentVersion);
 strncpy (gameConfig.szLastMission, msnNames [nNewMission] + (MsnHasGameVer (msnNames [nNewMission]) ? 4 : 0), sizeof (gameConfig.szLastMission));
 gameConfig.szLastMission [sizeof (gameConfig.szLastMission) - 1] = '\0';
 if (!missionManager.Load (nNewMission)) {
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_ERROR);
 	return -1;
 	}
-gameStates.app.bD1Mission = (missionManager.list [nNewMission].nDescentVersion == 1);
+gameStates.app.bD1Mission = (missionManager [nNewMission].nDescentVersion == 1);
 missionManager.nLastMission = nNewMission;
 if (bAnarchyOnly)
-	*bAnarchyOnly = missionManager.list [nNewMission].bAnarchyOnly;
+	*bAnarchyOnly = missionManager [nNewMission].bAnarchyOnly;
 return nNewMission;
 }
 
@@ -165,7 +165,7 @@ do {
 	if (nMissions < 1)
 		return;
 	for (i = 0; i < nMissions; i++) {
-		m.Push (missionManager.list [i].szMissionName);
+		m.Push (missionManager [i].szMissionName);
 		if (!stricmp (m [i], gameConfig.szLastMission))
 			nDefaultMission = i;
 		}
@@ -175,13 +175,13 @@ do {
 		return;         //abort!
 	nFolder = nMission;
 	}
-while (!missionManager.list [nMission].nDescentVersion);
+while (!missionManager [nMission].nDescentVersion);
 strcpy (gameConfig.szLastMission, m [nMission]);
 if (!missionManager.Load (nMission)) {
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_ERROR_MSNFILE); 
 	return;
 }
-gameStates.app.bD1Mission = (missionManager.list [nMission].nDescentVersion == 1);
+gameStates.app.bD1Mission = (missionManager [nMission].nDescentVersion == 1);
 missionManager.nLastMission = nMission;
 nNewLevel = 1;
 
@@ -293,7 +293,7 @@ for (;;) {
 	optUseMod = -1;
 
 	optSelMsn = m.AddMenu (TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
-	optMsnName = m.AddText ((nMission < 0) ? TXT_NONE_SELECTED : missionManager.list [nMission].szMissionName, 0);
+	optMsnName = m.AddText ((nMission < 0) ? TXT_NONE_SELECTED : missionManager [nMission].szMissionName, 0);
 	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, nPlayerMaxLevel);
 		Assert (strlen (szLevelText) < 100);
@@ -304,9 +304,9 @@ for (;;) {
 		}
 
 	if (nMission >= 0) {
-		bBuiltIn = missionManager.IsBuiltIn (missionManager.list [nMission].szMissionName);
+		bBuiltIn = missionManager.IsBuiltIn (missionManager [nMission].szMissionName);
 		gameOpts->app.bEnableMods = 1;
-		MakeModFolders (bBuiltIn ? hogFileManager.m_files.MsnHogFiles.szName : missionManager.list [nMission].filename);
+		MakeModFolders (bBuiltIn ? hogFileManager.m_files.MsnHogFiles.szName : missionManager [nMission].filename);
 		gameOpts->app.bEnableMods = bEnableMod;
 		if (gameStates.app.bHaveMod == bBuiltIn) {
 			m.AddText ("", 0);
