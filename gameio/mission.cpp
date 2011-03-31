@@ -341,6 +341,7 @@ strcpy (temp, filename);
 if ((p = strchr (temp, '.')) == NULL)
 	return 0;	//missing extension
 m_list [m_nCount].nDescentVersion = (p [3] == '2') ? 2 : 1;
+*p = '\0';
 // look if it's .mn2 or .msn
 strcpy (m_list [m_nCount].filename, temp);
 m_list [m_nCount].bAnarchyOnly = 0;
@@ -914,9 +915,7 @@ switch (m_list [nMission].location) {
 		sprintf (szFolder, "%s%s", gameFolders.szDataDir [0], *gameFolders.szDataDir [0] ? "/" : "");
 		break;
 	}
-sprintf (szFile, "%s%s", 
-			m_list [nMission].filename,
-			(m_list [nMission].nDescentVersion == 2) ? ".mn2" : ".msn");
+sprintf (szFile, "%s%s", m_list [nMission].filename, (m_list [nMission].nDescentVersion == 2) ? ".mn2" : ".msn");
 strlwr (szFile);
 if (!cf.Open (szFile, szFolder, "rb", 0)) {
 	nCurrentMission = -1;
@@ -945,10 +944,7 @@ else {
 				Warning (TXT_NO_HOG);
 		}
 	else {
-		sprintf (szFile, "%s%s%s", 
-					szFolder,
-					m_list [nMission].filename,
-					(m_list [nMission].nDescentVersion == 2) ? ".rl2" : ".rdl");
+		sprintf (szFile, "%s%s%s", szFolder, m_list [nMission].filename, (m_list [nMission].nDescentVersion == 2) ? ".rl2" : ".rdl");
 		strlwr (szFile);
 		bFoundHogFile = hogFileManager.UseMission (szFile);
 		if (bFoundHogFile) {

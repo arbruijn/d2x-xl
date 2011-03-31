@@ -1107,10 +1107,14 @@ for (;;) {
 		cf.ReadInt ();       //was hostagetext_offset
 
 	if (gameData.segs.nLevelVersion > 1) {
-		cf.GetS (szCurrentLevelPalette, sizeof (szCurrentLevelPalette));
-		if (szCurrentLevelPalette [strlen(szCurrentLevelPalette) - 1] == '\n')
-			szCurrentLevelPalette [strlen(szCurrentLevelPalette) - 1] = 0;
-	}
+		for (int i = 0; i < sizeof (szCurrentLevelPalette); i++) {
+			szCurrentLevelPalette [i] = (char) cf.ReadByte ();
+			if (szCurrentLevelPalette [i] == '\n')
+				szCurrentLevelPalette [i] = '\0';
+			if (szCurrentLevelPalette [i] == '\0')
+				break;
+			}
+		}
 	if ((gameData.segs.nLevelVersion <= 1) || (szCurrentLevelPalette [0] == 0)) // descent 1 level
 		strcpy (szCurrentLevelPalette, DEFAULT_LEVEL_PALETTE); //D1_PALETTE
 
