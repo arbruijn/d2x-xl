@@ -107,27 +107,27 @@ class CStack : public CArray< _T > {
 
 		inline void SortAscending (int left = 0, int right = -1) { 
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortAscending (m_data.buffer, left, (right >= 0) ? right : m_tos - 1); 
+				CQuickSort<_T>::SortAscending (this->m_data.buffer, left, (right >= 0) ? right : m_tos - 1); 
 				}
 
 		inline void SortDescending (int left = 0, int right = -1) {
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortDescending (m_data.buffer, left, (right >= 0) ? right : m_tos - 1);
+				CQuickSort<_T>::SortDescending (this->m_data.buffer, left, (right >= 0) ? right : m_tos - 1);
 			}
 #ifdef _WIN32
 		inline void SortAscending (comparator compare, int left = 0, int right = -1) {
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortAscending (m_data.buffer, left, (right >= 0) ? right : m_tos - 1, compare);
+				CQuickSort<_T>::SortAscending (this->m_data.buffer, left, (right >= 0) ? right : m_tos - 1, compare);
 			}
 
 		inline void SortDescending (comparator compare, int left = 0, int right = -1) {
 			if (m_data.buffer) 
-				CQuickSort<_T>::SortDescending (m_data.buffer, left, (right >= 0) ? right : m_tos - 1, compare);
+				CQuickSort<_T>::SortDescending (this->m_data.buffer, left, (right >= 0) ? right : m_tos - 1, compare);
 			}
 #endif
 
 		inline int BinSearch (_T key, int left = 0, int right = -1) {
-			return m_data.buffer ? CQuickSort<_T>::BinSearch (m_data.buffer, left, (right >= 0) ? right : m_tos - 1, key) : -1;
+			return this->m_data.buffer ? CQuickSort<_T>::BinSearch (this->m_data.buffer, left, (right >= 0) ? right : m_tos - 1, key) : -1;
 			}
 
 	};
