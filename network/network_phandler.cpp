@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "banlist.h"
 #include "timeout.h"
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
 typedef int ( __fastcall * pPacketHandler) (ubyte *dataP, int nLength);
@@ -53,7 +53,7 @@ static ubyte addressFilter [256];
 
 void InitPacketHandlers (void);
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 // Set a flag for packet types that do not carry a sender IP address
 // All other packets need to be patched with the IP address retrieved when
 // receiving the packet from the network adapter
@@ -76,12 +76,11 @@ memset (addressFilter, 0, sizeof (addressFilter));
 	 addressFilter [PID_DOWNLOAD] =
 	 addressFilter [PID_UPLOAD] =
 	 addressFilter [PID_XML_GAMEINFO] =
-	 addressFilter [PID_XML_GAMESTATUS] =
 	 addressFilter [(int) PID_TRACKER_ADD_SERVER] =
 	 addressFilter [(int) PID_TRACKER_GET_SERVERLIST] = 1;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 
 int NetworkBadPacketSize (int nLength, int nExpectedLength, const char *pszId)
 {
@@ -97,7 +96,7 @@ if (nLength == nExpectedLength - 4)
 return 1;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 
 int NetworkBadSecurity (int nSecurity, const char *pszId)
 {
@@ -110,7 +109,7 @@ PrintLog ("Networking: Bad security for %s\n", pszId);
 return 1;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 
 #define THEIR	reinterpret_cast<tSequencePacket*>(dataP)
 
@@ -119,50 +118,39 @@ int GameInfoHandler (ubyte *dataP, int nLength)
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int XMLGameInfoHandler (ubyte *dataP, int nLength)
 {
 	static CTimeout to (200);
 
-if (to.Expired () && !strcmp ((char*) dataP + 1, "Descent Game Info Request"))
-	NetworkSendXMLGameInfo ();
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int XMLGameStatusHandler (ubyte *dataP, int nLength)
-{
-	static CTimeout to (200);
-
-if (dataP && (networkData.xmlGameStatusRequestTime <= 0)) {
-	if (to.Expired () && !strcmp ((char*) dataP + 1, "Descent Game Status Request")) {
-		networkData.xmlGameStatusRequestTime = SDL_GetTicks ();
+if (dataP && (networkData.xmlGameInfoRequestTime <= 0)) {
+	if (to.Expired () && !strcmp ((char*) dataP + 1, "Descent Game Info Request")) {
+		networkData.xmlGameInfoRequestTime = SDL_GetTicks ();
 		for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			pingStats [i].ping = -1;
-			pingStats [i].launchTime = -networkData.xmlGameStatusRequestTime; // negative value suppresses display of returned ping on HUD
+			pingStats [i].launchTime = -networkData.xmlGameInfoRequestTime; // negative value suppresses display of returned ping on HUD
 			NetworkSendPing (i);
 			}
 		}
 	}
-else if (networkData.xmlGameStatusRequestTime > 0) {
+else if (networkData.xmlGameInfoRequestTime > 0) {
 	// check whether all players have returned a ping response
 	int i;
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (pingStats [i].ping < 0)
 			break;
 	// send XML game status when all players have returned a ping response or 1 second has passed since the XML game status request has arrived
-	if ((i == gameData.multiplayer.nPlayers) || (SDL_GetTicks () - networkData.xmlGameStatusRequestTime > 1000)) { 
-		NetworkSendXMLGameStatus ();
-		networkData.xmlGameStatusRequestTime = -1;
+	if ((i == gameData.multiplayer.nPlayers) || (SDL_GetTicks () - networkData.xmlGameInfoRequestTime > 1000)) { 
+		NetworkSendXMLGameInfo ();
+		networkData.xmlGameInfoRequestTime = -1;
 		to.Start ();
 		}
 	}
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int PlayersInfoHandler (ubyte *dataP, int nLength)
 {
@@ -179,7 +167,7 @@ networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_SYNC;
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int LiteInfoHandler (ubyte *dataP, int nLength)
 {
@@ -187,7 +175,7 @@ NetworkProcessLiteInfo (dataP);
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int GameListHandler (ubyte *dataP, int nLength)
 {
@@ -199,7 +187,7 @@ NetworkSendLiteInfo (THEIR);
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int AllGameInfoHandler (ubyte *dataP, int nLength)
 {
@@ -211,7 +199,7 @@ NetworkSendGameInfo (THEIR);
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int AddPlayerHandler (ubyte *dataP, int nLength)
 {
@@ -219,7 +207,7 @@ NetworkNewPlayer (THEIR);
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int RequestHandler (ubyte *dataP, int nLength)
 {
@@ -238,7 +226,7 @@ else if (networkData.nStatus == NETSTAT_PLAYING) {		// Someone wants to join a g
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int DumpHandler (ubyte *dataP, int nLength)
 {
@@ -246,7 +234,7 @@ NetworkProcessDump (THEIR);
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int QuitJoiningHandler (ubyte *dataP, int nLength)
 {
@@ -257,7 +245,7 @@ else if (networkData.nStatus == NETSTAT_PLAYING)
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int SyncHandler (ubyte *dataP, int nLength)
 {
@@ -289,7 +277,7 @@ else {
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int ExtraGameInfoHandler (ubyte *dataP, int nLength)
 {
@@ -298,7 +286,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int UploadHandler (ubyte *dataP, int nLength)
 {
@@ -307,7 +295,7 @@ if (IAmGameHost ())
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int DownloadHandler (ubyte *dataP, int nLength)
 {
@@ -316,7 +304,7 @@ if (extraGameInfo [0].bAutoDownload)
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int TrackerHandler (ubyte *dataP, int nLength)
 {
@@ -324,7 +312,7 @@ tracker.ReceiveServerList (dataP);
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int PDataHandler (ubyte *dataP, int nLength)
 {
@@ -333,7 +321,7 @@ if (IsNetworkGame)
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int NakedPDataHandler (ubyte *dataP, int nLength)
 {
@@ -342,7 +330,7 @@ if (IsNetworkGame)
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int ObjectDataHandler (ubyte *dataP, int nLength)
 {
@@ -350,7 +338,7 @@ NetworkReadObjectPacket (dataP);
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int EndLevelHandler (ubyte *dataP, int nLength)
 {
@@ -358,7 +346,7 @@ NetworkReadEndLevelPacket (dataP);
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int EndLevelShortHandler (ubyte *dataP, int nLength)
 {
@@ -366,7 +354,7 @@ NetworkReadEndLevelShortPacket (dataP);
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int GameUpdateHandler (ubyte *dataP, int nLength)
 {
@@ -386,7 +374,7 @@ if (IsTeamGame) {
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
    
 int PingSendHandler (ubyte *dataP, int nLength)
 {
@@ -395,7 +383,7 @@ NetworkPing (PID_PING_RETURN, dataP [1]);
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int PingReturnHandler (ubyte *dataP, int nLength)
 {
@@ -404,7 +392,7 @@ NetworkHandlePingReturn (dataP [1]);  // dataP [1] is CPlayerData who told us of
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int NamesReturnHandler (ubyte *dataP, int nLength)
 {
@@ -413,7 +401,7 @@ if (networkData.nNamesInfoSecurity != -1)
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int GamePlayersHandler (ubyte *dataP, int nLength)
 {
@@ -423,7 +411,7 @@ if (IAmGameHost () &&
 return 1;
 }
 
-//-------------------------------------------
+//------------------------------------------------------------------------------
 
 int MissingObjFramesHandler (ubyte *dataP, int nLength)
 {
@@ -431,7 +419,7 @@ NetworkProcessMissingObjFrames (reinterpret_cast<char*> (dataP));
 return 1;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 
 void InitPacketHandler (ubyte pId, pPacketHandler packetHandler, const char *pszInfo, int nLength, short nStatusFilter)
 {
@@ -443,7 +431,7 @@ piP->nLength = nLength;
 piP->nStatusFilter = nStatusFilter;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 
 #define	PHINIT(_pId, _handler, _nLength, _nStatusFilter) \
 			InitPacketHandler (_pId, _handler, #_pId, _nLength, _nStatusFilter)
@@ -451,7 +439,6 @@ piP->nStatusFilter = nStatusFilter;
 void InitPacketHandlers (void)
 {
 PHINIT (PID_XML_GAMEINFO, XMLGameInfoHandler, 0, (short) 0xFFFF);
-PHINIT (PID_XML_GAMESTATUS, XMLGameStatusHandler, 0, (short) 0xFFFF);
 PHINIT (PID_GAME_INFO, GameInfoHandler, 0, (short) 0xFFFF);
 PHINIT (PID_PLAYERSINFO, PlayersInfoHandler, ALLNETPLAYERSINFO_SIZE, (1 << NETSTAT_WAITING) | (1 << NETSTAT_PLAYING));
 PHINIT (PID_LITE_INFO, LiteInfoHandler, LITE_INFO_SIZE, 1 << NETSTAT_BROWSING);
@@ -480,7 +467,7 @@ PHINIT (PID_GAME_PLAYERS, GamePlayersHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTA
 PHINIT (PID_MISSING_OBJ_FRAMES, MissingObjFramesHandler, 0, (1 << NETSTAT_WAITING) | (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 
 int NetworkProcessPacket (ubyte *dataP, int nLength)
 {
@@ -509,5 +496,5 @@ else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 return 0;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 

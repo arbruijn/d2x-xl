@@ -130,7 +130,7 @@ typedef struct tNetworkData {
 	time_t				toWaitAllPoll;
 	tNetworkSyncData	sync [MAX_JOIN_REQUESTS];
 	short					nJoining;
-	int					xmlGameStatusRequestTime;
+	int					xmlGameInfoRequestTime;
 } __pack__ tNetworkData;
 
 extern tNetworkData networkData;
@@ -238,10 +238,8 @@ void NetworkSendGameInfo (tSequencePacket *their);
 void NetworkSendExtraGameInfo (tSequencePacket *their);
 void NetworkSendLiteInfo (tSequencePacket *their);
 void NetworkSendXMLGameInfo (void);
-void NetworkSendXMLGameStatus (void);
+void NetworkSendXMLGameInfo (void);
 char* XMLGameInfo (void);
-char* XMLGameStatus (void);
-void HandleXMLGameStatusRequest (void);
 void NetworkSendNetGameUpdate (void);
 int NetworkSendRequest (void);
 void NetworkSendSync (void);
@@ -259,8 +257,7 @@ void NetworkSyncExtras (tNetworkSyncData *syncP);
 tNetworkSyncData *FindJoiningPlayer (short nPlayer);
 int NetworkObjnumIsPast(int nObject, tNetworkSyncData *syncP);
 
-int XMLGameInfoHandler (ubyte *dataP, int nLength);
-int XMLGameStatusHandler (ubyte *dataP = NULL, int nLength = 0);
+int XMLGameInfoHandler (ubyte *dataP = NULL, int nLength = 0);
 
 void InitAddressFilter (void);
 

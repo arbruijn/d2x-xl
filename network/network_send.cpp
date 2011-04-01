@@ -415,18 +415,6 @@ if (IAmGameHost ()) {
 
 //------------------------------------------------------------------------------
 
-void NetworkSendXMLGameStatus (void)
-{
-if (IAmGameHost ()) {
-	gameStates.multi.bTrackerCall = 2;
-	char* szInfo = XMLGameStatus ();
-	SendInternetXMLGameInfoPacket (szInfo, networkData.packetSource.src_network, networkData.packetSource.src_node);
-	gameStates.multi.bTrackerCall = 0;
-	}
-}
-
-//------------------------------------------------------------------------------
-
 void NetworkSendLiteInfo (tSequencePacket *their)
 {
 	// Send game info to someone who requested it

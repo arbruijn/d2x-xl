@@ -485,7 +485,7 @@ NetworkListen ();
 if ((networkData.sync [0].nPlayer != -1) && !(gameData.app.nFrameCount & 63))
 	ResendSyncDueToPacketLoss (); // This will resend to network_player_rejoining
 #endif
-XMLGameStatusHandler ();
+XMLGameInfoHandler ();
 NetworkDoSyncFrame ();
 tracker.AddServer ();
 }

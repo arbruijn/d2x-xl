@@ -255,6 +255,35 @@ return GraphicsFxCompMode () | WeaponFxCompMode () | ShipFxCompMode () | HUDComp
 
 //------------------------------------------------------------------------------
 
+char* XMLPlayerInfo (char* xmlGameInfo)
+{
+strcat (xmlGameInfo, "  <PlayerInfo>\n");
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player%d name=\"%s\" ping=\"", i, netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].callsign);
+	if (pingStats [i].ping < 0)
+		strcat (xmlGameInfo, (i == gameData.multiplayer.nLocalPlayer) ? "0" : "> 1s");
+	else
+		sprintf (xmlGameInfo + strlen (xmlGameInfo), "\"%d\"", pingStats [i].ping);
+
+	ubyte* node = netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node ();
+	uint ip = (uint (node [0]) << 24) + (uint (node [1]) << 16) + (uint (node [2]) << 8) + uint (node [3]);
+
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "\" score=\"%d\" kills=\"%d\" deaths=\"%d\" country=\"%s\" />\n", 
+				gameData.multiplayer.players [i].score,
+				gameData.multiplayer.players [i].netKillsTotal,
+				gameData.multiplayer.players [i].netKilledTotal,
+#if 1
+				CountryFromIP (ip));
+#else
+				CountryFromIP (*((uint*) netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node ())));
+#endif
+	}
+strcat (xmlGameInfo, "  </PlayerInfo>\n");
+return xmlGameInfo;
+}
+
+//------------------------------------------------------------------------------
+
 char* XMLGameInfo (void)
 {
 	static char xmlGameInfo [UDP_PAYLOAD_SIZE];
@@ -297,6 +326,8 @@ strcat (xmlGameInfo, "  </Descent>\n");
 
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "  <Server Type=\"D2X-XL\" Version=\"%s\" Extensions=\"%s\" />\n",
 			 VERSION, szCompMode [nExtensions = CompetitionMode ()]);
+
+XMLPlayerInfo (xmlGameInfo);
 
 if (nExtensions) {
 	sprintf (xmlGameInfo + strlen (xmlGameInfo), "  <Extensions>\n");
@@ -354,43 +385,6 @@ PrintLog (xmlGameInfo);
 PrintLog ("\n");
 #endif
 return xmlGameInfo;
-}
-
-//------------------------------------------------------------------------------
-
-char* XMLGameStatus (void)
-{
-	static char xmlGameStatus [UDP_PAYLOAD_SIZE];
-
-sprintf (xmlGameStatus, "<?xml version=\"1.0\"?>\n<GameStatus>\n");
-sprintf (xmlGameStatus + strlen (xmlGameStatus), "  <PlayerCount>%d</PlayerCount>\n", gameData.multiplayer.nPlayers);
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	sprintf (xmlGameStatus + strlen (xmlGameStatus), "  <Player%d name=\"%s\" ping=\"", i, netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].callsign);
-	if (pingStats [i].ping < 0)
-		strcat (xmlGameStatus, (i == gameData.multiplayer.nLocalPlayer) ? "0" : "> 1s");
-	else
-		sprintf (xmlGameStatus + strlen (xmlGameStatus), "\"%d\"", pingStats [i].ping);
-
-	ubyte* node = netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node ();
-	uint ip = (uint (node [0]) << 24) + (uint (node [1]) << 16) + (uint (node [2]) << 8) + uint (node [3]);
-
-	sprintf (xmlGameStatus + strlen (xmlGameStatus), "\" score=\"%d\" kills=\"%d\" deaths=\"%d\" country=\"%s\" />\n", 
-				gameData.multiplayer.players [i].score,
-				gameData.multiplayer.players [i].netKillsTotal,
-				gameData.multiplayer.players [i].netKilledTotal,
-#if 1
-				CountryFromIP (ip));
-#else
-				CountryFromIP (*((uint*) netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node ())));
-#endif
-	}
-strcat (xmlGameStatus, "</GameStatus>\n");
-#if DBG
-PrintLog ("\nXML game status:\n\n");
-PrintLog (xmlGameStatus);
-PrintLog ("\n");
-#endif
-return xmlGameStatus;
 }
 
 //------------------------------------------------------------------------------
