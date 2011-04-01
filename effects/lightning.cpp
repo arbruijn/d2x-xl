@@ -910,7 +910,9 @@ if (m_nLife > 0) {
 color.red *= (float) (0.9 + dbl_rand () / 5);
 color.green *= (float) (0.9 + dbl_rand () / 5);
 color.blue *= (float) (0.9 + dbl_rand () / 5);
-if (!(bGlow = SetupGlow ()))
+if ((bGlow = SetupGlow ()) && glowRenderer.Available (GLOW_LIGHTNING))
+	glBlendEquation (GL_MAX);
+else
 	color.alpha *= 1.5f;
 if (nDepth)
 	color.alpha /= 2;
@@ -927,6 +929,8 @@ else {
 		RenderCore (&color, nDepth, nThread);
 		}
 	}
+if (bGlow)
+	glBlendEquation (GL_FUNC_ADD);
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif

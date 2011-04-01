@@ -448,8 +448,6 @@ if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != b
 	 ((nType == GLOW_LIGHTNING) != (m_nType == GLOW_LIGHTNING))) {
 #endif
 	End ();
-	if ((m_nType = nType) == GLOW_LIGHTNING)
-		glBlendEquation (GL_MAX);
 	m_bReplace = bReplace;
 	m_nStrength = nStrength;
 	m_brightness = brightness;
@@ -579,8 +577,6 @@ else
 	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
 	bool bDepthWrite = ogl.GetDepthWrite ();
 	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
-	//if (m_nType == GLOW_LIGHTNING)
-		glBlendEquation (GL_FUNC_ADD);
 
 	ogl.SetDepthWrite (false);
 	ogl.ResetClientStates (1);
