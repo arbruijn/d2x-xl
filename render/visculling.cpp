@@ -495,7 +495,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		AddObjectToSegList (nObject, nNewSeg);
 		}
 	}
-if (EGI_FLAG (nHitboxes, 0, 0, 0))
+if (CollisionModel ())
 	GatherLeftoutVisibleObjects ();
 PROF_END(ptBuildObjList)
 }

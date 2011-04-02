@@ -448,7 +448,7 @@ CATCH_OBJ (this, mType.physInfo.velocity.v.coord.y == 0);
 gameData.physics.nSegments = 0;
 
 mSaveOrient = info.position.mOrient;
-if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && EGI_FLAG (nHitboxes, 0, 0, 0)) {
+if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && CollisionModel ()) {
 	gameData.physics.ignoreObjs [0] = -1;
 	fq.p0 = 
 	fq.p1 = &info.position.vPos;

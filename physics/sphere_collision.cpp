@@ -421,7 +421,7 @@ if ((bThisPoly = UseHitbox (thisObjP)))
 else
 #endif
 vPos = thisObjP->info.position.vPos;
-if ((missionConfig.m_nCollisionModel || EGI_FLAG (nHitboxes, 0, 0, 0)) &&
+if (CollisionModel () &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
 	VmPointLineIntersection (vHit, *p0, *p1, vPos, 0);

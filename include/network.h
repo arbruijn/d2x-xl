@@ -361,6 +361,16 @@ return (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [IsMultiGame]) &&
 
 //	-----------------------------------------------------------------------------
 
+#define COLLISION_MODEL_SPHERES	0
+#define COLLISION_MODEL_BOXES		1
+
+static inline bool CollisionModel (void)
+{
+return (missionConfig.m_nCollisionModel || EGI_FLAG (nHitboxes, 0, 0, 0)) ? COLLISION_MODEL_SPHERES : COLLISION_MODEL_BOXES;
+}
+
+//	-----------------------------------------------------------------------------
+
 int NetworkStartGame (void);
 void NetworkRejoinGame (void);
 void NetworkLeaveGame (void);

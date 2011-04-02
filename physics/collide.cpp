@@ -305,7 +305,7 @@ vDist = pos1 - pos0;
 if ((CFixVector::Dot (vel0, vDist) <= 0) && (CFixVector::Dot (vel1, vDist) >= 0))
 	return 0;	//objects separating already
 
-if (!EGI_FLAG (nHitboxes, 0, 0, 0) &&
+if (!CollisionModel () &&
 	 ((thisP->info.nType == OBJ_PLAYER) || (thisP->info.nType == OBJ_ROBOT)||  (thisP->info.nType == OBJ_REACTOR)) &&
 	 ((otherP->info.nType == OBJ_PLAYER) || (otherP->info.nType == OBJ_ROBOT) || (otherP->info.nType == OBJ_REACTOR))) {
 	fix dist = vDist.Mag ();

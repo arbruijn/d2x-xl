@@ -91,7 +91,7 @@ else if (objP->info.nType == OBJ_ROBOT) {
 		blue *= fFade;
 		}
 	}
-if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
+if (!CollisionModel ()) {
 	DrawShieldSphere (objP, red, green, blue, alpha, 1);
 	return;
 	}
