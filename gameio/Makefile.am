@@ -5,4 +5,4 @@ INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcd
 libgameio_a_SOURCES = \
 	addon_bitmaps.cpp createmesh.cpp loadgeometry.cpp loadobjects.cpp hoard.cpp iff.cpp loadgame.cpp \
 	loadgamedata.cpp loadmodeldata.cpp loadsounds.cpp loadtextures.cpp mission.cpp paging.cpp piggy.cpp \
-	playerprofile.cpp savegame.cpp tga.cpp 
+	playerprofile.cpp savegame.cpp tga.cpp IpToCountry.cpp
