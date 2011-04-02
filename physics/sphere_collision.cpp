@@ -421,7 +421,7 @@ if ((bThisPoly = UseHitbox (thisObjP)))
 else
 #endif
 vPos = thisObjP->info.position.vPos;
-if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
+if ((missionConfig.m_nCollisionModel || EGI_FLAG (nHitboxes, 0, 0, 0)) &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
 	VmPointLineIntersection (vHit, *p0, *p1, vPos, 0);
@@ -500,7 +500,7 @@ return (t == nObject);
 //	-----------------------------------------------------------------------------
 
 int ComputeObjectHitpoint (short nThisObject, short nStartSeg, CFixVector *p0, CFixVector *p1, fix radP0, fix radP1, int flags,
-										 short* ignoreObjList, CFixVector& vClosestHitPoint, int &nHitType)
+									short* ignoreObjList, CFixVector& vClosestHitPoint, int &nHitType)
 {
 	CObject		* thisObjP = (nThisObject < 0) ? NULL : OBJECTS + nThisObject,
 			 		* otherObjP;
@@ -688,9 +688,9 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 			if (iFace >= nFaces)
 				continue;
 			//did we go through this wall/door?
-			nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check
-				segP->CheckLineToFaceSpecial (vHitPoint, p0, p1, radP1, nSide, iFace) :
-				segP->CheckLineToFaceRegular (vHitPoint, p0, p1, radP1, nSide, iFace);
+			nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
+								? segP->CheckLineToFaceSpecial (vHitPoint, p0, p1, radP1, nSide, iFace)
+								: segP->CheckLineToFaceRegular (vHitPoint, p0, p1, radP1, nSide, iFace);
 #if 1
 			if (bCheckVisibility && !nFaceHitType)
 					continue;
@@ -731,7 +731,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 															p1, radP0, radP1, nThisObject, ignoreObjList, flags,
 															tempSegList, &nTempSegs, nStartSeg);
 					if (subHitType != HIT_NONE) {
-						d = CFixVector::Dist(subHitPoint, *p0);
+						d = CFixVector::Dist (subHitPoint, *p0);
 						if (d < dMin) {
 							dMin = d;
 							vClosestHitPoint = subHitPoint;
@@ -939,8 +939,8 @@ if (nHitSegment == -1) {
 	if (fq->flags & FQ_VISIBILITY)
 		extraGameInfo [IsMultiGame].nHitboxes = 0;
 	nNewHitType = ComputeHitpoint (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->nSegment, fq->p1, 0, 0,
-								     (short) fq->nObject, fq->ignoreObjList, fq->flags, hitData->segList,
-									  &hitData->nSegments, -2);
+											 (short) fq->nObject, fq->ignoreObjList, fq->flags, hitData->segList,
+											 &hitData->nSegments, -2);
 	extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 	if (nNewHitSeg2 != -1) {
 		nHitType = nNewHitType;

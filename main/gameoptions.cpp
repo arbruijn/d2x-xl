@@ -668,9 +668,9 @@ m_bSecretSave = 1;
 int CMissionConfig::Load (char* szFilename)
 {
 	CConfigManager args;
-	CFile			cf;
-	char			szConfig [FILENAME_LEN];
-	bool			bLocal;
+	CFile				cf;
+	char				szConfig [FILENAME_LEN];
+	bool				bLocal;
 
 	static const char* szShipArgs [MAX_SHIP_TYPES] = {"-medium_ship", "-light_ship", "-heavy_ship"};
 
@@ -692,6 +692,7 @@ if (args.Parse (&cf)) {
 	m_playerShip = args.Value ("-player_ship", bLocal ? m_playerShip : -1);
 	m_bTeleport = args.Value ("-teleport", bLocal ? m_bTeleport : 1);
 	m_bSecretSave = args.Value ("-secret_save", bLocal ? m_bSecretSave : 1);
+	m_nCollisionModel = args.Value ("-collision_model", bLocal ? m_nCollisionModel : 1);
 	}
 cf.Close ();
 return 1;
