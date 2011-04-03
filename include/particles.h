@@ -130,6 +130,7 @@ typedef struct tParticle {
 	CFixVector	m_vDrift;
 	int			m_nTTL;				//time to live
 	int			m_nLife;				//remaining life time
+	int			m_nFadeTime;
 	float			m_decay;
 	int			m_nDelay;			//time between creation and appearance
 	int			m_nUpdated;
@@ -152,7 +153,6 @@ typedef struct tParticle {
 	char			m_bEmissive;
 	char			m_bReversed;
 	char			m_nFadeType;
-	char			m_nFadeState;
 	char			m_nClass;
 	char			m_iFrame;
 	char			m_nFrames;

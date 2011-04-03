@@ -24,9 +24,9 @@
 #include "renderthreads.h"
 
 static tRgbaColorf smokeColors [] = {
-	 {0.5f, 0.5f, 0.5f, 1.0f},
-	 {0.75f, 0.75f, 0.75f, 1.0f},
-	 {1.0f, 1.0f, 1.0f, 1.0f},
+	 {0.5f, 0.5f, 0.5f, 2.0f},	// alpha == 2.0 means that the particles are red in the beginning
+	 {0.75f, 0.75f, 0.75f, 2.0f},
+	 {1.0f, 1.0f, 1.0f, 2.0f},
 	 {1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, -0.25f},
 	 {1.0f, 1.0f, 1.0f, -0.1f}
 	};

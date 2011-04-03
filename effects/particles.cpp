@@ -103,6 +103,9 @@ return vPos;
 
 #define RANDOM_FADE	 (0.95f + (float) rand () / (float) RAND_MAX / 20.0f)
 
+static int bounceFlags [PARTICLE_TYPES] = {2,2,1,1,1,2,1,2,2,2};
+static int brightFlags [PARTICLE_TYPES] = {1,1,0,0,0,1,1,0,1,1};
+
 int CParticle::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 							  short nSegment, int nLife, int nSpeed, char nParticleSystemType,
 							  char nClass, float nScale, tRgbaColorf *colorP, int nCurTime,
@@ -137,7 +140,7 @@ m_bSkybox = SEGMENTS [nSegment].Function () == SEGMENT_FUNC_SKYBOX;
 if (nSegment < 0)
 	nSegment = nSegment;
 #endif
-m_nBounce = ((m_nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1 : 2;
+m_nBounce = bounceFlags [m_nType];
 m_bReversed = 0;
 m_nUpdated = m_nMoved = nCurTime;
 if (nLife < 0)
@@ -147,9 +150,9 @@ m_nDelay = 0; //bStart ? randN (nLife) : 0;
 
 m_color [0] = m_color [1] = color = (colorP && (m_bEmissive != 2)) ? *colorP : defaultParticleColor;
 
-if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
+if (!brightFlags [nType]) {
 	m_bBright = 0;
-	m_nFadeState = -1;
+	m_nFadeTime = -1;
 	if (colorP && (colorP->alpha < 0)) {
 		ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
 		m_color [0].alpha = float (3 * a + randN (2 * a)) / 255.0f;
@@ -163,13 +166,16 @@ else {
 			m_color [0].green *= RANDOM_FADE;
 			m_color [0].blue *= RANDOM_FADE;
 			}
-		m_nFadeState = 0;
+		m_nFadeTime = 0;
 		} 
 	else {
-		m_color [0].red = 1.0f;
-		m_color [0].green = 0.5f;
+		m_color [0].red = 0.9f + float (rand ()) / float (10 * RAND_MAX);
+		m_color [0].green = 0.5f + float (rand ()) / float (2 * RAND_MAX);
 		m_color [0].blue = 0.0f;
-		m_nFadeState = 2;
+		m_nFadeTime = 200 + rand () % 50;
+		m_color [1].red *= RANDOM_FADE;
+		m_color [1].green *= RANDOM_FADE;
+		m_color [1].blue *= RANDOM_FADE;
 		}
 	if (m_bEmissive /*&& (m_bEmissive < 3)*/)
 		; // m_color [0].alpha = float (SMOKE_START_ALPHA + 64) / 255.0f;
@@ -182,10 +188,14 @@ else {
 				m_color [0].alpha = float (3 * a + randN (2 * a)) / 255.0f;
 				} 
 			else {
-				if (2 == (m_nFadeState = char (colorP->alpha))) {
-					m_color [0].red = 1.0f;
-					m_color [0].green = 0.5f;
+				if (char (colorP->alpha) == 2) {
+					m_color [0].red = 0.9f + float (rand ()) / float (10 * RAND_MAX);
+					m_color [0].green = 0.5f + float (rand ()) / float (2 * RAND_MAX);
 					m_color [0].blue = 0.0f;
+					m_nFadeTime = 200 + rand () % 50;
+					m_color [1].red *= RANDOM_FADE;
+					m_color [1].green *= RANDOM_FADE;
+					m_color [1].blue *= RANDOM_FADE;
 					}
 				m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 				}
@@ -215,6 +225,12 @@ else {
 	if (nType == RAIN_PARTICLES)
 		m_vDrift = m_vDir;
 	else {
+#if 1
+		m_vDrift.v.coord.x = randN (I2X (1) / 4) - I2X (1) / 8;
+		m_vDrift.v.coord.y = randN (I2X (1) / 4) - I2X (1) / 8;
+		m_vDrift.v.coord.z = randN (I2X (1) / 4) - I2X (1) / 8;
+		m_vDrift += m_vDir;
+#else
 		CAngleVector a;
 		CFixMatrix m;
 		a.v.coord.p = randN (I2X (1) / 4) - I2X (1) / 8;
@@ -224,6 +240,7 @@ else {
 		if (nType == WATERFALL_PARTICLES)
 			CFixVector::Normalize (m_vDir);
 		m_vDrift = m * m_vDir;
+#endif
 		CFixVector::Normalize (m_vDrift);
 		if (nType == WATERFALL_PARTICLES) {
 			fix dot = CFixVector::Dot (m_vDir, m_vDrift);
@@ -269,14 +286,22 @@ else {
 	else
 		m_nRad *= 2;
 	if (mOrient) {
-		CAngleVector vRot;
-		CFixMatrix mRot;
+		static CFixMatrix mRot [9 * 9];
+		static char bInit = 1;
 
-		vRot.v.coord.b = 0;
-		vRot.v.coord.p = 2048 - ((d_rand () % 9) * 512);
-		vRot.v.coord.h = 2048 - ((d_rand () % 9) * 512);
-		mRot = CFixMatrix::Create (vRot);
-		m_mOrient = *mOrient * mRot;
+		if (bInit) {
+			bInit = 0;
+			for (int p = 0; p < 9; p++) { 
+				for (int h = 0; h < 9; h++) {
+					CAngleVector vRot;
+					vRot.v.coord.b = 0;
+					vRot.v.coord.p = 2048 - (p * 512);
+					vRot.v.coord.h = 2048 - (h * 512);
+					mRot [p * 9 + h] = CFixMatrix::Create (vRot);
+					}
+				}
+			}
+		m_mOrient = *mOrient * mRot [(d_rand () % 9) * 9 + (d_rand () % 9)];
 		}
 	}
 
@@ -284,13 +309,15 @@ else {
 m_vStartPos = m_vPos;
 
 if (m_bBlowUp) {
-	m_nWidth = (nType == WATERFALL_PARTICLES) ? m_nRad * 0.6666667f
-			: m_nRad;
+	m_nWidth = (nType == WATERFALL_PARTICLES) 
+				  ? m_nRad * 0.6666667f
+				  : m_nRad;
 	m_nHeight = m_nRad;
 	}
 else {
-	m_nWidth = (nType == WATERFALL_PARTICLES) ? m_nRad * 0.3333333f
-			: m_nRad * 2;
+	m_nWidth = (nType == WATERFALL_PARTICLES) 
+				  ? m_nRad * 0.3333333f
+			     : m_nRad * 2;
 	m_nHeight = m_nRad * 2;
 	}
 m_nWidth /= 65536.0f;
@@ -471,35 +498,46 @@ if ((m_nType <= WATERFALL_PARTICLES) && ((m_nType != BUBBLE_PARTICLES) || gameOp
 void CParticle::UpdateColor (float fBrightness, int nThread) 
 {
 if (m_nType <= SMOKE_PARTICLES) {
-	if (m_nFadeState > 0) {
+	if (m_nFadeTime > 0) {
+#if 1
+		if (m_nTTL - m_nLife < m_nFadeTime) 
+			m_color [0].green *= 0.9f;
+		else {
+			m_color [0].red = m_color [1].red;
+			m_color [0].green = m_color [1].green;
+			m_color [0].blue = m_color [1].blue;
+			m_nFadeTime = -1;
+			}
+#else
 		if (m_color [0].green < m_color [1].green) {
 #if SMOKE_SLOWMO
-			m_color [0].green += 1.0f / 20.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
+			m_color [0].green += 1.0f / 40.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
 #else
-			m_color [0].green += 1.0f / 20.0f;
+			m_color [0].green += 1.0f / 40.0f;
 #endif
 			if (m_color [0].green > m_color [1].green) {
 				m_color [0].green = m_color [1].green;
-				m_nFadeState--;
+				m_nFadeTime--;
 				}
 			}
 		if (m_color [0].blue < m_color [1].blue) {
 #if SMOKE_SLOWMO
-			m_color [0].blue += 1.0f / 10.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
+			m_color [0].blue += 1.0f / 20.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
 #else
-			m_color [0].blue += 1.0f / 10.0f;
+			m_color [0].blue += 1.0f / 20.0f;
 #endif
 			if (m_color [0].blue > m_color [1].blue) {
 				m_color [0].blue = m_color [1].blue;
-				m_nFadeState--;
+				m_nFadeTime--;
 				}
 			}
+#endif
 		}
-	else if (m_nFadeState == 0) {
+	else if (m_nFadeTime == 0) {
 		m_color [0].red = m_color [1].red * RANDOM_FADE;
 		m_color [0].green = m_color [1].green * RANDOM_FADE;
 		m_color [0].blue = m_color [1].blue * RANDOM_FADE;
-		m_nFadeState = -1;
+		m_nFadeTime = -1;
 	}
 #if SMOKE_LIGHTING //> 1
 	if (gameOpts->render.particles.nQuality == 3) {
