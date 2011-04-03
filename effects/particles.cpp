@@ -140,7 +140,7 @@ else {
 		m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
 		m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
 		m_color [0].blue = 0.0f;
-		m_nFadeTime = 150 + rand () % 50;
+		m_nFadeTime = 100 + rand () % 100;
 		m_color [1].red *= RANDOM_FADE;
 		m_color [1].green *= RANDOM_FADE;
 		m_color [1].blue *= RANDOM_FADE;
@@ -160,7 +160,7 @@ else {
 					m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
 					m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
 					m_color [0].blue = 0.0f;
-					m_nFadeTime = 150 + rand () % 50;
+					m_nFadeTime = 100 + rand () % 100;
 					m_color [1].red *= RANDOM_FADE;
 					m_color [1].green *= RANDOM_FADE;
 					m_color [1].blue *= RANDOM_FADE;
