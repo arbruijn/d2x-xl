@@ -200,6 +200,11 @@ class CParticle : public tParticle {
 		int SetupColor (float brightness);
 		fix Drag (void);
 		int Bounce (int nThread);
+		void InitColor (tRgbaColorf* colorP, float fBrightness, char nParticleSystemType);
+		int InitDrift (CFixVector* vDir, int nSpeed);
+		void InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient);
+		void InitSize (float nScale, CFixMatrix *mOrient);
+		void InitAnimation (void);
 
 };
 
