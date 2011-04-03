@@ -46,7 +46,7 @@
 
 //------------------------------------------------------------------------------
 
-#if 0
+#if 1
 
 tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
 	{{NULL, "", 1, 0, 0, 0, 0, 0},
