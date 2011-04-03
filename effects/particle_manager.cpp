@@ -364,7 +364,7 @@ return 1;
 
 int CParticleManager::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 										short nSegment, int nMaxEmitters, int nMaxParts,
-										float fScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
+										float fScale, /*int nDensity, int nPartsPerPos,*/ int nLife, int nSpeed, char nType,
 										int nObject, tRgbaColorf *colorP, int bBlowUpParts, char nSide)
 {
 if (!gameOpts->render.particles.nQuality)
@@ -386,8 +386,8 @@ else
 }
 if (!systemP)
 	return -1;
-int i = systemP->Create (vPos, vDir, mOrient, nSegment, nMaxEmitters, nMaxParts, fScale, nDensity,
-								 nPartsPerPos, nLife, nSpeed, nType, nObject, colorP, bBlowUpParts, nSide);
+int i = systemP->Create (vPos, vDir, mOrient, nSegment, nMaxEmitters, nMaxParts, fScale, /*nDensity, nPartsPerPos,*/ 
+								 nLife, nSpeed, nType, nObject, colorP, bBlowUpParts, nSide);
 if (i < 1)
 	return i;
 return systemP->Id ();

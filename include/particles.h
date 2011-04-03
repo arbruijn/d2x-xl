@@ -214,7 +214,7 @@ typedef struct tParticleEmitter {
 	int					m_nParts;			//curent no. of particles
 	int					m_nFirstPart;
 	int					m_nMaxParts;		//max. no. of particles
-	int					m_nDensity;			//density (opaqueness) of particle emitter
+	//int					m_nDensity;			//density (opaqueness) of particle emitter
 	float					m_fPartsPerTick;
 	int					m_nTicks;
 	int					m_nPartsPerPos;	//particles per interpolated position mutiplier of moving objects
@@ -248,7 +248,7 @@ class CParticleEmitter : public tParticleEmitter {
 		~CParticleEmitter () { Destroy (); };
 		int Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 						short nSegment, int nObject, int nMaxParts, float fScale,
-						int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
+						/*int nDensity, int nPartsPerPos,*/ int nLife, int nSpeed, char nType,
 						tRgbaColorf *colorP, int nCurTime, int bBlowUpParts, CFixVector *vEmittingFace);
 		int Destroy (void);
 		int Update (int nCurTime, int nThread);
@@ -261,7 +261,7 @@ class CParticleEmitter : public tParticleEmitter {
 		void SetFadeType (int nFadeType);
 		void SetSpeed (int nSpeed);
 		void SetType (int nType);
-		int SetDensity (int nMaxParts, int nDensity);
+		int SetDensity (int nMaxParts/*, int nDensity*/);
 		void SetScale (float fScale);
 		inline bool IsAlive (int nCurTime)
 		 { return (m_nLife < 0) || (m_nBirth + m_nLife > nCurTime); }
@@ -301,14 +301,14 @@ class CParticleSystem : public tParticleSystem {
 		void Init (int nId);
 		int Create (CFixVector *pPos, CFixVector *pDir, CFixMatrix *pOrient,
 					   short nSegment, int nMaxEmitters, int nMaxParts,
-						float fScale, int nDensity, int nPartsPerPos,
+						float fScale, /*int nDensity, int nPartsPerPos,*/
 						int nLife, int nSpeed, char nType, int nObject,
 						tRgbaColorf *pColor, int bBlowUpParts, char nFace);
 		void Destroy (void);
 		int Render (int nThread);
 		int Update (int nThread);
 		int RemoveEmitter (int i);
-		void SetDensity (int nMaxParts, int nDensity);
+		void SetDensity (int nMaxParts/*, int nDensity*/);
 		void SetPartScale (float fScale);
 		void SetPos (CFixVector *vPos, CFixMatrix *mOrient, short nSegment);
 		void SetDir (CFixVector *vDir);
@@ -387,7 +387,7 @@ class CParticleManager {
 		void Render (void);
 		int Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 						short nSegment, int nMaxEmitters, int nMaxParts,
-						float fScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
+						float fScale, /*int nDensity, int nPartsPerPos,*/ int nLife, int nSpeed, char nType,
 						int nObject, tRgbaColorf *colorP, int bBlowUpParts, char nSide);
 		int Destroy (int iParticleSystem);
 		void Cleanup (void);
@@ -420,9 +420,9 @@ class CParticleManager {
 			GetSystem (i).SetPos (vPos, mOrient, nSegment);
 			}
 
-		inline void SetDensity (int i, int nMaxParts, int nDensity) {
+		inline void SetDensity (int i, int nMaxParts/*, int nDensity*/) {
 			nMaxParts = MaxParticles (nMaxParts, gameOpts->render.particles.nDens [0]);
-			GetSystem (i).SetDensity (nMaxParts, nDensity);
+			GetSystem (i).SetDensity (nMaxParts/*, nDensity*/);
 			}
 
 		inline void SetScale (int i, float fScale) {

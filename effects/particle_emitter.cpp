@@ -118,7 +118,7 @@ return 1;
 
 int CParticleEmitter::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 										short nSegment, int nObject, int nMaxParts, float fScale,
-										int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
+										/*int nDensity, int nPartsPerPos, */int nLife, int nSpeed, char nType,
 										tRgbaColorf *colorP, int nCurTime, int bBlowUpParts, CFixVector *vEmittingFace)
 {
 if (!m_particles.Create (nMaxParts))
@@ -150,8 +150,8 @@ m_nPartLimit =
 m_nMaxParts = nMaxParts;
 m_nFirstPart = 0;
 m_fScale = fScale;
-m_nDensity = nDensity;
-m_nPartsPerPos = nPartsPerPos;
+//m_nDensity = nDensity;
+//m_nPartsPerPos = nPartsPerPos;
 m_nSegment = nSegment;
 m_nObject = nObject;
 if ((nObject >= 0) && (nObject < 0x70000000)) {
@@ -395,7 +395,7 @@ m_nType = nType;
 
 //------------------------------------------------------------------------------
 
-int CParticleEmitter::SetDensity (int nMaxParts, int nDensity)
+int CParticleEmitter::SetDensity (int nMaxParts/*, int nDensity*/)
 {
 	CParticle	*pp;
 	int			h;
@@ -420,7 +420,7 @@ if (nMaxParts > m_nPartLimit) {
 		}
 	m_particles.SetBuffer (pp, 0, nMaxParts);
 	}
-m_nDensity = nDensity;
+//m_nDensity = nDensity;
 m_nMaxParts = nMaxParts;
 #if 0
 if (m_nParts > nMaxParts)

@@ -47,7 +47,7 @@
 
 int CParticleSystem::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 									  short nSegment, int nMaxEmitters, int nMaxParts,
-									  float fScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
+									  float fScale, /*int nDensity, int nPartsPerPos,*/ int nLife, int nSpeed, char nType,
 									  int nObject, tRgbaColorf *colorP, int bBlowUpParts, char nSide)
 {
 	int			i;
@@ -71,8 +71,8 @@ m_nSpeed = nSpeed;
 m_nBirth = gameStates.app.nSDLTicks [0];
 m_nMaxEmitters = nMaxEmitters;
 for (i = 0; i < nMaxEmitters; i++)
-	if (m_emitters [i].Create (vPos, vDir, mOrient, nSegment, nObject, nMaxParts, fScale, nDensity,
-										nPartsPerPos, nLife, nSpeed, nType, colorP, gameStates.app.nSDLTicks [0], bBlowUpParts, (nSide < 0) ? NULL : vEmittingFace))
+	if (m_emitters [i].Create (vPos, vDir, mOrient, nSegment, nObject, nMaxParts, fScale, /*nDensity, nPartsPerPos,*/ 
+										nLife, nSpeed, nType, colorP, gameStates.app.nSDLTicks [0], bBlowUpParts, (nSide < 0) ? NULL : vEmittingFace))
 		m_nEmitters++;
 	else {
 		particleManager.Destroy (m_nId);
@@ -153,12 +153,12 @@ if (m_bValid && m_emitters.Buffer ())
 
 //------------------------------------------------------------------------------
 
-void CParticleSystem::SetDensity (int nMaxParts, int nDensity)
+void CParticleSystem::SetDensity (int nMaxParts/*, int nDensity*/)
 {
 if (m_bValid && m_emitters.Buffer ()) {
 	nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
 	for (int i = 0; i < m_nEmitters; i++)
-		m_emitters [i].SetDensity (nMaxParts, nDensity);
+		m_emitters [i].SetDensity (nMaxParts/*, nDensity*/);
 	}
 }
 
