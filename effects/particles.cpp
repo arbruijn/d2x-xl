@@ -137,8 +137,8 @@ else {
 		m_nFadeTime = 0;
 		} 
 	else {
-		m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
-		m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
+		m_color [0].red = 0.75f + float (rand ()) / float (4 * RAND_MAX);
+		m_color [0].green = m_color [0].red * (0.75f + float (rand ()) / float (4 * RAND_MAX));
 		m_color [0].blue = 0.0f;
 		m_nFadeTime = 100 + rand () % 100;
 		m_color [1].red *= RANDOM_FADE;
@@ -157,8 +157,8 @@ else {
 				} 
 			else {
 				if (char (colorP->alpha) == 2) {
-					m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
-					m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
+					m_color [0].red = 0.75f + float (rand ()) / float (4 * RAND_MAX);
+					m_color [0].green = m_color [0].red * (0.75f + float (rand ()) / float (4 * RAND_MAX));
 					m_color [0].blue = 0.0f;
 					m_nFadeTime = 100 + rand () % 100;
 					m_color [1].red *= RANDOM_FADE;
@@ -458,8 +458,8 @@ else {
 		m_nFadeTime = 0;
 		} 
 	else {
-		m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
-		m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
+		m_color [0].red = 0.75f + float (rand ()) / float (4 * RAND_MAX);
+		m_color [0].green = m_color [0].red * (0.75f + float (rand ()) / float (4 * RAND_MAX));
 		m_color [0].blue = 0.0f;
 		m_nFadeTime = 100 + rand () % 100;
 		m_color [1].red *= RANDOM_FADE;
@@ -478,8 +478,8 @@ else {
 				} 
 			else {
 				if (char (colorP->alpha) == 2) {
-					m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
-					m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
+					m_color [0].red = 0.75f + float (rand ()) / float (4 * RAND_MAX);
+					m_color [0].green = m_color [0].red * (0.75f + float (rand ()) / float (4 * RAND_MAX));
 					m_color [0].blue = 0.0f;
 					m_nFadeTime = 100 + rand () % 100;
 					m_color [1].red *= RANDOM_FADE;
