@@ -458,10 +458,10 @@ else {
 		m_nFadeTime = 0;
 		} 
 	else {
-		m_color [0].red = 0.75f + float (rand ()) / float (4 * RAND_MAX);
-		m_color [0].green = m_color [0].red * (0.75f + float (rand ()) / float (4 * RAND_MAX));
+		m_color [0].red = 1.0f; //0.75f + float (rand ()) / float (4 * RAND_MAX);
+		m_color [0].green = /*m_color [0].red **/ (0.75f + float (rand ()) / float (4 * RAND_MAX));
 		m_color [0].blue = 0.0f;
-		m_nFadeTime = 100 + rand () % 100;
+		m_nFadeTime = 150 + rand () % 150;
 		m_color [1].red *= RANDOM_FADE;
 		m_color [1].green *= RANDOM_FADE;
 		m_color [1].blue *= RANDOM_FADE;
@@ -478,10 +478,10 @@ else {
 				} 
 			else {
 				if (char (colorP->alpha) == 2) {
-					m_color [0].red = 0.75f + float (rand ()) / float (4 * RAND_MAX);
-					m_color [0].green = m_color [0].red * (0.75f + float (rand ()) / float (4 * RAND_MAX));
+					m_color [0].red = 1.0f; //0.75f + float (rand ()) / float (4 * RAND_MAX);
+					m_color [0].green = /*m_color [0].red **/ (0.75f + float (rand ()) / float (4 * RAND_MAX));
 					m_color [0].blue = 0.0f;
-					m_nFadeTime = 100 + rand () % 100;
+					m_nFadeTime = 50 + rand () % 150;
 					m_color [1].red *= RANDOM_FADE;
 					m_color [1].green *= RANDOM_FADE;
 					m_color [1].blue *= RANDOM_FADE;
@@ -805,8 +805,10 @@ void CParticle::UpdateColor (float fBrightness, int nThread)
 if (m_nType <= SMOKE_PARTICLES) {
 	if (m_nFadeTime > 0) {
 #if 1
-		if (m_nTTL - m_nLife < m_nFadeTime) 
-			m_color [0].green *= 0.9f;
+		if (m_nTTL - m_nLife < m_nFadeTime) {
+			m_color [0].red *= 0.95f;
+			m_color [0].green *= 0.85f;
+			}
 		else {
 			m_color [0].red = m_color [1].red;
 			m_color [0].green = m_color [1].green;
