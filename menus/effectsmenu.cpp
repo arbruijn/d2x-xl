@@ -135,7 +135,7 @@ if (gameOpts->render.particles.nQuality != v) {
 	else
 		m->m_bRebuild = -1;
 	gameOpts->render.particles.nQuality = v;
-	sprintf (m->m_text, TXT_SMOKE, pszNoneBasicFull [gameOpts->render.particles.nQuality]);
+	sprintf (m->m_text, TXT_SMOKE, pszNoneBasicStdFull [gameOpts->render.particles.nQuality]);
 	}
 
 if (effectOpts.nShadows >= 0) {
@@ -245,9 +245,9 @@ do {
 
 	optEnableFx = m.AddCheck (TXT_ENABLE_EFFECTS, gameOpts->render.effects.bEnabled, KEY_F, HTX_ENABLE_EFFECTS);
 	m.AddText ("");
-	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicFull [gameOpts->render.particles.nQuality]);
+	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicStdFull [gameOpts->render.particles.nQuality]);
 	*szSlider = *(TXT_SMOKE - 1);
-	effectOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 2, KEY_S, HTX_SMOKE);
+	effectOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 3, KEY_S, HTX_SMOKE);
 	if (!gameStates.render.bHaveStencilBuffer)
 		effectOpts.nShadows = -1;
 	else {

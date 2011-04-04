@@ -316,7 +316,7 @@ do {
 		AddSmokeSliders (m, 4);
 
 	m.AddText ("");
-#if 0
+#if 1
 	optCollisions = m.AddCheck (TXT_SMOKE_COLLISION, gameOpts->render.particles.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
 #endif
 	optDisperse = m.AddCheck (TXT_SMOKE_DISPERSE, gameOpts->render.particles.bDisperse, KEY_D, HTX_ADVRND_SMOKEDISP);
@@ -332,7 +332,7 @@ do {
 	GET_VAL (gameOpts->render.particles.bRobots, smokeOpts.nRobots);
 	GET_VAL (gameOpts->render.particles.bMissiles, smokeOpts.nMissiles);
 	GET_VAL (gameOpts->render.particles.bDebris, smokeOpts.nDebris);
-#if 0
+#if 1
 	GET_VAL (gameOpts->render.particles.bCollisions, optCollisions);
 #else
 	gameOpts->render.particles.bCollisions = 0;
