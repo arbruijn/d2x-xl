@@ -530,7 +530,11 @@ for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 particleBuffer [nBuffer].Add (particleP, brightness, pos, rad);
 return nBuffer;
 #else
+CFloatVector pos;
+pos.Assign (particleP->m_vPos);
+float rad = particleP->Rad ();
 particleBuffer [0].Add (particleP, brightness, pos, rad);
+return 0;
 #endif
 }
 
