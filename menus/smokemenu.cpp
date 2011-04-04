@@ -293,7 +293,6 @@ do {
 	memset (&smokeOpts, 0xff, sizeof (smokeOpts));
 	nOptSmokeLag = optStaticParticles = optCollisions = optDisperse = -1;
 
-	smokeOpts.nUse = m.AddCheck (TXT_USE_SMOKE, extraGameInfo [0].bUseParticles, KEY_U, HTX_ADVRND_USESMOKE);
 	for (j = 1; j < 5; j++)
 		smokeOpts.nSize [j] =
 		smokeOpts.nDensity [j] = 
@@ -375,32 +374,30 @@ do {
 	do {
 		i = m.Menu (NULL, TXT_SMOKE_DETAILS_TITLE, SmokeOptionsCallback, &choice);
 		} while (i >= 0);
-	if ((extraGameInfo [0].bUseParticles = m [smokeOpts.nUse].m_value)) {
-		GET_VAL (gameOpts->render.particles.bPlayers, smokeOpts.nPlayer);
-		GET_VAL (gameOpts->render.particles.bRobots, smokeOpts.nRobots);
-		GET_VAL (gameOpts->render.particles.bMissiles, smokeOpts.nMissiles);
-		GET_VAL (gameOpts->render.particles.bDebris, smokeOpts.nDebris);
-		GET_VAL (gameOpts->render.particles.bStatic, optStaticParticles);
+	GET_VAL (gameOpts->render.particles.bPlayers, smokeOpts.nPlayer);
+	GET_VAL (gameOpts->render.particles.bRobots, smokeOpts.nRobots);
+	GET_VAL (gameOpts->render.particles.bMissiles, smokeOpts.nMissiles);
+	GET_VAL (gameOpts->render.particles.bDebris, smokeOpts.nDebris);
+	GET_VAL (gameOpts->render.particles.bStatic, optStaticParticles);
 #if 0
-		GET_VAL (gameOpts->render.particles.bCollisions, optCollisions);
+	GET_VAL (gameOpts->render.particles.bCollisions, optCollisions);
 #else
-		gameOpts->render.particles.bCollisions = 0;
+	gameOpts->render.particles.bCollisions = 0;
 #endif
-		GET_VAL (gameOpts->render.particles.bDisperse, optDisperse);
-		GET_VAL (gameOpts->render.particles.bRotate, optRotate);
-		GET_VAL (gameOpts->render.particles.bDecreaseLag, nOptSmokeLag);
-		GET_VAL (gameOpts->render.particles.bAuxViews, optAuxViews);
-		GET_VAL (gameOpts->render.particles.bMonitors, optMonitors);
-		if (gameOpts->render.particles.bBubbles) {
-			GET_VAL (gameOpts->render.particles.bWiggleBubbles, optWiggle);
-			GET_VAL (gameOpts->render.particles.bWobbleBubbles, optWobble);
-			}
-		//GET_VAL (gameOpts->render.particles.bSyncSizes, smokeOpts.nSyncSizes);
-		if (gameOpts->render.particles.bSyncSizes) {
-			for (j = 1; j < 4; j++) {
-				gameOpts->render.particles.nSize [j] = gameOpts->render.particles.nSize [0];
-				gameOpts->render.particles.nDens [j] = gameOpts->render.particles.nDens [0];
-				}
+	GET_VAL (gameOpts->render.particles.bDisperse, optDisperse);
+	GET_VAL (gameOpts->render.particles.bRotate, optRotate);
+	GET_VAL (gameOpts->render.particles.bDecreaseLag, nOptSmokeLag);
+	GET_VAL (gameOpts->render.particles.bAuxViews, optAuxViews);
+	GET_VAL (gameOpts->render.particles.bMonitors, optMonitors);
+	if (gameOpts->render.particles.bBubbles) {
+		GET_VAL (gameOpts->render.particles.bWiggleBubbles, optWiggle);
+		GET_VAL (gameOpts->render.particles.bWobbleBubbles, optWobble);
+		}
+	//GET_VAL (gameOpts->render.particles.bSyncSizes, smokeOpts.nSyncSizes);
+	if (gameOpts->render.particles.bSyncSizes) {
+		for (j = 1; j < 4; j++) {
+			gameOpts->render.particles.nSize [j] = gameOpts->render.particles.nSize [0];
+			gameOpts->render.particles.nDens [j] = gameOpts->render.particles.nDens [0];
 			}
 		}
 	} while (i == -2);

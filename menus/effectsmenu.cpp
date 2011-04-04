@@ -253,7 +253,7 @@ do {
 	else {
 		sprintf (szSlider + 1, TXT_SHADOWS, pszNoneBasicFull [nShadows]);
 		*szSlider = *(TXT_SHADOWS - 1);
-		effectOpts.nShadows = m.AddSlider (szSlider + 1, nShadows, 0, 2, KEY_H, HTX_SHADOWS);
+		effectOpts.nShadows = m.AddSlider (szSlider + 1, nShadows, 0, 2, KEY_S, HTX_SHADOWS);
 		}
 	if (ogl.m_states.bDepthBlending) {
 		sprintf (szSlider + 1, TXT_CORONAS, pszOffOn [nCoronas]);
@@ -315,7 +315,7 @@ do {
 		}
 	if (gameOpts->app.bExpertMode) {
 		m.AddText ("");
-		optSmokeDetails = m.AddMenu (TXT_SMOKE_DETAILS, -1, NULL);
+		optSmokeDetails = m.AddMenu (TXT_SMOKE_DETAILS, KEY_D, NULL);
 		}
 	else
 		optSmokeDetails = -1;
