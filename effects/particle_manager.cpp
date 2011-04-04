@@ -148,7 +148,7 @@ if (!gameOpts->render.particles.nQuality) {
 	Reset ();
 	return false;
 	}
-if ((m_nType < 0) /*&& !bForce*/) {
+if ((m_nType < 0) || (m_iBuffer < 2)) {
 	Reset ();
 	return false;
 	}
