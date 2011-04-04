@@ -71,7 +71,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #if !SIMPLE_MENUS
 
 static struct {
-	int	nUse;
 	int	nPlayer;
 	int	nRobots;
 	int	nMissiles;
@@ -82,7 +81,6 @@ static struct {
 	int	nSize [5];
 	int	nAlpha [5];
 	int	nSyncSizes;
-	int	nQuality;
 } smokeOpts;
 
 //------------------------------------------------------------------------------
@@ -101,22 +99,7 @@ if (nState)
 	CMenuItem	*m;
 	int			i, v;
 
-m = menu + smokeOpts.nUse;
-v = m->m_value;
-if (v != extraGameInfo [0].bUseParticles) {
-	extraGameInfo [0].bUseParticles = v;
-	key = -2;
-	return nCurItem;
-	}
 if (extraGameInfo [0].bUseParticles) {
-	m = menu + smokeOpts.nQuality;
-	v = m->m_value;
-	if (v != gameOpts->render.particles.bSort) {
-		gameOpts->render.particles.bSort = v;
-		sprintf (m->m_text, TXT_SMOKE_QUALITY, pszSmokeQual [v]);
-		m->m_bRebuild = 1;
-		return nCurItem;
-		}
 	m = menu + smokeOpts.nSyncSizes;
 	v = m->m_value;
 	if (v != gameOpts->render.particles.bSyncSizes) {
@@ -260,7 +243,6 @@ void SmokeDetailsMenu (void)
 	int	i, j;
 	int	nOptSmokeLag, optStaticParticles, optCollisions, optDisperse, 
 			optRotate = -1, optAuxViews = -1, optMonitors = -1, optWiggle = -1, optWobble = -1;
-	char	szSmokeQual [50];
 
 pszSmokeSize [0] = TXT_SMALL;
 pszSmokeSize [1] = TXT_MEDIUM;
@@ -299,9 +281,6 @@ do {
 		smokeOpts.nAlpha [j] = -1;
 	if (extraGameInfo [0].bUseParticles) {
 		if (gameOpts->app.bExpertMode) {
-			sprintf (szSmokeQual + 1, TXT_SMOKE_QUALITY, pszSmokeQual [NMCLAMP (gameOpts->render.particles.bSort, 0, 2)]);
-			*szSmokeQual = *(TXT_SMOKE_QUALITY - 1);
-			smokeOpts.nQuality = m.AddSlider (szSmokeQual + 1, gameOpts->render.particles.bSort, 0, 2, KEY_Q, HTX_ADVRND_SMOKEQUAL);
 			smokeOpts.nSyncSizes = m.AddCheck (TXT_SYNC_SIZES, gameOpts->render.particles.bSyncSizes, KEY_M, HTX_ADVRND_SYNCSIZES);
 			if (gameOpts->render.particles.bSyncSizes) {
 				AddSmokeSliders (m, 0);

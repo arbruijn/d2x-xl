@@ -313,7 +313,7 @@ do {
 		else
 			optSoftParticles [2] = -1;
 		}
-	if (gameOpts->app.bExpertMode) {
+	if (gameOpts->app.bExpertMode && extraGameInfo [0].bUseParticles) {
 		m.AddText ("");
 		optSmokeDetails = m.AddMenu (TXT_SMOKE_DETAILS, KEY_D, NULL);
 		}
