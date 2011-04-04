@@ -220,7 +220,14 @@ else {
 sprintf (szSmokeAlpha [i] + 1, TXT_SMOKE_ALPHA, pszSmokeAlpha [NMCLAMP (gameOpts->render.particles.nAlpha [i], 0, 4)]);
 *szSmokeAlpha [i] = *(TXT_SMOKE_SIZE - 1);
 smokeOpts.nAlpha [i] = m.AddSlider (szSmokeAlpha [i] + 1, gameOpts->render.particles.nAlpha [i], 0, 4, KEY_Z, HTX_ADVRND_SMOKEALPHA);
-m.AddText ("", 0);
+}
+
+//------------------------------------------------------------------------------
+
+inline void AddSpace (CMenu& m, bool bNeedSpace)
+{
+if (!gameOpts->render.particles.bSyncSizes && bNeedSpace)
+	m.AddText ("");
 }
 
 //------------------------------------------------------------------------------
@@ -281,9 +288,9 @@ do {
 	else {
 		smokeOpts.nDensity [0] =
 		smokeOpts.nSize [0] = -1;
-		m.AddText ("");
 		}
 
+	m.AddText ("");
 	smokeOpts.nPlayer = m.AddCheck (TXT_SMOKE_PLAYERS, gameOpts->render.particles.bPlayers, KEY_Y, HTX_ADVRND_PLRSMOKE);
 	if (gameOpts->render.particles.bPlayers) {
 		if (!gameOpts->render.particles.bSyncSizes)
@@ -293,26 +300,22 @@ do {
 	else
 		nOptSmokeLag = -1;
 
-	if (gameOpts->render.particles.bRobots && !gameOpts->render.particles.bSyncSizes)
-		m.AddText ("");
+	AddSpace (m, gameOpts->render.particles.bPlayers || gameOpts->render.particles.bRobots);
 	smokeOpts.nRobots = m.AddCheck (TXT_SMOKE_ROBOTS, gameOpts->render.particles.bRobots, KEY_O, HTX_ADVRND_BOTSMOKE);
 	if (gameOpts->render.particles.bRobots && !gameOpts->render.particles.bSyncSizes)
 		AddSmokeSliders (m, 2);
 
-	if (gameOpts->render.particles.bMissiles && !gameOpts->render.particles.bSyncSizes)
-		m.AddText ("");
+	AddSpace (m, gameOpts->render.particles.bRobots || gameOpts->render.particles.bMissiles);
 	smokeOpts.nMissiles = m.AddCheck (TXT_SMOKE_MISSILES, gameOpts->render.particles.bMissiles, KEY_M, HTX_ADVRND_MSLSMOKE);
-	if (gameOpts->render.particles.bMissiles && !gameOpts->render.particles.bSyncSizes) {
+	if (gameOpts->render.particles.bMissiles && !gameOpts->render.particles.bSyncSizes)
 		AddSmokeSliders (m, 3);
-		}
 
-	if (gameOpts->render.particles.bDebris && !gameOpts->render.particles.bSyncSizes)
-		m.AddText ("");
+	AddSpace (m, gameOpts->render.particles.bMissiles || gameOpts->render.particles.bDebris);
 	smokeOpts.nDebris = m.AddCheck (TXT_SMOKE_DEBRIS, gameOpts->render.particles.bDebris, KEY_D, HTX_ADVRND_DEBRISSMOKE);
 	if (gameOpts->render.particles.bDebris && !gameOpts->render.particles.bSyncSizes)
 		AddSmokeSliders (m, 4);
-	else
-		m.AddText ("");
+
+	m.AddText ("");
 #if 0
 	optCollisions = m.AddCheck (TXT_SMOKE_COLLISION, gameOpts->render.particles.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
 #endif
