@@ -432,8 +432,8 @@ class CParticleManager {
 			GetSystem (i).SetPos (vPos, mOrient, nSegment);
 			}
 
-		inline void SetDensity (int i, int nMaxParts/*, int nDensity*/) {
-			nMaxParts = MaxParticles (nMaxParts, gameOpts->render.particles.nDens [0]);
+		inline void SetDensity (int i, int nMaxParts, int nType = -1/*, int nDensity*/) {
+			nMaxParts = MaxParticles (nMaxParts, gameOpts->render.particles.nDens [(nType < 0) ? 0 : nType]);
 			GetSystem (i).SetDensity (nMaxParts/*, nDensity*/);
 			}
 

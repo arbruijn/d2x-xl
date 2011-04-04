@@ -415,12 +415,280 @@ m_nLife = nLife;
 m_nDelay = 0; //bStart ? randN (nLife) : 0;
 m_nRenderType = RenderType ();
 
+#if 0
+
 InitColor (colorP, fBrightness, nParticleSystemType);
 if (!InitDrift (vDir, nSpeed))
 	return 0;
 InitPosition (vPos, vEmittingFace, mOrient); // needs InitDrift() to be executed first!
 InitSize (nScale, mOrient);
 InitAnimation ();
+
+#else
+
+// init color
+
+	tRgbaColorf color;
+
+m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES) 
+					? 1
+					: (nParticleSystemType == FIRE_PARTICLES) 
+						? 2
+						//: ((nParticleSystemType <= SMOKE_PARTICLES) || (nParticleSystemType <= WATERFALL_PARTICLES))
+						//	? 3
+						: 0;
+m_color [0] = m_color [1] = color = (colorP && (m_bEmissive != 2)) ? *colorP : defaultParticleColor;
+
+if (!brightFlags [m_nType]) {
+	m_bBright = 0;
+	m_nFadeTime = -1;
+	if (colorP && (colorP->alpha < 0)) {
+		ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
+		m_color [0].alpha = float (3 * a + randN (2 * a)) / 255.0f;
+		}
+	}
+else {
+	m_bBright = (m_nType <= SMOKE_PARTICLES) ? (rand () % 50) == 0 : 0;
+	if (colorP) {
+		if (!m_bEmissive /*|| (m_bEmissive == 3)*/) {
+			m_color [0].red *= RANDOM_FADE;
+			m_color [0].green *= RANDOM_FADE;
+			m_color [0].blue *= RANDOM_FADE;
+			}
+		m_nFadeTime = 0;
+		} 
+	else {
+		m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
+		m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
+		m_color [0].blue = 0.0f;
+		m_nFadeTime = 100 + rand () % 100;
+		m_color [1].red *= RANDOM_FADE;
+		m_color [1].green *= RANDOM_FADE;
+		m_color [1].blue *= RANDOM_FADE;
+		}
+	if (m_bEmissive /*&& (m_bEmissive < 3)*/)
+		; // m_color [0].alpha = float (SMOKE_START_ALPHA + 64) / 255.0f;
+	else if (nParticleSystemType != GATLING_PARTICLES) {
+		if (!colorP)
+			m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
+		else {
+			if (colorP->alpha < 0) {
+				ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
+				m_color [0].alpha = float (3 * a + randN (2 * a)) / 255.0f;
+				} 
+			else {
+				if (char (colorP->alpha) == 2) {
+					m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
+					m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
+					m_color [0].blue = 0.0f;
+					m_nFadeTime = 100 + rand () % 100;
+					m_color [1].red *= RANDOM_FADE;
+					m_color [1].green *= RANDOM_FADE;
+					m_color [1].blue *= RANDOM_FADE;
+					}
+				m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
+				}
+			}
+		if (m_bBlowUp && !m_bBright) {
+			fBrightness = 1.0f - fBrightness;
+			m_color [0].alpha += fBrightness * fBrightness / 8.0f;
+			}
+		}
+	}
+
+#if 0
+if (colorP && (colorP->alpha < 0))
+m_color [0].alpha /= 2.0f;
+else
+#endif
+	{
+	if (m_bEmissive /*&& (m_bEmissive < 3)*/)
+		m_color [0].alpha = 1.0f;
+	else if (nParticleSystemType == SIMPLE_SMOKE_PARTICLES)
+		m_color [0].alpha /= 3.5f - float (gameOpts->render.particles.nQuality) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
+	else if (nParticleSystemType == SMOKE_PARTICLES)
+		m_color [0].alpha /= colorP ? 3.0f - (color.red + color.green + color.blue) / 3.0f : 2.5f;
+	else if ((nParticleSystemType == BUBBLE_PARTICLES) || (nParticleSystemType == RAIN_PARTICLES) || (nParticleSystemType == SNOW_PARTICLES))
+		m_color [0].alpha /= 2.0f;
+	else if (nParticleSystemType == GATLING_PARTICLES)
+		m_color [0].alpha /= 4.0f;
+#	if 0
+	else if (nParticleSystemType == GATLING_PARTICLES)
+	;//m_color [0].alpha /= 6;
+#	endif
+	}
+
+// init drift
+
+#if 0
+if (nType == FIRE_PARTICLES)
+nSpeed = int (sqrt (double (nSpeed)) * float (I2X (1)));
+else
+#endif
+nSpeed *= I2X (1);
+if (!vDir) {
+	m_vDrift.v.coord.x = nSpeed - randN (2 * nSpeed);
+	m_vDrift.v.coord.y = nSpeed - randN (2 * nSpeed);
+	m_vDrift.v.coord.z = nSpeed - randN (2 * nSpeed);
+	m_vDir.SetZero ();
+	m_bHaveDir = 1;
+	}
+else {
+	m_vDir = *vDir;
+
+	if (m_nType == RAIN_PARTICLES)
+		m_vDrift = m_vDir;
+	else {
+#if 1
+		m_vDrift.v.coord.x = randN (I2X (1) / 4) - I2X (1) / 8;
+		m_vDrift.v.coord.y = randN (I2X (1) / 4) - I2X (1) / 8;
+		m_vDrift.v.coord.z = randN (I2X (1) / 4) - I2X (1) / 8;
+		m_vDrift += m_vDir;
+#else
+		CAngleVector a;
+		CFixMatrix m;
+		a.v.coord.p = randN (I2X (1) / 4) - I2X (1) / 8;
+		a.v.coord.b = randN (I2X (1) / 4) - I2X (1) / 8;
+		a.v.coord.h = randN (I2X (1) / 4) - I2X (1) / 8;
+		m = CFixMatrix::Create (a);
+		if (m_nType == WATERFALL_PARTICLES)
+			CFixVector::Normalize (m_vDir);
+		m_vDrift = m * m_vDir;
+#endif
+		CFixVector::Normalize (m_vDrift);
+		if (m_nType == WATERFALL_PARTICLES) {
+			fix dot = CFixVector::Dot (m_vDir, m_vDrift);
+			if (dot < I2X (1) / 2)
+				return 0;
+			}
+		float d = float (CFixVector::DeltaAngle (m_vDrift, m_vDir, NULL));
+		if (d) {
+			d = (float) exp ((I2X (1) / 8) / d);
+			nSpeed = (fix) ((float) nSpeed / d);
+			}
+		}
+	m_vDrift *= nSpeed;
+	if (m_nType <= FIRE_PARTICLES)
+		m_vDir *= (I2X (3) / 4 + I2X (randN (16)) / 64);
+	m_bHaveDir = 1;
+	}
+
+// init position
+
+if (vEmittingFace)
+	m_vPos = *RandomPointOnQuad (vEmittingFace, vPos);
+else if ((m_nType != BUBBLE_PARTICLES) && (m_nType != RAIN_PARTICLES) && (m_nType != SNOW_PARTICLES))
+	m_vPos = *vPos + m_vDrift * (I2X (1) / 64);
+else {
+	//m_vPos = *vPos + vDrift * (I2X (1) / 32);
+	int nSpeed = m_vDrift.Mag () / 16;
+	CFixVector v = CFixVector::Avg ((*mOrient).m.dir.r * (nSpeed - randN (2 * nSpeed)), (*mOrient).m.dir.u * (nSpeed - randN (2 * nSpeed)));
+	m_vPos = *vPos + v + (*mOrient).m.dir.f * (I2X (1) / 2 - randN (I2X (1)));
+	}
+m_vStartPos = m_vPos;
+
+// init size
+if (nScale < 0)
+	m_nRad = float (-nScale);
+else if (gameOpts->render.particles.bSyncSizes)
+	m_nRad = float (PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale, m_bBlowUp));
+else
+	m_nRad = float (nScale);
+if (!m_nRad)
+	m_nRad = 1.0f;
+
+if ((m_nType == BUBBLE_PARTICLES) || (m_nType == SNOW_PARTICLES))
+	m_nRad = m_nRad / 20 + float (randN (int (9 * m_nRad / 20)));
+else {
+	if (m_nType <= SMOKE_PARTICLES) {
+		if (m_bBlowUp)
+			m_nLife = 2 * m_nLife / 3;
+		m_nLife = 4 * m_nLife / 5 + randN (2 * m_nLife / 5);
+		m_nRad += float (randN (int (m_nRad)));
+		}
+	else if (m_nType == FIRE_PARTICLES) {
+		m_nLife = 3 * m_nLife / 4 + randN (m_nLife / 4);
+		m_nRad += float (randN (int (m_nRad)));
+		}
+	else
+		m_nRad *= 2;
+	if (mOrient) {
+		static CFixMatrix mRot [9 * 9];
+		static char bInit = 1;
+
+		if (bInit) {
+			bInit = 0;
+			for (int p = 0; p < 9; p++) { 
+				for (int h = 0; h < 9; h++) {
+					CAngleVector vRot;
+					vRot.v.coord.b = 0;
+					vRot.v.coord.p = 2048 - (p * 512);
+					vRot.v.coord.h = 2048 - (h * 512);
+					mRot [p * 9 + h] = CFixMatrix::Create (vRot);
+					}
+				}
+			}
+		m_mOrient = *mOrient * mRot [(d_rand () % 9) * 9 + (d_rand () % 9)];
+		}
+	}
+
+if (m_bBlowUp) {
+	m_nWidth = (m_nType == WATERFALL_PARTICLES) 
+				  ? m_nRad * 0.6666667f
+				  : m_nRad;
+	m_nHeight = m_nRad;
+	}
+else {
+	m_nWidth = (m_nType == WATERFALL_PARTICLES) 
+				  ? m_nRad * 0.3333333f
+			     : m_nRad * 2;
+	m_nHeight = m_nRad * 2;
+	}
+m_nWidth /= 65536.0f;
+m_nHeight /= 65536.0f;
+m_nRad /= 65536.0f;
+
+// init animation
+m_nFrames = ParticleImageInfo (m_nType).nFrames;
+m_deltaUV = 1.0f / float (m_nFrames);
+if (m_nType == BULLET_PARTICLES) {
+	m_iFrame = 0;
+	m_nRotFrame = 0;
+	m_nOrient = 3;
+	}
+else if ((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
+	m_iFrame = 0;
+	m_nRotFrame = 0;
+	m_nOrient = 1;
+	}
+else if (m_nType == BUBBLE_PARTICLES) {
+	m_iFrame = rand () % (m_nFrames * m_nFrames);
+	m_nRotFrame = 0;
+	m_nOrient = 0;
+	}
+else if ((m_nType == LIGHT_PARTICLES) || (m_nType == GATLING_PARTICLES)) {
+	m_iFrame = 0;
+	m_nRotFrame = 0;
+	m_nOrient = 0;
+	}
+else if (m_nType == FIRE_PARTICLES) {
+	m_iFrame = (rand () % 10 < 6) ? 0 : 2; // more fire than smoke (60:40)
+	if (m_iFrame < 2)
+		m_nLife = 9 * m_nLife / 10;
+	else
+		m_nLife = 10 * m_nLife / 9;
+	m_nRotFrame = rand () % PARTICLE_POSITIONS;
+	m_nOrient = rand () % 4;
+	}
+else {
+	m_iFrame = rand () % (m_nFrames * m_nFrames);
+	m_nRotFrame = rand () % PARTICLE_POSITIONS;
+	m_nOrient = rand () % 4;
+	}
+m_bAnimate = (m_nType != FIRE_PARTICLES) && (gameOpts->render.particles.nQuality > 1) && (m_nFrames > 1);
+m_bRotate = ((m_nRenderType <= SMOKE_PARTICLES) || (m_nRenderType == SNOW_PARTICLES)) ? 1 : (m_nRenderType == FIRE_PARTICLES + PARTICLE_TYPES) ? -1 : 0;
+
+#endif
 
 m_nTTL = m_nLife; // may have been changed during initialization
 
