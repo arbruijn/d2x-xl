@@ -531,7 +531,7 @@ return nBuffer;
 bool CParticleManager::Add (CParticle* particleP, float brightness)
 {
 #if 1
-if ((particleP->RenderType () != particleBuffer [nBuffer].GetType ()) || (particleP->m_bEmissive != particleBuffer [nBuffer].m_bEmissive))
+if ((particleP->RenderType () != particleBuffer [0].GetType ()) || (particleP->m_bEmissive != particleBuffer [0].m_bEmissive))
 	particleBuffer [0].Flush (brightness, true);
 return particleBuffer [0].Add (particleP, brightness, particleP->Posf (), particleP->Rad ());
 #else
