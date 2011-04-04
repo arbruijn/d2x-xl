@@ -62,7 +62,7 @@
 #define PART_BUF_SIZE	25000
 #define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
 
-#define MAX_PARTICLE_BUFFERS		3
+#define MAX_PARTICLE_BUFFERS	1
 
 //------------------------------------------------------------------------------
 

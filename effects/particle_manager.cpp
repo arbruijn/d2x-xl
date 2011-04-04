@@ -483,6 +483,7 @@ return 1;
 
 bool CParticleManager::Flush (float fBrightness, bool bForce)
 {
+#if MAX_PARTICLE_BUFFERS  > 1
 	bool bFlushed = false;
 
 for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
@@ -499,12 +500,16 @@ for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 		bFlushed = true;
 	}
 return bFlushed;
+#else
+return particleBuffer [0].Flush (fBrightness, bForce);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 short CParticleManager::Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed)
 {
+#if MAX_PARTICLE_BUFFERS  > 1
 if ((particleP->RenderType () != particleBuffer [nBuffer].GetType ()) || (particleP->m_bEmissive != particleBuffer [nBuffer].m_bEmissive))
 	return -1;
 CFloatVector pos;
@@ -524,18 +529,16 @@ for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 	}
 particleBuffer [nBuffer].Add (particleP, brightness, pos, rad);
 return nBuffer;
+#else
+particleBuffer [0].Add (particleP, brightness, pos, rad);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 bool CParticleManager::Add (CParticle* particleP, float brightness)
 {
-#if 1
-if ((particleP->RenderType () != particleBuffer [0].GetType ()) || (particleP->m_bEmissive != particleBuffer [0].m_bEmissive))
-	particleBuffer [0].Flush (brightness, true);
-return particleBuffer [0].Add (particleP, brightness, particleP->Posf (), particleP->Rad ());
-#else
-
+#if MAX_PARTICLE_BUFFERS  > 1
 	bool	bFlushed = false;
 	int	i, j;
 
@@ -553,6 +556,8 @@ for (i = 1, j = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 		j = i;
 	}
 return particleBuffer [j].Add (particleP, brightness, particleP->Posf (), particleP->Rad ());
+#else
+return particleBuffer [0].Add (particleP, brightness, particleP->Posf (), particleP->Rad ());
 #endif
 }
 
