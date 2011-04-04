@@ -2527,6 +2527,7 @@ void LoadGameTexts(void);
 #define HTX_BUMP_BRIGHTNESS			HT(419)
 #define HTX_PLAYERSHIP					HT(420)
 #define HTX_EFFECTS_GLOW				HT(421)
+#define HTX_SMOKE_DETAILS				HT(422)
 
 #if 0
 
