@@ -58,6 +58,8 @@ CObject *CObject::CreateExplBlast (void)
 
 if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves))
 	return NULL;
+if (SPECTATOR (this))
+	return NULL;
 nObject = CreateFireball (0, info.nSegment, info.position.vPos, 2 * info.xSize, RT_EXPLBLAST);
 if (nObject < 0)
 	return NULL;
@@ -260,7 +262,7 @@ CObject* CreateBadassExplosion (CObject* objP, short nSegment, CFixVector& posit
 CObject* explObjP = CreateExplosion (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
 if (explObjP) {
 	if (!objP ||
-		 (objP->info.nType == OBJ_PLAYER) || 
+		 ((objP->info.nType == OBJ_PLAYER) && !SPECTATOR (objP)) || 
 		 (objP->info.nType == OBJ_ROBOT) || 
 		 ((objP->info.nType == OBJ_WEAPON) && 
 		  ((objP->info.nId == MEGAMSL_ID) || 
