@@ -1937,6 +1937,8 @@ const char *defaultGameTexts [][2] = {
  {"Warte auf Mitspieler...", "Waiting for other players..."},
  {"Warte auf Gastgeber...", "Waiting for game host..."},
  {"Lade Zuordnung IP zu Land...", "Loading IP to country relations..."},
+ {"Rauch-~Detaileinstellungen...", "Smoke ~Detail Settings..."},
+ {"Rauch-Detaileinstellungen", "Smoke ~Detail Settings"},
 #if 0
  {"", ""},
 #endif

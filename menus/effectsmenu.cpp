@@ -55,6 +55,7 @@
 #include "menubackground.h"
 
 void DefaultEffectSettings (void);
+void SmokeDetailsMenu (void);
 
 //------------------------------------------------------------------------------
 
@@ -225,7 +226,7 @@ void EffectOptionsMenu (void)
 
 	CMenu	m;
 	int	i, j;
-	int	optEnableFx, optGatlingTrails, optStaticSmoke, optSoftParticles [3];
+	int	optEnableFx, optGatlingTrails, optStaticSmoke, optSoftParticles [3], optSmokeDetails;
 #if 0
 	int	optShockwaves;
 #endif
@@ -312,11 +313,19 @@ do {
 		else
 			optSoftParticles [2] = -1;
 		}
+	if (gameOpts->app.bExpertMode) {
+		m.AddText ("");
+		optSmokeDetails = m.AddMenu (TXT_SMOKE_DETAILS, -1, NULL);
+		}
+	else
+		optSmokeDetails = -1;
 
 	for (;;) {
 		i = m.Menu (NULL, TXT_EFFECT_MENUTITLE, EffectOptionsCallback, &choice);
 		if (i < 0)
 			break;
+		if (i == optSmokeDetails)
+			SmokeDetailsMenu ();
 		}
 
 	extraGameInfo [0].bUseParticles = (gameOpts->render.particles.nQuality != 0);

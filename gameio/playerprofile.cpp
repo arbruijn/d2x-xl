@@ -524,6 +524,13 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].gameplay.nAutoSelectWeapon, i, 0);
 		RP (gameOptions [i].gameplay.nSlowMotionSpeedup, i, 0);
 		RP (gameStates.sound.audio.nMaxChannels, 0, 128);
+
+		for (j = 0; j < 5; j++) {
+			RP (gameOptions [i].render.particles.nDens [j], i, j);
+			RP (gameOptions [i].render.particles.nSize [j], i, j);
+			RP (gameOptions [i].render.particles.nLife [j], i, j);
+			RP (gameOptions [i].render.particles.nAlpha [j], i, j);
+			}
 #if 0
 		RP (gameOpts->render.cockpit.bWideDisplays, 0, 1);
 		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
@@ -532,12 +539,6 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].grWallTransparency, 0, 0);
 		RP (extraGameInfo [i].nOmegaRamp, 0, 0);
 		RP (extraGameInfo [i].nSpeedBoost, 0, 0);
-		for (j = 0; j < 5; j++) {
-			RP (gameOptions [i].render.particles.nDens [j], i, j);
-			RP (gameOptions [i].render.particles.nSize [j], i, j);
-			RP (gameOptions [i].render.particles.nLife [j], i, j);
-			RP (gameOptions [i].render.particles.nAlpha [j], i, j);
-			}
 		RP (gameOptions [i].render.particles.bAuxViews, i, 0);
 		RP (gameOptions [i].render.particles.bMonitors, i, 0);
 		RP (gameOptions [i].render.particles.bDecreaseLag, i, 0);

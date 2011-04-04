@@ -1974,10 +1974,11 @@ void LoadGameTexts(void);
 #define TXT_CLIENT_WAIT					GT(1190)
 #define TXT_HOST_WAIT					GT(1191)
 #define TXT_LOADING_IPTOCOUNTRY		GT(1192)
+#define TXT_SMOKE_DETAILS_TITLE		GT(1193)
+#define TXT_SMOKE_DETAILS				GT(1194)
 
 #if 0
 
-#define TXT_					GT(1192)
 #define TXT_					GT(1193)
 #define TXT_					GT(1194)
 #define TXT_					GT(1195)

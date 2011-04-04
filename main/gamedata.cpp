@@ -1921,31 +1921,33 @@ gameOptions [0].render.particles.bAuxViews = (gameOptions [0].render.nQuality > 
 gameOptions [0].render.particles.bMonitors = (gameOptions [0].render.nQuality > 1);
 gameOptions [0].render.particles.bWiggleBubbles = 1;
 gameOptions [0].render.particles.bWobbleBubbles = 1;
-// player ships
-gameOptions [0].render.particles.nSize [1] = 1;
-gameOptions [0].render.particles.nDens [1] = 1;
-gameOptions [0].render.particles.nLife [1] = gameOpts->render.particles.nQuality;
-gameOptions [0].render.particles.nAlpha [1] = 2;
-// robots
-gameOptions [0].render.particles.nSize [2] = 1 + (gameOpts->render.particles.nQuality > 1);
-gameOptions [0].render.particles.nDens [2] = (gameOpts->render.particles.nQuality > 1);
-gameOptions [0].render.particles.nLife [2] = 2; //gameOpts->render.particles.nQuality;
-gameOptions [0].render.particles.nAlpha [2] = 2;
-// missiles
-gameOptions [0].render.particles.nSize [3] = 2 + (gameOpts->render.particles.nQuality > 1);
-gameOptions [0].render.particles.nDens [3] = (gameOpts->render.particles.nQuality > 1);
-gameOptions [0].render.particles.nLife [3] = 2; //gameOpts->render.particles.nQuality;
-gameOptions [0].render.particles.nAlpha [3] = 2;
-// debris
-gameOptions [0].render.particles.nSize [4] = 2 + (gameOpts->render.particles.nQuality > 1);
-gameOptions [0].render.particles.nDens [4] = (gameOpts->render.particles.nQuality > 1);
-gameOptions [0].render.particles.nLife [4] = 2; //gameOpts->render.particles.nQuality;
-gameOptions [0].render.particles.nAlpha [4] = 2;
-// static smoke
-#if 0
-gameOptions [0].render.particles.bStatic = 
-gameOptions [0].render.particles.bBubbles = (gameOptions [0].render.particles.nQuality > 2);
-#endif
+if (!gameOpts->app.bExpertMode) {
+	// player ships
+	gameOptions [0].render.particles.nSize [1] = 1;
+	gameOptions [0].render.particles.nDens [1] = 1;
+	gameOptions [0].render.particles.nLife [1] = gameOpts->render.particles.nQuality;
+	gameOptions [0].render.particles.nAlpha [1] = 2;
+	// robots
+	gameOptions [0].render.particles.nSize [2] = 1 + (gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nDens [2] = (gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nLife [2] = 2; //gameOpts->render.particles.nQuality;
+	gameOptions [0].render.particles.nAlpha [2] = 2;
+	// missiles
+	gameOptions [0].render.particles.nSize [3] = 3 * gameOpts->render.particles.nQuality; //3 + (gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nDens [3] = 0; //(gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nLife [3] = 2; //gameOpts->render.particles.nQuality;
+	gameOptions [0].render.particles.nAlpha [3] = 2;
+	// debris
+	gameOptions [0].render.particles.nSize [4] = 2 + (gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nDens [4] = (gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nLife [4] = 2; //gameOpts->render.particles.nQuality;
+	gameOptions [0].render.particles.nAlpha [4] = 2;
+	// static smoke
+	#if 0
+	gameOptions [0].render.particles.bStatic = 
+	gameOptions [0].render.particles.bBubbles = (gameOptions [0].render.particles.nQuality > 2);
+	#endif
+	}
 }
 
 // ----------------------------------------------------------------------------
