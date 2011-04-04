@@ -75,7 +75,6 @@ static struct {
 	int	nRobots;
 	int	nMissiles;
 	int	nDebris;
-	int	nBubbles;
 	int	nDensity [5];
 	int	nLife [5];
 	int	nSize [5];
@@ -129,12 +128,6 @@ if (extraGameInfo [0].bUseParticles) {
 	v = m->m_value;
 	if (gameOpts->render.particles.bDebris != v) {
 		gameOpts->render.particles.bDebris = v;
-		key = -2;
-		}
-	m = menu + smokeOpts.nBubbles;
-	v = m->m_value;
-	if (gameOpts->render.particles.bBubbles != v) {
-		gameOpts->render.particles.bBubbles = v;
 		key = -2;
 		}
 	if (gameOpts->render.particles.bSyncSizes) {
@@ -241,7 +234,7 @@ void SmokeDetailsMenu (void)
 
 	CMenu m;
 	int	i, j;
-	int	nOptSmokeLag, optStaticParticles, optCollisions, optDisperse, 
+	int	nOptSmokeLag, optCollisions, optDisperse, 
 			optRotate = -1, optAuxViews = -1, optMonitors = -1, optWiggle = -1, optWobble = -1;
 
 pszSmokeSize [0] = TXT_SMALL;
@@ -273,7 +266,7 @@ do {
 	m.Destroy ();
 	m.Create (50);
 	memset (&smokeOpts, 0xff, sizeof (smokeOpts));
-	nOptSmokeLag = optStaticParticles = optCollisions = optDisperse = -1;
+	nOptSmokeLag = optCollisions = optDisperse = -1;
 
 	for (j = 1; j < 5; j++)
 		smokeOpts.nSize [j] =
@@ -320,7 +313,6 @@ do {
 				AddSmokeSliders (m, 4);
 				m.AddText ("", 0);
 				}
-			optStaticParticles = m.AddCheck (TXT_SMOKE_STATIC, gameOpts->render.particles.bStatic, KEY_T, HTX_ADVRND_STATICSMOKE);
 #if 0
 			optCollisions = m.AddCheck (TXT_SMOKE_COLLISION, gameOpts->render.particles.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
 #endif
@@ -329,11 +321,6 @@ do {
 			optAuxViews = m.AddCheck (TXT_SMOKE_AUXVIEWS, gameOpts->render.particles.bAuxViews, KEY_W, HTX_SMOKE_AUXVIEWS);
 			optMonitors = m.AddCheck (TXT_SMOKE_MONITORS, gameOpts->render.particles.bMonitors, KEY_M, HTX_SMOKE_MONITORS);
 			m.AddText ("", 0);
-			smokeOpts.nBubbles = m.AddCheck (TXT_SMOKE_BUBBLES, gameOpts->render.particles.bBubbles, KEY_B, HTX_SMOKE_BUBBLES);
-			if (gameOpts->render.particles.bBubbles) {
-				optWiggle = m.AddCheck (TXT_WIGGLE_BUBBLES, gameOpts->render.particles.bWiggleBubbles, KEY_I, HTX_WIGGLE_BUBBLES);
-				optWobble = m.AddCheck (TXT_WOBBLE_BUBBLES, gameOpts->render.particles.bWobbleBubbles, KEY_I, HTX_WOBBLE_BUBBLES);
-				}
 			}
 		}
 	else
@@ -342,8 +329,6 @@ do {
 		smokeOpts.nRobots =
 		smokeOpts.nMissiles =
 		smokeOpts.nDebris =
-		smokeOpts.nBubbles =
-		optStaticParticles =
 		optCollisions =
 		optDisperse = 
 		optRotate = 
@@ -357,7 +342,6 @@ do {
 	GET_VAL (gameOpts->render.particles.bRobots, smokeOpts.nRobots);
 	GET_VAL (gameOpts->render.particles.bMissiles, smokeOpts.nMissiles);
 	GET_VAL (gameOpts->render.particles.bDebris, smokeOpts.nDebris);
-	GET_VAL (gameOpts->render.particles.bStatic, optStaticParticles);
 #if 0
 	GET_VAL (gameOpts->render.particles.bCollisions, optCollisions);
 #else
