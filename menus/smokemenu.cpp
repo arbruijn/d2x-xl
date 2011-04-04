@@ -175,8 +175,8 @@ else {
 		if (smokeOpts.nLife [i] >= 0) {
 			m = menu + smokeOpts.nLife [i];
 			v = m->m_value;
-			if (gameOpts->render.particles.nLife [i] != v) {
-				gameOpts->render.particles.nLife [i] = v;
+			if (gameOpts->render.particles.nLife [i] != v + 1) {
+				gameOpts->render.particles.nLife [i] = v + 1;
 				sprintf (m->m_text, TXT_SMOKE_LIFE, pszSmokeLife [v]);
 				m->m_bRebuild = 1;
 				}
@@ -215,7 +215,7 @@ if (i < 3)
 else {
 	sprintf (szSmokeLife [i] + 1, TXT_SMOKE_LIFE, pszSmokeLife [NMCLAMP (gameOpts->render.particles.nLife [i], 0, 3)]);
 	*szSmokeLife [i] = *(TXT_SMOKE_LIFE - 1);
-	smokeOpts.nLife [i] = m.AddSlider (szSmokeLife [i] + 1, gameOpts->render.particles.nLife [i], 0, 2, KEY_L, HTX_SMOKE_LIFE);
+	smokeOpts.nLife [i] = m.AddSlider (szSmokeLife [i] + 1, gameOpts->render.particles.nLife [i] - 1, 0, 2, KEY_L, HTX_SMOKE_LIFE);
 	}
 sprintf (szSmokeAlpha [i] + 1, TXT_SMOKE_ALPHA, pszSmokeAlpha [NMCLAMP (gameOpts->render.particles.nAlpha [i], 0, 4)]);
 *szSmokeAlpha [i] = *(TXT_SMOKE_SIZE - 1);

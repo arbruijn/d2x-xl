@@ -1933,8 +1933,8 @@ if (!gameOpts->app.bExpertMode) {
 	gameOptions [0].render.particles.nLife [2] = 2; //gameOpts->render.particles.nQuality;
 	gameOptions [0].render.particles.nAlpha [2] = 2;
 	// missiles
-	gameOptions [0].render.particles.nSize [3] = 3 * gameOpts->render.particles.nQuality; //3 + (gameOpts->render.particles.nQuality > 1);
-	gameOptions [0].render.particles.nDens [3] = 0; //(gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nSize [3] = 1 + gameOpts->render.particles.nQuality; //3 + (gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nDens [3] = 1 + (gameOpts->render.particles.nQuality > 1);
 	gameOptions [0].render.particles.nLife [3] = 2; //gameOpts->render.particles.nQuality;
 	gameOptions [0].render.particles.nAlpha [3] = 2;
 	// debris
