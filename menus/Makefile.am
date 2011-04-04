@@ -13,5 +13,5 @@ libmenus_a_SOURCES = \
 	fileselector.cpp gameplaymenu.cpp inputdevicemenu.cpp listbox.cpp menuitem.cpp messagebox.cpp miscmenu.cpp \
 	monsterballmenu.cpp menu.cpp menubackground.cpp msgbox.cpp netgamebrowser.cpp netgamehelp.cpp netgameinfo.cpp \
 	netmenu.cpp netplayerbrowser.cpp newgamemenu.cpp physicsmenu.cpp rendermenu.cpp screenresmenu.cpp \
-	soundmenu.cpp
+	soundmenu.cpp smokemenu.cpp
 	
