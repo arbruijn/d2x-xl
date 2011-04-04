@@ -530,6 +530,12 @@ return nBuffer;
 
 bool CParticleManager::Add (CParticle* particleP, float brightness)
 {
+#if 1
+if ((particleP->RenderType () != particleBuffer [nBuffer].GetType ()) || (particleP->m_bEmissive != particleBuffer [nBuffer].m_bEmissive))
+	particleBuffer [0].Flush (brightness, true);
+return particleBuffer [0].Add (particleP, brightness, particleP->Posf (), particleP->Rad ());
+#else
+
 	bool	bFlushed = false;
 	int	i, j;
 
@@ -547,6 +553,7 @@ for (i = 1, j = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 		j = i;
 	}
 return particleBuffer [j].Add (particleP, brightness, particleP->Posf (), particleP->Rad ());
+#endif
 }
 
 //------------------------------------------------------------------------------
