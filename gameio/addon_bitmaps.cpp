@@ -217,6 +217,7 @@ damageIcon [1].Load (const_cast<char*>("drivedmg.tga"));
 damageIcon [2].Load (const_cast<char*>("gundmg.tga"));
 PrintLog ("   Loading joystick emulator image\n");
 joyMouse.Load ();
+PrintLog ("   Loading shockwave animation\n");
 shockwave.Load ();
 }
 
