@@ -4,6 +4,8 @@
 #include "descent.h"
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 class CAddonBitmap : public CTGA {
 	private:
@@ -20,6 +22,36 @@ class CAddonBitmap : public CTGA {
 		~CAddonBitmap () { Unload (); }
 };
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+class CAnimation {
+	private:
+		uint						m_nFrames;
+		CArray<CAddonBitmap>	m_frames;
+
+	public:
+		CAnimation () : m_nFrames (0) {}
+
+		~CAnimation () { Destroy (); }
+
+		void Destroy (void) {
+			m_frames.Destroy ();
+			m_nFrames = 0;
+			}
+
+		bool Create (void) {
+			return m_frames.Create (m_nFrames) != NULL;
+			}
+
+		bool Load (const char* pszName);
+
+		CBitmap* Frame (int nStart, int nDuration);
+	};
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 int LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP);

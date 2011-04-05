@@ -105,6 +105,39 @@ if (m_bmP) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+bool CAnimation::Load (const char* pszName) 
+{
+if (!m_frames.Buffer ())
+	return false;
+
+	char szName [FILENAME_LEN], szFolder [FILENAME_LEN], szFile [FILENAME_LEN], szExt [FILENAME_LEN];
+
+CFile::SplitPath (pszName, szFolder, szFile, szExt);
+
+for (uint i = 0; i < m_nFrames; i++) {
+	sprintf (szName, "%s%s-%02d.%s", szFolder, szFile, szName);
+	if (!m_frames [i].Load (szName)) {
+		Destroy ();
+		return false;
+		}
+	}
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+CBitmap* CAnimation::Frame (int nStart, int nDuration) 
+{
+if (!m_frames.Buffer ())
+	return NULL;
+uint nFrame = (gameStates.app.nSDLTicks [0] - nStart) * m_nFrames / nDuration;
+return (nFrame >= m_nFrames) ? NULL : m_frames [nFrame].Bitmap ();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 int LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP)
 {
 if (!*bHaveP) {
