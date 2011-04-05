@@ -568,8 +568,8 @@ else
 void DoMissileSmoke (CObject *objP)
 {
 #if MISSILE_SMOKE
-	int				nParts, nSpeed, nLife, nObject, nSmoke;
-	float				nScale = 1.5f + float (gameOpts->render.particles.nQuality) / 2.0f;
+	int				nParts, nSpeed, nObject, nSmoke;
+	float				nScale = 1.5f + float (gameOpts->render.particles.nQuality) / 2.0f, nLife;
 
 nObject = objP->Index ();
 if (!(SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
@@ -581,9 +581,9 @@ if ((objP->info.xShield < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DES
 	nParts = 0;
 else {
 	nSpeed = WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel);
-	nLife = gameOpts->render.particles.nLife [3];
+	nLife = float (gameOpts->render.particles.nLife [3]) * float (WI_speed (CONCUSSION_ID, gameStates.app.nDifficultyLevel)) / float (nSpeed);
 #if 1
-	nParts = int (MSL_MAX_PARTS * X2F (nSpeed) / (15.0f * (4 - nLife)));
+	nParts = MSL_MAX_PARTS; //int (MSL_MAX_PARTS * X2F (nSpeed) / (15.0f * (4 - nLife)));
 	if ((objP->info.nId == EARTHSHAKER_MEGA_ID) || (objP->info.nId == ROBOT_SHAKER_MEGA_ID))
 		nParts /= 2;
 
@@ -602,7 +602,7 @@ if (nParts) {
 			}
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, nScale,
 													/*gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3], 1,*/ 
-													nLife * MSL_PART_LIFE / 2, MSL_PART_SPEED, SIMPLE_SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);
+													int (nLife * MSL_PART_LIFE * 0.5f + 0.5f), MSL_PART_SPEED, SIMPLE_SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);
 		if (nSmoke < 0)
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
@@ -787,7 +787,7 @@ void DoParticleTrail (CObject *objP)
 #if PARTICLE_TRAIL
 	int			nParts, nObject, nSmoke, id = objP->info.nId, 
 					bGatling = (id == VULCAN_ID) || (id == GAUSS_ID) || 
-								  ((gameOpts->render.particles.nQuality > 2) && ((id == ROBOT_RED_LASER_ID) || (id == ROBOT_WHITE_LASER_ID))),
+								  ((gameOpts->render.particles.nQuality > 2) && ((id == ROBOT_VULCAN_ID) || (id == ROBOT_GAUSS_ID))),
 					bOmega = (id == OMEGA_ID);
 	float			nScale;
 	CFixVector	pos;
@@ -862,23 +862,26 @@ particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 int DoObjectSmoke (CObject *objP)
 {
 int t = objP->info.nType;
+	ubyte nId = objP->info.nId;
+
 if (t == OBJ_PLAYER)
 	DoPlayerSmoke (objP, -1);
 else if (t == OBJ_ROBOT)
 	DoRobotSmoke (objP);
-else if ((t == OBJ_EFFECT) && (objP->info.nId == SMOKE_ID))
+else if ((t == OBJ_EFFECT) && (nId == SMOKE_ID))
 	DoStaticParticles (objP);
 else if (t == OBJ_REACTOR)
 	DoReactorSmoke (objP);
 else if (t == OBJ_WEAPON) {
-	if (gameData.objs.bIsMissile [objP->info.nId])
+	if (gameData.objs.bIsMissile [nId])
 		DoMissileSmoke (objP);
-	else if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID) || (objP->info.nId == ROBOT_VULCAN_ID) || (objP->info.nId == ROBOT_GAUSS_ID))
+	else if ((nId == VULCAN_ID) || (nId == GAUSS_ID) || 
+				((gameOpts->render.particles.nQuality > 2) && ((nId == ROBOT_VULCAN_ID) || (nId == ROBOT_GAUSS_ID))))
 		DoParticleTrail (objP);
-	else if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (objP->info.nId == PROXMINE_ID))
+	else if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (nId == PROXMINE_ID))
 		DoBombSmoke (objP);
 	else if (gameOpts->render.particles.bPlasmaTrails && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0) &&
-				gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsSlowWeapon [objP->info.nId])
+				gameData.objs.bIsWeapon [nId] && !gameData.objs.bIsSlowWeapon [nId])
 		DoParticleTrail (objP);
 	else
 		return 0;

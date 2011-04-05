@@ -272,6 +272,8 @@ int SaveStateMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
 	char		c = KeyToASCII (key);
 
 if (nState) { // render
+	if (i < 0)
+		return nCurItem;
 	CBitmap*	image = saveGameInfo [i].Image ();
 	if (!image)
 		return nCurItem;
