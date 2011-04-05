@@ -1923,24 +1923,24 @@ gameOptions [0].render.particles.bWiggleBubbles = 1;
 gameOptions [0].render.particles.bWobbleBubbles = 1;
 if (!gameOpts->app.bExpertMode) {
 	// player ships
-	gameOptions [0].render.particles.nSize [1] = 1;
-	gameOptions [0].render.particles.nDens [1] = 1;
-	gameOptions [0].render.particles.nLife [1] = gameOpts->render.particles.nQuality;
+	gameOptions [0].render.particles.nSize [1] = 2 + (gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nDens [1] = (gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nLife [1] = (gameOpts->render.particles.nQuality > 1);
 	gameOptions [0].render.particles.nAlpha [1] = 2;
 	// robots
-	gameOptions [0].render.particles.nSize [2] = 1 + (gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nSize [2] = 2 + (gameOpts->render.particles.nQuality > 1);
 	gameOptions [0].render.particles.nDens [2] = (gameOpts->render.particles.nQuality > 1);
-	gameOptions [0].render.particles.nLife [2] = 2; //gameOpts->render.particles.nQuality;
+	gameOptions [0].render.particles.nLife [2] = (gameOpts->render.particles.nQuality > 1);
 	gameOptions [0].render.particles.nAlpha [2] = 2;
 	// missiles
-	gameOptions [0].render.particles.nSize [3] = 1 + gameOpts->render.particles.nQuality; //3 + (gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nSize [3] = 2 + (gameOpts->render.particles.nQuality > 1);
 	gameOptions [0].render.particles.nDens [3] = 1 + (gameOpts->render.particles.nQuality > 1);
-	gameOptions [0].render.particles.nLife [3] = 2; //gameOpts->render.particles.nQuality;
+	gameOptions [0].render.particles.nLife [3] = 1 + (gameOpts->render.particles.nQuality > 1);
 	gameOptions [0].render.particles.nAlpha [3] = 2;
 	// debris
 	gameOptions [0].render.particles.nSize [4] = 2 + (gameOpts->render.particles.nQuality > 1);
-	gameOptions [0].render.particles.nDens [4] = (gameOpts->render.particles.nQuality > 1);
-	gameOptions [0].render.particles.nLife [4] = 2; //gameOpts->render.particles.nQuality;
+	gameOptions [0].render.particles.nDens [4] = 1 + (gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.nLife [4] = 1 + (gameOpts->render.particles.nQuality > 1);
 	gameOptions [0].render.particles.nAlpha [4] = 2;
 	// static smoke
 	#if 0

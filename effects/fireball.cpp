@@ -103,12 +103,8 @@ CObject* CreateExplosion (CObject* parentP, short nSegment, CFixVector& vPos, fi
 
 nObject = CreateFireball (nVClip, nSegment, vPos, xSize, RT_FIREBALL);
 
-if (nObject < 0) {
-#if TRACE
-	console.printf (1, "Can't create object in /*Object*/CreateExplosionSub.\n");
-#endif
+if (nObject < 0)
 	return NULL;
-	}
 
 explObjP = OBJECTS + nObject;
 //now set explosion-specific data
