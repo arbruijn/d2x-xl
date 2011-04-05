@@ -117,7 +117,7 @@ explObjP->cType.explInfo.nSpawnTime = -1;
 explObjP->cType.explInfo.nDeleteObj = -1;
 explObjP->cType.explInfo.nDeleteTime = -1;
 
-if (parentP && (nVClip == VCLIP_POWERUP_DISAPPEARANCE))
+if ((parentP && (nVClip == VCLIP_POWERUP_DISAPPEARANCE)) || (nVClip == VCLIP_MORPHING_ROBOT))
 	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), explObjP->LifeLeft (), explObjP->info.xSize, -1, explObjP->Position ()));
 
 if (xMaxDamage <= 0)
