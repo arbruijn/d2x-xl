@@ -30,9 +30,10 @@ class CAnimation {
 	private:
 		uint						m_nFrames;
 		CArray<CAddonBitmap>	m_frames;
+		char						m_szName [FILENAME_LEN];
 
 	public:
-		CAnimation () : m_nFrames (0) {}
+		CAnimation (uint nFrames = 0, const char* pszName = NULL);
 
 		~CAnimation () { Destroy (); }
 
@@ -41,11 +42,7 @@ class CAnimation {
 			m_nFrames = 0;
 			}
 
-		bool Create (void) {
-			return m_frames.Create (m_nFrames) != NULL;
-			}
-
-		bool Load (const char* pszName);
+		bool Load (const char* pszName = NULL);
 
 		CBitmap* Frame (int nStart, int nDuration);
 	};
