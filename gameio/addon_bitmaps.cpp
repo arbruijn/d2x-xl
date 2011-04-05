@@ -144,6 +144,14 @@ return true;
 
 //------------------------------------------------------------------------------
 
+void CAnimation::Unload (void)
+{
+for (uint i = 0; i < m_nFrames; i++)
+	m_frames [i].Unload ();
+}
+
+//------------------------------------------------------------------------------
+
 CBitmap* CAnimation::Frame (int nStart, int nDuration) 
 {
 if (!m_frames.Buffer ())
@@ -209,6 +217,7 @@ damageIcon [1].Load (const_cast<char*>("drivedmg.tga"));
 damageIcon [2].Load (const_cast<char*>("gundmg.tga"));
 PrintLog ("   Loading joystick emulator image\n");
 joyMouse.Load ();
+shockwave.Load ();
 }
 
 //------------------------------------------------------------------------------
@@ -227,6 +236,7 @@ scope.Unload ();
 damageIcon [0].Unload ();
 damageIcon [1].Unload ();
 damageIcon [2].Unload ();
+shockwave.Unload ();
 }
 
 //------------------------------------------------------------------------------

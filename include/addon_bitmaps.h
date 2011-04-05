@@ -44,6 +44,8 @@ class CAnimation {
 
 		bool Load (const char* pszName = NULL);
 
+		void Unload (void);
+
 		CBitmap* Frame (int nStart, int nDuration);
 	};
 
