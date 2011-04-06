@@ -27,6 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "hiresmodels.h"
 #include "addon_bitmaps.h"
+#include "transprender.h"
 
 #define BLAST_TYPE 0
 #define MOVE_BLAST 1
@@ -217,7 +218,7 @@ ogl.SetDepthWrite (true);
 void DrawShockwave (CObject *objP)
 {
 
-	CBitmap* bmP = shockwave.Bitmap (int (X2F (SHOCKWAVE_LIFE) * 1000), int (X2F (SHOCKWAVE_LIFE - objP->info.xLifeLeft) * 1000);
+	CBitmap* bmP = shockwave.Bitmap (int (X2F (SHOCKWAVE_LIFE) * 1000), int (X2F (SHOCKWAVE_LIFE - objP->info.xLifeLeft) * 1000));
 
 if (!bmP)
 	return;
