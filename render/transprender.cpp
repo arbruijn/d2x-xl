@@ -376,6 +376,10 @@ int CTransparencyRenderer::AddPoly (CSegFace *faceP, tFaceTriangle *triP, CBitma
 item.faceP = faceP;
 item.triP = triP;
 item.bmP = bmP;
+#if DBG
+if (strstr (bmP->Name (), "glare"))
+	bmP = bmP;
+#endif
 item.nVertices = nVertices;
 item.nPrimitive = nPrimitive;
 item.nWrap = nWrap;
@@ -416,10 +420,10 @@ if (bDepthMask && m_data.bSplitPolys) {
 else
 #endif
 	{
-	if (faceP)
-		return Add ((faceP || triP) ? tiFace : tiPoly, &item, sizeof (item), 
+	if (faceP) {
+		return Add (tiFace, &item, sizeof (item), 
 						SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->Center (), 0, true, false);
-
+		}
 	CFloatVector v = item.vertices [0];
 	for (i = 1; i < item.nVertices; i++) 
 		v += item.vertices [i];
@@ -430,7 +434,7 @@ else
 		m_data.bRenderGlow = 1;
 	if ((gameOpts->render.effects.bSoftParticles & 1) != 0)
 		m_data.bSoftBlend = 1;
-	return Add ((faceP || triP) ? tiFace : tiPoly, &item, sizeof (item), vPos, 0, true);
+	return Add (triP ? tiFace : tiPoly, &item, sizeof (item), vPos, 0, true);
 	}
 }
 
@@ -719,6 +723,10 @@ m_data.bmP [1] = m_data.bmP [2] = NULL;
 if (item->bAdditive & 3)
 	glowRenderer.Begin (GLOW_POLYS, 2, false, 1.0f);
 ogl.EnableClientStates (bmP != NULL, item->nColors == item->nVertices, 0, GL_TEXTURE0);
+#if DBG
+if (strstr (bmP->Name (), "shockwave"))
+	bmP = bmP;
+#endif
 if (LoadTexture (bmP, 0, 0, 0, item->nWrap)) {
 	if (bmP)
 		OglTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
@@ -730,10 +738,19 @@ if (LoadTexture (bmP, 0, 0, 0, item->nWrap)) {
 	ogl.SetBlendMode (item->bAdditive);
 	if (!(bSoftBlend && glareRenderer.LoadShader (5, item->bAdditive != 0)))
 		shaderManager.Deploy (-1);
+	//ogl.SetTexturing (false);
+	//glLineWidth (5);
+	ogl.SetFaceCulling (false);
 	ogl.SetupTransform (0);
 	OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 	ogl.ResetTransform (0);
+	ogl.SetFaceCulling (true);
+	//glLineWidth (1);
 	}
+#if DBG
+else
+	HUDMessage (0, "Couldn't load '%s'", bmP->Name ());
+#endif
 #if TI_POLY_OFFSET
 if (!bmP) {
 	glPolygonOffset (0,0);

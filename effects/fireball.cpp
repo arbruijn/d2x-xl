@@ -53,6 +53,10 @@ void DropStolenItems (CObject *objP);
 
 CObject *CObject::CreateExplBlast (void)
 {
+#if DBG
+return NULL;
+#endif
+
 	short		nObject, id;
 	CObject	*objP;
 
@@ -60,7 +64,7 @@ if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves)
 	return NULL;
 if (SPECTATOR (this))
 	return NULL;
-nObject = CreateFireball (0, info.nSegment, info.position.vPos, 2 * info.xSize, RT_EXPLBLAST);
+nObject = CreateFireball (0, info.nSegment, info.position.vPos, info.xSize, RT_EXPLBLAST);
 if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
@@ -94,11 +98,11 @@ if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves)
 	return NULL;
 if (SPECTATOR (this))
 	return NULL;
-nObject = CreateFireball (0, info.nSegment, info.position.vPos, 2 * info.xSize, RT_SHOCKWAVE);
+nObject = CreateFireball (0, info.nSegment, info.position.vPos, 10 * info.xSize, RT_SHOCKWAVE);
 if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
-objP->SetLife (SHOCKWAVE_LIFE);
+objP->SetLife (SHOCKWAVE_LIFE * 10);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;

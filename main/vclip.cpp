@@ -219,7 +219,7 @@ ogl.SetDepthWrite (true);
 void DrawShockwave (CObject *objP)
 {
 
-	CBitmap* bmP = shockwave.Bitmap (SHOCKWAVE_LIFE, objP->info.xLifeLeft);
+	CBitmap* bmP = shockwave.Bitmap (SHOCKWAVE_LIFE * 10, objP->info.xLifeLeft);
 
 if (!bmP)
 	return;
@@ -233,12 +233,12 @@ if (objP->info.xLifeLeft <= 0)
 	return;
 if (!shockwave.Load ())
 	return;
-float fSize = X2F (objP->info.xSize) * 10;
+float fSize = X2F (objP->info.xSize);
 f.Assign (objP->Orientation ().m.dir.f);
 f *= fSize;
 r.Assign (objP->Orientation ().m.dir.r);
 r *= fSize;
-vertices [0].Assign (objP->info.position.vPos);
+vertices [0].Assign (objP->Position ());
 vertices [1] = 
 vertices [2] = 
 vertices [3] = vertices [0];
@@ -252,9 +252,11 @@ vertices [2] -= f;
 vertices [3] += r;
 
 bmP->SetColor (&color);
-#if DBG
+#if 0
 ogl.RenderSprite (bmP, objP->Position (), objP->info.xSize * 5, objP->info.xSize * 5, 1.0f, 2, 10.0f);
 #else
+for (int i = 0; i < 4; i++)
+	transformation.Transform (vertices [i], vertices [i], 0);
 transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoord, &color, NULL, 1, 0, GL_QUADS, GL_CLAMP, 2, -1);
 #endif
 }
