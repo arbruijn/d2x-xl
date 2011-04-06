@@ -100,10 +100,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_WEAPON_VCLIP 7   // a weapon that renders as a tVideoClip
 #define RT_THRUSTER		8	 // like afterburner, but doesn't cast light
 #define RT_EXPLBLAST		9	 // white explosion light blast
-#define RT_SHRAPNELS		10	 // white explosion light blast
-#define RT_SMOKE			11
-#define RT_LIGHTNING    12
-#define RT_SOUND			13
+#define RT_SHOCKWAVE		10  // concentric shockwave effect
+#define RT_SHRAPNELS		11	 // smoke trails coming from explosions
+#define RT_SMOKE			12
+#define RT_LIGHTNING    13
+#define RT_SOUND			14
 
 #define SMOKE_ID			0
 #define LIGHTNING_ID		1
@@ -903,6 +904,7 @@ class CObject : public CObjectInfo {
 
 		inline void RequestEffects (ubyte nEffects);
 		CObject* CreateExplBlast (void);
+		CObject* CreateShockwave (void);
 		int CreateWeaponEffects (int bExplBlast);
 		CObject* ExplodeBadass (fix damage, fix distance, fix force);
 		CObject* ExplodeBadassPlayer (void);

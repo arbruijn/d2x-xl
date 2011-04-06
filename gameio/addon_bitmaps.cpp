@@ -152,7 +152,7 @@ for (uint i = 0; i < m_nFrames; i++)
 
 //------------------------------------------------------------------------------
 
-CBitmap* CAnimation::Frame (int nStart, int nDuration) 
+CBitmap* CAnimation::Bitmap (int nStart, int nDuration) 
 {
 if (!m_frames.Buffer ())
 	return NULL;

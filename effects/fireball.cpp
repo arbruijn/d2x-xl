@@ -71,21 +71,48 @@ objP->cType.explInfo.nDeleteTime = -1;
 objP->info.xSize = info.xSize;
 objP->info.xSize /= 3;
 if ((info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = info.nId])) {
-	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID)) {
+	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID))
 		objP->info.xSize = I2X (5) / 2;
-		//	objP->SetLife (3 * BLAST_LIFE / 2);
-		}
 	else if ((id == MEGAMSL_ID) || (id == ROBOT_MEGAMSL_ID) || (id == EARTHSHAKER_MEGA_ID))
 		objP->info.xSize = I2X (2);
 	else if ((id == SMARTMSL_ID) || (id == ROBOT_SMARTMSL_ID))
 		objP->info.xSize = I2X (3) / 2;
-	else {
-		// objP->info.xLifeLeft /= 2;
+	else
 		objP->info.xSize = I2X (1);
-		}
 	}
-//if (gameOpts->render.effects.nShockwaves == 2)
-//	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, objP->info.xSize, 1, objP->Position ()));
+return objP;
+}
+
+//------------------------------------------------------------------------------
+
+CObject *CObject::CreateShockwave (void)
+{
+	short		nObject, id;
+	CObject	*objP;
+
+if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves))
+	return NULL;
+if (SPECTATOR (this))
+	return NULL;
+nObject = CreateFireball (0, info.nSegment, info.position.vPos, 4 * info.xSize, RT_SHOCKWAVE);
+if (nObject < 0)
+	return NULL;
+objP = OBJECTS + nObject;
+objP->SetLife (SHOCKWAVE_LIFE);
+objP->cType.explInfo.nSpawnTime = -1;
+objP->cType.explInfo.nDeleteObj = -1;
+objP->cType.explInfo.nDeleteTime = -1;
+objP->Orientation () = Orientation ();
+if ((info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = info.nId])) {
+	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID))
+		objP->info.xSize = I2X (5) / 2;
+	else if ((id == MEGAMSL_ID) || (id == ROBOT_MEGAMSL_ID) || (id == EARTHSHAKER_MEGA_ID))
+		objP->info.xSize = I2X (2);
+	else if ((id == SMARTMSL_ID) || (id == ROBOT_SMARTMSL_ID))
+		objP->info.xSize = I2X (3) / 2;
+	else 
+		objP->info.xSize = I2X (1);
+	}
 return objP;
 }
 
@@ -576,6 +603,8 @@ if (info.xLifeLeft <= 0) {	// We died of old age
 	Die ();
 	}
 if (info.renderType == RT_EXPLBLAST)
+	return;
+if (info.renderType == RT_SHOCKWAVE)
 	return;
 if (info.renderType == RT_SHRAPNELS) {
 	//- moved to DoSmokeFrame() - UpdateShrapnels (this);

@@ -53,6 +53,7 @@ extern tVideoClip Vclip [2][MAX_VCLIPS];
 void DrawVClipObject (CObject *objP, fix timeleft, int lighted, int vclip_num, tRgbaColorf *color);
 void DrawWeaponVClip (CObject *objP);
 void DrawExplBlast (CObject *objP);
+void DrawShockwave (CObject *objP);
 void ConvertWeaponToVClip (CObject *objP);
 int SetupHiresVClip (tVideoClip *vcP, tVClipInfo *vciP, CBitmap* bmP = NULL);
 tRgbColorb *VClipColor (CObject *objP);

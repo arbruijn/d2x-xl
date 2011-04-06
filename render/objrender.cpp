@@ -988,6 +988,15 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
+static int RenderShockwave (CObject* objP, int bForce)
+{
+if (gameStates.render.nShadowPass != 2)
+	DrawShockwave (objP);
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
 static int RenderShrapnel (CObject* objP, int bForce)
 {
 if (gameStates.render.nShadowPass != 2)
@@ -1173,6 +1182,11 @@ switch (objP->info.renderType) {
 
 	case RT_EXPLBLAST:
 		if (!RenderExplBlast (objP, bForce))
+			return 0;
+		break;
+
+	case RT_SHOCKWAVE:
+		if (!RenderShockwave (objP, bForce))
 			return 0;
 		break;
 

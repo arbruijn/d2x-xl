@@ -450,7 +450,7 @@ switch (nObjType) {
 	case OBJ_EXPLOSION:
 		if (objP->info.nId == 0xff)
 			return 0;
-		if ((objP->info.renderType == RT_THRUSTER) || (objP->info.renderType == RT_EXPLBLAST) || (objP->info.renderType == RT_SHRAPNELS))
+		if ((objP->info.renderType == RT_THRUSTER) || (objP->info.renderType == RT_EXPLBLAST) || (objP->info.renderType == RT_SHOCKWAVE) || (objP->info.renderType == RT_SHRAPNELS))
 			return 0;
 		else {
 			tVideoClip *vcP = gameData.eff.vClips [0] + objP->info.nId;

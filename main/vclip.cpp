@@ -214,6 +214,47 @@ ogl.SetDepthWrite (true);
 
 // -----------------------------------------------------------------------------
 
+void DrawShockwave (CObject *objP)
+{
+
+	CBitmap* bmP = shockwave.Bitmap (int (X2F (SHOCKWAVE_LIFE) * 1000), int (X2F (SHOCKWAVE_LIFE - objP->info.xLifeLeft) * 1000);
+
+if (!bmP)
+	return;
+
+	CFloatVector	r, f, vertices [4];
+
+	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
+	static tRgbaColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
+
+if (objP->info.xLifeLeft <= 0)
+	return;
+if (!shockwave.Load ())
+	return;
+float fSize = X2F (objP->info.xSize);
+f.Assign (objP->Orientation ().m.dir.f);
+f *= fSize;
+r.Assign (objP->Orientation ().m.dir.r);
+r *= fSize;
+vertices [0].Assign (objP->info.position.vPos);
+vertices [1] = 
+vertices [2] = 
+vertices [3] = vertices [0];
+vertices [0] += f;
+vertices [0] += r;
+vertices [1] += f;
+vertices [1] -= r;
+vertices [2] -= f;
+vertices [2] -= r;
+vertices [3] -= f;
+vertices [3] += r;
+
+bmP->SetColor (&color);
+transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoord, &color, NULL, 1, 0, GL_QUADS, GL_CLAMP, 0, -1);
+}
+
+// -----------------------------------------------------------------------------
+
 void ConvertPowerupToVClip (CObject *objP)
 {
 objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
