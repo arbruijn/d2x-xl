@@ -247,7 +247,7 @@ do {
 	m.AddText ("");
 	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicStdFull [gameOpts->render.particles.nQuality]);
 	*szSlider = *(TXT_SMOKE - 1);
-	effectOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 3, KEY_S, HTX_SMOKE);
+	effectOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 3, KEY_P, HTX_SMOKE);
 	if (!gameStates.render.bHaveStencilBuffer)
 		effectOpts.nShadows = -1;
 	else {
@@ -274,7 +274,7 @@ do {
 	if (extraGameInfo [0].bUseParticles) {
 		sprintf (szSlider + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
 		*szSlider = *(TXT_EXPLOSION_SHRAPNELS - 1);
-		effectOpts.nExplShrapnels = m.AddSlider (szSlider + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_E, HTX_EXPLOSION_SHRAPNELS);
+		effectOpts.nExplShrapnels = m.AddSlider (szSlider + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_A, HTX_EXPLOSION_SHRAPNELS);
 		}
 	else
 		effectOpts.nExplShrapnels = -1;
@@ -293,7 +293,7 @@ do {
 
 	m.AddText ("");
 	if (extraGameInfo [0].bUseParticles) {
-		optStaticSmoke = m.AddCheck (TXT_SMOKE_STATIC, gameOpts->render.particles.bStatic, KEY_A, HTX_ADVRND_STATICSMOKE);
+		optStaticSmoke = m.AddCheck (TXT_SMOKE_STATIC, gameOpts->render.particles.bStatic, KEY_X, HTX_ADVRND_STATICSMOKE);
 		optGatlingTrails = m.AddCheck (TXT_GATLING_TRAILS, extraGameInfo [0].bGatlingTrails, KEY_G, HTX_GATLING_TRAILS);
 		}
 	else

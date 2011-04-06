@@ -26,7 +26,7 @@ CShrapnelManager shrapnelManager;
 
 // -----------------------------------------------------------------------------
 
-#define SHRAPNEL_MAX_PARTS			200
+#define SHRAPNEL_MAX_PARTS			225
 #define SHRAPNEL_PART_LIFE			-1500
 #define SHRAPNEL_PART_SPEED		10
 
@@ -170,7 +170,7 @@ if (explBlast.Load ())
 
 int CShrapnelCloud::Create (CObject* parentObjP, CObject* objP)
 {
-	float		fScale = float (sqrt (X2F (parentObjP->info.xSize))) * 1.125f;
+	float		fScale = float (sqrt (X2F (parentObjP->info.xSize))) * 1.25f;
 	int		i, 
 				h = int (fScale * fShrapnelScale [gameOpts->render.effects.nShrapnels] + 0.5);
 
@@ -196,7 +196,7 @@ fScale = 7.0f / fScale;
 #	pragma omp for 
 #endif
 	for (i = 0; i < h; i++) {
-		m_data.buffer [i].Create (parentObjP, objP, fScale);
+		m_data.buffer [i].Create (parentObjP, objP, 3.0f);
 		}
 	}
 objP->info.xLifeLeft *= 2;
@@ -243,6 +243,9 @@ CArray<CShrapnelCloud>::Destroy ();
 
 int CShrapnelManager::Create (CObject* objP)
 {
+#if 1
+return 0;
+#else
 if (!SHOW_SMOKE)
 	return 0;
 if (!gameOpts->render.effects.nShrapnels)
@@ -255,6 +258,7 @@ short nObject = CreateFireball (0, objP->info.nSegment, objP->info.position.vPos
 if (0 > nObject)
 	return 0;
 return m_data.buffer [nObject].Create (objP, OBJECTS + nObject);
+#endif
 }
 
 // -----------------------------------------------------------------------------
