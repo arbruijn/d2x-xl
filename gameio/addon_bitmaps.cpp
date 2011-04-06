@@ -152,11 +152,11 @@ for (uint i = 0; i < m_nFrames; i++)
 
 //------------------------------------------------------------------------------
 
-CBitmap* CAnimation::Bitmap (int nStart, int nDuration) 
+CBitmap* CAnimation::Bitmap (fix xTTL, fix xLifeLeft) 
 {
 if (!m_frames.Buffer ())
 	return NULL;
-uint nFrame = (gameStates.app.nSDLTicks [0] - nStart) * m_nFrames / nDuration;
+uint nFrame = uint (float (xTTL - xLifeLeft) / float (xTTL) + 0.5f);
 return (nFrame >= m_nFrames) ? NULL : m_frames [nFrame].Bitmap ();
 }
 

@@ -154,7 +154,6 @@ gameData.time.xLast = timerValue;
 
 #if EXACT_FRAME_TIME
 
-gameData.time.tLast = gameStates.app.nSDLTicks [0];
 if (nDeltaTime > 0)
 	gameData.time.tLast += nDeltaTime;
 
@@ -190,6 +189,7 @@ else
 
 void GetSlowTicks (void)
 {
+gameData.time.tLast = gameStates.app.nSDLTicks [0];
 gameStates.app.nSDLTicks [0] = SDL_GetTicks ();
 gameStates.app.tick40fps.nTime = gameStates.app.nSDLTicks [0] - gameStates.app.tick40fps.nLastTick;
 if ((gameStates.app.tick40fps.bTick = (gameStates.app.tick40fps.nTime >= 25)))

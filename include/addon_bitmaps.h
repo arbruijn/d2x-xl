@@ -46,7 +46,7 @@ class CAnimation {
 
 		void Unload (void);
 
-		CBitmap* Bitmap (int nStart, int nDuration);
+		CBitmap* Bitmap (fix xTTL, fix xLifeLeft);
 	};
 
 //------------------------------------------------------------------------------
