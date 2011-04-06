@@ -57,7 +57,7 @@ extern void timer_set_function( void _far * function );
 #define approx_fsec_to_msec(fsec) ((fsec) >> 6)
 
 #define MSEC2X(_s)	fix (float (_s) * (float (I2X (1)) / 1000.0f))
-#define X2MSEC(_x)	fix (float (_s) * (1000.0f / float (I2X (1))))
+#define X2MSEC(_x)	fix (float (_x) * (1000.0f / float (I2X (1))))
 
 static inline fix TimerGetApproxSeconds (void)
 {
