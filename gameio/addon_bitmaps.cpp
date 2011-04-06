@@ -133,7 +133,7 @@ if (!pszName)
 CFile::SplitPath (pszName, szFolder, szFile, szExt);
 
 for (uint i = 0; i < m_nFrames; i++) {
-	sprintf (szName, "%s%s-%02d.%s", szFolder, szFile, i + 1, szExt);
+	sprintf (szName, "%s%s-%02d%s", szFolder, szFile, i + 1, szExt);
 	if (!m_frames [i].Load (szName)) {
 		Destroy ();
 		return false;
