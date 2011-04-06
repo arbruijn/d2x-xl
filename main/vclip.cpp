@@ -218,7 +218,7 @@ ogl.SetDepthWrite (true);
 void DrawShockwave (CObject *objP)
 {
 
-	CBitmap* bmP = shockwave.Bitmap (int (X2F (SHOCKWAVE_LIFE) * 1000), int (X2F (SHOCKWAVE_LIFE - objP->info.xLifeLeft) * 1000));
+	CBitmap* bmP = shockwave.Bitmap (X2MSEC (objP->CreationTime ()), X2MSEC (SHOCKWAVE_LIFE - objP->info.xLifeLeft));
 
 if (!bmP)
 	return;

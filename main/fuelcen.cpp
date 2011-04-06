@@ -656,7 +656,7 @@ void FuelcenUpdateAll (void)
 {
 	int				i, t;
 	tFuelCenInfo*	fuelCenP = &gameData.matCens.fuelCenters [0];
-	fix				xAmountToReplenish = FixMul (gameData.time.xFrame,gameData.matCens.xFuelRefillSpeed);
+	fix				xAmountToReplenish = FixMul (gameData.time.xFrame, gameData.matCens.xFuelRefillSpeed);
 
 for (i = 0; i < gameData.matCens.nFuelCenters; i++, fuelCenP++) {
 	t = fuelCenP->nType;
