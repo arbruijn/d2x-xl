@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ET_MULTI_SECOND 2   //second part of multi-part explosion
 
 #define BLAST_LIFE		(I2X (2) / 5)
-#define SHOCKWAVE_LIFE	(I2X (2) / 5)
+#define SHOCKWAVE_LIFE	I2X (3)
 
 CObject *CreateBadassExplosion (CObject* parentObjP, short nSegment,
 										  CFixVector& position, fix size, ubyte vclipType,
