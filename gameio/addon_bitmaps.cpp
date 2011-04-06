@@ -39,7 +39,7 @@ CAddonBitmap scope (const_cast<char*>("scope.tga"));
 CAddonBitmap sparks (const_cast<char*>("sparks.tga"));
 CAddonBitmap joyMouse (const_cast<char*>("joymouse.tga"));
 
-CAnimation shockwave (96, const_cast<char*>("shockwave1.png"));
+CAnimation shockwave (const_cast<char*>("shockwave1.tga"), 96);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -107,7 +107,7 @@ if (m_bmP) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-CAnimation::CAnimation (uint nFrames, const char* pszName) 
+CAnimation::CAnimation (const char* pszName, uint nFrames) 
 	: m_nFrames (nFrames) 
 {
 if (pszName)
@@ -156,7 +156,10 @@ CBitmap* CAnimation::Bitmap (fix xTTL, fix xLifeLeft)
 {
 if (!m_frames.Buffer ())
 	return NULL;
-uint nFrame = uint (float (xTTL - xLifeLeft) / float (xTTL) + 0.5f);
+uint nFrame = uint (float (m_nFrames) * float (xTTL - xLifeLeft) / float (xTTL) + 0.5f);
+#if DBG
+HUDMessage (0, "Shockwave frame #%d", nFrame);
+#endif
 return (nFrame >= m_nFrames) ? NULL : m_frames [nFrame].Bitmap ();
 }
 

@@ -233,7 +233,7 @@ if (objP->info.xLifeLeft <= 0)
 	return;
 if (!shockwave.Load ())
 	return;
-float fSize = X2F (objP->info.xSize);
+float fSize = X2F (objP->info.xSize) * 10;
 f.Assign (objP->Orientation ().m.dir.f);
 f *= fSize;
 r.Assign (objP->Orientation ().m.dir.r);
@@ -243,16 +243,20 @@ vertices [1] =
 vertices [2] = 
 vertices [3] = vertices [0];
 vertices [0] += f;
-vertices [0] += r;
-vertices [1] += f;
+//vertices [0] += r;
+//vertices [1] += f;
 vertices [1] -= r;
 vertices [2] -= f;
-vertices [2] -= r;
-vertices [3] -= f;
+//vertices [2] -= r;
+//vertices [3] -= f;
 vertices [3] += r;
 
 bmP->SetColor (&color);
-transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoord, &color, NULL, 1, 0, GL_QUADS, GL_CLAMP, 0, -1);
+#if DBG
+ogl.RenderSprite (bmP, objP->Position (), objP->info.xSize * 5, objP->info.xSize * 5, 1.0f, 2, 10.0f);
+#else
+transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoord, &color, NULL, 1, 0, GL_QUADS, GL_CLAMP, 2, -1);
+#endif
 }
 
 // -----------------------------------------------------------------------------

@@ -33,7 +33,7 @@ class CAnimation {
 		char						m_szName [FILENAME_LEN];
 
 	public:
-		CAnimation (uint nFrames = 0, const char* pszName = NULL);
+		CAnimation (const char* pszName = NULL, uint nFrames = 0);
 
 		~CAnimation () { Destroy (); }
 

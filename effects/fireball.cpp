@@ -94,7 +94,7 @@ if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves)
 	return NULL;
 if (SPECTATOR (this))
 	return NULL;
-nObject = CreateFireball (0, info.nSegment, info.position.vPos, 4 * info.xSize, RT_SHOCKWAVE);
+nObject = CreateFireball (0, info.nSegment, info.position.vPos, 2 * info.xSize, RT_SHOCKWAVE);
 if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
