@@ -641,8 +641,10 @@ return 1;
 int CObject::CreateWeaponEffects (int bExplBlast)
 {
 if ((info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [info.nId]) {
-	if (bExplBlast)
+	if (bExplBlast) {
 		CreateExplBlast ();
+		CreateShockwave ();
+		}
 	if ((info.nId == EARTHSHAKER_ID) || (info.nId == EARTHSHAKER_ID))
 		RequestEffects (MISSILE_LIGHTNING);
 	else if ((info.nId == EARTHSHAKER_MEGA_ID) || (info.nId == ROBOT_SHAKER_MEGA_ID))

@@ -494,6 +494,7 @@ void CObject::ExplodePolyModel (void)
 Assert (info.renderType == RT_POLYOBJ);
 #if 1 //DBG == 0
 CreateExplBlast ();
+CreateShockwave ();
 RequestEffects (EXPL_LIGHTNING | SHRAPNEL_SMOKE);
 if (gameData.models.nDyingModels [ModelId ()] != -1)
 	rType.polyObjInfo.nModel = gameData.models.nDyingModels [ModelId ()];
