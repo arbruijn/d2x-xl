@@ -102,11 +102,18 @@ nObject = CreateFireball (0, info.nSegment, info.position.vPos, 10 * info.xSize,
 if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
-objP->SetLife (SHOCKWAVE_LIFE * 10);
+objP->SetLife (SHOCKWAVE_LIFE);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
+#if 0
 objP->Orientation () = Orientation ();
+#else
+CAngleVector a = CAngleVector::Create (d_rand (), d_rand (), d_rand ());
+CFixMatrix mRotate = CFixMatrix::Create (a);
+objP->Orientation () = mRotate * Orientation ();
+#endif
+
 if ((info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = info.nId])) {
 	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID))
 		objP->info.xSize = I2X (5) / 2;

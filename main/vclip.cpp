@@ -219,12 +219,12 @@ ogl.SetDepthWrite (true);
 void DrawShockwave (CObject *objP)
 {
 
-	CBitmap* bmP = shockwave.Bitmap (SHOCKWAVE_LIFE * 10, objP->info.xLifeLeft);
+	CBitmap* bmP = shockwave.Bitmap (SHOCKWAVE_LIFE, objP->info.xLifeLeft);
 
 if (!bmP)
 	return;
 
-	CFloatVector	r, f, vertices [4];
+	CFloatVector	v, vertices [4];
 
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 	static tRgbaColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -233,23 +233,25 @@ if (objP->info.xLifeLeft <= 0)
 	return;
 if (!shockwave.Load ())
 	return;
-float fSize = X2F (objP->info.xSize);
-f.Assign (objP->Orientation ().m.dir.f);
-f *= fSize;
-r.Assign (objP->Orientation ().m.dir.r);
-r *= fSize;
+
 vertices [0].Assign (objP->Position ());
 vertices [1] = 
 vertices [2] = 
 vertices [3] = vertices [0];
-vertices [0] += f;
+
+float fSize = X2F (objP->info.xSize);
+v.Assign (objP->Orientation ().m.dir.f);
+v *= fSize;
+vertices [0] += v;
+vertices [2] -= v;
 //vertices [0] += r;
 //vertices [1] += f;
-vertices [1] -= r;
-vertices [2] -= f;
+v.Assign (objP->Orientation ().m.dir.r);
+v *= fSize;
+vertices [1] -= v;
+vertices [3] += v;
 //vertices [2] -= r;
 //vertices [3] -= f;
-vertices [3] += r;
 
 bmP->SetColor (&color);
 #if 0
