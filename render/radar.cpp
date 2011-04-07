@@ -54,24 +54,57 @@ if (m) {
 	//VmVecNormalize (&n);
 	}
 else {
-	glPushMatrix ();
-	glColor4f (r, g, b, a);
-	glTranslatef (0, yRadar, 50);
+	//glTranslatef (0.0f, 0.0f, 50.0f);
+	//glScalef (fRadius, fRadius, fRadius);
+	int nSides = 64;
+	if (ogl.SizeVertexBuffer (nSides)) {
+		glPushMatrix ();
+		ogl.SetupTransform (0);
+		CFixVector vPos;
+		CFixMatrix mOrient;
+		vPos.Set (0, F2X (yRadar), F2X (50));
+		mOrient = CFixMatrix::IDENTITY;
+		transformation.Begin (vPos, mOrient);
+		glScalef (fRadius, fRadius, fRadius);
+		glLineWidth (2.0f);
+		glColor4f (1.0f, 0.5f, 0.0f, 1.0f);
+		int i;
+		double ang;
+		for (i = 0; i < nSides; i++) {
+			ang = 2.0 * Pi * i / nSides;
+			ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
+			ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
+			ogl.VertexBuffer () [i].v.coord.z = 50.0f;
+			}
+		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+		glColor4f (1.0f, 0.8f, 0.0f, a);
+		for (i = 0; i < nSides; i++) {
+			ang = 2.0 * Pi * i / nSides;
+			ogl.VertexBuffer () [i].v.coord.x = 0.0f;
+			ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
+			ogl.VertexBuffer () [i].v.coord.z = float (cos (ang));
+			}
+		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+		transformation.End ();
+		ogl.ResetTransform (0);
+		glPopMatrix ();
+		}
+
 #if 0
-	glColor4f (r, g, b, vec / 2);
- 	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, 10, 0, 7.5f, 0, sinCosRadar);
-#endif
+	glPushMatrix ();
+	glTranslatef (0, yRadar, 50);
 	glColor4f (r, g, b, a);
  	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
 	glColor4f (0.5f, 0.5f, 0.5f, 0.8f);
-	glLineWidth (fLineWidth);
+	glLineWidth (2.0f * fLineWidth);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
 	glColor4f (0.6f, 0.6f, 0.6f, 0.7f);
 	glLineWidth (1.5f * fLineWidth);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 2 * fRadius / 3.0f, 0, 2 * fRadius / 9.0f, 0, sinCosRadar);
 	glColor4f (0.7f, 0.7f, 0.7f, 0.6f);
-	glLineWidth (2 * fLineWidth);
+	glLineWidth (fLineWidth);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius / 3.0f, 0, fRadius / 9.0f, 0, sinCosRadar);
+
 	glLineWidth (fLineWidth);
 	if (ogl.SizeVertexBuffer (6)) {
 		float x = fRadius * 0.707f + 0.333f;
@@ -94,6 +127,7 @@ else {
 	//ogl.SetLineSmooth (false);
 	glLineWidth (2);
 	glPopMatrix ();
+#endif
 	return;
 	}
 v [0] *= FixDiv (1, 3);
