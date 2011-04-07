@@ -59,6 +59,7 @@ else {
 	int nSides = 64;
 	if (ogl.SizeVertexBuffer (nSides)) {
 		glPushMatrix ();
+		ogl.m_states.bUseTransform = 1;
 		ogl.SetupTransform (0);
 		CFixVector vPos;
 		CFixMatrix mOrient;
@@ -74,7 +75,7 @@ else {
 			ang = 2.0 * Pi * i / nSides;
 			ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
 			ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
-			ogl.VertexBuffer () [i].v.coord.z = 50.0f;
+			ogl.VertexBuffer () [i].v.coord.z = 0.0f;
 			}
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
 		glColor4f (1.0f, 0.8f, 0.0f, a);
@@ -87,6 +88,7 @@ else {
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
 		transformation.End ();
 		ogl.ResetTransform (0);
+		ogl.m_states.bUseTransform = 0;
 		glPopMatrix ();
 		}
 
