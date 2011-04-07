@@ -60,6 +60,8 @@ else {
 		CFloatVector vf, vu;
 		int i;
 
+		CFloatVector	vAxis [6];
+
 	vf.Assign (gameData.objs.viewerP->Orientation ().m.dir.f);
 	vf *= 50.0f;
 	vu.Assign (gameData.objs.viewerP->Orientation ().m.dir.u);
@@ -76,7 +78,7 @@ else {
 		mOrient = CFixMatrix::IDENTITY;
 		transformation.Begin (vPos, mOrient);
 		glScalef (fRadius, fRadius, fRadius);
-		glColor4f (0.6f, 0.6f, 0.6f, 0.7f);
+		glColor4f (0.5f, 0.5f, 0.5f, 0.6f);
 		glLineWidth (1.5f * fLineWidth);
 		//glColor4f (0.4f, 0.4f, 0.4f, 0.5f);
 		//glLineWidth (3.0f);
@@ -89,6 +91,8 @@ else {
 			pv->v.coord.z = 0.0f;
 			}
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+		vAxis [0] = ogl.VertexBuffer () [0];
+		vAxis [1] = ogl.VertexBuffer () [nSides / 2];
 
 		pv = &ogl.VertexBuffer () [0];
 		for (i = 0; i < nSides; i++, pv++) {
@@ -96,6 +100,8 @@ else {
 			pv->v.coord.x = 0.0f;
 			}
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+		vAxis [2] = ogl.VertexBuffer () [0];
+		vAxis [3] = ogl.VertexBuffer () [nSides / 2];
 
 		pv = &ogl.VertexBuffer () [0];
 		for (i = 0; i < nSides; i++, pv++) {
@@ -103,6 +109,13 @@ else {
 			pv->v.coord.y = 0.0f;
 			}
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+		vAxis [4] = ogl.VertexBuffer () [0];
+		vAxis [5] = ogl.VertexBuffer () [nSides / 2];
+
+		pv = &ogl.VertexBuffer () [0];
+		for (i = 0; i < 6; i++, pv++)
+			*pv = vAxis [i];
+		ogl.FlushBuffers (GL_LINES, 6, 3);
 
 		transformation.End ();
 		glPopMatrix ();
