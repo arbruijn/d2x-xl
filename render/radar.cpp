@@ -56,57 +56,85 @@ if (m) {
 else {
 	//glTranslatef (0.0f, 0.0f, 50.0f);
 	//glScalef (fRadius, fRadius, fRadius);
+		CFixMatrix mOrient;
+		CFloatVector vf, vu;
+		int i;
+
+	vf.Assign (gameData.objs.viewerP->Orientation ().m.dir.f);
+	vf *= 50.0f;
+	vu.Assign (gameData.objs.viewerP->Orientation ().m.dir.u);
+	vu *= yRadar;
+	CFixVector vPos;
+	vPos.Assign (vf + vu);
+	vPos += gameData.objs.viewerP->Position ();
+
 	int nSides = 64;
 	if (ogl.SizeVertexBuffer (nSides)) {
 		glPushMatrix ();
-		ogl.m_states.bUseTransform = 1;
-		ogl.SetupTransform (0);
-		CFixVector vPos;
-		CFixMatrix mOrient;
-		vPos.Set (0, F2X (yRadar), F2X (50));
+		ogl.SetTransform (1);
+
 		mOrient = CFixMatrix::IDENTITY;
 		transformation.Begin (vPos, mOrient);
 		glScalef (fRadius, fRadius, fRadius);
-		glLineWidth (2.0f);
-		glColor4f (1.0f, 0.5f, 0.0f, 1.0f);
-		int i;
-		double ang;
-		for (i = 0; i < nSides; i++) {
-			ang = 2.0 * Pi * i / nSides;
-			ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
-			ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
-			ogl.VertexBuffer () [i].v.coord.z = 0.0f;
+		glColor4f (0.6f, 0.6f, 0.6f, 0.7f);
+		glLineWidth (1.5f * fLineWidth);
+		//glColor4f (0.4f, 0.4f, 0.4f, 0.5f);
+		//glLineWidth (3.0f);
+
+		CFloatVector* pv = &ogl.VertexBuffer () [0];
+		for (i = 0; i < nSides; i++, pv++) {
+			double ang = 2.0 * Pi * i / nSides;
+			pv->v.coord.x = float (cos (ang));
+			pv->v.coord.y = float (sin (ang));
+			pv->v.coord.z = 0.0f;
 			}
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
-		glColor4f (1.0f, 0.8f, 0.0f, a);
-		for (i = 0; i < nSides; i++) {
-			ang = 2.0 * Pi * i / nSides;
-			ogl.VertexBuffer () [i].v.coord.x = 0.0f;
-			ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
-			ogl.VertexBuffer () [i].v.coord.z = float (cos (ang));
+
+		pv = &ogl.VertexBuffer () [0];
+		for (i = 0; i < nSides; i++, pv++) {
+			pv->v.coord.z = pv->v.coord.x; // cos
+			pv->v.coord.x = 0.0f;
 			}
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+
+		pv = &ogl.VertexBuffer () [0];
+		for (i = 0; i < nSides; i++, pv++) {
+			pv->v.coord.x = pv->v.coord.y; // sin
+			pv->v.coord.y = 0.0f;
+			}
+		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+
 		transformation.End ();
-		ogl.ResetTransform (0);
-		ogl.m_states.bUseTransform = 0;
 		glPopMatrix ();
+
+		glPushMatrix ();
+		mOrient = gameData.objs.viewerP->Orientation ();
+		transformation.Begin (vPos, mOrient);
+
+		glColor4f (r, g, b, a);
+		glScalef (fRadius, fRadius, fRadius);
+		ogl.FlushBuffers (GL_POLYGON, nSides, 3);
+
+		glColor4f (0.5f, 0.5f, 0.5f, 0.8f);
+		glLineWidth (2.0f * fLineWidth);
+		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+
+		glColor4f (0.6f, 0.6f, 0.6f, 0.7f);
+		glLineWidth (1.5f * fLineWidth);
+		glScalef (0.6666667f, 0.6666667f, 0.6666667f);
+		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+
+		glColor4f (0.7f, 0.7f, 0.7f, 0.6f);
+		glLineWidth (fLineWidth);
+		glScalef (0.5f, 0.5f, 0.5f);
+		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+
+		transformation.End ();
+		glPopMatrix ();
+		ogl.SetTransform (0);
 		}
 
 #if 0
-	glPushMatrix ();
-	glTranslatef (0, yRadar, 50);
-	glColor4f (r, g, b, a);
- 	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
-	glColor4f (0.5f, 0.5f, 0.5f, 0.8f);
-	glLineWidth (2.0f * fLineWidth);
- 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
-	glColor4f (0.6f, 0.6f, 0.6f, 0.7f);
-	glLineWidth (1.5f * fLineWidth);
- 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 2 * fRadius / 3.0f, 0, 2 * fRadius / 9.0f, 0, sinCosRadar);
-	glColor4f (0.7f, 0.7f, 0.7f, 0.6f);
-	glLineWidth (fLineWidth);
- 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius / 3.0f, 0, fRadius / 9.0f, 0, sinCosRadar);
-
 	glLineWidth (fLineWidth);
 	if (ogl.SizeVertexBuffer (6)) {
 		float x = fRadius * 0.707f + 0.333f;
@@ -127,9 +155,9 @@ else {
 		ogl.FlushBuffers (GL_LINES, 6, 2);
 		}
 	//ogl.SetLineSmooth (false);
+#endif
 	glLineWidth (2);
 	glPopMatrix ();
-#endif
 	return;
 	}
 v [0] *= FixDiv (1, 3);

@@ -655,7 +655,7 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CArray<CBitmap*>
 	CActiveDynLight*		activeLightsP = sliP ? lightManager.Active (0) + sliP->nFirst : NULL;
 	tObjTransformation*	posP = OBJPOS (objP);
 
-ogl.SetupTransform (1);
+//ogl.SetupTransform (1);
 if (bLighting) {
 	nLights = sliP->nActive;
 	if (nLights > gameStates.render.nMaxLightsPerObject)
@@ -781,7 +781,7 @@ if (bLighting) {
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetDepthWrite (true);
 	}
-ogl.ResetTransform (1);
+//ogl.ResetTransform (1);
 //HUDMessage (0, "%s", szLightSources);
 }
 
