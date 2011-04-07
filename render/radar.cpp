@@ -90,32 +90,27 @@ else {
 			pv->v.coord.y = float (sin (ang));
 			pv->v.coord.z = 0.0f;
 			}
+		vAxis [0] = ogl.VertexBuffer () [nSides / 4];
+		vAxis [1] = ogl.VertexBuffer () [3 * nSides / 4];
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
-		vAxis [0] = ogl.VertexBuffer () [0];
-		vAxis [1] = ogl.VertexBuffer () [nSides / 2];
 
 		pv = &ogl.VertexBuffer () [0];
 		for (i = 0; i < nSides; i++, pv++) {
 			pv->v.coord.z = pv->v.coord.x; // cos
 			pv->v.coord.x = 0.0f;
 			}
+		vAxis [2] = ogl.VertexBuffer () [nSides / 4];
+		vAxis [3] = ogl.VertexBuffer () [3 * nSides / 4];
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
-		vAxis [2] = ogl.VertexBuffer () [0];
-		vAxis [3] = ogl.VertexBuffer () [nSides / 2];
 
 		pv = &ogl.VertexBuffer () [0];
 		for (i = 0; i < nSides; i++, pv++) {
 			pv->v.coord.x = pv->v.coord.y; // sin
 			pv->v.coord.y = 0.0f;
 			}
+		vAxis [4] = ogl.VertexBuffer () [nSides / 4];
+		vAxis [5] = ogl.VertexBuffer () [3 * nSides / 4];
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
-		vAxis [4] = ogl.VertexBuffer () [0];
-		vAxis [5] = ogl.VertexBuffer () [nSides / 2];
-
-		pv = &ogl.VertexBuffer () [0];
-		for (i = 0; i < 6; i++, pv++)
-			*pv = vAxis [i];
-		ogl.FlushBuffers (GL_LINES, 6, 3);
 
 		transformation.End ();
 		glPopMatrix ();
@@ -144,6 +139,25 @@ else {
 
 		transformation.End ();
 		glPopMatrix ();
+
+		mOrient = CFixMatrix::IDENTITY;
+		transformation.Begin (vPos, mOrient);
+		glScalef (fRadius, fRadius, fRadius);
+
+		pv = &ogl.VertexBuffer () [0];
+		pv [0].Set (-1.0f, 0.0f, 0.0f);
+		pv [1].Set (1.0f, 0.0f, 0.0f);
+		pv [2].Set (0.0f, -1.0f, 0.0f);
+		pv [3].Set (0.0f, 1.0f, 0.0f);
+		pv [4].Set (0.0f, 0.0f, -1.0f);
+		pv [5].Set (0.0f, 0.0f, 1.0f);
+
+		glColor4f (0.4f, 0.4f, 0.4f, 0.5f);
+		glLineWidth (fLineWidth * 0.75f);
+		ogl.FlushBuffers (GL_LINES, 6, 3);
+		transformation.End ();
+		glPopMatrix ();
+
 		ogl.SetTransform (0);
 		}
 
