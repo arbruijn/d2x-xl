@@ -91,7 +91,7 @@ else {
 			}
 		vAxis [0] = ogl.VertexBuffer () [nSides / 4];
 		vAxis [1] = ogl.VertexBuffer () [3 * nSides / 4];
-		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+		ogl.FlushBuffers (GL_LINES, nSides, 3);
 
 		pv = &ogl.VertexBuffer () [0];
 		for (i = 0; i < nSides; i++, pv++) {
@@ -100,7 +100,7 @@ else {
 			}
 		vAxis [2] = ogl.VertexBuffer () [nSides / 4];
 		vAxis [3] = ogl.VertexBuffer () [3 * nSides / 4];
-		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+		ogl.FlushBuffers (GL_LINES, nSides, 3);
 
 		pv = &ogl.VertexBuffer () [0];
 		for (i = 0; i < nSides; i++, pv++) {
@@ -109,7 +109,7 @@ else {
 			}
 		vAxis [4] = ogl.VertexBuffer () [nSides / 4];
 		vAxis [5] = ogl.VertexBuffer () [3 * nSides / 4];
-		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+		ogl.FlushBuffers (GL_LINES, nSides, 3);
 
 		transformation.End ();
 		glPopMatrix ();
@@ -118,20 +118,21 @@ else {
 		mOrient = gameData.objs.viewerP->Orientation ();
 		transformation.Begin (vPos, mOrient);
 
-		glColor4f (r, g, b, a);
+		//glColor4f (r, g, b, a);
+		glColor4f (0.0f, 0.5f, 0.0f, 0.25f);
 		glScalef (fRadius, fRadius, fRadius);
 		ogl.FlushBuffers (GL_POLYGON, nSides, 3);
 
-		glColor4f (0.0f, 1.0f, 0.0f, 0.5f);
+		glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
 		glLineWidth (1.5f * fLineWidth);
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
 
-		glColor4f (1.0f, 0.8f, 0.0f, 0.5f);
+		glColor4f (0.0f, 0.75f, 0.0f, 0.5f);
 		//glLineWidth (1.5f * fLineWidth);
 		glScalef (0.6666667f, 0.6666667f, 0.6666667f);
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
 
-		glColor4f (1.0f, 0.0f, 0.0f, 0.5f);
+		glColor4f (0.0f, 1.0f, 0.0f, 0.5f);
 		//glLineWidth (2.0f * fLineWidth);
 		glScalef (0.5f, 0.5f, 0.5f);
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
@@ -157,7 +158,7 @@ else {
 		pv [10].Set (0.0f, 0.0f, 1.0f);
 		pv [11].Set (0.0f, 0.0f, 0.5f);
 
-		glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
+		glColor4f (0.0f, 0.333f, 0.0f, 0.5f);
 		glLineWidth (fLineWidth);
 		ogl.FlushBuffers (GL_LINES, 12, 3);
 		transformation.End ();
