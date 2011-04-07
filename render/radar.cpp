@@ -60,8 +60,6 @@ else {
 		CFloatVector vf, vu;
 		int i;
 
-		CFloatVector	vAxis [6];
-
 	vf.Assign (gameData.objs.viewerP->Orientation ().m.dir.f);
 	vf *= 50.0f;
 	vu.Assign (gameData.objs.viewerP->Orientation ().m.dir.u);
@@ -89,8 +87,6 @@ else {
 			pv->v.coord.y = float (sin (ang));
 			pv->v.coord.z = 0.0f;
 			}
-		vAxis [0] = ogl.VertexBuffer () [nSides / 4];
-		vAxis [1] = ogl.VertexBuffer () [3 * nSides / 4];
 		ogl.FlushBuffers (GL_LINES, nSides, 3);
 
 		pv = &ogl.VertexBuffer () [0];
@@ -98,8 +94,6 @@ else {
 			pv->v.coord.z = pv->v.coord.x; // cos
 			pv->v.coord.x = 0.0f;
 			}
-		vAxis [2] = ogl.VertexBuffer () [nSides / 4];
-		vAxis [3] = ogl.VertexBuffer () [3 * nSides / 4];
 		ogl.FlushBuffers (GL_LINES, nSides, 3);
 
 		pv = &ogl.VertexBuffer () [0];
@@ -107,8 +101,6 @@ else {
 			pv->v.coord.x = pv->v.coord.y; // sin
 			pv->v.coord.y = 0.0f;
 			}
-		vAxis [4] = ogl.VertexBuffer () [nSides / 4];
-		vAxis [5] = ogl.VertexBuffer () [3 * nSides / 4];
 		ogl.FlushBuffers (GL_LINES, nSides, 3);
 
 		transformation.End ();
@@ -123,11 +115,11 @@ else {
 		glScalef (fRadius, fRadius, fRadius);
 		ogl.FlushBuffers (GL_POLYGON, nSides, 3);
 
-		glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
+		glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
 		glLineWidth (1.5f * fLineWidth);
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
 
-		glColor4f (0.0f, 0.75f, 0.0f, 0.5f);
+		glColor4f (0.0f, 0.8f, 0.0f, 0.5f);
 		//glLineWidth (1.5f * fLineWidth);
 		glScalef (0.6666667f, 0.6666667f, 0.6666667f);
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
@@ -137,6 +129,31 @@ else {
 		glScalef (0.5f, 0.5f, 0.5f);
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
 
+#if 0
+		CFloatVector	vAxis [8], vOffset;
+
+		pv = &ogl.VertexBuffer () [0];
+
+		vAxis [0] = pv [nSides / 8];
+		vAxis [1] = pv [3 * nSides / 8];
+		vAxis [2] = pv [5 * nSides / 8];
+		vAxis [3] = pv [7 * nSides / 8];
+
+		vOffset = (vAxis [2] - vAxis [0]) * 0.1625f;
+		pv [0] = vAxis [0];
+		pv [1] = vAxis [0] + vOffset;
+		pv [2] = vAxis [2];
+		pv [3] = vAxis [2] - vOffset;
+		vOffset = (vAxis [3] - vAxis [1]) * 0.1625f;
+		pv [4] = vAxis [1];
+		pv [5] = vAxis [1] + vOffset;
+		pv [6] = vAxis [3];
+		pv [7] = vAxis [3] - vOffset;
+
+		glScalef (3.0f, 3.0f, 3.0f);
+		glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
+		ogl.FlushBuffers (GL_LINES, 8, 3);
+#endif
 		transformation.End ();
 		glPopMatrix ();
 
