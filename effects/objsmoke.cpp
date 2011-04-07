@@ -417,7 +417,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 			//PrintLog ("creating CPlayerData smoke\n");
 			nSmoke = particleManager.Create (&pos->vPos, vDirP, NULL, nSegment, 2, nParts, nScale,
 														/*gameOpts->render.particles.nSize [1], 2,*/ 
-														nLife, PLR_PART_SPEED, SIMPLE_SMOKE_PARTICLES, nObject, smokeColors + nType, 1, -1);
+														nLife, PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, 1, -1);
 			if (nSmoke < 0)
 				return;
 			particleManager.SetObjectSystem (nObject, nSmoke);
@@ -427,7 +427,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 			particleManager.SetFadeType (nSmoke, vDirP != NULL);
 			particleManager.SetLife (nSmoke, nLife);
 			//particleManager.SetBlowUp (nSmoke, bBlowUp);
-			particleManager.SetType (nSmoke, SIMPLE_SMOKE_PARTICLES);
+			particleManager.SetType (nSmoke, SMOKE_PARTICLES);
 			particleManager.SetScale (nSmoke, -nScale);
 			particleManager.SetDensity (nSmoke, nParts, 1/*, gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [1]*/);
 			particleManager.SetSpeed (particleManager.GetObjectSystem (nObject),
@@ -493,7 +493,7 @@ if (nParts > 0) {
 		//PrintLog ("creating robot %d smoke\n", nObject);
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, nScale,
 													/*gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [2], 1,*/ 
-													gameOpts->render.particles.nSize [3] * BOT_PART_LIFE / 2, BOT_PART_SPEED, SIMPLE_SMOKE_PARTICLES, nObject, smokeColors, 1, -1);
+													gameOpts->render.particles.nSize [3] * BOT_PART_LIFE / 2, BOT_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors, 1, -1);
 		if (nSmoke < 0)
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
@@ -542,7 +542,7 @@ if (nParts > 0) {
 		//PrintLog ("creating robot %d smoke\n", nObject);
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, F2X (-4.0),
 													/*-1, 1,*/ 
-													gameOpts->render.particles.nSize [3] * BOT_PART_LIFE, BOT_PART_SPEED, SIMPLE_SMOKE_PARTICLES, nObject, smokeColors, 1, -1);
+													gameOpts->render.particles.nSize [3] * BOT_PART_LIFE, BOT_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors, 1, -1);
 		if (nSmoke < 0)
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
@@ -602,7 +602,7 @@ if (nParts) {
 			}
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, nScale,
 													/*gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3], 1,*/ 
-													int (nLife * MSL_PART_LIFE * 0.5f + 0.5f), MSL_PART_SPEED, SIMPLE_SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);
+													int (nLife * MSL_PART_LIFE * 0.5f + 0.5f), MSL_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);
 		if (nSmoke < 0)
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
@@ -648,7 +648,7 @@ if (nParts) {
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts / 2, nScale, 
 													/*-1, 1,*/ 
-													gameOpts->render.particles.nSize [4] * DEBRIS_PART_LIFE / 2, DEBRIS_PART_SPEED, SIMPLE_SMOKE_PARTICLES, nObject, smokeColors, 0, -1);
+													gameOpts->render.particles.nSize [4] * DEBRIS_PART_LIFE / 2, DEBRIS_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors, 0, -1);
 		if (nSmoke < 0)
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
@@ -764,7 +764,7 @@ if (nParts) {
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, -PARTICLE_SIZE (3, 0.5f, 1), 
 													/*-1, 3,*/ 
-													BOMB_PART_LIFE, BOMB_PART_SPEED, SIMPLE_SMOKE_PARTICLES, nObject, NULL, 1, -1);
+													BOMB_PART_LIFE, BOMB_PART_SPEED, SMOKE_PARTICLES, nObject, NULL, 1, -1);
 		if (nSmoke < 0)
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
