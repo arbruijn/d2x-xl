@@ -109,7 +109,7 @@ objP->cType.explInfo.nDeleteTime = -1;
 #if 0
 objP->Orientation () = Orientation ();
 #else
-CAngleVector a = CAngleVector::Create (d_rand (), d_rand (), d_rand ());
+CAngleVector a = CAngleVector::Create (16384 - d_rand (), 16384 - d_rand (), 16384 - d_rand ());
 CFixMatrix mRotate = CFixMatrix::Create (a);
 objP->Orientation () = mRotate * Orientation ();
 #endif
@@ -510,9 +510,10 @@ RequestEffects (EXPL_LIGHTNING | SHRAPNEL_SMOKE);
 if (gameData.models.nDyingModels [ModelId ()] != -1)
 	rType.polyObjInfo.nModel = gameData.models.nDyingModels [ModelId ()];
 if (gameData.models.polyModels [0][ModelId ()].ModelCount () > 1) {
-	for (int j = gameOpts->render.effects.nShrapnels + 1; j; j--)
-		//if (d_rand () % j == 0)
-			for (int i = 1; i < gameData.models.polyModels [0][ModelId ()].ModelCount (); i++)
+	int h = 2 * (gameOpts->render.effects.nShrapnels + 1);
+	for (int j = 0; j < h; j++)
+		for (int i = 1; i < gameData.models.polyModels [0][ModelId ()].ModelCount (); i++)
+			if (d_rand () % (2 * h) <= h + j)
 				if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
 					CreateDebris (i);
 	}
