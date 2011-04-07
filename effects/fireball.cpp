@@ -513,28 +513,30 @@ RequestEffects (EXPL_LIGHTNING | SHRAPNEL_SMOKE);
 if (gameData.models.nDyingModels [ModelId ()] != -1)
 	rType.polyObjInfo.nModel = gameData.models.nDyingModels [ModelId ()];
 
-int h = gameOpts->render.effects.nShrapnels + 1;
-int nModels = gameData.models.polyModels [0][ModelId ()].ModelCount ();
+if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
+	int h = gameOpts->render.effects.nShrapnels + 1;
+	int nModels = gameData.models.polyModels [0][ModelId ()].ModelCount ();
 
-if (nModels > int (h == 0)) {
-	for (int j = 0; j < h; j++)
-		for (int i = int (h == 0); i < nModels; i++)
-			if (d_rand () % h <= j)
-				if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
+	if (nModels > int (h == 0)) {
+		for (int j = 0; j < h; j++)
+			for (int i = int (h == 0); i < nModels; i++)
+				if (d_rand () % h <= j)
+					if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
 #if DBG
-					if (CreateDebris (i))
-						++nDebris;
+						if (CreateDebris (i))
+							++nDebris;
 #else
-					CreateDebris (i);
+						CreateDebris (i);
 #endif
-	}
+		}
 #endif
 //make parent CObject only draw center part
 #if DBG
-HUDMessage (0, "%d object fragments created", nDebris);
+	HUDMessage (0, "%d object fragments created", nDebris);
 #endif
-if (info.nType != OBJ_REACTOR)
-	SetupDebris (0, ModelId (), rType.polyObjInfo.nTexOverride);
+		if (info.nType != OBJ_REACTOR)
+			SetupDebris (0, ModelId (), rType.polyObjInfo.nTexOverride);
+	}
 }
 
 //------------------------------------------------------------------------------

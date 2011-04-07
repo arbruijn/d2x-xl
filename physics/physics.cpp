@@ -923,7 +923,7 @@ if (info.controlType == CT_AI) {
 		}
 
 //if end point not in segment, move object to last pos, or segment center
-if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
+if ((info.nSegment >= 0) && SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
 	if (FindSegment () == -1) {
 		int n;
 

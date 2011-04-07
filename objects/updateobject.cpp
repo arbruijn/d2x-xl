@@ -682,7 +682,7 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 		continue;
 	if (!(objP->info.nFlags & OF_SHOULD_BE_DEAD))
 		continue;
-	Assert ((objP->info.nType != OBJ_FIREBALL) || (objP->cType.explInfo.nDeleteTime == -1));
+	//Assert ((objP->info.nType != OBJ_FIREBALL) || (objP->cType.explInfo.nDeleteTime == -1));
 	if (objP->info.nType != OBJ_PLAYER)
 		ReleaseObject (objP->Index ());
 	else {
