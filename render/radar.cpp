@@ -78,10 +78,8 @@ else {
 		mOrient = CFixMatrix::IDENTITY;
 		transformation.Begin (vPos, mOrient);
 		glScalef (fRadius, fRadius, fRadius);
-		glColor4f (0.5f, 0.5f, 0.5f, 0.6f);
+		glColor4f (0.4f, 0.4f, 0.4f, 0.5f);
 		glLineWidth (1.5f * fLineWidth);
-		//glColor4f (0.4f, 0.4f, 0.4f, 0.5f);
-		//glLineWidth (3.0f);
 
 		CFloatVector* pv = &ogl.VertexBuffer () [0];
 		for (i = 0; i < nSides; i++, pv++) {
@@ -123,17 +121,17 @@ else {
 		glScalef (fRadius, fRadius, fRadius);
 		ogl.FlushBuffers (GL_POLYGON, nSides, 3);
 
-		glColor4f (0.5f, 0.5f, 0.5f, 0.8f);
-		glLineWidth (2.0f * fLineWidth);
+		glColor4f (0.0f, 1.0f, 0.0f, 0.5f);
+		glLineWidth (fLineWidth);
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
 
-		glColor4f (0.6f, 0.6f, 0.6f, 0.7f);
+		glColor4f (1.0f, 0.8f, 0.0f, 0.5f);
 		glLineWidth (1.5f * fLineWidth);
 		glScalef (0.6666667f, 0.6666667f, 0.6666667f);
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
 
-		glColor4f (0.7f, 0.7f, 0.7f, 0.6f);
-		glLineWidth (fLineWidth);
+		glColor4f (1.0f, 0.0f, 0.0f, 0.5f);
+		glLineWidth (2.0f * fLineWidth);
 		glScalef (0.5f, 0.5f, 0.5f);
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
 
@@ -153,7 +151,7 @@ else {
 		pv [5].Set (0.0f, 0.0f, 1.0f);
 
 		glColor4f (0.4f, 0.4f, 0.4f, 0.5f);
-		glLineWidth (fLineWidth * 0.75f);
+		glLineWidth (1.5f * fLineWidth);
 		ogl.FlushBuffers (GL_LINES, 6, 3);
 		transformation.End ();
 		glPopMatrix ();

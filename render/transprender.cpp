@@ -376,10 +376,6 @@ int CTransparencyRenderer::AddPoly (CSegFace *faceP, tFaceTriangle *triP, CBitma
 item.faceP = faceP;
 item.triP = triP;
 item.bmP = bmP;
-#if DBG
-if (strstr (bmP->Name (), "glare"))
-	bmP = bmP;
-#endif
 item.nVertices = nVertices;
 item.nPrimitive = nPrimitive;
 item.nWrap = nWrap;
@@ -723,10 +719,6 @@ m_data.bmP [1] = m_data.bmP [2] = NULL;
 if (item->bAdditive & 3)
 	glowRenderer.Begin (GLOW_POLYS, 2, false, 1.0f);
 ogl.EnableClientStates (bmP != NULL, item->nColors == item->nVertices, 0, GL_TEXTURE0);
-#if DBG
-if (strstr (bmP->Name (), "shockwave"))
-	bmP = bmP;
-#endif
 if (LoadTexture (bmP, 0, 0, 0, item->nWrap)) {
 	if (bmP)
 		OglTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
