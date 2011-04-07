@@ -157,9 +157,6 @@ CBitmap* CAnimation::Bitmap (fix xTTL, fix xLifeLeft)
 if (!m_frames.Buffer ())
 	return NULL;
 uint nFrame = uint (float (m_nFrames) * float (xTTL - xLifeLeft) / float (xTTL) + 0.5f);
-#if DBG
-HUDMessage (0, "Shockwave frame #%d", nFrame);
-#endif
 return (nFrame >= m_nFrames) ? NULL : m_frames [nFrame].Bitmap ();
 }
 

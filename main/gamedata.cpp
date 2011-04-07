@@ -1909,19 +1909,19 @@ gameOptions [0].render.coronas.nObjIntensity = 1;
 
 void DefaultSmokeSettings (void)
 {
-gameOptions [0].render.particles.bPlayers = (gameOpts->render.particles.nQuality > 1);
-gameOptions [0].render.particles.bRobots = 1;
-gameOptions [0].render.particles.bMissiles = 1;
-gameOptions [0].render.particles.bDebris = 1;
-gameOptions [0].render.particles.bCollisions = 0;
-gameOptions [0].render.particles.bDisperse = 1;
-gameOptions [0].render.particles.bRotate = 1;
-gameOptions [0].render.particles.bDecreaseLag = (gameOptions [0].render.nQuality < 2);
-gameOptions [0].render.particles.bAuxViews = (gameOptions [0].render.nQuality > 2);
-gameOptions [0].render.particles.bMonitors = (gameOptions [0].render.nQuality > 1);
 gameOptions [0].render.particles.bWiggleBubbles = 1;
 gameOptions [0].render.particles.bWobbleBubbles = 1;
 if (!gameOpts->app.bExpertMode) {
+	gameOptions [0].render.particles.bPlayers = (gameOpts->render.particles.nQuality > 1);
+	gameOptions [0].render.particles.bRobots = 1;
+	gameOptions [0].render.particles.bMissiles = 1;
+	gameOptions [0].render.particles.bDebris = 1;
+	gameOptions [0].render.particles.bCollisions = 0;
+	gameOptions [0].render.particles.bDisperse = 1;
+	gameOptions [0].render.particles.bRotate = 1;
+	gameOptions [0].render.particles.bDecreaseLag = (gameOptions [0].render.nQuality < 2);
+	gameOptions [0].render.particles.bAuxViews = (gameOptions [0].render.nQuality > 2);
+	gameOptions [0].render.particles.bMonitors = (gameOptions [0].render.nQuality > 1);
 	// player ships
 	gameOptions [0].render.particles.nSize [1] = 2 + (gameOpts->render.particles.nQuality > 1);
 	gameOptions [0].render.particles.nDens [1] = (gameOpts->render.particles.nQuality > 1);

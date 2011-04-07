@@ -139,7 +139,7 @@ if ((Segment () < 0) || (Segment () > gameData.segs.nLastSegment))
 	return -1;
 
 if (nType == OBJ_DEBRIS) {
-	if (gameData.objs.nDebris >= gameStates.render.detail.nMaxDebrisObjects)
+	if (gameData.objs.nDebris >= gameStates.render.detail.nMaxDebrisObjects * (gameOpts->render.effects.nShrapnels + 1))
 		return -1;
 	}
 
@@ -251,7 +251,7 @@ if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
 	return -1;
 
 if (nType == OBJ_DEBRIS) {
-	if (gameData.objs.nDebris >= gameStates.render.detail.nMaxDebrisObjects)
+	if (gameData.objs.nDebris >= gameStates.render.detail.nMaxDebrisObjects * (gameOpts->render.effects.nShrapnels + 1))
 		return -1;
 	}
 

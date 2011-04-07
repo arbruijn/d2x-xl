@@ -531,14 +531,6 @@ for (i = 0; i < 2; i++) {
 			RP (gameOptions [i].render.particles.nLife [j], i, j);
 			RP (gameOptions [i].render.particles.nAlpha [j], i, j);
 			}
-#if 0
-		RP (gameOpts->render.cockpit.bWideDisplays, 0, 1);
-		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
-		RP (extraGameInfo [i].bRotateMarkers, i, 0);
-		RP (extraGameInfo [i].bBrightObjects, i, 0);
-		RP (extraGameInfo [i].grWallTransparency, 0, 0);
-		RP (extraGameInfo [i].nOmegaRamp, 0, 0);
-		RP (extraGameInfo [i].nSpeedBoost, 0, 0);
 		RP (gameOptions [i].render.particles.bAuxViews, i, 0);
 		RP (gameOptions [i].render.particles.bMonitors, i, 0);
 		RP (gameOptions [i].render.particles.bDecreaseLag, i, 0);
@@ -548,6 +540,14 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.particles.bMissiles, i, 0);
 		RP (gameOptions [i].render.particles.bPlayers, i, 0);
 		RP (gameOptions [i].render.particles.bRobots, i, 0);
+#if 0
+		RP (gameOpts->render.cockpit.bWideDisplays, 0, 1);
+		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
+		RP (extraGameInfo [i].bRotateMarkers, i, 0);
+		RP (extraGameInfo [i].bBrightObjects, i, 0);
+		RP (extraGameInfo [i].grWallTransparency, 0, 0);
+		RP (extraGameInfo [i].nOmegaRamp, 0, 0);
+		RP (extraGameInfo [i].nSpeedBoost, 0, 0);
 		RP (gameOptions [i].render.particles.bBubbles, i, 0);
 		RP (gameOptions [i].render.particles.bWobbleBubbles, i, 1);
 		RP (gameOptions [i].render.particles.bWiggleBubbles, i, 1);

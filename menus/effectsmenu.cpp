@@ -187,7 +187,7 @@ if (bInitialized)
 	return;
 bInitialized = true;
 
-pszExplShrapnels [0] = TXT_NONE;
+pszExplShrapnels [0] = TXT_STANDARD;
 pszExplShrapnels [1] = TXT_FEW;
 pszExplShrapnels [2] = TXT_MEDIUM;
 pszExplShrapnels [3] = TXT_MANY;
