@@ -217,23 +217,6 @@ v [0] += m_offset;
 v [1].v.coord.x = v [0].v.coord.x;
 v [1].v.coord.y = m_offset.v.coord.y;
 v [1].v.coord.z = v [0].v.coord.z;
-#if 0
-if (m) {
-	//HUDMessage (0, "%1.2f", X2F (m));
-	v [0].v.coord.x = FixDiv (n.v.coord.x, m) * 15; // /= RADAR_RANGE;
-	v [0].v.coord.y = FixDiv (n.v.coord.y, m) * 20; // /= RADAR_RANGE;
-	v [0].v.coord.z = n.v.coord.x / RADAR_RANGE;
-	//VmVecNormalize (&n);
-	}
-else {
-	//glTranslatef (0.0f, 0.0f, m_offset.v.coord.z);
-	//glScalef (m_radius, m_radius, m_radius);
-	}
-v [0] *= FixDiv (1, 3);
-h = X2F (n.v.coord.z) / RADAR_RANGE;
-glPushMatrix ();
-glTranslatef (m_offset.v.coord.x, m_offset.v.coord.y + h * m_radius / 3.0f, m_offset.v.coord.z);
-#endif
 s = 1.0f - fabs (m) / RADAR_RANGE;
 h = 3 * s;
 a += a * h;
@@ -259,12 +242,6 @@ void CRadar::RenderObjects (int bAbove)
 	CFixMatrix	mOrient = CFixMatrix::IDENTITY;
 
 glPushMatrix ();
-//transformation.Begin (m_vCenter, mOrient);
-//ogl.SetTransform (0);
-//transformation.Begin (gameData.objs.viewerP->Position (), gameData.objs.viewerP->Orientation ());
-//glTranslatef (m_vCenterf.v.coord.x, m_vCenterf.v.coord.y, m_vCenterf.v.coord.z);
-//glTranslatef (m_offset.v.coord.x, m_offset.v.coord.y, m_offset.v.coord.z);
-//glScalef (m_radius, m_radius, m_radius);
 glLineWidth (2);
 FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objs.consoleP)) {
