@@ -673,7 +673,7 @@ void DoStaticParticles (CObject *objP)
 	static tRgbaColorf defaultColors [7] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 
 														 {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 
 														 {1.0f, 1.0f, 1.0f, 1.0f}};
-	static int particleTypes [7] = {SIMPLE_SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES, WATERFALL_PARTICLES, SIMPLE_SMOKE_PARTICLES, RAIN_PARTICLES, SNOW_PARTICLES};
+	static int particleTypes [7] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES, WATERFALL_PARTICLES, SIMPLE_SMOKE_PARTICLES, RAIN_PARTICLES, SNOW_PARTICLES};
 
 nObject = (int) objP->Index ();
 if (objP->rType.particleInfo.nType == SMOKE_TYPE_WATERFALL) {
