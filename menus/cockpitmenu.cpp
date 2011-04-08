@@ -68,6 +68,7 @@ typedef struct tWindowOpts {
 
 typedef struct tRadarOpts {
 	int	nPos;
+	int	nSize;
 	int	nRange;
 } tRadarOpts;
 
@@ -319,7 +320,7 @@ do {
 	cockpitOpts.radar.nPos = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarPos, 0, 1, KEY_O, HTX_CPIT_RADARPOS);
 
 	sprintf (szSlider, TXT_RADAR_SIZE, szRadarSize [gameOpts->render.cockpit.nRadarSize]);
-	cockpitOpts.radar.nPos = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarSize, 0, 2, KEY_O, HTX_CPIT_RADARSIZE);
+	cockpitOpts.radar.nSize = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarSize, 0, 2, KEY_O, HTX_CPIT_RADARSIZE);
 
 	sprintf (szSlider, TXT_RADAR_RANGE, szRadarRange [gameOpts->render.cockpit.nRadarRange]);
 	cockpitOpts.radar.nRange = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarRange, 0, 4, KEY_R, HTX_CPIT_RADARRANGE);

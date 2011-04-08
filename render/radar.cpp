@@ -22,6 +22,7 @@ CRadar radar;
 
 int				CRadar::radarRanges [5] = {0, 100, 150, 200, 500};
 float				CRadar::radarSizes [3] = {3.0f, 4.0f, 5.0f};
+float				CRadar::sizeOffsets [2][3] = {{-1.0f, 0.0f, -1.0f}, {1.0f, 0.0f, 1.0f}};
 
 CAngleVector	CRadar::aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
 float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, 18.0f, -20.5f, -19.0f}, {17.0f, 20.5f, 18.0f, 20.5f, 19.0f}};
@@ -312,6 +313,7 @@ InitShipColors ();
 
 m_offset.v.coord.x = 0.0f;
 m_offset.v.coord.y = /*ogl.m_states.bRender2TextureOk ? 0.0f :*/ yOffs [gameOpts->render.cockpit.nRadarPos][gameStates.render.cockpit.nType];
+m_offset.v.coord.y += sizeOffsets [gameOpts->render.cockpit.nRadarPos][gameOpts->render.cockpit.nRadarSize];
 m_offset.v.coord.z = /*ogl.m_states.bRender2TextureOk ? 10.0f :*/ 50.0f;
 m_radius = radarSizes [gameOpts->render.cockpit.nRadarSize] / transformation.m_info.scalef.v.coord.x;
 m_lineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
