@@ -20,7 +20,7 @@ CRadar radar;
 
 // -----------------------------------------------------------------------------------
 
-int				CRadar::radarRanges [5] = {0, 100, 150, 200, 500};
+int				CRadar::radarRanges [5] = {0, 100, 200, 300, 1000};
 float				CRadar::radarSizes [3] = {2.0f, 3.0f, 4.0f};
 float				CRadar::sizeOffsets [2][3] = {{-4.0f, -2.0f, 0.0f}, {4.0f, 2.0f, 0.0f}};
 
