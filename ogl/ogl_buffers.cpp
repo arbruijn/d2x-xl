@@ -339,7 +339,6 @@ SetDrawBuffer (GL_BACK, 1);
 
 void COGL::FlushDrawBuffer (bool bAdditive)
 {
-#if FBO_DRAW_BUFFER
 if (HaveDrawBuffer ()) {
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
@@ -400,7 +399,6 @@ if (HaveDrawBuffer ()) {
 	//if (bStereo)
 		shaderManager.Deploy (-1);
 	}
-#endif
 }
 
 // -----------------------------------------------------------------------------------

@@ -518,7 +518,7 @@ RenderEffects (nWindow);
 #if 1
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
 	//PrintLog ("RenderRadar\n");
-	RenderRadar ();
+	radar.Render ();
 	}
 #endif
 #if 0

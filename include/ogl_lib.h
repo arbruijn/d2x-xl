@@ -328,7 +328,7 @@ class COGL {
 		int RenderQuad (CBitmap* bmP, CFloatVector& vPosf, float width, float height, int nDimensions = 3, int nWrap = GL_CLAMP);
 		int RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive);
 		int RenderSprite (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, float alpha, int bAdditive, float fSoftRad);
-		void RenderScreenQuad (int bTextured = 0);
+		void RenderScreenQuad (GLuint nTexture = 0);
 
 		inline int FullScreen (void) { return m_states.bFullScreen; }
 

@@ -12,35 +12,38 @@
 #include "cockpit.h"
 #include "automap.h"
 #include "ogl_render.h"
+#include "radar.h"
 
 // -----------------------------------------------------------------------------------
 
-int radarRanges [] = {100, 150, 200};
-
-#define RADAR_RANGE	radarRanges [gameOpts->render.automap.nRange]
-#define RADAR_SLICES	40
-#define BLIP_SLICES	40
-
-static CAngleVector	aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
-static CFixMatrix		mRadar;
-static float			yOffs [2][CM_LETTERBOX + 1] = {{17.5f, -20.5f, 18.0f, -20.5f, -19.0f}, {17.5f, 20.5f, 18.0f, 20.5f, 19.0f}};
-static float			yRadar, fRadius = 8.0f;
-static float			fLineWidth = 1.0f;
-
-static tSinCosf sinCosRadar [RADAR_SLICES];
-static tSinCosf sinCosBlip [BLIP_SLICES];
-static int bInitSinCos = 1;
-
-static tRgbColorf shipColors [8];
-static tRgbColorf guidebotColor = {0, 0.75f / 4, 0.25f};
-static tRgbColorf robotColor = {0.75f / 4, 0, 0.25f};
-static tRgbColorf powerupColor = {0.25f, 0.5f / 4, 0};
-static tRgbColorf radarColor [2] = {{1, 1, 1}, {0, 0, 0}};
-static int bHaveShipColors = 0;
+CRadar radar;
 
 // -----------------------------------------------------------------------------------
 
-void RenderRadarDevice (void)
+int				CRadar::radarRanges [4] = {100, 150, 200, 500};
+
+CAngleVector	CRadar::aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
+CFixMatrix		CRadar::mRadar;
+float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.5f, -20.5f, 18.0f, -20.5f, -19.0f}, {17.5f, 20.5f, 18.0f, 20.5f, 19.0f}};
+float				CRadar::yRadar;
+float				CRadar::fRadius = 8.0f;
+float				CRadar::fLineWidth = 1.0f;
+
+tSinCosf			CRadar::sinCosRadar [RADAR_SLICES];
+tSinCosf			CRadar::sinCosBlip [BLIP_SLICES];
+int				CRadar::bInitSinCos = 1;
+
+tRgbColorf		CRadar::shipColors [8];
+tRgbColorf		CRadar::guidebotColor = {0, 0.75f / 4, 0.25f};
+tRgbColorf		CRadar::robotColor = {0.75f / 4, 0, 0.25f};
+tRgbColorf		CRadar::powerupColor = {0.25f, 0.5f / 4, 0};
+tRgbColorf		CRadar::radarColor [2] = {{1, 1, 1}, {0, 0, 0}};
+int				CRadar::bHaveShipColors = 0;
+
+
+// -----------------------------------------------------------------------------------
+
+void CRadar::RenderDevice (void)
 {
 if (bInitSinCos) {
 	ComputeSinCosTable (sizeofa (sinCosRadar), sinCosRadar);
@@ -183,14 +186,14 @@ return;
 
 // -----------------------------------------------------------------------------------
 
-void RenderRadarBlip (CObject *objP, float r, float g, float b, float a, bool bAbove)
+void CRadar::RenderBlip (CObject *objP, float r, float g, float b, float a, int bAbove)
 {
 	CFixVector	n, v [2];
 	fix			m;
 	float			h, s;
 
 n = objP->info.position.vPos;
-if ((n.v.coord.y < gameData.objs.viewerP->Position ().v.coord.y) != bAbove)
+if ((bAbove >= 0) && ((n.v.coord.y < gameData.objs.viewerP->Position ().v.coord.y) != bAbove))
 	return;
 transformation.Transform (n, n, 0);
 if ((m = n.Mag ()) > I2X (RADAR_RANGE))
@@ -232,7 +235,7 @@ glPopMatrix ();
 
 // -----------------------------------------------------------------------------------
 
-void RenderObjectsOnRadar (bool bAbove)
+void CRadar::RenderObjects (int bAbove)
 {
 	CObject*		objP;
 	tRgbColorf*	pc = radarColor + gameOpts->render.automap.nColor;
@@ -242,27 +245,27 @@ FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objs.consoleP)) {
 		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)) {
 			pc = shipColors + (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId);
-			RenderRadarBlip (objP, pc->red, pc->green, pc->blue, 0.9f / 4, bAbove);
+			RenderBlip (objP, pc->red, pc->green, pc->blue, 0.9f / 4, bAbove);
 			}
 		}
 	else if (objP->info.nType == OBJ_ROBOT) {
 		if (AM_SHOW_ROBOTS) {
 			if (ROBOTINFO (objP->info.nId).companion)
-				RenderRadarBlip (objP, guidebotColor.red, guidebotColor.green, guidebotColor.blue, 0.9f / 4, bAbove);
+				RenderBlip (objP, guidebotColor.red, guidebotColor.green, guidebotColor.blue, 0.9f / 4, bAbove);
 			else
-				RenderRadarBlip (objP, robotColor.red, robotColor.green, robotColor.blue, 0.9f / 4, bAbove);
+				RenderBlip (objP, robotColor.red, robotColor.green, robotColor.blue, 0.9f / 4, bAbove);
 			}
 		}
 	else if (objP->info.nType == OBJ_POWERUP) {
 		if (AM_SHOW_POWERUPS (2))
-			RenderRadarBlip (objP, powerupColor.red, powerupColor.green, powerupColor.blue, 0.9f / 4, bAbove);
+			RenderBlip (objP, powerupColor.red, powerupColor.green, powerupColor.blue, 0.9f / 4, bAbove);
 		}
 	}
 }
 
 // -----------------------------------------------------------------------------------
 
-void InitShipColors (void)
+void CRadar::InitShipColors (void)
 {
 if (!bHaveShipColors) {
 	int	i;
@@ -278,7 +281,7 @@ if (!bHaveShipColors) {
 
 // -----------------------------------------------------------------------------------
 
-void RenderRadar (void)
+void CRadar::Render (void)
 {
 if (gameStates.app.bNostalgia)
 	return;
@@ -298,26 +301,29 @@ yRadar = yOffs [bRadar - 1][gameStates.render.cockpit.nType];
 fRadius = 4.0f / transformation.m_info.scalef.v.coord.x;
 fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
 mRadar = CFixMatrix::Create (aRadar);
-ogl.SelectTMU (GL_TEXTURE3);
-ogl.SetTexturing (false);
-ogl.SelectTMU (GL_TEXTURE2);
-ogl.SetTexturing (false);
-ogl.SelectTMU (GL_TEXTURE1);
-ogl.SetTexturing (false);
-ogl.SelectTMU (GL_TEXTURE0);
+ogl.ResetClientStates (1);
 ogl.SetTexturing (false);
 ogl.SetFaceCulling (false);
-ogl.SetDepthTest (false);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetLineSmooth (true);
 glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
 glLineWidth (fLineWidth);
-RenderObjectsOnRadar (true);
-RenderRadarDevice ();
-RenderObjectsOnRadar (false);
+if (ogl.HaveDrawBuffer ()) {
+	ogl.SelectGlowBuffer ();
+	RenderDevice ();
+	RenderObjects (-1);
+	ogl.RenderScreenQuad (ogl.DrawBuffer (2)->ColorBuffer ());
+	ogl.ChooseDrawBuffer ();
+	}
+else {
+	ogl.SetDepthTest (false);
+	RenderObjects (1);
+	RenderDevice ();
+	RenderObjects (0);
+	ogl.SetDepthTest (true);
+	}
 ogl.SetLineSmooth (false);
 glLineWidth (1);
-ogl.SetDepthTest (true);
 ogl.SetFaceCulling (true);
 ogl.StencilOn (bStencil);
 }

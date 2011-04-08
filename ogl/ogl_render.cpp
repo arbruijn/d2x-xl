@@ -1194,20 +1194,15 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void COGL::RenderScreenQuad (int bTextured)
+void COGL::RenderScreenQuad (GLuint nTexture)
 {
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
+	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
-CFloatVector verts [4];
-verts [0].v.coord.x =
-verts [1].v.coord.x = 0;
-verts [2].v.coord.x =
-verts [3].v.coord.x = 1;
-verts [0].v.coord.y =
-verts [3].v.coord.y = 0;
-verts [1].v.coord.y =
-verts [2].v.coord.y = 1;
-RenderQuad (NULL, verts, 2, bTextured ? texCoord : NULL);
+EnableClientStates (int (nTexture != 0), 0, 0, GL_TEXTURE0);
+BindTexture (nTexture);
+OglVertexPointer (2, GL_FLOAT, 0, verts);
+OglDrawArrays (GL_QUADS, 0, 4);
 }
 
 //------------------------------------------------------------------------------
