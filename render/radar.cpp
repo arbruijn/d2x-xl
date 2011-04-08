@@ -23,8 +23,8 @@ int radarRanges [] = {100, 150, 200};
 
 static CAngleVector	aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
 static CFixMatrix		mRadar;
-static float			yOffs = 18.0f;
-static float			yRadar, fRadius = 10.0f;
+static float			yOffs [2][CM_LETTERBOX + 1] = {{17.5f, -20.5f, 18.0f, -20.5f, -19.0f}, {17.5f, 20.5f, 18.0f, 20.5f, 19.0f}};
+static float			yRadar, fRadius = 8.0f;
 static float			fLineWidth = 1.0f;
 
 static tSinCosf sinCosRadar [RADAR_SLICES];
@@ -280,8 +280,6 @@ if (!bHaveShipColors) {
 
 void RenderRadar (void)
 {
-	int	i, bStencil;
-
 if (gameStates.app.bNostalgia)
 	return;
 if (cockpit->Hide ())
@@ -290,12 +288,14 @@ if (automap.Display ())
 	return;
 if (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor)
 	return;
-if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
+
+int bRadar = EGI_FLAG (nRadar, 0, 1, 0);
+if (!bRadar)
 	return;
-bStencil = ogl.StencilOff ();
+int bStencil = ogl.StencilOff ();
 InitShipColors ();
-yRadar = ((i == 1) || (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR)) ? yOffs : -yOffs;
-fRadius = 5.0f / transformation.m_info.scalef.v.coord.x;
+yRadar = yOffs [bRadar - 1][gameStates.render.cockpit.nType];
+fRadius = 4.0f / transformation.m_info.scalef.v.coord.x;
 fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
 mRadar = CFixMatrix::Create (aRadar);
 ogl.SelectTMU (GL_TEXTURE3);
