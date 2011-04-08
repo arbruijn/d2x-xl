@@ -1641,7 +1641,7 @@ const char *defaultGameTexts [][2] = {
  {"Radar unten", "Radar at b~Ottom"},
  {"~Weisses Radar", "~White radar"},
  {"~Schwarzes Radar", "b~Lack radar"},
- {"reich~Weite: %s", "r~Ange: %s"},
+ {"Radar-~Reichweite: %s", "radar ~Range: %s"},
  {"~Rauch zeichnen", "render ~Smoke"},
  {"Lebensdauer ~Truemmer: %d sec", "~Debris life: %d secs"},
  {"Powerups auf Karte ~Und Radar zeigen", "Show powerups on automap ~And radar"},
@@ -1939,6 +1939,8 @@ const char *defaultGameTexts [][2] = {
  {"Lade Zuordnung IP zu Land...", "Loading IP to country relations..."},
  {"Rauch-~Detaileinstellungen...", "Smoke ~Detail Settings..."},
  {"Rauch-Detaileinstellungen", "Smoke ~Detail Settings"},
+ {"radar-p~Osition: %s", "radar p~Osition: %s"},
+ {"radar-~Reichweite: %s", "radar ~Range: %s"},
 #if 0
  {"", ""},
 #endif
@@ -2656,6 +2658,8 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, sind helle Leuchteffekte von einem\nLichtschimmer umgeben", "When checked, bright light effects are surrounded by glow."},
  {"In diesem Menue kann die Raucherzeugung fuer Spielerschiffe, Roboter,\nRaketen und Truemmer detailliert gesteuert werden.", 
   "In this menu, smoke rendering for player ships, robots, missiles\nand debris can be controlled in detail."},
+ {"Hier kann die Position des Radars im Cockpit ausgewaehlt werden.", "Chose the position of the RADAR in the HUD here."},
+ {"Hier kann die Reichweite des Radars eingestellt werden.", "Chose the RADAR's range here."},
 #if 0
  {"", ""},
 #endif

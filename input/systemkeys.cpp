@@ -260,12 +260,7 @@ return SetFreeCam (!gameStates.render.bFreeCam);
 
 void ToggleRadar (void)
 {
-if (extraGameInfo [0].nRadar && (gameOpts->render.automap.nRange < 3))
-	gameOpts->render.automap.nRange++;
-else {
-	extraGameInfo [0].nRadar = (extraGameInfo [0].nRadar + 1) % 3;
-	gameOpts->render.automap.nRange = 0;
-	}
+gameOpts->render.render.nRange = (gameOpts->render.render.nRange + 1) % 5;
 }
 
 //------------------------------------------------------------------------------

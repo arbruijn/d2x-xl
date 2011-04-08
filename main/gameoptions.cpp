@@ -215,7 +215,8 @@ if (i) {
 	automap.bBright = 1;
 	automap.bCoronas = 0;
 	automap.nColor = 0;
-	automap.nRange = 2;
+	radar.nPos = 0;
+	radar.nRange = 0;
 	}
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
@@ -350,7 +351,8 @@ else {
 	automap.bBright = 1;
 	automap.bCoronas = 0;
 	automap.nColor = 0;
-	automap.nRange = 2;
+	radar.nPos = 0;
+	radar.nRange = 0;
 	}
 }
 

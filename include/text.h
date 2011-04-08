@@ -1976,12 +1976,10 @@ void LoadGameTexts(void);
 #define TXT_LOADING_IPTOCOUNTRY		GT(1192)
 #define TXT_SMOKE_DETAILS_TITLE		GT(1193)
 #define TXT_SMOKE_DETAILS				GT(1194)
+#define TXT_RADAR_POSITION				GT(1195)
 
 #if 0
 
-#define TXT_					GT(1193)
-#define TXT_					GT(1194)
-#define TXT_					GT(1195)
 #define TXT_					GT(1196)
 #define TXT_					GT(1197)
 #define TXT_					GT(1198)
@@ -2528,11 +2526,11 @@ void LoadGameTexts(void);
 #define HTX_PLAYERSHIP					HT(420)
 #define HTX_EFFECTS_GLOW				HT(421)
 #define HTX_SMOKE_DETAILS				HT(422)
+#define HTX_CPIT_RADARPOS				HT(423)
+#define HTX_CPIT_RADARRANGE			HT(424)
 
 #if 0
 
-#define HTX_						HT(423)
-#define HTX_						HT(424)
 #define HTX_						HT(425)
 #define HTX_						HT(426)
 #define HTX_						HT(427)

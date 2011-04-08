@@ -226,6 +226,8 @@ typedef struct tCockpitOptions {
 	int nWindowPos;
 	int nWindowSize;
 	int nWindowZoom;
+	int nRadarPos;
+	int nRadarRange;
 } tCockpitOptions;
 
 //------------------------------------------------------------------------------
@@ -314,7 +316,7 @@ typedef struct tAutomapOptions {
 	int bGrayOut;
 	int bSkybox;
 	int nColor;
-	int nRange;
+	//int nRange;
 } tAutomapOptions;
 
 //------------------------------------------------------------------------------

@@ -1,13 +1,12 @@
 #ifndef _RADAR_H
 #define _RADAR_H
 
-#define RADAR_RANGE	radarRanges [gameOpts->render.automap.nRange]
 #define RADAR_SLICES	64
 #define BLIP_SLICES	32
 
 class CRadar {
 	private:
-		static int				radarRanges [4];
+		static int				radarRanges [5];
 
 		static CAngleVector	aRadar;
 		static CFixMatrix		mRadar;
@@ -28,7 +27,6 @@ class CRadar {
 		static int				bHaveShipColors;
 
 	private:
-		CFixMatrix		m_mRadar;
 		CFixVector		m_vCenter;
 		float				m_lineWidth;
 		CFloatVector	m_offset;
