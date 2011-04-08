@@ -520,7 +520,7 @@ if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
 	if (nModels > int (h == 0)) {
 		for (int j = 0; j < h; j++)
 			for (int i = int (h == 0); i < nModels; i++)
-				if (d_rand () % h <= j)
+				//if (d_rand () % h <= j)
 					if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
 #if DBG
 						if (CreateDebris (i))
