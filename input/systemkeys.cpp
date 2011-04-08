@@ -260,7 +260,7 @@ return SetFreeCam (!gameStates.render.bFreeCam);
 
 void ToggleRadar (void)
 {
-gameOpts->render.render.nRange = (gameOpts->render.render.nRange + 1) % 5;
+gameOpts->render.cockpit.nRadarRange = (gameOpts->render.cockpit.nRadarRange + 1) % 5;
 }
 
 //------------------------------------------------------------------------------

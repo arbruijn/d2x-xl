@@ -481,6 +481,8 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.cockpit.nWindowPos, i, 0);
 		RP (gameOptions [i].render.cockpit.nWindowSize, i, 0);
 		RP (gameOptions [i].render.cockpit.nWindowZoom, i, 0);
+		RP (gameOptions [i].render.cockpit.nRadarPos, i, 0);
+		RP (gameOptions [i].render.cockpit.nRadarRange, i, 0);
 		RP (gameOptions [i].render.color.bUseLightmaps, i, 0);
 		RP (gameOptions [i].render.color.nLightmapRange, i, 0);
 
@@ -540,8 +542,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.particles.bMissiles, i, 0);
 		RP (gameOptions [i].render.particles.bPlayers, i, 0);
 		RP (gameOptions [i].render.particles.bRobots, i, 0);
-		RP (gameOptions [i].render.radar.nPos, i, 0);
-		RP (gameOptions [i].render.radar.nRange, i, 0);
 #if 0
 		RP (gameOpts->render.cockpit.bWideDisplays, 0, 1);
 		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
@@ -1006,8 +1006,6 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.effects.nShockwaves", "1"},
 	 {"gameOptions[0].render.automap.bTextured", "1"},
 	 {"gameOptions[0].render.automap.bBright", "0"},
-	 {"gameOptions[0].render.radar.nPos", "0"},
-	 {"gameOptions[0].render.radar.nRange", "0"},
 	 {"gameOptions[0].render.cockpit.bMouseIndicator", "1"},
 	 {"gameOptions[0].render.cockpit.bObjectTally", "1"},
 	 {"gameOptions[0].render.cockpit.bPlayerStats", "0"},
@@ -1015,6 +1013,8 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.cockpit.nWindowPos", "1"},
 	 {"gameOptions[0].render.cockpit.nWindowSize", "0"},
 	 {"gameOptions[0].render.cockpit.nWindowZoom", "1"},
+	 {"gameOptions[0].render.cockpit.nRadarPos", "0"},
+	 {"gameOptions[0].render.cockpit.nRadarRange", "0"},
 	 {"gameOptions[0].render.color.bUseLightmaps", "0"},
 	 {"gameOptions[0].render.color.nLightmapRange", "0"},
 	 {"gameOptions[0].render.powerups.b3D", "1"},

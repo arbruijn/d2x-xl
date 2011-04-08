@@ -36,7 +36,7 @@ tRgbColorf		CRadar::powerupColor = {0.25f, 0.5f / 4, 0};
 tRgbColorf		CRadar::radarColor [2] = {{1, 1, 1}, {0, 0, 0}};
 int				CRadar::bHaveShipColors = 0;
 
-#define RADAR_RANGE	radarRanges [gameOpts->render.radar.nRange]
+#define RADAR_RANGE	radarRanges [gameOpts->render.cockpit.nRadarRange]
 
 // -----------------------------------------------------------------------------------
 
@@ -300,7 +300,7 @@ if (cockpit->Hide ())
 	return;
 if (automap.Display ())
 	return;
-extraGameInfo [0].nRadar = (gameOpts->render.radar.nRange > 0);
+extraGameInfo [0].nRadar = (gameOpts->render.cockpit.nRadarRange > 0);
 if (!EGI_FLAG (nRadar, 0, 1, 0))
 	return;
 if (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor)
@@ -310,7 +310,7 @@ int bStencil = ogl.StencilOff ();
 InitShipColors ();
 
 m_offset.v.coord.x = 0.0f;
-m_offset.v.coord.y = /*ogl.m_states.bRender2TextureOk ? 0.0f :*/ yOffs [gameOpts->render.radar.nPos][gameStates.render.cockpit.nType];
+m_offset.v.coord.y = /*ogl.m_states.bRender2TextureOk ? 0.0f :*/ yOffs [gameOpts->render.cockpit.nRadarPos][gameStates.render.cockpit.nType];
 m_offset.v.coord.z = /*ogl.m_states.bRender2TextureOk ? 10.0f :*/ 50.0f;
 m_radius = 4.0f / transformation.m_info.scalef.v.coord.x;
 m_lineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;

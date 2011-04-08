@@ -164,6 +164,8 @@ if (i) {
 	textures.nQuality = 0;
 	cockpit.bMissileView = 1;
 	cockpit.bGuidedInMainView = 1;
+	cockpit.nRadarPos = 0;
+	cockpit.nRadarRange = 0;
 	particles.nDens [0] =
 	particles.nDens [1] =
 	particles.nDens [2] =
@@ -215,8 +217,6 @@ if (i) {
 	automap.bBright = 1;
 	automap.bCoronas = 0;
 	automap.nColor = 0;
-	radar.nPos = 0;
-	radar.nRange = 0;
 	}
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
@@ -283,6 +283,8 @@ else {
 	cockpit.nWindowSize = 0;
 	cockpit.nWindowZoom = 0;
 	cockpit.nWindowPos = 1;
+	cockpit.nRadarPos = 0;
+	cockpit.nRadarRange = 0;
 	color.nLevel = 2;
 	color.bMix = 1;
 	color.nSaturation = 0;
@@ -351,8 +353,6 @@ else {
 	automap.bBright = 1;
 	automap.bCoronas = 0;
 	automap.nColor = 0;
-	radar.nPos = 0;
-	radar.nRange = 0;
 	}
 }
 
