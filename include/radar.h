@@ -7,6 +7,7 @@
 class CRadar {
 	private:
 		static int				radarRanges [5];
+		static float			radarSizes [3];
 
 		static CAngleVector	aRadar;
 		static CFixMatrix		mRadar;

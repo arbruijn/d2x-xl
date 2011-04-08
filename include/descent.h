@@ -227,6 +227,7 @@ typedef struct tCockpitOptions {
 	int nWindowSize;
 	int nWindowZoom;
 	int nRadarPos;
+	int nRadarSize;
 	int nRadarRange;
 } tCockpitOptions;
 

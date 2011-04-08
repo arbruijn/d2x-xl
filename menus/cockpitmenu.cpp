@@ -88,6 +88,7 @@ static const char* szWindowSize [4];
 static const char* szWindowPos [2];
 static const char* szWindowAlign [3];
 static const char* szTgtInd [3];
+static const char* szRadarSize [3];
 static const char* szRadarRange [5];
 
 static int nWinFuncs, winFuncs [CV_FUNC_COUNT];
@@ -163,6 +164,14 @@ if (gameOpts->render.cockpit.nRadarPos != v) {
 	m->m_bRebuild = 1;
 	}
 
+m = menu + cockpitOpts.radar.nSize;
+v = m->m_value;
+if (gameOpts->render.cockpit.nRadarSize != v) {
+	gameOpts->render.cockpit.nRadarSize = v;
+	sprintf (m->m_text, TXT_RADAR_SIZE, szRadarSize [v]);
+	m->m_bRebuild = 1;
+	}
+
 m = menu + cockpitOpts.radar.nRange;
 v = m->m_value;
 if (gameOpts->render.cockpit.nRadarRange != v) {
@@ -203,6 +212,10 @@ szWindowPos [1] = TXT_POS_TOP;
 szWindowAlign [0] = TXT_ALIGN_CORNERS;
 szWindowAlign [1] = TXT_ALIGN_MIDDLE;
 szWindowAlign [2] = TXT_ALIGN_CENTER;
+
+szRadarSize [0] = TXT_SMALL;
+szRadarSize [1] = TXT_MEDIUM;
+szRadarSize [2] = TXT_LARGE;
 
 szRadarRange [0] = TXT_OFF;
 szRadarRange [1] = TXT_SHORT;
@@ -303,7 +316,10 @@ do {
 	m.AddText ("", 0);
 
 	sprintf (szSlider, TXT_RADAR_POSITION, szWindowPos [gameOpts->render.cockpit.nRadarPos]);
-	cockpitOpts.radar.nPos = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarPos, 0, 2, KEY_O, HTX_CPIT_RADARPOS);
+	cockpitOpts.radar.nPos = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarPos, 0, 1, KEY_O, HTX_CPIT_RADARPOS);
+
+	sprintf (szSlider, TXT_RADAR_SIZE, szRadarSize [gameOpts->render.cockpit.nRadarSize]);
+	cockpitOpts.radar.nPos = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarSize, 0, 2, KEY_O, HTX_CPIT_RADARSIZE);
 
 	sprintf (szSlider, TXT_RADAR_RANGE, szRadarRange [gameOpts->render.cockpit.nRadarRange]);
 	cockpitOpts.radar.nRange = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarRange, 0, 4, KEY_R, HTX_CPIT_RADARRANGE);

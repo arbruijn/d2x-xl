@@ -1675,11 +1675,11 @@ void LoadGameTexts(void);
 #define TXT_AUTOMAP_OPTIONS			GT(891)
 #define TXT_AUTOMAP_BRIGHT				GT(892)
 #define TXT_AUTOMAP_CORONAS			GT(893)
-#define TXT_RADAR_OFF					GT(894)
-#define TXT_RADAR_TOP					GT(895)
-#define TXT_RADAR_BOTTOM				GT(896)
-#define TXT_RADAR_WHITE					GT(897)
-#define TXT_RADAR_BLACK					GT(898)
+#define TXT_UNUSED1						GT(894)
+#define TXT_UNUSED2						GT(895)
+#define TXT_UNUSED3						GT(896)
+#define TXT_RADAR_POSITION				GT(897)
+#define TXT_RADAR_SIZE					GT(898)
 #define TXT_RADAR_RANGE					GT(899)
 #define TXT_AUTOMAP_SMOKE				GT(900)
 #define TXT_DEBRIS_LIFE					GT(901)
@@ -1763,7 +1763,7 @@ void LoadGameTexts(void);
 #define TXT_LIGHTNING_SMOOTH			GT(979)
 #define TXT_BRIGHT_OBJECTS				GT(980)
 #define TXT_POWERUP_CORONAS			GT(981)
-#define TXT_AUTOMAP_LIGHTNING		GT(982)
+#define TXT_AUTOMAP_LIGHTNING			GT(982)
 #define TXT_VERY_LOW						GT(983)
 #define TXT_ADDITIVE_CORONAS			GT(984)
 #define TXT_ADDITIVE_OBJCORONAS		GT(985)
@@ -1976,10 +1976,10 @@ void LoadGameTexts(void);
 #define TXT_LOADING_IPTOCOUNTRY		GT(1192)
 #define TXT_SMOKE_DETAILS_TITLE		GT(1193)
 #define TXT_SMOKE_DETAILS				GT(1194)
-#define TXT_RADAR_POSITION				GT(1195)
 
 #if 0
 
+#define TXT_					GT(1195)
 #define TXT_					GT(1196)
 #define TXT_					GT(1197)
 #define TXT_					GT(1198)
@@ -2527,11 +2527,11 @@ void LoadGameTexts(void);
 #define HTX_EFFECTS_GLOW				HT(421)
 #define HTX_SMOKE_DETAILS				HT(422)
 #define HTX_CPIT_RADARPOS				HT(423)
-#define HTX_CPIT_RADARRANGE			HT(424)
+#define HTX_CPIT_RADARSIZE				HT(424)
+#define HTX_CPIT_RADARRANGE			HT(425)
 
 #if 0
 
-#define HTX_						HT(425)
 #define HTX_						HT(426)
 #define HTX_						HT(427)
 #define HTX_						HT(428)
