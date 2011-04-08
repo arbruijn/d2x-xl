@@ -39,7 +39,7 @@ int				CRadar::bHaveShipColors = 0;
 
 // -----------------------------------------------------------------------------------
 
-void CRadar::RenderDevice (void)
+void CRadar::RenderDevice (bool bBackground)
 {
 if (bInitSinCos) {
 	ComputeSinCosTable (sizeofa (sinCosRadar), sinCosRadar);
@@ -55,11 +55,10 @@ vf.Assign (gameData.objs.viewerP->Orientation ().m.dir.f);
 vf *= m_offset.v.coord.z;
 vu.Assign (gameData.objs.viewerP->Orientation ().m.dir.u);
 vu *= m_offset.v.coord.y;
-CFixVector vPos;
 vr.Assign (gameData.objs.viewerP->Orientation ().m.dir.r);
 vr *= m_offset.v.coord.x;
-vPos.Assign (vf + vu + vr);
-vPos += gameData.objs.viewerP->Position ();
+m_vCenter.Assign (vf + vu + vr);
+m_vCenter += gameData.objs.viewerP->Position ();
 
 int nSides = 64;
 if (ogl.SizeVertexBuffer (nSides)) {
@@ -74,119 +73,122 @@ if (ogl.SizeVertexBuffer (nSides)) {
 
 	ogl.SetTransform (1);
 
-	glPushMatrix ();
-	mOrient = CFixMatrix::IDENTITY;
-	transformation.Begin (vPos, mOrient);
-	glScalef (m_radius * 1.1f, m_radius * 1.1f, m_radius * 1.1f);
-	glColor4f (0.0f, 0.0f, 0.0f, 0.5f);
-	ogl.FlushBuffers (GL_POLYGON, nSides, 3);
-	glPopMatrix ();
-
-	glPushMatrix ();
-	mOrient = CFixMatrix::IDENTITY;
-	transformation.Begin (vPos, mOrient);
-	glScalef (m_radius, m_radius, m_radius);
-
-	glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
-	glLineWidth (m_lineWidth);
-
-	ogl.FlushBuffers (GL_LINES, nSides, 3);
-
-	pv = &ogl.VertexBuffer () [0];
-	for (i = 0; i < nSides; i++, pv++) {
-		pv->v.coord.z = pv->v.coord.x; // cos
-		pv->v.coord.x = 0.0f;
+	if (bBackground) {
+		glPushMatrix ();
+		mOrient = gameData.objs.viewerP->Orientation ();
+		transformation.Begin (m_vCenter, mOrient);
+		glScalef (m_radius * 1.2f, m_radius * 1.2f, m_radius * 1.2f);
+		glColor4f (0.0f, 0.0f, 0.0f, 0.5f);
+		ogl.FlushBuffers (GL_POLYGON, nSides, 3);
+		transformation.End ();
+		glPopMatrix ();
 		}
-	ogl.FlushBuffers (GL_LINES, nSides, 3);
+	else {
+		glPushMatrix ();
+		mOrient = CFixMatrix::IDENTITY;
+		transformation.Begin (m_vCenter, mOrient);
+		glScalef (m_radius, m_radius, m_radius);
 
-	pv = &ogl.VertexBuffer () [0];
-	for (i = 0; i < nSides; i++, pv++) {
-		pv->v.coord.x = pv->v.coord.y; // sin
-		pv->v.coord.y = 0.0f;
+		glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
+		glLineWidth (m_lineWidth);
+
+		ogl.FlushBuffers (GL_LINES, nSides, 3);
+
+		pv = &ogl.VertexBuffer () [0];
+		for (i = 0; i < nSides; i++, pv++) {
+			pv->v.coord.z = pv->v.coord.x; // cos
+			pv->v.coord.x = 0.0f;
+			}
+		ogl.FlushBuffers (GL_LINES, nSides, 3);
+
+		pv = &ogl.VertexBuffer () [0];
+		for (i = 0; i < nSides; i++, pv++) {
+			pv->v.coord.x = pv->v.coord.y; // sin
+			pv->v.coord.y = 0.0f;
+			}
+		ogl.FlushBuffers (GL_LINES, nSides, 3);
+
+		transformation.End ();
+		glPopMatrix ();
+
+		glPushMatrix ();
+		mOrient = gameData.objs.viewerP->Orientation ();
+		transformation.Begin (m_vCenter, mOrient);
+
+		//glColor4f (r, g, b, a);
+		glColor4f (0.0f, 0.5f, 0.0f, 0.25f);
+		glScalef (m_radius, m_radius, m_radius);
+		ogl.FlushBuffers (GL_POLYGON, nSides, 3);
+
+		glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
+		glLineWidth (1.5f * m_lineWidth);
+		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+
+		glColor4f (0.0f, 0.8f, 0.0f, 0.5f);
+		//glLineWidth (1.5f * m_lineWidth);
+		glScalef (0.6666667f, 0.6666667f, 0.6666667f);
+		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+
+		glColor4f (0.0f, 1.0f, 0.0f, 0.5f);
+		//glLineWidth (2.0f * m_lineWidth);
+		glScalef (0.5f, 0.5f, 0.5f);
+		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
+
+	#if 0
+		CFloatVector	vAxis [8], vOffset;
+
+		pv = &ogl.VertexBuffer () [0];
+
+		vAxis [0] = pv [nSides / 8];
+		vAxis [1] = pv [3 * nSides / 8];
+		vAxis [2] = pv [5 * nSides / 8];
+		vAxis [3] = pv [7 * nSides / 8];
+
+		vOffset = (vAxis [2] - vAxis [0]) * 0.1625f;
+		pv [0] = vAxis [0];
+		pv [1] = vAxis [0] + vOffset;
+		pv [2] = vAxis [2];
+		pv [3] = vAxis [2] - vOffset;
+		vOffset = (vAxis [3] - vAxis [1]) * 0.1625f;
+		pv [4] = vAxis [1];
+		pv [5] = vAxis [1] + vOffset;
+		pv [6] = vAxis [3];
+		pv [7] = vAxis [3] - vOffset;
+
+		glScalef (3.0f, 3.0f, 3.0f);
+		glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
+		ogl.FlushBuffers (GL_LINES, 8, 3);
+	#endif
+		transformation.End ();
+		glPopMatrix ();
+
+		mOrient = CFixMatrix::IDENTITY;
+		transformation.Begin (m_vCenter, mOrient);
+		glScalef (m_radius, m_radius, m_radius);
+
+		pv = &ogl.VertexBuffer () [0];
+		pv [0].Set (-1.0f, 0.0f, 0.0f);
+		pv [1].Set (-0.5f, 0.0f, 0.0f);
+		pv [2].Set (1.0f, 0.0f, 0.0f);
+		pv [3].Set (0.5f, 0.0f, 0.0f);
+		pv [4].Set (0.0f, -1.0f, 0.0f);
+		pv [5].Set (0.0f, -0.5f, 0.0f);
+		pv [6].Set (0.0f, 1.0f, 0.0f);
+		pv [7].Set (0.0f, 0.5f, 0.0f);
+		pv [8].Set (0.0f, 0.0f, -1.0f);
+		pv [9].Set (0.0f, 0.0f, -0.5f);
+		pv [10].Set (0.0f, 0.0f, 1.0f);
+		pv [11].Set (0.0f, 0.0f, 0.5f);
+
+		glColor4f (0.0f, 0.333f, 0.0f, 0.5f);
+		glLineWidth (m_lineWidth);
+		ogl.FlushBuffers (GL_LINES, 12, 3);
+		transformation.End ();
+		glPopMatrix ();
+
+		ogl.SetTransform (0);
 		}
-	ogl.FlushBuffers (GL_LINES, nSides, 3);
-
-	transformation.End ();
-	glPopMatrix ();
-
-	glPushMatrix ();
-	mOrient = gameData.objs.viewerP->Orientation ();
-	transformation.Begin (vPos, mOrient);
-
-	//glColor4f (r, g, b, a);
-	glColor4f (0.0f, 0.5f, 0.0f, 0.25f);
-	glScalef (m_radius, m_radius, m_radius);
-	ogl.FlushBuffers (GL_POLYGON, nSides, 3);
-
-	glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
-	glLineWidth (1.5f * m_lineWidth);
-	ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
-
-	glColor4f (0.0f, 0.8f, 0.0f, 0.5f);
-	//glLineWidth (1.5f * m_lineWidth);
-	glScalef (0.6666667f, 0.6666667f, 0.6666667f);
-	ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
-
-	glColor4f (0.0f, 1.0f, 0.0f, 0.5f);
-	//glLineWidth (2.0f * m_lineWidth);
-	glScalef (0.5f, 0.5f, 0.5f);
-	ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
-
-#if 0
-	CFloatVector	vAxis [8], vOffset;
-
-	pv = &ogl.VertexBuffer () [0];
-
-	vAxis [0] = pv [nSides / 8];
-	vAxis [1] = pv [3 * nSides / 8];
-	vAxis [2] = pv [5 * nSides / 8];
-	vAxis [3] = pv [7 * nSides / 8];
-
-	vOffset = (vAxis [2] - vAxis [0]) * 0.1625f;
-	pv [0] = vAxis [0];
-	pv [1] = vAxis [0] + vOffset;
-	pv [2] = vAxis [2];
-	pv [3] = vAxis [2] - vOffset;
-	vOffset = (vAxis [3] - vAxis [1]) * 0.1625f;
-	pv [4] = vAxis [1];
-	pv [5] = vAxis [1] + vOffset;
-	pv [6] = vAxis [3];
-	pv [7] = vAxis [3] - vOffset;
-
-	glScalef (3.0f, 3.0f, 3.0f);
-	glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
-	ogl.FlushBuffers (GL_LINES, 8, 3);
-#endif
-	transformation.End ();
-	glPopMatrix ();
-
-	mOrient = CFixMatrix::IDENTITY;
-	transformation.Begin (vPos, mOrient);
-	glScalef (m_radius, m_radius, m_radius);
-
-	pv = &ogl.VertexBuffer () [0];
-	pv [0].Set (-1.0f, 0.0f, 0.0f);
-	pv [1].Set (-0.5f, 0.0f, 0.0f);
-	pv [2].Set (1.0f, 0.0f, 0.0f);
-	pv [3].Set (0.5f, 0.0f, 0.0f);
-	pv [4].Set (0.0f, -1.0f, 0.0f);
-	pv [5].Set (0.0f, -0.5f, 0.0f);
-	pv [6].Set (0.0f, 1.0f, 0.0f);
-	pv [7].Set (0.0f, 0.5f, 0.0f);
-	pv [8].Set (0.0f, 0.0f, -1.0f);
-	pv [9].Set (0.0f, 0.0f, -0.5f);
-	pv [10].Set (0.0f, 0.0f, 1.0f);
-	pv [11].Set (0.0f, 0.0f, 0.5f);
-
-	glColor4f (0.0f, 0.333f, 0.0f, 0.5f);
-	glLineWidth (m_lineWidth);
-	ogl.FlushBuffers (GL_LINES, 12, 3);
-	transformation.End ();
-	glPopMatrix ();
-
-	ogl.SetTransform (0);
 	}
-
 glLineWidth (2);
 glPopMatrix ();
 return;
@@ -201,9 +203,9 @@ void CRadar::RenderBlip (CObject *objP, float r, float g, float b, float a, int 
 	float			h, s;
 
 n = objP->info.position.vPos;
-if ((bAbove >= 0) && ((n.v.coord.y < gameData.objs.viewerP->Position ().v.coord.y) != bAbove))
-	return;
 transformation.Transform (n, n, 0);
+if ((n.v.coord.y < gameData.objs.viewerP->Position ().v.coord.y) != bAbove)
+	return;
 if ((m = n.Mag ()) > I2X (RADAR_RANGE))
 	return;
 if (m) {
@@ -370,8 +372,9 @@ else
 #endif
 	{
 	ogl.SetDepthTest (false);
+	RenderDevice (true);
 	RenderObjects (1);
-	RenderDevice ();
+	RenderDevice (false);
 	RenderObjects (0);
 	ogl.SetDepthTest (true);
 	}

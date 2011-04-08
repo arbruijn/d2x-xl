@@ -29,6 +29,7 @@ class CRadar {
 
 	private:
 		CFixMatrix		m_mRadar;
+		CFixVector		m_vCenter;
 		float				m_lineWidth;
 		CFloatVector	m_offset;
 		float				m_radius;
@@ -40,7 +41,7 @@ class CRadar {
 
 	private:
 		void InitShipColors (void);
-		void RenderDevice (void);
+		void RenderDevice (bool bBackground);
 		void RenderBlip (CObject *objP, float r, float g, float b, float a, int bAbove);
 		void RenderObjects (int bAbove);
 
