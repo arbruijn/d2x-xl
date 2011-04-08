@@ -27,7 +27,15 @@ class CRadar {
 		static tRgbColorf		radarColor [2];
 		static int				bHaveShipColors;
 
+	private:
+		CFixMatrix		m_mRadar;
+		float				m_lineWidth;
+		CFloatVector	m_offset;
+		float				m_radius;
+
 	public:
+		CRadar () : m_lineWidth (1.0f) {}
+
 		void Render (void);
 
 	private:

@@ -23,11 +23,7 @@ CRadar radar;
 int				CRadar::radarRanges [4] = {100, 150, 200, 500};
 
 CAngleVector	CRadar::aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
-CFixMatrix		CRadar::mRadar;
-float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.5f, -20.5f, 18.0f, -20.5f, -19.0f}, {17.5f, 20.5f, 18.0f, 20.5f, 19.0f}};
-float				CRadar::yRadar;
-float				CRadar::fRadius = 8.0f;
-float				CRadar::fLineWidth = 1.0f;
+float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, 18.0f, -20.5f, -19.0f}, {17.0f, 20.5f, 18.0f, 20.5f, 19.0f}};
 
 tSinCosf			CRadar::sinCosRadar [RADAR_SLICES];
 tSinCosf			CRadar::sinCosBlip [BLIP_SLICES];
@@ -52,36 +48,48 @@ if (bInitSinCos) {
 	}
 
 	CFixMatrix mOrient;
-	CFloatVector vf, vu;
+	CFloatVector vf, vu, vr;
 	int i;
 
 vf.Assign (gameData.objs.viewerP->Orientation ().m.dir.f);
-vf *= 50.0f;
+vf *= m_offset.v.coord.z;
 vu.Assign (gameData.objs.viewerP->Orientation ().m.dir.u);
-vu *= yRadar;
+vu *= m_offset.v.coord.y;
 CFixVector vPos;
-vPos.Assign (vf + vu);
+vr.Assign (gameData.objs.viewerP->Orientation ().m.dir.r);
+vr *= m_offset.v.coord.x;
+vPos.Assign (vf + vu + vr);
 vPos += gameData.objs.viewerP->Position ();
 
 int nSides = 64;
 if (ogl.SizeVertexBuffer (nSides)) {
-	glPushMatrix ();
-	ogl.SetTransform (1);
-
-	mOrient = CFixMatrix::IDENTITY;
-	transformation.Begin (vPos, mOrient);
-	glScalef (fRadius, fRadius, fRadius);
-	//glColor4f (0.4f, 0.4f, 0.4f, 0.5f);
-	glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
-	glLineWidth (fLineWidth);
-
 	CFloatVector* pv = &ogl.VertexBuffer () [0];
+
 	for (i = 0; i < nSides; i++, pv++) {
 		double ang = 2.0 * Pi * i / nSides;
 		pv->v.coord.x = float (cos (ang));
 		pv->v.coord.y = float (sin (ang));
 		pv->v.coord.z = 0.0f;
 		}
+
+	ogl.SetTransform (1);
+
+	glPushMatrix ();
+	mOrient = CFixMatrix::IDENTITY;
+	transformation.Begin (vPos, mOrient);
+	glScalef (m_radius * 1.1f, m_radius * 1.1f, m_radius * 1.1f);
+	glColor4f (0.0f, 0.0f, 0.0f, 0.5f);
+	ogl.FlushBuffers (GL_POLYGON, nSides, 3);
+	glPopMatrix ();
+
+	glPushMatrix ();
+	mOrient = CFixMatrix::IDENTITY;
+	transformation.Begin (vPos, mOrient);
+	glScalef (m_radius, m_radius, m_radius);
+
+	glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
+	glLineWidth (m_lineWidth);
+
 	ogl.FlushBuffers (GL_LINES, nSides, 3);
 
 	pv = &ogl.VertexBuffer () [0];
@@ -107,20 +115,20 @@ if (ogl.SizeVertexBuffer (nSides)) {
 
 	//glColor4f (r, g, b, a);
 	glColor4f (0.0f, 0.5f, 0.0f, 0.25f);
-	glScalef (fRadius, fRadius, fRadius);
+	glScalef (m_radius, m_radius, m_radius);
 	ogl.FlushBuffers (GL_POLYGON, nSides, 3);
 
 	glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
-	glLineWidth (1.5f * fLineWidth);
+	glLineWidth (1.5f * m_lineWidth);
 	ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
 
 	glColor4f (0.0f, 0.8f, 0.0f, 0.5f);
-	//glLineWidth (1.5f * fLineWidth);
+	//glLineWidth (1.5f * m_lineWidth);
 	glScalef (0.6666667f, 0.6666667f, 0.6666667f);
 	ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
 
 	glColor4f (0.0f, 1.0f, 0.0f, 0.5f);
-	//glLineWidth (2.0f * fLineWidth);
+	//glLineWidth (2.0f * m_lineWidth);
 	glScalef (0.5f, 0.5f, 0.5f);
 	ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
 
@@ -154,7 +162,7 @@ if (ogl.SizeVertexBuffer (nSides)) {
 
 	mOrient = CFixMatrix::IDENTITY;
 	transformation.Begin (vPos, mOrient);
-	glScalef (fRadius, fRadius, fRadius);
+	glScalef (m_radius, m_radius, m_radius);
 
 	pv = &ogl.VertexBuffer () [0];
 	pv [0].Set (-1.0f, 0.0f, 0.0f);
@@ -171,7 +179,7 @@ if (ogl.SizeVertexBuffer (nSides)) {
 	pv [11].Set (0.0f, 0.0f, 0.5f);
 
 	glColor4f (0.0f, 0.333f, 0.0f, 0.5f);
-	glLineWidth (fLineWidth);
+	glLineWidth (m_lineWidth);
 	ogl.FlushBuffers (GL_LINES, 12, 3);
 	transformation.End ();
 	glPopMatrix ();
@@ -206,13 +214,13 @@ if (m) {
 	//VmVecNormalize (&n);
 	}
 else {
-	//glTranslatef (0.0f, 0.0f, 50.0f);
-	//glScalef (fRadius, fRadius, fRadius);
+	//glTranslatef (0.0f, 0.0f, m_offset.v.coord.z);
+	//glScalef (m_radius, m_radius, m_radius);
 	}
 v [0] *= FixDiv (1, 3);
 h = X2F (n.v.coord.z) / RADAR_RANGE;
 glPushMatrix ();
-glTranslatef (0, yRadar + h * fRadius / 3.0f, 50);
+glTranslatef (m_offset.v.coord.x, m_offset.v.coord.y + h * m_radius / 3.0f, m_offset.v.coord.z);
 glPushMatrix ();
 s = 1.0f - (float) fabs (X2F (m) / RADAR_RANGE);
 h = 3 * s;
@@ -297,25 +305,70 @@ if (!bRadar)
 	return;
 int bStencil = ogl.StencilOff ();
 InitShipColors ();
-yRadar = yOffs [bRadar - 1][gameStates.render.cockpit.nType];
-fRadius = 4.0f / transformation.m_info.scalef.v.coord.x;
-fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
-mRadar = CFixMatrix::Create (aRadar);
+
+m_offset.v.coord.x = 0.0f;
+m_offset.v.coord.y = /*ogl.m_states.bRender2TextureOk ? 0.0f :*/ yOffs [bRadar - 1][gameStates.render.cockpit.nType];
+m_offset.v.coord.z = /*ogl.m_states.bRender2TextureOk ? 10.0f :*/ 50.0f;
+m_radius = 4.0f / transformation.m_info.scalef.v.coord.x;
+m_lineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
+
+m_mRadar = CFixMatrix::Create (aRadar);
 ogl.ResetClientStates (1);
 ogl.SetTexturing (false);
 ogl.SetFaceCulling (false);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlending (1);
+ogl.SetBlendMode (0);
 ogl.SetLineSmooth (true);
 glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
-glLineWidth (fLineWidth);
-if (ogl.HaveDrawBuffer ()) {
+glLineWidth (m_lineWidth);
+#if 0
+if (ogl.m_states.bRender2TextureOk) {
+	//static tTexCoord2f texCoord [4] = {{{0.3f, 0.3f}}, {{0.3f, 0.7f}}, {{0.7f, 0.7f}}, {{0.7f, 0.3f}}};
+	static float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+	static float verts [4][2] = {{0.2f, 1.0f}, {0.2f, 0.8f}, {0.4f, 0.8f}, {0.4f, 1.0f}};
+
 	ogl.SelectGlowBuffer ();
+	glClearColor (0,0,0,0);
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	ogl.SetDepthTest (false);
+	RenderObjects (1);
 	RenderDevice ();
-	RenderObjects (-1);
-	ogl.RenderScreenQuad (ogl.DrawBuffer (2)->ColorBuffer ());
+	RenderObjects (0);
+	ogl.SetDepthTest (true);
+
+	glMatrixMode (GL_MODELVIEW);
+	glPushMatrix ();
+	glLoadIdentity ();//clear matrix
+	glMatrixMode (GL_PROJECTION);
+	glPushMatrix ();
+	glLoadIdentity ();//clear matrix
+	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+	ogl.Viewport (0, 0, screen.Width (), screen.Height ());
+
 	ogl.ChooseDrawBuffer ();
+#if 0
+	ogl.RenderScreenQuad (ogl.DrawBuffer (2)->ColorBuffer ());
+#else
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
+	OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
+	OglVertexPointer (2, GL_FLOAT, 0, verts);
+
+	ogl.SetDepthMode (GL_ALWAYS);
+	glColor3f (1,1,1);
+	OglDrawArrays (GL_QUADS, 0, 4);
+	ogl.SetDepthMode (GL_LEQUAL);
+
+	glMatrixMode (GL_PROJECTION);
+	glPopMatrix ();
+	glMatrixMode (GL_MODELVIEW);
+	glPopMatrix ();
+
+#endif
 	}
-else {
+else 
+#endif
+	{
 	ogl.SetDepthTest (false);
 	RenderObjects (1);
 	RenderDevice ();

@@ -1201,6 +1201,8 @@ void COGL::RenderScreenQuad (GLuint nTexture)
 
 EnableClientStates (int (nTexture != 0), 0, 0, GL_TEXTURE0);
 BindTexture (nTexture);
+if (nTexture)
+	OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
 OglDrawArrays (GL_QUADS, 0, 4);
 }
