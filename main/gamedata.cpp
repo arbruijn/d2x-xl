@@ -2164,6 +2164,7 @@ gameOptions [0].render.cockpit.bFlashGauges = 1;
 //gameOptions [0].render.cockpit.bObjectTally = 1;
 gameOptions [0].render.cockpit.bPlayerStats = 0;
 
+extraGameInfo [0].nRadar = (gameOpts->render.cockpit.nRadarRange > 0);
 }
 
 // ----------------------------------------------------------------------------
