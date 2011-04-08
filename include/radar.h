@@ -30,6 +30,7 @@ class CRadar {
 
 	private:
 		CFixVector		m_vCenter;
+		CFloatVector	m_vCenterf;
 		float				m_lineWidth;
 		CFloatVector	m_offset;
 		float				m_radius;

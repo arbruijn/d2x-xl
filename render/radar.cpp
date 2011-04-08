@@ -21,8 +21,8 @@ CRadar radar;
 // -----------------------------------------------------------------------------------
 
 int				CRadar::radarRanges [5] = {0, 100, 150, 200, 500};
-float				CRadar::radarSizes [3] = {3.0f, 4.0f, 5.0f};
-float				CRadar::sizeOffsets [2][3] = {{-1.0f, 0.0f, -1.0f}, {1.0f, 0.0f, 1.0f}};
+float				CRadar::radarSizes [3] = {2.0f, 3.0f, 4.0f};
+float				CRadar::sizeOffsets [2][3] = {{-4.0f, -2.0f, 0.0f}, {4.0f, 2.0f, 0.0f}};
 
 CAngleVector	CRadar::aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
 float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, 18.0f, -20.5f, -19.0f}, {17.0f, 20.5f, 18.0f, 20.5f, 19.0f}};
@@ -62,6 +62,7 @@ vr.Assign (gameData.objs.viewerP->Orientation ().m.dir.r);
 vr *= m_offset.v.coord.x;
 m_vCenter.Assign (vf + vu + vr);
 m_vCenter += gameData.objs.viewerP->Position ();
+m_vCenterf.Assign (m_vCenter);
 
 int nSides = 64;
 if (ogl.SizeVertexBuffer (nSides)) {
@@ -201,16 +202,22 @@ return;
 
 void CRadar::RenderBlip (CObject *objP, float r, float g, float b, float a, int bAbove)
 {
-	CFixVector	n, v [2];
-	fix			m;
-	float			h, s;
+	CFloatVector	v [2];
+	float				m, h, s;
 
-n = objP->info.position.vPos;
-transformation.Transform (n, n, 0);
-if ((n.v.coord.y < gameData.objs.viewerP->Position ().v.coord.y) != bAbove)
+v [0].Assign (objP->info.position.vPos);
+transformation.Transform (v [0], v [0], 0);
+if ((v [0].v.coord.y < X2F (gameData.objs.viewerP->Position ().v.coord.y)) != bAbove)
 	return;
-if ((m = n.Mag ()) > I2X (RADAR_RANGE))
+if ((m = v [0].Mag ()) > RADAR_RANGE)
 	return;
+v [0] *= m_radius / float (RADAR_RANGE);
+v [0].v.coord.z = -v [0].v.coord.z;
+v [0] += m_offset;
+v [1].v.coord.x = v [0].v.coord.x;
+v [1].v.coord.y = m_offset.v.coord.y;
+v [1].v.coord.z = v [0].v.coord.z;
+#if 0
 if (m) {
 	//HUDMessage (0, "%1.2f", X2F (m));
 	v [0].v.coord.x = FixDiv (n.v.coord.x, m) * 15; // /= RADAR_RANGE;
@@ -226,24 +233,20 @@ v [0] *= FixDiv (1, 3);
 h = X2F (n.v.coord.z) / RADAR_RANGE;
 glPushMatrix ();
 glTranslatef (m_offset.v.coord.x, m_offset.v.coord.y + h * m_radius / 3.0f, m_offset.v.coord.z);
-glPushMatrix ();
-s = 1.0f - (float) fabs (X2F (m) / RADAR_RANGE);
+#endif
+s = 1.0f - fabs (m) / RADAR_RANGE;
 h = 3 * s;
 a += a * h;
 glColor4f (r + r * h, g + g * h, b + b * h, (float) sqrt (a));
-glTranslatef (X2F (v [0].v.coord.x), X2F (v [0].v.coord.y), X2F (v [0].v.coord.z));
-OglDrawEllipse (BLIP_SLICES, GL_POLYGON, 0.33f + 0.33f * s, 0, 0.33f + 0.33f * s, 0, sinCosBlip);
-glPopMatrix ();
-#if 1
-v [1] = v [0];
-v [1].v.coord.y = 0;
-if (ogl.SizeVertexBuffer (2)) {
-	ogl.VertexBuffer () [0].Assign (v [0]);
-	ogl.VertexBuffer () [1].Assign (v [1]);
-	ogl.FlushBuffers (GL_LINES, 2);
-	}
-#endif
-glPopMatrix ();
+h = radarSizes [gameOpts->render.cockpit.nRadarSize] * 0.05f;
+h += h * s;
+glTranslatef (v [0].v.coord.x, v [0].v.coord.y, v [0].v.coord.z);
+OglDrawEllipse (BLIP_SLICES, GL_POLYGON, h, 0, h, 0, sinCosBlip);
+glTranslatef (-v [0].v.coord.x, -v [0].v.coord.y, -v [0].v.coord.z);
+
+ogl.VertexBuffer () [0] = v [0];
+ogl.VertexBuffer () [1] = v [1];
+ogl.FlushBuffers (GL_LINES, 2);
 }
 
 // -----------------------------------------------------------------------------------
@@ -252,8 +255,17 @@ void CRadar::RenderObjects (int bAbove)
 {
 	CObject*		objP;
 	tRgbColorf*	pc = radarColor + gameOpts->render.automap.nColor;
+	CFixVector	vPos = CFixVector::ZERO;
+	CFixMatrix	mOrient = CFixMatrix::IDENTITY;
 
-glLineWidth (3);
+glPushMatrix ();
+//transformation.Begin (m_vCenter, mOrient);
+//ogl.SetTransform (0);
+//transformation.Begin (gameData.objs.viewerP->Position (), gameData.objs.viewerP->Orientation ());
+//glTranslatef (m_vCenterf.v.coord.x, m_vCenterf.v.coord.y, m_vCenterf.v.coord.z);
+//glTranslatef (m_offset.v.coord.x, m_offset.v.coord.y, m_offset.v.coord.z);
+//glScalef (m_radius, m_radius, m_radius);
+glLineWidth (2);
 FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objs.consoleP)) {
 		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)) {
@@ -274,6 +286,9 @@ FORALL_OBJS (objP, i) {
 			RenderBlip (objP, powerupColor.red, powerupColor.green, powerupColor.blue, 0.9f / 4, bAbove);
 		}
 	}
+//transformation.End ();
+//ogl.SetTransform (0);
+glPopMatrix ();
 }
 
 // -----------------------------------------------------------------------------------
@@ -316,7 +331,7 @@ m_offset.v.coord.y = /*ogl.m_states.bRender2TextureOk ? 0.0f :*/ yOffs [gameOpts
 m_offset.v.coord.y += sizeOffsets [gameOpts->render.cockpit.nRadarPos][gameOpts->render.cockpit.nRadarSize];
 m_offset.v.coord.z = /*ogl.m_states.bRender2TextureOk ? 10.0f :*/ 50.0f;
 m_radius = radarSizes [gameOpts->render.cockpit.nRadarSize] / transformation.m_info.scalef.v.coord.x;
-m_lineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
+m_lineWidth = float (CCanvas::Current ()->Width ()) / 640.0f * radarSizes [gameOpts->render.cockpit.nRadarSize] / radarSizes [sizeofa (radarSizes) - 1];
 
 ogl.ResetClientStates (1);
 ogl.SetTexturing (false);

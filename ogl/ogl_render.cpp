@@ -133,15 +133,15 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void OglDrawEllipse (int nSides, int nType, float xsc, float xo, float ysc, float yo, tSinCosf *sinCosP)
+void OglDrawEllipse (int nSides, int nType, float xScale, float xOffset, float yScale, float yOffset, tSinCosf *sinCosP)
 {
 	int		i;
 	double	ang;
 
 glPushMatrix ();
 ogl.SetLineSmooth (true);
-glTranslatef (xo, yo, 0.0f);
-glScalef (xsc, ysc, 1.0f);
+glTranslatef (xOffset, yOffset, 0.0f);
+glScalef (xScale, yScale, 1.0f);
 if (nType == GL_LINES) {	// implies a dashed circle
 	if (ogl.SizeVertexBuffer (nSides * 2)) {
 		if (sinCosP) {
