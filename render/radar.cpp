@@ -190,7 +190,7 @@ void RenderRadarBlip (CObject *objP, float r, float g, float b, float a, bool bA
 	float			h, s;
 
 n = objP->info.position.vPos;
-if ((n.v.coord.y > gameData.objs.viewerP->Position ().v.coord.y) != bAbove)
+if ((n.v.coord.y < gameData.objs.viewerP->Position ().v.coord.y) != bAbove)
 	return;
 transformation.Transform (n, n, 0);
 if ((m = n.Mag ()) > I2X (RADAR_RANGE))
