@@ -30,6 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "transprender.h"
 #include "renderthreads.h"
 #include "glare.h"
+#include "cockpit.h"
 #include "radar.h"
 #include "objrender.h"
 #include "textures.h"
