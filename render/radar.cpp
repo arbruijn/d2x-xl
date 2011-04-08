@@ -300,7 +300,8 @@ if (cockpit->Hide ())
 	return;
 if (automap.Display ())
 	return;
-if (!(EGI_FLAG (nRadar, 0, 1, 0) = (gameOpts->render.radar.nRange > 0)))
+extraGameInfo [0].nRadar = (gameOpts->render.radar.nRange > 0);
+if (!EGI_FLAG (nRadar, 0, 1, 0))
 	return;
 if (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor)
 	return;
