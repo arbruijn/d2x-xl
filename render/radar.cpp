@@ -164,7 +164,7 @@ glLineWidth (m_lineWidth);
 if (gameOpts->render.cockpit.nRadarStyle)
 	glColor4fv ((GLfloat*) &lineColors [0]);
 else
-	glColor4fv (radarColors [gameOpts->render.cockpit.nRadarColor]);
+	glColor4fv ((GLfloat*) &radarColors [gameOpts->render.cockpit.nRadarColor]);
 ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
 
 pv = &ogl.VertexBuffer () [0];
@@ -316,7 +316,7 @@ ogl.FlushBuffers (GL_LINES, 2);
 void CRadar::RenderObjects (int bAbove)
 {
 	CObject*		objP;
-	tRgbColorf*	pc = radarColor + gameOpts->render.automap.gameOpts->render.cockpit.nRadarColor;
+	tRgbColorf*	pc = radarColor + gameOpts->render.automap.nColor;
 	CFixVector	vPos = CFixVector::ZERO;
 	CFixMatrix	mOrient = CFixMatrix::IDENTITY;
 

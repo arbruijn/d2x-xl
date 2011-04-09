@@ -1979,13 +1979,13 @@ void LoadGameTexts(void);
 #define TXT_RADAR_COLOR					GT(1195)
 #define TXT_GREEN							GT(1196)
 #define TXT_AMBER							GT(1197)
-#define TXT_BLUE							GT(1198)
-#define TXT_RADAR_STYLE					GT(1199)
-#define TXT_MONOCHROME					GT(1200)
-#define TXT_MULTICOLOR					GT(1201)
+#define TXT_RADAR_STYLE					GT(1198)
+#define TXT_MONOCHROME					GT(1199)
+#define TXT_MULTICOLOR					GT(1200)
 
 #if 0
 
+#define TXT_					GT(1201)
 #define TXT_					GT(1202)
 #define TXT_					GT(1203)
 #define TXT_					GT(1204)

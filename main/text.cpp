@@ -1944,7 +1944,6 @@ const char *defaultGameTexts [][2] = {
  {"radar~Farbe: %s", "radar ~Color: %s"},
  {"gruen", "green"},
  {"bernstein", "amber"},
- {"blau", "blue"},
  {"radar~Stil: %s", "radar ~Style: %s"},
  {"monochrom", "monochrom"},
  {"mehrfarbig", "multi color"},
