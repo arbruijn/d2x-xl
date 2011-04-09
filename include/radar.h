@@ -42,7 +42,7 @@ class CRadar {
 		void Render (void);
 
 	private:
-		void ComputeCenter (void);
+		void RenderSetup (void);
 		void RenderBackground (void);
 		void RenderDevice (void);
 		void RenderBlip (CObject *objP, float r, float g, float b, float a, int bAbove);

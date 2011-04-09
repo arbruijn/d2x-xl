@@ -63,7 +63,7 @@ for (i = 0; i < RADAR_SLICES; i++) {
 
 // -----------------------------------------------------------------------------------
 
-void CRadar::ComputeCenter (void)
+void CRadar::RenderSetup (void)
 {
 	CFloatVector vf, vu, vr;
 
@@ -76,6 +76,18 @@ vr *= m_offset.v.coord.x;
 m_vCenter.Assign (vf + vu + vr);
 m_vCenter += gameData.objs.viewerP->Position ();
 m_vCenterf.Assign (m_vCenter);
+
+#if 1
+memcpy (ogl.VertexBuffer ().Buffer (), m_vertices, sizeof (m_vertices));
+#else
+CFloatVector* pv = &ogl.VertexBuffer () [0];
+for (int i = 0; i < RADAR_SLICES; i++, pv++) {
+	double ang = 2.0 * Pi * i / RADAR_SLICES;
+	pv->v.coord.x = float (cos (ang));
+	pv->v.coord.y = float (sin (ang));
+	pv->v.coord.z = 0.0f;
+	}
+#endif
 }
 
 // -----------------------------------------------------------------------------------
@@ -99,17 +111,6 @@ void CRadar::RenderDevice (void)
 	CFloatVector* pv = &ogl.VertexBuffer () [0];
 	CFixMatrix mOrient;
 	int i;
-
-#if 1
-memcpy (pv, m_vertices, sizeof (m_vertices));
-#else
-for (i = 0; i < RADAR_SLICES; i++, pv++) {
-double ang = 2.0 * Pi * i / RADAR_SLICES;
-pv->v.coord.x = float (cos (ang));
-pv->v.coord.y = float (sin (ang));
-pv->v.coord.z = 0.0f;
-}
-#endif
 
 ogl.SetTransform (1);
 ogl.SetTexturing (false);
@@ -399,7 +400,7 @@ else
 #endif
 	{
 	ogl.SetDepthTest (false);
-	ComputeCenter ();
+	RenderSetup ();
 	RenderBackground ();
 	RenderObjects (!gameOpts->render.cockpit.nRadarPos);
 	RenderDevice ();
