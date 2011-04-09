@@ -76,6 +76,7 @@ if (ogl.SizeVertexBuffer (nSides)) {
 		}
 
 	ogl.SetTransform (1);
+	ogl.SetTexturing (false);
 
 	if (bBackground) {
 		// render the dark background
@@ -94,33 +95,32 @@ if (ogl.SizeVertexBuffer (nSides)) {
 		mOrient = CFixMatrix::IDENTITY;
 		transformation.Begin (m_vCenter, mOrient);
 		glScalef (m_radius, m_radius, m_radius);
+		glLineWidth (m_lineWidth);
 
 #if DBG
-		glColor4f (0.0f, 1.0f, 0.5f, 0.5f);
+		glColor4f (0.5f, 0.0f, 1.0f, 0.5f);
 #else
 		glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
 #endif
-		glLineWidth (m_lineWidth);
-
 		ogl.FlushBuffers (GL_LINES, nSides, 3);
-#if DBG
-		glColor4f (1.0f, 0.5f, 0.0f, 0.5f);
-#endif
 		pv = &ogl.VertexBuffer () [0];
 		for (i = 0; i < nSides; i++, pv++) {
 			pv->v.coord.z = pv->v.coord.x; // cos
 			pv->v.coord.x = 0.0f;
 			}
+#if DBG
+		glColor4f (1.0f, 0.5f, 0.0f, 0.5f);
+#endif
 		ogl.FlushBuffers (GL_LINES, nSides, 3);
 
-#if DBG
-		glColor4f (0.0f, 0.5f, 1.0f, 0.5f);
-#endif
 		pv = &ogl.VertexBuffer () [0];
 		for (i = 0; i < nSides; i++, pv++) {
 			pv->v.coord.x = pv->v.coord.y; // sin
 			pv->v.coord.y = 0.0f;
 			}
+#if DBG
+		glColor4f (0.0f, 0.5f, 1.0f, 0.5f);
+#endif
 		ogl.FlushBuffers (GL_LINES, nSides, 3);
 
 		transformation.End ();
@@ -332,7 +332,8 @@ m_offset.v.coord.z = /*ogl.m_states.bRender2TextureOk ? 10.0f :*/ 50.0f;
 m_radius = radarSizes [gameOpts->render.cockpit.nRadarSize] / transformation.m_info.scalef.v.coord.x;
 m_lineWidth = float (CCanvas::Current ()->Width ()) / 640.0f * radarSizes [gameOpts->render.cockpit.nRadarSize] / radarSizes [sizeofa (radarSizes) - 1];
 
-ogl.ResetClientStates (1);
+ogl.ResetClientStates (0);
+ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 ogl.SetTexturing (false);
 ogl.SetFaceCulling (false);
 ogl.SetBlending (1);

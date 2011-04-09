@@ -987,6 +987,7 @@ if ((m_states.nTransformCalls > 0) && (m_states.bUseTransform || bForce) && !--m
 
 void COGL::DrawArrays (GLenum mode, GLint first, GLsizei count)
 {
+#if 0 //DBG
 if (count < 1)
 	PrintLog ("glDrawArrays: invalid count\n");
 else if (count > 100000)
@@ -998,6 +999,7 @@ else if (m_data.bUseTextures [m_data.nTMU [0]] && !m_data.clientStates [m_data.n
 	PrintLog ("glDrawArrays: client data not enabled\n");
 #endif
 else
+#endif
 	glDrawArrays (mode, first, count);
 }
 
