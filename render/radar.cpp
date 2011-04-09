@@ -95,7 +95,7 @@ if (ogl.SizeVertexBuffer (nSides)) {
 		transformation.Begin (m_vCenter, mOrient);
 		glScalef (m_radius, m_radius, m_radius);
 
-#if 1// DBG
+#if DBG
 		glColor4f (0.0f, 1.0f, 0.5f, 0.5f);
 #else
 		glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
