@@ -219,7 +219,7 @@ return;
 
 void CRadar::RenderBlip (CObject *objP, float r, float g, float b, float a, int bAbove)
 {
-	CFloatVector	v [2];
+	CFloatVector	v [2], hv;
 	float				m, h, s;
 
 v [0].Assign (objP->info.position.vPos);
@@ -229,11 +229,14 @@ if ((v [0].v.coord.y < X2F (gameData.objs.viewerP->Position ().v.coord.y)) != bA
 if ((m = v [0].Mag ()) > RADAR_RANGE)
 	return;
 v [0] *= m_radius / float (RADAR_RANGE);
-v [0].v.coord.z = -v [0].v.coord.z;
+v [0].v.coord.z = v [0].v.coord.z;
 v [0] += m_offset;
 v [1].v.coord.x = v [0].v.coord.x;
 v [1].v.coord.y = m_offset.v.coord.y;
 v [1].v.coord.z = v [0].v.coord.z;
+hv = v [0] - v [1];
+hv *= 0.5f;
+v [0] += hv;
 s = 1.0f - fabs (m) / RADAR_RANGE;
 h = 3 * s;
 a += a * h;
@@ -386,9 +389,9 @@ else
 	{
 	ogl.SetDepthTest (false);
 	RenderDevice (true);
-	RenderObjects (gameOpts->render.cockpit.nRadarPos);
-	RenderDevice (false);
 	RenderObjects (!gameOpts->render.cockpit.nRadarPos);
+	RenderDevice (false);
+	RenderObjects (gameOpts->render.cockpit.nRadarPos);
 	ogl.SetDepthTest (true);
 	}
 ogl.SetLineSmooth (false);

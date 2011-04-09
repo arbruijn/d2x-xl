@@ -994,7 +994,7 @@ else if (count > 100000)
 else if (mode > GL_POLYGON)
 	PrintLog ("glDrawArrays: invalid mode\n");
 #if TRACK_STATES || DBG_OGL
-else if (!m_data.clientStates [m_data.nTMU [0]][0])
+else if (m_data.bUseTextures [m_data.nTMU [0]] && !m_data.clientStates [m_data.nTMU [0]][0])
 	PrintLog ("glDrawArrays: client data not enabled\n");
 #endif
 else
