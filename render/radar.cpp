@@ -16,6 +16,38 @@
 
 // -----------------------------------------------------------------------------------
 
+static tRgbaColorf lineColors [3] = {
+	{0.5f, 0.0f, 1.0f, 0.5f},
+	{1.0f, 0.5f, 0.0f, 0.5f},
+	{0.0f, 0.5f, 1.0f, 0.5f}
+	};
+
+static tRgbaColorf planeColors [3] = {
+	{0.0f, 0.5f, 0.0f, 0.25f},
+	{0.8f, 0.8f, 0.0f, 0.25f},
+	{0.0f, 0.4f, 0.8f, 0.25f}
+	};
+
+static tRgbaColorf radarColors [3][3] = {
+	{
+	{0.0f, 0.6f, 0.0f, 0.5f},
+	{0.0f, 0.8f, 0.0f, 0.5f},
+	{0.0f, 1.0f, 0.0f, 0.5f}
+	},
+	{
+	{0.8f, 0.8f, 0.0f, 0.5f},
+	{0.9f, 0.9f, 0.0f, 0.5f},
+	{1.0f, 1.0f, 0.0f, 0.5f}
+	},
+	{
+	{0.0f, 0.4f, 0.8f, 0.5f},
+	{0.0f, 0.5f, 0.9f, 0.5f},
+	{0.0f, 0.6f, 1.0f, 0.5f}
+	},
+};
+
+int nColor = 0;
+
 CRadar radar;
 
 // -----------------------------------------------------------------------------------
@@ -132,9 +164,9 @@ glScalef (m_radius, m_radius, m_radius);
 glLineWidth (m_lineWidth);
 
 #if DBG
-glColor4f (0.5f, 0.0f, 1.0f, 0.5f);
+glColor4fv ((GLfloat*) &lineColors [0]);
 #else
-glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
+glColor4fv (radarColors [nColor]);
 #endif
 ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
 
@@ -144,7 +176,7 @@ for (i = 0; i < RADAR_SLICES; i++, pv++) {
 	pv->v.coord.x = 0.0f;
 	}
 #if DBG
-glColor4f (1.0f, 0.5f, 0.0f, 0.5f);
+glColor4fv ((GLfloat*) &lineColors [1]);
 #endif
 ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
 
@@ -154,7 +186,7 @@ for (i = 0; i < RADAR_SLICES; i++, pv++) {
 	pv->v.coord.y = 0.0f;
 	}
 #if DBG
-glColor4f (0.0f, 0.5f, 1.0f, 0.5f);
+glColor4fv ((GLfloat*) &lineColors [2]);
 #endif
 ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
 
@@ -167,22 +199,20 @@ mOrient = gameData.objs.viewerP->Orientation ();
 transformation.Begin (m_vCenter, mOrient);
 
 // render the transparent green dish
-glColor4f (0.0f, 0.5f, 0.0f, 0.25f);
+glColor4fv ((GLfloat*) &planeColors [nColor]);
 glScalef (m_radius, m_radius, m_radius);
 ogl.FlushBuffers (GL_POLYGON, RADAR_SLICES, 3);
 
 // render the green rings (dark to bright from outside to inside)
-glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
+glColor4fv ((GLfloat*) &radarColors [nColor][0]);
 glLineWidth (1.5f * m_lineWidth);
 ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
 
-glColor4f (0.0f, 0.8f, 0.0f, 0.5f);
-//glLineWidth (1.5f * m_lineWidth);
+glColor4fv ((GLfloat*) &radarColors [nColor][1]);
 glScalef (0.6666667f, 0.6666667f, 0.6666667f);
 ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
 
-glColor4f (0.0f, 1.0f, 0.0f, 0.5f);
-//glLineWidth (2.0f * m_lineWidth);
+glColor4fv ((GLfloat*) &radarColors [nColor][2]);
 glScalef (0.5f, 0.5f, 0.5f);
 ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
 
