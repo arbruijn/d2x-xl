@@ -355,7 +355,7 @@ do {
 	cockpitOpts.radar.nColor = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarColor, 0, 2, KEY_C, HTX_CPIT_RADARCOLOR);
 
 	sprintf (szSlider, TXT_RADAR_STYLE, szRadarStyle [gameOpts->render.cockpit.nRadarStyle]);
-	cockpitOpts.radar.nStyle = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarStyle, 0, 2, KEY_S, HTX_CPIT_RADARSTYLE);
+	cockpitOpts.radar.nStyle = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarStyle, 0, 1, KEY_S, HTX_CPIT_RADARSTYLE);
 
 	do {
 		i = m.Menu (NULL, TXT_COCKPIT_OPTS, &CockpitOptionsCallback, &choice);

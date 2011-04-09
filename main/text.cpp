@@ -1939,11 +1939,9 @@ const char *defaultGameTexts [][2] = {
  {"Lade Zuordnung IP zu Land...", "Loading IP to country relations..."},
  {"Rauch-~Detaileinstellungen...", "Smoke ~Detail Settings..."},
  {"Rauch-Detaileinstellungen", "Smoke ~Detail Settings"},
- {"radar-p~Osition: %s", "radar p~Osition: %s"},
- {"radar-~Reichweite: %s", "radar ~Range: %s"},
  {"gruen", "green"},
  {"bernstein", "amber"},
- {"monochrom", "monochrom"},
+ {"monochrom", "monochrome"},
  {"mehrfarbig", "multi color"},
 #if 0
  {"", ""},
