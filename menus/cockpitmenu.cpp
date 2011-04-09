@@ -70,6 +70,8 @@ typedef struct tRadarOpts {
 	int	nPos;
 	int	nSize;
 	int	nRange;
+	int	nColor;
+	int	nStyle;
 } tRadarOpts;
 
 static struct {
@@ -91,6 +93,8 @@ static const char* szWindowAlign [3];
 static const char* szTgtInd [3];
 static const char* szRadarSize [3];
 static const char* szRadarRange [5];
+static const char* szRadarColor [3];
+static const char* szRadarStyle [2];
 
 static int nWinFuncs, winFuncs [CV_FUNC_COUNT];
 
@@ -181,6 +185,22 @@ if (gameOpts->render.cockpit.nRadarRange != v) {
 	m->m_bRebuild = 1;
 	}
 
+m = menu + cockpitOpts.radar.nColor;
+v = m->m_value;
+if (gameOpts->render.cockpit.nRadarColor != v) {
+	gameOpts->render.cockpit.nRadarColor = v;
+	sprintf (m->m_text, TXT_RADAR_COLOR, szRadarColor [v]);
+	m->m_bRebuild = 1;
+	}
+
+m = menu + cockpitOpts.radar.nStyle;
+v = m->m_value;
+if (gameOpts->render.cockpit.nRadarStyle != v) {
+	gameOpts->render.cockpit.nRadarStyle = v;
+	sprintf (m->m_text, TXT_RADAR_COLOR, szRadarStyle [v]);
+	m->m_bRebuild = 1;
+	}
+
 m = menu + cockpitOpts.nTgtInd;
 v = m->m_value;
 if (nTgtInd != v) {
@@ -224,10 +244,16 @@ szRadarRange [2] = TXT_MEDIUM;
 szRadarRange [3] = TXT_LONG;
 szRadarRange [4] = TXT_EXTREME;
 
+szRadarColor [0] = TXT_GREEN;
+szRadarColor [1] = TXT_AMBER;
+szRadarColor [2] = TXT_BLUE;
+
+szRadarStyle [0] = TXT_MONOCHROME;
+szRadarStyle [1] = TXT_MULTICOLOR;
+
 szTgtInd [0] = TXT_NONE;
 szTgtInd [1] = TXT_MISSILES;
 szTgtInd [2] = TXT_FULL;
-
 }
 
 //------------------------------------------------------------------------------
@@ -324,6 +350,12 @@ do {
 
 	sprintf (szSlider, TXT_RADAR_RANGE, szRadarRange [gameOpts->render.cockpit.nRadarRange]);
 	cockpitOpts.radar.nRange = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarRange, 0, 4, KEY_R, HTX_CPIT_RADARRANGE);
+
+	sprintf (szSlider, TXT_RADAR_COLOR, szRadarColor [gameOpts->render.cockpit.nRadarColor]);
+	cockpitOpts.radar.nColor = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarColor, 0, 2, KEY_C, HTX_CPIT_RADARCOLOR);
+
+	sprintf (szSlider, TXT_RADAR_STYLE, szRadarStyle [gameOpts->render.cockpit.nRadarStyle]);
+	cockpitOpts.radar.nStyle = m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarStyle, 0, 2, KEY_S, HTX_CPIT_RADARSTYLE);
 
 	do {
 		i = m.Menu (NULL, TXT_COCKPIT_OPTS, &CockpitOptionsCallback, &choice);

@@ -1941,6 +1941,13 @@ const char *defaultGameTexts [][2] = {
  {"Rauch-Detaileinstellungen", "Smoke ~Detail Settings"},
  {"radar-p~Osition: %s", "radar p~Osition: %s"},
  {"radar-~Reichweite: %s", "radar ~Range: %s"},
+ {"radar~Farbe: %s", "radar ~Color: %s"},
+ {"gruen", "green"},
+ {"bernstein", "amber"},
+ {"blau", "blue"},
+ {"radar~Stil: %s", "radar ~Style: %s"},
+ {"monochrom", "monochrom"},
+ {"mehrfarbig", "multi color"},
 #if 0
  {"", ""},
 #endif
@@ -2661,6 +2668,8 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann die Position des Radars im Cockpit ausgewaehlt werden.", "Chose the position of the RADAR in the HUD here."},
  {"Hier kann die Groesse des Radars eingestellt werden.", "Adjust the RADAR's size here."},
  {"Hier kann die Reichweite des Radars eingestellt werden.", "Chose the RADAR's range here."},
+ {"Hier kann die Farbe des Radars ausgewaehlt werden.", "Chose a color for the RADAR here."},
+ {"Hier kann eingestellt werden, ob die gestrichelten Kreise um\ndas Radar ein- oder mehrfarbig sind.", "Chose monochrome or multi colored dashed circles around the\nRADAR here."},
 #if 0
  {"", ""},
 #endif

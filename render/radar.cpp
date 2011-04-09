@@ -24,8 +24,8 @@ static tRgbaColorf lineColors [3] = {
 
 static tRgbaColorf planeColors [3] = {
 	{0.0f, 0.5f, 0.0f, 0.25f},
-	{0.8f, 0.8f, 0.0f, 0.25f},
-	{0.0f, 0.4f, 0.8f, 0.25f}
+	{0.6f, 0.6f, 0.0f, 0.25f},
+	{0.0f, 0.4f, 0.6f, 0.25f}
 	};
 
 static tRgbaColorf radarColors [3][3] = {
@@ -35,18 +35,16 @@ static tRgbaColorf radarColors [3][3] = {
 	{0.0f, 1.0f, 0.0f, 0.5f}
 	},
 	{
-	{0.8f, 0.8f, 0.0f, 0.5f},
-	{0.9f, 0.9f, 0.0f, 0.5f},
-	{1.0f, 1.0f, 0.0f, 0.5f}
+	{0.4f, 0.4f, 0.0f, 0.5f},
+	{0.6f, 0.6f, 0.0f, 0.5f},
+	{0.8f, 0.8f, 0.0f, 0.5f}
 	},
 	{
-	{0.0f, 0.4f, 0.8f, 0.5f},
-	{0.0f, 0.5f, 0.9f, 0.5f},
-	{0.0f, 0.6f, 1.0f, 0.5f}
+	{0.0f, 0.2f, 0.4f, 0.5f},
+	{0.0f, 0.4f, 0.6f, 0.5f},
+	{0.0f, 0.6f, 0.8f, 0.5f}
 	},
 };
-
-int nColor = 0;
 
 CRadar radar;
 
@@ -163,11 +161,10 @@ transformation.Begin (m_vCenter, mOrient);
 glScalef (m_radius, m_radius, m_radius);
 glLineWidth (m_lineWidth);
 
-#if DBG
-glColor4fv ((GLfloat*) &lineColors [0]);
-#else
-glColor4fv (radarColors [nColor]);
-#endif
+if (gameOpts->render.cockpit.nRadarStyle)
+	glColor4fv ((GLfloat*) &lineColors [0]);
+else
+	glColor4fv (radarColors [gameOpts->render.cockpit.nRadarColor]);
 ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
 
 pv = &ogl.VertexBuffer () [0];
@@ -175,9 +172,8 @@ for (i = 0; i < RADAR_SLICES; i++, pv++) {
 	pv->v.coord.z = pv->v.coord.x; // cos
 	pv->v.coord.x = 0.0f;
 	}
-#if DBG
-glColor4fv ((GLfloat*) &lineColors [1]);
-#endif
+if (gameOpts->render.cockpit.nRadarStyle)
+	glColor4fv ((GLfloat*) &lineColors [1]);
 ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
 
 pv = &ogl.VertexBuffer () [0];
@@ -185,9 +181,8 @@ for (i = 0; i < RADAR_SLICES; i++, pv++) {
 	pv->v.coord.x = pv->v.coord.y; // sin
 	pv->v.coord.y = 0.0f;
 	}
-#if DBG
-glColor4fv ((GLfloat*) &lineColors [2]);
-#endif
+if (gameOpts->render.cockpit.nRadarStyle)
+	glColor4fv ((GLfloat*) &lineColors [2]);
 ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
 
 transformation.End ();
@@ -199,20 +194,20 @@ mOrient = gameData.objs.viewerP->Orientation ();
 transformation.Begin (m_vCenter, mOrient);
 
 // render the transparent green dish
-glColor4fv ((GLfloat*) &planeColors [nColor]);
+glColor4fv ((GLfloat*) &planeColors [gameOpts->render.cockpit.nRadarColor]);
 glScalef (m_radius, m_radius, m_radius);
 ogl.FlushBuffers (GL_POLYGON, RADAR_SLICES, 3);
 
 // render the green rings (dark to bright from outside to inside)
-glColor4fv ((GLfloat*) &radarColors [nColor][0]);
+glColor4fv ((GLfloat*) &radarColors [gameOpts->render.cockpit.nRadarColor][0]);
 glLineWidth (1.5f * m_lineWidth);
 ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
 
-glColor4fv ((GLfloat*) &radarColors [nColor][1]);
+glColor4fv ((GLfloat*) &radarColors [gameOpts->render.cockpit.nRadarColor][1]);
 glScalef (0.6666667f, 0.6666667f, 0.6666667f);
 ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
 
-glColor4fv ((GLfloat*) &radarColors [nColor][2]);
+glColor4fv ((GLfloat*) &radarColors [gameOpts->render.cockpit.nRadarColor][2]);
 glScalef (0.5f, 0.5f, 0.5f);
 ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
 
@@ -321,7 +316,7 @@ ogl.FlushBuffers (GL_LINES, 2);
 void CRadar::RenderObjects (int bAbove)
 {
 	CObject*		objP;
-	tRgbColorf*	pc = radarColor + gameOpts->render.automap.nColor;
+	tRgbColorf*	pc = radarColor + gameOpts->render.automap.gameOpts->render.cockpit.nRadarColor;
 	CFixVector	vPos = CFixVector::ZERO;
 	CFixMatrix	mOrient = CFixMatrix::IDENTITY;
 

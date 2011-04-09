@@ -484,6 +484,8 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.cockpit.nRadarPos, i, 0);
 		RP (gameOptions [i].render.cockpit.nRadarSize, i, 0);
 		RP (gameOptions [i].render.cockpit.nRadarRange, i, 0);
+		RP (gameOptions [i].render.cockpit.nRadarColor, i, 0);
+		RP (gameOptions [i].render.cockpit.nRadarStyle, i, 0);
 		RP (gameOptions [i].render.color.bUseLightmaps, i, 0);
 		RP (gameOptions [i].render.color.nLightmapRange, i, 0);
 
@@ -1016,7 +1018,9 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.cockpit.nWindowZoom", "1"},
 	 {"gameOptions[0].render.cockpit.nRadarPos", "0"},
 	 {"gameOptions[0].render.cockpit.nRadarSize", "1"},
-	 {"gameOptions[0].render.cockpit.nRadarRange", "0"},
+	 {"gameOptions[0].render.cockpit.nRadarRange", "1"},
+	 {"gameOptions[0].render.cockpit.nRadarColor", "0"},
+	 {"gameOptions[0].render.cockpit.nRadarStyle", "0"},
 	 {"gameOptions[0].render.color.bUseLightmaps", "0"},
 	 {"gameOptions[0].render.color.nLightmapRange", "0"},
 	 {"gameOptions[0].render.powerups.b3D", "1"},
