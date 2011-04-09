@@ -219,7 +219,7 @@ return;
 
 void CRadar::RenderBlip (CObject *objP, float r, float g, float b, float a, int bAbove)
 {
-	CFloatVector	v [2], hv;
+	CFloatVector	v [2];
 	float				m, h, s;
 
 v [0].Assign (objP->info.position.vPos);
@@ -234,9 +234,11 @@ v [0] += m_offset;
 v [1].v.coord.x = v [0].v.coord.x;
 v [1].v.coord.y = m_offset.v.coord.y;
 v [1].v.coord.z = v [0].v.coord.z;
-hv = v [0] - v [1];
+#if 0 // increase distance from radar plane
+CFloatVector hv = v [0] - v [1];
 hv *= 0.5f;
 v [0] += hv;
+#endif
 s = 1.0f - fabs (m) / RADAR_RANGE;
 h = 3 * s;
 a += a * h;
