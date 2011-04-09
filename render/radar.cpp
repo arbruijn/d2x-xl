@@ -78,6 +78,7 @@ if (ogl.SizeVertexBuffer (nSides)) {
 	ogl.SetTransform (1);
 
 	if (bBackground) {
+		// render the dark background
 		glPushMatrix ();
 		mOrient = gameData.objs.viewerP->Orientation ();
 		transformation.Begin (m_vCenter, mOrient);
@@ -88,16 +89,23 @@ if (ogl.SizeVertexBuffer (nSides)) {
 		glPopMatrix ();
 		}
 	else {
+		// render the three dashed, moving rings
 		glPushMatrix ();
 		mOrient = CFixMatrix::IDENTITY;
 		transformation.Begin (m_vCenter, mOrient);
 		glScalef (m_radius, m_radius, m_radius);
 
+#if 1// DBG
+		glColor4f (0.0f, 1.0f, 0.5f, 0.5f);
+#else
 		glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
+#endif
 		glLineWidth (m_lineWidth);
 
 		ogl.FlushBuffers (GL_LINES, nSides, 3);
-
+#if DBG
+		glColor4f (1.0f, 0.5f, 0.0f, 0.5f);
+#endif
 		pv = &ogl.VertexBuffer () [0];
 		for (i = 0; i < nSides; i++, pv++) {
 			pv->v.coord.z = pv->v.coord.x; // cos
@@ -105,6 +113,9 @@ if (ogl.SizeVertexBuffer (nSides)) {
 			}
 		ogl.FlushBuffers (GL_LINES, nSides, 3);
 
+#if DBG
+		glColor4f (0.0f, 0.5f, 1.0f, 0.5f);
+#endif
 		pv = &ogl.VertexBuffer () [0];
 		for (i = 0; i < nSides; i++, pv++) {
 			pv->v.coord.x = pv->v.coord.y; // sin
@@ -115,15 +126,17 @@ if (ogl.SizeVertexBuffer (nSides)) {
 		transformation.End ();
 		glPopMatrix ();
 
+		// render the radar plane
 		glPushMatrix ();
 		mOrient = gameData.objs.viewerP->Orientation ();
 		transformation.Begin (m_vCenter, mOrient);
 
-		//glColor4f (r, g, b, a);
+		// render the transparent green dish
 		glColor4f (0.0f, 0.5f, 0.0f, 0.25f);
 		glScalef (m_radius, m_radius, m_radius);
 		ogl.FlushBuffers (GL_POLYGON, nSides, 3);
 
+		// render the green rings (dark to bright from outside to inside)
 		glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
 		glLineWidth (1.5f * m_lineWidth);
 		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
@@ -141,6 +154,8 @@ if (ogl.SizeVertexBuffer (nSides)) {
 	#if 0
 		CFloatVector	vAxis [8], vOffset;
 
+		// render 4 short lines pointing from the outer ring of the radar dish to its center
+		// disabled as it makes the radar look too cluttered
 		pv = &ogl.VertexBuffer () [0];
 
 		vAxis [0] = pv [nSides / 8];
@@ -163,6 +178,7 @@ if (ogl.SizeVertexBuffer (nSides)) {
 		glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
 		ogl.FlushBuffers (GL_LINES, 8, 3);
 	#endif
+
 		transformation.End ();
 		glPopMatrix ();
 
@@ -170,6 +186,7 @@ if (ogl.SizeVertexBuffer (nSides)) {
 		transformation.Begin (m_vCenter, mOrient);
 		glScalef (m_radius, m_radius, m_radius);
 
+		// render the 6 lines pointing inwards from where the dashed rings touch
 		pv = &ogl.VertexBuffer () [0];
 		pv [0].Set (-1.0f, 0.0f, 0.0f);
 		pv [1].Set (-0.5f, 0.0f, 0.0f);
@@ -319,6 +336,7 @@ ogl.SetLineSmooth (true);
 glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
 glLineWidth (m_lineWidth);
 #if 0
+// render the radar to a texture and render that texture to the HUD (unfinished)
 if (ogl.m_states.bRender2TextureOk) {
 	//static tTexCoord2f texCoord [4] = {{{0.3f, 0.3f}}, {{0.3f, 0.7f}}, {{0.7f, 0.7f}}, {{0.7f, 0.3f}}};
 	static float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
@@ -368,9 +386,9 @@ else
 	{
 	ogl.SetDepthTest (false);
 	RenderDevice (true);
-	RenderObjects (1);
+	RenderObjects (gameOpts->render.cockpit.nRadarPos);
 	RenderDevice (false);
-	RenderObjects (0);
+	RenderObjects (!gameOpts->render.cockpit.nRadarPos);
 	ogl.SetDepthTest (true);
 	}
 ogl.SetLineSmooth (false);
