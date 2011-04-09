@@ -29,30 +29,43 @@ float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, 18.0f, -20.5f, -
 
 tSinCosf			CRadar::sinCosRadar [RADAR_SLICES];
 tSinCosf			CRadar::sinCosBlip [BLIP_SLICES];
-int				CRadar::bInitSinCos = 1;
 
 tRgbColorf		CRadar::shipColors [8];
 tRgbColorf		CRadar::guidebotColor = {0, 0.75f / 4, 0.25f};
 tRgbColorf		CRadar::robotColor = {0.75f / 4, 0, 0.25f};
 tRgbColorf		CRadar::powerupColor = {0.25f, 0.5f / 4, 0};
 tRgbColorf		CRadar::radarColor [2] = {{1, 1, 1}, {0, 0, 0}};
-int				CRadar::bHaveShipColors = 0;
 
 #define RADAR_RANGE	radarRanges [gameOpts->render.cockpit.nRadarRange]
 
 // -----------------------------------------------------------------------------------
 
-void CRadar::RenderDevice (bool bBackground)
+CRadar::CRadar () 
+	: m_lineWidth (1.0f) 
 {
-if (bInitSinCos) {
-	ComputeSinCosTable (sizeofa (sinCosRadar), sinCosRadar);
-	ComputeSinCosTable (sizeofa (sinCosBlip), sinCosBlip);
-	bInitSinCos = 0;
+ComputeSinCosTable (sizeofa (sinCosRadar), sinCosRadar);
+ComputeSinCosTable (sizeofa (sinCosBlip), sinCosBlip);
+
+int i;
+
+for (i = 0; i < 8; i++) {
+	shipColors [i].red = 2 * playerColors [i].red / 255.0f;
+	shipColors [i].green = 2 * playerColors [i].green / 255.0f;
+	shipColors [i].blue = 2 * playerColors [i].blue / 255.0f;
 	}
 
-	CFixMatrix mOrient;
+for (i = 0; i < RADAR_SLICES; i++) {
+	double a = 2.0 * Pi * i / RADAR_SLICES;
+	m_vertices [i].Set (float (cos (a)), float (sin (a)), 0.0f);
+	}
+
+}
+
+// -----------------------------------------------------------------------------------
+
+void CRadar::ComputeCenter (void)
+{
 	CFloatVector vf, vu, vr;
-	int i;
 
 vf.Assign (gameData.objs.viewerP->Orientation ().m.dir.f);
 vf *= m_offset.v.coord.z;
@@ -63,156 +76,166 @@ vr *= m_offset.v.coord.x;
 m_vCenter.Assign (vf + vu + vr);
 m_vCenter += gameData.objs.viewerP->Position ();
 m_vCenterf.Assign (m_vCenter);
+}
 
-int nSides = 64;
-if (ogl.SizeVertexBuffer (nSides)) {
-	CFloatVector* pv = &ogl.VertexBuffer () [0];
+// -----------------------------------------------------------------------------------
 
-	for (i = 0; i < nSides; i++, pv++) {
-		double ang = 2.0 * Pi * i / nSides;
-		pv->v.coord.x = float (cos (ang));
-		pv->v.coord.y = float (sin (ang));
-		pv->v.coord.z = 0.0f;
-		}
-
-	ogl.SetTransform (1);
-	ogl.SetTexturing (false);
-
-	if (bBackground) {
-		// render the dark background
-		glPushMatrix ();
-		mOrient = gameData.objs.viewerP->Orientation ();
-		transformation.Begin (m_vCenter, mOrient);
-		glScalef (m_radius * 1.2f, m_radius * 1.2f, m_radius * 1.2f);
-		glColor4f (0.0f, 0.0f, 0.0f, 0.5f);
-		ogl.FlushBuffers (GL_POLYGON, nSides, 3);
-		transformation.End ();
-		glPopMatrix ();
-		}
-	else {
-		// render the three dashed, moving rings
-		glPushMatrix ();
-		mOrient = CFixMatrix::IDENTITY;
-		transformation.Begin (m_vCenter, mOrient);
-		glScalef (m_radius, m_radius, m_radius);
-		glLineWidth (m_lineWidth);
-
-#if DBG
-		glColor4f (0.5f, 0.0f, 1.0f, 0.5f);
-#else
-		glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
-#endif
-		ogl.FlushBuffers (GL_LINES, nSides, 3);
-		pv = &ogl.VertexBuffer () [0];
-		for (i = 0; i < nSides; i++, pv++) {
-			pv->v.coord.z = pv->v.coord.x; // cos
-			pv->v.coord.x = 0.0f;
-			}
-#if DBG
-		glColor4f (1.0f, 0.5f, 0.0f, 0.5f);
-#endif
-		ogl.FlushBuffers (GL_LINES, nSides, 3);
-
-		pv = &ogl.VertexBuffer () [0];
-		for (i = 0; i < nSides; i++, pv++) {
-			pv->v.coord.x = pv->v.coord.y; // sin
-			pv->v.coord.y = 0.0f;
-			}
-#if DBG
-		glColor4f (0.0f, 0.5f, 1.0f, 0.5f);
-#endif
-		ogl.FlushBuffers (GL_LINES, nSides, 3);
-
-		transformation.End ();
-		glPopMatrix ();
-
-		// render the radar plane
-		glPushMatrix ();
-		mOrient = gameData.objs.viewerP->Orientation ();
-		transformation.Begin (m_vCenter, mOrient);
-
-		// render the transparent green dish
-		glColor4f (0.0f, 0.5f, 0.0f, 0.25f);
-		glScalef (m_radius, m_radius, m_radius);
-		ogl.FlushBuffers (GL_POLYGON, nSides, 3);
-
-		// render the green rings (dark to bright from outside to inside)
-		glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
-		glLineWidth (1.5f * m_lineWidth);
-		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
-
-		glColor4f (0.0f, 0.8f, 0.0f, 0.5f);
-		//glLineWidth (1.5f * m_lineWidth);
-		glScalef (0.6666667f, 0.6666667f, 0.6666667f);
-		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
-
-		glColor4f (0.0f, 1.0f, 0.0f, 0.5f);
-		//glLineWidth (2.0f * m_lineWidth);
-		glScalef (0.5f, 0.5f, 0.5f);
-		ogl.FlushBuffers (GL_LINE_LOOP, nSides, 3);
-
-	#if 0
-		CFloatVector	vAxis [8], vOffset;
-
-		// render 4 short lines pointing from the outer ring of the radar dish to its center
-		// disabled as it makes the radar look too cluttered
-		pv = &ogl.VertexBuffer () [0];
-
-		vAxis [0] = pv [nSides / 8];
-		vAxis [1] = pv [3 * nSides / 8];
-		vAxis [2] = pv [5 * nSides / 8];
-		vAxis [3] = pv [7 * nSides / 8];
-
-		vOffset = (vAxis [2] - vAxis [0]) * 0.1625f;
-		pv [0] = vAxis [0];
-		pv [1] = vAxis [0] + vOffset;
-		pv [2] = vAxis [2];
-		pv [3] = vAxis [2] - vOffset;
-		vOffset = (vAxis [3] - vAxis [1]) * 0.1625f;
-		pv [4] = vAxis [1];
-		pv [5] = vAxis [1] + vOffset;
-		pv [6] = vAxis [3];
-		pv [7] = vAxis [3] - vOffset;
-
-		glScalef (3.0f, 3.0f, 3.0f);
-		glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
-		ogl.FlushBuffers (GL_LINES, 8, 3);
-	#endif
-
-		transformation.End ();
-		glPopMatrix ();
-
-		mOrient = CFixMatrix::IDENTITY;
-		transformation.Begin (m_vCenter, mOrient);
-		glScalef (m_radius, m_radius, m_radius);
-
-		// render the 6 lines pointing inwards from where the dashed rings touch
-		pv = &ogl.VertexBuffer () [0];
-		pv [0].Set (-1.0f, 0.0f, 0.0f);
-		pv [1].Set (-0.5f, 0.0f, 0.0f);
-		pv [2].Set (1.0f, 0.0f, 0.0f);
-		pv [3].Set (0.5f, 0.0f, 0.0f);
-		pv [4].Set (0.0f, -1.0f, 0.0f);
-		pv [5].Set (0.0f, -0.5f, 0.0f);
-		pv [6].Set (0.0f, 1.0f, 0.0f);
-		pv [7].Set (0.0f, 0.5f, 0.0f);
-		pv [8].Set (0.0f, 0.0f, -1.0f);
-		pv [9].Set (0.0f, 0.0f, -0.5f);
-		pv [10].Set (0.0f, 0.0f, 1.0f);
-		pv [11].Set (0.0f, 0.0f, 0.5f);
-
-		glColor4f (0.0f, 0.333f, 0.0f, 0.5f);
-		glLineWidth (m_lineWidth);
-		ogl.FlushBuffers (GL_LINES, 12, 3);
-		transformation.End ();
-		glPopMatrix ();
-
-		ogl.SetTransform (0);
-		}
-	}
-glLineWidth (2);
+void CRadar::RenderBackground (void)
+{
+glPushMatrix ();
+CFixMatrix mOrient = gameData.objs.viewerP->Orientation ();
+transformation.Begin (m_vCenter, mOrient);
+glScalef (m_radius * 1.2f, m_radius * 1.2f, m_radius * 1.2f);
+glColor4f (0.0f, 0.0f, 0.0f, 0.5f);
+ogl.FlushBuffers (GL_POLYGON, RADAR_SLICES, 3);
+transformation.End ();
 glPopMatrix ();
-return;
+}
+
+// -----------------------------------------------------------------------------------
+
+void CRadar::RenderDevice (void)
+{
+	CFloatVector* pv = &ogl.VertexBuffer () [0];
+	CFixMatrix mOrient;
+	int i;
+
+#if 1
+memcpy (pv, m_vertices, sizeof (m_vertices));
+#else
+for (i = 0; i < RADAR_SLICES; i++, pv++) {
+double ang = 2.0 * Pi * i / RADAR_SLICES;
+pv->v.coord.x = float (cos (ang));
+pv->v.coord.y = float (sin (ang));
+pv->v.coord.z = 0.0f;
+}
+#endif
+
+ogl.SetTransform (1);
+ogl.SetTexturing (false);
+
+// render the three dashed, moving rings
+glPushMatrix ();
+mOrient = CFixMatrix::IDENTITY;
+transformation.Begin (m_vCenter, mOrient);
+glScalef (m_radius, m_radius, m_radius);
+glLineWidth (m_lineWidth);
+
+#if DBG
+glColor4f (0.5f, 0.0f, 1.0f, 0.5f);
+#else
+glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
+#endif
+ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
+ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
+
+pv = &ogl.VertexBuffer () [0];
+for (i = 0; i < RADAR_SLICES; i++, pv++) {
+	pv->v.coord.z = pv->v.coord.x; // cos
+	pv->v.coord.x = 0.0f;
+	}
+#if DBG
+glColor4f (1.0f, 0.5f, 0.0f, 0.5f);
+#endif
+ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
+
+pv = &ogl.VertexBuffer () [0];
+for (i = 0; i < RADAR_SLICES; i++, pv++) {
+	pv->v.coord.x = pv->v.coord.y; // sin
+	pv->v.coord.y = 0.0f;
+	}
+#if DBG
+glColor4f (0.0f, 0.5f, 1.0f, 0.5f);
+#endif
+ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
+
+transformation.End ();
+glPopMatrix ();
+
+// render the radar plane
+glPushMatrix ();
+mOrient = gameData.objs.viewerP->Orientation ();
+transformation.Begin (m_vCenter, mOrient);
+
+// render the transparent green dish
+glColor4f (0.0f, 0.5f, 0.0f, 0.25f);
+glScalef (m_radius, m_radius, m_radius);
+ogl.FlushBuffers (GL_POLYGON, RADAR_SLICES, 3);
+
+// render the green rings (dark to bright from outside to inside)
+glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
+glLineWidth (1.5f * m_lineWidth);
+ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
+
+glColor4f (0.0f, 0.8f, 0.0f, 0.5f);
+//glLineWidth (1.5f * m_lineWidth);
+glScalef (0.6666667f, 0.6666667f, 0.6666667f);
+ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
+
+glColor4f (0.0f, 1.0f, 0.0f, 0.5f);
+//glLineWidth (2.0f * m_lineWidth);
+glScalef (0.5f, 0.5f, 0.5f);
+ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
+
+#if 0
+CFloatVector	vAxis [8], vOffset;
+
+// render 4 short lines pointing from the outer ring of the radar dish to its center
+// disabled as it makes the radar look too cluttered
+pv = &ogl.VertexBuffer () [0];
+
+vAxis [0] = pv [RADAR_SLICES / 8];
+vAxis [1] = pv [3 * RADAR_SLICES / 8];
+vAxis [2] = pv [5 * RADAR_SLICES / 8];
+vAxis [3] = pv [7 * RADAR_SLICES / 8];
+
+vOffset = (vAxis [2] - vAxis [0]) * 0.1625f;
+pv [0] = vAxis [0];
+pv [1] = vAxis [0] + vOffset;
+pv [2] = vAxis [2];
+pv [3] = vAxis [2] - vOffset;
+vOffset = (vAxis [3] - vAxis [1]) * 0.1625f;
+pv [4] = vAxis [1];
+pv [5] = vAxis [1] + vOffset;
+pv [6] = vAxis [3];
+pv [7] = vAxis [3] - vOffset;
+
+glScalef (3.0f, 3.0f, 3.0f);
+glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
+ogl.FlushBuffers (GL_LINES, 8, 3);
+#endif
+
+transformation.End ();
+glPopMatrix ();
+
+glPushMatrix ();
+mOrient = CFixMatrix::IDENTITY;
+transformation.Begin (m_vCenter, mOrient);
+glScalef (m_radius, m_radius, m_radius);
+
+// render the 6 lines pointing inwards from where the dashed rings touch
+pv = &ogl.VertexBuffer () [0];
+pv [0].Set (-1.0f, 0.0f, 0.0f);
+pv [1].Set (-0.5f, 0.0f, 0.0f);
+pv [2].Set (1.0f, 0.0f, 0.0f);
+pv [3].Set (0.5f, 0.0f, 0.0f);
+pv [4].Set (0.0f, -1.0f, 0.0f);
+pv [5].Set (0.0f, -0.5f, 0.0f);
+pv [6].Set (0.0f, 1.0f, 0.0f);
+pv [7].Set (0.0f, 0.5f, 0.0f);
+pv [8].Set (0.0f, 0.0f, -1.0f);
+pv [9].Set (0.0f, 0.0f, -0.5f);
+pv [10].Set (0.0f, 0.0f, 1.0f);
+pv [11].Set (0.0f, 0.0f, 0.5f);
+
+glColor4f (0.0f, 0.333f, 0.0f, 0.5f);
+glLineWidth (m_lineWidth);
+ogl.FlushBuffers (GL_LINES, 12, 3);
+transformation.End ();
+glPopMatrix ();
+
+ogl.SetTransform (0);
+glLineWidth (2);
 }
 
 // -----------------------------------------------------------------------------------
@@ -292,22 +315,6 @@ glPopMatrix ();
 
 // -----------------------------------------------------------------------------------
 
-void CRadar::InitShipColors (void)
-{
-if (!bHaveShipColors) {
-	int	i;
-
-	for (i = 0; i < 8; i++) {
-		shipColors [i].red = 2 * playerColors [i].red / 255.0f;
-		shipColors [i].green = 2 * playerColors [i].green / 255.0f;
-		shipColors [i].blue = 2 * playerColors [i].blue / 255.0f;
-		}
-	bHaveShipColors = 1;
-	}
-}
-
-// -----------------------------------------------------------------------------------
-
 void CRadar::Render (void)
 {
 if (gameStates.app.bNostalgia)
@@ -321,9 +328,10 @@ if (!EGI_FLAG (nRadar, 0, 1, 0))
 	return;
 if (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor)
 	return;
+if (!ogl.SizeVertexBuffer (RADAR_SLICES))
+	return;
 
 int bStencil = ogl.StencilOff ();
-InitShipColors ();
 
 m_offset.v.coord.x = 0.0f;
 m_offset.v.coord.y = /*ogl.m_states.bRender2TextureOk ? 0.0f :*/ yOffs [gameOpts->render.cockpit.nRadarPos][gameStates.render.cockpit.nType];
@@ -391,9 +399,10 @@ else
 #endif
 	{
 	ogl.SetDepthTest (false);
-	RenderDevice (true);
+	ComputeCenter ();
+	RenderBackground ();
 	RenderObjects (!gameOpts->render.cockpit.nRadarPos);
-	RenderDevice (false);
+	RenderDevice ();
 	RenderObjects (gameOpts->render.cockpit.nRadarPos);
 	ogl.SetDepthTest (true);
 	}

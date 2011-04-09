@@ -442,7 +442,8 @@ glEnableClientState (nState);
 #if DBG_OGL
 memset (&m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY]));
 #endif
-if (!glGetError ()) {
+GLenum nError = glGetError ();
+if (!nError) {
 #if TRACK_STATES || DBG_OGL
 	m_data.clientStates [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY] = 1;
 #endif
