@@ -197,7 +197,7 @@ m = menu + cockpitOpts.radar.nStyle;
 v = m->m_value;
 if (gameOpts->render.cockpit.nRadarStyle != v) {
 	gameOpts->render.cockpit.nRadarStyle = v;
-	sprintf (m->m_text, TXT_RADAR_COLOR, szRadarStyle [v]);
+	sprintf (m->m_text, TXT_RADAR_STYLE, szRadarStyle [v]);
 	m->m_bRebuild = 1;
 	}
 
