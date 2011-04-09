@@ -55,7 +55,7 @@ for (i = 0; i < 8; i++) {
 	}
 
 for (i = 0; i < RADAR_SLICES; i++) {
-	double a = 2.0 * Pi * i / RADAR_SLICES;
+	double a = 2.0 * Pi * float (i) / float (RADAR_SLICES);
 	m_vertices [i].Set (float (cos (a)), float (sin (a)), 0.0f);
 	}
 
@@ -63,7 +63,7 @@ for (i = 0; i < RADAR_SLICES; i++) {
 
 // -----------------------------------------------------------------------------------
 
-void CRadar::RenderSetup (void)
+void CRadar::ComputeCenter (void)
 {
 	CFloatVector vf, vu, vr;
 
@@ -76,7 +76,12 @@ vr *= m_offset.v.coord.x;
 m_vCenter.Assign (vf + vu + vr);
 m_vCenter += gameData.objs.viewerP->Position ();
 m_vCenterf.Assign (m_vCenter);
+}
 
+// -----------------------------------------------------------------------------------
+
+void CRadar::RenderSetup (void)
+{
 #if 1
 memcpy (ogl.VertexBuffer ().Buffer (), m_vertices, sizeof (m_vertices));
 #else
@@ -94,29 +99,33 @@ for (int i = 0; i < RADAR_SLICES; i++, pv++) {
 
 void CRadar::RenderBackground (void)
 {
-glPushMatrix ();
+// glPushMatrix ();
+RenderSetup ();
+ogl.SetTransform (1);
 CFixMatrix mOrient = gameData.objs.viewerP->Orientation ();
 transformation.Begin (m_vCenter, mOrient);
 glScalef (m_radius * 1.2f, m_radius * 1.2f, m_radius * 1.2f);
 glColor4f (0.0f, 0.0f, 0.0f, 0.5f);
 ogl.FlushBuffers (GL_POLYGON, RADAR_SLICES, 3);
 transformation.End ();
-glPopMatrix ();
+ogl.SetTransform (0);
+// glPopMatrix ();
 }
 
 // -----------------------------------------------------------------------------------
 
 void CRadar::RenderDevice (void)
 {
-	CFloatVector* pv = &ogl.VertexBuffer () [0];
+	CFloatVector* pv;
 	CFixMatrix mOrient;
 	int i;
 
+RenderSetup ();
 ogl.SetTransform (1);
 ogl.SetTexturing (false);
 
 // render the three dashed, moving rings
-glPushMatrix ();
+// glPushMatrix ();
 mOrient = CFixMatrix::IDENTITY;
 transformation.Begin (m_vCenter, mOrient);
 glScalef (m_radius, m_radius, m_radius);
@@ -127,7 +136,6 @@ glColor4f (0.5f, 0.0f, 1.0f, 0.5f);
 #else
 glColor4f (0.0f, 0.5f, 0.0f, 0.5f);
 #endif
-ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
 ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
 
 pv = &ogl.VertexBuffer () [0];
@@ -151,10 +159,10 @@ glColor4f (0.0f, 0.5f, 1.0f, 0.5f);
 ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
 
 transformation.End ();
-glPopMatrix ();
+// glPopMatrix ();
 
 // render the radar plane
-glPushMatrix ();
+// glPushMatrix ();
 mOrient = gameData.objs.viewerP->Orientation ();
 transformation.Begin (m_vCenter, mOrient);
 
@@ -207,9 +215,9 @@ ogl.FlushBuffers (GL_LINES, 8, 3);
 #endif
 
 transformation.End ();
-glPopMatrix ();
+// glPopMatrix ();
 
-glPushMatrix ();
+// glPushMatrix ();
 mOrient = CFixMatrix::IDENTITY;
 transformation.Begin (m_vCenter, mOrient);
 glScalef (m_radius, m_radius, m_radius);
@@ -233,7 +241,7 @@ glColor4f (0.0f, 0.333f, 0.0f, 0.5f);
 glLineWidth (m_lineWidth);
 ogl.FlushBuffers (GL_LINES, 12, 3);
 transformation.End ();
-glPopMatrix ();
+// glPopMatrix ();
 
 ogl.SetTransform (0);
 glLineWidth (2);
@@ -287,7 +295,7 @@ void CRadar::RenderObjects (int bAbove)
 	CFixVector	vPos = CFixVector::ZERO;
 	CFixMatrix	mOrient = CFixMatrix::IDENTITY;
 
-glPushMatrix ();
+// glPushMatrix ();
 glLineWidth (2);
 FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objs.consoleP)) {
@@ -311,7 +319,7 @@ FORALL_OBJS (objP, i) {
 	}
 //transformation.End ();
 //ogl.SetTransform (0);
-glPopMatrix ();
+// glPopMatrix ();
 }
 
 // -----------------------------------------------------------------------------------
@@ -367,10 +375,10 @@ if (ogl.m_states.bRender2TextureOk) {
 	ogl.SetDepthTest (true);
 
 	glMatrixMode (GL_MODELVIEW);
-	glPushMatrix ();
+	// glPushMatrix ();
 	glLoadIdentity ();//clear matrix
 	glMatrixMode (GL_PROJECTION);
-	glPushMatrix ();
+	// glPushMatrix ();
 	glLoadIdentity ();//clear matrix
 	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 	ogl.Viewport (0, 0, screen.Width (), screen.Height ());
@@ -390,9 +398,9 @@ if (ogl.m_states.bRender2TextureOk) {
 	ogl.SetDepthMode (GL_LEQUAL);
 
 	glMatrixMode (GL_PROJECTION);
-	glPopMatrix ();
+	// glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);
-	glPopMatrix ();
+	// glPopMatrix ();
 
 #endif
 	}
@@ -400,7 +408,7 @@ else
 #endif
 	{
 	ogl.SetDepthTest (false);
-	RenderSetup ();
+	ComputeCenter ();
 	RenderBackground ();
 	RenderObjects (!gameOpts->render.cockpit.nRadarPos);
 	RenderDevice ();

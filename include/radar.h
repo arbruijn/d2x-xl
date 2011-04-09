@@ -42,6 +42,7 @@ class CRadar {
 		void Render (void);
 
 	private:
+		void ComputeCenter (void);
 		void RenderSetup (void);
 		void RenderBackground (void);
 		void RenderDevice (void);
