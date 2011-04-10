@@ -55,7 +55,7 @@ float				CRadar::radarSizes [3] = {2.0f, 3.0f, 4.0f};
 float				CRadar::sizeOffsets [2][3] = {{-4.0f, -2.0f, 0.0f}, {4.0f, 2.0f, 0.0f}};
 
 CAngleVector	CRadar::aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
-float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, 18.0f, -20.5f, -19.0f}, {17.0f, 20.5f, 18.0f, 20.5f, 19.0f}};
+float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, 18.0f, -20.5f, -19.0f}, {16.0f, 19.5f, 17.0f, 19.5f, 18.0f}};
 
 tSinCosf			CRadar::sinCosRadar [RADAR_SLICES];
 tSinCosf			CRadar::sinCosBlip [BLIP_SLICES];
@@ -137,6 +137,10 @@ transformation.Begin (m_vCenter, mOrient);
 glScalef (m_radius * 1.2f, m_radius * 1.2f, m_radius * 1.2f);
 glColor4f (0.0f, 0.0f, 0.0f, 0.5f);
 ogl.FlushBuffers (GL_POLYGON, RADAR_SLICES, 3);
+#if 0
+glColor4f (0.125f, 0.125f, 0.125f, 0.5f);
+ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
+#endif
 transformation.End ();
 ogl.SetTransform (0);
 // glPopMatrix ();
@@ -370,6 +374,10 @@ int bStencil = ogl.StencilOff ();
 m_offset.v.coord.x = 0.0f;
 m_offset.v.coord.y = /*ogl.m_states.bRender2TextureOk ? 0.0f :*/ yOffs [gameOpts->render.cockpit.nRadarPos][gameStates.render.cockpit.nType];
 m_offset.v.coord.y += sizeOffsets [gameOpts->render.cockpit.nRadarPos][gameOpts->render.cockpit.nRadarSize];
+if (EGI_FLAG (nWeaponIcons, 1, 1, 0) && (gameOpts->render.cockpit.bHUD) || cockpit->ShowAlways ()) {
+	if ((extraGameInfo [0].nWeaponIcons < 3) || ((extraGameInfo [0].nWeaponIcons & 1) == !gameOpts->render.cockpit.nRadarPos))
+		m_offset.v.coord.y += (m_offset.v.coord.y > 0) ? -3.75f : 3.25f;
+	}
 m_offset.v.coord.z = /*ogl.m_states.bRender2TextureOk ? 10.0f :*/ 50.0f;
 m_radius = radarSizes [gameOpts->render.cockpit.nRadarSize] / transformation.m_info.scalef.v.coord.x;
 m_lineWidth = float (CCanvas::Current ()->Width ()) / 640.0f * radarSizes [gameOpts->render.cockpit.nRadarSize] / radarSizes [sizeofa (radarSizes) - 1];
