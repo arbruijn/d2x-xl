@@ -566,7 +566,7 @@ class CParticleImageManager {
 };
 
 extern CParticleImageManager particleImageManager;
-extern tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES];
+extern tParticleImageInfo particleImageInfo [5][PARTICLE_TYPES];
 
 //------------------------------------------------------------------------------
 

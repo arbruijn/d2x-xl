@@ -48,7 +48,7 @@
 
 #if 1
 
-tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
+tParticleImageInfo particleImageInfo [5][PARTICLE_TYPES] = {
 	{{NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
@@ -65,6 +65,17 @@ tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
 	 {NULL, "rain.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smokingfire.tga", 2, 0, 0, 1, 0, 0},
+	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
+	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}},
+
+	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
+	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
+	 {NULL, "rain.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "smokingfire.tga", 2, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
 	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
@@ -112,6 +123,17 @@ tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
 	 {NULL, "rain.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smokingfire.tga", 2, 0, 0, 1, 0, 0},
+	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
+	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}},
+
+	{{NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
+	 {NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
+	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
+	 {NULL, "rain.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "smokingfire.tga", 2, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
 	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
@@ -212,8 +234,8 @@ if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave))
 	return 0;
 
 #if 0
-CTGA tga (pii.bmP);
 if (strstr (pii.szName, "smoke")) {
+	CTGA tga (pii.bmP);
 	tga.PreMultiplyAlpha (0.1f);
 	tga.ConvertToRGB ();
 	}
