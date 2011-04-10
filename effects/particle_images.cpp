@@ -211,7 +211,7 @@ if (pii.bHave)
 if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave))
 	return 0;
 
-#if DBG
+#if 0
 CTGA tga (pii.bmP);
 if (strstr (pii.szName, "smoke")) {
 	tga.PreMultiplyAlpha (0.1f);

@@ -171,7 +171,7 @@ else {
 if (m_bEmissive && (m_nFadeTime <= 0))
 	m_color [0].alpha = 1.0f;
 else if (nParticleSystemType == SIMPLE_SMOKE_PARTICLES)
-	m_color [0].alpha /= 3.5f - float (gameOpts->render.particles.nQuality) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
+	m_color [0].alpha /= 3.5f - float (1 + int (gameOpts->render.particles.nQuality > 1)) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
 else if (nParticleSystemType == SMOKE_PARTICLES)
 	m_color [0].alpha /= colorP ? 3.0f - (color.red + color.green + color.blue) / 3.0f : 2.5f;
 else if ((nParticleSystemType == BUBBLE_PARTICLES) || (nParticleSystemType == RAIN_PARTICLES) || (nParticleSystemType == SNOW_PARTICLES))
@@ -456,7 +456,7 @@ else {
 			else if (char (colorP->alpha) != 2.0f) 
 				m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 			else {
-				if ((m_bEmissive = (gameOpts->render.particles.nQuality == 3))) {
+				if ((m_bEmissive = (gameOpts->render.particles.nQuality > 3))) {
 					m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
 					m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
 					}
@@ -490,7 +490,7 @@ else {
 if (m_bEmissive && (m_nFadeTime <= 0))
 	m_color [0].alpha = 1.0f;
 else if (nParticleSystemType == SIMPLE_SMOKE_PARTICLES)
-	m_color [0].alpha /= 3.5f - float (gameOpts->render.particles.nQuality) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
+	m_color [0].alpha /= 3.5f - float (1 + int (gameOpts->render.particles.nQuality > 1)) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
 else if (nParticleSystemType == SMOKE_PARTICLES)
 	m_color [0].alpha /= colorP ? 3.0f - (color.red + color.green + color.blue) / 3.0f : 2.5f;
 else if ((nParticleSystemType == BUBBLE_PARTICLES) || (nParticleSystemType == RAIN_PARTICLES) || (nParticleSystemType == SNOW_PARTICLES))
@@ -796,7 +796,7 @@ if (m_nType <= SMOKE_PARTICLES) {
 			m_color [0].alpha *= float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 			m_nWidth *= 1.25;
 			m_nHeight *= 1.25;
-			//m_bEmissive = false;
+			m_bEmissive = false;
 			m_nFadeTime = -1;
 			}
 #else
