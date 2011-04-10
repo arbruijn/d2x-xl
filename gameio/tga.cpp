@@ -109,14 +109,14 @@ if ((m_bmP->BPP () == 4) && m_bmP->Buffer ()) {
 
 //------------------------------------------------------------------------------
 
-void CTGA::PreMultiplyAlpha (void)
+void CTGA::PreMultiplyAlpha (float fScale)
 {
 if ((m_bmP->BPP () == 4) && m_bmP->Buffer ()) {
 	tRgbaColorb *rgbaP = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ());
 	float alpha;
 
 	for (int i = m_bmP->Length () / 4; i; i--, rgbaP++) {
-		alpha = float (rgbaP->alpha / 255.0f);
+		alpha = float (rgbaP->alpha / 255.0f) * fScale;
 		rgbaP->red = ubyte (rgbaP->red * alpha + 0.5f);
 		rgbaP->green = ubyte (rgbaP->green * alpha + 0.5f);
 		rgbaP->blue = ubyte (rgbaP->blue * alpha + 0.5f);

@@ -786,14 +786,8 @@ if (m_nType <= SMOKE_PARTICLES) {
 	if (m_nFadeTime > 0) {
 #if 1
 		if (m_nTTL - m_nLife < m_nFadeTime) {
-			if (m_bEmissive) {
-				m_color [0].red *= 0.95f;
-				m_color [0].green *= 0.8f;
-				}
-			else {
-				m_color [0].red *= 0.975f;
-				m_color [0].green *= 0.8f;
-				}
+			m_color [0].red *= 0.95f;
+			m_color [0].green *= 0.8f;
 			}
 		else {
 			m_color [0].red = m_color [1].red;
@@ -802,7 +796,7 @@ if (m_nType <= SMOKE_PARTICLES) {
 			m_color [0].alpha *= float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 			m_nWidth *= 1.25;
 			m_nHeight *= 1.25;
-			m_bEmissive = false;
+			//m_bEmissive = false;
 			m_nFadeTime = -1;
 			}
 #else

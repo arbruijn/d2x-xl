@@ -100,7 +100,7 @@ class CTGA {
 		int MakeSquare (void);
 		int Compress (void);
 		void ConvertToRGB (void);
-		void PreMultiplyAlpha (void);
+		void PreMultiplyAlpha (float fScale = 1.0f);
 		CBitmap* ReadModelTexture (const char *pszFile, int bCustom);
 
 		inline tTGAHeader& Header (void) { return m_header.Data (); }
