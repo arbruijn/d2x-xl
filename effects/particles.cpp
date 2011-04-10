@@ -147,36 +147,23 @@ else {
 				ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
 				m_color [0].alpha = float (3 * a + randN (2 * a)) / 255.0f;
 				} 
-			else if (char (colorP->alpha) != 2.0f) 
-				m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 			else {
-				if ((m_bEmissive = (gameOpts->render.particles.nQuality == 3))) {
-					m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
-					m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
+				if (char (colorP->alpha) == 2) {
+					m_color [0].red = 0.5f + float (rand ()) / float (4 * RAND_MAX);
+					m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (4 * RAND_MAX));
+					m_color [0].blue = 0.0f;
+					m_nFadeTime = 100 + rand () % 100;
+					m_color [1].red *= RANDOM_FADE;
+					m_color [1].green *= RANDOM_FADE;
+					m_color [1].blue *= RANDOM_FADE;
+					m_bEmissive = true;
 					}
-				else {
-#if 1
-					m_color [0].red = 
-					m_color [0].green = 1.0;
-#else
-					m_color [0].red = 0.9f + float (rand ()) / float (10 * RAND_MAX);
-					m_color [0].green = m_color [0].red * (0.9f + float (rand ()) / float (10 * RAND_MAX));
-#endif
-					}
-				m_color [0].blue = 0.0f;
-				m_nFadeTime = 50 + rand () % 150;
-				m_color [1].red *= RANDOM_FADE;
-				m_color [1].green *= RANDOM_FADE;
-				m_color [1].blue *= RANDOM_FADE;
-				m_nWidth *= 2.0f / 3.0f;
-				m_nHeight *= 2.0f / 3.0f;
-				m_color [0].alpha = 0.8f + float (rand ()) / float (5 * RAND_MAX);
+				m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 				}
 			}
 		if (m_bBlowUp && !m_bBright) {
 			fBrightness = 1.0f - fBrightness;
-			if (m_nFadeTime <= 0)
-				m_color [0].alpha += fBrightness * fBrightness / 8.0f;
+			m_color [0].alpha += fBrightness * fBrightness / 8.0f;
 			}
 		}
 	}
@@ -470,8 +457,8 @@ else {
 				m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 			else {
 				if ((m_bEmissive = (gameOpts->render.particles.nQuality == 3))) {
-					m_color [0].red = 0.5f + float (rand ()) / float (4 * RAND_MAX);
-					m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (4 * RAND_MAX));
+					m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
+					m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
 					}
 				else {
 #if 1
@@ -487,8 +474,8 @@ else {
 				m_color [1].red *= RANDOM_FADE;
 				m_color [1].green *= RANDOM_FADE;
 				m_color [1].blue *= RANDOM_FADE;
-				m_nWidth *= 2.0f / 3.0f;
-				m_nHeight *= 2.0f / 3.0f;
+				m_nWidth *= 0.75;
+				m_nHeight *= 0.75;
 				m_color [0].alpha = 0.8f + float (rand ()) / float (5 * RAND_MAX);
 				}
 			}
@@ -813,8 +800,8 @@ if (m_nType <= SMOKE_PARTICLES) {
 			m_color [0].green = m_color [1].green;
 			m_color [0].blue = m_color [1].blue;
 			m_color [0].alpha *= float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
-			m_nWidth *= 1.5;
-			m_nHeight *= 1.5;
+			m_nWidth *= 1.25;
+			m_nHeight *= 1.25;
 			m_bEmissive = false;
 			m_nFadeTime = -1;
 			}
