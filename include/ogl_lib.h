@@ -80,7 +80,7 @@ class COglData {
 		float				zFar;
 		CFloatVector3	depthScale;
 		tScreenScale	screenScale;
-		CFBO				drawBuffers [5];
+		CStaticArray<CFBO, 9> drawBuffers;
 		CFBO*				drawBufferP;
 		int				nPerPixelLights [9];
 		float				lightRads [8];
@@ -116,9 +116,10 @@ class COglData {
 	public:
 		COglData () { Initialize (); }
 		void Initialize (void);
-		inline CFBO* GetDrawBuffer (int nBuffer) { return drawBuffers + nBuffer; }
-		inline CFBO* GetGlowBuffer (int nBuffer) { return drawBuffers + nBuffer + 2; }
-		inline CFBO* GetBlurBuffer (int nBuffer) { return drawBuffers + nBuffer + 3; }
+		inline CFBO* GetDrawBuffer (int nBuffer) { return &drawBuffers [nBuffer]; }
+		inline CFBO* GetGlowBuffer (int nBuffer) { return &drawBuffers [nBuffer + 2]; }
+		inline CFBO* GetBlurBuffer (int nBuffer) { return &drawBuffers [nBuffer + 3]; }
+		inline CFBO* GetDepthBuffer (int nBuffer) { return &drawBuffers [nBuffer + 5]; }
 };
 
 class CViewport {
@@ -295,9 +296,9 @@ class COGL {
 		void ResetTransform (int bForce);
 		void SetScreenMode (void);
 		void GetVerInfo (void);
-		GLuint CreateDepthTexture (int nTMU, int bFBO, int bStencil = 0);
+		GLuint CreateDepthTexture (int nTMU, int bFBO, int nType = 0, int nWidth = -1, int hHeight = -1);
 		void DestroyDepthTexture (int bFBO);
-		GLuint CopyDepthTexture (int bFBO = 0);
+		GLuint CopyDepthTexture (int nId, int nTMU = GL_TEXTURE1);
 		GLuint CreateColorTexture (int nTMU, int bFBO);
 		void DestroyColorTexture (void);
 		GLuint CopyColorTexture (void);
@@ -309,6 +310,9 @@ class COGL {
 		void DestroyDrawBuffers (void);
 		void SetDrawBuffer (int nBuffer, int bFBO);
 		void SetReadBuffer (int nBuffer, int bFBO);
+		void FlushStereoBuffers (int nEffects);
+		void FlushEffects (int nEffects);
+		void FlushShadowMaps (int nEffects);
 		void FlushDrawBuffer (bool bAdditive = false);
 		void ChooseDrawBuffer (void);
 
@@ -487,6 +491,8 @@ class COGL {
 
 		inline CFBO* BlurBuffer (int nBuffer) { return m_data.GetDrawBuffer (nBuffer + 3); }
 
+		inline CFBO* DepthBuffer (int nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDepthBuffer (nBuffer + 5); }
+
 		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
@@ -583,6 +589,8 @@ class COGL {
 		
 		void InitEnhanced3DShader (void);
 		void DeleteEnhanced3DShader (void);
+		void InitShadowMapShader (void);
+		void DeleteShadowMapShader (void);
 };
 
 extern COGL ogl;

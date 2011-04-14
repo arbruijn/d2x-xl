@@ -209,14 +209,12 @@ if (vPos && (nVolume < 10))
 if (!nVolume)
 	return -1;
 if (!pszWAV) {
-#ifdef NEWDEMO
 	if (gameData.demo.nState == ND_STATE_RECORDING) {
 		if (bNoDups)
 			NDRecordSound3DOnce (nSound, nPan, nVolume);
 		else
 			NDRecordSound3D (nSound, nPan, nVolume);
 		}
-#endif
 	nSound = (nSound < 0) ? -nSound : CAudio::XlatSound (nSound);
 	if (nSound < 0)
 		return -1;
@@ -366,10 +364,8 @@ if (!bForever) { 	// Hack to keep sounds from building up...
 	PlaySound (nOrgSound, nSoundClass, nVolume, nPan, 0, -1, pszSound, &objP->info.position.vPos);
 	return -1;
 	}
-#ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordCreateObjectSound (nOrgSound, nObject, maxVolume, maxDistance, nLoopStart, nLoopEnd);
-#endif
 if (!m_objects.Grow ())
 	return -1;
 soundObjP = m_objects.Top ();
@@ -425,10 +421,8 @@ int CAudio::ChangeObjectSound (int nObject, fix nVolume)
 
 	CSoundObject*	soundObjP = m_objects.Buffer ();
 
-#ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordDestroySoundObject (nObject);
-#endif
 
 for (uint i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 	if ((soundObjP->m_flags & (SOF_USED | SOF_LINK_TO_OBJ)) == (SOF_USED | SOF_LINK_TO_OBJ)) {
@@ -500,10 +494,8 @@ int CAudio::DestroyObjectSound (int nObject)
 
 	int				nKilled = 0;
 
-#ifdef NEWDEMO
 if ((nObject >= 0) && (gameData.demo.nState == ND_STATE_RECORDING))
 	NDRecordDestroySoundObject (nObject);
-#endif
 
 if (nObject == LOCALPLAYER.nObject)
 	gameData.multiplayer.bMoving = -1;

@@ -416,15 +416,17 @@ bool CGlowRenderer::Available (int const nType, bool bForce)
 if (nType == GLOW_SHIELDS)
 	return false;
 #endif
-if ((GLOW_FLAGS & nType) == 0)
-	return false;
 if (!gameOpts->render.bUseShaders)
+	return false;
+if (gameStates.render.nShadowMap > 0)
 	return false;
 if (!ogl.m_states.bGlowRendering)
 	return false;
 if (!gameOpts->render.effects.bEnabled)
 	return false;
 if (gameStates.render.cameras.bActive && !gameOpts->render.cameras.bHires)
+	return false;
+if ((GLOW_FLAGS & nType) == 0)
 	return false;
 if (!(bForce || gameOpts->render.effects.bGlow))
 	return false;

@@ -330,7 +330,7 @@ return m_data.index [0][0].nActive;
 
 //------------------------------------------------------------------------------
 
-void CLightManager::SetNearestStatic (int nSegment, int bStatic, ubyte nType, int nThread)
+void CLightManager::SetNearestStatic (int nSegment, int bStatic, int nThread)
 {
 	static short nActiveLights [4] = {-1, -1, -1, -1};
 
@@ -700,7 +700,7 @@ if (gameStates.render.nLightingMethod) {
 	short			i, j;
 	CDynLight*	prl;
 
-	for (i = gameStates.render.nMaxLightsPerFace; i; i--, pnl++) {
+	for (i = MAX_NEAREST_LIGHTS /*gameStates.render.nMaxLightsPerFace*/; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
 		if ((prl = RenderLights (j)) && (prl->render.bUsed [nThread] == 3))

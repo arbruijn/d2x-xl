@@ -27,20 +27,11 @@ CCameraManager cameraManager;
 
 int CCamera::CreateBuffer (void)
 {
-#if RENDER2TEXTURE == 1
-if (!OglCreatePBuffer (&m_data.pb, Width (), Height (), 0))
+if (!m_data.fbo.Create (Width (), Height (), m_data.bShadowMap ? 3 : 1))
 	return 0;
-m_data.glTexId = m_data.pb.texId;
-#elif RENDER2TEXTURE == 2
-while (!m_data.fbo.Create (Width (), Height (), cameraManager.m_fboType)) {
-	if (cameraManager.m_fboType == 3)
-		return 0;
-	cameraManager.m_fboType = 3;
-	}
-m_data.glTexId = m_data.fbo.ColorBuffer ();
-#endif
+m_data.glTexId = m_data.bShadowMap ? m_data.fbo.DepthBuffer () : m_data.fbo.ColorBuffer ();
 char szName [20];
-sprintf (szName, "CAM#%04d", m_data.nId);
+sprintf (szName, m_data.bShadowMap ? "SHADOW#%04d" : "CAM#%04d", m_data.nId);
 SetName (szName);
 return 1;
 }
@@ -50,13 +41,8 @@ return 1;
 int CCamera::HaveBuffer (int bCheckTexture)
 {
 if (bCheckTexture)
-#if RENDER2TEXTURE == 1
-	return Texture () ? m_data.Texture ()->PBO ()->Available() : -1;
-return OglPHaveBuffer (&m_data.pb);
-#elif RENDER2TEXTURE == 2
 	return Texture () ? Texture ()->FBO ().Available () : -1;
 return m_data.fbo.Available ();
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -71,13 +57,8 @@ return Texture () && ((int) Texture ()->Handle () > 0);
 int CCamera::EnableBuffer (void)
 {
 ReleaseTexture ();
-#if RENDER2TEXTURE == 1
-if (!OglEnablePBuffer (&m_data.pb))
-	return 0;
-#elif RENDER2TEXTURE == 2
 if (!m_data.fbo.Enable ())
 	return 0;
-#endif
 return 1;
 }
 
@@ -85,19 +66,12 @@ return 1;
 
 int CCamera::DisableBuffer (bool bPrepare)
 {
-#if RENDER2TEXTURE == 1
-if (!OglDisablePBuffer (&m_data.pb))
-	return 0;
-if (!Prepared ())
-	PrepareTexture (&m_data.buffer, 0, -1, 0, &m_data.pb);
-#elif RENDER2TEXTURE == 2
 if (!m_data.fbo.Disable ())
 	return 0;
-if (bPrepare && !Prepared ()) {
+if (!m_data.bShadowMap && bPrepare && !Prepared ()) {
 	SetTranspType (-1);
 	PrepareTexture (0, 0, &m_data.fbo);
 	}
-#endif
 return 1;
 }
 
@@ -108,11 +82,6 @@ int CCamera::BindBuffer (void)
 if ((HaveBuffer (0) != 1) && !CreateBuffer ())
 	return 0;
 ogl.BindTexture (m_data.glTexId);
-#if RENDER2TEXTURE == 1
-#	ifdef _WIN32
-return m_data.pbo.Bind ();
-#	endif
-#endif
 return 1;
 }
 
@@ -122,14 +91,8 @@ int CCamera::ReleaseBuffer (void)
 {
 if (HaveBuffer (0) != 1)
 	return 0;
-#if RENDER2TEXTURE == 1
-if (!m_data.pb.bBound)
-	return 1;
-#endif
-ReleaseTexture ();
-#if RENDER2TEXTURE == 1
-m_data.pb.bBound = 0;
-#endif
+if (!m_data.bShadowMap)
+	ReleaseTexture ();
 return 1;
 }
 
@@ -139,11 +102,7 @@ int CCamera::DestroyBuffer (void)
 {
 if (!HaveBuffer (0))
 	return 0;
-#if RENDER2TEXTURE == 1
-OglDestroyPBuffer (&m_data.pb);
-#elif RENDER2TEXTURE == 2
 m_data.fbo.Destroy ();
-#endif
 return 1;
 }
 
@@ -156,45 +115,10 @@ memset (&m_data, 0, sizeof (m_data));
 
 //------------------------------------------------------------------------------
 
-int Pow2ize (int x);//from ogl.c
-
-int CCamera::Create (short nId, short srcSeg, short srcSide, short tgtSeg, short tgtSide, 
-							CObject *objP, int bShadowMap, int bTeleport)
+void CCamera::Setup (int nId, short srcSeg, short srcSide, short tgtSeg, short tgtSide, CObject *objP, int bTeleport)
 {
-	CAngleVector	a;
-#if 0
-	short*		corners;
-	CFixVector	*pv;
-#endif
+	CAngleVector a;
 
-Init ();
-m_data.nId = nId;
-m_data.bShadowMap = bShadowMap;
-SetWidth (Pow2ize (screen.Width () / (2 - gameOpts->render.cameras.bHires)));
-SetHeight (Pow2ize (screen.Height () / (2 - gameOpts->render.cameras.bHires)));
-SetBPP (4);
-//SetRowSize (max (CCanvas::Current ()->Width (), Width ()));
-#if RENDER2TEXTURE
-if (!CreateBuffer ()) 
-#endif
-{
-#if CAMERA_READPIXELS
-	if (!(Create (Width () * Height () * 4)))
-		return 0;
-	if (gameOpts->render.cameras.bFitToWall || m_data.bTeleport)
-		m_data.screenBuf = Buffer ();
-	else {
-		m_data.screenBuf = new ubyte [CCanvas::Current ()->Width () * CCanvas::Current ()->Height () * 4];
-		if (!m_data.screenBuf) {
-			gameOpts->render.cameras.bFitToWall = 1;
-			m_data.screenBuf = Buffer ();
-			}
-		}
-	memset (Buffer (), 0, Width () * Height () * 4);
-#else
-	return 0;
-#endif
-	}
 if (objP) {
 	m_data.objP = objP;
 	m_data.orient = objP->info.position.mOrient;
@@ -241,6 +165,35 @@ else {
 m_data.nSegment = tgtSeg;
 m_data.nSide = tgtSide;
 m_data.bTeleport = (char) bTeleport;
+}
+
+//------------------------------------------------------------------------------
+
+int Pow2ize (int x);//from ogl.c
+
+int CCamera::Create (short nId, short srcSeg, short srcSide, short tgtSeg, short tgtSide, CObject *objP, int bShadowMap, int bTeleport)
+{
+#if 0
+	short*		corners;
+	CFixVector	*pv;
+#endif
+
+Init ();
+m_data.nId = nId;
+m_data.bShadowMap = bShadowMap;
+#if 0
+SetWidth (Pow2ize (screen.Width () / (2 - gameOpts->render.cameras.bHires)));
+SetHeight (Pow2ize (screen.Height () / (2 - gameOpts->render.cameras.bHires)));
+#else
+int nScreenScale = (bShadowMap || !gameOpts->render.cameras.bHires) ? 2 : 1;
+SetWidth (screen.Width () / nScreenScale);
+SetHeight (screen.Height () / nScreenScale);
+#endif
+SetBPP (4);
+//SetRowSize (max (CCanvas::Current ()->Width (), Width ()));
+if (!CreateBuffer ()) 
+	return 0;
+Setup (nId, srcSeg, srcSide, tgtSeg, tgtSide, objP, bTeleport);
 return 1;
 }
 
@@ -248,7 +201,8 @@ return 1;
 
 void CCamera::Destroy (void)
 {
-ReleaseTexture ();
+this->CBitmap::Destroy ();
+//ReleaseTexture ();
 ogl.DeleteTextures (1, &m_data.glTexId);
 if (m_data.screenBuf && (m_data.screenBuf != Buffer ())) {
 	delete m_data.screenBuf;
@@ -257,10 +211,8 @@ if (m_data.screenBuf && (m_data.screenBuf != Buffer ())) {
 if (Buffer ()) {
 	DestroyBuffer ();
 	}
-#if RENDER2TEXTURE
 if (ogl.m_states.bRender2TextureOk)
 	DestroyBuffer ();
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -296,10 +248,8 @@ else
 		fix	i;
 		float	duImage, dvImage, duFace, dvFace, du, dv,aFace, aImage;
 		int	xFlip, yFlip, rotLeft, rotRight;
-#if RENDER2TEXTURE
 		int	bHaveBuffer = HaveBuffer (1) == 1;
 		int	bFitToWall = 1; //m_data.bTeleport || gameOpts->render.cameras.bFitToWall;
-#endif
 #if DBG
 	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
@@ -472,111 +422,14 @@ int CCamera::Render (void)
 gameStates.render.cameras.bActive = 1;
 if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 	cockpit->Activate (CM_FULL_SCREEN);
-gameData.objs.viewerP = m_data.objP;
 //gameOpts->render.nMaxFPS = 1;
-#if RENDER2TEXTURE
-if (ReleaseBuffer () /*&& ogl.SelectDrawBuffer (-cameraManager.Index (this) - 1)*/) {
-	//int h = gameOpts->render.stereo.nGlasses;
-//	CCanvas::SetCurrent (this);
+if (ReleaseBuffer ()) {
+	CObject* viewerP = gameData.objs.viewerP;
+	gameData.objs.viewerP = m_data.objP;
 	RenderFrame (0, 0);
-//	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
+	gameData.objs.viewerP = viewerP;
 	m_data.bValid = 1;
 	DisableBuffer ();
-	}
-else 
-#	if CAMERA_READPIXELS
-if (Buffer ()) 
-#	endif
-#endif
- {
-	RenderFrame (0, 0);
-	m_data.bValid = 1;
-	ReleaseTexture ();
-#if CAMERA_READPIXELS
-	memset (Buffer (), 0, Width () * Height () * 4);
-	ogl.SetTexturing (false);
-#endif
-	glReadBuffer (GL_BACK);
-	if (gameOpts->render.cameras.bFitToWall || m_data.bTeleport) {
-#if CAMERA_READPIXELS == 0
-		SetTranspType (-1);
-		PrepareTexture (0, 0, NULL);
-		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
-			(CCanvas::Current ()->Width () - Width ()) / 2, 
-			(CCanvas::Current ()->Height () - Height ()) / 2, 
-			Width (), Height (), 0);
-#else
-		ogl.SetReadBuffer (GL_FRONT, 0);
-		glReadPixels (
-			(CCanvas::Current ()->Width () - Width ()) / 2, 
-			(CCanvas::Current ()->Height () - Height ()) / 2, 
-			Width (), Height (), 
-			GL_RGBA, GL_UNSIGNED_BYTE, Buffer ());
-		PrepareTexture (&m_data.buffer, 0, -1, NULL);
-#endif
-		}
-	else {
-#if CAMERA_READPIXELS == 0
-			SetTranspType (-1);
-			PrepareTexture (0, 0, NULL);
-			glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
-				-(Width () - CCanvas::Current ()->Width ()) / 2,
-				-(Height () - CCanvas::Current ()->Height ()) / 2, 
-				Width (), Height (), 0);
-#else
-		char	*pSrc, *pDest;
-		int	dxBuf = (Width () - CCanvas::Current ()->Width ()) / 2;
-		int	dyBuf = (Height () - CCanvas::Current ()->Height ()) / 2;
-		int	wSrc = CCanvas::Current ()->Width () * 4;
-		int	wDest = Width () * 4;
-
-		if (CCanvas::Current ()->Width () == Width ()) {
-			ogl.SetReadBuffer (GL_FRONT, 0);
-			glReadPixels (
-				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (),
-				GL_RGBA, GL_UNSIGNED_BYTE, Buffer () + dyBuf * Width () * 4);
-			}
-		else {
-			ogl.SetReadBuffer (GL_FRONT, 0);
-			glReadPixels (
-				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (),
-				GL_RGBA, GL_UNSIGNED_BYTE, m_data.screenBuf);
-			pSrc = m_data.screenBuf;
-			pDest = Buffer () + (dyBuf - 1) * wDest + dxBuf * 4;
-#	ifndef _WIN32
-			for (dyBuf = CCanvas::Current ()->Height (); dyBuf; dyBuf--, pSrc += wSrc, pDest += wDest)
-				memcpy (pDest, pSrc, wSrc);
-#	else
-			dxBuf = Width () - CCanvas::Current ()->Width ();
-			dyBuf = CCanvas::Current ()->Height ();
-			wSrc /= 4;
-			__asm {
-				push	edi
-				push	esi
-				push	ecx
-				mov	edx,dyBuf
-				mov	esi,pSrc
-				mov	edi,pDest
-				mov	eax,dxBuf
-				shl	eax,2
-				cld
-		copy:
-				mov	ecx,wSrc
-				rep	movsd
-				dec	edx
-				jz		done
-				add	edi,eax
-				jmp	copy
-		done:
-				pop	ecx
-				pop	esi
-				pop	edi
-				}
-#	endif
-			PrepareTexture (&m_data.buffer, 0, -1);
-			}
-#endif
-		}
 	}
 gameStates.render.cameras.bActive = 0;
 return m_data.bValid;
@@ -652,13 +505,15 @@ int CCameraManager::Create (void)
 	CObject	*objP;
 	CTrigger	*triggerP;
 
-if (!(gameStates.app.bD2XLevel && SEGMENTS.Buffer () && OBJECTS.Buffer ()))
+if (!(/*gameStates.app.bD2XLevel &&*/ SEGMENTS.Buffer () && OBJECTS.Buffer ()))
 	return 0;
 #if 0
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return 0;
 #endif
 PrintLog ("   creating cameras\n");
+if (!m_cameras.Create (MAX_CAMERAS))
+	return 0;
 if (!m_faceCameras.Create (LEVEL_FACES))
 	return 0;
 if (!m_objectCameras.Create (LEVEL_OBJECTS))
@@ -667,20 +522,22 @@ m_faceCameras.Clear (0xFF);
 m_objectCameras.Clear (0xFF);
 
 if (gameData.trigs.m_nTriggers) {
-	for (i = 0, wallP = WALLS.Buffer (); (i < gameData.walls.nWalls) && (m_nCameras < MAX_CAMERAS); i++, wallP++) {
+	for (i = 0, wallP = WALLS.Buffer (); (i < gameData.walls.nWalls) && (m_cameras.ToS () < MAX_CAMERAS); i++, wallP++) {
 		t = wallP->nTrigger;
 		if (t >= TRIGGERS.Length ())
 			continue;
 		triggerP = TRIGGERS + t;
 		if (triggerP->m_info.nType == TT_CAMERA) {
 			for (j = 0; j < triggerP->m_nLinks; j++)
-				if (m_cameras [m_nCameras].Create (m_nCameras, (short) wallP->nSegment, (short) wallP->nSide, triggerP->m_segments [j], triggerP->m_sides [j], NULL, 0, 0))
-					SetFaceCamera (triggerP->m_segments [j] * 6 + triggerP->m_sides [j], (char) m_nCameras++);
+				if (m_cameras.Grow () &&
+					 m_cameras.Top ()->Create (m_cameras.ToS () - 1, (short) wallP->nSegment, (short) wallP->nSide, triggerP->m_segments [j], triggerP->m_sides [j], NULL, 0, 0))
+					SetFaceCamera (triggerP->m_segments [j] * 6 + triggerP->m_sides [j], (char) m_cameras.ToS () - 1);
 			}
 #if TELEPORT_CAMERAS
 		else if (/*EGI_FLAG (bTeleporterCams, 0, 0) &&*/ (triggerP->m_info.nType == TT_TELEPORT)) {
-			if (m_cameras [m_nCameras].Create (m_nCameras, triggerP->m_segments [0], triggerP->m_sides [0], (short) wallP->nSegment, (short) wallP->nSide, NULL, 0, 1))
-				SetFaceCamera (wallP->nSegment * 6 + wallP->nSide, (char) m_nCameras++);
+			if (m_cameras.Grow () &&
+				 m_cameras.Top ()->Create (m_cameras.ToS () - 1, triggerP->m_segments [0], triggerP->m_sides [0], (short) wallP->nSegment, (short) wallP->nSide, NULL, 0, 1))
+				SetFaceCamera (wallP->nSegment * 6 + wallP->nSide, (char) m_cameras.ToS () + 1);
 			}
 #endif
 		}
@@ -696,43 +553,36 @@ if (gameData.trigs.m_nObjTriggers) {
 		if (j >= 0)
 			j = j;
 #endif
-		for (; j && (m_nCameras < MAX_CAMERAS); j--, triggerP++) {
+		for (; j && (m_cameras.ToS () < MAX_CAMERAS); j--, triggerP++) {
 			if (triggerP->m_info.nType == TT_CAMERA) {
 				for (k = 0; k < triggerP->m_nLinks; k++)
-					if (m_cameras [m_nCameras].Create (m_nCameras, -1, -1, triggerP->m_segments [k], triggerP->m_sides [k], objP, 0, 0))
-						SetFaceCamera (triggerP->m_segments [k] * 6 + triggerP->m_sides [k], (char) m_nCameras++);
+					if (m_cameras.Grow () &&
+						 m_cameras.Top ()->Create (m_cameras.ToS () - 1, -1, -1, triggerP->m_segments [k], triggerP->m_sides [k], objP, 0, 0))
+						SetFaceCamera (triggerP->m_segments [k] * 6 + triggerP->m_sides [k], (char) m_cameras.ToS () - 1);
 				}
 			}
 		}
 	}
-return m_nCameras;
+return m_cameras.ToS ();
 }
 
 //------------------------------------------------------------------------------
 
 void CCameraManager::Destroy (void)
 {
-#if RENDER2TEXTURE == 1
-if (ogl.m_states.bRender2TextureOk)
-#	ifdef _WIN32
-	wglMakeContextCurrentARB (hGlDC, hGlDC, hGlRC);
-#	else
-	glXMakeCurrent (hGlDC, hGlWindow, hGlRC);
-#	endif
-#endif
 PrintLog ("Destroying cameras\n");
-for (int i = 0; i < m_nCameras; i++)
+for (uint i = 0; i < m_cameras.ToS (); i++)
 	m_cameras [i].Destroy ();
+m_cameras.Destroy ();
 m_faceCameras.Destroy ();
 m_objectCameras.Destroy ();
-m_nCameras = 0;
 }
 
 //------------------------------------------------------------------------------
 
 int CCameraManager::Render (void)
 {
-	int		i;
+	uint		i;
 	CObject	*viewerSave = gameData.objs.viewerP;
 	time_t	t;
 	int		nCamsRendered;
@@ -748,11 +598,13 @@ if (IsMultiGame && !(gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].
 	return 0;
 nCamsRendered = 0;
 t = SDL_GetTicks ();
-for (i = 0; i < m_nCameras; i++) {
-	nWaitFrames = m_cameras [i].Ready (t);
-	if (nWaitFrames && (nMaxWaitFrames < nWaitFrames)) {
-		nMaxWaitFrames = nWaitFrames;
-		m_current = m_cameras + i;
+for (i = 0; i < m_cameras.ToS (); i++) {
+	if (m_cameras [i].Type () != 3) { // 3 -> shadow map
+		nWaitFrames = m_cameras [i].Ready (t);
+		if (nWaitFrames && (nMaxWaitFrames < nWaitFrames)) {
+			nMaxWaitFrames = nWaitFrames;
+			m_current = m_cameras + i;
+			}
 		}
 	}
 if (m_current) {
@@ -772,7 +624,7 @@ return 0;
 
 inline int CCameraManager::GetObjectCamera (int nObject) 
 {
-if (!(m_cameras && m_objectCameras.Buffer ()) || (nObject < 0) || (nObject >= LEVEL_OBJECTS))
+if (!(m_cameras.Buffer () && m_objectCameras.Buffer ()) || (nObject < 0) || (nObject >= LEVEL_OBJECTS))
 	return -1;
 return m_objectCameras [nObject];
 }
@@ -789,7 +641,7 @@ if (m_objectCameras.Buffer () && (nObject >= 0) && (nObject < LEVEL_OBJECTS))
 
 int CCameraManager::GetFaceCamera (int nFace) 
 {
-return (m_cameras && m_faceCameras.Buffer ()) ? m_faceCameras [nFace] : -1;
+return (m_cameras.Buffer () && m_faceCameras.Buffer ()) ? m_faceCameras [nFace] : -1;
 }
 
 //------------------------------------------------------------------------------
@@ -825,7 +677,7 @@ void CCameraManager::ReAlign (void)
 {
 Destroy ();
 Create ();
-for (int i = 0; i < m_nCameras; i++)
+for (uint i = 0; i < m_cameras.ToS (); i++)
 	m_cameras [i].ReAlign ();
 }
 

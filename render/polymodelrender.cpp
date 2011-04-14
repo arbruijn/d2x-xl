@@ -161,6 +161,7 @@ if (!gameStates.render.bBuildModels) {
 	}
 #endif
 
+#if 0
 if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
 	return 1;
 if (!(modelP = GetPolyModel (objP, pos, nModel, flags))) {
@@ -176,10 +177,20 @@ if (gameStates.render.nShadowPass == 2) {
 		}
 	return 1;
 	}
+#else
+if (!(modelP = GetPolyModel (objP, pos, nModel, flags))) {
+	if (!flags && (gameStates.render.nShadowPass != 2) && HaveHiresModel (nModel))
+		bHires = 1;
+	else
+		return 0;
+	}
+#endif
+
 #if 1//DBG
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
+
 nTextures = bHires ? 0 : modelP->LoadTextures (altTextures);
 G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
 gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();

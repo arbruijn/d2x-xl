@@ -74,10 +74,35 @@ if (!++gameStates.render.nFrameCount) {		//wrap!
 
 //------------------------------------------------------------------------------
 
+static void ComputeShadowTextureMatrix (int nLight)
+{
+
+	static float bias [16] = {0.5f, 0.0f, 0.0f, 0.0f,
+									  0.0f, 0.5f, 0.0f, 0.0f,
+									  0.0f, 0.0f, 0.5f, 0.0f,
+									  0.5f, 0.5f, 0.5f, 1.0f};
+	float modelView [16];
+	float projection [16];
+	GLint matrixMode;
+
+glGetIntegerv (GL_MATRIX_MODE, &matrixMode);
+glGetFloatv (GL_MODELVIEW_MATRIX, modelView);
+glGetFloatv (GL_PROJECTION_MATRIX, projection);
+glMatrixMode (GL_TEXTURE);
+glActiveTexture (GL_TEXTURE1 + nLight);
+glLoadMatrixf (bias);
+glMultMatrixf (projection);
+glMultMatrixf (modelView);
+glGetFloatv (GL_TEXTURE_MATRIX, lightManager.ShadowTextureMatrix (nLight).m.vec);
+glMatrixMode (matrixMode);
+}
+
+//------------------------------------------------------------------------------
+
 void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale)
 {
 	short nStartSeg;
-	bool	bPlayer = gameData.objs.viewerP == gameData.objs.consoleP;
+	bool	bPlayer = (gameData.objs.viewerP == &OBJECTS [LOCALPLAYER.nObject]);
 
 gameData.render.mine.viewer = gameData.objs.viewerP->info.position;
 if (xStereoSeparation && bPlayer)
@@ -87,6 +112,8 @@ externalView.SetPos (NULL);
 if (gameStates.render.cameras.bActive) {
 	nStartSeg = gameData.objs.viewerP->info.nSegment;
 	G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale, xStereoSeparation);
+	if (gameStates.render.nShadowMap > 0)
+		ComputeShadowTextureMatrix (gameStates.render.nShadowMap - 1);
 	}
 else {
 	if (!gameStates.render.nWindow && (bPlayer))
@@ -153,12 +180,21 @@ if (nStartSegP)
 int BeginRenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
 PROF_START
+#if 0 //DBG
+gameStates.render.bFullBright = 1;
+#else
+gameStates.render.bFullBright = (gameStates.render.nShadowMap > 0) || (automap.Display () && gameOpts->render.automap.bBright);
+#endif
+ogl.m_states.bStandardContrast = gameStates.app.bNostalgia || IsMultiGame || (ogl.m_states.nContrast == 8);
+ogl.m_states.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass < 3) && !FAST_SHADOWS;
+gameStates.render.bUseCameras = USE_CAMERAS;
+
 if (!nWindow)
 	GetPlayerMslLock ();	// uses rendered object info from previous frame stored in windowRenderedData
 if (!gameStates.render.cameras.bActive)
 	windowRenderedData [nWindow].nObjects = 0;
 ogl.m_states.fAlpha = FADE_LEVELS;
-if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) || gameStates.render.bShadowMaps) {
+if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) || gameStates.render.nShadowMap) {
 	if (!automap.Display ())
 		RenderStartFrame ();
 	}
@@ -173,14 +209,6 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	ogl.SetTransform (0);
 	lightManager.Transform (0, 1);
 	}
-#if 0 //DBG
-gameStates.render.bFullBright = 1;
-#else
-gameStates.render.bFullBright = automap.Display () && gameOpts->render.automap.bBright;
-#endif
-ogl.m_states.bStandardContrast = gameStates.app.bNostalgia || IsMultiGame || (ogl.m_states.nContrast == 8);
-ogl.m_states.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass < 3) && !FAST_SHADOWS;
-gameStates.render.bUseCameras = USE_CAMERAS;
 PROF_END(ptAux);
 return !gameStates.render.cameras.bActive && (gameData.objs.viewerP->info.nType != OBJ_ROBOT);
 }
@@ -247,6 +275,7 @@ gameStates.render.bDoLightmaps = 0;
 }
 
 //------------------------------------------------------------------------------
+// Always needs to be executed, since it resets the face list and sets segment visibility
 
 void ComputeMineLighting (short nStartSeg, fix xStereoSeparation, int nWindow)
 {

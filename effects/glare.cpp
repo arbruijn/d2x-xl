@@ -643,7 +643,7 @@ if (!gameOpts->render.bUseShaders)
 	return false;
 if (ogl.m_states.bDepthBlending < 1)
 	return false;
-if (!ogl.CopyDepthTexture ())
+if (!ogl.CopyDepthTexture (0))
 	return false;
 ogl.m_states.bUseDepthBlending = 1;
 if (dMax < 1)

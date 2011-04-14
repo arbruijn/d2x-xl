@@ -1082,11 +1082,6 @@ for (;;) {
 
 	strcpy(gameData.segs.szLevelFilename, filename);
 
-	//	#ifdef NEWDEMO
-	//	if (gameData.demo.nState == ND_STATE_RECORDING)
-	//		NDRecordStartDemo();
-	//	#endif
-
 	sig = cf.ReadInt ();
 	gameData.segs.nLevelVersion = cf.ReadInt ();
 	gameStates.app.bD2XLevel = (gameData.segs.nLevelVersion >= 10);

@@ -577,6 +577,11 @@ switch (nObjType) {
 
 void SetDynamicLight (void)
 {
+if (!gameOpts->render.debug.bDynamicLight)
+	return;
+if (gameStates.render.bFullBright)
+	return;
+
 	int			iVertex, nv;
 	int			nObject, nVertex, nSegment;
 	int			nRenderVertices;
@@ -587,8 +592,6 @@ void SetDynamicLight (void)
 	fix			xObjIntensity;
 	tRgbaColorf	color;
 
-if (!gameOpts->render.debug.bDynamicLight)
-	return;
 gameData.render.lights.vertexFlags.Clear ();
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 gameData.render.lights.bStartDynColoring = 1;

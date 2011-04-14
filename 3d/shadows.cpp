@@ -1397,7 +1397,7 @@ int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAn
 	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 
 Assert (objP->info.nId < MAX_ROBOT_TYPES);
-if (!gameStates.render.bShadowMaps) {
+if (!gameStates.render.nShadowMap) {
 	if (!POFGatherPolyModelItems (objP, modelDataP, animAngleP, po, 1))
 		return 0;
 	}
@@ -1423,7 +1423,7 @@ if (FAST_SHADOWS) {
 				continue;
 			}
 		gameData.render.shadows.vLightDir [gameData.render.shadows.nLight++] = vLightDir;
-		if (gameStates.render.bShadowMaps)
+		if (gameStates.render.nShadowMap)
 			RenderShadowMap (gameData.render.shadows.lightP);
 		else {
 			gameStates.render.bRendering = 1;

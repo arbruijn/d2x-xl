@@ -30,15 +30,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //returns ptr to data for this CObject, or NULL if none
 tMorphInfo *MorphFindData (CObject *objP)
 {
-	int i;
-
-#ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	gameData.render.morph.objects [0].objP = objP;
 	return &gameData.render.morph.objects [0];
-}
-#endif
-for (i = 0; i < MAX_MORPH_OBJECTS; i++)
+	}
+
+for (int i = 0; i < MAX_MORPH_OBJECTS; i++)
 	if (gameData.render.morph.objects [i].objP == objP)
 		return gameData.render.morph.objects + i;
 return NULL;
@@ -359,10 +356,8 @@ MorphDrawModel (pmP, 0, rType.polyObjInfo.animAngles, light, mdP, ModelId ());
 gameData.render.vertP = NULL;
 transformation.End ();
 
-#ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMorphFrame (mdP);
-#endif
 }
 
 //-------------------------------------------------------------

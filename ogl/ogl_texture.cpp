@@ -275,6 +275,10 @@ bool CTexture::Register (void)
 if (m_bRegistered)
 	return false;	// already registered
 textureManager.Register (this);
+#if DBG
+if (strstr (m_info.bmP->Name (), "SHADOW#"))
+	m_bRegistered = true;
+#endif
 return m_bRegistered = true;
 }
 
@@ -289,7 +293,8 @@ if (m_info.handle && (m_info.handle != GLuint (-1))) {
 	else if (!m_info.bRenderBuffer)
 		TextureError ();
 #endif
-	ogl.DeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
+	if (!m_info.bRenderBuffer)
+		ogl.DeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 	m_info.handle = 0;
 #if 1
 	if (m_info.bmP)
@@ -1465,6 +1470,42 @@ switch (m_info.nType) {
 	}
 return false;
 }
+
+//------------------------------------------------------------------------------
+
+#if DBG_OGL
+
+void COGL::GenTextures (GLsizei n, GLuint *hTextures)
+{
+glGenTextures (n, hTextures);
+#if 0
+if ((*hTextures == DrawBuffer ()->ColorBuffer ()) &&
+	 (hTextures != &DrawBuffer ()->ColorBuffer ()))
+	DestroyDrawBuffers ();
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::DeleteTextures (GLsizei n, GLuint *hTextures)
+{
+#if 0
+if ((*hTextures == DrawBuffer ()->ColorBuffer ()) &&
+	 (hTextures != &DrawBuffer ()->ColorBuffer ()))
+	DestroyDrawBuffers ();
+#endif
+#if DBG
+for (int i = 0; i < n;)
+	if (int (hTextures [i]) < 0)
+		hTextures [i] = hTextures [--n];
+	else
+		i++;
+if (n)
+#endif
+glDeleteTextures (n, hTextures);
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 

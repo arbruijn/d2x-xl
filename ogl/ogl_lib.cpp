@@ -355,8 +355,7 @@ CLEAR (lightRads);
 CLEAR (lightPos);
 bLightmaps = 0;
 nHeadlights = 0;
-drawBufferP = drawBuffers;
-
+drawBufferP = &drawBuffers [0];
 };
 
 //------------------------------------------------------------------------------
@@ -398,139 +397,10 @@ SetStencilTest (false);
 SetLighting (false);
 glDisable (GL_COLOR_MATERIAL);
 ogl.SetDepthWrite (true);
+shaderManager.Deploy (-1);
 ColorMask (1,1,1,1,1);
 if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
 	glDisable (GL_MULTISAMPLE_ARB);
-}
-
-//------------------------------------------------------------------------------
-
-void COGL::SelectTMU (int nTMU, bool bClient)
-{
-#if DBG
-	int	i = nTMU - GL_TEXTURE0;
-
-if ((i < 0) || (i > 3))
-	return;
-#endif
-//SDL_mutexP (semaphore);
-//if (m_data.nTMU [0] != nTMU)
-	{
-	glActiveTexture (nTMU);
-	m_data.nTMU [0] = nTMU - GL_TEXTURE0;
-	}
-if (bClient) {
-//	if (m_data.nTMU [1] != nTMU)
-		glClientActiveTexture (nTMU);
-		m_data.nTMU [1] = nTMU - GL_TEXTURE0;
-	}
-ClearError (0);
-//SDL_mutexV (semaphore);
-}
-
-//------------------------------------------------------------------------------
-
-int COGL::EnableClientState (GLuint nState, int nTMU)
-{
-if (nTMU >= GL_TEXTURE0)
-	SelectTMU (nTMU, true);
-#if TRACK_STATES
-if (m_data.clientStates [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY])
-	return 1;
-#endif
-glEnableClientState (nState);
-#if DBG_OGL
-memset (&m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY]));
-#endif
-GLenum nError = glGetError ();
-if (!nError) {
-#if TRACK_STATES || DBG_OGL
-	m_data.clientStates [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY] = 1;
-#endif
-	return 1;
-	}
-DisableClientState (nState, -1);
-return glGetError () == 0;
-}
-
-//------------------------------------------------------------------------------
-
-int COGL::DisableClientState (GLuint nState, int nTMU)
-{
-if (nTMU >= GL_TEXTURE0)
-	SelectTMU (nTMU, true);
-#if TRACK_STATES
-if (!m_data.clientStates [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY])
-#endif
-	{
-	glDisableClientState (nState);
-#if TRACK_STATES || DBG_OGL
-	m_data.clientStates [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY] = 0;
-#endif
-	}
-#if DBG_OGL
-//memset (&m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY]));
-#endif
-return glGetError () == 0;
-}
-
-//------------------------------------------------------------------------------
-
-int COGL::EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
-{
-if (nTMU >= GL_TEXTURE0) {
-	SelectTMU (nTMU, true);
-	SetTexturing (true);
-	}
-if (!bNormals)
-	DisableClientState (GL_NORMAL_ARRAY);
-else if (!EnableClientState (GL_NORMAL_ARRAY, -1)) {
-	DisableClientStates (0, 0, 0, -1);
-	return 0;
-	}
-if (!bTexCoord)
-	DisableClientState (GL_TEXTURE_COORD_ARRAY);
-else if (!EnableClientState (GL_TEXTURE_COORD_ARRAY, -1)) {
-	DisableClientStates (0, 0, 0, -1);
-	return 0;
-	}
-if (!bColor)
-	DisableClientState (GL_COLOR_ARRAY);
-else if (!EnableClientState (GL_COLOR_ARRAY, -1)) {
-	DisableClientStates (bTexCoord, 0, 0, -1);
-	return 0;
-	}
-return EnableClientState (GL_VERTEX_ARRAY, -1);
-}
-
-//------------------------------------------------------------------------------
-
-void COGL::DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
-{
-if (nTMU >= GL_TEXTURE0)
-	SelectTMU (nTMU, true);
-if (bNormals)
-	DisableClientState (GL_NORMAL_ARRAY);
-if (bTexCoord)
-	DisableClientState (GL_TEXTURE_COORD_ARRAY);
-if (bColor)
-	DisableClientState (GL_COLOR_ARRAY);
-DisableClientState (GL_VERTEX_ARRAY);
-SetTexturing (false);
-}
-
-//------------------------------------------------------------------------------
-
-void COGL::ResetClientStates (int nFirst)
-{
-for (int i = 3; i >= nFirst; i--) {
-	DisableClientStates (1, 1, 1, GL_TEXTURE0 + i);
-	SetTexturing (true);
-	ogl.BindTexture (0);
-	if (i)
-		SetTexturing (false);
-	}
-memset (m_data.clientStates + nFirst, 0, (4 - nFirst) * sizeof (m_data.clientStates [0]));
 }
 
 //------------------------------------------------------------------------------
@@ -651,44 +521,6 @@ else //GLASSES_SHUTTER or NONE
 
 //------------------------------------------------------------------------------
 
-void COGL::ChooseDrawBuffer (void)
-{
-if (gameStates.render.bBriefing || gameStates.render.nWindow) {
-	gameStates.render.bRenderIndirect = 0;
-	SetDrawBuffer (GL_BACK, 0);
-	}
-else if (gameStates.render.cameras.bActive) {
-	SelectDrawBuffer (-cameraManager.Current () - 1);
-	gameStates.render.bRenderIndirect = 0;
-	}
-else {
-	int i = Enhance3D ();
-	if (i < 0) {
-		ogl.ClearError (0);
-		SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
-		if (ogl.ClearError (0))
-			gameOpts->render.stereo.nGlasses = 0;
-		}	
-	else {
-#if 0
-		gameStates.render.bRenderIndirect = (ogl.m_states.bRender2TextureOk > 0); 
-		if (gameStates.render.bRenderIndirect) 
-			SelectDrawBuffer (m_data.xStereoSeparation > 0);
-		else
-			SetDrawBuffer (GL_BACK, 0);
-#else
-		gameStates.render.bRenderIndirect = (postProcessManager.Effects () != NULL) || (m_data.xStereoSeparation && (i > 0));
-		if (gameStates.render.bRenderIndirect) 
-			SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
-		else
-			SetDrawBuffer (GL_BACK, 0);
-#endif
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
 #define GL_INFINITY	0
 
 void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
@@ -697,13 +529,14 @@ void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 
 m_data.xStereoSeparation = xStereoSeparation;
 ChooseDrawBuffer ();
+#if 0
 if (gameStates.render.nShadowPass) {
 #if GL_INFINITY
 	float	infProj [4][4];	//projection to infinity
 #endif
 
 	if (gameStates.render.nShadowPass == 1) {	//render unlit/final scene
-		if (!gameStates.render.bShadowMaps) {
+		if (!gameStates.render.nShadowMap) {
 #if GL_INFINITY
 			glMatrixMode (GL_PROJECTION);
 			memset (infProj, 0, sizeof (infProj));
@@ -728,7 +561,7 @@ if (gameStates.render.nShadowPass) {
 			}
 		}
 	else if (gameStates.render.nShadowPass == 2) {	//render occluders / shadow maps
-		if (gameStates.render.bShadowMaps) {
+		if (gameStates.render.nShadowMap) {
 			ColorMask (0,0,0,0,0);
 			ogl.SetPolyOffsetFill (true);
 			glPolygonOffset (1.0f, 2.0f);
@@ -767,7 +600,7 @@ if (gameStates.render.nShadowPass) {
 			}
 		}
 	else if (gameStates.render.nShadowPass == 3) { //render final lit scene
-		if (gameStates.render.bShadowMaps) {
+		if (gameStates.render.nShadowMap) {
 			ogl.SetPolyOffsetFill (false);
 			SetDepthMode (GL_LESS);
 			}
@@ -803,7 +636,9 @@ if (gameStates.render.nShadowPass) {
 	glLoadIdentity ();
 #endif
 	}
-else {
+else 
+#endif
+	{
 	r_polyc =
 	r_tpolyc =
 	r_tvertexc =
@@ -827,14 +662,26 @@ else {
 		ogl.SetScissorTest (false);
 	if (gameStates.render.nRenderPass < 0) {
 		ogl.SetDepthWrite (true);
-		ColorMask (1,1,1,1,1);
-		glClearColor (0,0,0,1);
-#if 1
-		if (bResetColorBuf && (automap.Display () || gameStates.render.bRenderIndirect))
+		glClearDepth (1.0);
+		if (gameStates.render.nShadowMap) {
+#if 0
+			ColorMask (1, 1, 1, 1, 0);
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		else
-#endif
+#else
+			ColorMask (0, 0, 0, 0, 0);
+			//glClearDepth (0.5);
 			glClear (GL_DEPTH_BUFFER_BIT);
+#endif
+			}
+		else {
+			ColorMask (1, 1, 1, 1, 1);
+			if (bResetColorBuf && (automap.Display () || gameStates.render.bRenderIndirect)) {
+				glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+				glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				}
+			else
+				glClear (GL_DEPTH_BUFFER_BIT);
+			}
 		}
 	else if (gameStates.render.nRenderPass) {
 		SetDepthWrite (false);
@@ -858,7 +705,12 @@ else {
 	else {
 		SetFaceCulling (true);
 		glFrontFace (GL_CW);	//Weird, huh? Well, D2 renders everything reverse ...
-		SetCullMode ((gameStates.render.bRearView < 0) ? GL_FRONT : GL_BACK);
+#if 0
+		if (gameStates.render.nShadowMap)
+			SetCullMode ((gameStates.render.bRearView < 0) ? GL_BACK : GL_FRONT);
+		else
+#endif
+			SetCullMode ((gameStates.render.bRearView < 0) ? GL_FRONT : GL_BACK);
 		SetDepthTest (true);
 		SetDepthMode (GL_LESS);
 		SetAlphaTest (true);
@@ -1085,37 +937,6 @@ oglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
 
 //------------------------------------------------------------------------------
 
-#if 0
-
-GLuint COGL::CreateStencilTexture (int nTMU, int bFBO)
-{
-	GLuint	hBuffer;
-
-if (nTMU > 0)
-	SelectTMU (nTMU);
-ogl.SetTexturing (true);
-GenTextures (1, &hBuffer);
-if (glGetError ())
-	return hDepthBuffer = 0;
-ogl.BindTexture (hBuffer);
-glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, m_states.nCurWidth, m_states.nCurHeight,
-				  0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-if (glGetError ()) {
-	DeleteTextures (1, &hBuffer);
-	return hBuffer = 0;
-	}
-return hBuffer;
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
 int COGL::StencilOff (void)
 {
 if (!SHOW_SHADOWS || (gameStates.render.nShadowPass != 3))
@@ -1134,42 +955,6 @@ if (bStencil) {
 	m_states.nStencil++;
 	}
 }
-
-//------------------------------------------------------------------------------
-
-#if DBG_OGL
-
-void COGL::GenTextures (GLsizei n, GLuint *hTextures)
-{
-glGenTextures (n, hTextures);
-#if 0
-if ((*hTextures == DrawBuffer ()->ColorBuffer ()) &&
-	 (hTextures != &DrawBuffer ()->ColorBuffer ()))
-	DestroyDrawBuffers ();
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-void COGL::DeleteTextures (GLsizei n, GLuint *hTextures)
-{
-#if 0
-if ((*hTextures == DrawBuffer ()->ColorBuffer ()) &&
-	 (hTextures != &DrawBuffer ()->ColorBuffer ()))
-	DestroyDrawBuffers ();
-#endif
-#if DBG
-for (int i = 0; i < n;)
-	if (int (hTextures [i]) < 0)
-		hTextures [i] = hTextures [--n];
-	else
-		i++;
-if (n)
-#endif
-glDeleteTextures (n, hTextures);
-}
-
-#endif
 
 //------------------------------------------------------------------------------
 //eof

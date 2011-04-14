@@ -810,12 +810,14 @@ return SortFaces ();
 
 void RenderFaceList (int nType)
 {
-BeginRenderFaces (nType);
-gameData.render.mine.nVisited++;
-RenderSegments (nType, 0);
-if (nType == RENDER_TYPE_GEOMETRY)
-	RenderHeadlights (nType);
-EndRenderFaces ();
+if (gameStates.render.nShadowMap == 0) {
+	BeginRenderFaces (nType);
+	gameData.render.mine.nVisited++;
+	RenderSegments (nType, 0);
+	if (nType == RENDER_TYPE_GEOMETRY)
+		RenderHeadlights (nType);
+	EndRenderFaces ();
+	}
 }
 
 //------------------------------------------------------------------------------

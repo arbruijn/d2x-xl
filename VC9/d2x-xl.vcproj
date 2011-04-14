@@ -8650,7 +8650,19 @@
 					Name="Source Files"
 					>
 					<File
+						RelativePath="..\ogl\clientstates.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\ogl\drawbuffer.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\ogl\fbuffer.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\ogl\flushbuffers.cpp"
 						>
 					</File>
 					<File
@@ -8663,10 +8675,6 @@
 					</File>
 					<File
 						RelativePath="..\ogl\ogl_bitmap.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\ogl\ogl_buffers.cpp"
 						>
 					</File>
 					<File
@@ -8718,11 +8726,23 @@
 						>
 					</File>
 					<File
+						RelativePath="..\ogl\rendertextures.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\ogl\screenshot.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\ogl\sdlgl.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\ogl\shadowmap.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\ogl\stereo.cpp"
 						>
 					</File>
 				</Filter>
@@ -10497,11 +10517,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

@@ -920,6 +920,7 @@ class CTextureStates {
 		int bHaveMaskShader;
 		int bHaveGrayScaleShader;
 		int bHaveEnhanced3DShader;
+		int bHaveShadowMapShader;
 	};
 
 //------------------------------------------------------------------------------
@@ -1060,7 +1061,7 @@ class CRenderStates {
 		int nShadowPass;
 		int nShadowBlurPass;
 		int bBlurPass;
-		int bShadowMaps;
+		int nShadowMap;
 		int bLoResShadows;
 		int bUseCameras;
 		int bUseDynLight;

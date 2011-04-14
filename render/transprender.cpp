@@ -350,6 +350,9 @@ return SplitPoly (split, nDepth + 1) && SplitPoly (split + 1, nDepth + 1);
 
 int CTransparencyRenderer::AddObject (CObject *objP)
 {
+if (gameStates.render.nShadowMap)
+	return 0;
+
 	tTranspObject	item;
 //	CFixVector		vPos;
 
@@ -368,6 +371,9 @@ int CTransparencyRenderer::AddPoly (CSegFace *faceP, tFaceTriangle *triP, CBitma
 												tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 												short nSegment)
 {
+if (gameStates.render.nShadowMap)
+	return 0;
+
 	tTranspPoly	item;
 	int			i;
 	float			s = gameStates.render.grAlpha;
@@ -438,6 +444,9 @@ else
 
 int CTransparencyRenderer::AddFaceTris (CSegFace *faceP)
 {
+if (gameStates.render.nShadowMap)
+	return 0;
+
 	tFaceTriangle*	triP;
 	CFloatVector	vertices [3];
 	int				h, i, j, bAdditive = FaceIsAdditive (faceP);
@@ -474,6 +483,9 @@ return 1;
 
 int CTransparencyRenderer::AddFaceQuads (CSegFace *faceP)
 {
+if (gameStates.render.nShadowMap)
+	return 0;
+
 	CFloatVector	vertices [4];
 	int				i, j, bAdditive = FaceIsAdditive (faceP);
 	CBitmap*			bmP = faceP->m_info.bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
@@ -506,6 +518,9 @@ return AddPoly (faceP, NULL, bmP,
 int CTransparencyRenderer::AddSprite (CBitmap *bmP, const CFixVector& position, tRgbaColorf *color,
 												  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad)
 {
+if (gameStates.render.nShadowMap)
+	return 0;
+
 	tTranspSprite	item;
 
 item.bmP = bmP;
@@ -528,6 +543,9 @@ return Add (tiSprite, &item, sizeof (item), position);
 
 int CTransparencyRenderer::AddSpark (const CFixVector& position, char nType, int nSize, char nFrame)
 {
+if (gameStates.render.nShadowMap)
+	return 0;
+
 	tTranspSpark	item;
 //	CFixVector		vPos;
 
@@ -545,7 +563,10 @@ return Add (tiSpark, &item, sizeof (item), position);
 int CTransparencyRenderer::AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, 
 												  CObject *objP, char bAdditive, fix nSize)
 {
-	tTranspSphere	item;
+if (gameStates.render.nShadowMap)
+	return 0;
+
+tTranspSphere	item;
 	//CFixVector		vPos;
 item.nType = nType;
 item.color.red = red;
@@ -565,6 +586,9 @@ return Add (tiSphere, &item, sizeof (item), objP->info.position.vPos);
 
 int CTransparencyRenderer::AddParticle (CParticle *particle, float fBrightness, int nThread)
 {
+if (gameStates.render.nShadowMap)
+	return 0;
+
 	tTranspParticle	item;
 //	fix					z;
 
@@ -582,6 +606,9 @@ return Add (tiParticle, &item, sizeof (item), particle->m_vPos, 10);
 
 int CTransparencyRenderer::AddLightning (CLightning *lightningP, short nDepth)
 {
+if (gameStates.render.nShadowMap)
+	return 0;
+
 	tTranspLightning	item;
 	bool					bSwap;
 	//CFixVector			vPos;
@@ -613,6 +640,9 @@ return 1;
 
 int CTransparencyRenderer::AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP)
 {
+if (gameStates.render.nShadowMap)
+	return 0;
+
 	tTranspLightTrail	item;
 	int					i, j, iMin = 0;
 	CFixVector			v;
@@ -645,6 +675,9 @@ return Add (tiLightTrail, &item, sizeof (item), v, 0, false, 0);
 
 int CTransparencyRenderer::AddThruster (CObject* objP, tThrusterInfo* infoP, int nThruster)
 {
+if (gameStates.render.nShadowMap)
+	return 0;
+
 	tTranspThruster item;
 
 item.objP = objP;

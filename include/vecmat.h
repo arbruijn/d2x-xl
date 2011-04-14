@@ -1429,9 +1429,9 @@ class __pack__ CFloatMatrix {
 		const CFloatMatrix& Assign (CFloatMatrix& other);
 
 		static float* Transpose (float* dest, const CFloatMatrix& src);
-#if 0
-		float& operator[] (size_t i);
 
+		float& operator[] (size_t i);
+#if 0
 		inline const CFloatVector Mat (size_t i) const { return m.mat [i]; }
 		inline const CFloatVector R (void) const { return m.dir.r; }
 		inline const CFloatVector U (void) const { return m.dir.u; }
@@ -1470,7 +1470,7 @@ inline CFloatMatrix& CFloatMatrix::Transpose (CFloatMatrix& m) {
 // -----------------------------------------------------------------------------
 // CFloatMatrix member ops
 
-//inline float& CFloatMatrix::operator[] (size_t i) { return m.vec [i]; }
+inline float& CFloatMatrix::operator[] (size_t i) { return m.vec [i]; }
 
 inline const CFloatVector CFloatMatrix::operator* (const CFloatVector& v)
 {

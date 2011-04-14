@@ -326,22 +326,8 @@ if (frames) {
 		frames [i].ReleaseTexture ();
 		}
 	}
-else if (m_info.texP && (m_info.texP == &m_info.texture)) {
-#if RENDER2TEXTURE == 2
-	if (m_info.texP->IsRenderBuffer ())
-		ogl.ReleaseTexture (m_info.texP->Handle ());
-	else
-#elif RENDER2TEXTURE == 1
-#	ifdef _WIN32
-	if (m_info.texP->bFrameBuf)
-		m_info.texP->pbo.Destroy ();
-	else
-#	endif
-#endif
-		{
-		m_info.texP->Destroy ();
-		}
-	}
+else if (m_info.texP && (m_info.texP == &m_info.texture)) 
+	m_info.texP->Destroy ();
 else
 	m_info.texP = &m_info.texture;
 }

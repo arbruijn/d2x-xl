@@ -1225,7 +1225,6 @@ switch (objP->info.renderType) {
 		PrintLog ("Unknown renderType <%d>\n", objP->info.renderType);
 	}
 
-#ifdef NEWDEMO
 if (objP->info.renderType != RT_NONE)
 	if (gameData.demo.nState == ND_STATE_RECORDING) {
 		if (!gameData.demo.bWasRecorded [nObject]) {
@@ -1233,7 +1232,7 @@ if (objP->info.renderType != RT_NONE)
 			gameData.demo.bWasRecorded [nObject] = 1;
 		}
 	}
-#endif
+
 gameStates.render.detail.nMaxLinearDepth = mldSave;
 gameData.render.nTotalObjects++;
 ogl.ClearError (0);

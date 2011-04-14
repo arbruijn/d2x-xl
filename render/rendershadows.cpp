@@ -254,6 +254,8 @@ for (; gameData.render.shadows.nShadowMaps;)
 
 //------------------------------------------------------------------------------
 
+extern int shadowMaps [4];
+
 void ApplyShadowMaps (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
 	static float mTexBiasf [] = {
@@ -292,8 +294,9 @@ for (i = 0; i < 4; i++)
 
 glGetFloatv (GL_PROJECTION_MATRIX, mProjection.m.vec);
 glMatrixMode (GL_TEXTURE);
-for (i = 0, cameraP = gameData.render.shadows.shadowMaps; i < 1/*gameData.render.shadows.nShadowMaps*/; i++) {
-	ogl.BindTexture (cameraP->FrameBuffer ().ColorBuffer ());
+for (i = 0; i < lightManager.LightCount (2); i++) {
+	cameraP = cameraManager [shadowMaps [0]];
+	ogl.BindTexture (cameraP->FrameBuffer ().DepthBuffer ());
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
 	glLoadMatrixf (mTexBiasf);
@@ -315,7 +318,6 @@ glDisable (GL_TEXTURE_GEN_Q);
 ogl.SelectTMU (GL_TEXTURE0);	
 ogl.SetTexturing (false);
 #endif
-DestroyShadowMaps ();
 }
 
 //------------------------------------------------------------------------------
@@ -394,7 +396,7 @@ if (!bShadowTest)
 	{
 	gameStates.render.nShadowPass = 3;
 	ogl.StartFrame (0, 0, xStereoSeparation);
-	if	(gameStates.render.bShadowMaps) {
+	if	(gameStates.render.nShadowMap) {
 #if DBG
 		if (gameStates.render.bChaseCam)
 #else	

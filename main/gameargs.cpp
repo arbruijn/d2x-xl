@@ -345,10 +345,6 @@ void EvalRenderArgs (void)
 {
 	int	t;
 
-#if FBO_DRAW_BUFFER
-if ((t = FindArg ("-render_indirect")))
-	gameStates.render.bRenderIndirect = NumArg (t, 1);
-#endif
 if ((t = FindArg ("-hires_textures")))
 	gameOptions [0].render.textures.bUseHires [0] =
 	gameOptions [0].render.textures.bUseHires [1] = NumArg (t, 1);

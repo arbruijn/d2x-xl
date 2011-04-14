@@ -64,6 +64,7 @@
 
 int enhance3DShaderProg [2][2][3] = {{{-1,-1,-1},{-1,-1,-1}},{{-1,-1,-1},{-1,-1,-1}}};
 int duboisShaderProg = -1;
+int shadowShaderProg = -1;
 
 int nScreenDists [10] = {1, 2, 5, 10, 15, 20, 30, 50, 70, 100};
 float nDeghostThresholds [4][2] = {{1.0f, 1.0f}, {0.8f, 0.8f}, {0.7f, 0.7f}, {0.6f, 0.6f}};
@@ -185,7 +186,6 @@ if (!gameStates.menus.nInMenu || bForce) {
 
 void COGL::CreateDrawBuffer (int nType)
 {
-#if FBO_DRAW_BUFFER
 if (!m_states.bRender2TextureOk)
 	return;
 if (!gameStates.render.bRenderIndirect && (nType >= 0))
@@ -194,14 +194,12 @@ if (DrawBuffer ()->Handle ())
 	return;
 PrintLog ("creating draw buffer\n");
 DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType);
-#endif
 }
 
 //------------------------------------------------------------------------------
 
 void COGL::DestroyDrawBuffer (void)
 {
-#if FBO_DRAW_BUFFER
 #	if 1
 	static int bSemaphore = 0;
 
@@ -216,21 +214,18 @@ if (m_states.bRender2TextureOk && DrawBuffer () && DrawBuffer ()->Handle ()) {
 #	if 1
 bSemaphore--;
 #	endif
-#endif
 }
 
 //------------------------------------------------------------------------------
 
 void COGL::DestroyDrawBuffers (void)
 {
-for (int i = sizeofa (m_data.drawBuffers) - 1; i > 0; i--) {
+for (int i = m_data.drawBuffers.Length () - 1; i > 0; i--) {
 	if (m_data.drawBuffers [i].Handle ()) {
 		SelectDrawBuffer (i);
 		DestroyDrawBuffer ();
 		}
 	}
-SelectDrawBuffer (0);
-DestroyDrawBuffer ();
 }
 
 //------------------------------------------------------------------------------
@@ -244,7 +239,7 @@ if (bSemaphore)
 	return;
 bSemaphore++;
 #endif
-#if FBO_DRAW_BUFFER
+
 if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && DrawBuffer ()->Handle ()) {
 	if (!DrawBuffer ()->Active ()) {
 		if (DrawBuffer ()->Enable ()) {
@@ -263,9 +258,7 @@ else {
 		}
 	glDrawBuffer (m_states.nDrawBuffer = nBuffer);
 	}
-#else
-glDrawBuffer (m_states.nDrawBuffer = nBuffer);
-#endif
+
 #if 1
 bSemaphore--;
 #endif
@@ -275,7 +268,6 @@ bSemaphore--;
 
 void COGL::SetReadBuffer (int nBuffer, int bFBO)
 {
-#if FBO_DRAW_BUFFER
 if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && DrawBuffer ()->Handle ()) {
 	if (DrawBuffer ()->Active () || DrawBuffer ()->Enable ())
 		glReadBuffer (GL_COLOR_ATTACHMENT0_EXT);
@@ -287,19 +279,18 @@ else {
 		DrawBuffer ()->Disable ();
 	glReadBuffer (nBuffer);
 	}
-#else
-glReadBuffer (nBuffer);
-#endif
 }
 
 //------------------------------------------------------------------------------
 
 int COGL::SelectDrawBuffer (int nBuffer) 
 { 
+//if (gameStates.render.nShadowMap > 0)
+//	nBuffer = gameStates.render.nShadowMap + 5;
 int nPrevBuffer = (m_states.nCamera < 0) 
 						? m_states.nCamera 
 						: (m_data.drawBufferP && m_data.drawBufferP->Active ()) 
-							? int (m_data.drawBufferP - m_data.drawBuffers) 
+							? int (m_data.drawBufferP - m_data.drawBuffers.Buffer ()) 
 							: 0x7FFFFFFF;
 if (nBuffer != nPrevBuffer) {
 	if (m_data.drawBufferP)
@@ -307,13 +298,13 @@ if (nBuffer != nPrevBuffer) {
 	if (nBuffer >= 0) {
 		m_states.nCamera = 0;
 		m_data.drawBufferP = m_data.GetDrawBuffer (nBuffer); 
+		CreateDrawBuffer ((nBuffer < 2) ? 1 : (nBuffer < 3) ? -1 : -2);
 		}
 	else {
 		m_states.nCamera = nBuffer;
 		m_data.drawBufferP = &cameraManager.Camera (-nBuffer - 1)->FrameBuffer ();
 		}
 	}
-CreateDrawBuffer ((nBuffer < 2) ? 1 : (nBuffer < 3) ? -1 : -2);
 m_data.drawBufferP->Enable (false);
 return nPrevBuffer;
 }
@@ -337,63 +328,191 @@ SetDrawBuffer (GL_BACK, 1);
 
 //------------------------------------------------------------------------------
 
-void COGL::FlushDrawBuffer (bool bAdditive)
+void COGL::ChooseDrawBuffer (void)
 {
-if (HaveDrawBuffer ()) {
-	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
-	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+if (gameStates.render.bBriefing || gameStates.render.nWindow) {
+	gameStates.render.bRenderIndirect = 0;
+	SetDrawBuffer (GL_BACK, 0);
+	}
+else if (gameStates.render.cameras.bActive) {
+	SelectDrawBuffer (-cameraManager.Current () - 1);
+	gameStates.render.bRenderIndirect = 0;
+	}
+else {
+	int i = Enhance3D ();
+	if (i < 0) {
+		ogl.ClearError (0);
+		SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
+		if (ogl.ClearError (0))
+			gameOpts->render.stereo.nGlasses = 0;
+		}	
+	else {
+#if 0
+		gameStates.render.bRenderIndirect = (ogl.m_states.bRender2TextureOk > 0); 
+		if (gameStates.render.bRenderIndirect) 
+			SelectDrawBuffer (m_data.xStereoSeparation > 0);
+		else
+			SetDrawBuffer (GL_BACK, 0);
+#else
+		gameStates.render.bRenderIndirect = (postProcessManager.Effects () != NULL) 
+														|| (m_data.xStereoSeparation && (i > 0)) 
+														|| (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1, 0) != 0));
+		if (gameStates.render.bRenderIndirect) 
+			SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
+		else
+			SetDrawBuffer (GL_BACK, 0);
+#endif
+		}
+	}
+}
 
-	int bStereo = 0;
-	bool bHaveEffects = postProcessManager.HaveEffects ();
+//------------------------------------------------------------------------------
 
-	if (bHaveEffects)
+static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
+static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+
+void COGL::FlushEffects (int nEffects)
+{
+//ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
+if (nEffects & 1) {
+	postProcessManager.Setup ();
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	ogl.BindTexture (DrawBuffer ((nEffects & 2) ? 2 : 0)->ColorBuffer ());
+	OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
+	OglVertexPointer (2, GL_FLOAT, 0, verts);
+	if ((nEffects & 2) == 0)
+		SetDrawBuffer (GL_BACK, 0);
+	else {
+		SelectDrawBuffer (1);
+		SetDrawBuffer (GL_BACK, 1);
+		}
+	postProcessManager.Render ();
+	}
+}
+
+//------------------------------------------------------------------------------
+
+extern int shadowMaps [4];
+
+void COGL::FlushShadowMaps (int nEffects)
+{
+	static const char* szShadowMap [] = {"shadow0", "shadow1", "shadow2", "shadow3"};
+
+if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1, 0) != 0)) {
+#if 1
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	ogl.BindTexture (DrawBuffer ((nEffects & 1) ? 1 : (nEffects & 2) ? 2 : 0)->ColorBuffer ());
+	OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
+	OglVertexPointer (2, GL_FLOAT, 0, verts);
+	SetDrawBuffer (GL_BACK, 0);
+	GLint matrixMode;
+	glGetIntegerv (GL_MATRIX_MODE, &matrixMode);
+	GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (shadowShaderProg));
+	if (shaderProg) {
+		shaderManager.Rebuild (shaderProg);
+		int i;
+		for (i = 0; i < lightManager.LightCount (2); i++) {
+			glMatrixMode (GL_TEXTURE);
+			ogl.SelectTMU (GL_TEXTURE1 + i);
+			ogl.SetTexturing (true);
+			glLoadMatrixf (lightManager.ShadowTextureMatrix (i));
+#if 1
+			//ogl.BindTexture (cameraManager [shadowMaps [i]]->DrawBuffer ());
+			ogl.BindTexture (cameraManager [shadowMaps [i]]->FrameBuffer ().DepthBuffer ());
+#else
+			ogl.BindTexture (cameraManager [shadowMaps [i]]->FrameBuffer ().ColorBuffer ());
+#endif
+			glUniform1i (glGetUniformLocation (shaderProg, szShadowMap [i]), i + 1);
+			}
+		glUniform1i (glGetUniformLocation (shaderProg, "nLights"), i);
+		}
+	glMatrixMode (matrixMode);
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	OglDrawArrays (GL_QUADS, 0, 4);
+	ogl.SetBlendMode (0);
+#else
+#	if 0
+	glMatrixMode (GL_PROJECTION);
+	glLoadIdentity ();
+	glOrtho (-screen.Width (), screen.Width (), -screen.Height (), screen.Height (), 1, 20);
+	glMatrixMode (GL_MODELVIEW);
+	glLoadIdentity ();
+	glTranslatef (0, 0, -1);
+	glColor4f (1, 1, 1, 1);
+#	else
+	//ogl.InitState ();
+	//glScalef (0, -1, 0);
+#	endif
+	CCamera* cameraP = cameraManager [shadowMaps [0]];
+	if (cameraP) {
+		shaderManager.Deploy (-1);
+		SetDrawBuffer (GL_BACK, 0);
+		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+		glBindTexture (GL_TEXTURE_2D, cameraP->FrameBuffer ().ColorBuffer ()); //DepthBuffer ());
+		OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
+		OglVertexPointer (2, GL_FLOAT, 0, verts);
+		glColor4f (1, 1, 1, 1);
+		OglDrawArrays (GL_QUADS, 0, 4);
+		}
+#endif
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::FlushStereoBuffers (int nEffects)
+{
+if (m_data.xStereoSeparation > 0) {
+	static float gain [4] = {1.0, 4.0, 2.0, 1.0};
+	int h = gameOpts->render.stereo.bDeghost;
+	int i = (gameOpts->render.stereo.bColorGain > 0);
+	int j = Enhance3D () - 1;
+	if (nEffects & 5)
 		SelectGlowBuffer (); // use as temporary render buffer
 	else
 		SetDrawBuffer (GL_BACK, 0);
+	if ((j >= 0) && (j <= 2) && ((h < 4) || (j == 1))) {
+		GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][j]));
+		if (shaderProg) {
+			shaderManager.Rebuild (shaderProg);
+			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
+			ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
+			OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
+			OglVertexPointer (2, GL_FLOAT, 0, verts);
+
+			glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.stereo.bFlipFrames);
+			glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.stereo.bFlipFrames);
+			if (h < 4) {
+				if (h)
+					glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.stereo.bDeghost]));
+				if (i)
+					glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.stereo.bColorGain]);
+				}
+			ClearError (0);
+			}
+		}
+	OglDrawArrays (GL_QUADS, 0, 4);
+	}	
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::FlushDrawBuffer (bool bAdditive)
+{
+if (HaveDrawBuffer ()) {
+	int bStereo = 0;
+	int nEffects = postProcessManager.HaveEffects () + (int (m_data.xStereoSeparation > 0) << 1) + (int (EGI_FLAG (bShadows, 0, 1, 0) != 0) << 2);
+
+	glColor3f (1,1,1);
+
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 	OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 	OglVertexPointer (2, GL_FLOAT, 0, verts);
 
-	if (m_data.xStereoSeparation > 0) {
-		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
-		int h = gameOpts->render.stereo.bDeghost;
-		int i = (gameOpts->render.stereo.bColorGain > 0);
-		int j = Enhance3D () - 1;
-		if ((bStereo = ((j >= 0) && (j <= 2))) && ((h < 4) || (j == 1))) {
-			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][j]));
-			if (shaderProg) {
-				shaderManager.Rebuild (shaderProg);
-				ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
-				ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
-				OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
-				OglVertexPointer (2, GL_FLOAT, 0, verts);
-
-				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.stereo.bFlipFrames);
-				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.stereo.bFlipFrames);
-				if (h < 4) {
-					if (h)
-						glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.stereo.bDeghost]));
-					if (i)
-						glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.stereo.bColorGain]);
-					}
-				ClearError (0);
-				}
-			}
-		}
-
-	glColor3f (1,1,1);
-	OglDrawArrays (GL_QUADS, 0, 4);
-	if (bHaveEffects) {
-		//ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
-		postProcessManager.Setup ();
-		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-		ogl.BindTexture (DrawBuffer (2)->ColorBuffer ());
-		OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
-		OglVertexPointer (2, GL_FLOAT, 0, verts);
-		SetDrawBuffer (GL_BACK, 0);
-		postProcessManager.Render ();
-		}
+	FlushStereoBuffers (nEffects);
+	FlushEffects (nEffects);
+	FlushShadowMaps (nEffects);
 	ResetClientStates (0);
 	SelectDrawBuffer (0);
 	//if (bStereo)
@@ -403,12 +522,12 @@ if (HaveDrawBuffer ()) {
 
 // -----------------------------------------------------------------------------------
 
-#define GL_DEPTH_STENCIL_EXT 0x84F9
-#define GL_UNSIGNED_INT_24_8_EXT 0x84FA
-#define GL_DEPTH24_STENCIL8_EXT 0x88F0
+#define GL_DEPTH_STENCIL_EXT			0x84F9
+#define GL_UNSIGNED_INT_24_8_EXT		0x84FA
+#define GL_DEPTH24_STENCIL8_EXT		0x88F0
 #define GL_TEXTURE_STENCIL_SIZE_EXT 0x88F1
 
-GLuint COGL::CreateDepthTexture (int nTMU, int bFBO, int bStencil)
+GLuint COGL::CreateDepthTexture (int nTMU, int bFBO, int nType, int nWidth, int nHeight)
 {
 	GLuint	hBuffer;
 
@@ -420,28 +539,35 @@ if (glGetError ())
 	return hBuffer = 0;
 BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-if (bStencil)
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8_EXT, m_states.nCurWidth, m_states.nCurHeight, 0, GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, NULL);
-else
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, m_states.nCurWidth, m_states.nCurHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
-if (glGetError ()) {
-	DeleteTextures (1, &hBuffer);
-	return hBuffer = 0;
-	}
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-if (bFBO)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+if (bFBO) {
+#if DBG
+	if (nType != 2)
+#endif
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	}
 else {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 	glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
 	}
+if (nType == 2) { // shadowmap
+	//glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+	glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY); 	
+	}
+if (nType == 1) // depth + stencil
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8_EXT, (nWidth > 0) ? nWidth : m_states.nCurWidth, (nHeight > 0) ? nHeight : m_states.nCurHeight, 
+					  0, GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, NULL);
+else
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, (nWidth > 0) ? nWidth : m_states.nCurWidth, (nHeight > 0) ? nHeight : m_states.nCurHeight, 
+					  0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 if (glGetError ()) {
 	DeleteTextures (1, &hBuffer);
 	return hBuffer = 0;
 	}
+//ogl.BindTexture (0);
 return hBuffer;
 }
 
@@ -873,3 +999,97 @@ if (duboisShaderProg >= 0) {
 }
 
 //------------------------------------------------------------------------------
+
+const char* shadowMapVS = 
+	"varying vec3 position;\r\n" \
+	"varying vec4 vertex;\r\n" \
+	"varying vec3 normal;\r\n" \
+	"varying vec4 shadowCoord;\r\n" \
+	"void main() {\r\n" \
+	"position = gl_Vertex.xyz;\r\n" \
+	"vertex = gl_ModelViewMatrix * gl_Vertex;\r\n" \
+	"normal = gl_NormalMatrix * gl_Normal;\r\n" \
+	"gl_TexCoord[0] = gl_MultiTexCoord0;\r\n" \
+	"gl_TexCoord[1] = gl_TextureMatrix[1] * vertex;\r\n" \
+	"gl_TexCoord[2] = gl_TextureMatrix[2] * vertex;\r\n" \
+	"gl_TexCoord[3] = gl_TextureMatrix[3] * vertex;\r\n" \
+	"gl_TexCoord[4] = gl_TextureMatrix[4] * vertex;\r\n" \
+	"gl_Position = ftransform();\r\n" \
+	"shadowCoord = gl_TextureMatrix[1] * gl_Vertex;\r\n" \
+	"}\r\n";
+
+const char* shadowMapFS = 
+	"uniform sampler2D frameBuffer;\r\n" \
+	"uniform sampler2D/*Shadow*/ shadow0;\r\n" \
+	"uniform sampler2DShadow shadow1;\r\n" \
+	"uniform sampler2DShadow shadow2;\r\n" \
+	"uniform sampler2DShadow shadow3;\r\n" \
+	"uniform int nLights;\r\n" \
+	"//uniform sampler2D lightmask;\r\n" \
+	"varying vec3 position;\r\n" \
+	"varying vec4 vertex;\r\n" \
+	"varying vec3 normal;\r\n" \
+	"varying vec4 shadowCoord;\r\n" \
+	"float Lookup (sampler2DShadow shadowMap, vec2 offset, int i) {\r\n" \
+	"return shadow2DProj (shadowMap, shadowCoord + vec4 (offset.x * shadowCoord.w, offset.y * shadowCoord.w, 0.05, 0.0)).w;\r\n" \
+	"}\r\n" \
+	"float Shadow (sampler2DShadow shadowMap, int i) {\r\n" \
+	"if (i >= nLights)\r\n" \
+	"   return 0.0;\r\n" \
+	"if (vertex.w <= 1.0)\r\n" \
+	"   return 0.0;\r\n" \
+	"return Lookup (shadowMap, vec2 (0.0, 0.0), i);\r\n" \
+	"//float shadow = Lookup (shadowMap, vec2 (-1.5, -1.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (-1.5, -0.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (-1.5, 0.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (-1.5, 1.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (-0.5, -1.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (-0.5, -0.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (-0.5, 0.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (-0.5, 1.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (0.5, -1.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (0.5, -0.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (0.5, 0.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (0.5, 1.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (1.5, -1.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (1.5, -0.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (1.5, 0.5, i));\r\n" \
+	"//shadow += Lookup (shadowMap, vec2 (1.5, 1.5, i));\r\n" \
+	"//return shadow / 16.0;\r\n" \
+	"}\r\n" \
+	"void main() {\r\n" \
+	"//float shadow = shadow2DProj (shadow0, gl_TexCoord [1]).r;\r\n" \
+	"//float shadow = shadow2DProj (shadow0, shadowCoord + vec4 (0.0, 0.0, 0.05, 0.0)).w;\r\n" \
+	"//shadow += Shadow (shadow1, 1);\r\n" \
+	"//shadow += Shadow (shadow2, 2);\r\n" \
+	"//shadow += Shadow (shadow3, 3);\r\n" \
+	"//shadow = min (1.0, 0.2 + shadow * 0.8 / (float) nLights);\r\n" \
+	"//gl_FragColor = vec4 (shadow, shadow, shadow, 1.0);\r\n" \
+	"//gl_FragColor = vec4 (texture2D (frameBuffer, gl_TexCoord [0].xy).rgb * shadow, 1.0);\r\n" \
+	"//float s = texture2D (shadow0, gl_TexCoord [0].xy).r;\r\n" \
+	"//gl_FragColor = vec4 (s, s, s, 1.0);\r\n" \
+	"gl_FragColor = vec4 (vec3 (texture2D (shadow0, gl_TexCoord [0].xy).r), 1.0);\r\n" \
+	"}\r\n";
+
+//-------------------------------------------------------------------------
+
+void COGL::InitShadowMapShader (void)
+{
+if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
+	PrintLog ("building shadow mapping program\n");
+	gameStates.render.textures.bHaveShadowMapShader = (0 <= shaderManager.Build (shadowShaderProg, shadowMapFS, shadowMapVS));
+	if (!gameStates.render.textures.bHaveShadowMapShader) 
+		DeleteShadowMapShader ();
+	}
+}
+
+//-------------------------------------------------------------------------
+
+void COGL::DeleteShadowMapShader (void)
+{
+if (shadowShaderProg >= 0)
+	shaderManager.Delete (shadowShaderProg);
+}
+
+//------------------------------------------------------------------------------
+

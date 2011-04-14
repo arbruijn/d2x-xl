@@ -14,8 +14,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION. ALL RIGHTS RESERVED.
 #ifndef _NEWDEMO_H
 #define _NEWDEMO_H
 
-#ifdef NEWDEMO
-
 #define DEMO_VERSION						15   // last D1 version was 13
 
 #define ND_STATE_NORMAL					0
@@ -106,8 +104,5 @@ extern ubyte nDemoDoingRight, nDemoDoingLeft;
 extern char nDemoWBUType [];
 extern char bDemoRearCheck [];
 extern const char *szDemoExtraMessage [];
-
-
-#endif // NEWDEMO
 
 #endif // _NEWDEMO_H

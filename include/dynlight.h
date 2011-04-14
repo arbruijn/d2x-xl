@@ -148,11 +148,17 @@ class CHeadlightManager {
 //------------------------------------------------------------------------------
 
 #define MAX_NEAREST_LIGHTS 32
+#if DBG
+#	define MAX_SHADOW_SOURCES	1
+#else
+#	define MAX_SHADOW_SOURCES	4
+#endif
 
 class CDynLightData {
 	public:
-		CStaticArray< CDynLight, MAX_OGL_LIGHTS >		lights; // [MAX_OGL_LIGHTS];
-		CStaticArray< CDynLight*, MAX_OGL_LIGHTS >	renderLights; // [MAX_OGL_LIGHTS];
+		CStaticArray<CDynLight, MAX_OGL_LIGHTS>		lights; // [MAX_OGL_LIGHTS];
+		CStaticArray<CDynLight*, MAX_OGL_LIGHTS>		renderLights; // [MAX_OGL_LIGHTS];
+		CStaticArray<CDynLight, MAX_SHADOW_SOURCES>	shadowSources;
 		CArray< CActiveDynLight >							active [MAX_THREADS]; //[MAX_OGL_LIGHTS];
 		CStaticArray< CDynLightIndex, MAX_THREADS >	index [2]; //[MAX_THREADS];
 		CShortArray			nearestSegLights;		//the 8 nearest static lights for every segment
@@ -160,8 +166,9 @@ class CDynLightData {
 		CByteArray			variableVertLights;	//the 8 nearest veriable lights for every vertex
 		CShortArray			owners;
 		COglMaterial		material;
+		CStaticArray<CFloatMatrix, 5>	shadowTextureMatrix;
 		CFBO					fbo;
-		short					nLights [2];
+		short					nLights [3];
 		short					nVariable;
 		short					nDynLights;
 		short					nVertLights;
@@ -219,7 +226,7 @@ class CLightManager {
 		void SetNearestToVertex (int nFace, int nVertex, CFixVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);
 		int SetNearestToFace (CSegFace* faceP, int bTextured);
 		short SetNearestToSegment (int nSegment, int nFace, int bVariable, int nType, int nThread);
-		void SetNearestStatic (int nSegment, int bStatic, ubyte nType, int nThread);
+		void SetNearestStatic (int nSegment, int bStatic, int nThread);
 		short SetNearestToPixel (short nSegment, short nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int nThread);
 		void ResetNearestStatic (int nSegment, int nThread);
 		void ResetNearestToVertex (int nVertex, int nThread);
@@ -240,7 +247,8 @@ class CLightManager {
 		inline CDynLight* Lights (void) { return m_data.lights.Buffer (); }
 		inline CDynLight* RenderLights (uint i) { return m_data.renderLights [i]; }
 		inline CDynLight** RenderLights (void) { return m_data.renderLights.Buffer (); }
-		inline int LightCount (uint i) { return m_data.nLights [i]; }
+		inline short LightCount (uint i) { return m_data.nLights [i]; }
+		inline void SetLightCount (short nCount, uint i) { m_data.nLights [i] = nCount; }
 		inline CActiveDynLight* Active (uint i) { return m_data.active [ThreadId (i)].Buffer (); }
 		inline CDynLightIndex& Index (uint i, int nThread) { return m_data.index [0][ThreadId (nThread)]; }
 		inline CFBO& FBO (void) { return m_data.fbo; }
@@ -250,6 +258,9 @@ class CLightManager {
 		inline CByteArray& VariableVertLights (void) { return m_data.variableVertLights; }
 		inline COglMaterial& Material (void) { return m_data.material; }
 		inline void ResetIndex (void) { m_data.ResetIndex (); }
+		inline void SetShadowSource (CDynLight& source, int i) { m_data.shadowSources [i] = source; }
+		inline CFloatMatrix& ShadowTextureMatrix (int i) { return m_data.shadowTextureMatrix [i + 1]; }
+		inline CDynLight& GetShadowSource (int i) { return m_data.shadowSources [i]; }
 
 
 	private:

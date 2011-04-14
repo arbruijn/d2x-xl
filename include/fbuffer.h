@@ -31,6 +31,7 @@ typedef struct tFrameBuffer {
 class CFBO {
 	private:
 		tFrameBuffer	m_info;
+
 	public:
 		CFBO () { Init (); }
 		~CFBO () { Destroy (); }
@@ -76,6 +77,12 @@ class CFBO {
 		GLuint& ColorBuffer (int i = 0) { return m_info.hColorBuffer [(i < m_info.nColorBuffers) ? i : m_info.nColorBuffers - 1]; }
 		GLuint& DepthBuffer (void) { return m_info.hDepthBuffer; }
 		GLuint& StencilBuffer (void) { return m_info.hStencilBuffer; }
+
+	private:
+		int CreateColorBuffers (int nBuffers);
+		int CreateDepthBuffer (void);
+		void AttachBuffers (void);
+
 };
 
 #endif //RENDER2TEXTURE

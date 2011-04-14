@@ -674,7 +674,7 @@ else {
 	}
 if (m_fAlpha < 0.01f)
 	m_fAlpha = 0.01f;
-return (!gameStates.render.bShadowMaps && (gameStates.render.nShadowPass == 2)) 
+return (!gameStates.render.nShadowMap && (gameStates.render.nShadowPass == 2)) 
 		  ? RenderShadow (objP, fLight) 
 		  : Draw (objP, fLight);
 }

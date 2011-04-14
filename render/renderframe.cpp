@@ -406,6 +406,56 @@ else {
 
 //------------------------------------------------------------------------------
 
+int shadowMaps [4] = {-1, -1, -1, -1};
+
+static void RenderShadowMap (CDynLight* prl, int nLight, fix xStereoSeparation)
+{
+	CCamera* cameraP;
+
+if (shadowMaps [nLight] >= 0)
+	cameraP = cameraManager [shadowMaps [nLight]];
+else {
+	if (!(cameraP = cameraManager.Add ()))
+		return;
+	shadowMaps [nLight] = cameraManager.Index (cameraP);
+	}
+
+if (cameraP->HaveBuffer (0))
+	cameraP->Setup (cameraP->Id (), prl->info.nSegment, prl->info.nSide, -1, -1, (prl->info.nObject < 0) ? NULL : OBJECTS + prl->info.nObject, 0);
+else if (!cameraP->Create (cameraManager.Count () - 1, prl->info.nSegment, prl->info.nSide, -1, -1, (prl->info.nObject < 0) ? NULL : OBJECTS + prl->info.nObject, 1, 0))
+	return;
+CCamera* current = cameraManager [cameraManager.Current ()];
+cameraP = cameraManager [shadowMaps [nLight]];
+cameraManager.SetCurrent (cameraP);
+cameraP->Render ();
+cameraManager.SetCurrent (current);
+}
+
+//------------------------------------------------------------------------------
+
+static void RenderShadowMaps (fix xStereoSeparation)
+{
+if (EGI_FLAG (bShadows, 0, 1, 0)) {
+	lightManager.ResetActive (1, 0);
+	lightManager.ResetNearestStatic (gameData.objs.viewerP->Segment (), 1);
+	lightManager.SetNearestStatic (gameData.objs.viewerP->Segment (), 1, 1);
+	CDynLightIndex* sliP = &lightManager.Index (0,1);
+	CActiveDynLight* activeLightsP = lightManager.Active (1) + sliP->nFirst;
+	int nLights = 0, h = (sliP->nActive < MAX_SHADOW_SOURCES) ? sliP->nActive : MAX_SHADOW_SOURCES;
+	for (gameStates.render.nShadowMap = 1; gameStates.render.nShadowMap <= h; gameStates.render.nShadowMap++) {
+		CDynLight* prl = lightManager.GetActive (activeLightsP, 1);
+		if (prl) {
+			RenderShadowMap (prl, nLights, xStereoSeparation);
+			lightManager.SetShadowSource (*prl, nLights++);
+			}
+		}
+	lightManager.SetLightCount (nLights, 2);
+	gameStates.render.nShadowMap = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 extern CBitmap bmBackground;
 
 void RenderFrame (fix xStereoSeparation, int nWindow)
@@ -421,106 +471,75 @@ if (gameStates.app.bEndLevelSequence) {
 	gameStates.render.xStereoSeparation = nEyeOffsetSave;
 	return;
 	}
-#ifdef NEWDEMO
 if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
    if (!gameStates.render.nRenderingType)
    	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
    if (gameStates.render.nRenderingType != 255)
    	NDRecordViewerObject (gameData.objs.viewerP);
 	}
-#endif
 
-//PrintLog ("StartLightingFrame\n");
 StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
 ogl.m_states.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 if (!nWindow)
 	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
-//PrintLog ("G3StartFrame\n");
+
 {
 PROF_START
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
-//PrintLog ("SetRenderView\n");
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
+if (!(nWindow || gameStates.render.cameras.bActive)) {
+	CFloatMatrix m, im;
+	ogl.SetupTransform (1);
+	glGetFloatv (GL_MODELVIEW_MATRIX, m.m.vec);
+	ogl.ResetTransform (1);
+
+	im [0]  = m [0]; 
+	im [1]  = m [4]; 
+	im [2]  = m [8];
+	im [4]  = m [1]; 
+	im [5]  = m [5]; 
+	im [6]  = m [9];
+	im [8]  = m [2]; 
+	im [9]  = m [6]; 
+	im [10] = m [10];
+	im [3]  =
+	im [7]  = 
+	im [11] = 0.0f;
+	im [15] = 1.0f;
+
+	im [12] = -(m [12] * m [0]) - (m [13] * m [1]) - (m [14] * m [2]);
+	im [13] = -(m [12] * m [4]) - (m [13] * m [5]) - (m [14] * m [6]);
+	im [14] = -(m [12] * m [8]) - (m [13] * m [9]) - (m [14] * m [10]);
+
+	lightManager.ShadowTextureMatrix (-1) = im;
+	}
 PROF_END(ptAux)
 }
+
+#if 0 //DBG
+if (gameStates.render.nShadowMap) {
+	G3EndFrame (nWindow);
+	gameStates.render.xStereoSeparation = nEyeOffsetSave;
+	return;
+	}
+#endif
+
 if (0 > (gameStates.render.nStartSeg = nStartSeg)) {
 	G3EndFrame (nWindow);
 	gameStates.render.xStereoSeparation = nEyeOffsetSave;
 	return;
 	}
-#if CLEAR_WINDOW == 1
-if (!nClearWindowColor)
-	nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
-CCanvas::Current ()->Clear (nClearWindowColor);
-#endif
 
 #if DBG
 if (bShowOnlyCurSide)
 	CCanvas::Current ()->Clear (nClearWindowColor);
 #endif
-if (!gameStates.render.bHaveStencilBuffer)
-	extraGameInfo [0].bShadows =
-	extraGameInfo [1].bShadows = 0;
-if (SHOW_SHADOWS &&
-	 !(nWindow || gameStates.render.cameras.bActive || automap.Display ())) {
-	if (!gameStates.render.bShadowMaps) {
-		gameStates.render.nShadowPass = 1;
-#if SOFT_SHADOWS
-		if (gameOpts->render.shadows.bSoft = 1)
-			gameStates.render.nShadowBlurPass = 1;
-#endif
-		ogl.StartFrame (0, 0, xStereoSeparation);
-#if SOFT_SHADOWS
-		ogl.Viewport (CCanvas::Current ()->props.x, CCanvas::Current ()->props.y, 128, 128);
-#endif
-		RenderMine (nStartSeg, xStereoSeparation, nWindow);
-		PROF_START
-		RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
-		PROF_END(ptEffects)
-		if (FAST_SHADOWS)
-			;//RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
-		else {
-			PROF_START
-			RenderNeatShadows (xStereoSeparation, nWindow, nStartSeg);
-			PROF_END(ptEffects)
-			}
-#if SOFT_SHADOWS
-		if (gameOpts->render.shadows.bSoft) {
-			PROF_START
-			CreateShadowTexture ();
-			PROF_END(ptEffects)
-			gameStates.render.nShadowBlurPass = 2;
-			gameStates.render.nShadowPass = 0;
-			ogl.StartFrame (0, 1, xStereoSeparation);
-			SetRenderView (xStereoSeparation, &nStartSeg, 1);
-			RenderMine (nStartSeg, xStereoSeparation, nWindow);
-			RenderShadowTexture ();
-			}
-#endif
-		nWindow = 0;
-		}
-	}
-else {
-	if (gameStates.render.nRenderPass < 0)
-		RenderMine (nStartSeg, xStereoSeparation, nWindow);
-	else {
-		for (gameStates.render.nRenderPass = 0; gameStates.render.nRenderPass < 2; gameStates.render.nRenderPass++) {
-			ogl.StartFrame (0, 1, xStereoSeparation);
-			RenderMine (nStartSeg, xStereoSeparation, nWindow);
-			}
-		}
-	}
-ogl.StencilOff ();
+RenderMine (nStartSeg, xStereoSeparation, nWindow);
 RenderSkyBox (nWindow);
-#if 1
 RenderEffects (nWindow);
-#endif
-#if 1
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
-	//PrintLog ("RenderRadar\n");
 	radar.Render ();
 	}
-#endif
 #if 0
 if (transformation.m_info.bUsePlayerHeadAngles)
 	Draw3DReticle (xStereoSeparation);
@@ -541,6 +560,7 @@ void RenderMonoFrame (fix xStereoSeparation = 0)
 	CCanvas		frameWindow;
 	int			bExtraInfo = 1;
 
+RenderShadowMaps (xStereoSeparation);
 gameStates.render.vr.buffers.screenPages [0].SetupPane (
 	&frameWindow,
 	gameStates.render.vr.buffers.subRender [0].Left (),

@@ -275,10 +275,8 @@ if (pszLastMsg && (!strcmp (pszLastMsg, pszMsg))) {
 	}
 pMsgs->nLast = temp;
 // Check if memory has been overwritten at this point.
-#ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordHUDMessage (pszMsg);
-#endif
 pMsgs->xTimer = I2X (3);		// 1 second per 5 characters
 pMsgs->nMessages++;
 return 1;

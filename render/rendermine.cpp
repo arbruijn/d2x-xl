@@ -290,7 +290,7 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
 #endif
 	if (gameStates.render.bApplyDynLight) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
-		lightManager.SetNearestStatic (nSegment, 1, 1, 0);
+		lightManager.SetNearestStatic (nSegment, 1, 1);
 		}
 	RenderObjList (i, gameStates.render.nWindow);
 	if (gameStates.render.bApplyDynLight)
@@ -336,7 +336,7 @@ for (;;) {
 		nSegment = gameData.render.mine.segRenderList [1][i];
 		if (gameStates.render.bApplyDynLight) {
 			lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
-			lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
+			lightManager.SetNearestStatic (nSegment, 1, nThread);
 			}
 		bSemaphore [nThread] = 1;
 		while (bSemaphore [nThread])
@@ -613,7 +613,7 @@ RenderSegmentList (RENDER_TYPE_ZCULL);	// render depth only
 --gameStates.render.bFullBright;
 #endif
 RenderSegmentList (RENDER_TYPE_GEOMETRY);	// render opaque geometry
-if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
+if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 	if (!gameStates.app.bNostalgia &&
 		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) 
 		if (!nWindow && SetupCoronas ())

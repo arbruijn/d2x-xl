@@ -447,6 +447,7 @@ glowRenderer.InitShader ();
 InitGrayScaleShader ();
 ::PrintLog ("   initializing enhanced 3D shader programs\n");
 ogl.InitEnhanced3DShader ();
+ogl.InitShadowMapShader ();
 ResetPerPixelLightingShaders ();
 InitPerPixelLightingShaders ();
 ResetLightmapShaders ();
