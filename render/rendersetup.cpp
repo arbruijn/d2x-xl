@@ -85,9 +85,11 @@ static void ComputeShadowTextureMatrix (int nLight)
 	float projection [16];
 	GLint matrixMode;
 
+ogl.SetupTransform (1);
 glGetIntegerv (GL_MATRIX_MODE, &matrixMode);
 glGetFloatv (GL_MODELVIEW_MATRIX, modelView);
 glGetFloatv (GL_PROJECTION_MATRIX, projection);
+ogl.ResetTransform (1);
 glMatrixMode (GL_TEXTURE);
 glActiveTexture (GL_TEXTURE1 + nLight);
 glLoadMatrixf (bias);

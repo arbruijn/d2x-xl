@@ -530,8 +530,8 @@ if (!(nWindow || gameStates.render.cameras.bActive)) {
 	ogl.SetupTransform (1);
 	lightManager.ShadowTextureMatrix (-1) = OglGetMatrix (GL_MODELVIEW_MATRIX, true);
 	ogl.ResetTransform (1);
-	lightManager.ShadowTextureMatrix (-2) = OglGetMatrix (GL_PROJECTION_MATRIX, false);
-	lightManager.ShadowTextureMatrix (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, true);
+	lightManager.ShadowTextureMatrix (-2) = OglGetMatrix (GL_PROJECTION_MATRIX, true);
+	lightManager.ShadowTextureMatrix (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, false);
 	}
 #endif
 PROF_END(ptAux)
