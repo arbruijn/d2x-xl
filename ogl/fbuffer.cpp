@@ -90,8 +90,12 @@ for (int i = 0; i < nBuffers; i++) {
 	if (m_info.nType == 2) // GPGPU
 		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, m_info.nWidth, m_info.nHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 	else {
-		glTexImage2D (GL_TEXTURE_2D, 0, 3, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		glGenerateMipmapEXT (GL_TEXTURE_2D);
+		if (i > 0)
+			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_FLOAT, NULL);
+		else {
+			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+			glGenerateMipmapEXT (GL_TEXTURE_2D);
+			}
 		}
 	m_info.bufferIds [i] = GL_COLOR_ATTACHMENT0_EXT + i;
 	//glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, m_info.bufferIds [i], GL_TEXTURE_2D, m_info.hColorBuffer [i], 0);

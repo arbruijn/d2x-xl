@@ -529,7 +529,7 @@ void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 
 m_data.xStereoSeparation = xStereoSeparation;
 ChooseDrawBuffer ();
-#if 0
+#ifndef SHADOWMAPS
 if (gameStates.render.nShadowPass) {
 #if GL_INFINITY
 	float	infProj [4][4];	//projection to infinity
@@ -663,17 +663,14 @@ else
 	if (gameStates.render.nRenderPass < 0) {
 		ogl.SetDepthWrite (true);
 		glClearDepth (1.0);
+#ifdef SHADOWMAPS
 		if (gameStates.render.nShadowMap) {
-#if 0
-			ColorMask (1, 1, 1, 1, 0);
-			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-#else
 			ColorMask (0, 0, 0, 0, 0);
-			//glClearDepth (0.5);
 			glClear (GL_DEPTH_BUFFER_BIT);
-#endif
 			}
-		else {
+		else 
+#endif
+			{
 			ColorMask (1, 1, 1, 1, 1);
 			if (bResetColorBuf && (automap.Display () || gameStates.render.bRenderIndirect)) {
 				glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
@@ -705,7 +702,7 @@ else
 	else {
 		SetFaceCulling (true);
 		glFrontFace (GL_CW);	//Weird, huh? Well, D2 renders everything reverse ...
-#if 0
+#ifdef SHADOWMAPS
 		if (gameStates.render.nShadowMap)
 			SetCullMode ((gameStates.render.bRearView < 0) ? GL_BACK : GL_FRONT);
 		else

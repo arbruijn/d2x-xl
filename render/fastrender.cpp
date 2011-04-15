@@ -810,7 +810,10 @@ return SortFaces ();
 
 void RenderFaceList (int nType)
 {
-if (gameStates.render.nShadowMap == 0) {
+#ifdef SHADOWMAPS
+if (gameStates.render.nShadowMap == 0) 
+#endif
+	{
 	BeginRenderFaces (nType);
 	gameData.render.mine.nVisited++;
 	RenderSegments (nType, 0);

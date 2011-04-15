@@ -408,6 +408,8 @@ else {
 
 int shadowMaps [4] = {-1, -1, -1, -1};
 
+#ifdef SHADOWMAPS
+
 static void RenderShadowMap (CDynLight* prl, int nLight, fix xStereoSeparation)
 {
 	CCamera* cameraP;
@@ -454,6 +456,42 @@ if (EGI_FLAG (bShadows, 0, 1, 0)) {
 	}
 }
 
+#endif
+
+//------------------------------------------------------------------------------
+
+CFloatMatrix OglGetMatrix (GLuint nMatrix, bool bInverse)
+{
+CFloatMatrix m;
+
+glGetFloatv (nMatrix, m.m.vec);
+
+if (!bInverse)
+	return m;
+
+CFloatMatrix im;
+
+im [0]  = m [0]; 
+im [1]  = m [4]; 
+im [2]  = m [8];
+im [4]  = m [1]; 
+im [5]  = m [5]; 
+im [6]  = m [9];
+im [8]  = m [2]; 
+im [9]  = m [6]; 
+im [10] = m [10];
+im [3]  =
+im [7]  = 
+im [11] = 0.0f;
+im [15] = 1.0f;
+
+im [12] = -(m [12] * m [0]) - (m [13] * m [1]) - (m [14] * m [2]);
+im [13] = -(m [12] * m [4]) - (m [13] * m [5]) - (m [14] * m [6]);
+im [14] = -(m [12] * m [8]) - (m [13] * m [9]) - (m [14] * m [10]);
+
+return im;
+}
+
 //------------------------------------------------------------------------------
 
 extern CBitmap bmBackground;
@@ -487,32 +525,15 @@ if (!nWindow)
 PROF_START
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
+#ifdef SHADOWMAPS
 if (!(nWindow || gameStates.render.cameras.bActive)) {
-	CFloatMatrix m, im;
 	ogl.SetupTransform (1);
-	glGetFloatv (GL_MODELVIEW_MATRIX, m.m.vec);
+	lightManager.ShadowTextureMatrix (-1) = OglGetMatrix (GL_MODELVIEW_MATRIX, true);
+	lightManager.ShadowTextureMatrix (-2) = OglGetMatrix (GL_MODELVIEW_MATRIX, false);
 	ogl.ResetTransform (1);
-
-	im [0]  = m [0]; 
-	im [1]  = m [4]; 
-	im [2]  = m [8];
-	im [4]  = m [1]; 
-	im [5]  = m [5]; 
-	im [6]  = m [9];
-	im [8]  = m [2]; 
-	im [9]  = m [6]; 
-	im [10] = m [10];
-	im [3]  =
-	im [7]  = 
-	im [11] = 0.0f;
-	im [15] = 1.0f;
-
-	im [12] = -(m [12] * m [0]) - (m [13] * m [1]) - (m [14] * m [2]);
-	im [13] = -(m [12] * m [4]) - (m [13] * m [5]) - (m [14] * m [6]);
-	im [14] = -(m [12] * m [8]) - (m [13] * m [9]) - (m [14] * m [10]);
-
-	lightManager.ShadowTextureMatrix (-1) = im;
+	lightManager.ShadowTextureMatrix (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, true);
 	}
+#endif
 PROF_END(ptAux)
 }
 
@@ -534,7 +555,64 @@ if (0 > (gameStates.render.nStartSeg = nStartSeg)) {
 if (bShowOnlyCurSide)
 	CCanvas::Current ()->Clear (nClearWindowColor);
 #endif
+
+#ifdef SHADOWMAPS
 RenderMine (nStartSeg, xStereoSeparation, nWindow);
+#else
+if (!gameStates.render.bHaveStencilBuffer)
+	extraGameInfo [0].bShadows =
+	extraGameInfo [1].bShadows = 0;
+if (SHOW_SHADOWS &&
+	 !(nWindow || gameStates.render.cameras.bActive || automap.Display ())) {
+	if (!gameStates.render.nShadowMap) {
+		gameStates.render.nShadowPass = 1;
+#if SOFT_SHADOWS
+		if (gameOpts->render.shadows.bSoft = 1)
+			gameStates.render.nShadowBlurPass = 1;
+#endif
+		ogl.StartFrame (0, 0, xStereoSeparation);
+#if SOFT_SHADOWS
+		ogl.Viewport (CCanvas::Current ()->props.x, CCanvas::Current ()->props.y, 128, 128);
+#endif
+		RenderMine (nStartSeg, xStereoSeparation, nWindow);
+		PROF_START
+		RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
+		PROF_END(ptEffects)
+		if (FAST_SHADOWS)
+			;//RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
+		else {
+			PROF_START
+			RenderNeatShadows (xStereoSeparation, nWindow, nStartSeg);
+			PROF_END(ptEffects)
+			}
+#if SOFT_SHADOWS
+		if (gameOpts->render.shadows.bSoft) {
+			PROF_START
+			CreateShadowTexture ();
+			PROF_END(ptEffects)
+			gameStates.render.nShadowBlurPass = 2;
+			gameStates.render.nShadowPass = 0;
+			ogl.StartFrame (0, 1, xStereoSeparation);
+			SetRenderView (xStereoSeparation, &nStartSeg, 1);
+			RenderMine (nStartSeg, xStereoSeparation, nWindow);
+			RenderShadowTexture ();
+			}
+#endif
+		nWindow = 0;
+		}
+	}
+else {
+	if (gameStates.render.nRenderPass < 0)
+		RenderMine (nStartSeg, xStereoSeparation, nWindow);
+	else {
+		for (gameStates.render.nRenderPass = 0; gameStates.render.nRenderPass < 2; gameStates.render.nRenderPass++) {
+			ogl.StartFrame (0, 1, xStereoSeparation);
+			RenderMine (nStartSeg, xStereoSeparation, nWindow);
+			}
+		}
+	}
+ogl.StencilOff ();
+#endif
 RenderSkyBox (nWindow);
 RenderEffects (nWindow);
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
@@ -560,7 +638,9 @@ void RenderMonoFrame (fix xStereoSeparation = 0)
 	CCanvas		frameWindow;
 	int			bExtraInfo = 1;
 
+#ifdef SHADOWMAPS
 RenderShadowMaps (xStereoSeparation);
+#endif
 gameStates.render.vr.buffers.screenPages [0].SetupPane (
 	&frameWindow,
 	gameStates.render.vr.buffers.subRender [0].Left (),

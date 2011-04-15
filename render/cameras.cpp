@@ -185,7 +185,7 @@ m_data.bShadowMap = bShadowMap;
 SetWidth (Pow2ize (screen.Width () / (2 - gameOpts->render.cameras.bHires)));
 SetHeight (Pow2ize (screen.Height () / (2 - gameOpts->render.cameras.bHires)));
 #else
-int nScreenScale = (bShadowMap || !gameOpts->render.cameras.bHires) ? 2 : 1;
+int nScreenScale = (/*bShadowMap ||*/ !gameOpts->render.cameras.bHires) ? 2 : 1;
 SetWidth (screen.Width () / nScreenScale);
 SetHeight (screen.Height () / nScreenScale);
 #endif

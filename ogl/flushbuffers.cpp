@@ -161,7 +161,12 @@ void COGL::FlushDrawBuffer (bool bAdditive)
 {
 if (HaveDrawBuffer ()) {
 	int bStereo = 0;
-	int nEffects = postProcessManager.HaveEffects () + (int (m_data.xStereoSeparation > 0) << 1) + (int (EGI_FLAG (bShadows, 0, 1, 0) != 0) << 2);
+	int nEffects = postProcessManager.HaveEffects () 
+						+ (int (m_data.xStereoSeparation > 0) << 1)
+#ifdef SHADOWMAPS
+						+ (int (EGI_FLAG (bShadows, 0, 1, 0) != 0) << 2)
+#endif
+						;
 
 	glColor3f (1,1,1);
 
@@ -172,7 +177,9 @@ if (HaveDrawBuffer ()) {
 
 	FlushStereoBuffers (nEffects);
 	FlushEffects (nEffects);
+#ifdef SHADOWMAPS
 	FlushShadowMaps (nEffects);
+#endif
 	ResetClientStates (0);
 	SelectDrawBuffer (0);
 	//if (bStereo)

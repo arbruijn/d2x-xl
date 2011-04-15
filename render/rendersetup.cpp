@@ -183,7 +183,11 @@ PROF_START
 #if 0 //DBG
 gameStates.render.bFullBright = 1;
 #else
-gameStates.render.bFullBright = (gameStates.render.nShadowMap > 0) || (automap.Display () && gameOpts->render.automap.bBright);
+gameStates.render.bFullBright = (automap.Display () && gameOpts->render.automap.bBright)
+#ifdef SHADOWMAPS
+										  || (gameStates.render.nShadowMap > 0)
+#endif
+										  ;
 #endif
 ogl.m_states.bStandardContrast = gameStates.app.bNostalgia || IsMultiGame || (ogl.m_states.nContrast == 8);
 ogl.m_states.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass < 3) && !FAST_SHADOWS;

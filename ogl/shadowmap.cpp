@@ -73,6 +73,8 @@ void COGL::FlushShadowMaps (int nEffects)
 {
 	static const char* szShadowMap [] = {"shadowMap", "shadow1", "shadow2", "shadow3"};
 
+	//float screen [2] = {float (screen.Width ()) / 2.0f, float (screen.Height ()) / 2.0f};
+
 if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1, 0) != 0)) {
 #if 1
 	SetDrawBuffer (GL_BACK, 0);
@@ -97,7 +99,7 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			ogl.SelectTMU (GL_TEXTURE2 + i);
 			ogl.SetTexturing (true);
 			glLoadMatrixf (lightManager.ShadowTextureMatrix (i).m.vec);
-			glMultMatrixf (lightManager.ShadowTextureMatrix (-1).m.vec);
+			//glMultMatrixf (lightManager.ShadowTextureMatrix (-1).m.vec);
 #if 1
 			//ogl.BindTexture (cameraManager [shadowMaps [i]]->DrawBuffer ());
 			ogl.BindTexture (cameraManager [shadowMaps [i]]->FrameBuffer ().DepthBuffer ());
@@ -109,6 +111,9 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 		glUniform1i (glGetUniformLocation (shaderProg, "frameBuffer"), 0);
 		glUniform1i (glGetUniformLocation (shaderProg, "depthBuffer"), 1);
 		glUniform1i (glGetUniformLocation (shaderProg, "nLights"), i);
+		//glUniform2fv (glGetUniformLocation (shaderProg, "screen"), 1, (GLfloat*) screen);
+		//glUniformMatrix4fv (glGetUniformLocation (shaderProg, "invModelViewMat"), 1, (GLboolean) 0, (GLfloat*) lightManager.ShadowTextureMatrix (-1).m.vec);
+		glUniformMatrix4fv (glGetUniformLocation (shaderProg, "invProjMat"), 1, (GLboolean) 0, (GLfloat*) lightManager.ShadowTextureMatrix (-3).m.vec);
 		glMatrixMode (matrixMode);
 		ogl.SetBlendMode (0);
 		OglDrawArrays (GL_QUADS, 0, 4);
@@ -162,22 +167,29 @@ glTexGeni (GL_Q, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
 //------------------------------------------------------------------------------
 
 const char* shadowMapVS = 
+#if 0
 	"varying vec3 position;\r\n" \
 	"varying vec4 vertex;\r\n" \
 	"varying vec3 normal;\r\n" \
-	"varying vec4 shadowCoord;\r\n" \
 	"void main() {\r\n" \
 	"position = gl_Vertex.xyz;\r\n" \
 	"vertex = gl_ModelViewMatrix * gl_Vertex;\r\n" \
 	"normal = gl_NormalMatrix * gl_Normal;\r\n" \
 	"gl_TexCoord[0] = gl_MultiTexCoord0;\r\n" \
-	"gl_TexCoord[1] = gl_TextureMatrix[2] * gl_Vertex;\r\n" \
+	"//gl_TexCoord[1] = gl_TextureMatrix[2] * gl_Vertex;\r\n" \
 	"//gl_TexCoord[2] = gl_TextureMatrix[3] * vertex;\r\n" \
 	"//gl_TexCoord[3] = gl_TextureMatrix[4] * vertex;\r\n" \
 	"//gl_TexCoord[4] = gl_TextureMatrix[5] * vertex;\r\n" \
 	"gl_Position = ftransform();\r\n" \
 	"gl_FrontColor = gl_Color;\r\n" \
 	"}\r\n";
+#else
+	"void main() {\r\n" \
+	"gl_TexCoord[0] = gl_MultiTexCoord0;\r\n" \
+	"gl_Position = ftransform();\r\n" \
+	"gl_FrontColor = gl_Color;\r\n" \
+	"}\r\n";
+#endif
 
 const char* shadowMapFS = 
 #if 0
@@ -241,8 +253,16 @@ const char* shadowMapFS =
 	"uniform sampler2D frameBuffer;\r\n" \
 	"uniform sampler2D depthBuffer;\r\n" \
 	"uniform sampler2D shadowMap;\r\n" \
+	"//uniform mat4 invModelViewMat;\r\n" \
+	"uniform mat4 invProjMat;\r\n" \
+	"//uniform vec2 screen;\r\n" \
+	"#define LinearDepth(_z) (5000.0 / 4999.0) / ((5000.0 / 4999.0) - (2.0 * (_z) - 1.0))\r\n" \
 	"void main() {\r\n" \
 	"float sceneDepth = texture2D (depthBuffer, gl_TexCoord [0]).r;\r\n" \
+	"float z = LinearDepth (sceneDepth) * 2.0;\r\n" \
+	"vec4 v = vec4 ((gl_TexCoord [0].x - 0.5) * z, (gl_TexCoord [0].y - 0.5) * z, z, 1.0);\r\n" \
+	"vec4 vertex = invProjMat * v;\r\n" \
+	"gl_TexCoord [1] = gl_TextureMatrix [2] * vertex;\r\n" \
 	"float shadowDepth = texture2DProj (shadowMap, gl_TexCoord [1]).r;\r\n" \
 	"float light = 0.25 + ((sceneDepth < shadowDepth + 0.0005) ? 0.75 : 0.0);\r\n" \
 	"gl_FragColor = vec4 (texture2D (frameBuffer, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \

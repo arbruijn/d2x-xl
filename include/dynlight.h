@@ -166,7 +166,7 @@ class CDynLightData {
 		CByteArray			variableVertLights;	//the 8 nearest veriable lights for every vertex
 		CShortArray			owners;
 		COglMaterial		material;
-		CStaticArray<CFloatMatrix, 5>	shadowTextureMatrix;
+		CStaticArray<CFloatMatrix, 7>	shadowTextureMatrix;
 		CFBO					fbo;
 		short					nLights [3];
 		short					nVariable;
@@ -259,7 +259,7 @@ class CLightManager {
 		inline COglMaterial& Material (void) { return m_data.material; }
 		inline void ResetIndex (void) { m_data.ResetIndex (); }
 		inline void SetShadowSource (CDynLight& source, int i) { m_data.shadowSources [i] = source; }
-		inline CFloatMatrix& ShadowTextureMatrix (int i) { return m_data.shadowTextureMatrix [i + 1]; }
+		inline CFloatMatrix& ShadowTextureMatrix (int i) { return m_data.shadowTextureMatrix [i + 3]; }
 		inline CDynLight& GetShadowSource (int i) { return m_data.shadowSources [i]; }
 
 
