@@ -697,9 +697,8 @@ const char *glareFS =
 	"uniform int blendMode;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
-	"#define ZRANGE (ZFAR / ZNEAR)\r\n" \
-	"#define ZSCALE (ZFAR / ZRANGE)\r\n" \
-	"#define EyeZ(screenZ) (ZFAR / ((screenZ) * ZRANGE - ZFAR))\r\n" \
+	"#define ZRANGE (ZFAR - ZNEAR)\r\n" \
+	"#define EyeZ(screenZ) -(ZFAR / ((screenZ) * ZRANGE - ZFAR))\r\n" \
 	"void main (void) {\r\n" \
 	"//float sceneZ = EyeZ (texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
 	"//float fragZ = EyeZ (gl_FragCoord.z);\r\n" \

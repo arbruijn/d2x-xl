@@ -76,6 +76,7 @@ void COGL::FlushShadowMaps (int nEffects)
 	static const char* szShadowMap [] = {"shadowMap", "shadow1", "shadow2", "shadow3"};
 
 	float screenSize [2] = { float (screen.Width ()), float (screen.Height ()) };
+	float zScale = 5000.0f / 4999.0f;
 
 if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1, 0) != 0)) {
 #if 1
@@ -312,10 +313,10 @@ const char* shadowMapFS =
 	"uniform sampler2D shadowMap;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
-	"#define ZRANGE (ZFAR / ZNEAR)\r\n" \
-	"#define ZSCALE (ZFAR / ZRANGE)\r\n" \
-	"//#define EyeZ(screenZ) ZSCALE / (ZSCALE - (screenZ))\r\n" \
-	"#define EyeZ(screenZ) (ZFAR / ((screenZ) * ZRANGE - ZFAR))\r\n" \
+	"#define ZRANGE (ZFAR - ZNEAR)\r\n" \
+	"#define ZSCALE (ZFAR / ZNEAR)\r\n" \
+	"#//define EyeZ(screenZ) (ZFAR / ((screenZ) * ZRANGE - ZFAR))\r\n" \
+	"#define EyeZ(screenZ) (ZSCALE / ((screenZ) - ZSCALE))\r\n" \
 	"void main() {\r\n" \
 	"float colorDepth = texture2D (sceneDepth, gl_TexCoord [0]).r;\r\n" \
 	"vec4 ndc;\r\n" \
