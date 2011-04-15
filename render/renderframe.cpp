@@ -439,8 +439,9 @@ static void RenderShadowMaps (fix xStereoSeparation)
 {
 if (EGI_FLAG (bShadows, 0, 1, 0)) {
 	lightManager.ResetActive (1, 0);
-	lightManager.ResetNearestStatic (gameData.objs.viewerP->Segment (), 1);
-	lightManager.SetNearestStatic (gameData.objs.viewerP->Segment (), 1, 1);
+	short nSegment = OBJSEG (gameData.objs.viewerP);
+	lightManager.ResetNearestStatic (nSegment, 1);
+	lightManager.SetNearestStatic (nSegment, 1, 1);
 	CDynLightIndex* sliP = &lightManager.Index (0,1);
 	CActiveDynLight* activeLightsP = lightManager.Active (1) + sliP->nFirst;
 	int nLights = 0, h = (sliP->nActive < MAX_SHADOW_SOURCES) ? sliP->nActive : MAX_SHADOW_SOURCES;
@@ -528,7 +529,6 @@ SetRenderView (xStereoSeparation, &nStartSeg, 1);
 #ifdef SHADOWMAPS
 if (!(nWindow || gameStates.render.cameras.bActive)) {
 	ogl.SetupTransform (1);
-	lightManager.ShadowTextureMatrix (-2) = OglGetMatrix (GL_PROJECTION_MATRIX, false);
 	lightManager.ShadowTextureMatrix (-1) = OglGetMatrix (GL_MODELVIEW_MATRIX, true);
 	lightManager.ShadowTextureMatrix (-2) = OglGetMatrix (GL_MODELVIEW_MATRIX, false);
 	ogl.ResetTransform (1);
