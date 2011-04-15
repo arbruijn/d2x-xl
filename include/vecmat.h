@@ -1428,6 +1428,8 @@ class __pack__ CFloatMatrix {
 		const CFloatMatrix& Assign (CFixMatrix& other);
 		const CFloatMatrix& Assign (CFloatMatrix& other);
 
+		void Flip (void);
+
 		static float* Transpose (float* dest, const CFloatMatrix& src);
 
 		float& operator[] (size_t i);

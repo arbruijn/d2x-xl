@@ -190,11 +190,7 @@ m_info.aspect.v.coord.z = I2X (1);		//always 1
 void CTransformation::SetupProjection (void)
 {
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);
-Swap (m_info.projection.m.vec [1], m_info.projection.m.vec [4]);
-Swap (m_info.projection.m.vec [2], m_info.projection.m.vec [8]);
-Swap (m_info.projection.m.vec [3], m_info.projection.m.vec [12]);
-Swap (m_info.projection.m.vec [7], m_info.projection.m.vec [13]);
-Swap (m_info.projection.m.vec [11], m_info.projection.m.vec [14]);
+m_info.projection.Flip ();
 }
 
 //------------------------------------------------------------------------------

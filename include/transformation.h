@@ -146,6 +146,8 @@ class CTransformation {
 			return Codes (dest);
 			}
 
+		inline CFloatMatrix& Projection (void) { return m_info.projection; }
+
 		void ComputeAspect (void);
 
 		void SetupProjection (void);
