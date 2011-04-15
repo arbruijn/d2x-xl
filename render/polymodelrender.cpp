@@ -161,7 +161,7 @@ if (!gameStates.render.bBuildModels) {
 	}
 #endif
 
-#if 0
+#ifndef SHADOWMAPS
 if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
 	return 1;
 if (!(modelP = GetPolyModel (objP, pos, nModel, flags))) {
@@ -179,7 +179,7 @@ if (gameStates.render.nShadowPass == 2) {
 	}
 #else
 if (!(modelP = GetPolyModel (objP, pos, nModel, flags))) {
-	if (!flags && (gameStates.render.nShadowPass != 2) && HaveHiresModel (nModel))
+	if (!flags && HaveHiresModel (nModel))
 		bHires = 1;
 	else
 		return 0;
