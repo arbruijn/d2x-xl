@@ -1518,6 +1518,7 @@ class CShadowData {
 	public:
 		short					nLight;
 		short					nLights;
+		short					nShadowMaps;
 		CDynLight*			lightP;
 		CObject				lightSource;
 		CFloatVector		vLightPos;
