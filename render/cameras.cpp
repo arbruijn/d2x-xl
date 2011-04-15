@@ -520,6 +520,7 @@ if (!m_objectCameras.Create (LEVEL_OBJECTS))
 	return 0;
 m_faceCameras.Clear (0xFF);
 m_objectCameras.Clear (0xFF);
+m_shadowMaps.Clear (0xFF);
 
 if (gameData.trigs.m_nTriggers) {
 	for (i = 0, wallP = WALLS.Buffer (); (i < gameData.walls.nWalls) && (m_cameras.ToS () < MAX_CAMERAS); i++, wallP++) {
@@ -576,6 +577,7 @@ for (uint i = 0; i < m_cameras.ToS (); i++)
 m_cameras.Destroy ();
 m_faceCameras.Destroy ();
 m_objectCameras.Destroy ();
+m_shadowMaps.Clear (0xFF);
 }
 
 //------------------------------------------------------------------------------

@@ -4,6 +4,12 @@
 #include "ogl_defs.h"
 #include "ogl_texture.h"
 
+#if DBG
+#	define MAX_SHADOWMAPS	1
+#else
+#	define MAX_SHADOWMAPS	0 //4
+#endif
+
 #define MAX_CAMERAS	100
 
 typedef struct tCamera {
@@ -84,10 +90,11 @@ class CCamera : public CCanvas {
 
 class CCameraManager {
 	private:
-		CStack<CCamera>	m_cameras;
-		CCamera*				m_current;
-		CArray<char>		m_faceCameras;
-		CArray<ushort>		m_objectCameras;
+		CStack<CCamera>		m_cameras;
+		CCamera*					m_current;
+		CArray<char>			m_faceCameras;
+		CArray<ushort>			m_objectCameras;
+		CStaticArray<short, MAX_SHADOWMAPS>	m_shadowMaps;
 
 	public:
 		int				m_fboType;
@@ -113,6 +120,21 @@ class CCameraManager {
 		inline int Index (CCamera* cameraP) { return m_cameras.Buffer () ? int (cameraP - m_cameras.Buffer ()) : -1; }
 		inline CCamera* Add (void) { return ((m_cameras.Buffer () || Create ()) && m_cameras.Grow ()) ? m_cameras.Top () : NULL; }
 		inline CCamera* operator[] (uint i) { return (i < m_cameras.ToS ()) ? &m_cameras [i] : NULL; }
+		inline CCamera* ShadowMap (int i) { return (m_shadowMaps [i] < 0) ? NULL : (*this) [i]; }
+		inline CCamera* AddShadowMap (int i) { 
+			CCamera* cameraP = Add ();
+			if (!cameraP)
+				return NULL;
+			m_shadowMaps [i] = Index (cameraP);
+			return cameraP;
+			}
+		inline void DestroyShadowMap (int i) {
+			CCamera* cameraP = ShadowMap (i);
+			if (cameraP) {
+				cameraP->Destroy ();
+				m_shadowMaps [i] = -1;
+				}
+			}
 	};
 
 extern CCameraManager cameraManager;

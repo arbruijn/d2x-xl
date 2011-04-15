@@ -161,7 +161,7 @@ if (!gameStates.render.bBuildModels) {
 	}
 #endif
 
-#ifndef SHADOWMAPS
+#if !MAX_SHADOWMAPS
 if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
 	return 1;
 if (!(modelP = GetPolyModel (objP, pos, nModel, flags))) {

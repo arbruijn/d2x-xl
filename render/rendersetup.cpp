@@ -74,7 +74,7 @@ if (!++gameStates.render.nFrameCount) {		//wrap!
 
 //------------------------------------------------------------------------------
 
-static void ComputeShadowTextureMatrix (int nLight)
+static void ComputeShadowTransformation (int nLight)
 {
 
 	static float bias [16] = {0.5f, 0.0f, 0.0f, 0.0f,
@@ -92,10 +92,14 @@ glGetFloatv (GL_PROJECTION_MATRIX, projection);
 ogl.ResetTransform (1);
 glMatrixMode (GL_TEXTURE);
 glActiveTexture (GL_TEXTURE1 + nLight);
+#if 0
+glGetFloatv (GL_MODELVIEW_MATRIX, lightManager.ShadowTransformation (nLight).m.vec);
+#else
 glLoadMatrixf (bias);
 glMultMatrixf (projection);
 glMultMatrixf (modelView);
 glGetFloatv (GL_TEXTURE_MATRIX, lightManager.ShadowTransformation (nLight).m.vec);
+#endif
 glMatrixMode (matrixMode);
 }
 
@@ -115,7 +119,7 @@ if (gameStates.render.cameras.bActive) {
 	nStartSeg = gameData.objs.viewerP->info.nSegment;
 	G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale, xStereoSeparation);
 	if (gameStates.render.nShadowMap > 0)
-		ComputeShadowTextureMatrix (gameStates.render.nShadowMap - 1);
+		ComputeShadowTransformation (gameStates.render.nShadowMap - 1);
 	}
 else {
 	if (!gameStates.render.nWindow && (bPlayer))
@@ -186,7 +190,7 @@ PROF_START
 gameStates.render.bFullBright = 1;
 #else
 gameStates.render.bFullBright = (automap.Display () && gameOpts->render.automap.bBright)
-#ifdef SHADOWMAPS
+#if MAX_SHADOWMAPS
 										  || (gameStates.render.nShadowMap > 0)
 #endif
 										  ;

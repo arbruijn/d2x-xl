@@ -206,9 +206,9 @@ if (gameData.render.shadows.nShadowMaps == MAX_SHADOW_MAPS)
 	return 0;
 pLight->shadow.nFrame = !pLight->shadow.nFrame;
 gameStates.render.nShadowPass = 2;
-cameraP = gameData.render.shadows.shadowMaps + gameData.render.shadows.nShadowMaps;
-cameraP->Create (gameData.render.shadows.nShadowMaps++, pLight->info.nSegment, 
-					  pLight->info.nSide, pLight->info.nSegment, pLight->info.nSide, NULL, 1, 0);
+cameraP = cameraManager.ShadowMap (gameData.render.shadows.nShadowMaps);
+//cameraP->Create (gameData.render.shadows.nShadowMaps++, pLight->info.nSegment, 
+//					  pLight->info.nSide, pLight->info.nSegment, pLight->info.nSide, NULL, 1, 0);
 cameraP->Render ();
 gameStates.render.nShadowPass = 2;
 return 1;
@@ -249,12 +249,10 @@ FORALL_ACTOR_OBJS (objP, i)
 void DestroyShadowMaps (void)
 {
 for (; gameData.render.shadows.nShadowMaps;)
-	gameData.render.shadows.shadowMaps [--gameData.render.shadows.nShadowMaps].Destroy ();
+	cameraManager.DestroyShadowMap (--gameData.render.shadows.nShadowMaps);
 }
 
 //------------------------------------------------------------------------------
-
-extern int shadowMaps [4];
 
 void ApplyShadowMaps (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
@@ -295,7 +293,7 @@ for (i = 0; i < 4; i++)
 glGetFloatv (GL_PROJECTION_MATRIX, mProjection.m.vec);
 glMatrixMode (GL_TEXTURE);
 for (i = 0; i < lightManager.LightCount (2); i++) {
-	cameraP = cameraManager [shadowMaps [0]];
+	cameraP = cameraManager.ShadowMap (0);
 	ogl.BindTexture (cameraP->FrameBuffer ().DepthBuffer ());
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);

@@ -73,10 +73,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define DBG_SHADOWS 0
 #endif
 
-#if DBG
-#	define SHADOWMAPS
-#endif
-
 #define PER_PIXEL_LIGHTING 1
 
 #include "vers_id.h"
@@ -1523,8 +1519,6 @@ class CShadowData {
 		short					nLight;
 		short					nLights;
 		CDynLight*			lightP;
-		short					nShadowMaps;
-		CCamera				shadowMaps [MAX_SHADOW_MAPS];
 		CObject				lightSource;
 		CFloatVector		vLightPos;
 		CFixVector			vLightDir [MAX_SHADOW_LIGHTS];

@@ -810,7 +810,7 @@ return SortFaces ();
 
 void RenderFaceList (int nType)
 {
-#ifdef SHADOWMAPS
+#if MAX_SHADOWMAPS
 if (gameStates.render.nShadowMap == 0) 
 #endif
 	{

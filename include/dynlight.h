@@ -148,17 +148,12 @@ class CHeadlightManager {
 //------------------------------------------------------------------------------
 
 #define MAX_NEAREST_LIGHTS 32
-#if DBG
-#	define MAX_SHADOW_SOURCES	1
-#else
-#	define MAX_SHADOW_SOURCES	4
-#endif
 
 class CDynLightData {
 	public:
 		CStaticArray<CDynLight, MAX_OGL_LIGHTS>		lights; // [MAX_OGL_LIGHTS];
 		CStaticArray<CDynLight*, MAX_OGL_LIGHTS>		renderLights; // [MAX_OGL_LIGHTS];
-		CStaticArray<CDynLight, MAX_SHADOW_SOURCES>	shadowSources;
+		CStaticArray<CDynLight, MAX_SHADOWMAPS>		shadowSources;
 		CArray< CActiveDynLight >							active [MAX_THREADS]; //[MAX_OGL_LIGHTS];
 		CStaticArray< CDynLightIndex, MAX_THREADS >	index [2]; //[MAX_THREADS];
 		CShortArray			nearestSegLights;		//the 8 nearest static lights for every segment

@@ -62,8 +62,8 @@
 
 //#define _WIN32_WINNT		0x0600
 
-tTexCoord2f quadTexCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
-float quadVerts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+tTexCoord2f quadTexCoord [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
+float quadVerts [4][2] = {{0,0},{1,0},{1,1},{0,1}};
 
 //------------------------------------------------------------------------------
 
@@ -163,7 +163,7 @@ if (HaveDrawBuffer ()) {
 	int bStereo = 0;
 	int nEffects = postProcessManager.HaveEffects () 
 						+ (int (m_data.xStereoSeparation > 0) << 1)
-#ifdef SHADOWMAPS
+#if MAX_SHADOWMAPS
 						+ (int (EGI_FLAG (bShadows, 0, 1, 0) != 0) << 2)
 #endif
 						;
@@ -177,7 +177,7 @@ if (HaveDrawBuffer ()) {
 
 	FlushStereoBuffers (nEffects);
 	FlushEffects (nEffects);
-#ifdef SHADOWMAPS
+#if MAX_SHADOWMAPS
 	FlushShadowMaps (nEffects);
 #else
 	SetDrawBuffer (GL_BACK, 0);

@@ -406,28 +406,21 @@ else {
 
 //------------------------------------------------------------------------------
 
-int shadowMaps [4] = {-1, -1, -1, -1};
-
-#ifdef SHADOWMAPS
+#if MAX_SHADOWMAPS
 
 static void RenderShadowMap (CDynLight* prl, int nLight, fix xStereoSeparation)
 {
-	CCamera* cameraP;
+	CCamera* cameraP = cameraManager.ShadowMap (nLight);
 
-if (shadowMaps [nLight] >= 0)
-	cameraP = cameraManager [shadowMaps [nLight]];
-else {
-	if (!(cameraP = cameraManager.Add ()))
-		return;
-	shadowMaps [nLight] = cameraManager.Index (cameraP);
-	}
+if (!(cameraP || (cameraP = cameraManager.AddShadowMap (nLight))))
+	return;
 
 if (cameraP->HaveBuffer (0))
 	cameraP->Setup (cameraP->Id (), prl->info.nSegment, prl->info.nSide, -1, -1, (prl->info.nObject < 0) ? NULL : OBJECTS + prl->info.nObject, 0);
 else if (!cameraP->Create (cameraManager.Count () - 1, prl->info.nSegment, prl->info.nSide, -1, -1, (prl->info.nObject < 0) ? NULL : OBJECTS + prl->info.nObject, 1, 0))
 	return;
 CCamera* current = cameraManager [cameraManager.Current ()];
-cameraP = cameraManager [shadowMaps [nLight]];
+cameraP = cameraManager.ShadowMap (nLight);
 cameraManager.SetCurrent (cameraP);
 cameraP->Render ();
 cameraManager.SetCurrent (current);
@@ -444,7 +437,7 @@ if (EGI_FLAG (bShadows, 0, 1, 0)) {
 	lightManager.SetNearestStatic (nSegment, 1, 1);
 	CDynLightIndex* sliP = &lightManager.Index (0,1);
 	CActiveDynLight* activeLightsP = lightManager.Active (1) + sliP->nFirst;
-	int nLights = 0, h = (sliP->nActive < MAX_SHADOW_SOURCES) ? sliP->nActive : MAX_SHADOW_SOURCES;
+	int nLights = 0, h = (sliP->nActive < MAX_SHADOWMAPS) ? sliP->nActive : MAX_SHADOWMAPS;
 	for (gameStates.render.nShadowMap = 1; gameStates.render.nShadowMap <= h; gameStates.render.nShadowMap++) {
 		CDynLight* prl = lightManager.GetActive (activeLightsP, 1);
 		if (prl) {
@@ -526,12 +519,12 @@ if (!nWindow)
 PROF_START
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
-#ifdef SHADOWMAPS
+#if MAX_SHADOWMAPS
 if (!(nWindow || gameStates.render.cameras.bActive)) {
 	ogl.SetupTransform (1);
 	lightManager.ShadowTransformation (-1) = OglGetMatrix (GL_MODELVIEW_MATRIX, true); // inverse
 	lightManager.ShadowTransformation (-2) = OglGetMatrix (GL_MODELVIEW_MATRIX, false);
-	//lightManager.ShadowTransformation (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, true); 
+	lightManager.ShadowTransformation (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, false); 
 	ogl.ResetTransform (1);
 #if 0
 	GLint matrixMode;
@@ -567,7 +560,7 @@ if (bShowOnlyCurSide)
 	CCanvas::Current ()->Clear (nClearWindowColor);
 #endif
 
-#ifdef SHADOWMAPS
+#if MAX_SHADOWMAPS
 RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #else
 if (!gameStates.render.bHaveStencilBuffer)
@@ -649,7 +642,7 @@ void RenderMonoFrame (fix xStereoSeparation = 0)
 	CCanvas		frameWindow;
 	int			bExtraInfo = 1;
 
-#ifdef SHADOWMAPS
+#if MAX_SHADOWMAPS
 RenderShadowMaps (xStereoSeparation);
 #endif
 gameStates.render.vr.buffers.screenPages [0].SetupPane (
