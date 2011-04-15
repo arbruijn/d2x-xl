@@ -95,7 +95,7 @@ glActiveTexture (GL_TEXTURE1 + nLight);
 glLoadMatrixf (bias);
 glMultMatrixf (projection);
 glMultMatrixf (modelView);
-glGetFloatv (GL_TEXTURE_MATRIX, lightManager.ShadowTextureMatrix (nLight).m.vec);
+glGetFloatv (GL_TEXTURE_MATRIX, lightManager.ShadowTransformation (nLight).m.vec);
 glMatrixMode (matrixMode);
 }
 

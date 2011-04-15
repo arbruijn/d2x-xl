@@ -259,7 +259,7 @@ class CLightManager {
 		inline COglMaterial& Material (void) { return m_data.material; }
 		inline void ResetIndex (void) { m_data.ResetIndex (); }
 		inline void SetShadowSource (CDynLight& source, int i) { m_data.shadowSources [i] = source; }
-		inline CFloatMatrix& ShadowTextureMatrix (int i) { return m_data.shadowTextureMatrix [i + 3]; }
+		inline CFloatMatrix& ShadowTransformation (int i) { return m_data.shadowTextureMatrix [i + 3]; }
 		inline CDynLight& GetShadowSource (int i) { return m_data.shadowSources [i]; }
 
 
