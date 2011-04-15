@@ -110,9 +110,10 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			}
 		glUniform1i (glGetUniformLocation (shaderProg, "frameBuffer"), 0);
 		glUniform1i (glGetUniformLocation (shaderProg, "depthBuffer"), 1);
-		glUniform1i (glGetUniformLocation (shaderProg, "nLights"), i);
+		//glUniform1i (glGetUniformLocation (shaderProg, "nLights"), i);
+		glUniform1f (glGetUniformLocation (shaderProg, "aspect"), -GLfloat (screen.Height ()) / GLfloat (screen.Width ()));
 		//glUniform2fv (glGetUniformLocation (shaderProg, "screen"), 1, (GLfloat*) screen);
-		//glUniformMatrix4fv (glGetUniformLocation (shaderProg, "invModelViewMat"), 1, (GLboolean) 0, (GLfloat*) lightManager.ShadowTextureMatrix (-1).m.vec);
+		glUniformMatrix4fv (glGetUniformLocation (shaderProg, "projMat"), 1, (GLboolean) 0, (GLfloat*) lightManager.ShadowTextureMatrix (-2).m.vec);
 		glUniformMatrix4fv (glGetUniformLocation (shaderProg, "invProjMat"), 1, (GLboolean) 0, (GLfloat*) lightManager.ShadowTextureMatrix (-3).m.vec);
 		glMatrixMode (matrixMode);
 		ogl.SetBlendMode (0);
@@ -253,14 +254,16 @@ const char* shadowMapFS =
 	"uniform sampler2D frameBuffer;\r\n" \
 	"uniform sampler2D depthBuffer;\r\n" \
 	"uniform sampler2D shadowMap;\r\n" \
-	"//uniform mat4 invModelViewMat;\r\n" \
+	"uniform mat4 projMat;\r\n" \
 	"uniform mat4 invProjMat;\r\n" \
+	"uniform float aspect;\r\n" \
 	"//uniform vec2 screen;\r\n" \
-	"#define LinearDepth(_z) (5000.0 / 4999.0) / ((5000.0 / 4999.0) - (2.0 * (_z) - 1.0))\r\n" \
+	"//#define LinearDepth(_z) (5000.0 / 4999.0) / ((5000.0 / 4999.0) - (2.0 * (_z) - 1.0))\r\n" \
+	"#define EyeZ(_z) projMat [3].z / (-2.0 * (_z) + 1.0 - projMat [2].z);\r\n" \
 	"void main() {\r\n" \
 	"float sceneDepth = texture2D (depthBuffer, gl_TexCoord [0]).r;\r\n" \
-	"float z = LinearDepth (sceneDepth) * 2.0;\r\n" \
-	"vec4 v = vec4 ((gl_TexCoord [0].x - 0.5) * z, (gl_TexCoord [0].y - 0.5) * z, z, 1.0);\r\n" \
+	"float z = EyeZ (sceneDepth);\r\n" \
+	"vec4 v = vec4 ((gl_TexCoord [0].x - 0.5) * z * 2.0, (gl_TexCoord [0].y - 0.5) * aspect * z * 2.0, z, 1.0);\r\n" \
 	"vec4 vertex = invProjMat * v;\r\n" \
 	"gl_TexCoord [1] = gl_TextureMatrix [2] * vertex;\r\n" \
 	"float shadowDepth = texture2DProj (shadowMap, gl_TexCoord [1]).r;\r\n" \
