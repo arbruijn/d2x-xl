@@ -314,7 +314,7 @@ const char* shadowMapFS =
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define ZRANGE (ZFAR - ZNEAR)\r\n" \
-	"#define ZSCALE (ZFAR / ZNEAR)\r\n" \
+	"#define ZSCALE (ZFAR / ZRANGE)\r\n" \
 	"#//define EyeZ(screenZ) (ZFAR / ((screenZ) * ZRANGE - ZFAR))\r\n" \
 	"#define EyeZ(screenZ) (ZSCALE / ((screenZ) - ZSCALE))\r\n" \
 	"void main() {\r\n" \
