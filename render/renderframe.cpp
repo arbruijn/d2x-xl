@@ -529,9 +529,12 @@ SetRenderView (xStereoSeparation, &nStartSeg, 1);
 #ifdef SHADOWMAPS
 if (!(nWindow || gameStates.render.cameras.bActive)) {
 	ogl.SetupTransform (1);
-	lightManager.ShadowTextureMatrix (-1) = OglGetMatrix (GL_MODELVIEW_MATRIX, true);
 	lightManager.ShadowTextureMatrix (-2) = OglGetMatrix (GL_MODELVIEW_MATRIX, false);
+	//lightManager.ShadowTextureMatrix (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, false); 
+	//glMultMatrixf (lightManager.ShadowTextureMatrix (-3).m.vec);
+	lightManager.ShadowTextureMatrix (-1) = OglGetMatrix (GL_MODELVIEW_MATRIX, true); // inverse
 	ogl.ResetTransform (1);
+#if 0
 	GLint matrixMode;
 	glGetIntegerv (GL_MATRIX_MODE, &matrixMode);
 	glMatrixMode (GL_PROJECTION_MATRIX);
@@ -540,6 +543,7 @@ if (!(nWindow || gameStates.render.cameras.bActive)) {
 	lightManager.ShadowTextureMatrix (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, true); // inverse (modelview * projection)
 	glPopMatrix ();
 	glMatrixMode (matrixMode);
+#endif
 	}
 #endif
 PROF_END(ptAux)

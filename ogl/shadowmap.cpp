@@ -124,7 +124,8 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 		glUniform1i (glGetUniformLocation (shaderProg, "sceneColor"), 0);
 		glUniform1i (glGetUniformLocation (shaderProg, "sceneDepth"), 1);
 #if USE_SHADOW2DPROJ
-		glUniformMatrix4fv (glGetUniformLocation (shaderProg, "modelviewProjInverse"), 1, (GLboolean) 0, (GLfloat*) lightManager.ShadowTextureMatrix (-3).m.vec);
+		glUniformMatrix4fv (glGetUniformLocation (shaderProg, "modelviewProjInverse"), 1, (GLboolean) 0, (GLfloat*) lightManager.ShadowTextureMatrix (-1).m.vec);
+		//glUniformMatrix4fv (glGetUniformLocation (shaderProg, "modelviewProjInverse"), 1, (GLboolean) 0, (GLfloat*) lightManager.ShadowTextureMatrix (-3).m.vec);
 #else
 		glUniform2fv (glGetUniformLocation (shaderProg, "screenSize"), 1, (GLfloat*) screenSize);
 #endif
@@ -307,22 +308,17 @@ const char* shadowMapFS =
 	"uniform sampler2D sceneDepth;\r\n" \
 	"uniform sampler2D shadowMap;\r\n" \
 	"uniform vec2 screenSize;\r\n" \
+	"// ZNEAR == 1.0, ZFAR == 5000.0
 	"#define EyeZ(_z) (5000.0 / 4999.0) / ((5000.0 / 4999.0) - (_z))\r\n" \
 	"//#define EyeZ(_z) 5000.0 / ((_z) * 4999.0 - 5000.0)\r\n" \
 	"void main() {\r\n" \
 	"float colorDepth = texture2D (sceneDepth, gl_TexCoord [0]).r;\r\n" \
 	"float z = EyeZ (colorDepth);\r\n" \
-	"vec2 ndc = vec2 ((gl_TexCoord [0].x - 0.5) * 2.0, (gl_TexCoord [0].y - 0.5) * 2.0);\r\n" \
-	"vec4 ls = gl_TextureMatrix [2] * vec4 (ndc * -z, z, 1.0);\r\n" \
-	"//ls.xy /= -ls.z;\r\n" \
-   "//ls.x += 0.5;\r\n" \
-   "//ls.y += 0.5;\r\n" \
-	"//float shadowDepth = texture2D (shadowMap, ls.xy).r;\r\n" \
+	"vec4 ndc = vec4 ((gl_TexCoord [0].xy - vec2 (0.5, 0.5)) * 2.0 * -z, z, 1.0);\r\n" \
+	"vec4 ls = gl_TextureMatrix [2] * ndc;\r\n" \
 	"float shadowDepth = texture2DProj (shadowMap, ls).r;\r\n" \
 	"float light = 0.25 + ((colorDepth < shadowDepth + 0.0005) ? 0.75 : 0.0);\r\n" \
 	"gl_FragColor = vec4 (texture2D (sceneColor, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \
-	"//gl_FragColor = vec4 (texture2D (shadowMap, gl_TexCoord [0].xy).rgb, 1.0);\r\n" \
-	"//gl_FragColor = vec4 (vec3 (shadowDepth), 1.0);\r\n" \
 	"}\r\n";
 
 #endif
