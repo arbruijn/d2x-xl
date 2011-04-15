@@ -308,8 +308,10 @@ const char* shadowMapFS =
 	"uniform sampler2D sceneDepth;\r\n" \
 	"uniform sampler2D shadowMap;\r\n" \
 	"uniform vec2 screenSize;\r\n" \
-	"// ZNEAR == 1.0, ZFAR == 5000.0
-	"#define EyeZ(_z) (5000.0 / 4999.0) / ((5000.0 / 4999.0) - (_z))\r\n" \
+	"#define ZNEAR 1.0\r\n" \
+	"#define ZFAR 5000.0\r\n" \
+	"#define ZSCALE (ZFAR / ZNEAR)\r\n" \
+	"#define EyeZ(_z) ZSCALE / (ZSCALE - (_z))\r\n" \
 	"//#define EyeZ(_z) 5000.0 / ((_z) * 4999.0 - 5000.0)\r\n" \
 	"void main() {\r\n" \
 	"float colorDepth = texture2D (sceneDepth, gl_TexCoord [0]).r;\r\n" \
