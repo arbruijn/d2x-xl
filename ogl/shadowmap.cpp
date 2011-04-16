@@ -98,14 +98,18 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			ogl.SetTexturing (true);
 			glMatrixMode (GL_TEXTURE);
 			glLoadMatrixf (lightManager.ShadowTransformation (i).m.vec);  // light's projection * modelview
-			//glMultMatrixf (lightManager.ShadowTransformation (-1).m.vec); // inverse of camera's modelview
-			glMultMatrixf (lightManager.ShadowTransformation (-3).m.vec); // inverse of camera's projection
+#if 1
+			glMultMatrixf (lightManager.ShadowTransformation (-3).m.vec); // inverse of camera's modelview * inverse of camera's projection
+#else
+			glMultMatrixf (lightManager.ShadowTransformation (-1).m.vec); // inverse of camera's modelview
+			glMultMatrixf (lightManager.ShadowTransformation (-2).m.vec); // inverse of camera's projection
+#endif
 			glMatrixMode (matrixMode);
 			ogl.BindTexture (cameraManager.ShadowMap (i)->FrameBuffer ().DepthBuffer ());
 			glUniform1i (glGetUniformLocation (shaderProg, szShadowMap [i]), i + 2);
 			CDynLight* prl = cameraManager.ShadowLightSource (i);
 			glUniform3fv (glGetUniformLocation (shaderProg, "lightPos"), 1, (GLfloat*) prl->render.vPosf [0].v.vec);
-			glUniform1f (glGetUniformLocation (shaderProg, "lightRange"), (GLfloat) prl->info.fRange);
+			glUniform1f (glGetUniformLocation (shaderProg, "lightRange"), (GLfloat) fabs (prl->info.fRange) * 500.0f);
 			}
 		glUniform1i (glGetUniformLocation (shaderProg, "sceneColor"), 0);
 		glUniform1i (glGetUniformLocation (shaderProg, "sceneDepth"), 1);
@@ -228,15 +232,17 @@ const char* shadowMapFS =
 	"vec4 clipPos;\r\n" \
 	"clipPos.w = -ZEYE;\r\n" \
 	"clipPos.xyz = ndcPos * clipPos.w; // camera\r\n" \
-	"clipPos = gl_TextureMatrix [2] * clipPos; //light\r\n" \
-	"float shadowDepth = texture2DProj (shadowMap, clipPos).r;\r\n" \
+	"vec4 lightPos = gl_TextureMatrix [2] * clipPos; //light\r\n" \
+	"ndcPos = (lightPos.xyz / lightPos.w) * 0.5 + 0.5;\r\n" \
+	"float shadowDepth = texture2D (shadowMap, ndcPos).r;\r\n" \
+	"//float shadowDepth = texture2DProj (shadowMap, lightPos).r;\r\n" \
 	"float light;\r\n" \
 	"if (fragDepth < shadowDepth)\r\n" \
 	"   light = 1.0;\r\n" \
 	"else {\r\n" \
 	"   vec4 worldPos = modelviewProjInverse * clipPos;\r\n" \
 	"   float lightDist = length (lightPos - worldPos.xyz);\r\n" \
-	"   light = 1.0 - 0.75 * (1.0 - min (lightDist, lightRange) / lightRange);\r\n" \
+	"   light = sqrt (min (lightDist, lightRange) / lightRange);\r\n" \
 	"   }\r\n" \
 	"gl_FragColor = vec4 (texture2D (sceneColor, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \
 	"}\r\n";
