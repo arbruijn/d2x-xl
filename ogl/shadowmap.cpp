@@ -294,6 +294,8 @@ const char* shadowMapFS =
 
 #elif USE_SHADOW2DPROJ == 1
 
+#if 0
+
 	"uniform sampler2D sceneColor;\r\n" \
 	"uniform sampler2D sceneDepth;\r\n" \
 	"uniform sampler2D shadowMap;\r\n" \
@@ -304,10 +306,38 @@ const char* shadowMapFS =
 	"vec4 eyePos = projectionInverse * screenPos;\r\n" \
 	"eyePos /= eyePos.w;\r\n" \
 	"vec4 lightPos = gl_TextureMatrix [2] * eyePos;\r\n" \
-	"float shadowDepth = texture2DProj (shadowMap, lightPos).r;\r\n" \
+	"float shadowDepth = /*((abs (lightPos.x / -eyePos.z) > 0.5) || (abs (lightPos.y / -eyePos.z) > 0.5)) ? 2.0 :*/ texture2DProj (shadowMap, lightPos).r;\r\n" \
 	"float light = 0.25 + ((colorDepth < shadowDepth + 0.0005) ? 0.75 : 0.0);\r\n" \
 	"gl_FragColor = vec4 (texture2D (sceneColor, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \
 	"}\r\n";
+
+#else
+
+	"uniform sampler2D sceneColor;\r\n" \
+	"uniform sampler2D sceneDepth;\r\n" \
+	"uniform sampler2D shadowMap;\r\n" \
+	"uniform mat4 projectionInverse;\r\n" \
+	"#define ZNEAR 1.0\r\n" \
+	"#define ZFAR 5000.0\r\n" \
+	"#define A (ZNEAR + ZFAR)\r\n" \
+	"#define B (ZNEAR - ZFAR)\r\n" \
+	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
+	"#define D (ndcPos.z * B)\r\n" \
+	"#define ZEYE -(C / (A + D))\r\n" \
+	"void main() {\r\n" \
+	"float fragDepth = texture2D (sceneDepth, gl_TexCoord [0].xy).r;\r\n" \
+	"vec3 ndcPos = (vec3 (gl_TexCoord [0].xy, fragDepth) - 0.5) * 2.0;\r\n" \
+	"vec4 clipPos;\r\n" \
+	"clipPos.w = -ZEYE;\r\n" \
+	"clipPos.xyz = ndcPos * clipPos.w;\r\n" \
+	"vec4 eyePos = projectionInverse * clipPos;\r\n" \
+	"vec4 lightPos = gl_TextureMatrix [2] * eyePos;\r\n" \
+	"float shadowDepth = texture2DProj (shadowMap, lightPos).r;\r\n" \
+	"float light = 0.25 + ((fragDepth < shadowDepth) ? 0.75 : 0.0);\r\n" \
+	"gl_FragColor = vec4 (texture2D (sceneColor, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \
+	"}\r\n";
+
+#endif
 
 #else
 

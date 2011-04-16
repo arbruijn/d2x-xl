@@ -191,6 +191,7 @@ void CTransformation::SetupProjection (void)
 {
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);
 m_info.projection.Flip ();
+m_info.aspectRatio = 0.75f * float (screen.Width ()) / float (screen.Height ());
 }
 
 //------------------------------------------------------------------------------

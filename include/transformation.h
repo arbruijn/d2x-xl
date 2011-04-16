@@ -43,6 +43,7 @@ typedef struct tTransformation {
 		CFloatMatrix	projection;
 		fix				zoom;
 		float				zoomf;
+		float				aspectRatio;
 } tTransformation;
 
 class CTransformation {
@@ -126,7 +127,8 @@ class CTransformation {
 		_INLINE_ ubyte Codes (CFixVector& v) {
 			ubyte codes = 0;
 			fix z = v.v.coord.z;
-			fix x = FixMulDiv (v.v.coord.x, m_info.scale.v.coord.x, m_info.zoom);
+			fix r = fix (m_info.zoom * m_info.aspectRatio);
+			fix x = FixMulDiv (v.v.coord.x, m_info.scale.v.coord.x, r);
 
 			if (x > z)
 				codes |= CC_OFF_RIGHT;
