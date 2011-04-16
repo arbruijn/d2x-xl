@@ -187,11 +187,11 @@ m_info.aspect.v.coord.z = I2X (1);		//always 1
 
 //------------------------------------------------------------------------------
 
-void CTransformation::SetupProjection (void)
+void CTransformation::SetupProjection (float aspectRatio)
 {
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);
 m_info.projection.Flip ();
-m_info.aspectRatio = 0.75f * float (screen.Width ()) / float (screen.Height ());
+m_info.aspectRatio = aspectRatio;
 }
 
 //------------------------------------------------------------------------------

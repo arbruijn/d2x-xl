@@ -431,7 +431,8 @@ void COGL::SetupProjection (void)
 gameStates.render.glAspect = m_states.bUseTransform ? double (screen.Width ()) / double (screen.Height ()) : 1.0;
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
-gameStates.render.glFOV = gameStates.render.nShadowMap ? 170.0 : 105.0 * 0.75 * double (screen.Width ()) / double (screen.Height ()); // scale with ratio of current aspect to 4:3;
+float aspectRatio = 1.0; // 0.75 * double (screen.Width ()) / double (screen.Height ()) - ratio of current aspect to 4:3
+gameStates.render.glFOV = gameStates.render.nShadowMap ? 170.0 : 105.0 * aspectRatio; // scale with ratio of current aspect to 4:3;
 if (StereoSeparation () && (gameOpts->render.stereo.nMethod == STEREO_PARALLEL))
 	SetupFrustum ();
 else {
@@ -446,7 +447,7 @@ m_data.depthScale.v.coord.z = float (ZFAR - ZNEAR);
 m_data.screenScale.x = 1.0f / float (screen.Width ());
 m_data.screenScale.y = 1.0f / float (screen.Height ());
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-transformation.SetupProjection ();
+transformation.SetupProjection (aspectRatio);
 glMatrixMode (GL_MODELVIEW);
 }
 

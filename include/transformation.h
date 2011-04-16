@@ -152,7 +152,7 @@ class CTransformation {
 
 		void ComputeAspect (void);
 
-		void SetupProjection (void);
+		void SetupProjection (float aspectRatio);
 
 	};
 
