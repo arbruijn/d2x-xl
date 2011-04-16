@@ -566,15 +566,20 @@ if (!(nWindow || gameStates.render.cameras.bActive)) {
 	ogl.SetupTransform (1);
 	lightManager.ShadowTransformation (-1) = OglGetMatrix (GL_MODELVIEW_MATRIX, true); // inverse
 	lightManager.ShadowTransformation (-2) = OglGetMatrix (GL_MODELVIEW_MATRIX, false);
-	lightManager.ShadowTransformation (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, false); 
+	lightManager.ShadowTransformation (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, true); 
 	ogl.ResetTransform (1);
 #if 0
 	GLint matrixMode;
 	glGetIntegerv (GL_MATRIX_MODE, &matrixMode);
 	glMatrixMode (GL_PROJECTION_MATRIX);
 	glPushMatrix ();
+#if 1
+	glLoadMatrixf (lightManager.ShadowTransformation (-3).m.vec); // inverse camera projection
+	glMultMatrixf (lightManager.ShadowTransformation (-1).m.vec); // inverse camera modelview
+#else
 	glMultMatrixf (lightManager.ShadowTransformation (-2).m.vec);
 	lightManager.ShadowTransformation (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, true); // inverse (modelview * projection)
+#endif
 	glPopMatrix ();
 	glMatrixMode (matrixMode);
 #endif
