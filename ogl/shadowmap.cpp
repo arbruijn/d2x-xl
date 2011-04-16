@@ -233,7 +233,7 @@ const char* shadowMapFS =
 	"clipPos.w = -ZEYE;\r\n" \
 	"clipPos.xyz = ndcPos * clipPos.w; // camera\r\n" \
 	"vec4 lightPos = gl_TextureMatrix [2] * clipPos; //light\r\n" \
-	"ndcPos = (lightPos.xyz / lightPos.w) * 0.5 + 0.5;\r\n" \
+	"ndcPos = (lightPos.xyz / lightPos.w);\r\n" \
 	"float shadowDepth = texture2D (shadowMap, ndcPos).r;\r\n" \
 	"//float shadowDepth = texture2DProj (shadowMap, lightPos).r;\r\n" \
 	"float light;\r\n" \
