@@ -196,6 +196,8 @@ glPopMatrix ();
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 int RenderShadowMap (CDynLight *pLight)
 {
 	CCamera	*cameraP;
@@ -213,6 +215,8 @@ cameraP->Render ();
 gameStates.render.nShadowPass = 2;
 return 1;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 //The following code is an attempt to find all objects that cast a shadow visible

@@ -109,7 +109,7 @@ fSpecular.SetZero ();
 fEmissive.SetZero ();
 bTransform = 0;
 info.Init ();
-shadow.Init ();
+//shadow.Init ();
 }
 
 // ----------------------------------------------------------------------------

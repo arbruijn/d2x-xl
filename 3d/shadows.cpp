@@ -1423,28 +1423,24 @@ if (FAST_SHADOWS) {
 				continue;
 			}
 		gameData.render.shadows.vLightDir [gameData.render.shadows.nLight++] = vLightDir;
-		if (gameStates.render.nShadowMap)
-			RenderShadowMap (gameData.render.shadows.lightP);
-		else {
-			gameStates.render.bRendering = 1;
-			transformation.Transform (vLightPos, gameData.render.shadows.lightP->info.vPos, 0);
-			vLightPosf.Assign (vLightPos);
-			if (gameOpts->render.shadows.nClip) {
-				// get a default clipping distance using the model position as fall back
-				transformation.Transform (v, objP->info.position.vPos, 0);
-				fInf = NearestShadowedWallDist (objP->Index (), objP->info.nSegment, &v, 0);
-				}
-			else
-				fInf = G3_INFINITY;
-			po->VertsToFloat ();
-			transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
-			po->m_litFaces.Reset ();
-			if (gameOpts->render.shadows.nClip >= 2)
-				po->m_fClipDist.Clear ();
-			po->m_subModels [0].RenderShadow (objP, po);
-			transformation.End ();
-			gameStates.render.bRendering = 0;
+		gameStates.render.bRendering = 1;
+		transformation.Transform (vLightPos, gameData.render.shadows.lightP->info.vPos, 0);
+		vLightPosf.Assign (vLightPos);
+		if (gameOpts->render.shadows.nClip) {
+			// get a default clipping distance using the model position as fall back
+			transformation.Transform (v, objP->info.position.vPos, 0);
+			fInf = NearestShadowedWallDist (objP->Index (), objP->info.nSegment, &v, 0);
 			}
+		else
+			fInf = G3_INFINITY;
+		po->VertsToFloat ();
+		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
+		po->m_litFaces.Reset ();
+		if (gameOpts->render.shadows.nClip >= 2)
+			po->m_fClipDist.Clear ();
+		po->m_subModels [0].RenderShadow (objP, po);
+		transformation.End ();
+		gameStates.render.bRendering = 0;
 		}
 	}
 else {
