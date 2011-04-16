@@ -1400,6 +1400,7 @@ class CBase {
 
 #include "cameras.h"
 
+#if 0
 class CShadowLightData {
 	public:
 		CFloatVector	vPosf;
@@ -1414,6 +1415,8 @@ class CShadowLightData {
 };
 
 #define MAX_SHADOW_MAPS	20
+#endif
+
 #define MAX_SHADOW_LIGHTS 8
 
 typedef struct tLightRef {

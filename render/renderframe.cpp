@@ -410,9 +410,12 @@ else {
 
 static void RenderShadowMap (CDynLight* prl, int nLight, fix xStereoSeparation)
 {
+if (!prl)
+	return;
+
 	CCamera* cameraP = cameraManager.ShadowMap (nLight);
 
-if (!(cameraP || (cameraP = cameraManager.AddShadowMap (nLight))))
+if (!(cameraP || (cameraP = cameraManager.AddShadowMap (nLight, prl))))
 	return;
 
 if (cameraP->HaveBuffer (0))
@@ -438,13 +441,8 @@ if (EGI_FLAG (bShadows, 0, 1, 0)) {
 	CDynLightIndex* sliP = &lightManager.Index (0,1);
 	CActiveDynLight* activeLightsP = lightManager.Active (1) + sliP->nFirst;
 	int nLights = 0, h = (sliP->nActive < MAX_SHADOWMAPS) ? sliP->nActive : MAX_SHADOWMAPS;
-	for (gameStates.render.nShadowMap = 1; gameStates.render.nShadowMap <= h; gameStates.render.nShadowMap++) {
-		CDynLight* prl = lightManager.GetActive (activeLightsP, 1);
-		if (prl) {
-			RenderShadowMap (prl, nLights, xStereoSeparation);
-			lightManager.SetShadowSource (*prl, nLights++);
-			}
-		}
+	for (gameStates.render.nShadowMap = 1; gameStates.render.nShadowMap <= h; gameStates.render.nShadowMap++) 
+		RenderShadowMap (lightManager.GetActive (activeLightsP, 1), nLights, xStereoSeparation);
 	lightManager.SetLightCount (nLights, 2);
 	gameStates.render.nShadowMap = 0;
 	}

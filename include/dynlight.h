@@ -89,7 +89,7 @@ class CDynLight {
 		ubyte					bTransform;
 		CDynLightInfo		info;
 		CLightRenderData	render;
-		CShadowLightData	shadow;
+		//CShadowLightData	shadow;
 
 	public:
 		CDynLight ();
@@ -153,7 +153,7 @@ class CDynLightData {
 	public:
 		CStaticArray<CDynLight, MAX_OGL_LIGHTS>		lights; // [MAX_OGL_LIGHTS];
 		CStaticArray<CDynLight*, MAX_OGL_LIGHTS>		renderLights; // [MAX_OGL_LIGHTS];
-		CStaticArray<CDynLight, MAX_SHADOWMAPS>		shadowSources;
+		//CStaticArray<CDynLight, MAX_SHADOWMAPS>		shadowSources;
 		CArray< CActiveDynLight >							active [MAX_THREADS]; //[MAX_OGL_LIGHTS];
 		CStaticArray< CDynLightIndex, MAX_THREADS >	index [2]; //[MAX_THREADS];
 		CShortArray			nearestSegLights;		//the 8 nearest static lights for every segment
@@ -253,9 +253,9 @@ class CLightManager {
 		inline CByteArray& VariableVertLights (void) { return m_data.variableVertLights; }
 		inline COglMaterial& Material (void) { return m_data.material; }
 		inline void ResetIndex (void) { m_data.ResetIndex (); }
-		inline void SetShadowSource (CDynLight& source, int i) { m_data.shadowSources [i] = source; }
+		//inline void SetShadowSource (CDynLight& source, int i) { m_data.shadowSources [i] = source; }
+		//inline CDynLight& GetShadowSource (int i) { return m_data.shadowSources [i]; }
 		inline CFloatMatrix& ShadowTransformation (int i) { return m_data.shadowTextureMatrix [i + 3]; }
-		inline CDynLight& GetShadowSource (int i) { return m_data.shadowSources [i]; }
 
 
 	private:

@@ -3,6 +3,7 @@
 
 #include "ogl_defs.h"
 #include "ogl_texture.h"
+#include "dynlight.h"
 
 #if DBG
 #	define MAX_SHADOWMAPS	1
@@ -88,13 +89,19 @@ class CCamera : public CCanvas {
 
 //------------------------------------------------------------------------------
 
+typedef struct tShadowMapInfo {
+	public:
+		int			nCamera;
+		CDynLight*	prl;
+} tShadowMapInfo;
+
 class CCameraManager {
 	private:
 		CStack<CCamera>		m_cameras;
 		CCamera*					m_current;
 		CArray<char>			m_faceCameras;
 		CArray<ushort>			m_objectCameras;
-		CStaticArray<short, MAX_SHADOWMAPS>	m_shadowMaps;
+		CStaticArray<tShadowMapInfo, MAX_SHADOWMAPS>	m_shadowMaps;
 
 	public:
 		int				m_fboType;
@@ -120,19 +127,22 @@ class CCameraManager {
 		inline int Index (CCamera* cameraP) { return m_cameras.Buffer () ? int (cameraP - m_cameras.Buffer ()) : -1; }
 		inline CCamera* Add (void) { return ((m_cameras.Buffer () || Create ()) && m_cameras.Grow ()) ? m_cameras.Top () : NULL; }
 		inline CCamera* operator[] (uint i) { return (i < m_cameras.ToS ()) ? &m_cameras [i] : NULL; }
-		inline CCamera* ShadowMap (int i) { return (m_shadowMaps [i] < 0) ? NULL : (*this) [i]; }
-		inline CCamera* AddShadowMap (int i) { 
+		inline CCamera* ShadowMap (int i) { return (m_shadowMaps [i].nCamera < 0) ? NULL : (*this) [i]; }
+		inline CDynLight* ShadowLightSource (int i) { return (m_shadowMaps [i].nCamera < 0) ? NULL : m_shadowMaps [i].prl; }
+		inline CCamera* AddShadowMap (int i, CDynLight* prl) { 
 			CCamera* cameraP = Add ();
 			if (!cameraP)
 				return NULL;
-			m_shadowMaps [i] = Index (cameraP);
+			m_shadowMaps [i].nCamera = Index (cameraP);
+			m_shadowMaps [i].prl = prl;
 			return cameraP;
 			}
 		inline void DestroyShadowMap (int i) {
 			CCamera* cameraP = ShadowMap (i);
 			if (cameraP) {
 				cameraP->Destroy ();
-				m_shadowMaps [i] = -1;
+				m_shadowMaps [i].nCamera = -1;
+				m_shadowMaps [i].prl = NULL;
 				}
 			}
 	};
