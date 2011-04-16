@@ -525,7 +525,11 @@ inline int RenderSegmentList (int nType)
 {
 PROF_START
 gameStates.render.nType = nType;
+#if MAX_SHADOWMAPS
+if (gameStates.render.nShadowMap == 0) {
+#else
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
+#endif
 	BumpVisitedFlag ();
 	RenderFaceList (nType);
 	ogl.ClearError (0);
