@@ -107,6 +107,7 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			glLoadMatrixf (lightManager.ShadowTransformation (i).m.vec);  // light's projection * modelview
 #if USE_SHADOW2DPROJ
 			glMultMatrixf (lightManager.ShadowTransformation (-1).m.vec); // inverse of camera's modelview
+			glMultMatrixf (lightManager.ShadowTransformation (-3).m.vec); // inverse of camera's projection
 #else
 #	if 1
 			glMultMatrixf (lightManager.ShadowTransformation (-1).m.vec); // inverse of camera's modelview
@@ -330,8 +331,9 @@ const char* shadowMapFS =
 	"vec4 clipPos;\r\n" \
 	"clipPos.w = -ZEYE;\r\n" \
 	"clipPos.xyz = ndcPos * clipPos.w;\r\n" \
-	"vec4 eyePos = projectionInverse * clipPos;\r\n" \
-	"vec4 lightPos = gl_TextureMatrix [2] * eyePos;\r\n" \
+	"//vec4 eyePos = projectionInverse * clipPos;\r\n" \
+	"//vec4 lightPos = gl_TextureMatrix [2] * eyePos;\r\n" \
+	"vec4 lightPos = gl_TextureMatrix [2] * clipPos;\r\n" \
 	"float shadowDepth = texture2DProj (shadowMap, lightPos).r;\r\n" \
 	"float light = 0.25 + ((fragDepth < shadowDepth) ? 0.75 : 0.0);\r\n" \
 	"gl_FragColor = vec4 (texture2D (sceneColor, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \
