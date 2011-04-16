@@ -185,9 +185,18 @@ m_data.bShadowMap = bShadowMap;
 SetWidth (Pow2ize (screen.Width () / (2 - gameOpts->render.cameras.bHires)));
 SetHeight (Pow2ize (screen.Height () / (2 - gameOpts->render.cameras.bHires)));
 #else
-int nScreenScale = (/*bShadowMap ||*/ !gameOpts->render.cameras.bHires) ? 2 : 1;
-SetWidth (screen.Width () / nScreenScale);
-SetHeight (screen.Height () / nScreenScale);
+if (bShadowMap) {
+	int nSize = Pow2ize (int (sqrt (double (screen.Width () * screen.Height ()))));
+	if (!gameOpts->render.cameras.bHires)
+		nSize /= 2;
+	SetWidth (nSize);
+	SetHeight (nSize);
+	}
+else {
+	int nScreenScale = (!gameOpts->render.cameras.bHires) ? 2 : 1;
+	SetWidth (screen.Width () / nScreenScale);
+	SetHeight (screen.Height () / nScreenScale);
+	}
 #endif
 SetBPP (4);
 //SetRowSize (max (CCanvas::Current ()->Width (), Width ()));
@@ -426,7 +435,12 @@ if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 if (ReleaseBuffer ()) {
 	CObject* viewerP = gameData.objs.viewerP;
 	gameData.objs.viewerP = m_data.objP;
+	CCanvas* curCanvP;
+	if ((curCanvP = m_data.bShadowMap ? CCanvas::Current () : NULL))
+		CCanvas::SetCurrent (this);
 	RenderFrame (0, 0);
+	if (curCanvP)
+		CCanvas::SetCurrent (curCanvP);
 	gameData.objs.viewerP = viewerP;
 	m_data.bValid = 1;
 	DisableBuffer ();

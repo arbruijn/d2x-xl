@@ -496,11 +496,12 @@ return true;
 
 //------------------------------------------------------------------------------
 
-void CBackgroundManager::Rebuild (void)
+void CBackgroundManager::Rebuild (int bGame)
 {
 Destroy ();
 Setup (BackgroundName (BG_MENU), 0, 0, screen.Width (), screen.Height ());
-GrUpdate (0);
+if (!bGame)
+	GrUpdate (0);
 }
 
 //------------------------------------------------------------------------------

@@ -428,16 +428,10 @@ else
 
 void COGL::SetupProjection (void)
 {
-#if 0
-gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
-#else
-if (m_states.bUseTransform)
-	gameStates.render.glAspect = double (screen.Width ()) / double (screen.Height ());
-else
-	gameStates.render.glAspect = 1.0;
-#endif
+gameStates.render.glAspect = m_states.bUseTransform ? double (screen.Width ()) / double (screen.Height ()) : 1.0;
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
+gameStates.render.glFOV = gameStates.render.nShadowMap ? 180.0 : 105.0 * 0.75 * double (screen.Width ()) / double (screen.Height ()); // scale with ratio of current aspect to 4:3;
 if (StereoSeparation () && (gameOpts->render.stereo.nMethod == STEREO_PARALLEL))
 	SetupFrustum ();
 else {
@@ -858,9 +852,10 @@ else
 void COGL::RebuildContext (int bGame)
 {
 m_states.bRebuilding = 1;
+cameraManager.Destroy ();
 m_data.Initialize ();
 SetupExtensions ();
-backgroundManager.Rebuild ();
+backgroundManager.Rebuild (bGame);
 if (!gameStates.app.bGameRunning)
 	messageBox.Show (TXT_PREPARE_FOR_DESCENT);
 ResetClientStates ();
