@@ -408,25 +408,28 @@ else {
 
 #if MAX_SHADOWMAPS
 
-static void RenderShadowMap (CDynLight* prl, int nLight, fix xStereoSeparation)
+static int RenderShadowMap (CDynLight* prl, int nLight, fix xStereoSeparation)
 {
 if (!prl)
-	return;
+	return 0;
 
 	CCamera* cameraP = cameraManager.ShadowMap (nLight);
 
-if (!(cameraP || (cameraP = cameraManager.AddShadowMap (nLight, prl))))
-	return;
+if (!(cameraP || (cameraP = cameraManager.AddShadowMap (nLight, prl)))) 
+	return 0;
 
 if (cameraP->HaveBuffer (0))
 	cameraP->Setup (cameraP->Id (), prl->info.nSegment, prl->info.nSide, -1, -1, (prl->info.nObject < 0) ? NULL : OBJECTS + prl->info.nObject, 0);
-else if (!cameraP->Create (cameraManager.Count () - 1, prl->info.nSegment, prl->info.nSide, -1, -1, (prl->info.nObject < 0) ? NULL : OBJECTS + prl->info.nObject, 1, 0))
-	return;
+else if (!cameraP->Create (cameraManager.Count () - 1, prl->info.nSegment, prl->info.nSide, -1, -1, (prl->info.nObject < 0) ? NULL : OBJECTS + prl->info.nObject, 1, 0)) {
+	cameraManager.DestroyShadowMap (nLight);
+	return 0;
+	}
 CCamera* current = cameraManager [cameraManager.Current ()];
 cameraP = cameraManager.ShadowMap (nLight);
 cameraManager.SetCurrent (cameraP);
 cameraP->Render ();
 cameraManager.SetCurrent (current);
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -442,7 +445,7 @@ if (EGI_FLAG (bShadows, 0, 1, 0)) {
 	CActiveDynLight* activeLightsP = lightManager.Active (1) + sliP->nFirst;
 	int nLights = 0, h = (sliP->nActive < MAX_SHADOWMAPS) ? sliP->nActive : MAX_SHADOWMAPS;
 	for (gameStates.render.nShadowMap = 1; gameStates.render.nShadowMap <= h; gameStates.render.nShadowMap++) 
-		RenderShadowMap (lightManager.GetActive (activeLightsP, 1), nLights, xStereoSeparation);
+		nLights += RenderShadowMap (lightManager.GetActive (activeLightsP, 1), nLights, xStereoSeparation);
 	lightManager.SetLightCount (nLights, 2);
 	gameStates.render.nShadowMap = 0;
 	}
@@ -563,21 +566,16 @@ SetRenderView (xStereoSeparation, &nStartSeg, 1);
 if (!(nWindow || gameStates.render.cameras.bActive)) {
 	ogl.SetupTransform (1);
 	lightManager.ShadowTransformation (-1) = OglGetMatrix (GL_MODELVIEW_MATRIX, true); // inverse
-	lightManager.ShadowTransformation (-2) = OglGetMatrix (GL_MODELVIEW_MATRIX, false);
-	lightManager.ShadowTransformation (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, true); 
+	lightManager.ShadowTransformation (-2) = OglGetMatrix (GL_PROJECTION_MATRIX, true); 
+	lightManager.ShadowTransformation (-3) = OglGetMatrix (GL_MODELVIEW_MATRIX, false);
 	ogl.ResetTransform (1);
 #if 0
 	GLint matrixMode;
 	glGetIntegerv (GL_MATRIX_MODE, &matrixMode);
 	glMatrixMode (GL_PROJECTION_MATRIX);
 	glPushMatrix ();
-#if 1
-	glLoadMatrixf (lightManager.ShadowTransformation (-3).m.vec); // inverse camera projection
-	glMultMatrixf (lightManager.ShadowTransformation (-1).m.vec); // inverse camera modelview
-#else
-	glMultMatrixf (lightManager.ShadowTransformation (-2).m.vec);
+	glMultMatrixf (lightManager.ShadowTransformation (-3).m.vec);
 	lightManager.ShadowTransformation (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, true); // inverse (modelview * projection)
-#endif
 	glPopMatrix ();
 	glMatrixMode (matrixMode);
 #endif

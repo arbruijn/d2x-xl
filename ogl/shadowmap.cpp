@@ -98,15 +98,18 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			ogl.SetTexturing (true);
 			glMatrixMode (GL_TEXTURE);
 			glLoadMatrixf (lightManager.ShadowTransformation (i).m.vec);  // light's projection * modelview
-			glMultMatrixf (lightManager.ShadowTransformation (-1).m.vec); // inverse of camera's modelview
+			//glMultMatrixf (lightManager.ShadowTransformation (-1).m.vec); // inverse of camera's modelview
 			glMultMatrixf (lightManager.ShadowTransformation (-3).m.vec); // inverse of camera's projection
 			glMatrixMode (matrixMode);
 			ogl.BindTexture (cameraManager.ShadowMap (i)->FrameBuffer ().DepthBuffer ());
 			glUniform1i (glGetUniformLocation (shaderProg, szShadowMap [i]), i + 2);
+			CDynLight* prl = cameraManager.ShadowLightSource (i);
+			glUniform3fv (glGetUniformLocation (shaderProg, "lightPos"), 1, (GLfloat*) prl->render.vPosf [0].v.vec);
+			glUniform1f (glGetUniformLocation (shaderProg, "lightRange"), (GLfloat) prl->info.fRange);
 			}
 		glUniform1i (glGetUniformLocation (shaderProg, "sceneColor"), 0);
 		glUniform1i (glGetUniformLocation (shaderProg, "sceneDepth"), 1);
-		glUniformMatrix4fv (glGetUniformLocation (shaderProg, "projectionInverse"), 1, (GLboolean) 0, (GLfloat*) lightManager.ShadowTransformation (-3).m.vec);
+		glUniformMatrix4fv (glGetUniformLocation (shaderProg, "modelviewProjInverse"), 1, (GLboolean) 0, (GLfloat*) lightManager.ShadowTransformation (-3).m.vec);
 		ogl.SetBlendMode (0);
 		OglDrawArrays (GL_QUADS, 0, 4);
 		for (i = 0; i < lightManager.LightCount (2); i++) {
@@ -209,7 +212,9 @@ const char* shadowMapFS =
 	"uniform sampler2D sceneColor;\r\n" \
 	"uniform sampler2D sceneDepth;\r\n" \
 	"uniform sampler2D shadowMap;\r\n" \
-	"uniform mat4 projectionInverse;\r\n" \
+	"uniform mat4 modelviewProjInverse;\r\n" \
+	"uniform vec3 lightPos;\r\n" \
+	"uniform float lightRange;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define A (ZNEAR + ZFAR)\r\n" \
@@ -222,12 +227,17 @@ const char* shadowMapFS =
 	"vec3 ndcPos = (vec3 (gl_TexCoord [0].xy, fragDepth) - 0.5) * 2.0;\r\n" \
 	"vec4 clipPos;\r\n" \
 	"clipPos.w = -ZEYE;\r\n" \
-	"clipPos.xyz = ndcPos * clipPos.w;\r\n" \
-	"//vec4 eyePos = projectionInverse * clipPos;\r\n" \
-	"//vec4 lightPos = gl_TextureMatrix [2] * eyePos;\r\n" \
-	"clipPos = gl_TextureMatrix [2] * clipPos;\r\n" \
+	"clipPos.xyz = ndcPos * clipPos.w; // camera\r\n" \
+	"clipPos = gl_TextureMatrix [2] * clipPos; //light\r\n" \
 	"float shadowDepth = texture2DProj (shadowMap, clipPos).r;\r\n" \
-	"float light = 0.25 + ((fragDepth < shadowDepth) ? 0.75 : 0.0);\r\n" \
+	"float light;\r\n" \
+	"if (fragDepth < shadowDepth)\r\n" \
+	"   light = 1.0;\r\n" \
+	"else {\r\n" \
+	"   vec4 worldPos = modelviewProjInverse * clipPos;\r\n" \
+	"   float lightDist = length (lightPos - worldPos.xyz);\r\n" \
+	"   light = 1.0 - 0.75 * (1.0 - min (lightDist, lightRange) / lightRange);\r\n" \
+	"   }\r\n" \
 	"gl_FragColor = vec4 (texture2D (sceneColor, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \
 	"}\r\n";
 
