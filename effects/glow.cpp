@@ -249,13 +249,17 @@ if (gameOpts->render.effects.bGlow != 1)
 	return;
 if (!bTransformed)
 	transformation.Transform (v, v);
+tScreenPos s;
+#if 1
+ProjectPoint (v, s);
+#else
 v = transformation.m_info.projection * v;
 float z = -v.v.coord.z;
-tScreenPos s;
 float w = (float) ScreenWidth () / 2.0f;
 float h = (float) ScreenHeight () / 2.0f;
-s.x = fix (w + float (v.v.coord.x) * w / z);
-s.y = fix (h + float (v.v.coord.y) * h / z);
+s.x = fix (w - float (v.v.coord.x) * w / v.v.coord.z);
+s.y = fix (h - float (v.v.coord.y) * h / v.v.coord.z);
+#endif
 #pragma omp critical
 if (m_screenMin.x > s.x)
 	m_screenMin.x = s.x;

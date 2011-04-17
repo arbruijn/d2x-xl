@@ -181,9 +181,6 @@ else {
 	}
 if (nStartSegP)
 	*nStartSegP = nStartSeg;
-ogl.SetupTransform (1);
-transformation.m_info.modelview.Get (GL_MODELVIEW_MATRIX);
-ogl.ResetTransform (1);
 }
 
 //------------------------------------------------------------------------------

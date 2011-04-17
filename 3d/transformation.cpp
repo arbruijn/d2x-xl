@@ -191,6 +191,11 @@ void CTransformation::SetupProjection (float aspectRatio)
 {
 #if 1
 m_info.projection.Get (GL_PROJECTION_MATRIX);
+glMatrixMode (GL_MODELVIEW);
+glPushMatrix ();
+glLoadIdentity ();
+m_info.modelview.Get (GL_PROJECTION_MATRIX);
+glPopMatrix ();
 #else
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);
 m_info.projection.Flip ();
