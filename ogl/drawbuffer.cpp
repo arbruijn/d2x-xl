@@ -100,7 +100,7 @@ bSemaphore--;
 
 void COGL::DestroyDrawBuffers (void)
 {
-for (int i = m_data.drawBuffers.Length () - 1; i > 0; i--) {
+for (int i = m_data.drawBuffers.Length () - 1; i >= 0; i--) {
 	if (m_data.drawBuffers [i].Handle ()) {
 		SelectDrawBuffer (i);
 		DestroyDrawBuffer ();

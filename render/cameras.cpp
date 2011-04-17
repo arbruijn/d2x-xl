@@ -439,7 +439,7 @@ if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 //gameOpts->render.nMaxFPS = 1;
 if (ReleaseBuffer ()) {
 	CObject* viewerP = gameData.objs.viewerP;
-	gameData.objs.viewerP = m_data.objP;
+	gameData.objs.viewerP = m_data.objP ? m_data.objP : &m_data.obj;
 	CCanvas* curCanvP;
 	if ((curCanvP = m_data.bShadowMap ? CCanvas::Current () : NULL))
 		CCanvas::SetCurrent (this);

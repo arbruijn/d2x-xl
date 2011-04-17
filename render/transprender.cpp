@@ -1342,7 +1342,7 @@ if (!gameOpts->render.effects.bEnabled)
 	return 0;
 if (!ogl.m_states.bGlowRendering)
 	return true;
-if (gameStates.render.cameras.bActive)
+if (gameStates.render.cameras.bActive && !gameOpts->render.cameras.bHires)
 	return 0;
 return int (m_data.bRenderGlow || m_data.bSoftBlend);
 }

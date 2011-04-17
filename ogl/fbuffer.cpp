@@ -100,7 +100,14 @@ for (int i = 0; i < nBuffers; i++) {
 	m_info.bufferIds [i] = GL_COLOR_ATTACHMENT0_EXT + i;
 	//glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, m_info.bufferIds [i], GL_TEXTURE_2D, m_info.hColorBuffer [i], 0);
 	}
-return glGetError () ? 0 : nBuffers;
+#if DBG
+GLenum nError = glGetError ();
+if (nError)
+	return 0;
+return 1;
+#else
+return glGetError () ? 0 : 1;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -126,7 +133,14 @@ else if (m_info.nType != 2) { // 2 -> GPGPU
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hStencilBuffer = m_info.hDepthBuffer, 0);
 		}
 	}
+#if DBG
+GLenum nError = glGetError ();
+if (nError)
+	return 0;
+return 1;
+#else
 return glGetError () ? 0 : 1;
+#endif
 }
 
 //------------------------------------------------------------------------------

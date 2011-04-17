@@ -105,9 +105,9 @@ return hBuffer;
 
 void COGL::DestroyDepthTexture (int bFBO)
 {
-if (ogl.m_states.hDepthBuffer [bFBO]) {
-	ogl.DeleteTextures (1, &ogl.m_states.hDepthBuffer [bFBO]);
-	ogl.m_states.hDepthBuffer [bFBO] = 0;
+if (m_states.hDepthBuffer [bFBO]) {
+	DeleteTextures (1, &m_states.hDepthBuffer [bFBO]);
+	m_states.hDepthBuffer [bFBO] = 0;
 	}
 }
 

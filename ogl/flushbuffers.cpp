@@ -139,13 +139,13 @@ if (!gameStates.menus.nInMenu || bForce) {
 void COGL::FlushEffects (int nEffects)
 {
 //ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
-if (nEffects & 3) {
+if (nEffects & 5) {
 	postProcessManager.Setup ();
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.BindTexture (DrawBuffer ((nEffects & 2) ? 2 : 0)->ColorBuffer ());
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
-	if ((nEffects & 2) == 0)
+	if ((nEffects & 4) == 0)
 		SetDrawBuffer (GL_BACK, 0);
 	else {
 		SelectDrawBuffer (1);
@@ -179,10 +179,6 @@ if (HaveDrawBuffer ()) {
 	FlushEffects (nEffects);
 #if MAX_SHADOWMAPS
 	FlushShadowMaps (nEffects);
-#else
-	SetDrawBuffer (GL_BACK, 0);
-	ogl.BindTexture (DrawBuffer ((nEffects & 1) ? 1 : (nEffects & 2) ? 2 : 0)->ColorBuffer ());
-	OglDrawArrays (GL_QUADS, 0, 4);
 #endif
 	ResetClientStates (0);
 	SelectDrawBuffer (0);
