@@ -69,6 +69,8 @@ extern float quadVerts [4][2];
 
 //------------------------------------------------------------------------------
 
+#if MAX_SHADOWMAPS
+
 void COGL::FlushShadowMaps (int nEffects)
 {
 	static const char* szShadowMap [] = {"shadowMap", "shadow1", "shadow2", "shadow3"};
@@ -123,6 +125,8 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 		}
 	}
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 

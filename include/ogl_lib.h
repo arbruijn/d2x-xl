@@ -312,7 +312,9 @@ class COGL {
 		void SetReadBuffer (int nBuffer, int bFBO);
 		void FlushStereoBuffers (int nEffects);
 		void FlushEffects (int nEffects);
+#if MAX_SHADOWMAPS
 		void FlushShadowMaps (int nEffects);
+#endif
 		void FlushDrawBuffer (bool bAdditive = false);
 		void ChooseDrawBuffer (void);
 

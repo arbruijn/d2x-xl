@@ -252,11 +252,15 @@ FORALL_ACTOR_OBJS (objP, i)
 
 void DestroyShadowMaps (void)
 {
+#if MAX_SHADOWMAPS
 for (; gameData.render.shadows.nShadowMaps;)
 	cameraManager.DestroyShadowMap (--gameData.render.shadows.nShadowMaps);
+#endif
 }
 
 //------------------------------------------------------------------------------
+
+#if MAX_SHADOWMAPS
 
 void ApplyShadowMaps (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
@@ -321,6 +325,8 @@ ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetTexturing (false);
 #endif
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 

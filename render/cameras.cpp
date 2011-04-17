@@ -597,7 +597,9 @@ for (uint i = 0; i < m_cameras.ToS (); i++)
 m_cameras.Destroy ();
 m_faceCameras.Destroy ();
 m_objectCameras.Destroy ();
+#if MAX_SHADOWMAPS
 m_shadowMaps.Clear (0xFF);
+#endif
 }
 
 //------------------------------------------------------------------------------
