@@ -698,8 +698,13 @@ else
 		SetFaceCulling (true);
 		glFrontFace (GL_CW);	//Weird, huh? Well, D2 renders everything reverse ...
 #if MAX_SHADOWMAPS
-		if (gameStates.render.nShadowMap)
+		if (gameStates.render.nShadowMap) {
+#	if 1
+			ogl.SetPolyOffsetFill (true);
+			glPolygonOffset (1.0f, 2.0f);
+#	endif
 			SetCullMode ((gameStates.render.bRearView < 0) ? GL_BACK : GL_FRONT);
+			}
 		else
 #endif
 			SetCullMode ((gameStates.render.bRearView < 0) ? GL_FRONT : GL_BACK);

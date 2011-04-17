@@ -92,14 +92,14 @@ glGetFloatv (GL_PROJECTION_MATRIX, projection);
 ogl.ResetTransform (1);
 glMatrixMode (GL_TEXTURE);
 glActiveTexture (GL_TEXTURE1 + nLight);
-#if 0
-glGetFloatv (GL_MODELVIEW_MATRIX, lightManager.ShadowTransformation (nLight).m.vec);
-#else
+#if 1
 glLoadMatrixf (bias);
 glMultMatrixf (projection);
+#else
+glLoadMatrixf (projection);
+#endif
 glMultMatrixf (modelView);
 glGetFloatv (GL_TEXTURE_MATRIX, lightManager.ShadowTransformation (nLight).m.vec);
-#endif
 glMatrixMode (matrixMode);
 }
 
