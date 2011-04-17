@@ -78,10 +78,10 @@ if (!++gameStates.render.nFrameCount) {		//wrap!
 static void ComputeShadowTransformation (int nLight)
 {
 
-	static double biasData [16] = {0.5f, 0.0f, 0.0f, 0.0f,
-											 0.0f, 0.5f, 0.0f, 0.0f,
-											 0.0f, 0.0f, 0.5f, 0.0f,
-											 0.5f, 0.5f, 0.5f, 1.0f};
+	static double biasData [16] = {0.5, 0.0, 0.0, 0.0,
+											 0.0, 0.5, 0.0, 0.0,
+											 0.0, 0.0, 0.5, 0.0,
+											 0.5, 0.5, 0.5, 1.0};
 
 	COGLMatrix	bias, modelView, projection;
 	GLint matrixMode;
@@ -94,8 +94,12 @@ projection.Get (GL_PROJECTION_MATRIX);
 ogl.ResetTransform (1);
 glMatrixMode (GL_TEXTURE);
 glActiveTexture (GL_TEXTURE1 + nLight);
+#if 0
 bias.Set ();
 projection.Mul ();
+#else
+projection.Set ();
+#endif
 modelView.Mul ();
 lightManager.ShadowTransformation (nLight).Get (GL_TEXTURE_MATRIX);
 glMatrixMode (matrixMode);
@@ -177,6 +181,9 @@ else {
 	}
 if (nStartSegP)
 	*nStartSegP = nStartSeg;
+ogl.SetupTransform (1);
+transformation.m_info.modelview.Get (GL_MODELVIEW_MATRIX);
+ogl.ResetTransform (1);
 }
 
 //------------------------------------------------------------------------------

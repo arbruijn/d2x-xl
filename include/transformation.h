@@ -16,6 +16,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "fix.h"
 #include "vecmat.h" 
+#include "oglmatrix.h" 
 
 #if DBG
 #	define _INLINE_
@@ -40,7 +41,9 @@ typedef struct tTransformation {
 		CFixVector		aspect;		//scaling for window aspect
 		CFloatVector	posf [2];
 		CFloatMatrix	viewf [3];
-		CFloatMatrix	projection;
+		//CFloatMatrix	projection;
+		COGLMatrix		modelview;
+		COGLMatrix		projection;
 		fix				zoom;
 		float				zoomf;
 		float				aspectRatio;
@@ -148,7 +151,7 @@ class CTransformation {
 			return Codes (dest);
 			}
 
-		inline CFloatMatrix& Projection (void) { return m_info.projection; }
+		inline COGLMatrix& Projection (void) { return m_info.projection; }
 
 		void ComputeAspect (void);
 
