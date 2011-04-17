@@ -81,12 +81,12 @@ void COGL::FlushShadowMaps (int nEffects)
 
 if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1, 0) != 0)) {
 	SetDrawBuffer (GL_BACK, 0);
-	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	ogl.BindTexture (DrawBuffer ((nEffects & 1) ? 1 : (nEffects & 2) ? 2 : 0)->ColorBuffer ());
+	EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	BindTexture (DrawBuffer ((nEffects & 1) ? 1 : (nEffects & 2) ? 2 : 0)->ColorBuffer ());
 	//CopyDepthTexture (0, GL_TEXTURE0);
-	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
-	ogl.BindTexture (DrawBuffer ((nEffects & 1) ? 1 : (nEffects & 2) ? 2 : 0)->DepthBuffer ());
-	//ogl.BindTexture (0);
+	EnableClientStates (1, 0, 0, GL_TEXTURE1);
+	BindTexture (DrawBuffer ((nEffects & 1) ? 1 : (nEffects & 2) ? 2 : 0)->DepthBuffer ());
+	//BindTexture (0);
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
 	GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (shadowShaderProg));
@@ -96,18 +96,18 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 		glGetIntegerv (GL_MATRIX_MODE, &matrixMode);
 		int i;
 		for (i = 0; i < lightManager.LightCount (2); i++) {
-			ogl.SelectTMU (GL_TEXTURE2 + i);
-			ogl.SetTexturing (true);
+			SelectTMU (GL_TEXTURE2 + i);
+			SetTexturing (true);
 			glMatrixMode (GL_TEXTURE);
-			glLoadMatrixf (lightManager.ShadowTransformation (i).m.vec);  // light's projection * modelview
+			lightManager.ShadowTransformation (i).Set ();  // light's projection * modelview
 #if 1
-			glMultMatrixf (lightManager.ShadowTransformation (-3).m.vec); // inverse of camera's modelview * inverse of camera's projection
+			lightManager.ShadowTransformation (-3).Mul (); // inverse of camera's modelview * inverse of camera's projection
 #else
-			glMultMatrixf (lightManager.ShadowTransformation (-1).m.vec); // inverse of camera's modelview
-			glMultMatrixf (lightManager.ShadowTransformation (-2).m.vec); // inverse of camera's projection
+			lightManager.ShadowTransformation (-1).Mul (); // inverse of camera's modelview
+			lightManager.ShadowTransformation (-2).Mul (); // inverse of camera's projection
 #endif
 			glMatrixMode (matrixMode);
-			ogl.BindTexture (cameraManager.ShadowMap (i)->FrameBuffer ().DepthBuffer ());
+			BindTexture (cameraManager.ShadowMap (i)->FrameBuffer ().DepthBuffer ());
 			glUniform1i (glGetUniformLocation (shaderProg, szShadowMap [i]), i + 2);
 			CDynLight* prl = cameraManager.ShadowLightSource (i);
 			glUniform3fv (glGetUniformLocation (shaderProg, "lightPos"), 1, (GLfloat*) prl->render.vPosf [0].v.vec);
@@ -115,13 +115,15 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			}
 		glUniform1i (glGetUniformLocation (shaderProg, "sceneColor"), 0);
 		glUniform1i (glGetUniformLocation (shaderProg, "sceneDepth"), 1);
-		glUniformMatrix4fv (glGetUniformLocation (shaderProg, "modelviewProjInverse"), 1, (GLboolean) 0, (GLfloat*) lightManager.ShadowTransformation (-3).m.vec);
-		ogl.SetBlendMode (0);
+		glUniformMatrix4fv (glGetUniformLocation (shaderProg, "modelviewProjInverse"), 1, (GLboolean) 0, lightManager.ShadowTransformation (-3).ToFloat ());
+		SetBlendMode (0);
+		SetDepthTest (false);
 		OglDrawArrays (GL_QUADS, 0, 4);
 		for (i = 0; i < lightManager.LightCount (2); i++) {
-			ogl.SelectTMU (GL_TEXTURE1 + i);
-			ogl.SetTexturing (false);
+			SelectTMU (GL_TEXTURE1 + i);
+			SetTexturing (false);
 			}
+		SetDepthTest (true);
 		}
 	}
 }
@@ -237,9 +239,9 @@ const char* shadowMapFS =
 	"cameraClipPos.w = -ZEYE;\r\n" \
 	"cameraClipPos.xyz = cameraNDC * cameraClipPos.w;\r\n" \
 	"vec4 lightWinPos = gl_TextureMatrix [2] * cameraClipPos;\r\n" \
-	"float shadowDepth = texture2DProj (shadowMap, lightWinPos).r;\r\n" \
+	"float shadowDepth = ((abs (lightWinPos.x - 0.5) > 0.5) || (abs (lightWinPos.y - 0.5) > 0.5)) ? 2.0 : texture2DProj (shadowMap, lightWinPos).r;\r\n" \
 	"float light;\r\n" \
-	"if (fragDepth < shadowDepth * 0.99)\r\n" \
+	"if (fragDepth < shadowDepth)\r\n" \
 	"   light = 1.0;\r\n" \
 	"else {\r\n" \
 	"   vec4 worldPos = modelviewProjInverse * cameraClipPos;\r\n" \

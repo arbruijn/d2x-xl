@@ -147,6 +147,53 @@ class CHeadlightManager {
 
 //------------------------------------------------------------------------------
 
+class COGLMatrix {
+	private:
+		double	m_data [16];
+		GLfloat	m_dataf [16];
+
+	public:
+		inline COGLMatrix& operator= (const COGLMatrix& other) { 
+			memcpy (m_data, other.m_data, sizeof (m_data)); 
+			return *this;
+			}
+
+		inline COGLMatrix& operator= (const double other [16]) { 
+			memcpy (m_data, other, sizeof (m_data)); 
+			return *this;
+			}
+
+		COGLMatrix Inverse (void);
+
+		COGLMatrix& Get (GLuint nMatrix, double bInverse) { 
+			glGetDoublev (nMatrix, (GLdouble*) m_data); 
+			if (bInverse)
+				*this = Inverse ();
+			return *this;
+			}
+		void Set (void) { glLoadMatrixd ((GLdouble*) m_data); }
+
+		void Mul (void) { glMultMatrixd ((GLdouble*) m_data); }
+
+		double& operator[] (uint i) { return m_data [i]; }
+
+		GLfloat* ToFloat (void) {
+			for (uint i = 0; i < 16; i++)
+				m_dataf [i] = GLfloat (m_data [i]);
+			return m_dataf;
+			}
+
+		COGLMatrix& operator* (double factor) {
+			for (uint i = 0; i < 16; i++)
+				m_data [i] *= factor;
+			return *this;
+			}
+
+		double Det (COGLMatrix& other) { return m_data [0] * other [0] + m_data [1] * other [4] + m_data [2] * other [8] + m_data [3] * other [12]; }
+	};
+
+//------------------------------------------------------------------------------
+
 #define MAX_NEAREST_LIGHTS 32
 
 class CDynLightData {
@@ -161,7 +208,7 @@ class CDynLightData {
 		CByteArray			variableVertLights;	//the 8 nearest veriable lights for every vertex
 		CShortArray			owners;
 		COglMaterial		material;
-		CStaticArray<CFloatMatrix, 7>	shadowTextureMatrix;
+		CStaticArray<COGLMatrix, 7>	shadowTextureMatrix;
 		CFBO					fbo;
 		short					nLights [3];
 		short					nVariable;
@@ -255,7 +302,7 @@ class CLightManager {
 		inline void ResetIndex (void) { m_data.ResetIndex (); }
 		//inline void SetShadowSource (CDynLight& source, int i) { m_data.shadowSources [i] = source; }
 		//inline CDynLight& GetShadowSource (int i) { return m_data.shadowSources [i]; }
-		inline CFloatMatrix& ShadowTransformation (int i) { return m_data.shadowTextureMatrix [i + 3]; }
+		inline COGLMatrix& ShadowTransformation (int i) { return m_data.shadowTextureMatrix [i + 3]; }
 
 
 	private:

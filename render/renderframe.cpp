@@ -455,77 +455,34 @@ if (EGI_FLAG (bShadows, 0, 1, 0)) {
 
 //------------------------------------------------------------------------------
 
-bool OglInvertMatrix (const float m [16], float im [16])
+COGLMatrix COGLMatrix::Inverse (void)
 {
-im [0] =  m [5] * m [10] * m [15] - m [5] * m [11] * m [14] - m [9] * m [6] * m [15] + m [9] * m [7] * m [14] + m [13] * m [6] * m [11] - m [13] * m [7] * m [10];
-im [4] = -m [4] * m [10] * m [15] + m [4] * m [11] * m [14] + m [8] * m [6] * m [15] - m [8] * m [7] * m [14] - m [12] * m [6] * m [11] + m [12] * m [7] * m [10];
-im [8] =  m [4] * m [9] * m [15] - m [4] * m [11] * m [13] - m [8] * m [5] * m [15] + m [8] * m [7] * m [13] + m [12] * m [5] * m [11] - m [12] * m [7] * m [9];
-im [12] = -m [4] * m [9] * m [14] + m [4] * m [10] * m [13] + m [8] * m [5] * m [14] - m [8] * m [6] * m [13] - m [12] * m [5] * m [10] + m [12] * m [6] * m [9];
-im [1] =  -m [1] * m [10] * m [15] + m [1] * m [11] * m [14] + m [9] * m [2] * m [15] - m [9] * m [3] * m [14] - m [13] * m [2] * m [11] + m [13] * m [3] * m [10];
-im [5] =   m [0] * m [10] * m [15] - m [0] * m [11] * m [14] - m [8] * m [2] * m [15] + m [8] * m [3] * m [14] + m [12] * m [2] * m [11] - m [12] * m [3] * m [10];
-im [9] =  -m [0] * m [9] * m [15] + m [0] * m [11] * m [13] + m [8] * m [1] * m [15] - m [8] * m [3] * m [13] - m [12] * m [1] * m [11] + m [12] * m [3] * m [9];
-im [13] =  m [0] * m [9] * m [14] - m [0] * m [10] * m [13] - m [8] * m [1] * m [14] + m [8] * m [2] * m [13] + m [12] * m [1] * m [10] - m [12] * m [2] * m [9];
-im [2] =   m [1] * m [6] * m [15] - m [1] * m [7] * m [14] - m [5] * m [2] * m [15] + m [5] * m [3] * m [14] + m [13] * m [2] * m [7] - m [13] * m [3] * m [6];
-im [6] =  -m [0] * m [6] * m [15] + m [0] * m [7] * m [14] + m [4] * m [2] * m [15] - m [4] * m [3] * m [14] - m [12] * m [2] * m [7] + m [12] * m [3] * m [6];
-im [10] =  m [0] * m [5] * m [15] - m [0] * m [7] * m [13] - m [4] * m [1] * m [15] + m [4] * m [3] * m [13] + m [12] * m [1] * m [7] - m [12] * m [3] * m [5];
-im [14] = -m [0] * m [5] * m [14] + m [0] * m [6] * m [13] + m [4] * m [1] * m [14] - m [4] * m [2] * m [13] - m [12] * m [1] * m [6] + m [12] * m [2] * m [5];
-im [3] =  -m [1] * m [6] * m [11] + m [1] * m [7] * m [10] + m [5] * m [2] * m [11] - m [5] * m [3] * m [10] - m [9] * m [2] * m [7] + m [9] * m [3] * m [6];
-im [7] =   m [0] * m [6] * m [11] - m [0] * m [7] * m [10] - m [4] * m [2] * m [11] + m [4] * m [3] * m [10] + m [8] * m [2] * m [7] - m [8] * m [3] * m [6];
-im [11] = -m [0] * m [5] * m [11] + m [0] * m [7] * m [9] + m [4] * m [1] * m [11] - m [4] * m [3] * m [9] - m [8] * m [1] * m [7] + m [8] * m [3] * m [5];
-im [15] =  m [0] * m [5] * m [10] - m [0] * m [6] * m [9] - m [4] * m [1] * m [10] + m [4] * m [2] * m [9] + m [8] * m [1] * m [6] - m [8] * m [2] * m [5];
+	COGLMatrix im;
 
-float det = m [0] * im [0] + m [1] * im [4] + m [2] * im [8] + m [3] * im [12];
-if (det == 0.0f) {
-	memcpy (im, m, sizeof (m));
-	return false;
-	}
+im [0] =  m_data [5] * m_data [10] * m_data [15] - m_data [5] * m_data [11] * m_data [14] - m_data [9] * m_data [6] * m_data [15] + m_data [9] * m_data [7] * m_data [14] + m_data [13] * m_data [6] * m_data [11] - m_data [13] * m_data [7] * m_data [10];
+im [4] = -m_data [4] * m_data [10] * m_data [15] + m_data [4] * m_data [11] * m_data [14] + m_data [8] * m_data [6] * m_data [15] - m_data [8] * m_data [7] * m_data [14] - m_data [12] * m_data [6] * m_data [11] + m_data [12] * m_data [7] * m_data [10];
+im [8] =  m_data [4] * m_data [9] * m_data [15] - m_data [4] * m_data [11] * m_data [13] - m_data [8] * m_data [5] * m_data [15] + m_data [8] * m_data [7] * m_data [13] + m_data [12] * m_data [5] * m_data [11] - m_data [12] * m_data [7] * m_data [9];
+im [12] = -m_data [4] * m_data [9] * m_data [14] + m_data [4] * m_data [10] * m_data [13] + m_data [8] * m_data [5] * m_data [14] - m_data [8] * m_data [6] * m_data [13] - m_data [12] * m_data [5] * m_data [10] + m_data [12] * m_data [6] * m_data [9];
+im [1] =  -m_data [1] * m_data [10] * m_data [15] + m_data [1] * m_data [11] * m_data [14] + m_data [9] * m_data [2] * m_data [15] - m_data [9] * m_data [3] * m_data [14] - m_data [13] * m_data [2] * m_data [11] + m_data [13] * m_data [3] * m_data [10];
+im [5] =   m_data [0] * m_data [10] * m_data [15] - m_data [0] * m_data [11] * m_data [14] - m_data [8] * m_data [2] * m_data [15] + m_data [8] * m_data [3] * m_data [14] + m_data [12] * m_data [2] * m_data [11] - m_data [12] * m_data [3] * m_data [10];
+im [9] =  -m_data [0] * m_data [9] * m_data [15] + m_data [0] * m_data [11] * m_data [13] + m_data [8] * m_data [1] * m_data [15] - m_data [8] * m_data [3] * m_data [13] - m_data [12] * m_data [1] * m_data [11] + m_data [12] * m_data [3] * m_data [9];
+im [13] =  m_data [0] * m_data [9] * m_data [14] - m_data [0] * m_data [10] * m_data [13] - m_data [8] * m_data [1] * m_data [14] + m_data [8] * m_data [2] * m_data [13] + m_data [12] * m_data [1] * m_data [10] - m_data [12] * m_data [2] * m_data [9];
+im [2] =   m_data [1] * m_data [6] * m_data [15] - m_data [1] * m_data [7] * m_data [14] - m_data [5] * m_data [2] * m_data [15] + m_data [5] * m_data [3] * m_data [14] + m_data [13] * m_data [2] * m_data [7] - m_data [13] * m_data [3] * m_data [6];
+im [6] =  -m_data [0] * m_data [6] * m_data [15] + m_data [0] * m_data [7] * m_data [14] + m_data [4] * m_data [2] * m_data [15] - m_data [4] * m_data [3] * m_data [14] - m_data [12] * m_data [2] * m_data [7] + m_data [12] * m_data [3] * m_data [6];
+im [10] =  m_data [0] * m_data [5] * m_data [15] - m_data [0] * m_data [7] * m_data [13] - m_data [4] * m_data [1] * m_data [15] + m_data [4] * m_data [3] * m_data [13] + m_data [12] * m_data [1] * m_data [7] - m_data [12] * m_data [3] * m_data [5];
+im [14] = -m_data [0] * m_data [5] * m_data [14] + m_data [0] * m_data [6] * m_data [13] + m_data [4] * m_data [1] * m_data [14] - m_data [4] * m_data [2] * m_data [13] - m_data [12] * m_data [1] * m_data [6] + m_data [12] * m_data [2] * m_data [5];
+im [3] =  -m_data [1] * m_data [6] * m_data [11] + m_data [1] * m_data [7] * m_data [10] + m_data [5] * m_data [2] * m_data [11] - m_data [5] * m_data [3] * m_data [10] - m_data [9] * m_data [2] * m_data [7] + m_data [9] * m_data [3] * m_data [6];
+im [7] =   m_data [0] * m_data [6] * m_data [11] - m_data [0] * m_data [7] * m_data [10] - m_data [4] * m_data [2] * m_data [11] + m_data [4] * m_data [3] * m_data [10] + m_data [8] * m_data [2] * m_data [7] - m_data [8] * m_data [3] * m_data [6];
+im [11] = -m_data [0] * m_data [5] * m_data [11] + m_data [0] * m_data [7] * m_data [9] + m_data [4] * m_data [1] * m_data [11] - m_data [4] * m_data [3] * m_data [9] - m_data [8] * m_data [1] * m_data [7] + m_data [8] * m_data [3] * m_data [5];
+im [15] =  m_data [0] * m_data [5] * m_data [10] - m_data [0] * m_data [6] * m_data [9] - m_data [4] * m_data [1] * m_data [10] + m_data [4] * m_data [2] * m_data [9] + m_data [8] * m_data [1] * m_data [6] - m_data [8] * m_data [2] * m_data [5];
 
-det = 1.0f / det;
+double det = Det (im);
+if (det == 0.0)
+	return *this;
+
+det = 1.0 / det;
 for (int i = 0; i < 16; i++)
 	im [i] *= det;
-
-return true;
-}
-
-//------------------------------------------------------------------------------
-
-CFloatMatrix OglGetMatrix (GLuint nMatrix, bool bInverse)
-{
-CFloatMatrix m;
-
-glGetFloatv (nMatrix, m.m.vec);
-
-if (!bInverse)
-	return m;
-
-CFloatMatrix im;
-
-#if 1
-
-OglInvertMatrix (m.m.vec, im.m.vec);
-
-#else
-
-im [0]  = m [0]; 
-im [1]  = m [4]; 
-im [2]  = m [8];
-im [4]  = m [1]; 
-im [5]  = m [5]; 
-im [6]  = m [9];
-im [8]  = m [2]; 
-im [9]  = m [6]; 
-im [10] = m [10];
-im [3]  =
-im [7]  = 
-im [11] = 0.0f;
-im [15] = 1.0f;
-
-im [12] = -(m [12] * m [0]) - (m [13] * m [1]) - (m [14] * m [2]);
-im [13] = -(m [12] * m [4]) - (m [13] * m [5]) - (m [14] * m [6]);
-im [14] = -(m [12] * m [8]) - (m [13] * m [9]) - (m [14] * m [10]);
-
-#endif
-
 return im;
 }
 
@@ -565,13 +522,13 @@ SetRenderView (xStereoSeparation, &nStartSeg, 1);
 #if MAX_SHADOWMAPS
 if (!(nWindow || gameStates.render.cameras.bActive)) {
 	ogl.SetupTransform (1);
-	lightManager.ShadowTransformation (-1) = OglGetMatrix (GL_MODELVIEW_MATRIX, true); // inverse
-	lightManager.ShadowTransformation (-2) = OglGetMatrix (GL_PROJECTION_MATRIX, true); 
-	lightManager.ShadowTransformation (-3) = OglGetMatrix (GL_PROJECTION_MATRIX, false);
+	lightManager.ShadowTransformation (-1).Get (GL_MODELVIEW_MATRIX, true); // inverse
+	lightManager.ShadowTransformation (-2).Get (GL_PROJECTION_MATRIX, true); 
+	lightManager.ShadowTransformation (-3).Get (GL_PROJECTION_MATRIX, false);
 	glPushMatrix ();
-	glLoadMatrixf (lightManager.ShadowTransformation (-1).m.vec);
-	glMultMatrixf (lightManager.ShadowTransformation (-2).m.vec);
-	lightManager.ShadowTransformation (-3) = OglGetMatrix (GL_MODELVIEW_MATRIX, false); // inverse (modelview * projection)
+	lightManager.ShadowTransformation (-1).Set ();
+	lightManager.ShadowTransformation (-2).Mul ();
+	lightManager.ShadowTransformation (-3).Get (GL_MODELVIEW_MATRIX, false); // inverse (modelview * projection)
 	glPopMatrix ();
 	ogl.ResetTransform (1);
 	}

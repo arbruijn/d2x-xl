@@ -77,29 +77,26 @@ if (!++gameStates.render.nFrameCount) {		//wrap!
 static void ComputeShadowTransformation (int nLight)
 {
 
-	static float bias [16] = {0.5f, 0.0f, 0.0f, 0.0f,
-									  0.0f, 0.5f, 0.0f, 0.0f,
-									  0.0f, 0.0f, 0.5f, 0.0f,
-									  0.5f, 0.5f, 0.5f, 1.0f};
-	float modelView [16];
-	float projection [16];
+	static double biasData [16] = {0.5f, 0.0f, 0.0f, 0.0f,
+											 0.0f, 0.5f, 0.0f, 0.0f,
+											 0.0f, 0.0f, 0.5f, 0.0f,
+											 0.5f, 0.5f, 0.5f, 1.0f};
+
+	COGLMatrix	bias, modelView, projection;
 	GLint matrixMode;
 
 ogl.SetupTransform (1);
 glGetIntegerv (GL_MATRIX_MODE, &matrixMode);
-glGetFloatv (GL_MODELVIEW_MATRIX, modelView);
-glGetFloatv (GL_PROJECTION_MATRIX, projection);
+bias = biasData;
+modelView.Get (GL_MODELVIEW_MATRIX);
+projection.Get (GL_PROJECTION_MATRIX);
 ogl.ResetTransform (1);
 glMatrixMode (GL_TEXTURE);
 glActiveTexture (GL_TEXTURE1 + nLight);
-#if 1
-glLoadMatrixf (bias);
-glMultMatrixf (projection);
-#else
-glLoadMatrixf (projection);
-#endif
-glMultMatrixf (modelView);
-glGetFloatv (GL_TEXTURE_MATRIX, lightManager.ShadowTransformation (nLight).m.vec);
+bias.Set ();
+projection.Mul ();
+modelView.Mul ();
+lightManager.ShadowTransformation (nLight).Get (GL_TEXTURE_MATRIX);
 glMatrixMode (matrixMode);
 }
 
