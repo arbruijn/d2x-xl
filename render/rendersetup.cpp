@@ -60,6 +60,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sparkeffect.h"
 #include "createmesh.h"
 #include "systemkeys.h"
+#include "oglmatrix.h"
 
 //------------------------------------------------------------------------------
 //increment counter for checking if points bTransformed

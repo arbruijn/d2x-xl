@@ -1,6 +1,9 @@
 #ifndef _OGLMATRIX_H
 #define _OGLMATRIX_H
 
+#include <string.h>
+#include "glew.h"
+
 class COGLMatrix {
 	private:
 		double	m_data [16];
@@ -19,7 +22,7 @@ class COGLMatrix {
 
 		COGLMatrix Inverse (void);
 
-		COGLMatrix& Get (GLuint nMatrix, double bInverse) { 
+		COGLMatrix& Get (GLuint nMatrix, double bInverse = false) { 
 			glGetDoublev (nMatrix, (GLdouble*) m_data); 
 			if (bInverse)
 				*this = Inverse ();
@@ -29,16 +32,16 @@ class COGLMatrix {
 
 		void Mul (void) { glMultMatrixd ((GLdouble*) m_data); }
 
-		double& operator[] (uint i) { return m_data [i]; }
+		double& operator[] (int i) { return m_data [i]; }
 
 		GLfloat* ToFloat (void) {
-			for (uint i = 0; i < 16; i++)
+			for (int i = 0; i < 16; i++)
 				m_dataf [i] = GLfloat (m_data [i]);
 			return m_dataf;
 			}
 
 		COGLMatrix& operator* (double factor) {
-			for (uint i = 0; i < 16; i++)
+			for (int i = 0; i < 16; i++)
 				m_data [i] *= factor;
 			return *this;
 			}
