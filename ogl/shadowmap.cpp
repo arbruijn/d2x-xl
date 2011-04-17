@@ -221,11 +221,11 @@ const char* shadowMapFS =
 	"uniform float lightRange;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
-	"#define A (ZNEAR + ZFAR)\r\n" \
-	"#define B (ZNEAR - ZFAR)\r\n" \
-	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
+	"#define A 5001.0 //(ZNEAR + ZFAR)\r\n" \
+	"#define B 4999.0 //(ZNEAR - ZFAR)\r\n" \
+	"#define C 10000.0 //(2.0 * ZNEAR * ZFAR)\r\n" \
 	"#define D (ndcPos.z * B)\r\n" \
-	"#define ZEYE -(C / (A + D))\r\n" \
+	"#define ZEYE -10000.0 / (5001.0 + ndcPos.z * 4999.0) //-(C / (A + D))\r\n" \
 	"void main() {\r\n" \
 	"float fragDepth = texture2D (sceneDepth, gl_TexCoord [0].xy).r;\r\n" \
 	"vec3 ndcPos = (vec3 (gl_TexCoord [0].xy, fragDepth) - 0.5) * 2.0;\r\n" \

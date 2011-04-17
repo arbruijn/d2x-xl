@@ -539,8 +539,9 @@ if (!m_objectCameras.Create (LEVEL_OBJECTS))
 	return 0;
 m_faceCameras.Clear (0xFF);
 m_objectCameras.Clear (0xFF);
+#if MAX_SHADOWMAPS
 m_shadowMaps.Clear (0xFF);
-
+#endif
 if (gameData.trigs.m_nTriggers) {
 	for (i = 0, wallP = WALLS.Buffer (); (i < gameData.walls.nWalls) && (m_cameras.ToS () < MAX_CAMERAS); i++, wallP++) {
 		t = wallP->nTrigger;

@@ -6,7 +6,7 @@
 #include "dynlight.h"
 
 #if DBG
-#	define MAX_SHADOWMAPS	1
+#	define MAX_SHADOWMAPS	0
 #else
 #	define MAX_SHADOWMAPS	0 //4
 #endif
@@ -101,7 +101,9 @@ class CCameraManager {
 		CCamera*					m_current;
 		CArray<char>			m_faceCameras;
 		CArray<ushort>			m_objectCameras;
+#if MAX_SHADOWMAPS
 		CStaticArray<tShadowMapInfo, MAX_SHADOWMAPS>	m_shadowMaps;
+#endif
 
 	public:
 		int				m_fboType;
@@ -127,6 +129,8 @@ class CCameraManager {
 		inline int Index (CCamera* cameraP) { return m_cameras.Buffer () ? int (cameraP - m_cameras.Buffer ()) : -1; }
 		inline CCamera* Add (void) { return ((m_cameras.Buffer () || Create ()) && m_cameras.Grow ()) ? m_cameras.Top () : NULL; }
 		inline CCamera* operator[] (uint i) { return (i < m_cameras.ToS ()) ? &m_cameras [i] : NULL; }
+
+#if MAX_SHADOWMAPS
 		inline CCamera* ShadowMap (int i) { return (m_shadowMaps [i].nCamera < 0) ? NULL : (*this) [i]; }
 		inline CDynLight* ShadowLightSource (int i) { return (m_shadowMaps [i].nCamera < 0) ? NULL : m_shadowMaps [i].prl; }
 		inline CCamera* AddShadowMap (int i, CDynLight* prl) { 
@@ -145,7 +149,8 @@ class CCameraManager {
 				m_shadowMaps [i].prl = NULL;
 				}
 			}
-	};
+#endif
+};
 
 extern CCameraManager cameraManager;
 
