@@ -8722,6 +8722,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\ogl\oglmatrix.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\ogl\pbuffer.cpp"
 						>
 					</File>
@@ -8803,6 +8807,10 @@
 					</File>
 					<File
 						RelativePath="..\include\ogl_tmu.h"
+						>
+					</File>
+					<File
+						RelativePath="..\ogl\oglmatrix.h"
 						>
 					</File>
 					<File
@@ -10517,11 +10525,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
