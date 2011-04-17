@@ -196,6 +196,10 @@ glPushMatrix ();
 glLoadIdentity ();
 m_info.modelview.Get (GL_PROJECTION_MATRIX);
 glPopMatrix ();
+m_info.viewport [0] = 
+m_info.viewport [2] = 0;
+m_info.viewport [1] = screen.Width ();
+m_info.viewport [3] = screen.Height ();
 #else
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);
 m_info.projection.Flip ();

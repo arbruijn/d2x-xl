@@ -44,6 +44,7 @@ typedef struct tTransformation {
 		//CFloatMatrix	projection;
 		COGLMatrix		modelview;
 		COGLMatrix		projection;
+		int				viewport [4];
 		fix				zoom;
 		float				zoomf;
 		float				aspectRatio;

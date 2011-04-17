@@ -83,12 +83,17 @@ ubyte ProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
 #if 1
-gluProject (p.v.coord.x, p.v.coord.y, p.v.coord.z, &transformation.m_info.modelview [0], &transformation.m_info.projection [0], &v.v.coord.x, &v.v.coord.y, &v.v.coord.z);
+double x, y, z;
+gluProject ((double) p.v.coord.x, (double) p.v.coord.y, (double) p.v.coord.z, 
+				&transformation.m_info.modelview [0], transformation.m_info.viewport, &transformation.m_info.projection [0], 
+				&x, &y, &z);
+s.x = fix (fxCanvW2 - x * fxCanvW2 / z);
+s.y = fix (fxCanvH2 - y * fxCanvH2 / z);
 #else
 CFloatVector3 v = transformation.m_info.projection * p;
-#endif
 s.x = fix (fxCanvW2 - float (v.v.coord.x) * fxCanvW2 / v.v.coord.z);
 s.y = fix (fxCanvH2 - float (v.v.coord.y) * fxCanvH2 / v.v.coord.z);
+#endif
 return flags | PF_PROJECTED;
 }
 
