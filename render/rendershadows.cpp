@@ -415,7 +415,9 @@ if (!bShadowTest)
 		else
 			G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, 
 								  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), 1);
+#if MAX_SHADOWMAPS
 		ApplyShadowMaps (nStartSeg, xStereoSeparation, nWindow);
+#endif
 		}
 	else {
 		RenderShadowQuad (0);
