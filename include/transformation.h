@@ -18,6 +18,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vecmat.h" 
 #include "oglmatrix.h" 
 
+// -----------------------------------------------------------------------------------
+
 #if DBG
 #	define _INLINE_
 #else
@@ -30,6 +32,20 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CC_OFF_BOT      4
 #define CC_OFF_TOP      8
 #define CC_BEHIND       0x80
+
+// -----------------------------------------------------------------------------------
+
+typedef struct tScreenPos {
+	fix			x, y;
+} tScreenPos;
+
+// -----------------------------------------------------------------------------------
+
+typedef struct tScreenPosf {
+	float			x, y;
+} tScreenPosf;
+
+// -----------------------------------------------------------------------------------
 
 typedef struct tTransformation {
 		CFixVector		pos;
@@ -49,6 +65,8 @@ typedef struct tTransformation {
 		float				zoomf;
 		float				aspectRatio;
 } tTransformation;
+
+// -----------------------------------------------------------------------------------
 
 class CTransformation {
 	public:
@@ -128,24 +146,7 @@ class CTransformation {
 
 		const CFixVector& RotateScaled (CFixVector& dest, const CFixVector& src);
 
-		_INLINE_ ubyte Codes (CFixVector& v) {
-			ubyte codes = 0;
-			fix z = v.v.coord.z;
-			fix r = fix (m_info.zoom * m_info.aspectRatio);
-			fix x = FixMulDiv (v.v.coord.x, m_info.scale.v.coord.x, r);
-
-			if (x > z)
-				codes |= CC_OFF_RIGHT;
-			else if (x < -z)
-				codes |= CC_OFF_LEFT;
-			if (v.v.coord.y > z)
-				codes |= CC_OFF_TOP;
-			else if (v.v.coord.y < -z)
-				codes |= CC_OFF_BOT;
-			if (z < 0)
-				codes |= CC_BEHIND;
-			return codes;
-			}
+		ubyte Codes (CFixVector& v);
 
 		_INLINE_ ubyte TransformAndEncode (CFixVector& dest, const CFixVector& src) {
 			Transform (dest, src, 0);

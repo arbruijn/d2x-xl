@@ -202,4 +202,37 @@ m_info.aspectRatio = aspectRatio;
 }
 
 //------------------------------------------------------------------------------
+
+ubyte CTransformation::Codes (CFixVector& v)
+{
+	ubyte codes = (v.v.coord.z < 0) ? CC_BEHIND : 0;
+#if 1
+	tScreenPos s;
+	ProjectPoint (v, s);
+	if (s.x < 0)
+		codes |= CC_OFF_LEFT;
+	else if (s.x > screen.Width ())
+		codes |= CC_OFF_RIGHT;
+	if (s.y < 0)
+		codes |= CC_OFF_BOT;
+	else if (s.y > screen.Height ())
+		codes |= CC_OFF_TOP;
+#else
+	fix z = v.v.coord.z;
+	fix r = fix (m_info.zoom * m_info.aspectRatio);
+	fix x = FixMulDiv (v.v.coord.x, m_info.scale.v.coord.x, r);
+
+	if (x > z)
+		codes |= CC_OFF_RIGHT;
+	else if (x < -z)
+		codes |= CC_OFF_LEFT;
+	if (v.v.coord.y > z)
+		codes |= CC_OFF_TOP;
+	else if (v.v.coord.y < -z)
+		codes |= CC_OFF_BOT;
+#endif
+	return codes;
+	}
+
+//------------------------------------------------------------------------------
 //eof

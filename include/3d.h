@@ -48,14 +48,6 @@ typedef struct g3sNormal {
 	ubyte				nFaces;	// # of faces that use this vertex
 } g3sNormal;
 
-typedef struct tScreenPos {
-	fix			x, y;
-} tScreenPos;
-
-typedef struct tScreenPosf {
-	float			x, y;
-} tScreenPosf;
-
 typedef struct g3sPoint {
 	CFixVector	p3_src;			//untransformed point
 	CFixVector	p3_vec;			//x,y,z of rotated point
