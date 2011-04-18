@@ -136,11 +136,11 @@ class CTransformation {
 
 			if (x > z)
 				codes |= CC_OFF_RIGHT;
-			if (x < -z)
+			else if (x < -z)
 				codes |= CC_OFF_LEFT;
 			if (v.v.coord.y > z)
 				codes |= CC_OFF_TOP;
-			if (v.v.coord.y < -z)
+			else if (v.v.coord.y < -z)
 				codes |= CC_OFF_BOT;
 			if (z < 0)
 				codes |= CC_BEHIND;

@@ -812,17 +812,13 @@ for (l = 0; l < nRenderDepth; l++) {
 					bProjected = 0;
 					break;
 					}
-#if 1
+#if 0
 				G3TransformAndEncodePoint (&point, gameData.segs.vertices [sv [s2v [j]]]);
 				if (!(point.p3_flags & PF_PROJECTED))
 					G3ProjectPoint (&point);
 #else
 				if (!(point.p3_flags & PF_PROJECTED)) {
-					CFloatVector3 v;
-					v.Assign (gameData.segs.vertices [sv [s2v [j]]]);
-					OglProjectPoint (v, point.p3_screen);
-					G3TransformAndEncodePoint (&point, gameData.segs.vertices [sv [s2v [j]]]);
-					G3ProjectPoint (&point);
+					transformation.Transform (point.p3_vec, point.p3_src = gameData.segs.vertices [sv [s2v [j]]]);
 					if (point.p3_screen.x < 0)
 						point.p3_codes |= CC_OFF_LEFT;
 					else if (point.p3_screen.x > screen.Width ())
@@ -831,6 +827,8 @@ for (l = 0; l < nRenderDepth; l++) {
 						point.p3_codes |= CC_OFF_BOT;
 					else if (point.p3_screen.y > screen.Height ())
 						point.p3_codes |= CC_OFF_TOP;
+					if (point.p3_vec.v.coord.z < 0)
+						point.p3_codes |= CC_BEHIND;
 					}
 #endif
 				offScreenFlags &= (point.p3_codes & ~CC_BEHIND);
