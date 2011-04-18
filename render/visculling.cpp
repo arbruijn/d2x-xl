@@ -736,6 +736,7 @@ int nRenderDepth = min (gameStates.render.detail.nRenderDepth, gameData.segs.nSe
 // For each portal, the code looks through the open sides of the portal face's child segment 
 // (the child portals). The current portal is then modified with all of the child portals visible through
 // it. This goes on until the current portal has dimensions of zero (because only solid geometry is visible through it).
+// The end result is a list of all segments that have faces the viewer can see (fully or partially).
 
 for (l = 0; l < nRenderDepth; l++) {
 	for (nHead = nStart, nTail = nCurrent; nHead < nTail; nHead++) {
