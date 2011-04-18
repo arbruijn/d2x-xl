@@ -6,7 +6,7 @@
 #include "dynlight.h"
 
 #if DBG
-#	define MAX_SHADOWMAPS	1
+#	define MAX_SHADOWMAPS	-1
 #else
 #	define MAX_SHADOWMAPS	0 //4
 #endif
@@ -101,8 +101,10 @@ class CCameraManager {
 		CCamera*					m_current;
 		CArray<char>			m_faceCameras;
 		CArray<ushort>			m_objectCameras;
-#if MAX_SHADOWMAPS
-		CStaticArray<tShadowMapInfo, MAX_SHADOWMAPS>	m_shadowMaps;
+#if MAX_SHADOWMAPS < 0
+		CStaticArray<tShadowMapInfo, -MAX_SHADOWMAPS> m_shadowMaps;
+#elif MAX_SHADOWMAPS > 0
+		CStaticArray<tShadowMapInfo, MAX_SHADOWMAPS> m_shadowMaps;
 #endif
 
 	public:
