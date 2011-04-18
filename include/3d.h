@@ -48,17 +48,21 @@ typedef struct g3sNormal {
 	ubyte				nFaces;	// # of faces that use this vertex
 } g3sNormal;
 
-typedef struct g3sPoint {
-	CFixVector	p3_src;			//untransformed point
-	CFixVector	p3_vec;			//x,y,z of rotated point
-	tUVL			p3_uvl;			//u,v,l coords
-	tScreenPos	p3_screen;		//screen x&y
-	ubyte			p3_codes;		//clipping codes
-	ubyte			p3_flags;		//projected?
-	short			p3_key;
-	int			p3_index;		//keep structure longword aligned
-	g3sNormal	p3_normal;
-} g3sPoint;
+class g3sPoint 
+	{
+	public:
+		CFixVector	p3_src;			//untransformed point
+		CFixVector	p3_vec;			//x,y,z of rotated point
+		tUVL			p3_uvl;			//u,v,l coords
+		tScreenPos	p3_screen;		//screen x&y
+		ubyte			p3_codes;		//clipping codes
+		ubyte			p3_flags;		//projected?
+		short			p3_key;
+		int			p3_index;		//keep structure longword aligned
+		g3sNormal	p3_normal;
+
+		g3sPoint () : p3_flags (0) {}
+	};
 
 //An CObject, such as a robot
 typedef struct g3sObject {
