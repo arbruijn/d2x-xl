@@ -111,34 +111,34 @@ if (r > left)
 
 //------------------------------------------------------------------------------
 
-ubyte CodePortalPoint (fix x, fix y, tPortal *p)
+ubyte CodePortalPoint (fix x, fix y, tPortal& curPortal)
 {
 	ubyte code = 0;
 
-if (x <= p->left)
+if (x <= curPortal.left)
 	code |= 1;
-else if (x >= p->right)
+else if (x >= curPortal.right)
 	code |= 2;
-if (y <= p->top)
+if (y <= curPortal.top)
 	code |= 4;
-else if (y >= p->bot)
+else if (y >= curPortal.bot)
 	code |= 8;
 return code;
 }
 
 //------------------------------------------------------------------------------
 
-ubyte CodePortal (tPortal *s, tPortal *p)
+ubyte CodePortal (tPortal& facePortal, tPortal& curPortal)
 {
 	ubyte code = 0;
 
-if (s->right <= p->left)
+if (facePortal.right <= curPortal.left)
 	code |= 1;
-else if (s->left >= p->right)
+else if (facePortal.left >= curPortal.right)
 	code |= 2;
-if (s->bot <= p->top)
+if (facePortal.bot <= curPortal.top)
 	code |= 4;
-else if (s->top >= p->bot)
+else if (facePortal.top >= curPortal.bot)
 	code |= 8;
 return code;
 }
@@ -218,7 +218,7 @@ return (side0 == oppSide) ? side1 : side0;
 
 typedef struct tSideNormData {
 	CFixVector	n [2];
-	CFixVector	*p;
+	CFixVector	*facePortal;
 	short			t;
 } tSideNormData;
 
@@ -246,8 +246,8 @@ side0 = seg0->m_sides + otherSide0;
 side1 = seg1->m_sides + otherSide1;
 memcpy (s [0].n, side0->m_normals, 2 * sizeof (CFixVector));
 memcpy (s [1].n, side1->m_normals, 2 * sizeof (CFixVector));
-s [0].p = gameData.segs.vertices + seg0->m_verts [sideVertIndex [otherSide0][(s [0].t = side0->m_nType) == 3]];
-s [1].p = gameData.segs.vertices + seg1->m_verts [sideVertIndex [otherSide1][(s [1].t = side1->m_nType) == 3]];
+s [0].facePortal = gameData.segs.vertices + seg0->m_verts [sideVertIndex [otherSide0][(s [0].t = side0->m_nType) == 3]];
+s [1].facePortal = gameData.segs.vertices + seg1->m_verts [sideVertIndex [otherSide1][(s [1].t = side1->m_nType) == 3]];
 return 1;
 }
 
@@ -264,11 +264,11 @@ if (sideOpposite [c0] == c1)
 	return 0;
 //find normals of adjoining sides
 FindAdjacentSideNorms (segP, c0, c1, s);
-temp = gameData.render.mine.viewer.vPos - *s [0].p;
+temp = gameData.render.mine.viewer.vPos - *s [0].facePortal;
 d0 = CFixVector::Dot (s [0].n [0], temp);
 if (s [0].t != 1)	// triangularized face -> 2 different normals
 	d0 |= CFixVector::Dot (s [0].n [1], temp);	// we only need the sign, so a bitwise or does the trick
-temp = gameData.render.mine.viewer.vPos - *s [1].p;
+temp = gameData.render.mine.viewer.vPos - *s [1].facePortal;
 d1 = CFixVector::Dot (s [1].n [0], temp);
 if (s [1].t != 1)
 	d1 |= CFixVector::Dot (s [1].n [1], temp);
@@ -680,9 +680,7 @@ void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors, int nT
 	short			nChildSeg;
 	short*		sv;
 	int*			s2v;
-	ubyte			andCodes, andCodes3D;
-	int			bRotated, nSegment, bProjected;
-	tPortal*		curPortal;
+	int			nSegment;
 	short			childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
 	int			nChildren, bCullIfBehind;					//how many sides in childList
 	CSegment*	segP;
@@ -744,7 +742,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			continue;
 		gameData.render.mine.bProcessed [nHead] = gameData.render.mine.nProcessed;
 		nSegment = gameData.render.mine.segRenderList [0][nHead];
-		curPortal = renderPortals + nHead;
+		tPortal& curPortal = renderPortals [nHead];
 		if (nSegment == -1)
 			continue;
 #if DBG
@@ -758,7 +756,7 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 		segP = SEGMENTS + nSegment;
 		sv = segP->m_verts;
-		bRotated = 0;
+		int bRotated = 0;
 		//look at all sides of this segment.
 		//tricky code to look at sides in correct order follows
 		for (nChild = nChildren = 0; nChild < MAX_SIDES_PER_SEGMENT; nChild++) {		//build list of sides
@@ -804,19 +802,15 @@ for (l = 0; l < nRenderDepth; l++) {
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
-			tPortal p = {32767, -32767, 32767, -32767};
-			bProjected = 4;	//a point wasn't projected
+			tPortal facePortal = {32767, -32767, 32767, -32767};
+			int bProjected = 1;	//0 when at least one point wasn't projected
 			s2v = sideVertIndex [nSide];
-			andCodes3D = 0xff;
+			ubyte offScreenFlags = 0xff;
 			for (j = 0; j < 4; j++) {
 				g3sPoint& point = gameData.segs.points [sv [s2v [j]]];
 				if (point.p3_codes & CC_BEHIND) {
-#if VIS_CULLING == 2
-					bProjected--;
-#else
 					bProjected = 0;
 					break;
-#endif
 					}
 #if 1
 				G3TransformAndEncodePoint (&point, gameData.segs.vertices [sv [s2v [j]]]);
@@ -839,77 +833,75 @@ for (l = 0; l < nRenderDepth; l++) {
 						point.p3_codes |= CC_OFF_TOP;
 					}
 #endif
-				andCodes3D &= (point.p3_codes & ~CC_BEHIND);
-				if (p.left > point.p3_screen.x)
-					p.left = point.p3_screen.x;
-				if (p.right < point.p3_screen.x)
-					p.right = point.p3_screen.x;
-				if (p.top > point.p3_screen.y)
-					p.top = point.p3_screen.y;
-				if (p.bot < point.p3_screen.y)
-					p.bot = point.p3_screen.y;
+				offScreenFlags &= (point.p3_codes & ~CC_BEHIND);
+				if (facePortal.left > point.p3_screen.x)
+					facePortal.left = point.p3_screen.x;
+				if (facePortal.right < point.p3_screen.x)
+					facePortal.right = point.p3_screen.x;
+				if (facePortal.top > point.p3_screen.y)
+					facePortal.top = point.p3_screen.y;
+				if (facePortal.bot < point.p3_screen.y)
+					facePortal.bot = point.p3_screen.y;
 				}
 #if DBG
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
-#if VIS_CULLING == 2
-			if ((p.left < p.right) && (p.top < p.bot)) {
-#else
-			if (!bProjected || !(andCodes3D | (0xff & CodePortal (&p, curPortal)))) {	//maybe add this segment
-#endif
-				int nPos = gameData.render.mine.renderPos [nChildSeg];
-				tPortal *newPortal = renderPortals + nCurrent;
+			if (bProjected && (offScreenFlags | CodePortal (facePortal, curPortal)))
+				continue;
 
-				if (!bProjected)
-					*newPortal = *curPortal;
-				else {
-					newPortal->left = max (curPortal->left, p.left);
-					newPortal->right = min (curPortal->right, p.right);
-					newPortal->top = max (curPortal->top, p.top);
-					newPortal->bot = min (curPortal->bot, p.bot);
-					}
-				//see if this segment has already been visited, and if so, does the current portal expand the old portal?
-				if (nPos == -1) {
-					gameData.render.mine.renderPos [nChildSeg] = nCurrent;
-					gameData.render.mine.segRenderList [0][nCurrent] = nChildSeg;
-					gameData.render.mine.nSegDepth [nCurrent++] = l;
-					VISIT (nChildSeg);
-					}
-				else {
-					tPortal *oldPortal = renderPortals + nPos;
-					bool bExpand = false;
-					int h;
-					h = newPortal->left - oldPortal->left;
-					if (h > 0)
-						newPortal->left = oldPortal->left;
-					else if (h < 0)
-						bExpand = true;
-					h = newPortal->right - oldPortal->right;
-					if (h < 0)
-						newPortal->right = oldPortal->right;
-					else if (h > 0)
-						bExpand = true;
-					h = newPortal->top - oldPortal->top;
-					if (h > 0)
-						newPortal->top = oldPortal->top;
-					else if (h < 0)
-						bExpand = true;
-					h = newPortal->bot - oldPortal->bot;
-					if (h < 0)
-						newPortal->bot = oldPortal->bot;
-					else if (h > 0)
-						bExpand = true;
-					if (bExpand) {
-						if (nCurrent < gameData.segs.nSegments)
-							gameData.render.mine.segRenderList [0][nCurrent] = -0x7fff;
-						*oldPortal = *newPortal;		//get updated tPortal
-						gameData.render.mine.bProcessed [nPos] = gameData.render.mine.nProcessed - 1;		//force reprocess
+			//maybe add this segment
+			int nPos = gameData.render.mine.renderPos [nChildSeg];
+			tPortal& newPortal = renderPortals [nCurrent];
+
+			if (!bProjected)
+				newPortal = curPortal;
+			else {
+				newPortal.left = max (curPortal.left, facePortal.left);
+				newPortal.right = min (curPortal.right, facePortal.right);
+				newPortal.top = max (curPortal.top, facePortal.top);
+				newPortal.bot = min (curPortal.bot, facePortal.bot);
+				}
+			//see if this segment has already been visited, and if so, does the current portal expand the old portal?
+			if (nPos == -1) {
+				gameData.render.mine.renderPos [nChildSeg] = nCurrent;
+				gameData.render.mine.segRenderList [0][nCurrent] = nChildSeg;
+				gameData.render.mine.nSegDepth [nCurrent++] = l;
+				VISIT (nChildSeg);
+				}
+			else {
+				tPortal& oldPortal = renderPortals [nPos];
+				bool bExpand = false;
+				int h;
+				h = newPortal.left - oldPortal.left;
+				if (h > 0)
+					newPortal.left = oldPortal.left;
+				else if (h < 0)
+					bExpand = true;
+				h = newPortal.right - oldPortal.right;
+				if (h < 0)
+					newPortal.right = oldPortal.right;
+				else if (h > 0)
+					bExpand = true;
+				h = newPortal.top - oldPortal.top;
+				if (h > 0)
+					newPortal.top = oldPortal.top;
+				else if (h < 0)
+					bExpand = true;
+				h = newPortal.bot - oldPortal.bot;
+				if (h < 0)
+					newPortal.bot = oldPortal.bot;
+				else if (h > 0)
+					bExpand = true;
+				if (bExpand) {
+					if (nCurrent < gameData.segs.nSegments)
+						gameData.render.mine.segRenderList [0][nCurrent] = -0x7fff;
+					oldPortal = newPortal;		//get updated tPortal
+					gameData.render.mine.bProcessed [nPos] = gameData.render.mine.nProcessed - 1;		//force reprocess
 #if 0
-						if (!nStart || (nStart > nPos))
-							nStart = nPos;
+					if (!nStart || (nStart > nPos))
+						nStart = nPos;
 #endif
-						}
 					}
 				}
 			}
