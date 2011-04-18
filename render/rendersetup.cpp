@@ -94,7 +94,7 @@ projection.Get (GL_PROJECTION_MATRIX);
 ogl.ResetTransform (1);
 glMatrixMode (GL_TEXTURE);
 glActiveTexture (GL_TEXTURE1 + nLight);
-#if 1
+#if 0
 bias.Set ();
 projection.Mul ();
 #else
