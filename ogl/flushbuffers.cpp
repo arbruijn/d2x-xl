@@ -180,6 +180,10 @@ if (HaveDrawBuffer ()) {
 #if MAX_SHADOWMAPS
 	FlushShadowMaps (nEffects);
 #endif
+	if (!nEffects) {
+		SetDrawBuffer (GL_BACK, 0);
+		OglDrawArrays (GL_QUADS, 0, 4);
+		}
 	ResetClientStates (0);
 	SelectDrawBuffer (0);
 	//if (bStereo)

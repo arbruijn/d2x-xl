@@ -679,7 +679,12 @@ if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
 g3sPoint& point = gameData.segs.points [nVertex];
-if (!(point.p3_flags & PF_PROJECTED)) {
+#if DBG
+point.p3_flags = 0;
+#else
+if (!(point.p3_flags & PF_PROJECTED)) 
+#endif
+{
 	transformation.Transform (point.p3_vec, point.p3_src = gameData.segs.vertices [nVertex]);
 	G3ProjectPoint (&point);
 	point.p3_codes = (point.p3_vec.v.coord.z < 0) ? CC_BEHIND : 0;
