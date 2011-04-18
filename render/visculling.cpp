@@ -771,7 +771,25 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 #if 1
 			if (!bRotated) {
+#if 0
 				RotateVertexList (8, sv);
+#else
+				for (int i = 0; i < 8; i++) {
+					g3sPoint& point = gameData.segs.points [sv [i]];
+					transformation.Transform (point.p3_vec, point.p3_src = gameData.segs.vertices [sv [i]]);
+					G3ProjectPoint (&point);
+					if (point.p3_screen.x < 0)
+						point.p3_codes |= CC_OFF_LEFT;
+					else if (point.p3_screen.x > screen.Width ())
+						point.p3_codes |= CC_OFF_RIGHT;
+					if (point.p3_screen.y < 0)
+						point.p3_codes |= CC_OFF_BOT;
+					else if (point.p3_screen.y > screen.Height ())
+						point.p3_codes |= CC_OFF_TOP;
+					if (point.p3_vec.v.coord.z < 0)
+						point.p3_codes |= CC_BEHIND;
+					}
+#endif
 				bRotated = 1;
 				}
 #else
@@ -819,6 +837,7 @@ for (l = 0; l < nRenderDepth; l++) {
 #else
 				if (!(point.p3_flags & PF_PROJECTED)) {
 					transformation.Transform (point.p3_vec, point.p3_src = gameData.segs.vertices [sv [s2v [j]]]);
+					G3ProjectPoint (&point);
 					if (point.p3_screen.x < 0)
 						point.p3_codes |= CC_OFF_LEFT;
 					else if (point.p3_screen.x > screen.Width ())
