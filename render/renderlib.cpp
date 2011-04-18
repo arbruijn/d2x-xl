@@ -527,7 +527,13 @@ return (bForce || gameStates.render.bDoCameras) ? cameraManager.GetFaceCamera (n
 
 int SetupMonitorFace (short nSegment, short nSide, short nCamera, CSegFace *faceP)
 {
-	CCamera		*cameraP = cameraManager.Camera (nCamera);
+	CCamera		*cameraP = cameraManager [nCamera];
+
+if (!cameraP) {
+	faceP->m_info.nCamera = -1;
+	return 0;
+	}
+
 	int			bHaveMonitorBg, bIsTeleCam = cameraP->GetTeleport ();
 #if !DBG
 	int			i;

@@ -217,6 +217,8 @@ if (m_info.hFBO) {
 		m_info.nColorBuffers = 0;
 		}
 	if (m_info.hDepthBuffer) {
+		if (m_info.nType == 1)
+			ogl.DeleteTextures (1, &m_info.hDepthBuffer);
 		if (m_info.nType >= 0)
 			glDeleteRenderbuffersEXT (1, &m_info.hDepthBuffer);
 		m_info.hDepthBuffer =

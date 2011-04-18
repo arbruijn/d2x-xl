@@ -551,11 +551,7 @@ glClear (GL_COLOR_BUFFER_BIT);
 
 void CGlowRenderer::ChooseDrawBuffer (void)
 {
-//if (gameStates.render.cameras.bActive)
-//	cameraManager.Camera (cameraManager.Current ())->EnableBuffer ();
 ogl.ChooseDrawBuffer ();
-//if (gameStates.render.cameras.bActive)
-//	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 //------------------------------------------------------------------------------
@@ -567,7 +563,7 @@ if (m_nStrength < 0)
 
 #if USE_VIEWPORT
 if (!Visible ())
-	ChooseDrawBuffer ();
+	ogl.ChooseDrawBuffer ();
 else
 #endif
 	{
@@ -614,7 +610,7 @@ else
 #	endif
 #endif
 
-	ChooseDrawBuffer ();
+	ogl.ChooseDrawBuffer ();
 	ogl.SetDepthMode (GL_ALWAYS);
 	//ogl.SetBlendMode (2);
 	ogl.SetBlendMode (GL_ONE, GL_ONE);

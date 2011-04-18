@@ -119,7 +119,7 @@ class CCameraManager {
 		void Rotate (CObject *objP);
 		inline uint Count (void) { return m_cameras.Buffer () ? m_cameras.ToS () : 0; }
 		inline CCamera* Cameras (void) { return m_cameras.Buffer (); }
-		inline CCamera* Camera (short i = 0) { return Cameras () + i; }
+		//inline CCamera* Camera (short i = 0) { return Cameras () + i; }
 		inline int Current (void) { return int (m_current - m_cameras.Buffer ()); }
 		inline void SetCurrent (CCamera* cameraP) { m_current = cameraP; }
 		CCamera* Camera (CObject *objP);

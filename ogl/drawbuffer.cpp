@@ -172,6 +172,9 @@ int nPrevBuffer = (m_states.nCamera < 0)
 						: (m_data.drawBufferP && m_data.drawBufferP->Active ()) 
 							? int (m_data.drawBufferP - m_data.drawBuffers.Buffer ()) 
 							: 0x7FFFFFFF;
+
+CCamera* cameraP;
+
 if (nBuffer != nPrevBuffer) {
 	if (m_data.drawBufferP)
 		m_data.drawBufferP->Disable (false);
@@ -180,9 +183,9 @@ if (nBuffer != nPrevBuffer) {
 		m_data.drawBufferP = m_data.GetDrawBuffer (nBuffer); 
 		CreateDrawBuffer ((nBuffer < 2) ? 1 : (nBuffer < 3) ? -1 : -2);
 		}
-	else {
+	else if ((cameraP = cameraManager [-nBuffer - 1])) {
 		m_states.nCamera = nBuffer;
-		m_data.drawBufferP = &cameraManager.Camera (-nBuffer - 1)->FrameBuffer ();
+		m_data.drawBufferP = &cameraP->FrameBuffer ();
 		}
 	}
 m_data.drawBufferP->Enable (false);
