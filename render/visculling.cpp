@@ -823,7 +823,8 @@ for (l = 0; l < nRenderDepth; l++) {
 				}
 			childList [nChildren++] = nChild;
 			}
-		//now order the sides in some magical way
+		// now order the sides in some magical way
+		// looking from segment nSegment through side nSide at segment nChildSeg
 		for (nChild = 0; nChild < nChildren; nChild++) {
 			nSide = childList [nChild];
 			nChildSeg = segP->m_children [nSide];
@@ -833,7 +834,6 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 			tPortal facePortal = {32767, -32767, 32767, -32767};
 			int bProjected = 1;	//0 when at least one point wasn't projected
-			short* sv = SEGMENTS [nChildSeg].m_verts;
 			int* s2v = sideVertIndex [nSide];
 			ubyte offScreenFlags = 0xff;
 			for (int nCorner = 0; nCorner < 4; nCorner++) {
