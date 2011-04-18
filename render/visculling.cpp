@@ -768,14 +768,23 @@ for (l = 0; l < nRenderDepth; l++) {
 				RotateVertexList (8, sv);
 				bRotated = 1;
 				}
+#else
+			{
+			for (int i = 0; i < 8; i++) {
+				int j = sv [i];
+				CFixVector vertDir = gameData.segs.vertices [j] - viewPos;
+				if (CFixVector::Dot (viewDir, vertDir) < 0) 
+					gameData.segs.points [j].p3_codes |= CC_BEHIND;
+				}
+			}
 #endif
 			if (bCullIfBehind) {
 				andCodes = 0xff;
 				s2v = sideVertIndex [nChild];
-				if ((0xff & gameData.segs.points [sv [s2v [0]]].p3_codes
-							 & gameData.segs.points [sv [s2v [1]]].p3_codes
-					 	    & gameData.segs.points [sv [s2v [2]]].p3_codes
-						    & gameData.segs.points [sv [s2v [3]]].p3_codes) & CC_BEHIND)
+				if (gameData.segs.points [sv [s2v [0]]].p3_codes &
+					 gameData.segs.points [sv [s2v [1]]].p3_codes &
+					 gameData.segs.points [sv [s2v [2]]].p3_codes &
+					 gameData.segs.points [sv [s2v [3]]].p3_codes & CC_BEHIND)
 					continue;
 				}
 			childList [nChildren++] = nChild;
@@ -809,7 +818,9 @@ for (l = 0; l < nRenderDepth; l++) {
 				s.x = pnt->p3_screen.s.x;
 				s.y = pnt->p3_screen.s.y;
 #else
-				OglProjectPoint (pnt->p3_vec, s);
+				CFloatVector3 v;
+				v.Assign (pnt->p3_vec);
+				OglProjectPoint (v, s);
 #endif
 				andCodes3D &= (pnt->p3_codes & ~CC_BEHIND);
 				if (p.left > s.x)

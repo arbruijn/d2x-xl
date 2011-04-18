@@ -82,18 +82,9 @@ ubyte ProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
 {
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
-#if 0
-double x, y, z;
-gluProject ((double) p.v.coord.x, (double) p.v.coord.y, (double) p.v.coord.z, 
-				&transformation.m_info.oglModelview [0], &transformation.m_info.oglProjection [0], transformation.m_info.oglViewport, 
-				&x, &y, &z);
-s.x = fix (fxCanvW2 - x * fxCanvW2 / z);
-s.y = fix (fxCanvH2 - y * fxCanvH2 / z);
-#else
 CFloatVector3 v = transformation.m_info.projection * p;
 s.x = fix (fxCanvW2 - v.v.coord.x * fxCanvW2 / v.v.coord.z);
 s.y = fix (fxCanvH2 - v.v.coord.y * fxCanvH2 / v.v.coord.z);
-#endif
 return flags | PF_PROJECTED;
 }
 

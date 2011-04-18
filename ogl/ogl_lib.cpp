@@ -433,7 +433,7 @@ glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 float aspectRatio = 1.0; // 0.75 * double (screen.Width ()) / double (screen.Height ()) - ratio of current aspect to 4:3
 gameStates.render.glFOV = gameStates.render.nShadowMap ? 180.0 : 105.0 * aspectRatio; // scale with ratio of current aspect to 4:3;
-gameStates.render.glFOV = 180.0;
+gameStates.render.glFOV = 170.0;
 if (StereoSeparation () && (gameOpts->render.stereo.nMethod == STEREO_PARALLEL))
 	SetupFrustum ();
 else {
