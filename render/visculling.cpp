@@ -675,15 +675,12 @@ gameData.render.zMax = vCenter.v.coord.z + d1 + r;
 void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors, int nThread)
 {
 	int			nCurrent, nHead, nTail, nStart, nSide;
-	int			l, i, j;
+	int			l, i;
 	short			nChild;
 	short			nChildSeg;
-	short*		sv;
-	int*			s2v;
 	int			nSegment;
 	short			childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
 	int			nChildren, bCullIfBehind;					//how many sides in childList
-	CSegment*	segP;
 	CFixVector	viewDir, viewPos;
 
 viewDir = transformation.m_info.view [0].m.dir.f;
@@ -724,6 +721,9 @@ renderPortals [0].left =
 renderPortals [0].top = 0;
 renderPortals [0].right = CCanvas::Current ()->Width () - 1;
 renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
+
+for (i = 0; i < gameData.segs.nSegments; i++)
+	gameData.segs.points [i].p3_flags = 0;
 #if DBG
 int nIterations = 0;
 #endif
@@ -754,8 +754,8 @@ for (l = 0; l < nRenderDepth; l++) {
 #if DBG
 		nIterations++;
 #endif
-		segP = SEGMENTS + nSegment;
-		sv = segP->m_verts;
+		CSegment* segP = SEGMENTS + nSegment;
+		short* sv = segP->m_verts;
 		int bRotated = 0;
 		//look at all sides of this segment.
 		//tricky code to look at sides in correct order follows
@@ -775,19 +775,25 @@ for (l = 0; l < nRenderDepth; l++) {
 				RotateVertexList (8, sv);
 #else
 				for (int i = 0; i < 8; i++) {
-					g3sPoint& point = gameData.segs.points [sv [i]];
-					transformation.Transform (point.p3_vec, point.p3_src = gameData.segs.vertices [sv [i]]);
-					G3ProjectPoint (&point);
-					if (point.p3_screen.x < 0)
-						point.p3_codes |= CC_OFF_LEFT;
-					else if (point.p3_screen.x > screen.Width ())
-						point.p3_codes |= CC_OFF_RIGHT;
-					if (point.p3_screen.y < 0)
-						point.p3_codes |= CC_OFF_BOT;
-					else if (point.p3_screen.y > screen.Height ())
-						point.p3_codes |= CC_OFF_TOP;
-					if (point.p3_vec.v.coord.z < 0)
-						point.p3_codes |= CC_BEHIND;
+					short nVertex = sv [i];
+#if DBG
+					if (nVertex == nDbgVertex)
+						nDbgVertex = nDbgVertex;
+#endif
+					g3sPoint& point = gameData.segs.points [nVertex];
+					if (!(point.p3_flags & PF_PROJECTED)) {
+						transformation.Transform (point.p3_vec, point.p3_src = gameData.segs.vertices [nVertex]);
+						G3ProjectPoint (&point);
+						point.p3_codes = (point.p3_vec.v.coord.z < 0) ? CC_BEHIND : 0;
+						if (point.p3_screen.x < 0)
+							point.p3_codes |= CC_OFF_LEFT;
+						else if (point.p3_screen.x > screen.Width ())
+							point.p3_codes |= CC_OFF_RIGHT;
+						if (point.p3_screen.y < 0)
+							point.p3_codes |= CC_OFF_BOT;
+						else if (point.p3_screen.y > screen.Height ())
+							point.p3_codes |= CC_OFF_TOP;
+						}
 					}
 #endif
 				bRotated = 1;
@@ -803,7 +809,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			}
 #endif
 			if (bCullIfBehind) {
-				s2v = sideVertIndex [nChild];
+				int* s2v = sideVertIndex [nChild];
 				if (gameData.segs.points [sv [s2v [0]]].p3_codes &
 					 gameData.segs.points [sv [s2v [1]]].p3_codes &
 					 gameData.segs.points [sv [s2v [2]]].p3_codes &
@@ -822,21 +828,23 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 			tPortal facePortal = {32767, -32767, 32767, -32767};
 			int bProjected = 1;	//0 when at least one point wasn't projected
-			s2v = sideVertIndex [nSide];
+			short* sv = SEGMENTS [nChildSeg].m_verts;
+			int* s2v = sideVertIndex [nSide];
 			ubyte offScreenFlags = 0xff;
-			for (j = 0; j < 4; j++) {
-				g3sPoint& point = gameData.segs.points [sv [s2v [j]]];
+			for (int nCorner = 0; nCorner < 4; nCorner++) {
+				short nVertex = sv [s2v [nCorner]];
+				g3sPoint& point = gameData.segs.points [nVertex];
 				if (point.p3_codes & CC_BEHIND) {
 					bProjected = 0;
 					break;
 					}
 #if 0
-				G3TransformAndEncodePoint (&point, gameData.segs.vertices [sv [s2v [j]]]);
+				G3TransformAndEncodePoint (&point, gameData.segs.vertices [sv [s2v [nCorner]]]);
 				if (!(point.p3_flags & PF_PROJECTED))
 					G3ProjectPoint (&point);
 #else
 				if (!(point.p3_flags & PF_PROJECTED)) {
-					transformation.Transform (point.p3_vec, point.p3_src = gameData.segs.vertices [sv [s2v [j]]]);
+					transformation.Transform (point.p3_vec, point.p3_src = gameData.segs.vertices [nVertex]);
 					G3ProjectPoint (&point);
 					if (point.p3_screen.x < 0)
 						point.p3_codes |= CC_OFF_LEFT;
