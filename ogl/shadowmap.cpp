@@ -82,11 +82,15 @@ void COGL::FlushShadowMaps (int nEffects)
 if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1, 0) != 0)) {
 	SetDrawBuffer (GL_BACK, 0);
 	EnableClientStates (1, 0, 0, GL_TEXTURE0);
+#if MAX_SHADOWMAPS < 0
+	BindTexture (cameraManager.ShadowMap (0)->FrameBuffer ().ColorBuffer ());
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
+	OglDrawArrays (GL_QUADS, 0, 4);
+#else
 	BindTexture (DrawBuffer ((nEffects & 1) ? 1 : (nEffects & 2) ? 2 : 0)->ColorBuffer ());
-	//CopyDepthTexture (0, GL_TEXTURE0);
 	EnableClientStates (1, 0, 0, GL_TEXTURE1);
 	BindTexture (DrawBuffer ((nEffects & 1) ? 1 : (nEffects & 2) ? 2 : 0)->DepthBuffer ());
-	//BindTexture (0);
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
 	GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (shadowShaderProg));
@@ -125,6 +129,7 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			}
 		SetDepthTest (true);
 		}
+#endif
 	}
 }
 

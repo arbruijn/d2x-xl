@@ -432,8 +432,8 @@ gameStates.render.glAspect = m_states.bUseTransform ? double (screen.Width ()) /
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 float aspectRatio = 1.0; // 0.75 * double (screen.Width ()) / double (screen.Height ()) - ratio of current aspect to 4:3
-#if 0
-gameStates.render.glFOV = gameStates.render.nShadowMap ? 170.0 : 105.0 * aspectRatio; // scale with ratio of current aspect to 4:3;
+#if 1
+gameStates.render.glFOV = gameStates.render.nShadowMap ? 300.0 : 105.0 * aspectRatio; // scale with ratio of current aspect to 4:3;
 #else
 gameStates.render.glFOV = 170.0;
 #endif
@@ -662,7 +662,7 @@ else
 	if (gameStates.render.nRenderPass < 0) {
 		ogl.SetDepthWrite (true);
 		glClearDepth (1.0);
-#if MAX_SHADOWMAPS
+#if MAX_SHADOWMAPS > 0
 		if (gameStates.render.nShadowMap) {
 			ColorMask (0, 0, 0, 0, 0);
 			glClear (GL_DEPTH_BUFFER_BIT);
@@ -701,7 +701,7 @@ else
 	else {
 		SetFaceCulling (true);
 		glFrontFace (GL_CW);	//Weird, huh? Well, D2 renders everything reverse ...
-#if MAX_SHADOWMAPS
+#if MAX_SHADOWMAPS > 0
 		if (gameStates.render.nShadowMap) {
 #	if 1
 			ogl.SetPolyOffsetFill (true);

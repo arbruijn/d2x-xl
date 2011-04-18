@@ -123,7 +123,7 @@ else {
 		nMinFrameTime = 1000 / MAXFPS;
 		nDeltaTime = nMinFrameTime - nFrameTime;
 		fSlack += 1000.0f / MAXFPS - nMinFrameTime;
-		if (fSlack >= 1) {
+		if (fSlack >= 1.0f) {
 			nDeltaTime += int (fSlack);
 			fSlack -= int (fSlack);
 			}

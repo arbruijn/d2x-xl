@@ -181,10 +181,10 @@ if (nHeight > 0)
 	m_info.nHeight = nHeight;
 
 if (nType == 3) { // no color buffer needed for rendering shadow maps
-#if 0
+#if MAX_SHADOWMAPS < 0
 	nType = 1;
 #else
-	//nColorBuffers = 0;
+	nColorBuffers = 0;
 #endif
 	}
 

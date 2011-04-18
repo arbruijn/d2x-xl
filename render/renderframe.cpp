@@ -492,12 +492,12 @@ if (!(nWindow || gameStates.render.cameras.bActive)) {
 	lightManager.ShadowTransformation (-1).Get (GL_MODELVIEW_MATRIX, true); // inverse
 	lightManager.ShadowTransformation (-2).Get (GL_PROJECTION_MATRIX, true); 
 	lightManager.ShadowTransformation (-3).Get (GL_PROJECTION_MATRIX, false);
+	ogl.ResetTransform (1);
 	glPushMatrix ();
 	lightManager.ShadowTransformation (-1).Set ();
 	lightManager.ShadowTransformation (-2).Mul ();
 	lightManager.ShadowTransformation (-3).Get (GL_MODELVIEW_MATRIX, false); // inverse (modelview * projection)
 	glPopMatrix ();
-	ogl.ResetTransform (1);
 	}
 #endif
 PROF_END(ptAux)

@@ -526,7 +526,10 @@ inline int RenderSegmentList (int nType)
 PROF_START
 gameStates.render.nType = nType;
 #if MAX_SHADOWMAPS
-if (gameStates.render.nShadowMap == 0) {
+#	if MAX_SHADOWMAPS > 0
+if (gameStates.render.nShadowMap == 0) 
+#endif
+	{
 #else
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
 #endif
@@ -534,7 +537,9 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.
 	RenderFaceList (nType);
 	ogl.ClearError (0);
 	}
+#if !MAX_SHADOWMAPS
 RenderMineObjects (nType);
+#endif
 for (int i = 0; i < gameStates.app.nThreads; i++)
 	lightManager.ResetAllUsed (1, i);
 ogl.ClearError (0);
