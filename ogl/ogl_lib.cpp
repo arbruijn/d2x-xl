@@ -437,11 +437,25 @@ gameStates.render.glFOV = gameStates.render.nShadowMap ? 180.0 : 105.0 * aspectR
 #else
 gameStates.render.glFOV = 180.0;
 #endif
+#if 1
+fxCanvW2 = (float) m_states.nCurWidth;
+fxCanvH2 = (float) m_states.nHeightWidth;
+#else
+fxCanvW2 = (float) CCanvas::Current ()->Width ();
+fxCanvH2 = (float) CCanvas::Current ()->Height ();
+#endif
+xCanvW2 = F2X (fxCanvW2);
+xCanvH2 = F2X (fxCanvH2);
 if (StereoSeparation () && (gameOpts->render.stereo.nMethod == STEREO_PARALLEL))
 	SetupFrustum ();
 else {
-	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom),
-		   			 double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ()), ZNEAR, ZFAR);
+	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), 
+#if 1
+						 double (m_states.nCurWidth) / double (m_states.nCurHeight),
+#else
+		   			 double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ()), 
+#endif
+						 ZNEAR, ZFAR);
 	}
 if (gameStates.render.bRearView < 0)
 	glScalef (-1.0f, 1.0f, 1.0f);

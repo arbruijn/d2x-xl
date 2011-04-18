@@ -43,11 +43,6 @@ void _CDECL_ g3_close(void) {}
 void G3StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 {
 //set int w,h & fixed-point w,h/2
-xCanvW2 = CCanvas::Current ()->Width () << 15;
-xCanvH2 = CCanvas::Current ()->Height () << 15;
-fxCanvW2 = X2F (xCanvW2);
-fxCanvH2 = X2F (xCanvH2);
-fFOVScale = fxCanvW2 / fxCanvH2 * 0.75f;
 transformation.ComputeAspect ();
 InitFreePoints ();
 ogl.StartFrame (bFlat, bResetColorBuf, xStereoSeparation);

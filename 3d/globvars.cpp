@@ -25,7 +25,6 @@ fix		xCanvH2;				//fixed-point height/2
 
 float		fxCanvW2;
 float		fxCanvH2;
-float		fFOVScale;
 
 //vertex buffers for polygon drawing and clipping
 g3sPoint * Vbuf0[MAX_POINTS_IN_POLY];
