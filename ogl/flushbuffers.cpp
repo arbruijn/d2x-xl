@@ -123,6 +123,16 @@ if (!gameStates.menus.nInMenu || bForce) {
 		gameStates.render.bRenderIndirect = 1;
 		//SetDrawBuffer (GL_BACK, 1);
 		}
+#if 0
+	if (!gameStates.menus.nInMenu && gameStates.app.bGameRunning) {
+		EnableClientStates (1, 0, 0, GL_TEXTURE0);
+		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
+		OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
+		BindTexture (m_states.hDepthBuffer [0]);
+		SetDrawBuffer (GL_BACK, 0);
+		OglDrawArrays (GL_QUADS, 0, 4);
+		}
+#endif
 	SDL_GL_SwapBuffers ();
 	if (gameStates.app.bSaveScreenshot)
 		SaveScreenShot (NULL, 0);
@@ -170,10 +180,10 @@ if (HaveDrawBuffer ()) {
 
 	glColor3f (1,1,1);
 
-	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
+	EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
+	BindTexture (DrawBuffer (0)->ColorBuffer ());
 
 	FlushStereoBuffers (nEffects);
 	FlushEffects (nEffects);
@@ -181,6 +191,7 @@ if (HaveDrawBuffer ()) {
 	FlushShadowMaps (nEffects);
 #endif
 	if (!nEffects) {
+		BindTexture (m_states.hDepthBuffer [0]);
 		SetDrawBuffer (GL_BACK, 0);
 		OglDrawArrays (GL_QUADS, 0, 4);
 		}

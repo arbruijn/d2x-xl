@@ -236,19 +236,22 @@ const char* shadowMapFS =
 	"#define B 4999.0 //(ZNEAR - ZFAR)\r\n" \
 	"#define C 10000.0 //(2.0 * ZNEAR * ZFAR)\r\n" \
 	"#define D (cameraNDC.z * B)\r\n" \
-	"#define ZEYE -10000.0 / (5001.0 + cameraNDC.z * 4999.0) //-(C / (A + D))\r\n" \
+	"//#define ZEYE -10000.0 / (5001.0 + cameraNDC.z * 4999.0) //-(C / (A + D))\r\n" \
+	"#define ZEYE(z) -(ZFAR / ((z) * (ZFAR - ZNEAR) - ZFAR))\r\n" \
 	"void main() {\r\n" \
 	"float fragDepth = texture2D (sceneDepth, gl_TexCoord [0].xy).r;\r\n" \
 	"vec3 cameraNDC = (vec3 (gl_TexCoord [0].xy, fragDepth) - 0.5) * 2.0;\r\n" \
 	"vec4 cameraClipPos;\r\n" \
-	"cameraClipPos.w = -ZEYE;\r\n" \
+	"cameraClipPos.w = -ZEYE(cameraNDC.z);\r\n" \
 	"cameraClipPos.xyz = cameraNDC * cameraClipPos.w;\r\n" \
-	"//vec4 lightWinPos = gl_TextureMatrix [2] * cameraClipPos;\r\n" \
-	"vec4 lightClipPos = gl_TextureMatrix [2] * cameraClipPos;\r\n" \
-	"float w = abs (lightClipPos.w);\r\n" \
-	"float shadowDepth = ((w < 0.00001) || (abs (lightClipPos.x) > w) || (abs (lightClipPos.y) > w)) ? 2.0 : texture2D (shadowMap, lightClipPos.xy / (lightClipPos.w * 2.0) + 0.5).r;\r\n" \
+	"vec4 lightWinPos = gl_TextureMatrix [2] * cameraClipPos;\r\n" \
+	"float shadowDepth = texture2DProj (shadowMap, lightWinPos).r;\r\n" \
+	"//vec4 lightClipPos = gl_TextureMatrix [2] * cameraClipPos;\r\n" \
+	"//float w = abs (lightClipPos.w);\r\n" \
+	"//float shadowDepth = ((w < 0.00001) || (abs (lightClipPos.x) > w) || (abs (lightClipPos.y) > w)) ? 2.0 : texture2D (shadowMap, lightClipPos.xy / (lightClipPos.w * 2.0) + 0.5).r;\r\n" \
 	"float light;\r\n" \
-	"if (lightClipPos.z < (lightClipPos.w * 2.0) * (shadowDepth - 0.5))\r\n" \
+	"//if (lightClipPos.z < (lightClipPos.w * 2.0) * (shadowDepth - 0.5))\r\n" \
+	"if (fragDepth < shadowDepth)\r\n" \
 	"   light = 1.0;\r\n" \
 	"else {\r\n" \
 	"   vec4 worldPos = modelviewProjInverse * cameraClipPos;\r\n" \

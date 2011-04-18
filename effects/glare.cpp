@@ -697,15 +697,15 @@ const char *glareFS =
 	"uniform int blendMode;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
-	"#define ZRANGE (ZFAR - ZNEAR)\r\n" \
-	"#define ZSCALE (ZFAR / ZRANGE)\r\n" \
-	"#//define EyeZ(screenZ) (ZFAR / ((screenZ) * ZRANGE - ZFAR))\r\n" \
-	"#define EyeZ(screenZ) (ZSCALE / (ZSCALE - (screenZ)))\r\n" \
+	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
+	"#define A 5001.0 //(ZNEAR + ZFAR)\r\n" \
+	"#define B 4999.0 //(ZNEAR - ZFAR)\r\n" \
+	"#define C 10000.0 //(2.0 * ZNEAR * ZFAR)\r\n" \
+	"#define D (NDC (Z) * B)\r\n" \
+	"//#define ZEYE(z) -10000.0 / (5001.0 + NDC (z) * 4999.0) //(C / (A + D))\r\n" \
+	"#define ZEYE(z) -(ZFAR / ((z) * (ZFAR - ZNEAR) - ZFAR))\r\n" \
 	"void main (void) {\r\n" \
-	"//float sceneZ = EyeZ (texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
-	"//float fragZ = EyeZ (gl_FragCoord.z);\r\n" \
-	"//float dz = clamp (fragZ - sceneZ, 0.0, dMax);\r\n" \
-	"float dz = clamp (EyeZ (gl_FragCoord.z) - EyeZ (texture2D (depthTex, screenScale * gl_FragCoord.xy).r), 0.0, dMax);\r\n" \
+	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * screenScale).r), 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 texColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
 	"//gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);\r\n" \
