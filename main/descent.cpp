@@ -704,7 +704,6 @@ switch (loadOp) {
 		break;
 	case 11:
 		break;
-		g3_init ();
 	case 12:
 		/*---*/PrintLog ("Initializing texture merge buffer\n");
 		TexMergeInit (100); // 100 cache bitmaps

@@ -437,15 +437,6 @@ gameStates.render.glFOV = gameStates.render.nShadowMap ? 180.0 : 105.0 * aspectR
 #else
 gameStates.render.glFOV = 180.0;
 #endif
-#if 1
-fxCanvW2 = (float) m_states.nCurWidth;
-fxCanvH2 = (float) m_states.nHeightWidth;
-#else
-fxCanvW2 = (float) CCanvas::Current ()->Width ();
-fxCanvH2 = (float) CCanvas::Current ()->Height ();
-#endif
-xCanvW2 = F2X (fxCanvW2);
-xCanvH2 = F2X (fxCanvH2);
 if (StereoSeparation () && (gameOpts->render.stereo.nMethod == STEREO_PARALLEL))
 	SetupFrustum ();
 else {

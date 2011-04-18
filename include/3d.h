@@ -86,13 +86,6 @@ typedef line_drawer_func *line_drawer_fp;
 
 //3d system startup and shutdown:
 
-//initialize the 3d system
-void g3_init (void);
-
-//close down the 3d system
-void _CDECL_ g3_close (void);
-
-
 //Frame setup functions:
 
 //start the frame

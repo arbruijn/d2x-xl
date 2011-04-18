@@ -27,22 +27,14 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_lib.h"
 
 //------------------------------------------------------------------------------
-//initialize the 3d system
-void g3_init(void)
-{
-//	div0_init(DM_ERROR);
-	atexit(g3_close);
-}
-
-//------------------------------------------------------------------------------
-//close down the 3d system
-void _CDECL_ g3_close(void) {}
-
-//------------------------------------------------------------------------------
 //start the frame
 void G3StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 {
 //set int w,h & fixed-point w,h/2
+fxCanvW2 = (float) CCanvas::Current ()->Width ();
+fxCanvH2 = (float) CCanvas::Current ()->Height ();
+xCanvW2 = I2X (CCanvas::Current ()->Width ());
+xCanvH2 = I2X (CCanvas::Current ()->Height ());
 transformation.ComputeAspect ();
 InitFreePoints ();
 ogl.StartFrame (bFlat, bResetColorBuf, xStereoSeparation);
