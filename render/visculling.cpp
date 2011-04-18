@@ -763,7 +763,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			if (nChildSeg == nDbgSeg)
 				nChildSeg = nChildSeg;
 #endif
-#if 0
+#if 1
 			if (!bRotated) {
 				RotateVertexList (8, sv);
 				bRotated = 1;
@@ -797,14 +797,13 @@ for (l = 0; l < nRenderDepth; l++) {
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
-			tScreenPos s;
 			tPortal p = {32767, -32767, 32767, -32767};
 			bProjected = 4;	//a point wasn't projected
 			s2v = sideVertIndex [nSide];
 			andCodes3D = 0xff;
 			for (j = 0; j < 4; j++) {
-				g3sPoint *pnt = gameData.segs.points + sv [s2v [j]];
-				if (pnt->p3_codes & CC_BEHIND) {
+				g3sPoint& point = gameData.segs.points [sv [s2v [j]]];
+				if (point.p3_codes & CC_BEHIND) {
 #if VIS_CULLING == 2
 					bProjected--;
 #else
@@ -812,41 +811,36 @@ for (l = 0; l < nRenderDepth; l++) {
 					break;
 #endif
 					}
-#if 0
-				G3TransformAndEncodePoint (pnt, gameData.segs.vertices [sv [s2v [j]]]);
-				if (!(pnt->p3_flags & PF_PROJECTED))
-					G3ProjectPoint (pnt);
-				s = pnt->p3_screen.s;
+#if 1
+				G3TransformAndEncodePoint (&point, gameData.segs.vertices [sv [s2v [j]]]);
+				if (!(point.p3_flags & PF_PROJECTED))
+					G3ProjectPoint (&point);
 #else
-				if (pnt->p3_flags & PF_PROJECTED)
-					s = pnt->p3_screen;
-				else {
+				if (!(point.p3_flags & PF_PROJECTED)) {
 					CFloatVector3 v;
-					v.Assign (pnt->p3_vec);
-					OglProjectPoint (v, pnt->p3_screen);
-					s = pnt->p3_screen;
-					G3TransformAndEncodePoint (pnt, gameData.segs.vertices [sv [s2v [j]]]);
-					G3ProjectPoint (pnt);
-					s = pnt->p3_screen;
-					if (s.x < 0)
-						pnt->p3_codes |= CC_OFF_LEFT;
-					else if (s.x > screen.Width ())
-						pnt->p3_codes |= CC_OFF_RIGHT;
-					if (s.y < 0)
-						pnt->p3_codes |= CC_OFF_BOT;
-					else if (s.y > screen.Height ())
-						pnt->p3_codes |= CC_OFF_TOP;
+					v.Assign (gameData.segs.vertices [sv [s2v [j]]]);
+					OglProjectPoint (v, point.p3_screen);
+					G3TransformAndEncodePoint (&point, gameData.segs.vertices [sv [s2v [j]]]);
+					G3ProjectPoint (&point);
+					if (point.p3_screen.x < 0)
+						point.p3_codes |= CC_OFF_LEFT;
+					else if (point.p3_screen.x > screen.Width ())
+						point.p3_codes |= CC_OFF_RIGHT;
+					if (point.p3_screen.y < 0)
+						point.p3_codes |= CC_OFF_BOT;
+					else if (point.p3_screen.y > screen.Height ())
+						point.p3_codes |= CC_OFF_TOP;
 					}
 #endif
-				andCodes3D &= (pnt->p3_codes & ~CC_BEHIND);
-				if (p.left > s.x)
-					p.left = s.x;
-				if (p.right < s.x)
-					p.right = s.x;
-				if (p.top > s.y)
-					p.top = s.y;
-				if (p.bot < s.y)
-					p.bot = s.y;
+				andCodes3D &= (point.p3_codes & ~CC_BEHIND);
+				if (p.left > point.p3_screen.x)
+					p.left = point.p3_screen.x;
+				if (p.right < point.p3_screen.x)
+					p.right = point.p3_screen.x;
+				if (p.top > point.p3_screen.y)
+					p.top = point.p3_screen.y;
+				if (p.bot < point.p3_screen.y)
+					p.bot = point.p3_screen.y;
 				}
 #if DBG
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
