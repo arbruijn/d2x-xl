@@ -622,6 +622,7 @@ if (IsMultiGame && !(gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].
 	return 0;
 nCamsRendered = 0;
 t = SDL_GetTicks ();
+m_current = NULL;
 for (i = 0; i < m_cameras.ToS (); i++) {
 	if (m_cameras [i].Type () != 3) { // 3 -> shadow map
 		nWaitFrames = m_cameras [i].Ready (t);
