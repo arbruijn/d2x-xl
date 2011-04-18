@@ -537,7 +537,7 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.
 	RenderFaceList (nType);
 	ogl.ClearError (0);
 	}
-#if !MAX_SHADOWMAPS
+#if MAX_SHADOWMAPS >= 0
 RenderMineObjects (nType);
 #endif
 for (int i = 0; i < gameStates.app.nThreads; i++)
