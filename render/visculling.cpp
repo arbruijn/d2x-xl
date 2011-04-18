@@ -813,14 +813,30 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 					}
 #if 0
+				G3TransformAndEncodePoint (pnt, gameData.segs.vertices [sv [s2v [j]]]);
 				if (!(pnt->p3_flags & PF_PROJECTED))
 					G3ProjectPoint (pnt);
-				s.x = pnt->p3_screen.s.x;
-				s.y = pnt->p3_screen.s.y;
+				s = pnt->p3_screen.s;
 #else
-				CFloatVector3 v;
-				v.Assign (pnt->p3_vec);
-				OglProjectPoint (v, s);
+				if (pnt->p3_flags & PF_PROJECTED)
+					s = pnt->p3_screen;
+				else {
+					CFloatVector3 v;
+					v.Assign (pnt->p3_vec);
+					OglProjectPoint (v, pnt->p3_screen);
+					s = pnt->p3_screen;
+					G3TransformAndEncodePoint (pnt, gameData.segs.vertices [sv [s2v [j]]]);
+					G3ProjectPoint (pnt);
+					s = pnt->p3_screen;
+					if (s.x < 0)
+						pnt->p3_codes |= CC_OFF_LEFT;
+					else if (s.x > screen.Width ())
+						pnt->p3_codes |= CC_OFF_RIGHT;
+					if (s.y < 0)
+						pnt->p3_codes |= CC_OFF_BOT;
+					else if (s.y > screen.Height ())
+						pnt->p3_codes |= CC_OFF_TOP;
+					}
 #endif
 				andCodes3D &= (pnt->p3_codes & ~CC_BEHIND);
 				if (p.left > s.x)

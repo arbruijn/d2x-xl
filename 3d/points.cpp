@@ -114,8 +114,13 @@ double x, y, z;
 gluProject ((double) p.v.coord.x, (double) p.v.coord.y, (double) p.v.coord.z, 
 				&transformation.m_info.oglModelview [0], &transformation.m_info.oglProjection [0], transformation.m_info.oglViewport, 
 				&x, &y, &z);
+#if 1
+s.x = fix (x);
+s.y = fix (y);
+#else
 s.x = fix (fxCanvW2 - x * fxCanvW2 / z);
 s.y = fix (fxCanvH2 - y * fxCanvH2 / z);
+#endif
 return flags | PF_PROJECTED;
 }
 
