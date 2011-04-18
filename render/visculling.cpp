@@ -763,10 +763,12 @@ for (l = 0; l < nRenderDepth; l++) {
 			if (nChildSeg == nDbgSeg)
 				nChildSeg = nChildSeg;
 #endif
+#if 0
 			if (!bRotated) {
 				RotateVertexList (8, sv);
 				bRotated = 1;
 				}
+#endif
 			if (bCullIfBehind) {
 				andCodes = 0xff;
 				s2v = sideVertIndex [nChild];
@@ -786,7 +788,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
-			fix x, y;
+			tScreenPos s;
 			tPortal p = {32767, -32767, 32767, -32767};
 			bProjected = 4;	//a point wasn't projected
 			s2v = sideVertIndex [nSide];
@@ -801,19 +803,23 @@ for (l = 0; l < nRenderDepth; l++) {
 					break;
 #endif
 					}
+#if 0
 				if (!(pnt->p3_flags & PF_PROJECTED))
 					G3ProjectPoint (pnt);
-				x = pnt->p3_screen.x;
-				y = pnt->p3_screen.y;
+				s.x = pnt->p3_screen.s.x;
+				s.y = pnt->p3_screen.s.y;
+#else
+				OglProjectPoint (pnt->p3_vec, s);
+#endif
 				andCodes3D &= (pnt->p3_codes & ~CC_BEHIND);
-				if (p.left > x)
-					p.left = x;
-				if (p.right < x)
-					p.right = x;
-				if (p.top > y)
-					p.top = y;
-				if (p.bot < y)
-					p.bot = y;
+				if (p.left > s.x)
+					p.left = s.x;
+				if (p.right < s.x)
+					p.right = s.x;
+				if (p.top > s.y)
+					p.top = s.y;
+				if (p.bot < s.y)
+					p.bot = s.y;
 				}
 #if DBG
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))

@@ -635,7 +635,7 @@ for (i = 0; i < nVertices; i++) {
 	cc.ccAnd &= p->p3_codes;
 	cc.ccOr |= p->p3_codes;
 	}
-	return cc;
+return cc;
 }
 
 // -----------------------------------------------------------------------------------

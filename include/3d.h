@@ -157,6 +157,7 @@ ubyte ProjectPoint (CFloatVector3& v, tScreenPos& screen, ubyte flags = 0, ubyte
 
 ubyte ProjectPoint (CFixVector& v, tScreenPos& s, ubyte flags = 0, ubyte codes = 0);
 
+ubyte OglProjectPoint (CFixVector& v, tScreenPos& s, ubyte flags = 0, ubyte codes = 0);
 
 //code a point.  fills in the p3_codes field of the point, and returns the codes
 static inline ubyte G3EncodePoint (g3sPoint* p) 

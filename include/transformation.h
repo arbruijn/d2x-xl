@@ -41,10 +41,10 @@ typedef struct tTransformation {
 		CFixVector		aspect;		//scaling for window aspect
 		CFloatVector	posf [2];
 		CFloatMatrix	viewf [3];
-		//CFloatMatrix	projection;
-		COGLMatrix		modelview;
-		COGLMatrix		projection;
-		int				viewport [4];
+		CFloatMatrix	projection;
+		COGLMatrix		oglModelview;
+		COGLMatrix		oglProjection;
+		int				oglViewport [4];
 		fix				zoom;
 		float				zoomf;
 		float				aspectRatio;
@@ -152,7 +152,7 @@ class CTransformation {
 			return Codes (dest);
 			}
 
-		inline COGLMatrix& Projection (void) { return m_info.projection; }
+		inline CFloatMatrix& Projection (void) { return m_info.projection; }
 
 		void ComputeAspect (void);
 
