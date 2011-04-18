@@ -730,6 +730,13 @@ renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
 int nIterations = 0;
 #endif
 int nRenderDepth = min (gameStates.render.detail.nRenderDepth, gameData.segs.nSegments);
+
+// Starting at the viewer's segment, the following code looks through each open side of a segment
+// the projected rectangular area of that side is that side's "portal".
+// For each portal, the code looks through the open sides of the portal face's child segment 
+// (the child portals). The current portal is then modified with all of the child portals visible through
+// it. This goes on until the current portal has dimensions of zero (because only solid geometry is visible through it).
+
 for (l = 0; l < nRenderDepth; l++) {
 	for (nHead = nStart, nTail = nCurrent; nHead < nTail; nHead++) {
 		if (gameData.render.mine.bProcessed [nHead] == gameData.render.mine.nProcessed)
@@ -751,7 +758,7 @@ for (l = 0; l < nRenderDepth; l++) {
 		segP = SEGMENTS + nSegment;
 		sv = segP->m_verts;
 		bRotated = 0;
-		//look at all sides of this CSegment.
+		//look at all sides of this segment.
 		//tricky code to look at sides in correct order follows
 		for (nChild = nChildren = 0; nChild < MAX_SIDES_PER_SEGMENT; nChild++) {		//build list of sides
 			nChildSeg = segP->m_children [nChild];
@@ -779,13 +786,12 @@ for (l = 0; l < nRenderDepth; l++) {
 			}
 #endif
 			if (bCullIfBehind) {
-				andCodes = 0xff;
 				s2v = sideVertIndex [nChild];
 				if (gameData.segs.points [sv [s2v [0]]].p3_codes &
 					 gameData.segs.points [sv [s2v [1]]].p3_codes &
 					 gameData.segs.points [sv [s2v [2]]].p3_codes &
 					 gameData.segs.points [sv [s2v [3]]].p3_codes & CC_BEHIND)
-					continue;
+					continue; // all face vertices behind the viewer => face invisible to the viewer
 				}
 			childList [nChildren++] = nChild;
 			}
