@@ -208,7 +208,9 @@ if (nHitType != HIT_OBJECT)
 	return 0;
 objP = OBJECTS + hitData.hit.nObject;
 nType = objP->Type ();
-if ((nType == OBJ_ROBOT) || (nType == OBJ_REACTOR))
+if (nType == OBJ_ROBOT) 
+	return int (!objP->IsGuideBot ());
+if (nType == OBJ_REACTOR)
 	return 1;
 if (nType != OBJ_PLAYER)
 	return 0;
