@@ -65,7 +65,16 @@ tTransRotInfo	tirInfo;
 			else if ((_val) > (_max)) \
 				(_val) = (fix) (_max)
 
-#define FASTPITCH	(gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? extraGameInfo [IsMultiGame].bFastPitch : 2)
+//------------------------------------------------------------------------------
+
+static inline FastPitch (void)
+{
+if (!gameStates.app.bHaveExtraGameInfo [IsMultiGame])
+	return 2;
+if ((extraGameInfo [IsMultiGame].bFastPitch < 1) || ( extraGameInfo [IsMultiGame].bFastPitch > 2))
+	return 2;
+return extraGameInfo [IsMultiGame].bFastPitch;
+}
 
 //------------------------------------------------------------------------------
 
@@ -440,7 +449,7 @@ if (automap.Display () ||
 	 gameStates.app.bNostalgia ||
 	 COMPETITION ||
 	 !(bUseMouse && EGI_FLAG (bMouseLook, 0, 1, 0))) {
-	KCCLAMP (m_info [0].pitchTime, m_maxTurnRate / FASTPITCH);
+	KCCLAMP (m_info [0].pitchTime, m_maxTurnRate / FastPitch ());
 	KCCLAMP (m_info [0].headingTime, m_maxTurnRate);
 	}
 KCCLAMP (m_info [0].bankTime, m_frameTime);
@@ -471,7 +480,7 @@ return h;
 void CControlsManager::DoKeyboard (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
 {
 	int	i, v, pitchScale = (!(gameStates.app.bNostalgia || COMPETITION) &&
-									 (FASTPITCH == 1)) ? 2 * PH_SCALE : 1;
+									 (FastPitch () == 1)) ? 2 * PH_SCALE : 1;
 	int	speedFactor = gameStates.app.cheats.bTurboMode ? 2 : 1;
 	static int key_signs [8] = {1,1,-1,-1,-1,-1,1,1};
 
@@ -596,7 +605,7 @@ if (*bBankOn) {
 	}
 if (bGetSlideBank == 2)
 	LimitTurnRate (0);
-//KCCLAMP (pitchTime, m_maxTurnRate / FASTPITCH);
+//KCCLAMP (pitchTime, m_maxTurnRate / FastPitch ());
 *pitchTimeP = m_info [1].pitchTime;
 *headingTimeP = m_info [1].headingTime;
 }
@@ -1332,7 +1341,7 @@ if (LimitTurnRate (bUseMouse)) {
 		KCCLAMP (m_info [0].headingTime, m_maxTurnRate);
 		}
 	if (m_info [1].pitchTime || m_info [2].pitchTime) {
-		KCCLAMP (m_info [0].pitchTime, m_maxTurnRate / FASTPITCH);
+		KCCLAMP (m_info [0].pitchTime, m_maxTurnRate / FastPitch ());
 		}
 	if (m_info [1].bankTime || m_info [2].bankTime) {
 		KCCLAMP (m_info [0].bankTime, m_maxTurnRate);
@@ -1340,7 +1349,7 @@ if (LimitTurnRate (bUseMouse)) {
 	}
 else {
 	KCCLAMP (m_info [0].headingTime, m_maxTurnRate);
-	KCCLAMP (m_info [0].pitchTime, m_maxTurnRate / FASTPITCH);
+	KCCLAMP (m_info [0].pitchTime, m_maxTurnRate / FastPitch ());
 	KCCLAMP (m_info [0].bankTime, m_maxTurnRate);
 	}
 if (gameStates.zoom.nFactor > I2X (1)) {

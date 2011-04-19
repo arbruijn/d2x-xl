@@ -370,7 +370,7 @@ m_list [m_nCount].szMissionName [sizeof (m_list [m_nCount].szMissionName) - 1] =
 cf.GetS (lineBuf, sizeof (lineBuf));
 key = Trim (strtok (lineBuf, "="));
 value = stricmp (key, "type") ? NULL : Trim (strtok (NULL, "="));
-m_list [m_nCount].bAnarchyOnly = (value != NULL) && stricmp (value, "anarchy");
+m_list [m_nCount].bAnarchyOnly = (value != NULL) && !stricmp (value, "anarchy");
 cf.Close ();
 return 1;
 }

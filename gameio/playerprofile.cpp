@@ -1722,6 +1722,9 @@ gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
 gameStates.render.bAmbientColor = /*gameStates.render.bPerPixelLighting ||*/ (gameOpts->render.color.nLevel == 2);
 extraGameInfo [0].bFlickerLights = gameOpts->app.bEpilepticFriendly;
+if ((extraGameInfo [0].bFastPitch < 1) || (extraGameInfo [0].bFastPitch > 2))
+	extraGameInfo [0].bFastPitch = 2;
+extraGameInfo [1].bFastPitch = 2;
 DefaultAllSettings ();
 #if _WIN32
 if (gameStates.render.bVSyncOk)
