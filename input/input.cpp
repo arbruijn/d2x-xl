@@ -67,7 +67,7 @@ tTransRotInfo	tirInfo;
 
 //------------------------------------------------------------------------------
 
-static inline FastPitch (void)
+static inline int FastPitch (void)
 {
 if (!gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 	return 2;
