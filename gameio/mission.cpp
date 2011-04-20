@@ -533,13 +533,15 @@ void CMissionManager::Add (int bAnarchy, int bD1Mission, int bSubFolder, int bHa
 						m_nCount++;
 						}
 				else {
-					sprintf (lvlName, "%s%s", gameFolders.szMissionDirs [nLocation], ffs.name);
-					memcpy (lvlName + strlen (lvlName) - 4, lvlExt, sizeof (lvlExt));
-					if (cf.Exist (lvlName, "", 0))
-						memcpy (lvlName + strlen (lvlName) - 4, altLvlExt [bD1Mission], sizeof (altLvlExt [bD1Mission]));
-					if (!cf.Exist (lvlName, "", 0)) {
-						if (ReadFile (ffs.name, m_nCount, nLocation) && (bAnarchy || !m_list [m_nCount].bAnarchyOnly))
-							m_nCount++;
+					if (strcmp (ffs.name, "d2x.mn2")) { // Vertigo added by default if present
+						sprintf (lvlName, "%s%s", gameFolders.szMissionDirs [nLocation], ffs.name);
+						memcpy (lvlName + strlen (lvlName) - 4, lvlExt, sizeof (lvlExt));
+						if (cf.Exist (lvlName, "", 0))
+							memcpy (lvlName + strlen (lvlName) - 4, altLvlExt [bD1Mission], sizeof (altLvlExt [bD1Mission]));
+						if (!cf.Exist (lvlName, "", 0)) {
+							if (ReadFile (ffs.name, m_nCount, nLocation) && (bAnarchy || !m_list [m_nCount].bAnarchyOnly))
+								m_nCount++;
+							}
 						}
 					}
 			} while ((m_nCount < MAX_MISSIONS) && !FFN (&ffs, bFindDirs));
@@ -637,7 +639,7 @@ else {
 	if (!bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.szMsnSubDir, "single"))) {
 		if (gameOpts->app.nVersionFilter & 2) {
 			AddBuiltinMission ();  //read built-in first
-			if (gameOpts->app.bSinglePlayer)
+			//if (gameOpts->app.bSinglePlayer)
 				AddBuiltinD2XMission ();  //read built-in first
 			}
 		if (gameOpts->app.nVersionFilter & 1)

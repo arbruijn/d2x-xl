@@ -371,15 +371,17 @@ if ((bBuiltIn = (strstr (pszMission, "Descent: First Strike") != NULL)))
 	strcpy (gameFolders.szModName, "descent");
 else if ((bBuiltIn = (strstr (pszMission, "Descent 2: Counterstrike!") != NULL)))
 	strcpy (gameFolders.szModName, "descent2");
-else if ((bBuiltIn = (strstr (pszMission, "Descent 2: Vertigo") != NULL)))
-	strcpy (gameFolders.szModName, "d2x");
+else if ((bBuiltIn = (strstr (pszMission, "d2x.hog") != NULL)))
+	strcpy (gameFolders.szModName, "descent2");
 else if (bDefault)
 	return;
 
 if (bBuiltIn && !gameOpts->app.bEnableMods)
 	return;
 
-if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolders.szModName, "")) {
+if (GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolders.szModName, "")) 
+	*gameFolders.szModName = '\0';
+else {
 	sprintf (gameFolders.szSoundDir [4], "%s/%s", gameFolders.szModDir [1], SOUNDDIR);
 	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szTextureDir [2], TEXTUREDIR, "*.tga"))
 		*gameFolders.szTextureDir [2] = '\0';
@@ -400,8 +402,6 @@ if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolde
 	MakeTexSubFolders (gameFolders.szModelCacheDir [1]);
 	gameStates.app.bHaveMod = 1;
 	}
-else
-	*gameFolders.szModName = '\0';
 }
 
 // ----------------------------------------------------------------------------
