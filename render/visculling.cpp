@@ -940,11 +940,13 @@ for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 	if (gameData.render.mine.segRenderList [0][i] == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
+#if 0
 	if ((gameData.render.mine.segRenderList [0][i] >= 0) && gameStates.render.nShadowMap) {
 		CSegment* segP = &SEGMENTS [gameData.render.mine.segRenderList [0][i]];
 		if (CFixVector::Dist (viewPos, segP->Center ()) > I2X (400) + segP->MaxRad ())
 			gameData.render.mine.segRenderList [0][i] = -gameData.render.mine.segRenderList [0][i] - 1;
 		}
+#endif
 	if (gameData.render.mine.segRenderList [0][i] >= 0)
 		gameData.render.mine.bVisible [gameData.render.mine.segRenderList [0][i]] = gameData.render.mine.nVisible;
 	}
