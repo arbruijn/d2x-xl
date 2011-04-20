@@ -58,8 +58,11 @@ void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal);
 
 #define OGLTEXBUFSIZE (4096 * 4096 * 4)
 
-typedef struct tScreenScale {
-	float x, y;
+typedef union tScreenScale {
+	struct {
+		float x, y;
+		} dim;
+	float vec [2];
 } __pack__ tScreenScale;
 
 #if DBG_OGL

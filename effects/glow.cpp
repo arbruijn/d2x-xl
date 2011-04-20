@@ -138,7 +138,7 @@ const char *blurVS =
 
 bool CGlowRenderer::LoadShader (int const direction, float const radius)
 {
-	float fScale [2] = {ogl.m_data.screenScale.y * radius, ogl.m_data.screenScale.x * radius};
+	float fScale [2] = {ogl.m_data.screenScale.dim.y * radius, ogl.m_data.screenScale.dim.x * radius};
 
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader /*[direction]*/));
 if (!m_shaderProg)
@@ -147,7 +147,7 @@ if (shaderManager.Rebuild (m_shaderProg))
 	;
 shaderManager.Set ("glowSource", 0);
 shaderManager.Set ("direction", float (direction));
-shaderManager.Set ("scale", fScale [direction]));
+shaderManager.Set ("scale", fScale [direction]);
 shaderManager.Set ("brightness", m_brightness);
 return true;
 }
