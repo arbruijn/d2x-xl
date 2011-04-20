@@ -437,11 +437,15 @@ if (!bShadowTest)
 	gameStates.render.nShadowPass = 3;
 	ogl.StartFrame (0, 0, xStereoSeparation);
 #if 1
-	gameStates.render.nShadowBlurPass = 1;
-	glowRenderer.Begin (BLUR_SHADOW, 3, false, 1.0f);
+	if (glowRenderer.Available (BLUR_SHADOW)) {
+		gameStates.render.nShadowBlurPass = 1;
+		glowRenderer.Begin (BLUR_SHADOW, 3, false, 1.0f);
+		}
 	RenderShadowQuad (0);
-	glowRenderer.End ();
-	gameStates.render.nShadowBlurPass = 0;
+	if (gameStates.render.nShadowBlurPass) {
+		glowRenderer.End ();
+		gameStates.render.nShadowBlurPass = 0;
+		}
 #else
 	InitShadowBlurShader ();
 	if (shadowBlurProg > 0) {
