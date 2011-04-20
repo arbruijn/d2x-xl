@@ -348,8 +348,8 @@ if (/*gameStates.app.bInitialized &&*/ ogl.m_states.bInitialized) {
 zNear = 1.0f;
 zFar = 5000.0f;
 depthScale.SetZero ();
-screenScale.x =
-screenScale.y = 0;
+screenScale.dim.x =
+screenScale.dim.y = 0;
 CLEAR (nPerPixelLights);
 CLEAR (lightRads);
 CLEAR (lightPos);
@@ -434,6 +434,7 @@ glLoadIdentity ();//clear matrix
 float aspectRatio = 1.0; // 0.75 * double (screen.Width ()) / double (screen.Height ()) - ratio of current aspect to 4:3
 #if 1
 gameStates.render.glFOV = gameStates.render.nShadowMap ? 180.0 : 105.0 * aspectRatio; // scale with ratio of current aspect to 4:3;
+ZFAR = gameStates.render.nShadowMap ? 400.0f : 5000.0f;
 #else
 gameStates.render.glFOV = 180.0;
 #endif

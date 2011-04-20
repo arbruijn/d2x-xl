@@ -122,7 +122,7 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			shaderManager.Set (szShadowMap [i], i + 2);
 			CDynLight* prl = cameraManager.ShadowLightSource (i);
 			shaderManager.Set ("lightPos", prl->render.vPosf [0]);
-			shaderManager.Set ("lightRange", fabs (prl->info.fRange) * 300.0f);
+			shaderManager.Set ("lightRange", fabs (prl->info.fRange) * 400.0f);
 			}
 		shaderManager.Set ("sceneColor", 0);
 		shaderManager.Set ("sceneDepth", 1);
