@@ -527,7 +527,7 @@ if (direction >= 0)
 else
 #endif
 	shaderManager.Deploy (-1);
-ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer ());
+ogl.BindTexture (ogl.BlurBuffer (source, gameStates.render.nShadowBlurPass)->ColorBuffer ((source < 0) ? gameStates.render.nShadowBlurPass : 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
 glColor3f (1,1,1);
