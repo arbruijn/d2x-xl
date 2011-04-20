@@ -22,7 +22,7 @@
 
 const char* shadowBlurVS = "void main(){gl_Position = ftransform();}";
 
-const char* shadowBlurFS = "void main(){gl_FragColor = gl_FragData [1];}";
+const char* shadowBlurFS = "void main(){gl_FragData [1] = gl_Color;}";
 
 int shadowBlurProg = -1;
 
