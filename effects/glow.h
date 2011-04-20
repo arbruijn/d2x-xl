@@ -52,11 +52,12 @@ extern CGlowRenderer glowRenderer;
 #define GLOW_FACES			64
 #define GLOW_OBJECTS			128
 #define GLOW_HEADLIGHT		256
+#define BLUR_SHADOW			1024
 
 #if 0 //DBG
 #	define GLOW_FLAGS (GLOW_SHIELDS)
 #else
-#	define GLOW_FLAGS (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_THRUSTERS | GLOW_HEADLIGHT)
+#	define GLOW_FLAGS (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_THRUSTERS | GLOW_HEADLIGHT | BLUR_SHADOW)
 #endif
 
 //------------------------------------------------------------------------------

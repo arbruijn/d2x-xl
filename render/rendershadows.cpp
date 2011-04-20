@@ -16,6 +16,7 @@
 #include "rendermine.h"
 #include "rendershadows.h"
 #include "visibility.h"
+#include "glow.h"
 
 //------------------------------------------------------------------------------
 
@@ -76,7 +77,7 @@ if (gameStates.render.nShadowBlurPass)
 	ogl.SetBlending (false);
 else
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glColor4dv (shadowHue [gameStates.render.nShadowBlurPass]);// / fDist);
+glColor4dv (shadowHue [gameStates.render.nShadowBlurPass]);
 glBegin (GL_QUADS);
 glVertex2f (0,0);
 glVertex2f (1,0);
@@ -404,24 +405,9 @@ if (!bShadowTest)
 	{
 	gameStates.render.nShadowPass = 3;
 	ogl.StartFrame (0, 0, xStereoSeparation);
-	if	(gameStates.render.nShadowMap) {
-#if DBG
-		if (gameStates.render.bChaseCam)
-#else	
-		if (gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION)))
-#endif			 
-			G3SetViewMatrix (gameData.render.mine.viewer.vPos, externalView.Pos () ? externalView.Pos ()->mOrient : 
-								  gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
-		else
-			G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, 
-								  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), 1);
-#if MAX_SHADOWMAPS
-		ApplyShadowMaps (nStartSeg, xStereoSeparation, nWindow);
-#endif
-		}
-	else {
-		RenderShadowQuad (0);
-		}
+	glowRenderer.Begin (BLUR_SHADOW, 3, false, 1.0f);
+	RenderShadowQuad (0);
+	glowRenderer.End ();
 	}
 }
 

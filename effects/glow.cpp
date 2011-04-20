@@ -401,6 +401,8 @@ if (!Available (nType))
 	return true;
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
+if ((GLOW_FLAGS & BLUR_SHADOW) != 0)
+	return false;
 #if USE_VIEWPORT
 //if (gameStates.render.cameras.bActive)
 //	return true;

@@ -6,7 +6,7 @@
 #include "dynlight.h"
 
 #if DBG
-#	define MAX_SHADOWMAPS	1
+#	define MAX_SHADOWMAPS	0
 #else
 #	define MAX_SHADOWMAPS	0 //4
 #endif

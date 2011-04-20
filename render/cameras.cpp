@@ -187,7 +187,7 @@ SetHeight (Pow2ize (screen.Height () / (2 - gameOpts->render.cameras.bHires)));
 #else
 #	if 1
 if (bShadowMap) {
-#if 1
+#if 0
 	int nSize = max (screen.Width (), screen.Height ());
 #else
 	int nSize = Pow2ize (int (sqrt (double (screen.Width () * screen.Height ()))));

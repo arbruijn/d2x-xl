@@ -434,7 +434,7 @@ glLoadIdentity ();//clear matrix
 float aspectRatio = 1.0; // 0.75 * double (screen.Width ()) / double (screen.Height ()) - ratio of current aspect to 4:3
 #if 1
 gameStates.render.glFOV = gameStates.render.nShadowMap ? 180.0 : 105.0 * aspectRatio; // scale with ratio of current aspect to 4:3;
-//ZFAR = gameStates.render.nShadowMap ? 400.0f : 5000.0f;
+ZFAR = gameStates.render.nShadowMap ? 400.0f : 5000.0f;
 #else
 gameStates.render.glFOV = 180.0;
 #endif
