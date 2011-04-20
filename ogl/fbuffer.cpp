@@ -90,9 +90,12 @@ for (int i = 0; i < nBuffers; i++) {
 	if (m_info.nType == 2) // GPGPU
 		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, m_info.nWidth, m_info.nHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 	else {
+#if 0
 		if (i > 0)
 			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_FLOAT, NULL);
-		else {
+		else 
+#endif
+			{
 			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 			glGenerateMipmapEXT (GL_TEXTURE_2D);
 			}
@@ -192,13 +195,13 @@ m_info.nType = nType;
 m_info.hDepthBuffer = 0;
 m_info.hStencilBuffer = 0;
 
-glGenFramebuffersEXT (1, &m_info.hFBO);
-glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
-
 if (!CreateColorBuffers (nColorBuffers))
 	return 0;
 if (!CreateDepthBuffer ())
 	return 0;
+glGenFramebuffersEXT (1, &m_info.hFBO);
+glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
+
 AttachBuffers ();
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 return Available ();
