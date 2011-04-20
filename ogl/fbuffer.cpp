@@ -245,8 +245,8 @@ if (m_info.nType == 3) {
 	glReadBuffer (GL_NONE);
 	}
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
-//if (m_info.nType != 3)
-//	SetDrawBuffers ();
+if (m_info.nType != 3)
+	SetDrawBuffers ();
 return m_info.bActive = 1;
 }
 

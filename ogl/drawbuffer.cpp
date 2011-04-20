@@ -122,9 +122,7 @@ bSemaphore++;
 
 if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && DrawBuffer ()->Handle ()) {
 	if (!DrawBuffer ()->Active ()) {
-		if (DrawBuffer ()->Enable ())
-			DrawBuffer ()->SetDrawBuffers ();
-		else {
+		if (!DrawBuffer ()->Enable ()) {
 			DestroyDrawBuffers ();
 			SelectDrawBuffer (0);
 			glDrawBuffer (GL_BACK);
@@ -132,9 +130,8 @@ if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && DrawBuffer ()-
 		}
 	}
 else {
-	if (DrawBuffer ()->Active ()) {
+	if (DrawBuffer ()->Active ())
 		DrawBuffer ()->Disable ();
-		}
 	glDrawBuffer (m_states.nDrawBuffer = nBuffer);
 	}
 
@@ -238,7 +235,7 @@ void COGL::SelectGlowBuffer (void)
 SelectDrawBuffer (gameStates.render.nShadowBlurPass ? int (m_data.xStereoSeparation > 0) : 2);
 SetDrawBuffer (GL_BACK, 1);
 if (gameStates.render.nShadowBlurPass)
-	DrawBuffer ()->SetDrawBuffers (1);
+	DrawBuffer ()->SetDrawBuffers (0);
 }
 
 //------------------------------------------------------------------------------

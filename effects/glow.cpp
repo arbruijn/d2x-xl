@@ -528,7 +528,7 @@ if (direction >= 0)
 else
 #endif
 	shaderManager.Deploy (-1);
-ogl.BindTexture (ogl.BlurBuffer (source, gameStates.render.nShadowBlurPass)->ColorBuffer ((source < 0) ? gameStates.render.nShadowBlurPass : 0));
+ogl.BindTexture (ogl.BlurBuffer (source, gameStates.render.nShadowBlurPass)->ColorBuffer ()); //(source < 0) ? gameStates.render.nShadowBlurPass : 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
 glColor3f (1,1,1);
@@ -604,7 +604,7 @@ else
 	ogl.SelectBlurBuffer (1); 
 	ClearViewport (radius);
 	Render (0, 1, radius); // Blur 0 -> Blur 1
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetBlendMode (GL_ONE, (m_nType == BLUR_SHADOW) ? GL_ZERO : GL_ONE);
 #	if BLUR > 1
 	for (int i = 1; i < m_nStrength; i++) {
 		radius += RAD_INCR;

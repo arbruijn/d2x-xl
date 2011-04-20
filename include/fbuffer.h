@@ -65,10 +65,10 @@ class CFBO {
 			return nFirst;
 			}
 
-		inline void SetDrawBuffers (int nBuffer = -1) { 
-			if (m_info.nBufferCount == 1)
+		inline void SetDrawBuffers (int nBuffer = 0) { 
+			if ((m_info.nBufferCount == 1) || (nBuffer >= m_info.nBufferCount))
 				glDrawBuffer (m_info.bufferIds [0]);
-			else if ((nBuffer < 0) || (nBuffer >= m_info.nBufferCount))
+			else if (nBuffer < 0)
 				glDrawBuffers (m_info.nBufferCount, m_info.bufferIds); 
 			else
 				glDrawBuffer (m_info.bufferIds [nBuffer]);

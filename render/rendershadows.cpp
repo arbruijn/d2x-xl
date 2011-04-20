@@ -439,7 +439,7 @@ if (!bShadowTest)
 #if 1
 	if (glowRenderer.Available (BLUR_SHADOW)) {
 		gameStates.render.nShadowBlurPass = 1;
-		glowRenderer.Begin (BLUR_SHADOW, 3, false, 1.0f);
+		glowRenderer.Begin (BLUR_SHADOW, 0, false, 1.0f);
 		}
 	RenderShadowQuad (0);
 	if (gameStates.render.nShadowBlurPass) {
