@@ -65,11 +65,13 @@ class CFBO {
 			return nFirst;
 			}
 
-		inline void SetDrawBuffers (void) { 
+		inline void SetDrawBuffers (int nBuffer = -1) { 
 			if (m_info.nBufferCount == 1)
 				glDrawBuffer (m_info.bufferIds [0]);
-			else
+			else if ((nBuffer < 0) || (nBuffer >= m_info.nBufferCount))
 				glDrawBuffers (m_info.nBufferCount, m_info.bufferIds); 
+			else
+				glDrawBuffer (m_info.bufferIds [nBuffer]);
 			}
 
 		int IsBound (void);
