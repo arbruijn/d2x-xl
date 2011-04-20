@@ -202,6 +202,10 @@ ogl.SelectGlowBuffer ();
 glClearColor (0.0, 0.375, 0.75, 0.5);
 glClear (GL_COLOR_BUFFER_BIT);
 #else
+if (m_nType == BLUR_SHADOW)
+	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
+else
+	glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
 glClear (GL_COLOR_BUFFER_BIT /*| GL_DEPTH_BUFFER_BIT*/);
 #endif
 }
@@ -615,7 +619,10 @@ else
 	ogl.ChooseDrawBuffer ();
 	ogl.SetDepthMode (GL_ALWAYS);
 	//ogl.SetBlendMode (2);
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	if (m_nType == BLUR_SHADOW)
+		ogl.SetBlendMode (-1);
+	else
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
 	float scale = (float) ScreenScale ();
 #if BLUR
 	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 8.0f); // Glow -> back buffer

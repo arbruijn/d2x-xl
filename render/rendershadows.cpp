@@ -20,6 +20,37 @@
 
 //------------------------------------------------------------------------------
 
+const char* shadowBlurVS = "void main(){gl_Position = ftransform();}";
+
+const char* shadowBlurFS = "void main(){gl_FragColor = gl_FragData [1];}";
+
+int shadowBlurProg = -1;
+
+//------------------------------------------------------------------------------
+
+void DeleteShadowBlurShader (void)
+{
+if (shadowBlurProg > 0) {
+	shaderManager.Delete (shadowBlurProg);
+	shadowBlurProg = -1;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void InitShadowBlurShader (void)
+{
+if (gameOpts->render.bUseShaders && ogl.m_states.bShadersOk && (shadowBlurProg > -2)) {
+	PrintLog ("building shadow blur program\n");
+	if (0 > shaderManager.Build (shadowBlurProg, shadowBlurFS, shadowBlurVS)) {
+		DeleteShadowBlurShader ();
+		shadowBlurProg = -2;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void RenderFaceShadow (tFaceProps *propsP)
 {
 	int				i, nVertices = propsP->nVertices;
@@ -60,7 +91,7 @@ G3RenderFarShadowCapFace (v, nVertices);
 
 void RenderShadowQuad (int bWhite)
 {
-	static GLdouble shadowHue [2][4] = {{0, 0, 0, 0.6},{0, 0, 0, 1}};
+	static GLfloat shadowHue [2][4] = {{0.0f, 0.0f, 0.0f, 0.6f}, {0.6f, 0.6f, 0.6f, 1.0f}};
 
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
@@ -77,7 +108,7 @@ if (gameStates.render.nShadowBlurPass)
 	ogl.SetBlending (false);
 else
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glColor4dv (shadowHue [gameStates.render.nShadowBlurPass]);
+glColor4fv (shadowHue [gameStates.render.nShadowBlurPass]);
 glBegin (GL_QUADS);
 glVertex2f (0,0);
 glVertex2f (1,0);
@@ -405,9 +436,16 @@ if (!bShadowTest)
 	{
 	gameStates.render.nShadowPass = 3;
 	ogl.StartFrame (0, 0, xStereoSeparation);
-	glowRenderer.Begin (BLUR_SHADOW, 3, false, 1.0f);
+	InitShadowBlurShader ();
+	if (shadowBlurProg > 0) {
+		glowRenderer.Begin (BLUR_SHADOW, 3, false, 1.0f);
+		gameStates.render.nShadowBlurPass = 1;
+		}
 	RenderShadowQuad (0);
-	glowRenderer.End ();
+	if (shadowBlurProg > 0) {
+		gameStates.render.nShadowBlurPass = 0;
+		glowRenderer.End ();
+		}
 	}
 }
 
@@ -444,7 +482,6 @@ gameStates.render.nShadowPass = 4;
 RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #endif
 }
-
 
 //------------------------------------------------------------------------------
 // eof

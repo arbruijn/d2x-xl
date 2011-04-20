@@ -254,8 +254,11 @@ if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 
 void COGL::DeleteShadowMapShader (void)
 {
-if (shadowShaderProg >= 0)
+if (shadowShaderProg >= 0) {
 	shaderManager.Delete (shadowShaderProg);
+	shadowShaderProg = -1;
+	gameStates.render.textures.bHaveShadowMapShader = 0;
+	}
 }
 
 //------------------------------------------------------------------------------

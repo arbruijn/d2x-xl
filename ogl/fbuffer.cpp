@@ -126,7 +126,7 @@ else if (m_info.nType != 2) { // 2 -> GPGPU
 	else { // depth + stencil buffer
 		m_info.hDepthBuffer = (m_info.nType == 1)
 									  ? ogl.CreateDepthTexture (GL_TEXTURE0, 1, 1, m_info.nWidth, m_info.nHeight)
-									  : ogl.m_states.hDepthBuffer [1];
+									  : ogl.CopyDepthTexture (1); //ogl.m_states.hDepthBuffer [1];
 		if (!m_info.hDepthBuffer)
 			return 0;
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hDepthBuffer, 0);

@@ -73,7 +73,7 @@ if (!gameStates.render.bRenderIndirect && (nType >= 0))
 if (DrawBuffer ()->Handle ())
 	return;
 PrintLog ("creating draw buffer\n");
-DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType);
+DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType, 1 + (EGI_FLAG (bShadows, 0, 1, 0) != 0));
 }
 
 //------------------------------------------------------------------------------
@@ -222,7 +222,7 @@ else {
 #else
 		gameStates.render.bRenderIndirect = (postProcessManager.Effects () != NULL) 
 														|| (m_data.xStereoSeparation && (i > 0)) 
-														|| (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1, 0) != 0));
+														|| (/*gameStates.render.textures.bHaveShadowMapShader &&*/ (EGI_FLAG (bShadows, 0, 1, 0) != 0));
 		if (gameStates.render.bRenderIndirect) 
 			SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
 		else
@@ -236,7 +236,7 @@ else {
 
 void COGL::SelectGlowBuffer (void) 
 { 
-SelectDrawBuffer (2);
+SelectDrawBuffer (gameStates.render.nShadowBlurPass ? int (m_data.xStereoSeparation > 0) : 2);
 SetDrawBuffer (GL_BACK, 1);
 //glClear (GL_COLOR_BUFFER_BIT/* | GL_DEPTH_BUFFER_BIT*/);
 }
