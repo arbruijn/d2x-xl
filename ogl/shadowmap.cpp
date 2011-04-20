@@ -112,8 +112,8 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 #endif
 			glMatrixMode (matrixMode);
 			BindTexture (cameraManager.ShadowMap (i)->FrameBuffer ().DepthBuffer ());
-			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); //NEAREST);
+			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //NEAREST);
 			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
@@ -122,11 +122,12 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			glUniform1i (glGetUniformLocation (shaderProg, szShadowMap [i]), i + 2);
 			CDynLight* prl = cameraManager.ShadowLightSource (i);
 			glUniform3fv (glGetUniformLocation (shaderProg, "lightPos"), 1, (GLfloat*) prl->render.vPosf [0].v.vec);
-			glUniform1f (glGetUniformLocation (shaderProg, "lightRange"), (GLfloat) fabs (prl->info.fRange) * 200.0f);
+			glUniform1f (glGetUniformLocation (shaderProg, "lightRange"), (GLfloat) fabs (prl->info.fRange) * 2000.0f);
 			}
 		glUniform1i (glGetUniformLocation (shaderProg, "sceneColor"), 0);
 		glUniform1i (glGetUniformLocation (shaderProg, "sceneDepth"), 1);
 		glUniformMatrix4fv (glGetUniformLocation (shaderProg, "modelviewProjInverse"), 1, (GLboolean) 0, lightManager.ShadowTransformation (-3).ToFloat ());
+		glUniform2fv (glGetUniformLocation (shaderProg, "windowScale"), 1, (GLfloat*) screenScale);
 		SetBlendMode (0);
 		SetDepthTest (false);
 		OglDrawArrays (GL_QUADS, 0, 4);
@@ -152,6 +153,8 @@ const char* shadowMapVS =
 	"}\r\n";
 
 const char* shadowMapFS = 
+#if 0
+
 	"uniform sampler2D sceneColor;\r\n" \
 	"uniform sampler2D sceneDepth;\r\n" \
 	"uniform sampler2DShadow shadowMap;\r\n" \
@@ -173,17 +176,61 @@ const char* shadowMapFS =
 	"cameraClipPos.xyz = cameraNDC * cameraClipPos.w;\r\n" \
 	"vec4 lightWinPos = gl_TextureMatrix [2] * cameraClipPos;\r\n" \
 	"float w = abs (lightWinPos.w);\r\n" \
-	"int lit = ((w < 0.00001) || (abs (lightWinPos.x) > w) || (abs (lightWinPos.y) > w)) ? 1.0 : shadow2DProj (shadowMap, lightWinPos).r;\r\n" \
+	"float lit = ((w < 0.00001) || (abs (lightWinPos.x) > w) || (abs (lightWinPos.y) > w)) ? 1.0 : shadow2DProj (shadowMap, lightWinPos));\r\n" \
 	"float light;\r\n" \
 	"if (lit == 1)\r\n" \
 	"   light = 1.0;\r\n" \
 	"else {\r\n" \
 	"   vec4 worldPos = modelviewProjInverse * cameraClipPos;\r\n" \
 	"   float lightDist = length (lightPos - worldPos.xyz);\r\n" \
-	"   light = sqrt (min (lightDist, lightRange) / lightRange);\r\n" \
+	"   light = 0.25 + 0.75 * sqrt ((lightRange - min (lightRange, lightDist)) / lightRange);\r\n" \
 	"   }\r\n" \
 	"gl_FragColor = vec4 (texture2D (sceneColor, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \
 	"}\r\n";
+
+#else
+
+	"uniform sampler2D sceneColor;\r\n" \
+	"uniform sampler2D sceneDepth;\r\n" \
+	"uniform sampler2DShadow shadowMap;\r\n" \
+	"uniform mat4 modelviewProjInverse;\r\n" \
+	"uniform vec2 windowScale;\r\n" \
+	"uniform vec3 lightPos;\r\n" \
+	"uniform float lightRange;\r\n" \
+	"#define ZNEAR 1.0\r\n" \
+	"#define ZFAR 5000.0\r\n" \
+	"#define A 5001.0 //(ZNEAR + ZFAR)\r\n" \
+	"#define B 4999.0 //(ZNEAR - ZFAR)\r\n" \
+	"#define C 10000.0 //(2.0 * ZNEAR * ZFAR)\r\n" \
+	"#define D (cameraNDC.z * B)\r\n" \
+	"#define ZEYE -10000.0 / (5001.0 + cameraNDC.z * 4999.0) //-(C / (A + D))\r\n" \
+	"#define MAX_OFFSET 2.5\r\n" \
+	"#define SAMPLE_RANGE (MAX_OFFSET + MAX_OFFSET + 1.0)\r\n" \
+	"#define SAMPLE_COUNT (SAMPLE_RANGE * SAMPLE_RANGE)\r\n" \
+	"void main() {\r\n" \
+	"float fragDepth = texture2D (sceneDepth, gl_TexCoord [0].xy).r;\r\n" \
+	"vec3 cameraNDC = (vec3 (gl_TexCoord [0].xy, fragDepth) - 0.5) * 2.0;\r\n" \
+	"vec4 cameraClipPos;\r\n" \
+	"cameraClipPos.w = -ZEYE;\r\n" \
+	"cameraClipPos.xyz = cameraNDC * cameraClipPos.w;\r\n" \
+	"vec4 lightWinPos = gl_TextureMatrix [2] * cameraClipPos;\r\n" \
+	"float w = abs (lightWinPos.w);\r\n" \
+	"vec4 samplePos = lightWinPos;\r\n" \
+	"float light = 0.0;\r\n" \
+	"vec2 offset;\r\n" \
+	"for (offset.y = -MAX_OFFSET; offset.y <= MAX_OFFSET; offset.y += 1.0) {\r\n" \
+	"  for (offset.x = -MAX_OFFSET; offset.x <= MAX_OFFSET; offset.x += 1.0) {\r\n" \
+	"    samplePos.xy = lightWinPos.xy + offset * windowScale;\r\n" \
+	"    light += ((w < 0.00001) || (abs (samplePos.x) > w) || (abs (samplePos.y) > w)) ? 1.0 : shadow2DProj (shadowMap, samplePos);\r\n" \
+	"    }\r\n" \
+	"  }\r\n" \
+	"vec4 worldPos = modelviewProjInverse * cameraClipPos;\r\n" \
+	"float lightDist = length (lightPos - worldPos.xyz);\r\n" \
+	"light = 1.0 - 0.75 * sqrt ((lightRange - min (lightRange, lightDist)) / lightRange) * (1.0 - light / SAMPLE_COUNT);\r\n" \
+	"gl_FragColor = vec4 (texture2D (sceneColor, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \
+	"}\r\n";
+
+#endif
 
 //-------------------------------------------------------------------------
 
