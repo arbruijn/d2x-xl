@@ -619,10 +619,7 @@ else
 	ogl.ChooseDrawBuffer ();
 	ogl.SetDepthMode (GL_ALWAYS);
 	//ogl.SetBlendMode (2);
-	if (m_nType == BLUR_SHADOW)
-		ogl.SetBlendMode (-1);
-	else
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetBlendMode ((m_nType == BLUR_SHADOW) ? -1 : 1);
 	float scale = (float) ScreenScale ();
 #if BLUR
 	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 8.0f); // Glow -> back buffer
