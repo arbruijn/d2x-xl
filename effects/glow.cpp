@@ -145,10 +145,10 @@ if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg))
 	;
-glUniform1i (glGetUniformLocation (m_shaderProg, "glowSource"), 0);
-glUniform1f (glGetUniformLocation (m_shaderProg, "direction"), GLfloat (direction));
-glUniform1f (glGetUniformLocation (m_shaderProg, "scale"), GLfloat (fScale [direction]));
-glUniform1f (glGetUniformLocation (m_shaderProg, "brightness"), GLfloat (m_brightness));
+shaderManager.Set ("glowSource", 0);
+shaderManager.Set ("direction", float (direction));
+shaderManager.Set ("scale", fScale [direction]));
+shaderManager.Set ("brightness", m_brightness);
 return true;
 }
 

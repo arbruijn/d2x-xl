@@ -562,7 +562,7 @@ if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
 fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
-//glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), 20.0f);
+//shaderManager.Set ("dMax"), 20.0f);
 RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
 					  !automap.Display () || automap.m_visited [nSegment] || !gameOpts->render.automap.bGrayOut);
 #if DBG
@@ -652,17 +652,17 @@ m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader));
 if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg)) {
-	glUniform1i (glGetUniformLocation (m_shaderProg, "glareTex"), 0);
-	glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
-	glUniform2fv (glGetUniformLocation (m_shaderProg, "screenScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.screenScale));
-	glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
-	glUniform1i (glGetUniformLocation (m_shaderProg, "blendMode"), (GLint) nBlendMode);
+	shaderManager.Set ("glareTex", 0);
+	shaderManager.Set ("depthTex", 1);
+	shaderManager.Set ("screenScale", ogl.m_data.screenScale);
+	shaderManager.Set ("dMax", dMax);
+	shaderManager.Set ("blendMode", nBlendMode);
 	}
 else {
 	if (dMaxPrev != dMax)
-		glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
+		shaderManager.Set ("dMax", dMax);
 	if (nBlendPrev != nBlendMode)
-		glUniform1i (glGetUniformLocation (m_shaderProg, "blendMode"), (GLint) nBlendMode);
+		shaderManager.Set ("blendMode", nBlendMode);
 	}
 dMaxPrev = dMax;
 nBlendPrev = nBlendMode;

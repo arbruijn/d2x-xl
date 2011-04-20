@@ -403,7 +403,7 @@ if (nShader >= int (m_shaders.ToS ()))
 	return 0;
 GLhandleARB shaderProg = (nShader < 0) ? 0 : m_shaders [nShader].program;
 if (m_nCurrent == nShader)
-	return -intptr_t (shaderProg);
+	return -intptr_t (shaderProg); // < 0 => program already bound
 m_nCurrent = nShader;
 glUseProgramObjectARB (shaderProg);
 gameData.render.nShaderChanges++;

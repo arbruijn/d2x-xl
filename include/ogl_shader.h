@@ -6,6 +6,11 @@
 #include <stddef.h>
 #endif
 
+#include "glew.h"
+#include "vecmat.h"
+#include "oglmatrix.h"
+
+
 extern GLhandleARB	genShaderProg;
 
 void OglInitShaders (void);
@@ -49,6 +54,49 @@ class CShaderManager {
 				return true;
 			nShaderProg = GLhandleARB (-(intptr_t (nShaderProg)));
 			return false;
+			}
+		inline GLint Ref (const char* name) { return (m_nCurrent < 0) ? -1 : glGetUniformLocation (m_shaders [m_nCurrent].program, name); }
+
+		inline bool Set (const char* name, int var) { 
+			GLint ref = Ref (name);
+			if (ref >= 0)
+				glUniform1i (ref, (GLint) var);
+			return (ref >= 0);
+			}
+
+		inline bool Set (const char* name, float var) { 
+			GLint ref = Ref (name);
+			if (ref >= 0)
+				glUniform1f (ref, (GLfloat) var);
+			return (ref >= 0);
+			}
+
+		inline bool Set (const char* name, float var [2]) { 
+			GLint ref = Ref (name);
+			if (ref >= 0)
+				glUniform2fv (ref, 1, (GLfloat*) var);
+			return (ref >= 0);
+			}
+
+		inline bool Set (const char* name, CFloatVector3& var) { 
+			GLint ref = Ref (name);
+			if (ref >= 0)
+				glUniform3fv (ref, 1, (GLfloat*) var.v.vec);
+			return (ref >= 0);
+			}
+
+		inline bool Set (const char* name, CFloatVector& var) { 
+			GLint ref = Ref (name);
+			if (ref >= 0)
+				glUniform3fv (ref, 1, (GLfloat*) var.v.vec);
+			return (ref >= 0);
+			}
+
+		inline bool Set (const char* name, COGLMatrix& var) { 
+			GLint ref = Ref (name);
+			if (ref >= 0)
+				glUniformMatrix4fv (ref, 1, (GLboolean) 0, (GLfloat*) var.ToFloat ());
+			return (ref >= 0);
 			}
 
 	private:

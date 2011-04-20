@@ -103,11 +103,11 @@ if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg))
 	;
-glUniform1i (glGetUniformLocation (m_shaderProg, "sceneTex"), 0);
-glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
-glUniform3fv (glGetUniformLocation (m_shaderProg, "effectStrength"), 1, reinterpret_cast<GLfloat*> (&effectStrength));
+shaderManager.Set ("sceneTex", 0);
+shaderManager.Set ("depthTex", 1);
+shaderManager.Set ("effectStrength", effectStrength);
 float screenSize [2] = {screen.Width (), screen.Height () };
-glUniform2fv (glGetUniformLocation (m_shaderProg, "screenSize"), 1, reinterpret_cast<GLfloat*> (screenSize));
+shaderManager.Set ("screenSize", screenSize);
 ogl.SetLighting (true);
 return true;
 }
@@ -197,7 +197,7 @@ glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, m_effectRad);
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_LINEAR_ATTENUATION, m_rad);
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, 1.0f - m_ttl);
 glLighti (GL_LIGHT0 + m_nShockwaves, GL_SPOT_EXPONENT, m_nBias);
-glUniform1i (glGetUniformLocation (m_shaderProg, "nShockwaves"), ++m_nShockwaves);
+shaderManager.Set ("nShockwaves", ++m_nShockwaves);
 return true;
 }
 

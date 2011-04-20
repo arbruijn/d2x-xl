@@ -119,15 +119,15 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 			glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
-			glUniform1i (glGetUniformLocation (shaderProg, szShadowMap [i]), i + 2);
+			shaderManager.Set (szShadowMap [i], i + 2);
 			CDynLight* prl = cameraManager.ShadowLightSource (i);
-			glUniform3fv (glGetUniformLocation (shaderProg, "lightPos"), 1, (GLfloat*) prl->render.vPosf [0].v.vec);
-			glUniform1f (glGetUniformLocation (shaderProg, "lightRange"), (GLfloat) fabs (prl->info.fRange) * 2000.0f);
+			shaderManager.Set ("lightPos", prl->render.vPosf [0]);
+			shaderManager.Set ("lightRange", fabs (prl->info.fRange) * 300.0f);
 			}
-		glUniform1i (glGetUniformLocation (shaderProg, "sceneColor"), 0);
-		glUniform1i (glGetUniformLocation (shaderProg, "sceneDepth"), 1);
-		glUniformMatrix4fv (glGetUniformLocation (shaderProg, "modelviewProjInverse"), 1, (GLboolean) 0, lightManager.ShadowTransformation (-3).ToFloat ());
-		glUniform2fv (glGetUniformLocation (shaderProg, "windowScale"), 1, (GLfloat*) screenScale);
+		shaderManager.Set ("sceneColor", 0);
+		shaderManager.Set ("sceneDepth", 1);
+		shaderManager.Set ("modelviewProjInverse", lightManager.ShadowTransformation (-3));
+		shaderManager.Set ("windowScale", screenScale);
 		SetBlendMode (0);
 		SetDepthTest (false);
 		OglDrawArrays (GL_QUADS, 0, 4);
