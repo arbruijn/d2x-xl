@@ -460,6 +460,7 @@ if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != b
 	 ((nType == GLOW_LIGHTNING) != (m_nType == GLOW_LIGHTNING))) {
 #endif
 	End ();
+	m_nType = nType;
 	m_bReplace = bReplace;
 	m_nStrength = nStrength;
 	m_brightness = brightness;
