@@ -515,6 +515,7 @@ int nDbgOvlTex = -1;
 int nDbgTexture = -1;
 short nDbgSound = -1;
 short nDbgChannel = -1;
+short nDbgLight = -1;
 
 #endif
 

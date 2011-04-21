@@ -1409,6 +1409,8 @@ gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
 	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
 		gameData.render.shadows.lightP = lightManager.RenderLights (*pnl);
+		if (gameData.render.shadows.lightP->info.nObject < 0)
+			continue;
 		if (!gameData.render.shadows.lightP->info.bState)
 			continue;
 		if (!CanSeePoint (objP, &objP->info.position.vPos, &gameData.render.shadows.lightP->info.vPos, objP->info.nSegment))

@@ -109,7 +109,7 @@ gameStates.render.nShadowPass = 3;
 ogl.StartFrame (0, 0, xStereoSeparation);
 if (glowRenderer.Available (BLUR_SHADOW)) {
 	gameStates.render.nShadowBlurPass = 1;
-	glowRenderer.Begin (BLUR_SHADOW, 1, true, 1.0f);
+	glowRenderer.Begin (BLUR_SHADOW, 2, true, 1.0f);
 	}
 RenderShadowQuad ();
 if (gameStates.render.nShadowBlurPass) {
@@ -409,6 +409,8 @@ FORALL_OBJS (objP, h) {
 	k = h * MAX_SHADOW_LIGHTS;
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
 		prl = lightManager.RenderLights (*pnl);
+		if (prl->info.nObject >= 0) // only use moving dynamic lights
+			continue;
 		if (!prl->render.bState)
 			continue;
 		if (!CanSeePoint (objP, &objP->info.position.vPos, &prl->info.vPos, objP->info.nSegment))

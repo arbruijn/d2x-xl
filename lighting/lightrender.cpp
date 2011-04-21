@@ -38,6 +38,8 @@ for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgSeg == pl->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->info.nSide)))
 		nDbgSeg = nDbgSeg;
+	if (i == nDbgLight)
+		nDbgLight = nDbgLight;
 #endif
 	pl->render.vPosf [0].Assign (pl->info.vPos);
 	if (ogl.m_states.bUseTransform)
