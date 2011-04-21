@@ -73,7 +73,7 @@ if (!gameStates.render.bRenderIndirect && (nType >= 0))
 if (DrawBuffer ()->Handle ())
 	return;
 PrintLog ("creating draw buffer\n");
-DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType, 1);// + (EGI_FLAG (bShadows, 0, 1, 0) != 0));
+DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType, 1 + (EGI_FLAG (bShadows, 0, 1, 0) != 0));
 }
 
 //------------------------------------------------------------------------------
@@ -235,7 +235,7 @@ void COGL::SelectGlowBuffer (void)
 SelectDrawBuffer (gameStates.render.nShadowBlurPass ? int (m_data.xStereoSeparation > 0) : 2);
 SetDrawBuffer (GL_BACK, 1);
 if (gameStates.render.nShadowBlurPass)
-	DrawBuffer ()->SetDrawBuffers (0);
+	DrawBuffer ()->SetDrawBuffers (1);
 }
 
 //------------------------------------------------------------------------------

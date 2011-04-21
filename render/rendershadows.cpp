@@ -89,9 +89,9 @@ G3RenderFarShadowCapFace (v, nVertices);
 
 //------------------------------------------------------------------------------
 
-void RenderShadowQuad (int bWhite)
+void RenderShadowQuad (void)
 {
-	static GLfloat shadowHue [2][4] = {{0.0f, 0.0f, 0.0f, 0.6f}, {0.6f, 0.6f, 0.6f, 1.0f}};
+	static GLfloat shadowHue [4] = {{0.6f, 0.6f, 0.6f, 0.6f}, {0.25f, 0.25f, 0.25f, 1.0f}};
 
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
@@ -107,20 +107,106 @@ ogl.SetDepthWrite (false);
 if (gameStates.render.nShadowBlurPass)
 	ogl.SetBlending (false);
 else
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glColor4fv (shadowHue [gameStates.render.nShadowBlurPass]);
+	ogl.SetBlendMode (-1); 
+glColor4fv (shadowHue [gameStates.render.nShadowBlurPass]); 
 glBegin (GL_QUADS);
 glVertex2f (0,0);
 glVertex2f (1,0);
 glVertex2f (1,1);
 glVertex2f (0,1);
 glEnd ();
+if (gameStates.render.nShadowBlurPass)
+	ogl.SetBlending (true);
+else
+	ogl.SetBlendMode (0); //GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetDepthTest (true);
 ogl.SetStencilTest (false);
 ogl.SetDepthWrite (true);
 glPopMatrix ();
 glMatrixMode (GL_MODELVIEW);
 glPopMatrix ();
+}
+
+//------------------------------------------------------------------------------
+
+void RenderFastShadows (fix xStereoSeparation, int nWindow, short nStartSeg)
+{
+#if 0//OOF_TEST_CUBE
+#	if 1
+for (bShadowTest = 1; bShadowTest >= 0; bShadowTest--) 
+#	else
+for (bShadowTest = 0; bShadowTest < 2; bShadowTest++) 
+#	endif
+#endif
+ {
+	gameStates.render.nShadowPass = 2;
+	ogl.StartFrame (0, 0, xStereoSeparation);
+	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
+	//RenderObjectShadows ();
+	RenderMine (nStartSeg, xStereoSeparation, nWindow);
+	}
+#if 1 
+	{
+	gameStates.render.nShadowPass = 3;
+	ogl.StartFrame (0, 0, xStereoSeparation);
+#if 1
+	if (glowRenderer.Available (BLUR_SHADOW)) {
+		gameStates.render.nShadowBlurPass = 1;
+		glowRenderer.Begin (BLUR_SHADOW, 1, true, 1.0f);
+		}
+	RenderShadowQuad (0);
+	if (gameStates.render.nShadowBlurPass) {
+		glowRenderer.End ();
+		gameStates.render.nShadowBlurPass = 0;
+		}
+#else
+	InitShadowBlurShader ();
+	if (shadowBlurProg > 0) {
+		gameStates.render.nShadowBlurPass = 1;
+		glowRenderer.Begin (BLUR_SHADOW, 3, false, 1.0f);
+		}
+	RenderShadowQuad (0);
+	if (shadowBlurProg > 0) {
+		gameStates.render.nShadowBlurPass = 0;
+		glowRenderer.End ();
+		}
+#endif
+	}
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void RenderNeatShadows (fix xStereoSeparation, int nWindow, short nStartSeg)
+{
+	short			i, n;
+	CDynLight*	prl;
+
+gameData.render.shadows.nLights = GatherShadowLightSources ();
+n = lightManager.LightCount (1);
+for (i = 0; i < n; i++) {
+	prl = lightManager.RenderLights (i);
+	if (!prl->render.bShadow)
+		continue;
+	gameData.render.shadows.lightP = prl;
+	prl->render.bExclusive = 1;
+#if 1
+	gameStates.render.nShadowPass = 2;
+	ogl.StartFrame (0, 0, xStereoSeparation);
+	memcpy (&gameData.render.shadows.vLightPos, prl->render.vPosf + 1, sizeof (CFloatVector));
+	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
+	RenderMine (nStartSeg, xStereoSeparation, nWindow);
+#endif
+	gameStates.render.nShadowPass = 3;
+	ogl.StartFrame (0, 0, xStereoSeparation);
+	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
+	RenderMine (nStartSeg, xStereoSeparation, nWindow);
+	prl->render.bExclusive = 0;
+	}
+#if 0
+gameStates.render.nShadowPass = 4;
+RenderMine (nStartSeg, xStereoSeparation, nWindow);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -410,88 +496,6 @@ for (h = i = 0; i < h; i++)
 	if (lightManager.RenderLights (i)->render.bShadow)
 		h++;
 return h;
-}
-
-//------------------------------------------------------------------------------
-
-void RenderFastShadows (fix xStereoSeparation, int nWindow, short nStartSeg)
-{
-#if 0//OOF_TEST_CUBE
-#	if 1
-for (bShadowTest = 1; bShadowTest >= 0; bShadowTest--) 
-#	else
-for (bShadowTest = 0; bShadowTest < 2; bShadowTest++) 
-#	endif
-#endif
- {
-	gameStates.render.nShadowPass = 2;
-	ogl.StartFrame (0, 0, xStereoSeparation);
-	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
-	//RenderObjectShadows ();
-	RenderMine (nStartSeg, xStereoSeparation, nWindow);
-	}
-#if 1 
-	{
-	gameStates.render.nShadowPass = 3;
-	ogl.StartFrame (0, 0, xStereoSeparation);
-#if 1
-	if (glowRenderer.Available (BLUR_SHADOW)) {
-		gameStates.render.nShadowBlurPass = 1;
-		glowRenderer.Begin (BLUR_SHADOW, 0, false, 1.0f);
-		}
-	RenderShadowQuad (0);
-	if (gameStates.render.nShadowBlurPass) {
-		glowRenderer.End ();
-		gameStates.render.nShadowBlurPass = 0;
-		}
-#else
-	InitShadowBlurShader ();
-	if (shadowBlurProg > 0) {
-		gameStates.render.nShadowBlurPass = 1;
-		glowRenderer.Begin (BLUR_SHADOW, 3, false, 1.0f);
-		}
-	RenderShadowQuad (0);
-	if (shadowBlurProg > 0) {
-		gameStates.render.nShadowBlurPass = 0;
-		glowRenderer.End ();
-		}
-#endif
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-void RenderNeatShadows (fix xStereoSeparation, int nWindow, short nStartSeg)
-{
-	short			i, n;
-	CDynLight*	prl;
-
-gameData.render.shadows.nLights = GatherShadowLightSources ();
-n = lightManager.LightCount (1);
-for (i = 0; i < n; i++) {
-	prl = lightManager.RenderLights (i);
-	if (!prl->render.bShadow)
-		continue;
-	gameData.render.shadows.lightP = prl;
-	prl->render.bExclusive = 1;
-#if 1
-	gameStates.render.nShadowPass = 2;
-	ogl.StartFrame (0, 0, xStereoSeparation);
-	memcpy (&gameData.render.shadows.vLightPos, prl->render.vPosf + 1, sizeof (CFloatVector));
-	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
-	RenderMine (nStartSeg, xStereoSeparation, nWindow);
-#endif
-	gameStates.render.nShadowPass = 3;
-	ogl.StartFrame (0, 0, xStereoSeparation);
-	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
-	RenderMine (nStartSeg, xStereoSeparation, nWindow);
-	prl->render.bExclusive = 0;
-	}
-#if 0
-gameStates.render.nShadowPass = 4;
-RenderMine (nStartSeg, xStereoSeparation, nWindow);
-#endif
 }
 
 //------------------------------------------------------------------------------

@@ -198,16 +198,11 @@ return false;
 void CGlowRenderer::Activate (void)
 {
 ogl.SelectGlowBuffer ();
-#if 0 //DBG
-glClearColor (0.0, 0.375, 0.75, 0.5);
-glClear (GL_COLOR_BUFFER_BIT);
-#else
 if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else
 	glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
-glClear (GL_COLOR_BUFFER_BIT /*| GL_DEPTH_BUFFER_BIT*/);
-#endif
+glClear (GL_COLOR_BUFFER_BIT);
 }
 
 //------------------------------------------------------------------------------
@@ -528,7 +523,7 @@ if (direction >= 0)
 else
 #endif
 	shaderManager.Deploy (-1);
-ogl.BindTexture (ogl.BlurBuffer (source, gameStates.render.nShadowBlurPass)->ColorBuffer ()); //(source < 0) ? gameStates.render.nShadowBlurPass : 0));
+ogl.BindTexture (ogl.BlurBuffer (source, gameStates.render.nShadowBlurPass)->ColorBuffer ((source < 0) ? gameStates.render.nShadowBlurPass : 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
 glColor3f (1,1,1);
