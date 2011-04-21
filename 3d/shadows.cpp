@@ -1418,9 +1418,11 @@ if (FAST_SHADOWS) {
 			if ((gameData.render.shadows.lightP = activeLightsP->pl)) {
 				if (gameData.render.shadows.lightP->info.nType < 2)
 					continue;
-				if ((gameData.render.shadows.lightP->info.nType == 2) && 
-					 (objP->info.nType != OBJ_WEAPON) && (objP->info.nType != OBJ_FIREBALL) && (objP->info.nType != OBJ_FLARE) && (objP->info.nType != OBJ_LIGHT))
-					continue;
+				if (gameData.render.shadows.lightP->info.nType == 2) {
+					int nType = OBJECTS [gameData.render.shadows.lightP->info.nObject].Type ();
+					if ((nType != OBJ_WEAPON) && (nType != OBJ_FIREBALL) && (nType != OBJ_FLARE) && (nType != OBJ_LIGHT))
+						continue;
+					}
 				if (!gameData.render.shadows.lightP->info.bState)
 					continue;
 				if (!CanSeePoint (objP, &objP->info.position.vPos, &gameData.render.shadows.lightP->info.vPos, objP->info.nSegment))
@@ -1459,6 +1461,7 @@ if (FAST_SHADOWS) {
 			}
 		}
 	lightManager.ResetActive (0, 0);
+	lightManager.ResetAllUsed (1, 0);
 	}
 else {
 	h = objP->Index ();
