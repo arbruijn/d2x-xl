@@ -124,6 +124,7 @@ SetupTextureCompression ();
 SetupStencilOps ();
 SetupRefreshSync ();
 SetupAntiAliasing ();
+SetupMRT ();
 SetupVBOs ();
 #if RENDER2TEXTURE == 1
 SetupPBuffer ();
