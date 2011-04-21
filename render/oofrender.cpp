@@ -628,7 +628,7 @@ for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) 
 	if (!Draw (objP, fLight))
 		return 0;
 	if (FAST_SHADOWS)
-		RenderShadowQuad (0);
+		RenderShadowQuad ();
 	}
 return 1;
 }

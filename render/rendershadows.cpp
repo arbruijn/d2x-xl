@@ -20,37 +20,6 @@
 
 //------------------------------------------------------------------------------
 
-const char* shadowBlurVS = "void main(){gl_Position = ftransform();}";
-
-const char* shadowBlurFS = "void main(){gl_FragData [1] = gl_Color;}";
-
-int shadowBlurProg = -1;
-
-//------------------------------------------------------------------------------
-
-void DeleteShadowBlurShader (void)
-{
-if (shadowBlurProg > 0) {
-	shaderManager.Delete (shadowBlurProg);
-	shadowBlurProg = -1;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void InitShadowBlurShader (void)
-{
-if (gameOpts->render.bUseShaders && ogl.m_states.bShadersOk && (shadowBlurProg > -2)) {
-	PrintLog ("building shadow blur program\n");
-	if (0 > shaderManager.Build (shadowBlurProg, shadowBlurFS, shadowBlurVS)) {
-		DeleteShadowBlurShader ();
-		shadowBlurProg = -2;
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
 void RenderFaceShadow (tFaceProps *propsP)
 {
 	int				i, nVertices = propsP->nVertices;
@@ -131,48 +100,22 @@ glPopMatrix ();
 
 void RenderFastShadows (fix xStereoSeparation, int nWindow, short nStartSeg)
 {
-#if 0//OOF_TEST_CUBE
-#	if 1
-for (bShadowTest = 1; bShadowTest >= 0; bShadowTest--) 
-#	else
-for (bShadowTest = 0; bShadowTest < 2; bShadowTest++) 
-#	endif
-#endif
- {
-	gameStates.render.nShadowPass = 2;
-	ogl.StartFrame (0, 0, xStereoSeparation);
-	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
-	//RenderObjectShadows ();
-	RenderMine (nStartSeg, xStereoSeparation, nWindow);
+gameStates.render.nShadowPass = 2;
+ogl.StartFrame (0, 0, xStereoSeparation);
+gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
+RenderMine (nStartSeg, xStereoSeparation, nWindow);
+
+gameStates.render.nShadowPass = 3;
+ogl.StartFrame (0, 0, xStereoSeparation);
+if (glowRenderer.Available (BLUR_SHADOW)) {
+	gameStates.render.nShadowBlurPass = 1;
+	glowRenderer.Begin (BLUR_SHADOW, 1, true, 1.0f);
 	}
-#if 1 
-	{
-	gameStates.render.nShadowPass = 3;
-	ogl.StartFrame (0, 0, xStereoSeparation);
-#if 1
-	if (glowRenderer.Available (BLUR_SHADOW)) {
-		gameStates.render.nShadowBlurPass = 1;
-		glowRenderer.Begin (BLUR_SHADOW, 1, true, 1.0f);
-		}
-	RenderShadowQuad (0);
-	if (gameStates.render.nShadowBlurPass) {
-		glowRenderer.End ();
-		gameStates.render.nShadowBlurPass = 0;
-		}
-#else
-	InitShadowBlurShader ();
-	if (shadowBlurProg > 0) {
-		gameStates.render.nShadowBlurPass = 1;
-		glowRenderer.Begin (BLUR_SHADOW, 3, false, 1.0f);
-		}
-	RenderShadowQuad (0);
-	if (shadowBlurProg > 0) {
-		gameStates.render.nShadowBlurPass = 0;
-		glowRenderer.End ();
-		}
-#endif
+RenderShadowQuad ();
+if (gameStates.render.nShadowBlurPass) {
+	glowRenderer.End ();
+	gameStates.render.nShadowBlurPass = 0;
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -233,15 +176,9 @@ if (!bHaveShadowBuf) {
 	bHaveShadowBuf = 1;
 	}
 #if 1
-//glStencilFunc (GL_EQUAL, 0, ~0);
-//RenderShadowQuad (1);
-#	if 0
-glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, CCanvas::Current ()->Height () - 128, 128, 128, 0);
-#	else
 glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, 0,
 						CCanvas::Current ()->Width (), 
 						CCanvas::Current ()->Height (), 0);
-#	endif
 #else
 glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, 128, 128);
 #endif

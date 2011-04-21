@@ -5,7 +5,7 @@
 #include "renderlib.h"
 
 void RenderFaceShadow (tFaceProps *propsP);
-void RenderShadowQuad (int bWhite);
+void RenderShadowQuad (void);
 void CreateShadowTexture (void);
 void RenderShadowTexture (void);
 int RenderShadowMap (CDynLight *pLight);
