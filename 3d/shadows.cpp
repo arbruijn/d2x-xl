@@ -1528,6 +1528,7 @@ if (FAST_SHADOWS) {
 				else
 					fInf = G3_INFINITY;
 				po->VertsToFloat ();
+				// remove z-fighting
 				transformation.Transform (vShadowOffset, objP->Position ());
 				vShadowOffset -= vLightPos;
 				CFixVector::Normalize (vShadowOffset);
@@ -1536,7 +1537,6 @@ if (FAST_SHADOWS) {
 					dist = 400.0;
 				vShadowOffset *= F2X (sqrt (dist / 400.0));
 				transformation.Begin (objP->Position (), objP->info.position.mOrient);
-				//vShadowOffset.SetZero ();
 				po->m_litFaces.Reset ();
 				if (gameOpts->render.shadows.nClip >= 2)
 					po->m_fClipDist.Clear ();
