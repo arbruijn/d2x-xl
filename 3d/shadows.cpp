@@ -1395,6 +1395,7 @@ int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAn
 	short*		pnl;
 	int			h, i, j;
 	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
+	CObject*		lightObjP;
 
 Assert (objP->info.nId < MAX_ROBOT_TYPES);
 if (!gameStates.render.nShadowMap) {
@@ -1418,8 +1419,12 @@ if (FAST_SHADOWS) {
 			if ((gameData.render.shadows.lightP = activeLightsP->pl)) {
 				if (gameData.render.shadows.lightP->info.nType < 2)
 					continue;
-				if (gameData.render.shadows.lightP->info.nType == 2) {
-					int nType = OBJECTS [gameData.render.shadows.lightP->info.nObject].Type ();
+				if (gameData.render.shadows.lightP->info.nType == 3) {
+					lightObjP = &OBJECTS [gameData.multiplayer.players [gameData.render.shadows.lightP->info.nPlayer].nObject];
+					}
+				else if (gameData.render.shadows.lightP->info.nType == 2) {
+					lightObjP = &OBJECTS [gameData.render.shadows.lightP->info.nObject];
+					int nType = lightObjP->Type ();
 					if ((nType != OBJ_WEAPON) && (nType != OBJ_FIREBALL) && (nType != OBJ_FLARE) && (nType != OBJ_LIGHT))
 						continue;
 					}
@@ -1429,7 +1434,7 @@ if (FAST_SHADOWS) {
 					continue;
 				vLightDir = objP->info.position.vPos - gameData.render.shadows.lightP->info.vPos;
 				CFixVector::Normalize (vLightDir);
-				if ((gameData.render.shadows.lightP->info.bSpot) && (CFixVector::Dot (vLightDir, objP->Orientation ().m.dir.f) < 0.6666667f))
+				if ((gameData.render.shadows.lightP->info.bSpot) && (!lightObjP || (CFixVector::Dot (vLightDir, lightObjP->Orientation ().m.dir.f) < 0.6666667f)))
 					continue;
 				if (gameData.render.shadows.nLight) {
 					for (j = 0; j < gameData.render.shadows.nLight; j++)
