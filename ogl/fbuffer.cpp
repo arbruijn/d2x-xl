@@ -117,6 +117,7 @@ return glGetError () ? 0 : 1;
 
 int CFBO::CreateDepthBuffer (void)
 {
+ogl.ClearError (false);
 if (m_info.nType == 3) { // depth buffer for shadow map
 	if (!(m_info.hDepthBuffer = ogl.CreateDepthTexture (GL_TEXTURE0, 1, 2, m_info.nWidth, m_info.nHeight)))
 		return 0;
@@ -195,13 +196,13 @@ m_info.nType = nType;
 m_info.hDepthBuffer = 0;
 m_info.hStencilBuffer = 0;
 
-if (!CreateColorBuffers (nColorBuffers))
-	return 0;
-if (!CreateDepthBuffer ())
-	return 0;
 glGenFramebuffersEXT (1, &m_info.hFBO);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
 
+if (!(CreateColorBuffers (nColorBuffers) && CreateDepthBuffer ())) {
+	Destroy ();
+	return 0;
+	}
 AttachBuffers ();
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 return Available ();
