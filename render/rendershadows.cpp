@@ -91,7 +91,7 @@ G3RenderFarShadowCapFace (v, nVertices);
 
 void RenderShadowQuad (void)
 {
-	static GLfloat shadowHue [4] = {{0.6f, 0.6f, 0.6f, 0.6f}, {0.25f, 0.25f, 0.25f, 1.0f}};
+	static GLfloat shadowHue [2][4] = {{0.6f, 0.6f, 0.6f, 0.6f}, {0.25f, 0.25f, 0.25f, 1.0f}};
 
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
