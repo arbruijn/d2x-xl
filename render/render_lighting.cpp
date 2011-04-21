@@ -600,6 +600,7 @@ int CountRenderFaces (void)
 	short			nSegment;
 	int			h, i, j, nFaces, nSegments;
 
+ogl.m_states.bUseTransform = 1; // prevent vertex transformation from setting FVERTICES!
 for (i = nSegments = nFaces = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 	segP = SEGMENTS + gameData.render.mine.segRenderList [0][i];
 	if (SegmentIsVisible (segP)) {
@@ -621,6 +622,7 @@ if (nFaces) {
 			}
 		}
 	}
+ogl.m_states.bUseTransform = 0;
 return nSegments;
 }
 
