@@ -604,7 +604,8 @@ else
 	ogl.SelectBlurBuffer (1); 
 	ClearViewport (radius);
 	Render (0, 1, radius); // Blur 0 -> Blur 1
-	ogl.SetBlendMode (GL_ONE, (m_nType == BLUR_SHADOW) ? GL_ZERO : GL_ONE);
+	if (m_nType != BLUR_SHADOW)
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
 #	if BLUR > 1
 	for (int i = 1; i < m_nStrength; i++) {
 		radius += RAD_INCR;

@@ -185,13 +185,14 @@ if (HaveDrawBuffer ()) {
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
 	BindTexture (DrawBuffer (0)->ColorBuffer ());
 
-	FlushStereoBuffers (nEffects);
-	FlushEffects (nEffects);
+	if (nEffects) {
+		FlushStereoBuffers (nEffects);
+		FlushEffects (nEffects);
 #if MAX_SHADOWMAPS
-	FlushShadowMaps (nEffects);
+		FlushShadowMaps (nEffects);
 #endif
-	if (!nEffects) {
-		BindTexture (m_states.hDepthBuffer [0]);
+		}
+	else {
 		SetDrawBuffer (GL_BACK, 0);
 		OglDrawArrays (GL_QUADS, 0, 4);
 		}
