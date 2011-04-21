@@ -216,9 +216,9 @@ else {
 		else
 			SetDrawBuffer (GL_BACK, 0);
 #else
-		gameStates.render.bRenderIndirect = 1 || (postProcessManager.Effects () != NULL) 
+		gameStates.render.bRenderIndirect = (postProcessManager.Effects () != NULL) 
 														|| (m_data.xStereoSeparation && (i > 0)) 
-														|| (/*gameStates.render.textures.bHaveShadowMapShader &&*/ (EGI_FLAG (bShadows, 0, 1, 0) != 0));
+														|| (glowRenderer.Available (BLUR_SHADOW) && (EGI_FLAG (bShadows, 0, 1, 0) != 0));
 		if (gameStates.render.bRenderIndirect) 
 			SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
 		else

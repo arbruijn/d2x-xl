@@ -517,7 +517,7 @@ float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 #endif
 
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-#if 1 //!DBG
+#if 0 //!DBG
 if (direction >= 0)
 	LoadShader (direction, radius);
 else
@@ -616,7 +616,12 @@ else
 	ogl.ChooseDrawBuffer ();
 	ogl.SetDepthMode (GL_ALWAYS);
 	//ogl.SetBlendMode (2);
-	ogl.SetBlendMode ((m_nType == BLUR_SHADOW) ? -1 : 1);
+	if (m_nType != BLUR_SHADOW)
+		ogl.SetBlendMode (1);
+	else {
+		ogl.SetBlendMode (GL_ONE, GL_ZERO); //-1);
+		//ogl.SetStencilTest (true);
+		}
 	float scale = (float) ScreenScale ();
 #if BLUR
 	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 8.0f); // Glow -> back buffer
@@ -632,6 +637,7 @@ else
 	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
 	ogl.SetDepthWrite (bDepthWrite);
 	ogl.SetDepthMode (nDepthMode);
+	ogl.SetStencilTest (false);
 	}
 
 m_nType = -1;

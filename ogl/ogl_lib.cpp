@@ -534,12 +534,14 @@ void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 
 m_data.xStereoSeparation = xStereoSeparation;
 ChooseDrawBuffer ();
+ogl.SetPolyOffsetFill (false);
 #if !MAX_SHADOWMAPS
 if (gameStates.render.nShadowPass) {
 #if GL_INFINITY
 	float	infProj [4][4];	//projection to infinity
 #endif
 
+	SetDepthMode (GL_LESS);
 	if (gameStates.render.nShadowPass == 1) {	//render unlit/final scene
 		if (!gameStates.render.nShadowMap) {
 #if GL_INFINITY
@@ -558,7 +560,6 @@ if (gameStates.render.nShadowPass) {
 #endif
 			SetDepthTest (true);
 			SetStencilTest (false);
-			SetDepthMode (GL_LESS);
 			SetFaceCulling (true);
 			OglCullFace (0);
 			if (!FAST_SHADOWS)
