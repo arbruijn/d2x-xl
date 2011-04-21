@@ -1877,7 +1877,7 @@ gameOptions [0].render.shadows.nClip = (gameOptions [0].render.nQuality > 1) ? 2
 #endif
 gameOptions [0].render.shadows.bPlayers = 1;
 gameOptions [0].render.shadows.bRobots = 1;
-gameOptions [0].render.shadows.bMissiles = 0;
+gameOptions [0].render.shadows.bMissiles = (gameOptions [0].render.nQuality > 1);
 gameOptions [0].render.shadows.bPowerups = 0;
 gameOptions [0].render.shadows.bReactors = 0;
 }
