@@ -74,7 +74,7 @@ void RenderStartFrame (void);
 void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale);
 
 void RenderMine (short nStartSeg, fix xExeOffset, int nWindow);
-void RenderShadowQuad (int bWhite);
+void RenderShadowQuad (void);
 void UpdateRenderedData (int window_num, CObject *viewer, int rearViewFlag, int user);
 void RenderObjList (int nListPos, int nWindow);
 void RenderMineSegment (int nn);
