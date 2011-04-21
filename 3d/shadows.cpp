@@ -1407,43 +1407,53 @@ ogl.EnableClientState (GL_VERTEX_ARRAY);
 pnl = lightManager.NearestSegLights () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
-	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
-		gameData.render.shadows.lightP = lightManager.RenderLights (*pnl);
-		if (gameData.render.shadows.lightP->info.nObject < 0)
-			continue;
-		if (!gameData.render.shadows.lightP->info.bState)
-			continue;
-		if (!CanSeePoint (objP, &objP->info.position.vPos, &gameData.render.shadows.lightP->info.vPos, objP->info.nSegment))
-			continue;
-		vLightDir = objP->info.position.vPos - gameData.render.shadows.lightP->info.vPos;
-		CFixVector::Normalize (vLightDir);
-		if (gameData.render.shadows.nLight) {
-			for (j = 0; j < gameData.render.shadows.nLight; j++)
-				if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir [j])) > I2X (2) / 3) // 60 deg
-					break;
-			if (j < gameData.render.shadows.nLight)
-				continue;
+	short nLights = lightManager.SetNearestToSegment (objP->Segment (), -1, 0, 0, 0);	//only get light emitting objects here
+	if (nLights > 0) {
+		if (nLights > gameOpts->render.shadows.nLights)
+			nLights = gameOpts->render.shadows.nLights;
+		CDynLightIndex* sliP = &lightManager.Index (0, 0);
+		CActiveDynLight* activeLightsP = lightManager.Active (0) + sliP->nFirst;
+		int i = sliP->nLast - sliP->nFirst + 1;
+		for (; (i > 0) && (nLights > 0); activeLightsP++, i--) {
+			if ((gameData.render.shadows.lightP = activeLightsP->pl)) {
+				if (gameData.render.shadows.lightP->info.nObject < 0)
+					continue;
+				if (!gameData.render.shadows.lightP->info.bState)
+					continue;
+				if (!CanSeePoint (objP, &objP->info.position.vPos, &gameData.render.shadows.lightP->info.vPos, objP->info.nSegment))
+					continue;
+				vLightDir = objP->info.position.vPos - gameData.render.shadows.lightP->info.vPos;
+				CFixVector::Normalize (vLightDir);
+				if (gameData.render.shadows.nLight) {
+					for (j = 0; j < gameData.render.shadows.nLight; j++)
+						if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir [j])) > I2X (2) / 3) // 60 deg
+							break;
+					if (j < gameData.render.shadows.nLight)
+						continue;
+					}
+				gameData.render.shadows.vLightDir [gameData.render.shadows.nLight++] = vLightDir;
+				gameStates.render.bRendering = 1;
+				transformation.Transform (vLightPos, gameData.render.shadows.lightP->info.vPos, 0);
+				vLightPosf.Assign (vLightPos);
+				if (gameOpts->render.shadows.nClip) {
+					// get a default clipping distance using the model position as fall back
+					transformation.Transform (v, objP->info.position.vPos, 0);
+					fInf = NearestShadowedWallDist (objP->Index (), objP->info.nSegment, &v, 0);
+					}
+				else
+					fInf = G3_INFINITY;
+				po->VertsToFloat ();
+				transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
+				po->m_litFaces.Reset ();
+				if (gameOpts->render.shadows.nClip >= 2)
+					po->m_fClipDist.Clear ();
+				po->m_subModels [0].RenderShadow (objP, po);
+				transformation.End ();
+				gameStates.render.bRendering = 0;
+				}
 			}
-		gameData.render.shadows.vLightDir [gameData.render.shadows.nLight++] = vLightDir;
-		gameStates.render.bRendering = 1;
-		transformation.Transform (vLightPos, gameData.render.shadows.lightP->info.vPos, 0);
-		vLightPosf.Assign (vLightPos);
-		if (gameOpts->render.shadows.nClip) {
-			// get a default clipping distance using the model position as fall back
-			transformation.Transform (v, objP->info.position.vPos, 0);
-			fInf = NearestShadowedWallDist (objP->Index (), objP->info.nSegment, &v, 0);
-			}
-		else
-			fInf = G3_INFINITY;
-		po->VertsToFloat ();
-		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
-		po->m_litFaces.Reset ();
-		if (gameOpts->render.shadows.nClip >= 2)
-			po->m_fClipDist.Clear ();
-		po->m_subModels [0].RenderShadow (objP, po);
-		transformation.End ();
-		gameStates.render.bRendering = 0;
 		}
+	lightManager.ResetActive (0, 0);
 	}
 else {
 	h = objP->Index ();
