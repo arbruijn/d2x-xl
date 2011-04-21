@@ -1416,7 +1416,10 @@ if (FAST_SHADOWS) {
 		int i = sliP->nLast - sliP->nFirst + 1;
 		for (; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			if ((gameData.render.shadows.lightP = activeLightsP->pl)) {
-				if (gameData.render.shadows.lightP->info.nObject < 0)
+				if (gameData.render.shadows.lightP->info.nType < 2)
+					continue;
+				if ((gameData.render.shadows.lightP->info.nType == 2) && 
+					 (objP->info.nType != OBJ_WEAPON) && (objP->info.nType != OBJ_FIREBALL) && (objP->info.nType != OBJ_FLARE) && (objP->info.nType != OBJ_LIGHT))
 					continue;
 				if (!gameData.render.shadows.lightP->info.bState)
 					continue;
@@ -1424,6 +1427,8 @@ if (FAST_SHADOWS) {
 					continue;
 				vLightDir = objP->info.position.vPos - gameData.render.shadows.lightP->info.vPos;
 				CFixVector::Normalize (vLightDir);
+				if ((gameData.render.shadows.lightP->info.bSpot) && (CFixVector::Dot (vLightDir, objP->Orientation ().m.dir.f) < 0.6666667f))
+					continue;
 				if (gameData.render.shadows.nLight) {
 					for (j = 0; j < gameData.render.shadows.nLight; j++)
 						if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir [j])) > I2X (2) / 3) // 60 deg
