@@ -1529,7 +1529,7 @@ if (FAST_SHADOWS) {
 					fInf = G3_INFINITY;
 				po->VertsToFloat ();
 				// remove z-fighting
-#if 1
+#if 0
 				vShadowOffset.SetZero ();
 #else
 				transformation.Transform (vShadowOffset, objP->Position ());
