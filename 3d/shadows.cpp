@@ -744,7 +744,7 @@ void SetCullAndStencil (int bCullFront, int bZPass)
 	int nStencilOp [2] = {GL_DECR_WRAP, GL_INCR_WRAP};
 
 ogl.SetFaceCulling (true);
-OglCullFace (!bCullFront);
+OglCullFace (bCullFront);
 if (bZPass)
 	glStencilOp (GL_KEEP, GL_KEEP, nStencilOp [bCullFront]);
 else
@@ -1529,6 +1529,9 @@ if (FAST_SHADOWS) {
 					fInf = G3_INFINITY;
 				po->VertsToFloat ();
 				// remove z-fighting
+#if 1
+				vShadowOffset.SetZero ();
+#else
 				transformation.Transform (vShadowOffset, objP->Position ());
 				vShadowOffset -= vLightPos;
 				CFixVector::Normalize (vShadowOffset);
@@ -1536,6 +1539,7 @@ if (FAST_SHADOWS) {
 				if (dist > 400.0)
 					dist = 400.0;
 				vShadowOffset *= F2X (sqrt (dist / 400.0));
+#endif
 				transformation.Begin (objP->Position (), objP->info.position.mOrient);
 				po->m_litFaces.Reset ();
 				if (gameOpts->render.shadows.nClip >= 2)

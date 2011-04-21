@@ -180,6 +180,7 @@ class COglStates {
 		int	bFSAA;
 		int	bAntiAliasing;
 		int	bAntiAliasingOk;
+		int	bMRTOk;
 		int	bQuadBuffering;
 		int	bVoodooHack;
 		int	bTextureCompression;
@@ -273,6 +274,7 @@ class COGL {
 		void SetupStencilOps (void);
 		void SetupRefreshSync (void);
 		void SetupAntiAliasing (void);
+		void SetupMRT (void);
 		void SetupVBOs (void);
 
 		void InitState (void);

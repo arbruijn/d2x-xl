@@ -517,7 +517,7 @@ float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 #endif
 
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-#if 0 //!DBG
+#if 1 //!DBG
 if (direction >= 0)
 	LoadShader (direction, radius);
 else
@@ -619,7 +619,7 @@ else
 	if (m_nType != BLUR_SHADOW)
 		ogl.SetBlendMode (1);
 	else {
-		ogl.SetBlendMode (GL_ONE, GL_ZERO); //-1);
+		ogl.SetBlendMode (-1);
 		//ogl.SetStencilTest (true);
 		}
 	float scale = (float) ScreenScale ();

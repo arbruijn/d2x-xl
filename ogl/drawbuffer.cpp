@@ -73,7 +73,7 @@ if (!gameStates.render.bRenderIndirect && (nType >= 0))
 if (DrawBuffer ()->Handle ())
 	return;
 PrintLog ("creating draw buffer\n");
-DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType, 2); //1 + (EGI_FLAG (bShadows, 0, 1, 0) != 0));
+DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType, 1 + m_states.bMRTOk);
 }
 
 //------------------------------------------------------------------------------

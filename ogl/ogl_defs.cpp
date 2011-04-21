@@ -94,6 +94,13 @@ m_states.bAntiAliasingOk = (pszOglExtensions && strstr (pszOglExtensions, "GL_AR
 
 //------------------------------------------------------------------------------
 
+void COGL::SetupMRT (void)
+{
+m_states.bMRTOk = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_drawbuffers"));
+}
+
+//------------------------------------------------------------------------------
+
 void COGL::SetupRefreshSync (void)
 {
 #ifdef _WIN32
