@@ -639,7 +639,8 @@ return particleBuffer [0].Flush (fBrightness, bForce);
 short CParticleManager::Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed)
 {
 #if MAX_PARTICLE_BUFFERS  > 1
-if ((particleP->RenderType () != particleBuffer [nBuffer].GetType ()) || (particleP->m_bEmissive != particleBuffer [nBuffer].m_bEmissive))
+if ((particleP->RenderType () != particleBuffer [nBuffer].GetType ()) || 
+	 (!(ogl.m_states.bMRTOk && (gameOpts->render.effects.bSoftParticles & 4) && (particleP->m_bEmissive == particleBuffer [nBuffer].m_bEmissive)))
 	return -1;
 CFloatVector pos;
 pos.Assign (particleP->m_vPos);
