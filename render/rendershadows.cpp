@@ -48,12 +48,12 @@ OglDrawArrays (GL_TRIANGLE_FAN, 0, nVertices);
 if (!bShadowTest || bShadowVolume)
 #endif
 for (i = 0; i < nVertices; i++)
-	G3RenderShadowVolumeFace (v + i);
+	RenderShadowVolumeFace (v + i);
 ogl.DisableClientState (GL_VERTEX_ARRAY);
 #if DBG_SHADOWS
 if (!bShadowTest || bRearCap)
 #endif
-G3RenderFarShadowCapFace (v, nVertices);
+RenderFarShadowCapFace (v, nVertices);
 }
 
 //------------------------------------------------------------------------------

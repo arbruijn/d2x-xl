@@ -933,6 +933,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\include\shadows.h"
+						>
+					</File>
+					<File
 						RelativePath="..\include\transformation.h"
 						>
 					</File>
@@ -10525,11 +10529,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

@@ -780,7 +780,7 @@ OglDrawArrays (GL_QUADS, 0, 4);
 
 //------------------------------------------------------------------------------
 
-void G3RenderFarShadowCapFace (CFloatVector *pv, int nVerts)
+void RenderFarShadowCapFace (CFloatVector *pv, int nVerts)
 {
 	CFloatVector	v0, v1;
 	int				i;
