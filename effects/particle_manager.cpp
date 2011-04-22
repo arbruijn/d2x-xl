@@ -45,6 +45,8 @@
 
 CParticleManager particleManager;
 
+#define USE_PARTICLE_SHADER	0
+
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
@@ -122,25 +124,25 @@ const char *particleFS =
 	"uniform sampler2D particleTex, sceneTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
 	"uniform vec2 screenScale;\r\n" \
-	"#define ZNEAR 1.0\r\n" \
-	"#define ZFAR 5000.0\r\n" \
+	"//#define ZNEAR 1.0\r\n" \
+	"//#define ZFAR 5000.0\r\n" \
+	"//#define A 5001.0 //(ZNEAR + ZFAR)\r\n" \
+	"//#define B 4999.0 //(ZNEAR - ZFAR)\r\n" \
+	"//#define C 10000.0 //(2.0 * ZNEAR * ZFAR)\r\n" \
+	"//#define D (NDC (Z) * B)\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
-	"#define A 5001.0 //(ZNEAR + ZFAR)\r\n" \
-	"#define B 4999.0 //(ZNEAR - ZFAR)\r\n" \
-	"#define C 10000.0 //(2.0 * ZNEAR * ZFAR)\r\n" \
-	"#define D (NDC (Z) * B)\r\n" \
 	"#define ZEYE(z) (10000.0 / (5001.0 - NDC (z) * 4999.0)) //(C / (A + D))\r\n" \
 	"//#define ZEYE(z) -(ZFAR / ((z) * (ZFAR - ZNEAR) - ZFAR))\r\n" \
 	"void main (void) {\r\n" \
-	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * screenScale).r), 0.0, dMax);\r\n" \
+	"vec2 sceneCoord = gl_FragCoord.xy * screenScale;\r\n" \
+	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, sceneCoord).r), 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
-	"vec2 scenePos = gl_FragCoord.xy * screenScale;\r\n" \
-	"vec4 sceneColor = texture2D (sceneTex, scenePos.xy);\r\n" \
+	"vec4 sceneColor = texture2D (sceneTex, sceneCoord);\r\n" \
 	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"if (gl_Color.a == 0.0) //additive\r\n" \
 	"   gl_FragColor = vec4 (sceneColor.rgb + particleColor.rgb * dz, 1.0);\r\n" \
 	"else//alpha\r\n" \
-	"   gl_FragColor = particleColor; //vec4 (mix (sceneColor.rgb, particleColor.rgb, particleColor.a * dz), 1.0);\r\n" \
+	"   gl_FragColor = vec4 (mix (sceneColor.rgb, particleColor.rgb, particleColor.a * dz), 1.0);\r\n" \
 	"}\r\n"
 	;
 
@@ -174,9 +176,13 @@ if (ogl.m_states.bMRTOk) {
 
 float CParticleBuffer::AlphaScale (void)
 {
+#if USE_PARTICLE_SHADER
 return (gameStates.render.cameras.bActive || !(m_bEmissive && (gameOpts->render.effects.bSoftParticles & 4) && ogl.m_states.bMRTOk && (m_nType <= WATERFALL_PARTICLES)))
 		 ? 1.0f
 		 : 0.0f;
+#else
+return 1.0f;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -241,7 +247,13 @@ bool CParticleBuffer::Add (CParticle* particleP, float brightness, CFloatVector&
 {
 	bool bFlushed = false;
 
-if ((particleP->RenderType () != m_nType) || (particleP->m_bEmissive != m_bEmissive)) {
+if ((particleP->RenderType () != m_nType) || 
+#if USE_PARTICLE_SHADER
+	 (!(ogl.m_states.bMRTOk && (gameOpts->render.effects.bSoftParticles & 4) && (particleP->m_bEmissive == m_bEmissive))))
+#else
+	 (particleP->m_bEmissive != m_bEmissive)) 
+#endif
+	{
 	bFlushed = Flush (brightness, true);
 	m_nType = particleP->RenderType ();
 	m_bEmissive = particleP->m_bEmissive;
@@ -326,12 +338,14 @@ if (Init ()) {
 #endif
 		if (gameStates.render.cameras.bActive || !(gameOpts->render.effects.bSoftParticles & 4))
 			shaderManager.Deploy (-1);
-		else if (!ogl.m_states.bMRTOk || (m_nType >= PARTICLE_TYPES)) { // load soft blending shader
-			if (!glareRenderer.LoadShader (5, (m_nType < PARTICLE_TYPES) ? m_bEmissive : -1))
+#if USE_PARTICLE_SHADER
+		else if (ogl.m_states.bMRTOk && (m_nType <= WATERFALL_PARTICLES)) {
+			if (!particleManager.LoadShader (20.0f))
 				shaderManager.Deploy (-1);
 			}
-		else if (m_nType <= WATERFALL_PARTICLES) {
-			if (!particleManager.LoadShader (20.0f))
+#endif
+		else if ((m_nType <= WATERFALL_PARTICLES) || (m_nType >= PARTICLE_TYPES)) { // load soft blending shader
+			if (!glareRenderer.LoadShader (5, (m_nType < PARTICLE_TYPES) ? m_bEmissive : -1))
 				shaderManager.Deploy (-1);
 			}
 		else
@@ -652,7 +666,11 @@ short CParticleManager::Add (CParticle* particleP, float brightness, int nBuffer
 {
 #if MAX_PARTICLE_BUFFERS  > 1
 if ((particleP->RenderType () != particleBuffer [nBuffer].GetType ()) || 
+#if USE_PARTICLE_SHADER
 	 (!(ogl.m_states.bMRTOk && (gameOpts->render.effects.bSoftParticles & 4) && (particleP->m_bEmissive == particleBuffer [nBuffer].m_bEmissive))))
+#else
+	 (particleP->m_bEmissive == particleBuffer [nBuffer].m_bEmissive))
+#endif
 	return -1;
 CFloatVector pos;
 pos.Assign (particleP->m_vPos);
