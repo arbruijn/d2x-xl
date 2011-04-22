@@ -702,8 +702,8 @@ const char *glareFS =
 	"#define B 4999.0 //(ZNEAR - ZFAR)\r\n" \
 	"#define C 10000.0 //(2.0 * ZNEAR * ZFAR)\r\n" \
 	"#define D (NDC (Z) * B)\r\n" \
-	"//#define ZEYE(z) -10000.0 / (5001.0 + NDC (z) * 4999.0) //(C / (A + D))\r\n" \
-	"#define ZEYE(z) -(ZFAR / ((z) * (ZFAR - ZNEAR) - ZFAR))\r\n" \
+	"#define ZEYE(z) (10000.0 / (5001.0 - NDC (z) * 4999.0)) //(C / (A + D))\r\n" \
+	"//#define ZEYE(z) -(ZFAR / ((z) * (ZFAR - ZNEAR) - ZFAR))\r\n" \
 	"void main (void) {\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * screenScale).r), 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
