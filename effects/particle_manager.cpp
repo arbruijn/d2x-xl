@@ -118,7 +118,7 @@ if (ogl.m_states.bDepthBlending) {
 // into the other color buffer with blend mode replace (GL_ONE, GL_ZERO)
 
 const char *particleFS =
-	"uniform sampler2D sceneTex, particleTex, depthTex;\r\n" \
+	"uniform sampler2D particleTex, sceneTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
 	"uniform vec2 screenScale;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
@@ -133,7 +133,7 @@ const char *particleFS =
 	"void main (void) {\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * screenScale).r), 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
-	"vec2 scenePos = gl_FragCoord.xy / gl_FragCoord.w;\r\n" \
+	"vec2 scenePos = gl_FragCoord.xy * screenScale;\r\n" \
 	"vec4 sceneColor = texture2D (sceneTex, scenePos.xy);\r\n" \
 	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color * dz;\r\n" \
 	"bool bAdditive = ;\r\n" \
