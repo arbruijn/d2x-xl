@@ -293,7 +293,7 @@ char* Trim (char* s)
 if (s) {
 	while (::isspace (*s))
 		s++;
-	for (int i = strlen (s); --i; ) {
+	for (int i = (int) strlen (s); --i; ) {
 		if (::isspace (s [i]))
 			s [i] = '\0';
 		else
