@@ -85,6 +85,7 @@ else {
 	}
 dMaxPrev = dMax;
 ogl.SetDepthTest (false);
+ogl.SetAlphaTest (false);
 ogl.SetBlendMode (OGL_BLEND_ALPHA_CONTROLLED);
 ogl.SelectTMU (GL_TEXTURE0);
 return true;
@@ -130,7 +131,7 @@ const char *particleFS =
 	"#define ZEYE(z) (10000.0 / (5001.0 - NDC (z) * 4999.0)) //(C / (A + D))\r\n" \
 	"//#define ZEYE(z) -(ZFAR / ((z) * (ZFAR - ZNEAR) - ZFAR))\r\n" \
 	"void main (void) {\r\n" \
-	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, sceneCoord).r), 0.0, dMax);\r\n" \
+	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * screenScale).r), 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"if (gl_Color.a == 0.0) //additive\r\n" \
@@ -219,7 +220,8 @@ m_nType = -1;
 m_bEmissive = false;
 m_dMax = 0.0f;
 ogl.SetDepthTest (true);
-ogl.SetBlendMode (OGL_BLEND_ALPHA);
+ogl.SetAlphaTest (true);
+ogl.SetBlendMode (m_bEmissive);
 CEffectArea::Reset ();
 }
 
