@@ -1208,7 +1208,7 @@ ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ()) 
 				 ? BM_ADDON_RETICLE_RED 
 				 : BM_ADDON_RETICLE_GREEN;
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 glColor3i (1,1,1);
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
 		  (x + ScaleX (crossOffsets [ofs].x - 1)), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
@@ -1916,7 +1916,7 @@ if (!cockpit->Setup (true))
 	return;
 #endif
 ogl.SetDepthMode (GL_ALWAYS);
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.ColorMask (1,1,1,1,0);
 CCanvas::SetCurrent (CurrentGameScreen ());
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);

@@ -110,7 +110,7 @@ if (scope.Load ()) {
 
 	ogl.SetTexturing (true);
 	ogl.SetBlending (true);
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	ogl.SetDepthTest (false);
 	if (scope.Bind (1))
 		return;
@@ -334,7 +334,7 @@ if (gameOpts->app.bEpilepticFriendly ||
 	 !(/*extraGameInfo [0].bFlickerLights &&*/ gameStates.render.nFlashScale && (gameStates.render.nFlashScale != I2X (1))))
 	return;
 
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 glColor4f (0, 0, 0, /*1.0f -*/ 3 * X2F (gameStates.render.nFlashScale) / 4);
 ogl.SetTexturing (false);
 ogl.SetDepthTest (false);
@@ -351,7 +351,7 @@ void Draw2DFrameElements (void)
 fix xStereoSeparation = ogl.StereoSeparation ();
 ogl.SetStereoSeparation (0);
 ogl.ColorMask (1,1,1,1,0);
-//SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//SetBlendMode (OGL_BLEND_ALPHA);
 if (gameStates.app.bGameRunning && !automap.Display ()) {
 	PROF_START
 	cockpit->Render (!(gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()), 0);

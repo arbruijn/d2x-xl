@@ -767,7 +767,7 @@ ogl.SetDepthMode (GL_LEQUAL);
 #if ADDITIVE_SPHERE_BLENDING
 ogl.SetBlendMode (bAdditive);
 #else
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 #endif
 glowRenderer.Begin (GLOW_SHIELDS, 2, true, 0.75f);
 if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, xScale))

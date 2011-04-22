@@ -147,7 +147,7 @@ if (ogl.SizeVertexBuffer (4)) {
 	ogl.VertexBuffer () [3].v.coord.x = x0;
 	ogl.VertexBuffer () [3].v.coord.y = y1;
 	ogl.FlushBuffers (GL_LINE_LOOP, 4, 2);
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	}
 }
 

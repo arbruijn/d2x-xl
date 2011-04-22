@@ -251,11 +251,11 @@ if (gameOpts->render.debug.bWireFrame) {
 static inline void G3SetBlendMode (CSegFace *faceP)
 {
 if (faceP->m_info.bAdditive)
-	ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+	ogl.SetBlendMode (OGL_BLEND_ADD_WEAK);
 else if (faceP->m_info.bTransparent)
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 else
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 }
 
 //------------------------------------------------------------------------------
@@ -481,7 +481,7 @@ else {
 				break;
 			if (!bAdditive) {
 				bAdditive = true;
-				ogl.SetBlendMode (GL_ONE, GL_ONE); //_MINUS_SRC_COLOR);
+				ogl.SetBlendMode (OGL_BLEND_ADD); //_MINUS_SRC_COLOR);
 				ogl.SetDepthMode (GL_EQUAL);
 				ogl.SetDepthWrite (false);
 				}

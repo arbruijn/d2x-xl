@@ -383,7 +383,7 @@ pvc = m_vertColors.Buffer ();
 //memset (pvc, 0, m_nVerts * sizeof (tFaceColor));
 ogl.SetFaceCulling (true);
 OglCullFace (0);
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 if (!bDynLighting) {
 	sc = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos, 0);
 	if (sc.index != gameStates.render.nFrameFlipFlop + 1)

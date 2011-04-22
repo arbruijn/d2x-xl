@@ -445,7 +445,7 @@ else { //3D
 
 		ogl.ResetClientStates (1);
 		ogl.SetFaceCulling (false);
-		ogl.SetBlendMode (1);
+		ogl.SetBlendMode (OGL_BLEND_ADD);
 		ogl.SetTransform (1);
 		ogl.SetDepthWrite (false);
 
@@ -460,7 +460,7 @@ else { //3D
 		transformation.End ();
 		}
 	ogl.SetTransform (0);
-	ogl.SetBlendMode (0);
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	ogl.SetFaceCulling (true);
 	OglCullFace (0);
 	ogl.SetDepthWrite (true);

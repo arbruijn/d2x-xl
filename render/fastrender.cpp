@@ -340,7 +340,7 @@ else
 		if (glareRenderer.Style ())
 			glareRenderer.LoadShader (10, 1);
 		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (OGL_BLEND_ADD);
 #if 0
 		ogl.SetDepthMode (GL_LEQUAL); 
 #endif
@@ -428,7 +428,7 @@ else
 	}
 if (gameStates.render.bFullBright)
 	glColor3f (1,1,1);
-ogl.SetBlendMode (GL_ONE, GL_ZERO);
+ogl.SetBlendMode (OGL_BLEND_REPLACE);
 ogl.ClearError (0);
 return 1;
 }
@@ -447,7 +447,7 @@ ogl.ResetTransform (1);
 if (FACES.vboDataHandle)
 	glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 glareRenderer.UnloadShader ();
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetDepthWrite (true);
 ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
@@ -778,7 +778,7 @@ return nFaces;
 void RenderHeadlights (int nType)
 {
 if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
-	ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+	ogl.SetBlendMode (OGL_BLEND_ADD_WEAK);
 	faceRenderFunc = DrawHeadlights;
 	RenderSegments (nType, 1);
 	SetFaceDrawer (-1);

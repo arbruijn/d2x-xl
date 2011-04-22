@@ -744,7 +744,7 @@ if (!m_plasmaVerts.Buffer ())
 
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
-ogl.SetBlendMode (1);
+ogl.SetBlendMode (OGL_BLEND_ADD);
 if (nDepth || (m_bGlow < 1)) {
 	glColor3fv (reinterpret_cast<GLfloat*> (colorP));
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
@@ -825,7 +825,7 @@ void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
 if (!m_coreVerts.Buffer ())
 	return;
-ogl.SetBlendMode (1);
+ogl.SetBlendMode (OGL_BLEND_ADD);
 ogl.SetLineSmooth (true);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
@@ -975,7 +975,7 @@ else {
 		ogl.SetFaceCulling (true);
 	glLineWidth (1);
 	ogl.SetLineSmooth (false);
-	ogl.SetBlendMode (0);
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	}
 }
 

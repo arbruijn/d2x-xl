@@ -398,7 +398,7 @@ m_bmBackdrop.Remap (NULL, -1, -1);
 KeyFlush ();
 m_xTimeout = SDL_GetTicks () + m_xDelay;
 ogl.SetBlending (true);
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 gameStates.menus.nInMenu = 1;
 for (;;) {
 	Read ();

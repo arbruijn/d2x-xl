@@ -81,7 +81,7 @@ else {
 		r = float (controls.CalcDeadzone (0, gameOpts->input.mouse.nDeadzone));
 		w = r / float (screen.Width ());
 		h = r / float (screen.Height ());
-		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (OGL_BLEND_ALPHA);
 		glPushMatrix ();
 		glTranslatef (0.5f, 0.5f, 0);
 		glColor4f (1.0f, 1.0f, 1.0f, 0.8f / (float) gameOpts->input.mouse.nDeadzone);
@@ -100,7 +100,7 @@ else {
 		glPushMatrix ();
 		glTranslatef (0.5f, 0.5f, 0);
 		glScalef (scale / 320.0f, scale / 200.0f, scale);	//the positions are based upon the standard reticle at 320x200 res.
-		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (OGL_BLEND_ALPHA);
 		glColor4f (1.0f, 0.8f, 0.0f, 1.0f / (3.0f + 0.5f * gameOpts->input.mouse.nDeadzone));
 		glLineWidth (4); //(GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
 		r = float (controls.CalcDeadzone (0, gameOpts->input.mouse.nDeadzone)) / 4;

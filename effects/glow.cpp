@@ -590,7 +590,7 @@ else
 	float radius = 0.0f;
 #if BLUR
 	ogl.SetDepthMode (GL_ALWAYS);
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 
 	radius += RAD_INCR;
 	ogl.SelectBlurBuffer (0); 
@@ -600,7 +600,7 @@ else
 	ClearViewport (radius);
 	Render (0, 1, radius); // Blur 0 -> Blur 1
 	if (m_nType != BLUR_SHADOW)
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (OGL_BLEND_ADD);
 #	if BLUR > 1
 	for (int i = 1; i < m_nStrength; i++) {
 		radius += RAD_INCR;
@@ -615,11 +615,11 @@ else
 
 	ogl.ChooseDrawBuffer ();
 	ogl.SetDepthMode (GL_ALWAYS);
-	//ogl.SetBlendMode (2);
+	//ogl.SetBlendMode (OGL_BLEND_ADD_WEAK);
 	if (m_nType != BLUR_SHADOW)
-		ogl.SetBlendMode (1);
+		ogl.SetBlendMode (OGL_BLEND_ADD);
 	else {
-		ogl.SetBlendMode (-1);
+		ogl.SetBlendMode (OGL_BLEND_MULTIPLY);
 		//ogl.SetStencilTest (true);
 		}
 	float scale = (float) ScreenScale ();

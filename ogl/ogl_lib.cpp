@@ -577,7 +577,7 @@ if (gameStates.render.nShadowPass) {
 			if (bShadowTest) {
 				ColorMask (1,1,1,1,0);
 				SetDepthWrite (false);
-				SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				SetBlendMode (OGL_BLEND_ALPHA);
 				SetStencilTest (false);
 				}
 			else
@@ -725,7 +725,7 @@ else
 		glAlphaFunc (GL_GEQUAL, (float) 0.01);
 		}
 	SetBlending (true);
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	SetBlendMode (OGL_BLEND_ALPHA);
 	SetStencilTest (false);
 	}
 nError = glGetError ();
@@ -757,7 +757,7 @@ DisableClientStates (1, 1, 1, GL_TEXTURE1);
 ogl.BindTexture (0);
 DisableClientStates (1, 1, 1, GL_TEXTURE0);
 ogl.BindTexture (0);
-SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+SetBlendMode (OGL_BLEND_ALPHA);
 Viewport (0, 0, screen.Width (), screen.Height ());
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
@@ -922,7 +922,7 @@ else {
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();//clear matrix
 		SetBlending (true);
-		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		SetBlendMode (OGL_BLEND_ALPHA);
 		SetTexturing (false);
 		SetDepthMode (GL_ALWAYS); //LEQUAL);
 		SetDepthTest (false);

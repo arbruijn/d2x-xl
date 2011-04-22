@@ -76,7 +76,7 @@ ogl.SetDepthWrite (false);
 if (gameStates.render.nShadowBlurPass)
 	ogl.SetBlending (false);
 else
-	ogl.SetBlendMode (-1); 
+	ogl.SetBlendMode (OGL_BLEND_MULTIPLY); 
 glColor4fv (shadowHue [gameStates.render.nShadowBlurPass]); 
 glBegin (GL_QUADS);
 glVertex2f (0,0);
@@ -87,7 +87,7 @@ glEnd ();
 if (gameStates.render.nShadowBlurPass)
 	ogl.SetBlending (true);
 else
-	ogl.SetBlendMode (0); //GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (OGL_BLEND_ALPHA); //GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetDepthTest (true);
 ogl.SetStencilTest (false);
 ogl.SetDepthWrite (true);
@@ -218,7 +218,7 @@ ogl.SetDepthWrite (false);
 ogl.SetBlending (false);
 #else
 ogl.SetBlending (true);
-SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+SetBlendMode (OGL_BLEND_ALPHA);
 #endif
 ogl.SetTexturing (true);
 ogl.SelectTMU (GL_TEXTURE0);

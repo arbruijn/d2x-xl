@@ -42,13 +42,13 @@ if (m_data.nSuspended)
 if (!m_data.bDoEffect)
 	return;
 ogl.SetBlending (true);
-ogl.SetBlendMode (GL_ONE,GL_ONE);
+ogl.SetBlendMode (OGL_BLEND_ADD);
 glColor3fv (reinterpret_cast<GLfloat*> (&m_data.flash));
 ogl.SetDepthTest (false);
 ogl.SetTexturing (false);
 ogl.RenderScreenQuad ();
 ogl.SetDepthTest (true);
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 }
 
 //------------------------------------------------------------------------------

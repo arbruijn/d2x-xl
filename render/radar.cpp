@@ -387,7 +387,7 @@ ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 ogl.SetTexturing (false);
 ogl.SetFaceCulling (false);
 ogl.SetBlending (1);
-ogl.SetBlendMode (0);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetLineSmooth (true);
 glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
 glLineWidth (m_lineWidth);

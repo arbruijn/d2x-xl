@@ -129,7 +129,7 @@ m_info.texP->Wrap (GL_REPEAT);
 m_render.bBlendState = ogl.GetBlendUsage ();
 m_render.depthFunc = ogl.GetDepthMode ();
 ogl.SetDepthMode (GL_ALWAYS);
-ogl.SetBlendMode (0);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 return &m_info.texture;
 }
 

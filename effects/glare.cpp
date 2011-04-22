@@ -462,12 +462,12 @@ bmP->SetTranspType (-1);
 ogl.SetFaceCulling (false);
 if (bAdditive) {
 	fLight *= color.alpha;
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetBlendMode (OGL_BLEND_ADD);
 	}
 bmP->SetColor (&color);
 bmP->SetTexCoord (tcGlare);
 ogl.RenderQuad (bmP, sprite, 3);
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetFaceCulling (true);
 RenderCoronaOutline (sprite, vCenter);
 }
@@ -520,7 +520,6 @@ void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCente
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	CBitmap*		bmP = NULL;
 
-//ogl.SetBlendMode (bAdditive);
 if (!(bmP = (bAdditive ? glare.Bitmap () : corona.Bitmap ())))
 	return;
 if (gameStates.render.bAmbientColor)

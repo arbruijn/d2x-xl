@@ -134,7 +134,7 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			return;
 		if (!shaderManager.Set ("windowScale", screenScale))
 			return;
-		SetBlendMode (0);
+		SetBlendMode (OGL_BLEND_ALPHA);
 		SetDepthTest (false);
 		OglDrawArrays (GL_QUADS, 0, 4);
 		for (i = 0; i < lightManager.LightCount (2); i++) {

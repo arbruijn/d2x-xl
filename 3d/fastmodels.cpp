@@ -659,13 +659,13 @@ else
 ogl.SetBlending (true);
 ogl.SetDepthWrite (false);
 if (bEmissive || (bTranspFilter == 2))
-	ogl.SetBlendMode (1);
+	ogl.SetBlendMode (OGL_BLEND_ADD);
 else if (gameStates.render.bCloaked)
-	ogl.SetBlendMode (0);
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 else if (bTranspFilter)
-	ogl.SetBlendMode (0);
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 else {
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 	ogl.SetDepthWrite (true);
 	}
 
@@ -676,7 +676,7 @@ else
 for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	if (bLighting) {
 		if (nPass) {
-			ogl.SetBlendMode (2);
+			ogl.SetBlendMode (OGL_BLEND_ADD_WEAK);
 			ogl.SetDepthWrite (false);
 			}
 		for (iLight = 0; (nLightRange > 0) && (iLight < 8) && nLights; activeLightsP++, nLightRange--) {
@@ -770,7 +770,7 @@ if (!nLightRange && nLights)
 #endif
 if (bLighting) {
 	ogl.DisableLighting ();
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	ogl.SetDepthWrite (true);
 	}
 ogl.ResetTransform (1);

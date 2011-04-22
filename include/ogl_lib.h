@@ -53,6 +53,14 @@ void G3Normal (g3sPoint** pointList, CFixVector* pvNormal);
 void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal);
 
 //------------------------------------------------------------------------------
+
+#define OGL_BLEND_ALPHA		0
+#define OGL_BLEND_ADD		1
+#define OGL_BLEND_ADD_WEAK	2
+#define OGL_BLEND_REPLACE	3
+#define OGL_BLEND_MULTIPLY	4
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -440,22 +448,23 @@ class COGL {
 
 		inline void SetBlendMode (int nBlendMode) {
 			switch (nBlendMode) {
-				case 0:
-					SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // alpha
+				case OGL_BLEND_REPLACE:
+					SetBlendMode (GL_ONE, GL_ZERO); // replace 
 					break;
-				case 1:
+				case OGL_BLEND_ADD:
 					SetBlendMode (GL_ONE, GL_ONE); // additive
 					break;
-				case 2:
+				case OGL_BLEND_ADD_WEAK:
 					SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR); // weak additive
 					break;
-				case 3:
-					SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-					break;
-				default: //-1
+				case OGL_BLEND_MULTIPLY: //-1
 					SetBlendMode (GL_DST_COLOR, GL_ZERO); // multiplicative
 					break;
-					}
+				case OGL_BLEND_ALPHA:
+				default:
+					SetBlendMode (GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // alpha
+					break;
+				}
 			}
 
 

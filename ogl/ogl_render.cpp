@@ -441,14 +441,14 @@ int G3DrawTexPolyFlat (
 if (ogl.SizeVertexBuffer (nVertices)) {
 	if (FAST_SHADOWS) {
 		if (bBlend)
-			ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			ogl.SetBlendMode (OGL_BLEND_ALPHA);
 		else
 			ogl.SetBlending (false);
 		}
 	else {
 		if (gameStates.render.nShadowPass == 3) {
 			ogl.SetBlending (true);
-			ogl.SetBlendMode (GL_ONE, GL_ONE);
+			ogl.SetBlendMode (OGL_BLEND_ADD);
 			}
 		}
 	ogl.SelectTMU (GL_TEXTURE0, true);
@@ -522,7 +522,7 @@ if (FAST_SHADOWS) {
 		ogl.SetBlending (false);
 #if 0
 	else
-		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (OGL_BLEND_ALPHA);
 #endif
 	}
 else {
@@ -530,7 +530,7 @@ else {
 		bLight = !bDynLight;
 	else if (gameStates.render.nShadowPass == 3) {
 		ogl.SetBlending (true);
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (OGL_BLEND_ADD);
 		}
 	}
 ogl.SetDepthMode (GL_LEQUAL);
@@ -825,14 +825,14 @@ r_tpolyc++;
 	ogl.SetDepthMode (GL_LEQUAL);
 if (FAST_SHADOWS) {
 	if (bBlend)
-		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	else
 		ogl.SetBlending (false);
 	}
 else {
 	if (gameStates.render.nShadowPass == 3) {
 		ogl.SetBlending (true);
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (OGL_BLEND_ADD);
 		}
 	}
 ogl.SetDepthMode (GL_LEQUAL);
@@ -929,7 +929,7 @@ if (FAST_SHADOWS) {
 		ogl.SetBlending (false);
 #if 0
 	else
-		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (OGL_BLEND_ALPHA);
 #endif
 	}
 else {
@@ -937,7 +937,7 @@ else {
 		bLight = !bDynLight;
 	else if (gameStates.render.nShadowPass == 3) {
 		ogl.SetBlending (true);
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (OGL_BLEND_ADD);
 		}
 	}
 ogl.SetDepthMode (GL_LEQUAL);
@@ -1143,7 +1143,7 @@ else {
 	bmP->SetColor (colorP ? colorP : &color);
 	RenderQuad (bmP, vPosf, X2F (xWidth), X2F (xHeight));
 	}
-SetBlendMode (0);
+SetBlendMode (OGL_BLEND_ALPHA);
 return 0;
 }
 
@@ -1186,7 +1186,7 @@ else {
 		ogl.SetDepthWrite (false);
 		ogl.RenderQuad (bmP, vPosf, X2F (xWidth), X2F (xHeight), 3);
 		ogl.SetDepthWrite (true);
-		SetBlendMode (0);
+		SetBlendMode (OGL_BLEND_ALPHA);
 		}
 	}
 return 0;

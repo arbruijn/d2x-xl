@@ -716,7 +716,7 @@ else {
 				if (gameOpts->legacy.bRender)
 					gameStates.render.grAlpha = GrAlpha (FADE_LEVELS - 2);
 				else {
-					ogl.SetBlendMode (GL_ONE, GL_ONE);
+					ogl.SetBlendMode (OGL_BLEND_ADD);
 					glowRenderer.Begin (GLOW_OBJECTS, 2, false, 1.0f);
 					}
 				}
@@ -749,7 +749,7 @@ else {
 									(bGatling || bEnergyWeapon) ? gameData.weapons.color + id : NULL);
 		if (!gameStates.render.bBuildModels) {
 			if (!gameOpts->legacy.bRender)
-				ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				ogl.SetBlendMode (OGL_BLEND_ALPHA);
 			gameStates.render.grAlpha = 1.0f;
 			}
 		}

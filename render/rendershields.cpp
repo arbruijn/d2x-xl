@@ -105,7 +105,7 @@ else {
 	}
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetBlending (true);
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetTexturing (false);
 ogl.SetDepthWrite (false);
 
