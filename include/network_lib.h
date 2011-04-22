@@ -131,7 +131,7 @@ typedef struct tNetworkData {
 	tNetworkSyncData	sync [MAX_JOIN_REQUESTS];
 	short					nJoining;
 	int					xmlGameInfoRequestTime;
-} __pack__ tNetworkData;
+} tNetworkData;
 
 extern tNetworkData networkData;
 

@@ -374,7 +374,7 @@ int bStencil = ogl.StencilOff ();
 m_offset.v.coord.x = 0.0f;
 m_offset.v.coord.y = /*ogl.m_states.bRender2TextureOk ? 0.0f :*/ yOffs [gameOpts->render.cockpit.nRadarPos][gameStates.render.cockpit.nType];
 m_offset.v.coord.y += sizeOffsets [gameOpts->render.cockpit.nRadarPos][gameOpts->render.cockpit.nRadarSize];
-if (EGI_FLAG (nWeaponIcons, 1, 1, 0) && (gameOpts->render.cockpit.bHUD) || cockpit->ShowAlways ()) {
+if (EGI_FLAG (nWeaponIcons, 1, 1, 0) && (gameOpts->render.cockpit.bHUD || cockpit->ShowAlways ())) {
 	if ((extraGameInfo [0].nWeaponIcons < 3) || ((extraGameInfo [0].nWeaponIcons & 1) == !gameOpts->render.cockpit.nRadarPos))
 		m_offset.v.coord.y += (m_offset.v.coord.y > 0) ? -3.75f : 3.25f;
 	}

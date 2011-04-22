@@ -41,4 +41,4 @@ extern CStack<CIpToCountry> ipToCountry;
 int LoadIpToCountry (void);
 char* CountryFromIP (uint ip);
 
-#endif __IP2Country_h
+#endif //__IP2Country_h

@@ -9,7 +9,7 @@
 
 //------------------------------------------------------------------------------
 
-#define RAND_HALF	double ((RAND_MAX + 1) / 2)
+#define RAND_HALF	((double (RAND_MAX) + 1.0) * 0.5)
 
 #if CUSTOM_RAND
 
@@ -26,7 +26,7 @@ inline double CPerlin::Random (void)
 //return (double (rand ()) - RAND_HALF) / RAND_HALF;
 #if DBG
 double r = rand ();
-r /= RAND_HALF;
+r /= double RAND_HALF;
 r -= 1.0;
 return r;
 #else
@@ -116,7 +116,7 @@ return CubicInterpolate (v0, v1, v2, v3, x - int (x));
 
 double CPerlin::ComputeNoise (double x, double persistence, long octaves)
 {
-double total = 0, frequency = 1.0, amplitude = 1.0;
+double total = 0, amplitude = 1.0;
 #if 0 //DBG
 octaves = 1;
 #endif
@@ -178,7 +178,7 @@ return CosineInterpolate (i1, i2, yFrac);
 
 double CPerlin::ComputeNoise (double x, double y, double persistence, long octaves)
 {
-double total = 0, frequency = 1.0, amplitude = 1.0;
+double total = 0, amplitude = 1.0;
 for (int i = 0; i < octaves; i++) {
 	total += InterpolatedNoise (x, y, i) * amplitude;
 	amplitude *= persistence;

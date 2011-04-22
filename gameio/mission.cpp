@@ -348,7 +348,7 @@ m_list [m_nCount].bAnarchyOnly = 0;
 m_list [m_nCount].location = location;
 
 cf.GetS (lineBuf, sizeof (lineBuf));
-if (p = strchr (lineBuf, ';'))
+if ((p = strchr (lineBuf, ';')))
 	*p = '\0';
 key = Trim (strtok (lineBuf, "="));
 if (stricmp (key, "name") && stricmp (key, "xname") && stricmp (key, "zname") && stricmp (key, "d2x-name")) {

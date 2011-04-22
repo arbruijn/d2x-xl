@@ -115,7 +115,7 @@ m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES)
 						: 0;
 m_color [0] = m_color [1] = color = (colorP && (m_bEmissive != 2)) ? *colorP : defaultParticleColor;
 
-if (!brightFlags [m_nType]) {
+if (!brightFlags [(int) m_nType]) {
 	m_bBright = 0;
 	m_nFadeTime = -1;
 	if (colorP && (colorP->alpha < 0)) {
@@ -150,8 +150,8 @@ else {
 			m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 		else {
 			if ((m_bEmissive = (gameOpts->render.particles.nQuality > 3))) {
-				m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
-				m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
+				m_color [0].red = 0.5f + float (rand ()) / float (RAND_MAX) * 0.5f;
+				m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (RAND_MAX) * 0.5f);
 				}
 			else {
 #if 1
@@ -169,7 +169,7 @@ else {
 			m_color [1].blue *= RANDOM_FADE;
 			m_nWidth *= 0.75;
 			m_nHeight *= 0.75;
-			m_color [0].alpha = 0.8f + float (rand ()) / float (5 * RAND_MAX);
+			m_color [0].alpha = 0.8f + float (rand ()) / float (RAND_MAX) * 0.2f;
 			}
 		if (m_bBlowUp && !m_bBright) {
 			fBrightness = 1.0f - fBrightness;
@@ -399,7 +399,7 @@ m_bSkybox = SEGMENTS [nSegment].Function () == SEGMENT_FUNC_SKYBOX;
 if (nSegment < 0)
 	nSegment = nSegment;
 #endif
-m_nBounce = bounceFlags [m_nType];
+m_nBounce = bounceFlags [(int) m_nType];
 m_bReversed = 0;
 m_nUpdated = m_nMoved = nCurTime;
 if (nLife < 0)
@@ -432,7 +432,7 @@ m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES)
 						: 0;
 m_color [0] = m_color [1] = color = (colorP && (m_bEmissive != 2)) ? *colorP : defaultParticleColor;
 
-if (!brightFlags [m_nType]) {
+if (!brightFlags [(int) m_nType]) {
 	m_bBright = 0;
 	m_nFadeTime = -1;
 	if (colorP && (colorP->alpha < 0)) {
@@ -467,8 +467,8 @@ else {
 			m_color [1].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 		else {
 			if ((m_bEmissive = (gameOpts->render.particles.nQuality > 3))) {
-				m_color [0].red = 0.5f + float (rand ()) / float (2 * RAND_MAX);
-				m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (2 * RAND_MAX));
+				m_color [0].red = 0.5f + float (rand ()) / float (RAND_MAX) * 0.5f;
+				m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (RAND_MAX) * 0.5f);
 				}
 			else {
 #if 1
@@ -505,7 +505,7 @@ else if ((nParticleSystemType == BUBBLE_PARTICLES) || (nParticleSystemType == RA
 else if (nParticleSystemType == GATLING_PARTICLES)
 	m_color [1].alpha /= 4.0f;
 if (m_bEmissive)
-	m_color [0].alpha = (m_nFadeTime > 0) ? 0.8f + float (rand ()) / float (5 * RAND_MAX) : 1.0f;
+	m_color [0].alpha = (m_nFadeTime > 0) ? 0.8f + float (rand ()) / float (RAND_MAX) * 0.2f : 1.0f;
 else
 	m_color [0].alpha = m_color [1].alpha;
 

@@ -84,7 +84,7 @@ if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
 
 bool CPostEffectShockwave::SetupShader (void)
 {
-	static CFloatVector3 effectStrength = {10.0f, 0.8f, screen.Width () * 0.1f};
+	static CFloatVector3 effectStrength = {{10.0f, 0.8f, screen.Width () * 0.1f}};
 
 if (m_nShockwaves > 0)
 	return true;

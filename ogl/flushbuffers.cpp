@@ -170,7 +170,6 @@ if (nEffects & 5) {
 void COGL::FlushDrawBuffer (bool bAdditive)
 {
 if (HaveDrawBuffer ()) {
-	int bStereo = 0;
 	int nEffects = postProcessManager.HaveEffects () 
 						+ (int (m_data.xStereoSeparation > 0) << 1)
 #if MAX_SHADOWMAPS
