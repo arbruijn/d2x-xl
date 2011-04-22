@@ -138,7 +138,7 @@ const char *particleFS =
 	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"if (gl_Color.a == 0.0) //additive\r\n" \
 	"   gl_FragColor = vec4 (sceneColor.rgb + particleColor.rgb * dz, 1.0);\r\n" \
-	"else //alpha\r\n" \
+	"else//alpha\r\n" \
 	"   gl_FragColor = vec4 (mix (sceneColor.rgb, particleColor.rgb, particleColor.a * dz), 1.0);\r\n" \
 	"}\r\n"
 	;

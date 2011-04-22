@@ -706,14 +706,13 @@ const char *glareFS =
 	"void main (void) {\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * screenScale).r), 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
-	"vec4 texColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
-	"//gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);\r\n" \
+	"vec4 glareColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
 	"if (blendMode > 0) //additive\r\n" \
-	"   gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb * dz, 1.0);\r\n" \
+	"   gl_FragColor = vec4 (glareColor.rgb * gl_Color.rgb * dz, 1.0);\r\n" \
 	"else if (blendMode < 0) //multiplicative\r\n" \
-	"   gl_FragColor = vec4 (max (texColor.rgb, 1.0 - dz), 1.0);\r\n" \
+	"   gl_FragColor = vec4 (max (glareColor.rgb, 1.0 - dz), 1.0);\r\n" \
 	"else //alpha\r\n" \
-	"   gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);\r\n" \
+	"   gl_FragColor = vec4 (glareColor.rgb * gl_Color.rgb, glareColor.a * gl_Color.a * dz);\r\n" \
 	"}\r\n"
 	;
 
