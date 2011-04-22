@@ -641,7 +641,7 @@ short CParticleManager::Add (CParticle* particleP, float brightness, int nBuffer
 {
 #if MAX_PARTICLE_BUFFERS  > 1
 if ((particleP->RenderType () != particleBuffer [nBuffer].GetType ()) || 
-	 (!(ogl.m_states.bMRTOk && (gameOpts->render.effects.bSoftParticles & 4) && (particleP->m_bEmissive == particleBuffer [nBuffer].m_bEmissive)))
+	 (!(ogl.m_states.bMRTOk && (gameOpts->render.effects.bSoftParticles & 4) && (particleP->m_bEmissive == particleBuffer [nBuffer].m_bEmissive))))
 	return -1;
 CFloatVector pos;
 pos.Assign (particleP->m_vPos);
