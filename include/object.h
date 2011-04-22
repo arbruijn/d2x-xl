@@ -747,11 +747,11 @@ class CObjDamageInfo {
 
 class CObject : public CObjectInfo {
 	private:
-		static CStaticArray< ubyte, MAX_WEAPONS >	m_bIsWeapon;
-		static CStaticArray< ubyte, MAX_WEAPONS >	m_bIsSlowWeapon;
-		static CStaticArray< ubyte, MAX_WEAPONS >	m_bIsEnergyWeapon;
-		static CStaticArray< ubyte, MAX_WEAPONS >	m_bIsMissile; 
-		static CStaticArray< ubyte, MAX_POWERUP_TYPES >	m_bIsEquipment; 
+		static CArray<ubyte>	m_bIsWeapon;
+		static CArray<ubyte>	m_bIsSlowWeapon;
+		static CArray<ubyte>	m_bIsEnergyWeapon;
+		static CArray<ubyte>	m_bIsMissile; 
+		static CArray<ubyte>	m_bIsEquipment; 
 
 	public:
 		static void InitTables (void);

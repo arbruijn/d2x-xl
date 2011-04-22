@@ -82,16 +82,17 @@ int dbgObjInstances = 0;
 
 //------------------------------------------------------------------------------
 
-CStaticArray< ubyte, MAX_WEAPONS > CObject::m_bIsWeapon;
-CStaticArray< ubyte, MAX_WEAPONS > CObject::m_bIsSlowWeapon;
-CStaticArray< ubyte, MAX_WEAPONS > CObject::m_bIsEnergyWeapon;
-CStaticArray< ubyte, MAX_WEAPONS > CObject::m_bIsMissile; 
-CStaticArray< ubyte, MAX_POWERUP_TYPES > CObject::m_bIsEquipment; 
+CArray<ubyte> CObject::m_bIsWeapon;
+CArray<ubyte> CObject::m_bIsSlowWeapon;
+CArray<ubyte> CObject::m_bIsEnergyWeapon;
+CArray<ubyte> CObject::m_bIsMissile; 
+CArray<ubyte> CObject::m_bIsEquipment; 
 
 //------------------------------------------------------------------------------
 
 void CObject::InitTables (void)
 {
+m_bIsMissile.Create (MAX_WEAPONS);
 m_bIsMissile.Clear (0);
 m_bIsMissile [CONCUSSION_ID] =
 m_bIsMissile [HOMINGMSL_ID] =
@@ -112,6 +113,7 @@ m_bIsMissile [ROBOT_MEGAMSL_ID] =
 m_bIsMissile [ROBOT_EARTHSHAKER_ID] =
 m_bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
 
+m_bIsWeapon.Create (MAX_WEAPONS);
 m_bIsWeapon.Clear (0);
 m_bIsWeapon [VULCAN_ID] =
 m_bIsWeapon [GAUSS_ID] =
@@ -153,6 +155,7 @@ m_bIsWeapon [ROBOT_RED_LASER_ID] =
 m_bIsWeapon [ROBOT_GREEN_LASER_ID] =
 m_bIsWeapon [ROBOT_WHITE_LASER_ID] = 1;
 
+m_bIsSlowWeapon.Create (MAX_WEAPONS);
 m_bIsSlowWeapon.Clear (0);
 m_bIsSlowWeapon [OMEGA_ID] =
 m_bIsSlowWeapon [VULCAN_ID] =
@@ -165,6 +168,7 @@ m_bIsSlowWeapon [ROBOT_SMARTMINE_BLOB_ID] =
 m_bIsSlowWeapon [SMARTMSL_BLOB_ID] =
 m_bIsSlowWeapon [ROBOT_SMARTMSL_BLOB_ID] = 1;
 
+m_bIsEnergyWeapon.Create (MAX_WEAPONS);
 m_bIsEnergyWeapon.Clear (0);
 m_bIsEnergyWeapon [LASER_ID] =
 m_bIsEnergyWeapon [LASER_ID + 1] =
@@ -202,6 +206,7 @@ m_bIsEnergyWeapon [ROBOT_WHITE_ENERGY_ID] =
 m_bIsEnergyWeapon [ROBOT_VERTIGO_FIREBALL_ID] =
 m_bIsEnergyWeapon [ROBOT_VERTIGO_PHOENIX_ID] = 1;
 
+m_bIsEquipment.Create (MAX_POWERUP_TYPES);
 m_bIsEquipment.Clear (0);
 m_bIsEquipment [POW_EXTRA_LIFE] =
 m_bIsEquipment [POW_KEY_BLUE] =
