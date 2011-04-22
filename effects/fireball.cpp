@@ -521,11 +521,8 @@ if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
 					CreateDebris (i);
 
 //make parent CObject only draw center part
-#if DBG
-	HUDMessage (0, "%d object fragments created", nDebris);
-#endif
-		if (info.nType != OBJ_REACTOR)
-			SetupDebris (0, ModelId (), rType.polyObjInfo.nTexOverride);
+	if (info.nType != OBJ_REACTOR)
+		SetupDebris (0, ModelId (), rType.polyObjInfo.nTexOverride);
 	}
 }
 
