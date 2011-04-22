@@ -74,6 +74,14 @@ class CFBO {
 				glDrawBuffer (m_info.bufferIds [nBuffer]);
 			}
 
+		void FlipBuffers (int i, int j) {
+			if ((i != j) && (i < m_info.nBufferCount) && (j < m_info.nBufferCount)) {
+				GLuint h = m_info.bufferIds [i];
+				m_info.bufferIds [i] = m_info.bufferIds [j];
+				m_info.bufferIds [j] = h;
+				}
+			}
+
 		int IsBound (void);
 		GLuint Handle (void) { return m_info.hFBO; }
 		GLuint& ColorBuffer (int i = 0) { return m_info.hColorBuffer [(i < m_info.nColorBuffers) ? i : m_info.nColorBuffers - 1]; }

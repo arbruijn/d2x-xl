@@ -45,6 +45,126 @@
 
 CParticleManager particleManager;
 
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+
+bool CParticleManager::LoadShader (float dMax)
+{
+	static float dMaxPrev = -1;
+	static int nBlendPrev = -1;
+
+ogl.ClearError (0);
+ogl.m_states.bUseDepthBlending = 0;
+if (!gameOpts->render.bUseShaders)
+	return false;
+if (ogl.m_states.bDepthBlending < 1)
+	return false;
+if (!ogl.CopyDepthTexture (0))
+	return false;
+ogl.m_states.bUseDepthBlending = 1;
+if (dMax < 1)
+	dMax = 1;
+m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader));
+if (!m_shaderProg)
+	return false;
+if (shaderManager.Rebuild (m_shaderProg)) {
+	shaderManager.Set ("sceneTex", 0);
+	shaderManager.Set ("depthTex", 1);
+	shaderManager.Set ("screenScale", ogl.m_data.screenScale.vec);
+	shaderManager.Set ("dMax", dMax);
+	shaderManager.Set ("blendMode", nBlendMode);
+	}
+else {
+	if (dMaxPrev != dMax)
+		shaderManager.Set ("dMax", dMax);
+	if (nBlendPrev != nBlendMode)
+		shaderManager.Set ("blendMode", nBlendMode);
+	}
+dMaxPrev = dMax;
+nBlendPrev = nBlendMode;
+ogl.SetDepthTest (false);
+ogl.SelectTMU (GL_TEXTURE0);
+return true;
+}
+
+//-------------------------------------------------------------------------
+
+void CParticleManager::UnloadShader (void)
+{
+if (ogl.m_states.bDepthBlending) {
+	shaderManager.Deploy (-1);
+	//DestroyGlareDepthTexture ();
+	ogl.SetTexturing (true);
+	ogl.SelectTMU (GL_TEXTURE1);
+	ogl.BindTexture (0);
+	ogl.SelectTMU (GL_TEXTURE2);
+	ogl.BindTexture (0);
+	ogl.SelectTMU (GL_TEXTURE0);
+	ogl.SetDepthTest (true);
+	}
+}
+
+//------------------------------------------------------------------------------
+// The following shader blends a particle into a scene. The blend mode depends
+// on the particle color's alpha value: 0.0 => additive, otherwise alpha
+// This shader allows to switch between additive and alpha blending without
+// having to flush a particle render batch beforehand
+// In order to be able to handle blending in a shader, a framebuffer with 
+// two color buffers is used and the scene from the one color buffer is rendered
+// into the other color buffer with blend mode replace (GL_ONE, GL_ZERO)
+
+const char *particleFS =
+	"uniform sampler2D sceneTex, particleTex, depthTex;\r\n" \
+	"uniform float dMax;\r\n" \
+	"uniform vec2 screenScale;\r\n" \
+	"#define ZNEAR 1.0\r\n" \
+	"#define ZFAR 5000.0\r\n" \
+	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
+	"#define A 5001.0 //(ZNEAR + ZFAR)\r\n" \
+	"#define B 4999.0 //(ZNEAR - ZFAR)\r\n" \
+	"#define C 10000.0 //(2.0 * ZNEAR * ZFAR)\r\n" \
+	"#define D (NDC (Z) * B)\r\n" \
+	"#define ZEYE(z) (10000.0 / (5001.0 - NDC (z) * 4999.0)) //(C / (A + D))\r\n" \
+	"//#define ZEYE(z) -(ZFAR / ((z) * (ZFAR - ZNEAR) - ZFAR))\r\n" \
+	"void main (void) {\r\n" \
+	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * screenScale).r), 0.0, dMax);\r\n" \
+	"dz = (dMax - dz) / dMax;\r\n" \
+	"vec2 scenePos = gl_FragCoord.xy / gl_FragCoord.w;\r\n" \
+	"vec4 sceneColor = texture2D (sceneTex, scenePos.xy);\r\n" \
+	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color * dz;\r\n" \
+	"bool bAdditive = ;\r\n" \
+	"if (gl_Color.alpha == 0.0) //additive\r\n" \
+	"   gl_FragColor = vec4 (sceneColor.rgb + particleColor.rgb, 1.0);\r\n" \
+	"else //alpha\r\n" \
+	"   gl_FragColor = vec4 (mix (sceneColor.rgb, particleColor.rgb, particleColor.a), sceneColor.a + particleColor.a);\r\n" \
+	"}\r\n"
+	;
+
+const char *particleVS =
+	"void main (void){\r\n" \
+	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
+	"gl_Position = ftransform (); //gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
+	"gl_FrontColor = gl_Color;}\r\n"
+	;
+
+//-------------------------------------------------------------------------
+
+void CParticleManager::InitShader (void)
+{
+if (ogl.m_states.bMRTOk) {
+	PrintLog ("building particle blending shader program\n");
+	if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
+		ogl.m_states.bDepthBlending = 1;
+		m_shaderProg = 0;
+		if (!shaderManager.Build (hParticleShader, particleFS, particleVS)) {
+			ogl.ClearError (0);
+			ogl.m_states.bDepthBlending = -1;
+			}
+		}
+	}
+}
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

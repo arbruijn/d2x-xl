@@ -532,6 +532,12 @@ class CParticleManager {
 
 		bool Flush (float brightness, bool bForce = false);
 
+		bool LoadShader (float dMax);
+
+		bool UnloadShader (void);
+
+		bool InitShader (void);
+
 	private:
 		void RebuildSystemList (void);
 		short Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed);

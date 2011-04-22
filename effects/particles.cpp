@@ -1342,7 +1342,10 @@ else {
 	fScale = m_decay;
 	}
 
-pb [0].color = pb [1].color = pb [2].color = pb [3].color = m_renderColor;
+pb [0].color = m_renderColor;
+if (m_bEmissive)
+	pb [0].color.alpha = 0.0f;
+pb [1].color = pb [2].color = pb [3].color = pb [0].color;
 
 float hx = ParticleImageInfo (m_nType).xBorder;
 pb [(int) m_nOrient].texCoord.v.u = pb [int (m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + hx;
