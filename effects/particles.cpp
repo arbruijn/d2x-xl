@@ -1315,7 +1315,7 @@ pb [3].vertex.dir.coord.z = vCenter.dir.coord.z;
 
 #else // -----------------------------------------------------------------------
 
-void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread) 
+void CParticle::Setup (float alphaScale, float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread) 
 {
 	CFloatVector3 vCenter, uVec, rVec;
 	float fScale;
@@ -1343,8 +1343,7 @@ else {
 	}
 
 pb [0].color = m_renderColor;
-if (m_bEmissive)
-	pb [0].color.alpha = 0.0f;
+pb [0].color.alpha *= alphaScale;
 pb [1].color = pb [2].color = pb [3].color = pb [0].color;
 
 float hx = ParticleImageInfo (m_nType).xBorder;

@@ -66,11 +66,11 @@ if (!ogl.CopyDepthTexture (0, GL_TEXTURE2))
 ogl.m_states.bUseDepthBlending = 1;
 if (dMax < 1)
 	dMax = 1;
-ogl.DrawBuffer ()->FlipBuffers (0, 1); // color buffer 1 becomes render target, color buffer 0 becomes render source (scene texture)
-ogl.DrawBuffer ()->SetDrawBuffers ();
+//ogl.DrawBuffer ()->FlipBuffers (0, 1); // color buffer 1 becomes render target, color buffer 0 becomes render source (scene texture)
+//ogl.DrawBuffer ()->SetDrawBuffers ();
 ogl.SelectTMU (GL_TEXTURE1);
 ogl.SetTexturing (true);
-ogl.BindTexture (ogl.DrawBuffer ()->ColorBuffer (1));
+ogl.BindTexture (ogl.DrawBuffer ()->ColorBuffer (0));
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hParticleShader));
 if (!m_shaderProg)
 	return false;
@@ -171,15 +171,26 @@ if (ogl.m_states.bMRTOk) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+float CParticleBuffer::AlphaScale (void)
+{
+return (gameStates.render.cameras.bActive || !(m_bEmissive && (gameOpts->render.effects.bSoftParticles & 4) && ogl.m_states.bMRTOk && (m_nType <= WATERFALL_PARTICLES))
+		 ? 0.0f
+		 : 1.0f;
+}
+
+//------------------------------------------------------------------------------
+
 void CParticleBuffer::Setup (void)
 {
+	float alphaScale = AlphaScale ();
+
 PROF_START
 #if USE_OPENMP > 1
 #	if (LAZY_RENDER_SETUP < 2)
 if (m_iBuffer <= 1000)
 #	endif
 for (int i = 0; i < m_iBuffer; i++)
-	m_particles [i].particle->Setup (m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
+	m_particles [i].particle->Setup (alphaScale, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
 #	if (LAZY_RENDER_SETUP < 2)
 else
 #	endif
@@ -188,7 +199,7 @@ else
 	int nThread = omp_get_thread_num();
 #	pragma omp for 
 	for (int i = 0; i < m_iBuffer; i++)
-		m_particles [i].particle->Setup (m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
+		m_particles [i].particle->Setup (alphaScale, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
 	}
 #else
 if ((m_iBuffer < 100) || !RunRenderThreads (rtParticles))
@@ -216,9 +227,10 @@ void CParticleBuffer::Setup (int nThread)
 int nStep = m_iBuffer / gameStates.app.nThreads;
 int nStart = nStep * nThread;
 int nEnd = (nThread == gameStates.app.nThreads - 1) ? m_iBuffer : nStart + nStep;
+float alphaScale = AlphaScale ();
 
 for (int i = nStart; i < nEnd; i++)
-	m_particles [i].particle->Setup (m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
+	m_particles [i].particle->Setup (alphaScale, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
 }
 
 //------------------------------------------------------------------------------
