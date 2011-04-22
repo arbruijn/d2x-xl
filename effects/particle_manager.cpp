@@ -87,6 +87,7 @@ else {
 	}
 dMaxPrev = dMax;
 ogl.SetDepthTest (false);
+ogl.SetBlendMode (OGL_BLEND_REPLACE);
 ogl.SelectTMU (GL_TEXTURE0);
 return true;
 }
@@ -139,7 +140,7 @@ const char *particleFS =
 	"if (gl_Color.a == 0.0) //additive\r\n" \
 	"   gl_FragColor = vec4 (sceneColor.rgb + particleColor.rgb * dz, 1.0);\r\n" \
 	"else//alpha\r\n" \
-	"   gl_FragColor = vec4 (mix (sceneColor.rgb, particleColor.rgb, particleColor.a * dz), 1.0);\r\n" \
+	"   gl_FragColor = particleColor; //vec4 (mix (sceneColor.rgb, particleColor.rgb, particleColor.a * dz), 1.0);\r\n" \
 	"}\r\n"
 	;
 
@@ -217,6 +218,7 @@ m_iBuffer = 0;
 m_nType = -1;
 m_bEmissive = false;
 m_dMax = 0.0f;
+ogl.SetDepthTest (true);
 CEffectArea::Reset ();
 }
 
@@ -329,9 +331,7 @@ if (Init ()) {
 				shaderManager.Deploy (-1);
 			}
 		else if (m_nType <= WATERFALL_PARTICLES) {
-			if (particleManager.LoadShader (20.0f))
-				ogl.SetBlendMode (OGL_BLEND_REPLACE);
-			else
+			if (!particleManager.LoadShader (20.0f))
 				shaderManager.Deploy (-1);
 			}
 		else
