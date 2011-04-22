@@ -383,12 +383,13 @@ class CParticleManager {
 		int								m_bAnimate;
 		int								m_bStencil;
 		int								m_iRenderBuffer;
+		GLhandleARB						m_shaderProg;
 
 	public:
 		CParticleBuffer				particleBuffer [MAX_PARTICLE_BUFFERS];
 
 	public:
-		CParticleManager () {}
+		CParticleManager () { m_shaderProg = 0; }
 		~CParticleManager ();
 		void Init (void);
 		inline void InitObjects (void) {
@@ -534,9 +535,9 @@ class CParticleManager {
 
 		bool LoadShader (float dMax);
 
-		bool UnloadShader (void);
+		void UnloadShader (void);
 
-		bool InitShader (void);
+		void InitShader (void);
 
 	private:
 		void RebuildSystemList (void);

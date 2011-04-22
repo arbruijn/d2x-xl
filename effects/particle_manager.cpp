@@ -49,10 +49,11 @@ CParticleManager particleManager;
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 
+int hParticleShader = -1;
+
 bool CParticleManager::LoadShader (float dMax)
 {
 	static float dMaxPrev = -1;
-	static int nBlendPrev = -1;
 
 ogl.ClearError (0);
 ogl.m_states.bUseDepthBlending = 0;
@@ -60,29 +61,30 @@ if (!gameOpts->render.bUseShaders)
 	return false;
 if (ogl.m_states.bDepthBlending < 1)
 	return false;
-if (!ogl.CopyDepthTexture (0))
+if (!ogl.CopyDepthTexture (0, GL_TEXTURE2))
 	return false;
 ogl.m_states.bUseDepthBlending = 1;
 if (dMax < 1)
 	dMax = 1;
-m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader));
+ogl.DrawBuffer ()->FlipBuffers (0, 1);
+ogl.SelectTMU (GL_TEXTURE1);
+ogl.SetTexturing (true);
+ogl.BindTexture (ogl.DrawBuffer ()->ColorBuffer (1));
+m_shaderProg = GLhandleARB (shaderManager.Deploy (hParticleShader));
 if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg)) {
-	shaderManager.Set ("sceneTex", 0);
-	shaderManager.Set ("depthTex", 1);
+	shaderManager.Set ("particleTex", 0);
+	shaderManager.Set ("sceneTex", 1);
+	shaderManager.Set ("depthTex", 2);
 	shaderManager.Set ("screenScale", ogl.m_data.screenScale.vec);
 	shaderManager.Set ("dMax", dMax);
-	shaderManager.Set ("blendMode", nBlendMode);
 	}
 else {
 	if (dMaxPrev != dMax)
 		shaderManager.Set ("dMax", dMax);
-	if (nBlendPrev != nBlendMode)
-		shaderManager.Set ("blendMode", nBlendMode);
 	}
 dMaxPrev = dMax;
-nBlendPrev = nBlendMode;
 ogl.SetDepthTest (false);
 ogl.SelectTMU (GL_TEXTURE0);
 return true;
@@ -294,7 +296,7 @@ if (Init ()) {
 	Setup ();
 #endif
 
-	ogl.SetBlendMode ((m_nType < PARTICLE_TYPES) ? m_bEmissive : -1);
+	ogl.SetBlendMode ((m_nType < PARTICLE_TYPES) ? m_bEmissive : OGL_BLEND_MULTIPLY);
 
 	if (ogl.m_states.bShadersOk) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
@@ -308,9 +310,16 @@ if (Init ()) {
 			}
 		else
 #endif
-		if ((m_nType <= WATERFALL_PARTICLES) || (m_nType >= PARTICLE_TYPES)) {
-			if (gameStates.render.cameras.bActive || 
-				 !((gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, (m_nType < PARTICLE_TYPES) ? m_bEmissive : -1)))
+		if (gameStates.render.cameras.bActive || !(gameOpts->render.effects.bSoftParticles & 4))
+			shaderManager.Deploy (-1);
+		else if (!ogl.m_states.bMRTOk || (m_nType >= PARTICLE_TYPES)) { // load soft blending shader
+			if (!glareRenderer.LoadShader (5, (m_nType < PARTICLE_TYPES) ? m_bEmissive : -1))
+				shaderManager.Deploy (-1);
+			}
+		else if (m_nType <= WATERFALL_PARTICLES) {
+			if (particleManager.LoadShader (20.0f))
+				ogl.SetBlendMode (OGL_BLEND_REPLACE);
+			else
 				shaderManager.Deploy (-1);
 			}
 		else

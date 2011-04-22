@@ -441,6 +441,8 @@ gpgpuLighting.InitShader ();
 #endif
 ::PrintLog ("   initializing glare shader programs\n");
 glareRenderer.InitShader ();
+::PrintLog ("   initializing particle shader programs\n");
+particleManager.InitShader ();
 ::PrintLog ("   initializing blur shader programs\n");
 glowRenderer.InitShader ();
 ::PrintLog ("   initializing gray scale shader programs\n");
