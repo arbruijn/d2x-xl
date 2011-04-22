@@ -1780,7 +1780,7 @@ void DefaultShadowSettings (void)
 {
 // shadow render option defaults
 gameOptions [0].render.shadows.nLights = (gameOptions [0].render.nQuality > 1) ? 4 : 2;
-#if 1
+#if 0
 gameOptions [0].render.shadows.nReach = (gameOptions [0].render.nQuality > 1) ? 2 : 1;
 gameOptions [0].render.shadows.nClip = (gameOptions [0].render.nQuality > 1) ? 2 : 1;
 #endif
