@@ -462,7 +462,7 @@ class COGL {
 					break;
 				case OGL_BLEND_ALPHA:
 				default:
-					SetBlendMode (GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // alpha
+					SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // alpha
 					break;
 				}
 			}

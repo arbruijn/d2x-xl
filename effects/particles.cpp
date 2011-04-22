@@ -120,7 +120,7 @@ if (!brightFlags [(int) m_nType]) {
 	m_nFadeTime = -1;
 	if (colorP && (colorP->alpha < 0)) {
 		ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
-		m_color [0].alpha = float (3 * a + randN (2 * a)) / 255.0f;
+		m_color [1].alpha = float (3 * a + randN (2 * a)) / 255.0f;
 		}
 	}
 else {
@@ -141,13 +141,13 @@ else {
 		; // m_color [0].alpha = float (SMOKE_START_ALPHA + 64) / 255.0f;
 	else if (nParticleSystemType != GATLING_PARTICLES) {
 		if (!colorP)
-			m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
+			m_color [1].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 		else if (colorP->alpha < 0) {
 			ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
-			m_color [0].alpha = float (3 * a + randN (2 * a)) / 255.0f;
+			m_color [1].alpha = float (3 * a + randN (2 * a)) / 255.0f;
 			} 
 		else if (char (colorP->alpha) != 2.0f) 
-			m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
+			m_color [1].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 		else {
 			if ((m_bEmissive = (gameOpts->render.particles.nQuality > 3))) {
 				m_color [0].red = 0.5f + float (rand ()) / float (RAND_MAX) * 0.5f;
@@ -169,26 +169,28 @@ else {
 			m_color [1].blue *= RANDOM_FADE;
 			m_nWidth *= 0.75;
 			m_nHeight *= 0.75;
-			m_color [0].alpha = 0.8f + float (rand ()) / float (RAND_MAX) * 0.2f;
+			m_color [1].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 			}
 		if (m_bBlowUp && !m_bBright) {
 			fBrightness = 1.0f - fBrightness;
 			if (m_nFadeTime <= 0)
-				m_color [0].alpha += fBrightness * fBrightness / 8.0f;
+				m_color [1].alpha += fBrightness * fBrightness / 8.0f;
 			}
 		}
 	}
 
-if (m_bEmissive && (m_nFadeTime <= 0))
-	m_color [0].alpha = 1.0f;
-else if (nParticleSystemType == SIMPLE_SMOKE_PARTICLES)
-	m_color [0].alpha /= 3.5f - float (1 + int (gameOpts->render.particles.nQuality > 1)) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
+if (nParticleSystemType == SIMPLE_SMOKE_PARTICLES)
+	m_color [1].alpha /= 3.5f - float (1 + int (gameOpts->render.particles.nQuality > 1)) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
 else if (nParticleSystemType == SMOKE_PARTICLES)
-	m_color [0].alpha /= colorP ? 3.0f - (color.red + color.green + color.blue) / 3.0f : 2.5f;
+	m_color [1].alpha /= colorP ? 3.0f - (color.red + color.green + color.blue) / 3.0f : 2.5f;
 else if ((nParticleSystemType == BUBBLE_PARTICLES) || (nParticleSystemType == RAIN_PARTICLES) || (nParticleSystemType == SNOW_PARTICLES))
-	m_color [0].alpha /= 2.0f;
+	m_color [1].alpha /= 2.0f;
 else if (nParticleSystemType == GATLING_PARTICLES)
-	m_color [0].alpha /= 4.0f;
+	m_color [1].alpha /= 4.0f;
+if (m_bEmissive)
+	m_color [0].alpha = (m_nFadeTime > 0) ? 0.8f + float (rand ()) / float (RAND_MAX) * 0.2f : 1.0f;
+else
+	m_color [0].alpha = m_color [1].alpha;
 }
 
 //------------------------------------------------------------------------------
@@ -408,7 +410,7 @@ m_nLife = nLife;
 m_nDelay = 0; //bStart ? randN (nLife) : 0;
 m_nRenderType = RenderType ();
 
-#if 0
+#if 1
 
 InitColor (colorP, fBrightness, nParticleSystemType);
 if (!InitDrift (vDir, nSpeed))
