@@ -173,7 +173,7 @@ if (ogl.m_states.bMRTOk) {
 
 float CParticleBuffer::AlphaScale (void)
 {
-return (gameStates.render.cameras.bActive || !(m_bEmissive && (gameOpts->render.effects.bSoftParticles & 4) && ogl.m_states.bMRTOk && (m_nType <= WATERFALL_PARTICLES))
+return (gameStates.render.cameras.bActive || !(m_bEmissive && (gameOpts->render.effects.bSoftParticles & 4) && ogl.m_states.bMRTOk && (m_nType <= WATERFALL_PARTICLES)))
 		 ? 0.0f
 		 : 1.0f;
 }
