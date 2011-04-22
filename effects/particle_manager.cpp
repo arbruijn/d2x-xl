@@ -66,7 +66,8 @@ if (!ogl.CopyDepthTexture (0, GL_TEXTURE2))
 ogl.m_states.bUseDepthBlending = 1;
 if (dMax < 1)
 	dMax = 1;
-ogl.DrawBuffer ()->FlipBuffers (0, 1);
+ogl.DrawBuffer ()->FlipBuffers (0, 1); // color buffer 1 becomes render target, color buffer 0 becomes render source (scene texture)
+ogl.DrawBuffer ()->SetDrawBuffers ();
 ogl.SelectTMU (GL_TEXTURE1);
 ogl.SetTexturing (true);
 ogl.BindTexture (ogl.DrawBuffer ()->ColorBuffer (1));

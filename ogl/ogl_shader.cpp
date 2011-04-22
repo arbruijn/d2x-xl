@@ -37,6 +37,7 @@
 #include "ogl_shader.h"
 #include "ogl_fastrender.h"
 #include "glare.h"
+#include "particles.h"
 #include "../effects/glow.h"
 #include "sphere.h"
 #include "rendermine.h"
