@@ -167,7 +167,7 @@ static inline int UseSphere (CObject *objP)
 {
 	int nType = objP->info.nType;
 
-return gameStates.app.bNostalgia || (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POWERUP) || ((nType == OBJ_WEAPON) && WeaponIsMine (objP->info.nId));
+return gameStates.app.bNostalgia || (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POWERUP) || objP->IsMine ();
 }
 
 //	-----------------------------------------------------------------------------

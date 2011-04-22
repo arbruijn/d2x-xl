@@ -755,12 +755,12 @@ class CObject : public CObjectInfo {
 
 	public:
 		static void InitTables (void);
-		static inline bool IsWeapon (short nId) { return m_bIsWeapon [nId]; }
-		static inline bool IsEnergyWeapon (short nId) { return m_bIsEnergyWeapon [nId]; }
-		static inline bool IsSlowWeapon (short nId) { return m_bIsSlowWeapon [nId]; }
-		static inline bool IsFastWeapon (short nId) { return !m_bIsSlowWeapon [nId]; }
-		static inline bool IsMissile (short nId) { return m_bIsMissile [nId]; }
-		static inline bool IsEquipment (short nId) { m_bIsEquipment [nId]; }
+		static inline bool IsWeapon (short nId) { return m_bIsWeapon [nId] != 0; }
+		static inline bool IsEnergyWeapon (short nId) { return m_bIsEnergyWeapon [nId] != 0; }
+		static inline bool IsSlowWeapon (short nId) { return m_bIsSlowWeapon [nId] != 0; }
+		static inline bool IsFastWeapon (short nId) { return !m_bIsSlowWeapon [nId] != 0; }
+		static inline bool IsMissile (short nId) { return m_bIsMissile [nId] != 0; }
+		static inline bool IsEquipment (short nId) { return m_bIsEquipment [nId] != 0; }
 
 	private:
 		short				m_nId;
@@ -1022,9 +1022,9 @@ class CObject : public CObjectInfo {
 		inline bool IsFastWeapon (void) { return (Type () == OBJ_WEAPON) && !m_bIsSlowWeapon [Id ()]; }
 		inline bool IsMissile (void) { return (Type () == OBJ_WEAPON) && m_bIsMissile [Id ()]; }
 		inline bool IsEquipment (void) { return (Type () == OBJ_WEAPON) && m_bIsEquipment [Id ()]; }
-		inline bool IsPlayerMine (void) { return IsWeapon && ((Id () == PROXMINE_ID) || (Id () == SMARTMINE_ID) || (Id () == SMALLMINE_ID)); }
-		inline bool IsRobotMine (void) { return IsWeapon () && (Id () == ROBOT_SMARTMINE_ID); }
-		inline bool IsMine (void) { return IsPlayerMine () || IsRobotMine (); }
+		bool IsPlayerMine (void);
+		bool IsRobotMine (void);
+		bool IsMine (void);
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);
