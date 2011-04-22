@@ -285,7 +285,7 @@ if (SHOW_LIGHTNING) {
 #endif
 			}
 		else if (h & MISSILE_LIGHTNING) {
-			if ((objP->info.nType == OBJ_WEAPON) || gameData.objs.bIsMissile [objP->info.nId])
+			if ((objP->IsMissile ())
 				CreateForMissile (objP);
 #if DBG
 			else if (objP->info.nType != 255)
@@ -686,7 +686,7 @@ CreateForExplosion (objP, &color, 30, I2X (15), 750);
 
 int CLightningManager::CreateForMissile (CObject* objP)
 {
-if (gameData.objs.bIsMissile [objP->info.nId]) {
+if (objP->IsMissile ()) {
 	if ((objP->info.nId == EARTHSHAKER_ID) || (objP->info.nId == EARTHSHAKER_ID))
 		CreateForShaker (objP);
 	else if ((objP->info.nId == EARTHSHAKER_MEGA_ID) || (objP->info.nId == ROBOT_SHAKER_MEGA_ID))

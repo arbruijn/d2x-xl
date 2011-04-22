@@ -62,10 +62,7 @@ void G3DynLightModel (CObject *objP, RenderModel::CModel *pm, ushort iVerts, ush
 	RenderModel::CVertex*	pmv;
 	tFaceColor*					pc;
 	float							fAlpha = gameStates.render.grAlpha;
-	int							h, i, 
-									bEmissive = (objP->info.nType == OBJ_WEAPON) && 
-													gameData.objs.bIsWeapon [objP->info.nId] && 
-													!gameData.objs.bIsMissile [objP->info.nId];
+	int							h, i, bEmissive = objP->IsWeapon () && !objP->IsMissile ();
 
 if (!gameStates.render.bBrightObject) {
 	vPos.Assign (objP->info.position.vPos);
@@ -104,10 +101,7 @@ void G3LightModel (CObject *objP, int nModel, fix xModelLight, fix *xGlowValues,
 	tRgbaColorf					baseColor, *colorP;
 	float							fLight, fAlpha = gameStates.render.grAlpha;
 	int							h, i, j, l;
-	int							bEmissive = (objP->info.nType == OBJ_MARKER) ||
-													((objP->info.nType == OBJ_WEAPON) && 
-													 gameData.objs.bIsWeapon [objP->info.nId] && 
-													 !gameData.objs.bIsMissile [objP->info.nId]);
+	int							bEmissive = (objP->info.nType == OBJ_MARKER) || (objP->IsWeapon () && !objP->IsMissile ());
 
 #if DBG
 if (objP->Index () == nDbgObj)
@@ -373,9 +367,7 @@ return 0;
 
 static inline int ObjectHasThruster (CObject *objP)
 {
-return (objP->info.nType == OBJ_PLAYER) ||
-		 (objP->info.nType == OBJ_ROBOT) ||
-		 ((objP->info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [objP->info.nId]));
+return (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || objP->IsMissile ();
 }
 
 //------------------------------------------------------------------------------
@@ -646,7 +638,7 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CArray<CBitmap*>
 	CDynLight*				prl;
 	int						nPass, iLight, nLights, nLightRange;
 	int						bBright = objP && (objP->info.nType == OBJ_MARKER);
-	int						bEmissive = objP && (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
+	int						bEmissive = objP && (objP->IsWeapon () && !objP->IsMissile ());
 	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && (bTranspFilter < 2) && !(gameStates.render.bCloaked || bEmissive || bBright);
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
@@ -843,7 +835,7 @@ if (objP && (objP->info.nType == OBJ_PLAYER))
 	int						i, 
 								bHires = 1, 
 								bUseVBO = ogl.m_states.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
-								bEmissive = (objP != NULL) && (objP->info.nType == OBJ_WEAPON) && (objP->info.nId <= MAX_WEAPON_ID) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId],
+								bEmissive = (objP != NULL) && objP->IsWeapon () && !objP->IsMissile (),
 								nGunId, nBombId, nMissileId, nMissiles;
 
 if (!objP)

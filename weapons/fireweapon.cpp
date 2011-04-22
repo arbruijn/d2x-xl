@@ -193,7 +193,7 @@ if (objP1->cType.laserInfo.parent.nSignature == objP2->cType.laserInfo.parent.nS
 //	Anything can cause a collision with a robot super prox mine.
 if (WeaponIsMine (id1) || WeaponIsMine (id2))
 	return 0;
-if (!COMPETITION && EGI_FLAG (bKillMissiles, 0, 0, 0) && (gameData.objs.bIsMissile [id1] || gameData.objs.bIsMissile [id2]))
+if (!COMPETITION && EGI_FLAG (bKillMissiles, 0, 0, 0) && (CObject::IsMissile (id1) || CObject::IsMissile (id2)))
 	return 0;
 return 1;
 }
@@ -372,7 +372,7 @@ laserP = OBJECTS + nObject;
 if ((nLaserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
 	gameData.objs.guidedMissile [objP->info.nId].objP = laserP;
 gameData.multigame.bIsGuided = 0;
-if (gameData.objs.bIsMissile [nLaserType] && (nLaserType != GUIDEDMSL_ID)) {
+if (CObject::IsMissile (nLaserType) && (nLaserType != GUIDEDMSL_ID)) {
 	if (!gameData.objs.missileViewerP && (objP->info.nId == gameData.multiplayer.nLocalPlayer))
 		gameData.objs.missileViewerP = laserP;
 	}
@@ -458,7 +458,7 @@ objP->info.position.mOrient = CFixMatrix::CreateF(vNewDir);
 
 static inline fix HomingMslStraightTime (int id)
 {
-if (!gameData.objs.bIsMissile [id])
+if (!CObject::IsMissile (id))
 	return HOMINGMSL_STRAIGHT_TIME;
 if ((id == EARTHSHAKER_MEGA_ID) || (id == ROBOT_SHAKER_MEGA_ID))
 	return HOMINGMSL_STRAIGHT_TIME;

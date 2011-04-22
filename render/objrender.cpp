@@ -162,8 +162,7 @@ else {
 		bHasModel = 1;
 		}
 	}
-if (!bHasModel && ((info.nType != OBJ_WEAPON) || !gameData.objs.bIsMissile [info.nId]) &&
-	 !(nModel && HaveReplacementModel (nModel)))
+if (!bHasModel && !IsMissile () && !(nModel && HaveReplacementModel (nModel)))
 		return 0;
 
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
@@ -175,30 +174,16 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 mType.physInfo.mass = I2X (1);
 mType.physInfo.drag = 512;
 mType.physInfo.brakes = 0;
-#if 0
-if ((info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [info.nId])
-#endif
- {
-	mType.physInfo.rotVel.v.coord.x = 0;
-	mType.physInfo.rotVel.v.coord.y =
-	mType.physInfo.rotVel.v.coord.z = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
-	}
-#if 0
-else {
-	mType.physInfo.rotVel.dir.coord.x =
-	mType.physInfo.rotVel.dir.coord.z = 0;
-	mType.physInfo.rotVel.dir.coord.y = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
-	}
-#endif
+mType.physInfo.rotVel.v.coord.x = 0;
+mType.physInfo.rotVel.v.coord.y =
+mType.physInfo.rotVel.v.coord.z = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 info.controlType = CT_WEAPON;
 info.renderType = RT_POLYOBJ;
 info.movementType = MT_PHYSICS;
 mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 rType.polyObjInfo.nModel = nModel;
-#if 1
 if (bHasModel)
 	info.xSize = gameData.models.polyModels [0][ModelId ()].Rad ();
-#endif
 rType.polyObjInfo.nTexOverride = -1;
 SetLife (IMMORTAL_TIME);
 return 1;
@@ -663,7 +648,7 @@ id = (int) objP->info.nId;
 if ((id < 0) || (id == 255))
 	bEnergyWeapon = id = 0;
 else {
-	bEnergyWeapon = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [id] && !gameData.objs.bIsMissile [id];
+	bEnergyWeapon = objP->IsEnergyWeapon ();
 	}
 if (!bForce && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass == 3))
 	return 1;
@@ -853,7 +838,7 @@ if (automap.Display () && !AM_SHOW_POWERUPS (1))
 if (!(gameStates.app.bNostalgia || gameOpts->Use3DPowerups ()) && WeaponIsMine (objP->info.nId) && (objP->info.nId != SMALLMINE_ID))
 	ConvertWeaponToVClip (objP);
 else {
-	if (gameData.objs.bIsMissile [objP->info.nId]) {	//make missiles smaller during launch
+	if (objP->IsMissile ()) {	//make missiles smaller during launch
 		if ((objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
 			 (gameData.models.renderModels [1][objP->ModelId ()].m_bValid > 0)) {	//hires player ship
 			float dt = X2F (gameData.time.xGame - objP->CreationTime ());
@@ -1080,7 +1065,6 @@ if (nType == 255) {
 	objP->Die ();
 	return 0;
 	}
-//int bEmissive = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
 if ((gameStates.render.nShadowPass != 2) &&
 	 (objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) &&
 	 (objP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {

@@ -330,7 +330,7 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 		else
 			audio.PlaySound (weaponInfoP->flashSound, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER, volume);
 		}
-	if (gameOpts->sound.bMissiles && gameData.objs.bIsMissile [nWeaponType]) {
+	if (gameOpts->sound.bMissiles && CObject::IsMissile (nWeaponType)) {
 		bBigMsl = (nWeaponType == SMARTMSL_ID) ||
 					 (nWeaponType == MEGAMSL_ID) ||
 					 (nWeaponType == EARTHSHAKER_ID) ||
@@ -357,7 +357,7 @@ else {
 // Move 1 frame, so that the end-tip of the laser is touching the gun barrel.
 // This also jitters the laser a bit so that it doesn't alias.
 //	Don't do for weapons created by weapons.
-if ((parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID) && !gameData.objs.bIsMissile [nWeaponType]) {
+if ((parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID) && !CObject::IsMissile (nWeaponType)) {
 #if 1
 	objP->mType.physInfo.velocity = vDir * (gameData.laser.nOffset + (xLaserLength / 2));
 #if 0 //DBG

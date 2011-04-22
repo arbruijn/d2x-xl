@@ -755,6 +755,12 @@ class CObject : public CObjectInfo {
 
 	public:
 		static void InitTables (void);
+		static inline bool IsWeapon (short nId) { return m_bIsWeapon [nId]; }
+		static inline bool IsEnergyWeapon (short nId) { return m_bIsEnergyWeapon [nId]; }
+		static inline bool IsSlowWeapon (short nId) { return m_bIsSlowWeapon [nId]; }
+		static inline bool IsFastWeapon (short nId) { return !m_bIsSlowWeapon [nId]; }
+		static inline bool IsMissile (short nId) { return m_bIsMissile [nId]; }
+		static inline bool IsEquipment (short nId) { m_bIsEquipment [nId]; }
 
 	private:
 		short				m_nId;
@@ -1013,8 +1019,12 @@ class CObject : public CObjectInfo {
 		inline bool IsWeapon (void) { return (Type () == OBJ_WEAPON) && m_bIsWeapon [Id ()]; }
 		inline bool IsEnergyWeapon (void) { return (Type () == OBJ_WEAPON) && m_bIsEnergyWeapon [Id ()]; }
 		inline bool IsSlowWeapon (void) { return (Type () == OBJ_WEAPON) && m_bIsSlowWeapon [Id ()]; }
+		inline bool IsFastWeapon (void) { return (Type () == OBJ_WEAPON) && !m_bIsSlowWeapon [Id ()]; }
 		inline bool IsMissile (void) { return (Type () == OBJ_WEAPON) && m_bIsMissile [Id ()]; }
 		inline bool IsEquipment (void) { return (Type () == OBJ_WEAPON) && m_bIsEquipment [Id ()]; }
+		inline bool IsPlayerMine (void) { return IsWeapon && ((Id () == PROXMINE_ID) || (Id () == SMARTMINE_ID) || (Id () == SMALLMINE_ID)); }
+		inline bool IsRobotMine (void) { return IsWeapon () && (Id () == ROBOT_SMARTMINE_ID); }
+		inline bool IsMine (void) { return IsPlayerMine () || IsRobotMine (); }
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);
@@ -1366,8 +1376,6 @@ void DetachChildObjects (CObject *parentP);
 
 void InitMultiPlayerObject (int nStage);
 
-extern ubyte bIsMissile [];
-
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
@@ -1387,7 +1395,7 @@ extern ubyte bIsMissile [];
 #define	IS_THIEF(_objP)		(((_objP)->info.nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->info.nId).thief)
 #define	IS_BOSS(_objP)			(((_objP)->info.nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->info.nId).bossFlag)
 #define	IS_BOSS_I(_i)			IS_BOSS (gameData.objs.objects + (_i))
-#define	IS_MISSILE(_objP)		(((_objP)->info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(_objP)->info.nId])
+#define	IS_MISSILE(_objP)		((_objP)->IsMissile ())
 #define	IS_MISSILE_I(_i)		IS_MISSILE (gameData.objs.objects + (_i))
 
 #if DBG

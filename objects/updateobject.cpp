@@ -461,7 +461,7 @@ if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].nAfterburner
 	fix	delay, lifetime, nSize;
 
 #if 1
-	if ((info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [info.nId]) {
+	if (IsMissile ()) {
 		if (SHOW_SMOKE && gameOpts->render.particles.bMissiles)
 			return;
 		if ((gameStates.app.bNostalgia || EGI_FLAG (bThrusterFlames, 1, 1, 0)) &&

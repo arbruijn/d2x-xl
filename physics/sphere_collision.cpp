@@ -462,10 +462,6 @@ if (CollisionModel () &&
 		}
 	}
 else {
-#if 0
-	if ((otherObjP->info.nType == OBJ_WEAPON) /*&& (gameData.objs.bIsMissile [otherObjP->info.nId])*/)
-		rad = gameData.models.polyModels [0][otherObjP->ModelId ()].Rad (1);
-#endif
 	if (!(dist = CheckVectorToSphere1 (vHit, p0, p1, &vPos, size + rad)))
 		return 0;
 	nModel = 0;

@@ -109,7 +109,7 @@ if (nType == OBJ_WEAPON) {
 		nType = nType;
 	if (nId == FLARE_ID)
 		nType = nType;
-	if (gameData.objs.bIsMissile [(int) nId])
+	if (m_bIsMissile [(int) nId])
 		nType = nType;
 	}
 else if (nType == OBJ_ROBOT) {
@@ -214,7 +214,7 @@ if (nType == OBJ_WEAPON) {
 		}
 	if (nId == FLARE_ID)
 		nType = nType;
-	if (gameData.objs.bIsMissile [(int) nId])
+	if (m_bIsMissile [(int) nId])
 		nType = nType;
 	}
 else if (nType == OBJ_ROBOT) {
@@ -315,7 +315,7 @@ objP->LinkToSeg (nSegment);
 memset (&objP->HitInfo (), 0, sizeof (CObjHitInfo));
 #if 1
 if (IsMultiGame && IsCoopGame && 
-	 (nType == OBJ_WEAPON) && gameData.objs.bIsMissile [int (nId)] && 
+	 (nType == OBJ_WEAPON) && m_bIsMissile [int (nId)] && 
 	 (nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER)) {
 	extern char powerupToObject [MAX_POWERUP_TYPES];
 

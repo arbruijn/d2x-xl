@@ -159,7 +159,7 @@ if (RenderObject (objP, nWindow, 0)) {
 		tWindowRenderedData*	wrd = windowRenderedData + nWindow;
 		int nType = objP->info.nType;
 		if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
-			 ((nType == OBJ_WEAPON) && (WeaponIsPlayerMine (objP->info.nId) || (gameData.objs.bIsMissile [objP->info.nId] && EGI_FLAG (bKillMissiles, 0, 0, 0))))) {
+			 ((nType == OBJ_WEAPON) && (objP->IsPlayerMine () || (objP->IsMissile () && EGI_FLAG (bKillMissiles, 0, 0, 0))))) {
 			if (wrd->nObjects >= MAX_RENDERED_OBJECTS) {
 				Int3();
 				wrd->nObjects /= 2;

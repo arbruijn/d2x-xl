@@ -523,7 +523,7 @@ switch (nObjType) {
 
 	case OBJ_WEAPON: {
 		fix tval = gameData.weapons.info [objP->info.nId].light;
-		if (gameData.objs.bIsMissile [objP->info.nId])
+		if (objP->IsMissile ())
 			*colorP = missileColor;
 		else if (gameOpts->render.color.nLevel)
 			*colorP = gameData.weapons.color [objP->info.nId];

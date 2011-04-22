@@ -191,34 +191,6 @@ static int inline LaserPlayerFire (CObject *objP, ubyte laserType, int nGun, int
 return LaserPlayerFireSpread (objP, laserType, nGun, 0, 0, makeSound, harmless, nLightObj);
 }
 
-//	-----------------------------------------------------------------------------------------------------------
-
-static inline int WeaponIsPlayerMine (int nId)
-{
-return (nId == PROXMINE_ID) || (nId == SMARTMINE_ID) || (nId == SMALLMINE_ID);
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-static inline int WeaponIsMine (int nId)
-{
-return WeaponIsPlayerMine (nId) || (nId == ROBOT_SMARTMINE_ID);
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-static inline int ObjIsPlayerMine (CObject *objP)
-{
-return (objP->info.nType == OBJ_WEAPON) && WeaponIsPlayerMine (objP->info.nId);
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-static inline int ObjIsMine (CObject *objP)
-{
-return (objP->info.nType == OBJ_WEAPON) && WeaponIsMine (objP->info.nId);
-}
-
 // ---------------------------------------------------------------------------------
 
 #define MAX_OMEGA_CHARGE (gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? gameData.omega.xMaxCharge : DEFAULT_MAX_OMEGA_CHARGE)

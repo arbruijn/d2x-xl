@@ -873,7 +873,7 @@ else if ((t == OBJ_EFFECT) && (nId == SMOKE_ID))
 else if (t == OBJ_REACTOR)
 	DoReactorSmoke (objP);
 else if (t == OBJ_WEAPON) {
-	if (gameData.objs.bIsMissile [nId])
+	if (objP->IsMissile ())
 		DoMissileSmoke (objP);
 	else if ((nId == VULCAN_ID) || (nId == GAUSS_ID) || 
 				((gameOpts->render.particles.nQuality > 2) && ((nId == ROBOT_VULCAN_ID) || (nId == ROBOT_GAUSS_ID))))
@@ -881,7 +881,7 @@ else if (t == OBJ_WEAPON) {
 	else if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (nId == PROXMINE_ID))
 		DoBombSmoke (objP);
 	else if (gameOpts->render.particles.bPlasmaTrails && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0) &&
-				gameData.objs.bIsWeapon [nId] && !gameData.objs.bIsSlowWeapon [nId])
+				objP->IsFastWeapon (nId))
 		DoParticleTrail (objP);
 	else
 		return 0;

@@ -210,11 +210,11 @@ else {
 	colorP = &color;
 	}
 
-if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0)) {
+if (objP->IsFastWeapon () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0)) {
 	if (gameOpts->render.particles.bPlasmaTrails)
 		;//DoObjectSmoke (objP);
 	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->info.nType == OBJ_WEAPON) &&
-				!gameData.objs.bIsSlowWeapon [objP->info.nId] &&
+				objP->IsFastWeapon () &&
 				(!objP->mType.physInfo.velocity.IsZero ()) &&
 				glare.Load ()) {
 			CFloatVector	vNorm, vCenter, vOffs, vTrailVerts [8];

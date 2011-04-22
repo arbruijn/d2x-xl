@@ -155,7 +155,7 @@ else {
 				continue;
 			}
 		else if (curObjP->info.nType == OBJ_WEAPON) {
-			if (!EGI_FLAG (bKillMissiles, 0, 1, 0) || !bOmega || !(gameData.objs.bIsMissile [curObjP->info.nId] || WeaponIsMine (curObjP->info.nId)))
+			if (!EGI_FLAG (bKillMissiles, 0, 1, 0) || !bOmega || !(curObjP->IsMissile () || WeaponIsMine (curObjP->info.nId)))
 				continue;
 			}
 		else if ((curObjP->info.nType != OBJ_PLAYER) && (curObjP->info.nType != OBJ_REACTOR))

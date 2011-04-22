@@ -969,7 +969,7 @@ mass = cf.ReadFix ();
 drag = cf.ReadFix ();
 thrust = cf.ReadFix ();
 poLenToWidthRatio = cf.ReadFix ();
-if (gameData.objs.bIsMissile [i])
+if (OBJECTS [i].IsMissile ())
 	poLenToWidthRatio = I2X (10);
 light = cf.ReadFix ();
 i = int (this - gameData.weapons.info.Buffer ());

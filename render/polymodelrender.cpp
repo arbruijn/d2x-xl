@@ -55,7 +55,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 else if (objP->info.nType == OBJ_WEAPON) {
 	if (!gameOpts->render.shadows.bMissiles)
 		return 0;
-	if (!gameData.objs.bIsMissile [objP->info.nId] && (objP->info.nId != SMALLMINE_ID))
+	if (!objP->IsMissile () && (objP->info.nId != SMALLMINE_ID))
 		return 0;
 	}
 else if (objP->info.nType == OBJ_POWERUP) {

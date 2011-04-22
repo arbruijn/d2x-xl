@@ -74,7 +74,7 @@ objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
 objP->info.xSize = info.xSize;
 objP->info.xSize /= 3;
-if ((info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = info.nId])) {
+if (IsMissile ()) {
 	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID))
 		objP->info.xSize = I2X (5) / 2;
 	else if ((id == MEGAMSL_ID) || (id == ROBOT_MEGAMSL_ID) || (id == EARTHSHAKER_MEGA_ID))
@@ -114,7 +114,7 @@ CFixMatrix mRotate = CFixMatrix::Create (a);
 objP->Orientation () = mRotate * Orientation ();
 #endif
 
-if ((info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = info.nId])) {
+if (IsMissile ()) {
 	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID))
 		objP->info.xSize = I2X (5) / 2;
 	else if ((id == MEGAMSL_ID) || (id == ROBOT_MEGAMSL_ID) || (id == EARTHSHAKER_MEGA_ID))
