@@ -135,11 +135,11 @@ const char *particleFS =
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec2 scenePos = gl_FragCoord.xy * screenScale;\r\n" \
 	"vec4 sceneColor = texture2D (sceneTex, scenePos.xy);\r\n" \
-	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color * dz;\r\n" \
+	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"if (gl_Color.a == 0.0) //additive\r\n" \
-	"   gl_FragColor = vec4 (sceneColor.rgb + particleColor.rgb, 1.0);\r\n" \
+	"   gl_FragColor = vec4 (sceneColor.rgb + particleColor.rgb * dz, 1.0);\r\n" \
 	"else //alpha\r\n" \
-	"   gl_FragColor = vec4 (mix (sceneColor.rgb, particleColor.rgb, particleColor.a), sceneColor.a + particleColor.a);\r\n" \
+	"   gl_FragColor = vec4 (mix (sceneColor.rgb, particleColor.rgb, particleColor.a * dz), 1.0);\r\n" \
 	"}\r\n"
 	;
 
@@ -174,8 +174,8 @@ if (ogl.m_states.bMRTOk) {
 float CParticleBuffer::AlphaScale (void)
 {
 return (gameStates.render.cameras.bActive || !(m_bEmissive && (gameOpts->render.effects.bSoftParticles & 4) && ogl.m_states.bMRTOk && (m_nType <= WATERFALL_PARTICLES)))
-		 ? 0.0f
-		 : 1.0f;
+		 ? 1.0f
+		 : 0.0f;
 }
 
 //------------------------------------------------------------------------------
