@@ -155,7 +155,7 @@ else {
 				continue;
 			}
 		else if (curObjP->info.nType == OBJ_WEAPON) {
-			if (!EGI_FLAG (bKillMissiles, 0, 1, 0) || !bOmega || !(curObjP->IsMissile () || WeaponIsMine (curObjP->info.nId)))
+			if (!EGI_FLAG (bKillMissiles, 0, 1, 0) || !bOmega || !(curObjP->IsMissile () || curObjP->IsMine ()))
 				continue;
 			}
 		else if ((curObjP->info.nType != OBJ_PLAYER) && (curObjP->info.nType != OBJ_REACTOR))
@@ -248,7 +248,7 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 	if ((curObjP->info.nType != trackObjType1) && (curObjP->info.nType != trackObjType2) && (curObjP->info.nType != OBJ_MONSTERBALL)) {
 		if (curObjP->info.nType != OBJ_WEAPON) 
 			continue;
-		if (!WeaponIsPlayerMine (curObjP->info.nId))
+		if (!curObjP->IsPlayerMine ())
 			continue;
 		if (curObjP->cType.laserInfo.parent.nSignature == trackerP->cType.laserInfo.parent.nSignature)
 			continue;

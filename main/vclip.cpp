@@ -128,7 +128,7 @@ if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
 	alpha = (ta >= 0) ? alpha - ta : alpha + ta;
 	}
 else if (objP->info.nType == OBJ_WEAPON) {
-	if (WeaponIsMine (objP->info.nId))
+	if (objP->IsMine ())
 		alpha = 1.0;
 	else
 		alpha = WEAPON_ALPHA;
