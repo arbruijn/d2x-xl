@@ -24,6 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "aistruct.h"
 #include "segment.h"
 #include "gr.h"
+#include "powerup.h"
 
 /*
  * CONSTANTS
@@ -378,19 +379,19 @@ class CPowerupInfo {
 
 //	-----------------------------------------------------------------------------
 
-typedef struct tVClipInfo {
+typedef struct tVideoClipInfo {
 public:
 	int     nClipIndex;
 	fix	  xTotalTime;
 	fix     xFrameTime;
 	sbyte   nCurFrame;
-} __pack__ tVClipInfo;
+} __pack__ tVideoClipInfo;
 
 class CVClipInfo {
 	private:
-		tVClipInfo	m_info;
+		tVideoClipInfo	m_info;
 	public:
-		inline tVClipInfo* GetInfo (void) { return &m_info; };
+		inline tVideoClipInfo* GetInfo (void) { return &m_info; };
 		inline int GetClipIndex (void) { return m_info.nClipIndex; }
 		inline fix GetTotalTime (void) { return m_info.xTotalTime; }
 		inline fix GetFrameTime (void) { return m_info.xFrameTime; }
@@ -618,7 +619,7 @@ typedef union tObjControlInfo {
 
 typedef union tObjRenderInfo {
 	tPolyObjInfo		polyObjInfo;   // polygon model
-	tVClipInfo			vClipInfo;     // tVideoClip
+	tVideoClipInfo			vClipInfo;     // tVideoClip
 	tParticleInfo		particleInfo;
 	tLightningInfo		lightningInfo;
 	tSoundInfo			soundInfo;
@@ -742,7 +743,19 @@ class CObjDamageInfo {
 		int				tRepaired;
 };
 
+#define MAX_WEAPONS	100
+
 class CObject : public CObjectInfo {
+	private:
+		static CStaticArray< ubyte, MAX_WEAPONS >	m_bIsWeapon;
+		static CStaticArray< ubyte, MAX_WEAPONS >	m_bIsSlowWeapon;
+		static CStaticArray< ubyte, MAX_WEAPONS >	m_bIsEnergyWeapon;
+		static CStaticArray< ubyte, MAX_WEAPONS >	m_bIsMissile; 
+		static CStaticArray< ubyte, MAX_POWERUP_TYPES >	m_bIsEquipment; 
+
+	public:
+		static void InitTables (void);
+
 	private:
 		short				m_nId;
 		CObject*			m_prev;
@@ -996,6 +1009,12 @@ class CObject : public CObjectInfo {
 		inline fix MaxEnergy (void) { return fix (I2X (100) * EnergyScale ()); }
 
 		short Visible (void);
+
+		inline bool IsWeapon (void) { return (Type () == OBJ_WEAPON) && m_bIsWeapon [Id ()]; }
+		inline bool IsEnergyWeapon (void) { return (Type () == OBJ_WEAPON) && m_bIsEnergyWeapon [Id ()]; }
+		inline bool IsSlowWeapon (void) { return (Type () == OBJ_WEAPON) && m_bIsSlowWeapon [Id ()]; }
+		inline bool IsMissile (void) { return (Type () == OBJ_WEAPON) && m_bIsMissile [Id ()]; }
+		inline bool IsEquipment (void) { return (Type () == OBJ_WEAPON) && m_bIsEquipment [Id ()]; }
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);
@@ -1407,6 +1426,11 @@ extern CObject *dbgObjP;
 #	define FORALL_STATIC_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.lists.statics, _objP, _i)
 #	define IS_OBJECT(_objP, _i)							((_objP) != NULL)
 #endif
+
+//	-----------------------------------------------------------------------------------------------------------
+
+int SetupHiresVClip (tVideoClip *vcP, tVideoClipInfo *vciP, CBitmap* bmP = NULL);
+void UpdatePowerupClip (tVideoClip *vcP, tVideoClipInfo *vciP, int nObject);
 
 //	-----------------------------------------------------------------------------------------------------------
 

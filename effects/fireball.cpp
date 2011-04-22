@@ -503,10 +503,7 @@ return VCLIP_SMALL_EXPLOSION;		//default
 void CObject::ExplodePolyModel (void)
 {
 Assert (info.renderType == RT_POLYOBJ);
-#if DBG
-int nDebris = 0;
-#endif
-#if 1 //DBG == 0
+
 CreateExplBlast ();
 CreateShockwave ();
 RequestEffects (EXPL_LIGHTNING | SHRAPNEL_SMOKE);
@@ -514,22 +511,15 @@ if (gameData.models.nDyingModels [ModelId ()] != -1)
 	rType.polyObjInfo.nModel = gameData.models.nDyingModels [ModelId ()];
 
 if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
-	int h = gameOpts->render.effects.nShrapnels + 1;
 	int nModels = gameData.models.polyModels [0][ModelId ()].ModelCount ();
+	int h = (nModels == 1) ? 1 : gameOpts->render.effects.nShrapnels + 1;
 
-	if (nModels > int (h == 0)) {
-		for (int j = 0; j < h; j++)
-			for (int i = int (h == 0); i < nModels; i++)
-				//if (d_rand () % h <= j)
-					if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
-#if DBG
-						if (CreateDebris (i))
-							++nDebris;
-#else
-						CreateDebris (i);
-#endif
-		}
-#endif
+	for (int j = 0; j < h; j++)
+		for (int i = int (j > 0); i < nModels; i++) // "i = int (j > 0)" => use the models fuselage only once
+			//if (d_rand () % h <= j)
+				if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
+					CreateDebris (i);
+
 //make parent CObject only draw center part
 #if DBG
 	HUDMessage (0, "%d object fragments created", nDebris);

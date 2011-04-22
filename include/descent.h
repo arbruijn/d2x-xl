@@ -2063,8 +2063,6 @@ typedef struct tHitbox {
 
 //------------------------------------------------------------------------------
 
-#define MAX_WEAPONS	100
-
 typedef struct tObjectViewData {
 	CFixMatrix			mView;
 	int					nFrame;
@@ -2138,11 +2136,7 @@ class CObjectData {
 		CPowerupData				pwrUp;
 		ubyte							collisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
 		CArray<tObjectViewData>	viewData;
-		CStaticArray< ubyte, MAX_WEAPONS >	bIsMissile; //[MAX_WEAPONS];
-		CStaticArray< ubyte, MAX_WEAPONS >	bIsWeapon; //[MAX_WEAPONS];
-		CStaticArray< ubyte, MAX_WEAPONS >	bIsSlowWeapon; //[MAX_WEAPONS];
 		CStaticArray< short, MAX_WEAPONS >	idToOOF; //[MAX_WEAPONS];
-		CStaticArray< ubyte, MAX_POWERUP_TYPES >	bIsEquipment; //[MAX_WEAPONS];
 		CByteArray				bWantEffect; //[MAX_OBJECTS_D2X];
 
 	public:
@@ -2334,7 +2328,7 @@ class CShipData {
 typedef struct tFlagData {
 	tBitmapIndex		bmi;
 	tVideoClip*			vcP;
-	tVClipInfo			vci;
+	tVideoClipInfo			vci;
 	CFlightPath			path;
 } tFlagData;
 

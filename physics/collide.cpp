@@ -1527,7 +1527,7 @@ if (cType.laserInfo.parent.nSignature == robotP->info.nSignature)
 //	Changed, 10/04/95, put out blobs based on skill level and power of this doing damage.
 //	Also, only a this hit from a tPlayer this causes smart blobs.
 if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
-	if ((robotP->info.xShield > 0) && bIsEnergyWeapon [info.nId]) {
+	if ((robotP->info.xShield > 0) && gameStates.objs.bIsEnergyWeapon [info.nId]) {
 		fix xProb = (gameStates.app.nDifficultyLevel+2) * min (info.xShield, robotP->info.xShield);
 		xProb = botInfoP->energyBlobs * xProb / (NDL * 32);
 		int nBlobs = xProb >> 16;

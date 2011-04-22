@@ -145,17 +145,6 @@ ubyte bCycling = 0;
 //	"Mega\nMissile"
 //};
 
-sbyte   bIsEnergyWeapon [MAX_WEAPON_TYPES] = {
-	1, 1, 1, 1, 1,
-	1, 1, 1, 0, 1,
-	1, 0, 1, 1, 1,
-	0, 1, 0, 0, 1,
-	1, 0, 0, 1, 1,
-	1, 1, 1, 0, 1,
-	1, 1, 0, 1, 1,
-	1
-};
-
 // ; (0) Laser Level 1
 // ; (1) Laser Level 2
 // ; (2) Laser Level 3

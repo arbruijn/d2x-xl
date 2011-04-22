@@ -82,6 +82,148 @@ int dbgObjInstances = 0;
 
 //------------------------------------------------------------------------------
 
+CStaticArray< ubyte, MAX_WEAPONS > CObject::m_bIsWeapon;
+CStaticArray< ubyte, MAX_WEAPONS > CObject::m_bIsSlowWeapon;
+CStaticArray< ubyte, MAX_WEAPONS > CObject::m_bIsEnergyWeapon;
+CStaticArray< ubyte, MAX_WEAPONS > CObject::m_bIsMissile; 
+CStaticArray< ubyte, MAX_POWERUP_TYPES > CObject::m_bIsEquipment; 
+
+//------------------------------------------------------------------------------
+
+void CObject::InitTables (void)
+{
+m_bIsMissile.Clear (0);
+m_bIsMissile [CONCUSSION_ID] =
+m_bIsMissile [HOMINGMSL_ID] =
+m_bIsMissile [SMARTMSL_ID] =
+m_bIsMissile [MEGAMSL_ID] =
+m_bIsMissile [FLASHMSL_ID] =
+m_bIsMissile [GUIDEDMSL_ID] =
+m_bIsMissile [MERCURYMSL_ID] =
+m_bIsMissile [EARTHSHAKER_ID] =
+m_bIsMissile [EARTHSHAKER_MEGA_ID] =
+m_bIsMissile [ROBOT_CONCUSSION_ID] =
+m_bIsMissile [ROBOT_HOMINGMSL_ID] =
+m_bIsMissile [ROBOT_FLASHMSL_ID] =
+m_bIsMissile [ROBOT_MERCURYMSL_ID] =
+m_bIsMissile [ROBOT_MEGA_FLASHMSL_ID] =
+m_bIsMissile [ROBOT_SMARTMSL_ID] =
+m_bIsMissile [ROBOT_MEGAMSL_ID] =
+m_bIsMissile [ROBOT_EARTHSHAKER_ID] =
+m_bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
+
+m_bIsWeapon.Clear (0);
+m_bIsWeapon [VULCAN_ID] =
+m_bIsWeapon [GAUSS_ID] =
+m_bIsWeapon [ROBOT_VULCAN_ID] = 1;
+m_bIsWeapon [LASER_ID] =
+m_bIsWeapon [LASER_ID + 1] =
+m_bIsWeapon [LASER_ID + 2] =
+m_bIsWeapon [LASER_ID + 3] =
+m_bIsWeapon [REACTOR_BLOB_ID] =
+m_bIsWeapon [ROBOT_LIGHT_FIREBALL_ID] =
+m_bIsWeapon [SMARTMSL_BLOB_ID] =
+m_bIsWeapon [SMARTMINE_BLOB_ID] =
+m_bIsWeapon [ROBOT_SMARTMINE_BLOB_ID] =
+m_bIsWeapon [FLARE_ID] =
+m_bIsWeapon [SPREADFIRE_ID] =
+m_bIsWeapon [PLASMA_ID] =
+m_bIsWeapon [FUSION_ID] =
+m_bIsWeapon [SUPERLASER_ID] =
+m_bIsWeapon [SUPERLASER_ID + 1] =
+m_bIsWeapon [HELIX_ID] =
+m_bIsWeapon [PHOENIX_ID] =
+m_bIsWeapon [OMEGA_ID] =
+m_bIsWeapon [ROBOT_PLASMA_ID] =
+m_bIsWeapon [ROBOT_MEDIUM_FIREBALL_ID] =
+m_bIsWeapon [ROBOT_SMARTMSL_BLOB_ID] =
+m_bIsWeapon [ROBOT_TI_STREAM_ID] =
+m_bIsWeapon [ROBOT_PHOENIX_ID] =
+m_bIsWeapon [ROBOT_FAST_PHOENIX_ID] =
+m_bIsWeapon [ROBOT_PHASE_ENERGY_ID] =
+m_bIsWeapon [ROBOT_MEGA_FLASHMSL_ID] =
+m_bIsWeapon [ROBOT_MEGA_FLASHMSL_ID + 1] =
+m_bIsWeapon [ROBOT_VERTIGO_FIREBALL_ID] =
+m_bIsWeapon [ROBOT_VERTIGO_PHOENIX_ID] =
+m_bIsWeapon [ROBOT_HELIX_ID] =
+m_bIsWeapon [ROBOT_BLUE_ENERGY_ID] =
+m_bIsWeapon [ROBOT_WHITE_ENERGY_ID] =
+m_bIsWeapon [ROBOT_BLUE_LASER_ID] =
+m_bIsWeapon [ROBOT_RED_LASER_ID] =
+m_bIsWeapon [ROBOT_GREEN_LASER_ID] =
+m_bIsWeapon [ROBOT_WHITE_LASER_ID] = 1;
+
+m_bIsSlowWeapon.Clear (0);
+m_bIsSlowWeapon [OMEGA_ID] =
+m_bIsSlowWeapon [VULCAN_ID] =
+m_bIsSlowWeapon [GAUSS_ID] =
+m_bIsSlowWeapon [ROBOT_VULCAN_ID] = 1;
+m_bIsSlowWeapon [REACTOR_BLOB_ID] =
+m_bIsSlowWeapon [ROBOT_TI_STREAM_ID] =
+m_bIsSlowWeapon [SMARTMINE_BLOB_ID] =
+m_bIsSlowWeapon [ROBOT_SMARTMINE_BLOB_ID] =
+m_bIsSlowWeapon [SMARTMSL_BLOB_ID] =
+m_bIsSlowWeapon [ROBOT_SMARTMSL_BLOB_ID] = 1;
+
+m_bIsEnergyWeapon.Clear (0);
+m_bIsEnergyWeapon [LASER_ID] =
+m_bIsEnergyWeapon [LASER_ID + 1] =
+m_bIsEnergyWeapon [LASER_ID + 2] =
+m_bIsEnergyWeapon [LASER_ID + 2] =
+m_bIsEnergyWeapon [ROBOT_LIGHT_FIREBALL_ID] =
+m_bIsEnergyWeapon [REACTOR_BLOB_ID] =
+m_bIsEnergyWeapon [FLARE_ID] =
+m_bIsEnergyWeapon [ROBOT_BLUE_LASER_ID] =
+m_bIsEnergyWeapon [SPREADFIRE_ID] =
+m_bIsEnergyWeapon [PLASMA_ID] =
+m_bIsEnergyWeapon [FUSION_ID] =
+m_bIsEnergyWeapon [SMARTMSL_ID] =
+m_bIsEnergyWeapon [SMARTMSL_BLOB_ID] =
+m_bIsEnergyWeapon [ROBOT_BLUE_ENERGY_ID] =
+m_bIsEnergyWeapon [SILENT_SPREADFIRE_ID] =
+m_bIsEnergyWeapon [ROBOT_RED_LASER_ID] =
+m_bIsEnergyWeapon [ROBOT_GREEN_LASER_ID] =
+m_bIsEnergyWeapon [ROBOT_PLASMA_ID] =
+m_bIsEnergyWeapon [ROBOT_MEDIUM_FIREBALL_ID] =
+m_bIsEnergyWeapon [ROBOT_SMARTMSL_BLOB_ID] =
+m_bIsEnergyWeapon [SUPERLASER_ID] =
+m_bIsEnergyWeapon [SUPERLASER_ID + 1] =
+m_bIsEnergyWeapon [HELIX_ID] =
+m_bIsEnergyWeapon [PHOENIX_ID] =
+m_bIsEnergyWeapon [OMEGA_ID] =
+m_bIsEnergyWeapon [ROBOT_WHITE_LASER_ID] =
+m_bIsEnergyWeapon [ROBOT_PHOENIX_ID] =
+m_bIsEnergyWeapon [ROBOT_FAST_PHOENIX_ID] =
+m_bIsEnergyWeapon [ROBOT_HELIX_ID] =
+m_bIsEnergyWeapon [SMARTMINE_BLOB_ID] =
+m_bIsEnergyWeapon [ROBOT_PHASE_ENERGY_ID] =
+m_bIsEnergyWeapon [ROBOT_SMARTMINE_BLOB_ID] =
+m_bIsEnergyWeapon [ROBOT_WHITE_ENERGY_ID] =
+m_bIsEnergyWeapon [ROBOT_VERTIGO_FIREBALL_ID] =
+m_bIsEnergyWeapon [ROBOT_VERTIGO_PHOENIX_ID] = 1;
+
+m_bIsEquipment.Clear (0);
+m_bIsEquipment [POW_EXTRA_LIFE] =
+m_bIsEquipment [POW_KEY_BLUE] =
+m_bIsEquipment [POW_KEY_RED] =
+m_bIsEquipment [POW_KEY_GOLD] =
+m_bIsEquipment [POW_FULL_MAP] =
+m_bIsEquipment [POW_BLUEFLAG] =
+m_bIsEquipment [POW_REDFLAG] =
+m_bIsEquipment [POW_CLOAK] =
+m_bIsEquipment [POW_INVUL] =
+m_bIsEquipment [POW_HOARD_ORB] = 2;
+m_bIsEquipment [POW_QUADLASER] =
+m_bIsEquipment [POW_CONVERTER] =
+m_bIsEquipment [POW_AMMORACK] =
+m_bIsEquipment [POW_AFTERBURNER] =
+m_bIsEquipment [POW_HEADLIGHT] =
+m_bIsEquipment [POW_SLOWMOTION] =
+m_bIsEquipment [POW_BULLETTIME] = 1;
+}
+
+//------------------------------------------------------------------------------
+
 int bPrintObjectInfo = 0;
 
 tWindowRenderedData windowRenderedData [MAX_RENDERED_WINDOWS];
@@ -1113,7 +1255,7 @@ if (nType == OBJ_PLAYER)
 if (nType == OBJ_ROBOT)
 	return SOUNDCLASS_ROBOT;
 if (nType == OBJ_WEAPON)
-	return gameData.objs.bIsMissile [info.nId] ? SOUNDCLASS_MISSILE : SOUNDCLASS_GENERIC;
+	return IsMissile () ? SOUNDCLASS_MISSILE : SOUNDCLASS_GENERIC;
 return SOUNDCLASS_GENERIC;
 }
 

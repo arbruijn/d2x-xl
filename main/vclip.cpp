@@ -77,7 +77,7 @@ return bmP->GetAvgColor ();
 
 //------------------------------------------------------------------------------
 
-int SetupHiresVClip (tVideoClip *vcP, tVClipInfo *vciP, CBitmap* bmP)
+int SetupHiresVClip (tVideoClip *vcP, tVideoClipInfo *vciP, CBitmap* bmP)
 {
 	int nFrames = vcP->nFrameCount;
 

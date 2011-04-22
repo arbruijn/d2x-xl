@@ -272,7 +272,6 @@ extern char 	*pszPrimaryWeaponNames [];
 extern char 	*pszSecondaryWeaponNames [];
 extern int  	nMaxPrimaryAmmo [MAX_PRIMARY_WEAPONS];
 extern ubyte   nMaxSecondaryAmmo [MAX_SECONDARY_WEAPONS];
-extern sbyte   bIsEnergyWeapon [MAX_WEAPON_TYPES];
 
 #define HAS_WEAPON_FLAG 1
 #define HAS_ENERGY_FLAG 2

@@ -107,7 +107,7 @@ void *pickupHandler [MAX_POWERUP_TYPES];
 
 static int nDbgMinFrame = 0;
 
-void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject)
+void UpdatePowerupClip (tVideoClip *vcP, tVideoClipInfo *vciP, int nObject)
 {
 if (vcP) {
 	static fix	xPowerupTime = 0;
@@ -183,7 +183,7 @@ void CObject::DoPowerupFrame (void)
 	int	i = OBJ_IDX (this);
 //if (gameStates.app.tick40fps.bTick) 
 if (info.renderType != RT_POLYOBJ) {
-	tVClipInfo	*vciP = &rType.vClipInfo;
+	tVideoClipInfo	*vciP = &rType.vClipInfo;
 	tVideoClip	*vcP = ((vciP->nClipIndex < 0) || (vciP->nClipIndex >= MAX_VCLIPS)) ? NULL : gameData.eff.vClips [0] + vciP->nClipIndex;
 	UpdatePowerupClip (vcP, vciP, i);
 	}

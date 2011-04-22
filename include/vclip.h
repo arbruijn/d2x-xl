@@ -55,7 +55,6 @@ void DrawWeaponVClip (CObject *objP);
 void DrawExplBlast (CObject *objP);
 void DrawShockwave (CObject *objP);
 void ConvertWeaponToVClip (CObject *objP);
-int SetupHiresVClip (tVideoClip *vcP, tVClipInfo *vciP, CBitmap* bmP = NULL);
 tRgbColorb *VClipColor (CObject *objP);
 
 void ReadVideoClip (tVideoClip& vc, CFile& cf);

@@ -117,7 +117,6 @@ void DrawPowerup(CObject *objP);
 int DoPowerup(CObject *objP, int nPlayer);
 
 //process (animate) a powerup for one frame
-void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject);
 void UpdateFlagClips (void);
 
 // Diminish shield and energy towards max in case they exceeded it.
