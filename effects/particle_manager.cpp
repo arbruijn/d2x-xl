@@ -45,7 +45,7 @@
 
 CParticleManager particleManager;
 
-#define USE_PARTICLE_SHADER	0
+#define USE_PARTICLE_SHADER	1
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
@@ -63,23 +63,19 @@ if (!gameOpts->render.bUseShaders)
 	return false;
 if (ogl.m_states.bDepthBlending < 1)
 	return false;
-if (!ogl.CopyDepthTexture (0, GL_TEXTURE2))
+if (!ogl.CopyDepthTexture (0, GL_TEXTURE1))
 	return false;
 ogl.m_states.bUseDepthBlending = 1;
 if (dMax < 1)
 	dMax = 1;
 //ogl.DrawBuffer ()->FlipBuffers (0, 1); // color buffer 1 becomes render target, color buffer 0 becomes render source (scene texture)
 //ogl.DrawBuffer ()->SetDrawBuffers ();
-ogl.SelectTMU (GL_TEXTURE1);
-ogl.SetTexturing (true);
-ogl.BindTexture (ogl.DrawBuffer ()->ColorBuffer (0));
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hParticleShader));
 if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg)) {
 	shaderManager.Set ("particleTex", 0);
-	shaderManager.Set ("sceneTex", 1);
-	shaderManager.Set ("depthTex", 2);
+	shaderManager.Set ("depthTex", 1);
 	shaderManager.Set ("screenScale", ogl.m_data.screenScale.vec);
 	shaderManager.Set ("dMax", dMax);
 	}
@@ -89,7 +85,7 @@ else {
 	}
 dMaxPrev = dMax;
 ogl.SetDepthTest (false);
-ogl.SetBlendMode (OGL_BLEND_REPLACE);
+ogl.SetBlendMode (OGL_BLEND_ALPHA_CONTROLLED);
 ogl.SelectTMU (GL_TEXTURE0);
 return true;
 }
@@ -121,7 +117,7 @@ if (ogl.m_states.bDepthBlending) {
 // into the other color buffer with blend mode replace (GL_ONE, GL_ZERO)
 
 const char *particleFS =
-	"uniform sampler2D particleTex, sceneTex, depthTex;\r\n" \
+	"uniform sampler2D particleTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
 	"uniform vec2 screenScale;\r\n" \
 	"//#define ZNEAR 1.0\r\n" \
@@ -134,15 +130,13 @@ const char *particleFS =
 	"#define ZEYE(z) (10000.0 / (5001.0 - NDC (z) * 4999.0)) //(C / (A + D))\r\n" \
 	"//#define ZEYE(z) -(ZFAR / ((z) * (ZFAR - ZNEAR) - ZFAR))\r\n" \
 	"void main (void) {\r\n" \
-	"vec2 sceneCoord = gl_FragCoord.xy * screenScale;\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, sceneCoord).r), 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
-	"vec4 sceneColor = texture2D (sceneTex, sceneCoord);\r\n" \
 	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"if (gl_Color.a == 0.0) //additive\r\n" \
-	"   gl_FragColor = vec4 (sceneColor.rgb + particleColor.rgb * dz, 1.0);\r\n" \
+	"   gl_FragColor = vec4 (particleColor.rgb * dz, 1.0);\r\n" \
 	"else//alpha\r\n" \
-	"   gl_FragColor = vec4 (mix (sceneColor.rgb, particleColor.rgb, particleColor.a * dz), 1.0);\r\n" \
+	"   gl_FragColor = vec4 (particleColor.rgb, (1.0 - particleColor.a * gl_Color.a) * dz);\r\n" \
 	"}\r\n"
 	;
 
@@ -225,6 +219,7 @@ m_nType = -1;
 m_bEmissive = false;
 m_dMax = 0.0f;
 ogl.SetDepthTest (true);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 CEffectArea::Reset ();
 }
 

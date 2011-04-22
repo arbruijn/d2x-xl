@@ -54,11 +54,12 @@ void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal);
 
 //------------------------------------------------------------------------------
 
-#define OGL_BLEND_ALPHA		0
-#define OGL_BLEND_ADD		1
-#define OGL_BLEND_ADD_WEAK	2
-#define OGL_BLEND_REPLACE	3
-#define OGL_BLEND_MULTIPLY	4
+#define OGL_BLEND_ALPHA					0
+#define OGL_BLEND_ADD					1
+#define OGL_BLEND_ADD_WEAK				2
+#define OGL_BLEND_REPLACE				3
+#define OGL_BLEND_MULTIPLY				4
+#define OGL_BLEND_ALPHA_CONTROLLED	5
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -459,6 +460,9 @@ class COGL {
 					break;
 				case OGL_BLEND_MULTIPLY: //-1
 					SetBlendMode (GL_DST_COLOR, GL_ZERO); // multiplicative
+					break;
+				case OGL_BLEND_ALPHA_CONTROLLED:
+					SetBlendMode (GL_ONE, GL_SRC_ALPHA);
 					break;
 				case OGL_BLEND_ALPHA:
 				default:
