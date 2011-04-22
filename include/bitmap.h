@@ -265,7 +265,7 @@ class CBitmap : public CArray< ubyte > {
 		inline int *SuperTranspFrames (int i = 0) { return m_info.supertranspFrames + i; }
 		inline char* Name (void) { return m_info.szName; }
 		inline int FrameSize (void) { return static_cast<int> (m_info.props.h) * static_cast<int> (m_info.props.rowSize); }
-		inline void SetId (ushort nId) { m_info.nId = nId; }
+		inline void SetKey (ushort nId) { m_info.nId = nId; }
 		inline void SetName (const char* pszName) { if (pszName) strncpy (m_info.szName, pszName, sizeof (m_info.szName)); }
 		inline void SetWidth (short w) { m_info.props.w = w; m_info.props.rowSize = w * m_info.nBPP; }
 		inline void SetHeight (short h) { m_info.props.h = h; }

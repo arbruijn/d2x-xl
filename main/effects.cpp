@@ -184,7 +184,7 @@ else {
 				hbmP->SetOverride (NULL);	//prevent the root texture from being deleted
 			hbmP->Unload (j, gameStates.app.bD1Data);
 			hbmP->SetOverride (bmfP);
-			bmfP->SetId (j);
+			bmfP->SetKey (j);
 			bmfP += nFrameStep;
 			}
 		}

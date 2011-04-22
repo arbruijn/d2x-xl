@@ -94,7 +94,7 @@ class CPolyModel : public CByteArray {
 		fix Size (void);
 
 		inline ushort Id (void) { return m_info.nId; }
-		inline void SetId (ushort nId) { m_info.nId = nId; }
+		inline void SetKey (ushort nId) { m_info.nId = nId; }
 		inline short Type (void) { return m_info.nType; }
 		inline void SetType (short nType) { m_info.nType = nType; }
 		inline bool Custom (void) { return m_info.bCustom; }

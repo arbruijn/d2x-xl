@@ -669,7 +669,7 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 		inline CFixVector LastPos () { return info.vLastPos; }
 
 		inline void SetSignature (int nSignature) { info.nSignature = nSignature; }
-		inline void SetId (ubyte nId) { info.nId = nId; }
+		inline void SetKey (ubyte nId) { info.nId = nId; }
 		inline void SetSize (fix xSize) { info.xSize = xSize; }
 		inline void SetShield (fix xShield) { info.xShield = xShield; }
 		inline void UpdateShield (fix xShield) { info.xShield += xShield; }
@@ -763,7 +763,7 @@ class CObject : public CObjectInfo {
 		static inline ubyte IsEquipment (short nId) { return m_bIsEquipment [nId]; }
 
 	private:
-		short				m_nId;
+		short				m_nKey;
 		CObject*			m_prev;
 		CObject*			m_next;
 		CObject*			m_target;
@@ -811,7 +811,7 @@ class CObject : public CObjectInfo {
 							  const CFixMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 		void ToBaseObject (tBaseObject *objP);
 
-		inline short Id (void) { return m_nId; }
+		inline short Key (void) { return m_nKey; }
 		inline CObject* Prev (void) { return m_prev; }
 		inline CObject* Next (void) { return m_next; }
 		inline void ResetLinks (void) {
@@ -827,7 +827,7 @@ class CObject : public CObjectInfo {
 		inline CFixVector StartVel (void) { return m_vStartVel; }
 		inline CFixVector RenderPos (void) { return m_vRenderPos.IsZero () ? info.position.vPos : m_vRenderPos; }
 
-		inline void SetId (short nId) { m_nId = nId; }
+		inline void SetKey (short nKey) { m_nKey = nKey; }
 		inline void SetPrev (CObject* prev) { m_prev = prev; }
 		inline void SetNext (CObject* next) { m_next = next; }
 		inline void SetLinkedType (ubyte nLinkedType) { m_nLinkedType = nLinkedType; }
@@ -1016,12 +1016,12 @@ class CObject : public CObjectInfo {
 
 		short Visible (void);
 
-		inline ubyte IsWeapon (void) { return (Type () != OBJ_WEAPON) ? 0 : m_bIsWeapon [Id ()]; }
-		inline ubyte IsEnergyWeapon (void) { return (Type () != OBJ_WEAPON) ? 0 : m_bIsEnergyWeapon [Id ()]; }
-		inline ubyte IsSlowWeapon (void) { return (Type () != OBJ_WEAPON) ? 0 : m_bIsSlowWeapon [Id ()]; }
-		inline ubyte IsFastWeapon (void) { return (Type () != OBJ_WEAPON) ? 0 : !m_bIsSlowWeapon [Id ()]; }
-		inline ubyte IsMissile (void) { return (Type () != OBJ_WEAPON) ? 0 : m_bIsMissile [Id ()]; }
-		inline ubyte IsEquipment (void) { return (Type () != OBJ_WEAPON) ? 0 : m_bIsEquipment [Id ()]; }
+		inline ubyte IsWeapon (void) { return ((Type () != OBJ_WEAPON) || Id () >= m_bIsWeapon.Length ()) ? 0 : m_bIsWeapon [Id ()]; }
+		inline ubyte IsEnergyWeapon (void) { return ((Type () != OBJ_WEAPON) || Id () >= m_bIsEnergyWeapon.Length ()) ? 0 : m_bIsEnergyWeapon [Id ()]; }
+		inline ubyte IsSlowWeapon (void) { return ((Type () != OBJ_WEAPON) || Id () >= m_bIsSlowWeapon.Length ()) ? 0 : m_bIsSlowWeapon [Id ()]; }
+		inline ubyte IsFastWeapon (void) { return ((Type () != OBJ_WEAPON) || Id () >= m_bIsSlowWeapon.Length ()) ? 0 : !m_bIsSlowWeapon [Id ()]; }
+		inline ubyte IsMissile (void) { return ((Type () != OBJ_WEAPON) || Id () >= m_bIsMissile.Length ()) ? 0 : m_bIsMissile [Id ()]; }
+		inline ubyte IsEquipment (void) { return ((Type () != OBJ_WEAPON) || Id () >= m_bIsEquipment.Length ()) ? 0 : m_bIsEquipment [Id ()]; }
 
 		static bool IsPlayerMine (short nId);
 		static bool IsRobotMine (short nId);

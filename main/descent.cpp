@@ -783,6 +783,7 @@ SDL_SetSpecialKeyHandling (0);
 #endif
 SDL_putenv (const_cast<char*>("SDL_DISABLE_LOCK_KEYS=1"));
 hogFileManager.Init ("", "");
+CObject::InitTables ();
 InitGameStates ();
 gameData.Init ();
 InitExtraGameInfo ();

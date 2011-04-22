@@ -770,7 +770,7 @@ else if (strstr (pszFile, "plasblob#") && strstr (pszFile, "/mods/") && !strstr 
 	gameStates.render.bPlasmaModded = 1;
 altBmP->SetType (BM_TYPE_ALT);
 altBmP->SetName (bmName);
-altBmP->SetId (nIndex);
+altBmP->SetKey (nIndex);
 bmP->SetOverride (altBmP);
 bmP = altBmP;
 bmP->DelFlags (BM_FLAG_RLE);
@@ -882,7 +882,7 @@ if (bmP->Texture ())
 	bmP->Texture ()->Release ();
 bmP->SetBPP (1);
 bmP->SetName (bmName);
-bmP->SetId (nIndex);
+bmP->SetKey (nIndex);
 
 #if DBG
 if ((nIndex >= 0) && (nIndex == nDbgTexture))
@@ -1055,7 +1055,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 					}
 				}
 			j = indices [i];
-			bm.SetId (j);
+			bm.SetKey (j);
 			}
 		else {
 #if DBG
@@ -1064,7 +1064,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 #endif
 			ReadBitmap (&bm, int (bm.Width ()) * int (bm.Height ()), &cf, false);
 			j = indices [i];
-			bm.SetId (j);
+			bm.SetKey (j);
 			bm.RLEExpand (NULL, 0);
 			*bm.Props () = *gameData.pig.tex.bitmapP [j].Props ();
 			bm.Remap (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);

@@ -1110,7 +1110,7 @@ CREATE (bHaveHiresModel, MAX_POLYGON_MODELS, 0);
 for (i = 0; i < 3; i++) {
 	polyModels [i].Create (MAX_POLYGON_MODELS);
 	for (int j = 0; j < MAX_POLYGON_MODELS; j++)
-		polyModels [i][j].SetId (j);
+		polyModels [i][j].SetKey (j);
 	}
 CREATE (modelToPOL, MAX_POLYGON_MODELS, 0);
 CREATE (polyModelPoints, MAX_POLYGON_VERTS, 0);
@@ -1167,7 +1167,6 @@ for (int i = 0; i < 2; i++)
 
 void InitWeaponFlags (void)
 {
-CObject::InitTables ();
 }
 
 //------------------------------------------------------------------------------

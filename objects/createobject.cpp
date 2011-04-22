@@ -78,7 +78,7 @@ void CObject::Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment
 {
 SetSignature (gameData.objs.nNextSignature++);
 SetType (nType);
-SetId (nId);
+SetKey (nId);
 SetLastPos (vPos);
 SetSize (xSize);
 SetCreator ((sbyte) nCreator);
@@ -144,10 +144,10 @@ if (nType == OBJ_DEBRIS) {
 	}
 
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
-m_nId = OBJ_IDX (this);
+SetKey (OBJ_IDX (this));
 SetSignature (gameData.objs.nNextSignature++);
 SetType (nType);
-SetId (nId);
+SetKey (nId);
 SetLastPos (vPos);
 SetPos (&vPos);
 SetSize (xSize);
@@ -189,7 +189,7 @@ else if (GetControlType () == CT_EXPLOSION) {
 #endif
 Link ();
 LinkToSeg (nSegment);
-return m_nId;
+return Key ();
 }
 
 //-----------------------------------------------------------------------------
@@ -259,7 +259,7 @@ if (nType == OBJ_DEBRIS) {
 if (0 > (nObject = AllocObject ()))
 	return -1;
 objP = OBJECTS + nObject;
-objP->SetId (nObject);
+objP->SetKey (nObject);
 objP->SetCreationTime ();
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
 objP->info.nSignature = gameData.objs.nNextSignature++;
