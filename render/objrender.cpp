@@ -835,7 +835,7 @@ static int RenderWeaponModel (CObject* objP, int bSpectate)
 {
 if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
-if (!(gameStates.app.bNostalgia || gameOpts->Use3DPowerups ()) && objP->WeaponIsMine () && (objP->info.nId != SMALLMINE_ID))
+if (!(gameStates.app.bNostalgia || gameOpts->Use3DPowerups ()) && objP->IsMine () && (objP->info.nId != SMALLMINE_ID))
 	ConvertWeaponToVClip (objP);
 else {
 	if (objP->IsMissile ()) {	//make missiles smaller during launch
@@ -999,7 +999,7 @@ if (gameStates.render.nShadowPass != 2) {
 	if (objP->info.nType != OBJ_WEAPON)
 		DrawWeaponVClip (objP);
 	else {
-		if (objP->WeaponIsMine ()) {
+		if (objP->IsMine ()) {
 			if (!DoObjectSmoke (objP))
 				DrawWeaponVClip (objP);
 			}

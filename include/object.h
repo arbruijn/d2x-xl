@@ -1023,11 +1023,11 @@ class CObject : public CObjectInfo {
 		inline ubyte IsMissile (void) { return (Type () != OBJ_WEAPON) ? 0 : m_bIsMissile [Id ()]; }
 		inline ubyte IsEquipment (void) { return (Type () != OBJ_WEAPON) ? 0 : m_bIsEquipment [Id ()]; }
 
-		bool IsPlayerMine (short nId);
+		static bool IsPlayerMine (short nId);
+		static bool IsRobotMine (short nId);
+		static bool IsMine (short nId);
 		bool IsPlayerMine (void);
-		bool IsRobotMine (short nId);
 		bool IsRobotMine (void);
-		bool IsMine (short nId);
 		bool IsMine (void);
 
 	private:

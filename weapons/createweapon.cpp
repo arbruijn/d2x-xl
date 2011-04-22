@@ -345,7 +345,7 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 	}
 //	Here's where to fix the problem with OBJECTS which are moving backwards imparting higher velocity to their weaponfire.
 //	Find out if moving backwards.
-if (!WeaponIsMine (nWeaponType))
+if (!CObject::IsMine (nWeaponType))
 	xParentSpeed = 0;
 else {
 	xParentSpeed = parentP->mType.physInfo.velocity.Mag ();

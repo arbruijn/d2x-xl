@@ -127,7 +127,7 @@ if (nId == PHOENIX_ID)
 	return gameData.time.xGame > xCreationTime + (I2X (1) / 3) * gameStates.gameplay.slowmo [0].fSpeed;
 else if (nId == GUIDEDMSL_ID)
 	return gameData.time.xGame > xCreationTime + (I2X (1) / 2) * gameStates.gameplay.slowmo [0].fSpeed;
-else if (WeaponIsPlayerMine (nId))
+else if (CObject::IsPlayerMine (nId))
 	return gameData.time.xGame > xCreationTime + (I2X (4)) * gameStates.gameplay.slowmo [0].fSpeed;
 else
 	return 0;
@@ -191,7 +191,7 @@ if (objP1->cType.laserInfo.parent.nSignature == objP2->cType.laserInfo.parent.nS
 	}
 
 //	Anything can cause a collision with a robot super prox mine.
-if (WeaponIsMine (id1) || WeaponIsMine (id2))
+if (CObject::IsMine (id1) || CObject::IsMine (id2))
 	return 0;
 if (!COMPETITION && EGI_FLAG (bKillMissiles, 0, 0, 0) && (CObject::IsMissile (id1) || CObject::IsMissile (id2)))
 	return 0;
@@ -390,7 +390,7 @@ if (bHarmless)
 
 //	If the object firing the laser is the CPlayerData, then indicate the laser object so robots can dodge.
 //	New by MK on 6/8/95, don't let robots evade proximity bombs, thereby decreasing uselessness of bombs.
-if ((objP == gameData.objs.consoleP) && !WeaponIsPlayerMine (laserP->info.nId))
+if ((objP == gameData.objs.consoleP) && !laserP->IsPlayerMine ())
 	gameStates.app.bPlayerFiredLaserThisFrame = nObject;
 
 if (gameStates.app.cheats.bHomingWeapons || gameData.weapons.info [nLaserType].homingFlag) {

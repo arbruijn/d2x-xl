@@ -57,7 +57,7 @@ CObject *CObject::CreateExplBlast (void)
 return NULL;
 #endif
 
-	short		nObject, id;
+	short		nObject;
 	CObject	*objP;
 
 if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves))
@@ -75,11 +75,11 @@ objP->cType.explInfo.nDeleteTime = -1;
 objP->info.xSize = info.xSize;
 objP->info.xSize /= 3;
 if (IsMissile ()) {
-	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID))
+	if ((Id () == EARTHSHAKER_ID) || (Id () == ROBOT_EARTHSHAKER_ID))
 		objP->info.xSize = I2X (5) / 2;
-	else if ((id == MEGAMSL_ID) || (id == ROBOT_MEGAMSL_ID) || (id == EARTHSHAKER_MEGA_ID))
+	else if ((Id () == MEGAMSL_ID) || (Id () == ROBOT_MEGAMSL_ID) || (Id () == EARTHSHAKER_MEGA_ID))
 		objP->info.xSize = I2X (2);
-	else if ((id == SMARTMSL_ID) || (id == ROBOT_SMARTMSL_ID))
+	else if ((Id () == SMARTMSL_ID) || (Id () == ROBOT_SMARTMSL_ID))
 		objP->info.xSize = I2X (3) / 2;
 	else
 		objP->info.xSize = I2X (1);
