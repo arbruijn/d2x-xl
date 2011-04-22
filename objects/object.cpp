@@ -1692,16 +1692,37 @@ return (info.nType == OBJ_ROBOT) && (info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (i
 
 //------------------------------------------------------------------------------
 
+bool CObject::IsPlayerMine (short nId) 
+{ 
+return (nId == PROXMINE_ID) || (nId == SMARTMINE_ID) || (nId == SMALLMINE_ID); 
+}
+
+//------------------------------------------------------------------------------
+
 bool CObject::IsPlayerMine (void) 
 { 
-return IsWeapon && ((Id () == PROXMINE_ID) || (Id () == SMARTMINE_ID) || (Id () == SMALLMINE_ID)); 
+return IsWeapon () && IsPlayerMine (Id ()); 
+}
+
+//------------------------------------------------------------------------------
+
+bool CObject::IsRobotMine (short nId) 
+{ 
+return (nId == ROBOT_SMARTMINE_ID); 
 }
 
 //------------------------------------------------------------------------------
 
 bool CObject::IsRobotMine (void) 
 { 
-return IsWeapon () && (Id () == ROBOT_SMARTMINE_ID); 
+return IsWeapon () && IsRobotMine (Id ()); 
+}
+
+//------------------------------------------------------------------------------
+
+bool CObject::IsMine (short nId) 
+{ 
+return IsPlayerMine (nId) || IsRobotMine (nId); 
 }
 
 //------------------------------------------------------------------------------

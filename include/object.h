@@ -755,12 +755,12 @@ class CObject : public CObjectInfo {
 
 	public:
 		static void InitTables (void);
-		static inline bool IsWeapon (short nId) { return m_bIsWeapon [nId] != 0; }
-		static inline bool IsEnergyWeapon (short nId) { return m_bIsEnergyWeapon [nId] != 0; }
-		static inline bool IsSlowWeapon (short nId) { return m_bIsSlowWeapon [nId] != 0; }
-		static inline bool IsFastWeapon (short nId) { return !m_bIsSlowWeapon [nId] != 0; }
-		static inline bool IsMissile (short nId) { return m_bIsMissile [nId] != 0; }
-		static inline bool IsEquipment (short nId) { return m_bIsEquipment [nId] != 0; }
+		static inline ubyte IsWeapon (short nId) { return m_bIsWeapon [nId]; }
+		static inline ubyte IsEnergyWeapon (short nId) { return m_bIsEnergyWeapon [nId]; }
+		static inline ubyte IsSlowWeapon (short nId) { return m_bIsSlowWeapon [nId]; }
+		static inline ubyte IsFastWeapon (short nId) { return !m_bIsSlowWeapon [nId]; }
+		static inline ubyte IsMissile (short nId) { return m_bIsMissile [nId]; }
+		static inline ubyte IsEquipment (short nId) { return m_bIsEquipment [nId]; }
 
 	private:
 		short				m_nId;
@@ -1016,14 +1016,18 @@ class CObject : public CObjectInfo {
 
 		short Visible (void);
 
-		inline bool IsWeapon (void) { return (Type () == OBJ_WEAPON) && m_bIsWeapon [Id ()]; }
-		inline bool IsEnergyWeapon (void) { return (Type () == OBJ_WEAPON) && m_bIsEnergyWeapon [Id ()]; }
-		inline bool IsSlowWeapon (void) { return (Type () == OBJ_WEAPON) && m_bIsSlowWeapon [Id ()]; }
-		inline bool IsFastWeapon (void) { return (Type () == OBJ_WEAPON) && !m_bIsSlowWeapon [Id ()]; }
-		inline bool IsMissile (void) { return (Type () == OBJ_WEAPON) && m_bIsMissile [Id ()]; }
-		inline bool IsEquipment (void) { return (Type () == OBJ_WEAPON) && m_bIsEquipment [Id ()]; }
+		inline ubyte IsWeapon (void) { return (Type () != OBJ_WEAPON) ? 0 : m_bIsWeapon [Id ()]; }
+		inline ubyte IsEnergyWeapon (void) { return (Type () != OBJ_WEAPON) ? 0 : m_bIsEnergyWeapon [Id ()]; }
+		inline ubyte IsSlowWeapon (void) { return (Type () != OBJ_WEAPON) ? 0 : m_bIsSlowWeapon [Id ()]; }
+		inline ubyte IsFastWeapon (void) { return (Type () != OBJ_WEAPON) ? 0 : !m_bIsSlowWeapon [Id ()]; }
+		inline ubyte IsMissile (void) { return (Type () != OBJ_WEAPON) ? 0 : m_bIsMissile [Id ()]; }
+		inline ubyte IsEquipment (void) { return (Type () != OBJ_WEAPON) ? 0 : m_bIsEquipment [Id ()]; }
+
+		bool IsPlayerMine (short nId);
 		bool IsPlayerMine (void);
+		bool IsRobotMine (short nId);
 		bool IsRobotMine (void);
+		bool IsMine (short nId);
 		bool IsMine (void);
 
 	private:

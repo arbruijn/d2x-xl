@@ -194,7 +194,7 @@ void RenderLightTrail (CObject *objP)
 
 if (!SHOW_OBJ_FX)
 	return;
-if (!gameData.objs.bIsWeapon [objP->info.nId])
+if (!objP->IsWeapon ())
 	return;
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;

@@ -684,7 +684,7 @@ static int HaveHiresAnimation (const char* bmName, int bD1)
 
 if (!ps)
 	return -1;
-int l = ps - bmName + 1;
+int l = int (ps - bmName + 1);
 strncpy (szAnim, bmName, l);
 szAnim [l] = '0';
 szAnim [l + 1] = '\0';

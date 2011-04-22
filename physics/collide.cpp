@@ -1124,7 +1124,7 @@ return 1;
 //	If both OBJECTS are weapons, weaken the weapon.
 void CObject::MaybeKillWeapon (CObject* otherObjP)
 {
-if (WeaponIsMine (info.nId)) {
+if (IsMine ()) {
 	Die ();
 	return;
 	}
@@ -2048,7 +2048,7 @@ return 1;
 int CObject::CollideWeaponAndDebris (CObject* debrisP, CFixVector& vHitPt)
 {
 //	Hack! Prevent debrisP from causing bombs spewed at CPlayerData death to detonate!
-if (WeaponIsMine (info.nId)) {
+if (IsMine ()) {
 	if (cType.laserInfo.xCreationTime + I2X (1)/2 > gameData.time.xGame)
 		return 1;
 	}

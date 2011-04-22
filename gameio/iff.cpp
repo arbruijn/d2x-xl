@@ -779,7 +779,7 @@ int CIFF::WritePbm (FILE *fp, tIFFBitmapHeader *bitmap_header, int bCompression)
 {
 	int ret;
 	int raw_size = EVEN(bitmap_header->w) * bitmap_header->h;
-	int body_size, tiny_size, pbm_size = 4 + BMHD_SIZE + 8 + EVEN(raw_size) + sizeof (tPalEntry) * (1 << bitmap_header->nplanes) + 8;
+	int body_size, tiny_size, pbm_size = 4 + BMHD_SIZE + 8 + EVEN(raw_size) + sizeof (tPalEntry) * int (1 << bitmap_header->nplanes) + 8;
 	int save_pos;
 
 ////printf("write_pbm\n");
@@ -796,7 +796,7 @@ if (ret != IFF_NO_ERROR)
 	return ret;
 tiny_size = 0;
 body_size = WriteBody(fp, bitmap_header, bCompression);
-pbm_size = 4 + BMHD_SIZE + body_size + tiny_size + sizeof (tPalEntry) * (1 << bitmap_header->nplanes) + 8;
+pbm_size = 4 + BMHD_SIZE + body_size + tiny_size + sizeof (tPalEntry) * int (1 << bitmap_header->nplanes) + 8;
 Assert(fseek(fp, save_pos, SEEK_SET)==0);
 PutLong(pbm_size+8, fp);
 Assert(fseek(fp, pbm_size+8, SEEK_CUR)==0);

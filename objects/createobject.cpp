@@ -315,7 +315,7 @@ objP->LinkToSeg (nSegment);
 memset (&objP->HitInfo (), 0, sizeof (CObjHitInfo));
 #if 1
 if (IsMultiGame && IsCoopGame && 
-	 (nType == OBJ_WEAPON) && m_bIsMissile [int (nId)] && 
+	 (nType == OBJ_WEAPON) && CObject::IsMissile (short (nId)) && 
 	 (nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER)) {
 	extern char powerupToObject [MAX_POWERUP_TYPES];
 
@@ -381,7 +381,7 @@ if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
 #endif
 	return -2;
 	}
-if (gameStates.gameplay.bMineMineCheat && !bForce && (gameData.objs.bIsEquipment [nId] < 2))
+if (gameStates.gameplay.bMineMineCheat && !bForce && (CObject::IsEquipment (nId) < 2))
 	return -1;
 short nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size,
 										CT_POWERUP, MT_PHYSICS, RT_POWERUP);

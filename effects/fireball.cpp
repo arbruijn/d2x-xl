@@ -168,7 +168,7 @@ FORALL_OBJS (objP, i) {
 	if (objP->info.nFlags & OF_SHOULD_BE_DEAD)
 		continue;
 	if (nType == OBJ_WEAPON) {
-		if (!WeaponIsMine (objP->info.nId))
+		if (!objP->IsMine ())
 		continue;
 		}
 	else if (nType == OBJ_ROBOT) {
@@ -195,7 +195,7 @@ FORALL_OBJS (objP, i) {
 	vHit *= (FixDiv (objP->info.xSize, objP->info.xSize + dist));
 	if (nType == OBJ_WEAPON) {
 		objP->ApplyForce (vForce);
-		if (WeaponIsMine (objP->info.nId) && (FixMul (dist, force) > I2X (8000))) {	//prox bombs have chance of blowing up
+		if (objP->IsMine () && (FixMul (dist, force) > I2X (8000))) {	//prox bombs have chance of blowing up
 			objP->Die ();
 			objP->ExplodeBadassWeapon (objP->info.position.vPos);
 			}

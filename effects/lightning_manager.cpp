@@ -285,7 +285,7 @@ if (SHOW_LIGHTNING) {
 #endif
 			}
 		else if (h & MISSILE_LIGHTNING) {
-			if ((objP->IsMissile ())
+			if (objP->IsMissile ())
 				CreateForMissile (objP);
 #if DBG
 			else if (objP->info.nType != 255)

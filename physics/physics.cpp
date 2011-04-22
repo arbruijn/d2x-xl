@@ -676,7 +676,7 @@ retryMove:
 	else if (fviResult == HIT_OBJECT) {
 		CObject	*hitObjP = OBJECTS + hi.hit.nObject;
 
-		if (ObjIsPlayerMine (hitObjP))
+		if (hitObjP->IsPlayerMine ())
 			nTries--;
 		}
 
