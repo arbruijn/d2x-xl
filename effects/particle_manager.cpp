@@ -141,7 +141,7 @@ const char *particleFS =
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color * dz;\r\n" \
 	"if (gl_Color.a == 0.0) //additive\r\n" \
-	"   gl_FragColor = vec4 (1.0, 0.5, 0.0/*particleColor.rgb * dz*/, 1.0);\r\n" \
+	"   gl_FragColor = vec4 (particleColor.rgb * dz, 1.0);\r\n" \
 	"else // alpha\r\n" \
 	"   gl_FragColor = vec4 (particleColor.rgb * particleColor.a, 1.0 - particleColor.a);\r\n" \
 	"}\r\n"
