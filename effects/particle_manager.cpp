@@ -140,12 +140,11 @@ const char *particleFS =
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * screenScale).r), 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
-	"if (gl_Color.a == 0.0) //additive\r\n" \
-	"   gl_FragColor = vec4 (particleColor.rgb * dz, 0.0);\r\n" \
-	"else {//alpha\r\n" \
-	"   particleColor.a *= gl_Color.a;\r\n" \
-	"   gl_FragColor = vec4 (particleColor.rgb * particleColor.a, 1.0 - particleColor.a * dz);\r\n" \
-	"   }\r\n" \
+	"particleColor *= dz;\r\n" \
+	"if (gl_Color.a < 0.1) //additive\r\n" \
+	"   gl_FragColor = vec4 (particleColor.rgb * dz, 1.0 - dz);\r\n" \
+	"else // alpha\r\n" \
+	"   gl_FragColor = vec4 (particleColor.rgb * particleColor.a, 1.0 - particleColor.a);\r\n" \
 	"}\r\n"
 	;
 
@@ -180,7 +179,7 @@ if (ogl.m_states.bMRTOk) {
 float CParticleBuffer::AlphaScale (void)
 {
 #if HAVE_PARTICLE_SHADER
-return (!gameStates.render.cameras.bActive && m_bEmissive && (gameOpts->render.effects.bSoftParticles & 4) && ogl.m_states.bMRTOk && (m_nType <= WATERFALL_PARTICLES))
+return (!gameStates.render.cameras.bActive && (m_nType <= WATERFALL_PARTICLES) && m_bEmissive && USE_PARTICLE_SHADER)
 		 ? 0.0f
 		 : 1.0f;
 #else
