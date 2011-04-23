@@ -44,8 +44,7 @@ static CStaticArray< bool, MAX_VCLIPS >	bVClipLoaded;
 
 void OglCachePolyModelTextures (int nModel)
 {
-	int bCustomModel = 0;
-	CPolyModel* modelP = GetPolyModel (NULL, NULL, nModel, 0, bCustomModel);
+	CPolyModel* modelP = GetPolyModel (NULL, NULL, nModel, 0);
 
 if (modelP)
 	modelP->LoadTextures (NULL);

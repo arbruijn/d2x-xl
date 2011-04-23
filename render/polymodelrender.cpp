@@ -79,7 +79,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-CPolyModel* GetPolyModel (CObject *objP, CFixVector *pos, int nModel, int flags, int& bCustomModel)
+CPolyModel* GetPolyModel (CObject *objP, CFixVector *pos, int nModel, int flags, int* bCustomModel)
 {
 	CPolyModel	*modelP = NULL;
 	int			bHaveAltModel, bIsDefModel;
@@ -112,7 +112,8 @@ else if (!modelP) {
 		if (gameStates.app.bFixModels && (objP->info.nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
 			return NULL;
 		modelP = gameData.models.polyModels [0] + nModel;
-		bCustomModel = 1;
+		if (bCustomModel)
+			*bCustomModel = 1;
 		}
 	else if (gameStates.render.nShadowPass != 2) {
 		if ((gameStates.app.bAltModels || (objP->info.nType == OBJ_PLAYER)) && bHaveAltModel)
@@ -166,7 +167,7 @@ if (!gameStates.render.bBuildModels) {
 #if !MAX_SHADOWMAPS
 if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
 	return 1;
-if (!(modelP = GetPolyModel (objP, pos, nModel, flags, bCustomModel))) {
+if (!(modelP = GetPolyModel (objP, pos, nModel, flags, &bCustomModel))) {
 	if (!(bCustomModel || flags) && (gameStates.render.nShadowPass != 2) && HaveHiresModel (nModel))
 		bHires = 1;
 	else
@@ -180,7 +181,7 @@ if (gameStates.render.nShadowPass == 2) {
 	return 1;
 	}
 #else
-if (!(modelP = GetPolyModel (objP, pos, nModel, flags, bCustomModel))) {
+if (!(modelP = GetPolyModel (objP, pos, nModel, flags, &bCustomModel))) {
 	if (!flags && HaveHiresModel (nModel))
 		bHires = 1;
 	else

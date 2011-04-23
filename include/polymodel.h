@@ -162,7 +162,7 @@ void DrawModelPicture (int mn,CAngleVector* orient_angles);
 
 int ReadPolyModels (CArray<CPolyModel>& models, int nModels, CFile& cf, int nOffset = 0);
 
-CPolyModel* GetPolyModel (CObject* objP, CFixVector* pos, int nModel, int flags, int& bCustomModel);
+CPolyModel* GetPolyModel (CObject* objP, CFixVector* pos, int nModel, int flags, int* bCustomModel = NULL);
 
 //	-----------------------------------------------------------------------------
 
