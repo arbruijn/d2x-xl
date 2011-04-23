@@ -96,7 +96,7 @@ m_states.bAntiAliasingOk = (pszOglExtensions && strstr (pszOglExtensions, "GL_AR
 
 void COGL::SetupMRT (void)
 {
-m_states.bMRTOk = 0; //(pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_draw_buffers"));
+m_states.bMRTOk = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_draw_buffers"));
 }
 
 //------------------------------------------------------------------------------
