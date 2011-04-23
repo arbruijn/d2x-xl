@@ -48,7 +48,7 @@ CParticleManager particleManager;
 #define HAVE_PARTICLE_SHADER	1
 
 #if HAVE_PARTICLE_SHADER
-#	define USE_PARTICLE_SHADER	(ogl.m_states.bMRTOk && (gameOpts->render.effects.bSoftParticles & 4))
+#	define USE_PARTICLE_SHADER	(ogl.m_states.bMRTOk && (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)))
 #else
 #	define USE_PARTICLE_SHADER	0
 #endif
@@ -328,7 +328,7 @@ if (Init ()) {
 	if (ogl.m_states.bShadersOk) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
 		if (m_nType <= SMOKE_PARTICLES) {
-			if ((gameOpts->render.particles.nQuality == 3) && !automap.Display () && lightManager.Headlights ().nLights) {
+			if ((gameOpts->render.particles.nQuality == 2) && !automap.Display () && lightManager.Headlights ().nLights) {
 				tRgbaColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
 				lightManager.Headlights ().SetupShader (1, 0, &color);
 				}
@@ -337,7 +337,7 @@ if (Init ()) {
 			}
 		else
 #endif
-		if (gameStates.render.cameras.bActive || !(gameOpts->render.effects.bSoftParticles & 4))
+		if (gameStates.render.cameras.bActive || !gameOpts->SoftBlend (SOFT_BLEND_PARTICLES))
 			shaderManager.Deploy (-1);
 #if HAVE_PARTICLE_SHADER
 		else if ((m_nType <= WATERFALL_PARTICLES) && USE_PARTICLE_SHADER) {

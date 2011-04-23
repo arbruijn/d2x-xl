@@ -78,7 +78,7 @@ static int nShadows, nCoronas, nLightTrails;
 
 static const char* pszExplShrapnels [5];
 static const char* pszNoneBasicFull [3];
-static const char* pszSmokeQuality [5];
+static const char* pszSmokeQuality [4];
 static const char* pszNoneBasicAdv [3];
 static const char* pszNoneStdHigh [3];
 static const char* pszOffOn [2];
@@ -201,7 +201,6 @@ pszSmokeQuality [0] = TXT_NONE;
 pszSmokeQuality [1] = TXT_BASIC;
 pszSmokeQuality [2] = TXT_STANDARD;
 pszSmokeQuality [3] = TXT_HIGH;
-pszSmokeQuality [4] = TXT_EXTREME;
 
 pszNoneBasicAdv [0] = TXT_NONE;
 pszNoneBasicAdv [1] = TXT_BASIC;
@@ -248,7 +247,7 @@ do {
 	m.AddText ("");
 	sprintf (szSlider + 1, TXT_SMOKE, pszSmokeQuality [gameOpts->render.particles.nQuality]);
 	*szSlider = *(TXT_SMOKE - 1);
-	effectOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 4, KEY_P, HTX_SMOKE);
+	effectOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 3, KEY_P, HTX_SMOKE);
 	if (!gameStates.render.bHaveStencilBuffer)
 		effectOpts.nShadows = -1;
 	else {
@@ -307,10 +306,10 @@ do {
 		optSoftParticles [2] = -1;
 	else {
 		m.AddText ("");
-		optSoftParticles [0] = m.AddCheck (TXT_SOFT_SPRITES, (gameOpts->render.effects.bSoftParticles & 1) != 0, KEY_I, HTX_SOFT_SPRITES);
-		optSoftParticles [1] = m.AddCheck (TXT_SOFT_SPARKS, (gameOpts->render.effects.bSoftParticles & 2) != 0, KEY_A, HTX_SOFT_SPARKS);
+		optSoftParticles [0] = m.AddCheck (TXT_SOFT_SPRITES, gameOpts->SoftBlend (SOFT_BLEND_SPRITES) != 0, KEY_I, HTX_SOFT_SPRITES);
+		optSoftParticles [1] = m.AddCheck (TXT_SOFT_SPARKS, gameOpts->SoftBlend (SOFT_BLEND_SPARKS) != 0, KEY_A, HTX_SOFT_SPARKS);
 		if (extraGameInfo [0].bUseParticles)
-			optSoftParticles [2] = m.AddCheck (TXT_SOFT_SMOKE, (gameOpts->render.effects.bSoftParticles & 4) != 0, KEY_O, HTX_SOFT_SMOKE);
+			optSoftParticles [2] = m.AddCheck (TXT_SOFT_SMOKE, gameOpts->SoftBlend (SOFT_BLEND_PARTICLES) != 0, KEY_O, HTX_SOFT_SMOKE);
 		else
 			optSoftParticles [2] = -1;
 		}

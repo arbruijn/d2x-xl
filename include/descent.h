@@ -344,6 +344,10 @@ typedef struct tCoronaRenderOptions {
 
 //------------------------------------------------------------------------------
 
+#define SOFT_BLEND_SPRITES		1
+#define SOFT_BLEND_SPARKS		2
+#define SOFT_BLEND_PARTICLES	4
+
 typedef struct tEffectRenderOptions {
 	int bEnabled;
 	int nShockwaves;
@@ -668,6 +672,7 @@ class CGameOptions {
 		void Init (int i = 0);
 		bool Use3DPowerups (void);
 		int UseHiresSound (void);
+		inline bool SoftBlend (int nFlag) { return (render.effects.bSoftParticles & nFlag) != 0; }
 };
 
 //------------------------------------------------------------------------------

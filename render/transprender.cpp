@@ -434,7 +434,7 @@ else
 	vPos.Assign (v);
 	if (bAdditive & 3)
 		m_data.bRenderGlow = 1;
-	if ((gameOpts->render.effects.bSoftParticles & 1) != 0)
+	if (gameOpts->SoftBlend (SOFT_BLEND_SPRITES) != 0)
 		m_data.bSoftBlend = 1;
 	return Add (triP ? tiFace : tiPoly, &item, sizeof (item), vPos, 0, true);
 	}
@@ -534,7 +534,7 @@ item.fSoftRad = fSoftRad;
 item.position.Assign (position);
 if (bAdditive & 3)
 	m_data.bRenderGlow = 1;
-if ((gameOpts->render.effects.bSoftParticles & 1) != 0)
+if (gameOpts->SoftBlend (SOFT_BLEND_SPRITES) != 0)
 	m_data.bSoftBlend = 1;
 return Add (tiSprite, &item, sizeof (item), position);
 }
@@ -553,7 +553,7 @@ item.nSize = nSize;
 item.nFrame = nFrame;
 item.nType = nType;
 item.position.Assign (position);
-if (gameOpts->render.effects.bSoftParticles & 2)
+if (gameOpts->SoftBlend (SOFT_BLEND_SPARKS))
 	m_data.bSoftBlend = 1;
 return Add (tiSpark, &item, sizeof (item), position);
 }
@@ -597,7 +597,7 @@ if ((particle->m_nType < 0) || (particle->m_nType >= PARTICLE_TYPES))
 item.particle = particle;
 item.fBrightness = fBrightness;
 //particle->Transform (gameStates.render.bPerPixelLighting == 2);
-if (gameOpts->render.effects.bSoftParticles & 4)
+if gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)
 	m_data.bSoftBlend = 1;
 return Add (tiParticle, &item, sizeof (item), particle->m_vPos, 10);
 }
@@ -745,7 +745,7 @@ void CTransparencyRenderer::RenderPoly (tTranspPoly *item)
 {
 PROF_START
 	CBitmap*		bmP = item->bmP;
-	int			bSoftBlend = SoftBlend (1);
+	int			bSoftBlend = SoftBlend (SOFT_BLEND_SPRITES);
 
 ogl.ResetClientStates (1);
 m_data.bmP [1] = m_data.bmP [2] = NULL;
@@ -982,7 +982,7 @@ ResetBitmaps ();
 void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
 #if 1
-	int bSoftBlend = (item->fSoftRad > 0) && SoftBlend (1);
+	int bSoftBlend = (item->fSoftRad > 0) && SoftBlend (SOFT_BLEND_SPRITES);
 	int bGlow = 1;
 
 if (glowRenderer.Available (GLOW_SPRITES)) {
@@ -1049,7 +1049,7 @@ if (!sparkBuffer.nSparks)
 
 sparkArea.Reset ();
 
-	int bSoftBlend = SoftBlend (2);
+	int bSoftBlend = SoftBlend (SOFT_BLEND_SPARKS);
 
 ogl.ResetClientStates (1);
 m_data.bmP [1] = m_data.bmP [2] = NULL;
@@ -1351,7 +1351,7 @@ return int (m_data.bRenderGlow || m_data.bSoftBlend);
 
 int CTransparencyRenderer::SoftBlend (int nFlag)
 {
-return m_data.bHaveDepthBuffer && !gameStates.render.cameras.bActive && ((gameOpts->render.effects.bSoftParticles & nFlag) != 0);
+return m_data.bHaveDepthBuffer && !gameStates.render.cameras.bActive && (gameOpts->SoftBlend (nFlag) != 0);
 }
 
 //------------------------------------------------------------------------------

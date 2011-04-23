@@ -149,7 +149,7 @@ else {
 		else if (char (colorP->alpha) != 2.0f) 
 			m_color [1].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 		else {
-			if ((m_bEmissive = (gameOpts->render.particles.nQuality > 3))) {
+			if ((m_bEmissive = (gameOpts->render.particles.nQuality > 2))) {
 				m_color [0].red = 0.5f + float (rand ()) / float (RAND_MAX) * 0.5f;
 				m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (RAND_MAX) * 0.5f);
 				}
@@ -410,7 +410,7 @@ m_nLife = nLife;
 m_nDelay = 0; //bStart ? randN (nLife) : 0;
 m_nRenderType = RenderType ();
 
-#if 1
+#if 0
 
 InitColor (colorP, fBrightness, nParticleSystemType);
 if (!InitDrift (vDir, nSpeed))
@@ -468,7 +468,7 @@ else {
 		else if (char (colorP->alpha) != 2.0f) 
 			m_color [1].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 		else {
-			if ((m_bEmissive = (gameOpts->render.particles.nQuality > 3))) {
+			if ((m_bEmissive = (gameOpts->render.particles.nQuality > 2))) {
 				m_color [0].red = 0.5f + float (rand ()) / float (RAND_MAX) * 0.5f;
 				m_color [0].green = m_color [0].red * (0.5f + float (rand ()) / float (RAND_MAX) * 0.5f);
 				}
@@ -842,7 +842,7 @@ if (m_nType <= SMOKE_PARTICLES) {
 		m_nFadeTime = -1;
 	}
 #if SMOKE_LIGHTING //> 1
-	if (gameOpts->render.particles.nQuality == 3) {
+	if (gameOpts->render.particles.nQuality > 2) {
 		if (0 <= (m_nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 0, nThread))) {
 			tFaceColor* colorP = lightManager.AvgSgmColor (m_nSegment, NULL, nThread);
 			m_color [0].red *= colorP->color.red;

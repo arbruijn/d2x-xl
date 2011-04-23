@@ -786,8 +786,7 @@ void DoParticleTrail (CObject *objP)
 {
 #if PARTICLE_TRAIL
 	int			nParts, nObject, nSmoke, id = objP->info.nId, 
-					bGatling = (id == VULCAN_ID) || (id == GAUSS_ID) || 
-								  ((gameOpts->render.particles.nQuality > 2) && ((id == ROBOT_VULCAN_ID) || (id == ROBOT_GAUSS_ID))),
+					bGatling = (id == VULCAN_ID) || (id == GAUSS_ID) || (id == ROBOT_VULCAN_ID) || (id == ROBOT_GAUSS_ID),
 					bOmega = (id == OMEGA_ID);
 	float			nScale;
 	CFixVector	pos;
@@ -820,10 +819,10 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	if (bGatling)
 		nScale = 5.0f;
 	else {
-		if (((id >= LASER_ID) && (id < LASER_ID + 4)) ||
+		if (((id >= LASER_ID) && (id <= LASER_ID + 3)) ||
 			 (id == SUPERLASER_ID) || (id == SUPERLASER_ID + 1) ||
 			 (id == ROBOT_BLUE_LASER_ID) || (id == ROBOT_GREEN_LASER_ID) || 
-			 ((gameOpts->render.particles.nQuality > 2) && ((id == ROBOT_RED_LASER_ID) || (id == ROBOT_WHITE_LASER_ID))))
+			 (id == ROBOT_RED_LASER_ID) || (id == ROBOT_WHITE_LASER_ID))
 			nScale = 3;
 		else if ((id == PHOENIX_ID) || (id == ROBOT_LIGHT_FIREBALL_ID) || (id == ROBOT_FAST_PHOENIX_ID))
 			nScale = 1;
@@ -875,8 +874,7 @@ else if (t == OBJ_REACTOR)
 else if (t == OBJ_WEAPON) {
 	if (objP->IsMissile ())
 		DoMissileSmoke (objP);
-	else if ((nId == VULCAN_ID) || (nId == GAUSS_ID) || 
-				((gameOpts->render.particles.nQuality > 2) && ((nId == ROBOT_VULCAN_ID) || (nId == ROBOT_GAUSS_ID))))
+	else if ((nId == VULCAN_ID) || (nId == GAUSS_ID) || (nId == ROBOT_VULCAN_ID) || (nId == ROBOT_GAUSS_ID))
 		DoParticleTrail (objP);
 	else if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (nId == PROXMINE_ID))
 		DoBombSmoke (objP);
