@@ -1344,7 +1344,7 @@ else {
 	}
 
 pb [0].color = m_renderColor;
-if (m_bEmissive && useAlphaControl)
+if (m_bEmissive && alphaControl)
 	pb [0].color.alpha = 0;
 pb [1].color = pb [2].color = pb [3].color = pb [0].color;
 
