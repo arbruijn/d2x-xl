@@ -67,12 +67,12 @@ void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal);
 
 #define OGLTEXBUFSIZE (4096 * 4096 * 4)
 
-typedef union tScreenScale {
+typedef union tWindowScale {
 	struct {
 		float x, y;
 		} dim;
 	float vec [2];
-} __pack__ tScreenScale;
+} __pack__ tWindowScale;
 
 #if DBG_OGL
 
@@ -91,7 +91,7 @@ class COglData {
 		float				zNear;
 		float				zFar;
 		CFloatVector3	depthScale;
-		tScreenScale	screenScale;
+		tWindowScale	windowScale;
 		CStaticArray<CFBO, 9> drawBuffers;
 		CFBO*				drawBufferP;
 		int				nPerPixelLights [9];

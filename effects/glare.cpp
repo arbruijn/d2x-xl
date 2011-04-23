@@ -653,7 +653,7 @@ if (!m_shaderProg)
 if (shaderManager.Rebuild (m_shaderProg)) {
 	shaderManager.Set ("glareTex", 0);
 	shaderManager.Set ("depthTex", 1);
-	shaderManager.Set ("screenScale", ogl.m_data.screenScale.vec);
+	shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
 	shaderManager.Set ("dMax", dMax);
 	shaderManager.Set ("blendMode", nBlendMode);
 	}
@@ -692,7 +692,7 @@ if (ogl.m_states.bDepthBlending) {
 const char *glareFS =
 	"uniform sampler2D glareTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
-	"uniform vec2 screenScale;\r\n" \
+	"uniform vec2 windowScale;\r\n" \
 	"uniform int blendMode;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
@@ -704,7 +704,7 @@ const char *glareFS =
 	"#define ZEYE(z) (10000.0 / (5001.0 - NDC (z) * 4999.0)) //(C / (A + D))\r\n" \
 	"//#define ZEYE(z) -(ZFAR / ((z) * (ZFAR - ZNEAR) - ZFAR))\r\n" \
 	"void main (void) {\r\n" \
-	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * screenScale).r), 0.0, dMax);\r\n" \
+	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 glareColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
 	"if (blendMode > 0) //additive\r\n" \

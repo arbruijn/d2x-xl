@@ -348,8 +348,8 @@ if (/*gameStates.app.bInitialized &&*/ ogl.m_states.bInitialized) {
 zNear = 1.0f;
 zFar = 5000.0f;
 depthScale.SetZero ();
-screenScale.dim.x =
-screenScale.dim.y = 0;
+windowScale.dim.x =
+windowScale.dim.y = 0;
 CLEAR (nPerPixelLights);
 CLEAR (lightRads);
 CLEAR (lightPos);
@@ -454,8 +454,8 @@ if (gameStates.render.bRearView < 0)
 m_data.depthScale.v.coord.x = float (ZFAR / (ZFAR - ZNEAR));
 m_data.depthScale.v.coord.y = float (ZNEAR * ZFAR / (ZNEAR - ZFAR));
 m_data.depthScale.v.coord.z = float (ZFAR - ZNEAR);
-m_data.screenScale.dim.x = 1.0f / float (screen.Width ());
-m_data.screenScale.dim.y = 1.0f / float (screen.Height ());
+m_data.windowScale.dim.x = 1.0f / float (screen.Width ());
+m_data.windowScale.dim.y = 1.0f / float (screen.Height ());
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 transformation.SetupProjection (aspectRatio);
 glMatrixMode (GL_MODELVIEW);

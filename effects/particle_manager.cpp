@@ -82,7 +82,7 @@ if (!m_shaderProg)
 if (shaderManager.Rebuild (m_shaderProg)) {
 	shaderManager.Set ("particleTex", 0);
 	shaderManager.Set ("depthTex", 1);
-	shaderManager.Set ("screenScale", ogl.m_data.screenScale.vec);
+	shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
 	shaderManager.Set ("dMax", dMax);
 	}
 else {
@@ -126,18 +126,23 @@ if (ogl.m_states.bDepthBlending) {
 const char *particleFS =
 	"uniform sampler2D particleTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
-	"uniform vec2 screenScale;\r\n" \
+	"uniform vec2 windowScale;\r\n" \
 	"//#define ZNEAR 1.0\r\n" \
 	"//#define ZFAR 5000.0\r\n" \
 	"//#define A 5001.0 //(ZNEAR + ZFAR)\r\n" \
 	"//#define B 4999.0 //(ZNEAR - ZFAR)\r\n" \
 	"//#define C 10000.0 //(2.0 * ZNEAR * ZFAR)\r\n" \
 	"//#define D (NDC (Z) * B)\r\n" \
+	"// compute Normalized Device Coordinates\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
+	"// compute eye space depth value from window depth\r\n" \
 	"#define ZEYE(z) (10000.0 / (5001.0 - NDC (z) * 4999.0)) //(C / (A + D))\r\n" \
 	"//#define ZEYE(z) -(ZFAR / ((z) * (ZFAR - ZNEAR) - ZFAR))\r\n" \
 	"void main (void) {\r\n" \
-	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * screenScale).r), 0.0, dMax);\r\n" \
+	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
+	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
+	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dMax);\r\n" \
+	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color * dz;\r\n" \
 	"if (gl_Color.a == 0.0) //additive\r\n" \
