@@ -139,10 +139,9 @@ const char *particleFS =
 	"void main (void) {\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * screenScale).r), 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
-	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
-	"particleColor *= dz;\r\n" \
-	"if (gl_Color.a < 0.1) //additive\r\n" \
-	"   gl_FragColor = vec4 (particleColor.rgb * dz, 1.0 - dz);\r\n" \
+	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color * dz;\r\n" \
+	"if (gl_Color.a == 0.0) //additive\r\n" \
+	"   gl_FragColor = vec4 (1.0, 0.5, 0.0/*particleColor.rgb * dz*/, 1.0);\r\n" \
 	"else // alpha\r\n" \
 	"   gl_FragColor = vec4 (particleColor.rgb * particleColor.a, 1.0 - particleColor.a);\r\n" \
 	"}\r\n"
@@ -176,14 +175,12 @@ if (ogl.m_states.bMRTOk) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-float CParticleBuffer::AlphaScale (void)
+bool CParticleBuffer::AlphaControl (void)
 {
 #if HAVE_PARTICLE_SHADER
-return (!gameStates.render.cameras.bActive && (m_nType <= WATERFALL_PARTICLES) && m_bEmissive && USE_PARTICLE_SHADER)
-		 ? 0.0f
-		 : 1.0f;
+return (!gameStates.render.cameras.bActive && (m_nType <= WATERFALL_PARTICLES) && USE_PARTICLE_SHADER);
 #else
-return 1.0f;
+return false;
 #endif
 }
 
@@ -191,7 +188,7 @@ return 1.0f;
 
 void CParticleBuffer::Setup (void)
 {
-	float alphaScale = AlphaScale ();
+	bool alphaControl = AlphaControl ();
 
 PROF_START
 #if USE_OPENMP > 1
@@ -199,7 +196,7 @@ PROF_START
 if (m_iBuffer <= 1000)
 #	endif
 for (int i = 0; i < m_iBuffer; i++)
-	m_particles [i].particle->Setup (alphaScale, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
+	m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
 #	if (LAZY_RENDER_SETUP < 2)
 else
 #	endif
@@ -208,7 +205,7 @@ else
 	int nThread = omp_get_thread_num();
 #	pragma omp for 
 	for (int i = 0; i < m_iBuffer; i++)
-		m_particles [i].particle->Setup (alphaScale, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
+		m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
 	}
 #else
 if ((m_iBuffer < 100) || !RunRenderThreads (rtParticles))
@@ -239,10 +236,10 @@ void CParticleBuffer::Setup (int nThread)
 int nStep = m_iBuffer / gameStates.app.nThreads;
 int nStart = nStep * nThread;
 int nEnd = (nThread == gameStates.app.nThreads - 1) ? m_iBuffer : nStart + nStep;
-float alphaScale = AlphaScale ();
+bool alphaControl = AlphaControl ();
 
 for (int i = nStart; i < nEnd; i++)
-	m_particles [i].particle->Setup (alphaScale, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
+	m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -281,6 +278,7 @@ ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].texCoord);
 OglColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].color);
 OglVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].vertex);
+glColor4f (1.0, 1.0, 1.0, 1.0);
 return 1;
 }
 

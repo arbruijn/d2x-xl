@@ -172,7 +172,7 @@ class CParticle : public tParticle {
 				      float fScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp, char nFadeType,
 					   float fBrightness, CFixVector *vEmittingFace);
 		int Render (float brightness);
-		void Setup (float alphaScale, float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread);
+		void Setup (bool alphaControl, float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread);
 		int Update (int nCurTime, float brightness, int nThread);
 		bool IsVisible (int nThread);
 		inline fix Transform (bool bUnscaled) {
@@ -365,7 +365,7 @@ class CParticleBuffer : public CEffectArea {
 		bool Flush (float brightness, bool bForce = false);
 		bool Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad);
 		void Reset (void);
-		float AlphaScale (void);
+		bool AlphaControl (void);
 
 		CParticleBuffer () : CEffectArea (), m_iBuffer (0), m_nType (-1), m_bEmissive (false), m_dMax (0.0f) {}
 

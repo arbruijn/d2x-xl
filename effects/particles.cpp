@@ -1022,6 +1022,8 @@ m_nLife -= t;
 m_decay = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
 #else
 UpdateColor (fBrightness, nThread);
+if (m_nLife < 0)
+	return 1;
 
 if (m_nDelay > 0) {
 	m_nUpdated = nCurTime;
@@ -1031,8 +1033,7 @@ if (m_nDelay > 0) {
 
 if (!UpdateDrift (nCurTime, nThread))
 	return 0;
-
-if (m_nTTL < 0)
+if (m_nLife < 0)
 	return 1;
 
 #if SMOKE_SLOWMO
@@ -1315,7 +1316,7 @@ pb [3].vertex.dir.coord.z = vCenter.dir.coord.z;
 
 #else // -----------------------------------------------------------------------
 
-void CParticle::Setup (float alphaScale, float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread) 
+void CParticle::Setup (bool alphaControl, float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread) 
 {
 	CFloatVector3 vCenter, uVec, rVec;
 	float fScale;
@@ -1343,7 +1344,8 @@ else {
 	}
 
 pb [0].color = m_renderColor;
-pb [0].color.alpha *= alphaScale;
+if (m_bEmissive && useAlphaControl)
+	pb [0].color.alpha = 0;
 pb [1].color = pb [2].color = pb [3].color = pb [0].color;
 
 float hx = ParticleImageInfo (m_nType).xBorder;
