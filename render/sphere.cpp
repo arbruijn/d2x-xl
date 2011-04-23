@@ -873,8 +873,8 @@ if (gameData.render.shield.nFaces > 0)
 		if (objP->rType.polyObjInfo.nModel < 0) 
 			nSize = objP->info.xSize;
 		else {
-			int bAltModel = 0;
-			CPolyModel* modelP = GetPolyModel (objP, NULL, objP->ModelId (), 0, bAltModel);
+			int bCustomModel = 0;
+			CPolyModel* modelP = GetPolyModel (objP, NULL, objP->ModelId (), 0, bCustomModel);
 			nSize = modelP ? modelP->Rad () : objP->info.xSize;
 			}
 		fScale = gameData.render.shield.Pulse ()->fScale;

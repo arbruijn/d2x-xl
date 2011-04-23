@@ -79,7 +79,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-CPolyModel* GetPolyModel (CObject *objP, CFixVector *pos, int nModel, int flags, int& bAltModel)
+CPolyModel* GetPolyModel (CObject *objP, CFixVector *pos, int nModel, int flags, int& bCustomModel)
 {
 	CPolyModel	*modelP = NULL;
 	int			bHaveAltModel, bIsDefModel;
@@ -88,6 +88,7 @@ CPolyModel* GetPolyModel (CObject *objP, CFixVector *pos, int nModel, int flags,
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
+bCustomModel = 0;
 if (gameStates.app.bEndLevelSequence && 
 	 ((nModel == gameData.endLevel.exit.nModel) || (nModel == gameData.endLevel.exit.nDestroyedModel))) {
 	bHaveAltModel = 0;
@@ -107,10 +108,11 @@ if ((nModel >= gameData.models.nPolyModels) && !(modelP = gameData.models.modelT
 if (!objP)
 	modelP = ((gameStates.app.bAltModels && bIsDefModel && bHaveAltModel) ? gameData.models.polyModels [2] : gameData.models.polyModels [0]) + nModel;
 else if (!modelP) {
-	if (!(bIsDefModel || bHaveAltModel)) {
+	if (!(bIsDefModel && bHaveAltModel)) {
 		if (gameStates.app.bFixModels && (objP->info.nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
 			return NULL;
 		modelP = gameData.models.polyModels [0] + nModel;
+		bCustomModel = 1;
 		}
 	else if (gameStates.render.nShadowPass != 2) {
 		if ((gameStates.app.bAltModels || (objP->info.nType == OBJ_PLAYER)) && bHaveAltModel)
@@ -132,7 +134,6 @@ if (!(SHOW_DYN_LIGHT || SHOW_SHADOWS) && modelP->SimplerModel () && !flags && po
 	while (modelP->SimplerModel () && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * modelP->Rad ()))
 		modelP = gameData.models.polyModels [0] + modelP->SimplerModel () - 1;
 	}
-bAltModel = bHaveAltModel && !bIsDefModel;
 return modelP;
 }
 
@@ -152,7 +153,7 @@ int DrawPolyModel (
 	tRgbaColorf*	colorP)
 {
 	CPolyModel*	modelP;
-	int			nTextures, bHires = 0, bAltModel = 0;
+	int			nTextures, bHires = 0, bCustomModel = 0;
 
 #if 0 //DBG
 if (!gameStates.render.bBuildModels) {
@@ -165,8 +166,8 @@ if (!gameStates.render.bBuildModels) {
 #if !MAX_SHADOWMAPS
 if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
 	return 1;
-if (!(modelP = GetPolyModel (objP, pos, nModel, flags, bAltModel))) {
-	if (!flags && (gameStates.render.nShadowPass != 2) && HaveHiresModel (nModel))
+if (!(modelP = GetPolyModel (objP, pos, nModel, flags, bCustomModel))) {
+	if (!(bCustomModel || flags) && (gameStates.render.nShadowPass != 2) && HaveHiresModel (nModel))
 		bHires = 1;
 	else
 		return gameStates.render.nShadowPass == 2;
@@ -179,7 +180,7 @@ if (gameStates.render.nShadowPass == 2) {
 	return 1;
 	}
 #else
-if (!(modelP = GetPolyModel (objP, pos, nModel, flags, bAltModel))) {
+if (!(modelP = GetPolyModel (objP, pos, nModel, flags, bCustomModel))) {
 	if (!flags && HaveHiresModel (nModel))
 		bHires = 1;
 	else
@@ -201,7 +202,7 @@ if (!flags) {	//draw entire object
 	if (objP->info.nType == OBJ_DEBRIS)
 		objP = objP;
 #endif
-	if (!gameStates.app.bNostalgia && G3RenderModel (objP, bAltModel ? -nModel : nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
+	if (!gameStates.app.bNostalgia && G3RenderModel (objP, bCustomModel ? -nModel : nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
 		ogl.SetTransform (0);
 		gameData.render.vertP = NULL;
 		return 1;

@@ -828,10 +828,10 @@ if (vOffsetP)
 int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
 						 CAngleVector *animAnglesP, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
-if (objP && (objP->info.nType == OBJ_PLAYER))
+if (objP && (objP->info.nType == OBJ_PLAYER) && (nModel > 0))
 	nModel += gameData.multiplayer.weaponStates [objP->info.nId].nShip;
 
-	int						i, 
+	int						i = 0, 
 								bHires = (nModel > 0), 
 								bUseVBO = ogl.m_states.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
 								bEmissive = (objP != NULL) && objP->IsWeapon () && !objP->IsMissile (),
@@ -851,29 +851,33 @@ if (objP->info.nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 
-if (pm->m_bValid < 1) {
-	if (pm->m_bValid) {
-		i = 0;
-		bHires = 0;
-		}
-	else {
-		if (IsDefaultModel (nModel)) {
-			if (bUseVBO && pm->m_bValid && !(pm->m_vboDataHandle && pm->m_vboIndexHandle))
-				pm->m_bValid = 0;
-			i = G3BuildModel (objP, nModel, pp, modelBitmaps, pObjColor, 1);
-			if (i < 0)	//successfully built new model
-				return gameStates.render.bBuildModels;
+if (bHires) {
+	if (pm->m_bValid < 1) {
+		if (pm->m_bValid)
+			bHires = 0;
+		else {
+			if (IsDefaultModel (nModel)) {
+				if (bUseVBO && pm->m_bValid && !(pm->m_vboDataHandle && pm->m_vboIndexHandle))
+					pm->m_bValid = 0;
+				i = G3BuildModel (objP, nModel, pp, modelBitmaps, pObjColor, 1);
+				if (i < 0)	//successfully built new model
+					return gameStates.render.bBuildModels;
+				}
+			else
+				i = 0;
+			pm->m_bValid = -1;
+			bHires = 0;
 			}
-		else
-			i = 0;
-		pm->m_bValid = -1;
 		}
+	}
+
+if (!bHires) {
 	pm = gameData.models.renderModels [0] + nModel;
 	if (pm->m_bValid < 0)
 		return 0;
 	if (bUseVBO && pm->m_bValid && !(pm->m_vboDataHandle && pm->m_vboIndexHandle))
 		pm->m_bValid = 0;
-	if (!(i || pm->m_bValid)) {
+	if (!pm->m_bValid) {
 		i = G3BuildModel (objP, nModel, pp, modelBitmaps, pObjColor, 0);
 		if (i <= 0) {
 			if (!i)
