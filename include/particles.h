@@ -21,6 +21,8 @@
 #define GATLING_PARTICLES			9
 #define PARTICLE_TYPES				10
 
+#define MAX_PARTICLE_QUALITY		3
+
 #define MAX_PARTICLES(_nParts,_nDens)				particleManager.MaxParticles (_nParts, _nDens)
 #define PARTICLE_SIZE(_nSize,_fScale,_bBlowUp)	particleManager.ParticleSize (_nSize, _fScale, _bBlowUp)
 
@@ -574,7 +576,7 @@ class CParticleImageManager {
 };
 
 extern CParticleImageManager particleImageManager;
-extern tParticleImageInfo particleImageInfo [5][PARTICLE_TYPES];
+extern tParticleImageInfo particleImageInfo [MAX_PARTICLE_QUALITY + 1][PARTICLE_TYPES];
 
 //------------------------------------------------------------------------------
 

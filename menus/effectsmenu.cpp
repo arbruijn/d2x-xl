@@ -78,7 +78,7 @@ static int nShadows, nCoronas, nLightTrails;
 
 static const char* pszExplShrapnels [5];
 static const char* pszNoneBasicFull [3];
-static const char* pszSmokeQuality [4];
+static const char* pszSmokeQuality [MAX_PARTICLE_QUALITY + 1];
 static const char* pszNoneBasicAdv [3];
 static const char* pszNoneStdHigh [3];
 static const char* pszOffOn [2];
@@ -247,7 +247,7 @@ do {
 	m.AddText ("");
 	sprintf (szSlider + 1, TXT_SMOKE, pszSmokeQuality [gameOpts->render.particles.nQuality]);
 	*szSlider = *(TXT_SMOKE - 1);
-	effectOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 3, KEY_P, HTX_SMOKE);
+	effectOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, MAX_PARTICLE_QUALITY, KEY_P, HTX_SMOKE);
 	if (!gameStates.render.bHaveStencilBuffer)
 		effectOpts.nShadows = -1;
 	else {

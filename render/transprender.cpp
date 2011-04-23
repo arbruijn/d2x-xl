@@ -597,7 +597,7 @@ if ((particle->m_nType < 0) || (particle->m_nType >= PARTICLE_TYPES))
 item.particle = particle;
 item.fBrightness = fBrightness;
 //particle->Transform (gameStates.render.bPerPixelLighting == 2);
-if gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)
+if (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES))
 	m_data.bSoftBlend = 1;
 return Add (tiParticle, &item, sizeof (item), particle->m_vPos, 10);
 }

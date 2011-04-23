@@ -48,7 +48,7 @@
 
 #if 1
 
-tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
+tParticleImageInfo particleImageInfo [MAX_PARTICLE_QUALITY + 1][PARTICLE_TYPES] = {
 	{{NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
@@ -95,7 +95,7 @@ tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
 
 #else
 
-tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
+tParticleImageInfo particleImageInfo [MAX_PARTICLE_QUALITY + 1][PARTICLE_TYPES] = {
 	{{NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
