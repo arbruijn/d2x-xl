@@ -831,12 +831,14 @@ int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp,
 if (objP && (objP->info.nType == OBJ_PLAYER))
 	nModel += gameData.multiplayer.weaponStates [objP->info.nId].nShip;
 
-	RenderModel::CModel*	pm = gameData.models.renderModels [1] + nModel;
 	int						i, 
-								bHires = 1, 
+								bHires = (nModel > 0), 
 								bUseVBO = ogl.m_states.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
 								bEmissive = (objP != NULL) && objP->IsWeapon () && !objP->IsMissile (),
 								nGunId, nBombId, nMissileId, nMissiles;
+
+nModel = abs (nModel);
+RenderModel::CModel*	pm = gameData.models.renderModels [bHires] + nModel;
 
 if (!objP)
 	return 0;
