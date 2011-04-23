@@ -189,6 +189,9 @@ return (fate == HIT_NONE) || (fate == HIT_BAD_P0);
 
 int TargetInLineOfFire (void)
 {
+#if DBG
+return 0;
+#else
 	int			nType;
 	CHitData		hitData;
 	CObject*		objP;
@@ -219,6 +222,7 @@ if (IsCoopGame)
 if (!IsTeamGame)
 	return 1;
 return GetTeam (gameData.objs.consoleP->info.nId) != GetTeam (objP->info.nId);
+#endif
 }
 
 //	-----------------------------------------------------------------------------

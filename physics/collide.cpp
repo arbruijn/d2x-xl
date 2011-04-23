@@ -1975,7 +1975,7 @@ if (WI_destructible (nTarget))
 	return 1;
 if (COMPETITION)
 	return 0;
-if (!OBJECTS [nTarget].IsMissile ())
+if (!CObject::IsMissile (nTarget))
 	return 0;
 if (EGI_FLAG (bKillMissiles, 0, 0, 0) == 2)
 	return 1;
