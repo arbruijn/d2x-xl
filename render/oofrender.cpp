@@ -169,6 +169,9 @@ SetCullAndStencil (bCullFront);
 
 int OOF_DrawShadowVolume (CModel *po, CSubModel *pso, int bCullFront)
 {
+if (bCullFront && gameStates.render.bSeparateStencilOps)
+	return 1;
+
 	CEdge*					pe;
 	CFloatVector*			pv;
 	int						nVerts, nEdges;
@@ -248,6 +251,9 @@ return 1;
 
 int OOF_DrawShadowCaps (CModel *po, CSubModel *pso, int bCullFront)
 {
+if (bCullFront && gameStates.render.bSeparateStencilOps)
+	return 1;
+
 	CFace*			pf;
 	CFaceVert*		pfv;
 	CFloatVector*	pv, v0, v1;
@@ -267,7 +273,8 @@ nVerts = 0;
 for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++)
 	nVerts += pf->m_nVerts;
 
-if (bCullFront) {
+//if (bCullFront) 
+{
 #if DBG_SHADOWS
 	if (!bRearCap)
 		return 1;
@@ -299,7 +306,8 @@ if (bCullFront) {
 			glFrontFace (GL_CW);
 		}
 	}
-else {
+//else
+	{
 #if DBG_SHADOWS
 	if (!bFrontCap)
 		return 1;
@@ -563,6 +571,7 @@ if (gameStates.render.nShadowPass == 2)
 	OOF_DrawShadow (po, po->m_subModels + nIndex);
 else
 	Draw (objP, po, fLight);
+ogl.SetFaceCulling (true);
 return 1;
 }
 

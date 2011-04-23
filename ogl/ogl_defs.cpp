@@ -58,6 +58,18 @@ gameStates.render.bSeparateStencilOps = 0;
 if ((gameStates.render.bHaveStencilBuffer = glIsEnabled (GL_STENCIL_TEST))) {
 	SetStencilTest (false);
 	if (pszOglExtensions) {
+		const char *s = pszOglExtensions;
+		while (*s && (s = strstr (s, "separate"))) 
+		{
+			ogl.SetStencilTest (false);
+			++s;
+		}
+		s = pszOglExtensions;
+		while (*s && (s = strstr (s, "stencil"))) 
+		{
+			ogl.SetStencilTest (false);
+			++s;
+		}
 		if (strstr (pszOglExtensions, "GL_ATI_separate_stencil"))
 			gameStates.render.bSeparateStencilOps = 1;
 		else if (strstr (pszOglExtensions, "GL_EXT_stencil_two_side"))

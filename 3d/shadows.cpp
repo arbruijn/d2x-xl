@@ -1357,7 +1357,7 @@ GatherLitFaces (po);
 if ((m_nRenderFlipFlop = !m_nRenderFlipFlop))
 	m_fClipDist = ClipDist (objP, po);
 ogl.SetTexturing (false);
-h = RenderShadowCaps (objP, po, 0) &&
+h = RenderSha1dowCaps (objP, po, 0) &&
 	 RenderShadowCaps (objP, po, 1) &&
 	 RenderShadowVolume (po, 0) &&
 	 RenderShadowVolume (po, 1);

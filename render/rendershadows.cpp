@@ -109,7 +109,7 @@ gameStates.render.nShadowPass = 3;
 ogl.StartFrame (0, 0, xStereoSeparation);
 if (ogl.m_states.bMRTOk && glowRenderer.Available (BLUR_SHADOW)) {
 	gameStates.render.nShadowBlurPass = 1;
-	glowRenderer.Begin (BLUR_SHADOW, 2, true, 1.0f);
+	glowRenderer.Begin (BLUR_SHADOW, 1 + int ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)), true, 1.0f);
 	}
 RenderShadowQuad ();
 if (gameStates.render.nShadowBlurPass) {
