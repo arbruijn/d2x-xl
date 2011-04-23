@@ -54,8 +54,16 @@ void COGL::SetupPointSprites (void)
 void COGL::SetupStencilOps (void)
 {
 ogl.SetStencilTest (true);
-if ((gameStates.render.bHaveStencilBuffer = glIsEnabled (GL_STENCIL_TEST)))
+gameStates.render.bSeparateStencilOps = 0;
+if ((gameStates.render.bHaveStencilBuffer = glIsEnabled (GL_STENCIL_TEST))) {
 	SetStencilTest (false);
+	if (pszOglExtensions) {
+		if (strstr (pszOglExtensions, "GL_ATI_separate_stencil"))
+			gameStates.render.bSeparateStencilOps = 1;
+		else if (strstr (pszOglExtensions, "GL_EXT_stencil_two_side"))
+			gameStates.render.bSeparateStencilOps = 2;
+		}
+	}
 }
 
 //------------------------------------------------------------------------------

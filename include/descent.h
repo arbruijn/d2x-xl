@@ -1058,6 +1058,7 @@ class CRenderStates {
 		int bHaveDynLights;
 		int bHaveSparks;
 		int bHaveStencilBuffer;
+		int bSeparateStencilOps;
 		int bHaveStereoBuffers;
 		int bUsePerPixelLighting;
 		int nRenderPass;

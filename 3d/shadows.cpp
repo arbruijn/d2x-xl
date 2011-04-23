@@ -741,14 +741,34 @@ return m_nState = 1;
 
 void SetCullAndStencil (int bCullFront, int bZPass)
 {
-	int nStencilOp [2] = {GL_DECR_WRAP, GL_INCR_WRAP};
+	static int nStencilOp [2] = {GL_DECR_WRAP, GL_INCR_WRAP};
 
-ogl.SetFaceCulling (true);
-OglCullFace (bCullFront);
-if (bZPass)
-	glStencilOp (GL_KEEP, GL_KEEP, nStencilOp [bCullFront]);
-else
-	glStencilOp (GL_KEEP, nStencilOp [bCullFront], GL_KEEP);
+if (gameStates.render.bSeparateStencilOps == 0) {
+	ogl.SetFaceCulling (true);
+	OglCullFace (bCullFront);
+	if (bZPass)
+		glStencilOp (GL_KEEP, GL_KEEP, nStencilOp [bCullFront]);
+	else
+		glStencilOp (GL_KEEP, nStencilOp [bCullFront], GL_KEEP);
+	}
+else {
+	ogl.SetFaceCulling (false);
+	if (gameStates.render.bSeparateStencilOps == 1) {
+		glStencilOpSeparate (GL_BACK, GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT); 
+		glStencilOpSeparate (GL_FRONT, GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT); 
+		}
+	else {
+		glEnable (GL_STENCIL_TEST_TWO_SIDE_EXT);
+		glActiveStencilFaceEXT (GL_BACK);
+		glStencilOp (GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT); 
+		glStencilMask (~0);
+		glStencilFunc (GL_ALWAYS, 0, ~0);
+		glActiveStencilFaceEXT (GL_FRONT);
+		glStencilOp (GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT); 
+		glStencilMask (~0);
+		glStencilFunc (GL_ALWAYS, 0, ~0);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -816,6 +836,9 @@ ogl.FlushBuffers (GL_TRIANGLE_FAN, i);
 
 int CSubModel::RenderShadowVolume (CModel* po, int bCullFront)
 {
+if (bCullFront && gameStates.render.bSeparateStencilOps)
+	return 1;
+
 	CFloatVector*	pvf, v [4];
 	CFace*			pf, ** ppf;
 	ushort*			pfv, * paf;
@@ -1259,6 +1282,9 @@ return m_fClipDist = (fMaxDist ? fMaxDist : (fInf < G3_INFINITY) ? fInf : G3_INF
 
 int CSubModel::RenderShadowCaps (CObject *objP, CModel* po, int bCullFront)
 {
+if (bCullFront && gameStates.render.bSeparateStencilOps)
+	return 1;
+
 	CFloatVector*	pvf, v0, v1;
 	CFace*			pf, ** ppf;
 	ushort*			pfv, i, j, nVerts;
@@ -1335,7 +1361,7 @@ h = RenderShadowCaps (objP, po, 0) &&
 	 RenderShadowCaps (objP, po, 1) &&
 	 RenderShadowVolume (po, 0) &&
 	 RenderShadowVolume (po, 1);
-;
+ogl.SetFaceCulling (true);
 }
 if (m_nParent >= 0)
 	transformation.End ();

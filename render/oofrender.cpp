@@ -160,26 +160,7 @@ return pso->m_edges.m_nContourEdges = h;
 
 void OOF_SetCullAndStencil (int bCullFront)
 {
-#if DBG_SHADOWS
-if (bSingleStencil || bShadowTest) 
-#endif
- {
-	ogl.SetFaceCulling (true);
-	if (bCullFront) {
-		OglCullFace (1);
-		if (bZPass)
-			glStencilOp (GL_KEEP, GL_KEEP, GL_INCR_WRAP);
-		else
-			glStencilOp (GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-		}
-	else {
-		OglCullFace (0);
-		if (bZPass)
-			glStencilOp (GL_KEEP, GL_KEEP, GL_DECR_WRAP);
-		else
-			glStencilOp (GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-		}
-	}
+SetCullAndStencil (bCullFront);
 }
 
 //------------------------------------------------------------------------------
