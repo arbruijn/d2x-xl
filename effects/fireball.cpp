@@ -96,9 +96,11 @@ CObject *CObject::CreateShockwave (void)
 
 if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves))
 	return NULL;
+if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
+	return NULL;
 if (SPECTATOR (this))
 	return NULL;
-nObject = CreateFireball (0, info.nSegment, info.position.vPos, 10 * info.xSize, RT_SHOCKWAVE);
+nObject = CreateFireball (0, info.nSegment, info.position.vPos, info.xSize, RT_SHOCKWAVE);
 if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
