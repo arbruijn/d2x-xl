@@ -158,6 +158,8 @@ return pso->m_edges.m_nContourEdges = h;
 
 //------------------------------------------------------------------------------
 
+void SetCullAndStencil (int bCullFront, int bZPass = 0);
+
 void OOF_SetCullAndStencil (int bCullFront)
 {
 SetCullAndStencil (bCullFront);

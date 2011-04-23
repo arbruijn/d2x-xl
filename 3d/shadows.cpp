@@ -739,7 +739,7 @@ return m_nState = 1;
 
 //------------------------------------------------------------------------------
 
-void SetCullAndStencil (int bCullFront, int bZPass)
+void SetCullAndStencil (int bCullFront, int bZPass = 0)
 {
 	static int nStencilOp [2] = {GL_DECR_WRAP, GL_INCR_WRAP};
 
