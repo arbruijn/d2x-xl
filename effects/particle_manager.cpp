@@ -45,7 +45,13 @@
 
 CParticleManager particleManager;
 
-#define USE_PARTICLE_SHADER	1
+#define HAVE_PARTICLE_SHADER	1
+
+#if HAVE_PARTICLE_SHADER
+#	define USE_PARTICLE_SHADER	(ogl.m_states.bMRTOk && (gameOpts->render.effects.bSoftParticles & 4))
+#else
+#	define USE_PARTICLE_SHADER	0
+#endif
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
@@ -136,8 +142,10 @@ const char *particleFS =
 	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"if (gl_Color.a == 0.0) //additive\r\n" \
 	"   gl_FragColor = vec4 (particleColor.rgb * dz, 0.0);\r\n" \
-	"else//alpha\r\n" \
-	"   gl_FragColor = vec4 (particleColor.rgb, (1.0 - particleColor.a * gl_Color.a) * dz);\r\n" \
+	"else {//alpha\r\n" \
+	"   particleColor.a *= gl_Color.a;\r\n" \
+	"   gl_FragColor = vec4 (particleColor.rgb * particleColor.a, 1.0 - particleColor.a * dz);\r\n" \
+	"   }\r\n" \
 	"}\r\n"
 	;
 
@@ -171,7 +179,7 @@ if (ogl.m_states.bMRTOk) {
 
 float CParticleBuffer::AlphaScale (void)
 {
-#if USE_PARTICLE_SHADER
+#if HAVE_PARTICLE_SHADER
 return (!gameStates.render.cameras.bActive && m_bEmissive && (gameOpts->render.effects.bSoftParticles & 4) && ogl.m_states.bMRTOk && (m_nType <= WATERFALL_PARTICLES))
 		 ? 0.0f
 		 : 1.0f;
@@ -215,13 +223,13 @@ PROF_END(ptParticles)
 
 void CParticleBuffer::Reset (void)
 {
+ogl.SetDepthTest (true);
+ogl.SetAlphaTest (true);
+ogl.SetBlendMode (m_bEmissive);
 m_iBuffer = 0;
 m_nType = -1;
 m_bEmissive = false;
 m_dMax = 0.0f;
-ogl.SetDepthTest (true);
-ogl.SetAlphaTest (true);
-ogl.SetBlendMode (m_bEmissive);
 CEffectArea::Reset ();
 }
 
@@ -244,13 +252,7 @@ bool CParticleBuffer::Add (CParticle* particleP, float brightness, CFloatVector&
 {
 	bool bFlushed = false;
 
-if ((particleP->RenderType () != m_nType) || 
-#if USE_PARTICLE_SHADER
-	 (!(ogl.m_states.bMRTOk && (gameOpts->render.effects.bSoftParticles & 4) && (particleP->m_bEmissive == m_bEmissive))))
-#else
-	 (particleP->m_bEmissive != m_bEmissive)) 
-#endif
-	{
+if ((particleP->RenderType () != m_nType) || ((particleP->m_bEmissive != m_bEmissive) && !USE_PARTICLE_SHADER)) {
 	bFlushed = Flush (brightness, true);
 	m_nType = particleP->RenderType ();
 	m_bEmissive = particleP->m_bEmissive;
@@ -335,8 +337,8 @@ if (Init ()) {
 #endif
 		if (gameStates.render.cameras.bActive || !(gameOpts->render.effects.bSoftParticles & 4))
 			shaderManager.Deploy (-1);
-#if USE_PARTICLE_SHADER
-		else if (ogl.m_states.bMRTOk && (m_nType <= WATERFALL_PARTICLES)) {
+#if HAVE_PARTICLE_SHADER
+		else if ((m_nType <= WATERFALL_PARTICLES) && USE_PARTICLE_SHADER) {
 			if (!particleManager.LoadShader (20.0f))
 				shaderManager.Deploy (-1);
 			}
@@ -662,12 +664,7 @@ return particleBuffer [0].Flush (fBrightness, bForce);
 short CParticleManager::Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed)
 {
 #if MAX_PARTICLE_BUFFERS  > 1
-if ((particleP->RenderType () != particleBuffer [nBuffer].GetType ()) || 
-#if USE_PARTICLE_SHADER
-	 (!(ogl.m_states.bMRTOk && (gameOpts->render.effects.bSoftParticles & 4) && (particleP->m_bEmissive == particleBuffer [nBuffer].m_bEmissive))))
-#else
-	 (particleP->m_bEmissive == particleBuffer [nBuffer].m_bEmissive))
-#endif
+if ((particleP->RenderType () != particleBuffer [nBuffer].GetType ()) || ((particleP->m_bEmissive != particleBuffer [nBuffer].m_bEmissive) && !USE_PARTICLE_SHADER))
 	return -1;
 CFloatVector pos;
 pos.Assign (particleP->m_vPos);
