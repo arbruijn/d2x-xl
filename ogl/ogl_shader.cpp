@@ -251,7 +251,7 @@ int CShaderManager::Compile (int nShader, const char* pszFragShader, const char*
 
 	static GLint nShaderTypes [2] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 
-if (!ogl.m_states.m_available.bShaders)
+if (!ogl.m_available.bShaders)
 	return 0;
 if ((nShader < 0) || (nShader >= int (m_shaders.ToS ())))
 	return 0;
@@ -311,7 +311,7 @@ return 0;
 
 int CShaderManager::Link (int nShader)
 {
-if (!ogl.m_states.m_available.bShaders)
+if (!ogl.m_available.bShaders)
 	return 0;
 if ((nShader < 0) || (nShader >= int (m_shaders.ToS ())))
 	return 0;
@@ -398,7 +398,7 @@ if ((nShader >= 0) && (nShader < int (m_shaders.ToS ()))) {
 
 intptr_t CShaderManager::Deploy (int nShader)
 {
-if (!ogl.m_states.m_available.bShaders)
+if (!ogl.m_available.bShaders)
 	return 0;
 if (nShader >= int (m_shaders.ToS ()))
 	return 0;
@@ -417,14 +417,14 @@ void CShaderManager::Setup (void)
 {
 	GLint	nTMUs;
 
-if (!(gameOpts->render.bUseShaders && ogl.m_states.m_available.bShaders))
+if (!(gameOpts->render.bUseShaders && ogl.m_available.bShaders))
 	return;
 Destroy ();
 Init ();
 ::PrintLog ("initializing shader programs\n");
 glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
-ogl.m_states.m_available.bShaders = (nTMUs >= 4);
-if (!ogl.m_states.m_available.bShaders) {
+ogl.m_available.bShaders = (nTMUs >= 4);
+if (!ogl.m_available.bShaders) {
 	::PrintLog ("GPU has too few texture units (%d)\n", nTMUs);
 	ogl.m_states.bLowMemory = 0;
 	ogl.m_available.bTextureCompression = 0;
@@ -475,7 +475,7 @@ shaderManager.Setup ();
 void COGL::SetupShaders (void)
 {
 PrintLog ("Checking shaders ...\n");
-ogl.m_states.m_available.bShaders = 0;
+ogl.m_available.bShaders = 0;
 if (!gameOpts->render.bUseShaders)
 	PrintLog ("   Shaders have been disabled in d2x.ini\n");
 else if (!ogl.m_available.bMultiTexturing)
@@ -487,8 +487,8 @@ else if (!strstr (pszOglExtensions, "GL_ARB_shading_language_100"))
 else if (!strstr (pszOglExtensions, "GL_ARB_shader_objects"))
 	PrintLog ("   Shader objects not supported by the OpenGL driver\n");
 else
-	ogl.m_states.m_available.bShaders = 1;
-PrintLog (ogl.m_states.m_available.bShaders ? "Shaders are available\n" : "No shaders available\n");
+	ogl.m_available.bShaders = 1;
+PrintLog (ogl.m_available.bShaders ? "Shaders are available\n" : "No shaders available\n");
 }
 
 //------------------------------------------------------------------------------

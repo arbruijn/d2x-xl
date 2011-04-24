@@ -240,7 +240,7 @@ glVertex2d (0.5,0.5);
 glTexCoord2d (0,-1);
 glVertex2d (0,0.5);
 glEnd ();
-if (ogl.m_states.m_available.bShaders)
+if (ogl.m_available.bShaders)
 	shaderManager.Deploy (-1);
 ogl.SetDepthTest (true);
 ogl.SetDepthWrite (true);

@@ -637,14 +637,14 @@ bool CGlareRenderer::LoadShader (float dMax, int nBlendMode)
 	static int nBlendPrev = -1;
 
 ogl.ClearError (0);
-ogl.m_states.bUseDepthBlending = 0;
+ogl.m_apply.bDepthBlending = 0;
 if (!gameOpts->render.bUseShaders)
 	return false;
 if (ogl.m_available.bDepthBlending < 1)
 	return false;
 if (!ogl.CopyDepthTexture (0))
 	return false;
-ogl.m_states.bUseDepthBlending = 1;
+ogl.m_apply.bDepthBlending = 1;
 if (dMax < 1)
 	dMax = 1;
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader));
@@ -730,7 +730,7 @@ void CGlareRenderer::InitShader (void)
 if (ogl.m_available.bDepthBlending > -1) {
 #if SHADER_SOFT_CORONAS
 	PrintLog ("building corona blending shader program\n");
-	if (ogl.m_available.bRenderToTexture && ogl.m_states.m_available.bShaders) {
+	if (ogl.m_available.bRenderToTexture && ogl.m_available.bShaders) {
 		ogl.m_available.bDepthBlending = 1;
 		m_shaderProg = 0;
 		if (!shaderManager.Build (hGlareShader, glareFS, glareVS)) {

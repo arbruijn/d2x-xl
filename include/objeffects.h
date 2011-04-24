@@ -18,7 +18,7 @@ int RenderWeaponCorona (CObject *objP, tRgbaColorf *colorP, float alpha, fix xOf
 void RenderLightTrail (CObject *objP);
 void DrawDebrisCorona (CObject *objP);
 
-#define SHIELD_EFFECT_TIME		((gameOpts->render.bUseShaders && ogl.m_states.m_available.bShaders) ? 2000 : 500)
+#define SHIELD_EFFECT_TIME		((gameOpts->render.bUseShaders && ogl.m_available.bShaders) ? 2000 : 500)
 
 #endif //_OBJEFFECTS_H
 //eof

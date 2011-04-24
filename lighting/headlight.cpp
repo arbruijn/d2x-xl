@@ -791,7 +791,7 @@ if (nLights == ogl.m_data.nHeadlights)
 gameStates.render.bHaveDynLights = 0;
 DeleteHeadlightShader ();
 PrintLog ("building lighting shader programs\n");
-if ((ogl.m_states.bHeadlight = ogl.m_states.m_available.bShaders)) {
+if ((ogl.m_states.bHeadlight = ogl.m_available.bShaders)) {
 	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 2; i++) {
 		for (j = 0; j < HEADLIGHT_SHADER_COUNT / 2; j++) {

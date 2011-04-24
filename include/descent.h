@@ -835,79 +835,6 @@ class CGfxStates {
 
 //------------------------------------------------------------------------------
 
-class CRenderAPIStates {
-	public:
-		int bInitialized;
-		int bRebuilding;
-		int m_available.bShaders;
-		int available.bMultiTexturing;
-		int bRender2TextureOk;
-		int m_available.bPerPixelLighting;
-		int bUseRender2Texture;
-		int bReadBufferActive;
-		int bFullScreen;
-		int bLastFullScreen;
-		int bUseTransform;
-		int bGlTexMerge;
-		int bBrightness;
-		int bLowMemory;
-		int nColorBits;
-		int nPreloadTextures;
-		ubyte nTransparencyLimit;
-		GLint nDepthBits;
-		GLint nStencilBits;
-		int bEnableTexture2D;
-		int bEnableTexClamp;
-		int bEnableScissor;
-		int bNeedMipMaps;
-		int bFSAA;
-		int bAntiAliasing;
-		int available.bAntiAliasing;
-		int bTextureCompression;
-		int bHaveTexCompression;
-		int bHaveVBOs;
-		int bHaveTextureArrays;
-		int texMinFilter;
-		int texMagFilter;
-		int nTexMagFilterState;
-		int nTexMinFilterState;
-		int nTexEnvModeState;
-		int nContrast;
-		int nCurWidth;
-		int nCurHeight;
-		int nLights;
-		int iLight;
-		int nFirstLight;
-		int bCurFullScreen;
-		int bpp;
-		int bScaleLight;
-		int bDynObjLight;
-		int bVertexLighting;
-		int bHeadlight;
-		int bStandardContrast;
-		int nRGBAFormat;
-		int nRGBFormat;
-		int bIntensity4;
-		int bLuminance4Alpha4;
-		int bOcclusionQuery;
-		int bDepthBlending;
-		int bUseDepthBlending;
-		int bHaveDepthBuffer;
-		int nDrawBuffer;
-		int nStencil;
-	#ifdef GL_ARB_multitexture
-		int bArbMultiTexture;
-	#endif
-	#ifdef GL_SGIS_multitexture
-		int bSgisMultiTexture;
-	#endif
-		float fAlpha;
-		float fLightRange;
-		GLuint hDepthBuffer; 
-	};
-
-//------------------------------------------------------------------------------
-
 class CCameraStates {
 	public:
 		int bActive;
@@ -1318,7 +1245,6 @@ class CGameStates {
 		CMovieStates			movies;
 		CMultiplayerStates	multi;
 		CGfxStates				gfx;
-		//CRenderAPIStates		ogl;
 		CRenderStates			render;
 		CZoomStates				zoom;
 		CSoundStates			sound;

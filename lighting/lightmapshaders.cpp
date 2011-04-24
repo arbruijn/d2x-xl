@@ -116,7 +116,7 @@ int CreateLightmapShader (int nType)
 {
 	int	h, j;
 
-if (!(ogl.m_states.m_available.bShaders && ogl.m_states.m_available.bPerPixelLighting)) {
+if (!(ogl.m_available.bShaders && ogl.m_available.bPerPixelLighting)) {
 	gameStates.render.bPerPixelLighting = 0;
 	return 0;
 	}
@@ -127,7 +127,7 @@ for (h = 0; h <= 3; h++) {
 		continue;
 	PrintLog ("building lightmap shader programs\n");
 	if (!shaderManager.Build (lightmapShaderProgs [h], pszLMLightingFS [h], pszLMLightingVS [h])) {
-		ogl.m_states.m_available.bPerPixelLighting = 0;
+		ogl.m_available.bPerPixelLighting = 0;
 		gameStates.render.bPerPixelLighting = 0;
 		for (j = 0; j < 4; j++)
 			shaderManager.Delete (lightmapShaderProgs [j]);

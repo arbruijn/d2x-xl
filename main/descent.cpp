@@ -277,7 +277,7 @@ fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1,
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
 #if 0
-if (!ogl.m_states.m_available.bShaders) {
+if (!ogl.m_available.bShaders) {
 	fontManager.SetColorRGBi (RGB_PAL (63, 0, 0), 1, 0, 0);
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 5 * (fontManager.Current ()->Height () + 2), "due to insufficient graphics hardware,");
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 4 * (fontManager.Current ()->Height () + 2), "D2X-XL will run at reduced settings.");
@@ -949,7 +949,7 @@ void BadHardwareNotification (void)
 {
 //HardwareCheck ();
 #if 1//!DBG
-if (!ogl.m_states.m_available.bShaders && (gameConfig.nVersion != D2X_IVER)) {
+if (!ogl.m_available.bShaders && (gameConfig.nVersion != D2X_IVER)) {
 	SetScreenMode (SCREEN_MENU);
 	int nFade = gameOpts->menus.nFade;
 	gameOpts->menus.nFade = 333;

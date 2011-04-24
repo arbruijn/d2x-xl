@@ -746,7 +746,7 @@ if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
 		SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
-if (m_states.m_available.bShaders)
+if (m_available.bShaders)
 	shaderManager.Deploy (-1);
 ogl.SetTexturing (true);
 DisableClientStates (1, 1, 1, GL_TEXTURE3);

@@ -147,7 +147,7 @@ SetupPBuffer ();
 #elif RENDER2TEXTURE == 2
 CFBO::Setup ();
 #endif
-if (!(gameOpts->render.bUseShaders && m_states.m_available.bShaders)) {
+if (!(gameOpts->render.bUseShaders && m_available.bShaders)) {
 	gameOpts->ogl.bGlTexMerge = 0;
 	m_states.bLowMemory = 0;
 	m_available.bTextureCompression = 0;

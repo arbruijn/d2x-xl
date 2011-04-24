@@ -183,7 +183,7 @@ int SetupShader (CSegFace *faceP, int bColorKey, int bMultiTexture, int bTexture
 {
 	int	nType, nShader = -1;
 
-if (!ogl.m_states.m_available.bShaders || (gameStates.render.nType == RENDER_TYPE_SKYBOX))
+if (!ogl.m_available.bShaders || (gameStates.render.nType == RENDER_TYPE_SKYBOX))
 	return -1;
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))

@@ -163,23 +163,23 @@ class CViewport {
 
 class COglFeatures {
 	public:
-		int	bShaders;
-		int	bMultiTexturing;
-		int	bRenderToTexture;
-		int	bPerPixelLighting;
 		int	bAntiAliasing;
-		int	bMultipleRenderTargets;
-		int	bTextureCompression;
 		int	bDepthBlending;
 		int	bGlowRendering;
+		int	bMultipleRenderTargets;
+		int	bMultiTexturing;
+		int	bOcclusionQuery;
+		int	bPerPixelLighting;
+		int	bRenderToTexture;
+		int	bShaders;
 		int	bStencilBuffer;
+		int	bTextureCompression;
 	};
 
 class COglStates {
 	public:
 		int	bInitialized;
 		int	bRebuilding;
-
 		int	bFullScreen;
 		int	bLastFullScreen;
 		int	bUseTransform;
@@ -198,7 +198,6 @@ class COglStates {
 		int	bNeedMipMaps;
 		int	bFSAA;
 		int	bQuadBuffering;
-		int	bHaveVBOs;
 		int	texMinFilter;
 		int	texMagFilter;
 		int	nTexMagFilterState;
@@ -222,10 +221,8 @@ class COglStates {
 		int	nRGBFormat;
 		int	bIntensity4;
 		int	bLuminance4Alpha4;
-		int	bOcclusionQuery;
 		int	bDepthBlending;
 		int	bGlowRendering;
-		int	bUseDepthBlending;
 		int	bHaveDepthBuffer [2];
 		int	bHaveColorBuffer;
 		int	nDrawBuffer;
@@ -526,7 +523,7 @@ class COGL {
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
 		inline int Enhance3D (int bForce = 0) { 
-			return !(gameOpts->render.bUseShaders && m_states.m_available.bShaders)
+			return !(gameOpts->render.bUseShaders && m_available.bShaders)
 					 ? 0
 					 : !(bForce || gameOpts->render.stereo.bEnhance)
 						 ? 0
