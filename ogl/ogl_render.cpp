@@ -552,7 +552,7 @@ if (bmTop) {
       bSuperTransp = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	else
 		bSuperTransp = (bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
-	bShaderMerge = bSuperTransp && ogl.m_states.bGlTexMerge;
+	bShaderMerge = bSuperTransp && gameOpts->ogl.bGlTexMerge;
 	bOverlay = !bShaderMerge;
 	}
 else

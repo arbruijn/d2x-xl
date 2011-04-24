@@ -39,8 +39,8 @@ const char *pszOglExtensions = NULL;
 
 void COGL::SetupOcclusionQuery (void)
 {
-m_states.bOcclusionQuery = 1;
-PrintLog (m_states.bOcclusionQuery ? (char *) "Occlusion query is available\n" : (char *) "No occlusion query available\n");
+m_available.bOcclusionQuery = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_occlusion_query"));
+PrintLog (m_available.bOcclusionQuery ? (char *) "Occlusion query is available\n" : (char *) "No occlusion query available\n");
 }
 
 //------------------------------------------------------------------------------
@@ -54,26 +54,14 @@ void COGL::SetupPointSprites (void)
 void COGL::SetupStencilOps (void)
 {
 ogl.SetStencilTest (true);
-gameStates.render.bSeparateStencilOps = 0;
-if ((gameStates.render.bHaveStencilBuffer = glIsEnabled (GL_STENCIL_TEST))) {
+ogl.m_available.bSeparateStencilOps = 0;
+if ((ogl.m_available.bStencilBuffer = glIsEnabled (GL_STENCIL_TEST))) {
 	SetStencilTest (false);
 	if (pszOglExtensions) {
-		const char *s = pszOglExtensions;
-		while (*s && (s = strstr (s, "separate"))) 
-		{
-			ogl.SetStencilTest (false);
-			++s;
-		}
-		s = pszOglExtensions;
-		while (*s && (s = strstr (s, "stencil"))) 
-		{
-			ogl.SetStencilTest (false);
-			++s;
-		}
 		if (strstr (pszOglExtensions, "GL_ATI_separate_stencil"))
-			gameStates.render.bSeparateStencilOps = 1;
+			ogl.m_available.bSeparateStencilOps = 1;
 		else if (strstr (pszOglExtensions, "GL_EXT_stencil_two_side"))
-			gameStates.render.bSeparateStencilOps = 2;
+			ogl.m_available.bSeparateStencilOps = 2;
 		}
 	}
 }
@@ -82,8 +70,16 @@ if ((gameStates.render.bHaveStencilBuffer = glIsEnabled (GL_STENCIL_TEST))) {
 
 void COGL::SetupVBOs (void)
 {
-m_states.bHaveVBOs = 1;
-PrintLog (m_states.bHaveVBOs ? (char *) "VBOs are available\n" : (char *) "No VBOs available\n");
+m_available.bVertexBufferObjects = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_vertex_buffer_object"));
+PrintLog (m_available.bVertexBufferObjects ? (char *) "VBOs are available\n" : (char *) "No VBOs available\n");
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::SetupTextureArrays (void)
+{
+m_available.bTextureArrays = (pszOglExtensions && strstr (pszOglExtensions, "GL_EXT_texture_array"));
+PrintLog (m_available.bTextureArrays ? (char *) "Multi-texturing is available\n" : (char *) "No multi-texturing available\n");
 }
 
 //------------------------------------------------------------------------------
@@ -91,9 +87,9 @@ PrintLog (m_states.bHaveVBOs ? (char *) "VBOs are available\n" : (char *) "No VB
 void COGL::SetupTextureCompression (void)
 {
 #if TEXTURE_COMPRESSION
-m_states.bHaveTexCompression = 1;
+m_available.bTextureCompression = 1;
 #else
-m_states.bHaveTexCompression = 0;
+m_available.bTextureCompression = 0;
 #endif
 }
 
@@ -101,22 +97,22 @@ m_states.bHaveTexCompression = 0;
 
 void COGL::SetupMultiTexturing (void)
 {
-m_states.bMultiTexturingOk = 1;
-PrintLog (m_states.bMultiTexturingOk ? (char *) "Multi-texturing is available\n" : (char *) "No multi-texturing available\n");
+m_available.bMultiTexturing = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_multitexture"));
+PrintLog (m_available.bMultiTexturing ? (char *) "Multi-texturing is available\n" : (char *) "No multi-texturing available\n");
 }
 
 //------------------------------------------------------------------------------
 
 void COGL::SetupAntiAliasing (void)
 {
-m_states.bAntiAliasingOk = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_multisample"));
+m_available.bAntiAliasing = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_multisample"));
 }
 
 //------------------------------------------------------------------------------
 
 void COGL::SetupMRT (void)
 {
-m_states.bMRTOk = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_draw_buffers"));
+m_available.bMultipleRenderTargets = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_draw_buffers"));
 }
 
 //------------------------------------------------------------------------------
@@ -151,10 +147,10 @@ SetupPBuffer ();
 #elif RENDER2TEXTURE == 2
 CFBO::Setup ();
 #endif
-if (!(gameOpts->render.bUseShaders && m_states.bShadersOk)) {
+if (!(gameOpts->render.bUseShaders && m_states.m_available.bShaders)) {
 	gameOpts->ogl.bGlTexMerge = 0;
 	m_states.bLowMemory = 0;
-	m_states.bHaveTexCompression = 0;
+	m_available.bTextureCompression = 0;
 	}
 }
 

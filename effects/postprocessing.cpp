@@ -72,7 +72,7 @@ GLhandleARB CPostEffectShockwave::m_shaderProg;
 void CPostEffectShockwave::InitShader (void)
 {
 PrintLog ("building shockwave shader program\n");
-if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
+if (ogl.m_available.bRenderToTexture && ogl.m_states.m_available.bShaders) {
 	m_shaderProg = 0;
 	if (!shaderManager.Build (hShockwaveShader, shockwaveFS, shockwaveVS)) {
 		ogl.ClearError (0);
@@ -94,7 +94,7 @@ if (hShockwaveShader < 0) {
 		return false;
 	}
 #if DBG
-//	ogl.m_states.bHaveDepthBuffer [1] = 0;
+//	ogl.m_states.bDepthBuffer [1] = 0;
 #endif
 if (!ogl.CopyDepthTexture (1))
 	return false;
@@ -240,7 +240,7 @@ m_nEffects = 0;
 
 void CPostProcessManager::Add (CPostEffect* e) 
 {
-if (!(ogl.m_states.bRender2TextureOk && e->Enabled ()))
+if (!(ogl.m_available.bRenderToTexture && e->Enabled ()))
 	delete e;
 else {
 	e->Link (NULL, m_effects);

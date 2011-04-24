@@ -40,7 +40,7 @@ CGlareRenderer glareRenderer;
 
 int CGlareRenderer::Style (void)
 {
-return (ogl.m_states.bDepthBlending > 0) && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle && !gameStates.render.cameras.bActive;
+return (ogl.m_available.bDepthBlending > 0) && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle && !gameStates.render.cameras.bActive;
 }
 
 // -----------------------------------------------------------------------------------
@@ -582,7 +582,7 @@ float CGlareRenderer::Visibility (int nQuery)
 	GLint		nError;
 #endif
 
-if (! (ogl.m_states.bOcclusionQuery && nQuery) || (Style () != 1))
+if (! (ogl.m_available.bOcclusionQuery && nQuery) || (Style () != 1))
 	return 1;
 if (!(gameStates.render.bQueryCoronas || gameData.render.lights.coronaSamples [nQuery - 1]))
 	return 0;
@@ -640,7 +640,7 @@ ogl.ClearError (0);
 ogl.m_states.bUseDepthBlending = 0;
 if (!gameOpts->render.bUseShaders)
 	return false;
-if (ogl.m_states.bDepthBlending < 1)
+if (ogl.m_available.bDepthBlending < 1)
 	return false;
 if (!ogl.CopyDepthTexture (0))
 	return false;
@@ -674,7 +674,7 @@ return true;
 
 void CGlareRenderer::UnloadShader (void)
 {
-if (ogl.m_states.bDepthBlending) {
+if (ogl.m_available.bDepthBlending) {
 	shaderManager.Deploy (-1);
 	//DestroyGlareDepthTexture ();
 	ogl.SetTexturing (true);
@@ -727,15 +727,15 @@ const char *glareVS =
 
 void CGlareRenderer::InitShader (void)
 {
-if (ogl.m_states.bDepthBlending > -1) {
+if (ogl.m_available.bDepthBlending > -1) {
 #if SHADER_SOFT_CORONAS
 	PrintLog ("building corona blending shader program\n");
-	if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
-		ogl.m_states.bDepthBlending = 1;
+	if (ogl.m_available.bRenderToTexture && ogl.m_states.m_available.bShaders) {
+		ogl.m_available.bDepthBlending = 1;
 		m_shaderProg = 0;
 		if (!shaderManager.Build (hGlareShader, glareFS, glareVS)) {
 			ogl.ClearError (0);
-			ogl.m_states.bDepthBlending = -1;
+			ogl.m_available.bDepthBlending = -1;
 			}
 		}
 	}

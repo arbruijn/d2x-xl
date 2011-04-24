@@ -139,8 +139,8 @@ nCurQual = nQuality;
 m_states.texMagFilter = renderQualities [nQuality].texMagFilter;
 m_states.texMinFilter = renderQualities [nQuality].texMinFilter;
 m_states.bNeedMipMaps = renderQualities [nQuality].bNeedMipmap;
-m_states.bAntiAliasing = renderQualities [nQuality].bAntiAliasing;
-if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
+m_apply.bAntiAliasing = renderQualities [nQuality].bAntiAliasing;
+if (m_available.bAntiAliasing && m_apply.bAntiAliasing)
 	glEnable (GL_MULTISAMPLE);
 else
 	glDisable (GL_MULTISAMPLE);
@@ -269,7 +269,7 @@ pvNormal->Assign (vNormal);
 void COglStates::Initialize (void)
 {
 memset (this, 0, sizeof (*this));
-bPerPixelLightingOk = 2;
+m_available.bPerPixelLighting = 2;
 bUseRender2Texture = 1;
 nContrast = 8;
 nColorBits = 32;
@@ -399,7 +399,7 @@ glDisable (GL_COLOR_MATERIAL);
 ogl.SetDepthWrite (true);
 shaderManager.Deploy (-1);
 ColorMask (1,1,1,1,1);
-if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
+if (m_available.bAntiAliasing && m_apply.bAntiAliasing)
 	glDisable (GL_MULTISAMPLE_ARB);
 }
 
@@ -698,7 +698,7 @@ else
 		ColorMask (0,0,0,0,0);
 		glClear (GL_DEPTH_BUFFER_BIT);
 		}
-	if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
+	if (m_available.bAntiAliasing && m_apply.bAntiAliasing)
 		glEnable (GL_MULTISAMPLE_ARB);
 	if (bFlat) {
 		SetDepthTest (false);
@@ -746,7 +746,7 @@ if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
 		SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
-if (m_states.bShadersOk)
+if (m_states.m_available.bShaders)
 	shaderManager.Deploy (-1);
 ogl.SetTexturing (true);
 DisableClientStates (1, 1, 1, GL_TEXTURE3);
@@ -775,7 +775,7 @@ if (SHOW_DYN_LIGHT) {
 	}
 ogl.SetDepthWrite (true);
 ColorMask (1,1,1,1,0);
-if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
+if (m_available.bAntiAliasing && m_apply.bAntiAliasing)
 	glDisable (GL_MULTISAMPLE_ARB);
 }
 

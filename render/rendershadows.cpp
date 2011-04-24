@@ -107,7 +107,7 @@ RenderMine (nStartSeg, xStereoSeparation, nWindow);
 
 gameStates.render.nShadowPass = 3;
 ogl.StartFrame (0, 0, xStereoSeparation);
-if (ogl.m_states.bMRTOk && glowRenderer.Available (BLUR_SHADOW)) {
+if (ogl.m_available.bMultipleRenderTargets && glowRenderer.Available (BLUR_SHADOW)) {
 	gameStates.render.nShadowBlurPass = 1;
 	glowRenderer.Begin (BLUR_SHADOW, 1 + int ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)), true, 1.0f);
 	}
@@ -240,7 +240,7 @@ glVertex2d (0.5,0.5);
 glTexCoord2d (0,-1);
 glVertex2d (0,0.5);
 glEnd ();
-if (ogl.m_states.bShadersOk)
+if (ogl.m_states.m_available.bShaders)
 	shaderManager.Deploy (-1);
 ogl.SetDepthTest (true);
 ogl.SetDepthWrite (true);

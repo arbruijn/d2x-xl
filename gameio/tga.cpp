@@ -81,7 +81,7 @@ return 1;
 
 int CTGA::Compress (void)
 {
-if (!(ogl.m_states.bTextureCompression && ogl.m_states.bHaveTexCompression))
+if (!(ogl.m_apply.bTextureCompression && ogl.m_available.bTextureCompression))
 	return 0;
 if (m_bmP->LoadTexture (0, 0, 0))
 	return 0;

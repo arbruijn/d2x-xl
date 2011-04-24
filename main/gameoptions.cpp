@@ -598,7 +598,6 @@ bHeadlight = 0;
 bLightPowerups = 0;
 bObjLighting = 0;
 bSetGammaRamp = 0;
-bVoodooHack = 0;
 bGlTexMerge = 1;
 }
 

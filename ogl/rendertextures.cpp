@@ -126,16 +126,16 @@ if (nError)
 #endif
 if (!gameOpts->render.bUseShaders)
 	return m_states.hDepthBuffer [nId] = 0;
-if (ogl.m_states.bDepthBlending < 1) // too slow on the current hardware
+if (ogl.m_available.bDepthBlending < 1) // too slow on the current hardware
 	return m_states.hDepthBuffer [nId] = 0;
 int t = (nSamples >= 5) ? -1 : SDL_GetTicks ();
 SelectTMU (nTMU);
 SetTexturing (true);
 if (!m_states.hDepthBuffer [nId])
-	m_states.bHaveDepthBuffer [nId] = 0;
+	m_states.bDepthBuffer [nId] = 0;
 if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTexture (-1, nId, nId))) {
 	BindTexture (m_states.hDepthBuffer [nId]);
-	if (!m_states.bHaveDepthBuffer [nId]) {
+	if (!m_states.bDepthBuffer [nId]) {
 		if (ogl.Enhance3D () < 0)
 			ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 		else
@@ -145,7 +145,7 @@ if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTex
 			DestroyDepthTexture (nId);
 			return m_states.hDepthBuffer [nId] = 0;
 			}
-		m_states.bHaveDepthBuffer [nId] = 1;
+		m_states.bDepthBuffer [nId] = 1;
 		gameData.render.nStateChanges++;
 		}
 	}
@@ -154,7 +154,7 @@ if (t > 0) {
 		nDuration += SDL_GetTicks () - t;
 		if ((nSamples >= 5) && (nDuration / nSamples > 10)) {
 			PrintLog ("Disabling depth buffer reads (average read time: %d ms)\n", nDuration / nSamples);
-			ogl.m_states.bDepthBlending = -1;
+			ogl.m_available.bDepthBlending = -1;
 			DestroyDepthTexture (nId);
 			m_states.hDepthBuffer [nId] = 0;
 			}
@@ -220,10 +220,10 @@ if (nError)
 SelectTMU (GL_TEXTURE1);
 SetTexturing (true);
 if (!m_states.hColorBuffer)
-	m_states.bHaveColorBuffer = 0;
+	m_states.bColorBuffer = 0;
 if (m_states.hColorBuffer || (m_states.hColorBuffer = CreateColorTexture (-1, 0))) {
 	BindTexture (m_states.hColorBuffer);
-	if (!m_states.bHaveColorBuffer) {
+	if (!m_states.bColorBuffer) {
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 		if ((nError = glGetError ())) {
 			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
@@ -232,7 +232,7 @@ if (m_states.hColorBuffer || (m_states.hColorBuffer = CreateColorTexture (-1, 0)
 				return m_states.hColorBuffer = 0;
 				}
 			}
-		m_states.bHaveColorBuffer = 1;
+		m_states.bColorBuffer = 1;
 		gameData.render.nStateChanges++;
 		}
 	}

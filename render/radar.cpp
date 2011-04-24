@@ -372,13 +372,13 @@ if (!ogl.SizeVertexBuffer (RADAR_SLICES))
 int bStencil = ogl.StencilOff ();
 
 m_offset.v.coord.x = 0.0f;
-m_offset.v.coord.y = /*ogl.m_states.bRender2TextureOk ? 0.0f :*/ yOffs [gameOpts->render.cockpit.nRadarPos][gameStates.render.cockpit.nType];
+m_offset.v.coord.y = /*ogl.m_available.bRenderToTexture ? 0.0f :*/ yOffs [gameOpts->render.cockpit.nRadarPos][gameStates.render.cockpit.nType];
 m_offset.v.coord.y += sizeOffsets [gameOpts->render.cockpit.nRadarPos][gameOpts->render.cockpit.nRadarSize];
 if (EGI_FLAG (nWeaponIcons, 1, 1, 0) && (gameOpts->render.cockpit.bHUD || cockpit->ShowAlways ())) {
 	if ((extraGameInfo [0].nWeaponIcons < 3) || ((extraGameInfo [0].nWeaponIcons & 1) == !gameOpts->render.cockpit.nRadarPos))
 		m_offset.v.coord.y += (m_offset.v.coord.y > 0) ? -3.75f : 3.25f;
 	}
-m_offset.v.coord.z = /*ogl.m_states.bRender2TextureOk ? 10.0f :*/ 50.0f;
+m_offset.v.coord.z = /*ogl.m_available.bRenderToTexture ? 10.0f :*/ 50.0f;
 m_radius = radarSizes [gameOpts->render.cockpit.nRadarSize] / transformation.m_info.scalef.v.coord.x;
 m_lineWidth = float (CCanvas::Current ()->Width ()) / 640.0f * radarSizes [gameOpts->render.cockpit.nRadarSize] / radarSizes [sizeofa (radarSizes) - 1];
 
@@ -393,7 +393,7 @@ glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
 glLineWidth (m_lineWidth);
 #if 0
 // render the radar to a texture and render that texture to the HUD (unfinished)
-if (ogl.m_states.bRender2TextureOk) {
+if (ogl.m_available.bRenderToTexture) {
 	//static tTexCoord2f texCoord [4] = {{{0.3f, 0.3f}}, {{0.3f, 0.7f}}, {{0.7f, 0.7f}}, {{0.7f, 0.3f}}};
 	static float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 	static float verts [4][2] = {{0.2f, 1.0f}, {0.2f, 0.8f}, {0.4f, 0.8f}, {0.4f, 1.0f}};

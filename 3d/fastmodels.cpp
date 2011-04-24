@@ -833,7 +833,7 @@ if (objP && (objP->info.nType == OBJ_PLAYER) && (nModel > 0))
 
 	int						i = 0, 
 								bHires = (nModel > 0), 
-								bUseVBO = ogl.m_states.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
+								bUseVBO = ogl.m_available.bVertexBufferObjects && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
 								bEmissive = (objP != NULL) && objP->IsWeapon () && !objP->IsMissile (),
 								nGunId, nBombId, nMissileId, nMissiles;
 

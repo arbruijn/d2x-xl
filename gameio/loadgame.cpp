@@ -1048,7 +1048,7 @@ gameData.render.color.vertices.Clear ();
 gameData.render.color.segments.Clear ();
 /*---*/PrintLog ("   resetting speed boost information\n");
 gameData.objs.speedBoost.Clear ();
-if (!gameStates.render.bHaveStencilBuffer)
+if (!ogl.m_available.bStencilBuffer)
 	extraGameInfo [0].bShadows = 0;
 D2SetCaption ();
 if (!bRestore) {

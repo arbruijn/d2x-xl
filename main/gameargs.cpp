@@ -355,7 +355,7 @@ if ((t = FindArg ("-model_quality")) && *appConfig [t+1])
 	gameStates.render.nModelQuality = NumArg (t, 3);
 #if 0
 if ((t = FindArg ("-gl_texcompress")))
-	ogl.m_states.bTextureCompression = NumArg (t, 1);
+	ogl.m_apply.bTextureCompression = NumArg (t, 1);
 #endif
 gameOptions [0].render.bUseShaders = 1;
 gameStates.app.bReadOnly = 0;

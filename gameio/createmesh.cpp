@@ -1260,7 +1260,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 bool CQuadMeshBuilder::BuildVBOs (void)
 {
 #if GEOMETRY_VBOS
-if (!ogl.m_states.bHaveVBOs)
+if (!ogl.m_available.bVertexBufferObjects)
 	return false;
 DestroyVBOs ();
 int h, i;
@@ -1271,7 +1271,7 @@ if ((i = glGetError ())) {
 #	if DBG
 		HUDMessage (0, "glGenBuffersARB failed (%d)", i);
 #	endif
-		ogl.m_states.bHaveVBOs = 0;
+		ogl.m_available.bVertexBufferObjects = 0;
 		return false;
 		}
 	}
@@ -1280,7 +1280,7 @@ if ((i = glGetError ())) {
 #	if DBG
 	HUDMessage (0, "glBindBufferARB failed (%d)", i);
 #	endif
-	ogl.m_states.bHaveVBOs = 0;
+	ogl.m_available.bVertexBufferObjects = 0;
 	return false;
 	}
 FACES.nVertices = gameStates.render.bTriangleMesh ? gameData.segs.nTris * 3 : gameData.segs.nFaces * 4;

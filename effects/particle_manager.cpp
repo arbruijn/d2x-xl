@@ -48,7 +48,7 @@ CParticleManager particleManager;
 #define HAVE_PARTICLE_SHADER	1
 
 #if HAVE_PARTICLE_SHADER
-#	define USE_PARTICLE_SHADER	(ogl.m_states.bMRTOk && (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)))
+#	define USE_PARTICLE_SHADER	(ogl.m_available.bMultipleRenderTargets && (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)))
 #else
 #	define USE_PARTICLE_SHADER	0
 #endif
@@ -67,7 +67,7 @@ ogl.ClearError (0);
 ogl.m_states.bUseDepthBlending = 0;
 if (!gameOpts->render.bUseShaders)
 	return false;
-if (ogl.m_states.bDepthBlending < 1)
+if (ogl.m_available.bDepthBlending < 1)
 	return false;
 if (!ogl.CopyDepthTexture (0, GL_TEXTURE1))
 	return false;
@@ -101,7 +101,7 @@ return true;
 
 void CParticleManager::UnloadShader (void)
 {
-if (ogl.m_states.bDepthBlending) {
+if (ogl.m_available.bDepthBlending) {
 	shaderManager.Deploy (-1);
 	//DestroyGlareDepthTexture ();
 	ogl.SetTexturing (true);
@@ -163,14 +163,14 @@ const char *particleVS =
 
 void CParticleManager::InitShader (void)
 {
-if (ogl.m_states.bMRTOk) {
+if (ogl.m_available.bMultipleRenderTargets) {
 	PrintLog ("building particle blending shader program\n");
-	if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
-		ogl.m_states.bDepthBlending = 1;
+	if (ogl.m_available.bRenderToTexture && ogl.m_states.m_available.bShaders) {
+		ogl.m_available.bDepthBlending = 1;
 		m_shaderProg = 0;
 		if (!shaderManager.Build (hParticleShader, particleFS, particleVS)) {
 			ogl.ClearError (0);
-			ogl.m_states.bDepthBlending = -1;
+			ogl.m_available.bDepthBlending = -1;
 			}
 		}
 	}
@@ -325,7 +325,7 @@ if (Init ()) {
 
 	ogl.SetBlendMode ((m_nType < PARTICLE_TYPES) ? m_bEmissive : OGL_BLEND_MULTIPLY);
 
-	if (ogl.m_states.bShadersOk) {
+	if (ogl.m_states.m_available.bShaders) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
 		if (m_nType <= SMOKE_PARTICLES) {
 			if ((gameOpts->render.particles.nQuality == 2) && !automap.Display () && lightManager.Headlights ().nLights) {
@@ -367,7 +367,7 @@ if (Init ()) {
 PROF_END(ptParticles)
 #endif
 Reset ();
-if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
+if ((ogl.m_states.m_available.bShaders && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
 	shaderManager.Deploy (-1);
 return true;
 }

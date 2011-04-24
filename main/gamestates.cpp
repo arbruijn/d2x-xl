@@ -205,7 +205,6 @@ gameStates.render.bTMapFlat = 0;
 gameStates.render.nLighting = 1;
 gameStates.render.bTransparency = 0;
 gameStates.render.bSplitPolys = 1;
-gameStates.render.bHaveStencilBuffer = 0;
 gameStates.render.nRenderPass = -1;
 gameStates.render.nShadowPass = 0;
 gameStates.render.nShadowMap = 0;

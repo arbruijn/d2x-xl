@@ -743,7 +743,7 @@ void SetCullAndStencil (int bCullFront, int bZPass = 0)
 {
 	static int nStencilOp [2] = {GL_DECR_WRAP, GL_INCR_WRAP};
 
-if (gameStates.render.bSeparateStencilOps == 0) {
+if (ogl.m_available.bSeparateStencilOps == 0) {
 	ogl.SetFaceCulling (true);
 	OglCullFace (bCullFront);
 	if (bZPass)
@@ -753,7 +753,7 @@ if (gameStates.render.bSeparateStencilOps == 0) {
 	}
 else {
 	ogl.SetFaceCulling (false);
-	if (gameStates.render.bSeparateStencilOps == 1) {
+	if (ogl.m_available.bSeparateStencilOps == 1) {
 		glStencilOpSeparate (GL_BACK, GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT); 
 		glStencilOpSeparate (GL_FRONT, GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT); 
 		}
@@ -836,7 +836,7 @@ ogl.FlushBuffers (GL_TRIANGLE_FAN, i);
 
 int CSubModel::RenderShadowVolume (CModel* po, int bCullFront)
 {
-if (bCullFront && gameStates.render.bSeparateStencilOps)
+if (bCullFront && ogl.m_available.bSeparateStencilOps)
 	return 1;
 
 	CFloatVector*	pvf, v [4];
@@ -1282,7 +1282,7 @@ return m_fClipDist = (fMaxDist ? fMaxDist : (fInf < G3_INFINITY) ? fInf : G3_INF
 
 int CSubModel::RenderShadowCaps (CObject *objP, CModel* po, int bCullFront)
 {
-if (bCullFront && gameStates.render.bSeparateStencilOps)
+if (bCullFront && ogl.m_available.bSeparateStencilOps)
 	return 1;
 
 	CFloatVector*	pvf, v0, v1;

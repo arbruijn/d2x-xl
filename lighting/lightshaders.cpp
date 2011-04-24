@@ -968,8 +968,8 @@ int CreatePerPixelLightingShader (int nType, int nLights)
 	char	*pszFS, *pszVS;
 	const char	**fsP, **vsP;
 
-if (!(ogl.m_states.bShadersOk && gameStates.render.bUsePerPixelLighting && (ogl.m_states.bPerPixelLightingOk == 2)))
-	ogl.m_states.bPerPixelLightingOk =
+if (!(ogl.m_states.m_available.bShaders && gameStates.render.bUsePerPixelLighting && (ogl.m_states.m_available.bPerPixelLighting == 2)))
+	ogl.m_states.m_available.bPerPixelLighting =
 	gameStates.render.bPerPixelLighting = 0;
 if (!gameStates.render.bPerPixelLighting)
 	return -1;
@@ -1014,7 +1014,7 @@ for (h = 0; h <= 3; h++) {
 		delete[] pszFS;
 		delete[] pszVS;
 		if (!bOk) {
-			ogl.m_states.bPerPixelLightingOk = 1;
+			ogl.m_states.m_available.bPerPixelLighting = 1;
 			gameStates.render.bPerPixelLighting = 1;
 			for (i = 0; i <= MAX_LIGHTS_PER_PIXEL; i++)
 				for (j = 0; j < 4; j++)

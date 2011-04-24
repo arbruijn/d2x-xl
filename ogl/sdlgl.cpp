@@ -180,7 +180,7 @@ glGetIntegerv (GL_ALPHA_BITS, &i);
 ogl.m_states.nColorBits += i;
 glGetIntegerv (GL_DEPTH_BITS, &ogl.m_states.nDepthBits);
 glGetIntegerv (GL_STENCIL_BITS, &ogl.m_states.nStencilBits);
-gameStates.render.bHaveStencilBuffer = (ogl.m_states.nStencilBits > 0);
+ogl.m_available.bStencilBuffer = (ogl.m_states.nStencilBits > 0);
 if (!ogl.m_states.bQuadBuffering)
 	ogl.m_states.nStereo = 0;
 else {

@@ -92,7 +92,7 @@ int CPBO::Create (int nWidth, int nHeight)
 		WGL_TEXTURE_2D_ARB,
 		0};
 
-if (!ogl.m_states.bRender2TextureOk)
+if (!ogl.m_available.bRenderToTexture)
 	return 0;
 Destroy ();
 hGlDC = wglGetCurrentDC ();
@@ -142,7 +142,7 @@ wglShareLists (hGlRC, m_info.hRC);
         None
     };
 
-if (!ogl.m_states.bRender2TextureOk)
+if (!ogl.m_available.bRenderToTexture)
 	return 0;
 hGlWindow = glXGetCurrentDrawable ();
 hGlDC = glXGetCurrentDisplay ();
@@ -288,9 +288,9 @@ m_info.bBound = false;
 
 void CPBO::Setup (void)
 {
-ogl.m_states.bUseRender2Texture = 1;
-ogl.m_states.bRender2TextureOk = 0;
-if (ogl.m_states.bUseRender2Texture) {
+ogl.m_apply.bRenderToTexture = 1;
+ogl.m_available.bRenderToTexture = 0;
+if (ogl.m_apply.bRenderToTexture) {
 #ifdef _WIN32
 	wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC) wglGetProcAddress ("wglCreatePbufferARB");
 	wglGetPbufferDCARB = (PFNWGLGETPBUFFERDCARBPROC) wglGetProcAddress ("wglGetPbufferDCARB");
@@ -301,12 +301,12 @@ if (ogl.m_states.bUseRender2Texture) {
 	wglMakeContextCurrentARB = (PFNWGLMAKECONTEXTCURRENTARBPROC) wglGetProcAddress ("wglMakeContextCurrentARB");
 	wglBindTexImageARB = (PFNWGLBINDTEXIMAGEARBPROC) wglGetProcAddress ("wglBindTexImageARB");
 	wglReleaseTexImageARB = (PFNWGLRELEASETEXIMAGEARBPROC) wglGetProcAddress ("wglReleaseTexImageARB");
-	ogl.m_states.bRender2TextureOk =
+	ogl.m_available.bRenderToTexture =
 		wglCreatePbufferARB && wglGetPbufferDCARB && wglReleasePbufferDCARB && wglDestroyPbufferARB && 
 		wglQueryPbufferARB && wglChoosePixelFormatARB && wglMakeContextCurrentARB &&
 		wglBindTexImageARB && wglReleaseTexImageARB;
 #else
-	ogl.m_states.bRender2TextureOk = 1;
+	ogl.m_available.bRenderToTexture = 1;
 #endif
 	}
 
@@ -319,7 +319,7 @@ if (ogl.m_states.bUseRender2Texture) {
   hGlRC = glXGetCurrentContext ();
 #endif
   
-PrintLog ((ogl.m_states.bRender2TextureOk == 1)  
+PrintLog ((ogl.m_available.bRenderToTexture == 1)  
 		  ? "Rendering to pixel buffers is available\n" 
 		  : "No rendering to pixel buffers available\n");
 

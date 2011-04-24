@@ -432,7 +432,7 @@ if (!ogl.m_states.bVertexLighting)
 	return;
 ogl.m_states.bVertexLighting = 0;
 #if GPGPU_VERTEX_LIGHTING
-if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
+if (ogl.m_available.bRenderToTexture && ogl.m_states.m_available.bShaders) {
 	PrintLog ("building vertex lighting shader program\n");
 	ogl.m_states.bVertexLighting = 1;
 	if (m_nShaderProg)

@@ -21,7 +21,6 @@ void TexMergeFlush ();
 void InitTexMergeShaders ();
 int SetupTexMergeShader (int bColorKey, int bColored, int nType);
 
-extern int bGlTexMergeOk;
 extern int tmShaderProgs [3]; 
 
 #endif /* _TEXMERGE_H */

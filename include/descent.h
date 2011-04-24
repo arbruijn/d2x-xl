@@ -445,7 +445,6 @@ class COglOptions {
 		int nMaxLightsPerFace;
 		int nMaxLightsPerPass;
 		int nMaxLightsPerObject;
-		int bVoodooHack;
 
 	public:
 		COglOptions () { Init (); }
@@ -840,10 +839,10 @@ class CRenderAPIStates {
 	public:
 		int bInitialized;
 		int bRebuilding;
-		int bShadersOk;
-		int bMultiTexturingOk;
+		int m_available.bShaders;
+		int available.bMultiTexturing;
 		int bRender2TextureOk;
-		int bPerPixelLightingOk;
+		int m_available.bPerPixelLighting;
 		int bUseRender2Texture;
 		int bReadBufferActive;
 		int bFullScreen;
@@ -863,11 +862,11 @@ class CRenderAPIStates {
 		int bNeedMipMaps;
 		int bFSAA;
 		int bAntiAliasing;
-		int bAntiAliasingOk;
-		int bVoodooHack;
+		int available.bAntiAliasing;
 		int bTextureCompression;
 		int bHaveTexCompression;
 		int bHaveVBOs;
+		int bHaveTextureArrays;
 		int texMinFilter;
 		int texMagFilter;
 		int nTexMagFilterState;
@@ -894,7 +893,6 @@ class CRenderAPIStates {
 		int bDepthBlending;
 		int bUseDepthBlending;
 		int bHaveDepthBuffer;
-		int bHaveBlur;
 		int nDrawBuffer;
 		int nStencil;
 	#ifdef GL_ARB_multitexture
@@ -1057,9 +1055,6 @@ class CRenderStates {
 		int bSplitPolys;
 		int bHaveDynLights;
 		int bHaveSparks;
-		int bHaveStencilBuffer;
-		int bSeparateStencilOps;
-		int bHaveStereoBuffers;
 		int bUsePerPixelLighting;
 		int nRenderPass;
 		int nShadowPass;
@@ -1323,7 +1318,7 @@ class CGameStates {
 		CMovieStates			movies;
 		CMultiplayerStates	multi;
 		CGfxStates				gfx;
-		CRenderAPIStates		ogl;
+		//CRenderAPIStates		ogl;
 		CRenderStates			render;
 		CZoomStates				zoom;
 		CSoundStates			sound;

@@ -236,7 +236,7 @@ InitStrings ();
 
 if (gameOpts->render.coronas.nStyle > 1)
 	gameOpts->render.coronas.nStyle = 1;
-nCoronas = ogl.m_states.bDepthBlending && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle;
+nCoronas = ogl.m_available.bDepthBlending && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle;
 nShadows = extraGameInfo [0].bShadows ? ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)) ? 2 : 1 : 0;
 nLightTrails = extraGameInfo [0].bLightTrails ? gameOpts->render.particles.bPlasmaTrails ? 2 : 1 : 0;
 do {
@@ -248,14 +248,14 @@ do {
 	sprintf (szSlider + 1, TXT_SMOKE, pszSmokeQuality [gameOpts->render.particles.nQuality]);
 	*szSlider = *(TXT_SMOKE - 1);
 	effectOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, MAX_PARTICLE_QUALITY, KEY_P, HTX_SMOKE);
-	if (!gameStates.render.bHaveStencilBuffer)
+	if (!ogl.m_available.bStencilBuffer)
 		effectOpts.nShadows = -1;
 	else {
 		sprintf (szSlider + 1, TXT_SHADOWS, pszNoneBasicFull [nShadows]);
 		*szSlider = *(TXT_SHADOWS - 1);
 		effectOpts.nShadows = m.AddSlider (szSlider + 1, nShadows, 0, 2, KEY_S, HTX_SHADOWS);
 		}
-	if (ogl.m_states.bDepthBlending) {
+	if (ogl.m_available.bDepthBlending) {
 		sprintf (szSlider + 1, TXT_CORONAS, pszOffOn [nCoronas]);
 		*szSlider = *(TXT_CORONAS - 1);
 		effectOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1, KEY_O, HTX_CORONAS);
