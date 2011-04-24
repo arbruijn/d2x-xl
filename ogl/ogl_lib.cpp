@@ -269,8 +269,6 @@ pvNormal->Assign (vNormal);
 void COglStates::Initialize (void)
 {
 memset (this, 0, sizeof (*this));
-m_available.bPerPixelLighting = 2;
-bUseRender2Texture = 1;
 nContrast = 8;
 nColorBits = 32;
 nDepthBits = 24;
@@ -368,6 +366,8 @@ void COGL::Initialize (void)
 {
 m_states.Initialize ();
 m_data.Initialize ();
+m_available.bPerPixelLighting = 2;
+m_apply.bRenderToTexture = 1;
 if (!semaphore)
 	semaphore = SDL_CreateMutex ();
 }

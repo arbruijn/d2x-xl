@@ -135,7 +135,7 @@ else {
 			}
 		}
 	}
-if (!(ogl.m_states.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
+if (!gameOpts->ogl.bGlTexMerge) {
 	ogl.m_states.bLowMemory = 0;
 	ogl.m_available.bTextureCompression = 0;
 	PrintLog ("+++++ OpenGL shader texture merging has been disabled! +++++\n");

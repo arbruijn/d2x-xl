@@ -171,9 +171,13 @@ class COglFeatures {
 		int	bOcclusionQuery;
 		int	bPerPixelLighting;
 		int	bRenderToTexture;
+		int	bSeparateStencilOps;
 		int	bShaders;
 		int	bStencilBuffer;
+		int	bStereoBuffers;
+		int	bQuadBuffers;
 		int	bTextureCompression;
+		int	bVertexBufferObjects;
 	};
 
 class COglStates {
@@ -197,7 +201,6 @@ class COglStates {
 		int	bEnableScissor;
 		int	bNeedMipMaps;
 		int	bFSAA;
-		int	bQuadBuffering;
 		int	texMinFilter;
 		int	texMagFilter;
 		int	nTexMagFilterState;
@@ -289,6 +292,7 @@ class COGL {
 		void SetupAntiAliasing (void);
 		void SetupMRT (void);
 		void SetupVBOs (void);
+		void SetupTextureArrays (void);
 
 		void InitState (void);
 		void InitShaders (void);

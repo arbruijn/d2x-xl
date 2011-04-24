@@ -324,7 +324,7 @@ else
 if ((t = FindArg ("-FSAA")))
 	ogl.m_states.bFSAA = NumArg (t, 1);
 if ((t = FindArg ("-quad_buffering")))
-	ogl.m_states.bQuadBuffering = NumArg (t, 1);
+	ogl.m_apply.bQuadBuffers = NumArg (t, 1);
 }
 
 // ----------------------------------------------------------------------------
