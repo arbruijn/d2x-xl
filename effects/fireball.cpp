@@ -514,15 +514,22 @@ if (gameData.models.nDyingModels [ModelId ()] != -1)
 
 if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
 	int nModels = gameData.models.polyModels [0][ModelId ()].ModelCount ();
-	int h = (nModels == 1) ? 1 : gameOpts->render.effects.nShrapnels + 1;
 
-	for (int j = 0; j < h; j++)
-		for (int i = int (j > 0); i < nModels; i++) // "i = int (j > 0)" => use the models fuselage only once
-			//if (d_rand () % h <= j)
-				if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
-					CreateDebris (i);
-
-//make parent CObject only draw center part
+	if (gameOpts->render.effects.nShrapnels && (nModels > 1)) {
+		int j = int (X2F (info.xSize) + 0.5) * (gameOpts->render.effects.nShrapnels + 1);
+		for (int i = 0; i < j; i++) {// "i = int (j > 0)" => use the models fuselage only once
+			int h = i % nModels;
+			if (((i == 0) || (h != 0)) &&
+				 ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (h != 5))) 	//energy sucker energy part
+					CreateDebris (h);
+			}
+		}
+	else {
+		for (int i = 0; i < nModels; i++) // "i = int (j > 0)" => use the models fuselage only once
+			if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
+				CreateDebris (i);
+		}
+	//make parent CObject only draw center part
 	if (info.nType != OBJ_REACTOR)
 		SetupDebris (0, ModelId (), rType.polyObjInfo.nTexOverride);
 	}
