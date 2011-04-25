@@ -176,8 +176,6 @@ bool CParticleBuffer::Flush (float fBrightness, bool bForce)
 	static float dMax [2] = {20.0f, 3.0f};
 	int nShader = 0;
 
-if (m_iBuffer < 2)
-	return false;
 if (!gameOpts->render.particles.nQuality) {
 	Reset ();
 	return false;

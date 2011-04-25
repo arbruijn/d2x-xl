@@ -943,7 +943,7 @@ return 1;
 static int RenderPolyModel (CObject* objP, int bSpectate)
 {
 DrawPolygonObject (objP, 0);
-DrawDebrisCorona (objP);
+//DrawDebrisCorona (objP);
 if (markerManager.IsSpawnObject (objP))
 	RenderMslLockIndicator (objP);
 return 1;
