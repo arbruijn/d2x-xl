@@ -1348,7 +1348,10 @@ if (m_bEmissive && alphaControl)
 	pb [0].color.alpha = 0.0f;
 pb [1].color = pb [2].color = pb [3].color = pb [0].color;
 
-if (m_nType == SPARK_PARTICLES) {
+if (m_bEmissive < 0) {
+	m_bEmissive = 1;
+	m_nType = SPARK_PARTICLES;
+
 	float nRow = m_texCoord.v.u;
 	float nCol = m_texCoord.v.v;
 

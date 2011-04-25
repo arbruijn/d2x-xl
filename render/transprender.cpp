@@ -72,6 +72,24 @@ return *this;
 }
 
 //------------------------------------------------------------------------------
+
+typedef struct tSparkVertex {
+	CFloatVector3		vPos;
+	tTexCoord2f	texCoord;
+} tSparkVertex;
+
+#define SPARK_BUF_SIZE	1000
+
+typedef struct tSparkBuffer {
+	int				nSparks;
+	tSparkVertex	vertices [SPARK_BUF_SIZE * 4];
+	CParticle		particles [SPARK_BUF_SIZE];
+} tSparkBuffer;
+
+tSparkBuffer sparkBuffer;
+CEffectArea sparkArea;
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -121,6 +139,7 @@ if (m_data.depthBuffer.Buffer ())
 	m_data.depthBuffer.Clear ();
 if (m_data.itemLists.Buffer ())
 	memset (m_data.itemLists.Buffer (), 0, (ITEM_BUFFER_SIZE - m_data.nFreeItems) * sizeof (struct tTranspItem));
+memset (&sparkBuffer, 0, sizeof (sparkBuffer));
 m_data.nFreeItems = ITEM_BUFFER_SIZE;
 ResetFreeList ();
 }
@@ -1025,23 +1044,6 @@ if (!bGlow || glowRenderer.SetViewport (GLOW_SPRITES, *vPosf.XYZ (), X2F (item->
 
 //------------------------------------------------------------------------------
 
-typedef struct tSparkVertex {
-	CFloatVector3		vPos;
-	tTexCoord2f	texCoord;
-} tSparkVertex;
-
-#define SPARK_BUF_SIZE	1000
-
-typedef struct tSparkBuffer {
-	int				nSparks;
-	tSparkVertex	vertices [SPARK_BUF_SIZE * 4];
-} tSparkBuffer;
-
-tSparkBuffer sparkBuffer;
-CEffectArea sparkArea;
-
-//------------------------------------------------------------------------------
-
 void CTransparencyRenderer::FlushSparkBuffer (void)
 {
 if (!sparkBuffer.nSparks)
@@ -1077,17 +1079,23 @@ void CTransparencyRenderer::RenderSpark (tTranspSpark *item)
 		float	nRow = (float) (item->nFrame % 8);
 
 if (USE_PARTICLE_SHADER) {
-	CParticle p;
+	if (sparkBuffer.nSparks >= SPARK_BUF_SIZE) {
+		FlushParticleBuffer (-1);
+		sparkBuffer.nSparks = 0;
+		}
 
-	p.m_nType = SPARK_PARTICLES;
+	CParticle& p = sparkBuffer.particles [sparkBuffer.nSparks];
+
+	p.m_nType =
+	p.m_nRenderType = SMOKE_PARTICLES;
 	p.m_nLife = p.m_nTTL = 1000;
 	p.m_decay = 1.0f;
+	p.m_nRad = 1.0f;
 	p.m_renderColor.red = p.m_renderColor.green = p.m_renderColor.blue = p.m_renderColor.alpha = 1.0f;
 	p.m_nWidth =
 	p.m_nHeight = X2F (item->nSize);
-	p.m_bEmissive = 1;
-	p.m_bRotate = 0;
-	p.m_nOrient = 0;
+	p.m_bEmissive = -1;
+	p.m_vPosf = item->position;
 	p.m_vPos.Assign (item->position);
 	p.m_texCoord.v.u = nCol;
 	p.m_texCoord.v.v = nRow; 
