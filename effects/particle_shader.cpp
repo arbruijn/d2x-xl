@@ -54,8 +54,8 @@ if (!gameOpts->render.bUseShaders)
 	return false;
 if (ogl.m_features.bDepthBlending < 0)
 	return false;
-if (!ogl.CopyDepthTexture (0, nShader ? GL_TEXTURE1 : GL_TEXTURE3))
-	return false;
+if ((nShader > 1) && !ogl.CopyDepthTexture (0, nShader ? GL_TEXTURE1 : GL_TEXTURE3))
+	nShader -= 2;
 //ogl.DrawBuffer ()->FlipBuffers (0, 1); // color buffer 1 becomes render target, color buffer 0 becomes render source (scene texture)
 //ogl.DrawBuffer ()->SetDrawBuffers ();
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hParticleShader [nShader]));
@@ -63,16 +63,15 @@ if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg)) {
 	shaderManager.Set ("particleTex", 0);
-	if (nShader == 3) 
-		shaderManager.Set ("depthTex", 1);
-	else if (!(nShader & 1)) {
+	if (!(nShader & 1)) {
 		shaderManager.Set ("sparkTex", 1);
 		shaderManager.Set ("bubbleTex", 2);
-		if (nShader == 2) 
-			shaderManager.Set ("depthTex", 3);
 		}
-	shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
-	shaderManager.Set ("dMax", (CShaderManager::vec3) dMax);
+	if (nShader > 1) {
+		shaderManager.Set ("depthTex", (nShader == 3) ? 1 : 3);
+		shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
+		shaderManager.Set ("dMax", (CShaderManager::vec3) dMax);
+		}
 	}
 ogl.SetDepthTest (false);
 ogl.SetAlphaTest (false);
