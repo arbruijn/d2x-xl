@@ -47,8 +47,8 @@
 #include "timeout.h"
 
 CTimeout toFlushed (1000);
-int nFlushes [3] = {0, 0, 0};
-int nPartsFlushed [3] = {0, 0, 0};
+int nFlushes [4] = {0, 0, 0, 0};
+int nPartsFlushed [4] = {0, 0, 0, 0};
 int iFlushed = 0;
 #endif
 
@@ -211,7 +211,8 @@ if (toFlushed.Expired ()) {
 	++nFlushes [iFlushed];
 	nPartsFlushed [iFlushed] += m_iBuffer;
 	int p = 0, f = 0;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 4; i++)
+		if (i != iFlushed)
 		p += nPartsFlushed [i], f = nFlushes [i];
 HUDMessage (0, "%1.2f particles/flush", float (p) / float (f));
 #endif
