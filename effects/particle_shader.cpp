@@ -104,7 +104,7 @@ if (ogl.m_features.bDepthBlending > 0) {
 const char *particleFS [2] = {
 	// no texture arrays - bind textures to TMU0 and TMU1
 	"uniform sampler2D particleTex, sparkTex, depthTex;\r\n" \
-	"uniform float dMax [2];\r\n" \
+	"uniform vec2 dMax;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"//#define ZNEAR 1.0\r\n" \
 	"//#define ZFAR 5000.0\r\n" \
@@ -136,7 +136,7 @@ const char *particleFS [2] = {
 
 	"uniform sampler2DArray particleTex;\r\n" \
 	"uniform sampler2D sparkTex, depthTex;\r\n" \
-	"uniform float dMax [2];\r\n" \
+	"uniform vec2 dMax;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"//#define ZNEAR 1.0\r\n" \
 	"//#define ZFAR 5000.0\r\n" \
