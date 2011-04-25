@@ -120,7 +120,7 @@ const char *particleFS [2] = {
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
 	"int nType = floor (gl_TexCoord [0].z + 0.5);\r\n" \
-	"float dm = (nType == 0) ? dMax.x : (nType == 1) ? dMax.y : dMax.z; //dMax [nType];\r\n" \
+	"float dm = dMax [nType];\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
 	"dz = (dm - dz) / dm;\r\n" \
@@ -153,8 +153,8 @@ const char *particleFS [2] = {
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
 	"int nType = floor (gl_TexCoord [0].z + 0.5);\r\n" \
-	"float dm = (nType == 0) ? dMax.x : (nType == 1) ? dMax.y : dMax.z; //dMax [nType];\r\n" \
-	"//float dm = dMax [floor (gl_TexCoord [0].z + 0.5)];\r\n" \
+	"//float dm = (nType == 0) ? dMax.x : (nType == 1) ? dMax.y : dMax.z; //dMax [nType];\r\n" \
+	"float dm = dMax [floor (gl_TexCoord [0].z + 0.5)];\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
 	"dz = (dm - dz) / dm;\r\n" \
