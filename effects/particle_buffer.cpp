@@ -120,11 +120,22 @@ for (int i = nStart; i < nEnd; i++)
 
 //------------------------------------------------------------------------------
 
+int CParticleBuffer::bCompatible [PARTICLE_TYPES] = {0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1};
+
+bool CParticleBuffer::Compatible (CParticle* particleP)
+{
+if (USE_PARTICLE_SHADER) 
+	return bCompatible [m_nType] && bCompatible [particleP->RenderType ()];
+return (particleP->RenderType () == m_nType) && (particleP->m_bEmissive == m_bEmissive);
+}
+
+//------------------------------------------------------------------------------
+
 bool CParticleBuffer::Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad)
 {
 	bool bFlushed = false;
 
-if ((particleP->RenderType () != m_nType) || ((particleP->m_bEmissive != m_bEmissive) && !USE_PARTICLE_SHADER)) {
+if (!Compatible (particleP->RenderType () != m_nType) || ((particleP->m_bEmissive != m_bEmissive) && !USE_PARTICLE_SHADER)) {
 	bFlushed = Flush (brightness, true);
 	m_nType = particleP->RenderType ();
 	m_bEmissive = particleP->m_bEmissive;

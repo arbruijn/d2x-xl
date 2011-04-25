@@ -377,10 +377,13 @@ class CParticleBuffer : public CEffectArea {
 		bool Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad);
 		void Reset (void);
 		bool AlphaControl (void);
+		bool Compatible (CParticle* particleP);
 
 		CParticleBuffer () : CEffectArea (), m_iBuffer (0), m_nType (-1), m_bEmissive (false), m_dMax (0.0f) {}
 
 	private:
+		static int bCompatible [PARTICLE_TYPES];
+
 		int Init (void);
 		int UseParticleShader (void);
 	};
@@ -553,13 +556,9 @@ class CParticleManager {
 		void InitShader (void);
 
 	private:
-		static int CParticleManager::compatible [PARTICLE_TYPES];
-
 		void RebuildSystemList (void);
 
 		short Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed);
-
-		bool Compatible (int nType1, int nType2, int bEmissive1, int bEmissive2);
 };
 
 extern CParticleManager particleManager;

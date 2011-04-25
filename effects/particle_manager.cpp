@@ -336,21 +336,10 @@ return particleBuffer [0].Flush (fBrightness, bForce);
 
 //------------------------------------------------------------------------------
 
-int CParticleManager::compatible [PARTICLE_TYPES] = {0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1};
-
-bool CParticleManager::Compatible (int nType1, int nType2, int bEmissive1, int bEmissive2)
-{
-if (USE_PARTICLE_SHADER) 
-	return compatible [nType1] && compatible [nType2];
-return (nType1 == nType2) && (bEmissive1 == bEmissive2);
-}
-
-//------------------------------------------------------------------------------
-
 short CParticleManager::Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed)
 {
 #if MAX_PARTICLE_BUFFERS  > 1
-if (!Compatible (particleP->RenderType (), particleBuffer [nBuffer].GetType (), particleP->m_bEmissive, particleBuffer [nBuffer].m_bEmissive))
+if (!particleBuffer [nBuffer].Compatible (particleP))
 	return -1;
 CFloatVector pos;
 pos.Assign (particleP->m_vPos);
@@ -391,7 +380,7 @@ for (i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 		return bFlushed;
 	}
 // flush and reuse the buffer with the most entries
-for (i = 1, j = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+for (i = 0, j = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 	if (particleBuffer [i].m_nType < 0) {
 		j = i;
 		break;
