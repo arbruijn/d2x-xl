@@ -280,7 +280,7 @@ for (int i = 0; i < PARTICLE_TYPES; i++) {
 		return 0;
 	Animate (i);
 	}
-SetupMultipleTextures ();
+SetupMultipleTextures (ParticleImageInfo (SPARK_PARTICLES).bmP, ParticleImageInfo (SMOKE_PARTICLES).bmP);
 return 1;
 }
 
