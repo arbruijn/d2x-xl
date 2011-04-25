@@ -1079,7 +1079,7 @@ void CTransparencyRenderer::RenderSpark (tTranspSpark *item)
 if (USE_PARTICLE_SHADER) {
 	CParticle p;
 
-	p.m_nType = SPARK_PARTICLE;
+	p.m_nType = SPARK_PARTICLES;
 	p.m_nLife = p.m_nTTL = 1000;
 	p.m_decay = 1.0f;
 	p.m_renderColor.red = p.m_renderColor.green = p.m_renderColor.blue = p.m_renderColor.alpha = 1.0f;
@@ -1091,7 +1091,6 @@ if (USE_PARTICLE_SHADER) {
 	p.m_vPos.Assign (item->position);
 	p.m_texCoord.v.u = nCol;
 	p.m_texCoord.v.v = nRow; 
-	p.m_texCoord.v.l = 0.0f;
 	particleManager.Add (&p, 1.0f);
 	}
 else {
