@@ -144,7 +144,7 @@ const char *particleVS =
 
 void CParticleManager::InitShader (void)
 {
-if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders && (ogl.m_features.bDepthBlending > -1)) {
+if (ogl.m_features.bRenderToTexture.Available () && ogl.m_features.bShaders && (ogl.m_features.bDepthBlending > -1)) {
 	PrintLog ("building particle blending shader program\n");
 	m_shaderProg = 0;
 	if (shaderManager.Build (hParticleShader, particleFS, particleVS))

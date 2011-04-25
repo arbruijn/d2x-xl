@@ -283,7 +283,7 @@ void CFBO::Setup (void)
 {
 PrintLog ("Checking rendering to texture ...\n");
 #if RENDER2TEXTURE
-if (ogl.m_features.bRenderToTexture/*.Apply ()*/) {
+if (ogl.m_features.bRenderToTexture.Available ()) {
 #	ifdef _WIN32
 	ogl.m_features.bRenderToTexture = 0;
 	if (!(glDrawBuffers = (PFNGLDRAWBUFFERSPROC) wglGetProcAddress ("glDrawBuffers")))
