@@ -203,11 +203,11 @@ const char *particleVS =
 
 void CParticleManager::InitShader (void)
 {
-if (ogl.m_features.bRenderToTexture.Available () && ogl.m_features.bShaders && (ogl.m_features.bDepthBlending > -1)) {
+if (ogl.m_features.bRenderToTexture.Available () && ogl.m_features.bShaders) {
 	PrintLog ("building particle blending shader programs\n");
 	m_shaderProg = 0;
-	int i;
-	for (i = 0; i < 4; i++)
+	int i, j = (ogl.m_features.bDepthBlending > -1) ? 4 : 2;
+	for (i = 0; i < j; i++)
 		if (!shaderManager.Build (hParticleShader [i], particleFS [i], particleVS))
 			break;
 	if (i == 4)
