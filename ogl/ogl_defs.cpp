@@ -55,7 +55,7 @@ void COGL::SetupStencilOps (void)
 {
 ogl.SetStencilTest (true);
 ogl.m_features.bSeparateStencilOps = 0;
-if ((ogl.m_features.bStencilBuffer = glIsEnabled (GL_STENCIL_TEST))) {
+if ((ogl.m_features.bStencilBuffer.Available (glIsEnabled (GL_STENCIL_TEST)))) {
 	SetStencilTest (false);
 	if (pszOglExtensions) {
 		if (strstr (pszOglExtensions, "GL_ATI_separate_stencil"))

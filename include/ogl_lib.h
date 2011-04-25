@@ -168,7 +168,7 @@ class COglFeature {
 		int	m_bApply;
 
 	public:
-		inline void Available (const int i) { m_bAvailable = i; }
+		inline int Available (const int i) { return (m_bAvailable = i); }
 		inline int Available (void) { return m_bAvailable; }
 		inline int Apply (void) { return m_bAvailable && m_bApply; }
 		inline const COglFeature& operator = (const int i) { 
@@ -195,6 +195,7 @@ class COglFeatures {
 		COglFeature	bStencilBuffer;
 		COglFeature	bStereoBuffers;
 		COglFeature	bQuadBuffers;
+		COglFeature	bTextureArrays;
 		COglFeature	bTextureCompression;
 		COglFeature	bVertexBufferObjects;
 	};

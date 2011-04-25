@@ -477,11 +477,11 @@ void COGL::SetupShaders (void)
 PrintLog ("Checking shaders ...\n");
 ogl.m_features.bShaders.Available (gameOpts->render.bUseShaders);
 ogl.m_features.bShaders = 0;
-if (!ogl.m_features.bShaders.Available)
+if (!ogl.m_features.bShaders.Available ())
 	PrintLog ("   Shaders have been disabled in d2x.ini\n");
 else if (!ogl.m_features.bMultiTexturing.Available ())
 	PrintLog ("   Multi-texturing not supported by the OpenGL driver\n");
-else if (!pszOglExtensions.Available ())
+else if (!pszOglExtensions)
 	PrintLog ("   Required Extensions not supported by the OpenGL driver\n");
 else if (!strstr (pszOglExtensions, "GL_ARB_shading_language_100"))
 	PrintLog ("   Shading language not supported by the OpenGL driver\n");
