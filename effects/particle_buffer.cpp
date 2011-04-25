@@ -156,6 +156,8 @@ return 1;
 
 bool CParticleBuffer::Flush (float fBrightness, bool bForce)
 {
+	static float dMax [2] = {20.0f, 3.0f};
+
 if (!m_iBuffer)
 	return false;
 if (!gameOpts->render.particles.nQuality) {
@@ -206,7 +208,7 @@ if (Init ()) {
 			shaderManager.Deploy (-1);
 #if HAVE_PARTICLE_SHADER
 		else if ((m_nType <= WATERFALL_PARTICLES) && USE_PARTICLE_SHADER) {
-			if (!particleManager.LoadShader (20.0f))
+			if (!particleManager.LoadShader (dMax))
 				shaderManager.Deploy (-1);
 			}
 #endif

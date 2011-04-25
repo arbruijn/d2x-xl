@@ -1076,7 +1076,7 @@ void CTransparencyRenderer::RenderSpark (tTranspSpark *item)
 		float	nCol = (float) (item->nFrame / 8);
 		float	nRow = (float) (item->nFrame % 8);
 
-if () {
+if (USE_PARTICLE_SHADER) {
 	CParticle p;
 
 	p.m_nType = SPARK_PARTICLE;
