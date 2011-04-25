@@ -182,15 +182,15 @@ void CParticleManager::InitShader (void)
 if (ogl.m_features.bRenderToTexture.Available () && ogl.m_features.bShaders && (ogl.m_features.bDepthBlending > -1)) {
 	PrintLog ("building particle blending shader programs\n");
 	m_shaderProg = 0;
-	for (int i = 0; i < 2; i++)
+	int i;
+	for (i = 0; i < 2; i++)
 		if (!shaderManager.Build (hParticleShader [i], particleFS [i], particleVS))
 			break;
-		if (i == 2)
-			ogl.m_features.bDepthBlending.Available (1);
-		else {
-			ogl.ClearError (0);
-			ogl.m_features.bDepthBlending.Available (0);
-			}
+	if (i == 2)
+		ogl.m_features.bDepthBlending.Available (1);
+	else {
+		ogl.ClearError (0);
+		ogl.m_features.bDepthBlending.Available (0);
 		}
 	}
 }

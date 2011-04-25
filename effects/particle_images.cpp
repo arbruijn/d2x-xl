@@ -308,7 +308,7 @@ bool CParticleImageManager::SetupMultipleTextures (CBitmap* bmP1, CBitmap* bmP2)
 if (!USE_PARTICLE_SHADER)
 	return false;
 
-if (ogl.m_features.bTextureArrays.Available ())) {
+if (ogl.m_features.bTextureArrays.Available ()) {
 		static GLfloat borderColor [4] = {0.0, 0.0, 0.0, 0.0};
 
 		int nWidth = bmP1->Width ();
