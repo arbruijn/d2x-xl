@@ -409,6 +409,7 @@ if (nLife < 0)
 m_nLife = nLife;
 m_nDelay = 0; //bStart ? randN (nLife) : 0;
 m_nRenderType = RenderType ();
+m_texCoord.v.l = 0;
 
 #if 0
 

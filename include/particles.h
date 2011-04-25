@@ -149,7 +149,7 @@ typedef struct tParticle {
 	float			m_nHeight;
 	float			m_nRad;
 	short			m_nSegment;
-	tTexCoord2f	m_texCoord;
+	tTexCoord3f	m_texCoord;
 	float			m_deltaUV;
 	tRgbaColorf	m_color [2];		//well ... the color, ya know =)
 	tRgbaColorf	m_renderColor;
