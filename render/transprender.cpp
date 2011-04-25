@@ -1269,17 +1269,25 @@ if (glowRenderer.Available (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_
 	if (glowRenderer.End ())
 		ResetBitmaps ();
 	}
-if ((nType == tiSpark) && !USE_PARTICLE_SHADER) {
-	if (!itemP || particleManager.Overlap (itemP->item.spark.position, X2F (itemP->item.spark.nSize)))
-		FlushParticleBuffer (nType);
-	}
-else if (nType == tiParticle) {
-	if (!itemP || sparkArea.Overlap (itemP->item.particle.particle->Posf (), itemP->item.particle.particle->Rad ()))
+if (USE_PARTICLE_SHADER) {
+	if ((nType != tiSpark) && (nType != tiParticle)) {
 		FlushSparkBuffer ();
+		FlushParticleBuffer (nType);
+		}
 	}	
 else {
-	FlushSparkBuffer ();
-	FlushParticleBuffer (nType);
+	if (nType == tiSpark) {
+		if (!itemP || particleManager.Overlap (itemP->item.spark.position, X2F (itemP->item.spark.nSize)))
+			FlushParticleBuffer (nType);
+		}
+	else if (nType == tiParticle) {
+		if (!itemP || sparkArea.Overlap (itemP->item.particle.particle->Posf (), itemP->item.particle.particle->Rad ()))
+			FlushSparkBuffer ();
+		}	
+	else {
+		FlushSparkBuffer ();
+		FlushParticleBuffer (nType);
+		}
 	}
 }
 
