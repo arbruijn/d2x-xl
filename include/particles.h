@@ -553,8 +553,13 @@ class CParticleManager {
 		void InitShader (void);
 
 	private:
+		static int CParticleManager::compatible [PARTICLE_TYPES];
+
 		void RebuildSystemList (void);
+
 		short Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed);
+
+		bool Compatible (int nType1, int nType2, int bEmissive1, int bEmissive2);
 };
 
 extern CParticleManager particleManager;
