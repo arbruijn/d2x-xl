@@ -169,7 +169,7 @@ SetCullAndStencil (bCullFront);
 
 int OOF_DrawShadowVolume (CModel *po, CSubModel *pso, int bCullFront)
 {
-if (bCullFront && ogl.m_available.bSeparateStencilOps)
+if (bCullFront && ogl.m_features.bSeparateStencilOps.Available ())
 	return 1;
 
 	CEdge*					pe;
@@ -251,7 +251,7 @@ return 1;
 
 int OOF_DrawShadowCaps (CModel *po, CSubModel *pso, int bCullFront)
 {
-if (bCullFront && ogl.m_available.bSeparateStencilOps)
+if (bCullFront && ogl.m_features.bSeparateStencilOps.Available ())
 	return 1;
 
 	CFace*			pf;

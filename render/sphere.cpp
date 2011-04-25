@@ -86,14 +86,14 @@ int sphereShaderProg = -1;
 
 int CreateSphereShader (void)
 {
-if (!(ogl.m_available.bShaders && ogl.m_available.bPerPixelLighting)) {
+if (!(ogl.m_features.bShaders && ogl.m_features.bPerPixelLighting.Available ())) {
 	gameStates.render.bPerPixelLighting = 0;
 	return 0;
 	}
 if (sphereShaderProg < 0) {
 	PrintLog ("building sphere shader program\n");
 	if (!shaderManager.Build (sphereShaderProg, pszSphereFS, pszSphereVS)) {
-		ogl.m_available.bPerPixelLighting = 0;
+		ogl.m_features.bPerPixelLighting.Available (0);
 		gameStates.render.bPerPixelLighting = 0;
 		return -1;
 		}
@@ -780,7 +780,7 @@ if (!bEffect)
 if (ogl.m_states.bUseTransform = !bEffect)
 #endif
 	UnloadSphereShader ();
-else if (gameOpts->render.bUseShaders && ogl.m_available.bShaders) {
+else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
 	if (!SetupSphereShader (objP, alpha))
 		return 0;
 	}
@@ -884,7 +884,7 @@ if (gameData.render.shield.nFaces > 0)
 	else if (transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, bAdditive, nSize)) {
 #if 0
 		// full and not just partial sphere rendered
-		if (!(ogl.m_available.bShaders && ogl.m_available.bPerPixelLighting) ||
+		if (!(ogl.m_features.bShaders.Available () && ogl.m_features.bPerPixelLighting.Available ()) ||
 			 ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_ROBOT))) {
 			CFixVector vPos;
 			RenderObjectHalo (PolyObjPos (objP, &vPos), 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);

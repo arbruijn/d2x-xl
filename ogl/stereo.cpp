@@ -326,7 +326,7 @@ const char* enhance3DVS =
 
 void COGL::InitEnhanced3DShader (void)
 {
-if (gameOpts->render.bUseShaders && m_available.bShaders) {
+if (gameOpts->render.bUseShaders && m_features.bShaders.Available ()) {
 	PrintLog ("building dubois optimization programs\n");
 	gameStates.render.textures.bHaveEnhanced3DShader = (0 <= shaderManager.Build (duboisShaderProg, duboisFS, enhance3DVS));
 	if (!gameStates.render.textures.bHaveEnhanced3DShader) {

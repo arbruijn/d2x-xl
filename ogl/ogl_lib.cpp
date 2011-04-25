@@ -139,8 +139,8 @@ nCurQual = nQuality;
 m_states.texMagFilter = renderQualities [nQuality].texMagFilter;
 m_states.texMinFilter = renderQualities [nQuality].texMinFilter;
 m_states.bNeedMipMaps = renderQualities [nQuality].bNeedMipmap;
-m_apply.bAntiAliasing = renderQualities [nQuality].bAntiAliasing;
-if (m_available.bAntiAliasing && m_apply.bAntiAliasing)
+m_features.bAntiAliasing = renderQualities [nQuality].bAntiAliasing;
+if (m_features.bAntiAliasing/*.Apply ()*/)
 	glEnable (GL_MULTISAMPLE);
 else
 	glDisable (GL_MULTISAMPLE);
@@ -366,8 +366,8 @@ void COGL::Initialize (void)
 {
 m_states.Initialize ();
 m_data.Initialize ();
-m_available.bPerPixelLighting = 2;
-m_apply.bRenderToTexture = 1;
+m_features.bPerPixelLighting = 2;
+m_features.bRenderToTexture = 1;
 if (!semaphore)
 	semaphore = SDL_CreateMutex ();
 }
@@ -399,7 +399,7 @@ glDisable (GL_COLOR_MATERIAL);
 ogl.SetDepthWrite (true);
 shaderManager.Deploy (-1);
 ColorMask (1,1,1,1,1);
-if (m_available.bAntiAliasing && m_apply.bAntiAliasing)
+if (m_features.bAntiAliasing/*.Apply ()*/)
 	glDisable (GL_MULTISAMPLE_ARB);
 }
 
@@ -473,7 +473,7 @@ m_states.viewport [1] = m_states.viewport [0];
 void COGL::RestoreViewport (void)
 {
 m_states.viewport [0] = m_states.viewport [1];
-m_states.viewport [0].Apply ();
+m_states.viewport [0]/*.Apply ()*/;
 }
 
 //------------------------------------------------------------------------------
@@ -492,7 +492,7 @@ if (!gameOpts->render.cameras.bHires)
 if (m_states.viewport [0] != CViewport (x, y, w, h, t)) {
 	m_states.viewport [1] = m_states.viewport [0];
 	m_states.viewport [0] = CViewport (x, y, w, h, t);
-	m_states.viewport [0].Apply ();
+	m_states.viewport [0]/*.Apply ()*/;
 	}
 }
 
@@ -698,7 +698,7 @@ else
 		ColorMask (0,0,0,0,0);
 		glClear (GL_DEPTH_BUFFER_BIT);
 		}
-	if (m_available.bAntiAliasing && m_apply.bAntiAliasing)
+	if (m_features.bAntiAliasing/*.Apply ()*/)
 		glEnable (GL_MULTISAMPLE_ARB);
 	if (bFlat) {
 		SetDepthTest (false);
@@ -746,7 +746,7 @@ if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
 		SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
-if (m_available.bShaders)
+if (m_features.bShaders)
 	shaderManager.Deploy (-1);
 ogl.SetTexturing (true);
 DisableClientStates (1, 1, 1, GL_TEXTURE3);
@@ -775,7 +775,7 @@ if (SHOW_DYN_LIGHT) {
 	}
 ogl.SetDepthWrite (true);
 ColorMask (1,1,1,1,0);
-if (m_available.bAntiAliasing && m_apply.bAntiAliasing)
+if (m_features.bAntiAliasing/*.Apply ()*/)
 	glDisable (GL_MULTISAMPLE_ARB);
 }
 

@@ -126,7 +126,7 @@ if (nError)
 #endif
 if (!gameOpts->render.bUseShaders)
 	return m_states.hDepthBuffer [nId] = 0;
-if (ogl.m_available.bDepthBlending < 1) // too slow on the current hardware
+if (ogl.m_states.bDepthBlending < 1) // too slow on the current hardware
 	return m_states.hDepthBuffer [nId] = 0;
 int t = (nSamples >= 5) ? -1 : SDL_GetTicks ();
 SelectTMU (nTMU);
@@ -154,7 +154,7 @@ if (t > 0) {
 		nDuration += SDL_GetTicks () - t;
 		if ((nSamples >= 5) && (nDuration / nSamples > 10)) {
 			PrintLog ("Disabling depth buffer reads (average read time: %d ms)\n", nDuration / nSamples);
-			ogl.m_available.bDepthBlending = -1;
+			ogl.m_states.bDepthBlending = -1;
 			DestroyDepthTexture (nId);
 			m_states.hDepthBuffer [nId] = 0;
 			}

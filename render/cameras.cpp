@@ -229,7 +229,7 @@ if (m_data.screenBuf && (m_data.screenBuf != Buffer ())) {
 if (Buffer ()) {
 	DestroyBuffer ();
 	}
-if (ogl.m_available.bRenderToTexture)
+if (ogl.m_features.bRenderToTexture)
 	DestroyBuffer ();
 }
 

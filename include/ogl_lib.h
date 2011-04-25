@@ -161,23 +161,42 @@ class CViewport {
 	};
 
 
+
+class COglFeature {
+	private:
+		int	m_bAvailable;
+		int	m_bApply;
+
+	public:
+		inline void Available (const int i) { m_bAvailable = i; }
+		inline int Available (void) { return m_bAvailable; }
+		inline int Apply (void) { return m_bAvailable && m_bApply; }
+		inline const COglFeature& operator = (const int i) { 
+			m_bApply = i; 
+			return *this;
+			}
+		operator int() { return Available () * Apply (); }
+		//operator bool() { return bool (Available () && Apply ()); }
+		COglFeature () : m_bAvailable (1), m_bApply (0) {}
+	};
+
+
 class COglFeatures {
 	public:
-		int	bAntiAliasing;
-		int	bDepthBlending;
-		int	bGlowRendering;
-		int	bMultipleRenderTargets;
-		int	bMultiTexturing;
-		int	bOcclusionQuery;
-		int	bPerPixelLighting;
-		int	bRenderToTexture;
-		int	bSeparateStencilOps;
-		int	bShaders;
-		int	bStencilBuffer;
-		int	bStereoBuffers;
-		int	bQuadBuffers;
-		int	bTextureCompression;
-		int	bVertexBufferObjects;
+		COglFeature	bAntiAliasing;
+		COglFeature	bGlowRendering;
+		COglFeature	bMultipleRenderTargets;
+		COglFeature	bMultiTexturing;
+		COglFeature	bOcclusionQuery;
+		COglFeature	bPerPixelLighting;
+		COglFeature	bRenderToTexture;
+		COglFeature	bSeparateStencilOps;
+		COglFeature	bShaders;
+		COglFeature	bStencilBuffer;
+		COglFeature	bStereoBuffers;
+		COglFeature	bQuadBuffers;
+		COglFeature	bTextureCompression;
+		COglFeature	bVertexBufferObjects;
 	};
 
 class COglStates {
@@ -274,8 +293,7 @@ class COGL {
 		COglData			m_data;
 		COglStates		m_states;
 		COglBuffers		m_buffers;
-		COglFeatures	m_available;
-		COglFeatures	m_apply;
+		COglFeatures	m_features;
 
 	public:
 		void Initialize (void);
@@ -527,7 +545,7 @@ class COGL {
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
 		inline int Enhance3D (int bForce = 0) { 
-			return !(gameOpts->render.bUseShaders && m_available.bShaders)
+			return !m_features.bShaders
 					 ? 0
 					 : !(bForce || gameOpts->render.stereo.bEnhance)
 						 ? 0
@@ -609,7 +627,7 @@ class COGL {
 		inline fix StereoSeparation (void) { return m_data.xStereoSeparation; }
 
 		inline int HaveDrawBuffer (void) {
-			return m_available.bRenderToTexture && m_data.drawBufferP->Handle () && m_data.drawBufferP->Active ();
+			return m_features.bRenderToTexture.Available () && m_data.drawBufferP->Handle () && m_data.drawBufferP->Active ();
 			}
 
 		int StencilOff (void);

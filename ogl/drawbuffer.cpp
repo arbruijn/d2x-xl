@@ -66,14 +66,14 @@
 
 void COGL::CreateDrawBuffer (int nType)
 {
-if (!m_available.bRenderToTexture)
+if (!m_features.bRenderToTexture)
 	return;
 if (!gameStates.render.bRenderIndirect && (nType >= 0))
 	return;
 if (DrawBuffer ()->Handle ())
 	return;
 PrintLog ("creating draw buffer\n");
-DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType, 1 + m_available.bMultipleRenderTargets);
+DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType, 1 + m_features.bMultipleRenderTargets);
 }
 
 //------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ if (bSemaphore)
 	return;
 bSemaphore++;
 #	endif
-if (m_available.bRenderToTexture && DrawBuffer () && DrawBuffer ()->Handle ()) {
+if (m_features.bRenderToTexture && DrawBuffer () && DrawBuffer ()->Handle ()) {
 	SetDrawBuffer (GL_BACK, 0);
 	DrawBuffer ()->Destroy ();
 	}
@@ -120,7 +120,7 @@ if (bSemaphore)
 bSemaphore++;
 #endif
 
-if (bFBO && (nBuffer == GL_BACK) && m_available.bRenderToTexture && DrawBuffer ()->Handle ()) {
+if (bFBO && (nBuffer == GL_BACK) && m_features.bRenderToTexture && DrawBuffer ()->Handle ()) {
 	if (DrawBuffer ()->Active ()) 
 		DrawBuffer ()->SetDrawBuffers ();
 	else if (!DrawBuffer ()->Enable ()) {
@@ -144,7 +144,7 @@ bSemaphore--;
 
 void COGL::SetReadBuffer (int nBuffer, int bFBO)
 {
-if (bFBO && (nBuffer == GL_BACK) && m_available.bRenderToTexture && DrawBuffer ()->Handle ()) {
+if (bFBO && (nBuffer == GL_BACK) && m_features.bRenderToTexture && DrawBuffer ()->Handle ()) {
 	if (DrawBuffer ()->Active () || DrawBuffer ()->Enable ())
 		glReadBuffer (GL_COLOR_ATTACHMENT0_EXT);
 	else
@@ -210,7 +210,7 @@ else {
 		}	
 	else {
 #if 0
-		gameStates.render.bRenderIndirect = (ogl.m_available.bRenderToTexture > 0); 
+		gameStates.render.bRenderIndirect = (ogl.m_features.bRenderToTexture > 0); 
 		if (gameStates.render.bRenderIndirect) 
 			SelectDrawBuffer (m_data.xStereoSeparation > 0);
 		else
@@ -218,7 +218,7 @@ else {
 #else
 		gameStates.render.bRenderIndirect = 
 #if 1
-			(ogl.m_available.bRenderToTexture > 0); 
+			(ogl.m_features.bRenderToTexture > 0); 
 #else
 			(postProcessManager.Effects () != NULL) 
 			|| (m_data.xStereoSeparation && (i > 0)) 

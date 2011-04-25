@@ -39,7 +39,7 @@
 
 int CFBO::Available (void)
 {
-if (!ogl.m_available.bRenderToTexture)
+if (!ogl.m_features.bRenderToTexture)
 	return 0;
 if (!Handle ())
 	return 0;
@@ -175,7 +175,7 @@ else if (m_info.nType != 2) { // 2 -> GPGPU
 
 int CFBO::Create (int nWidth, int nHeight, int nType, int nColorBuffers)
 {
-if (!ogl.m_available.bRenderToTexture)
+if (!ogl.m_features.bRenderToTexture)
 	return 0;
 
 Destroy ();
@@ -212,7 +212,7 @@ return Available ();
 
 void CFBO::Destroy (void)
 {
-if (!ogl.m_available.bRenderToTexture)
+if (!ogl.m_features.bRenderToTexture)
 	return;
 if (m_info.hFBO) {
 	if (m_info.nColorBuffers) {
@@ -283,9 +283,9 @@ void CFBO::Setup (void)
 {
 PrintLog ("Checking rendering to texture ...\n");
 #if RENDER2TEXTURE
-if (ogl.m_apply.bRenderToTexture) {
+if (ogl.m_features.bRenderToTexture/*.Apply ()*/) {
 #	ifdef _WIN32
-	ogl.m_available.bRenderToTexture = 0;
+	ogl.m_features.bRenderToTexture = 0;
 	if (!(glDrawBuffers = (PFNGLDRAWBUFFERSPROC) wglGetProcAddress ("glDrawBuffers")))
 		PrintLog ("   glDrawBuffers not supported by the OpenGL driver\n");
 	else if (!(glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC) wglGetProcAddress ("glBindRenderbufferEXT")))
@@ -324,10 +324,10 @@ if (ogl.m_apply.bRenderToTexture) {
 		PrintLog ("   glGenerateMipmapEXT not supported by the OpenGL driver\n");
 	else
 #	endif
-ogl.m_available.bRenderToTexture = 2;
+ogl.m_features.bRenderToTexture = 2;
 	}
 #endif
-PrintLog ((ogl.m_available.bRenderToTexture == 2) ? "Rendering to texture is available\n" : "No rendering to texture available\n");
+PrintLog ((ogl.m_features.bRenderToTexture == 2) ? "Rendering to texture is available\n" : "No rendering to texture available\n");
 }
 
 //------------------------------------------------------------------------------

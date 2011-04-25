@@ -1899,9 +1899,9 @@ gameOptions [0].render.color.nSaturation = 1;
 extraGameInfo [0].bPowerupLights = 0;
 extraGameInfo [0].bBrightObjects = 0;
 gameOptions [0].ogl.nMaxLightsPerObject = nMaxLightsPerObject [gameOptions [0].render.nQuality];
-gameOptions [0].ogl.bHeadlight = ogl.m_available.bShaders;
-gameOptions [0].ogl.bObjLighting = ogl.m_available.bShaders;
-gameOptions [0].ogl.bLightObjects = ogl.m_available.bShaders;
+gameOptions [0].ogl.bHeadlight = ogl.m_features.bShaders;
+gameOptions [0].ogl.bObjLighting = ogl.m_features.bShaders;
+gameOptions [0].ogl.bLightObjects = ogl.m_features.bShaders;
 extraGameInfo [0].bFlickerLights = !gameOptions [0].app.bEpilepticFriendly;
 extraGameInfo [0].bBrightObjects = 0;
 }
@@ -1973,7 +1973,7 @@ if (!gameOpts->app.bExpertMode) {
 		gameOpts->render.stereo.nScreenDist = 5;
 		gameOpts->render.stereo.bColorGain = 1;
 		gameOpts->render.stereo.bDeghost = 1;
-		gameOpts->render.stereo.bEnhance = (gameOpts->render.bUseShaders && ogl.m_available.bShaders);
+		gameOpts->render.stereo.bEnhance = (gameOpts->render.bUseShaders && ogl.m_features.bShaders);
 		gameOpts->render.stereo.bFlipFrames = 0;
 		}
 	}

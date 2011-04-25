@@ -92,7 +92,7 @@ int CPBO::Create (int nWidth, int nHeight)
 		WGL_TEXTURE_2D_ARB,
 		0};
 
-if (!ogl.m_available.bRenderToTexture)
+if (!ogl.m_features.bRenderToTexture)
 	return 0;
 Destroy ();
 hGlDC = wglGetCurrentDC ();
@@ -142,7 +142,7 @@ wglShareLists (hGlRC, m_info.hRC);
         None
     };
 
-if (!ogl.m_available.bRenderToTexture)
+if (!ogl.m_features.bRenderToTexture)
 	return 0;
 hGlWindow = glXGetCurrentDrawable ();
 hGlDC = glXGetCurrentDisplay ();
@@ -288,9 +288,9 @@ m_info.bBound = false;
 
 void CPBO::Setup (void)
 {
-ogl.m_apply.bRenderToTexture = 1;
-ogl.m_available.bRenderToTexture = 0;
-if (ogl.m_apply.bRenderToTexture) {
+ogl.m_features.bRenderToTexture/*.Apply ()*/ = 1;
+ogl.m_features.bRenderToTexture = 0;
+if (ogl.m_features.bRenderToTexture/*.Apply ()*/) {
 #ifdef _WIN32
 	wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC) wglGetProcAddress ("wglCreatePbufferARB");
 	wglGetPbufferDCARB = (PFNWGLGETPBUFFERDCARBPROC) wglGetProcAddress ("wglGetPbufferDCARB");
@@ -301,12 +301,12 @@ if (ogl.m_apply.bRenderToTexture) {
 	wglMakeContextCurrentARB = (PFNWGLMAKECONTEXTCURRENTARBPROC) wglGetProcAddress ("wglMakeContextCurrentARB");
 	wglBindTexImageARB = (PFNWGLBINDTEXIMAGEARBPROC) wglGetProcAddress ("wglBindTexImageARB");
 	wglReleaseTexImageARB = (PFNWGLRELEASETEXIMAGEARBPROC) wglGetProcAddress ("wglReleaseTexImageARB");
-	ogl.m_available.bRenderToTexture =
+	ogl.m_features.bRenderToTexture =
 		wglCreatePbufferARB && wglGetPbufferDCARB && wglReleasePbufferDCARB && wglDestroyPbufferARB && 
 		wglQueryPbufferARB && wglChoosePixelFormatARB && wglMakeContextCurrentARB &&
 		wglBindTexImageARB && wglReleaseTexImageARB;
 #else
-	ogl.m_available.bRenderToTexture = 1;
+	ogl.m_features.bRenderToTexture = 1;
 #endif
 	}
 
@@ -319,7 +319,7 @@ if (ogl.m_apply.bRenderToTexture) {
   hGlRC = glXGetCurrentContext ();
 #endif
   
-PrintLog ((ogl.m_available.bRenderToTexture == 1)  
+PrintLog ((ogl.m_features.bRenderToTexture == 1)  
 		  ? "Rendering to pixel buffers is available\n" 
 		  : "No rendering to pixel buffers available\n");
 

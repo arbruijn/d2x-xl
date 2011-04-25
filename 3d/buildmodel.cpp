@@ -99,7 +99,7 @@ m_sortedVerts.Clear (0);
 for (ushort i = 0; i < m_nSubModels; i++)
 	m_subModels [i].m_nSubModel = i;
 
-if (ogl.m_available.bVertexBufferObjects) {
+if (ogl.m_features.bVertexBufferObjects) {
 	int i;
 	ogl.ClearError (0);
 	glGenBuffersARB (1, &m_vboDataHandle);
@@ -107,7 +107,7 @@ if (ogl.m_available.bVertexBufferObjects) {
 #	if DBG
 		HUDMessage (0, "glGenBuffersARB failed (%d)", i);
 #	endif
-		ogl.m_available.bVertexBufferObjects = 0;
+		ogl.m_features.bVertexBufferObjects = 0;
 		Destroy ();
 		return false;
 		}
@@ -117,7 +117,7 @@ if (ogl.m_available.bVertexBufferObjects) {
 #	if DBG
 		HUDMessage (0, "glBindBufferARB failed (%d)", i);
 #	endif
-		ogl.m_available.bVertexBufferObjects = 0;
+		ogl.m_features.bVertexBufferObjects = 0;
 		Destroy ();
 		return false;
 		}
@@ -147,9 +147,9 @@ if (m_nModel > -1)
 if ((nDbgModel >= 0) && (m_nModel == nDbgModel))
 	nDbgModel = nDbgModel;
 #endif
-if (ogl.m_available.bVertexBufferObjects && m_vboDataHandle)
+if (ogl.m_features.bVertexBufferObjects && m_vboDataHandle)
 	glDeleteBuffersARB (1, &m_vboDataHandle);
-if (ogl.m_available.bVertexBufferObjects && m_vboIndexHandle)
+if (ogl.m_features.bVertexBufferObjects && m_vboIndexHandle)
 	glDeleteBuffersARB (1, &m_vboIndexHandle);
 #if DBG
 if (m_textures.Buffer ())
@@ -384,7 +384,7 @@ if (bSort)
 else
 	memcpy (m_sortedVerts.Buffer (), m_faceVerts.Buffer (), m_sortedVerts.Size ());
 m_bValid = 1;
-if (ogl.m_available.bVertexBufferObjects) {
+if (ogl.m_features.bVertexBufferObjects) {
 	glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 	}

@@ -324,7 +324,7 @@ else
 if ((t = FindArg ("-FSAA")))
 	ogl.m_states.bFSAA = NumArg (t, 1);
 if ((t = FindArg ("-quad_buffering")))
-	ogl.m_apply.bQuadBuffers = NumArg (t, 1);
+	ogl.m_features.bQuadBuffers = NumArg (t, 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -355,7 +355,7 @@ if ((t = FindArg ("-model_quality")) && *appConfig [t+1])
 	gameStates.render.nModelQuality = NumArg (t, 3);
 #if 0
 if ((t = FindArg ("-gl_texcompress")))
-	ogl.m_apply.bTextureCompression = NumArg (t, 1);
+	ogl.m_features.bTextureCompression.Apply (NumArg (t, 1));
 #endif
 gameOptions [0].render.bUseShaders = 1;
 gameStates.app.bReadOnly = 0;

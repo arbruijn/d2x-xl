@@ -116,7 +116,7 @@ SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_GREEN_SIZE", SDL_GL_ACCUM_GREEN_SIZE, 5);
 SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_BLUE_SIZE", SDL_GL_ACCUM_BLUE_SIZE, 5);
 SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_ALPHA_SIZE", SDL_GL_ACCUM_ALPHA_SIZE, 5);
 SdlGlSetAttribute (NULL, "SDL_GL_DOUBLEBUFFER", SDL_GL_DOUBLEBUFFER, 1);
-if (ogl.m_apply.bQuadBuffers)
+if (ogl.m_features.bQuadBuffers/*.Apply ()*/)
 	SdlGlSetAttribute (NULL, "SDL_GL_STEREO", SDL_GL_STEREO, 1);
 if (ogl.m_states.bFSAA) {
 	SdlGlSetAttribute (NULL, "SDL_GL_MULTISAMPLEBUFFERS", SDL_GL_MULTISAMPLEBUFFERS, 1);
@@ -180,12 +180,12 @@ glGetIntegerv (GL_ALPHA_BITS, &i);
 ogl.m_states.nColorBits += i;
 glGetIntegerv (GL_DEPTH_BITS, &ogl.m_states.nDepthBits);
 glGetIntegerv (GL_STENCIL_BITS, &ogl.m_states.nStencilBits);
-ogl.m_available.bStencilBuffer = (ogl.m_states.nStencilBits > 0);
-if (!ogl.m_apply.bQuadBuffers)
+ogl.m_features.bStencilBuffer = (ogl.m_states.nStencilBits > 0);
+if (!ogl.m_features.bQuadBuffers/*.Apply ()*/)
 	ogl.m_states.nStereo = 0;
 else {
 	glGetIntegerv (GL_STEREO, &ogl.m_states.nStereo);
-	ogl.m_available.bStereoBuffers = (ogl.m_states.nStereo > 0);
+	ogl.m_features.bStereoBuffers = (ogl.m_states.nStereo > 0);
 	}
 SDL_ShowCursor (0);
 ogl.m_states.nCurWidth = w;

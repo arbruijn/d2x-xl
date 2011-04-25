@@ -953,7 +953,7 @@ LoadTextureColors (pszLevelName, NULL);
 missionConfig.Init ();
 missionConfig.Load ();
 missionConfig.Load (pszLevelName);
-missionConfig.Apply ();
+missionConfig/*.Apply ()*/;
 InitTexColors ();
 
 for (;;) {
@@ -1048,7 +1048,7 @@ gameData.render.color.vertices.Clear ();
 gameData.render.color.segments.Clear ();
 /*---*/PrintLog ("   resetting speed boost information\n");
 gameData.objs.speedBoost.Clear ();
-if (!ogl.m_available.bStencilBuffer)
+if (!ogl.m_features.bStencilBuffer)
 	extraGameInfo [0].bShadows = 0;
 D2SetCaption ();
 if (!bRestore) {

@@ -122,7 +122,7 @@ for (int i = 0; i < 2; i++)
 
 void InitGrayScaleShader (void)
 {
-if (!(gameOpts->render.bUseShaders && ogl.m_available.bShaders))
+if (!(gameOpts->render.bUseShaders && ogl.m_features.bShaders))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
 	PrintLog ("building grayscale shader programs\n");
@@ -137,7 +137,7 @@ else {
 	}
 if (!gameOpts->ogl.bGlTexMerge) {
 	ogl.m_states.bLowMemory = 0;
-	ogl.m_available.bTextureCompression = 0;
+	ogl.m_features.bTextureCompression = 0;
 	PrintLog ("+++++ OpenGL shader texture merging has been disabled! +++++\n");
 	}
 }

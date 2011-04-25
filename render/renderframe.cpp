@@ -525,7 +525,7 @@ if (bShowOnlyCurSide)
 #if MAX_SHADOWMAPS
 RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #else
-if (!ogl.m_available.bStencilBuffer)
+if (!ogl.m_features.bStencilBuffer.Available ())
 	extraGameInfo [0].bShadows =
 	extraGameInfo [1].bShadows = 0;
 if (SHOW_SHADOWS &&

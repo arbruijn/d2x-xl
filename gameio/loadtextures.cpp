@@ -241,7 +241,7 @@ int CBitmap::ReadS3TC (const char *pszFolder, const char *pszFile)
 	CFile		cf;
 	char		szFilename [FILENAME_LEN], szFolder [FILENAME_LEN];
 
-if (!ogl.m_available.bTextureCompression)
+if (!ogl.m_features.bTextureCompression)
 	return 0;
 if (!m_info.compressed.bCompressed)
 	return 0;

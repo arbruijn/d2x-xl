@@ -1130,7 +1130,7 @@ if ((bLocal = (m_info.texP == NULL))) {
 m_info.texP->Prepare (m_info.compressed.bCompressed);
 #	ifndef __macosx__
 if (!(m_info.compressed.bCompressed || Parent ())) {
-	if (ogl.m_states.apply.bTextureCompression && ogl.m_available.bTextureCompression &&
+	if (ogl.m_features.bTextureCompression &&
 		 ((m_info.texP->Format () == GL_RGBA) || (m_info.texP->Format () == GL_RGB)) &&
 		 (m_info.texP->TW () >= 64) && (m_info.texP->TH () >= 64))
 		m_info.texP->SetInternalFormat (GL_COMPRESSED_RGBA);
