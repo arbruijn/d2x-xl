@@ -288,6 +288,11 @@ return 1;
 
 void CParticleImageManager::FreeAll (void)
 {
+if (m_textureArray) {
+	ogl.DeleteTextures (1, &m_textureArray);
+	m_textureArray = 0;
+	}
+
 	int	i, j;
 	tParticleImageInfo* piiP = particleImageInfo [0];
 
@@ -306,34 +311,33 @@ bool CParticleImageManager::SetupMultipleTextures (CBitmap* bmP1, CBitmap* bmP2,
 {
 if (!ogl.m_features.bTextureArrays.Available ())
 	return false;
-if ((bmP2->Width () != bmP1->Width ()) || (bmP2->Height () != bmP1->Height ()) || 
-	 (bmP3->Width () != bmP1->Width ()) || (bmP3->Height () != bmP1->Height ()))
+if (m_textureArray)
+	return true;
+
+int nWidth = bmP1->Width ();
+int nHeight = bmP1->Height ();
+
+if ((bmP2->Width () != nWidth) || (bmP2->Height () != nHeight) || 
+	 (bmP3->Width () != nWidth) || (bmP3->Height () != nHeight))
 	return false;
+
 ogl.GenTextures (1, &m_textureArray);
 if (!m_textureArray)
 	return false;
 
-if (ogl.m_features.bTextureArrays.Available ()) {
-		static GLfloat borderColor [4] = {0.0, 0.0, 0.0, 0.0};
+static GLfloat borderColor [4] = {0.0, 0.0, 0.0, 0.0};
 
-		int nWidth = bmP1->Width ();
-		int nHeight = bmP1->Height ();
-
-
-	glBindTexture (GL_TEXTURE_2D_ARRAY_EXT, m_textureArray);
-	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexParameterf (GL_TEXTURE_2D_ARRAY_EXT, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf (GL_TEXTURE_2D_ARRAY_EXT, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf (GL_TEXTURE_2D_ARRAY_EXT, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameterf (GL_TEXTURE_2D_ARRAY_EXT, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	glTexParameterfv (GL_TEXTURE_2D_ARRAY_EXT, GL_TEXTURE_BORDER_COLOR, borderColor);
-	glTexImage3D (GL_TEXTURE_2D_ARRAY_EXT, 0, GL_RGBA, nWidth, nHeight, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexSubImage3D (GL_TEXTURE_2D_ARRAY_EXT, 0, 0, 0, 0, nWidth, nHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, bmP1->Buffer ());
-	glTexSubImage3D (GL_TEXTURE_2D_ARRAY_EXT, 0, 0, 0, 1, nWidth, nHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, bmP2->Buffer ());
-	glTexSubImage3D (GL_TEXTURE_2D_ARRAY_EXT, 0, 0, 0, 2, nWidth, nHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, bmP3->Buffer ());
-	}
-else {
-	}
+glBindTexture (GL_TEXTURE_2D_ARRAY_EXT, m_textureArray);
+glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+glTexParameterf (GL_TEXTURE_2D_ARRAY_EXT, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glTexParameterf (GL_TEXTURE_2D_ARRAY_EXT, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameterf (GL_TEXTURE_2D_ARRAY_EXT, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+glTexParameterf (GL_TEXTURE_2D_ARRAY_EXT, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+glTexParameterfv (GL_TEXTURE_2D_ARRAY_EXT, GL_TEXTURE_BORDER_COLOR, borderColor);
+glTexImage3D (GL_TEXTURE_2D_ARRAY_EXT, 0, GL_RGBA, nWidth, nHeight, 3, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+glTexSubImage3D (GL_TEXTURE_2D_ARRAY_EXT, 0, 0, 0, 0, nWidth, nHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, bmP1->Buffer ());
+glTexSubImage3D (GL_TEXTURE_2D_ARRAY_EXT, 0, 0, 0, 1, nWidth, nHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, bmP2->Buffer ());
+glTexSubImage3D (GL_TEXTURE_2D_ARRAY_EXT, 0, 0, 0, 2, nWidth, nHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, bmP3->Buffer ());
 return true;
 }
 	
