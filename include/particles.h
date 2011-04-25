@@ -19,7 +19,8 @@
 #define BULLET_PARTICLES			7
 #define LIGHT_PARTICLES				8
 #define GATLING_PARTICLES			9
-#define PARTICLE_TYPES				10
+#define SPARK_PARTICLES				10
+#define PARTICLE_TYPES				11
 
 #define MAX_PARTICLE_QUALITY		3
 
@@ -149,7 +150,7 @@ typedef struct tParticle {
 	float			m_nHeight;
 	float			m_nRad;
 	short			m_nSegment;
-	tTexCoord3f	m_texCoord;
+	tTexCoord2f	m_texCoord;
 	float			m_deltaUV;
 	tRgbaColorf	m_color [2];		//well ... the color, ya know =)
 	tRgbaColorf	m_renderColor;

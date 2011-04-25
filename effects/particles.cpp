@@ -409,7 +409,6 @@ if (nLife < 0)
 m_nLife = nLife;
 m_nDelay = 0; //bStart ? randN (nLife) : 0;
 m_nRenderType = RenderType ();
-m_texCoord.v.l = 0;
 
 #if 0
 
@@ -1349,12 +1348,29 @@ if (m_bEmissive && alphaControl)
 	pb [0].color.alpha = 0.0f;
 pb [1].color = pb [2].color = pb [3].color = pb [0].color;
 
-float hx = ParticleImageInfo (m_nType).xBorder;
-pb [(int) m_nOrient].texCoord.v.u = pb [int (m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + hx;
-pb [int (m_nOrient + 1) % 4].texCoord.v.u = pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - hx;
-float hy = ParticleImageInfo (m_nType).yBorder;
-pb [(int) m_nOrient].texCoord.v.v = pb [int (m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + hy;
-pb [int (m_nOrient + 2) % 4].texCoord.v.v = pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - hy;
+if (m_nType == SPARK_PARTICLES) {
+	float nRow = m_texCoord.v.u;
+	float nCol = m_texCoord.v.v;
+
+	pb [0].texCoord.v.u = nCol / 8.0f;
+	pb [0].texCoord.v.v = (nRow + 1) / 8.0f;
+	pb [1].texCoord.v.u = (nCol + 1) / 8.0f;
+	pb [1].texCoord.v.v = (nRow + 1) / 8.0f;
+	pb [2].texCoord.v.u = (nCol + 1) / 8.0f;
+	pb [2].texCoord.v.v = nRow / 8.0f;
+	pb [3].texCoord.v.u = nCol / 8.0f;
+	pb [3].texCoord.v.v = nRow / 8.0f;
+	pb [0].texCoord.v.l = pb [1].texCoord.v.l = pb [2].texCoord.v.l = pb [3].texCoord.v.l = 0.0f;
+	}
+else {
+	float hx = ParticleImageInfo (m_nType).xBorder;
+	pb [(int) m_nOrient].texCoord.v.u = pb [int (m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + hx;
+	pb [int (m_nOrient + 1) % 4].texCoord.v.u = pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - hx;
+	float hy = ParticleImageInfo (m_nType).yBorder;
+	pb [(int) m_nOrient].texCoord.v.v = pb [int (m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + hy;
+	pb [int (m_nOrient + 2) % 4].texCoord.v.v = pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - hy;
+	pb [0].texCoord.v.l = pb [1].texCoord.v.l = pb [2].texCoord.v.l = pb [3].texCoord.v.l = 1.0f;
+	}
 
 if (m_nType == RAIN_PARTICLES) {
 	uVec.Assign (m_vDir);
@@ -1369,8 +1385,7 @@ if (m_nType == RAIN_PARTICLES) {
 	rVec = CFloatVector3::Cross (u, v);
 	}
 else {
-	if ((m_nType == SNOW_PARTICLES) || ((m_nType == BUBBLE_PARTICLES)
-			&& gameOpts->render.particles.bWiggleBubbles))
+	if ((m_nType == SNOW_PARTICLES) || ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles))
 		vCenter.v.coord.x += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 	if (m_bRotate && gameOpts->render.particles.bRotate) {
 		int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;

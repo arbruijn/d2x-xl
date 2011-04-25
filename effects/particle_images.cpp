@@ -57,6 +57,7 @@ tParticleImageInfo particleImageInfo [MAX_PARTICLE_QUALITY + 1][PARTICLE_TYPES] 
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
+	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0}},
 
 	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
@@ -68,7 +69,8 @@ tParticleImageInfo particleImageInfo [MAX_PARTICLE_QUALITY + 1][PARTICLE_TYPES] 
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
 	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
-	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}},
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "sparks.tga", 1, 0, 0, 0, 0, 0}},
 
 	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
@@ -79,7 +81,8 @@ tParticleImageInfo particleImageInfo [MAX_PARTICLE_QUALITY + 1][PARTICLE_TYPES] 
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
 	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
-	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}},
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "sparks.tga", 1, 0, 0, 0, 0, 0}},
 
 	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
@@ -90,7 +93,8 @@ tParticleImageInfo particleImageInfo [MAX_PARTICLE_QUALITY + 1][PARTICLE_TYPES] 
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
 	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
-	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}},
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "sparks.tga", 1, 0, 0, 0, 0, 0}},
 	};
 
 #else

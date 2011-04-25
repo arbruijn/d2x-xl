@@ -1034,7 +1034,7 @@ typedef struct tSparkVertex {
 
 typedef struct tSparkBuffer {
 	int				nSparks;
-	tSparkVertex	info [SPARK_BUF_SIZE * 4];
+	tSparkVertex	vertices [SPARK_BUF_SIZE * 4];
 } tSparkBuffer;
 
 tSparkBuffer sparkBuffer;
@@ -1060,8 +1060,8 @@ if (LoadTexture (sparks.Bitmap (), 0, 0, 0, GL_CLAMP)) {
 		shaderManager.Deploy (-1);
 	ogl.SetBlendMode (OGL_BLEND_ADD);
 	glColor3f (1,1,1);
-	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].texCoord);
-	OglVertexPointer (3, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].vPos);
+	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.vertices [0].texCoord);
+	OglVertexPointer (3, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.vertices [0].vPos);
 	OglDrawArrays (GL_QUADS, 0, 4 * sparkBuffer.nSparks);
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	ogl.SetDepthTest (true);
@@ -1073,45 +1073,64 @@ if (LoadTexture (sparks.Bitmap (), 0, 0, 0, GL_CLAMP)) {
 
 void CTransparencyRenderer::RenderSpark (tTranspSpark *item)
 {
-if (sparkBuffer.nSparks >= SPARK_BUF_SIZE)
-	FlushSparkBuffer ();
+		float	nCol = (float) (item->nFrame / 8);
+		float	nRow = (float) (item->nFrame % 8);
 
+if () {
+	CParticle p;
 
-	tSparkVertex	*infoP = sparkBuffer.info + 4 * sparkBuffer.nSparks;
-	CFloatVector	vPos;
-	float				nSize = X2F (item->nSize);
-	float				nCol = (float) (item->nFrame / 8);
-	float				nRow = (float) (item->nFrame % 8);
+	p.m_nType = SPARK_PARTICLE;
+	p.m_nLife = p.m_nTTL = 1000;
+	p.m_decay = 1.0f;
+	p.m_renderColor.red = p.m_renderColor.green = p.m_renderColor.blue = p.m_renderColor.alpha = 1.0f;
+	p.m_nWidth =
+	p.m_nHeight = X2F (item->nSize);
+	p.m_bEmissive = 1;
+	p.m_bRotate = 0;
+	p.m_nOrient = 0;
+	p.m_vPos.Assign (item->position);
+	p.m_texCoord.v.u = nCol;
+	p.m_texCoord.v.v = nRow; 
+	p.m_texCoord.v.l = 0.0f;
+	}
+else {
+	if (sparkBuffer.nSparks >= SPARK_BUF_SIZE)
+		FlushSparkBuffer ();
 
-sparkArea.Add (item->position, nSize);
+		tSparkVertex	*vertexP = sparkBuffer.vertices + 4 * sparkBuffer.nSparks;
+		CFloatVector	vPos;
+		float				nSize = X2F (item->nSize);
 
-transformation.Transform (vPos, item->position, 0);
-if (!item->nType)
-	nCol += 4;
-infoP->vPos.v.coord.x = vPos.v.coord.x - nSize;
-infoP->vPos.v.coord.y = vPos.v.coord.y + nSize;
-infoP->vPos.v.coord.z = vPos.v.coord.z;
-infoP->texCoord.v.u = nCol / 8.0f;
-infoP->texCoord.v.v = (nRow + 1) / 8.0f;
-infoP++;
-infoP->vPos.v.coord.x = vPos.v.coord.x + nSize;
-infoP->vPos.v.coord.y = vPos.v.coord.y + nSize;
-infoP->vPos.v.coord.z = vPos.v.coord.z;
-infoP->texCoord.v.u = (nCol + 1) / 8.0f;
-infoP->texCoord.v.v = (nRow + 1) / 8.0f;
-infoP++;
-infoP->vPos.v.coord.x = vPos.v.coord.x + nSize;
-infoP->vPos.v.coord.y = vPos.v.coord.y - nSize;
-infoP->vPos.v.coord.z = vPos.v.coord.z;
-infoP->texCoord.v.u = (nCol + 1) / 8.0f;
-infoP->texCoord.v.v = nRow / 8.0f;
-infoP++;
-infoP->vPos.v.coord.x = vPos.v.coord.x - nSize;
-infoP->vPos.v.coord.y = vPos.v.coord.y - nSize;
-infoP->vPos.v.coord.z = vPos.v.coord.z;
-infoP->texCoord.v.u = nCol / 8.0f;
-infoP->texCoord.v.v = nRow / 8.0f;
-sparkBuffer.nSparks++;
+	sparkArea.Add (item->position, nSize);
+
+	transformation.Transform (vPos, item->position, 0);
+	if (!item->nType)
+		nCol += 4;
+	vertexP->vPos.v.coord.x = vPos.v.coord.x - nSize;
+	vertexP->vPos.v.coord.y = vPos.v.coord.y + nSize;
+	vertexP->vPos.v.coord.z = vPos.v.coord.z;
+	vertexP->texCoord.v.u = nCol / 8.0f;
+	vertexP->texCoord.v.v = (nRow + 1) / 8.0f;
+	vertexP++;
+	vertexP->vPos.v.coord.x = vPos.v.coord.x + nSize;
+	vertexP->vPos.v.coord.y = vPos.v.coord.y + nSize;
+	vertexP->vPos.v.coord.z = vPos.v.coord.z;
+	vertexP->texCoord.v.u = (nCol + 1) / 8.0f;
+	vertexP->texCoord.v.v = (nRow + 1) / 8.0f;
+	vertexP++;
+	vertexP->vPos.v.coord.x = vPos.v.coord.x + nSize;
+	vertexP->vPos.v.coord.y = vPos.v.coord.y - nSize;
+	vertexP->vPos.v.coord.z = vPos.v.coord.z;
+	vertexP->texCoord.v.u = (nCol + 1) / 8.0f;
+	vertexP->texCoord.v.v = nRow / 8.0f;
+	vertexP++;
+	vertexP->vPos.v.coord.x = vPos.v.coord.x - nSize;
+	vertexP->vPos.v.coord.y = vPos.v.coord.y - nSize;
+	vertexP->vPos.v.coord.z = vPos.v.coord.z;
+	vertexP->texCoord.v.u = nCol / 8.0f;
+	vertexP->texCoord.v.v = nRow / 8.0f;
+	sparkBuffer.nSparks++;
+	}
 }
 
 //------------------------------------------------------------------------------

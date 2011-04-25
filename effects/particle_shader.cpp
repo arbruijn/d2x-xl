@@ -124,7 +124,7 @@ if (ogl.m_states.bDepthBlending) {
 // into the other color buffer with blend mode replace (GL_ONE, GL_ZERO)
 
 const char *particleFS =
-	"uniform sampler2D particleTex, depthTex;\r\n" \
+	"uniform sampler2D particleTex, sparkTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"//#define ZNEAR 1.0\r\n" \
@@ -144,11 +144,12 @@ const char *particleFS =
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dMax);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
-	"vec4 particleColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color * dz;\r\n" \
+	"vec4 texColor = texture2D ((gl_TexCoord [0].z > 0.5) ? particleTex : sparkTex, gl_TexCoord [0].xy);\r\n" \
+	"texColor *= gl_Color * dz;\r\n" \
 	"if (gl_Color.a == 0.0) //additive\r\n" \
-	"   gl_FragColor = vec4 (particleColor.rgb, 1.0);\r\n" \
+	"   gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
 	"else // alpha\r\n" \
-	"   gl_FragColor = vec4 (particleColor.rgb * particleColor.a, 1.0 - particleColor.a);\r\n" \
+	"   gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
 	"}\r\n"
 	;
 
