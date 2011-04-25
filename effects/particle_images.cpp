@@ -280,6 +280,8 @@ for (int i = 0; i < PARTICLE_TYPES; i++) {
 		return 0;
 	Animate (i);
 	}
+if (ogl.m_features.bTextureArrays.Available ())
+	ogl.GenTextures (1, &m_textureArray);
 return 1;
 }
 

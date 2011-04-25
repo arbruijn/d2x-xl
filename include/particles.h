@@ -396,12 +396,13 @@ class CParticleManager {
 		int								m_bStencil;
 		int								m_iRenderBuffer;
 		GLhandleARB						m_shaderProg;
+		GLuint							m_textureArray; // holds several particle images as texture array
 
 	public:
 		CParticleBuffer				particleBuffer [MAX_PARTICLE_BUFFERS];
 
 	public:
-		CParticleManager () { m_shaderProg = 0; }
+		CParticleManager () : m_shaderProg (0), m_textureArray (0) {}
 		~CParticleManager ();
 		void Init (void);
 		inline void InitObjects (void) {
@@ -554,7 +555,7 @@ class CParticleManager {
 	private:
 		void RebuildSystemList (void);
 		short Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed);
-
+		bool LoadTextureArray (CBitmap* bmP1, CBitmap* bmP2);
 };
 
 extern CParticleManager particleManager;
