@@ -44,6 +44,9 @@
 #include "automap.h"
 
 #if DBG
+#include "timeout.h"
+
+CTimeout toFlushed (3000);
 int nFlushes = 0;
 int nPartsFlushed = 0;
 #endif
@@ -200,6 +203,8 @@ if ((m_nType < 0) || (m_iBuffer < 2)) {
 	}
 
 #if DBG
+if (toFlushed.Expired ())
+	nFlushes = nPartsFlushed = 0;
 ++nFlushes;
 nPartsFlushed += m_iBuffer;
 HUDMessage (0, "%1.2f particles/flush", float (nPartsFlushed) / float (nFlushes));
