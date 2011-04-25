@@ -473,7 +473,7 @@ m_states.viewport [1] = m_states.viewport [0];
 void COGL::RestoreViewport (void)
 {
 m_states.viewport [0] = m_states.viewport [1];
-m_states.viewport [0]/*.Apply ()*/;
+m_states.viewport [0].Apply ();
 }
 
 //------------------------------------------------------------------------------
@@ -492,7 +492,7 @@ if (!gameOpts->render.cameras.bHires)
 if (m_states.viewport [0] != CViewport (x, y, w, h, t)) {
 	m_states.viewport [1] = m_states.viewport [0];
 	m_states.viewport [0] = CViewport (x, y, w, h, t);
-	m_states.viewport [0]/*.Apply ()*/;
+	m_states.viewport [0].Apply ();
 	}
 }
 

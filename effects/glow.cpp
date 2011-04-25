@@ -421,7 +421,7 @@ bool CGlowRenderer::Available (int const nType, bool bForce)
 if (nType == GLOW_SHIELDS)
 	return false;
 #endif
-if (!gameOpts->render.bUseShaders)
+if (!ogl.m_features.bShaders)
 	return false;
 if (gameStates.render.nShadowMap > 0)
 	return false;
