@@ -66,6 +66,14 @@
 
 #define MAX_PARTICLE_BUFFERS	3
 
+#define HAVE_PARTICLE_SHADER	1
+
+#if HAVE_PARTICLE_SHADER
+#	define USE_PARTICLE_SHADER	(ogl.m_features.bMultipleRenderTargets && (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)))
+#else
+#	define USE_PARTICLE_SHADER	0
+#endif
+
 //------------------------------------------------------------------------------
 
 extern int nPartSeg [MAX_THREADS];
@@ -115,7 +123,7 @@ typedef struct tPartPos {
 
 typedef struct tParticleVertex {
 	CFloatVector3	vertex;
-	tTexCoord2f		texCoord;
+	tTexCoord3f		texCoord;
 	tRgbaColorf		color;
 	} tParticleVertex;
 
