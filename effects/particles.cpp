@@ -1352,15 +1352,18 @@ if (m_nType == SPARK_PARTICLES) {
 	float nRow = m_texCoord.v.u;
 	float nCol = m_texCoord.v.v;
 
-	pb [0].texCoord.v.u = nCol / 8.0f;
-	pb [0].texCoord.v.v = (nRow + 1) / 8.0f;
-	pb [1].texCoord.v.u = (nCol + 1) / 8.0f;
-	pb [1].texCoord.v.v = (nRow + 1) / 8.0f;
-	pb [2].texCoord.v.u = (nCol + 1) / 8.0f;
-	pb [2].texCoord.v.v = nRow / 8.0f;
+	pb [0].texCoord.v.u =
 	pb [3].texCoord.v.u = nCol / 8.0f;
+	pb [0].texCoord.v.v =
+	pb [1].texCoord.v.v = (nRow + 1) / 8.0f;
+	pb [1].texCoord.v.u =
+	pb [2].texCoord.v.u = (nCol + 1) / 8.0f;
+	pb [2].texCoord.v.v =
 	pb [3].texCoord.v.v = nRow / 8.0f;
-	pb [0].texCoord.v.l = pb [1].texCoord.v.l = pb [2].texCoord.v.l = pb [3].texCoord.v.l = 0.0f;
+	pb [0].texCoord.v.l = 
+	pb [1].texCoord.v.l = 
+	pb [2].texCoord.v.l = 
+	pb [3].texCoord.v.l = 0.0f;
 	}
 else {
 	float hx = ParticleImageInfo (m_nType).xBorder;
