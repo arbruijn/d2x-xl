@@ -104,7 +104,7 @@ if (ogl.m_features.bDepthBlending > 0) {
 const char *particleFS [2] = {
 	// no texture arrays - bind textures to TMU0 and TMU1
 	"uniform sampler2D particleTex, sparkTex, depthTex;\r\n" \
-	"uniform vec2 dMax;\r\n" \
+	"uniform float dMax [2];\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"//#define ZNEAR 1.0\r\n" \
 	"//#define ZFAR 5000.0\r\n" \
@@ -120,12 +120,11 @@ const char *particleFS [2] = {
 	"void main (void) {\r\n" \
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
-	"bool nType = (gl_TexCoord [0].z < 0.5);\r\n" \
-	"float dm = nType ? dMax.y : dMax.x;\r\n" \
+	"float dm = dMax [gl_TexCoord [0].z];\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
 	"dz = (dm - dz) / dm;\r\n" \
-	"vec4 texColor = nType ? texture2D (sparkTex, gl_TexCoord [0].xy) : texture2D (particleTex, gl_TexCoord [0].xy);\r\n" \
+	"vec4 texColor = (gl_TexCoord [0].z < 0.5) ? texture2D (sparkTex, gl_TexCoord [0].xy) : texture2D (particleTex, gl_TexCoord [0].xy);\r\n" \
 	"texColor *= gl_Color * dz;\r\n" \
 	"if (gl_Color.a == 0.0) //additive\r\n" \
 	"   gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
@@ -137,7 +136,7 @@ const char *particleFS [2] = {
 
 	"uniform sampler2DArray particleTex;\r\n" \
 	"uniform sampler2D depthTex;\r\n" \
-	"uniform vec2 dMax;\r\n" \
+	"uniform float dMax [2];\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"//#define ZNEAR 1.0\r\n" \
 	"//#define ZFAR 5000.0\r\n" \
@@ -153,8 +152,7 @@ const char *particleFS [2] = {
 	"void main (void) {\r\n" \
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
-	"bool nType = (gl_TexCoord [0].z < 0.5);\r\n" \
-	"float dm = nType ? dMax.y : dMax.x;\r\n" \
+	"float dm = dMax [gl_TexCoord [0].z];\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
 	"dz = (dm - dz) / dm;\r\n" \
