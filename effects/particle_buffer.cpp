@@ -205,7 +205,7 @@ if ((m_nType < 0) || (m_iBuffer < 2)) {
 
 #if DBG
 if (toFlushed.Expired ()) {
-	iFlushed = (iFlushed + 1) % 3;
+	iFlushed = (iFlushed + 1) % 4;
 	nFlushes [iFlushed] = nPartsFlushed [iFlushed] = 0;
 	}
 	++nFlushes [iFlushed];
@@ -214,7 +214,8 @@ if (toFlushed.Expired ()) {
 	for (int i = 0; i < 4; i++)
 		if (i != iFlushed)
 		p += nPartsFlushed [i], f = nFlushes [i];
-HUDMessage (0, "%1.2f particles/flush", float (p) / float (f));
+if (f)
+	HUDMessage (0, "%1.2f particles/flush", float (p) / float (f));
 #endif
 #if ENABLE_FLUSH
 PROF_START
