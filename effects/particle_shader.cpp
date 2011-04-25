@@ -63,12 +63,13 @@ if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg)) {
 	shaderManager.Set ("particleTex", 0);
-	if (nShader) 
+	if (nShader == 3) 
 		shaderManager.Set ("depthTex", 1);
-	else {
+	else if (!(nShader & 1)) {
 		shaderManager.Set ("sparkTex", 1);
 		shaderManager.Set ("bubbleTex", 2);
-		shaderManager.Set ("depthTex", 3);
+		if (nShader == 2) 
+			shaderManager.Set ("depthTex", 3);
 		}
 	shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
 	shaderManager.Set ("dMax", (CShaderManager::vec3) dMax);
@@ -102,7 +103,7 @@ if (ogl.m_features.bDepthBlending > 0) {
 
 const char *particleFS [4] = {
 	// no texture arrays - bind textures to TMU0 and TMU1
-	"uniform sampler2D particleTex, sparkTex, bubbleTex, depthTex;\r\n" \
+	"uniform sampler2D particleTex, sparkTex, bubbleTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"void main (void) {\r\n" \
 	"int nType = floor (gl_TexCoord [0].z + 0.5);\r\n" \
@@ -117,7 +118,6 @@ const char *particleFS [4] = {
 	, 	// texture arrays - bind texture array to TMU0, ignore TMU1
 
 	"uniform sampler2DArray particleTex;\r\n" \
-	"uniform sampler2D depthTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2DArray (particleTex, gl_TexCoord [0].xyz) * gl_Color;\r\n" \
