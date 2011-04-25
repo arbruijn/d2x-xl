@@ -43,16 +43,6 @@
 #include "renderthreads.h"
 #include "automap.h"
 
-CParticleManager particleManager;
-
-#define HAVE_PARTICLE_SHADER	1
-
-#if HAVE_PARTICLE_SHADER
-#	define USE_PARTICLE_SHADER	(ogl.m_features.bMultipleRenderTargets && (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)))
-#else
-#	define USE_PARTICLE_SHADER	0
-#endif
-
 //-------------------------------------------------------------------------
 
 int hParticleShader = -1;
