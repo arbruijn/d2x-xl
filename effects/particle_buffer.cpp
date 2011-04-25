@@ -223,12 +223,11 @@ if (Init ()) {
 		else if ((nShader = UseParticleShader ())) {
 			if (!particleManager.LoadShader (nShader - 1, dMax))
 				shaderManager.Deploy (-1);
+			else if (nShader == 2) 
+				particleImageManager.LoadMultipleTextures (particleImageManager.LoadMultipleTextures (GL_TEXTURE0));
 			else {
+				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
 				ParticleImageInfo (SPARK_PARTICLES).bmP->Bind (0);
-				if (nShader == 2) 
-					particleImageManager.LoadMultipleTextures (particleImageManager.LoadMultipleTextures (GL_TEXTURE1));
-				else
-					ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
 				}	
 			}
 #endif
