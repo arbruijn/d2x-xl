@@ -135,7 +135,7 @@ bool CParticleBuffer::Add (CParticle* particleP, float brightness, CFloatVector&
 {
 	bool bFlushed = false;
 
-if (!Compatible (particleP->RenderType () != m_nType) || ((particleP->m_bEmissive != m_bEmissive) && !USE_PARTICLE_SHADER)) {
+if (!Compatible (particleP)) {
 	bFlushed = Flush (brightness, true);
 	m_nType = particleP->RenderType ();
 	m_bEmissive = particleP->m_bEmissive;
