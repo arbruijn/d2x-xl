@@ -2151,7 +2151,7 @@ if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
 	}
 else
 	RenderFrame (0, nWindow + 1);
-if (gameStates.render.bRenderIndirect)
+if (gameStates.render.bRenderIndirect > 0)
 	ogl.SetDrawBuffer (GL_BACK, 0);
 gameStates.zoom.nFactor = nZoomSave;
 //ogl.SetStereoSeparation (xStereoSeparation);

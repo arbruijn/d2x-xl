@@ -139,7 +139,7 @@ if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTex
 		if (ogl.Enhance3D () < 0)
 			ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 		else
-			ogl.SetReadBuffer (GL_BACK, gameStates.render.bRenderIndirect || gameStates.render.cameras.bActive);
+			ogl.SetReadBuffer (GL_BACK, (gameStates.render.bRenderIndirect > 0) || gameStates.render.cameras.bActive);
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 		if ((nError = glGetError ())) {
 			DestroyDepthTexture (nId);

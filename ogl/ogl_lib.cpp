@@ -678,7 +678,7 @@ else
 #endif
 			{
 			ColorMask (1, 1, 1, 1, 1);
-			if (bResetColorBuf && (automap.Display () || gameStates.render.bRenderIndirect)) {
+			if (bResetColorBuf && (automap.Display () || (gameStates.render.bRenderIndirect > 0))) {
 				glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 				glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				}
@@ -742,9 +742,9 @@ if (nWindow == 0) {
 	}
 
 if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
-	if (gameStates.render.bRenderIndirect)
+	if (gameStates.render.bRenderIndirect > 0)
 		SelectDrawBuffer (0);
-	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
+	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect > 0);
 	}
 if (m_features.bShaders)
 	shaderManager.Deploy (-1);

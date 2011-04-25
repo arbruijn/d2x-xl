@@ -115,7 +115,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 		paletteManager.RenderEffect ();
 #endif
 	glowRenderer.End ();
-	if (gameStates.render.bRenderIndirect && !gameStates.menus.nInMenu) {
+	if ((gameStates.render.bRenderIndirect > 0) && !gameStates.menus.nInMenu) {
 		FlushDrawBuffer ();
 		//SelectDrawBuffer (0);
 		gameStates.render.bRenderIndirect = 0;
@@ -136,9 +136,9 @@ if (!gameStates.menus.nInMenu || bForce) {
 	SDL_GL_SwapBuffers ();
 	if (gameStates.app.bSaveScreenshot)
 		SaveScreenShot (NULL, 0);
-	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
+	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect > 0);
 #if 1
-	//if (gameStates.menus.nInMenu || bClear)
+	if (gameStates.menus.nInMenu || bClear)
 		glClear (GL_COLOR_BUFFER_BIT);
 #endif
 	}

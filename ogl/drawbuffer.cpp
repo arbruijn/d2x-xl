@@ -68,7 +68,7 @@ void COGL::CreateDrawBuffer (int nType)
 {
 if (!m_features.bRenderToTexture)
 	return;
-if (!gameStates.render.bRenderIndirect && (nType >= 0))
+if ((gameStates.render.bRenderIndirect <= 0) && (nType >= 0))
 	return;
 if (DrawBuffer ()->Handle ())
 	return;
@@ -192,7 +192,7 @@ return nPrevBuffer;
 
 void COGL::ChooseDrawBuffer (void)
 {
-if (gameStates.render.bBriefing || gameStates.render.nWindow) {
+if (gameStates.render.bBriefing || gameStates.render.nWindow || (gameStates.render.bRenderIndirect < 0)) {
 	gameStates.render.bRenderIndirect = 0;
 	SetDrawBuffer (GL_BACK, 0);
 	}
@@ -211,7 +211,7 @@ else {
 	else {
 #if 0
 		gameStates.render.bRenderIndirect = (ogl.m_features.bRenderToTexture > 0); 
-		if (gameStates.render.bRenderIndirect) 
+		if (gameStates.render.bRenderIndirect > 0) 
 			SelectDrawBuffer (m_data.xStereoSeparation > 0);
 		else
 			SetDrawBuffer (GL_BACK, 0);
@@ -224,7 +224,7 @@ else {
 			|| (m_data.xStereoSeparation && (i > 0)) 
 			|| (glowRenderer.Available (BLUR_SHADOW) && (EGI_FLAG (bShadows, 0, 1, 0) != 0));
 #endif
-		if (gameStates.render.bRenderIndirect) 
+		if (gameStates.render.bRenderIndirect > 0) 
 			SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
 		else
 			SetDrawBuffer (GL_BACK, 0);

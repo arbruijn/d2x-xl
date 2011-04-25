@@ -429,12 +429,12 @@ bool BeginRenderMenu (void)
 {
 if (gameStates.app.bGameRunning && ogl.Enhance3D () && (ogl.StereoSeparation () <= 0)) 
 	return false;
-if (gameStates.app.bGameRunning && gameStates.render.bRenderIndirect) {
+if (gameStates.app.bGameRunning && (gameStates.render.bRenderIndirect > 0)) {
 	ogl.FlushDrawBuffer ();
-	if (gameStates.render.bRenderIndirect)
+	if (gameStates.render.bRenderIndirect > 0)
 		Draw2DFrameElements ();
 	else
-		ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect = 0);
+		ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
 return true;
 }
