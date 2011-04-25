@@ -671,7 +671,7 @@ class CGameOptions {
 		void Init (int i = 0);
 		bool Use3DPowerups (void);
 		int UseHiresSound (void);
-		inline bool SoftBlend (int nFlag) { return (render.effects.bSoftParticles & nFlag) != 0; }
+		inline int SoftBlend (int nFlag) { return (render.effects.bSoftParticles & nFlag) != 0; }
 };
 
 //------------------------------------------------------------------------------

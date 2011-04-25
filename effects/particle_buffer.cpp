@@ -181,8 +181,8 @@ int CParticleBuffer::UseParticleShader (void)
 if (!USE_PARTICLE_SHADER)
 	return 0;
 if ((m_nType == SMOKE_PARTICLES) || (m_nType == SPARK_PARTICLES) || (m_nType == BUBBLE_PARTICLES))
-	return ogl.m_features.bTextureArrays.Available () ? 2 : 1;
-return (m_nType <= WATERFALL_PARTICLES);
+	return (2 * gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)) + ogl.m_features.bTextureArrays.Available () ? 2 : 1;
+return (2 * gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)) + (m_nType <= WATERFALL_PARTICLES);
 }
 
 //------------------------------------------------------------------------------

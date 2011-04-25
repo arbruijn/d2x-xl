@@ -45,7 +45,7 @@
 
 //-------------------------------------------------------------------------
 
-int hParticleShader [2] = {-1, -1};
+int hParticleShader [4] = {-1, -1, -1, -1};
 
 bool CParticleManager::LoadShader (int nShader, CShaderManager::vec3& dMax)
 {
@@ -100,7 +100,34 @@ if (ogl.m_features.bDepthBlending > 0) {
 // two color buffers is used and the scene from the one color buffer is rendered
 // into the other color buffer with blend mode replace (GL_ONE, GL_ZERO)
 
-const char *particleFS [2] = {
+const char *particleFS [4] = {
+	// no texture arrays - bind textures to TMU0 and TMU1
+	"uniform sampler2D particleTex, sparkTex, bubbleTex, depthTex;\r\n" \
+	"uniform vec2 windowScale;\r\n" \
+	"void main (void) {\r\n" \
+	"int nType = floor (gl_TexCoord [0].z + 0.5);\r\n" \
+	"vec4 texColor = ((nType == 0) ? texture2D (sparkTex, gl_TexCoord [0].xy) : (nType == 1) ? texture2D (particleTex, gl_TexCoord [0].xy) : texture2D (bubbleTex, gl_TexCoord [0].xy));\r\n" \
+	"texColor *= gl_Color;\r\n" \
+	"if (gl_Color.a == 0.0) //additive\r\n" \
+	"   gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
+	"else // alpha\r\n" \
+	"   gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
+	"}\r\n"
+
+	, 	// texture arrays - bind texture array to TMU0, ignore TMU1
+
+	"uniform sampler2DArray particleTex;\r\n" \
+	"uniform sampler2D depthTex;\r\n" \
+	"uniform vec2 windowScale;\r\n" \
+	"void main (void) {\r\n" \
+	"vec4 texColor = texture2DArray (particleTex, gl_TexCoord [0].xyz) * gl_Color;\r\n" \
+	"if (gl_Color.a == 0.0) //additive\r\n" \
+	"   gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
+	"else // alpha\r\n" \
+	"   gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
+	"}\r\n"
+	,
+	
 	// no texture arrays - bind textures to TMU0 and TMU1
 	"uniform sampler2D particleTex, sparkTex, bubbleTex, depthTex;\r\n" \
 	"uniform vec3 dMax;\r\n" \
@@ -152,8 +179,6 @@ const char *particleFS [2] = {
 	"void main (void) {\r\n" \
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
-	"int nType = floor (gl_TexCoord [0].z + 0.5);\r\n" \
-	"//float dm = (nType == 0) ? dMax.x : (nType == 1) ? dMax.y : dMax.z; //dMax [nType];\r\n" \
 	"float dm = dMax [floor (gl_TexCoord [0].z + 0.5)];\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
@@ -165,10 +190,7 @@ const char *particleFS [2] = {
 	"else // alpha\r\n" \
 	"   gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
 	"}\r\n"
-
-
-	}
-	;
+	};
 
 const char *particleVS =
 	"void main (void){\r\n" \
@@ -185,10 +207,10 @@ if (ogl.m_features.bRenderToTexture.Available () && ogl.m_features.bShaders && (
 	PrintLog ("building particle blending shader programs\n");
 	m_shaderProg = 0;
 	int i;
-	for (i = 0; i < 2; i++)
+	for (i = 0; i < 4; i++)
 		if (!shaderManager.Build (hParticleShader [i], particleFS [i], particleVS))
 			break;
-	if (i == 2)
+	if (i == 4)
 		ogl.m_features.bDepthBlending.Available (1);
 	else {
 		ogl.ClearError (0);
