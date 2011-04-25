@@ -1269,7 +1269,7 @@ if (glowRenderer.Available (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_
 	if (glowRenderer.End ())
 		ResetBitmaps ();
 	}
-if (nType == tiSpark) {
+if ((nType == tiSpark) && !USE_PARTICLE_SHADER) {
 	if (!itemP || particleManager.Overlap (itemP->item.spark.position, X2F (itemP->item.spark.nSize)))
 		FlushParticleBuffer (nType);
 	}
