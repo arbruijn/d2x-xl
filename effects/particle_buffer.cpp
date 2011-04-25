@@ -210,6 +210,10 @@ if (Init ()) {
 		else if ((m_nType <= WATERFALL_PARTICLES) && USE_PARTICLE_SHADER) {
 			if (!particleManager.LoadShader (dMax))
 				shaderManager.Deploy (-1);
+			else {
+				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
+				ParticleImageInfo (SPARK_PARTICLES).bmP->Bind (0);
+				}	
 			}
 #endif
 		else if ((m_nType <= WATERFALL_PARTICLES) || (m_nType >= PARTICLE_TYPES)) { // load soft blending shader

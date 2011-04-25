@@ -1092,6 +1092,7 @@ if (USE_PARTICLE_SHADER) {
 	p.m_texCoord.v.u = nCol;
 	p.m_texCoord.v.v = nRow; 
 	p.m_texCoord.v.l = 0.0f;
+	particleManager.Add (&p, 1.0f);
 	}
 else {
 	if (sparkBuffer.nSparks >= SPARK_BUF_SIZE)
