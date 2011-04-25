@@ -52,7 +52,7 @@ bool CParticleManager::LoadShader (float dMax [2])
 ogl.ClearError (0);
 if (!gameOpts->render.bUseShaders)
 	return false;
-if (ogl.m_features.bDepthBlending < 1)
+if (ogl.m_features.bDepthBlending < 0)
 	return false;
 if (!ogl.CopyDepthTexture (0, GL_TEXTURE2))
 	return false;
