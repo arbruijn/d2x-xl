@@ -135,7 +135,7 @@ const char *particleFS [2] = {
 	, 	// texture arrays - bind texture array to TMU0, ignore TMU1
 
 	"uniform sampler2DArray particleTex;\r\n" \
-	"uniform sampler2D depthTex;\r\n" \
+	"uniform sampler2D sparkTex, depthTex;\r\n" \
 	"uniform float dMax [2];\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"//#define ZNEAR 1.0\r\n" \
