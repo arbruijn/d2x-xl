@@ -46,9 +46,10 @@
 #if DBG
 #include "timeout.h"
 
-CTimeout toFlushed (3000);
-int nFlushes = 0;
-int nPartsFlushed = 0;
+CTimeout toFlushed (1000);
+int nFlushes [3] = {0, 0, 0};
+int nPartsFlushed [3] = {0, 0, 0};
+int iFlushed = 0;
 #endif
 
 //------------------------------------------------------------------------------
@@ -203,11 +204,16 @@ if ((m_nType < 0) || (m_iBuffer < 2)) {
 	}
 
 #if DBG
-if (toFlushed.Expired ())
-	nFlushes = nPartsFlushed = 0;
-++nFlushes;
-nPartsFlushed += m_iBuffer;
-HUDMessage (0, "%1.2f particles/flush", float (nPartsFlushed) / float (nFlushes));
+if (toFlushed.Expired ()) {
+	iFlushed = (iFlushed + 1) % 3;
+	nFlushes [iFlushed] = nPartsFlushed [iFlushed] = 0;
+	}
+	++nFlushes [iFlushed];
+	nPartsFlushed [iFlushed] += m_iBuffer;
+	int p = 0, f = 0;
+	for (int i = 0; i < 3; i++)
+		p += nPartsFlushed [i], f = nFlushes [i];
+HUDMessage (0, "%1.2f particles/flush", float (p) / float (f));
 #endif
 #if ENABLE_FLUSH
 PROF_START
