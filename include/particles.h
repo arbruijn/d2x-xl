@@ -382,6 +382,7 @@ class CParticleBuffer : public CEffectArea {
 
 	private:
 		int Init (void);
+		int UseParticleShader (void);
 	};
 
 //------------------------------------------------------------------------------
@@ -396,13 +397,12 @@ class CParticleManager {
 		int								m_bStencil;
 		int								m_iRenderBuffer;
 		GLhandleARB						m_shaderProg;
-		GLuint							m_textureArray; // holds several particle images as texture array
 
 	public:
 		CParticleBuffer				particleBuffer [MAX_PARTICLE_BUFFERS];
 
 	public:
-		CParticleManager () : m_shaderProg (0), m_textureArray (0) {}
+		CParticleManager () : m_shaderProg (0) {}
 		~CParticleManager ();
 		void Init (void);
 		inline void InitObjects (void) {
@@ -546,7 +546,7 @@ class CParticleManager {
 
 		bool Flush (float brightness, bool bForce = false);
 
-		bool LoadShader (float dMax [2]);
+		bool LoadShader (int nShader, float dMax [2]);
 
 		void UnloadShader (void);
 
@@ -555,7 +555,6 @@ class CParticleManager {
 	private:
 		void RebuildSystemList (void);
 		short Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed);
-		bool LoadTextureArray (CBitmap* bmP1, CBitmap* bmP2);
 };
 
 extern CParticleManager particleManager;
@@ -574,12 +573,16 @@ typedef struct tParticleImageInfo {
 } tParticleImageInfo;
 
 class CParticleImageManager {
+	private:
+		GLuint m_textureArray; // holds several particle images as texture array
+
 	public:
-		CParticleImageManager () {};
+		CParticleImageManager () : m_textureArray (0) {};
 		~CParticleImageManager () {};
 		int Load (int nType);
 		int LoadAll (void);
 		void FreeAll (void);
+		bool SetupMultipleTextures (CBitmap* bmP1, CBitmap* bmP2);
 		void Animate (int nType);
 		void AdjustBrightness (CBitmap *bmP);
 		int GetType (int nType);

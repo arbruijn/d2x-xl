@@ -155,9 +155,21 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+int CParticleBuffer::UseParticleShader (void)
+{
+if (!USE_PARTICLE_SHADER)
+	return 0;
+if ((m_nType == SMOKE_PARTICLES) || (m_nType == SPARK_PARTICLES))
+	return ogl.m_features.bTextureArrays.Available () ? 2 : 1;
+return (m_nType <= WATERFALL_PARTICLES);
+}
+
+//------------------------------------------------------------------------------
+
 bool CParticleBuffer::Flush (float fBrightness, bool bForce)
 {
 	static float dMax [2] = {20.0f, 3.0f};
+	int nShader = 0;
 
 if (!m_iBuffer)
 	return false;
@@ -208,9 +220,11 @@ if (Init ()) {
 		if (gameStates.render.cameras.bActive || !gameOpts->SoftBlend (SOFT_BLEND_PARTICLES))
 			shaderManager.Deploy (-1);
 #if HAVE_PARTICLE_SHADER
-		else if ((m_nType <= WATERFALL_PARTICLES) && USE_PARTICLE_SHADER) {
-			if (!particleManager.LoadShader (dMax))
+		else if ((nShader = UseParticleShader ())) {
+			if (!particleManager.LoadShader (nShader - 1, dMax))
 				shaderManager.Deploy (-1);
+			else if (nShader == 1) 
+				particleImageManager.SetupMultipleTextures (ParticleImageInfo (SMOKE_PARTICLES).bmP, ParticleImageInfo (SPARK_PARTICLES).bmP);
 			else {
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
 				ParticleImageInfo (SPARK_PARTICLES).bmP->Bind (0);
