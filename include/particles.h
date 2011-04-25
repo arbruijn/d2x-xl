@@ -583,6 +583,7 @@ class CParticleImageManager {
 		int LoadAll (void);
 		void FreeAll (void);
 		bool SetupMultipleTextures (CBitmap* bmP1, CBitmap* bmP2);
+		bool LoadMultipleTextures (int nTMU);
 		void Animate (int nType);
 		void AdjustBrightness (CBitmap *bmP);
 		int GetType (int nType);

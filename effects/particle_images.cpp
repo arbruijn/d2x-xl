@@ -280,8 +280,7 @@ for (int i = 0; i < PARTICLE_TYPES; i++) {
 		return 0;
 	Animate (i);
 	}
-if (ogl.m_features.bTextureArrays.Available ())
-	ogl.GenTextures (1, &m_textureArray);
+SetupMultipleTextures ();
 return 1;
 }
 
@@ -305,7 +304,10 @@ for (i = 0; i < 2; i++)
 
 bool CParticleImageManager::SetupMultipleTextures (CBitmap* bmP1, CBitmap* bmP2)
 {
-if (!USE_PARTICLE_SHADER)
+if (!ogl.m_features.bTextureArrays.Available ())
+	return false;
+ogl.GenTextures (1, &m_textureArray);
+if (!m_textureArray)
 	return false;
 
 if (ogl.m_features.bTextureArrays.Available ()) {
@@ -330,5 +332,17 @@ else {
 return true;
 }
 	
+//-------------------------------------------------------------------------
+
+bool CParticleImageManager::LoadMultipleTextures (int nTMU)
+{
+if (!ogl.m_features.bTextureArrays.Available ())
+	return false;
+if (!m_textureArray)
+	return false;
+ogl.BindTexture (m_textureArray);
+return true;
+}
+
 //------------------------------------------------------------------------------
 //eof
