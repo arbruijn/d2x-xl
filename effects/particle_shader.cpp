@@ -50,14 +50,12 @@ int hParticleShader = -1;
 bool CParticleManager::LoadShader (float dMax [2])
 {
 ogl.ClearError (0);
-ogl.m_states.bDepthBlending = 0;
 if (!gameOpts->render.bUseShaders)
 	return false;
-if (ogl.m_states.bDepthBlending < 1)
+if (ogl.m_features.bDepthBlending < 1)
 	return false;
 if (!ogl.CopyDepthTexture (0, GL_TEXTURE2))
 	return false;
-ogl.m_states.bDepthBlending = 1;
 //ogl.DrawBuffer ()->FlipBuffers (0, 1); // color buffer 1 becomes render target, color buffer 0 becomes render source (scene texture)
 //ogl.DrawBuffer ()->SetDrawBuffers ();
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hParticleShader));
@@ -81,7 +79,7 @@ return true;
 
 void CParticleManager::UnloadShader (void)
 {
-if (ogl.m_states.bDepthBlending) {
+if (ogl.m_features.bDepthBlending > 0) {
 	shaderManager.Deploy (-1);
 	//DestroyGlareDepthTexture ();
 	ogl.SetTexturing (true);
@@ -146,15 +144,14 @@ const char *particleVS =
 
 void CParticleManager::InitShader (void)
 {
-if (ogl.m_features.bMultipleRenderTargets) {
+if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders && (ogl.m_features.bDepthBlending > -1)) {
 	PrintLog ("building particle blending shader program\n");
-	if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders) {
-		ogl.m_states.bDepthBlending = 1;
-		m_shaderProg = 0;
-		if (!shaderManager.Build (hParticleShader, particleFS, particleVS)) {
-			ogl.ClearError (0);
-			ogl.m_states.bDepthBlending = -1;
-			}
+	m_shaderProg = 0;
+	if (shaderManager.Build (hParticleShader, particleFS, particleVS))
+		ogl.m_features.bDepthBlending.Available (1);
+	else {
+		ogl.ClearError (0);
+		ogl.m_features.bDepthBlending.Available (0);
 		}
 	}
 }

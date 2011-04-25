@@ -175,7 +175,7 @@ class COglFeature {
 			m_bApply = i; 
 			return *this;
 			}
-		operator int() { return Available () * Apply (); }
+		operator int() { return (Available () > 0) * Apply (); }
 		//operator bool() { return bool (Available () && Apply ()); }
 		COglFeature () : m_bAvailable (1), m_bApply (0) {}
 	};
@@ -184,6 +184,7 @@ class COglFeature {
 class COglFeatures {
 	public:
 		COglFeature	bAntiAliasing;
+		COglFeature bDepthBlending;
 		COglFeature	bGlowRendering;
 		COglFeature	bMultipleRenderTargets;
 		COglFeature	bMultiTexturing;
@@ -244,7 +245,6 @@ class COglStates {
 		int	nRGBFormat;
 		int	bIntensity4;
 		int	bLuminance4Alpha4;
-		int	bDepthBlending;
 		int	bGlowRendering;
 		int	bHaveDepthBuffer [2];
 		int	bHaveColorBuffer;
