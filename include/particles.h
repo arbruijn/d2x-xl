@@ -546,7 +546,7 @@ class CParticleManager {
 
 		bool Flush (float brightness, bool bForce = false);
 
-		bool LoadShader (int nShader, float dMax [2]);
+		bool LoadShader (int nShader, CShaderManager::vec3& dMax);
 
 		void UnloadShader (void);
 
