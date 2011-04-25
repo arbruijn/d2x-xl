@@ -353,6 +353,7 @@ do {
 		gameOpts->render.particles.bPlasmaTrails = (nLightTrails == 2);
 	} while (i == -2);
 
+particleManager.ClearBuffers ();
 SetDebrisCollisions ();
 DefaultEffectSettings ();
 if (gameStates.app.bGameRunning) {

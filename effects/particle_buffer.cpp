@@ -290,8 +290,10 @@ if (Init ()) {
 PROF_END(ptParticles)
 #endif
 Reset ();
-if ((ogl.m_features.bShaders && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
+#if 1
+if (ogl.m_features.bShaders && !glareRenderer.ShaderActive ())
 	shaderManager.Deploy (-1);
+#endif
 return true;
 }
 

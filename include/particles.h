@@ -2,6 +2,7 @@
 #define __PARTICLES_H
 
 #include "descent.h"
+#include "ogl_shader.h"
 
 #define EXTRA_VERTEX_ARRAYS	1
 
@@ -371,6 +372,11 @@ class CParticleBuffer : public CEffectArea {
 
 		inline int GetType (void) { return m_nType; }
 		inline void SetType (int nType) { m_nType = nType; }
+		inline void Clear (void) {
+			m_iBuffer = 0;
+			m_nType = -1;
+			m_bEmissive = 0;
+			}
 		void Setup (void);
 		void Setup (int nThread);
 		bool Flush (float brightness, bool bForce = false);
@@ -548,6 +554,11 @@ class CParticleManager {
 		bool Add (CParticle* particleP, float brightness);
 
 		bool Flush (float brightness, bool bForce = false);
+
+		inline void ClearBuffers (void) {
+			for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++)
+				particleBuffer [i].Clear ();
+			}	
 
 		bool LoadShader (int nShader, CShaderManager::vec3& dMax);
 
