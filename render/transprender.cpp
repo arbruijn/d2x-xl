@@ -1248,13 +1248,14 @@ void CTransparencyRenderer::FlushParticleBuffer (int nType)
 {
 if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))) {
 	ResetBitmaps ();
-	if (sparkBuffer.nSparks && particleManager.Overlap (sparkArea))
+	if (sparkBuffer.nSparks && !USE_PARTICLE_SHADER && particleManager.Overlap (sparkArea))
 		FlushSparkBuffer ();
 	if (particleManager.Flush (-1.0f, true)) {
 		if (nType < 0)
 			particleManager.CloseBuffer ();
 		particleManager.SetLastType (-1);
 		m_data.bClientColor = 1;
+		sparkBuffer.nSparks = 0;
 		ResetBitmaps ();
 		}
 	}
@@ -1271,7 +1272,7 @@ if (glowRenderer.Available (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_
 	}
 if (USE_PARTICLE_SHADER) {
 	if ((nType != tiSpark) && (nType != tiParticle)) {
-		FlushSparkBuffer ();
+		//FlushSparkBuffer ();
 		FlushParticleBuffer (nType);
 		}
 	}	
