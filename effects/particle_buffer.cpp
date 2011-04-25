@@ -43,6 +43,11 @@
 #include "renderthreads.h"
 #include "automap.h"
 
+#if DBG
+int nFlushes = 0;
+int nPartsFlushed = 0;
+#endif
+
 //------------------------------------------------------------------------------
 
 bool CParticleBuffer::AlphaControl (void)
@@ -182,6 +187,11 @@ if ((m_nType < 0) || (m_iBuffer < 2)) {
 	return false;
 	}
 
+#if DBG
+++nFlushes;
+nPartsFlushed += m_iBuffer;
+HUDMessage (0, "%1.2f particles/flush", float (nPartsFlushed) / float (nFlushes));
+#endif
 #if ENABLE_FLUSH
 PROF_START
 if (Init ()) {
