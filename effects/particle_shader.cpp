@@ -68,8 +68,6 @@ if (ogl.m_states.bDepthBlending < 1)
 if (!ogl.CopyDepthTexture (0, GL_TEXTURE2))
 	return false;
 ogl.m_states.bDepthBlending = 1;
-if (dMax < 1)
-	dMax = 1;
 //ogl.DrawBuffer ()->FlipBuffers (0, 1); // color buffer 1 becomes render target, color buffer 0 becomes render source (scene texture)
 //ogl.DrawBuffer ()->SetDrawBuffers ();
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hParticleShader));
@@ -82,11 +80,6 @@ if (shaderManager.Rebuild (m_shaderProg)) {
 	shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
 	shaderManager.Set ("dMax", dMax);
 	}
-else {
-	if (dMaxPrev != dMax)
-		shaderManager.Set ("dMax", dMax);
-	}
-dMaxPrev = dMax;
 ogl.SetDepthTest (false);
 ogl.SetAlphaTest (false);
 ogl.SetBlendMode (OGL_BLEND_ALPHA_CONTROLLED);
