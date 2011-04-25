@@ -120,7 +120,7 @@ const char *particleFS [2] = {
 	"void main (void) {\r\n" \
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
-	"float dm = dMax [gl_TexCoord [0].z];\r\n" \
+	"float dm = (gl_TexCoord [0].z < 0.5) ? dMax.x : dMax.y; //1dMax [gl_TexCoord [0].z];\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
 	"dz = (dm - dz) / dm;\r\n" \

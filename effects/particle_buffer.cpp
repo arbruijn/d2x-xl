@@ -160,7 +160,7 @@ int CParticleBuffer::UseParticleShader (void)
 if (!USE_PARTICLE_SHADER)
 	return 0;
 if ((m_nType == SMOKE_PARTICLES) || (m_nType == SPARK_PARTICLES))
-	return 1; //ogl.m_features.bTextureArrays.Available () ? 2 : 1;
+	return ogl.m_features.bTextureArrays.Available () ? 2 : 1;
 return (m_nType <= WATERFALL_PARTICLES);
 }
 
@@ -171,7 +171,7 @@ bool CParticleBuffer::Flush (float fBrightness, bool bForce)
 	static float dMax [2] = {20.0f, 3.0f};
 	int nShader = 0;
 
-if (!m_iBuffer)
+if (m_iBuffer < 2)
 	return false;
 if (!gameOpts->render.particles.nQuality) {
 	Reset ();
