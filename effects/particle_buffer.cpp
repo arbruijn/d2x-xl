@@ -223,7 +223,7 @@ if (Init ()) {
 		else if ((nShader = UseParticleShader ())) {
 			if (!particleManager.LoadShader (nShader - 1, dMax))
 				shaderManager.Deploy (-1);
-			else if (nShader == 1) 
+			else if (nShader == 2) 
 				particleImageManager.SetupMultipleTextures (ParticleImageInfo (SMOKE_PARTICLES).bmP, ParticleImageInfo (SPARK_PARTICLES).bmP);
 			else {
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
