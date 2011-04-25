@@ -259,9 +259,9 @@ if (Init ()) {
 			shaderManager.Deploy (-1);
 #if HAVE_PARTICLE_SHADER
 		else if ((nShader = UseParticleShader ())) {
-			if (!particleManager.LoadShader (nShader - 1, dMax))
+			if (!particleManager.LoadShader (--nShader, dMax))
 				shaderManager.Deploy (-1);
-			else if (nShader == 2) 
+			else if (nShader & 1) 
 				particleImageManager.LoadMultipleTextures (GL_TEXTURE0);
 			else {
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
