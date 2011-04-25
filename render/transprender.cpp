@@ -1075,9 +1075,11 @@ if (LoadTexture (sparks.Bitmap (), 0, 0, 0, GL_CLAMP)) {
 
 void CTransparencyRenderer::RenderSpark (tTranspSpark *item)
 {
-		float	nCol = (float) (item->nFrame / 8);
-		float	nRow = (float) (item->nFrame % 8);
+	float	nCol = (float) (item->nFrame / 8);
+	float	nRow = (float) (item->nFrame % 8);
 
+if (!item->nType)
+	nCol += 4;
 if (USE_PARTICLE_SHADER) {
 	if (sparkBuffer.nSparks >= SPARK_BUF_SIZE) {
 		FlushParticleBuffer (-1);
@@ -1097,8 +1099,8 @@ if (USE_PARTICLE_SHADER) {
 	p.m_bEmissive = -1;
 	p.m_vPosf = item->position;
 	p.m_vPos.Assign (item->position);
-	p.m_texCoord.v.u = nCol;
-	p.m_texCoord.v.v = nRow; 
+	p.m_texCoord.v.v = nCol / 8.0f;
+	p.m_texCoord.v.u = nRow / 8.0f; 
 	particleManager.Add (&p, 1.0f);
 	}
 else {
@@ -1112,8 +1114,6 @@ else {
 	sparkArea.Add (item->position, nSize);
 
 	transformation.Transform (vPos, item->position, 0);
-	if (!item->nType)
-		nCol += 4;
 	vertexP->vPos.v.coord.x = vPos.v.coord.x - nSize;
 	vertexP->vPos.v.coord.y = vPos.v.coord.y + nSize;
 	vertexP->vPos.v.coord.z = vPos.v.coord.z;
@@ -1137,8 +1137,8 @@ else {
 	vertexP->vPos.v.coord.z = vPos.v.coord.z;
 	vertexP->texCoord.v.u = nCol / 8.0f;
 	vertexP->texCoord.v.v = nRow / 8.0f;
-	sparkBuffer.nSparks++;
 	}
+sparkBuffer.nSparks++;
 }
 
 //------------------------------------------------------------------------------

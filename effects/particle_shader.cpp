@@ -119,12 +119,12 @@ const char *particleFS =
 	"void main (void) {\r\n" \
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
-	"bool nType = gl_TexCoord [0].z < 0.5;\r\n" \
-	"float dm = dMax [nType];\r\n" \
+	"bool nType = (gl_TexCoord [0].z < 0.5);\r\n" \
+	"float dm = nType ? dMax.y : dMax.x;\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
 	"dz = (dm - dz) / dm;\r\n" \
-	"vec4 texColor = texture2D (nType ? sparkTex : particleTex, gl_TexCoord [0].xy);\r\n" \
+	"vec4 texColor = nType ? texture2D (sparkTex, gl_TexCoord [0].xy) : texture2D (particleTex, gl_TexCoord [0].xy);\r\n" \
 	"texColor *= gl_Color * dz;\r\n" \
 	"if (gl_Color.a == 0.0) //additive\r\n" \
 	"   gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \

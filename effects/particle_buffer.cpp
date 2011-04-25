@@ -89,6 +89,7 @@ PROF_END(ptParticles)
 
 void CParticleBuffer::Reset (void)
 {
+ogl.ResetClientStates (1);
 ogl.SetDepthTest (true);
 ogl.SetAlphaTest (true);
 ogl.SetBlendMode (m_bEmissive);
