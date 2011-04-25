@@ -33,6 +33,11 @@ class CShaderManager {
 		int							m_nCurrent;
 
 	public:
+		typedef float vec2 [2];
+		typedef float vec3 [3];
+		typedef float vec4 [4];
+
+	public:
 		CShaderManager ();
 		~CShaderManager ();
 		void Init (void);
@@ -73,11 +78,27 @@ class CShaderManager {
 			return true;
 			}
 
-		inline bool Set (const char* name, float var [2]) { 
+		inline bool Set (const char* name, vec2& var) { 
 			GLint addr = Addr (name);
 			if (addr < 0)
 				return false;
 			glUniform2fv (addr, 1, (GLfloat*) var);
+			return true;
+			}
+
+		inline bool Set (const char* name, vec3& var) { 
+			GLint addr = Addr (name);
+			if (addr < 0)
+				return false;
+			glUniform3fv (addr, 1, (GLfloat*) var);
+			return true;
+			}
+
+		inline bool Set (const char* name, vec4& var) { 
+			GLint addr = Addr (name);
+			if (addr < 0)
+				return false;
+			glUniform4fv (addr, 1, (GLfloat*) var);
 			return true;
 			}
 

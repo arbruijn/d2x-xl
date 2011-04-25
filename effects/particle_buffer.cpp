@@ -164,7 +164,7 @@ int CParticleBuffer::UseParticleShader (void)
 {
 if (!USE_PARTICLE_SHADER)
 	return 0;
-if ((m_nType == SMOKE_PARTICLES) || (m_nType == SPARK_PARTICLES))
+if ((m_nType == SMOKE_PARTICLES) || (m_nType == SPARK_PARTICLES) || (m_nType == BUBBLE_PARTICLES))
 	return ogl.m_features.bTextureArrays.Available () ? 2 : 1;
 return (m_nType <= WATERFALL_PARTICLES);
 }
@@ -173,7 +173,7 @@ return (m_nType <= WATERFALL_PARTICLES);
 
 bool CParticleBuffer::Flush (float fBrightness, bool bForce)
 {
-	static float dMax [2] = {20.0f, 3.0f};
+	static float dMax [3] = {5.0f, 3.0f, 5.0f}; // blend ranges for smoke, sparks, bubbles
 	int nShader = 0;
 
 if (!m_iBuffer)
@@ -234,10 +234,12 @@ if (Init ()) {
 			if (!particleManager.LoadShader (nShader - 1, dMax))
 				shaderManager.Deploy (-1);
 			else if (nShader == 2) 
-				particleImageManager.LoadMultipleTextures (particleImageManager.LoadMultipleTextures (GL_TEXTURE0));
+				particleImageManager.LoadMultipleTextures (GL_TEXTURE0);
 			else {
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
 				ParticleImageInfo (SPARK_PARTICLES).bmP->Bind (0);
+				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE2);
+				ParticleImageInfo (BUBBLE_PARTICLES).bmP->Bind (0);
 				}	
 			}
 #endif

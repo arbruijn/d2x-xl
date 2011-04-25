@@ -280,7 +280,7 @@ for (int i = 0; i < PARTICLE_TYPES; i++) {
 		return 0;
 	Animate (i);
 	}
-SetupMultipleTextures (ParticleImageInfo (SPARK_PARTICLES).bmP, ParticleImageInfo (SMOKE_PARTICLES).bmP);
+SetupMultipleTextures (ParticleImageInfo (SPARK_PARTICLES).bmP, ParticleImageInfo (SMOKE_PARTICLES).bmP, ParticleImageInfo (BUBBLE_PARTICLES).bmP);
 return 1;
 }
 
@@ -302,9 +302,12 @@ for (i = 0; i < 2; i++)
 
 //-------------------------------------------------------------------------
 
-bool CParticleImageManager::SetupMultipleTextures (CBitmap* bmP1, CBitmap* bmP2)
+bool CParticleImageManager::SetupMultipleTextures (CBitmap* bmP1, CBitmap* bmP2, CBitmap* bmP3)
 {
 if (!ogl.m_features.bTextureArrays.Available ())
+	return false;
+if ((bmP2->Width () != bmP1->Width ()) || (bmP2->Height () != bmP1->Height ()) || 
+	 (bmP3->Width () != bmP1->Width ()) || (bmP3->Height () != bmP1->Height ()))
 	return false;
 ogl.GenTextures (1, &m_textureArray);
 if (!m_textureArray)
@@ -316,6 +319,7 @@ if (ogl.m_features.bTextureArrays.Available ()) {
 		int nWidth = bmP1->Width ();
 		int nHeight = bmP1->Height ();
 
+
 	glBindTexture (GL_TEXTURE_2D_ARRAY_EXT, m_textureArray);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameterf (GL_TEXTURE_2D_ARRAY_EXT, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -326,6 +330,7 @@ if (ogl.m_features.bTextureArrays.Available ()) {
 	glTexImage3D (GL_TEXTURE_2D_ARRAY_EXT, 0, GL_RGBA, nWidth, nHeight, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexSubImage3D (GL_TEXTURE_2D_ARRAY_EXT, 0, 0, 0, 0, nWidth, nHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, bmP1->Buffer ());
 	glTexSubImage3D (GL_TEXTURE_2D_ARRAY_EXT, 0, 0, 0, 1, nWidth, nHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, bmP2->Buffer ());
+	glTexSubImage3D (GL_TEXTURE_2D_ARRAY_EXT, 0, 0, 0, 2, nWidth, nHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, bmP3->Buffer ());
 	}
 else {
 	}
