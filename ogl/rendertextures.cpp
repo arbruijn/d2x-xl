@@ -126,7 +126,7 @@ if (nError)
 #endif
 if (!gameOpts->render.bUseShaders)
 	return m_states.hDepthBuffer [nId] = 0;
-if (ogl.m_features.bDepthBlending < 1) // too slow on the current hardware
+if (ogl.m_features.bDepthBlending < 0) // too slow on the current hardware
 	return m_states.hDepthBuffer [nId] = 0;
 int t = (nSamples >= 5) ? -1 : SDL_GetTicks ();
 SelectTMU (nTMU);
