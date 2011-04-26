@@ -175,11 +175,11 @@ class COglFeature {
 			m_bApply = i; 
 			return *this;
 			}
-		operator int() { return (Available () > 0) * Apply (); }
-		inline bool operator == (const int i) { return  (Available () > 0) * Apply () == i; }
-		inline bool operator != (const int i) { return  (Available () > 0) * Apply () != i; }
-		inline bool operator > (const int i) { return  (Available () > 0) * Apply () > i; }
-		inline bool operator < (const int i) { return  (Available () > 0) * Apply () < i; }
+		operator int() { return (m_bAvailable > 0) * m_bApply; }
+		inline bool operator == (const int i) { return ((m_bAvailable > 0) * m_bApply) == i; }
+		inline bool operator != (const int i) { return ((m_bAvailable > 0) * m_bApply) != i; }
+		inline bool operator > (const int i) { return ((m_bAvailable > 0) * m_bApply) > i; }
+		inline bool operator < (const int i) { return ((m_bAvailable > 0) * m_bApply) < i; }
 		//operator bool() { return bool (Available () && Apply ()); }
 		COglFeature () : m_bAvailable (1), m_bApply (0) {}
 	};
