@@ -160,6 +160,7 @@ if (!gameStates.app.bNostalgia) {
 	if (v != paletteManager.GetGamma ()) {
 		paletteManager.SetGamma (v);
 		sprintf (m->m_text, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
+		m->m_bRebuild = 1;
 		}
 	}
 
