@@ -128,8 +128,8 @@ int CParticleBuffer::bCompatible [PARTICLE_TYPES] = {0, 1, 1, 0, 0, 0, 1, 0, 0, 
 
 bool CParticleBuffer::Compatible (CParticle* particleP)
 {
-if (USE_PARTICLE_SHADER) 
-	return bCompatible [m_nType] && bCompatible [particleP->RenderType ()];
+if (USE_PARTICLE_SHADER && bCompatible [m_nType] && bCompatible [particleP->RenderType ()])
+	return 1;
 return (particleP->RenderType () == m_nType) && (particleP->m_bEmissive == m_bEmissive);
 }
 
