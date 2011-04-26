@@ -16,7 +16,7 @@
 #	endif
 #endif
 
-#define DBG_ARRAYS	1 //DBG
+#define DBG_ARRAYS	0 //DBG
 
 #include "pstypes.h"
 #include "cquicksort.h"

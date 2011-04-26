@@ -1,11 +1,11 @@
 #ifndef _BITMAP_H
 #define _BITMAP_H
 
-#include "ogl_defs.h"
-#include "ogl_texture.h"
-#include "fbuffer.h"
-#include "pbuffer.h"
 #include "carray.h"
+#include "color.h"
+#include "palette.h"
+//#include "fbuffer.h"
+//#include "pbuffer.h"
 
 //-----------------------------------------------------------------------------
 
@@ -50,6 +50,9 @@ typedef struct grsPoint {
 class CBitmap;
 class CTexture;
 class CCanvas;
+
+#include "ogl_defs.h"
+#include "ogl_texture.h"
 
 //-----------------------------------------------------------------------------
 
@@ -383,11 +386,14 @@ inline int operator- (CBitmap* o, CArray<CBitmap>& a) { return a.Index (o); }
 
 //-----------------------------------------------------------------------------
 
+tRgbColorf *BitmapColor (CBitmap *bmP, ubyte *bufP);
 void LoadGameBackground (void);
 void GrBitmapM (int x, int y, CBitmap *bmP, int bTransp);
 void GrBmUBitBltM (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest, int bTransp);
 
 //-----------------------------------------------------------------------------
+
+//#error ++++++++++++++++++++++ BITMAP_H +++++++++++++++++++++++++
 
 #endif //_BITMAP_H
 

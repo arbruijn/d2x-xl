@@ -14,6 +14,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _TRANSFORMATION_H
 #define _TRANSFORMATION_H
 
+#include "carray.h"
+#include "cstack.h"
 #include "fix.h"
 #include "vecmat.h" 
 #include "oglmatrix.h" 

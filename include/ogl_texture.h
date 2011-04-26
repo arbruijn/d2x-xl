@@ -145,10 +145,6 @@ extern CTextureManager textureManager;
 
 //------------------------------------------------------------------------------
 
-tRgbColorf *BitmapColor (CBitmap *bmP, ubyte *bufP);
-
-//------------------------------------------------------------------------------
-
 int Pow2ize (int x);
 
 extern int nOglMemTarget;

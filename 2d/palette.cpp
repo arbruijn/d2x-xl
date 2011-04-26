@@ -20,20 +20,11 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 
 #include "descent.h"
-#include "pstypes.h"
 #include "strutil.h"
-#include "u_mem.h"
-#include "gr.h"
-#include "grdef.h"
-#include "cfile.h"
-#include "error.h"
-#include "mono.h"
-#include "fix.h"
 #include "newdemo.h"
 #include "text.h"
 #include "texmerge.h"
 #include "rle.h"
-#include "bitmap.h"
 #include "palette.h"
 
 //#define Sqr(x) ((x)*(x))
@@ -411,6 +402,14 @@ if (m_data.nGamma != gamma) {
 int CPaletteManager::GetGamma (void)
 {
 return m_data.nGamma;
+}
+
+//	-----------------------------------------------------------------------------
+
+const char* CPaletteManager::BrightnessLevel (void) 
+{
+float b = Brightness ();
+return (b == 1.0f) ? TXT_STANDARD : (b < 1.0f) ? TXT_LOW : TXT_HIGH;
 }
 
 //	-----------------------------------------------------------------------------

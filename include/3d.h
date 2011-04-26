@@ -17,6 +17,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fix.h"
 #include "vecmat.h" //the vector/matrix library
 #include "globvars.h"
+#include "bitmap.h" //the vector/matrix library
 #include "gr.h"
 #include "transformation.h"
 

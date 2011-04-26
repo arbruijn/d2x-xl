@@ -14,11 +14,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _FONT_H
 #define _FONT_H
 
+//#error ++++++++++++++++++++ FONT_H ++++++++++++++++++++++
+
 #include "pstypes.h"
-#include "palette.h"
-#include "bitmap.h"
-#include "gamefont.h"
 #include "cstack.h"
+#include "bitmap.h"
+#include "palette.h"
+#include "gamefont.h"
 
 //-----------------------------------------------------------------------------
 

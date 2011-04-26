@@ -50,8 +50,8 @@ extern double glFOV, glAspect;
 
 void OglSetFOV (double fov);
 
-#include "gr.h"
-#include "palette.h"
+//#include "gr.h"
+//#include "palette.h"
 #include "pstypes.h"
 #include "pbuffer.h"
 #include "fbuffer.h"
@@ -64,6 +64,22 @@ void OglSetFOV (double fov);
 
 #define OGL_TEXENV(p,m) OGL_SETSTATE(p,m,glTexEnvi(GL_TEXTURE_ENV, p,m));
 #define OGL_TEXPARAM(p,m) OGL_SETSTATE(p,m,glTexParameteri(GL_TEXTURE_2D,p,m));
+
+//-----------------------------------------------------------------------------
+
+typedef union tTexCoord2f {
+	float a [2];
+	struct {
+		float	u, v;
+		} v;
+	} __pack__ tTexCoord2f;
+
+typedef union tTexCoord3f {
+	float a [3];
+	struct {
+		float	u, v, l;
+		} v;
+	} __pack__ tTexCoord3f;
 
 //------------------------------------------------------------------------------
 

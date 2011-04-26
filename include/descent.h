@@ -95,7 +95,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ase.h"
 #include "cfile.h"
 #include "segment.h"
-#include "console.h"
+#include "canvas.h"
+//#include "console.h"
 #include "vecmat.h"
 
 #ifdef __macosx__

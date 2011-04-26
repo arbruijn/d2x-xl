@@ -14,12 +14,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _CANVAS_H
 #define _CANVAS_H
 
+//#error +++++++++++++++++++ CANVAS_H ++++++++++++++++++++++++
+
 #include "pstypes.h"
 #include "fix.h"
-#include "palette.h"
+#include "cstack.h"
 #include "bitmap.h"
 #include "font.h"
-#include "cstack.h"
+#include "palette.h"
 
 //-----------------------------------------------------------------------------
 

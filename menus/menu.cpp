@@ -71,6 +71,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "songs.h"
 #include "automap.h"
 #include "renderframe.h"
+#include "console.h"
 
 //------------------------------------------------------------------------------ 
 

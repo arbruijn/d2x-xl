@@ -78,6 +78,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hiresmodels.h"
 #include "soundthreads.h"
 #include "songs.h"
+#include "cvar.h"
 #include "lightcluster.h"
 
 void PrintVersion (void);

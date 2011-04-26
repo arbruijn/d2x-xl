@@ -29,6 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "rendermine.h"
 #include "screens.h"
+#include "console.h"
 #include "cockpit.h"
 #include "gamefont.h"
 #include "newdemo.h"

@@ -86,7 +86,7 @@ if (gameStates.app.bGameRunning) {
 
 static int optBrightness = -1;
 
-int ConfigMenuCallback (CMenu& m, int& nLastKey, int nCurItem, int nState)
+int ConfigMenuCallback (CMenu& menu, int& nLastKey, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;

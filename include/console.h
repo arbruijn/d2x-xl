@@ -23,6 +23,7 @@ Have Fun!
 #include "gr.h"
 #include "key.h"
 #include "cvar.h"
+#include "canvas.h"
 
 //! Cut the buffer line if it becomes longer than this
 #define CON_CHARS_PER_LINE   256

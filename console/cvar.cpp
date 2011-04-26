@@ -25,6 +25,7 @@
 #include "descent.h"
 #include "error.h"
 #include "strutil.h"
+#include "cvar.h"
 
 CCvar* CCvar::m_list = NULL;
 

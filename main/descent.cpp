@@ -88,6 +88,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "banlist.h"
 #include "menubackground.h"
 #include "songs.h"
+#include "console.h"
 #include "IpToCountry.h"
 
 extern int SDL_HandleSpecialKeys;

@@ -16,6 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "pstypes.h"
 #include "timeout.h"
+#include "font.h"
 // returns number of item chosen
 
 //------------------------------------------------------------------------------
