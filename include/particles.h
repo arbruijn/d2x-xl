@@ -560,7 +560,7 @@ class CParticleManager {
 				particleBuffer [i].Clear ();
 			}	
 
-		bool LoadShader (int nShader, CShaderManager::vec3& dMax);
+		bool LoadShader (int nShader, vec3& dMax);
 
 		void UnloadShader (void);
 

@@ -47,7 +47,7 @@
 
 int hParticleShader [4] = {-1, -1, -1, -1};
 
-bool CParticleManager::LoadShader (int nShader, CShaderManager::vec3& dMax)
+bool CParticleManager::LoadShader (int nShader, vec3& dMax)
 {
 ogl.ClearError (0);
 if (!gameOpts->render.bUseShaders)
@@ -70,7 +70,7 @@ if (shaderManager.Rebuild (m_shaderProg)) {
 	if (nShader > 1) {
 		shaderManager.Set ("depthTex", (nShader == 3) ? 1 : 3);
 		shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
-		shaderManager.Set ("dMax", (CShaderManager::vec3) dMax);
+		shaderManager.Set ("dMax", dMax);
 		}
 	}
 if (nShader > 1)

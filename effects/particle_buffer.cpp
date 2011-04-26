@@ -43,7 +43,7 @@
 #include "renderthreads.h"
 #include "automap.h"
 
-#if DBG
+#if 0 //DBG
 #include "timeout.h"
 
 CTimeout toFlushed (1000);
@@ -190,7 +190,7 @@ return nShader;
 
 bool CParticleBuffer::Flush (float fBrightness, bool bForce)
 {
-	static CShaderManager::vec3 dMax = {5.0f, 3.0f, 5.0f}; // blend ranges for smoke, sparks, bubbles
+	static vec3 dMax = {5.0f, 3.0f, 5.0f}; // blend ranges for smoke, sparks, bubbles
 	int nShader = 0;
 
 if (!m_iBuffer)
@@ -204,7 +204,7 @@ if ((m_nType < 0) || (m_iBuffer < 2)) {
 	return false;
 	}
 
-#if DBG
+#if 0 //DBG
 if (toFlushed.Expired ()) {
 	iFlushed = (iFlushed + 1) % 4;
 	nFlushes [iFlushed] = nPartsFlushed [iFlushed] = 0;

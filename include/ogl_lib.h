@@ -67,11 +67,15 @@ void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal);
 
 #define OGLTEXBUFSIZE (4096 * 4096 * 4)
 
+typedef float vec2 [2];
+typedef float vec3 [3];
+typedef float vec4 [4];
+
 typedef union tWindowScale {
 	struct {
 		float x, y;
 		} dim;
-	float vec [2];
+	vec2 vec;
 } __pack__ tWindowScale;
 
 #if DBG_OGL
@@ -159,7 +163,6 @@ class CViewport {
 			return (m_x != other.m_x) || (m_y != other.m_y) || (m_w != other.m_w) || (m_h != other.m_h) || (m_t != other.m_t);
 			}
 	};
-
 
 
 class COglFeature {

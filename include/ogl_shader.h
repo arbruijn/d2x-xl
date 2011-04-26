@@ -33,11 +33,6 @@ class CShaderManager {
 		int							m_nCurrent;
 
 	public:
-		typedef float vec2 [2];
-		typedef float vec3 [3];
-		typedef float vec4 [4];
-
-	public:
 		CShaderManager ();
 		~CShaderManager ();
 		void Init (void);
