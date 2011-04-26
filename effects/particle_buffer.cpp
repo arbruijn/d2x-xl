@@ -156,8 +156,6 @@ CEffectArea::Add (pos, rad);
 float d = CFloatVector::Dist (pos, transformation.m_info.posf [0]);
 if (m_dMax < d)
 	m_dMax = d;
-if (m_iBuffer == PART_BUF_SIZE)
-	bFlushed = Flush (brightness, true);
 return bFlushed;
 }
 
