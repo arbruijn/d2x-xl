@@ -297,6 +297,7 @@ class COGL {
 		COglFeatures	m_features;
 
 	public:
+		COGL () { Initialize (); }
 		void Initialize (void);
 		inline void ResetStates (void) { m_data.Initialize (); }
 

@@ -364,12 +364,12 @@ static SDL_mutex* semaphore = NULL;
 
 void COGL::Initialize (void)
 {
-m_states.Initialize ();
-m_data.Initialize ();
 m_features.bPerPixelLighting = 2;
 m_features.bRenderToTexture = 1;
-if (!semaphore)
-	semaphore = SDL_CreateMutex ();
+//m_states.Initialize ();
+//m_data.Initialize ();
+//if (!semaphore)
+//	semaphore = SDL_CreateMutex ();
 }
 
 //------------------------------------------------------------------------------
