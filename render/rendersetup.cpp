@@ -269,7 +269,7 @@ gameData.render.nTotalLights =
 gameData.render.nMaxLights =
 gameData.render.nStateChanges =
 gameData.render.nShaderChanges = 0;
-gameData.render.fBrightness = /*1.0f +*/ float (paletteManager.GetGamma ()) / 4.0f;
+gameData.render.fBrightness = 0.25f + float (paletteManager.GetGamma ()) / 4.0f;
 if ((gameOpts->render.stereo.nGlasses > 0) && (!gameOpts->app.bExpertMode || gameOpts->render.stereo.bBrighten))
 	gameData.render.fBrightness *= 1.25f;
 
