@@ -92,7 +92,7 @@ if (nState)
 	return nCurItem;
 
 if (gameStates.app.bNostalgia) {
-	CMenuItem* m = menu + renderOpts.nBrightness;
+	CMenuItem* m = menu + optBrightness;
 	int v = m->m_value;
 	if ((nCurItem == optBrightness) && (v != paletteManager.GetGamma ())) {
 		paletteManager.SetGamma (v);

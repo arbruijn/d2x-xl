@@ -692,13 +692,12 @@ else {
 #if DBG
 
 //	----------------------------------------------------------------------------------------
-//	Show CPlayerData which weapons he has, how much ammo...
+//	Show player which weapons he has, how much ammo...
 //	Looks like a debug screen now because it writes to mono screen, but that will change...
 void ShowWeaponStatus (void)
 {
-	int	i;
 #if TRACE
-for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
+for (int i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	if (LOCALPLAYER.primaryWeaponFlags & (1 << i))
 		console.printf (CON_DBG, "HAVE");
 	else
