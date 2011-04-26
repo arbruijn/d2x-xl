@@ -31,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "tracker.h"
 #include "banlist.h"
 #include "timeout.h"
+#include "console.h"
 
 //-----------------------------------------------------------------------------------------------------------------
 

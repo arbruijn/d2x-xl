@@ -44,6 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "playerprofile.h"
 #include "gamecntl.h"
 #include "text.h"
+#include "console.h"
 
 #ifndef _WIN32
 #	include "linux/include/ipx_udp.h"

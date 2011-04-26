@@ -51,6 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "monsterball.h"
 #include "dropobject.h"
 #include "marker.h"
+#include "console.h"
 
 typedef void tMultiHandler (char *);
 typedef tMultiHandler *pMultiHandler;

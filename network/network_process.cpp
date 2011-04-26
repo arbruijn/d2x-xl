@@ -31,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "tracker.h"
 #include "text.h"
 #include "monsterball.h"
+#include "console.h"
 
 //------------------------------------------------------------------------------
 

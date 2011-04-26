@@ -35,6 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "tracker.h"
 #include "monsterball.h"
 #include "text.h"
+#include "console.h"
 
 #if DBG
 #	define OBJ_PACKETS_PER_FRAME 1

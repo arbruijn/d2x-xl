@@ -46,6 +46,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "headlight.h"
 #include "ogl_render.h"
 #include "renderframe.h"
+#include "console.h"
+
 #if defined (TACTILE)
 #	include "tactile.h"
 #endif
