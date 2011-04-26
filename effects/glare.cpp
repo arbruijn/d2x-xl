@@ -728,8 +728,10 @@ void CGlareRenderer::InitShader (void)
 if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders && (ogl.m_features.bDepthBlending > -1)) {
 	PrintLog ("building corona blending shader program\n");
 	m_shaderProg = 0;
-	if (shaderManager.Build (hGlareShader, glareFS, glareVS)) 
+	if (shaderManager.Build (hGlareShader, glareFS, glareVS)) {
 		ogl.m_features.bDepthBlending.Available (1);
+		ogl.m_features.bDepthBlending = 1;
+		}
 	else {
 		ogl.ClearError (0);
 		ogl.m_features.bDepthBlending.Available (0);

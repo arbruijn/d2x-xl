@@ -73,7 +73,8 @@ if (shaderManager.Rebuild (m_shaderProg)) {
 		shaderManager.Set ("dMax", (CShaderManager::vec3) dMax);
 		}
 	}
-ogl.SetDepthTest (false);
+if (nShader > 1)
+	ogl.SetDepthTest (false);
 ogl.SetAlphaTest (false);
 ogl.SetBlendMode (OGL_BLEND_ALPHA_CONTROLLED);
 ogl.SelectTMU (GL_TEXTURE0);
