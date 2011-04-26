@@ -180,7 +180,7 @@ if (shaderManager.Rebuild (shaderProg)) {
 	glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"), 
 					 ((gameOpts->render.stereo.nGlasses > 0) && (!gameOpts->app.bExpertMode || gameOpts->render.stereo.bBrighten)) 
 					 ? 2.0f 
-					 : 1.0f + float (paletteManager.GetGamma ()) / 4.0f);
+					 : /*1.0f +*/ float (paletteManager.GetGamma ()) / 4.0f);
 	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
 	if (nType) {
 		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 1);
