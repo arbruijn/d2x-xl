@@ -651,7 +651,7 @@ if (!m_shaderProg)
 if (shaderManager.Rebuild (m_shaderProg)) {
 	shaderManager.Set ("glareTex", 0);
 	shaderManager.Set ("depthTex", 1);
-	shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
+	shaderManager.Set ("windowScale", (CShaderManager::vec2) ogl.m_data.windowScale.vec);
 	shaderManager.Set ("dMax", dMax);
 	shaderManager.Set ("blendMode", nBlendMode);
 	}
