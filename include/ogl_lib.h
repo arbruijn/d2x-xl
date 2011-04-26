@@ -76,7 +76,7 @@ typedef union tWindowScale {
 		float x, y;
 		} dim;
 	vec2 vec;
-} __pack__ tWindowScale;
+} tWindowScale;
 
 #if DBG_OGL
 
