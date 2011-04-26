@@ -182,10 +182,10 @@ if (!USE_PARTICLE_SHADER)
 	return 0;
 if (!bCompatible [m_nType])
 	return 0;
-int i = ogl.m_features.bTextureArrays.Available () ? 2 : 1;
+int nShader = ogl.m_features.bTextureArrays.Available () ? 2 : 1;
 if ((ogl.m_features.bDepthBlending > -1) && gameOpts->SoftBlend (SOFT_BLEND_PARTICLES))
-	return i + 2;
-return i;
+	return nShader + 2;
+return nShader;
 }
 
 //------------------------------------------------------------------------------
