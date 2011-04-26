@@ -8,6 +8,7 @@
 
 #include "glew.h"
 #include "vecmat.h"
+#include "ogl_lib.h"
 #include "oglmatrix.h"
 
 
