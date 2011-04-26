@@ -73,7 +73,7 @@ if ((gameStates.render.bRenderIndirect <= 0) && (nType >= 0))
 if (DrawBuffer ()->Handle ())
 	return;
 PrintLog ("creating draw buffer\n");
-DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType, 1 + m_features.bMultipleRenderTargets);
+DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType, (nType != 1) ? 1 : 1 + m_features.bMultipleRenderTargets);
 }
 
 //------------------------------------------------------------------------------

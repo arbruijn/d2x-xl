@@ -769,7 +769,7 @@ ogl.SetBlendMode (bAdditive);
 #else
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 #endif
-glowRenderer.Begin (GLOW_SHIELDS, 2, true, 0.75f);
+glowRenderer.Begin (GLOW_SHIELDS, 2, false, 0.75f);
 if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, xScale))
 	return 0;
 #if RINGED_SPHERE
