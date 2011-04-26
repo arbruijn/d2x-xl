@@ -159,7 +159,7 @@ if (!gameStates.app.bNostalgia) {
 	v = m->m_value;
 	if (v != paletteManager.GetGamma ()) {
 		paletteManager.SetGamma (v);
-		sprintf (m->m_text, TXT_BRIGHTNESS + 1, paletteManager.BrightnessLevel ());
+		sprintf (m->m_text, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
 		}
 	}
 
@@ -477,8 +477,9 @@ do {
 		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
 #endif
 	if (!gameStates.app.bNostalgia) {
-		sprintf (szSlider, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
-		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 15, KEY_B, HTX_RENDER_BRIGHTNESS);
+		sprintf (szSlider + 1, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
+		*szSlider = *(TXT_BRIGHTNESS - 1);
+		renderOpts.nBrightness = m.AddSlider (szSlider + 1, paletteManager.GetGamma (), 0, 15, KEY_B, HTX_RENDER_BRIGHTNESS);
 		}
 	m.AddText ("");
 #if !DBG
@@ -504,11 +505,11 @@ do {
 		renderOpts.nLightmaps = -1;
 	else {
 		sprintf (szSlider + 1, TXT_LIGHTING, pszQuality [nLighting]);
-		*szSlider = *(TXT_LIGHTING + 1);
+		*szSlider = *(TXT_LIGHTING - 1);
 		renderOpts.nLighting = m.AddSlider (szSlider + 1, nLighting, 0, (gameOpts->render.bUseShaders && ogl.m_features.bShaders) ? 3 : 1, KEY_L, HTX_LIGHTING);
 		if (nLighting >= 2) {
 			sprintf (szSlider + 1, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
-			*szSlider = *(TXT_LMAP_QUALITY + 1);
+			*szSlider = *(TXT_LMAP_QUALITY - 1);
 			renderOpts.nLightmaps = m.AddSlider (szSlider + 1, gameOpts->render.nLightmapQuality, 0, 3, KEY_M, HTX_LMAP_QUALITY);
 
 			if (nLighting == 3) {
@@ -518,7 +519,7 @@ do {
 				}
 			}
 		sprintf (szSlider + 1, TXT_LIGHTCOLOR, pszColorLevel [gameOpts->render.color.nLevel]);
-		*szSlider = *(TXT_LIGHTCOLOR + 1);
+		*szSlider = *(TXT_LIGHTCOLOR - 1);
 		renderOpts.nColorLevel = m.AddSlider (szSlider + 1, gameOpts->render.color.nLevel, 0, 2, KEY_C, HTX_RENDER_LIGHTCOLOR);
 		m.AddText ("", 0);
 		}
@@ -534,7 +535,7 @@ do {
 	else {
 		if ((gameOpts->render.nLightingMethod == 1) && !gameOpts->render.bUseLightmaps) {
 			sprintf (szSlider + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
-			*szSlider = *(TXT_MESH_QUALITY + 1);
+			*szSlider = *(TXT_MESH_QUALITY - 1);
 			renderOpts.nMeshQual = m.AddSlider (szSlider + 1, gameOpts->render.nMeshQuality, 0, 3, KEY_V, HTX_MESH_QUALITY);
 			}
 		else

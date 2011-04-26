@@ -96,7 +96,7 @@ if (gameStates.app.bNostalgia) {
 	int v = m->m_value;
 	if ((nCurItem == optBrightness) && (v != paletteManager.GetGamma ())) {
 		paletteManager.SetGamma (v);
-		sprintf (m->m_text, TXT_BRIGHTNESS + 1, paletteManager.BrightnessLevel ());
+		sprintf (m->m_text, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
 		m ->m_bRebuild = 1;
 		}
 	}
@@ -125,8 +125,9 @@ do {
 	optConfig = menu.AddMenu (TXT_CONTROLS_, KEY_O, HTX_OPTIONS_CONFIG);
 	menu.AddText ("", 0);
 	if (gameStates.app.bNostalgia) {
-		sprintf (szSlider, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
-		optBrightness = menu.AddSlider (szSlider, paletteManager.GetGamma (), 0, 15, KEY_B, HTX_RENDER_BRIGHTNESS);
+		sprintf (szSlider + 1, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
+		*szSlider = *(TXT_BRIGHTNESS - 1);
+		optBrightness = menu.AddSlider (szSlider + 1, paletteManager.GetGamma (), 0, 15, KEY_B, HTX_RENDER_BRIGHTNESS);
 		}
 
 	if (gameStates.app.bNostalgia)
