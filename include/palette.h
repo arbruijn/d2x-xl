@@ -17,6 +17,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define DEFAULT_LEVEL_PALETTE "groupa.256" //don't confuse with DEFAULT_PALETTE
 #define D1_PALETTE "palette.256"
 
+#include "text.h"
 #include "color.h"
 #include "cfile.h"
 #include "cstack.h"
@@ -146,6 +147,11 @@ class CPaletteManager {
 		int FindClosestColor15bpp (int rgb);
 		void SetGamma (int gamma);
 		int GetGamma (void);
+		inline const float Brightness (void) { return 0.125f + (float) GetGamma () / 8.0f; }
+		inline const char* BrightnessLevel (void) {
+			float b = Brightness ();
+			return (b == 1.0f) ? TXT_STANDARD : (b < 1.0f) ? TXT_LOW : TXT_HIGH;
+			}
 		void Flash (void);
 
 		void ClearStep (void);

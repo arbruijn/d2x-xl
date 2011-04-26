@@ -157,8 +157,10 @@ if (nState)
 if (!gameStates.app.bNostalgia) {
 	m = menu + renderOpts.nBrightness;
 	v = m->m_value;
-	if (v != paletteManager.GetGamma ())
+	if (v != paletteManager.GetGamma ()) {
 		paletteManager.SetGamma (v);
+		sprintf (m->m_text, TXT_BRIGHTNESS + 1, paletteManager.BrightnessLevel ());
+		}
 	}
 
 #if !DBG
@@ -474,8 +476,10 @@ do {
 	if (!gameOpts->app.bNotebookFriendly)
 		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
 #endif
-	if (!gameStates.app.bNostalgia)
+	if (!gameStates.app.bNostalgia) {
+		sprintf (szSlider, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
 		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 15, KEY_B, HTX_RENDER_BRIGHTNESS);
+		}
 	m.AddText ("");
 #if !DBG
 	if (gameOpts->app.bNotebookFriendly)

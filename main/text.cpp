@@ -440,7 +440,7 @@ const char* d2GameTexts [][2] = {
 	{"Sound Effects Volume", NULL},
 	{"Music Volume", NULL},
 	{"Reverse Stereo", NULL},
-	{"Brightness", NULL},
+	{"Brightness: %s", NULL},
 	{"C~Ontrols...", NULL},
 	{"~Detail levels...", NULL},
 	{"Calibrate Joystick", NULL},

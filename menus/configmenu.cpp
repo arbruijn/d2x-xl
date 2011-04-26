@@ -92,8 +92,13 @@ if (nState)
 	return nCurItem;
 
 if (gameStates.app.bNostalgia) {
-	if (nCurItem == optBrightness)
-		paletteManager.SetGamma (m [optBrightness].m_value);
+	CMenuItem* m = menu + renderOpts.nBrightness;
+	int v = m->m_value;
+	if ((nCurItem == optBrightness) && (v != paletteManager.GetGamma ())) {
+		paletteManager.SetGamma (v);
+		sprintf (m->m_text, TXT_BRIGHTNESS + 1, paletteManager.BrightnessLevel ());
+		m ->m_bRebuild = 1;
+		}
 	}
 return nCurItem;
 }
@@ -108,6 +113,8 @@ void ConfigMenu (void)
 	int	i;
 	int	optSound, optConfig, optPerformance, optScrRes, optReorderPrim, optReorderSec, optEffects,
 			optMiscellaneous, optRender, optGameplay, optCockpit, optPhysics = -1;
+	char	szSlider [50];
+
 
 do {
 	menu.Destroy ();
@@ -117,8 +124,10 @@ do {
 	menu.AddText ("", 0);
 	optConfig = menu.AddMenu (TXT_CONTROLS_, KEY_O, HTX_OPTIONS_CONFIG);
 	menu.AddText ("", 0);
-	if (gameStates.app.bNostalgia)
-		optBrightness = menu.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 15, KEY_B, HTX_RENDER_BRIGHTNESS);
+	if (gameStates.app.bNostalgia) {
+		sprintf (szSlider, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
+		optBrightness = menu.AddSlider (szSlider, paletteManager.GetGamma (), 0, 15, KEY_B, HTX_RENDER_BRIGHTNESS);
+		}
 
 	if (gameStates.app.bNostalgia)
 		optPerformance = menu.AddMenu (TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL);
