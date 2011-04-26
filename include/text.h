@@ -406,7 +406,7 @@ else
 #define TXT_FX_VOLUME           GAMETEXT (369)
 #define TXT_MUSIC_VOLUME        GAMETEXT (370)
 #define TXT_REVERSE_STEREO      GAMETEXT (371)
-#define TXT_BRIGHTNESS          GAMETEXT (372)
+#define TXT_BRIGHTNESS_D2       GAMETEXT (372)
 #define TXT_CONTROLS_           GAMETEXT (373)
 #define TXT_DETAIL_LEVELS       GAMETEXT (374)
 #define TXT_CAL_JOYSTICK        GAMETEXT (375)
@@ -1980,10 +1980,10 @@ void LoadGameTexts(void);
 #define TXT_AMBER							GT(1196)
 #define TXT_MONOCHROME					GT(1197)
 #define TXT_MULTICOLOR					GT(1198)
+#define TXT_BRIGHTNESS					GT(1199)
 
 #if 0
 
-#define TXT_					GT(1199)
 #define TXT_					GT(1200)
 #define TXT_					GT(1201)
 #define TXT_					GT(1202)
