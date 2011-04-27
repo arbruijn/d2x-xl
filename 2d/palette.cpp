@@ -536,7 +536,7 @@ return D1 ();
 
 //	-----------------------------------------------------------------------------
 
-const float CPalette::Brightness (void) 
+const float CPaletteManager::Brightness (void) 
 { 
 return 0.25f + (float) GetGamma () / 4.0f; 
 }
