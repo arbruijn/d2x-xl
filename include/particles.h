@@ -80,8 +80,6 @@
 
 extern int nPartSeg [MAX_THREADS];
 extern tRgbaColorf defaultParticleColor;
-extern CFloatVector vRot [PARTICLE_POSITIONS];
-extern CFixMatrix mRot [PARTICLE_POSITIONS];
 
 //------------------------------------------------------------------------------
 
@@ -178,6 +176,13 @@ typedef struct tParticle {
 } __pack__ tParticle;
 
 class CParticle : public tParticle {
+	public:
+		static CFloatVector CParticle::vRot [PARTICLE_POSITIONS];
+		static CFixMatrix CParticle::mRot [2][PARTICLE_POSITIONS];
+
+		static void InitRotation (void);
+		static void SetupRotation (void);
+
 	public:
 		int Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 					   short nSegment, int nLife, int nSpeed, char nParticleSystemType, char nClass,

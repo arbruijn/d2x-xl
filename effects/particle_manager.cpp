@@ -133,12 +133,7 @@ for (int i = 0; i < PARTICLE_POSITIONS; i++) {
 
 #else
 
-CAngleVector vRotAngs;
-vRotAngs.SetZero ();
-for (int i = 0; i < PARTICLE_POSITIONS; i++) {
-	vRotAngs.v.coord.b = i * (I2X (1) / PARTICLE_POSITIONS);
-	mRot [i] = CFixMatrix::Create (vRotAngs);
-	}
+CParticle::InitRotation ();
 
 #endif
 }
@@ -401,6 +396,7 @@ int CParticleManager::BeginRender (int nType, float nScale)
 	static time_t	t0 = 0;
 
 particleManager.SetLastType (-1);
+CParticle::SetupRotation ();
 if ((gameStates.app.nSDLTicks [0] - t0 < 33) || (ogl.StereoSeparation () < 0))
 	particleManager.m_bAnimate = 0;
 else {

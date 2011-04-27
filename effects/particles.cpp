@@ -46,8 +46,8 @@
 
 tRgbaColorf defaultParticleColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-CFloatVector vRot [PARTICLE_POSITIONS];
-CFixMatrix mRot [PARTICLE_POSITIONS];
+CFloatVector CParticle::vRot [PARTICLE_POSITIONS];
+CFixMatrix CParticle::mRot [2][PARTICLE_POSITIONS];
 
 #define SMOKE_START_ALPHA		 (m_bBlowUp ? 64 : 96) //96 : 128)
 
@@ -94,6 +94,26 @@ i += 2;
 *vPos *= (2 * d_rand ());
 *vPos += vOffs;
 return vPos;
+}
+
+//------------------------------------------------------------------------------
+
+void CParticle::InitRotation (void)
+{
+CAngleVector vRotAngs;
+vRotAngs.SetZero ();
+for (int i = 0; i < PARTICLE_POSITIONS; i++) {
+	vRotAngs.v.coord.b = i * (I2X (1) / PARTICLE_POSITIONS);
+	CParticle::mRot [0][i] = CFixMatrix::Create (vRotAngs);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CParticle::SetupRotation (void)
+{
+for (int i = 0; i < PARTICLE_POSITIONS; i++)
+	mRot [1][i] = gameData.render.mine.viewer.mOrient * mRot [0][i];
 }
 
 //------------------------------------------------------------------------------
@@ -1394,8 +1414,7 @@ else {
 	if ((m_nType == SNOW_PARTICLES) || ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles))
 		vCenter.v.coord.x += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 	if (m_bRotate && gameOpts->render.particles.bRotate) {
-		int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-		CFixMatrix mOrient = gameData.render.mine.viewer.mOrient * mRot [i];
+		CFixMatrix& mOrient = mRot [1][(m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame];
 		uVec.Assign (mOrient.m.dir.u);
 		rVec.Assign (mOrient.m.dir.r);
 		}

@@ -239,6 +239,7 @@ if (AllocBuffers ()) {
 			ph->z = nDepth;
 			ph->bValid = true;
 			memcpy (&ph->item, itemData, itemSize);
+#if 0
 			for (pi = pd->head; pi; pi = pi->pNextItem) {
 				if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
 					break;
@@ -247,7 +248,9 @@ if (AllocBuffers ()) {
 				ph->pNextItem = pi->pNextItem;
 				pi->pNextItem = ph;
 				}
-			else {
+			else 
+#endif
+				{
 				ph->pNextItem = pd->head;
 				pd->head = ph;
 				}
@@ -1097,6 +1100,7 @@ if (USE_PARTICLE_SHADER) {
 	p.m_nWidth =
 	p.m_nHeight = X2F (item->nSize);
 	p.m_bEmissive = -1;
+	p.m_bRotate = 1;
 	p.m_vPosf = item->position;
 	p.m_vPos.Assign (item->position);
 	p.m_texCoord.v.v = nCol / 8.0f;
