@@ -361,6 +361,8 @@ if (cockpit->Hide ())
 	return;
 if (automap.Display ())
 	return;
+if (gameStates.render.bChaseCam)
+	return;
 extraGameInfo [0].nRadar = (gameOpts->render.cockpit.nRadarRange > 0);
 if (!EGI_FLAG (nRadar, 0, 1, 0))
 	return;
