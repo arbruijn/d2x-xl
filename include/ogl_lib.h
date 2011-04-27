@@ -286,7 +286,10 @@ class COglBuffers {
 		int							m_nVertices;
 
 	public:
-		COglBuffers () { m_nVertices = 0; }
+		COglBuffers () { 
+			m_nVertices = 0; 
+			SizeBuffers (1000);
+			}
 		bool SizeVertices (int nVerts);
 		bool SizeColor (int nVerts);
 		bool SizeTexCoord (int nVerts);

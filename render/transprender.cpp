@@ -1103,9 +1103,7 @@ if (USE_PARTICLE_SHADER) {
 	p.m_nHeight = X2F (item->nSize);
 	p.m_bEmissive = -1;
 	p.m_bRotate = 1;
-	p.m_nRotFrame = item->nRotFrame + item->nFrame;
-	if (p.m_nOrient = item->nOrient)
-		p.m_nRotFrame = -p.m_nRotFrame;
+	p.m_nRotFrame = (item->nRotFrame + item->nFrame) % 64;
 	p.m_vPosf = item->position;
 	p.m_vPos.Assign (item->position);
 	p.m_texCoord.v.v = nCol / 8.0f;

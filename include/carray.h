@@ -150,7 +150,14 @@ class CArray : public CQuickSort < _T > {
 		void Destroy (void) { 
 			if (m_data.buffer) {
 				if (!m_data.nMode) {
-					delete[] m_data.buffer;
+					try {
+						delete[] m_data.buffer;
+						}
+					catch(...) {
+#if DBG_ARRAYS
+						ArrayError ("invalid buffer pointer\n");
+#endif
+						}
 #if DBG_ARRAYS
 					m_data.buffer = reinterpret_cast<_T *> (NULL); 
 #endif

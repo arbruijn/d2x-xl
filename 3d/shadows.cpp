@@ -1310,8 +1310,13 @@ for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 	if (!ogl.SizeVertexBuffer (j))
 		return 0;
 	nVerts = 0;
+#if 0
 	for (pfv = pf->m_verts + j; j; j--) {
 		v0 = pvf [*--pfv] + vShadowOffset;
+#else
+	for (pfv = pf->m_verts; j; j++) {
+		v0 = pvf [*pfv++] + vShadowOffset;
+#endif
 		v1 = v0 - vLightPosf; // project the current shadow cap vertex to a distance of fClipDist from it's current position as seen from the light
 		v1 *= fClipDist / v1.Mag ();
 		ogl.VertexBuffer () [nVerts++] = v0 + v1;
