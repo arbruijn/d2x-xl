@@ -155,7 +155,6 @@ typedef struct tParticle {
 	tRgbaColorf	m_renderColor;
 	char			m_nType;				//black or white
 	char			m_nRenderType;
-	char			m_nRotDir;
 	char			m_nBounce;
 	char			m_bHaveDir;
 	char			m_bBlowUp;
