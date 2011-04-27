@@ -1523,7 +1523,7 @@ int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAn
 {
 	CFixVector	v;
 	short*		pnl;
-	int			h, i, j, nShadowQuality = (gameOpts->render.ShadowQuality () - 1;
+	int			h, i, j, nShadowQuality = gameOpts->render.ShadowQuality () - 1;
 	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 	CObject*		lightObjP;
 
