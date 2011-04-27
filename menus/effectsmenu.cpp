@@ -237,7 +237,7 @@ InitStrings ();
 if (gameOpts->render.coronas.nStyle > 1)
 	gameOpts->render.coronas.nStyle = 1;
 nCoronas = (ogl.m_features.bDepthBlending > 0) && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle;
-nShadows = extraGameInfo [0].bShadows ? ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)) ? 2 : 1 : 0;
+nShadows = gameOpts->render.ShadowQuality ();
 nLightTrails = extraGameInfo [0].bLightTrails ? gameOpts->render.particles.bPlasmaTrails ? 2 : 1 : 0;
 do {
 	m.Destroy ();

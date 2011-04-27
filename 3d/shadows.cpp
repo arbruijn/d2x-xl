@@ -743,7 +743,10 @@ void SetCullAndStencil (int bCullFront, int bZPass = 0)
 {
 	static int nStencilOp [2] = {GL_DECR_WRAP, GL_INCR_WRAP};
 
+ogl.SetStencilTest (true);
 if (ogl.m_features.bSeparateStencilOps == 0) {
+	glStencilMask (~0);
+	glStencilFunc (GL_ALWAYS, 0, ~0);
 	ogl.SetFaceCulling (true);
 	OglCullFace (bCullFront);
 	if (bZPass)
@@ -754,21 +757,44 @@ if (ogl.m_features.bSeparateStencilOps == 0) {
 else {
 	ogl.SetFaceCulling (false);
 	if (ogl.m_features.bSeparateStencilOps == 1) {
-		glStencilOpSeparate (GL_BACK, GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT); 
-		glStencilOpSeparate (GL_FRONT, GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT); 
+		if (bZPass) {
+			glStencilOpSeparate (GL_BACK, GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT); 
+			glStencilOpSeparate (GL_FRONT, GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT); 
+			}
+		else {
+			glStencilOpSeparate (GL_BACK, GL_KEEP, GL_DECR_WRAP_EXT, GL_KEEP); 
+			glStencilOpSeparate (GL_FRONT, GL_KEEP, GL_INCR_WRAP_EXT, GL_KEEP); 
+			}
 		}
 	else {
 		glEnable (GL_STENCIL_TEST_TWO_SIDE_EXT);
 		glActiveStencilFaceEXT (GL_BACK);
-		glStencilOp (GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT); 
+		if (bZPass)
+			glStencilOp (GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT); 
+		else
+			glStencilOp (GL_KEEP, GL_DECR_WRAP_EXT, GL_KEEP); 
 		glStencilMask (~0);
 		glStencilFunc (GL_ALWAYS, 0, ~0);
 		glActiveStencilFaceEXT (GL_FRONT);
-		glStencilOp (GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT); 
+		if (bZPass)
+			glStencilOp (GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT); 
+		else
+			glStencilOp (GL_KEEP, GL_INCR_WRAP_EXT, GL_KEEP); 
 		glStencilMask (~0);
 		glStencilFunc (GL_ALWAYS, 0, ~0);
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void ResetCullAndStencil (void)
+{
+if (ogl.m_features.bSeparateStencilOps == 0) 
+	ogl.SetStencilTest (false);
+else 
+	glDisable (GL_STENCIL_TEST_TWO_SIDE_EXT);
+ogl.SetFaceCulling (true);
 }
 
 //------------------------------------------------------------------------------
@@ -1310,7 +1336,7 @@ for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 	if (!ogl.SizeVertexBuffer (j))
 		return 0;
 	nVerts = 0;
-#if 0
+#if 1
 	for (pfv = pf->m_verts + j; j; j--) {
 		v0 = pvf [*--pfv] + vShadowOffset;
 #else
@@ -1366,7 +1392,7 @@ h = RenderShadowCaps (objP, po, 0) &&
 	 RenderShadowCaps (objP, po, 1) &&
 	 RenderShadowVolume (po, 0) &&
 	 RenderShadowVolume (po, 1);
-ogl.SetFaceCulling (true);
+ResetCullAndStencil ();
 }
 if (m_nParent >= 0)
 	transformation.End ();
@@ -1497,7 +1523,7 @@ int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAn
 {
 	CFixVector	v;
 	short*		pnl;
-	int			h, i, j, nShadowQuality = (gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2);
+	int			h, i, j, nShadowQuality = (gameOpts->render.ShadowQuality () - 1;
 	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 	CObject*		lightObjP;
 
@@ -1521,6 +1547,7 @@ if (FAST_SHADOWS) {
 		int i = sliP->nLast - sliP->nFirst + 1;
 		for (; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			if ((gameData.render.shadows.lightP = activeLightsP->pl)) {
+				--nLights;
 				if (gameData.render.shadows.lightP->info.nType < 2)
 					continue;
 				if (gameData.render.shadows.lightP->info.nType == 3) {

@@ -358,6 +358,17 @@ else {
 
 //------------------------------------------------------------------------------
 
+int CRenderOptions::ShadowQuality (void)
+{
+if (!SHOW_SHADOWS)
+	return 0;
+if ((gameOpts->render.shadows.nReach < 2) || (gameOpts->render.shadows.nClip < 2))
+	return 1;
+return 2;
+}
+
+//------------------------------------------------------------------------------
+
 void CGameplayOptions::Init (int i)
 {
 if (i) {

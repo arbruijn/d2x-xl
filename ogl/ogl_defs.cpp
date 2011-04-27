@@ -55,7 +55,7 @@ void COGL::SetupStencilOps (void)
 {
 ogl.SetStencilTest (true);
 ogl.m_features.bSeparateStencilOps = 0;
-#if 0 //!DBG
+#if 1
 if ((ogl.m_features.bStencilBuffer.Available (glIsEnabled (GL_STENCIL_TEST)))) {
 	SetStencilTest (false);
 	if (pszOglExtensions) {

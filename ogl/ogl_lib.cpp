@@ -585,12 +585,14 @@ if (gameStates.render.nShadowPass) {
 			 {
 				ColorMask (0,0,0,0,0);
 				SetDepthWrite (false);
+#if 0
 				SetStencilTest (true);
 				if (!glIsEnabled (GL_STENCIL_TEST)) {
 					SetStencilTest (false);
 					extraGameInfo [0].bShadows =
 					extraGameInfo [1].bShadows = 0;
 					}
+#endif
 				glClearStencil (0);
 				glClear (GL_STENCIL_BUFFER_BIT);
 					bSingleStencil = 1;

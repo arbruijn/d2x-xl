@@ -431,6 +431,7 @@ class CRenderOptions {
 	public:
 		CRenderOptions () { Init (); }
 		void Init (int i = 0);
+		int ShadowQuality (void);
 	};
 
 //------------------------------------------------------------------------------
