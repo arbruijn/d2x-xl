@@ -1027,7 +1027,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 			tTGAHeader&	h = tga.Header ();
 			int			nFrames = bm.Height () / bm.Width ();
 
-			h.width = bm.Width ();
+			h.width = 
 			h.height = bm.Width ();
 			h.bits = 32;
 			if (!tga.ReadData (cf, -1, 1.0, 0, 1)) {

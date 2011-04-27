@@ -325,7 +325,7 @@ else {
 		cf.Read (bufP, 1, w);
 		}
 	}
-SetProperties (alpha, bGrayScale, brightness, true);
+SetProperties (alpha, bGrayScale, brightness, bReverse == 0);
 #else
 	int				i, j, n, nAlpha = 0, nVisible = 0, nFrames;
 	int				h = m_bmP->Height ();
@@ -564,7 +564,7 @@ return 1;
 
 int CTGA::Load (int alpha, double brightness, int bGrayScale)
 {
-return m_header.Read (m_cf, m_bmP) && ReadData (m_cf, alpha, brightness, bGrayScale, m_header.m_data.yStart == 0);
+return m_header.Read (m_cf, m_bmP) && ReadData (m_cf, alpha, brightness, bGrayScale, m_header.m_data.yStart != 0);
 }
 
 //---------------------------------------------------------------

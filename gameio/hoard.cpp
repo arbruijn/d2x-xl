@@ -66,11 +66,11 @@ gameData.hoard.monsterball.bm.Init ();
 
 CTGA tga (&gameData.hoard.monsterball.bm);
 
-if (!tga.Read ("monsterball.tga", gameFolders.szTextureDir [0], -1, 1.0, 0, 0)) {
+if (!tga.Read ("monsterball.tga", gameFolders.szTextureDir [0], -1, 1.0, 0)) {
 	altBmP = CBitmap::Create (0, 0, 0, 1, "Monsterball");
 	if (altBmP && 
-		(tga.Read ("mballgold#0.tga", gameFolders.szTextureDir [0], -1, 1.0, 0, 0) ||
-		 tga.Read ("mballred#0.tga", gameFolders.szTextureDir [0], -1, 1.0, 0, 0))) {
+		(tga.Read ("mballgold#0.tga", gameFolders.szTextureDir [0], -1, 1.0, 0) ||
+		 tga.Read ("mballred#0.tga", gameFolders.szTextureDir [0], -1, 1.0, 0))) {
 		vcP = &gameData.eff.vClips [0][gameData.hoard.monsterball.nClip];
 		for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
 			Assert (nBitmap < MAX_BITMAP_FILES);

@@ -71,7 +71,7 @@ for (int i = 0; i < 2; i++) {
 	if (!cf.Exist (szFilename, "", 0))
 		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [0], pszObjTallyIcons [i]);
 	CTGA tga (&bmObjTally [i]);
-	if (!tga.Read (szFilename, NULL, -1, 1.0, 0, 0)) {
+	if (!tga.Read (szFilename, NULL, -1, 1.0, 0)) {
 		while (i) {
 			i--;
 			bmObjTally [i].Destroy ();

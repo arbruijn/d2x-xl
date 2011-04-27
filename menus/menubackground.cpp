@@ -432,7 +432,7 @@ CTGA tga (bmP);
 
 if (!tga. Read (gameOpts->menus.altBg.szName, gameFolders.szWallpaperDir, 
 					 (gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255),
-					 gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale, 0)) {
+					 gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale)) {
 	delete bmP;
 	gameOpts->menus.altBg.bHave = -1;
 	return NULL;

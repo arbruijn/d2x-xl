@@ -416,7 +416,7 @@ else if ((ps = strstr (szImg, ".pcx"))) {
 if (strstr (szImg, ".tga")) {
 	CBitmap	bm;
 	CTGA		tga (&bm);
-	if (!tga.Read (szImg, gameFolders.szDataDir [0], -1, 1.0, 0, 0))
+	if (!tga.Read (szImg, gameFolders.szDataDir [0], -1, 1.0, 0))
 		return PCX_ERROR_OPENING;
 	bm.RenderFullScreen ();
 	return PCX_ERROR_NONE;
