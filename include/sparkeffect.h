@@ -7,6 +7,7 @@ class CEnergySpark {
 		char				m_nFrame;
 		ubyte				m_bRendered :1;
 		ubyte				m_nType :1;
+		ubyte				m_nOrient :1;
 		fix				m_xSize;
 		time_t			m_tRender;
 		time_t			m_tCreate;

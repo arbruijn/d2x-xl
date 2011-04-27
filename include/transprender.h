@@ -63,6 +63,7 @@ typedef struct tTranspSpark {
 	CFloatVector		position;
 	int					nSize;
 	char					nFrame;
+	char					nOrient;
 	char					nType;
 } tTranspSpark;
 
@@ -200,7 +201,7 @@ class CTransparencyRenderer {
 		int AddObject (CObject *objP);
 		int AddSprite (CBitmap *bmP, const CFixVector& position, tRgbaColorf *color,
 							  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad);
-		int AddSpark (const CFixVector& position, char nType, int nSize, char nFrame);
+		int AddSpark (const CFixVector& position, char nType, int nSize, char nFrame, char nOrient);
 		int AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *objP, char bAdditive, fix nSize = 0);
 		int AddParticle (CParticle *particle, float fBrightness, int nThread);
 		int AddLightning (CLightning *lightningP, short nDepth);
