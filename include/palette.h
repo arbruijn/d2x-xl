@@ -146,7 +146,7 @@ class CPaletteManager {
 		int FindClosestColor15bpp (int rgb);
 		void SetGamma (int gamma);
 		int GetGamma (void);
-		inline const float Brightness (void) { return 0.125f + (float) GetGamma () / 8.0f; }
+		const float Brightness (void);
 		const char* BrightnessLevel (void);
 		void Flash (void);
 
