@@ -563,7 +563,7 @@ return Add (tiSprite, &item, sizeof (item), position);
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::AddSpark (const CFixVector& position, char nType, int nSize, char nFrame, char nOrient)
+int CTransparencyRenderer::AddSpark (const CFixVector& position, char nType, int nSize, char nFrame, char nRotFrame, char nOrient)
 {
 if (gameStates.render.nShadowMap)
 	return 0;
@@ -573,6 +573,7 @@ if (gameStates.render.nShadowMap)
 
 item.nSize = nSize;
 item.nFrame = nFrame;
+item.nRotFrame = nRotFrame;
 item.nOrient = nOrient;
 item.nType = nType;
 item.position.Assign (position);
@@ -1102,8 +1103,9 @@ if (USE_PARTICLE_SHADER) {
 	p.m_nHeight = X2F (item->nSize);
 	p.m_bEmissive = -1;
 	p.m_bRotate = 1;
-	p.m_nOrient = item->nOrient;
-	p.m_nRotFrame = item->nFrame * 2;
+	p.m_nRotFrame = item->nRotFrame + item->nFrame;
+	if (p.m_nOrient = item->nOrient)
+		p.m_nRotFrame = -p.m_nRotFrame;
 	p.m_vPosf = item->position;
 	p.m_vPos.Assign (item->position);
 	p.m_texCoord.v.v = nCol / 8.0f;

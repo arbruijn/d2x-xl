@@ -5,6 +5,7 @@ class CEnergySpark {
 	public:
 		short				m_nProb;
 		char				m_nFrame;
+		char				m_nRotFrame;
 		ubyte				m_bRendered :1;
 		ubyte				m_nType :1;
 		ubyte				m_nOrient :1;

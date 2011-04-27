@@ -61,6 +61,7 @@ else {
 	else {
 		m_xSize = I2X (1) + 4 * d_rand ();
 		m_nFrame = 0;
+		m_nRotFrame = rand () % 64;
 		m_nOrient = rand () % 2;
 		m_tRender = -1;
 		m_bRendered = 0;
@@ -105,7 +106,7 @@ if (m_tRender) {
 	if (m_nFrame > 31)
 		m_tRender = 0;
 	else
-		transparencyRenderer.AddSpark (m_vPos, (char) m_nType, m_xSize, (char) m_nFrame, (char) m_nOrient);
+		transparencyRenderer.AddSpark (m_vPos, (char) m_nType, m_xSize, (char) m_nFrame, (char) m_nRotFrame, (char) m_nOrient);
 	}
 }
 
