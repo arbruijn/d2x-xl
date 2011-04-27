@@ -275,6 +275,8 @@ return 1;
 
 int CParticleImageManager::LoadAll (void)
 {
+if (!gameOpts->render.particles.nQuality)
+	return 0;
 for (int i = 0; i < PARTICLE_TYPES; i++) {
 	if (!Load (i))
 		return 0;
@@ -313,6 +315,8 @@ if (!ogl.m_features.bTextureArrays.Available ())
 	return false;
 if (m_textureArray)
 	return true;
+if (!bmP1)
+	return false;
 
 int nWidth = bmP1->Width ();
 int nHeight = bmP1->Height ();

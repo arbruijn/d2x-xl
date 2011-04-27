@@ -1314,7 +1314,7 @@ for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 	for (pfv = pf->m_verts + j; j; j--) {
 		v0 = pvf [*--pfv] + vShadowOffset;
 #else
-	for (pfv = pf->m_verts; j; j++) {
+	for (pfv = pf->m_verts; j; j--) {
 		v0 = pvf [*pfv++] + vShadowOffset;
 #endif
 		v1 = v0 - vLightPosf; // project the current shadow cap vertex to a distance of fClipDist from it's current position as seen from the light
