@@ -325,7 +325,7 @@ else {
 		cf.Read (bufP, 1, w);
 		}
 	}
-SetProperties (alpha, bGrayScale, brightness, bReverse == 0);
+SetProperties (alpha, bGrayScale, brightness, true);
 #else
 	int				i, j, n, nAlpha = 0, nVisible = 0, nFrames;
 	int				h = m_bmP->Height ();
@@ -562,9 +562,9 @@ return 1;
 //---------------------------------------------------------------
 //---------------------------------------------------------------
 
-int CTGA::Load (int alpha, double brightness, int bGrayScale, int bReverse)
+int CTGA::Load (int alpha, double brightness, int bGrayScale)
 {
-return m_header.Read (m_cf, m_bmP) && ReadData (m_cf, alpha, brightness, bGrayScale, bReverse);
+return m_header.Read (m_cf, m_bmP) && ReadData (m_cf, alpha, brightness, bGrayScale, m_header.m_data.yStart == 0);
 }
 
 //---------------------------------------------------------------
@@ -578,7 +578,7 @@ return m_header.Write (m_cf, m_bmP) && WriteData ();
 
 #if USE_SDL_IMAGE
 
-int CTGA::ReadImage (const char* pszFile, const char* pszFolder, int alpha, double brightness, int bGrayScale, int bReverse)
+int CTGA::ReadImage (const char* pszFile, const char* pszFolder, int alpha, double brightness, int bGrayScale)
 {
 	char	szFolder [FILENAME_LEN], szFile [FILENAME_LEN], szExt [FILENAME_LEN], szImage [FILENAME_LEN];
 	CFile	cf;
@@ -625,11 +625,11 @@ return 1;
 
 //---------------------------------------------------------------
 
-int CTGA::Read (const char *pszFile, const char *pszFolder, int alpha, double brightness, int bGrayScale, int bReverse)
+int CTGA::Read (const char *pszFile, const char *pszFolder, int alpha, double brightness, int bGrayScale)
 {
 #if USE_SDL_IMAGE
 
-if (ReadImage (pszFile, pszFolder, alpha, brightness, bGrayScale, bReverse))
+if (ReadImage (pszFile, pszFolder, alpha, brightness, bGrayScale))
 	return 1;
 
 #endif //USE_SDL_IMAGE
@@ -655,7 +655,7 @@ if (!(psz = const_cast<char*> (strstr (pszFile, ".tga")))) {
 	pszFile = szFile;
 	}
 m_cf.Open (pszFile, pszFolder, "rb", 0);
-r = (m_cf.File() != NULL) && Load (alpha, brightness, bGrayScale, bReverse);
+r = (m_cf.File() != NULL) && Load (alpha, brightness, bGrayScale);
 #if TEXTURE_COMPRESSION
 if (r && CompressTGA (bmP))
 	m_bmP->SaveS3TC (pszFolder, pszFile);
@@ -677,7 +677,7 @@ CBitmap* CTGA::CreateAndRead (char* pszFile)
 {
 if (!(m_bmP = CBitmap::Create (0, 0, 0, 4)))
 	return NULL;
-if (Read (pszFile, NULL, -1, 1.0, 0, 0)) {
+if (Read (pszFile, NULL, -1, 1.0, 0)) {
 	char	szName [FILENAME_LEN];
 	CFile::SplitPath (pszFile, NULL, szName, NULL);
 	m_bmP->SetType (BM_TYPE_ALT);
@@ -1009,7 +1009,7 @@ if (nShrinkFactor > 1) {
 	sprintf (szShrunkFolder, "%s/%d", gameFolders.szModelCacheDir [bCustom], 512 / nShrinkFactor);
 	tBase = m_cf.Date (fnBase, gameFolders.szModelDir [bCustom], 0);
 	tShrunk = m_cf.Date (fnBase, szShrunkFolder, 0);
-	if ((tShrunk > tBase) && Read (fnBase, szShrunkFolder, -1, 1.0, 0, 0)) {
+	if ((tShrunk > tBase) && Read (fnBase, szShrunkFolder, -1, 1.0, 0)) {
 #if DBG
 		m_bmP->SetName (fn);
 #endif
@@ -1017,7 +1017,7 @@ if (nShrinkFactor > 1) {
 		return m_bmP;
 		}
 	}
-if (!Read (pszFile, gameFolders.szModelDir [bCustom], -1, 1.0, 0, 0))
+if (!Read (pszFile, gameFolders.szModelDir [bCustom], -1, 1.0, 0))
 	return NULL;
 UseBitmapCache (m_bmP, int (m_bmP->Height ()) * int (m_bmP->RowSize ()));
 if (gameStates.app.bCacheTextures && (nShrinkFactor > 1) &&

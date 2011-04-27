@@ -87,10 +87,10 @@ class CTGA {
 			}
 
 		int Shrink (int xFactor, int yFactor, int bRealloc);
-		int ReadData (CFile& cf, int alpha, double brightness, int bGrayScale, int bRedBlueFlip);
+		int ReadData (CFile& cf, int alpha, double brightness, int bGrayScale, int bReverse);
 		int WriteData (void);
-		int Load (int alpha, double brightness, int bGrayScale, int bRedBlueFlip);
-		int Read (const char* pszFile, const char* pszFolder, int alpha = -1, double brightness = 1.0, int bGrayScale = 0, int bRedBlueFlip = 0);
+		int Load (int alpha, double brightness, int bGrayScale);
+		int Read (const char* pszFile, const char* pszFolder, int alpha = -1, double brightness = 1.0, int bGrayScale = 0);
 		int Write (void);
 		CBitmap* CreateAndRead (char* pszFile);
 		int Save (const char *pszFile, const char *pszFolder);
@@ -107,7 +107,7 @@ class CTGA {
 
 	private:
 		void SetProperties (int alpha, int bGrayScale, double brightness, bool bSwapRB = true);
-		int ReadImage (const char* pszFile, const char* pszFolder, int alpha, double brightness, int bGrayScale, int bReverse);
+		int ReadImage (const char* pszFile, const char* pszFolder, int alpha, double brightness, int bGrayScale);
 
 	};
 
