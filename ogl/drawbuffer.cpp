@@ -211,7 +211,7 @@ else {
 	else {
 		gameStates.render.bRenderIndirect = 
 #if 1
-			(m_features.bRenderToTexture > 0) && !gameStates.app.bNostalgia; 
+			!gameStates.app.bNostalgia && m_features.bShaders && (m_features.bRenderToTexture > 0); 
 #else
 			(postProcessManager.Effects () != NULL) 
 			|| (m_data.xStereoSeparation && (i > 0)) 
@@ -219,8 +219,10 @@ else {
 #endif
 		if (gameStates.render.bRenderIndirect > 0) 
 			SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
-		else
+		else {
+			m_data.xStereoSeparation = 0;
 			SetDrawBuffer (GL_BACK, 0);
+			}
 		}
 	}
 }

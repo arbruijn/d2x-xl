@@ -240,7 +240,7 @@ m_nEffects = 0;
 
 void CPostProcessManager::Add (CPostEffect* e) 
 {
-if (!(ogl.m_features.bRenderToTexture && e->Enabled ()))
+if (!(ogl.m_features.bShaders && ogl.m_features.bRenderToTexture && e->Enabled ()))
 	delete e;
 else {
 	e->Link (NULL, m_effects);
