@@ -157,7 +157,9 @@ if (distance < maxDistance) {
 	int nSearchSegs = X2I (maxDistance / 10);
 	if (nSearchSegs < 3)
 		nSearchSegs = 3;
-	pathDistance = PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
+	pathDistance = gameData.segs.SegVis (nListenerSeg, nSoundSeg) 
+						? distance
+						: PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
 	if (pathDistance > -1) {
 		if (!nDecay)
 #if 1
