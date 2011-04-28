@@ -756,7 +756,7 @@ class CObject : public CObjectInfo {
 		static inline bool IsEnergyWeapon (short nId) { return (m_weaponInfo [nId] & OBJ_IS_ENERGY_WEAPON) != 0; }
 		static inline bool HasLightTrail (short nId) { return (m_weaponInfo [nId] & OBJ_HAS_LIGHT_TRAIL) != 0; }
 		static inline bool IsMissile (short nId) { return (m_weaponInfo [nId] & OBJ_IS_MISSILE) != 0; }
-		static inline bool IsEquipment (short nId) { return m_bIsEquipment [nId] != 0; }
+		static inline ubyte IsEquipment (short nId) { return m_bIsEquipment [nId]; }
 		static bool IsPlayerMine (short nId);
 		static bool IsRobotMine (short nId);
 		static bool IsMine (short nId);

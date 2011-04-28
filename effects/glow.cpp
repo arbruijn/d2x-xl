@@ -421,6 +421,8 @@ if (nType == GLOW_SHIELDS)
 #endif
 if (!ogl.m_features.bShaders)
 	return false;
+if (ogl.m_features.bDepthBlending < 0)
+	return false;
 if (gameStates.render.nShadowMap > 0)
 	return false;
 if (!ogl.m_states.bGlowRendering)

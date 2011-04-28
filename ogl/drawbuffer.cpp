@@ -218,7 +218,7 @@ else {
 #else
 		gameStates.render.bRenderIndirect = 
 #if 1
-			(ogl.m_features.bRenderToTexture > 0); 
+			(m_features.bRenderToTexture > 0); 
 #else
 			(postProcessManager.Effects () != NULL) 
 			|| (m_data.xStereoSeparation && (i > 0)) 

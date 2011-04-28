@@ -109,7 +109,7 @@ if (nType == OBJ_WEAPON) {
 		nType = nType;
 	if (nId == FLARE_ID)
 		nType = nType;
-	if (m_bIsMissile [(int) nId])
+	if (IsMissile ((int) nId))
 		nType = nType;
 	}
 else if (nType == OBJ_ROBOT) {
