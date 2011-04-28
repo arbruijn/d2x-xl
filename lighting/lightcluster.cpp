@@ -202,7 +202,7 @@ if (nPrevShot >= 0) {
 				nLight = -1;
 				}
 			}
-		if (CFixVector::Dist (shotP->info.position.vPos, lightP->info.position.vPos) < I2X (10)) {
+		if (CFixVector::Dist (shotP->info.position.vPos, lightP->info.position.vPos) < I2X (15)) {
 			if (nLight >= 0) {
 				m_objects [nShot].nObject = nLight;
 				lightP->cType.lightInfo.nObjects++;
