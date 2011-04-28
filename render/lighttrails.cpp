@@ -199,7 +199,7 @@ if (!objP->IsWeapon ())
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 
-bGatling = objP->IsGatlingGun ();
+bGatling = objP->IsGatlingRound ();
 if (objP->info.renderType == RT_POLYOBJ)
 	colorP = gameData.weapons.color + objP->info.nId;
 else {
@@ -210,11 +210,11 @@ else {
 	colorP = &color;
 	}
 
-if (objP->IsFastWeapon () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0)) {
+if (objP->HasLightTrail () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0)) {
 	if (gameOpts->render.particles.bPlasmaTrails)
 		;//DoObjectSmoke (objP);
 	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->info.nType == OBJ_WEAPON) &&
-				objP->IsFastWeapon () &&
+				objP->HasLightTrail () &&
 				(!objP->mType.physInfo.velocity.IsZero ()) &&
 				glare.Load ()) {
 			CFloatVector	vNorm, vCenter, vOffs, vTrailVerts [8];

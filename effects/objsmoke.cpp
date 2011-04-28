@@ -786,7 +786,7 @@ void DoParticleTrail (CObject *objP)
 {
 #if PARTICLE_TRAIL
 	int			nParts, nObject, nSmoke, id = objP->info.nId, 
-					bGatling = objP->IsGatlingGun (),
+					bGatling = objP->IsGatlingRound (),
 					bOmega = (id == OMEGA_ID);
 	float			nScale;
 	CFixVector	pos;
@@ -874,12 +874,12 @@ else if (t == OBJ_REACTOR)
 else if (t == OBJ_WEAPON) {
 	if (objP->IsMissile ())
 		DoMissileSmoke (objP);
-	else if (objP->IsGatlingGun ())
+	else if (objP->IsGatlingRound ())
 		DoParticleTrail (objP);
 	else if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (nId == PROXMINE_ID))
 		DoBombSmoke (objP);
 	else if (gameOpts->render.particles.bPlasmaTrails && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0) &&
-				objP->IsFastWeapon (nId))
+				objP->HasLightTrail (nId))
 		DoParticleTrail (objP);
 	else
 		return 0;

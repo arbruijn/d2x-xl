@@ -93,7 +93,7 @@ if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
 	objP->info.xSize = FixDiv (gameData.models.polyModels [0][objP->ModelId ()].Rad (1),
 										gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
 	}
-else if (EGI_FLAG (bTracers, 0, 1, 0) && objP->IsGatlingGun ()) {
+else if (EGI_FLAG (bTracers, 0, 1, 0) && objP->IsGatlingRound ()) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
 	objP->rType.polyObjInfo.nTexOverride = -1;
 	objP->rType.polyObjInfo.nAltTextures = 0;
@@ -209,7 +209,7 @@ objP->cType.laserInfo.parent.nObject = nParent;
 if (parentP) {
 	objP->cType.laserInfo.parent.nType = parentP->info.nType;
 	objP->cType.laserInfo.parent.nSignature = parentP->info.nSignature;
-	if (objP->IsGatlingGun ())
+	if (objP->IsGatlingRound ())
 		parentP->SetTracers ((parentP->Tracers () + 1) % 3);
 	}
 else {
@@ -313,7 +313,7 @@ if (((nParent != nViewer) || SPECTATOR (parentP)) && (parentP->info.nType != OBJ
 	}
 volume = I2X (1);
 if (bMakeSound && (weaponInfoP->flashSound > -1)) {
-	int bGatling = objP->IsGatlingGun ();
+	int bGatling = objP->IsGatlingRound ();
 	if (nParent != nViewer) {
 		if (bGatling && (parentP->info.nType == OBJ_PLAYER) && (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling)
 			audio.CreateSegmentSound (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume, I2X (256),

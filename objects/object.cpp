@@ -82,130 +82,83 @@ int dbgObjInstances = 0;
 
 //------------------------------------------------------------------------------
 
-CArray<ubyte> CObject::m_bIsWeapon;
-CArray<ubyte> CObject::m_bIsSlowWeapon;
-CArray<ubyte> CObject::m_bIsEnergyWeapon;
-CArray<ubyte> CObject::m_bIsMissile; 
+CArray<ubyte> CObject::m_weaponInfo;
 CArray<ubyte> CObject::m_bIsEquipment; 
 
 //------------------------------------------------------------------------------
 
 void CObject::InitTables (void)
 {
-m_bIsMissile.Create (MAX_WEAPONS);
-m_bIsMissile.Clear (0);
-m_bIsMissile [CONCUSSION_ID] =
-m_bIsMissile [HOMINGMSL_ID] =
-m_bIsMissile [SMARTMSL_ID] =
-m_bIsMissile [MEGAMSL_ID] =
-m_bIsMissile [FLASHMSL_ID] =
-m_bIsMissile [GUIDEDMSL_ID] =
-m_bIsMissile [MERCURYMSL_ID] =
-m_bIsMissile [EARTHSHAKER_ID] =
-m_bIsMissile [EARTHSHAKER_MEGA_ID] =
-m_bIsMissile [ROBOT_CONCUSSION_ID] =
-m_bIsMissile [ROBOT_HOMINGMSL_ID] =
-m_bIsMissile [ROBOT_FLASHMSL_ID] =
-m_bIsMissile [ROBOT_MEGA_FLASHMSL_ID + 1] =
-m_bIsMissile [ROBOT_MERCURYMSL_ID] =
-m_bIsMissile [ROBOT_MEGA_FLASHMSL_ID] =
-m_bIsMissile [ROBOT_SMARTMSL_ID] =
-m_bIsMissile [ROBOT_MEGAMSL_ID] =
-m_bIsMissile [ROBOT_EARTHSHAKER_ID] =
-m_bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
+m_weaponInfo.Create (MAX_WEAPONS);
+m_weaponInfo.Clear (0);
 
-m_bIsWeapon.Create (MAX_WEAPONS);
-m_bIsWeapon.Clear (0);
-m_bIsWeapon [VULCAN_ID] =
-m_bIsWeapon [GAUSS_ID] =
-m_bIsWeapon [ROBOT_VULCAN_ID] = 1;
-m_bIsWeapon [LASER_ID] =
-m_bIsWeapon [LASER_ID + 1] =
-m_bIsWeapon [LASER_ID + 2] =
-m_bIsWeapon [LASER_ID + 3] =
-m_bIsWeapon [REACTOR_BLOB_ID] =
-m_bIsWeapon [ROBOT_LIGHT_FIREBALL_ID] =
-m_bIsWeapon [SMARTMSL_BLOB_ID] =
-m_bIsWeapon [SMARTMINE_BLOB_ID] =
-m_bIsWeapon [ROBOT_SMARTMINE_BLOB_ID] =
-m_bIsWeapon [FLARE_ID] =
-m_bIsWeapon [SPREADFIRE_ID] =
-m_bIsWeapon [PLASMA_ID] =
-m_bIsWeapon [FUSION_ID] =
-m_bIsWeapon [SUPERLASER_ID] =
-m_bIsWeapon [SUPERLASER_ID + 1] =
-m_bIsWeapon [HELIX_ID] =
-m_bIsWeapon [PHOENIX_ID] =
-m_bIsWeapon [OMEGA_ID] =
-m_bIsWeapon [ROBOT_PLASMA_ID] =
-m_bIsWeapon [ROBOT_MEDIUM_FIREBALL_ID] =
-m_bIsWeapon [ROBOT_SMARTMSL_BLOB_ID] =
-m_bIsWeapon [ROBOT_VULCAN_ID] =
-m_bIsWeapon [ROBOT_TI_STREAM_ID] =
-m_bIsWeapon [ROBOT_PHOENIX_ID] =
-m_bIsWeapon [ROBOT_FAST_PHOENIX_ID] =
-m_bIsWeapon [ROBOT_PHASE_ENERGY_ID] =
-m_bIsWeapon [ROBOT_GAUSS_ID] =
-m_bIsWeapon [ROBOT_VERTIGO_FIREBALL_ID] =
-m_bIsWeapon [ROBOT_VERTIGO_PHOENIX_ID] =
-m_bIsWeapon [ROBOT_HELIX_ID] =
-m_bIsWeapon [ROBOT_BLUE_ENERGY_ID] =
-m_bIsWeapon [ROBOT_WHITE_ENERGY_ID] =
-m_bIsWeapon [ROBOT_BLUE_LASER_ID] =
-m_bIsWeapon [ROBOT_RED_LASER_ID] =
-m_bIsWeapon [ROBOT_GREEN_LASER_ID] =
-m_bIsWeapon [ROBOT_WHITE_LASER_ID] = 1;
+m_weaponInfo [CONCUSSION_ID] |= OBJ_IS_MISSILE;
+m_weaponInfo [HOMINGMSL_ID] |= OBJ_IS_MISSILE;
+m_weaponInfo [SMARTMSL_ID] |= OBJ_IS_MISSILE;
+m_weaponInfo [FLASHMSL_ID] |= OBJ_IS_MISSILE;
+m_weaponInfo [GUIDEDMSL_ID] |= OBJ_IS_MISSILE;
+m_weaponInfo [MERCURYMSL_ID] |= OBJ_IS_MISSILE;
+m_weaponInfo [ROBOT_CONCUSSION_ID] |= OBJ_IS_MISSILE;
+m_weaponInfo [ROBOT_HOMINGMSL_ID] |= OBJ_IS_MISSILE;
+m_weaponInfo [ROBOT_FLASHMSL_ID] |= OBJ_IS_MISSILE;
+m_weaponInfo [ROBOT_MERCURYMSL_ID] |= OBJ_IS_MISSILE;
+m_weaponInfo [ROBOT_SMARTMSL_ID] |= OBJ_IS_MISSILE;
 
-m_bIsSlowWeapon.Create (MAX_WEAPONS);
-m_bIsSlowWeapon.Clear (0);
-m_bIsSlowWeapon [OMEGA_ID] =
-m_bIsSlowWeapon [VULCAN_ID] =
-m_bIsSlowWeapon [GAUSS_ID] =
-m_bIsSlowWeapon [ROBOT_VULCAN_ID] = 1;
-m_bIsSlowWeapon [REACTOR_BLOB_ID] =
-m_bIsSlowWeapon [ROBOT_TI_STREAM_ID] =
-m_bIsSlowWeapon [SMARTMINE_BLOB_ID] =
-m_bIsSlowWeapon [ROBOT_SMARTMINE_BLOB_ID] =
-m_bIsSlowWeapon [SMARTMSL_BLOB_ID] =
-m_bIsSlowWeapon [ROBOT_SMARTMSL_BLOB_ID] = 1;
+m_weaponInfo [MEGAMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
+m_weaponInfo [EARTHSHAKER_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
+m_weaponInfo [EARTHSHAKER_MEGA_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
+m_weaponInfo [ROBOT_MEGAMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
+m_weaponInfo [ROBOT_EARTHSHAKER_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
+m_weaponInfo [ROBOT_SHAKER_MEGA_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
+m_weaponInfo [ROBOT_MEGA_FLASHMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
+m_weaponInfo [ROBOT_MEGA_FLASHMSL_ID + 1] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
 
-m_bIsEnergyWeapon.Create (MAX_WEAPONS);
-m_bIsEnergyWeapon.Clear (0);
-m_bIsEnergyWeapon [LASER_ID] =
-m_bIsEnergyWeapon [LASER_ID + 1] =
-m_bIsEnergyWeapon [LASER_ID + 2] =
-m_bIsEnergyWeapon [LASER_ID + 2] =
-m_bIsEnergyWeapon [ROBOT_LIGHT_FIREBALL_ID] =
-m_bIsEnergyWeapon [REACTOR_BLOB_ID] =
-m_bIsEnergyWeapon [FLARE_ID] =
-m_bIsEnergyWeapon [ROBOT_BLUE_LASER_ID] =
-m_bIsEnergyWeapon [SPREADFIRE_ID] =
-m_bIsEnergyWeapon [PLASMA_ID] =
-m_bIsEnergyWeapon [FUSION_ID] =
-m_bIsEnergyWeapon [SMARTMSL_ID] =
-m_bIsEnergyWeapon [SMARTMSL_BLOB_ID] =
-m_bIsEnergyWeapon [ROBOT_BLUE_ENERGY_ID] =
-m_bIsEnergyWeapon [SILENT_SPREADFIRE_ID] =
-m_bIsEnergyWeapon [ROBOT_RED_LASER_ID] =
-m_bIsEnergyWeapon [ROBOT_GREEN_LASER_ID] =
-m_bIsEnergyWeapon [ROBOT_PLASMA_ID] =
-m_bIsEnergyWeapon [ROBOT_MEDIUM_FIREBALL_ID] =
-m_bIsEnergyWeapon [ROBOT_SMARTMSL_BLOB_ID] =
-m_bIsEnergyWeapon [SUPERLASER_ID] =
-m_bIsEnergyWeapon [SUPERLASER_ID + 1] =
-m_bIsEnergyWeapon [HELIX_ID] =
-m_bIsEnergyWeapon [PHOENIX_ID] =
-m_bIsEnergyWeapon [OMEGA_ID] =
-m_bIsEnergyWeapon [ROBOT_WHITE_LASER_ID] =
-m_bIsEnergyWeapon [ROBOT_PHOENIX_ID] =
-m_bIsEnergyWeapon [ROBOT_FAST_PHOENIX_ID] =
-m_bIsEnergyWeapon [ROBOT_HELIX_ID] =
-m_bIsEnergyWeapon [SMARTMINE_BLOB_ID] =
-m_bIsEnergyWeapon [ROBOT_PHASE_ENERGY_ID] =
-m_bIsEnergyWeapon [ROBOT_SMARTMINE_BLOB_ID] =
-m_bIsEnergyWeapon [ROBOT_WHITE_ENERGY_ID] =
-m_bIsEnergyWeapon [ROBOT_VERTIGO_FIREBALL_ID] =
-m_bIsEnergyWeapon [ROBOT_VERTIGO_PHOENIX_ID] = 1;
+m_weaponInfo [VULCAN_ID] |= OBJ_IS_WEAPON | OBJ_IS_GATLING_ROUND;
+m_weaponInfo [GAUSS_ID] |= OBJ_IS_WEAPON | OBJ_IS_GATLING_ROUND;
+m_weaponInfo [ROBOT_VULCAN_ID] |= OBJ_IS_WEAPON | OBJ_IS_GATLING_ROUND; 
+m_weaponInfo [ROBOT_GAUSS_ID] |= OBJ_IS_WEAPON | OBJ_IS_GATLING_ROUND;
+m_weaponInfo [ROBOT_TI_STREAM_ID] |= OBJ_IS_WEAPON;
+
+m_weaponInfo [FLARE_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [LASER_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [LASER_ID + 1] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [LASER_ID + 2] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [LASER_ID + 3] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [SPREADFIRE_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [PLASMA_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [FUSION_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [SUPERLASER_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [SUPERLASER_ID + 1] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [HELIX_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [PHOENIX_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [OMEGA_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+
+m_weaponInfo [ROBOT_BLUE_LASER_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_RED_LASER_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_GREEN_LASER_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_WHITE_LASER_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_PLASMA_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_HELIX_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_PHOENIX_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_PHASE_ENERGY_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_FAST_PHOENIX_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_LIGHT_FIREBALL_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_MEDIUM_FIREBALL_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_VERTIGO_FIREBALL_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_VERTIGO_PHOENIX_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_BLUE_ENERGY_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+m_weaponInfo [ROBOT_WHITE_ENERGY_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
+
+m_weaponInfo [REACTOR_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON;
+m_weaponInfo [SMARTMSL_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON;
+m_weaponInfo [ROBOT_SMARTMSL_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON;
+m_weaponInfo [SMARTMINE_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON;
+m_weaponInfo [ROBOT_SMARTMINE_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON;
+
+m_weaponInfo [PROXMINE_ID] |= OBJ_IS_PLAYER_MINE;
+m_weaponInfo [SMARTMINE_ID] |= OBJ_IS_PLAYER_MINE;
+m_weaponInfo [SMALLMINE_ID] |= OBJ_IS_PLAYER_MINE;
+m_weaponInfo [ROBOT_SMARTMINE_ID] |= OBJ_IS_ROBOT_MINE;
 
 m_bIsEquipment.Create (MAX_POWERUP_TYPES);
 m_bIsEquipment.Clear (0);
@@ -1700,7 +1653,7 @@ return (info.nType == OBJ_ROBOT) && (info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (i
 
 bool CObject::IsPlayerMine (short nId) 
 { 
-return (nId == PROXMINE_ID) || (nId == SMARTMINE_ID) || (nId == SMALLMINE_ID); 
+return (m_weaponInfo [nId] & OBJ_IS_PLAYER_MINE) != 0; 
 }
 
 //------------------------------------------------------------------------------
@@ -1712,16 +1665,23 @@ return IsWeapon () && IsPlayerMine (Id ());
 
 //------------------------------------------------------------------------------
 
-bool CObject::IsGatlingGun (void) 
+bool CObject::IsGatlingRound (void) 
 { 
-return IsWeapon () && ((Id () == VULCAN_ID) || (Id () == GAUSS_ID) || (Id () == ROBOT_VULCAN_ID) || (Id () == ROBOT_GAUSS_ID));
+return IsWeapon () && ((m_weaponInfo [Id ()] & OBJ_IS_GATLING_ROUND) != 0);
+}
+
+//------------------------------------------------------------------------------
+
+bool CObject::IsBadassWeapon (void) 
+{ 
+return IsWeapon () && ((m_weaponInfo [Id ()] & OBJ_IS_BADASS_WEAPON) != 0);
 }
 
 //------------------------------------------------------------------------------
 
 bool CObject::IsRobotMine (short nId) 
 { 
-return (nId == ROBOT_SMARTMINE_ID); 
+return (m_weaponInfo [nId] & OBJ_IS_ROBOT_MINE) != 0; 
 }
 
 //------------------------------------------------------------------------------

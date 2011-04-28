@@ -876,7 +876,7 @@ else {
 				RenderLightTrail (objP);
 			}
 		else {
-			if (objP->IsGatlingGun ()) {
+			if (objP->IsGatlingRound ()) {
 				if (SHOW_OBJ_FX && extraGameInfo [0].bTracers) {
 					//RenderLightTrail (objP);
 					gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (3) / 2);

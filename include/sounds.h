@@ -31,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SOUND_WEAPON_HIT_DOOR                   27
 #define SOUND_WEAPON_HIT_BLASTABLE              11
+#define SOUND_STANDARD_EXPLOSION                11  // need something different for this if possible
 #define SOUND_BADASS_EXPLOSION                  58  // need something different for this if possible
 
 #define SOUND_ROBOT_HIT_PLAYER                  17

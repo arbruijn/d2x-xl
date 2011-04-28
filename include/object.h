@@ -747,20 +747,25 @@ class CObjDamageInfo {
 
 class CObject : public CObjectInfo {
 	private:
-		static CArray<ubyte>	m_bIsWeapon;
-		static CArray<ubyte>	m_bIsSlowWeapon;
-		static CArray<ubyte>	m_bIsEnergyWeapon;
-		static CArray<ubyte>	m_bIsMissile; 
+		static CArray<ubyte>	m_weaponInfo;
 		static CArray<ubyte>	m_bIsEquipment; 
 
 	public:
 		static void InitTables (void);
-		static inline ubyte IsWeapon (short nId) { return m_bIsWeapon [nId]; }
-		static inline ubyte IsEnergyWeapon (short nId) { return m_bIsEnergyWeapon [nId]; }
-		static inline ubyte IsSlowWeapon (short nId) { return m_bIsSlowWeapon [nId]; }
-		static inline ubyte IsFastWeapon (short nId) { return !m_bIsSlowWeapon [nId]; }
-		static inline ubyte IsMissile (short nId) { return m_bIsMissile [nId]; }
-		static inline ubyte IsEquipment (short nId) { return m_bIsEquipment [nId]; }
+		static inline bool IsWeapon (short nId) { return (m_weaponInfo [nId] & OBJ_IS_WEAPON) != 0; }
+		static inline bool IsEnergyWeapon (short nId) { return (m_weaponInfo [nId] & OBJ_IS_ENERGY_WEAPON) != 0; }
+		static inline bool HasLightTrail (short nId) { return (m_weaponInfo [nId] & OBJ_HAS_LIGHT_TRAIL) != 0; }
+		static inline bool IsMissile (short nId) { return (m_weaponInfo [nId] & OBJ_IS_MISSILE) != 0; }
+		static inline bool IsEquipment (short nId) { return m_bIsEquipment [nId] != 0; }
+		static bool IsPlayerMine (short nId);
+		static bool IsRobotMine (short nId);
+		static bool IsMine (short nId);
+
+		bool IsPlayerMine (void);
+		bool IsRobotMine (void);
+		bool IsMine (void);
+		bool IsGatlingRound (void);
+		bool IsBadassWeapon (void);
 
 	private:
 		short				m_nKey;
@@ -1016,20 +1021,11 @@ class CObject : public CObjectInfo {
 
 		short Visible (void);
 
-		inline ubyte IsWeapon (void) { return ((Type () != OBJ_WEAPON) || Id () >= m_bIsWeapon.Length ()) ? 0 : m_bIsWeapon [Id ()]; }
-		inline ubyte IsEnergyWeapon (void) { return ((Type () != OBJ_WEAPON) || Id () >= m_bIsEnergyWeapon.Length ()) ? 0 : m_bIsEnergyWeapon [Id ()]; }
-		inline ubyte IsSlowWeapon (void) { return ((Type () != OBJ_WEAPON) || Id () >= m_bIsSlowWeapon.Length ()) ? 0 : m_bIsSlowWeapon [Id ()]; }
-		inline ubyte IsFastWeapon (void) { return ((Type () != OBJ_WEAPON) || Id () >= m_bIsSlowWeapon.Length ()) ? 0 : !m_bIsSlowWeapon [Id ()]; }
-		inline ubyte IsMissile (void) { return ((Type () != OBJ_WEAPON) || Id () >= m_bIsMissile.Length ()) ? 0 : m_bIsMissile [Id ()]; }
-		inline ubyte IsEquipment (void) { return ((Type () != OBJ_WEAPON) || Id () >= m_bIsEquipment.Length ()) ? 0 : m_bIsEquipment [Id ()]; }
-
-		static bool IsPlayerMine (short nId);
-		static bool IsRobotMine (short nId);
-		static bool IsMine (short nId);
-		bool IsPlayerMine (void);
-		bool IsRobotMine (void);
-		bool IsMine (void);
-		bool IsGatlingGun (void);
+		inline bool IsWeapon (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsWeapon (Id ()); }
+		inline bool IsEnergyWeapon (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsEnergyWeapon (Id ()); }
+		inline bool HasLightTrail (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && HasLightTrail (Id ()); }
+		inline bool IsMissile (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsMissile (Id ()); }
+		inline bool IsEquipment (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsEquipment (Id ()); }
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);

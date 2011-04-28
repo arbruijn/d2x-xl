@@ -162,18 +162,16 @@ if (xMaxDamage <= 0)
 FORALL_OBJS (objP, i) {
 	nType = objP->info.nType;
 	id = objP->info.nId;
-	//	Weapons used to be affected by xBadAss explosions, but this introduces serious problems.
-	//	When a smart bomb blows up, if one of its children goes right towards a nearby CWall, it will
+	//	Weapons used to be affected by badass explosions, but this introduces serious problems.
+	//	When a smart bomb blows up, if one of its children goes right towards a nearby wall, it will
 	//	blow up, blowing up all the children.  So I remove it.  MK, 09/11/94
 	if (objP == parentP)
 		continue;
 	if (objP->info.nFlags & OF_SHOULD_BE_DEAD)
 		continue;
-	if (nType == OBJ_WEAPON) {
-		if (!objP->IsMine ())
+	if (!objP->IsMine ())
 		continue;
-		}
-	else if (nType == OBJ_ROBOT) {
+	if (nType == OBJ_ROBOT) {
 		if (nParent < 0)
 			continue;
 		if ((OBJECTS [nParent].info.nType == OBJ_ROBOT) && (OBJECTS [nParent].info.nId == id))
@@ -190,7 +188,7 @@ FORALL_OBJS (objP, i) {
 	damage = xMaxDamage - FixMulDiv (dist, xMaxDamage, xMaxDistance);
 	force = xMaxForce - FixMulDiv (dist, xMaxForce, xMaxDistance);
 	// Find the force vector on the CObject
-	CFixVector::NormalizedDir(vForce, objP->info.position.vPos, explObjP->info.position.vPos);
+	CFixVector::NormalizedDir (vForce, objP->info.position.vPos, explObjP->info.position.vPos);
 	vForce *= force;
 	// Find where the point of impact is... (vHit)
 	vHit = explObjP->info.position.vPos - objP->info.position.vPos;
@@ -323,7 +321,7 @@ CObject* CObject::ExplodeBadassWeapon (CFixVector& vPos)
 Assert (wi->xDamageRadius);
 if ((info.nId == EARTHSHAKER_ID) || (info.nId == ROBOT_EARTHSHAKER_ID))
 	ShakerRockStuff ();
-audio.CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
+audio.CreateObjectSound (IsBadassWeapon () ? SOUND_BADASS_EXPLOSION : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 CFixVector v;
 if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall
 	v = info.vLastPos - info.position.vPos;
