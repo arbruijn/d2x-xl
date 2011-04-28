@@ -1029,6 +1029,7 @@ class CObject : public CObjectInfo {
 		bool IsPlayerMine (void);
 		bool IsRobotMine (void);
 		bool IsMine (void);
+		bool IsGatlingGun (void);
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);

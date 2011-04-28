@@ -216,6 +216,8 @@ if (nType == OBJ_WEAPON) {
 		nType = nType;
 	if (CObject::IsMissile ((int) nId))
 		nType = nType;
+	else
+		nType = nType;
 	}
 else if (nType == OBJ_ROBOT) {
 #if 0

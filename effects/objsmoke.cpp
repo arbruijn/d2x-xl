@@ -786,7 +786,7 @@ void DoParticleTrail (CObject *objP)
 {
 #if PARTICLE_TRAIL
 	int			nParts, nObject, nSmoke, id = objP->info.nId, 
-					bGatling = (id == VULCAN_ID) || (id == GAUSS_ID) || (id == ROBOT_VULCAN_ID) || (id == ROBOT_GAUSS_ID),
+					bGatling = objP->IsGatlingGun (),
 					bOmega = (id == OMEGA_ID);
 	float			nScale;
 	CFixVector	pos;
@@ -874,7 +874,7 @@ else if (t == OBJ_REACTOR)
 else if (t == OBJ_WEAPON) {
 	if (objP->IsMissile ())
 		DoMissileSmoke (objP);
-	else if ((nId == VULCAN_ID) || (nId == GAUSS_ID) || (nId == ROBOT_VULCAN_ID) || (nId == ROBOT_GAUSS_ID))
+	else if (objP->IsGatlingGun ())
 		DoParticleTrail (objP);
 	else if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (nId == PROXMINE_ID))
 		DoBombSmoke (objP);

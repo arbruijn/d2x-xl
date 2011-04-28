@@ -199,7 +199,7 @@ if (!objP->IsWeapon ())
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 
-bGatling = (objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID);
+bGatling = objP->IsGatlingGun ();
 if (objP->info.renderType == RT_POLYOBJ)
 	colorP = gameData.weapons.color + objP->info.nId;
 else {

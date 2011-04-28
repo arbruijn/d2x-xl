@@ -1711,6 +1711,13 @@ return IsWeapon () && IsPlayerMine (Id ());
 
 //------------------------------------------------------------------------------
 
+bool CObject::IsGatlingGun (void) 
+{ 
+return IsWeapon () && ((Id () == VULCAN_ID) || (Id () == GAUSS_ID) || (Id () == ROBOT_VULCAN_ID) || (Id () == ROBOT_GAUSS_ID));
+}
+
+//------------------------------------------------------------------------------
+
 bool CObject::IsRobotMine (short nId) 
 { 
 return (nId == ROBOT_SMARTMINE_ID); 

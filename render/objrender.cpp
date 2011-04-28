@@ -876,9 +876,9 @@ else {
 				RenderLightTrail (objP);
 			}
 		else {
-			if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID)) {
+			if (objP->IsGatlingGun ()) {
 				if (SHOW_OBJ_FX && extraGameInfo [0].bTracers) {
-					RenderLightTrail (objP);
+					//RenderLightTrail (objP);
 					gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (3) / 2);
 					CFixVector vSavedPos = objP->info.position.vPos;
 					objP->info.position.vPos += objP->info.position.mOrient.m.dir.f;
@@ -943,7 +943,8 @@ return 1;
 static int RenderPolyModel (CObject* objP, int bSpectate)
 {
 DrawPolygonObject (objP, 0);
-//DrawDebrisCorona (objP);
+if (!(SHOW_SMOKE && gameOpts->render.particles.bDebris)) 
+	DrawDebrisCorona (objP);
 if (markerManager.IsSpawnObject (objP))
 	RenderMslLockIndicator (objP);
 return 1;
