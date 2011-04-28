@@ -209,16 +209,9 @@ else {
 			gameOpts->render.stereo.nGlasses = 0;
 		}	
 	else {
-#if 0
-		gameStates.render.bRenderIndirect = (ogl.m_features.bRenderToTexture > 0); 
-		if (gameStates.render.bRenderIndirect > 0) 
-			SelectDrawBuffer (m_data.xStereoSeparation > 0);
-		else
-			SetDrawBuffer (GL_BACK, 0);
-#else
 		gameStates.render.bRenderIndirect = 
 #if 1
-			(m_features.bRenderToTexture > 0); 
+			(m_features.bRenderToTexture > 0) && !gameStates.app.bNostalgia; 
 #else
 			(postProcessManager.Effects () != NULL) 
 			|| (m_data.xStereoSeparation && (i > 0)) 
@@ -228,7 +221,6 @@ else {
 			SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
 		else
 			SetDrawBuffer (GL_BACK, 0);
-#endif
 		}
 	}
 }
