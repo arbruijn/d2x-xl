@@ -260,6 +260,10 @@ for (i = 0; i < nSounds; i++) {
 		nLoadedSounds [0]++;
 		}
 	memcpy (soundP->szName, szSoundName, sizeof (soundP->szName));
+#if DBG
+	if (strstr (soundP->szName, "dexp"))
+		soundP = soundP;
+#endif
 	soundP->bCustom = 0;
 	if (!bCustom)
 		PiggyRegisterSound (szSoundName, 1, bCustom);
