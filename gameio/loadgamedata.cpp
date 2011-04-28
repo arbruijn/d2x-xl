@@ -234,6 +234,7 @@ gameData.bots.defaultJoints = gameData.bots.joints;
 gameData.weapons.nTypes [0] = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d weapon descriptions\n", gameData.weapons.nTypes [0]);
 ReadWeaponInfos (0, gameData.weapons.nTypes [0], cf, gameData.pig.tex.nHamFileVersion);
+gameData.weapons.info [48].light = I2X (1); // fix light for BPer shots and smart missile blobs - don't make them too bright though
 BMSetAfterburnerSizes ();
 
 gameData.objs.pwrUp.nTypes = cf.ReadInt ();

@@ -1557,14 +1557,10 @@ if (FAST_SHADOWS) {
 					if (gameData.render.shadows.lightP->info.nObject >= 0) {
 						lightObjP = &OBJECTS [gameData.render.shadows.lightP->info.nObject];
 						int nType = lightObjP->Type ();
-						if (nShadowQuality) {
-							if ((nType != OBJ_FIREBALL) && (nType != OBJ_FLARE) && (nType != OBJ_LIGHT) && !lightObjP->IsEnergyWeapon ())
-								continue;
-							}
-						else {
-							if ((nType != OBJ_FLARE) && (nType != OBJ_LIGHT) && !lightObjP->IsEnergyWeapon ())
-								continue;
-							} 
+						if ((nType != OBJ_FIREBALL) && (nType != OBJ_FLARE) && (nType != OBJ_LIGHT) && !lightObjP->IsEnergyWeapon ())
+							continue;
+						if (!nShadowQuality && (nType == OBJ_FIREBALL) && !lightObjP->IsEnergyWeapon ())
+							continue;
 						}
 					}
 				else if (!nShadowQuality)

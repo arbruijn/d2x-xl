@@ -1068,17 +1068,17 @@ else {
 		//	Changed by mk, 10/24/95, claw guys should not slow down when attacking!
 		if (!(ROBOTINFO (info.nId).thief || ROBOTINFO (info.nId).attackType)) {
 			if (cType.aiInfo.SKIP_AI_COUNT * gameData.physics.xTime < I2X (3)/4) {
-				fix	tval = FixDiv (I2X (1), 8 * gameData.physics.xTime);
-				int	addval = X2I (tval);
-				if ((d_rand () * 2) < (tval & 0xffff))
-					addval++;
-				cType.aiInfo.SKIP_AI_COUNT += addval;
+				fix	xTime = FixDiv (I2X (1), 8 * gameData.physics.xTime);
+				int	nTime = X2I (xTime);
+				if ((d_rand () * 2) < (xTime & 0xffff))
+					nTime++;
+				cType.aiInfo.SKIP_AI_COUNT += nTime;
 				}
 			}
 		}
 	else {
-		if (xRate < I2X (1)/2)
-			xRate = I2X (1)/2;
+		if (xRate < I2X (1) / 2)
+			xRate = I2X (1) / 2;
 		}
 	}
 //	Turn amount inversely proportional to mass.  Third parameter is seconds to do 360 turn.

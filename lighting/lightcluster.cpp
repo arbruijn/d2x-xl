@@ -172,6 +172,10 @@ if (nLightObj >= 0) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+// The purpose of this function is to combine nearby shots coming from the same robot.
+// If there is already a shot listed for the object, the function checks whether the new shot is close enough.
+// If the function can combine two or more shots, it will create a dedicated light object for them. This light 
+// object receives the signature of the first shot assigned to it for future reference.
 
 void CLightClusterManager::AddForAI (CObject *objP, short nObject, short nShot)
 {

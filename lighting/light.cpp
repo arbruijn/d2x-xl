@@ -407,9 +407,9 @@ fix	objLightXlat [16] =
 
 fix ComputeLightIntensity (int nObject, tRgbaColorf *colorP, char *pbGotColor)
 {
-	CObject		*objP = OBJECTS + nObject;
-	int			nObjType = objP->info.nType;
-   fix			hoardlight, s;
+	CObject*	objP = OBJECTS + nObject;
+	int		nObjType = objP->info.nType;
+   fix		s;
 	static tRgbaColorf powerupColors [9] = {
 	 {0,1,0,1},{1,0.8f,0,1},{0,0,1,1},{1,1,1,1},{0,0,1,1},{1,0,0,1},{1,0.8f,0,1},{0,1,0,1},{1,0.8f,0,1}
 	};
@@ -430,19 +430,18 @@ switch (nObjType) {
 
 		// If hoard game and CPlayerData, add extra light based on how many orbs you have
 		// Pulse as well.
-		  	hoardlight = I2X (gameData.multiplayer.players [objP->info.nId].secondaryAmmo [PROXMINE_INDEX])/2; //I2X (12);
-			hoardlight++;
+		  	fix xLight = I2X (gameData.multiplayer.players [objP->info.nId].secondaryAmmo [PROXMINE_INDEX]) / 2 + 1; //I2X (12);
 		   FixSinCos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
-			s+=I2X (1);
-			s>>=1;
-			hoardlight = FixMul (s,hoardlight);
-		   return (hoardlight);
+			s += I2X (1);
+			s >>= 1;
+			xLight = FixMul (s,xLight);
+		   return (xLight);
 		  }
 		else if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
-			return max (gameData.physics.playerThrust.Mag()/4, I2X (2)) + I2X (1)/2;
+			return max (gameData.physics.playerThrust.Mag () / 4, I2X (2)) + I2X (1) / 2;
 			}
 		else {
-			return max (objP->mType.physInfo.thrust.Mag()/4, I2X (2)) + I2X (1)/2;
+			return max (objP->mType.physInfo.thrust.Mag () / 4, I2X (2)) + I2X (1) / 2;
 			}
 		break;
 
@@ -522,7 +521,7 @@ switch (nObjType) {
 		break;
 
 	case OBJ_WEAPON: {
-		fix tval = gameData.weapons.info [objP->info.nId].light;
+		fix xLight = gameData.weapons.info [objP->info.nId].light;
 		if (objP->IsMissile ())
 			*colorP = missileColor;
 		else if (gameOpts->render.color.nLevel)
@@ -533,23 +532,23 @@ switch (nObjType) {
 				if (d_rand () > 8192)
 					return 0;		//	3/4 of time, omega blobs will cast 0 light!
 		if (objP->info.nId == FLARE_ID) {
-			return 2 * (min (tval, objP->info.xLifeLeft) + ((gameData.time.xGame ^ objLightXlat [nObject & 0x0f]) & 0x3fff));
+			return 2 * (min (xLight, objP->info.xLifeLeft) + ((gameData.time.xGame ^ objLightXlat [nObject & 0x0f]) & 0x3fff));
 			}
 		else
-			return tval;
+			return xLight;
 		}
 
 	case OBJ_MARKER: {
-		fix	lightval = objP->info.xLifeLeft;
-		lightval &= 0xffff;
-		lightval = 8 * abs (I2X (1)/2 - lightval);
+		fix xLight = objP->info.xLifeLeft;
+		xLight &= 0xffff;
+		xLight = 8 * abs (I2X (1)/2 - xLight);
 		if (objP->info.xLifeLeft < I2X (1000))
 			objP->info.xLifeLeft += I2X (1);	//	Make sure this CObject doesn't go out.
 		colorP->red = 0.1f;
 		colorP->green = 1.0f;
 		colorP->blue = 0.1f;
 		*pbGotColor = 1;
-		return lightval;
+		return xLight;
 		}
 
 	case OBJ_POWERUP:
