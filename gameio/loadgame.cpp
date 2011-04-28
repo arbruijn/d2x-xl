@@ -1215,6 +1215,8 @@ else
 // NOTE LINK TO ABOVE!!!
 gameStates.app.bGameRunning = 0;
 backgroundManager.SetShadow (false);
+gameStates.render.bRenderIndirect = -1;
+ogl.ChooseDrawBuffer ();
 m.Menu (NULL, szTitle, NULL, NULL, BackgroundName (BG_STARS));
 backgroundManager.SetShadow (true);
 }
