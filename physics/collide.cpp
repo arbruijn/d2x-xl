@@ -759,7 +759,7 @@ if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 	//for most weapons, use volatile CWall hit.  For mega, use its special tVideoClip
 	tVideoClip = (info.nId == MEGAMSL_ID) ? weaponInfoP->nRobotHitVClip : VCLIP_VOLATILE_WALL_HIT;
 	//	New by MK: If powerful badass, explode as badass, not due to lava, fixes megas being wimpy in lava.
-	if (weaponInfoP->xDamageRadius >= VOLATILE_WALL_DAMAGE_RADIUS/2)
+	if (weaponInfoP->xDamageRadius >= VOLATILE_WALL_DAMAGE_RADIUS / 2)
 		ExplodeBadassWeapon (vHitPt);
 	else
 		CreateBadassExplosion (this, nHitSeg, vHitPt, weaponInfoP->xImpactSize + VOLATILE_WALL_IMPACT_SIZE, tVideoClip,
@@ -774,7 +774,7 @@ else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
 	if (weaponInfoP->matter) {
 		audio.CreateSegmentSound (SOUNDMSL_HIT_WATER, nHitSeg, 0, vHitPt);
 		if (weaponInfoP->xDamageRadius) {
-			audio.CreateObjectSound (SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
+			audio.CreateObjectSound (IsBadassWeapon () ? SOUND_BADASS_EXPLOSION : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 			//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
 			CreateBadassExplosion (this, nHitSeg, vHitPt, weaponInfoP->xImpactSize/2, weaponInfoP->nRobotHitVClip,
 										  nStrength / 4, weaponInfoP->xDamageRadius, nStrength / 2, cType.laserInfo.parent.nObject);

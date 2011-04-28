@@ -1674,7 +1674,7 @@ return IsWeapon () && ((m_weaponInfo [Id ()] & OBJ_IS_GATLING_ROUND) != 0);
 
 bool CObject::IsBadassWeapon (void) 
 { 
-return IsWeapon () && ((m_weaponInfo [Id ()] & OBJ_IS_BADASS_WEAPON) != 0);
+return ((m_weaponInfo [Id ()] & OBJ_IS_BADASS_WEAPON) != 0);
 }
 
 //------------------------------------------------------------------------------
