@@ -176,8 +176,8 @@ typedef struct tParticle {
 
 class CParticle : public tParticle {
 	public:
-		static CFloatVector CParticle::vRot [PARTICLE_POSITIONS];
-		static CFixMatrix CParticle::mRot [2][PARTICLE_POSITIONS];
+		static CFloatVector vRot [PARTICLE_POSITIONS];
+		static CFixMatrix mRot [2][PARTICLE_POSITIONS];
 
 		static void InitRotation (void);
 		static void SetupRotation (void);
