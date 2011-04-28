@@ -334,7 +334,7 @@ if (rval) {
 	gameData.bosses.Remove (i);
 	if (ROBOTINFO (objP->info.nId).bEndsLevel)
 		DoReactorDestroyedStuff (NULL);
-	audio.CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (4), I2X (512));
+	audio.CreateObjectSound (SOUND_BADASS_EXPLOSION_ACTOR, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (4), I2X (512));
 	objP->Explode (I2X (1)/4);
 	}
 }

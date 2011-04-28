@@ -344,10 +344,6 @@ int CAudio::CreateObjectSound (
 	CSoundObject*	soundObjP;
 	short				nSound = 0;
 
-#if DBG
-if (nOrgSound == SOUND_BADASS_EXPLOSION)
-	nOrgSound = nOrgSound;
-#endif
 if (maxVolume < 0)
 	return -1;
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
