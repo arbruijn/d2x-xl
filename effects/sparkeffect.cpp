@@ -71,9 +71,7 @@ else {
 			m_vDir.v.coord.y = (I2X (1) / 4) - d_rand ();
 			m_vDir.v.coord.z = (I2X (1) / 4) - d_rand ();
 			CFixVector::Normalize (m_vDir);
-#if !DBG
-			m_vDir *= ((I2X (1) / (16 + d_rand () % 16)));
-#endif
+			m_vDir *= ((I2X (1) / (8 + d_rand () % 8)));
 			}
 		else
 			m_vDir.SetZero ();
