@@ -144,6 +144,8 @@ botInfoP = &ROBOTINFO (objP->info.nId);
 nWeaponType = botInfoP->nWeaponType;
 if ((nGuns == 0) && (botInfoP->nSecWeaponType != -1))
 	nWeaponType = botInfoP->nSecWeaponType;
+if (nWeaponType < 0)
+	return 0;
 wiP = gameData.weapons.info + nWeaponType;
 xMaxWeaponSpeed = wiP->speed [gameStates.app.nDifficultyLevel];
 if (xMaxWeaponSpeed < I2X (1))
