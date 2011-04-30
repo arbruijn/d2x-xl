@@ -158,7 +158,7 @@ if ((parentP && (nVClip == VCLIP_POWERUP_DISAPPEARANCE)) || (nVClip == VCLIP_MOR
 
 if (xMaxDamage <= 0)
 	return explObjP;
-// -- now legal for xBadAss explosions on a CWall. Assert (this != NULL);
+// -- now legal for xBadass explosions on a CWall. Assert (this != NULL);
 FORALL_OBJS (objP, i) {
 	nType = objP->info.nType;
 	id = objP->info.nId;
@@ -169,12 +169,14 @@ FORALL_OBJS (objP, i) {
 		continue;
 	if (objP->info.nFlags & OF_SHOULD_BE_DEAD)
 		continue;
-	if (!objP->IsMine ())
-		continue;
-	if (nType == OBJ_ROBOT) {
+	if (nType == OBJ_WEAPON) {
+		if (!objP->IsMine ())
+			continue;
+		}
+	else if (nType == OBJ_ROBOT) {
 		if (nParent < 0)
 			continue;
-		if ((OBJECTS [nParent].info.nType == OBJ_ROBOT) && (OBJECTS [nParent].info.nId == id))
+		if ((OBJECTS [nParent].info.nType == OBJ_ROBOT) && (OBJECTS [nParent].Id () == id))
 			continue;
 		}
 	else if ((nType != OBJ_REACTOR) && (nType != OBJ_PLAYER))
@@ -220,9 +222,13 @@ FORALL_OBJS (objP, i) {
 				objP->mType.physInfo.flags |= PF_USES_THRUST;
 				}
 			}
+#if 1
+		vNegForce = vForce * xScale;
+#else
 		vNegForce.v.coord.x = vForce.v.coord.x * xScale;
 		vNegForce.v.coord.y = vForce.v.coord.y * xScale;
 		vNegForce.v.coord.z = vForce.v.coord.z * xScale;
+#endif
 		objP->ApplyRotForce (vNegForce);
 		if (objP->info.xShield >= 0) {
 			if (ROBOTINFO (objP->info.nId).bossFlag &&
@@ -269,10 +275,11 @@ FORALL_OBJS (objP, i) {
 		vRotForce = vForce;
 		if (nParent > -1) {
 			killerP = OBJECTS + nParent;
-			if (killerP != gameData.objs.consoleP)		// if someone else whacks you, cut force by 2x
+			if (killerP != gameData.objs.consoleP)	{	// if someone else whacks you, cut force by 2x
 				vRotForce.v.coord.x /= 2;
 				vRotForce.v.coord.y /= 2;
 				vRotForce.v.coord.z /= 2;
+				}
 			}
 		vRotForce.v.coord.x /= 2;
 		vRotForce.v.coord.y /= 2;
@@ -298,12 +305,7 @@ if (explObjP) {
 	if (!objP ||
 		 ((objP->info.nType == OBJ_PLAYER) && !SPECTATOR (objP)) || 
 		 (objP->info.nType == OBJ_ROBOT) || 
-		 ((objP->info.nType == OBJ_WEAPON) && 
-		  ((objP->info.nId == MEGAMSL_ID) || 
-		   (objP->info.nId == EARTHSHAKER_ID) || 
-			(objP->info.nId == EARTHSHAKER_MEGA_ID) || 
-			(objP->info.nId == ROBOT_EARTHSHAKER_ID) || 
-			(objP->info.nId == ROBOT_SHAKER_MEGA_ID))))
+		 objP->IsBadassWeapon ())
 		postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, explObjP->info.xSize, 1, explObjP->Position ()));
 	if (objP && (objP->info.nType == OBJ_WEAPON))
 		CreateSmartChildren (objP, NUM_SMART_CHILDREN);
@@ -312,7 +314,7 @@ return explObjP;
 }
 
 //------------------------------------------------------------------------------
-//blows up a xBadAss weapon, creating the xBadAss explosion
+//blows up a xBadass weapon, creating the xBadass explosion
 //return the explosion CObject
 CObject* CObject::ExplodeBadassWeapon (CFixVector& vPos)
 {
@@ -350,7 +352,7 @@ return explObjP;
 }
 
 //------------------------------------------------------------------------------
-//blows up the CPlayerData with a xBadAss explosion
+//blows up the CPlayerData with a xBadass explosion
 //return the explosion CObject
 CObject* CObject::ExplodeBadassPlayer (void)
 {
@@ -640,7 +642,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 	CObject		*explObjP, *delObjP;
 	ubyte			nVClip;
 	CFixVector*	vSpawnPos;
-	fix			xBadAss;
+	fix			xBadass;
 
 	if ((cType.explInfo.nDeleteObj < 0) ||
 		 (cType.explInfo.nDeleteObj > gameData.objs.nLastObject [0])) {
@@ -651,7 +653,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 		return;
 		}
 	delObjP = OBJECTS + cType.explInfo.nDeleteObj;
-	xBadAss = (fix) ROBOTINFO (delObjP->info.nId).badass;
+	xBadass = (fix) ROBOTINFO (delObjP->info.nId).badass;
 	vSpawnPos = &delObjP->info.position.vPos;
 	nType = delObjP->info.nType;
 	if (((nType != OBJ_ROBOT) && (nType != OBJ_CLUTTER) && (nType != OBJ_REACTOR) && (nType != OBJ_PLAYER)) ||
@@ -660,9 +662,9 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 		return;
 		}
 	nVClip = (ubyte) GetExplosionVClip (delObjP, 1);
-	if ((delObjP->info.nType == OBJ_ROBOT) && xBadAss)
+	if ((delObjP->info.nType == OBJ_ROBOT) && xBadass)
 		explObjP = CreateBadassExplosion (NULL, delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE),
-													 nVClip, I2X (xBadAss), I2X (4) * xBadAss, I2X (35) * xBadAss, -1);
+													 nVClip, I2X (xBadass), I2X (4) * xBadass, I2X (35) * xBadass, -1);
 	else
 		explObjP = /*Object*/CreateExplosion (delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);
 	if (!IsMultiGame) { // Multiplayer handled outside of this code!!

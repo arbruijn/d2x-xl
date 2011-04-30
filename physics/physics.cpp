@@ -485,8 +485,12 @@ if (mType.physInfo.velocity.IsZero ()) {
 	}
 
 #if DBG
-if (Index () == nDbgObj)
+if (Index () == nDbgObj) {
 	nDbgObj = nDbgObj;
+	if (!mType.physInfo.velocity.IsZero ())
+		nDbgObj = nDbgObj;
+	HUDMessage (0, "%1.2f", X2F (mType.physInfo.velocity.Mag ()));
+	}
 #endif
 
 //Assert (mType.physInfo.brakes == 0);		//brakes not used anymore?
@@ -944,6 +948,13 @@ if ((info.nSegment >= 0) && SEGMENTS [info.nSegment].Masks (info.position.vPos, 
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
 CATCH_OBJ (this, mType.physInfo.velocity.v.coord.y == 0);
+#if DBG
+if (Index () == nDbgObj) {
+	nDbgObj = nDbgObj;
+	HUDMessage (0, "%1.2f", X2F (mType.physInfo.velocity.Mag ()));
+	}
+#endif
+
 #if UNSTICK_OBJS
 UnstickObject (this);
 #endif
@@ -975,6 +986,12 @@ if (!gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted || (this != gameData.obj
 	mType.physInfo.velocity += vForce;
 #else
 	mType.physInfo.velocity += (vForce * FixDiv (I2X (1), mType.physInfo.mass));
+#	if DBG
+if (Index () == nDbgObj) {
+	fix xMag = mType.physInfo.velocity.Mag ();
+	nDbgObj = nDbgObj;
+	}
+#	endif
 #endif
 	}
 }
