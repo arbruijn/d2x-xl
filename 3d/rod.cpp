@@ -103,7 +103,7 @@ return G3DrawPoly (4, rodPointList);
 //------------------------------------------------------------------------------
 //draw a bitmap CObject that is always facing you
 //returns 1 if off screen, 0 if drew
-int G3DrawRodTexPoly (CBitmap *bmP, g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList)
+int G3DrawRodTexPoly (CBitmap *bmP, g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList, int bAdditive)
 {
 if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;
@@ -113,7 +113,7 @@ uvlList [0].l =
 uvlList [1].l =
 uvlList [2].l =
 uvlList [3].l = light;
-return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1, -1);
+return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1, bAdditive, -1);
 }
 
 //------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ G3TransformAndEncodePoint (&pTop, vTop);
 G3TransformAndEncodePoint (&pBottom, vBottom);
 fix light = bLit ? ComputeObjectLight (objP, &pTop.p3_vec) : I2X (1);
 if (!gameStates.render.bPerPixelLighting)
-	G3DrawRodTexPoly (bmP, &pBottom, objP->info.xSize, &pTop, objP->info.xSize, light, NULL);
+	G3DrawRodTexPoly (bmP, &pBottom, objP->info.xSize, &pTop, objP->info.xSize, light, NULL, objP->info.nType == OBJ_FIREBALL);
 else {
 	if (CalcRodCorners (&pBottom, objP->info.xSize, &pTop, objP->info.xSize))
 		return;

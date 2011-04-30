@@ -433,6 +433,7 @@ int G3DrawTexPolyFlat (
 	CFixVector*	pvNormal,
 	int			orient,
 	int			bBlend,
+	int			bAdditive,
 	short			nSegment)
 {
 	int			i;
@@ -493,6 +494,7 @@ int G3DrawTexPolyMulti (
 	CFixVector*	pvNormal,
 	int			orient,
 	int			bBlend,
+	int			bAdditive,
 	short			nSegment)
 {
 	int			i, nShader, nFrame;
@@ -646,7 +648,7 @@ if (bDepthSort) {
 			SetTMapColor (uvlList + i, i, bmBot, !bOverlay, &vertColors [i].color);
 		}
 	bmBot->SetupTexture (1, 0);
-	transparencyRenderer.AddPoly (NULL, NULL, bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
+	transparencyRenderer.AddPoly (NULL, NULL, bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, bAdditive, nSegment);
 	return 0;
 	}
 
@@ -845,7 +847,7 @@ if (bmTop && (bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
 else
 	nFrame = -1;
 if (!lightmap) //lightmapping enabled
-	return G3DrawTexPolyMulti (nVertices, pointList, uvlList, uvlLMap, bmBot, bmTop, lightmap, pvNormal, orient, bBlend, nSegment);
+	return G3DrawTexPolyMulti (nVertices, pointList, uvlList, uvlLMap, bmBot, bmTop, lightmap, pvNormal, orient, bBlend, 0, nSegment);
 // chose shaders depending on whether overlay bitmap present or not
 if ((bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge)) {
 	lmProg = lmShaderProgs [(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0];

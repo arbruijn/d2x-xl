@@ -67,7 +67,7 @@ gameData.render.terrain.uvlList [0][2].v = (j) * (I2X (1) / 4);
 gameData.render.terrain.uvlList [0][1].v = (j + 1) * (I2X (1) / 4);
 gameData.render.terrain.uvlList [0][2].u = (i + 1) * (I2X (1) / 4);
 #if DBG
-G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [0], gameData.render.terrain.bmP, NULL, 1, -1);
+G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [0], gameData.render.terrain.bmP, NULL, 1, 0, -1);
 #else
 G3CheckAndDrawTMap (3, pointList, gameData.render.terrain.uvlList [0], gameData.render.terrain.bmP, NULL, NULL);
 #endif
@@ -94,7 +94,7 @@ gameData.render.terrain.uvlList [1][1].v = (j + 1) * (I2X (1) / 4);
 gameData.render.terrain.uvlList [1][2].v = (j) * (I2X (1) / 4);
 
 #if DBG
-G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [1], gameData.render.terrain.bmP, NULL, 1, -1);
+G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [1], gameData.render.terrain.bmP, NULL, 1, 0, -1);
 #else
 G3CheckAndDrawTMap (3, pointList, gameData.render.terrain.uvlList [1], gameData.render.terrain.bmP, NULL, NULL);
 #endif

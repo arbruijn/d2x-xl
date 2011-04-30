@@ -28,6 +28,7 @@ int G3DrawTexPolyMulti (
 	CFixVector	*pvNormal,
 	int			orient, 
 	int			bBlend,
+	int			bAdditive,
 	short			nSegment);
 
 int G3DrawTexPolyLightmap (
@@ -54,6 +55,7 @@ int G3DrawTexPolyFlat (
 	CFixVector	*pvNormal,
 	int			orient, 
 	int			bBlend,
+	int			bAdditive,
 	short			nSegment);
 
 int G3DrawTexPolySimple (
@@ -78,7 +80,7 @@ void InitGrayScaleShader (void);
 
 //------------------------------------------------------------------------------
 
-typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, CBitmap *, CBitmap *, tLightmap *, CFixVector *, int, int, short);
+typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, CBitmap *, CBitmap *, tLightmap *, CFixVector *, int, int, int, short);
 
 extern tTexPolyMultiDrawer	*fpDrawTexPolyMulti;
 
@@ -89,9 +91,9 @@ extern GLhandleARB	activeShaderProg;
 //------------------------------------------------------------------------------
 
 static inline int G3DrawTexPoly (int nVerts, g3sPoint **pointList, tUVL *uvlList,
-											CBitmap *bmP, CFixVector *pvNormal, int bBlend, short nSegment)
+											CBitmap *bmP, CFixVector *pvNormal, int bBlend, int bAdditive, short nSegment)
 {
-return fpDrawTexPolyMulti (nVerts, pointList, uvlList, NULL, bmP, NULL, NULL, pvNormal, 0, bBlend, nSegment);
+return fpDrawTexPolyMulti (nVerts, pointList, uvlList, NULL, bmP, NULL, NULL, pvNormal, 0, bBlend, bAdditive, nSegment);
 }
 
 //------------------------------------------------------------------------------

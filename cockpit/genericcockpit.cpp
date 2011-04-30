@@ -1109,7 +1109,7 @@ CCanvas::Pop ();
 
 saved_interp_method = gameStates.render.nInterpolationMethod;
 gameStates.render.nInterpolationMethod	= 3;		// The best, albiet slowest.
-G3DrawTexPoly (4, pointList, tUVL, reticleCanvas, NULL, 1, -1);
+G3DrawTexPoly (4, pointList, tUVL, reticleCanvas, NULL, 1, 0, -1);
 gameStates.render.nInterpolationMethod	= saved_interp_method;
 }
 

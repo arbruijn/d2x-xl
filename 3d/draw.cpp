@@ -75,7 +75,7 @@ int G3CheckAndDrawTMap (
 	int nv, g3sPoint **pointlist, tUVL *uvl_list, CBitmap *bm, CFixVector *norm, CFixVector *pnt)
 {
 if (DoFacingCheck (norm, pointlist, pnt))
-	return !G3DrawTexPoly (nv, pointlist, uvl_list, bm, norm, 1, -1);
+	return !G3DrawTexPoly (nv, pointlist, uvl_list, bm, norm, 1, 0, -1);
 else
 	return 0;
 }

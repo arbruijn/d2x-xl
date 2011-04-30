@@ -207,7 +207,7 @@ int G3DrawRodPoly (g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top
 
 //draw a bitmap CObject that is always facing you
 //returns 1 if off screen, 0 if drew
-int G3DrawRodTexPoly (CBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width,fix light, tUVL *uvlList);
+int G3DrawRodTexPoly (CBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width,fix light, tUVL *uvlList, int bAdditive = 0);
 
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults
