@@ -230,7 +230,7 @@ targets.Reset ();
 maxTrackableDist = MAX_TRACKABLE_DIST;
 if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == EARTHSHAKER_MEGA_ID)) {
 	maxTrackableDist *= 2;
-	xBestDot = -I2X (1);
+	xBestDot = 0; //-I2X (1);
 	}
 else
 	xBestDot = MIN_TRACKABLE_DOT;
@@ -289,15 +289,16 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 	CFixVector::Normalize (vecToCurObj);
 	dot = CFixVector::Dot (vecToCurObj, trackerP->info.position.mOrient.m.dir.f);
 	if (bIsProximity)
-		dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...
+		dot = 9 * dot / 8;		//	I suspect Watcom would be too stupid to figure out the obvious...
 	if (dot < xBestDot)
 		continue;
 #if 1
+#	if 1
 	targets.Push (CTarget (dot, curObjP));
-#else
+#	else
 	targets.Push (CTarget (fix (dist * (1.0f - X2F (dot) / 2.0f)), curObjP));
-#endif
-#if 0
+#	endif
+#else
 	//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 	//	to determine if an CObject is initially trackable.  FindHomingObject is called on subsequent
 	//	frames to determine if the CObject remains trackable.
@@ -308,6 +309,7 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 	nBestObj = OBJ_IDX (curObjP);
 #endif
 	}
+#if 1
 if (targets.ToS () < 1)
 	return -1;
 if (targets.ToS () > 1)
@@ -318,6 +320,9 @@ for (uint i = 0; i < targets.ToS (); i++) {
 		return targets [i].m_objP->Index ();
 	}
 return -1;
+#else
+return nBestObj;
+#endif
 }
 
 //	------------------------------------------------------------------------------------------------------------

@@ -170,8 +170,9 @@ do {
 	fq.nObject = OBJ_IDX (objP1);
 	fq.ignoreObjList = NULL;
 	if (nTries++) {
-		fq.nSegment	= bSpectate ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) :
-						  FindSegByPos (objP1->info.position.vPos, objP1->info.nSegment, 1, 0);
+		fq.nSegment	= bSpectate 
+						  ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) 
+						  : FindSegByPos (objP1->info.position.vPos, objP1->info.nSegment, 1, 0);
 		if (fq.nSegment < 0) {
 			fate = HIT_BAD_P0;
 			return false;
@@ -179,7 +180,7 @@ do {
 		}
 	else
 		fq.nSegment	= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
-	fate = FindHitpoint (&fq, &hitData);
+	fate = gameData.segs.SegVis (fq.nSegment, objP2->Segment ()) ? FindHitpoint (&fq, &hitData) : HIT_WALL;
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));
 return (fate == HIT_NONE) || (fate == HIT_BAD_P0);
