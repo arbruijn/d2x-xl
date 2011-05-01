@@ -158,7 +158,7 @@ if ((parentP && (nVClip == VCLIP_POWERUP_DISAPPEARANCE)) || (nVClip == VCLIP_MOR
 
 if (xMaxDamage <= 0)
 	return explObjP;
-// -- now legal for xBadass explosions on a CWall. Assert (this != NULL);
+// -- now legal for xSplashDamage explosions on a CWall. Assert (this != NULL);
 FORALL_OBJS (objP, i) {
 	nType = objP->info.nType;
 	id = objP->info.nId;
@@ -199,7 +199,7 @@ FORALL_OBJS (objP, i) {
 		objP->ApplyForce (vForce);
 		if (objP->IsMine () && (FixMul (dist, force) > I2X (8000))) {	//prox bombs have chance of blowing up
 			objP->Die ();
-			objP->ExplodeBadassWeapon (objP->info.position.vPos);
+			objP->ExplodeSplashDamageWeapon (objP->info.position.vPos);
 			}
 		}
 	else if (nType == OBJ_ROBOT) {
@@ -297,7 +297,7 @@ return explObjP;
 
 //------------------------------------------------------------------------------
 
-CObject* CreateBadassExplosion (CObject* objP, short nSegment, CFixVector& position, fix size, ubyte nVClip,
+CObject* CreateSplashDamageExplosion (CObject* objP, short nSegment, CFixVector& position, fix size, ubyte nVClip,
 										  fix maxDamage, fix maxDistance, fix maxForce, short parent)
 {
 CObject* explObjP = CreateExplosion (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
@@ -305,7 +305,7 @@ if (explObjP) {
 	if (!objP ||
 		 ((objP->info.nType == OBJ_PLAYER) && !SPECTATOR (objP)) || 
 		 (objP->info.nType == OBJ_ROBOT) || 
-		 objP->IsBadassWeapon ())
+		 objP->IsSplashDamageWeapon ())
 		postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), BLAST_LIFE, explObjP->info.xSize, 1, explObjP->Position ()));
 	if (objP && (objP->info.nType == OBJ_WEAPON))
 		CreateSmartChildren (objP, NUM_SMART_CHILDREN);
@@ -314,16 +314,16 @@ return explObjP;
 }
 
 //------------------------------------------------------------------------------
-//blows up a xBadass weapon, creating the xBadass explosion
+//blows up a xSplashDamage weapon, creating the xSplashDamage explosion
 //return the explosion CObject
-CObject* CObject::ExplodeBadassWeapon (CFixVector& vPos)
+CObject* CObject::ExplodeSplashDamageWeapon (CFixVector& vPos)
 {
 	CWeaponInfo *wi = &gameData.weapons.info [info.nId];
 
 Assert (wi->xDamageRadius);
 if ((info.nId == EARTHSHAKER_ID) || (info.nId == ROBOT_EARTHSHAKER_ID))
 	ShakerRockStuff ();
-audio.CreateObjectSound (IsBadassWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
+audio.CreateObjectSound (IsSplashDamageWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 CFixVector v;
 if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall
 	v = info.vLastPos - info.position.vPos;
@@ -333,7 +333,7 @@ if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is 
 	}
 else
 	v = vPos;
-return CreateBadassExplosion (this, info.nSegment, v, wi->xImpactSize, wi->nRobotHitVClip,
+return CreateSplashDamageExplosion (this, info.nSegment, v, wi->xImpactSize, wi->nRobotHitVClip,
                               wi->strength [gameStates.app.nDifficultyLevel], 
 										wi->xDamageRadius, wi->strength [gameStates.app.nDifficultyLevel],
                               cType.laserInfo.parent.nObject);
@@ -341,10 +341,10 @@ return CreateBadassExplosion (this, info.nSegment, v, wi->xImpactSize, wi->nRobo
 
 //------------------------------------------------------------------------------
 
-CObject* CObject::ExplodeBadass (fix damage, fix distance, fix force)
+CObject* CObject::ExplodeSplashDamage (fix damage, fix distance, fix force)
 {
 
-CObject* explObjP = CreateBadassExplosion (this, info.nSegment, info.position.vPos, info.xSize,
+CObject* explObjP = CreateSplashDamageExplosion (this, info.nSegment, info.position.vPos, info.xSize,
 													    (ubyte) GetExplosionVClip (this, 0), damage, distance, force, OBJ_IDX (this));
 if (explObjP)
 	audio.CreateObjectSound (SOUND_BADASS_EXPLOSION_ACTOR, SOUNDCLASS_EXPLOSION, OBJ_IDX (explObjP));
@@ -352,11 +352,11 @@ return explObjP;
 }
 
 //------------------------------------------------------------------------------
-//blows up the CPlayerData with a xBadass explosion
+//blows up the CPlayerData with a xSplashDamage explosion
 //return the explosion CObject
-CObject* CObject::ExplodeBadassPlayer (void)
+CObject* CObject::ExplodeSplashDamagePlayer (void)
 {
-return ExplodeBadass (I2X (50), I2X (40), I2X (150));
+return ExplodeSplashDamage (I2X (50), I2X (40), I2X (150));
 }
 
 //------------------------------------------------------------------------------
@@ -642,7 +642,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 	CObject		*explObjP, *delObjP;
 	ubyte			nVClip;
 	CFixVector*	vSpawnPos;
-	fix			xBadass;
+	fix			xSplashDamage;
 
 	if ((cType.explInfo.nDeleteObj < 0) ||
 		 (cType.explInfo.nDeleteObj > gameData.objs.nLastObject [0])) {
@@ -653,7 +653,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 		return;
 		}
 	delObjP = OBJECTS + cType.explInfo.nDeleteObj;
-	xBadass = (fix) ROBOTINFO (delObjP->info.nId).badass;
+	xSplashDamage = (fix) ROBOTINFO (delObjP->info.nId).splashDamage;
 	vSpawnPos = &delObjP->info.position.vPos;
 	nType = delObjP->info.nType;
 	if (((nType != OBJ_ROBOT) && (nType != OBJ_CLUTTER) && (nType != OBJ_REACTOR) && (nType != OBJ_PLAYER)) ||
@@ -662,9 +662,9 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 		return;
 		}
 	nVClip = (ubyte) GetExplosionVClip (delObjP, 1);
-	if ((delObjP->info.nType == OBJ_ROBOT) && xBadass)
-		explObjP = CreateBadassExplosion (NULL, delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE),
-													 nVClip, I2X (xBadass), I2X (4) * xBadass, I2X (35) * xBadass, -1);
+	if ((delObjP->info.nType == OBJ_ROBOT) && xSplashDamage)
+		explObjP = CreateSplashDamageExplosion (NULL, delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE),
+													 nVClip, I2X (xSplashDamage), I2X (4) * xSplashDamage, I2X (35) * xSplashDamage, -1);
 	else
 		explObjP = /*Object*/CreateExplosion (delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);
 	if (!IsMultiGame) { // Multiplayer handled outside of this code!!

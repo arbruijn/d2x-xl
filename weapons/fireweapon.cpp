@@ -485,7 +485,7 @@ if (objP->LifeLeft () == ONE_FRAME_TIME) {
 if (objP->LifeLeft () < 0) {		// We died of old age
 	objP->Die ();
 	if (WI_damage_radius (objP->info.nId))
-		objP->ExplodeBadassWeapon (objP->info.position.vPos);
+		objP->ExplodeSplashDamageWeapon (objP->info.position.vPos);
 	return;
 	}
 //delete weapons that are not moving

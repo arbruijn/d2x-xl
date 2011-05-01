@@ -765,7 +765,7 @@ class CObject : public CObjectInfo {
 		bool IsRobotMine (void);
 		bool IsMine (void);
 		bool IsGatlingRound (void);
-		bool IsBadassWeapon (void);
+		bool IsSplashDamageWeapon (void);
 
 	private:
 		short				m_nKey;
@@ -930,9 +930,9 @@ class CObject : public CObjectInfo {
 		CObject* CreateExplBlast (void);
 		CObject* CreateShockwave (void);
 		int CreateWeaponEffects (int bExplBlast);
-		CObject* ExplodeBadass (fix damage, fix distance, fix force);
-		CObject* ExplodeBadassPlayer (void);
-		CObject* ExplodeBadassWeapon (CFixVector& vPos);
+		CObject* ExplodeSplashDamage (fix damage, fix distance, fix force);
+		CObject* ExplodeSplashDamagePlayer (void);
+		CObject* ExplodeSplashDamageWeapon (CFixVector& vPos);
 		void MaybeKillWeapon (CObject *otherObjP);
 		int MaybeDetonateWeapon (CObject* otherP, CFixVector& vHitPt);
 		void DoExplosionSequence (void);

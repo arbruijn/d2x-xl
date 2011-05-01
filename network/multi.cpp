@@ -1568,7 +1568,7 @@ gameData.multigame.create.nCount = 0;
 	}
 if (buf [0] == MULTI_PLAYER_EXPLODE) {
 	KillPlayerSmoke (nPlayer);
-	objP->ExplodeBadassPlayer ();
+	objP->ExplodeSplashDamagePlayer ();
 	objP->info.nFlags &= ~OF_SHOULD_BE_DEAD;              //don't really kill player
 	MultiMakePlayerGhost (nPlayer);
 	}

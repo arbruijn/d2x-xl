@@ -68,15 +68,15 @@ typedef struct tRobotInfo {
 	short   nExp2Sound;
 	sbyte   nWeaponType;
 	sbyte   nSecWeaponType; //  Secondary weapon number, -1 means none, otherwise gun #0 fires this weapon.
-	sbyte   nGuns;         // how many different gun positions
+	sbyte   nGuns;				// how many different gun positions
 	sbyte   containsId;     //  ID of powerup this robot can contain.
-	sbyte   containsCount; //  Max number of things this instance can contain.
-	sbyte   containsProb;  //  Probability that this instance will contain something in N/16
-	sbyte   containsType;  //  Type of thing contained, robot or powerup, in bitmaps.tbl, !0=robot, 0=powerup
+	sbyte   containsCount;	//  Max number of things this instance can contain.
+	sbyte   containsProb;	//  Probability that this instance will contain something in N/16
+	sbyte   containsType;	//  Type of thing contained, robot or powerup, in bitmaps.tbl, !0=robot, 0=powerup
 	sbyte   kamikaze;       //  !0 means commits suicide when hits you, strength thereof. 0 means no.
-	short   scoreValue;    //  Score from this robot.
-	sbyte   badass;         //  Dies with badass explosion, and strength thereof, 0 means NO.
-	sbyte   energyDrain;   //  Points of energy drained at each collision.
+	short   scoreValue;		//  Score from this robot.
+	sbyte   splashDamage;	//  Dies with splash damage explosion, and strength thereof, 0 means NO.
+	sbyte   energyDrain;		//  Points of energy drained at each collision.
 	fix     lighting;       // should this be here or with polygon model?
 	fix     strength;       // Initial shield of robot
 	fix     mass;           // how heavy is this thing?

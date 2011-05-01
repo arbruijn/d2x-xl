@@ -758,11 +758,11 @@ if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 	audio.CreateSegmentSound (SOUND_VOLATILE_WALL_HIT, nHitSeg, 0, vHitPt);
 	//for most weapons, use volatile CWall hit.  For mega, use its special tVideoClip
 	tVideoClip = (info.nId == MEGAMSL_ID) ? weaponInfoP->nRobotHitVClip : VCLIP_VOLATILE_WALL_HIT;
-	//	New by MK: If powerful badass, explode as badass, not due to lava, fixes megas being wimpy in lava.
+	//	New by MK: If powerful splash damager, explode with splash damage, not due to lava, fixes megas being wimpy in lava.
 	if (weaponInfoP->xDamageRadius >= VOLATILE_WALL_DAMAGE_RADIUS / 2)
-		ExplodeBadassWeapon (vHitPt);
+		ExplodeSplashDamageWeapon (vHitPt);
 	else
-		CreateBadassExplosion (this, nHitSeg, vHitPt, weaponInfoP->xImpactSize + VOLATILE_WALL_IMPACT_SIZE, tVideoClip,
+		CreateSplashDamageExplosion (this, nHitSeg, vHitPt, weaponInfoP->xImpactSize + VOLATILE_WALL_IMPACT_SIZE, tVideoClip,
 									  nStrength / 4 + VOLATILE_WALL_EXPL_STRENGTH, weaponInfoP->xDamageRadius+VOLATILE_WALL_DAMAGE_RADIUS,
 									  nStrength / 2 + VOLATILE_WALL_DAMAGE_FORCE, cType.laserInfo.parent.nObject);
 	Die ();		//make flares die in lava
@@ -770,13 +770,13 @@ if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
 			(sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_WATER))) {
 	//we've hit water
-	//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
+	//	MK: 09/13/95: SplashDamage in water is 1/2 Normal intensity.
 	if (weaponInfoP->matter) {
 		audio.CreateSegmentSound (SOUNDMSL_HIT_WATER, nHitSeg, 0, vHitPt);
 		if (weaponInfoP->xDamageRadius) {
-			audio.CreateObjectSound (IsBadassWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
-			//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
-			CreateBadassExplosion (this, nHitSeg, vHitPt, weaponInfoP->xImpactSize/2, weaponInfoP->nRobotHitVClip,
+			audio.CreateObjectSound (IsSplashDamageWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
+			//	MK: 09/13/95: SplashDamage in water is 1/2 Normal intensity.
+			CreateSplashDamageExplosion (this, nHitSeg, vHitPt, weaponInfoP->xImpactSize/2, weaponInfoP->nRobotHitVClip,
 										  nStrength / 4, weaponInfoP->xDamageRadius, nStrength / 2, cType.laserInfo.parent.nObject);
 			}
 		else
@@ -798,7 +798,7 @@ else {
 				CreateSound (weaponInfoP->nWallHitSound);
 		if (weaponInfoP->nWallHitVClip > -1) {
 			if (weaponInfoP->xDamageRadius)
-				ExplodeBadassWeapon (vHitPt);
+				ExplodeSplashDamageWeapon (vHitPt);
 			else
 				CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, weaponInfoP->nWallHitVClip);
 			}
@@ -1158,7 +1158,7 @@ if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 		if (0 <= (i = FindReactor (reactorP)))
 			gameData.reactor.states [i].bHit = 1;
 	if (WI_damage_radius (info.nId))
-		ExplodeBadassWeapon (vHitPt);
+		ExplodeSplashDamageWeapon (vHitPt);
 	else
 		/*Object*/CreateExplosion (reactorP->info.nSegment, vHitPt, 3 * reactorP->info.xSize / 20, VCLIP_SMALL_EXPLOSION);
 	audio.CreateSegmentSound (SOUND_CONTROL_CENTER_HIT, reactorP->info.nSegment, 0, vHitPt);
@@ -1537,17 +1537,17 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 			CreateSmartChildren (robotP, nBlobs);
 		}
 
-	//	Note: If this hits an invulnerable boss, it will still do badass damage, including to the boss,
+	//	Note: If this hits an invulnerable boss, it will still do splash damage, including to the boss,
 	//	unless this is trapped elsewhere.
 	if (WI_damage_radius (info.nId)) {
 		if (bInvulBoss) {			//don't make badass sound
-			//this code copied from ExplodeBadassWeapon ()
-			CreateBadassExplosion (this, info.nSegment, vHitPt, wInfoP->xImpactSize, wInfoP->nRobotHitVClip, 
+			//this code copied from ExplodeSplashDamageWeapon ()
+			CreateSplashDamageExplosion (this, info.nSegment, vHitPt, wInfoP->xImpactSize, wInfoP->nRobotHitVClip, 
 										  nStrength, wInfoP->xDamageRadius, nStrength, cType.laserInfo.parent.nObject);
 
 			}
-		else		//Normal badass explosion
-			ExplodeBadassWeapon (vHitPt);
+		else		//Normal splash damage explosion
+			ExplodeSplashDamageWeapon (vHitPt);
 		}
 	if (((cType.laserInfo.parent.nType == OBJ_PLAYER) ||
 		 ((cType.laserInfo.parent.nType == OBJ_ROBOT) &&
@@ -1644,7 +1644,7 @@ return 1;
 //--unused-- 	}
 //--unused--
 //--unused-- 	if (WI_damage_radius (weaponP->info.nId))
-//--unused-- 		ExplodeBadassWeapon (weaponP);
+//--unused-- 		ExplodeSplashDamageWeapon (weaponP);
 //--unused--
 //--unused-- 	MaybeKillWeapon (weaponP, hostage);
 //--unused--
@@ -1809,7 +1809,7 @@ if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
 	}
 /*Object*/CreateExplosion (playerObjP->info.nSegment, vHitPt, I2X (10)/2, VCLIP_PLAYER_HIT);
 if (WI_damage_radius (info.nId))
-	ExplodeBadassWeapon (vHitPt);
+	ExplodeSplashDamageWeapon (vHitPt);
 MaybeKillWeapon (playerObjP);
 BumpTwoObjects (playerObjP, this, 0, vHitPt);	//no xDamage from bump
 if (!WI_damage_radius (info.nId) && (cType.laserInfo.parent.nObject > -1) && !(info.nFlags & OF_HARMLESS))
@@ -1947,7 +1947,7 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
-//	See if otherP causes this weapon to create a badass explosion.  If so, create the explosion
+//	See if otherP causes this weapon to create a splash damage explosion.  If so, create the explosion
 //	Return true if weapon does proximity (as opposed to only contact) damage when it explodes.
 int CObject::MaybeDetonateWeapon (CObject* otherP, CFixVector& vHitPt)
 {
@@ -1960,7 +1960,7 @@ else {
 	MaybeKillWeapon (otherP);
 	if (info.nFlags & OF_SHOULD_BE_DEAD) {
 		CreateWeaponEffects (0);
-		ExplodeBadassWeapon (vHitPt);
+		ExplodeSplashDamageWeapon (vHitPt);
 		audio.CreateSegmentSound (gameData.weapons.info [info.nId].nRobotHitSound, info.nSegment, 0, vHitPt);
 		}
 	}
@@ -2031,7 +2031,7 @@ if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 		}
 	/*Object*/CreateExplosion (mBallP->info.nSegment, vHitPt, I2X (10)/2, VCLIP_PLAYER_HIT);
 	if (WI_damage_radius (info.nId))
-		ExplodeBadassWeapon (vHitPt);
+		ExplodeSplashDamageWeapon (vHitPt);
 	MaybeKillWeapon (mBallP);
 	BumpTwoObjects (this, mBallP, 1, vHitPt);
 	}
@@ -2056,7 +2056,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && !(debrisP->info.nFlags & OF_
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
 	debrisP->Explode (0);
 	if (WI_damage_radius (info.nId))
-		ExplodeBadassWeapon (vHitPt);
+		ExplodeSplashDamageWeapon (vHitPt);
 	MaybeKillWeapon (debrisP);
 	Die ();
 	}

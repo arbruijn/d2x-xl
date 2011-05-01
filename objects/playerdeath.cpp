@@ -191,8 +191,8 @@ if (gameStates.app.bPlayerIsDead) {
 			gameStates.app.bPlayerEggsDropped = 1;
 			if (IsMultiGame)
 				MultiSendPlayerExplode (MULTI_PLAYER_EXPLODE);
-			gameData.objs.consoleP->ExplodeBadassPlayer ();
-			//is this next line needed, given the badass call above?
+			gameData.objs.consoleP->ExplodeSplashDamagePlayer ();
+			//is this next line needed, given the splash damage call above?
 			gameData.objs.consoleP->Explode (0);
 			gameData.objs.consoleP->info.nFlags &= ~OF_SHOULD_BE_DEAD;		//don't really kill CPlayerData
 			gameData.objs.consoleP->info.renderType = RT_NONE;				//..just make him disappear

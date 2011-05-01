@@ -1400,7 +1400,7 @@ for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 		if (e & 3)		//3 of 4 are Normal
 			/*Object*/CreateExplosion ((short) gameData.walls.exploding [i].nSegment, vPos, size, (ubyte) VCLIP_SMALL_EXPLOSION);
 		else
-			CreateBadassExplosion (NULL, (short) gameData.walls.exploding [i].nSegment, vPos,
+			CreateSplashDamageExplosion (NULL, (short) gameData.walls.exploding [i].nSegment, vPos,
 										  size, (ubyte) VCLIP_SMALL_EXPLOSION, I2X (4), I2X (20), I2X (50), -1);
 		}
 	if (gameData.walls.exploding [i].time >= EXPL_WALL_TIME)

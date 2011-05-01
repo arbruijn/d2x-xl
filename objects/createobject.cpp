@@ -241,7 +241,7 @@ else if (nType == OBJ_POWERUP) {
 	nType = nType;
 	if (nId == POW_MONSTERBALL)
 		nId = nId;
-	if (nId == 27)
+	if (nId == 27) // unknown powerup type
 		nId = nId;
 	}
 #endif

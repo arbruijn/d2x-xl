@@ -579,7 +579,7 @@ if ((gameData.physics.xTime > 0) && UpdateControl ()) {
 if (info.xLifeLeft < 0) {		// We died of old age
 	Die ();
 	if ((info.nType == OBJ_WEAPON) && WI_damage_radius (info.nId))
-		ExplodeBadassWeapon (info.position.vPos);
+		ExplodeSplashDamageWeapon (info.position.vPos);
 	else if (info.nType == OBJ_ROBOT)	//make robots explode
 		Explode (0);
 	}

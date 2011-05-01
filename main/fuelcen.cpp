@@ -238,10 +238,16 @@ int StartMatCen (short nSegment)
 #if TRACE
 console.printf (CON_DBG, "Trigger matcen, CSegment %i\n", nSegment);
 #endif
+if (segP->m_nMatCen < 0)
+	return 0;
 if (segP->m_function == SEGMENT_FUNC_EQUIPMAKER) {	// toggle it on or off
+	if (segP->m_nMatCen >= gameData.matCens.nEquipCenters)
+		return 0;
 	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipGens [segP->m_nMatCen].nFuelCen;
 	return (matCenP->bEnabled = !matCenP->bEnabled) ? 1 : 2;
 	}
+if (segP->m_nMatCen >= gameData.matCens.nBotCenters)
+	return 0;
 matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [segP->m_nMatCen].nFuelCen;
 if (matCenP->bEnabled)
 	return 0;

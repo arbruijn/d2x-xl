@@ -104,14 +104,14 @@ m_weaponInfo [ROBOT_FLASHMSL_ID] |= OBJ_IS_MISSILE;
 m_weaponInfo [ROBOT_MERCURYMSL_ID] |= OBJ_IS_MISSILE;
 m_weaponInfo [ROBOT_SMARTMSL_ID] |= OBJ_IS_MISSILE;
 
-m_weaponInfo [MEGAMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
-m_weaponInfo [EARTHSHAKER_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
-m_weaponInfo [EARTHSHAKER_MEGA_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
-m_weaponInfo [ROBOT_MEGAMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
-m_weaponInfo [ROBOT_EARTHSHAKER_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
-m_weaponInfo [ROBOT_SHAKER_MEGA_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
-m_weaponInfo [ROBOT_MEGA_FLASHMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
-m_weaponInfo [ROBOT_MEGA_FLASHMSL_ID + 1] |= OBJ_IS_MISSILE | OBJ_IS_BADASS_WEAPON;
+m_weaponInfo [MEGAMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
+m_weaponInfo [EARTHSHAKER_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
+m_weaponInfo [EARTHSHAKER_MEGA_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
+m_weaponInfo [ROBOT_MEGAMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
+m_weaponInfo [ROBOT_EARTHSHAKER_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
+m_weaponInfo [ROBOT_SHAKER_MEGA_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
+m_weaponInfo [ROBOT_MEGA_FLASHMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
+m_weaponInfo [ROBOT_MEGA_FLASHMSL_ID + 1] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
 
 m_weaponInfo [VULCAN_ID] |= OBJ_IS_WEAPON | OBJ_IS_GATLING_ROUND;
 m_weaponInfo [GAUSS_ID] |= OBJ_IS_WEAPON | OBJ_IS_GATLING_ROUND;
@@ -1672,9 +1672,9 @@ return IsWeapon () && ((m_weaponInfo [Id ()] & OBJ_IS_GATLING_ROUND) != 0);
 
 //------------------------------------------------------------------------------
 
-bool CObject::IsBadassWeapon (void) 
+bool CObject::IsSplashDamageWeapon (void) 
 { 
-return ((m_weaponInfo [Id ()] & OBJ_IS_BADASS_WEAPON) != 0);
+return ((m_weaponInfo [Id ()] & OBJ_IS_SPLASHDMG_WEAPON) != 0);
 }
 
 //------------------------------------------------------------------------------

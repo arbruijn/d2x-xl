@@ -22,13 +22,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define BLAST_LIFE		(I2X (2) / 5)
 #define SHOCKWAVE_LIFE	I2X (1)
 
-CObject *CreateBadassExplosion (CObject* parentObjP, short nSegment,
+CObject *CreateSplashDamageExplosion (CObject* parentObjP, short nSegment,
 										  CFixVector& position, fix size, ubyte vclipType,
 										  fix maxdamage, fix maxdistance, fix maxforce, short parent);
 
-// blows up a badass weapon, creating the badass explosion
+// blows up a splash damage weapon, creating the splash damage explosion
 // return the explosion CObject
-// blows up the CPlayerData with a badass explosion
+// blows up the CPlayerData with a splash damage explosion
 // return the explosion CObject
 void DoDebrisFrame (CObject* objP);      // deal with debris for this frame
 void DrawFireball (CObject* objP);
