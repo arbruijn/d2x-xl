@@ -870,8 +870,10 @@ else
 uvls [0] = m_uvls [m_faceVerts [h]];
 uvls [1] = m_uvls [m_faceVerts [h+1]];
 uvls [2] = m_uvls [m_faceVerts [h+2]];
-*u = uvls [1].u + FixMul (k0, uvls [0].u - uvls [1].u) + FixMul (k1, uvls [2].u - uvls [1].u);
-*v = uvls [1].v + FixMul (k0, uvls [0].v - uvls [1].v) + FixMul (k1, uvls [2].v - uvls [1].v);
+if (0 > (*u = uvls [1].u + FixMul (k0, uvls [0].u - uvls [1].u) + FixMul (k1, uvls [2].u - uvls [1].u)))
+	*u += I2X (1);
+if (0 > (*v = uvls [1].v + FixMul (k0, uvls [0].v - uvls [1].v) + FixMul (k1, uvls [2].v - uvls [1].v)))
+	*v += I2X (1);
 if (l)
 	*l = uvls [1].l + FixMul (k0, uvls [0].l - uvls [1].l) + FixMul (k1, uvls [2].l - uvls [1].l);
 }
