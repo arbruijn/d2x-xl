@@ -59,7 +59,7 @@ if (targetP->Type () == OBJ_ROBOT) {
 		 (cType.laserInfo.parent.nType == OBJ_PLAYER))
 		return 0;
 	}
-CFixVector vTracker = SPECTATOR (trackerP) ? gameStates.app.playerPos.mOrient.m.dir.f : info.position.mOrient.m.dir.f;
+CFixVector vTracker = SPECTATOR (this) ? gameStates.app.playerPos.mOrient.m.dir.f : info.position.mOrient.m.dir.f;
 CFixVector vTarget = targetP->info.position.vPos - info.position.vPos;
 CFixVector::Normalize (vTarget);
 xDot = CFixVector::Dot (vTarget, vTracker);
@@ -71,14 +71,14 @@ if ((xDot < xMinTrackableDot) && (xDot > I2X (9) / 10)) {
 if ((xDot >= xMinTrackableDot) || 
 	 (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (Type () == OBJ_WEAPON) && (Id () == EARTHSHAKER_MEGA_ID) /*&& (xDot >= 0)*/)) {
 	//	xDot is in legal range, now see if CObject is visible
-	return ObjectToObjectVisibility (targetP, FQ_TRANSWALL);
+	return ObjectToObjectVisibility (this, targetP, FQ_TRANSWALL);
 	}
 return 0;
 }
 
 //	--------------------------------------------------------------------------------------------
 
-int CObject::SelectHomingTarget (CObject *CFixVector *vCurPos)
+int CObject::SelectHomingTarget (CFixVector* vCurPos)
 {
 if (!IsMultiGame)
 	return FindAnyHomingTarget (vCurPos, OBJ_ROBOT, -1);
@@ -126,7 +126,7 @@ return MAX_TRACKABLE_DIST;
 //	--------------------------------------------------------------------------------------------
 //	Find CObject to home in on.
 //	Scan list of OBJECTS rendered last frame, find one that satisfies function of nearness to center and distance.
-int CObject::FindVisibleHomingTarget (CFixVector *vTrackerPos)
+int CObject::FindVisibleHomingTarget (CFixVector* vTrackerPos)
 {
 	int nBestObj = -1;
 
@@ -138,13 +138,13 @@ if (IsMultiGame)
 if ((Type () != OBJ_PLAYER) && (cType.laserInfo.parent.nObject != LOCALPLAYER.nObject) && !(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	return OBJ_IDX (gameData.objs.consoleP);
 
-int nWindow = FindTargetWindow (;
+int nWindow = FindTargetWindow ();
 if (nWindow == -1)
-l	return SelectHomingTarget (vTrackerPos);
+	return SelectHomingTarget (vTrackerPos);
 
 fix xBestDot;
 fix maxTrackableDist = MaxTrackableDist (xBestDot);
-CFixVector vTracker = SPECTATOR (trackerP) ? gameStates.app.playerPos.mOrient.m.dir.f : info.position.mOrient.m.dir.f;
+CFixVector vTracker = SPECTATOR (this) ? gameStates.app.playerPos.mOrient.m.dir.f : info.position.mOrient.m.dir.f;
 bool bOmega = (Type () == OBJ_WEAPON) && (Id () == OMEGA_ID);
 bool bPlayer = (Type () == OBJ_PLAYER);
 
@@ -177,7 +177,7 @@ for (int i = windowRenderedData [nWindow].nObjects - 1; i >= 0; i--) {
 		//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 		//	to determine if an CObject is initially trackable.  FindHomingTarget is called on subsequent
 		//	frames to determine if the CObject remains trackable.
-		if ((dot > xBestDot) && (ObjectToObjectVisibility (targetP, FQ_TRANSWALL))) {
+		if ((dot > xBestDot) && (ObjectToObjectVisibility (this, targetP, FQ_TRANSWALL))) {
 			xBestDot = dot;
 			nBestObj = nObject;
 			} 
@@ -206,7 +206,7 @@ targets.Reset ();
 fix xBestDot;
 fix maxTrackableDist = MaxTrackableDist (xBestDot);
 CObject* targetP;
-CFixVector vTracker = SPECTATOR (trackerP) ? gameStates.app.playerPos.mOrient.m.dir.f : info.position.mOrient.m.dir.f;
+CFixVector vTracker = SPECTATOR (this) ? gameStates.app.playerPos.mOrient.m.dir.f : info.position.mOrient.m.dir.f;
 bool bOmega = (Type () == OBJ_WEAPON) && (Id () == OMEGA_ID);
 
 FORALL_ACTOR_OBJS (targetP, nObject) {
@@ -279,7 +279,7 @@ if (targets.ToS () > 1)
 	targets.SortDescending ();
 
 for (uint i = 0; i < targets.ToS (); i++) {
-	if (ObjectToObjectVisibility (targets[i].m_objP, FQ_TRANSWALL))
+	if (ObjectToObjectVisibility (this, targets[i].m_objP, FQ_TRANSWALL))
 		return targets[i].m_objP->Index ();
 	}
 return -1;
@@ -292,7 +292,7 @@ return nBestObj;
 //	See if legal to keep tracking currently tracked CObject.  If not, see if another CObject is trackable.  If not, return -1,
 //	else return CObject number of tracking CObject.
 //	Computes and returns a fairly precise dot product.
-int UpdateHomingTarget (int nTarget, fix& dot, int nThread)
+int CObject::UpdateHomingTarget (int nTarget, fix& dot, int nThread)
 {
 	int	rVal = -2;
 	int	nFrame;
@@ -300,7 +300,7 @@ int UpdateHomingTarget (int nTarget, fix& dot, int nThread)
 
 //if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
 	//	Every 8 frames for each CObject, scan all OBJECTS.
-nFrame = OBJ_IDX (trackerP) ^ gameData.app.nFrameCount;
+nFrame = OBJ_IDX (this) ^ gameData.app.nFrameCount;
 if (ObjectIsTrackable (nTarget, dot)) {
 	if (gameOpts->legacy.bHomers) {
 		if (nFrame % 8)
@@ -328,7 +328,7 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 				rVal = FindAnyHomingTarget (&info.position.vPos, OBJ_PLAYER, OBJ_ROBOT, nThread);
 			} 
 		else {
-			goalType = OBJECTS [cType.laserInfo.nTarget].Type ();
+			goalType = OBJECTS [cType.laserInfo.nHomingTarget].Type ();
 			if ((goalType == OBJ_PLAYER) || (goalType == OBJ_ROBOT) || (goalType == OBJ_MONSTERBALL))
 				rVal = FindAnyHomingTarget (&info.position.vPos, goalType, -1, nThread);
 			else
@@ -341,7 +341,7 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 		if (nTarget == -1)
 			rVal = FindAnyHomingTarget (&info.position.vPos, OBJ_PLAYER, goal2Type, nThread);
 		else {
-			goalType = OBJECTS [cType.laserInfo.nTarget].Type ();
+			goalType = OBJECTS [cType.laserInfo.nHomingTarget].Type ();
 			rVal = FindAnyHomingTarget (&info.position.vPos, goalType, goal2Type, nThread);
 			}
 		}
