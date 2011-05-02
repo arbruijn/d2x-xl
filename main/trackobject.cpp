@@ -230,8 +230,9 @@ int FindHomingTargetComplete (CFixVector *vCurPos, CObject *trackerP, int trackO
 	int		nBestObj = -1;
 #else
 	static CStack<class CTarget>	targets;
+	uint h = uint (100 * ((gameData.objs.nObjects + 99) / 100));
 
-if ((targets.Length () < uint (100 * ((gameData.objs.nObjects + 99) / 100))) && !targets.Resize (uint (gameData.objs.nObjects), false))
+if ((targets.Length () < h) && !targets.Resize (h, false))
 	return -1;
 targets.Reset ();
 #endif
