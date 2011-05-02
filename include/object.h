@@ -1034,8 +1034,8 @@ class CObject : public CObjectInfo {
 		int CheckTriggerHits (short nPrevSegment);
 		void UpdateShipSound (void);
 		void UpdateEffects (void);
-		int UpdateControl (void);
-		void UpdateMovement (void);
+		int UpdateMovement (void);
+		void UpdatePosition (void);
 		fix WeaponSpeed (void);
 		void UpdateWeapon (void);
 		void SetupRandomMovement (void);

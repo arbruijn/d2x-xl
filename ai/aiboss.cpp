@@ -77,7 +77,7 @@ int CObject::CreateGatedRobot (short nSegment, ubyte nObjId, CFixVector* vPos)
 	ubyte			default_behavior;
 
 #if !DBG
-if (gameStates.gameplay.bNoBotAI)
+if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
 #endif
 	return -1;
 nBoss = gameData.bosses.Find (OBJ_IDX (this));

@@ -238,7 +238,7 @@ FORALL_OBJS (objP, i) {
 #if DBG
 				if (parentP && (nParent == LOCALPLAYER.nObject))
 #else
-				if (!gameStates.gameplay.bNoBotAI && parentP && (nParent == LOCALPLAYER.nObject))
+				if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS) && parentP && (nParent == LOCALPLAYER.nObject))
 #endif
 					cockpit->AddPointsToScore (ROBOTINFO (objP->info.nId).scoreValue);
 				}

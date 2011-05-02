@@ -292,8 +292,8 @@ if ((t = FindArg ("-noscreens")))
 	gameOpts->gameplay.bSkipBriefingScreens = NumArg (t, 1);
 if ((t = FindArg ("-secretsave")))
 	gameOptions [0].gameplay.bSecretSave = NumArg (t, 1);
-if ((t = FindArg ("-nobotai")))
-	gameStates.gameplay.bNoBotAI = NumArg (t, 1);
+if ((t = FindArg ("-nobotai")) && NumArg (t, 1))
+	gameStates.app.bGameSuspended |= SUSP_ROBOTS;
 }
 
 // ----------------------------------------------------------------------------

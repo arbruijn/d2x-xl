@@ -256,7 +256,7 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 
 // -----------------------------------------------------------------------------
 
-int CObject::UpdateControl (void)
+int CObject::UpdateMovement (void)
 {
 switch (info.controlType) {
 	case CT_NONE:
@@ -279,7 +279,7 @@ switch (info.controlType) {
 
 	case CT_AI:
 		//NOTE LINK TO CT_MORPH ABOVE!!!
-		if (gameStates.gameplay.bNoBotAI || (gameStates.app.bGameSuspended & SUSP_ROBOTS)) {
+		if (gameStates.app.bGameSuspended & SUSP_ROBOTS) {
 			mType.physInfo.velocity.SetZero ();
 			mType.physInfo.thrust.SetZero ();
 			mType.physInfo.rotThrust.SetZero ();
@@ -320,7 +320,7 @@ switch (info.controlType) {
 		break;		//movement is handled in com_process_input
 
 	case CT_CNTRLCEN:
-		if (gameStates.gameplay.bNoBotAI)
+		if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
 			return 1;
 		DoReactorFrame (this);
 		break;
@@ -366,7 +366,7 @@ gameData.multiplayer.bMoving = nSpeed;
 
 // -----------------------------------------------------------------------------
 
-void CObject::UpdateMovement (void)
+void CObject::UpdatePosition (void)
 {
 if (info.nType == OBJ_MARKER)
 	RotateMarker ();
@@ -567,12 +567,10 @@ if (info.nType == OBJ_ROBOT) {
 info.vLastPos = info.position.vPos;			// Save the current position
 RepairDamage ();
 HandleSegmentFunction ();
-if ((info.xLifeLeft != IMMORTAL_TIME) &&
-	 (info.xLifeLeft != ONE_FRAME_TIME) &&
-	 (gameData.physics.xTime > 0))
+if ((info.xLifeLeft != IMMORTAL_TIME) && (info.xLifeLeft != ONE_FRAME_TIME) && (gameData.physics.xTime > 0))
 	info.xLifeLeft -= (fix) (gameData.physics.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
-if ((gameData.physics.xTime > 0) && UpdateControl ()) {
+if ((gameData.physics.xTime > 0) && UpdateMovement ()) {
 	UpdateEffects ();
 	return 1;
 	}
@@ -586,7 +584,7 @@ if (info.xLifeLeft < 0) {		// We died of old age
 if ((info.nType == OBJ_NONE) || (info.nFlags & OF_SHOULD_BE_DEAD)) {
 	return 1;			//CObject has been deleted
 	}
-UpdateMovement ();
+UpdatePosition ();
 UpdateEffects ();
 if (CheckTriggerHits (nPrevSegment))
 	return 0;

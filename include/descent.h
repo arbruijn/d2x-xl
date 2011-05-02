@@ -713,7 +713,6 @@ class CGameplayStates {
 		int bHaveSmartMines;
 		int bMineDestroyed;
 		int bKillBossCheat;
-		int bNoBotAI;
 		int bTagFlag;
 		int nReactorCount [2];
 		int nLastReactor;

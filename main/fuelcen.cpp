@@ -524,7 +524,7 @@ void BotGenHandler (tFuelCenInfo * matCenP)
 	int			nType, nMyStation, nCount;
 	//int			i;
 
-if (gameStates.gameplay.bNoBotAI)
+if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
 	return;
 if (!matCenP->bEnabled)
 	return;
