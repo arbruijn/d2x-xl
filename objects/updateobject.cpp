@@ -616,6 +616,9 @@ gameData.laser.xUpdateTime += gameData.time.xFrame;
 gameStates.entropy.bConquering = 0;
 UpdatePlayerOrient ();
 //WaitForEffectsThread ();
+#if USE_OPENMP > 1
+gameData.objs.update.Reset ();
+#endif
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;
 	if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ()) {

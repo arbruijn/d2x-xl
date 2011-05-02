@@ -219,7 +219,14 @@ class CArray : public CQuickSort < _T > {
 				}
 			m_data.length = length;
 			m_data.pos %= length;
-			delete[] m_data.buffer;
+			try {
+				delete[] m_data.buffer;
+				}
+			catch (...) {
+#if DBG_ARRAYS
+				ArrayError ("invalid buffer pointer\n");
+#endif
+				}
 			return m_data.buffer = p;
 			}
 

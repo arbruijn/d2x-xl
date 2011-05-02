@@ -201,6 +201,10 @@ return nBestObj;
 //	Always track proximity bombs.  --MK, 06/14/95
 //	Make homing OBJECTS not track parent's prox bombs.
 
+#define NEW_TARGETTING 0
+
+#if NEW_TARGETTING
+
 class CTarget {
 	public:
 		fix		m_xDot;
@@ -214,18 +218,23 @@ class CTarget {
 		inline bool operator>= (CTarget& other) { return m_xDot >= other.m_xDot; }
 	};
 
+#endif
+
 int FindHomingTargetComplete (CFixVector *vCurPos, CObject *trackerP, int trackObjType1, int trackObjType2)
 {
-	//int		nBestObj = -1;
 	fix		xBestDot;
 	fix		maxTrackableDist;
 	CObject*	curObjP;
 
+#if !NEW_TARGETTING
+	int		nBestObj = -1;
+#else
 	static CStack<class CTarget>	targets;
 
 if ((targets.Length () < uint (gameData.objs.nObjects)) && !targets.Resize (uint (gameData.objs.nObjects), false))
 	return -1;
 targets.Reset ();
+#endif
 
 maxTrackableDist = MAX_TRACKABLE_DIST;
 if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == EARTHSHAKER_MEGA_ID)) {
@@ -292,7 +301,7 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 		dot = 9 * dot / 8;		//	I suspect Watcom would be too stupid to figure out the obvious...
 	if (dot < xBestDot)
 		continue;
-#if 1
+#if NEW_TARGETTING
 #	if 1
 	targets.Push (CTarget (dot, curObjP));
 #	else
@@ -309,7 +318,8 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 	nBestObj = OBJ_IDX (curObjP);
 #endif
 	}
-#if 1
+
+#if NEW_TARGETTING
 if (targets.ToS () < 1)
 	return -1;
 if (targets.ToS () > 1)

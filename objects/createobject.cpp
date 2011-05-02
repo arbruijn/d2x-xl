@@ -214,6 +214,8 @@ if (nType == OBJ_WEAPON) {
 		}
 	if (nId == FLARE_ID)
 		nType = nType;
+	if (nId == EARTHSHAKER_MEGA_ID)
+		nType = nType;
 	if (CObject::IsMissile ((int) nId))
 		nType = nType;
 	else

@@ -907,7 +907,7 @@ SetCullAndStencil (bCullFront, bZPass);
 		paf = po->m_adjFaces + pf->m_nAdjFaces;
 		for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++) {
 			h = *paf++;
-			if ((h < 0) || (h >= m_nFaces) || !m_faces [h].m_bFacingLight)
+			if ((h >= m_nFaces) || !m_faces [h].m_bFacingLight)
 				nVerts += 4;
 			}
 		}
@@ -924,7 +924,7 @@ SetCullAndStencil (bCullFront, bZPass);
 		// if so, that edge is a contour edge: Use it to render a shadow volume face ("side wall" of the shadow volume)
 		for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++) {
 			h = *paf++;
-			if ((h < 0) || (h >= m_nFaces) || !m_faces [h].m_bFacingLight) {
+			if ((h >= m_nFaces) || !m_faces [h].m_bFacingLight) {
 				v [1] = pvf [pfv [j]] + vShadowOffset;
 				v [0] = pvf [pfv [(j + 1) % n]] + vShadowOffset;
 #if DBG_SHADOWS
