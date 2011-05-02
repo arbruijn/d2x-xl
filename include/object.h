@@ -959,10 +959,11 @@ class CObject : public CObjectInfo {
 		void RotateCamera (void);
 		void RotateMarker (void);
 
-		int SelectHomingTarget (CFixVector* vCurPos);
-		int FindVisibleHomingTarget (CFixVector* vCurPos);
-		int FindAnyHomingTarget (CFixVector* vCurPos, int track_objType1, int track_objType2, int nThread = 0);
+		int SelectHomingTarget (CFixVector& vTrackerPos);
+		int FindVisibleHomingTarget (CFixVector& vTrackerPos);
+		int FindAnyHomingTarget (CFixVector& vTrackerPos, int nTargetType1, int nTargetType2, int nThread = 0);
 		int UpdateHomingTarget (int nTarget, fix& dot, int nThread = 0);
+		int MaxTrackableDist (int& xBestDot);
 
 		CFixVector RegisterHit (CFixVector vHit, short nModel = -1);
 		inline bool CriticalHit (void) {
@@ -1049,7 +1050,8 @@ class CObject : public CObjectInfo {
 
 		int ObjectIsTrackable (int nTarget, fix& xDot);
 		int FindTargetWindow (void);
-		int MaxTrackableDist (int& xBestDot);
+		void AddHomingTarget (CObject* targetP, CFixVector* vTrackerPos, fix maxTrackableDist, fix& xBestDot, int& nBestObj);
+
 
 	public:
 		void UpdateHomingWeapon (int nThread = 0);
