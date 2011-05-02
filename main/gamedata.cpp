@@ -1233,6 +1233,7 @@ bool CObjectData::Create (void)
 {
 Init ();
 CREATE (gameData.objs.objects, LEVEL_OBJECTS, 0);
+CREATE (gameData.objs.update, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.freeList, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.parentObjs, LEVEL_OBJECTS, (char) 0xff);
 CREATE (gameData.objs.childObjs, LEVEL_OBJECTS, 0);

@@ -2021,6 +2021,7 @@ class CObjectData {
 	public:
 		CArray<CObjTypeData>		types;
 		CArray<CObject>			objects;
+		CStack<CObject*>			update;
 		CArray<tBaseObject>		effects;
 		CObjLists					lists;
 		CArray<short>				freeList;

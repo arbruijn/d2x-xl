@@ -1036,11 +1036,15 @@ class CObject : public CObjectInfo {
 		void UpdateEffects (void);
 		int UpdateMovement (void);
 		void UpdatePosition (void);
-		fix WeaponSpeed (void);
+		bool RemoveWeapon (void);
+		void UpdateWeaponSpeed (void);
 		void UpdateWeapon (void);
 		void SetupRandomMovement (void);
 		void SetupDebris (int nSubObj, int nId, int nTexOverride);
-};
+
+	public:
+		void UpdateHomingWeapon (void);
+	};
 
 inline int operator- (CObject* o, CArray<CObject>& a) { return a.Index (o); }
 

@@ -467,7 +467,7 @@ return HOMINGMSL_STRAIGHT_TIME * nMslSlowDown [(int) extraGameInfo [IsMultiGame]
 
 //-------------------------------------------------------------------------------------------
 
-fix CObject::WeaponSpeed (void)
+bool CObject::RemoveWeapon (void)
 {
 if (LifeLeft () == ONE_FRAME_TIME) {
 	if (IsMultiGame)
@@ -475,24 +475,106 @@ if (LifeLeft () == ONE_FRAME_TIME) {
 	else
 		SetLife (0);
 	info.renderType = RT_NONE;
-	return 0;
+	return true;
 	}
 if (LifeLeft () < 0) {		// We died of old age
 	Die ();
 	if (WI_damage_radius (info.nId))
 		ExplodeSplashDamageWeapon (info.position.vPos);
-	return -1;
+	return true;
 	}
 //delete weapons that are not moving
-fix xWeaponSpeed = mType.physInfo.velocity.Mag ();
+fix xSpeed = mType.physInfo.velocity.Mag ();
 if (!((gameData.app.nFrameCount ^ info.nSignature) & 3) &&
 		(info.nType == OBJ_WEAPON) && (info.nId != FLARE_ID) &&
 		(gameData.weapons.info [info.nId].speed [gameStates.app.nDifficultyLevel] > 0) &&
-		(xWeaponSpeed < I2X (2))) {
+		(xSpeed < I2X (2))) {
 	ReleaseObject (Index ());
-	return -1;
+	return true;
 	}
-return xWeaponSpeed;
+return false;
+}
+
+//-------------------------------------------------------------------------------------------
+//sequence this weapon object for this _frame_ (underscores added here to aid MK in his searching!)
+void CObject::UpdateHomingWeapon (void)
+{
+for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= I2X (1) / 40; xFrameTime -= I2X (1) / 40) {
+	CFixVector	vVecToObject, vNewVel;
+	fix			dot = I2X (1);
+	fix			speed, xMaxSpeed, xDist;
+	int			nObjId = info.nId;
+	//	For first 1/2 second of life, missile flies straight.
+	if (cType.laserInfo.xCreationTime + HomingMslStraightTime (nObjId) < gameData.time.xGame) 
+		{
+		//	If it's time to do tracking, then it's time to grow up, stop bouncing and start exploding!.
+		if (Bounces ())
+			mType.physInfo.flags &= ~PF_BOUNCE;
+		//	Make sure the CObject we are tracking is still trackable.
+		int nHomingTarget = TrackHomingTarget (cType.laserInfo.nHomingTarget, this, &dot);
+		if (nHomingTarget != -1) {
+			if (nHomingTarget == LOCALPLAYER.nObject) {
+				fix xDistToTarget = CFixVector::Dist (info.position.vPos, OBJECTS [nHomingTarget].info.position.vPos);
+				if ((xDistToTarget < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
+					LOCALPLAYER.homingObjectDist = xDistToTarget;
+				}
+			vVecToObject = OBJECTS [nHomingTarget].info.position.vPos - info.position.vPos;
+			xDist = CFixVector::Normalize (vVecToObject);
+			vNewVel = mType.physInfo.velocity;
+			speed = CFixVector::Normalize (vNewVel);
+			xMaxSpeed = WI_speed (info.nId, gameStates.app.nDifficultyLevel);
+			if (speed + I2X (1) < xMaxSpeed) {
+				speed += FixMul (xMaxSpeed, I2X (1) / 80);
+				if (speed > xMaxSpeed)
+					speed = xMaxSpeed;
+				}
+			if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (info.nId == EARTHSHAKER_MEGA_ID)) {
+				fix h = (info.xLifeLeft + I2X (1) - 1) / I2X (1);
+
+				if (h > 7)
+					vVecToObject *= (I2X (1) / (h - 6));
+				}
+#if 0
+			vVecToObject *= HomingMslScale ();
+#endif
+			vNewVel += vVecToObject;
+			//	The boss' smart children track better...
+			if (gameData.weapons.info [info.nId].renderType != WEAPON_RENDER_POLYMODEL)
+				vNewVel += vVecToObject;
+			CFixVector::Normalize (vNewVel);
+			//CFixVector vOldVel = mType.physInfo.velocity;
+			CFixVector vTest = info.position.vPos + vNewVel * xDist;
+			if (CanSeePoint (NULL, &info.position.vPos, &vTest, info.nSegment, 3 * info.xSize / 2))
+				/*mType.physInfo.velocity = vOldVel;
+			else*/ {	//	Subtract off life proportional to amount turned. For hardest turn, it will lose 2 seconds per second.
+				mType.physInfo.velocity = vNewVel;
+				mType.physInfo.velocity *= speed;
+				dot = abs (I2X (1) - dot);
+				info.xLifeLeft -= FixMul (dot * 32, I2X (1) / 40);
+				}
+
+			//	Only polygon OBJECTS have visible orientation, so only they should turn.
+			if (gameData.weapons.info [info.nId].renderType == WEAPON_RENDER_POLYMODEL)
+				HomingMissileTurnTowardsVelocity (this, &vNewVel);		//	vNewVel is normalized velocity.
+			}
+		}
+	}
+UpdateWeaponSpeed ();
+}
+
+//-------------------------------------------------------------------------------------------
+//	Make sure weapon is not moving faster than allowed speed.
+
+void CObject::UpdateWeaponSpeed (void)
+{
+fix xSpeed = mType.physInfo.velocity.Mag ();
+if ((info.nType == OBJ_WEAPON) && (xSpeed > WI_speed (info.nId, gameStates.app.nDifficultyLevel))) {
+	//	Only slow down if not allowed to move.  Makes sense, huh?  Allows proxbombs to get moved by physics force. --MK, 2/13/96
+	if (WI_speed (info.nId, gameStates.app.nDifficultyLevel)) {
+		fix xScaleFactor = FixDiv (WI_speed (info.nId, gameStates.app.nDifficultyLevel), xSpeed);
+		mType.physInfo.velocity *= xScaleFactor;
+		}
+	}
 }
 
 //-------------------------------------------------------------------------------------------
@@ -500,12 +582,11 @@ return xWeaponSpeed;
 void CObject::UpdateWeapon (void)
 {
 	CObject*	gmObjP;
-	fix		xWeaponSpeed, xScaleFactor, xDistToTarget;
-
+	
 Assert (info.controlType == CT_WEAPON);
 //	Ok, this is a big hack by MK.
 //	If you want an CObject to last for exactly one frame, then give it a lifeleft of ONE_FRAME_TIME
-if (0 >= (xWeaponSpeed = WeaponSpeed ()))
+if (RemoveWeapon ())
 	return;
 if ((info.nType == OBJ_WEAPON) && (info.nId == FUSION_ID)) {		//always set fusion weapon to max vel
 	CFixVector::Normalize (mType.physInfo.velocity);
@@ -518,80 +599,14 @@ if ((gameData.laser.xUpdateTime >= I2X (1) / 40) &&
 	 !(info.nFlags & PF_HAS_BOUNCED) &&
 	 !((info.nId == GUIDEDMSL_ID) &&
 	   (this == (gmObjP = gameData.objs.guidedMissile [OBJECTS [cType.laserInfo.parent.nObject].info.nId].objP)) &&
-	   (info.nSignature == gmObjP->info.nSignature))) {
-	for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= I2X (1) / 40; xFrameTime -= I2X (1) / 40) {
-		CFixVector	vVecToObject, vNewVel;
-		fix			dot = I2X (1);
-		fix			speed, xMaxSpeed, xDist;
-		int			nObjId = info.nId;
-		//	For first 1/2 second of life, missile flies straight.
-		if (cType.laserInfo.xCreationTime + HomingMslStraightTime (nObjId) < gameData.time.xGame) 
-			{
-			int nHomingTarget = cType.laserInfo.nHomingTarget;
-
-			//	If it's time to do tracking, then it's time to grow up, stop bouncing and start exploding!.
-			if (Bounces ())
-				mType.physInfo.flags &= ~PF_BOUNCE;
-
-			//	Make sure the CObject we are tracking is still trackable.
-			nHomingTarget = TrackHomingTarget (nHomingTarget, this, &dot);
-			if (nHomingTarget != -1) {
-				if (nHomingTarget == LOCALPLAYER.nObject) {
-					xDistToTarget = CFixVector::Dist (info.position.vPos, OBJECTS [nHomingTarget].info.position.vPos);
-					if ((xDistToTarget < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
-						LOCALPLAYER.homingObjectDist = xDistToTarget;
-					}
-				vVecToObject = OBJECTS [nHomingTarget].info.position.vPos - info.position.vPos;
-				xDist = CFixVector::Normalize (vVecToObject);
-				vNewVel = mType.physInfo.velocity;
-				speed = CFixVector::Normalize (vNewVel);
-				xMaxSpeed = WI_speed (info.nId,gameStates.app.nDifficultyLevel);
-				if (speed + I2X (1) < xMaxSpeed) {
-					speed += FixMul (xMaxSpeed, I2X (1) / 80);
-					if (speed > xMaxSpeed)
-						speed = xMaxSpeed;
-					}
-				if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (info.nId == EARTHSHAKER_MEGA_ID)) {
-					fix h = (info.xLifeLeft + I2X (1) - 1) / I2X (1);
-
-					if (h > 7)
-						vVecToObject *= (I2X (1) / (h - 6));
-					}
-	#if 0
-				vVecToObject *= HomingMslScale ();
-	#endif
-				vNewVel += vVecToObject;
-				//	The boss' smart children track better...
-				if (gameData.weapons.info [info.nId].renderType != WEAPON_RENDER_POLYMODEL)
-					vNewVel += vVecToObject;
-				CFixVector::Normalize (vNewVel);
-				//CFixVector vOldVel = mType.physInfo.velocity;
-				CFixVector vTest = info.position.vPos + vNewVel * xDist;
-				if (CanSeePoint (NULL, &info.position.vPos, &vTest, info.nSegment, 3 * info.xSize / 2))
-					/*mType.physInfo.velocity = vOldVel;
-				else*/ {	//	Subtract off life proportional to amount turned. For hardest turn, it will lose 2 seconds per second.
-					mType.physInfo.velocity = vNewVel;
-					mType.physInfo.velocity *= speed;
-					dot = abs (I2X (1) - dot);
-					info.xLifeLeft -= FixMul (dot * 32, I2X (1) / 40);
-					}
-
-				//	Only polygon OBJECTS have visible orientation, so only they should turn.
-				if (gameData.weapons.info [info.nId].renderType == WEAPON_RENDER_POLYMODEL)
-					HomingMissileTurnTowardsVelocity (this, &vNewVel);		//	vNewVel is normalized velocity.
-				}
-			}
-		}
-	}
-	//	Make sure weapon is not moving faster than allowed speed.
-if ((info.nType == OBJ_WEAPON) &&
-	 (xWeaponSpeed > WI_speed (info.nId, gameStates.app.nDifficultyLevel))) {
-	//	Only slow down if not allowed to move.  Makes sense, huh?  Allows proxbombs to get moved by physics force. --MK, 2/13/96
-	if (WI_speed (info.nId, gameStates.app.nDifficultyLevel)) {
-		xScaleFactor = FixDiv (WI_speed (info.nId,gameStates.app.nDifficultyLevel), xWeaponSpeed);
-		mType.physInfo.velocity *= xScaleFactor;
-		}
-	}
+	   (info.nSignature == gmObjP->info.nSignature)))
+#if USE_OPENMP > 1
+	gameData.objs.update.Push (this);
+#else
+	UpdateHomingWeapon ();
+#endif
+else
+	UpdateWeaponSpeed ();
 }
 
 //	--------------------------------------------------------------------------------------------------
