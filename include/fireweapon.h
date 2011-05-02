@@ -148,7 +148,6 @@ int CreateWeaponObject (ubyte weaponType, short nSegment,CFixVector *position, s
 void ReleaseGuidedMissile(int player_num);
 
 void CreateSmartChildren (CObject *objp, int count);
-int FindHomingTarget (CFixVector *curpos, CObject *tracker);
 int UpdateOmegaLightnings (CObject *parentObjP, CObject *targetObjP);
 void StopPrimaryFire (void);
 void StopSecondaryFire (void);

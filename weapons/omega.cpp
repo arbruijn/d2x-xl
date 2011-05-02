@@ -264,7 +264,7 @@ if (SlowMotionActive ()) {
 	nTargetObj = -1;
 else
 #endif
-	nTargetObj = FindHomingTarget (vMuzzle, weaponObjP);
+	nTargetObj = weaponObjP->FindVisibleHomingTarget (vMuzzle);
 nParentSeg = bSpectate ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment;
 
 if (0 > (nFiringSeg = FindSegByPos (*vMuzzle, nParentSeg, 1, 0))) {
