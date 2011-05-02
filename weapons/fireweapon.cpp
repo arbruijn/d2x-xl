@@ -497,7 +497,7 @@ return false;
 
 //-------------------------------------------------------------------------------------------
 //sequence this weapon object for this _frame_ (underscores added here to aid MK in his searching!)
-void CObject::UpdateHomingWeapon (void)
+void CObject::UpdateHomingWeapon (int nThread)
 {
 for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= I2X (1) / 40; xFrameTime -= I2X (1) / 40) {
 	CFixVector	vVecToObject, vNewVel;
@@ -511,7 +511,7 @@ for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= I2X (1) / 40; xF
 		if (Bounces ())
 			mType.physInfo.flags &= ~PF_BOUNCE;
 		//	Make sure the CObject we are tracking is still trackable.
-		int nHomingTarget = TrackHomingTarget (cType.laserInfo.nHomingTarget, this, &dot);
+		int nHomingTarget = TrackHomingTarget (cType.laserInfo.nHomingTarget, this, &dot, nThread);
 		if (nHomingTarget != -1) {
 			if (nHomingTarget == LOCALPLAYER.nObject) {
 				fix xDistToTarget = CFixVector::Dist (info.position.vPos, OBJECTS [nHomingTarget].info.position.vPos);

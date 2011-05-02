@@ -1043,7 +1043,7 @@ class CObject : public CObjectInfo {
 		void SetupDebris (int nSubObj, int nId, int nTexOverride);
 
 	public:
-		void UpdateHomingWeapon (void);
+		void UpdateHomingWeapon (int nThread = 0);
 	};
 
 inline int operator- (CObject* o, CArray<CObject>& a) { return a.Index (o); }

@@ -220,7 +220,7 @@ class CTarget {
 
 #endif
 
-int FindHomingTargetComplete (CFixVector *vCurPos, CObject *trackerP, int trackObjType1, int trackObjType2)
+int FindHomingTargetComplete (CFixVector *vCurPos, CObject *trackerP, int trackObjType1, int trackObjType2, int nThread)
 {
 	fix		xBestDot;
 	fix		maxTrackableDist;
@@ -229,12 +229,10 @@ int FindHomingTargetComplete (CFixVector *vCurPos, CObject *trackerP, int trackO
 #if !NEW_TARGETTING
 	int		nBestObj = -1;
 #else
-	static CStack<class CTarget>	targets;
-	uint h = uint (100 * ((gameData.objs.nObjects + 99) / 100));
+	static CStack<class CTarget>	targets [MAX_THREADS];
 
-if ((targets.Length () < h) && !targets.Resize (h, false))
-	return -1;
-targets.Reset ();
+targets [nThread].SetGrowth (100);
+targets [nThread].Reset ();
 #endif
 
 maxTrackableDist = MAX_TRACKABLE_DIST;

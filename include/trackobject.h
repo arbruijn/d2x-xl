@@ -25,7 +25,7 @@ extern fix xMinTrackableDot;   //  MIN_TRACKABLE_DOT inversely scaled by FrameTi
 
 int CallFindHomingTargetComplete (CObject *tracker, CFixVector *curpos);
 int FindHomingTarget (CFixVector *curpos, CObject *trackerP);
-int FindHomingTargetComplete (CFixVector *curpos, CObject *tracker, int track_objType1, int track_objType2);
+int FindHomingTargetComplete (CFixVector *curpos, CObject *tracker, int track_objType1, int track_objType2, int nThread = 0);
 int TrackHomingTarget (int nHomingTarget, CObject *tracker, fix *dot);
 
 #endif //_TRACKOBJECT_H

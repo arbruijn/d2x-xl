@@ -632,8 +632,9 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	{
 	int h = int (gameData.objs.update.ToS ());
 	#pragma omp for
-	for (int i = 0; i < h; i++) {
-		gameData.objs.update [i]->UpdateHomingWeapon ();
+	for (int nThread = 0; nThread < gameStates.app.nThreads; nThread++) {
+		for (int i = nThread; i < h; i += gameStates.app.nThreads)
+			gameData.objs.update [i]->UpdateHomingWeapon (nThread);
 		}
 	}
 #endif
