@@ -15,7 +15,7 @@
 
 fix	xMinTrackableDot = MIN_TRACKABLE_DOT;
 
-#define NEW_TARGETTING 1
+#define NEW_TARGETTING 0
 
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
@@ -55,8 +55,10 @@ class CHomingTargetData {
 			{ 
 			m_vTrackerViewDir = SPECTATOR (m_trackerP) ? gameStates.app.playerPos.mOrient.m.dir.f : m_trackerP->info.position.mOrient.m.dir.f;
 			m_xMaxDist = trackerP->MaxTrackableDist (m_xBestDot); 
+#if NEW_TARGETTING
 			m_targets.SetGrowth (100);
 			m_targets.Reset ();
+#endif
 			}
 
 		void Add (CObject* targetP, float dotScale = 1.0f);
@@ -85,9 +87,9 @@ m_targets.Push (CTarget (fix (dist * (1.0f - X2F (dot) / 2.0f)), targetP));
 //	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 //	to determine if an CObject is initially trackable.  FindHomingTarget is called on subsequent
 //	frames to determine if the CObject remains trackable.
-if (ObjectToObjectVisibility (this, targetP, FQ_TRANSWALL)) {
+if (ObjectToObjectVisibility (m_trackerP, targetP, FQ_TRANSWALL)) {
 	m_xBestDot = dot;
-	m_nBestObj = nObject;
+	m_nBestObj = targetP->Index ();
 	}
 #endif
 }
