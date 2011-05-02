@@ -106,7 +106,7 @@ const char *particleFS [4] = {
 	"uniform sampler2D particleTex, sparkTex, bubbleTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"void main (void) {\r\n" \
-	"int nType = floor (gl_TexCoord [0].z + 0.5);\r\n" \
+	"int nType = (int) floor (gl_TexCoord [0].z + 0.5);\r\n" \
 	"vec4 texColor = ((nType == 0) ? texture2D (sparkTex, gl_TexCoord [0].xy) : (nType == 1) ? texture2D (particleTex, gl_TexCoord [0].xy) : texture2D (bubbleTex, gl_TexCoord [0].xy));\r\n" \
 	"texColor *= gl_Color;\r\n" \
 	"if (gl_Color.a == 0.0) //additive\r\n" \
@@ -146,7 +146,7 @@ const char *particleFS [4] = {
 	"void main (void) {\r\n" \
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
-	"int nType = floor (gl_TexCoord [0].z + 0.5);\r\n" \
+	"int nType = (int) floor (gl_TexCoord [0].z + 0.5);\r\n" \
 	"float dm = dMax [nType];\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
@@ -179,7 +179,7 @@ const char *particleFS [4] = {
 	"void main (void) {\r\n" \
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
-	"float dm = dMax [floor (gl_TexCoord [0].z + 0.5)];\r\n" \
+	"float dm = dMax [(int) floor (gl_TexCoord [0].z + 0.5)];\r\n" \
 	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
 	"dz = (dm - dz) / dm;\r\n" \

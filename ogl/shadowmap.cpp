@@ -227,7 +227,7 @@ const char* shadowMapFS =
 	"for (offset.y = -MAX_OFFSET; offset.y <= MAX_OFFSET; offset.y += 1.0) {\r\n" \
 	"  for (offset.x = -MAX_OFFSET; offset.x <= MAX_OFFSET; offset.x += 1.0) {\r\n" \
 	"    samplePos.xy = lightWinPos.xy + offset * windowScale;\r\n" \
-	"    light += ((w < 0.00001) || (abs (samplePos.x) > w) || (abs (samplePos.y) > w)) ? 1.0 : shadow2DProj (shadowMap, samplePos);\r\n" \
+	"    light += ((w < 0.00001) || (abs (samplePos.x) > w) || (abs (samplePos.y) > w)) ? 1.0 : shadow2DProj (shadowMap, samplePos).r;\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
 	"vec4 worldPos = modelviewProjInverse * cameraClipPos;\r\n" \
