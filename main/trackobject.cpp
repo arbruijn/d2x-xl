@@ -59,20 +59,20 @@ class CHomingTargetData {
 			m_targets.Reset ();
 			}
 
-		void Add (CObject* targetP);
+		void Add (CObject* targetP, float dotScale = 1.0f);
 
 		int Target (void);
 	};
 
 //	-----------------------------------------------------------------------------
 
-void CHomingTargetData::Add (CObject* targetP)
+void CHomingTargetData::Add (CObject* targetP, float dotScale)
 {
 CFixVector vTarget = targetP->Position () - m_vTrackerPos;
 fix dist = CFixVector::Normalize (vTarget);
 if (dist >= m_xMaxDist)
 	return;
-fix dot = CFixVector::Dot (vTarget, m_vTrackerViewDir);
+fix dot = fix (CFixVector::Dot (vTarget, m_vTrackerViewDir) * dotScale);
 if (dot < m_xBestDot)
 	return;
 #if NEW_TARGETTING
@@ -270,19 +270,19 @@ FORALL_ACTOR_OBJS (targetP, nObject) {
 	if (OBJ_IDX (targetP) == cType.laserInfo.parent.nObject) // Don't track shooter
 		continue;
 
+	float dotScale = 1.0f;
 	int nType = targetP->Type ();
 	if (nType == OBJ_WEAPON) {
 		if (targetP->cType.laserInfo.parent.nSignature == cType.laserInfo.parent.nSignature)
 			continue; // target was created by tracker (e.g. a mine dropped by the tracker object)
 		if (targetP->IsPlayerMine ())
-			bIsProximity = 1;
+			dotScale = 9.0f / 8.0f;
 		else if (!(bOmega && EGI_FLAG (bKillMissiles, 0, 1, 0) && (targetP->IsMissile () || targetP->IsMine ())))
 			continue;
 		}
 	else if ((nType != targetType1) && (nType != targetType2) && (nType != OBJ_MONSTERBALL)) {
 		continue;
 		}
-	
 	else if (targetP->Type () == OBJ_PLAYER) {
 		if (gameData.multiplayer.players [targetP->Id ()].flags & PLAYER_FLAGS_CLOAKED)
 			continue; // don't track cloaked players.
@@ -299,7 +299,7 @@ FORALL_ACTOR_OBJS (targetP, nObject) {
 			continue;	//	player missiles don't track the guidebot.
 		}
 
-	targetData.Add (targetP);
+	targetData.Add (targetP, dotScale);
 	}
 
 return targetData.Target ();
