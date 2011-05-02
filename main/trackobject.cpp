@@ -138,7 +138,7 @@ if (targetP->Type () == OBJ_ROBOT) {
 		return 0;
 	}
 CFixVector vTracker = SPECTATOR (this) ? gameStates.app.playerPos.mOrient.m.dir.f : info.position.mOrient.m.dir.f;
-CFixVector vTarget = targetP->info.position.vPos - info.position.vPos;
+CFixVector vTarget = targetP->Position () - Position ();
 CFixVector::Normalize (vTarget);
 xDot = CFixVector::Dot (vTarget, vTracker);
 if ((xDot < xMinTrackableDot) && (xDot > I2X (9) / 10)) {
@@ -214,14 +214,14 @@ if (IsMultiGame)
 if ((Type () != OBJ_PLAYER) && (cType.laserInfo.parent.nObject != LOCALPLAYER.nObject) && !(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	return OBJ_IDX (gameData.objs.consoleP);
 
-int nWindow = FindTargetWindow ();
+	int nWindow = FindTargetWindow ();
+
 if (nWindow == -1)
 	return SelectHomingTarget (vTrackerPos);
 
-bool bOmega = (Type () == OBJ_WEAPON) && (Id () == OMEGA_ID);
-bool bPlayer = (Type () == OBJ_PLAYER);
-
-CHomingTargetData targetData (this, vTrackerPos, targetLists [0]);
+	bool bOmega = (Type () == OBJ_WEAPON) && (Id () == OMEGA_ID);
+	bool bPlayer = (Type () == OBJ_PLAYER);
+	CHomingTargetData targetData (this, vTrackerPos, targetLists [0]);
 
 //	Not in multiplayer mode and fired by player.
 for (int i = windowRenderedData [nWindow].nObjects - 1; i >= 0; i--) {
@@ -260,18 +260,9 @@ return targetData.Target ();
 
 int CObject::FindAnyHomingTarget (CFixVector& vTrackerPos, int targetType1, int targetType2, int nThread)
 {
-#if !NEW_TARGETTING
-	int nBestObj = -1;
-#else
-	CStack<class CTarget>& targets = targetLists [nThread];
-
-targets.SetGrowth (100);
-targets.Reset ();
-#endif
-
-bool bOmega = (Type () == OBJ_WEAPON) && (Id () == OMEGA_ID);
-
-CHomingTargetData targetData (this, vTrackerPos, targetLists [nThread]);
+	bool bOmega = (Type () == OBJ_WEAPON) && (Id () == OMEGA_ID);
+	CObject* targetP;
+	CHomingTargetData targetData (this, vTrackerPos, targetLists [nThread]);
 
 FORALL_ACTOR_OBJS (targetP, nObject) {
 	int			bIsProximity = 0;
@@ -322,7 +313,7 @@ int CObject::UpdateHomingTarget (int nTarget, fix& dot, int nThread)
 {
 	int	rVal = -2;
 	int	nFrame;
-	int	goalType, goal2Type = -1;
+	int	targetType1, targetType2 = -1;
 
 //if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
 	//	Every 8 frames for each CObject, scan all OBJECTS.
@@ -344,31 +335,31 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 		if (nTarget == -1) {
 			if (IsMultiGame) {
 				if (IsCoopGame)
-					rVal = FindAnyHomingTarget (&info.position.vPos, OBJ_ROBOT, -1, nThread);
+					rVal = FindAnyHomingTarget (Position (), OBJ_ROBOT, -1, nThread);
 				else if (gameData.app.nGameMode & GM_MULTI_ROBOTS)		//	Not cooperative, if robots, track either robot or CPlayerData
-					rVal = FindAnyHomingTarget (&info.position.vPos, OBJ_PLAYER, OBJ_ROBOT, nThread);
+					rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, OBJ_ROBOT, nThread);
 				else		//	Not cooperative and no robots, track only a CPlayerData
-					rVal = FindAnyHomingTarget (&info.position.vPos, OBJ_PLAYER, -1, nThread);
+					rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, -1, nThread);
 				}
 			else
-				rVal = FindAnyHomingTarget (&info.position.vPos, OBJ_PLAYER, OBJ_ROBOT, nThread);
+				rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, OBJ_ROBOT, nThread);
 			} 
 		else {
-			goalType = OBJECTS [cType.laserInfo.nHomingTarget].Type ();
-			if ((goalType == OBJ_PLAYER) || (goalType == OBJ_ROBOT) || (goalType == OBJ_MONSTERBALL))
-				rVal = FindAnyHomingTarget (&info.position.vPos, goalType, -1, nThread);
+			targetType1 = OBJECTS [cType.laserInfo.nHomingTarget].Type ();
+			if ((targetType1 == OBJ_PLAYER) || (targetType1 == OBJ_ROBOT) || (targetType1 == OBJ_MONSTERBALL))
+				rVal = FindAnyHomingTarget (Position (), targetType1, -1, nThread);
 			else
 				rVal = -1;
 			}
 		} 
 	else {
 		if (gameStates.app.cheats.bRobotsKillRobots || (Parent () && (Parent ()->Target ()->Type () == OBJ_ROBOT)))
-			goal2Type = OBJ_ROBOT;
+			targetType2 = OBJ_ROBOT;
 		if (nTarget == -1)
-			rVal = FindAnyHomingTarget (&info.position.vPos, OBJ_PLAYER, goal2Type, nThread);
+			rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, targetType2, nThread);
 		else {
-			goalType = OBJECTS [cType.laserInfo.nHomingTarget].Type ();
-			rVal = FindAnyHomingTarget (&info.position.vPos, goalType, goal2Type, nThread);
+			targetType1 = OBJECTS [cType.laserInfo.nHomingTarget].Type ();
+			rVal = FindAnyHomingTarget (Position (), targetType1, targetType2, nThread);
 			}
 		}
 	Assert (rVal != -2);		//	This means it never got set which is bad! Contact Mike.
