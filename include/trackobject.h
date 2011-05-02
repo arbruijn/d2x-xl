@@ -21,11 +21,4 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_TRACKABLE_DIST         I2X (250)
 #define HOMINGMSL_STRAIGHT_TIME    (I2X (1) / 8)    //  Changed as per request of John, Adam, Yuan, but mostly John
 
-extern fix xMinTrackableDot;   //  MIN_TRACKABLE_DOT inversely scaled by FrameTime
-
-int CallUpdateHomingTarget (CObject *tracker, CFixVector *curpos);
-int FindHomingTarget (CFixVector *curpos, CObject *trackerP);
-int UpdateHomingTarget (CFixVector *curpos, CObject *tracker, int track_objType1, int track_objType2, int nThread = 0);
-int TrackHomingTarget (int nHomingTarget, CObject *tracker, fix *dot, int nThread = 0);
-
 #endif //_TRACKOBJECT_H

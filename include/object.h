@@ -959,6 +959,11 @@ class CObject : public CObjectInfo {
 		void RotateCamera (void);
 		void RotateMarker (void);
 
+		int SelectHomingTarget (CFixVector* vCurPos);
+		int FindVisibleHomingTarget (CFixVector* vCurPos);
+		int FindAnyHomingTarget (CFixVector* vCurPos, int track_objType1, int track_objType2, int nThread = 0);
+		int UpdateHomingTarget (int nTarget, fix& dot, int nThread = 0);
+
 		CFixVector RegisterHit (CFixVector vHit, short nModel = -1);
 		inline bool CriticalHit (void) {
 			bool bCritical = m_damage.bCritical;
@@ -1041,6 +1046,10 @@ class CObject : public CObjectInfo {
 		void UpdateWeapon (void);
 		void SetupRandomMovement (void);
 		void SetupDebris (int nSubObj, int nId, int nTexOverride);
+
+		int ObjectIsTrackable (int nTarget, fix& xDot);
+		int FindTargetWindow (void);
+		int MaxTrackableDist (int& xBestDot);
 
 	public:
 		void UpdateHomingWeapon (int nThread = 0);

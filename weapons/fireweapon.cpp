@@ -395,12 +395,12 @@ if ((objP == gameData.objs.consoleP) && !laserP->IsPlayerMine ())
 
 if (gameStates.app.cheats.bHomingWeapons || gameData.weapons.info [nLaserType].homingFlag) {
 	if (objP == gameData.objs.consoleP) {
-		laserP->cType.laserInfo.nHomingTarget = FindHomingTarget (&vLaserPos, laserP);
-		gameData.multigame.laser.nTrack = laserP->cType.laserInfo.nHomingTarget;
+		laserP->cType.laserInfo.nTarget = FindVisibleHomingTarget (&vLaserPos, laserP);
+		gameData.multigame.laser.nTrack = laserP->cType.laserInfo.nTarget;
 		}
 	else {// Some other CPlayerData shot the homing thing
 		Assert (IsMultiGame);
-		laserP->cType.laserInfo.nHomingTarget = gameData.multigame.laser.nTrack;
+		laserP->cType.laserInfo.nTarget = gameData.multigame.laser.nTrack;
 		}
 	}
 lightClusterManager.Add (nObject, nLightObj);
@@ -511,14 +511,14 @@ for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= I2X (1) / 40; xF
 		if (Bounces ())
 			mType.physInfo.flags &= ~PF_BOUNCE;
 		//	Make sure the CObject we are tracking is still trackable.
-		int nHomingTarget = TrackHomingTarget (cType.laserInfo.nHomingTarget, this, &dot, nThread);
-		if (nHomingTarget != -1) {
-			if (nHomingTarget == LOCALPLAYER.nObject) {
-				fix xDistToTarget = CFixVector::Dist (info.position.vPos, OBJECTS [nHomingTarget].info.position.vPos);
+		int nTarget = UpdateHomingTarget (cType.laserInfo.nTarget, dot, nThread);
+		if (nTarget != -1) {
+			if (nTarget == LOCALPLAYER.nObject) {
+				fix xDistToTarget = CFixVector::Dist (info.position.vPos, OBJECTS [nTarget].info.position.vPos);
 				if ((xDistToTarget < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
 					LOCALPLAYER.homingObjectDist = xDistToTarget;
 				}
-			vVecToObject = OBJECTS [nHomingTarget].info.position.vPos - info.position.vPos;
+			vVecToObject = OBJECTS [nTarget].info.position.vPos - info.position.vPos;
 			xDist = CFixVector::Normalize (vVecToObject);
 			vNewVel = mType.physInfo.velocity;
 			speed = CFixVector::Normalize (vNewVel);
@@ -775,7 +775,7 @@ else { //	Create a vector towards the goal, then add some noise to it.
 	}
 if (0 > (nObject = CreateNewWeapon (&vGoal, &objP->info.position.vPos, objP->info.nSegment, objP->Index (), objType, bMakeSound)))
 	return -1;
-OBJECTS [nObject].cType.laserInfo.nHomingTarget = nGoalObj;
+OBJECTS [nObject].cType.laserInfo.nTarget = nGoalObj;
 return nObject;
 }
 
@@ -997,7 +997,7 @@ if (gameStates.app.bPlayerIsDead)
 gameData.objs.trackGoals [0] =
 gameData.objs.trackGoals [1] = NULL;
 if ((objP = GuidedInMainView ())) {
-	nObject = FindHomingTarget (&objP->info.position.vPos, objP);
+	nObject = FindVisibleHomingTarget (&objP->info.position.vPos, objP);
 	gameData.objs.trackGoals [0] =
 	gameData.objs.trackGoals [1] = (nObject < 0) ? NULL : OBJECTS + nObject;
 	return;
@@ -1030,7 +1030,7 @@ for (i = 0; i < j; i++, h = !h) {
 		vGunPos = vGunPoints [nGun];
 		vGunPos = *viewP * vGunPos;
 		vGunPos += gameData.objs.consoleP->info.position.vPos;
-		nObject = FindHomingTarget (&vGunPos, gameData.objs.consoleP);
+		nObject = FindVisibleHomingTarget (&vGunPos, gameData.objs.consoleP);
 		gameData.objs.trackGoals [i] = (nObject < 0) ? NULL : OBJECTS + nObject;
 		}
 	}
