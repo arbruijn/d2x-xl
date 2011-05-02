@@ -201,7 +201,7 @@ return nBestObj;
 //	Always track proximity bombs.  --MK, 06/14/95
 //	Make homing OBJECTS not track parent's prox bombs.
 
-#define NEW_TARGETTING 0
+#define NEW_TARGETTING 1
 
 #if NEW_TARGETTING
 
@@ -231,7 +231,7 @@ int FindHomingTargetComplete (CFixVector *vCurPos, CObject *trackerP, int trackO
 #else
 	static CStack<class CTarget>	targets;
 
-if ((targets.Length () < uint (gameData.objs.nObjects)) && !targets.Resize (uint (gameData.objs.nObjects), false))
+if ((targets.Length () < uint (100 * ((gameData.objs.nObjects + 99) / 100))) && !targets.Resize (uint (gameData.objs.nObjects), false))
 	return -1;
 targets.Reset ();
 #endif
@@ -239,7 +239,7 @@ targets.Reset ();
 maxTrackableDist = MAX_TRACKABLE_DIST;
 if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == EARTHSHAKER_MEGA_ID)) {
 	maxTrackableDist *= 2;
-	xBestDot = 0; //-I2X (1);
+	xBestDot = I2X (1) / 4; //-I2X (1);
 	}
 else
 	xBestDot = MIN_TRACKABLE_DOT;
