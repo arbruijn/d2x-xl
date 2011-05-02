@@ -256,7 +256,7 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 
 // -----------------------------------------------------------------------------
 
-int CObject::UpdateMovement (int nPass)
+int CObject::UpdateMovement (void)
 {
 switch (info.controlType) {
 	case CT_NONE:
@@ -270,9 +270,7 @@ switch (info.controlType) {
 		Int3 ();	// -- hey!these are no longer supported!!-- do_repair_sequence (this); break;
 
 	case CT_POWERUP:
-			DoPowerupFrame ();
-		else
-			gameData.objs.objects.update.Push (this);
+		DoPowerupFrame ();
 		break;
 
 	case CT_MORPH:			//morph implies AI
@@ -629,9 +627,10 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 #if USE_OPENMP > 1
 #pragma omp parallel 
 	{
+	int h = int (gameData.objs.update.ToS ());
 	#pragma omp for
-	for (uint i = 0; i < gameData.objs.update.ToS (); i++) {
-		gameData.objs.update [i].UpdateHomingWeapon ();
+	for (int i = 0; i < h; i++) {
+		gameData.objs.update [i]->UpdateHomingWeapon ();
 		}
 	}
 #endif
