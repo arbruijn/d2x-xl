@@ -109,7 +109,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void RenderLaser (CObject *obj);
 void find_goal_texture (CObject * obj, ubyte nType, int gun_num, int makeSound, int harmlessFlag);
-void DoWeaponSequence (CObject *obj);
 void CreateFlare (CObject *obj);
 int LasersAreRelated (int o1, int o2);
 int FireWeaponDelayedWithSpread (CObject *objP, ubyte laserType, int gun_num, fix spreadr, 
@@ -149,7 +148,7 @@ int CreateWeaponObject (ubyte weaponType, short nSegment,CFixVector *position, s
 void ReleaseGuidedMissile(int player_num);
 
 void CreateSmartChildren (CObject *objp, int count);
-int FindHomingObject (CFixVector *curpos, CObject *tracker);
+int FindHomingTarget (CFixVector *curpos, CObject *tracker);
 int UpdateOmegaLightnings (CObject *parentObjP, CObject *targetObjP);
 void StopPrimaryFire (void);
 void StopSecondaryFire (void);

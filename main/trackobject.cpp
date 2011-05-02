@@ -59,28 +59,28 @@ return 0;
 
 //	--------------------------------------------------------------------------------------------
 
-int CallFindHomingObjectComplete (CObject *trackerP, CFixVector *vCurPos)
+int CallFindHomingTargetComplete (CObject *trackerP, CFixVector *vCurPos)
 {
 if (!IsMultiGame)
-	return FindHomingObjectComplete (vCurPos, trackerP, OBJ_ROBOT, -1);
+	return FindHomingTargetComplete (vCurPos, trackerP, OBJ_ROBOT, -1);
 if ((trackerP->info.nType == OBJ_PLAYER) || (trackerP->cType.laserInfo.parent.nType == OBJ_PLAYER)) {
 	//	It's fired by a player, so if robots present, track robot, else track player.
 	return IsCoopGame ? 
-			 FindHomingObjectComplete (vCurPos, trackerP, OBJ_ROBOT, -1) :
-			 FindHomingObjectComplete (vCurPos, trackerP, OBJ_PLAYER, OBJ_ROBOT);
+			 FindHomingTargetComplete (vCurPos, trackerP, OBJ_ROBOT, -1) :
+			 FindHomingTargetComplete (vCurPos, trackerP, OBJ_PLAYER, OBJ_ROBOT);
 		} 
 #if DBG
 if ((trackerP->cType.laserInfo.parent.nType != OBJ_ROBOT) && (trackerP->cType.laserInfo.parent.nType != OBJ_PLAYER))
 	trackerP = trackerP;
 #endif
 CObject* parentP = trackerP->Parent ();
-return FindHomingObjectComplete (vCurPos, trackerP, OBJ_PLAYER, (parentP && (parentP->Target ()->Type () == OBJ_ROBOT)) ? OBJ_ROBOT : -1);
+return FindHomingTargetComplete (vCurPos, trackerP, OBJ_PLAYER, (parentP && (parentP->Target ()->Type () == OBJ_ROBOT)) ? OBJ_ROBOT : -1);
 }
 
 //	--------------------------------------------------------------------------------------------
 //	Find CObject to home in on.
 //	Scan list of OBJECTS rendered last frame, find one that satisfies function of nearness to center and distance.
-int FindHomingObject (CFixVector *vTrackerPos, CObject *trackerP)
+int FindHomingTarget (CFixVector *vTrackerPos, CObject *trackerP)
 {
 	int	i, bOmega, bGuidedMslView;
 	fix	maxDot = -I2X (2);
@@ -94,7 +94,7 @@ if ((trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == SMARTMINE_BLO
 	nDbgObj = nDbgObj;
 #endif
 if (IsMultiGame)
-	return CallFindHomingObjectComplete (trackerP, vTrackerPos);
+	return CallFindHomingTargetComplete (trackerP, vTrackerPos);
 if (trackerP->info.nType == OBJ_WEAPON) {
 	bOmega = (trackerP->info.nId == OMEGA_ID);
 	bGuidedMslView = (trackerP == GuidedInMainView ());
@@ -127,7 +127,7 @@ else {
 
 	//	Couldn't find suitable view from this frame, so do complete search.
 	if (nWindow == -1)
-		return CallFindHomingObjectComplete (trackerP, vTrackerPos);
+		return CallFindHomingTargetComplete (trackerP, vTrackerPos);
 
 	maxTrackableDist = MAX_TRACKABLE_DIST;
 	if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == EARTHSHAKER_MEGA_ID))
@@ -166,7 +166,7 @@ else {
 			dot = CFixVector::Dot (vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient.m.dir.f : trackerP->info.position.mOrient.m.dir.f);
 
 			//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
-			//	to determine if an CObject is initially trackable.  FindHomingObject is called on subsequent
+			//	to determine if an CObject is initially trackable.  FindHomingTarget is called on subsequent
 			//	frames to determine if the CObject remains trackable.
 			if (dot > curMinTrackableDot) {
 				if (dot > maxDot) {
@@ -214,7 +214,7 @@ class CTarget {
 		inline bool operator>= (CTarget& other) { return m_xDot >= other.m_xDot; }
 	};
 
-int FindHomingObjectComplete (CFixVector *vCurPos, CObject *trackerP, int trackObjType1, int trackObjType2)
+int FindHomingTargetComplete (CFixVector *vCurPos, CObject *trackerP, int trackObjType1, int trackObjType2)
 {
 	//int		nBestObj = -1;
 	fix		xBestDot;
@@ -300,7 +300,7 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 #	endif
 #else
 	//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
-	//	to determine if an CObject is initially trackable.  FindHomingObject is called on subsequent
+	//	to determine if an CObject is initially trackable.  FindHomingTarget is called on subsequent
 	//	frames to determine if the CObject remains trackable.
 	if (!ObjectToObjectVisibility (trackerP, curObjP, FQ_TRANSWALL))
 		continue;
@@ -355,19 +355,19 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 		if (nHomingTarget == -1) {
 			if (IsMultiGame) {
 				if (IsCoopGame)
-					rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_ROBOT, -1);
+					rVal = FindHomingTargetComplete (&trackerP->info.position.vPos, trackerP, OBJ_ROBOT, -1);
 				else if (gameData.app.nGameMode & GM_MULTI_ROBOTS)		//	Not cooperative, if robots, track either robot or CPlayerData
-					rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, OBJ_ROBOT);
+					rVal = FindHomingTargetComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, OBJ_ROBOT);
 				else		//	Not cooperative and no robots, track only a CPlayerData
-					rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, -1);
+					rVal = FindHomingTargetComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, -1);
 				}
 			else
-				rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, OBJ_ROBOT);
+				rVal = FindHomingTargetComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, OBJ_ROBOT);
 			} 
 		else {
 			goalType = OBJECTS [trackerP->cType.laserInfo.nHomingTarget].info.nType;
 			if ((goalType == OBJ_PLAYER) || (goalType == OBJ_ROBOT) || (goalType == OBJ_MONSTERBALL))
-				rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, goalType, -1);
+				rVal = FindHomingTargetComplete (&trackerP->info.position.vPos, trackerP, goalType, -1);
 			else
 				rVal = -1;
 			}
@@ -376,10 +376,10 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 		if (gameStates.app.cheats.bRobotsKillRobots || (trackerP->Parent () && (trackerP->Parent ()->Target ()->Type () == OBJ_ROBOT)))
 			goal2Type = OBJ_ROBOT;
 		if (nHomingTarget == -1)
-			rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, goal2Type);
+			rVal = FindHomingTargetComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, goal2Type);
 		else {
 			goalType = OBJECTS [trackerP->cType.laserInfo.nHomingTarget].info.nType;
-			rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, goalType, goal2Type);
+			rVal = FindHomingTargetComplete (&trackerP->info.position.vPos, trackerP, goalType, goal2Type);
 			}
 		}
 	Assert (rVal != -2);		//	This means it never got set which is bad! Contact Mike.

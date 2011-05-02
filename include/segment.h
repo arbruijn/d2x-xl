@@ -107,12 +107,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define OBJ_IS_WEAPON					1
 #define OBJ_IS_ENERGY_WEAPON			2
-#define OBJ_IS_SPLASHDMG_WEAPON			4
+#define OBJ_IS_SPLASHDMG_WEAPON		4
 #define OBJ_HAS_LIGHT_TRAIL			8
 #define OBJ_IS_PLAYER_MINE				16
 #define OBJ_IS_ROBOT_MINE				32
 #define OBJ_IS_MISSILE					64
 #define OBJ_IS_GATLING_ROUND			128
+#define OBJ_BOUNCES						256
 
 // Returns true if nSegment references a child, else returns false.
 // Note that -1 means no connection, -2 means a connection to the outside world.

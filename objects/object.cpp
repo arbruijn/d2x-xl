@@ -82,7 +82,7 @@ int dbgObjInstances = 0;
 
 //------------------------------------------------------------------------------
 
-CArray<ubyte> CObject::m_weaponInfo;
+CArray<ushort> CObject::m_weaponInfo;
 CArray<ubyte> CObject::m_bIsEquipment; 
 
 //------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ m_weaponInfo [EARTHSHAKER_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
 m_weaponInfo [EARTHSHAKER_MEGA_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
 m_weaponInfo [ROBOT_MEGAMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
 m_weaponInfo [ROBOT_EARTHSHAKER_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
-m_weaponInfo [ROBOT_SHAKER_MEGA_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
+m_weaponInfo [ROBOT_SHAKER_MEGA_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON | OBJ_BOUNCES;
 m_weaponInfo [ROBOT_MEGA_FLASHMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
 m_weaponInfo [ROBOT_MEGA_FLASHMSL_ID + 1] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
 
@@ -150,10 +150,10 @@ m_weaponInfo [ROBOT_BLUE_ENERGY_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OB
 m_weaponInfo [ROBOT_WHITE_ENERGY_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_HAS_LIGHT_TRAIL;
 
 m_weaponInfo [REACTOR_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON;
-m_weaponInfo [SMARTMSL_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON;
-m_weaponInfo [ROBOT_SMARTMSL_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON;
-m_weaponInfo [SMARTMINE_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON;
-m_weaponInfo [ROBOT_SMARTMINE_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON;
+m_weaponInfo [SMARTMSL_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_BOUNCES;
+m_weaponInfo [ROBOT_SMARTMSL_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_BOUNCES;
+m_weaponInfo [SMARTMINE_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_BOUNCES;
+m_weaponInfo [ROBOT_SMARTMINE_BLOB_ID] |= OBJ_IS_WEAPON | OBJ_IS_ENERGY_WEAPON | OBJ_BOUNCES;
 
 m_weaponInfo [PROXMINE_ID] |= OBJ_IS_PLAYER_MINE;
 m_weaponInfo [SMARTMINE_ID] |= OBJ_IS_PLAYER_MINE;
@@ -1668,6 +1668,13 @@ return IsWeapon () && IsPlayerMine (Id ());
 bool CObject::IsGatlingRound (void) 
 { 
 return IsWeapon () && ((m_weaponInfo [Id ()] & OBJ_IS_GATLING_ROUND) != 0);
+}
+
+//------------------------------------------------------------------------------
+
+bool CObject::Bounces (void) 
+{ 
+return IsWeapon () && ((mType.physInfo.flags & PF_BOUNCE) != 0) && ((m_weaponInfo [Id ()] & OBJ_BOUNCES) != 0);
 }
 
 //------------------------------------------------------------------------------

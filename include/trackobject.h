@@ -23,9 +23,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern fix xMinTrackableDot;   //  MIN_TRACKABLE_DOT inversely scaled by FrameTime
 
-int CallFindHomingObjectComplete (CObject *tracker, CFixVector *curpos);
-int FindHomingObject (CFixVector *curpos, CObject *trackerP);
-int FindHomingObjectComplete (CFixVector *curpos, CObject *tracker, int track_objType1, int track_objType2);
+int CallFindHomingTargetComplete (CObject *tracker, CFixVector *curpos);
+int FindHomingTarget (CFixVector *curpos, CObject *trackerP);
+int FindHomingTargetComplete (CFixVector *curpos, CObject *tracker, int track_objType1, int track_objType2);
 int TrackHomingTarget (int nHomingTarget, CObject *tracker, fix *dot);
 
 #endif //_TRACKOBJECT_H

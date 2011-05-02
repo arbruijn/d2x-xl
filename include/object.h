@@ -747,8 +747,8 @@ class CObjDamageInfo {
 
 class CObject : public CObjectInfo {
 	private:
-		static CArray<ubyte>	m_weaponInfo;
-		static CArray<ubyte>	m_bIsEquipment; 
+		static CArray<ushort>	m_weaponInfo;
+		static CArray<ubyte>		m_bIsEquipment; 
 
 	public:
 		static void InitTables (void);
@@ -766,6 +766,7 @@ class CObject : public CObjectInfo {
 		bool IsMine (void);
 		bool IsGatlingRound (void);
 		bool IsSplashDamageWeapon (void);
+		bool Bounces (void);
 
 	private:
 		short				m_nKey;
@@ -1035,6 +1036,8 @@ class CObject : public CObjectInfo {
 		void UpdateEffects (void);
 		int UpdateControl (void);
 		void UpdateMovement (void);
+		fix WeaponSpeed (void);
+		void UpdateWeapon (void);
 		void SetupRandomMovement (void);
 		void SetupDebris (int nSubObj, int nId, int nTexOverride);
 };

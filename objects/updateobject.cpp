@@ -131,16 +131,16 @@ if (this == dbgObjP)
 //process a continuously-spinning CObject
 void CObject::Spin (void)
 {
-	CAngleVector rotangs;
-	CFixMatrix rotmat, new_pm;
+	CAngleVector vRot;
+	CFixMatrix mRot, mOrient;
 
 Assert (info.movementType == MT_SPINNING);
-rotangs = CAngleVector::Create((fixang) FixMul (mType.spinRate.v.coord.x, gameData.time.xFrame),
+vRot = CAngleVector::Create((fixang) FixMul (mType.spinRate.v.coord.x, gameData.time.xFrame),
 										 (fixang) FixMul (mType.spinRate.v.coord.y, gameData.time.xFrame),
 										 (fixang) FixMul (mType.spinRate.v.coord.z, gameData.time.xFrame));
-rotmat = CFixMatrix::Create (rotangs);
-new_pm = info.position.mOrient * rotmat;
-info.position.mOrient = new_pm;
+mRot = CFixMatrix::Create (vRot);
+mOrient = info.position.mOrient * mRot;
+info.position.mOrient = mOrient;
 info.position.mOrient.CheckAndFix();
 }
 
@@ -299,7 +299,7 @@ switch (info.controlType) {
 		break;
 
 	case CT_WEAPON:
-		DoWeaponSequence (this);
+		UpdateWeapon ();
 		break;
 
 	case CT_EXPLOSION:

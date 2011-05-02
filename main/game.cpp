@@ -1052,7 +1052,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 		longjmp (gameExitPoint, 0);		// Go back to menu
 	}
 else { // Note the link to above!
-	LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  DoWeaponSequence modifies this.
+	LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  CObject::UpdateWeapon modifies this.
 	if (!UpdateAllObjects ())
 		return 0;
 	PowerupGrabCheatAll ();
