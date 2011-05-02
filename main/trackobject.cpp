@@ -189,17 +189,17 @@ return -1;
 
 int CObject::MaxTrackableDist (int& xBestDot)
 {
-if (Type () == OBJ_WEAPON) {
+if (Type () != OBJ_WEAPON) 
+	xBestDot = MIN_TRACKABLE_DOT;
+else {
 	if (Id () == OMEGA_ID) {
 		xBestDot = OMEGA_MIN_TRACKABLE_DOT;
 		return OMEGA_MAX_TRACKABLE_DIST;
 		}
-	if (Id () != EARTHSHAKER_MEGA_ID)
-		return MAX_TRACKABLE_DIST;
-	if (EGI_FLAG (bEnhancedShakers, 0, 0, 0))
+	xBestDot = MIN_TRACKABLE_DOT;
+	if ((Id () == EARTHSHAKER_MEGA_ID) && EGI_FLAG (bEnhancedShakers, 0, 0, 0))
 		return MAX_TRACKABLE_DIST * 2;
 	}
-xBestDot = MIN_TRACKABLE_DOT;
 return MAX_TRACKABLE_DIST;
 }
 
