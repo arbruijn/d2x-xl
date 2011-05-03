@@ -2171,7 +2171,7 @@ bRandom = (spawnMap [0].xDist >= SPAWN_MIN_DIST);
 
 j = 0;
 for (;;) {
-	i = bRandom ? d_rand () % nSpawnSegs : j++;
+	i = bRandom ? RandShort () % nSpawnSegs : j++;
 	nSpawnPos = spawnMap [i].i;
 	if (IsTeamGame) {
 		switch (gameData.multiplayer.playerInit [nSpawnPos].nSegType) {

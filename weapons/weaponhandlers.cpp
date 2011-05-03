@@ -63,7 +63,7 @@ int LaserHandler (CObject *objP, int nLevel, int& nFlags, int nRoundsPerShot)
 	short	nLightObj = lightClusterManager.Create (objP);
 	short nFired = 0;
 
-gameData.laser.nOffset = (I2X (2) * (d_rand () % 8)) / 8;
+gameData.laser.nOffset = (I2X (2) * (RandShort () % 8)) / 8;
 if (0 <= LaserPlayerFire (objP, nLaser, 0, 1, 0, nLightObj))
 	nFired++;
 if (0 <= LaserPlayerFire (objP, nLaser, 1, 0, 0, nLightObj))
@@ -85,7 +85,7 @@ return nFired ? nRoundsPerShot : 0;
 
 int VulcanHandler (CObject *objP, int nLevel, int& nFlags, int nRoundsPerShot)
 {
-#	define VULCAN_SPREAD	(d_rand ()/8 - 32767/16)
+#	define VULCAN_SPREAD	(SRandShort () / 8)
 
 	int			bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
 										 (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling;
@@ -186,9 +186,9 @@ vForce.v.coord.x = -(objP->info.position.mOrient.m.dir.f.v.coord.x << 7);
 vForce.v.coord.y = -(objP->info.position.mOrient.m.dir.f.v.coord.y << 7);
 vForce.v.coord.z = -(objP->info.position.mOrient.m.dir.f.v.coord.z << 7);
 objP->ApplyForce (vForce);
-vForce.v.coord.x = (vForce.v.coord.x >> 4) + d_rand () - 16384;
-vForce.v.coord.y = (vForce.v.coord.y >> 4) + d_rand () - 16384;
-vForce.v.coord.z = (vForce.v.coord.z >> 4) + d_rand () - 16384;
+vForce.v.coord.x = (vForce.v.coord.x >> 4) + SRandShort ();
+vForce.v.coord.y = (vForce.v.coord.y >> 4) + SRandShort ();
+vForce.v.coord.z = (vForce.v.coord.z >> 4) + SRandShort ();
 objP->ApplyRotForce (vForce);
 return nRoundsPerShot;
 }

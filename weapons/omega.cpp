@@ -231,7 +231,7 @@ if (gameStates.gameplay.bMineMineCheat && (gameData.omega.xCharge [IsMultiGame] 
 #endif
 if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 	//	If charge >= min, or (some charge and zero energy), allow to fire.
-	if (((d_rand () > parentObjP->GunDamage ()) || (gameData.omega.xCharge [IsMultiGame] < MIN_OMEGA_CHARGE)) &&
+	if (((RandShort () > parentObjP->GunDamage ()) || (gameData.omega.xCharge [IsMultiGame] < MIN_OMEGA_CHARGE)) &&
 		 (!gameData.omega.xCharge [IsMultiGame] || gameData.multiplayer.players [nPlayer].energy)) {
 		ReleaseObject (OBJ_IDX (weaponObjP));
 		omegaLightning.Destroy (LOCALPLAYER.nObject);

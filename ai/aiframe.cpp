@@ -313,8 +313,8 @@ else if (!gameData.ai.nTargetVisibility && (gameData.ai.target.xDist > MAX_CHASE
 
 if ((aiP->CURRENT_STATE == AIS_REST) && (aiP->GOAL_STATE == AIS_REST)) {
 	if (gameData.ai.nTargetVisibility &&
-		 (d_rand () < gameData.time.xFrame * gameData.ai.nTargetVisibility) &&
-		 (gameData.ai.target.xDist / 256 < d_rand () * gameData.ai.nTargetVisibility)) {
+		 (RandShort () < gameData.time.xFrame * gameData.ai.nTargetVisibility) &&
+		 (gameData.ai.target.xDist / 256 < RandShort () * gameData.ai.nTargetVisibility)) {
 		aiP->GOAL_STATE = AIS_SEARCH;
 		aiP->CURRENT_STATE = AIS_SEARCH;
 		}
@@ -536,7 +536,7 @@ if ((gameData.ai.target.xDist < MAX_WAKEUP_DIST) || (siP->ailP->targetAwarenessT
 
 	// turn towards vector if visible this time or last time, or rand
 	// new!
-	if ((gameData.ai.nTargetVisibility == 2) || (siP->nPrevVisibility == 2)) { // -- MK, 06/09/95:  || ((d_rand () > 0x4000) && !(siP->bMultiGame))) {
+	if ((gameData.ai.nTargetVisibility == 2) || (siP->nPrevVisibility == 2)) { // -- MK, 06/09/95:  || ((RandShort () > 0x4000) && !(siP->bMultiGame))) {
 		if (!AIMultiplayerAwareness (objP, 71)) {
 			if (AIMaybeDoActualFiringStuff (objP, siP->aiP))
 				AIDoActualFiringStuff (objP, siP->aiP, siP->ailP, siP->botInfoP, siP->aiP->CURRENT_GUN);
@@ -869,7 +869,7 @@ if (siP->botInfoP->companion) {
 			CreateNewWeaponSimple (&objP->info.position.mOrient.m.dir.f, &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = I2X (1)/2;
 			if (!gameData.escort.bMayTalk) // If buddy not talking, make him fire flares less often.
-				siP->ailP->nextPrimaryFire += d_rand ()*4;
+				siP->ailP->nextPrimaryFire += RandShort ()*4;
 			}
 		}
 	}
@@ -902,7 +902,7 @@ if (siP->botInfoP->thief) {
 			CreateNewWeaponSimple (&objP->info.position.mOrient.m.dir.f, &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = I2X (1) / 2;
 			if (gameData.thief.nStolenItem == 0)     // If never stolen an item, fire flares less often (bad: gameData.thief.nStolenItem wraps, but big deal)
-				siP->ailP->nextPrimaryFire += d_rand ()*4;
+				siP->ailP->nextPrimaryFire += RandShort ()*4;
 			}
 		}
 	}
@@ -926,7 +926,7 @@ else if ((siP->nObjRef & 3) || siP->nPrevVisibility || (gameData.ai.target.xDist
 	return 0;
 else {
 	if (!HeadlightIsOn (-1)) {
-		fix rval = d_rand ();
+		fix rval = RandShort ();
 		fix sval = (gameData.ai.target.xDist * (gameStates.app.nDifficultyLevel + 1)) / 64;
 		if	((FixMul (rval, sval) >= gameData.time.xFrame))
 			return 0;
@@ -1036,9 +1036,9 @@ if (gameData.ai.nOverallAgitation < 71)
 	return 0;
 //if (!gameOpts->gameplay.nAIAggressivity || (siP->ailP->targetAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode == AIM_FOLLOW_PATH))
  {
-	if ((gameData.ai.target.xDist >= MAX_REACTION_DIST) || (d_rand () >= gameData.time.xFrame/4))
+	if ((gameData.ai.target.xDist >= MAX_REACTION_DIST) || (RandShort () >= gameData.time.xFrame/4))
 		return 0;
-	if (d_rand () * (gameData.ai.nOverallAgitation - 40) <= I2X (5))
+	if (RandShort () * (gameData.ai.nOverallAgitation - 40) <= I2X (5))
 		return 0;
 	}
 #if DBG
@@ -1070,7 +1070,7 @@ if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileC
 	gameData.ai.target.vBelievedPos = OBJPOS (OBJECTS + gameData.ai.nLastMissileCamera)->vPos;
 	return 0;
 	}
-if (gameStates.app.cheats.bRobotsKillRobots || (!siP->botInfoP->thief && (d_rand () > 2 * objP->AimDamage ()))) {
+if (gameStates.app.cheats.bRobotsKillRobots || (!siP->botInfoP->thief && (RandShort () > 2 * objP->AimDamage ()))) {
 	siP->vVisPos = objP->info.position.vPos;
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
 	if (gameData.ai.nTargetVisibility) {
@@ -1102,7 +1102,7 @@ if (gameStates.app.cheats.bRobotsKillRobots || (!siP->botInfoP->thief && (d_rand
 		}
 	}
 siP->bVisAndVecComputed = 0;
-if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || (d_rand () > objP->AimDamage ()))
+if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || (RandShort () > objP->AimDamage ()))
 	gameData.ai.target.vBelievedPos = gameData.ai.cloakInfo [siP->nObject & (MAX_AI_CLOAK_INFO - 1)].vLastPos;
 else
 	gameData.ai.target.vBelievedPos = OBJPOS (gameData.objs.consoleP)->vPos;
@@ -1175,7 +1175,7 @@ int AIPlayerDeadHandler (CObject *objP, tAIStateInfo *siP)
 
 if (!gameStates.app.bPlayerIsDead || ailP->targetAwarenessType)
 	return 0;
-if ((gameData.ai.target.xDist >= MAX_REACTION_DIST) || (d_rand () >= gameData.time.xFrame / 8))
+if ((gameData.ai.target.xDist >= MAX_REACTION_DIST) || (RandShort () >= gameData.time.xFrame / 8))
 	return 0;
 if ((aiP->behavior == AIB_STILL) || (aiP->behavior == AIB_RUN_FROM))
 	return 0;

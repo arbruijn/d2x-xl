@@ -67,9 +67,9 @@ m_damage.tRepaired = gameStates.app.nSDLTicks [0];
 
 if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks [0] > m_damage.tCritical)) {	// check and handle critical hits
 	float fDamage = (1.0f - Damage ()) / float (sqrt (DamageRate ()));
-	if ((m_damage.bCritical = d_rand () < F2X (fDamage))) {
+	if ((m_damage.bCritical = RandShort () < F2X (fDamage))) {
 		if (!extraGameInfo [0].nHitboxes)
-			nModel = d_rand () > 3 * I2X (1) / 8;	// 75% chance for a torso hit with sphere based collision handling
+			nModel = RandShort () > 3 * I2X (1) / 8;	// 75% chance for a torso hit with sphere based collision handling
 #if DBG
 		if (nModel < 2)
 			HUDMessage (0, "crit. hit AIM\n");

@@ -779,7 +779,7 @@ if ((nPlayer < 0) || (nObject < 0) || (nFuelCen < 0) ||
 robotGenP = gameData.matCens.fuelCenters + nFuelCen;
 // Play effect and sound
 vObjPos = SEGMENTS [robotGenP->nSegment].Center ();
-objP = /*Object*/CreateExplosion ((short) robotGenP->nSegment, vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
+objP = CreateExplosion ((short) robotGenP->nSegment, vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
 if (objP)
 	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotGenP->nSegment]);
 if (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound > -1)
@@ -993,8 +993,8 @@ else if (delObjP->cType.aiInfo.REMOTE_OWNER == -1) // No Random goodies for robo
 else if (botInfoP->containsCount) {
 	if (gameStates.multi.nGameType != UDP_GAME)
 		d_srand (TimerGetApproxSeconds ());
-	if (((d_rand () * 16) >> 15) < botInfoP->containsProb) {
-		delObjP->info.contains.nCount = ((d_rand () * botInfoP->containsCount) >> 15) + 1;
+	if (((RandShort () * 16) >> 15) < botInfoP->containsProb) {
+		delObjP->info.contains.nCount = ((RandShort () * botInfoP->containsCount) >> 15) + 1;
 		delObjP->info.contains.nType = botInfoP->containsType;
 		delObjP->info.contains.nId = botInfoP->containsId;
 		if (delObjP->info.contains.nType == OBJ_POWERUP) {
@@ -1035,7 +1035,7 @@ if (nRemoteObj < 0)
 if ((gameData.multigame.robots.agitation [slot] < 70) || 
 	 (MULTI_ROBOT_PRIORITY (nRemoteObj, player_num) > 
 	  MULTI_ROBOT_PRIORITY (nRemoteObj, gameData.multiplayer.nLocalPlayer)) || 
-	  (d_rand () > 0x4400)) {
+	  (RandShort () > 0x4400)) {
 	if (gameData.multigame.robots.sendPending [slot])
 		MultiSendRobotPosition (gameData.multigame.robots.controlled [slot], -1);
 	MultiSendReleaseRobot (gameData.multigame.robots.controlled [slot]);

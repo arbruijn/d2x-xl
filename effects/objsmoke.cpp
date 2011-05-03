@@ -550,9 +550,9 @@ if (nParts > 0) {
 	else {
 		particleManager.SetScale (nSmoke, F2X (-4.0));
 		particleManager.SetDensity (nSmoke, nParts, 2/*, -1*/);
-		vDir.v.coord.x = d_rand () - I2X (1) / 4;
-		vDir.v.coord.y = d_rand () - I2X (1) / 4;
-		vDir.v.coord.z = d_rand () - I2X (1) / 4;
+		vDir.v.coord.x = SRandShort ();
+		vDir.v.coord.y = SRandShort ();
+		vDir.v.coord.z = SRandShort ();
 		CFixVector::Normalize (vDir);
 		vPos = objP->info.position.vPos + vDir * (-objP->info.xSize / 2);
 		particleManager.SetPos (nSmoke, &vPos, NULL, objP->info.nSegment);
@@ -736,9 +736,9 @@ if (objP->rType.particleInfo.nSide <= 0) {	//don't vary emitter position for smo
 	if (!(j = i - i / 2))
 		j = 2;
 	i /= 2;
-	offs.v.coord.x = (I2X (1) / 4 - d_rand ()) * (d_rand () % j + i);
-	offs.v.coord.y = (I2X (1) / 4 - d_rand ()) * (d_rand () % j + i);
-	offs.v.coord.z = (I2X (1) / 4 - d_rand ()) * (d_rand () % j + i);
+	offs.v.coord.x = SRandShort () * (RandShort () % j + i);
+	offs.v.coord.y = SRandShort () * (RandShort () % j + i);
+	offs.v.coord.z = SRandShort () * (RandShort () % j + i);
 	pos = objP->info.position.vPos + offs;
 	particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 	}
@@ -769,9 +769,9 @@ if (nParts) {
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
 		}
-	offs.v.coord.x = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
-	offs.v.coord.y = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
-	offs.v.coord.z = (I2X (1) / 4 - d_rand ()) * ((d_rand () & 15) + 16);
+	offs.v.coord.x = SRandShort () * ((RandShort () & 15) + 16);
+	offs.v.coord.y = SRandShort () * ((RandShort () & 15) + 16);
+	offs.v.coord.z = SRandShort () * ((RandShort () & 15) + 16);
 	pos = objP->info.position.vPos + offs;
 	particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 	}

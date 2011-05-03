@@ -529,7 +529,7 @@ switch (nObjType) {
 		*pbGotColor = 1;
 		if (IsMultiGame)
 			if (objP->info.nId == OMEGA_ID)
-				if (d_rand () > 8192)
+				if (RandShort () > 8192)
 					return 0;		//	3/4 of time, omega blobs will cast 0 light!
 		if (objP->info.nId == FLARE_ID) {
 			return 2 * (min (xLight, objP->info.xLifeLeft) + ((gameData.time.xGame ^ objLightXlat [nObject & 0x0f]) & 0x3fff));

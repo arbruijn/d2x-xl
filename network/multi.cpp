@@ -1939,7 +1939,7 @@ OBJECTS [nLocalObj].info.position.vPos = vPos;
 OBJECTS [nLocalObj].mType.physInfo.velocity.SetZero ();
 OBJECTS [nLocalObj].RelinkToSeg (nSegment);
 MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
-/*Object*/CreateExplosion (nSegment, vPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
+CreateExplosion (nSegment, vPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 return nLocalObj;
 }
 
@@ -4631,7 +4631,7 @@ HUDInitMessage ((gameData.app.nGameMode & GM_HOARD) ? TXT_DROP_ORB : TXT_DROP_VI
 audio.PlaySound (SOUND_DROP_WEAPON);
 if (nObject > -1)
 	if (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY))
-		MultiSendDropFlag (nObject, d_rand ());
+		MultiSendDropFlag (nObject, RandShort ());
 // If empty, tell everyone to stop drawing the box around me
 if (!--LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX])
 	MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
@@ -4659,7 +4659,7 @@ nObject = SpitPowerup (gameData.objs.consoleP, (ubyte) ((GetTeam (gameData.multi
 if (nObject < 0)
 	return;
 if ((gameData.app.nGameMode & GM_CAPTURE) && (nObject > -1))
-	MultiSendDropFlag (nObject, d_rand ());
+	MultiSendDropFlag (nObject, RandShort ());
 LOCALPLAYER.flags &= ~ (PLAYER_FLAGS_FLAG);
 }
 

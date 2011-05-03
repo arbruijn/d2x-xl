@@ -127,7 +127,7 @@ if (gameStates.app.bAutoDemos) {
 		) {
 		int nDemos = NDCountDemos ();
 		for (;;) {
-			if ((d_rand () % (nDemos+1)) == 0) {
+			if ((RandShort () % (nDemos+1)) == 0) {
 				gameStates.video.nScreenMode = -1;
 				movieManager.PlayIntro ();
 				songManager.Play (SONG_TITLE, 1);

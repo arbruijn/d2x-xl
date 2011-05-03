@@ -41,11 +41,11 @@ int SpitPowerup (CObject *spitterP, ubyte id, int seed)
 	CFixVector	newVelocity, newPos;
 	tObjTransformation	*posP = OBJPOS (spitterP);
 
-d_srand (gameStates.app.nRandSeed = (seed < 0) ? d_rand () : seed);
+d_srand (gameStates.app.nRandSeed = (seed < 0) ? RandShort () : seed);
 newVelocity = spitterP->mType.physInfo.velocity + spitterP->info.position.mOrient.m.dir.f * I2X (SPIT_SPEED);
-newVelocity.v.coord.x += (d_rand() - 16384) * SPIT_SPEED * 2;
-newVelocity.v.coord.y += (d_rand() - 16384) * SPIT_SPEED * 2;
-newVelocity.v.coord.z += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity.v.coord.x += (SRandShort ()) * SPIT_SPEED * 2;
+newVelocity.v.coord.y += (SRandShort ()) * SPIT_SPEED * 2;
+newVelocity.v.coord.z += (SRandShort ()) * SPIT_SPEED * 2;
 // Give keys zero velocity so they can be tracked better in multi
 if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 	newVelocity.SetZero ();
@@ -76,13 +76,13 @@ switch (objP->info.nId) {
 	case POW_CONCUSSION_4:
 	case POW_SHIELD_BOOST:
 	case POW_ENERGY:
-		objP->SetLife ((d_rand() + I2X (3)) * 64);		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
+		objP->SetLife ((RandShort () + I2X (3)) * 64);		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
 		if (IsMultiGame)
 			objP->info.xLifeLeft /= 2;
 		break;
 	default:
 		//if (gameData.app.nGameMode & GM_MULTI)
-		//	objP->info.xLifeLeft = (d_rand() + I2X (3)) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
+		//	objP->info.xLifeLeft = (RandShort () + I2X (3)) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
 		break;
 	}
 MultiSendWeapons (1);

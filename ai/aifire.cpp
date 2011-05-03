@@ -50,7 +50,7 @@ void SetNextFireTime (CObject *objP, tAILocalInfo *ailP, tRobotInfo *botInfoP, i
 {
 	//	For guys in snipe mode, they have a 50% shot of getting this shot free.
 if ((nGun != 0) || (botInfoP->nSecWeaponType == -1))
-	if ((objP->cType.aiInfo.behavior != AIB_SNIPE) || (d_rand () > 16384))
+	if ((objP->cType.aiInfo.behavior != AIB_SNIPE) || (RandShort () > 16384))
 		ailP->nRapidFireCount++;
 if (((nGun != 0) || (botInfoP->nSecWeaponType == -1)) && (ailP->nRapidFireCount < botInfoP->nRapidFireCount [gameStates.app.nDifficultyLevel])) {
 	ailP->nextPrimaryFire = min (I2X (1)/8, botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/2);
@@ -215,7 +215,7 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 if (TARGETOBJ->Cloaked ()) {
 	fix	xCloakTime = gameData.ai.cloakInfo [nObject % MAX_AI_CLOAK_INFO].lastTime;
 	if ((gameData.time.xGame - xCloakTime > CLOAK_TIME_MAX / 4) &&
-		 (d_rand () > FixDiv (gameData.time.xGame - xCloakTime, CLOAK_TIME_MAX) / 2)) {
+		 (RandShort () > FixDiv (gameData.time.xGame - xCloakTime, CLOAK_TIME_MAX) / 2)) {
 		SetNextFireTime (objP, ailP, botInfoP, nGun);
 		return;
 		}
@@ -262,7 +262,7 @@ if (gameStates.gameplay.seismic.nMagnitude) {
 //	Lead the target half the time.
 //	Note that when leading the player, aim is perfect.  This is probably acceptable since leading is so hacked in.
 //	Problem is all robots will lead equally badly.
-if (d_rand () < 16384) {
+if (RandShort () < 16384) {
 	if (LeadTarget (objP, vFirePoint, vBelievedTargetPos, nGun, &vFire))		//	Stuff direction to fire at in vFirePoint.
 		goto targetLed;
 }
@@ -273,9 +273,9 @@ if (gameStates.app.bNostalgia) {
 	count = 4;			//	Don't want to sit in this loop foreverd:\temp\dm_test.
 	i = (NDL - gameStates.app.nDifficultyLevel - 1) * 4 * aim;
 	do {
-		vRandTargetPos.v.coord.x = (*vBelievedTargetPos).v.coord.x + FixMul ((d_rand () - 16384), aim);
-		vRandTargetPos.v.coord.y = (*vBelievedTargetPos).v.coord.y + FixMul ((d_rand () - 16384), aim);
-		vRandTargetPos.v.coord.z = (*vBelievedTargetPos).v.coord.z + FixMul ((d_rand () - 16384), aim);
+		vRandTargetPos.v.coord.x = (*vBelievedTargetPos).v.coord.x + FixMul (SRandShort (), aim);
+		vRandTargetPos.v.coord.y = (*vBelievedTargetPos).v.coord.y + FixMul (SRandShort (), aim);
+		vRandTargetPos.v.coord.z = (*vBelievedTargetPos).v.coord.z + FixMul (SRandShort (), aim);
 		CFixVector::NormalizedDir (vFire, vRandTargetPos, *vFirePoint);
 		dot = CFixVector::Dot (objP->info.position.mOrient.m.dir.f, vFire);
 		} while (--count && (dot < I2X (1) / 4));
@@ -284,9 +284,9 @@ if (gameStates.app.bNostalgia) {
 else {	// this way it should always work
 	count = 10;
 	CFixVector	vRand;
-	vRand.dir.coord.x = FixMul ((d_rand () - 16384), aim);
-	vRand.dir.coord.y = FixMul ((d_rand () - 16384), aim);
-	vRand.dir.coord.z = FixMul ((d_rand () - 16384), aim);
+	vRand.dir.coord.x = FixMul (SRandShort (), aim);
+	vRand.dir.coord.y = FixMul (SRandShort (), aim);
+	vRand.dir.coord.z = FixMul (SRandShort (), aim);
 	CFixVector vOffs = vRand * I2X (1) / 10;
 	do {
 		CFixVector::NormalizedDir (vFire, *vBelievedTargetPos + vRand, *vFirePoint);
@@ -374,7 +374,7 @@ if ((nType != PA_WEAPON_ROBOT_COLLISION) && (nType != PA_PLAYER_COLLISION))
 	return;
 if (objP->cType.aiInfo.behavior != AIB_STILL)
 	return;
-int r = d_rand ();
+int r = RandShort ();
 //	Attack robots (eg, green guy) shouldn't have behavior = still.
 //Assert (ROBOTINFO (objP->info.nId).attackType == 0);
 //	1/8 time, charge CPlayerData, 1/4 time create path, rest of time, do nothing
@@ -385,7 +385,7 @@ if (r < 4096) {
 	gameData.ai.localInfo [objP->Index ()].mode = AIM_CHASE_OBJECT;
 	}
 else if (r < 4096 + 8192) {
-	CreateNSegmentPath (objP, d_rand () / 8192 + 2, -1);
+	CreateNSegmentPath (objP, RandShort () / 8192 + 2, -1);
 	gameData.ai.localInfo [objP->Index ()].mode = AIM_FOLLOW_PATH;
 	}
 }
@@ -516,7 +516,7 @@ else if ((!botInfoP->attackType && (botInfoP->nWeaponType >= 0) && gameData.weap
 else {	//	---------------------------------------------------------------
 	CFixVector	vLastPos;
 
-	if (d_rand ()/2 < FixMul (gameData.time.xFrame, (gameStates.app.nDifficultyLevel << 12) + 0x4000)) {
+	if (RandShort ()/2 < FixMul (gameData.time.xFrame, (gameStates.app.nDifficultyLevel << 12) + 0x4000)) {
 		if ((!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailP)) &&
 			 (gameData.ai.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
 			CFixVector::NormalizedDir(vLastPos, gameData.ai.target.vBelievedPos, objP->info.position.vPos);

@@ -56,7 +56,7 @@ if (nType >= WEAPON_WALL_COLLISION)
 if (gameData.ai.nAwarenessEvents < MAX_AWARENESS_EVENTS) {
 	if ((nType == WEAPON_WALL_COLLISION) || (nType == WEAPON_ROBOT_COLLISION))
 		if (objP->info.nId == VULCAN_ID)
-			if (d_rand () > 3276)
+			if (RandShort () > 3276)
 				return 0;       // For vulcan cannon, only about 1/10 actually cause awareness
 	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].nSegment = objP->info.nSegment;
 	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].pos = objP->info.position.vPos;
@@ -74,7 +74,7 @@ void CreateAwarenessEvent (CObject *objP, int nType)
 	// If not in multiplayer, or in multiplayer with robots, do this, else unnecessary!
 if (IsRobotGame) {
 	if (AddAwarenessEvent (objP, nType)) {
-		if (((d_rand () * (nType+4)) >> 15) > 4)
+		if (((RandShort () * (nType+4)) >> 15) > 4)
 			gameData.ai.nOverallAgitation++;
 		if (gameData.ai.nOverallAgitation > OVERALL_AGITATION_MAX)
 			gameData.ai.nOverallAgitation = OVERALL_AGITATION_MAX;

@@ -445,9 +445,9 @@ if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
 	CFixVector vForce;
 	paletteManager.BumpEffect (0, 0, 60);	//flash blue
 	//knock CPlayerData around
-	vForce.v.coord.x = 40 * (d_rand () - 16384);
-	vForce.v.coord.y = 40 * (d_rand () - 16384);
-	vForce.v.coord.z = 40 * (d_rand () - 16384);
+	vForce.v.coord.x = 40 * SRandShort ();
+	vForce.v.coord.y = 40 * SRandShort ();
+	vForce.v.coord.z = 40 * SRandShort ();
 	ApplyRotForce (vForce);
 #ifdef TACTILE
 	if (TactileStick)
@@ -533,8 +533,8 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {
 		paletteManager.BumpEffect (X2I (xDamage * 4), 0, 0);	//flash red
 		}
 	if (xDamage || !mType.physInfo.thrust.IsZero ()) {
-		mType.physInfo.rotVel.v.coord.x = (d_rand () - 16384) / 2;
-		mType.physInfo.rotVel.v.coord.z = (d_rand () - 16384) / 2;
+		mType.physInfo.rotVel.v.coord.x = SRandShort () / 2;
+		mType.physInfo.rotVel.v.coord.z = SRandShort () / 2;
 		}
 	}
 return nType;
@@ -571,14 +571,14 @@ if (xDamage > 0) {
 	if ((info.nType == OBJ_PLAYER) && (info.nId == gameData.multiplayer.nLocalPlayer))
 		paletteManager.BumpEffect (X2I (xDamage * 4), 0, 0);	//flash red
 	if ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) {
-		mType.physInfo.rotVel.v.coord.x = (d_rand () - 16384) / 4;
-		mType.physInfo.rotVel.v.coord.z = (d_rand () - 16384) / 4;
+		mType.physInfo.rotVel.v.coord.x = SRandShort () / 4;
+		mType.physInfo.rotVel.v.coord.z = SRandShort () / 4;
 		}
 	return nType;
 	}
 if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && !mType.physInfo.thrust.IsZero ()) {
-	mType.physInfo.rotVel.v.coord.x = (d_rand () - 16384) / 8;
-	mType.physInfo.rotVel.v.coord.z = (d_rand () - 16384) / 8;
+	mType.physInfo.rotVel.v.coord.x = SRandShort () / 8;
+	mType.physInfo.rotVel.v.coord.z = SRandShort () / 8;
 	}
 return nType;
 }
@@ -780,11 +780,11 @@ else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
 										  nStrength / 4, weaponInfoP->xDamageRadius, nStrength / 2, cType.laserInfo.parent.nObject);
 			}
 		else
-			/*Object*/CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, weaponInfoP->nWallHitVClip);
+			CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, weaponInfoP->nWallHitVClip);
 		}
 	else {
 		audio.CreateSegmentSound (SOUND_LASER_HIT_WATER, nHitSeg, 0, vHitPt);
-		/*Object*/CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, VCLIP_WATER_HIT);
+		CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, VCLIP_WATER_HIT);
 		}
 	Die ();		//make flares die in water
 	}
@@ -955,7 +955,7 @@ if (info.nFlags & OF_EXPLODING)
 	return 1;
 nCollisionSeg = FindSegByPos (vHitPt, playerObjP->info.nSegment, 1, 0);
 if (nCollisionSeg != -1)
-	/*Object*/CreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].xImpactSize, gameData.weapons.info [0].nWallHitVClip);
+	CreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].xImpactSize, gameData.weapons.info [0].nWallHitVClip);
 if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
 	if (ROBOTINFO (info.nId).companion)	//	Player and companion don't Collide.
 		return 1;
@@ -1160,14 +1160,14 @@ if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 	if (WI_damage_radius (info.nId))
 		ExplodeSplashDamageWeapon (vHitPt);
 	else
-		/*Object*/CreateExplosion (reactorP->info.nSegment, vHitPt, 3 * reactorP->info.xSize / 20, VCLIP_SMALL_EXPLOSION);
+		CreateExplosion (reactorP->info.nSegment, vHitPt, 3 * reactorP->info.xSize / 20, VCLIP_SMALL_EXPLOSION);
 	audio.CreateSegmentSound (SOUND_CONTROL_CENTER_HIT, reactorP->info.nSegment, 0, vHitPt);
 	damage = FixMul (damage, cType.laserInfo.xScale);
 	reactorP->ApplyDamageToReactor (damage, cType.laserInfo.parent.nObject);
 	MaybeKillWeapon (reactorP);
 	}
 else {	//	If robotP this hits control center, blow it up, make it go away, but do no damage to control center.
-	/*Object*/CreateExplosion (reactorP->info.nSegment, vHitPt, 3 * reactorP->info.xSize / 20, VCLIP_SMALL_EXPLOSION);
+	CreateExplosion (reactorP->info.nSegment, vHitPt, 3 * reactorP->info.xSize / 20, VCLIP_SMALL_EXPLOSION);
 	MaybeKillWeapon (reactorP);
 	}
 return 1;
@@ -1181,7 +1181,7 @@ ubyte exp_vclip = VCLIP_SMALL_EXPLOSION;
 if (clutterP->info.xShield >= 0)
 	clutterP->info.xShield -= info.xShield;
 audio.CreateSegmentSound (SOUND_LASER_HIT_CLUTTER, (short) info.nSegment, 0, vHitPt);
-/*Object*/CreateExplosion ((short) clutterP->info.nSegment, vHitPt, ((clutterP->info.xSize / 3) * 3) / 4, exp_vclip);
+CreateExplosion ((short) clutterP->info.nSegment, vHitPt, ((clutterP->info.xSize / 3) * 3) / 4, exp_vclip);
 if ((clutterP->info.xShield < 0) && !(clutterP->info.nFlags & (OF_EXPLODING | OF_DESTROYED)))
 	clutterP->Explode (STANDARD_EXPL_DELAY);
 MaybeKillWeapon (clutterP);
@@ -1349,7 +1349,7 @@ if (weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) {
 		 (!bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewBotsEnergy)) {
 		int i = gameData.bosses.Find (OBJ_IDX (robotP));
 		if (i >= 0) {
-			if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewMore && (d_rand () > 16384) &&
+			if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewMore && (RandShort () > SHORT_RAND_MAX / 2) &&
 				 (robotP->BossSpewRobot (&vHitPt, -1, 0) != -1))
 				gameData.bosses [i].m_nLastGateTime = gameData.time.xGame - gameData.bosses [i].m_nGateInterval - 1;	//	Force allowing spew of another bot.
 			robotP->BossSpewRobot (&vHitPt, -1, 0);
@@ -1374,7 +1374,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 		bDamage = 0;
 
 		if (xLastTimeBuddyGameHint == 0)
-			xLastTimeBuddyGameHint = d_rand ()*32 + I2X (16);
+			xLastTimeBuddyGameHint = RandShort () * 32 + I2X (16);
 
 		if (nBuddyGaveHintCount) {
 			if (xLastTimeBuddyGameHint + I2X (20) < gameData.time.xGame) {
@@ -1382,7 +1382,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 
 				nBuddyGaveHintCount--;
 				xLastTimeBuddyGameHint = gameData.time.xGame;
-				sval = (d_rand ()*4) >> 15;
+				sval = (RandShort () * 4) >> 15;
 				switch (sval) {
 					case 0:
 						BuddyMessage (TXT_BOSS_HIT_BACK);
@@ -1531,7 +1531,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 		fix xProb = (gameStates.app.nDifficultyLevel+2) * min (info.xShield, robotP->info.xShield);
 		xProb = botInfoP->energyBlobs * xProb / (NDL * 32);
 		int nBlobs = xProb >> 16;
-		if (2 * d_rand () < (xProb & 0xffff))
+		if (2 * RandShort () < (xProb & 0xffff))
 			nBlobs++;
 		if (nBlobs)
 			CreateSmartChildren (robotP, nBlobs);
@@ -1564,9 +1564,9 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 	  	else
 			MultiRobotRequestChange (robotP, OBJECTS [cType.laserInfo.parent.nObject].info.nId);
 		if (botInfoP->nExp1VClip > -1)
-			explObjP = /*Object*/CreateExplosion (info.nSegment, vHitPt, (3 * robotP->info.xSize) / 8, (ubyte) botInfoP->nExp1VClip);
+			explObjP = CreateExplosion (info.nSegment, vHitPt, (3 * robotP->info.xSize) / 8, (ubyte) botInfoP->nExp1VClip);
 		else if (gameData.weapons.info [info.nId].nRobotHitVClip > -1)
-			explObjP = /*Object*/CreateExplosion (info.nSegment, vHitPt, wInfoP->xImpactSize, (ubyte) wInfoP->nRobotHitVClip);
+			explObjP = CreateExplosion (info.nSegment, vHitPt, wInfoP->xImpactSize, (ubyte) wInfoP->nRobotHitVClip);
 		if (explObjP)
 			AttachObject (robotP, explObjP);
 		if (bDamage && (botInfoP->nExp1Sound > -1))
@@ -1599,9 +1599,9 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 
 			if (aip->SKIP_AI_COUNT * gameData.time.xFrame < I2X (1)) {
 				aip->SKIP_AI_COUNT++;
-				robotP->mType.physInfo.rotThrust.v.coord.x = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
-				robotP->mType.physInfo.rotThrust.v.coord.y = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
-				robotP->mType.physInfo.rotThrust.v.coord.z = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robotP->mType.physInfo.rotThrust.v.coord.x = FixMul (SRandShort (), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robotP->mType.physInfo.rotThrust.v.coord.y = FixMul (SRandShort (), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robotP->mType.physInfo.rotThrust.v.coord.z = FixMul (SRandShort (), gameData.time.xFrame * aip->SKIP_AI_COUNT);
 				robotP->mType.physInfo.flags |= PF_USES_THRUST;
 				}
 			}
@@ -1807,7 +1807,7 @@ if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
 			MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, I2X (1));
 		}
 	}
-/*Object*/CreateExplosion (playerObjP->info.nSegment, vHitPt, I2X (10)/2, VCLIP_PLAYER_HIT);
+CreateExplosion (playerObjP->info.nSegment, vHitPt, I2X (10)/2, VCLIP_PLAYER_HIT);
 if (WI_damage_radius (info.nId))
 	ExplodeSplashDamageWeapon (vHitPt);
 MaybeKillWeapon (playerObjP);
@@ -1824,7 +1824,7 @@ return 1;
 int CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt)
 {
 //	if (!(ROBOTINFO (objP->info.nId).energyDrain && gameData.multiplayer.players [info.nId].energy))
-/*Object*/CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
+CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
 if (BumpTwoObjects (this, robotP, 0, vHitPt)) {//no damage from bump
 	audio.CreateSegmentSound (ROBOTINFO (robotP->info.nId).clawSound, info.nSegment, 0, vHitPt);
 	ApplyDamageToPlayer (robotP, I2X (gameStates.app.nDifficultyLevel+1));
@@ -1840,7 +1840,7 @@ int CObject::CollidePlayerAndMatCen (void)
 
 CreateSound (SOUND_PLAYER_GOT_HIT);
 //	audio.PlaySound (SOUND_PLAYER_GOT_HIT);
-/*Object*/CreateExplosion (info.nSegment, info.position.vPos, I2X (10) / 2, VCLIP_PLAYER_HIT);
+CreateExplosion (info.nSegment, info.position.vPos, I2X (10) / 2, VCLIP_PLAYER_HIT);
 if (info.nId != gameData.multiplayer.nLocalPlayer)
 	return 1;
 CSegment* segP = SEGMENTS + info.nSegment;
@@ -1870,7 +1870,7 @@ int CObject::CollideRobotAndMatCen (void)
 CreateSound (SOUND_ROBOT_HIT);
 //	audio.PlaySound (SOUND_ROBOT_HIT);
 if (ROBOTINFO (info.nId).nExp1VClip > -1)
-	/*Object*/CreateExplosion ((short) info.nSegment, info.position.vPos, (info.xSize/2*3)/4, (ubyte) ROBOTINFO (info.nId).nExp1VClip);
+	CreateExplosion ((short) info.nSegment, info.position.vPos, (info.xSize/2*3)/4, (ubyte) ROBOTINFO (info.nId).nExp1VClip);
 vExitDir.SetZero ();
 for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
 	if (segP->IsDoorWay (nSide, NULL) & WID_FLY_FLAG) {
@@ -2029,7 +2029,7 @@ if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 		if (AddHitObject (this, OBJ_IDX (mBallP)) < 0)
 			return 1;
 		}
-	/*Object*/CreateExplosion (mBallP->info.nSegment, vHitPt, I2X (10)/2, VCLIP_PLAYER_HIT);
+	CreateExplosion (mBallP->info.nSegment, vHitPt, I2X (10)/2, VCLIP_PLAYER_HIT);
 	if (WI_damage_radius (info.nId))
 		ExplodeSplashDamageWeapon (vHitPt);
 	MaybeKillWeapon (mBallP);

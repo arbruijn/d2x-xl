@@ -472,14 +472,14 @@ vPos = objP->info.position.vPos;
 vRand = CFixVector::Random();
 vRand *= (objP->info.xSize / 2);
 vPos += vRand;
-size = FixMul (size_scale, I2X (1) / 2 + d_rand () * 4 / 2);
+size = FixMul (size_scale, I2X (1) / 2 + RandShort () * 4 / 2);
 nSegment = FindSegByPos (vPos, objP->info.nSegment, 1, 0);
 if (nSegment != -1) {
-	CObject *explObjP = /*Object*/CreateExplosion (nSegment, vPos, size, VCLIP_SMALL_EXPLOSION);
+	CObject *explObjP = CreateExplosion (nSegment, vPos, size, VCLIP_SMALL_EXPLOSION);
 	if (!explObjP)
 		return;
 	AttachObject (objP, explObjP);
-	if (bSound || (d_rand () < 8192)) {
+	if (bSound || (RandShort () < 8192)) {
 		fix vol = I2X (1) / 2;
 		if (objP->info.nType == OBJ_ROBOT)
 			vol *= 2;
@@ -501,10 +501,10 @@ vPos = objP->info.position.vPos;
 vRand = CFixVector::Random();
 vRand *= (objP->info.xSize / 2);
 vPos += vRand;
-xSize = FixMul (xScale, I2X (1) + d_rand ()*4);
+xSize = FixMul (xScale, I2X (1) + RandShort ()*4);
 nSegment = FindSegByPos (vPos, objP->info.nSegment, 1, 0);
 if (nSegment != -1) {
-	CObject *explObjP = /*Object*/CreateExplosion (nSegment, vPos, xSize, nVClip);
+	CObject *explObjP = CreateExplosion (nSegment, vPos, xSize, nVClip);
 	if (!explObjP)
 		return;
 

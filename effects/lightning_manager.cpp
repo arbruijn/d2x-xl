@@ -838,12 +838,12 @@ if (i < 0) {
 		fDamage = (0.5f - objP->Damage ()) / 500.0f;
 		}
 #if 1
-	if (dbl_rand () > fDamage)
+	if (RandDouble () > fDamage)
 		return 0;
 #endif
 	if (pointList) {
 		vPos = pointList [0]->p3_src;
-		vEnd = pointList [1 + d_rand () % (nVertices - 1)]->p3_vec;
+		vEnd = pointList [1 + RandShort () % (nVertices - 1)]->p3_vec;
 		vNorm = CFixVector::Normal (vPos, pointList [1]->p3_vec, vEnd);
 		vPos += vNorm * (I2X (1) / 64);
 		vEnd += vNorm * (I2X (1) / 64);
@@ -852,7 +852,7 @@ if (i < 0) {
 		}
 	else {
 		memcpy (&vPosf, &vertP->m_vertex, sizeof (CFloatVector3));
-		memcpy (&vEndf, &vertP [1 + d_rand () % (nVertices - 1)].m_vertex, sizeof (CFloatVector3));
+		memcpy (&vEndf, &vertP [1 + RandShort () % (nVertices - 1)].m_vertex, sizeof (CFloatVector3));
 		memcpy (&v, &vertP [1].m_vertex, sizeof (CFloatVector3));
 		vNormf = CFloatVector::Normal (vPosf, v, vEndf);
 		vPosf += vNormf * (1.0f / 64.0f);
@@ -864,7 +864,7 @@ if (i < 0) {
 		}
 	if (CFixVector::Dist (vPos, vEnd) < I2X (1) / 4)
 		return -1;
-	nLife = 1000 + d_rand () % 2000;
+	nLife = 1000 + RandShort () % 2000;
 	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, nLife, 0,
 					h, I2X (1) / 2, 0, 0, 20, 0, 1, 5, 0, 1, -1, 0, 0, 1, &color);
 	bUpdate = 1;

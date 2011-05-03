@@ -1014,22 +1014,22 @@ else
 const CFixVector CFixVector::Random (void) 
 {
 	CFixVector v;
-	int i = d_rand () % 3;
+	int i = RandShort () % 3;
 
 if (i == 2) {
-	v.v.coord.x = (16384 - d_rand ()) | 1;	// make sure we don't create null vector
-	v.v.coord.y = 16384 - d_rand ();
-	v.v.coord.z = 16384 - d_rand ();
+	v.v.coord.x = (SRandShort ()) | 1;	// make sure we don't create null vector
+	v.v.coord.y = SRandShort ();
+	v.v.coord.z = SRandShort ();
 	}
 else if (i == 1) {
-	v.v.coord.y = (16384 - d_rand ()) | 1;
-	v.v.coord.z = 16384 - d_rand ();
-	v.v.coord.x = 16384 - d_rand ();	// make sure we don't create null vector
+	v.v.coord.y = (SRandShort ()) | 1;
+	v.v.coord.z = SRandShort ();
+	v.v.coord.x = SRandShort ();	// make sure we don't create null vector
 	}
 else {
-	v.v.coord.z = (16384 - d_rand ()) | 1;
-	v.v.coord.x = 16384 - d_rand ();	// make sure we don't create null vector
-	v.v.coord.y = 16384 - d_rand ();
+	v.v.coord.z = (SRandShort ()) | 1;
+	v.v.coord.x = SRandShort ();	// make sure we don't create null vector
+	v.v.coord.y = SRandShort ();
 	}
 Normalize (v);
 return v;

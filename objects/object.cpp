@@ -1573,9 +1573,9 @@ void CObject::RandomBump (fix xScale, fix xForce, bool bSound)
 {
 	fix angle;
 
-angle = (d_rand () - I2X (1) / 4);
+angle = SRandShort ();
 mType.physInfo.rotVel.v.coord.x += FixMul (angle, xScale);
-angle = (d_rand () - I2X (1) / 4);
+angle = SRandShort ();
 mType.physInfo.rotVel.v.coord.z += FixMul (angle, xScale);
 CFixVector vRand = CFixVector::Random ();
 Bump (vRand, xForce);

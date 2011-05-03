@@ -861,7 +861,7 @@ else {
 	}
 bMakeSound = 1;
 for (i = 0; i < nSmartChildren; i++) {
-	short nTarget = nObjects ? objList [(d_rand () * nObjects) >> 15] : -1;
+	short nTarget = nObjects ? objList [(RandShort () * nObjects) >> 15] : -1;
 	CreateHomingWeapon (objP, nTarget, nBlobId, bMakeSound);
 	bMakeSound = 0;
 	}
@@ -964,9 +964,9 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	vForce.v.coord.y = - (gameData.objs.consoleP->info.position.mOrient.m.dir.f.v.coord.y << 7);
 	vForce.v.coord.z = - (gameData.objs.consoleP->info.position.mOrient.m.dir.f.v.coord.z << 7);
 	gameData.objs.consoleP->ApplyForce (vForce);
-	vForce.v.coord.x = (vForce.v.coord.x >> 4) + d_rand () - 16384;
-	vForce.v.coord.y = (vForce.v.coord.y >> 4) + d_rand () - 16384;
-	vForce.v.coord.z = (vForce.v.coord.z >> 4) + d_rand () - 16384;
+	vForce.v.coord.x = (vForce.v.coord.x >> 4) + SRandShort ();
+	vForce.v.coord.y = (vForce.v.coord.y >> 4) + SRandShort ();
+	vForce.v.coord.z = (vForce.v.coord.z >> 4) + SRandShort ();
 	gameData.objs.consoleP->ApplyRotForce (vForce);
 	break; //no dual mega/smart missile launch
 	}

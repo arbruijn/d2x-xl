@@ -1392,13 +1392,13 @@ for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 		v2 = gameData.segs.vertices + corners [2];
 		vv0 = *v0 - *v1;
 		vv1 = *v2 - *v1;
-		vPos = *v1 + vv0 * (d_rand () * 2);
-		vPos += vv1 * (d_rand ()*2);
+		vPos = *v1 + vv0 * (RandShort () * 2);
+		vPos += vv1 * (RandShort ()*2);
 		size = EXPL_WALL_FIREBALL_SIZE + (2*EXPL_WALL_FIREBALL_SIZE * e / EXPL_WALL_TOTAL_FIREBALLS);
 		//fireballs start away from door, with subsequent ones getting closer
 		vPos += SEGMENTS [nSegment].m_sides [nSide].m_normals [0] * (size * (EXPL_WALL_TOTAL_FIREBALLS - e) / EXPL_WALL_TOTAL_FIREBALLS);
 		if (e & 3)		//3 of 4 are Normal
-			/*Object*/CreateExplosion ((short) gameData.walls.exploding [i].nSegment, vPos, size, (ubyte) VCLIP_SMALL_EXPLOSION);
+			CreateExplosion ((short) gameData.walls.exploding [i].nSegment, vPos, size, (ubyte) VCLIP_SMALL_EXPLOSION);
 		else
 			CreateSplashDamageExplosion (NULL, (short) gameData.walls.exploding [i].nSegment, vPos,
 										  size, (ubyte) VCLIP_SMALL_EXPLOSION, I2X (4), I2X (20), I2X (50), -1);

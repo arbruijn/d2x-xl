@@ -217,7 +217,7 @@ if (m_nLinks) {
 		nSegment = m_segments [0];
 	else {
 		do {
-			nSegment = m_segments [d_rand () % m_nLinks];
+			nSegment = m_segments [RandShort () % m_nLinks];
 			} while (nSegment == m_info.nSegment);
 		m_info.nSegment = nSegment;
 		}
@@ -739,7 +739,7 @@ if ((nObject >= 0) && (m_nLinks > 0)) {
 		short		nSegment, nSide;
 
 	StopSpeedBoost (nObject);
-	i = d_rand () % m_nLinks;
+	i = RandShort () % m_nLinks;
 	nSegment = m_segments [i];
 	nSide = m_sides [i];
 	// set new CPlayerData direction, facing the destination nSide
@@ -1129,7 +1129,7 @@ if (m_info.tOperated < 0) {
 			m_info.time [1] = m_info.time [0];
 		else {
 			fix h = -m_info.time [0] / 10;
-			m_info.time [1] = h + h * (d_rand () % 10);
+			m_info.time [1] = h + h * (RandShort () % 10);
 			}
 		}
 	}

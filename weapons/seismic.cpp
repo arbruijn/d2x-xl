@@ -53,7 +53,7 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 		if (!gameStates.gameplay.seismic.bSound) {
 			audio.PlayLoopingSound ((short) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
 			gameStates.gameplay.seismic.bSound = 1;
-			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
+			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + RandShort () / 2;
 			}
 		if (deltaTime < ESHAKER_SHAKE_TIME) {
 			//	Control center destroyed, rock the CPlayerData's ship.
@@ -68,8 +68,8 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 				fc = 1;
 			gameStates.gameplay.seismic.nVolume += fc;
 			h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
-			rx = FixMul(d_rand() - 16384, h);
-			rz = FixMul(d_rand() - 16384, h);
+			rx = FixMul (SRandShort (), h);
+			rz = FixMul (SRandShort (), h);
 			gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
 			gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
 			//	Shake the buddy!
@@ -112,14 +112,14 @@ int StartSeismicDisturbance (void)
 
 if (gameStates.gameplay.seismic.nShakeDuration < 1)
 	return 0;
-rval =  (2 * FixMul(d_rand(), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.time.xFrame;
+rval = (2 * FixMul (RandShort (), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.time.xFrame;
 if (rval) {
 	gameStates.gameplay.seismic.nStartTime = gameData.time.xGame;
 	gameStates.gameplay.seismic.nEndTime = gameData.time.xGame + gameStates.gameplay.seismic.nShakeDuration;
 	if (!gameStates.gameplay.seismic.bSound) {
 		audio.PlayLoopingSound ((short) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
 		gameStates.gameplay.seismic.bSound = 1;
-		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
+		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + RandShort () / 2;
 		}
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendSeismic (gameStates.gameplay.seismic.nStartTime,gameStates.gameplay.seismic.nEndTime);
@@ -146,8 +146,8 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 			fc = 1;
 		gameStates.gameplay.seismic.nVolume += fc;
 		h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
-		rx = FixMul(d_rand() - 16384, h);
-		rz = FixMul(d_rand() - 16384, h);
+		rx = FixMul(SRandShort (), h);
+		rz = FixMul(SRandShort (), h);
 		gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
 		gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
 		//	Shake the buddy!
@@ -205,7 +205,7 @@ if (stv_save != 0) {
 		if (volume > I2X (1))
 			volume = I2X (1);
 		audio.ChangeLoopingVolume (volume);
-		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand () / 4 + 8192;
+		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + RandShort () / 4 + 8192;
 		}
 	}
 }

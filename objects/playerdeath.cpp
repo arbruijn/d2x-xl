@@ -205,7 +205,7 @@ if (gameStates.app.bPlayerIsDead) {
 			}
 		}
 	else {
-		if (d_rand () < gameData.time.xFrame * 4) {
+		if (RandShort () < gameData.time.xFrame * 4) {
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendCreateExplosion (gameData.multiplayer.nLocalPlayer);
 			CreateSmallFireballOnObject (gameData.objs.consoleP, I2X (1), 1);

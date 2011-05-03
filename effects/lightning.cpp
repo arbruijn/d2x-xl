@@ -51,9 +51,9 @@ CFixVector *VmRandomVector (CFixVector *vRand)
 	CFixVector	vr;
 
 do {
-	vr.v.coord.x = (90 - d_rand () % 181) * (I2X (1) / 90);
-	vr.v.coord.y = (90 - d_rand () % 181) * (I2X (1) / 90);
-	vr.v.coord.z = (90 - d_rand () % 181) * (I2X (1) / 90);
+	vr.v.coord.x = (90 - RandShort () % 181) * (I2X (1) / 90);
+	vr.v.coord.y = (90 - RandShort () % 181) * (I2X (1) / 90);
+	vr.v.coord.z = (90 - RandShort () % 181) * (I2X (1) / 90);
 } while (vr.IsZero ());
 CFixVector::Normalize (vr);
 *vRand = vr;
@@ -79,7 +79,7 @@ do {
 	} while (CFixVector::Dot (vr, vd) > I2X (9) / 10);
 
 vr = CFixVector::Normal (CFixVector::ZERO, vd, vr);
-fix dot = nMinDot + (d_rand () % ((nMaxDot - nMinDot + 1) / 2)) * 2;
+fix dot = nMinDot + (RandShort () % ((nMaxDot - nMinDot + 1) / 2)) * 2;
 double a = acos (X2D (dot));
 if (fabs (a - Pi * 0.5) > 1e-6) {
 	vr *= F2X (tan (a));
@@ -104,7 +104,7 @@ return vRand;
 
 int CLightning::ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength)
 {
-//nLength = 4 * nLength / 5 + int (dbl_rand () * nLength / 5);
+//nLength = 4 * nLength / 5 + int (RandDouble () * nLength / 5);
 DirectedRandomVector (vDir, vParentDir, I2X (85) / 100, I2X (95) / 100);
 *vEnd = *vPos + *vDir * nLength;
 return nLength;
@@ -137,7 +137,7 @@ else {
 	}
 m_vDir = vDir;
 if (m_nOffset) {
-	i = m_nOffset / 2 + int (dbl_rand () * m_nOffset / 2);
+	i = m_nOffset / 2 + int (RandDouble () * m_nOffset / 2);
 	m_vPos += vDir * i;
 	m_vEnd += vDir * i;
 	}
@@ -243,8 +243,8 @@ if (!m_coreVerts.Create ((m_nNodes + 3) * 4))
 	return false;
 m_nodes.Clear ();
 if (m_bRandom) {
-	m_nTTL = 3 * m_nTTL / 4 + int (dbl_rand () * m_nTTL / 2);
-	m_nLength = 3 * m_nLength / 4 + int (dbl_rand () * m_nLength / 2);
+	m_nTTL = 3 * m_nTTL / 4 + int (RandDouble () * m_nTTL / 2);
+	m_nLength = 3 * m_nLength / 4 + int (RandDouble () * m_nLength / 2);
 	}
 if (m_nAmplitude < 0)
 	m_nAmplitude = m_nLength / 6;
@@ -254,7 +254,7 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 	double nProb = double (m_nChildren) / double (m_nNodes);
 	int nOffset = m_nNodes / m_nChildren / 2;
 	for (int nNode = 1 + rand () % nOffset; (nNode < m_nNodes - nOffset) && (nBranches < m_nChildren); nNode++) {
-		if (dbl_rand () <= nProb) {
+		if (RandDouble () <= nProb) {
 			nBranches++;
 			int nChildNodes = m_nNodes - nNode;
 			if (nChildNodes > 1) {
@@ -350,7 +350,7 @@ for (i = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; i > 0; i--, nodeP++) {
 	}
 if ((h = nAmplitude - nMaxDist)) {
 	if (m_nNodes > 0) {
-		nMaxDist += (d_rand () % 4 + 1) * h / 4;
+		nMaxDist += (RandShort () % 4 + 1) * h / 4;
 		for (i = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; i > 0; i--, nodeP++)
 			nodeP->m_vOffs *= FixDiv (nAmplitude, nMaxDist);
 		}
@@ -528,12 +528,12 @@ if (m_nTTL <= 0) {
 	if (m_nLife < 0) {
 		if ((m_nDelay > 1) && (0 > (m_nNodes = -m_nNodes))) {
 			h = m_nDelay / 2;
-			m_nTTL = h + int (dbl_rand () * h);
+			m_nTTL = h + int (RandDouble () * h);
 			}
 		else {
 			if (m_bRandom) {
 				h = -m_nLife;
-				m_nTTL = 3 * h / 4 + int (dbl_rand () * h / 2);
+				m_nTTL = 3 * h / 4 + int (RandDouble () * h / 2);
 				Setup (0);
 				}
 			else {
@@ -907,9 +907,9 @@ if (m_nLife > 0) {
 	else if (m_nTTL < m_nLife / 4)
 		color.alpha *= (float) m_nTTL / (float) (m_nLife / 4);
 	}
-color.red *= (float) (0.9 + dbl_rand () / 5);
-color.green *= (float) (0.9 + dbl_rand () / 5);
-color.blue *= (float) (0.9 + dbl_rand () / 5);
+color.red *= (float) (0.9 + RandDouble () / 5);
+color.green *= (float) (0.9 + RandDouble () / 5);
+color.blue *= (float) (0.9 + RandDouble () / 5);
 if ((bGlow = SetupGlow ()) && glowRenderer.Available (GLOW_LIGHTNING))
 	glBlendEquation (GL_MAX);
 else

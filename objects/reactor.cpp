@@ -96,7 +96,7 @@ if (gameStates.gameplay.nReactorCount [0] < gameStates.gameplay.nReactorCount [1
 		if ((rStatP->nDeadObj != -1) && 
 			 (OBJECTS [rStatP->nDeadObj].info.nType == OBJ_REACTOR) &&
 			 (gameData.reactor.countdown.nSecsLeft > 0))
-		if (d_rand () < gameData.time.xFrame * 4)
+		if (RandShort () < gameData.time.xFrame * 4)
 			CreateSmallFireballOnObject (OBJECTS + rStatP->nDeadObj, I2X (1), 1);
 		}
 	}
@@ -142,8 +142,8 @@ xScale = 1;
 if (gameStates.app.nDifficultyLevel == 0)
 	xScale = 4;
 h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
-gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += (FixMul (d_rand () - 16384, h)) / xScale;
-gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += (FixMul (d_rand () - 16384, h)) / xScale;
+gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += (FixMul (SRandShort (), h)) / xScale;
+gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += (FixMul (SRandShort (), h)) / xScale;
 //	Hook in the rumble sound effect here.
 oldTime = gameData.reactor.countdown.nTimer;
 if (!TimeStopped ())
@@ -366,7 +366,7 @@ if ((rStatP->nNextFireTime < 0) &&
 		//	some of time, based on level, fire another thing, not directly at CPlayerData, so it might hit him if he's constantly moving.
 		nRandProb = I2X (1) / (abs (missionManager.nCurrentLevel) / 4 + 2);
 		count = 0;
-		while ((d_rand () > nRandProb) && (count < 4)) {
+		while ((RandShort () > nRandProb) && (count < 4)) {
 			CFixVector	vRand;
 
 			vRand = CFixVector::Random();

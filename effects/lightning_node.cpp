@@ -258,7 +258,7 @@ CFixVector CLightningNode::CreateErratic (CFixVector *vPos, CFixVector *vBase, i
 
 m_vNewPos = m_vBase;
 for (j = 0; j < 2 - bInPlane; j++) {
-	nDelta = nAmplitude / 2 - int (dbl_rand () * nAmplitude);
+	nDelta = nAmplitude / 2 - int (RandDouble () * nAmplitude);
 	if (!bRandom) {
 		i -= bFromEnd;
 		nDelta *= 3;

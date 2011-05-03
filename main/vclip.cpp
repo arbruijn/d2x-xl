@@ -95,7 +95,7 @@ if (vcP->flags & WCF_ALTFMT) {
 		else
 			vcP->flags |= WCF_INITIALIZED;
 		if (vciP)
-			vciP->nCurFrame = d_rand () % nFrames;
+			vciP->nCurFrame = RandShort () % nFrames;
 		}
 	}
 return nFrames;
@@ -349,7 +349,7 @@ if (modtime == IMMORTAL_TIME)
 	modtime = playTime;
 //	Should cause Omega blobs (which live for one frame) to not always be the same.
 if (modtime == ONE_FRAME_TIME)
-	modtime = d_rand();
+	modtime = RandShort ();
 if (objP->info.nId == PROXMINE_ID) {		//make prox bombs spin out of sync
 	int nObject = objP->Index ();
 	modtime += (modtime * (nObject & 7)) / 16;	//add variance to spin rate

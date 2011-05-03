@@ -297,7 +297,7 @@ if (!nTypes)
 	return -1;
 if (nTypes == 1)
 	return objTypes [0];
-return objTypes [(d_rand () * nTypes) / 32768];
+return objTypes [(RandShort () * nTypes) / 32768];
 }
 
 //------------------------------------------------------------
@@ -372,7 +372,7 @@ void CreateMatCenEffect (tFuelCenInfo *matCenP, ubyte nVideoClip)
 
 vPos = SEGMENTS [matCenP->nSegment].Center ();
 // HACK!!!The 10 under here should be something equal to the 1/2 the size of the CSegment.
-objP = /*Object*/CreateExplosion ((short) matCenP->nSegment, vPos, I2X (10), nVideoClip);
+objP = CreateExplosion ((short) matCenP->nSegment, vPos, I2X (10), nVideoClip);
 if (objP) {
 	ExtractOrientFromSegment (&objP->info.position.mOrient, SEGMENTS + matCenP->nSegment);
 	if (gameData.eff.vClips [0][nVideoClip].nSound > -1)
@@ -573,11 +573,11 @@ if (!matCenP->bFlag) {
 		topTime = ROBOT_GEN_TIME;
 	else {
 		xDistToPlayer = CFixVector::Dist(gameData.objs.consoleP->info.position.vPos, matCenP->vCenter);
-		topTime = xDistToPlayer / 64 + d_rand () * 2 + I2X (2);
+		topTime = xDistToPlayer / 64 + RandShort () * 2 + I2X (2);
 		if (topTime > ROBOT_GEN_TIME)
-			topTime = ROBOT_GEN_TIME + d_rand ();
+			topTime = ROBOT_GEN_TIME + RandShort ();
 		if (topTime < I2X (2))
-			topTime = I2X (3)/2 + d_rand ()*2;
+			topTime = I2X (3)/2 + RandShort ()*2;
 		}
 	if (matCenP->xTimer < topTime)
 		return;

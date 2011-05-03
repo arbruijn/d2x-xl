@@ -394,7 +394,7 @@ if (botInfoP->attackType == 1) {
 		  (xDistToTarget >= I2X (30))))
 		MoveTowardsPlayer (objP, &gameData.ai.target.vDir);
 		//	1/4 of time, move around CPlayerData, 3/4 of time, move away from CPlayerData
-	else if (d_rand () < 8192)
+	else if (RandShort () < 8192)
 		MoveAroundPlayer (objP, &gameData.ai.target.vDir, -1);
 	else
 		MoveAwayFromTarget (objP, &gameData.ai.target.vDir, 1);

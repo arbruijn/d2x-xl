@@ -64,7 +64,7 @@ if (!objCount)		//no OBJECTS of this nType had initially been placed in the mine
 	return NULL;	//can happen with missile packs
 if ((bUseFree = (objCount < 0)))
 	objCount = -objCount;
-h = d_rand () % objCount + 1;
+h = RandShort () % objCount + 1;
 for (i = 0, objP = gameData.objs.init.Buffer (); i < gameFileInfo.objects.count; i++, objP++) {
 	if ((objP->info.nType != nType) || (objP->info.nId != id))
 		continue;
@@ -132,7 +132,7 @@ while (nTail != nHead) {
 	if (nCurDepth >= nMaxDepth) {
 		if (nDepthP)
 			*nDepthP = nCurDepth;
-		return segQueue [nTail + d_rand () % (nHead - nTail)];
+		return segQueue [nTail + RandShort () % (nHead - nTail)];
 		}
 	segP = SEGMENTS + segQueue [nTail++];
 
@@ -140,7 +140,7 @@ while (nTail != nHead) {
 	for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 		sideList [i] = i;
 	for (i = MAX_SIDES_PER_SEGMENT; i; ) {
-		j = d_rand () % i;
+		j = RandShort () % i;
 		nSide = sideList [j];
 		if (j < --i)
 			sideList [j] = sideList [i];
@@ -162,7 +162,7 @@ while ((nTail > 0) && (bVisited [segQueue [nTail - 1]] == nCurDepth))
 	nTail--;
 if (nDepthP)
 	*nDepthP = nCurDepth + 1;
-return segQueue [nTail + d_rand () % (nHead - nTail)];
+return segQueue [nTail + RandShort () % (nHead - nTail)];
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -198,7 +198,7 @@ if (bUseInitSgm) {
 	}
 if (pbFixedPos)
 	*pbFixedPos = 0;
-nDepth = BASE_NET_DROP_DEPTH + d_rand () % (BASE_NET_DROP_DEPTH * 2);
+nDepth = BASE_NET_DROP_DEPTH + RandShort () % (BASE_NET_DROP_DEPTH * 2);
 vPlayerPos = &OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
 nPlayerSeg = OBJECTS [LOCALPLAYER.nObject].info.nSegment;
 
@@ -208,7 +208,7 @@ while (nSegment == -1) {
 	if (!IsMultiGame)
 		nPlayer = gameData.multiplayer.nLocalPlayer;
 	else {	// chose drop segment at required minimum distance from some random player
-		nPlayer = d_rand () % gameData.multiplayer.nPlayers;
+		nPlayer = RandShort () % gameData.multiplayer.nPlayers;
 		count = 0;
 		while ((count < gameData.multiplayer.nPlayers) &&	// make sure player is not the local player or on his team
 				 (!gameData.multiplayer.players [nPlayer].connected ||
@@ -268,7 +268,7 @@ if (nSegment == -1) {
 #if TRACE
 	console.printf (1, "Warning: Unable to find a connected CSegment.  Picking a random one.\n");
 #endif
-	return (d_rand () % gameData.segs.nSegments);
+	return (RandShort () % gameData.segs.nSegments);
 	}
 return nSegment;
 }
@@ -408,7 +408,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (!bFixedPos)
 		OBJECTS [nObject].info.position.vPos = vNewPos;
 	OBJECTS [nObject].RelinkToSeg (nSegment);
-	/*Object*/CreateExplosion (&OBJECTS [nObject], nSegment, vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
+	CreateExplosion (&OBJECTS [nObject], nSegment, vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 	return 1;
 	}
 return 0;
@@ -510,7 +510,7 @@ else if (( (nWeapon == GAUSS_INDEX) || (delObjP->info.contains.nId == POW_VULCAN
 	delObjP->info.contains.nCount = 0;
 else if (nWeapon != -1) {
 	if ((PlayerHasWeapon (nWeapon, 0, -1, 1) & HAS_WEAPON_FLAG) || WeaponNearby (delObjP, delObjP->info.contains.nId)) {
-		if (d_rand () > 16384) {
+		if (RandShort () > 16384) {
 			delObjP->info.contains.nType = OBJ_POWERUP;
 			if (nWeapon == VULCAN_INDEX) {
 				delObjP->info.contains.nId = POW_VULCAN_AMMO;
@@ -530,7 +530,7 @@ else if (nWeapon != -1) {
 	}
 else if (delObjP->info.contains.nId == POW_QUADLASER)
 	if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) || WeaponNearby (delObjP, delObjP->info.contains.nId)) {
-		if (d_rand () > 16384) {
+		if (RandShort () > 16384) {
 			delObjP->info.contains.nType = OBJ_POWERUP;
 			delObjP->info.contains.nId = POW_ENERGY;
 			}
@@ -582,9 +582,9 @@ switch (nType) {
 				nRandScale = 2;
 			xNewMag = xOldMag + I2X (32);
 			nOffset = 16384 * nRandScale;
-			vNewVel.v.coord.x += FixMul (xNewMag, d_rand () * nRandScale - nOffset);
-			vNewVel.v.coord.y += FixMul (xNewMag, d_rand () * nRandScale - nOffset);
-			vNewVel.v.coord.z += FixMul (xNewMag, d_rand () * nRandScale - nOffset);
+			vNewVel.v.coord.x += FixMul (xNewMag, RandShort () * nRandScale - nOffset);
+			vNewVel.v.coord.y += FixMul (xNewMag, RandShort () * nRandScale - nOffset);
+			vNewVel.v.coord.z += FixMul (xNewMag, RandShort () * nRandScale - nOffset);
 			// Give keys zero velocity so they can be tracked better in multi
 			if (IsMultiGame && (((nId >= POW_KEY_BLUE) && (nId <= POW_KEY_GOLD)) || (nId == POW_MONSTERBALL)))
 				vNewVel.SetZero ();
@@ -623,13 +623,13 @@ switch (nType) {
 				case POW_CONCUSSION_4:
 				case POW_SHIELD_BOOST:
 				case POW_ENERGY:
-					objP->SetLife ((d_rand () + I2X (3)) * 64);		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
+					objP->SetLife ((RandShort () + I2X (3)) * 64);		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
 					if (IsMultiGame)
 						objP->info.xLifeLeft /= 2;
 					break;
 				default:
 //						if (IsMultiGame)
-//							objP->SetLife ((d_rand () + I2X (3)) * 64);		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
+//							objP->SetLife ((RandShort () + I2X (3)) * 64);		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
 					break;
 				}
 			}
@@ -643,16 +643,16 @@ switch (nType) {
 			CFixVector::Normalize (vNewVel);
 			//	We want powerups to move more in network mode.
 			nRandScale = 2;
-			vNewVel.v.coord.x += (d_rand () - 16384) * 2;
-			vNewVel.v.coord.y += (d_rand () - 16384) * 2;
-			vNewVel.v.coord.z += (d_rand () - 16384) * 2;
+			vNewVel.v.coord.x += SRandShort () * 2;
+			vNewVel.v.coord.y += SRandShort () * 2;
+			vNewVel.v.coord.z += SRandShort () * 2;
 			CFixVector::Normalize (vNewVel);
 			vNewVel *= ((I2X (32) + xOldMag) * nRandScale);
 			vNewPos = vPos;
 			//	This is dangerous, could be outside mine.
-//				vNewPos.x += (d_rand ()-16384)*8;
-//				vNewPos.y += (d_rand ()-16384)*7;
-//				vNewPos.z += (d_rand ()-16384)*6;
+//				vNewPos.x += SRandShort () * 8;
+//				vNewPos.y += SRandShort () * 7;
+//				vNewPos.z += SRandShort () * 6;
 			if (0 > (nObject = CreateRobot (nId, nSegment, vNewPos)))
 				return nObject;
 			if (IsMultiGame)
@@ -678,7 +678,7 @@ switch (nType) {
 			}
 		// At JasenW's request, robots which contain robots
 		// sometimes drop shield.
-		if (d_rand () > 16384)
+		if (RandShort () > 16384)
 			DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 1, vInitVel, vPos, nSegment);
 		break;
 
@@ -705,24 +705,24 @@ if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERU
 	else {
 		if (objP->info.contains.nId == POW_SHIELD_BOOST) {
 			if (LOCALPLAYER.Shield () >= I2X (100)) {
-				if (d_rand () > 16384) {
+				if (RandShort () > 16384) {
 					return -1;
 					}
 				} 
 			else  if (LOCALPLAYER.Shield () >= I2X (150)) {
-				if (d_rand () > 8192) {
+				if (RandShort () > 8192) {
 					return -1;
 					}
 				}
 			}
 		else if (objP->info.contains.nId == POW_ENERGY) {
 			if (LOCALPLAYER.Energy () >= I2X (100)) {
-				if (d_rand () > 16384) {
+				if (RandShort () > 16384) {
 					return -1;
 					}
 				} 
 			else if (LOCALPLAYER.Energy () >= I2X (150)) {
-				if (d_rand () > 8192) {
+				if (RandShort () > 8192) {
 					return -1;
 					}
 				}
@@ -779,7 +779,7 @@ for (i = 0; i < nThrusters; i++) {
 	nSegment = FindSegByPos (ti.vPos [i], objP->info.nSegment, 1, 0);
 	if (nSegment == -1)
 		continue;
-	if (!(blobObjP = /*Object*/CreateExplosion (nSegment, ti.vPos [i], xSizeScale, VCLIP_AFTERBURNER_BLOB)))
+	if (!(blobObjP = CreateExplosion (nSegment, ti.vPos [i], xSizeScale, VCLIP_AFTERBURNER_BLOB)))
 		continue;
 	if (xLifeTime != -1) {
 		blobObjP->rType.vClipInfo.xTotalTime = xLifeTime;
@@ -865,7 +865,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		return;
 	if (nAmmo > 4)
 		nAmmo = 4;
-	for (nAmmo = d_rand () % nAmmo; nAmmo; nAmmo--) {
+	for (nAmmo = RandShort () % nAmmo; nAmmo; nAmmo--) {
 		CFixVector vRandom = CFixVector::Random ();
 		CFixVector vDropPos = playerObjP->info.position.vPos + vRandom;
 		short nNewSeg = FindSegByPos (vDropPos, playerObjP->info.nSegment, 1, 0);
@@ -881,7 +881,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
   		}
 	}
 else {
-	for (int nThreshold = 30000; (playerP->secondaryAmmo [nType] % 4 == 1) && (d_rand () < nThreshold); nThreshold /= 2) {
+	for (int nThreshold = 30000; (playerP->secondaryAmmo [nType] % 4 == 1) && (RandShort () < nThreshold); nThreshold /= 2) {
 		CFixVector vRandom = CFixVector::Random ();
 		nThreshold /= 2;
 		CFixVector vDropPos = playerObjP->info.position.vPos + vRandom;

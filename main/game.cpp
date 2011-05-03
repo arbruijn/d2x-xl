@@ -349,8 +349,8 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 //@@{
 //@@	int	rx, rz;
 //@@
-//@@	rx = (abScale * FixMul (d_rand () - 16384, I2X (1)/8 + (((gameData.time.xGame + 0x4000)*4) & 0x3fff)))/16;
-//@@	rz = (abScale * FixMul (d_rand () - 16384, I2X (1)/2 + ((gameData.time.xGame*4) & 0xffff)))/16;
+//@@	rx = (abScale * FixMul (SRandShort (), I2X (1)/8 + (((gameData.time.xGame + 0x4000)*4) & 0x3fff)))/16;
+//@@	rz = (abScale * FixMul (SRandShort (), I2X (1)/2 + ((gameData.time.xGame*4) & 0xffff)))/16;
 //@@
 //@@	gameData.objs.consoleP->mType.physInfo.rotVel.x += rx;
 //@@	gameData.objs.consoleP->mType.physInfo.rotVel.z += rz;
@@ -922,15 +922,15 @@ if (gameStates.app.bPlayerIsDead)
 
 if (bLava) {							//has lava
 	nSound = SOUND_AMBIENT_LAVA;
-	if (bWater && (d_rand () & 1))	//both, pick one
+	if (bWater && (RandShort () & 1))	//both, pick one
 		nSound = SOUND_AMBIENT_WATER;
 	}
 else if (bWater)						//just water
 	nSound = SOUND_AMBIENT_WATER;
 else
 	return;
-if (((d_rand () << 3) < gameData.time.xFrame))	//play the nSound
-	audio.PlaySound (nSound, SOUNDCLASS_GENERIC, (fix) (d_rand () + I2X (1) / 2));
+if (((RandShort () << 3) < gameData.time.xFrame))	//play the nSound
+	audio.PlaySound (nSound, SOUNDCLASS_GENERIC, (fix) (RandShort () + I2X (1) / 2));
 }
 
 //-----------------------------------------------------------------------------
@@ -1261,7 +1261,7 @@ for (i = 1; i < player_path_length; i++) {
 	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 	objP->rType.vClipInfo.nCurFrame = 0;
-	objP->SetLife (I2X (100) + d_rand () * 4);
+	objP->SetLife (I2X (100) + RandShort () * 4);
 	}
 return 1;
 }

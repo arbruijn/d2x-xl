@@ -190,7 +190,7 @@ networkData.nStatus = NETSTAT_STARTING;
 IpxInitNetGameAuxData (netGame.AuxData ());
 NetworkSetGameMode (netGame.m_info.gameMode);
 d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
-netGame.m_info.nSecurity = d_rand ();  // For syncing NetGames with CPlayerData packets
+netGame.m_info.nSecurity = RandShort ();  // For syncing NetGames with CPlayerData packets
 if (NetworkSelectPlayers (bAutoRun)) {
 	missionManager.DeleteLevelStates ();
 	missionManager.SaveLevelStates ();

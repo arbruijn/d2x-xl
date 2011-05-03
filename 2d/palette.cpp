@@ -88,7 +88,7 @@ if (m_nComputedColors < MAX_COMPUTED_COLORS) {
 	m_nComputedColors++;
 	} 
 else
-	i = (d_rand() * MAX_COMPUTED_COLORS) >> 15;
+	i = (RandShort () * MAX_COMPUTED_COLORS) >> 15;
 m_computedColors [i].color.red = r;
 m_computedColors [i].color.green = g;
 m_computedColors [i].color.blue = b;
@@ -347,7 +347,7 @@ void CPaletteManager::FadeEffect (void)
 	//	Diminish at FADE_RATE units/second.
 	//	For frame rates > FADE_RATE Hz, use randomness to achieve this.
 if (gameData.time.xFrame < I2X (1) / FADE_RATE) {
-	if (d_rand () < gameData.time.xFrame * FADE_RATE / 2)	
+	if (RandShort () < gameData.time.xFrame * FADE_RATE / 2)	
 		nDelta = 1;
 	}
 else {
@@ -370,7 +370,7 @@ if (m_data.xFlashDuration) {
 	if (m_data.xFlashDuration < 0)
 		m_data.xFlashDuration = 0;
 
-	if (bForce || (d_rand () > 4096)) {
+	if (bForce || (RandShort () > 4096)) {
       if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.red || m_data.effect.green || m_data.effect.blue))
 	      NDRecordPaletteEffect (short (m_data.effect.red * 64), short (m_data.effect.green * 64), short (m_data.effect.blue * 64));
 		paletteManager.SetEffect ();

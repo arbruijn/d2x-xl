@@ -240,7 +240,7 @@ if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SH
 //	Dematerialize Buddy!
 FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP)) {
-			/*Object*/CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
+			CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
 			objP->Die ();
 		}
 LOCALPLAYER.homingObjectDist = -I2X (1); // Turn off homing sound.
@@ -466,7 +466,7 @@ if (!gameStates.render.bOutsideMine) {
 		if (CFixVector::Dot (tvec, gameData.endLevel.exit.mOrient.m.dir.f) > 0) {
 			CObject *objP;
 			gameStates.render.bOutsideMine = 1;
-			objP = /*Object*/CreateExplosion (gameData.endLevel.exit.nSegNum, gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
+			objP = CreateExplosion (gameData.endLevel.exit.nSegNum, gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (objP) {
 				externalExplosion = *objP;
 				objP->Die ();
@@ -480,47 +480,46 @@ if (!gameStates.render.bOutsideMine) {
 
 	//do explosions chasing CPlayerData
 	if ((explosion_wait1 -= gameData.time.xFrame) < 0) {
-		CFixVector	tpnt;
+		CFixVector	vPos;
 		short			nSegment;
-		CObject		*expl;
-		static int	soundCount;
+		static int	nSounds = 0;
 
-		tpnt = gameData.objs.consoleP->info.position.vPos + gameData.objs.consoleP->info.position.mOrient.m.dir.f * (-gameData.objs.consoleP->info.xSize * 5);
-		tpnt += gameData.objs.consoleP->info.position.mOrient.m.dir.r * ((d_rand ()- RAND_MAX / 2) * 15);
-		tpnt += gameData.objs.consoleP->info.position.mOrient.m.dir.u * ((d_rand ()- RAND_MAX / 2) * 15);
-		nSegment = FindSegByPos (tpnt, gameData.objs.consoleP->info.nSegment, 1, 0);
+		vPos = gameData.objs.consoleP->info.position.vPos + gameData.objs.consoleP->info.position.mOrient.m.dir.f * (-gameData.objs.consoleP->info.xSize * 5);
+		vPos += gameData.objs.consoleP->info.position.mOrient.m.dir.r * (SRandShort () * 15);
+		vPos += gameData.objs.consoleP->info.position.mOrient.m.dir.u * (SRandShort () * 15);
+		nSegment = FindSegByPos (vPos, gameData.objs.consoleP->info.nSegment, 1, 0);
 		if (nSegment != -1) {
-			expl = /*Object*/CreateExplosion (nSegment, tpnt, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
-			if ((d_rand () < 10000) || (++soundCount == 7)) {		//pseudo-random
-				audio.CreateSegmentSound (SOUND_TUNNEL_EXPLOSION, nSegment, 0, tpnt, 0, I2X (1));
-				soundCount=0;
+			CreateExplosion (nSegment, vPos, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
+			if ((RandShort () < 10000) || (++nSounds == 7)) {		//pseudo-random
+				audio.CreateSegmentSound (SOUND_TUNNEL_EXPLOSION, nSegment, 0, vPos, 0, I2X (1));
+				nSounds = 0;
 				}
 			}
-		explosion_wait1 = 0x2000 + d_rand ()/4;
+		explosion_wait1 = 0x2000 + RandShort () / 4;
 		}
 	}
 
 //do little explosions on walls
 if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndLevelSequence < EL_OUTSIDE))
 	if ((explosion_wait2 -= gameData.time.xFrame) < 0) {
-		CFixVector	tpnt;
+		CFixVector	vPos;
 		//create little explosion on CWall
-		tpnt = gameData.objs.consoleP->info.position.mOrient.m.dir.r * ((d_rand () - RAND_MAX / 2) * 100);
-		tpnt += gameData.objs.consoleP->info.position.mOrient.m.dir.u * ((d_rand () - RAND_MAX / 2) * 100);
-		tpnt += gameData.objs.consoleP->info.position.vPos;
+		vPos = gameData.objs.consoleP->info.position.mOrient.m.dir.r * (SRandShort () * 100);
+		vPos += gameData.objs.consoleP->info.position.mOrient.m.dir.u * (SRandShort () * 100);
+		vPos += gameData.objs.consoleP->info.position.vPos;
 		if (gameStates.app.bEndLevelSequence == EL_FLYTHROUGH)
-			tpnt += gameData.objs.consoleP->info.position.mOrient.m.dir.f * (d_rand ()*200);
+			vPos += gameData.objs.consoleP->info.position.mOrient.m.dir.f * (RandShort () * 200);
 		else
-			tpnt += gameData.objs.consoleP->info.position.mOrient.m.dir.f * (d_rand ()*60);
+			vPos += gameData.objs.consoleP->info.position.mOrient.m.dir.f * (RandShort () * 60);
 
 		//find hit point on CWall
-		CHitQuery	fq (0, &gameData.objs.consoleP->info.position.vPos, &tpnt, gameData.objs.consoleP->info.nSegment);
+		CHitQuery	fq (0, &gameData.objs.consoleP->info.position.vPos, &vPos, gameData.objs.consoleP->info.nSegment);
 		CHitData		hitData;
 
 		FindHitpoint (&fq, &hitData);
 		if ((hitData.hit.nType == HIT_WALL) && (hitData.hit.nSegment != -1))
-			/*Object*/CreateExplosion ((short) hitData.hit.nSegment, hitData.hit.vPoint, I2X (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);
-		explosion_wait2 = (0xa00 + d_rand ()/8)/2;
+			CreateExplosion ((short) hitData.hit.nSegment, hitData.hit.vPoint, I2X (3) + RandShort () * 6, VCLIP_SMALL_EXPLOSION);
+		explosion_wait2 = (0xa00 + RandShort () / 8) / 2;
 		}
 
 switch (gameStates.app.bEndLevelSequence) {
@@ -803,9 +802,9 @@ void GenerateStarfield (void)
 	int i;
 
 for (i = 0; i < MAX_STARS; i++) {
-	stars [i].v.coord.x = (d_rand () - RAND_MAX/2) << 14;
-	stars [i].v.coord.z = (d_rand () - RAND_MAX/2) << 14;
-	stars [i].v.coord.y = (d_rand ()/2) << 14;
+	stars [i].v.coord.x = SRandShort () << 14;
+	stars [i].v.coord.z = SRandShort () << 14;
+	stars [i].v.coord.y = (RandShort () / 2) << 14;
 	}
 }
 

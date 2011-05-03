@@ -438,11 +438,11 @@ void ai_turn_randomly(CFixVector *vec_to_player, CObject *objP, fix rate, int nP
 
 	//	Random turning looks too stupid, so 1/4 of time, cheat.
 	if (nPrevVisibility)
-		if (d_rand() > 0x7400) {
+		if (RandShort () > 0x7400) {
 			ai_turn_towards_vector (vec_to_player, objP, rate);
 			return;
 		}
-//--debug-- 	if (d_rand() > 0x6000)
+//--debug-- 	if (RandShort () > 0x6000)
 //--debug-- 		Prevented_turns++;
 
 	curVec = objP->mType.physInfo.rotVel;
@@ -778,19 +778,19 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 		fix	cloak_time = gameData.ai.cloakInfo [nObject % D1_MAX_AI_CLOAK_INFO].lastTime;
 
 		if (gameData.time.xGame - cloak_time > CLOAK_TIME_MAX/4)
-			if (d_rand() > FixDiv(gameData.time.xGame - cloak_time, CLOAK_TIME_MAX)/2) {
+			if (RandShort () > FixDiv(gameData.time.xGame - cloak_time, CLOAK_TIME_MAX)/2) {
 				SetNextPrimaryFireTime(ailP, botInfoP);
 				return;
 			}
 	}
 
 	//	Set position to fire at based on difficulty level.
-	bpp_diff.v.coord.x = gameData.ai.target.vBelievedPos.v.coord.x + (d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
-	bpp_diff.v.coord.y = gameData.ai.target.vBelievedPos.v.coord.y + (d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
-	bpp_diff.v.coord.z = gameData.ai.target.vBelievedPos.v.coord.z + (d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
+	bpp_diff.v.coord.x = gameData.ai.target.vBelievedPos.v.coord.x + SRandShort () * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
+	bpp_diff.v.coord.y = gameData.ai.target.vBelievedPos.v.coord.y + SRandShort () * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
+	bpp_diff.v.coord.z = gameData.ai.target.vBelievedPos.v.coord.z + SRandShort () * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
 
 	//	Half the time fire at the playerP, half the time lead the playerP.
-	if (d_rand() > 16384) {
+	if (RandShort () > 16384) {
 
 		CFixVector::NormalizedDir(vFire, bpp_diff, *fire_point);
 
@@ -1103,7 +1103,7 @@ void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_p
 	if (botInfoP->attackType == 1) {
 		if (((ailP->nextPrimaryFire > botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) && (dist_to_player < I2X (30))) || gameStates.app.bPlayerIsDead) {
 			//	1/4 of time, move around playerP, 3/4 of time, move away from playerP
-			if (d_rand() < 8192) {
+			if (RandShort () < 8192) {
 				move_around_player(objP, vec_to_player, -1);
 			} else {
 				move_away_from_player(objP, vec_to_player, 1);
@@ -1213,7 +1213,7 @@ if (!*flag) {
 		// *player_visibility = 2;
 
 		if ((ailP->nextMiscSoundTime < gameData.time.xGame) && (ailP->nextPrimaryFire < I2X (1)) && (dist < I2X (20))) {
-			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand() + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 1;
+			ailP->nextMiscSoundTime = gameData.time.xGame + (RandShort () + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 1;
 			audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 			}
 		}
@@ -1239,7 +1239,7 @@ if (!*flag) {
 				if (ailP->timeTargetSeen + I2X (1)/2 < gameData.time.xGame) {
 					audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 					ailP->timeTargetSoundAttacked = gameData.time.xGame;
-					ailP->nextMiscSoundTime = gameData.time.xGame + I2X (1) + d_rand()*4;
+					ailP->nextMiscSoundTime = gameData.time.xGame + I2X (1) + RandShort ()*4;
 					}
 				}
 			else if (ailP->timeTargetSoundAttacked + I2X (1)/4 < gameData.time.xGame) {
@@ -1249,7 +1249,7 @@ if (!*flag) {
 			}
 
 		if ((*player_visibility == 2) && (ailP->nextMiscSoundTime < gameData.time.xGame)) {
-			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand() + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 2;
+			ailP->nextMiscSoundTime = gameData.time.xGame + (RandShort () + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 2;
 			audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 			}
 		ailP->nPrevVisibility = *player_visibility;
@@ -1382,9 +1382,9 @@ return 0;
 int get_random_child(int nSegment)
 {
 CSegment	*segP = SEGMENTS + nSegment;
-int sidenum = (d_rand() * 6) >> 15;
+int sidenum = (RandShort () * 6) >> 15;
 while (!(segP->IsDoorWay (sidenum, NULL) & WID_FLY_FLAG))
-	sidenum = (d_rand() * 6) >> 15;
+	sidenum = (RandShort () * 6) >> 15;
 return segP->m_children [sidenum];
 }
 
@@ -1436,7 +1436,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 	if (nObjId == 10)						//	This is a toaster guy!
 		default_behavior = D1_AIB_RUN_FROM;
 	InitAIObject (objP->Index (), default_behavior, -1 );		//	Note, -1 = CSegment this robotP goes to to hide, should probably be something useful
-	/*Object*/CreateExplosion (nSegment, vObjPos, I2X(10), VCLIP_MORPHING_ROBOT);
+	CreateExplosion (nSegment, vObjPos, I2X(10), VCLIP_MORPHING_ROBOT);
 	audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0, I2X (1));
 	objP->MorphStart ();
 
@@ -1458,7 +1458,7 @@ if (!gameData.bosses.ToS ())
 if (nSegment < 0) {
 	if (!(gameData.bosses [0].m_gateSegs.Buffer () && gameData.bosses [0].m_nGateSegs))
 		return -1;
-	nSegment = gameData.bosses [0].m_gateSegs [(d_rand () * gameData.bosses [0].m_nGateSegs) >> 15];
+	nSegment = gameData.bosses [0].m_gateSegs [(RandShort () * gameData.bosses [0].m_nGateSegs) >> 15];
 	}
 return CreateGatedRobot (nSegment, type);
 }
@@ -1585,7 +1585,7 @@ void do_super_boss_stuff(CObject *objP, fix dist_to_player, int player_visibilit
 		if (gameData.time.xGame - gameData.bosses [0].m_nLastGateTime > gameData.bosses [0].m_nGateInterval)
 			if (ai_multiplayer_awareness(objP, 99)) {
 				int	nObject;
-				int	randtype = (d_rand() * D1_MAX_GATE_INDEX) >> 15;
+				int	randtype = (RandShort () * D1_MAX_GATE_INDEX) >> 15;
 
 				Assert(randtype < int (D1_MAX_GATE_INDEX));
 				randtype = super_boss_gate_list [randtype];
@@ -1782,8 +1782,8 @@ if (DoAnyRobotDyingFrame (objP))
 	//	Occasionally make non-still robots make a path to the playerP.  Based on agitation and distance from playerP.
 	if ((aiP->behavior != D1_AIB_RUN_FROM) && (aiP->behavior != D1_AIB_STILL) && !(IsMultiGame))
 		if (gameData.ai.nOverallAgitation > 70) {
-			if ((dist_to_player < I2X (200)) && (d_rand() < gameData.time.xFrame/4)) {
-				if (d_rand() * (gameData.ai.nOverallAgitation - 40) > I2X (5)) {
+			if ((dist_to_player < I2X (200)) && (RandShort () < gameData.time.xFrame/4)) {
+				if (RandShort () * (gameData.ai.nOverallAgitation - 40) > I2X (5)) {
 					CreatePathToTarget(objP, 4 + gameData.ai.nOverallAgitation/8 + gameStates.app.nDifficultyLevel, 1);
 					// -- show_path_and_other(objP);
 					return;
@@ -1877,7 +1877,7 @@ if (DoAnyRobotDyingFrame (objP))
 
 
 	if (gameStates.app.bPlayerIsDead && (ailP->targetAwarenessType == 0))
-		if ((dist_to_player < I2X (200)) && (d_rand() < gameData.time.xFrame/8)) {
+		if ((dist_to_player < I2X (200)) && (RandShort () < gameData.time.xFrame/8)) {
 			if ((aiP->behavior != D1_AIB_STILL) && (aiP->behavior != D1_AIB_RUN_FROM)) {
 				if (!ai_multiplayer_awareness(objP, 30))
 					return;
@@ -2052,8 +2052,8 @@ if (DoAnyRobotDyingFrame (objP))
 
 			if ((aiP->CURRENT_STATE == D1_AIS_REST) && (aiP->GOAL_STATE == D1_AIS_REST)) {
 				if (player_visibility) {
-					if (d_rand() < gameData.time.xFrame*player_visibility) {
-						if (dist_to_player/256 < d_rand()*player_visibility) {
+					if (RandShort () < gameData.time.xFrame*player_visibility) {
+						if (dist_to_player/256 < RandShort ()*player_visibility) {
 							aiP->GOAL_STATE = D1_AIS_SRCH;
 							aiP->CURRENT_STATE = D1_AIS_SRCH;
 							}
@@ -2221,9 +2221,9 @@ if (DoAnyRobotDyingFrame (objP))
 			if ((dist_to_player < I2X (120) + gameStates.app.nDifficultyLevel * I2X (20)) || (ailP->targetAwarenessType >= D1_PA_WEAPON_ROBOT_COLLISION - 1)) {
 				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 
-				//	turn towards vector if visible this time or last time, or d_rand
+				//	turn towards vector if visible this time or last time, or RandShort
 				// new!
-				if ((player_visibility) || (nPrevVisibility) || ((d_rand() > 0x4000) && !(IsMultiGame))) {
+				if ((player_visibility) || (nPrevVisibility) || ((RandShort () > 0x4000) && !(IsMultiGame))) {
 					if (!ai_multiplayer_awareness(objP, 71) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
 						if (bHaveGunPos /*|| CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN)*/)
 							ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
@@ -2489,7 +2489,7 @@ int add_awareness_event(CObject *objP, int type)
 	if (gameData.ai.nAwarenessEvents < D1_MAX_AWARENESS_EVENTS) {
 		if ((type == D1_PA_WEAPON_WALL_COLLISION) || (type == D1_PA_WEAPON_ROBOT_COLLISION))
 			if (objP->info.nId == VULCAN_ID)
-				if (d_rand() > 3276)
+				if (RandShort () > 3276)
 					return 0;		//	For vulcan cannon, only about 1/10 actually cause awareness
 
 		gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].nSegment = objP->info.nSegment;

@@ -226,12 +226,12 @@ if (StartTime + xRollDuration - xSoundDuration < gameData.time.xGame) {
 		*bDyingSoundPlaying = 1;
 		audio.CreateObjectSound (deathSound, SOUNDCLASS_ROBOT, objP->Index (), 0, xSoundScale, xSoundScale * 256);	//	I2X (5)12 means play twice as loud
 		}
-	else if (d_rand () < gameData.time.xFrame * 16) {
-		CreateSmallFireballOnObject (objP, (I2X (1) + d_rand ()) * (16 * xExplScale/I2X (1)) / 8, d_rand () < gameData.time.xFrame * 2);
+	else if (RandShort () < gameData.time.xFrame * 16) {
+		CreateSmallFireballOnObject (objP, (I2X (1) + RandShort ()) * (16 * xExplScale/I2X (1)) / 8, RandShort () < gameData.time.xFrame * 2);
 		}
 	}
-else if (d_rand () < gameData.time.xFrame * 8) {
-	CreateSmallFireballOnObject (objP, (I2X (1)/2 + d_rand ()) * (16 * xExplScale / I2X (1)) / 8, d_rand () < gameData.time.xFrame);
+else if (RandShort () < gameData.time.xFrame * 8) {
+	CreateSmallFireballOnObject (objP, (I2X (1)/2 + RandShort ()) * (16 * xExplScale / I2X (1)) / 8, RandShort () < gameData.time.xFrame);
 	}
 return (StartTime + xRollDuration < gameData.time.xGame);
 }

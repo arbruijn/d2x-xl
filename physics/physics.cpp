@@ -1087,7 +1087,7 @@ else {
 			if (cType.aiInfo.SKIP_AI_COUNT * gameData.physics.xTime < I2X (3)/4) {
 				fix	xTime = FixDiv (I2X (1), 8 * gameData.physics.xTime);
 				int	nTime = X2I (xTime);
-				if ((d_rand () * 2) < (xTime & 0xffff))
+				if ((RandShort () * 2) < (xTime & 0xffff))
 					nTime++;
 				cType.aiInfo.SKIP_AI_COUNT += nTime;
 				}

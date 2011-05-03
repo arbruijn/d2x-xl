@@ -68,7 +68,7 @@ nDepth = THIEF_DEPTH;
 while (nSegment == -1) {
 	nSegment = PickConnectedSegment (OBJECTS + LOCALPLAYER.nObject, nDepth, &nDropDepth);
 	if (nDropDepth < THIEF_DEPTH / 2)
-		return (d_rand() * gameData.segs.nLastSegment) >> 15;
+		return (RandShort () * gameData.segs.nLastSegment) >> 15;
 	if ((nSegment >= 0) && (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_CONTROLCEN))
 		nSegment = -1;
 	nDepth--;
@@ -79,7 +79,7 @@ if (nSegment >= 0)
 #if TRACE
 console.printf (1, "Warning: Unable to find a connected CSegment for thief recreation.\n");
 #endif
-return (d_rand() * gameData.segs.nLastSegment) >> 15;
+return (RandShort () * gameData.segs.nLastSegment) >> 15;
 }
 
 //	----------------------------------------------------------------------
@@ -184,7 +184,7 @@ void DoThiefFrame (CObject *objP)
 		case AIM_THIEF_ATTACK:
 			if (ailp->targetAwarenessType >= PA_PLAYER_COLLISION) {
 				ailp->targetAwarenessType = 0;
-				if (d_rand() > 8192) {
+				if (RandShort () > 8192) {
 					CreateNSegmentPath (objP, 10, gameData.objs.consoleP->info.nSegment);
 					gameData.ai.localInfo[objP->Index ()].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 					gameData.ai.localInfo[objP->Index ()].mode = AIM_THIEF_RETREAT;
@@ -236,7 +236,7 @@ void DoThiefFrame (CObject *objP)
 int MaybeStealFlagItem (int nPlayer, int flagval)
 {
 	if (gameData.multiplayer.players[nPlayer].flags & flagval) {
-		if (d_rand() < THIEF_PROBABILITY) {
+		if (RandShort () < THIEF_PROBABILITY) {
 			int	powerup_index=-1;
 			gameData.multiplayer.players[nPlayer].flags &= (~flagval);
 			switch (flagval) {
@@ -290,9 +290,9 @@ int MaybeStealFlagItem (int nPlayer, int flagval)
 int MaybeStealSecondaryWeapon (int nPlayer, int nWeapon)
 {
 if ((gameData.multiplayer.players[nPlayer].secondaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players[nPlayer].secondaryAmmo[nWeapon])
-	if (d_rand() < THIEF_PROBABILITY) {
+	if (RandShort () < THIEF_PROBABILITY) {
 		if (nWeapon == PROXMINE_INDEX)
-			if (d_rand() > 8192)		//	Come in groups of 4, only add 1/4 of time.
+			if (RandShort () > 8192)		//	Come in groups of 4, only add 1/4 of time.
 				return 0;
 		gameData.multiplayer.players[nPlayer].secondaryAmmo[nWeapon]--;
 		//	Smart mines and proxbombs don't get dropped because they only come in 4 packs.
@@ -313,7 +313,7 @@ return 0;
 int MaybeStealPrimaryWeapon (int nPlayer, int nWeapon)
 {
 	if ((gameData.multiplayer.players[nPlayer].primaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players[nPlayer].primaryAmmo[nWeapon]) {
-		if (d_rand() < THIEF_PROBABILITY) {
+		if (RandShort () < THIEF_PROBABILITY) {
 			if (nWeapon == 0) {
 				if (gameData.multiplayer.players[nPlayer].laserLevel > 0) {
 					if (gameData.multiplayer.players[nPlayer].laserLevel > 3) {
@@ -411,7 +411,7 @@ int AttemptToStealItem2(CObject *objP, int nPlayer)
 
 	if (rval) {
 		gameData.thief.nStolenItem = (gameData.thief.nStolenItem+1) % MAX_STOLEN_ITEMS;
-		if (d_rand() > 20000)	//	Occasionally, boost the value again
+		if (RandShort () > 20000)	//	Occasionally, boost the value again
 			gameData.thief.nStolenItem = (gameData.thief.nStolenItem+1) % MAX_STOLEN_ITEMS;
 	}
 
@@ -434,7 +434,7 @@ int AttemptToStealItem (CObject *objP, int nPlayer)
 	rval += AttemptToStealItem2(objP, nPlayer);
 
 	for (i=0; i<3; i++) {
-		if (!rval || (d_rand() < 11000)) {	//	about 1/3 of time, steal another item
+		if (!rval || (RandShort () < 11000)) {	//	about 1/3 of time, steal another item
 			rval += AttemptToStealItem2(objP, nPlayer);
 		} else
 			break;

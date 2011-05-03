@@ -10,8 +10,6 @@
 #include <cmath>
 #include "pstypes.h"
 
-#define D_RAND_MAX 32767
-
 //=============================== FIXED POINT ===============================
 
 #ifndef Pi
@@ -124,24 +122,35 @@ srand(seed);
 }
 
 //-----------------------------------------------------------------------------
+// return a random integer in the range [0 .. SHORT_RAND_MAX]
 
-#define D_RAND_MAX 0x7fff
+#define SHORT_RAND_MAX 0x7fff
 
-static inline int d_rand (void)
+static inline int RandShort (void)
 {
-return rand() & D_RAND_MAX;
+return int (rand () & SHORT_RAND_MAX);
 }
 
 //-----------------------------------------------------------------------------
+// return a random integer in the range [-SHORT_RAND_MAX / 2 .. +SHORT_RAND_MAX / 2]
 
-static inline float f_rand (void)
+static inline int SRandShort (void)
 {
-return float (d_rand()) / float (D_RAND_MAX);
+return SRandShort ();
+}
+
+//-----------------------------------------------------------------------------
+// return a random float in the range [0.0f .. 1.0f]
+
+static inline float RandFloat (float scale = 1.0f)
+{
+return float (rand ()) / (float (RAND_MAX) * scale);
 }
 
 //------------------------------------------------------------------------------
+// return a random double in the range [0.0 .. 1.0]
 
-inline double dbl_rand (void)
+inline double RandDouble (void)
 {
 return double (rand ()) / double (RAND_MAX);
 }

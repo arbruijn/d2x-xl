@@ -111,7 +111,7 @@ objP->cType.explInfo.nDeleteTime = -1;
 #if 0
 objP->Orientation () = Orientation ();
 #else
-CAngleVector a = CAngleVector::Create (16384 - d_rand (), 16384 - d_rand (), 16384 - d_rand ());
+CAngleVector a = CAngleVector::Create (SRandShort (), SRandShort (), SRandShort ());
 CFixMatrix mRotate = CFixMatrix::Create (a);
 objP->Orientation () = mRotate * Orientation ();
 #endif
@@ -216,9 +216,9 @@ FORALL_OBJS (objP, i) {
 				aip->SKIP_AI_COUNT--;
 			else {
 				aip->SKIP_AI_COUNT += nForce;
-				objP->mType.physInfo.rotThrust.v.coord.x = ((d_rand () - 16384) * nForce) / 16;
-				objP->mType.physInfo.rotThrust.v.coord.y = ((d_rand () - 16384) * nForce) / 16;
-				objP->mType.physInfo.rotThrust.v.coord.z = ((d_rand () - 16384) * nForce) / 16;
+				objP->mType.physInfo.rotThrust.v.coord.x = (SRandShort () * nForce) / 16;
+				objP->mType.physInfo.rotThrust.v.coord.y = (SRandShort () * nForce) / 16;
+				objP->mType.physInfo.rotThrust.v.coord.z = (SRandShort () * nForce) / 16;
 				objP->mType.physInfo.flags |= PF_USES_THRUST;
 				}
 			}
@@ -398,16 +398,16 @@ return sqrt (size);
 
 void CObject::SetupRandomMovement (void)
 {
-mType.physInfo.velocity.Set (D_RAND_MAX / 2 - d_rand (), D_RAND_MAX / 2 - d_rand (), D_RAND_MAX / 2 - d_rand ());
+mType.physInfo.velocity.Set (SRandShort (), SRandShort (), SRandShort ());
 //mType.physInfo.velocity *= (I2X (10));
 CFixVector::Normalize (mType.physInfo.velocity);
-mType.physInfo.velocity *= (I2X (10 + 30 * d_rand () / RAND_MAX));
+mType.physInfo.velocity *= (I2X (10 + 30 * RandShort () / SHORT_RAND_MAX));
 //mType.physInfo.velocity += mType.physInfo.velocity;
 // -- used to be: Notice, not random!VmVecMake (&mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
 #if 0//DBG
 VmVecZero (&mType.physInfo.rotVel);
 #else
-mType.physInfo.rotVel = CFixVector::Create (d_rand () + 0x1000, 2 * d_rand () + 0x4000, 3 * d_rand () + 0x2000);
+mType.physInfo.rotVel = CFixVector::Create (RandShort () + 0x1000, 2 * RandShort () + 0x4000, 3 * RandShort () + 0x2000);
 #endif
 mType.physInfo.rotThrust.SetZero ();
 }
@@ -429,9 +429,9 @@ rType.polyObjInfo.nTexOverride = nTexOverride;
 //Set physics data for this CObject
 SetupRandomMovement ();
 #if 0 //DBG
-SetLife (I2X (nDebrisLife [8]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE));	//	Some randomness, so they don't all go away at the same time.
+SetLife (I2X (nDebrisLife [8]) + 3 * DEBRIS_LIFE / 4 + FixMul (RandShort (), DEBRIS_LIFE));	//	Some randomness, so they don't all go away at the same time.
 #else
-SetLife (I2X (nDebrisLife [gameOpts->render.nDebrisLife]) + 3 * DEBRIS_LIFE / 4 + FixMul (d_rand (), DEBRIS_LIFE));	//	Some randomness, so they don't all go away at the same time.
+SetLife (I2X (nDebrisLife [gameOpts->render.nDebrisLife]) + 3 * DEBRIS_LIFE / 4 + FixMul (RandShort (), DEBRIS_LIFE));	//	Some randomness, so they don't all go away at the same time.
 if (nSubObj == 0)
 	info.xLifeLeft *= 2;
 #endif
@@ -584,7 +584,7 @@ else {
 	ubyte		nVClip;
 
 	nVClip = (ubyte) GetExplosionVClip (this, 0);
-	explObjP = /*Object*/CreateExplosion (info.nSegment, info.position.vPos, FixMul (info.xSize, EXPLOSION_SCALE), nVClip);
+	explObjP = CreateExplosion (info.nSegment, info.position.vPos, FixMul (info.xSize, EXPLOSION_SCALE), nVClip);
 	if (!explObjP) {
 		MaybeDelete ();		//no explosion, die instantly
 #if TRACE
@@ -666,7 +666,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 		explObjP = CreateSplashDamageExplosion (NULL, delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE),
 													 nVClip, I2X (xSplashDamage), I2X (4) * xSplashDamage, I2X (35) * xSplashDamage, -1);
 	else
-		explObjP = /*Object*/CreateExplosion (delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);
+		explObjP = CreateExplosion (delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);
 	if (!IsMultiGame) { // Multiplayer handled outside of this code!!
 		if (delObjP->info.contains.nCount > 0) {
 			//	If dropping a weapon that the player has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
@@ -678,8 +678,8 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 		if (delObjP->info.nType == OBJ_ROBOT) {
 			tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->info.nId);
 			if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))) {
-				if (d_rand () % 16 + 1 < botInfoP->containsProb) {
-					delObjP->info.contains.nCount = (d_rand () % botInfoP->containsCount) + 1;
+				if (RandShort () % 16 + 1 < botInfoP->containsProb) {
+					delObjP->info.contains.nCount = (RandShort () % botInfoP->containsCount) + 1;
 					delObjP->info.contains.nType = botInfoP->containsType;
 					delObjP->info.contains.nId = botInfoP->containsId;
 					MaybeReplacePowerupWithEnergy (delObjP);

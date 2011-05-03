@@ -106,7 +106,7 @@ void CObject::CreateAppearanceEffect (void)
 
 if (this == gameData.objs.viewerP)
 	vPos += info.position.mOrient.m.dir.f * FixMul (info.xSize, flashDist);
-CObject* effectObjP = /*Object*/CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
+CObject* effectObjP = CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
 if (effectObjP) {
 	effectObjP->info.position.mOrient = info.position.mOrient;
 	if (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)

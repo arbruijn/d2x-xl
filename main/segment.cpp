@@ -361,9 +361,9 @@ for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 //		From center, go up to 50% of way towards any of the 8 vertices.
 CFixVector CSegment::RandomPoint (void)
 {
-int nVertex = d_rand () % MAX_VERTICES_PER_SEGMENT;
+int nVertex = RandShort () % MAX_VERTICES_PER_SEGMENT;
 CFixVector v = gameData.segs.vertices [m_verts [nVertex]] - m_vCenter;
-v *= (d_rand ());
+v *= (RandShort ());
 return v + m_vCenter;
 }
 
@@ -1101,7 +1101,7 @@ else {
 	xDestSize = I2X (20);
 	vc = 3;
 	}
-/*Object*/CreateExplosion (short (Index ()), vHit, xDestSize, vc);
+CreateExplosion (short (Index ()), vHit, xDestSize, vc);
 if (nSwitchType) {
 	if ((nSound = gameData.eff.vClipP [vc].nSound) != -1)
 		audio.CreateSegmentSound (nSound, Index (), 0, vHit);

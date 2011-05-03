@@ -773,7 +773,7 @@ if ((gameData.escort.nGoalIndex < 0) && (gameData.escort.nGoalIndex != -3)) {	//
 	}
 else {
 	if (nGoalSeg == -3) {
-		CreateNSegmentPath (objP, 16 + d_rand () * 16, -1);
+		CreateNSegmentPath (objP, 16 + RandShort () * 16, -1);
 		aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 		}
 	else {
@@ -791,7 +791,7 @@ else {
 			if (xDistToPlayer > MIN_ESCORT_DISTANCE)
 				CreatePathToTarget (objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
 			else {
-				CreateNSegmentPath (objP, 8 + d_rand () * 8, -1);
+				CreateNSegmentPath (objP, 8 + RandShort () * 8, -1);
 				aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 				}
 			}
@@ -988,7 +988,7 @@ if (!gameData.escort.bMayTalk)
 //	If the CPlayerData is now visible, then create a path.
 if (ailp->mode == AIM_WANDER)
 	if (nPlayerVisibility) {
-		CreateNSegmentPath (objP, 16 + d_rand () * 16, -1);
+		CreateNSegmentPath (objP, 16 + RandShort () * 16, -1);
 		aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 		}
 if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
@@ -997,7 +997,7 @@ if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 #if TRACE
 			console.printf (CON_DBG, "Frame %i: Buddy creating new scram path.\n", gameData.app.nFrameCount);
 #endif
-			CreateNSegmentPath (objP, 10 + d_rand () * 16, gameData.objs.consoleP->info.nSegment);
+			CreateNSegmentPath (objP, 10 + RandShort () * 16, gameData.objs.consoleP->info.nSegment);
 			gameData.escort.xLastPathCreated = gameData.time.xGame;
 			}
 	// -- Int3 ();

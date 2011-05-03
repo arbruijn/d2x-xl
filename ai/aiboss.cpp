@@ -130,7 +130,7 @@ objP->SetShield (botInfoP->strength);
 objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
 default_behavior = ROBOTINFO (objP->info.nId).behavior;
 InitAIObject (objP->Index (), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
-/*Object*/CreateExplosion (nSegment, vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
+CreateExplosion (nSegment, vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
 audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0 , I2X (1));
 objP->MorphStart ();
 gameData.bosses [nBoss].m_nLastGateTime = gameData.time.xGame;
@@ -161,11 +161,11 @@ if (nSegment == -1) {
 if (!vPos) 
 	vPos = &SEGMENTS [nSegment].Center ();
 if (objType < 0)
-	objType = spewBots [gameStates.app.bD1Mission][nBossIndex][(maxSpewBots [nBossIndex] * d_rand ()) >> 15];
+	objType = spewBots [gameStates.app.bD1Mission][nBossIndex][(maxSpewBots [nBossIndex] * RandShort ()) >> 15];
 if (objType == 255) {	// spawn an arbitrary robot
 	maxRobotTypes = gameData.bots.nTypes [gameStates.app.bD1Mission];
 	do {
-		objType = d_rand () % maxRobotTypes;
+		objType = RandShort () % maxRobotTypes;
 		pri = gameData.bots.info [gameStates.app.bD1Mission] + objType;
 		} while (pri->bossFlag ||	//well ... don't spawn another boss, huh? ;)
 					pri->companion || //the buddy bot isn't exactly an enemy ... ^_^
@@ -178,9 +178,9 @@ if (nObject != -1) {
 	int		force_val = I2X (1) / (gameData.time.xFrame ? gameData.time.xFrame : 1);
 	if (force_val) {
 		newObjP->cType.aiInfo.SKIP_AI_COUNT += force_val;
-		newObjP->mType.physInfo.rotThrust.v.coord.x = ((d_rand () - 16384) * force_val)/16;
-		newObjP->mType.physInfo.rotThrust.v.coord.y = ((d_rand () - 16384) * force_val)/16;
-		newObjP->mType.physInfo.rotThrust.v.coord.z = ((d_rand () - 16384) * force_val)/16;
+		newObjP->mType.physInfo.rotThrust.v.coord.x = (SRandShort () * force_val)/16;
+		newObjP->mType.physInfo.rotThrust.v.coord.y = (SRandShort () * force_val)/16;
+		newObjP->mType.physInfo.rotThrust.v.coord.z = (SRandShort () * force_val)/16;
 		newObjP->mType.physInfo.flags |= PF_USES_THRUST;
 
 		//	Now, give a big initial velocity to get moving away from boss.
@@ -207,7 +207,7 @@ if (nSegment < 0) {
 		return -1;
 	if (!(gameData.bosses [nBoss].m_gateSegs.Buffer () && gameData.bosses [nBoss].m_nGateSegs))
 		return -1;
-	nSegment = gameData.bosses [nBoss].m_gateSegs [(d_rand () * gameData.bosses [nBoss].m_nGateSegs) >> 15];
+	nSegment = gameData.bosses [nBoss].m_gateSegs [(RandShort () * gameData.bosses [nBoss].m_nGateSegs) >> 15];
 	}
 Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 return OBJECTS [nObject].CreateGatedRobot (nSegment, nType, NULL);
@@ -268,7 +268,7 @@ i = gameData.bosses.Find (nObject);
 if (i < 0)
 	return;
 // do not teleport if less than 1% of initial shield strength left or drives heavily damaged
-if ((objP->Damage () < 0.01) || (d_rand () > objP->DriveDamage ()))
+if ((objP->Damage () < 0.01) || (RandShort () > objP->DriveDamage ()))
 	return;
 //Assert (gameData.bosses [i].m_nTeleportSegs > 0);
 if (gameData.bosses [i].m_nTeleportSegs <= 0)
@@ -276,7 +276,7 @@ if (gameData.bosses [i].m_nTeleportSegs <= 0)
 if (gameData.bosses [i].m_nDyingStartTime > 0)
 	return;
 do {
-	nRandIndex = (d_rand () * gameData.bosses [i].m_nTeleportSegs) >> 15;
+	nRandIndex = (RandShort () * gameData.bosses [i].m_nTeleportSegs) >> 15;
 	nRandSeg = gameData.bosses [i].m_teleportSegs [nRandIndex];
 	Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segs.nLastSegment));
 	if (IsMultiGame)
@@ -389,7 +389,7 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 					CFixVector	spewPoint;
 					spewPoint = objP->info.position.mOrient.m.dir.f * (objP->info.xSize * 2);
 					spewPoint += objP->info.position.vPos;
-					if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewMore && (d_rand () > 16384) &&
+					if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewMore && (RandShort () > 16384) &&
 						 (objP->BossSpewRobot (&spewPoint, -1, 0) != -1))
 						gameData.bosses [i].m_nLastGateTime = gameData.time.xGame - gameData.bosses [i].m_nGateInterval - 1;	//	Force allowing spew of another bot.
 					objP->BossSpewRobot (&spewPoint, -1, 0);
@@ -403,12 +403,12 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 			gameData.bosses [i].m_nCloakDuration = BOSS_CLOAK_DURATION;
 		if ((gameData.time.xGame > gameData.bosses [i].m_nCloakEndTime) ||
 			 (gameData.time.xGame < gameData.bosses [i].m_nCloakStartTime) || 
-			 (objP->Damage () < 0.01) || (d_rand () > objP->DriveDamage ()))
+			 (objP->Damage () < 0.01) || (RandShort () > objP->DriveDamage ()))
 			objP->cType.aiInfo.CLOAKED = 0;
 		}
 	else if (((gameData.time.xGame - gameData.bosses [i].m_nCloakEndTime > gameData.bosses [i].m_nCloakInterval) ||
 				 (gameData.time.xGame - gameData.bosses [i].m_nCloakEndTime < -gameData.bosses [i].m_nCloakDuration)) && 
-				 (objP->Damage () >= 0.01) && (d_rand () <= objP->DriveDamage ())) {
+				 (objP->Damage () >= 0.01) && (RandShort () <= objP->DriveDamage ())) {
 		if (AIMultiplayerAwareness (objP, 95)) {
 			gameData.bosses [i].m_nCloakStartTime = gameData.time.xGame;
 			gameData.bosses [i].m_nCloakEndTime = gameData.time.xGame + gameData.bosses [i].m_nCloakDuration;

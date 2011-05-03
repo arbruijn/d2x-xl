@@ -86,7 +86,7 @@ else {
 	if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {
 		if (gameData.FusionCharge () > I2X (2)) {
 			audio.PlaySound (11);
-			gameData.objs.consoleP->ApplyDamageToPlayer (gameData.objs.consoleP, d_rand () * 4);
+			gameData.objs.consoleP->ApplyDamageToPlayer (gameData.objs.consoleP, RandShort () * 4);
 			}
 		else {
 			CreateAwarenessEvent (gameData.objs.consoleP, WEAPON_ROBOT_COLLISION);
@@ -95,7 +95,7 @@ else {
 				MultiSendPlaySound (SOUND_FUSION_WARMUP, I2X (1));
 				}
 		gameData.fusion.xLastSoundTime = gameData.time.xGame;
-		gameData.fusion.xNextSoundTime = gameData.time.xGame + I2X (1) / 8 + d_rand () / 4;
+		gameData.fusion.xNextSoundTime = gameData.time.xGame + I2X (1) / 8 + RandShort () / 4;
 		}
 	gameData.fusion.xFrameTime = 0;
 	}

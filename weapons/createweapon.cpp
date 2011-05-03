@@ -128,7 +128,7 @@ int CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, short nSegme
 	static int	nMslSounds [2] = {SND_ADDON_MISSILE_SMALL, SND_ADDON_MISSILE_BIG};
 	static int	nGatlingSounds [2] = {SND_ADDON_VULCAN, SND_ADDON_GAUSS};
 
-	if (d_rand () > parentP->GunDamage ())
+	if (RandShort () > parentP->GunDamage ())
 		return -1;
 
 	fix			damage = (I2X (1) / 2 - parentP->AimDamage ()) >> 3;
@@ -137,9 +137,9 @@ if (damage > 0) {
 	CAngleVector	v;
 	CFixMatrix		m;
 
-	v.v.coord.p = fixang (damage / 2 - d_rand () % damage);
+	v.v.coord.p = fixang (damage / 2 - RandShort () % damage);
 	v.v.coord.b = 0;
-	v.v.coord.h = fixang (damage / 2 - d_rand () % damage);
+	v.v.coord.h = fixang (damage / 2 - RandShort () % damage);
 	m = CFixMatrix::Create (v);
 	vDir = m * vDir;
 	CFixVector::Normalize (vDir);
@@ -377,7 +377,7 @@ if ((parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].
 
 xWeaponSpeed = WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel);
 if (weaponInfoP->speedvar != 128) {
-	fix randval = I2X (1) - ((d_rand () * weaponInfoP->speedvar) >> 6);	//	Get a scale factor between speedvar% and 1.0.
+	fix randval = I2X (1) - ((RandShort () * weaponInfoP->speedvar) >> 6);	//	Get a scale factor between speedvar% and 1.0.
 	xWeaponSpeed = FixMul (xWeaponSpeed, randval);
 	}
 //	Ugly hack (too bad we're on a deadline), for homing missiles dropped by smart bomb, start them out slower.
@@ -398,7 +398,7 @@ if (WIThrust (nWeaponType) != 0) {
 	objP->mType.physInfo.thrust *= FixDiv (WIThrust (objP->info.nId), xWeaponSpeed + xParentSpeed);
 	}
 if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID))
-	objP->info.xLifeLeft += (d_rand () - 16384) << 2;		//	add in -2..2 seconds
+	objP->info.xLifeLeft += SRandShort () << 2;		//	add in -2..2 seconds
 
 return nObject;
 }

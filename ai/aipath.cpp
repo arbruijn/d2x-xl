@@ -16,7 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #include <stdio.h>		//	for printf ()
-#include <stdlib.h>		// for d_rand () and qsort ()
+#include <stdlib.h>		// for RandShort () and qsort ()
 #include <string.h>		// for memset ()
 
 #include "descent.h"
@@ -57,7 +57,7 @@ void CreateRandomXlate (sbyte *xt)
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 	xt [i] = i;
 for (i = 0; i<MAX_SIDES_PER_SEGMENT; i++) {
-	j = (d_rand () * MAX_SIDES_PER_SEGMENT) / (D_RAND_MAX + 1);
+	j = (RandShort () * MAX_SIDES_PER_SEGMENT) / (SHORT_RAND_MAX + 1);
 	Assert ((j >= 0) && (j < MAX_SIDES_PER_SEGMENT));
 	h = xt [j];
 	xt [j] = xt [i];
@@ -174,8 +174,8 @@ for (i = 1, --j; i < j; i++) {
 	if (abs (CFixVector::Dot (a, b)) > I2X (3)/4) {
 		if (abs (a.v.coord.z) < I2X (1)/2) {
 			if (bRandom) {
-				e.v.coord.x = (d_rand ()- 16384) / 2;
-				e.v.coord.y = (d_rand ()- 16384) / 2;
+				e.v.coord.x = SRandShort () / 2;
+				e.v.coord.y = SRandShort () / 2;
 				e.v.coord.z = abs (e.v.coord.x) + abs (e.v.coord.y) + 1;
 				CFixVector::Normalize (e);
 				}
@@ -187,8 +187,8 @@ for (i = 1, --j; i < j; i++) {
 			}
 		else {
 			if (bRandom) {
-				e.v.coord.y = (d_rand ()-16384)/2;
-				e.v.coord.z = (d_rand ()-16384)/2;
+				e.v.coord.y = SRandShort () / 2;
+				e.v.coord.z = SRandShort () / 2;
 				e.v.coord.x = abs (e.v.coord.y) + abs (e.v.coord.z) + 1;
 				CFixVector::Normalize (e);
 				}
@@ -209,7 +209,7 @@ for (i = 1, --j; i < j; i++) {
 		Int3 ();
 #endif
 	xSegSize = CFixVector::Dist (gameData.segs.vertices [SEGMENTS [nSegment].m_verts [0]], 
-										 gameData.segs.vertices [SEGMENTS [nSegment].m_verts [6]]);
+										  gameData.segs.vertices [SEGMENTS [nSegment].m_verts [6]]);
 	if (xSegSize > I2X (40))
 		xSegSize = I2X (40);
 	vGoalPos = ptSegs [i].point + e * (xSegSize/4);
@@ -314,7 +314,7 @@ nCurSeg = nStartSeg;
 bVisited [nCurSeg] = 1;
 while (nCurSeg != nEndSeg) {
 	segP = SEGMENTS + nCurSeg;
-	if (bRandom && (d_rand () < 8192))	//create a different xlate at random time intervals
+	if (bRandom && (RandShort () < 8192))	//create a different xlate at random time intervals
 		CreateRandomXlate (randomXlate);
 
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
@@ -910,7 +910,7 @@ if (!(nTargetVisibility || nPrevVisibility) && (xDistToTarget > I2X (200)) && !I
 		//	Buddy-bot can create paths he can't fly, waiting for player.
 		// -- bah, this isn't good enough, buddy will fail to get through any door!if (WALL_IS_DOORWAY (&SEGMENTS]objP->info.nSegment], nConnSide) & WID_FLY_FLAG) {
 		if (!(botInfoP->companion || botInfoP->thief)) {
-			if ((xCoverableDist >= xDistToGoal) || ((d_rand () >> 1) < FixDiv (xCoverableDist, xDistToGoal)))
+			if ((xCoverableDist >= xDistToGoal) || ((RandShort () >> 1) < FixDiv (xCoverableDist, xDistToGoal)))
 				MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
 			return;
 			}
@@ -986,7 +986,7 @@ while (xDistToGoal < thresholdDistance) {
 		if (botInfoP->companion) {
 			if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 				if (nTargetVisibility) {
-					CreateNSegmentPath (objP, 16 + d_rand () * 16, -1);
+					CreateNSegmentPath (objP, 16 + RandShort () * 16, -1);
 					aiP->nPathLength = SmoothPath (objP, &gameData.ai.routeSegs [aiP->nHideIndex], aiP->nPathLength);
 					Assert (aiP->nPathLength != 0);
 					ailP->mode = AIM_WANDER;	//	Special buddy mode.p.
@@ -1301,7 +1301,7 @@ void AttemptToResumePath (CObject *objP)
 //	int				nAbsIndex, nNewPathIndex;
 
 if ((aiP->behavior == AIB_STATION) && (ROBOTINFO (objP->info.nId).companion != 1))
-	if (d_rand () > 8192) {
+	if (RandShort () > 8192) {
 		tAILocalInfo *ailP = &gameData.ai.localInfo [objP->Index ()];
 
 		aiP->nHideSegment = objP->info.nSegment;

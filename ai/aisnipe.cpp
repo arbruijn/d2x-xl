@@ -104,9 +104,9 @@ void DoSnipeFire (CObject *objP, tAILocalInfo *ailP)
 {
 if (ailP->nextActionTime < 0) {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-	CreateNSegmentPath (objP, 10 + d_rand () / 2048, OBJSEG (TARGETOBJ));
+	CreateNSegmentPath (objP, 10 + RandShort () / 2048, OBJSEG (TARGETOBJ));
 	aiP->nPathLength = (aiP->nHideIndex < 0) ? 0 : SmoothPath (objP, &gameData.ai.routeSegs [aiP->nHideIndex], aiP->nPathLength);
-	if (d_rand () < 8192)
+	if (RandShort () < 8192)
 		ailP->mode = AIM_SNIPE_RETREAT_BACKWARDS;
 	else
 		ailP->mode = AIM_SNIPE_RETREAT;
