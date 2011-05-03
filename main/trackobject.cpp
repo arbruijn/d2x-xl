@@ -196,9 +196,10 @@ else {
 		xBestDot = OMEGA_MIN_TRACKABLE_DOT;
 		return OMEGA_MAX_TRACKABLE_DIST;
 		}
-	xBestDot = MIN_TRACKABLE_DOT;
-	if ((Id () == EARTHSHAKER_MEGA_ID) && EGI_FLAG (bEnhancedShakers, 0, 0, 0))
+	if ((Id () == EARTHSHAKER_MEGA_ID) && EGI_FLAG (bEnhancedShakers, 0, 0, 0)) {
+		xBestDot = I2X (1) / 4;
 		return MAX_TRACKABLE_DIST * 2;
+		}
 	}
 return MAX_TRACKABLE_DIST;
 }

@@ -49,7 +49,7 @@ tRgbaColorf defaultParticleColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 CFloatVector CParticle::vRot [PARTICLE_POSITIONS];
 CFixMatrix CParticle::mRot [2][PARTICLE_POSITIONS];
 
-#define SMOKE_START_ALPHA		 (m_bBlowUp ? 64 : 96) //96 : 128)
+static int smokeStartAlpha [2][5] = {{192, 160, 128, 96, 64}, {160, 128, 96, 64, 32}};
 
 //------------------------------------------------------------------------------
 
@@ -65,6 +65,14 @@ return int (float (rand ()) * float (n) / float (RAND_MAX));
 inline float sqr (float n) 
 {
 return n * n;
+}
+
+//------------------------------------------------------------------------------
+
+static inline float SmokeStartAlpha (char bBlowUp, char nClass)
+{
+int alpha = smokeStartAlpha [int (bBlowUp)][gameOpts->render.particles.nAlpha [gameOpts->app.bExpertMode ? int (nClass) : 0]];
+return float (3 * alpha / 4 + randN (alpha / 2)) / 255.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -161,13 +169,13 @@ else {
 		; // m_color [0].alpha = float (SMOKE_START_ALPHA + 64) / 255.0f;
 	else if (nParticleSystemType != GATLING_PARTICLES) {
 		if (!colorP)
-			m_color [1].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
+			m_color [1].alpha = SmokeStartAlpha (m_bBlowUp, m_nClass);
 		else if (colorP->alpha < 0) {
 			ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
 			m_color [1].alpha = float (3 * a + randN (2 * a)) / 255.0f;
 			} 
 		else if (char (colorP->alpha) != 2.0f) 
-			m_color [1].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
+			m_color [1].alpha = SmokeStartAlpha (m_bBlowUp, m_nClass);
 		else {
 			if ((m_bEmissive = (gameOpts->render.particles.nQuality > 2))) {
 				m_color [0].red = 0.5f + float (rand ()) / float (RAND_MAX) * 0.5f;
@@ -189,7 +197,7 @@ else {
 			m_color [1].blue *= RANDOM_FADE;
 			m_nWidth *= 0.75;
 			m_nHeight *= 0.75;
-			m_color [1].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
+			m_color [1].alpha = SmokeStartAlpha (m_bBlowUp, m_nClass);
 			}
 		if (m_bBlowUp && !m_bBright) {
 			fBrightness = 1.0f - fBrightness;
@@ -480,13 +488,13 @@ else {
 		; // m_color [0].alpha = float (SMOKE_START_ALPHA + 64) / 255.0f;
 	else if (nParticleSystemType != GATLING_PARTICLES) {
 		if (!colorP)
-			m_color [1].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
+			m_color [1].alpha = SmokeStartAlpha (m_bBlowUp, m_nClass);
 		else if (colorP->alpha < 0) {
 			ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
 			m_color [1].alpha = float (3 * a + randN (2 * a)) / 255.0f;
 			} 
 		else if (char (colorP->alpha) != 2.0f) 
-			m_color [1].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
+			m_color [1].alpha = SmokeStartAlpha (m_bBlowUp, m_nClass);
 		else {
 			if ((m_bEmissive = (gameOpts->render.particles.nQuality > 2))) {
 				m_color [0].red = 0.5f + float (rand ()) / float (RAND_MAX) * 0.5f;
@@ -508,7 +516,7 @@ else {
 			m_color [1].blue *= RANDOM_FADE;
 			m_nWidth *= 0.75;
 			m_nHeight *= 0.75;
-			m_color [1].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
+			m_color [1].alpha = SmokeStartAlpha (m_bBlowUp, m_nClass);
 			}
 		if (m_bBlowUp && !m_bBright) {
 			fBrightness = 1.0f - fBrightness;
