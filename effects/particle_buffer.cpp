@@ -43,7 +43,7 @@
 #include "renderthreads.h"
 #include "automap.h"
 
-#if 0 //DBG
+#if DBG
 #include "timeout.h"
 
 CTimeout toFlushed (1000);
@@ -180,7 +180,7 @@ if (!USE_PARTICLE_SHADER)
 	return 0;
 if (!bCompatible [m_nType])
 	return 0;
-int nShader = ogl.m_features.bTextureArrays.Available () ? 2 : 1;
+int nShader = 1; //ogl.m_features.bTextureArrays.Available () ? 2 : 1;
 if ((ogl.m_features.bDepthBlending > -1) && gameOpts->SoftBlend (SOFT_BLEND_PARTICLES))
 	return nShader + 2;
 return nShader;
@@ -204,7 +204,7 @@ if ((m_nType < 0) || (m_iBuffer < 2)) {
 	return false;
 	}
 
-#if 0 //DBG
+#if DBG
 if (toFlushed.Expired ()) {
 	iFlushed = (iFlushed + 1) % 4;
 	nFlushes [iFlushed] = nPartsFlushed [iFlushed] = 0;

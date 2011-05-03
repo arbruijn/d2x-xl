@@ -54,15 +54,16 @@ if (!gameOpts->render.bUseShaders)
 	return false;
 if (ogl.m_features.bDepthBlending < 0)
 	return false;
-if ((nShader > 1) && !ogl.CopyDepthTexture (0, nShader ? GL_TEXTURE1 : GL_TEXTURE3))
+if ((nShader > 1) && !ogl.CopyDepthTexture (0, (nShader & 1) ? GL_TEXTURE1 : GL_TEXTURE3))
 	nShader -= 2;
 //ogl.DrawBuffer ()->FlipBuffers (0, 1); // color buffer 1 becomes render target, color buffer 0 becomes render source (scene texture)
 //ogl.DrawBuffer ()->SetDrawBuffers ();
-m_shaderProg = GLhandleARB (shaderManager.Deploy (hParticleShader [nShader]));
+m_shaderProg = GLhandleARB (shaderManager.Deploy (hParticleShader [nShader], true));
 if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg)) {
 	shaderManager.Set ("particleTex", 0);
+	//shaderManager.Set ("sourceTex", 0);
 	if (!(nShader & 1)) {
 		shaderManager.Set ("sparkTex", 1);
 		shaderManager.Set ("bubbleTex", 2);
@@ -105,26 +106,38 @@ const char *particleFS [4] = {
 	// no texture arrays - bind textures to TMU0 and TMU1
 	"uniform sampler2D particleTex, sparkTex, bubbleTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
+	"//uniform sampler2D sourceTex;\r\n" \
+	"uniform int bSuspended;\r\n" \
 	"void main (void) {\r\n" \
-	"int nType = int (floor (gl_TexCoord [0].z + 0.5));\r\n" \
-	"vec4 texColor = ((nType == 0) ? texture2D (sparkTex, gl_TexCoord [0].xy) : (nType == 1) ? texture2D (particleTex, gl_TexCoord [0].xy) : texture2D (bubbleTex, gl_TexCoord [0].xy));\r\n" \
-	"texColor *= gl_Color;\r\n" \
-	"if (gl_Color.a == 0.0) //additive\r\n" \
-	"   gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
-	"else // alpha\r\n" \
-	"   gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
+	"if (bSuspended != 0)\r\n" \
+	"   gl_FragColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
+	"else {\r\n" \
+	"   int nType = int (floor (gl_TexCoord [0].z + 0.5));\r\n" \
+	"   vec4 texColor = ((nType == 0) ? texture2D (sparkTex, gl_TexCoord [0].xy) : (nType == 1) ? texture2D (particleTex, gl_TexCoord [0].xy) : texture2D (bubbleTex, gl_TexCoord [0].xy));\r\n" \
+	"   texColor *= gl_Color;\r\n" \
+	"   if (gl_Color.a == 0.0) //additive\r\n" \
+	"      gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
+	"   else // alpha\r\n" \
+	"      gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
+	"   }\r\n" \
 	"}\r\n"
 
 	, 	// texture arrays - bind texture array to TMU0, ignore TMU1
 
 	"uniform sampler2DArray particleTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
+	"//uniform sampler2D sourceTex;\r\n" \
+	"uniform int bSuspended;\r\n" \
 	"void main (void) {\r\n" \
-	"vec4 texColor = texture2DArray (particleTex, gl_TexCoord [0].xyz) * gl_Color;\r\n" \
-	"if (gl_Color.a == 0.0) //additive\r\n" \
-	"   gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
-	"else // alpha\r\n" \
-	"   gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
+	"if (bSuspended != 0)\r\n" \
+	"   gl_FragColor = texture2DArray (particleTex, vec3 (gl_TexCoord [0].xy, 0.0)) * gl_Color;\r\n" \
+	"else {\r\n" \
+	"   vec4 texColor = texture2DArray (particleTex, gl_TexCoord [0].xyz) * gl_Color;\r\n" \
+	"   if (gl_Color.a == 0.0) //additive\r\n" \
+	"      gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
+	"   else // alpha\r\n" \
+	"      gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
+	"   }\r\n" \
 	"}\r\n"
 	,
 	
@@ -132,6 +145,8 @@ const char *particleFS [4] = {
 	"uniform sampler2D particleTex, sparkTex, bubbleTex, depthTex;\r\n" \
 	"uniform vec3 dMax;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
+	"//uniform sampler2D sourceTex;\r\n" \
+	"uniform int bSuspended;\r\n" \
 	"//#define ZNEAR 1.0\r\n" \
 	"//#define ZFAR 5000.0\r\n" \
 	"//#define A 5001.0 //(ZNEAR + ZFAR)\r\n" \
@@ -146,17 +161,21 @@ const char *particleFS [4] = {
 	"void main (void) {\r\n" \
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
-	"int nType = int (floor (gl_TexCoord [0].z + 0.5));\r\n" \
-	"float dm = dMax [nType];\r\n" \
-	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
+	"if (bSuspended != 0)\r\n" \
+	"   gl_FragColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
+	"else {\r\n" \
+	"   int nType = int (floor (gl_TexCoord [0].z + 0.5));\r\n" \
+	"   float dm = dMax [nType];\r\n" \
+	"   float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
-	"dz = (dm - dz) / dm;\r\n" \
-	"vec4 texColor = ((nType == 0) ? texture2D (sparkTex, gl_TexCoord [0].xy) : (nType == 1) ? texture2D (particleTex, gl_TexCoord [0].xy) : texture2D (bubbleTex, gl_TexCoord [0].xy));\r\n" \
-	"texColor *= gl_Color * dz;\r\n" \
-	"if (gl_Color.a == 0.0) //additive\r\n" \
-	"   gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
-	"else // alpha\r\n" \
-	"   gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
+	"   dz = (dm - dz) / dm;\r\n" \
+	"   vec4 texColor = ((nType == 0) ? texture2D (sparkTex, gl_TexCoord [0].xy) : (nType == 1) ? texture2D (particleTex, gl_TexCoord [0].xy) : texture2D (bubbleTex, gl_TexCoord [0].xy));\r\n" \
+	"   texColor *= gl_Color * dz;\r\n" \
+	"   if (gl_Color.a == 0.0) //additive\r\n" \
+	"      gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
+	"   else // alpha\r\n" \
+	"      gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
+	"   }\r\n" \
 	"}\r\n"
 
 	, 	// texture arrays - bind texture array to TMU0, ignore TMU1
@@ -165,6 +184,8 @@ const char *particleFS [4] = {
 	"uniform sampler2D depthTex;\r\n" \
 	"uniform vec3 dMax;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
+	"//uniform sampler2D sourceTex;\r\n" \
+	"uniform int bSuspended;\r\n" \
 	"//#define ZNEAR 1.0\r\n" \
 	"//#define ZFAR 5000.0\r\n" \
 	"//#define A 5001.0 //(ZNEAR + ZFAR)\r\n" \
@@ -179,16 +200,20 @@ const char *particleFS [4] = {
 	"void main (void) {\r\n" \
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
-	"float dm = dMax [int (floor (gl_TexCoord [0].z + 0.5))];\r\n" \
-	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
+	"if (bSuspended != 0)\r\n" \
+	"   gl_FragColor = texture2DArray (particleTex, vec3 (gl_TexCoord [0].xy, 0.0)) * gl_Color;\r\n" \
+	"else {\r\n" \
+	"   float dm = dMax [int (floor (gl_TexCoord [0].z + 0.5))];\r\n" \
+	"   float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
-	"dz = (dm - dz) / dm;\r\n" \
-	"vec4 texColor = texture2DArray (particleTex, gl_TexCoord [0].xyz);\r\n" \
-	"texColor *= gl_Color * dz;\r\n" \
-	"if (gl_Color.a == 0.0) //additive\r\n" \
-	"   gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
-	"else // alpha\r\n" \
-	"   gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
+	"   dz = (dm - dz) / dm;\r\n" \
+	"   vec4 texColor = texture2DArray (particleTex, gl_TexCoord [0].xyz);\r\n" \
+	"   texColor *= gl_Color * dz;\r\n" \
+	"   if (gl_Color.a == 0.0) //additive\r\n" \
+	"      gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
+	"   else // alpha\r\n" \
+	"      gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
+	"   }\r\n" \
 	"}\r\n"
 	};
 

@@ -32,6 +32,7 @@ class CShaderManager {
 	private:
 		CStack<tShaderData>		m_shaders;
 		int							m_nCurrent;
+		bool							m_bSuspendable;
 
 	public:
 		CShaderManager ();
@@ -39,7 +40,7 @@ class CShaderManager {
 		void Init (void);
 		void Destroy (bool bAll = true);
 		void Setup (void);
-		intptr_t Deploy (int nShader);
+		intptr_t Deploy (int nShader, bool bSuspendable = false);
 		int Alloc (int& nShader);
 		char* Load (const char* filename);
 		int Create (int nShader);

@@ -102,6 +102,7 @@ m_shaders.Create (100);
 m_shaders.SetGrowth (100);
 m_shaders.Clear ();
 m_nCurrent = -1;
+m_bSuspendable = false;
 }
 
 //------------------------------------------------------------------------------
@@ -291,9 +292,9 @@ for (i = 0; i < 2; i++) {
 	if (!bCompiled [i]) {
 		bError = true;
 		if (i)
-			::PrintLog ("   Couldn't compile fragment shader\n   \"%s\"\n", pszFragShader);
+			::PrintLog ("\nCouldn't compile fragment shader\n\n\"%s\"\n", pszFragShader);
 		else
-			::PrintLog ("   Couldn't compile vertex shader\n   \"%s\"\n", pszVertShader);
+			::PrintLog ("\nCouldn't compile vertex shader\n\n\"%s\"\n", pszVertShader);
 		if (shader.shaders [i]) {
 			PrintLog (shader.shaders [i], 0);
 			glDeleteObjectARB (shader.shaders [i]);
@@ -396,18 +397,32 @@ if ((nShader >= 0) && (nShader < int (m_shaders.ToS ()))) {
 
 //------------------------------------------------------------------------------
 
-intptr_t CShaderManager::Deploy (int nShader)
+intptr_t CShaderManager::Deploy (int nShader, bool bSuspendable)
 {
 if (!ogl.m_features.bShaders)
 	return 0;
 if (nShader >= int (m_shaders.ToS ()))
 	return 0;
 GLhandleARB shaderProg = (nShader < 0) ? 0 : m_shaders [nShader].program;
-if (m_nCurrent == nShader)
+if (m_nCurrent == nShader) {
+	if ((nShader >= 0) && m_bSuspendable)
+		Set ("bSuspended", 0);
 	return -intptr_t (shaderProg); // < 0 => program already bound
-m_nCurrent = nShader;
-glUseProgramObjectARB (shaderProg);
-gameData.render.nShaderChanges++;
+	}
+if ((nShader < 0) && bSuspendable && m_bSuspendable)
+	Set ("bSuspended", 1);
+else {
+#if DBG
+	if ((nShader < 0) && m_bSuspendable)
+		m_bSuspendable = m_bSuspendable;
+#endif
+	m_nCurrent = nShader;
+	glUseProgramObjectARB (shaderProg);
+	if (m_bSuspendable = bSuspendable)
+		Set ("bSuspended", 0);
+	else
+		gameData.render.nShaderChanges++;
+	}
 return intptr_t (shaderProg);
 }
 

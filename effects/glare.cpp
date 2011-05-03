@@ -645,7 +645,7 @@ if (!ogl.CopyDepthTexture (0))
 	return false;
 if (dMax < 1)
 	dMax = 1;
-m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader));
+m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader, true));
 if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg)) {
@@ -692,6 +692,7 @@ const char *glareFS =
 	"uniform float dMax;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"uniform int blendMode;\r\n" \
+	"uniform int bSuspended;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
@@ -702,15 +703,19 @@ const char *glareFS =
 	"#define ZEYE(z) (10000.0 / (5001.0 - NDC (z) * 4999.0)) //(C / (A + D))\r\n" \
 	"//#define ZEYE(z) -(ZFAR / ((z) * (ZFAR - ZNEAR) - ZFAR))\r\n" \
 	"void main (void) {\r\n" \
-	"float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dMax);\r\n" \
-	"dz = (dMax - dz) / dMax;\r\n" \
-	"vec4 glareColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
-	"if (blendMode > 0) //additive\r\n" \
-	"   gl_FragColor = vec4 (glareColor.rgb * gl_Color.rgb * dz, 1.0);\r\n" \
-	"else if (blendMode < 0) //multiplicative\r\n" \
-	"   gl_FragColor = vec4 (max (glareColor.rgb, 1.0 - dz), 1.0);\r\n" \
-	"else //alpha\r\n" \
-	"   gl_FragColor = vec4 (glareColor.rgb * gl_Color.rgb, glareColor.a * gl_Color.a * dz);\r\n" \
+	"if (bSuspended != 0)\r\n" \
+	"   gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
+	"else {\r\n" \
+	"   float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dMax);\r\n" \
+	"   dz = (dMax - dz) / dMax;\r\n" \
+	"   vec4 glareColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
+	"   if (blendMode > 0) //additive\r\n" \
+	"      gl_FragColor = vec4 (glareColor.rgb * gl_Color.rgb * dz, 1.0);\r\n" \
+	"   else if (blendMode < 0) //multiplicative\r\n" \
+	"      gl_FragColor = vec4 (max (glareColor.rgb, 1.0 - dz), 1.0);\r\n" \
+	"   else //alpha\r\n" \
+	"      gl_FragColor = vec4 (glareColor.rgb * gl_Color.rgb, glareColor.a * gl_Color.a * dz);\r\n" \
+	"   }\r\n" \
 	"}\r\n"
 	;
 
