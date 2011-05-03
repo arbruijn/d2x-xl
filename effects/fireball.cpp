@@ -398,16 +398,16 @@ return sqrt (size);
 
 void CObject::SetupRandomMovement (void)
 {
-mType.physInfo.velocity.Set (RAND_MAX / 2 - d_rand (), RAND_MAX / 2 - d_rand (), RAND_MAX / 2 - d_rand ());
+mType.physInfo.velocity.Set (D_RAND_MAX / 2 - d_rand (), D_RAND_MAX / 2 - d_rand (), D_RAND_MAX / 2 - d_rand ());
 //mType.physInfo.velocity *= (I2X (10));
 CFixVector::Normalize (mType.physInfo.velocity);
-mType.physInfo.velocity *= (I2X (10 + (30 * d_rand () / RAND_MAX)));
+mType.physInfo.velocity *= (I2X (10 + 30 * d_rand () / RAND_MAX));
 //mType.physInfo.velocity += mType.physInfo.velocity;
 // -- used to be: Notice, not random!VmVecMake (&mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
 #if 0//DBG
 VmVecZero (&mType.physInfo.rotVel);
 #else
-mType.physInfo.rotVel = CFixVector::Create (d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
+mType.physInfo.rotVel = CFixVector::Create (d_rand () + 0x1000, 2 * d_rand () + 0x4000, 3 * d_rand () + 0x2000);
 #endif
 mType.physInfo.rotThrust.SetZero ();
 }

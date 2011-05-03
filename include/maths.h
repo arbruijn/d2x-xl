@@ -125,16 +125,18 @@ srand(seed);
 
 //-----------------------------------------------------------------------------
 
+#define D_RAND_MAX 0x7fff
+
 static inline int d_rand (void)
 {
-return rand() & 0x7fff;
+return rand() & D_RAND_MAX;
 }
 
 //-----------------------------------------------------------------------------
 
 static inline float f_rand (void)
 {
-return static_cast<float> (d_rand()) / static_cast<float> (0x7fff);
+return float (d_rand()) / float (D_RAND_MAX);
 }
 
 //------------------------------------------------------------------------------
