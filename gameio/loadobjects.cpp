@@ -681,48 +681,57 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
+static bool AssignMatCen (tMatCenInfo& matCen, int nFunction)
+{
+CSegment& seg = SEGMENTS [matCen.nSegment];
+if (seg.m_function != SEGMENT_FUNC_ROBOTMAKER) // this matcen has an invalid segment
+	return false;
+tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [seg.m_value];
+if (!(fuelCen.bFlag & 1)) // this segment already has a matcen assigned
+	return false;
+fuelCen.bFlag = 0;
+matCen.nFuelCen = seg.m_value;
+return true;
+}
+
+// -----------------------------------------------------------------------------
+
 static int ReadBotGenInfo (CFile& cf)
 {
 if (gameFileInfo.botGen.offset > -1) {
-	int		i, j;
-	CSegment	*segP;
-
 	if (cf.Seek (gameFileInfo.botGen.offset, SEEK_SET)) {
 		Error ("Error seeking to robot generator data\n(file damaged or invalid)");
 		return -1;
 		}
-	for (i = 0; i < gameFileInfo.botGen.count; i++) {
-		if (gameTopFileInfo.fileinfoVersion < 27) {
+	for (int i = 0; i < gameFileInfo.botGen.count; ) {
+		if (gameTopFileInfo.fileinfoVersion >= 27) 
+			MatCenInfoRead (gameData.matCens.botGens + i, cf);
+		else {
 			old_tMatCenInfo m;
 
 			OldMatCenInfoRead (&m, cf);
 
 			gameData.matCens.botGens [i].objFlags [0] = m.objFlags;
-			gameData.matCens.botGens [i].objFlags [1] = 0;
+			gameData.matCens.botGens [i].objFlags [1] =
+			gameData.matCens.botGens [i].objFlags [2] = 0;
 			gameData.matCens.botGens [i].xHitPoints = m.xHitPoints;
 			gameData.matCens.botGens [i].xInterval = m.xInterval;
 			gameData.matCens.botGens [i].nSegment = m.nSegment;
 			gameData.matCens.botGens [i].nFuelCen = m.nFuelCen;
-		}
-		else
-			MatCenInfoRead (gameData.matCens.botGens + i, cf);
+			}
 
-		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
-		for (j = gameData.segs.nSegments, segP = SEGMENTS.Buffer (); j; j--, segP++)
-			if ((segP->m_function == SEGMENT_FUNC_ROBOTMAKER) && (segP->m_nMatCen == i)) {
-				gameData.matCens.botGens [i].nFuelCen = segP->m_value;
-				break;
-				}
-		if (!j) {
+		if (AssignMatCen (gameData.matCens.botGens [i], SEGMENT_FUNC_ROBOTMAKER))
+			++i;
+		else {
 #if DBG
 			PrintLog ("Invalid robot generator data found\n");
 #endif
-			gameData.matCens.nBotCenters--;
-			gameFileInfo.botGen.count--;
-			i--;
+			--gameData.matCens.nBotCenters;
+			--gameFileInfo.botGen.count;
 			}
 		}
 	}
+
 return 0;
 }
 
@@ -731,22 +740,40 @@ return 0;
 static int ReadEquipGenInfo (CFile& cf)
 {
 if (gameFileInfo.equipGen.offset > -1) {
-	int	i, j;
-
 	if (cf.Seek (gameFileInfo.equipGen.offset, SEEK_SET)) {
 		Error ("Error seeking to equipment generator data\n(file damaged or invalid)");
 		return -1;
 		}
-	for (i = 0; i < gameFileInfo.equipGen.count; i++) {
+	for (int i = 0; i < gameFileInfo.equipGen.count;) {
 		MatCenInfoRead (gameData.matCens.equipGens + i, cf);
-		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
-		CSegment* segP = SEGMENTS.Buffer ();
-		for (j = 0; j <= gameData.segs.nLastSegment; j++, segP++)
-			if ((segP->m_function == SEGMENT_FUNC_EQUIPMAKER) && (segP->m_nMatCen == i))
-				gameData.matCens.equipGens [i].nFuelCen = segP->m_value;
+		if (AssignMatCen (gameData.matCens.equipGens [i], SEGMENT_FUNC_EQUIPMAKER))
+			++i;
+		else {
+#if DBG
+			PrintLog ("Invalid equipment generator data found\n");
+#endif
+			--gameData.matCens.nEquipCenters;
+			--gameFileInfo.equipGen.count;
+			}
 		}
 	}
 return 0;
+}
+
+// -----------------------------------------------------------------------------
+
+void CleanupMatCenInfo (void)
+{
+CSegment* segP = SEGMENTS.Buffer ();
+for (int i = gameData.segs.nSegments; i; i--, segP++) {
+	if (segP->m_function == SEGMENT_FUNC_ROBOTMAKER) {
+		tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [segP->m_value];
+		if (fuelCen.bFlag) {
+			fuelCen.bFlag = 0;
+			segP->m_function = SEGMENT_FUNC_NONE;
+			}
+		}
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -1009,6 +1036,7 @@ if (ReadBotGenInfo (cf))
 	return -1;
 if (ReadEquipGenInfo (cf))
 	return -1;
+CleanupMatCenInfo ();
 if (ReadLightDeltaIndexInfo (cf))
 	return -1;
 if (ReadLightDeltaInfo (cf))

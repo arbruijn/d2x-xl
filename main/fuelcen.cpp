@@ -63,7 +63,7 @@ void reset_allRobot_centers ()
 
 	// Remove all materialization centers
 for (i = 0; i < gameData.segs.nSegments; i++)
-	if (SEGMENTS [i].m_function == SEGMENT_FUNC_ROBOTMAKER) {
+	if ((SEGMENTS [i].m_function == SEGMENT_FUNC_ROBOTMAKER) || (SEGMENTS [i].m_function == SEGMENT_FUNC_EQUIPMAKER)) {
 		SEGMENTS [i].m_function = SEGMENT_FUNC_NONE;
 		SEGMENTS [i].m_nMatCen = -1;
 		}
@@ -88,13 +88,19 @@ if (!CreateMatCen (nOldFunction, MAX_FUEL_CENTERS))
 
 if (nOldFunction == SEGMENT_FUNC_EQUIPMAKER) {
 	gameData.matCens.origStationTypes [m_value] = SEGMENT_FUNC_NONE;
-	if (m_nMatCen < --gameData.matCens.nEquipCenters)
+	if (m_nMatCen < --gameData.matCens.nEquipCenters) {
 		gameData.matCens.equipGens [m_nMatCen] = gameData.matCens.equipGens [gameData.matCens.nEquipCenters];
+		SEGMENTS [gameData.matCens.equipGens [gameData.matCens.nEquipCenters].nSegment].m_nMatCen = m_nMatCen;
+		m_nMatCen = -1;
+		}
 	}
 else if (nOldFunction == SEGMENT_FUNC_ROBOTMAKER) {
 	gameData.matCens.origStationTypes [m_value] = SEGMENT_FUNC_NONE;
-	if (m_nMatCen < --gameData.matCens.nBotCenters)
+	if (m_nMatCen < --gameData.matCens.nBotCenters) {
 		gameData.matCens.botGens [m_nMatCen] = gameData.matCens.botGens [gameData.matCens.nBotCenters];
+		SEGMENTS [gameData.matCens.botGens [gameData.matCens.nBotCenters].nSegment].m_nMatCen = m_nMatCen;
+		m_nMatCen = -1;
+		}
 	}
 return true;
 }
@@ -125,7 +131,7 @@ fuelCen.xMaxCapacity =
 fuelCen.xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
 fuelCen.nSegment = Index ();
 fuelCen.xTimer = -1;
-fuelCen.bFlag = 0;
+fuelCen.bFlag = (m_function == SEGMENT_FUNC_ROBOTMAKER) ? 1 : (m_function == SEGMENT_FUNC_EQUIPMAKER) ? 2 : 0;
 fuelCen.vCenter = m_vCenter;
 return true;
 }
@@ -805,9 +811,6 @@ for (i = 0; i < gameData.matCens.nBotCenters; i++) {
 void InitAllMatCens (void)
 {
 	int	i;
-#if DBG
-	int	j, nFuelCen;
-#endif
 
 for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_FUNC_ROBOTMAKER) {
@@ -816,55 +819,40 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 		 gameData.matCens.fuelCenters [i].xDisableTime = 0;
 		 }
 
-#if DBG
+#if 0 //DBG
 
+	int	j, nFuelCen;
 for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_FUNC_ROBOTMAKER) {
 		//	Make sure this fuelcen is pointed at by a matcen.
 		for (j = 0; j < gameData.matCens.nBotCenters; j++)
 			if (gameData.matCens.botGens [j].nFuelCen == i)
 				break;
-#	if 1
 		if (j == gameData.matCens.nBotCenters)
 			j = j;
-#	else
-		Assert (j != gameData.matCens.nBotCenters);
-#	endif
 		}
 	else if (gameData.matCens.fuelCenters [i].nType == SEGMENT_FUNC_EQUIPMAKER) {
 		//	Make sure this fuelcen is pointed at by a matcen.
 		for (j = 0; j < gameData.matCens.nEquipCenters; j++)
 			if (gameData.matCens.equipGens [j].nFuelCen == i)
 				break;
-#	if 1
 		if (j == gameData.matCens.nEquipCenters)
 			j = j;
-#	else
-		Assert (j != gameData.matCens.nEquipCenters);
-#	endif
 		}
 
 //	Make sure all matcens point at a fuelcen
 for (i = 0; i < gameData.matCens.nBotCenters; i++) {
 	nFuelCen = gameData.matCens.botGens [i].nFuelCen;
 	Assert (nFuelCen < gameData.matCens.nFuelCenters);
-#	if 1
 	if (gameData.matCens.fuelCenters [nFuelCen].nType != SEGMENT_FUNC_ROBOTMAKER)
 		i = i;
-#	else
-	Assert (gameData.matCens.fuelCenters [nFuelCen].nType == SEGMENT_FUNC_ROBOTMAKER);
-#	endif
 	}
 
 for (i = 0; i < gameData.matCens.nEquipCenters; i++) {
 	nFuelCen = gameData.matCens.equipGens [i].nFuelCen;
 	Assert (nFuelCen < gameData.matCens.nFuelCenters);
-#	if 1
 	if (gameData.matCens.fuelCenters [nFuelCen].nType != SEGMENT_FUNC_EQUIPMAKER)
 		i = i;
-#	else
-	Assert (gameData.matCens.fuelCenters [nFuelCen].nType == SEGMENT_FUNC_EQUIPMAKER);
-#	endif
 	}
 #endif
 
