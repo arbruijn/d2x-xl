@@ -194,7 +194,7 @@ if ((bTransformed > 0) && (m_data.bAllowAdd < 0))	// already added and still in 
 	return 0;
 #endif
 #if RENDER_TRANSPARENCY
-	tTranspItem*		ph, *	pi;
+	tTranspItem*		ph;
 	tTranspItemList*	pd;
 	int					nDepth = Depth (vPos, bTransformed > 0);
 	
@@ -239,7 +239,8 @@ if (AllocBuffers ()) {
 			ph->z = nDepth;
 			ph->bValid = true;
 			memcpy (&ph->item, itemData, itemSize);
-#if 0
+#if 0 // sort by depth
+			tTranspItem* pi;
 			for (pi = pd->head; pi; pi = pi->pNextItem) {
 				if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
 					break;
