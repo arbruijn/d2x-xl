@@ -287,9 +287,13 @@ return fScale;
 
 void DrawObjectBitmap (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
 {
+	int nType = objP->info.nType;
+
+if ((nType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
+	return;
+
 	CBitmap*		bmP;
 	tRgbaColorf	color;
-	int			nType = objP->info.nType;
 	int			nId = objP->info.nId;
 #if 0
 	int			bMuzzleFlash = 0;
@@ -902,6 +906,8 @@ return 1;
 
 static int RenderPowerupModel (CObject* objP, int bSpectate)
 {
+if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
+	return 0;
 if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
 if (!gameStates.app.bNostalgia && gameOpts->Use3DPowerups ()) {
@@ -1031,6 +1037,8 @@ return 1;
 
 static int RenderPowerup (CObject* objP, int bForce)
 {
+if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
+	return 0;
 if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
 if (objP->PowerupToDevice ()) {

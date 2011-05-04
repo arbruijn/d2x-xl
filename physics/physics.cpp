@@ -408,6 +408,10 @@ else
 
 void CObject::DoPhysicsSim (void)
 {
+if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
+	return;
+
+
 	short					nIgnoreObjs = 0;
 	int					iSeg, i;
 	int					bRetry;

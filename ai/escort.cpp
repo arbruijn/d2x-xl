@@ -469,6 +469,10 @@ int GetBossId (void)
 //	"special" is used to find OBJECTS spewed by CPlayerData which is hacked into flags field of powerup.
 int ExistsInMine2 (int nSegment, int objType, int objId, int special)
 {
+if ((objType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
+	return -1;
+
+
 	int nObject = SEGMENTS [nSegment].m_objects;
 	
 if (nObject != -1) {

@@ -546,6 +546,8 @@ restart:
 			}
 #endif
 		int nOtherType = otherObjP->info.nType;
+		if ((nOtherType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
+			continue;
 		if ((flags & FQ_CHECK_PLAYER) && (nOtherType != OBJ_PLAYER))
 			continue;
 		if (otherObjP->info.nFlags & OF_SHOULD_BE_DEAD)

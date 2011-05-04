@@ -656,6 +656,9 @@ typedef int (* pPickupFlag) (CObject *, int, int, const char *, int);
 //	returns true if powerup consumed
 int DoPowerup (CObject *objP, int nPlayer)
 {
+if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
+	return 0;
+
 	CPlayerData*	playerP;
 	int				bUsed = 0;
 	int				bSpecialUsed = 0;		//for when hitting vulcan cannon gets vulcan ammo
@@ -726,6 +729,9 @@ return bUsed;
 
 int SpawnPowerup (CObject *spitterP, ubyte nId, int nCount)
 {
+if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
+	return 0;
+
 	int			i;
 	short			nObject;
 	CFixVector	velSave;

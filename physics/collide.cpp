@@ -1891,6 +1891,8 @@ return 1;
 
 int CObject::CollidePlayerAndPowerup (CObject* powerupP, CFixVector& vHitPt)
 {
+if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
+	return 1;
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 	(info.nId == gameData.multiplayer.nLocalPlayer)) {
 	int bPowerupUsed = DoPowerup (powerupP, info.nId);

@@ -376,6 +376,8 @@ return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, g
 
 int CreatePowerup (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, int bIgnoreLimits, bool bForce)
 {
+if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
+	return -1;
 if (nId >= MAX_POWERUP_TYPES) {
 	PrintLog ("Trying to create non-existant powerup (type %d)\n", nId);
 	return -1;

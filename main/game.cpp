@@ -1175,13 +1175,16 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 }
 
 //	-------------------------------------------------------------------------------------------------------
-//	If CPlayerData is close enough to nObject, which ought to be a powerup, pick it up!
+//	If player is close enough to nObject, which ought to be a powerup, pick it up!
 //	This could easily be made difficulty level dependent.
 void PowerupGrabCheat (CObject *playerP, int nObject)
 {
-	CObject		*powerupP = OBJECTS + nObject;
-	tObjTransformation	*posP = OBJPOS (playerP);
-	CFixVector	vCollision;
+if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
+	return;
+
+	CObject*					powerupP = OBJECTS + nObject;
+	tObjTransformation*	posP = OBJPOS (playerP);
+	CFixVector				vCollision;
 
 Assert (powerupP->info.nType == OBJ_POWERUP);
 if (powerupP->info.nFlags & OF_SHOULD_BE_DEAD)
