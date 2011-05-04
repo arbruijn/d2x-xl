@@ -1267,7 +1267,8 @@ automap.ClearVisited ();
 ResetPlayerData (false, true, false);
 gameData.objs.viewerP = OBJECTS + LOCALPLAYER.nObject;
 GameStartRemoveUnusedPlayers ();
-//gameStates.app.bGameSuspended = 0;
+if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
+	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
 gameData.reactor.bDestroyed = 0;
 cockpit->Init ();
 paletteManager.ResetEffect ();
@@ -1758,7 +1759,8 @@ if (IsMultiGame)
 else
 	ResetMonsterball (false); //will simply remove all Monsterballs
 GameStartRemoveUnusedPlayers ();
-//gameStates.app.bGameSuspended = 0;
+if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
+	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
 gameData.reactor.bDestroyed = 0;
 gameStates.render.glFOV = DEFAULT_FOV;
 SetScreenMode (SCREEN_GAME);

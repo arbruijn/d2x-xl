@@ -525,7 +525,8 @@ gameData.objs.viewerP = gameData.objs.consoleP;
 //console.printf (CON_DBG, "   FlyInit d:\temp\dm_test.\n");
 #endif
 FlyInit (gameData.objs.consoleP);
-//gameStates.app.bGameSuspended = 0;
+if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
+	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
 ResetTime ();
 gameData.time.SetTime (0);			//make first frame zero
 #if TRACE

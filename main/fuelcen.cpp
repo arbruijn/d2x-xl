@@ -72,126 +72,95 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 
 //------------------------------------------------------------
 // Turns a CSegment into a fully charged up fuel center...
-void CSegment::CreateFuelCen (int oldType)
+bool CSegment::CreateFuelCen (int nOldFunction)
 {
-	int	i, stationType = m_function;
-
-switch (stationType) {
-	case SEGMENT_FUNC_NONE:
-	case SEGMENT_FUNC_GOAL_BLUE:
-	case SEGMENT_FUNC_GOAL_RED:
-	case SEGMENT_FUNC_TEAM_BLUE:
-	case SEGMENT_FUNC_TEAM_RED:
-	case SEGMENT_FUNC_SPEEDBOOST:
-	case SEGMENT_FUNC_SKYBOX:
-		return;
-	case SEGMENT_FUNC_FUELCEN:
-	case SEGMENT_FUNC_REPAIRCEN:
-	case SEGMENT_FUNC_CONTROLCEN:
-	case SEGMENT_FUNC_ROBOTMAKER:
-	case SEGMENT_FUNC_EQUIPMAKER:
-		break;
-	default:
-		Error ("Segment %d has invalid\nstation nType %d in fuelcen.c\n", Index (), stationType);
+if ((m_function != SEGMENT_FUNC_FUELCEN) &&
+	 (m_function != SEGMENT_FUNC_REPAIRCEN) &&
+	 (m_function != SEGMENT_FUNC_CONTROLCEN) &&
+	 (m_function != SEGMENT_FUNC_ROBOTMAKER) &&
+	 (m_function != SEGMENT_FUNC_EQUIPMAKER)) {
+	PrintLog ("Segment %d has invalid function %d in fuelcen.cpp\n", Index (), m_function);
+	return false;
 	}
 
-switch (oldType) {
-	case SEGMENT_FUNC_FUELCEN:
-	case SEGMENT_FUNC_REPAIRCEN:
-	case SEGMENT_FUNC_ROBOTMAKER:
-	case SEGMENT_FUNC_EQUIPMAKER:
-		i = m_value;
-		break;
-	default:
-		Assert (gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS);
-		i = gameData.matCens.nFuelCenters;
-	}
+if (!CreateMatCen (nOldFunction, MAX_FUEL_CENTERS))
+	return false;
 
-m_value = i;
-gameData.matCens.fuelCenters [i].nType = stationType;
-gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_FUNC_NONE : oldType;
-gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.xFuelMaxAmount;
-gameData.matCens.fuelCenters [i].xCapacity = gameData.matCens.fuelCenters [i].xMaxCapacity;
-gameData.matCens.fuelCenters [i].nSegment = Index ();
-gameData.matCens.fuelCenters [i].xTimer = -1;
-gameData.matCens.fuelCenters [i].bFlag = 0;
-//	gameData.matCens.fuelCenters [i].NextRobotType = -1;
-//	gameData.matCens.fuelCenters [i].last_created_obj=NULL;
-//	gameData.matCens.fuelCenters [i].last_created_sig = -1;
-gameData.matCens.fuelCenters [i].vCenter = Center ();
-if (oldType == SEGMENT_FUNC_NONE)
-	gameData.matCens.nFuelCenters++;
-if (oldType == SEGMENT_FUNC_EQUIPMAKER)
-	gameData.matCens.nEquipCenters++;
-else if (oldType == SEGMENT_FUNC_ROBOTMAKER) {
-	gameData.matCens.origStationTypes [i] = SEGMENT_FUNC_NONE;
+if (nOldFunction == SEGMENT_FUNC_EQUIPMAKER) {
+	gameData.matCens.origStationTypes [m_value] = SEGMENT_FUNC_NONE;
+	if (m_nMatCen < --gameData.matCens.nEquipCenters)
+		gameData.matCens.equipGens [m_nMatCen] = gameData.matCens.equipGens [gameData.matCens.nEquipCenters];
+	}
+else if (nOldFunction == SEGMENT_FUNC_ROBOTMAKER) {
+	gameData.matCens.origStationTypes [m_value] = SEGMENT_FUNC_NONE;
 	if (m_nMatCen < --gameData.matCens.nBotCenters)
 		gameData.matCens.botGens [m_nMatCen] = gameData.matCens.botGens [gameData.matCens.nBotCenters];
 	}
+return true;
 }
 
 //------------------------------------------------------------
 
-void CSegment::CreateMatCen (int nOldType, int nMaxCount)
+bool CSegment::CreateMatCen (int nOldFunction, int nMaxCount)
 {
-	int	i;
-
-if (m_nMatCen >= nMaxCount) {
+if ((nMaxCount > 0) && (m_nMatCen >= nMaxCount)) {
 	m_function = SEGMENT_FUNC_NONE;
 	m_nMatCen = -1;
-	return;
+	return false;
 	}
-switch (nOldType) {
-	case SEGMENT_FUNC_FUELCEN:
-	case SEGMENT_FUNC_REPAIRCEN:
-	case SEGMENT_FUNC_ROBOTMAKER:
-	case SEGMENT_FUNC_EQUIPMAKER:
-		i = m_value;	// index in fuel center array passed from level editor
-		break;
-	default:
-		Assert (gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS);
-		m_value = i = gameData.matCens.nFuelCenters;
+
+if ((nOldFunction != SEGMENT_FUNC_FUELCEN) && 
+	 (nOldFunction != SEGMENT_FUNC_REPAIRCEN) && 
+	 (nOldFunction != SEGMENT_FUNC_ROBOTMAKER) && 
+	 (nOldFunction != SEGMENT_FUNC_EQUIPMAKER)) {
+	if (gameData.matCens.nFuelCenters >= MAX_FUEL_CENTERS)
+		return false;
+	m_value = gameData.matCens.nFuelCenters++; // hasn't already been a matcen, so allocate a new one
 	}
-gameData.matCens.origStationTypes [i] = (nOldType == m_function) ? SEGMENT_FUNC_NONE : nOldType;
-tFuelCenInfo* fuelCenP = &gameData.matCens.fuelCenters [i];
-fuelCenP->nType = m_function;
-fuelCenP->xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
-fuelCenP->xMaxCapacity = fuelCenP->xCapacity;
-fuelCenP->nSegment = Index ();
-fuelCenP->xTimer = -1;
-fuelCenP->bFlag = 0;
-fuelCenP->vCenter = m_vCenter;
+
+gameData.matCens.origStationTypes [m_value] = (nOldFunction == m_function) ? SEGMENT_FUNC_NONE : nOldFunction;
+tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [m_value];
+fuelCen.nType = m_function;
+fuelCen.xMaxCapacity = 
+fuelCen.xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
+fuelCen.nSegment = Index ();
+fuelCen.xTimer = -1;
+fuelCen.bFlag = 0;
+fuelCen.vCenter = m_vCenter;
+return true;
 }
 
 //------------------------------------------------------------
 // Adds a matcen that already is a special nType into the gameData.matCens.fuelCenters array.
 // This function is separate from other fuelcens because we don't want values reset.
-void CSegment::CreateBotGen (int nOldType)
+bool CSegment::CreateBotGen (int nOldFunction)
 {
-CreateMatCen (nOldType, gameFileInfo.botGen.count);
-int i = gameData.matCens.nBotCenters++;
-gameData.matCens.botGens [i].xHitPoints = MATCEN_HP_DEFAULT;
-gameData.matCens.botGens [i].xInterval = MATCEN_INTERVAL_DEFAULT;
-gameData.matCens.botGens [i].nSegment = Index ();
-if (nOldType == SEGMENT_FUNC_NONE)
-	gameData.matCens.botGens [i].nFuelCen = gameData.matCens.nFuelCenters;
-gameData.matCens.nFuelCenters++;
+m_nMatCen = gameData.matCens.nBotCenters;
+if (!CreateMatCen (nOldFunction, gameFileInfo.botGen.count))
+	return false;
+++gameData.matCens.nBotCenters;
+gameData.matCens.botGens [m_nMatCen].xHitPoints = MATCEN_HP_DEFAULT;
+gameData.matCens.botGens [m_nMatCen].xInterval = MATCEN_INTERVAL_DEFAULT;
+gameData.matCens.botGens [m_nMatCen].nSegment = Index ();
+gameData.matCens.botGens [m_nMatCen].nFuelCen = m_value;
+return true;
 }
 
 
 //------------------------------------------------------------
 // Adds a matcen that already is a special nType into the gameData.matCens.fuelCenters array.
 // This function is separate from other fuelcens because we don't want values reset.
-void CSegment::CreateEquipGen (int nOldType)
+bool CSegment::CreateEquipGen (int nOldFunction)
 {
-CreateMatCen (nOldType, gameFileInfo.equipGen.count);
-int i = gameData.matCens.nEquipCenters++;
-gameData.matCens.equipGens [i].xHitPoints = MATCEN_HP_DEFAULT;
-gameData.matCens.equipGens [i].xInterval = MATCEN_INTERVAL_DEFAULT;
-gameData.matCens.equipGens [i].nSegment = Index ();
-if (nOldType == SEGMENT_FUNC_NONE)
-	gameData.matCens.equipGens [i].nFuelCen = gameData.matCens.nFuelCenters;
-gameData.matCens.nFuelCenters++;
+m_nMatCen = gameData.matCens.nEquipCenters;
+if (!CreateMatCen (nOldFunction, gameFileInfo.equipGen.count))
+	return false;
+++gameData.matCens.nEquipCenters;
+gameData.matCens.equipGens [m_nMatCen].xHitPoints = MATCEN_HP_DEFAULT;
+gameData.matCens.equipGens [m_nMatCen].xInterval = MATCEN_INTERVAL_DEFAULT;
+gameData.matCens.equipGens [m_nMatCen].nSegment = Index ();
+gameData.matCens.equipGens [m_nMatCen].nFuelCen = m_value;
+return true;
 }
 
 //------------------------------------------------------------
@@ -204,19 +173,22 @@ for (i = 0; i < gameData.matCens.nEquipCenters; i++)
 	gameData.matCens.fuelCenters [gameData.matCens.equipGens [i].nFuelCen].bEnabled =
 		FindTriggerTarget (gameData.matCens.fuelCenters [i].nSegment, -1) == 0;
 }
+
 //------------------------------------------------------------
 // Adds a CSegment that already is a special nType into the gameData.matCens.fuelCenters array.
-void CSegment::CreateGenerator (int nType)
+bool CSegment::CreateGenerator (int nType)
 {
 m_function = nType;
 if (m_function == SEGMENT_FUNC_ROBOTMAKER)
-	CreateBotGen (SEGMENT_FUNC_NONE);
+	return CreateBotGen (SEGMENT_FUNC_NONE);
 else if (m_function == SEGMENT_FUNC_EQUIPMAKER)
-	CreateEquipGen (SEGMENT_FUNC_NONE);
+	return CreateEquipGen (SEGMENT_FUNC_NONE);
 else {
-	CreateFuelCen (SEGMENT_FUNC_NONE);
+	if (!CreateFuelCen (SEGMENT_FUNC_NONE))
+		return false;
 	if (m_function == SEGMENT_FUNC_REPAIRCEN)
 		m_nMatCen = gameData.matCens.nRepairCenters++;
+	return true;
 	}
 }
 
@@ -673,7 +645,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++, fuelCenP++) {
 			BotGenHandler (gameData.matCens.fuelCenters + i);
 		}
 	else if (t == SEGMENT_FUNC_EQUIPMAKER) {
-		if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS))
+		if (!(gameStates.app.bGameSuspended & SUSP_POWERUPS))
 			EquipGenHandler (gameData.matCens.fuelCenters + i);
 		}
 	else if (t == SEGMENT_FUNC_CONTROLCEN) {

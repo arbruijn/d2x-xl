@@ -318,11 +318,11 @@ class CSegment {
 		void ChangeTexture (int oldOwner);
 		void OverrideTextures (short nTexture, short nOldTexture, short nTexture2, int bFullBright, int bForce);
 
-		void CreateGenerator (int nType);
-		void CreateEquipGen (int oldType);
-		void CreateBotGen (int oldType);
-		void CreateFuelCen (int oldType);
-		void CreateMatCen (int nOldType, int nMaxCount);
+		bool CreateGenerator (int nType);
+		bool CreateEquipGen (int nOldFunction);
+		bool CreateBotGen (int nOldFunction);
+		bool CreateFuelCen (int nOldFunction);
+		bool CreateMatCen (int nOldFunction, int nMaxCount);
 
 		void ComputeCenter (void);
 		void ComputeRads (fix xMinDist);

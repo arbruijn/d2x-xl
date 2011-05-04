@@ -119,6 +119,7 @@ extern int bGameDoubleBuffer;      // double buffering?
 #define SUSP_ROBOTS     1           // Robot AI doesn't move
 #define SUSP_WEAPONS    2           // Lasers, etc. don't move
 #define SUSP_POWERUPS   4           // powerups aren't rendered and cannot be picked up
+#define SUSP_TEMPORARY	128
 
 extern int Game_suspended;          // if non-zero, nothing moves but CPlayerData
 

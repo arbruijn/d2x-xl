@@ -315,7 +315,8 @@ if (missionManager [missionManager.nCurrentMission].nDescentVersion == 1)
 gameStates.app.bEndLevelSequence = EL_FLYTHROUGH;
 gameData.objs.consoleP->info.movementType = MT_NONE;			//movement handled by flythrough
 gameData.objs.consoleP->info.controlType = CT_NONE;
-gameStates.app.bGameSuspended |= SUSP_ROBOTS;          //robots don't move
+if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS))
+	gameStates.app.bGameSuspended |= SUSP_ROBOTS | SUSP_TEMPORARY;          //robots don't move
 gameData.endLevel.xCurFlightSpeed = gameData.endLevel.xDesiredFlightSpeed = FLY_SPEED;
 StartEndLevelFlyThrough (0, gameData.objs.consoleP, gameData.endLevel.xCurFlightSpeed);		//initialize
 HUDInitMessage (TXT_EXIT_SEQUENCE);
