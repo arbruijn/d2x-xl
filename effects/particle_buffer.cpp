@@ -177,10 +177,10 @@ return 1;
 int CParticleBuffer::UseParticleShader (void)
 {
 if (!USE_PARTICLE_SHADER)
-	return 0;
+	return -1;
 if (!bCompatible [m_nType])
-	return 0;
-int nShader = 1; //ogl.m_features.bTextureArrays.Available () ? 2 : 1;
+	return -1;
+int nShader = 0; //ogl.m_features.bTextureArrays.Available ();
 if ((ogl.m_features.bDepthBlending > -1) && gameOpts->SoftBlend (SOFT_BLEND_PARTICLES))
 	return nShader + 2;
 return nShader;
@@ -256,11 +256,12 @@ if (Init ()) {
 		if (gameStates.render.cameras.bActive /*|| !gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)*/)
 			shaderManager.Deploy (-1);
 #if HAVE_PARTICLE_SHADER
-		else if ((nShader = UseParticleShader ())) {
-			if (!particleManager.LoadShader (--nShader, dMax))
+		else if (0 <= (nShader = UseParticleShader ())) {
+			if (!particleManager.LoadShader (nShader, dMax))
 				shaderManager.Deploy (-1);
-			else if (nShader & 1) 
-				particleImageManager.LoadMultipleTextures (GL_TEXTURE0);
+			else if (nShader & 1) {
+				particleImageManager.LoadMultipleTextures (GL_TEXTURE1);
+				}
 			else {
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
 				ParticleImageInfo (SPARK_PARTICLES).bmP->Bind (0);

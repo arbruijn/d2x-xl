@@ -353,6 +353,8 @@ if (!ogl.m_features.bTextureArrays.Available ())
 	return false;
 if (!m_textureArray)
 	return false;
+ogl.SelectTMU (nTMU);
+ogl.SetTexturing (true);
 ogl.BindTexture (m_textureArray);
 return true;
 }

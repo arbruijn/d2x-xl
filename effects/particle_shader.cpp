@@ -54,7 +54,7 @@ if (!gameOpts->render.bUseShaders)
 	return false;
 if (ogl.m_features.bDepthBlending < 0)
 	return false;
-if ((nShader > 1) && !ogl.CopyDepthTexture (0, (nShader & 1) ? GL_TEXTURE1 : GL_TEXTURE3))
+if ((nShader > 1) && !ogl.CopyDepthTexture (0, (nShader & 1) ? GL_TEXTURE2 : GL_TEXTURE3))
 	nShader -= 2;
 //ogl.DrawBuffer ()->FlipBuffers (0, 1); // color buffer 1 becomes render target, color buffer 0 becomes render source (scene texture)
 //ogl.DrawBuffer ()->SetDrawBuffers ();
@@ -62,14 +62,17 @@ m_shaderProg = GLhandleARB (shaderManager.Deploy (hParticleShader [nShader], tru
 if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg)) {
-	shaderManager.Set ("particleTex", 0);
-	//shaderManager.Set ("sourceTex", 0);
-	if (!(nShader & 1)) {
+	if (nShader & 1) {
+		shaderManager.Set ("sourceTex", 0);
+		shaderManager.Set ("particleTex", 1); // this doesn't work with texture arrays on my GTX 570 ???
+		}
+	else {
+		shaderManager.Set ("particleTex", 0);
 		shaderManager.Set ("sparkTex", 1);
 		shaderManager.Set ("bubbleTex", 2);
 		}
 	if (nShader > 1) {
-		shaderManager.Set ("depthTex", (nShader == 3) ? 1 : 3);
+		shaderManager.Set ("depthTex", (nShader == 3) ? 2 : 3);
 		shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
 		shaderManager.Set ("dMax", dMax);
 		}
@@ -124,13 +127,13 @@ const char *particleFS [4] = {
 
 	, 	// texture arrays - bind texture array to TMU0, ignore TMU1
 
+	"uniform sampler2D sourceTex;\r\n" \
 	"uniform sampler2DArray particleTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
-	"//uniform sampler2D sourceTex;\r\n" \
 	"uniform int bSuspended;\r\n" \
 	"void main (void) {\r\n" \
 	"if (bSuspended != 0)\r\n" \
-	"   gl_FragColor = texture2DArray (particleTex, vec3 (gl_TexCoord [0].xy, 0.0)) * gl_Color;\r\n" \
+	"   gl_FragColor = texture2D (sourceTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"else {\r\n" \
 	"   vec4 texColor = texture2DArray (particleTex, gl_TexCoord [0].xyz) * gl_Color;\r\n" \
 	"   if (gl_Color.a == 0.0) //additive\r\n" \
@@ -180,11 +183,11 @@ const char *particleFS [4] = {
 
 	, 	// texture arrays - bind texture array to TMU0, ignore TMU1
 
+	"uniform sampler2D sourceTex;\r\n" \
 	"uniform sampler2DArray particleTex;\r\n" \
 	"uniform sampler2D depthTex;\r\n" \
 	"uniform vec3 dMax;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
-	"//uniform sampler2D sourceTex;\r\n" \
 	"uniform int bSuspended;\r\n" \
 	"//#define ZNEAR 1.0\r\n" \
 	"//#define ZFAR 5000.0\r\n" \
@@ -201,7 +204,7 @@ const char *particleFS [4] = {
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
 	"if (bSuspended != 0)\r\n" \
-	"   gl_FragColor = texture2DArray (particleTex, vec3 (gl_TexCoord [0].xy, 0.0)) * gl_Color;\r\n" \
+	"   gl_FragColor = texture2D (sourceTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"else {\r\n" \
 	"   float dm = dMax [int (floor (gl_TexCoord [0].z + 0.5))];\r\n" \
 	"   float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
