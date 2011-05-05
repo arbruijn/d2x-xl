@@ -649,28 +649,23 @@ return 1;
 //	wake up all robots that were rendered last frame subject to some constraints.
 void WakeupRenderedObjects (CObject *viewerP, int nWindow)
 {
-	int	i;
-
-	//	Make sure that we are processing current data.
+//	Make sure that we are processing current data.
 if (gameData.app.nFrameCount != windowRenderedData [nWindow].nFrame) {
 #if TRACE
 		console.printf (1, "Warning: Called WakeupRenderedObjects with a bogus window.\n");
 #endif
 	return;
 	}
+
 gameData.ai.nLastMissileCamera = OBJ_IDX (viewerP);
-
-int nObject, frameFilter = gameData.app.nFrameCount & 3;
-CObject *objP;
-tAILocalInfo *ailP;
-
-for (i = windowRenderedData [nWindow].nObjects; i; ) {
-	nObject = windowRenderedData [nWindow].renderedObjects [--i];
+int frameFilter = gameData.app.nFrameCount & 3;
+for (int i = windowRenderedData [nWindow].nObjects; i; ) {
+	int nObject = windowRenderedData [nWindow].renderedObjects [--i];
 	if ((nObject & 3) == frameFilter) {
-		objP = OBJECTS + nObject;
+		CObject* objP = OBJECTS + nObject;
 		if (objP->info.nType == OBJ_ROBOT) {
 			if (CFixVector::Dist (viewerP->info.position.vPos, objP->info.position.vPos) < I2X (100)) {
-				ailP = gameData.ai.localInfo + nObject;
+				tAILocalInfo* ailP = gameData.ai.localInfo + nObject;
 				if (ailP->targetAwarenessType == 0) {
 					objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
 					ailP->targetAwarenessType = WEAPON_ROBOT_COLLISION;

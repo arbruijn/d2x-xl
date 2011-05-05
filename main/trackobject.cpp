@@ -189,9 +189,7 @@ return -1;
 
 int CObject::MaxTrackableDist (int& xBestDot)
 {
-if (Type () != OBJ_WEAPON) 
-	xBestDot = MIN_TRACKABLE_DOT;
-else {
+if (Type () == OBJ_WEAPON) {
 	if (Id () == OMEGA_ID) {
 		xBestDot = OMEGA_MIN_TRACKABLE_DOT;
 		return OMEGA_MAX_TRACKABLE_DIST;
@@ -201,6 +199,7 @@ else {
 		return MAX_TRACKABLE_DIST * 2;
 		}
 	}
+xBestDot = MIN_TRACKABLE_DOT;
 return MAX_TRACKABLE_DIST;
 }
 
@@ -268,7 +267,7 @@ int CObject::FindAnyHomingTarget (CFixVector& vTrackerPos, int targetType1, int 
 	CHomingTargetData targetData (this, vTrackerPos, targetLists [nThread]);
 
 FORALL_ACTOR_OBJS (targetP, nObject) {
-	int			bIsProximity = 0;
+	int bIsProximity = 0;
 
 	if (OBJ_IDX (targetP) == cType.laserInfo.parent.nObject) // Don't track shooter
 		continue;
