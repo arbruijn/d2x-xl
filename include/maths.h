@@ -136,7 +136,7 @@ return int (rand () & SHORT_RAND_MAX);
 
 static inline int SRandShort (void)
 {
-return RandShort () - (SHORT_RAND_MAX + 1) / 2;
+return SHORT_RAND_MAX / 2 - RandShort ();
 }
 
 //-----------------------------------------------------------------------------
