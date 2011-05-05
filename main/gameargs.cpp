@@ -455,6 +455,7 @@ if ((t = FindArg ("-multithreaded"))) {
 	else if (gameStates.app.nThreads > MAX_THREADS)
 		gameStates.app.nThreads = MAX_THREADS;
 	}
+GetNumThreads ();
 #endif
 if ((t = FindArg ("-nosound")))
 	gameStates.app.bUseSound = (NumArg (t, 1) == 0);

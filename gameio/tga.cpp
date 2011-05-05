@@ -134,11 +134,11 @@ void CTGA::SetProperties (int alpha, int bGrayScale, double brightness, bool bSw
 	float			nVisible = 0;
 	tRgbaColorf	avgColor;
 	tRgbColorb	avgColorb;
-	tRgbaColorb *p;
 	float			a;
 
-if (!gameStates.app.bMultiThreaded)
- 	p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ());
+//tRgbaColorb *p;
+//if (!gameStates.app.bMultiThreaded)
+// 	p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ());
 
 m_bmP->AddFlags (BM_FLAG_TGA);
 m_bmP->SetTranspType (-1);
@@ -251,6 +251,7 @@ else {
 	else
 #endif
 		{
+		tRgbaColorb* p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ());
 		for (i = w * (h / nFrames); i; i--, p++) {
 			if (bSwapRB)
 				::Swap (p->red, p->blue);

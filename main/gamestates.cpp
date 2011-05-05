@@ -285,8 +285,10 @@ gameStates.app.bHaveExtraGameInfo [0] = 1;
 gameStates.app.bHaveExtraGameInfo [1] = 0;
 gameStates.app.nSDLTicks [0] = -1;
 #if USE_OPENMP > 1
+gameStates.app.bMultiThreaded = 1;
 GetNumThreads ();
 #else
+gameStates.app.bMultiThreaded = 0;
 gameStates.app.nThreads = 1;
 #endif
 #if DBG
