@@ -528,18 +528,22 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 	CFloatVector3::Normalize (m_data.vcd.vertNorm);
 	m_data.nColor = 0;
 	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
-#if USE_OPENMP
-	GetNumThreads ();
-#	pragma omp parallel
-		{
-		#pragma omp for
-		for (i = 0; i < gameStates.app.nThreads; i++)
-			Build (i);
-		}
-#else
-	if (!RunRenderThreads (rtLightmap, gameStates.app.nThreads))
+	if (!gameStates.app.bMultiThreaded)
 		Build (-1);
+	else {
+#if USE_OPENMP
+		GetNumThreads ();
+#	pragma omp parallel
+			{
+		#pragma omp for
+			for (i = 0; i < gameStates.app.nThreads; i++)
+				Build (i);
+			}
+#else
+		if (!RunRenderThreads (rtLightmap, gameStates.app.nThreads))
+			Build (-1);
 #endif
+		}
 #if DBG
 	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;

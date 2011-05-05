@@ -477,7 +477,7 @@ RenderObjectsST ();
 #else
 
 
-if ((gameStates.render.nShadowPass == 2) || (gameStates.app.nThreads < 3) || (gameData.render.mine.nRenderSegs [1] < 2 * (gameStates.app.nThreads - 1)))
+if (!gameStates.app.bMultiThreaded || (gameStates.render.nShadowPass == 2) || (gameStates.app.nThreads < 3) || (gameData.render.mine.nRenderSegs [1] < 2 * (gameStates.app.nThreads - 1)))
 	RenderObjectsST ();
 else {
 #if USE_OPENMP > 1

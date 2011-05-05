@@ -71,26 +71,30 @@ void CParticleBuffer::Setup (void)
 
 PROF_START
 #if USE_OPENMP > 1
+if (gameStates.app.bMultiThreaded) {
 #	if (LAZY_RENDER_SETUP < 2)
-if (m_iBuffer <= 1000)
+	if (m_iBuffer <= 1000)
 #	endif
-for (int i = 0; i < m_iBuffer; i++)
-	m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
+	for (int i = 0; i < m_iBuffer; i++)
+		m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
 #	if (LAZY_RENDER_SETUP < 2)
 else
 #	endif
 #	pragma omp parallel
-	{
-	int nThread = omp_get_thread_num();
+		{
+		int nThread = omp_get_thread_num();
 #	pragma omp for 
-	for (int i = 0; i < m_iBuffer; i++)
-		m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
+		for (int i = 0; i < m_iBuffer; i++)
+			m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
+		}
 	}
-#else
-if ((m_iBuffer < 100) || !RunRenderThreads (rtParticles))
-	for (int i = 0; i < m_iBuffer; i++)
-		m_particles [i].particle->Setup (m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
+else
 #endif
+	{
+	if ((m_iBuffer < 100) || !RunRenderThreads (rtParticles))
+		for (int i = 0; i < m_iBuffer; i++)
+			m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
+	}
 PROF_END(ptParticles)
 }
 

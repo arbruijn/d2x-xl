@@ -134,10 +134,11 @@ void CTGA::SetProperties (int alpha, int bGrayScale, double brightness, bool bSw
 	float			nVisible = 0;
 	tRgbaColorf	avgColor;
 	tRgbColorb	avgColorb;
+	tRgbaColorb *p;
 	float			a;
-#if !USE_OPENMP
- 	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ());
-#endif
+
+if (!gameStates.app.bMultiThreaded)
+ 	p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ());
 
 m_bmP->AddFlags (BM_FLAG_TGA);
 m_bmP->SetTranspType (-1);
@@ -149,30 +150,33 @@ m_bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPAR
 if (m_bmP->BPP () == 3) {
 	tRgbColorb*	p = reinterpret_cast<tRgbColorb*> (m_bmP->Buffer ());
 #if USE_OPENMP
-	int			tId, j = w * h;
-	tRgbColorf	ac [MAX_THREADS];
+	if (gameStates.app.bMultiThreaded) {
+		int			tId, j = w * h;
+		tRgbColorf	ac [MAX_THREADS];
 
-	memset (ac, 0, sizeof (ac));
+		memset (ac, 0, sizeof (ac));
 #	pragma omp parallel private (tId)
-		{
-		tId = omp_get_thread_num ();
+			{
+			tId = omp_get_thread_num ();
 #		pragma omp for reduction (+: nVisible)
-		for (int i = 0; i < j; i++) {
-			if (p [i].red || p [i].green || p [i].blue) {
-				::Swap (p [i].red, p [i].blue);
-				ac [tId].red += p [i].red;
-				ac [tId].green += p [i].green;
-				ac [tId].blue += p [i].blue;
-				nVisible++;
+			for (int i = 0; i < j; i++) {
+				if (p [i].red || p [i].green || p [i].blue) {
+					::Swap (p [i].red, p [i].blue);
+					ac [tId].red += p [i].red;
+					ac [tId].green += p [i].green;
+					ac [tId].blue += p [i].blue;
+					nVisible++;
+					}
 				}
 			}
+		for (i = 0, j = GetNumThreads (); i < j; i++) {
+			avgColor.red += ac [i].red;
+			avgColor.green += ac [i].green;
+			avgColor.blue += ac [i].blue;
+			}
 		}
-	for (i = 0, j = GetNumThreads (); i < j; i++) {
-		avgColor.red += ac [i].red;
-		avgColor.green += ac [i].green;
-		avgColor.blue += ac [i].blue;
-		}
-#else
+	else
+#endif
 	for (int i = 0, j = w * h; i < j; i++) {
 		if (p [i].red || p [i].green || p [i].blue) {
 			::Swap (p [i].red, p [i].blue);
@@ -182,7 +186,6 @@ if (m_bmP->BPP () == 3) {
 			nVisible++;
 			}
 		}
-#endif
 	avgColor.alpha = 1.0f;
 	}
 else {
@@ -193,57 +196,61 @@ else {
 	for (n = 0; n < nFrames; n++) {
 		nSuperTransp = 0;
 #if USE_OPENMP
-		int			nst [MAX_THREADS], nac [MAX_THREADS], tId, j = w * (h / nFrames);
-		tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ()) + n * j;
-		tRgbaColorf	avc [MAX_THREADS];
+		if (gameStates.app.bMultiThreaded) {
+			int			nst [MAX_THREADS], nac [MAX_THREADS], tId, j = w * (h / nFrames);
+			tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ()) + n * j;
+			tRgbaColorf	avc [MAX_THREADS];
 
-		memset (avc, 0, sizeof (avc));
-		memset (nst, 0, sizeof (nst));
-		memset (nac, 0, sizeof (nac));
+			memset (avc, 0, sizeof (avc));
+			memset (nst, 0, sizeof (nst));
+			memset (nac, 0, sizeof (nac));
 #pragma omp parallel private (tId)
-		{
-		tId = omp_get_thread_num ();
+			{
+			tId = omp_get_thread_num ();
 #	pragma omp for reduction (+: nVisible)
-		for (int i = 0; i < j; i++) {
-			if (bSwapRB)
-				::Swap (p [i].red, p [i].blue);
-			if (bGrayScale) {
-				p [i].red =
-				p [i].green =
-				p [i].blue = ubyte ((int (p [i].red) + int (p [i].green) + int (p [i].blue)) / 3 * brightness);
-				}
-			else if ((p [i].red == 120) && (p [i].green == 88) && (p [i].blue == 128)) {
-				nst [tId]++;
-				p [i].alpha = 0;
-				}
-			else {
-				if (alpha >= 0)
-					p [i].alpha = alpha;
-				if (!p [i].alpha)
-					p [i].red =		//avoid colored transparent areas interfering with visible image edges
+			for (int i = 0; i < j; i++) {
+				if (bSwapRB)
+					::Swap (p [i].red, p [i].blue);
+				if (bGrayScale) {
+					p [i].red =
 					p [i].green =
-					p [i].blue = 0;
+					p [i].blue = ubyte ((int (p [i].red) + int (p [i].green) + int (p [i].blue)) / 3 * brightness);
+					}
+				else if ((p [i].red == 120) && (p [i].green == 88) && (p [i].blue == 128)) {
+					nst [tId]++;
+					p [i].alpha = 0;
+					}
+				else {
+					if (alpha >= 0)
+						p [i].alpha = alpha;
+					if (!p [i].alpha)
+						p [i].red =		//avoid colored transparent areas interfering with visible image edges
+						p [i].green =
+						p [i].blue = 0;
+					}
+				if (p [i].alpha < MIN_OPACITY) {
+					avc [tId].alpha += p [i].alpha;
+					nac [tId]++;
+					}
+				a = float (p [i].alpha) / 255.0f;
+				nVisible += a;
+				avc [tId].red += float (p [i].red) * a;
+				avc [tId].green += float (p [i].green) * a;
+				avc [tId].blue += float (p [i].blue) * a;
 				}
-			if (p [i].alpha < MIN_OPACITY) {
-				avc [tId].alpha += p [i].alpha;
-				nac [tId]++;
-				}
-			a = float (p [i].alpha) / 255.0f;
-			nVisible += a;
-			avc [tId].red += float (p [i].red) * a;
-			avc [tId].green += float (p [i].green) * a;
-			avc [tId].blue += float (p [i].blue) * a;
+			}
+		for (int i = 0, j = GetNumThreads (); i < j; i++) {
+			avgColor.red += avc [i].red;
+			avgColor.green += avc [i].green;
+			avgColor.blue += avc [i].blue;
+			avgColor.alpha += avc [i].alpha;
+			nSuperTransp += nst [i];
+			nAlpha += nac [i];
 			}
 		}
-	for (int i = 0, j = GetNumThreads (); i < j; i++) {
-		avgColor.red += avc [i].red;
-		avgColor.green += avc [i].green;
-		avgColor.blue += avc [i].blue;
-		avgColor.alpha += avc [i].alpha;
-		nSuperTransp += nst [i];
-		nAlpha += nac [i];
-		}
-#else
+	else
+#endif
+		{
 		for (i = w * (h / nFrames); i; i--, p++) {
 			if (bSwapRB)
 				::Swap (p->red, p->blue);
@@ -274,7 +281,7 @@ else {
 			avgColor.green += float (p->green) * a;
 			avgColor.blue += float (p->blue) * a;
 			}
-#endif
+		}
 		if (nAlpha > w * w / 1000) {
 			if (!n) {
 				if (avgColor.alpha / nAlpha > 5.0f)

@@ -629,7 +629,7 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 
 #if USE_OPENMP > 1
 #pragma omp parallel 
-	{
+if (gameStates.app.bMultiThreaded) {
 	int h = int (gameData.objs.update.ToS ());
 	#pragma omp for
 	for (int nThread = 0; nThread < gameStates.app.nThreads; nThread++) {

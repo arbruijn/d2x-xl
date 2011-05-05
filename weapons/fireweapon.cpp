@@ -599,12 +599,14 @@ if ((gameData.laser.xUpdateTime >= I2X (1) / 40) &&
 	 !(info.nFlags & PF_HAS_BOUNCED) &&
 	 !((info.nId == GUIDEDMSL_ID) &&
 	   (this == (gmObjP = gameData.objs.guidedMissile [OBJECTS [cType.laserInfo.parent.nObject].info.nId].objP)) &&
-	   (info.nSignature == gmObjP->info.nSignature)))
+		(info.nSignature == gmObjP->info.nSignature))) {
 #if USE_OPENMP > 1
-	gameData.objs.update.Push (this);
-#else
-	UpdateHomingWeapon ();
+	if (gameStates.app.bMultiThreaded)
+		gameData.objs.update.Push (this);
+	else
 #endif
+		UpdateHomingWeapon ();
+	}
 else
 	UpdateWeaponSpeed ();
 }

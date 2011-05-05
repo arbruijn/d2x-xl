@@ -244,7 +244,7 @@ if (SHOW_LIGHTNING) {
 		}
 	int nCurrent = -1;
 #if USE_OPENMP > 1
-	if (m_emitterList.Buffer ()) {
+	if (gameStates.app.bMultiThreaded && m_emitterList.Buffer ()) {
 		int nSystems = 0;
 		CLightningEmitter* emitterP, * nextP;
 		for (emitterP = m_emitters.GetFirst (nCurrent), nextP = NULL; emitterP; emitterP = nextP) {
@@ -389,7 +389,7 @@ if (SHOW_LIGHTNING) {
 
 	int nCurrent = -1;
 #if USE_OPENMP > 1
-	if (m_emitterList.Buffer ()) {
+	if (gameStates.app.bMultiThreaded && m_emitterList.Buffer ()) {
 		CLightningEmitter* emitterP;
 		int nSystems = 0;
 		for (emitterP = m_emitters.GetFirst (nCurrent); emitterP; emitterP = m_emitters.GetNext (nCurrent))
@@ -589,7 +589,7 @@ if (SHOW_LIGHTNING) {
 	int nCurrent = -1;
 
 #if USE_OPENMP > 1
-	if (m_emitterList.Buffer ()) {
+	if (gameStates.app.bMultiThreaded && m_emitterList.Buffer ()) {
 		CLightningEmitter* emitterP;
 		int nSystems = 0;
 		for (emitterP = m_emitters.GetFirst (nCurrent); emitterP; emitterP = m_emitters.GetNext (nCurrent))

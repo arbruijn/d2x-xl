@@ -63,14 +63,15 @@ return 0;
 
 #else
 
+if (!gameStates.app.bMultiThreaded)
+	return 0;
+
 #	if DBG
 	time_t	t0 = 0, t2 = 0;
 	static	int nLockups = 0;
 #	endif
 	int		i, bWait = 1;
 
-if (!gameStates.app.bMultiThreaded)
-	return 0;
 if (nTask < 0) {
 	nTask = -nTask - 1;
 	bWait = 0;
@@ -397,6 +398,8 @@ return false;
 
 int GetNumThreads (void)
 {
+if (!gameStates.app.bMultiThreaded)
+	return gameStates.app.nThreads = 1;
 #if USE_OPENMP
 gameStates.app.nThreads = omp_get_num_threads ();
 if (gameStates.app.nThreads < 2)

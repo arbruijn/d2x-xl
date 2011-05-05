@@ -711,19 +711,21 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 
 	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
 #if USE_OPENMP > 1
-	int nStart, nEnd;
+	if (gameStates.app.bMultiThreaded) {
+		int nStart, nEnd;
 #	pragma omp parallel
-	{
+		{
 #		pragma omp for private (nStart, nEnd)
 		for (i = 0; i < gameStates.app.nThreads; i++) {
 			ComputeThreadRange (i, gameData.segs.nVertices, nStart, nEnd);
 			lightManager.GatherStaticVertexLights (nStart, nEnd, i);
 			}
+		}
 	}
-#else
+else
+#endif
 	//if (!RunRenderThreads (rtStaticVertLight))
 		lightManager.GatherStaticVertexLights (0, gameData.segs.nVertices, 0);
-#endif
 	pf = gameData.render.color.ambient.Buffer ();
 	for (i = 0, segP = SEGMENTS.Buffer (); i < gameData.segs.nSegments; i++, segP++) {
 		if (segP->m_function == SEGMENT_FUNC_SKYBOX) {
