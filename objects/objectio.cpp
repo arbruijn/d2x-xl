@@ -70,6 +70,10 @@ if (gameTopFileInfo.fileinfoVersion > 37)
 else
 	m_bMultiplayer = false;
 info.nSegment = cf.ReadShort ();
+#if DBG
+if (info.nSegment == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
 info.nAttachedObj = -1;
 cf.ReadVector (info.position.vPos);
 cf.ReadMatrix (info.position.mOrient);

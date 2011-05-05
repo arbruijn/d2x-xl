@@ -684,22 +684,40 @@ return 0;
 static bool AssignMatCen (tMatCenInfo& matCen, int nFunction)
 {
 #if 1
-tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [matCen.nFuelCen];
-CSegment& seg = SEGMENTS [fuelCen.nSegment];
-if (seg.m_value != matCen.nFuelCen)
-	return false;
-if (seg.m_function != nFunction) // this matcen has an invalid segment
-	return false;
+if (matCen.nFuelCen < 0) {
+	if (matCen.nSegment < 0)
+		return false;
+	CSegment& seg = SEGMENTS [matCen.nSegment];
+	if (seg.m_function != nFunction) // this matcen has an invalid segment
+		return false;
+	tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [matCen.nFuelCen = seg.m_value];
+	if (!(fuelCen.bFlag & 1)) // this segment already has a matcen assigned
+		return false;
+	fuelCen.bFlag = 0;
+	}
+else {
+	tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [matCen.nFuelCen];
+	if (fuelCen.nSegment < 0)
+		return false;
+	CSegment& seg = SEGMENTS [fuelCen.nSegment];
+	if (seg.m_value != matCen.nFuelCen)
+		return false;
+	if (!(fuelCen.bFlag & 1)) // this segment already has a matcen assigned
+		return false;
+	fuelCen.bFlag = 0;
+	}
 #else
+if (matCen.nSegment < 0)
+	return false;
 CSegment& seg = SEGMENTS [matCen.nSegment];
 if (seg.m_function != nFunction) // this matcen has an invalid segment
 	return false;
 tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [seg.m_value];
-#endif
 if (!(fuelCen.bFlag & 1)) // this segment already has a matcen assigned
 	return false;
 fuelCen.bFlag = 0;
 matCen.nFuelCen = seg.m_value;
+#endif
 return true;
 }
 
