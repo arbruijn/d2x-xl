@@ -260,7 +260,7 @@ if (Init ()) {
 			if (!particleManager.LoadShader (nShader, dMax))
 				shaderManager.Deploy (-1);
 			else if (nShader & 1) {
-				particleImageManager.LoadMultipleTextures (GL_TEXTURE1);
+				particleImageManager.LoadMultipleTextures (GL_TEXTURE1); // texture arrays don't seem to like being bound to another than GL_TEXTURE0 though - this doesn't work
 				}
 			else {
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
