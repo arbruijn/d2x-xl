@@ -52,7 +52,7 @@ CRadar radar;
 
 int				CRadar::radarRanges [5] = {0, 100, 200, 300, 1000};
 float				CRadar::radarSizes [3] = {2.0f, 3.0f, 4.0f};
-float				CRadar::sizeOffsets [2][3] = {{-4.0f, -2.0f, 0.0f}, {4.0f, 2.0f, 0.0f}};
+float				CRadar::sizeOffsets [2][3] = {{4.0f, 2.0f, 0.0f}, {4.0f, 2.0f, 0.0f}};
 
 CAngleVector	CRadar::aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
 float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, 18.0f, -20.5f, -19.0f}, {16.0f, 19.5f, 17.0f, 19.5f, 18.0f}};
@@ -375,7 +375,7 @@ int bStencil = ogl.StencilOff ();
 
 m_offset.v.coord.x = 0.0f;
 m_offset.v.coord.y = yOffs [gameOpts->render.cockpit.nRadarPos][gameStates.render.cockpit.nType];
-m_offset.v.coord.y += sizeOffsets [gameOpts->render.cockpit.nRadarPos][gameOpts->render.cockpit.nRadarSize];
+m_offset.v.coord.y += sizeOffsets [gameOpts->render.cockpit.nRadarPos][gameOpts->render.cockpit.nRadarSize] * (m_offset.v.coord.y / fabs (m_offset.v.coord.y));
 if (EGI_FLAG (nWeaponIcons, 1, 1, 0) && (gameOpts->render.cockpit.bHUD || cockpit->ShowAlways ())) {
 	if ((extraGameInfo [0].nWeaponIcons < 3) || ((extraGameInfo [0].nWeaponIcons & 1) == !gameOpts->render.cockpit.nRadarPos))
 		m_offset.v.coord.y += (m_offset.v.coord.y > 0) ? -3.75f : 3.25f;
