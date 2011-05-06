@@ -681,44 +681,45 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static bool AssignMatCen (tMatCenInfo& matCen, int nFunction, sbyte bFlag)
+static int AssignMatCen (tMatCenInfo& matCen, int nFunction, sbyte bFlag)
 {
+CSegment* segP;
 #if 1
 if (matCen.nSegment >= 0) {
-	CSegment& seg = SEGMENTS [matCen.nSegment];
-	if (seg.m_function != nFunction) // this matcen has an invalid segment
-		return false;
-	tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [matCen.nFuelCen = seg.m_value];
+	segP = &SEGMENTS [matCen.nSegment];
+	if (segP->m_function != nFunction) // this matcen has an invalid segment
+		return -1;
+	tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [matCen.nFuelCen = segP->m_value];
 	if (!(fuelCen.bFlag & bFlag)) // this segment already has a matcen assigned
-		return false;
+		return -1;
 	fuelCen.bFlag = 0;
 	}
 else if (matCen.nFuelCen >= 0) {
 	tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [matCen.nFuelCen];
 	if (fuelCen.nSegment < 0)
-		return false;
-	CSegment& seg = SEGMENTS [fuelCen.nSegment];
-	if (seg.m_value != matCen.nFuelCen)
-		return false;
+		return -1;
+	segP = &SEGMENTS [fuelCen.nSegment];
+	if (segP->m_value != matCen.nFuelCen)
+		return -1;
 	if (!(fuelCen.bFlag & bFlag)) // this segment already has a matcen assigned
-		return false;
+		return -1;
 	fuelCen.bFlag = 0;
 	}
 else
-	return false;
+	return -1;
 #else
 if (matCen.nSegment < 0)
 	return false;
-CSegment& seg = SEGMENTS [matCen.nSegment];
-if (seg.m_function != nFunction) // this matcen has an invalid segment
+segP = &SEGMENTS [matCen.nSegment];
+if (segP->m_function != nFunction) // this matcen has an invalid segment
 	return false;
-tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [seg.m_value];
+tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [segP->m_value];
 if (!(fuelCen.bFlag & 1)) // this segment already has a matcen assigned
 	return false;
 fuelCen.bFlag = 0;
-matCen.nFuelCen = seg.m_value;
+matCen.nFuelCen = segP->m_value;
 #endif
-return true;
+return segP->m_nMatCen;
 }
 
 // -----------------------------------------------------------------------------
@@ -730,25 +731,13 @@ if (gameFileInfo.botGen.offset > -1) {
 		Error ("Error seeking to robot generator data\n(file damaged or invalid)");
 		return -1;
 		}
-	for (int i = 0; i < gameFileInfo.botGen.count; ) {
-		if (gameTopFileInfo.fileinfoVersion >= 27) 
-			MatCenInfoRead (gameData.matCens.botGens + i, cf);
-		else {
-			old_tMatCenInfo m;
-
-			OldMatCenInfoRead (&m, cf);
-
-			gameData.matCens.botGens [i].objFlags [0] = m.objFlags;
-			gameData.matCens.botGens [i].objFlags [1] =
-			gameData.matCens.botGens [i].objFlags [2] = 0;
-			gameData.matCens.botGens [i].xHitPoints = m.xHitPoints;
-			gameData.matCens.botGens [i].xInterval = m.xInterval;
-			gameData.matCens.botGens [i].nSegment = m.nSegment;
-			gameData.matCens.botGens [i].nFuelCen = m.nFuelCen;
-			}
-
-		if (AssignMatCen (gameData.matCens.botGens [i], SEGMENT_FUNC_ROBOTMAKER, 1))
+	for (int h, i = 0; i < gameFileInfo.botGen.count; ) {
+		tMatCenInfo m;
+		MatCenInfoRead (gameData.matCens.botGens + i, cf, gameTopFileInfo.fileinfoVersion < 27);
+		if (0 <= (h = AssignMatCen (m, SEGMENT_FUNC_ROBOTMAKER, 1))) {
+			gameData.matCens.botGens [h] = m;
 			++i;
+			}
 		else {
 #if DBG
 			PrintLog ("Invalid robot generator data found\n");
@@ -771,10 +760,13 @@ if (gameFileInfo.equipGen.offset > -1) {
 		Error ("Error seeking to equipment generator data\n(file damaged or invalid)");
 		return -1;
 		}
-	for (int i = 0; i < gameFileInfo.equipGen.count;) {
-		MatCenInfoRead (gameData.matCens.equipGens + i, cf);
-		if (AssignMatCen (gameData.matCens.equipGens [i], SEGMENT_FUNC_EQUIPMAKER, 2))
+	for (int h, i = 0; i < gameFileInfo.equipGen.count;) {
+		tMatCenInfo m;
+		MatCenInfoRead (m, cf, false);
+		if (0 >= (h = AssignMatCen (m, SEGMENT_FUNC_EQUIPMAKER, 2))) {
+			gameData.matCens.equipGens [h] = m;
 			++i;
+			}
 		else {
 #if DBG
 			PrintLog ("Invalid equipment generator data found\n");

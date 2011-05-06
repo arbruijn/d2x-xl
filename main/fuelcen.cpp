@@ -507,6 +507,10 @@ if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
 	return;
 if (!matCenP->bEnabled)
 	return;
+#if DBG
+if (matCenP->nSegment == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
 if (matCenP->xDisableTime > 0) {
 	matCenP->xDisableTime -= gameData.time.xFrame;
 	if (matCenP->xDisableTime <= 0) {
@@ -577,6 +581,10 @@ if (!matCenP->bFlag) {
 		//	Whack on any robot or CPlayerData in the matcen CSegment.
 	nCount = 0;
 	nSegment = matCenP->nSegment;
+#if DBG
+	if (nSegment == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
 	for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 		nCount++;
 		if (nCount > LEVEL_OBJECTS) {
@@ -980,25 +988,18 @@ LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]=0;
 /*
  * reads an old_tMatCenInfo structure from a CFile
  */
-void OldMatCenInfoRead (old_tMatCenInfo *mi, CFile& cf)
-{
-mi->objFlags = cf.ReadInt ();
-mi->xHitPoints = cf.ReadFix ();
-mi->xInterval = cf.ReadFix ();
-mi->nSegment = cf.ReadShort ();
-mi->nFuelCen = cf.ReadShort ();
-}
-
 /*
  * reads a tMatCenInfo structure from a CFile
  */
-void MatCenInfoRead (tMatCenInfo *mi, CFile& cf)
+void MatCenInfoRead (tMatCenInfo *mi, CFile& cf, bool bOldFormat)
 {
 mi->objFlags [0] = cf.ReadInt ();
-mi->objFlags [1] = cf.ReadInt ();
+mi->objFlags [1] = bOldFormat ? 0 : cf.ReadInt ();
 mi->xHitPoints = cf.ReadFix ();
 mi->xInterval = cf.ReadFix ();
 mi->nSegment = cf.ReadShort ();
 mi->nFuelCen = cf.ReadShort ();
 }
 #endif
+
+//--------------------------------------------------------------------

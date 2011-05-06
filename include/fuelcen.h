@@ -138,7 +138,7 @@ void OldMatCenInfoRead(old_tMatCenInfo *mi, CFile& cf);
 /*
  * reads a tMatCenInfo structure from a CFILE
  */
-void MatCenInfoRead (tMatCenInfo *ps, CFile& cf);
+void MatCenInfoRead (tMatCenInfo *ps, CFile& cf, bool bOldFormat);
 #endif
 
 #define FUELCEN_IDX(_fuelcenP)	((short) ((_fuelcenP) - gameData.matCens.fuelCenters.Buffer ()))
