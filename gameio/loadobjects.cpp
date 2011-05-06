@@ -681,7 +681,7 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static bool AssignMatCen (tMatCenInfo& matCen, int nFunction)
+static bool AssignMatCen (tMatCenInfo& matCen, int nFunction, sbyte bFlag)
 {
 #if 1
 if (matCen.nFuelCen < 0) {
@@ -702,7 +702,7 @@ else {
 	CSegment& seg = SEGMENTS [fuelCen.nSegment];
 	if (seg.m_value != matCen.nFuelCen)
 		return false;
-	if (!(fuelCen.bFlag & 1)) // this segment already has a matcen assigned
+	if (!(fuelCen.bFlag & bFlag)) // this segment already has a matcen assigned
 		return false;
 	fuelCen.bFlag = 0;
 	}
@@ -747,7 +747,7 @@ if (gameFileInfo.botGen.offset > -1) {
 			gameData.matCens.botGens [i].nFuelCen = m.nFuelCen;
 			}
 
-		if (AssignMatCen (gameData.matCens.botGens [i], SEGMENT_FUNC_ROBOTMAKER))
+		if (AssignMatCen (gameData.matCens.botGens [i], SEGMENT_FUNC_ROBOTMAKER, 1))
 			++i;
 		else {
 #if DBG
@@ -773,7 +773,7 @@ if (gameFileInfo.equipGen.offset > -1) {
 		}
 	for (int i = 0; i < gameFileInfo.equipGen.count;) {
 		MatCenInfoRead (gameData.matCens.equipGens + i, cf);
-		if (AssignMatCen (gameData.matCens.equipGens [i], SEGMENT_FUNC_EQUIPMAKER))
+		if (AssignMatCen (gameData.matCens.equipGens [i], SEGMENT_FUNC_EQUIPMAKER, 2))
 			++i;
 		else {
 #if DBG
