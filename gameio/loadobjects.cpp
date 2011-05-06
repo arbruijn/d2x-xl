@@ -684,9 +684,7 @@ return 0;
 static bool AssignMatCen (tMatCenInfo& matCen, int nFunction, sbyte bFlag)
 {
 #if 1
-if (matCen.nFuelCen < 0) {
-	if (matCen.nSegment < 0)
-		return false;
+if (matCen.nSegment >= 0) {
 	CSegment& seg = SEGMENTS [matCen.nSegment];
 	if (seg.m_function != nFunction) // this matcen has an invalid segment
 		return false;
@@ -695,7 +693,7 @@ if (matCen.nFuelCen < 0) {
 		return false;
 	fuelCen.bFlag = 0;
 	}
-else {
+else if (matCen.nFuelCen >= 0) {
 	tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [matCen.nFuelCen];
 	if (fuelCen.nSegment < 0)
 		return false;
@@ -706,6 +704,8 @@ else {
 		return false;
 	fuelCen.bFlag = 0;
 	}
+else
+	return false;
 #else
 if (matCen.nSegment < 0)
 	return false;

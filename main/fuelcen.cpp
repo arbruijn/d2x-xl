@@ -189,13 +189,14 @@ if (m_function == SEGMENT_FUNC_ROBOTMAKER)
 	return CreateBotGen (SEGMENT_FUNC_NONE);
 else if (m_function == SEGMENT_FUNC_EQUIPMAKER)
 	return CreateEquipGen (SEGMENT_FUNC_NONE);
-else {
+else if ((m_function == SEGMENT_FUNC_FUELCEN) || (m_function == SEGMENT_FUNC_REPAIRCEN)) {
 	if (!CreateFuelCen (SEGMENT_FUNC_NONE))
 		return false;
 	if (m_function == SEGMENT_FUNC_REPAIRCEN)
 		m_nMatCen = gameData.matCens.nRepairCenters++;
 	return true;
 	}
+return false;
 }
 
 //	The lower this number is, the more quickly the center can be re-triggered.
