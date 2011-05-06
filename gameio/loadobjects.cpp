@@ -733,7 +733,7 @@ if (gameFileInfo.botGen.offset > -1) {
 		}
 	for (int h, i = 0; i < gameFileInfo.botGen.count; ) {
 		tMatCenInfo m;
-		MatCenInfoRead (gameData.matCens.botGens + i, cf, gameTopFileInfo.fileinfoVersion < 27);
+		MatCenInfoRead (&m, cf, gameTopFileInfo.fileinfoVersion < 27);
 		if (0 <= (h = AssignMatCen (m, SEGMENT_FUNC_ROBOTMAKER, 1))) {
 			gameData.matCens.botGens [h] = m;
 			++i;
@@ -762,7 +762,7 @@ if (gameFileInfo.equipGen.offset > -1) {
 		}
 	for (int h, i = 0; i < gameFileInfo.equipGen.count;) {
 		tMatCenInfo m;
-		MatCenInfoRead (m, cf, false);
+		MatCenInfoRead (&m, cf, false);
 		if (0 >= (h = AssignMatCen (m, SEGMENT_FUNC_EQUIPMAKER, 2))) {
 			gameData.matCens.equipGens [h] = m;
 			++i;
