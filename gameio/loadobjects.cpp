@@ -689,7 +689,7 @@ if (matCen.nSegment >= 0) {
 	if (seg.m_function != nFunction) // this matcen has an invalid segment
 		return false;
 	tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [matCen.nFuelCen = seg.m_value];
-	if (!(fuelCen.bFlag & 1)) // this segment already has a matcen assigned
+	if (!(fuelCen.bFlag & bFlag)) // this segment already has a matcen assigned
 		return false;
 	fuelCen.bFlag = 0;
 	}
