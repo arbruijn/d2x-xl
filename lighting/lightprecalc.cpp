@@ -33,7 +33,7 @@
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 15
+#define LIGHT_DATA_VERSION 16
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis.Buffer () ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
@@ -632,22 +632,15 @@ else
 #if MULTI_THREADED_PRECALC
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
-	int bMultiThreaded = gameStates.app.bMultiThreaded;
-	gameStates.app.bMultiThreaded = 0;
 	PrintLog ("Computing segment visibility\n");
 	ComputeSegmentVisibility (-1);
 	PrintLog ("Computing light visibility\n");
 	ComputeLightVisibility (-1);
-	//PrintLog ("Starting segment light calculation threads\n");
-	//StartOglLightThreads (SegLightsThread);
-		PrintLog ("Computing segment lights\n");
-		ComputeNearestSegmentLights (-1);
-	//PrintLog ("Starting vertex light calculation threads\n");
-	//StartOglLightThreads (VertLightsThread);
-		PrintLog ("Computing vertex lights\n");
-		ComputeNearestVertexLights (-1);
+	PrintLog ("Starting segment light calculation threads\n");
+	StartOglLightThreads (SegLightsThread);
+	PrintLog ("Starting vertex light calculation threads\n");
+	StartOglLightThreads (VertLightsThread);
 	gameData.physics.side.bCache = 1;
-	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}
 else {
 	int bMultiThreaded = gameStates.app.bMultiThreaded;

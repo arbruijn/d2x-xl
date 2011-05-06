@@ -751,7 +751,7 @@ renderPortals [0].top = 0;
 renderPortals [0].right = CCanvas::Current ()->Width () - 1;
 renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
 
-for (i = 0; i < gameData.segs.nSegments; i++)
+for (i = 0; i < gameData.segs.nVertices; i++)
 	gameData.segs.points [i].p3_flags = 0;
 #if DBG
 int nIterations = 0;
