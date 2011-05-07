@@ -1225,7 +1225,7 @@ if (m_data.nPrevType != m_data.nCurType) {
 glowRenderer.Begin (GLOW_LIGHTTRAILS, 2, false);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 if (LoadTexture (item->bmP, 0, 0, 0, GL_CLAMP)) {
-	ogl.SetDepthWrite (true);
+	ogl.SetDepthWrite (false); //true);
 	ogl.SetFaceCulling (false);
 	ogl.SetBlendMode (OGL_BLEND_ADD);
 	glColor4fv (reinterpret_cast<GLfloat*> (&item->color));

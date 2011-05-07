@@ -338,7 +338,7 @@ if (gameStates.app.bNostalgia)
 	return false;
 if (!gameOpts->render.effects.bEnabled)
 	return false;
-if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
+if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 2))
 	return false;
 if (!(m_nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0)))
 	return false;
