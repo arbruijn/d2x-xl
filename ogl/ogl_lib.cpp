@@ -950,7 +950,7 @@ oglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
 
 int COGL::StencilOff (void)
 {
-if (!SHOW_SHADOWS || (gameStates.render.nShadowPass != 3))
+if (!(ogl.m_data.bStencilTest && SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 	return 0;
 SetStencilTest (false);
 m_states.nStencil--;
@@ -961,7 +961,7 @@ return 1;
 
 void COGL::StencilOn (int bStencil)
 {
-if (bStencil) {
+if (bStencil && !ogl.m_data.bStencilTest) {
 	ogl.SetStencilTest (true);
 	m_states.nStencil++;
 	}

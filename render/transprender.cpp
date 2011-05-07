@@ -1500,6 +1500,7 @@ if (bCleanup) {
 FlushBuffers (-1);
 particleManager.EndRender ();
 shaderManager.Deploy (-1);
+glowRenderer.End ();
 ogl.ResetClientStates ();
 ogl.SetTexturing (false);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
@@ -1514,7 +1515,6 @@ if (bCleanup) {
 	m_data.nMaxOffs = 0;
 	m_data.nFreeItems = ITEM_BUFFER_SIZE;
 	}
-glowRenderer.End ();
 PROF_END(ptTranspPolys)
 #endif
 }

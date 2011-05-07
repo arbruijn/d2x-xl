@@ -97,14 +97,14 @@ int MenuGetValues (const char *pszMsg, int *valueP, int nValues)
 {
 	CMenu	m (1);
 	char	text [20] = "", *psz;
-	int	i = 0;
 
 m.AddInput (text, 20);
-if (m.Menu (NULL, pszMsg) >= 0) {
-	valueP [0] = atoi (m [0].m_text);
-	for (i = 1, psz = m [0].m_text; --nValues && (psz = strchr (psz, ',')); i++)
-		valueP [i] = atoi (++psz);
-	}
+if (m.Menu (NULL, pszMsg) < 0) 
+	return 0;
+valueP [0] = atoi (m [0].m_text);
+int i;
+for (i = 1, psz = m [0].m_text; --nValues && (psz = strchr (psz, ',')); i++)
+	valueP [i] = atoi (++psz);
 return i;
 }
 
@@ -434,7 +434,8 @@ void CubeWarpCheat (int bVerbose)
 {
 	int nNewSegSide [2] = {0, 0};
 
-MenuGetValues (TXT_ENTER_SEGNUM, nNewSegSide, 2);
+if (!MenuGetValues (TXT_ENTER_SEGNUM, nNewSegSide, 2))
+	return;
 if ((nNewSegSide [0] >= 0) && (nNewSegSide [0] <= gameData.segs.nLastSegment)) {
 	DoCheatPenalty ();
 	if (nNewSegSide [1] < 0)

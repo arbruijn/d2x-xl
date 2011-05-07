@@ -100,6 +100,7 @@ glPopMatrix ();
 
 void RenderFastShadows (fix xStereoSeparation, int nWindow, short nStartSeg)
 {
+glowRenderer.End ();
 gameStates.render.nShadowPass = 2;
 ogl.StartFrame (0, 0, xStereoSeparation);
 gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
