@@ -763,7 +763,7 @@ if (gameFileInfo.equipGen.offset > -1) {
 	for (int h, i = 0; i < gameFileInfo.equipGen.count;) {
 		tMatCenInfo m;
 		MatCenInfoRead (&m, cf, false);
-		if (0 >= (h = AssignMatCen (m, SEGMENT_FUNC_EQUIPMAKER, 2))) {
+		if (0 <= (h = AssignMatCen (m, SEGMENT_FUNC_EQUIPMAKER, 2))) {
 			gameData.matCens.equipGens [h] = m;
 			++i;
 			}
