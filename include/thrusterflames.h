@@ -34,12 +34,12 @@ class CThrusterFlames {
 		int				m_nVerts;
 		int				m_nThrusters;
 		int				m_nStyle;
-		bool				m_bHaveFlame;
+		bool				m_bHaveFlame [2];
 		bool				m_bPlayer;
 		bool				m_bSpectate;
 
 	public:
-		CThrusterFlames () { m_bHaveFlame = false; }
+		CThrusterFlames () { m_bHaveFlame [0] = m_bHaveFlame [1] = false; }
 		void Render (CObject *objP, tThrusterInfo* infoP = NULL, int nThruster = -1);
 		void Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, tRgbaColorf *colorP);
 		int CalcPos (CObject *objP, tThrusterInfo* tiP = NULL, int bAfterburnerBlob = 0);

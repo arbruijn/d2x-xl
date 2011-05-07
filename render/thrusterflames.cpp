@@ -54,7 +54,7 @@ static CFloatVector	vRingVerts [RING_SEGS] = {
 
 void CThrusterFlames::Create (void)
 {
-if (!m_bHaveFlame) {
+if (!m_bHaveFlame [m_bPlayer]) {
 		CFloatVector*	pv;
 		int				i, j, m, n;
 		double			phi, sinPhi;
@@ -97,7 +97,7 @@ if (!m_bHaveFlame) {
 				}
 			}
 		}
-	m_bHaveFlame = true;
+	m_bHaveFlame [m_bPlayer] = true;
 	}
 }
 
@@ -349,6 +349,8 @@ if ((objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->inf
 
 bool bFallback;
 
+m_bPlayer = (objP->info.nType == OBJ_PLAYER);
+
 if (nStages & 2) {
 	if (thruster.Load ()) 
 		bFallback = false;
@@ -363,6 +365,7 @@ if (nStages & 2) {
 
 	if (m_nStyle == 2) {
 		ogl.SetTexturing (true);
+		ogl.SelectTMU (GL_TEXTURE0);
 		thruster.Bitmap ()->SetTranspType (-1);
 		if (thruster.Bitmap ()->Bind (1)) {
 			extraGameInfo [IsMultiGame].bThrusterFlames = bFallback ? 0 : 1;
@@ -385,8 +388,6 @@ if (nStages & 1) {
 	m_ti.fScale += float (rand () % 100) / 1000.0f;
 	if (!CalcPos (objP))
 		return false;
-
-	m_bPlayer = (objP->info.nType == OBJ_PLAYER);
 	}
 
 return true;
@@ -461,9 +462,6 @@ else { //3D
 		transformation.End ();
 		transformation.End ();
 		glowRenderer.Done (GLOW_THRUSTERS);
-#if DBG
-		//glowRenderer.End ();
-#endif
 		}
 	ogl.SetTransform (0);
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
