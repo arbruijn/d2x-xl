@@ -258,6 +258,8 @@ info.renderType = RT_MORPH;
 info.movementType = MT_PHYSICS;		//RT_NONE;
 mType.physInfo.rotVel = morph_rotvel;
 pmP = gameData.models.polyModels [0] + ModelId ();
+if (!pmP->Data ())
+	return;
 G3CheckAndSwap (reinterpret_cast<void*> (pmP->Data ()));
 MorphFindModelBounds (pmP, 0, pmmin, pmmax);
 vBoxSize.v.coord.x = max (-pmmin.v.coord.x, pmmax.v.coord.x) / 2;
@@ -348,6 +350,8 @@ mdP = MorphFindData (this);
 Assert (mdP != NULL);
 Assert (ModelId () < gameData.models.nPolyModels);
 pmP = gameData.models.polyModels [0] + ModelId ();
+if (!pmP->Data ())
+	return;
 light = ComputeObjectLight (this, NULL);
 transformation.Begin (info.position.vPos, info.position.mOrient);
 G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());

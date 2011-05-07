@@ -70,7 +70,7 @@ class CHomingTargetData {
 
 void CHomingTargetData::Add (CObject* targetP, float dotScale)
 {
-CFixVector vTarget = targetP->Position () - m_vTrackerPos;
+CFixVector vTarget = (SPECTATOR (targetP) ? gameStates.app.playerPos.vPos : targetP->Position ()) - m_vTrackerPos;
 fix dist = CFixVector::Normalize (vTarget);
 if (dist >= m_xMaxDist)
 	return;

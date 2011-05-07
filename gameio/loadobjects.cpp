@@ -731,8 +731,9 @@ if (gameFileInfo.botGen.offset > -1) {
 		Error ("Error seeking to robot generator data\n(file damaged or invalid)");
 		return -1;
 		}
+	tMatCenInfo m;
+	m.objFlags [2] = gameData.objs.nVertigoBotFlags;
 	for (int h, i = 0; i < gameFileInfo.botGen.count; ) {
-		tMatCenInfo m;
 		MatCenInfoRead (&m, cf, gameTopFileInfo.fileinfoVersion < 27);
 		if (0 <= (h = AssignMatCen (m, SEGMENT_FUNC_ROBOTMAKER, 1))) {
 			gameData.matCens.botGens [h] = m;
@@ -760,8 +761,9 @@ if (gameFileInfo.equipGen.offset > -1) {
 		Error ("Error seeking to equipment generator data\n(file damaged or invalid)");
 		return -1;
 		}
+	tMatCenInfo m;
+	m.objFlags [2] = 0;
 	for (int h, i = 0; i < gameFileInfo.equipGen.count;) {
-		tMatCenInfo m;
 		MatCenInfoRead (&m, cf, false);
 		if (0 <= (h = AssignMatCen (m, SEGMENT_FUNC_EQUIPMAKER, 2))) {
 			gameData.matCens.equipGens [h] = m;
