@@ -307,11 +307,12 @@ if (thruster.Load ()) {
 		verts [i].v.coord.y *= scale;
 		verts [i].v.coord.z = z;
 		}
-	glowRenderer.SetViewport (GLOW_THRUSTERS, verts, 4);
-	glColor3f (1,1,1);
-	ogl.RenderQuad (thruster.Bitmap (), verts, 3, tcCap [m_bPlayer]);
-	ogl.SetTexturing (true);
-	thruster.Bitmap ()->Bind (1);
+	if (glowRenderer.SetViewport (GLOW_THRUSTERS, verts, 4)) {
+		glColor3f (1,1,1);
+		ogl.RenderQuad (thruster.Bitmap (), verts, 3, tcCap [m_bPlayer]);
+		ogl.SetTexturing (true);
+		thruster.Bitmap ()->Bind (1);
+		}
 	}
 }
 
@@ -319,15 +320,16 @@ if (thruster.Load ()) {
 
 void CThrusterFlames::Render3D (int i)
 {
-glowRenderer.SetViewport (GLOW_THRUSTERS, m_flameVerts, FLAME_VERT_COUNT);
-glColor3f (1,1,1);
-ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-OglTexCoordPointer (2, GL_FLOAT, 0, &m_flameTexCoord [m_bPlayer]);
-OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_flameVerts);
-glPushMatrix ();
-glScalef (m_ti.fSize [i], m_ti.fSize [i], m_ti.fLength [i]);
-OglDrawArrays (GL_QUAD_STRIP, 0, FLAME_VERT_COUNT);
-glPopMatrix ();
+if (glowRenderer.SetViewport (GLOW_THRUSTERS, m_flameVerts, FLAME_VERT_COUNT)) {
+	glColor3f (1,1,1);
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	OglTexCoordPointer (2, GL_FLOAT, 0, &m_flameTexCoord [m_bPlayer]);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_flameVerts);
+	glPushMatrix ();
+	glScalef (m_ti.fSize [i], m_ti.fSize [i], m_ti.fLength [i]);
+	OglDrawArrays (GL_QUAD_STRIP, 0, FLAME_VERT_COUNT);
+	glPopMatrix ();
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -458,6 +460,10 @@ else { //3D
 		Render3D (nThruster);
 		transformation.End ();
 		transformation.End ();
+		glowRenderer.Done (GLOW_THRUSTERS);
+#if DBG
+		//glowRenderer.End ();
+#endif
 		}
 	ogl.SetTransform (0);
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);

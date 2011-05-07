@@ -18,6 +18,7 @@ class CGlowRenderer {
 		bool Available (int const nType, bool bForce = false);
 		void InitShader (void);
 		bool ShaderActive (void);
+		void Done (const int nType);
 		bool End (void);
 		bool Begin (int const nType, int const nStrength = 1, bool const bReplace = true, float const brightness = 1.0f);
 		bool SetViewport (int const nType, CFloatVector3* vertexP, int nVerts);

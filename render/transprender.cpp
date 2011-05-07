@@ -797,6 +797,8 @@ if (LoadTexture (bmP, 0, 0, 0, item->nWrap)) {
 	ogl.SetFaceCulling (true);
 	//glLineWidth (1);
 	}
+if (item->bAdditive & 3)
+	glowRenderer.Done (GLOW_POLYS);
 #if DBG
 else
 	HUDMessage (0, "Couldn't load '%s'", bmP->Name ());
@@ -894,8 +896,11 @@ else {
 	}
 
 ogl.EnableClientStates (bTextured, bColored && !bLightmaps, !bLightmaps, GL_TEXTURE0 + bLightmaps);
-if (!LoadTexture (bmBot, 0, 0, bLightmaps, item->nWrap))
+if (!LoadTexture (bmBot, 0, 0, bLightmaps, item->nWrap)) {
+	if (bAdditive & 3)
+		glowRenderer.Done (GLOW_FACES);
 	return;
+	}	
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, (bDecal < 0) ? FACES.ovlTexCoord + nIndex : FACES.texCoord + nIndex);
 if (!bLightmaps) {
@@ -978,6 +983,8 @@ else {
 					 bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
 	OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
+if (bAdditive & 3)
+	glowRenderer.Done (GLOW_FACES);
 ogl.ResetTransform (faceP != NULL);
 gameData.render.nTotalFaces++;
 
@@ -1010,7 +1017,9 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 	int bSoftBlend = (item->fSoftRad > 0) && SoftBlend (SOFT_BLEND_SPRITES);
 	int bGlow = 1;
 
-if (glowRenderer.Available (GLOW_SPRITES)) {
+if (!glowRenderer.Available (GLOW_SPRITES)) 
+	bGlow = 0;
+else {
 	if (item->bAdditive == 1) 
 		glowRenderer.Begin (GLOW_SPRITES, 2, false, 0.85f);
 	else if (item->bAdditive == 2)
@@ -1045,6 +1054,8 @@ CFloatVector vPosf;
 transformation.Transform (vPosf, item->position, 0);
 if (!bGlow || glowRenderer.SetViewport (GLOW_SPRITES, *vPosf.XYZ (), X2F (item->nWidth), X2F (item->nHeight), true))
 	ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
+if (bGlow)
+	glowRenderer.Done (GLOW_SPRITES);
 #endif
 }
 
@@ -1237,6 +1248,7 @@ if (LoadTexture (item->bmP, 0, 0, 0, GL_CLAMP)) {
 	ogl.SetFaceCulling (true);
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	}
+glowRenderer.Done (GLOW_LIGHTTRAILS);
 }
 
 //------------------------------------------------------------------------------

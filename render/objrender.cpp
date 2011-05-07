@@ -756,6 +756,8 @@ else {
 				ogl.SetBlendMode (OGL_BLEND_ALPHA);
 			gameStates.render.grAlpha = 1.0f;
 			}
+		if (bEnergyWeapon)
+			glowRenderer.Done (GLOW_OBJECTS);
 		}
 	}
 if (!gameStates.render.bBuildModels) {

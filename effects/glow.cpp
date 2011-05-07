@@ -451,8 +451,9 @@ if (automap.Display ())
 #if 0
 if (nType != m_nType) {
 #else
-if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness) || 
-	 ((nType == GLOW_LIGHTNING) != (m_nType == GLOW_LIGHTNING))) {
+if ((m_bReplace == bReplace) && (m_nStrength == nStrength) && (m_brightness == brightness) && ((nType == GLOW_LIGHTNING) == (m_nType == GLOW_LIGHTNING))) 
+	ogl.SelectGlowBuffer ();
+else {
 #endif
 	End ();
 	m_nType = nType;
@@ -554,6 +555,14 @@ glClear (GL_COLOR_BUFFER_BIT);
 void CGlowRenderer::ChooseDrawBuffer (void)
 {
 ogl.ChooseDrawBuffer ();
+}
+
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::Done (const int nType)
+{
+if (Available (nType))
+	ogl.ChooseDrawBuffer ();
 }
 
 //------------------------------------------------------------------------------

@@ -938,6 +938,7 @@ if (extraGameInfo [0].bUseLightning > 1)
 		for (i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
 				m_nodes [i].GetChild ()->Draw (nDepth + 1, nThread);
+glowRenderer.Done (GLOW_LIGHTNING);
 ogl.ClearError (0);
 }
 

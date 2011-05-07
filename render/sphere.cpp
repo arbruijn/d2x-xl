@@ -770,8 +770,10 @@ ogl.SetBlendMode (bAdditive);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 #endif
 glowRenderer.Begin (GLOW_SHIELDS, 2, false, 0.75f);
-if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, xScale))
+if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, xScale)) {
+	glowRenderer.Done (GLOW_SHIELDS);
 	return 0;
+	}
 #if RINGED_SPHERE
 #if 1
 ogl.SetTransform (1);
@@ -781,8 +783,10 @@ if (ogl.m_states.bUseTransform = !bEffect)
 #endif
 	UnloadSphereShader ();
 else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
-	if (!SetupSphereShader (objP, alpha))
+	if (!SetupSphereShader (objP, alpha)) {
+		glowRenderer.Done (GLOW_SHIELDS);
 		return 0;
+		}
 	}
 ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
@@ -791,6 +795,7 @@ RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
 ogl.ResetTransform (0);
 ogl.SetTransform (0);
+glowRenderer.Done (GLOW_SHIELDS);
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
 #endif //RINGED_SPHERE
