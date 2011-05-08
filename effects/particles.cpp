@@ -49,7 +49,7 @@ tRgbaColorf defaultParticleColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 CFloatVector CParticle::vRot [PARTICLE_POSITIONS];
 CFixMatrix CParticle::mRot [2][PARTICLE_POSITIONS];
 
-static int smokeStartAlpha [2][5] = {{192, 160, 128, 96, 64}, {160, 128, 96, 64, 32}};
+static int smokeStartAlpha [2][5] = {{160, 128, 96, 64, 32}, {128, 96, 64, 32, 16}};
 
 //------------------------------------------------------------------------------
 
