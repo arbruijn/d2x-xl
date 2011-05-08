@@ -108,7 +108,7 @@ RenderMine (nStartSeg, xStereoSeparation, nWindow);
 
 gameStates.render.nShadowPass = 3;
 ogl.StartFrame (0, 0, xStereoSeparation);
-if (ogl.m_features.bMultipleRenderTargets && glowRenderer.Available (BLUR_SHADOW)) {
+if (glowRenderer.Available (BLUR_SHADOW)) {
 	gameStates.render.nShadowBlurPass = 1;
 	glowRenderer.Begin (BLUR_SHADOW, 2 /*gameOpts->render.ShadowQuality ()*/, true, 1.0f);
 	}

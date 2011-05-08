@@ -106,8 +106,7 @@ GetSlowTicks ();
 #if EXACT_FRAME_TIME
 
 	static float fSlack = 0;
-
-	int	nFrameTime, nMinFrameTime, nDeltaTime;
+	int nDeltaTime;
 
 if (MAXFPS <= 1) 
 	nDeltaTime = 0;
@@ -119,8 +118,47 @@ else {
 	if (!gameData.time.tLast)
 		nDeltaTime = 0;
 	else {
-		nFrameTime = gameStates.app.nSDLTicks [0] - gameData.time.tLast;
-		nMinFrameTime = 1000 / MAXFPS;
+#ifdef _WIN32
+		static time_t tError = 0, ticksPerMSec = 0;
+		static LARGE_INTEGER tLast = {0}, ticksPerSec;
+
+		if (!ticksPerMSec) 
+			QueryPerformanceFrequency (&ticksPerSec);
+		ticksPerMSec = time_t (ticksPerSec.QuadPart) / 1000;
+		tError += time_t (ticksPerSec.QuadPart) - ticksPerMSec * 1000;
+		time_t tSlack = tError / ticksPerMSec;
+		if (tSlack > 0) {
+			ticksPerMSec += tSlack;
+			tError -= tSlack * ticksPerMSec;
+			}
+		LARGE_INTEGER tick;
+		time_t tFrame, tMinFrame = time_t (ticksPerSec.QuadPart / LONGLONG (MAXFPS));
+		do {
+  			QueryPerformanceCounter (&tick);
+			tFrame = time_t (tick.QuadPart - tLast.QuadPart);
+			G3_SLEEP (0);
+		} while (tFrame < tMinFrame);
+		tLast = tick;
+		}
+#elif 1
+		static time_t tError = 0, ticksPerMSec = 0;
+		static int64_t tLast = 0;
+
+		struct timeval t;
+		gettimeofday (&t, NULL);
+		int64_t tick = int64_t (t.tv_sec) * 1000000 + int64_t (t.tv_usec);
+		time_t tFrame, tMinFrame = time_t (1000000 / MAXFPS);
+		do {
+			gettimeofday (&t, NULL);
+			tick = int64_t (t.tv_sec) * 1000000 + int64_t (t.tv_usec);
+  			tFrame = time_t (tick - tLast);
+			G3_SLEEP (0);
+		} while (tFrame < tMinFrame);
+		tLast = tick;
+		}
+#else
+		int nFrameTime = gameStates.app.nSDLTicks [0] - gameData.time.tLast;
+		int nMinFrameTime = 1000 / MAXFPS;
 		nDeltaTime = nMinFrameTime - nFrameTime;
 		fSlack += 1000.0f / MAXFPS - nMinFrameTime;
 		if (fSlack >= 1.0f) {
@@ -129,7 +167,10 @@ else {
 			}
 		if (0 < nDeltaTime)
 			G3_SLEEP (nDeltaTime);
+		else
+			nDeltaTime = 0;
 		}
+#endif
 	}
 timerValue = MSEC2X (gameStates.app.nSDLTicks [0]);
 
@@ -141,7 +182,7 @@ do {
    gameData.time.SetTime (timerValue - gameData.time.xLast);
 	if (MAXFPS < 2)
 		break;
-	G3_SLEEP (1);
+	G3_SLEEP (0);
 	} while (gameData.time.xFrame < xMinFrameTime);
 
 #endif
@@ -153,10 +194,12 @@ if (gameStates.app.cheats.bTurboMode)
 gameData.time.xLast = timerValue;
 
 #if EXACT_FRAME_TIME
-
+#	ifdef _WIN32
+gameData.time.tLast = SDL_GetTicks ();
+#else
 if (nDeltaTime > 0)
 	gameData.time.tLast += nDeltaTime;
-
+#	endif
 #else
 
 gameData.time.tLast = SDL_GetTicks ();

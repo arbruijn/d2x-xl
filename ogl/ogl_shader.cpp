@@ -412,16 +412,11 @@ if (m_nCurrent == nShader) {
 if ((nShader < 0) && bSuspendable && m_bSuspendable)
 	Set ("bSuspended", 1);
 else {
-#if DBG
-	if ((nShader < 0) && m_bSuspendable)
-		m_bSuspendable = m_bSuspendable;
-#endif
 	m_nCurrent = nShader;
 	glUseProgramObjectARB (shaderProg);
 	if (m_bSuspendable = bSuspendable)
 		Set ("bSuspended", 0);
-	else
-		gameData.render.nShaderChanges++;
+	gameData.render.nShaderChanges++;
 	}
 return intptr_t (shaderProg);
 }

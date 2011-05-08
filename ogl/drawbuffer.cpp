@@ -185,6 +185,7 @@ if (nBuffer != nPrevBuffer) {
 		}
 	}
 m_data.drawBufferP->Enable (false);
+m_data.drawBufferP->SetDrawBuffers (0);
 return nPrevBuffer;
 }
 
@@ -231,10 +232,9 @@ else {
 
 void COGL::SelectGlowBuffer (void) 
 { 
-SelectDrawBuffer (gameStates.render.nShadowBlurPass ? int (m_data.xStereoSeparation > 0) : 2);
+SelectDrawBuffer (int (m_data.xStereoSeparation > 0));
 SetDrawBuffer (GL_BACK, 1);
-if (gameStates.render.nShadowBlurPass)
-	DrawBuffer ()->SetDrawBuffers (1);
+DrawBuffer ()->SetDrawBuffers (1);
 }
 
 //------------------------------------------------------------------------------

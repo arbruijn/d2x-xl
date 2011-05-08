@@ -201,7 +201,7 @@ ogl.SelectGlowBuffer ();
 if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else
-	glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 glClear (GL_COLOR_BUFFER_BIT);
 }
 
@@ -423,6 +423,8 @@ if (!ogl.m_features.bShaders)
 	return false;
 if (ogl.m_features.bDepthBlending < 0)
 	return false;
+if (!ogl.m_features.bMultipleRenderTargets)
+	return false;
 if (gameStates.render.nShadowMap > 0)
 	return false;
 if (!ogl.m_states.bGlowRendering)
@@ -524,7 +526,7 @@ if (direction >= 0)
 else
 #endif
 	shaderManager.Deploy (-1);
-ogl.BindTexture (ogl.BlurBuffer (source, gameStates.render.nShadowBlurPass)->ColorBuffer ((source < 0) ? gameStates.render.nShadowBlurPass : 0));
+ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer (source < 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
 glColor3f (1,1,1);
@@ -543,6 +545,10 @@ glViewport ((GLsizei) max (m_screenMin.x - r, 0),
 				(GLsizei) max (m_screenMin.y - r, 0), 
 				(GLint) min (m_screenMax.x - m_screenMin.x + 1 + 2 * r, ScreenWidth ()), 
 				(GLint) min (m_screenMax.y - m_screenMin.y + 1 + 2 * r, ScreenHeight ()));
+if (m_nType == BLUR_SHADOW)
+	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
+else
+	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 glClear (GL_COLOR_BUFFER_BIT);
 ogl.RestoreViewport ();
 #else
@@ -561,8 +567,10 @@ ogl.ChooseDrawBuffer ();
 
 void CGlowRenderer::Done (const int nType)
 {
+#if 1
 if (Available (nType))
-	ogl.ChooseDrawBuffer ();
+	ogl.DrawBuffer ()->SetDrawBuffers (0);
+#endif
 }
 
 //------------------------------------------------------------------------------
