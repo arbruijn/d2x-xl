@@ -350,6 +350,7 @@ if ((objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->inf
 bool bFallback;
 
 m_bPlayer = (objP->info.nType == OBJ_PLAYER);
+m_bSpectate = SPECTATOR (objP);
 
 if (nStages & 2) {
 	if (thruster.Load ()) 
@@ -373,7 +374,6 @@ if (nStages & 2) {
 			}
 		thruster.Texture ()->Wrap (GL_CLAMP);
 		}
-	m_bSpectate = SPECTATOR (objP);
 	}
 
 if (nStages & 1) {
