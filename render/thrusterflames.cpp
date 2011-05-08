@@ -461,7 +461,7 @@ else { //3D
 		Render3D (nThruster);
 		transformation.End ();
 		transformation.End ();
-#if 0
+#if 1
 		glowRenderer.Done (GLOW_THRUSTERS);
 #else
 		glowRenderer.End ();
