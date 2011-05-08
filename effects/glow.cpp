@@ -10,8 +10,8 @@ CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT 1
 #define BLUR 2
-#define START_RAD 3.0f
-#define RAD_INCR 3.0f
+#define START_RAD 2.0f
+#define RAD_INCR 2.0f
 
 //------------------------------------------------------------------------------
 
@@ -334,9 +334,9 @@ if ((GLOW_FLAGS & nType) == 0)
 //	return true;
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
-#pragma omp parallel 
+//#pragma omp parallel 
 {
-#	pragma omp for
+//#	pragma omp for
 for (int i = 0; i < nVerts; i++) {
 	SetExtent (vertexP [i]);
 	}
@@ -358,9 +358,9 @@ if ((GLOW_FLAGS & nType) == 0)
 //	return true;
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
-#pragma omp parallel 
+//#pragma omp parallel 
 {
-#	pragma omp for
+//#	pragma omp for
 for (int i = 0; i < nVerts; i++) {
 	SetExtent (*(vertexP [i].XYZ ()));
 	}
