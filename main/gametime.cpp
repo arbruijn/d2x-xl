@@ -136,9 +136,11 @@ else {
 			}
 		LARGE_INTEGER tick;
 		time_t tFrame, tMinFrame = time_t (ticksPerSec.QuadPart / LONGLONG (MAXFPS));
-		while (tFrame < tMinFrame) {
+		for (;;) {
   			QueryPerformanceCounter (&tick);
 			tFrame = time_t (tick.QuadPart - tLast.QuadPart);
+			if (tFrame >= tMinFrame) 
+				break;
 			G3_SLEEP (0);
 			}
 		tLast = tick;
@@ -150,10 +152,12 @@ else {
 		gettimeofday (&t, NULL);
 		int64_t tick = int64_t (t.tv_sec) * 1000000 + int64_t (t.tv_usec);
 		time_t tFrame, tMinFrame = time_t (1000000 / MAXFPS);
-		while (tFrame < tMinFrame) {
+		for (;;) {
 			gettimeofday (&t, NULL);
 			tick = int64_t (t.tv_sec) * 1000000 + int64_t (t.tv_usec);
   			tFrame = time_t (tick - tLast);
+			if (tFrame >= tMinFrame) 
+				break;
 			G3_SLEEP (0);
 			}
 		tLast = tick;
