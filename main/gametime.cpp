@@ -136,11 +136,11 @@ else {
 			}
 		LARGE_INTEGER tick;
 		time_t tFrame, tMinFrame = time_t (ticksPerSec.QuadPart / LONGLONG (MAXFPS));
-		do {
+		while (tFrame < tMinFrame) {
   			QueryPerformanceCounter (&tick);
 			tFrame = time_t (tick.QuadPart - tLast.QuadPart);
 			G3_SLEEP (0);
-		} while (tFrame < tMinFrame);
+			}
 		tLast = tick;
 		}
 #elif defined(__unix__) || defined(__macosx__)
@@ -150,12 +150,12 @@ else {
 		gettimeofday (&t, NULL);
 		int64_t tick = int64_t (t.tv_sec) * 1000000 + int64_t (t.tv_usec);
 		time_t tFrame, tMinFrame = time_t (1000000 / MAXFPS);
-		do {
+		while (tFrame < tMinFrame) {
 			gettimeofday (&t, NULL);
 			tick = int64_t (t.tv_sec) * 1000000 + int64_t (t.tv_usec);
   			tFrame = time_t (tick - tLast);
 			G3_SLEEP (0);
-		} while (tFrame < tMinFrame);
+			}
 		tLast = tick;
 		}
 #else
