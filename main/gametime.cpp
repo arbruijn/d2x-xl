@@ -21,6 +21,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdarg.h>
 #include <ctype.h>
 #include <time.h>
+#ifdef __unix
+#	include <sys/time.h>
+#endif
 
 #include "descent.h"
 #include "timer.h"
@@ -140,8 +143,7 @@ else {
 		} while (tFrame < tMinFrame);
 		tLast = tick;
 		}
-#elif 1
-		static time_t tError = 0, ticksPerMSec = 0;
+#elif defined(__unix__) || defined(__macosx__)
 		static int64_t tLast = 0;
 
 		struct timeval t;
