@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdarg.h>
 #include <ctype.h>
 #include <time.h>
-#ifdef __unix
+#if defined(__unix__) || defined(__macosx__)
 #	include <sys/time.h>
 #endif
 
