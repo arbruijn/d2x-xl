@@ -115,7 +115,7 @@ const char *pszGaugeIcons [] = {"shield-icon.tga", "energy-icon.tga", "afterburn
 
 int CHUDIcons::LoadGaugeIcons (void)
 {
-return LoadIcons (pszGaugeIcons, bmGaugeIcons, sizeofa (bmObjTally), bHaveGaugeBms);
+return LoadIcons (pszGaugeIcons, bmGaugeIcons, sizeofa (bmGaugeIcons), bHaveGaugeBms);
 }
 
 //	-----------------------------------------------------------------------------
