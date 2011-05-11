@@ -278,7 +278,7 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 	w = (nLevel > 100) ? 100 : 50;
 	OglDrawEmptyRect (x, y, x + int (w * m_info.xGaugeScale), y + h);
 	tCanvasColor fontColor = {0, 1, {255, 224, 0, 255}};
-	CCanvas::Current ()->SetFontColor (fontColor, 1);	// black background
+	CCanvas::Current ()->SetFontColor (fontColor, 0);	// black background
 	nIdLevel = GrPrintF (&nIdLevel, x + int (w * m_info.xGaugeScale), int (y + m_info.yGaugeScale + 0.5f), " %i%%", nLevel);
 	if (bFlash) {
 		if (!bShow)
@@ -345,7 +345,7 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 	int x = 6 + int (10 * m_info.xGaugeScale);
 	OglDrawEmptyRect (x, y, x + (int) (50 * m_info.xGaugeScale), y + h);
 	tCanvasColor fontColor = {0, 1, {255, 0, 0, 255}};
-	CCanvas::Current ()->SetFontColor (fontColor, 1);	// black background
+	CCanvas::Current ()->SetFontColor (fontColor, 0);	// black background
 	nIdLevel = GrPrintF (&nIdLevel, x + int (50 * m_info.xGaugeScale), int (y + m_info.yGaugeScale + 0.5f), " %i%%", nLevel);
 	CCanvas::Current ()->SetColorRGB (224, 0, 0, 128);
 	OglDrawFilledRect (x, y, x + (int) (nLevel * m_info.xGaugeScale / 2.0f), y + h);
@@ -600,7 +600,7 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 	glLineWidth (1);
 	OglDrawEmptyRect (x, y, x + int (w * m_info.xGaugeScale), y + h);
 	tCanvasColor fontColor = {0, 1, {0, 64, 255, 255}};
-	CCanvas::Current ()->SetFontColor (fontColor, 1);	// black background
+	CCanvas::Current ()->SetFontColor (fontColor, 0);	// black background
 	nIdLevel = GrPrintF (&nIdLevel, x + int (w * m_info.xGaugeScale), int (y + m_info.yGaugeScale + 0.5f), " %i%%", nLevel);
 	if (bShow) {
 		CCanvas::Current ()->SetColorRGB (0, 64, 224, 128);
