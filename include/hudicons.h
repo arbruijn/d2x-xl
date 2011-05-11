@@ -17,6 +17,7 @@ class CHUDIcons {
 		void DestroyTallyIcons (void);
 		int LoadGaugeIcons (void);
 		void DestroyGaugeIcons (void);
+		CBitmap& GaugeIcon (int i);
 		void DrawTally (void);
 		void ToggleWeaponIcons (void);
 		void DrawWeapons (void);

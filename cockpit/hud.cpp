@@ -261,28 +261,30 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 	time_t			t;
 	ubyte				c;
 
-	int h = m_info.nEnergy;
+	int nLevel = m_info.nEnergy;
 	int nLineSpacing = 5 * GAME_FONT->Height () / 4;
-	if ((t = FlashGauge (h, &bFlash, (int) tToggle))) {
+	if ((t = FlashGauge (nLevel, &bFlash, (int) tToggle))) {
 		tToggle = t;
 		bShow = !bShow;
 		}
-	int y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * nLineSpacing - 1) * m_info.yGaugeScale);
-	CCanvas::Current ()->SetColorRGB (255, 255, (ubyte) ((h > 100) ? 255 : 0), 255);
+	int h, w, y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * nLineSpacing - 1) * m_info.yGaugeScale);
+	hudIcons.GaugeIcon (1).RenderScaled (6, y, w = int (9 * m_info.xGaugeScale), h = int (9 * m_info.yGaugeScale));
+	CCanvas::Current ()->SetColorRGB (255, 255, (ubyte) ((nLevel > 100) ? 255 : 0), 255);
 	glLineWidth (1);
-	OglDrawEmptyRect (6, y, 6 + (int) (100 * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
+	int x = 6 + int (10 * m_info.xGaugeScale);
+	OglDrawEmptyRect (x, y, x + (int) (100 * m_info.xGaugeScale), y + h);
 	if (bFlash) {
 		if (!bShow)
 			return;
-		h = 100;
+		nLevel = 100;
 		}
 	else
 		bShow = 1;
-	c = (h > 100) ? 224 : 224;
-	CCanvas::Current ()->SetColorRGB (c, c, (ubyte) ((h > 100) ? c : 0), 128);
-	while (h > 100)
+	c = (nLevel > 100) ? 224 : 224;
+	CCanvas::Current ()->SetColorRGB (c, c, (ubyte) ((nLevel > 100) ? c : 0), 128);
+	while (nLevel > 100)
 		h -= 100;
-	OglDrawFilledRect (6, y, 6 + (int) (h * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
+	OglDrawFilledRect (x, y, x + (int) (nLevel * m_info.xGaugeScale), y + h);
 	}
 }
 
@@ -315,15 +317,17 @@ if (cockpit->Hide ())
 	
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
-int h = FixMul (gameData.physics.xAfterburnerCharge, 100);
+int nLevel = FixMul (gameData.physics.xAfterburnerCharge, 100);
 int nLineSpacing = 5 * GAME_FONT->Height () / 4;
 if (!gameOpts->render.cockpit.bTextGauges) {
-	int y = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
+	int h, w, y = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
+	hudIcons.GaugeIcon (2).RenderScaled (6, y, w = int (9 * m_info.xGaugeScale), h = int (9 * m_info.yGaugeScale));
 	CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
 	glLineWidth (1);
-	OglDrawEmptyRect (6, y, 6 + (int) (100 * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
+	int x = 6 + int (10 * m_info.xGaugeScale);
+	OglDrawEmptyRect (x, y, x + (int) (100 * m_info.xGaugeScale), y + h);
 	CCanvas::Current ()->SetColorRGB (224, 0, 0, 128);
-	OglDrawFilledRect (6, y, 6 + (int) (h * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
+	OglDrawFilledRect (x, y, x + (int) (nLevel * m_info.xGaugeScale), y + h);
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if (gameData.physics.xAfterburnerCharge != m_history [gameStates.render.vr.nCurrentPage].afterburner) {
@@ -556,23 +560,25 @@ if (cockpit->Hide ())
 //	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
 if (!gameOpts->render.cockpit.bTextGauges) {
 
-	int h = m_info.nShield;
-	if ((t = FlashGauge (h, &gameStates.render.cockpit.nShieldFlash, (int) tToggle))) {
+	int nLevel = m_info.nShield;
+	if ((t = FlashGauge (nLevel, &gameStates.render.cockpit.nShieldFlash, (int) tToggle))) {
 		tToggle = t;
 		bShow = !bShow;
 		}
 
 	int nLineSpacing = 5 * GAME_FONT->Height () / 4;
-	int y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * m_info.yGaugeScale);
+	int h, w, y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * m_info.yGaugeScale);
 
-	CCanvas::Current ()->SetColorRGB (0, ubyte ((h > 100) ? 255 : 64), 255, 255);
+	hudIcons.GaugeIcon (2).RenderScaled (6, y, w = int (9 * m_info.xGaugeScale), h = int (9 * m_info.yGaugeScale));
+	CCanvas::Current ()->SetColorRGB (0, ubyte ((nLevel > 100) ? 255 : 64), 255, 255);
 	glLineWidth (1);
+	int x = 6 + int (10 * m_info.xGaugeScale);
 	OglDrawEmptyRect (6, y, 6 + int (100 * m_info.xGaugeScale), y + int (9 * m_info.yGaugeScale));
 	if (bShow) {
-		CCanvas::Current ()->SetColorRGB (0, ubyte ((h > 100) ? 224 : 64), 224, 128);
-		while (h > 100)
-			h -= 100;
-		OglDrawFilledRect (6, y, 6 + int (h * m_info.xGaugeScale), y + int (9 * m_info.yGaugeScale));
+		CCanvas::Current ()->SetColorRGB (0, ubyte ((nLevel > 100) ? 224 : 64), 224, 128);
+		while (nLevel > 100)
+			nLevel -= 100;
+		OglDrawFilledRect (6, y, 6 + int (nLevel * m_info.xGaugeScale), y + int (9 * m_info.yGaugeScale));
 		}
 	}
 if (gameStates.render.cockpit.nShieldFlash) {

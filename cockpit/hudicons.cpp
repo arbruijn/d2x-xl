@@ -48,7 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 CBitmap*	bmpInventory = NULL;
 CBitmap	bmInvItems [NUM_INV_ITEMS];
 CBitmap	bmObjTally [2];
-CBitmap	bmObjGauges [3];
+CBitmap	bmGaugeIcons [3];
 
 int bHaveInvBms = -1;
 int bHaveObjTallyBms = -1;
@@ -115,14 +115,21 @@ const char *pszGaugeIcons [] = {"afterburner-icon.tga", "shieldboost-icon.tga", 
 
 int CHUDIcons::LoadGaugeIcons (void)
 {
-return LoadIcons (pszObjTallyIcons, bmObjTally, sizeofa (bmObjTally), bHaveObjTallyBms);
+return LoadIcons (pszGaugeIcons, bmGaugeIcons, sizeofa (bmObjTally), bHaveGaugeBms);
 }
 
 //	-----------------------------------------------------------------------------
 
 void CHUDIcons::DestroyGaugeIcons (void)
 {
-DestroyIcons (bmObjTally, sizeofa (bmObjTally), bHaveObjTallyBms);
+DestroyIcons (bmGaugeIcons, sizeofa (bmGaugeIcons), bHaveGaugeBms);
+}
+
+//	-----------------------------------------------------------------------------
+
+CBitmap& CHUDIcons::GaugeIcon (int i)
+{
+return bmGaugeIcons [i];
 }
 
 //	-----------------------------------------------------------------------------
