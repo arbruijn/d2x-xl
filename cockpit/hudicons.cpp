@@ -111,7 +111,7 @@ DestroyIcons (bmObjTally, sizeofa (bmObjTally), bHaveObjTallyBms);
 
 //	-----------------------------------------------------------------------------
 
-const char *pszGaugeIcons [] = {"afterburner-icon.tga", "shieldboost-icon.tga", "energyboost-icon.tga"};
+const char *pszGaugeIcons [] = {"shield-icon.tga", "energy-icon.tga", "afterburner-icon.tga"};
 
 int CHUDIcons::LoadGaugeIcons (void)
 {

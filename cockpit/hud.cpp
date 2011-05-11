@@ -267,8 +267,11 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 		tToggle = t;
 		bShow = !bShow;
 		}
-	int h, w, y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * nLineSpacing - 1) * m_info.yGaugeScale);
-	hudIcons.GaugeIcon (1).RenderScaled (6, y, w = int (9 * m_info.xGaugeScale), h = int (9 * m_info.yGaugeScale));
+	int h = int (9 * m_info.yGaugeScale), 
+		 w = int (9 * m_info.xGaugeScale), 
+		 y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * nLineSpacing - 1) * m_info.yGaugeScale);
+	if (hudIcons.LoadGaugeIcons () > 0)
+		hudIcons.GaugeIcon (1).RenderScaled (6, y, w, h);
 	CCanvas::Current ()->SetColorRGB (255, 255, (ubyte) ((nLevel > 100) ? 255 : 0), 255);
 	glLineWidth (1);
 	int x = 6 + int (10 * m_info.xGaugeScale);
@@ -283,7 +286,7 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 	c = (nLevel > 100) ? 224 : 224;
 	CCanvas::Current ()->SetColorRGB (c, c, (ubyte) ((nLevel > 100) ? c : 0), 128);
 	while (nLevel > 100)
-		h -= 100;
+		nLevel -= 100;
 	OglDrawFilledRect (x, y, x + (int) (nLevel * m_info.xGaugeScale), y + h);
 	}
 }
@@ -320,8 +323,11 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 int nLevel = FixMul (gameData.physics.xAfterburnerCharge, 100);
 int nLineSpacing = 5 * GAME_FONT->Height () / 4;
 if (!gameOpts->render.cockpit.bTextGauges) {
-	int h, w, y = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
-	hudIcons.GaugeIcon (2).RenderScaled (6, y, w = int (9 * m_info.xGaugeScale), h = int (9 * m_info.yGaugeScale));
+	int h = int (9 * m_info.yGaugeScale), 
+		 w = int (9 * m_info.xGaugeScale), 
+		 y = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
+	if (hudIcons.LoadGaugeIcons () > 0)
+		hudIcons.GaugeIcon (2).RenderScaled (6, y, w = int (9 * m_info.xGaugeScale), h = int (9 * m_info.yGaugeScale));
 	CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
 	glLineWidth (1);
 	int x = 6 + int (10 * m_info.xGaugeScale);
@@ -567,9 +573,11 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 		}
 
 	int nLineSpacing = 5 * GAME_FONT->Height () / 4;
-	int h, w, y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * m_info.yGaugeScale);
-
-	hudIcons.GaugeIcon (2).RenderScaled (6, y, w = int (9 * m_info.xGaugeScale), h = int (9 * m_info.yGaugeScale));
+	int h = int (9 * m_info.yGaugeScale), 
+		 w = int (9 * m_info.xGaugeScale), 
+		 y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * m_info.yGaugeScale);
+	if (hudIcons.LoadGaugeIcons () > 0)
+		hudIcons.GaugeIcon (0).RenderScaled (6, y, w = int (9 * m_info.xGaugeScale), h = int (9 * m_info.yGaugeScale));
 	CCanvas::Current ()->SetColorRGB (0, ubyte ((nLevel > 100) ? 255 : 64), 255, 255);
 	glLineWidth (1);
 	int x = 6 + int (10 * m_info.xGaugeScale);
