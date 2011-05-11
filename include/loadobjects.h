@@ -39,7 +39,6 @@ int SaveLevel(char *filename);
 extern void load_mine_only(char * filename);
 
 extern char Gamesave_current_filename [];
-extern int nGameSaveOrgRobots;
 
 // In dumpmine.c
 extern void write_game_text_file(char *filename);

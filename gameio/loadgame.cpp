@@ -372,6 +372,8 @@ void ResetPlayerData (bool bNewGame, bool bSecret, bool bRestore, int nPlayer)
 {
 CPlayerData* playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
 
+playerP->numKillsLevel = 0;
+playerP->numRobotsLevel = CountRobotsInLevel ();
 if (bNewGame) {
 	playerP->score = 0;
 	playerP->lastScore = 0;
@@ -387,12 +389,10 @@ if (bNewGame) {
 	playerP->netKillsTotal = 0;
 	playerP->numKillsLevel = 0;
 	playerP->numKillsTotal = 0;
-	playerP->numRobotsLevel = 0;
 	playerP->numRobotsTotal = 0;
 	playerP->nScoreGoalCount = 0;
 	playerP->hostages.nRescued = 0;
-	playerP->numRobotsLevel = CountRobotsInLevel ();
-	playerP->numRobotsTotal += playerP->numRobotsLevel;
+	playerP->numRobotsTotal = playerP->numRobotsLevel;
 	playerP->hostages.nLevel = CountHostagesInLevel ();
 	playerP->hostages.nTotal += playerP->hostages.nLevel;
 	playerP->hostages.nOnBoard = 0;
@@ -421,7 +421,6 @@ else {
 		playerP->hoursLevel = 0;
 		}
 	playerP->nKillerObj = -1;
-	playerP->numKillsLevel = 0;
 	playerP->hostages.nOnBoard = 0;
 	if (!bSecret) {
 		InitAmmoAndEnergy ();

@@ -230,11 +230,12 @@ if (segP->m_nMatCen >= gameData.matCens.nBotCenters)
 matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [segP->m_nMatCen].nFuelCen;
 if (matCenP->bEnabled)
 	return 0;
-if (!matCenP->nLives)
-	return 0;
 //	MK: 11/18/95, At insane, matcens work forever!
-if (gameStates.app.bD1Mission || (gameStates.app.nDifficultyLevel + 1 < NDL))
-	matCenP->nLives--;
+if (gameStates.app.bD1Mission || (gameStates.app.nDifficultyLevel + 1 < NDL)) {
+	if (!matCenP->nLives)
+		return 0;
+	--matCenP->nLives;
+	}
 
 matCenP->xTimer = I2X (1000);	//	Make sure the first robot gets emitted right away.
 matCenP->bEnabled = 1;			//	Say this center is enabled, it can create robots.
@@ -539,7 +540,7 @@ if (!(gameData.matCens.botGens [nMatCen].objFlags [0] ||
 	return;
 
 // Wait until we have a free slot for this puppy...
-if ((LOCALPLAYER.numRobotsLevel - LOCALPLAYER.numKillsLevel) >= (nGameSaveOrgRobots + Num_extryRobots)) {
+if (/*!gameStates.app.bD2XLevel &&*/ (LOCALPLAYER.RemainingRobots () >= gameData.objs.nInitialRobots + MAX_EXCESS_OBJECTS)) {
 #if DBG
 	if (gameData.app.nFrameCount > FrameCount_last_msg + 20) {
 #if TRACE

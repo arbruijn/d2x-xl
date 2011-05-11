@@ -2025,6 +2025,8 @@ if (m_nVersion >= 54) {
 	gameOpts->gameplay.nShip [1] = -1;
 	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip = ubyte (gameOpts->gameplay.nShip [0]);
 	}
+if (LOCALPLAYER.numRobotsLevel > LOCALPLAYER.numKillsLevel + CountRobotsInLevel ()) // fix for a bug affecting savegames
+	LOCALPLAYER.numRobotsLevel = LOCALPLAYER.numKillsLevel + CountRobotsInLevel ();
 SetSoundSources ();
 return 1;
 }

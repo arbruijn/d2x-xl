@@ -88,7 +88,6 @@ void dump_mine_info(void);
 #endif
 
 int nGameSavePlayers = 0;
-int nGameSaveOrgRobots = 0;
 int nSavePOFNames = 0;
 char szSavePOFNames [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
@@ -101,7 +100,7 @@ void VerifyObject (CObject * objP)
 {
 objP->SetLife (IMMORTAL_TIME);		//all loaded CObject are immortal, for now
 if (objP->info.nType == OBJ_ROBOT) {
-	nGameSaveOrgRobots++;
+	++gameData.objs.nInitialRobots;
 	// Make sure valid id...
 	if (objP->info.nId >= gameData.bots.nTypes [gameStates.app.bD1Data])
 		objP->info.nId %= gameData.bots.nTypes [0];
@@ -1041,7 +1040,7 @@ if (bFileInfo)
 
 gameData.objs.nNextSignature = 0;
 gameData.render.lights.nStatic = 0;
-nGameSaveOrgRobots = 0;
+gameData.objs.nInitialRobots = 0;
 nGameSavePlayers = 0;
 if (ReadObjectInfo (cf))
 	return -1;

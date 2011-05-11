@@ -2055,6 +2055,7 @@ class CObjectData {
 		int							nLastObject [2];
 		int							nObjectLimit;
 		int							nMaxUsedObjects;
+		int							nInitialRobots;
 		int							nEffects;
 		int							nDebris;
 		int							nNextSignature;

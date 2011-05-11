@@ -238,6 +238,7 @@ class __pack__ CPlayerData : public CPlayerInfo {
 		inline int EnergyLevel (void) { return m_energy.Level (); }
 		inline float ShieldScale (void) { return m_shield.Scale (); }
 		inline float EnergyScale (void) { return m_energy.Scale (); }
+		inline int RemainingRobots (void) { return numRobotsLevel - numKillsLevel; }
 #endif
 		CObject* Object (void);
 		void SetObject (short n);

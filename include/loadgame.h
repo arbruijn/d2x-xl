@@ -66,6 +66,8 @@ void ResetShipData (bool bRestore = false);
 
 void GameStartRemoveUnusedPlayers (void);
 
+int CountRobotsInLevel (void);
+
 void ShowHelp (void);
 void UpdatePlayerStats (void);
 
