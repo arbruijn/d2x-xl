@@ -296,27 +296,32 @@ objP->info.movementType = MT_PHYSICS;
 
 int ConvertVClipToPolymodel (CObject *objP)
 {
-	CAngleVector	a;
-	short				nModel;
-
 if (gameStates.app.bNostalgia || !gameOpts->Use3DPowerups ())
 	return 0;
 if (objP->info.renderType == RT_POLYOBJ)
 	return 1;
-nModel = WeaponToModel (objP->info.nId);
+short	nModel = WeaponToModel (objP->info.nId);
 if (!(nModel && HaveReplacementModel (nModel)))
 	return 0;
-a.v.coord.p = (rand () % I2X (1)) - I2X (1) / 2;
-a.v.coord.b = (rand () % I2X (1)) - I2X (1) / 2;
-a.v.coord.h = (rand () % I2X (1)) - I2X (1) / 2;
-objP->info.position.mOrient = CFixMatrix::Create(a);
+#if 0 //DBG
+objP->Orientation () = gameData.objs.consoleP->Orientation ();
+objP->mType.physInfo.rotVel.v.coord.x =
+objP->mType.physInfo.rotVel.v.coord.y =
+objP->mType.physInfo.rotVel.v.coord.z = 0;
+#else
+CAngleVector a;
+a.v.coord.p = 2 * SRandShort ();
+a.v.coord.b = 2 * SRandShort ();
+a.v.coord.h = 2 * SRandShort ();
+objP->info.position.mOrient = CFixMatrix::Create (a);
+objP->mType.physInfo.rotVel.v.coord.z =
+objP->mType.physInfo.rotVel.v.coord.y = 0;
+objP->mType.physInfo.rotVel.v.coord.x = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+#endif
 #if 0
 objP->mType.physInfo.mass = I2X (1);
 objP->mType.physInfo.drag = 512;
 #endif
-objP->mType.physInfo.rotVel.v.coord.z =
-objP->mType.physInfo.rotVel.v.coord.y = 0;
-objP->mType.physInfo.rotVel.v.coord.x = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 //objP->info.controlType = CT_WEAPON;
 objP->info.renderType = RT_POLYOBJ;
 objP->info.movementType = MT_PHYSICS;

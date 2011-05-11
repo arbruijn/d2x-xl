@@ -140,9 +140,6 @@ return 1;
 
 int CObject::PowerupToDevice (void)
 {
-	CAngleVector	a;
-	short				nModel, nId;
-	int				bHasModel = 0;
 
 if (gameStates.app.bNostalgia)
 	return 0;
@@ -152,7 +149,10 @@ if (info.controlType == CT_WEAPON)
 	return 1;
 if ((info.nType != OBJ_POWERUP) && (info.nType != OBJ_WEAPON))
 	return 0;
-nModel = PowerupToModel (info.nId);
+
+int bHasModel = 0;
+short nId, nModel = PowerupToModel (info.nId);
+
 if (nModel)
 	nId = info.nId;
 else {
@@ -165,18 +165,26 @@ else {
 if (!bHasModel && !IsMissile () && !(nModel && HaveReplacementModel (nModel)))
 		return 0;
 
+#if 0 //DBG
+Orientation () = gameData.objs.consoleP->Orientation ();
+mType.physInfo.rotVel.v.coord.x =
+mType.physInfo.rotVel.v.coord.y =
+mType.physInfo.rotVel.v.coord.z = 0;
+#else
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	a.v.coord.p = (rand () % I2X (1)) - I2X (1) / 2;
-	a.v.coord.b = (rand () % I2X (1)) - I2X (1) / 2;
-	a.v.coord.h = (rand () % I2X (1)) - I2X (1) / 2;
+	CAngleVector a;
+	a.v.coord.p = 2 * SRandShort ();
+	a.v.coord.b = 2 * SRandShort ();
+	a.v.coord.h = 2 * SRandShort ();
 	info.position.mOrient = CFixMatrix::Create(a);
 	}
-mType.physInfo.mass = I2X (1);
-mType.physInfo.drag = 512;
-mType.physInfo.brakes = 0;
 mType.physInfo.rotVel.v.coord.x = 0;
 mType.physInfo.rotVel.v.coord.y =
 mType.physInfo.rotVel.v.coord.z = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+#endif
+mType.physInfo.mass = I2X (1);
+mType.physInfo.drag = 512;
+mType.physInfo.brakes = 0;
 info.controlType = CT_WEAPON;
 info.renderType = RT_POLYOBJ;
 info.movementType = MT_PHYSICS;

@@ -445,6 +445,8 @@ if (Index () == nDbgObj)
 if (bDontMoveAIObjects)
 	if (info.controlType == CT_AI)
 		return;
+	if (info.nType == OBJ_DEBRIS)
+		nDbgObj = nDbgObj;
 #endif
 if (bInitialize)
 	gameData.physics.xTime = I2X (1);

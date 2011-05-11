@@ -48,11 +48,50 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 CBitmap*	bmpInventory = NULL;
 CBitmap	bmInvItems [NUM_INV_ITEMS];
 CBitmap	bmObjTally [2];
+CBitmap	bmObjGauges [3];
 
 int bHaveInvBms = -1;
 int bHaveObjTallyBms = -1;
+int bHaveGaugeBms = -1;
 
 CHUDIcons	hudIcons;
+
+//	-----------------------------------------------------------------------------
+
+int CHUDIcons::LoadIcons (const char* pszIcons [], CBitmap* icons, int nIcons, int& bHaveIcons)
+{
+	char	szFilename [FILENAME_LEN];
+	CFile	cf;
+
+if (bHaveIcons > -1)
+	return bHaveIcons;
+for (int i = 0; i < nIcons; i++) {
+	icons [i].Destroy ();
+	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [2], pszIcons [i]);
+	if (!cf.Exist (szFilename, "", 0))
+		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [0], pszIcons [i]);
+	CTGA tga (&icons [i]);
+	if (!tga.Read (szFilename, NULL, -1, 1.0, 0)) {
+		while (i) {
+			i--;
+			icons [i].Destroy ();
+			}
+		return bHaveIcons = 0;
+		}
+	}
+return bHaveIcons = 1;
+}
+
+//	-----------------------------------------------------------------------------
+
+void CHUDIcons::DestroyIcons (CBitmap* icons, int nIcons, int& bHaveIcons)
+{
+if (bHaveObjTallyBms > 0) {
+	for (int i = 0; i < nIcons; i++)
+		icons [i].Destroy ();
+	bHaveIcons = -1;
+	}
+}
 
 //	-----------------------------------------------------------------------------
 
@@ -60,39 +99,30 @@ const char *pszObjTallyIcons [] = {"rboticon.tga", "pwupicon.tga"};
 
 int CHUDIcons::LoadTallyIcons (void)
 {
-	char	szFilename [FILENAME_LEN];
-	CFile	cf;
-
-if (bHaveObjTallyBms > -1)
-	return bHaveObjTallyBms;
-for (int i = 0; i < 2; i++) {
-	bmObjTally [i].Destroy ();
-	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [2], pszObjTallyIcons [i]);
-	if (!cf.Exist (szFilename, "", 0))
-		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [0], pszObjTallyIcons [i]);
-	CTGA tga (&bmObjTally [i]);
-	if (!tga.Read (szFilename, NULL, -1, 1.0, 0)) {
-		while (i) {
-			i--;
-			bmObjTally [i].Destroy ();
-			}
-		return bHaveObjTallyBms = 0;
-		}
-	}
-return bHaveObjTallyBms = 1;
+return LoadIcons (pszObjTallyIcons, bmObjTally, sizeofa (bmObjTally), bHaveObjTallyBms);
 }
 
 //	-----------------------------------------------------------------------------
 
 void CHUDIcons::DestroyTallyIcons (void)
 {
-	int	i;
+DestroyIcons (bmObjTally, sizeofa (bmObjTally), bHaveObjTallyBms);
+}
 
-if (bHaveObjTallyBms > 0) {
-	for (i = 0; i < 2; i++)
-		bmObjTally [i].Destroy ();
-	bHaveObjTallyBms = -1;
-	}
+//	-----------------------------------------------------------------------------
+
+const char *pszGaugeIcons [] = {"afterburner-icon.tga", "shieldboost-icon.tga", "energyboost-icon.tga"};
+
+int CHUDIcons::LoadGaugeIcons (void)
+{
+return LoadIcons (pszObjTallyIcons, bmObjTally, sizeofa (bmObjTally), bHaveObjTallyBms);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CHUDIcons::DestroyGaugeIcons (void)
+{
+DestroyIcons (bmObjTally, sizeofa (bmObjTally), bHaveObjTallyBms);
 }
 
 //	-----------------------------------------------------------------------------
