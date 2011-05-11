@@ -258,6 +258,7 @@ if (cockpit->Hide ())
 if (!gameOpts->render.cockpit.bTextGauges) {
 	static int		bFlash = 0, bShow = 1;
 	static time_t	tToggle;
+	static int		nIdLevel = 0;
 	time_t			t;
 
 	int nLevel = m_info.nEnergy;
@@ -271,11 +272,14 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 		 y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * nLineSpacing - 1) * m_info.yGaugeScale);
 	if (hudIcons.LoadGaugeIcons () > 0)
 		hudIcons.GaugeIcon (1).RenderScaled (6, y, w, h);
-	CCanvas::Current ()->SetColorRGB (255, 255, 0, 255);
+	CCanvas::Current ()->SetColorRGB (255, 224, 0, 255);
 	glLineWidth (1);
 	int x = 6 + int (10 * m_info.xGaugeScale);
 	w = (nLevel > 100) ? 100 : 50;
-	OglDrawEmptyRect (x, y, x + (int) (w * m_info.xGaugeScale), y + h);
+	OglDrawEmptyRect (x, y, x + int (w * m_info.xGaugeScale), y + h);
+	tCanvasColor fontColor = {0, 1, {255, 224, 0, 255}};
+	CCanvas::Current ()->SetFontColor (fontColor, 1);	// black background
+	nIdLevel = GrPrintF (&nIdLevel, x + int (w * m_info.xGaugeScale), int (y + m_info.yGaugeScale + 0.5f), " %i%%", nLevel);
 	if (bFlash) {
 		if (!bShow)
 			return;
@@ -323,6 +327,8 @@ void CHUD::DrawAfterburnerBar (void)
 {
 if (cockpit->Hide ())
 	return;
+
+	static int nIdLevel = 0;
 	
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
@@ -338,6 +344,9 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 	glLineWidth (1);
 	int x = 6 + int (10 * m_info.xGaugeScale);
 	OglDrawEmptyRect (x, y, x + (int) (50 * m_info.xGaugeScale), y + h);
+	tCanvasColor fontColor = {0, 1, {255, 0, 0, 255}};
+	CCanvas::Current ()->SetFontColor (fontColor, 1);	// black background
+	nIdLevel = GrPrintF (&nIdLevel, x + int (50 * m_info.xGaugeScale), int (y + m_info.yGaugeScale + 0.5f), " %i%%", nLevel);
 	CCanvas::Current ()->SetColorRGB (224, 0, 0, 128);
 	OglDrawFilledRect (x, y, x + (int) (nLevel * m_info.xGaugeScale / 2.0f), y + h);
 	}
@@ -565,6 +574,7 @@ if (cockpit->Hide ())
 
 	static int		bShow = 1;
 	static time_t	tToggle = 0, nBeep = -1;
+	static int		nIdLevel = 0;
 
 	time_t			t = gameStates.app.nSDLTicks [0];
 	int				bLastFlash = gameStates.render.cockpit.nShieldFlash;
@@ -586,9 +596,12 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 		hudIcons.GaugeIcon (0).RenderScaled (6, y, w, h);
 	int x = 6 + int (10 * m_info.xGaugeScale);
 	w = (nLevel > 100) ? 100 : 50;
-	CCanvas::Current ()->SetColorRGB (0, 64, 255, 255);
+	CCanvas::Current ()->SetColorRGB (0, 64, 224, 255);
 	glLineWidth (1);
 	OglDrawEmptyRect (x, y, x + int (w * m_info.xGaugeScale), y + h);
+	tCanvasColor fontColor = {0, 1, {0, 64, 255, 255}};
+	CCanvas::Current ()->SetFontColor (fontColor, 1);	// black background
+	nIdLevel = GrPrintF (&nIdLevel, x + int (w * m_info.xGaugeScale), int (y + m_info.yGaugeScale + 0.5f), " %i%%", nLevel);
 	if (bShow) {
 		CCanvas::Current ()->SetColorRGB (0, 64, 224, 128);
 		if (nLevel <= 100)
