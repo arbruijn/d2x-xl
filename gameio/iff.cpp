@@ -149,7 +149,7 @@ int CIFF::GetSig (void)
 
 int CIFF::GetBytes (char* dest, int len)
 {
-	int maxLen = Len () - Pos ();
+	int maxLen = Rem ();
 
 if (len > maxLen)
 	len = maxLen;
@@ -170,7 +170,7 @@ return Data() [NextPos()];
 int CIFF::GetWord (void)
 {
 ubyte c0, c1;
-if (Pos() > Len() - 2) return EOF;
+if (Rem () < 2) return EOF;
 c1 = Data() [NextPos()];
 c0 = Data() [NextPos()];
 if (c0==0xff) return EOF;
@@ -182,7 +182,7 @@ return(((int)c1<<8) + c0);
 int CIFF::GetLong (void)
 {
 	ubyte c0, c1, c2, c3;
-if (Pos() > Len() - 4) return EOF;
+if (Rem () < 4) return EOF;
 c3 = Data() [NextPos()];
 c2 = Data() [NextPos()];
 c1 = Data() [NextPos()];

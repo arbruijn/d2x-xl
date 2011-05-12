@@ -82,8 +82,9 @@ public:
 		int RLESpan (ubyte *dest, ubyte *src, int len);
 
 		inline ubyte*& Data () { return m_file.data; }
-		inline int Pos () { return m_file.position; }
-		inline int Len () { return m_file.length; }
+		inline int Pos (void) { return m_file.position; }
+		inline int Len (void) { return m_file.length; }
+		inline int Rem (void) { return Len () - Pos (); }
 		inline void SetPos (int position) { m_file.position = position; }
 		inline void SetLen (int length) { m_file.length = length; }
 		inline int NextPos (int i = 1) { 
