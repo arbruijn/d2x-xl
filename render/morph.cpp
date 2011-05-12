@@ -305,7 +305,6 @@ for (i = m; i < n; i++) {
 			gameData.models.textures [j] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [modelP->FirstTexture ()+j]]*/gameData.models.textureIndex [j].index;
 			}
 
-#ifdef PIGGY_USE_PAGING
 		// Make sure the textures for this CObject are paged in..
 		gameData.pig.tex.bPageFlushed = 0;
 		for (j = 0; j < h; j++)
@@ -319,7 +318,6 @@ for (i = m; i < n; i++) {
 			}
 			// Make sure that they can all fit in memory.
 		Assert (gameData.pig.tex.bPageFlushed == 0);
-#endif
 
 		G3DrawMorphingModel (
 			modelP->Data () + modelP->SubModels ().ptrs [nSubModel],

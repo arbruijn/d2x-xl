@@ -128,7 +128,6 @@ for (i = 0, cacheP = &texCache [0]; i < nCacheEntries; i++, cacheP++) {
 //---- Page out the LRU bitmap;
 nCacheMisses++;
 // Make sure the bitmaps are paged in...
-#ifdef PIGGY_USE_PAGING
 gameData.pig.tex.bPageFlushed = 0;
 LoadTexture (gameData.pig.tex.bmIndexP [tMapTop].index, gameStates.app.bD1Mission);
 LoadTexture (gameData.pig.tex.bmIndexP [tMapBot].index, gameStates.app.bD1Mission);
@@ -138,7 +137,6 @@ if (gameData.pig.tex.bPageFlushed) {	// If cache got flushed, re-read 'em.
 	LoadTexture (gameData.pig.tex.bmIndexP [tMapBot].index, gameStates.app.bD1Mission);
 	}
 Assert (gameData.pig.tex.bPageFlushed == 0);
-#endif
 
 bmTop = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapTop].index].Override (-1);
 bmBot = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapBot].index].Override (-1);

@@ -674,7 +674,6 @@ else {
 if (m_info.nId == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
-#ifdef PIGGY_USE_PAGING
 // Make sure the textures for this CObject are paged in...
 gameData.pig.tex.bPageFlushed = 0;
 for (i = 0; i < nTextures; i++)
@@ -688,7 +687,6 @@ if (gameData.pig.tex.bPageFlushed) {
 }
 // Make sure that they can all fit in memory.
 Assert (gameData.pig.tex.bPageFlushed == 0);
-#endif
 return nTextures;
 }
 

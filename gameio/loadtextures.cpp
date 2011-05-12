@@ -647,7 +647,7 @@ return nShrinkFactor;
 
 //------------------------------------------------------------------------------
 
-static char* FindHiresBitmap (const char* bmName, int& nFile, int bD1)
+static char* FindHiresBitmap (const char* bmName, int& nFile, int bD1, int bShrink = 1)
 {
 	static char	fn [6][FILENAME_LEN];
 
@@ -664,7 +664,7 @@ else
 	*gameFolders.szTextureDir [3] =
 	*gameFolders.szTextureCacheDir [3] = '\0';
 
-int nShrinkFactor = ShrinkFactor (bmName);
+int nShrinkFactor = bShrink ? ShrinkFactor (bmName) : 1;
 
 MakeBitmapFilenames (bmName, gameFolders.szTextureDir [3], gameFolders.szTextureCacheDir [3], fn [1], fn [0], nShrinkFactor);
 MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
@@ -740,14 +740,14 @@ return false;
 
 //------------------------------------------------------------------------------
 
-static int ReadHiresBitmap (CBitmap* bmP, const char* bmName, int nIndex, int bD1)
+int ReadHiresBitmap (CBitmap* bmP, const char* bmName, int nIndex, int bD1)
 {
 
 if (gameOpts->Use3DPowerups () && IsWeapon (bmName) && !gameStates.app.bHaveMod)
 	return -1;
 
 int	nFile;
-char* pszFile = FindHiresBitmap (bmName, nFile, bD1);
+char* pszFile = FindHiresBitmap (bmName, nFile, bD1, nIndex != 0x7FFFFFFF);
 
 if (!pszFile)
 	return (nIndex < 0) ? -1 : 0;
@@ -758,7 +758,14 @@ PrintLog ("loading hires texture '%s' (quality: %d)\n", pszFile, min (gameOpts->
 if (nFile < 2)	//was level specific mod folder
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);
 
-CBitmap*	altBmP = (nIndex < 0) ? &gameData.pig.tex.addonBitmaps [-nIndex - 1] : &gameData.pig.tex.altBitmaps [bD1][nIndex];
+CBitmap*	altBmP;
+if (nIndex < 0) 
+	altBmP = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
+else if (nIndex == 0x7FFFFFFF)
+	altBmP = bmP;
+else
+	altBmP = &gameData.pig.tex.altBitmaps [bD1][nIndex];
+
 CTGA tga (altBmP);
 
 #if DBG
@@ -775,15 +782,17 @@ else if (strstr (pszFile, "plasblob#") && strstr (pszFile, "/mods/") && !strstr 
 altBmP->SetType (BM_TYPE_ALT);
 altBmP->SetName (bmName);
 altBmP->SetKey (nIndex);
-bmP->SetOverride (altBmP);
-bmP = altBmP;
+if (nIndex != 0x7FFFFFFF) {
+	bmP->SetOverride (altBmP);
+	bmP = altBmP;
+	}
 bmP->DelFlags (BM_FLAG_RLE);
 
 int nSize = int (bmP->Size ());
 int nFrames = (bmP->Height () % bmP->Width ()) ? 1 : bmP->Height () / bmP->Width ();
 bmP->SetFrameCount (ubyte (nFrames));
 
-if (nIndex >= 0) {	// replacement texture for a lores game texture
+if ((nIndex >= 0) && (nIndex < 0x7FFFFFFF)) {	// replacement texture for a lores game texture
 	if (bmP->Height () > bmP->Width ()) {
 		tEffectClip	*ecP = NULL;
 		tWallClip *wcP;

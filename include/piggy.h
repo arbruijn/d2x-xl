@@ -195,12 +195,11 @@ int SaveModelData (void);
 void piggy_read_bitmap_data (CBitmap * bmp);
 void piggy_readSound_data (CSoundSample *snd);
 
-#ifdef PIGGY_USE_PAGING
+int ReadHiresBitmap (CBitmap* bmP, const char* bmName, int nIndex, int bD1);
 int PiggyBitmapPageIn (int bmi, int bD1, bool bHires = false);
 int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1, bool bHires = false);
 void UnloadTextures (void);
 void ResetTextureFlags (void);
-#endif
 
 void LoadSounds (CFile& cf, bool bCustom = false);
 

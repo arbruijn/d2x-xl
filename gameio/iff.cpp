@@ -147,6 +147,18 @@ int CIFF::GetSig (void)
 
 //------------------------------------------------------------------------------
 
+int CIFF::GetBytes (char* dest, int len)
+{
+	int maxLen = Len () - Pos ();
+
+if (len > maxLen)
+	len = maxLen;
+memcpy (dest, Data () + NextPos (len), len);
+return len;
+}
+
+//------------------------------------------------------------------------------
+
 char CIFF::GetByte (void)
 {
 if (Pos() >= Len()) return EOF;
@@ -423,12 +435,10 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 			break;
 
 		case cmap_sig: {
-			int ncolors = (int) (len/3), cnum;
-			for (cnum = 0; cnum < ncolors; cnum++) {
-				bmHeader->palette [cnum].r = GetByte () >> 2;
-				bmHeader->palette [cnum].g = GetByte () >> 2;
-				bmHeader->palette [cnum].b = GetByte () >> 2;
-				}
+			char* p = (char*) &bmHeader->palette;
+			len = GetBytes (p, len);
+			for (int i = len; i; i--)
+				*p++ /= 4;
 			if (len & 1) 
 				NextPos();
 			break;
@@ -608,9 +618,17 @@ return ret;
 //returns error codes - see IFF.H.  see GR[HA] for bitmapType
 int CIFF::ReadBitmap (const char *cfname, CBitmap *bmP, int bitmapType)
 {
-	int ret;			//return code
+#if 0
+	char* p, fn [FILENAME_LEN];
 
-ret = Open (cfname);		//read in entire file
+strcpy (fn, cfname);
+
+if ((p = strstr (fn, ".bbm")))
+	*p = '\0';
+if (ReadHiresBitmap (&gameData.endLevel.terrain.bmInstance, fn, 0x7FFFFFFF, 1) > 0)
+	return IFF_NO_ERROR;
+#endif
+int ret = Open (cfname);		//read in entire file
 if (ret == IFF_NO_ERROR) {
 	ret = ParseBitmap (bmP, bitmapType, NULL);
 	}

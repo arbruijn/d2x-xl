@@ -1161,7 +1161,7 @@ while (cf.GetS (line, LINE_LEN)) {
 	switch (var) {
 		case 0: {						//ground terrain
 			CIFF iff;
-			int iff_error;
+			int iffError;
 
 			PrintLog ("         loading terrain bitmap\n");
 			if (gameData.endLevel.terrain.bmInstance.Buffer ()) {
@@ -1169,10 +1169,10 @@ while (cf.GetS (line, LINE_LEN)) {
 				gameData.endLevel.terrain.bmInstance.DestroyBuffer ();
 				}
 			Assert (gameData.endLevel.terrain.bmInstance.Buffer () == NULL);
-			iff_error = iff.ReadBitmap (p, &gameData.endLevel.terrain.bmInstance, BM_LINEAR);
-			if (iff_error != IFF_NO_ERROR) {
+			iffError = iff.ReadBitmap (p, &gameData.endLevel.terrain.bmInstance, BM_LINEAR);
+			if (iffError != IFF_NO_ERROR) {
 #if DBG
-				PrintLog (TXT_EXIT_TERRAIN, p, iff.ErrorMsg (iff_error));
+				PrintLog (TXT_EXIT_TERRAIN, p, iff.ErrorMsg (iffError));
 				PrintLog ("\n");
 #endif
 				gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
@@ -1200,16 +1200,16 @@ while (cf.GetS (line, LINE_LEN)) {
 
 		case 4: {						//planet bitmap
 			CIFF iff;
-			int iff_error;
+			int iffError;
 
 			PrintLog ("         loading satellite bitmap\n");
 			if (gameData.endLevel.satellite.bmInstance.Buffer ()) {
 				gameData.endLevel.satellite.bmInstance.ReleaseTexture ();
 				gameData.endLevel.satellite.bmInstance.DestroyBuffer ();
 				}
-			iff_error = iff.ReadBitmap (p, &gameData.endLevel.satellite.bmInstance, BM_LINEAR);
-			if (iff_error != IFF_NO_ERROR) {
-				Warning (TXT_SATELLITE, p, iff.ErrorMsg (iff_error));
+			iffError = iff.ReadBitmap (p, &gameData.endLevel.satellite.bmInstance, BM_LINEAR);
+			if (iffError != IFF_NO_ERROR) {
+				Warning (TXT_SATELLITE, p, iff.ErrorMsg (iffError));
 				gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 				return;
 			}

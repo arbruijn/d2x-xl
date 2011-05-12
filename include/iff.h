@@ -55,6 +55,7 @@ public:
 		int Open (const char *cfname);
 		void Close ();
 		int GetSig ();
+		int GetBytes (char* dest, int len);
 		char GetByte ();
 		int GetWord ();
 		int GetLong ();
@@ -85,7 +86,12 @@ public:
 		inline int Len () { return m_file.length; }
 		inline void SetPos (int position) { m_file.position = position; }
 		inline void SetLen (int length) { m_file.length = length; }
-		inline int NextPos () { return (Pos () < Len ()) ? m_file.position++ : m_file.position; }
+		inline int NextPos (int i = 1) { 
+			int p = m_file.position;
+			if (Pos () < Len ()) 
+				m_file.position += i;
+			return p; 
+			}
 
 		inline ubyte HasTransparency (void) { return m_hasTransparency; }
 		inline ubyte TransparentColor (void) { return m_transparentColor; }

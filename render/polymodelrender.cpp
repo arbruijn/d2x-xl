@@ -199,10 +199,6 @@ G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
 gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
 ogl.SetTransform (1);
 if (!flags) {	//draw entire object
-#if DBG
-	if (objP->info.nType == OBJ_DEBRIS)
-		objP = objP;
-#endif
 	if (!gameStates.app.bNostalgia && G3RenderModel (objP, bCustomModel ? -nModel : nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
 		ogl.SetTransform (0);
 		gameData.render.vertP = NULL;
