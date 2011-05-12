@@ -1944,6 +1944,7 @@ const char *defaultGameTexts [][2] = {
  {"monochrom", "monochrome"},
  {"mehrfarbig", "multi color"},
  {"~Helligkeit: %s", "~Brightness: %s"},
+ {"Gespeicherte Spiele loeschen", "Delete saved games"},
 #if 0
  {"", ""},
 #endif

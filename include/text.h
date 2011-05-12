@@ -1981,10 +1981,10 @@ void LoadGameTexts(void);
 #define TXT_MONOCHROME					GT(1197)
 #define TXT_MULTICOLOR					GT(1198)
 #define TXT_BRIGHTNESS					GT(1199)
+#define TXT_DELETE_SAVEGAMES			GT(1200)
 
 #if 0
 
-#define TXT_					GT(1200)
 #define TXT_					GT(1201)
 #define TXT_					GT(1202)
 #define TXT_					GT(1203)

@@ -284,7 +284,7 @@ class CFileSelector : public CMenu {
 	private:
 		int					m_nFirstItem;
 		int					m_nVisibleItems;
-		int					m_bPlayerMode;
+		int					m_nMode;
 		int					m_nLeft;
 		int					m_nTop;
 		int					m_nWidth;

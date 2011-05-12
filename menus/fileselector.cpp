@@ -126,7 +126,7 @@ for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 		OglDrawFilledRect (m_nLeft - 1, y - 1, m_nLeft - 1, y + h + 1);
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 		OglDrawFilledRect (m_nLeft, y - 1, m_nLeft + m_nWidth - 1, y + h + 1);
-		GrString (m_nLeft + 5, y, reinterpret_cast<char*> (&m_filenames [i]) + ((m_bPlayerMode && m_filenames [i][0] == '$') ? 1 : 0), NULL);
+		GrString (m_nLeft + 5, y, reinterpret_cast<char*> (&m_filenames [i]) + (((m_nMode == 1) && (m_filenames [i][0] == '$')) ? 1 : 0), NULL);
 		}
 	}	 
 gameStates.render.grAlpha = 1.0f;
@@ -143,8 +143,6 @@ int CFileSelector::FileSelector (const char* pszTitle, const char* filespec, cha
 	int					done, m_nOldChoice;
 	int					nPrevItem;
 	int					bKeyRepeat = gameStates.input.keys.bRepeat;
-	int					m_bPlayerMode = 0;
-	int					bDemoMode = 0;
 	int					bDemosDeleted = 0;
 	int					bInitialized = 0;
 	int					exitValue = 0;
@@ -159,7 +157,6 @@ int CFileSelector::FileSelector (const char* pszTitle, const char* filespec, cha
 m_tEnter = -1;
 m_nFirstItem = -1;
 m_nVisibleItems = 8;
-m_bPlayerMode = 0;
 m_nFileCount = 0;
 m_callback = NULL;
 
@@ -171,9 +168,11 @@ m_nChoice = 0;
 gameStates.input.keys.bRepeat = 1;
 
 if (strstr (filespec, "*.plr"))
-	m_bPlayerMode = 1;
+	m_nMode = 1;
 else if (strstr (filespec, "*.dem"))
-	bDemoMode = 1;
+	m_nMode = 2;
+else
+	m_nMode = 0;
 
 ReadFileNames:
 
@@ -181,7 +180,7 @@ done = 0;
 m_nFileCount = 0;
 
 #if !defined (APPLE_DEMO)		// no new pilots for special apple oem version
-if (m_bPlayerMode && !gameStates.app.bReadOnly) {
+if ((m_nMode == 1) && !gameStates.app.bReadOnly) {
 	m_filenames [m_nFileCount] = TXT_CREATE_NEW;
 	m_nFileCount++;
 	}
@@ -192,7 +191,7 @@ if (!FFF (filespec, &ffs, 0)) {
 		if (m_nFileCount < MENU_MAX_FILES) {
 			pszFn = (char*) (&m_filenames [m_nFileCount][0]);
 			strncpy (pszFn, ffs.name, FILENAME_LEN);
-			if (m_bPlayerMode) {
+			if (m_nMode == 1) {
 				char* p = strchr (pszFn, '.');
 				if (p) 
 					*p = '\0';
@@ -207,7 +206,7 @@ if (!FFF (filespec, &ffs, 0)) {
 	} while (!FFN (&ffs, 0));
 	FFC (&ffs);
 	}
-if (bDemoMode && gameFolders.bAltHogDirInited) {
+if ((m_nMode == 2) && gameFolders.bAltHogDirInited) {
 	char filespec2 [PATH_MAX + FILENAME_LEN];
 	sprintf (filespec2, "%s/%s", gameFolders.szAltHogDir, filespec);
 	if (!FFF (filespec2, &ffs, 0)) {
@@ -227,7 +226,7 @@ if ((m_nFileCount < 1) && bDemosDeleted) {
 	exitValue = 0;
 	goto exitFileMenu;
 	}
-if ((m_nFileCount < 1) && bDemoMode) {
+if ((m_nFileCount < 1) && (m_nMode == 2)) {
 	MsgBox (NULL, NULL, 1, TXT_OK, "%s %s\n%s", TXT_NO_DEMO_FILES, TXT_USE_F5, TXT_TO_CREATE_ONE);
 	exitValue = 0;
 	goto exitFileMenu;
@@ -298,7 +297,7 @@ if (!bInitialized) {
 	bInitialized = 1;
 	}
 
-if (!m_bPlayerMode)
+if (m_nMode != 1)
 	m_filenames.SortAscending (0, m_nFileCount - 1);
 else {
 	m_filenames.SortAscending (1, m_nFileCount - 2); 
@@ -356,47 +355,33 @@ while (!done) {
 			break;
 
 		case KEY_CTRLED + KEY_D:
-			if (((m_bPlayerMode) && (m_nChoice > 0)) || ((bDemoMode) && (m_nChoice >= 0))) {
+			if (((m_nMode == 1) && (m_nChoice > 0)) || ((m_nMode == 2) && (m_nChoice >= 0))) {
 				int x = 1;
 				char* pszFile = (char*) (&m_filenames [m_nChoice][0]);
 				if (*pszFile == '$')
 					pszFile++;
 				SDL_ShowCursor (0);
-				if (m_bPlayerMode)
-					x = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_PILOT, pszFile);
-				else if (bDemoMode)
-					x = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_DEMO, pszFile);
-				SDL_ShowCursor (1);
-				if (!x) {
-					char* p;
-					int ret;
-
-					p = pszFile + strlen (pszFile);
-					if (m_bPlayerMode)
+				if (!MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", (m_nMode == 1) ? TXT_DELETE_PILOT : TXT_DELETE_DEMO, pszFile)) {
+					char* p = pszFile + strlen (pszFile);
+					if (m_nMode == 1)
 						*p = '.';
-					ret = CFile::Delete (pszFile, m_bPlayerMode ? gameFolders.szProfDir : gameFolders.szDemoDir);
-					if (m_bPlayerMode) {
-						if (!ret) {
-							p [3] = 'x';	//turn ".plr" to ".plx"
-							CFile::Delete (pszFile, gameFolders.szProfDir);
-							*p = 0;
-							DeleteSaveGames (pszFile);
-							}
-						*p = 0;
-						}
-
-					if (ret) {
-						if (m_bPlayerMode)
-							MsgBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
-						else if (bDemoMode)
-							MsgBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
-						}
-					else if (bDemoMode)
+					if (CFile::Delete (pszFile, m_nMode == 1 ? gameFolders.szProfDir : gameFolders.szDemoDir))
+						MsgBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, (m_nMode == 1) ? TXT_DELETE_PILOT : TXT_DELETE_DEMO, pszFile);
+					else if (m_nMode == 2) 
 						bDemosDeleted = 1;
+					else if (m_nMode == 1) {
+						p [3] = 'x';	//turn ".plr" to ".plx"
+						CFile::Delete (pszFile, gameFolders.szProfDir);
+						if (!MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s?", TXT_DELETE_SAVEGAMES))
+							DeleteSaveGames (pszFile);
+						}
+					SDL_ShowCursor (1);
+					*p = 0;
 					m_nFirstItem = -1;
 					goto ReadFileNames;
+					}
+				SDL_ShowCursor (1);
 				}
-			}
 			break;
 		case KEY_HOME:
 		case KEY_PAD7:
@@ -551,7 +536,7 @@ FadeOut ();
 if (m_nChoice < 0)
 	exitValue = 0;
 else {
-	strncpy (filename, reinterpret_cast<char*> (&m_filenames [m_nChoice]) + (m_bPlayerMode && m_filenames [m_nChoice][0] == '$'), FILENAME_LEN);
+	strncpy (filename, reinterpret_cast<char*> (&m_filenames [m_nChoice]) + (m_nMode == 1 && m_filenames [m_nChoice][0] == '$'), FILENAME_LEN);
 	exitValue = 1;
 	}										 
 

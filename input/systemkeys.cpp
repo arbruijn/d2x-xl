@@ -912,8 +912,8 @@ void HandleTestKey(int key)
 			break;
 
 	case KEYDBGGED + KEY_ALTED + KEY_D:
-			networkData.nNetLifeKills=4000;
-			networkData.nNetLifeKilled=5;
+			networkData.nNetLifeKills = 4000;
+			networkData.nNetLifeKilled = 5;
 			MultiAddLifetimeKills ();
 			break;
 
