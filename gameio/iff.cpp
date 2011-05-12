@@ -169,25 +169,27 @@ return Data() [NextPos()];
 
 int CIFF::GetWord (void)
 {
-ubyte c0, c1;
-if (Rem () < 2) return EOF;
-c1 = Data() [NextPos()];
-c0 = Data() [NextPos()];
-if (c0==0xff) return EOF;
-return(((int)c1<<8) + c0);
+if (Rem () < 2) 
+	return EOF;
+ubyte c1 = Data() [NextPos()];
+ubyte c0 = Data() [NextPos()];
+if (c0 == 0xff) 
+	return EOF;
+return ((int) c1 << 8) + c0;
 }
 
 //------------------------------------------------------------------------------
 
 int CIFF::GetLong (void)
 {
-	ubyte c0, c1, c2, c3;
-if (Rem () < 4) return EOF;
-c3 = Data() [NextPos()];
-c2 = Data() [NextPos()];
-c1 = Data() [NextPos()];
-c0 = Data() [NextPos()];
-return(((int)c3<<24) + ((int)c2<<16) + ((int)c1<<8) + c0);
+if (Rem () < 4) 
+	return EOF;
+
+ubyte c3 = Data() [NextPos()];
+ubyte c2 = Data() [NextPos()];
+ubyte c1 = Data() [NextPos()];
+ubyte c0 = Data() [NextPos()];
+return ((int) c3 << 24) + ((int) c2 << 16) + ((int) c1 << 8) + c0;
 }
 
 //------------------------------------------------------------------------------
