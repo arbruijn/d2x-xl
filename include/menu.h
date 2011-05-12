@@ -285,6 +285,7 @@ class CFileSelector : public CMenu {
 		int					m_nFirstItem;
 		int					m_nVisibleItems;
 		int					m_nMode;
+		int					m_bDemosDeleted;
 		int					m_nLeft;
 		int					m_nTop;
 		int					m_nWidth;
@@ -296,6 +297,7 @@ class CFileSelector : public CMenu {
 
 	public:
 		int FileSelector (const char *pszTitle, const char *filespec, char *filename, int bAllowAbort);
+		int DeleteFile (void);
 		virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 	};
 
