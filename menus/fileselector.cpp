@@ -361,26 +361,34 @@ while (!done) {
 				if (*pszFile == '$')
 					pszFile++;
 				SDL_ShowCursor (0);
-				if (!MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", (m_nMode == 1) ? TXT_DELETE_PILOT : TXT_DELETE_DEMO, pszFile)) {
-					char* p = pszFile + strlen (pszFile);
-					if (m_nMode == 1)
-						*p = '.';
-					if (CFile::Delete (pszFile, m_nMode == 1 ? gameFolders.szProfDir : gameFolders.szDemoDir))
-						MsgBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, (m_nMode == 1) ? TXT_DELETE_PILOT : TXT_DELETE_DEMO, pszFile);
-					else if (m_nMode == 2) 
-						bDemosDeleted = 1;
-					else if (m_nMode == 1) {
-						p [3] = 'x';	//turn ".plr" to ".plx"
-						CFile::Delete (pszFile, gameFolders.szProfDir);
-						if (!MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s?", TXT_DELETE_SAVEGAMES))
-							DeleteSaveGames (pszFile);
-						}
+				if (MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", (m_nMode == 1) ? TXT_DELETE_PILOT : TXT_DELETE_DEMO, pszFile)) 
 					SDL_ShowCursor (1);
-					*p = 0;
+				else {
+					if (m_nMode == 2) 
+						if (CFile::Delete (pszFile, gameFolders.szDemoDir))
+							MsgBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
+						else
+							bDemosDeleted = 1;
+					else {
+						char* p = pszFile + strlen (pszFile);
+						*p = '.'; // make the extension visible again
+						if (CFile::Delete (pszFile, gameFolders.szProfDir))
+							MsgBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
+						else {
+							pszFile [strlen (pszFile) - 1] = 'x'; //turn ".plr" to ".plx"
+							CFile::Delete (pszFile, gameFolders.szProfDir);
+							if (!MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s?", TXT_DELETE_SAVEGAMES)) {
+								*p = '\0'; // hide extension
+								DeleteSaveGames (pszFile);
+								}
+							}
+						*p = '\0'; // hide extension
+						}
+
+					SDL_ShowCursor (1);
 					m_nFirstItem = -1;
 					goto ReadFileNames;
 					}
-				SDL_ShowCursor (1);
 				}
 			break;
 		case KEY_HOME:
