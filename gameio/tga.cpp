@@ -195,10 +195,13 @@ else {
 		nFrames = 1;
 	for (n = 0; n < nFrames; n++) {
 		nSuperTransp = 0;
+
+	int				j = w * (h / nFrames);
+	tRgbaColorb*	p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ()) + n * j;
+
 #if USE_OPENMP
 		if (gameStates.app.bMultiThreaded) {
-			int			nst [MAX_THREADS], nac [MAX_THREADS], tId, j = w * (h / nFrames);
-			tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ()) + n * j;
+			int			nst [MAX_THREADS], nac [MAX_THREADS], tId;
 			tRgbaColorf	avc [MAX_THREADS];
 
 			memset (avc, 0, sizeof (avc));
@@ -251,8 +254,7 @@ else {
 	else
 #endif
 		{
-		tRgbaColorb* p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ());
-		for (i = w * (h / nFrames); i; i--, p++) {
+		for (i = j; i; i--, p++) {
 			if (bSwapRB)
 				::Swap (p->red, p->blue);
 			if (bGrayScale) {

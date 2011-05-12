@@ -761,6 +761,10 @@ if (nFile < 2)	//was level specific mod folder
 CBitmap*	altBmP = (nIndex < 0) ? &gameData.pig.tex.addonBitmaps [-nIndex - 1] : &gameData.pig.tex.altBitmaps [bD1][nIndex];
 CTGA tga (altBmP);
 
+#if DBG
+if (strstr (pszFile, "door35"))
+	pszFile = pszFile;
+#endif
 if (!tga.Read (pszFile, ""))
 	throw (EX_OUT_OF_MEMORY);
 
