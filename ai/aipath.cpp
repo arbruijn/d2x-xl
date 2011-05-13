@@ -1227,7 +1227,7 @@ gameData.ai.freePointSegs = gameData.ai.routeSegs + nFreeIndex;
 FORALL_ROBOT_OBJS (objP, i)
 	if (objP->info.controlType == CT_AI) {
 		aiP = &objP->cType.aiInfo; 
-		if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) && (aiP->nPathLength > 0))
+		if ((aiP->nHideIndex + aiP->nPathLength > int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs))) && (aiP->nPathLength > 0))
 			Int3 ();		//	Contact Mike: Debug trap for nasty, elusive bug.
 		}
 #	if PATH_VALIDATION
