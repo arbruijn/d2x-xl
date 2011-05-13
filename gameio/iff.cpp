@@ -636,7 +636,7 @@ return ret;
 //returns error codes - see IFF.H.  see GR[HA] for bitmapType
 int CIFF::ReadBitmap (const char *cfname, CBitmap *bmP, int bitmapType)
 {
-#if 0
+#if 1
 	char* p, fn [FILENAME_LEN];
 
 strcpy (fn, cfname);
