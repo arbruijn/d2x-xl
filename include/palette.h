@@ -50,11 +50,12 @@ class CPalette {
 		tPalette			m_data;
 		tComputedColor	m_computedColors [MAX_COMPUTED_COLORS];
 		short				m_nComputedColors;
+		int				m_transparentColors [2];
 
 	public:
 		CPalette () {};
 		~CPalette () {};
-		void Init (void);
+		void Init (int nTransparentColor = -1, int nSuperTranspColor = -1);
 		void ClearStep ();
 		bool Read (CFile& cf);
 		bool Write (CFile& cf);
@@ -84,6 +85,7 @@ class CPalette {
 			}
 		inline bool operator== (CPalette& source) { return !memcmp (&Data (), &source.Data (), sizeof (tPalette)); }
 		inline tRgbColorb& operator[] (const int i) { return m_data.rgb [i]; }
+		inline int TransparentColor (int i) { return m_transparentColors [i]; }
 	};
 
 //------------------------------------------------------------------------------
@@ -137,11 +139,11 @@ class CPaletteManager {
 		~CPaletteManager () { Destroy (); }
 		void Init (void);
 		void Destroy (void); 
-		CPalette *Find (CPalette& palette);
-		CPalette *Add (CPalette& palette);
-		CPalette *Add (ubyte* buffer);
-		CPalette *Load (const char *pszPaletteName, const char *pszLevelName, int nUsedForLevel, int bNoScreenChange, int bForce);
-		CPalette *Load (const char* filename, const char* levelname);
+		CPalette* Find (CPalette& palette);
+		CPalette* Add (CPalette& palette, int nTransparentColor = -1, int nSuperTranspColor = -1);
+		CPalette* Add (ubyte* buffer, int nTransparentColor = -1, int nSuperTranspColor = -1);
+		CPalette* Load (const char *pszPaletteName, const char *pszLevelName, int nUsedForLevel, int bNoScreenChange, int bForce);
+		CPalette* Load (const char* filename, const char* levelname);
 		CPalette* LoadD1 (void);
 		int FindClosestColor15bpp (int rgb);
 		void SetGamma (int gamma);
@@ -174,7 +176,7 @@ class CPaletteManager {
 		bool EffectEnabled (void) { return m_data.nSuspended <= 0; }
 		bool EffectDisabled (void) { return m_data.nSuspended > 0; }
 		inline bool FadedOut (void) { return m_data.nSuspended <= 0; }
-		void SetPrev (CPalette *palette) { m_data.prev = palette; }
+		void SetPrev (CPalette* palette) { m_data.prev = palette; }
 
 		 void Push (void) { 
 			m_save.Push (m_data.current); 
@@ -225,6 +227,7 @@ class CPaletteManager {
 
 		inline int ClosestColor (int r, int g, int b)
 		 { return m_data.current ? m_data.current->ClosestColor (r, g, b) : 0; }
+
 	};
 
 extern CPaletteManager paletteManager;

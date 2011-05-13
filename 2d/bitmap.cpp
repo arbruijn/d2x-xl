@@ -241,7 +241,7 @@ else {
 			}
 		SetTranspType ((Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
 		}
-	m_info.palette = paletteManager.Add (*palette);
+	m_info.palette = paletteManager.Add (*palette, transparentColor, supertranspColor);
 	}
 }
 
@@ -256,37 +256,13 @@ if (!palette)
 	palette = m_info.palette;
 if (!palette)
 	return;
-if (transparentColor < 0)
-	transparentColor = TRANSPARENCY_COLOR;
-if (supertranspColor < 0)
-	supertranspColor = SUPER_TRANSP_COLOR;
-
-int bRemap = (transparentColor != TRANSPARENCY_COLOR) || (supertranspColor != SUPER_TRANSP_COLOR);
-
-ubyte *p = Buffer ();
-if (m_info.props.w == m_info.props.rowSize) {
-	CountColors (p, m_info.props.w * m_info.props.h, freq);
-	if (bRemap) {
-		for (int i = m_info.props.w * m_info.props.h; i; i--, p++) {
-			if (*p == transparentColor)
-				*p = TRANSPARENCY_COLOR;
-			else if (*p == supertranspColor)
-				*p = SUPER_TRANSP_COLOR;
-			}
-		}
-	}
+if (m_info.props.w == m_info.props.rowSize)
+	CountColors (Buffer (), m_info.props.w * m_info.props.h, freq);
 else {
-	for (int y = m_info.props.h; y; y--, p += m_info.props.rowSize) {
+	int y;
+	ubyte *p = Buffer ();
+	for (y = m_info.props.h; y; y--, p += m_info.props.rowSize)
 		CountColors (p, m_info.props.w, freq);
-		if (bRemap) {
-			for (int x = 0; x < m_info.props.h; x++) {
-				if (p [x] == transparentColor)
-					p [x] = TRANSPARENCY_COLOR;
-				else if (p [x] == supertranspColor)
-					p [x] = SUPER_TRANSP_COLOR;
-				}
-			}
-		}
 	}
 SetPalette (palette, transparentColor, supertranspColor, freq);
 }

@@ -44,10 +44,12 @@ return i * i;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CPalette::Init (void)
+void CPalette::Init (int nTransparentColor, int nSuperTranspColor)
 {
 m_nComputedColors = 0;
 memset (m_computedColors, 0xff, sizeof (m_computedColors));
+m_transparentColors [0] = (nTransparentColor < 0) ? TRANSPARENCY_COLOR : nTransparentColor;
+m_transparentColors [1] = (nSuperTranspColor < 0) ? SUPER_TRANSP_COLOR : nSuperTranspColor;
 }
 
 //------------------------------------------------------------------------------
@@ -207,7 +209,7 @@ return NULL;
 
 //	-----------------------------------------------------------------------------
 
-CPalette *CPaletteManager::Add (CPalette& palette)
+CPalette *CPaletteManager::Add (CPalette& palette, int nTransparentColor, int nSuperTranspColor)
 {
 	tPaletteList	*plP;
 
@@ -218,19 +220,19 @@ if (!(plP = new tPaletteList))
 plP->next = m_data.list;
 m_data.list = plP;
 plP->palette = palette;
-plP->palette.Init ();
+plP->palette.Init (nTransparentColor, nSuperTranspColor);
 m_data.nPalettes++;
 return Activate (&plP->palette);
 }
 
 //	-----------------------------------------------------------------------------
 
-CPalette *CPaletteManager::Add (ubyte* buffer)
+CPalette *CPaletteManager::Add (ubyte* buffer, int nTransparentColor, int nSuperTranspColor)
 {
 	CPalette	palette;
 
 memcpy (palette.Raw (), buffer, PALETTE_SIZE * 3);
-return Add (palette);
+return Add (palette, nTransparentColor, nSuperTranspColor);
 }
 
 //	-----------------------------------------------------------------------------

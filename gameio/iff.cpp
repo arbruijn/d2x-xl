@@ -441,7 +441,7 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 			break;
 
 		case cmap_sig: {
-#if 0
+#if 1
 			tPalEntry* p = bmHeader->palette;
 			for (int i = len / 3; i; i--, p++) {
 				p->r = Data () [NextPos ()] / 4;
@@ -625,7 +625,7 @@ CopyIffToBitmap (bmP, &bmHeader);
 if (bmHeader.masking != mskHasTransparentColor) 
 	bmP->SetPalette (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette)));
 else
-	bmP->Remap (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette)), bmHeader.transparentColor, -1);
+	bmP->SetPalette (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette), bmHeader.transparentColor, -1));
 //Now do post-process if required
 if (bitmapType == BM_RGB15)
 	ret = ConvertRgb15 (bmP, &bmHeader);

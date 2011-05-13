@@ -444,11 +444,6 @@ return 0;
 
 ubyte* CTexture::Convert (int dxo, int dyo, CBitmap* bmP, int nTranspType, int bSuperTransp)
 {
-	tRgbColorb	*colorP;
-	int			x, y, c;
-	ushort		r, g, b, a;
-	int			bTransp, bpp;
-
 #if DBG
 if (strstr (bmP->Name (), "hoard"))
 	bmP = bmP;
@@ -456,14 +451,16 @@ if (strstr (bmP->Name (), "hoard"))
 paletteManager.SetTexture (bmP->Parent () ? bmP->Parent ()->Palette () : bmP->Palette ());
 if (!paletteManager.Texture ())
 	return NULL;
-bTransp = (nTranspType || bSuperTransp) && bmP->HasTransparency ();
+
+int bTransp = (nTranspType || bSuperTransp) && bmP->HasTransparency ();
 if (!bTransp)
 	m_info.format = GL_RGB;
 #if DBG
 if (!nTranspType)
 	nTranspType = 0;
 #endif
-colorP = paletteManager.Texture ()->Color ();
+
+int bpp;
 
 restart:
 
@@ -490,8 +487,15 @@ switch (m_info.format) {
 if (m_info.tw * m_info.th * bpp > (int) sizeof (ogl.m_data.buffer))//shouldn'texP happen, descent never uses textures that big.
 	Error ("texture too big %i %i", m_info.tw, m_info.th);
 
-ubyte* rawData = bmP->Buffer ();
-GLubyte* bufP = ogl.m_data.buffer;
+	ubyte*		rawData = bmP->Buffer ();
+	GLubyte*		bufP = ogl.m_data.buffer;
+	tRgbColorb* colorP = paletteManager.Texture ()->Color ();
+	int			transparencyColor = paletteManager.Texture ()->TransparentColor (0);
+	int			superTranspColor =  paletteManager.Texture ()->TransparentColor (1);
+	ushort		r, g, b, a;
+	int			x, y, c;
+
+
 //bmP->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 for (y = 0; y < m_info.h; y++) {
 	for (x = 0; x < m_info.w; x++) {
