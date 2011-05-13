@@ -278,19 +278,19 @@ if (gameData.render.terrain.heightmap.Buffer ()) {
 void LoadTerrain (char *filename)
 {
 	CBitmap	bmHeight;
-	int		iff_error;
+	int		iffError;
 	int		i, j;
 	ubyte		h, hMin, hMax;
 	CIFF		iff;
 
 PrintLog ("            loading terrain height map\n");
 memset (&bmHeight, 0, sizeof (bmHeight));
-iff_error = iff.ReadBitmap (filename, &bmHeight, BM_LINEAR);
-if (iff_error != IFF_NO_ERROR) {
+iffError = iff.ReadBitmap (filename, &bmHeight, BM_LINEAR);
+if (iffError != IFF_NO_ERROR) {
 #if TRACE
-	console.printf (1, "File %s - IFF error: %s", filename, iff.ErrorMsg (iff_error));
+	console.printf (1, "File %s - IFF error: %s", filename, iff.ErrorMsg (iffError));
 #endif
-	Error ("File %s - IFF error: %s", filename, iff.ErrorMsg (iff_error));
+	Error ("File %s - IFF error: %s", filename, iff.ErrorMsg (iffError));
 }
 gameData.render.terrain.heightmap.Destroy ();
 gameData.render.terrain.nGridW = bmHeight.Width ();
