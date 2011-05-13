@@ -203,7 +203,8 @@ CPalette* CPaletteManager::Find (CPalette& palette)
 for (plP = m_data.list; plP; plP = plP->next)
 #if DBG
 	{
-	if ((plP->palette.TransparentColor (0) != palette.TransparentColor (0)) || (plP->palette.TransparentColor (1) != palette.TransparentColor (1)))
+	if ((plP->palette.TransparentColor () != palette.TransparentColor ()) || 
+		 (plP->palette.SuperTranspColor () != palette.SuperTranspColor ()))
 		continue;
 	for (i = 0; i < PALETTE_SIZE * 3; i++)
 		if (palette.Data ().raw [i] != plP->palette.Data ().raw [i])

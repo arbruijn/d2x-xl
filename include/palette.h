@@ -81,8 +81,10 @@ class CPalette {
 		inline void SetTransparency (ubyte r, ubyte g, ubyte b) 
 		 { m_data.rgb [PALETTE_SIZE - 1].red = r, m_data.rgb [PALETTE_SIZE - 1].green = g, m_data.rgb [PALETTE_SIZE - 1].blue = b; }
 		inline CPalette& operator= (CPalette& source) { 
-			memcpy (&Data (), &source.Data (), sizeof (tPalette));
 			Init ();
+			memcpy (&Data (), &source.Data (), sizeof (tPalette));
+			m_transparentColor = source.TransparentColor ();
+			m_superTranspColor = source.SuperTranspColor ();
 			return *this;
 			}
 		inline bool operator== (CPalette& source) { 
