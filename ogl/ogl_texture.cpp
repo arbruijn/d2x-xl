@@ -494,15 +494,15 @@ if (m_info.tw * m_info.th * bpp > (int) sizeof (ogl.m_data.buffer))//shouldn'tex
 #if 1
 	if (bmP) {
 		colorP = bmP->Palette ()->Color ();
-		transparencyColor = bmP->Palette ()->TransparentColor (0);
-		superTranspColor =  bmP->Palette ()->TransparentColor (1);
+		transparencyColor = bmP->Palette ()->TransparentColor ();
+		superTranspColor =  bmP->Palette ()->SuperTranspColor ();
 		}
 	else
 #endif
 		{
 		colorP = paletteManager.Texture ()->Color ();
-		transparencyColor = paletteManager.Texture ()->TransparentColor (0);
-		superTranspColor =  paletteManager.Texture ()->TransparentColor (1);
+		transparencyColor = paletteManager.Texture ()->TransparentColor ();
+		superTranspColor =  paletteManager.Texture ()->SuperTranspColor ();
 		}
 
 	ushort		r, g, b, a;

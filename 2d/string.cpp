@@ -567,7 +567,7 @@ x = 0;
 			nKey = 0;
 		bmfP = (bHotKey && (fontManager.Current () != SMALL_FONT)) ? SELECTED_FONT->Bitmaps () + letter : fontP->Bitmaps () + letter;
 		palP = bmfP->Parent () ? bmfP->Parent ()->Palette () : bmfP->Palette ();
-		int transparencyColor = paletteManager.Texture ()->TransparentColor (0);
+		int transparencyColor = paletteManager.Texture ()->TransparentColor ();
 		nChars++;
 		i = nKeyColor * 3;
 		kc.red = RGBA_RED (nKeyColor);
