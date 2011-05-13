@@ -221,26 +221,20 @@ if (gameData.pig.tex.textureIndex [0][m_info.nId] >= 0) {
 
 //------------------------------------------------------------------------------
 
-void CBitmap::SetPalette (CPalette *palette, int *colorFrequencies, int transparentColor, int superTranspColor)
+void CBitmap::SetPalette (CPalette *palette, int transparentColor, int superTranspColor, ubyte* bufP, int bufLen)
 {
-if (!palette)
+if (!palette) {
 	m_info.palette = NULL;
-else
-	m_info.palette = paletteManager.Add (*palette, transparentColor, superTranspColor);
-}
-
-//------------------------------------------------------------------------------
-
-void CBitmap::SetPalette (CPalette *palette, int transparentColor, int superTranspColor)
-{
-if (!(palette || (palette = m_info.palette)))
 	return;
+	}
 m_info.palette = paletteManager.Add (*palette, transparentColor, superTranspColor);
 
 	int colorFrequencies [256];
 
 memset (colorFrequencies, 0, 256 * sizeof (int));
-if (m_info.props.w == m_info.props.rowSize)
+if (bufP)
+	CountColors (bufP, buflen, colorFrequencies);
+else if (m_info.props.w == m_info.props.rowSize)
 	CountColors (Buffer (), m_info.props.w * m_info.props.h, colorFrequencies);
 else {
 	ubyte *p = Buffer ();
@@ -250,12 +244,12 @@ else {
 if (transparentColor <= 255) {
 	if (transparentColor < 0)
 		transparentColor = TRANSPARENCY_COLOR;
-	SetTransparent (colorFrequencies [transparentColor] != 0);
+	SetTransparent (colorFreqP [transparentColor] != 0);
 	}
 if (superTranspColor <= 255) {
 	if (superTranspColor < 0)
 		superTranspColor = SUPER_TRANSP_COLOR;
-	SetSuperTransparent (colorFrequencies [superTranspColor] != 0);
+	SetSuperTransparent (colorFreqP [superTranspColor] != 0);
 	}
 SetTranspType ((Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
 }

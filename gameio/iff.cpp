@@ -622,10 +622,10 @@ if (bmHeader.nType == TYPE_ILBM) {
 	}
 //Copy data from tIFFBitmapHeader structure into CBitmap structure
 CopyIffToBitmap (bmP, &bmHeader);
-if (bmHeader.masking != mskHasTransparentColor) 
+if ((bmHeader.masking != mskHasTransparentColor) || (bmHeader.transparentColor < 0))
 	bmP->SetPalette (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette)));
 else
-	bmP->SetPalette (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette), bmHeader.transparentColor, -1));
+	bmP->SetPalette (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette), bmHeader.transparentColor, -1), bmHeader.transparentColor, -1);
 //Now do post-process if required
 if (bitmapType == BM_RGB15)
 	ret = ConvertRgb15 (bmP, &bmHeader);

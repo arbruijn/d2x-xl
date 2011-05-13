@@ -401,7 +401,7 @@ if (m_info.flags & FT_COLOR) {		//remap palette
 		}
 	}
 #endif
-	m_info.parentBitmap.SetPalette (&palette, TRANSPARENCY_COLOR, -1);
+	m_info.parentBitmap.SetPalette (&palette, TRANSPARENCY_COLOR, -1, m_info.data, (int) (ptr - m_info.data));
 	}
 else
 	m_info.parentBitmap.SetPalette (paletteManager.Default (), TRANSPARENCY_COLOR, -1);

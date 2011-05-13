@@ -504,7 +504,7 @@ for (y = 0; y < m_info.h; y++) {
 			break;
 #endif
 		c = *rawData++;
-		if (nTranspType && (c == TRANSPARENCY_COLOR)) {
+		if (nTranspType && (c == transparencyColor)) {
 			//bmP->Flags () |= BM_FLAG_TRANSPARENT;
 			switch (m_info.format) {
 				case GL_LUMINANCE:
@@ -546,7 +546,7 @@ for (y = 0; y < m_info.h; y++) {
 
 				case GL_RGB:
 				case GL_RGB5:
-					if (bSuperTransp && (c == SUPER_TRANSP_COLOR)) {
+					if (bSuperTransp && (c == superTranspColor)) {
 						//bmP->Flags () |= BM_FLAG_SUPER_TRANSPARENT;
 						m_info.format = ogl.m_states.nRGBAFormat;
 						goto restart;
