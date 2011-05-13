@@ -56,6 +56,7 @@ class CPalette {
 		CPalette () {};
 		~CPalette () {};
 		void Init (int nTransparentColor = -1, int nSuperTranspColor = -1);
+		void InitTransparency (int nTransparentColor = -1, int nSuperTranspColor = -1);
 		void ClearStep ();
 		bool Read (CFile& cf);
 		bool Write (CFile& cf);

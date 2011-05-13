@@ -48,6 +48,13 @@ void CPalette::Init (int nTransparentColor, int nSuperTranspColor)
 {
 m_nComputedColors = 0;
 memset (m_computedColors, 0xff, sizeof (m_computedColors));
+InitTransparency (nTransparentColor, nSuperTranspColor);
+}
+
+//------------------------------------------------------------------------------
+
+void CPalette::InitTransparency (int nTransparentColor, int nSuperTranspColor)
+{
 m_transparentColors [0] = (nTransparentColor < 0) ? TRANSPARENCY_COLOR : nTransparentColor;
 m_transparentColors [1] = (nSuperTranspColor < 0) ? SUPER_TRANSP_COLOR : nSuperTranspColor;
 }
@@ -211,10 +218,12 @@ return NULL;
 
 CPalette *CPaletteManager::Add (CPalette& palette, int nTransparentColor, int nSuperTranspColor)
 {
-	tPaletteList	*plP;
+	tPaletteList	*plP = Find (palette);
 
-if (Find (palette))
+if (plP) {
+	plP->palette.InitTransparency (nTransparentColor, nSuperTranspColor);
 	return m_data.current;
+	}
 if (!(plP = new tPaletteList))
 	return NULL;
 plP->next = m_data.list;
