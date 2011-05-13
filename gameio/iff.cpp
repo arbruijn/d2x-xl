@@ -204,12 +204,12 @@ bmHeader->nplanes = GetByte ();
 bmHeader->masking = GetByte ();
 bmHeader->compression = GetByte ();
 GetByte ();        /* skip pad */
-bmHeader->transparentcolor = GetWord ();
+bmHeader->transparentColor = GetWord ();
 bmHeader->xaspect = GetByte ();
 bmHeader->yaspect = GetByte ();
 bmHeader->pagewidth = GetWord ();
 bmHeader->pageheight = GetWord ();
-m_transparentColor = (char) bmHeader->transparentcolor;
+m_transparentColor = (char) bmHeader->transparentColor;
 m_hasTransparency = 0;
 if (bmHeader->masking == mskHasTransparentColor)
 	m_hasTransparency = 1;
@@ -222,13 +222,13 @@ return IFF_NO_ERROR;
 
 int CIFF::ParseBody (int len, tIFFBitmapHeader *bmHeader)
 {
-	ubyte  *p = bmHeader->raw_data;
-	int				width, depth;
-	signed char		n;
-	int				nn, wid_cnt, end_cnt, plane;
-	char				ignore = 0;
-	ubyte	*data_end;
-	int				endPos;
+	ubyte*		p = bmHeader->raw_data;
+	int			width, depth;
+	signed char	n;
+	int			nn, wid_cnt, end_cnt, plane;
+	char			ignore = 0;
+	ubyte*		data_end;
+	int			endPos;
 
 #if DBG
 	int rowCount=0;
@@ -251,8 +251,12 @@ end_cnt = (width&1)?-1:0;
 data_end = p + width*bmHeader->h*depth;
 if (bmHeader->compression == cmpNone) {        /* no compression */
 	for (int y = bmHeader->h; y; y--) {
+#if 1
+		p += GetBytes ((char*) p, width * depth);
+#else
 		for (int x = 0; x < width * depth; x++)
 			*p++= Data() [NextPos()];
+#endif
 		if (bmHeader->masking == mskHasMask)
 			SetPos (Pos () + width);				//skip mask!
 		if (bmHeader->w & 1) 
@@ -437,10 +441,19 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 			break;
 
 		case cmap_sig: {
+#if 0
+			tPalEntry* p = bmHeader->palette;
+			for (int i = len / 3; i; i--, p++) {
+				p->r = Data () [NextPos ()] / 4;
+				p->g = Data () [NextPos ()] / 4;
+				p->b = Data () [NextPos ()] / 4;
+				}
+#else
 			char* p = (char*) &bmHeader->palette;
 			len = GetBytes (p, len);
 			for (int i = len; i; i--)
 				*p++ /= 4;
+#endif
 			if (len & 1) 
 				NextPos();
 			break;
@@ -609,7 +622,10 @@ if (bmHeader.nType == TYPE_ILBM) {
 	}
 //Copy data from tIFFBitmapHeader structure into CBitmap structure
 CopyIffToBitmap (bmP, &bmHeader);
-bmP->SetPalette (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette)));
+if (bmHeader.masking != mskHasTransparentColor) 
+	bmP->SetPalette (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette)));
+else
+	bmP->Remap (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette)), bmHeader.transparentColor, -1);
 //Now do post-process if required
 if (bitmapType == BM_RGB15)
 	ret = ConvertRgb15 (bmP, &bmHeader);
@@ -668,7 +684,7 @@ PutByte (bitmap_header->nplanes, fp);
 PutByte (bitmap_header->masking, fp);
 PutByte (bitmap_header->compression, fp);
 PutByte (0, fp);	/* pad */
-PutWord (bitmap_header->transparentcolor, fp);
+PutWord (bitmap_header->transparentColor, fp);
 PutByte (bitmap_header->xaspect, fp);
 PutByte (bitmap_header->yaspect, fp);
 PutWord (bitmap_header->pagewidth, fp);
@@ -844,7 +860,7 @@ bmHeader.x = bmHeader.y = 0;
 bmHeader.w = bmP->Width ();
 bmHeader.h = bmP->Height ();
 bmHeader.nType = TYPE_PBM;
-bmHeader.transparentcolor = m_transparentColor;
+bmHeader.transparentColor = m_transparentColor;
 bmHeader.pagewidth = bmP->Width ();	//I don't think it matters what I write
 bmHeader.pageheight = bmP->Height ();
 bmHeader.nplanes = 8;

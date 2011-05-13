@@ -172,10 +172,8 @@ tv = mSurfaceOrient.m.dir.r * TERRAIN_GRID_SCALE;
 transformation.RotateScaled (delta_i, tv);
 tv = mSurfaceOrient.m.dir.f * TERRAIN_GRID_SCALE;
 transformation.RotateScaled (delta_j, tv);
-gameData.render.terrain.vStartPoint = *vOrgPoint + mSurfaceOrient.m.dir.r *
-					(-(gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE);
-gameData.render.terrain.vStartPoint += mSurfaceOrient.m.dir.f *
-					(-(gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
+gameData.render.terrain.vStartPoint = *vOrgPoint - mSurfaceOrient.m.dir.r * (gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE;
+gameData.render.terrain.vStartPoint -= mSurfaceOrient.m.dir.f * (gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE;
 tv = gameData.objs.viewerP->info.position.vPos - gameData.render.terrain.vStartPoint;
 iViewer = CFixVector::Dot (tv, mSurfaceOrient.m.dir.r) / TERRAIN_GRID_SCALE;
 if (iViewer > iHigh)
@@ -199,8 +197,7 @@ for (i = iLow; i < iViewer; i++) {
 	for (j = jLow; j < jViewer; j++) {
 		G3AddDeltaVec (&p, &pLast, &delta_j);
 		G3AddDeltaVec (&p2, &p, get_dy_vec (HEIGHT (i + 1, j + 1)));
-		DrawTerrainCell (i, j, gameData.render.terrain.saveRow + j,
-							  gameData.render.terrain.saveRow + j + 1, &p2, &p2Last);
+		DrawTerrainCell (i, j, gameData.render.terrain.saveRow + j, gameData.render.terrain.saveRow + j + 1, &p2, &p2Last);
 		pLast = p;
 		gameData.render.terrain.saveRow [j] = p2Last;
 		p2Last = p2;
@@ -212,8 +209,7 @@ for (i = iLow; i < iViewer; i++) {
 	for (j = jHigh - 1; j >= jViewer; j--) {
 		G3AddDeltaVec (&p, &pLast, &delta_j);
 		G3AddDeltaVec (&p2, &p, get_dy_vec (HEIGHT (i + 1, j)));
-		DrawTerrainCell (i, j, gameData.render.terrain.saveRow + j,
-							  gameData.render.terrain.saveRow + j + 1, &p2Last, &p2);
+		DrawTerrainCell (i, j, gameData.render.terrain.saveRow + j, gameData.render.terrain.saveRow + j + 1, &p2Last, &p2);
 		pLast = p;
 		gameData.render.terrain.saveRow [j + 1] = p2Last;
 		p2Last = p2;

@@ -27,7 +27,7 @@ typedef struct tIFFBitmapHeader {
 	short w, h;						//width and height of this bitmap
 	short x, y;						//generally unused
 	short nType;						//see types above
-	short transparentcolor;		//which color is transparent (if any)
+	short transparentColor;		//which color is transparent (if any)
 	short pagewidth, pageheight; //width & height of source screen
 	sbyte nplanes;              //number of planes (8 for 256 color image)
 	sbyte masking, compression;  //see constants above
