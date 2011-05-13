@@ -567,6 +567,7 @@ x = 0;
 			nKey = 0;
 		bmfP = (bHotKey && (fontManager.Current () != SMALL_FONT)) ? SELECTED_FONT->Bitmaps () + letter : fontP->Bitmaps () + letter;
 		palP = bmfP->Parent () ? bmfP->Parent ()->Palette () : bmfP->Palette ();
+		int transparencyColor = paletteManager.Texture ()->TransparentColor (0);
 		nChars++;
 		i = nKeyColor * 3;
 		kc.red = RGBA_RED (nKeyColor);
@@ -578,7 +579,7 @@ x = 0;
 				pc = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + (y + hy) * w + x;
 				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
 				for (hx = bmfP->Width (); hx; hx--, pc++, pf++)
-					if ((c = *pf) != TRANSPARENCY_COLOR) {
+					if ((c = *pf) != transparencyColor) {
 						colorP = palP->Color () + c;
 						pc->red = colorP->red * 4;
 						pc->green = colorP->green * 4;
@@ -610,7 +611,7 @@ x = 0;
 				pc = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + (y + hy) * w + x;
 				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
 				for (hx = bmfP->Width (); hx; hx--, pc++, pf++)
-					if (*pf != TRANSPARENCY_COLOR)
+					if (*pf != transparencyColor)
 						*pc = bHotKey ? kc : hc;
 				}
 			}

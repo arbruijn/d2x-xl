@@ -50,11 +50,12 @@ class CPalette {
 		tPalette			m_data;
 		tComputedColor	m_computedColors [MAX_COMPUTED_COLORS];
 		short				m_nComputedColors;
-		int				m_transparentColors [2];
+		int				m_transparentColor;
+		int				m_superTranspColor;
 
 	public:
-		CPalette () {};
-		~CPalette () {};
+		CPalette () : m_transparentColor (-1), m_superTranspColor (-1) {}
+		~CPalette () {}
 		void Init (int nTransparentColor = -1, int nSuperTranspColor = -1);
 		void InitTransparency (int nTransparentColor = -1, int nSuperTranspColor = -1);
 		void ClearStep ();
@@ -84,9 +85,14 @@ class CPalette {
 			Init ();
 			return *this;
 			}
-		inline bool operator== (CPalette& source) { return !memcmp (&Data (), &source.Data (), sizeof (tPalette)); }
+		inline bool operator== (CPalette& source) { 
+			return (TransparentColor () == source.TransparentColor ()) && 
+					 (SuperTranspColor () == source.SuperTranspColor ()) &&
+					 (memcmp (&Data (), &source.Data (), sizeof (tPalette)) == 0); 
+			}
 		inline tRgbColorb& operator[] (const int i) { return m_data.rgb [i]; }
-		inline int TransparentColor (int i) { return m_transparentColors [i]; }
+		inline int TransparentColor (void) { return m_transparentColor; }
+		inline int SuperTranspColor (void) { return m_superTranspColor; }
 	};
 
 //------------------------------------------------------------------------------

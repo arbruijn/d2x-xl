@@ -489,9 +489,22 @@ if (m_info.tw * m_info.th * bpp > (int) sizeof (ogl.m_data.buffer))//shouldn'tex
 
 	ubyte*		rawData = bmP->Buffer ();
 	GLubyte*		bufP = ogl.m_data.buffer;
-	tRgbColorb* colorP = paletteManager.Texture ()->Color ();
-	int			transparencyColor = paletteManager.Texture ()->TransparentColor (0);
-	int			superTranspColor =  paletteManager.Texture ()->TransparentColor (1);
+	tRgbColorb* colorP;
+	int			transparencyColor, superTranspColor;
+#if 1
+	if (bmP) {
+		colorP = bmP->Palette ()->Color ();
+		transparencyColor = bmP->Palette ()->TransparentColor (0);
+		superTranspColor =  bmP->Palette ()->TransparentColor (1);
+		}
+	else
+#endif
+		{
+		colorP = paletteManager.Texture ()->Color ();
+		transparencyColor = paletteManager.Texture ()->TransparentColor (0);
+		superTranspColor =  paletteManager.Texture ()->TransparentColor (1);
+		}
+
 	ushort		r, g, b, a;
 	int			x, y, c;
 
@@ -1360,7 +1373,7 @@ if (nDepth > 1)
 	return -1;
 nDepth++;
 
-if (!strcmp (m_info.szName, "sparks.tga"))
+if (!strcmp (m_info.szName, "font3-1h.fnt"))
 	nDbgSeg = nDbgSeg;
 
 if (bMipMaps < 0)
@@ -1379,6 +1392,10 @@ if (!(m_info.texP && m_info.texP->IsRenderBuffer ()))
 #endif
 	{
 	if (!Prepared ()) {
+#if DBG
+		if (!strcmp (m_info.szName, "font3-1h.fnt"))
+			nDbgSeg = nDbgSeg;
+#endif
 		if (!SetupTexture (bMipMaps, 1)) {
 #if DBG
 			SetupTexture (bMipMaps, 1);

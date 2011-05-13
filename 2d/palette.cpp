@@ -55,8 +55,10 @@ InitTransparency (nTransparentColor, nSuperTranspColor);
 
 void CPalette::InitTransparency (int nTransparentColor, int nSuperTranspColor)
 {
-m_transparentColors [0] = (nTransparentColor < 0) ? TRANSPARENCY_COLOR : nTransparentColor;
-m_transparentColors [1] = (nSuperTranspColor < 0) ? SUPER_TRANSP_COLOR : nSuperTranspColor;
+if (m_transparentColor < 0)
+	m_transparentColor = (nTransparentColor < 0) ? TRANSPARENCY_COLOR : nTransparentColor;
+if (m_superTranspColor < 0)
+	m_superTranspColor = (nSuperTranspColor < 0) ? SUPER_TRANSP_COLOR : nSuperTranspColor;
 }
 
 //------------------------------------------------------------------------------
@@ -200,7 +202,9 @@ CPalette* CPaletteManager::Find (CPalette& palette)
 
 for (plP = m_data.list; plP; plP = plP->next)
 #if DBG
- {
+	{
+	if ((plP->palette.TransparentColor (0) != palette.TransparentColor (0)) || (plP->palette.TransparentColor (1) != palette.TransparentColor (1)))
+		continue;
 	for (i = 0; i < PALETTE_SIZE * 3; i++)
 		if (palette.Data ().raw [i] != plP->palette.Data ().raw [i])
 			break;
@@ -218,12 +222,9 @@ return NULL;
 
 CPalette *CPaletteManager::Add (CPalette& palette, int nTransparentColor, int nSuperTranspColor)
 {
-	CPalette* palP = Find (palette);
-
-if (palP) {
-	palP->InitTransparency (nTransparentColor, nSuperTranspColor);
+palette.InitTransparency (nTransparentColor, nSuperTranspColor);
+if (Find (palette))
 	return m_data.current;
-	}
 
 	tPaletteList* plP;
 

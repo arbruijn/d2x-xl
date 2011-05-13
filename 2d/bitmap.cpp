@@ -233,7 +233,7 @@ m_info.palette = paletteManager.Add (*palette, transparentColor, superTranspColo
 
 memset (colorFrequencies, 0, 256 * sizeof (int));
 if (bufP)
-	CountColors (bufP, buflen, colorFrequencies);
+	CountColors (bufP, bufLen, colorFrequencies);
 else if (m_info.props.w == m_info.props.rowSize)
 	CountColors (Buffer (), m_info.props.w * m_info.props.h, colorFrequencies);
 else {
@@ -244,12 +244,12 @@ else {
 if (transparentColor <= 255) {
 	if (transparentColor < 0)
 		transparentColor = TRANSPARENCY_COLOR;
-	SetTransparent (colorFreqP [transparentColor] != 0);
+	SetTransparent (colorFrequencies [transparentColor] != 0);
 	}
 if (superTranspColor <= 255) {
 	if (superTranspColor < 0)
 		superTranspColor = SUPER_TRANSP_COLOR;
-	SetSuperTransparent (colorFreqP [superTranspColor] != 0);
+	SetSuperTransparent (colorFrequencies [superTranspColor] != 0);
 	}
 SetTranspType ((Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
 }
