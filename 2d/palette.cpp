@@ -218,12 +218,15 @@ return NULL;
 
 CPalette *CPaletteManager::Add (CPalette& palette, int nTransparentColor, int nSuperTranspColor)
 {
-	tPaletteList	*plP = Find (palette);
+	CPalette* palP = Find (palette);
 
-if (plP) {
-	plP->palette.InitTransparency (nTransparentColor, nSuperTranspColor);
+if (palP) {
+	palP->InitTransparency (nTransparentColor, nSuperTranspColor);
 	return m_data.current;
 	}
+
+	tPaletteList* plP;
+
 if (!(plP = new tPaletteList))
 	return NULL;
 plP->next = m_data.list;
