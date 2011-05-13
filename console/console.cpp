@@ -798,7 +798,7 @@ Assert(pcxError == PCX_ERROR_NONE);
 #else
 PCXReadBitmap (filename, &bm, BM_LINEAR, 0);
 #endif
-bm.Remap (NULL, -1, -1);
+bm.SetPalette (NULL, -1, -1);
 SetBackground (&bm);
 }
 

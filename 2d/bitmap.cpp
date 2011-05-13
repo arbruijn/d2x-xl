@@ -221,50 +221,48 @@ if (gameData.pig.tex.textureIndex [0][m_info.nId] >= 0) {
 
 //------------------------------------------------------------------------------
 
-void CBitmap::SetPalette (CPalette *palette, int transparentColor, int supertranspColor, int *freq)
+void CBitmap::SetPalette (CPalette *palette, int *colorFrequencies, int transparentColor, int superTranspColor)
 {
 if (!palette)
 	m_info.palette = NULL;
 else {
-	if (freq) {
-		if ((transparentColor >= 0) && (transparentColor <= 255)) {
-			if (freq [transparentColor])
-				SetTransparent (1);
-			else
-				SetTransparent (0);
+	if (colorFrequencies) {
+		if (transparentColor <= 255) {
+			if (transparentColor < 0)
+				transparentColor = TRANSPARENT_COLOR;
+			SetTransparent (colorFrequencies [transparentColor] != 0);
 			}
-		if ((supertranspColor >= 0) && (supertranspColor <= 255)) {
-			if (freq [supertranspColor])
-				SetSuperTransparent (1);
-			else
-				SetSuperTransparent (0);
+		if (superTranspColor <= 255) {
+			if (superTranspColor < 0)
+				superTranspColor = TRANSPARENT_COLOR;
+			SetSuperTransparent (colorFrequencies [superTranspColor] != 0);
 			}
 		SetTranspType ((Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
 		}
-	m_info.palette = paletteManager.Add (*palette, transparentColor, supertranspColor);
+	m_info.palette = paletteManager.Add (*palette, transparentColor, superTranspColor);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void CBitmap::Remap (CPalette *palette, int transparentColor, int supertranspColor)
+void CBitmap::SetPalette (CPalette *palette, int transparentColor, int superTranspColor)
 {
-	int freq [256];
+	int colorFrequencies [256];
 
-memset (freq, 0, 256 * sizeof (int));
+memset (colorFrequencies, 0, 256 * sizeof (int));
 if (!palette)
 	palette = m_info.palette;
 if (!palette)
 	return;
 if (m_info.props.w == m_info.props.rowSize)
-	CountColors (Buffer (), m_info.props.w * m_info.props.h, freq);
+	CountColors (Buffer (), m_info.props.w * m_info.props.h, colorFrequencies);
 else {
 	int y;
 	ubyte *p = Buffer ();
 	for (y = m_info.props.h; y; y--, p += m_info.props.rowSize)
-		CountColors (p, m_info.props.w, freq);
+		CountColors (p, m_info.props.w, colorFrequencies);
 	}
-SetPalette (palette, transparentColor, supertranspColor, freq);
+SetPalette (palette, colorFrequencies, transparentColor, superTranspColor);
 }
 
 //------------------------------------------------------------------------------
