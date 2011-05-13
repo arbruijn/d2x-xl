@@ -411,9 +411,9 @@ if (iffError != IFF_NO_ERROR)	 {
 	return bmi;
 	}
 if (iff.HasTransparency ())
-	bmP->Remap (NULL, iff.TransparentColor (), 254);
+	bmP->SetPalette (NULL, iff.TransparentColor (), 254);
 else
-	bmP->Remap (NULL, -1, 254);
+	bmP->SetPalette (NULL, -1, 254);
 bmP->AvgColorIndex ();
 bmi.index = gameData.pig.tex.nExtraBitmaps;
 gameData.pig.tex.bitmapP [gameData.pig.tex.nExtraBitmaps++] = *bmP;

@@ -129,7 +129,7 @@ if (nPCXError != PCX_ERROR_NONE) {
 	Error ("File %s - PCX error: %s", BackgroundName (BG_MAP), pcx_errormsg (nPCXError));
 	return false;
 	}
-m_background.Remap (NULL, -1, -1);
+m_background.SetPalette (NULL, -1, -1);
 return (m_background.Buffer () != NULL);
 }
 

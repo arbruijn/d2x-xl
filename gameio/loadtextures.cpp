@@ -499,9 +499,9 @@ if (IsMacDataFile (cfP, bD1))
 	bmP->Swap_0_255 ();
 #endif
 if (bD1)
-	bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+	bmP->SetPalette (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 else
-	bmP->Remap (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+	bmP->SetPalette (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 bmP->SetTranspType ((bmP->Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
 return 1;
 }
@@ -532,9 +532,9 @@ if (IsMacDataFile (cfP, bD1))
 	bmP->Swap_0_255 ();
 #endif
 if (bD1)
-	bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+	bmP->SetPalette (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 else
-	bmP->Remap (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+	bmP->SetPalette (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 bmP->SetTranspType ((bmP->Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
 return 1;
 }
@@ -1080,7 +1080,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 			bm.SetKey (j);
 			bm.RLEExpand (NULL, 0);
 			*bm.Props () = *gameData.pig.tex.bitmapP [j].Props ();
-			bm.Remap (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+			bm.SetPalette (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			}
 #if DBG
 		if (j == nDbgTexture)
@@ -1178,7 +1178,7 @@ bmBackground.DestroyBuffer ();
 pcx_error = PCXReadBitmap (szBackground [gameStates.app.cheats.bJohnHeadOn], &bmBackground, BM_LINEAR, 0);
 if (pcx_error != PCX_ERROR_NONE)
 	Error ("File %s - PCX error: %s", BACKGROUND_NAME, pcx_errormsg (pcx_error));
-bmBackground.Remap (NULL, -1, -1);
+bmBackground.SetPalette (NULL, -1, -1);
 }
 
 //------------------------------------------------------------------------------

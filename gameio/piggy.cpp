@@ -649,7 +649,7 @@ switch (cf.Length ()) {
 		}
 if (bmh->flags & BM_FLAG_RLE)
 	bmP->RLEExpand (NULL, bSwap0255);
-bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, -1);
+bmP->SetPalette (paletteManager.D1 (), TRANSPARENCY_COLOR, -1);
 }
 
 //------------------------------------------------------------------------------

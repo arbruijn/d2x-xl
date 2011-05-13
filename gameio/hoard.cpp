@@ -121,7 +121,7 @@ for (int i = 0; i < nFrames; i++) {
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, flags, bmDataP);
 	sprintf (szName, "hoard#%d", i + 1);
 	bmP->SetName (szName);
-	bmP->Remap (&palette, 255, -1);
+	bmP->SetPalette (&palette, 255, -1);
 	bmDataP += nFrameSize;
 	}
 }
@@ -253,7 +253,7 @@ for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 	CBitmap* bmP = &gameData.pig.tex.bitmaps [0][vcP->frames [i].index];
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
-	bmP->Remap (gameData.hoard.orb.palette, 255, -1);
+	bmP->SetPalette (gameData.hoard.orb.palette, 255, -1);
 	}
 #endif
 //Load and remap bitmap data for goal texture
@@ -270,7 +270,7 @@ for (i = 0; i < gameData.hoard.goal.nFrames; i++) {
 	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + ecP->vClipInfo.frames [i].index;
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
-	bmP->Remap (gameData.hoard.goal.palette, 255, -1);
+	bmP->SetPalette (gameData.hoard.goal.palette, 255, -1);
 	}
 #endif
 //Load and remap bitmap data for HUD icons

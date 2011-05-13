@@ -359,10 +359,9 @@ m_info.parentBitmap.PrepareTexture (0, 0, NULL);
 //remap a font by re-reading its data & palette
 void CFont::Setup (const char *fontname, ubyte* fontData, CPalette& palette)
 {
-	int	i;
-	int	nChars;
-	ubyte	*ptr;
-	int	freq [256];
+	int		i;
+	int		nChars;
+	ubyte*	ptr;
 
 Destroy ();
 
@@ -402,12 +401,10 @@ if (m_info.flags & FT_COLOR) {		//remap palette
 		}
 	}
 #endif
-	memset (freq, 0, sizeof (freq));
-	CountColors (m_info.data, (int) (ptr - m_info.data), freq);
-	m_info.parentBitmap.SetPalette (&palette, TRANSPARENCY_COLOR, -1, freq);
+	m_info.parentBitmap.SetPalette (&palette, TRANSPARENCY_COLOR, -1);
 	}
 else
-	m_info.parentBitmap.SetPalette (paletteManager.Default (), TRANSPARENCY_COLOR, -1, freq);
+	m_info.parentBitmap.SetPalette (paletteManager.Default (), TRANSPARENCY_COLOR, -1);
 Create (fontname);
 }
 

@@ -235,7 +235,7 @@ else {
 	if (nVersion >= 9) {
 		CPalette palette;
 		palette.Read (cf);
-		m_info.image->Remap (&palette, -1, -1);
+		m_info.image->SetPalette (&palette, -1, -1);
 		}
 	struct tm	*t;
 	int			h;
