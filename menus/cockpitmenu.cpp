@@ -120,10 +120,11 @@ if (dir != bShowWeaponIcons) {
 
 for (int i = 0; i < 2; i++) {
 	m = menu + cockpitOpts.windows.nType [i];
-	v = winFuncList [m->m_value];
+	v = m->m_value;
 	if (v != winFunc [i]) {
 		winFunc [i] = v;
-		sprintf (m->m_text, GT (1163 + i), szWindowType [m->m_value]);
+		gameStates.render.cockpit.n3DView [i] = winFuncList [v];
+		sprintf (m->m_text, GT (1163 + i), szWindowType [v]);
 		m->m_bRebuild = 1;
 		}
 	}
