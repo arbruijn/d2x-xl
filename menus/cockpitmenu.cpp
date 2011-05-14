@@ -96,7 +96,7 @@ static const char* szRadarRange [5];
 static const char* szRadarColor [3];
 static const char* szRadarStyle [2];
 
-static int nWinFuncs, winFuncs [CV_FUNC_COUNT];
+static int nWinFuncs, winFunc [2], winFuncList [CV_FUNC_COUNT], winFuncMap [CV_FUNC_COUNT];
 
 //------------------------------------------------------------------------------
 
@@ -120,9 +120,9 @@ if (dir != bShowWeaponIcons) {
 
 for (int i = 0; i < 2; i++) {
 	m = menu + cockpitOpts.windows.nType [i];
-	v = winFuncs [m->m_value];
-	if (v != gameStates.render.cockpit.n3DView [i]) {
-		gameStates.render.cockpit.n3DView [i] = v;
+	v = winFuncList [m->m_value];
+	if (v != winFunc [i]) {
+		winFunc [i] = v;
 		sprintf (m->m_text, GT (1163 + i), szWindowType [m->m_value]);
 		m->m_bRebuild = 1;
 		}
@@ -257,6 +257,32 @@ szTgtInd [2] = TXT_FULL;
 }
 
 //------------------------------------------------------------------------------
+// build a list of all available cockpit window functions
+
+int GatherWindowFunctions (int winFuncList [CV_FUNC_COUNT], int winFuncMap [CV_FUNC_COUNT])
+{
+	int	i = 0;
+
+winFuncList [i++] = CV_NONE;
+if (FindEscort())
+	winFuncList [i++] = CV_ESCORT;
+winFuncList [i++] = CV_REAR;
+if ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)) 
+	winFuncList [i++] = CV_COOP;
+if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView)
+	winFuncList [i++] = CV_MARKER;
+if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
+	 (!(gameData.app.nGameMode & GM_MULTI) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+	winFuncList [i++] = CV_RADAR_TOPDOWN;
+	winFuncList [i++] = CV_RADAR_HEADSUP;
+	}
+memset (winFuncMap, 0xFF, sizeofa (winFuncMap));
+for (int j = 0; j < i; j++)
+	winFuncMap [winFuncList [j]] = j;
+return i;
+}
+
+//------------------------------------------------------------------------------
 
 void DefaultCockpitSettings (void);
 
@@ -270,9 +296,11 @@ void CockpitOptionsMenu (void)
 
 	char	szSlider [50];
 
-nWinFuncs = GatherWindowFunctions (winFuncs);
+nWinFuncs = GatherWindowFunctions (winFuncList, winFuncMap);
+for (i = 0; i < 2; i++)
+	winFunc [i] = winFuncMap [gameStates.render.cockpit.n3DView [i]];
 for (i = 0; i < nWinFuncs; i++)
-	szWindowType [i] = GT (1156 + winFuncs [i]);
+	szWindowType [i] = GT (1156 + winFuncList [i]);
 
 InitStrings ();
 
@@ -324,8 +352,8 @@ do {
 	m.AddText ("", 0);
 
 	for (i = 0; i < 2; i++) {
-		sprintf (szSlider, GT (1163 + i), szWindowType [gameStates.render.cockpit.n3DView [i]]);
-		cockpitOpts.windows.nType [i] = m.AddSlider (szSlider, gameStates.render.cockpit.n3DView [0], 0, nWinFuncs - 1, i ? KEY_R : KEY_L, HTX_CPIT_WINTYPE);
+		sprintf (szSlider, GT (1163 + i), szWindowType [winFunc [i]]);
+		cockpitOpts.windows.nType [i] = m.AddSlider (szSlider, winFunc [i], 0, nWinFuncs - 1, i ? KEY_R : KEY_L, HTX_CPIT_WINTYPE);
 		}
 
 	sprintf (szSlider, TXT_AUXWIN_SIZE, szWindowSize [gameOpts->render.cockpit.nWindowSize]);
@@ -372,6 +400,8 @@ do {
 #endif
 	} while (i >= 0);
 
+	for (i = 0; i < 2; i++)
+		gameStates.render.cockpit.n3DView [i] = winFuncList [winFunc [i]];
 	GET_VAL (gameOpts->render.cockpit.bReticle, optReticle);
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bMissileView, optMissiles);

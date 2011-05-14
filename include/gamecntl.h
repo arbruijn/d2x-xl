@@ -6,6 +6,5 @@ void PauseGame (void);
 void ResumeGame (void);
 int DoGamePause (void);
 int SelectNextWindowFunction (int nWindow);
-int GatherWindowFunctions (int* nWinFuncs);
 
 #endif //__GAMECNTL_H

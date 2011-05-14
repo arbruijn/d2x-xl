@@ -325,28 +325,6 @@ SavePlayerProfile();
 return 1;	 //bScreenChanged
 }
 
-//------------------------------------------------------------------------------
-//switch a cockpit window to the next function
-int GatherWindowFunctions (int* nWinFuncs)
-{
-	int	i = 0;
-
-nWinFuncs [i++] = CV_NONE;
-if (FindEscort())
-	nWinFuncs [i++] = CV_ESCORT;
-nWinFuncs [i++] = CV_REAR;
-if ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)) 
-	nWinFuncs [i++] = CV_COOP;
-if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView)
-	nWinFuncs [i++] = CV_MARKER;
-if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-	 (!(gameData.app.nGameMode & GM_MULTI) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
-	nWinFuncs [i++] = CV_RADAR_TOPDOWN;
-	nWinFuncs [i++] = CV_RADAR_HEADSUP;
-	}
-return i;
-}
-
 //	Testing functions ----------------------------------------------------------
 
 #if DBG
