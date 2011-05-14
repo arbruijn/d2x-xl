@@ -976,7 +976,10 @@ m_bRadar = bRadar;
 bPauseGame = Setup (bPauseGame, xEntryTime);
 bRedrawScreen = 0;
 if (bRadar) {
+	int bRenderToTexture = ogl.m_features.bRenderToTexture.Apply ();
+	ogl.m_features.bRenderToTexture = 0;
 	Render ();
+	ogl.m_features.bRenderToTexture = bRenderToTexture;
 
 	ogl.m_states.nContrast = nContrast;
 	if (!--m_bDisplay) {
