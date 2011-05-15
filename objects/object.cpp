@@ -106,7 +106,7 @@ m_weaponInfo [ROBOT_SMARTMSL_ID] |= OBJ_IS_MISSILE;
 
 m_weaponInfo [MEGAMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
 m_weaponInfo [EARTHSHAKER_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
-m_weaponInfo [EARTHSHAKER_MEGA_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
+m_weaponInfo [EARTHSHAKER_MEGA_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON | OBJ_BOUNCES;
 m_weaponInfo [ROBOT_MEGAMSL_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
 m_weaponInfo [ROBOT_EARTHSHAKER_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON;
 m_weaponInfo [ROBOT_SHAKER_MEGA_ID] |= OBJ_IS_MISSILE | OBJ_IS_SPLASHDMG_WEAPON | OBJ_BOUNCES;
@@ -1674,7 +1674,17 @@ return IsWeapon () && ((m_weaponInfo [Id ()] & OBJ_IS_GATLING_ROUND) != 0);
 
 bool CObject::Bounces (void) 
 { 
-return IsWeapon () && ((mType.physInfo.flags & PF_BOUNCE) != 0) && ((m_weaponInfo [Id ()] & OBJ_BOUNCES) != 0);
+#if DBG
+if (!(IsWeapon () || IsMissile ()))
+	return false;
+if ((m_weaponInfo [Id ()] & OBJ_BOUNCES) == 0)
+	return false;
+if ((mType.physInfo.flags & PF_BOUNCE) == 0)
+	return false;
+return true;
+#else
+return (IsWeapon () || IsMissile ()) && ((mType.physInfo.flags & PF_BOUNCE) != 0) && ((m_weaponInfo [Id ()] & OBJ_BOUNCES) != 0);
+#endif
 }
 
 //------------------------------------------------------------------------------
