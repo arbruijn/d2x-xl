@@ -533,13 +533,13 @@ if (gameStates.render.nLightingMethod) {
 			prl->render.xDistance = (fix) ((xLightDist /*- F2X (prl->info.fRad)*/) / prl->info.fRange);
 			if (prl->render.xDistance > xMaxLightRange)
 				continue;
-#if 1
+#if 0
 			CFloatVector vLightDirf;
 			vLightDirf.Assign (vLightDir / xLightDist);
-			if (CFloatVector::Dot (vLightDirf, prl->info.vDirf) < -0.1)
+			if (CFloatVector::Dot (vLightDirf, prl->info.vDirf) < -0.25)
 				continue;
 			vLightDirf.Assign (SEGMENTS [nSegment].Side (nSide)->Normal (2));
-			if (CFloatVector::Dot (vLightDirf, prl->info.vDirf) > -0.1)
+			if (CFloatVector::Dot (vLightDirf, prl->info.vDirf) > -0.25)
 				continue;
 #endif
 			}

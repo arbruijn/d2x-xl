@@ -484,7 +484,7 @@ for (i = nStart; i < nEnd; i++) {
 						*pc = gameData.render.color.ambient [nVertex].color;
 					else {
 						tFaceColor *pvc = gameData.render.color.vertices + nVertex;
-#if DBG
+#if 0 //DBG
 						pvc->color.red = 
 						pvc->color.green = 
 						pvc->color.blue = 1.0f;

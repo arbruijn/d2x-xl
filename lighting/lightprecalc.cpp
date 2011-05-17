@@ -333,6 +333,9 @@ else
 viewer.info.nSegment = nStartSeg;
 gameData.objs.viewerP = &viewer;
 for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
+#if DBG
+	sideP = segP->m_sides + nSide;
+#endif
 	if (bLights && gameStates.render.bPerPixelLighting) {
 		if (0 <= (nChildSeg = segP->m_children [nSide])) {
 			gameData.segs.SetSegVis (nStartSeg, nChildSeg, bLights);

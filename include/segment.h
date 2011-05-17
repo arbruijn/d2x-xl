@@ -169,8 +169,8 @@ class CSide {
 		ushort			m_nOvlOrient : 2;
 #endif
 		tUVL     		m_uvls [4];
-		CFixVector		m_normals [2];  // 2 normals, if quadrilateral, both the same.
-		CFloatVector	m_fNormals [2];
+		CFixVector		m_normals [3];  // 2 normals, if quadrilateral, both the same.
+		CFloatVector	m_fNormals [3];
 		CFixVector		m_rotNorms [2];
 		CFixVector		m_vCenter;
 		fix				m_rads [2];
