@@ -50,7 +50,7 @@ CRadar radar;
 
 // -----------------------------------------------------------------------------------
 
-int				CRadar::radarRanges [5] = {0, 100, 200, 300, 1000};
+int				CRadar::radarRanges [5] = {0, 100, 250, 500, 2000};
 float				CRadar::radarSizes [3] = {2.0f, 3.0f, 4.0f};
 float				CRadar::sizeOffsets [2][3] = {{4.0f, 2.0f, 0.0f}, {4.0f, 2.0f, 0.0f}};
 
@@ -304,7 +304,7 @@ s = 1.0f - fabs (m) / RADAR_RANGE;
 h = 3 * s;
 a += a * h;
 glColor4f (r + r * h, g + g * h, b + b * h, (float) sqrt (a));
-h = radarSizes [gameOpts->render.cockpit.nRadarSize] * 0.05f;
+h = radarSizes [gameOpts->render.cockpit.nRadarSize] * 0.0875f;
 h += h * s;
 glTranslatef (v [0].v.coord.x, v [0].v.coord.y, v [0].v.coord.z);
 OglDrawEllipse (BLIP_SLICES, GL_POLYGON, h, 0, h, 0, sinCosBlip);
@@ -325,7 +325,7 @@ void CRadar::RenderObjects (int bAbove)
 	CFixMatrix	mOrient = CFixMatrix::IDENTITY;
 
 // glPushMatrix ();
-glLineWidth (2);
+glLineWidth (GLfloat (2 + gameOpts->render.cockpit.nRadarSize));
 FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objs.consoleP)) {
 		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)) {

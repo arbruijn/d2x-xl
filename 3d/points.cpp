@@ -18,6 +18,7 @@ COPYRIGHT 1993-1998PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 #include "3d.h"
 #include "globvars.h"
+#include "canvas.h"
 
 // -----------------------------------------------------------------------------------
 //checks for overflow & divides if ok, fillig in r

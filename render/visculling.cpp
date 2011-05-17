@@ -679,7 +679,7 @@ if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
 g3sPoint& point = gameData.segs.points [nVertex];
-#if DBG
+#if 0 //DBG
 point.p3_flags = 0;
 #else
 if (!(point.p3_flags & PF_PROJECTED)) 
@@ -754,7 +754,7 @@ renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
 g3sPoint* pointP = &gameData.segs.points [0];
 for (i = gameData.segs.nVertices; i; i--, pointP++) {
 	pointP->p3_flags = 0;
-	pointP->p3_codes = 0;
+	//pointP->p3_codes = 0;
 	}
 
 #if DBG

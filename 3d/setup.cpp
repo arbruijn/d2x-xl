@@ -35,6 +35,8 @@ void G3StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 //CCanvas::fCanvH2 = (float) CCanvas::Current ()->Height () * 0.5f;
 //CCanvas::xCanvW2 = I2X (CCanvas::Current ()->Width ()) / 2;
 //CCanvas::xCanvH2 = I2X (CCanvas::Current ()->Height ()) / 2;
+CCanvas::Current ()->SetWidth ();
+CCanvas::Current ()->SetHeight ();
 transformation.ComputeAspect ();
 InitFreePoints ();
 ogl.StartFrame (bFlat, bResetColorBuf, xStereoSeparation);
@@ -47,6 +49,8 @@ gameStates.render.bDepthSort = 1;
 void G3EndFrame (int nWindow)
 {
 ogl.EndFrame (nWindow);
+CCanvas::Current ()->SetWidth ();
+CCanvas::Current ()->SetHeight ();
 nFreePoints = 0;
 }
 

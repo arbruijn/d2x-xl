@@ -101,15 +101,21 @@ class CCanvas : public CBitmap {
 		void SetColorRGB15bpp (ushort c, ubyte alpha);
 		inline void SetColorRGBi (int i) { SetColorRGB (RGBA_RED (i), RGBA_GREEN (i), RGBA_BLUE (i), RGBA_ALPHA (i)); }
 
-		inline void SetWidth (short w) { 
-			CBitmap::SetWidth (w); 
+		inline void SetWidth (short w = -1) { 
+			if (w > 0)
+				CBitmap::SetWidth (w); 
+			else
+				w = Width ();
 			if (this == m_current) {
 				fCanvW2 = (float) w * 0.5f;
 				xCanvW2 = I2X (w) / 2;
 				}
 			}
-		inline void SetHeight (short h) { 
-			CBitmap::SetHeight (h); 
+		inline void SetHeight (short h = -1) { 
+			if (h > 0)
+				CBitmap::SetHeight (h); 
+			else
+				h = Height ();
 			if (this == m_current) {
 				fCanvH2 = (float) h * 0.5f;
 				xCanvH2 = I2X (h) / 2;

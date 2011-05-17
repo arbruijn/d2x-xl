@@ -465,12 +465,15 @@ for (y = yMin; y < yMax; y++) {
 			}
 		}
 	}
+#pragma omp critical
+{
 if (bBlack)
 	m_data.nColor |= 1;
 else if (bWhite)
 	m_data.nColor |= 2;
 else 
 	m_data.nColor |= 4;
+}
 }
 
 //------------------------------------------------------------------------------
