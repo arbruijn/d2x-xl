@@ -300,7 +300,7 @@ void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, shor
 	CSegment*		segP, *childP;
 	CSide*			sideP;
 	short				nSegment, nSide, nChildSeg, nChildSide, i;
-	CFixVector		fVec;
+	CFixVector		fVec, uVec, rVec;
 	CObject			viewer;
 
 //PrintLog ("computing visibility of segment %d\n", nStartSeg);
@@ -312,7 +312,7 @@ if (nStartSeg == nDbgSeg)
 segP = SEGMENTS + nStartSeg;
 sideP = segP->m_sides + nFirstSide;
 if (!bLights)
-	viewer.info.position.vPos = SEGMENTS [nStartSeg].Center ();
+	
 viewer.info.nSegment = nStartSeg;
 gameData.objs.viewerP = &viewer;
 
@@ -321,18 +321,49 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	sideP = segP->m_sides + nSide;
 #endif
 	fVec = sideP->m_normals [2];
-	if (!bLights) 
+	if (!bLights) {
+		viewer.info.position.vPos = sideP->Center () + fVec;
+		//viewer.info.position.vPos = SEGMENTS [nStartSeg].Center ();
 		fVec.Neg (); // point from segment center outwards
+		rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
+		CFixVector::Normalize (rVec);
+		CFixVector::Cross (uVec, fVec, rVec);
+		viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
+#if 0 //DBG
+		int i;
+		do {
+			for (i = 0; i < 4; i++) {
+				CFixVector v = VERTICES [sideP->m_corners [i]] - viewer.info.position.vPos;
+				CFixVector::Normalize (v);
+				if (CFixVector::Dot (v, fVec) < 46341) { // I2X * cos (90 / 2), where 90 is the view angle
+					viewer.info.position.vPos -= fVec;
+					break;
+					}
+				}
+			} while (i < 4);
+#endif
+		}
 	else { // point from side center across the segment
 		if (bLights == 5) { // from side center, pointing to normal
-			viewer.info.position.vPos = sideP->Center ();
+			viewer.info.position.vPos = sideP->Center () + fVec;
+			rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
+			CFixVector::Normalize (rVec);
+			CFixVector::Cross (uVec, fVec, rVec);
+			viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
 			}
 		else { // from side corner, pointing to average between vector from center to corner and side normal
 			viewer.info.position.vPos = VERTICES [sideP->m_corners [bLights - 1]];
-			CFixVector h = viewer.info.position.vPos - sideP->Center ();
+			CFixVector h = sideP->Center () - viewer.info.position.vPos;
 			CFixVector::Normalize (h);
 			fVec = CFixVector::Avg (fVec, h);
 			CFixVector::Normalize (fVec);
+			rVec = sideP->m_normals [2];
+			rVec.Neg ();
+			rVec = CFixVector::Avg (rVec, h);
+			CFixVector::Normalize (rVec);
+			CFixVector::Cross (uVec, fVec, rVec);
+			viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
+			//viewer.info.position.mOrient = CFixMatrix::Create (&fVec, 0);
 			}
 		if (gameStates.render.bPerPixelLighting) {
 			if (0 <= (nChildSeg = segP->m_children [nSide])) {
@@ -348,7 +379,6 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			}
 		}
 
-	viewer.info.position.mOrient = CFixMatrix::Create (&fVec, 0);
 	fix w = CCanvas::Current ()->Width ();
 	fix h = CCanvas::Current ()->Height ();
 	CCanvas::Current ()->SetWidth (1024);
