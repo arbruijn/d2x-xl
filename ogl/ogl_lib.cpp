@@ -454,8 +454,13 @@ if (gameStates.render.bRearView < 0)
 m_data.depthScale.v.coord.x = float (ZFAR / (ZFAR - ZNEAR));
 m_data.depthScale.v.coord.y = float (ZNEAR * ZFAR / (ZNEAR - ZFAR));
 m_data.depthScale.v.coord.z = float (ZFAR - ZNEAR);
+#if 1
+m_data.windowScale.dim.x = 1.0f / float (screen.Width ());
+m_data.windowScale.dim.y = 1.0f / float (screen.Height ());
+#else
 m_data.windowScale.dim.x = 1.0f / float (CCanvas::Current ()->Width ());
 m_data.windowScale.dim.y = 1.0f / float (CCanvas::Current ()->Height ());
+#endif
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 transformation.SetupProjection (aspectRatio);
 glMatrixMode (GL_MODELVIEW);
