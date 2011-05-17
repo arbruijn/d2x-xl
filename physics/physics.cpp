@@ -93,7 +93,7 @@ if (gameOpts->gameplay.nAutoLeveling == 1)	// old way: used floor's Normal as up
 else if (gameOpts->gameplay.nAutoLeveling == 2) {	 // new CPlayerData leveling code: use Normal of CSide closest to our up vec
 	CSide* sideP = SEGMENTS [objP->info.nSegment].m_sides + nBestSide;
 	if (sideP->FaceCount () == 2) {
-		desiredUpVec = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
+		desiredUpVec = sideP->m_normals [2];
 		CFixVector::Normalize (desiredUpVec);
 		}
 	else

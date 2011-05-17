@@ -428,7 +428,7 @@ else
 
 void COGL::SetupProjection (void)
 {
-gameStates.render.glAspect = m_states.bUseTransform ? double (screen.Width ()) / double (screen.Height ()) : 1.0;
+gameStates.render.glAspect = m_states.bUseTransform ? double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ()) : 1.0;
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 float aspectRatio = 1.0f; //(float (screen.Width ()) / float (screen.Height ())) / (float (CCanvas::Current ()->Width ()) / float (CCanvas::Current ()->Height ())); // ratio of current aspect to 4:3
@@ -454,8 +454,8 @@ if (gameStates.render.bRearView < 0)
 m_data.depthScale.v.coord.x = float (ZFAR / (ZFAR - ZNEAR));
 m_data.depthScale.v.coord.y = float (ZNEAR * ZFAR / (ZNEAR - ZFAR));
 m_data.depthScale.v.coord.z = float (ZFAR - ZNEAR);
-m_data.windowScale.dim.x = 1.0f / float (screen.Width ());
-m_data.windowScale.dim.y = 1.0f / float (screen.Height ());
+m_data.windowScale.dim.x = 1.0f / float (CCanvas::Current ()->Width ());
+m_data.windowScale.dim.y = 1.0f / float (CCanvas::Current ()->Height ());
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 transformation.SetupProjection (aspectRatio);
 glMatrixMode (GL_MODELVIEW);

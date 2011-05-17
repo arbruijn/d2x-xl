@@ -96,7 +96,6 @@ ogl.BindTexture (lmP->handle);
 if ((nError = glGetError ()))
 	return 0;
 #endif
-glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -521,7 +520,7 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 	sideP = SEGMENTS [m_data.faceP->m_info.nSegment].m_sides + m_data.faceP->m_info.nSide;
 	memcpy (m_data.sideVerts, m_data.faceP->m_info.index, sizeof (m_data.sideVerts));
 	m_data.nType = (sideP->m_nType == SIDE_IS_QUAD) || (sideP->m_nType == SIDE_IS_TRI_02);
-	m_data.vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
+	m_data.vNormal = sideP->m_normals [2];
 	CFixVector::Normalize (m_data.vNormal);
 	m_data.vcd.vertNorm.Assign (m_data.vNormal);
 	CFloatVector3::Normalize (m_data.vcd.vertNorm);
@@ -772,11 +771,15 @@ if (gameStates.render.bPerPixelLighting) {
 
 int SetupLightmap (CSegFace* faceP)
 {
+#if DBG
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
 if (!lightmapManager.Bind (i))
 	return 0;
 GLuint h = lightmapManager.Buffer (i)->handle;
-#if 1
+#if 0 //!DBG
 if (0 <= ogl.IsBound (h))
 	return 1;
 #endif

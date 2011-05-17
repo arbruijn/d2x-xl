@@ -991,17 +991,29 @@ void CQuadMeshBuilder::SetupLMapTexCoord (tTexCoord2f *texCoordP)
 	 {{LMAP_SIZE, 1.0f - LMAP_SIZE}}
 	};
 #endif
+#if DBG
+if ((m_faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+if (m_faceP->m_info.nLightmap == 2211)
+	m_faceP->m_info.nLightmap = 1;
+#endif
 int i = m_faceP->m_info.nLightmap % LIGHTMAP_BUFSIZE;
 float x = (float) (i % LIGHTMAP_ROWSIZE);
 float y = (float) (i / LIGHTMAP_ROWSIZE);
-texCoordP [0].v.u = x / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
-texCoordP [0].v.v = y / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+float step = 1.0f / (float) LIGHTMAP_ROWSIZE;
+#if 0
+const float border = 0.0f;
+#else
+const float border = 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+#endif
+texCoordP [0].v.u = 
+texCoordP [3].v.u = x * step + border;
 texCoordP [1].v.u =
-texCoordP [2].v.u = (x + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
-texCoordP [1].v.v = y / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
-texCoordP [2].v.v = (y + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
-texCoordP [3].v.u = x / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
-texCoordP [3].v.v = (y + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+texCoordP [2].v.u = (x + 1) * step - border;
+texCoordP [0].v.v = 
+texCoordP [1].v.v = y * step + border;
+texCoordP [2].v.v = 
+texCoordP [3].v.v = (y + 1) * step - border;
 }
 
 //------------------------------------------------------------------------------
@@ -1012,8 +1024,7 @@ void CQuadMeshBuilder::SetupFace (void)
 	CFixVector		vNormal;
 	CFloatVector3	vNormalf;
 
-vNormal = m_sideP->m_normals [0] + m_sideP->m_normals [1];
-vNormal *= I2X (1) / 2;
+vNormal = m_sideP->m_normals [2];
 vNormalf.Assign (vNormal);
 for (i = 0; i < 4; i++) {
 	j = m_sideVerts [i];

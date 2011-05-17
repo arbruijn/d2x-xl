@@ -300,7 +300,7 @@ void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, shor
 	CSegment*		segP, *childP;
 	CSide*			sideP;
 	short				nSegment, nSide, nChildSeg, nChildSide, i;
-	CFixVector		vNormal;
+	CFixVector		fVec, rVec, uVec;
 	CObject			viewer;
 
 //PrintLog ("computing visibility of segment %d\n", nStartSeg);
@@ -312,7 +312,7 @@ if (nStartSeg == nDbgSeg)
 segP = SEGMENTS + nStartSeg;
 sideP = segP->m_sides + nFirstSide;
 if (bLights) {
-	vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
+	fVec = sideP->m_normals [2];
 	if (bLights == 5) {
 		viewer.info.position.vPos = sideP->Center ();
 		}
@@ -320,16 +320,19 @@ if (bLights) {
 		viewer.info.position.vPos = VERTICES [sideP->m_corners [bLights - 1]];
 		CFixVector h = sideP->Center () - viewer.info.position.vPos;
 		CFixVector::Normalize (h);
-		vNormal = CFixVector::Avg (vNormal, h);
-		CFixVector::Normalize (vNormal);
+		fVec = CFixVector::Avg (fVec, h);
+		CFixVector::Normalize (fVec);
 		}
+	rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]);
+	rVec -= sideP->Center ();
+	CFixVector::Normalize (rVec);
+	CFixVector::Cross (uVec, fVec, rVec);
 	}
 else
 	viewer.info.position.vPos = SEGMENTS [nStartSeg].Center ();
 viewer.info.nSegment = nStartSeg;
 gameData.objs.viewerP = &viewer;
 for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
-
 	if (bLights && gameStates.render.bPerPixelLighting) {
 		if (0 <= (nChildSeg = segP->m_children [nSide])) {
 			gameData.segs.SetSegVis (nStartSeg, nChildSeg, bLights);
@@ -344,10 +347,22 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 		}
 	// view from segment center towards current side
 	if (!bLights) {
-		vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
-		vNormal.Neg ();
+		fVec = sideP->m_normals [2];
+		fVec.Neg ();
+		rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]);
+		rVec -= sideP->Center ();
+		CFixVector::Normalize (rVec);
+		CFixVector::Cross (uVec, fVec, rVec);
 		}
-	viewer.info.position.mOrient = CFixMatrix::Create (&vNormal, 0);
+#if 1
+	viewer.info.position.mOrient = CFixMatrix::Create (&fVec, 0);
+#else
+	viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
+#endif
+	fix w = CCanvas::Current ()->Width ();
+	fix h = CCanvas::Current ()->Height ();
+	CCanvas::Current ()->SetWidth (1024);
+	CCanvas::Current ()->SetHeight (1024);
 	gameStates.render.bRenderIndirect = -1;
 	G3StartFrame (0, 0, 0);
 	RenderStartFrame ();
@@ -361,6 +376,8 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BuildRenderSegList (nStartSeg, 0, true);
 	gameStates.render.nShadowPass = 0;
 	G3EndFrame (0);
+	CCanvas::Current ()->SetWidth (w);
+	CCanvas::Current ()->SetHeight (h);
 	//PrintLog ("   flagging visible segments\n");
 	for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 		if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
@@ -628,7 +645,7 @@ loadIdx = 0;
 PrintLog ("Looking for precompiled light data\n");
 if (LoadLightData (nLevel))
 	return;
-else
+
 #if MULTI_THREADED_PRECALC
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
@@ -662,6 +679,7 @@ else {
 		}
 	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}
+
 gameData.segs.bVertVis.Destroy ();
 PrintLog ("Saving precompiled light data\n");
 SaveLightData (nLevel);

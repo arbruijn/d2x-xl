@@ -320,8 +320,7 @@ else {
 #else
 lightManager.SetNearestToSegment (faceP->m_info.nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 #endif
-vNormal = sideP->m_normals [0] + sideP->m_normals [1];
-vNormal *= (I2X (1) / 2);
+vNormal = sideP->m_normals [2];
 #if 1
 for (i = 0; i < 4; i++)
 	lightManager.SetNearestToVertex (faceP - FACES.faces, faceP->m_info.index [i], &vNormal, 0, 0, 1, 0);
@@ -513,7 +512,7 @@ if (gameStates.render.nLightingMethod) {
 			prl = prl;
 #endif
 		vLightDir = *vPixelPos - prl->info.vPos;
-		xLightDist = vLightDir.Mag();
+		xLightDist = vLightDir.Mag ();
 		nLightSeg = prl->info.nSegment;
 #if 0
 		if ((nLightSeg != nSegment) || (prl->info.nSide != nSide)) {
@@ -524,12 +523,25 @@ if (gameStates.render.nLightingMethod) {
 				continue;
 			}
 #endif
+#if DBG
+		if ((nDbgSeg >= 0) && (nDbgSeg == nLightSeg))
+			nDbgSeg = nDbgSeg;
+#endif
 		if ((nLightSeg < 0) || !gameData.segs.LightVis (nLightSeg, nSegment))
 			continue;
 		if (!(bForce = (prl->info.nSegment == nSegment) && (prl->info.nSide == nSide))) {
-			prl->render.xDistance = (fix) ((CFixVector::Dist (*vPixelPos, prl->info.vPos) /*- F2X (prl->info.fRad)*/) / prl->info.fRange);
+			prl->render.xDistance = (fix) ((xLightDist /*- F2X (prl->info.fRad)*/) / prl->info.fRange);
 			if (prl->render.xDistance > xMaxLightRange)
 				continue;
+#if 1
+			CFloatVector vLightDirf;
+			vLightDirf.Assign (vLightDir / xLightDist);
+			if (CFloatVector::Dot (vLightDirf, prl->info.vDirf) < -0.1)
+				continue;
+			vLightDirf.Assign (SEGMENTS [nSegment].Side (nSide)->Normal (2));
+			if (CFloatVector::Dot (vLightDirf, prl->info.vDirf) > -0.1)
+				continue;
+#endif
 			}
 		SetActive (activeLightsP, prl, 1, nThread, bForce);
 		}

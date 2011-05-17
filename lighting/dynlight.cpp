@@ -435,7 +435,7 @@ else if (nSegment >= 0) {
 		m_data.nVariable += pl->info.bVariable;
 		CSide* sideP = SEGMENTS [nSegment].m_sides + nSide;
 		pl->info.vPos = sideP->Center ();
-		CFixVector vOffs = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
+		CFixVector vOffs = sideP->m_normals [2];
 		pl->info.vDirf.Assign (vOffs);
 		CFloatVector::Normalize (pl->info.vDirf);
 #if 0

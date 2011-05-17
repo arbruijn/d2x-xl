@@ -319,6 +319,8 @@ else {
 	for (; i < 6; i++)
 		AddToVertexNormal (m_vertices [i], m_normals [1]);
 	}
+m_normals [2] = CFixVector::Avg (m_normals [0], m_normals [1]);
+m_fNormals [2] = CFloatVector::Avg (m_fNormals [0], m_fNormals [1]);
 }
 
 // -------------------------------------------------------------------------------

@@ -484,6 +484,11 @@ for (i = nStart; i < nEnd; i++) {
 						*pc = gameData.render.color.ambient [nVertex].color;
 					else {
 						tFaceColor *pvc = gameData.render.color.vertices + nVertex;
+#if DBG
+						pvc->color.red = 
+						pvc->color.green = 
+						pvc->color.blue = 1.0f;
+#else
 						if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
 							if (nLights + lightManager.VariableVertLights () [nVertex] == 0) {
 								pvc->color.red = c.color.red + gameData.render.color.ambient [nVertex].color.red;
@@ -496,11 +501,12 @@ for (i = nStart; i < nEnd; i++) {
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
-#if DBG
+#	if DBG
 							if (nVertex == nDbgVertex)
 								nVertex = nVertex;
-#endif
+#	endif
 							}
+#endif
 						*pc = pvc->color;
 						}
 					if (nColor) {
