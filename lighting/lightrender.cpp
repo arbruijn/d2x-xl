@@ -535,12 +535,14 @@ if (gameStates.render.nLightingMethod) {
 				continue;
 #if 0
 			CFloatVector vLightDirf;
-			vLightDirf.Assign (vLightDir / xLightDist);
-			if (CFloatVector::Dot (vLightDirf, prl->info.vDirf) < -0.25)
+			vLightDir / xLightDist;
+			vLightDirf.Assign (vLightDir);
+			if (CFloatVector::Dot (vLightDirf, prl->info.vDirf) < -0.1)
 				continue;
-			vLightDirf.Assign (SEGMENTS [nSegment].Side (nSide)->Normal (2));
-			if (CFloatVector::Dot (vLightDirf, prl->info.vDirf) > -0.25)
+#	if 1
+			if (CFixVector::Dot (vLightDir, SEGMENTS [nSegment].Side (nSide)->Normal (2)) > I2X (1) / 10)
 				continue;
+#	endif
 #endif
 			}
 		SetActive (activeLightsP, prl, 1, nThread, bForce);

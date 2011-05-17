@@ -83,8 +83,8 @@ ubyte ProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
 CFloatVector3 v = transformation.m_info.projection * p;
-s.x = fix (fxCanvW2 - v.v.coord.x * fxCanvW2 / v.v.coord.z);
-s.y = fix (fxCanvH2 - v.v.coord.y * fxCanvH2 / v.v.coord.z);
+s.x = fix (CCanvas::fCanvW2 - v.v.coord.x * CCanvas::fCanvW2 / v.v.coord.z);
+s.y = fix (CCanvas::fCanvH2 - v.v.coord.y * CCanvas::fCanvH2 / v.v.coord.z);
 return flags | PF_PROJECTED;
 }
 
@@ -118,8 +118,8 @@ gluProject ((double) p.v.coord.x, (double) p.v.coord.y, (double) p.v.coord.z,
 s.x = fix (x);
 s.y = fix (y);
 #else
-s.x = fix (fxCanvW2 - x * fxCanvW2 / z);
-s.y = fix (fxCanvH2 - y * fxCanvH2 / z);
+s.x = fix (CCanvas::xCanvW2f - x * CCanvas::xCanvW2f / z);
+s.y = fix (CCanvas::fCanvH2 - y * CCanvas::fCanvH2 / z);
 #endif
 return flags | PF_PROJECTED;
 }
@@ -131,8 +131,8 @@ void G3Point2Vec (CFixVector *v,short sx,short sy)
 	CFixVector h;
 	CFixMatrix m;
 
-h.v.coord.x =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2, xCanvW2), transformation.m_info.scale.v.coord.z, transformation.m_info.scale.v.coord.x);
-h.v.coord.y = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2, xCanvH2), transformation.m_info.scale.v.coord.z, transformation.m_info.scale.v.coord.y);
+h.v.coord.x =  FixMulDiv (FixDiv ((sx<<16) - CCanvas::xCanvW2, CCanvas::xCanvW2), transformation.m_info.scale.v.coord.z, transformation.m_info.scale.v.coord.x);
+h.v.coord.y = -FixMulDiv (FixDiv ((sy<<16) - CCanvas::xCanvH2, CCanvas::xCanvH2), transformation.m_info.scale.v.coord.z, transformation.m_info.scale.v.coord.y);
 h.v.coord.z = I2X (1);
 CFixVector::Normalize (h);
 m = transformation.m_info.view [1].Transpose();

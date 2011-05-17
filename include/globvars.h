@@ -22,9 +22,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_POINTS_IN_POLY 100
 
-extern fix xCanvW2,xCanvH2;				//fixed-point width,height/2
-extern float fxCanvW2, fxCanvH2;
-
 extern int nFreePoints;
 
 //vertex buffers for polygon drawing and clipping

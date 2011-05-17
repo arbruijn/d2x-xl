@@ -20,12 +20,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 CTransformation	transformation;
 
-fix		xCanvW2;				//fixed-point width/2
-fix		xCanvH2;				//fixed-point height/2
-
-float		fxCanvW2;
-float		fxCanvH2;
-
 //vertex buffers for polygon drawing and clipping
 g3sPoint * Vbuf0[MAX_POINTS_IN_POLY];
 g3sPoint *Vbuf1[MAX_POINTS_IN_POLY];

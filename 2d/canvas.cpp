@@ -26,8 +26,14 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "canvas.h"
 
 CCanvas*	CCanvas::m_current = NULL;
+fix CCanvas::xCanvW2;
+fix CCanvas::xCanvH2;
+float CCanvas::fCanvW2;
+float CCanvas::fCanvH2;
+
 CStack<CCanvas*> CCanvas::m_save;
 CScreen* CScreen::m_current = NULL;
+
 
 CScreen screen;
 

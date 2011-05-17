@@ -57,6 +57,10 @@ class CCanvas : public CBitmap {
 		static CStack<CCanvas*> m_save;
 
 	public:
+		static fix					xCanvW2, xCanvH2;
+		static float				fCanvW2, fCanvH2;
+
+	public:
 		CCanvas () { Init (); }
 		~CCanvas () {}
 
@@ -96,6 +100,21 @@ class CCanvas : public CBitmap {
 		void SetColorRGB (ubyte red, ubyte green, ubyte blue, ubyte alpha);
 		void SetColorRGB15bpp (ushort c, ubyte alpha);
 		inline void SetColorRGBi (int i) { SetColorRGB (RGBA_RED (i), RGBA_GREEN (i), RGBA_BLUE (i), RGBA_ALPHA (i)); }
+
+		inline void SetWidth (short w) { 
+			CBitmap::SetWidth (w); 
+			if (this == m_current) {
+				fCanvW2 = (float) w * 0.5f;
+				xCanvW2 = I2X (w) / 2;
+				}
+			}
+		inline void SetHeight (short h) { 
+			CBitmap::SetHeight (h); 
+			if (this == m_current) {
+				fCanvH2 = (float) h * 0.5f;
+				xCanvH2 = I2X (h) / 2;
+				}
+			}
 
 		inline bool Clip (int x, int y) { return this->CBitmap::Clip (x, y); }
 

@@ -31,10 +31,10 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void G3StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 {
 //set int w,h & fixed-point w,h/2
-fxCanvW2 = (float) CCanvas::Current ()->Width () * 0.5f;
-fxCanvH2 = (float) CCanvas::Current ()->Height () * 0.5f;
-xCanvW2 = I2X (CCanvas::Current ()->Width ()) / 2;
-xCanvH2 = I2X (CCanvas::Current ()->Height ()) / 2;
+//CCanvas::fCanvW2 = (float) CCanvas::Current ()->Width () * 0.5f;
+//CCanvas::fCanvH2 = (float) CCanvas::Current ()->Height () * 0.5f;
+//CCanvas::xCanvW2 = I2X (CCanvas::Current ()->Width ()) / 2;
+//CCanvas::xCanvH2 = I2X (CCanvas::Current ()->Height ()) / 2;
 transformation.ComputeAspect ();
 InitFreePoints ();
 ogl.StartFrame (bFlat, bResetColorBuf, xStereoSeparation);
