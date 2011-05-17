@@ -300,7 +300,7 @@ void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, shor
 	CSegment*		segP, *childP;
 	CSide*			sideP;
 	short				nSegment, nSide, nChildSeg, nChildSide, i;
-	CFixVector		fVec, rVec, uVec;
+	CFixVector		fVec;
 	CObject			viewer;
 
 //PrintLog ("computing visibility of segment %d\n", nStartSeg);
@@ -311,57 +311,44 @@ if (nStartSeg == nDbgSeg)
 #endif
 segP = SEGMENTS + nStartSeg;
 sideP = segP->m_sides + nFirstSide;
-if (bLights) {
-	fVec = sideP->m_normals [2];
-	if (bLights == 5) {
-		viewer.info.position.vPos = sideP->Center ();
-		}
-	else {
-		viewer.info.position.vPos = VERTICES [sideP->m_corners [bLights - 1]];
-		CFixVector h = sideP->Center () - viewer.info.position.vPos;
-		CFixVector::Normalize (h);
-		fVec = CFixVector::Avg (fVec, h);
-		CFixVector::Normalize (fVec);
-		}
-	rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]);
-	rVec -= sideP->Center ();
-	CFixVector::Normalize (rVec);
-	CFixVector::Cross (uVec, fVec, rVec);
-	}
-else
+if (!bLights)
 	viewer.info.position.vPos = SEGMENTS [nStartSeg].Center ();
 viewer.info.nSegment = nStartSeg;
 gameData.objs.viewerP = &viewer;
+
 for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #if DBG
 	sideP = segP->m_sides + nSide;
 #endif
-	if (bLights && gameStates.render.bPerPixelLighting) {
-		if (0 <= (nChildSeg = segP->m_children [nSide])) {
-			gameData.segs.SetSegVis (nStartSeg, nChildSeg, bLights);
-			childP = SEGMENTS + nChildSeg;
-			for (nChildSide = 0; nChildSide < 6; nChildSide++) {
-				if (0 <= (nSegment = childP->m_children [nSide])) {
-					while (!gameData.segs.SetSegVis (nChildSeg, nSegment, bLights))
-						;
+	fVec = sideP->m_normals [2];
+	if (!bLights) 
+		fVec.Neg (); // point from segment center outwards
+	else { // point from side center across the segment
+		if (bLights == 5) { // from side center, pointing to normal
+			viewer.info.position.vPos = sideP->Center ();
+			}
+		else { // from side corner, pointing to average between vector from center to corner and side normal
+			viewer.info.position.vPos = VERTICES [sideP->m_corners [bLights - 1]];
+			CFixVector h = viewer.info.position.vPos - sideP->Center ();
+			CFixVector::Normalize (h);
+			fVec = CFixVector::Avg (fVec, h);
+			CFixVector::Normalize (fVec);
+			}
+		if (gameStates.render.bPerPixelLighting) {
+			if (0 <= (nChildSeg = segP->m_children [nSide])) {
+				gameData.segs.SetSegVis (nStartSeg, nChildSeg, bLights);
+				childP = SEGMENTS + nChildSeg;
+				for (nChildSide = 0; nChildSide < 6; nChildSide++) {
+					if (0 <= (nSegment = childP->m_children [nSide])) {
+						while (!gameData.segs.SetSegVis (nChildSeg, nSegment, bLights))
+							;
+						}
 					}
 				}
 			}
 		}
-	// view from segment center towards current side
-	if (!bLights) {
-		fVec = sideP->m_normals [2];
-		fVec.Neg ();
-		rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]);
-		rVec -= sideP->Center ();
-		CFixVector::Normalize (rVec);
-		CFixVector::Cross (uVec, fVec, rVec);
-		}
-#if 1
+
 	viewer.info.position.mOrient = CFixMatrix::Create (&fVec, 0);
-#else
-	viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
-#endif
 	fix w = CCanvas::Current ()->Width ();
 	fix h = CCanvas::Current ()->Height ();
 	CCanvas::Current ()->SetWidth (1024);

@@ -807,8 +807,13 @@ for (l = 0; l < nRenderDepth; l++) {
 #if 0
 				RotateVertexList (8, sv);
 #else
-				for (int i = 0; i < 8; i++)
+				for (int i = 0; i < 8; i++) {
+#if DBG
+					if (sv [i] == nDbgVertex)
+						nDbgVertex = nDbgVertex;
+#endif
 					ProjectRenderPoint (sv [i]);
+					}
 #endif
 				bRotated = 1;
 				}
