@@ -33,7 +33,7 @@
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 16
+#define LIGHT_DATA_VERSION 17
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis.Buffer () ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
