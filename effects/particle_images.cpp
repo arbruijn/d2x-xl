@@ -311,10 +311,6 @@ for (i = 0; i < 2; i++)
 
 bool CParticleImageManager::SetupMultipleTextures (CBitmap* bmP1, CBitmap* bmP2, CBitmap* bmP3)
 {
-if (!ogl.m_features.bTextureArrays.Available ())
-	return false;
-if (m_textureArray)
-	return true;
 if (!bmP1)
 	return false;
 
@@ -324,6 +320,11 @@ int nHeight = bmP1->Height ();
 if ((bmP2->Width () != nWidth) || (bmP2->Height () != nHeight) || 
 	 (bmP3->Width () != nWidth) || (bmP3->Height () != nHeight))
 	return false;
+
+if (!ogl.m_features.bTextureArrays.Available ())
+	return false;
+if (m_textureArray)
+	return true;
 
 ogl.GenTextures (1, &m_textureArray);
 if (!m_textureArray)

@@ -196,6 +196,7 @@ bool CParticleBuffer::Flush (float fBrightness, bool bForce)
 {
 	static vec3 dMax = {5.0f, 3.0f, 5.0f}; // blend ranges for smoke, sparks, bubbles
 	int nShader = 0;
+	bool bHaveTexture = false;
 
 if (!m_iBuffer)
 	return false;
@@ -224,75 +225,86 @@ if (f)
 #endif
 #if ENABLE_FLUSH
 PROF_START
-if (Init ()) {
-	CBitmap* bmP = ParticleImageInfo (m_nType % PARTICLE_TYPES).bmP;
-	if (!bmP) {
-		PROF_END(ptParticles)
-		Reset ();
-		return false;
-		}
-	if (bmP->CurFrame ())
-		bmP = bmP->CurFrame ();
-	if (bmP->Bind (0)) {
-		PROF_END(ptParticles)
-		Reset ();
-		return false;
-		}
+if (!Init ()) {
+	Reset ();
+	return false;
+	}
 
 #if LAZY_RENDER_SETUP
 	Setup ();
 #endif
 
-	ogl.SetBlendMode ((m_nType < PARTICLE_TYPES) ? m_bEmissive : OGL_BLEND_MULTIPLY);
 
-	if (ogl.m_features.bShaders) {
+if (ogl.m_features.bShaders) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
-		if (m_nType <= SMOKE_PARTICLES) {
-			if ((gameOpts->render.particles.nQuality == 2) && !automap.Display () && lightManager.Headlights ().nLights) {
-				tRgbaColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
-				lightManager.Headlights ().SetupShader (1, 0, &color);
-				}
-			else 
-				shaderManager.Deploy (-1);
+	if (m_nType <= SMOKE_PARTICLES) {
+		if ((gameOpts->render.particles.nQuality == 2) && !automap.Display () && lightManager.Headlights ().nLights) {
+			tRgbaColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
+			lightManager.Headlights ().SetupShader (1, 0, &color);
 			}
-		else
-#endif
-		if (gameStates.render.cameras.bActive /*|| !gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)*/)
+		else 
 			shaderManager.Deploy (-1);
+		}
+	else
+#endif
+	if (gameStates.render.cameras.bActive /*|| !gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)*/)
+		shaderManager.Deploy (-1);
 #if HAVE_PARTICLE_SHADER
-		else if (0 <= (nShader = UseParticleShader ())) {
-			if (!particleManager.LoadShader (nShader, dMax))
-				shaderManager.Deploy (-1);
-			else if (nShader & 1) {
+	else if (0 <= (nShader = UseParticleShader ())) {
+		if (!particleManager.LoadShader (nShader, dMax))
+			shaderManager.Deploy (-1);
+		else {
+			bHaveTexture = true;
+			if (nShader & 1) {
 				particleImageManager.LoadMultipleTextures (GL_TEXTURE1); // texture arrays don't seem to like being bound to another than GL_TEXTURE0 though - this doesn't work
 				}
 			else {
+				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
+				ParticleImageInfo (SMOKE_PARTICLES).bmP->Bind (0);
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
 				ParticleImageInfo (SPARK_PARTICLES).bmP->Bind (0);
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE2);
 				ParticleImageInfo (BUBBLE_PARTICLES).bmP->Bind (0);
 				}	
 			}
+		}
 #endif
-		else if (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES) && ((m_nType <= WATERFALL_PARTICLES) || (m_nType >= PARTICLE_TYPES))) { // load soft blending shader
-			if (!glareRenderer.LoadShader (5, (m_nType < PARTICLE_TYPES) ? m_bEmissive : -1))
-				shaderManager.Deploy (-1);
-			}
-		else
+	else if (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES) && ((m_nType <= WATERFALL_PARTICLES) || (m_nType >= PARTICLE_TYPES))) { // load soft blending shader
+		if (!glareRenderer.LoadShader (5, (m_nType < PARTICLE_TYPES) ? m_bEmissive : -1))
 			shaderManager.Deploy (-1);
 		}
-	glNormal3f (0, 0, -1);
-#if !TRANSFORM_PARTICLE_VERTICES
-	ogl.SetupTransform (1);
-#endif
-	ogl.SetFaceCulling (false);
-	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
-	ogl.SetFaceCulling (true);
-#if !TRANSFORM_PARTICLE_VERTICES
-	ogl.ResetTransform (1);
-#endif
-	glNormal3f (1, 1, 1);
+	else
+		shaderManager.Deploy (-1);
 	}
+
+if (!bHaveTexture) {
+CBitmap* bmP = ParticleImageInfo (m_nType % PARTICLE_TYPES).bmP;
+if (!bmP) {
+	PROF_END(ptParticles)
+	Reset ();
+	return false;
+	}
+if (bmP->CurFrame ())
+	bmP = bmP->CurFrame ();
+if (bmP->Bind (0)) {
+	PROF_END(ptParticles)
+	Reset ();
+	return false;
+	}
+ogl.SetBlendMode ((m_nType < PARTICLE_TYPES) ? m_bEmissive : OGL_BLEND_MULTIPLY);
+}
+
+glNormal3f (0, 0, -1);
+#if !TRANSFORM_PARTICLE_VERTICES
+ogl.SetupTransform (1);
+#endif
+ogl.SetFaceCulling (false);
+OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
+ogl.SetFaceCulling (true);
+#if !TRANSFORM_PARTICLE_VERTICES
+ogl.ResetTransform (1);
+#endif
+glNormal3f (1, 1, 1);
 PROF_END(ptParticles)
 #endif
 Reset ();

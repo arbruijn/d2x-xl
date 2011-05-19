@@ -43,6 +43,8 @@
 #include "rendermine.h"
 #include "gpgpu_lighting.h"
 
+#define SUSPENDABLE_SHADERS 1
+
 //------------------------------------------------------------------------------
 
 #if 1
@@ -405,17 +407,24 @@ if (nShader >= int (m_shaders.ToS ()))
 	return 0;
 GLhandleARB shaderProg = (nShader < 0) ? 0 : m_shaders [nShader].program;
 if (m_nCurrent == nShader) {
+#if SUSPENDABLE_SHADERS
 	if ((nShader >= 0) && m_bSuspendable)
 		Set ("bSuspended", 0);
+#endif
 	return -intptr_t (shaderProg); // < 0 => program already bound
 	}
+#if SUSPENDABLE_SHADERS
 if ((nShader < 0) && bSuspendable && m_bSuspendable)
 	Set ("bSuspended", 1);
-else {
+else 
+#endif
+	{
 	m_nCurrent = nShader;
 	glUseProgramObjectARB (shaderProg);
+#if SUSPENDABLE_SHADERS
 	if (m_bSuspendable = bSuspendable)
 		Set ("bSuspended", 0);
+#endif
 	gameData.render.nShaderChanges++;
 	}
 return intptr_t (shaderProg);

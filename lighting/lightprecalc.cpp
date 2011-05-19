@@ -33,7 +33,7 @@
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 17
+#define LIGHT_DATA_VERSION 18
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis.Buffer () ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
@@ -309,9 +309,9 @@ ogl.SetTransform (1);
 if (nStartSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
+SetSegAndVertVis (nStartSeg, nStartSeg, bLights);
 segP = SEGMENTS + nStartSeg;
 sideP = segP->m_sides + nFirstSide;
-if (!bLights)
 	
 viewer.info.nSegment = nStartSeg;
 gameData.objs.viewerP = &viewer;
@@ -328,7 +328,6 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 		rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
 		CFixVector::Normalize (rVec);
 		CFixVector::Cross (uVec, fVec, rVec);
-		viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
 #if 0 //DBG
 		int i;
 		do {
@@ -349,7 +348,6 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
 			CFixVector::Normalize (rVec);
 			CFixVector::Cross (uVec, fVec, rVec);
-			viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
 			}
 		else { // from side corner, pointing to average between vector from center to corner and side normal
 			viewer.info.position.vPos = VERTICES [sideP->m_corners [bLights - 1]];
@@ -362,9 +360,12 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			rVec = CFixVector::Avg (rVec, h);
 			CFixVector::Normalize (rVec);
 			CFixVector::Cross (uVec, fVec, rVec);
-			viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
-			//viewer.info.position.mOrient = CFixMatrix::Create (&fVec, 0);
 			}
+#if 0 //DBG
+		viewer.info.position.mOrient = CFixMatrix::Create (&fVec, 0);
+#else
+		viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
+#endif
 		if (gameStates.render.bPerPixelLighting) {
 			if (0 <= (nChildSeg = segP->m_children [nSide])) {
 				gameData.segs.SetSegVis (nStartSeg, nChildSeg, bLights);

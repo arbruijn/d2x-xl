@@ -290,7 +290,8 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
 #endif
 	if (gameStates.render.bApplyDynLight) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
-		lightManager.SetNearestStatic (nSegment, 1, 1);
+		//lightManager.ResetNearestStatic (nSegment, 0);
+		lightManager.SetNearestStatic (nSegment, 1, 0);
 		}
 	RenderObjList (i, gameStates.render.nWindow);
 	if (gameStates.render.bApplyDynLight)
