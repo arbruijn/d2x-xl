@@ -537,10 +537,10 @@ if (gameStates.render.nLightingMethod) {
 			CFloatVector vLightDirf;
 			vLightDir / xLightDist;
 			vLightDirf.Assign (vLightDir);
-			if (CFloatVector::Dot (vLightDirf, prl->info.vDirf) < -0.1)
+			if (CFloatVector::Dot (vLightDirf, prl->info.vDirf) < -0.5)
 				continue;
 #	if 1
-			if (CFixVector::Dot (vLightDir, SEGMENTS [nSegment].Side (nSide)->Normal (2)) > I2X (1) / 10)
+			if (CFixVector::Dot (vLightDir, SEGMENTS [nSegment].Side (nSide)->Normal (2)) > I2X (1) / 2)
 				continue;
 #	endif
 #endif

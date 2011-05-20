@@ -126,6 +126,7 @@ int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nS
 {
 	CHitQuery	fq (FQ_TRANSWALL, vSource, vDest, -1, objP ? objP->Index () : -1, 1, xRad);
 	CHitData		hitData;
+
 if (SPECTATOR (objP))
 	fq.nSegment = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 else

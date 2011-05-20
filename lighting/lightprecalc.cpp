@@ -299,7 +299,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide
 
 void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, short nLastSide = 5, int bLights = 0)
 {
-	CSegment*		segP, *childP;
+	CSegment*		startSegP, *childP;
 	CSide*			sideP;
 	short				nSegment, nSide, nChildSeg, nChildSide, i;
 	CFixVector		fVec, uVec, rVec;
@@ -312,15 +312,15 @@ if (nStartSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 SetSegAndVertVis (nStartSeg, nStartSeg, bLights);
-segP = SEGMENTS + nStartSeg;
-sideP = segP->m_sides + nFirstSide;
+startSegP = SEGMENTS + nStartSeg;
+sideP = startSegP->m_sides + nFirstSide;
 	
 viewer.info.nSegment = nStartSeg;
 gameData.objs.viewerP = &viewer;
 
 for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #if DBG
-	sideP = segP->m_sides + nSide;
+	sideP = startSegP->m_sides + nSide;
 #endif
 	fVec = sideP->m_normals [2];
 	if (!bLights) {
@@ -332,8 +332,6 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 		fVec.Neg (); // point from segment center outwards
 		rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
 		CFixVector::Normalize (rVec);
-		CFixVector::Cross (uVec, fVec, rVec);
-		CFixVector::Cross (rVec, fVec, uVec);
 #if 0 //DBG
 		int i;
 		do {
@@ -353,8 +351,6 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			viewer.info.position.vPos = sideP->Center () + fVec;
 			rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
 			CFixVector::Normalize (rVec);
-			CFixVector::Cross (uVec, fVec, rVec);
-			CFixVector::Cross (rVec, fVec, uVec);
 			}
 		else { // from side corner, pointing to average between vector from center to corner and side normal
 #if DBG
@@ -370,10 +366,9 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			h.Neg ();
 			rVec = CFixVector::Avg (rVec, h);
 			CFixVector::Normalize (rVec);
-			CFixVector::Cross (uVec, fVec, rVec);
 			}
 		if (gameStates.render.bPerPixelLighting) {
-			if (0 <= (nChildSeg = segP->m_children [nSide])) {
+			if (0 <= (nChildSeg = startSegP->m_children [nSide])) {
 				gameData.segs.SetSegVis (nStartSeg, nChildSeg, bLights);
 				childP = SEGMENTS + nChildSeg;
 				for (nChildSide = 0; nChildSide < 6; nChildSide++) {
@@ -389,8 +384,9 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #if 0 //DBG
 		viewer.info.position.mOrient = CFixMatrix::Create (&fVec, 0);
 #else
-		CFixVector::Cross (rVec, fVec, uVec);
-		CFixVector::Cross (uVec, fVec, rVec);
+		CFixVector::Cross (uVec, fVec, rVec); // create uVec perpendicular to fVec and rVec
+		CFixVector::Cross (rVec, fVec, uVec); // adjust rVec to be perpendicular to fVec and uVec (eliminate rounding errors)
+		CFixVector::Cross (uVec, fVec, rVec); // adjust uVec to be perpendicular to fVec and rVec (eliminate rounding errors)
 #	if DBG
 		fix dot = CFixVector::Dot (rVec, fVec);
 		if ((dot < -1) || (dot > 1))
@@ -431,8 +427,10 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		if (nSegment >= gameData.segs.nSegments)
 			continue;
 #endif
+#if 1
 		if (!SegmentIsVisible (SEGMENTS + nSegment))
 			continue;
+#endif
 		SetSegAndVertVis (nStartSeg, nSegment, bLights);
 		}
 	gameStates.render.nShadowPass = 0;
@@ -464,9 +462,42 @@ for (i = startI; i < endI; i++)
 
 //------------------------------------------------------------------------------
 
+void CheckLightVisibility (short nStartSeg, short nSide, short nSegment, fix xLightRange)
+{
+	int bVisible = gameData.segs.LightVis (nStartSeg, nSegment);
+
+if (!bVisible)
+	return;
+
+CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nStartSeg, -1, 1, 0);
+CHitData	hitData;
+CSegment* segP = SEGMENTS + nSegment;
+CSide* sideP = segP->m_sides;
+
+int i;
+
+for (i = 0; (i < 4); i++) {
+	fq.p0 = &VERTICES [sideP->m_corners [i]];
+	for (int j = 0; (j < 8); j++) {
+		fq.p1 = &VERTICES [segP->m_verts [j]];
+		if (CFixVector::Dist (*fq.p0, *fq.p1) > xLightRange)
+			continue;
+		int nHitType = FindHitpoint (&fq, &hitData);
+		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nSegment)))
+			return;
+		}
+	}
+
+i = gameData.segs.LightVisIdx (nStartSeg, nSegment);
+gameData.segs.bSegVis [1][i >> 3] &= ~(1 << (i & 7));
+}
+
+//------------------------------------------------------------------------------
+
 void ComputeLightVisibility (int startI)
 {
-	int			i, endI;
+	int	i, j, endI;
+	fix	xLightRange;
 
 PrintLog ("computing light visibility (%d)\n", startI);
 if (startI <= 0) {
@@ -486,9 +517,13 @@ if (startI < 0)
 // every segment can see itself and its neighbours
 CDynLight* pl = lightManager.Lights () + startI;
 for (i = endI - startI; i; i--, pl++)
-	if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0))
-		for (int j = 1; j <= 5; j++)
+	if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
+		for (j = 1; j <= 5; j++)
 			ComputeSingleSegmentVisibility (pl->info.nSegment, pl->info.nSide, pl->info.nSide, j);
+		xLightRange = fix (MAX_LIGHT_RANGE * pl->info.fRange);
+		for (j = 0; j < gameData.segs.nSegments; j++)
+			CheckLightVisibility (pl->info.nSegment, pl->info.nSide, j, xLightRange);
+		}
 }
 
 //------------------------------------------------------------------------------
