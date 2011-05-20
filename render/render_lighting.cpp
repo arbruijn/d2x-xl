@@ -43,7 +43,18 @@ inline int SegmentIsVisible (CSegment *segP)
 {
 if (automap.Display ())
 	return 1;
+#if 0
 return RotateVertexList (8, segP->m_verts).ccAnd == 0;
+#else
+ubyte code = 0xFF;
+
+for (int i = 0; i < 8; i++) {
+	code &= ProjectRenderPoint (i);
+	if (!code)
+		return 1;
+	}
+return 0;
+#endif
 }
 
 //------------------------------------------------------------------------------

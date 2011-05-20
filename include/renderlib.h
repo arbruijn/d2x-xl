@@ -47,6 +47,7 @@ g3sCodes RotateVertexList (int nVerts, short* vertexIndexP);
 void RotateSideNorms (void);
 // Given a list of point numbers, project any that haven't been projected
 void ProjectVertexList (int nv, short *pointIndex);
+ubyte ProjectRenderPoint (short nVertex);
 
 void TransformSideCenters (void);
 #if USE_SEGRADS

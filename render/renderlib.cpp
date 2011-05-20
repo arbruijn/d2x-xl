@@ -602,7 +602,14 @@ colorP->color.alpha = 1;
 g3sPoint *RotateVertex (int i)
 {
 g3sPoint *p = gameData.segs.points + i;
-if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) {
+#if !DBG
+if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) 
+#endif
+	{
+#if DBG
+	if (i == nDbgVertex)
+		nDbgVertex = nDbgVertex;
+#endif
 	G3TransformAndEncodePoint (p, gameData.segs.vertices [i]);
 #if TRANSP_DEPTH_HASH
 	fix d = p->p3_vec.Mag ();
@@ -633,7 +640,7 @@ return p;
 g3sCodes RotateVertexList (int nVertices, short* vertexIndexP)
 {
 	int			i;
-	g3sPoint		*p;
+	g3sPoint*	p;
 	g3sCodes		cc = {0, 0xff};
 
 for (i = 0; i < nVertices; i++) {
@@ -655,6 +662,36 @@ for (i = 0; i < nVertices; i++) {
 	if (!(gameData.segs.points [j].p3_flags & PF_PROJECTED))
 		G3ProjectPoint (&gameData.segs.points [j]);
 	}
+}
+
+//------------------------------------------------------------------------------
+
+ubyte ProjectRenderPoint (short nVertex)
+{
+#if DBG
+if (nVertex == nDbgVertex)
+	nDbgVertex = nDbgVertex;
+#endif
+g3sPoint& point = gameData.segs.points [nVertex];
+#if 0 //DBG
+point.p3_flags = 0;
+#else
+if (!(point.p3_flags & PF_PROJECTED)) 
+#endif
+{
+	transformation.Transform (point.p3_vec, point.p3_src = gameData.segs.vertices [nVertex]);
+	G3ProjectPoint (&point);
+	point.p3_codes = (point.p3_vec.v.coord.z < 0) ? CC_BEHIND : 0;
+	if (point.p3_screen.x < 0)
+		point.p3_codes |= CC_OFF_LEFT;
+	else if (point.p3_screen.x > screen.Width ())
+		point.p3_codes |= CC_OFF_RIGHT;
+	if (point.p3_screen.y < 0)
+		point.p3_codes |= CC_OFF_BOT;
+	else if (point.p3_screen.y > screen.Height ())
+		point.p3_codes |= CC_OFF_TOP;
+	}
+return point.p3_codes;
 }
 
 //------------------------------------------------------------------------------

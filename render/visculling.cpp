@@ -672,35 +672,6 @@ gameData.render.zMax = vCenter.v.coord.z + d1 + r;
 
 //------------------------------------------------------------------------------
 
-static void ProjectRenderPoint (short nVertex)
-{
-#if DBG
-if (nVertex == nDbgVertex)
-	nDbgVertex = nDbgVertex;
-#endif
-g3sPoint& point = gameData.segs.points [nVertex];
-#if 0 //DBG
-point.p3_flags = 0;
-#else
-if (!(point.p3_flags & PF_PROJECTED)) 
-#endif
-{
-	transformation.Transform (point.p3_vec, point.p3_src = gameData.segs.vertices [nVertex]);
-	G3ProjectPoint (&point);
-	point.p3_codes = (point.p3_vec.v.coord.z < 0) ? CC_BEHIND : 0;
-	if (point.p3_screen.x < 0)
-		point.p3_codes |= CC_OFF_LEFT;
-	else if (point.p3_screen.x > screen.Width ())
-		point.p3_codes |= CC_OFF_RIGHT;
-	if (point.p3_screen.y < 0)
-		point.p3_codes |= CC_OFF_BOT;
-	else if (point.p3_screen.y > screen.Height ())
-		point.p3_codes |= CC_OFF_TOP;
-	}
-}
-
-//------------------------------------------------------------------------------
-
 void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors, int nThread)
 {
 	int			nCurrent, nHead, nTail, nStart, nSide;
@@ -950,7 +921,7 @@ for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 		nDbgSeg = nDbgSeg;
 #endif
 #if 1
-	if ((gameData.render.mine.segRenderList [0][i] >= 0) && gameStates.render.nShadowMap) {
+	if (gameStates.render.nShadowMap && (gameData.render.mine.segRenderList [0][i] >= 0)) {
 		CSegment* segP = &SEGMENTS [gameData.render.mine.segRenderList [0][i]];
 		if (CFixVector::Dist (viewPos, segP->Center ()) > I2X (400) + segP->MaxRad ())
 			gameData.render.mine.segRenderList [0][i] = -gameData.render.mine.segRenderList [0][i] - 1;
