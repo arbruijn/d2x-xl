@@ -283,7 +283,7 @@ for (i = 0; i < 6; i++) {
 	for (j = 0; j < 4; j++) {
 		CFixVector v = VERTICES [segVerts [sideVerts [j]]] - c;
 		CFixVector::Normalize (v);
-		if (CFixVector::Dot (m_normals [i], v) < 0)) {
+		if (CFixVector::Dot (m_normals [i], v) < 0) {
 			if (!--nPtInside)
 				return false;
 			bPtInside = 0;

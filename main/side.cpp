@@ -89,7 +89,7 @@ return -1;
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupCorners (short* verts, int* index)
+void CSide::SetupCorners (short* verts, short* index)
 {
 m_corners [0] = verts [index [0]];
 m_corners [1] = verts [index [1]];
@@ -99,7 +99,7 @@ m_corners [3] = verts [index [3]];
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupVertexList (short* verts, int* index)
+void CSide::SetupVertexList (short* verts, short* index)
 {
 m_nFaces = -1;
 if (m_nType == SIDE_IS_QUAD) {
@@ -181,7 +181,7 @@ else if (m_nType == SIDE_IS_TRI_13) {
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, short* verts, int* index)
+void CSide::SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, short* verts, short* index)
 {
 m_nType = SIDE_IS_QUAD;
 m_normals [0] = 
@@ -193,7 +193,7 @@ SetupVertexList (verts, index);
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupAsTriangles (bool bSolid, short* verts, int* index)
+void CSide::SetupAsTriangles (bool bSolid, short* verts, short* index)
 {
 	CFixVector		vNormal;
 	fix				dot;

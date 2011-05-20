@@ -866,7 +866,7 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 			if (offScreenFlags || (bProjected && CodePortal (facePortal, curPortal)))
 				continue;
-			if (!transformation.Frustum ().Contains (sv, s2v, SEGMENTS [nChildSeg].Side (nSide)->Normal (2)))
+			if (!transformation.Frustum ().Contains (sv, s2v, &SEGMENTS [nChildSeg].Side (nSide)->Normal (2)))
 				continue;
 
 			//maybe add this segment

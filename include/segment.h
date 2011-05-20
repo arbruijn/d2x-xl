@@ -239,11 +239,11 @@ class CSide {
 		bool IsTextured (void);
 
 	private:
-		void SetupCorners (short* verts, int* index);
-		void SetupVertexList (short* verts, int* index);
+		void SetupCorners (short* verts, short* index);
+		void SetupVertexList (short* verts, short* index);
 		void SetupFaceVertIndex (void);
-		void SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, short* verts, int* index);
-		void SetupAsTriangles (bool bSolid, short* verts, int* index);
+		void SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, short* verts, short* index);
+		void SetupAsTriangles (bool bSolid, short* verts, short* index);
 	};
 
 //------------------------------------------------------------------------------
