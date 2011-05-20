@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // -----------------------------------------------------------------------------------
 
-inline int SegmentIsVisible (CSegment *segP)
+int SegmentIsVisible (CSegment *segP)
 {
 if (automap.Display ())
 	return 1;

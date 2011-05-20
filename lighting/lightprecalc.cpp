@@ -31,6 +31,8 @@
 //static SDL_mutex* semaphore;
 #endif
 
+int SegmentIsVisible (CSegment *segP);
+
 //------------------------------------------------------------------------------
 
 #define LIGHT_DATA_VERSION 18
@@ -331,6 +333,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 		rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
 		CFixVector::Normalize (rVec);
 		CFixVector::Cross (uVec, fVec, rVec);
+		CFixVector::Cross (rVec, fVec, uVec);
 #if 0 //DBG
 		int i;
 		do {
@@ -351,6 +354,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
 			CFixVector::Normalize (rVec);
 			CFixVector::Cross (uVec, fVec, rVec);
+			CFixVector::Cross (rVec, fVec, uVec);
 			}
 		else { // from side corner, pointing to average between vector from center to corner and side normal
 #if DBG
@@ -385,6 +389,19 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #if 0 //DBG
 		viewer.info.position.mOrient = CFixMatrix::Create (&fVec, 0);
 #else
+		CFixVector::Cross (rVec, fVec, uVec);
+		CFixVector::Cross (uVec, fVec, rVec);
+#	if DBG
+		fix dot = CFixVector::Dot (rVec, fVec);
+		if ((dot < -1) || (dot > 1))
+			dot = 0;
+		dot = CFixVector::Dot (rVec, uVec);
+		if ((dot < -1) || (dot > 1))
+			dot = 0;
+		dot = CFixVector::Dot (fVec, uVec);
+		if ((dot < -1) || (dot > 1))
+			dot = 0;
+#	endif
 		viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
 #endif
 
@@ -393,6 +410,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	CCanvas::Current ()->SetWidth (1024);
 	CCanvas::Current ()->SetHeight (1024);
 	gameStates.render.bRenderIndirect = -1;
+	gameStates.render.nShadowMap = 1;
 	G3StartFrame (0, 0, 0);
 	RenderStartFrame ();
 	G3SetViewMatrix (viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
@@ -403,11 +421,6 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 	gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
 	BuildRenderSegList (nStartSeg, 0, true);
-	gameStates.render.nShadowPass = 0;
-	CCanvas::Current ()->SetWidth (w);
-	CCanvas::Current ()->SetHeight (h);
-	transformation.ComputeAspect ();
-	G3EndFrame (0);
 	//PrintLog ("   flagging visible segments\n");
 	for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 		if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
@@ -418,8 +431,16 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		if (nSegment >= gameData.segs.nSegments)
 			continue;
 #endif
+		if (!SegmentIsVisible (SEGMENTS + nSegment))
+			continue;
 		SetSegAndVertVis (nStartSeg, nSegment, bLights);
 		}
+	gameStates.render.nShadowPass = 0;
+	CCanvas::Current ()->SetWidth (w);
+	CCanvas::Current ()->SetHeight (h);
+	transformation.ComputeAspect ();
+	G3EndFrame (0);
+	gameStates.render.nShadowMap = 0;
 	}
 ogl.SetTransform (0);
 }

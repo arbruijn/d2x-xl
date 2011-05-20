@@ -824,6 +824,9 @@ for (l = 0; l < nRenderDepth; l++) {
 			for (int nCorner = 0; nCorner < 4; nCorner++) {
 				short nVertex = sv [s2v [nCorner]];
 				g3sPoint& point = gameData.segs.points [nVertex];
+#if DBG
+				point.p3_flags = point.p3_codes = 0;
+#endif
 				if (point.p3_codes & CC_BEHIND) {
 					bProjected = 0;
 					break;
@@ -833,9 +836,6 @@ for (l = 0; l < nRenderDepth; l++) {
 				if (!(point.p3_flags & PF_PROJECTED))
 					G3ProjectPoint (&point);
 #else
-#	if DBG
-				point.p3_flags = point.p3_codes = 0;
-#	endif
 				ProjectRenderPoint (sv [s2v [nCorner]]);
 #endif
 				offScreenFlags &= (point.p3_codes & ~CC_BEHIND);
