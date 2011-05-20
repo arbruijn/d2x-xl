@@ -799,11 +799,11 @@ for (l = 0; l < nRenderDepth; l++) {
 			}
 #endif
 			if (bCullIfBehind) {
-				short* s2v = sideVertIndex [nChild];
-				if (gameData.segs.points [sv [s2v [0]]].m_codes &
-					 gameData.segs.points [sv [s2v [1]]].m_codes &
-					 gameData.segs.points [sv [s2v [2]]].m_codes &
-					 gameData.segs.points [sv [s2v [3]]].m_codes & CC_BEHIND)
+				short* s2v = segP->Sides (nChild)->m_corners;;
+				if (gameData.segs.points [s2v [0]].m_codes &
+					 gameData.segs.points [s2v [1]].m_codes &
+					 gameData.segs.points [s2v [2]].m_codes &
+					 gameData.segs.points [s2v [3]].m_codes & CC_BEHIND)
 					continue; // all face vertices behind the viewer => face invisible to the viewer
 #if DBG
 				fix dot;
@@ -833,10 +833,11 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 			tPortal facePortal = {32767, -32767, 32767, -32767};
 			int bProjected = 1;	//0 when at least one point wasn't projected
-			short* s2v = sideVertIndex [nSide];
+			CSide* sideP = segP->Side (nSide);
+			short* s2v = sideP->m_corners;
 			ubyte offScreenFlags = 0xff;
 			for (int nCorner = 0; nCorner < 4; nCorner++) {
-				short nVertex = sv [s2v [nCorner]];
+				short nVertex = s2v [nCorner];
 				g3sPoint& point = gameData.segs.points [nVertex];
 #if DBG
 				point.m_flags = point.m_codes = 0;
@@ -866,7 +867,7 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 			if (offScreenFlags || (bProjected && CodePortal (facePortal, curPortal)))
 				continue;
-			if (!transformation.Frustum ().Contains (sv, s2v, &SEGMENTS [nChildSeg].Side (nSide)->Normal (2)))
+			if (!transformation.Frustum ().Contains (sideP, &SEGMENTS [nChildSeg].Side (nSide)->Normal (2)))
 				continue;
 
 			//maybe add this segment
