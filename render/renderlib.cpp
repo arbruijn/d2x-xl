@@ -678,10 +678,19 @@ point.p3_flags = 0;
 #else
 if (!(point.p3_flags & PF_PROJECTED)) 
 #endif
-{
+	{
+#if 0
 	transformation.Transform (point.p3_vec, point.p3_src = gameData.segs.vertices [nVertex]);
 	G3ProjectPoint (&point);
 	point.p3_codes = (point.p3_vec.v.coord.z < 0) ? CC_BEHIND : 0;
+#else
+	point.p3_src = gameData.segs.vertices [nVertex];
+	CFloatVector3 v;
+	transformation.Transform (v, *((CFloatVector3*) &gameData.segs.fVertices [nVertex]));
+	point.p3_vec.Assign (v);
+	point.p3_codes = (v.v.coord.z < 0.0f) ? CC_BEHIND : 0;
+	ProjectPoint (v, point.p3_screen);
+#endif
 	if (point.p3_screen.x < 0)
 		point.p3_codes |= CC_OFF_LEFT;
 	else if (point.p3_screen.x > screen.Width ())
