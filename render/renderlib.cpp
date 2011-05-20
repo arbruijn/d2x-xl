@@ -700,6 +700,16 @@ if (!(point.p3_flags & PF_PROJECTED))
 		point.p3_codes |= CC_OFF_BOT;
 	else if (point.p3_screen.y > screen.Height ())
 		point.p3_codes |= CC_OFF_TOP;
+#if TRANSP_DEPTH_HASH
+	fix d = point.p3_vec.Mag ();
+	if (gameData.render.zMin > d)
+		gameData.render.zMin = d;
+	if (gameData.render.zMax < d)
+		gameData.render.zMax = d;
+#else
+	if (gameData.render.zMax < point.p3_vec.dir.coord.z)
+		gameData.render.zMax = point.p3_vec.dir.coord.z;
+#endif
 	}
 return point.p3_codes;
 }
