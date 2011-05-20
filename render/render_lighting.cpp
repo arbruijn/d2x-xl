@@ -48,8 +48,12 @@ return RotateVertexList (8, segP->m_verts).ccAnd == 0;
 #else
 ubyte code = 0xFF;
 
+#if DBG
+if (segP->Index () == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
 for (int i = 0; i < 8; i++) {
-	code &= ProjectRenderPoint (i);
+	code &= ProjectRenderPoint (segP->m_verts [i]);
 	if (!code)
 		return 1;
 	}
