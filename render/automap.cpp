@@ -180,39 +180,39 @@ void CAutomap::DrawPlayer (CObject* objP)
 	int			size = objP->info.xSize * (m_bRadar ? 2 : 1);
 //	int			bUseTransform = ogl.m_states.bUseTransform;
 
-spherePoint.p3_index = -1;
+spherePoint.m_index = -1;
 // Draw Console CPlayerData -- shaped like a ellipse with an arrow.
-//spherePoint.p3_vec.SetZero ();
+//spherePoint.m_vec.SetZero ();
 G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
-//transformation.Rotate (&spherePoint.p3_vec, &objP->info.position.vPos, 0);
+//transformation.Rotate (&spherePoint.m_vec, &objP->info.position.vPos, 0);
 G3DrawSphere (&spherePoint, m_bRadar ? objP->info.xSize * 2 : objP->info.xSize, !m_bRadar);
 
 if (m_bRadar && (objP->Index () != LOCALPLAYER.nObject))
 	return;
 if (ogl.SizeVertexBuffer (3)) {
-	headPoint.p3_index =
-	arrowPoint.p3_index = -1;
-	ogl.VertexBuffer () [1].Assign (spherePoint.p3_vec);
+	headPoint.m_index =
+	arrowPoint.m_index = -1;
+	ogl.VertexBuffer () [1].Assign (spherePoint.m_vec);
 	// Draw CPlayerData's up vector
 	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.u * (size*2);
 	G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
-	ogl.VertexBuffer () [0].Assign (arrowPoint.p3_vec);
+	ogl.VertexBuffer () [0].Assign (arrowPoint.m_vec);
 	// Draw shaft of arrow
 	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size * 3);
 	G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
-	ogl.VertexBuffer () [2].Assign (arrowPoint.p3_vec);
+	ogl.VertexBuffer () [2].Assign (arrowPoint.m_vec);
 	ogl.FlushBuffers (GL_LINE_STRIP, 3);
-	ogl.VertexBuffer () [1].Assign (arrowPoint.p3_vec);
+	ogl.VertexBuffer () [1].Assign (arrowPoint.m_vec);
 	// Draw right head of arrow
 	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size*2);
 	vHeadPos += objP->info.position.mOrient.m.dir.r * (size*1);
 	G3TransformAndEncodePoint (&headPoint, vHeadPos);
-	ogl.VertexBuffer () [0].Assign (headPoint.p3_vec);
+	ogl.VertexBuffer () [0].Assign (headPoint.m_vec);
 	// Draw left head of arrow
 	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size*2);
 	vHeadPos += objP->info.position.mOrient.m.dir.r * (size* (-1));
 	G3TransformAndEncodePoint (&headPoint, vHeadPos);
-	ogl.VertexBuffer () [2].Assign (headPoint.p3_vec);
+	ogl.VertexBuffer () [2].Assign (headPoint.m_vec);
 	ogl.FlushBuffers (GL_LINE_STRIP, 3);
 	}
 }
@@ -1090,10 +1090,10 @@ else {
 		ogl.FlushBuffers (GL_LINES, m_nVerts, 3, 0, 1);
 		m_nVerts = 0;
 		}
-	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v0].p3_vec);
+	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v0].m_vec);
 	ogl.ColorBuffer () [m_nVerts] = m_color;
 	m_nVerts++;
-	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v1].p3_vec);
+	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v1].m_vec);
 	ogl.ColorBuffer () [m_nVerts] = m_color;
 	m_nVerts++;
 	}
@@ -1137,7 +1137,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 		}
 
 	cc = RotateVertexList (2, edgeP->verts);
-	distance = gameData.segs.points [edgeP->verts [1]].p3_vec.v.coord.z;
+	distance = gameData.segs.points [edgeP->verts [1]].m_vec.v.coord.z;
 	if (minDistance > distance)
 		minDistance = distance;
 	if (!cc.ccAnd)  {	//all off screen?
@@ -1189,7 +1189,7 @@ while (incr > 0) {
 			v1 = m_brightEdges [j]->verts [0];
 			v2 = m_brightEdges [j + incr]->verts [0];
 
-			if (gameData.segs.points [v1].p3_vec.v.coord.z < gameData.segs.points [v2].p3_vec.v.coord.z) {
+			if (gameData.segs.points [v1].m_vec.v.coord.z < gameData.segs.points [v2].m_vec.v.coord.z) {
 				// If not in correct order, them swap 'em
 				Swap (m_brightEdges [j + incr], m_brightEdges [j]);
 				j -= incr;
@@ -1207,7 +1207,7 @@ for (i = 0; i < nbright; i++) {
 	edgeP = m_brightEdges [i];
 	p1 = gameData.segs.points + edgeP->verts [0];
 	p2 = gameData.segs.points + edgeP->verts [1];
-	fix xDist = p1->p3_vec.v.coord.z - minDistance;
+	fix xDist = p1->m_vec.v.coord.z - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
 	if (xDist < 0)
 		xDist = 0;

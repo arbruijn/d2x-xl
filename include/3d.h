@@ -52,17 +52,17 @@ typedef struct g3sNormal {
 class g3sPoint 
 	{
 	public:
-		CFixVector	p3_src;			//untransformed point
-		CFixVector	p3_vec;			//x,y,z of rotated point
-		tUVL			p3_uvl;			//u,v,l coords
-		tScreenPos	p3_screen;		//screen x&y
-		ubyte			p3_codes;		//clipping codes
-		ubyte			p3_flags;		//projected?
-		short			p3_key;
-		int			p3_index;		//keep structure longword aligned
-		g3sNormal	p3_normal;
+		CFixVector	m_src;			//untransformed point
+		CFixVector	m_vec;			//x,y,z of rotated point
+		tUVL			m_uvl;			//u,v,l coords
+		tScreenPos	m_screen;		//screen x&y
+		ubyte			m_codes;		//clipping codes
+		ubyte			m_flags;		//projected?
+		short			m_key;
+		int			m_index;		//keep structure longword aligned
+		g3sNormal	m_normal;
 
-		g3sPoint () : p3_flags (0) {}
+		g3sPoint () : m_flags (0) {}
 	};
 
 //An CObject, such as a robot
@@ -149,17 +149,17 @@ ubyte ProjectPoint (CFixVector& v, tScreenPos& s, ubyte flags = 0, ubyte codes =
 
 ubyte OglProjectPoint (CFloatVector3& v, tScreenPos& s, ubyte flags = 0, ubyte codes = 0);
 
-//code a point.  fills in the p3_codes field of the point, and returns the codes
+//code a point.  fills in the m_codes field of the point, and returns the codes
 static inline ubyte G3EncodePoint (g3sPoint* p) 
 {
-return p->p3_codes = transformation.Codes (p->p3_vec);
+return p->m_codes = transformation.Codes (p->m_vec);
 }
 
 static inline ubyte G3TransformAndEncodePoint (g3sPoint* dest, const CFixVector& src)
 {
-dest->p3_src = src;
-transformation.Transform (dest->p3_vec, src);
-dest->p3_flags = 0;
+dest->m_src = src;
+transformation.Transform (dest->m_vec, src);
+dest->m_flags = 0;
 return G3EncodePoint (dest);
 }
 

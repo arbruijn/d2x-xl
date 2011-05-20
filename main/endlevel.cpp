@@ -768,7 +768,7 @@ transformation.End ();
 G3TransformAndEncodePoint (&p, gameData.endLevel.satellite.vPos);
 transformation.RotateScaled (vDelta, gameData.endLevel.satellite.vUp);
 G3AddDeltaVec (&pTop, &p, &vDelta);
-if (!(p.p3_codes & CC_BEHIND) && !(p.p3_flags & PF_OVERFLOW)) {
+if (!(p.m_codes & CC_BEHIND) && !(p.m_flags & PF_OVERFLOW)) {
 	int imSave = gameStates.render.nInterpolationMethod;
 	gameStates.render.nInterpolationMethod = 0;
 	//gameData.endLevel.satellite.bmP->SetTranspType (0);
@@ -822,12 +822,12 @@ for (i = 0; i < MAX_STARS; i++) {
 		CCanvas::Current ()->SetColorRGBi (RGB_PAL (intensity, intensity, intensity));
 		intensity-=3;
 		}
-	transformation.RotateScaled (p.p3_vec, stars [i]);
+	transformation.RotateScaled (p.m_vec, stars [i]);
 	G3EncodePoint (&p);
-	if (p.p3_codes == 0) {
-		p.p3_flags &= ~PF_PROJECTED;
+	if (p.m_codes == 0) {
+		p.m_flags &= ~PF_PROJECTED;
 		G3ProjectPoint (&p);
-		DrawPixelClipped (p.p3_screen.x, p.p3_screen.y);
+		DrawPixelClipped (p.m_screen.x, p.m_screen.y);
 		}
 	}
 }

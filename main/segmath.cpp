@@ -197,7 +197,7 @@ return (((index [0] + 3) % 4) == index [1]) || (((index [1] + 3) % 4) == index [
 
 void AddToVertexNormal (int nVertex, CFixVector& vNormal)
 {
-	g3sNormal	*pn = &gameData.segs.points [nVertex].p3_normal;
+	g3sNormal	*pn = &gameData.segs.points [nVertex].m_normal;
 
 #if DBG
 if (nVertex == nDbgVertex)
@@ -215,15 +215,15 @@ void ComputeVertexNormals (void)
 	g3sPoint	*pp;
 
 for (i = gameData.segs.nVertices, pp = gameData.segs.points.Buffer (); i; i--, pp++) {
-	if (1 < (h = pp->p3_normal.nFaces)) {
-		pp->p3_normal.vNormal /= (float) h;
+	if (1 < (h = pp->m_normal.nFaces)) {
+		pp->m_normal.vNormal /= (float) h;
 		/*
-		pp->p3_normal.vNormal.v.c.y /= h;
-		pp->p3_normal.vNormal.v.c.z /= h;
+		pp->m_normal.vNormal.v.c.y /= h;
+		pp->m_normal.vNormal.v.c.z /= h;
 		*/
-		CFloatVector::Normalize (pp->p3_normal.vNormal);
+		CFloatVector::Normalize (pp->m_normal.vNormal);
 		}
-	pp->p3_normal.nFaces = 1;
+	pp->m_normal.nFaces = 1;
 	}
 }
 
@@ -235,8 +235,8 @@ void ResetVertexNormals (void)
 	g3sPoint	*pp;
 
 for (i = gameData.segs.nVertices, pp = gameData.segs.points.Buffer (); i; i--, pp++) {
-	pp->p3_normal.vNormal.SetZero ();
-	pp->p3_normal.nFaces = 0;
+	pp->m_normal.vNormal.SetZero ();
+	pp->m_normal.nFaces = 0;
 	}
 }
 

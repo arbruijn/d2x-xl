@@ -49,8 +49,8 @@ if (norm) {		//have Normal
 else {	//Normal not specified, so must compute
 	CFixVector vTemp;
 	//get three points (rotated) and compute Normal
-	vTemp = CFixVector::Perp(vertlist [0]->p3_vec, vertlist [1]->p3_vec, vertlist [2]->p3_vec);
-	return (CFixVector::Dot (vTemp, vertlist [1]->p3_vec) < 0);
+	vTemp = CFixVector::Perp(vertlist [0]->m_vec, vertlist [1]->m_vec, vertlist [2]->m_vec);
+	return (CFixVector::Dot (vTemp, vertlist [1]->m_vec) < 0);
 	}
 }
 

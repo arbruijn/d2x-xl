@@ -167,7 +167,7 @@ const char* shadowMapFS =
 	"uniform mat4 modelviewProjInverse;\r\n" \
 	"uniform vec3 lightPos;\r\n" \
 	"uniform float lightRange;\r\n" \
-	"#define ZNEAR 0.1\r\n" \
+	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define A (ZNEAR + ZFAR)\r\n" \
 	"#define B (ZNEAR - ZFAR)\r\n" \
@@ -203,7 +203,7 @@ const char* shadowMapFS =
 	"uniform vec2 windowScale;\r\n" \
 	"uniform vec3 lightPos;\r\n" \
 	"uniform float lightRange;\r\n" \
-	"#define ZNEAR 0.1\r\n" \
+	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define A (ZNEAR + ZFAR)\r\n" \
 	"#define B (ZNEAR - ZFAR)\r\n" \

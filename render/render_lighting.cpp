@@ -54,7 +54,7 @@ if (segP->Index () == nDbgSeg)
 #endif
 for (int i = 0; i < 8; i++) {
 #if 0 //DBG
-	gameData.segs.points [segP->m_verts [i]].p3_flags = 0;
+	gameData.segs.points [segP->m_verts [i]].m_flags = 0;
 #endif
 	code &= ProjectRenderPoint (segP->m_verts [i]);
 	if (!code)
@@ -213,7 +213,7 @@ for (i = nStart; i < nEnd; i++) {
 							if (nVertex == nDbgVertex)
 								nDbgVertex = nDbgVertex;
 #endif
-							G3VertexColor(gameData.segs.points[nVertex].p3_normal.vNormal.XYZ (),
+							G3VertexColor(gameData.segs.points[nVertex].m_normal.vNormal.XYZ (),
 											  gameData.segs.fVertices[nVertex].XYZ (), nVertex,
 											  NULL, &c, 1, 0, nThread);
 							lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
@@ -382,7 +382,7 @@ for (i = nStart; i < nEnd; i++) {
 								if (nVertex == nDbgVertex)
 									nDbgVertex = nDbgVertex;
 #endif
-								G3VertexColor (gameData.segs.points [nVertex].p3_normal.vNormal.XYZ (),
+								G3VertexColor (gameData.segs.points [nVertex].m_normal.vNormal.XYZ (),
 													gameData.segs.fVertices [nVertex].XYZ (), nVertex,
 													NULL, &c, 1, 0, nThread);
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);

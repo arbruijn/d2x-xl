@@ -1065,7 +1065,7 @@ void Draw3DReticle (fix xStereoSeparation)
 //	if (!transformation.m_info.bUsePlayerHeadAngles) return;
 
 for (i = 0; i < 4; i++) {
-	reticlePoints [i].p3_index = -1;
+	reticlePoints [i].m_index = -1;
 	pointList [i] = reticlePoints + i;
 	tUVL [i].l = MAX_LIGHT;
 	}
@@ -1325,11 +1325,11 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 		ogl.EndFrame ();
 		//transformation.Pop ();
 #endif
-		if (vPlayerPos.p3_codes == 0) {	//on screen
+		if (vPlayerPos.m_codes == 0) {	//on screen
 			G3ProjectPoint (&vPlayerPos);
-			if (!(vPlayerPos.p3_flags & PF_OVERFLOW)) {
-				fix x = vPlayerPos.p3_screen.x;
-				fix y = screen.Height () - vPlayerPos.p3_screen.y;
+			if (!(vPlayerPos.m_flags & PF_OVERFLOW)) {
+				fix x = vPlayerPos.m_screen.x;
+				fix y = screen.Height () - vPlayerPos.m_screen.y;
 				if (bShowName) {				// Draw callsign on HUD
 					if (nState) {
 						int t = gameStates.app.nSDLTicks [0];
@@ -1358,8 +1358,8 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 					}
 
 				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
-					fix dy = -FixMulDiv (OBJECTS [nObject].info.xSize, I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.p3_vec.v.coord.z);
-//					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, transformation.m_info.scale.y), I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.p3_z);
+					fix dy = -FixMulDiv (OBJECTS [nObject].info.xSize, I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.m_vec.v.coord.z);
+//					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, transformation.m_info.scale.y), I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.m_z);
 					fix dx = FixMul (dy, screen.Aspect ());
 					fix w = dx / 4;
 					fix h = dy / 4;

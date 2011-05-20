@@ -197,13 +197,13 @@ if (pvNormal) {
 		glNormal3f ((GLfloat) X2F ((*pvNormal).v.coord.x),
 						(GLfloat) X2F ((*pvNormal).v.coord.y),
 						(GLfloat) X2F ((*pvNormal).v.coord.z));
-		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->p3_vec);
+		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->m_vec);
 	else {
 		transformation.Rotate (vNormal, *pvNormal, 0);
 		glNormal3f ((GLfloat) X2F (vNormal.v.coord.x),
 						(GLfloat) X2F (vNormal.v.coord.y),
 						(GLfloat) X2F (vNormal.v.coord.z));
-		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
+		//VmVecInc (&vNormal, &pointList [0]->m_vec);
 		}
 //	glNormal3f ((GLfloat) X2F (vNormal.x), (GLfloat) X2F (vNormal.y), (GLfloat) X2F (vNormal.z));
 	}
@@ -212,11 +212,11 @@ else
  {
 	short	v [4], vSorted [4];
 
-	v [0] = pointList [0]->p3_index;
-	v [1] = pointList [1]->p3_index;
-	v [2] = pointList [2]->p3_index;
+	v [0] = pointList [0]->m_index;
+	v [1] = pointList [1]->m_index;
+	v [2] = pointList [2]->m_index;
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-		vNormal = CFixVector::Normal (pointList [0]->p3_vec, pointList [1]->p3_vec, pointList [2]->p3_vec);
+		vNormal = CFixVector::Normal (pointList [0]->m_vec, pointList [1]->m_vec, pointList [2]->m_vec);
 		glNormal3f ((GLfloat) X2F (vNormal.v.coord.x), (GLfloat) X2F (vNormal.v.coord.y), (GLfloat) X2F (vNormal.v.coord.z));
 		}
 	else {
@@ -240,15 +240,15 @@ void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal)
 	CFixVector	vNormal;
 
 if (gameStates.render.nState == 1)	// an object polymodel
-	vNormal = CFixVector::Normal (pointList [0]->p3_vec, pointList [1]->p3_vec, pointList [2]->p3_vec);
+	vNormal = CFixVector::Normal (pointList [0]->m_vec, pointList [1]->m_vec, pointList [2]->m_vec);
 else {
 	short	v [4], vSorted [4];
 
-	v [0] = pointList [0]->p3_index;
-	v [1] = pointList [1]->p3_index;
-	v [2] = pointList [2]->p3_index;
+	v [0] = pointList [0]->m_index;
+	v [1] = pointList [1]->m_index;
+	v [2] = pointList [2]->m_index;
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-		vNormal = CFixVector::Normal (pointList [0]->p3_vec, pointList [1]->p3_vec, pointList [2]->p3_vec);
+		vNormal = CFixVector::Normal (pointList [0]->m_vec, pointList [1]->m_vec, pointList [2]->m_vec);
 		}
 	else {
 		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted);

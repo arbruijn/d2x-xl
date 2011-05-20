@@ -536,13 +536,13 @@ void CTriMeshBuilder::SetupVertexNormals (void)
 
 for (i = gameData.segs.nVertices, pointP = gameData.segs.points.Buffer (); i; i--, pointP++) {
 /*
-	(*pointP->p3_normal.vNormal.XYZ ()).v.c.x =
-	(*pointP->p3_normal.vNormal.XYZ ()).v.c.y =
-	(*pointP->p3_normal.vNormal.XYZ ()).v.c.z = 0;
+	(*pointP->m_normal.vNormal.XYZ ()).v.c.x =
+	(*pointP->m_normal.vNormal.XYZ ()).v.c.y =
+	(*pointP->m_normal.vNormal.XYZ ()).v.c.z = 0;
 */
-	pointP->p3_normal.vNormal.XYZ ()->SetZero ();
+	pointP->m_normal.vNormal.XYZ ()->SetZero ();
 
-	pointP->p3_normal.nFaces = 0;
+	pointP->m_normal.nFaces = 0;
 	}
 for (h = 0, triP = FACES.tris.Buffer (); h < gameData.segs.nTris; h++, triP++) {
 	for (i = 0; i < 3; i++) {
@@ -551,8 +551,8 @@ for (h = 0, triP = FACES.tris.Buffer (); h < gameData.segs.nTris; h++, triP++) {
 		if (nVertex == nDbgVertex)
 			nVertex = nVertex;
 #endif
-		*gameData.segs.points [nVertex].p3_normal.vNormal.XYZ () += FACES.normals [3 * h];
-		gameData.segs.points [nVertex].p3_normal.nFaces++;
+		*gameData.segs.points [nVertex].m_normal.vNormal.XYZ () += FACES.normals [3 * h];
+		gameData.segs.points [nVertex].m_normal.nFaces++;
 		}
 	}
 ComputeVertexNormals ();

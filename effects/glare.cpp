@@ -693,14 +693,14 @@ const char *glareFS =
 	"uniform vec2 windowScale;\r\n" \
 	"uniform int blendMode;\r\n" \
 	"uniform int bSuspended;\r\n" \
-	"#define ZNEAR 0.1\r\n" \
+	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
 	"#define A (ZNEAR + ZFAR)\r\n" \
 	"#define B (ZNEAR - ZFAR)\r\n" \
 	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
-	"#define D (NDC (Z) * B)\r\n" \
-	"#define ZEYE(z) (C / (A + D))\r\n" \
+	"#define D(z) (NDC (z) * B)\r\n" \
+	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
 	"void main (void) {\r\n" \
 	"if (bSuspended != 0)\r\n" \
 	"   gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \

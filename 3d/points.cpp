@@ -75,27 +75,6 @@ return screen.Height () /*/ ScreenScale ()*/;
 }
 
 // -----------------------------------------------------------------------------------
-//projects a point
-
-#define VIS_CULLING 1
-
-ubyte ProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
-{
-if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
-	return flags;
-CFloatVector3 v = transformation.m_info.projection * p;
-#if 1
-//if (p.v.coord.z != 0.0f)
-//	v.v.coord.z *= p.v.coord.z / fabs (p.v.coord.z);
-if ((v.v.coord.z > 0.0f) && (p.v.coord.z < 0.0f))
-	v.v.coord.z = -v.v.coord.z;
-#endif
-s.x = fix (CCanvas::fCanvW2 * (1.0f - v.v.coord.x / v.v.coord.z));
-s.y = fix (CCanvas::fCanvH2 * (1.0f - v.v.coord.y / v.v.coord.z));
-return flags | PF_PROJECTED;
-}
-
-// -----------------------------------------------------------------------------------
 
 ubyte OglProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
 {
@@ -122,6 +101,19 @@ return flags | PF_PROJECTED;
 }
 
 // -----------------------------------------------------------------------------------
+//projects a point
+
+ubyte ProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
+{
+if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
+	return flags;
+CFloatVector3 v = transformation.m_info.projection * p;
+s.x = fix (CCanvas::fCanvW2 * (1.0f - v.v.coord.x / v.v.coord.z));
+s.y = fix (CCanvas::fCanvH2 * (1.0f - v.v.coord.y / v.v.coord.z));
+return flags | PF_PROJECTED;
+}
+
+// -----------------------------------------------------------------------------------
 
 ubyte ProjectPoint (CFixVector& v, tScreenPos& s, ubyte flags, ubyte codes)
 {
@@ -134,7 +126,7 @@ return ProjectPoint (h, s, flags);
 
 void G3ProjectPoint (g3sPoint *p)
 {
-p->p3_flags = ProjectPoint (p->p3_vec, p->p3_screen, p->p3_flags, p->p3_codes);
+p->m_flags = ProjectPoint (p->m_vec, p->m_screen, p->m_flags, p->m_codes);
 }
 
 // -----------------------------------------------------------------------------------
@@ -156,8 +148,8 @@ m = transformation.m_info.view [1].Transpose();
 
 ubyte G3AddDeltaVec (g3sPoint *dest, g3sPoint *src, CFixVector *vDelta)
 {
-dest->p3_vec = src->p3_vec + *vDelta;
-dest->p3_flags = 0;		//not projected
+dest->m_vec = src->m_vec + *vDelta;
+dest->m_flags = 0;		//not projected
 return G3EncodePoint (dest);
 }
 

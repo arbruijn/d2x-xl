@@ -150,16 +150,16 @@ const char *particleFS [4] = {
 	"uniform vec2 windowScale;\r\n" \
 	"//uniform sampler2D sourceTex;\r\n" \
 	"uniform int bSuspended;\r\n" \
-	"#define ZNEAR 0.1\r\n" \
+	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"// compute Normalized Device Coordinates\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
 	"#define A (ZNEAR + ZFAR)\r\n" \
 	"#define B (ZNEAR - ZFAR)\r\n" \
 	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
-	"#define D (NDC (Z) * B)\r\n" \
+	"#define D(z) (NDC (z) * B)\r\n" \
 	"// compute eye space depth value from window depth\r\n" \
-	"#define ZEYE(z) (C / (A + D))\r\n" \
+	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
 	"void main (void) {\r\n" \
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \
@@ -188,16 +188,16 @@ const char *particleFS [4] = {
 	"uniform vec3 dMax;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"uniform int bSuspended;\r\n" \
-	"#define ZNEAR 0.1\r\n" \
+	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"// compute Normalized Device Coordinates\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
 	"#define A (ZNEAR + ZFAR)\r\n" \
 	"#define B (ZNEAR - ZFAR)\r\n" \
 	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
-	"#define D (NDC (Z) * B)\r\n" \
+	"#define D(z) (NDC (z) * B)\r\n" \
 	"// compute eye space depth value from window depth\r\n" \
-	"#define ZEYE(z) (C / (A + D))\r\n" \
+	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
 	"void main (void) {\r\n" \
 	"// compute distance from scene fragment to particle fragment and clamp with 0.0 and max. distance\r\n" \
 	"// the bigger the result, the further the particle fragment is behind the corresponding scene fragment\r\n" \

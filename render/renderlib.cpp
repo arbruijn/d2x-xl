@@ -121,11 +121,11 @@ if (gameStates.render.bQueryOcclusion) {
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 ogl.SetDepthMode (GL_ALWAYS);
 CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
-center.p3_vec.SetZero ();
+center.m_vec.SetZero ();
 for (i = 0; i < nVertices; i++) {
 	G3DrawLine (pointList [i], pointList [(i + 1) % nVertices]);
-	center.p3_vec += pointList [i]->p3_vec;
-	nf = &pointList [i]->p3_normal.vNormal;
+	center.m_vec += pointList [i]->m_vec;
+	nf = &pointList [i]->m_normal.vNormal;
 /*
 	n.v.c.x = (fix) (nf->x() * 65536.0f);
 	n.v.c.y = (fix) (nf->y() * 65536.0f);
@@ -133,16 +133,16 @@ for (i = 0; i < nVertices; i++) {
 */
 	n.Assign (*nf);
 	transformation.Rotate(n, n, 0);
-	Normal.p3_vec = pointList[i]->p3_vec + n * (I2X (10));
+	Normal.m_vec = pointList[i]->m_vec + n * (I2X (10));
 	G3DrawLine (pointList [i], &Normal);
 	}
 #if 0
-VmVecNormal (&Normal.p3_vec,
-				 &pointList [0]->p3_vec,
-				 &pointList [1]->p3_vec,
-				 &pointList [2]->p3_vec);
-VmVecInc (&Normal.p3_vec, &center.p3_vec);
-VmVecScale (&Normal.p3_vec, I2X (10));
+VmVecNormal (&Normal.m_vec,
+				 &pointList [0]->m_vec,
+				 &pointList [1]->m_vec,
+				 &pointList [2]->m_vec);
+VmVecInc (&Normal.m_vec, &center.m_vec);
+VmVecScale (&Normal.m_vec, I2X (10));
 G3DrawLine (&center, &Normal);
 #endif
 ogl.SetDepthMode (depthFunc);
@@ -612,21 +612,21 @@ if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount)
 #endif
 	G3TransformAndEncodePoint (p, gameData.segs.vertices [i]);
 #if TRANSP_DEPTH_HASH
-	fix d = p->p3_vec.Mag ();
+	fix d = p->m_vec.Mag ();
 	if (gameData.render.zMin > d)
 		gameData.render.zMin = d;
 	if (gameData.render.zMax < d)
 		gameData.render.zMax = d;
 #else
-	if (gameData.render.zMax < p->p3_vec.dir.coord.z)
-		gameData.render.zMax = p->p3_vec.dir.coord.z;
+	if (gameData.render.zMax < p->m_vec.dir.coord.z)
+		gameData.render.zMax = p->m_vec.dir.coord.z;
 #endif
 	if (!ogl.m_states.bUseTransform) {
-		gameData.segs.fVertices [i].v.coord.x = X2F (p->p3_vec.v.coord.x);
-		gameData.segs.fVertices [i].v.coord.y = X2F (p->p3_vec.v.coord.y);
-		gameData.segs.fVertices [i].v.coord.z = X2F (p->p3_vec.v.coord.z);
+		gameData.segs.fVertices [i].v.coord.x = X2F (p->m_vec.v.coord.x);
+		gameData.segs.fVertices [i].v.coord.y = X2F (p->m_vec.v.coord.y);
+		gameData.segs.fVertices [i].v.coord.z = X2F (p->m_vec.v.coord.z);
 		}
-	p->p3_index = i;
+	p->m_index = i;
 	gameData.render.mine.nRotatedLast [i] = gameStates.render.nFrameCount;
 	}
 return p;
@@ -645,8 +645,8 @@ g3sCodes RotateVertexList (int nVertices, short* vertexIndexP)
 
 for (i = 0; i < nVertices; i++) {
 	p = RotateVertex (vertexIndexP [i]);
-	cc.ccAnd &= p->p3_codes;
-	cc.ccOr |= p->p3_codes;
+	cc.ccAnd &= p->m_codes;
+	cc.ccOr |= p->m_codes;
 	}
 return cc;
 }
@@ -659,7 +659,7 @@ void ProjectVertexList (int nVertices, short *vertexIndexP)
 
 for (i = 0; i < nVertices; i++) {
 	j = vertexIndexP [i];
-	if (!(gameData.segs.points [j].p3_flags & PF_PROJECTED))
+	if (!(gameData.segs.points [j].m_flags & PF_PROJECTED))
 		G3ProjectPoint (&gameData.segs.points [j]);
 	}
 }
@@ -674,44 +674,44 @@ if (nVertex == nDbgVertex)
 #endif
 g3sPoint& point = gameData.segs.points [nVertex];
 #if 0 //DBG
-point.p3_flags = 0;
+point.m_flags = 0;
 #else
-if (!(point.p3_flags & PF_PROJECTED)) 
+if (!(point.m_flags & PF_PROJECTED)) 
 #endif
 	{
 #if 0
-	transformation.Transform (point.p3_vec, point.p3_src = gameData.segs.vertices [nVertex]);
+	transformation.Transform (point.m_vec, point.m_src = gameData.segs.vertices [nVertex]);
 	G3ProjectPoint (&point);
-	point.p3_codes = (point.p3_vec.v.coord.z < 0) ? CC_BEHIND : 0;
+	point.m_codes = (point.m_vec.v.coord.z < 0) ? CC_BEHIND : 0;
 #else
-	point.p3_flags |= PF_PROJECTED;
-	point.p3_src = gameData.segs.vertices [nVertex];
+	point.m_flags |= PF_PROJECTED;
+	point.m_src = gameData.segs.vertices [nVertex];
 	CFloatVector3 v;
 	transformation.Transform (v, *((CFloatVector3*) &gameData.segs.fVertices [nVertex]));
-	point.p3_vec.Assign (v);
-	point.p3_codes = (v.v.coord.z < 0.0f) ? CC_BEHIND : 0;
-	ProjectPoint (v, point.p3_screen);
+	point.m_vec.Assign (v);
+	point.m_codes = (v.v.coord.z < 0.0f) ? CC_BEHIND : 0;
+	ProjectPoint (v, point.m_screen);
 #endif
-	if (point.p3_screen.x < 0)
-		point.p3_codes |= CC_OFF_LEFT;
-	else if (point.p3_screen.x > screen.Width ())
-		point.p3_codes |= CC_OFF_RIGHT;
-	if (point.p3_screen.y < 0)
-		point.p3_codes |= CC_OFF_BOT;
-	else if (point.p3_screen.y > screen.Height ())
-		point.p3_codes |= CC_OFF_TOP;
+	if (point.m_screen.x < 0)
+		point.m_codes |= CC_OFF_LEFT;
+	else if (point.m_screen.x > screen.Width ())
+		point.m_codes |= CC_OFF_RIGHT;
+	if (point.m_screen.y < 0)
+		point.m_codes |= CC_OFF_BOT;
+	else if (point.m_screen.y > screen.Height ())
+		point.m_codes |= CC_OFF_TOP;
 #if TRANSP_DEPTH_HASH
-	fix d = point.p3_vec.Mag ();
+	fix d = point.m_vec.Mag ();
 	if (gameData.render.zMin > d)
 		gameData.render.zMin = d;
 	if (gameData.render.zMax < d)
 		gameData.render.zMax = d;
 #else
-	if (gameData.render.zMax < point.p3_vec.dir.coord.z)
-		gameData.render.zMax = point.p3_vec.dir.coord.z;
+	if (gameData.render.zMax < point.m_vec.dir.coord.z)
+		gameData.render.zMax = point.m_vec.dir.coord.z;
 #endif
 	}
-return point.p3_codes;
+return point.m_codes;
 }
 
 //------------------------------------------------------------------------------

@@ -107,7 +107,7 @@ dest += o;
 if (norms)
 	norms += o;
 while (n--) {
-	dest->p3_key = (short) o;
+	dest->m_key = (short) o;
 #if 1
 	if (norms) {
 		if (norms->nFaces > 1) {
@@ -117,11 +117,11 @@ while (n--) {
 			norms->nFaces = 1;
 			CFloatVector::Normalize (norms->vNormal);
 			}
-		dest->p3_normal = *norms++;
+		dest->m_normal = *norms++;
 		}
 	else
 #endif
-		dest->p3_normal.nFaces = 0;
+		dest->m_normal.nFaces = 0;
 	if (ogl.m_states.bUseTransform) {
 		pfv->Assign (*src);
 		if (bScale)
@@ -132,22 +132,22 @@ while (n--) {
 			CFixVector v = *src;
 			v *= gameData.models.vScale;
 #if 1
-			transformation.Transform (dest->p3_vec, v, 0);
+			transformation.Transform (dest->m_vec, v, 0);
 #else
 			G3TransformAndEncodePoint (dest, &dir);
 #endif
 			}
 		else {
 #if 1
-			transformation.Transform (dest->p3_vec, *src, 0);
+			transformation.Transform (dest->m_vec, *src, 0);
 #else
 			G3TransformAndEncodePoint (dest, src);
 #endif
 			}
-		pfv->Assign (dest->p3_vec);
+		pfv->Assign (dest->m_vec);
 		}
-	dest->p3_index = o++;
-	dest->p3_src = *src++;
+	dest->m_index = o++;
+	dest->m_src = *src++;
 	dest++;
 	pfv++;
 	}
@@ -349,8 +349,8 @@ if (CFixVector::Dot (*vNormal, vForward) > -I2X (1) / 3)
 if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -I2X (1)))
 #endif
 	return;
-for (i = 1, v = pointList [0]->p3_src; i < nPoints; i++)
-	v += pointList [i]->p3_src;
+for (i = 1, v = pointList [0]->m_src; i < nPoints; i++)
+	v += pointList [i]->m_src;
 v.v.coord.x /= nPoints;
 v.v.coord.y /= nPoints;
 v.v.coord.z /= nPoints;
@@ -366,7 +366,7 @@ mtP->vDir [mtP->nCount] = *vNormal;
 mtP->vDir [mtP->nCount] = -mtP->vDir [mtP->nCount];
 if (!mtP->nCount++) {
 	for (i = 0, nSize = 0x7fffffff; i < nPoints; i++)
-		if (nSize > (h = CFixVector::Dist(v, pointList [i]->p3_src)))
+		if (nSize > (h = CFixVector::Dist(v, pointList [i]->m_src)))
 			nSize = h;
 	mtP->fSize [i] = X2F (nSize);// * 1.25f;
 	}

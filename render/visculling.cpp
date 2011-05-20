@@ -724,8 +724,8 @@ renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
 
 g3sPoint* pointP = &gameData.segs.points [0];
 for (i = gameData.segs.nVertices; i; i--, pointP++) {
-	pointP->p3_flags = 0;
-	//pointP->p3_codes = 0;
+	pointP->m_flags = 0;
+	//pointP->m_codes = 0;
 	}
 
 #if DBG
@@ -794,16 +794,16 @@ for (l = 0; l < nRenderDepth; l++) {
 				int j = sv [i];
 				CFixVector vertDir = gameData.segs.vertices [j] - viewPos;
 				if (CFixVector::Dot (viewDir, vertDir) < 0) 
-					gameData.segs.points [j].p3_codes |= CC_BEHIND;
+					gameData.segs.points [j].m_codes |= CC_BEHIND;
 				}
 			}
 #endif
 			if (bCullIfBehind) {
 				int* s2v = sideVertIndex [nChild];
-				if (gameData.segs.points [sv [s2v [0]]].p3_codes &
-					 gameData.segs.points [sv [s2v [1]]].p3_codes &
-					 gameData.segs.points [sv [s2v [2]]].p3_codes &
-					 gameData.segs.points [sv [s2v [3]]].p3_codes & CC_BEHIND)
+				if (gameData.segs.points [sv [s2v [0]]].m_codes &
+					 gameData.segs.points [sv [s2v [1]]].m_codes &
+					 gameData.segs.points [sv [s2v [2]]].m_codes &
+					 gameData.segs.points [sv [s2v [3]]].m_codes & CC_BEHIND)
 					continue; // all face vertices behind the viewer => face invisible to the viewer
 				}
 			childList [nChildren++] = nChild;
@@ -825,28 +825,25 @@ for (l = 0; l < nRenderDepth; l++) {
 				short nVertex = sv [s2v [nCorner]];
 				g3sPoint& point = gameData.segs.points [nVertex];
 #if DBG
-				point.p3_flags = point.p3_codes = 0;
+				point.m_flags = point.m_codes = 0;
+#else
+				if (!(point.m_flags & PF_PROJECTED))
 #endif
-				if (point.p3_codes & CC_BEHIND) {
+					ProjectRenderPoint (sv [s2v [nCorner]]);
+				if (point.m_codes & CC_BEHIND) {
 					bProjected = 0;
 					break;
 					}
-#if 0
-				G3TransformAndEncodePoint (&point, gameData.segs.vertices [sv [s2v [nCorner]]]);
-				if (!(point.p3_flags & PF_PROJECTED))
-					G3ProjectPoint (&point);
-#else
-				ProjectRenderPoint (sv [s2v [nCorner]]);
-#endif
-				offScreenFlags &= (point.p3_codes & ~CC_BEHIND);
-				if (facePortal.left > point.p3_screen.x)
-					facePortal.left = point.p3_screen.x;
-				if (facePortal.right < point.p3_screen.x)
-					facePortal.right = point.p3_screen.x;
-				if (facePortal.top > point.p3_screen.y)
-					facePortal.top = point.p3_screen.y;
-				if (facePortal.bot < point.p3_screen.y)
-					facePortal.bot = point.p3_screen.y;
+
+				offScreenFlags &= (point.m_codes & ~CC_BEHIND);
+				if (facePortal.left > point.m_screen.x)
+					facePortal.left = point.m_screen.x;
+				if (facePortal.right < point.m_screen.x)
+					facePortal.right = point.m_screen.x;
+				if (facePortal.top > point.m_screen.y)
+					facePortal.top = point.m_screen.y;
+				if (facePortal.bot < point.m_screen.y)
+					facePortal.bot = point.m_screen.y;
 				}
 #if DBG
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))

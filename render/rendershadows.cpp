@@ -28,10 +28,10 @@ void RenderFaceShadow (tFaceProps *propsP)
 
 for (i = 0; i < nVertices; i++) {
 	p = gameData.segs.points + propsP->vp [i];
-	if (p->p3_index < 0)
-		v [i].Assign (p->p3_vec);
+	if (p->m_index < 0)
+		v [i].Assign (p->m_vec);
 	else
-		memcpy (v + i, gameData.render.vertP + p->p3_index, sizeof (CFloatVector));
+		memcpy (v + i, gameData.render.vertP + p->m_index, sizeof (CFloatVector));
 	}
 v [nVertices] = v [0];
 ogl.EnableClientState (GL_VERTEX_ARRAY);

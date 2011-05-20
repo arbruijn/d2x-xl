@@ -121,7 +121,7 @@ if (ogl.SizeVertexBuffer (nPoints [nMarker])) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 15, 0));
 	G3TransformAndEncodePoint (&basePoint, GetObject (-1, nMarker)->info.position.vPos);
 	glPushMatrix ();
-	glTranslatef (X2F (basePoint.p3_vec.v.coord.x), X2F (basePoint.p3_vec.v.coord.y), X2F (basePoint.p3_vec.v.coord.z));
+	glTranslatef (X2F (basePoint.m_vec.v.coord.x), X2F (basePoint.m_vec.v.coord.y), X2F (basePoint.m_vec.v.coord.z));
 	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
 	px = xCoord [nMarker];
@@ -156,7 +156,7 @@ void CMarkerManager::Render (void)
 if (m_data.fScale == 0.0f)
 	m_data.fScale = 2.0f;
 nMaxDrop = MaxDrop ();
-spherePoint.p3_index = -1;
+spherePoint.m_index = -1;
 for (i = 0; i < nMaxDrop; i++)
 	if ((objP = GetObject (-1, i))) {
 		bSpawn = (objP == markerManager.SpawnObject (-1));

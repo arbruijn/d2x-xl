@@ -659,7 +659,7 @@ extern COGL ogl;
 
 static inline CFloatVector3* G3GetNormal (g3sPoint *pPoint, CFloatVector *pvNormal)
 {
-return pPoint->p3_normal.nFaces ? pPoint->p3_normal.vNormal.XYZ () : pvNormal->XYZ ();
+return pPoint->m_normal.nFaces ? pPoint->m_normal.vNormal.XYZ () : pvNormal->XYZ ();
 }
 
 //------------------------------------------------------------------------------
@@ -674,7 +674,7 @@ else
 
 //------------------------------------------------------------------------------
 
-#define ZNEAR		0.1
+#define ZNEAR		1.0
 #define ZFAR		ogl.m_data.zFar
 #define ZRANGE		(ZFAR - ZNEAR)
 

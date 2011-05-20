@@ -3483,16 +3483,16 @@ glVertex3f ((float) x / 65536.0f, (float) y / 65536.0f, (float) z / 65536.0f);
 static inline void OglVertex3f (g3sPoint *p, CFloatVector* v = NULL)
 {
 if (v) {
-	if (p->p3_index < 0)
-		v->Assign (p->p3_vec);
+	if (p->m_index < 0)
+		v->Assign (p->m_vec);
 	else
-		*v = gameData.render.vertP [p->p3_index];
+		*v = gameData.render.vertP [p->m_index];
 	}
 else {
-	if (p->p3_index < 0)
-		OglVertex3x (p->p3_vec.v.coord.x, p->p3_vec.v.coord.y, p->p3_vec.v.coord.z);
+	if (p->m_index < 0)
+		OglVertex3x (p->m_vec.v.coord.x, p->m_vec.v.coord.y, p->m_vec.v.coord.z);
 	else
-		glVertex3fv (reinterpret_cast<GLfloat *> (gameData.render.vertP + p->p3_index));
+		glVertex3fv (reinterpret_cast<GLfloat *> (gameData.render.vertP + p->m_index));
 	}
 }
 

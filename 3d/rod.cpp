@@ -47,7 +47,7 @@ int CalcRodCorners (g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix x
 
 //compute vector from one point to other, do cross product with vector
 //from eye to get perpendicular
-vDelta = btmPoint->p3_vec - topPoint->p3_vec;
+vDelta = btmPoint->m_vec - topPoint->m_vec;
 //unscale for aspect
 #if RESCALE_ROD
 vDelta.p.x = FixDiv (vDelta.p.x, transformation.m_info.scale.p.x);
@@ -57,7 +57,7 @@ vDelta.p.y = FixDiv (vDelta.p.y, transformation.m_info.scale.p.y);
 //do lots of normalizing to prevent overflowing.  When this code works,
 //it should be optimized
 CFixVector::Normalize (vDelta);
-vTop = topPoint->p3_vec;
+vTop = topPoint->m_vec;
 CFixVector::Normalize (vTop);
 vRodNorm = CFixVector::Cross (vDelta, vTop);
 CFixVector::Normalize (vRodNorm);
@@ -70,12 +70,12 @@ vRodNorm.p.y = FixMul (vRodNorm.p.y, transformation.m_info.scale.p.y);
 //vTop points
 vTemp = vRodNorm * xTopWidth;
 vTemp.v.coord.z = 0;
-rodPoints [0].p3_vec = topPoint->p3_vec + vTemp;
-rodPoints [1].p3_vec = topPoint->p3_vec - vTemp;
+rodPoints [0].m_vec = topPoint->m_vec + vTemp;
+rodPoints [1].m_vec = topPoint->m_vec - vTemp;
 vTemp = vRodNorm * xBtmWidth;
 vTemp.v.coord.z = 0;
-rodPoints [2].p3_vec = btmPoint->p3_vec - vTemp;
-rodPoints [3].p3_vec = btmPoint->p3_vec + vTemp;
+rodPoints [2].m_vec = btmPoint->m_vec - vTemp;
+rodPoints [3].m_vec = btmPoint->m_vec + vTemp;
 
 //now code the four points
 for (i = 0, andCodes = 0xff; i < 4; i++)
@@ -84,8 +84,8 @@ if (andCodes)
 	return 1;		//1 means off screen
 //clear flags for new points (not projected)
 for (i = 0; i < 4; i++) {
-	rodPoints [i].p3_flags = 0;
-	rodPoints [i].p3_index = -1;
+	rodPoints [i].m_flags = 0;
+	rodPoints [i].m_index = -1;
 	}
 return 0;
 }
@@ -133,7 +133,7 @@ CFixVector vTop = objP->info.position.vPos + delta;
 CFixVector vBottom = objP->info.position.vPos - delta;
 G3TransformAndEncodePoint (&pTop, vTop);
 G3TransformAndEncodePoint (&pBottom, vBottom);
-fix light = bLit ? ComputeObjectLight (objP, &pTop.p3_vec) : I2X (1);
+fix light = bLit ? ComputeObjectLight (objP, &pTop.m_vec) : I2X (1);
 if (!gameStates.render.bPerPixelLighting)
 	G3DrawRodTexPoly (bmP, &pBottom, objP->info.xSize, &pTop, objP->info.xSize, light, NULL, objP->info.nType == OBJ_FIREBALL);
 else {
@@ -144,7 +144,7 @@ else {
 	tTexCoord2f		texCoords [4]; // = {{0,0},{u,0},{u,v},{0,v}};
 
 	for (int i = 0; i < 4; i++) {
-		vertices [i].Assign (rodPoints [i].p3_vec);
+		vertices [i].Assign (rodPoints [i].m_vec);
 		texCoords [i].v.u = X2F (rodUvlList [i].u);
 		texCoords [i].v.v = X2F (rodUvlList [i].v);
 		}
