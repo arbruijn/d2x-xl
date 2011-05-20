@@ -462,20 +462,20 @@ for (i = startI; i < endI; i++)
 
 //------------------------------------------------------------------------------
 
-void CheckLightVisibility (short nStartSeg, short nSide, short nSegment, fix xLightRange)
+void CheckLightVisibility (short nStartSeg, short nSide, short nDestSeg, fix xLightRange)
 {
-	int bVisible = gameData.segs.LightVis (nStartSeg, nSegment);
+	int bVisible = gameData.segs.LightVis (nStartSeg, nDestSeg);
 
 if (!bVisible)
 	return;
 
-CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nStartSeg, -1, 1, 0);
-CHitData	hitData;
-CSegment* segP = SEGMENTS + nSegment;
-CSide* sideP = segP->m_sides;
+	CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nStartSeg, -1, 1, 0);
+	CHitData	hitData;
+	CSegment* segP = SEGMENTS + nStartSeg;
+	CSide* sideP = segP->m_sides;
+	int i;
 
-int i;
-
+segP = SEGMENTS + nDestSeg;
 for (i = 0; (i < 4); i++) {
 	fq.p0 = &VERTICES [sideP->m_corners [i]];
 	for (int j = 0; (j < 8); j++) {
@@ -483,12 +483,12 @@ for (i = 0; (i < 4); i++) {
 		if (CFixVector::Dist (*fq.p0, *fq.p1) > xLightRange)
 			continue;
 		int nHitType = FindHitpoint (&fq, &hitData);
-		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nSegment)))
+		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)))
 			return;
 		}
 	}
 
-i = gameData.segs.LightVisIdx (nStartSeg, nSegment);
+i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
 gameData.segs.bSegVis [1][i >> 3] &= ~(1 << (i & 7));
 }
 
