@@ -53,6 +53,9 @@ if (segP->Index () == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 for (int i = 0; i < 8; i++) {
+#if DBG
+	gameData.segs.points [segP->m_verts [i]].p3_flags = 0;
+#endif
 	code &= ProjectRenderPoint (segP->m_verts [i]);
 	if (!code)
 		return 1;

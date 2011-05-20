@@ -684,6 +684,7 @@ if (!(point.p3_flags & PF_PROJECTED))
 	G3ProjectPoint (&point);
 	point.p3_codes = (point.p3_vec.v.coord.z < 0) ? CC_BEHIND : 0;
 #else
+	point.p3_flags |= PF_PROJECTED;
 	point.p3_src = gameData.segs.vertices [nVertex];
 	CFloatVector3 v;
 	transformation.Transform (v, *((CFloatVector3*) &gameData.segs.fVertices [nVertex]));
