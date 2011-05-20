@@ -18,7 +18,7 @@
 char	sideOpposite [MAX_SIDES_PER_SEGMENT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRONT, WBACK};
 
 //	Note, this MUST be the same as sideVertIndex, it is an int for speed reasons.
-int sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
+short sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
 		 {7,6,2,3},			// left
 		 {0,4,7,3},			// top
 		 {0,1,5,4},			// right
@@ -33,12 +33,12 @@ extern bool bNewFileFormat;
 // Fill in array with four absolute point numbers for a given CSide
 void CSegment::GetCornerIndex (int nSide, ushort* vertIndex)
 {
-	int*	sv = sideVertIndex [nSide];
+	short* s2v = sideVertIndex [nSide];
 
-vertIndex [0] = m_verts [sv [0]];
-vertIndex [1] = m_verts [sv [1]];
-vertIndex [2] = m_verts [sv [2]];
-vertIndex [3] = m_verts [sv [3]];
+vertIndex [0] = m_verts [s2v [0]];
+vertIndex [1] = m_verts [s2v [1]];
+vertIndex [2] = m_verts [s2v [2]];
+vertIndex [3] = m_verts [s2v [3]];
 }
 
 //------------------------------------------------------------------------------
@@ -1224,7 +1224,7 @@ gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 
 float CSegment::FaceSize (ubyte nSide)
 {
-	int*		s2v = sideVertIndex [nSide];
+	short*	s2v = sideVertIndex [nSide];
 
 	short		v0 = m_verts [s2v [0]];
 	short		v1 = m_verts [s2v [1]];

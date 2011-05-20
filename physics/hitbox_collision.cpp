@@ -107,7 +107,7 @@ return minDist;
 // Given: p3
 // Find: intersection with p1,p2 of the line through p3 that is perpendicular on p1,p2
 
-int FindPointLineIntersectionf (CFixVector *pv1, CFixVector *pv2, CFixVector *pv3)
+int FindPointLineIntersectionf (CFixVector* pv1, CFixVector* pv2, CFixVector* pv3)
 {
 	CFloatVector	p1, p2, p3, d31, d21, h, v [2];
 	float				m, u;
@@ -138,8 +138,8 @@ return 0;
 // vPlanePoint & vPlaneNorm describe the plane
 // p0 & p1 are the ends of the line
 
-int FindLineQuadIntersectionSub (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
-										   CFixVector *p0, CFixVector *p1, fix rad)
+int FindLineQuadIntersectionSub (CFixVector& intersection, CFixVector* vPlanePoint, CFixVector* vPlaneNorm,
+										   CFixVector* p0, CFixVector* p1, fix rad)
 {
 	CFixVector	d, w;
 	double		num, den;
@@ -174,7 +174,7 @@ return 1;
 // of the quad must hit each edge between the edge's end points (provided vHit
 // is in the quad's plane).
 
-int CheckLineHitsQuad (CFixVector& intersection, CFixVector *planeP)
+int CheckLineHitsQuad (CFixVector& intersection, CFixVector* planeP)
 {
 for (int i = 0; i < 4; i++)
 	if (FindPointLineIntersectionf (planeP + i, planeP + ((i + 1) % 4), &intersection))
@@ -184,7 +184,7 @@ return 1;	//hits
 
 //	-----------------------------------------------------------------------------
 
-int FindLineQuadIntersection (CFixVector& intersection, CFixVector *planeP, CFixVector *planeNormP, CFixVector *p0, CFixVector *p1, fix rad)
+int FindLineQuadIntersection (CFixVector& intersection, CFixVector* planeP, CFixVector* planeNormP, CFixVector* p0, CFixVector* p1, fix rad)
 {
 	CFixVector	vHit;
 	fix			dist;
@@ -208,7 +208,7 @@ return dist;
 // Simple intersection check by checking whether any of the edges of plane p1
 // penetrate p2. Returns average of all penetration points.
 
-int FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector *p1, CFixVector *vn1, CFixVector *p2, CFixVector *vn2, CFixVector *vRef)
+int FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector* p1, CFixVector* vn1, CFixVector* p2, CFixVector* vn2, CFixVector* vRef)
 {
 	int			i, nHits = 0;
 	fix			dMin = 0x7fffffff;
@@ -224,7 +224,7 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-int FindQuadQuadIntersection (CFixVector& intersection, CFixVector *p0, CFixVector *vn1, CFixVector *p1, CFixVector *vn2, CFixVector *vRef)
+int FindQuadQuadIntersection (CFixVector& intersection, CFixVector* p0, CFixVector* vn1, CFixVector* p1, CFixVector* vn2, CFixVector* vRef)
 {
 	CFixVector	vHit;
 	int			nHits = 0;
@@ -245,7 +245,7 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-int FindLineHitboxIntersection (CFixVector& intersection, tBox *phb, CFixVector *p0, CFixVector *p1, CFixVector *vRef, fix rad)
+int FindLineHitboxIntersection (CFixVector& intersection, tBox *phb, CFixVector* p0, CFixVector* p1, CFixVector* vRef, fix rad)
 {
 	int			i, nHits = 0;
 	fix			dist, dMin = 0x7fffffff;
@@ -266,7 +266,7 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-int FindHitboxIntersection (CFixVector& intersection, tBox *phb1, tBox *phb2, CFixVector *vRef)
+int FindHitboxIntersection (CFixVector& intersection, tBox *phb1, tBox *phb2, CFixVector* vRef)
 {
 	int			i, j, nHits = 0;
 	fix			dMin = 0x7fffffff;
@@ -295,7 +295,7 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1, short& nModel)
+fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, short& nModel)
 {
 	CFixVector		vHit, vRef = OBJPOS (objP2)->vPos;
 	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
@@ -360,7 +360,7 @@ return nHits ? dMin ? dMin : 1 : 0;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *vRef, CObject *objP, fix rad, short& nModel)
+fix CheckVectorToHitbox (CFixVector& intersection, CFixVector* p0, CFixVector* p1, CFixVector* vRef, CObject *objP, fix rad, short& nModel)
 {
 	int				iModel, nModels;
 	fix				xDist = 0x7fffffff, dMin = 0x7fffffff;

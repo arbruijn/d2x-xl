@@ -49,6 +49,15 @@ typedef struct tScreenPosf {
 
 // -----------------------------------------------------------------------------------
 
+class CFrustum {
+	public:
+		CFixVector		m_corners [8];
+		CFixVector		m_normals [6];
+
+	void Compute (void);
+	bool Contains (short* segVerts, short* sideVerts, CFixVector* normal);
+	};
+
 typedef struct tTransformation {
 	CFixVector		pos;
 	CAngleVector	playerHeadAngles;
@@ -59,7 +68,7 @@ typedef struct tTransformation {
 	CFixVector		aspect;		//scaling for window aspect
 	CFloatVector	posf [2];
 	CFloatMatrix	viewf [3];
-	CFloatVector	frustum [8];
+	CFrustum			frustum;
 	CFloatMatrix	projection;
 	COGLMatrix		oglModelview;
 	COGLMatrix		oglProjection;
@@ -165,7 +174,11 @@ class CTransformation {
 
 		void SetupProjection (float aspectRatio);
 
-		void ComputeFrustumCorners (void);
+		inline CFrustum& Frustum (void) { return m_info.frustum; }
+
+		inline void ComputeFrustum (void) { Frustum ().Compute (); }
+
+		inline bool FrustumContains (short* segVerts, short* sideVerts, CFixVector* normal) { return Frustum ().Contains (segVerts, sideVerts, normal); }
 
 	};
 

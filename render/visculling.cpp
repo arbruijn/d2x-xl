@@ -799,7 +799,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			}
 #endif
 			if (bCullIfBehind) {
-				int* s2v = sideVertIndex [nChild];
+				short* s2v = sideVertIndex [nChild];
 				if (gameData.segs.points [sv [s2v [0]]].m_codes &
 					 gameData.segs.points [sv [s2v [1]]].m_codes &
 					 gameData.segs.points [sv [s2v [2]]].m_codes &
@@ -833,7 +833,7 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 			tPortal facePortal = {32767, -32767, 32767, -32767};
 			int bProjected = 1;	//0 when at least one point wasn't projected
-			int* s2v = sideVertIndex [nSide];
+			short* s2v = sideVertIndex [nSide];
 			ubyte offScreenFlags = 0xff;
 			for (int nCorner = 0; nCorner < 4; nCorner++) {
 				short nVertex = sv [s2v [nCorner]];
@@ -864,14 +864,10 @@ for (l = 0; l < nRenderDepth; l++) {
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
-			if (bProjected) {
-				if (offScreenFlags | CodePortal (facePortal, curPortal))
-					continue;
-				}
-			else {
-				if (offScreenFlags)
-					continue;
-				}
+			if (offScreenFlags || (bProjected && CodePortal (facePortal, curPortal)))
+				continue;
+			if (!transformation.Frustum ().Contains (sv, s2v, SEGMENTS [nChildSeg].Side (nSide)->Normal (2)))
+				continue;
 
 			//maybe add this segment
 			int nPos = gameData.render.mine.renderPos [nChildSeg];

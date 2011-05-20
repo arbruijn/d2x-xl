@@ -119,7 +119,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Note that -1 means no connection, -2 means a connection to the outside world.
 #define IS_CHILD(nSegment) (nSegment > -1)
 
-extern int sideVertIndex [MAX_SIDES_PER_SEGMENT][4];
+extern short sideVertIndex [MAX_SIDES_PER_SEGMENT][4];
 extern char sideOpposite [MAX_SIDES_PER_SEGMENT];
 
 //------------------------------------------------------------------------------
@@ -211,7 +211,7 @@ class CSide {
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }
 
-		void Setup (short* verts, int* index, bool bSolid);
+		void Setup (short* verts, short* index, bool bSolid);
 
 		void SetTextures (int nBaseTex, int nOvlTex);
 
@@ -515,7 +515,7 @@ typedef struct tSegFaces {
 //--repair-- } lsegment;
 
 // Globals from mglobal.c
-extern int	sideVertIndex [MAX_SIDES_PER_SEGMENT][4];       // sideVertIndex[my_side] is list of vertices forming CSide my_side.
+extern short sideVertIndex [MAX_SIDES_PER_SEGMENT][4];       // sideVertIndex[my_side] is list of vertices forming CSide my_side.
 extern char sideOpposite [];                                // sideOpposite [my_side] returns CSide opposite cube from my_side.
 
 // New stuff, 10/14/95: For shooting out lights and monitors.

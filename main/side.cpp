@@ -278,7 +278,7 @@ return 0;
 
 // -------------------------------------------------------------------------------
 
-void CSide::Setup (short* verts, int* index, bool bSolid)
+void CSide::Setup (short* verts, short* index, bool bSolid)
 {
 	short				vSorted [4], bFlip;
 	int				i;
