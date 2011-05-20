@@ -322,8 +322,11 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #endif
 	fVec = sideP->m_normals [2];
 	if (!bLights) {
+#if 0
 		viewer.info.position.vPos = sideP->Center () + fVec;
-		//viewer.info.position.vPos = SEGMENTS [nStartSeg].Center ();
+#else
+		viewer.info.position.vPos = SEGMENTS [nStartSeg].Center ();// + fVec;
+#endif
 		fVec.Neg (); // point from segment center outwards
 		rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
 		CFixVector::Normalize (rVec);
@@ -361,11 +364,6 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			CFixVector::Normalize (rVec);
 			CFixVector::Cross (uVec, fVec, rVec);
 			}
-#if 0 //DBG
-		viewer.info.position.mOrient = CFixMatrix::Create (&fVec, 0);
-#else
-		viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
-#endif
 		if (gameStates.render.bPerPixelLighting) {
 			if (0 <= (nChildSeg = segP->m_children [nSide])) {
 				gameData.segs.SetSegVis (nStartSeg, nChildSeg, bLights);
@@ -379,6 +377,12 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 				}
 			}
 		}
+
+#if 0 //DBG
+		viewer.info.position.mOrient = CFixMatrix::Create (&fVec, 0);
+#else
+		viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
+#endif
 
 	fix w = CCanvas::Current ()->Width ();
 	fix h = CCanvas::Current ()->Height ();
