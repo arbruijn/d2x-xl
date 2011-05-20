@@ -353,13 +353,17 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			CFixVector::Cross (uVec, fVec, rVec);
 			}
 		else { // from side corner, pointing to average between vector from center to corner and side normal
+#if DBG
+			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide)))
+				nDbgSeg = nDbgSeg;
+#endif
 			viewer.info.position.vPos = VERTICES [sideP->m_corners [bLights - 1]];
 			CFixVector h = sideP->Center () - viewer.info.position.vPos;
 			CFixVector::Normalize (h);
 			fVec = CFixVector::Avg (fVec, h);
 			CFixVector::Normalize (fVec);
 			rVec = sideP->m_normals [2];
-			rVec.Neg ();
+			h.Neg ();
 			rVec = CFixVector::Avg (rVec, h);
 			CFixVector::Normalize (rVec);
 			CFixVector::Cross (uVec, fVec, rVec);

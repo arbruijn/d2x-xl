@@ -475,8 +475,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			}
 		}
 
-#if USE_FACE_DIST
-	if (/*(nVertex < 0) &&*/ (nType < 2)) {
+	if (nType < 2) {
 		DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide));
 		CFloatVector3 dir = lightPos - *vcd.vertPosP;
 		fLightDist = dir.Mag () * ogl.m_states.fLightRange;
@@ -489,19 +488,15 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (fabs (fLightDist) < 1.0f)
 			fLightDist = 0.0f;
 		}
-#endif
+
 	if ((gameStates.render.nState || (nType < 2)) && (fLightDist > 0.0f)) {
-		// decrease the distance between light and vertex by the light's radius
 		// check whether the vertex is behind the light or the light shines at the vertice's back
 		// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
 		fLightAngle = (fLightDist > 0.1f) ? -CFloatVector3::Dot (lightDir, spotDir) + 0.01f : 1.0f;
-#if !USE_FACE_DIST
-		float lightRad = (fLightAngle < 0.0f) ? 0.0f : prl->info.fRad * (1.0f - 0.9f * float (sqrt (fabs (fLightAngle))));	// make rad smaller the greater the angle
-		fLightDist -= lightRad * ogl.m_states.fLightRange; //make light darker if face behind light source
-#endif
 		}
 	else
 		fLightAngle = 1.0f;
+
 	if	(fLightDist <= 0.0f) {
 		NdotL = 1.0f;
 		fLightDist = 0.0f;
@@ -510,12 +505,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	else {	//make it decay faster
 		float decay = min (fLightAngle, NdotL);
 		if (decay < 0.0f) {
-#if 0
-			fLightDist -= 1e2f * decay;
-#else
 			decay += 1.0000001f;
 			fLightDist /= decay * decay;
-#endif
 			}
 		//if ((nType < 2) && (nVertex < 0))
 		//fLightDist *= 0.9f;
@@ -525,12 +516,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		else
 #endif
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
-#if USE_FACE_DIST
+#if 0
 		if ((nType < 2) && (prl->info.fRad > 0.0f))
-#else
-		if ((nVertex > -1) && (prl->info.fRad > 0.0f))
+			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f); // make light wrap around corners a bit
 #endif
-			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
 		fAttenuation /= prl->info.fBrightness;
 		}
 	if (prl->info.bSpot) {
@@ -538,11 +527,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			continue;
 		CFloatVector3::Normalize (spotDir);
 		lightDir = -lightDir;
-		/*
-		lightDir.v.c.y = -lightDir.v.c.y;
-		lightDir.v.c.z = -lightDir.v.c.z;
-		*/
-		//spotEffect = G3_DOTF (spotDir, lightDir);
 		spotEffect = CFloatVector3::Dot (spotDir, lightDir);
 
 		if (spotEffect <= prl->info.fSpotAngle)
@@ -563,7 +547,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 	vertColor *= lightColor;
 	if ((NdotL > 0.0f) && (fLightDist > 0.0f) && (vcd.fMatShininess > 0.0f) /* && vcd.bMatSpecular */) {
-		//RdotV = max (dot (Reflect (-Normalize (lightDir), Normal), Normalize (-vertPos)), 0.0);
 		if (!prl->info.bSpot)	//need direction from light to vertex now
 			lightDir.Neg ();
 		vReflect = CFloatVector3::Reflect (lightDir, vcd.vertNorm);
@@ -574,7 +557,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 		RdotE = CFloatVector3::Dot (vReflect, vertPos);
 		if (RdotE > 0.0f) {
-			//spec = pow (Reflect dot lightToEye, matShininess) * matSpecular * lightSpecular
 			vertColor += (lightColor * (float) pow (RdotE, vcd.fMatShininess));
 			}
 		}

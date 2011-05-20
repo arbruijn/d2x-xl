@@ -833,6 +833,9 @@ for (l = 0; l < nRenderDepth; l++) {
 				if (!(point.p3_flags & PF_PROJECTED))
 					G3ProjectPoint (&point);
 #else
+#	if DBG
+				point.p3_flags = point.p3_codes = 0;
+#	endif
 				ProjectRenderPoint (sv [s2v [nCorner]]);
 #endif
 				offScreenFlags &= (point.p3_codes & ~CC_BEHIND);
