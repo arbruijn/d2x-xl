@@ -428,6 +428,8 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			continue;
 #endif
 #if 1
+		if (bLights && !gameData.segs.SegVis (nStartSeg, nSegment))
+			continue;
 		if (!SegmentIsVisible (SEGMENTS + nSegment))
 			continue;
 #endif

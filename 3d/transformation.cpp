@@ -26,6 +26,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vecmat.h"
 #include "interp.h"
 #include "oof.h"
+#include "dynlight.h"
 
 #define MAX_INSTANCE_DEPTH	10
 
@@ -199,6 +200,21 @@ glGetIntegerv (GL_VIEWPORT, m_info.oglViewport);
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);
 m_info.projection.Flip ();
 m_info.aspectRatio = aspectRatio;
+}
+
+//------------------------------------------------------------------------------
+
+void CTransformation::ComputeFrustumCorners (void)
+{
+	static CFloatVector corners [8] = {
+		{{0.0, 0.0, 0.0}}, {{0.0, 1.0, 0.0}}, {{1.0, 1.0, 0.0}}, {{0.0, 1.0, 0.0}},
+		{{0.0, 0.0, 1.0}}, {{0.0, 1.0, 1.0}}, {{1.0, 1.0, 1.0}}, {{0.0, 1.0, 1.0}}
+	};
+
+CFloatMatrix m;
+memcpy (m.m.vec, transformation.SystemMatrix (-3).ToFloat (), sizeof (m.m.vec));
+for (int i = 0; i < 8; i++)
+	m_info.frustum [i] = m * corners [i];
 }
 
 //------------------------------------------------------------------------------

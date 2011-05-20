@@ -805,6 +805,20 @@ for (l = 0; l < nRenderDepth; l++) {
 					 gameData.segs.points [sv [s2v [2]]].m_codes &
 					 gameData.segs.points [sv [s2v [3]]].m_codes & CC_BEHIND)
 					continue; // all face vertices behind the viewer => face invisible to the viewer
+#if DBG
+				fix dot;
+				int ii;
+				for (ii = 0; ii < 4; ii++) {
+					CFixVector v = VERTICES [sv [s2v [ii]]] - gameData.objs.consoleP->Position ();
+					CFixVector::Normalize (v);
+					dot = CFixVector::Dot (gameData.objs.consoleP->Orientation ().m.dir.f, v);
+					if (dot >= 0)
+						break;
+					}
+				if (ii == 4)
+					continue;
+
+#endif
 				}
 			childList [nChildren++] = nChild;
 			}
@@ -832,9 +846,10 @@ for (l = 0; l < nRenderDepth; l++) {
 					ProjectRenderPoint (sv [s2v [nCorner]]);
 				if (point.m_codes & CC_BEHIND) {
 					bProjected = 0;
+#if 0
 					break;
+#endif
 					}
-
 				offScreenFlags &= (point.m_codes & ~CC_BEHIND);
 				if (facePortal.left > point.m_screen.x)
 					facePortal.left = point.m_screen.x;
@@ -849,8 +864,14 @@ for (l = 0; l < nRenderDepth; l++) {
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
-			if (bProjected && (offScreenFlags | CodePortal (facePortal, curPortal)))
-				continue;
+			if (bProjected) {
+				if (offScreenFlags | CodePortal (facePortal, curPortal))
+					continue;
+				}
+			else {
+				if (offScreenFlags)
+					continue;
+				}
 
 			//maybe add this segment
 			int nPos = gameData.render.mine.renderPos [nChildSeg];

@@ -101,7 +101,7 @@ projection.Mul ();
 projection.Set ();
 #endif
 modelView.Mul ();
-lightManager.ShadowTransformation (nLight).Get (GL_TEXTURE_MATRIX);
+transformation.SystemMatrix (nLight).Get (GL_TEXTURE_MATRIX);
 glMatrixMode (matrixMode);
 }
 

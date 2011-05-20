@@ -487,18 +487,19 @@ if (!nWindow)
 PROF_START
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
-#if MAX_SHADOWMAPS
+#if 1 //MAX_SHADOWMAPS
 if (!(nWindow || gameStates.render.cameras.bActive)) {
 	ogl.SetupTransform (1);
-	lightManager.ShadowTransformation (-1).Get (GL_MODELVIEW_MATRIX, true); // inverse
-	lightManager.ShadowTransformation (-2).Get (GL_PROJECTION_MATRIX, true); 
-	lightManager.ShadowTransformation (-3).Get (GL_PROJECTION_MATRIX, false);
+	transformation.SystemMatrix (-1).Get (GL_MODELVIEW_MATRIX, true); // inverse
+	transformation.SystemMatrix (-2).Get (GL_PROJECTION_MATRIX, true); 
+	transformation.SystemMatrix (-3).Get (GL_PROJECTION_MATRIX, false);
 	ogl.ResetTransform (1);
 	glPushMatrix ();
-	lightManager.ShadowTransformation (-1).Set ();
-	lightManager.ShadowTransformation (-2).Mul ();
-	lightManager.ShadowTransformation (-3).Get (GL_MODELVIEW_MATRIX, false); // inverse (modelview * projection)
+	transformation.SystemMatrix (-1).Set ();
+	transformation.SystemMatrix (-2).Mul ();
+	transformation.SystemMatrix (-3).Get (GL_MODELVIEW_MATRIX, false); // inverse (modelview * projection)
 	glPopMatrix ();
+	transformation.ComputeFrustumCorners ();
 	}
 #endif
 PROF_END(ptAux)

@@ -103,12 +103,12 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			SelectTMU (GL_TEXTURE2 + i);
 			SetTexturing (true);
 			glMatrixMode (GL_TEXTURE);
-			lightManager.ShadowTransformation (i).Set ();  // light's projection * modelview
+			transformation.SystemMatrix (i).Set ();  // light's projection * modelview
 #if 1
-			lightManager.ShadowTransformation (-3).Mul (); // inverse of camera's modelview * inverse of camera's projection
+			transformation.SystemMatrix (-3).Mul (); // inverse of camera's modelview * inverse of camera's projection
 #else
-			lightManager.ShadowTransformation (-1).Mul (); // inverse of camera's modelview
-			lightManager.ShadowTransformation (-2).Mul (); // inverse of camera's projection
+			transformation.SystemMatrix (-1).Mul (); // inverse of camera's modelview
+			transformation.SystemMatrix (-2).Mul (); // inverse of camera's projection
 #endif
 			glMatrixMode (matrixMode);
 			BindTexture (cameraManager.ShadowMap (i)->FrameBuffer ().DepthBuffer ());
@@ -130,7 +130,7 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			return;
 		if (!shaderManager.Set ("sceneDepth", 1))
 			return;
-		if (!shaderManager.Set ("modelviewProjInverse", lightManager.ShadowTransformation (-3)))
+		if (!shaderManager.Set ("modelviewProjInverse", transformation.SystemMatrix (-3)))
 			return;
 		if (!shaderManager.Set ("windowScale", windowScale))
 			return;

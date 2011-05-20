@@ -16,9 +16,9 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "carray.h"
 #include "cstack.h"
+#include "oglmatrix.h" 
 #include "fix.h"
 #include "vecmat.h" 
-#include "oglmatrix.h" 
 
 // -----------------------------------------------------------------------------------
 
@@ -50,29 +50,31 @@ typedef struct tScreenPosf {
 // -----------------------------------------------------------------------------------
 
 typedef struct tTransformation {
-		CFixVector		pos;
-		CAngleVector	playerHeadAngles;
-		int				bUsePlayerHeadAngles;
-		CFixMatrix		view [2];
-		CFixVector		scale;
-		CFloatVector	scalef;
-		CFixVector		aspect;		//scaling for window aspect
-		CFloatVector	posf [2];
-		CFloatMatrix	viewf [3];
-		CFloatMatrix	projection;
-		COGLMatrix		oglModelview;
-		COGLMatrix		oglProjection;
-		int				oglViewport [4];
-		fix				zoom;
-		float				zoomf;
-		float				aspectRatio;
+	CFixVector		pos;
+	CAngleVector	playerHeadAngles;
+	int				bUsePlayerHeadAngles;
+	CFixMatrix		view [2];
+	CFixVector		scale;
+	CFloatVector	scalef;
+	CFixVector		aspect;		//scaling for window aspect
+	CFloatVector	posf [2];
+	CFloatMatrix	viewf [3];
+	CFloatVector	frustum [8];
+	CFloatMatrix	projection;
+	COGLMatrix		oglModelview;
+	COGLMatrix		oglProjection;
+	int				oglViewport [4];
+	fix				zoom;
+	float				zoomf;
+	float				aspectRatio;
 } tTransformation;
 
 // -----------------------------------------------------------------------------------
 
 class CTransformation {
 	public:
-		tTransformation			m_info;
+		tTransformation					m_info;
+		CStaticArray<COGLMatrix, 7>	m_sysMats;
 
 	private:
 		CStack<tTransformation>	m_save;
@@ -157,9 +159,13 @@ class CTransformation {
 
 		inline CFloatMatrix& Projection (void) { return m_info.projection; }
 
+		inline COGLMatrix& SystemMatrix (int i) { return m_sysMats [i + 3]; }
+
 		void ComputeAspect (void);
 
 		void SetupProjection (float aspectRatio);
+
+		void ComputeFrustumCorners (void);
 
 	};
 

@@ -163,7 +163,6 @@ class CDynLightData {
 		CByteArray			variableVertLights;	//the 8 nearest veriable lights for every vertex
 		CShortArray			owners;
 		COglMaterial		material;
-		CStaticArray<COGLMatrix, 7>	shadowTextureMatrix;
 		CFBO					fbo;
 		short					nLights [3];
 		short					nVariable;
@@ -257,8 +256,6 @@ class CLightManager {
 		inline void ResetIndex (void) { m_data.ResetIndex (); }
 		//inline void SetShadowSource (CDynLight& source, int i) { m_data.shadowSources [i] = source; }
 		//inline CDynLight& GetShadowSource (int i) { return m_data.shadowSources [i]; }
-		inline COGLMatrix& ShadowTransformation (int i) { return m_data.shadowTextureMatrix [i + 3]; }
-
 
 	private:
 		static int IsTriggered (short nSegment, short nSide, bool bOppSide = false);
