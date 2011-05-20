@@ -674,7 +674,7 @@ else
 
 //------------------------------------------------------------------------------
 
-#define ZNEAR		1.0
+#define ZNEAR		0.1
 #define ZFAR		ogl.m_data.zFar
 #define ZRANGE		(ZFAR - ZNEAR)
 

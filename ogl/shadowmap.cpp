@@ -167,13 +167,13 @@ const char* shadowMapFS =
 	"uniform mat4 modelviewProjInverse;\r\n" \
 	"uniform vec3 lightPos;\r\n" \
 	"uniform float lightRange;\r\n" \
-	"#define ZNEAR 1.0\r\n" \
+	"#define ZNEAR 0.1\r\n" \
 	"#define ZFAR 5000.0\r\n" \
-	"#define A 5001.0 //(ZNEAR + ZFAR)\r\n" \
-	"#define B 4999.0 //(ZNEAR - ZFAR)\r\n" \
-	"#define C 10000.0 //(2.0 * ZNEAR * ZFAR)\r\n" \
+	"#define A (ZNEAR + ZFAR)\r\n" \
+	"#define B (ZNEAR - ZFAR)\r\n" \
+	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
 	"#define D (cameraNDC.z * B)\r\n" \
-	"#define ZEYE -10000.0 / (5001.0 + cameraNDC.z * 4999.0) //-(C / (A + D))\r\n" \
+	"#define ZEYE -(C / (A + D))\r\n" \
 	"void main() {\r\n" \
 	"float fragDepth = texture2D (sceneDepth, gl_TexCoord [0].xy).r;\r\n" \
 	"vec3 cameraNDC = (vec3 (gl_TexCoord [0].xy, fragDepth) - 0.5) * 2.0;\r\n" \
@@ -203,13 +203,13 @@ const char* shadowMapFS =
 	"uniform vec2 windowScale;\r\n" \
 	"uniform vec3 lightPos;\r\n" \
 	"uniform float lightRange;\r\n" \
-	"#define ZNEAR 1.0\r\n" \
+	"#define ZNEAR 0.1\r\n" \
 	"#define ZFAR 5000.0\r\n" \
-	"#define A 5001.0 //(ZNEAR + ZFAR)\r\n" \
-	"#define B 4999.0 //(ZNEAR - ZFAR)\r\n" \
-	"#define C 10000.0 //(2.0 * ZNEAR * ZFAR)\r\n" \
+	"#define A (ZNEAR + ZFAR)\r\n" \
+	"#define B (ZNEAR - ZFAR)\r\n" \
+	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
 	"#define D (cameraNDC.z * B)\r\n" \
-	"#define ZEYE -10000.0 / (5001.0 + cameraNDC.z * 4999.0) //-(C / (A + D))\r\n" \
+	"#define ZEYE -(C / (A + D))\r\n" \
 	"#define MAX_OFFSET 2.5\r\n" \
 	"#define SAMPLE_RANGE (MAX_OFFSET + MAX_OFFSET + 1.0)\r\n" \
 	"#define SAMPLE_COUNT (SAMPLE_RANGE * SAMPLE_RANGE)\r\n" \

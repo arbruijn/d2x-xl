@@ -84,27 +84,15 @@ ubyte ProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
 CFloatVector3 v = transformation.m_info.projection * p;
-if (p.v.coord.z != 0.0f)
-	v.v.coord.z *= p.v.coord.z / fabs (p.v.coord.z);
+#if 1
+//if (p.v.coord.z != 0.0f)
+//	v.v.coord.z *= p.v.coord.z / fabs (p.v.coord.z);
+if ((v.v.coord.z > 0.0f) && (p.v.coord.z < 0.0f))
+	v.v.coord.z = -v.v.coord.z;
+#endif
 s.x = fix (CCanvas::fCanvW2 * (1.0f - v.v.coord.x / v.v.coord.z));
 s.y = fix (CCanvas::fCanvH2 * (1.0f - v.v.coord.y / v.v.coord.z));
 return flags | PF_PROJECTED;
-}
-
-// -----------------------------------------------------------------------------------
-
-ubyte ProjectPoint (CFixVector& v, tScreenPos& s, ubyte flags, ubyte codes)
-{
-CFloatVector3 h;
-h.Assign (v);
-return ProjectPoint (h, s, flags);
-}
-
-// -----------------------------------------------------------------------------------
-
-void G3ProjectPoint (g3sPoint *p)
-{
-p->p3_flags = ProjectPoint (p->p3_vec, p->p3_screen, p->p3_flags, p->p3_codes);
 }
 
 // -----------------------------------------------------------------------------------
@@ -124,7 +112,29 @@ s.y = fix (y);
 s.x = fix (CCanvas::xCanvW2f - x * CCanvas::xCanvW2f / z);
 s.y = fix (CCanvas::fCanvH2 - y * CCanvas::fCanvH2 / z);
 #endif
+#if DBG
+tScreenPos h;
+OglProjectPoint (p, h);
+if ((h.x != s.x) || (h.y != s.y))
+	s = h;
+#endif
 return flags | PF_PROJECTED;
+}
+
+// -----------------------------------------------------------------------------------
+
+ubyte ProjectPoint (CFixVector& v, tScreenPos& s, ubyte flags, ubyte codes)
+{
+CFloatVector3 h;
+h.Assign (v);
+return ProjectPoint (h, s, flags);
+}
+
+// -----------------------------------------------------------------------------------
+
+void G3ProjectPoint (g3sPoint *p)
+{
+p->p3_flags = ProjectPoint (p->p3_vec, p->p3_screen, p->p3_flags, p->p3_codes);
 }
 
 // -----------------------------------------------------------------------------------
