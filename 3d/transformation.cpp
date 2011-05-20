@@ -200,7 +200,7 @@ glGetIntegerv (GL_VIEWPORT, m_info.oglViewport);
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);
 m_info.projection.Flip ();
 m_info.aspectRatio = aspectRatio;
-ComputeFrustum ();
+transformation.ComputeFrustum ();
 }
 
 //------------------------------------------------------------------------------
@@ -241,8 +241,12 @@ ubyte CTransformation::Codes (CFixVector& v)
 //------------------------------------------------------------------------------
 
 static int planeVerts [6][3] = {
-	{0,1,2},{0,1,5},{1,5,6},{6,2,3},{7,3,0},{6,5,4}
+	{0,1,2},{0,1,5},{6,5,1},{6,2,3},{0,2,7},{4,5,6}
 	};
+
+static int oppSides [6] = {5, 3, 4, 1, 2, 0};
+
+static int normRefs [6][2] = {{1,5},{1,2},{1,0},{2,1},{0,1},{5,1}};
 
 void CFrustum::Compute (void)
 {
@@ -251,17 +255,33 @@ void CFrustum::Compute (void)
 		{{0.0, 0.0, 1.0}}, {{0.0, 1.0, 1.0}}, {{1.0, 1.0, 1.0}}, {{0.0, 1.0, 1.0}}
 		};
 
-	CFloatMatrix	m;
-	CFloatVector	v;
-	int				i;
+transformation.SystemMatrix (-1).Get (GL_MODELVIEW_MATRIX, false); // inverse
+transformation.SystemMatrix (-2).Get (GL_PROJECTION_MATRIX, false); 
 
-memcpy (m.m.vec, transformation.SystemMatrix (-3).ToFloat (), sizeof (m.m.vec));
+GLint viewport [4];
+glGetIntegerv (GL_VIEWPORT, viewport);
+
+int i;
+GLdouble x, y, z;
+CFixVector v;
 for (i = 0; i < 8; i++) {
-	v = m * corners [i];
-	m_corners [i].Assign (v);
+	gluUnProject (corners [i].v.coord.x, corners [i].v.coord.y, corners [i].v.coord.z, 
+					  &transformation.SystemMatrix (-1) [0],
+					  &transformation.SystemMatrix (-2) [0],
+					  viewport,
+					  &x, &y, &z);
+	v.v.coord.x = F2X ((float) x);
+	v.v.coord.y = F2X ((float) y);
+	v.v.coord.z = F2X ((float) z);
+	transformation.Transform (m_corners [i], v);
 	}
-for (i = 0; i < 6; i++)
+for (i = 0; i < 6; i++) {
 	m_normals [i] = CFixVector::Normal (m_corners [planeVerts [i][0]], m_corners [planeVerts [i][1]], m_corners [planeVerts [i][2]]);
+	CFixVector v = m_corners [normRefs [i][1]] - m_corners [normRefs [i][0]];
+	CFixVector::Normalize (v);
+	if (CFixVector::Dot (v, m_normals [i]) < 0)
+		m_normals [i].Neg ();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -275,13 +295,17 @@ bool CFrustum::Contains (short* segVerts, short* sideVerts, CFixVector* normal)
 	};
 
 	int i, j, nInside = 0;
+	CFixVector* verts [4];
+
+for (j = 0; j < 4; j++)
+	verts [j] = &VERTICES [segVerts [sideVerts [j]]];
 
 for (i = 0; i < 6; i++) {
 	int nPtInside = 4;
 	int bPtInside = 1;
 	CFixVector c = m_corners [planeVerts [i][0]];
 	for (j = 0; j < 4; j++) {
-		CFixVector v = VERTICES [segVerts [sideVerts [j]]] - c;
+		CFixVector v = *verts [j] - c;
 		CFixVector::Normalize (v);
 		if (CFixVector::Dot (m_normals [i], v) < 0) {
 			if (!--nPtInside)

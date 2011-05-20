@@ -499,7 +499,6 @@ if (!(nWindow || gameStates.render.cameras.bActive)) {
 	transformation.SystemMatrix (-2).Mul ();
 	transformation.SystemMatrix (-3).Get (GL_MODELVIEW_MATRIX, false); // inverse (modelview * projection)
 	glPopMatrix ();
-	transformation.ComputeFrustum ();
 	}
 #endif
 PROF_END(ptAux)
