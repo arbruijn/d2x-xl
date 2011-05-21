@@ -197,7 +197,11 @@ glLoadIdentity ();
 m_info.oglModelview.Get (GL_MODELVIEW_MATRIX);
 glPopMatrix ();
 glGetIntegerv (GL_VIEWPORT, m_info.oglViewport);
+#if 1
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);
+#else
+memcpy (m_info.projection.m.vec, &m_info.oglProjection [0], sizeof (m_info.projection.m.vec));
+#endif
 m_info.projection.Flip ();
 m_info.aspectRatio = aspectRatio;
 }
