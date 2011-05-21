@@ -266,18 +266,15 @@ void CFrustum::Compute (void)
 transformation.SystemMatrix (-1).Get (GL_MODELVIEW_MATRIX, false); // inverse
 transformation.SystemMatrix (-2).Get (GL_PROJECTION_MATRIX, false); 
 
-GLint viewport [4];
-glGetIntegerv (GL_VIEWPORT, viewport);
-
-int i;
-GLdouble x, y, z;
-CFixVector v;
+	int i;
+	GLdouble x, y, z;
+	CFixVector v;
 
 for (i = 0; i < 8; i++) {
 	gluUnProject (corners [i].v.coord.x, corners [i].v.coord.y, corners [i].v.coord.z, 
 					  &transformation.SystemMatrix (-1) [0],
 					  &transformation.SystemMatrix (-2) [0],
-					  viewport,
+					  m_info.oglViewport,
 					  &x, &y, &z);
 	v.v.coord.x = F2X ((float) x);
 	v.v.coord.y = F2X ((float) y);
