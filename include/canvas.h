@@ -124,6 +124,8 @@ class CCanvas : public CBitmap {
 
 		inline bool Clip (int x, int y) { return this->CBitmap::Clip (x, y); }
 
+		inline double AspectRatio (void) { return double (Width ()) / double (Height ()); }
+
 		void FadeColorRGB (double dFade);
 };
 

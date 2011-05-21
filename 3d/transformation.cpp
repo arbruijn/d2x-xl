@@ -239,8 +239,10 @@ ubyte CTransformation::Codes (CFixVector& v)
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-static int planeVerts [6][3] = {
-	{0,1,2},{0,1,5},{6,5,1},{6,2,3},{0,3,7},{4,5,6}
+#define COMPUTE_TYPE 1
+
+static int planeVerts [6][4] = {
+	{0,1,2,3},{0,1,5,4},{6,5,1,2},{6,2,3,7},{0,3,7,4},{4,5,6,7}
 	};
 
 static int oppSides [6] = {5, 3, 4, 1, 2, 0};
@@ -249,13 +251,131 @@ static int normRefs [6][2] = {{1,5},{1,2},{1,0},{2,1},{0,1},{5,1}};
 
 void CFrustum::Compute (void)
 {
+	int i, j;
+
+transformation.SystemMatrix (-1).Get (GL_MODELVIEW_MATRIX, false); 
+transformation.SystemMatrix (-2).Get (GL_PROJECTION_MATRIX, false); 
+
+#if COMPUTE_TYPE == 2
+
+// Note: WNEARHALF = ZNEAR * tan(LIGHTFOV * (PI / 180.0) / 2.0);
+//       WFARHALF = ZFAR * tan(LIGHTFOV * (PI / 180.0) / 2.0);
+
+float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * Pi / 360.0));
+float wNearHalf = float (ZNEAR) * h;
+float wFarHalf = float (ZFAR) * h;
+
+// Calculate the light direction vector components.
+CFloatVector &f = transformation.m_info.viewf [0].m.dir.f;
+CFloatVector &r = transformation.m_info.viewf [0].m.dir.r;
+CFloatVector &u = transformation.m_info.viewf [0].m.dir.u;
+
+// Calculate vector fc (vector from viewer to center of far frustum plane.
+CFloatVector hr = r * wFarHalf;
+CFloatVector hu = u * wFarHalf;
+CFloatVector fc = f * ZFAR;
+// Calculate vertex of far top left frustum plane.
+//CFloatVector ftl = fc + hu - hr;
+//CFloatVector ftr = fc + hu + hr;
+//CFloatVector fbl = fc - hu - hr;
+//CFloatVector fbr = fc - hu + hr;
+CFloatVector ftl = fc + hu;
+CFloatVector ftr = ftl;
+ftl -= hr;
+ftr += hr;
+CFloatVector fbl = fc - hu;
+CFloatVector fbr = fbl;
+fbl -= hr;
+fbr += hr;
+
+// Calculate vector nc (vector from viewer to center of near frustum plane.
+hr = r * wNearHalf;
+hu = u * wNearHalf;
+CFloatVector nc = f * ZNEAR;
+//CFloatVector ntl = nc + hu - hr;
+//CFloatVector ntr = nc + hu + hr;
+//CFloatVector nbl = nc - hu - hr;
+//CFloatVector nbr = nc - hu + hr;
+CFloatVector ntl = nc + hu;
+CFloatVector ntr = ntl;
+ntl -= hr;
+ntr += hr;
+CFloatVector nbl = nc - hu;
+CFloatVector nbr = nbl;
+nbl -= hr;
+nbr += hr;
+
+m_corners [0].Assign (nbl);
+m_corners [1].Assign (ntl);
+m_corners [2].Assign (ntr);
+m_corners [3].Assign (nbr);
+m_corners [4].Assign (fbl);
+m_corners [5].Assign (ftl);
+m_corners [6].Assign (ftr);
+m_corners [7].Assign (fbr);
+
+#elif COMPUTE_TYPE == 1
+
+const double DEG2RAD = 3.14159265 / 180;
+
+float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * Pi / 360.0));
+float w = float (h * CCanvas::Current ()->AspectRatio ());
+float n = float (ZNEAR);
+float f = float (ZFAR);
+float m = (n + f) * 0.5f;
+float r = f / n;
+
+#define ln -w
+#define rn +w
+#define tn +h
+#define bn -h
+
+#define lf (ln * r)
+#define rf (rn * r)
+#define tf (tn * r)
+#define bf (bn * r)
+
+	CFloatVector corners [8] = {
+		{{ln, bn, n}}, {{ln, tn, n}}, {{rn, tn, n}}, {{rn, bn, n}},
+		{{lf, bf, f}}, {{lf, tf, f}}, {{rf, tf, f}}, {{rf, bf, f}}
+		};
+
+	static CFloatVector centers [6] = {
+		{{0.0f, 0.0f, n}}, {{ln, 0.0f, m}}, {{0.0f, tn, m}}, {{rn, 0.0f, m}},{{0.0f, bn, m}}, {{0.0f, 0.0f, f}}
+		};
+
+
+	CFixVector v;
+
+for (i = 0; i < 8; i++) {
+	v.Assign (corners [i]);
+	transformation.Transform (m_corners [i], v);
+#if DBG
+	tScreenPos s;
+	ProjectPoint (m_corners [i], s);
+	ProjectPoint (v, s);
+	i = i;
+#endif
+	}
+for (i = 0; i < 6; i++) {
+	v.Assign (centers [i]);
+	transformation.Transform (m_centers [i], v);
+	}
+
+#else
+
+	float w = CCanvas::Current ()->Width ();
+	float h = CCanvas::Current ()->Height ();
+	float n = float (ZNEAR);
+	float f = float (ZFAR);
+
 	static CFloatVector corners [8] = {
-#if 1
+#if 0
 		{{0.0, 0.0, 0.0}}, {{0.0, 1.0, 0.0}}, {{1.0, 1.0, 0.0}}, {{1.0, 0.0, 0.0}},
 		{{0.0, 0.0, 1.0}}, {{0.0, 1.0, 1.0}}, {{1.0, 1.0, 1.0}}, {{1.0, 0.0, 1.0}}
 #else
-		{{-1.0f, -1.0f, 0.0}}, {{-1.0f, 1.0f, 0.0}}, {{1.0f, 1.0f, 0.0}}, {{1.0f, -1.0f, 0.0}},
-		{{-1.0f, -1.0f, 1.0}}, {{-1.0f, 1.0f, 1.0}}, {{1.0f, 1.0f, 1.0}}, {{1.0f, -1.0f, 1.0}},
+		{{0.0f, 0.0f, n}}, {{0.0f, h, n}}, {{w, h, n}}, {{w, 0.0f, n}},
+		{{0.0f, 0.0f, f}}, {{0.0f, h, f}}, {{w, h, f}}, {{w, 0.0f, f}},
 #endif
 		};
 
@@ -266,9 +386,7 @@ void CFrustum::Compute (void)
 transformation.SystemMatrix (-1).Get (GL_MODELVIEW_MATRIX, false); 
 transformation.SystemMatrix (-2).Get (GL_PROJECTION_MATRIX, false); 
 
-	int i;
 	GLdouble x, y, z;
-	CFixVector v;
 
 for (i = 0; i < 8; i++) {
 	gluUnProject (corners [i].v.coord.x, corners [i].v.coord.y, corners [i].v.coord.z, 
@@ -280,6 +398,12 @@ for (i = 0; i < 8; i++) {
 	v.v.coord.y = F2X ((float) y);
 	v.v.coord.z = F2X ((float) z);
 	transformation.Transform (m_corners [i], v);
+#if DBG
+	tScreenPos s;
+	ProjectPoint (m_corners [i], s);
+	ProjectPoint (v, s);
+	i = i;
+#endif
 	}
 
 for (i = 0; i < 6; i++) {
@@ -294,7 +418,12 @@ for (i = 0; i < 6; i++) {
 	transformation.Transform (m_centers [i], v);
 	}
 
+#endif
+
 for (i = 0; i < 6; i++) {
+	for (j = 0; j < 4; j++)
+		m_centers [i] += m_corners [planeVerts [i][j]];
+	m_centers [i] /= I2X (4);
 	m_normals [i] = CFixVector::Normal (m_corners [planeVerts [i][0]], m_corners [planeVerts [i][1]], m_corners [planeVerts [i][2]]);
 #if 1
 	CFixVector v = m_corners [normRefs [i][1]] - m_corners [normRefs [i][0]];
@@ -374,3 +503,105 @@ return false;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //eof
+
+#if 0
+
+// Note: WNEARHALF = ZNEAR * tan(LIGHTFOV * (PI / 180.0) / 2.0);
+//       WFARHALF = ZFAR * tan(LIGHTFOV * (PI / 180.0) / 2.0);
+
+GLfloat length, *tempAL, *tempBL, *tempR;
+GLint i, j;
+
+CFloatVector3 d, r, u, a, b;
+
+// Calculate the light direction vector components.
+d = LIGHTLOOKAT - lightPos;
+
+// Normalize the direction vector.
+Normalize (d);
+
+// Calculate the light right vector components.
+r[0] = -d[2];
+r[1] = 0.0;
+r[2] = d[0];
+
+// Normalize the right vector.
+Normalize (r);
+
+// Calculate the light up vector components (cross product of: right X direction).
+u = Normalize (Cross (r, d));
+
+// Calculate vector fc (vector from viewer to center of far frustum plane.
+fc = lightPos + d * ZFAR;
+
+// Calculate vertex of far top left frustum plane.
+ftl = fc + (u * WFARHALF) - (r * WFARHALF);
+
+// Calculate vertex of far top right frustum plane.
+ftr = fc + (u * WFARHALF) + (r * WFARHALF);
+
+// Calculate vertex of far bottom left frustum plane.
+fbl = fc - (u * WFARHALF) - (r * WFARHALF);
+
+// Calculate vertex of far bottom right frustum plane.
+fbr = fc - (u * WFARHALF) + (r * WFARHALF);
+
+// Calculate vector nc (vector from viewer to center of near frustum plane.
+nc = lightPos + d * ZNEAR;
+
+// Calculate vertex of near top left frustum plane.
+ntl = nc + (u * WNEARHALF) - (r * WNEARHALF);
+
+// Calculate vertex of near top right frustum plane.
+ntr = nc + (u * WNEARHALF) + (r * WNEARHALF);
+
+// Calculate vertex of near bottom left frustum plane.
+nbl = nc - (u * WNEARHALF) - (r * WNEARHALF);
+
+// Calculate vertex of near bottom right frustum plane.
+nbr = nc - (u * WNEARHALF) + (r * WNEARHALF);
+
+// Calculate the six light frustum clip planes.
+for(j = 0; j < 6; j++){	// Near clip plane.
+	if(j == 0) { 
+		tempAL = nbl;
+		tempBL = ntr;
+		tempR = nbr;
+		}	// Far clip plane.
+	else if(j == 1) { 
+		tempAL = fbr;
+		tempBL = ftl;
+		tempR = fbl;
+		}	// Left clip plane.
+	else if(j == 2) { 
+		tempAL = fbl;
+		tempBL = ntl;
+		tempR = nbl;
+		}	// Right clip plane.
+	else if(j == 3) { 
+		tempAL = nbr;
+		tempBL = ftr;
+		tempR = fbr;
+		}	// Top clip plane.
+	else if(j == 4) { 
+		tempAL = ntr;
+		tempBL = ftl;
+		tempR = ftr;
+		}	// Bottom clip plane.
+	else { 
+		tempAL = nbl;
+		tempBL = fbr;
+		tempR = fbl;
+		}	
+	a = tempAL - tempR;
+	b = tempBL - tempR;
+
+	lightClipPlane[j][0] = a[1] * b[2] - a[2] * b[1];
+	lightClipPlane[j][1] = a[2] * b[0] - a[0] * b[2];
+	lightClipPlane[j][2] = a[0] * b[1] - a[1] * b[0];
+
+	Normalize (lightClipPlane[j]);
+	lightClipPlane[j][3] = -(lightClipPlane[j][0] * tempR[0] + lightClipPlane[j][1] * tempR[1] + lightClipPlane[j][2] * tempR[2]);
+	}
+
+#endif
