@@ -316,8 +316,6 @@ m_corners [7].Assign (fbr);
 
 #elif COMPUTE_TYPE == 1
 
-const double DEG2RAD = 3.14159265 / 180;
-
 float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * Pi / 360.0));
 float w = float (h * CCanvas::Current ()->AspectRatio ());
 float n = float (ZNEAR);
@@ -344,23 +342,10 @@ float r = f / n;
 		{{0.0f, 0.0f, n}}, {{ln, 0.0f, m}}, {{0.0f, tn, m}}, {{rn, 0.0f, m}},{{0.0f, bn, m}}, {{0.0f, 0.0f, f}}
 		};
 
-
-	CFixVector v;
-
-for (i = 0; i < 8; i++) {
-	v.Assign (corners [i]);
-	transformation.Transform (m_corners [i], v);
-#if DBG
-	tScreenPos s;
-	ProjectPoint (m_corners [i], s);
-	ProjectPoint (v, s);
-	i = i;
-#endif
-	}
-for (i = 0; i < 6; i++) {
-	v.Assign (centers [i]);
-	transformation.Transform (m_centers [i], v);
-	}
+for (i = 0; i < 8; i++)
+	m_corners [i].Assign (corners [i]);
+for (i = 0; i < 6; i++)
+	m_centers [i].Assign (centers [i]);
 
 #else
 
@@ -504,104 +489,3 @@ return false;
 //------------------------------------------------------------------------------
 //eof
 
-#if 0
-
-// Note: WNEARHALF = ZNEAR * tan(LIGHTFOV * (PI / 180.0) / 2.0);
-//       WFARHALF = ZFAR * tan(LIGHTFOV * (PI / 180.0) / 2.0);
-
-GLfloat length, *tempAL, *tempBL, *tempR;
-GLint i, j;
-
-CFloatVector3 d, r, u, a, b;
-
-// Calculate the light direction vector components.
-d = LIGHTLOOKAT - lightPos;
-
-// Normalize the direction vector.
-Normalize (d);
-
-// Calculate the light right vector components.
-r[0] = -d[2];
-r[1] = 0.0;
-r[2] = d[0];
-
-// Normalize the right vector.
-Normalize (r);
-
-// Calculate the light up vector components (cross product of: right X direction).
-u = Normalize (Cross (r, d));
-
-// Calculate vector fc (vector from viewer to center of far frustum plane.
-fc = lightPos + d * ZFAR;
-
-// Calculate vertex of far top left frustum plane.
-ftl = fc + (u * WFARHALF) - (r * WFARHALF);
-
-// Calculate vertex of far top right frustum plane.
-ftr = fc + (u * WFARHALF) + (r * WFARHALF);
-
-// Calculate vertex of far bottom left frustum plane.
-fbl = fc - (u * WFARHALF) - (r * WFARHALF);
-
-// Calculate vertex of far bottom right frustum plane.
-fbr = fc - (u * WFARHALF) + (r * WFARHALF);
-
-// Calculate vector nc (vector from viewer to center of near frustum plane.
-nc = lightPos + d * ZNEAR;
-
-// Calculate vertex of near top left frustum plane.
-ntl = nc + (u * WNEARHALF) - (r * WNEARHALF);
-
-// Calculate vertex of near top right frustum plane.
-ntr = nc + (u * WNEARHALF) + (r * WNEARHALF);
-
-// Calculate vertex of near bottom left frustum plane.
-nbl = nc - (u * WNEARHALF) - (r * WNEARHALF);
-
-// Calculate vertex of near bottom right frustum plane.
-nbr = nc - (u * WNEARHALF) + (r * WNEARHALF);
-
-// Calculate the six light frustum clip planes.
-for(j = 0; j < 6; j++){	// Near clip plane.
-	if(j == 0) { 
-		tempAL = nbl;
-		tempBL = ntr;
-		tempR = nbr;
-		}	// Far clip plane.
-	else if(j == 1) { 
-		tempAL = fbr;
-		tempBL = ftl;
-		tempR = fbl;
-		}	// Left clip plane.
-	else if(j == 2) { 
-		tempAL = fbl;
-		tempBL = ntl;
-		tempR = nbl;
-		}	// Right clip plane.
-	else if(j == 3) { 
-		tempAL = nbr;
-		tempBL = ftr;
-		tempR = fbr;
-		}	// Top clip plane.
-	else if(j == 4) { 
-		tempAL = ntr;
-		tempBL = ftl;
-		tempR = ftr;
-		}	// Bottom clip plane.
-	else { 
-		tempAL = nbl;
-		tempBL = fbr;
-		tempR = fbl;
-		}	
-	a = tempAL - tempR;
-	b = tempBL - tempR;
-
-	lightClipPlane[j][0] = a[1] * b[2] - a[2] * b[1];
-	lightClipPlane[j][1] = a[2] * b[0] - a[0] * b[2];
-	lightClipPlane[j][2] = a[0] * b[1] - a[1] * b[0];
-
-	Normalize (lightClipPlane[j]);
-	lightClipPlane[j][3] = -(lightClipPlane[j][0] * tempR[0] + lightClipPlane[j][1] * tempR[1] + lightClipPlane[j][2] * tempR[2]);
-	}
-
-#endif

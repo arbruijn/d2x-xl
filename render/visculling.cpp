@@ -791,20 +791,6 @@ for (l = 0; l < nRenderDepth; l++) {
 					 gameData.segs.points [s2v [2]].m_codes &
 					 gameData.segs.points [s2v [3]].m_codes & CC_BEHIND)
 					continue; // all face vertices behind the viewer => face invisible to the viewer
-#if DBG
-				fix dot;
-				int ii;
-				for (ii = 0; ii < 4; ii++) {
-					CFixVector v = VERTICES [s2v [ii]] - gameData.objs.consoleP->Position ();
-					CFixVector::Normalize (v);
-					dot = CFixVector::Dot (gameData.objs.consoleP->Orientation ().m.dir.f, v);
-					if (dot >= 0)
-						break;
-					}
-				if (ii == 4)
-					continue;
-
-#endif
 				}
 			childList [nChildren++] = nChild;
 			}
@@ -830,7 +816,7 @@ for (l = 0; l < nRenderDepth; l++) {
 #else
 				if (!(point.m_flags & PF_PROJECTED))
 #endif
-					ProjectRenderPoint (s2v [nCorner]);
+					ProjectRenderPoint (nVertex);
 				if (point.m_codes & CC_BEHIND) {
 					bProjected = 0;
 #if 0
@@ -853,7 +839,7 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 			if (offScreenFlags || (bProjected && CodePortal (facePortal, curPortal)))
 				continue;
-#if 0
+#if 1
 			if (!transformation.Frustum ().Contains (sideP))
 				continue;
 #endif
