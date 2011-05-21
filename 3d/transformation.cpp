@@ -488,6 +488,7 @@ if (sideP->m_nFaces == 2) {
 
 for (i = 4; i < 12; i++) {
 	for (j = 0; j < sideP->m_nFaces; j++) {
+		transformation.Transform (sideP->m_rotNorms [j], sideP->m_normals [j]);
 		if (!FindPlaneLineIntersection (intersection, &points [j]->m_vec, &sideP->m_rotNorms [j],
 												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0))
 			continue;
