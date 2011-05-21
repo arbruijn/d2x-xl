@@ -313,8 +313,10 @@ for (i = 0; i < 6; i++) {
 		if (CFixVector::Dot (m_normals [i], v) < 0)
 			break;
 		}
-	if (j == 4)
+	if (j == 4) {
+		memset (points, 0, sizeof (points));
 		return true;
+		}
 	}
 
 if (sideP->m_nFaces == 2) {
@@ -328,11 +330,14 @@ for (i = 0; i < 12; i++) {
 		if (!FindPlaneLineIntersection (intersection, &points [j]->m_vec, &sideP->m_rotNorms [j],
 												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0))
 			continue;
-		if (!sideP->CheckPointToFace (intersection, j, sideP->m_rotNorms [j]))
+		if (!sideP->CheckPointToFace (intersection, j, sideP->m_rotNorms [j])) {
+			memset (points, 0, sizeof (points));
 			return true;
+			}
 		}
 	}
 // check whether face contains frustum
+memset (points, 0, sizeof (points));
 return false;
 }
 
