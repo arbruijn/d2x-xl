@@ -19,16 +19,13 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "globvars.h"
 #include "bitmap.h" //the vector/matrix library
 #include "gr.h"
+#include "segment.h"
 #include "transformation.h"
 
 extern int g3d_interp_outline;      //if on, polygon models outlined in white
 
 //Structure for storing u,v,light values.  This structure doesn't have a
 //prefix because it was defined somewhere else before it was moved here
-typedef struct tUVL {
-	fix u,v,l;
-} __pack__ tUVL;
-
 //Stucture to store clipping codes in a word
 typedef struct g3sCodes {
 	ubyte ccOr, ccAnd;   //or is low byte, and is high byte

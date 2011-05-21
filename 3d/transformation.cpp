@@ -298,10 +298,10 @@ bool CFrustum::Contains (CSide* sideP, CFixVector* normal)
 
 	int i, j, nInside = 0;
 	g3sPoint* points [6];
-	CFixVector verts [6], intersection;
+	CFixVector intersection;
 
 for (j = 0; j < 4; j++)
-	points [j] = gameData.segs.points [sideP->m_corners [j]];
+	points [j] = &gameData.segs.points [sideP->m_corners [j]];
 
 for (i = 0; i < 6; i++) {
 	int nPtInside = 4;
@@ -318,18 +318,19 @@ for (i = 0; i < 6; i++) {
 	}
 
 if (sideP->m_nFaces == 2) {
-	points [1] = gameData.segs.points [sideP->m_vertices [3]];
+	points [1] = &gameData.segs.points [sideP->m_vertices [3]];
 	if (!(points [j]->m_flags & PF_PROJECTED))
 		transformation.Transform (points [j]->m_vec, points [j]->m_src = VERTICES [sideP->m_vertices [j]]);
 	}
 
 for (i = 0; i < 12; i++) {
 	for (j = 0; j < sideP->m_nFaces; j++) {
-		if (!FindPlaneLineIntersection (intersection, points [j]->m_vec, sideP->m_rotNorms [j],
-												  m_corners [lineVerts [i][0]], m_corners [lineVerts [i][1]], 0))
+		if (!FindPlaneLineIntersection (intersection, &points [j]->m_vec, &sideP->m_rotNorms [j],
+												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0))
 			continue;
-		if (!sideP->CheckPointToFace (intersection, j, sideP->rotNorms [i]))
+		if (!sideP->CheckPointToFace (intersection, j, sideP->m_rotNorms [j]))
 			return true;
+		}
 	}
 // check whether face contains frustum
 return false;
