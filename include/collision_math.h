@@ -125,7 +125,7 @@ int CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1,
 								short nSegment, short nSide, short iFace, int nv, fix rad);
 
 int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
-										 CFixVector *p0, CFixVector *p1, fix rad);
+										 CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow = true);
 
 int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2);
 

@@ -146,7 +146,7 @@ return minDist;
 //vPlanePoint & vPlaneNorm describe the plane
 //p0 & p1 are the ends of the line
 int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
-										 CFixVector *p0, CFixVector *p1, fix rad)
+										 CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow)
 {
 	CFixVector	d, w;
 	fix			num, den;
@@ -166,7 +166,7 @@ else {
 		return 0;
 	}
 //do check for potential overflow
-if (labs (num) / (I2X (1) / 2) >= labs (den))
+if (bCheckOverflow && (labs (num) / (I2X (1) / 2) >= labs (den)))
 	return 0;
 d *= FixDiv (num, den);
 intersection = (*p0) + d;

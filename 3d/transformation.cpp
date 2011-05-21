@@ -251,7 +251,7 @@ static int normRefs [6][2] = {{1,5},{1,2},{1,0},{2,1},{0,1},{5,1}};
 
 void CFrustum::Compute (void)
 {
-	int i, j;
+	int i;
 
 transformation.SystemMatrix (-1).Get (GL_MODELVIEW_MATRIX, false); 
 transformation.SystemMatrix (-2).Get (GL_PROJECTION_MATRIX, false); 
@@ -421,7 +421,7 @@ for (i = 1; i < 6; i++) {
 	m_centers [i].Assign (centers [i]);
 #if COMPUTE_TYPE == 1
 #else
-	for (j = 0; j < 4; j++)
+	for (int j = 0; j < 4; j++)
 		m_centers [i] += m_corners [planeVerts [i][j]];
 	m_centers [i] /= I2X (4);
 #endif
@@ -490,7 +490,7 @@ for (i = 4; i < 12; i++) {
 	for (j = 0; j < sideP->m_nFaces; j++) {
 		transformation.Transform (sideP->m_rotNorms [j], sideP->m_normals [j]);
 		if (!FindPlaneLineIntersection (intersection, &points [j]->m_vec, &sideP->m_rotNorms [j],
-												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0))
+												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0, false))
 			continue;
 		if (!sideP->CheckPointToFace (intersection, j, sideP->m_rotNorms [j])) {
 			return true;
