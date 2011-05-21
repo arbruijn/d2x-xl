@@ -254,6 +254,10 @@ void CFrustum::Compute (void)
 		{{0.0, 0.0, 1.0}}, {{0.0, 1.0, 1.0}}, {{1.0, 1.0, 1.0}}, {{0.0, 1.0, 1.0}}
 		};
 
+	static CFloatVector centers [6] = {
+		{{0.5, 0.5, 0.0}}, {{0.0, 0.5, 0.5}}, {{0.5, 1.0, 0.5}}, {{1.0, 0.5, 0.5}},{{0.5, 0.0, 0.5}}, {{0.5, 0.5, 1.0}}
+		};
+
 transformation.SystemMatrix (-1).Get (GL_MODELVIEW_MATRIX, false); // inverse
 transformation.SystemMatrix (-2).Get (GL_PROJECTION_MATRIX, false); 
 
@@ -263,6 +267,7 @@ glGetIntegerv (GL_VIEWPORT, viewport);
 int i;
 GLdouble x, y, z;
 CFixVector v;
+
 for (i = 0; i < 8; i++) {
 	gluUnProject (corners [i].v.coord.x, corners [i].v.coord.y, corners [i].v.coord.z, 
 					  &transformation.SystemMatrix (-1) [0],
@@ -274,6 +279,19 @@ for (i = 0; i < 8; i++) {
 	v.v.coord.z = F2X ((float) z);
 	transformation.Transform (m_corners [i], v);
 	}
+
+for (i = 0; i < 6; i++) {
+	gluUnProject (centers [i].v.coord.x, centers [i].v.coord.y, centers [i].v.coord.z, 
+					  &transformation.SystemMatrix (-1) [0],
+					  &transformation.SystemMatrix (-2) [0],
+					  viewport,
+					  &x, &y, &z);
+	v.v.coord.x = F2X ((float) x);
+	v.v.coord.y = F2X ((float) y);
+	v.v.coord.z = F2X ((float) z);
+	transformation.Transform (m_centers [i], v);
+	}
+
 for (i = 0; i < 6; i++) {
 	m_normals [i] = CFixVector::Normal (m_corners [planeVerts [i][0]], m_corners [planeVerts [i][1]], m_corners [planeVerts [i][2]]);
 #if 1
@@ -308,7 +326,7 @@ for (j = 0; j < 4; j++) {
 for (i = 0; i < 6; i++) {
 	int nPtInside = 4;
 	int bPtInside = 1;
-	CFixVector c = m_corners [planeVerts [i][0]];
+	CFixVector c = m_centers [planeVerts [i][0]];
 	for (j = 0; j < 4; j++) {
 		CFixVector v = points [j]->m_vec - c;
 		CFixVector::Normalize (v);

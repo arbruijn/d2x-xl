@@ -54,6 +54,7 @@ typedef struct tScreenPosf {
 class CFrustum {
 	public:
 		CFixVector		m_corners [8];
+		CFixVector		m_centers [6];
 		CFixVector		m_normals [6];
 
 	void Compute (void);
