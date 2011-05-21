@@ -288,7 +288,7 @@ for (i = 0; i < 6; i++) {
 
 //------------------------------------------------------------------------------
 
-bool CFrustum::Contains (CSide* sideP, CFixVector* normal)
+bool CFrustum::Contains (CSide* sideP)
 {
 	static int lineVerts [12][2] = {
 		{0,1}, {1,2}, {2,3}, {3,0}, 

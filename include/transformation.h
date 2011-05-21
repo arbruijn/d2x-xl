@@ -57,7 +57,7 @@ class CFrustum {
 		CFixVector		m_normals [6];
 
 	void Compute (void);
-	bool Contains (CSide* sideP, CFixVector* normal);
+	bool Contains (CSide* sideP);
 	};
 
 typedef struct tTransformation {
@@ -180,7 +180,7 @@ class CTransformation {
 
 		inline void ComputeFrustum (void) { Frustum ().Compute (); }
 
-		inline bool FrustumContains (CSide* sideP, CFixVector* normal) { return Frustum ().Contains (sideP, normal); }
+		inline bool FrustumContains (CSide* sideP) { return Frustum ().Contains (sideP); }
 
 	};
 

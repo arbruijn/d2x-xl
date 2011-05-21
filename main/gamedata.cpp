@@ -631,8 +631,6 @@ void CSegmentData::Destroy (void)
 DESTROY (gameData.segs.vertices);
 DESTROY (gameData.segs.fVertices);
 DESTROY (SEGMENTS);
-DESTROY (SEGMENTS);
-DESTROY (SEGMENTS);
 DESTROY (gameData.segs.points);
 #if CALC_SEGRADS
 DESTROY (gameData.segs.segRads [0]);
