@@ -842,6 +842,8 @@ for (l = 0; l < nRenderDepth; l++) {
 #if 1
 			if (!(bProjected || transformation.Frustum ().Contains (sideP))) {
 #	if DBG
+				if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+					nDbgSeg = nDbgSeg;
 				transformation.Frustum ().Contains (sideP);
 #	endif
 				continue;
