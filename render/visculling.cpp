@@ -799,7 +799,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			}
 #endif
 			if (bCullIfBehind) {
-				short* s2v = segP->Sides (nChild)->m_corners;;
+				short* s2v = segP->Side (nChild)->m_corners;;
 				if (gameData.segs.points [s2v [0]].m_codes &
 					 gameData.segs.points [s2v [1]].m_codes &
 					 gameData.segs.points [s2v [2]].m_codes &
