@@ -303,7 +303,7 @@ bool CFrustum::Contains (CSide* sideP)
 for (j = 0; j < 4; j++) {
 	points [j] = &gameData.segs.points [sideP->m_corners [j]];
 	if (!(points [j]->m_flags & PF_PROJECTED))
-		transformation.Transform (points [j]->m_vec, points [j]->m_src = VERTICES [sideP->m_vertices [j]]);
+		transformation.Transform (points [j]->m_vec, points [j]->m_src = VERTICES [sideP->m_corners [j]]);
 	}
 
 for (i = 0; i < 6; i++) {

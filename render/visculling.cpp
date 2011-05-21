@@ -759,7 +759,6 @@ for (l = 0; l < nRenderDepth; l++) {
 		nIterations++;
 #endif
 		CSegment* segP = SEGMENTS + nSegment;
-		short* sv = segP->m_verts;
 		int bRotated = 0;
 		//look at all sides of this segment.
 		//tricky code to look at sides in correct order follows
@@ -773,11 +772,8 @@ for (l = 0; l < nRenderDepth; l++) {
 			if (nChildSeg == nDbgSeg)
 				nChildSeg = nChildSeg;
 #endif
-#if 1
 			if (!bRotated) {
-#if 0
-				RotateVertexList (8, sv);
-#else
+				short* sv = segP->m_verts;
 				for (int i = 0; i < 8; i++) {
 #if DBG
 					if (sv [i] == nDbgVertex)
@@ -785,19 +781,9 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 					ProjectRenderPoint (sv [i]);
 					}
-#endif
 				bRotated = 1;
 				}
-#else
-			{
-			for (int i = 0; i < 8; i++) {
-				int j = sv [i];
-				CFixVector vertDir = gameData.segs.vertices [j] - viewPos;
-				if (CFixVector::Dot (viewDir, vertDir) < 0) 
-					gameData.segs.points [j].m_codes |= CC_BEHIND;
-				}
-			}
-#endif
+
 			if (bCullIfBehind) {
 				short* s2v = segP->Side (nChild)->m_corners;;
 				if (gameData.segs.points [s2v [0]].m_codes &
@@ -844,7 +830,7 @@ for (l = 0; l < nRenderDepth; l++) {
 #else
 				if (!(point.m_flags & PF_PROJECTED))
 #endif
-					ProjectRenderPoint (sv [s2v [nCorner]]);
+					ProjectRenderPoint (s2v [nCorner]);
 				if (point.m_codes & CC_BEHIND) {
 					bProjected = 0;
 #if 0
