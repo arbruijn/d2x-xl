@@ -242,7 +242,7 @@ ubyte CTransformation::Codes (CFixVector& v)
 #define COMPUTE_TYPE 1
 
 static int planeVerts [6][4] = {
-	{0,1,2,3},{0,1,5,4},{6,5,1,2},{6,2,3,7},{0,3,7,4},{4,5,6,7}
+	{0,1,2,3},{0,1,5,4},{1,2,6,5},{2,3,7,6},{0,3,7,4},{4,5,6,7}
 	};
 
 static int oppSides [6] = {5, 3, 4, 1, 2, 0};
@@ -417,7 +417,7 @@ for (i = 0; i < 6; i++) {
 m_centers [0].SetZero ();
 m_normals [0].Set (0, 0, I2X (1));
 for (i = 1; i < 6; i++) {
-	m_normals [i] = CFixVector::Normal (m_corners [planeVerts [i][0]], m_corners [planeVerts [i][1]], m_corners [planeVerts [i][2]]);
+	m_normals [i] = CFixVector::Normal (m_corners [planeVerts [i][1]], m_corners [planeVerts [i][2]], m_corners [planeVerts [i][3]]);
 	m_centers [i].Assign (centers [i]);
 #if COMPUTE_TYPE == 1
 #else
@@ -444,7 +444,7 @@ bool CFrustum::Contains (CSide* sideP)
 		{0,4}, {1,5}, {2,6}, {3,7}
 	};
 
-	int i, j, nInside = 0;
+	int i, j, nInside = 0, nOutside = 0;
 	g3sPoint* points [4];
 	CFixVector intersection;
 
@@ -464,8 +464,11 @@ for (i = 0; i < 6; i++) {
 		CFixVector::Normalize (v);
 		if (CFixVector::Dot (n, v) < 0) {
 			if (!--nPtInside) {
-				memset (points, 0, sizeof (points));
+#if DBG
+				++nOutside;
+#else
 				return false;
+#endif
 				}
 			bPtInside = 0;
 			}
@@ -473,8 +476,7 @@ for (i = 0; i < 6; i++) {
 	nInside += bPtInside;
 	}
 
-if (nInside) {
-	memset (points, 0, sizeof (points));
+if (nInside == 6) {
 	return true;
 	}
 
@@ -490,13 +492,11 @@ for (i = 4; i < 12; i++) {
 												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0))
 			continue;
 		if (!sideP->CheckPointToFace (intersection, j, sideP->m_rotNorms [j])) {
-			memset (points, 0, sizeof (points));
 			return true;
 			}
 		}
 	}
 // check whether face contains frustum
-memset (points, 0, sizeof (points));
 return false;
 }
 
