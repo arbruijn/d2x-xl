@@ -246,12 +246,12 @@ ubyte CTransformation::Codes (CFixVector& v)
 #define COMPUTE_TYPE 1
 
 static int planeVerts [6][4] = {
-	{0,1,2,3},{1,0,4,5},{1,2,6,5},{2,3,7,6},{0,4,7,4},{4,5,6,7}
+	{0,1,2,3},{0,1,5,4},{1,2,6,5},{2,3,7,6},{0,3,7,4},{4,5,6,7}
 	};
 
 static int oppSides [6] = {5, 3, 4, 1, 2, 0};
 
-static int normRefs [6][2] = {{1,5},{4,7},{4,5},{7,4},{5,4},{5,1}};
+static int normRefs [6][2] = {{1,5},{4,7},{5,4},{7,4},{4,5},{5,1}};
 
 void CFrustum::Compute (void)
 {

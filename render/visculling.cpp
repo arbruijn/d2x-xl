@@ -851,11 +851,11 @@ for (l = 0; l < nRenderDepth; l++) {
 				if (!transformation.Frustum ().Contains (sideP)) {
 #	if DBG
 					if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-						nDbgSeg = nDbgSeg;
+						transformation.Frustum ().Contains (sideP);
 					else {
-					transformation.Frustum ().Contains (sideP);
+						transformation.Frustum ().Contains (sideP);
 #	endif
-					continue;
+						continue;
 #	if DBG
 					}
 #	endif
