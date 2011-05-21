@@ -300,8 +300,11 @@ bool CFrustum::Contains (CSide* sideP)
 	g3sPoint* points [4];
 	CFixVector intersection;
 
-for (j = 0; j < 4; j++)
+for (j = 0; j < 4; j++) {
 	points [j] = &gameData.segs.points [sideP->m_corners [j]];
+	if (!(points [j]->m_flags & PF_PROJECTED))
+		transformation.Transform (points [j]->m_vec, points [j]->m_src = VERTICES [sideP->m_vertices [j]]);
+	}
 
 for (i = 0; i < 6; i++) {
 	int nPtInside = 4;
@@ -310,13 +313,20 @@ for (i = 0; i < 6; i++) {
 	for (j = 0; j < 4; j++) {
 		CFixVector v = points [j]->m_vec - c;
 		CFixVector::Normalize (v);
-		if (CFixVector::Dot (m_normals [i], v) < 0)
-			break;
+		if (CFixVector::Dot (m_normals [i], v) < 0) {
+			if (!--nPtInside) {
+				memset (points, 0, sizeof (points));
+				return false;
+				}
+			bPtInside = 0;
+			}
+		nInside += bPtInside;
 		}
-	if (j == 4) {
-		memset (points, 0, sizeof (points));
-		return true;
-		}
+	}
+
+if (nInside) {
+	memset (points, 0, sizeof (points));
+	return true;
 	}
 
 if (sideP->m_nFaces == 2) {
