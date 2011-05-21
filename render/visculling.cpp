@@ -840,16 +840,26 @@ for (l = 0; l < nRenderDepth; l++) {
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (offScreenFlags || (bProjected && CodePortal (facePortal, curPortal)))
+			if (offScreenFlags)
 				continue;
+			if (bProjected) {
+				 if (CodePortal (facePortal, curPortal))
+					 continue;
+				}
 #if 1
-			if (!(bProjected || transformation.Frustum ().Contains (sideP))) {
+			else {
+				if (!transformation.Frustum ().Contains (sideP)) {
 #	if DBG
-				if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-					nDbgSeg = nDbgSeg;
-				transformation.Frustum ().Contains (sideP);
+					if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+						nDbgSeg = nDbgSeg;
+					else {
+					transformation.Frustum ().Contains (sideP);
 #	endif
-				continue;
+					continue;
+#	if DBG
+					}
+#	endif
+				}
 			}
 #endif
 			//maybe add this segment
