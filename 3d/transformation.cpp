@@ -243,7 +243,7 @@ ubyte CTransformation::Codes (CFixVector& v)
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-#define COMPUTE_TYPE 1
+#define COMPUTE_TYPE 0
 
 static int planeVerts [6][4] = {
 	{0,1,2,3},{0,1,5,4},{1,2,6,5},{2,3,7,6},{0,3,7,4},{4,5,6,7}
@@ -257,10 +257,7 @@ void CFrustum::Compute (void)
 {
 	int i;
 
-transformation.SystemMatrix (-1).Get (GL_MODELVIEW_MATRIX, false); 
-transformation.SystemMatrix (-2).Get (GL_PROJECTION_MATRIX, false); 
-
-#if COMPUTE_TYPE == 2
+#if COMPUTE_TYPE == 1
 
 // Note: WNEARHALF = ZNEAR * tan(LIGHTFOV * (PI / 180.0) / 2.0);
 //       WFARHALF = ZFAR * tan(LIGHTFOV * (PI / 180.0) / 2.0);
@@ -318,7 +315,7 @@ m_corners [5].Assign (ftl);
 m_corners [6].Assign (ftr);
 m_corners [7].Assign (fbr);
 
-#elif COMPUTE_TYPE == 1
+#else
 
 float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * Pi / 360.0));
 float w = float (h * CCanvas::Current ()->AspectRatio ());
@@ -359,62 +356,6 @@ for (i = 0; i < 8; i++)
 	m_corners [i].Assign (corners [i]);
 for (i = 0; i < 6; i++)
 	m_centers [i].Assign (centers [i]);
-
-#else
-
-	float w = CCanvas::Current ()->Width ();
-	float h = CCanvas::Current ()->Height ();
-	float n = float (ZNEAR);
-	float f = float (ZFAR);
-
-	static CFloatVector corners [8] = {
-#if 0
-		{{0.0, 0.0, 0.0}}, {{0.0, 1.0, 0.0}}, {{1.0, 1.0, 0.0}}, {{1.0, 0.0, 0.0}},
-		{{0.0, 0.0, 1.0}}, {{0.0, 1.0, 1.0}}, {{1.0, 1.0, 1.0}}, {{1.0, 0.0, 1.0}}
-#else
-		{{0.0f, 0.0f, n}}, {{0.0f, h, n}}, {{w, h, n}}, {{w, 0.0f, n}},
-		{{0.0f, 0.0f, f}}, {{0.0f, h, f}}, {{w, h, f}}, {{w, 0.0f, f}},
-#endif
-		};
-
-	static CFloatVector centers [6] = {
-		{{0.5, 0.5, 0.0}}, {{0.0, 0.5, 0.5}}, {{0.5, 1.0, 0.5}}, {{1.0, 0.5, 0.5}},{{0.5, 0.0, 0.5}}, {{0.5, 0.5, 1.0}}
-		};
-
-transformation.SystemMatrix (-1).Get (GL_MODELVIEW_MATRIX, false); 
-transformation.SystemMatrix (-2).Get (GL_PROJECTION_MATRIX, false); 
-
-	GLdouble x, y, z;
-
-for (i = 0; i < 8; i++) {
-	gluUnProject (corners [i].v.coord.x, corners [i].v.coord.y, corners [i].v.coord.z, 
-					  &transformation.SystemMatrix (-1) [0],
-					  &transformation.SystemMatrix (-2) [0],
-					  transformation.m_info.oglViewport,
-					  &x, &y, &z);
-	v.v.coord.x = F2X ((float) x);
-	v.v.coord.y = F2X ((float) y);
-	v.v.coord.z = F2X ((float) z);
-	transformation.Transform (m_corners [i], v);
-#if DBG
-	tScreenPos s;
-	ProjectPoint (m_corners [i], s);
-	ProjectPoint (v, s);
-	i = i;
-#endif
-	}
-
-for (i = 0; i < 6; i++) {
-	gluUnProject (centers [i].v.coord.x, centers [i].v.coord.y, centers [i].v.coord.z, 
-					  &transformation.SystemMatrix (-1) [0],
-					  &transformation.SystemMatrix (-2) [0],
-					  transformation.m_info.oglViewport,
-					  &x, &y, &z);
-	v.v.coord.x = F2X ((float) x);
-	v.v.coord.y = F2X ((float) y);
-	v.v.coord.z = F2X ((float) z);
-	transformation.Transform (m_centers [i], v);
-	}
 
 #endif
 
