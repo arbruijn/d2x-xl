@@ -151,15 +151,12 @@ static inline double DblRound (double v) { return (v < 0.0) ? v - 0.5 : v + 0.5;
 int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
 										 CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow)
 {
-	CFixVector	d, w;
-	fix			num, den;
-
-w = *p0 - *vPlanePoint;
-d = *p1 - *p0;
-num = CFixVector::Dot (*vPlaneNorm, w) - rad;
-den = -CFixVector::Dot (*vPlaneNorm, d);
+CFixVector d = *p1 - *p0;
+fix den = -CFixVector::Dot (*vPlaneNorm, d);
 if (!den)
 	return 0;
+CFixVector w = *p0 - *vPlanePoint;
+fix num = CFixVector::Dot (*vPlaneNorm, w) - rad;
 if (den > 0) {
 	if ((num > den) || ((-num >> 15) >= den)) //frac greater than one
 		return 0;

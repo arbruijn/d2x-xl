@@ -413,10 +413,8 @@ return d * (Pi / 180.0);
 
 void COGL::SetupFrustum (void)
 {
-double fovy = gameStates.render.glFOV * X2D (transformation.m_info.zoom);
-double aspect = double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ());
-double h = ZNEAR * tan (DegToRad (fovy * 0.5));
-double w = aspect * h;
+double h = ZNEAR * tan (DegToRad (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * 0.5));
+double w = h * CCanvas::Current ()->AspectRatio ();
 double shift = X2D (StereoSeparation ()) / 2.0 * ZNEAR / ZScreen ();
 if (shift < 0)
 	glFrustum (-w - shift, w - shift, -h, h, ZNEAR, ZFAR);
