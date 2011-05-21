@@ -823,7 +823,8 @@ for (l = 0; l < nRenderDepth; l++) {
 					break;
 #endif
 					}
-				offScreenFlags &= (point.m_codes & ~CC_BEHIND);
+				//offScreenFlags &= (point.m_codes & ~CC_BEHIND);
+				offScreenFlags &= point.m_codes;
 				if (facePortal.left > point.m_screen.x)
 					facePortal.left = point.m_screen.x;
 				if (facePortal.right < point.m_screen.x)
@@ -836,6 +837,8 @@ for (l = 0; l < nRenderDepth; l++) {
 #if DBG
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				nDbgSeg = nDbgSeg;
 #endif
 			if (offScreenFlags || (bProjected && CodePortal (facePortal, curPortal)))
 				continue;
