@@ -809,7 +809,7 @@ for (l = 0; l < nRenderDepth; l++) {
 				fix dot;
 				int ii;
 				for (ii = 0; ii < 4; ii++) {
-					CFixVector v = VERTICES [sv [s2v [ii]]] - gameData.objs.consoleP->Position ();
+					CFixVector v = VERTICES [s2v [ii]] - gameData.objs.consoleP->Position ();
 					CFixVector::Normalize (v);
 					dot = CFixVector::Dot (gameData.objs.consoleP->Orientation ().m.dir.f, v);
 					if (dot >= 0)
