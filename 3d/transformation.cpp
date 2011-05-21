@@ -297,7 +297,7 @@ bool CFrustum::Contains (CSide* sideP, CFixVector* normal)
 	};
 
 	int i, j, nInside = 0;
-	g3sPoint* points [6];
+	g3sPoint* points [4];
 	CFixVector intersection;
 
 for (j = 0; j < 4; j++)
