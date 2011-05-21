@@ -840,8 +840,12 @@ for (l = 0; l < nRenderDepth; l++) {
 			if (offScreenFlags || (bProjected && CodePortal (facePortal, curPortal)))
 				continue;
 #if 1
-			if (!transformation.Frustum ().Contains (sideP))
+			if (!transformation.Frustum ().Contains (sideP)) {
+#	if DBG
+				transformation.Frustum ().Contains (sideP);
+#	endif
 				continue;
+			}
 #endif
 			//maybe add this segment
 			int nPos = gameData.render.mine.renderPos [nChildSeg];

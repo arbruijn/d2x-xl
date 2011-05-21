@@ -320,7 +320,7 @@ float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom)
 float w = float (h * CCanvas::Current ()->AspectRatio ());
 float n = float (ZNEAR);
 float f = float (ZFAR);
-float m = (n + f) * 0.5f;
+float m = f * 0.5f;
 float r = f / n;
 
 #define ln -w
@@ -334,12 +334,21 @@ float r = f / n;
 #define bf (bn * r)
 
 	CFloatVector corners [8] = {
+#if 1
+		{{0.0f, 0.0f, 0.0f}}, {{0.0f, 0.0f, 0.0f}}, {{0.0f, 0.0f, 0.0f}}, {{0.0f, 0.0f, 0.0f}},
+#else
 		{{ln, bn, n}}, {{ln, tn, n}}, {{rn, tn, n}}, {{rn, bn, n}},
+#endif
 		{{lf, bf, f}}, {{lf, tf, f}}, {{rf, tf, f}}, {{rf, bf, f}}
 		};
 
 	static CFloatVector centers [6] = {
-		{{0.0f, 0.0f, n}}, {{ln, 0.0f, m}}, {{0.0f, tn, m}}, {{rn, 0.0f, m}},{{0.0f, bn, m}}, {{0.0f, 0.0f, f}}
+#if 1
+		{{0.0f, 0.0f, 0.0f}},
+#else
+		{{0.0f, 0.0f, n}}, 
+#endif
+		{{lf * 0.5f, 0.0f, m}}, {{0.0f, tf * 0.5f, m}}, {{rf * 0.5f, 0.0f, m}}, {{0.0f, bf * 0.5f, m}}, {{0.0f, 0.0f, f}}
 		};
 
 for (i = 0; i < 8; i++)
@@ -405,11 +414,17 @@ for (i = 0; i < 6; i++) {
 
 #endif
 
-for (i = 0; i < 6; i++) {
+m_centers [0].SetZero ();
+m_normals [0].Set (0, 0, I2X (1));
+for (i = 1; i < 6; i++) {
+	m_normals [i] = CFixVector::Normal (m_corners [planeVerts [i][0]], m_corners [planeVerts [i][1]], m_corners [planeVerts [i][2]]);
+	m_centers [i].Assign (centers [i]);
+#if COMPUTE_TYPE == 1
+#else
 	for (j = 0; j < 4; j++)
 		m_centers [i] += m_corners [planeVerts [i][j]];
 	m_centers [i] /= I2X (4);
-	m_normals [i] = CFixVector::Normal (m_corners [planeVerts [i][0]], m_corners [planeVerts [i][1]], m_corners [planeVerts [i][2]]);
+#endif
 #if 1
 	CFixVector v = m_corners [normRefs [i][1]] - m_corners [normRefs [i][0]];
 	CFixVector::Normalize (v);
@@ -442,19 +457,20 @@ for (j = 0; j < 4; j++) {
 for (i = 0; i < 6; i++) {
 	int nPtInside = 4;
 	int bPtInside = 1;
-	CFixVector c = m_centers [planeVerts [i][0]];
+	CFixVector& c = m_centers [i];
+	CFixVector& n = m_normals [i];
 	for (j = 0; j < 4; j++) {
 		CFixVector v = points [j]->m_vec - c;
 		CFixVector::Normalize (v);
-		if (CFixVector::Dot (m_normals [i], v) < 0) {
+		if (CFixVector::Dot (n, v) < 0) {
 			if (!--nPtInside) {
 				memset (points, 0, sizeof (points));
 				return false;
 				}
 			bPtInside = 0;
 			}
-		nInside += bPtInside;
 		}
+	nInside += bPtInside;
 	}
 
 if (nInside) {
@@ -468,7 +484,7 @@ if (sideP->m_nFaces == 2) {
 		transformation.Transform (points [1]->m_vec, points [1]->m_src = VERTICES [sideP->m_vertices [1]]);
 	}
 
-for (i = 0; i < 12; i++) {
+for (i = 4; i < 12; i++) {
 	for (j = 0; j < sideP->m_nFaces; j++) {
 		if (!FindPlaneLineIntersection (intersection, &points [j]->m_vec, &sideP->m_rotNorms [j],
 												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0))
