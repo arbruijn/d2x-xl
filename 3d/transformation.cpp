@@ -444,7 +444,7 @@ bool CFrustum::Contains (CSide* sideP)
 		{0,4}, {1,5}, {2,6}, {3,7}
 	};
 
-	int i, j, nInside = 0, nOutside = 0;
+	int i, j, nInside = 0, nOutside [4] = {0, 0, 0, 0};
 	g3sPoint* points [4];
 	CFixVector intersection;
 
@@ -463,22 +463,20 @@ for (i = 0; i < 6; i++) {
 		CFixVector v = points [j]->m_vec - c;
 		CFixVector::Normalize (v);
 		if (CFixVector::Dot (n, v) < 0) {
-			if (!--nPtInside) {
-#if DBG
-				++nOutside;
-#else
+			if (!--nPtInside)
 				return false;
-#endif
-				}
+			++nOutside [j];
 			bPtInside = 0;
 			}
 		}
 	nInside += bPtInside;
 	}
 
-if (nInside == 6) {
+if (nInside == 6)
 	return true;
-	}
+for (j = 0; j < 4; j++) 
+	if (!nOutside [j])
+		return true;
 
 if (sideP->m_nFaces == 2) {
 	points [1] = &gameData.segs.points [sideP->m_vertices [3]];
