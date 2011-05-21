@@ -263,7 +263,7 @@ void CFrustum::Compute (void)
 		{{0.5, 0.5, 0.0}}, {{0.0, 0.5, 0.5}}, {{0.5, 1.0, 0.5}}, {{1.0, 0.5, 0.5}},{{0.5, 0.0, 0.5}}, {{0.5, 0.5, 1.0}}
 		};
 
-transformation.SystemMatrix (-1).Get (GL_MODELVIEW_MATRIX, false); // inverse
+transformation.SystemMatrix (-1).Get (GL_MODELVIEW_MATRIX, false); 
 transformation.SystemMatrix (-2).Get (GL_PROJECTION_MATRIX, false); 
 
 	int i;
@@ -274,7 +274,7 @@ for (i = 0; i < 8; i++) {
 	gluUnProject (corners [i].v.coord.x, corners [i].v.coord.y, corners [i].v.coord.z, 
 					  &transformation.SystemMatrix (-1) [0],
 					  &transformation.SystemMatrix (-2) [0],
-					  m_info.oglViewport,
+					  transformation.m_info.oglViewport,
 					  &x, &y, &z);
 	v.v.coord.x = F2X ((float) x);
 	v.v.coord.y = F2X ((float) y);
@@ -286,7 +286,7 @@ for (i = 0; i < 6; i++) {
 	gluUnProject (centers [i].v.coord.x, centers [i].v.coord.y, centers [i].v.coord.z, 
 					  &transformation.SystemMatrix (-1) [0],
 					  &transformation.SystemMatrix (-2) [0],
-					  viewport,
+					  transformation.m_info.oglViewport,
 					  &x, &y, &z);
 	v.v.coord.x = F2X ((float) x);
 	v.v.coord.y = F2X ((float) y);
