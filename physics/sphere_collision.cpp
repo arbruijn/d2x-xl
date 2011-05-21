@@ -145,6 +145,9 @@ return minDist;
 //intersection is the found intersection on the plane
 //vPlanePoint & vPlaneNorm describe the plane
 //p0 & p1 are the ends of the line
+
+static inline double DblRound (double v) { return (v < 0.0) ? v - 0.5 : v + 0.5; }
+
 int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
 										 CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow)
 {
@@ -166,9 +169,17 @@ else {
 		return 0;
 	}
 //do check for potential overflow
-if (bCheckOverflow && (labs (num) / (I2X (1) / 2) >= labs (den)))
-	return 0;
-d *= FixDiv (num, den);
+if (bCheckOverflow) {
+	if (labs (num) / (I2X (1) / 2) >= labs (den))
+		return 0;
+	d *= FixDiv (num, den);
+	}
+else {
+	double scale = double (num) / double (den);
+	d.v.coord.x = fix (DblRound (double (d.v.coord.x) * scale));
+	d.v.coord.y = fix (DblRound (double (d.v.coord.y) * scale));
+	d.v.coord.z = fix (DblRound (double (d.v.coord.z) * scale));
+	}
 intersection = (*p0) + d;
 return 1;
 }

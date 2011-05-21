@@ -486,6 +486,7 @@ if (sideP->m_nFaces == 2) {
 		transformation.Transform (points [1]->m_vec, points [1]->m_src = VERTICES [sideP->m_vertices [1]]);
 	}
 
+gameStates.render.bRendering = 1; // make sure CSide::CheckPointToFace uses the transformed vertices
 for (i = 4; i < 12; i++) {
 	for (j = 0; j < sideP->m_nFaces; j++) {
 		transformation.Transform (sideP->m_rotNorms [j], sideP->m_normals [j]);
@@ -493,10 +494,12 @@ for (i = 4; i < 12; i++) {
 												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0, false))
 			continue;
 		if (!sideP->CheckPointToFace (intersection, j, sideP->m_rotNorms [j])) {
+			gameStates.render.bRendering = 0;
 			return true;
 			}
 		}
 	}
+gameStates.render.bRendering = 0;
 // check whether face contains frustum
 return false;
 }
