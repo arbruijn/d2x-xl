@@ -487,7 +487,8 @@ if (!nWindow)
 PROF_START
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
-#if 1 //MAX_SHADOWMAPS
+transformation.ComputeFrustum ();
+#if MAX_SHADOWMAPS
 if (!(nWindow || gameStates.render.cameras.bActive)) {
 	ogl.SetupTransform (1);
 	transformation.SystemMatrix (-1).Get (GL_MODELVIEW_MATRIX, true); // inverse

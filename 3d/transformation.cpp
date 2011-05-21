@@ -200,7 +200,6 @@ glGetIntegerv (GL_VIEWPORT, m_info.oglViewport);
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);
 m_info.projection.Flip ();
 m_info.aspectRatio = aspectRatio;
-transformation.ComputeFrustum ();
 }
 
 //------------------------------------------------------------------------------
@@ -331,8 +330,8 @@ if (nInside) {
 
 if (sideP->m_nFaces == 2) {
 	points [1] = &gameData.segs.points [sideP->m_vertices [3]];
-	if (!(points [j]->m_flags & PF_PROJECTED))
-		transformation.Transform (points [j]->m_vec, points [j]->m_src = VERTICES [sideP->m_vertices [j]]);
+	if (!(points [1]->m_flags & PF_PROJECTED))
+		transformation.Transform (points [1]->m_vec, points [1]->m_src = VERTICES [sideP->m_vertices [1]]);
 	}
 
 for (i = 0; i < 12; i++) {
