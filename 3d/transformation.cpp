@@ -317,6 +317,8 @@ m_corners [7].Assign (fbr);
 
 #else
 
+// compute the frustum. ZNEAR is 0.0 here!
+
 float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * Pi / 360.0));
 float w = float (h * CCanvas::Current ()->AspectRatio ());
 float n = float (ZNEAR);
@@ -380,6 +382,7 @@ for (i = 1; i < 6; i++) {
 }
 
 //------------------------------------------------------------------------------
+// Check whether the frustum intersects with a face defined by side *sideP.
 
 bool CFrustum::Contains (CSide* sideP)
 {
@@ -399,6 +402,8 @@ for (j = 0; j < 4; j++) {
 		transformation.Transform (points [j]->m_vec, points [j]->m_src = VERTICES [sideP->m_corners [j]]);
 	}
 
+// check whether all vertices of the face are at the back side of at least one frustum plane,
+// or if at least one is at at least one frustum plane's front side
 for (i = 0; i < 6; i++) {
 	int nPtInside = 4;
 	int bPtInside = 1;
@@ -418,10 +423,10 @@ for (i = 0; i < 6; i++) {
 	}
 
 if (nInside == 6)
-	return true;
+	return true; // face completely contained
 for (j = 0; j < 4; j++) 
 	if (!nOutside [j])
-		return true;
+		return true; // some vertex inside frustum
 
 if (sideP->m_nFaces == 2) {
 	points [1] = &gameData.segs.points [sideP->m_vertices [3]];
@@ -429,6 +434,9 @@ if (sideP->m_nFaces == 2) {
 		transformation.Transform (points [1]->m_vec, points [1]->m_src = VERTICES [sideP->m_vertices [1]]);
 	}
 
+// check whether the frustum intersects with the face
+// to do that, compute the intersections of all frustum edges with the plane(s) spanned up by the face (two planes if face not planar)
+// if an edge intersects, check whether the intersection is inside the face
 gameStates.render.bRendering = 1; // make sure CSide::CheckPointToFace uses the transformed vertices
 for (j = 0; j < sideP->m_nFaces; j++) 
 	transformation.Rotate (sideP->m_rotNorms [j], sideP->m_normals [j], 0);
@@ -444,7 +452,6 @@ for (i = 11; i >= 4; i--) {
 		}
 	}
 gameStates.render.bRendering = 0;
-// check whether face contains frustum
 return false;
 }
 
