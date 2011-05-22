@@ -15,6 +15,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _ARGS_H
 #define _ARGS_H
 
+#include "cstack.h"
+
 extern int Inferno_verbose;
 
 class CConfigManager {
