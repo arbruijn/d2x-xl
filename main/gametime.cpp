@@ -37,7 +37,227 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
                    (automap.Display () && !(automap.Radar () || (gameStates.render.bShowFrameRate == 1))) ? 40 : \
 						 ((gameOpts->render.stereo.nGlasses == 5) && (gameOpts->render.nMaxFPS < 120)) ? 2 * gameOpts->render.nMaxFPS : gameOpts->render.nMaxFPS)
 
+#define EXACT_FRAME_TIME	1
+
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+class CFrameTime {
+	protected:
+		time_t	m_tMinFrame;
+
+	protected:
+		virtual void Setup (void) = 0;
+
+		virtual void GetTick (void) = 0;
+
+		virtual time_t Elapsed (void) = 0;
+
+	public:
+		virtual void Compute (void) = 0;
+	};
+
+//------------------------------------------------------------------------------
+
+template <class _T>
+class CTypedFrameTime : public CFrameTime {
+	protected:
+		_T		m_tLast;
+		_T		m_tick;
+
+	protected:
+		virtual void Setup (void) {
+			GetTick ();
+			m_tLast = m_tick;
+			}
+
+	public:
+		virtual void Compute (void) {
+			while (Elapsed () < m_tMinFrame)
+				G3_SLEEP (0);
+			m_tLast = m_tick;
+			}
+	};
+
+//------------------------------------------------------------------------------
+
+#ifdef _WIN32
+
+class CWindowsFrameTime : public CTypedFrameTime <LARGE_INTEGER> {
+	private:
+		time_t			m_ticksPerMSec;
+		LARGE_INTEGER	m_ticksPerSec;
+		time_t			m_tError;
+
+	protected:
+		virtual void Setup (void);
+		virtual void GetTick (void);
+		virtual time_t Elapsed (void);
+
+	public:
+		explicit CWindowsFrameTime() { Setup (); }
+		virtual void Compute (void);
+
+		static CFrameTime* GetInstance (void);
+
+	};
+
+//------------------------------------------------------------------------------
+
+LARGE_INTEGER CWindowsFrameTime::Setup (void)
+{
+QueryPerformanceFrequency (&m_ticksPerSec);
+CFrameTime::Setup ();
+m_tError = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void CWindowsFrameTime::GetTick (void)
+{
+QueryPerformanceCounter (&m_tick);
+}
+
+//------------------------------------------------------------------------------
+
+time_t CWindowsFrameTime::Elapsed (void)
+{
+GetTick ();
+return time_t (m_tick.QuadPart - m_tLast.QuadPart);
+}
+
+//------------------------------------------------------------------------------
+
+void CWindowsFrameTime::Compute (void)
+{
+m_ticksPerMSec = time_t (m_ticksPerSec.QuadPart) / 1000;
+m_tError += time_t (m_ticksPerSec.QuadPart) - m_ticksPerMSec * 1000;
+time_t tSlack = m_tError / m_ticksPerMSec;
+if (tSlack > 0) {
+	m_ticksPerMSec += tSlack;
+	m_tError -= tSlack * m_ticksPerMSec;
+	}
+m_tMinFrame = time_t (m_ticksPerSec.QuadPart / LONGLONG (MAXFPS));
+CFrameTime::Compute ();
+}
+
+//------------------------------------------------------------------------------
+
+#elif defined (__unix__) || defined(__macosx__)
+
+class CUnixFrameTime : public CTypedFrameTime <int64_t> {
+	protected:
+		virtual void GetTick (void);
+		time_t Elapsed (void);
+
+	public:
+		virtual void Compute (void);
+	};
+
+//------------------------------------------------------------------------------
+
+void CUnixFrameTime::GetTick (void)
+{
+struct timeval t;
+gettimeofday (&t, NULL);
+m_tick = int64_t (t.tv_sec) * 1000000 + int64_t (t.tv_usec);
+}
+
+//------------------------------------------------------------------------------
+
+time_t CUnixFrameTime::Elapsed (void)
+{
+GetTick ();
+return time_t (m_tick - m_tLast);
+}
+
+//------------------------------------------------------------------------------
+
+void CUnixFrameTime::Compute (void)
+{
+m_tMinFrame = time_t (1000000 / MAXFPS);
+CFrameTime::Compute ();
+}
+
+
+//------------------------------------------------------------------------------
+
+#else
+
+class CSDLFrameTime : public CTypedFrameTime <time_t> {
+	protected:
+		virtual void GetTick (void);
+		time_t FrameTime (void);
+
+	public:
+		virtual void Compute (void);
+	};
+
+//------------------------------------------------------------------------------
+
+void CSDLFrameTime::GetTick (void)
+{
+m_tick = SDL_GetTicks ();
+}
+
+//------------------------------------------------------------------------------
+
+time_t CSDLFrameTime::Elapsed (void)
+{
+GetTick ();
+return time_t (m_tick - m_tLast);
+}
+
+//------------------------------------------------------------------------------
+
+void CSDLFrameTime::Compute (void)
+{
+m_tMinFrame = 1000 / MAXFPS;
+CFrameTime::Compute ();
+}
+
+#endif
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+class CFrameTimeFactory {
+	private:
+		static CFrameTimeFactory* m_instance;
+		static CFrameTime* m_timer;
+
+	protected:
+		explicit CFrameTimeFactory() {}
+
+	public:
+		static CFrameTimeFactory* GetInstance (void) {
+			if (!m_instance)
+				m_instance = new CFrameTimeFactory;
+			return m_instance;
+			}
+
+		static CFrameTime* GetTimer (void) {
+			if (!m_timer)
+#ifdef _WIN32
+				m_timer = new CWindowsFrameTime ();
+#elif defined (__unix__) || defined(__macosx__)
+				m_timer = new CUnixFrameTime ();
+#else
+				m_timer = new CSDLFrameTime ();
+#endif
+			return m_timer;
+			}
+	};
+
+CFrameTimeFactory* CFrameTimeFactory::m_instance = NULL;
+CFrameTime* CFrameTimeFactory::m_timer = NULL;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 
 void StopTime (void)
 {
@@ -90,8 +310,6 @@ gameData.time.xLast = TimerGetFixedSeconds ();
 
 //------------------------------------------------------------------------------
 
-#define EXACT_FRAME_TIME	1
-
 void CalcFrameTime (void)
 {
 if (gameData.app.bGamePaused) {
@@ -120,7 +338,9 @@ else {
 	if (!gameData.time.tLast)
 		nDeltaTime = 0;
 	else {
-#ifdef _WIN32
+#if 1
+		CFrameTimeFactory::GetInstance ()->GetTimer ()->Compute ();
+#elif defined(_WIN32)
 		static time_t tError = 0, ticksPerMSec = 0;
 		static LARGE_INTEGER tLast = {0}, ticksPerSec;
 
@@ -143,24 +363,17 @@ else {
 			G3_SLEEP (0);
 			}
 		tLast = tick;
-		}
 #elif defined(__unix__) || defined(__macosx__)
 		static int64_t tLast = 0;
 
-		struct timeval t;
-		gettimeofday (&t, NULL);
-		int64_t tick = int64_t (t.tv_sec) * 1000000 + int64_t (t.tv_usec);
-		time_t tFrame, tMinFrame = time_t (1000000 / MAXFPS);
+		int64_t tick, tFrame, tMinFrame = int64_t (1000000 / MAXFPS);
 		for (;;) {
-			gettimeofday (&t, NULL);
-			tick = int64_t (t.tv_sec) * 1000000 + int64_t (t.tv_usec);
-  			tFrame = time_t (tick - tLast);
+  			tFrame = tick - tLast;
 			if (tFrame >= tMinFrame) 
 				break;
 			G3_SLEEP (0);
 			}
 		tLast = tick;
-		}
 #else
 		static float fSlack = 0;
 
@@ -176,9 +389,10 @@ else {
 			G3_SLEEP (nDeltaTime);
 		else
 			nDeltaTime = 0;
-		}
 #endif
+		}
 	}
+
 timerValue = MSEC2X (gameStates.app.nSDLTicks [0]);
 
 #else
