@@ -77,6 +77,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define PER_PIXEL_LIGHTING 1
 
+#if defined(__macosx__) || defined(__unix__)
+#	pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
+
 #include "vers_id.h"
 #include "pstypes.h"
 #include "3d.h"
