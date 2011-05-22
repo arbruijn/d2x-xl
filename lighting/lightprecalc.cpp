@@ -428,8 +428,10 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			continue;
 #endif
 #if 1
+#	if 0
 		if (bLights && !gameData.segs.SegVis (nStartSeg, nSegment))
 			continue;
+#	endif
 		if (!SegmentIsVisible (SEGMENTS + nSegment))
 			continue;
 #endif
@@ -499,7 +501,6 @@ gameData.segs.bSegVis [1][i >> 3] &= ~(1 << (i & 7));
 void ComputeLightVisibility (int startI)
 {
 	int	i, j, endI;
-	fix	xLightRange;
 
 PrintLog ("computing light visibility (%d)\n", startI);
 if (startI <= 0) {
@@ -522,9 +523,11 @@ for (i = endI - startI; i; i--, pl++)
 	if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
 		for (j = 1; j <= 5; j++)
 			ComputeSingleSegmentVisibility (pl->info.nSegment, pl->info.nSide, pl->info.nSide, j);
-		xLightRange = fix (MAX_LIGHT_RANGE * pl->info.fRange);
+#if 0
+		fix xLightRange = fix (MAX_LIGHT_RANGE * pl->info.fRange);
 		for (j = 0; j < gameData.segs.nSegments; j++)
 			CheckLightVisibility (pl->info.nSegment, pl->info.nSide, j, xLightRange);
+#endif
 		}
 }
 
