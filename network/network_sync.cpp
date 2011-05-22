@@ -397,7 +397,7 @@ if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
 if (nState)
 	return nCurItem;
 
-	int nPackets = NetworkListen ();
+	/*int nPackets =*/ NetworkListen ();
 
 if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit the menu
 	if (NetworkVerifyPlayers ())
@@ -568,7 +568,7 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) && (SDL_GetTicks () <
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 		ReceiveNetPlayersPacket (packet, &playerData);
 #else
-		playerData = *(reinterpret_cast<tAllNetPlayersInfo*> (packet));
+		playerData = *((tAllNetPlayersInfo*) &packet [0]);
 #endif
 		retries++;
 		if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_PLAYERS) {

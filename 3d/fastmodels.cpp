@@ -709,7 +709,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				glEnable (hLight);
 	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (prl->nObject >= 0) ? -prl->nObject : prl->nSegment);
 				fBrightness = prl->info.fBrightness * fLightScale;
-				color = *(reinterpret_cast<CFloatVector*> (&prl->info.color));
+				memcpy (&color.v.color, &prl->info.color, sizeof (color.v.color));
 				color.v.color.r *= fLightScale;
 				color.v.color.g *= fLightScale;
 				color.v.color.b *= fLightScale;

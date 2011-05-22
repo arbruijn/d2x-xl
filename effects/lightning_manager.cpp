@@ -596,7 +596,7 @@ if (SHOW_LIGHTNING) {
 			m_emitterList [nSystems++] = emitterP;
 #	pragma omp parallel
 			{
-			int nThread = omp_get_thread_num ();
+			//int nThread = omp_get_thread_num ();
 #		pragma omp for private(emitterP) reduction(+: nLights)
 			for (int i = 0; i < nSystems; i++) {
 				emitterP = m_emitterList [i];

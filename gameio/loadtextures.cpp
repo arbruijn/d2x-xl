@@ -491,7 +491,7 @@ if (bmP->Flags () & BM_FLAG_RLE) {
 	#endif
 	}
 else {
-	if (bmP->Read (*cfP, nSize) != nSize)
+	if (bmP->Read (*cfP, nSize) != (size_t) nSize)
 		return -2;
 	}
 #ifndef MACDATA

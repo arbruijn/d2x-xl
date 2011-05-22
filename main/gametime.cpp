@@ -108,7 +108,6 @@ GetSlowTicks ();
 
 #if EXACT_FRAME_TIME
 
-	static float fSlack = 0;
 	int nDeltaTime;
 
 if (MAXFPS <= 1) 
@@ -163,6 +162,8 @@ else {
 		tLast = tick;
 		}
 #else
+		static float fSlack = 0;
+
 		int nFrameTime = gameStates.app.nSDLTicks [0] - gameData.time.tLast;
 		int nMinFrameTime = 1000 / MAXFPS;
 		nDeltaTime = nMinFrameTime - nFrameTime;

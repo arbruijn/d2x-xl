@@ -249,7 +249,7 @@ static int planeVerts [6][4] = {
 	{0,1,2,3},{0,1,5,4},{1,2,6,5},{2,3,7,6},{0,3,7,4},{4,5,6,7}
 	};
 
-static int oppSides [6] = {5, 3, 4, 1, 2, 0};
+//static int oppSides [6] = {5, 3, 4, 1, 2, 0};
 
 static int normRefs [6][2] = {{1,5},{4,7},{5,4},{7,4},{4,5},{5,1}};
 
@@ -338,20 +338,20 @@ float r = f / n;
 
 	CFloatVector corners [8] = {
 #if 1
-		{{0.0f, 0.0f, 0.0f}}, {{0.0f, 0.0f, 0.0f}}, {{0.0f, 0.0f, 0.0f}}, {{0.0f, 0.0f, 0.0f}},
+		{{{0.0f, 0.0f, 0.0f}}}, {{{0.0f, 0.0f, 0.0f}}}, {{{0.0f, 0.0f, 0.0f}}}, {{{0.0f, 0.0f, 0.0f}}},
 #else
-		{{ln, bn, n}}, {{ln, tn, n}}, {{rn, tn, n}}, {{rn, bn, n}},
+		{{{ln, bn, n}}}, {{{ln, tn, n}}}, {{{rn, tn, n}}}, {{{rn, bn, n}}},
 #endif
-		{{lf, bf, f}}, {{lf, tf, f}}, {{rf, tf, f}}, {{rf, bf, f}}
+		{{{lf, bf, f}}}, {{{lf, tf, f}}}, {{{rf, tf, f}}}, {{{rf, bf, f}}}
 		};
 
 	static CFloatVector centers [6] = {
 #if 1
-		{{0.0f, 0.0f, 0.0f}},
+		{{{0.0f, 0.0f, 0.0f}}},
 #else
-		{{0.0f, 0.0f, n}}, 
+		{{{0.0f, 0.0f, n}}},
 #endif
-		{{lf * 0.5f, 0.0f, m}}, {{0.0f, tf * 0.5f, m}}, {{rf * 0.5f, 0.0f, m}}, {{0.0f, bf * 0.5f, m}}, {{0.0f, 0.0f, f}}
+		{{{lf * 0.5f, 0.0f, m}}}, {{{0.0f, tf * 0.5f, m}}}, {{{rf * 0.5f, 0.0f, m}}}, {{{0.0f, bf * 0.5f, m}}}, {{{0.0f, 0.0f, f}}}
 		};
 
 for (i = 0; i < 8; i++)

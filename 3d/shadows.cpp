@@ -1525,7 +1525,7 @@ int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAn
 	short*		pnl;
 	int			h, i, j, nShadowQuality = gameOpts->render.ShadowQuality () - 1;
 	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
-	CObject*		lightObjP;
+	CObject*		lightObjP = NULL;
 
 Assert (objP->info.nId < MAX_ROBOT_TYPES);
 if (!gameStates.render.nShadowMap) {

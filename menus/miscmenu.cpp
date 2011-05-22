@@ -180,6 +180,7 @@ do {
 		optMissileView = m.AddCheck (TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPIT_MSLVIEW);
 		optGuided = m.AddCheck (TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_G, HTX_CPIT_GUIDEDVIEW);
 		optHeadlight = m.AddCheck (TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadlightOnWhenPickedUp, KEY_H, HTX_MISC_HEADLIGHT);
+		optNotebook = -1;
 		}
 	else {
 		optEpileptic = m.AddCheck (TXT_EPILEPTIC_FRIENDLY, gameOpts->app.bEpilepticFriendly, KEY_E, HTX_EPILEPTIC_FRIENDLY);

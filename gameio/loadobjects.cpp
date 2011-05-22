@@ -342,7 +342,7 @@ static int ReadLevelInfo (CFile& cf)
 {
 if (gameTopFileInfo.fileinfoVersion >= 31) { //load mine filename
 	// read newline-terminated string, not sure what version this changed.
-	for (int i = 0; i < sizeof (missionManager.szCurrentLevel); i++) {
+	for (int i = 0; i < (int) sizeof (missionManager.szCurrentLevel); i++) {
 		missionManager.szCurrentLevel [i] = (char) cf.ReadByte ();
 		if (missionManager.szCurrentLevel [i] == '\n')
 			missionManager.szCurrentLevel [i] = '\0';
@@ -1150,7 +1150,7 @@ for (;;) {
 		cf.ReadInt ();       //was hostagetext_offset
 
 	if (gameData.segs.nLevelVersion > 1) {
-		for (int i = 0; i < sizeof (szCurrentLevelPalette); i++) {
+		for (int i = 0; i < (int) sizeof (szCurrentLevelPalette); i++) {
 			szCurrentLevelPalette [i] = (char) cf.ReadByte ();
 			if (szCurrentLevelPalette [i] == '\n')
 				szCurrentLevelPalette [i] = '\0';

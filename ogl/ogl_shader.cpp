@@ -422,7 +422,7 @@ else
 	m_nCurrent = nShader;
 	glUseProgramObjectARB (shaderProg);
 #if SUSPENDABLE_SHADERS
-	if (m_bSuspendable = bSuspendable)
+	if ((m_bSuspendable = bSuspendable))
 		Set ("bSuspended", 0);
 #endif
 	gameData.render.nShaderChanges++;

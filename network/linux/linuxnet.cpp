@@ -188,7 +188,8 @@ while (driver->PacketReady (&ipxSocketData)) {
 		break;
 	if (dataSize < 6)
 		continue;
-	dataOffs = tracker.IsTracker (*reinterpret_cast<uint*> (networkData.packetSource.src_node), *reinterpret_cast<ushort*> (networkData.packetSource.src_node + 4)) ? 0 : 4;
+	dataOffs = tracker.IsTracker (*((uint*) &networkData.packetSource.src_node [0]),
+                                  *((ushort*) &networkData.packetSource.src_node [4]) ? 0 : 4;
 	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
 		PrintLog ("incoming data package too large (%d bytes)\n", dataSize);
 		continue;
@@ -212,12 +213,12 @@ if (dataSize > MAX_PAYLOAD_SIZE)
 else {
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
-	*reinterpret_cast<u_short*> (&ipxHeader.Destination.Socket [0]) = htons (ipxSocketData.socket);
+	*((u_short*) &ipxHeader.Destination.Socket [0]) = htons (ipxSocketData.socket);
 	ipxHeader.PacketType = 4; /* Packet Exchange */
 	if (gameStates.multi.bTrackerCall)
 		memcpy (buf, data, dataSize);
 	else {
-		*reinterpret_cast<uint*> (buf) = nIpxPacket++;
+		*((uint*) &buf [0]) = nIpxPacket++;
 		memcpy (buf + 4, data, dataSize);
 		}
 	driver->SendPacket (&ipxSocketData, &ipxHeader, buf, dataSize + (gameStates.multi.bTrackerCall ? 0 : 4));
@@ -494,7 +495,7 @@ if (driver->SendGamePacket) {
 		PrintLog ("IpxSendGamePacket: packet too large (%d bytes)\n", dataSize);
 	else {
 		static u_char buf [MAX_PACKET_SIZE];
-		*reinterpret_cast<uint*> (buf) = nIpxPacket++;
+		*((uint*) &buf [0]) = nIpxPacket++;
 		memcpy (buf + 4, data, dataSize);
 		*reinterpret_cast<uint*> (data) = nIpxPacket++;
 		return driver->SendGamePacket (&ipxSocketData, buf, dataSize + 4);

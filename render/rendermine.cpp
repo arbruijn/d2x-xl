@@ -318,8 +318,9 @@ static int nThreads = 0;
 // tell the render process that this segment's objects can be rendered, and waits
 // for the render process to reset its semaphore before proceeding with the next 
 // segment.
-
+#if DBG
 static int nDbgThread = -1;
+#endif
 
 int _CDECL_ LightObjectsThread (void* nThreadP)
 {

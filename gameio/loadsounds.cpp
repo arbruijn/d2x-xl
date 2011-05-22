@@ -348,7 +348,7 @@ if (!(gameData.pig.sound.nType || bCustom))
 	CFile		cf;
 	int		sndId, sndVersion;
 	int		nSounds;
-	int		nLoadedSounds;
+	int		nLoadedSounds = 0;
 	bool		bUseLowRes = false;
 	char		szFile [FILENAME_LEN];
 	char*		pszFile, * pszFolder;

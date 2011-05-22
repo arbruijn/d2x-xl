@@ -446,7 +446,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 	if (prl->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
-	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
+	memcpy (&lightColor.v.color, &prl->info.color, sizeof (lightColor.v.color));
 	if (lightColor.IsZero ())
 		continue;
 

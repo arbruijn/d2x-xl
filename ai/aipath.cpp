@@ -821,7 +821,7 @@ void AIFollowPath (CObject *objP, int nTargetVisibility, int nPrevVisibility, CF
 	tRobotInfo*		botInfoP = &ROBOTINFO (objP->info.nId);
 	int				originalDir, originalIndex;
 	fix				xDistToTarget;
-	short				nGoalSeg;
+	short				nGoalSeg = -1;
 	tAILocalInfo*	ailP = gameData.ai.localInfo + objP->Index ();
 	fix				thresholdDistance;
 

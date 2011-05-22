@@ -405,10 +405,9 @@ if (!rle_cache_initialized)
 
 Assert (!(bmP->Flags () & BM_FLAG_PAGED_OUT));
 
-lc = rleCounter;
-rleCounter++;
-if (rleCounter < lc) {
-	for (i=0; i<MAX_CACHE_BITMAPS; i++) {
+lc = rleCounter++;
+if (rleCounter < lc) { // overflow
+	for (i = 0; i < MAX_CACHE_BITMAPS; i++) {
 		rle_cache [i].rle_bitmap = NULL;
 		rle_cache [i].last_used = 0;
 		}

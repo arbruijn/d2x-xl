@@ -267,8 +267,6 @@ int CObject::FindAnyHomingTarget (CFixVector& vTrackerPos, int targetType1, int 
 	CHomingTargetData targetData (this, vTrackerPos, targetLists [nThread]);
 
 FORALL_ACTOR_OBJS (targetP, nObject) {
-	int bIsProximity = 0;
-
 	if (OBJ_IDX (targetP) == cType.laserInfo.parent.nObject) // Don't track shooter
 		continue;
 

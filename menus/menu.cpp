@@ -446,7 +446,7 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 {
 	static	int t0 = 0;
 
-	int y;
+	int y = 0;
 
 if (!MenuRenderTimeout (t0, m_tEnter))
 	return;

@@ -3495,7 +3495,7 @@ else if (0 > (slot = saveGameManager.GetSaveFile (1) - 1))
 gameId = TimerGetFixedSeconds ();
 gameId ^= gameData.multiplayer.nPlayers << 4;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	gameId ^= *reinterpret_cast<uint*> (gameData.multiplayer.players [i].callsign);
+	gameId ^= *((uint*) &gameData.multiplayer.players [i].callsign [0]);
 if (gameId == 0)
 	gameId = 1; // 0 is invalid
 if (slot > 0)
@@ -3573,7 +3573,7 @@ else
 gameData.app.bGamePaused = 1;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	MultiStripRobots (i);
-if (saveGameManager.GetGameId (szFile, (slot < 0) ? -1 : 0) != id) {
+if ((uint) saveGameManager.GetGameId (szFile, (slot < 0) ? -1 : 0) != id) {
 	MultiBadRestore ();
 	gameData.app.bGamePaused = 0;
 	return;

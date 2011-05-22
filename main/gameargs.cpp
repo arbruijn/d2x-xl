@@ -89,10 +89,10 @@ void EvalAutoNetGameArgs (void)
 {
 	int	t, bHaveIp = 0;
 	char	*p;
-
+#if 0
 	static const char *pszTypes [] = {"anarchy", "coop", "ctf", "ctf+", "hoard", "entropy", NULL};
 	static const char	*pszConnect [] = {"ipx", "udp", "", "multicast", NULL};
-
+#endif
 memset (&gameData.multiplayer.autoNG, 0, sizeof (gameData.multiplayer.autoNG));
 if ((t = FindArg ("-ng_player")) && (p = appConfig [t+1])) {
 	strncpy (gameData.multiplayer.autoNG.szPlayer, appConfig [t+1], 8);

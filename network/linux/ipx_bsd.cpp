@@ -155,7 +155,7 @@ static int ipx_bsd_OpenSocket(ipx_socket_t *sk, int port)
 	}
 #endif
 	ipxs.sipx_family = AF_IPX;
-	ipxs.sipx_network = *reinterpret_cast<uint*> (&ipx_MyAddress[0]);
+	ipxs.sipx_network = *((uint*) &ipx_MyAddress[0]);
 	/*  ipxs.sipx_network = htonl(MyNetwork); */
 	bzero(ipxs.sipx_node, 6);	/* Please fill in my node name */
 	ipxs.sipx_port = htons(port);
@@ -201,7 +201,7 @@ static int ipx_bsd_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
 	memcpy(&ipxs.sipx_network, IPXHeader->Destination.Network, 4);
 	/* if destination address is 0, then send to my net */
 	if (ipxs.sipx_network == 0) {
-		ipxs.sipx_network = *reinterpret_cast<uint*> (&ipx_MyAddress[0]);
+		ipxs.sipx_network = *((uint*) &ipx_MyAddress[0]);
 		/*  ipxs.sipx_network = htonl(MyNetwork); */
 	}
 	memcpy(&ipxs.sipx_node, IPXHeader->Destination.Node, 6);

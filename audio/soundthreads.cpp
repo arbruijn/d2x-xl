@@ -60,11 +60,8 @@ return 0;
 
 void WaitForSoundThread (time_t nTimeout)
 {
-	time_t t0;
-
-if (nTimeout >= 0)
-	t0 = SDL_GetTicks ();
-while (tiSound.ti.pThread && tiSound.ti.bExec && ((nTimeout < 0) || (SDL_GetTicks () - t0 < nTimeout)))
+time_t t0 = (nTimeout < 0) ? 0 : (time_t) SDL_GetTicks ();
+while (tiSound.ti.pThread && tiSound.ti.bExec && ((nTimeout < 0) || ((time_t) SDL_GetTicks () - t0 < nTimeout)))
 	G3_SLEEP (1);
 }
 

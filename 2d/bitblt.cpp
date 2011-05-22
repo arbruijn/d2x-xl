@@ -164,7 +164,7 @@ for (i = 0; i < num_pixels / 4; i++) {
 	work = ((work << 8) & 0xFF000000) | (work & 0x00FFFFFF); // 0xABEFGHGH -> 0xEFEFGHGH
 	doubletemp[1] = work;
 
-	*d = *reinterpret_cast<double*> (doubletemp);
+	*d = *((double*) &doubletemp [0]);
 	d++;
 	}
 }

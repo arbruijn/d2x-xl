@@ -281,7 +281,7 @@ void CFont::Create (const char *fontname)
 	ubyte		*fp;
 	CPalette *palette;
 	int		nChars = Range ();
-	int		i, j, w, h, tw, th, x, y, curx = 0, cury = 0;
+	int		i, j, x, y, w, h, tw = 0, th = 0, curx = 0, cury = 0;
 	ubyte		white;
 	int		gap = 0; //having a gap just wastes ram, since we don't filter text textures at all.
 

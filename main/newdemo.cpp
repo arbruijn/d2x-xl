@@ -2464,9 +2464,9 @@ while (!bDone) {
 
 
 		case ND_EVENT_WALL_SET_TMAP_NUM1: {
-			short nSegment, nConnSeg, tmap;
+			short nSegment, nConnSeg, tmap = 0;
 			ubyte nSide, nConnSide;
-			short nAnim, nFrame;
+			short nAnim = 0, nFrame = 0;
 
 			nSegment = NDReadShort ();
 			nSide = NDReadByte ();
@@ -2491,9 +2491,9 @@ while (!bDone) {
 			break;
 
 		case ND_EVENT_WALL_SET_TMAP_NUM2: {
-			short nSegment, nConnSeg, tmap;
+			short nSegment, nConnSeg, tmap = 0;
 			ubyte nSide, nConnSide;
-			int nAnim, nFrame;
+			int nAnim = 0, nFrame = 0;
 
 			nSegment = NDReadShort ();
 			nSide = NDReadByte ();

@@ -1047,8 +1047,10 @@ return h;
 
 //------------------------------------------------------------------------------
 
+#if DBG
 static int nDbgTrigger = -1;
 static int nDbgType = -1;
+#endif
 
 int CTrigger::Operate (short nObject, int nPlayer, int bShot, bool bObjTrigger)
 {

@@ -142,7 +142,7 @@ int CIFF::GetSig (void)
 	s[2] = Data() [NextPos()];
 	s[3] = Data() [NextPos()];
 #endif
-	return *reinterpret_cast<int*> (s);
+	return *((int*) &s [0]);
 }
 
 //------------------------------------------------------------------------------

@@ -6,8 +6,8 @@
 
 typedef ubyte tUdpAddress [6];
 
-#define UDP_ADDR(_a)	*(reinterpret_cast<uint *> (_a))
-#define UDP_PORT(_a)	*(reinterpret_cast<ushort *> (((char *) (_a)) + 4))
+#define UDP_ADDR(_a)	*((uint *) (_a))
+#define UDP_PORT(_a)	*((ushort *) ((char *) (_a) + 4))
 
 #define	MAX_TRACKER_SERVERS	(512 / sizeof (tUdpAddress))
 

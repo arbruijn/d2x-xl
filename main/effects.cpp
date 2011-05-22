@@ -210,7 +210,7 @@ xEffectTime += gameData.time.xFrame;
 		CBitmap*			bmP = NULL;
 		tEffectClip*	ecP;
 		tBitmapIndex	bmi;
-		fix				ft;
+		fix				ft = 0;
 		int				i, t, nFrames;
 
 	for (i = 0, ecP = gameData.eff.effectP.Buffer (); i < gameData.eff.nEffects [gameStates.app.bD1Data]; i++, ecP++) {

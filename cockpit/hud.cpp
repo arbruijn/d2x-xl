@@ -258,7 +258,7 @@ if (cockpit->Hide ())
 if (!gameOpts->render.cockpit.bTextGauges) {
 	static int		bFlash = 0, bShow = 1;
 	static time_t	tToggle;
-	static int		nIdLevel = 0;
+	//static int		nIdLevel = 0;
 	time_t			t;
 
 	int nLevel = m_info.nEnergy;
@@ -328,7 +328,7 @@ void CHUD::DrawAfterburnerBar (void)
 if (cockpit->Hide ())
 	return;
 
-	static int nIdLevel = 0;
+	//static int nIdLevel = 0;
 	
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
@@ -574,7 +574,7 @@ if (cockpit->Hide ())
 
 	static int		bShow = 1;
 	static time_t	tToggle = 0, nBeep = -1;
-	static int		nIdLevel = 0;
+	//static int		nIdLevel = 0;
 
 	time_t			t = gameStates.app.nSDLTicks [0];
 	int				bLastFlash = gameStates.render.cockpit.nShieldFlash;
