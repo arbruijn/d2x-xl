@@ -360,7 +360,7 @@ drawBufferP = &drawBuffers [0];
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-static SDL_mutex* semaphore = NULL;
+//static SDL_mutex* semaphore = NULL;
 
 void COGL::Initialize (void)
 {
