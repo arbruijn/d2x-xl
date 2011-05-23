@@ -1183,7 +1183,11 @@ try {
 	}
 catch(...) {
 	PrintLog ("Error reading background image '%s'\n", BACKGROUND_NAME);
-	bmBackground.DestroyBuffer ();
+	try {
+		bmBackground.Destroy ();
+		}
+	catch(...) {
+		}
 	}
 }
 
