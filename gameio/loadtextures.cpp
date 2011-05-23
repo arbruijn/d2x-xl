@@ -1182,7 +1182,7 @@ try {
 	bmBackground.SetPalette (NULL, -1, -1);
 	}
 catch(...) {
-	Printlog ("Error reading background image '%s'\n", BACKGROUND_NAME);
+	PrintLog ("Error reading background image '%s'\n", BACKGROUND_NAME);
 	bmBackground.DestroyBuffer ();
 	}
 }
