@@ -35,7 +35,7 @@ int PCXReadBitmap (const char * filename, CBitmap * bmp, int bitmapType, int bD1
 
 int pcx_write_bitmap (const char * filename, CBitmap * bmp);
 
-const char *pcx_errormsg(int error_number);
+const char *PcxErrorMsg(int error_number);
 
 int PcxReadFullScrImage (const char * filename, int bD1Mission);
 

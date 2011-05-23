@@ -366,7 +366,7 @@ const char pcx_error_messages[] = {
 
 //------------------------------------------------------------------------------
 //function to return pointer to error message
-const char *pcx_errormsg (int error_number)
+const char *PcxErrorMsg (int error_number)
 {
 	const char *p = pcx_error_messages;
 

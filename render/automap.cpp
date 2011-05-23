@@ -126,7 +126,7 @@ if (m_background.Buffer ())
 
 int nPCXError = PCXReadBitmap (BackgroundName (BG_MAP), &m_background, BM_LINEAR, 0);
 if (nPCXError != PCX_ERROR_NONE) {
-	Error ("File %s - PCX error: %s", BackgroundName (BG_MAP), pcx_errormsg (nPCXError));
+	Error ("File %s - PCX error: %s", BackgroundName (BG_MAP), PcxErrorMsg (nPCXError));
 	return false;
 	}
 m_background.SetPalette (NULL, -1, -1);

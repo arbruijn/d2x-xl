@@ -1170,15 +1170,21 @@ extern CBitmap bmBackground;
 
 void LoadGameBackground (void)
 {
-	int pcx_error;
+	int pcxError;
 	
 	static char szBackground [2][13] = {"statback.pcx", "johnhead.pcx"};
 
-bmBackground.DestroyBuffer ();
-pcx_error = PCXReadBitmap (szBackground [gameStates.app.cheats.bJohnHeadOn], &bmBackground, BM_LINEAR, 0);
-if (pcx_error != PCX_ERROR_NONE)
-	Error ("File %s - PCX error: %s", BACKGROUND_NAME, pcx_errormsg (pcx_error));
-bmBackground.SetPalette (NULL, -1, -1);
+try {
+	bmBackground.DestroyBuffer ();
+	pcxError = PCXReadBitmap (szBackground [gameStates.app.cheats.bJohnHeadOn], &bmBackground, BM_LINEAR, 0);
+	if (pcxError != PCX_ERROR_NONE)
+		Error ("PCX error %s when reading background image '%s'", PcxErrorMsg (pcxError), BACKGROUND_NAME);
+	bmBackground.SetPalette (NULL, -1, -1);
+	}
+catch(...) {
+	Printlog ("Error reading background image '%s'\n", BACKGROUND_NAME);
+	bmBackground.DestroyBuffer ();
+	}
 }
 
 //------------------------------------------------------------------------------

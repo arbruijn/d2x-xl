@@ -736,7 +736,7 @@ if (pcxResult != PCX_ERROR_NONE) {
 
 	if (strncmp (szErrScreen, szBriefScreen, sizeof (szErrScreen))) {
 		Error ("Error loading briefing screen <%s>, \nPCX load error: %s (%i)\n", 
-				 szBriefScreen, pcx_errormsg (pcxResult), pcxResult);
+				 szBriefScreen, PcxErrorMsg (pcxResult), pcxResult);
 		strncpy (szErrScreen, szBriefScreen, sizeof (szErrScreen));
 		}
 #endif
@@ -1532,7 +1532,7 @@ if (gameStates.app.bD1Mission) {
 	int pcxResult = RenderImage (briefingScreens [nScreen % MAX_BRIEFING_SCREENS].szName);
 	if (pcxResult != PCX_ERROR_NONE) {
 		console.printf (CON_DBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing screen.  Does this cause you pain?)\n", 
-							 briefingScreens [nScreen % MAX_BRIEFING_SCREENS].szName, pcx_errormsg (pcxResult), pcxResult);
+							 briefingScreens [nScreen % MAX_BRIEFING_SCREENS].szName, PcxErrorMsg (pcxResult), pcxResult);
 		Int3 ();
 		return 0;
 		}
