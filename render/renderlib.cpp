@@ -686,7 +686,7 @@ if (!(point.m_flags & PF_PROJECTED))
 #else
 	CFloatVector3 v;
 	point.m_flags |= PF_PROJECTED;
-#if 1
+#if 0
 	transformation.Transform (point.m_vec, point.m_src = gameData.segs.vertices [nVertex]);
 	v.Assign (point.m_vec);
 #else
