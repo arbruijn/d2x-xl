@@ -156,10 +156,10 @@ class CUnixFrameTime : public CFrameTime <int64_t> {
 
 //------------------------------------------------------------------------------
 
-void CWindowsFrameTime::Setup (void)
+void CUnixFrameTime::Setup (void)
 {
 m_tMinFrame = time_t (1000000 / MAXFPS);
-CFrameTime::Setup ();
+CFrameTime<int64_t>::Setup ();
 }
 
 //------------------------------------------------------------------------------
