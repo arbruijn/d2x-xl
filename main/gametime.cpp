@@ -96,11 +96,9 @@ class CWindowsFrameTime : public CTypedFrameTime <LARGE_INTEGER> {
 		virtual time_t Elapsed (void);
 
 	public:
-		explicit CWindowsFrameTime() { Setup (); }
 		virtual void Compute (void);
 
-		static CFrameTime* GetInstance (void);
-
+		explicit CWindowsFrameTime() { Setup (); }
 	};
 
 //------------------------------------------------------------------------------
@@ -108,7 +106,7 @@ class CWindowsFrameTime : public CTypedFrameTime <LARGE_INTEGER> {
 LARGE_INTEGER CWindowsFrameTime::Setup (void)
 {
 QueryPerformanceFrequency (&m_ticksPerSec);
-CFrameTime::Setup ();
+CTypedFrameTime::Setup ();
 m_tError = 0;
 }
 
@@ -149,10 +147,12 @@ CTypedFrameTime::Compute ();
 class CUnixFrameTime : public CTypedFrameTime <int64_t> {
 	protected:
 		virtual void GetTick (void);
-		time_t Elapsed (void);
+		virtual time_t Elapsed (void);
 
 	public:
 		virtual void Compute (void);
+
+		explicit CUnixFrameTime() { Setup (); }
 	};
 
 //------------------------------------------------------------------------------
@@ -188,10 +188,12 @@ CTypedFrameTime::Compute ();
 class CSDLFrameTime : public CTypedFrameTime <time_t> {
 	protected:
 		virtual void GetTick (void);
-		time_t FrameTime (void);
+		virtual time_t FrameTime (void);
 
 	public:
 		virtual void Compute (void);
+
+		explicit CSDLFrameTime() { Setup (); }
 	};
 
 //------------------------------------------------------------------------------
