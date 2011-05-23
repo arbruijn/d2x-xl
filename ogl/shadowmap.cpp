@@ -209,7 +209,7 @@ const char* shadowMapFS =
 	"#define B (ZNEAR - ZFAR)\r\n" \
 	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
 	"#define D (cameraNDC.z * B)\r\n" \
-	"#define ZEYE -(C / (A + D))\r\n" \
+	"#define ZEYE (C / (A + D))\r\n" \
 	"#define MAX_OFFSET 2.5\r\n" \
 	"#define SAMPLE_RANGE (MAX_OFFSET + MAX_OFFSET + 1.0)\r\n" \
 	"#define SAMPLE_COUNT (SAMPLE_RANGE * SAMPLE_RANGE)\r\n" \
@@ -217,7 +217,7 @@ const char* shadowMapFS =
 	"float fragDepth = texture2D (sceneDepth, gl_TexCoord [0].xy).r;\r\n" \
 	"vec3 cameraNDC = (vec3 (gl_TexCoord [0].xy, fragDepth) - 0.5) * 2.0;\r\n" \
 	"vec4 cameraClipPos;\r\n" \
-	"cameraClipPos.w = -ZEYE;\r\n" \
+	"cameraClipPos.w = ZEYE;\r\n" \
 	"cameraClipPos.xyz = cameraNDC * cameraClipPos.w;\r\n" \
 	"vec4 lightWinPos = gl_TextureMatrix [2] * cameraClipPos;\r\n" \
 	"float w = abs (lightWinPos.w);\r\n" \

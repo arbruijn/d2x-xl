@@ -800,6 +800,8 @@ for (l = 0; l < nRenderDepth; l++) {
 			nSide = childList [nChild];
 			nChildSeg = segP->m_children [nSide];
 #if DBG
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				nDbgSeg = nDbgSeg;
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
@@ -835,10 +837,10 @@ for (l = 0; l < nRenderDepth; l++) {
 					facePortal.bot = point.m_screen.y;
 				}
 #if DBG
-			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-				nChildSeg = nChildSeg;
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
+			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				nChildSeg = nChildSeg;
 #endif
 			if (offScreenFlags)
 				continue;
