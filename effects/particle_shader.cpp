@@ -234,7 +234,7 @@ if (ogl.m_features.bRenderToTexture.Available () && ogl.m_features.bShaders) {
 	m_shaderProg = 0;
 	int i, j = (ogl.m_features.bDepthBlending > -1) ? 4 : 2;
 	for (i = 0; i < j; i++)
-		if (!shaderManager.Build (hParticleShader [i], particleFS [i], particleVS))
+		if (((i & 1) == 0) && !shaderManager.Build (hParticleShader [i], particleFS [i], particleVS)) // skip the texture array shaders
 			break;
 	if (i == 4)
 		ogl.m_features.bDepthBlending.Available (1);
