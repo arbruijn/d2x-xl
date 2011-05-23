@@ -146,19 +146,19 @@ void __cdecl D2SignalHandler (int nSignal)
 #endif
 {
 if (nSignal == SIGABRT)
-	PrintLog ("Abnormal program termination\n");
+	PrintLog ("+++ Abnormal program termination\n");
 else if (nSignal == SIGFPE)
-	PrintLog ("Floating point error\n");
+	PrintLog ("+++ Floating point error\n");
 else if (nSignal == SIGILL)
-	PrintLog ("Illegal instruction\n");
+	PrintLog ("+++ Illegal instruction\n");
 else if (nSignal == SIGINT)
-	PrintLog ("Ctrl+C signal\n");
+	PrintLog ("+++ Ctrl+C signal\n");
 else if (nSignal == SIGSEGV)
-	PrintLog ("Memory access violation\n");
+	PrintLog ("+++ Memory access violation\n");
 else if (nSignal == SIGTERM)
-	PrintLog ("Termination request\n");
+	PrintLog ("+++ Termination request\n");
 else
-	PrintLog ("Unknown signal\n");
+	PrintLog ("+++ Unknown signal\n");
 #if DBG
 //exit (1);
 #endif
