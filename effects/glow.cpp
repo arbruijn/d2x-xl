@@ -27,18 +27,18 @@ const char *blurFS =
 	"uniform float direction;\r\n" \
 	"uniform float scale; // render target width/height\r\n" \
 	"uniform float brightness; // render target width/height\r\n" \
-	"float offset[3] = float[3](0.0, 1.3846153846, 3.2307692308);\r\n" \
-	"float weight[3] = float[3](0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
+	"vec2 offset = vec2 (1.3846153846, 3.2307692308);\r\n" \
+	"vec3 weight = vec3 (0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
 	"void main() {\r\n" \
 	"float xScale = (1.0 - direction) * scale, yScale = direction * scale;\r\n" \
 	"vec2 uv = gl_TexCoord [0].xy;\r\n" \
-	"vec3 tc = texture2D (glowSource, uv).rgb * weight [0];\r\n" \
-	"vec2 v = vec2 (offset [1] * xScale, offset [1] * yScale);\r\n" \
-	"tc += texture2D (glowSource, uv + v).rgb * weight [1];\r\n" \
-	"tc += texture2D (glowSource, uv - v).rgb * weight [1];\r\n" \
+	"vec3 tc = texture2D (glowSource, uv).rgb * weight.x;\r\n" \
+	"vec2 v = vec2 (offset.x * xScale, offset.x * yScale);\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * weight.y;\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * weight.y;\r\n" \
 	"v = vec2 (offset [2] * xScale, offset [2] * yScale);\r\n" \
-	"tc += texture2D (glowSource, uv + v).rgb * weight [2];\r\n" \
-	"tc += texture2D (glowSource, uv - v).rgb * weight [2];\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * weight.z;\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * weight.z;\r\n" \
 	"gl_FragColor = vec4 (tc, 1.0) * brightness;\r\n" \
 	"}\r\n";
 
@@ -55,13 +55,13 @@ const char *blurFS =
 	"void main() {\r\n" \
 	"float xScale = (1.0 - direction) * scale, yScale = direction * scale;\r\n" \
 	"vec2 uv = gl_TexCoord [0].xy;\r\n" \
-	"vec3 tc = texture2D (glowSource, uv).rgb * weight [0];\r\n" \
+	"vec3 tc = texture2D (glowSource, uv).rgb * weight.x;\r\n" \
 	"vec2 v = vec2 (offset [1] * xScale, offset [1] * yScale);\r\n" \
-	"tc += texture2D (glowSource, uv + v).rgb * weight [1];\r\n" \
-	"tc += texture2D (glowSource, uv - v).rgb * weight [1];\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * weight.y;\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * weight.y;\r\n" \
 	"v = vec2 (offset [2] * xScale, offset [2] * yScale);\r\n" \
-	"tc += texture2D (glowSource, uv + v).rgb * weight [2];\r\n" \
-	"tc += texture2D (glowSource, uv - v).rgb * weight [2];\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * weight.z;\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * weight.z;\r\n" \
 	"v = vec2 (offset [3] * xScale, offset [3] * yScale);\r\n" \
 	"tc += texture2D (glowSource, uv + v).rgb * weight [3];\r\n" \
 	"tc += texture2D (glowSource, uv - v).rgb * weight [3];\r\n" \
