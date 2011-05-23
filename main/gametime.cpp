@@ -103,7 +103,7 @@ class CWindowsFrameTime : public CTypedFrameTime <LARGE_INTEGER> {
 
 //------------------------------------------------------------------------------
 
-LARGE_INTEGER CWindowsFrameTime::Setup (void)
+void CWindowsFrameTime::Setup (void)
 {
 QueryPerformanceFrequency (&m_ticksPerSec);
 CTypedFrameTime::Setup ();
