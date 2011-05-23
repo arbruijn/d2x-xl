@@ -139,7 +139,7 @@ if (tSlack > 0) {
 	m_tError -= tSlack * m_ticksPerMSec;
 	}
 m_tMinFrame = time_t (m_ticksPerSec.QuadPart / LONGLONG (MAXFPS));
-CFrameTime::Compute ();
+CTypedFrameTime::Compute ();
 }
 
 //------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ return time_t (m_tick - m_tLast);
 void CUnixFrameTime::Compute (void)
 {
 m_tMinFrame = time_t (1000000 / MAXFPS);
-CFrameTime::Compute ();
+CTypedFrameTime::Compute ();
 }
 
 
@@ -214,7 +214,7 @@ return time_t (m_tick - m_tLast);
 void CSDLFrameTime::Compute (void)
 {
 m_tMinFrame = 1000 / MAXFPS;
-CFrameTime::Compute ();
+CTypedFrameTime::Compute ();
 }
 
 #endif
