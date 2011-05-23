@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-class CFrameTime {
+class CGenericFrameTime {
 	protected:
 		time_t	m_tMinFrame;
 
@@ -61,7 +61,7 @@ class CFrameTime {
 //------------------------------------------------------------------------------
 
 template <class _T>
-class CTypedFrameTime : public CFrameTime {
+class CFrameTime : public CGenericFrameTime {
 	protected:
 		_T		m_tLast;
 		_T		m_tick;
@@ -84,7 +84,7 @@ class CTypedFrameTime : public CFrameTime {
 
 #ifdef _WIN32
 
-class CWindowsFrameTime : public CTypedFrameTime <LARGE_INTEGER> {
+class CWindowsFrameTime : public CFrameTime <LARGE_INTEGER> {
 	private:
 		time_t			m_ticksPerMSec;
 		LARGE_INTEGER	m_ticksPerSec;
@@ -97,7 +97,6 @@ class CWindowsFrameTime : public CTypedFrameTime <LARGE_INTEGER> {
 
 	public:
 		virtual void Compute (void);
-
 		explicit CWindowsFrameTime() { Setup (); }
 	};
 
@@ -106,7 +105,7 @@ class CWindowsFrameTime : public CTypedFrameTime <LARGE_INTEGER> {
 void CWindowsFrameTime::Setup (void)
 {
 QueryPerformanceFrequency (&m_ticksPerSec);
-CTypedFrameTime::Setup ();
+CFrameTime::Setup ();
 m_tError = 0;
 }
 
@@ -137,23 +136,31 @@ if (tSlack > 0) {
 	m_tError -= tSlack * m_ticksPerMSec;
 	}
 m_tMinFrame = time_t (m_ticksPerSec.QuadPart / LONGLONG (MAXFPS));
-CTypedFrameTime::Compute ();
+CFrameTime<LARGE_INTEGER>::Compute ();
 }
 
 //------------------------------------------------------------------------------
 
 #elif defined (__unix__) || defined(__macosx__)
 
-class CUnixFrameTime : public CTypedFrameTime <int64_t> {
+class CUnixFrameTime : public CFrameTime <int64_t> {
 	protected:
 		virtual void GetTick (void);
 		virtual time_t Elapsed (void);
 
 	public:
-		virtual void Compute (void);
+		virtual void Setup (void);
 
 		explicit CUnixFrameTime() { Setup (); }
 	};
+
+//------------------------------------------------------------------------------
+
+void CWindowsFrameTime::Setup (void)
+{
+m_tMinFrame = time_t (1000000 / MAXFPS);
+CFrameTime::Setup ();
+}
 
 //------------------------------------------------------------------------------
 
@@ -174,18 +181,9 @@ return time_t (m_tick - m_tLast);
 
 //------------------------------------------------------------------------------
 
-void CUnixFrameTime::Compute (void)
-{
-m_tMinFrame = time_t (1000000 / MAXFPS);
-CTypedFrameTime::Compute ();
-}
-
-
-//------------------------------------------------------------------------------
-
 #else
 
-class CSDLFrameTime : public CTypedFrameTime <time_t> {
+class CSDLFrameTime : public CFrameTime <time_t> {
 	protected:
 		virtual void GetTick (void);
 		virtual time_t FrameTime (void);
@@ -216,7 +214,7 @@ return time_t (m_tick - m_tLast);
 void CSDLFrameTime::Compute (void)
 {
 m_tMinFrame = 1000 / MAXFPS;
-CTypedFrameTime::Compute ();
+CFrameTime<time_t>::Compute ();
 }
 
 #endif
@@ -228,7 +226,7 @@ CTypedFrameTime::Compute ();
 class CFrameTimeFactory {
 	private:
 		static CFrameTimeFactory* m_instance;
-		static CFrameTime* m_timer;
+		static CGenericFrameTime* m_timer;
 
 	protected:
 		explicit CFrameTimeFactory() {}
@@ -240,7 +238,7 @@ class CFrameTimeFactory {
 			return m_instance;
 			}
 
-		static CFrameTime* GetTimer (void) {
+		static CGenericFrameTime* GetTimer (void) {
 			if (!m_timer)
 #ifdef _WIN32
 				m_timer = new CWindowsFrameTime ();
@@ -254,7 +252,7 @@ class CFrameTimeFactory {
 	};
 
 CFrameTimeFactory* CFrameTimeFactory::m_instance = NULL;
-CFrameTime* CFrameTimeFactory::m_timer = NULL;
+CGenericFrameTime* CFrameTimeFactory::m_timer = NULL;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
