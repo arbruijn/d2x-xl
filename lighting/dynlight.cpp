@@ -583,6 +583,28 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+int CDynLight::SeesPoint (CFixVector vNormal, CFixVector vPoint)
+{
+	CFloatVector v;
+
+v.Assign (vNormal);
+if (CFloatVector::Dot (v, info.vDirf) > 0) // light doesn't "see" face
+	return 0;
+v.Assign (vPoint);
+if (CFloatVector::Dot (v, info.vDirf) < 0.0f) // light doesn't see point
+	return 0;
+return 1;	
+}
+
+//------------------------------------------------------------------------------
+
+int CDynLight::SeesPoint (short nSegment, short nSide, CFixVector vPoint)
+{
+return SeesPoint (SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint);
+}
+
+//------------------------------------------------------------------------------
+
 void CLightManager::Sort (void)
 {
 CQuickSort<CDynLight> qs;

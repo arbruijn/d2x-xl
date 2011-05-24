@@ -209,7 +209,8 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 				continue;
 			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
 				sideP = SEGMENTS [pl->info.nSegment].m_sides + pl->info.nSide;
-#if DBG
+#if 0
+#	if DBG
 				fix xDot = CFixVector::Dot (sideP->m_normals [0], vLightToVert);
 				if (xDot < -I2X (1) / 6) {
 					if (sideP->m_nType == SIDE_IS_QUAD) 
@@ -218,10 +219,11 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 					if (xDot < -I2X (1) / 6)
 						continue;
 					}
-#else
+#	else
 				if ((CFixVector::Dot (sideP->m_normals [0], vLightToVert) < -I2X (1) / 6) &&
 					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals [1], vLightToVert) < -I2X (1) / 6)))
 					continue;
+#	endif
 #endif
 				}
 			}
@@ -395,7 +397,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	CCanvas::Current ()->SetWidth (1024);
 	CCanvas::Current ()->SetHeight (1024);
 	gameStates.render.bRenderIndirect = -1;
-	gameStates.render.nShadowMap = 1;
+	gameStates.render.nShadowMap = -1;
 	G3StartFrame (0, 0, 0);
 	RenderStartFrame ();
 	G3SetViewMatrix (viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
@@ -416,7 +418,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		if (nSegment >= gameData.segs.nSegments)
 			continue;
 #endif
-#if 1
+#if 0
 #	if 0
 		if (bLights && !gameData.segs.SegVis (nStartSeg, nSegment))
 			continue;
@@ -468,9 +470,18 @@ if (!bVisible)
 	CSide* sideP = segP->m_sides;
 	int i;
 
+#if DBG
+if ((nDbgSeg >= 0) && (nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+	i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
+	i = gameData.segs.bSegVis [1][i >> 3] & (1 << (i & 7));
+	if (!i)
+		i = 1;
+#endif
+
 segP = SEGMENTS + nDestSeg;
-for (i = 0; (i < 4); i++) {
-	fq.p0 = &VERTICES [sideP->m_corners [i]];
+for (i = 0; i < 5; i++) {
+	fq.p0 = (i == 4) ? &sideP->Center () : &VERTICES [sideP->m_corners [i]];
 	for (int j = 0; (j < 8); j++) {
 		fq.p1 = &VERTICES [segP->m_verts [j]];
 		if (CFixVector::Dist (*fq.p0, *fq.p1) > xLightRange)

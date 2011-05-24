@@ -850,7 +850,7 @@ for (l = 0; l < nRenderDepth; l++) {
 					 continue;
 				}
 #if 1
-			else {
+			else if (gameStates.render.nShadowMap < 0) {
 				if (!transformation.Frustum ().Contains (sideP)) {
 #	if DBG
 					if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
