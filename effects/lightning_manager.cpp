@@ -793,7 +793,7 @@ typedef union tPolyKey {
 	short	s [4];
 } tPolyKey;
 
-int CLightningManager::RenderForDamage (CObject* objP, g3sPoint **pointList, RenderModel::CVertex *vertP, int nVertices)
+int CLightningManager::RenderForDamage (CObject* objP, CRenderPoint **pointList, RenderModel::CVertex *vertP, int nVertices)
 {
 	CLightningEmitter*	emitterP;
 	CFloatVector			v, vPosf, vEndf, vNormf, vDeltaf;
@@ -819,7 +819,7 @@ h = (nVertices + 1) / 2;
 // create a unique key for the lightning using the vertex key/index
 if (pointList) {
 	for (i = 0; i < j; i++)
-		key.s [i] = pointList [i]->m_key;
+		key.s [i] = pointList [i]->Key ();
 	for (; i < 4; i++)
 		key.s [i] = 0;
 	}
@@ -842,9 +842,9 @@ if (i < 0) {
 		return 0;
 #endif
 	if (pointList) {
-		vPos = pointList [0]->m_src;
-		vEnd = pointList [1 + RandShort () % (nVertices - 1)]->m_vec;
-		vNorm = CFixVector::Normal (vPos, pointList [1]->m_vec, vEnd);
+		vPos = pointList [0]->Pos (1);
+		vEnd = pointList [1 + RandShort () % (nVertices - 1)]->Pos (1);
+		vNorm = CFixVector::Normal (vPos, pointList [1]->Pos (1), vEnd);
 		vPos += vNorm * (I2X (1) / 64);
 		vEnd += vNorm * (I2X (1) / 64);
 		vDelta = CFixVector::Normal (vNorm, vPos, vEnd);

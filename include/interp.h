@@ -36,7 +36,7 @@
 //Object functions:
 
 //gives the interpreter an array of points to use
-void G3SetModelPoints (g3sPoint *pointlist);
+void G3SetModelPoints (CRenderPoint *pointlist);
 
 //calls the CObject interpreter to render an CObject.  The CObject renderer
 //is really a seperate pipeline. returns true if drew
@@ -105,7 +105,7 @@ int G3ModelMinMax (int nModel, tHitbox *phb);
 
 //------------------------------------------------------------------------------
 
-extern g3sPoint *pointList [MAX_POINTS_PER_POLY];
+extern CRenderPoint *pointList [MAX_POINTS_PER_POLY];
 extern int hitboxFaceVerts [6][4];
 extern CFixVector hitBoxOffsets [8];
 //extern CAngleVector CAngleVector::ZERO;

@@ -124,52 +124,67 @@ return ProjectPoint (h, s, flags);
 }
 
 // -----------------------------------------------------------------------------------
-
-void G3ProjectPoint (g3sPoint *p)
-{
-p->m_flags = ProjectPoint (p->m_vec, p->m_screen, p->m_flags, p->m_codes);
-}
-
 // -----------------------------------------------------------------------------------
-//from a 2d point, compute the vector through that point
-void G3Point2Vec (CFixVector *v,short sx,short sy)
-{
-	CFixVector h;
-	CFixMatrix m;
+// -----------------------------------------------------------------------------------
 
-h.v.coord.x =  FixMulDiv (FixDiv ((sx<<16) - CCanvas::xCanvW2, CCanvas::xCanvW2), transformation.m_info.scale.v.coord.z, transformation.m_info.scale.v.coord.x);
-h.v.coord.y = -FixMulDiv (FixDiv ((sy<<16) - CCanvas::xCanvH2, CCanvas::xCanvH2), transformation.m_info.scale.v.coord.z, transformation.m_info.scale.v.coord.y);
-h.v.coord.z = I2X (1);
-CFixVector::Normalize (h);
-m = transformation.m_info.view [1].Transpose();
-*v = m * h;
+void CRenderPoint::Transform (int nVertex = -1) 
+{
+if (nVertex >= 0)
+	m_vertex [0] = VERTICES [nVertex];
+transformation.Transform (m_vertex [1], m_vertex [0]); 
 }
 
 // -----------------------------------------------------------------------------------
 
-ubyte G3AddDeltaVec (g3sPoint *dest, g3sPoint *src, CFixVector *vDelta)
+void CRenderPoint::Project (void)
 {
-dest->m_vec = src->m_vec + *vDelta;
-dest->m_flags = 0;		//not projected
-return G3EncodePoint (dest);
+m_flags = ProjectPoint (m_vertex [1], m_screen, m_flags, m_codes);
+}
+
+// -----------------------------------------------------------------------------------
+
+ubyte CRenderPoint::Encode (void) 
+{
+if (!Projected ())
+	m_codes = transformation.Codes (m_vertex [1]); 
+else {
+	if (m_screen.x < 0)
+		m_codes |= CC_OFF_LEFT;
+	else if (m_screen.x > screen.Width ())
+		m_codes |= CC_OFF_RIGHT;
+	if (m_screen.y < 0)
+		m_codes |= CC_OFF_BOT;
+	else if (m_screen.y > screen.Height ())
+		m_codes |= CC_OFF_TOP;
+	}
+return m_codes;
+}
+
+// -----------------------------------------------------------------------------------
+
+ubyte CRenderPoint::Add (CRenderPoint *src, CFixVector *vDelta)
+{
+m_vertex [1] = src->m_vertex [1] + *vDelta;
+m_flags = 0;		//not projected
+return G3Encode (dest);
 }
 
 // -----------------------------------------------------------------------------------
 //calculate the depth of a point - returns the z coord of the rotated point
-fix G3CalcPointDepth (const CFixVector& pnt)
+fix G3CalcPointDepth (const CFixVector& v)
 {
 #ifdef _WIN32
-	QLONG q = mul64 (pnt.v.coord.x - transformation.m_info.pos.v.coord.x, transformation.m_info.view [0].m.dir.f.v.coord.x);
-	q += mul64 (pnt.v.coord.y - transformation.m_info.pos.v.coord.y, transformation.m_info.view [0].m.dir.f.v.coord.y);
-	q += mul64 (pnt.v.coord.z - transformation.m_info.pos.v.coord.z, transformation.m_info.view [0].m.dir.f.v.coord.z);
+	QLONG q = mul64 (v.v.coord.x - transformation.m_info.pos.v.coord.x, transformation.m_info.view [0].m.dir.f.v.coord.x);
+	q += mul64 (v.v.coord.y - transformation.m_info.pos.v.coord.y, transformation.m_info.view [0].m.dir.f.v.coord.y);
+	q += mul64 (v.v.coord.z - transformation.m_info.pos.v.coord.z, transformation.m_info.view [0].m.dir.f.v.coord.z);
 	return (fix) (q >> 16);
 #else
 	tQuadInt q;
 
 	q.low=q.high=0;
-	FixMulAccum (&q, (pnt.v.coord.x - transformation.m_info.pos.v.coord.x),transformation.m_info.view [0].m.dir.f.v.coord.x);
-	FixMulAccum (&q, (pnt.v.coord.y - transformation.m_info.pos.v.coord.y),transformation.m_info.view [0].m.dir.f.v.coord.y);
-	FixMulAccum (&q, (pnt.v.coord.z - transformation.m_info.pos.v.coord.z),transformation.m_info.view [0].m.dir.f.v.coord.z);
+	FixMulAccum (&q, (v.v.coord.x - transformation.m_info.pos.v.coord.x),transformation.m_info.view [0].m.dir.f.v.coord.x);
+	FixMulAccum (&q, (v.v.coord.y - transformation.m_info.pos.v.coord.y),transformation.m_info.view [0].m.dir.f.v.coord.y);
+	FixMulAccum (&q, (v.v.coord.z - transformation.m_info.pos.v.coord.z),transformation.m_info.view [0].m.dir.f.v.coord.z);
 	return FixQuadAdjust (&q);
 #endif
 }

@@ -1493,7 +1493,7 @@ class CTerrainRenderData {
 		CArray<fix>				lightmap;
 		CArray<CFixVector>	points;
 		CBitmap*					bmP;
-		CStaticArray< g3sPoint, TERRAIN_GRID_MAX_SIZE >		saveRow; // [TERRAIN_GRID_MAX_SIZE];
+		CStaticArray< CRenderPoint, TERRAIN_GRID_MAX_SIZE >		saveRow; // [TERRAIN_GRID_MAX_SIZE];
 		CFixVector				vStartPoint;
 		tUVL						uvlList [2][3];
 		int						bOutline;
@@ -1813,7 +1813,7 @@ class CSegmentData {
 		CArray<CFloatVector>		fVertices;
 		CArray<CSegment>			segments;
 		CArray<tSegFaces>			segFaces;
-		CArray<g3sPoint>			points;
+		CArray<CRenderPoint>			points;
 		CSkyBox						skybox;
 		CSegmentGrid				grids [2];
 #if CALC_SEGRADS
@@ -2403,7 +2403,7 @@ class CModelData {
 		CArray<OOF::CModel*>				modelToOOF [2]; //[MAX_POLYGON_MODELS];
 		CArray<ASE::CModel*>				modelToASE [2]; //[MAX_POLYGON_MODELS];
 		CArray<CPolyModel*>				modelToPOL ; //[MAX_POLYGON_MODELS];
-		CArray<g3sPoint>					polyModelPoints ; //[MAX_POLYGON_VERTS];
+		CArray<CRenderPoint>					polyModelPoints ; //[MAX_POLYGON_VERTS];
 		CArray<CFloatVector>				fPolyModelVerts ; //[MAX_POLYGON_VERTS];
 		CArray<CBitmap*>					textures ; //[MAX_POLYOBJ_TEXTURES];
 		CArray<tBitmapIndex>				textureIndex ; //[MAX_POLYOBJ_TEXTURES];
@@ -3484,19 +3484,20 @@ glVertex3f ((float) x / 65536.0f, (float) y / 65536.0f, (float) z / 65536.0f);
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static inline void OglVertex3f (g3sPoint *p, CFloatVector* v = NULL)
+static inline void OglVertex3f (CRenderPoint *p, CFloatVector* v = NULL)
 {
+	int i = p->Index ();
 if (v) {
-	if (p->m_index < 0)
-		v->Assign (p->m_vec);
+	if (i < 0)
+		v->Assign (p->Pos ());
 	else
-		*v = gameData.render.vertP [p->m_index];
+		*v = gameData.render.vertP [i];
 	}
 else {
-	if (p->m_index < 0)
-		OglVertex3x (p->m_vec.v.coord.x, p->m_vec.v.coord.y, p->m_vec.v.coord.z);
+	if (i < 0)
+		OglVertex3x (p->Pos ().v.coord.x, p->Pos ().v.coord.y, p->Pos ().v.coord.z);
 	else
-		glVertex3fv (reinterpret_cast<GLfloat *> (gameData.render.vertP + p->m_index));
+		glVertex3fv (reinterpret_cast<GLfloat *> (gameData.render.vertP + i));
 	}
 }
 

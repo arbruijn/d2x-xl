@@ -213,9 +213,9 @@ for (i = nStart; i < nEnd; i++) {
 							if (nVertex == nDbgVertex)
 								nDbgVertex = nDbgVertex;
 #endif
-							G3VertexColor(gameData.segs.points[nVertex].m_normal.vNormal.XYZ (),
-											  gameData.segs.fVertices[nVertex].XYZ (), nVertex,
-											  NULL, &c, 1, 0, nThread);
+							G3VertexColor (gameData.segs.points[nVertex].GetNormal ()->XYZ (),
+											   gameData.segs.fVertices[nVertex].XYZ (), nVertex,
+											   NULL, &c, 1, 0, nThread);
 							lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 							lightManager.ResetNearestToVertex (nVertex, nThread);
 							}
@@ -382,7 +382,7 @@ for (i = nStart; i < nEnd; i++) {
 								if (nVertex == nDbgVertex)
 									nDbgVertex = nDbgVertex;
 #endif
-								G3VertexColor (gameData.segs.points [nVertex].m_normal.vNormal.XYZ (),
+								G3VertexColor (gameData.segs.points [nVertex].GetNormal ()->XYZ (),
 													gameData.segs.fVertices [nVertex].XYZ (), nVertex,
 													NULL, &c, 1, 0, nThread);
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);

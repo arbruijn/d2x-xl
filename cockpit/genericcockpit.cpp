@@ -1055,9 +1055,9 @@ return gmObjP &&
 // Draw the reticle in 3D for head tracking
 void Draw3DReticle (fix xStereoSeparation)
 {
-	g3sPoint 	reticlePoints [4];
+	CRenderPoint 	reticlePoints [4];
 	tUVL			tUVL [4];
-	g3sPoint		*pointList [4];
+	CRenderPoint		*pointList [4];
 	int 			i;
 	CFixVector	v1, v2;
 	int			saved_interp_method;
@@ -1082,16 +1082,16 @@ v1 = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.pos
 v1 += gameData.objs.viewerP->info.position.mOrient.mat.dir.r * xStereoSeparation;
 v2 = v1 + gameData.objs.viewerP->info.position.mOrient.mat.dir.r * (-I2X (1));
 v2 += gameData.objs.viewerP->info.position.mOrient.mat.dir.u * (I2X (1));
-G3TransformAndEncodePoint(&reticlePoints [0], v2);
+reticlePoints [0].TransformAndEncode (v2);
 v2 = v1 + gameData.objs.viewerP->info.position.mOrient.mat.dir.r * (+I2X (1));
 v2 += gameData.objs.viewerP->info.position.mOrient.mat.dir.u * (I2X (1));
-G3TransformAndEncodePoint(&reticlePoints [1], v2);
+reticlePoints [1].TransformAndEncode (v2);
 v2 = v1 + gameData.objs.viewerP->info.position.mOrient.mat.dir.r * (+I2X (1));
 v2 += gameData.objs.viewerP->info.position.mOrient.mat.dir.u * (-I2X (1));
-G3TransformAndEncodePoint(&reticlePoints [2], v2);
+reticlePoints [2].TransformAndEncode (v2);
 v2 = v1 + gameData.objs.viewerP->info.position.mOrient.mat.dir.r * (-I2X (1));
 v2 += gameData.objs.viewerP->info.position.mOrient.mat.dir.u * (-I2X (1));
-G3TransformAndEncodePoint(&reticlePoints [3], v2);
+reticlePoints [3].TransformAndEncode (v2);
 
 if ( reticleCanvas == NULL) {
 	reticleCanvas = CCanvas::Create (64, 64);
@@ -1314,22 +1314,22 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 		}
 
 	if ((bShowName || bHasFlag) && CanSeeObject (nObject, 1)) {
-		g3sPoint		vPlayerPos;
+		CRenderPoint		vPlayerPos;
 
 #if 1
-		G3TransformAndEncodePoint (&vPlayerPos, OBJECTS [nObject].info.position.vPos);
+		vPlayerPos.TransformAndEncode (OBJECTS [nObject].info.position.vPos);
 #else
 		//transformation.Push ();
 		SetRenderView (0, NULL, 0);
-		G3TransformAndEncodePoint (&vPlayerPos, OBJECTS [nObject].info.position.vPos);
+		vPlayerPos.TransformAndEncode (OBJECTS [nObject].info.position.vPos);
 		ogl.EndFrame ();
 		//transformation.Pop ();
 #endif
-		if (vPlayerPos.m_codes == 0) {	//on screen
-			G3ProjectPoint (&vPlayerPos);
-			if (!(vPlayerPos.m_flags & PF_OVERFLOW)) {
-				fix x = vPlayerPos.m_screen.x;
-				fix y = screen.Height () - vPlayerPos.m_screen.y;
+		if (vPlayerPos.Visible ()) {	//on screen
+			vPlayerPos.Project ();
+			if (!vPlayerPos.Overflow ()) {
+				fix x = vPlayerPos.X ();
+				fix y = screen.Height () - vPlayerPos.Y ();
 				if (bShowName) {				// Draw callsign on HUD
 					if (nState) {
 						int t = gameStates.app.nSDLTicks [0];
@@ -1358,7 +1358,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 					}
 
 				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
-					fix dy = -FixMulDiv (OBJECTS [nObject].info.xSize, I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.m_vec.v.coord.z);
+					fix dy = -FixMulDiv (OBJECTS [nObject].info.xSize, I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.Pos ().v.coord.z);
 //					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, transformation.m_info.scale.y), I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.m_z);
 					fix dx = FixMul (dy, screen.Aspect ());
 					fix w = dx / 4;

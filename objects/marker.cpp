@@ -80,7 +80,7 @@ return (nObject < 0) ? NULL : OBJECTS + nObject;
 
 void CMarkerManager::DrawNumber (int nMarker)
 {
-	g3sPoint	basePoint;
+	CRenderPoint	basePoint;
 	int		i, j;
 	float		*px, *py;
 
@@ -119,9 +119,9 @@ if (ogl.SizeVertexBuffer (nPoints [nMarker])) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 0, 47));
 	else
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 15, 0));
-	G3TransformAndEncodePoint (&basePoint, GetObject (-1, nMarker)->info.position.vPos);
+	basePoint.TransformAndEncode (GetObject (-1, nMarker)->info.position.vPos);
 	glPushMatrix ();
-	glTranslatef (X2F (basePoint.m_vec.v.coord.x), X2F (basePoint.m_vec.v.coord.y), X2F (basePoint.m_vec.v.coord.z));
+	glTranslatef (X2F (basePoint.Pos ().v.coord.x), X2F (basePoint.Pos ().v.coord.y), X2F (basePoint.Pos ().v.coord.z));
 	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
 	px = xCoord [nMarker];
@@ -145,7 +145,7 @@ glPopMatrix ();
 
 void CMarkerManager::Render (void)
 {
-	g3sPoint spherePoint;
+	CRenderPoint spherePoint;
 	int		i, j, nMaxDrop, bSpawn;
 	CObject*	objP;
 	ubyte*	colorP;
@@ -156,12 +156,12 @@ void CMarkerManager::Render (void)
 if (m_data.fScale == 0.0f)
 	m_data.fScale = 2.0f;
 nMaxDrop = MaxDrop ();
-spherePoint.m_index = -1;
+spherePoint.SetIndex (-1);
 for (i = 0; i < nMaxDrop; i++)
 	if ((objP = GetObject (-1, i))) {
 		bSpawn = (objP == markerManager.SpawnObject (-1));
 		colorP = &colors [bSpawn][0];
-		G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
+		spherePoint.TransformAndEncode (objP->info.position.vPos);
 		for (j = 0; j < 3; j++, colorP++) {
 			CCanvas::Current ()->SetColorRGB (PAL2RGBA (*colorP), 0, 0, 255);
 			G3DrawSphere (&spherePoint, int (m_data.fScale * MARKER_SPHERE_SIZE) >> j, 1);

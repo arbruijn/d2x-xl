@@ -41,7 +41,7 @@ return (CFixVector::Dot (v, pnorm) > 0);
 
 //------------------------------------------------------------------------------
 
-int DoFacingCheck (CFixVector *norm, g3sPoint **vertlist, CFixVector *p)
+int DoFacingCheck (CFixVector *norm, CRenderPoint **vertlist, CFixVector *p)
 {
 if (norm) {		//have Normal
 	return G3CheckNormalFacing (*p, *norm);
@@ -49,8 +49,8 @@ if (norm) {		//have Normal
 else {	//Normal not specified, so must compute
 	CFixVector vTemp;
 	//get three points (rotated) and compute Normal
-	vTemp = CFixVector::Perp(vertlist [0]->m_vec, vertlist [1]->m_vec, vertlist [2]->m_vec);
-	return (CFixVector::Dot (vTemp, vertlist [1]->m_vec) < 0);
+	vTemp = CFixVector::Perp(vertlist [0]->m_vertex [1], vertlist [1]->m_vertex [1], vertlist [2]->m_vertex [1]);
+	return (CFixVector::Dot (vTemp, vertlist [1]->m_vertex [1]) < 0);
 	}
 }
 
@@ -61,7 +61,7 @@ else {	//Normal not specified, so must compute
 //is passed, this function works like G3CheckNormalFacing () plus
 //G3DrawPoly ().
 //returns -1 if not facing, 1 if off screen, 0 if drew
-int G3CheckAndDrawPoly (int nv, g3sPoint **pointlist, CFixVector *norm, CFixVector *pnt)
+int G3CheckAndDrawPoly (int nv, CRenderPoint **pointlist, CFixVector *norm, CFixVector *pnt)
 {
 	if (DoFacingCheck (norm, pointlist, pnt))
 		return G3DrawPoly (nv, pointlist);
@@ -72,7 +72,7 @@ int G3CheckAndDrawPoly (int nv, g3sPoint **pointlist, CFixVector *norm, CFixVect
 //------------------------------------------------------------------------------
 
 int G3CheckAndDrawTMap (
-	int nv, g3sPoint **pointlist, tUVL *uvl_list, CBitmap *bm, CFixVector *norm, CFixVector *pnt)
+	int nv, CRenderPoint **pointlist, tUVL *uvl_list, CBitmap *bm, CFixVector *norm, CFixVector *pnt)
 {
 if (DoFacingCheck (norm, pointlist, pnt))
 	return !G3DrawTexPoly (nv, pointlist, uvl_list, bm, norm, 1, 0, -1);

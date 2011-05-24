@@ -45,9 +45,9 @@ void _CDECL_ FreeTerrainLightmap (void);
 
 // ------------------------------------------------------------------------
 
-void DrawTerrainCell (int i, int j, g3sPoint *p0, g3sPoint *p1, g3sPoint *p2, g3sPoint *p3)
+void DrawTerrainCell (int i, int j, CRenderPoint *p0, CRenderPoint *p1, CRenderPoint *p2, CRenderPoint *p3)
 {
-	g3sPoint *pointList [3];
+	CRenderPoint *pointList [3];
 
 p0->m_index =
 p1->m_index =
@@ -150,14 +150,14 @@ int im=1;
 void RenderTerrain (CFixVector *vOrgPoint, int org_2dx, int org_2dy)
 {
 	CFixVector	tv, delta_i, delta_j;		//delta_y;
-	g3sPoint		p, p2, pLast, p2Last, pLowSave, pHighSave;
+	CRenderPoint		p, p2, pLast, p2Last, pLowSave, pHighSave;
 	int			i, j, iLow, iHigh, jLow, jHigh, iViewer, jViewer;
 
 #if 1
-memset (&p, 0, sizeof (g3sPoint));
-memset (&p2, 0, sizeof (g3sPoint));
-memset (&pLast, 0, sizeof (g3sPoint));
-memset (&p2Last, 0, sizeof (g3sPoint));
+memset (&p, 0, sizeof (CRenderPoint));
+memset (&p2, 0, sizeof (CRenderPoint));
+memset (&pLast, 0, sizeof (CRenderPoint));
+memset (&p2Last, 0, sizeof (CRenderPoint));
 #endif
 gameData.render.terrain.nMineTilesDrawn = 0;	//clear flags
 gameData.render.terrain.orgI = org_2dy;
@@ -181,7 +181,7 @@ if (iViewer > iHigh)
 jViewer = CFixVector::Dot (tv, mSurfaceOrient.m.dir.f) / TERRAIN_GRID_SCALE;
 if (jViewer > jHigh)
 	jViewer = jHigh;
-G3TransformAndEncodePoint (&pLast, gameData.render.terrain.vStartPoint);
+pLast.TransformAndEncode (gameData.render.terrain.vStartPoint);
 pLowSave = pLast;
 for (j = jLow; j <= jHigh; j++) {
 	G3AddDeltaVec (gameData.render.terrain.saveRow + j, &pLast, get_dy_vec (HEIGHT (iLow, j)));
@@ -219,9 +219,8 @@ for (i = iLow; i < iViewer; i++) {
 	}
 //now do i from other end
 delta_i = -delta_i;		//going the other way now...
-gameData.render.terrain.vStartPoint += mSurfaceOrient.m.dir.r *
-						((iHigh-iLow)*TERRAIN_GRID_SCALE);
-G3TransformAndEncodePoint (&pLast, gameData.render.terrain.vStartPoint);
+gameData.render.terrain.vStartPoint += mSurfaceOrient.m.dir.r * ((iHigh - iLow) * TERRAIN_GRID_SCALE);
+pLast.TransformAndEncode (gameData.render.terrain.vStartPoint);
 pLowSave = pLast;
 for (j = jLow; j <= jHigh; j++) {
 	G3AddDeltaVec (gameData.render.terrain.saveRow + j, &pLast, get_dy_vec (HEIGHT (iHigh, j)));

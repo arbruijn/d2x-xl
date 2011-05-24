@@ -28,8 +28,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RESCALE_ROD	0
 
 grsPoint blobVertices [4];
-g3sPoint rodPoints [4];
-g3sPoint *rodPointList [] = {rodPoints, rodPoints + 1, rodPoints + 2, rodPoints + 3};
+CRenderPoint rodPoints [4];
+CRenderPoint *rodPointList [] = {rodPoints, rodPoints + 1, rodPoints + 2, rodPoints + 3};
 
 tUVL rodUvlList [4] = {
  {0x0200, 0x0200, 0},
@@ -39,7 +39,7 @@ tUVL rodUvlList [4] = {
 
 //------------------------------------------------------------------------------
 //compute the corners of a rod.  fills in vertbuf.
-int CalcRodCorners (g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth)
+int CalcRodCorners (CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth)
 {
 	CFixVector	vDelta, vTop, vTemp, vRodNorm;
 	ubyte			andCodes;
@@ -47,7 +47,7 @@ int CalcRodCorners (g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix x
 
 //compute vector from one point to other, do cross product with vector
 //from eye to get perpendicular
-vDelta = btmPoint->m_vec - topPoint->m_vec;
+vDelta = btmPoint->m_vertex [1] - topPoint->m_vertex [1];
 //unscale for aspect
 #if RESCALE_ROD
 vDelta.p.x = FixDiv (vDelta.p.x, transformation.m_info.scale.p.x);
@@ -57,7 +57,7 @@ vDelta.p.y = FixDiv (vDelta.p.y, transformation.m_info.scale.p.y);
 //do lots of normalizing to prevent overflowing.  When this code works,
 //it should be optimized
 CFixVector::Normalize (vDelta);
-vTop = topPoint->m_vec;
+vTop = topPoint->m_vertex [1];
 CFixVector::Normalize (vTop);
 vRodNorm = CFixVector::Cross (vDelta, vTop);
 CFixVector::Normalize (vRodNorm);
@@ -70,16 +70,16 @@ vRodNorm.p.y = FixMul (vRodNorm.p.y, transformation.m_info.scale.p.y);
 //vTop points
 vTemp = vRodNorm * xTopWidth;
 vTemp.v.coord.z = 0;
-rodPoints [0].m_vec = topPoint->m_vec + vTemp;
-rodPoints [1].m_vec = topPoint->m_vec - vTemp;
+rodPoints [0].m_vertex [1] = topPoint->m_vertex [1] + vTemp;
+rodPoints [1].m_vertex [1] = topPoint->m_vertex [1] - vTemp;
 vTemp = vRodNorm * xBtmWidth;
 vTemp.v.coord.z = 0;
-rodPoints [2].m_vec = btmPoint->m_vec - vTemp;
-rodPoints [3].m_vec = btmPoint->m_vec + vTemp;
+rodPoints [2].m_vertex [1] = btmPoint->m_vertex [1] - vTemp;
+rodPoints [3].m_vertex [1] = btmPoint->m_vertex [1] + vTemp;
 
 //now code the four points
 for (i = 0, andCodes = 0xff; i < 4; i++)
-	andCodes &= G3EncodePoint (rodPoints + i);
+	andCodes &= rodPoints [i].Encode ();
 if (andCodes)
 	return 1;		//1 means off screen
 //clear flags for new points (not projected)
@@ -93,7 +93,7 @@ return 0;
 //------------------------------------------------------------------------------
 //draw a polygon that is always facing you
 //returns 1 if off screen, 0 if drew
-int G3DrawRodPoly (g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth)
+int G3DrawRodPoly (CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth)
 {
 if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;
@@ -103,7 +103,7 @@ return G3DrawPoly (4, rodPointList);
 //------------------------------------------------------------------------------
 //draw a bitmap CObject that is always facing you
 //returns 1 if off screen, 0 if drew
-int G3DrawRodTexPoly (CBitmap *bmP, g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList, int bAdditive)
+int G3DrawRodTexPoly (CBitmap *bmP, CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList, int bAdditive)
 {
 if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;
@@ -121,7 +121,7 @@ return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1, bAdditive, -1);
 void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame)
 {
 	CBitmap*		bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
-	g3sPoint		pTop, pBottom;
+	CRenderPoint		pTop, pBottom;
 
 LoadTexture (bmi.index, 0);
 if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
@@ -131,9 +131,9 @@ if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
 CFixVector delta = objP->info.position.mOrient.m.dir.u * objP->info.xSize;
 CFixVector vTop = objP->info.position.vPos + delta;
 CFixVector vBottom = objP->info.position.vPos - delta;
-G3TransformAndEncodePoint (&pTop, vTop);
-G3TransformAndEncodePoint (&pBottom, vBottom);
-fix light = bLit ? ComputeObjectLight (objP, &pTop.m_vec) : I2X (1);
+pTop->TransformAndEncode (vTop);
+pBottom->TransformAndEncode (vBottom);
+fix light = bLit ? ComputeObjectLight (objP, &pTop.m_vertex [1]) : I2X (1);
 if (!gameStates.render.bPerPixelLighting)
 	G3DrawRodTexPoly (bmP, &pBottom, objP->info.xSize, &pTop, objP->info.xSize, light, NULL, objP->info.nType == OBJ_FIREBALL);
 else {
@@ -144,7 +144,7 @@ else {
 	tTexCoord2f		texCoords [4]; // = {{0,0},{u,0},{u,v},{0,v}};
 
 	for (int i = 0; i < 4; i++) {
-		vertices [i].Assign (rodPoints [i].m_vec);
+		vertices [i].Assign (rodPoints [i].m_vertex [1]);
 		texCoords [i].v.u = X2F (rodUvlList [i].u);
 		texCoords [i].v.v = X2F (rodUvlList [i].v);
 		}

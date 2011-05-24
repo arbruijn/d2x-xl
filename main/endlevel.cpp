@@ -754,7 +754,7 @@ fix xSatelliteSize = I2X (400);
 void RenderExternalScene (fix xEyeOffset)
 {
 	CFixVector vDelta;
-	g3sPoint p, pTop;
+	CRenderPoint p, pTop;
 
 gameData.render.mine.viewer.vPos = gameData.objs.viewerP->info.position.vPos;
 if (xEyeOffset)
@@ -765,10 +765,10 @@ transformation.Begin (CFixVector::ZERO, mSurfaceOrient);
 DrawStars ();
 transformation.End ();
 //draw satellite
-G3TransformAndEncodePoint (&p, gameData.endLevel.satellite.vPos);
+p.TransformAndEncode (gameData.endLevel.satellite.vPos);
 transformation.RotateScaled (vDelta, gameData.endLevel.satellite.vUp);
-G3AddDeltaVec (&pTop, &p, &vDelta);
-if (!(p.m_codes & CC_BEHIND) && !(p.m_flags & PF_OVERFLOW)) {
+pTop.Add (p, vDelta);
+if (!(p.Codes () & (CC_BEHIND | PF_OVERFLOW))) {
 	int imSave = gameStates.render.nInterpolationMethod;
 	gameStates.render.nInterpolationMethod = 0;
 	//gameData.endLevel.satellite.bmP->SetTranspType (0);
@@ -815,15 +815,15 @@ void DrawStars ()
 {
 	int i;
 	int intensity = 31;
-	g3sPoint p;
+	CRenderPoint p;
 
 for (i = 0; i < MAX_STARS; i++) {
 	if ((i&63) == 0) {
 		CCanvas::Current ()->SetColorRGBi (RGB_PAL (intensity, intensity, intensity));
 		intensity-=3;
 		}
-	transformation.RotateScaled (p.m_vec, stars [i]);
-	G3EncodePoint (&p);
+	transformation.RotateScaled (p.m_vertex [1], stars [i]);
+	G3Encode (&p);
 	if (p.m_codes == 0) {
 		p.m_flags &= ~PF_PROJECTED;
 		G3ProjectPoint (&p);

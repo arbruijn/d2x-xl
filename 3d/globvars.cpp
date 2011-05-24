@@ -21,8 +21,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 CTransformation	transformation;
 
 //vertex buffers for polygon drawing and clipping
-g3sPoint * Vbuf0[MAX_POINTS_IN_POLY];
-g3sPoint *Vbuf1[MAX_POINTS_IN_POLY];
+CRenderPoint * Vbuf0[MAX_POINTS_IN_POLY];
+CRenderPoint *Vbuf1[MAX_POINTS_IN_POLY];
 
 //list of 2d coords
 fix polyVertList [MAX_POINTS_IN_POLY*2];

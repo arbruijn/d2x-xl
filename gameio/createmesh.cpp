@@ -531,7 +531,7 @@ if (left < r)
 void CTriMeshBuilder::SetupVertexNormals (void)
 {
 	tFaceTriangle*	triP;
-	g3sPoint*		pointP;
+	CRenderPoint*		pointP;
 	int				h, i, nVertex;
 
 for (i = gameData.segs.nVertices, pointP = gameData.segs.points.Buffer (); i; i--, pointP++) {
@@ -540,9 +540,7 @@ for (i = gameData.segs.nVertices, pointP = gameData.segs.points.Buffer (); i; i-
 	(*pointP->m_normal.vNormal.XYZ ()).v.c.y =
 	(*pointP->m_normal.vNormal.XYZ ()).v.c.z = 0;
 */
-	pointP->m_normal.vNormal.XYZ ()->SetZero ();
-
-	pointP->m_normal.nFaces = 0;
+	pointP->Normal ().Reset ();
 	}
 for (h = 0, triP = FACES.tris.Buffer (); h < gameData.segs.nTris; h++, triP++) {
 	for (i = 0; i < 3; i++) {
@@ -551,8 +549,7 @@ for (h = 0, triP = FACES.tris.Buffer (); h < gameData.segs.nTris; h++, triP++) {
 		if (nVertex == nDbgVertex)
 			nVertex = nVertex;
 #endif
-		*gameData.segs.points [nVertex].m_normal.vNormal.XYZ () += FACES.normals [3 * h];
-		gameData.segs.points [nVertex].m_normal.nFaces++;
+		gameData.segs.points [nVertex].Normal () += FACES.normals [3 * h];
 		}
 	}
 ComputeVertexNormals ();

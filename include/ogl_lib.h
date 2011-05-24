@@ -49,8 +49,8 @@ typedef struct tSinCosf {
 void OglDeleteLists (GLuint *lp, int n);
 void ComputeSinCosTable (int nSides, tSinCosf *sinCosP);
 int CircleListInit (int nSides, int nType, int mode);
-void G3Normal (g3sPoint** pointList, CFixVector* pvNormal);
-void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal);
+void G3Normal (CRenderPoint** pointList, CFixVector* pvNormal);
+void G3CalcNormal (CRenderPoint **pointList, CFloatVector *pvNormal);
 
 //------------------------------------------------------------------------------
 
@@ -654,13 +654,6 @@ class COGL {
 };
 
 extern COGL ogl;
-
-//------------------------------------------------------------------------------
-
-static inline CFloatVector3* G3GetNormal (g3sPoint *pPoint, CFloatVector *pvNormal)
-{
-return pPoint->m_normal.nFaces ? pPoint->m_normal.vNormal.XYZ () : pvNormal->XYZ ();
-}
 
 //------------------------------------------------------------------------------
 

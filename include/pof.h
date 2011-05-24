@@ -93,7 +93,7 @@ class CModel {
 		CArray<CFloatVector>	m_vertsf;
 		CArray<float>			m_fClipDist;
 		CArray<ubyte>			m_vertFlags;
-		CArray<g3sNormal>		m_vertNorms;
+		CArray<CRenderNormal>		m_vertNorms;
 		CFixVector				m_vCenter;
 		CArray<CFixVector>	m_rotVerts;
 		CArray<CFace>			m_faces;

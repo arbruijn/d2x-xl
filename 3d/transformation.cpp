@@ -393,13 +393,13 @@ bool CFrustum::Contains (CSide* sideP)
 	};
 
 	int i, j, nInside = 0, nOutside [4] = {0, 0, 0, 0};
-	g3sPoint* points [4];
+	CRenderPoint* points [4];
 	CFixVector intersection;
 
 for (j = 0; j < 4; j++) {
 	points [j] = &gameData.segs.points [sideP->m_corners [j]];
-	if (!(points [j]->m_flags & PF_PROJECTED))
-		transformation.Transform (points [j]->m_vec, points [j]->m_src = VERTICES [sideP->m_corners [j]]);
+	if (!(points [j]->Projected ()))
+		points [j]->Transform (sideP->m_corners [j]);
 	}
 
 // check whether all vertices of the face are at the back side of at least one frustum plane,
@@ -410,7 +410,7 @@ for (i = 0; i < 6; i++) {
 	CFixVector& c = m_centers [i];
 	CFixVector& n = m_normals [i];
 	for (j = 0; j < 4; j++) {
-		CFixVector v = points [j]->m_vec - c;
+		CFixVector v = points [j]->Pos () - c;
 		CFixVector::Normalize (v);
 		if (CFixVector::Dot (n, v) < 0) {
 			if (!--nPtInside)
@@ -430,8 +430,8 @@ for (j = 0; j < 4; j++)
 
 if (sideP->m_nFaces == 2) {
 	points [1] = &gameData.segs.points [sideP->m_vertices [3]];
-	if (!(points [1]->m_flags & PF_PROJECTED))
-		transformation.Transform (points [1]->m_vec, points [1]->m_src = VERTICES [sideP->m_vertices [1]]);
+	if (!points [1]->Projected ())
+		points [1]->Transform (sideP->m_vertices [1]);
 	}
 
 // check whether the frustum intersects with the face
@@ -443,7 +443,7 @@ for (j = 0; j < sideP->m_nFaces; j++)
 	transformation.Rotate (sideP->m_rotNorms [j], sideP->m_normals [j], 0);
 for (i = 11; i >= 4; i--) {
 	for (j = 0; j < sideP->m_nFaces; j++) {
-		if (!FindPlaneLineIntersection (intersection, &points [j]->m_vec, &sideP->m_rotNorms [j],
+		if (!FindPlaneLineIntersection (intersection, &points [j]->Pos (), &sideP->m_rotNorms [j],
 												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0, false))
 			continue;
 		if (!sideP->CheckPointToFace (intersection, j, sideP->m_rotNorms [j])) {

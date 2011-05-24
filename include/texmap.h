@@ -25,14 +25,14 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define FIX_RECIP_TABLE_SIZE	641 //increased from 321 to 641, since this res is now quite achievable.. slight fps boost -MM
 // -------------------------------------------------------------------------------------------------------
-extern fix compute_lightingValue(g3sPoint *vertptr);
+extern fix compute_lightingValue(CRenderPoint *vertptr);
 
 // -------------------------------------------------------------------------------------------------------
 // This is the main texture mapper call.
 //	tmap_num references a texture map defined in Texmap_ptrs.
 //	nverts = number of vertices
 //	vertbuf is a pointer to an array of vertex pointers
-extern void draw_tmap(CBitmap *bp, int nverts, g3sPoint **vertbuf);
+extern void draw_tmap(CBitmap *bp, int nverts, CRenderPoint **vertbuf);
 
 // -------------------------------------------------------------------------------------------------------
 // Texture map vertex.

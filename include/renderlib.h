@@ -42,8 +42,8 @@ typedef struct tFaceListEntry {
 
 // Given a list of point numbers, rotate any that haven't been rotated
 // this frame
-g3sPoint *RotateVertex (int i);
-g3sCodes RotateVertexList (int nVerts, short* vertexIndexP);
+CRenderPoint *RotateVertex (int i);
+tRenderCodes RotateVertexList (int nVerts, short* vertexIndexP);
 void RotateSideNorms (void);
 // Given a list of point numbers, project any that haven't been projected
 void ProjectVertexList (int nv, short *pointIndex);
@@ -67,7 +67,7 @@ float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int b
 					  tRgbaColorf *pc, int *bCloaking, ubyte *bTextured, ubyte* bCloaked, ubyte* bTransparent);
 int SetupMonitorFace (short nSegment, short nSide, short nCamera, CSegFace *faceP);
 CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures = 1);
-void DrawOutline (int nVertices, g3sPoint **pointList);
+void DrawOutline (int nVertices, CRenderPoint **pointList);
 int ToggleOutlineMode (void);
 int ToggleShowOnlyCurSide (void);
 void RotateTexCoord2f (tTexCoord2f& dest, tTexCoord2f& src, ubyte nOrient);

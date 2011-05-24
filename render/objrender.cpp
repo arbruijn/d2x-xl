@@ -217,14 +217,14 @@ FORALL_OBJS (objP, i)
 void SetRobotLocationInfo (CObject *objP)
 {
 if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
-	g3sPoint temp;
+	CRenderPoint temp;
 
-	G3TransformAndEncodePoint(&temp, objP->info.position.vPos);
-	if (temp.m_codes & CC_BEHIND)		//robot behind the screen
+	temp.TransformAndEncode (objP->info.position.vPos);
+	if (temp.Behind ())		//robot behind the screen
 		return;
 	//the code below to check for CObject near the center of the screen
 	//completely ignores z, which may not be good
-	if ((abs (temp.m_vec.v.coord.x) < I2X (4)) && (abs (temp.m_vec.v.coord.y) < I2X (4))) {
+	if ((abs (temp.Pos ().v.coord.x) < I2X (4)) && (abs (temp.Pos ().v.coord.y) < I2X (4))) {
 		objP->cType.aiInfo.nDangerLaser = gameStates.app.bPlayerFiredLaserThisFrame;
 		objP->cType.aiInfo.nDangerLaserSig = OBJECTS [gameStates.app.bPlayerFiredLaserThisFrame].info.nSignature;
 		}

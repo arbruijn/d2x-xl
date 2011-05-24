@@ -722,9 +722,9 @@ renderPortals [0].top = 0;
 renderPortals [0].right = CCanvas::Current ()->Width () - 1;
 renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
 
-g3sPoint* pointP = &gameData.segs.points [0];
+CRenderPoint* pointP = &gameData.segs.points [0];
 for (i = gameData.segs.nVertices; i; i--, pointP++) {
-	pointP->m_flags = 0;
+	pointP->SetFlags ();
 	//pointP->m_codes = 0;
 	}
 
@@ -786,10 +786,10 @@ for (l = 0; l < nRenderDepth; l++) {
 
 			if (bCullIfBehind) {
 				short* s2v = segP->Side (nChild)->m_corners;;
-				if (gameData.segs.points [s2v [0]].m_codes &
-					 gameData.segs.points [s2v [1]].m_codes &
-					 gameData.segs.points [s2v [2]].m_codes &
-					 gameData.segs.points [s2v [3]].m_codes & CC_BEHIND)
+				if (gameData.segs.points [s2v [0]].Codes () &
+					 gameData.segs.points [s2v [1]].Codes () &
+					 gameData.segs.points [s2v [2]].Codes () &
+					 gameData.segs.points [s2v [3]].Codes () & CC_BEHIND)
 					continue; // all face vertices behind the viewer => face invisible to the viewer
 				}
 			childList [nChildren++] = nChild;
@@ -812,29 +812,30 @@ for (l = 0; l < nRenderDepth; l++) {
 			ubyte offScreenFlags = 0xff;
 			for (int nCorner = 0; nCorner < 4; nCorner++) {
 				short nVertex = s2v [nCorner];
-				g3sPoint& point = gameData.segs.points [nVertex];
+				CRenderPoint& point = gameData.segs.points [nVertex];
 #if DBG
-				point.m_flags = point.m_codes = 0;
+				point.SetFlags ();
+				point.SetCodes ();
 #else
-				if (!(point.m_flags & PF_PROJECTED))
+				if (!(point.Projected ()))
 #endif
 					ProjectRenderPoint (nVertex);
-				if (point.m_codes & CC_BEHIND) {
+				if (point.Behind ()) {
 					bProjected = 0;
 #if 0
 					break;
 #endif
 					}
 				//offScreenFlags &= (point.m_codes & ~CC_BEHIND);
-				offScreenFlags &= point.m_codes;
-				if (facePortal.left > point.m_screen.x)
-					facePortal.left = point.m_screen.x;
-				if (facePortal.right < point.m_screen.x)
-					facePortal.right = point.m_screen.x;
-				if (facePortal.top > point.m_screen.y)
-					facePortal.top = point.m_screen.y;
-				if (facePortal.bot < point.m_screen.y)
-					facePortal.bot = point.m_screen.y;
+				offScreenFlags &= point.Codes ();
+				if (facePortal.left > point.X ())
+					facePortal.left = point.X ();
+				if (facePortal.right < point.X ())
+					facePortal.right = point.X ();
+				if (facePortal.top > point.Y ())
+					facePortal.top = point.Y ();
+				if (facePortal.bot < point.Y ())
+					facePortal.bot = point.Y ();
 				}
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))

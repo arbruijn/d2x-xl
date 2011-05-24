@@ -327,7 +327,7 @@ m_fNormals [2] = CFloatVector::Avg (m_fNormals [0], m_fNormals [1]);
 
 CFixVector& CSide::Vertex (int nVertex)
 {
-return gameStates.render.bRendering ? gameData.segs.points [nVertex].m_vec : VERTICES [nVertex];
+return gameStates.render.bRendering ? gameData.segs.points [nVertex].Pos () : VERTICES [nVertex];
 }
 
 // -------------------------------------------------------------------------------
@@ -605,8 +605,8 @@ nVerts = 5 - m_nFaces;
 h = iFace * 3;
 for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
 	if (gameStates.render.bRendering) {
-		v0 = &gameData.segs.points [m_vertices [h + nEdge]].m_vec;
-		v1 = &gameData.segs.points [m_vertices [h + ((nEdge + 1) % nVerts)]].m_vec;
+		v0 = &gameData.segs.points [m_vertices [h + nEdge]].Pos ();
+		v1 = &gameData.segs.points [m_vertices [h + ((nEdge + 1) % nVerts)]].Pos ();
 		}
 	else {
 		v0 = VERTICES + m_vertices [h + nEdge];
@@ -646,8 +646,8 @@ for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
 nVerts = 5 - m_nFaces;
 iFace *= 3;
 if (gameStates.render.bRendering) {
-	v0 = &gameData.segs.points [m_vertices [iFace + nEdge]].m_vec;
-	v1 = &gameData.segs.points [m_vertices [iFace + ((nEdge + 1) % nVerts)]].m_vec;
+	v0 = &gameData.segs.points [m_vertices [iFace + nEdge]].Pos ();
+	v1 = &gameData.segs.points [m_vertices [iFace + ((nEdge + 1) % nVerts)]].Pos ();
 	}
 else {
 	v0 = VERTICES + m_vertices [iFace + nEdge];
@@ -728,7 +728,7 @@ if (m_nFaces == 1) {
 //PrintLog ("         FindPlaneLineIntersection...");
 pli = FindPlaneLineIntersection (intersection,
 											gameStates.render.bRendering 
-											? &gameData.segs.points [nVertex].m_vec 
+											? &gameData.segs.points [nVertex].Pos () 
 											: VERTICES + nVertex,
 											&vNormal, p0, p1, rad);
 //PrintLog ("done\n");

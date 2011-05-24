@@ -102,13 +102,11 @@ return bShowOnlyCurSide = !bShowOnlyCurSide;
 
 //------------------------------------------------------------------------------
 
-void DrawOutline (int nVertices, g3sPoint **pointList)
+void DrawOutline (int nVertices, CRenderPoint **pointList)
 {
-	int i;
-	GLint depthFunc;
-	g3sPoint center, Normal;
-	CFixVector n;
-	CFloatVector *nf;
+	GLint				depthFunc;
+	CRenderPoint	center, normal;
+	CFixVector		n;
 
 #if 1 //!DBG
 if (gameStates.render.bQueryOcclusion) {
@@ -121,28 +119,22 @@ if (gameStates.render.bQueryOcclusion) {
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 ogl.SetDepthMode (GL_ALWAYS);
 CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
-center.m_vec.SetZero ();
-for (i = 0; i < nVertices; i++) {
+center.Pos ().SetZero ();
+for (int i = 0; i < nVertices; i++) {
 	G3DrawLine (pointList [i], pointList [(i + 1) % nVertices]);
-	center.m_vec += pointList [i]->m_vec;
-	nf = &pointList [i]->m_normal.vNormal;
-/*
-	n.v.c.x = (fix) (nf->x() * 65536.0f);
-	n.v.c.y = (fix) (nf->y() * 65536.0f);
-	n.v.c.z = (fix) (nf->z() * 65536.0f);
-*/
-	n.Assign (*nf);
-	transformation.Rotate(n, n, 0);
-	Normal.m_vec = pointList[i]->m_vec + n * (I2X (10));
-	G3DrawLine (pointList [i], &Normal);
+	center.Pos () += pointList [i]->Pos ();
+	n.Assign (*pointList [i]->GetNormal ());
+	transformation.Rotate (n, n, 0);
+	normal.Pos () = pointList [i]->Pos () + (n * (I2X (10)));
+	G3DrawLine (pointList [i], &normal);
 	}
 #if 0
-VmVecNormal (&Normal.m_vec,
-				 &pointList [0]->m_vec,
-				 &pointList [1]->m_vec,
-				 &pointList [2]->m_vec);
-VmVecInc (&Normal.m_vec, &center.m_vec);
-VmVecScale (&Normal.m_vec, I2X (10));
+VmVecNormal (&Normal.m_vertex [1],
+				 &pointList [0]->m_vertex [1],
+				 &pointList [1]->m_vertex [1],
+				 &pointList [2]->m_vertex [1]);
+VmVecInc (&Normal.m_vertex [1], &center.m_vertex [1]);
+VmVecScale (&Normal.m_vertex [1], I2X (10));
 G3DrawLine (&center, &Normal);
 #endif
 ogl.SetDepthMode (depthFunc);
@@ -599,9 +591,9 @@ colorP->color.alpha = 1;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined
 //by the vertices passed relative to the viewer
 
-g3sPoint *RotateVertex (int i)
+CRenderPoint *RotateVertex (int i)
 {
-g3sPoint *p = gameData.segs.points + i;
+CRenderPoint& p = gameData.segs.points [i];
 #if !DBG
 if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) 
 #endif
@@ -610,26 +602,24 @@ if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount)
 	if (i == nDbgVertex)
 		nDbgVertex = nDbgVertex;
 #endif
-	G3TransformAndEncodePoint (p, gameData.segs.vertices [i]);
+	p.TransformAndEncode (gameData.segs.vertices [i]);
 #if TRANSP_DEPTH_HASH
-	fix d = p->m_vec.Mag ();
+	fix d = p.Pos ().Mag ();
 	if (gameData.render.zMin > d)
 		gameData.render.zMin = d;
 	if (gameData.render.zMax < d)
 		gameData.render.zMax = d;
 #else
-	if (gameData.render.zMax < p->m_vec.dir.coord.z)
-		gameData.render.zMax = p->m_vec.dir.coord.z;
+	if (gameData.render.zMax < p->m_vertex [1].dir.coord.z)
+		gameData.render.zMax = p->m_vertex [1].dir.coord.z;
 #endif
 	if (!ogl.m_states.bUseTransform) {
-		gameData.segs.fVertices [i].v.coord.x = X2F (p->m_vec.v.coord.x);
-		gameData.segs.fVertices [i].v.coord.y = X2F (p->m_vec.v.coord.y);
-		gameData.segs.fVertices [i].v.coord.z = X2F (p->m_vec.v.coord.z);
+		gameData.segs.fVertices [i].Assign (p.Pos ());
 		}
-	p->m_index = i;
+	p.SetIndex (i);
 	gameData.render.mine.nRotatedLast [i] = gameStates.render.nFrameCount;
 	}
-return p;
+return &p;
 }
 
 // -----------------------------------------------------------------------------------
@@ -637,16 +627,15 @@ return p;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined
 //by the vertices passed relative to the viewer
 
-g3sCodes RotateVertexList (int nVertices, short* vertexIndexP)
+tRenderCodes RotateVertexList (int nVertices, short* vertexIndexP)
 {
-	int			i;
-	g3sPoint*	p;
-	g3sCodes		cc = {0, 0xff};
+	tRenderCodes cc = {0, 0xff};
 
-for (i = 0; i < nVertices; i++) {
-	p = RotateVertex (vertexIndexP [i]);
-	cc.ccAnd &= p->m_codes;
-	cc.ccOr |= p->m_codes;
+for (int i = 0; i < nVertices; i++) {
+	CRenderPoint* p = RotateVertex (vertexIndexP [i]);
+	ubyte c = p->Codes ();
+	cc.ccAnd &= c;
+	cc.ccOr |= c;
 	}
 return cc;
 }
@@ -655,12 +644,10 @@ return cc;
 //Given a lit of point numbers, project any that haven't been projected
 void ProjectVertexList (int nVertices, short *vertexIndexP)
 {
-	int i, j;
-
-for (i = 0; i < nVertices; i++) {
-	j = vertexIndexP [i];
-	if (!(gameData.segs.points [j].m_flags & PF_PROJECTED))
-		G3ProjectPoint (&gameData.segs.points [j]);
+for (int i = 0; i < nVertices; i++) {
+	int j = vertexIndexP [i];
+	if (!gameData.segs.points [j].Projected ())
+		gameData.segs.points [j].Project ();
 	}
 }
 
@@ -672,51 +659,44 @@ ubyte ProjectRenderPoint (short nVertex)
 if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
-g3sPoint& point = gameData.segs.points [nVertex];
+CRenderPoint& point = gameData.segs.points [nVertex];
 #if 0 //DBG
 point.m_flags = 0;
 #else
-if (!(point.m_flags & PF_PROJECTED)) 
+if (!point.Projected ()) 
 #endif
 	{
 #if 0
-	transformation.Transform (point.m_vec, point.m_src = gameData.segs.vertices [nVertex]);
+	point.Transform (point.m_vertex [1], point.m_vertex [0] = gameData.segs.vertices [nVertex]);
 	G3ProjectPoint (&point);
-	point.m_codes = (point.m_vec.v.coord.z < 0) ? CC_BEHIND : 0;
+	point.m_codes = (point.m_vertex [1].v.coord.z < 0) ? CC_BEHIND : 0;
 #else
 	CFloatVector3 v;
-	point.m_flags |= PF_PROJECTED;
+	point.AddFlags (PF_PROJECTED);
 #if 0
-	transformation.Transform (point.m_vec, point.m_src = gameData.segs.vertices [nVertex]);
-	v.Assign (point.m_vec);
+	transformation.Transform (point.m_vertex [1], point.m_vertex [0] = gameData.segs.vertices [nVertex]);
+	v.Assign (point.m_vertex [1]);
 #else
-	point.m_src = gameData.segs.vertices [nVertex];
+	point.Pos (0) = gameData.segs.vertices [nVertex];
 	transformation.Transform (v, *((CFloatVector3*) &gameData.segs.fVertices [nVertex]));
-	point.m_vec.Assign (v);
+	point.Pos ().Assign (v);
 #endif
-	point.m_codes = (v.v.coord.z < 0.0f) ? CC_BEHIND : 0;
-	ProjectPoint (v, point.m_screen);
+	point.SetCodes ((v.v.coord.z < 0.0f) ? CC_BEHIND : 0);
+	ProjectPoint (v, point.Screen ());
 #endif
-	if (point.m_screen.x < 0)
-		point.m_codes |= CC_OFF_LEFT;
-	else if (point.m_screen.x > screen.Width ())
-		point.m_codes |= CC_OFF_RIGHT;
-	if (point.m_screen.y < 0)
-		point.m_codes |= CC_OFF_BOT;
-	else if (point.m_screen.y > screen.Height ())
-		point.m_codes |= CC_OFF_TOP;
+	point.Encode ();
 #if TRANSP_DEPTH_HASH
-	fix d = point.m_vec.Mag ();
+	fix d = point.Pos ().Mag ();
 	if (gameData.render.zMin > d)
 		gameData.render.zMin = d;
 	if (gameData.render.zMax < d)
 		gameData.render.zMax = d;
 #else
-	if (gameData.render.zMax < point.m_vec.dir.coord.z)
-		gameData.render.zMax = point.m_vec.dir.coord.z;
+	if (gameData.render.zMax < point.m_vertex [1].dir.coord.z)
+		gameData.render.zMax = point.m_vertex [1].dir.coord.z;
 #endif
 	}
-return point.m_codes;
+return point.Codes ();
 }
 
 //------------------------------------------------------------------------------

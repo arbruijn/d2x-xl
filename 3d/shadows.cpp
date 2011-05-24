@@ -452,7 +452,7 @@ if (bShadowData) {
 	}
 else {
 	CFloatVector	nf;
-	g3sNormal		*pvn;
+	CRenderNormal		*pvn;
 
 	pfv = WORDPTR (p+30);
 	nf.Assign (*pn);

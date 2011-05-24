@@ -67,7 +67,7 @@ int bPrintLine = 0;
 short nHighestTexture;
 int g3d_interp_outline;
 
-g3sPoint	*modelPointList = NULL;
+CRenderPoint	*modelPointList = NULL;
 
 #define MAX_INTERP_COLORS 100
 
@@ -80,20 +80,20 @@ tInterpColor interpColorTable [MAX_INTERP_COLORS];
 //static int bFlatPolys = 1;
 //static int bTexPolys = 1;
 
-g3sPoint *pointList [MAX_POINTS_PER_POLY];
+CRenderPoint *pointList [MAX_POINTS_PER_POLY];
 
 short nGlow = -1;
 
 //------------------------------------------------------------------------------
 //gives the interpreter an array of points to use
-void G3SetModelPoints (g3sPoint *pointlist)
+void G3SetModelPoints (CRenderPoint *pointlist)
 {
 modelPointList = pointlist;
 }
 
 //------------------------------------------------------------------------------
 
-void RotatePointList (g3sPoint *dest, CFixVector *src, g3sNormal *norms, int n, int o)
+void RotatePointList (CRenderPoint *dest, CFixVector *src, CRenderNormal *norms, int n, int o)
 {
 PROF_START
 	CFloatVector	*pfv = gameData.models.fPolyModelVerts + o;
@@ -132,22 +132,22 @@ while (n--) {
 			CFixVector v = *src;
 			v *= gameData.models.vScale;
 #if 1
-			transformation.Transform (dest->m_vec, v, 0);
+			transformation.Transform (dest->m_vertex [1], v, 0);
 #else
-			G3TransformAndEncodePoint (dest, &dir);
+			dest.TransformAndEncode (dir);
 #endif
 			}
 		else {
 #if 1
-			transformation.Transform (dest->m_vec, *src, 0);
+			transformation.Transform (dest->m_vertex [1], *src, 0);
 #else
-			G3TransformAndEncodePoint (dest, src);
+			dest.TransformAndEncode (*src);
 #endif
 			}
-		pfv->Assign (dest->m_vec);
+		pfv->Assign (dest->m_vertex [1]);
 		}
 	dest->m_index = o++;
-	dest->m_src = *src++;
+	dest->m_vertex [0] = *src++;
 	dest++;
 	pfv++;
 	}
@@ -349,8 +349,8 @@ if (CFixVector::Dot (*vNormal, vForward) > -I2X (1) / 3)
 if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -I2X (1)))
 #endif
 	return;
-for (i = 1, v = pointList [0]->m_src; i < nPoints; i++)
-	v += pointList [i]->m_src;
+for (i = 1, v = pointList [0]->m_vertex [0]; i < nPoints; i++)
+	v += pointList [i]->m_vertex [0];
 v.v.coord.x /= nPoints;
 v.v.coord.y /= nPoints;
 v.v.coord.z /= nPoints;
@@ -366,7 +366,7 @@ mtP->vDir [mtP->nCount] = *vNormal;
 mtP->vDir [mtP->nCount] = -mtP->vDir [mtP->nCount];
 if (!mtP->nCount++) {
 	for (i = 0, nSize = 0x7fffffff; i < nPoints; i++)
-		if (nSize > (h = CFixVector::Dist(v, pointList [i]->m_src)))
+		if (nSize > (h = CFixVector::Dist(v, pointList [i]->m_vertex [0])))
 			nSize = h;
 	mtP->fSize [i] = X2F (nSize);// * 1.25f;
 	}
@@ -533,9 +533,9 @@ for (;;) {
 		p += 32;
 		}
 	else if (nTag == OP_RODBM) {
-		g3sPoint rodBotP, rodTopP;
-		G3TransformAndEncodePoint (&rodBotP, *VECPTR (p+20));
-		G3TransformAndEncodePoint (&rodTopP, *VECPTR (p+4));
+		CRenderPoint rodBotP, rodTopP;
+		rodBotP->TransformAndEncode (*VECPTR (p+20));
+		rodTopP->TransformAndEncode (*VECPTR (p+4));
 		G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), I2X (1), NULL);
 		p += 36;
 		}
@@ -672,9 +672,9 @@ for (;;) {
 			break;
 
 		case OP_RODBM: {
-			g3sPoint rodBotP, rodTopP;
-			G3TransformAndEncodePoint (&rodBotP, *VECPTR (p+20));
-			G3TransformAndEncodePoint (&rodTopP, *VECPTR (p+4));
+			CRenderPoint rodBotP, rodTopP;
+			rodBotP->TransformAndEncode (*VECPTR (p+20));
+			rodTopP->TransformAndEncode (*VECPTR (p+4));
 			G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), I2X (1), NULL);
 			p += 36;
 			break;

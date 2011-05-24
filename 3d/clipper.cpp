@@ -22,8 +22,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int nFreePoints=0;
 
-g3sPoint temp_points[MAX_POINTS_IN_POLY];
-g3sPoint *free_points[MAX_POINTS_IN_POLY];
+CRenderPoint temp_points[MAX_POINTS_IN_POLY];
+CRenderPoint *free_points[MAX_POINTS_IN_POLY];
 
 void InitFreePoints(void)
 {
@@ -34,9 +34,9 @@ for (i = 0; i < MAX_POINTS_IN_POLY; i++)
 }
 
 
-g3sPoint *get_temp_point()
+CRenderPoint *get_temp_point()
 {
-	g3sPoint *p;
+	CRenderPoint *p;
 
 	Assert (nFreePoints < MAX_POINTS_IN_POLY );
 	p = free_points[nFreePoints++];
@@ -46,7 +46,7 @@ g3sPoint *get_temp_point()
 	return p;
 }
 
-void free_temp_point(g3sPoint *p)
+void free_temp_point(CRenderPoint *p)
 {
 	Assert(p->m_flags & PF_TEMP_POINT);
 
@@ -56,22 +56,22 @@ void free_temp_point(g3sPoint *p)
 }
 
 //clips an edge against one plane.
-g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
+CRenderPoint *clip_edge(int planeFlag,CRenderPoint *on_pnt,CRenderPoint *off_pnt)
 {
 	fix psx_ratio;
 	fix a,b,kn,kd;
-	g3sPoint *tmp;
+	CRenderPoint *tmp;
 
 	//compute clipping value k = (xs-zs) / (xs-xe-zs+ze)
 	//use x or y as appropriate, and negate x/y value as appropriate
 
 	if (planeFlag & (CC_OFF_RIGHT | CC_OFF_LEFT)) {
-		a = on_pnt->m_vec.v.coord.x;
-		b = off_pnt->m_vec.v.coord.x;
+		a = on_pnt->m_vertex [1].v.coord.x;
+		b = off_pnt->m_vertex [1].v.coord.x;
 	}
 	else {
-		a = on_pnt->m_vec.v.coord.y;
-		b = off_pnt->m_vec.v.coord.y;
+		a = on_pnt->m_vertex [1].v.coord.y;
+		b = off_pnt->m_vertex [1].v.coord.y;
 	}
 
 	if (planeFlag & (CC_OFF_LEFT | CC_OFF_BOT)) {
@@ -79,8 +79,8 @@ g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 		b = -b;
 	}
 
-	kn = a - on_pnt->m_vec.v.coord.z;						//xs-zs
-	kd = kn - b + off_pnt->m_vec.v.coord.z;				//xs-zs-xe+ze
+	kn = a - on_pnt->m_vertex [1].v.coord.z;						//xs-zs
+	kd = kn - b + off_pnt->m_vertex [1].v.coord.z;				//xs-zs-xe+ze
 
 	tmp = get_temp_point();
 
@@ -88,19 +88,19 @@ g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 
 
 // PSX_HACK!!!!
-//	tmp->m_vec.v.c.x = on_pnt->m_vec.v.c.x + FixMulDiv(off_pnt->m_vec.v.c.x-on_pnt->m_vec.v.c.x,kn,kd);
-//	tmp->m_vec.v.c.y = on_pnt->m_vec.v.c.y + FixMulDiv(off_pnt->m_vec.v.c.y-on_pnt->m_vec.v.c.y,kn,kd);
+//	tmp->m_vertex [1].v.c.x = on_pnt->m_vertex [1].v.c.x + FixMulDiv(off_pnt->m_vertex [1].v.c.x-on_pnt->m_vertex [1].v.c.x,kn,kd);
+//	tmp->m_vertex [1].v.c.y = on_pnt->m_vertex [1].v.c.y + FixMulDiv(off_pnt->m_vertex [1].v.c.y-on_pnt->m_vertex [1].v.c.y,kn,kd);
 
-	tmp->m_vec.v.coord.x = on_pnt->m_vec.v.coord.x + FixMul( (off_pnt->m_vec.v.coord.x-on_pnt->m_vec.v.coord.x), psx_ratio);
-	tmp->m_vec.v.coord.y = on_pnt->m_vec.v.coord.y + FixMul( (off_pnt->m_vec.v.coord.y-on_pnt->m_vec.v.coord.y), psx_ratio);
+	tmp->m_vertex [1].v.coord.x = on_pnt->m_vertex [1].v.coord.x + FixMul( (off_pnt->m_vertex [1].v.coord.x-on_pnt->m_vertex [1].v.coord.x), psx_ratio);
+	tmp->m_vertex [1].v.coord.y = on_pnt->m_vertex [1].v.coord.y + FixMul( (off_pnt->m_vertex [1].v.coord.y-on_pnt->m_vertex [1].v.coord.y), psx_ratio);
 
 	if (planeFlag & (CC_OFF_TOP|CC_OFF_BOT))
-		tmp->m_vec.v.coord.z = tmp->m_vec.v.coord.y;
+		tmp->m_vertex [1].v.coord.z = tmp->m_vertex [1].v.coord.y;
 	else
-		tmp->m_vec.v.coord.z = tmp->m_vec.v.coord.x;
+		tmp->m_vertex [1].v.coord.z = tmp->m_vertex [1].v.coord.x;
 
 	if (planeFlag & (CC_OFF_LEFT|CC_OFF_BOT))
-		tmp->m_vec.v.coord.z = -tmp->m_vec.v.coord.z;
+		tmp->m_vertex [1].v.coord.z = -tmp->m_vertex [1].v.coord.z;
 
 	if (on_pnt->m_flags & PF_UVS) {
 // PSX_HACK!!!!
@@ -123,16 +123,16 @@ g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 		tmp->m_flags |= PF_LS;
 	}
 
-	G3EncodePoint(tmp);
+	G3Encode(tmp);
 
 	return tmp;
 }
 
 //clips a line to the viewing pyramid.
-void clip_line(g3sPoint **p0,g3sPoint **p1,ubyte codes_or)
+void clip_line(CRenderPoint **p0,CRenderPoint **p1,ubyte codes_or)
 {
 	int planeFlag;
-	g3sPoint *old_p1;
+	CRenderPoint *old_p1;
 
 	//might have these left over
 	(*p0)->m_flags &= ~(PF_UVS|PF_LS);
@@ -142,7 +142,7 @@ void clip_line(g3sPoint **p0,g3sPoint **p1,ubyte codes_or)
 		if (codes_or & planeFlag) {
 
 			if ((*p0)->m_codes & planeFlag)
-			 {g3sPoint *t=*p0; *p0=*p1; *p1=t;}	//swap!
+			 {CRenderPoint *t=*p0; *p0=*p1; *p1=t;}	//swap!
 
 			old_p1 = *p1;
 
@@ -155,10 +155,10 @@ void clip_line(g3sPoint **p0,g3sPoint **p1,ubyte codes_or)
 }
 
 
-int clip_plane(int planeFlag,g3sPoint **src,g3sPoint **dest,int *nv,g3sCodes *cc)
+int clip_plane(int planeFlag,CRenderPoint **src,CRenderPoint **dest,int *nv,tRenderCodes *cc)
 {
 	int i;
-	g3sPoint **save_dest=dest;
+	CRenderPoint **save_dest=dest;
 
 	//copy first two verts to end
 	src[*nv] = src[0];
@@ -202,10 +202,10 @@ int clip_plane(int planeFlag,g3sPoint **src,g3sPoint **dest,int *nv,g3sCodes *cc
 }
 
 
-g3sPoint **clip_polygon(g3sPoint **src,g3sPoint **dest,int *nv,g3sCodes *cc)
+CRenderPoint **clip_polygon(CRenderPoint **src,CRenderPoint **dest,int *nv,tRenderCodes *cc)
 {
 	int planeFlag;
-	g3sPoint **t;
+	CRenderPoint **t;
 
 	for (planeFlag=1;planeFlag<16;planeFlag<<=1)
 

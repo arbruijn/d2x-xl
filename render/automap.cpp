@@ -176,43 +176,43 @@ markerManager.Clear ();
 void CAutomap::DrawPlayer (CObject* objP)
 {
 	CFixVector	vArrowPos, vHeadPos;
-	g3sPoint		spherePoint, arrowPoint, headPoint;
+	CRenderPoint		spherePoint, arrowPoint, headPoint;
 	int			size = objP->info.xSize * (m_bRadar ? 2 : 1);
 //	int			bUseTransform = ogl.m_states.bUseTransform;
 
-spherePoint.m_index = -1;
+spherePoint.SetIndex (-1);
 // Draw Console CPlayerData -- shaped like a ellipse with an arrow.
-//spherePoint.m_vec.SetZero ();
-G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
-//transformation.Rotate (&spherePoint.m_vec, &objP->info.position.vPos, 0);
+//spherePoint.m_vertex [1].SetZero ();
+spherePoint.TransformAndEncode (objP->info.position.vPos);
+//transformation.Rotate (&spherePoint.m_vertex [1], &objP->info.position.vPos, 0);
 G3DrawSphere (&spherePoint, m_bRadar ? objP->info.xSize * 2 : objP->info.xSize, !m_bRadar);
 
 if (m_bRadar && (objP->Index () != LOCALPLAYER.nObject))
 	return;
 if (ogl.SizeVertexBuffer (3)) {
-	headPoint.m_index =
-	arrowPoint.m_index = -1;
-	ogl.VertexBuffer () [1].Assign (spherePoint.m_vec);
+	headPoint.SetIndex (-1);
+	arrowPoint.SetIndex (-1);
+	ogl.VertexBuffer () [1].Assign (spherePoint.Pos ());
 	// Draw CPlayerData's up vector
 	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.u * (size*2);
-	G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
-	ogl.VertexBuffer () [0].Assign (arrowPoint.m_vec);
+	arrowPoint.TransformAndEncode (vArrowPos);
+	ogl.VertexBuffer () [0].Assign (arrowPoint.Pos ());
 	// Draw shaft of arrow
 	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size * 3);
-	G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
-	ogl.VertexBuffer () [2].Assign (arrowPoint.m_vec);
+	arrowPoint.TransformAndEncode (vArrowPos);
+	ogl.VertexBuffer () [2].Assign (arrowPoint.Pos ());
 	ogl.FlushBuffers (GL_LINE_STRIP, 3);
-	ogl.VertexBuffer () [1].Assign (arrowPoint.m_vec);
+	ogl.VertexBuffer () [1].Assign (arrowPoint.Pos ());
 	// Draw right head of arrow
 	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size*2);
 	vHeadPos += objP->info.position.mOrient.m.dir.r * (size*1);
-	G3TransformAndEncodePoint (&headPoint, vHeadPos);
-	ogl.VertexBuffer () [0].Assign (headPoint.m_vec);
+	headPoint.TransformAndEncode (vHeadPos);
+	ogl.VertexBuffer () [0].Assign (headPoint.Pos ());
 	// Draw left head of arrow
 	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size*2);
 	vHeadPos += objP->info.position.mOrient.m.dir.r * (size* (-1));
-	G3TransformAndEncodePoint (&headPoint, vHeadPos);
-	ogl.VertexBuffer () [2].Assign (headPoint.m_vec);
+	headPoint.TransformAndEncode (vHeadPos);
+	ogl.VertexBuffer () [2].Assign (headPoint.Pos ());
 	ogl.FlushBuffers (GL_LINE_STRIP, 3);
 	}
 }
@@ -262,20 +262,20 @@ if (bTextured)
 	ogl.SetBlending (true);
 
 CObject* objP = OBJECTS.Buffer ();
-g3sPoint	spherePoint;
+CRenderPoint	spherePoint;
 
 FORALL_OBJS (objP, i) {
 	int size = objP->info.xSize;
 	switch (objP->info.nType) {
 		case OBJ_HOSTAGE:
 			CCanvas::Current ()->SetColorRGBi (m_colors.nHostage);
-			G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
-			G3DrawSphere (&spherePoint,size, !m_bRadar);
+			spherePoint.TransformAndEncode (objP->info.position.vPos);
+			G3DrawSphere (&spherePoint, size, !m_bRadar);
 			break;
 
 		case OBJ_MONSTERBALL:
 			CCanvas::Current ()->SetColorRGBi (m_colors.nMonsterball);
-			G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
+			spherePoint.TransformAndEncode (objP->info.position.vPos);
 			G3DrawSphere (&spherePoint,size, !m_bRadar);
 			break;
 
@@ -301,7 +301,7 @@ FORALL_OBJS (objP, i) {
 					else
 						CCanvas::Current ()->SetColorRGB (78 + int ((123 - 78) * fScale + 0.5f), 0, 96 + int ((135 - 96) * fScale + 0.5f), 255);
 					}
-				G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
+				spherePoint.TransformAndEncode (objP->info.position.vPos);
 				//transformation.Begin (&objP->info.position.vPos, &objP->info.position.mOrient);
 				G3DrawSphere (&spherePoint, bTextured ? size : (size * 3) / 2, !m_bRadar);
 				//transformation.End ();
@@ -328,7 +328,7 @@ FORALL_OBJS (objP, i) {
 					CCanvas::Current ()->SetColorRGBi (ORANGE_RGBA); //orange
 					break;
 				}
-			G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
+			spherePoint.TransformAndEncode (objP->info.position.vPos);
 			G3DrawSphere (&spherePoint, size, !m_bRadar);
 			break;
 		}
@@ -1090,10 +1090,10 @@ else {
 		ogl.FlushBuffers (GL_LINES, m_nVerts, 3, 0, 1);
 		m_nVerts = 0;
 		}
-	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v0].m_vec);
+	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v0].Pos ());
 	ogl.ColorBuffer () [m_nVerts] = m_color;
 	m_nVerts++;
-	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v1].m_vec);
+	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v1].Pos ());
 	ogl.ColorBuffer () [m_nVerts] = m_color;
 	m_nVerts++;
 	}
@@ -1103,14 +1103,14 @@ else {
 
 void CAutomap::DrawEdges (void)
 {
-	g3sCodes			cc;
+	tRenderCodes			cc;
 	int				i, j, nbright = 0;
 	ubyte				nfacing, nnfacing;
 	tEdgeInfo*		edgeP;
 	CFixVector		*tv1;
 	fix				distance;
 	fix				minDistance = 0x7fffffff;
-	g3sPoint			*p1, *p2;
+	CRenderPoint			*p1, *p2;
 	int				bUseTransform = ogl.UseTransform ();
 	
 m_bDrawBuffers = ogl.SizeBuffers (1000);
@@ -1137,7 +1137,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 		}
 
 	cc = RotateVertexList (2, edgeP->verts);
-	distance = gameData.segs.points [edgeP->verts [1]].m_vec.v.coord.z;
+	distance = gameData.segs.points [edgeP->verts [1]].Pos ().v.coord.z;
 	if (minDistance > distance)
 		minDistance = distance;
 	if (!cc.ccAnd)  {	//all off screen?
@@ -1189,7 +1189,7 @@ while (incr > 0) {
 			v1 = m_brightEdges [j]->verts [0];
 			v2 = m_brightEdges [j + incr]->verts [0];
 
-			if (gameData.segs.points [v1].m_vec.v.coord.z < gameData.segs.points [v2].m_vec.v.coord.z) {
+			if (gameData.segs.points [v1].Pos ().v.coord.z < gameData.segs.points [v2].Pos ().v.coord.z) {
 				// If not in correct order, them swap 'em
 				Swap (m_brightEdges [j + incr], m_brightEdges [j]);
 				j -= incr;
@@ -1207,7 +1207,7 @@ for (i = 0; i < nbright; i++) {
 	edgeP = m_brightEdges [i];
 	p1 = gameData.segs.points + edgeP->verts [0];
 	p2 = gameData.segs.points + edgeP->verts [1];
-	fix xDist = p1->m_vec.v.coord.z - minDistance;
+	fix xDist = p1->Pos ().v.coord.z - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
 	if (xDist < 0)
 		xDist = 0;
