@@ -259,7 +259,7 @@ if (nVertex == nDbgVertex)
 			}
 		vLightToVertex = vVertex - prl->info.vPos;
 		xLightDist = vLightToVertex.Mag ();
-		prl->info.bDiffuse [nThread] = prl->SeesPoint (*vNormal, vLightToVertex / xLightDist);
+		prl->info.bDiffuse [nThread] = prl->SeesPoint (vNormal, vLightToVertex / xLightDist);
 		prl->render.xDistance = (fix) (xLightDist / prl->info.fRange);
 		if (prl->info.nSegment >= 0)
 			prl->render.xDistance -= SEGMENTS [prl->info.nSegment].AvgRad ();

@@ -95,7 +95,7 @@ class CDynLight {
 	public:
 		CDynLight ();
 		void Init (void);
-		int SeesPoint (CFixVector vNormal, CFixVector vPoint);
+		int SeesPoint (CFixVector* vNormal, CFixVector vPoint);
 		int SeesPoint (short nSegment, short nSide, CFixVector vPoint);
 		int Compare (CDynLight& other);
 		inline bool operator< (CDynLight& other)
