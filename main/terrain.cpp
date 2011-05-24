@@ -184,31 +184,31 @@ if (jViewer > jHigh)
 pLast.TransformAndEncode (gameData.render.terrain.vStartPoint);
 pLowSave = pLast;
 for (j = jLow; j <= jHigh; j++) {
-	G3AddDeltaVec (gameData.render.terrain.saveRow + j, &pLast, get_dy_vec (HEIGHT (iLow, j)));
+	gameData.render.terrain.saveRow [j].Add (pLast, *get_dy_vec (HEIGHT (iLow, j)));
 	if (j == jHigh)
 		pHighSave = pLast;
 	else
-		G3AddDeltaVec (&pLast, &pLast, &delta_j);
+		pLast.Add (pLast, delta_j);
 	}
 for (i = iLow; i < iViewer; i++) {
-	G3AddDeltaVec (&pLowSave, &pLowSave, &delta_i);
+	pLowSave.Add (pLowSave, delta_i);
 	pLast = pLowSave;
-	G3AddDeltaVec (&p2Last, &pLast, get_dy_vec (HEIGHT (i + 1, jLow)));
+	p2Last.Add (pLast, *get_dy_vec (HEIGHT (i + 1, jLow)));
 	for (j = jLow; j < jViewer; j++) {
-		G3AddDeltaVec (&p, &pLast, &delta_j);
-		G3AddDeltaVec (&p2, &p, get_dy_vec (HEIGHT (i + 1, j + 1)));
+		p.Add (pLast, delta_j);
+		p2.Add (p, *get_dy_vec (HEIGHT (i + 1, j + 1)));
 		DrawTerrainCell (i, j, gameData.render.terrain.saveRow + j, gameData.render.terrain.saveRow + j + 1, &p2, &p2Last);
 		pLast = p;
 		gameData.render.terrain.saveRow [j] = p2Last;
 		p2Last = p2;
 		}
 	delta_j = -delta_j;			//don't have a delta sub...
-	G3AddDeltaVec (&pHighSave, &pHighSave, &delta_i);
+	pHighSave.Add (pHighSave, delta_i);
 	pLast = pHighSave;
-	G3AddDeltaVec (&p2Last, &pLast, get_dy_vec (HEIGHT (i + 1, jHigh)));
+	p2Last.Add (pLast, *get_dy_vec (HEIGHT (i + 1, jHigh)));
 	for (j = jHigh - 1; j >= jViewer; j--) {
-		G3AddDeltaVec (&p, &pLast, &delta_j);
-		G3AddDeltaVec (&p2, &p, get_dy_vec (HEIGHT (i + 1, j)));
+		p.Add (pLast, delta_j);
+		p2.Add (p, *get_dy_vec (HEIGHT (i + 1, j)));
 		DrawTerrainCell (i, j, gameData.render.terrain.saveRow + j, gameData.render.terrain.saveRow + j + 1, &p2Last, &p2);
 		pLast = p;
 		gameData.render.terrain.saveRow [j + 1] = p2Last;
@@ -223,19 +223,19 @@ gameData.render.terrain.vStartPoint += mSurfaceOrient.m.dir.r * ((iHigh - iLow) 
 pLast.TransformAndEncode (gameData.render.terrain.vStartPoint);
 pLowSave = pLast;
 for (j = jLow; j <= jHigh; j++) {
-	G3AddDeltaVec (gameData.render.terrain.saveRow + j, &pLast, get_dy_vec (HEIGHT (iHigh, j)));
+	gameData.render.terrain.saveRow [j].Add (pLast, *get_dy_vec (HEIGHT (iHigh, j)));
 	if (j == jHigh)
 		pHighSave = pLast;
 	else
-		G3AddDeltaVec (&pLast, &pLast, &delta_j);
+		pLast.Add (pLast, delta_j);
 	}
 for (i = iHigh - 1; i >= iViewer; i--) {
-	G3AddDeltaVec (&pLowSave, &pLowSave, &delta_i);
+	pLowSave.Add (pLowSave, delta_i);
 	pLast = pLowSave;
-	G3AddDeltaVec (&p2Last, &pLast, get_dy_vec (HEIGHT (i, jLow)));
+	p2Last.Add (pLast, *get_dy_vec (HEIGHT (i, jLow)));
 	for (j = jLow; j < jViewer; j++) {
-		G3AddDeltaVec (&p, &pLast, &delta_j);
-		G3AddDeltaVec (&p2, &p, get_dy_vec (HEIGHT (i, j + 1)));
+		p.Add (pLast, delta_j);
+		p2.Add (p, *get_dy_vec (HEIGHT (i, j + 1)));
 		DrawTerrainCell (i, j, &p2Last, &p2,
 							  gameData.render.terrain.saveRow + j + 1,
 							  gameData.render.terrain.saveRow + j);
@@ -244,12 +244,12 @@ for (i = iHigh - 1; i >= iViewer; i--) {
 		p2Last = p2;
 		}
 	delta_j = -delta_j;			//don't have a delta sub...
-	G3AddDeltaVec (&pHighSave, &pHighSave, &delta_i);
+	pHighSave.Add (pHighSave, delta_i);
 	pLast = pHighSave;
-	G3AddDeltaVec (&p2Last, &pLast, get_dy_vec (HEIGHT (i, jHigh)));
+	p2Last.Add (pLast, *get_dy_vec (HEIGHT (i, jHigh)));
 	for (j = jHigh - 1; j >= jViewer; j--) {
-		G3AddDeltaVec (&p, &pLast, &delta_j);
-		G3AddDeltaVec (&p2, &p, get_dy_vec (HEIGHT (i, j)));
+		p.Add (pLast, delta_j);
+		p2.Add (p, *get_dy_vec (HEIGHT (i, j)));
 		DrawTerrainCell (i, j, &p2, &p2Last,
 							  gameData.render.terrain.saveRow + j + 1,
 							  gameData.render.terrain.saveRow + j);

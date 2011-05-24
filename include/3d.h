@@ -206,8 +206,6 @@ ubyte OglProjectPoint (CFloatVector3& v, tScreenPos& s, ubyte flags = 0, ubyte c
 //calculate the depth of a point - returns the z coord of the rotated point
 fix G3CalcPointDepth (const CFixVector& pnt);
 
-ubyte G3AddDeltaVec (CRenderPoint *dest, CRenderPoint *src, CFixVector *deltav);
-
 //Drawing functions:
 
 //draw a flat-shaded face.

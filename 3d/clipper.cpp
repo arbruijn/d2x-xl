@@ -20,19 +20,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "clipper.h"
 #include "error.h"
 
-int nFreePoints=0;
-
-CRenderPoint temp_points[MAX_POINTS_IN_POLY];
-CRenderPoint *free_points[MAX_POINTS_IN_POLY];
-
-void InitFreePoints(void)
-{
-	int i;
-
-for (i = 0; i < MAX_POINTS_IN_POLY; i++)
-	free_points [i] = temp_points + i;
-}
-
 
 CRenderPoint *get_temp_point()
 {

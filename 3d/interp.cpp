@@ -121,7 +121,7 @@ while (n--) {
 		}
 	else
 #endif
-		dest->Reset ();
+		dest->Normal ().Reset ();
 	if (ogl.m_states.bUseTransform) {
 		pfv->Assign (*src);
 		if (bScale)
