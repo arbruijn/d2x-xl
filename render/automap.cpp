@@ -192,27 +192,27 @@ if (m_bRadar && (objP->Index () != LOCALPLAYER.nObject))
 if (ogl.SizeVertexBuffer (3)) {
 	headPoint.SetIndex (-1);
 	arrowPoint.SetIndex (-1);
-	ogl.VertexBuffer () [1].Assign (spherePoint.Pos ());
+	ogl.VertexBuffer () [1].Assign (spherePoint.ViewPos ());
 	// Draw CPlayerData's up vector
 	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.u * (size*2);
 	arrowPoint.TransformAndEncode (vArrowPos);
-	ogl.VertexBuffer () [0].Assign (arrowPoint.Pos ());
+	ogl.VertexBuffer () [0].Assign (arrowPoint.ViewPos ());
 	// Draw shaft of arrow
 	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size * 3);
 	arrowPoint.TransformAndEncode (vArrowPos);
-	ogl.VertexBuffer () [2].Assign (arrowPoint.Pos ());
+	ogl.VertexBuffer () [2].Assign (arrowPoint.ViewPos ());
 	ogl.FlushBuffers (GL_LINE_STRIP, 3);
-	ogl.VertexBuffer () [1].Assign (arrowPoint.Pos ());
+	ogl.VertexBuffer () [1].Assign (arrowPoint.ViewPos ());
 	// Draw right head of arrow
 	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size*2);
 	vHeadPos += objP->info.position.mOrient.m.dir.r * (size*1);
 	headPoint.TransformAndEncode (vHeadPos);
-	ogl.VertexBuffer () [0].Assign (headPoint.Pos ());
+	ogl.VertexBuffer () [0].Assign (headPoint.ViewPos ());
 	// Draw left head of arrow
 	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size*2);
 	vHeadPos += objP->info.position.mOrient.m.dir.r * (size* (-1));
 	headPoint.TransformAndEncode (vHeadPos);
-	ogl.VertexBuffer () [2].Assign (headPoint.Pos ());
+	ogl.VertexBuffer () [2].Assign (headPoint.ViewPos ());
 	ogl.FlushBuffers (GL_LINE_STRIP, 3);
 	}
 }
@@ -1090,10 +1090,10 @@ else {
 		ogl.FlushBuffers (GL_LINES, m_nVerts, 3, 0, 1);
 		m_nVerts = 0;
 		}
-	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v0].Pos ());
+	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v0].ViewPos ());
 	ogl.ColorBuffer () [m_nVerts] = m_color;
 	m_nVerts++;
-	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v1].Pos ());
+	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v1].ViewPos ());
 	ogl.ColorBuffer () [m_nVerts] = m_color;
 	m_nVerts++;
 	}
@@ -1137,7 +1137,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 		}
 
 	cc = RotateVertexList (2, edgeP->verts);
-	distance = gameData.segs.points [edgeP->verts [1]].Pos ().v.coord.z;
+	distance = gameData.segs.points [edgeP->verts [1]].ViewPos ().v.coord.z;
 	if (minDistance > distance)
 		minDistance = distance;
 	if (!cc.ccAnd)  {	//all off screen?
@@ -1189,7 +1189,7 @@ while (incr > 0) {
 			v1 = m_brightEdges [j]->verts [0];
 			v2 = m_brightEdges [j + incr]->verts [0];
 
-			if (gameData.segs.points [v1].Pos ().v.coord.z < gameData.segs.points [v2].Pos ().v.coord.z) {
+			if (gameData.segs.points [v1].ViewPos ().v.coord.z < gameData.segs.points [v2].ViewPos ().v.coord.z) {
 				// If not in correct order, them swap 'em
 				Swap (m_brightEdges [j + incr], m_brightEdges [j]);
 				j -= incr;
@@ -1207,7 +1207,7 @@ for (i = 0; i < nbright; i++) {
 	edgeP = m_brightEdges [i];
 	p1 = gameData.segs.points + edgeP->verts [0];
 	p2 = gameData.segs.points + edgeP->verts [1];
-	fix xDist = p1->Pos ().v.coord.z - minDistance;
+	fix xDist = p1->ViewPos ().v.coord.z - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
 	if (xDist < 0)
 		xDist = 0;

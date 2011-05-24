@@ -122,8 +122,8 @@ int G3DrawLine (CRenderPoint *p0, CRenderPoint *p1)
 if (ogl.SizeVertexBuffer (2)) {
 	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
-	ogl.VertexBuffer () [0].Assign (p0->Pos ());
-	ogl.VertexBuffer () [1].Assign (p1->Pos ());
+	ogl.VertexBuffer () [0].Assign (p0->ViewPos ());
+	ogl.VertexBuffer () [1].Assign (p1->ViewPos ());
 	ogl.FlushBuffers (GL_LINES, 2, 3);
 	if (CCanvas::Current ()->Color ().rgb)
 		ogl.SetBlending (false);
@@ -215,7 +215,7 @@ int G3DrawSphere (CRenderPoint *pnt, fix rad, int bBigSphere)
 ogl.SetTexturing (false);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
-glTranslatef (X2F (pnt->Pos ().v.coord.x), X2F (pnt->Pos ().v.coord.y), X2F (pnt->Pos ().v.coord.z));
+glTranslatef (X2F (pnt->ViewPos ().v.coord.x), X2F (pnt->ViewPos ().v.coord.y), X2F (pnt->ViewPos ().v.coord.z));
 r = X2F (rad);
 glScaled (r, r, r);
 if (bBigSphere) {
@@ -254,9 +254,9 @@ int G3DrawSphere3D (CRenderPoint *p0, int nSides, int rad)
 if (ogl.SizeVertexBuffer (nSides + 1)) {
 	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
-	x = X2F (p.Pos ().v.coord.x);
-	y = X2F (p.Pos ().v.coord.y);
-	z = X2F (p.Pos ().v.coord.z);
+	x = X2F (p.ViewPos ().v.coord.x);
+	y = X2F (p.ViewPos ().v.coord.y);
+	z = X2F (p.ViewPos ().v.coord.z);
 	r = X2F (rad);
 	v.v.coord.z = z;
 	for (i = 0; i <= nSides; i++) {
@@ -285,9 +285,9 @@ int G3DrawCircle3D (CRenderPoint *p0, int nSides, int rad)
 if (ogl.SizeVertexBuffer (2 * (nSides + 1))) {
 	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
-	x = X2F (p.Pos ().v.coord.x);
-	y = X2F (p.Pos ().v.coord.y);
-	v.v.coord.z = X2F (p.Pos ().v.coord.z);
+	x = X2F (p.ViewPos ().v.coord.x);
+	y = X2F (p.ViewPos ().v.coord.y);
+	v.v.coord.z = X2F (p.ViewPos ().v.coord.z);
 	r = X2F (rad);
 	for (i = 0; i <= nSides; i++) {
 		for (j = i; j <= i + 1; j++) {
@@ -318,7 +318,7 @@ if (ogl.SizeVertexBuffer (nVertices)) {
 	for (i = 0; i < nVertices; i++) {
 		p = pointList [i];
 		if (p->Index () < 0)
-			ogl.VertexBuffer () [i].Assign ((*pointList)->Pos ());
+			ogl.VertexBuffer () [i].Assign ((*pointList)->ViewPos ());
 		else
 			ogl.VertexBuffer () [i] = gameData.render.vertP [p->Index ()];
 		}
@@ -344,7 +344,7 @@ if (ogl.SizeVertexBuffer (nVertices)) {
 	for (i = 0; i < nVertices; i++) {
 		p = pointList [i];
 		if (p->Index () < 0)
-			ogl.VertexBuffer () [i].Assign ((*pointList)->Pos ());
+			ogl.VertexBuffer () [i].Assign ((*pointList)->ViewPos ());
 		else
 			ogl.VertexBuffer () [i] = gameData.render.vertP [p->Index ()];
 		}
@@ -429,7 +429,7 @@ if (ogl.SizeVertexBuffer (nVertices)) {
 	for (i = 0; i < nVertices; i++) {
 		p = pointList [i];
 		if (p->Index () < 0)
-			ogl.VertexBuffer () [i].Assign ((*pointList)->Pos ());
+			ogl.VertexBuffer () [i].Assign ((*pointList)->ViewPos ());
 		else
 			ogl.VertexBuffer () [i] = gameData.render.vertP [p->Index ()];
 		}
@@ -442,13 +442,13 @@ return 0;
 
 #define	G3VERTPOS(_dest,_src) \
 			if ((_src)->Index () < 0) \
-				(_dest).Assign ((_src)->Pos ()); \
+				(_dest).Assign ((_src)->ViewPos ()); \
 			else \
 				_dest = gameData.render.vertP [(_src)->Index ()];
 
 #define	G3VERTPOS3(_dest,_src) \
 			if ((_src)->Index () < 0) \
-				(_dest).Assign ((_src)->Pos ()); \
+				(_dest).Assign ((_src)->ViewPos ()); \
 			else \
 				_dest = gameData.render.vertP [(_src)->Index ()];
 
@@ -605,7 +605,7 @@ if (bDepthSort) {
 		vertIndex [i] = pl->Index ();
 		//colorIndex [i] = i;
 		if (pl->Index () < 0)
-			vertices[i].Assign (pl->Pos ());
+			vertices[i].Assign (pl->ViewPos ());
 		else
 			vertices [i] = gameData.render.vertP [pl->Index ()];
 		texCoord [0][i].v.u = X2F (uvlList [i].u);
@@ -722,7 +722,7 @@ if (bOverlay) {
 	if (bDynLight) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 			CRenderPoint* pl = *ppl;
-			vVertPos.Assign (pl->Pos ());
+			vVertPos.Assign (pl->ViewPos ());
 			G3VertexColor (pl->GetNormal ()->XYZ (), vVertPos.XYZ (), pl->Index (), &faceColor, NULL, 1, 0, 0);
 			ogl.ColorBuffer () [i] = faceColor.color;
 			SetTexCoord (uvlList + i, orient, 0, ogl.TexCoordBuffer () + i, mask != NULL);

@@ -119,13 +119,13 @@ if (gameStates.render.bQueryOcclusion) {
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 ogl.SetDepthMode (GL_ALWAYS);
 CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
-center.Pos ().SetZero ();
+center.ViewPos ().SetZero ();
 for (int i = 0; i < nVertices; i++) {
 	G3DrawLine (pointList [i], pointList [(i + 1) % nVertices]);
-	center.Pos () += pointList [i]->Pos ();
+	center.ViewPos () += pointList [i]->ViewPos ();
 	n.Assign (*pointList [i]->GetNormal ());
 	transformation.Rotate (n, n, 0);
-	normal.Pos () = pointList [i]->Pos () + (n * (I2X (10)));
+	normal.ViewPos () = pointList [i]->ViewPos () + (n * (I2X (10)));
 	G3DrawLine (pointList [i], &normal);
 	}
 #if 0
@@ -604,7 +604,7 @@ if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount)
 #endif
 	p.TransformAndEncode (gameData.segs.vertices [i]);
 #if TRANSP_DEPTH_HASH
-	fix d = p.Pos ().Mag ();
+	fix d = p.ViewPos ().Mag ();
 	if (gameData.render.zMin > d)
 		gameData.render.zMin = d;
 	if (gameData.render.zMax < d)
@@ -614,7 +614,7 @@ if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount)
 		gameData.render.zMax = p->m_vertex [1].dir.coord.z;
 #endif
 	if (!ogl.m_states.bUseTransform) {
-		gameData.segs.fVertices [i].Assign (p.Pos ());
+		gameData.segs.fVertices [i].Assign (p.ViewPos ());
 		}
 	p.SetIndex (i);
 	gameData.render.mine.nRotatedLast [i] = gameStates.render.nFrameCount;
@@ -679,14 +679,14 @@ if (!point.Projected ())
 #else
 	point.Pos (0) = gameData.segs.vertices [nVertex];
 	transformation.Transform (v, *((CFloatVector3*) &gameData.segs.fVertices [nVertex]));
-	point.Pos ().Assign (v);
+	point.ViewPos ().Assign (v);
 #endif
 	point.SetCodes ((v.v.coord.z < 0.0f) ? CC_BEHIND : 0);
 	ProjectPoint (v, point.Screen ());
 #endif
 	point.Encode ();
 #if TRANSP_DEPTH_HASH
-	fix d = point.Pos ().Mag ();
+	fix d = point.ViewPos ().Mag ();
 	if (gameData.render.zMin > d)
 		gameData.render.zMin = d;
 	if (gameData.render.zMax < d)

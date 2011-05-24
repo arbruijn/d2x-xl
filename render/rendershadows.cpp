@@ -29,7 +29,7 @@ void RenderFaceShadow (tFaceProps *propsP)
 for (i = 0; i < nVertices; i++) {
 	p = gameData.segs.points + propsP->vp [i];
 	if (p->Index () < 0)
-		v [i].Assign (p->Pos ());
+		v [i].Assign (p->ViewPos ());
 	else
 		memcpy (v + i, gameData.render.vertP + p->Index (), sizeof (CFloatVector));
 	}

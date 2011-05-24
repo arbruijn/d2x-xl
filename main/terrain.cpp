@@ -49,10 +49,10 @@ void DrawTerrainCell (int i, int j, CRenderPoint *p0, CRenderPoint *p1, CRenderP
 {
 	CRenderPoint *pointList [3];
 
-p0->m_index =
-p1->m_index =
-p2->m_index =
-p3->m_index =  - 1;
+p0->SetIndex (-1);
+p1->SetIndex (-1);
+p2->SetIndex (-1);
+p3->SetIndex (-1);  
 pointList [0] = p0;
 pointList [1] = p1;
 pointList [2] = p3;

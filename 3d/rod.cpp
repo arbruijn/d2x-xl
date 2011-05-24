@@ -47,7 +47,7 @@ int CalcRodCorners (CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoin
 
 //compute vector from one point to other, do cross product with vector
 //from eye to get perpendicular
-vDelta = btmPoint->m_vertex [1] - topPoint->m_vertex [1];
+vDelta = btmPoint->ViewPos () - topPoint->ViewPos ();
 //unscale for aspect
 #if RESCALE_ROD
 vDelta.p.x = FixDiv (vDelta.p.x, transformation.m_info.scale.p.x);
@@ -57,7 +57,7 @@ vDelta.p.y = FixDiv (vDelta.p.y, transformation.m_info.scale.p.y);
 //do lots of normalizing to prevent overflowing.  When this code works,
 //it should be optimized
 CFixVector::Normalize (vDelta);
-vTop = topPoint->m_vertex [1];
+vTop = topPoint->ViewPos ();
 CFixVector::Normalize (vTop);
 vRodNorm = CFixVector::Cross (vDelta, vTop);
 CFixVector::Normalize (vRodNorm);
@@ -70,12 +70,12 @@ vRodNorm.p.y = FixMul (vRodNorm.p.y, transformation.m_info.scale.p.y);
 //vTop points
 vTemp = vRodNorm * xTopWidth;
 vTemp.v.coord.z = 0;
-rodPoints [0].m_vertex [1] = topPoint->m_vertex [1] + vTemp;
-rodPoints [1].m_vertex [1] = topPoint->m_vertex [1] - vTemp;
+rodPoints [0].Pos () = topPoint->ViewPos () + vTemp;
+rodPoints [1].Pos () = topPoint->ViewPos () - vTemp;
 vTemp = vRodNorm * xBtmWidth;
 vTemp.v.coord.z = 0;
-rodPoints [2].m_vertex [1] = btmPoint->m_vertex [1] - vTemp;
-rodPoints [3].m_vertex [1] = btmPoint->m_vertex [1] + vTemp;
+rodPoints [2].Pos () = btmPoint->ViewPos () - vTemp;
+rodPoints [3].Pos () = btmPoint->ViewPos () + vTemp;
 
 //now code the four points
 for (i = 0, andCodes = 0xff; i < 4; i++)
@@ -84,8 +84,8 @@ if (andCodes)
 	return 1;		//1 means off screen
 //clear flags for new points (not projected)
 for (i = 0; i < 4; i++) {
-	rodPoints [i].m_flags = 0;
-	rodPoints [i].m_index = -1;
+	rodPoints [i].SetFlags ();
+	rodPoints [i].SetIndex (-1);
 	}
 return 0;
 }
@@ -120,8 +120,8 @@ return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1, bAdditive, -1);
 //draw an CObject that is a texture-mapped rod
 void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame)
 {
-	CBitmap*		bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
-	CRenderPoint		pTop, pBottom;
+	CBitmap*			bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
+	CRenderPoint	pTop, pBottom;
 
 LoadTexture (bmi.index, 0);
 if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
@@ -131,9 +131,9 @@ if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
 CFixVector delta = objP->info.position.mOrient.m.dir.u * objP->info.xSize;
 CFixVector vTop = objP->info.position.vPos + delta;
 CFixVector vBottom = objP->info.position.vPos - delta;
-pTop->TransformAndEncode (vTop);
-pBottom->TransformAndEncode (vBottom);
-fix light = bLit ? ComputeObjectLight (objP, &pTop.m_vertex [1]) : I2X (1);
+pTop.TransformAndEncode (vTop);
+pBottom.TransformAndEncode (vBottom);
+fix light = bLit ? ComputeObjectLight (objP, &pTop.Pos ()) : I2X (1);
 if (!gameStates.render.bPerPixelLighting)
 	G3DrawRodTexPoly (bmP, &pBottom, objP->info.xSize, &pTop, objP->info.xSize, light, NULL, objP->info.nType == OBJ_FIREBALL);
 else {
@@ -144,7 +144,7 @@ else {
 	tTexCoord2f		texCoords [4]; // = {{0,0},{u,0},{u,v},{0,v}};
 
 	for (int i = 0; i < 4; i++) {
-		vertices [i].Assign (rodPoints [i].m_vertex [1]);
+		vertices [i].Assign (rodPoints [i].Pos ());
 		texCoords [i].v.u = X2F (rodUvlList [i].u);
 		texCoords [i].v.v = X2F (rodUvlList [i].v);
 		}

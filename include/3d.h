@@ -103,9 +103,11 @@ class CRenderPoint {
 		CRenderNormal	m_normal;
 
 	public:
-		CRenderPoint () : m_flags (0) {}
+		CRenderPoint () : m_flags (0), m_index (-1) {}
+
 		void Project (void);
-		void Add (CRenderPoint& other, CFixVector& vDelta);
+
+		ubyte Add (CRenderPoint& other, CFixVector& vDelta);
 
 		ubyte Encode (void);
 
@@ -144,7 +146,8 @@ class CRenderPoint {
 			return m_normal.nFaces ? m_normal.vNormal.XYZ () : vNormal->XYZ ();
 			}
 
-		inline CFixVector& Pos (int i = 1) { return m_vertex [i]; }
+		inline CFixVector& WorldPos () { return m_vertex [0]; }
+		inline CFixVector& ViewPos () { return m_vertex [1]; }
 
 	};
 

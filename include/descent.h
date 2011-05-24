@@ -3489,13 +3489,13 @@ static inline void OglVertex3f (CRenderPoint *p, CFloatVector* v = NULL)
 	int i = p->Index ();
 if (v) {
 	if (i < 0)
-		v->Assign (p->Pos ());
+		v->Assign (p->ViewPos ());
 	else
 		*v = gameData.render.vertP [i];
 	}
 else {
 	if (i < 0)
-		OglVertex3x (p->Pos ().v.coord.x, p->Pos ().v.coord.y, p->Pos ().v.coord.z);
+		OglVertex3x (p->ViewPos ().v.coord.x, p->ViewPos ().v.coord.y, p->ViewPos ().v.coord.z);
 	else
 		glVertex3fv (reinterpret_cast<GLfloat *> (gameData.render.vertP + i));
 	}

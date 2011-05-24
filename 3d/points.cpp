@@ -127,7 +127,7 @@ return ProjectPoint (h, s, flags);
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
 
-void CRenderPoint::Transform (int nVertex = -1) 
+void CRenderPoint::Transform (int nVertex) 
 {
 if (nVertex >= 0)
 	m_vertex [0] = VERTICES [nVertex];
@@ -162,11 +162,11 @@ return m_codes;
 
 // -----------------------------------------------------------------------------------
 
-ubyte CRenderPoint::Add (CRenderPoint *src, CFixVector *vDelta)
+ubyte CRenderPoint::Add (CRenderPoint& src, CFixVector& vDelta)
 {
-m_vertex [1] = src->m_vertex [1] + *vDelta;
+m_vertex [1] = src.Pos () + vDelta;
 m_flags = 0;		//not projected
-return G3Encode (dest);
+return Encode ();
 }
 
 // -----------------------------------------------------------------------------------

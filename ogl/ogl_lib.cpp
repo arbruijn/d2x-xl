@@ -197,15 +197,12 @@ if (pvNormal) {
 		glNormal3f ((GLfloat) X2F ((*pvNormal).v.coord.x),
 						(GLfloat) X2F ((*pvNormal).v.coord.y),
 						(GLfloat) X2F ((*pvNormal).v.coord.z));
-		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->Pos ());
 	else {
 		transformation.Rotate (vNormal, *pvNormal, 0);
 		glNormal3f ((GLfloat) X2F (vNormal.v.coord.x),
 						(GLfloat) X2F (vNormal.v.coord.y),
 						(GLfloat) X2F (vNormal.v.coord.z));
-		//VmVecInc (&vNormal, &pointList [0]->Pos ());
 		}
-//	glNormal3f ((GLfloat) X2F (vNormal.x), (GLfloat) X2F (vNormal.y), (GLfloat) X2F (vNormal.z));
 	}
 else
 #endif
@@ -216,7 +213,7 @@ else
 	v [1] = pointList [1]->Index ();
 	v [2] = pointList [2]->Index ();
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-		vNormal = CFixVector::Normal (pointList [0]->Pos (), pointList [1]->Pos (), pointList [2]->Pos ());
+		vNormal = CFixVector::Normal (pointList [0]->ViewPos (), pointList [1]->ViewPos (), pointList [2]->ViewPos ());
 		glNormal3f ((GLfloat) X2F (vNormal.v.coord.x), (GLfloat) X2F (vNormal.v.coord.y), (GLfloat) X2F (vNormal.v.coord.z));
 		}
 	else {
@@ -240,7 +237,7 @@ void G3CalcNormal (CRenderPoint **pointList, CFloatVector *pvNormal)
 	CFixVector	vNormal;
 
 if (gameStates.render.nState == 1)	// an object polymodel
-	vNormal = CFixVector::Normal (pointList [0]->Pos (), pointList [1]->Pos (), pointList [2]->Pos ());
+	vNormal = CFixVector::Normal (pointList [0]->ViewPos (), pointList [1]->ViewPos (), pointList [2]->ViewPos ());
 else {
 	short	v [4], vSorted [4];
 
@@ -248,7 +245,7 @@ else {
 	v [1] = pointList [1]->Index ();
 	v [2] = pointList [2]->Index ();
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-		vNormal = CFixVector::Normal (pointList [0]->Pos (), pointList [1]->Pos (), pointList [2]->Pos ());
+		vNormal = CFixVector::Normal (pointList [0]->ViewPos (), pointList [1]->ViewPos (), pointList [2]->ViewPos ());
 		}
 	else {
 		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted);

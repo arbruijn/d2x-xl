@@ -842,9 +842,9 @@ if (i < 0) {
 		return 0;
 #endif
 	if (pointList) {
-		vPos = pointList [0]->Pos (1);
-		vEnd = pointList [1 + RandShort () % (nVertices - 1)]->Pos (1);
-		vNorm = CFixVector::Normal (vPos, pointList [1]->Pos (1), vEnd);
+		vPos = pointList [0]->WorldPos ();
+		vEnd = pointList [1 + RandShort () % (nVertices - 1)]->WorldPos ();
+		vNorm = CFixVector::Normal (vPos, pointList [1]->WorldPos (), vEnd);
 		vPos += vNorm * (I2X (1) / 64);
 		vEnd += vNorm * (I2X (1) / 64);
 		vDelta = CFixVector::Normal (vNorm, vPos, vEnd);

@@ -822,12 +822,11 @@ for (i = 0; i < MAX_STARS; i++) {
 		CCanvas::Current ()->SetColorRGBi (RGB_PAL (intensity, intensity, intensity));
 		intensity-=3;
 		}
-	transformation.RotateScaled (p.m_vertex [1], stars [i]);
-	G3Encode (&p);
-	if (p.m_codes == 0) {
-		p.m_flags &= ~PF_PROJECTED;
-		G3ProjectPoint (&p);
-		DrawPixelClipped (p.m_screen.x, p.m_screen.y);
+	transformation.RotateScaled (p.Pos (), stars [i]);
+	p.Encode ();
+	if (p.Visible ()) {
+		p.Project ();
+		DrawPixelClipped (p.X (), p.Y ());
 		}
 	}
 }

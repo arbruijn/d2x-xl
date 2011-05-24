@@ -410,7 +410,7 @@ for (i = 0; i < 6; i++) {
 	CFixVector& c = m_centers [i];
 	CFixVector& n = m_normals [i];
 	for (j = 0; j < 4; j++) {
-		CFixVector v = points [j]->Pos () - c;
+		CFixVector v = points [j]->ViewPos () - c;
 		CFixVector::Normalize (v);
 		if (CFixVector::Dot (n, v) < 0) {
 			if (!--nPtInside)
@@ -443,7 +443,7 @@ for (j = 0; j < sideP->m_nFaces; j++)
 	transformation.Rotate (sideP->m_rotNorms [j], sideP->m_normals [j], 0);
 for (i = 11; i >= 4; i--) {
 	for (j = 0; j < sideP->m_nFaces; j++) {
-		if (!FindPlaneLineIntersection (intersection, &points [j]->Pos (), &sideP->m_rotNorms [j],
+		if (!FindPlaneLineIntersection (intersection, &points [j]->ViewPos (), &sideP->m_rotNorms [j],
 												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0, false))
 			continue;
 		if (!sideP->CheckPointToFace (intersection, j, sideP->m_rotNorms [j])) {
