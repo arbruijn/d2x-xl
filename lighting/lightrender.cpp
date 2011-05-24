@@ -513,12 +513,18 @@ if (gameStates.render.nLightingMethod) {
 #endif
 		if (nLightSeg < 0)
 			continue;
-		prl->info.bDiffuse [nThread] = !gameData.segs.LightVis (nLightSeg, nSegment);
+		prl->info.bDiffuse [nThread] = gameData.segs.LightVis (nLightSeg, nSegment);
 		if (!(bForce = (prl->info.nSegment == nSegment) && (prl->info.nSide == nSide))) {
 			prl->render.xDistance = (fix) ((xLightDist /*- F2X (prl->info.fRad)*/) / prl->info.fRange);
 			if (prl->render.xDistance > xMaxLightRange)
 				continue;
-			prl->info.bDiffuse [nThread] = prl->SeesPoint (nSegment, nSide, vLightToPixel / xLightDist);
+			if (prl->info.bDiffuse [nThread])
+				prl->info.bDiffuse [nThread] = prl->SeesPoint (nSegment, nSide, vLightToPixel / xLightDist);
+			if (!prl->info.bDiffuse [nThread]) {
+				prl->render.xDistance = PathLength (*vPixelPos, nSegment, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
+				if (prl->render.xDistance > 4 * xMaxLightRange / 3)
+					continue;
+				}
 			}
 		SetActive (activeLightsP, prl, 1, nThread, bForce);
 		}

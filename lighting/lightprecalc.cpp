@@ -165,7 +165,6 @@ int ComputeNearestVertexLights (int nVertex)
 {
 	CFixVector*				vertP;
 	CDynLight*				pl;
-	CSide*					sideP;
 	int						h, j, k, l, n, nMaxLights;
 	CFixVector				vLightToVert;
 	struct tLightDist*	pDists;
@@ -207,25 +206,17 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 			h = CFixVector::Normalize (vLightToVert) - (int) (pl->info.fRad * 6553.6f);
 			if (h > MAX_LIGHT_RANGE * pl->info.fRange)
 				continue;
-			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
-				sideP = SEGMENTS [pl->info.nSegment].m_sides + pl->info.nSide;
 #if 0
-#	if DBG
-				fix xDot = CFixVector::Dot (sideP->m_normals [0], vLightToVert);
-				if (xDot < -I2X (1) / 6) {
-					if (sideP->m_nType == SIDE_IS_QUAD) 
-						continue;
-					xDot = CFixVector::Dot (sideP->m_normals [1], vLightToVert);
-					if (xDot < -I2X (1) / 6)
+			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
+				CSide* sideP = SEGMENTS [pl->info.nSegment].m_sides + pl->info.nSide;
+				if ((CFixVector::Dot (sideP->m_normals [0], vLightToVert) < 0) &&
+					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals [1], vLightToVert) < 0))) {
+					h = PathLength (VERTICES [nVertex], -1, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
+					if (h > 4 * MAX_LIGHT_RANGE / 3 * pl->info.fRange)
 						continue;
 					}
-#	else
-				if ((CFixVector::Dot (sideP->m_normals [0], vLightToVert) < -I2X (1) / 6) &&
-					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals [1], vLightToVert) < -I2X (1) / 6)))
-					continue;
-#	endif
-#endif
 				}
+#endif
 			}
 		pDists [n].nDist = h;
 		pDists [n].nIndex = l;
@@ -418,7 +409,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		if (nSegment >= gameData.segs.nSegments)
 			continue;
 #endif
-#if 0
+#if 1
 #	if 0
 		if (bLights && !gameData.segs.SegVis (nStartSeg, nSegment))
 			continue;

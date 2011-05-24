@@ -327,6 +327,17 @@ fix PathLength (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg,
 	}
 #endif
 
+if (nStartSeg < 0) {
+	nStartSeg = FindSegByPos (p0, 0, 1, 0);
+	if (nStartSeg < 0)
+		return -1;
+	}
+if (nDestSeg < 0) {
+	nDestSeg = FindSegByPos (p0, 0, 1, 0);
+	if (nDestSeg < 0)
+		return -1;
+	}
+
 // same segment?
 if ((nCacheType >= 0) && (nStartSeg == nDestSeg)) {
 	fcdCaches [nCacheType].SetPathLength (0);
