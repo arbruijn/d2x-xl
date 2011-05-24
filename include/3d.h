@@ -244,6 +244,8 @@ int G3DrawRodPoly (CRenderPoint *bot_point,fix bot_width,CRenderPoint *top_point
 //returns 1 if off screen, 0 if drew
 int G3DrawRodTexPoly (CBitmap *bitmap,CRenderPoint *bot_point,fix bot_width,CRenderPoint *top_point,fix top_width,fix light, tUVL *uvlList, int bAdditive = 0);
 
+void InitFreePoints (void);
+
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults
 extern CRenderPoint *Vbuf0 [];

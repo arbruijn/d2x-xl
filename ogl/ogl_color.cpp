@@ -538,7 +538,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 	else {
 		vertColor = *gameData.render.vertColor.matAmbient.XYZ ();
-		if (NdotL > 0.1f)
+		if (!prl->info.bDiffuse [nThread])
+			NdotL = 0.0f;
+		else if (NdotL > 0.1f)
 			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
 		else if (NdotL >= 0.0f)
 			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * 0.1f);

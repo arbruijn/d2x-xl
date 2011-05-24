@@ -404,17 +404,6 @@ if (gameStates.render.nLightingMethod) {
 		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg))
 			prl = prl;
 #endif
-		nType = prl->info.nType;
-		if (nType == 3) {
-			if (bSkipHeadlight)
-				continue;
-			}
-		if (nType < 2) {	// all light emitting objects scanned
-			if (!bVariable)
-				break;
-			if (!(prl->info.bVariable && prl->info.bOn))
-				continue;
-			}
 		if (gameData.threads.vertColor.data.bNoShadow && prl->render.bShadow)
 			continue;
 #if DBG
@@ -423,29 +412,32 @@ if (gameStates.render.nLightingMethod) {
 		if ((prl->info.nSegment >= 0) && (prl->info.nSide < 0))
 			prl = prl;
 #endif
-		if (nType < 3) {
+		nType = prl->info.nType;
+		if (nType == 3) {
+			if (bSkipHeadlight)
+				continue;
+			}
+		else {
 			if (prl->info.bPowerup > gameData.render.nPowerupFilter)
 				continue;
+			if (nType < 2) {	// all light emitting objects scanned
+				if (!bVariable)
+					break;
+				if (!(prl->info.bVariable && prl->info.bOn))
+					continue;
+				}
 #if DBG
 			if (prl->info.nObject >= 0)
 				nDbgObj = nDbgObj;
 #endif
-			if ((nLightSeg = prl->info.nSegment) >= 0) {
-				if (!((prl->info.nSide >= 0) ? gameData.segs.LightVis (nLightSeg, nSegment) : gameData.segs.SegVis (nLightSeg, nSegment)))
-					continue;
-				}
-			else if ((prl->info.nObject >= 0) && ((nLightSeg = OBJECTS [prl->info.nObject].info.nSegment) >= 0)) {
-				if (!gameData.segs.SegVis (nLightSeg, nSegment))
-					continue;
-				}
+			if ((nLightSeg = prl->info.nSegment) >= 0) 
+				prl->info.bDiffuse [nThread] = (prl->info.nSide >= 0) ? gameData.segs.LightVis (nLightSeg, nSegment) : gameData.segs.SegVis (nLightSeg, nSegment);
+			else if ((prl->info.nObject >= 0) && ((nLightSeg = OBJECTS [prl->info.nObject].info.nSegment) >= 0))
+				prl->info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nSegment);
 			else
 				continue;
 			}
-#if DBG
-		else
-			prl = prl;
-#endif
-		prl->render.xDistance = (fix) ((CFixVector::Dist (c, prl->info.vPos) /*- F2X (prl->info.fRad)*/) / (prl->info.fRange * max (prl->info.fRad, 1.0f)));
+		prl->render.xDistance = (fix) ((float) CFixVector::Dist (c, prl->info.vPos) / (prl->info.fRange * max (prl->info.fRad, 1.0f)));
 		if (prl->render.xDistance > xMaxLightRange)
 			continue;
 #if DBG
@@ -527,7 +519,7 @@ if (gameStates.render.nLightingMethod) {
 		if ((nDbgSeg >= 0) && (nDbgSeg == nLightSeg))
 			nDbgSeg = nDbgSeg;
 #endif
-		if ((nLightSeg < 0) || !gameData.segs.LightVis (nLightSeg, nSegment))
+		if (nLightSeg < 0)
 			continue;
 		if (!(bForce = (prl->info.nSegment == nSegment) && (prl->info.nSide == nSide))) {
 			prl->render.xDistance = (fix) ((xLightDist /*- F2X (prl->info.fRad)*/) / prl->info.fRange);
@@ -545,6 +537,7 @@ if (gameStates.render.nLightingMethod) {
 #	endif
 #endif
 			}
+		prl->info.bDiffuse [nThread] = !gameData.segs.LightVis (nLightSeg, nSegment);
 		SetActive (activeLightsP, prl, 1, nThread, bForce);
 		}
 	}

@@ -387,17 +387,6 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 		CFixVector::Cross (uVec, fVec, rVec); // create uVec perpendicular to fVec and rVec
 		CFixVector::Cross (rVec, fVec, uVec); // adjust rVec to be perpendicular to fVec and uVec (eliminate rounding errors)
 		CFixVector::Cross (uVec, fVec, rVec); // adjust uVec to be perpendicular to fVec and rVec (eliminate rounding errors)
-#	if DBG
-		fix dot = CFixVector::Dot (rVec, fVec);
-		if ((dot < -1) || (dot > 1))
-			dot = 0;
-		dot = CFixVector::Dot (rVec, uVec);
-		if ((dot < -1) || (dot > 1))
-			dot = 0;
-		dot = CFixVector::Dot (fVec, uVec);
-		if ((dot < -1) || (dot > 1))
-			dot = 0;
-#	endif
 		viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
 #endif
 
@@ -523,7 +512,7 @@ for (i = endI - startI; i; i--, pl++)
 	if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
 		for (j = 1; j <= 5; j++)
 			ComputeSingleSegmentVisibility (pl->info.nSegment, pl->info.nSide, pl->info.nSide, j);
-#if 0
+#if 1
 		fix xLightRange = fix (MAX_LIGHT_RANGE * pl->info.fRange);
 		for (j = 0; j < gameData.segs.nSegments; j++)
 			CheckLightVisibility (pl->info.nSegment, pl->info.nSide, j, xLightRange);

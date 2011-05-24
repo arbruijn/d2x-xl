@@ -24,14 +24,12 @@ COPYRIGHT 1993-1998PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int nFreePoints=0;
 
-CRenderPoint temp_points[MAX_POINTS_IN_POLY];
-CRenderPoint *free_points[MAX_POINTS_IN_POLY];
+CRenderPoint temp_points [MAX_POINTS_IN_POLY];
+CRenderPoint *free_points [MAX_POINTS_IN_POLY];
 
-void InitFreePoints(void)
+void InitFreePoints (void)
 {
-	int i;
-
-for (i = 0; i < MAX_POINTS_IN_POLY; i++)
+for (int i = 0; i < MAX_POINTS_IN_POLY; i++)
 	free_points [i] = temp_points + i;
 }
 

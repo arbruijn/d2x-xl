@@ -75,6 +75,7 @@ class CDynLightInfo {
 		ubyte				bVariable;
 		ubyte				bPowerup;
 		ubyte				bAmbient;
+		ubyte				bDiffuse [MAX_THREADS];
 	public:
 		CDynLightInfo () { Init (); }
 		void Init (void) { memset (this, 0, sizeof (*this)); }

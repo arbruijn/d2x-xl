@@ -25,7 +25,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "3d.h"
 #include "globvars.h"
 #include "texmap.h"
-#include "clipper.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_render.h"
