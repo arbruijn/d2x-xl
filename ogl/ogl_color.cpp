@@ -651,7 +651,8 @@ else {
 extern int nDbgVertex;
 
 
-void G3VertexColor (CFloatVector3 *pvVertNorm, CFloatVector3 *pVertPos, int nVertex,
+void G3VertexColor (int nSegment, int nSide, int nVertex,
+						  CFloatVector3 *pvVertNorm, CFloatVector3 *pVertPos, 
 						  tFaceColor *pVertColor, tFaceColor *pBaseColor,
 						  float fScale, int bSetColor, int nThread)
 {
@@ -727,7 +728,7 @@ else {
 if ((bVertexLights = !(gameStates.render.nState || pVertColor))) {
 	vertPos.Assign (gameData.segs.vertices [nVertex]);
 	pVertPos = &vertPos;
-	lightManager.SetNearestToVertex (-1, nVertex, NULL, 1, 0, 1, nThread);
+	lightManager.SetNearestToVertex (nSegment, nSide, nVertex, NULL, 1, 0, 1, nThread);
 	}
 vcd.vertPosP = pVertPos;
 //VmVecNegate (&vertNorm);

@@ -317,7 +317,7 @@ else if (nState == 1) {
 	CFloatVector	vPos = gameData.segs.fVertices [nVertex],
 						vNormal = *gameData.segs.points [nVertex].GetNormal ();
 		
-	lightManager.SetNearestToVertex (-1, nVertex, NULL, 1, 0, 1, 0);
+	lightManager.SetNearestToVertex (-1, -1, nVertex, NULL, 1, 0, 1, 0);
 	if (!(h = lightManager.Index (0,0).nActive))
 		return 1;
 	if (h > GPGPU_LIGHT_BUF_SIZE)

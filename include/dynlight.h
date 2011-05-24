@@ -222,7 +222,7 @@ class CLightManager {
 		void AddGeometryLights (void);
 		void Transform (int bStatic, int bVariable);
 		ubyte VariableVertexLights (int nVertex);
-		void SetNearestToVertex (int nFace, int nVertex, CFixVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);
+		void SetNearestToVertex (int nSegment, int nSide, int nVertex, CFixVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);
 		int SetNearestToFace (CSegFace* faceP, int bTextured);
 		short SetNearestToSegment (int nSegment, int nFace, int bVariable, int nType, int nThread);
 		void SetNearestStatic (int nSegment, int bStatic, int nThread);

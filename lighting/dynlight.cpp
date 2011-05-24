@@ -697,9 +697,9 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	vVertex.Assign (gameData.segs.vertices [nVertex]);
 	lightManager.ResetActive (nThread, 0);
 	lightManager.ResetAllUsed (0, nThread);
-	lightManager.SetNearestToVertex (-1, nVertex, NULL, 1, 1, bColorize, nThread);
+	lightManager.SetNearestToVertex (-1, -1, nVertex, NULL, 1, 1, bColorize, nThread);
 	gameData.render.color.vertices [nVertex].index = 0;
-	G3VertexColor (gameData.segs.points [nVertex].GetNormal ()->XYZ (), vVertex.XYZ (), nVertex, pf, NULL, 1, 0, nThread);
+	G3VertexColor (-1, -1, nVertex, gameData.segs.points [nVertex].GetNormal ()->XYZ (), vVertex.XYZ (), pf, NULL, 1, 0, nThread);
 	}
 }
 

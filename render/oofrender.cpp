@@ -443,7 +443,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 				phv = pv + (h = pfv->m_nIndex);
 				if (bDynLighting) {
 					if (pvc [h].index != gameStates.render.nFrameFlipFlop + 1)
-						G3VertexColor (reinterpret_cast<CFloatVector3*> (pvn + h), reinterpret_cast<CFloatVector3*> (phv), -1, pvc + h, NULL, 1, 0, 0);
+						G3VertexColor (-1, -1, -1, reinterpret_cast<CFloatVector3*> (pvn + h), reinterpret_cast<CFloatVector3*> (phv), pvc + h, NULL, 1, 0, 0);
 					
 					vc.color.red = (float) sqrt (pvc [h].color.red);
 					vc.color.green = (float) sqrt (pvc [h].color.green);

@@ -38,7 +38,8 @@ tRgbaColorf GetCanvasColor (tCanvasColor* colorP);
 void OglColor4sf (float r, float g, float b, float s);
 void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, tRgbaColorf *colorP = NULL);
 int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcdP, int nThread);
-void G3VertexColor (CFloatVector3 *pvVertNorm, CFloatVector3 *pVertPos, int nVertex, 
+void G3VertexColor (int nSegment, int nSide, int nVertex, 
+						  CFloatVector3 *pvVertNorm, CFloatVector3 *pVertPos, 
 						  tFaceColor *pVertColor, tFaceColor *pBaseColor, 
 						  float fScale, int bSetColor, int nThread);
 void InitVertColorData (CVertColorData& vcd);

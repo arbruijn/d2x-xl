@@ -613,7 +613,7 @@ if (bDepthSort) {
 		SetTexCoord (uvlList + i, orient, 1, texCoord [1] + i, 0);
 		G3VERTPOS (vVertPos, pl);
 		if (bDynLight)
-			G3VertexColor (pl->GetNormal ()->XYZ (), vVertPos.XYZ (), vertIndex [i], vertColors + i, NULL,
+			G3VertexColor (-1, -1, vertIndex [i], pl->GetNormal ()->XYZ (), vVertPos.XYZ (), vertColors + i, NULL,
 								gameStates.render.nState ? X2F (uvlList [i].l) : 1, -1, 0);
 		else if (bLight)
 			SetTMapColor (uvlList + i, i, bmBot, !bOverlay, &vertColors [i].color);
@@ -634,7 +634,7 @@ if (bDynLight) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 			pl = *ppl;
 			G3VERTPOS (vVertPos, pl);
-			G3VertexColor (pl->GetNormal ()->XYZ (), vVertPos.XYZ (), pl->Index (), &faceColor, NULL, 1, 0, 0);
+			G3VertexColor (-1, -1, pl->Index (), pl->GetNormal ()->XYZ (), vVertPos.XYZ (), &faceColor, NULL, 1, 0, 0);
 			ogl.ColorBuffer () [i] = faceColor.color;
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
@@ -646,7 +646,7 @@ if (bDynLight) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 			pl = *ppl;
 			G3VERTPOS (vVertPos, pl);
-			G3VertexColor (pl->GetNormal ()->XYZ (), vVertPos.XYZ (), pl->Index (), &faceColor, NULL,
+			G3VertexColor (-1, -1, pl->Index (), pl->GetNormal ()->XYZ (), vVertPos.XYZ (), &faceColor, NULL,
 								gameStates.render.nState ? X2F (uvlList [i].l) : 1, 0, 0);
 			ogl.ColorBuffer () [i] = faceColor.color;
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
@@ -723,7 +723,7 @@ if (bOverlay) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 			CRenderPoint* pl = *ppl;
 			vVertPos.Assign (pl->ViewPos ());
-			G3VertexColor (pl->GetNormal ()->XYZ (), vVertPos.XYZ (), pl->Index (), &faceColor, NULL, 1, 0, 0);
+			G3VertexColor (-1, -1, pl->Index (), pl->GetNormal ()->XYZ (), vVertPos.XYZ (), &faceColor, NULL, 1, 0, 0);
 			ogl.ColorBuffer () [i] = faceColor.color;
 			SetTexCoord (uvlList + i, orient, 0, ogl.TexCoordBuffer () + i, mask != NULL);
 			OglVertex3f (*ppl, ogl.VertexBuffer () + i);
@@ -957,7 +957,7 @@ if (ogl.SizeBuffers (nVertices)) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 			pl = *ppl;
 			G3VERTPOS (vVertPos, pl);
-			G3VertexColor (pl->GetNormal ()->XYZ (), vVertPos.XYZ (), pl->Index (), NULL, &faceColor, 1, 0, 0);
+			G3VertexColor (-1, -1, pl->Index (), pl->GetNormal ()->XYZ (), vVertPos.XYZ (), NULL, &faceColor, 1, 0, 0);
 			ogl.ColorBuffer () [i] = faceColor.color;
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);

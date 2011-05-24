@@ -211,7 +211,7 @@ return h;
 
 //------------------------------------------------------------------------------
 
-void CLightManager::SetNearestToVertex (int nFace, int nVertex, CFixVector *vNormal, ubyte nType, int bStatic, int bVariable, int nThread)
+void CLightManager::SetNearestToVertex (int nSegment, int nSide, int nVertex, CFixVector *vNormal, ubyte nType, int bStatic, int bVariable, int nThread)
 {
 if (bStatic || m_data.variableVertLights [nVertex]) {
 	PROF_START
@@ -259,8 +259,10 @@ if (nVertex == nDbgVertex)
 			}
 		vLightToVertex = vVertex - prl->info.vPos;
 		xLightDist = vLightToVertex.Mag ();
-		prl->info.bDiffuse [nThread] = prl->SeesPoint (vNormal, vLightToVertex / xLightDist);
-		prl->render.xDistance = (fix) (xLightDist / prl->info.fRange);
+		if ((prl->info.bDiffuse [nThread] = prl->SeesPoint (vNormal, vLightToVertex / xLightDist)) || (nSegment < 0))
+			prl->render.xDistance = (fix) (xLightDist / prl->info.fRange);
+		else if (nSegment >= 0)
+			prl->render.xDistance = PathLength (vVertex, nSegment, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
 		if (prl->info.nSegment >= 0)
 			prl->render.xDistance -= SEGMENTS [prl->info.nSegment].AvgRad ();
 		if (prl->render.xDistance > xMaxLightRange)
@@ -268,10 +270,6 @@ if (nVertex == nDbgVertex)
 		if (SetActive (activeLightsP, prl, 2, nThread)) {
 			prl->render.nType = nType;
 			//prl->render.bState = 1;
-#if DBG
-			prl->render.nTarget = nFace + 1;
-			prl->render.nFrame = gameData.app.nFrameCount;
-#endif
 			}
 		}
 	PROF_END(ptVertexLighting)
@@ -313,7 +311,7 @@ lightManager.SetNearestToSegment (faceP->m_info.nSegment, faceP - FACES, 0, 0, 0
 vNormal = sideP->m_normals [2];
 #if 1
 for (i = 0; i < 4; i++)
-	lightManager.SetNearestToVertex (faceP - FACES.faces, faceP->m_info.index [i], &vNormal, 0, 0, 1, 0);
+	lightManager.SetNearestToVertex (-1, -1, faceP->m_info.index [i], &vNormal, 0, 0, 1, 0);
 #endif
 PROF_END(ptPerPixelLighting)
 return m_data.index [0][0].nActive;
@@ -546,7 +544,7 @@ if (nSegment == nDbgSeg)
 lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 #if 1
 for (i = 0; i < 8; i++)
-	lightManager.SetNearestToVertex (-1, segP->m_verts [i], NULL, 0, 1, 1, 0);
+	lightManager.SetNearestToVertex (-1, -1, segP->m_verts [i], NULL, 0, 1, 1, 0);
 #endif
 return m_data.index [0][0].nActive;
 }
