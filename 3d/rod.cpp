@@ -70,12 +70,12 @@ vRodNorm.p.y = FixMul (vRodNorm.p.y, transformation.m_info.scale.p.y);
 //vTop points
 vTemp = vRodNorm * xTopWidth;
 vTemp.v.coord.z = 0;
-rodPoints [0].Pos () = topPoint->ViewPos () + vTemp;
-rodPoints [1].Pos () = topPoint->ViewPos () - vTemp;
+rodPoints [0].ViewPos () = topPoint->ViewPos () + vTemp;
+rodPoints [1].ViewPos () = topPoint->ViewPos () - vTemp;
 vTemp = vRodNorm * xBtmWidth;
 vTemp.v.coord.z = 0;
-rodPoints [2].Pos () = btmPoint->ViewPos () - vTemp;
-rodPoints [3].Pos () = btmPoint->ViewPos () + vTemp;
+rodPoints [2].ViewPos () = btmPoint->ViewPos () - vTemp;
+rodPoints [3].ViewPos () = btmPoint->ViewPos () + vTemp;
 
 //now code the four points
 for (i = 0, andCodes = 0xff; i < 4; i++)
@@ -133,7 +133,7 @@ CFixVector vTop = objP->info.position.vPos + delta;
 CFixVector vBottom = objP->info.position.vPos - delta;
 pTop.TransformAndEncode (vTop);
 pBottom.TransformAndEncode (vBottom);
-fix light = bLit ? ComputeObjectLight (objP, &pTop.Pos ()) : I2X (1);
+fix light = bLit ? ComputeObjectLight (objP, &pTop.ViewPos ()) : I2X (1);
 if (!gameStates.render.bPerPixelLighting)
 	G3DrawRodTexPoly (bmP, &pBottom, objP->info.xSize, &pTop, objP->info.xSize, light, NULL, objP->info.nType == OBJ_FIREBALL);
 else {
@@ -144,7 +144,7 @@ else {
 	tTexCoord2f		texCoords [4]; // = {{0,0},{u,0},{u,v},{0,v}};
 
 	for (int i = 0; i < 4; i++) {
-		vertices [i].Assign (rodPoints [i].Pos ());
+		vertices [i].Assign (rodPoints [i].ViewPos ());
 		texCoords [i].v.u = X2F (rodUvlList [i].u);
 		texCoords [i].v.v = X2F (rodUvlList [i].v);
 		}

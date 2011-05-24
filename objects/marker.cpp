@@ -121,7 +121,7 @@ if (ogl.SizeVertexBuffer (nPoints [nMarker])) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 15, 0));
 	basePoint.TransformAndEncode (GetObject (-1, nMarker)->info.position.vPos);
 	glPushMatrix ();
-	glTranslatef (X2F (basePoint.Pos ().v.coord.x), X2F (basePoint.Pos ().v.coord.y), X2F (basePoint.Pos ().v.coord.z));
+	glTranslatef (X2F (basePoint.ViewPos ().v.coord.x), X2F (basePoint.ViewPos ().v.coord.y), X2F (basePoint.ViewPos ().v.coord.z));
 	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
 	px = xCoord [nMarker];

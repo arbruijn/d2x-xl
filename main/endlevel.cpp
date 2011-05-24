@@ -822,7 +822,7 @@ for (i = 0; i < MAX_STARS; i++) {
 		CCanvas::Current ()->SetColorRGBi (RGB_PAL (intensity, intensity, intensity));
 		intensity-=3;
 		}
-	transformation.RotateScaled (p.Pos (), stars [i]);
+	transformation.RotateScaled (p.ViewPos (), stars [i]);
 	p.Encode ();
 	if (p.Visible ()) {
 		p.Project ();

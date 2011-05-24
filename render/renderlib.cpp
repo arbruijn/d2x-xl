@@ -677,7 +677,7 @@ if (!point.Projected ())
 	transformation.Transform (point.m_vertex [1], point.m_vertex [0] = gameData.segs.vertices [nVertex]);
 	v.Assign (point.m_vertex [1]);
 #else
-	point.Pos (0) = gameData.segs.vertices [nVertex];
+	point.WorldPos () = gameData.segs.vertices [nVertex];
 	transformation.Transform (v, *((CFloatVector3*) &gameData.segs.fVertices [nVertex]));
 	point.ViewPos ().Assign (v);
 #endif

@@ -164,7 +164,7 @@ return m_codes;
 
 ubyte CRenderPoint::Add (CRenderPoint& src, CFixVector& vDelta)
 {
-m_vertex [1] = src.Pos () + vDelta;
+ViewPos () = src.ViewPos () + vDelta;
 m_flags = 0;		//not projected
 return Encode ();
 }
