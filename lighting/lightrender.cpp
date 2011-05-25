@@ -261,7 +261,7 @@ if (nVertex == nDbgVertex)
 			}
 		vLightToVertex = vVertex - prl->info.vPos;
 		xLightDist = vLightToVertex.Mag ();
-		if ((prl->info.bDiffuse [nThread] = prl->SeesPoint (vNormal, vLightToVertex / xLightDist)) || (nSegment < 0))
+		if ((prl->info.bDiffuse [nThread] = gameData.segs.LightVis (prl->info.nSegment, nSegment) && prl->SeesPoint (vNormal, vLightToVertex / xLightDist)) || (nSegment < 0))
 			prl->render.xDistance = fix (xLightDist / prl->info.fRange);
 		else if (nSegment >= 0) {
 #if FASTROUTE
@@ -280,7 +280,6 @@ if (nVertex == nDbgVertex)
 #endif
 			if (prl->render.xDistance < 0)
 				continue;
-			prl->render.xDistance = 3 * prl->render.xDistance / 4;
 			}
 		if (prl->info.nSegment >= 0)
 			prl->render.xDistance -= SEGMENTS [prl->info.nSegment].AvgRad ();
