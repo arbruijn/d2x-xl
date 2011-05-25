@@ -242,6 +242,7 @@ m_nDestSeg = nDestSeg;
 m_p0 = p0;
 m_p1 = p1;
 
+#if !DBG
 if (m_nDestSeg >= 0) {
 	// same segment?
 	m_cacheType = nCacheType;
@@ -265,6 +266,7 @@ if (m_nDestSeg >= 0) {
 		}
 	#endif
 	}
+#endif
 
 m_maxDepth = nMaxDepth;
 m_widFlag = nWidFlag;
