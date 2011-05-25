@@ -531,9 +531,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		fAttenuation /= prl->info.fBrightness;
 		}
 
-	if (!bDiffuse) 
-		vertColor = *gameData.render.vertColor.matDiffuse.XYZ ();
-	else {
+	vertColor = *gameData.render.vertColor.matAmbient.XYZ ();
+	if (bDiffuse) {
 		if (prl->info.bSpot) {
 			if (NdotL <= 0.0f)
 				continue;
@@ -546,10 +545,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			if (prl->info.fSpotExponent)
 				spotEffect = (float) pow (spotEffect, prl->info.fSpotExponent);
 			fAttenuation /= spotEffect * ogl.m_states.fLightRange;
-			vertColor = *gameData.render.vertColor.matAmbient.XYZ () + (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
+			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
 			}
 		else {
-			vertColor = *gameData.render.vertColor.matAmbient.XYZ ();
 			if (NdotL > 0.1f)
 				vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
 			else if (NdotL >= 0.0f)
