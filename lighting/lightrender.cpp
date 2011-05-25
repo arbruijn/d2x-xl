@@ -458,8 +458,8 @@ if (gameStates.render.nLightingMethod) {
 		if (prl->render.xDistance > xMaxLightRange)
 			continue;
 		if (prl->info.bDiffuse [nThread]) {
-			CFixVector* vPos = &SEGMENTS [nSegment].Center ();
-			prl->info.bDiffuse [nThread] = prl->SeesPoint (vPos, NULL);
+			CFixVector& vPos = SEGMENTS [nSegment].Center ();
+			prl->info.bDiffuse [nThread] = prl->SeesPoint (&vPos, NULL);
 			if (!prl->info.bDiffuse [nThread]) {
 				prl->render.xDistance = LightPathLength (prl, nSegment, vPos);
 				if (prl->render.xDistance > xMaxLightRange)
@@ -557,7 +557,7 @@ if (gameStates.render.nLightingMethod) {
 				prl->info.bDiffuse [nThread] = prl->SeesPoint (nSegment, nSide, &vLightToPixel);
 				}
 			if (!prl->info.bDiffuse [nThread]) {
-				prl->render.xDistance = LightPathLength (prl->info.vPos, nSegment, *vPixelPos);
+				prl->render.xDistance = LightPathLength (prl, nSegment, *vPixelPos);
 				if ((prl->render.xDistance < 0) || (prl->render.xDistance > xMaxLightRange))
 					continue;
 				}
