@@ -64,11 +64,19 @@ static int loadOp = 0;
 
 void ComputeSingleSegmentDistance (int nSegment)
 {
+#if DBG
+if (nSegment == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
 dacsRouter [0].Create (gameData.segs.nSegments);
 dacsRouter [0].PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, 0x7FFFFFFF, WID_RENDPAST_FLAG | WID_FLY_FLAG, -1);
 for (int i = 0; i < gameData.segs.nSegments; i++)
 #if DBG
 	{	
+#if DBG
+	if (i == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
 	fix xDist = dacsRouter [0].Distance (i);
 	if (!xDist && (i != nSegment))
 		dacsRouter [0].Distance (i);

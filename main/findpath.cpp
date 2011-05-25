@@ -359,7 +359,8 @@ return xDist;
 fix CSimpleBiDirRouter::FindPath (void)
 {
 if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
-	return -1;
+	return 0x7FFFFFFF;
+
 m_scanInfo.Setup (m_heap, m_widFlag, m_maxDepth);
 m_heap [0].Setup (m_nStartSeg, m_nDestSeg, 0, m_scanInfo.m_bFlag);
 m_heap [1].Setup (m_nDestSeg, m_nStartSeg, 1, m_scanInfo.m_bFlag);
@@ -396,6 +397,7 @@ else
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
+
 bool CDACSUniDirRouter::Create (int nNodes) 
 { 
 if ((m_nNodes != nNodes) && !m_heap.Create (nNodes))
@@ -409,7 +411,7 @@ return true;
 fix CDACSUniDirRouter::BuildPath (short nSegment)
 {
 if (m_heap.Cost (nSegment) == 0xFFFF)
-	return -1;
+	return 0x7FFFFFFF;
 
 	int j = m_heap.BuildRoute (nSegment);
 
