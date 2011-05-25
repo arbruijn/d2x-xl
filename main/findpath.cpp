@@ -187,14 +187,10 @@ return (nSegment == m_scanData.m_nDestSeg)
 }
 
 //	-----------------------------------------------------------------------------
-
-//	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
 //static SDL_mutex* semaphore = NULL;
-
-//	-----------------------------------------------------------------------------
 
 #if MULTITHREADED_SCAN
 
@@ -258,10 +254,11 @@ if (m_cacheType >= 0) {
 
 fix distance = Scan ();
 
-
-if (m_cacheType >= 0) 
+if ((distance < 0) && (m_cacheType >= 0))
 	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, 10000, I2X (10000));
 
+return distance;
+}
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -286,7 +283,22 @@ return nSegment;
 
 // -----------------------------------------------------------------------------
 
-fix CDACSBiDirRouter::BuildRoute (void)
+fix CDACSBiDirRouter::BuildPath (short nSegment)
+{
+	int j = -2;
+
+if (m_nSegments [0] >= 0)
+	j += m_heap [0].BuildRoute (nSegment, 0, route) - 1;
+if (m_nSegments [1] >= 0)
+	j += m_heap [1].BuildRoute (nSegment, 1, route + gameData.fcd.nConnSegDist);
+fix xDist = 0;
+for (int i = 1; i < j; i++)
+	xDist += CFixVector::Dist (SEGMENTS [m_route [i]].Center (), SEGMENTS [m_route [i + 1]].Center ());
+xDist += CFixVector::Dist (m_p0, SEGMENTS [m_route [1]].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [m_route [j]].Center ());
+if (m_cacheType >= 0) 
+	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, j + 2, xDist);
+return xDist;
+}
 
 // -----------------------------------------------------------------------------
 
@@ -297,10 +309,8 @@ fix CDACSBiDirRouter::FindPath (void)
 	short	nExpanded = 0;
 #endif
 
-	short	nSegments [2] = {m_nStartSeg, m_nDestSeg};
-
-m_heap [0].Setup (m_segments [0], m_nStartSeg);
-m_heap [1].Setup (m_nDestSeg);
+m_heap [0].Setup (m_nSegments [0] = m_nStartSeg);
+m_heap [1].Setup (m_nSegments [1] = m_nDestSeg);
 
 for (;;) {
 	if (nSegments [0] >= 0) {
@@ -330,21 +340,27 @@ for (;;) {
 		nSegment = nSegments [0];
 	else
 		continue;
-	int j = -2;
-	if (nSegments [0] >= 0)
-		j += m_heap [0].BuildRoute (nSegment, 0, route) - 1;
-	if (nSegments [1] >= 0)
-		j += m_heap [1].BuildRoute (nSegment, 1, route + gameData.fcd.nConnSegDist);
-	xDist = 0;
-	for (int i = 1; i < j; i++)
-		xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
-	xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [j]].Center ());
-	return xDist;
+	return BuildPath (nSegment);
 	}
 }
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+fix CDACSUniDirRouter::BuildPath (short nSegment)
+{
+int j = m_heap.BuildRoute (nSegment) - 2;
+short* route = m_heap.Route ();
+fix xDist = 0;
+for (int i = 1; i < j; i++)
+	xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
+xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [j]].Center ());
+if (m_cacheType >= 0) 
+	m_cache [m_cacheType].Add (m_scanData [0].m_nStartSeg, m_scanData [0].m_nDestSeg, j + 2, xDist);
+return xDist;
+}
+
 // -----------------------------------------------------------------------------
 
 fix CDACSUniDirRouter::FindPath (void)
@@ -360,15 +376,8 @@ for (;;) {
 	nSegment = m_heap.Pop (nDist);
 	if (nSegment < 0)
 		return -1;
-	if (nSegment == m_nDestSeg) {
-		int j = m_heap.BuildRoute (m_nDestSeg) - 2;
-		short* route = m_heap.Route ();
-		xDist = 0;
-		for (int i = 1; i < j; i++)
-			xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
-		xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [j]].Center ());
-		return xDist;
-		}
+	if (nSegment == m_nDestSeg)
+		return BuildPath (nSegment);
 #if DBG
 	nExpanded++;
 #endif
@@ -499,7 +508,7 @@ else
 // -----------------------------------------------------------------------------
 // uni-directional scanner
 
-fix CSimpleUniDirRouter::BuildPathUniDir (CFixVector& m_p0, CFixVector& m_p1, int nCacheType)
+fix CSimpleUniDirRouter::BuildPath (void)
 {
 	fix	xDist;
 	int	nLength = 0; 
@@ -523,16 +532,15 @@ return xDist;
 
 // -----------------------------------------------------------------------------
 
-fix CSimpleUniDirRouter::Distance (CFixVector& m_p0, short m_nStartSeg, CFixVector& m_p1, short m_nDestSeg, int m_maxDepth, int m_widFlag, int nCacheType)
+fix CSimpleUniDirRouter::FindPath (void)
 {
 m_scanInfo.m_maxDepth = m_maxDepth;
 
 for (;;) {
 	if (0 > (m_scanInfo.nLinkSeg = ExpandSegment (nDir)))
 		return -1;
-	if (m_scanInfo.nLinkSeg > 0)
-		// destination segment reached
-		return BuildPathUniDir (m_p0, m_p1, m_cacheType);
+	if (m_scanInfo.nLinkSeg > 0) // destination segment reached
+		return BuildPath (m_p0, m_p1, m_cacheType);
 	}	
 }
 

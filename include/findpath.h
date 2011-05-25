@@ -170,6 +170,9 @@ class CDACSUniDirRouter : public CDACSRouter {
 	private:
 		CDialHeap	m_heap [2];
 
+	private:
+		fix BuildPath (short nSegment);
+
 	protected:
 		virtual fix FindPath (void);
 };
@@ -180,10 +183,11 @@ class CDACSBiDirRouter : public CDACSRouter {
 	private:
 		CDialHeap	m_heap [2];
 		short			m_route [2 * MAX_SEGMENTS_D2X];
-		short			m_segments [2];
+		short			m_nSegments [2];
 
 	private:
 		int Expand (int nDir);
+		fix BuildPath (short nSegment);
 
 	protected:
 		virtual fix FindPath (void);
