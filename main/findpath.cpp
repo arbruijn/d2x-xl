@@ -430,7 +430,7 @@ for (;;) {
 	segP = SEGMENTS + nSegment;
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag))
-			m_heap.Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [1][nSide]);
+			m_heap.Push (segP->m_children [nSide], nSegment, nDist + (ushort) segP->m_childDists [1][nSide]);
 		}
 	}
 }
@@ -451,7 +451,7 @@ if (m_heap [!nDir].Popped (nSegment))
 CSegment* segP = SEGMENTS + nSegment;
 for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag))
-		m_heap [nDir].Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [1][nSide]);
+		m_heap [nDir].Push (segP->m_children [nSide], nSegment, nDist + (ushort) segP->m_childDists [1][nSide]);
 	}
 return nSegment;
 }
