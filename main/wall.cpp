@@ -22,8 +22,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "descent.h"
 #include "error.h"
-#include "segmath.h"
 #include "findpath.h"
+#include "segmath.h"
 #include "cockpit.h"
 #include "text.h"
 #include "fireball.h"
@@ -55,8 +55,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //#define BM_FLAG_SUPER_TRANSPARENT	2
 
 //------------------------------------------------------------------------------
-
-void FlushFCDCache (void);
 
 // Opens a door, including animation and other processing.
 bool DoDoorOpen (int nDoor);
@@ -915,7 +913,7 @@ for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++)
 		nStuckObjects++;
 	}
 //	Ok, this is awful, but we need to do things whenever a door opens/closes/disappears, etc.
-FlushFCDCache();
+simpleRouter.Flush ();
 }
 
 // -----------------------------------------------------------------------------------
