@@ -394,7 +394,6 @@ else
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
-
 bool CDACSUniDirRouter::Create (int nNodes) 
 { 
 if ((m_nNodes != nNodes) && !m_heap.Create (nNodes))
@@ -407,7 +406,10 @@ return true;
 
 fix CDACSUniDirRouter::BuildPath (short nSegment)
 {
-int j = m_heap.BuildRoute (nSegment) - 2;
+	int j = m_heap.BuildRoute (nSegment);
+
+if (m_nDestSeg >= 0)
+	j -= 2;
 CDialHeap::tPathNode* route = m_heap.Route ();
 fix xDist = 0;
 for (int i = 1; i < j; i++)
