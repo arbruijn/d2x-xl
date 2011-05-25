@@ -385,6 +385,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform,
 							nSaturation = gameOpts->render.color.nSaturation;
 	int					nBrightness, nMaxBrightness = 0;
+	int					bDiffuse;
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
 	CFloatVector3		spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3		lightColor, colorSum, vertColor = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
@@ -459,8 +460,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (IsLightVert (nVertex, prl)) {
 		fLightDist = 0.0f;
 		NdotL = 1.0f;
+		bDiffuse = 1;
 		}
-	else {
+	else if (bDiffuse = prl->info.bDiffuse [nThread]) {
 		fLightDist = lightDir.Mag () * ogl.m_states.fLightRange;
 		if (lightDir.IsZero ())
 			lightDir = vcd.vertNorm;
@@ -475,7 +477,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			}
 		}
 
-	if (nType < 2) {
+	if (bDiffuse)
+		fLightDist = X2F (prl->render.xDistance [nThread]) * ogl.m_states.fLightRange;
+	else if (nType < 2) {
 		DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide));
 		CFloatVector3 dir = lightPos - *vcd.vertPosP;
 		fLightDist = dir.Mag () * ogl.m_states.fLightRange;
@@ -522,33 +526,36 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 		fAttenuation /= prl->info.fBrightness;
 		}
-	if (prl->info.bSpot) {
-		if (NdotL <= 0.0f)
-			continue;
-		CFloatVector3::Normalize (spotDir);
-		lightDir = -lightDir;
-		spotEffect = CFloatVector3::Dot (spotDir, lightDir);
 
-		if (spotEffect <= prl->info.fSpotAngle)
-			continue;
-		if (prl->info.fSpotExponent)
-			spotEffect = (float) pow (spotEffect, prl->info.fSpotExponent);
-		fAttenuation /= spotEffect * ogl.m_states.fLightRange;
-		vertColor = *gameData.render.vertColor.matAmbient.XYZ () + (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
-		}
+	if (!bDiffuse) 
+		vertColor = *gameData.render.vertColor.matDiffuse.XYZ ();
 	else {
-		vertColor = *gameData.render.vertColor.matAmbient.XYZ ();
-		if (!prl->info.bDiffuse [nThread])
-			NdotL = 0.0f;
-		else if (NdotL > 0.1f)
-			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
-		else if (NdotL >= 0.0f)
-			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * 0.1f);
-		else
-			NdotL = 0.0f;
+		if (prl->info.bSpot) {
+			if (NdotL <= 0.0f)
+				continue;
+			CFloatVector3::Normalize (spotDir);
+			lightDir = -lightDir;
+			spotEffect = CFloatVector3::Dot (spotDir, lightDir);
+
+			if (spotEffect <= prl->info.fSpotAngle)
+				continue;
+			if (prl->info.fSpotExponent)
+				spotEffect = (float) pow (spotEffect, prl->info.fSpotExponent);
+			fAttenuation /= spotEffect * ogl.m_states.fLightRange;
+			vertColor = *gameData.render.vertColor.matAmbient.XYZ () + (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
+			}
+		else {
+			vertColor = *gameData.render.vertColor.matAmbient.XYZ ();
+			if (NdotL > 0.1f)
+				vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
+			else if (NdotL >= 0.0f)
+				vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * 0.1f);
+			else
+				NdotL = 0.0f;
+			}
 		}
 	vertColor *= lightColor;
-	if ((NdotL > 0.0f) && (fLightDist > 0.0f) && (vcd.fMatShininess > 0.0f) /* && vcd.bMatSpecular */) {
+	if (bDiffuse && (NdotL > 0.0f) && (fLightDist > 0.0f) && (vcd.fMatShininess > 0.0f) /* && vcd.bMatSpecular */) {
 		if (!prl->info.bSpot)	//need direction from light to vertex now
 			lightDir.Neg ();
 		vReflect = CFloatVector3::Reflect (lightDir, vcd.vertNorm);
@@ -563,6 +570,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			}
 		}
 	vertColor /= fAttenuation;
+
 	if ((nSaturation < 2) || gameStates.render.bHaveLightmaps) {//sum up color components
 		colorSum += vertColor;
 		}
