@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "dialheap.h"
 #endif
 
-CSimpleBiDirRouter simpleRouter;
+CSimpleBiDirRouter simpleRouter [MAX_THREADS];
 CDACSUniDirRouter dacsRouter;
 
 // -----------------------------------------------------------------------------------

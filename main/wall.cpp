@@ -913,7 +913,7 @@ for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++)
 		nStuckObjects++;
 	}
 //	Ok, this is awful, but we need to do things whenever a door opens/closes/disappears, etc.
-simpleRouter.Flush ();
+simpleRouter [0].Flush ();
 }
 
 // -----------------------------------------------------------------------------------
@@ -977,7 +977,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 			pnt = segP->SideCenter (nSide);
 			dist = CFixVector::Dist(pnt, objP->info.position.vPos);
 			if (dist < damage / 2) {
-				dist = simpleRouter.PathLength (pnt, segP->Index (), objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, -1);
+				dist = simpleRouter [0].PathLength (pnt, segP->Index (), objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, -1);
 				if ((dist > 0) && (dist < damage / 2) &&
 					 segP->CheckEffectBlowup (nSide, pnt, (objP->cType.laserInfo.parent.nObject < 0) ? NULL : OBJECTS + objP->cType.laserInfo.parent.nObject, 1))
 						segP->OperateTrigger (nSide, OBJECTS + objP->cType.laserInfo.parent.nObject, 1);

@@ -138,9 +138,9 @@ void DoThiefFrame (CObject *objP)
 
 			ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 
-			connectedDistance = simpleRouter.PathLength (objP->info.position.vPos, objP->info.nSegment, 
-																		gameData.ai.target.vBelievedPos, gameData.ai.target.nBelievedSeg, 
-																		30, WID_FLY_FLAG, 1);
+			connectedDistance = simpleRouter [0].PathLength (objP->info.position.vPos, objP->info.nSegment, 
+																			 gameData.ai.target.vBelievedPos, gameData.ai.target.nBelievedSeg, 
+																			 30, WID_FLY_FLAG, 1);
 			if (connectedDistance < I2X (500)) {
 				CreatePathToTarget(objP, 30, 1);
 				ailp->mode = AIM_THIEF_ATTACK;

@@ -166,7 +166,7 @@ int ComputeNearestVertexLights (int nVertex)
 {
 	CFixVector*				vertP;
 	CDynLight*				pl;
-	int						h, j, k, l, n, nMaxLights;
+	int						h, j, k, l, n, nMaxLights, nThread;
 	CFixVector				vLightToVert;
 	struct tLightDist*	pDists;
 
@@ -182,10 +182,14 @@ if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
 nMaxLights = MAX_NEAREST_LIGHTS;
-if (gameStates.app.bMultiThreaded)
-	j = nVertex ? gameData.segs.nVertices : gameData.segs.nVertices / 2;
-else
+if (gameStates.app.bMultiThreaded) {
+	nThread = (nVertex > 0);
+	j = nThread ? gameData.segs.nVertices : gameData.segs.nVertices / 2;
+	}
+else {
+	nThread = 0;
 	INIT_PROGRESS_LOOP (nVertex, j, gameData.segs.nVertices);
+	}
 for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) {
 #if DBG
 	if (nVertex == nDbgVertex)
@@ -212,7 +216,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 				CSide* sideP = SEGMENTS [pl->info.nSegment].m_sides + pl->info.nSide;
 				if ((CFixVector::Dot (sideP->m_normals [0], vLightToVert) < 0) &&
 					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals [1], vLightToVert) < 0))) {
-					h = simpleRouter.PathLength (VERTICES [nVertex], -1, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
+					h = simpleRouter [nThread].PathLength (VERTICES [nVertex], -1, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
 					if (h > 4 * MAX_LIGHT_RANGE / 3 * pl->info.fRange)
 						continue;
 					}
