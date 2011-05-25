@@ -1894,12 +1894,22 @@ class CSegmentData {
 			return 1;
 			}
 
+		inline int SegDistSize (int nElements = 0) {
+			if (!nElements)
+				nElements = nSegments;
+			return QUADMATSIZE (nSegments);
+			}
+
 		inline int SegDistIdx (int i, int j) {
 			return QUADMATIDX (i, j, nSegments);
 			}
 
 		inline int SegDist (int i, int j) {
 			return segDist [SegDistIdx (i, j)];
+			}
+
+		inline void SetSegDist (int i, int j, fix xDistance) {
+			segDist [SegDistIdx (i, j)] = xDistance;
 			}
 
 		inline bool BuildGrid (int nSize, int bSkyBox) { return grids [bSkyBox].Create (nSize, bSkyBox); }

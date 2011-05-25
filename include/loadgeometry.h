@@ -127,7 +127,8 @@ extern CFixMatrix Secret_return_orient;
 extern short ConvertD1Texture(short d1_tmap_num, int bForce);
 extern int d1_tmap_num_unique(short d1_tmap_num); //is d1_tmap_num's texture only in d1?
 
-int LoadMineGaugeSize ();
-int SortLightsGaugeSize ();
+int LoadMineGaugeSize (void);
+int SortLightsGaugeSize (void);
+int SegDistGaugeSize (void);
 
 #endif /* _LOADGEOMETRY_H */

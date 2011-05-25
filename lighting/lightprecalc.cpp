@@ -25,6 +25,7 @@
 #include "paging.h"
 #include "light.h"
 #include "dynlight.h"
+#include "findpath.h"
 
 #if !USE_OPENMP
 #include "SDL_mutex.h"
@@ -58,6 +59,35 @@ typedef struct tLightDataHeader {
 
 static int loadIdx = 0;
 static int loadOp = 0;
+
+//------------------------------------------------------------------------------
+
+void ComputeSingleSegmentDistance (int nSegment)
+{
+	CDDACSUniDirRouter router;
+
+router.PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, 0x7FFFFFFF, WID_RENDPAST_FLAG | WID_FLY_FLAG, -1);
+for (int i = 0; i < gameData.segs.nSegments; i++)
+	gameData.segs.SetSegDist (nSegment, i, router.Distance (i));
+gameData.segs.SetSegDist (nSegment, nSegment, router.Distance (i));
+}
+
+//------------------------------------------------------------------------------
+
+void ComputeSegmentDistance (int startI)
+{
+	int			i, endI;
+
+PrintLog ("computing segment distances (%d)\n", startI);
+if (gameStates.app.bMultiThreaded)
+	endI = gameData.segs.nSegments;
+else
+	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
+if (startI < 0)
+	startI = 0;
+for (i = startI; i < endI; i++)
+	ComputeSingleSegmentDistance (i);
+}
 
 //------------------------------------------------------------------------------
 
@@ -438,7 +468,7 @@ ogl.SetTransform (0);
 
 void ComputeSegmentVisibility (int startI)
 {
-	int			i, endI;
+	int i, endI;
 
 PrintLog ("computing segment visibility (%d)\n", startI);
 if (gameStates.app.bMultiThreaded)
@@ -496,7 +526,7 @@ gameData.segs.bSegVis [1][i >> 3] &= ~(1 << (i & 7));
 
 void ComputeLightVisibility (int startI)
 {
-	int	i, j, endI;
+	int i, j, endI;
 
 PrintLog ("computing light visibility (%d)\n", startI);
 if (startI <= 0) {
@@ -536,7 +566,7 @@ if (nState)
 
 //paletteManager.ResumeEffect ();
 if (loadOp == 0) {
-	ComputeSegmentVisibility (loadIdx);
+	ComputeSegmentDistance (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
@@ -544,30 +574,38 @@ if (loadOp == 0) {
 		}
 	}
 if (loadOp == 1) {
-	ComputeLightVisibility (loadIdx);
+	ComputeSegmentVisibility (loadIdx);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= lightManager.LightCount (0)) {
+	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
 		loadOp = 2;
 		}
 	}
-else if (loadOp == 2) {
-	ComputeNearestSegmentLights (loadIdx);
+if (loadOp == 2) {
+	ComputeLightVisibility (loadIdx);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= gameData.segs.nSegments) {
+	if (loadIdx >= lightManager.LightCount (0)) {
 		loadIdx = 0;
 		loadOp = 3;
 		}
 	}
 else if (loadOp == 3) {
-	ComputeNearestVertexLights (loadIdx);
+	ComputeNearestSegmentLights (loadIdx);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= gameData.segs.nVertices) {
+	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
 		loadOp = 4;
 		}
 	}
-if (loadOp == 4) {
+else if (loadOp == 4) {
+	ComputeNearestVertexLights (loadIdx);
+	loadIdx += PROGRESS_INCR;
+	if (loadIdx >= gameData.segs.nVertices) {
+		loadIdx = 0;
+		loadOp = 5;
+		}
+	}
+if (loadOp == 5) {
 	key = -2;
 	//paletteManager.ResumeEffect ();
 	return nCurItem;
@@ -577,6 +615,13 @@ menu [0].m_bRebuild = 1;
 key = 0;
 //paletteManager.ResumeEffect ();
 return nCurItem;
+}
+
+//------------------------------------------------------------------------------
+
+int SegDistGaugeSize (void)
+{
+return PROGRESS_STEPS (gameData.segs.nSegments);
 }
 
 //------------------------------------------------------------------------------
@@ -625,6 +670,7 @@ if (bOk)
 if (bOk)
 	bOk = (gameData.segs.bSegVis [0].Read (cf, gameData.segs.SegVisSize (ldh.nSegments), 0) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
 			(gameData.segs.bSegVis [1].Read (cf, gameData.segs.LightVisSize (ldh.nSegments), 0) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
+			(gameData.segs.segDist.Read (cf, gameData.segs.SegDistSize (ldh.nSegments), 0) == size_t (gameData.segs.SegDistSize (ldh.nSegments))) &&
 			(lightManager.NearestSegLights  ().Read (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 			(lightManager.NearestVertLights ().Read (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
 cf.Close ();
@@ -654,6 +700,7 @@ if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "w
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
 		(gameData.segs.bSegVis [0].Write (cf, gameData.segs.SegVisSize (ldh.nSegments)) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
 		(gameData.segs.bSegVis [1].Write (cf, gameData.segs.LightVisSize (ldh.nSegments)) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
+		(gameData.segs.segDist.Write (cf, gameData.segs.SegDistSize (ldh.nSegments)) == size_t (gameData.segs.SegDistSize (ldh.nSegments))) &&
 		(lightManager.NearestSegLights  ().Write (cf, ldh.nSegments * MAX_NEAREST_LIGHTS) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 		(lightManager.NearestVertLights ().Write (cf, ldh.nVertices * MAX_NEAREST_LIGHTS) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
 cf.Close ();
@@ -733,8 +780,10 @@ PrintLog ("Looking for precompiled light data\n");
 if (LoadLightData (nLevel))
 	return;
 
-#if MULTI_THREADED_PRECALC
+#if MULTI_THREADED_PRECALC != 0
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
+	PrintLog ("Computing segment distances\n");
+	ComputeSegmentDistance (-1);
 	gameData.physics.side.bCache = 0;
 	PrintLog ("Computing segment visibility\n");
 	ComputeSegmentVisibility (-1);
@@ -753,8 +802,10 @@ else {
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 		ProgressBar (TXT_LOADING,
 						 LoadMineGaugeSize () + PagingGaugeSize (),
-						 LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll);
+						 LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize () + SegDistGaugeSize (), SortLightsPoll);
 	else {
+		PrintLog ("Computing segment distances\n");
+		ComputeSegmentDistance (-1);
 		PrintLog ("Computing segment visibility\n");
 		ComputeSegmentVisibility (-1);
 		PrintLog ("Computing light visibility\n");
