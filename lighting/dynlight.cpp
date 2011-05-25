@@ -16,6 +16,7 @@
 #include "ogl_lib.h"
 #include "ogl_color.h"
 #include "ogl_shader.h"
+#include "findpath.h"
 #include "segmath.h"
 #include "endlevel.h"
 #include "renderthreads.h"
@@ -583,6 +584,15 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+int CDynLight::LightPathLength (const short nLightSeg, const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int bFastRoute, int nThread)
+{
+if (bFastRoute)
+	return fix (gameData.segs.SegDist (nLightSeg, nDestSeg) / info.fRange);
+return fix (simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, nDestSeg, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0) / info.fRange);
+}
+
+//------------------------------------------------------------------------------
+
 int CDynLight::SeesPoint (CFixVector* vNormal, CFixVector* vPoint)
 {
 	CFloatVector v;
@@ -605,6 +615,34 @@ return 1;
 int CDynLight::SeesPoint (short nSegment, short nSide, CFixVector* vPoint)
 {
 return SeesPoint (&SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint);
+}
+
+//------------------------------------------------------------------------------
+
+int CDynLight::Contribute (const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread)
+{
+	short nLightSeg = info.nSegment;
+
+if (nLightSeg >= 0) 
+	info.bDiffuse [nThread] = (info.nSide >= 0) ? gameData.segs.LightVis (nLightSeg, nDestSeg) : gameData.segs.SegVis (nLightSeg, nDestSeg);
+else if ((info.nObject >= 0) && ((nLightSeg = OBJECTS [info.nObject].info.nSegment) >= 0))
+	info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
+else
+	return 0;
+fix xDistance = fix (float (CFixVector::Dist (vDestPos, info.vPos)) / (info.fRange * fRangeMod)) + xDistMod;
+if (render.xDistance [nThread] > xMaxLightRange)
+	return 0;
+if (info.bDiffuse [nThread]) {
+	CFixVector vLightToPoint = vDestPos - info.vPos;
+	info.bDiffuse [nThread] = SeesPoint (&vLightToPoint, NULL);
+	}
+if (!info.bDiffuse [nThread]) {
+	xDistance = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+	if ((xDistance < 0) || (xDistance > xMaxLightRange))
+		return 0;
+	}
+render.xDistance [nThread] = xDistance;
+return 1;
 }
 
 //------------------------------------------------------------------------------

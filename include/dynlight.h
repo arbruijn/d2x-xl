@@ -34,7 +34,7 @@ class CActiveDynLight;
 class CLightRenderData {
 	public:
 		CFloatVector		vPosf [2];
-		fix					xDistance;
+		fix					xDistance [MAX_THREADS];
 		short					nVerts [4];
 		int					nTarget;	//lit segment/face
 		int					nFrame;
@@ -97,6 +97,8 @@ class CDynLight {
 		void Init (void);
 		int SeesPoint (CFixVector* vNormal, CFixVector* vPoint);
 		int SeesPoint (short nSegment, short nSide, CFixVector* vPoint);
+		int LightPathLength (const short nLightSeg, const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int bFastRoute, int nThread);
+		int Contribute (const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread);
 		int Compare (CDynLight& other);
 		inline bool operator< (CDynLight& other)
 		 { return Compare (other) < 0; }
