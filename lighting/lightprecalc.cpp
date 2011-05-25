@@ -69,7 +69,7 @@ void ComputeSingleSegmentDistance (int nSegment)
 router.PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, 0x7FFFFFFF, WID_RENDPAST_FLAG | WID_FLY_FLAG, -1);
 for (int i = 0; i < gameData.segs.nSegments; i++)
 	gameData.segs.SetSegDist (nSegment, i, router.Distance (i));
-gameData.segs.SetSegDist (nSegment, nSegment, router.Distance (i));
+gameData.segs.SetSegDist (nSegment, nSegment, 0);
 }
 
 //------------------------------------------------------------------------------
