@@ -263,7 +263,11 @@ if (nVertex == nDbgVertex)
 		if ((prl->info.bDiffuse [nThread] = prl->SeesPoint (vNormal, vLightToVertex / xLightDist)) || (nSegment < 0))
 			prl->render.xDistance = (fix) (xLightDist / prl->info.fRange);
 		else if (nSegment >= 0)
+#if 1
+			prl->render.xDistance = gameData.segs.SegDist (prl->info.nSegment, nSegment);
+#else
 			prl->render.xDistance = simpleRouter [nThread].PathLength (vVertex, nSegment, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
+#endif
 		if (prl->info.nSegment >= 0)
 			prl->render.xDistance -= SEGMENTS [prl->info.nSegment].AvgRad ();
 		if (prl->render.xDistance > xMaxLightRange)
