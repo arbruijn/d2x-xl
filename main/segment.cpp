@@ -248,13 +248,29 @@ m_vCenter.v.coord.z /= 8;
 
 void CSegment::ComputeChildDists (void)
 {
+// unscaled distances from the segment's center to each adjacent segment's center
 for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+	fix& dist = m_childDists [0][i];
 	if (0 > m_children [i])
-		m_childDists [i] = 0xFFFF;
+		dist = -1;
 	else {
-		m_childDists [i] = CFixVector::Dist (Center (), SEGMENTS [m_children [i]].Center ()) / gameData.segs.xDistScale;
-		if (m_childDists [i] == 0)
-			m_childDists [i] = 1;
+		dist = CFixVector::Dist (Center (), SEGMENTS [m_children [i]].Center ());
+		if (dist == 0)
+			dist = 1;
+		}
+	}
+
+// scaled distances from the segment's center to each adjacent segment's center
+// scaled with 0xFFFF / max (child distance) of all child distances
+// this is needed for the DACS router to make sure no edge is longer than 0xFFFF units
+for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+	fix& dist = m_childDists [1][i];
+	if (0 > m_children [i])
+		dist = 0xFFFF;
+	else {
+		dist = m_childDists [0][i] / gameData.segs.xDistScale;
+		if (dist == 0)
+			dist = 1;
 		}
 	}
 }
