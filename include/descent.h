@@ -1813,7 +1813,8 @@ class CSegmentData {
 		CArray<CFloatVector>		fVertices;
 		CArray<CSegment>			segments;
 		CArray<tSegFaces>			segFaces;
-		CArray<CRenderPoint>			points;
+		CArray<fix>					segDists;
+		CArray<CRenderPoint>		points;
 		CSkyBox						skybox;
 		CSegmentGrid				grids [2];
 #if CALC_SEGRADS

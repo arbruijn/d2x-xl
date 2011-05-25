@@ -520,7 +520,7 @@ if (gameStates.render.nLightingMethod) {
 				prl->info.bDiffuse [nThread] = prl->SeesPoint (nSegment, nSide, vLightToPixel / xLightDist);
 			if (!prl->info.bDiffuse [nThread]) {
 				prl->render.xDistance = PathLength (*vPixelPos, nSegment, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
-				if (prl->render.xDistance > 4 * xMaxLightRange / 3)
+				if (prl->render.xDistance > xMaxLightRange)
 					continue;
 				}
 			}

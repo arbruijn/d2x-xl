@@ -47,32 +47,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
 
-typedef struct {
-	short	seg0, seg1;
-	int	pathLen;
-	fix	dist;
-} tFCDCacheData;
-
-#define	MAX_FCD_CACHE	128
-
-class CFCDCache {
-	public:	
-		int				m_nIndex;
-		CStaticArray< tFCDCacheData, MAX_FCD_CACHE >	m_cache; // [MAX_FCD_CACHE];
-		fix				m_xLastFlushTime;
-		fix				m_nPathLength;
-
-		void Flush (void);
-		void Add (int seg0, int seg1, int nDepth, fix dist);
-		fix Dist (short seg0, short seg1);
-		inline void SetPathLength (fix nPathLength) { m_nPathLength = nPathLength; }
-		inline fix GetPathLength (void) { return m_nPathLength; }
-};
-
-CFCDCache fcdCaches [2];
-
-// -----------------------------------------------------------------------------------
-
 #define	MIN_CACHE_FCD_DIST	 (I2X (80))	//	Must be this far apart for cache lookup to succeed.  Recognizes small changes in distance matter at small distances.
 
 void CFCDCache::Flush (void)
@@ -121,123 +95,104 @@ for (int i = int (m_cache.Length ()); i; i--, pc++) {
 return -1;
 }
 
-// -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void FlushFCDCache (void)
 {
-fcdCaches [0].Flush ();
-fcdCaches [1].Flush ();
+m_cache [0].Flush ();
+m_cache [1].Flush ();
 }
 
-// -----------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
-# if BIDIRECTIONAL_DACS
-
-static int Expand (int nDir, short nDestSeg, int widFlag)
+void CScanData::Setup (short nStartSeg, short nDestSeg, uint flag, int dir)
 {
-ushort nDist;
-short nSegment = dialHeaps [nDir].Pop (nDist);
-if ((nSegment < 0) || (nSegment == nDestSeg))
-	return nSegment;
-if (dialHeaps [!nDir].Popped (nSegment))
-	return nSegment;
-CSegment* segP = SEGMENTS + nSegment;
-for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-	if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & widFlag))
-		dialHeaps [nDir].Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
-	}
-return nSegment;
+m_path [nStartSeg].bVisited = flag;
+m_path [nStartSeg].nDepth = 0;
+m_path [nStartSeg].nPred = -1;
+m_nStartSeg =
+m_segQueue [0] = nStartSeg;
+m_nDestSeg = nDestSeg;
+m_nTail = 0;
+m_nHead = 1;
+m_nRouteDir = dir;
+m_nLinkSeg = 0;
 }
-
-#endif
 
 //	-----------------------------------------------------------------------------
 
-typedef struct tSegPathNode {
-	uint		bVisited;
-	short		nDepth;
-	short		nPred;
-} tSegPathNode;
-
-typedef struct tSegScanInfo {
-	uint	bFlag;
-	int	nMaxDepth;
-	int	widFlag;
-	short bScanning;
-	short	nLinkSeg;
-} tSegScanInfo;
-
-typedef struct tSegScanData {
-	tSegPathNode segPath [MAX_SEGMENTS_D2X];
-	short segQueue [MAX_SEGMENTS_D2X];
-	uint	bFlag;
-	short	nStartSeg;
-	short nDestSeg;
-	short nLinkSeg;
-	short nHead;
-	short nTail;
-	int	nRouteDir;
-} tSegScanData;
-
-static tSegScanInfo scanInfo = {0xFFFFFFFF, 0, 0, 3, -1};
-static tSegScanData scanData [2];
-//static SDL_mutex* semaphore = NULL;
-
-//	-----------------------------------------------------------------------------
-
-static short ExpandSegment (int nDir)
+short CScanData::Expand (CScanInfo& scanInfo)
 {
-	tSegScanData& sd = scanData [nDir];
-
-if (sd.nTail >= sd.nHead)
-	return sd.nLinkSeg = -1;
-short nPredSeg = sd.segQueue [sd.nTail++];
+if (m_nTail >= m_nHead)
+	return m_nLinkSeg = -1;
+short nPredSeg = m_queue [m_nTail++];
 #if DBG_SCAN
 if (nPredSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-short nDepth = sd.segPath [nPredSeg].nDepth + 1;
-if (nDepth > scanInfo.nMaxDepth) {
+short nDepth = m_path [nPredSeg].nDepth + 1;
+if (nDepth > scanInfo.m_maxDepth) {
 	scanInfo.bScanning &= ~(1 << nDir);
-	return sd.nLinkSeg = (scanInfo.bScanning ? 0 : -1);
+	return m_nLinkSeg = (scanInfo.bScanning ? 0 : -1);
 	}
 CSegment* segP = SEGMENTS + nPredSeg;
 for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	short nSuccSeg = segP->m_children [nSide];
 	if (nSuccSeg < 0)
 		continue;
-	if (sd.nRouteDir) {
+	if (m_nRouteDir) {
 		CSegment* otherSegP = SEGMENTS + nSuccSeg;
 		short nOtherSide = SEGMENTS [nPredSeg].ConnectedSide (otherSegP);
-		if ((nOtherSide == -1) || !(otherSegP->IsDoorWay (nOtherSide, NULL) & scanInfo.widFlag))
+		if ((nOtherSide == -1) || !(otherSegP->IsDoorWay (nOtherSide, NULL) & scanInfo.m_widFlag))
 			continue;
 		}
 	else {
-		if (!(segP->IsDoorWay (nSide, NULL) & scanInfo.widFlag))
+		if (!(segP->IsDoorWay (nSide, NULL) & scanInfo.m_widFlag))
 			continue;
 		}
 #if DBG_SCAN
 	if (nSuccSeg == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
-	tSegPathNode* pathNodeP = &sd.segPath [nSuccSeg];
+	tSegPathNode* pathNodeP = &m_m_path [nSuccSeg];
 	if (pathNodeP->bVisited == scanInfo.bFlag)
 		continue;
 	pathNodeP->nPred = nPredSeg;
-#if BIDIRECTIONAL_SCAN
-	if (scanData [!nDir].segPath [nSuccSeg].bVisited == scanInfo.bFlag)
-#else
-	if (nSuccSeg == sd.nDestSeg)
-#endif
-		return sd.nLinkSeg = nSuccSeg + 1;
+	if (Match (nSuccSeg, nDir))
+		return m_nLinkSeg = nSuccSeg + 1;
 	pathNodeP->bVisited = scanInfo.bFlag;
 	pathNodeP->nDepth = nDepth;
-	sd.segQueue [sd.nHead++] = nSuccSeg;
+	m_segQueue [m_nHead++] = nSuccSeg;
 	}
 return 0;
 }
+
+// -----------------------------------------------------------------------------
+
+bool CBiDirScanData::Match (short nSegment, int nDir)
+{
+return (m_scanData [!nDir].segPath [nSegment].bVisited == m_scanInfo.bFlag);
+#else
+	if (nSuccSeg == sd.m_nDestSeg)
+#endif
+}
+
+// -----------------------------------------------------------------------------
+
+bool CUniDirScanData::Match (short nSegment, int nDir)
+{
+return (nSegment == m_scanData.m_nDestSeg)
+}
+
+//	-----------------------------------------------------------------------------
+
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+
+//static SDL_mutex* semaphore = NULL;
 
 //	-----------------------------------------------------------------------------
 
@@ -247,7 +202,7 @@ int _CDECL_ ExpandSegmentMT (void* nThreadP)
 {
 	int nDir = *((int *) nThreadP);
 
-while (!(ExpandSegment (nDir) || scanData [!nDir].nLinkSeg))
+while (!(ExpandSegment (nDir) || m_scanData [!nDir].nLinkSeg))
 	;
 return 1;
 }
@@ -255,186 +210,163 @@ return 1;
 #endif
 
 // -----------------------------------------------------------------------------
-
-#if BIDIRECTIONAL_SCAN 
-
-static fix BuildPathBiDir (CFixVector& p0, CFixVector& p1, int nCacheType)
-{
-	fix	xDist = 0;
-	int	nLength = 0; 
-	short	nPredSeg, nSuccSeg;
-
---scanInfo.nLinkSeg;
-for (int nDir = 0; nDir < 2; nDir++) {
-	tSegScanData& sd = scanData [nDir];
-	nSuccSeg = scanInfo.nLinkSeg;
-	for (;;) {
-		nPredSeg = sd.segPath [nSuccSeg].nPred;
-		if (nPredSeg == sd.nStartSeg) {
-			xDist += CFixVector::Dist (nDir ? p1 : p0, SEGMENTS [nSuccSeg].Center ());
-			break;
-			}
-		nLength++;
-		if (nLength > 2 * scanInfo.nMaxDepth + 2)
-			return -0x7FFFFFFF;
-		xDist += CFixVector::Dist (SEGMENTS [nPredSeg].Center (), SEGMENTS [nSuccSeg].Center ());
-		nSuccSeg = nPredSeg;
-		}
-	}
-if (nCacheType >= 0) 
-	fcdCaches [nCacheType].Add (scanData [0].nStartSeg, scanData [0].nDestSeg, nLength + 3, xDist);
-return xDist;
-}
-
-#else //	-----------------------------------------------------------------------
-
-static fix BuildPathUniDir (CFixVector& p0, CFixVector& p1, int nCacheType)
-{
-	fix	xDist;
-	int	nLength = 0; 
-	short	nPredSeg, nSuccSeg;
-
-nPredSeg = --scanInfo.nLinkSeg;
-xDist = CFixVector::Dist (p1, SEGMENTS [nPredSeg].Center ());
-for (;;) {
-	nPredSeg = scanData [0].segPath [nSuccSeg].nPred;
-	if (nPredSeg == scanData [0].nStartSeg)
-		break;
-	nLength++;
-	xDist += CFixVector::Dist (SEGMENTS [nPredSeg].Center (), SEGMENTS [nSuccSeg].Center ());
-	nSuccSeg = nPredSeg;
-	}
-xDist += CFixVector::Dist (p0, SEGMENTS [nSuccSeg].Center ());
-if (nCacheType >= 0) 
-	fcdCaches [nCacheType].Add (scanData [0].nStartSeg, scanData [0].nDestSeg, nLength + 3, xDist);
-return xDist;
-}
-
-#endif 
-
-// -----------------------------------------------------------------------------
 //	Determine whether seg0 and seg1 are reachable in a way that allows sound to pass.
-//	Search up to a maximum nDepth of nMaxDepth.
+//	Search up to a maximum nDepth of m_maxDepth.
 //	Return the distance.
 
-fix PathLength (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int widFlag, int nCacheType)
+fix CRouter::Distance (CFixVector& m_p0, short m_nStartSeg, CFixVector& m_p1, short m_nDestSeg, int m_maxDepth, int m_widFlag, int nCacheType)
 {
 #if 0 //DBG
-//if (!nCacheType) 
+//if (!m_cacheType) 
 	{
-	fcdCaches [nCacheType].SetPathLength (10000);
+	m_cache [m_cacheType].SetPathLength (10000);
 	return -1;
 	}
 #endif
 
-if (nStartSeg < 0) {
-	nStartSeg = FindSegByPos (p0, 0, 1, 0);
-	if (nStartSeg < 0)
+if (m_nStartSeg < 0) {
+	m_nStartSeg = FindSegByPos (m_p0, 0, 1, 0);
+	if (m_nStartSeg < 0)
 		return -1;
 	}
-if (nDestSeg < 0) {
-	nDestSeg = FindSegByPos (p0, 0, 1, 0);
-	if (nDestSeg < 0)
+if (m_nDestSeg < 0) {
+	m_nDestSeg = FindSegByPos (m_p0, 0, 1, 0);
+	if (m_nDestSeg < 0)
 		return -1;
 	}
 
 // same segment?
-if ((nCacheType >= 0) && (nStartSeg == nDestSeg)) {
-	fcdCaches [nCacheType].SetPathLength (0);
-	return CFixVector::Dist (p0, p1);
+if ((m_cacheType >= 0) && (m_nStartSeg == m_nDestSeg)) {
+	m_cache [m_cacheType].SetPathLength (0);
+	return CFixVector::Dist (m_p0, m_p1);
 	}
 
 // adjacent segments?
-short nSide = SEGMENTS [nStartSeg].ConnectedSide (SEGMENTS + nDestSeg);
-if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
-	fcdCaches [nCacheType].SetPathLength (1);
-	return CFixVector::Dist (p0, p1);
+short nSide = SEGMENTS [m_nStartSeg].ConnectedSide (SEGMENTS + m_nDestSeg);
+if ((nSide != -1) && (SEGMENTS [m_nDestSeg].IsDoorWay (nSide, NULL) & m_widFlag)) {
+	m_cache [m_cacheType].SetPathLength (1);
+	return CFixVector::Dist (m_p0, m_p1);
 	}
 
 #if USE_FCD_CACHE
-if (nCacheType >= 0) {
-	fix xDist = fcdCaches [nCacheType].Dist (nStartSeg, nDestSeg);
+if (m_cacheType >= 0) {
+	fix xDist = m_cache [m_cacheType].Dist (m_nStartSeg, m_nDestSeg);
 	if (xDist >= 0)
 		return xDist;
 	}
 #endif
 
-#if USE_DACS
+fix distance = Scan ();
+
+
+if (m_cacheType >= 0) 
+	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, 10000, I2X (10000));
+
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+int CDACSBiDirRouter::Expand (int nDir)
+{
+	ushort nDist;
+
+short nSegment = m_heap [nDir].Pop (nDist);
+if ((nSegment < 0) || (nSegment == m_nDestSeg))
+	return nSegment;
+if (m_heap [!nDir].Popped (nSegment))
+	return nSegment;
+CSegment* segP = SEGMENTS + nSegment;
+for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+	if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag))
+		m_heap [nDir].Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
+	}
+return nSegment;
+}
+
+// -----------------------------------------------------------------------------
+
+fix CDACSBiDirRouter::BuildRoute (void)
+
+// -----------------------------------------------------------------------------
+
+fix CDACSBiDirRouter::FindPath (void)
 
 	short	nSegment;
 #if DBG
 	short	nExpanded = 0;
 #endif
 
-# if BIDIRECTIONAL_DACS
+	short	nSegments [2] = {m_nStartSeg, m_nDestSeg};
 
-	short	nSegments [2] = {nStartSeg, nDestSeg};
-	static short route [2 * MAX_SEGMENTS_D2X];
-
-dialHeaps [0].Setup (nStartSeg);
-dialHeaps [1].Setup (nDestSeg);
+m_heap [0].Setup (m_segments [0], m_nStartSeg);
+m_heap [1].Setup (m_nDestSeg);
 
 for (;;) {
 	if (nSegments [0] >= 0) {
+#if DBG
 		nExpanded++;
-		nSegments [0] = Expand (0, nDestSeg, widFlag);
+#endif
+		nSegments [0] = Expand (0);
 		}
 	if (nSegments [1] >= 0) {
+#if DBG
 		nExpanded++;
-		nSegments [1] = Expand (1, nStartSeg, widFlag);
+#endif
+		nSegments [1] = Expand (1);
 		}
-	if ((nSegments [0] < 0) && (nSegments [1] < 0)) {
-		gameData.fcd.nConnSegDist = gameData.segs.nSegments + 1;
-		return -1;
-		}
-	if (nSegments [0] == nDestSeg) {
+	if ((nSegments [0] < 0) && (nSegments [1] < 0))
+	if (nSegments [0] == m_nDestSeg) {
 		nSegment = nSegments [0];
 		nSegments [1] = -1;
 		}
-	else if (nSegments [1] == nStartSeg) {
+	else if (nSegments [1] == m_nStartSeg) {
 		nSegment = nSegments [1];
 		nSegments [0] = -1;
 		}
-	else if ((nSegments [1] >= 0) && dialHeaps [0].Popped (nSegments [1]))
+	else if ((nSegments [1] >= 0) && m_heap [0].Popped (nSegments [1]))
 		nSegment = nSegments [1];
-	else if ((nSegments [0] >= 0) && dialHeaps [1].Popped (nSegments [0]))
+	else if ((nSegments [0] >= 0) && m_heap [1].Popped (nSegments [0]))
 		nSegment = nSegments [0];
 	else
 		continue;
-	gameData.fcd.nConnSegDist = 0;
+	int j = -2;
 	if (nSegments [0] >= 0)
-		gameData.fcd.nConnSegDist += dialHeaps [0].BuildRoute (nSegment, 0, route) - 1;
+		j += m_heap [0].BuildRoute (nSegment, 0, route) - 1;
 	if (nSegments [1] >= 0)
-		gameData.fcd.nConnSegDist += dialHeaps [1].BuildRoute (nSegment, 1, route + gameData.fcd.nConnSegDist);
-	int j = gameData.fcd.nConnSegDist - 2;
+		j += m_heap [1].BuildRoute (nSegment, 1, route + gameData.fcd.nConnSegDist);
 	xDist = 0;
 	for (int i = 1; i < j; i++)
 		xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
-	xDist += CFixVector::Dist (p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (p1, SEGMENTS [route [j]].Center ());
+	xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [j]].Center ());
 	return xDist;
 	}
+}
 
-#	else
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+fix CDACSUniDirRouter::FindPath (void)
 
 	ushort		nDist;
 	CSegment*	segP;
 
-dialHeap.Setup (nStartSeg);
-nExpanded = 0;
+m_heap.Setup (m_nStartSeg);
+#if DBG
+int nExpanded = 0;
+#endif
 for (;;) {
-	nSegment = dialHeap.Pop (nDist);
-	if (nSegment < 0) {
-		gameData.fcd.nConnSegDist = gameData.segs.nSegments + 1;
+	nSegment = m_heap.Pop (nDist);
+	if (nSegment < 0)
 		return -1;
-		}
-	if (nSegment == nDestSeg) {
-		gameData.fcd.nConnSegDist = dialHeap.BuildRoute (nDestSeg);
-		int j = gameData.fcd.nConnSegDist - 2;
-		short* route = dialHeap.Route ();
+	if (nSegment == m_nDestSeg) {
+		int j = m_heap.BuildRoute (m_nDestSeg) - 2;
+		short* route = m_heap.Route ();
 		xDist = 0;
 		for (int i = 1; i < j; i++)
 			xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
-		xDist += CFixVector::Dist (p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (p1, SEGMENTS [route [j]].Center ());
+		xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [j]].Center ());
 		return xDist;
 		}
 #if DBG
@@ -442,43 +374,34 @@ for (;;) {
 #endif
 	segP = SEGMENTS + nSegment;
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & widFlag))
-			dialHeap.Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
+		if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag))
+			m_heap.Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
 		}
 	}
+}
 
-#	endif
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
-#else
-
-if (!++scanInfo.bFlag) {
-	memset (scanData, 0, sizeof (scanData));
-	scanInfo.bFlag = 1;
+fix CSimpleRouter::Scan (void)
+{
+if (!++m_scanInfo.bFlag) {
+	memset (m_scanData, 0, sizeof (m_scanData));
+	m_scanInfo.bFlag = 1;
 	}
 
-if (nMaxDepth < 0)
-	nMaxDepth = gameData.segs.nSegments;
+if (m_maxDepth < 0)
+	m_maxDepth = gameData.segs.nSegments;
 
-scanData [0].segPath [nStartSeg].bVisited = scanInfo.bFlag;
-scanData [0].segPath [nStartSeg].nDepth = 0;
-scanData [0].segPath [nStartSeg].nPred = -1;
-scanData [0].nStartSeg = 
-scanData [0].segQueue [0] = nStartSeg;
-scanData [0].nDestSeg = nDestSeg;
-scanData [0].nTail = 0;
-scanData [0].nHead = 1;
-scanData [0].nRouteDir = (nCacheType == 0);
-scanData [0].nLinkSeg = 0;
-
-scanInfo.widFlag = widFlag;
-scanInfo.nLinkSeg = 0;
-scanInfo.bScanning = 3;
-
-#if BIDIRECTIONAL_SCAN
-
-scanInfo.nMaxDepth = nMaxDepth / 2 + 1;
-
-// bi-directional scanner (expands about 1/3 of the segments the uni-directional scanner does on average)
+m_scanData [0].segPath [m_nStartSeg].bVisited = m_scanInfo.bFlag;
+m_scanData [0].segPath [m_nStartSeg].nDepth = 0;
+m_scanData [0].segPath [m_nStartSeg].nPred = -1;
+m_scanData [0].segQueue [0] = m_nStartSeg;
+m_scanData [0].nTail = 0;
+m_scanData [0].nHead = 1;
+m_scanData [0].nRouteDir = (m_cacheType == 0);
+m_scanData [0].nLinkSeg = 0;
 
 scanData [1].segPath [nDestSeg].bVisited = scanInfo.bFlag;
 scanData [1].segPath [nDestSeg].nDepth = 0;
@@ -491,6 +414,56 @@ scanData [1].nHead = 1;
 scanData [1].nRouteDir = (nCacheType != 0);
 scanData [1].nLinkSeg = 0;
 
+
+
+m_scanInfo.m_widFlag = m_widFlag;
+m_scanInfo.nLinkSeg = 0;
+m_scanInfo.bScanning = 3;
+
+FindPath ();
+
+return -1;
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+fix CSimpleBiDirRouter::BuildPath (void)
+{
+	fix	xDist = 0;
+	int	nLength = 0; 
+	short	nPredSeg, nSuccSeg;
+
+--m_scanInfo.nLinkSeg;
+for (int nDir = 0; nDir < 2; nDir++) {
+	tSegScanData& sd = m_scanData [nDir];
+	nSuccSeg = m_scanInfo.nLinkSeg;
+	for (;;) {
+		nPredSeg = sd.segPath [nSuccSeg].nPred;
+		if (nPredSeg == sd.m_nStartSeg) {
+			xDist += CFixVector::Dist (nDir ? m_p1 : m_p0, SEGMENTS [nSuccSeg].Center ());
+			break;
+			}
+		nLength++;
+		if (nLength > 2 * m_scanInfo.m_maxDepth + 2)
+			return -0x7FFFFFFF;
+		xDist += CFixVector::Dist (SEGMENTS [nPredSeg].Center (), SEGMENTS [nSuccSeg].Center ());
+		nSuccSeg = nPredSeg;
+		}
+	}
+if (m_cacheType >= 0) 
+	m_cache [m_cacheType].Add (m_scanData [0].m_nStartSeg, m_scanData [0].m_nDestSeg, nLength + 3, xDist);
+return xDist;
+}
+
+// -----------------------------------------------------------------------------
+
+fix CSimpleBiDirRouter::FindPath (void)
+{
+m_scanData [0].Setup (nStartSeg, nDestSeg, 0, m_scanInfo.bFlag);
+m_scanData [1].Setup (nDestSeg, nStartSeg, 1, m_scanInfo.bFlag);
+
 #if MULTITHREADED_SCAN
 if (gameStates.app.nThreads > 1) {
 	SDL_Thread* threads [2];
@@ -500,50 +473,70 @@ if (gameStates.app.nThreads > 1) {
 	SDL_WaitThread (threads [0], NULL);
 	SDL_WaitThread (threads [1], NULL);
 
-	if (((0 < (scanInfo.nLinkSeg = scanData [0].nLinkSeg)) && (scanInfo.nLinkSeg != scanData [0].nDestSeg + 1)) || 
-		 ((0 < (scanInfo.nLinkSeg = scanData [1].nLinkSeg)) && (scanInfo.nLinkSeg != scanData [1].nDestSeg + 1)))
-		return BuildPathBiDir (p0, p1, nCacheType);
+	if (((0 < (m_scanInfo.nLinkSeg = m_scanData [0].nLinkSeg)) && (m_scanInfo.nLinkSeg != m_scanData [0].m_nDestSeg + 1)) || 
+		 ((0 < (m_scanInfo.nLinkSeg = m_scanData [1].nLinkSeg)) && (m_scanInfo.nLinkSeg != m_scanData [1].m_nDestSeg + 1)))
+		return BuildPathBiDir (m_p0, m_p1, m_cacheType);
 	}
 else 
 #endif
 	{
 	for (;;) {
 		for (int nDir = 0; nDir < 2; nDir++) {
-			if (!(scanInfo.nLinkSeg = ExpandSegment (nDir)))
+			if (!(m_scanInfo.nLinkSeg = m_scanData.Expand ()))
 				continue;
-			if (scanInfo.nLinkSeg < 0)
-				goto errorExit;
+			if (m_scanInfo.nLinkSeg < 0)
+				return -1;
 			// destination segment reached
-			return BuildPathBiDir (p0, p1, nCacheType);
+			return BuildPath (m_p0, m_p1, m_cacheType);
 			}
 		}	
 	}
-
-errorExit:
-
-#else
-
-// uni-directional scanner
-
-scanInfo.nMaxDepth = nMaxDepth;
-
-for (;;) {
-	if (0 > (scanInfo.nLinkSeg = ExpandSegment (nDir)))
-		break;
-	if (scanInfo.nLinkSeg > 0)
-		// destination segment reached
-		return BuildPathUniDir (p0, p1, nCacheType);
-	}	
-
-#endif
-
-if (nCacheType >= 0) 
-	fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, 10000, I2X (10000));
-return -1;
-
-#endif
-
 }
 
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// uni-directional scanner
+
+fix CSimpleUniDirRouter::BuildPathUniDir (CFixVector& m_p0, CFixVector& m_p1, int nCacheType)
+{
+	fix	xDist;
+	int	nLength = 0; 
+	short	nPredSeg, nSuccSeg;
+
+nPredSeg = --m_scanInfo.nLinkSeg;
+xDist = CFixVector::Dist (m_p1, SEGMENTS [nPredSeg].Center ());
+for (;;) {
+	nPredSeg = m_scanData [0].segPath [nSuccSeg].nPred;
+	if (nPredSeg == m_scanData [0].m_nStartSeg)
+		break;
+	nLength++;
+	xDist += CFixVector::Dist (SEGMENTS [nPredSeg].Center (), SEGMENTS [nSuccSeg].Center ());
+	nSuccSeg = nPredSeg;
+	}
+xDist += CFixVector::Dist (m_p0, SEGMENTS [nSuccSeg].Center ());
+if (m_cacheType >= 0) 
+	m_cache [m_cacheType].Add (m_scanData [0].m_nStartSeg, m_scanData [0].m_nDestSeg, nLength + 3, xDist);
+return xDist;
+}
+
+// -----------------------------------------------------------------------------
+
+fix CSimpleUniDirRouter::Distance (CFixVector& m_p0, short m_nStartSeg, CFixVector& m_p1, short m_nDestSeg, int m_maxDepth, int m_widFlag, int nCacheType)
+{
+m_scanInfo.m_maxDepth = m_maxDepth;
+
+for (;;) {
+	if (0 > (m_scanInfo.nLinkSeg = ExpandSegment (nDir)))
+		return -1;
+	if (m_scanInfo.nLinkSeg > 0)
+		// destination segment reached
+		return BuildPathUniDir (m_p0, m_p1, m_cacheType);
+	}	
+}
+
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 //eof
