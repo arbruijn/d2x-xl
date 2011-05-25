@@ -215,6 +215,13 @@ return 1;
 #endif
 
 // -----------------------------------------------------------------------------
+
+int CRouter::SetSegment (short nSegment, CFixVector& p)
+{
+return (nSegment < 0) ? FindSegByPos (p, 0, 1, 0) : nSegment;
+}
+
+// -----------------------------------------------------------------------------
 //	Determine whether seg0 and seg1 are reachable in a way that allows sound to pass.
 //	Search up to a maximum m_nDepth of m_maxDepth.
 //	Return the distance.
@@ -229,21 +236,11 @@ fix CRouter::PathLength (CFixVector& p0, short nStartSeg, CFixVector& p1, short 
 	}
 #endif
 
+if (0 > (m_nStartSeg = SetSegment (nStartSeg, p0)))
+	return -1;
+m_nDestSeg = nDestSeg;
 m_p0 = p0;
 m_p1 = p1;
-
-m_nStartSeg = nStartSeg;
-if (m_nStartSeg < 0) {
-	m_nStartSeg = FindSegByPos (m_p0, 0, 1, 0);
-	if (m_nStartSeg < 0)
-		return -1;
-	}
-m_nDestSeg = nDestSeg;
-if (m_nDestSeg < 0) {
-	m_nDestSeg = FindSegByPos (m_p0, 0, 1, 0);
-	if (m_nDestSeg < 0)
-		return -1;
-	}
 
 // same segment?
 m_cacheType = nCacheType;
@@ -309,6 +306,8 @@ return xDist;
 
 fix CSimpleUniDirRouter::FindPath (void)
 {
+if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
+	return -1;
 m_scanInfo.Setup (&m_heap, m_widFlag, m_maxDepth);
 m_heap.Setup (m_nStartSeg, m_nDestSeg, 0, m_scanInfo.m_bFlag);
 
@@ -356,8 +355,9 @@ return xDist;
 
 fix CSimpleBiDirRouter::FindPath (void)
 {
+if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
+	return -1;
 m_scanInfo.Setup (m_heap, m_widFlag, m_maxDepth);
-
 m_heap [0].Setup (m_nStartSeg, m_nDestSeg, 0, m_scanInfo.m_bFlag);
 m_heap [1].Setup (m_nDestSeg, m_nStartSeg, 1, m_scanInfo.m_bFlag);
 
@@ -401,39 +401,47 @@ CDialHeap::tPathNode* route = m_heap.Route ();
 fix xDist = 0;
 for (int i = 1; i < j; i++)
 	xDist += SEGMENTS [route [i].nNode].m_childDists [0][route [i].nEdge];
-xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [j].nNode].Center ());
-if (m_cacheType >= 0) 
-	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, j + 2, xDist);
+if (m_nDestSeg >= 0) {
+	xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [j].nNode].Center ());
+	if (m_cacheType >= 0) 
+		m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, j + 2, xDist);
+	}
 return xDist;
 }
 
 // -----------------------------------------------------------------------------
+// Specialty: If m_nDestSeg < 0, then the paths to all segments reachable 
+// from m_nStartSeg is computed
 
 fix CDACSUniDirRouter::FindPath (void)
 {
 	ushort		nDist;
 	short			nSegment, nSide;
 	CSegment*	segP;
+	int nExpanded = 0;
 
 m_heap.Setup (m_nStartSeg);
-#if DBG
-int nExpanded = 0;
-#endif
+
 for (;;) {
 	nSegment = m_heap.Pop (nDist);
 	if (nSegment < 0)
-		return -1;
+		return (m_nDestSeg < 0) ? nExpanded : -1;
 	if (nSegment == m_nDestSeg)
 		return BuildPath (nSegment);
-#if DBG
 	nExpanded++;
-#endif
 	segP = SEGMENTS + nSegment;
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag))
 			m_heap.Push (segP->m_children [nSide], nSegment, nSide, nDist + (ushort) segP->m_childDists [1][nSide]);
 		}
 	}
+}
+
+// -----------------------------------------------------------------------------
+
+virtual fix CDACSUniDirRouter::Distance (short nSegment)
+{
+return BuildPath (nSegment);
 }
 
 // -----------------------------------------------------------------------------
@@ -480,10 +488,12 @@ return xDist;
 
 fix CDACSBiDirRouter::FindPath (void)
 {
-	short	nSegment;
-
+if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
+	return -1;
 m_heap [0].Setup (m_nSegments [0] = m_nStartSeg);
 m_heap [1].Setup (m_nSegments [1] = m_nDestSeg);
+
+	short	nSegment;
 
 for (;;) {
 	if (m_nSegments [0] >= 0) {

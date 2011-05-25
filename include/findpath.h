@@ -127,7 +127,11 @@ class CRouter {
 			m_cache [1].Flush ();
 			};
 
+		virtual fix Distance (short nSegment) { return -1; }
+
+
 	protected:
+		int SetSegment (short nSegment, CFixVector& p);
 		virtual fix FindPath (void) { return -1; }
 	};
 
@@ -185,6 +189,9 @@ class CDACSUniDirRouter : public CDACSRouter {
 
 	protected:
 		virtual fix FindPath (void);
+
+	public:
+		virtual fix Distance (short nSegment);
 };
 
 // -----------------------------------------------------------------------------

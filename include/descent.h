@@ -1829,6 +1829,7 @@ class CSegmentData {
 		CArray<CFixVector>		sideCenters;
 		CArray<ubyte>				bSegVis [2];
 		CArray<ubyte>				bVertVis;
+		CArray<fix>					segDist;
 		int							nVertices;
 		int							nFaceVerts;
 		int							nLastVertex;
@@ -1891,6 +1892,14 @@ class CSegmentData {
 				bSegVis [0][i >> 3] |= (1 << (i & 7));
 				}
 			return 1;
+			}
+
+		inline int SegDistIdx (int i, int j) {
+			return QUADMATIDX (i, j, nSegments);
+			}
+
+		inline int SegDist (int i, int j) {
+			return segDist [SegDistIdx (i, j)];
 			}
 
 		inline bool BuildGrid (int nSize, int bSkyBox) { return grids [bSkyBox].Create (nSize, bSkyBox); }
