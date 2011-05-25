@@ -54,20 +54,7 @@ class CPathNode {
 		short		m_nPred;
 	};
 
-class CScanInfo {
-	public:
-		uint	m_bFlag;
-		int	m_maxDepth;
-		int	m_widFlag;
-		short m_bScanning;
-		short	m_nLinkSeg;
-
-		int Setup (int nWidFlag, int nMaxDepth);
-		inline int Scanning (int nDir) {
-			m_bScanning &= ~(1 << nDir);
-			return m_bScanning;
-			}
-	};
+class CScanInfo;
 
 class CSimpleHeap {
 	public:
@@ -86,21 +73,39 @@ class CSimpleHeap {
 		short Expand (CScanInfo& scanInfo);
 
 	protected:
-		virtual bool Match (short nSegment, int nDir) { return false; }
+		virtual bool Match (short nSegment, CScanInfo& scanInfo) { return false; }
 };
+
+// -----------------------------------------------------------------------------
+
+class CScanInfo {
+	public:
+		uint				m_bFlag;
+		int				m_maxDepth;
+		int				m_widFlag;
+		short 			m_bScanning;
+		short				m_nLinkSeg;
+		CSimpleHeap*	m_heap;
+
+		int Setup (CSimpleHeap* heap, int nWidFlag, int nMaxDepth);
+		inline int Scanning (int nDir) {
+			m_bScanning &= ~(1 << nDir);
+			return m_bScanning;
+			}
+	};
 
 // -----------------------------------------------------------------------------
 
 class CSimpleUniDirHeap : public CSimpleHeap {
 	protected:
-		virtual bool Match (short nSegment, int nDir);
+		virtual bool Match (short nSegment, CScanInfo& scanInfo);
 };
 
 // -----------------------------------------------------------------------------
 
 class CSimpleBiDirHeap : public CSimpleHeap {
 	protected:
-		virtual bool Match (short nSegment, int nDir);
+		virtual bool Match (short nSegment, CScanInfo& scanInfo);
 };
 
 // -----------------------------------------------------------------------------
@@ -134,14 +139,13 @@ class CSimpleRouter : public CRouter {
 	protected:
 		virtual fix Scan (void);
 		virtual fix FindPath (void) { return -1; }
-		short Expand (int nDir, CSimpleHeap& sd);
 	};
 
 // -----------------------------------------------------------------------------
 
 class CSimpleUniDirRouter : public CSimpleRouter {
 	private:
-		CSimpleHeap	m_heap;
+		CSimpleHeap		m_heap;
 
 	private:
 		fix BuildPath (void);
@@ -155,7 +159,7 @@ class CSimpleUniDirRouter : public CSimpleRouter {
 
 class CSimpleBiDirRouter : public CSimpleRouter {
 	private:
-		CSimpleHeap	m_heap [2];
+		CSimpleHeap		m_heap [2];
 
 	private:
 		fix BuildPath (void);
@@ -177,7 +181,7 @@ class CDACSRouter : public CRouter {
 
 class CDACSUniDirRouter : public CDACSRouter {
 	private:
-		CDialHeap	m_heap [2];
+		CDialHeap	m_heap;
 
 	private:
 		fix BuildPath (short nSegment);
