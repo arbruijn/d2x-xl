@@ -52,6 +52,7 @@ class CPathNode {
 		uint		m_bVisited;
 		short		m_nDepth;
 		short		m_nPred;
+		short		m_nEdge;
 	};
 
 class CScanInfo;

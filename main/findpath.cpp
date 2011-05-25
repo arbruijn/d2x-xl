@@ -171,6 +171,7 @@ for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	if (pathNode.m_bVisited == scanInfo.m_bFlag)
 		continue;
 	pathNode.m_nPred = nPredSeg;
+	pathNode.m_nEdge = nSide;
 	if (Match (nSuccSeg, scanInfo))
 		return m_nLinkSeg = nSuccSeg + 1;
 	pathNode.m_bVisited = scanInfo.m_bFlag;
@@ -295,7 +296,7 @@ for (;;) {
 	if (nPredSeg == m_heap.m_nStartSeg)
 		break;
 	nLength++;
-	xDist += CFixVector::Dist (SEGMENTS [nPredSeg].Center (), SEGMENTS [nSuccSeg].Center ());
+	xDist += SEGMENTS [nPredSeg].m_childDists [0][m_heap.m_path [nSuccSeg].m_nEdge];
 	nSuccSeg = nPredSeg;
 	}
 xDist += CFixVector::Dist (m_p0, SEGMENTS [nSuccSeg].Center ());
@@ -342,7 +343,7 @@ for (int nDir = 0; nDir < 2; nDir++) {
 		nLength++;
 		if (nLength > 2 * m_scanInfo.m_maxDepth + 2)
 			return -0x7FFFFFFF;
-		xDist += CFixVector::Dist (SEGMENTS [nPredSeg].Center (), SEGMENTS [nSuccSeg].Center ());
+		xDist += SEGMENTS [nPredSeg].m_childDists [0][heap.m_path [nSuccSeg].m_nEdge];
 		nSuccSeg = nPredSeg;
 		}
 	}
