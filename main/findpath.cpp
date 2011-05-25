@@ -216,7 +216,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-int CRouter::SetSegment (short nSegment, CFixVector& p)
+int CRouter::SetSegment (const short nSegment, const CFixVector& p)
 {
 return (nSegment < 0) ? FindSegByPos (p, 0, 1, 0) : nSegment;
 }
@@ -226,7 +226,7 @@ return (nSegment < 0) ? FindSegByPos (p, 0, 1, 0) : nSegment;
 //	Search up to a maximum m_nDepth of m_maxDepth.
 //	Return the distance.
 
-fix CRouter::PathLength (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int nWidFlag, int nCacheType)
+fix CRouter::PathLength (const CFixVector& p0, const short nStartSeg, const CFixVector& p1, const short nDestSeg, const int nMaxDepth, const int nWidFlag, const int nCacheType)
 {
 #if 0 //DBG
 //if (!m_cacheType) 
@@ -439,7 +439,7 @@ for (;;) {
 
 // -----------------------------------------------------------------------------
 
-virtual fix CDACSUniDirRouter::Distance (short nSegment)
+fix CDACSUniDirRouter::Distance (short nSegment)
 {
 return BuildPath (nSegment);
 }

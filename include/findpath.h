@@ -121,7 +121,7 @@ class CRouter {
 		int			m_cacheType;
 
 	public:
-		fix PathLength (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int widFlag, int nCacheType);
+		fix PathLength (const CFixVector& p0, const short nStartSeg, const CFixVector& p1, const short nDestSeg, const int nMaxDepth, const int widFlag, const int nCacheType);
 		void Flush (void) {
 			m_cache [0].Flush ();
 			m_cache [1].Flush ();
@@ -131,7 +131,7 @@ class CRouter {
 
 
 	protected:
-		int SetSegment (short nSegment, CFixVector& p);
+		int SetSegment (const short nSegment, const CFixVector& p);
 		virtual fix FindPath (void) { return -1; }
 	};
 

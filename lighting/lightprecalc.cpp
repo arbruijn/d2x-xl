@@ -64,7 +64,7 @@ static int loadOp = 0;
 
 void ComputeSingleSegmentDistance (int nSegment)
 {
-	CDDACSUniDirRouter router;
+	CDACSUniDirRouter router;
 
 router.PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, 0x7FFFFFFF, WID_RENDPAST_FLAG | WID_FLY_FLAG, -1);
 for (int i = 0; i < gameData.segs.nSegments; i++)
