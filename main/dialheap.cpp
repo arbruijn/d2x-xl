@@ -21,7 +21,7 @@ m_index.Destroy ();
 m_cost.Destroy ();
 m_links.Destroy ();
 m_pred.Destroy ();
-m_side.Destroy ();
+m_edge.Destroy ();
 m_route.Destroy ();
 }
 
@@ -39,7 +39,7 @@ m_nIndex = 0;
 void CDialHeap::Setup (short nNode)
 {
 Reset ();
-Push (nNode, -1, 0);
+Push (nNode, -1, -1, 0);
 }
 
 //-----------------------------------------------------------------------------
