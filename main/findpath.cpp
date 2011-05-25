@@ -126,6 +126,7 @@ m_queue [0] = nStartSeg;
 m_nDestSeg = nDestSeg;
 m_nTail = 0;
 m_nHead = 1;
+m_bFlag = flag;
 m_nDir = dir;
 m_nLinkSeg = 0;
 }
@@ -242,15 +243,15 @@ m_nDestSeg = nDestSeg;
 m_p0 = p0;
 m_p1 = p1;
 
-#if !DBG
 if (m_nDestSeg >= 0) {
 	// same segment?
+#if !DBG
 	m_cacheType = nCacheType;
 	if ((m_cacheType >= 0) && (m_nStartSeg == m_nDestSeg)) {
 		m_cache [m_cacheType].SetPathLength (0);
 		return CFixVector::Dist (m_p0, m_p1);
 		}
-
+#endif
 	// adjacent segments?
 	short nSide = SEGMENTS [m_nStartSeg].ConnectedSide (SEGMENTS + m_nDestSeg);
 	if ((nSide != -1) && (SEGMENTS [m_nDestSeg].IsDoorWay (nSide, NULL) & m_widFlag)) {
@@ -258,15 +259,16 @@ if (m_nDestSeg >= 0) {
 		return CFixVector::Dist (m_p0, m_p1);
 		}
 
-	#if USE_FCD_CACHE
+#if !DBG
+#	if USE_FCD_CACHE
 	if (m_cacheType >= 0) {
 		fix xDist = m_cache [m_cacheType].Dist (m_nStartSeg, m_nDestSeg);
 		if (xDist >= 0)
 			return xDist;
 		}
-	#endif
-	}
+#	endif
 #endif
+	}
 
 m_maxDepth = nMaxDepth;
 m_widFlag = nWidFlag;
@@ -336,7 +338,7 @@ fix CSimpleBiDirRouter::BuildPath (void)
 
 --m_scanInfo.m_nLinkSeg;
 for (int nDir = 0; nDir < 2; nDir++) {
-	CSimpleHeap& heap = m_heap [nDir];
+	CSimpleBiDirHeap& heap = m_heap [nDir];
 	nSuccSeg = m_scanInfo.m_nLinkSeg;
 	for (;;) {
 		nPredSeg = heap.m_path [nSuccSeg].m_nPred;
