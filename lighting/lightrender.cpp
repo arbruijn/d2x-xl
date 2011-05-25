@@ -388,10 +388,9 @@ if (gameStates.render.nLightingMethod) {
 	int						bSkipHeadlight = !gameStates.render.nState && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bHeadlight);
 	fix						xMaxLightRange = SEGMENTS [nSegment].AvgRad () + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
 	CDynLight*				prl;
-	CFixVector&				vDestPos;
+	CFixVector&				vDestPos = SEGMENTS [nSegment].Center ();
 	CActiveDynLight*		activeLightsP = m_data.active [nThread].Buffer ();
 
-	vDestPos = SEGMENTS [nSegment].Center ();
 	lightManager.ResetAllUsed (0, nThread);
 	lightManager.ResetActive (nThread, 0);
 	while (i) {
