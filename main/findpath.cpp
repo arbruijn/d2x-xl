@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 CSimpleBiDirRouter simpleRouter [MAX_THREADS];
-CDACSUniDirRouter dacsRouter;
+CDACSUniDirRouter dacsRouter [MAX_THREADS];
 
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
@@ -394,6 +394,16 @@ else
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
+bool CDACSUniDirRouter::Create (int nNodes) 
+{ 
+if ((m_nNodes != nNodes) && !m_heap.Create (nNodes))
+	return false;
+m_nNodes = nNodes;
+return true;
+}
+
+// -----------------------------------------------------------------------------
+
 fix CDACSUniDirRouter::BuildPath (short nSegment)
 {
 int j = m_heap.BuildRoute (nSegment) - 2;
@@ -446,6 +456,16 @@ return BuildPath (nSegment);
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+bool CDACSBiDirRouter::Create (int nNodes) 
+{ 
+if ((m_nNodes != nNodes) && !(m_heap [0].Create (nNodes) && m_heap [1].Create (nNodes)))
+	return false;
+m_nNodes = nNodes;
+return true;
+}
+
 // -----------------------------------------------------------------------------
 
 int CDACSBiDirRouter::Expand (int nDir)

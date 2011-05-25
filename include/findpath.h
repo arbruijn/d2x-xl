@@ -115,20 +115,26 @@ class CRouter {
 	protected:
 		CFCDCache	m_cache [2];
 		CFixVector	m_p0, m_p1;
-		short			m_nStartSeg, m_nDestSeg;
+		short			m_nStartSeg;
+		short			m_nDestSeg;
 		int			m_maxDepth;
 		int			m_widFlag;
 		int			m_cacheType;
+		int			m_nNodes;
 
 	public:
+		explicit CRouter () : m_nNodes (0) {}
+
+		virtual bool Create (int nNodes) { return true; }
+
 		fix PathLength (const CFixVector& p0, const short nStartSeg, const CFixVector& p1, const short nDestSeg, const int nMaxDepth, const int widFlag, const int nCacheType);
+
 		void Flush (void) {
 			m_cache [0].Flush ();
 			m_cache [1].Flush ();
 			};
 
 		virtual fix Distance (short nSegment) { return -1; }
-
 
 	protected:
 		int SetSegment (const short nSegment, const CFixVector& p);
@@ -191,6 +197,8 @@ class CDACSUniDirRouter : public CDACSRouter {
 		virtual fix FindPath (void);
 
 	public:
+		virtual bool Create (int nNodes);
+
 		virtual fix Distance (short nSegment);
 };
 
@@ -208,6 +216,9 @@ class CDACSBiDirRouter : public CDACSRouter {
 
 	protected:
 		virtual fix FindPath (void);
+
+	public:
+		virtual bool Create (int nNodes);
 };
 
 // -----------------------------------------------------------------------------
@@ -215,7 +226,7 @@ class CDACSBiDirRouter : public CDACSRouter {
 // -----------------------------------------------------------------------------
 
 extern CSimpleBiDirRouter simpleRouter [MAX_THREADS];
-extern CDACSUniDirRouter dacsRouter;
+extern CDACSUniDirRouter dacsRouter [MAX_THREADS];
 
 // -----------------------------------------------------------------------------
 

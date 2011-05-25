@@ -7,6 +7,7 @@
 
 bool CDialHeap::Create (short nNodes)
 {
+Destroy ();
 m_nNodes = nNodes;
 if (!(m_index.Create (65536) && m_cost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes) && m_edge.Create (nNodes)))
 	return false;
