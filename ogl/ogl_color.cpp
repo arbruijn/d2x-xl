@@ -562,11 +562,11 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			vertColor += (lightColor * (float) pow (RdotE, vcd.fMatShininess));
 			}
 		}
+	vertColor /= fAttenuation;
 	if ((nSaturation < 2) || gameStates.render.bHaveLightmaps) {//sum up color components
-		colorSum = colorSum + vertColor * (1.0f / fAttenuation);
+		colorSum += vertColor;
 		}
 	else {	//use max. color components
-		vertColor = vertColor * fAttenuation;
 		nBrightness = sqri ((int) (vertColor.v.color.r * 1000)) + sqri ((int) (vertColor.v.color.g * 1000)) + sqri ((int) (vertColor.v.color.b * 1000));
 		if (nMaxBrightness < nBrightness) {
 			nMaxBrightness = nBrightness;

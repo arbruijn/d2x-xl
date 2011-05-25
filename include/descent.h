@@ -3541,7 +3541,7 @@ return 1.0f - float (alpha) / float (FADE_LEVELS);
 
 #define G3_INFINITY			fInfinity [gameOpts->render.shadows.nReach]
 
-#define MAX_LIGHT_RANGE	I2X (250)
+#define MAX_LIGHT_RANGE	I2X (220)
 
 //	-----------------------------------------------------------------------------------------------------------
 

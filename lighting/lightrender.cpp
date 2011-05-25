@@ -543,10 +543,14 @@ if (gameStates.render.nLightingMethod) {
 #else
 				prl->render.xDistance = fix (simpleRouter [nThread].PathLength (*vPixelPos, nSegment, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0) / prl->info.fRange);
 #endif
-				if ((prl->render.xDistance < 0) || (prl->render.xDistance > 4 * xMaxLightRange / 3))
+				if ((prl->render.xDistance < 0) || (prl->render.xDistance > xMaxLightRange))
 					continue;
 				}
 			}
+#if DBG
+		if (prl->info.bDiffuse [nThread] && (nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+			nDbgSeg = nDbgSeg;
+#endif
 		SetActive (activeLightsP, prl, 1, nThread, bForce);
 		}
 	}
