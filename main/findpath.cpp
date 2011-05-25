@@ -359,7 +359,7 @@ return xDist;
 fix CSimpleBiDirRouter::FindPath (void)
 {
 if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
-	return 0x7FFFFFFF;
+	return -1;
 
 m_scanInfo.Setup (m_heap, m_widFlag, m_maxDepth);
 m_heap [0].Setup (m_nStartSeg, m_nDestSeg, 0, m_scanInfo.m_bFlag);
@@ -411,7 +411,7 @@ return true;
 fix CDACSUniDirRouter::BuildPath (short nSegment)
 {
 if (m_heap.Cost (nSegment) == 0xFFFF)
-	return 0x7FFFFFFF;
+	return -1;
 
 	int j = m_heap.BuildRoute (nSegment);
 
@@ -420,7 +420,7 @@ if (m_nDestSeg >= 0)
 CDialHeap::tPathNode* route = m_heap.Route ();
 fix xDist = 0;
 for (int i = 1; i < j; i++)
-	xDist += SEGMENTS [route [i].nNode].m_childDists [0][route [i].nEdge];
+	xDist += SEGMENTS [route [i - 1].nNode].m_childDists [0][route [i].nEdge];
 if (m_nDestSeg >= 0) {
 	xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [j].nNode].Center ());
 	if (m_cacheType >= 0) 
@@ -517,7 +517,7 @@ if (m_nSegments [1] >= 0)
 	j += m_heap [1].BuildRoute (nSegment, 1, m_route + j);
 fix xDist = 0;
 for (int i = 1; i < j; i++)
-	xDist += SEGMENTS [m_route [i].nNode].m_childDists [0][m_route [i].nEdge];
+	xDist += SEGMENTS [m_route [i - 1].nNode].m_childDists [0][m_route [i].nEdge];
 xDist += CFixVector::Dist (m_p0, SEGMENTS [m_route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [m_route [j].nNode].Center ());
 if (m_cacheType >= 0) 
 	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, j + 2, xDist);
