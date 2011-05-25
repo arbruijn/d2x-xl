@@ -221,8 +221,8 @@ if (bStatic || m_data.variableVertLights [nVertex]) {
 	short					i, j, nActiveLightI = sliP->nActive;
 	CDynLight*			prl;
 	CActiveDynLight*	activeLightsP = m_data.active [nThread].Buffer ();
-	CFixVector			vVertex = gameData.segs.vertices [nVertex], vLightToVertex;
-	//fix					xLightDist, xMaxLightRange = /*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE;
+	CFixVector			vVertex = gameData.segs.vertices [nVertex];
+	fix					xMaxLightRange = /*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE;
 
 #if DBG
 if (nVertex == nDbgVertex)
@@ -262,8 +262,8 @@ if (nVertex == nDbgVertex)
 		if (!prl->Contribute (nSegment, vVertex, xMaxLightRange, 1.0f, (prl->info.nSegment >= 0) ? -SEGMENTS [prl->info.nSegment].AvgRad () : 0, nThread))
 			continue;
 #else
-		vLightToVertex = vVertex - prl->info.vPos;
-		xLightDist = CFixVector::Normalize (vLightToVertex.Mag ());
+		CFixVector vLightToVertex = vVertex - prl->info.vPos;
+		fix xLightDist = CFixVector::Normalize (vLightToVertex.Mag ());
 		if ((prl->info.bDiffuse [nThread] = gameData.segs.LightVis (prl->info.nSegment, nSegment) && prl->SeesPoint (vNormal, &vLightToVertex)) || (nSegment < 0))
 			prl->render.xDistance [nThread] = fix (xLightDist / prl->info.fRange);
 		else if (nSegment >= 0) {
