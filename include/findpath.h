@@ -57,13 +57,19 @@ class CPathNode {
 class CScanInfo {
 	public:
 		uint	m_bFlag;
-		int	m_nMaxDepth;
+		int	m_maxDepth;
 		int	m_widFlag;
 		short m_bScanning;
 		short	m_nLinkSeg;
+
+		int Setup (int nWidFlag, int nMaxDepth);
+		inline int Scanning (int nDir) {
+			m_bScanning &= ~(1 << nDir);
+			return m_bScanning;
+			}
 	};
 
-class CScanData {
+class CSimpleHeap {
 	public:
 		CPathNode	m_path [MAX_SEGMENTS_D2X];
 		short			m_queue [MAX_SEGMENTS_D2X];
@@ -74,43 +80,46 @@ class CScanData {
 		short			m_nHead;
 		short			m_nTail;
 		int			m_nDir;
+		int			m_nMaxDepth;
 
 		void Setup (short nStartSeg, short nDestSeg, uint flag, int dir);
 		short Expand (CScanInfo& scanInfo);
 
 	protected:
-		virtual bool Match (short nSegment, short nDir) { return false; }
+		virtual bool Match (short nSegment, int nDir) { return false; }
 };
 
 // -----------------------------------------------------------------------------
 
-class CUniDirScanData : public CScanData {
+class CSimpleUniDirHeap : public CSimpleHeap {
 	protected:
-		virtual bool Match (short nSegment, short nDir);
+		virtual bool Match (short nSegment, int nDir);
 };
 
 // -----------------------------------------------------------------------------
 
-class CBiDirScanData : public CScanData {
+class CSimpleBiDirHeap : public CSimpleHeap {
 	protected:
-		virtual bool Match (short nSegment, short nDir);
+		virtual bool Match (short nSegment, int nDir);
 };
 
 // -----------------------------------------------------------------------------
 
 class CRouter {
-	private:
-		tSegScanInfo	m_scanInfo; // {0xFFFFFFFF, 0, 0, 3, -1}
-		tSegScanData	m_scanData [2];
-		CFCDCache		m_cache [2];
-		CFixVector		m_p0, m_p1;
-		short				m_nStartSeg, m_nDestSeg;
-		int				m_maxDepth;
-		int				m_widFlag;
-		int				m_cacheType;
+	protected:
+		CFCDCache	m_cache [2];
+		CFixVector	m_p0, m_p1;
+		short			m_nStartSeg, m_nDestSeg;
+		int			m_maxDepth;
+		int			m_widFlag;
+		int			m_cacheType;
 
 	public:
 		fix Distance (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int widFlag, int nCacheType);
+		void Flush (void) {
+			m_cache [0].Flush ();
+			m_cache [1].Flush ();
+			};
 
 	protected:
 		virtual fix Scan (void) { return -1; }
@@ -125,14 +134,14 @@ class CSimpleRouter : public CRouter {
 	protected:
 		virtual fix Scan (void);
 		virtual fix FindPath (void) { return -1; }
-		short Expand (int nDir, CScanData& sd);
+		short Expand (int nDir, CSimpleHeap& sd);
 	};
 
 // -----------------------------------------------------------------------------
 
 class CSimpleUniDirRouter : public CSimpleRouter {
 	private:
-		CScanData	m_scanData;
+		CSimpleHeap	m_heap;
 
 	private:
 		fix BuildPath (void);
@@ -146,7 +155,7 @@ class CSimpleUniDirRouter : public CSimpleRouter {
 
 class CSimpleBiDirRouter : public CSimpleRouter {
 	private:
-		CScanData	m_scanData [2];
+		CSimpleHeap	m_heap [2];
 
 	private:
 		fix BuildPath (void);
