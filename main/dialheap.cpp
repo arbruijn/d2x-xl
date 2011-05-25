@@ -8,7 +8,7 @@
 bool CDialHeap::Create (short nNodes)
 {
 m_nNodes = nNodes;
-if (!(m_index.Create (65536) && m_cost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes)))
+if (!(m_index.Create (65536) && m_cost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes) && m_edge.Create (nNodes)))
 	return false;
 return true;
 }
@@ -21,6 +21,7 @@ m_index.Destroy ();
 m_cost.Destroy ();
 m_links.Destroy ();
 m_pred.Destroy ();
+m_side.Destroy ();
 m_route.Destroy ();
 }
 
@@ -43,7 +44,7 @@ Push (nNode, -1, 0);
 
 //-----------------------------------------------------------------------------
 
-bool CDialHeap::Push (short nNode, short nPredNode, ushort nNewCost)
+bool CDialHeap::Push (short nNode, short nPredNode, short nEdge, ushort nNewCost)
 {
 	ushort nOldCost = m_cost [nNode];
 
@@ -74,6 +75,7 @@ m_links [nNode] = m_index [nIndex];
 m_index [nIndex] = nNode;
 m_cost [nNode] = nNewCost;
 m_pred [nNode] = nPredNode;
+m_edge [nNode] = nEdge;
 return true;
 }
 
@@ -108,7 +110,7 @@ return i + 1;
 
 //-----------------------------------------------------------------------------
 
-short CDialHeap::BuildRoute (short nNode, int bReverse, short* route)
+short CDialHeap::BuildRoute (short nNode, int bReverse, tPathNode* route)
 {
 	short	h = RouteLength (nNode);
 
@@ -120,13 +122,15 @@ if (!route) {
 
 if (bReverse) {
 	for (int i = 0; i < h; i++) {
-		route [i] = nNode;
+		route [i].nNode = nNode;
+		route [i].nEdge = m_edge [nNode];
 		nNode = m_pred [nNode];
 		}
 	}
 else {
 	for (int i = h - 1; i >= 0; i--) {
-		route [i] = nNode;
+		route [i].nNode = nNode;
+		route [i].nEdge = m_edge [nNode];
 		nNode = m_pred [nNode];
 		}
 	}

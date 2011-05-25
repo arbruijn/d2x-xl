@@ -396,11 +396,11 @@ else
 fix CDACSUniDirRouter::BuildPath (short nSegment)
 {
 int j = m_heap.BuildRoute (nSegment) - 2;
-short* route = m_heap.Route ();
+CDialHeap::tPathNode* route = m_heap.Route ();
 fix xDist = 0;
 for (int i = 1; i < j; i++)
-	xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
-xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [j]].Center ());
+	xDist += SEGMENTS [route [i].nNode].m_childDists [0][route [i].nEdge];
+xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [j].nNode].Center ());
 if (m_cacheType >= 0) 
 	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, j + 2, xDist);
 return xDist;
@@ -430,7 +430,7 @@ for (;;) {
 	segP = SEGMENTS + nSegment;
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag))
-			m_heap.Push (segP->m_children [nSide], nSegment, nDist + (ushort) segP->m_childDists [1][nSide]);
+			m_heap.Push (segP->m_children [nSide], nSegment, nSide, nDist + (ushort) segP->m_childDists [1][nSide]);
 		}
 	}
 }
@@ -451,7 +451,7 @@ if (m_heap [!nDir].Popped (nSegment))
 CSegment* segP = SEGMENTS + nSegment;
 for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag))
-		m_heap [nDir].Push (segP->m_children [nSide], nSegment, nDist + (ushort) segP->m_childDists [1][nSide]);
+		m_heap [nDir].Push (segP->m_children [nSide], nSegment, nSide, nDist + (ushort) segP->m_childDists [1][nSide]);
 	}
 return nSegment;
 }
@@ -468,8 +468,8 @@ if (m_nSegments [1] >= 0)
 	j += m_heap [1].BuildRoute (nSegment, 1, m_route + j);
 fix xDist = 0;
 for (int i = 1; i < j; i++)
-	xDist += CFixVector::Dist (SEGMENTS [m_route [i]].Center (), SEGMENTS [m_route [i + 1]].Center ());
-xDist += CFixVector::Dist (m_p0, SEGMENTS [m_route [1]].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [m_route [j]].Center ());
+	xDist += SEGMENTS [m_route [i].nNode].m_childDists [0][m_route [i].nEdge];
+xDist += CFixVector::Dist (m_p0, SEGMENTS [m_route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [m_route [j].nNode].Center ());
 if (m_cacheType >= 0) 
 	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, j + 2, xDist);
 return xDist;

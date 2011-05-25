@@ -190,9 +190,9 @@ class CDACSUniDirRouter : public CDACSRouter {
 
 class CDACSBiDirRouter : public CDACSRouter {
 	private:
-		CDialHeap	m_heap [2];
-		short			m_route [2 * MAX_SEGMENTS_D2X];
-		short			m_nSegments [2];
+		CDialHeap				m_heap [2];
+		CDialHeap::tPathNode	m_route [2 * MAX_SEGMENTS_D2X];
+		short						m_nSegments [2];
 
 	private:
 		int Expand (int nDir);

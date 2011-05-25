@@ -7,33 +7,35 @@
 #include "carray.h"
 
 class CDialHeap {
-	struct tHeapIndex {
-		short		nNode;
-		ushort	nCost;
-	} tHeapIndex;
+	public:
+		typedef struct tPathNode {
+			short		nNode;
+			short		nEdge;
+		} tPathNode;
 
 	private:
-		CShortArray		m_index;
-		CUShortArray	m_cost;
-		CShortArray		m_links;
-		CShortArray		m_pred;
-		CShortArray		m_route;
-		short				m_nNodes;
-		ushort			m_nIndex;
+		CShortArray			m_index;
+		CUShortArray		m_cost;
+		CShortArray			m_links;
+		CShortArray			m_pred;
+		CShortArray			m_edge;
+		CArray<tPathNode>	m_route;
+		short					m_nNodes;
+		ushort				m_nIndex;
 
 	public:
 		bool Create (short nNodes);
 		void Destroy (void);
 		void Reset (void);
 		void Setup (short nNode);
-		bool Push (short nNode, short nPredNode, ushort nCost);
+		bool Push (short nNode, short nPredNode, short nSide, ushort nCost);
 		short Pop (ushort &nCost);
 		short RouteLength (short nNode);
-		short BuildRoute (short nNode, int bReverse = 0, short *route = NULL);
+		short BuildRoute (short nNode, int bReverse = 0, tPathNode* route = NULL);
 		inline ushort Cost (short nNode) { return m_cost [nNode]; }
 		inline bool Pushed (short nNode) { return Cost (nNode) < 0xFFFF; }
 		inline bool Popped (short nNode) { return Cost (nNode) == 0; }
-		inline short* Route (void) { return m_route.Buffer (); }
+		inline tPathNode* Route (void) { return m_route.Buffer (); }
 };
 
 
