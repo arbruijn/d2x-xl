@@ -265,6 +265,7 @@ if (m_cacheType >= 0) {
 #endif
 
 m_maxDepth = nMaxDepth;
+m_widFlag = nWidFlag;
 
 fix distance = FindPath ();
 
