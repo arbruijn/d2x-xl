@@ -130,6 +130,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "multi.h"
 #include "addon_bitmaps.h"
 #include "marker.h"
+#include "findpath.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
@@ -2153,11 +2154,9 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		if (j != gameData.multiplayer.nLocalPlayer) {
 			objP = OBJECTS + gameData.multiplayer.players [j].nObject;
 			if ((objP->info.nType == OBJ_PLAYER)) {
-				xDist = PathLength (objP->info.position.vPos,
-														 objP->info.nSegment,
-														 gameData.multiplayer.playerInit [i].position.vPos,
-														 gameData.multiplayer.playerInit [i].nSegment,
-														 10, WID_FLY_FLAG, -1);	//	Used to be 5, search up to 10 segments
+				xDist = simpleRouter.PathLength (objP->info.position.vPos, objP->info.nSegment,
+														   gameData.multiplayer.playerInit [i].position.vPos, gameData.multiplayer.playerInit [i].nSegment,
+														   10, WID_FLY_FLAG, -1);	//	Used to be 5, search up to 10 segments
 				if (xDist < 0)
 					continue;
 				if (spawnMap [i].xDist > xDist)

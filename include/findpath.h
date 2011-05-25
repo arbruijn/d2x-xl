@@ -120,7 +120,7 @@ class CRouter {
 		int			m_cacheType;
 
 	public:
-		fix Distance (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int widFlag, int nCacheType);
+		fix PathLength (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int widFlag, int nCacheType);
 		void Flush (void) {
 			m_cache [0].Flush ();
 			m_cache [1].Flush ();
@@ -210,6 +210,10 @@ class CDACSBiDirRouter : public CDACSRouter {
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
+extern CSimpleBiDirRouter simpleRouter;
+extern CDACSUniDirRouter dacsRouter;
+
+// -----------------------------------------------------------------------------
 
 #endif
 

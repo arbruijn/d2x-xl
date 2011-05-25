@@ -23,6 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 #include "error.h"
 #include "segmath.h"
+#include "findpath.h"
 #include "cockpit.h"
 #include "text.h"
 #include "fireball.h"
@@ -978,7 +979,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 			pnt = segP->SideCenter (nSide);
 			dist = CFixVector::Dist(pnt, objP->info.position.vPos);
 			if (dist < damage / 2) {
-				dist = PathLength (pnt, segP->Index (), objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, -1);
+				dist = simpleRouter.PathLength (pnt, segP->Index (), objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, -1);
 				if ((dist > 0) && (dist < damage / 2) &&
 					 segP->CheckEffectBlowup (nSide, pnt, (objP->cType.laserInfo.parent.nObject < 0) ? NULL : OBJECTS + objP->cType.laserInfo.parent.nObject, 1))
 						segP->OperateTrigger (nSide, OBJECTS + objP->cType.laserInfo.parent.nObject, 1);

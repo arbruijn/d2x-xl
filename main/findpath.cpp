@@ -41,6 +41,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "dialheap.h"
 #endif
 
+CSimpleBiDirRouter simpleRouter;
+CDACSUniDirRouter dacsRouter;
+
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
@@ -215,7 +218,7 @@ return 1;
 //	Search up to a maximum m_nDepth of m_maxDepth.
 //	Return the distance.
 
-fix CRouter::Distance (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int nWidFlag, int nCacheType)
+fix CRouter::PathLength (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int nWidFlag, int nCacheType)
 {
 #if 0 //DBG
 //if (!m_cacheType) 

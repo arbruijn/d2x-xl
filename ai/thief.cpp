@@ -23,6 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "text.h"
 #include "network.h"
+#include "findpath.h"
 #include "segmath.h"
 #include "cockpit.h"
 #include "dropobject.h"
@@ -137,8 +138,9 @@ void DoThiefFrame (CObject *objP)
 
 			ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 
-			connectedDistance = PathLength (objP->info.position.vPos, objP->info.nSegment, gameData.ai.target.vBelievedPos, 
-																	 gameData.ai.target.nBelievedSeg, 30, WID_FLY_FLAG, 1);
+			connectedDistance = simpleRouter.PathLength (objP->info.position.vPos, objP->info.nSegment, 
+																		gameData.ai.target.vBelievedPos, gameData.ai.target.nBelievedSeg, 
+																		30, WID_FLY_FLAG, 1);
 			if (connectedDistance < I2X (500)) {
 				CreatePathToTarget(objP, 30, 1);
 				ailp->mode = AIM_THIEF_ATTACK;

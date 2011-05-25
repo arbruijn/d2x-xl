@@ -31,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "text.h"
 #include "kconfig.h"
+#include "findpath.h"
 #include "segmath.h"
 #include "midi.h"
 #include "audio.h"
@@ -161,7 +162,7 @@ if (distance < maxDistance) {
 		nSearchSegs = 3;
 	pathDistance = gameData.segs.SegVis (nListenerSeg, nSoundSeg) 
 						? distance
-						: PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
+						: simpleRouter.PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
 	if (pathDistance > -1) {
 		if (!nDecay)
 #if 1

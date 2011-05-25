@@ -7,6 +7,7 @@
 #include "text.h"
 #include "u_mem.h"
 #include "timer.h"
+#include "findpath.h"
 #include "segmath.h"
 #include "network.h"
 #include "network_lib.h"
@@ -254,7 +255,7 @@ while (nSegment == -1) {
 	//bail if not far enough from original position
 	if (nSegment > -1) {
 		tempv = segP->Center ();
-		nDist = PathLength (*vPlayerPos, nPlayerSeg, tempv, nSegment, -1, WID_FLY_FLAG, -1);
+		nDist = simpleRouter.PathLength (*vPlayerPos, nPlayerSeg, tempv, nSegment, -1, WID_FLY_FLAG, -1);
 		if ((nDist < 0) || (nDist >= I2X (20) * nDepth))
 			break;
 		}

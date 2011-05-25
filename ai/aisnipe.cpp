@@ -22,6 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 #include "error.h"
 #include "segmath.h"
+#include "findpath.h"
 
 #include "string.h"
 
@@ -70,8 +71,9 @@ void DoSnipeWait (CObject *objP, tAILocalInfo *ailP)
 if ((gameData.ai.target.xDist > I2X (50)) && (ailP->nextActionTime > 0))
 	return;
 ailP->nextActionTime = SNIPE_WAIT_TIME;
-xConnectedDist = PathLength (objP->info.position.vPos, objP->info.nSegment, gameData.ai.target.vBelievedPos, 
-													 gameData.ai.target.nBelievedSeg, 30, WID_FLY_FLAG, 1);
+xConnectedDist = simpleRouter.PathLength (objP->info.position.vPos, objP->info.nSegment, 
+														gameData.ai.target.vBelievedPos, gameData.ai.target.nBelievedSeg, 
+														30, WID_FLY_FLAG, 1);
 if (xConnectedDist < MAX_SNIPE_DIST) {
 	CreatePathToTarget (objP, 30, 1);
 	ailP->mode = AIM_SNIPE_ATTACK;

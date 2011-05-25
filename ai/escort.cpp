@@ -28,6 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "escort.h"
 #include "playerprofile.h"
 #include "network.h"
+#include "findpath.h"
 #include "segmath.h"
 #include "headlight.h"
 #include "visibility.h"
@@ -790,8 +791,9 @@ else {
 			BuddyMessage (TXT_CANT_REACH, GT (nEscortGoalText [gameData.escort.nGoalObject-1]));
 			gameData.escort.bSearchingMarker = -1;
 			gameData.escort.nGoalObject = ESCORT_GOAL_SCRAM;
-			xDistToPlayer = PathLength (objP->info.position.vPos, objP->info.nSegment, gameData.ai.target.vBelievedPos, 
-												 gameData.ai.target.nBelievedSeg, 100, WID_FLY_FLAG, 1);
+			xDistToPlayer = simpleRouter.PathLength (objP->info.position.vPos, objP->info.nSegment, 
+																  gameData.ai.target.vBelievedPos, gameData.ai.target.nBelievedSeg, 
+																  100, WID_FLY_FLAG, 1);
 			if (xDistToPlayer > MIN_ESCORT_DISTANCE)
 				CreatePathToTarget (objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
 			else {

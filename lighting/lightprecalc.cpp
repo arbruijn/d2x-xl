@@ -16,6 +16,7 @@
 #include "error.h"
 #include "lightmap.h"
 #include "rendermine.h"
+#include "findpath.h"
 #include "segmath.h"
 #include "menu.h"
 #include "netmisc.h"
@@ -211,7 +212,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 				CSide* sideP = SEGMENTS [pl->info.nSegment].m_sides + pl->info.nSide;
 				if ((CFixVector::Dot (sideP->m_normals [0], vLightToVert) < 0) &&
 					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals [1], vLightToVert) < 0))) {
-					h = PathLength (VERTICES [nVertex], -1, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
+					h = simpleRouter.PathLength (VERTICES [nVertex], -1, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
 					if (h > 4 * MAX_LIGHT_RANGE / 3 * pl->info.fRange)
 						continue;
 					}
