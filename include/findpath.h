@@ -155,7 +155,7 @@ class CSimpleRouter : public CRouter {
 
 class CSimpleUniDirRouter : public CSimpleRouter {
 	private:
-		CSimpleHeap		m_heap;
+		CSimpleUniDirHeap	m_heap;
 
 	private:
 		fix BuildPath (void);
@@ -168,7 +168,7 @@ class CSimpleUniDirRouter : public CSimpleRouter {
 
 class CSimpleBiDirRouter : public CSimpleRouter {
 	private:
-		CSimpleHeap		m_heap [2];
+		CSimpleBiDirHeap	m_heap [2];
 
 	private:
 		fix BuildPath (void);

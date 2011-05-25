@@ -312,7 +312,7 @@ fix CSimpleUniDirRouter::FindPath (void)
 if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
 	return -1;
 m_scanInfo.Setup (&m_heap, m_widFlag, m_maxDepth);
-m_heap.Setup (m_nStartSeg, m_nDestSeg, 0, m_scanInfo.m_bFlag);
+m_heap.Setup (m_nStartSeg, m_nDestSeg, m_scanInfo.m_bFlag, 0);
 
 for (;;) {
 	if (0 > (m_scanInfo.m_nLinkSeg = m_heap.Expand (m_scanInfo)))
@@ -362,8 +362,8 @@ if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
 	return -1;
 
 m_scanInfo.Setup (m_heap, m_widFlag, m_maxDepth);
-m_heap [0].Setup (m_nStartSeg, m_nDestSeg, 0, m_scanInfo.m_bFlag);
-m_heap [1].Setup (m_nDestSeg, m_nStartSeg, 1, m_scanInfo.m_bFlag);
+m_heap [0].Setup (m_nStartSeg, m_nDestSeg, m_scanInfo.m_bFlag, 0);
+m_heap [1].Setup (m_nDestSeg, m_nStartSeg, m_scanInfo.m_bFlag, 1);
 
 #if MULTITHREADED_SCAN
 if (gameStates.app.nThreads > 1) {
