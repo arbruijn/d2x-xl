@@ -30,6 +30,27 @@
 
 //------------------------------------------------------------------------------
 
+
+static inline fix LightPathLength (CDynLight* prl, const short nSegment, const CFixVector& vPos)
+{
+#if FASTROUTE
+return fix (gameData.segs.SegDist (prl->info.nSegment, nSegment) / prl->info.fRange);
+#else
+#	if 0 //DBG
+fix d1 = prl->render.xDistance = gameData.segs.SegDist (prl->info.nSegment, nSegment);
+fix d2 = prl->render.xDistance = simpleRouter [nThread].PathLength (prl->info.vPos, prl->info.nSegment, vPos, nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
+if (d2 < 9 * d1 / 10) {
+	d2 = prl->render.xDistance = simpleRouter [nThread].PathLength (prl->info.vPos, prl->info.nSegment, vPos, nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
+	d1 = d2;
+	}
+#	else
+	return fix (simpleRouter [nThread].PathLength (prl->info.vPos, prl->info.nSegment, vPos, nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0) / prl->info.fRange);
+#	endif
+#endif
+}
+
+//------------------------------------------------------------------------------
+
 void CLightManager::Transform (int bStatic, int bVariable)
 {
 	int			i;
@@ -261,23 +282,11 @@ if (nVertex == nDbgVertex)
 			}
 		vLightToVertex = vVertex - prl->info.vPos;
 		xLightDist = vLightToVertex.Mag ();
-		if ((prl->info.bDiffuse [nThread] = gameData.segs.LightVis (prl->info.nSegment, nSegment) && prl->SeesPoint (vNormal, vLightToVertex / xLightDist)) || (nSegment < 0))
+		vLightToVertex /= xLightDist;
+		if ((prl->info.bDiffuse [nThread] = gameData.segs.LightVis (prl->info.nSegment, nSegment) && prl->SeesPoint (vNormal, &vLightToVertex)) || (nSegment < 0))
 			prl->render.xDistance = fix (xLightDist / prl->info.fRange);
 		else if (nSegment >= 0) {
-#if FASTROUTE
-			prl->render.xDistance = fix (gameData.segs.SegDist (prl->info.nSegment, nSegment) / prl->info.fRange);
-#else
-#	if 0 //DBG
-			fix d1 = prl->render.xDistance = gameData.segs.SegDist (prl->info.nSegment, nSegment);
-			fix d2 = prl->render.xDistance = simpleRouter [nThread].PathLength (vVertex, nSegment, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
-			if (d2 < 9 * d1 / 10) {
-				d2 = prl->render.xDistance = simpleRouter [nThread].PathLength (vVertex, nSegment, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
-				d1 = d2;
-				}
-#	else
-			prl->render.xDistance = fix (simpleRouter [nThread].PathLength (vVertex, nSegment, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0) / prl->info.fRange);
-#	endif
-#endif
+			prl->render.xDistance = LightPathLength (prl, nSegment, vVertex);
 			if (prl->render.xDistance < 0)
 				continue;
 			}
@@ -420,6 +429,7 @@ if (gameStates.render.nLightingMethod) {
 			prl = prl;
 #endif
 		nType = prl->info.nType;
+		prl->info.bDiffuse [nThread] = 1;
 		if (nType == 3) {
 			if (bSkipHeadlight)
 				continue;
@@ -447,7 +457,15 @@ if (gameStates.render.nLightingMethod) {
 		prl->render.xDistance = (fix) ((float) CFixVector::Dist (c, prl->info.vPos) / (prl->info.fRange * max (prl->info.fRad, 1.0f)));
 		if (prl->render.xDistance > xMaxLightRange)
 			continue;
-		prl->info.bDiffuse [nThread] = 1;
+		if (prl->info.bDiffuse [nThread]) {
+			CFixVector* vPos = &SEGMENTS [nSegment].Center ();
+			prl->info.bDiffuse [nThread] = prl->SeesPoint (vPos, NULL);
+			if (!prl->info.bDiffuse [nThread]) {
+				prl->render.xDistance = LightPathLength (prl, nSegment, vPos);
+				if (prl->render.xDistance > xMaxLightRange)
+					continue;
+				}
+			}
 #if DBG
 		if (SetActive (activeLightsP, prl, 1, nThread)) {
 			if ((nSegment == nDbgSeg) && (nDbgObj >= 0) && (prl->info.nObject == nDbgObj))
@@ -534,14 +552,12 @@ if (gameStates.render.nLightingMethod) {
 			prl->render.xDistance = (fix) ((xLightDist /*- F2X (prl->info.fRad)*/) / prl->info.fRange);
 			if (prl->render.xDistance > xMaxLightRange)
 				continue;
-			if (prl->info.bDiffuse [nThread])
-				prl->info.bDiffuse [nThread] = prl->SeesPoint (nSegment, nSide, vLightToPixel / xLightDist);
+			if (prl->info.bDiffuse [nThread]) {
+				vLightToPixel /= xLightDist;
+				prl->info.bDiffuse [nThread] = prl->SeesPoint (nSegment, nSide, &vLightToPixel);
+				}
 			if (!prl->info.bDiffuse [nThread]) {
-#if FASTROUTE
-				prl->render.xDistance = fix (gameData.segs.SegDist (prl->info.nSegment, nSegment) / prl->info.fRange);
-#else
-				prl->render.xDistance = fix (simpleRouter [nThread].PathLength (*vPixelPos, nSegment, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0) / prl->info.fRange);
-#endif
+				prl->render.xDistance = LightPathLength (prl->info.vPos, nSegment, *vPixelPos);
 				if ((prl->render.xDistance < 0) || (prl->render.xDistance > xMaxLightRange))
 					continue;
 				}

@@ -583,24 +583,26 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CDynLight::SeesPoint (CFixVector* vNormal, CFixVector vPoint)
+int CDynLight::SeesPoint (CFixVector* vNormal, CFixVector* vPoint)
 {
 	CFloatVector v;
 
 if (vNormal) {
 	v.Assign (*vNormal);
-	if (CFloatVector::Dot (v, info.vDirf) > 0) // light doesn't "see" face
+	if (CFloatVector::Dot (v, info.vDirf) > 0.0f) // light doesn't "see" face
 		return 0;
 	}
-v.Assign (vPoint);
-if (CFloatVector::Dot (v, info.vDirf) < 0.0f) // light doesn't see point
-	return 0;
+if (vPoint) {
+	v.Assign (*vPoint);
+	if (CFloatVector::Dot (v, info.vDirf) < 0.0f) // light doesn't see point
+		return 0;
+	}
 return 1;	
 }
 
 //------------------------------------------------------------------------------
 
-int CDynLight::SeesPoint (short nSegment, short nSide, CFixVector vPoint)
+int CDynLight::SeesPoint (short nSegment, short nSide, CFixVector* vPoint)
 {
 return SeesPoint (&SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint);
 }
