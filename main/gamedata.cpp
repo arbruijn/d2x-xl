@@ -132,7 +132,7 @@ nLight = -1;
 CLightRenderData::CLightRenderData ()
 {
 CLEAR (vPosf);
-xDistance = 0;
+memset (xDistance, 0, sizeof (xDistance));
 CLEAR (nVerts);
 nTarget = 0;	//lit segment/face
 nFrame = 0;
