@@ -267,7 +267,7 @@ if (nVertex == nDbgVertex)
 #if FASTROUTE
 			prl->render.xDistance = fix (gameData.segs.SegDist (prl->info.nSegment, nSegment) / prl->info.fRange);
 #else
-#	if DBG
+#	if 0 //DBG
 			fix d1 = prl->render.xDistance = gameData.segs.SegDist (prl->info.nSegment, nSegment);
 			fix d2 = prl->render.xDistance = simpleRouter [nThread].PathLength (vVertex, nSegment, prl->info.vPos, prl->info.nSegment, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
 			if (d2 < 9 * d1 / 10) {
