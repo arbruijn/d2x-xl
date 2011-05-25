@@ -443,18 +443,18 @@ for (y = yMin; y < yMax; y++) {
 			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
 			G3AccumVertColor (-1, &color, &vcd, nThread);
-			if ((color.v.color.r > 0.001f) || (color.v.color.g > 0.001f) || (color.v.color.b > 0.001f)) {
+			if ((color.v.color.r >= 1.0f / 255.0f) || (color.v.color.g >= 1.0f / 255.0f) || (color.v.color.b >= 1.0f / 255.0f)) {
 					bBlack = false;
-				if (color.v.color.r >= 0.999f)
-					color.v.color.r = 1;
+				if (color.v.color.r >= 254.0f / 255.0f)
+					color.v.color.r = 1.0f;
 				else
 					bWhite = false;
-				if (color.v.color.g >= 0.999f)
-					color.v.color.g = 1;
+				if (color.v.color.g >= 254.0f / 255.0f)
+					color.v.color.g = 1.0f;
 				else
 					bWhite = false;
-				if (color.v.color.b >= 0.999f)
-					color.v.color.b = 1;
+				if (color.v.color.b >= 254.0f / 255.0f)
+					color.v.color.b = 1.0f;
 				else
 					bWhite = false;
 				}
