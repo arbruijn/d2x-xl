@@ -127,7 +127,7 @@ class CRouter {
 			};
 
 	protected:
-		virtual fix Scan (void) { return -1; }
+		virtual fix FindPath (void) { return -1; }
 	};
 
 // -----------------------------------------------------------------------------
@@ -137,7 +137,6 @@ class CSimpleRouter : public CRouter {
 		CScanInfo	m_scanInfo;
 
 	protected:
-		virtual fix Scan (void);
 		virtual fix FindPath (void) { return -1; }
 	};
 
@@ -152,7 +151,6 @@ class CSimpleUniDirRouter : public CSimpleRouter {
 
 	protected:
 		virtual fix FindPath (void);
-		virtual bool Match (short nSegment, short nDir);
 };
 
 // -----------------------------------------------------------------------------
@@ -166,14 +164,12 @@ class CSimpleBiDirRouter : public CSimpleRouter {
 
 	protected:
 		virtual fix FindPath (void);
-		virtual bool Match (short nSegment, short nDir);
 };
 
 // -----------------------------------------------------------------------------
 
 class CDACSRouter : public CRouter {
 	protected:
-		virtual fix Scan (void);
 		virtual fix FindPath (void) { return -1; }
 	};
 

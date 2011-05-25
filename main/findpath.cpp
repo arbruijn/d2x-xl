@@ -268,7 +268,7 @@ if (m_cacheType >= 0) {
 
 m_maxDepth = nMaxDepth;
 
-fix distance = Scan ();
+fix distance = FindPath ();
 
 if ((distance < 0) && (m_cacheType >= 0))
 	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, 10000, I2X (10000));
@@ -280,16 +280,6 @@ return distance;
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-fix CSimpleRouter::Scan (void)
-{
-FindPath ();
-
-return -1;
-}
-
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 // uni-directional scanner
 
 fix CSimpleUniDirRouter::BuildPath (void)

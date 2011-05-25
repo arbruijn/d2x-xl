@@ -2354,6 +2354,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\include\findpath.h"
+						>
+					</File>
+					<File
 						RelativePath="..\include\flightpath.h"
 						>
 					</File>
