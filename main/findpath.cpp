@@ -242,27 +242,29 @@ m_nDestSeg = nDestSeg;
 m_p0 = p0;
 m_p1 = p1;
 
-// same segment?
-m_cacheType = nCacheType;
-if ((m_cacheType >= 0) && (m_nStartSeg == m_nDestSeg)) {
-	m_cache [m_cacheType].SetPathLength (0);
-	return CFixVector::Dist (m_p0, m_p1);
-	}
+if (m_nDestSeg >= 0) {
+	// same segment?
+	m_cacheType = nCacheType;
+	if ((m_cacheType >= 0) && (m_nStartSeg == m_nDestSeg)) {
+		m_cache [m_cacheType].SetPathLength (0);
+		return CFixVector::Dist (m_p0, m_p1);
+		}
 
-// adjacent segments?
-short nSide = SEGMENTS [m_nStartSeg].ConnectedSide (SEGMENTS + m_nDestSeg);
-if ((nSide != -1) && (SEGMENTS [m_nDestSeg].IsDoorWay (nSide, NULL) & m_widFlag)) {
-	m_cache [m_cacheType].SetPathLength (1);
-	return CFixVector::Dist (m_p0, m_p1);
-	}
+	// adjacent segments?
+	short nSide = SEGMENTS [m_nStartSeg].ConnectedSide (SEGMENTS + m_nDestSeg);
+	if ((nSide != -1) && (SEGMENTS [m_nDestSeg].IsDoorWay (nSide, NULL) & m_widFlag)) {
+		m_cache [m_cacheType].SetPathLength (1);
+		return CFixVector::Dist (m_p0, m_p1);
+		}
 
-#if USE_FCD_CACHE
-if (m_cacheType >= 0) {
-	fix xDist = m_cache [m_cacheType].Dist (m_nStartSeg, m_nDestSeg);
-	if (xDist >= 0)
-		return xDist;
+	#if USE_FCD_CACHE
+	if (m_cacheType >= 0) {
+		fix xDist = m_cache [m_cacheType].Dist (m_nStartSeg, m_nDestSeg);
+		if (xDist >= 0)
+			return xDist;
+		}
+	#endif
 	}
-#endif
 
 m_maxDepth = nMaxDepth;
 m_widFlag = nWidFlag;
@@ -406,6 +408,9 @@ return true;
 
 fix CDACSUniDirRouter::BuildPath (short nSegment)
 {
+if (m_heap.Cost (nSegment) == 0xFFFF)
+	return -1;
+
 	int j = m_heap.BuildRoute (nSegment);
 
 if (m_nDestSeg >= 0)
@@ -431,9 +436,10 @@ fix CDACSUniDirRouter::FindPath (void)
 	ushort		nDist;
 	short			nSegment, nSide;
 	CSegment*	segP;
-	int nExpanded = 0;
 
 m_heap.Setup (m_nStartSeg);
+
+	int nExpanded = 1;
 
 for (;;) {
 	nSegment = m_heap.Pop (nDist);
@@ -441,11 +447,20 @@ for (;;) {
 		return (m_nDestSeg < 0) ? nExpanded : -1;
 	if (nSegment == m_nDestSeg)
 		return BuildPath (nSegment);
-	nExpanded++;
 	segP = SEGMENTS + nSegment;
+#if DBG
+	if (nSegment == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag))
+		if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag)) {
+#if DBG
+			if (segP->m_children [nSide] == nDbgSeg)
+				nDbgSeg = nDbgSeg;
+#endif
 			m_heap.Push (segP->m_children [nSide], nSegment, nSide, nDist + (ushort) segP->m_childDists [1][nSide]);
+			++nExpanded;
+			}
 		}
 	}
 }
