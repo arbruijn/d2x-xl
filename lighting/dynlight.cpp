@@ -595,7 +595,7 @@ return fix (simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, n
 
 //------------------------------------------------------------------------------
 
-int CDynLight::SeesPoint (const CFixVector* vNormal, const CFixVector* vLightToPoint)
+int CDynLight::SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const CFixVector* vLightToPoint)
 {
 	CFloatVector vLightToPointf, vNormalf;
 
@@ -607,19 +607,38 @@ if (vNormal) {
 	if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.0001f) // light doesn't "see" face
 		return 0;
 	}
-return 1;	
+
+int nLightSeg = LightSeg ();
+if (nLightSeg < 0)
+	return 1;
+
+CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &info.vPos, vPoint, nLightSeg, -1, 1, 0);
+CHitData	hitData;
+int nHitType = FindHitpoint (&fq, &hitData);
+return (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)));
 }
 
 //------------------------------------------------------------------------------
 
-int CDynLight::SeesPoint (const short nSegment, const short nSide, const CFixVector* vPoint)
+int CDynLight::SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const CFixVector* vLightToPoint)
 {
-return SeesPoint (&SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint);
+return SeesPoint (nSegment, &SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint, vLightToPoint);
 }
 
 //------------------------------------------------------------------------------
 
-int CDynLight::Contribute (const short nDestSeg, const short nDestSide, const CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread)
+int CDynLight::LightSeg (void)
+{
+if (info.nSegment >= 0)
+	return info.nSegment;
+if (info.nObject >= 0)
+	return OBJECTS [info.nObject].Segment ();
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+int CDynLight::Contribute (const short nDestSeg, const short nDestSide, CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread)
 {
 	short nLightSeg = info.nSegment;
 
@@ -655,7 +674,7 @@ if (xDistance > xMaxLightRange)
 	return 0;
 if (info.bDiffuse [nThread]) {
 	vLightToPoint /= xDistance;
-	info.bDiffuse [nThread] = SeesPoint (vNormal, &vLightToPoint);
+	info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, &vLightToPoint);
 	}
 if (!info.bDiffuse [nThread]) {
 	fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);

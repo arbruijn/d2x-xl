@@ -95,10 +95,11 @@ class CDynLight {
 	public:
 		CDynLight ();
 		void Init (void);
-		int SeesPoint (const CFixVector* vNormal, const CFixVector* vPoint);
-		int SeesPoint (const short nSegment, const short nSide, const CFixVector* vPoint);
+		int LightSeg (void);
+		int SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const CFixVector* vLightToPoint);
+		int SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const CFixVector* vLightToPoint);
 		int LightPathLength (const short nLightSeg, const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int bFastRoute, int nThread);
-		int Contribute (const short nDestSeg, const short nDestSide, const CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread);
+		int Contribute (const short nDestSeg, const short nDestSide, CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread);
 		int Compare (CDynLight& other);
 		inline bool operator< (CDynLight& other)
 		 { return Compare (other) < 0; }
