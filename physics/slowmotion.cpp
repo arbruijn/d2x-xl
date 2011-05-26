@@ -116,6 +116,9 @@ SlowMotionMessage ();
 
 int ToggleSlowMotion (void)
 {
+if (gameData.reactor.bDestroyed)
+	return 0;
+
 	int	bSlowMotionOk = gameStates.app.cheats.bSpeed || ((LOCALPLAYER.Energy () > I2X (10)) && (LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION));
 	int	bBulletTimeOk = bSlowMotionOk && (gameStates.app.cheats.bSpeed || (LOCALPLAYER.flags & (PLAYER_FLAGS_SLOWMOTION | PLAYER_FLAGS_BULLETTIME)));
 	int	bSlowMotion = bSlowMotionOk && (controls [0].slowMotionCount > 0);

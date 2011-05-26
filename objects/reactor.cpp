@@ -29,6 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "trigger.h"
 #include "cheats.h"
 #include "loadobjects.h"
+#include "slowmotion.h"
 
 //@@CFixVector controlcen_gun_points[MAX_CONTROLCEN_GUNS];
 //@@CFixVector controlcen_gun_dirs[MAX_CONTROLCEN_GUNS];
@@ -192,8 +193,10 @@ else if (gameStates.app.nBaseCtrlCenExplTime != DEFAULT_CONTROL_CENTER_EXPLOSION
 else
 	gameData.reactor.countdown.nTotalTime = nAlanPavlishReactorTimes [gameStates.app.bD1Mission][gameStates.app.nDifficultyLevel];
 gameData.reactor.countdown.nTimer = (nTimer < 0) ? I2X (gameData.reactor.countdown.nTotalTime) : (nTimer ? nTimer : I2X (1));
-if (bReactorDestroyed)
+if (bReactorDestroyed) {
 	gameData.reactor.bDestroyed = 1;
+	SlowMotionOff ();
+	}
 }
 
 //	-----------------------------------------------------------------------------
