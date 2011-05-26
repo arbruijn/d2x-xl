@@ -15,7 +15,7 @@ class CDialHeap {
 
 	private:
 		CShortArray			m_index;
-		CUShortArray		m_cost;
+		CIntArray			m_cost;
 		CShortArray			m_links;
 		CShortArray			m_pred;
 		CShortArray			m_edge;
@@ -28,11 +28,11 @@ class CDialHeap {
 		void Destroy (void);
 		void Reset (void);
 		void Setup (short nNode);
-		bool Push (short nNode, short nPredNode, short nSide, ushort nCost);
-		short Pop (ushort &nCost);
+		bool Push (short nNode, short nPredNode, short nSide, int nCost);
+		short Pop (int &nCost);
 		short RouteLength (short nNode);
 		short BuildRoute (short nNode, int bReverse = 0, tPathNode* route = NULL);
-		inline ushort Cost (short nNode) { return m_cost [nNode]; }
+		inline int Cost (short nNode) { return m_cost [nNode]; }
 		inline bool Pushed (short nNode) { return Cost (nNode) < 0xFFFF; }
 		inline bool Popped (short nNode) { return Cost (nNode) == 0; }
 		inline tPathNode* Route (void) { return m_route.Buffer (); }

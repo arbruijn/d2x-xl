@@ -586,8 +586,10 @@ return 0;
 
 int CDynLight::LightPathLength (const short nLightSeg, const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int bFastRoute, int nThread)
 {
+#if 1
 if (bFastRoute)
 	return fix (gameData.segs.SegDist (nLightSeg, nDestSeg) / info.fRange);
+#endif
 return fix (simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, nDestSeg, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0) / info.fRange);
 }
 
@@ -598,11 +600,11 @@ int CDynLight::SeesPoint (const CFixVector* vNormal, const CFixVector* vLightToP
 	CFloatVector vLightToPointf, vNormalf;
 
 vLightToPointf.Assign (*vLightToPoint);
-if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
+if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.01f) // light doesn't see point
 	return 0;
 if (vNormal) {
 	vNormalf.Assign (*vNormal);
-	if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f) // light doesn't "see" face
+	if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.01f) // light doesn't "see" face
 		return 0;
 	}
 return 1;	

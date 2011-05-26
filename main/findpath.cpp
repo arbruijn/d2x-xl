@@ -439,7 +439,7 @@ return xDist;
 
 fix CDACSUniDirRouter::FindPath (void)
 {
-	ushort		nDist;
+	int			nDist;
 	short			nSegment, nSide;
 	CSegment*	segP;
 
@@ -464,7 +464,7 @@ for (;;) {
 			if (segP->m_children [nSide] == nDbgSeg)
 				nDbgSeg = nDbgSeg;
 #endif
-			m_heap.Push (segP->m_children [nSide], nSegment, nSide, nDist + (ushort) segP->m_childDists [1][nSide]);
+			m_heap.Push (segP->m_children [nSide], nSegment, nSide, nDist + ushort (segP->m_childDists [1][nSide]));
 			++nExpanded;
 			}
 		}
@@ -494,7 +494,7 @@ return true;
 
 int CDACSBiDirRouter::Expand (int nDir)
 {
-	ushort nDist;
+	int nDist;
 
 short nSegment = m_heap [nDir].Pop (nDist);
 if ((nSegment < 0) || (nSegment == m_nDestSeg))
@@ -504,7 +504,7 @@ if (m_heap [!nDir].Popped (nSegment))
 CSegment* segP = SEGMENTS + nSegment;
 for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag))
-		m_heap [nDir].Push (segP->m_children [nSide], nSegment, nSide, nDist + (ushort) segP->m_childDists [1][nSide]);
+		m_heap [nDir].Push (segP->m_children [nSide], nSegment, nSide, nDist + ushort (segP->m_childDists [1][nSide]));
 	}
 return nSegment;
 }

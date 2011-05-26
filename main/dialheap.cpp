@@ -45,9 +45,9 @@ Push (nNode, -1, -1, 0);
 
 //-----------------------------------------------------------------------------
 
-bool CDialHeap::Push (short nNode, short nPredNode, short nEdge, ushort nNewCost)
+bool CDialHeap::Push (short nNode, short nPredNode, short nEdge, int nNewCost)
 {
-	ushort nOldCost = m_cost [nNode];
+	int nOldCost = m_cost [nNode];
 
 if (nNewCost >= nOldCost)
 	return false;
@@ -60,7 +60,7 @@ if (!nNewCost)
 	ushort nIndex = nNewCost & 0xFFFF;
 
 if (nOldCost < 0xFFFF) {	// node already in heap with higher m_cost, so unlink
-	int h = nOldCost & 0xFFFF;
+	int h = ushort (nOldCost & 0xFFFF);
 	for (int i = m_index [h], j = -1; i >= 0; j = i, i = m_links [i]) {
 		if (i == nNode) {
 			if (j < 0)
@@ -81,7 +81,7 @@ return true;
 
 //-----------------------------------------------------------------------------
 
-short CDialHeap::Pop (ushort& nCost)
+short CDialHeap::Pop (int& nCost)
 {
 	short	nNode;
 
