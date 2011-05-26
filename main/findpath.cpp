@@ -426,7 +426,9 @@ if (m_nDestSeg >= 0)
 	fix xDist = 0;
 
 	CHitQuery	fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], route [0].nNode, -1, 1, 0);
+#if 0
 	CHitData		hitData;
+#endif
 	CFixVector* p1;
 	short			nStartSeg, nDestSeg;
 
@@ -438,10 +440,15 @@ for (int i = 0, j; i < h; i = j) {
 	fq.p0 = &SEGMENTS [nStartSeg].Center ();
 	for (j = i + 1; j < h; j++) { 
 		nDestSeg = route [j].nNode;
+#if 1
+		if (!gameData.segs.SegVis (nStartSeg, nDestSeg))
+			break;
+#else
 		fq.p1 = &SEGMENTS [nDestSeg].Center ();
 		int nHitType = FindHitpoint (&fq, &hitData);
 		if (nHitType && ((nHitType != HIT_WALL) || (hitData.hit.nSegment != nDestSeg)))
 			break;
+#endif
 		p1 = fq.p1;
 		}	
 	if (j < i + 2) // can only see next segment after route [i].nNode
