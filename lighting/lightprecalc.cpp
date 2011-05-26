@@ -83,7 +83,6 @@ void ComputeSingleSegmentDistance (int nSegment, int nThread)
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-dacsRouter [nThread].Create (gameData.segs.nSegments);
 dacsRouter [nThread].PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, 0x7FFFFFFF, WID_RENDPAST_FLAG | WID_FLY_FLAG, -1);
 for (int i = 0; i < gameData.segs.nSegments; i++)
 #if DBG
@@ -110,6 +109,7 @@ void ComputeSegmentDistance (int startI, int nThread)
 	int	i, endI;
 
 PrintLog ("computing segment distances (%d)\n", startI);
+dacsRouter [nThread].Create (gameData.segs.nSegments);
 for (i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i < endI; i++)
 	ComputeSingleSegmentDistance (i, nThread);
 }
