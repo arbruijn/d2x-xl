@@ -1882,7 +1882,7 @@ class CSegmentData {
 
 		inline sbyte LightVis (int i, int j) {
 			i = LightVisIdx (i, j);
-			return sbyte (((bSegVis [1][i >> 2] >> (((i & 3) << 1) << 1)) & 3) - 1);
+			return sbyte (((bSegVis [1][i >> 2] >> ((i & 3) << 1)) & 3) - 1);
 			}
 
 		inline int SetSegVis (short nSrcSeg, short nDestSeg, int bLights)	{
