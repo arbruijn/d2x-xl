@@ -414,7 +414,7 @@ return true;
 
 fix CDACSUniDirRouter::BuildPath (short nSegment)
 {
-if (m_heap.Cost (nSegment) < 0)
+if (m_heap.Cost (nSegment) == 0xFFFFFFFF)
 	return -1;
 
 	int h = m_heap.BuildRoute (nSegment);
