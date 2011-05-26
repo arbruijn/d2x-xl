@@ -1888,11 +1888,11 @@ class CSegmentData {
 		inline int SetSegVis (short nSrcSeg, short nDestSeg, int bLights)	{
 			if (bLights) {
 				int i = LightVisIdx (nSrcSeg, nDestSeg);
-				bSegVis [1][i >> 2] |= (2 << (i & 3));
+				bSegVis [1][i >> 2] |= segVisFlags [0][i & 3];
 				}
 			else {
 				int i = SegVisIdx (nSrcSeg, nDestSeg);
-				bSegVis [0][i >> 2] |= segVisFlags [0][i & 3];
+				bSegVis [0][i >> 3] |= 1 << (i & 7);
 				}
 			return 1;
 			}
