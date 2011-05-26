@@ -638,11 +638,8 @@ if (xDistance > xMaxLightRange)
 if (info.bDiffuse [nThread])
 	info.bDiffuse [nThread] = SeesPoint (vNormal, &vLightToPoint);
 if (!info.bDiffuse [nThread]) {
-	fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
-	if (xPathLength < 0)
-		return 0;
-	xDistance = (xPathLength + xDistance) / 2;
-	if (xDistance > xMaxLightRange)
+	xDistance = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+	if ((xDistance < 0) || (xDistance > xMaxLightRange))
 		return 0;
 	}
 render.xDistance [nThread] = xDistance;
