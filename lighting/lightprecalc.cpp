@@ -508,30 +508,36 @@ for (i = startI; i < endI; i++)
 
 void CheckLightVisibility (short nStartSeg, short nSide, short nDestSeg, fix xLightRange)
 {
+#if 0
 	int bVisible = gameData.segs.LightVis (nStartSeg, nDestSeg);
 
 if (!bVisible)
 	return;
-
-	CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nStartSeg, -1, 1, 0);
-	CHitData	hitData;
-	CSegment* segP = SEGMENTS + nStartSeg;
-	CSide* sideP = segP->m_sides;
+#endif
 	int i;
 
-segP = SEGMENTS + nDestSeg;
-for (i = 0; i < 5; i++) {
-	fq.p0 = (i == 4) ? &sideP->Center () : &VERTICES [sideP->m_corners [i]];
-	for (int j = 0; (j < 8); j++) {
-		fq.p1 = &VERTICES [segP->m_verts [j]];
-		if (CFixVector::Dist (*fq.p0, *fq.p1) > xLightRange)
-			continue;
-		int nHitType = FindHitpoint (&fq, &hitData);
-		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)))
-			return;
+if (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nDestSeg].Center ()) + SEGMENTS [nStartSeg].MaxRad () + SEGMENTS [nDestSeg].MaxRad () < xLightRange) {
+		CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nStartSeg, -1, 1, 0);
+		CHitData	hitData;
+		CSegment* segP = SEGMENTS + nStartSeg;
+		CSide* sideP = segP->m_sides;
+
+	segP = SEGMENTS + nDestSeg;
+	for (i = 4; i >= 0; i--) {
+		fq.p0 = (i == 4) ? &sideP->Center () : &VERTICES [sideP->m_corners [i]];
+		for (int j = 9; j >= 0; j--) {
+			fq.p1 = (j == 8) ? &segP->Center () : &VERTICES [segP->m_verts [j]];
+			if (CFixVector::Dist (*fq.p0, *fq.p1) > xLightRange)
+				continue;
+			int nHitType = FindHitpoint (&fq, &hitData);
+			if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
+				i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
+				gameData.segs.bSegVis [1][i >> 3] |= (1 << (i & 7));
+				return;
+				}
+			}
 		}
 	}
-
 i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
 gameData.segs.bSegVis [1][i >> 3] &= ~(1 << (i & 7));
 }
@@ -561,8 +567,10 @@ if (startI < 0)
 CDynLight* pl = lightManager.Lights () + startI;
 for (i = endI - startI; i; i--, pl++)
 	if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
+#if 0
 		for (j = 1; j <= 5; j++)
 			ComputeSingleSegmentVisibility (pl->info.nSegment, pl->info.nSide, pl->info.nSide, j);
+#endif
 #if 1
 		fix xLightRange = fix (MAX_LIGHT_RANGE * pl->info.fRange);
 		for (j = 0; j < gameData.segs.nSegments; j++)
