@@ -510,11 +510,9 @@ if (gameStates.render.nLightingMethod) {
 		if (bLight && prl->info.bAmbient && ((prl->info.nSegment != nSegment) || (prl->info.nSide != nSide)))
 			continue;
 #if DBG
-		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg))
-			prl = prl;
-#endif
-#if DBG
 		if ((nDbgSeg >= 0) && (nDbgSeg == prl->info.nSegment))
+			nDbgSeg = nDbgSeg;
+		if ((nDbgSeg >= 0) && (nDbgSeg == nSegment))
 			nDbgSeg = nDbgSeg;
 #endif
 		if (prl->info.nSegment < 0)

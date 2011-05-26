@@ -520,8 +520,12 @@ if (!bVisible)
 #endif
 	int i;
 
+#if DBG
+if (nDestSeg == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
 if ((SEGMENTS [nStartSeg].HasOutdoorsProp () && (nStartSeg != nDestSeg)) ||
-	 (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nDestSeg].Center ()) + SEGMENTS [nStartSeg].MaxRad () + SEGMENTS [nDestSeg].MaxRad () >= xLightRange)) {
+	 (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nDestSeg].Center ()) - SEGMENTS [nStartSeg].MaxRad () - SEGMENTS [nDestSeg].MaxRad () >= xLightRange)) {
 	i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
 	gameData.segs.bSegVis [1][i >> 2] &= (3 << ((i & 3) << 1)); // no light contribution
 	return;
