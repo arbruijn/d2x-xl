@@ -633,7 +633,7 @@ CFixVector vLightToPoint = vDestPos - info.vPos;
 fix xDistance = vLightToPoint.Mag ();
 vLightToPoint /= xDistance;
 xDistance = fix (float (xDistance) / (info.fRange * fRangeMod)) + xDistMod;
-if (render.xDistance [nThread] > xMaxLightRange)
+if (xDistance > xMaxLightRange)
 	return 0;
 if (info.bDiffuse [nThread])
 	info.bDiffuse [nThread] = SeesPoint (vNormal, &vLightToPoint);

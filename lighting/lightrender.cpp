@@ -537,7 +537,7 @@ if (gameStates.render.nLightingMethod) {
 				prl->info.bDiffuse [nThread] = prl->SeesPoint (nSegment, nSide, &vLightToPixel);
 				}
 			if (!prl->info.bDiffuse [nThread]) {
-				prl->render.xDistance [nThread] = prl->LightPathLength (nSegment, *vPixelPos);
+				prl->render.xDistance [nThread] = prl->LightPathLength (prl->info.nSegment, nSegment, *vPixelPos, xMaxLightRange, 1, nThread);
 				if ((prl->render.xDistance [nThread] < 0) || (prl->render.xDistance [nThread] > xMaxLightRange))
 					continue;
 				}
