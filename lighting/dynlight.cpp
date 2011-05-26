@@ -600,11 +600,11 @@ int CDynLight::SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixV
 	CFloatVector vLightToPointf, vNormalf;
 
 vLightToPointf.Assign (*vLightToPoint);
-if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.0001f) // light doesn't see point
+if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
 	return 0;
 if (vNormal) {
 	vNormalf.Assign (*vNormal);
-	if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.0001f) // light doesn't "see" face
+	if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f) // light doesn't "see" face
 		return 0;
 	}
 
@@ -672,9 +672,10 @@ else if ((info.nObject >= 0) && ((nLightSeg = OBJECTS [info.nObject].info.nSegme
 else
 	return 0;
 CFixVector vLightToPoint = vDestPos - info.vPos;
+fix xRad = F2X (info.fRad);
 fix xDistance = vLightToPoint.Mag ();
 xDistance = fix (float (xDistance) / (info.fRange * fRangeMod)) + xDistMod;
-if (xDistance > xMaxLightRange)
+if (xDistance - xRad > xMaxLightRange)
 	return 0;
 if (info.bDiffuse [nThread]) {
 	vLightToPoint /= xDistance;
@@ -690,8 +691,13 @@ if (!info.bDiffuse [nThread]) {
 	xDistance = xPathLength;
 #else
 	if (xDistance < xPathLength) {
-		xDistance = (xDistance + 2 * xPathLength) / 3; // since the path length goes via segment centers and is therefore usually to great, adjust it a bit
-		if (xDistance > xMaxLightRange)
+		// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
+#if 1
+		xDistance = (xDistance + xPathLength) / 2; 
+#else
+		xDistance = (xDistance + 2 * xPathLength) / 3; 
+#endif
+		if (xDistance - xRad > xMaxLightRange)
 			return 0;
 		}
 #endif

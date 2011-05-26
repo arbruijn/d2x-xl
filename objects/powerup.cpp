@@ -330,6 +330,7 @@ if (!gameOpts->gameplay.bInventory || (IsMultiGame && !IsCoopGame))
 	return -ApplyCloak (1, nPlayer);
 if (playerP->nCloaks < MAX_INV_ITEMS) {
 	playerP->nCloaks++;
+	PowerupBasic (0, 0, 0, 0, "%s!", TXT_CLOAKING_DEVICE);
 	return 1;
 	}
 if (ISLOCALPLAYER (nPlayer))
@@ -347,6 +348,7 @@ if (!gameOpts->gameplay.bInventory || (IsMultiGame && !IsCoopGame))
 	return -ApplyInvul (1, nPlayer);
 if (playerP->nInvuls < MAX_INV_ITEMS) {
 	playerP->nInvuls++;
+	PowerupBasic (0, 0, 0, 0, "%s!", TXT_INVULNERABILITY);
 	return 1;
 	}
 if (ISLOCALPLAYER (nPlayer))
@@ -572,8 +574,9 @@ MultiSendWeapons (1);
 int ApplyInvul (int bForce, int nPlayer)
 {
 	CPlayerData *playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
+	int bInventory = playerP->nInvuls && gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame);
 
-if (!(bForce || ((gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && playerP->nInvuls)))
+if (!(bForce || bInventory))
 	return 0;
 if (playerP->flags & PLAYER_FLAGS_INVULNERABLE) {
 	if (ISLOCALPLAYER (nPlayer))
@@ -587,7 +590,10 @@ if (ISLOCALPLAYER (nPlayer)) {
 	playerP->flags |= PLAYER_FLAGS_INVULNERABLE;
 	if IsMultiGame
 		MultiSendInvul ();
-	PowerupBasic (7, 14, 21, INVULNERABILITY_SCORE, "%s!", TXT_INVULNERABILITY);
+	if (bInventory)
+		PowerupBasic (7, 14, 21, 0, "");
+	else
+		PowerupBasic (7, 14, 21, INVULNERABILITY_SCORE, "%s!", TXT_INVULNERABILITY);
 	SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 	UsePowerup (-POW_INVUL);
 	}
@@ -599,8 +605,9 @@ return 1;
 int ApplyCloak (int bForce, int nPlayer)
 {
 	CPlayerData *playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
+	int bInventory = playerP->nCloaks && gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame);
 
-if (!(bForce || ((gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && playerP->nCloaks)))
+if (!(bForce || bInventory))
 	return 0;
 if (playerP->flags & PLAYER_FLAGS_CLOAKED) {
 	if (ISLOCALPLAYER (nPlayer))
@@ -615,7 +622,10 @@ if (ISLOCALPLAYER (nPlayer)) {
 	AIDoCloakStuff ();
 	if IsMultiGame
 		MultiSendCloak ();
-	PowerupBasic (-10, -10, -10, CLOAK_SCORE, "%s!", TXT_CLOAKING_DEVICE);
+	if (bInventory)
+		PowerupBasic (-10, -10, -10, 0, "");
+	else
+		PowerupBasic (-10, -10, -10, CLOAK_SCORE, "%s!", TXT_CLOAKING_DEVICE);
 	UsePowerup (-POW_CLOAK);
 	}
 return 1;
