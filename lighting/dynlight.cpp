@@ -604,13 +604,6 @@ int nLightSeg = info.nSegment;
 #else
 int nLightSeg = LightSeg ();
 #endif
-if ((nLightSeg >= 0) && (info.nSide >= 0)) {
-	short* cornerP = SEGMENTS [nLightSeg].m_sides [info.nSide].m_corners;
-	for (int i = 0; i < 4; i++)
-		if (*vPoint == VERTICES [*cornerP++])
-			return 1;
-	}
-
 vLightToPointf.Assign (*vLightToPoint);
 if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
 	return 0;
