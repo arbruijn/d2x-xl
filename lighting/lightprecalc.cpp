@@ -526,8 +526,10 @@ if (nDestSeg == nDbgSeg)
 #endif
 if ((SEGMENTS [nStartSeg].HasOutdoorsProp () && (nStartSeg != nDestSeg)) ||
 	 (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nDestSeg].Center ()) - SEGMENTS [nStartSeg].MaxRad () - SEGMENTS [nDestSeg].MaxRad () >= xLightRange)) {
+#if 0 // segVis is initialized to zero
 	i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
-	gameData.segs.bSegVis [1][i >> 2] &= (3 << ((i & 3) << 1)); // no light contribution
+	gameData.segs.bSegVis [1][i >> 2] &= ~(3 << ((i & 3) << 1)); // no light contribution
+#endif
 	return;
 	}
 
@@ -581,6 +583,10 @@ if (startI < 0)
 CDynLight* pl = lightManager.Lights () + startI;
 for (i = endI - startI; i; i--, pl++)
 	if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
+#if DBG
+		if ((nDbgSeg >= 0) && (pl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pl->info.nSide == nDbgSide)))
+			nDbgSeg = nDbgSeg;
+#endif
 #if 0
 		for (j = 1; j <= 5; j++)
 			ComputeSingleSegmentVisibility (pl->info.nSegment, pl->info.nSide, pl->info.nSide, j);
