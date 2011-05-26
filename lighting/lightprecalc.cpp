@@ -525,7 +525,7 @@ if (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nDestSeg].Center
 	segP = SEGMENTS + nDestSeg;
 	for (i = 4; i >= 0; i--) {
 		fq.p0 = (i == 4) ? &sideP->Center () : &VERTICES [sideP->m_corners [i]];
-		for (int j = 9; j >= 0; j--) {
+		for (int j = 8; j >= 0; j--) {
 			fq.p1 = (j == 8) ? &segP->Center () : &VERTICES [segP->m_verts [j]];
 			if (CFixVector::Dist (*fq.p0, *fq.p1) > xLightRange)
 				continue;
