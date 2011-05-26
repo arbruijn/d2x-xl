@@ -593,7 +593,7 @@ return fix (simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, n
 
 //------------------------------------------------------------------------------
 
-int CDynLight::SeesPoint (CFixVector* vNormal, CFixVector* vPoint)
+int CDynLight::SeesPoint (const CFixVector* vNormal, const CFixVector* vPoint)
 {
 	CFloatVector v;
 
@@ -612,26 +612,19 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CDynLight::SeesPoint (short nSegment, short nSide, CFixVector* vPoint)
+int CDynLight::SeesPoint (const short nSegment, const short nSide, const CFixVector* vPoint)
 {
 return SeesPoint (&SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint);
 }
 
 //------------------------------------------------------------------------------
 
-int CDynLight::Contribute (const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread)
+int CDynLight::Contribute (const short nDestSeg, const CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread)
 {
 	short nLightSeg = info.nSegment;
-	CFixVector* vNormal = NULL;
 
-if (nLightSeg >= 0) {
-	if (info.nSide < 0) 
-		info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
-	else {
-		info.bDiffuse [nThread] = gameData.segs.LightVis (nLightSeg, nDestSeg);
-		vNormal = &SEGMENTS [info.nSegment].Normal (info.nSide, 2);
-		}
-	}
+if (nLightSeg >= 0)
+	info.bDiffuse [nThread] = (info.nSide < 0) ? gameData.segs.SegVis (nLightSeg, nDestSeg) : info.bDiffuse [nThread] = gameData.segs.LightVis (nLightSeg, nDestSeg);
 else if ((info.nObject >= 0) && ((nLightSeg = OBJECTS [info.nObject].info.nSegment) >= 0))
 	info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
 else
