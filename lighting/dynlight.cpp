@@ -626,7 +626,7 @@ int CDynLight::Contribute (const short nDestSeg, const CFixVector& vDestPos, con
 if (nLightSeg >= 0) {
 	if (info.nSide < 0) 
 		info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
-	else if (0 > (info.bDiffuse [nThread] = gameData.segs.LightVis (nLightSeg, nDestSeg)))
+	else if (ubyte (-1) == int (info.bDiffuse [nThread] = gameData.segs.LightVis (nLightSeg, nDestSeg)))
 		return 0;
 	}
 else if ((info.nObject >= 0) && ((nLightSeg = OBJECTS [info.nObject].info.nSegment) >= 0))
@@ -658,6 +658,7 @@ if (!info.bDiffuse [nThread]) {
 		}
 #endif
 	}
+
 render.xDistance [nThread] = xDistance;
 return 1;
 }

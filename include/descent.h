@@ -1882,7 +1882,8 @@ class CSegmentData {
 
 		inline int LightVis (int i, int j) {
 			i = LightVisIdx (i, j);
-			return int (bSegVis [1][i >> 2] & segVisFlags [0][i & 3]) - 1;
+			j = i & 3;
+			return int ((bSegVis [1][i >> 2] & segVisFlags [0][j]) >> (j << 1)) - 1;
 			}
 
 		inline int SetSegVis (short nSrcSeg, short nDestSeg, int bLights)	{
