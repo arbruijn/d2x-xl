@@ -509,8 +509,6 @@ for (i = startI; i < endI; i++)
 
 //------------------------------------------------------------------------------
 
-ubyte segVisFlags [2][4] = {{0x03, 0x0C, 0x30, 0xC0},{0x01, 0x04, 0x10, 0x40}};
-
 void CheckLightVisibility (short nStartSeg, short nSide, short nDestSeg, fix xLightRange)
 {
 #if 0
@@ -543,14 +541,14 @@ for (i = 4; i >= 0; i--) {
 		int nHitType = FindHitpoint (&fq, &hitData);
 		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
 			i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
-			gameData.segs.bSegVis [1][i >> 2] |= segVisFlags [0][i & 3]; // diffuse + ambient
+			gameData.segs.bSegVis [1][i >> 2] |= 2 << ((i & 3) << 1); // diffuse + ambient
 			return;
 			}
 		}
 	}
 
 i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
-gameData.segs.bSegVis [1][i >> 2] |= segVisFlags [1][i & 3]; // diffuse
+gameData.segs.bSegVis [1][i >> 2] |= 1 << ((i & 3) << 1); // diffuse
 }
 
 //------------------------------------------------------------------------------
