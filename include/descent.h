@@ -1880,10 +1880,9 @@ class CSegmentData {
 			return QUADMATIDX (i, j, nSegments);
 			}
 
-		inline int LightVis (int i, int j) {
+		inline sbyte LightVis (int i, int j) {
 			i = LightVisIdx (i, j);
-			j = i & 3;
-			return int ((bSegVis [1][i >> 2] & segVisFlags [0][j]) >> (j << 1)) - 1;
+			return sbyte (((bSegVis [1][i >> 2] >> (((i & 3) << 1) << 1)) & 3) - 1);
 			}
 
 		inline int SetSegVis (short nSrcSeg, short nDestSeg, int bLights)	{
