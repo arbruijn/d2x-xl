@@ -608,7 +608,11 @@ if (vNormal) {
 		return 0;
 	}
 
+#if 1
+int nLightSeg = info.nSegment;
+#else
 int nLightSeg = LightSeg ();
+#endif
 if (nLightSeg < 0)
 	return 1;
 
