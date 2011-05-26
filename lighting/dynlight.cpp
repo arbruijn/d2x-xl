@@ -593,18 +593,16 @@ return fix (simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, n
 
 //------------------------------------------------------------------------------
 
-int CDynLight::SeesPoint (const CFixVector* vNormal, const CFixVector* vPoint)
+int CDynLight::SeesPoint (const CFixVector* vNormal, const CFixVector* vLightToPoint)
 {
-	CFloatVector v;
+	CFloatVector vLightToPointf, vNormalf;
 
+vLightToPointf.Assign (*vLightToPoint);
+if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
+	return 0;
 if (vNormal) {
-	v.Assign (*vNormal);
-	if (CFloatVector::Dot (v, info.vDirf) > 0.0f) // light doesn't "see" face
-		return 0;
-	}
-if (vPoint) {
-	v.Assign (*vPoint);
-	if (CFloatVector::Dot (v, info.vDirf) < 0.0f) // light doesn't see point
+	vNormalf.Assign (*vNormal);
+	if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f) // light doesn't "see" face
 		return 0;
 	}
 return 1;	
