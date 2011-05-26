@@ -522,7 +522,7 @@ if (!bVisible)
 
 if (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nDestSeg].Center ()) + SEGMENTS [nStartSeg].MaxRad () + SEGMENTS [nDestSeg].MaxRad () >= xLightRange) {
 	i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
-	gameData.segs.bSegVis [1][i >> 2] &= ~segVisFlags [0][i & 3]; // no light contribution
+	gameData.segs.bSegVis [1][i >> 2] &= 3 << ((i & 3) << 1); // no light contribution
 	return;
 	}
 
