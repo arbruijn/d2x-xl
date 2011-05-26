@@ -629,13 +629,14 @@ else if ((info.nObject >= 0) && ((nLightSeg = OBJECTS [info.nObject].info.nSegme
 	info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
 else
 	return 0;
-fix xDistance = fix (float (CFixVector::Dist (vDestPos, info.vPos)) / (info.fRange * fRangeMod)) + xDistMod;
+CFixVector vLightToPoint = vDestPos - info.vPos;
+fix xDistance = vLightToPoint.Mag ();
+vLightToPoint /= xDistance;
+xDistance = fix (float (xDistance) / (info.fRange * fRangeMod)) + xDistMod;
 if (render.xDistance [nThread] > xMaxLightRange)
 	return 0;
-if (info.bDiffuse [nThread]) {
-	CFixVector vLightToPoint = vDestPos - info.vPos;
+if (info.bDiffuse [nThread])
 	info.bDiffuse [nThread] = SeesPoint (&vLightToPoint, NULL);
-	}
 if (!info.bDiffuse [nThread]) {
 	xDistance = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 	if ((xDistance < 0) || (xDistance > xMaxLightRange))

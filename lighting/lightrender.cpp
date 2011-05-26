@@ -489,9 +489,8 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 #endif
 if (gameStates.render.nLightingMethod) {
 	short						i, n = m_data.nLights [1];
-	fix						xLightDist, xMaxLightRange = F2X (fLightRad) + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
+	fix						xMaxLightRange = F2X (fLightRad) + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
 	CDynLight*				prl;
-	CFixVector				vLightToPixel;
 	CActiveDynLight*		activeLightsP = m_data.active [nThread].Buffer ();
 	bool						bForce, bLight = Find (nSegment, nSide, -1) >= 0;
 
@@ -514,8 +513,6 @@ if (gameStates.render.nLightingMethod) {
 		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg))
 			prl = prl;
 #endif
-		vLightToPixel = *vPixelPos - prl->info.vPos;
-		xLightDist = CFixVector::Normalize (vLightToPixel);
 #if DBG
 		if ((nDbgSeg >= 0) && (nDbgSeg == prl->info.nSegment))
 			nDbgSeg = nDbgSeg;
@@ -524,11 +521,13 @@ if (gameStates.render.nLightingMethod) {
 			continue;
 #if 1
 		bForce = (prl->info.nSegment == nSegment) && (prl->info.nSide == nSide);
-		if (!prl->Contribute (nSegment, vLightToPixel, xMaxLightRange, 1.0f, 0, nThread))
+		if (!(bForce || prl->Contribute (nSegment, *vPixelPos, xMaxLightRange, 1.0f, 0, nThread)))
 			continue;
 #else
 		prl->info.bDiffuse [nThread] = gameData.segs.LightVis (prl->info.nSegment, nSegment);
 		if (!bForce) {
+			CFixVector vLightToPixel = *vPixelPos - prl->info.vPos;
+			fix xLightDist = CFixVector::Normalize (vLightToPixel);
 			prl->render.xDistance [nThread] = (fix) ((xLightDist /*- F2X (prl->info.fRad)*/) / prl->info.fRange);
 			if (prl->render.xDistance [nThread] > xMaxLightRange)
 				continue;
