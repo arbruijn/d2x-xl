@@ -622,9 +622,16 @@ return SeesPoint (&SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint);
 int CDynLight::Contribute (const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread)
 {
 	short nLightSeg = info.nSegment;
+	CFixVector* vNormal = NULL;
 
-if (nLightSeg >= 0) 
-	info.bDiffuse [nThread] = (info.nSide >= 0) ? gameData.segs.LightVis (nLightSeg, nDestSeg) : gameData.segs.SegVis (nLightSeg, nDestSeg);
+if (nLightSeg >= 0) {
+	if (info.nSide < 0) 
+		info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
+	else {
+		info.bDiffuse [nThread] = gameData.segs.LightVis (nLightSeg, nDestSeg);
+		vNormal = &SEGMENTS [info.nSegment].Normal (info.nSide, 2);
+		}
+	}
 else if ((info.nObject >= 0) && ((nLightSeg = OBJECTS [info.nObject].info.nSegment) >= 0))
 	info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
 else
@@ -636,7 +643,7 @@ xDistance = fix (float (xDistance) / (info.fRange * fRangeMod)) + xDistMod;
 if (render.xDistance [nThread] > xMaxLightRange)
 	return 0;
 if (info.bDiffuse [nThread])
-	info.bDiffuse [nThread] = SeesPoint (&vLightToPoint, NULL);
+	info.bDiffuse [nThread] = SeesPoint (vNormal, &vLightToPoint);
 if (!info.bDiffuse [nThread]) {
 	xDistance = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 	if ((xDistance < 0) || (xDistance > xMaxLightRange))
