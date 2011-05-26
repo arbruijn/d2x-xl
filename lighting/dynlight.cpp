@@ -641,8 +641,8 @@ if (!info.bDiffuse [nThread]) {
 	xDistance = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 	if ((xDistance < 0) || (xDistance > xMaxLightRange))
 		return 0;
-	render.xDistance [nThread] = xDistance;
 	}
+render.xDistance [nThread] = xDistance;
 return 1;
 }
 

@@ -62,6 +62,21 @@ static int loadOp = 0;
 
 //------------------------------------------------------------------------------
 
+static int GetLoopLimits (int nStart, int& nEnd, int nMax, int nThread)
+{
+if (!gameStates.app.bMultiThreaded) {
+	INIT_PROGRESS_LOOP (nStart, nEnd, nMax);
+	}
+else {
+	nEnd = (nThread + 1) * (nMax + gameStates.app.nThreads - 1) / gameStates.app.nThreads;
+	if (nEnd > nMax)
+		nEnd = nMax;
+	}
+return (nStart < 0) ? 0 : nStart;
+}
+
+//------------------------------------------------------------------------------
+
 void ComputeSingleSegmentDistance (int nSegment)
 {
 #if DBG
@@ -90,18 +105,12 @@ gameData.segs.SetSegDist (nSegment, nSegment, 0);
 
 //------------------------------------------------------------------------------
 
-void ComputeSegmentDistance (int startI)
+void ComputeSegmentDistance (int startI, int nThread)
 {
-	int			i, endI;
+	int	i, endI;
 
 PrintLog ("computing segment distances (%d)\n", startI);
-if (gameStates.app.bMultiThreaded)
-	endI = gameData.segs.nSegments;
-else
-	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
-if (startI < 0)
-	startI = 0;
-for (i = startI; i < endI; i++)
+for (i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i < endI; i++)
 	ComputeSingleSegmentDistance (i);
 }
 
@@ -153,7 +162,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ComputeNearestSegmentLights (int i)
+int ComputeNearestSegmentLights (int i, int nThread)
 {
 	CSegment				*segP;
 	CDynLight			*pl;
@@ -164,16 +173,15 @@ int ComputeNearestSegmentLights (int i)
 PrintLog ("computing nearest segment lights (%d)\n", i);
 if (!lightManager.LightCount (0))
 	return 0;
+
 if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
 	gameOpts->render.nLightingMethod = 0;
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
+
 nMaxLights = MAX_NEAREST_LIGHTS;
-if (gameStates.app.bMultiThreaded)
-	j = i ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
-else
-	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
+i = GetLoopLimits (i, j, gameData.segs.nSegments, nThread);
 for (segP = SEGMENTS + i; i < j; i++, segP++) {
 	center = segP->Center ();
 	pl = lightManager.Lights ();
@@ -208,34 +216,31 @@ return 1;
 extern int nDbgVertex;
 #endif
 
-int ComputeNearestVertexLights (int nVertex)
+int ComputeNearestVertexLights (int nVertex, int nThread)
 {
 	CFixVector*				vertP;
 	CDynLight*				pl;
-	int						h, j, k, l, n, nMaxLights, nThread;
+	int						h, j, k, l, n, nMaxLights;
 	CFixVector				vLightToVert;
 	struct tLightDist*	pDists;
 
 if (!lightManager.LightCount (0))
 	return 0;
+
 if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
 	gameOpts->render.nLightingMethod = 0;
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
+
 #if DBG
 if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
+
 nMaxLights = MAX_NEAREST_LIGHTS;
-if (gameStates.app.bMultiThreaded) {
-	nThread = (nVertex > 0);
-	j = nThread ? gameData.segs.nVertices : gameData.segs.nVertices / 2;
-	}
-else {
-	nThread = 0;
-	INIT_PROGRESS_LOOP (nVertex, j, gameData.segs.nVertices);
-	}
+nVertex = GetLoopLimits (nVertex, j, gameData.segs.nVertices, nThread);
+
 for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) {
 #if DBG
 	if (nVertex == nDbgVertex)
@@ -514,15 +519,6 @@ if (!bVisible)
 	CSide* sideP = segP->m_sides;
 	int i;
 
-#if DBG
-if ((nDbgSeg >= 0) && (nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
-	i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
-	i = gameData.segs.bSegVis [1][i >> 3] & (1 << (i & 7));
-	if (!i)
-		i = 1;
-#endif
-
 segP = SEGMENTS + nDestSeg;
 for (i = 0; i < 5; i++) {
 	fq.p0 = (i == 4) ? &sideP->Center () : &VERTICES [sideP->m_corners [i]];
@@ -584,7 +580,7 @@ if (nState)
 
 //paletteManager.ResumeEffect ();
 if (loadOp == 0) {
-	ComputeSegmentDistance (loadIdx);
+	ComputeSegmentDistance (loadIdx, 0);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
@@ -608,7 +604,7 @@ if (loadOp == 2) {
 		}
 	}
 else if (loadOp == 3) {
-	ComputeNearestSegmentLights (loadIdx);
+	ComputeNearestSegmentLights (loadIdx, 0);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
@@ -616,7 +612,7 @@ else if (loadOp == 3) {
 		}
 	}
 else if (loadOp == 4) {
-	ComputeNearestVertexLights (loadIdx);
+	ComputeNearestVertexLights (loadIdx, 0);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nVertices) {
 		loadIdx = 0;
@@ -729,7 +725,19 @@ return bOk;
 
 #if MULTI_THREADED_PRECALC
 
-static tThreadInfo	ti [2];
+static tThreadInfo	ti [MAX_THREADS];
+
+//------------------------------------------------------------------------------
+
+int _CDECL_ SegDistThread (void *pThreadId)
+{
+	int		nId = *(reinterpret_cast<int*> (pThreadId));
+
+ComputeSegmentDistance (nId * (gameData.segs.nSegments + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
+SDL_SemPost (ti [nId].done);
+ti [nId].bDone = 1;
+return 0;
+}
 
 //------------------------------------------------------------------------------
 
@@ -737,7 +745,7 @@ int _CDECL_ SegLightsThread (void *pThreadId)
 {
 	int		nId = *(reinterpret_cast<int*> (pThreadId));
 
-ComputeNearestSegmentLights (nId ? gameData.segs.nSegments / 2 : 0);
+ComputeNearestSegmentLights (nId * (gameData.segs.nSegments + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
 SDL_SemPost (ti [nId].done);
 ti [nId].bDone = 1;
 return 0;
@@ -749,7 +757,7 @@ int _CDECL_ VertLightsThread (void *pThreadId)
 {
 	int		nId = *(reinterpret_cast<int*> (pThreadId));
 
-ComputeNearestVertexLights (nId ? gameData.segs.nVertices / 2 : 0);
+ComputeNearestVertexLights (nId * (gameData.segs.nVertices + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
 SDL_SemPost (ti [nId].done);
 ti [nId].bDone = 1;
 return 0;
@@ -757,24 +765,24 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static void StartOglLightThreads (pThreadFunc pFunc)
+static void StartLightThreads (pThreadFunc pFunc)
 {
 	int	i;
 
-for (i = 0; i < 2; i++) {
+for (i = 0; i < gameStates.app.nThreads; i++) {
 	ti [i].bDone = 0;
 	ti [i].done = SDL_CreateSemaphore (0);
 	ti [i].nId = i;
 	ti [i].pThread = SDL_CreateThread (pFunc, &ti [i].nId);
 	}
 #if 1
-SDL_SemWait (ti [0].done);
-SDL_SemWait (ti [1].done);
+for (i = 0; i < gameStates.app.nThreads; i++)
+	SDL_SemWait (ti [i].done);
 #else
 while (!(ti [0].bDone && ti [1].bDone))
 	G3_SLEEP (0);
 #endif
-for (i = 0; i < 2; i++) {
+for (i = 0; i < gameStates.app.nThreads; i++) {
 	SDL_WaitThread (ti [i].pThread, NULL);
 	SDL_DestroySemaphore (ti [i].done);
 	}
@@ -801,16 +809,16 @@ if (LoadLightData (nLevel))
 #if MULTI_THREADED_PRECALC != 0
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	PrintLog ("Computing segment distances\n");
-	ComputeSegmentDistance (-1);
+	StartLightThreads (SegDistThread);
 	gameData.physics.side.bCache = 0;
 	PrintLog ("Computing segment visibility\n");
 	ComputeSegmentVisibility (-1);
 	PrintLog ("Computing light visibility\n");
 	ComputeLightVisibility (-1);
 	PrintLog ("Starting segment light calculation threads\n");
-	StartOglLightThreads (SegLightsThread);
+	StartLightThreads (SegLightsThread);
 	PrintLog ("Starting vertex light calculation threads\n");
-	StartOglLightThreads (VertLightsThread);
+	StartLightThreads (VertLightsThread);
 	gameData.physics.side.bCache = 1;
 	}
 else {
@@ -823,15 +831,15 @@ else {
 						 LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize () + SegDistGaugeSize (), SortLightsPoll);
 	else {
 		PrintLog ("Computing segment distances\n");
-		ComputeSegmentDistance (-1);
+		ComputeSegmentDistance (-1, 0);
 		PrintLog ("Computing segment visibility\n");
 		ComputeSegmentVisibility (-1);
 		PrintLog ("Computing light visibility\n");
 		ComputeLightVisibility (-1);
 		PrintLog ("Computing segment lights\n");
-		ComputeNearestSegmentLights (-1);
+		ComputeNearestSegmentLights (-1, 0);
 		PrintLog ("Computing vertex lights\n");
-		ComputeNearestVertexLights (-1);
+		ComputeNearestVertexLights (-1, 0);
 		}
 	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}

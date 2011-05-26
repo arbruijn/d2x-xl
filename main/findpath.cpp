@@ -417,18 +417,42 @@ fix CDACSUniDirRouter::BuildPath (short nSegment)
 if (m_heap.Cost (nSegment) < 0)
 	return -1;
 
-	int j = m_heap.BuildRoute (nSegment);
+	int h = m_heap.BuildRoute (nSegment);
 
 if (m_nDestSeg >= 0)
-	j -= 2;
-CDialHeap::tPathNode* route = m_heap.Route ();
-fix xDist = 0;
-for (int i = 1; i < j; i++)
-	xDist += SEGMENTS [route [i - 1].nNode].m_childDists [0][route [i].nEdge];
-if (m_nDestSeg >= 0) {
-	xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [j].nNode].Center ());
+	h -= 2;
+
+	CDialHeap::tPathNode* route = m_heap.Route ();
+	fix xDist = 0;
+
+	CHitQuery	fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], route [0].nNode, -1, 1, 0);
+	CHitData		hitData;
+	CFixVector* p1;
+	short			nStartSeg, nDestSeg;
+
+for (int i = 0, j; i < h; i = j) {
+	// beginning at segment route [i].node, traverse the route until the center of route segment route [j].nNode cannot be seen from 
+	// the center of segment route [i].nNode. That way, the distance calculation is corrected by using direct lines of sight between
+	// segments of the route that can "see" each other even if they aren't directly connected.
+	nStartSeg = route [i].nNode;
+	fq.p0 = &SEGMENTS [nStartSeg].Center ();
+	for (j = i + 1; j < h; j++) { 
+		nDestSeg = route [j].nNode;
+		fq.p1 = &SEGMENTS [nDestSeg].Center ();
+		int nHitType = FindHitpoint (&fq, &hitData);
+		if (nHitType && ((nHitType != HIT_WALL) || (hitData.hit.nSegment != nDestSeg)))
+			break;
+		p1 = fq.p1;
+		}	
+	if (j < i + 2) // can only see next segment after route [i].nNode
+		xDist += SEGMENTS [nStartSeg].m_childDists [0][route [i].nEdge];
+	else // skipped some segment(s)
+		xDist += CFixVector::Dist (*fq.p0, *p1);
+	}
+if	(m_nDestSeg >= 0) {
+	xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [h].nNode].Center ());
 	if (m_cacheType >= 0) 
-		m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, j + 2, xDist);
+		m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, h + 2, xDist);
 	}
 return xDist;
 }
