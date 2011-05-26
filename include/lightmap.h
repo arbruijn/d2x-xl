@@ -11,7 +11,7 @@
 
 //------------------------------------------------------------------------------
 
-#define MAX_LIGHTMAP_WIDTH	128
+#define MAX_LIGHTMAP_WIDTH	256
 #define LIGHTMAP_WIDTH		lightmapWidth [gameOpts->render.nLightmapQuality]
 #define LIGHTMAP_BUFWIDTH	512
 #define LIGHTMAP_ROWSIZE	(LIGHTMAP_BUFWIDTH / LIGHTMAP_WIDTH)
