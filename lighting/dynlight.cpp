@@ -690,7 +690,7 @@ if (!info.bDiffuse [nThread]) {
 	xDistance = xPathLength;
 #else
 	if (xDistance < xPathLength) {
-		xDistance = (xDistance + 2 * xPathLength) / 3;
+		xDistance = (xDistance + 2 * xPathLength) / 3; // since the path length goes via segment centers and is therefore usually to great, adjust it a bit
 		if (xDistance > xMaxLightRange)
 			return 0;
 		}
