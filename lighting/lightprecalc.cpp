@@ -77,14 +77,14 @@ return (nStart < 0) ? 0 : nStart;
 
 //------------------------------------------------------------------------------
 
-void ComputeSingleSegmentDistance (int nSegment)
+void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
 #if DBG
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-dacsRouter [0].Create (gameData.segs.nSegments);
-dacsRouter [0].PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, 0x7FFFFFFF, WID_RENDPAST_FLAG | WID_FLY_FLAG, -1);
+dacsRouter [nThread].Create (gameData.segs.nSegments);
+dacsRouter [nThread].PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, 0x7FFFFFFF, WID_RENDPAST_FLAG | WID_FLY_FLAG, -1);
 for (int i = 0; i < gameData.segs.nSegments; i++)
 #if DBG
 	{	
@@ -92,13 +92,13 @@ for (int i = 0; i < gameData.segs.nSegments; i++)
 	if (i == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
-	fix xDist = dacsRouter [0].Distance (i);
+	fix xDist = dacsRouter [nThread].Distance (i);
 	if (!xDist && (i != nSegment))
-		dacsRouter [0].Distance (i);
+		dacsRouter [nThread].Distance (i);
 	gameData.segs.SetSegDist (nSegment, i, xDist);
 	}
 #else
-	gameData.segs.SetSegDist (nSegment, i, dacsRouter [0].Distance (i));
+	gameData.segs.SetSegDist (nSegment, i, dacsRouter [nThread].Distance (i));
 #endif
 gameData.segs.SetSegDist (nSegment, nSegment, 0);
 }
@@ -111,7 +111,7 @@ void ComputeSegmentDistance (int startI, int nThread)
 
 PrintLog ("computing segment distances (%d)\n", startI);
 for (i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i < endI; i++)
-	ComputeSingleSegmentDistance (i);
+	ComputeSingleSegmentDistance (i, nThread);
 }
 
 //------------------------------------------------------------------------------
