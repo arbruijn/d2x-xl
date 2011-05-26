@@ -1806,8 +1806,6 @@ class CSegmentGrid {
 		inline bool Available (void) { return (m_segments.Buffer () != NULL); }
 };
 
-extern ubyte segVisFlags [2][4];
-
 class CSegmentData {
 	public:
 		int							nMaxSegments;
@@ -1888,7 +1886,7 @@ class CSegmentData {
 		inline int SetSegVis (short nSrcSeg, short nDestSeg, int bLights)	{
 			if (bLights) {
 				int i = LightVisIdx (nSrcSeg, nDestSeg);
-				bSegVis [1][i >> 2] |= segVisFlags [0][i & 3];
+				bSegVis [1][i >> 2] |= 2 << ((i & 3) << 1);
 				}
 			else {
 				int i = SegVisIdx (nSrcSeg, nDestSeg);
