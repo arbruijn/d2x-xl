@@ -600,11 +600,11 @@ int CDynLight::SeesPoint (const CFixVector* vNormal, const CFixVector* vLightToP
 	CFloatVector vLightToPointf, vNormalf;
 
 vLightToPointf.Assign (*vLightToPoint);
-if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.01f) // light doesn't see point
+if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.0001f) // light doesn't see point
 	return 0;
 if (vNormal) {
 	vNormalf.Assign (*vNormal);
-	if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.01f) // light doesn't "see" face
+	if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.0001f) // light doesn't "see" face
 		return 0;
 	}
 return 1;	
@@ -623,24 +623,40 @@ int CDynLight::Contribute (const short nDestSeg, const CFixVector& vDestPos, con
 {
 	short nLightSeg = info.nSegment;
 
-if (nLightSeg >= 0)
-	info.bDiffuse [nThread] = (info.nSide < 0) ? gameData.segs.SegVis (nLightSeg, nDestSeg) : info.bDiffuse [nThread] = gameData.segs.LightVis (nLightSeg, nDestSeg);
+if (nLightSeg >= 0) {
+	if (info.nSide < 0) 
+		info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
+	else if (0 > (info.bDiffuse [nThread] = gameData.segs.LightVis (nLightSeg, nDestSeg)))
+		return 0;
+	}
 else if ((info.nObject >= 0) && ((nLightSeg = OBJECTS [info.nObject].info.nSegment) >= 0))
 	info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
 else
 	return 0;
 CFixVector vLightToPoint = vDestPos - info.vPos;
 fix xDistance = vLightToPoint.Mag ();
-vLightToPoint /= xDistance;
 xDistance = fix (float (xDistance) / (info.fRange * fRangeMod)) + xDistMod;
 if (xDistance > xMaxLightRange)
 	return 0;
-if (info.bDiffuse [nThread])
+if (info.bDiffuse [nThread]) {
+	vLightToPoint /= xDistance;
 	info.bDiffuse [nThread] = SeesPoint (vNormal, &vLightToPoint);
+	}
 if (!info.bDiffuse [nThread]) {
-	xDistance = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
-	if ((xDistance < 0) || (xDistance > xMaxLightRange))
+	fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+	if (xPathLength < 0)
 		return 0;
+#if 0
+	if (xPathLength > xMaxLightRange)
+		return 0;
+	xDistance = xPathLength;
+#else
+	if (xDistance < xPathLength) {
+		xDistance = (xDistance + 2 * xPathLength) / 3;
+		if (xDistance > xMaxLightRange)
+			return 0;
+		}
+#endif
 	}
 render.xDistance [nThread] = xDistance;
 return 1;

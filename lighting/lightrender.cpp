@@ -544,8 +544,11 @@ if (gameStates.render.nLightingMethod) {
 			}
 #endif
 #if DBG
-		if (prl->info.bDiffuse [nThread] && (nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+		if (prl->info.bDiffuse [nThread]) {
 			nDbgSeg = nDbgSeg;
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				nDbgSeg = nDbgSeg;
+			}
 #endif
 		SetActive (activeLightsP, prl, 1, nThread, bForce);
 		}

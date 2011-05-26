@@ -1806,6 +1806,8 @@ class CSegmentGrid {
 		inline bool Available (void) { return (m_segments.Buffer () != NULL); }
 };
 
+extern ubyte segVisFlags [2][4];
+
 class CSegmentData {
 	public:
 		int							nMaxSegments;
@@ -1845,6 +1847,7 @@ class CSegmentData {
 		short							nSlideSegs;
 		int							bHaveSlideSegs;
 		CFaceData					faces;
+
 	public:
 		CSegmentData ();
 		void Init (void);
@@ -1870,7 +1873,7 @@ class CSegmentData {
 		inline int LightVisSize (int nElements = 0) {
 			if (!nElements)
 				nElements = nSegments;
-			return (QUADMATSIZE (nSegments) + 7) / 8;
+			return (QUADMATSIZE (nSegments) + 3) / 4;
 			}
 
 		inline int LightVisIdx (int i, int j) {
@@ -1879,17 +1882,17 @@ class CSegmentData {
 
 		inline int LightVis (int i, int j) {
 			i = LightVisIdx (i, j);
-			return (bSegVis [1][i >> 3] & (1 << (i & 7))) != 0;
+			return int (bSegVis [1][i >> 2] & segVisFlags [0][i & 3]) - 1;
 			}
 
 		inline int SetSegVis (short nSrcSeg, short nDestSeg, int bLights)	{
 			if (bLights) {
 				int i = LightVisIdx (nSrcSeg, nDestSeg);
-				bSegVis [1][i >> 3] |= (1 << (i & 7));
+				bSegVis [1][i >> 2] |= (2 << (i & 3));
 				}
 			else {
 				int i = SegVisIdx (nSrcSeg, nDestSeg);
-				bSegVis [0][i >> 3] |= (1 << (i & 7));
+				bSegVis [0][i >> 2] |= segVisFlags [0][i & 3];
 				}
 			return 1;
 			}

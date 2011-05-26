@@ -348,9 +348,9 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide
 
 void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, short nLastSide = 5, int bLights = 0)
 {
-	CSegment*		startSegP, *childP;
+	CSegment*		startSegP;
 	CSide*			sideP;
-	short				nSegment, nSide, nChildSeg, nChildSide, i;
+	short				nSegment, nSide,i;
 	CFixVector		fVec, uVec, rVec;
 	CObject			viewer;
 
@@ -416,11 +416,13 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			rVec = CFixVector::Avg (rVec, h);
 			CFixVector::Normalize (rVec);
 			}
+#if 0
 		if (gameStates.render.bPerPixelLighting) {
-			if (0 <= (nChildSeg = startSegP->m_children [nSide])) {
+			int nChildSeg = startSegP->m_children [nSide];
+			if (0 <= nChildSeg) {
 				gameData.segs.SetSegVis (nStartSeg, nChildSeg, bLights);
-				childP = SEGMENTS + nChildSeg;
-				for (nChildSide = 0; nChildSide < 6; nChildSide++) {
+				CSegment* childP = SEGMENTS + nChildSeg;
+				for (int nChildSide = 0; nChildSide < 6; nChildSide++) {
 					if (0 <= (nSegment = childP->m_children [nSide])) {
 						while (!gameData.segs.SetSegVis (nChildSeg, nSegment, bLights))
 							;
@@ -428,6 +430,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 					}
 				}
 			}
+#endif
 		}
 
 #if 0 //DBG
@@ -506,40 +509,48 @@ for (i = startI; i < endI; i++)
 
 //------------------------------------------------------------------------------
 
+ubyte segVisFlags [2][4] = {{0x03, 0x0C, 0x30, 0xC0},{0x01, 0x04, 0x10, 0x40}};
+
 void CheckLightVisibility (short nStartSeg, short nSide, short nDestSeg, fix xLightRange)
 {
 #if 0
 	int bVisible = gameData.segs.LightVis (nStartSeg, nDestSeg);
-
 if (!bVisible)
 	return;
+#else
+	int bVisible = gameData.segs.SegVis (nStartSeg, nDestSeg);
 #endif
 	int i;
 
-if (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nDestSeg].Center ()) + SEGMENTS [nStartSeg].MaxRad () + SEGMENTS [nDestSeg].MaxRad () < xLightRange) {
-		CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nStartSeg, -1, 1, 0);
-		CHitData	hitData;
-		CSegment* segP = SEGMENTS + nStartSeg;
-		CSide* sideP = segP->m_sides;
+if (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nDestSeg].Center ()) + SEGMENTS [nStartSeg].MaxRad () + SEGMENTS [nDestSeg].MaxRad () >= xLightRange) {
+	i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
+	gameData.segs.bSegVis [1][i >> 2] &= ~segVisFlags [0][i & 3]; // no light contribution
+	return;
+	}
 
-	segP = SEGMENTS + nDestSeg;
-	for (i = 4; i >= 0; i--) {
-		fq.p0 = (i == 4) ? &sideP->Center () : &VERTICES [sideP->m_corners [i]];
-		for (int j = 8; j >= 0; j--) {
-			fq.p1 = (j == 8) ? &segP->Center () : &VERTICES [segP->m_verts [j]];
-			if (CFixVector::Dist (*fq.p0, *fq.p1) > xLightRange)
-				continue;
-			int nHitType = FindHitpoint (&fq, &hitData);
-			if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
-				i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
-				gameData.segs.bSegVis [1][i >> 3] |= (1 << (i & 7));
-				return;
-				}
+	CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nStartSeg, -1, 1, 0);
+	CHitData	hitData;
+	CSegment* segP = SEGMENTS + nStartSeg;
+	CSide* sideP = segP->m_sides;
+
+segP = SEGMENTS + nDestSeg;
+for (i = 4; i >= 0; i--) {
+	fq.p0 = (i == 4) ? &sideP->Center () : &VERTICES [sideP->m_corners [i]];
+	for (int j = 8; j >= 0; j--) {
+		fq.p1 = (j == 8) ? &segP->Center () : &VERTICES [segP->m_verts [j]];
+		if (CFixVector::Dist (*fq.p0, *fq.p1) > xLightRange)
+			continue;
+		int nHitType = FindHitpoint (&fq, &hitData);
+		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
+			i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
+			gameData.segs.bSegVis [1][i >> 2] |= segVisFlags [0][i & 3]; // diffuse + ambient
+			return;
 			}
 		}
 	}
+
 i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
-gameData.segs.bSegVis [1][i >> 3] &= ~(1 << (i & 7));
+gameData.segs.bSegVis [1][i >> 2] |= segVisFlags [1][i & 3]; // diffuse
 }
 
 //------------------------------------------------------------------------------
