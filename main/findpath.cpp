@@ -414,7 +414,7 @@ return true;
 
 fix CDACSUniDirRouter::BuildPath (short nSegment)
 {
-if (m_heap.Cost (nSegment) == 0xFFFF)
+if (m_heap.Cost (nSegment) < 0)
 	return -1;
 
 	int j = m_heap.BuildRoute (nSegment);
@@ -439,7 +439,7 @@ return xDist;
 
 fix CDACSUniDirRouter::FindPath (void)
 {
-	int			nDist;
+	uint			nDist;
 	short			nSegment, nSide;
 	CSegment*	segP;
 
@@ -494,7 +494,7 @@ return true;
 
 int CDACSBiDirRouter::Expand (int nDir)
 {
-	int nDist;
+	uint nDist;
 
 short nSegment = m_heap [nDir].Pop (nDist);
 if ((nSegment < 0) || (nSegment == m_nDestSeg))
