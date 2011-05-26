@@ -619,15 +619,30 @@ return SeesPoint (&SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint);
 
 //------------------------------------------------------------------------------
 
-int CDynLight::Contribute (const short nDestSeg, const CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread)
+int CDynLight::Contribute (const short nDestSeg, const short nDestSide, const CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread)
 {
 	short nLightSeg = info.nSegment;
 
 if (nLightSeg >= 0) {
+#if DBG
+	if ((nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == info.nSide)))
+		nDbgSeg = nDbgSeg;
+#endif
 	if (info.nSide < 0) 
 		info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
-	else if (0 > (info.bDiffuse [nThread] = gameData.segs.LightVis (nLightSeg, nDestSeg)))
-		return 0;
+	else {
+#if DBG
+		if (nDestSeg == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+#endif
+		if (SEGMENTS [nLightSeg].HasOutdoorsProp ()) {
+			if ((nDestSide >= 0) && ((info.nSide != nDestSide) || (nLightSeg != nDestSeg)))
+				return 0;
+			info.bDiffuse [nThread] = 1;
+			}
+		else if (0 > (info.bDiffuse [nThread] = gameData.segs.LightVis (nLightSeg, nDestSeg)))
+			return 0;
+		}
 	}
 else if ((info.nObject >= 0) && ((nLightSeg = OBJECTS [info.nObject].info.nSegment) >= 0))
 	info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);

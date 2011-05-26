@@ -520,9 +520,10 @@ if (!bVisible)
 #endif
 	int i;
 
-if (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nDestSeg].Center ()) + SEGMENTS [nStartSeg].MaxRad () + SEGMENTS [nDestSeg].MaxRad () >= xLightRange) {
+if ((SEGMENTS [nStartSeg].HasOutdoorsProp () && (nStartSeg != nDestSeg)) ||
+	 (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nDestSeg].Center ()) + SEGMENTS [nStartSeg].MaxRad () + SEGMENTS [nDestSeg].MaxRad () >= xLightRange)) {
 	i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
-	gameData.segs.bSegVis [1][i >> 2] &= 3 << ((i & 3) << 1); // no light contribution
+	gameData.segs.bSegVis [1][i >> 2] &= (3 << ((i & 3) << 1)); // no light contribution
 	return;
 	}
 
@@ -541,14 +542,14 @@ for (i = 4; i >= 0; i--) {
 		int nHitType = FindHitpoint (&fq, &hitData);
 		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
 			i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
-			gameData.segs.bSegVis [1][i >> 2] |= 2 << ((i & 3) << 1); // diffuse + ambient
+			gameData.segs.bSegVis [1][i >> 2] |= (2 << ((i & 3) << 1)); // diffuse + ambient
 			return;
 			}
 		}
 	}
 
 i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
-gameData.segs.bSegVis [1][i >> 2] |= 1 << ((i & 3) << 1); // diffuse
+gameData.segs.bSegVis [1][i >> 2] |= (1 << ((i & 3) << 1)); // diffuse
 }
 
 //------------------------------------------------------------------------------
