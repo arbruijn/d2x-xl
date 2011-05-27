@@ -34,7 +34,7 @@ class CDialHeap {
 		short BuildRoute (short nNode, int bReverse = 0, tPathNode* route = NULL);
 		inline uint Cost (short nNode) { return m_cost [nNode]; }
 		inline bool Pushed (short nNode) { return Cost (nNode) < 0xFFFFFFFF; }
-		inline bool Popped (short nNode) { return Cost (nNode) == 0; }
+		inline bool Popped (short nNode) { return !Pushed (nNode) && ((Cost (nNode) & 0x80000000) != 0); }
 		inline tPathNode* Route (void) { return m_route.Buffer (); }
 };
 

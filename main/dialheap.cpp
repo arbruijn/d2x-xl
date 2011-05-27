@@ -47,7 +47,7 @@ Push (nNode, -1, -1, 0);
 
 bool CDialHeap::Push (short nNode, short nPredNode, short nEdge, uint nNewCost)
 {
-	uint nOldCost = m_cost [nNode];
+	uint nOldCost = m_cost [nNode] & ~0x80000000;
 
 if (nNewCost >= nOldCost)
 	return false;
@@ -89,7 +89,7 @@ for (int i = 65536; i; i--) {
 	if (0 <= (nNode = m_index [m_nIndex])) {
 		m_index [m_nIndex] = m_links [nNode];
 		nCost = m_cost [nNode];
-		m_cost [nNode] = 0;
+		m_cost [nNode] |= 0x80000000;
 		return nNode;
 		}
 	m_nIndex++;

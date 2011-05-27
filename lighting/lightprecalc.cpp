@@ -81,6 +81,7 @@ return (nStart < 0) ? 0 : nStart;
 
 void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
+G3_SLEEP (0);
 #if DBG
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
@@ -226,6 +227,8 @@ int ComputeNearestVertexLights (int nVertex, int nThread)
 	CFixVector				vLightToVert;
 	struct tLightDist*	pDists;
 
+G3_SLEEP (0);
+
 if (!lightManager.LightCount (0))
 	return 0;
 
@@ -320,7 +323,7 @@ while (!gameData.segs.SetSegVis (nStartSeg, nSegment, bLights))
 if (!bLights)
 	return;
 #else
-	if (!bLights) {
+if (!bLights) {
 	if (!gameData.segs.SegVis (nStartSeg, nSegment))
 		while (!gameData.segs.SetSegVis (nStartSeg, nSegment, bLights))
 			;
@@ -365,6 +368,7 @@ static void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 
 	CFixVector		fVec, uVec, rVec;
 	CObject			viewer;
 
+G3_SLEEP (0);
 //PrintLog ("computing visibility of segment %d\n", nStartSeg);
 ogl.SetTransform (1);
 #if DBG
@@ -625,7 +629,7 @@ if (startI < 0)
 	startI = 0;
 // every segment can see itself and its neighbours
 CDynLight* pl = lightManager.Lights () + startI;
-for (i = endI - startI; i; i--, pl++)
+for (i = endI - startI; i; i--, pl++) {
 	if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
 #if DBG
 		if ((nDbgSeg >= 0) && (pl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pl->info.nSide == nDbgSide)))
@@ -641,6 +645,7 @@ for (i = endI - startI; i; i--, pl++)
 			CheckLightVisibility (pl->info.nSegment, pl->info.nSide, j, xLightRange, pl->info.fRange);
 #endif
 		}
+	}
 }
 
 //------------------------------------------------------------------------------
