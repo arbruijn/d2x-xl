@@ -667,7 +667,7 @@ if (nLightSeg >= 0) {
 			return 0;
 		}
 	}
-#if DBG
+#if 0 //DBG
 #else
 else if ((info.nObject >= 0) && ((nLightSeg = OBJECTS [info.nObject].info.nSegment) >= 0))
 	info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
