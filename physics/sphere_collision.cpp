@@ -1036,8 +1036,8 @@ int PointSeesPoint (CFixVector* p0, CFixVector* p1, short nStartSeg, short nStar
 	CSegment*	segP;
 	CSide*		sideP;
 	CWall*		wallP;
-	CFixVector	intersection;
-	int			nSide, nFace;
+	CFixVector	intersection, v0, v1;
+	short			nSide, nFace;
 
 for (;;) {
 	segP = &SEGMENTS [nStartSeg];
@@ -1046,11 +1046,19 @@ for (;;) {
 		if (nSide == nStartSide)
 			continue;
 		for (nFace = 0; nFace < sideP->m_nFaces; nFace++) {
-			if (FindPlaneLineIntersection (intersection, &VERTICES [sideP->m_vertices [nFace * 3]], &sideP->m_normals [nFace], p0, p1, 0, false) &&
-				 sideP->PointIsInsideFace (intersection, nFace, sideP->m_normals [nFace]))
+			CFixVector& n = sideP->m_normals [nFace];
+			if (!FindPlaneLineIntersection (intersection, &VERTICES [sideP->m_vertices [nFace * 3]], &n, p0, p1, 0, false))
+				continue;
+			v0 = *p0 - intersection;
+			v1 = *p1 - intersection;
+			CFixVector::Normalize (v0);
+			CFixVector::Normalize (v1);
+			if (CFixVector::Dot (v0, n) == CFixVector::Dot (v1, n))
+				continue;
+			if (sideP->PointIsInsideFace (intersection, nFace, sideP->m_normals [nFace]))
 				break;
 			}
-		if (nFace == 2)
+		if (nFace == sideP->m_nFaces)
 			continue; // line doesn't intersect with this side
 		if (0 > (nStartSeg = segP->m_children [nSide]))
 			return (nStartSeg == nDestSeg); // line intersects a solid wall
