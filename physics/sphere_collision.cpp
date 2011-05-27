@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderlib.h"
 #include "collision_math.h"
 
-int CheckSphereToFace (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal);
+int SphereIntersectsFace (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal);
 
 //	-----------------------------------------------------------------------------
 
@@ -183,7 +183,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 //see if a point is inside a face by projecting into 2d
-uint CheckPointToFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal)
+uint PointIsInsideFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal)
 {
 //	CFixVector	vNormal;
 	CFixVector	t;
@@ -236,7 +236,7 @@ return nEdgeMask;
 
 //	-----------------------------------------------------------------------------
 //check if a sphere intersects a face
-int CheckSphereToFace (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal)
+int SphereIntersectsFace (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal)
 {
 	CFixVector	vEdge, vCheck;            //this time, real 3d vectors
 	CFixVector	vClosestPoint;
@@ -247,7 +247,7 @@ int CheckSphereToFace (CFixVector* refP, fix rad, CFixVector *vertList, int nVer
 	uint			nEdgeMask;
 
 //now do 2d check to see if refP is inside
-if (!(nEdgeMask = CheckPointToFace (refP, vertList, nVerts, vNormal)))
+if (!(nEdgeMask = PointIsInsideFace (refP, vertList, nVerts, vNormal)))
 	return IT_FACE;	//we've gone through all the sides, and are inside
 //get verts for edge we're behind
 for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
@@ -306,7 +306,7 @@ vHit = intersection;
 //if rad != 0, project the refP down onto the plane of the polygon
 if (rad)
 	vHit += *vNormal * (-rad);
-if ((pli = CheckSphereToFace (&vHit, rad, vertList, nVerts, vNormal)))
+if ((pli = SphereIntersectsFace (&vHit, rad, vertList, nVerts, vNormal)))
 	return pli;
 if (bCheckRad) {
 	int			i, d;
@@ -1002,7 +1002,7 @@ if (faceMask != 0) {				//on the back of at least one face
 		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
 			if (faceMask & bit) {            //on the back of this iFace
 				//did we go through this CWall/door?
-				nFaceHitType = segP->CheckSphereToFace (*vPoint, rad, nSide, iFace);
+				nFaceHitType = segP->SphereIntersectsFace (*vPoint, rad, nSide, iFace);
 				if (nFaceHitType) {            //through this CWall/door
 					//if what we have hit is a door, check the adjoining segP
 					nChild = segP->m_children [nSide];
@@ -1027,6 +1027,41 @@ return 0;
 int ObjectIntersectsWall (CObject *objP)
 {
 return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, objP->info.xSize);
+}
+
+//------------------------------------------------------------------------------
+
+int PointSeesPoint (short nStartSeg, short nStartSide, CFixVector* p0, CFixVector* p1)
+{
+	CSegment*	segP;
+	CSide*		sideP;
+	CWall*		wallP;
+	CFixVector	intersection;
+	int			nSide, nFace;
+
+for (;;) {
+	segP = &SEGMENTS [nStartSeg];
+	sideP = segP->Side (0);
+	for (nSide = 0; nSide < 6; nSide++, sideP++) {
+		if (nSide == nStartSide)
+			continue;
+		for (nFace = 0; nFace < sideP->m_nFaces; nFace++) {
+			if (FindPlaneLineIntersection (intersection, &VERTICES [sideP->m_vertices [nFace * 3]], &sideP->m_normals [nFace], p0, p1, 0, false) &&
+				 sideP->PointIsInsideFace (intersection, nFace, sideP->m_normals [nFace]))
+				break;
+			}
+		if (nFace == 2)
+			continue; // line doesn't intersect with this side
+		if (0 > (nStartSeg = segP->m_children [nSide]))
+			return 0; // line intersects a solid wall
+		if ((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL))
+			return 0; // line intersects a solid wall
+		nStartSide = nSide;
+		break;
+		}
+	if (nSide == 6)
+		return 1; // line doesn't intersect any side of this segment -> p1 must be inside segment
+	}
 }
 
 //	-----------------------------------------------------------------------------

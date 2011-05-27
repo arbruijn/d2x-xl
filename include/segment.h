@@ -206,8 +206,8 @@ class CSide {
 		int CheckTransparency (void);
 		int CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
 		int CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
-		int CheckSphereToFace (CFixVector& intersection, fix rad, short iFace, CFixVector vNormal);
-		uint CheckPointToFace (CFixVector& intersection, short iFace, CFixVector vNormal);
+		int SphereIntersectsFace (CFixVector& intersection, fix rad, short iFace, CFixVector vNormal);
+		uint PointIsInsideFace (CFixVector& intersection, short iFace, CFixVector vNormal);
 
 		void GetNormals (CFixVector& n1, CFixVector& n2);
 
@@ -356,11 +356,11 @@ class CSegment {
 		int ConnectedSide (CSegment* other);
 		inline CFixVector& Normal (int nSide, int nFace) { return m_sides [nSide].Normal (nFace); }
 #if 0
-		inline uint CheckPointToFace (CFixVector& intersection, int nSide, short iFace)
-		 { return m_sides [nSide].CheckPointToFace (intersection, iFace, Normal (nSide, iFace)); }
+		inline uint PointIsInsideFace (CFixVector& intersection, int nSide, short iFace)
+		 { return m_sides [nSide].PointIsInsideFace (intersection, iFace, Normal (nSide, iFace)); }
 #endif
-		inline int CheckSphereToFace (CFixVector& intersection, fix rad, int nSide, short iFace)
-		 { return m_sides [nSide].CheckSphereToFace (intersection, rad, iFace, Normal (nSide, iFace)); }
+		inline int SphereIntersectsFace (CFixVector& intersection, fix rad, int nSide, short iFace)
+		 { return m_sides [nSide].SphereIntersectsFace (intersection, rad, iFace, Normal (nSide, iFace)); }
 		inline int CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, short iFace)
 		 { return m_sides [nSide].CheckLineToFaceRegular (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 		inline int CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, int iFace)
