@@ -369,9 +369,12 @@ return 1;
 
 void RenderObjectsMT (void)
 {
-	int	nListPos [MAX_THREADS] = {0,1,2,3,4,5,6,7};
-	int	i = 0;
+	int	i, nListPos [MAX_THREADS];
+	
+for (i = 0; i < MAX_THREADS; i++)
+ nListPos [i] = i;
 
+i = 0;
 while (nThreads > 0) {
 	if (bSemaphore [i] > 0) {
 		lightManager.SetThreadId (i);
@@ -487,12 +490,19 @@ else {
 		threadLock = SDL_CreateMutex ();
 	nThreads = gameStates.app.nThreads - 1;
 	memset (bSemaphore, 0, sizeof (bSemaphore));
-	int nThreadIds [MAX_THREADS] = {0,1,2,3,4,5,6,7};
+	int nThreadIds [MAX_THREADS];
 #if PERSISTENT_THREADS
-	static SDL_Thread* threads [MAX_THREADS] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+	static bool bInit = true;
+	static SDL_Thread* threads [MAX_THREADS];
+	if (bInit) {
+		bInit = false;
+		memset (threads, 0, sizeof (threads));
+		}
 #else
 	SDL_Thread* threads [MAX_THREADS];
 #endif
+	for (i = 0; i < MAX_THREADS; i++) 
+		nThreadIds [i] = i;
 	for (i = 0; i < nThreads; i++) 
 #if PERSISTENT_THREADS
 		if (!threads [i])
