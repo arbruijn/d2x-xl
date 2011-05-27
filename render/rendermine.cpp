@@ -308,7 +308,7 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
 #	pragma auto_inline(off)
 #endif
 
-static sbyte bSemaphore [MAX_THREADS] = {0,0,0,0};
+static sbyte bSemaphore [MAX_THREADS] = {0,0,0,0,0,0,0,0};
 static SDL_mutex* threadLock = NULL;
 static int nThreads = 0;
 
@@ -369,7 +369,7 @@ return 1;
 
 void RenderObjectsMT (void)
 {
-	int	nListPos [MAX_THREADS] = {0,1,2,3};
+	int	nListPos [MAX_THREADS] = {0,1,2,3,4,5,6,7};
 	int	i = 0;
 
 while (nThreads > 0) {
@@ -487,9 +487,9 @@ else {
 		threadLock = SDL_CreateMutex ();
 	nThreads = gameStates.app.nThreads - 1;
 	memset (bSemaphore, 0, sizeof (bSemaphore));
-	int nThreadIds [MAX_THREADS] = {0,1,2,3};
+	int nThreadIds [MAX_THREADS] = {0,1,2,3,4,5,6,7};
 #if PERSISTENT_THREADS
-	static SDL_Thread* threads [MAX_THREADS] = {NULL, NULL, NULL, NULL};
+	static SDL_Thread* threads [MAX_THREADS] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 #else
 	SDL_Thread* threads [MAX_THREADS];
 #endif
