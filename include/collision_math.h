@@ -139,7 +139,7 @@ bool PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex,
 
 uint PointIsInsideFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal);
 
-int PointSeesPoint (short nStartSeg, short nStartSide, CFixVector* p0, CFixVector* p1);
+int PointSeesPoint (CFixVector* p0, CFixVector* p1, short nStartSeg, short nStartSide, short nDestSeg);
 
 //	-----------------------------------------------------------------------------
 

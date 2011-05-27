@@ -1031,7 +1031,7 @@ return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, obj
 
 //------------------------------------------------------------------------------
 
-int PointSeesPoint (short nStartSeg, short nStartSide, CFixVector* p0, CFixVector* p1)
+int PointSeesPoint (CFixVector* p0, CFixVector* p1, short nStartSeg, short nStartSide, short nDestSeg)
 {
 	CSegment*	segP;
 	CSide*		sideP;
@@ -1053,9 +1053,9 @@ for (;;) {
 		if (nFace == 2)
 			continue; // line doesn't intersect with this side
 		if (0 > (nStartSeg = segP->m_children [nSide]))
-			return 0; // line intersects a solid wall
+			return (nStartSeg == nDestSeg); // line intersects a solid wall
 		if ((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL))
-			return 0; // line intersects a solid wall
+			return (nStartSeg == nDestSeg); // line intersects a solid wall
 		nStartSide = nSide;
 		break;
 		}
