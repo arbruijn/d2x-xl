@@ -587,8 +587,10 @@ for (i = 4; i >= -4; i--) {
 			dMin = d;
 		int canSee = PointSeesPoint (fq.p0, fq.p1, nLightSeg, nSide, nDestSeg);
 		int nHitType = FindHitpoint (&fq, &hitData);
-		if (canSee != (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))))
-			canSee = -1;
+		if (canSee != (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)))) {
+			canSee = PointSeesPoint (fq.p0, fq.p1, nLightSeg, nSide, nDestSeg);
+			nHitType = FindHitpoint (&fq, &hitData);
+			}
 		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
 			i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);
 			gameData.segs.bSegVis [1][i >> 2] |= (2 << ((i & 3) << 1)); // diffuse + ambient
