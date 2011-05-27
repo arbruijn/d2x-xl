@@ -95,6 +95,7 @@ class CDynLight {
 	public:
 		CDynLight ();
 		void Init (void);
+		CObject* Object (void);
 		int LightSeg (void);
 		int SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const CFixVector* vLightToPoint);
 		int SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const CFixVector* vLightToPoint);

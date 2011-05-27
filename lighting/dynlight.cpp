@@ -635,9 +635,23 @@ int CDynLight::LightSeg (void)
 {
 if (info.nSegment >= 0)
 	return info.nSegment;
-if (info.nObject >= 0)
-	return OBJECTS [info.nObject].Segment ();
+CObject* objP = Object ();
+if (objP)
+	return objP->Segment ();
 return -1;
+}
+
+//------------------------------------------------------------------------------
+
+CObject* CDynLight::Object (void)
+{
+if (info.nSegment >= 0)
+	return NULL;
+if (info.nObject >= 0)
+	return &OBJECTS [info.nObject];
+if (!info.bSpot)
+	return NULL;
+return &OBJECTS [gameData.multiplayer.players [info.nPlayer].nObject];
 }
 
 //------------------------------------------------------------------------------
@@ -669,7 +683,7 @@ if (nLightSeg >= 0) {
 	}
 #if 0 //DBG
 #else
-else if ((info.nObject >= 0) && ((nLightSeg = OBJECTS [info.nObject].info.nSegment) >= 0))
+else if ((nLightSeg = LightSeg ()) >= 0)
 	info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
 #endif
 else
