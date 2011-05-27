@@ -42,6 +42,8 @@ int SegmentIsVisible (CSegment *segP);
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis.Buffer () ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
 
+#define FAST_LIGHTVIS 1
+
 //------------------------------------------------------------------------------
 
 typedef struct tLightDataHeader {
@@ -310,12 +312,21 @@ return 1;
 
 static void SetSegAndVertVis (short nStartSeg, short nSegment, int bLights)
 {
+#if FAST_LIGHTVIS
 if (!bLights && gameData.segs.SegVis (nStartSeg, nSegment))
 	return;
 while (!gameData.segs.SetSegVis (nStartSeg, nSegment, bLights))
 	;
 if (!bLights)
 	return;
+#else
+	if (!bLights) {
+	if (!gameData.segs.SegVis (nStartSeg, nSegment))
+		while (!gameData.segs.SetSegVis (nStartSeg, nSegment, bLights))
+			;
+	return;
+	}
+#endif
 
 	tSegFaces*		segFaceP = SEGFACES + nSegment;
 	CSegFace*		faceP;
@@ -346,7 +357,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide
 // Do this for each side of the current segment, using the side Normal (s) as forward vector
 // of the viewer
 
-void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, short nLastSide = 5, int bLights = 0)
+static void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, short nLastSide = 5, int bLights = 0)
 {
 	CSegment*		startSegP;
 	CSide*			sideP;
@@ -492,7 +503,7 @@ ogl.SetTransform (0);
 
 //------------------------------------------------------------------------------
 
-void ComputeSegmentVisibility (int startI)
+static void ComputeSegmentVisibility (int startI)
 {
 	int i, endI;
 
@@ -508,59 +519,92 @@ for (i = startI; i < endI; i++)
 }
 
 //------------------------------------------------------------------------------
+// This function checks whether segment nDestSeg has a chance to receive diffuse (direct)
+// light from the light source at (nLightSeg,nSide).
 
-void CheckLightVisibility (short nStartSeg, short nSide, short nDestSeg, fix xLightRange)
+static void CheckLightVisibility (short nLightSeg, short nSide, short nDestSeg, fix xMaxDist, float fRange)
 {
 #if 0
-	int bVisible = gameData.segs.LightVis (nStartSeg, nDestSeg);
+	int bVisible = gameData.segs.LightVis (nLightSeg, nDestSeg);
 if (!bVisible)
 	return;
 #else
-	int bVisible = gameData.segs.SegVis (nStartSeg, nDestSeg);
+	int bVisible = gameData.segs.SegVis (nLightSeg, nDestSeg);
 #endif
 	int i;
+
+#if FAST_LIGHTVIS == 2
+	fix dPath = gameData.segs.SegDist (nLightSeg, nDestSeg);
+#else
+	fix dPath = 0;
+#endif
 
 #if DBG
 if (nDestSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-if ((SEGMENTS [nStartSeg].HasOutdoorsProp () && (nStartSeg != nDestSeg)) ||
-	 (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nDestSeg].Center ()) - SEGMENTS [nStartSeg].MaxRad () - SEGMENTS [nDestSeg].MaxRad () >= xLightRange)) {
-#if 0 // segVis is initialized to zero
-	i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
+i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);
+if ((0 < dPath) || // path from light to dest blocked
+	 (SEGMENTS [nLightSeg].HasOutdoorsProp () && (nLightSeg != nDestSeg)) || // light only illuminates its own face
+	 (CFixVector::Dist (SEGMENTS [nLightSeg].Center (), SEGMENTS [nDestSeg].Center ()) - SEGMENTS [nLightSeg].MaxRad () - SEGMENTS [nDestSeg].MaxRad () >= xMaxDist)) { // distance to great
+#if FAST_LIGHTVIS // segVis is initialized to zero
 	gameData.segs.bSegVis [1][i >> 2] &= ~(3 << ((i & 3) << 1)); // no light contribution
 #endif
 	return;
 	}
+#if FAST_LIGHTVIS
+if (gameData.segs.bSegVis [1][i >> 2] & (3 << ((i & 3) << 1))) // face visible 
+	return;
+#endif
 
-	CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nStartSeg, -1, 1, 0);
-	CHitData	hitData;
-	CSegment* segP = SEGMENTS + nStartSeg;
-	CSide* sideP = segP->m_sides;
+	CHitQuery	fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nLightSeg, -1, 1, 0);
+	CHitData		hitData;
+	CFixVector	p0;
+	CSegment*	segP = SEGMENTS + nLightSeg;
+	CSide*		sideP = segP->m_sides;
+	fix			d, dMin = 0x7FFFFFFF;
 
+// cast rays from light segment to target segment and see if at least one of them isn't blocked by geometry
 segP = SEGMENTS + nDestSeg;
-for (i = 4; i >= 0; i--) {
-	fq.p0 = (i == 4) ? &sideP->Center () : &VERTICES [sideP->m_corners [i]];
+for (i = 4; i >= -4; i--) {
+	if (i == 4)
+		fq.p0 = &sideP->Center ();
+	else if (i >= 0)
+		fq.p0 = &VERTICES [sideP->m_corners [i]];
+	else {
+		p0 = CFixVector::Avg (VERTICES [sideP->m_corners [4 + i]], VERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
+		fq.p0 = &p0;
+		}
 	for (int j = 8; j >= 0; j--) {
 		fq.p1 = (j == 8) ? &segP->Center () : &VERTICES [segP->m_verts [j]];
-		if (CFixVector::Dist (*fq.p0, *fq.p1) > xLightRange)
+		if ((d = CFixVector::Dist (*fq.p0, *fq.p1)) > xMaxDist)
 			continue;
+		if (dMin > d)
+			dMin = d;
 		int nHitType = FindHitpoint (&fq, &hitData);
 		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
-			i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
+			i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);
 			gameData.segs.bSegVis [1][i >> 2] |= (2 << ((i & 3) << 1)); // diffuse + ambient
 			return;
 			}
 		}
 	}
 
-i = gameData.segs.LightVisIdx (nStartSeg, nDestSeg);
+if (dMin > xMaxDist)
+	return;
+#if FAST_LIGHTVIS == 2
+dMin = (dMin + dPath) / 2;
+if (dMin > xMaxDist)
+	return;
+#endif
+
+i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);
 gameData.segs.bSegVis [1][i >> 2] |= (1 << ((i & 3) << 1)); // diffuse
 }
 
 //------------------------------------------------------------------------------
 
-void ComputeLightVisibility (int startI)
+static void ComputeLightVisibility (int startI)
 {
 	int i, j, endI;
 
@@ -587,14 +631,14 @@ for (i = endI - startI; i; i--, pl++)
 		if ((nDbgSeg >= 0) && (pl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pl->info.nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
-#if 0
+#if FAST_LIGHTVIS
 		for (j = 1; j <= 5; j++)
 			ComputeSingleSegmentVisibility (pl->info.nSegment, pl->info.nSide, pl->info.nSide, j);
 #endif
 #if 1
 		fix xLightRange = fix (MAX_LIGHT_RANGE * pl->info.fRange);
 		for (j = 0; j < gameData.segs.nSegments; j++)
-			CheckLightVisibility (pl->info.nSegment, pl->info.nSide, j, xLightRange);
+			CheckLightVisibility (pl->info.nSegment, pl->info.nSide, j, xLightRange, pl->info.fRange);
 #endif
 		}
 }

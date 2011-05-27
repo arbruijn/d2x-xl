@@ -686,7 +686,7 @@ inline const CFloatVector3 CFloatVector3::Reflect (const CFloatVector3& d, const
 
 //inline const float CFloatVector3::operator[] (size_t i) const { return vec [i]; }
 
-inline bool CFloatVector3::IsZero (void) const { return ! (v.coord.x || v.coord.y || v.coord.z); }
+inline bool CFloatVector3::IsZero (void) const { return (v.coord.x == 0.0f) && (v.coord.y == 0.0f) && (v.coord.z == 0.0f); }
 
 inline void CFloatVector3::SetZero (void) { memset (&v, 0, sizeof (v)); }
 

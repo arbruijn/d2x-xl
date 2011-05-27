@@ -667,8 +667,11 @@ if (nLightSeg >= 0) {
 			return 0;
 		}
 	}
+#if DBG
+#else
 else if ((info.nObject >= 0) && ((nLightSeg = OBJECTS [info.nObject].info.nSegment) >= 0))
 	info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
+#endif
 else
 	return 0;
 CFixVector vLightToPoint = vDestPos - info.vPos;
@@ -828,8 +831,13 @@ m_data.renderLights.Clear ();
 for (i = 0; i < MAX_THREADS; i++)
 	m_data.active [i].Clear (0);
 Transform (1, bColorize);
-for (i = 0; i < gameData.segs.nVertices; i++)
+for (i = 0; i < gameData.segs.nVertices; i++) {
+#if DBG
+	if (i == nDbgVertex)
+		nDbgVertex = nDbgVertex;
+#endif
 	m_data.variableVertLights [i] = VariableVertexLights (i);
+	}
 if (gameStates.render.bPerPixelLighting/* && lightmapManager.HaveLightmaps ()*/) {
 	gameData.render.color.ambient.Clear ();
 	return;

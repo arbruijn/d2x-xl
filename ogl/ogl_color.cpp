@@ -457,23 +457,27 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		spotDir = *prl->info.vDirf.XYZ ();
 	lightPos = *prl->render.vPosf [bTransform].XYZ ();
 	lightDir = lightPos - *vcd.vertPosP;
-	if (IsLightVert (nVertex, prl)) {
+	if (IsLightVert (nVertex, prl)) { // inside the light emitting face
 		fLightDist = 0.0f;
 		NdotL = 1.0f;
 		bDiffuse = 1;
 		}
 	else if (bDiffuse = prl->info.bDiffuse [nThread]) {
-		fLightDist = lightDir.Mag () * ogl.m_states.fLightRange;
-		if (lightDir.IsZero ())
+		fLightDist = lightDir.Mag ();
+		if (fLightDist < 1.e-6f) {
 			lightDir = vcd.vertNorm;
-		else
-			CFloatVector3::Normalize (lightDir);
-		if ((fLightDist <= 0.1f) || vcd.vertNorm.IsZero ())
-			NdotL = 1.0f;
+			NdotL = 1.0f; // full light contribution for adjacent points
+			}
 		else {
-			NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
-			if ((NdotL < 0.0f) && (NdotL > -0.01f))
-				NdotL = 0.0f;
+			lightDir / fLightDist; // normalize
+			fLightDist *= ogl.m_states.fLightRange;
+			if (vcd.vertNorm.IsZero ())
+				NdotL = 1.0f;
+			else {
+				NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
+				if ((NdotL < 0.0f) && (NdotL > -0.01f)) // compensate for faces almost planar with the light emitting face
+					NdotL = 0.0f;
+				}
 			}
 		}
 
@@ -516,18 +520,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			decay += 1.0000001f;
 			fLightDist /= decay * decay;
 			}
-		//if ((nType < 2) && (nVertex < 0))
-		//fLightDist *= 0.9f;
-#if USE_FACE_DIST
-		if (/*(nVertex < 0) &&*/ (nType < 2))
-			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
-		else
-#endif
-			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
-#if 0
-		if ((nType < 2) && (prl->info.fRad > 0.0f))
-			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f); // make light wrap around corners a bit
-#endif
+		fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
 		fAttenuation /= prl->info.fBrightness;
 		}
 
@@ -548,10 +541,15 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
 			}
 		else {
+#if 1
+			if (NdotL > 0.0f)
+				vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
+#else
 			if (NdotL > 0.1f)
 				vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
 			else if (NdotL >= 0.0f)
 				vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * 0.1f);
+#endif
 			else
 				NdotL = 0.0f;
 			}
