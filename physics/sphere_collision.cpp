@@ -1037,13 +1037,14 @@ int PointSeesPoint (CFixVector* p0, CFixVector* p1, short nStartSeg, short nStar
 	CSide*		sideP;
 	CWall*		wallP;
 	CFixVector	intersection, v0, v1;
-	short			nSide, nFace;
+	short			nSide, nFace, nChildSeg, nPredSeg = -1;
 
 for (;;) {
 	segP = &SEGMENTS [nStartSeg];
 	sideP = segP->Side (0);
 	for (nSide = 0; nSide < 6; nSide++, sideP++) {
-		if (nSide == nStartSide)
+		nChildSeg = segP->m_children [nSide];
+		if (nChildSeg == nPredSeg)
 			continue;
 		for (nFace = 0; nFace < sideP->m_nFaces; nFace++) {
 			CFixVector& n = sideP->m_normals [nFace];
@@ -1055,15 +1056,21 @@ for (;;) {
 			CFixVector::Normalize (v1);
 			if (CFixVector::Dot (v0, n) == CFixVector::Dot (v1, n))
 				continue;
-			if (sideP->PointIsInsideFace (intersection, nFace, sideP->m_normals [nFace]))
+#if DBG
+			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				nDbgSeg = nDbgSeg;
+#endif
+			if (!sideP->PointIsInsideFace (intersection, nFace, sideP->m_normals [nFace]))
 				break;
 			}
 		if (nFace == sideP->m_nFaces)
 			continue; // line doesn't intersect with this side
-		if (0 > (nStartSeg = segP->m_children [nSide]))
+		if (0 > nChildSeg)
 			return (nStartSeg == nDestSeg); // line intersects a solid wall
 		if ((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL))
 			return (nStartSeg == nDestSeg); // line intersects a solid wall
+		nPredSeg = nStartSeg;
+		nStartSeg = nChildSeg;
 		nStartSide = nSide;
 		break;
 		}
