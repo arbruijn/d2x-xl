@@ -1035,6 +1035,7 @@ class CRenderStates {
 		int bVSync;
 		int bVSyncOk;
 		int nThreads;
+		int xPlaneDistTolerance;
 		fix xZoom;
 		fix xZoomScale;
 		ubyte nRenderingType;

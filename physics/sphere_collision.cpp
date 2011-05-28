@@ -80,7 +80,7 @@ fix invDenom = FixDiv (I2X (1), FixMul (dot00, dot11) - FixMul (dot01, dot01));
 fix u = FixMul (FixMul (dot11, dot02) - FixMul (dot01, dot12), invDenom);
 fix v = FixMul (FixMul (dot00, dot12) - FixMul (dot01, dot02), invDenom);
 // Check if point is in triangle
-return int (u < 0) + (int (v < 0) << 1) + (int (u + v > I2X (1)) << 2);
+return int (u < -PLANE_DIST_TOLERANCE) + (int (v < -PLANE_DIST_TOLERANCE) << 1) + (int (u + v > I2X (1) + PLANE_DIST_TOLERANCE) << 2); // compensate for numerical errors
 }
 
 //	-----------------------------------------------------------------------------
@@ -101,12 +101,14 @@ float invDenom = 1.0f / (dot00 * dot11 - dot01 * dot01);
 float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
 float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 // Check if point is in triangle
+#if 0 //DBG
 CFloatVector p = FVERTICES [nVertIndex [0]];
 p += v0 * u;
 p += v1 * v;
 p -= *refP;
 float l = p.Mag ();
-return (int (u < 0.0f)) + ((int (v < 0.0f)) << 1) + ((int (u + v > 1.0f)) << 2);
+#endif
+return (int (u < -0.001f)) + ((int (v < -0.001f)) << 1) + ((int (u + v > 1.001f)) << 2); // compensate for numerical errors
 #else
 	CFloatVector	t, *v0, *v1;
 	int 				i, j, nEdge, biggest;
@@ -149,7 +151,7 @@ for (nEdge = 1; nEdge <= nVerts; nEdge++) {
 	vEdge.j = v1->v.vec [j] - v0->v.vec [j];
 	vCheck.i = check_i - v0->v.vec [i];
 	vCheck.j = check_j - v0->v.vec [j];
-	if (vCheck.i * vEdge.j - vCheck.j * vEdge.i < -0.005f)
+	if (vCheck.i * vEdge.j - vCheck.j * vEdge.i < -X2F (PLANE_DIST_TOLERANCE))
 		return false;
 	}
 return true;

@@ -19,7 +19,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vecmat.h"
 #include "segment.h"
 
-#define PLANE_DIST_TOLERANCE	250
+#define DEFAULT_PLANE_DIST_TOLERANCE	250
+#define PLANE_DIST_TOLERANCE				gameStates.render.xPlaneDistTolerance
 
 // -----------------------------------------------------------------------------
 //Tries to find a CSegment for a point, in the following way:

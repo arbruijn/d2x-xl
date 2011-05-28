@@ -235,6 +235,7 @@ gameStates.render.detail.nDebrisAmount = 4;
 gameStates.render.bUsePerPixelLighting = 1;
 gameStates.render.nMaxLightsPerPass = 8;
 gameStates.render.nMaxLightsPerFace = 16;
+gameStates.render.xPlaneDistTolerance = DEFAULT_PLANE_DIST_TOLERANCE;
 }
 
 // ----------------------------------------------------------------------------

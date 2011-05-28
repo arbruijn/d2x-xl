@@ -30,9 +30,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderlib.h"
 #include "collision_math.h"
 
-#undef PLANE_DIST_TOLERANCE
-#define PLANE_DIST_TOLERANCE 10
-
 // How far a point can be from a plane, and still be "in" the plane
 
 extern bool bNewFileFormat;
@@ -304,26 +301,28 @@ vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]
 xDistToPlane = abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSorted [0]]));
 if (bFlip)
 	vNormal.Neg ();
-#if 1
+
+if (gameStates.render.xPlaneDistTolerance [0] < gameStates.render.xPlaneDistTolerance [1]) {
 	SetupAsTriangles (bSolid, verts, index);
 	if (m_normals [0] == m_normals [1])
 		SetupAsQuad (vNormal, vNormalf, verts, index);
-#else
-if (xDistToPlane <= PLANE_DIST_TOLERANCE)
-	SetupAsQuad (vNormal, vNormalf, verts, index);
-else {
-	SetupAsTriangles (bSolid, verts, index);
-	//this code checks to see if we really should be triangulated, and
-	//de-triangulates if we shouldn't be.
-	Assert (m_nFaces == 2);
-	fix dist0 = VERTICES [m_vertices [1]].DistToPlane (m_normals [1], VERTICES [m_nMinVertex [0]]);
-	fix dist1 = VERTICES [m_vertices [4]].DistToPlane (m_normals [0], VERTICES [m_nMinVertex [0]]);
-	int s0 = sign (dist0);
-	int s1 = sign (dist1);
-	if (s0 == 0 || s1 == 0 || s0 != s1)
-		SetupAsQuad (vNormal, vNormalf, verts, index);
 	}
-#endif
+	if (xDistToPlane <= PLANE_DIST_TOLERANCE)
+		SetupAsQuad (vNormal, vNormalf, verts, index);
+	else {
+		SetupAsTriangles (bSolid, verts, index);
+		//this code checks to see if we really should be triangulated, and
+		//de-triangulates if we shouldn't be.
+		Assert (m_nFaces == 2);
+		fix dist0 = VERTICES [m_vertices [1]].DistToPlane (m_normals [1], VERTICES [m_nMinVertex [0]]);
+		fix dist1 = VERTICES [m_vertices [4]].DistToPlane (m_normals [0], VERTICES [m_nMinVertex [0]]);
+		int s0 = sign (dist0);
+		int s1 = sign (dist1);
+		if (s0 == 0 || s1 == 0 || s0 != s1)
+			SetupAsQuad (vNormal, vNormalf, verts, index);
+		}
+	}
+
 if (m_nType == SIDE_IS_QUAD) {
 	AddToVertexNormal (m_vertices [0], vNormal);
 	AddToVertexNormal (m_vertices [1], vNormal);
