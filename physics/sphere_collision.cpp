@@ -82,9 +82,10 @@ else {
 //now do the 2d problem in the i, j plane
 check_i = refP->v.vec [i];
 check_j = refP->v.vec [j];
-for (nEdge = 0; nEdge < nVerts; nEdge++) {
-	v0 = FVERTICES + nVertIndex [nEdge];
-	v1 = FVERTICES + nVertIndex [(nEdge + 1) % nVerts];
+v1 = FVERTICES + nVertIndex [0];
+for (nEdge = 1; nEdge <= nVerts; nEdge++) {
+	v0 = v1; //FVERTICES + nVertIndex [nEdge];
+	v1 = FVERTICES + nVertIndex [nEdge % nVerts];
 	vEdge.i = v1->v.vec [i] - v0->v.vec [i];
 	vEdge.j = v1->v.vec [j] - v0->v.vec [j];
 	vCheck.i = check_i - v0->v.vec [i];
@@ -178,6 +179,24 @@ else {
 	d.v.coord.z = fix (DblRound (double (d.v.coord.z) * scale));
 	}
 intersection = (*p0) + d;
+return 1;
+}
+
+//	-----------------------------------------------------------------------------
+
+int PlaneLineIntersection (CFloatVector& intersection, CFloatVector* vPlane, CFloatVector* vNormal, CFloatVector* p0, CFloatVector* p1)
+{
+CFloatVector u = *p1 - *p0;
+float d = CFloatVector::Dot (vNormal, u);
+if (d == 0.0f)
+	return 0;
+float d = CFloatVector::Dot (vNormal, w);
+float s = n / d;
+if ((s < 0.0f) || (s > 1.0f))
+	return 0;
+intersection = u;
+intersection *= s;
+intersection += p0;
 return 1;
 }
 
@@ -684,8 +703,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 		if (bCheckVisibility && (0 > nChildSide))	// poking through a wall into the void around the level?
 			continue;
 #endif
-		if (!(nFaces = segP->FaceCount (nSide)))
-			nFaces = 1;
+		nFaces = segP->Side (nSide)->m_nFaces;
 		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
 			if (nChildSide == nEntrySeg)	//must be executed here to have bit shifted
 				continue;		//don't go back through entry nSide
@@ -1031,15 +1049,18 @@ return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, obj
 
 //------------------------------------------------------------------------------
 
-int PointSeesPoint (CFixVector* p0, CFixVector* p1, short nStartSeg, short nStartSide, short nDestSeg)
+int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, int nDepth)
 {
-	CSegment*	segP;
-	CSide*		sideP;
-	CWall*		wallP;
-	CFixVector	intersection, v0, v1;
-	fix			l0, l1;
-	short			nSide, nFace, nChildSeg, nPredSeg = 0x7FFF;
+	CSegment*		segP;
+	CSide*			sideP;
+	CWall*			wallP;
+	CFloatVector	intersection, v0, v1;
+	float				l0, l1;
+	short				nSide, nFace, nChildSeg, nPredSeg = 0x7FFF;
 
+if (!nDepth)
+	gameData.render.mine.bVisited.Clear (0, gameData.segs.nSegments);
+			
 for (;;) {
 	gameData.render.mine.bVisited [nStartSeg] = 1;
 	segP = &SEGMENTS [nStartSeg];
@@ -1049,24 +1070,24 @@ for (;;) {
 		if ((nChildSeg >= 0) && gameData.render.mine.bVisited [nChildSeg])
 			continue;
 		for (nFace = 0; nFace < sideP->m_nFaces; nFace++) {
-			CFixVector& n = sideP->m_normals [nFace];
-			if (!FindPlaneLineIntersection (intersection, &VERTICES [sideP->m_vertices [nFace * 3]], &n, p0, p1, 0, false))
+			CFloatVector* n = sideP->m_fNormals + nFace;
+			if (!FindPlaneLineIntersection (intersection, &FVERTICES [sideP->m_vertices [nFace * 3]], n, p0, p1, 0, false))
 				continue;
 			v0 = *p0 - intersection;
 			v1 = *p1 - intersection;
 			l0 = v0.Mag ();
 			l1 = v1.Mag ();
-			if ((l0 > PLANE_DIST_TOLERANCE) && (l1 > PLANE_DIST_TOLERANCE)) {
+			if ((l0 > X2F (PLANE_DIST_TOLERANCE)) && (l1 > X2F (PLANE_DIST_TOLERANCE))) {
 				v0 /= l0;
 				v1 /= l1;
-				if (CFixVector::Dot (v0, n) == CFixVector::Dot (v1, n))
+				if (CFloatVector::Dot (v0, n) == CFloatVector::Dot (v1, n))
 					continue;
 				}
 #if DBG
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (!sideP->PointIsInsideFace (intersection, nFace, sideP->m_normals [nFace])) {
+			if (!PointIsInFace (intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - sideP->m_nFaces)) {
 				if (l1 < PLANE_DIST_TOLERANCE)
 					return 1;
 				break;
@@ -1080,7 +1101,7 @@ for (;;) {
 			continue;
 			}
 			//return (nStartSeg == nDestSeg); // line intersects a solid wall
-		if (PointSeesPoint (p0, p1, nChildSeg, nSide, nDestSeg))
+		if (PointSeesPoint (p0, p1, nChildSeg, nDepth + 1))
 			return 1;
 		}
 	return (nStartSeg == nDestSeg); // line doesn't intersect any side of this segment -> p1 must be inside segment

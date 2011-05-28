@@ -30,6 +30,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderlib.h"
 #include "collision_math.h"
 
+#undef PLANE_DIST_TOLERANCE
+#define PLANE_DIST_TOLERANCE 10
+
 // How far a point can be from a plane, and still be "in" the plane
 
 extern bool bNewFileFormat;
@@ -296,6 +299,11 @@ vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]
 xDistToPlane = abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSorted [0]]));
 if (bFlip)
 	vNormal.Neg ();
+#if 1
+	SetupAsTriangles (bSolid, verts, index);
+	if (m_normals [0] == m_normals [1])
+		SetupAsQuad (vNormal, vNormalf, verts, index);
+#else
 if (xDistToPlane <= PLANE_DIST_TOLERANCE)
 	SetupAsQuad (vNormal, vNormalf, verts, index);
 else {
@@ -310,6 +318,7 @@ else {
 	if (s0 == 0 || s1 == 0 || s0 != s1)
 		SetupAsQuad (vNormal, vNormalf, verts, index);
 	}
+#endif
 if (m_nType == SIDE_IS_QUAD) {
 	AddToVertexNormal (m_vertices [0], vNormal);
 	AddToVertexNormal (m_vertices [1], vNormal);

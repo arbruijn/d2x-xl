@@ -561,36 +561,44 @@ if (gameData.segs.bSegVis [1][i >> 2] & (3 << ((i & 3) << 1))) // face visible
 	return;
 #endif
 
-	CHitQuery	fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nLightSeg, -1, 1, 0);
-	CHitData		hitData;
-	CFixVector	p0;
-	CSegment*	segP = SEGMENTS + nLightSeg;
-	CSide*		sideP = segP->m_sides;
-	fix			d, dMin = 0x7FFFFFFF;
+	CHitQuery		fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nLightSeg, -1, 1, 0);
+	CHitData			hitData;
+	CFixVector		p0;
+	CFloatVector	v0, v1;
+	CSegment*		segP = SEGMENTS + nLightSeg;
+	CSide*			sideP = segP->m_sides;
+	fix				d, dMin = 0x7FFFFFFF;
 
 // cast rays from light segment to target segment and see if at least one of them isn't blocked by geometry
 segP = SEGMENTS + nDestSeg;
 for (i = 4; i >= -4; i--) {
-	if (i == 4)
+	if (i == 4) {
 		fq.p0 = &sideP->Center ();
-	else if (i >= 0)
+		v0.Assign (fq.p0);
+		}
+	else if (i >= 0) {
 		fq.p0 = &VERTICES [sideP->m_corners [i]];
+		v0 = VERTICES [sideP->m_corners [i]];
+		}
 	else {
 		p0 = CFixVector::Avg (VERTICES [sideP->m_corners [4 + i]], VERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
 		fq.p0 = &p0;
+		v0 = CFloatVector::Avg (FVERTICES [sideP->m_corners [4 + i]], FVERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
 		}
 	for (int j = 8; j >= 0; j--) {
 		fq.p1 = (j == 8) ? &segP->Center () : &VERTICES [segP->m_verts [j]];
+		if (j == 8)
+			v1.Assign (fq.p1);
+		else
+			v1 = VERTICES [segP->m_verts [j]];
 		if ((d = CFixVector::Dist (*fq.p0, *fq.p1)) > xMaxDist)
 			continue;
 		if (dMin > d)
 			dMin = d;
-		gameData.render.mine.bVisited.Clear (0, gameData.segs.nSegments);
-		int canSee = PointSeesPoint (fq.p0, fq.p1, nLightSeg, nSide, nDestSeg);
+		int canSee = PointSeesPoint (&v0, &v1, nLightSeg, 0);
 		int nHitType = FindHitpoint (&fq, &hitData);
 		if (canSee != (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)))) {
-			gameData.render.mine.bVisited.Clear (0, gameData.segs.nSegments);
-			canSee = PointSeesPoint (fq.p0, fq.p1, nLightSeg, nSide, nDestSeg);
+			canSee = PointSeesPoint (&v0, &v1, nLightSeg, 0);
 			nHitType = FindHitpoint (&fq, &hitData);
 			}
 		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
