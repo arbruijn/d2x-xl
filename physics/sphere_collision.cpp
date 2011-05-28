@@ -1037,25 +1037,33 @@ int PointSeesPoint (CFixVector* p0, CFixVector* p1, short nStartSeg, short nStar
 	CSide*		sideP;
 	CWall*		wallP;
 	CFixVector	intersection, v0, v1;
-	short			nSide, nFace, nChildSeg, nPredSeg = -1;
+	fix			l0, l1;
+	short			nSide, nFace, nChildSeg, nPredSeg = 0x7FFF;
 
 for (;;) {
+	gameData.render.mine.bVisited [nStartSeg] = 1;
 	segP = &SEGMENTS [nStartSeg];
 	sideP = segP->Side (0);
 	for (nSide = 0; nSide < 6; nSide++, sideP++) {
 		nChildSeg = segP->m_children [nSide];
-		if (nChildSeg == nPredSeg)
+		if ((nChildSeg >= 0) && gameData.render.mine.bVisited [nChildSeg])
 			continue;
 		for (nFace = 0; nFace < sideP->m_nFaces; nFace++) {
 			CFixVector& n = sideP->m_normals [nFace];
 			if (!FindPlaneLineIntersection (intersection, &VERTICES [sideP->m_vertices [nFace * 3]], &n, p0, p1, 0, false))
 				continue;
 			v0 = *p0 - intersection;
-			v1 = *p1 - intersection;
-			CFixVector::Normalize (v0);
-			CFixVector::Normalize (v1);
-			if (CFixVector::Dot (v0, n) == CFixVector::Dot (v1, n))
-				continue;
+			l0 = v0.Mag ();
+			if (l0 > PLANE_DIST_TOLERANCE) {
+				v1 = *p1 - intersection;
+				l1 = v1.Mag ();
+				if (l1 > PLANE_DIST_TOLERANCE) {
+					v0 /= l0;
+					v1 /= l1;
+					if (CFixVector::Dot (v0, n) == CFixVector::Dot (v1, n))
+						continue;
+					}
+				}
 #if DBG
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
@@ -1065,17 +1073,22 @@ for (;;) {
 			}
 		if (nFace == sideP->m_nFaces)
 			continue; // line doesn't intersect with this side
-		if (0 > nChildSeg)
-			return (nStartSeg == nDestSeg); // line intersects a solid wall
-		if ((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL))
-			return (nStartSeg == nDestSeg); // line intersects a solid wall
-		nPredSeg = nStartSeg;
-		nStartSeg = nChildSeg;
-		nStartSide = nSide;
-		break;
+		if (0 > nChildSeg) {
+			if (nStartSeg == nDestSeg)
+				return 1;
+			continue;
+			}
+			//return (nStartSeg == nDestSeg); // line intersects a solid wall
+		if ((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL)) {
+			if (nStartSeg == nDestSeg)
+				return 1;
+			continue;
+			}
+			//return (nStartSeg == nDestSeg); // line intersects a solid wall
+		if (PointSeesPoint (p0, p1, nChildSeg, nSide, nDestSeg))
+			return 1;
 		}
-	if (nSide == 6)
-		return 1; // line doesn't intersect any side of this segment -> p1 must be inside segment
+	return (nStartSeg == nDestSeg); // line doesn't intersect any side of this segment -> p1 must be inside segment
 	}
 }
 

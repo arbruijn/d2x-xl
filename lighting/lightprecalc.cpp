@@ -585,9 +585,11 @@ for (i = 4; i >= -4; i--) {
 			continue;
 		if (dMin > d)
 			dMin = d;
+		gameData.render.mine.bVisited.Clear (0, gameData.segs.nSegments);
 		int canSee = PointSeesPoint (fq.p0, fq.p1, nLightSeg, nSide, nDestSeg);
 		int nHitType = FindHitpoint (&fq, &hitData);
 		if (canSee != (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)))) {
+			gameData.render.mine.bVisited.Clear (0, gameData.segs.nSegments);
 			canSee = PointSeesPoint (fq.p0, fq.p1, nLightSeg, nSide, nDestSeg);
 			nHitType = FindHitpoint (&fq, &hitData);
 			}

@@ -53,6 +53,9 @@ m_vCenter += VERTICES [m_vertices [3]];
 m_vCenter.v.coord.x /= 4;
 m_vCenter.v.coord.y /= 4;
 m_vCenter.v.coord.z /= 4;
+CFixVector v0 = m_vCenter + m_normals [2];
+CFixVector v1 = m_vCenter - m_normals [2];
+FindPlaneLineIntersection (m_vCenter, &VERTICES [m_vertices [0]], &m_normals [2], &v0, &v1, 0, false);
 }
 
 // ------------------------------------------------------------------------------------------
