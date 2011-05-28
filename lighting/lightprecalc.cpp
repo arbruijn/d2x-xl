@@ -590,7 +590,7 @@ for (i = 4; i >= -4; i--) {
 		if (j == 8)
 			v1.Assign (fq.p1);
 		else
-			v1 = VERTICES [segP->m_verts [j]];
+			v1 = FVERTICES [segP->m_verts [j]];
 		if ((d = CFixVector::Dist (*fq.p0, *fq.p1)) > xMaxDist)
 			continue;
 		if (dMin > d)
