@@ -1135,7 +1135,7 @@ int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short n
 	uint*				bVisited = segVisList [nThread];
 
 if (!nDepth) {
-#if 1
+#if 0
 	memset (bVisited, 0, gameData.segs.nSegments * sizeof (*bVisited));
 #else
 	if (!++segVisFlags [nThread]) {
