@@ -35,48 +35,32 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 //see if a point is inside a face by projecting into 2d
-bool PointIsInQuad (CFixVector vRef, CFixVector* vertP, CFixVector vNormal)
+bool PointIsInQuad (CFixVector point, CFixVector* vertP, CFixVector vNormal)
 {
-	CFixVector	t, v0, v1;
-	int 			i, j, iEdge, biggest;
-	fix			check_i, check_j;
-	vec2d 		vEdge, vCheck;
+	CFixVector		t, v0, v1;
+	CFixVector2D 	vEdge, vCheck, vRef;
+	int 				h, i, j, iEdge, biggest;
 
 //now do 2d check to see if vRef is in side
 //project polygon onto plane by finding largest component of Normal
-t.v.coord.x = labs (vNormal.v.coord.x);
-t.v.coord.y = labs (vNormal.v.coord.y);
-t.v.coord.z = labs (vNormal.v.coord.z);
-if (t.v.coord.x > t.v.coord.y) {
-	if (t.v.coord.x > t.v.coord.z)
-		biggest = 0;
-	else
-		biggest = 2;
-	}
-else {
-	if (t.v.coord.y > t.v.coord.z)
-		biggest = 1;
-	else
-		biggest = 2;
-	}
-if (vNormal.v.vec [biggest] > 0) {
-	i = ijTable [biggest][0];
-	j = ijTable [biggest][1];
-	}
-else {
-	i = ijTable [biggest][1];
-	j = ijTable [biggest][0];
-	}
+t.Set (labs (vNormal.v.coord.x), labs (vNormal.v.coord.y), labs (vNormal.v.coord.z));
+if (t.v.coord.x > t.v.coord.y)
+	biggest = (t.v.coord.x > t.v.coord.z) ? 0 : 2;
+else
+	biggest = (t.v.coord.y > t.v.coord.z) ? 1 : 2;
+h = (vNormal.v.vec [biggest] < 0);
+i = ijTable [biggest][h];
+j = ijTable [biggest][!h];
 //now do the 2d problem in the i, j plane
-check_i = vRef.v.vec [i];
-check_j = vRef.v.vec [j];
+vRef.i = point.v.vec [i];
+vRef.j = point.v.vec [j];
 for (iEdge = 0; iEdge < 4; ) {
 	v0 = vertP [iEdge++];
 	v1 = vertP [iEdge % 4];
 	vEdge.i = v1.v.vec [i] - v0.v.vec [i];
 	vEdge.j = v1.v.vec [j] - v0.v.vec [j];
-	vCheck.i = check_i - v0.v.vec [i];
-	vCheck.j = check_j - v0.v.vec [j];
+	vCheck.i = vRef.i - v0.v.vec [i];
+	vCheck.j = vRef.j - v0.v.vec [j];
 	if (FixMul (vCheck.i, vEdge.j) - FixMul (vCheck.j, vEdge.i) < 0)
 		return false;
 	}

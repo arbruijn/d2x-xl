@@ -283,7 +283,7 @@ if (nVerts == 3)
 	uint 			nEdgeMask;
 	fix 			check_i, check_j;
 	CFixVector	*v0, *v1;
-	vec2d 		vEdge, vCheck;
+	CFixVector2D 		vEdge, vCheck;
 	fix 			d;
 
 //now do 2d check to see if refP is in side

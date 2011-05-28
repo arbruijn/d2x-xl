@@ -587,7 +587,7 @@ return IS_WALL (m_nWall) ? WALLS + m_nWall : NULL;
 uint CSide::PointToFaceRelation (CFixVector& intersection, short nFace, CFixVector vNormal)
 {
 	CFixVector		t;
-	int 				i, nEdge, nVerts, projPlane;
+	int 				h, i, j, nEdge, nVerts, projPlane;
 	uint 				nEdgeMask;
 	CFixVector*		v0, * v1;
 	CFixVector2D	vEdge, vCheck, vRef;
@@ -599,18 +599,20 @@ if (t.v.coord.x > t.v.coord.y)
    projPlane = (t.v.coord.x > t.v.coord.z) ? 0 : 2;
 else 
    projPlane = (t.v.coord.y > t.v.coord.z) ? 1 : 2;
-i = (vNormal.v.vec [projPlane] < 0);
+h = (vNormal.v.vec [projPlane] < 0);
+i = ijTable [projPlane][h];
+j = ijTable [projPlane][!h];
 //now do the 2d problem in the i, j plane
-vRef.i = intersection.v.vec [ijTable [projPlane][i]];
-vRef.j = intersection.v.vec [ijTable [projPlane][!i]];
+vRef.i = intersection.v.vec [i];
+vRef.j = intersection.v.vec [j];
 nVerts = 5 - m_nFaces;
-i = nFace * 3;
-v1 = gameStates.render.bRendering ? &gameData.segs.points [m_vertices [i]].ViewPos () : VERTICES + m_vertices [i];
+h = nFace * 3;
+v1 = gameStates.render.bRendering ? &gameData.segs.points [m_vertices [h]].ViewPos () : VERTICES + m_vertices [h];
 for (nEdge = 1, nEdgeMask = 0; nEdge <= nVerts; nEdge++) {
 	v0 = v1;
 	v1 = gameStates.render.bRendering 
-		  ? &gameData.segs.points [m_vertices [i + nEdge % nVerts]].ViewPos ()
-		  : VERTICES + m_vertices [i + nEdge % nVerts];
+		  ? &gameData.segs.points [m_vertices [h + nEdge % nVerts]].ViewPos ()
+		  : VERTICES + m_vertices [h + nEdge % nVerts];
 	vEdge.i = v1->v.vec [i] - v0->v.vec [i];
 	vEdge.j = v1->v.vec [j] - v0->v.vec [j];
 	vCheck.i = vRef.i - v0->v.vec [i];
