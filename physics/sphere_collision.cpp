@@ -1052,13 +1052,11 @@ for (;;) {
 			CFixVector& n = sideP->m_normals [nFace];
 			if (!FindPlaneLineIntersection (intersection, &VERTICES [sideP->m_vertices [nFace * 3]], &n, p0, p1, 0, false))
 				continue;
-			v1 = *p1 - intersection;
-			l1 = v1.Mag ();
-			if (l1 < PLANE_DIST_TOLERANCE)
-				return 1;
 			v0 = *p0 - intersection;
+			v1 = *p1 - intersection;
 			l0 = v0.Mag ();
-			if (l0 > PLANE_DIST_TOLERANCE) {
+			l1 = v1.Mag ();
+			if ((l0 > PLANE_DIST_TOLERANCE) && (l1 > PLANE_DIST_TOLERANCE)) {
 				v0 /= l0;
 				v1 /= l1;
 				if (CFixVector::Dot (v0, n) == CFixVector::Dot (v1, n))
@@ -1068,18 +1066,15 @@ for (;;) {
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (!sideP->PointIsInsideFace (intersection, nFace, sideP->m_normals [nFace]))
+			if (!sideP->PointIsInsideFace (intersection, nFace, sideP->m_normals [nFace])) {
+				if (l1 < PLANE_DIST_TOLERANCE)
+					return 1;
 				break;
+				}
 			}
 		if (nFace == sideP->m_nFaces)
 			continue; // line doesn't intersect with this side
-		if (0 > nChildSeg) {
-			if (nStartSeg == nDestSeg)
-				return 1;
-			continue;
-			}
-			//return (nStartSeg == nDestSeg); // line intersects a solid wall
-		if ((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL)) {
+		if ((0 > nChildSeg) || ((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL))) {
 			if (nStartSeg == nDestSeg)
 				return 1;
 			continue;
