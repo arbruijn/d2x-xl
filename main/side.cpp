@@ -587,13 +587,11 @@ return IS_WALL (m_nWall) ? WALLS + m_nWall : NULL;
 uint CSide::PointToFaceRelation (CFixVector& intersection, short iFace, CFixVector vNormal)
 {
 	CFixVector	t;
-	int			biggest;
+	int			projPlane;
 	int 			h, i, j, nEdge, nVerts;
 	uint 			nEdgeMask;
-	fix 			check_i, check_j;
 	CFixVector	*v0, *v1;
-	vec2d 		vEdge, vCheck;
-	QLONG			d;
+	vec2d 		vEdge, vCheck, vRef;
 
 //now do 2d check to see if refP is in CSide
 //project polygon onto plane by finding largest component of Normal
@@ -601,42 +599,33 @@ t.v.coord.x = labs (vNormal.v.coord.x);
 t.v.coord.y = labs (vNormal.v.coord.y);
 t.v.coord.z = labs (vNormal.v.coord.z);
 if (t.v.coord.x > t.v.coord.y)
-	if (t.v.coord.x > t.v.coord.z)
-		biggest = 0;
-	else
-		biggest = 2;
-else if (t.v.coord.y > t.v.coord.z)
-	biggest = 1;
-else
-	biggest = 2;
-if (vNormal.v.vec [biggest] > 0) {
-	i = ijTable [biggest][0];
-	j = ijTable [biggest][1];
+   projPlane = (t.v.coord.x > t.v.coord.z) ? 0 : 2;
+else 
+   projPlane = (t.v.coord.y > t.v.coord.z) ? 1 : 2;
+if (vNormal.v.vec [projPlane] > 0) {
+	i = ijTable [projPlane][0];
+	j = ijTable [projPlane][1];
 	}
 else {
-	i = ijTable [biggest][1];
-	j = ijTable [biggest][0];
+	i = ijTable [projPlane][1];
+	j = ijTable [projPlane][0];
 	}
 //now do the 2d problem in the i, j plane
-check_i = intersection.v.vec [i];
-check_j = intersection.v.vec [j];
+vRef.i = intersection.v.vec [i];
+vRef.j = intersection.v.vec [j];
 nVerts = 5 - m_nFaces;
 h = iFace * 3;
-for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
-	if (gameStates.render.bRendering) {
-		v0 = &gameData.segs.points [m_vertices [h + nEdge]].ViewPos ();
-		v1 = &gameData.segs.points [m_vertices [h + ((nEdge + 1) % nVerts)]].ViewPos ();
-		}
-	else {
-		v0 = VERTICES + m_vertices [h + nEdge];
-		v1 = VERTICES + m_vertices [h + ((nEdge + 1) % nVerts)];
-		}
+v1 = gameStates.render.bRendering ? &gameData.segs.points [m_vertices [h]].ViewPos () : VERTICES + m_vertices [h];
+for (nEdge = 1, nEdgeMask = 0; nEdge <= nVerts; nEdge++) {
+	v0 = v1;
+	v1 = gameStates.render.bRendering 
+		  ? &gameData.segs.points [m_vertices [h + nEdge % nVerts]].ViewPos ()
+		  : VERTICES + m_vertices [h + nEdge % nVerts];
 	vEdge.i = v1->v.vec [i] - v0->v.vec [i];
 	vEdge.j = v1->v.vec [j] - v0->v.vec [j];
-	vCheck.i = check_i - v0->v.vec [i];
-	vCheck.j = check_j - v0->v.vec [j];
-	d = FixMul64 (vCheck.i, vEdge.j) - FixMul64 (vCheck.j, vEdge.i);
-	if (d < 0)              		//we are outside of triangle
+	vCheck.i = vRef.i - v0->v.vec [i];
+	vCheck.j = vRef.j - v0->v.vec [j];
+	if (FixMul64 (vCheck.i, vEdge.j) - FixMul64 (vCheck.j, vEdge.i) < 0) //we are outside of triangle
 		nEdgeMask |= (1 << nEdge);
 	}
 return nEdgeMask;
