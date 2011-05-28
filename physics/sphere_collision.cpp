@@ -184,19 +184,20 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int PlaneLineIntersection (CFloatVector& intersection, CFloatVector* vPlane, CFloatVector* vNormal, CFloatVector* p0, CFloatVector* p1)
+int FindPlaneLineIntersection (CFloatVector& intersection, CFloatVector* vPlane, CFloatVector* vNormal, CFloatVector* p0, CFloatVector* p1)
 {
 CFloatVector u = *p1 - *p0;
-float d = CFloatVector::Dot (vNormal, u);
+float d = CFloatVector::Dot (*vNormal, u);
 if (d == 0.0f)
 	return 0;
-float d = CFloatVector::Dot (vNormal, w);
+CFloatVector w = *vPlane - *p0;
+float n = CFloatVector::Dot (*vNormal, w);
 float s = n / d;
 if ((s < 0.0f) || (s > 1.0f))
 	return 0;
 intersection = u;
 intersection *= s;
-intersection += p0;
+intersection += *p0;
 return 1;
 }
 
@@ -1049,7 +1050,7 @@ return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, obj
 
 //------------------------------------------------------------------------------
 
-int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, int nDepth)
+int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short nDestSeg, int nDepth)
 {
 	CSegment*		segP;
 	CSide*			sideP;
@@ -1071,7 +1072,7 @@ for (;;) {
 			continue;
 		for (nFace = 0; nFace < sideP->m_nFaces; nFace++) {
 			CFloatVector* n = sideP->m_fNormals + nFace;
-			if (!FindPlaneLineIntersection (intersection, &FVERTICES [sideP->m_vertices [nFace * 3]], n, p0, p1, 0, false))
+			if (!FindPlaneLineIntersection (intersection, &FVERTICES [sideP->m_vertices [nFace * 3]], n, p0, p1))
 				continue;
 			v0 = *p0 - intersection;
 			v1 = *p1 - intersection;
@@ -1080,14 +1081,14 @@ for (;;) {
 			if ((l0 > X2F (PLANE_DIST_TOLERANCE)) && (l1 > X2F (PLANE_DIST_TOLERANCE))) {
 				v0 /= l0;
 				v1 /= l1;
-				if (CFloatVector::Dot (v0, n) == CFloatVector::Dot (v1, n))
+				if (CFloatVector::Dot (v0, *n) == CFloatVector::Dot (v1, *n))
 					continue;
 				}
 #if DBG
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (!PointIsInFace (intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - sideP->m_nFaces)) {
+			if (!PointIsInFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - sideP->m_nFaces)) {
 				if (l1 < PLANE_DIST_TOLERANCE)
 					return 1;
 				break;
@@ -1101,7 +1102,7 @@ for (;;) {
 			continue;
 			}
 			//return (nStartSeg == nDestSeg); // line intersects a solid wall
-		if (PointSeesPoint (p0, p1, nChildSeg, nDepth + 1))
+		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDepth + 1))
 			return 1;
 		}
 	return (nStartSeg == nDestSeg); // line doesn't intersect any side of this segment -> p1 must be inside segment

@@ -595,10 +595,10 @@ for (i = 4; i >= -4; i--) {
 			continue;
 		if (dMin > d)
 			dMin = d;
-		int canSee = PointSeesPoint (&v0, &v1, nLightSeg, 0);
+		int canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0);
 		int nHitType = FindHitpoint (&fq, &hitData);
 		if (canSee != (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)))) {
-			canSee = PointSeesPoint (&v0, &v1, nLightSeg, 0);
+			canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0);
 			nHitType = FindHitpoint (&fq, &hitData);
 			}
 		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
