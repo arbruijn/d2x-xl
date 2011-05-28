@@ -71,12 +71,14 @@ ubyte PointIsInFace (CFixVector* refP, CFixVector vNormal, short* nVertIndex, sh
 CFixVector v0 = VERTICES [nVertIndex [2]] - VERTICES [nVertIndex [0]];
 CFixVector v1 = VERTICES [nVertIndex [1]] - VERTICES [nVertIndex [0]];
 CFixVector v2 = *refP - FVERTICES [nVertIndex [0]];
+fix dot00 = CFixVector::Dot (v0, v0);
+fix dot11 = CFixVector::Dot (v1, v1);
 fix dot01 = CFixVector::Dot (v0, v1);
 fix dot02 = CFixVector::Dot (v0, v2);
 fix dot12 = CFixVector::Dot (v1, v2);
-fix invDenom = -FixDiv (I2X (1), FixMul (dot01, dot01)); 
-fix u = FixMul (dot02 - FixMul (dot01, dot12), invDenom);
-fix v = FixMul (dot12 - FixMul (dot01, dot02), invDenom);
+fix invDenom = FixDiv (I2X (1), FixMul (dot00, dot11) - FixMul (dot01, dot01)); 
+fix u = FixMul (FixMul (dot11, dot02) - FixMul (dot01, dot12), invDenom);
+fix v = FixMul (FixMul (dot00, dot12) - FixMul (dot01, dot02), invDenom);
 // Check if point is in triangle
 return int (u < 0) + (int (v < 0) << 1) + (int (u + v > I2X (1)) << 2);
 }
@@ -90,13 +92,20 @@ ubyte PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex
 CFloatVector v0 = FVERTICES [nVertIndex [2]] - FVERTICES [nVertIndex [0]];
 CFloatVector v1 = FVERTICES [nVertIndex [1]] - FVERTICES [nVertIndex [0]];
 CFloatVector v2 = *refP - FVERTICES [nVertIndex [0]];
+float dot00 = CFloatVector::Dot (v0, v0);
+float dot11 = CFloatVector::Dot (v1, v1);
 float dot01 = CFloatVector::Dot (v0, v1);
 float dot02 = CFloatVector::Dot (v0, v2);
 float dot12 = CFloatVector::Dot (v1, v2);
-float invDenom = -1.0f / (dot01 * dot01);
-float u = (dot02 - dot01 * dot12) * invDenom;
-float v = (dot12 - dot01 * dot02) * invDenom;
+float invDenom = 1.0f / (dot00 * dot11 - dot01 * dot01);
+float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 // Check if point is in triangle
+CFloatVector p = FVERTICES [nVertIndex [0]];
+p += v0 * u;
+p += v1 * v;
+p -= *refP;
+float l = p.Mag ();
 return (int (u < 0.0f)) + ((int (v < 0.0f)) << 1) + ((int (u + v > 1.0f)) << 2);
 #else
 	CFloatVector	t, *v0, *v1;
@@ -1148,7 +1157,7 @@ for (;;) {
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (PointIsInFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - sideP->m_nFaces)) {
+			if (!PointIsInFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - sideP->m_nFaces)) {
 				if (l1 <= X2F (PLANE_DIST_TOLERANCE))
 					return 1;
 				break;
