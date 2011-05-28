@@ -620,7 +620,13 @@ if (nLightSeg < 0)
 CFloatVector v0, v1;
 v0.Assign (info.vPos);
 v1.Assign (*vPoint);
-return PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0);
+#if DBG
+if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
+	nDbgVertex = nDbgVertex;
+#endif
+if (info.nSide < 0)
+	return PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0);
+return SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (&v1, nDestSeg);
 #else
 CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &info.vPos, vPoint, nLightSeg, -1, 1, 0);
 CHitData	hitData;

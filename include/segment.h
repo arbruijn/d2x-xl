@@ -184,6 +184,7 @@ class CSide {
 		short				m_faceVerts [6];
 		short				m_corners [4];
 		short				m_nMinVertex [2];
+		short				m_nSegment;
 		ubyte				m_nFaces;
 
 	public:
@@ -208,6 +209,7 @@ class CSide {
 		int CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
 		int SphereToFaceRelation (CFixVector& intersection, fix rad, short iFace, CFixVector vNormal);
 		uint PointToFaceRelation (CFixVector& intersection, short iFace, CFixVector vNormal);
+		int SeesPoint (CFixVector& vPoint, short nDestSeg, int nLevel = 0);
 
 		void GetNormals (CFixVector& n1, CFixVector& n2);
 
@@ -217,7 +219,7 @@ class CSide {
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }
 
-		void Setup (short* verts, short* index, bool bSolid);
+		void Setup (short nSegment, short* verts, short* index, bool bSolid);
 
 		void SetTextures (int nBaseTex, int nOvlTex);
 

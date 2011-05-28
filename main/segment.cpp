@@ -368,7 +368,7 @@ for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (i == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	m_sides [i].Setup (m_verts, sideVertIndex [i], m_children [i] < 0);
+	m_sides [i].Setup (Index (), m_verts, sideVertIndex [i], m_children [i] < 0);
 	}
 }
 

@@ -285,14 +285,14 @@ return 0;
 
 // -------------------------------------------------------------------------------
 
-void CSide::Setup (short* verts, short* index, bool bSolid)
+void CSide::Setup (short nSegment, short* verts, short* index, bool bSolid)
 {
 	short				vSorted [4], bFlip;
 	CFixVector		vNormal;
 	CFloatVector	vNormalf;
 	fix				xDistToPlane;
 
-
+m_nSegment = nSegment;
 SetupCorners (verts, index);
 bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
 vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
@@ -580,6 +580,30 @@ return minDist;
 CWall* CSide::Wall (void) 
 { 
 return IS_WALL (m_nWall) ? WALLS + m_nWall : NULL; 
+}
+
+//	-----------------------------------------------------------------------------
+// Check whether point vPoint in segment nDestSeg can be seen from this side.
+// Level 0: Check from side center, 1: check from center and corners, 2: check from center, corners, and edge centers
+
+int CSide::SeesPoint (CFixVector& vPoint, short nDestSeg, int nLevel)
+{
+	static int nLevels [3] = {4, 0, -4};
+
+	CFloatVector v0, v1;
+
+v1.Assign (vPoint);
+for (int i = 4, j = nLevels [nLevel]; i >= j; i--) {
+	if (i == 4)
+		v0.Assign (Center ());
+	else if (i >= 0)
+		v0 = FVERTICES [m_corners [i]];
+	else
+		v0 = CFloatVector::Avg (FVERTICES [m_corners [4 + i]], FVERTICES [m_corners [(5 + i) & 3]]); // center of face's edges
+	if (PointSeesPoint (&v0, &v1, m_nSegment, nDestSeg, 0))
+		return 1;
+	}
+return 0;
 }
 
 //	-----------------------------------------------------------------------------

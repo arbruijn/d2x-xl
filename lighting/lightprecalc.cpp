@@ -42,6 +42,7 @@ int SegmentIsVisible (CSegment *segP);
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis.Buffer () ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
 
+#define FAST_POINTVIS 1
 #define FAST_LIGHTVIS 1
 
 //------------------------------------------------------------------------------
@@ -572,25 +573,33 @@ if (gameData.segs.bSegVis [1][i >> 2] & (3 << ((i & 3) << 1))) // face visible
 // cast rays from light segment to target segment and see if at least one of them isn't blocked by geometry
 segP = SEGMENTS + nDestSeg;
 for (i = 4; i >= -4; i--) {
-	if (i == 4) {
+#if FAST_POINTVIS
+	if (i == 4) 
+		v0.Assign (sideP->Center ());
+	else if (i >= 0) 
+		v0 = FVERTICES [sideP->m_corners [i]];
+	else 
+		v0 = CFloatVector::Avg (FVERTICES [sideP->m_corners [4 + i]], FVERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
+#else
+	if (i == 4) 
 		fq.p0 = &sideP->Center ();
-		v0.Assign (*fq.p0);
-		}
 	else if (i >= 0) {
 		fq.p0 = &VERTICES [sideP->m_corners [i]];
-		v0 = FVERTICES [sideP->m_corners [i]];
 		}
 	else {
 		p0 = CFixVector::Avg (VERTICES [sideP->m_corners [4 + i]], VERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
 		fq.p0 = &p0;
-		v0 = CFloatVector::Avg (FVERTICES [sideP->m_corners [4 + i]], FVERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
 		}
+#endif
 	for (int j = 8; j >= 0; j--) {
-		fq.p1 = (j == 8) ? &segP->Center () : &VERTICES [segP->m_verts [j]];
+#	if FAST_POINTVIS
 		if (j == 8)
 			v1.Assign (*fq.p1);
 		else
 			v1 = FVERTICES [segP->m_verts [j]];
+#else
+		fq.p1 = (j == 8) ? &segP->Center () : &VERTICES [segP->m_verts [j]];
+#endif
 		if ((d = CFixVector::Dist (*fq.p0, *fq.p1)) > xMaxDist)
 			continue;
 		if (dMin > d)
@@ -604,7 +613,12 @@ for (i = 4; i >= -4; i--) {
 			}
 		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
 #else
+#	if FAST_POINTVIS
 		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0)) {
+#	else
+		int nHitType = FindHitpoint (&fq, &hitData);
+		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
+#	endif
 #endif
 			i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);
 			gameData.segs.bSegVis [1][i >> 2] |= (2 << ((i & 3) << 1)); // diffuse + ambient

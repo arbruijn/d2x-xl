@@ -1176,12 +1176,12 @@ for (;;) {
 		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDepth + 1))
 			return 1;
 		}
+#if DBG
+	if (!nDepth)
+		nDepth = nDepth;
+#endif
 	return (nStartSeg == nDestSeg); // line doesn't intersect any side of this segment -> p1 must be inside segment
 	}
-#if DBG
-if (!nDepth)
-	nDepth = nDepth;
-#endif
 }
 
 //	-----------------------------------------------------------------------------
