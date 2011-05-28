@@ -1121,8 +1121,11 @@ return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, obj
 
 //------------------------------------------------------------------------------
 
-int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short nDestSeg, int nDepth)
+int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short nDestSeg, int nDepth, int nThread)
 {
+	static			ubyte segVisList [MAX_THREADS][MAX_SEGMENTS_D2X];
+	static			ubyte segVisFlags [MAX_THREADS] = {255, 255, 255, 255, 255, 255, 255, 255};
+
 	CSegment*		segP;
 	CSide*			sideP;
 	CWall*			wallP;
@@ -1130,16 +1133,23 @@ int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short n
 	float				l0, l1;
 	short				nSide, nFace, nChildSeg, nPredSeg = 0x7FFF;
 
-if (!nDepth)
-	gameData.render.mine.bVisited.Clear (0, gameData.segs.nSegments);
-			
+if (!nDepth) {
+	if (!++segVisFlags [nThread]) {
+		++segVisFlags [nThread];
+		memset (segVisList [nThread], 0, sizeof (segVisList [nThread]));
+		}
+	}
+
+	ubyte*			bVisited = segVisList [nThread];
+	ubyte				bFlag = segVisFlags [nThread];
+
 for (;;) {
-	gameData.render.mine.bVisited [nStartSeg] = 1;
+	bVisited [nStartSeg] = bFlag;
 	segP = &SEGMENTS [nStartSeg];
 	sideP = segP->Side (0);
 	for (nSide = 0; nSide < 6; nSide++, sideP++) {
 		nChildSeg = segP->m_children [nSide];
-		if ((nChildSeg >= 0) && gameData.render.mine.bVisited [nChildSeg])
+		if ((nChildSeg >= 0) && (bVisited [nChildSeg] == bFlag))
 			continue;
 		for (nFace = 0; nFace < sideP->m_nFaces; nFace++) {
 			CFloatVector* n = sideP->m_fNormals + nFace;
@@ -1173,7 +1183,7 @@ for (;;) {
 			continue;
 			}
 			//return (nStartSeg == nDestSeg); // line intersects a solid wall
-		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDepth + 1))
+		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDepth + 1, nThread))
 			return 1;
 		}
 #if DBG

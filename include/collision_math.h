@@ -148,7 +148,7 @@ ubyte PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex
 
 uint PointToFaceRelation (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal);
 
-int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short nDestSeg, int nDepth);
+int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short nDestSeg, int nDepth, int nThread);
 
 //	-----------------------------------------------------------------------------
 

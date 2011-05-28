@@ -730,8 +730,8 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		//gameData.render.fAttScale [0] = 2.0f;
 		lightManager.Index (0,0).nFirst = MAX_OGL_LIGHTS;
 		lightManager.Index (0,0).nLast = 0;
-		PLANE_DIST_TOLERANCE = fix (I2X (1) * 0.001f);
-		SetupSegments (); // set all faces up as triangles
+		//PLANE_DIST_TOLERANCE = fix (I2X (1) * 0.001f);
+		//SetupSegments (); // set all faces up as triangles
 		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 			nFace = 0;
 			ProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreatePoll);
@@ -741,8 +741,8 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 			BuildAll (-1);
 			messageBox.Clear ();
 			}
-		PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;
-		SetupSegments (); // standard face setup (triangles or quads)
+		//PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;
+		//SetupSegments (); // standard face setup (triangles or quads)
 		//gameData.render.fAttScale [0] = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
 		gameStates.render.bHaveLightmaps = 0;
 		gameStates.render.nState = 0;

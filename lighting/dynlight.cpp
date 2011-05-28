@@ -595,7 +595,7 @@ return fix (simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, n
 
 //------------------------------------------------------------------------------
 
-int CDynLight::SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const CFixVector* vLightToPoint)
+int CDynLight::SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const CFixVector* vLightToPoint, int nThread)
 {
 	CFloatVector vLightToPointf, vNormalf;
 
@@ -622,11 +622,11 @@ if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide 
 	nDbgVertex = nDbgVertex;
 #endif
 if (info.nSide >= 0)
-	return SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (*vPoint, nDestSeg);
+	return SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (*vPoint, nDestSeg, nThread);
 CFloatVector v0, v1;
 v0.Assign (info.vPos);
 v1.Assign (*vPoint);
-return PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0);
+return PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, nThread);
 #else
 CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &info.vPos, vPoint, nLightSeg, -1, 1, 0);
 CHitData	hitData;
@@ -637,9 +637,9 @@ return (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSe
 
 //------------------------------------------------------------------------------
 
-int CDynLight::SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const CFixVector* vLightToPoint)
+int CDynLight::SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const CFixVector* vLightToPoint, int nThread)
 {
-return SeesPoint (nSegment, &SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint, vLightToPoint);
+return SeesPoint (nSegment, &SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint, vLightToPoint, int nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -709,7 +709,7 @@ if (xDistance - xRad > xMaxLightRange)
 	return 0;
 if (info.bDiffuse [nThread]) {
 	vLightToPoint /= xDistance;
-	info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, &vLightToPoint);
+	info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, &vLightToPoint, nThread);
 	}
 if (!info.bDiffuse [nThread]) {
 	fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);

@@ -97,8 +97,8 @@ class CDynLight {
 		void Init (void);
 		CObject* Object (void);
 		int LightSeg (void);
-		int SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const CFixVector* vLightToPoint);
-		int SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const CFixVector* vLightToPoint);
+		int SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const CFixVector* vLightToPoint, int nThread);
+		int SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const CFixVector* vLightToPoint, int nThread);
 		int LightPathLength (const short nLightSeg, const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int bFastRoute, int nThread);
 		int Contribute (const short nDestSeg, const short nDestSide, CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread);
 		int Compare (CDynLight& other);

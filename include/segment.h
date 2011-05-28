@@ -209,7 +209,7 @@ class CSide {
 		int CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
 		int SphereToFaceRelation (CFixVector& intersection, fix rad, short iFace, CFixVector vNormal);
 		uint PointToFaceRelation (CFixVector& intersection, short iFace, CFixVector vNormal);
-		int SeesPoint (CFixVector& vPoint, short nDestSeg, int nLevel = 0);
+		int SeesPoint (CFixVector& vPoint, short nDestSeg, int nLevel = 0, int nThread = 0);
 
 		void GetNormals (CFixVector& n1, CFixVector& n2);
 

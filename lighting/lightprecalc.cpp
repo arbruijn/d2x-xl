@@ -605,16 +605,16 @@ for (i = 4; i >= -4; i--) {
 		if (dMin > d)
 			dMin = d;
 #if 0
-		int canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0);
+		int canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, 0);
 		int nHitType = FindHitpoint (&fq, &hitData);
 		if (canSee != (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)))) {
-			canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0);
+			canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, 0);
 			nHitType = FindHitpoint (&fq, &hitData);
 			}
 		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
 #else
 #	if FAST_POINTVIS
-		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0)) {
+		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, 0)) {
 #	else
 		int nHitType = FindHitpoint (&fq, &hitData);
 		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
@@ -681,8 +681,8 @@ for (i = endI - startI; i; i--, pl++) {
 #endif
 		}
 	}
-PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;
-SetupSegments ();
+//PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;
+//SetupSegments ();
 }
 
 //------------------------------------------------------------------------------
