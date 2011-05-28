@@ -599,9 +599,14 @@ if (t.v.coord.x > t.v.coord.y)
    projPlane = (t.v.coord.x > t.v.coord.z) ? 0 : 2;
 else 
    projPlane = (t.v.coord.y > t.v.coord.z) ? 1 : 2;
-h = (vNormal.v.vec [projPlane] < 0);
-i = ijTable [projPlane][h];
-j = ijTable [projPlane][!h];
+if (vNormal.v.vec [projPlane] > 0) {
+	i = ijTable [projPlane][0];
+	j = ijTable [projPlane][1];
+	}
+else {
+	i = ijTable [projPlane][1];
+	j = ijTable [projPlane][0];
+	}
 //now do the 2d problem in the i, j plane
 vRef.i = intersection.v.vec [i];
 vRef.j = intersection.v.vec [j];

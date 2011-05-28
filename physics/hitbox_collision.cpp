@@ -39,18 +39,24 @@ bool PointIsInQuad (CFixVector point, CFixVector* vertP, CFixVector vNormal)
 {
 	CFixVector		t, v0, v1;
 	CFixVector2D 	vEdge, vCheck, vRef;
-	int 				h, i, j, iEdge, biggest;
+	int 				i, j, iEdge, projPlane;
 
 //now do 2d check to see if vRef is in side
 //project polygon onto plane by finding largest component of Normal
 t.Set (labs (vNormal.v.coord.x), labs (vNormal.v.coord.y), labs (vNormal.v.coord.z));
 if (t.v.coord.x > t.v.coord.y)
-	biggest = (t.v.coord.x > t.v.coord.z) ? 0 : 2;
+	projPlane = (t.v.coord.x > t.v.coord.z) ? 0 : 2;
 else
-	biggest = (t.v.coord.y > t.v.coord.z) ? 1 : 2;
-h = (vNormal.v.vec [biggest] < 0);
-i = ijTable [biggest][h];
-j = ijTable [biggest][!h];
+	projPlane = (t.v.coord.y > t.v.coord.z) ? 1 : 2;
+
+if (vNormal.v.vec [projPlane] > 0) {
+	i = ijTable [projPlane][0];
+	j = ijTable [projPlane][1];
+	}
+else {
+	i = ijTable [projPlane][1];
+	j = ijTable [projPlane][0];
+	}
 //now do the 2d problem in the i, j plane
 vRef.i = point.v.vec [i];
 vRef.j = point.v.vec [j];
