@@ -1052,17 +1052,17 @@ for (;;) {
 			CFixVector& n = sideP->m_normals [nFace];
 			if (!FindPlaneLineIntersection (intersection, &VERTICES [sideP->m_vertices [nFace * 3]], &n, p0, p1, 0, false))
 				continue;
+			v1 = *p1 - intersection;
+			l1 = v1.Mag ();
+			if (l1 < PLANE_DIST_TOLERANCE)
+				return 1;
 			v0 = *p0 - intersection;
 			l0 = v0.Mag ();
 			if (l0 > PLANE_DIST_TOLERANCE) {
-				v1 = *p1 - intersection;
-				l1 = v1.Mag ();
-				if (l1 > PLANE_DIST_TOLERANCE) {
-					v0 /= l0;
-					v1 /= l1;
-					if (CFixVector::Dot (v0, n) == CFixVector::Dot (v1, n))
-						continue;
-					}
+				v0 /= l0;
+				v1 /= l1;
+				if (CFixVector::Dot (v0, n) == CFixVector::Dot (v1, n))
+					continue;
 				}
 #if DBG
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
