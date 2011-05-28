@@ -707,28 +707,32 @@ fix xDistance = vLightToPoint.Mag ();
 xDistance = fix (float (xDistance) / (info.fRange * fRangeMod)) + xDistMod;
 if (xDistance - xRad > xMaxLightRange)
 	return 0;
-if (info.bDiffuse [nThread] && (nLightSeg != nDestSeg)) {
-	vLightToPoint /= xDistance;
-	info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, &vLightToPoint, nThread);
-	}
-if (!info.bDiffuse [nThread]) {
-	fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
-	if (xPathLength < 0)
-		return 0;
-#if 0
-	if (xPathLength > xMaxLightRange)
-		return 0;
-	xDistance = xPathLength;
-#else
-	if (xDistance < xPathLength) {
-		// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
-#if 1
-		xDistance = (xDistance + xPathLength) / 2; 
-#else
-		xDistance = (xDistance + 2 * xPathLength) / 3; 
-#endif
-		if (xDistance - xRad > xMaxLightRange)
+if (nLightSeg != nDestSeg)
+	info.bDiffuse [nThread] = 1;
+else {
+	if (info.bDiffuse [nThread]) {
+		vLightToPoint /= xDistance;
+		info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, &vLightToPoint, nThread);
+		}
+	if (!info.bDiffuse [nThread]) {
+		fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+		if (xPathLength < 0)
 			return 0;
+#if 0
+		if (xPathLength > xMaxLightRange)
+			return 0;
+		xDistance = xPathLength;
+#else
+		if (xDistance < xPathLength) {
+			// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
+#if 1
+			xDistance = (xDistance + xPathLength) / 2; 
+#else
+			xDistance = (xDistance + 2 * xPathLength) / 3; 
+#endif
+			if (xDistance - xRad > xMaxLightRange)
+				return 0;
+			}
 		}
 #endif
 	}
