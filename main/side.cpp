@@ -288,7 +288,6 @@ return 0;
 void CSide::Setup (short* verts, short* index, bool bSolid)
 {
 	short				vSorted [4], bFlip;
-	int				i;
 	CFixVector		vNormal;
 	CFloatVector	vNormalf;
 	fix				xDistToPlane;
@@ -302,11 +301,14 @@ xDistToPlane = abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSort
 if (bFlip)
 	vNormal.Neg ();
 
-if (gameStates.render.xPlaneDistTolerance [0] < gameStates.render.xPlaneDistTolerance [1]) {
+if (PLANE_DIST_TOLERANCE < DEFAULT_PLANE_DIST_TOLERANCE) {
 	SetupAsTriangles (bSolid, verts, index);
+#if 0
 	if (m_normals [0] == m_normals [1])
 		SetupAsQuad (vNormal, vNormalf, verts, index);
+#endif
 	}
+else {
 	if (xDistToPlane <= PLANE_DIST_TOLERANCE)
 		SetupAsQuad (vNormal, vNormalf, verts, index);
 	else {
@@ -330,6 +332,7 @@ if (m_nType == SIDE_IS_QUAD) {
 	AddToVertexNormal (m_vertices [3], vNormal);
 	}
 else {
+	int i;
 	for (i = 0; i < 3; i++)
 		AddToVertexNormal (m_vertices [i], m_normals [0]);
 	for (; i < 6; i++)
