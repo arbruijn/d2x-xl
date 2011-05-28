@@ -574,11 +574,11 @@ segP = SEGMENTS + nDestSeg;
 for (i = 4; i >= -4; i--) {
 	if (i == 4) {
 		fq.p0 = &sideP->Center ();
-		v0.Assign (fq.p0);
+		v0.Assign (*fq.p0);
 		}
 	else if (i >= 0) {
 		fq.p0 = &VERTICES [sideP->m_corners [i]];
-		v0 = VERTICES [sideP->m_corners [i]];
+		v0 = FVERTICES [sideP->m_corners [i]];
 		}
 	else {
 		p0 = CFixVector::Avg (VERTICES [sideP->m_corners [4 + i]], VERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
@@ -588,7 +588,7 @@ for (i = 4; i >= -4; i--) {
 	for (int j = 8; j >= 0; j--) {
 		fq.p1 = (j == 8) ? &segP->Center () : &VERTICES [segP->m_verts [j]];
 		if (j == 8)
-			v1.Assign (fq.p1);
+			v1.Assign (*fq.p1);
 		else
 			v1 = FVERTICES [segP->m_verts [j]];
 		if ((d = CFixVector::Dist (*fq.p0, *fq.p1)) > xMaxDist)

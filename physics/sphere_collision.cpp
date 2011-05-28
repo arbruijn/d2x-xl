@@ -152,33 +152,35 @@ static inline double DblRound (double v) { return (v < 0.0) ? v - 0.5 : v + 0.5;
 int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
 										 CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow)
 {
-CFixVector d = *p1 - *p0;
-fix den = -CFixVector::Dot (*vPlaneNorm, d);
+CFixVector u = *p1 - *p0;
+fix den = -CFixVector::Dot (*vPlaneNorm, u);
 if (!den)
 	return 0;
 CFixVector w = *p0 - *vPlanePoint;
 fix num = CFixVector::Dot (*vPlaneNorm, w) - rad;
-if (den > 0) {
-	if ((num > den) || ((-num >> 15) >= den)) //frac greater than one
-		return 0;
-	}
-else {
-	if (num < den)
-		return 0;
-	}
 //do check for potential overflow
 if (bCheckOverflow) {
+	if (den > 0) {
+		if ((num > den) || ((-num >> 15) >= den)) //frac greater than one
+			return 0;
+		}
+	else {
+		if (num < den)
+			return 0;
+		}
 	if (labs (num) / (I2X (1) / 2) >= labs (den))
 		return 0;
-	d *= FixDiv (num, den);
+	u *= FixDiv (num, den);
 	}
 else {
 	double scale = double (num) / double (den);
-	d.v.coord.x = fix (DblRound (double (d.v.coord.x) * scale));
-	d.v.coord.y = fix (DblRound (double (d.v.coord.y) * scale));
-	d.v.coord.z = fix (DblRound (double (d.v.coord.z) * scale));
+	if ((scale < 1e-10f) || (scale > 1.0f))
+		return 0;
+	u.v.coord.x = fix (DblRound (double (u.v.coord.x) * scale));
+	u.v.coord.y = fix (DblRound (double (u.v.coord.y) * scale));
+	u.v.coord.z = fix (DblRound (double (u.v.coord.z) * scale));
 	}
-intersection = (*p0) + d;
+intersection = *p0 + u;
 return 1;
 }
 
@@ -186,18 +188,20 @@ return 1;
 
 int FindPlaneLineIntersection (CFloatVector& intersection, CFloatVector* vPlane, CFloatVector* vNormal, CFloatVector* p0, CFloatVector* p1)
 {
-CFloatVector u = *p1 - *p0;
-float d = CFloatVector::Dot (*vNormal, u);
-if (d == 0.0f)
+CFloatVector u = *p1;
+u -= *p0;
+float d = -CFloatVector::Dot (*vNormal, u);
+if (d < 1e-10f) // ~ parallel
 	return 0;
-CFloatVector w = *vPlane - *p0;
+CFloatVector w = *p0;
+w -= *vPlane;
 float n = CFloatVector::Dot (*vNormal, w);
 float s = n / d;
 if ((s < 0.0f) || (s > 1.0f))
 	return 0;
-intersection = u;
-intersection *= s;
-intersection += *p0;
+u *= s;
+intersection = *p0;
+intersection += u;
 return 1;
 }
 
@@ -1088,8 +1092,8 @@ for (;;) {
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (!PointIsInFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - sideP->m_nFaces)) {
-				if (l1 < PLANE_DIST_TOLERANCE)
+			if (PointIsInFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - sideP->m_nFaces)) {
+				if (l1 <= X2F (PLANE_DIST_TOLERANCE))
 					return 1;
 				break;
 				}
@@ -1107,6 +1111,10 @@ for (;;) {
 		}
 	return (nStartSeg == nDestSeg); // line doesn't intersect any side of this segment -> p1 must be inside segment
 	}
+#if DBG
+if (!nDepth)
+	nDepth = nDepth;
+#endif
 }
 
 //	-----------------------------------------------------------------------------
