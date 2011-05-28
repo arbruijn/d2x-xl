@@ -48,7 +48,7 @@ int ijTable [3][2] = {
 //	-----------------------------------------------------------------------------
 //see if a point is inside a face using barycentric method
 
-bool PointIsInFace (CFixVector* refP, CFixVector vNormal, short* nVertIndex, short nVerts)
+ubyte PointIsInFace (CFixVector* refP, CFixVector vNormal, short* nVertIndex, short nVerts)
 {
 CFixVector v0 = VERTICES [nVertIndex [2]] - VERTICES [nVertIndex [0]];
 CFixVector v1 = VERTICES [nVertIndex [2]] - VERTICES [nVertIndex [0]];
@@ -56,11 +56,11 @@ CFixVector v2 = *refP - FVERTICES [nVertIndex [0]];
 fix dot01 = CFixVector::Dot (v0, v1);
 fix dot02 = CFixVector::Dot (v0, v2);
 fix dot12 = CFixVector::Dot (v1, v2);
-fix invDenom = -FixDiv (I2X (1), dot01 * dot01);
+fix invDenom = -FixDiv (I2X (1), FixMul (dot01, dot01)); 
 fix u = FixMul (dot02 - FixMul (dot01, dot12), invDenom);
-fix u = FixMul (dot12 - FixMul (dot01, dot02), invDenom);
+fix v = FixMul (dot12 - FixMul (dot01, dot02), invDenom);
 // Check if point is in triangle
-return (u >= 0) && (v >= 0) && (u + v <= I2X (1));
+return int (u < 0) + (int (v < 0) << 1) + (int (u + v > I2X (1)) << 2);
 }
 
 //	-----------------------------------------------------------------------------
@@ -79,7 +79,8 @@ float invDenom = -1.0f / (dot01 * dot01);
 float u = (dot02 - dot01 * dot12) * invDenom;
 float v = (dot12 - dot01 * dot02) * invDenom;
 // Check if point is in triangle
-return (u >= 0.0f) && (v >= 0.0f) && (u + v <= 1.0f);
+return (int (u < 0.0f)) + ((int (v < 0.0f)) << 1) + ((int (u + v > 1.0f)) << 2);
+ubyte edgeMask = (u < 0.0f) ? 1 : 0;
 #else
 	CFloatVector	t, *v0, *v1;
 	int 				i, j, nEdge, biggest;
