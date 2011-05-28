@@ -1123,8 +1123,8 @@ return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, obj
 
 int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short nDestSeg, int nDepth, int nThread)
 {
-	static			ubyte segVisList [MAX_THREADS][MAX_SEGMENTS_D2X];
-	static			ubyte segVisFlags [MAX_THREADS] = {255, 255, 255, 255, 255, 255, 255, 255};
+	static			uint segVisList [MAX_THREADS][MAX_SEGMENTS_D2X];
+	static			uint segVisFlags [MAX_THREADS] = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
 
 	CSegment*		segP;
 	CSide*			sideP;
@@ -1132,20 +1132,20 @@ int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short n
 	CFloatVector	intersection, v0, v1;
 	float				l0, l1;
 	short				nSide, nFace, nChildSeg, nPredSeg = 0x7FFF;
+	uint*				bVisited = segVisList [nThread];
 
 if (!nDepth) {
 #if 1
-	memset (segVisList [nThread], 0, gameData.segs.nSegments);
+	memset (bVisited, 0, gameData.segs.nSegments * sizeof (*bVisited));
 #else
 	if (!++segVisFlags [nThread]) {
 		++segVisFlags [nThread];
-		memset (segVisList [nThread], 0, sizeof (segVisList [nThread]));
+		memset (bVisited, 0, gameData.segs.nSegments * sizeof (*bVisited));
 		}
 #endif
 	}
 
-	ubyte*			bVisited = segVisList [nThread];
-	ubyte				bFlag = segVisFlags [nThread];
+	uint			bFlag = segVisFlags [nThread];
 
 for (;;) {
 	bVisited [nStartSeg] = bFlag;

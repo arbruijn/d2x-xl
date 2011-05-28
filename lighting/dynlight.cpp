@@ -626,7 +626,7 @@ if (info.nSide >= 0)
 CFloatVector v0, v1;
 v0.Assign (info.vPos);
 v1.Assign (*vPoint);
-return PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 1, nThread);
+return PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, nThread);
 #else
 CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &info.vPos, vPoint, nLightSeg, -1, 1, 0);
 CHitData	hitData;
@@ -707,7 +707,7 @@ fix xDistance = vLightToPoint.Mag ();
 xDistance = fix (float (xDistance) / (info.fRange * fRangeMod)) + xDistMod;
 if (xDistance - xRad > xMaxLightRange)
 	return 0;
-if (info.bDiffuse [nThread]) {
+if (info.bDiffuse [nThread] && (nLightSeg != nDestSeg)) {
 	vLightToPoint /= xDistance;
 	info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, &vLightToPoint, nThread);
 	}

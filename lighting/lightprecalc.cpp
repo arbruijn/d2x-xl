@@ -648,8 +648,7 @@ static void ComputeLightVisibility (int startI)
 	int i, j, endI;
 
 PrintLog ("computing light visibility (%d)\n", startI);
-PLANE_DIST_TOLERANCE = fix (I2X (1) * 0.001f);
-SetupSegments ();
+SetupSegments (fix (I2X (1) * 0.001f));
 if (startI <= 0) {
 	i = sizeof (gameData.segs.bVertVis [0]) * gameData.segs.nVertices * VERTVIS_FLAGS;
 	if (!gameData.segs.bVertVis.Create (i))
