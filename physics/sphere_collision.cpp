@@ -113,7 +113,7 @@ return (int (u < -0.001f)) + ((int (v < -0.001f)) << 1) + ((int (u + v > 1.001f)
 	CFloatVector	t, *v0, *v1;
 	int 				i, j, nEdge, biggest;
 	float				check_i, check_j;
-	fvec2d 			vEdge, vCheck;
+	CFloatVector2D 			vEdge, vCheck;
 
 //now do 2d check to see if refP is in side
 //project polygon onto plane by finding largest component of Normal

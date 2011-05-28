@@ -24,15 +24,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define HIT_OBJECT	2		//we hit an CObject - which one?  no way to tell...
 #define HIT_BAD_P0	3		//start point is not in specified CSegment
 
-#define Cross2D(v0, v1) (FixMul((v0).i, (v1).j) - FixMul((v0).j, (v1).i))
+class CFixVector2D {
+	public:
+		fix i, j;
 
-typedef struct vec2d {
-	fix i, j;
-} vec2d;
+	inline fix Cross (CFixVector2D& other) { return FixMul (i, other.j) - FixMul (j, other.i); }
+	};
 
-typedef struct fvec2d {
-	float i, j;
-} fvec2d;
+class CFloatVector2D {
+	public:
+		float i, j;
+
+	inline float Cross (CFloatVector2D& other) { return i * other.j - j * other.i; }
+	};
+
 
 extern int ijTable [3][2];
 
