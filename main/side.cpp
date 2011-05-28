@@ -247,10 +247,12 @@ else {
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
 		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 32767, vSorted);
 		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
+		m_fNormals [0] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [0].Neg ();
 		bFlip = GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 32767, vSorted);
 		m_normals [1] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
+		m_fNormals [1] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [1].Neg ();
 		GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 32767, vSorted);
@@ -260,10 +262,12 @@ else {
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
 		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [3], 32767, vSorted);
 		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
+		m_fNormals [0] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [0].Neg ();
 		bFlip = GetVertsForNormal (m_corners [1], m_corners [2], m_corners [3], 32767, vSorted);
 		m_normals [1] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
+		m_fNormals [1] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [1].Neg ();
 		}
@@ -291,6 +295,7 @@ void CSide::Setup (short* verts, short* index, bool bSolid)
 	CFixVector		vNormal;
 	CFloatVector	vNormalf;
 	fix				xDistToPlane;
+
 
 SetupCorners (verts, index);
 bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
