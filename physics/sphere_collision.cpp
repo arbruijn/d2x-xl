@@ -253,7 +253,7 @@ int FindPlaneLineIntersection (CFloatVector& intersection, CFloatVector* vPlane,
 CFloatVector u = *p1;
 u -= *p0;
 float d = -CFloatVector::Dot (*vNormal, u);
-if (d < 1e-10f) // ~ parallel
+if ((d > -1e-10f) && (d < 1e-10f)) // ~ parallel
 	return 0;
 CFloatVector w = *p0;
 w -= *vPlane;

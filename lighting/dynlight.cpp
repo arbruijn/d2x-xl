@@ -616,10 +616,17 @@ if (vNormal) {
 if (nLightSeg < 0)
 	return 1;
 
+#if 1
+CFloatVector v0, v1;
+v0.Assign (info.vPos);
+v1.Assign (*vPoint);
+return PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0);
+#else
 CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &info.vPos, vPoint, nLightSeg, -1, 1, 0);
 CHitData	hitData;
 int nHitType = FindHitpoint (&fq, &hitData);
 return (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)));
+#endif
 }
 
 //------------------------------------------------------------------------------

@@ -595,6 +595,7 @@ for (i = 4; i >= -4; i--) {
 			continue;
 		if (dMin > d)
 			dMin = d;
+#if 0
 		int canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0);
 		int nHitType = FindHitpoint (&fq, &hitData);
 		if (canSee != (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)))) {
@@ -602,6 +603,9 @@ for (i = 4; i >= -4; i--) {
 			nHitType = FindHitpoint (&fq, &hitData);
 			}
 		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
+#else
+		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0)) {
+#endif
 			i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);
 			gameData.segs.bSegVis [1][i >> 2] |= (2 << ((i & 3) << 1)); // diffuse + ambient
 			return;
