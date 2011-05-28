@@ -564,7 +564,9 @@ if (gameData.segs.bSegVis [1][i >> 2] & (3 << ((i & 3) << 1))) // face visible
 
 	CHitQuery		fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nLightSeg, -1, 1, 0);
 	CHitData			hitData;
+#if !FAST_POINTVIS
 	CFixVector		p0;
+#endif
 	CFloatVector	v0, v1;
 	CSegment*		segP = SEGMENTS + nLightSeg;
 	CSide*			sideP = segP->m_sides;
