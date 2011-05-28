@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderlib.h"
 #include "collision_math.h"
 
-int SphereIntersectsFace (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal);
+int SphereToFaceRelation (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal);
 
 //	-----------------------------------------------------------------------------
 
@@ -46,9 +46,41 @@ int ijTable [3][2] = {
 	};
 
 //	-----------------------------------------------------------------------------
-//see if a point is inside a face by projecting into 2d
+//see if a point is inside a face using barycentric method
+
+bool PointIsInFace (CFixVector* refP, CFixVector vNormal, short* nVertIndex, short nVerts)
+{
+CFixVector v0 = VERTICES [nVertIndex [2]] - VERTICES [nVertIndex [0]];
+CFixVector v1 = VERTICES [nVertIndex [2]] - VERTICES [nVertIndex [0]];
+CFixVector v2 = *refP - FVERTICES [nVertIndex [0]];
+fix dot01 = CFixVector::Dot (v0, v1);
+fix dot02 = CFixVector::Dot (v0, v2);
+fix dot12 = CFixVector::Dot (v1, v2);
+fix invDenom = -FixDiv (I2X (1), dot01 * dot01);
+fix u = FixMul (dot02 - FixMul (dot01, dot12), invDenom);
+fix u = FixMul (dot12 - FixMul (dot01, dot02), invDenom);
+// Check if point is in triangle
+return (u >= 0) && (v >= 0) && (u + v <= I2X (1));
+}
+
+//	-----------------------------------------------------------------------------
+//see if a point is inside a face using barycentric method
+
 bool PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex, short nVerts)
 {
+#if 1
+CFloatVector v0 = FVERTICES [nVertIndex [2]] - FVERTICES [nVertIndex [0]];
+CFloatVector v1 = FVERTICES [nVertIndex [2]] - FVERTICES [nVertIndex [0]];
+CFloatVector v2 = *refP - FVERTICES [nVertIndex [0]];
+float dot01 = CFloatVector::Dot (v0, v1);
+float dot02 = CFloatVector::Dot (v0, v2);
+float dot12 = CFloatVector::Dot (v1, v2);
+float invDenom = -1.0f / (dot01 * dot01);
+float u = (dot02 - dot01 * dot12) * invDenom;
+float v = (dot12 - dot01 * dot02) * invDenom;
+// Check if point is in triangle
+return (u >= 0.0f) && (v >= 0.0f) && (u + v <= 1.0f);
+#else
 	CFloatVector	t, *v0, *v1;
 	int 				i, j, nEdge, biggest;
 	float				check_i, check_j;
@@ -94,6 +126,7 @@ for (nEdge = 1; nEdge <= nVerts; nEdge++) {
 		return false;
 	}
 return true;
+#endif
 }
 
 //	-----------------------------------------------------------------------------
@@ -207,7 +240,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 //see if a point is inside a face by projecting into 2d
-uint PointIsInsideFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal)
+uint PointToFaceRelation (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal)
 {
 //	CFixVector	vNormal;
 	CFixVector	t;
@@ -260,7 +293,7 @@ return nEdgeMask;
 
 //	-----------------------------------------------------------------------------
 //check if a sphere intersects a face
-int SphereIntersectsFace (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal)
+int SphereToFaceRelation (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal)
 {
 	CFixVector	vEdge, vCheck;            //this time, real 3d vectors
 	CFixVector	vClosestPoint;
@@ -271,7 +304,7 @@ int SphereIntersectsFace (CFixVector* refP, fix rad, CFixVector *vertList, int n
 	uint			nEdgeMask;
 
 //now do 2d check to see if refP is inside
-if (!(nEdgeMask = PointIsInsideFace (refP, vertList, nVerts, vNormal)))
+if (!(nEdgeMask = PointToFaceRelation (refP, vertList, nVerts, vNormal)))
 	return IT_FACE;	//we've gone through all the sides, and are inside
 //get verts for edge we're behind
 for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
@@ -330,7 +363,7 @@ vHit = intersection;
 //if rad != 0, project the refP down onto the plane of the polygon
 if (rad)
 	vHit += *vNormal * (-rad);
-if ((pli = SphereIntersectsFace (&vHit, rad, vertList, nVerts, vNormal)))
+if ((pli = SphereToFaceRelation (&vHit, rad, vertList, nVerts, vNormal)))
 	return pli;
 if (bCheckRad) {
 	int			i, d;
@@ -1025,7 +1058,7 @@ if (faceMask != 0) {				//on the back of at least one face
 		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
 			if (faceMask & bit) {            //on the back of this iFace
 				//did we go through this CWall/door?
-				nFaceHitType = segP->SphereIntersectsFace (*vPoint, rad, nSide, iFace);
+				nFaceHitType = segP->SphereToFaceRelation (*vPoint, rad, nSide, iFace);
 				if (nFaceHitType) {            //through this CWall/door
 					//if what we have hit is a door, check the adjoining segP
 					nChild = segP->m_children [nSide];

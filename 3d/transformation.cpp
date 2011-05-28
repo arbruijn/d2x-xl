@@ -438,7 +438,7 @@ if (sideP->m_nFaces == 2) {
 // to do that, compute the intersections of all frustum edges with the plane(s) spanned up by the face (two planes if face not planar)
 // if an edge intersects, check whether the intersection is inside the face
 // since the near plane is at 0.0, only 8 edges of 5 planes need to be checked
-gameStates.render.bRendering = 1; // make sure CSide::PointIsInsideFace uses the transformed vertices
+gameStates.render.bRendering = 1; // make sure CSide::PointToFaceRelation uses the transformed vertices
 for (j = 0; j < sideP->m_nFaces; j++) 
 	transformation.Rotate (sideP->m_rotNorms [j], sideP->m_normals [j], 0);
 for (i = 11; i >= 4; i--) {
@@ -446,7 +446,7 @@ for (i = 11; i >= 4; i--) {
 		if (!FindPlaneLineIntersection (intersection, &points [j]->ViewPos (), &sideP->m_rotNorms [j],
 												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0, false))
 			continue;
-		if (!sideP->PointIsInsideFace (intersection, j, sideP->m_rotNorms [j])) {
+		if (!sideP->PointToFaceRelation (intersection, j, sideP->m_rotNorms [j])) {
 			gameStates.render.bRendering = 0;
 			return true;
 			}

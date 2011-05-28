@@ -526,7 +526,7 @@ for (i = j = 0; i < m_nFaces; i++, j += 3) {
 	dist = CFixVector::Dot (h, n);
 	if (minDist > abs (dist)) {
 		h = v - n * dist;
-		if (!PointIsInsideFace (h, i, n)) {
+		if (!PointToFaceRelation (h, i, n)) {
 			minDist = abs (dist);
 			}
 		}
@@ -582,7 +582,7 @@ return IS_WALL (m_nWall) ? WALLS + m_nWall : NULL;
 
 //	-----------------------------------------------------------------------------
 //see if a refP is inside a face by projecting into 2d
-uint CSide::PointIsInsideFace (CFixVector& intersection, short iFace, CFixVector vNormal)
+uint CSide::PointToFaceRelation (CFixVector& intersection, short iFace, CFixVector vNormal)
 {
 	CFixVector	t;
 	int			biggest;
@@ -642,7 +642,7 @@ return nEdgeMask;
 
 //	-----------------------------------------------------------------------------
 //check if a sphere intersects a face
-int CSide::SphereIntersectsFace (CFixVector& intersection, fix rad, short iFace, CFixVector vNormal)
+int CSide::SphereToFaceRelation (CFixVector& intersection, fix rad, short iFace, CFixVector vNormal)
 {
 	CFixVector	vEdge, vCheck;            //this time, real 3d vectors
 	CFixVector	vNearest;
@@ -653,7 +653,7 @@ int CSide::SphereIntersectsFace (CFixVector& intersection, fix rad, short iFace,
 	uint			nEdgeMask;
 
 //now do 2d check to see if refP is in side
-nEdgeMask = PointIsInsideFace (intersection, iFace, vNormal);
+nEdgeMask = PointToFaceRelation (intersection, iFace, vNormal);
 //we've gone through all the sides, are we inside?
 if (nEdgeMask == 0)
 	return IT_FACE;
@@ -721,7 +721,7 @@ if (m_nFaces <= iFace) {
 #if 1
 if (p1 == p0) {
 #if 0
-	return SphereIntersectsFace (p0, rad, iFace, vNormal);
+	return SphereToFaceRelation (p0, rad, iFace, vNormal);
 #else
 	if (!rad)
 		return IT_NONE;
@@ -755,7 +755,7 @@ CFixVector vHit = intersection;
 //if rad != 0, project the refP down onto the plane of the polygon
 if (rad)
 	vHit += vNormal * (-rad);
-if ((pli = SphereIntersectsFace (vHit, rad, iFace, vNormal)))
+if ((pli = SphereToFaceRelation (vHit, rad, iFace, vNormal)))
 	return pli;
 if (bCheckRad) {
 	int			i, d;
@@ -790,7 +790,7 @@ int CSide::CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFi
 vMove = *p1 - *p0;
 //figure out which edge(side) to check against
 //PrintLog ("      CheckPointToSegFace ...\n");
-if (!(nEdgeMask = PointIsInsideFace (*p0, iFace, vNormal))) {
+if (!(nEdgeMask = PointToFaceRelation (*p0, iFace, vNormal))) {
 	//PrintLog ("      CheckLineToSegFace ...");
 	return CheckLineToFaceRegular (intersection, p0, p1, rad, iFace, vNormal);
 	//PrintLog ("done\n");

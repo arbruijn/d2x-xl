@@ -137,7 +137,7 @@ fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP
 
 bool PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex, short nVerts);
 
-uint PointIsInsideFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal);
+uint PointToFaceRelation (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal);
 
 int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short nDestSeg, int nDepth);
 
