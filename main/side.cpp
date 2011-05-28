@@ -586,7 +586,7 @@ return IS_WALL (m_nWall) ? WALLS + m_nWall : NULL;
 // Check whether point vPoint in segment nDestSeg can be seen from this side.
 // Level 0: Check from side center, 1: check from center and corners, 2: check from center, corners, and edge centers
 
-int CSide::SeesPoint (CFixVector& vPoint, short nDestSeg, int nLevel)
+int CSide::SeesPoint (CFixVector& vPoint, short nDestSeg, int nLevel, int nThread)
 {
 	static int nLevels [3] = {4, 0, -4};
 
@@ -600,7 +600,7 @@ for (int i = 4, j = nLevels [nLevel]; i >= j; i--) {
 		v0 = FVERTICES [m_corners [i]];
 	else
 		v0 = CFloatVector::Avg (FVERTICES [m_corners [4 + i]], FVERTICES [m_corners [(5 + i) & 3]]); // center of face's edges
-	if (PointSeesPoint (&v0, &v1, m_nSegment, nDestSeg, 0))
+	if (PointSeesPoint (&v0, &v1, m_nSegment, nDestSeg, 0, nThread))
 		return 1;
 	}
 return 0;

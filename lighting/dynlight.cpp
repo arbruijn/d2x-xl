@@ -639,7 +639,7 @@ return (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSe
 
 int CDynLight::SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const CFixVector* vLightToPoint, int nThread)
 {
-return SeesPoint (nSegment, &SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint, vLightToPoint, int nThread);
+return SeesPoint (nSegment, &SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint, vLightToPoint, nThread);
 }
 
 //------------------------------------------------------------------------------
