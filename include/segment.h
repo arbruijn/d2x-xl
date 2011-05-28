@@ -573,7 +573,7 @@ int CountSkyBoxSegments (void);
 void FreeSkyBoxSegList (void);
 int BuildSkyBoxSegList (void);
 
-void SetupSegments (void);
+void SetupSegments (fix xPlaneDistTolerance = -1);
 
 // ----------------------------------------------------------------------------
 

@@ -641,7 +641,7 @@ if (loadOp == 0) {
 		}
 	}
 else if (loadOp == 1) {
-	SetupSegments ();			// Fill in CSide nType and normals.
+	SetupSegments (fix (I2X (1) * 0.001f));
 	loadOp++;
 	}
 else if (loadOp == 2) {
@@ -817,7 +817,7 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	LoadSegmentsGauge (cf);
 else {
 	LoadSegmentsCompiled (-1, cf);
-	SetupSegments ();			// Fill in side type and normals.
+	SetupSegments (fix (I2X (1) * 0.001f));
 	LoadExtSegmentsCompiled (cf);
 	LoadVertLightsCompiled (-1, cf);
 	LoadSideLightsCompiled (-1, cf);

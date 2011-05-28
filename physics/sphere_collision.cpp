@@ -1134,10 +1134,14 @@ int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short n
 	short				nSide, nFace, nChildSeg, nPredSeg = 0x7FFF;
 
 if (!nDepth) {
+#if 1
+	memset (segVisList [nThread], 0, gameData.segs.nSegments);
+#else
 	if (!++segVisFlags [nThread]) {
 		++segVisFlags [nThread];
 		memset (segVisList [nThread], 0, sizeof (segVisList [nThread]));
 		}
+#endif
 	}
 
 	ubyte*			bVisited = segVisList [nThread];

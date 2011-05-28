@@ -1226,8 +1226,9 @@ return &SEGMENTS [m_info.nSegment];
 //	gameData.segs.nLastSegment must be set.
 //	For all used segments (number <= gameData.segs.nLastSegment), nSegment field must be != -1.
 
-void SetupSegments (void)
+void SetupSegments (fix xPlaneDistTolerance)
 {
+PLANE_DIST_TOLERANCE = (xPlaneDistTolerance < 0) ? DEFAULT_PLANE_DIST_TOLERANCE : xPlaneDistTolerance;
 gameOpts->render.nMathFormat = 0;
 gameData.segs.points.Clear ();
 for (int i = 0; i <= gameData.segs.nLastSegment; i++)

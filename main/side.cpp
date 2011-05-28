@@ -53,9 +53,26 @@ m_vCenter += VERTICES [m_vertices [3]];
 m_vCenter.v.coord.x /= 4;
 m_vCenter.v.coord.y /= 4;
 m_vCenter.v.coord.z /= 4;
+// make sure side center is inside segment
 CFixVector v0 = m_vCenter + m_normals [2];
 CFixVector v1 = m_vCenter - m_normals [2];
-FindPlaneLineIntersection (m_vCenter, &VERTICES [m_vertices [0]], &m_normals [2], &v0, &v1, 0, false);
+#if 1
+FindPlaneLineIntersection (m_vCenter, &VERTICES [m_vertices [0]], &m_normals [0], &v0, &v1, 0, false);
+#else
+CFixVector c0, c1;
+FindPlaneLineIntersection (c0, &VERTICES [m_vertices [0]], &m_normals [0], &v0, &v1, 0, false);
+FindPlaneLineIntersection (c1, &VERTICES [m_vertices [3]], &m_normals [1], &v0, &v1, 0, false);
+if (c0 == c1) 
+	m_vCenter = c0;
+else {
+	v0 = c0 - c1;
+	CFixVector::Normalize (v0);
+	if (CFixVector::Dot (v0, m_normals [2]) < 0)
+		m_vCenter = c0;
+	else
+		m_vCenter = c1;
+	}
+#endif
 }
 
 // ------------------------------------------------------------------------------------------
