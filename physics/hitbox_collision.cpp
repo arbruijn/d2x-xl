@@ -61,7 +61,7 @@ vRef.i = point.v.vec [i];
 vRef.j = point.v.vec [j];
 v1 = vertP [0];
 for (iEdge = 1; iEdge <= 4; iEdge++) {
-	v0 = 1;
+	v0 = v1;
 	v1 = vertP [iEdge % 4];
 	vEdge.i = v1.v.vec [i] - v0.v.vec [i];
 	vEdge.j = v1.v.vec [j] - v0.v.vec [j];
