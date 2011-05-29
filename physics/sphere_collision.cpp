@@ -165,8 +165,8 @@ float DistToFace (CFloatVector3 vRef, short nSegment, ubyte nSide, CFloatVector3
 	CSide*			sideP = SEGMENTS [nSegment].Side (nSide);
 	CFloatVector	h, r;
 	short*			nVerts = sideP->m_vertices;
-	float				dist, minDist = 1e10f;
 	int				i, j;
+	float				d;
 
 r.Assign (vRef);
 
@@ -174,32 +174,34 @@ r.Assign (vRef);
 for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 	CFloatVector& n = sideP->m_fNormals [i];
 	h = r - FVERTICES [nVerts [j]];
-	dist = float (fabs (CFloatVector::Dot (h, n)));
-	if (minDist > dist) {
-		h = r - n * dist;
-		if (PointIsInFace (&h, n, nVerts + j, 5 - sideP->m_nFaces)) {
-			if (vHit) {
-				if (dist < 0.001f)
-					*vHit = vRef;
-				else
-					vHit->Assign (h);
-				}
-			minDist = dist;
+	float d = float (fabs (CFloatVector::Dot (h, n)));
+	//h = r - n * dist;
+	h = n;
+	h *= -d;
+	h += r;
+	if (PointIsInFace (&h, n, nVerts + j, 5 - sideP->m_nFaces)) {
+		if (vHit) {
+			if (d < 0.001f)
+				*vHit = vRef;
+			else
+				vHit->Assign (h);
 			}
+		return (vHit == NULL) ? d : 0.0f;
 		}
 	}
-if (minDist < 1e10f)
-	return 0.0f;
 
 nVerts = sideP->m_corners;
-CFloatVector* v0, * v1 = &FVERTICES [nVerts [0]];
+
+	CFloatVector	* v0, * v1 = &FVERTICES [nVerts [0]];
+	float				minDist = 1e10f;
+
 for (i = 1; i <= 4; i++) {
 	v0 = v1;
 	v1 = &FVERTICES [nVerts [i % 4]];
 	VmPointLineIntersection (h, *v0, *v1, r, 1);
-	dist = CFloatVector::Dist (h, r);
-	if (minDist > dist) {
-		minDist = dist;
+	d = CFloatVector::Dist (h, r);
+	if (minDist > d) {
+		minDist = d;
 		if (vHit)
 			vHit->Assign (h);
 		}

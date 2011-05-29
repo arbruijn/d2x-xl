@@ -588,11 +588,12 @@ return 0;
 
 int CDynLight::LightPathLength (const short nLightSeg, const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int bFastRoute, int nThread)
 {
-#if 1
-if (bFastRoute)
-	return fix (gameData.segs.SegDist (nLightSeg, nDestSeg) / info.fRange);
-#endif
-return fix (simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, nDestSeg, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0) / info.fRange);
+fix dist = (bFastRoute) 
+			  ? gameData.segs.SegDist (nLightSeg, nDestSeg)
+			  : simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, nDestSeg, X2I (xMaxLightRange / 5), WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
+if (dist < 0)
+	return -1;
+return fix (dist / info.fRange);
 }
 
 //------------------------------------------------------------------------------

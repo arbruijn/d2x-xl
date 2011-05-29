@@ -454,8 +454,10 @@ for (int i = 0, j; i < h; i = j) {
 		}	
 	if (j < i + 2) // can only see next segment after route [i].nNode
 		xDist += SEGMENTS [nStartSeg].m_childDists [0][route [i].nEdge];
-	else // skipped some segment(s)
+	else {// skipped some segment(s)
 		xDist += CFixVector::Dist (*p0, *p1);
+		--j;
+		}
 	}
 if	(m_nDestSeg >= 0) {
 	xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [h].nNode].Center ());
