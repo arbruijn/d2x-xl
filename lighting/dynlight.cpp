@@ -739,15 +739,17 @@ else if ((nLightSeg = LightSeg ()) >= 0)
 else
 	return 0;
 
-	CFixVector	vLightToPoint = vDestPos - info.vPos;
-	fix			xRad = F2X (info.fRad);
-	fix			xDistance = vLightToPoint.Mag ();
+	fix xDistance, xRad;
 
-xDistance = fix (float (xDistance) / (info.fRange * fRangeMod)) + xDistMod;
-if (xDistance - xRad > xMaxLightRange)
-	return 0;
-
-if ((nLightSeg >= 0) && (info.nSide >= 0)) {
+if ((nLightSeg < 0) || (info.nSide < 0)) {
+	CFixVector vLightToPoint = vDestPos - info.vPos;
+	xRad = F2X (info.fRad);
+	xDistance = vLightToPoint.Mag ();
+	xDistance = fix (float (xDistance) / (info.fRange * fRangeMod)) + xDistMod;
+	if (xDistance - xRad > xMaxLightRange)
+		return 0;
+	}
+else {
 	CFloatVector3 v;
 	v.Assign (vDestPos);
 	float distance = DistToFace (v, nLightSeg, ubyte (info.nSide)) / (info.fRange * fRangeMod) + X2F (xDistMod);
@@ -756,7 +758,6 @@ if ((nLightSeg >= 0) && (info.nSide >= 0)) {
 	xDistance = F2X (distance);
 	xRad = 0;
 	}
-
 if (nLightSeg == nDestSeg)
 	info.bDiffuse [nThread] = 1;
 else {
