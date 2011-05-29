@@ -523,7 +523,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			decay += 1.0000001f;
 			fLightDist /= decay * decay;
 			}
-		fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
+		fAttenuation = 1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist;
 		fAttenuation /= prl->info.fBrightness;
 		}
 
@@ -556,8 +556,23 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			else
 				NdotL = 0.0f;
 			}
+#if TEST_AMBIENT > 0
+		vertColor.SetZero ();
+#elif TEST_AMBIENT < 0
+		vertColor.Set (0.0f, 0.0f, 3.0f);
+#else
+		vertColor *= lightColor;
+#endif
 		}
-	vertColor *= lightColor;
+	else {
+#if TEST_AMBIENT > 0
+		//vertColor.Set (1.0f, 0.0f, 0.0f);
+#elif TEST_AMBIENT < 0
+		vertColor.SetZero ();
+#else
+		vertColor *= lightColor;
+#endif
+	}
 
 #if 1
 	if (bSpecular && bDiffuse && (NdotL > 0.0f) && (fLightDist > 0.0f)) {
