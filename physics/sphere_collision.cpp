@@ -200,7 +200,8 @@ for (i = 1; i <= 4; i++) {
 	dist = CFloatVector::Dist (h, r);
 	if (minDist > dist) {
 		minDist = dist;
-		vHit.Assign (h);
+		if (vHit)
+			vHit->Assign (h);
 		}
 	}
 return minDist;
