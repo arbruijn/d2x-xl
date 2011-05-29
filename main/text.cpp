@@ -1972,7 +1972,8 @@ const char *defaultHelpTexts [][2] = {
  {"Programm verlassen.", "Quit program."},
  {"Hier kann eingestellt werden, ob nur Descent 1, oder nur Descent 2, oder alle Missionen zur Auswahl angeboten werden sollen.",
 	 "Select whether only Descent 1, only Descent 2, or all missions can be chosen for playing."},
- {"(keine Hilfe verfuegbar)", "(no help available)"},
+ {"Hier kann die Genauigkeit der Berechnung von Lightmaps eingestellt\nwerden. Je hoeher die Genauigkeit, desto genauer wird erfasst,\nwelche Bereiche fuer eine Lichtquelle sichtbar sind und welche\nnicht. Mit der Genauigkeit waechst allerdings auch die Rechenzeit.", 
+   "Adjust the precision of lightmap calculation here. The higher the\nprecision, the better areas visible and invisible to a light source\nare detected. Computing time will grow with precision though."},
 	//controls configuration menu
  {"Ankreuzen, um die Steuerung des Schiffs per Maus zu ermoeglichen.",
 	 "Check to enable control of the ship using a mouse."},

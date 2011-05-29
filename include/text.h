@@ -2202,7 +2202,7 @@ void LoadGameTexts(void);
 #define HTX_MAIN_CREDITS				HT(10)
 #define HTX_MAIN_QUIT					HT(11)
 #define HTX_LEVEL_VERSION_FILTER		HT(12)
-#define HTX_UNUSED1						HT(13)
+#define HTX_LMAP_PRECISION				HT(13)
 
 #define HTX_CONF_USEMOUSE				HT(14)
 #define HTX_CONF_CUSTMOUSE				HT(15)
