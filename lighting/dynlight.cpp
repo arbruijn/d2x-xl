@@ -597,7 +597,9 @@ return fix (simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, n
 
 //------------------------------------------------------------------------------
 
-int CDynLight::SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const CFixVector* vLightToPoint, int nThread)
+#define LIGHTING_LEVEL 1
+
+int CDynLight::SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, int nLevel, int nThread)
 {
 	CFloatVector vLightToPointf, vNormalf;
 
@@ -606,14 +608,38 @@ int nLightSeg = info.nSegment;
 #else
 int nLightSeg = LightSeg ();
 #endif
-vLightToPointf.Assign (*vLightToPoint);
-if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
-	return 0;
-if (vNormal) {
-	vNormalf.Assign (*vNormal);
-	if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f) // light doesn't "see" face
-		return 0;
+
+	static int nLevels [3] = {4, 0, -4};
+
+	CSide*			sideP = SEGMENTS [nLightSeg].Side (info.nSide);
+	CFloatVector	v0, v1, vLightToPointf;
+
+v1.Assign (vPoint);
+for (int i = 4, j = nLevels [nLevel]; i >= j; i--) {
+	if (i == 4)
+		v0.Assign (info.vPos);
+	else if (i >= 0)
+		v0 = FVERTICES [sideP->m_corners [i]];
+	else
+		v0 = CFloatVector::Avg (FVERTICES [sideP->m_corners [4 + i]], FVERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
+
+	vLightToPoint = v1 - v0;
+	if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
+		continue;
+	if (vNormal) {
+		vNormalf.Assign (*vNormal);
+		if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f) // light doesn't "see" face
+			continue;
+		}
+
+	if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, nThread))
+		return 1;
+	vLightToPointf.Assign (*vLightToPoint);
 	}
+
+return 0;
+
+#if 0
 
 if (nLightSeg < 0)
 	return 1;
@@ -639,13 +665,14 @@ int nHitType = FindHitpoint (&fq, &hitData);
 return (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)));
 
 #endif
+#endif
 }
 
 //------------------------------------------------------------------------------
 
-int CDynLight::SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const CFixVector* vLightToPoint, int nThread)
+int CDynLight::SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const int nLevel, int nThread)
 {
-return SeesPoint (nSegment, &SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint, vLightToPoint, nThread);
+return SeesPoint (nSegment, &SEGMENTS [nSegment].Side (nSide)->Normal (2), vPoint, nLevel, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -718,7 +745,7 @@ if (nLightSeg == nDestSeg)
 else {
 	if (info.bDiffuse [nThread]) {
 		vLightToPoint /= xDistance;
-		info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, &vLightToPoint, nThread);
+		info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, 1, nThread);
 		}
 	if (!info.bDiffuse [nThread]) {
 		fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
