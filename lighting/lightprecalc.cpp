@@ -695,7 +695,7 @@ if (nState)
 
 //paletteManager.ResumeEffect ();
 if (loadOp == 0) {
-	ComputeSegmentDistance (loadIdx, 0);
+	ComputeSegmentVisibility (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
@@ -703,7 +703,7 @@ if (loadOp == 0) {
 		}
 	}
 if (loadOp == 1) {
-	ComputeSegmentVisibility (loadIdx);
+	ComputeSegmentDistance (loadIdx, 0);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
@@ -923,11 +923,11 @@ if (LoadLightData (nLevel))
 
 #if MULTI_THREADED_PRECALC != 0
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
-	PrintLog ("Computing segment distances\n");
-	StartLightThreads (SegDistThread);
 	gameData.physics.side.bCache = 0;
 	PrintLog ("Computing segment visibility\n");
 	ComputeSegmentVisibility (-1);
+	PrintLog ("Computing segment distances\n");
+	StartLightThreads (SegDistThread);
 	PrintLog ("Computing light visibility\n");
 	ComputeLightVisibility (-1);
 	PrintLog ("Starting segment light calculation threads\n");
@@ -945,10 +945,10 @@ else {
 						 LoadMineGaugeSize () + PagingGaugeSize (),
 						 LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize () + SegDistGaugeSize (), SortLightsPoll);
 	else {
-		PrintLog ("Computing segment distances\n");
-		ComputeSegmentDistance (-1, 0);
 		PrintLog ("Computing segment visibility\n");
 		ComputeSegmentVisibility (-1);
+		PrintLog ("Computing segment distances\n");
+		ComputeSegmentDistance (-1, 0);
 		PrintLog ("Computing light visibility\n");
 		ComputeLightVisibility (-1);
 		PrintLog ("Computing segment lights\n");

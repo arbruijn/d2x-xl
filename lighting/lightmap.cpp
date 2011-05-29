@@ -734,6 +734,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		//gameData.render.fAttScale [0] = 2.0f;
 		lightManager.Index (0,0).nFirst = MAX_OGL_LIGHTS;
 		lightManager.Index (0,0).nLast = 0;
+		gameStates.render.bSpecularColor = 0;
 		//PLANE_DIST_TOLERANCE = fix (I2X (1) * 0.001f);
 		//SetupSegments (); // set all faces up as triangles
 		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
@@ -748,6 +749,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		//PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;
 		//SetupSegments (); // standard face setup (triangles or quads)
 		//gameData.render.fAttScale [0] = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
+		gameStates.render.bSpecularColor = 1;
 		gameStates.render.bHaveLightmaps = 0;
 		gameStates.render.nState = 0;
 		gameOpts->render.color.nSaturation = nSaturation;

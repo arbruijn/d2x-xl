@@ -650,8 +650,9 @@ else {
 			continue;
 		if (vNormal && (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f)) // light doesn't "see" face
 			continue;
+		break;
 		}
-	if (i == j)
+	if (i < j)
 		return 0;
 
 #if DBG

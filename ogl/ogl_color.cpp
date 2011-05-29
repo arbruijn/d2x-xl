@@ -387,7 +387,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform,
 							nSaturation = gameOpts->render.color.nSaturation;
 	int					nBrightness, nMaxBrightness = 0;
-	int					bDiffuse;
+	int					bDiffuse, bSpecular = gameStates.render.bSpecularColor && (vcd.fMatShininess > 0.0f);
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
 	CFloatVector3		spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3		lightColor, colorSum, vertColor = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
@@ -403,8 +403,7 @@ if (nThread == 1)
 	nThread = nThread;
 #endif
 colorSum = *pColorSum;
-vertPos = *vcd.vertPosP - *transformation.m_info.posf [1].XYZ ();
-vertPos.Neg ();
+vertPos = *transformation.m_info.posf [1].XYZ () - *vcd.vertPosP;
 CFloatVector3::Normalize (vertPos);
 nLights = sliP->nActive;
 if (nLights > lightManager.LightCount (0))
@@ -533,7 +532,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			if (NdotL <= 0.0f)
 				continue;
 			CFloatVector3::Normalize (spotDir);
-			lightDir = -lightDir;
+			lightDir.Neg ();
 			spotEffect = CFloatVector3::Dot (spotDir, lightDir);
 
 			if (spotEffect <= prl->info.fSpotAngle)
@@ -556,13 +555,25 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			else
 				NdotL = 0.0f;
 			}
+		vertColor *= lightColor;
+		//vertColor.SetZero (); // test!!!
 		}
-	vertColor *= lightColor;
-	if (bDiffuse && (NdotL > 0.0f) && (fLightDist > 0.0f) && (vcd.fMatShininess > 0.0f) /* && vcd.bMatSpecular */) {
+	else {
+#if 0 //DBG
+		CFloatVector3 c;
+		c.Set (3.0f, 0.0f, 0.0f);
+		vertColor *= c;
+#else
+		vertColor *= lightColor;
+#endif
+		}
+
+#if 1
+	if (bSpecular && bDiffuse && (NdotL > 0.0f) && (fLightDist > 0.0f)) {
 		if (!prl->info.bSpot)	//need direction from light to vertex now
 			lightDir.Neg ();
 		vReflect = CFloatVector3::Reflect (lightDir, vcd.vertNorm);
-		CFloatVector3::Normalize (vReflect);
+		//CFloatVector3::Normalize (vReflect);
 #if DBG
 		if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
 			nDbgVertex = nDbgVertex;
@@ -570,8 +581,11 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		RdotE = CFloatVector3::Dot (vReflect, vertPos);
 		if (RdotE > 0.0f) {
 			vertColor += (lightColor * (float) pow (RdotE, vcd.fMatShininess));
+			//vertColor.Set (0.0f, 0.0f, (float) pow (RdotE, vcd.fMatShininess)); //test
 			}
 		}
+#endif
+
 	vertColor /= fAttenuation;
 
 	if ((nSaturation < 2) || gameStates.render.bHaveLightmaps) {//sum up color components
@@ -866,7 +880,7 @@ void InitVertColorData (CVertColorData& vcd)
 matSpecular.Set (1.0f, 1.0f, 1.0f, 1.0f);
 
 vcd.bExclusive = !FAST_SHADOWS && (gameStates.render.nShadowPass == 3),
-vcd.fMatShininess = 0;
+vcd.fMatShininess = 0.0f;
 vcd.bMatSpecular = 0;
 vcd.bMatEmissive = 0;
 vcd.nMatLight = -1;

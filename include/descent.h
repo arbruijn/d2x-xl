@@ -1012,6 +1012,7 @@ class CRenderStates {
 		int bQueryCoronas;
 		int bDoLightmaps;
 		int bAmbientColor;
+		int bSpecularColor;
 		int bDoCameras;
 		int bRenderIndirect;
 		int bBuildModels;

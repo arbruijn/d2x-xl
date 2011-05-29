@@ -425,11 +425,11 @@ if (m_nDestSeg >= 0)
 	CDialHeap::tPathNode* route = m_heap.Route ();
 	fix xDist = 0;
 
-	CHitQuery	fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], route [0].nNode, -1, 1, 0);
 #if 0
+	CHitQuery	fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], route [0].nNode, -1, 1, 0);
 	CHitData		hitData;
 #endif
-	CFixVector* p1;
+	CFixVector* p0, *p1;
 	short			nStartSeg, nDestSeg;
 
 for (int i = 0, j; i < h; i = j) {
@@ -437,24 +437,25 @@ for (int i = 0, j; i < h; i = j) {
 	// the center of segment route [i].nNode. That way, the distance calculation is corrected by using direct lines of sight between
 	// segments of the route that can "see" each other even if they aren't directly connected.
 	nStartSeg = route [i].nNode;
-	fq.p0 = &SEGMENTS [nStartSeg].Center ();
+	/*fq.*/p0 = &SEGMENTS [nStartSeg].Center ();
 	for (j = i + 1; j < h; j++) { 
 		nDestSeg = route [j].nNode;
 #if 1
 		if (!gameData.segs.SegVis (nStartSeg, nDestSeg))
 			break;
+		p1 = &SEGMENTS [nDestSeg].Center ();
 #else
 		fq.p1 = &SEGMENTS [nDestSeg].Center ();
 		int nHitType = FindHitpoint (&fq, &hitData);
 		if (nHitType && ((nHitType != HIT_WALL) || (hitData.hit.nSegment != nDestSeg)))
 			break;
-#endif
 		p1 = fq.p1;
+#endif
 		}	
 	if (j < i + 2) // can only see next segment after route [i].nNode
 		xDist += SEGMENTS [nStartSeg].m_childDists [0][route [i].nEdge];
 	else // skipped some segment(s)
-		xDist += CFixVector::Dist (*fq.p0, *p1);
+		xDist += CFixVector::Dist (*p0, *p1);
 	}
 if	(m_nDestSeg >= 0) {
 	xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [h].nNode].Center ());
