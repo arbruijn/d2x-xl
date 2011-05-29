@@ -29,7 +29,7 @@
 #include "palette.h"
 #include "transformation.h"
 
-#define TEST_AMBIENT			-1
+#define TEST_AMBIENT			0
 #define CHECK_LIGHT_VERT	1
 #define BRIGHT_SHOTS			0
 #if DBG
