@@ -1228,7 +1228,11 @@ return &SEGMENTS [m_info.nSegment];
 
 void SetupSegments (fix xPlaneDistTolerance)
 {
+#if 0
+PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;
+#else
 PLANE_DIST_TOLERANCE = (xPlaneDistTolerance < 0) ? DEFAULT_PLANE_DIST_TOLERANCE : xPlaneDistTolerance;
+#endif
 gameOpts->render.nMathFormat = 0;
 gameData.segs.points.Clear ();
 for (int i = 0; i <= gameData.segs.nLastSegment; i++)

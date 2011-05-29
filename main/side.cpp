@@ -627,6 +627,65 @@ return 0;
 //see if a refP is inside a face by projecting into 2d
 uint CSide::PointToFaceRelation (CFixVector& intersection, short nFace, CFixVector vNormal)
 {
+#if 0
+
+	CFixVector	t;
+	int			biggest;
+	int 			h, i, j, nEdge, nVerts;
+	uint 			nEdgeMask;
+	fix 			check_i, check_j;
+	CFixVector	*v0, *v1;
+	CFixVector2D 		vEdge, vCheck;
+	QLONG			d;
+
+//now do 2d check to see if refP is in CSide
+//project polygon onto plane by finding largest component of Normal
+t.v.coord.x = labs (vNormal.v.coord.x);
+t.v.coord.y = labs (vNormal.v.coord.y);
+t.v.coord.z = labs (vNormal.v.coord.z);
+if (t.v.coord.x > t.v.coord.y)
+	if (t.v.coord.x > t.v.coord.z)
+		biggest = 0;
+	else
+		biggest = 2;
+else if (t.v.coord.y > t.v.coord.z)
+	biggest = 1;
+else
+	biggest = 2;
+if (vNormal.v.vec [biggest] > 0) {
+	i = ijTable [biggest][0];
+	j = ijTable [biggest][1];
+	}
+else {
+	i = ijTable [biggest][1];
+	j = ijTable [biggest][0];
+	}
+//now do the 2d problem in the i, j plane
+check_i = intersection.v.vec [i];
+check_j = intersection.v.vec [j];
+nVerts = 5 - m_nFaces;
+h = nFace * 3;
+for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
+	if (gameStates.render.bRendering) {
+		v0 = &gameData.segs.points [m_vertices [h + nEdge]].ViewPos ();
+		v1 = &gameData.segs.points [m_vertices [h + ((nEdge + 1) % nVerts)]].ViewPos ();
+		}
+	else {
+		v0 = VERTICES + m_vertices [h + nEdge];
+		v1 = VERTICES + m_vertices [h + ((nEdge + 1) % nVerts)];
+		}
+	vEdge.i = v1->v.vec [i] - v0->v.vec [i];
+	vEdge.j = v1->v.vec [j] - v0->v.vec [j];
+	vCheck.i = check_i - v0->v.vec [i];
+	vCheck.j = check_j - v0->v.vec [j];
+	d = FixMul64 (vCheck.i, vEdge.j) - FixMul64 (vCheck.j, vEdge.i);
+	if (d < 0)              		//we are outside of triangle
+		nEdgeMask |= (1 << nEdge);
+	}
+return nEdgeMask;
+
+#else
+
 	CFixVector		t;
 	int 				h, i, j, nEdge, nVerts, projPlane;
 	uint 				nEdgeMask;
@@ -667,6 +726,8 @@ for (nEdge = 1, nEdgeMask = 0; nEdge <= nVerts; nEdge++) {
 		nEdgeMask |= (1 << (nEdge - 1));
 	}
 return nEdgeMask;
+
+#endif
 }
 
 //	-----------------------------------------------------------------------------

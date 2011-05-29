@@ -33,6 +33,8 @@
 
 class CLightManager lightManager;
 
+#define FAST_POINTVIS 2
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -616,22 +618,26 @@ if (vNormal) {
 if (nLightSeg < 0)
 	return 1;
 
-#if 1
+#if FAST_POINTVIS
+
 #if DBG
 if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
 	nDbgVertex = nDbgVertex;
 #endif
 if (info.nSide >= 0)
-	return SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (*vPoint, nDestSeg, 1, nThread);
+	return SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (*vPoint, nDestSeg, 0, nThread);
 CFloatVector v0, v1;
 v0.Assign (info.vPos);
 v1.Assign (*vPoint);
-return PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, nThread);
+return PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, FAST_POINTVIS - 1, nThread);
+
 #else
+
 CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &info.vPos, vPoint, nLightSeg, -1, 1, 0);
 CHitData	hitData;
 int nHitType = FindHitpoint (&fq, &hitData);
 return (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)));
+
 #endif
 }
 
@@ -707,7 +713,7 @@ fix xDistance = vLightToPoint.Mag ();
 xDistance = fix (float (xDistance) / (info.fRange * fRangeMod)) + xDistMod;
 if (xDistance - xRad > xMaxLightRange)
 	return 0;
-if (nLightSeg != nDestSeg)
+if (nLightSeg == nDestSeg)
 	info.bDiffuse [nThread] = 1;
 else {
 	if (info.bDiffuse [nThread]) {
