@@ -754,16 +754,16 @@ const int VmPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, c
 
 d21 = p2 - p1;
 m = (float) fabs (d21.SqrMag ());
-if (!m) {
+if (m != 0.0f) {
 	hitP = p1;
 	return 0;
 	}
 d31 = p3 - p1;
 u = CFloatVector::Dot (d31, d21);
 u /= m;
-if (u < 0)
+if (u < 0.0f)
 	bClamped = 1;
-else if (u > 1)
+else if (u > 1.0f)
 	bClamped = 2;
 else
 	bClamped = 0;
@@ -787,16 +787,16 @@ const int VmPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, c
 
 d21 = p2 - p1;
 m = (float) fabs (d21.SqrMag ());	// Dot (d21, d21)
-if (!m) {
+if (m == 0.0f) {
 	hitP = p1;
 	return 0;
 	}
 d31 = p3 - p1;
 u = CFloatVector::Dot (d31, d21);
 u /= m;
-if (u < 0)
+if (u < 0.0f)
 	bClamped = 1;
-else if (u > 1)
+else if (u > 1.0f)
 	bClamped = 2;
 else
 	bClamped = 0;
@@ -818,16 +818,16 @@ const int VmPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1,
 
 d21 = p2 - p1;
 m = (float) fabs (d21.SqrMag ());
-if (!m) {
+if (m == 0.0f) {
 	hitP = p1;
 	return 0;
 	}
 d31 = p3 - p1;
 u = CFloatVector3::Dot (d31, d21);
 u /= m;
-if (u < 0)
+if (u < 0.0f)
 	bClamped = 1;
-else if (u > 1)
+else if (u > 1.0f)
 	bClamped = 2;
 else
 	bClamped = 0;

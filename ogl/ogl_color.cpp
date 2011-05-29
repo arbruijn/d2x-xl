@@ -29,6 +29,7 @@
 #include "palette.h"
 #include "transformation.h"
 
+#define TEST_AMBIENT			-1
 #define CHECK_LIGHT_VERT	1
 #define BRIGHT_SHOTS			0
 #if DBG
@@ -491,8 +492,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (nType < 2) {
 			DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide));
 			CFloatVector3 dir = lightPos - *vcd.vertPosP;
-			fLightDist = dir.Mag () * ogl.m_states.fLightRange;
-			CFloatVector3::Normalize (dir);
+			fLightDist = dir.Mag ();
+			dir /= fLightDist; // normalize
+			fLightDist *= ogl.m_states.fLightRange;
 			float dot = CFloatVector3::Dot (vcd.vertNorm, dir);
 			if (NdotL <= dot) {
 				NdotL = dot;
@@ -555,15 +557,18 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			else
 				NdotL = 0.0f;
 			}
+#if TEST_AMBIENT > 0
+		vertColor.SetZero (); 
+#else
 		vertColor *= lightColor;
-		//vertColor.SetZero (); // test!!!
+#endif
 		}
 	else {
-#if 0 //DBG
+#if TEST_AMBIENT > 0
 		CFloatVector3 c;
 		c.Set (3.0f, 0.0f, 0.0f);
 		vertColor *= c;
-#else
+#elif TEST_AMBIENT == 0
 		vertColor *= lightColor;
 #endif
 		}
@@ -581,7 +586,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		RdotE = CFloatVector3::Dot (vReflect, vertPos);
 		if (RdotE > 0.0f) {
 			vertColor += (lightColor * (float) pow (RdotE, vcd.fMatShininess));
-			//vertColor.Set (0.0f, 0.0f, (float) pow (RdotE, vcd.fMatShininess)); //test
+			vertColor.Set (0.0f, 0.0f, (float) pow (RdotE, vcd.fMatShininess)); //test
 			}
 		}
 #endif

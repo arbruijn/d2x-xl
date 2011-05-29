@@ -163,20 +163,20 @@ return true;
 float DistToFace (CFloatVector3& vHit, CFloatVector3 refP, short nSegment, ubyte nSide)
 {
 	CSide*			sideP = SEGMENTS [nSegment].Side (nSide);
-	CFloatVector	h, n, v;
+	CFloatVector	h, n, r;
 	short*			nVerts = sideP->m_vertices;
 	float				dist, minDist = 1e30f;
 	int				i, j;
 
-v.Assign (refP);
+r.Assign (refP);
 
 // compute intersection of perpendicular through refP with the plane spanned up by the face
 for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 	n.Assign (sideP->m_normals [i]);
-	h = v - FVERTICES [nVerts [j]];
+	h = r - FVERTICES [nVerts [j]];
 	dist = CFloatVector::Dot (h, n);
 	if (minDist > fabs (dist)) {
-		h = v - n * dist;
+		h = r - n * dist;
 		if (PointIsInFace (&h, n, nVerts + j, (sideP->m_nFaces == 1) ? 4 : 3)) {
 			if (fabs (dist) < 0.01)
 				vHit = refP;
@@ -191,9 +191,12 @@ if (minDist < 1e30f)
 
 nVerts = sideP->m_corners;
 minDist = 1e30f;
-for (i = 0; i < 4; i++) {
-	VmPointLineIntersection (h, FVERTICES [nVerts [i]], FVERTICES [nVerts [(i + 1) % 4]], v, 1);
-	dist = CFloatVector::Dist (h, v);
+CFloatVector* v0, * v1 = &FVERTICES [nVerts [0]];
+for (i = 1; i <= 4; i++) {
+	v0 = v1;
+	v1 = &FVERTICES [nVerts [i % 4]];
+	VmPointLineIntersection (h, *v0, *v1, r, 1);
+	dist = CFloatVector::Dist (h, r);
 	if (minDist > dist) {
 		minDist = dist;
 		vHit.Assign (h);
