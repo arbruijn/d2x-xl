@@ -382,6 +382,10 @@ float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
 int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcdP, int nThread)
 {
+	CDynLight*			prl;
+	CDynLightIndex*	sliP = &lightManager.Index (0, nThread);
+	CActiveDynLight*	activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
+	CVertColorData		vcd = *vcdP;
 	int					i, j, nLights, nType,
 							bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
 							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform,
@@ -391,10 +395,6 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
 	CFloatVector3		spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3		lightColor, colorSum, vertColor = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
-	CDynLight*			prl;
-	CDynLightIndex*	sliP = &lightManager.Index (0, nThread);
-	CActiveDynLight*	activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
-	CVertColorData		vcd = *vcdP;
 
 #if DBG
 if (nThread == 0)
