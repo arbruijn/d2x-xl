@@ -506,8 +506,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			// check whether the vertex is behind the light or the light shines at the vertice's back
 			// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
 			float dot = -CFloatVector3::Dot (lightDir, spotDir);
-			if (dot < 0.99f)
-				fLightAngle = dot + 0.01f;
+			fLightAngle = (dot < 0.99f) ? dot + 0.01f : 1.0f;
 			}
 		else
 			fLightAngle = 1.0f;
