@@ -502,10 +502,12 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 				fLightDist = 0.0f;
 			}
 
-		if ((gameStates.render.nState || (nType < 2)) && (fLightDist > 0.0f)) {
+		if ((gameStates.render.nState || (nType < 2)) && (fLightDist > 0.1f)) {
 			// check whether the vertex is behind the light or the light shines at the vertice's back
 			// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
-			fLightAngle = (fLightDist > 0.1f) ? -CFloatVector3::Dot (lightDir, spotDir) + 0.01f : 1.0f;
+			float dot = -CFloatVector3::Dot (lightDir, spotDir);
+			if (dot < 0.99f)
+				fLightAngle = dot + 0.01f;
 			}
 		else
 			fLightAngle = 1.0f;
