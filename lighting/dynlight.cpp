@@ -601,60 +601,65 @@ return fix (simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, n
 
 int CDynLight::SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, int nLevel, int nThread)
 {
-	CFloatVector ;
-
 #if 1
 int nLightSeg = info.nSegment;
 #else
 int nLightSeg = LightSeg ();
 #endif
 
-	static int nLevels [3] = {4, 0, -4};
-
-	CSide*			sideP = SEGMENTS [nLightSeg].Side (info.nSide);
-	CFloatVector	v0, v1, vLightToPointf, vNormalf;
-
-v1.Assign (*vPoint);
-if (vNormal) {
-	vNormalf.Assign (*vNormal);
-for (int i = 4, j = nLevels [nLevel]; i >= j; i--) {
-	if (i == 4)
-		v0.Assign (info.vPos);
-	else if (i >= 0)
-		v0 = FVERTICES [sideP->m_corners [i]];
-	else
-		v0 = CFloatVector::Avg (FVERTICES [sideP->m_corners [4 + i]], FVERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
-
-	vLightToPointf = v1 - v0;
-	CFloatVector::Normalize (vLightToPointf);
-	if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
-		continue;
-	if (vNormal && (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f)) // light doesn't "see" face
-		continue;
-
-	if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, nThread))
-		return 1;
-	}
-
-return 0;
-
-#if 0
-
-if (nLightSeg < 0)
-	return 1;
+		CFloatVector	v0, v1, vLightToPointf, vNormalf;
 
 #if FAST_POINTVIS
 
+if (info.nSide < 0) {
+	if (nLightSeg < 0)
+		return 1;
+	v1.Assign (*vPoint);
+	v0.Assign (info.vPos);
+	vLightToPointf = v1 - v0;
+	CFloatVector::Normalize (vLightToPointf);
+	if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
+		return 0;
+	if (vNormal) {
+		vNormalf.Assign (*vNormal);
+		if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f) // light doesn't "see" face
+			return 0;
+		}
+	return PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, FAST_POINTVIS - 1, nThread);
+	}
+else {
+		static int nLevels [3] = {4, 0, -4};
+
+		CSide*	sideP = SEGMENTS [nLightSeg].Side (info.nSide);
+		int		i, j = nLevels [nLevel];
+
+	v1.Assign (*vPoint);
+	if (vNormal) 
+		vNormalf.Assign (*vNormal);
+	for (i = 4; i >= j; i--) {
+		if (i == 4)
+			v0.Assign (info.vPos);
+		else if (i >= 0)
+			v0 = FVERTICES [sideP->m_corners [i]];
+		else
+			v0 = CFloatVector::Avg (FVERTICES [sideP->m_corners [4 + i]], FVERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
+
+		vLightToPointf = v1 - v0;
+		CFloatVector::Normalize (vLightToPointf);
+		if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
+			continue;
+		if (vNormal && (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f)) // light doesn't "see" face
+			continue;
+		}
+	if (i == j)
+		return 0;
+
 #if DBG
-if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
-	nDbgVertex = nDbgVertex;
+	if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
+		nDbgVertex = nDbgVertex;
 #endif
-if (info.nSide >= 0)
 	return SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (*vPoint, nDestSeg, 0, nThread);
-CFloatVector v0, v1;
-v0.Assign (info.vPos);
-v1.Assign (*vPoint);
-return PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, FAST_POINTVIS - 1, nThread);
+	}
 
 #else
 
@@ -663,7 +668,6 @@ CHitData	hitData;
 int nHitType = FindHitpoint (&fq, &hitData);
 return (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)));
 
-#endif
 #endif
 }
 
@@ -742,10 +746,8 @@ if (xDistance - xRad > xMaxLightRange)
 if (nLightSeg == nDestSeg)
 	info.bDiffuse [nThread] = 1;
 else {
-	if (info.bDiffuse [nThread]) {
-		vLightToPoint /= xDistance;
+	if (info.bDiffuse [nThread])
 		info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, 1, nThread);
-		}
 	if (!info.bDiffuse [nThread]) {
 		fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 		if (xPathLength < 0)
