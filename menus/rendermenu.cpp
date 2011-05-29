@@ -73,6 +73,7 @@ static struct {
 	int	nPowerups;
 	int	nLighting;
 	int	nLightmapQuality;
+	int	nLightmapPrecision;
 	int	nColorLevel;
 	int	n3DGlasses;
 	int   nScreenDist;
