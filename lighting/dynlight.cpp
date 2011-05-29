@@ -601,7 +601,7 @@ return fix (simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, n
 
 int CDynLight::SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, int nLevel, int nThread)
 {
-	CFloatVector vLightToPointf, vNormalf;
+	CFloatVector ;
 
 #if 1
 int nLightSeg = info.nSegment;
@@ -612,9 +612,11 @@ int nLightSeg = LightSeg ();
 	static int nLevels [3] = {4, 0, -4};
 
 	CSide*			sideP = SEGMENTS [nLightSeg].Side (info.nSide);
-	CFloatVector	v0, v1, vLightToPointf;
+	CFloatVector	v0, v1, vLightToPointf, vNormalf;
 
-v1.Assign (vPoint);
+v1.Assign (*vPoint);
+if (vNormal) {
+	vNormalf.Assign (*vNormal);
 for (int i = 4, j = nLevels [nLevel]; i >= j; i--) {
 	if (i == 4)
 		v0.Assign (info.vPos);
@@ -623,18 +625,15 @@ for (int i = 4, j = nLevels [nLevel]; i >= j; i--) {
 	else
 		v0 = CFloatVector::Avg (FVERTICES [sideP->m_corners [4 + i]], FVERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
 
-	vLightToPoint = v1 - v0;
+	vLightToPointf = v1 - v0;
+	CFloatVector::Normalize (vLightToPointf);
 	if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
 		continue;
-	if (vNormal) {
-		vNormalf.Assign (*vNormal);
-		if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f) // light doesn't "see" face
-			continue;
-		}
+	if (vNormal && (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f)) // light doesn't "see" face
+		continue;
 
 	if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, nThread))
 		return 1;
-	vLightToPointf.Assign (*vLightToPoint);
 	}
 
 return 0;
