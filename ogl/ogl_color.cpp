@@ -465,7 +465,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	else if (bDiffuse = prl->info.bDiffuse [nThread]) {
 		fLightDist = lightDir.Mag ();
 		if (fLightDist < 1.e-6f) {
-			fLightDist = 0;
+			fLightDist = 0.0f;
 			lightDir = vcd.vertNorm;
 			NdotL = 1.0f; // full light contribution for adjacent points
 			}
@@ -556,21 +556,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			else
 				NdotL = 0.0f;
 			}
-#if TEST_AMBIENT > 0
-		vertColor.SetZero (); 
-#else
-		vertColor *= lightColor;
-#endif
 		}
-	else {
-#if TEST_AMBIENT > 0
-		CFloatVector3 c;
-		c.Set (3.0f, 0.0f, 0.0f);
-		vertColor *= c;
-#elif TEST_AMBIENT == 0
-		vertColor *= lightColor;
-#endif
-		}
+	vertColor *= lightColor;
 
 #if 1
 	if (bSpecular && bDiffuse && (NdotL > 0.0f) && (fLightDist > 0.0f)) {

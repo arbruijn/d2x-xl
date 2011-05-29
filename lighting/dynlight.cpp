@@ -710,7 +710,7 @@ int CDynLight::Contribute (const short nDestSeg, const short nDestSide, CFixVect
 {
 	short nLightSeg = info.nSegment;
 
-if (nLightSeg >= 0) {
+if ((nLightSeg >= 0) && (nDestSeg >= 0)) {
 #if DBG
 	if ((nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == info.nSide)))
 		nDbgSeg = nDbgSeg;
@@ -741,13 +741,15 @@ else
 
 	fix xDistance, xRad;
 
-if ((nLightSeg < 0) || (info.nSide < 0)) {
+if ((nLightSeg < 0) || (nDestSeg < 0) || (info.nSide < 0)) {
 	CFixVector vLightToPoint = vDestPos - info.vPos;
 	xRad = F2X (info.fRad);
 	xDistance = vLightToPoint.Mag ();
 	xDistance = fix (float (xDistance) / (info.fRange * fRangeMod)) + xDistMod;
 	if (xDistance - xRad > xMaxLightRange)
 		return 0;
+	if (nDestSeg < 0)
+		return 1;
 	}
 else {
 	CFloatVector3 v;

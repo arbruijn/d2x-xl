@@ -599,9 +599,9 @@ return nCurItem;
 char *CLightmapManager::Filename (char *pszFilename, int nLevel)
 {
 if (gameOpts->render.color.nLevel == 2)
-	return GameDataFilename (pszFilename, "lmap", nLevel, gameOpts->render.nLightmapQuality * (gameOpts->render.nLightmapPrecision + 1));
+	return GameDataFilename (pszFilename, "lmap", nLevel, (gameOpts->render.nLightmapQuality + 1) * (gameOpts->render.nLightmapPrecision + 1) - 1);
 else
-	return GameDataFilename (pszFilename, "bw.lmap", nLevel, gameOpts->render.nLightmapQuality * (gameOpts->render.nLightmapPrecision + 1));
+	return GameDataFilename (pszFilename, "bw.lmap", nLevel, (gameOpts->render.nLightmapQuality + 1) * (gameOpts->render.nLightmapPrecision + 1) - 1);
 }
 
 //------------------------------------------------------------------------------
