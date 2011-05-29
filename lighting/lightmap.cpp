@@ -599,9 +599,9 @@ return nCurItem;
 char *CLightmapManager::Filename (char *pszFilename, int nLevel)
 {
 if (gameOpts->render.color.nLevel == 2)
-	return GameDataFilename (pszFilename, "lmap", nLevel, gameOpts->render.nLightmapQuality);
+	return GameDataFilename (pszFilename, "lmap", nLevel, gameOpts->render.nLightmapQuality * (gameOpts->render.nLightmapPrecision + 1));
 else
-	return GameDataFilename (pszFilename, "bw.lmap", nLevel, gameOpts->render.nLightmapQuality);
+	return GameDataFilename (pszFilename, "bw.lmap", nLevel, gameOpts->render.nLightmapQuality * (gameOpts->render.nLightmapPrecision + 1));
 }
 
 //------------------------------------------------------------------------------
@@ -718,6 +718,8 @@ if ((gameStates.render.bUsePerPixelLighting == 1) && !CreateLightmapShader (0))
 #if !DBG
 if (gameOpts->render.nLightmapQuality > 3)
 	gameOpts->render.nLightmapQuality = 3;
+if (gameOpts->render.nLightmapPrecision > 2)
+	gameOpts->render.nLightmapPrecision = 2;
 #endif
 Destroy ();
 int nLights = Init (0);

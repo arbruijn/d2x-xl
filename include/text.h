@@ -1675,7 +1675,7 @@ void LoadGameTexts(void);
 #define TXT_AUTOMAP_OPTIONS			GT(891)
 #define TXT_AUTOMAP_BRIGHT				GT(892)
 #define TXT_AUTOMAP_CORONAS			GT(893)
-#define TXT_UNUSED1						GT(894)
+#define TXT_LMAP_PRECISION				GT(894)
 #define TXT_RADAR_COLOR					GT(895)
 #define TXT_RADAR_STYLE					GT(896)
 #define TXT_RADAR_POSITION				GT(897)

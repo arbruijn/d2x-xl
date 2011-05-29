@@ -662,6 +662,7 @@ for (i = 0; i < 2; i++) {
 	RP (gameOptions [i].render.nMeshQuality, i, 0);
 	RP (gameOptions [i].render.bUseLightmaps, i, 0);
 	RP (gameOptions [i].render.nLightmapQuality, i, 0);
+	RP (gameOptions [i].render.nLightmapPrecision, i, 0);
 
 	RP (gameOptions [i].render.cockpit.bMissileView, i, 0);
 	RP (gameOptions [i].render.cockpit.bHUD, i, 0);
@@ -1079,6 +1080,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.nMeshQuality", "0"},
 	 {"gameOptions[0].render.bUseLightmaps", "0"},
 	 {"gameOptions[0].render.nLightmapQuality", "1"},
+	 {"gameOptions[0].render.nLightmapPrecision", "1"},
 	 {"gameOptions[0].render.cockpit.bMissileView", "0"},
 	 {"gameOptions[0].render.cockpit.bHUD", "1"},
 	 {"gameOptions[0].render.cockpit.bReticle", "1"},

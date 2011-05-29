@@ -72,7 +72,7 @@ static struct {
 	int	nMeshQual;
 	int	nPowerups;
 	int	nLighting;
-	int	nLightmaps;
+	int	nLightmapQuality;
 	int	nColorLevel;
 	int	n3DGlasses;
 	int   nScreenDist;
@@ -145,6 +145,7 @@ static const char* pszNoneBasicAdv [3];
 static const char* pszNoneBasicFull [3];
 static const char* pszNoneBasicStdFull [4];
 static const char *pszQuality [4];
+static const char *pszPrecision [3];
 
 int RenderOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
@@ -344,12 +345,22 @@ if (!gameStates.app.bGameRunning) {
 		return nCurItem;
 		}
 
-	if (renderOpts.nLightmaps >= 0) {
-		m = menu + renderOpts.nLightmaps;
+	if (renderOpts.nLightmapQuality >= 0) {
+		m = menu + renderOpts.nLightmapQuality;
 		v = m->m_value;
 		if (gameOpts->render.nLightmapQuality != v) {
 			gameOpts->render.nLightmapQuality = v;
 			sprintf (m->m_text, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
+			m->m_bRebuild = 1;
+			}
+		}
+
+	if (renderOpts.nLightmapPrecision >= 0) {
+		m = menu + renderOpts.nLightmapPrecision;
+		v = m->m_value;
+		if (gameOpts->render.nLightmapPrecision != v) {
+			gameOpts->render.nLightmapPrecision = v;
+			sprintf (m->m_text, TXT_LMAP_PRECISION, pszPrecision [gameOpts->render.nLightmapPrecision]);
 			m->m_bRebuild = 1;
 			}
 		}
@@ -413,6 +424,10 @@ pszQuality [0] = TXT_BASIC;
 pszQuality [1] = TXT_STANDARD;
 pszQuality [2] = TXT_HIGH;
 pszQuality [3] = TXT_BEST;
+
+pszPrecision [0] = TXT_BASIC;
+pszPrecision [1] = TXT_STANDARD;
+pszPrecision [2] = TXT_HIGH;
 
 pszColorLevel [0] = TXT_OFF;
 pszColorLevel [1] = TXT_WEAPONS;
@@ -497,13 +512,14 @@ do {
 		renderOpts.nFrameCap = m.AddSlider (szSlider + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, sizeofa (fpsTable) - 1, KEY_F, HTX_RENDER_FRAMECAP);
 		}
 
-	renderOpts.nLightmaps =
+	renderOpts.nLightmapQuality =
+	renderOpts.nLightmapPrecision =
 	renderOpts.nLights =
 	renderOpts.nPasses = -1;
 	if (gameStates.app.bGameRunning || gameStates.app.bNostalgia)
 		renderOpts.nLighting = 
 		renderOpts.nColorLevel =
-		renderOpts.nLightmaps = -1;
+		renderOpts.nLightmapQuality = -1;
 	else {
 		sprintf (szSlider + 1, TXT_LIGHTING, pszQuality [nLighting]);
 		*szSlider = *(TXT_LIGHTING - 1);
@@ -511,7 +527,13 @@ do {
 		if (nLighting >= 2) {
 			sprintf (szSlider + 1, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
 			*szSlider = *(TXT_LMAP_QUALITY - 1);
-			renderOpts.nLightmaps = m.AddSlider (szSlider + 1, gameOpts->render.nLightmapQuality, 0, 3, KEY_M, HTX_LMAP_QUALITY);
+			renderOpts.nLightmapQuality = m.AddSlider (szSlider + 1, gameOpts->render.nLightmapQuality, 0, 3, KEY_M, HTX_LMAP_QUALITY);
+
+			if (gameOpts->app.bExpertMode) {
+				sprintf (szSlider + 1, TXT_LMAP_PRECISION, pszPrecision [gameOpts->render.nLightmapPrecision]);
+				*szSlider = *(TXT_LMAP_PRECISION - 1);
+				renderOpts.nLightmapPrecision = m.AddSlider (szSlider + 1, gameOpts->render.nLightmapPrecision, 0, 2, KEY_P, HTX_LMAP_PRECISION);
+				}
 
 			if (nLighting == 3) {
 				sprintf (szSlider + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);

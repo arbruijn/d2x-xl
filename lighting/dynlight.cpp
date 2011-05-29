@@ -762,7 +762,7 @@ if (nLightSeg == nDestSeg)
 	info.bDiffuse [nThread] = 1;
 else {
 	if (info.bDiffuse [nThread])
-		info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, 1, nThread);
+		info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
 	if (!info.bDiffuse [nThread]) {
 		fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 		if (xPathLength < 0)

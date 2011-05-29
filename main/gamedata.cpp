@@ -1969,6 +1969,7 @@ gameOptions [0].render.weaponIcons.bShowAmmo = 1;
 gameOptions [0].render.weaponIcons.alpha = 4;
 
 if (!gameOpts->app.bExpertMode) {
+	gameOpts->render.nLightmapPrecision = 1;
 	if (gameOpts->render.stereo.nGlasses) {
 		gameOpts->render.stereo.nMethod = 1;
 		gameOpts->render.stereo.nScreenDist = 5;

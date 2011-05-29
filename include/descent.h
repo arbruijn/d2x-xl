@@ -410,6 +410,7 @@ class CRenderOptions {
 		int nMeshQuality;
 		int bUseLightmaps;
 		int nLightmapQuality;
+		int nLightmapPrecision;
 		int bUseShaders;
 		int nMathFormat;
 		int nDefMathFormat;
