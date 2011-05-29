@@ -755,6 +755,7 @@ else {
 	float distance = DistToFace (v, nLightSeg, ubyte (info.nSide)) / (info.fRange * fRangeMod) + X2F (xDistMod);
 	if (distance > X2F (xMaxLightRange))
 		return 0;
+	xDistance = F2X (distance);
 	xRad = 0;
 	}
 if (nLightSeg == nDestSeg)
