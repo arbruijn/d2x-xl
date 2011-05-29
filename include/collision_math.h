@@ -134,7 +134,7 @@ int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint
 
 int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2);
 
-float DistToFace (CFloatVector3& vHit, CFloatVector3 refP, short nSegment, ubyte nSide);
+float DistToFace (CFloatVector3 vRef, short nSegment, ubyte nSide, CFloatVector3* vHit = NULL);
 
 fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *vRef, CObject *objP, fix rad, short& nModel);
 

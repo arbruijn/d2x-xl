@@ -160,37 +160,38 @@ return true;
 
 //	-----------------------------------------------------------------------------
 
-float DistToFace (CFloatVector3& vHit, CFloatVector3 refP, short nSegment, ubyte nSide)
+float DistToFace (CFloatVector3 vRef, short nSegment, ubyte nSide, CFloatVector3* vHit)
 {
 	CSide*			sideP = SEGMENTS [nSegment].Side (nSide);
-	CFloatVector	h, n, r;
+	CFloatVector	h, r;
 	short*			nVerts = sideP->m_vertices;
-	float				dist, minDist = 1e30f;
+	float				dist, minDist = 1e10f;
 	int				i, j;
 
-r.Assign (refP);
+r.Assign (vRef);
 
-// compute intersection of perpendicular through refP with the plane spanned up by the face
+// compute intersection of vector perpendicular to the plane through vRef with the face's plane(s)
 for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
-	n.Assign (sideP->m_normals [i]);
+	CFloatVector& n = sideP->m_fNormals [i];
 	h = r - FVERTICES [nVerts [j]];
-	dist = CFloatVector::Dot (h, n);
-	if (minDist > fabs (dist)) {
+	dist = float (fabs (CFloatVector::Dot (h, n)));
+	if (minDist > dist) {
 		h = r - n * dist;
-		if (PointIsInFace (&h, n, nVerts + j, (sideP->m_nFaces == 1) ? 4 : 3)) {
-			if (fabs (dist) < 0.01)
-				vHit = refP;
-			else
-				vHit.Assign (h);
-			minDist = float (fabs (dist));
+		if (PointIsInFace (&h, n, nVerts + j, 5 - sideP->m_nFaces)) {
+			if (vHit) {
+				if (dist < 0.001f)
+					*vHit = vRef;
+				else
+					vHit->Assign (h);
+				}
+			minDist = dist;
 			}
 		}
 	}
-if (minDist < 1e30f)
-	return 0;
+if (minDist < 1e10f)
+	return 0.0f;
 
 nVerts = sideP->m_corners;
-minDist = 1e30f;
 CFloatVector* v0, * v1 = &FVERTICES [nVerts [0]];
 for (i = 1; i <= 4; i++) {
 	v0 = v1;
