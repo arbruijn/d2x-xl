@@ -96,8 +96,10 @@ for (int i = 0; i < gameData.segs.nSegments; i++)
 		nDbgSeg = nDbgSeg;
 #endif
 	fix xDist = dacsRouter [nThread].Distance (i);
+#if DBG
 	if (!xDist && (i != nSegment))
 		dacsRouter [nThread].Distance (i);
+#endif
 	gameData.segs.SetSegDist (nSegment, i, xDist);
 	}
 #else
