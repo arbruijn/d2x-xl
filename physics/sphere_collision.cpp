@@ -46,7 +46,8 @@ int ijTable [3][2] = {
 	};
 
 //	-----------------------------------------------------------------------------
-//see if a point (refP) is inside a triangle using barycentric method
+// see if a point (refP) is inside a triangle using barycentric method
+// return 0 if point inside triangle, otherwise sides point is behind as bit code
 
 ubyte PointIsInFace (CFixVector* refP, CFixVector vNormal, CFixVector* vertices, short nVerts)
 {
@@ -179,7 +180,7 @@ for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 	h = n;
 	h *= -d;
 	h += r;
-	if (PointIsInFace (&h, n, nVerts + j, 5 - sideP->m_nFaces)) {
+	if (!PointIsInFace (&h, n, nVerts + j, 5 - sideP->m_nFaces)) {
 		if (vHit) {
 			if (d < 0.001f)
 				*vHit = vRef;
