@@ -63,46 +63,46 @@ return m_data.Create ();
 
 void CLightManager::SetColor (short nLight, float red, float green, float blue, float fBrightness)
 {
-	CDynLight*	pl = m_data.lights + nLight;
+	CDynLight*	lightP = m_data.lights + nLight;
 	int			i;
 
-if ((pl->info.nType == 2) ? (gameOpts->render.color.nLevel >= 1) : (gameOpts->render.color.nLevel == 2)) {
-	pl->info.color.red = red;
-	pl->info.color.green = green;
-	pl->info.color.blue = blue;
+if ((lightP->info.nType == 2) ? (gameOpts->render.color.nLevel >= 1) : (gameOpts->render.color.nLevel == 2)) {
+	lightP->info.color.red = red;
+	lightP->info.color.green = green;
+	lightP->info.color.blue = blue;
 	}
 else if (gameStates.app.bNostalgia) {
-	pl->info.color.red =
-	pl->info.color.green =
-	pl->info.color.blue = 1.0f;
+	lightP->info.color.red =
+	lightP->info.color.green =
+	lightP->info.color.blue = 1.0f;
 	}
 else {
-	pl->info.color.red =
-	pl->info.color.green =
-	pl->info.color.blue = (red + green + blue) / 3.0f;
+	lightP->info.color.red =
+	lightP->info.color.green =
+	lightP->info.color.blue = (red + green + blue) / 3.0f;
 	}
-pl->info.color.alpha = 1.0;
-pl->info.fBrightness = fBrightness;
-pl->info.fRange = (float) sqrt (fBrightness / 2.0f);
-pl->fSpecular.v.color.r = red;
-pl->fSpecular.v.color.g = green;
-pl->fSpecular.v.color.b = blue;
+lightP->info.color.alpha = 1.0;
+lightP->info.fBrightness = fBrightness;
+lightP->info.fRange = (float) sqrt (fBrightness / 2.0f);
+lightP->fSpecular.v.color.r = red;
+lightP->fSpecular.v.color.g = green;
+lightP->fSpecular.v.color.b = blue;
 for (i = 0; i < 3; i++) {
 #if USE_OGL_LIGHTS
-	pl->info.fAmbient.dir [i] = pl->info.fDiffuse [i] * 0.01f;
-	pl->info.fDiffuse.dir [i] =
+	lightP->info.fAmbient.dir [i] = lightP->info.fDiffuse [i] * 0.01f;
+	lightP->info.fDiffuse.dir [i] =
 #endif
-	pl->fEmissive.v.vec [i] = pl->fSpecular.v.vec [i] * fBrightness;
+	lightP->fEmissive.v.vec [i] = lightP->fSpecular.v.vec [i] * fBrightness;
 	}
 // light alphas
 #if USE_OGL_LIGHTS
-pl->info.fAmbient.dir [3] = 1.0f;
-pl->info.fDiffuse.dir [3] = 1.0f;
-pl->fSpecular.dir [3] = 1.0f;
-glLightfv (pl->info.handle, GL_AMBIENT, pl->info.fAmbient);
-glLightfv (pl->info.handle, GL_DIFFUSE, pl->info.fDiffuse);
-glLightfv (pl->info.handle, GL_SPECULAR, pl->fSpecular);
-glLightf (pl->info.handle, GL_SPOT_EXPONENT, 0.0f);
+lightP->info.fAmbient.dir [3] = 1.0f;
+lightP->info.fDiffuse.dir [3] = 1.0f;
+lightP->fSpecular.dir [3] = 1.0f;
+glLightfv (lightP->info.handle, GL_AMBIENT, lightP->info.fAmbient);
+glLightfv (lightP->info.handle, GL_DIFFUSE, lightP->info.fDiffuse);
+glLightfv (lightP->info.handle, GL_SPECULAR, lightP->fSpecular);
+glLightf (lightP->info.handle, GL_SPOT_EXPONENT, 0.0f);
 #endif
 }
 
@@ -123,13 +123,13 @@ short CLightManager::Find (short nSegment, short nSide, short nObject)
 {
 //if (gameStates.render.nLightingMethod && !gameStates.app.bNostalgia) 
 	{
-	CDynLight*	pl = &m_data.lights [0];
+	CDynLight*	lightP = &m_data.lights [0];
 
 	if (nObject >= 0)
 		return m_data.owners.Buffer () ? m_data.owners [nObject] : -1;
 	if (nSegment >= 0)
-		for (short i = 0; i < m_data.nLights [0]; i++, pl++)
-			if ((pl->info.nSegment == nSegment) && (pl->info.nSide == nSide))
+		for (short i = 0; i < m_data.nLights [0]; i++, lightP++)
+			if ((lightP->info.nSegment == nSegment) && (lightP->info.nSide == nSide))
 				return i;
 	}
 return -1;
@@ -151,13 +151,13 @@ short CLightManager::Update (tRgbaColorf *colorP, float fBrightness, short nSegm
 	short	nLight = Find (nSegment, nSide, nObject);
 
 if (nLight >= 0) {
-	CDynLight* pl = m_data.lights + nLight;
+	CDynLight* lightP = m_data.lights + nLight;
 	if (!colorP)
-		colorP = &pl->info.color;
+		colorP = &lightP->info.color;
 	if (nObject >= 0)
-		pl->info.vPos = OBJECTS [nObject].info.position.vPos;
-	if ((pl->info.fBrightness != fBrightness) ||
-		 (pl->info.color.red != colorP->red) || (pl->info.color.green != colorP->green) || (pl->info.color.blue != colorP->blue)) {
+		lightP->info.vPos = OBJECTS [nObject].info.position.vPos;
+	if ((lightP->info.fBrightness != fBrightness) ||
+		 (lightP->info.color.red != colorP->red) || (lightP->info.color.green != colorP->green) || (lightP->info.color.blue != colorP->blue)) {
 		SetColor (nLight, colorP->red, colorP->green, colorP->blue, fBrightness);
 		}
 	}
@@ -202,9 +202,9 @@ int CLightManager::Toggle (short nSegment, short nSide, short nObject, int bStat
 	short nLight = Find (nSegment, nSide, nObject);
 
 if (nLight >= 0) {
-	CDynLight* pl = m_data.lights + nLight;
-	pl->info.bOn = bState;
-	pl->info.bState = 1;
+	CDynLight* lightP = m_data.lights + nLight;
+	lightP->info.bOn = bState;
+	lightP->info.bState = 1;
 	}
 return nLight;
 }
@@ -318,7 +318,7 @@ return j ? i / j : 1;
 int CLightManager::Add (CSegFace* faceP, tRgbaColorf *colorP, fix xBrightness, short nSegment,
 							   short nSide, short nObject, short nTexture, CFixVector *vPos, ubyte bAmbient)
 {
-	CDynLight*	pl;
+	CDynLight*	lightP;
 	short			h, i;
 	float			fBrightness = X2F (xBrightness);
 #if USE_OGL_LIGHTS
@@ -367,46 +367,46 @@ if (m_data.nLights [0] >= MAX_OGL_LIGHTS) {
 	return -1;	//too many lights
 	}
 i = m_data.nLights [0]; //LastEnabledDynLight () + 1;
-pl = m_data.lights + i;
-pl->info.faceP = faceP;
-pl->info.nSegment = nSegment;
-pl->info.nSide = nSide;
-pl->info.nObject = nObject;
-pl->info.nPlayer = -1;
-pl->info.bState = 1;
-pl->info.bSpot = 0;
-pl->info.fBoost = 0;
-pl->info.bPowerup = 0;
-pl->info.bAmbient = bAmbient;
+lightP = m_data.lights + i;
+lightP->info.faceP = faceP;
+lightP->info.nSegment = nSegment;
+lightP->info.nSide = nSide;
+lightP->info.nObject = nObject;
+lightP->info.nPlayer = -1;
+lightP->info.bState = 1;
+lightP->info.bSpot = 0;
+lightP->info.fBoost = 0;
+lightP->info.bPowerup = 0;
+lightP->info.bAmbient = bAmbient;
 //0: static light
 //2: object/lightning
 //3: headlight
 if (nObject >= 0) {
 	CObject *objP = OBJECTS + nObject;
 	//HUDMessage (0, "Adding object light %d, type %d", m_data.nLights [0], objP->info.nType);
-	pl->info.nType = 2;
+	lightP->info.nType = 2;
 	if (objP->info.nType == OBJ_POWERUP) {
 		int id = objP->info.nId;
 		if ((id == POW_EXTRA_LIFE) || (id == POW_ENERGY) || (id == POW_SHIELD_BOOST) ||
 			 (id == POW_HOARD_ORB) || (id == POW_MONSTERBALL) || (id == POW_INVUL))
-			pl->info.bPowerup = 1;
+			lightP->info.bPowerup = 1;
 		else
-			pl->info.bPowerup = 2;
+			lightP->info.bPowerup = 2;
 #if 0
-		if (pl->info.bPowerup > gameData.render.nPowerupFilter)
+		if (lightP->info.bPowerup > gameData.render.nPowerupFilter)
 			return -1;
 #endif
 		}
-	pl->info.vPos = objP->info.position.vPos;
-	pl->info.fRad = 0; //X2F (OBJECTS [nObject].size) / 2;
+	lightP->info.vPos = objP->info.position.vPos;
+	lightP->info.fRad = 0; //X2F (OBJECTS [nObject].size) / 2;
 	if (fBrightness > 1) {
 		if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
-			pl->info.fBoost = 1;
-			pl->info.fRad = fBrightness;
+			lightP->info.fBoost = 1;
+			lightP->info.fRad = fBrightness;
 			}
 		else if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID)) {
-			pl->info.fBoost = 1;
-			pl->info.fRad = 2 * fBrightness;
+			lightP->info.fBoost = 1;
+			lightP->info.fRad = 2 * fBrightness;
 			}
 		}
 	m_data.owners [nObject] = m_data.nLights [0];
@@ -417,65 +417,65 @@ else if (nSegment >= 0) {
 	CSide			*sideP = SEGMENTS [nSegment].m_sides + nSide;
 #endif
 	if (nSide < 0) {
-		pl->info.nType = 2;
-		pl->info.bVariable = 1;
-		pl->info.fRad = 0;
+		lightP->info.nType = 2;
+		lightP->info.bVariable = 1;
+		lightP->info.fRad = 0;
 		if (vPos)
-			pl->info.vPos = *vPos;
+			lightP->info.vPos = *vPos;
 		else
-			pl->info.vPos = SEGMENTS [nSegment].Center ();
+			lightP->info.vPos = SEGMENTS [nSegment].Center ();
 		}
 	else {
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
-		pl->info.nType = 0;
-		pl->info.fRad = faceP ? faceP->m_info.fRads [1] / 2.0f : 0;
+		lightP->info.nType = 0;
+		lightP->info.fRad = faceP ? faceP->m_info.fRads [1] / 2.0f : 0;
 		//RegisterLight (NULL, nSegment, nSide);
-		pl->info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || 
+		lightP->info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || 
 									SEGMENTS [nSegment].Side (nSide)->IsVolatile ();
-		m_data.nVariable += pl->info.bVariable;
+		m_data.nVariable += lightP->info.bVariable;
 		CSide* sideP = SEGMENTS [nSegment].m_sides + nSide;
-		pl->info.vPos = sideP->Center ();
+		lightP->info.vPos = sideP->Center ();
 		CFixVector vOffs = sideP->m_normals [2];
-		pl->info.vDirf.Assign (vOffs);
-		CFloatVector::Normalize (pl->info.vDirf);
+		lightP->info.vDirf.Assign (vOffs);
+		CFloatVector::Normalize (lightP->info.vDirf);
 #if 0
 		if (gameStates.render.bPerPixelLighting) {
 			vOffs *= I2X (1) / 64;
-			pl->info.vPos += vOffs;
+			lightP->info.vPos += vOffs;
 			}
 #endif
 		}
 	}
 else {
-	pl->info.nType = 3;
-	pl->info.bVariable = 0;
+	lightP->info.nType = 3;
+	lightP->info.bVariable = 0;
 	}
 #if 0
-PrintLog ("adding light %d,%d\n", m_data.nLights [0], pl - m_data.lights [0]);
+PrintLog ("adding light %d,%d\n", m_data.nLights [0], lightP - m_data.lights [0]);
 #endif
-pl->info.bOn = 1;
-pl->bTransform = 1;
+lightP->info.bOn = 1;
+lightP->bTransform = 1;
 SetColor (m_data.nLights [0], colorP->red, colorP->green, colorP->blue, fBrightness);
 return m_data.nLights [0]++;
 }
 
 //------------------------------------------------------------------------------
 
-bool CLightManager::DeleteFromList (CDynLight* pl, short nLight)
+bool CLightManager::DeleteFromList (CDynLight* lightP, short nLight)
 {
-//PrintLog ("removing light %d,%d\n", nLight, pl - m_data.lights [0]);
+//PrintLog ("removing light %d,%d\n", nLight, lightP - m_data.lights [0]);
 // if not removing last light in list, move last light down to the now free list entry
 // and keep the freed light handle thus avoiding gaps in used handles
 if (!m_data.lights.Buffer () || (nLight >= m_data.nLights [0]))
 	return false;
-*pl = m_data.lights [--m_data.nLights [0]];
-if (pl->info.nObject >= 0)
-	m_data.owners [pl->info.nObject] = nLight;
-if (pl->info.nPlayer < MAX_PLAYERS)
-	m_headlights.lightIds [pl->info.nPlayer] = nLight;
+*lightP = m_data.lights [--m_data.nLights [0]];
+if (lightP->info.nObject >= 0)
+	m_data.owners [lightP->info.nObject] = nLight;
+if (lightP->info.nPlayer < MAX_PLAYERS)
+	m_headlights.lightIds [lightP->info.nPlayer] = nLight;
 return true;
 }
 
@@ -484,17 +484,17 @@ return true;
 void CLightManager::Delete (short nLight)
 {
 if ((nLight >= 0) && (nLight < m_data.nLights [0])) {
-	CDynLight* pl = m_data.lights + nLight;
+	CDynLight* lightP = m_data.lights + nLight;
 #if DBG
-	if ((nDbgSeg >= 0) && (nDbgSeg == pl->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->info.nSide)))
+	if ((nDbgSeg >= 0) && (nDbgSeg == lightP->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == lightP->info.nSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (!pl->info.nType) {
+	if (!lightP->info.nType) {
 		// do not remove static lights, or the nearest lights to segment info will get messed up!
-		pl->info.bState = pl->info.bOn = 0;
+		lightP->info.bState = lightP->info.bOn = 0;
 		return;
 		}
-	DeleteFromList (pl, nLight);
+	DeleteFromList (lightP, nLight);
 	}
 }
 
@@ -516,13 +516,13 @@ return 1;
 
 void CLightManager::DeleteLightning (void)
 {
-	CDynLight* pl = &m_data.lights [0];
+	CDynLight* lightP = &m_data.lights [0];
 
-if (pl != NULL) {
+if (lightP != NULL) {
 	for (short i = 0; i < m_data.nLights [0]; ) {
-		if (!((pl->info.nSegment >= 0) && (pl->info.nSide < 0) && DeleteFromList (pl, i))) {
+		if (!((lightP->info.nSegment >= 0) && (lightP->info.nSide < 0) && DeleteFromList (lightP, i))) {
 			i++;
-			pl++;
+			lightP++;
 			}
 		}
 	}
@@ -544,10 +544,10 @@ void CLightManager::SetMaterial (short nSegment, short nSide, short nObject)
 	int nLight = Find (nSegment, nSide, nObject);
 
 if (nLight >= 0) {
-	CDynLight* pl = m_data.lights + nLight;
-	if (pl->info.bState) {
-		m_data.material.emissive = *reinterpret_cast<CFloatVector*> (&pl->fEmissive);
-		m_data.material.specular = *reinterpret_cast<CFloatVector*> (&pl->fEmissive);
+	CDynLight* lightP = m_data.lights + nLight;
+	if (lightP->info.bState) {
+		m_data.material.emissive = *reinterpret_cast<CFloatVector*> (&lightP->fEmissive);
+		m_data.material.specular = *reinterpret_cast<CFloatVector*> (&lightP->fEmissive);
 		m_data.material.shininess = 8;
 		m_data.material.bValid = 1;
 		m_data.material.nLight = nLight;
@@ -805,6 +805,25 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+int CDynLight::ComputeVisibleVertices (int nThread)
+{
+if (!bVariable)
+	return 0;
+short nLightSeg = LightSeg ();
+if ((nLightSeg < 0) || (info.nSide < 0))
+	return 0;
+if (!info.visibleVertices.Create (gameData.segs.nVertices))
+	return -1;
+CSide* sideP = SEGMENTS [nLightSeg].Side (info.nSide);
+for (int i = 0; i < gameData.segs.nVertices; i++)
+	info.visibleVertices [i] = sideP->SeesPoint (VERTICES [i], -1, 2, nThread);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 void CLightManager::Sort (void)
 {
 CQuickSort<CDynLight> qs;
@@ -872,9 +891,9 @@ for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--
 Sort ();
 #if 0
 PrintLog ("light sources:\n");
-CDynLight* pl = m_data.lights [0];
-for (int i = m_data.nLights [0]; i; i--, pl++)
-	PrintLog ("%d,%d,%d,%d\n", pl->info.nSegment, pl->info.nSide, pl->info.nObject, pl->info.bVariable);
+CDynLight* lightP = m_data.lights [0];
+for (int i = m_data.nLights [0]; i; i--, lightP++)
+	PrintLog ("%d,%d,%d,%d\n", lightP->info.nSegment, lightP->info.nSide, lightP->info.nObject, lightP->info.bVariable);
 PrintLog ("\n");
 #endif
 }

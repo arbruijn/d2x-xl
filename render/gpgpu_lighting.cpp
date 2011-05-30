@@ -312,7 +312,7 @@ if (nState == 0) {
 	ogl.SetDepthWrite (false);
 	}
 else if (nState == 1) {
-	CDynLight*		psl;
+	CDynLight*		lightP;
 	int				bSkipHeadlight = ogl.m_states.bHeadlight && (lightManager.Headlights ().nLights > 0) && !gameStates.render.nState;
 	CFloatVector	vPos = gameData.segs.fVertices [nVertex],
 						vNormal = *gameData.segs.points [nVertex].GetNormal ();
@@ -331,17 +331,17 @@ else if (nState == 1) {
 		nDbgVertex = nDbgVertex;
 #endif
 	for (nLights = 0, i = m_vld.nLights, j = 0; j < h; i++, j++) {
-		psl = lightManager.Active (0) [j].pl;
-		if (bSkipHeadlight && (psl->info.nType == 3))
+		lightP = lightManager.Active (0) [j].lightP;
+		if (bSkipHeadlight && (lightP->info.nType == 3))
 			continue;
 		m_vld.buffers [0][i] = vPos;
 		m_vld.buffers [1][i] = vNormal;
-		m_vld.buffers [2][i] = psl->render.vPosf [0];
-		m_vld.buffers [3][i] = *((CFloatVector*) &psl->info.color);
+		m_vld.buffers [2][i] = lightP->render.vPosf [0];
+		m_vld.buffers [3][i] = *((CFloatVector*) &lightP->info.color);
 		m_vld.buffers [0][i].v.coord.w = 1.0f;
-		m_vld.buffers [1][i].v.coord.w = (psl->info.nType < 2) ? 1.0f : 0.0f;
-		m_vld.buffers [2][i].v.coord.w = psl->info.fRad;
-		m_vld.buffers [3][i].v.coord.w = psl->info.fBrightness;
+		m_vld.buffers [1][i].v.coord.w = (lightP->info.nType < 2) ? 1.0f : 0.0f;
+		m_vld.buffers [2][i].v.coord.w = lightP->info.fRad;
+		m_vld.buffers [3][i].v.coord.w = lightP->info.fBrightness;
 		nLights++;
 		}
 	if (nLights) {

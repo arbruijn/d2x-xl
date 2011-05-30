@@ -76,6 +76,7 @@ class CDynLightInfo {
 		ubyte				bPowerup;
 		ubyte				bAmbient;
 		sbyte				bDiffuse [MAX_THREADS];
+		CByteArray		visibleVertices;
 	public:
 		CDynLightInfo () { Init (); }
 		void Init (void) { memset (this, 0, sizeof (*this)); }
@@ -101,6 +102,7 @@ class CDynLight {
 		int SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const int nLevel, int nThread);
 		int LightPathLength (const short nLightSeg, const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int bFastRoute, int nThread);
 		int Contribute (const short nDestSeg, const short nDestSide, CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread);
+		int ComputeVisibleVertices (int nThread);
 		int Compare (CDynLight& other);
 		inline bool operator< (CDynLight& other)
 		 { return Compare (other) < 0; }
@@ -115,7 +117,7 @@ class CDynLight {
 class CActiveDynLight {
 	public:
 		short			nType;
-		CDynLight*	pl;
+		CDynLight*	lightP;
 };
 
 class CDynLightIndex {
@@ -238,16 +240,16 @@ class CLightManager {
 		tFaceColor* AvgSgmColor (int nSegment, CFixVector *vPosP, int nThread);
 		void GatherStaticLights (int nLevel);
 		void GatherStaticVertexLights (int nVertex, int nMax, int nThread);
-		int SetActive (CActiveDynLight* activeLightsP, CDynLight* prl, short nType, int nThread, bool bForce = false);
+		int SetActive (CActiveDynLight* activeLightsP, CDynLight* lightP, short nType, int nThread, bool bForce = false);
 		CDynLight* GetActive (CActiveDynLight* activeLightsP, int nThread);
-		void ResetUsed (CDynLight* prl, int nThread);
+		void ResetUsed (CDynLight* lightP, int nThread);
 		void ResetActive (int nThread, int nActive);
 		void ResetAllUsed (int bVariable, int nThread);
 		int SetMethod (void);
 
 		inline void SetThreadId (int nThread = -1) { m_data.nThread = nThread; }
 		inline int ThreadId (uint i) { return (m_data.nThread < 0) ? i : m_data.nThread; }
-		inline CDynLight* Lights (void) { return m_data.lights.Buffer (); }
+		inline CDynLight* Lights (uint i = 0) { return &m_data.lights [i]; }
 		inline CDynLight* RenderLights (uint i) { return m_data.renderLights [i]; }
 		inline CDynLight** RenderLights (void) { return m_data.renderLights.Buffer (); }
 		inline short LightCount (uint i) { return m_data.nLights [i]; }
@@ -268,7 +270,7 @@ class CLightManager {
 		static int IsTriggered (short nSegment, short nSide, bool bOppSide = false);
 		static int IsFlickering (short nSegment, short nSide);
 		int IsDestructible (short nTexture);
-		bool DeleteFromList (CDynLight* pl, short nLight);
+		bool DeleteFromList (CDynLight* lightP, short nLight);
 		void Sort (void);
 	};
 
@@ -309,7 +311,7 @@ CDynLight *GetActiveRenderLight (CActiveDynLight *activeLightsP, int nThread);
 tFaceColor *AvgSgmColor (int nSegment, CFixVector *vPos);
 void ResetSegmentLights (void);
 int IsLight (int tMapNum);
-void ResetUsedLight (CDynLight *prl, int nThread);
+void ResetUsedLight (CDynLight *lightP, int nThread);
 void ResetUsedLights (int bVariable, int nThread);
 void ResetActiveLights (int nThread, int nActive);
 

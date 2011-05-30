@@ -92,7 +92,7 @@ class CCamera : public CCanvas {
 typedef struct tShadowMapInfo {
 	public:
 		int			nCamera;
-		CDynLight*	prl;
+		CDynLight*	lightP;
 } tShadowMapInfo;
 
 class CCameraManager {
@@ -134,13 +134,13 @@ class CCameraManager {
 
 #if MAX_SHADOWMAPS
 		inline CCamera* ShadowMap (int i) { return (m_shadowMaps [i].nCamera < 0) ? NULL : (*this) [i]; }
-		inline CDynLight* ShadowLightSource (int i) { return (m_shadowMaps [i].nCamera < 0) ? NULL : m_shadowMaps [i].prl; }
-		inline CCamera* AddShadowMap (int i, CDynLight* prl) { 
+		inline CDynLight* ShadowLightSource (int i) { return (m_shadowMaps [i].nCamera < 0) ? NULL : m_shadowMaps [i].lightP; }
+		inline CCamera* AddShadowMap (int i, CDynLight* lightP) { 
 			CCamera* cameraP = Add ();
 			if (!cameraP)
 				return NULL;
 			m_shadowMaps [i].nCamera = Index (cameraP);
-			m_shadowMaps [i].prl = prl;
+			m_shadowMaps [i].lightP = lightP;
 			return cameraP;
 			}
 		inline void DestroyShadowMap (int i) {
@@ -148,7 +148,7 @@ class CCameraManager {
 			if (cameraP) {
 				cameraP->Destroy ();
 				m_shadowMaps [i].nCamera = -1;
-				m_shadowMaps [i].prl = NULL;
+				m_shadowMaps [i].lightP = NULL;
 				}
 			}
 #endif

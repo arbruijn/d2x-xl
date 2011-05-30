@@ -46,7 +46,7 @@ void DoShowNetGameHelp (void)
    char		szText [MENU_MAX_TEXTLEN];
 	int		i, eff;
 #if DBG
-	int pl;
+	int		nLost;
 #endif
 	//char *eff_strings[]={"trashing", "really hurting", "seriously affecting", "hurting", "affecting", "tarnishing"};
 
@@ -69,10 +69,10 @@ m.AddText (szText);
 sprintf (szText, TXT_INFO_SHORTPKT, netGame.GetShortPackets () ? "Yes" : "No");
 m.AddText (szText);
 #if DBG
-pl = (int) ((double (networkData.nTotalMissedPackets) / double (networkData.nTotalPacketsGot + networkData.nTotalMissedPackets)) * 100.0);
-if (pl < 0)
-	pl = 0;
-sprintf (szText, TXT_INFO_LOSTPKT, networkData.nTotalMissedPackets, pl);
+nLost = (int) ((double (networkData.nTotalMissedPackets) / double (networkData.nTotalPacketsGot + networkData.nTotalMissedPackets)) * 100.0);
+if (nLost < 0)
+	nLost = 0;
+sprintf (szText, TXT_INFO_LOSTPKT, networkData.nTotalMissedPackets, nLost);
 m.AddText (szText);
 #endif
 if (netGame.GetScoreGoal ())

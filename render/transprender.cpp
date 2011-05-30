@@ -122,11 +122,11 @@ m_data.depthBuffer.Destroy ();
 
 void CTransparencyRenderer::ResetFreeList (void)
 {
-	tTranspItem* pl, * pn;
+	tTranspItem* item, * pn;
 
-for (pl = m_data.freeList.head; pl; pl = pn) {
-	pn = pl->pNextItem;
-	pl->pNextItem = NULL;
+for (item = m_data.freeList.head; item; item = pn) {
+	pn = item->pNextItem;
+	item->pNextItem = NULL;
 	}
 m_data.freeList.head = NULL;
 }

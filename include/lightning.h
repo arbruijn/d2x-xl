@@ -236,11 +236,11 @@ class CLightningManager : public tLightningData {
 		void Move (int i, CFixVector vNewPos, CFixVector vNewEnd, short nSegment);
 		void Mute (void);
 		void MoveForObject (CObject *objP);
-		void Render (tLightning *pl, int nBolts, short nDepth);
-		void RenderBuffered (tLightning *plRoot, int nStart, int nBolts, int nDepth, int nThread);
+		void Render (tLightning *lightningP, int nBolts, short nDepth);
+		void RenderBuffered (tLightning *lightningRootP, int nStart, int nBolts, int nDepth, int nThread);
 		void RenderSystem (void);
 		int RenderForDamage (CObject *objP, CRenderPoint **pointList, RenderModel::CVertex *pVerts, int nVertices);
-		void Animate (tLightning *pl, int nStart, int nBolts, int nDepth);
+		void Animate (tLightning *lightningP, int nStart, int nBolts, int nDepth);
 		int Enable (CObject* objP);
 		int CreateForMissile (CObject *objP);
 		void CreateForShaker (CObject *objP);

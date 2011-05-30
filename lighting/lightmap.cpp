@@ -160,25 +160,25 @@ vOffs = (v2 - v1) * nOffset;
 
 void CLightmapManager::RestoreLights (int bVariable)
 {
-	CDynLight	*pl;
+	CDynLight*	lightP = lightManager.Lights ();
 	int			i;
 
-for (pl = lightManager.Lights (), i = lightManager.LightCount (0); i; i--, pl++)
-	if (!(pl->info.nType || (pl->info.bVariable && !bVariable)))
-		pl->info.bOn = 1;
+for (int i = lightManager.LightCount (0); i; i--, lightP++)
+	if (!(lightP->info.nType || (lightP->info.bVariable && !bVariable)))
+		lightP->info.bOn = 1;
 }
 
 //------------------------------------------------------------------------------
 
 int CLightmapManager::CountLights (int bVariable)
 {
-	CDynLight		*pl;
-	int				i, nLights = 0;
+	CDynLight*	lightP = lightManager.Lights ();
+	int			nLights = 0;
 
 if (!gameStates.render.bPerPixelLighting)
 	return 0;
-for (pl = lightManager.Lights (), i = lightManager.LightCount (0); i; i--, pl++)
-	if (!(pl->info.nType || (pl->info.bVariable && !bVariable)))
+for (int i = lightManager.LightCount (0); i; i--, lightP++)
+	if (!(lightP->info.nType || (lightP->info.bVariable && !bVariable)))
 		nLights++;
 return nLights; 
 }
@@ -224,11 +224,11 @@ return sqrt (dx * dx + dy * dy + dz * dz) / (2 * (double) I2X (1));
 
 int CLightmapManager::Init (int bVariable)
 {
-	CDynLight		*pl;
-	CSegFace			*faceP = NULL;
+	CDynLight*		lightP;
+	CSegFace*		faceP = NULL;
 	int				bIsLight, nIndex, i; 
 	short				t; 
-	tLightmapInfo	*lmiP;  //temporary place to put light data.
+	tLightmapInfo*	lightmapInfoP;  //temporary place to put light data.
 	double			sideRad;
 
 //first step find all the lights in the level.  By iterating through every surface in the level.
@@ -252,28 +252,28 @@ m_list.buffers.Clear ();
 m_list.info.Clear (); 
 m_list.nLights = 0; 
 //first lightmap is dummy lightmap for multi pass lighting
-lmiP = m_list.info.Buffer (); 
-for (pl = lightManager.Lights (), i = lightManager.LightCount (0); i; i--, pl++) {
-	if (pl->info.nType || (pl->info.bVariable && !bVariable))
+lightmapInfoP = m_list.info.Buffer (); 
+for (lightP = lightManager.Lights (), i = lightManager.LightCount (0); i; i--, lightP++) {
+	if (lightP->info.nType || (lightP->info.bVariable && !bVariable))
 		continue;
-	if (faceP == pl->info.faceP)
+	if (faceP == lightP->info.faceP)
 		continue;
-	faceP = pl->info.faceP;
+	faceP = lightP->info.faceP;
 	bIsLight = 0; 
 	t = IsLight (faceP->m_info.nBaseTex) ? faceP->m_info.nBaseTex : faceP->m_info.nOvlTex;
 	sideRad = (double) faceP->m_info.fRads [1] / 10.0;
 	nIndex = faceP->m_info.nSegment * 6 + faceP->m_info.nSide;
 	//Process found light.
-	lmiP->range += sideRad;
+	lightmapInfoP->range += sideRad;
 	//find where it is in the level.
-	lmiP->vPos = SEGMENTS [faceP->m_info.nSegment].SideCenter (faceP->m_info.nSide);
-	lmiP->nIndex = nIndex; 
+	lightmapInfoP->vPos = SEGMENTS [faceP->m_info.nSegment].SideCenter (faceP->m_info.nSide);
+	lightmapInfoP->nIndex = nIndex; 
 	//find light direction, currently based on first 3 points of CSide, not always right.
 	CFixVector *normalP = SEGMENTS [faceP->m_info.nSegment].m_sides [faceP->m_info.nSide].m_normals;
-	lmiP->vDir = CFixVector::Avg(normalP[0], normalP[1]);
-	lmiP++; 
+	lightmapInfoP->vDir = CFixVector::Avg(normalP[0], normalP[1]);
+	lightmapInfoP++; 
 	}
-return m_list.nLights = (int) (lmiP - m_list.info.Buffer ()); 
+return m_list.nLights = (int) (lightmapInfoP - m_list.info.Buffer ()); 
 }
 
 //------------------------------------------------------------------------------

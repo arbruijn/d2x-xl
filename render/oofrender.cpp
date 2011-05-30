@@ -608,11 +608,11 @@ return r;
 
 int CModel::RenderShadow (CObject *objP, float *fLight)
 {
-	short		i, *pnl = lightManager.NearestSegLights () + gameData.objs.consoleP->info.nSegment * MAX_NEAREST_LIGHTS;
+	short		i, *nearestLightP = lightManager.NearestSegLights () + gameData.objs.consoleP->info.nSegment * MAX_NEAREST_LIGHTS;
 
 gameData.render.shadows.nLight = 0; 
-for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
-	gameData.render.shadows.lightP = lightManager.RenderLights (*pnl);
+for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*nearestLightP >= 0); i++, nearestLightP++) {
+	gameData.render.shadows.lightP = lightManager.RenderLights (*nearestLightP);
 	if (!gameData.render.shadows.lightP [0].render.bState)
 		continue;
 	gameData.render.shadows.nLight++;

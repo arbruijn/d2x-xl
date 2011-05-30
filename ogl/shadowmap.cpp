@@ -120,10 +120,10 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 			glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
 			shaderManager.Set (szShadowMap [i], i + 2);
-			CDynLight* prl = cameraManager.ShadowLightSource (i);
-			if (!shaderManager.Set ("lightPos", prl->render.vPosf [0]))
+			CDynLight* lightP = cameraManager.ShadowLightSource (i);
+			if (!shaderManager.Set ("lightPos", lightP->render.vPosf [0]))
 				return;
-			if (!shaderManager.Set ("lightRange", fabs (prl->info.fRange) * 400.0f))
+			if (!shaderManager.Set ("lightRange", fabs (lightP->info.fRange) * 400.0f))
 				return;
 			}
 		if (!shaderManager.Set ("sceneColor", 0))

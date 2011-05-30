@@ -32,7 +32,7 @@ int LightingMethod (void);
 fix ComputeHeadlight (CFixVector *point, fix xFaceLight);
 fix ComputeHeadlightLightOnObject (CObject *objP);
 void ToggleHeadlight (void);
-void SetupHeadlight (CDynLight *pl, CDynLight *prl);
+void SetupHeadlight (CDynLight *lightP, CDynLight *renderLightP);
 void TransformHeadlights (void);
 int AddOglHeadlight (CObject *objP);
 void RemoveOglHeadlight (CObject *objP);

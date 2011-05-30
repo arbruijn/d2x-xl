@@ -16,11 +16,11 @@ typedef struct tRenderThreadInfo {
 	int						nFaces;
 	int						zMin [MAX_THREADS];
 	int						zMax [MAX_THREADS];
-	tLightning				*pl;
+	tLightning*				lightningP;
 	int						nLightnings;
-	CObject					*objP;
-	RenderModel::CModel	*pm;
-	tParticleEmitter		*particleEmitters [MAX_THREADS];
+	CObject*					objP;
+	RenderModel::CModel*	modelP;
+	tParticleEmitter*		particleEmitters [MAX_THREADS];
 	int						nCurTime [MAX_THREADS];
 	tThreadInfo				ti [MAX_THREADS];
 	SDL_mutex*				semaphore;

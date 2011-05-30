@@ -258,7 +258,7 @@ class CTransparencyRenderer {
 		void RenderLightning (tTranspLightning *item);
 		void RenderLightTrail (tTranspLightTrail *item);
 		void RenderThruster (tTranspThruster *item);
-		int RenderItem (struct tTranspItem *pl);
+		int RenderItem (struct tTranspItem *item);
 	};
 
 extern CTransparencyRenderer transparencyRenderer;

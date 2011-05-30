@@ -594,11 +594,11 @@ return bChanged;
 
 void CTrigger::PrintMessage (int nPlayer, int bShot, const char *message)
 {
-	static char	pl [2][2] = {"", "s"};		//points to 's' or nothing for plural word
+	static char	pluralSuffix [2][2] = {"", "s"};		//points to 's' or nothing for plural word
 
 if (!gameStates.app.bD1Mission && ((nPlayer < 0) || (nPlayer == gameData.multiplayer.nLocalPlayer))) {
 	if (!(m_info.flags & TF_NO_MESSAGE) && bShot)	// only display if not a silent trigger and the trigger has been shot (not flown through)
-		HUDInitMessage (message, pl [m_nLinks > 1]);
+		HUDInitMessage (message, pluralSuffix [m_nLinks > 1]);
 	}
 }
 

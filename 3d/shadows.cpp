@@ -1444,7 +1444,7 @@ return 1;
 int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAngleP, int nModel)
 {
 	CFixVector	v, vLightDir;
-	short*		pnl;
+	short*		nearestLightP;
 	int			h, i, j;
 	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 
@@ -1456,11 +1456,11 @@ if (!gameStates.render.nShadowMap) {
 ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetTexturing (false);
 ogl.EnableClientState (GL_VERTEX_ARRAY);
-pnl = lightManager.NearestSegLights () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
+nearestLightP = lightManager.NearestSegLights () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
-	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
-		gameData.render.shadows.lightP = lightManager.RenderLights (*pnl);
+	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*nearestLightP >= 0); i++, nearestLightP++) {
+		gameData.render.shadows.lightP = lightManager.RenderLights (*nearestLightP);
 		if (!gameData.render.shadows.lightP->info.bState)
 			continue;
 		if (!CanSeePoint (objP, &objP->info.position.vPos, &gameData.render.shadows.lightP->info.vPos, objP->info.nSegment))
@@ -1498,11 +1498,11 @@ if (FAST_SHADOWS) {
 else {
 	h = objP->Index ();
 	j = int (gameData.render.shadows.lightP - lightManager.Lights ());
-	pnl = gameData.render.shadows.objLights + h * MAX_SHADOW_LIGHTS;
-	for (i = 0; i < gameOpts->render.shadows.nLights; i++, pnl++) {
-		if (*pnl < 0)
+	nearestLightP = gameData.render.shadows.objLights + h * MAX_SHADOW_LIGHTS;
+	for (i = 0; i < gameOpts->render.shadows.nLights; i++, nearestLightP++) {
+		if (*nearestLightP < 0)
 			break;
-		if (*pnl == j) {
+		if (*nearestLightP == j) {
 			vLightPosf = gameData.render.shadows.vLightPos;
 			po->VertsToFloat ();
 			transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
@@ -1522,7 +1522,7 @@ return 1;
 int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAngleP, int nModel)
 {
 	CFixVector	v;
-	short*		pnl;
+	short*		nearestLightP;
 	int			h, i, j, nShadowQuality = gameOpts->render.ShadowQuality () - 1;
 	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 	CObject*		lightObjP = NULL;
@@ -1535,7 +1535,7 @@ if (!gameStates.render.nShadowMap) {
 ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetTexturing (false);
 ogl.EnableClientState (GL_VERTEX_ARRAY);
-pnl = lightManager.NearestSegLights () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
+nearestLightP = lightManager.NearestSegLights () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
 	short nLights = lightManager.SetNearestToSegment (objP->Segment (), -1, 0, 0, 0);	//only get light emitting objects here
@@ -1546,7 +1546,7 @@ if (FAST_SHADOWS) {
 		CActiveDynLight* activeLightsP = lightManager.Active (0) + sliP->nFirst;
 		int i = sliP->nLast - sliP->nFirst + 1;
 		for (; (i > 0) && (nLights > 0); activeLightsP++, i--) {
-			if ((gameData.render.shadows.lightP = activeLightsP->pl)) {
+			if ((gameData.render.shadows.lightP = activeLightsP->lightP)) {
 				--nLights;
 				if (gameData.render.shadows.lightP->info.nType < 2)
 					continue;
@@ -1620,11 +1620,11 @@ if (FAST_SHADOWS) {
 else {
 	h = objP->Index ();
 	j = int (gameData.render.shadows.lightP - lightManager.Lights ());
-	pnl = gameData.render.shadows.objLights + h * MAX_SHADOW_LIGHTS;
-	for (i = 0; i < gameOpts->render.shadows.nLights; i++, pnl++) {
-		if (*pnl < 0)
+	nearestLightP = gameData.render.shadows.objLights + h * MAX_SHADOW_LIGHTS;
+	for (i = 0; i < gameOpts->render.shadows.nLights; i++, nearestLightP++) {
+		if (*nearestLightP < 0)
 			break;
-		if (*pnl == j) {
+		if (*nearestLightP == j) {
 			vLightPosf = gameData.render.shadows.vLightPos;
 			po->VertsToFloat ();
 			transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);

@@ -409,19 +409,19 @@ else {
 
 #if MAX_SHADOWMAPS
 
-static int RenderShadowMap (CDynLight* prl, int nLight, fix xStereoSeparation)
+static int RenderShadowMap (CDynLight* lightP, int nLight, fix xStereoSeparation)
 {
-if (!prl)
+if (!lightP)
 	return 0;
 
 	CCamera* cameraP = cameraManager.ShadowMap (nLight);
 
-if (!(cameraP || (cameraP = cameraManager.AddShadowMap (nLight, prl)))) 
+if (!(cameraP || (cameraP = cameraManager.AddShadowMap (nLight, lightP)))) 
 	return 0;
 
 if (cameraP->HaveBuffer (0))
-	cameraP->Setup (cameraP->Id (), prl->info.nSegment, prl->info.nSide, -1, -1, (prl->info.nObject < 0) ? NULL : OBJECTS + prl->info.nObject, 0);
-else if (!cameraP->Create (cameraManager.Count () - 1, prl->info.nSegment, prl->info.nSide, -1, -1, (prl->info.nObject < 0) ? NULL : OBJECTS + prl->info.nObject, 1, 0)) {
+	cameraP->Setup (cameraP->Id (), lightP->info.nSegment, lightP->info.nSide, -1, -1, (lightP->info.nObject < 0) ? NULL : OBJECTS + lightP->info.nObject, 0);
+else if (!cameraP->Create (cameraManager.Count () - 1, lightP->info.nSegment, lightP->info.nSide, -1, -1, (lightP->info.nObject < 0) ? NULL : OBJECTS + lightP->info.nObject, 1, 0)) {
 	cameraManager.DestroyShadowMap (nLight);
 	return 0;
 	}

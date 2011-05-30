@@ -95,21 +95,21 @@ void CHeadlightManager::Transform (void)
 if (automap.Display ())
 	return;
 
-	CDynLight*	pl;
+	CDynLight*	lightP;
 	bool			bHWHeadlight = (gameStates.render.bPerPixelLighting == 2) || (ogl.m_states.bHeadlight && gameOpts->ogl.bHeadlight);
 
 for (int i = 0; i < MAX_PLAYERS; i++) {
 	if (lightIds [i] >= 0) {
-		pl = lightManager.Lights () + lightIds [i];
-		pl->info.bSpot = 1;
-		pl->info.vDirf.Assign (pl->vDir);
+		lightP = lightManager.Lights () + lightIds [i];
+		lightP->info.bSpot = 1;
+		lightP->info.vDirf.Assign (lightP->vDir);
 		if (bHWHeadlight) {
-			pos [i] = pl->render.vPosf [0];
-			dir [i] = *pl->info.vDirf.XYZ ();
+			pos [i] = lightP->render.vPosf [0];
+			dir [i] = *lightP->info.vDirf.XYZ ();
 			brightness [i] = 100.0f;
 			}
-		else if (pl->bTransform && !ogl.UseTransform ())
-			transformation.Rotate (pl->info.vDirf, pl->info.vDirf, 0);
+		else if (lightP->bTransform && !ogl.UseTransform ())
+			transformation.Rotate (lightP->info.vDirf, lightP->info.vDirf, 0);
 
 		}
 	}
@@ -144,13 +144,13 @@ if (gameStates.render.nLightingMethod) {
 			int nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
 
 		if (0 <= nLight) {
-			CDynLight* pl = lightManager.Lights () + nLight;
-			pl->info.nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : 1;
-			pl->info.fRad = 0;
-			pl->info.bSpot = 1;
-			pl->info.fSpotAngle = 0.9f; //spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
-			pl->info.fSpotExponent = 12.0f; //spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
-			pl->bTransform = 0;
+			CDynLight* lightP = lightManager.Lights () + nLight;
+			lightP->info.nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : 1;
+			lightP->info.fRad = 0;
+			lightP->info.bSpot = 1;
+			lightP->info.fSpotAngle = 0.9f; //spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
+			lightP->info.fSpotExponent = 12.0f; //spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
+			lightP->bTransform = 0;
 			lightIds [objP->info.nId] = nLight;
 			}
 		return lightIds [objP->info.nId];
@@ -175,17 +175,17 @@ if (gameStates.render.nLightingMethod && (lightIds [objP->info.nId] >= 0)) {
 
 void CHeadlightManager::Update (void)
 {
-	CDynLight	*pl;
-	CObject		*objP;
+	CDynLight*	lightP;
+	CObject*		objP;
 	short			nPlayer;
 
 for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	if (lightIds [nPlayer] >= 0) {
-		pl = lightManager.Lights () + lightIds [nPlayer];
+		lightP = lightManager.Lights () + lightIds [nPlayer];
 		objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
-		pl->info.vPos = OBJPOS (objP)->vPos;
-		pl->vDir = OBJPOS (objP)->mOrient.m.dir.f;
-		pl->info.vPos += pl->vDir * (objP->info.xSize / 4);
+		lightP->info.vPos = OBJPOS (objP)->vPos;
+		lightP->vDir = OBJPOS (objP)->mOrient.m.dir.f;
+		lightP->info.vPos += lightP->vDir * (objP->info.xSize / 4);
 		}
 	}
 }
