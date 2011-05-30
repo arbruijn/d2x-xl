@@ -655,7 +655,7 @@ else {
 			break;
 			}
 		if (i < j)
-			return 0;
+			return -1;
 		}
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
@@ -767,9 +767,9 @@ if (nLightSeg == nDestSeg)
 else {
 	int bDiffuse = info.bDiffuse [nThread] && SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
 
-	if (!bDiffuse) {
+	if (bDiffuse <= 0) {
 		info.bDiffuse [nThread] = 0;
-		if (!SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread)) {
+		if ((bDiffuse < 0) || !SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread)) {
 			fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 			if (xPathLength < 0)
 				return 0;

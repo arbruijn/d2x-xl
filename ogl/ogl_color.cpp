@@ -576,7 +576,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		vertColor.SetZero ();
 #else
 		// make ambient light behind the light source decay with angle and in front of it full strength 
-		vertColor *= lightColor * fLightAngle;
+		vertColor *= lightColor * fLightAngle * fLightAngle;
 #endif
 	}
 
