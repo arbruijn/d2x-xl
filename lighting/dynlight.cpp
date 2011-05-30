@@ -766,7 +766,7 @@ else {
 if (nLightSeg == nDestSeg)
 	info.bDiffuse [nThread] = 1;
 else if (info.bVariable && (nDestVertex >= 0)) {
-	if (info.visibleVertices->Buffer ())
+	if (info.visibleVertices && info.visibleVertices->Buffer ())
 		info.bDiffuse [nThread] = (*info.visibleVertices) [nDestVertex];
 	else
 		info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);

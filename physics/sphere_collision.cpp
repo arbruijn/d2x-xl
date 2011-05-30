@@ -1183,8 +1183,8 @@ for (;;) {
 				nDbgSeg = nDbgSeg;
 #endif
 			if (!PointIsOutsideFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - sideP->m_nFaces)) {
-				if (l1 <= X2F (PLANE_DIST_TOLERANCE))
-					return 1;
+				if (l1 <= X2F (PLANE_DIST_TOLERANCE)) 
+					return (nStartSeg == nChildSeg) || !(wallP = sideP->Wall ()) || (wallP->IsDoorWay (NULL, false) & WID_WALL);
 				break;
 				}
 			}
