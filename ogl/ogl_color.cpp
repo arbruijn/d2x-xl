@@ -455,8 +455,17 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		transformation.Transform (spotDir, *prl->info.vDirf.XYZ (), 1);
 	else
 		spotDir = *prl->info.vDirf.XYZ ();
-	lightPos = *prl->render.vPosf [bTransform].XYZ ();
+
+	if (nType < 2)
+		DistToFace (*vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide), &lightPos);
+		//if (fabs (fLightDist) < 1.0f)
+		//	fLightDist = 0.0f;
+	else 
+		lightPos = *prl->render.vPosf [bTransform].XYZ ();
 	lightDir = lightPos - *vcd.vertPosP;
+	fLightDist = lightDir.Mag ();
+	lightDir /= fLightDist; // normalize
+
 	if (IsLightVert (nVertex, prl)) { // inside the light emitting face
 		fLightDist = 0.0f;
 		NdotL = 1.0f;
@@ -464,7 +473,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 	else {
 		bDiffuse = prl->info.bDiffuse [nThread];
-		fLightDist = lightDir.Mag ();
+		NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
 		if (fLightDist < 1.e-6f) {
 			fLightDist = 0.0f;
 			lightDir = vcd.vertNorm;
@@ -472,7 +481,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			}
 		else {
 			lightDir /= fLightDist; // normalize
-			fLightDist *= ogl.m_states.fLightRange;
 			if (vcd.vertNorm.IsZero ())
 				NdotL = 1.0f;
 			else {
@@ -488,40 +496,27 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		nDbgSeg = nDbgSeg;
 #endif
 
-	if (nType < 2) {
-		DistToFace (*vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide), &lightPos);
-		CFloatVector3 dir = lightPos - *vcd.vertPosP;
-		fLightDist = dir.Mag ();
-		dir /= fLightDist; // normalize
-		fLightDist *= ogl.m_states.fLightRange;
-		float dot = CFloatVector3::Dot (vcd.vertNorm, dir);
-		if (NdotL <= dot) {
-			NdotL = dot;
-			lightDir = dir;
+	if (bDiffuse) {
+		if ((gameStates.render.nState || (nType < 2)) && (fLightDist > 0.1f)) {
+			// check whether the vertex is behind the light or the light shines at the vertice's back
+			// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
+			float dot = -CFloatVector3::Dot (lightDir, spotDir);
+			fLightAngle = (dot < 0.99f) ? dot + 0.01f : 1.0f;
 			}
-		if (fabs (fLightDist) < 1.0f)
-			fLightDist = 0.0f;
+		else
+			fLightAngle = 1.0f;
 		}
-
-	if ((gameStates.render.nState || (nType < 2)) && (fLightDist > 0.1f)) {
-		// check whether the vertex is behind the light or the light shines at the vertice's back
-		// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
-		float dot = -CFloatVector3::Dot (lightDir, spotDir);
-		fLightAngle = (dot < 0.99f) ? dot + 0.01f : 1.0f;
-		}
-	else
+	else {
+		fLightDist = X2F (prl->render.xDistance [nThread]);
 		fLightAngle = 1.0f;
-
-	if (!bDiffuse) {
-		fLightDist = X2F (prl->render.xDistance [nThread]) * ogl.m_states.fLightRange;
-		fLightAngle = 1.0f;
-		NdotL = (NdotL < 0.0f) ? 1.0f + NdotL : 1.0f; // make ambient light behind the light source decay with angle and in front of it full strength
+		NdotL = (NdotL < 0.0f) ? 1.0f : 1.0f - NdotL; // make ambient light behind the light source decay with angle and in front of it full strength 
 #if DBG
 		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
 		}
 
+	fLightDist *= ogl.m_states.fLightRange;
 	if	(fLightDist <= 0.0f) {
 		NdotL = 1.0f;
 		fLightDist = 0.0f;
