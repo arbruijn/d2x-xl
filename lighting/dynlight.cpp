@@ -661,7 +661,7 @@ else {
 	if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
 		nDbgVertex = nDbgVertex;
 #endif
-	return SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (*vPoint, nDestSeg, nLevel, nThread);
+	return SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (*vPoint, nDestSeg, info.bDiffuse [nThread] ? nLevel : -nLevel - 1, nThread);
 	}
 
 #else

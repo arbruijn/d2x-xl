@@ -607,10 +607,20 @@ int CSide::SeesPoint (CFixVector& vPoint, short nDestSeg, int nLevel, int nThrea
 {
 	static int nLevels [3] = {4, 0, -4};
 
-	CFloatVector v0, v1;
+	CFloatVector	v0, v1;
+	int				i, j;
 
 v1.Assign (vPoint);
-for (int i = 4, j = nLevels [nLevel]; i >= j; i--) {
+
+if (nLevel >= 0) 
+	i = 4;
+else {
+	i = 3;
+	nLevel = -nLevel - 1;
+	}
+j = j = nLevels [nLevel];
+
+for (; i >= j; i--) {
 	if (i == 4)
 		v0.Assign (Center ());
 	else if (i >= 0)
