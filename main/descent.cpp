@@ -527,7 +527,7 @@ if (gameStates.app.bMultiThreaded) {
 	}
 gameData.render.vertColor.matAmbient.v.color.r =
 gameData.render.vertColor.matAmbient.v.color.g =
-gameData.render.vertColor.matAmbient.v.color.b = AMBIENT_LIGHT;
+gameData.render.vertColor.matAmbient.v.color.b = 1.0f - DIFFUSE_LIGHT; //AMBIENT_LIGHT;
 gameData.render.vertColor.matAmbient.v.color.a = 1.0f;
 gameData.render.vertColor.matDiffuse.v.color.r =
 gameData.render.vertColor.matDiffuse.v.color.g =

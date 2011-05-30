@@ -571,7 +571,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 	else {
 #if TEST_AMBIENT > 0
-		//vertColor.Set (1.0f, 0.0f, 0.0f);
+		vertColor.Set (1.0f, 1.0f, 1.0f);
 #elif TEST_AMBIENT < 0
 		vertColor.SetZero ();
 #else

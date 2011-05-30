@@ -175,19 +175,20 @@ r.Assign (vRef);
 for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 	CFloatVector& n = sideP->m_fNormals [i];
 	h = r - FVERTICES [nVerts [j]];
-	float d = float (fabs (CFloatVector::Dot (h, n)));
+	float d = CFloatVector::Dot (h, n);
 	//h = r - n * dist;
 	h = n;
-	h *= d;
+	h *= -d;
 	h += r;
 	if (!PointIsOutsideFace (&h, n, nVerts + j, 5 - sideP->m_nFaces)) {
-		if (vHit) {
-			if (d < 0.001f)
-				*vHit = vRef;
-			else
-				vHit->Assign (h);
-			}
-		return (vHit == NULL) ? d : 0.0f;
+		d = float (fabs (d));
+		if (!vHit)
+			return d;
+		if (d < 0.001f)
+			*vHit = vRef;
+		else
+			vHit->Assign (h);
+		return 0.0f;
 		}
 	}
 
