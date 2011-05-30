@@ -1183,19 +1183,23 @@ for (;;) {
 				nDbgSeg = nDbgSeg;
 #endif
 			if (!PointIsOutsideFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - sideP->m_nFaces)) {
-				if (l1 <= X2F (PLANE_DIST_TOLERANCE)) 
-					return (nStartSeg == nChildSeg) || !(wallP = sideP->Wall ()) || (wallP->IsDoorWay (NULL, false) & WID_WALL);
+				if (l1 <= X2F (PLANE_DIST_TOLERANCE)) { // end point lies in this face
+					if (nDestSeg < 0)
+						return 1;
+					if (nStartSeg == nDestSeg)
+						return 1;
+					if ((nChildSeg == nDestSeg) && !((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL)))
+						return 1;
+					}
 				break;
 				}
 			}
 		if (nFace == sideP->m_nFaces)
 			continue; // line doesn't intersect with this side
-		if ((0 > nChildSeg) || ((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL))) {
-			if (nStartSeg == nDestSeg)
-				return 1;
+		if (0 > nChildSeg) // solid wall
 			continue;
-			}
-			//return (nStartSeg == nDestSeg); // line intersects a solid wall
+		if ((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL)) // impassable
+			continue;
 		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDepth + 1, nThread))
 			return 1;
 		}
