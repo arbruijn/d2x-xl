@@ -767,7 +767,7 @@ if (nLightSeg == nDestSeg)
 	info.bDiffuse [nThread] = 1;
 else if (info.bVariable && (nDestVertex >= 0)) {
 	if (info.visibleVertices->Buffer ())
-		info.bDiffuse [nThread] = *info.visibleVertices [nDestVertex];
+		info.bDiffuse [nThread] = (*info.visibleVertices) [nDestVertex];
 	else
 		info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
 	}
@@ -819,13 +819,13 @@ if (!info.bVariable)
 short nLightSeg = LightSeg ();
 if ((nLightSeg < 0) || (info.nSide < 0))
 	return 0;
-if (!(info.visibleVertices || (info.visibleVertices = new CByteArray ()))
+if (!(info.visibleVertices || (info.visibleVertices = new CByteArray ())))
 	return -1;
 if (!info.visibleVertices->Create (gameData.segs.nVertices))
 	return -1;
 CSide* sideP = SEGMENTS [nLightSeg].Side (info.nSide);
 for (int i = 0; i < gameData.segs.nVertices; i++)
-	info.visibleVertices [i] = sideP->SeesPoint (VERTICES [i], -1, 2, nThread);
+	(*info.visibleVertices) [i] = sideP->SeesPoint (VERTICES [i], -1, 2, nThread);
 return 1;
 }
 
