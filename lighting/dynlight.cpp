@@ -765,27 +765,29 @@ else {
 if (nLightSeg == nDestSeg)
 	info.bDiffuse [nThread] = 1;
 else {
-	int bDiffuse = SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
+	int bDiffuse = info.bDiffuse [nThread] && SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
 
 	if (!bDiffuse) {
 		info.bDiffuse [nThread] = 0;
-		fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
-		if (xPathLength < 0)
-			return 0;
-#if 0
-		if (xPathLength > xMaxLightRange)
-			return 0;
-		xDistance = xPathLength;
-#else
-		if (xDistance < xPathLength) {
-			// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
-#if 1
-			xDistance = (xDistance + xPathLength) / 2; 
-#else
-			xDistance = (xDistance + 2 * xPathLength) / 3; 
-#endif
-			if (xDistance - xRad > xMaxLightRange)
+		if (!SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread)) {
+			fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+			if (xPathLength < 0)
 				return 0;
+#if 0
+			if (xPathLength > xMaxLightRange)
+				return 0;
+			xDistance = xPathLength;
+#else
+			if (xDistance < xPathLength) {
+				// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
+#if 1
+				xDistance = (xDistance + xPathLength) / 2; 
+#else
+				xDistance = (xDistance + 2 * xPathLength) / 3; 
+#endif
+				if (xDistance - xRad > xMaxLightRange)
+					return 0;
+				}
 			}
 		}
 #endif
