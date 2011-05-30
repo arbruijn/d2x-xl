@@ -690,11 +690,11 @@ for (i = endI - startI; i; i--, lightP++) {
 
 //------------------------------------------------------------------------------
 
-void ComputeLightsVisibleVertices (void)
+void ComputeLightsVisibleVertices (int startI)
 {
 	int	i, endI;
 
-for (i = GetLoopLimits (startI, endI, lightManager.LightCount (0); i < endI; i++)
+for (i = GetLoopLimits (startI, endI, lightManager.LightCount (0), 0); i < endI; i++)
 	lightManager.Lights (i)->ComputeVisibleVertices (0);
 }
 
@@ -747,7 +747,7 @@ else if (loadOp == 4) {
 		}
 	}
 else if (loadOp == 4) {
-	ComputeLightsVisibleVertices (loadIdx, 0);
+	ComputeLightsVisibleVertices (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= lightManager.LightCount (0)) {
 		loadIdx = 0;
@@ -900,18 +900,6 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ LightsVisibleVerticesThread (void *pThreadId)
-{
-	int nId = *(reinterpret_cast<int*> (pThreadId));
-
-ComputeLightsVisibleVertices (nId * (gameData.segs.nVertices + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
-SDL_SemPost (ti [nId].done);
-ti [nId].bDone = 1;
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
 static void StartLightThreads (pThreadFunc pFunc)
 {
 	int	i;
@@ -967,7 +955,7 @@ if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	PrintLog ("Starting vertex light calculation threads\n");
 	StartLightThreads (VertLightsThread);
 	PrintLog ("Computing vertices visible to lights\n");
-	ComputeLightsVisibleVertices (-1, 0);
+	ComputeLightsVisibleVertices (-1);
 	gameData.physics.side.bCache = 1;
 	}
 else {
@@ -990,7 +978,7 @@ else {
 		PrintLog ("Computing vertex lights\n");
 		ComputeNearestVertexLights (-1, 0);
 		PrintLog ("Computing vertices visible to lights\n");
-		ComputeLightsVisibleVertices (-1, 0);
+		ComputeLightsVisibleVertices (-1);
 		}
 	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}

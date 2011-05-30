@@ -807,7 +807,7 @@ return 1;
 
 int CDynLight::ComputeVisibleVertices (int nThread)
 {
-if (!bVariable)
+if (!info.bVariable)
 	return 0;
 short nLightSeg = LightSeg ();
 if ((nLightSeg < 0) || (info.nSide < 0))

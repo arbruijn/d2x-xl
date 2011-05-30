@@ -161,7 +161,6 @@ vOffs = (v2 - v1) * nOffset;
 void CLightmapManager::RestoreLights (int bVariable)
 {
 	CDynLight*	lightP = lightManager.Lights ();
-	int			i;
 
 for (int i = lightManager.LightCount (0); i; i--, lightP++)
 	if (!(lightP->info.nType || (lightP->info.bVariable && !bVariable)))
