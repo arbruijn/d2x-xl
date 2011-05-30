@@ -49,7 +49,7 @@ int ijTable [3][2] = {
 // see if a point (refP) is inside a triangle using barycentric method
 // return 0 if point inside triangle, otherwise sides point is behind as bit code
 
-ubyte PointIsInFace (CFixVector* refP, CFixVector vNormal, CFixVector* vertices, short nVerts)
+ubyte PointIsOutsideFace (CFixVector* refP, CFixVector vNormal, CFixVector* vertices, short nVerts)
 {
 CFixVector v0 = vertices [2] - vertices [0];
 CFixVector v1 = vertices [1] - vertices [0];
@@ -67,7 +67,7 @@ return int (u < 0) + (int (v < 0) << 1) + (int (u + v > I2X (1)) << 2);
 //	-----------------------------------------------------------------------------
 //see if a point (refP) is inside a triangle using barycentric method
 
-ubyte PointIsInFace (CFixVector* refP, CFixVector vNormal, short* nVertIndex, short nVerts)
+ubyte PointIsOutsideFace (CFixVector* refP, CFixVector vNormal, short* nVertIndex, short nVerts)
 {
 CFixVector v0 = VERTICES [nVertIndex [2]] - VERTICES [nVertIndex [0]];
 CFixVector v1 = VERTICES [nVertIndex [1]] - VERTICES [nVertIndex [0]];
@@ -87,7 +87,7 @@ return int (u < -PLANE_DIST_TOLERANCE) + (int (v < -PLANE_DIST_TOLERANCE) << 1) 
 //	-----------------------------------------------------------------------------
 //see if a point (refP) is inside a triangle using barycentric method
 
-ubyte PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex, short nVerts)
+ubyte PointIsOutsideFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex, short nVerts)
 {
 #if 1
 CFloatVector v0 = FVERTICES [nVertIndex [2]] - FVERTICES [nVertIndex [0]];
@@ -180,7 +180,7 @@ for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 	h = n;
 	h *= -d;
 	h += r;
-	if (!PointIsInFace (&h, n, nVerts + j, 5 - sideP->m_nFaces)) {
+	if (!PointIsOutsideFace (&h, n, nVerts + j, 5 - sideP->m_nFaces)) {
 		if (vHit) {
 			if (d < 0.001f)
 				*vHit = vRef;
@@ -281,7 +281,7 @@ uint PointToFaceRelation (CFixVector* refP, CFixVector *vertList, int nVerts, CF
 {
 #if 0
 if (nVerts == 3)
-	return uint (PointIsInFace (refP, vNormal, vertList));
+	return uint (PointIsOutsideFace (refP, vNormal, vertList));
 #endif
 
 //	CFixVector	vNormal;
@@ -1181,7 +1181,7 @@ for (;;) {
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (!PointIsInFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - sideP->m_nFaces)) {
+			if (!PointIsOutsideFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - sideP->m_nFaces)) {
 				if (l1 <= X2F (PLANE_DIST_TOLERANCE))
 					return 1;
 				break;

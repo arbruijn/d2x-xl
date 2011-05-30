@@ -140,11 +140,11 @@ fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p
 
 fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1, short& nModel);
 
-ubyte PointIsInFace (CFixVector* refP, CFixVector vNormal, CFixVector* vertices, short nVerts);
+ubyte PointIsOutsideFace (CFixVector* refP, CFixVector vNormal, CFixVector* vertices, short nVerts);
 
-ubyte PointIsInFace (CFixVector* refP, CFixVector vNormal, short* nVertIndex, short nVerts);
+ubyte PointIsOutsideFace (CFixVector* refP, CFixVector vNormal, short* nVertIndex, short nVerts);
 
-ubyte PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex, short nVerts);
+ubyte PointIsOutsideFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex, short nVerts);
 
 uint PointToFaceRelation (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal);
 

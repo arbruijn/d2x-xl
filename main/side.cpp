@@ -576,7 +576,7 @@ for (i = j = 0; i < m_nFaces; i++, j += 3) {
 	dist = CFloatVector::Dot (h, n);
 	if (minDist > fabs (dist)) {
 		h = v - n * dist;
-		if (PointIsInFace (&h, n, m_vertices + j, (m_nFaces == 1) ? 4 : 3)) {
+		if (PointIsOutsideFace (&h, n, m_vertices + j, (m_nFaces == 1) ? 4 : 3)) {
 			minDist = float (fabs (dist));
 			}
 		}
