@@ -735,7 +735,7 @@ if ((nLightSeg >= 0) && (nDestSeg >= 0)) {
 #if 0 //DBG
 #else
 else if ((nLightSeg = LightSeg ()) >= 0)
-	info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
+	info.bDiffuse [nThread] = (nDestSeg < 0) || gameData.segs.SegVis (nLightSeg, nDestSeg);
 #endif
 else
 	return 0;
