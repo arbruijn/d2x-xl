@@ -426,6 +426,10 @@ else {//SIDE_IS_TRI_02
 bBlack = bWhite = true;
 pixelPosP = m_data.pixelPos + yMin * w;
 for (y = yMin; y < yMax; y++) {
+#if DBG
+	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
 	for (x = 0; x < w; x++, pixelPosP++) { 
 #if DBG
 		if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide))) {
@@ -478,6 +482,10 @@ else if (bWhite)
 else 
 	m_data.nColor |= 4;
 }
+#if DBG
+if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 }
 
 //------------------------------------------------------------------------------

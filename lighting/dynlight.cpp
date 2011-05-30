@@ -629,38 +629,39 @@ if (info.nSide < 0) {
 	return PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, FAST_POINTVIS - 1, nThread);
 	}
 else {
-		static int nLevels [3] = {4, 0, -4};
+	if (info.bDiffuse [nThread]) {
+			static int nLevels [3] = {4, 0, -4};
 
-		CSide*	sideP = SEGMENTS [nLightSeg].Side (info.nSide);
-		int		i, j = nLevels [nLevel];
+			CSide*	sideP = SEGMENTS [nLightSeg].Side (info.nSide);
+			int		i, j = nLevels [nLevel];
 
-	v1.Assign (*vPoint);
-	if (vNormal) 
-		vNormalf.Assign (*vNormal);
-	for (i = 4; i >= j; i--) {
-		if (i == 4)
-			v0.Assign (info.vPos);
-		else if (i >= 0)
-			v0 = FVERTICES [sideP->m_corners [i]];
-		else
-			v0 = CFloatVector::Avg (FVERTICES [sideP->m_corners [4 + i]], FVERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
+		v1.Assign (*vPoint);
+		if (vNormal) 
+			vNormalf.Assign (*vNormal);
+		for (i = 4; i >= j; i--) {
+			if (i == 4)
+				v0.Assign (info.vPos);
+			else if (i >= 0)
+				v0 = FVERTICES [sideP->m_corners [i]];
+			else
+				v0 = CFloatVector::Avg (FVERTICES [sideP->m_corners [4 + i]], FVERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
 
-		vLightToPointf = v1 - v0;
-		CFloatVector::Normalize (vLightToPointf);
-		if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
-			continue;
-		if (vNormal && (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f)) // light doesn't "see" face
-			continue;
-		break;
+			vLightToPointf = v1 - v0;
+			CFloatVector::Normalize (vLightToPointf);
+			if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
+				continue;
+			if (vNormal && (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f)) // light doesn't "see" face
+				continue;
+			break;
+			}
+		if (i < j)
+			return 0;
 		}
-	if (i < j)
-		return 0;
-
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
 		nDbgVertex = nDbgVertex;
 #endif
-	return SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (*vPoint, nDestSeg, 0, nThread);
+	return SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (*vPoint, nDestSeg, nLevel, nThread);
 	}
 
 #else
@@ -764,9 +765,10 @@ else {
 if (nLightSeg == nDestSeg)
 	info.bDiffuse [nThread] = 1;
 else {
-	if (info.bDiffuse [nThread])
-		info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
-	if (!info.bDiffuse [nThread]) {
+	int bDiffuse = SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
+
+	if (!bDiffuse) {
+		info.bDiffuse [nThread] = 0;
 		fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 		if (xPathLength < 0)
 			return 0;

@@ -392,7 +392,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	int					nBrightness, nMaxBrightness = 0;
 	int					bDiffuse, bSpecular = gameStates.render.bSpecularColor && (vcd.fMatShininess > 0.0f);
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
-	CFloatVector3		spotDir, lightDir, lightPos, vertPos, vReflect;
+	CFloatVector3		lightDir, lightRayDir, lightPos, vertPos, vReflect;
 	CFloatVector3		lightColor, colorSum, vertColor = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
 
 #if DBG
@@ -452,9 +452,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 
 	if (bTransform) 
-		transformation.Transform (spotDir, *prl->info.vDirf.XYZ (), 1);
+		transformation.Transform (lightDir, *prl->info.vDirf.XYZ (), 1);
 	else
-		spotDir = *prl->info.vDirf.XYZ ();
+		lightDir = *prl->info.vDirf.XYZ ();
 
 	if (nType < 2)
 		DistToFace (*vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide), &lightPos);
@@ -462,14 +462,15 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		//	fLightDist = 0.0f;
 	else 
 		lightPos = *prl->render.vPosf [bTransform].XYZ ();
+	lightRayDir = lightPos - *vcd.vertPosP;
+	fLightDist = lightRayDir.Mag ();
+	lightRayDir /= fLightDist; // normalize
+
+#if DBG
 	CFloatVector3 hDir = *prl->render.vPosf [bTransform].XYZ () - *vcd.vertPosP;
 	CFloatVector3::Normalize (hDir);
 	float hDot = CFloatVector3::Dot (vcd.vertNorm, hDir);
-	lightDir = lightPos - *vcd.vertPosP;
-	fLightDist = lightDir.Mag ();
-	lightDir /= fLightDist; // normalize
 
-#if DBG
 	if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
@@ -479,48 +480,41 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		NdotL = 1.0f;
 		bDiffuse = 1;
 		}
-	else {
-		bDiffuse = prl->info.bDiffuse [nThread];
+	else if (bDiffuse = prl->info.bDiffuse [nThread]) {
 		if (fLightDist < 1.e-6f) {
 			fLightDist = 0.0f;
-			lightDir = vcd.vertNorm;
+			lightRayDir = vcd.vertNorm;
 			NdotL = 1.0f; // full light contribution for adjacent points
 			}
 		else {
 			if (vcd.vertNorm.IsZero ())
 				NdotL = 1.0f;
 			else {
-				NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
+				NdotL = CFloatVector3::Dot (vcd.vertNorm, lightRayDir);
 				if ((NdotL < 0.0f) && (NdotL > -0.01f)) // compensate for faces almost planar with the light emitting face
 					NdotL = 0.0f;
 				}
+			if ((gameStates.render.nState || (nType < 2)) && (fLightDist > 0.1f)) {
+				// check whether the vertex is behind the light or the light shines at the vertice's back
+				// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
+				fLightAngle = -CFloatVector3::Dot (lightRayDir, lightDir);
+				fLightAngle = (fLightAngle < 0.99f) ? fLightAngle + 0.01f : 1.0f;
+				}
+			else
+				fLightAngle = 1.0f;
 			}
+		}
+	else {
+		NdotL = 1.0f;
+		fLightDist = X2F (prl->render.xDistance [nThread]);
+		fLightAngle = CFloatVector3::Dot (lightRayDir, lightDir);
+		fLightAngle = (fLightAngle < 0.0f) ? 1.0f : 1.0f - fLightAngle; 
 		}
 
 #if DBG
 	if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-
-	if (bDiffuse) {
-		if ((gameStates.render.nState || (nType < 2)) && (fLightDist > 0.1f)) {
-			// check whether the vertex is behind the light or the light shines at the vertice's back
-			// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
-			float dot = -CFloatVector3::Dot (lightDir, spotDir);
-			fLightAngle = (dot < 0.99f) ? dot + 0.01f : 1.0f;
-			}
-		else
-			fLightAngle = 1.0f;
-		}
-	else {
-		fLightDist = X2F (prl->render.xDistance [nThread]);
-		fLightAngle = 1.0f;
-		NdotL = (NdotL < 0.0f) ? 1.0f : 1.0f - NdotL; // make ambient light behind the light source decay with angle and in front of it full strength 
-#if DBG
-		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
-			nDbgSeg = nDbgSeg;
-#endif
-		}
 
 	fLightDist *= ogl.m_states.fLightRange;
 	if	(fLightDist <= 0.0f) {
@@ -543,9 +537,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (prl->info.bSpot) {
 			if (NdotL <= 0.0f)
 				continue;
-			CFloatVector3::Normalize (spotDir);
-			lightDir.Neg ();
-			spotEffect = CFloatVector3::Dot (spotDir, lightDir);
+			CFloatVector3::Normalize (lightDir);
+			lightRayDir.Neg ();
+			spotEffect = CFloatVector3::Dot (lightDir, lightRayDir);
 
 			if (spotEffect <= prl->info.fSpotAngle)
 				continue;
@@ -581,15 +575,16 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #elif TEST_AMBIENT < 0
 		vertColor.SetZero ();
 #else
-		vertColor *= lightColor * NdotL;
+		// make ambient light behind the light source decay with angle and in front of it full strength 
+		vertColor *= lightColor * fLightAngle;
 #endif
 	}
 
 #if 1
 	if (bSpecular && bDiffuse && (NdotL > 0.0f) && (fLightDist > 0.0f)) {
 		if (!prl->info.bSpot)	//need direction from light to vertex now
-			lightDir.Neg ();
-		vReflect = CFloatVector3::Reflect (lightDir, vcd.vertNorm);
+			lightRayDir.Neg ();
+		vReflect = CFloatVector3::Reflect (lightRayDir, vcd.vertNorm);
 		//CFloatVector3::Normalize (vReflect);
 #if DBG
 		if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
