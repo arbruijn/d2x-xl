@@ -259,7 +259,7 @@ if (nVertex == nDbgVertex)
 				continue;
 			}
 #if 1
-		if (!lightP->Contribute (nSegment, nSide, vVertex, vNormal, xMaxLightRange, 1.0f, (lightP->info.nSegment >= 0) ? -SEGMENTS [lightP->info.nSegment].AvgRad () : 0, nThread))
+		if (!lightP->Contribute (nSegment, nSide, nVertex, vVertex, vNormal, xMaxLightRange, 1.0f, (lightP->info.nSegment >= 0) ? -SEGMENTS [lightP->info.nSegment].AvgRad () : 0, nThread))
 			continue;
 #else
 		CFixVector vLightToVertex = vVertex - lightP->info.vPos;
@@ -429,7 +429,7 @@ if (gameStates.render.nLightingMethod) {
 #endif
 			}
 #if 1
-		if (!lightP->Contribute (nSegment, -1, vDestPos, NULL, xMaxLightRange, max (lightP->info.fRad, 1.0f), 0, nThread))
+		if (!lightP->Contribute (nSegment, -1, -1, vDestPos, NULL, xMaxLightRange, max (lightP->info.fRad, 1.0f), 0, nThread))
 			continue;
 #else
 		short nLightSeg = lightP->info.nSegment;
@@ -520,7 +520,7 @@ if (gameStates.render.nLightingMethod) {
 		if ((bForce = (lightP->info.nSegment == nSegment) && (lightP->info.nSide == nSide)))
 			lightP->info.bDiffuse [nThread] = 1;
 #if 1
-		else if (!lightP->Contribute (nSegment, nSide, *vPixelPos, &SEGMENTS [nSegment].Normal (nSide, 2), xMaxLightRange, 1.0f, 0, nThread))
+		else if (!lightP->Contribute (nSegment, nSide, -1, *vPixelPos, &SEGMENTS [nSegment].Normal (nSide, 2), xMaxLightRange, 1.0f, 0, nThread))
 			continue;
 #else
 		else {

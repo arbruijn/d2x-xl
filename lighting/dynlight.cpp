@@ -708,7 +708,7 @@ return &OBJECTS [gameData.multiplayer.players [info.nPlayer].nObject];
 
 //------------------------------------------------------------------------------
 
-int CDynLight::Contribute (const short nDestSeg, const short nDestSide, CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread)
+int CDynLight::Contribute (const short nDestSeg, const short nDestSide, const short nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread)
 {
 	short nLightSeg = info.nSegment;
 
@@ -764,6 +764,12 @@ else {
 	}
 if (nLightSeg == nDestSeg)
 	info.bDiffuse [nThread] = 1;
+else if (info.bVariable && (nDestVertex >= 0)) {
+	if (info.visibleVertices.Buffer ())
+		info.bDiffuse [nThread] = info.visibleVertices [nDestVertex];
+	else
+		info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
+	}
 else { // check whether light only contributes ambient light to point
 	int bDiffuse = info.bDiffuse [nThread] && SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
 	if (nDestSeg >= 0) {
