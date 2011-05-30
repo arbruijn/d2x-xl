@@ -232,22 +232,10 @@ if (nVertex == nDbgVertex)
 	for (i = MAX_NEAREST_LIGHTS; i; i--, nearestLightP++) {
 		if ((j = *nearestLightP) < 0)
 			break;
-#if DBG
-		if (j >= m_data.nLights [1])
-			break;
-#endif
 		if (!(lightP = RenderLights (j)))
 			continue;
-#if DBG
-		if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg))
-			nDbgSeg = nDbgSeg;
-#endif
 		if (lightP->render.bUsed [nThread])
 			continue;
-#if DBG
-		if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg))
-			nDbgSeg = nDbgSeg;
-#endif
 		if (gameData.threads.vertColor.data.bNoShadow && lightP->render.bShadow)
 			continue;
 		if (lightP->info.bVariable) {

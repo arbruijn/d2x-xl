@@ -90,7 +90,25 @@ SetDataVersion (-1);
 
 CDynLight::CDynLight ()
 {
+info.visibleVertices = NULL;
 Init ();
+}
+
+// ----------------------------------------------------------------------------
+
+CDynLight::~CDynLight ()
+{
+Destroy ();
+}
+
+// ----------------------------------------------------------------------------
+
+void CDynLight::Destroy (void)
+{
+if (info.visibleVertices) {
+	delete info.visibleVertices;
+	info.visibleVertices = NULL;
+	}
 }
 
 // ----------------------------------------------------------------------------

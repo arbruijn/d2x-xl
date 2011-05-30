@@ -746,7 +746,7 @@ else if (loadOp == 4) {
 		loadOp = 5;
 		}
 	}
-else if (loadOp == 4) {
+else if (loadOp == 5) {
 	ComputeLightsVisibleVertices (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= lightManager.LightCount (0)) {

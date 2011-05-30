@@ -76,7 +76,7 @@ class CDynLightInfo {
 		ubyte				bPowerup;
 		ubyte				bAmbient;
 		sbyte				bDiffuse [MAX_THREADS];
-		CByteArray		visibleVertices;
+		CByteArray*		visibleVertices;
 	public:
 		CDynLightInfo () { Init (); }
 		void Init (void) { memset (this, 0, sizeof (*this)); }
@@ -95,7 +95,9 @@ class CDynLight {
 
 	public:
 		CDynLight ();
+		~CDynLight ();
 		void Init (void);
+		void Destroy (void);
 		CObject* Object (void);
 		int LightSeg (void);
 		int SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const int nLevel, int nThread);
