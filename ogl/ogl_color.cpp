@@ -462,9 +462,17 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		//	fLightDist = 0.0f;
 	else 
 		lightPos = *prl->render.vPosf [bTransform].XYZ ();
+	CFloatVector3 hDir = *prl->render.vPosf [bTransform].XYZ () - *vcd.vertPosP;
+	CFloatVector3::Normalize (hDir);
+	float hDot = CFloatVector3::Dot (vcd.vertNorm, hDir);
 	lightDir = lightPos - *vcd.vertPosP;
 	fLightDist = lightDir.Mag ();
 	lightDir /= fLightDist; // normalize
+
+#if DBG
+	if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
 
 	if (IsLightVert (nVertex, prl)) { // inside the light emitting face
 		fLightDist = 0.0f;
@@ -473,14 +481,12 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 	else {
 		bDiffuse = prl->info.bDiffuse [nThread];
-		NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
 		if (fLightDist < 1.e-6f) {
 			fLightDist = 0.0f;
 			lightDir = vcd.vertNorm;
 			NdotL = 1.0f; // full light contribution for adjacent points
 			}
 		else {
-			lightDir /= fLightDist; // normalize
 			if (vcd.vertNorm.IsZero ())
 				NdotL = 1.0f;
 			else {

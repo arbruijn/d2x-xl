@@ -178,7 +178,7 @@ for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 	float d = float (fabs (CFloatVector::Dot (h, n)));
 	//h = r - n * dist;
 	h = n;
-	h *= -d;
+	h *= d;
 	h += r;
 	if (!PointIsOutsideFace (&h, n, nVerts + j, 5 - sideP->m_nFaces)) {
 		if (vHit) {
