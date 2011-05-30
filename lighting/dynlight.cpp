@@ -597,6 +597,10 @@ return fix (dist / info.fRange);
 }
 
 //------------------------------------------------------------------------------
+// Check whether a point can be seen from a light emitting face. Returns:
+// -1: Point is behind light face or light face is on rear side of point
+// 0: Point is occluded by geometry
+// 1: Point is visible
 
 #define LIGHTING_LEVEL 1
 
@@ -764,12 +768,13 @@ else {
 	}
 if (nLightSeg == nDestSeg)
 	info.bDiffuse [nThread] = 1;
-else {
+else { // check whether light only contributes ambient light to point
 	int bDiffuse = info.bDiffuse [nThread] && SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
-
-	if (bDiffuse <= 0) {
+	if (bDiffuse <= 0) { // => ambient contribution only
 		info.bDiffuse [nThread] = 0;
-		if ((bDiffuse < 0) || !SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread)) {
+		// if point occluded, use segment path distance to point for light range and attenuation
+		// if bDiffuse == 0 then point is completely occluded (determined by above call to SeesPoint ()), otherwise use SeesPoint() to test occlusion
+		if (!bDiffuse || !SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread)) {
 			fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 			if (xPathLength < 0)
 				return 0;
