@@ -228,6 +228,7 @@ for (i = nStart; i < nEnd; i++) {
 							G3VertexColor (nSegment, nSide, nVertex,
 												gameData.segs.points [nVertex].GetNormal ()->XYZ (), gameData.segs.fVertices [nVertex].XYZ (),
 											   NULL, &c, 1, 0, nThread);
+							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 							lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 							lightManager.ResetNearestToVertex (nVertex, nThread);
 							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
@@ -405,6 +406,7 @@ for (i = nStart; i < nEnd; i++) {
 								G3VertexColor (nSegment, nSide, nVertex,
 													gameData.segs.points [nVertex].GetNormal ()->XYZ (), gameData.segs.fVertices [nVertex].XYZ (), 
 													NULL, &c, 1, 0, nThread);
+								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
@@ -537,6 +539,7 @@ for (i = nStart; i < nEnd; i++) {
 								}
 							else {
 								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
+								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
