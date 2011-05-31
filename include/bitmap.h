@@ -94,7 +94,7 @@ class CBitmapInfo {
 		tBmProps				props;
 		ubyte					flags;
 		ushort				nId;
-		tRgbColorb			avgColor;
+		CRGBColor			avgColor;
 		ubyte					avgColorIndex;
 		ubyte					nBPP;
 		ubyte					nType;
@@ -121,7 +121,7 @@ class CBitmapInfo {
 		CTexture				texture;
 		CTexture*			texP;
 		tTexCoord2f*		texCoordP;
-		tRgbaColorf*		colorP;
+		CFloatVector*		colorP;
 		int					nColors;
 	};
 
@@ -189,8 +189,8 @@ class CBitmap : public CArray< ubyte > {
 			return bmP->CurFrame (iFrame);
 			}
 
-		inline void SetColor (tRgbaColorf* colorP = NULL, int nColors = 1) { m_info.colorP = colorP, m_info.nColors = nColors; }
-		inline tRgbaColorf* GetColor (int* nColors = NULL) { 
+		inline void SetColor (CFloatVector* colorP = NULL, int nColors = 1) { m_info.colorP = colorP, m_info.nColors = nColors; }
+		inline CFloatVector* GetColor (int* nColors = NULL) { 
 			if (nColors)
 				*nColors = m_info.nColors; 
 			return m_info.colorP; 
@@ -202,9 +202,9 @@ class CBitmap : public CArray< ubyte > {
 		void SetSuperTransparent (int bTransparent);
 		void CheckTransparency (void);
 		int HasTransparency (void);
-		int AvgColor (tRgbColorf *colorP = NULL, bool bForce = true);
-		inline tRgbColorb *GetAvgColor (void) { return &m_info.avgColor; }
-		tRgbaColorf *GetAvgColor (tRgbaColorf *colorP);
+		int AvgColor (CFloatVector3 *colorP = NULL, bool bForce = true);
+		inline CRGBColor *GetAvgColor (void) { return &m_info.avgColor; }
+		CFloatVector *GetAvgColor (CFloatVector *colorP);
 		int AvgColorIndex (void);
 
 		void Swap_0_255 (void);
@@ -287,7 +287,7 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetTeam (ubyte nTeam) { m_info.nTeam = nTeam; }
 		inline void SetBlendMode (ubyte nBlendMode) { m_info.nBlendMode = nBlendMode; }
 		inline void SetAvgColorIndex (ubyte nIndex) { m_info.avgColorIndex = nIndex; }
-		inline void SetAvgColor (tRgbColorb& color) { m_info.avgColor = color; }
+		inline void SetAvgColor (CRGBColor& color) { m_info.avgColor = color; }
 		inline void SetTranspType (int nTranspType) { m_info.nTranspType = ((m_info.nBPP > 1) ? -1 : nTranspType); }
 		inline void SetupTexture (void) {
 			m_info.texP = &m_info.texture;
@@ -337,7 +337,7 @@ class CBitmap : public CArray< ubyte > {
 						int xDest, int yDest, int wDest, int hDest,
 						int xSrc, int ySrc, int wSrc, int hSrc,
 						int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0,
-						float fAlpha = 1.0f, tRgbaColorf* colorP = NULL);
+						float fAlpha = 1.0f, CFloatVector* colorP = NULL);
 		inline void Render (CBitmap* dest, int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, float fAlpha = 1.0f)
 		 { Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, bSmoothe, fAlpha); }
 		void RenderStretched (CBitmap* dest = NULL, int x = 0, int y = 0);
@@ -354,9 +354,9 @@ class CBitmap : public CArray< ubyte > {
 		void SetTexCoord (GLfloat u, GLfloat v, int orient);
 		void SetTexCoord (GLfloat u, GLfloat v, int orient, tTexCoord2f& texCoord);
 		CTexture* OglBeginRender (bool bBlend, int bMipMaps, int nTranspType);
-		void OglRender (tRgbaColorf* colorP, int nColors, int orient);
+		void OglRender (CFloatVector* colorP, int nColors, int orient);
 		void OglEndRender (void);
-		int RenderScaled (int x, int y, int w = 0, int h = 0, int scale = I2X (1), int orient = 0, tCanvasColor *colorP = NULL, int bSmoothe = 1);
+		int RenderScaled (int x, int y, int w = 0, int h = 0, int scale = I2X (1), int orient = 0, CCanvasColor *colorP = NULL, int bSmoothe = 1);
 
 		inline bool Clip (int x, int y) { return (x < 0) || (y < 0) || (x >= Width ()) || (y >= Width ()); }
 		void DrawPixel (int x, int y, ubyte color);
@@ -385,7 +385,7 @@ inline int operator- (CBitmap* o, CArray<CBitmap>& a) { return a.Index (o); }
 
 //-----------------------------------------------------------------------------
 
-tRgbColorf *BitmapColor (CBitmap *bmP, ubyte *bufP);
+CFloatVector3 *BitmapColor (CBitmap *bmP, ubyte *bufP);
 void LoadGameBackground (void);
 void GrBitmapM (int x, int y, CBitmap *bmP, int bTransp);
 void GrBmUBitBltM (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest, int bTransp);

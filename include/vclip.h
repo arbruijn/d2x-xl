@@ -50,12 +50,12 @@ extern int Num_vclips [2];
 extern tVideoClip Vclip [2][MAX_VCLIPS];
 
 // draw an CObject which renders as a tVideoClip.
-void DrawVClipObject (CObject *objP, fix timeleft, int lighted, int vclip_num, tRgbaColorf *color);
+void DrawVClipObject (CObject *objP, fix timeleft, int lighted, int vclip_num, CFloatVector *color);
 void DrawWeaponVClip (CObject *objP);
 void DrawExplBlast (CObject *objP);
 void DrawShockwave (CObject *objP);
 void ConvertWeaponToVClip (CObject *objP);
-tRgbColorb *VClipColor (CObject *objP);
+CRGBColor *VClipColor (CObject *objP);
 
 void ReadVideoClip (tVideoClip& vc, CFile& cf);
 int ReadVideoClips (CArray<tVideoClip>& vc, int n, CFile& cf);

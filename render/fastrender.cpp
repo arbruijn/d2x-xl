@@ -514,7 +514,7 @@ return 1;
 static inline int FaceIsTransparent (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
 {
 if (!bmBot)
-	return faceP->m_info.nTransparent = faceP->m_info.bTransparent || (faceP->m_info.color.alpha < 1.0f);
+	return faceP->m_info.nTransparent = faceP->m_info.bTransparent || (faceP->m_info.color.Alpha () < 1.0f);
 if (faceP->m_info.bTransparent || faceP->m_info.bAdditive)
 	return 1;
 if (bmBot->Flags () & BM_FLAG_SEE_THRU)

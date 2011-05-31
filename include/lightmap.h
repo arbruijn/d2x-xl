@@ -29,12 +29,12 @@ typedef struct tLightmapInfo {
 } tLightmapInfo;
 
 typedef struct tLightmap {
-	tRgbColorf	*bmP;
+	CFloatVector3	*bmP;
 } tLightmap;
 
 typedef struct tLightmapBuffer {
 	GLuint		handle;
-	tRgbColorb	bmP [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
+	CRGBColor	bmP [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
 } tLightmapBuffer;
 
 typedef struct tLightmapList {
@@ -54,7 +54,7 @@ typedef struct tLightmapData {
 	CFixVector				vNormal;
 	ushort					sideVerts [4]; 
 	CVertColorData			vcd;
-	tRgbColorb				texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
+	CRGBColor				texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
 	CFixVector				pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
 	int						nOffset [MAX_LIGHTMAP_WIDTH];
 	CArray<tSegFacePtr>	faceList;
@@ -87,8 +87,8 @@ class CLightmapManager {
 		inline void ComputePixelOffset (CFixVector& vPos, CFixVector& v1, CFixVector& v2, int nOffset);
 		double SideRad (int nSegment, int nSide);
 		int CountLights (int bVariable);
-		void Copy (tRgbColorb *texColorP, ushort nLightmap);
-		void CreateSpecial (tRgbColorb *texColorP, ushort nLightmap, ubyte nColor);
+		void Copy (CRGBColor *texColorP, ushort nLightmap);
+		void CreateSpecial (CRGBColor *texColorP, ushort nLightmap, ubyte nColor);
 		void Realloc (int nBuffers);
 		int Save (int nLevel);
 		int Load (int nLevel);

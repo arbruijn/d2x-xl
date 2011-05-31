@@ -1366,17 +1366,17 @@ typedef struct tLightRef {
 
 class CColorData {
 	public:
-		CArray<tFaceColor>	lights;
-		CArray<tFaceColor>	sides;
-		CArray<tFaceColor>	segments;
-		CArray<tFaceColor>	vertices;
+		CArray<CFaceColor>	lights;
+		CArray<CFaceColor>	sides;
+		CArray<CFaceColor>	segments;
+		CArray<CFaceColor>	vertices;
 		CArray<float>			vertBright;
-		CArray<tFaceColor>	ambient;	//static light values
-		CArray<tFaceColor>	textures; // [MAX_WALL_TEXTURES];
-		CArray<tFaceColor>	defaultTextures [2]; //[MAX_WALL_TEXTURES];
+		CArray<CFaceColor>	ambient;	//static light values
+		CArray<CFaceColor>	textures; // [MAX_WALL_TEXTURES];
+		CArray<CFaceColor>	defaultTextures [2]; //[MAX_WALL_TEXTURES];
 		CArray<tLightRef>		visibleLights;
 		int						nVisibleLights;
-		tRgbColorf				flagTag;
+		CFloatVector3			flagTag;
 	public:
 		CColorData ();
 		bool Create (void);
@@ -1429,12 +1429,12 @@ class CLightData {
 		CArray<ubyte>					subtracted;
 		CFlickerLightData				flicker;
 		CArray<fix>						dynamicLight;
-		CArray<tRgbColorf>			dynamicColor;
+		CArray<CFloatVector3>			dynamicColor;
 		CArray<ubyte>					bGotDynColor;
 		ubyte								bGotGlobalDynColor;
 		ubyte								bStartDynColoring;
 		ubyte								bInitDynColoring;
-		tRgbColorf						globalDynColor;
+		CFloatVector3						globalDynColor;
 		CArray<short>					vertices;
 		CArray<sbyte>					vertexFlags;
 		CArray<sbyte>					newObjects;
@@ -1704,7 +1704,7 @@ typedef struct tSlideSegs {
 typedef struct tFaceRenderVertex {
 	CFloatVector3		vertex;
 	CFloatVector3		normal;
-	tRgbaColorf			color;
+	CFloatVector			color;
 	tTexCoord2f			texCoord;
 	tTexCoord2f			ovlTexCoord;
 	tTexCoord2f			lMapTexCoord;
@@ -1719,7 +1719,7 @@ class CFaceData {
 		CArray<tTexCoord2f>		texCoord;
 		CArray<tTexCoord2f>		ovlTexCoord;
 		CArray<tTexCoord2f>		lMapTexCoord;
-		CArray<tRgbaColorf>		color;
+		CArray<CFloatVector>		color;
 		CArray<ushort>				faceVerts;
 		CSegFace*					slidingFaces;
 #if USE_RANGE_ELEMENTS
@@ -2065,7 +2065,7 @@ class CObjectData {
 		CArray<fix>					xLastAfterburnerTime;
 		CArray<fix>					xLight;
 		CArray<int>					nLightSig;
-		tFaceColor					color;
+		CFaceColor					color;
 		short							nFirstDropped;
 		short							nLastDropped;
 		short							nFreeDropped;
@@ -2231,7 +2231,7 @@ class CTextureData {
 		CArray<short>				textureIndex [2]; //[MAX_BITMAP_FILES];
 		CArray<ushort>				objBmIndexP ; //[MAX_OBJ_BITMAPS];
 		CArray<tBitmapIndex>		cockpitBmIndex; //[N_COCKPIT_BITMAPS];
-		CArray<tRgbColorf>		bitmapColors ; //[MAX_BITMAP_FILES];
+		CArray<CFloatVector3>		bitmapColors ; //[MAX_BITMAP_FILES];
 		int							nBitmaps [2];
 		int							nObjBitmaps;
 		int							bPageFlushed;
@@ -2338,7 +2338,7 @@ class CWeaponData {
 		int						nTypes [2];
 		CStaticArray< CWeaponInfo, MAX_WEAPON_TYPES >	info; // [MAX_WEAPON_TYPES];
 		CStaticArray< CD1WeaponInfo, D1_MAX_WEAPON_TYPES >	infoD1; // [D1_MAX_WEAPON_TYPES];
-		CArray<tRgbaColorf>	color;
+		CArray<CFloatVector>	color;
 		ubyte						bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
 
 	public:

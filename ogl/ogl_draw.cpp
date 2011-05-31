@@ -45,7 +45,7 @@
 
 extern int r_upixelc;
 
-void OglDrawPixel (int x, int y, tCanvasColor *colorP)
+void OglDrawPixel (int x, int y, CCanvasColor *colorP)
 {
 if (ogl.SizeVertexBuffer (1)) {
 	ogl.SetTexturing (false);
@@ -61,7 +61,7 @@ if (ogl.SizeVertexBuffer (1)) {
 
 //------------------------------------------------------------------------------
 
-void OglDrawFilledRect (int left, int top, int right, int bot, tCanvasColor *colorP)
+void OglDrawFilledRect (int left, int top, int right, int bot, CCanvasColor *colorP)
 {
 GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);
 GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);
@@ -82,7 +82,7 @@ ogl.RenderQuad (NULL, vPosf, (x1 - x0) / 2, (y1 - y0) / 2, 2);
 
 //------------------------------------------------------------------------------
 
-void OglDrawFilledPoly (int* x, int* y, int nVerts, tCanvasColor *colorP, int nColors)
+void OglDrawFilledPoly (int* x, int* y, int nVerts, CCanvasColor *colorP, int nColors)
 {
 if (ogl.SizeBuffers (nVerts + 1)) {
 	int left = CCanvas::Current ()->Left ();
@@ -106,7 +106,7 @@ if (ogl.SizeBuffers (nVerts + 1)) {
 
 //------------------------------------------------------------------------------
 
-void OglDrawLine (int left, int top, int right, int bot, tCanvasColor *colorP)
+void OglDrawLine (int left, int top, int right, int bot, CCanvasColor *colorP)
 {
 if (ogl.SizeVertexBuffer (2)) {
 	GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);
@@ -127,7 +127,7 @@ if (ogl.SizeVertexBuffer (2)) {
 
 //------------------------------------------------------------------------------
 
-void OglDrawEmptyRect (int left, int top, int right, int bot, tCanvasColor* colorP)
+void OglDrawEmptyRect (int left, int top, int right, int bot, CCanvasColor* colorP)
 {
 if (ogl.SizeVertexBuffer (4)) {
 	GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);

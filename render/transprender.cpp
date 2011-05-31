@@ -281,7 +281,7 @@ int CTransparencyRenderer::SplitPoly (tTranspPoly *item, int nDepth)
 {
 	tTranspPoly		split [2];
 	CFloatVector		vSplit;
-	tRgbaColorf	color;
+	CFloatVector	color;
 	int			i, l, i0, i1, i2, i3, nMinLen = 0x7fff, nMaxLen = 0;
 	float			z, zMin, zMax, *coord, *c0, *c1;
 
@@ -390,8 +390,8 @@ return Add (tiObject, &item, sizeof (item), OBJPOS (objP)->vPos, 0, 0, -1);
 //------------------------------------------------------------------------------
 
 int CTransparencyRenderer::AddPoly (CSegFace *faceP, tFaceTriangle *triP, CBitmap *bmP,
-												CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
-												tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
+												CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, CFloatVector *color,
+												CFaceColor* altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 												short nSegment)
 {
 if (gameStates.render.nShadowMap)
@@ -416,20 +416,20 @@ if ((item.nColors = nColors)) {
 	if (nColors < nVertices)
 		nColors = 1;
 	if (color) {
-		memcpy (item.color, color, nColors * sizeof (tRgbaColorf));
+		memcpy (item.color, color, nColors * sizeof (CFloatVector));
 		for (i = 0; i < nColors; i++)
 			if (bAdditive)
-				item.color [i].alpha = 1;
+				item.color [i].Alpha () = 1;
 			else
-				item.color [i].alpha *= s;
+				item.color [i].Alpha () *= s;
 		}
 	else if (altColor) {
 		for (i = 0; i < nColors; i++) {
-			item.color [i] = altColor [i].color;
+			item.color [i] = altColor [i];
 			if (bAdditive)
-				item.color [i].alpha = 1;
+				item.color [i].Alpha () = 1;
 			else
-				item.color [i].alpha *= s;
+				item.color [i].Alpha () *= s;
 			}
 		}
 	else
@@ -538,7 +538,7 @@ return AddPoly (faceP, NULL, bmP,
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::AddSprite (CBitmap *bmP, const CFixVector& position, tRgbaColorf *color,
+int CTransparencyRenderer::AddSprite (CBitmap *bmP, const CFixVector& position, CFloatVector *color,
 												  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad)
 {
 if (gameStates.render.nShadowMap)
@@ -594,10 +594,10 @@ if (gameStates.render.nShadowMap)
 tTranspSphere	item;
 	//CFixVector		vPos;
 item.nType = nType;
-item.color.red = red;
-item.color.green = green;
-item.color.blue = blue;
-item.color.alpha = alpha;
+item.color.Red () = red;
+item.color.Green () = green;
+item.color.Blue () = blue;
+item.color.Alpha () = alpha;
 item.nSize = nSize;
 item.bAdditive = bAdditive;
 item.objP = objP;
@@ -663,7 +663,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP)
+int CTransparencyRenderer::AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, CFloatVector *colorP)
 {
 if (gameStates.render.nShadowMap)
 	return 0;
@@ -928,7 +928,7 @@ if (!bTextured) {
 #endif
 ogl.SetupTransform (1);
 if (gameStates.render.bFullBright)
-	glColor4f (1,1,1,item->color [0].alpha);
+	glColor4f (1,1,1,item->color [0].Alpha ());
 else if (!bColored)
 	glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 ogl.SetBlendMode (bAdditive);
@@ -1110,7 +1110,7 @@ if (USE_PARTICLE_SHADER) {
 	p.m_nLife = p.m_nTTL = 1000;
 	p.m_decay = 1.0f;
 	p.m_nRad = 1.0f;
-	p.m_renderColor.red = p.m_renderColor.green = p.m_renderColor.blue = p.m_renderColor.alpha = 1.0f;
+	p.m_renderColor.Red () = p.m_renderColor.Green () = p.m_renderColor.Blue () = p.m_renderColor.Alpha () = 1.0f;
 	p.m_nWidth =
 	p.m_nHeight = X2F (item->nSize);
 	p.m_bEmissive = -1;
@@ -1167,12 +1167,12 @@ void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1, true);
 if (item->nType == riSphereShield) {
-	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->bAdditive, item->nSize);
+	DrawShieldSphere (item->objP, item->Red (), item->Green (), item->Blue (), item->Alpha (), item->bAdditive, item->nSize);
 	}
 else if (item->nType == riMonsterball) {
 	if (glowRenderer.End ())
 		ResetBitmaps ();
-	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
+	DrawMonsterball (item->objP, item->Red (), item->Green (), item->Blue (), item->Alpha ());
 	}
 //shaderManager.Deploy (-1);
 ResetBitmaps ();

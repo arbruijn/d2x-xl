@@ -180,15 +180,15 @@ int GrInternalString0 (int x, int y, const char *s)
 	
 if (CCanvas::Current ()->FontColor (0).rgb) {
 	CCanvas::Current ()->FontColor (0).rgb = 0;
-	CCanvas::Current ()->FontColor (0).index = palette->ClosestColor (CCanvas::Current ()->FontColor (0).color.red, 
-																							CCanvas::Current ()->FontColor (0).color.green, 
-																							CCanvas::Current ()->FontColor (0).color.blue);
+	CCanvas::Current ()->FontColor (0).index = palette->ClosestColor (CCanvas::Current ()->FontColor (0).color.Red (), 
+																							CCanvas::Current ()->FontColor (0).color.Green (), 
+																							CCanvas::Current ()->FontColor (0).color.Blue ());
 	}
 if (CCanvas::Current ()->FontColor (1).rgb) {
 	CCanvas::Current ()->FontColor (1).rgb = 0;
-	CCanvas::Current ()->FontColor (1).index = palette->ClosestColor (CCanvas::Current ()->FontColor (1).color.red, 
-																							CCanvas::Current ()->FontColor (1).color.green, 
-																							CCanvas::Current ()->FontColor (1).color.blue);
+	CCanvas::Current ()->FontColor (1).index = palette->ClosestColor (CCanvas::Current ()->FontColor (1).color.Red (), 
+																							CCanvas::Current ()->FontColor (1).color.Green (), 
+																							CCanvas::Current ()->FontColor (1).color.Blue ());
 	}
 bits = 0;
 videoOffset1 = y * rowSize + x;
@@ -275,10 +275,10 @@ if ((c >= 1) && (c <= 3)) {
 	if (textP [1]) {
 		if (grMsgColorLevel >= c) {
 			CCanvas::Current ()->FontColor (0).rgb = 1;
-			CCanvas::Current ()->FontColor (0).color.red = (textP [1] - nOffset) * nScale;
-			CCanvas::Current ()->FontColor (0).color.green = (textP [2] - nOffset) * nScale;
-			CCanvas::Current ()->FontColor (0).color.blue = (textP [3] - nOffset) * nScale;
-			CCanvas::Current ()->FontColor (0).color.alpha = 255;
+			CCanvas::Current ()->FontColor (0).color.Red () = (textP [1] - nOffset) * nScale;
+			CCanvas::Current ()->FontColor (0).color.Green () = (textP [2] - nOffset) * nScale;
+			CCanvas::Current ()->FontColor (0).color.Blue () = (textP [3] - nOffset) * nScale;
+			CCanvas::Current ()->FontColor (0).color.Alpha () = 255;
 			}
 		return textP + 4;
 		}
@@ -310,11 +310,11 @@ int GrInternalString0m (int x, int y, const char *s)
 
 if (CCanvas::Current ()->FontColor (0).rgb) {
 	CCanvas::Current ()->FontColor (0).rgb = 0;
-	CCanvas::Current ()->FontColor (0).index = fontManager.Current ()->ParentBitmap ().Palette ()->ClosestColor (CCanvas::Current ()->FontColor (0).color.red, CCanvas::Current ()->FontColor (0).color.green, CCanvas::Current ()->FontColor (0).color.blue);
+	CCanvas::Current ()->FontColor (0).index = fontManager.Current ()->ParentBitmap ().Palette ()->ClosestColor (CCanvas::Current ()->FontColor (0).color.Red (), CCanvas::Current ()->FontColor (0).color.Green (), CCanvas::Current ()->FontColor (0).color.Blue ());
 	}
 if (CCanvas::Current ()->FontColor (1).rgb) {
 	CCanvas::Current ()->FontColor (1).rgb = 0;
-	CCanvas::Current ()->FontColor (1).index = fontManager.Current ()->ParentBitmap ().Palette ()->ClosestColor (CCanvas::Current ()->FontColor (1).color.red, CCanvas::Current ()->FontColor (1).color.green, CCanvas::Current ()->FontColor (1).color.blue);
+	CCanvas::Current ()->FontColor (1).index = fontManager.Current ()->ParentBitmap ().Palette ()->ClosestColor (CCanvas::Current ()->FontColor (1).color.Red (), CCanvas::Current ()->FontColor (1).color.Green (), CCanvas::Current ()->FontColor (1).color.Blue ());
 	}
 origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
 bits=0;
@@ -421,7 +421,7 @@ int CFont::DrawString (int left, int top, const char *s)
 	float				fScale = fontManager.Scale ();
 	ubyte				c;
 	CBitmap*			bmf;
-	tCanvasColor*	colorP = (m_info.flags & FT_COLOR) ? NULL : &CCanvas::Current ()->FontColor (0);
+	CCanvasColor*	colorP = (m_info.flags & FT_COLOR) ? NULL : &CCanvas::Current ()->FontColor (0);
 	
 if (CCanvas::Current ()->Mode () != BM_OGL)
 	return -1;
@@ -467,10 +467,10 @@ CBitmap *CreateStringBitmap (
 	int			origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
 	int			i, x, y, hx, hy, w, h, aw, cw, spacing, nTab, nChars, bHotKey;
 	CBitmap		*bmP, *bmfP;
-	tRgbaColorb	hc, kc, *pc;
+	CRGBAColor	hc, kc, *pc;
 	ubyte			*pf;
 	CPalette		*palP = NULL;
-	tRgbColorb	*colorP;
+	CRGBColor	*colorP;
 	ubyte			c;
 	const char	*textP, *text_ptr1, *nextRowP;
 	int			letter;
@@ -570,21 +570,21 @@ x = 0;
 		int transparencyColor = paletteManager.Texture ()->TransparentColor ();
 		nChars++;
 		i = nKeyColor * 3;
-		kc.red = RGBA_RED (nKeyColor);
-		kc.green = RGBA_GREEN (nKeyColor);
-		kc.blue = RGBA_BLUE (nKeyColor);
-		kc.alpha = 255;
+		kc.Red () = RGBA_RED (nKeyColor);
+		kc.Green () = RGBA_GREEN (nKeyColor);
+		kc.Blue () = RGBA_BLUE (nKeyColor);
+		kc.Alpha () = 255;
 		if (fontP->Flags () & FT_COLOR) {
 			for (hy = 0; hy < bmfP->Height (); hy++) {
-				pc = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + (y + hy) * w + x;
+				pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
 				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
 				for (hx = bmfP->Width (); hx; hx--, pc++, pf++)
 					if ((c = *pf) != transparencyColor) {
 						colorP = palP->Color () + c;
-						pc->red = colorP->red * 4;
-						pc->green = colorP->green * 4;
-						pc->blue = colorP->blue * 4;
-						pc->alpha = 255;
+						pc->Red () = colorP->Red () * 4;
+						pc->Green () = colorP->Green () * 4;
+						pc->Blue () = colorP->Blue () * 4;
+						pc->Alpha () = 255;
 						}
 #if DBG
 					else
@@ -601,14 +601,14 @@ x = 0;
 					}
 				else {
 					colorP = palP->Color () + CCanvas::Current ()->FontColor (0).index;
-					hc.red = colorP->red * 4;
-					hc.green = colorP->green * 4;
-					hc.blue = colorP->blue * 4;
+					hc.Red () = colorP->Red () * 4;
+					hc.Green () = colorP->Green () * 4;
+					hc.Blue () = colorP->Blue () * 4;
 					}
-				hc.alpha = 255;
+				hc.Alpha () = 255;
 				}
 			for (hy = 0; hy < bmfP->Height (); hy++) {
-				pc = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + (y + hy) * w + x;
+				pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
 				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
 				for (hx = bmfP->Width (); hx; hx--, pc++, pf++)
 					if (*pf != transparencyColor)

@@ -121,9 +121,9 @@ for (i = 0; i < m_vld.nLights; i++) {
 			NdotL = 0.0f;
 		}	
 	attenuation = lightDist / brightness;
-	vertColor.v.color.r = (matAmbient.v.color.r + NdotL) * lightColor.v.color.r;
-	vertColor.v.color.g = (matAmbient.v.color.g + NdotL) * lightColor.v.color.g;
-	vertColor.v.color.b = (matAmbient.v.color.b + NdotL) * lightColor.v.color.b;
+	vertColor.Red () = (matAmbient.Red () + NdotL) * lightColor.Red ();
+	vertColor.Green () = (matAmbient.Green () + NdotL) * lightColor.Green ();
+	vertColor.Blue () = (matAmbient.Blue () + NdotL) * lightColor.Blue ();
 	if (NdotL > 0.0f) {
 		vReflect = CFloatVector::Reflect (lightDir.Neg (), *vertNorm);
 		CFloatVector::Normalize (vReflect);
@@ -133,13 +133,13 @@ for (i = 0; i < m_vld.nLights; i++) {
 		if (RdotE < 0.0f)
 			RdotE = 0.0f;
 		specular = (float) pow (RdotE, shininess);
-		vertColor.v.color.r += lightColor.v.color.r * specular;
-		vertColor.v.color.g += lightColor.v.color.g * specular;
-		vertColor.v.color.b += lightColor.v.color.b * specular;
+		vertColor.Red () += lightColor.Red () * specular;
+		vertColor.Green () += lightColor.Green () * specular;
+		vertColor.Blue () += lightColor.Blue () * specular;
 		}	
-	m_vld.colors [i].v.color.r = vertColor.v.color.r / attenuation;
-	m_vld.colors [i].v.color.g = vertColor.v.color.g / attenuation;
-	m_vld.colors [i].v.color.b = vertColor.v.color.b / attenuation;
+	m_vld.colors [i].Red () = vertColor.Red () / attenuation;
+	m_vld.colors [i].Green () = vertColor.Green () / attenuation;
+	m_vld.colors [i].Blue () = vertColor.Blue () / attenuation;
 	}
 }
 
@@ -147,12 +147,12 @@ for (i = 0; i < m_vld.nLights; i++) {
 
 int CGPGPULighting::Render (void)
 {
-	tFaceColor	*vertColorP;
-	tRgbaColorf	vertColor;
-	CFloatVector		*pc;
-	int			i, j;
-	short			nVertex, nLights;
-	GLuint		hBuffer [GPGPU_LIGHT_BUFFERS] = {0,0,0,0};
+	CFaceColor*		vertColorP;
+	CFloatVector	vertColor;
+	CFloatVector*	colorP;
+	int				i, j;
+	short				nVertex, nLights;
+	GLuint			hBuffer [GPGPU_LIGHT_BUFFERS] = {0,0,0,0};
 
 #if !GPGPU_LIGHT_DRAWARRAYS
 	static float	quadCoord [4][2] = {{0, 0}, {0, GPGPU_LIGHT_BUF_WIDTH}, {GPGPU_LIGHT_BUF_WIDTH, GPGPU_LIGHT_BUF_WIDTH}, {GPGPU_LIGHT_BUF_WIDTH, 0}};
@@ -197,47 +197,40 @@ ogl.SetReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
 glReadPixels (0, 0, GPGPU_LIGHT_BUF_WIDTH, GPGPU_LIGHT_BUF_WIDTH, GL_RGBA, GL_FLOAT, m_vld.colors);
 #endif
 
-for (i = 0, pc = m_vld.colors; i < m_vld.nVertices; i++) {
+for (i = 0, colorP = m_vld.colors; i < m_vld.nVertices; i++) {
 	nVertex = m_vld.index [i].nVertex;
 #if DBG
 	if (nVertex == nDbgVertex)
 		nDbgVertex = nDbgVertex;
 #endif
 	vertColor = m_vld.index [i].color;
-	vertColor.red += gameData.render.color.ambient [nVertex].color.red;
-	vertColor.green += gameData.render.color.ambient [nVertex].color.green;
-	vertColor.blue += gameData.render.color.ambient [nVertex].color.blue;
+	vertColor += gameData.render.color.ambient [nVertex];
 	if (gameOpts->render.color.nSaturation == 2) {
-		for (j = 0, nLights = m_vld.index [i].nLights; j < nLights; j++, pc++) {
-			if (vertColor.red < pc->v.color.r)
-				vertColor.red = pc->v.color.r;
-			if (vertColor.green < pc->v.color.g)
-				vertColor.green = pc->v.color.g;
-			if (vertColor.blue < pc->v.color.b)
-				vertColor.blue = pc->v.color.b;
+		for (j = 0, nLights = m_vld.index [i].nLights; j < nLights; j++, colorP++) {
+			if (vertColor.Red () < colorP->Red ())
+				vertColor.Red () = colorP->Red ();
+			if (vertColor.Green () < colorP->Green ())
+				vertColor.Green () = colorP->Green ();
+			if (vertColor.Blue () < colorP->Blue ())
+				vertColor.Blue () = colorP->Blue ();
 			}
 		}
 	else {
-		for (j = 0, nLights = m_vld.index [i].nLights; j < nLights; j++, pc++) {
-			vertColor.red += pc->v.color.r;
-			vertColor.green += pc->v.color.g;
-			vertColor.blue += pc->v.color.b;
+		for (j = 0, nLights = m_vld.index [i].nLights; j < nLights; j++, colorP++) {
+			vertColor += *colorP;
 			}
 		if (gameOpts->render.color.nSaturation) {	//if a color component is > 1, cap color components using highest component value
-			float	cMax = vertColor.red;
-			if (cMax < vertColor.green)
-				cMax = vertColor.green;
-			if (cMax < vertColor.blue)
-				cMax = vertColor.blue;
-			if (cMax > 1) {
-				vertColor.red /= cMax;
-				vertColor.green /= cMax;
-				vertColor.blue /= cMax;
-				}
+			float	cMax = vertColor.Red ();
+			if (cMax < vertColor.Green ())
+				cMax = vertColor.Green ();
+			if (cMax < vertColor.Blue ())
+				cMax = vertColor.Blue ();
+			if (cMax > 1)
+				vertColor /= cMax;
 			}
 		}
 	vertColorP = gameData.render.color.vertices + nVertex;
-	vertColorP->color = vertColor;
+	*vertColorP = vertColor;
 	vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 	}
 m_vld.nVertices = 0;
@@ -247,7 +240,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CGPGPULighting::Compute (short nVertex, int nState, tFaceColor *colorP)
+int CGPGPULighting::Compute (short nVertex, int nState, CFaceColor *colorP)
 {
 	int	nLights, h, i, j;
 

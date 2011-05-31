@@ -388,7 +388,7 @@ tGaugeBox hudWindowAreas [8] = {
 
 //	-----------------------------------------------------------------------------
 
-tCanvasColor gaugeFadeColors [2][4] = {
+CCanvasColor gaugeFadeColors [2][4] = {
 	{{-1, 1, {0, 0, 0, 255}},
 	 {-1, 1, {0, 0, 0, 0}},
 	 {-1, 1, {0, 0, 0, 0}},

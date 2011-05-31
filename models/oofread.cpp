@@ -719,9 +719,9 @@ if (m_bTextured) {
 #endif
 	}
 else {
-	m_texProps.color.red = OOF_ReadByte (cf, "texProps.color.red");
-	m_texProps.color.green = OOF_ReadByte (cf, "texProps.color.green");
-	m_texProps.color.blue = OOF_ReadByte (cf, "texProps.color.blue");
+	m_texProps.color.Red () = OOF_ReadByte (cf, "texProps.color.Red ()");
+	m_texProps.color.Green () = OOF_ReadByte (cf, "texProps.color.Green ()");
+	m_texProps.color.Blue () = OOF_ReadByte (cf, "texProps.color.Blue ()");
 	}
 #if OOF_MEM_OPT
 if (pfv) {
@@ -1016,9 +1016,9 @@ if (!stricmp (command,"$glow=")) {
 	Assert (nValues == 4);
 	m_nFlags |= OOF_SOF_GLOW;
 	//m_glowInfo = new CGlowInfo;
-	m_glowInfo.m_color.red = r;
-	m_glowInfo.m_color.green = g;
-	m_glowInfo.m_color.blue = b;
+	m_glowInfo.m_color.Red () = r;
+	m_glowInfo.m_color.Green () = g;
+	m_glowInfo.m_color.Blue () = b;
 	m_glowInfo.m_fSize = size;
 	return;
 	}
@@ -1033,9 +1033,9 @@ if (!stricmp (command,"$thruster=")) {
 	Assert(nValues == 4);
 	m_nFlags |= OOF_SOF_THRUSTER;
 	//m_glowInfo = new CGlowInfo;
-	m_glowInfo.m_color.red = r;
-	m_glowInfo.m_color.green = g;
-	m_glowInfo.m_color.blue = b;
+	m_glowInfo.m_color.Red () = r;
+	m_glowInfo.m_color.Green () = g;
+	m_glowInfo.m_color.Blue () = b;
 	m_glowInfo.m_fSize = size;
 	return;
 	}
@@ -1202,7 +1202,7 @@ if (m_nVerts) {
 			m_pfAlpha [i] = 1.0f;
 		else {
 			if (bLogOOF)
-				sprintf (szId, "pfAlpha [%d]", i);
+				sprintf (szId, "fAlphaP [%d]", i);
 			m_pfAlpha [i] = OOF_ReadFloat (cf, szId);
 			if	(m_pfAlpha [i] < 0.99)
 				po->m_nFlags |= OOF_PMF_ALPHA;

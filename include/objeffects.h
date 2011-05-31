@@ -9,12 +9,12 @@ void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, floa
 void RenderPowerupCorona (CObject *objP, float red, float green, float blue, float alpha);
 void RenderPlayerShield (CObject *objP);
 void RenderRobotShield (CObject *objP);
-void RenderDamageIndicator (CObject *objP, tRgbColorf *pc);
+void RenderDamageIndicator (CObject *objP, CFloatVector3 *pc);
 void RenderMslLockIndicator (CObject *objP);
-void RenderTargetIndicator (CObject *objP, tRgbColorf *pc);
+void RenderTargetIndicator (CObject *objP, CFloatVector3 *pc);
 void RenderTowedFlag (CObject *objP);
-void RenderLaserCorona (CObject *objP, tRgbaColorf *colorP, float alpha, float fScale);
-int RenderWeaponCorona (CObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset, int bDepthSort);
+void RenderLaserCorona (CObject *objP, CFloatVector *colorP, float alpha, float fScale);
+int RenderWeaponCorona (CObject *objP, CFloatVector *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset, int bDepthSort);
 void RenderLightTrail (CObject *objP);
 void DrawDebrisCorona (CObject *objP);
 

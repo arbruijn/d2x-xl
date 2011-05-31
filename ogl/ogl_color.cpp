@@ -51,33 +51,33 @@
 
 //------------------------------------------------------------------------------
 
-tFaceColor lightColor = {{1.0f, 1.0f, 1.0f, 1.0f}, 0};
-tFaceColor tMapColor = {{1.0f, 1.0f, 1.0f, 1.0f}, 0};
-tFaceColor vertColors [8] = {
- {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
- {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
- {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
- {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
- {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
- {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
- {{1.0f, 1.0f, 1.0f, 1.0f}, 0},
- {{1.0f, 1.0f, 1.0f, 1.0f}, 0}
+CFaceColor lightColor = {{{1.0f, 1.0f, 1.0f, 1.0f}}, 0};
+CFaceColor tMapColor = {{{1.0f, 1.0f, 1.0f, 1.0f}}, 0};
+CFaceColor vertColors [8] = {
+	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
+	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
+	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
+	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
+	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
+	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
+	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
+	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}
 	};
-tRgbaColorf shadowColor [2] = {{1.0f, 0.0f, 0.0f, 0.8f}, {0.0f, 0.0f, 1.0f, 0.8f}};
-tRgbaColorf modelColor [2] = {{0.0f, 0.5f, 1.0f, 0.5f}, {0.0f, 1.0f, 0.5f, 0.5f}};
+CFloatVector shadowColor [2] = {{1.0f, 0.0f, 0.0f, 0.8f}, {0.0f, 0.0f, 1.0f, 0.8f}};
+CFloatVector modelColor [2] = {{0.0f, 0.5f, 1.0f, 0.5f}, {0.0f, 1.0f, 0.5f, 0.5f}};
 
 //------------------------------------------------------------------------------
 
-void OglPalColor (CPalette *palette, int c, tRgbaColorf* colorP)
+void OglPalColor (CPalette *palette, int c, CFloatVector* colorP)
 {
-	tRgbaColorf	color;
+	CFloatVector	color;
 
 if (c < 0) {
 	if (colorP)
-		colorP->red =
-		colorP->green =
-		colorP->blue =
-		colorP->alpha = 1.0;
+		colorP->Red () =
+		colorP->Green () =
+		colorP->Blue () =
+		colorP->Alpha () = 1.0;
 	else
 		glColor3f (1.0, 1.0, 1.0);
 	}
@@ -85,7 +85,7 @@ else {
 	if (!palette)
 		palette = paletteManager.Game ();
 	palette->ToRgbaf (c, color);
-	color.alpha = gameStates.render.grAlpha;
+	color.Alpha () = gameStates.render.grAlpha;
 	if (colorP)
 		*colorP = color;
 	else
@@ -95,43 +95,43 @@ else {
 
 //------------------------------------------------------------------------------
 
-tRgbaColorf GetPalColor (CPalette *palette, int c)
+CFloatVector GetPalColor (CPalette *palette, int c)
 {
-	tRgbaColorf color;
+	CFloatVector color;
 
 if (c < 0)
-	color.red = color.green = color.blue = color.alpha = 1.0f;
+	color.Red () = color.Green () = color.Blue () = color.Alpha () = 1.0f;
 else {
 	if (!palette)
 		palette = paletteManager.Game ();
 	palette->ToRgbaf (c, color);
-	color.alpha = gameStates.render.grAlpha;
+	color.Alpha () = gameStates.render.grAlpha;
 	}
 return color;
 }
 
 //------------------------------------------------------------------------------
 
-void OglCanvasColor (tCanvasColor* canvColorP, tRgbaColorf* colorP)
+void OglCanvasColor (CCanvasColor* canvColorP, CFloatVector* colorP)
 {
-	tRgbaColorf	color;
+	CFloatVector	color;
 
 if (!canvColorP) {
 	if (colorP) {
-		colorP->red =
-		colorP->green =
-		colorP->blue = 1.0f;
-		colorP->alpha = gameStates.render.grAlpha;
+		colorP->Red () =
+		colorP->Green () =
+		colorP->Blue () = 1.0f;
+		colorP->Alpha () = gameStates.render.grAlpha;
 		}
 	else 
 		glColor4f (1.0f, 1.0f, 1.0f, gameStates.render.grAlpha);
 	}
 else if (canvColorP->rgb) {
-	color.red = float (canvColorP->color.red) / 255.0f;
-	color.green = float (canvColorP->color.green) / 255.0f;
-	color.blue = float (canvColorP->color.blue) / 255.0f;
-	color.alpha = float (canvColorP->color.alpha) / 255.0f * gameStates.render.grAlpha;
-	if (color.alpha < 1.0f)
+	color.Red () = float (canvColorP->Red ()) / 255.0f;
+	color.Green () = float (canvColorP->Green ()) / 255.0f;
+	color.Blue () = float (canvColorP->Blue ()) / 255.0f;
+	color.Alpha () = float (canvColorP->Alpha ()) / 255.0f * gameStates.render.grAlpha;
+	if (color.Alpha () < 1.0f)
 		ogl.SetBlendMode (ogl.m_data.nSrcBlendMode, ogl.m_data.nDestBlendMode);
 	if (colorP)
 		*colorP = color;
@@ -144,21 +144,21 @@ else
 
 //------------------------------------------------------------------------------
 
-tRgbaColorf GetCanvasColor (tCanvasColor *colorP)
+CFloatVector GetCanvasColor (CCanvasColor *colorP)
 {
 
 if (!colorP) {
-	tRgbaColorf	color = {1, 1, 1, gameStates.render.grAlpha};
+	CFloatVector	color = {1, 1, 1, gameStates.render.grAlpha};
 	return color;
 	}
 else if (colorP->rgb) {
-	tRgbaColorf color = {
-		float (colorP->color.red) / 255.0f,
-		float (colorP->color.green) / 255.0f,
-		float (colorP->color.blue) / 255.0f,
-		float (colorP->color.alpha) / 255.0f * gameStates.render.grAlpha
+	CFloatVector color = {
+		float (colorP->Red ()) / 255.0f,
+		float (colorP->Green ()) / 255.0f,
+		float (colorP->Blue ()) / 255.0f,
+		float (colorP->Alpha ()) / 255.0f * gameStates.render.grAlpha
 		};
-	if (colorP->color.alpha < 1.0f) {
+	if (colorP->Alpha () < 1.0f) {
 		ogl.SetBlending (true);
 		ogl.SetBlendMode (ogl.m_data.nSrcBlendMode, ogl.m_data.nDestBlendMode);
 		}
@@ -181,10 +181,10 @@ else
 inline void CapTMapColor (tUVL *uvlList, int nVertices, CBitmap *bm)
 {
 #if 0
-	tFaceColor *color = tMapColor.index ? &tMapColor : lightColor.index ? &lightColor : NULL;
+	CFaceColor *color = tMapColor.index ? &tMapColor : lightColor.index ? &lightColor : NULL;
 
 if (! (bm->props.flags & BM_FLAG_NO_LIGHTING) && color) {
-		double	vec, mat = tMapColor.color.red;
+		double	vec, mat = tMapColor.color.Red ();
 		double	h, l = 0;
 		int		i;
 
@@ -195,39 +195,35 @@ if (! (bm->props.flags & BM_FLAG_NO_LIGHTING) && color) {
 		}
 
 	// scale brightness with the average color to avoid darkening bright areas with the color
-	vec = (color->color.red + color->color.green + color->color.blue) / 3;
-	if (mat < color->color.green)
-		mat = color->color.green;
-	if (mat < color->color.blue)
-		mat = color->color.blue;
+	vec = (color->Red () + color->Green () + color->Blue ()) / 3;
+	if (mat < color->Green ())
+		mat = color->Green ();
+	if (mat < color->Blue ())
+		mat = color->Blue ();
 	l = l / vec;
 	// prevent any color component getting over 1.0
 	if (l * mat > 1.0)
 		l = 1.0 / mat;
-	color->color.red *= l;
-	color->color.green *= l;
-	color->color.blue *= l;
+	color->Red () *= l;
+	color->Green () *= l;
+	color->Blue () *= l;
 	}
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-static inline void ScaleColor (tFaceColor *color, float l)
+static inline void ScaleColor (CFaceColor *colorP, float l)
 {
 if (l >= 0) {
-		float m = color->color.red;
+		float m = colorP->v.color.Red ();
 
-	if (m < color->color.green)
-		m = color->color.green;
-	if (m < color->color.blue)
-		m = color->color.blue;
-	if (m > 0.0f) {
-		m = l / m;
-		color->color.red *= m;
-		color->color.green *= m;
-		color->color.blue *= m;
-		}
+	if (m < colorP->v.color.Green ())
+		m = colorP->v.color.Green ();
+	if (m < colorP->v.color.Blue ())
+		m = colorP->v.color.Blue ();
+	if (m > 0.0f)
+		*colorP *= l / m;
 	}
 }
 
@@ -256,7 +252,7 @@ else {
 //------------------------------------------------------------------------------
 
 /*inline*/
-void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, tRgbaColorf* colorP)
+void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, CFloatVector* colorP)
 {
 	float l = (bmP->Flags () & BM_FLAG_NO_LIGHTING) ? 1.0f : X2F (uvlList->l);
 	float s = 1.0f;
@@ -268,67 +264,65 @@ if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
 	if (!colorP)
 		OglColor4sf (l, l, l, s);
 	else {
-		colorP->red =
-		colorP->green =
-		colorP->blue = l;
-		colorP->alpha = s;
+		colorP->Red () =
+		colorP->Green () =
+		colorP->Blue () = l;
+		colorP->Alpha () = s;
 		}
 	}
 else if (colorP) {
 	if (tMapColor.index) {
 		ScaleColor (&tMapColor, l);
 		*colorP = tMapColor.color;
-		colorP->red *= gameData.render.fBrightness;
-		colorP->green *= gameData.render.fBrightness;
-		colorP->blue *= gameData.render.fBrightness;
+		colorP->Red () *= gameData.render.fBrightness;
+		colorP->Green () *= gameData.render.fBrightness;
+		colorP->Blue () *= gameData.render.fBrightness;
 		if (l >= 0)
-			tMapColor.color.red =
-			tMapColor.color.green =
-			tMapColor.color.blue = 1.0;
+			tMapColor.color.Red () =
+			tMapColor.color.Green () =
+			tMapColor.color.Blue () = 1.0;
 		}
-	else if (i >= (int) (sizeof (vertColors) / sizeof (tFaceColor)))
+	else if (i >= (int) (sizeofa (vertColors)))
 		return;
 	else if (vertColors [i].index) {
-			tFaceColor *pvc = vertColors + i;
+			CFaceColor* vertColorP = vertColors + i;
 
 		*colorP = vertColors [i].color;
-		colorP->red *= gameData.render.fBrightness;
-		colorP->green *= gameData.render.fBrightness;
-		colorP->blue *= gameData.render.fBrightness;
+		colorP *= gameData.render.fBrightness;
 		if (bResetColor) {
-			pvc->color.red =
-			pvc->color.green =
-			pvc->color.blue = 1.0;
-			pvc->index = 0;
+			vertColorP->Red () =
+			vertColorP->Green () =
+			vertColorP->Blue () = 1.0f;
+			vertColorP->index = 0;
 			}
 		}
 	else {
-		colorP->red =
-		colorP->green =
-		colorP->blue = l;
+		colorP->Red () =
+		colorP->Green () =
+		colorP->Blue () = l.0f;
 		}
-	colorP->alpha = s;
+	colorP->Alpha () = s;
 	}
 else {
 	if (tMapColor.index) {
 		ScaleColor (&tMapColor, l);
-		OglColor4sf (tMapColor.color.red, tMapColor.color.green, tMapColor.color.blue, s);
+		OglColor4sf (tMapColor.color.Red (), tMapColor.color.Green (), tMapColor.color.Blue (), s);
 		if (l >= 0)
-			tMapColor.color.red =
-			tMapColor.color.green =
-			tMapColor.color.blue = 1.0;
+			tMapColor.color.Red () =
+			tMapColor.color.Green () =
+			tMapColor.color.Blue () = 1.0;
 		}
-	else if (i >= (int) (sizeof (vertColors) / sizeof (tFaceColor)))
+	else if (i >= (int) (sizeofa (vertColors)))
 		return;
 	else if (vertColors [i].index) {
-			tFaceColor *pvc = vertColors + i;
+			CFaceColor* vertColorP = vertColors + i;
 
-		OglColor4sf (pvc->color.red, pvc->color.green, pvc->color.blue, s);
+		OglColor4sf (vertColorP->Red (), vertColorP->Green (), vertColorP->Blue (), s);
 		if (bResetColor) {
-			pvc->color.red =
-			pvc->color.green =
-			pvc->color.blue = 1.0;
-			pvc->index = 0;
+			vertColorP->Red () =
+			vertColorP->Green () =
+			vertColorP->Blue () = 1.0;
+			vertColorP->index = 0;
 			}
 		}
 	else {
@@ -600,33 +594,33 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		colorSum += vertColor;
 		}
 	else {	//use max. color components
-		nBrightness = sqri ((int) (vertColor.v.color.r * 1000)) + sqri ((int) (vertColor.v.color.g * 1000)) + sqri ((int) (vertColor.v.color.b * 1000));
+		nBrightness = sqri ((int) (vertColor.Red () * 1000)) + sqri ((int) (vertColor.Green () * 1000)) + sqri ((int) (vertColor.Blue () * 1000));
 		if (nMaxBrightness < nBrightness) {
 			nMaxBrightness = nBrightness;
 			colorSum = vertColor;
 			}
 		else if (nMaxBrightness == nBrightness) {
-			if (colorSum.v.color.r < vertColor.v.color.r)
-				colorSum.v.color.r = vertColor.v.color.r;
-			if (colorSum.v.color.g < vertColor.v.color.g)
-				colorSum.v.color.g = vertColor.v.color.g;
-			if (colorSum.v.color.b < vertColor.v.color.b)
-				colorSum.v.color.b = vertColor.v.color.b;
+			if (colorSum.Red () < vertColor.Red ())
+				colorSum.Red () = vertColor.Red ();
+			if (colorSum.Green () < vertColor.Green ())
+				colorSum.Green () = vertColor.Green ();
+			if (colorSum.Blue () < vertColor.Blue ())
+				colorSum.Blue () = vertColor.Blue ();
 			}
 		}
 	j++;
 	}
 if (j) {
 	if ((nSaturation == 1) || gameStates.render.bHaveLightmaps) { //if a color component is > 1, cap color components using highest component value
-		float	cMax = colorSum.v.color.r;
-		if (cMax < colorSum.v.color.g)
-			cMax = colorSum.v.color.g;
-		if (cMax < colorSum.v.color.b)
-			cMax = colorSum.v.color.b;
+		float	cMax = colorSum.Red ();
+		if (cMax < colorSum.Green ())
+			cMax = colorSum.Green ();
+		if (cMax < colorSum.Blue ())
+			cMax = colorSum.Blue ();
 		if (cMax > 1) {
-			colorSum.v.color.r /= cMax;
-			colorSum.v.color.g /= cMax;
-			colorSum.v.color.b /= cMax;
+			colorSum.Red () /= cMax;
+			colorSum.Green () /= cMax;
+			colorSum.Blue () /= cMax;
 			}
 		}
 	*pColorSum = colorSum;
@@ -662,9 +656,9 @@ if (lightManager.Material ().bValid) {
 		}
 #endif
 	colorData.bMatSpecular =
-		lightManager.Material ().specular.v.color.r ||
-		lightManager.Material ().specular.v.color.g ||
-		lightManager.Material ().specular.v.color.b;
+		lightManager.Material ().specular.Red () ||
+		lightManager.Material ().specular.Green () ||
+		lightManager.Material ().specular.Blue ();
 	if (colorData.bMatSpecular) {
 		colorData.matSpecular = lightManager.Material ().specular;
 		colorData.fMatShininess = (float) lightManager.Material ().shininess;
@@ -685,14 +679,14 @@ extern int nDbgVertex;
 
 
 void G3VertexColor (int nSegment, int nSide, int nVertex,
-						  CFloatVector3 *pvVertNorm, CFloatVector3 *pVertPos, 
-						  tFaceColor *pVertColor, tFaceColor *pBaseColor,
+						  CFloatVector3* vVertNormP, CFloatVector3* vVertPosP, 
+						  CFaceColor* vertColorP, CFaceColor* baseColorP,
 						  float fScale, int bSetColor, int nThread)
 {
 PROF_START
 	CFloatVector3	colorSum = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
 	CFloatVector3	vertPos;
-	tFaceColor*		pc = NULL;
+	CFaceColor*		colorP = NULL;
 	int				bVertexLights;
 	CVertColorData	colorData;
 
@@ -715,21 +709,19 @@ if (fScale > 1)
 	fScale = 1;
 #if 1//!DBG //cache light values per frame
 if (!(gameStates.render.nState || colorData.bExclusive || colorData.bMatEmissive) && (nVertex >= 0)) {
-	pc = gameData.render.color.vertices + nVertex;
-	if (pc->index == gameStates.render.nFrameFlipFlop + 1) {
-		if (pVertColor) {
-			pVertColor->index = gameStates.render.nFrameFlipFlop + 1;
-			pVertColor->color.red = pc->color.red * fScale;
-			pVertColor->color.green = pc->color.green * fScale;
-			pVertColor->color.blue = pc->color.blue * fScale;
-			pVertColor->color.alpha = 1;
+	colorP = gameData.render.color.vertices + nVertex;
+	if (colorP->index == gameStates.render.nFrameFlipFlop + 1) {
+		if (vertColorP)
+#pragma omp critical
+			{
+			vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
+			*vertColorP = *colorP * fScale;
+			vertColorP->Alpha () = 1;
 			}
 		if (bSetColor > 0)
-			OglColor4sf (pc->color.red * fScale, pc->color.green * fScale, pc->color.blue * fScale, 1.0);
+			OglColor4sf (colorP->Red () * fScale, colorP->Green () * fScale, colorP->Blue () * fScale, 1.0);
 		else if (bSetColor < 0) {
-			pc->color.red *= gameData.render.fBrightness;
-			pc->color.green *= gameData.render.fBrightness;
-			pc->color.blue *= gameData.render.fBrightness;
+			*colorP *= gameData.render.fBrightness;
 			}
 #if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex))
@@ -746,24 +738,24 @@ if (!gameStates.render.nState && (nVertex == nDbgVertex))
 #endif
 if (ogl.m_states.bUseTransform)
 #if 1
-	colorData.vertNorm = *pvVertNorm;
+	colorData.vertNorm = *vVertNormP;
 #else
-	CFloatVector::Normalize (&colorData.vertNorm, pvVertNorm);
+	CFloatVector::Normalize (&colorData.vertNorm, vVertNormP);
 #endif
 else {
 	if (gameStates.render.nState)
-		transformation.Rotate (colorData.vertNorm, *pvVertNorm, 0);
+		transformation.Rotate (colorData.vertNorm, *vVertNormP, 0);
 	else {
-		colorData.vertNorm = *pvVertNorm;
+		colorData.vertNorm = *vVertNormP;
 		CFloatVector3::Normalize (colorData.vertNorm);
 		}
 	}
-if ((bVertexLights = !(gameStates.render.nState || pVertColor))) {
+if ((bVertexLights = !(gameStates.render.nState || vertColorP))) {
 	vertPos.Assign (gameData.segs.vertices [nVertex]);
-	pVertPos = &vertPos;
+	vVertPosP = &vertPos;
 	lightManager.SetNearestToVertex (nSegment, nSide, nVertex, NULL, 1, 0, 1, nThread);
 	}
-colorData.vertPosP = pVertPos;
+colorData.vertPosP = vVertPosP;
 //VmVecNegate (&vertNorm);
 //if (nLights)
 #if MULTI_THREADED_LIGHTS
@@ -776,18 +768,16 @@ if (gameStates.app.bMultiThreaded) {
 	}
 else
 #endif
-#if 1
+
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
-	colorSum.v.color.r =
-	colorSum.v.color.g =
-	colorSum.v.color.b = 1;
+	colorSum.Red () =
+	colorSum.Green () =
+	colorSum.Blue () = 1;
 	}
-else
-#endif
- {
+else {
 	if (lightManager.Index (0, nThread).nActive) {
-		if (pBaseColor)
-			memcpy (&colorSum, &pBaseColor->color, sizeof (colorSum));
+		if (baseColorP)
+			memcpy (&colorSum, &baseColorP->color, sizeof (colorSum));
 #if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex))
 			nVertex = nVertex;
@@ -795,51 +785,47 @@ else
 		G3AccumVertColor (nVertex, &colorSum, &colorData, nThread);
 		}
 	if ((nVertex >= 0) && !(gameStates.render.nState || gameData.render.vertColor.bDarkness)) {
-		tFaceColor *pfc = gameData.render.color.ambient + nVertex;
-		colorSum.v.color.r += pfc->color.red * fScale;
-		colorSum.v.color.g += pfc->color.green * fScale;
-		colorSum.v.color.b += pfc->color.blue * fScale;
+#if 1
+		colorSum.v.color += gameData.render.color.ambient [nVertex] * fScale;
+#else
+		CFaceColor *faceColorP = gameData.render.color.ambient + nVertex;
+		colorSum.Red () += faceColorP->Red () * fScale;
+		colorSum.Green () += faceColorP->Green () * fScale;
+		colorSum.Blue () += faceColorP->Blue () * fScale;
+#endif
 #if DBG
-		if (!gameStates.render.nState && (nVertex == nDbgVertex) && (colorSum.v.color.r + colorSum.v.color.g + colorSum.v.color.b < 0.1f))
+		if (!gameStates.render.nState && (nVertex == nDbgVertex) && (colorSum.Red () + colorSum.Green () + colorSum.Blue () < 0.1f))
 			nVertex = nVertex;
 #endif
 		}
-	if (colorSum.v.color.r > 1.0)
-		colorSum.v.color.r = 1.0;
-	if (colorSum.v.color.g > 1.0)
-		colorSum.v.color.g = 1.0;
-	if (colorSum.v.color.b > 1.0)
-		colorSum.v.color.b = 1.0;
+	if (colorSum.Red () > 1.0)
+		colorSum.Red () = 1.0;
+	if (colorSum.Green () > 1.0)
+		colorSum.Green () = 1.0;
+	if (colorSum.Blue () > 1.0)
+		colorSum.Blue () = 1.0;
 	}
-#if ONLY_HEADLIGHT
-if (gameData.render.lights.dynamic.headlights.nLights)
-	colorSum.dir.color.r = colorSum.dir.color.g = colorSum.dir.color.b = 0;
-#endif
 colorSum *= gameData.render.fBrightness;
 if (bSetColor)
-	OglColor4sf (colorSum.v.color.r * fScale, colorSum.v.color.g * fScale, colorSum.v.color.b * fScale, 1.0);
-#if 1
-if (!colorData.bMatEmissive && pc) {
-	pc->index = gameStates.render.nFrameFlipFlop + 1;
-	pc->color.red = colorSum.v.color.r;
-	pc->color.green = colorSum.v.color.g;
-	pc->color.blue = colorSum.v.color.b;
+	OglColor4sf (colorSum.Red () * fScale, colorSum.Green () * fScale, colorSum.Blue () * fScale, 1.0);
+
+if (!colorData.bMatEmissive && colorP) 
+#pragma omp critical
+	{
+	colorP->index = gameStates.render.nFrameFlipFlop + 1;
+	*colorP = colorSum;
 	}
-if (pVertColor) {
-	pVertColor->index = gameStates.render.nFrameFlipFlop + 1;
-	pVertColor->color.red = colorSum.v.color.r * fScale;
-	pVertColor->color.green = colorSum.v.color.g * fScale;
-	pVertColor->color.blue = colorSum.v.color.b * fScale;
-	pVertColor->color.alpha = 1;
+if (vertColorP) 
+#pragma omp critical
+	{
+	vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
+	*vertColorP = colorSum * fScale;
+	vertColorP->Alpha () = 1;
 	}
-#endif
+
 #if DBG
 if (!gameStates.render.nState && (nVertex == nDbgVertex))
 	nVertex = nVertex;
-#endif
-#if 0
-if (bVertexLights)
-	lightManager.Index (0) [nThread].nActive = lightManager.Index (0) [nThread].iVertex;
 #endif
 PROF_END(ptVertexColor)
 }

@@ -110,7 +110,7 @@ void DrawOutline (int nVertices, CRenderPoint **pointList)
 
 #if 1 //!DBG
 if (gameStates.render.bQueryOcclusion) {
-	tRgbaColorf outlineColor = {1, 1, 0, -1};
+	CFloatVector outlineColor = {1, 1, 0, -1};
 	G3DrawPolyAlpha (nVertices, pointList, &outlineColor, 1, -1);
 	return;
 	}
@@ -166,13 +166,13 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-tRgbaColorf segmentColors [4] = {
+CFloatVector segmentColors [4] = {
 	 {0.5f, 0, 0, 0.333f},
 	 {0, 0, 0.5f, 0.333f},
 	 {0, 1.0f / 16.0f, 0.5f, 0.333f},
 	 {0.5f, 0, 0, 0.333f}};
 
-tRgbaColorf *ColoredSegmentColor (int nSegment, int nSide, char nColor)
+CFloatVector *ColoredSegmentColor (int nSegment, int nSide, char nColor)
 {
 	CSegment*	segP = SEGMENTS + nSegment;
 	short			nConnSeg;
@@ -208,39 +208,28 @@ return segmentColors + nColor;
 //------------------------------------------------------------------------------
 // If any color component > 1, scale all components down so that the greatest == 1.
 
-static inline void ScaleColor (tFaceColor *colorP, float l)
+static inline void ScaleColor (CFaceColor *colorP, float l)
 {
-	float m = colorP->color.red;
+	float m = colorP->Red ();
 
-if (m < colorP->color.green)
-	m = colorP->color.green;
-if (m < colorP->color.blue)
-	m = colorP->color.blue;
-if (m > l) {
-	m = l / m;
-	colorP->color.red *= m;
-	colorP->color.green *= m;
-	colorP->color.blue *= m;
-	}
+if (m < colorP->Green ())
+	m = colorP->Green ();
+if (m < colorP->Blue ())
+	m = colorP->Blue ();
+if (m > l)
+	*colorP *= l / m;
 }
 
 //------------------------------------------------------------------------------
 
-int SetVertexColor (int nVertex, tFaceColor *colorP)
+int SetVertexColor (int nVertex, CFaceColor *colorP)
 {
 #if DBG
 if (nVertex == nDbgVertex)
 	nVertex = nVertex;
 #endif
-if (gameStates.render.bAmbientColor) {
-	colorP->color.red += gameData.render.color.ambient [nVertex].color.red;
-	colorP->color.green += gameData.render.color.ambient [nVertex].color.green;
-	colorP->color.blue += gameData.render.color.ambient [nVertex].color.blue;
-	}
-#if 0
-else
-	memset (colorP, 0, sizeof (*colorP));
-#endif
+if (gameStates.render.bAmbientColor) 
+	*colorP += gameData.render.color.ambient [nVertex];
 return 1;
 }
 
@@ -266,11 +255,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-fix SetVertexLight (int nSegment, int nSide, int nVertex, tFaceColor *colorP, fix light)
+fix SetVertexLight (int nSegment, int nSide, int nVertex, CFaceColor *colorP, fix light)
 {
-	tRgbColorf	*pdc;
-	fix			dynLight;
-	float			fl, dl, hl;
+	CFloatVector	dynColor;
+	fix				dynLight;
+	float				fl, dl, hl;
 
 //the tUVL struct has static light already in it
 //scale static light for destruction effect
@@ -300,51 +289,45 @@ if (nVertex == nDbgVertex)
 #endif
 if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	if (gameData.render.lights.bGotDynColor [nVertex]) {
-		pdc = gameData.render.lights.dynamicColor + nVertex;
+		dynColor.Assign (gameData.render.lights.dynamicColor [nVertex]);
 		if (gameOpts->render.color.bMix) {
 			if (gameOpts->render.color.nLevel) {
 				if (gameStates.render.bAmbientColor) {
 					if ((fl != 0) && gameData.render.color.vertBright [nVertex]) {
 						hl = fl / gameData.render.color.vertBright [nVertex];
-						colorP->color.red = colorP->color.red * hl + pdc->red * dl;
-						colorP->color.green = colorP->color.green * hl + pdc->green * dl;
-						colorP->color.blue = colorP->color.blue * hl + pdc->blue * dl;
+						*colorP *= hl;
+						*colorP += dynColor * dl;
 						ScaleColor (colorP, fl + dl);
 						}
 					else {
-						colorP->color.red = pdc->red * dl;
-						colorP->color.green = pdc->green * dl;
-						colorP->color.blue = pdc->blue * dl;
+						*colorP = dynColor * dl;
 						ScaleColor (colorP, dl);
 						}
 					}
 				else {
-					colorP->color.red = fl + pdc->red * dl;
-					colorP->color.green = fl + pdc->green * dl;
-					colorP->color.blue = fl + pdc->blue * dl;
+					*colorP.Set (fl, fl, fl);
+					*colorP += dynColor * dl;
 					ScaleColor (colorP, fl + dl);
 					}
 				}
 			else {
-				colorP->color.red =
-				colorP->color.green =
-				colorP->color.blue = fl + dl;
+				colorP->Red () =
+				colorP->Green () =
+				colorP->Blue () = fl + dl;
 				}
 			if (gameOpts->render.color.bCap) {
-				if (colorP->color.red > 1.0)
-					colorP->color.red = 1.0;
-				if (colorP->color.green > 1.0)
-					colorP->color.green = 1.0;
-				if (colorP->color.blue > 1.0)
-					colorP->color.blue = 1.0;
+				if (colorP->Red () > 1.0)
+					colorP->Red () = 1.0;
+				if (colorP->Green () > 1.0)
+					colorP->Green () = 1.0;
+				if (colorP->Blue () > 1.0)
+					colorP->Blue () = 1.0;
 				}
 			}
 		else {
 			float dl = X2F (light);
 			dl = (float) pow (dl, 1.0f / 3.0f);
-			colorP->color.red = pdc->red * dl;
-			colorP->color.green = pdc->green * dl;
-			colorP->color.blue = pdc->blue * dl;
+			*colorP = dynColor * dl;
 			}
 		}
 	else {
@@ -354,9 +337,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 else {
 	ScaleColor (colorP, fl + dl);
 	}
-colorP->color.red *= gameData.render.fBrightness;
-colorP->color.green *= gameData.render.fBrightness;
-colorP->color.blue *= gameData.render.fBrightness;
+*colorP *= gameData.render.fBrightness;
 light = fix (light * gameData.render.fBrightness);
 //saturate at max value
 if (light > MAX_LIGHT)
@@ -425,9 +406,9 @@ return !gameStates.app.bD1Mission &&
 //------------------------------------------------------------------------------
 
 float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, ubyte bAdditive,
-					  tRgbaColorf *colorP, int *nColor, ubyte *bTextured, ubyte *bCloaked, ubyte* bTransparent)
+					  CFloatVector *colorP, int *nColor, ubyte *bTextured, ubyte *bCloaked, ubyte* bTransparent)
 {
-	static tRgbaColorf cloakColor = {1, 1, 1, 0};
+	static CFloatVector cloakColor = {1, 1, 1, 0};
 
 	CWall	*wallP;
 	float fAlpha, fMaxColor;
@@ -457,16 +438,16 @@ if (*bCloaked || *bTransparent || (widFlags & WID_TRANSPARENT_FLAG)) {
 		*colorP = cloakColor;
 		*nColor = 1;
 		*bTextured = !*bCloaked;
-		colorP->alpha = (c >= FADE_LEVELS) ? 0 : 1.0f - float (c) / float (FADE_LEVELS);
+		colorP->Alpha () = (c >= FADE_LEVELS) ? 0 : 1.0f - float (c) / float (FADE_LEVELS);
 		if (*bTransparent)
-			colorP->red =
-			colorP->green =
-			colorP->blue = colorP->alpha;
+			colorP->Red () =
+			colorP->Green () =
+			colorP->Blue () = colorP->Alpha ();
 #if DBG
-		if (colorP->alpha < 1)
-			return colorP->alpha;
+		if (colorP->Alpha () < 1)
+			return colorP->Alpha ();
 #endif
-		return colorP->alpha;
+		return colorP->Alpha ();
 		}
 	if (!gameOpts->render.color.bWalls)
 		c = 0;
@@ -480,32 +461,32 @@ if (*bCloaked || *bTransparent || (widFlags & WID_TRANSPARENT_FLAG)) {
 		//fAlpha = (float) sqrt (fAlpha);
 		paletteManager.Game ()->ToRgbaf ((ubyte) c, *colorP);
 		if (bAdditive) {
-			colorP->red /= fAlpha;
-			colorP->green /= fAlpha;
-			colorP->blue /= fAlpha;
+			colorP->Red () /= fAlpha;
+			colorP->Green () /= fAlpha;
+			colorP->Blue () /= fAlpha;
 			}
-		fMaxColor = colorP->red;
-		if (fMaxColor < colorP->green)
-			fMaxColor = colorP->green;
-		if (fMaxColor < colorP->blue)
-			fMaxColor = colorP->blue;
+		fMaxColor = colorP->Red ();
+		if (fMaxColor < colorP->Green ())
+			fMaxColor = colorP->Green ();
+		if (fMaxColor < colorP->Blue ())
+			fMaxColor = colorP->Blue ();
 		if (fMaxColor > 1) {
-			colorP->red /= fMaxColor;
-			colorP->green /= fMaxColor;
-			colorP->blue /= fMaxColor;
+			colorP->Red () /= fMaxColor;
+			colorP->Green () /= fMaxColor;
+			colorP->Blue () /= fMaxColor;
 			}
 		*bTextured = 0;
 		*nColor = 1;
 		}
-	return colorP->alpha = fAlpha;
+	return colorP->Alpha () = fAlpha;
 	}
 if (gameStates.app.bD2XLevel) {
 	c = wallP->cloakValue;
-	return colorP->alpha = (c && (c < FADE_LEVELS)) ? (float) (FADE_LEVELS - c) / (float) FADE_LEVELS : 1;
+	return colorP->Alpha () = (c && (c < FADE_LEVELS)) ? (float) (FADE_LEVELS - c) / (float) FADE_LEVELS : 1;
 	}
 if (gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (SEGMENTS [nSegment].m_sides [nSide].m_nBaseTex))
-	return colorP->alpha = 0.8f;
-return colorP->alpha = 1;
+	return colorP->Alpha () = 0.8f;
+return colorP->Alpha () = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -550,7 +531,7 @@ if (bHaveMonitorBg) {
 #else
 		faceP->bmTop = cameraP;
 		for (i = 0; i < 4; i++)
-			gameData.render.color.vertices [faceP->m_info.index [i]].color.alpha = 0.7f;
+			gameData.render.color.vertices [faceP->m_info.index [i]].color.Alpha () = 0.7f;
 #endif
 		}
 	else if (/*gameOpts->render.cameras.bFitToWall ||*/ (faceP->m_info.nOvlTex == 0) || !faceP->bmBot)
@@ -566,7 +547,7 @@ return bHaveMonitorBg || gameOpts->render.cameras.bFitToWall;
 
 //------------------------------------------------------------------------------
 
-void AdjustVertexColor (CBitmap *bmP, tFaceColor *colorP, fix xLight)
+void AdjustVertexColor (CBitmap *bmP, CFaceColor *colorP, fix xLight)
 {
 	float l = (bmP && (bmP->Flags () & BM_FLAG_NO_LIGHTING)) ? 1.0f : X2F (xLight);
 	float s = 1.0f;
@@ -574,16 +555,13 @@ void AdjustVertexColor (CBitmap *bmP, tFaceColor *colorP, fix xLight)
 if (ogl.m_states.bScaleLight)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
 if (!colorP->index || !gameStates.render.bAmbientColor || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) {
-	colorP->color.red =
-	colorP->color.green =
-	colorP->color.blue = l * s;
+	colorP->Red () =
+	colorP->Green () =
+	colorP->Blue () = l * s;
 	}
-else if (s != 1) {
-	colorP->color.red *= s;
-	colorP->color.green *= s;
-	colorP->color.blue *= s;
-	}
-colorP->color.alpha = 1;
+else if (s != 1.0f)
+	*colorP *= s;
+colorP->Alpha () = 1.0f;
 }
 
 // -----------------------------------------------------------------------------------

@@ -51,7 +51,7 @@ for (i = 0; i < m_data.nLights [0]; i++, lightP++) {
 		}
 	lightP->render.vPosf [0].v.coord.w = 1;
 	lightP->render.nType = lightP->info.nType;
-	lightP->render.bState = lightP->info.bState && (lightP->info.color.red + lightP->info.color.green + lightP->info.color.blue > 0.0);
+	lightP->render.bState = lightP->info.bState && (lightP->info.color.Red () + lightP->info.color.Green () + lightP->info.color.Blue () > 0.0);
 	lightP->render.bLightning = (lightP->info.nObject < 0) && (lightP->info.nSide < 0);
 	for (int j = 0; j < gameStates.app.nThreads; j++)
 		ResetUsed (lightP, j);
@@ -563,9 +563,9 @@ return m_data.index [0][0].nActive;
 
 //------------------------------------------------------------------------------
 
-tFaceColor* CLightManager::AvgSgmColor (int nSegment, CFixVector *vPosP, int nThread)
+CFaceColor* CLightManager::AvgSgmColor (int nSegment, CFixVector *vPosP, int nThread)
 {
-	tFaceColor	c, *pvc, *psc = gameData.render.color.segments + nSegment;
+	CFaceColor	c, *pvc, *psc = gameData.render.color.segments + nSegment;
 	short			i, *pv;
 	CFixVector	vCenter, vVertex;
 	float			d, ds;
@@ -574,7 +574,7 @@ tFaceColor* CLightManager::AvgSgmColor (int nSegment, CFixVector *vPosP, int nTh
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-if (!vPosP && (psc->index == (char) (gameData.app.nFrameCount & 0xff)) && (psc->color.red + psc->color.green + psc->color.blue != 0))
+if (!vPosP && (psc->index == (char) (gameData.app.nFrameCount & 0xff)) && (psc->Red () + psc->Green () + psc->Blue () != 0))
 	return psc;
 #if DBG
 if (nSegment == nDbgSeg)
@@ -582,14 +582,14 @@ if (nSegment == nDbgSeg)
 #endif
 nThread = ThreadId (nThread);
 if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
-	psc->color.red = psc->color.green = psc->color.blue = psc->color.alpha = 1.0f;
+	psc->Red () = psc->Green () = psc->Blue () = psc->Alpha () = 1.0f;
 	psc->index = 1;
 	}
 else if (gameStates.render.bPerPixelLighting) {
-	psc->color.red =
-	psc->color.green =
-	psc->color.blue = 0;
-	psc->color.alpha = 1.0f;
+	psc->Red () =
+	psc->Green () =
+	psc->Blue () = 0;
+	psc->Alpha () = 1.0f;
 	if (SetNearestToSgmAvg (nSegment, nThread)) {
 			CVertColorData	vcd;
 
@@ -606,7 +606,7 @@ else if (gameStates.render.bPerPixelLighting) {
 		G3AccumVertColor (-1, reinterpret_cast<CFloatVector3*> (psc), &vcd, 0);
 		}
 #if DBG
-	if (psc->color.red + psc->color.green + psc->color.blue == 0)
+	if (psc->Red () + psc->Green () + psc->Blue () == 0)
 		psc = psc;
 #endif
 	lightManager.ResetAllUsed (0, nThread);
@@ -621,7 +621,7 @@ else {
 	else
 		ds = 1.0f;
 	pv = SEGMENTS [nSegment].m_verts;
-	c.color.red = c.color.green = c.color.blue = 0.0f;
+	c.color.Red () = c.color.Green () = c.color.Blue () = 0.0f;
 	c.index = 0;
 	for (i = 0; i < 8; i++, pv++) {
 		pvc = gameData.render.color.vertices + *pv;
@@ -629,24 +629,24 @@ else {
 			vVertex = gameData.segs.vertices [*pv];
 			//transformation.Transform (&vVertex, &vVertex);
 			d = 2.0f - X2F (CFixVector::Dist(vVertex, *vPosP)) / X2F (CFixVector::Dist(vCenter, vVertex));
-			c.color.red += pvc->color.red * d;
-			c.color.green += pvc->color.green * d;
-			c.color.blue += pvc->color.blue * d;
+			c.color.Red () += pvc->Red () * d;
+			c.color.Green () += pvc->Green () * d;
+			c.color.Blue () += pvc->Blue () * d;
 			ds += d;
 			}
 		else {
-			c.color.red += pvc->color.red;
-			c.color.green += pvc->color.green;
-			c.color.blue += pvc->color.blue;
+			c.color.Red () += pvc->Red ();
+			c.color.Green () += pvc->Green ();
+			c.color.Blue () += pvc->Blue ();
 			}
 		}
 #if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	psc->color.red = c.color.red / 8.0f;
-	psc->color.green = c.color.green / 8.0f;
-	psc->color.blue = c.color.blue / 8.0f;
+	psc->Red () = c.color.Red () / 8.0f;
+	psc->Green () = c.color.Green () / 8.0f;
+	psc->Blue () = c.color.Blue () / 8.0f;
 #if 0
 	if (lightManager.SetNearestToSegment (nSegment, 1)) {
 		CDynLight*		lightP;
@@ -674,15 +674,15 @@ else {
 		}
 #endif
 #if 0
-	d = psc->color.red;
-	if (d < psc->color.green)
-		d = psc->color.green;
-	if (d < psc->color.blue)
-		d = psc->color.blue;
+	d = psc->Red ();
+	if (d < psc->Green ())
+		d = psc->Green ();
+	if (d < psc->Blue ())
+		d = psc->Blue ();
 	if (d > 1.0f) {
-		psc->color.red /= d;
-		psc->color.green /= d;
-		psc->color.blue /= d;
+		psc->Red () /= d;
+		psc->Green () /= d;
+		psc->Blue () /= d;
 		}
 #endif
 	}

@@ -281,7 +281,7 @@ class COglBuffers {
 	public:
 		CArray<CFloatVector>		vertices;
 		CArray<tTexCoord2f>		texCoord [2];
-		CArray<tRgbaColorf>		color;
+		CArray<CFloatVector>		color;
 		CUShortArray				indices;
 		int							m_nVertices;
 
@@ -372,7 +372,7 @@ class COGL {
 
 		int BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
 							  tTexCoord2f *texCoordP, 
-							  tRgbaColorf *colorP, int nColors,
+							  CFloatVector *colorP, int nColors,
 							  CBitmap *bmP, 							  
 							  int nTMU = -1);
 		void ReleaseBuffers (void);
@@ -380,11 +380,11 @@ class COGL {
 		int RenderArrays (int nPrimitive, 
 								CFloatVector *vertexP, int nVertices, int nDimensions = 3,
 								tTexCoord2f *texCoordP = NULL, 
-								tRgbaColorf *colorP = NULL, int nColors = 1, 
+								CFloatVector *colorP = NULL, int nColors = 1, 
 								CBitmap *bmP = NULL, int nFrame = 0, int nWrap = GL_REPEAT);
-		int RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int nDimensions = 3, tTexCoord2f* texCoordP = NULL, tRgbaColorf* colorP = NULL, int nColors = 1, int nWrap = GL_CLAMP);
+		int RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int nDimensions = 3, tTexCoord2f* texCoordP = NULL, CFloatVector* colorP = NULL, int nColors = 1, int nWrap = GL_CLAMP);
 		int RenderQuad (CBitmap* bmP, CFloatVector& vPosf, float width, float height, int nDimensions = 3, int nWrap = GL_CLAMP);
-		int RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive);
+		int RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, CFloatVector* colorP, float alpha, int bAdditive);
 		int RenderSprite (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, float alpha, int bAdditive, float fSoftRad);
 		void RenderScreenQuad (GLuint nTexture = 0);
 
@@ -421,7 +421,7 @@ class COGL {
 		inline COglBuffers& Buffers (void) { return m_buffers; }
 		inline CArray<CFloatVector>& VertexBuffer (void) { return Buffers ().vertices; }
 		inline CArray<tTexCoord2f>& TexCoordBuffer (int i = 0) { return Buffers ().texCoord [i]; }
-		inline CArray<tRgbaColorf>& ColorBuffer (void) { return Buffers ().color; }
+		inline CArray<CFloatVector>& ColorBuffer (void) { return Buffers ().color; }
 		inline bool SizeBuffers (int nVerts) { return m_buffers.SizeBuffers (nVerts); }
 		inline bool SizeVertexBuffer (int nVerts) { return m_buffers.SizeVertices (nVerts); }
 		inline void FlushBuffers (GLenum nPrimitive, int nVerts, int nDimensions = 3, int bTextured = 0, int bColored = 0) {

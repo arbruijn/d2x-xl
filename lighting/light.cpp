@@ -164,12 +164,12 @@ gameData.render.lights.bStartDynColoring = 0;
 
 // ----------------------------------------------------------------------------------------------
 
-void SetDynColor (tRgbaColorf *color, tRgbColorf *dynColorP, int nVertex, ubyte *bGotDynColorP, int bForce)
+void SetDynColor (CFloatVector *color, CFloatVector3 *dynColorP, int nVertex, ubyte *bGotDynColorP, int bForce)
 {
 if (!color)
 	return;
 #if 1
-if (!bForce && (color->red == 1.0) && (color->green == 1.0) && (color->blue == 1.0))
+if (!bForce && (color->Red () == 1.0) && (color->Green () == 1.0) && (color->Blue () == 1.0))
 	return;
 #endif
 if (gameData.render.lights.bStartDynColoring) {
@@ -181,12 +181,12 @@ if (!dynColorP) {
 	bGotDynColorP = gameData.render.lights.bGotDynColor + nVertex;
 	}
 if (*bGotDynColorP) {
-	dynColorP->red = (dynColorP->red + color->red) / 2;
-	dynColorP->green = (dynColorP->green + color->green) / 2;
-	dynColorP->blue = (dynColorP->blue + color->blue) / 2;
+	dynColorP->Red () = (dynColorP->Red () + color->Red ()) / 2;
+	dynColorP->Green () = (dynColorP->Green () + color->Green ()) / 2;
+	dynColorP->Blue () = (dynColorP->Blue () + color->Blue ()) / 2;
 	}
 else {
-	memcpy (dynColorP, color, sizeof (tRgbColorf));
+	memcpy (dynColorP, color, sizeof (CFloatVector3));
 	*bGotDynColorP = 1;
 	}
 }
@@ -212,7 +212,7 @@ return false;
 // ----------------------------------------------------------------------------------------------
 
 void ApplyLight (fix xObjIntensity, int nObjSeg, CFixVector *vObjPos, int nRenderVertices,
-					  CArray<short>& renderVertices,	int nObject, tRgbaColorf *color)
+					  CArray<short>& renderVertices,	int nObject, CFloatVector *color)
 {
 	int				iVertex, bUseColor, bForceColor;
 	int				nVertex;
@@ -273,7 +273,7 @@ if (xObjIntensity) {
 		}
 	if (objP && (nObjType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0, 0))
 		return;
-	bUseColor = (color != NULL); //&& (color->red < 1.0 || color->green < 1.0 || color->blue < 1.0);
+	bUseColor = (color != NULL); //&& (color->Red () < 1.0 || color->Green () < 1.0 || color->Blue () < 1.0);
 	bForceColor = objP && ((nObjType == OBJ_WEAPON) || (nObjType == OBJ_FIREBALL) || (nObjType == OBJ_EXPLOSION));
 	// for pretty dim sources, only process vertices in CObject's own CSegment.
 	//	12/04/95, MK, markers only cast light in own CSegment.
@@ -310,7 +310,7 @@ if (xObjIntensity) {
 				headlightShift = 3;
 				if (color) {
 					bUseColor = bForceColor = 1;
-					color->red = color->green = color->blue = 1.0;
+					color->Red () = color->Green () = color->Blue () = 1.0;
 					}
 				if (objP->info.nId != gameData.multiplayer.nLocalPlayer) {
 					CFixVector tVec = *vObjPos + objP->info.position.mOrient.m.dir.f * I2X (200);
@@ -405,19 +405,19 @@ fix	objLightXlat [16] =
 	 0x2123, 0x39af, 0x0f03, 0x132a,
 	 0x3123, 0x29af, 0x1f03, 0x032a};
 
-fix ComputeLightIntensity (int nObject, tRgbaColorf *colorP, char *pbGotColor)
+fix ComputeLightIntensity (int nObject, CFloatVector *colorP, char *pbGotColor)
 {
 	CObject*	objP = OBJECTS + nObject;
 	int		nObjType = objP->info.nType;
    fix		s;
-	static tRgbaColorf powerupColors [9] = {
+	static CFloatVector powerupColors [9] = {
 	 {0,1,0,1},{1,0.8f,0,1},{0,0,1,1},{1,1,1,1},{0,0,1,1},{1,0,0,1},{1,0.8f,0,1},{0,1,0,1},{1,0.8f,0,1}
 	};
-	static tRgbaColorf missileColor = {1,0.3f,0,1};
+	static CFloatVector missileColor = {1,0.3f,0,1};
 
-colorP->red =
-colorP->green =
-colorP->blue = 1.0;
+colorP->Red () =
+colorP->Green () =
+colorP->Blue () = 1.0;
 *pbGotColor = 0;
 switch (nObjType) {
 	case OBJ_PLAYER:
@@ -464,29 +464,29 @@ switch (nObjType) {
 			else
 #endif
 				{
-				colorP->red =
-				colorP->green =
-				colorP->blue = 0.0f;
+				colorP->Red () =
+				colorP->Green () =
+				colorP->Blue () = 0.0f;
 				for (i = j = 0; i < vcP->nFrameCount; i++) {
 					bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [i].index;
 					if ((bmoP = bmP->HasOverride ()))
 						bmP = bmoP;
-					tRgbaColorf avgRGB;
+					CFloatVector avgRGB;
 					bmP->GetAvgColor (&avgRGB);
-					if (avgRGB.red + avgRGB.green + avgRGB.blue == 0) {
+					if (avgRGB.Red () + avgRGB.Green () + avgRGB.Blue () == 0) {
 						if (0 > bmP->AvgColor ())
 							continue;
 						bmP->GetAvgColor (&avgRGB);
 						}
-					colorP->red += (float) avgRGB.red;
-					colorP->green += (float) avgRGB.green;
-					colorP->blue += (float) avgRGB.blue;
+					colorP->Red () += (float) avgRGB.Red ();
+					colorP->Green () += (float) avgRGB.Green ();
+					colorP->Blue () += (float) avgRGB.Blue ();
 					j++;
 					}
 				if (j) {
-					colorP->red /= j;
-					colorP->green /= j;
-					colorP->blue /= j;
+					colorP->Red () /= j;
+					colorP->Green () /= j;
+					colorP->Blue () /= j;
 					*pbGotColor = 1;
 					}
 				}
@@ -494,15 +494,15 @@ switch (nObjType) {
 			if (objP->info.renderType != RT_THRUSTER)
 				xLight /= 8;
 #endif
-			float maxColor = colorP->red;
-			if (maxColor < colorP->green)
-				maxColor = colorP->green;
-			if (maxColor < colorP->blue)
-				maxColor = colorP->blue;
+			float maxColor = colorP->Red ();
+			if (maxColor < colorP->Green ())
+				maxColor = colorP->Green ();
+			if (maxColor < colorP->Blue ())
+				maxColor = colorP->Blue ();
 			if (maxColor > 0.0) {
-				colorP->red /= maxColor;
-				colorP->green /= maxColor;
-				colorP->blue /= maxColor;
+				colorP->Red () /= maxColor;
+				colorP->Green () /= maxColor;
+				colorP->Blue () /= maxColor;
 				}
 			if (objP->info.xLifeLeft < I2X (4))
 				return FixMul (FixDiv (objP->info.xLifeLeft, gameData.eff.vClips [0][objP->info.nId].xTotalTime), xLight);
@@ -544,9 +544,9 @@ switch (nObjType) {
 		xLight = 8 * abs (I2X (1)/2 - xLight);
 		if (objP->info.xLifeLeft < I2X (1000))
 			objP->info.xLifeLeft += I2X (1);	//	Make sure this CObject doesn't go out.
-		colorP->red = 0.1f;
-		colorP->green = 1.0f;
-		colorP->blue = 0.1f;
+		colorP->Red () = 0.1f;
+		colorP->Green () = 1.0f;
+		colorP->Blue () = 0.1f;
 		*pbGotColor = 1;
 		return xLight;
 		}
@@ -589,7 +589,7 @@ if (gameStates.render.bFullBright)
 	CObject		*objP;
 	CFixVector	*objPos;
 	fix			xObjIntensity;
-	tRgbaColorf	color;
+	CFloatVector	color;
 
 gameData.render.lights.vertexFlags.Clear ();
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;

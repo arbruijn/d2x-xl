@@ -77,12 +77,12 @@ return cf.File () && (cf.Write (&m_data, sizeof (m_data), 1) == 1);
 
 //	-----------------------------------------------------------------------------
 
-void CPalette::ToRgbaf (ubyte nIndex, tRgbaColorf& color)
+void CPalette::ToRgbaf (ubyte nIndex, CFloatVector& color)
 {
-color.red = float (m_data.rgb [nIndex].red) / 63.0f;
-color.green = float (m_data.rgb [nIndex].green) / 63.0f;
-color.blue = float (m_data.rgb [nIndex].blue) / 63.0f;
-color.alpha = -1;
+color.Red () = float (m_data.rgb [nIndex].Red ()) / 63.0f;
+color.Green () = float (m_data.rgb [nIndex].Green ()) / 63.0f;
+color.Blue () = float (m_data.rgb [nIndex].Blue ()) / 63.0f;
+color.Alpha () = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -100,9 +100,9 @@ if (m_nComputedColors < MAX_COMPUTED_COLORS) {
 	} 
 else
 	i = (RandShort () * MAX_COMPUTED_COLORS) >> 15;
-m_computedColors [i].color.red = r;
-m_computedColors [i].color.green = g;
-m_computedColors [i].color.blue = b;
+m_computedColors [i].color.Red () = r;
+m_computedColors [i].color.Green () = g;
+m_computedColors [i].color.Blue () = b;
 m_computedColors [i].nIndex = nIndex;
 }
 
@@ -115,9 +115,9 @@ memset (m_computedColors, 0xff, sizeof (m_computedColors));
 
 //	-----------------------------------------------------------------------------
 
-static inline int ColorDelta (tRgbColorb& palette, int r, int g, int b)
+static inline int ColorDelta (CRGBColor& palette, int r, int g, int b)
 {
-return Sqr (r - palette.red) + Sqr (g - palette.green) + Sqr (b - palette.blue);
+return Sqr (r - palette.Red ()) + Sqr (g - palette.Green ()) + Sqr (b - palette.Blue ());
 }
 
 //	-----------------------------------------------------------------------------
@@ -141,7 +141,7 @@ n = m_nComputedColors;
 //	If we've already computed this color, return it!
 pci = m_computedColors;
 for (i = 0; i < n; i++, pci++)
-	if ((r == pci->color.red) && (g == pci->color.green) && (b == pci->color.blue)) {
+	if ((r == pci->Red ()) && (g == pci->Green ()) && (b == pci->Blue ())) {
 		if (i <= 4)
 			return pci->nIndex;
 		else {
@@ -270,7 +270,7 @@ void CPaletteManager::SetEffect (bool bForce)
 if (gameStates.render.vr.bUseRegCode)
 	;//GrPaletteStepUpVR (r, g, b, VR_WHITE_INDEX, VR_BLACK_INDEX);
 else
-	SetEffect (m_data.effect.red, m_data.effect.green, m_data.effect.blue, bForce);
+	SetEffect (m_data.effect.Red (), m_data.effect.Green (), m_data.effect.Blue (), bForce);
 }
 
 //	------------------------------------------------------------------------------------
@@ -288,12 +288,12 @@ void CPaletteManager::BumpEffect (float red, float green, float blue)
 {
 	float	maxVal = (paletteManager.FlashDuration () ? 60 : MAX_PALETTE_ADD) / 64.0f;
 
-m_data.effect.red += red;
-m_data.effect.green += green;
-m_data.effect.blue += blue;
-CLAMP (m_data.effect.red, -maxVal, maxVal);
-CLAMP (m_data.effect.green, -maxVal, maxVal);
-CLAMP (m_data.effect.blue, -maxVal, maxVal);
+m_data.effect.Red () += red;
+m_data.effect.Green () += green;
+m_data.effect.Blue () += blue;
+CLAMP (m_data.effect.Red (), -maxVal, maxVal);
+CLAMP (m_data.effect.Green (), -maxVal, maxVal);
+CLAMP (m_data.effect.Blue (), -maxVal, maxVal);
 }
 
 //------------------------------------------------------------------------------
@@ -309,7 +309,7 @@ m_data.xLastDuration = m_data.xFlashDuration;
 void CPaletteManager::ResumeEffect (bool bCond)
 {
 if (bCond) {
-	SetEffect (m_data.lastEffect.red, m_data.lastEffect.green, m_data.lastEffect.blue);
+	SetEffect (m_data.lastEffect.Red (), m_data.lastEffect.Green (), m_data.lastEffect.Blue ());
 	m_data.xFlashDuration = m_data.xLastDuration;
 	m_data.xLastEffectTime = 0;
 	}
@@ -387,19 +387,19 @@ if (m_data.xFlashDuration) {
 		m_data.xFlashDuration = 0;
 
 	if (bForce || (RandShort () > 4096)) {
-      if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.red || m_data.effect.green || m_data.effect.blue))
-	      NDRecordPaletteEffect (short (m_data.effect.red * 64), short (m_data.effect.green * 64), short (m_data.effect.blue * 64));
+      if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.Red () || m_data.effect.Green () || m_data.effect.Blue ()))
+	      NDRecordPaletteEffect (short (m_data.effect.Red () * 64), short (m_data.effect.Green () * 64), short (m_data.effect.Blue () * 64));
 		paletteManager.SetEffect ();
 		return;
 		}
 	}
 
-m_data.effect.red = UpdateEffect (m_data.effect.red, nDelta);
-m_data.effect.green = UpdateEffect (m_data.effect.green, nDelta);
-m_data.effect.blue = UpdateEffect (m_data.effect.blue, nDelta);
+m_data.effect.Red () = UpdateEffect (m_data.effect.Red (), nDelta);
+m_data.effect.Green () = UpdateEffect (m_data.effect.Green (), nDelta);
+m_data.effect.Blue () = UpdateEffect (m_data.effect.Blue (), nDelta);
 
-if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.red || m_data.effect.green || m_data.effect.blue))
-     NDRecordPaletteEffect (short (m_data.effect.red * 64), short (m_data.effect.green * 64), short (m_data.effect.blue * 64));
+if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.Red () || m_data.effect.Green () || m_data.effect.Blue ()))
+     NDRecordPaletteEffect (short (m_data.effect.Red () * 64), short (m_data.effect.Green () * 64), short (m_data.effect.Blue () * 64));
 SetEffect (bForce);
 }
 

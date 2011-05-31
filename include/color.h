@@ -3,54 +3,34 @@
 
 //-----------------------------------------------------------------------------
 
-typedef struct tRgbColord {
-	double red;
-	double green;
-	double blue;
-} __pack__ tRgbColord;
+class CRGBAColor {
+	public:
+		ubyte	r, g, b, a;
 
-typedef struct tRgbaColord {
-	double red;
-	double green;
-	double blue;
-	double alpha;
-} __pack__ tRgbaColord;
+	inline ubyte& Red (void) { return r; }
+	inline ubyte& Green (void) { return g; }
+	inline ubyte& Blue (void) { return b; }
+	inline ubyte& Alpha (void) { return a; }
+	};
 
-typedef struct tRgbColorf {
-	float red;
-	float green;
-	float blue;
-} __pack__ tRgbColorf;
+class CRGBColor {
+	public:
+		ubyte	r, g, b;
 
-typedef struct tRgbaColorf {
-	float red;
-	float green;
-	float blue;
-	float	alpha;
-} __pack__ tRgbaColorf;
+	inline ubyte& Red (void) { return r; }
+	inline ubyte& Green (void) { return g; }
+	inline ubyte& Blue (void) { return b; }
+	};
 
-typedef struct tRgbaColorb {
-	ubyte	red, green, blue, alpha;
-} __pack__ tRgbaColorb;
+class CFaceColor : public CFloatVector {
+	public:
+		char	index;
+	};
 
-typedef struct tRgbColorb {
-	ubyte	red, green, blue;
-} __pack__ tRgbColorb;
-
-typedef struct tRgbColors {
-	sbyte red, green, blue;
-} __pack__ tRgbColors;
-
-typedef struct tFaceColor {
-	tRgbaColorf	color;
-	char			index;
-} __pack__ tFaceColor;
-
-typedef struct tCanvasColor {
-	short       index;       // current color
-	ubyte			rgb;
-	tRgbaColorb	color;
-} __pack__ tCanvasColor;
+class CCanvasColor : public CRGBAColor {
+	short				index;       // current color
+	ubyte				rgb;
+	};
 
 //-----------------------------------------------------------------------------
 

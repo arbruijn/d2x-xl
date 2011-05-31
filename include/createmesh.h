@@ -21,7 +21,7 @@ namespace Mesh {
 		short			nId;
 		tTexCoord2f	texCoord [3];
 		tTexCoord2f	ovlTexCoord [3];
-		tRgbaColorf	color [3];
+		CFloatVector	color [3];
 	} __pack__ tTriangle;
 
 class CTriMeshBuilder {
@@ -77,8 +77,8 @@ class CQuadMeshBuilder {
 		tTexCoord2f*	m_texCoordP;
 		tTexCoord2f*	m_ovlTexCoordP;
 		tTexCoord2f*	m_lMapTexCoordP;
-		tRgbaColorf*	m_faceColorP;
-		tFaceColor*		m_colorP;
+		CFloatVector*	m_faceColorP;
+		CFaceColor*		m_colorP;
 		CSegment*		m_segP;
 		tSegFaces*		m_segFaceP;
 		CSide*			m_sideP;

@@ -37,12 +37,12 @@ typedef struct tRGB {
 
 typedef union tPalette {
 	ubyte			raw [PALETTE_SIZE * 3];
-	tRgbColorb	rgb [PALETTE_SIZE];
+	CRGBColor	rgb [PALETTE_SIZE];
 } __pack__ tPalette;
 
 typedef struct tComputedColor {
 	ubyte			nIndex;
-	tRgbColorb	color;
+	CRGBColor	color;
 } __pack__ tComputedColor;
 
 class CPalette {
@@ -62,24 +62,24 @@ class CPalette {
 		bool Read (CFile& cf);
 		bool Write (CFile& cf);
 		int ClosestColor (int r, int g, int b);
-		inline int ClosestColor (tRgbColorb* colorP)
-		 { return ClosestColor ((int) colorP->red, (int) colorP->green, (int) colorP->blue); }
-		inline int ClosestColor (tRgbColorf* colorP)
-		 { return ClosestColor ((int) (colorP->red * 63.0f), (int) (colorP->green * 63.0f), (int) (colorP->blue * 63.0f)); }
+		inline int ClosestColor (CRGBColor* colorP)
+		 { return ClosestColor ((int) colorP->r, (int) colorP->g, (int) colorP->b); }
+		inline int ClosestColor (CFloatVector3* colorP)
+		 { return ClosestColor ((int) (colorP->Red () * 63.0f), (int) (colorP->Green () * 63.0f), (int) (colorP->Blue () * 63.0f)); }
 		void SwapTransparency (void);
 		void AddComputedColor (int r, int g, int b, int nIndex);
 		void InitComputedColors (void);
-		void ToRgbaf (ubyte nColor, tRgbaColorf& color);
+		void ToRgbaf (ubyte nColor, CFloatVector& color);
 
 		inline tPalette& Data (void) { return m_data; }
-		inline tRgbColorb *Color (void) { return m_data.rgb; }
+		inline CRGBColor *Color (void) { return m_data.rgb; }
 		inline ubyte *Raw (void) { return m_data.raw; }
 		inline void Skip (CFile& cf) { cf.Seek (sizeof (m_data), SEEK_CUR); }
 		inline size_t Size (void) { return sizeof (m_data); }
 		inline void SetBlack (ubyte r, ubyte g, ubyte b) 
-		 { m_data.rgb [0].red = r, m_data.rgb [0].green = g, m_data.rgb [0].blue = b; }
+		 { m_data.rgb [0].r = r, m_data.rgb [0].g = g, m_data.rgb [0].b = b; }
 		inline void SetTransparency (ubyte r, ubyte g, ubyte b) 
-		 { m_data.rgb [PALETTE_SIZE - 1].red = r, m_data.rgb [PALETTE_SIZE - 1].green = g, m_data.rgb [PALETTE_SIZE - 1].blue = b; }
+		 { m_data.rgb [PALETTE_SIZE - 1].r = r, m_data.rgb [PALETTE_SIZE - 1].g = g, m_data.rgb [PALETTE_SIZE - 1].b = b; }
 		inline CPalette& operator= (CPalette& source) { 
 			Init ();
 			memcpy (&Data (), &source.Data (), sizeof (tPalette));
@@ -92,7 +92,7 @@ class CPalette {
 					 (SuperTranspColor () == source.SuperTranspColor ()) &&
 					 (memcmp (&Data (), &source.Data (), sizeof (tPalette)) == 0); 
 			}
-		inline tRgbColorb& operator[] (const int i) { return m_data.rgb [i]; }
+		inline CRGBColor& operator[] (const int i) { return m_data.rgb [i]; }
 		inline int TransparentColor (void) { return m_transparentColor; }
 		inline int SuperTranspColor (void) { return m_superTranspColor; }
 	};
@@ -127,9 +127,9 @@ class CPaletteData {
 		fix				xLastEffectTime;
 
 		ubyte				fadeTable [PALETTE_SIZE * MAX_FADE_LEVELS];
-		tRgbColorf		flash;
-		tRgbColorf		effect;
-		tRgbColorf		lastEffect;
+		CFloatVector3		flash;
+		CFloatVector3		effect;
+		CFloatVector3		lastEffect;
 		bool				bDoEffect;
 		int				nSuspended;
 	};
@@ -170,13 +170,13 @@ class CPaletteManager {
 		void SaveEffect (void);
 		void SuspendEffect (bool bCond = true);
 		void ResumeEffect (bool bCond = true);
-		void SetEffect (int red, int green, int blue, bool bForce = false);
-		void SetEffect (float red, float green, float blue, bool bForce = false);
-		void BumpEffect (int red, int green, int blue);
-		void BumpEffect (float red, float green, float blue);
-		inline void SetRedEffect (int color) { m_data.effect.red = float (color) / 64.0f; }
-		inline void SetGreenEffect (int color) { m_data.effect.green = float (color) / 64.0f; }
-		inline void SetBlueEffect (int color) { m_data.effect.blue = float (color) / 64.0f; }
+		void SetEffect (int r, int g, int b, bool bForce = false);
+		void SetEffect (float r, float g, float b, bool bForce = false);
+		void BumpEffect (int r, int g, int b);
+		void BumpEffect (float r, float g, float b);
+		inline void SetRedEffect (int color) { m_data.effect.Red () = float (color) / 64.0f; }
+		inline void SetGreenEffect (int color) { m_data.effect.Green () = float (color) / 64.0f; }
+		inline void SetBlueEffect (int color) { m_data.effect.Blue () = float (color) / 64.0f; }
 		void SetEffect (bool bForce = false);
 		void ClearEffect (void);
 		int ClearEffect (CPalette* palette);
@@ -202,12 +202,12 @@ class CPaletteManager {
 			return m_data.current;
 			}
 
-		inline sbyte RedEffect (void) { return sbyte (m_data.effect.red * 64.0f); }
-		inline sbyte GreenEffect (void) { return sbyte (m_data.effect.green * 64.0f); }
-		inline sbyte BlueEffect (void) { return sbyte (m_data.effect.blue * 64.0f); }
-		inline void SetRedEffect (sbyte color) {  m_data.effect.red = float (color) / 64.0f; }
-		inline void SetGreenEffect (sbyte color) {  m_data.effect.green = float (color) / 64.0f; }
-		inline void SetBlueEffect (sbyte color) {  m_data.effect.blue = float (color) / 64.0f; }
+		inline sbyte RedEffect (void) { return sbyte (m_data.effect.Red () * 64.0f); }
+		inline sbyte GreenEffect (void) { return sbyte (m_data.effect.Green () * 64.0f); }
+		inline sbyte BlueEffect (void) { return sbyte (m_data.effect.Blue () * 64.0f); }
+		inline void SetRedEffect (sbyte color) {  m_data.effect.Red () = float (color) / 64.0f; }
+		inline void SetGreenEffect (sbyte color) {  m_data.effect.Green () = float (color) / 64.0f; }
+		inline void SetBlueEffect (sbyte color) {  m_data.effect.Blue () = float (color) / 64.0f; }
 		inline void SetFlashDuration (fix xDuration) { m_data.xFlashDuration = xDuration; }
 		inline void SetLastEffectTime (fix xTime) { m_data.xLastEffectTime = xTime; }
 		inline fix FlashDuration (void) { return m_data.xFlashDuration; }

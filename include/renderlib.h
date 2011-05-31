@@ -55,16 +55,16 @@ void TransformSideCenters (void);
 #endif
 
 int IsTransparentTexture (short nTexture);
-int SetVertexColor (int nVertex, tFaceColor *pc);
+int SetVertexColor (int nVertex, CFaceColor *pc);
 int SetVertexColors (tFaceProps *propsP);
-fix SetVertexLight (int nSegment, int nSide, int nVertex, tFaceColor *pc, fix light);
+fix SetVertexLight (int nSegment, int nSide, int nVertex, CFaceColor *pc, fix light);
 int SetFaceLight (tFaceProps *propsP);
-void AdjustVertexColor (CBitmap *bmP, tFaceColor *pc, fix xLight);
+void AdjustVertexColor (CBitmap *bmP, CFaceColor *pc, fix xLight);
 char IsColoredSegFace (short nSegment, short nSide);
-tRgbaColorf *ColoredSegmentColor (int nSegment, int nSide, char nColor);
+CFloatVector *ColoredSegmentColor (int nSegment, int nSide, char nColor);
 int IsMonitorFace (short nSegment, short nSide, int bForce);
 float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, ubyte bAdditive,
-					  tRgbaColorf *pc, int *bCloaking, ubyte *bTextured, ubyte* bCloaked, ubyte* bTransparent);
+					  CFloatVector *pc, int *bCloaking, ubyte *bTextured, ubyte* bCloaked, ubyte* bTransparent);
 int SetupMonitorFace (short nSegment, short nSide, short nCamera, CSegFace *faceP);
 CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures = 1);
 void DrawOutline (int nVertices, CRenderPoint **pointList);
@@ -86,7 +86,7 @@ void DrawWindowBox (uint color, short left, short top, short right, short bot);
 
 //------------------------------------------------------------------------------
 
-extern tRgbaColorf segmentColors [4];
+extern CFloatVector segmentColors [4];
 
 #if DBG
 extern short nDbgSeg;

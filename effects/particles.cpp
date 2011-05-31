@@ -44,7 +44,7 @@
 
 //------------------------------------------------------------------------------
 
-tRgbaColorf defaultParticleColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+CFloatVector defaultParticleColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 CFloatVector CParticle::vRot [PARTICLE_POSITIONS];
 CFixMatrix CParticle::mRot [2][PARTICLE_POSITIONS];
@@ -75,12 +75,12 @@ return float (3 * alpha / 4 + RandN (alpha / 2)) / 255.0f;
 
 //------------------------------------------------------------------------------
 
-inline float ParticleBrightness (tRgbaColorf *colorP) 
+inline float ParticleBrightness (CFloatVector *colorP) 
 {
 #if 0
-return (colorP->red + colorP->green + colorP->blue) / 3.0f;
+return (colorP->Red () + colorP->Green () + colorP->Blue ()) / 3.0f;
 #else
-return colorP ? (colorP->red * 3 + colorP->green * 5 + colorP->blue * 2) / 10.0f : 1.0f;
+return colorP ? (colorP->Red () * 3 + colorP->Green () * 5 + colorP->Blue () * 2) / 10.0f : 1.0f;
 #endif
 }
 
@@ -128,9 +128,9 @@ for (int i = 0; i < PARTICLE_POSITIONS; i++)
 
 static int brightFlags [PARTICLE_TYPES] = {1,1,0,0,0,1,1,0,1,1};
 
-void CParticle::InitColor (tRgbaColorf* colorP, float fBrightness, char nParticleSystemType)
+void CParticle::InitColor (CFloatVector* colorP, float fBrightness, char nParticleSystemType)
 {
-	tRgbaColorf color;
+	CFloatVector color;
 
 m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES) 
 					? 1
@@ -144,79 +144,79 @@ m_color [0] = m_color [1] = color = (colorP && (m_bEmissive != 2)) ? *colorP : d
 if (!brightFlags [(int) m_nType]) {
 	m_bBright = 0;
 	m_nFadeTime = -1;
-	if (colorP && (colorP->alpha < 0)) {
-		ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
-		m_color [1].alpha = float (3 * a + RandN (2 * a)) / 255.0f;
+	if (colorP && (colorP->Alpha () < 0)) {
+		ubyte a = ubyte (-colorP->Alpha () * 255.0f * 0.25f + 0.5f);
+		m_color [1].Alpha () = float (3 * a + RandN (2 * a)) / 255.0f;
 		}
 	}
 else {
 	m_bBright = (m_nType <= SMOKE_PARTICLES) ? (rand () % 50) == 0 : 0;
 	if (colorP) {
 		if (!m_bEmissive /*|| (m_bEmissive == 3)*/) {
-			m_color [0].red *= RANDOM_FADE;
-			m_color [0].green *= RANDOM_FADE;
-			m_color [0].blue *= RANDOM_FADE;
+			m_color [0].Red () *= RANDOM_FADE;
+			m_color [0].Green () *= RANDOM_FADE;
+			m_color [0].Blue () *= RANDOM_FADE;
 			}
 		m_nFadeTime = 0;
 		} 
 	else {
 		colorP = &m_color [0];
-		m_color [0].alpha = 2.0f;
+		m_color [0].Alpha () = 2.0f;
 		}
 	if (m_bEmissive /*&& (m_bEmissive < 3)*/)
-		; // m_color [0].alpha = float (SMOKE_START_ALPHA + 64) / 255.0f;
+		; // m_color [0].Alpha () = float (SMOKE_START_ALPHA + 64) / 255.0f;
 	else if (nParticleSystemType != GATLING_PARTICLES) {
 		if (!colorP)
-			m_color [1].alpha = SmokeStartAlpha (m_bBlowUp, m_nClass);
-		else if (colorP->alpha < 0) {
-			ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
-			m_color [1].alpha = float (3 * a + RandN (2 * a)) / 255.0f;
+			m_color [1].Alpha () = SmokeStartAlpha (m_bBlowUp, m_nClass);
+		else if (colorP->Alpha () < 0) {
+			ubyte a = ubyte (-colorP->Alpha () * 255.0f * 0.25f + 0.5f);
+			m_color [1].Alpha () = float (3 * a + RandN (2 * a)) / 255.0f;
 			} 
-		else if (char (colorP->alpha) != 2.0f) 
-			m_color [1].alpha = SmokeStartAlpha (m_bBlowUp, m_nClass);
+		else if (char (colorP->Alpha ()) != 2.0f) 
+			m_color [1].Alpha () = SmokeStartAlpha (m_bBlowUp, m_nClass);
 		else {
 			if ((m_bEmissive = (gameOpts->render.particles.nQuality > 2))) {
-				m_color [0].red = 0.5f + RandFloat (2.0f);
-				m_color [0].green = m_color [0].red * (0.5f + RandFloat (2.0f));
+				m_color [0].Red () = 0.5f + RandFloat (2.0f);
+				m_color [0].Green () = m_color [0].Red () * (0.5f + RandFloat (2.0f));
 				}
 			else {
 #if 1
-				m_color [0].red = 
-				m_color [0].green = 1.0;
+				m_color [0].Red () = 
+				m_color [0].Green () = 1.0;
 #else
-				m_color [0].red = 0.9f + RandFloat (10.0f);
-				m_color [0].green = m_color [0].red * (0.9f + RandFloat (10.0f));
+				m_color [0].Red () = 0.9f + RandFloat (10.0f);
+				m_color [0].Green () = m_color [0].Red () * (0.9f + RandFloat (10.0f));
 #endif
 				}
-			m_color [0].blue = 0.0f;
+			m_color [0].Blue () = 0.0f;
 			m_nFadeTime = 50 + rand () % 150;
-			m_color [1].red *= RANDOM_FADE;
-			m_color [1].green *= RANDOM_FADE;
-			m_color [1].blue *= RANDOM_FADE;
+			m_color [1].Red () *= RANDOM_FADE;
+			m_color [1].Green () *= RANDOM_FADE;
+			m_color [1].Blue () *= RANDOM_FADE;
 			m_nWidth *= 0.75;
 			m_nHeight *= 0.75;
-			m_color [1].alpha = SmokeStartAlpha (m_bBlowUp, m_nClass);
+			m_color [1].Alpha () = SmokeStartAlpha (m_bBlowUp, m_nClass);
 			}
 		if (m_bBlowUp && !m_bBright) {
 			fBrightness = 1.0f - fBrightness;
 			if (m_nFadeTime <= 0)
-				m_color [1].alpha += fBrightness * fBrightness / 8.0f;
+				m_color [1].Alpha () += fBrightness * fBrightness / 8.0f;
 			}
 		}
 	}
 
 if (nParticleSystemType == SIMPLE_SMOKE_PARTICLES)
-	m_color [1].alpha /= 3.5f - float (1 + int (gameOpts->render.particles.nQuality > 1)) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
+	m_color [1].Alpha () /= 3.5f - float (1 + int (gameOpts->render.particles.nQuality > 1)) / 2.0f; //colorP ? 2.0f + (color.Red () + color.Green () + color.Blue ()) / 3.0f : 2.0f;
 else if (nParticleSystemType == SMOKE_PARTICLES)
-	m_color [1].alpha /= colorP ? 3.0f - (color.red + color.green + color.blue) / 3.0f : 2.5f;
+	m_color [1].Alpha () /= colorP ? 3.0f - (color.Red () + color.Green () + color.Blue ()) / 3.0f : 2.5f;
 else if ((nParticleSystemType == BUBBLE_PARTICLES) || (nParticleSystemType == RAIN_PARTICLES) || (nParticleSystemType == SNOW_PARTICLES))
-	m_color [1].alpha /= 2.0f;
+	m_color [1].Alpha () /= 2.0f;
 else if (nParticleSystemType == GATLING_PARTICLES)
-	m_color [1].alpha /= 4.0f;
+	m_color [1].Alpha () /= 4.0f;
 if (m_bEmissive)
-	m_color [0].alpha = (m_nFadeTime > 0) ? 0.8f + RandFloat (5.0f) : 1.0f;
+	m_color [0].Alpha () = (m_nFadeTime > 0) ? 0.8f + RandFloat (5.0f) : 1.0f;
 else
-	m_color [0].alpha = m_color [1].alpha;
+	m_color [0].Alpha () = m_color [1].Alpha ();
 }
 
 //------------------------------------------------------------------------------
@@ -410,7 +410,7 @@ static int bounceFlags [PARTICLE_TYPES] = {2,2,1,1,1,2,1,2,2,2};
 
 int CParticle::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 							  short nSegment, int nLife, int nSpeed, char nParticleSystemType,
-							  char nClass, float nScale, tRgbaColorf *colorP, int nCurTime,
+							  char nClass, float nScale, CFloatVector *colorP, int nCurTime,
 							  int bBlowUp, char nFadeType, float fBrightness,
 							  CFixVector *vEmittingFace) 
 {
@@ -449,7 +449,7 @@ InitAnimation ();
 
 // init color
 
-	tRgbaColorf color;
+	CFloatVector color;
 
 m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES) 
 					? 1
@@ -463,79 +463,79 @@ m_color [0] = m_color [1] = color = (colorP && (m_bEmissive != 2)) ? *colorP : d
 if (!brightFlags [(int) m_nType]) {
 	m_bBright = 0;
 	m_nFadeTime = -1;
-	if (colorP && (colorP->alpha < 0)) {
-		ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
-		m_color [1].alpha = float (3 * a + RandN (2 * a)) / 255.0f;
+	if (colorP && (colorP->Alpha () < 0)) {
+		ubyte a = ubyte (-colorP->Alpha () * 255.0f * 0.25f + 0.5f);
+		m_color [1].Alpha () = float (3 * a + RandN (2 * a)) / 255.0f;
 		}
 	}
 else {
 	m_bBright = (m_nType <= SMOKE_PARTICLES) ? (rand () % 50) == 0 : 0;
 	if (colorP) {
 		if (!m_bEmissive /*|| (m_bEmissive == 3)*/) {
-			m_color [0].red *= RANDOM_FADE;
-			m_color [0].green *= RANDOM_FADE;
-			m_color [0].blue *= RANDOM_FADE;
+			m_color [0].Red () *= RANDOM_FADE;
+			m_color [0].Green () *= RANDOM_FADE;
+			m_color [0].Blue () *= RANDOM_FADE;
 			}
 		m_nFadeTime = 0;
 		} 
 	else {
 		colorP = &m_color [0];
-		m_color [0].alpha = 2.0f;
+		m_color [0].Alpha () = 2.0f;
 		}
 	if (m_bEmissive /*&& (m_bEmissive < 3)*/)
-		; // m_color [0].alpha = float (SMOKE_START_ALPHA + 64) / 255.0f;
+		; // m_color [0].Alpha () = float (SMOKE_START_ALPHA + 64) / 255.0f;
 	else if (nParticleSystemType != GATLING_PARTICLES) {
 		if (!colorP)
-			m_color [1].alpha = SmokeStartAlpha (m_bBlowUp, m_nClass);
-		else if (colorP->alpha < 0) {
-			ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
-			m_color [1].alpha = float (3 * a + RandN (2 * a)) / 255.0f;
+			m_color [1].Alpha () = SmokeStartAlpha (m_bBlowUp, m_nClass);
+		else if (colorP->Alpha () < 0) {
+			ubyte a = ubyte (-colorP->Alpha () * 255.0f * 0.25f + 0.5f);
+			m_color [1].Alpha () = float (3 * a + RandN (2 * a)) / 255.0f;
 			} 
-		else if (char (colorP->alpha) != 2.0f) 
-			m_color [1].alpha = SmokeStartAlpha (m_bBlowUp, m_nClass);
+		else if (char (colorP->Alpha ()) != 2.0f) 
+			m_color [1].Alpha () = SmokeStartAlpha (m_bBlowUp, m_nClass);
 		else {
 			if ((m_bEmissive = (gameOpts->render.particles.nQuality > 2))) {
-				m_color [0].red = 0.5f + RandFloat (2.0f);
-				m_color [0].green = m_color [0].red * (0.5f + RandFloat (2.0f));
+				m_color [0].Red () = 0.5f + RandFloat (2.0f);
+				m_color [0].Green () = m_color [0].Red () * (0.5f + RandFloat (2.0f));
 				}
 			else {
 #if 1
-				m_color [0].red = 
-				m_color [0].green = 1.0;
+				m_color [0].Red () = 
+				m_color [0].Green () = 1.0;
 #else
-				m_color [0].red = 0.9f + RandFloat (10.0f);
-				m_color [0].green = m_color [0].red * (0.9f + RandFloat (10.0f));
+				m_color [0].Red () = 0.9f + RandFloat (10.0f);
+				m_color [0].Green () = m_color [0].Red () * (0.9f + RandFloat (10.0f));
 #endif
 				}
-			m_color [0].blue = 0.0f;
+			m_color [0].Blue () = 0.0f;
 			m_nFadeTime = 50 + rand () % 150;
-			m_color [1].red *= RANDOM_FADE;
-			m_color [1].green *= RANDOM_FADE;
-			m_color [1].blue *= RANDOM_FADE;
+			m_color [1].Red () *= RANDOM_FADE;
+			m_color [1].Green () *= RANDOM_FADE;
+			m_color [1].Blue () *= RANDOM_FADE;
 			m_nWidth *= 0.75;
 			m_nHeight *= 0.75;
-			m_color [1].alpha = SmokeStartAlpha (m_bBlowUp, m_nClass);
+			m_color [1].Alpha () = SmokeStartAlpha (m_bBlowUp, m_nClass);
 			}
 		if (m_bBlowUp && !m_bBright) {
 			fBrightness = 1.0f - fBrightness;
 			if (m_nFadeTime <= 0)
-				m_color [1].alpha += fBrightness * fBrightness / 8.0f;
+				m_color [1].Alpha () += fBrightness * fBrightness / 8.0f;
 			}
 		}
 	}
 
 if (nParticleSystemType == SIMPLE_SMOKE_PARTICLES)
-	m_color [1].alpha /= 3.5f - float (1 + int (gameOpts->render.particles.nQuality > 1)) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
+	m_color [1].Alpha () /= 3.5f - float (1 + int (gameOpts->render.particles.nQuality > 1)) / 2.0f; //colorP ? 2.0f + (color.Red () + color.Green () + color.Blue ()) / 3.0f : 2.0f;
 else if (nParticleSystemType == SMOKE_PARTICLES)
-	m_color [1].alpha /= colorP ? 3.0f - (color.red + color.green + color.blue) / 3.0f : 2.5f;
+	m_color [1].Alpha () /= colorP ? 3.0f - (color.Red () + color.Green () + color.Blue ()) / 3.0f : 2.5f;
 else if ((nParticleSystemType == BUBBLE_PARTICLES) || (nParticleSystemType == RAIN_PARTICLES) || (nParticleSystemType == SNOW_PARTICLES))
-	m_color [1].alpha /= 2.0f;
+	m_color [1].Alpha () /= 2.0f;
 else if (nParticleSystemType == GATLING_PARTICLES)
-	m_color [1].alpha /= 4.0f;
+	m_color [1].Alpha () /= 4.0f;
 if (m_bEmissive)
-	m_color [0].alpha = (m_nFadeTime > 0) ? 0.8f + RandFloat (5.0f) : 1.0f;
+	m_color [0].Alpha () = (m_nFadeTime > 0) ? 0.8f + RandFloat (5.0f) : 1.0f;
 else
-	m_color [0].alpha = m_color [1].alpha;
+	m_color [0].Alpha () = m_color [1].Alpha ();
 
 
 // init drift
@@ -826,8 +826,8 @@ if (m_nType <= SMOKE_PARTICLES) {
 	if (m_nFadeTime > 0) {
 #if 1
 		if (m_nTTL - m_nLife < m_nFadeTime) {
-			m_color [0].red *= 0.95f;
-			m_color [0].green *= 0.8f;
+			m_color [0].Red () *= 0.95f;
+			m_color [0].Green () *= 0.8f;
 			}
 		else {
 			m_color [0] = m_color [1];
@@ -837,43 +837,43 @@ if (m_nType <= SMOKE_PARTICLES) {
 			m_nFadeTime = -1;
 			}
 #else
-		if (m_color [0].green < m_color [1].green) {
+		if (m_color [0].Green () < m_color [1].Green ()) {
 #if SMOKE_SLOWMO
-			m_color [0].green += 1.0f / 40.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
+			m_color [0].Green () += 1.0f / 40.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
 #else
-			m_color [0].green += 1.0f / 40.0f;
+			m_color [0].Green () += 1.0f / 40.0f;
 #endif
-			if (m_color [0].green > m_color [1].green) {
-				m_color [0].green = m_color [1].green;
+			if (m_color [0].Green () > m_color [1].Green ()) {
+				m_color [0].Green () = m_color [1].Green ();
 				m_nFadeTime--;
 				}
 			}
-		if (m_color [0].blue < m_color [1].blue) {
+		if (m_color [0].Blue () < m_color [1].Blue ()) {
 #if SMOKE_SLOWMO
-			m_color [0].blue += 1.0f / 20.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
+			m_color [0].Blue () += 1.0f / 20.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
 #else
-			m_color [0].blue += 1.0f / 20.0f;
+			m_color [0].Blue () += 1.0f / 20.0f;
 #endif
-			if (m_color [0].blue > m_color [1].blue) {
-				m_color [0].blue = m_color [1].blue;
+			if (m_color [0].Blue () > m_color [1].Blue ()) {
+				m_color [0].Blue () = m_color [1].Blue ();
 				m_nFadeTime--;
 				}
 			}
 #endif
 		}
 	else if (m_nFadeTime == 0) {
-		m_color [0].red = m_color [1].red * RANDOM_FADE;
-		m_color [0].green = m_color [1].green * RANDOM_FADE;
-		m_color [0].blue = m_color [1].blue * RANDOM_FADE;
+		m_color [0].Red () = m_color [1].Red () * RANDOM_FADE;
+		m_color [0].Green () = m_color [1].Green () * RANDOM_FADE;
+		m_color [0].Blue () = m_color [1].Blue () * RANDOM_FADE;
 		m_nFadeTime = -1;
 	}
 #if SMOKE_LIGHTING //> 1
 	if (gameOpts->render.particles.nQuality > 2) {
 		if (0 <= (m_nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 0, nThread))) {
-			tFaceColor* colorP = lightManager.AvgSgmColor (m_nSegment, NULL, nThread);
-			m_color [0].red *= colorP->color.red;
-			m_color [0].green *= colorP->color.green;
-			m_color [0].blue *= colorP->color.blue;
+			CFaceColor* colorP = lightManager.AvgSgmColor (m_nSegment, NULL, nThread);
+			m_color [0].Red () *= colorP->Red ();
+			m_color [0].Green () *= colorP->Green ();
+			m_color [0].Blue () *= colorP->Blue ();
 			}
 		}
 #endif
@@ -1038,7 +1038,7 @@ else
 
 int CParticle::Update (int nCurTime, float fBrightness, int nThread) 
 {
-if ((m_nLife <= 0) /*|| (m_color [0].alpha < 0.01f)*/)
+if ((m_nLife <= 0) /*|| (m_color [0].Alpha () < 0.01f)*/)
 	return 0;
 
 fix t = nCurTime - m_nUpdated;
@@ -1092,9 +1092,9 @@ if ((m_nType <= SMOKE_PARTICLES) && (m_nRad > 0)) {
 			m_nHeight += m_nRad * 0.1f;
 			if (m_nHeight > m_nRad)
 				m_nHeight = m_nRad;
-			m_color [0].alpha *= (1.0f + 0.0725f / m_bBlowUp);
-			if (m_color [0].alpha > 1)
-				m_color [0].alpha = 1;
+			m_color [0].Alpha () *= (1.0f + 0.0725f / m_bBlowUp);
+			if (m_color [0].Alpha () > 1)
+				m_color [0].Alpha () = 1;
 			}
 		} 
 	else {
@@ -1102,9 +1102,9 @@ if ((m_nType <= SMOKE_PARTICLES) && (m_nRad > 0)) {
 			m_nRad = 0;
 		else {
 			m_nRad *= 1.2f;
-			m_color [0].alpha *= 1.0725f;
-			if (m_color [0].alpha > 1)
-				m_color [0].alpha = 1;
+			m_color [0].Alpha () *= 1.0725f;
+			if (m_color [0].Alpha () > 1)
+				m_color [0].Alpha () = 1;
 			}
 		}
 	}
@@ -1186,22 +1186,22 @@ if (m_bBright)
 m_renderColor = m_color [0];
 if (m_nType <= SMOKE_PARTICLES) {
 	fBrightness *= 0.9f + (float) (rand () % 1000) / 5000.0f;
-	m_renderColor.red *= fBrightness;
-	m_renderColor.green *= fBrightness;
-	m_renderColor.blue *= fBrightness;
+	m_renderColor.Red () *= fBrightness;
+	m_renderColor.Green () *= fBrightness;
+	m_renderColor.Blue () *= fBrightness;
 	}
 
 float fFade;
 
 if (m_nFadeType == 0) { // default (start fully visible, fade out)
 #if 1 
-	m_renderColor.alpha *= m_decay; // * 0.6f;
+	m_renderColor.Alpha () *= m_decay; // * 0.6f;
 #else
-	m_renderColor.alpha *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
+	m_renderColor.Alpha () *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
 #endif
 	}
 else if (m_nFadeType == 1) { // quickly fade in, then gently fade out
-	m_renderColor.alpha *= float (
+	m_renderColor.Alpha () *= float (
 			sin (double (sqr (1.0f - m_decay)) * Pi * 1.5) * 0.5 + 0.5);
 	if (m_decay >= 0.666f)
 		return 1;
@@ -1220,7 +1220,7 @@ else if (m_nFadeType == 1) { // quickly fade in, then gently fade out
 		fFade = 0.1f + 0.9f * fFade;
 	if (fFade > 1.0f)
 		fFade = 1.0f;
-	m_renderColor.alpha *= fFade;
+	m_renderColor.Alpha () *= fFade;
 	if (m_decay >= 0.75f)
 		return 1;
 	}
@@ -1234,20 +1234,20 @@ else if (m_nFadeType == 3) { // fire (additive, blend in)
 		m_nLife = -1;
 		return 0;
 	}
-	m_renderColor.red =
-	m_renderColor.green =
-	m_renderColor.blue = fFade;
+	m_renderColor.Red () =
+	m_renderColor.Green () =
+	m_renderColor.Blue () = fFade;
 	m_color [0] = m_renderColor;
 #endif
 	return 1;
 	}
 else if (m_nFadeType == 4) { // light trail (additive, constant effect)
-	m_renderColor.red /= 50.0f;
-	m_renderColor.green /= 50.0f;
-	m_renderColor.blue /= 50.0f;
+	m_renderColor.Red () /= 50.0f;
+	m_renderColor.Green () /= 50.0f;
+	m_renderColor.Blue () /= 50.0f;
 	return 1;
 	}
-if (m_renderColor.alpha >= 0.01f) //1.0 / 255.0
+if (m_renderColor.Alpha () >= 0.01f) //1.0 / 255.0
 	return 1;
 m_nLife = -1;
 return 0;
@@ -1368,7 +1368,7 @@ else {
 
 pb [0].color = m_renderColor;
 if (m_bEmissive && alphaControl)
-	pb [0].color.alpha = 0.0f;
+	pb [0].color.Alpha () = 0.0f;
 pb [1].color = pb [2].color = pb [3].color = pb [0].color;
 
 if (m_bEmissive < 0) {

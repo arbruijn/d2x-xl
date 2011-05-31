@@ -353,7 +353,7 @@ int CSubModel::Draw (CObject *objP, CModel *po, float *fLight)
 	CFace*			pf;
 	CFaceVert*		pfv;
 	CFloatVector*	pv, * pvn, * phv;
-	tFaceColor*		pvc, vc, sc = {{1,1,1,1}};
+	CFaceColor*		vertColorP, vertColor, segColor = {{{1.0f,1.0f, 1.0f, 1.0f}}, 1};
 	CBitmap*			bmP = NULL;
 	int				h, i, j, nVerts [3];
 	int				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0), bTextured = -1, bReverse;
@@ -361,7 +361,7 @@ int CSubModel::Draw (CObject *objP, CModel *po, float *fLight)
 	float				fl, r, g, b, fAlpha = po->m_fAlpha;
 	// helper pointers into render buffers
 	CFloatVector*	pvb;
-	tRgbaColorf*	pcb;
+	CFloatVector*	pcb;
 	tTexCoord2f*	ptb;
 
 #if DBG_SHADOWS
@@ -370,15 +370,15 @@ if (bShadowTest && (bShadowTest < 4))
 #endif
 pv = m_rotVerts.Buffer ();
 pvn = m_normals.Buffer ();
-pvc = m_vertColors.Buffer ();
-//memset (pvc, 0, m_nVerts * sizeof (tFaceColor));
+vertColorP = m_vertColors.Buffer ();
+//memset (vertColorP, 0, m_nVerts * sizeof (CFaceColor));
 ogl.SetFaceCulling (true);
 OglCullFace (0);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 if (!bDynLighting) {
-	sc = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos, 0);
-	if (sc.index != gameStates.render.nFrameFlipFlop + 1)
-		sc.color.red = sc.color.green = sc.color.blue = 1;
+	segColor = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos, 0);
+	if (segColor.index != gameStates.render.nFrameFlipFlop + 1)
+		segColor.Red () = segColor.Green () = segColor.Blue () = 1;
 	}
 
 for (bReverse = 0; bReverse <= 1; bReverse++) {
@@ -424,37 +424,37 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			if (fl > 1)
 				fl = 1;
 			if (m_nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
-				pcb->red = fl * m_glowInfo.m_color.red;
-				pcb->green = fl * m_glowInfo.m_color.green;
-				pcb->blue = fl * m_glowInfo.m_color.blue;
-				pcb->alpha = m_pfAlpha [pfv->m_nIndex] * fAlpha;
+				pcb->Red () = fl * m_glowInfo.m_color.Red ();
+				pcb->Green () = fl * m_glowInfo.m_color.Green ();
+				pcb->Blue () = fl * m_glowInfo.m_color.Blue ();
+				pcb->Alpha () = m_pfAlpha [pfv->m_nIndex] * fAlpha;
 				pcb++;
 				}
 			else if (!bDynLighting) {
 				if (bBright)
 					fl += (1 - fl) / 2;
-				pcb->red = sc.color.red * fl;
-				pcb->green = sc.color.green * fl;
-				pcb->blue = sc.color.blue * fl;
-				pcb->alpha = m_pfAlpha [pfv->m_nIndex] * fAlpha;
+				pcb->Red () = segColor.Red () * fl;
+				pcb->Green () = segColor.Green () * fl;
+				pcb->Blue () = segColor.Blue () * fl;
+				pcb->Alpha () = m_pfAlpha [pfv->m_nIndex] * fAlpha;
 				pcb++;
 				}
 			for (j = pf->m_nVerts; j; j--, pfv++) {
 				phv = pv + (h = pfv->m_nIndex);
 				if (bDynLighting) {
-					if (pvc [h].index != gameStates.render.nFrameFlipFlop + 1)
-						G3VertexColor (-1, -1, -1, reinterpret_cast<CFloatVector3*> (pvn + h), reinterpret_cast<CFloatVector3*> (phv), pvc + h, NULL, 1, 0, 0);
+					if (vertColorP [h].index != gameStates.render.nFrameFlipFlop + 1)
+						G3VertexColor (-1, -1, -1, reinterpret_cast<CFloatVector3*> (pvn + h), reinterpret_cast<CFloatVector3*> (phv), vertColorP + h, NULL, 1, 0, 0);
 					
-					vc.color.red = (float) sqrt (pvc [h].color.red);
-					vc.color.green = (float) sqrt (pvc [h].color.green);
-					vc.color.blue = (float) sqrt (pvc [h].color.blue);
+					vertColor.Red () = (float) sqrt (vertColorP [h].Red ());
+					vertColor.Green () = (float) sqrt (vertColorP [h].Green ());
+					vertColor.Blue () = (float) sqrt (vertColorP [h].Blue ());
 					if (bBright) {
-						vc.color.red += (1 - vc.color.red) / 2;
-						vc.color.green += (1 - vc.color.green) / 2;
-						vc.color.blue += (1 - vc.color.blue) / 2;
+						vertColor.Red () += (1.0f - vertColor.Red ()) * 0.5f
+						vertColor.Green () += (1.0f - vertColor.Green ()) * 0.5f;
+						vertColor.Blue () += (1.0f - vertColor.Blue ()) * 0.5f
 						}
-					vc.color.alpha = m_pfAlpha [pfv->m_nIndex] * fAlpha;
-					*pcb++ = vc.color;
+					vertColor.Alpha () = m_pfAlpha [pfv->m_nIndex] * fAlpha;
+					*pcb++ = vertColor.color;
 					}
 				ptb->v.u = pfv->m_fu;
 				ptb->v.v = pfv->m_fv;
@@ -492,9 +492,9 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 				bmP = NULL;
 				}
 			fl = fLight [1];
-			r = fl * (float) pf->m_texProps.color.red / 255.0f;
-			g = fl * (float) pf->m_texProps.color.green / 255.0f;
-			b = fl * (float) pf->m_texProps.color.blue / 255.0f;
+			r = fl * (float) pf->m_texProps.Red () / 255.0f;
+			g = fl * (float) pf->m_texProps.Green () / 255.0f;
+			b = fl * (float) pf->m_texProps.Blue () / 255.0f;
 			glColor4f (r, g, b, m_pfAlpha [pfv->m_nIndex] * fAlpha);
 			*pvb++ = pv [pfv->m_nIndex];
 			}

@@ -213,9 +213,6 @@ class __pack__ CFloatVector {
 		static const CFloatVector Reflect (const CFloatVector& d, const CFloatVector& n);
 
 #if 0
-		inline float& X (void) { return vec.coord.x; }
-		inline float& Y (void) { return vec.coord.y; }
-		inline float& Z (void) { return vec.coord.z; }
 		// access op for assignment
 		float& operator[] (size_t i);
 		// read-only access op
@@ -254,6 +251,14 @@ class __pack__ CFloatVector {
 		CFloatVector& Assign (const CFloatVector& other);
 		CFloatVector& Assign (const CFixVector& other);
 		const float DistToPlane (const CFloatVector& n, const CFloatVector& p) const;
+		inline float& X (void) { return v.coord.x; }
+		inline float& Y (void) { return v.coord.y; }
+		inline float& Z (void) { return v.coord.z; }
+		inline float& W (void) { return v.coord.w; }
+		inline float& Red (void) { return v.color.r; }
+		inline float& Green (void) { return v.color.g; }
+		inline float& Blue (void) { return v.color.b; }
+		inline float& Alpha (void) { return v.color.a; }
 };
 
 //const float operator* (const CFloatVector& v0, const CFloatVector& v1);
@@ -335,6 +340,12 @@ class __pack__ CFloatVector3 {
 		CFloatVector3& Assign (const CFloatVector3& other);
 		CFloatVector3& Assign (const CFloatVector& other);
 		CFloatVector3& Assign (const CFixVector& other);
+		inline float& X (void) { return v.coord.x; }
+		inline float& Y (void) { return v.coord.y; }
+		inline float& Z (void) { return v.coord.z; }
+		inline float& Red (void) { return v.color.r; }
+		inline float& Green (void) { return v.color.g; }
+		inline float& Blue (void) { return v.color.b; }
 };
 
 //const float operator* (const CFloatVector3& v0, const CFloatVector3& v1);

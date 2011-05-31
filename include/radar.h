@@ -21,11 +21,11 @@ class CRadar {
 		static tSinCosf		sinCosBlip [BLIP_SLICES];
 		static int				bInitSinCos;
 
-		static tRgbColorf		shipColors [8];
-		static tRgbColorf		guidebotColor;
-		static tRgbColorf		robotColor;
-		static tRgbColorf		powerupColor;
-		static tRgbColorf		radarColor [2];
+		static CFloatVector3		shipColors [8];
+		static CFloatVector3		guidebotColor;
+		static CFloatVector3		robotColor;
+		static CFloatVector3		powerupColor;
+		static CFloatVector3		radarColor [2];
 		static int				bHaveShipColors;
 
 	private:

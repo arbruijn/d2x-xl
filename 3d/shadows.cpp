@@ -36,7 +36,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "lightning.h"
 #include "visibility.h"
 
-extern tFaceColor tMapColor;
+extern CFaceColor tMapColor;
 extern int bPrintLine;
 
 using namespace POF;
@@ -54,7 +54,7 @@ using namespace POF;
 float fInfinity [4] = {100.0f, 100.0f, 200.0f, 400.0f};	//5, 10, 20 standard cubes
 float fInf;
 
-extern tRgbaColorf shadowColor [2], modelColor [2];
+extern CFloatVector shadowColor [2], modelColor [2];
 
 static CFloatVector	vLightPosf,
 							//vViewerPos,

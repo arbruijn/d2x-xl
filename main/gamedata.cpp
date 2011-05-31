@@ -1449,10 +1449,7 @@ bool CWeaponData::Create (void)
 {
 CREATE (color, LEVEL_OBJECTS, 0);
 for (int i = 0; i < LEVEL_OBJECTS; i++)
-	color [i].red =
-	color [i].green =
-	color [i].blue =
-	color [i].alpha = 1.0;
+	color [i].Set (1.0f, 1.0f, 1.0f, 1.0f);
 return true;
 }
 

@@ -525,18 +525,18 @@ if (gameStates.app.bMultiThreaded) {
 #endif
 		}
 	}
-gameData.render.vertColor.matAmbient.v.color.r =
-gameData.render.vertColor.matAmbient.v.color.g =
-gameData.render.vertColor.matAmbient.v.color.b = 1.0f - DIFFUSE_LIGHT; //AMBIENT_LIGHT;
-gameData.render.vertColor.matAmbient.v.color.a = 1.0f;
-gameData.render.vertColor.matDiffuse.v.color.r =
-gameData.render.vertColor.matDiffuse.v.color.g =
-gameData.render.vertColor.matDiffuse.v.color.b = DIFFUSE_LIGHT;
-gameData.render.vertColor.matDiffuse.v.color.a = 1.0f;
-gameData.render.vertColor.matSpecular.v.color.r =
-gameData.render.vertColor.matSpecular.v.color.g =
-gameData.render.vertColor.matSpecular.v.color.b = 0.0f;
-gameData.render.vertColor.matSpecular.v.color.a = 1.0f;
+gameData.render.vertColor.matAmbient.Red () =
+gameData.render.vertColor.matAmbient.Green () =
+gameData.render.vertColor.matAmbient.Blue () = 1.0f - DIFFUSE_LIGHT; //AMBIENT_LIGHT;
+gameData.render.vertColor.matAmbient.Alpha () = 1.0f;
+gameData.render.vertColor.matDiffuse.Red () =
+gameData.render.vertColor.matDiffuse.Green () =
+gameData.render.vertColor.matDiffuse.Blue () = DIFFUSE_LIGHT;
+gameData.render.vertColor.matDiffuse.Alpha () = 1.0f;
+gameData.render.vertColor.matSpecular.Red () =
+gameData.render.vertColor.matSpecular.Green () =
+gameData.render.vertColor.matSpecular.Blue () = 0.0f;
+gameData.render.vertColor.matSpecular.Alpha () = 1.0f;
 }
 
 // ------------------------------------------------------------------------------------------

@@ -213,10 +213,10 @@ switch (info.renderType) {
 		rType.particleInfo.nSpeed = cf.ReadInt ();
 		rType.particleInfo.nDrift = cf.ReadInt ();
 		rType.particleInfo.nBrightness = cf.ReadInt ();
-		rType.particleInfo.color.red = cf.ReadByte ();
-		rType.particleInfo.color.green = cf.ReadByte ();
-		rType.particleInfo.color.blue = cf.ReadByte ();
-		rType.particleInfo.color.alpha = cf.ReadByte ();
+		rType.particleInfo.color.Red () = cf.ReadByte ();
+		rType.particleInfo.color.Green () = cf.ReadByte ();
+		rType.particleInfo.color.Blue () = cf.ReadByte ();
+		rType.particleInfo.color.Alpha () = cf.ReadByte ();
 		rType.particleInfo.nSide = cf.ReadByte ();
 		if (gameData.segs.nLevelVersion < 18)
 			rType.particleInfo.nType = 0;
@@ -248,10 +248,10 @@ switch (info.renderType) {
 		rType.lightningInfo.bSound = cf.ReadByte ();
 		rType.lightningInfo.bRandom = cf.ReadByte ();
 		rType.lightningInfo.bInPlane = cf.ReadByte ();
-		rType.lightningInfo.color.red = cf.ReadByte ();
-		rType.lightningInfo.color.green = cf.ReadByte ();
-		rType.lightningInfo.color.blue = cf.ReadByte ();
-		rType.lightningInfo.color.alpha = cf.ReadByte ();
+		rType.lightningInfo.color.Red () = cf.ReadByte ();
+		rType.lightningInfo.color.Green () = cf.ReadByte ();
+		rType.lightningInfo.color.Blue () = cf.ReadByte ();
+		rType.lightningInfo.color.Alpha () = cf.ReadByte ();
 		if (gameData.segs.nLevelVersion < 19)
 			rType.lightningInfo.bEnabled = 1;
 		else

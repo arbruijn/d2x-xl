@@ -30,7 +30,7 @@ typedef struct tTranspPoly {
 	CBitmap*				bmP;
 	CFloatVector		vertices [8];
 	tTexCoord2f			texCoord [8];
-	tRgbaColorf			color [8];
+	CFloatVector			color [8];
 	short					sideLength [8];
 	short					nSegment;
 	int					nWrap;
@@ -49,7 +49,7 @@ typedef struct tTranspObject {
 typedef struct tTranspSprite {
 	CBitmap				*bmP;
 	CFloatVector		position;
-	tRgbaColorf			color;
+	CFloatVector			color;
 	int					nWidth;
 	int					nHeight;
 	char					nFrame;
@@ -80,7 +80,7 @@ typedef enum tTranspSphereType {
 
 typedef struct tTranspSphere {
 	tTranspSphereType	nType;
-	tRgbaColorf			color;
+	CFloatVector			color;
 	CObject				*objP;
 	int					nSize;
 	char					bAdditive;
@@ -95,7 +95,7 @@ typedef struct tTranspLightTrail {
 	CBitmap					*bmP;
 	CFloatVector			vertices [8];
 	tTexCoord2f				texCoord [8];
-	tRgbaColorf				color;
+	CFloatVector				color;
 	char						bTrail;
 } tTranspLightTrail;
 
@@ -196,17 +196,17 @@ class CTransparencyRenderer {
 			return gameStates.render.bTriangleMesh ? AddFaceTris (faceP) : AddFaceQuads (faceP);
 			}
 		int AddPoly (CSegFace *faceP, tFaceTriangle *triP, CBitmap *bmP,
-							CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
-							tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
+							CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, CFloatVector *color,
+							CFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 							short nSegment);
 		int AddObject (CObject *objP);
-		int AddSprite (CBitmap *bmP, const CFixVector& position, tRgbaColorf *color,
+		int AddSprite (CBitmap *bmP, const CFixVector& position, CFloatVector *color,
 							  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad);
 		int AddSpark (const CFixVector& position, char nType, int nSize, char nFrame, char nRotFrame, char nOrient);
 		int AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *objP, char bAdditive, fix nSize = 0);
 		int AddParticle (CParticle *particle, float fBrightness, int nThread);
 		int AddLightning (CLightning *lightningP, short nDepth);
-		int AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP);
+		int AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, CFloatVector *colorP);
 		int AddThruster (CObject* objP, tThrusterInfo* infoP, int nThruster);
 		void Render (int nWindow);
 		void StartRenderThreads (void);

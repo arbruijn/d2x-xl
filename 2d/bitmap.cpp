@@ -321,22 +321,22 @@ else
 
 //------------------------------------------------------------------------------
 
-int CBitmap::AvgColor (tRgbColorf* colorP, bool bForce)
+int CBitmap::AvgColor (CFloatVector3* colorP, bool bForce)
 {
 	int			c, h, i, j = 0, r = 0, g = 0, b = 0;
-	tRgbColorf	*color;
-	tRgbColorb	*colorBuf;
+	CFloatVector3	*color;
+	CRGBColor	*colorBuf;
 	CPalette		*palette;
 	ubyte			*bufP;
 
-if (!bForce && (m_info.avgColor.red || m_info.avgColor.green || m_info.avgColor.blue))
+if (!bForce && (m_info.avgColor.Red () || m_info.avgColor.Green () || m_info.avgColor.Blue ()))
 	return 0;
 if (m_info.nBPP > 1)
 	return 0;
 if (!(bufP = Buffer ())) {
-	m_info.avgColor.red = 
-	m_info.avgColor.green =
-	m_info.avgColor.blue = 0;
+	m_info.avgColor.Red () = 
+	m_info.avgColor.Green () =
+	m_info.avgColor.Blue () = 0;
 	return -1;
 	}
 if (gameData.pig.tex.bitmapP.IsElement (this))
@@ -348,38 +348,38 @@ else if (gameData.pig.tex.bitmaps [0].IsElement (this))
 else
 	return -1;
 color = gameData.pig.tex.bitmapColors + h;
-if (!(h = (int) ((color->red + color->green + color->blue) * 255.0f))) {
-	m_info.avgColor.red = 
-	m_info.avgColor.green =
-	m_info.avgColor.blue = 0;
+if (!(h = (int) ((color->Red () + color->Green () + color->Blue ()) * 255.0f))) {
+	m_info.avgColor.Red () = 
+	m_info.avgColor.Green () =
+	m_info.avgColor.Blue () = 0;
 	if (!(palette = m_info.palette))
 		palette = paletteManager.Default ();
 	colorBuf = palette->Color ();
 	for (h = i = m_info.props.w * m_info.props.h; i; i--, bufP++) {
 		if ((c = *bufP) && (c != TRANSPARENCY_COLOR) && (c != SUPER_TRANSP_COLOR)) {
-			r += colorBuf [c].red;
-			g += colorBuf [c].green;
-			b += colorBuf [c].blue;
+			r += colorBuf [c].Red ();
+			g += colorBuf [c].Green ();
+			b += colorBuf [c].Blue ();
 			j++;
 			}
 		}
 	if (j) {
-		m_info.avgColor.red = 4 * (ubyte) (r / j);
-		m_info.avgColor.green = 4 * (ubyte) (g / j);
-		m_info.avgColor.blue = 4 * (ubyte) (b / j);
+		m_info.avgColor.Red () = 4 * (ubyte) (r / j);
+		m_info.avgColor.Green () = 4 * (ubyte) (g / j);
+		m_info.avgColor.Blue () = 4 * (ubyte) (b / j);
 		j *= 63;	//palette entries are all /4, so do not divide by 256
-		color->red = (float) r / (float) j;
-		color->green = (float) g / (float) j;
-		color->blue = (float) b / (float) j;
-		h = m_info.avgColor.red + m_info.avgColor.green + m_info.avgColor.blue;
+		color->Red () = (float) r / (float) j;
+		color->Green () = (float) g / (float) j;
+		color->Blue () = (float) b / (float) j;
+		h = m_info.avgColor.Red () + m_info.avgColor.Green () + m_info.avgColor.Blue ();
 		}
 	else {
-		m_info.avgColor.red =
-		m_info.avgColor.green =
-		m_info.avgColor.blue = 0;
-		color->red =
-		color->green =
-		color->blue = 0.0f;
+		m_info.avgColor.Red () =
+		m_info.avgColor.Green () =
+		m_info.avgColor.Blue () = 0;
+		color->Red () =
+		color->Green () =
+		color->Blue () = 0.0f;
 		h = 0;
 		}
 	}
@@ -402,13 +402,13 @@ if (m_info.avgColorIndex)
 	return m_info.avgColorIndex;
 
 	int			c, h, i, j = 0, r = 0, g = 0, b = 0;
-	tRgbColorb	*palette = m_info.palette->Color ();
+	CRGBColor	*palette = m_info.palette->Color ();
 
 for (h = i = m_info.props.w * m_info.props.h; i; i--, p++) {
 	if ((c = *p) && (c != TRANSPARENCY_COLOR) && (c != SUPER_TRANSP_COLOR)) {
-		r += palette [c].red;
-		g += palette [c].green;
-		b += palette [c].blue;
+		r += palette [c].Red ();
+		g += palette [c].Green ();
+		b += palette [c].Blue ();
 		j++;
 		}
 	}
@@ -417,33 +417,33 @@ return m_info.avgColorIndex = j ? m_info.palette->ClosestColor (r / j, g / j, b 
 
 //------------------------------------------------------------------------------
 
-tRgbaColorf *CBitmap::GetAvgColor (tRgbaColorf *colorP)
+CFloatVector *CBitmap::GetAvgColor (CFloatVector *colorP)
 { 
-tRgbColorb* pc;
+CRGBColor* pc;
 
-colorP->alpha = 1.0f;
+colorP->Alpha () = 1.0f;
 #if 0
 if (!m_data.buffer) {
-	colorP->red = 
-	colorP->green =
-	colorP->blue = 0;
+	colorP->Red () = 
+	colorP->Green () =
+	colorP->Blue () = 0;
 	return colorP;
 	}
 #endif
 if (m_info.nBPP == 1) {
 	if (!m_info.palette) {
-		colorP->red = 
-		colorP->green =
-		colorP->blue = 0;
+		colorP->Red () = 
+		colorP->Green () =
+		colorP->Blue () = 0;
 		return colorP;
 		}	
 	pc = m_info.palette->Color () + AvgColorIndex ();
 	}
 else
 	pc = &m_info.avgColor;
-colorP->red = float (pc->red) / 255.0f;
-colorP->green = float (pc->green) / 255.0f;
-colorP->blue = float (pc->blue) / 255.0f;
+colorP->Red () = float (pc->Red ()) / 255.0f;
+colorP->Green () = float (pc->Green ()) / 255.0f;
+colorP->Blue () = float (pc->Blue ()) / 255.0f;
 return colorP;
 }
 

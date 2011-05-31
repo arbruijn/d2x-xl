@@ -41,7 +41,7 @@ void G3SetModelPoints (CRenderPoint *pointlist);
 //calls the CObject interpreter to render an CObject.  The CObject renderer
 //is really a seperate pipeline. returns true if drew
 int G3DrawPolyModel (CObject *objP, void *modelDataP, CArray<CBitmap*>& modelBitmaps, CAngleVector *animAngles, CFixVector *vOffset,
-							fix light, fix *glowValues, tRgbaColorf *obj_colors, POF::CModel *modelP, int nModel);
+							fix light, fix *glowValues, CFloatVector *obj_colors, POF::CModel *modelP, int nModel);
 
 int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *pAnimAngles, int nModel);
 
@@ -97,7 +97,7 @@ int get_chunks(ubyte *data, ubyte *new_data, chunk *list, int *no);
 void G3SwapPolyModelData (ubyte *data);
 
 int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
-						 CAngleVector *pAnimAngles, CFixVector *pOffs, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor);
+						 CAngleVector *pAnimAngles, CFixVector *pOffs, fix xModelLight, fix *xGlowValues, CFloatVector *pObjColor);
 
 void G3DynLightModel (CObject *objP, RenderModel::CModel* modelP, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
 

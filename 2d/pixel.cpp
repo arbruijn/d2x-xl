@@ -55,7 +55,7 @@ void CBitmap::DrawPixel (int x, int y, ubyte color)
 if (!Buffer () || Clip (x, y))
 	return;
 if (Mode () == BM_OGL) {
-	tCanvasColor c;
+	CCanvasColor c;
 	c.index = color;
 	c.rgb = 0;
 	OglDrawPixel (Left () + x, Top () + y, &c);

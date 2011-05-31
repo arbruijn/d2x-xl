@@ -25,7 +25,7 @@ typedef struct tCloakInfo {
 
 //------------------------------------------------------------------------------
 
-void DrawObjectBitmap (CObject *obj, int bmi0, int bmi, int iFrame, tRgbaColorf *color, float alpha);
+void DrawObjectBitmap (CObject *obj, int bmi0, int bmi, int iFrame, CFloatVector *color, float alpha);
 // draw an CObject that is a texture-mapped rod
 void DrawObjectRodTexPoly (CObject *obj, tBitmapIndex bitmap, int bLit, int iFrame);
 int DrawPolygonObject (CObject *objP, int bForce);

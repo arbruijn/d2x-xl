@@ -224,7 +224,7 @@ void CAutomap::DrawObjects (void)
 if (!((gameOpts->render.automap.bTextured & 2) || m_bRadar))
 	return;
 int color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer % MAX_PLAYER_COLORS;	// Note link to above if!
-CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
 int bTextured = (gameOpts->render.automap.bTextured & 1) && !m_bRadar;
 ogl.SetFaceCulling (false);
 ogl.SetBlending (true);
@@ -249,7 +249,7 @@ if (AM_SHOW_PLAYERS) {
 		if ((i != gameData.multiplayer.nLocalPlayer) && AM_SHOW_PLAYER (i)) {
 			if (OBJECTS [gameData.multiplayer.players [i].nObject].info.nType == OBJ_PLAYER) {
 				color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
-				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
+				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
 				if (bTextured)
 					ogl.SetBlending (true);
 				DrawPlayer (OBJECTS + gameData.multiplayer.players [i].nObject);
@@ -1070,11 +1070,9 @@ if ((bFade != m_bFade) || (nColor != m_nColor) || (fScale != m_fScale)) {
 	else
 		CCanvas::Current ()->SetColorRGBi (RGBA_FADE (nColor, 32.0f / fScale));
 	if (m_bDrawBuffers) {
-		tCanvasColor canvColor = CCanvas::Current ()->Color ();
-		m_color.red = float (canvColor.color.red) / 255.0f;
-		m_color.green = float (canvColor.color.green) / 255.0f;
-		m_color.blue = float (canvColor.color.blue) / 255.0f;
-		m_color.alpha = float (canvColor.color.alpha) / 255.0f;
+		CCanvasColor canvColor = CCanvas::Current ()->Color ();
+		m_color.Set (float (canvColor.Red ()), float (canvColor.Green ()), float (canvColor.Blue ()), float (canvColor.Alpha ()));
+		m_color /= 255.0f;
 		}
 	}
 }
@@ -1446,7 +1444,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		color = RGBA_PAL2 (31,0,31);
 
 	if (color != WHITE_RGBA) {
-		// If they have a map powerup, draw unvisited areas in dark blue.
+		// If they have a map powerup, draw unvisited areas in dark b.
 		if ((LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP) &&
 				!(gameStates.render.bAllVisited || m_visited [nSegment]))
 			color = m_colors.walls.nRevealed;

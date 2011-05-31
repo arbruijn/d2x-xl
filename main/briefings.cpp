@@ -72,7 +72,7 @@ CBriefing briefing;
 
 //-----------------------------------------------------------------------------
 
-tRgbaColorb briefFgColors [2][MAX_BRIEFING_COLORS] = {
+CRGBAColor briefFgColors [2][MAX_BRIEFING_COLORS] = {
 	{{255, 255, 255, 255}, 
 	 {0, 160, 0, 255}, 
 	 {160, 132, 140, 255}, 
@@ -93,7 +93,7 @@ tRgbaColorb briefFgColors [2][MAX_BRIEFING_COLORS] = {
 	 {255, 255, 255, 255}}
 	};
 
-tRgbaColorb briefBgColors [2][MAX_BRIEFING_COLORS] = {
+CRGBAColor briefBgColors [2][MAX_BRIEFING_COLORS] = {
 	{{0, 0, 0, 255}, 
 	 {0, 24, 255}, 
 	 {20, 20, 20, 255}, 
@@ -114,7 +114,7 @@ tRgbaColorb briefBgColors [2][MAX_BRIEFING_COLORS] = {
 	 {255, 255, 255, 255}}
 	};
 
-tRgbaColorb eraseColorRgb = {0, 0, 0, 255};
+CRGBAColor eraseColorRgb = {0, 0, 0, 255};
 
 //-----------------------------------------------------------------------------
 
@@ -946,10 +946,10 @@ int CBriefing::HandleC (void)
 
 if ((c == 'F') || (c == 'B')) {
 	m_info.message++;
-	tRgbaColorb* colorP = (c == 'F') ? briefFgColors [gameStates.app.bD1Mission] : briefBgColors [gameStates.app.bD1Mission];
-	colorP->red = ParseMessageInt (m_info.message);
-	colorP->green = ParseMessageInt (m_info.message);
-	colorP->blue = ParseMessageInt (m_info.message);
+	CRGBAColor* colorP = (c == 'F') ? briefFgColors [gameStates.app.bD1Mission] : briefBgColors [gameStates.app.bD1Mission];
+	colorP->Red () = ParseMessageInt (m_info.message);
+	colorP->Green () = ParseMessageInt (m_info.message);
+	colorP->Blue () = ParseMessageInt (m_info.message);
 	m_info.nCurrentColor = 0;
 	}
 else {

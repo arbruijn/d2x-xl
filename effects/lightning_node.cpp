@@ -43,7 +43,7 @@ bool CLightningNode::CreateChild (CFixVector *vEnd, CFixVector *vDelta,
 											 int nLife, int nLength, int nAmplitude,
 											 char nAngle, short nNodes, short nChildren, char nDepth, short nSteps,
 											 short nSmoothe, char bClamp, char bGlow, char bLight,
-											 char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode,
+											 char nStyle, CFloatVector *colorP, CLightning *parentP, short nNode,
 											 int nThread)
 {
 if (!(m_child = new CLightning))
@@ -353,7 +353,7 @@ Move (vj - vi, nSegment, nThread);
 
 //------------------------------------------------------------------------------
 
-bool CLightningNode::SetLight (short nSegment, tRgbaColorf *colorP)
+bool CLightningNode::SetLight (short nSegment, CFloatVector *colorP)
 {
 if (0 > (nSegment = FindSegByPos (m_vPos, nSegment, 0, 0)))
 	return false;

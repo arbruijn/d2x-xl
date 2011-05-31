@@ -260,7 +260,7 @@ return xLight;
 
 //------------------------------------------------------------------------------
 
-static float ObjectBlobColor (CObject *objP, CBitmap *bmP, tRgbaColorf *colorP, bool bMaxOut = false)
+static float ObjectBlobColor (CObject *objP, CBitmap *bmP, CFloatVector *colorP, bool bMaxOut = false)
 {
 	float	fScale;
 
@@ -270,22 +270,22 @@ if ((objP->info.nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->info.nId == 
 	nDbgObjType = nDbgObjType;
 #endif
 if (bMaxOut) {
-	float h = colorP->red;
-	if (h < colorP->green)
-		h = colorP->green;
-	if (h < colorP->blue)
-		h = colorP->blue;
+	float h = colorP->Red ();
+	if (h < colorP->Green ())
+		h = colorP->Green ();
+	if (h < colorP->Blue ())
+		h = colorP->Blue ();
 	if ((h > 0.0f) && (h < 1.0f)) {
-		colorP->red /= h;
-		colorP->green /= h;
-		colorP->blue /= h;
+		colorP->Red () /= h;
+		colorP->Green () /= h;
+		colorP->Blue () /= h;
 		}
 	}
-fScale = colorP->red + colorP->green + colorP->blue;
+fScale = colorP->Red () + colorP->Green () + colorP->Blue ();
 if (fScale == 0) {
-	colorP->red =
-	colorP->green =
-	colorP->blue = 1;
+	colorP->Red () =
+	colorP->Green () =
+	colorP->Blue () = 1;
 	}
 return fScale;
 }
@@ -293,7 +293,7 @@ return fScale;
 //------------------------------------------------------------------------------
 //draw an CObject that has one bitmap & doesn't rotate
 
-void DrawObjectBitmap (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
+void DrawObjectBitmap (CObject *objP, int bmi0, int bmi, int iFrame, CFloatVector *colorP, float fAlpha)
 {
 	int nType = objP->info.nType;
 
@@ -301,7 +301,7 @@ if ((nType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	return;
 
 	CBitmap*		bmP;
-	tRgbaColorf	color;
+	CFloatVector	color;
 	int			nId = objP->info.nId;
 #if 0
 	int			bMuzzleFlash = 0;
@@ -388,13 +388,13 @@ bool b3DShield = ((nType == OBJ_POWERUP) && ((objP->info.nId == POW_SHIELD_BOOST
 fScale = ObjectBlobColor (objP, bmP, &color, b3DShield);
 if (colorP /*&& (bmi >= 0)*/)
 	*colorP = color;
-	//memcpy (colorP, gameData.pig.tex.bitmapColors + bmi, sizeof (tRgbaColorf));
+	//memcpy (colorP, gameData.pig.tex.bitmapColors + bmi, sizeof (CFloatVector));
 
 xSize = objP->info.xSize;
 
 if (nType == OBJ_POWERUP) {
 	if (/*!b3DShield &&**/ ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
-		RenderPowerupCorona (objP, color.red, color.green, color.blue, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
+		RenderPowerupCorona (objP, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	}
 
 if (b3DShield) {
@@ -403,28 +403,26 @@ if (b3DShield) {
 		objP->mType.spinRate = objP->info.position.mOrient.m.dir.u * (I2X (1) / 8);
 		}
 	//the actual shield in the sprite texture has 3/4 of the textures size
-	DrawShieldSphere (objP, color.red, color.green, color.blue, 1.0f, 0, 3 * objP->info.xSize / 4);
+	DrawShieldSphere (objP, color.Red (), color.Green (), color.Blue (), 1.0f, 0, 3 * objP->info.xSize / 4);
 	}
 else if (fAlpha < 1) {
 	if (bAdditive) {
 #if 1
-		color.red =
-		color.green =
-		color.blue = 0.5f;
+		color.Red () =
+		color.Green () =
+		color.Blue () = 0.5f;
 #else
 		if ((nType == OBJ_FIREBALL) && (fScale > 0)) {
 			fScale = 1.0f - fScale / 6.0f;
-			color.red *= fScale;
-			color.green *= fScale;
-			color.blue *= fScale;
+			color.Red () *= fScale;
+			color.Green () *= fScale;
+			color.Blue () *= fScale;
 			}
 #endif
 		}
 	else
-		color.red =
-		color.green =
-		color.blue = 1;
-	color.alpha = fAlpha;
+		color.Red () = color.Green () = color.Blue () = 1.0f;
+	color.Alpha () = fAlpha;
 	CFixVector vPos = objP->info.position.vPos;
 #if 0
 	if (!IsMultiGame && (nType == OBJ_WEAPON) && (objP->info.nId == PLASMA_ID) && !gameStates.render.bPlasmaModded) {

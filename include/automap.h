@@ -90,7 +90,7 @@ class CAutomap {
 		int						m_bFade;
 		int						m_nColor;
 		float						m_fScale;
-		tRgbaColorf				m_color;
+		CFloatVector				m_color;
 		int						m_bChaseCam;
 		int						m_bFreeCam;
 		char						m_szLevelNum [200];

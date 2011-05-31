@@ -308,7 +308,7 @@ void CModel::Setup (int bHires, int bSort)
 	CVertex*			pmv;
 	CFloatVector3*	pv, * pn;
 	tTexCoord2f*	pt;
-	tRgbaColorf*	pc;
+	CFloatVector*	pc;
 	CBitmap*			textureP = bHires ? m_textures.Buffer () : NULL;
 	int				i, j;
 	ushort			nId;
@@ -342,7 +342,7 @@ for (i = 0; i < m_nSubModels; i++) {
 	}
 m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (m_vertBuf [0].Buffer ()), 1, m_vertBuf [0].Length ());
 m_vbNormals.SetBuffer (m_vbVerts.Buffer () + m_nFaceVerts, true, m_vertBuf [0].Length ());
-m_vbColor.SetBuffer (reinterpret_cast<tRgbaColorf*> (m_vbNormals.Buffer () + m_nFaceVerts), 1, m_vertBuf [0].Length ());
+m_vbColor.SetBuffer (reinterpret_cast<CFloatVector*> (m_vbNormals.Buffer () + m_nFaceVerts), 1, m_vertBuf [0].Length ());
 m_vbTexCoord.SetBuffer (reinterpret_cast<tTexCoord2f*> (m_vbColor.Buffer () + m_nFaceVerts), 1, m_vertBuf [0].Length ());
 pv = m_vbVerts.Buffer ();
 pn = m_vbNormals.Buffer ();
@@ -879,7 +879,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int G3BuildModel (CObject* objP, int nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, tRgbaColorf* pObjColor, int bHires)
+int G3BuildModel (CObject* objP, int nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* pObjColor, int bHires)
 {
 	RenderModel::CModel*	pm = gameData.models.renderModels [bHires] + nModel;
 

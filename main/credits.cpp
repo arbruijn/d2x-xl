@@ -277,7 +277,7 @@ return true;
 
 void CCreditsManager::Render (void)
 {
-	tRgbaColorf		colors [4] = {{1,1,1,1},{1,1,1,1},{1,1,1,1},{1,1,1,1}};
+	CFloatVector		colors [4] = {{1,1,1,1},{1,1,1,1},{1,1,1,1},{1,1,1,1}};
 
 for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 	RenderBackdrop ();
@@ -305,9 +305,9 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 				CBitmap* bmP = CreateStringBitmap (s, 0, 0, NULL, 1, w, -1);
 				if (bmP) {
 					float dy = float ((y < FADE_DIST) ? y : (480 - y - h < FADE_DIST) ? 480 - y - h : FADE_DIST);
-					colors [0].alpha = colors [1].alpha = dy / float (FADE_DIST);
+					colors [0].Alpha () = colors [1].Alpha () = dy / float (FADE_DIST);
 					dy = float ((y + h < FADE_DIST) ? y + h : (480 - y - 2 * h < FADE_DIST) ? 480 - y - 2 * h : FADE_DIST);
-					colors [2].alpha = colors [3].alpha = dy / float (FADE_DIST);
+					colors [2].Alpha () = colors [3].Alpha () = dy / float (FADE_DIST);
 					bmP->Render (CCanvas::Current (), (screen.Width () - w) / 2, m_yOffs + y, w, h, 0, 0, w, h, 1, 0, 0, 1, colors);
 					delete bmP;
 					}

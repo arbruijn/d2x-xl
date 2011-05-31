@@ -16,19 +16,19 @@
 
 // -----------------------------------------------------------------------------------
 
-static tRgbaColorf lineColors [3] = {
+static CFloatVector lineColors [3] = {
 	{0.5f, 0.0f, 1.0f, 0.5f},
 	{1.0f, 0.5f, 0.0f, 0.5f},
 	{0.0f, 0.5f, 1.0f, 0.5f}
 	};
 
-static tRgbaColorf planeColors [3] = {
+static CFloatVector planeColors [3] = {
 	{0.0f, 0.5f, 0.0f, 0.25f},
 	{0.6f, 0.6f, 0.0f, 0.25f},
 	{0.0f, 0.4f, 0.6f, 0.25f}
 	};
 
-static tRgbaColorf radarColors [3][3] = {
+static CFloatVector radarColors [3][3] = {
 	{
 	{0.0f, 0.6f, 0.0f, 0.5f},
 	{0.0f, 0.8f, 0.0f, 0.5f},
@@ -60,11 +60,11 @@ float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, 18.0f, -20.5f, -
 tSinCosf			CRadar::sinCosRadar [RADAR_SLICES];
 tSinCosf			CRadar::sinCosBlip [BLIP_SLICES];
 
-tRgbColorf		CRadar::shipColors [8];
-tRgbColorf		CRadar::guidebotColor = {0, 0.75f / 4, 0.25f};
-tRgbColorf		CRadar::robotColor = {0.75f / 4, 0, 0.25f};
-tRgbColorf		CRadar::powerupColor = {0.25f, 0.5f / 4, 0};
-tRgbColorf		CRadar::radarColor [2] = {{1, 1, 1}, {0, 0, 0}};
+CFloatVector3		CRadar::shipColors [8];
+CFloatVector3		CRadar::guidebotColor = {0, 0.75f / 4, 0.25f};
+CFloatVector3		CRadar::robotColor = {0.75f / 4, 0, 0.25f};
+CFloatVector3		CRadar::powerupColor = {0.25f, 0.5f / 4, 0};
+CFloatVector3		CRadar::radarColor [2] = {{1, 1, 1}, {0, 0, 0}};
 
 #define RADAR_RANGE	radarRanges [gameOpts->render.cockpit.nRadarRange]
 
@@ -79,9 +79,8 @@ ComputeSinCosTable (sizeofa (sinCosBlip), sinCosBlip);
 int i;
 
 for (i = 0; i < 8; i++) {
-	shipColors [i].red = 2 * playerColors [i].red / 255.0f;
-	shipColors [i].green = 2 * playerColors [i].green / 255.0f;
-	shipColors [i].blue = 2 * playerColors [i].blue / 255.0f;
+	shipColors [i].Set (playerColors [i].r, playerColors [i].g, playerColors [i].b);
+	shipColors /= (255.0f * 0.5f);
 	}
 
 for (i = 0; i < RADAR_SLICES; i++) {
@@ -319,31 +318,31 @@ ogl.FlushBuffers (GL_LINES, 2);
 
 void CRadar::RenderObjects (int bAbove)
 {
-	CObject*		objP;
-	tRgbColorf*	pc = radarColor + gameOpts->render.automap.nColor;
-	CFixVector	vPos = CFixVector::ZERO;
-	CFixMatrix	mOrient = CFixMatrix::IDENTITY;
+	CObject*			objP;
+	CFloatVector3*	colorP = radarColor + gameOpts->render.automap.nColor;
+	CFixVector		vPos = CFixVector::ZERO;
+	CFixMatrix		mOrient = CFixMatrix::IDENTITY;
 
 // glPushMatrix ();
 glLineWidth (GLfloat (2 + gameOpts->render.cockpit.nRadarSize));
 FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objs.consoleP)) {
 		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)) {
-			pc = shipColors + (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId);
-			RenderBlip (objP, pc->red, pc->green, pc->blue, 0.9f / 4, bAbove);
+			colorP = shipColors + (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId);
+			RenderBlip (objP, colorP->Red (), colorP->Green (), colorP->Blue (), 0.9f / 4, bAbove);
 			}
 		}
 	else if (objP->info.nType == OBJ_ROBOT) {
 		if (AM_SHOW_ROBOTS) {
 			if (ROBOTINFO (objP->info.nId).companion)
-				RenderBlip (objP, guidebotColor.red, guidebotColor.green, guidebotColor.blue, 0.9f / 4, bAbove);
+				RenderBlip (objP, guidebotColor.Red (), guidebotColor.Green (), guidebotColor.Blue (), 0.9f * 0.25f, bAbove);
 			else
-				RenderBlip (objP, robotColor.red, robotColor.green, robotColor.blue, 0.9f / 4, bAbove);
+				RenderBlip (objP, robotColor.Red (), robotColor.Green (), robotColor.Blue (), 0.9f * 0.25f, bAbove);
 			}
 		}
 	else if (objP->info.nType == OBJ_POWERUP) {
 		if (AM_SHOW_POWERUPS (2))
-			RenderBlip (objP, powerupColor.red, powerupColor.green, powerupColor.blue, 0.9f / 4, bAbove);
+			RenderBlip (objP, powerupColor.Red (), powerupColor.Green (), powerupColor.Blue (), 0.9f * 0.25f, bAbove);
 		}
 	}
 //transformation.End ();

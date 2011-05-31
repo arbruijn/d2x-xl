@@ -87,13 +87,13 @@ int nIndex = faceP->m_info.nIndex;
 *indexP++ = nIndex++;
 *indexP = nIndex;
 #else
-	tRgbaColorf	*pc = FACES.color + faceP->m_info.nIndex;
+	CFloatVector	*pc = FACES.color + faceP->m_info.nIndex;
 	float			l, lMax = 0;
 	int			i, j, nIndex;
 	int			iMax = 0;
 
 for (i = 0; i < 4; i++, pc++) {
-	l = pc->red + pc->green + pc->blue;
+	l = pc->Red () + pc->Green () + pc->Blue ();
 	if (lMax < l) {
 		lMax = l;
 		iMax = i;
@@ -179,7 +179,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int SetupShader (CSegFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP)
+int SetupShader (CSegFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, CFloatVector *colorP)
 {
 	int	nType, nShader = -1;
 

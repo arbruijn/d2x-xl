@@ -79,7 +79,7 @@
 //------------------------------------------------------------------------------
 
 extern int nPartSeg [MAX_THREADS];
-extern tRgbaColorf defaultParticleColor;
+extern CFloatVector defaultParticleColor;
 
 //------------------------------------------------------------------------------
 
@@ -124,7 +124,7 @@ typedef struct tPartPos {
 typedef struct tParticleVertex {
 	CFloatVector3	vertex;
 	tTexCoord3f		texCoord;
-	tRgbaColorf		color;
+	CFloatVector		color;
 	} tParticleVertex;
 
 typedef struct tParticle {
@@ -151,8 +151,8 @@ typedef struct tParticle {
 	short			m_nSegment;
 	tTexCoord2f	m_texCoord;
 	float			m_deltaUV;
-	tRgbaColorf	m_color [2];		//well ... the color, ya know =)
-	tRgbaColorf	m_renderColor;
+	CFloatVector	m_color [2];		//well ... the color, ya know =)
+	CFloatVector	m_renderColor;
 	char			m_nType;				//black or white
 	char			m_nRenderType;
 	char			m_nBounce;
@@ -185,7 +185,7 @@ class CParticle : public tParticle {
 	public:
 		int Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 					   short nSegment, int nLife, int nSpeed, char nParticleSystemType, char nClass,
-				      float fScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp, char nFadeType,
+				      float fScale, CFloatVector *colorP, int nCurTime, int bBlowUp, char nFadeType,
 					   float fBrightness, CFixVector *vEmittingFace);
 		int Render (float brightness);
 		void Setup (bool alphaControl, float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread);
@@ -217,13 +217,13 @@ class CParticle : public tParticle {
 		fix Drag (void);
 		int Bounce (int nThread);
 #ifdef _WIN32
-		inline void InitColor (tRgbaColorf* colorP, float fBrightness, char nParticleSystemType);
+		inline void InitColor (CFloatVector* colorP, float fBrightness, char nParticleSystemType);
 		inline int InitDrift (CFixVector* vDir, int nSpeed);
 		inline void InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient);
 		inline void InitSize (float nScale, CFixMatrix *mOrient);
 		inline void InitAnimation (void);
 #else
-		void InitColor (tRgbaColorf* colorP, float fBrightness, char nParticleSystemType);
+		void InitColor (CFloatVector* colorP, float fBrightness, char nParticleSystemType);
 		int InitDrift (CFixVector* vDir, int nSpeed);
 		void InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient);
 		void InitSize (float nScale, CFixMatrix *mOrient);
@@ -263,7 +263,7 @@ typedef struct tParticleEmitter {
 	ubyte					m_bHaveDir;			//movement direction given?
 	ubyte					m_bHavePrevPos;	//valid previous position set?
 	CArray<CParticle>	m_particles;		//list of active particles
-	tRgbaColorf			m_color;
+	CFloatVector			m_color;
 	char					m_bHaveColor;
 	char					m_bBlowUpParts;	//blow particles up at their "birth"
 	char					m_bEmittingFace;
@@ -277,7 +277,7 @@ class CParticleEmitter : public tParticleEmitter {
 		int Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 						short nSegment, int nObject, int nMaxParts, float fScale,
 						/*int nDensity, int nPartsPerPos,*/ int nLife, int nSpeed, char nType,
-						tRgbaColorf *colorP, int nCurTime, int bBlowUpParts, CFixVector *vEmittingFace);
+						CFloatVector *colorP, int nCurTime, int bBlowUpParts, CFixVector *vEmittingFace);
 		int Destroy (void);
 		int Update (int nCurTime, int nThread);
 		int Render (int nThread);
@@ -331,7 +331,7 @@ class CParticleSystem : public tParticleSystem {
 					   short nSegment, int nMaxEmitters, int nMaxParts,
 						float fScale, /*int nDensity, int nPartsPerPos,*/
 						int nLife, int nSpeed, char nType, int nObject,
-						tRgbaColorf *pColor, int bBlowUpParts, char nFace);
+						CFloatVector *pColor, int bBlowUpParts, char nFace);
 		void Destroy (void);
 		int Render (int nThread);
 		int Update (int nThread);
@@ -427,7 +427,7 @@ class CParticleManager {
 		int Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 						short nSegment, int nMaxEmitters, int nMaxParts,
 						float fScale, /*int nDensity, int nPartsPerPos,*/ int nLife, int nSpeed, char nType,
-						int nObject, tRgbaColorf *colorP, int bBlowUpParts, char nSide);
+						int nObject, CFloatVector *colorP, int bBlowUpParts, char nSide);
 		int Destroy (int iParticleSystem);
 		void Cleanup (void);
 		int Shutdown (void);

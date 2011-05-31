@@ -180,7 +180,7 @@ if (Update (parentObjP, targetObjP, vTargetPos)) {
 		return 0;
 	}
 else {
-	static tRgbaColorf	color = {0.9f, 0.6f, 0.6f, 0.3f};
+	static CFloatVector	color = {0.9f, 0.6f, 0.6f, 0.3f};
 	CFixVector	vMuzzle, *vTarget;
 
 	Destroy (nObject);
@@ -190,7 +190,7 @@ else {
 	handleP->nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;
 	vTarget = targetObjP ? &targetObjP->info.position.vPos : vTargetPos;
 #if OMEGA_PLASMA
-	color.alpha = gameOpts->render.lightning.bGlow ? 0.5f : 0.3f;
+	color.Alpha () = gameOpts->render.lightning.bGlow ? 0.5f : 0.3f;
 #endif
 	handleP->nLightning =
 		lightningManager.Create (OMEGA_BOLTS, &vMuzzle, vTarget, NULL, nObject,

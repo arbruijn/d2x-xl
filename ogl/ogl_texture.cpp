@@ -489,7 +489,7 @@ if (m_info.tw * m_info.th * bpp > (int) sizeof (ogl.m_data.buffer))//shouldn'tex
 
 	ubyte*		rawData = bmP->Buffer ();
 	GLubyte*		bufP = ogl.m_data.buffer;
-	tRgbColorb* colorP;
+	CRGBColor*	colorP;
 	int			transparencyColor, superTranspColor;
 #if 1
 	if (bmP) {
@@ -565,9 +565,9 @@ for (y = 0; y < m_info.h; y++) {
 						goto restart;
 						}
 					else {
-						r = colorP [c].red * 4;
-						g = colorP [c].green * 4;
-						b = colorP [c].blue * 4;
+						r = colorP [c].Red () * 4;
+						g = colorP [c].Green () * 4;
+						b = colorP [c].Blue () * 4;
 						if ((r < ogl.m_states.nTransparencyLimit) &&
 							 (g < ogl.m_states.nTransparencyLimit) &&
 							 (b < ogl.m_states.nTransparencyLimit)) {
@@ -608,9 +608,9 @@ for (y = 0; y < m_info.h; y++) {
 							}
 						}
 					else {
-						r = colorP [c].red * 4;
-						g = colorP [c].green * 4;
-						b = colorP [c].blue * 4;
+						r = colorP [c].Red () * 4;
+						g = colorP [c].Green () * 4;
+						b = colorP [c].Blue () * 4;
 						if ((r < ogl.m_states.nTransparencyLimit) &&
 							 (g < ogl.m_states.nTransparencyLimit) &&
 							 (b < ogl.m_states.nTransparencyLimit))
@@ -1231,7 +1231,7 @@ else {
 if (Flags () & BM_FLAG_RLE)
 	RLEExpand (NULL, 0);
 if (!bMask) {
-	tRgbColorf color;
+	CFloatVector3 color;
 	if (0 <= (AvgColor (&color)))
 		SetAvgColorIndex ((ubyte) Palette ()->ClosestColor (&color));
 	}

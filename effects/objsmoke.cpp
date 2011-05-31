@@ -23,7 +23,7 @@
 #include "thrusterflames.h"
 #include "renderthreads.h"
 
-static tRgbaColorf smokeColors [] = {
+static CFloatVector smokeColors [] = {
 	 {0.5f, 0.5f, 0.5f, 2.0f},	// alpha == 2.0 means that the particles are red in the beginning
 	 {0.75f, 0.75f, 0.75f, 2.0f},
 	 {1.0f, 1.0f, 1.0f, 2.0f},
@@ -670,7 +670,7 @@ void DoStaticParticles (CObject *objP)
 					nType, nFadeType;
 	CFixVector	pos, offs, dir;
 
-	static tRgbaColorf defaultColors [7] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 
+	static CFloatVector defaultColors [7] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 
 														 {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 
 														 {1.0f, 1.0f, 1.0f, 1.0f}};
 	static int particleTypes [7] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES, WATERFALL_PARTICLES, SIMPLE_SMOKE_PARTICLES, RAIN_PARTICLES, SNOW_PARTICLES};
@@ -702,14 +702,14 @@ if (!(SHOW_SMOKE && objP->rType.particleInfo.bEnabled && ((nType == 1) ? gameOpt
 	return;
 	}
 if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
-		tRgbaColorf color;
+		CFloatVector color;
 		int bColor;
 
-	color.red = (float) objP->rType.particleInfo.color.red / 255.0f;
-	color.green = (float) objP->rType.particleInfo.color.green / 255.0f;
-	color.blue = (float) objP->rType.particleInfo.color.blue / 255.0f;
-	if ((bColor = (color.red + color.green + color.blue > 0)))
-		color.alpha = (float) -objP->rType.particleInfo.color.alpha / 255.0f;
+	color.Red () = (float) objP->rType.particleInfo.color.Red () / 255.0f;
+	color.Green () = (float) objP->rType.particleInfo.color.Green () / 255.0f;
+	color.Blue () = (float) objP->rType.particleInfo.color.Blue () / 255.0f;
+	if ((bColor = (color.Red () + color.Green () + color.Blue () > 0)))
+		color.Alpha () = (float) -objP->rType.particleInfo.color.Alpha () / 255.0f;
 	dir = objP->info.position.mOrient.m.dir.f * (objP->rType.particleInfo.nSpeed * I2X (2) / 55);
 	nSmoke = particleManager.Create (&objP->info.position.vPos, &dir, &objP->info.position.mOrient,
 												objP->info.nSegment, 1,
@@ -790,7 +790,7 @@ void DoParticleTrail (CObject *objP)
 					bOmega = (id == OMEGA_ID);
 	float			nScale;
 	CFixVector	pos;
-	tRgbaColorf	c;
+	CFloatVector	c;
 
 if (!(SHOW_OBJ_FX && (bGatling ? EGI_FLAG (bUseParticles, 0, 0, 0) && EGI_FLAG (bGatlingTrails, 1, 1, 0) : EGI_FLAG (bLightTrails, 1, 1, 0))))
 	return;
@@ -806,14 +806,14 @@ nParts = bGatling ? LASER_MAX_PARTS : 2 * LASER_MAX_PARTS / 3;
 nParts = gameData.weapons.info [objP->info.nId].speed [0] / I2X (1);
 #endif
 if (bGatling) {
-	c.red = c.green = c.blue = 2.0f / 3.0f;
-	c.alpha = 1.0f / 4.0f;
+	c.Red () = c.Green () = c.Blue () = 2.0f / 3.0f;
+	c.Alpha () = 1.0f / 4.0f;
 	}
 else {
-	c.red = (float) gameData.weapons.color [objP->info.nId].red;
-	c.green = (float) gameData.weapons.color [objP->info.nId].green;
-	c.blue = (float) gameData.weapons.color [objP->info.nId].blue;
-	c.alpha = 0.5f;
+	c.Red () = (float) gameData.weapons.color [objP->info.nId].Red ();
+	c.Green () = (float) gameData.weapons.color [objP->info.nId].Green ();
+	c.Blue () = (float) gameData.weapons.color [objP->info.nId].Blue ();
+	c.Alpha () = 0.5f;
 	}
 if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	if (bGatling)
@@ -840,7 +840,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 			nScale = omegaLightning.Exist () ? 2.0f : 1.0f;
 		else
 			nScale = 1;
-		c.alpha = 0.1f + nScale / 10;
+		c.Alpha () = 0.1f + nScale / 10;
 		}
 	nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale, 1),
 											   /*gameOpts->render.particles.nSize [3], 1,*/ 

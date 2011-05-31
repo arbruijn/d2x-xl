@@ -188,7 +188,7 @@ tBitmapIndex PiggyFindBitmap (const char * name, int bD1Data );
 int PiggyFindSound (const char * name);
 int LoadSoundReplacements (const char *pszFileName);
 void FreeSoundReplacements (void);
-void LoadTextureColors (const char *pszLevelName, tFaceColor *colorP);
+void LoadTextureColors (const char *pszLevelName, CFaceColor *colorP);
 int LoadModelData (void);
 int SaveModelData (void);
 

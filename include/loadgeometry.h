@@ -108,7 +108,7 @@ extern struct me mine_editor;
 // returns 1 if error, else 0
 int game_load_mine(char * filename);
 
-void ReadColor (CFile& cf, tFaceColor *pc, int bFloatData, int bRegisterColor);
+void ReadColor (CFile& cf, CFaceColor *pc, int bFloatData, int bRegisterColor);
 
 // loads from an already-open file
 // returns 0=everything ok, 1=old version, -1=error

@@ -44,7 +44,7 @@ void OglDrawMouseIndicator (void)
 	static tSinCosf sinCos12 [12];
 	static int bInitSinCos = 1;
 
-	static tCanvasColor color = {-1, 1, {255, 255, 255, 96}};
+	static CCanvasColor color = {-1, 1, {255, 255, 255, 96}};
 
 	float	r, w, h;
 
@@ -62,9 +62,9 @@ else {
 	glNewList (mouseIndList, GL_COMPILE_AND_EXECUTE);
 #endif
 	if (joyMouse.Load ()) {
-		color.color.alpha = 255;
+		color.color.Alpha () = 255;
 		joyMouse.Bitmap ()->RenderScaled (mouseData.x - 8, mouseData.y - 8, 16, 16, I2X (1), 0, &color);
-		color.color.alpha = 96;
+		color.color.Alpha () = 96;
 		}
 	else {
 		glPushMatrix ();

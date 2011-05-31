@@ -281,7 +281,7 @@ void CConsole::Update (void)
 	int				loop;
 	int				loop2;
 	int				Screenlines;
-	tCanvasColor	orig_color;
+	CCanvasColor	orig_color;
 
 	/* Due to the Blits, the update is not very fast: So only update if it's worth it */
 if (!IsVisible ())
@@ -631,7 +631,7 @@ void CConsole::DrawCommandLine (void)
 	static int		LastBlinkTime = 0;	/* Last time the consoles cursor blinked */
 	static int		LastCursorPos = 0;		// Last Cursor Position
 	static int		bBlink = 0;			/* Is the cursor currently blinking */
-	tCanvasColor	orig_color;
+	CCanvasColor	orig_color;
 
 commandbuffer = m_VChars - (int) strlen (m_Prompt) - 1; // -1 to make cursor visible
 

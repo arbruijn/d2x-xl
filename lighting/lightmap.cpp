@@ -309,21 +309,21 @@ for (i = 512; i; i--, brightmap++)
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::Copy (tRgbColorb *texColorP, ushort nLightmap)
+void CLightmapManager::Copy (CRGBColor *texColorP, ushort nLightmap)
 {
 tLightmapBuffer *bufP = &m_list.buffers [nLightmap / LIGHTMAP_BUFSIZE];
 int i = nLightmap % LIGHTMAP_BUFSIZE;
 int x = (i % LIGHTMAP_ROWSIZE) * LM_W;
 int y = (i / LIGHTMAP_ROWSIZE) * LM_H;
 for (i = 0; i < LM_H; i++, y++, texColorP += LM_W)
-	memcpy (&bufP->bmP [y][x], texColorP, LM_W * sizeof (tRgbColorb));
+	memcpy (&bufP->bmP [y][x], texColorP, LM_W * sizeof (CRGBColor));
 }
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::CreateSpecial (tRgbColorb *texColorP, ushort nLightmap, ubyte nColor)
+void CLightmapManager::CreateSpecial (CRGBColor *texColorP, ushort nLightmap, ubyte nColor)
 {
-memset (texColorP, nColor, LM_W * LM_H * sizeof (tRgbColorb));
+memset (texColorP, nColor, LM_W * LM_H * sizeof (CRGBColor));
 Copy (texColorP, nLightmap);
 }
 
@@ -333,7 +333,7 @@ Copy (texColorP, nLightmap);
 void CLightmapManager::Build (int nThread)
 {
 	CFixVector		*pixelPosP;
-	tRgbColorb		*texColorP;
+	CRGBColor		*texColorP;
 	CFloatVector3	color;
 	CFixVector		v0, v1, v2;
 	struct {
@@ -450,25 +450,25 @@ for (y = yMin; y < yMax; y++) {
 			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
 			G3AccumVertColor (-1, &color, &vcd, nThread);
-			if ((color.v.color.r >= 1.0f / 255.0f) || (color.v.color.g >= 1.0f / 255.0f) || (color.v.color.b >= 1.0f / 255.0f)) {
+			if ((color.Red () >= 1.0f / 255.0f) || (color.Green () >= 1.0f / 255.0f) || (color.Blue () >= 1.0f / 255.0f)) {
 					bBlack = false;
-				if (color.v.color.r >= 254.0f / 255.0f)
-					color.v.color.r = 1.0f;
+				if (color.Red () >= 254.0f / 255.0f)
+					color.Red () = 1.0f;
 				else
 					bWhite = false;
-				if (color.v.color.g >= 254.0f / 255.0f)
-					color.v.color.g = 1.0f;
+				if (color.Green () >= 254.0f / 255.0f)
+					color.Green () = 1.0f;
 				else
 					bWhite = false;
-				if (color.v.color.b >= 254.0f / 255.0f)
-					color.v.color.b = 1.0f;
+				if (color.Blue () >= 254.0f / 255.0f)
+					color.Blue () = 1.0f;
 				else
 					bWhite = false;
 				}
 			texColorP = m_data.texColor + x * w + y;
-			texColorP->red = (ubyte) (255 * color.v.color.r);
-			texColorP->green = (ubyte) (255 * color.v.color.g);
-			texColorP->blue = (ubyte) (255 * color.v.color.b);
+			texColorP->Red () = (ubyte) (255 * color.Red ());
+			texColorP->Green () = (ubyte) (255 * color.Green ());
+			texColorP->Blue () = (ubyte) (255 * color.Blue ());
 			}
 		}
 	}
@@ -539,7 +539,7 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 	m_data.vcd.vertNorm.Assign (m_data.vNormal);
 	CFloatVector3::Normalize (m_data.vcd.vertNorm);
 	m_data.nColor = 0;
-	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
+	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (CRGBColor));
 	if (!gameStates.app.bMultiThreaded)
 		Build (-1);
 	else {

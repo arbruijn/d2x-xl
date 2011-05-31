@@ -43,9 +43,9 @@ class CCanvas;
 class CScreen;
 
 typedef struct tCanvas {
-	tCanvasColor	color;
+	CCanvasColor	color;
 	CFont				*font;				// the currently selected font
-	tCanvasColor	fontColors [2];   // current font background color (-1==Invisible)
+	CCanvasColor	fontColors [2];   // current font background color (-1==Invisible)
 	short				nDrawMode;			// fill, XOR, etc.
 } tCanvas;
 
@@ -74,13 +74,13 @@ class CCanvas : public CBitmap {
 		void DestroyPane (void);
 		void Clear (void);
 
-		inline tCanvasColor& Color (void) { return m_info.color; }
-		inline tCanvasColor& FontColor (int i) { return m_info.fontColors [i]; }
+		inline CCanvasColor& Color (void) { return m_info.color; }
+		inline CCanvasColor& FontColor (int i) { return m_info.fontColors [i]; }
 		inline CFont* Font (void) { return m_info.font; }
 		inline short DrawMode (void) { return m_info.nDrawMode; }
 
-		inline void SetColor (tCanvasColor& color) { m_info.color = color; }
-		inline void SetFontColor (tCanvasColor& color, int i) { m_info.fontColors [i] = color; }
+		inline void SetColor (CCanvasColor& color) { m_info.color = color; }
+		inline void SetFontColor (CCanvasColor& color, int i) { m_info.fontColors [i] = color; }
 		inline void SetFont (CFont *font) { m_info.font = font; }
 		inline void SetDrawMode (short nDrawMode) { m_info.nDrawMode = nDrawMode; }
 

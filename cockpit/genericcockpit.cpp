@@ -1117,7 +1117,7 @@ gameStates.render.nInterpolationMethod	= saved_interp_method;
 
 //	-----------------------------------------------------------------------------
 
-tRgbColorb playerColors [] = {
+CRGBColor playerColors [] = {
  {15, 15, 23},
  {27, 0, 0},
  {0, 23, 0},
@@ -1266,10 +1266,10 @@ void CGenericCockpit::DrawPlayerNames (void)
 {
 	int			bHasFlag, bShowName, bShowTeamNames, bShowAllNames, bShowFlags, nObject, nTeam;
 	int			nPlayer, nState;
-	tRgbColorb*	colorP;
+	CRGBColor*	colorP;
 
 	static int nCurColor = 1, tColorChange = 0;
-	static tRgbColorb typingColors [2] = {
+	static CRGBColor typingColors [2] = {
 		{63, 0, 0},
 		{63, 63, 0}
 	};
@@ -1347,11 +1347,11 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 
 					sprintf (s, "%s", (nState == 1) ? TXT_TYPING : (nState == 2) ? "Downloading..." : gameData.multiplayer.players [nPlayer].callsign);
 					fontManager.Current ()->StringSize (s, w, h, aw);
-					fontManager.SetColorRGBi (RGBA_PAL2 (colorP->red, colorP->green, colorP->blue), 1, 0, 0);
+					fontManager.SetColorRGBi (RGBA_PAL2 (colorP->Red (), colorP->Green (), colorP->Blue ()), 1, 0, 0);
 					x1 = x - w / 2;
 					y1 = y - h / 2;
 					nIdNames [nCurColor][nPlayer] = GrString (x1, y1, s, nIdNames [nCurColor] + nPlayer);
-					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (colorP->red, colorP->green, colorP->blue));
+					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (colorP->Red (), colorP->Green (), colorP->Blue ()));
 					glLineWidth ((GLfloat) 2.0f);
 					OglDrawEmptyRect (x1 - 4, y1 - 3, x1 + w + 2, y1 + h + 3);
 					glLineWidth (1);
@@ -1482,11 +1482,11 @@ for (i = 0; i < nPlayers; i++) {
 			fontManager.SetColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
 		else {
 			int color = IsTeamGame ? GetTeam (nPlayer) : nPlayer % MAX_PLAYER_COLORS;
-			fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue), 1, 0, 0);
+			fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].Red (), playerColors [color].Green (), playerColors [color].Blue ()), 1, 0, 0);
 			}
 		}
 	else
-		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [nPlayer].red, playerColors [nPlayer].green, playerColors [nPlayer].blue), 1, 0, 0);
+		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [nPlayer].Red (), playerColors [nPlayer].Green (), playerColors [nPlayer].Blue ()), 1, 0, 0);
 	if (gameData.multigame.score.bShowList == 3) {
 		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
 #if 0//DBG
@@ -1624,7 +1624,7 @@ if ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepair
 if (gameOpts->render.cockpit.bTextGauges) {
 	int				nColor, nDamage [3], h [4], w [4], aw [4], tw = 0;
 	char				szDamage [3][10];
-	tCanvasColor	dmgColor = {-1, 1, {0, 0, 0, 128}};
+	CCanvasColor	dmgColor = {-1, 1, {0, 0, 0, 128}};
 
 	fontManager.SetScale (max (1.0f, floor (fScale + 0.5f)));
 	for (i = 0; i < 3; i++) {
@@ -1642,9 +1642,9 @@ if (gameOpts->render.cockpit.bTextGauges) {
 	CCanvas::Current ()->SetFontColor (dmgColor, 1);	// black background
 	for (i = 0; i < 3; i++) {
 		nColor = dmgColors [1][nDamage [i] / 33];
-		dmgColor.color.red = RGBA_RED (nColor);
-		dmgColor.color.green = RGBA_GREEN (nColor);
-		dmgColor.color.blue = RGBA_BLUE (nColor);
+		dmgColor.color.Red () = RGBA_RED (nColor);
+		dmgColor.color.Green () = RGBA_GREEN (nColor);
+		dmgColor.color.Blue () = RGBA_BLUE (nColor);
 		CCanvas::Current ()->SetFontColor (dmgColor, 0);
 		if (nDamage [i] < 100)
 			szDamage [i][2] = '\0'; // remove the trailing blank, it causes rendering artifacts

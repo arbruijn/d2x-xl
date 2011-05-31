@@ -48,7 +48,7 @@
 int CParticleSystem::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 									  short nSegment, int nMaxEmitters, int nMaxParts,
 									  float fScale, /*int nDensity, int nPartsPerPos,*/ int nLife, int nSpeed, char nType,
-									  int nObject, tRgbaColorf *colorP, int bBlowUpParts, char nSide)
+									  int nObject, CFloatVector *colorP, int bBlowUpParts, char nSide)
 {
 	int			i;
 	CFixVector	vEmittingFace [4];

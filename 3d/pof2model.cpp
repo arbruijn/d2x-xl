@@ -110,13 +110,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-CFace* CModel::AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CArray<CBitmap*>& modelBitmaps, tRgbaColorf* objColorP, bool bTextured)
+CFace* CModel::AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP, bool bTextured)
 {
 	ushort				nVerts = WORDVAL (p+2);
 	CVertex*				pmv;
 	ushort*				pfv;
 	tUVL*					uvl;
-	tRgbaColorf			baseColor;
+	CFloatVector			baseColor;
 	CFloatVector3		n, * pvn;
 	ushort				i, j;
 	ushort				c;
@@ -137,7 +137,7 @@ if (bTextured) {
 				paletteManager.Game ()->ToRgbaf (bmP->AvgColorIndex (), *objColorP);
 			}
 		}
-	baseColor.red = baseColor.green = baseColor.blue = baseColor.alpha = 1;
+	baseColor.Red () = baseColor.Green () = baseColor.Blue () = baseColor.Alpha () = 1;
 	i = (int) (bmP - gameData.pig.tex.bitmaps [0]);
 	pmf->m_bThruster = (i == 24) || ((i >= 1741) && (i <= 1745));
 	}
@@ -145,10 +145,10 @@ else {
 	bTextured = 0;
 	pmf->m_nBitmap = -1;
 	c = WORDVAL (p + 28);
-	baseColor.red = (float) PAL2RGBA (((c >> 10) & 31) << 1) / 255.0f;
-	baseColor.green = (float) PAL2RGBA (((c >> 5) & 31) << 1) / 255.0f;
-	baseColor.blue = (float) PAL2RGBA ((c & 31) << 1) / 255.0f;
-	baseColor.alpha = gameStates.render.grAlpha;
+	baseColor.Red () = (float) PAL2RGBA (((c >> 10) & 31) << 1) / 255.0f;
+	baseColor.Green () = (float) PAL2RGBA (((c >> 5) & 31) << 1) / 255.0f;
+	baseColor.Blue () = (float) PAL2RGBA ((c & 31) << 1) / 255.0f;
+	baseColor.Alpha () = gameStates.render.grAlpha;
 	if (objColorP)
 		*objColorP = baseColor;
 	}
@@ -189,7 +189,7 @@ return ++pmf;
 //------------------------------------------------------------------------------
 
 int CModel::GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int nThis, int nParent,
-										int bSubObject, CArray<CBitmap*>& modelBitmaps, tRgbaColorf *objColorP)
+										int bSubObject, CArray<CBitmap*>& modelBitmaps, CFloatVector *objColorP)
 {
 	ubyte*		p = reinterpret_cast<ubyte*> (modelDataP);
 	CSubModel*	psm = m_subModels + nThis;
@@ -316,7 +316,7 @@ for (pmf = m_faces.Buffer (), i = m_nFaces; i; i--, pmf++)
 
 //------------------------------------------------------------------------------
 
-int CModel::BuildFromPOF (CObject* objP, int nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, tRgbaColorf* objColorP)
+int CModel::BuildFromPOF (CObject* objP, int nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP)
 {
 if (!pp->Buffer ())
 	return 0;

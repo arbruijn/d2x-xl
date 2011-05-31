@@ -176,7 +176,7 @@ void CLightning::Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 							  short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 							  char nAngle, int nOffset, short nNodes, short nChildren, short nSteps,
 							  short nSmoothe, char bClamp, char bGlow, char bLight,
-							  char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode)
+							  char nStyle, CFloatVector *colorP, CLightning *parentP, short nNode)
 {
 	int	bRandom = (vEnd == NULL) || (nAngle > 0);
 
@@ -733,7 +733,7 @@ if (extraGameInfo [0].bUseLightning > 1)
 
 //------------------------------------------------------------------------------
 
-void CLightning::RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread)
+void CLightning::RenderGlow (CFloatVector *colorP, int nDepth, int nThread)
 {
 if (!m_plasmaVerts.Buffer ())
 	return;
@@ -751,7 +751,7 @@ if (nDepth || (m_bGlow < 1)) {
 	}
 else {
 	int h = 4 * (m_nNodes - 1);
-	glColor3f (colorP->red / 2.0f, colorP->green / 2.0f, colorP->blue / 2.0f);
+	glColor3f (colorP->Red () / 2.0f, colorP->Green () / 2.0f, colorP->Blue () / 2.0f);
 	for (int i = 1; i >= 0; i--) {
 		OglDrawArrays (GL_QUADS, i * h, h);
 #if RENDER_LIGHTNING_OUTLINE
@@ -821,7 +821,7 @@ return pow (1.0f - (zMin + zMax) / 2.0f / (float) ZRANGE, 50.0f);
 
 //------------------------------------------------------------------------------
 
-void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
+void CLightning::RenderCore (CFloatVector *colorP, int nDepth, int nThread)
 {
 if (!m_coreVerts.Buffer ())
 	return;
@@ -829,7 +829,7 @@ ogl.SetBlendMode (OGL_BLEND_ADD);
 ogl.SetLineSmooth (true);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
-	//glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
+	//glColor4f (colorP->Red () / 2, colorP->Green () / 2, colorP->Blue () / 2, colorP->Alpha ());
 	glColor4fv ((GLfloat*) colorP);
 	GLfloat w = nDepth ? CORE_WIDTH / 2.0f : CORE_WIDTH; // CORE_WIDTH : CORE_WIDTH * 1.5f;
 	if (glowRenderer.Available (GLOW_LIGHTNING))
@@ -892,7 +892,7 @@ if (gameStates.app.bMultiThreaded && (nThread > 0)) {	//thread 1 will always ren
 void CLightning::Draw (int nDepth, int nThread)
 {
 	int				i, bGlow;
-	tRgbaColorf		color;
+	CFloatVector		color;
 
 if (!m_nodes.Buffer () || (m_nNodes <= 0) || (m_nSteps < 0))
 	return;
@@ -903,19 +903,19 @@ if (gameStates.app.bMultiThreaded && (nThread > 0))
 color = m_color;
 if (m_nLife > 0) {
 	if ((i = m_nLife - m_nTTL) < 250)
-		color.alpha *= (float) i / 250.0f;
+		color.Alpha () *= (float) i / 250.0f;
 	else if (m_nTTL < m_nLife / 4)
-		color.alpha *= (float) m_nTTL / (float) (m_nLife / 4);
+		color.Alpha () *= (float) m_nTTL / (float) (m_nLife / 4);
 	}
-color.red *= (float) (0.9 + RandDouble () / 5);
-color.green *= (float) (0.9 + RandDouble () / 5);
-color.blue *= (float) (0.9 + RandDouble () / 5);
+color.Red () *= (float) (0.9 + RandDouble () / 5);
+color.Green () *= (float) (0.9 + RandDouble () / 5);
+color.Blue () *= (float) (0.9 + RandDouble () / 5);
 if ((bGlow = SetupGlow ()) && glowRenderer.Available (GLOW_LIGHTNING))
 	glBlendEquation (GL_MAX);
 else
-	color.alpha *= 1.5f;
+	color.Alpha () *= 1.5f;
 if (nDepth)
-	color.alpha /= 2;
+	color.Alpha () /= 2;
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif

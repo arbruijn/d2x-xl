@@ -21,7 +21,7 @@
 typedef struct tVertLightIndex {
 	short			nVertex;
 	short			nLights;
-	tRgbaColorf	color;
+	CFloatVector	color;
 } __pack__ tVertLightIndex;
 
 typedef struct tVertLightData {
@@ -46,7 +46,7 @@ class CGPGPULighting {
 		void Begin (void);
 		void End (void);
 		void InitShader (void);
-		int Compute (short nVertex, int nState, tFaceColor *colorP);
+		int Compute (short nVertex, int nState, CFaceColor *colorP);
 
 	private:
 		GLuint CreateBuffer (int i);

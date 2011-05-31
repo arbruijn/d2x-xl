@@ -20,27 +20,27 @@
 
 //------------------------------------------------------------------------------
 
-extern tFaceColor lightColor;
-extern tFaceColor tMapColor;
-extern tFaceColor vertColors [8];
+extern CFaceColor lightColor;
+extern CFaceColor tMapColor;
+extern CFaceColor vertColors [8];
 
-extern tRgbaColorf shadowColor [2];
-extern tRgbaColorf modelColor [2];
+extern CFloatVector shadowColor [2];
+extern CFloatVector modelColor [2];
 
 extern float fLightRanges [5];
 
 //------------------------------------------------------------------------------
 
-void OglPalColor (ubyte *palette, int c, tRgbaColorf* colorP = NULL);
-tRgbaColorf GetPalColor (CPalette *palette, int c);
-void OglCanvasColor (tCanvasColor* canvColorP, tRgbaColorf* colorP = NULL);
-tRgbaColorf GetCanvasColor (tCanvasColor* colorP);
+void OglPalColor (ubyte *palette, int c, CFloatVector* colorP = NULL);
+CFloatVector GetPalColor (CPalette *palette, int c);
+void OglCanvasColor (CCanvasColor* canvColorP, CFloatVector* colorP = NULL);
+CFloatVector GetCanvasColor (CCanvasColor* colorP);
 void OglColor4sf (float r, float g, float b, float s);
-void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, tRgbaColorf *colorP = NULL);
+void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, CFloatVector *colorP = NULL);
 int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcdP, int nThread);
 void G3VertexColor (int nSegment, int nSide, int nVertex, 
 						  CFloatVector3 *pvVertNorm, CFloatVector3 *pVertPos, 
-						  tFaceColor *pVertColor, tFaceColor *pBaseColor, 
+						  CFaceColor *pVertColor, CFaceColor *pBaseColor, 
 						  float fScale, int bSetColor, int nThread);
 void InitVertColorData (CVertColorData& vcd);
 

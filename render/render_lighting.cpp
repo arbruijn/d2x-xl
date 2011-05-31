@@ -81,7 +81,7 @@ return faceP->m_info.bVisible = 1;
 
 //------------------------------------------------------------------------------
 
-int SetupFace (short nSegment, short nSide, CSegment *segP, CSegFace *faceP, tFaceColor *pFaceColor, float *pfAlpha)
+int SetupFace (short nSegment, short nSide, CSegment *segP, CSegFace *faceP, CFaceColor *faceColorP, float *fAlphaP)
 {
 	ubyte	bTextured, bCloaked, bTransparent, bWall;
 	int	nColor = 0;
@@ -108,25 +108,25 @@ bTextured = 1;
 bCloaked = 0;
 bTransparent = 0;
 if (bWall)
-	*pfAlpha = WallAlpha (nSegment, nSide, faceP->m_info.nWall, faceP->m_info.widFlags, faceP->m_info.nCamera >= 0, faceP->m_info.bAdditive,
-								 &pFaceColor [1].color, &nColor, &bTextured, &bCloaked, &bTransparent);
+	*fAlphaP = WallAlpha (nSegment, nSide, faceP->m_info.nWall, faceP->m_info.widFlags, faceP->m_info.nCamera >= 0, faceP->m_info.bAdditive,
+								 &faceColorP [1], &nColor, &bTextured, &bCloaked, &bTransparent);
 else
-	*pfAlpha = 1;
+	*fAlphaP = 1;
 faceP->m_info.bTextured = bTextured;
 faceP->m_info.bCloaked = bCloaked;
 faceP->m_info.bTransparent |= bTransparent;
 if (faceP->m_info.bSegColor) {
 	if ((faceP->m_info.nSegColor = IsColoredSegFace (nSegment, nSide))) {
 		faceP->m_info.color = *ColoredSegmentColor (nSegment, nSide, faceP->m_info.nSegColor);
-		pFaceColor [2].color = faceP->m_info.color;
+		faceColorP [2] = faceP->m_info.color;
 		if (faceP->m_info.nBaseTex < 0)
-			*pfAlpha = faceP->m_info.color.alpha;
+			*fAlphaP = faceP->m_info.color.Alpha ();
 		nColor = 2;
 		}
 	else
 		faceP->m_info.bVisible = (faceP->m_info.nBaseTex >= 0);
 	}
-if ((*pfAlpha < 1) || ((nColor == 2) && (faceP->m_info.nBaseTex < 0)))
+if ((*fAlphaP < 1) || ((nColor == 2) && (faceP->m_info.nBaseTex < 0)))
 	faceP->m_info.bTransparent = 1;
 return nColor;
 }
@@ -136,19 +136,19 @@ return nColor;
 void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 {
 PROF_START
-	CSegFace		*faceP;
-	tRgbaColorf	*pc;
-	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
+	CSegFace*		faceP;
+	CFloatVector*	colorP;
+	CFaceColor		c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
-	short			nVertex, nSegment, nSide;
-	float			fAlpha;
-	int			h, i, nColor, nLights = 0;
+	short				nVertex, nSegment, nSide;
+	float				fAlpha;
+	int				h, i, nColor, nLights = 0;
 	//int				bVertexLight = gameStates.render.bPerPixelLighting != 2;
 	int				bLightmaps = lightmapManager.HaveLightmaps ();
-	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
-	static		tFaceColor brightColor = {{1,1,1,1},1};
+	bool				bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
+	static			CFaceColor brightColor = {{{1.0f, 1.0f, 1.0f, 1.0f}}, 1};
 
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 ogl.SetTransform (1);
@@ -182,15 +182,15 @@ for (i = nStart; i < nEnd; i++) {
 #endif
 	AddFaceListItem (faceP, nThread);
 	faceP->m_info.color = faceColor [nColor].color;
-	pc = FACES.color + faceP->m_info.nIndex;
-	for (h = 0; h < 4; h++, pc++) {
+	colorP = FACES.color + faceP->m_info.nIndex;
+	for (h = 0; h < 4; h++, colorP++) {
 		if (gameStates.render.bFullBright)
-			*pc = nColor ? faceColor [nColor].color : brightColor.color;
+			*colorP = nColor ? faceColor [nColor] : brightColor;
 		else {
 			if (bLightmaps) {
 				c = faceColor [nColor];
 				if (nColor)
-					*pc = c.color;
+					*colorP = c.color;
 				}
 			else {
 				nVertex = faceP->m_info.index [h];
@@ -199,14 +199,16 @@ for (i = nStart; i < nEnd; i++) {
 					nDbgVertex = nDbgVertex;
 #endif
 				if (gameStates.render.bPerPixelLighting == 2)
-					*pc = gameData.render.color.ambient [nVertex].color;
+					*colorP = gameData.render.color.ambient [nVertex];
 				else {
-					c.color = gameData.render.color.ambient [nVertex].color;
-					tFaceColor *pvc = gameData.render.color.vertices + nVertex;
-					if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
-						if (nLights + lightManager.VariableVertLights () [nVertex] == 0) {
-							pvc->color = c.color;
-							pvc->index = gameStates.render.nFrameFlipFlop + 1;
+					c.color = gameData.render.color.ambient [nVertex];
+					CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
+					if (vertColorP->index != gameStates.render.nFrameFlipFlop + 1) {
+						if (nLights + lightManager.VariableVertLights (nVertex) == 0) 
+#pragma omp critical
+							{
+							*vertColorP = c;
+							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 							}
 						else {
 #if DBG
@@ -224,16 +226,12 @@ for (i = nStart; i < nEnd; i++) {
 							nVertex = nVertex;
 #endif
 						}
-					*pc = pvc->color;
+					*colorP = *vertColorP;
 					}
 				}
-			if (nColor == 1) {
-				c = faceColor [nColor];
-				pc->red *= c.color.red;
-				pc->blue *= c.color.green;
-				pc->green *= c.color.blue;
-				}
-			pc->alpha = fAlpha;
+			if (nColor == 1)
+				*colorP *= faceColor [nColor];
+			colorP->Alpha () = fAlpha;
 			}
 		}
 	lightManager.Material ().bValid = 0;
@@ -293,11 +291,11 @@ while (bSemaphore [nThread])
 bSemaphore [nThread] = 1;
 #endif
 PROF_START
-	CSegment		*segP;
-	tSegFaces	*segFaceP;
-	CSegFace		*faceP;
-	tRgbaColorf	*pc;
-	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
+	CSegment*		segP;
+	tSegFaces*		segFaceP;
+	CSegFace*		faceP;
+	CFloatVector*	colorP;
+	CFaceColor		c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
@@ -306,7 +304,7 @@ PROF_START
 	int			h, i, j, nColor, nLights = 0,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
 					bLightmaps = lightmapManager.HaveLightmaps ();
-	static		tFaceColor brightColor = {{1,1,1,1},1};
+	static		CFaceColor brightColor = {{1,1,1,1},1};
 
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 ogl.SetTransform (1);
@@ -348,14 +346,14 @@ for (i = nStart; i < nEnd; i++) {
 		FixTriangleFan (segP, faceP);
 		faceP->m_info.color = faceColor [nColor].color;
 //			SetDynLightMaterial (nSegment, faceP->m_info.nSide, -1);
-		pc = FACES.color + faceP->m_info.nIndex;
-		for (h = 0; h < 4; h++, pc++) {
+		colorP = FACES.color + faceP->m_info.nIndex;
+		for (h = 0; h < 4; h++, colorP++) {
 			if (gameStates.render.bFullBright)
-				*pc = nColor ? faceColor [nColor].color : brightColor.color;
+				*colorP = nColor ? faceColor [nColor].color : brightColor.color;
 			else {
 				c = faceColor [nColor];
 				if (nColor)
-					*pc = c.color;
+					*colorP = c;
 				if (!bLightmaps) {
 					nVertex = faceP->m_info.index [h];
 #if DBG
@@ -363,19 +361,19 @@ for (i = nStart; i < nEnd; i++) {
 						nDbgVertex = nDbgVertex;
 #endif
 					if (gameStates.render.bPerPixelLighting == 2)
-						*pc = gameData.render.color.ambient [nVertex].color;
+						*colorP = gameData.render.color.ambient [nVertex].color;
 					else {
-						tFaceColor *pvc = gameData.render.color.vertices + nVertex;
-						if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
+						CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
+						if (vertColorP->index != gameStates.render.nFrameFlipFlop + 1) {
 #if DBG
 							if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 								nSegment = nSegment;
 #endif
-							if (nLights + lightManager.VariableVertLights ()[nVertex] == 0) {
-								pvc->color.red = c.color.red + gameData.render.color.ambient [nVertex].color.red;
-								pvc->color.green = c.color.green + gameData.render.color.ambient [nVertex].color.green;
-								pvc->color.blue = c.color.blue + gameData.render.color.ambient [nVertex].color.blue;
-								pvc->index = gameStates.render.nFrameFlipFlop + 1;
+							if (nLights + lightManager.VariableVertLights ()[nVertex] == 0) 
+#pragma omp critical
+								{
+								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
+								*vertColorP = c + gameData.render.color.ambient [nVertex];
 								}
 							else {
 #if DBG
@@ -393,16 +391,12 @@ for (i = nStart; i < nEnd; i++) {
 								nVertex = nVertex;
 #endif
 							}
-						*pc = pvc->color;
+						*colorP = *vertColorP;
 						}
 					}
-				if (nColor == 1) {
-					c = faceColor [nColor];
-					pc->red *= c.color.red;
-					pc->blue *= c.color.green;
-					pc->green *= c.color.blue;
-					}
-				pc->alpha = fAlpha;
+				if (nColor == 1)
+					*colorP *= faceColor [nColor];
+				colorP->Alpha () = fAlpha;
 				}
 			}
 		lightManager.Material ().bValid = 0;
@@ -428,8 +422,8 @@ PROF_START
 	tSegFaces*		segFaceP;
 	CSegFace*		faceP;
 	tFaceTriangle*	triP;
-	tRgbaColorf*	pc;
-	tFaceColor		c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
+	CFloatVector*	colorP;
+	CFaceColor		c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
@@ -438,7 +432,7 @@ PROF_START
 	int			h, i, j, k, nIndex, nColor, nLights = 0;
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 
-	static		tFaceColor brightColor = {{1,1,1,1},1};
+	static		CFaceColor brightColor = {{1,1,1,1},1};
 
 ogl.SetTransform (1);
 gameStates.render.nState = 0;
@@ -485,34 +479,34 @@ for (i = nStart; i < nEnd; i++) {
 		faceP->m_info.bHasColor = 1;
 		for (k = faceP->m_info.nTris, triP = FACES.tris + faceP->m_info.nTriIndex; k; k--, triP++) {
 			nIndex = triP->nIndex;
-			pc = FACES.color + nIndex;
-			for (h = 0; h < 3; h++, pc++, nIndex++) {
+			colorP = FACES.color + nIndex;
+			for (h = 0; h < 3; h++, colorP++, nIndex++) {
 				if (gameStates.render.bFullBright)
-					*pc = nColor ? faceColor [nColor].color : brightColor.color;
+					*colorP = nColor ? faceColor [nColor] : brightColor;
 				else {
 					c = faceColor [nColor];
 					if (nColor)
-						*pc = c.color;
+						*colorP = c;
 					nVertex = triP->index [h];
 #if DBG
 					if (nVertex == nDbgVertex)
 						nDbgVertex = nDbgVertex;
 #endif
 					if (gameStates.render.bPerPixelLighting == 2)
-						*pc = gameData.render.color.ambient [nVertex].color;
+						*colorP = gameData.render.color.ambient [nVertex];
 					else {
-						tFaceColor *pvc = gameData.render.color.vertices + nVertex;
+						CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
 #if 0 //DBG
-						pvc->color.red = 
-						pvc->color.green = 
-						pvc->color.blue = 1.0f;
+						vertColorP->Red () = 
+						vertColorP->Green () = 
+						vertColorP->Blue () = 1.0f;
 #else
-						if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
-							if (nLights + lightManager.VariableVertLights () [nVertex] == 0) {
-								pvc->color.red = c.color.red + gameData.render.color.ambient [nVertex].color.red;
-								pvc->color.green = c.color.green + gameData.render.color.ambient [nVertex].color.green;
-								pvc->color.blue = c.color.blue + gameData.render.color.ambient [nVertex].color.blue;
-								pvc->index = gameStates.render.nFrameFlipFlop + 1;
+						if (vertColorP->index != gameStates.render.nFrameFlipFlop + 1) {
+							if (nLights + lightManager.VariableVertLights (nVertex) == 0) 
+#pragma omp critical
+								{
+								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
+								*vertColorP = c + gameData.render.color.ambient [nVertex];
 								}
 							else {
 								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
@@ -525,15 +519,11 @@ for (i = nStart; i < nEnd; i++) {
 #	endif
 							}
 #endif
-						*pc = pvc->color;
+						*colorP = *vertColorP;
 						}
-					if (nColor) {
-						c = faceColor [nColor];
-						pc->red *= c.color.red;
-						pc->blue *= c.color.green;
-						pc->green *= c.color.blue;
-						}
-					pc->alpha = fAlpha;
+					if (nColor) 
+						*colorP *= faceColor [nColor];
+					colorP->Alpha () = fAlpha;
 					}
 				}
 			}
@@ -552,11 +542,11 @@ ogl.SetTransform (0);
 
 void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 {
-	CSegment		*segP;
-	tSegFaces	*segFaceP;
-	CSegFace		*faceP;
-	tRgbaColorf	*pc;
-	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
+	CSegment*		segP;
+	tSegFaces*		segFaceP;
+	CSegFace*		faceP;
+	CFloatVector*	colorP;
+	CFaceColor		c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
@@ -566,7 +556,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 	tUVL			*uvlP;
 	int			h, i, j, uvi, nColor;
 
-	static		tFaceColor brightColor = {{1,1,1,1},1};
+	static		CFaceColor brightColor = {{1,1,1,1},1};
 
 ogl.SetTransform (1);
 gameStates.render.nState = 0;
@@ -592,11 +582,11 @@ for (i = nStart; i < nEnd; i++) {
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
 		faceP->m_info.color = faceColor [nColor].color;
-		pc = FACES.color + faceP->m_info.nIndex;
+		colorP = FACES.color + faceP->m_info.nIndex;
 		uvlP = segP->m_sides [nSide].m_uvls;
-		for (h = 0, uvi = 0 /*(segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13)*/; h < 4; h++, pc++, uvi++) {
+		for (h = 0, uvi = 0 /*(segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13)*/; h < 4; h++, colorP++, uvi++) {
 			if (gameStates.render.bFullBright)
-				*pc = nColor ? faceColor [nColor].color : brightColor.color;
+				*colorP = nColor ? faceColor [nColor] : brightColor;
 			else {
 				c = faceColor [nColor];
 				nVertex = faceP->m_info.index [h];
@@ -608,8 +598,8 @@ for (i = nStart; i < nEnd; i++) {
 				xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % 4].l);
 				AdjustVertexColor (NULL, &c, xLight);
 				}
-			*pc = c.color;
-			pc->alpha = fAlpha;
+			*colorP = c;
+			colorP->Alpha () = fAlpha;
 			}
 		}
 	}
@@ -620,7 +610,7 @@ ogl.SetTransform (0);
 
 int CountRenderFaces (void)
 {
-	CSegment		*segP;
+	CSegment*	segP;
 	short			nSegment;
 	int			h, i, j, nFaces, nSegments;
 

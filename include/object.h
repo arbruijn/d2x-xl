@@ -339,7 +339,7 @@ typedef struct tObjLightInfo {
     fix				intensity;  // how bright the light is
 	 short			nSegment;
 	 short			nObjects;
-	 tRgbaColorf	color;
+	 CFloatVector	color;
 } __pack__ tObjLightInfo;
 
 class CObjLightInfo {
@@ -350,11 +350,11 @@ class CObjLightInfo {
 		inline fix GetIntensity (void) { return m_info.intensity; }
 		inline short GetSegment (void) { return m_info.nSegment; }
 		inline short GetObjects (void) { return m_info.nObjects; }
-		inline tRgbaColorf* GetColor (void) { return &m_info.color; }
+		inline CFloatVector* GetColor (void) { return &m_info.color; }
 		inline void SetIntensity (fix intensity) { m_info.intensity = intensity; }
 		inline void SetSegment (short nSegment) { m_info.nSegment = nSegment; }
 		inline void SetObjects (short nObjects) { m_info.nObjects = nObjects; }
-		inline void SetColor (tRgbaColorf *color) { m_info.color = *color; }
+		inline void SetColor (CFloatVector *color) { m_info.color = *color; }
 };
 
 //	-----------------------------------------------------------------------------
@@ -417,7 +417,7 @@ public:
 	int			nSpeed;
 	int			nDrift;
 	int			nBrightness;
-	tRgbaColorb	color;
+	CRGBAColor	color;
 	char			nSide;
 	char			nType;
 	char			bEnabled;
@@ -434,7 +434,7 @@ class CSmokeInfo {
 		inline int GetSpeed (void) { return m_info.nSpeed; }
 		inline int GetDrift (void) { return m_info.nDrift; }
 		inline int GetBrightness (void) { return m_info.nBrightness; }
-		inline tRgbaColorb GetColor (void) { return m_info.color; }
+		inline CRGBAColor GetColor (void) { return m_info.color; }
 		inline char GetSide (void) { return m_info.nSide; }
 };
 
@@ -462,7 +462,7 @@ public:
 	char			bRandom;
 	char			bInPlane;
 	char			bEnabled;
-	tRgbaColorb color;
+	CRGBAColor color;
 } __pack__ tLightningInfo;
 
 class CLightningInfo {

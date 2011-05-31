@@ -151,7 +151,7 @@ int DrawPolyModel (
 	fix				light,
 	fix*				glowValues,
 	tBitmapIndex	altTextures [],
-	tRgbaColorf*	colorP)
+	CFloatVector*	colorP)
 {
 	CPolyModel*	modelP;
 	int			nTextures, bHires = 0, bCustomModel = 0;

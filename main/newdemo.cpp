@@ -755,10 +755,10 @@ switch (objP->info.renderType) {
 		objP->rType.particleInfo.nSpeed = NDReadInt ();
 		objP->rType.particleInfo.nDrift = NDReadInt ();
 		objP->rType.particleInfo.nBrightness = NDReadInt ();
-		objP->rType.particleInfo.color.red = NDReadByte ();
-		objP->rType.particleInfo.color.green = NDReadByte ();
-		objP->rType.particleInfo.color.blue = NDReadByte ();
-		objP->rType.particleInfo.color.alpha = NDReadByte ();
+		objP->rType.particleInfo.color.Red () = NDReadByte ();
+		objP->rType.particleInfo.color.Green () = NDReadByte ();
+		objP->rType.particleInfo.color.Blue () = NDReadByte ();
+		objP->rType.particleInfo.color.Alpha () = NDReadByte ();
 		objP->rType.particleInfo.nSide = NDReadByte ();
 		objP->rType.particleInfo.nType = NDReadByte ();
 		objP->rType.particleInfo.bEnabled = NDReadByte ();
@@ -784,10 +784,10 @@ switch (objP->info.renderType) {
 		objP->rType.lightningInfo.bSound = NDReadByte ();
 		objP->rType.lightningInfo.bRandom = NDReadByte ();
 		objP->rType.lightningInfo.bInPlane = NDReadByte ();
-		objP->rType.lightningInfo.color.red = NDReadByte ();
-		objP->rType.lightningInfo.color.green = NDReadByte ();
-		objP->rType.lightningInfo.color.blue = NDReadByte ();
-		objP->rType.lightningInfo.color.alpha = NDReadByte ();
+		objP->rType.lightningInfo.color.Red () = NDReadByte ();
+		objP->rType.lightningInfo.color.Green () = NDReadByte ();
+		objP->rType.lightningInfo.color.Blue () = NDReadByte ();
+		objP->rType.lightningInfo.color.Alpha () = NDReadByte ();
 		objP->rType.lightningInfo.bEnabled = NDReadByte ();
 		break;
 
@@ -972,10 +972,10 @@ switch (o.info.renderType) {
 		NDWriteInt (o.rType.particleInfo.nSpeed);
 		NDWriteInt (o.rType.particleInfo.nDrift);
 		NDWriteInt (o.rType.particleInfo.nBrightness);
-		NDWriteByte (o.rType.particleInfo.color.red);
-		NDWriteByte (o.rType.particleInfo.color.green);
-		NDWriteByte (o.rType.particleInfo.color.blue);
-		NDWriteByte (o.rType.particleInfo.color.alpha);
+		NDWriteByte (o.rType.particleInfo.color.Red ());
+		NDWriteByte (o.rType.particleInfo.color.Green ());
+		NDWriteByte (o.rType.particleInfo.color.Blue ());
+		NDWriteByte (o.rType.particleInfo.color.Alpha ());
 		NDWriteByte (o.rType.particleInfo.nSide);
 		NDWriteByte (o.rType.particleInfo.nType);
 		NDWriteByte (o.rType.particleInfo.bEnabled);
@@ -1001,10 +1001,10 @@ switch (o.info.renderType) {
 		NDWriteByte (o.rType.lightningInfo.bSound);
 		NDWriteByte (o.rType.lightningInfo.bRandom);
 		NDWriteByte (o.rType.lightningInfo.bInPlane);
-		NDWriteByte (o.rType.lightningInfo.color.red);
-		NDWriteByte (o.rType.lightningInfo.color.green);
-		NDWriteByte (o.rType.lightningInfo.color.blue);
-		NDWriteByte (o.rType.lightningInfo.color.alpha);
+		NDWriteByte (o.rType.lightningInfo.color.Red ());
+		NDWriteByte (o.rType.lightningInfo.color.Green ());
+		NDWriteByte (o.rType.lightningInfo.color.Blue ());
+		NDWriteByte (o.rType.lightningInfo.color.Alpha ());
 		NDWriteByte (o.rType.lightningInfo.bEnabled);
 		break;
 

@@ -32,12 +32,12 @@
 
 // -----------------------------------------------------------------------------
 
-static inline tRgbColorf *ObjectFrameColor (CObject *objP, tRgbColorf *pc)
+static inline CFloatVector3 *ObjectFrameColor (CObject *objP, CFloatVector3 *pc)
 {
-	static tRgbColorf	defaultColor = {0, 1.0f, 0};
-	static tRgbColorf	botDefColor = {1.0f, 0, 0};
-	static tRgbColorf	reactorDefColor = {0.5f, 0, 0.5f};
-	static tRgbColorf	playerDefColors [] = {{0,1.0f,0},{0,0,1.0f},{1.0f,0,0}};
+	static CFloatVector3	defaultColor = {0, 1.0f, 0};
+	static CFloatVector3	botDefColor = {1.0f, 0, 0};
+	static CFloatVector3	reactorDefColor = {0.5f, 0, 0.5f};
+	static CFloatVector3	playerDefColors [] = {{0,1.0f,0},{0,0,1.0f},{1.0f,0,0}};
 
 if (pc)
 	return pc;
@@ -59,7 +59,7 @@ return &defaultColor;
 
 // -----------------------------------------------------------------------------
 
-void RenderDamageIndicator (CObject *objP, tRgbColorf *pc)
+void RenderDamageIndicator (CObject *objP, CFloatVector3 *pc)
 {
 	CFixVector		vPos;
 	CFloatVector	vPosf, fVerts [4];
@@ -92,7 +92,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	fVerts [2].v.coord.y = fVerts [3].v.coord.y = vPosf.v.coord.y - r2;
 	fVerts [0].v.coord.z = fVerts [1].v.coord.z = fVerts [2].v.coord.z = fVerts [3].v.coord.z = vPosf.v.coord.z;
 	fVerts [0].v.coord.w = fVerts [1].v.coord.w = fVerts [2].v.coord.w = fVerts [3].v.coord.w = 1;
-	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
+	glColor4f (pc->Red (), pc->Green (), pc->Blue (), 2.0f / 3.0f);
 	ogl.SetTexturing (false);
 	ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
@@ -109,7 +109,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 
 // -----------------------------------------------------------------------------
 
-static tRgbaColorf	trackGoalColor [2] = {{1, 0.5f, 0, 0.8f}, {1, 0.5f, 0, 0.8f}};
+static CFloatVector	trackGoalColor [2] = {{1, 0.5f, 0, 0.8f}, {1, 0.5f, 0, 0.8f}};
 static int				nMslLockColor [2] = {0, 0};
 static int				nMslLockColorIncr [2] = {-1, -1};
 static float			fMslLockGreen [2] = {0.65f, 0.0f};
@@ -143,7 +143,7 @@ if (gameStates.app.nSDLTicks [0] - t0 [bMarker] > tDelay [bMarker]) {
 	if (!nMslLockColor [bMarker] || (nMslLockColor [bMarker] == 15))
 		nMslLockColorIncr [bMarker] = -nMslLockColorIncr [bMarker];
 	nMslLockColor [bMarker] += nMslLockColorIncr [bMarker];
-	trackGoalColor [bMarker].green = fMslLockGreen [bMarker] + (float) nMslLockColor [bMarker] / 100.0f;
+	trackGoalColor [bMarker].Green () = fMslLockGreen [bMarker] + (float) nMslLockColor [bMarker] / 100.0f;
 	nMslLockIndPos [bMarker] = (nMslLockIndPos [bMarker] + 1) % INDICATOR_POSITIONS;
 	}
 PolyObjPos (objP, &vPos);
@@ -264,7 +264,7 @@ ogl.SetFaceCulling (true);
 
 // -----------------------------------------------------------------------------
 
-void RenderTargetIndicator (CObject *objP, tRgbColorf *pc)
+void RenderTargetIndicator (CObject *objP, CFloatVector3 *pc)
 {
 	CFixVector		vPos;
 	CFloatVector	fPos, fVerts [4];
@@ -300,7 +300,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	ogl.SetTexturing (false);
 	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) &&
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ?
-		  reinterpret_cast<tRgbColorf*> (&trackGoalColor [0]) : ObjectFrameColor (objP, pc);
+		  reinterpret_cast<CFloatVector3*> (&trackGoalColor [0]) : ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
 	fPos.Assign (vPos);
 	transformation.Transform (fPos, fPos, 0);
@@ -376,7 +376,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 				//fVerts [2].v.c.y = fPos.v.c.y + r - r2;
 				}
 			}
-		glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
+		glColor4f (pc->Red (), pc->Green (), pc->Blue (), 2.0f / 3.0f);
 		if (bDrawArrays) {
 			OglDrawArrays (GL_TRIANGLES, 0, 3);
 			ogl.DisableClientState (GL_VERTEX_ARRAY);

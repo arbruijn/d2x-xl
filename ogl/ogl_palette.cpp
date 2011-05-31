@@ -68,11 +68,11 @@ if (!gameStates.render.nLightingMethod) // || gameStates.menus.nInMenu || !gameS
 CLAMP (red, 0, 1);
 CLAMP (green, 0, 1);
 CLAMP (blue, 0, 1);
-if (!bForce && (m_data.flash.red == red) && (m_data.flash.green == green) && (m_data.flash.blue == blue))
+if (!bForce && (m_data.flash.Red () == red) && (m_data.flash.Green () == green) && (m_data.flash.Blue () == blue))
 	return;
-m_data.flash.red = red;
-m_data.flash.green = green;
-m_data.flash.blue = blue;
+m_data.flash.Red () = red;
+m_data.flash.Green () = green;
+m_data.flash.Blue () = blue;
 if (gameOpts->ogl.bSetGammaRamp && ogl.m_states.bBrightness) {
 	ogl.m_states.bBrightness = !SdlGlSetBrightnessInternal ();
 	m_data.bDoEffect = 0;
@@ -86,12 +86,12 @@ else {
 
 void CPaletteManager::SetEffect (int red, int green, int blue, bool bForce)
 {
-m_data.effect.red = float (red) / 64.0f;
-m_data.effect.green = float (green) / 64.0f;
-m_data.effect.blue = float (blue) / 64.0f;
-CLAMP (m_data.effect.red, 0, 1);
-CLAMP (m_data.effect.green, 0, 1);
-CLAMP (m_data.effect.blue, 0, 1);
+m_data.effect.Red () = float (red) / 64.0f;
+m_data.effect.Green () = float (green) / 64.0f;
+m_data.effect.Blue () = float (blue) / 64.0f;
+CLAMP (m_data.effect.Red (), 0, 1);
+CLAMP (m_data.effect.Green (), 0, 1);
+CLAMP (m_data.effect.Blue (), 0, 1);
 SetEffect (bForce);
 }
 

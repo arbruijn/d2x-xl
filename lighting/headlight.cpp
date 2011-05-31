@@ -140,7 +140,7 @@ int CHeadlightManager::Add (CObject *objP)
 objects [objP->info.nId] = objP;
 if (gameStates.render.nLightingMethod) {
 	if (lightIds [objP->info.nId] < 0) {
-			static tRgbaColorf c = {1.0f, 1.0f, 1.0f, 1.0f};
+			static CFloatVector c = {1.0f, 1.0f, 1.0f, 1.0f};
 			int nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
 
 		if (0 <= nLight) {
@@ -818,10 +818,10 @@ ogl.m_data.nHeadlights = nLights;
 
 //------------------------------------------------------------------------------
 
-int CHeadlightManager::SetupShader (int nType, int bLightmaps, tRgbaColorf *colorP)
+int CHeadlightManager::SetupShader (int nType, int bLightmaps, CFloatVector *colorP)
 {
 	int			h, i, bTransform;
-	tRgbaColorf	color;
+	CFloatVector	color;
 
 //headlights
 h = IsMultiGame ? nLights : 1;
@@ -855,15 +855,15 @@ for (h = i = 0; i < MAX_PLAYERS; i++) {
 if (bTransform)
 	ogl.ResetTransform (1);
 if (colorP) {
-	float fScale = colorP->alpha * 1.05f;
-	color.red = colorP->red * fScale;
-	color.green = colorP->green * fScale;
-	color.blue = colorP->blue * fScale;
-	color.alpha = colorP->alpha;
+	float fScale = colorP->Alpha () * 1.05f;
+	color.Red () = colorP->Red () * fScale;
+	color.Green () = colorP->Green () * fScale;
+	color.Blue () = colorP->Blue () * fScale;
+	color.Alpha () = colorP->Alpha ();
 	}
 else {
-	color.red = color.green = color.blue = 2.0f;
-	color.alpha = 1;
+	color.Red () = color.Green () = color.Blue () = 2.0f;
+	color.Alpha () = 1;
 	}
 glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&color));
 ogl.ClearError (0);

@@ -97,12 +97,12 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 		for (i = 0; i < 3; i++, pmv++) {
 			h = pfa->m_nVerts [i];
 			if ((pmv->m_bTextured = bTextured))
-				pmv->m_baseColor.red =
-				pmv->m_baseColor.green =
-				pmv->m_baseColor.blue = 1;
+				pmv->m_baseColor.Red () =
+				pmv->m_baseColor.Green () =
+				pmv->m_baseColor.Blue () = 1;
 			else 
 				bmP->GetAvgColor (&pmv->m_baseColor);
-			pmv->m_baseColor.alpha = 1;
+			pmv->m_baseColor.Alpha () = 1;
 			pmv->m_renderColor = pmv->m_baseColor;
 			pmv->m_normal = psa->m_verts [h].m_normal;
 			pmv->m_vertex = psa->m_verts [h].m_vertex * fScale;

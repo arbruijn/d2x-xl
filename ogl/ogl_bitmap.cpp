@@ -135,7 +135,7 @@ return &m_info.texture;
 
 //------------------------------------------------------------------------------
 
-void CBitmap::OglRender (tRgbaColorf* colorP, int nColors, int orient)
+void CBitmap::OglRender (CFloatVector* colorP, int nColors, int orient)
 {
 	float				verts [4][2] = {{m_render.x0, m_render.y0}, {m_render.x1, m_render.y0}, {m_render.x1, m_render.y1}, {m_render.x0, m_render.y1}};
 	tTexCoord2f		texCoord [4];
@@ -147,7 +147,7 @@ SetTexCoord (m_render.u1, m_render.v2, orient, texCoord [3]);
 ogl.EnableClientStates (1, (nColors == 4), 0, GL_TEXTURE0);
 glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoord);
 if (nColors == 4)
-	OglColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), colorP);
+	OglColorPointer (4, GL_FLOAT, sizeof (CFloatVector), colorP);
 else
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP));
 OglVertexPointer (2, GL_FLOAT, 2 * sizeof (float), verts);
@@ -168,10 +168,10 @@ ogl.SetTexturing (false);
 
 //------------------------------------------------------------------------------
 
-int CBitmap::RenderScaled (int x, int y, int w, int h, int scale, int orient, tCanvasColor* colorP, int bSmoothe)
+int CBitmap::RenderScaled (int x, int y, int w, int h, int scale, int orient, CCanvasColor* colorP, int bSmoothe)
 {
 	CBitmap*		bmoP;
-	tRgbaColorf	color;
+	CFloatVector	color;
 
 if ((bmoP = HasOverride ()))
 	return bmoP->RenderScaled (x, y, w, h, scale, orient, colorP, bSmoothe);
@@ -192,7 +192,7 @@ int CBitmap::Render (CBitmap *destP,
 							int xDest, int yDest, int wDest, int hDest,
 							int xSrc, int ySrc, int wSrc, int hSrc,
 							int bTransp, int bMipMaps, int bSmoothe,
-							float fAlpha, tRgbaColorf* colorP)
+							float fAlpha, CFloatVector* colorP)
 {
 	CBitmap*		bmoP;
 
@@ -204,13 +204,13 @@ if ((bmoP = HasOverride ()))
 
 //	ubyte *oldpal;
 OglVertices (xDest, yDest, wDest, hDest, I2X (1), 0, destP);
-tRgbaColorf color;
+CFloatVector color;
 int nColors;
 bool bBlend = bTransp && nTransp;
 
 if (!colorP) {
-	color.red = color.green = color.blue = 1.0f;
-	color.alpha = bBlend ? fAlpha * gameStates.render.grAlpha : 1.0f;
+	color.Red () = color.Green () = color.Blue () = 1.0f;
+	color.Alpha () = bBlend ? fAlpha * gameStates.render.grAlpha : 1.0f;
 	colorP = &color;
 	nColors = 1;
 	}

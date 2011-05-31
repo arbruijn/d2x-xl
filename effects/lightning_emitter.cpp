@@ -41,7 +41,7 @@ bool CLightningEmitter::Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, 
 										 short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 										 char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps,
 										 short nSmoothe, char bClamp, char bGlow, char bSound, char bLight,
-										 char nStyle, tRgbaColorf *colorP)
+										 char nStyle, CFloatVector *colorP)
 {
 m_nObject = nObject;
 if (!(nLife && nLength && (nNodes > 4)))

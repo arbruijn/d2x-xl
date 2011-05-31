@@ -119,15 +119,15 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 			psm->SetMinMax (&pmv->m_vertex);
 			*pvn = vNormal;
 			if ((pmv->m_bTextured = pof->m_bTextured))
-				pmv->m_baseColor.red =
-				pmv->m_baseColor.green =
-				pmv->m_baseColor.blue = 1.0f;
+				pmv->m_baseColor.Red () =
+				pmv->m_baseColor.Green () =
+				pmv->m_baseColor.Blue () = 1.0f;
 			else {
-				pmv->m_baseColor.red = (float) pof->m_texProps.color.red / 255.0f;
-				pmv->m_baseColor.green = (float) pof->m_texProps.color.green / 255.0f;
-				pmv->m_baseColor.blue = (float) pof->m_texProps.color.blue / 255.0f;
+				pmv->m_baseColor.Red () = (float) pof->m_texProps.color.Red () / 255.0f;
+				pmv->m_baseColor.Green () = (float) pof->m_texProps.color.Green () / 255.0f;
+				pmv->m_baseColor.Blue () = (float) pof->m_texProps.color.Blue () / 255.0f;
 				}
-			pmv->m_baseColor.alpha = 1.0f;
+			pmv->m_baseColor.Alpha () = 1.0f;
 			nIndex++;
 			}
 		}

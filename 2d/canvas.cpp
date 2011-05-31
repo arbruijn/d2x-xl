@@ -135,10 +135,10 @@ m_info.color.rgb = 0;
 void CCanvas::SetColorRGB (ubyte red, ubyte green, ubyte blue, ubyte alpha)
 {
 m_info.color.rgb = 1;
-m_info.color.color.red = red;
-m_info.color.color.green = green;
-m_info.color.color.blue = blue;
-m_info.color.color.alpha = alpha;
+m_info.color.color.Red () = red;
+m_info.color.color.Green () = green;
+m_info.color.color.Blue () = blue;
+m_info.color.color.Alpha () = alpha;
 }
 
 //	-----------------------------------------------------------------------------
@@ -157,10 +157,10 @@ CCanvas::SetColorRGB (
 void CCanvas::FadeColorRGB (double dFade)
 {
 if (dFade && m_info.color.rgb) {
-	m_info.color.color.red = (ubyte) (m_info.color.color.red * dFade);
-	m_info.color.color.green = (ubyte) (m_info.color.color.green * dFade);
-	m_info.color.color.blue = (ubyte) (m_info.color.color.blue * dFade);
-	//m_info.color.color.alpha = (ubyte) ((float) gameStates.render.grAlpha / (float) FADE_LEVELS * 255.0f);
+	m_info.color.color.Red () = (ubyte) (m_info.color.color.Red () * dFade);
+	m_info.color.color.Green () = (ubyte) (m_info.color.color.Green () * dFade);
+	m_info.color.color.Blue () = (ubyte) (m_info.color.color.Blue () * dFade);
+	//m_info.color.color.Alpha () = (ubyte) ((float) gameStates.render.grAlpha / (float) FADE_LEVELS * 255.0f);
 	}
 }
 

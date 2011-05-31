@@ -446,7 +446,7 @@ class CRearView : public CGenericCockpit {
 
 //	-----------------------------------------------------------------------------
 
-extern tRgbColorb playerColors [];
+extern CRGBColor playerColors [];
 
 extern CHUD			hudCockpit;
 extern CWideHUD	letterboxCockpit;

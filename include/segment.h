@@ -437,7 +437,7 @@ class CSegFaceInfo {
 		int					nVerts;
 		int					nTris;
 		int					nFrame;
-		tRgbaColorf			color;
+		CFloatVector			color;
 		float					fRads [2];
 		short					nWall;
 		short					nBaseTex;

@@ -93,13 +93,13 @@ return 1;
 void CTGA::ConvertToRGB (void)
 {
 if ((m_bmP->BPP () == 4) && m_bmP->Buffer ()) {
-	tRgbColorb *rgbP = reinterpret_cast<tRgbColorb*> (m_bmP->Buffer ());
-	tRgbaColorb *rgbaP = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ());
+	CRGBColor *rgbP = reinterpret_cast<CRGBColor*> (m_bmP->Buffer ());
+	CRGBAColor *rgbaP = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ());
 
 	for (int i = m_bmP->Length () / 4; i; i--, rgbP++, rgbaP++) {
-		rgbP->red = rgbaP->red;
-		rgbP->green = rgbaP->green;
-		rgbP->blue = rgbaP->blue;
+		rgbP->Red () = rgbaP->Red ();
+		rgbP->Green () = rgbaP->Green ();
+		rgbP->Blue () = rgbaP->Blue ();
 		}
 	m_bmP->Resize (uint (3 * m_bmP->Size () / 4));
 	m_bmP->SetBPP (3);
@@ -112,14 +112,14 @@ if ((m_bmP->BPP () == 4) && m_bmP->Buffer ()) {
 void CTGA::PreMultiplyAlpha (float fScale)
 {
 if ((m_bmP->BPP () == 4) && m_bmP->Buffer ()) {
-	tRgbaColorb *rgbaP = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ());
+	CRGBAColor *rgbaP = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ());
 	float alpha;
 
 	for (int i = m_bmP->Length () / 4; i; i--, rgbaP++) {
-		alpha = float (rgbaP->alpha / 255.0f) * fScale;
-		rgbaP->red = ubyte (rgbaP->red * alpha + 0.5f);
-		rgbaP->green = ubyte (rgbaP->green * alpha + 0.5f);
-		rgbaP->blue = ubyte (rgbaP->blue * alpha + 0.5f);
+		alpha = float (rgbaP->Alpha () / 255.0f) * fScale;
+		rgbaP->Red () = ubyte (rgbaP->Red () * alpha + 0.5f);
+		rgbaP->Green () = ubyte (rgbaP->Green () * alpha + 0.5f);
+		rgbaP->Blue () = ubyte (rgbaP->Blue () * alpha + 0.5f);
 		}
 	}
 }
@@ -132,13 +132,13 @@ void CTGA::SetProperties (int alpha, int bGrayScale, double brightness, bool bSw
 	int			h = m_bmP->Height ();
 	int			w = m_bmP->Width ();
 	float			nVisible = 0;
-	tRgbaColorf	avgColor;
-	tRgbColorb	avgColorb;
+	CFloatVector	avgColor;
+	CRGBColor	avgColorb;
 	float			a;
 
-//tRgbaColorb *p;
+//CRGBAColor *p;
 //if (!gameStates.app.bMultiThreaded)
-// 	p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ());
+// 	p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ());
 
 m_bmP->AddFlags (BM_FLAG_TGA);
 m_bmP->SetTranspType (-1);
@@ -148,11 +148,11 @@ memset (&avgColor, 0, sizeof (avgColor));
 
 m_bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 if (m_bmP->BPP () == 3) {
-	tRgbColorb*	p = reinterpret_cast<tRgbColorb*> (m_bmP->Buffer ());
+	CRGBColor*	p = reinterpret_cast<CRGBColor*> (m_bmP->Buffer ());
 #if USE_OPENMP
 	if (gameStates.app.bMultiThreaded) {
 		int			tId, j = w * h;
-		tRgbColorf	ac [MAX_THREADS];
+		CFloatVector3	ac [MAX_THREADS];
 
 		memset (ac, 0, sizeof (ac));
 #	pragma omp parallel private (tId)
@@ -160,33 +160,33 @@ if (m_bmP->BPP () == 3) {
 			tId = omp_get_thread_num ();
 #		pragma omp for reduction (+: nVisible)
 			for (int i = 0; i < j; i++) {
-				if (p [i].red || p [i].green || p [i].blue) {
-					::Swap (p [i].red, p [i].blue);
-					ac [tId].red += p [i].red;
-					ac [tId].green += p [i].green;
-					ac [tId].blue += p [i].blue;
+				if (p [i].Red () || p [i].Green () || p [i].Blue ()) {
+					::Swap (p [i].Red (), p [i].Blue ());
+					ac [tId].Red () += p [i].Red ();
+					ac [tId].Green () += p [i].Green ();
+					ac [tId].Blue () += p [i].Blue ();
 					nVisible++;
 					}
 				}
 			}
 		for (i = 0, j = GetNumThreads (); i < j; i++) {
-			avgColor.red += ac [i].red;
-			avgColor.green += ac [i].green;
-			avgColor.blue += ac [i].blue;
+			avgColor.Red () += ac [i].Red ();
+			avgColor.Green () += ac [i].Green ();
+			avgColor.Blue () += ac [i].Blue ();
 			}
 		}
 	else
 #endif
 	for (int i = 0, j = w * h; i < j; i++) {
-		if (p [i].red || p [i].green || p [i].blue) {
-			::Swap (p [i].red, p [i].blue);
-			avgColor.red += p [i].red;
-			avgColor.green += p [i].green;
-			avgColor.blue += p [i].blue;
+		if (p [i].Red () || p [i].Green () || p [i].Blue ()) {
+			::Swap (p [i].Red (), p [i].Blue ());
+			avgColor.Red () += p [i].Red ();
+			avgColor.Green () += p [i].Green ();
+			avgColor.Blue () += p [i].Blue ();
 			nVisible++;
 			}
 		}
-	avgColor.alpha = 1.0f;
+	avgColor.Alpha () = 1.0f;
 	}
 else {
 	int nSuperTransp;
@@ -197,12 +197,12 @@ else {
 		nSuperTransp = 0;
 
 	int				j = w * (h / nFrames);
-	tRgbaColorb*	p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ()) + n * j;
+	CRGBAColor*	p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ()) + n * j;
 
 #if USE_OPENMP
 		if (gameStates.app.bMultiThreaded) {
 			int			nst [MAX_THREADS], nac [MAX_THREADS], tId;
-			tRgbaColorf	avc [MAX_THREADS];
+			CFloatVector	avc [MAX_THREADS];
 
 			memset (avc, 0, sizeof (avc));
 			memset (nst, 0, sizeof (nst));
@@ -213,40 +213,40 @@ else {
 #	pragma omp for reduction (+: nVisible)
 			for (int i = 0; i < j; i++) {
 				if (bSwapRB)
-					::Swap (p [i].red, p [i].blue);
+					::Swap (p [i].Red (), p [i].Blue ());
 				if (bGrayScale) {
-					p [i].red =
-					p [i].green =
-					p [i].blue = ubyte ((int (p [i].red) + int (p [i].green) + int (p [i].blue)) / 3 * brightness);
+					p [i].Red () =
+					p [i].Green () =
+					p [i].Blue () = ubyte ((int (p [i].Red ()) + int (p [i].Green ()) + int (p [i].Blue ())) / 3 * brightness);
 					}
-				else if ((p [i].red == 120) && (p [i].green == 88) && (p [i].blue == 128)) {
+				else if ((p [i].Red () == 120) && (p [i].Green () == 88) && (p [i].Blue () == 128)) {
 					nst [tId]++;
-					p [i].alpha = 0;
+					p [i].Alpha () = 0;
 					}
 				else {
 					if (alpha >= 0)
-						p [i].alpha = alpha;
-					if (!p [i].alpha)
-						p [i].red =		//avoid colored transparent areas interfering with visible image edges
-						p [i].green =
-						p [i].blue = 0;
+						p [i].Alpha () = alpha;
+					if (!p [i].Alpha ())
+						p [i].Red () =		//avoid colored transparent areas interfering with visible image edges
+						p [i].Green () =
+						p [i].Blue () = 0;
 					}
-				if (p [i].alpha < MIN_OPACITY) {
-					avc [tId].alpha += p [i].alpha;
+				if (p [i].Alpha () < MIN_OPACITY) {
+					avc [tId].Alpha () += p [i].Alpha ();
 					nac [tId]++;
 					}
-				a = float (p [i].alpha) / 255.0f;
+				a = float (p [i].Alpha ()) / 255.0f;
 				nVisible += a;
-				avc [tId].red += float (p [i].red) * a;
-				avc [tId].green += float (p [i].green) * a;
-				avc [tId].blue += float (p [i].blue) * a;
+				avc [tId].Red () += float (p [i].Red ()) * a;
+				avc [tId].Green () += float (p [i].Green ()) * a;
+				avc [tId].Blue () += float (p [i].Blue ()) * a;
 				}
 			}
 		for (int i = 0, j = GetNumThreads (); i < j; i++) {
-			avgColor.red += avc [i].red;
-			avgColor.green += avc [i].green;
-			avgColor.blue += avc [i].blue;
-			avgColor.alpha += avc [i].alpha;
+			avgColor.Red () += avc [i].Red ();
+			avgColor.Green () += avc [i].Green ();
+			avgColor.Blue () += avc [i].Blue ();
+			avgColor.Alpha () += avc [i].Alpha ();
 			nSuperTransp += nst [i];
 			nAlpha += nac [i];
 			}
@@ -256,38 +256,38 @@ else {
 		{
 		for (i = j; i; i--, p++) {
 			if (bSwapRB)
-				::Swap (p->red, p->blue);
+				::Swap (p->Red (), p->Blue ());
 			if (bGrayScale) {
-				p->red =
-				p->green =
-				p->blue = ubyte ((int (p->red) + int (p->green) + int (p->blue)) / 3 * brightness);
+				p->Red () =
+				p->Green () =
+				p->Blue () = ubyte ((int (p->Red ()) + int (p->Green ()) + int (p->Blue ())) / 3 * brightness);
 				}
-			else if ((p->red == 120) && (p->green == 88) && (p->blue == 128)) {
+			else if ((p->Red () == 120) && (p->Green () == 88) && (p->Blue () == 128)) {
 				nSuperTransp++;
-				p->alpha = 0;
+				p->Alpha () = 0;
 				}
 			else {
 				if (alpha >= 0)
-					p->alpha = alpha;
-				if (!p->alpha)
-					p->red =		//avoid colored transparent areas interfering with visible image edges
-					p->green =
-					p->blue = 0;
+					p->Alpha () = alpha;
+				if (!p->Alpha ())
+					p->Red () =		//avoid colored transparent areas interfering with visible image edges
+					p->Green () =
+					p->Blue () = 0;
 				}
-			if (p->alpha < MIN_OPACITY) {
-				avgColor.alpha += p->alpha;
+			if (p->Alpha () < MIN_OPACITY) {
+				avgColor.Alpha () += p->Alpha ();
 				nAlpha++;
 				}
-			a = float (p->alpha) / 255.0f;
+			a = float (p->Alpha ()) / 255.0f;
 			nVisible += a;
-			avgColor.red += float (p->red) * a;
-			avgColor.green += float (p->green) * a;
-			avgColor.blue += float (p->blue) * a;
+			avgColor.Red () += float (p->Red ()) * a;
+			avgColor.Green () += float (p->Green ()) * a;
+			avgColor.Blue () += float (p->Blue ()) * a;
 			}
 		}
 		if (nAlpha > w * w / 1000) {
 			if (!n) {
-				if (avgColor.alpha / nAlpha > 5.0f)
+				if (avgColor.Alpha () / nAlpha > 5.0f)
 					m_bmP->AddFlags (BM_FLAG_TRANSPARENT);
 				else
 					m_bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
@@ -302,9 +302,9 @@ else {
 			}
 		}
 	}
-avgColorb.red = ubyte (avgColor.red / nVisible);
-avgColorb.green = ubyte (avgColor.green / nVisible);
-avgColorb.blue = ubyte (avgColor.blue / nVisible);
+avgColorb.Red () = ubyte (avgColor.Red () / nVisible);
+avgColorb.Green () = ubyte (avgColor.Green () / nVisible);
+avgColorb.Blue () = ubyte (avgColor.Blue () / nVisible);
 m_bmP->SetAvgColor (avgColorb);
 if (!nAlpha)
 	ConvertToRGB ();
@@ -340,34 +340,34 @@ SetProperties (alpha, bGrayScale, brightness, bReverse == 0);
 	int				i, j, n, nAlpha = 0, nVisible = 0, nFrames;
 	int				h = m_bmP->Height ();
 	int				w = m_bmP->Width ();
-	tRgbColorf		avgColor;
-	tRgbColorb		avgColorb;
+	CFloatVector3		avgColor;
+	CRGBColor		avgColorb;
 	float				vec, avgAlpha = 0;
 
-avgColor.red = avgColor.green = avgColor.blue = 0;
+avgColor.Red () = avgColor.Green () = avgColor.Blue () = 0;
 m_bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 if (m_header.Bits () == 24) {
 	tBGRA	coord;
-	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (m_bmP->Buffer ()) + w * (h - 1);
+	CRGBColor *p = reinterpret_cast<CRGBColor*> (m_bmP->Buffer ()) + w * (h - 1);
 
 	for (i = h; i; i--) {
 		for (j = w; j; j--, p++) {
 			if (cf.Read (&coord, 1, 3) != (size_t) 3)
 				return 0;
 			if (bGrayScale) {
-				p->red =
-				p->green =
-				p->blue = (ubyte) (((int) coord.r + (int) coord.g + (int) coord.b) / 3 * brightness);
+				p->Red () =
+				p->Green () =
+				p->Blue () = (ubyte) (((int) coord.r + (int) coord.g + (int) coord.b) / 3 * brightness);
 				}
 			else {
-				p->red = (ubyte) (coord.r * brightness);
-				p->green = (ubyte) (coord.g * brightness);
-				p->blue = (ubyte) (coord.b * brightness);
+				p->Red () = (ubyte) (coord.r * brightness);
+				p->Green () = (ubyte) (coord.g * brightness);
+				p->Blue () = (ubyte) (coord.b * brightness);
 				}
-			avgColor.red += p->red;
-			avgColor.green += p->green;
-			avgColor.blue += p->blue;
-			//p->alpha = (alpha < 0) ? 255 : alpha;
+			avgColor.Red () += p->Red ();
+			avgColor.Green () += p->Green ();
+			avgColor.Blue () += p->Blue ();
+			//p->Alpha () = (alpha < 0) ? 255 : alpha;
 			}
 		p -= 2 * w;
 		nVisible = w * h * 255;
@@ -377,7 +377,7 @@ else {
 	m_bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
 	if (bReverse) {
 		tRGBA	coord;
-		tRgbaColorb	*p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ());
+		CRGBAColor	*p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ());
 		int nSuperTransp;
 
 		nFrames = h / w - 1;
@@ -388,42 +388,42 @@ else {
 				if (cf.Read (&coord, 1, 4) != (size_t) 4)
 					return 0;
 				if (bGrayScale) {
-					p->red =
-					p->green =
-					p->blue = (ubyte) (((int) coord.r + (int) coord.g + (int) coord.b) / 3 * brightness);
+					p->Red () =
+					p->Green () =
+					p->Blue () = (ubyte) (((int) coord.r + (int) coord.g + (int) coord.b) / 3 * brightness);
 					}
 				else if (coord.vec) {
-					p->red = (ubyte) (coord.r * brightness);
-					p->green = (ubyte) (coord.g * brightness);
-					p->blue = (ubyte) (coord.b * brightness);
+					p->Red () = (ubyte) (coord.r * brightness);
+					p->Green () = (ubyte) (coord.g * brightness);
+					p->Blue () = (ubyte) (coord.b * brightness);
 					}
 				if ((coord.r == 120) && (coord.g == 88) && (coord.b == 128)) {
 					nSuperTransp++;
-					p->alpha = 0;
+					p->Alpha () = 0;
 					}
 				else {
-					p->alpha = (alpha < 0) ? coord.vec : alpha;
-					if (!p->alpha)
-						p->red =		//avoid colored transparent areas interfering with visible image edges
-						p->green =
-						p->blue = 0;
+					p->Alpha () = (alpha < 0) ? coord.vec : alpha;
+					if (!p->Alpha ())
+						p->Red () =		//avoid colored transparent areas interfering with visible image edges
+						p->Green () =
+						p->Blue () = 0;
 					}
-				if (p->alpha < MIN_OPACITY) {
+				if (p->Alpha () < MIN_OPACITY) {
 					if (!n) {
 						m_bmP->AddFlags (BM_FLAG_TRANSPARENT);
-						if (p->alpha)
+						if (p->Alpha ())
 							m_bmP->DelFlags (BM_FLAG_SEE_THRU);
 						}
 					if (bmP)
 						m_bmP->TransparentFrames () [n / 32] |= (1 << (n % 32));
-					avgAlpha += p->alpha;
+					avgAlpha += p->Alpha ();
 					nAlpha++;
 					}
-				nVisible += p->alpha;
-				vec = (float) p->alpha / 255;
-				avgColor.red += p->red * vec;
-				avgColor.green += p->green * vec;
-				avgColor.blue += p->blue * vec;
+				nVisible += p->Alpha ();
+				vec = (float) p->Alpha () / 255;
+				avgColor.Red () += p->Red () * vec;
+				avgColor.Green () += p->Green () * vec;
+				avgColor.Blue () += p->Blue () * vec;
 				}
 			if (nSuperTransp > 50) {
 				if (!n)
@@ -434,7 +434,7 @@ else {
 		}
 	else {
 		tBGRA	coord;
-		tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ()) + w * (h - 1);
+		CRGBAColor *p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ()) + w * (h - 1);
 		int nSuperTransp;
 
 		nFrames = h / w - 1;
@@ -445,41 +445,41 @@ else {
 				if (cf.Read (&coord, 1, 4) != (size_t) 4)
 					return 0;
 				if (bGrayScale) {
-					p->red =
-					p->green =
-					p->blue = (ubyte) (((int) coord.r + (int) coord.g + (int) coord.b) / 3 * brightness);
+					p->Red () =
+					p->Green () =
+					p->Blue () = (ubyte) (((int) coord.r + (int) coord.g + (int) coord.b) / 3 * brightness);
 					}
 				else {
-					p->red = (ubyte) (coord.r * brightness);
-					p->green = (ubyte) (coord.g * brightness);
-					p->blue = (ubyte) (coord.b * brightness);
+					p->Red () = (ubyte) (coord.r * brightness);
+					p->Green () = (ubyte) (coord.g * brightness);
+					p->Blue () = (ubyte) (coord.b * brightness);
 					}
 				if ((coord.r == 120) && (coord.g == 88) && (coord.b == 128)) {
 					nSuperTransp++;
-					p->alpha = 0;
+					p->Alpha () = 0;
 					}
 				else {
-					p->alpha = (alpha < 0) ? coord.vec : alpha;
-					if (!p->alpha)
-						p->red =		//avoid colored transparent areas interfering with visible image edges
-						p->green =
-						p->blue = 0;
+					p->Alpha () = (alpha < 0) ? coord.vec : alpha;
+					if (!p->Alpha ())
+						p->Red () =		//avoid colored transparent areas interfering with visible image edges
+						p->Green () =
+						p->Blue () = 0;
 					}
-				if (p->alpha < MIN_OPACITY) {
+				if (p->Alpha () < MIN_OPACITY) {
 					if (!n) {
 						m_bmP->AddFlags (BM_FLAG_TRANSPARENT);
-						if (p->alpha)
+						if (p->Alpha ())
 							m_bmP->DelFlags (BM_FLAG_SEE_THRU);
 						}
 					m_bmP->TransparentFrames () [n / 32] |= (1 << (n % 32));
-					avgAlpha += p->alpha;
+					avgAlpha += p->Alpha ();
 					nAlpha++;
 					}
-				nVisible += p->alpha;
-				vec = (float) p->alpha / 255;
-				avgColor.red += p->red * vec;
-				avgColor.green += p->green * vec;
-				avgColor.blue += p->blue * vec;
+				nVisible += p->Alpha ();
+				vec = (float) p->Alpha () / 255;
+				avgColor.Red () += p->Red () * vec;
+				avgColor.Green () += p->Green () * vec;
+				avgColor.Blue () += p->Blue () * vec;
 				}
 			if (nSuperTransp > w * w / 2000) {
 				if (!n)
@@ -491,9 +491,9 @@ else {
 		}
 	}
 vec = (float) nVisible / 255.0f;
-avgColorb.red = (ubyte) (avgColor.red / vec);
-avgColorb.green = (ubyte) (avgColor.green / vec);
-avgColorb.blue = (ubyte) (avgColor.blue / vec);
+avgColorb.Red () = (ubyte) (avgColor.Red () / vec);
+avgColorb.Green () = (ubyte) (avgColor.Green () / vec);
+avgColorb.Blue () = (ubyte) (avgColor.Blue () / vec);
 m_bmP->SetAvgColor (avgColorb);
 if (!nAlpha)
 	ConvertToRGB (bmP);
@@ -512,12 +512,12 @@ int CTGA::WriteData (void)
 if (m_header.Bits () == 24) {
 	if (m_bmP->BPP () == 3) {
 		tBGR	c;
-		tRgbColorb *p = reinterpret_cast<tRgbColorb*> (m_bmP->Buffer ()) + w * (m_bmP->Height () - 1);
+		CRGBColor *p = reinterpret_cast<CRGBColor*> (m_bmP->Buffer ()) + w * (m_bmP->Height () - 1);
 		for (i = m_bmP->Height (); i; i--) {
 			for (j = w; j; j--, p++) {
-				c.r = p->red;
-				c.g = p->green;
-				c.b = p->blue;
+				c.r = p->Red ();
+				c.g = p->Green ();
+				c.b = p->Blue ();
 				if (m_cf.Write (&c, 1, 3) != (size_t) 3)
 					return 0;
 				}
@@ -526,12 +526,12 @@ if (m_header.Bits () == 24) {
 		}
 	else {
 		tBGR	c;
-		tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ()) + w * (m_bmP->Height () - 1);
+		CRGBAColor *p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ()) + w * (m_bmP->Height () - 1);
 		for (i = m_bmP->Height (); i; i--) {
 			for (j = w; j; j--, p++) {
-				c.r = p->red;
-				c.g = p->green;
-				c.b = p->blue;
+				c.r = p->Red ();
+				c.g = p->Green ();
+				c.b = p->Blue ();
 				if (m_cf.Write (&c, 1, 3) != (size_t) 3)
 					return 0;
 				}
@@ -541,23 +541,23 @@ if (m_header.Bits () == 24) {
 	}
 else {
 	tBGRA	c;
-	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (m_bmP->Buffer ()) + w * (m_bmP->Height () - 1);
+	CRGBAColor *p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ()) + w * (m_bmP->Height () - 1);
 	int bShaderMerge = gameOpts->ogl.bGlTexMerge;
 	nFrames = h / w - 1;
 	for (i = 0; i < h; i++) {
 		n = nFrames - i / w;
 		for (j = w; j; j--, p++) {
-			if (bShaderMerge && !(p->red || p->green || p->blue) && (p->alpha == 1)) {
+			if (bShaderMerge && !(p->Red () || p->Green () || p->Blue ()) && (p->Alpha () == 1)) {
 				c.r = 120;
 				c.g = 88;
 				c.b = 128;
 				c.a = 1;
 				}
 			else {
-				c.r = p->red;
-				c.g = p->green;
-				c.b = p->blue;
-				c.a = ((p->red == 120) && (p->green == 88) && (p->blue == 128)) ? 255 : p->alpha;
+				c.r = p->Red ();
+				c.g = p->Green ();
+				c.b = p->Blue ();
+				c.a = ((p->Red () == 120) && (p->Green () == 88) && (p->Blue () == 128)) ? 255 : p->Alpha ();
 				}
 			if (m_cf.Write (&c, 1, 4) != (size_t) 4)
 				return 0;

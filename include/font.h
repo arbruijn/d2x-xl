@@ -150,7 +150,7 @@ class CFontManager {
 		float Scale (void);
 		void SetCurrent (CFont* fontP);
 		void SetColor (int fgColor, int bgColor);
-		void SetColorRGB (tRgbaColorb *fgColor, tRgbaColorb *bgColor);
+		void SetColorRGB (CRGBAColor *fgColor, CRGBAColor *bgColor);
 		void SetColorRGBi (uint fgColor, int bSetFG, uint bgColor, int bSetBG);
 		void Push (void) { m_save.Push (m_current); }
 		void Pop (void) { m_current = m_save.Pop (); }

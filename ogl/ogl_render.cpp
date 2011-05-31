@@ -244,7 +244,7 @@ return 0;
 
 int G3DrawSphere3D (CRenderPoint *p0, int nSides, int rad)
 {
-	tCanvasColor	c = CCanvas::Current ()->Color ();
+	CCanvasColor	c = CCanvas::Current ()->Color ();
 	CRenderPoint			p = *p0;
 	int				i;
 	CFloatVector	v;
@@ -357,14 +357,14 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int G3DrawPolyAlpha (int nVertices, CRenderPoint **pointList, tRgbaColorf *color, char bDepthMask, short nSegment)
+int G3DrawPolyAlpha (int nVertices, CRenderPoint **pointList, CFloatVector *color, char bDepthMask, short nSegment)
 {
 if (gameStates.render.nShadowBlurPass == 1) {
 	G3DrawWhitePoly (nVertices, pointList);
 	return 0;
 	}
-if (color->alpha < 0)
-	color->alpha = gameStates.render.grAlpha;
+if (color->Alpha () < 0)
+	color->Alpha () = gameStates.render.grAlpha;
 CFloatVector	vertices [8];
 
 for (int i = 0; i < nVertices; i++)
@@ -476,7 +476,7 @@ int G3DrawTexPolyMulti (
 						bDepthSort,
 						bResetColor = 0,
 						bOverlay = 0;
-	tFaceColor*		colorP;
+	CFaceColor*		colorP;
 	CBitmap*			bmP = NULL, *mask = NULL;
 	CRenderPoint*	pointP, **pointPP;
 #if USE_VERTNORMS
@@ -595,7 +595,7 @@ if (!bDepthSort) {
 ogl.m_states.fAlpha = gameStates.render.grAlpha;
 if (bDepthSort) {
 		CFloatVector	vertices [8];
-		tFaceColor		vertColors [8];
+		CFaceColor		vertColors [8];
 		tTexCoord2f		texCoord [2][8];
 		int				vertIndex [8];
 		//int				colorIndex [8];
@@ -627,7 +627,7 @@ if (bDepthSort) {
 if (!ogl.SizeBuffers (nVertices))
 	return 0;
 
-tFaceColor	faceColor;
+CFaceColor	faceColor;
 
 if (bDynLight) {
 	if (bShaderMerge) {
@@ -953,7 +953,7 @@ ogl.m_states.bDynObjLight = bDynLight;
 ogl.m_states.fAlpha = gameStates.render.grAlpha;
 if (ogl.SizeBuffers (nVertices)) {
 	if (bDynLight) {
-		tFaceColor	faceColor;
+		CFaceColor	faceColor;
 		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
 			pointP = *pointPP;
 			G3VERTPOS (vVertPos, pointP);
@@ -1014,7 +1014,7 @@ return 1;
 
 int COGL::BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
 							  tTexCoord2f *texCoordP, 
-							  tRgbaColorf *colorP, int nColors,
+							  CFloatVector *colorP, int nColors,
 							  CBitmap *bmP,
 							  int nTMU)
 {
@@ -1024,7 +1024,7 @@ if (texCoordP)
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoordP);
 if (colorP) {
 	if (nColors == nVertices)
-		OglColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), colorP);
+		OglColorPointer (4, GL_FLOAT, sizeof (CFloatVector), colorP);
 	else
 		glColor4fv (reinterpret_cast<GLfloat*> (colorP));
 	}
@@ -1044,7 +1044,7 @@ ogl.DisableClientStates (m_data.bClientTexCoord, m_data.bClientColor, 0);
 int COGL::RenderArrays (int nPrimitive, 
 							   CFloatVector *vertexP, int nVertices, int nDimensions,
 							   tTexCoord2f *texCoordP, 
-							   tRgbaColorf *colorP, int nColors, 
+							   CFloatVector *colorP, int nColors, 
 							   CBitmap *bmP, int nFrame, int nWrap)
 {
 if (!BindBitmap (bmP, nFrame, nWrap, texCoordP != NULL))
@@ -1058,7 +1058,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int COGL::RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int nDimensions, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors, int nWrap)
+int COGL::RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int nDimensions, tTexCoord2f* texCoordP, CFloatVector* colorP, int nColors, int nWrap)
 {
 if (!bmP)
 	RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoordP, colorP, nColors, bmP, 0, GL_CLAMP);
@@ -1096,16 +1096,16 @@ if (nDimensions == 3)
 	verts [2].v.coord.z =
 	verts [3].v.coord.z = vPosf.v.coord.z;
 int nColors = 0;
-tRgbaColorf* colorP = bmP ? bmP->GetColor (&nColors) : NULL;
+CFloatVector* colorP = bmP ? bmP->GetColor (&nColors) : NULL;
 return RenderQuad (bmP, verts, nDimensions, bmP ?  bmP->GetTexCoord () : NULL, colorP, nColors, nWrap);
 }
 
 //------------------------------------------------------------------------------
 
-int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive)
+int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, CFloatVector* colorP, float alpha, int bAdditive)
 {
 	CFloatVector	vPosf;
-	tRgbaColorf		color = {1, 1, 1, alpha};
+	CFloatVector		color = {1, 1, 1, alpha};
 
 SelectTMU (GL_TEXTURE0);
 SetBlendMode (bAdditive);
@@ -1130,15 +1130,15 @@ int COGL::RenderSprite (CBitmap* bmP, const CFixVector& vPos,
 								float fSoftRad)
 {
 	CFixVector		pv, v1;
-	tRgbaColorf*	colorP = bmP->GetColor ();
+	CFloatVector*	colorP = bmP->GetColor ();
 
 if (alpha < 1.0f) {
-	tRgbaColorf	color;
+	CFloatVector	color;
 	if (!colorP) {
-		color.red =
-		color.green =
-		color.blue = 1;
-		color.alpha = alpha;
+		color.Red () =
+		color.Green () =
+		color.Blue () = 1;
+		color.Alpha () = alpha;
 		colorP = &color;
 		}
 	transparencyRenderer.AddSprite (bmP, vPos, colorP, xWidth, xHeight, 0, bAdditive, fSoftRad);

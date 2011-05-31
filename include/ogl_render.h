@@ -14,7 +14,7 @@
 void OglDrawEllipse (int nSides, int nType, float xsc, float xo, float ysc, float yo, tSinCosf *sinCosP);
 void OglDrawCircle (int nSides, int nType);
 int G3DrawWhitePoly (int nv, CRenderPoint **pointList);
-int G3DrawPolyAlpha (int nv, CRenderPoint **pointlist, tRgbaColorf *color, char bDepthMask, short nSegment);
+int G3DrawPolyAlpha (int nv, CRenderPoint **pointlist, CFloatVector *color, char bDepthMask, short nSegment);
 void G3FlushFaceBuffer (int bForce);
 
 int G3DrawTexPolyMulti (
@@ -70,11 +70,11 @@ void OglCachePolyModelTextures (int nModel);
 
 void DrawTexPolyFlat (CBitmap *bm,int nv,CRenderPoint **vertlist);
 
-void OglDrawFilledPoly (int* x, int* y, int nVerts, tCanvasColor *colorP = NULL, int nColors = 1);
-void OglDrawFilledRect (int left,int top, int right,int bot, tCanvasColor* colorP = NULL);
-void OglDrawPixel (int x, int y, tCanvasColor* colorP = NULL);
-void OglDrawLine (int left,int top, int right,int bot, tCanvasColor* colorP = NULL);
-void OglDrawEmptyRect (int left, int top, int right, int bot, tCanvasColor* colorP = NULL);
+void OglDrawFilledPoly (int* x, int* y, int nVerts, CCanvasColor *colorP = NULL, int nColors = 1);
+void OglDrawFilledRect (int left,int top, int right,int bot, CCanvasColor* colorP = NULL);
+void OglDrawPixel (int x, int y, CCanvasColor* colorP = NULL);
+void OglDrawLine (int left,int top, int right,int bot, CCanvasColor* colorP = NULL);
+void OglDrawEmptyRect (int left, int top, int right, int bot, CCanvasColor* colorP = NULL);
 
 void InitGrayScaleShader (void);
 

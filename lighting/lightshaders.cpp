@@ -1059,11 +1059,11 @@ int SetupHardwareLighting (CSegFace *faceP, int nType)
 PROF_START
 	int					nLightRange, nLights;
 	float					fBrightness;
-	tRgbaColorf			ambient, diffuse;
+	CFloatVector			ambient, diffuse;
 #if 0
-	tRgbaColorf			black = {0,0,0,0};
+	CFloatVector			black = {0,0,0,0};
 #endif
-	tRgbaColorf			specular = {0.5f,0.5f,0.5f,0.5f};
+	CFloatVector			specular = {0.5f,0.5f,0.5f,0.5f};
 	//CFloatVector			vPos = CFloatVector::Create(0,0,0,1);
 	GLenum				hLight;
 	CActiveDynLight*	activeLightsP;
@@ -1130,7 +1130,7 @@ for (nLights = 0;
 		}
 	hLight = GL_LIGHT0 + nLights++;
 	//glEnable (hLight);
-	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
+	specular.Alpha () = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
 	fBrightness = psl->info.fBrightness;
 #if 0//DBG
 	if ((psl->info.nObject >= 0) && (OBJECTS [psl->info.nObject].nType == nDbgObjType) &&
@@ -1151,29 +1151,29 @@ for (nLights = 0;
 			glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&vNormal));
 			}
 #endif
-		ambient.red = psl->info.color.red * PPL_AMBIENT_LIGHT;
-		ambient.green = psl->info.color.green * PPL_AMBIENT_LIGHT;
-		ambient.blue = psl->info.color.blue * PPL_AMBIENT_LIGHT;
-		ambient.alpha = 1.0f;
-		diffuse.red = psl->info.color.red * PPL_DIFFUSE_LIGHT;
-		diffuse.green = psl->info.color.green * PPL_DIFFUSE_LIGHT;
-		diffuse.blue = psl->info.color.blue * PPL_DIFFUSE_LIGHT;
-		diffuse.alpha = 1.0f;
+		ambient.Red () = psl->info.color.Red () * PPL_AMBIENT_LIGHT;
+		ambient.Green () = psl->info.color.Green () * PPL_AMBIENT_LIGHT;
+		ambient.Blue () = psl->info.color.Blue () * PPL_AMBIENT_LIGHT;
+		ambient.Alpha () = 1.0f;
+		diffuse.Red () = psl->info.color.Red () * PPL_DIFFUSE_LIGHT;
+		diffuse.Green () = psl->info.color.Green () * PPL_DIFFUSE_LIGHT;
+		diffuse.Blue () = psl->info.color.Blue () * PPL_DIFFUSE_LIGHT;
+		diffuse.Alpha () = 1.0f;
 		}
 	else {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, GEO_LIN_ATT / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, GEO_QUAD_ATT / fBrightness);
 		glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&psl->info.vDirf));
-		ambient.red = psl->info.color.red * PPL_AMBIENT_LIGHT;
-		ambient.green = psl->info.color.green * PPL_AMBIENT_LIGHT;
-		ambient.blue = psl->info.color.blue * PPL_AMBIENT_LIGHT;
-		ambient.alpha = 1.0f;
+		ambient.Red () = psl->info.color.Red () * PPL_AMBIENT_LIGHT;
+		ambient.Green () = psl->info.color.Green () * PPL_AMBIENT_LIGHT;
+		ambient.Blue () = psl->info.color.Blue () * PPL_AMBIENT_LIGHT;
+		ambient.Alpha () = 1.0f;
 		fBrightness = min (fBrightness, 1.0f) * PPL_DIFFUSE_LIGHT;
-		diffuse.red = psl->info.color.red * fBrightness;
-		diffuse.green = psl->info.color.green * fBrightness;
-		diffuse.blue = psl->info.color.blue * fBrightness;
-		diffuse.alpha = 1.0f;
+		diffuse.Red () = psl->info.color.Red () * fBrightness;
+		diffuse.Green () = psl->info.color.Green () * fBrightness;
+		diffuse.Blue () = psl->info.color.Blue () * fBrightness;
+		diffuse.Alpha () = 1.0f;
 		}
 	glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&diffuse));
 	glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&specular));

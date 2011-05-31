@@ -330,7 +330,7 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 	int			h, i, nIndex = triP->nIndex;
 	ushort		nFace = triP->nFace, *indexP = triP->index, index [4];
 	tTexCoord2f	texCoord [4], ovlTexCoord [4];
-	tRgbaColorf	color [4];
+	CFloatVector	color [4];
 
 // find insertion point for the new vertex
 for (i = 0; i < 3; i++) {
@@ -365,10 +365,10 @@ texCoord [0].v.v = (texCoord [1].v.v + texCoord [3].v.v) / 2;
 texCoord [0].v.u = (texCoord [1].v.u + texCoord [3].v.u) / 2;
 ovlTexCoord [0].v.v = (ovlTexCoord [1].v.v + ovlTexCoord [3].v.v) / 2;
 ovlTexCoord [0].v.u = (ovlTexCoord [1].v.u + ovlTexCoord [3].v.u) / 2;
-color [0].red = (color [1].red + color [3].red) / 2;
-color [0].green = (color [1].green + color [3].green) / 2;
-color [0].blue = (color [1].blue + color [3].blue) / 2;
-color [0].alpha = (color [1].alpha + color [3].alpha) / 2;
+color [0].Red () = (color [1].Red () + color [3].Red ()) / 2;
+color [0].Green () = (color [1].Green () + color [3].Green ()) / 2;
+color [0].Blue () = (color [1].Blue () + color [3].Blue ()) / 2;
+color [0].Alpha () = (color [1].Alpha () + color [3].Alpha ()) / 2;
 DeleteTriangle (triP); //remove any references to this triangle
 if (!(triP = CreateTriangle (triP, index, nFace, nIndex))) //create a new triangle at this location (insert)
 	return 0;
@@ -1041,10 +1041,10 @@ for (i = 0; i < 4; i++) {
 	if (!gameStates.app.bNostalgia)
 		*m_faceColorP = gameData.render.color.ambient [j].color;
 	else {
-		m_faceColorP->red = 
-		m_faceColorP->green = 
-		m_faceColorP->blue = X2F (m_sideP->m_uvls [i].l);
-		m_faceColorP->alpha = 1;
+		m_faceColorP->Red () = 
+		m_faceColorP->Green () = 
+		m_faceColorP->Blue () = X2F (m_sideP->m_uvls [i].l);
+		m_faceColorP->Alpha () = 1;
 		}
 	m_faceColorP++;
 	}
@@ -1204,23 +1204,23 @@ void CQuadMeshBuilder::SplitIn4Tris (void)
 	static short	n4TriVerts [4][3] = {{0,1,4},{1,2,4},{2,3,4},{3,0,4}};
 
 	CFloatVector	vSide [4];
-	tRgbaColorf		color;
+	CFloatVector		color;
 	tTexCoord2f		texCoord;
 	short*			triVertP;
 	int				h, i, j, k, v;
 
 texCoord.v.u = texCoord.v.v = 0;
-color.red = color.green = color.blue = color.alpha = 0;
+color.Red () = color.Green () = color.Blue () = color.Alpha () = 0;
 for (i = 0; i < 4; i++) {
 	j = (i + 1) % 4;
 	texCoord.v.u += X2F (m_sideP->m_uvls [i].u + m_sideP->m_uvls [j].u) / 8;
 	texCoord.v.v += X2F (m_sideP->m_uvls [i].v + m_sideP->m_uvls [j].v) / 8;
 	h = m_sideVerts [i];
 	k = m_sideVerts [j];
-	color.red += (gameData.render.color.ambient [h].color.red + gameData.render.color.ambient [k].color.red) / 8;
-	color.green += (gameData.render.color.ambient [h].color.green + gameData.render.color.ambient [k].color.green) / 8;
-	color.blue += (gameData.render.color.ambient [h].color.blue + gameData.render.color.ambient [k].color.blue) / 8;
-	color.alpha += (gameData.render.color.ambient [h].color.alpha + gameData.render.color.ambient [k].color.alpha) / 8;
+	color.Red () += (gameData.render.color.ambient [h].color.Red () + gameData.render.color.ambient [k].color.Red ()) / 8;
+	color.Green () += (gameData.render.color.ambient [h].color.Green () + gameData.render.color.ambient [k].color.Green ()) / 8;
+	color.Blue () += (gameData.render.color.ambient [h].color.Blue () + gameData.render.color.ambient [k].color.Blue ()) / 8;
+	color.Alpha () += (gameData.render.color.ambient [h].color.Alpha () + gameData.render.color.ambient [k].color.Alpha ()) / 8;
 	}
 vSide [0] = CFloatVector::Avg (gameData.segs.fVertices [m_sideVerts [0]], gameData.segs.fVertices [m_sideVerts [1]]);
 vSide [2] = CFloatVector::Avg (gameData.segs.fVertices [m_sideVerts [2]], gameData.segs.fVertices [m_sideVerts [3]]);
@@ -1468,11 +1468,11 @@ if (!(gameData.segs.Resize () && gameData.render.lights.Resize () && gameData.re
 	return 0;
 #endif
 for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVertices; i; i--, m_colorP++)
-	if (m_colorP->color.alpha > 1) {
-		m_colorP->color.red /= m_colorP->color.alpha;
-		m_colorP->color.green /= m_colorP->color.alpha;
-		m_colorP->color.blue /= m_colorP->color.alpha;
-		m_colorP->color.alpha = 1;
+	if (m_colorP->Alpha () > 1) {
+		m_colorP->Red () /= m_colorP->Alpha ();
+		m_colorP->Green () /= m_colorP->Alpha ();
+		m_colorP->Blue () /= m_colorP->Alpha ();
+		m_colorP->Alpha () = 1;
 		}
 if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality))
 	return 0;

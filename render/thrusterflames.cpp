@@ -246,7 +246,7 @@ return m_nThrusters;
 
 // -----------------------------------------------------------------------------
 
-void CThrusterFlames::Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, tRgbaColorf *colorP)
+void CThrusterFlames::Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, CFloatVector *colorP)
 {
 if (gameOpts->render.stereo.nGlasses && (ogl.StereoSeparation () >= 0))
 	return;
@@ -417,7 +417,7 @@ if (m_nStyle == 1) {	//2D
 	if (!Setup (objP))
 		return;
 
-		static tRgbaColorf	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
+		static CFloatVector	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
 		static CFloatVector	vEye = CFloatVector::ZERO;
 
 	//m_ti.fLength *= 4 * m_ti.fSize;

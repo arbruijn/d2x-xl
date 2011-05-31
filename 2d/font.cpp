@@ -684,7 +684,7 @@ CCanvas::Current ()->FontColor (1).rgb = 0;
 
 //------------------------------------------------------------------------------
 
-void CFontManager::SetColorRGB (tRgbaColorb *fg, tRgbaColorb *bg)
+void CFontManager::SetColorRGB (CRGBAColor *fg, CRGBAColor *bg)
 {
 if (fg) {
 	CCanvas::Current ()->FontColor (0).rgb = 1;
@@ -702,17 +702,17 @@ void CFontManager::SetColorRGBi (uint fg, int bSetFG, uint bg, int bSetBG)
 {
 if (bSetFG) {
 	CCanvas::Current ()->FontColor (0).rgb = 1;
-	CCanvas::Current ()->FontColor (0).color.red = RGBA_RED (fg);
-	CCanvas::Current ()->FontColor (0).color.green = RGBA_GREEN (fg);
-	CCanvas::Current ()->FontColor (0).color.blue = RGBA_BLUE (fg);
-	CCanvas::Current ()->FontColor (0).color.alpha = ubyte (RGBA_ALPHA (fg) * gameStates.render.grAlpha);
+	CCanvas::Current ()->FontColor (0).color.Red () = RGBA_RED (fg);
+	CCanvas::Current ()->FontColor (0).color.Green () = RGBA_GREEN (fg);
+	CCanvas::Current ()->FontColor (0).color.Blue () = RGBA_BLUE (fg);
+	CCanvas::Current ()->FontColor (0).color.Alpha () = ubyte (RGBA_ALPHA (fg) * gameStates.render.grAlpha);
 	}
 if (bSetBG) {
 	CCanvas::Current ()->FontColor (1).rgb = 1;
-	CCanvas::Current ()->FontColor (1).color.red = RGBA_RED (bg);
-	CCanvas::Current ()->FontColor (1).color.green = RGBA_GREEN (bg);
-	CCanvas::Current ()->FontColor (1).color.blue = RGBA_BLUE (bg);
-	CCanvas::Current ()->FontColor (1).color.alpha = ubyte (RGBA_ALPHA (bg) * gameStates.render.grAlpha);
+	CCanvas::Current ()->FontColor (1).color.Red () = RGBA_RED (bg);
+	CCanvas::Current ()->FontColor (1).color.Green () = RGBA_GREEN (bg);
+	CCanvas::Current ()->FontColor (1).color.Blue () = RGBA_BLUE (bg);
+	CCanvas::Current ()->FontColor (1).color.Alpha () = ubyte (RGBA_ALPHA (bg) * gameStates.render.grAlpha);
 	}
 }
 

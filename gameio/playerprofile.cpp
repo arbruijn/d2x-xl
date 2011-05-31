@@ -335,7 +335,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameStates.multi.nConnection, 0, 0);
 		RP (tracker.m_bUse, 0, 0);
 
-		RP (gameData.menu.alpha, 0, 0);
+		RP (gameData.menu.Alpha (), 0, 0);
 
 		RP (mpParams.nLevel, 0, 0);
 		RP (mpParams.nGameType, 0, 0);
@@ -818,7 +818,7 @@ tParamValue defaultParams [] = {
 	 {"ogl.m_states.nContrast", "8"},
 	 {"gameStates.multi.nConnection", "1"},
 	 {"tracker.m_bUse", "0"},
-	 {"gameData.menu.alpha", "79"},
+	 {"gameData.menu.Alpha ()", "79"},
 	 {"mpParams.nLevel", "1"},
 	 {"mpParams.nGameType", "3"},
 	 {"mpParams.nGameMode", "3"},

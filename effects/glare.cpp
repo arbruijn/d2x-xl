@@ -432,36 +432,36 @@ void CGlareRenderer::RenderHardGlare (CFloatVector *sprite, CFloatVector *vCente
 												  float fIntensity, tIntervalf *zRangeP, int bAdditive, int bColored)
 {
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
-	tRgbaColorf	color;
+	CFloatVector	color;
 	CBitmap*		bmP;
 
 fLight /= 4;
 if (fLight < 0.01f)
 	return;
-color.alpha = vCenter->Mag ();
-if (color.alpha < zRangeP->fRad)
-	fIntensity *= color.alpha / zRangeP->fRad;
+color.Alpha () = vCenter->Mag ();
+if (color.Alpha () < zRangeP->fRad)
+	fIntensity *= color.Alpha () / zRangeP->fRad;
 
 if (gameStates.render.bAmbientColor) {
 	color = gameData.render.color.textures [nTexture].color;
-	color.alpha = (float) (color.red * 3 + color.green * 5 + color.blue * 2) / 30 * 2;
+	color.Alpha () = (float) (color.Red () * 3 + color.Green () * 5 + color.Blue () * 2) / 30 * 2;
 	}
 else {
-	color.alpha = X2F (IsLight (nTexture));
-	color.red = color.green = color.blue = color.alpha / 2;
-	color.alpha *= 2.0f / 3.0f;
+	color.Alpha () = X2F (IsLight (nTexture));
+	color.Red () = color.Green () = color.Blue () = color.Alpha () / 2;
+	color.Alpha () *= 2.0f / 3.0f;
 	}
 if (!bColored)
-	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
-color.alpha *= fIntensity * fIntensity;
-if (color.alpha < 0.01f)
+	color.Red () = color.Green () = color.Blue () = (color.Red () + color.Green () + color.Blue ()) / 4;
+color.Alpha () *= fIntensity * fIntensity;
+if (color.Alpha () < 0.01f)
 	return;
 if (!(bmP = (bAdditive ? glare.Bitmap () : corona.Bitmap ())))
 	return;
 bmP->SetTranspType (-1);
 ogl.SetFaceCulling (false);
 if (bAdditive) {
-	fLight *= color.alpha;
+	fLight *= color.Alpha ();
 	ogl.SetBlendMode (OGL_BLEND_ADD);
 	}
 bmP->SetColor (&color);
@@ -516,7 +516,7 @@ return float (sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nInten
 
 void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCenter, int nTexture, float fIntensity, int bAdditive, int bColored)
 {
-	tRgbaColorf color;
+	CFloatVector color;
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	CBitmap*		bmP = NULL;
 
@@ -525,13 +525,13 @@ if (!(bmP = (bAdditive ? glare.Bitmap () : corona.Bitmap ())))
 if (gameStates.render.bAmbientColor)
 	color = gameData.render.color.textures [nTexture].color;
 else
-	color.red = color.green = color.blue = X2F (IsLight (nTexture)) / 2;
+	color.Red () = color.Green () = color.Blue () = X2F (IsLight (nTexture)) / 2;
 if (!bColored)
-	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
+	color.Red () = color.Green () = color.Blue () = (color.Red () + color.Green () + color.Blue ()) / 4;
 if (bAdditive)
-	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
+	glColor4f (fIntensity * color.Red (), fIntensity * color.Green (), fIntensity * color.Blue (), 1);
 else
-	glColor4f (color.red, color.green, color.blue, fIntensity);
+	glColor4f (color.Red (), color.Green (), color.Blue (), fIntensity);
 bmP->Bind (1);
 OglTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), sprite);

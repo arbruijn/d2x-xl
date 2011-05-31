@@ -57,7 +57,7 @@ class CDynLightInfo {
 		CSegFace*		faceP;
 		CFixVector		vPos;
 		CFloatVector	vDirf;
-		tRgbaColorf		color;
+		CFloatVector		color;
 		float				fBrightness;
 		float				fBoost;
 		float				fRange;
@@ -153,7 +153,7 @@ class CHeadlightManager {
 		int Add (CObject* objP);
 		void Remove (CObject* objP);
 		void Update (void);
-		int SetupShader (int nType, int bLightmaps, tRgbaColorf *colorP);
+		int SetupShader (int nType, int bLightmaps, CFloatVector *colorP);
 };
 
 //------------------------------------------------------------------------------
@@ -215,12 +215,12 @@ class CLightManager {
 		void SetPos (short nObject);
 		short Find (short nSegment, short nSide, short nObject);
 		bool Ambient (short nSegment, short nSide);
-		short Update (tRgbaColorf *colorP, float fBrightness, short nSegment, short nSide, short nObject);
+		short Update (CFloatVector *colorP, float fBrightness, short nSegment, short nSide, short nObject);
 		int LastEnabled (void);
 		void Swap (CDynLight* pl1, CDynLight* pl2);
 		int Toggle (short nSegment, short nSide, short nObject, int bState);
-		void Register (tFaceColor *colorP, short nSegment, short nSide);
-		int Add (CSegFace* faceP, tRgbaColorf *colorP, fix xBrightness, short nSegment,
+		void Register (CFaceColor *colorP, short nSegment, short nSide);
+		int Add (CSegFace* faceP, CFloatVector *colorP, fix xBrightness, short nSegment,
 				   short nSide, short nObject, short nTexture, CFixVector *vPos, ubyte bAmbient = 0);
 		void Delete (short nLight);
 		void DeleteLightning (void);
@@ -239,7 +239,7 @@ class CLightManager {
 		void ResetNearestToVertex (int nVertex, int nThread);
 		int SetNearestToSgmAvg (short nSegment, int nThread);
 		void ResetSegmentLights (void);
-		tFaceColor* AvgSgmColor (int nSegment, CFixVector *vPosP, int nThread);
+		CFaceColor* AvgSgmColor (int nSegment, CFixVector *vPosP, int nThread);
 		void GatherStaticLights (int nLevel);
 		void GatherStaticVertexLights (int nVertex, int nMax, int nThread);
 		int SetActive (CActiveDynLight* activeLightsP, CDynLight* lightP, short nType, int nThread, bool bForce = false);
@@ -262,7 +262,7 @@ class CLightManager {
 		inline CHeadlightManager& Headlights (void) { return m_headlights; }
 		inline CShortArray& NearestSegLights (void) { return m_data.nearestSegLights; }
 		inline CShortArray& NearestVertLights (void) { return m_data.nearestVertLights; }
-		inline CByteArray& VariableVertLights (void) { return m_data.variableVertLights; }
+		inline ubyte& VariableVertLights (uint i = 0) { return m_data.variableVertLights [i]; }
 		inline COglMaterial& Material (void) { return m_data.material; }
 		inline void ResetIndex (void) { m_data.ResetIndex (); }
 		//inline void SetShadowSource (CDynLight& source, int i) { m_data.shadowSources [i] = source; }
@@ -286,8 +286,8 @@ extern CLightManager lightManager;
 
 #if 0
 
-void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
-int lightManager.Add (CSegFace *faceP, tRgbaColorf *pc, fix xBrightness, 
+void RegisterLight (CFaceColor *pc, short nSegment, short nSide);
+int lightManager.Add (CSegFace *faceP, CFloatVector *pc, fix xBrightness, 
 					  short nSegment, short nSide, short nOwner, short nTexture, CFixVector *vPos);
 int RemoveDynLight (short nSegment, short nSide, short nObject);
 void AddDynGeometryLights (void);
@@ -310,7 +310,7 @@ short SetNearestSegmentLights (int nSegment, int nFace, int bVariable, int nType
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
 void ComputeStaticDynLighting (int nLevel);
 CDynLight *GetActiveRenderLight (CActiveDynLight *activeLightsP, int nThread);
-tFaceColor *AvgSgmColor (int nSegment, CFixVector *vPos);
+CFaceColor *AvgSgmColor (int nSegment, CFixVector *vPos);
 void ResetSegmentLights (void);
 int IsLight (int tMapNum);
 void ResetUsedLight (CDynLight *lightP, int nThread);
@@ -338,6 +338,6 @@ void ResetLightmapShaders (void);
 #define	APPLY_DYN_LIGHT \
 			(gameStates.render.bUseDynLight && (gameOpts->ogl.bLightObjects || gameStates.render.nState))
 
-extern tFaceColor tMapColor, lightColor, vertColors [8];
+extern CFaceColor tMapColor, lightColor, vertColors [8];
 
 #endif //_DYNLIGHT_H

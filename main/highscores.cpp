@@ -141,7 +141,7 @@ for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
 	if (gameData.multiplayer.players [m_sorted [j]].connected == 0)
 		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
    else
-      fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue), 1, 0, 0);
+      fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].Red (), playerColors [color].Green (), playerColors [color].Blue ()), 1, 0, 0);
 	GrPrintF (NULL, x, LHY (40) + yOffs, "%c", gameData.multiplayer.players [m_sorted [j]].callsign [0]);
 	}
 x = LHX (72 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + gameData.multiplayer.nPlayers*25) + xOffs;
@@ -321,7 +321,7 @@ for (i= 0; i<gameData.multiplayer.nPlayers; i++) {
 	if (!gameData.multiplayer.players [m_sorted [i]].connected)
 		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else
-		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue), 1, 0, 0);
+		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].Red (), playerColors [color].Green (), playerColors [color].Blue ()), 1, 0, 0);
 	DrawItem (i);
 	}
 DrawDeaths ();
@@ -346,7 +346,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players [m_sorted [i]].connected == 0)
 		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else
-		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue), 1, 0, 0);
+		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].Red (), playerColors [color].Green (), playerColors [color].Blue ()), 1, 0, 0);
 	DrawCoopItem (i);
 	}
 DrawDeaths ();

@@ -99,7 +99,7 @@ class CFace {
 		int					m_bTextured;
 		union {
 			int				nTexId;
-			tRgbColorb		color;
+			CRGBColor		color;
 			} m_texProps;
 		CFaceVert*			m_verts;
 		float					m_fBoundingLength;
@@ -131,7 +131,7 @@ class CFaceList {
 
 class CGlowInfo {
 	public:
-		tRgbColorf		m_color;
+		CFloatVector3		m_color;
 		float				m_fSize;
 		float				m_fLength;
 		CFloatVector	m_vCenter;
@@ -325,7 +325,7 @@ class CSubModel {
 		CArray<CFloatVector>		m_verts;
 		CArray<CFloatVector>		m_rotVerts;
 		CArray<CFloatVector>		m_normals;
-		CArray<tFaceColor>		m_vertColors;
+		CArray<CFaceColor>		m_vertColors;
 		CArray<float>				m_pfAlpha;	// only present if version >= 2300
 		CFaceList					m_faces;
 		CEdgeList					m_edges;

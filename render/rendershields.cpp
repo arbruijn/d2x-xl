@@ -53,7 +53,7 @@ for (i = 0; i < 8; i++) {
 
 static int nDbgBox = -1, nDbgBoxFace = -1;
 
-void RenderHitbox (CObject *objP, float red, float green, float blue, float alpha)
+void RenderHitbox (CObject *objP, float Red (), float Green (), float Blue (), float alpha)
 {
 if (objP->rType.polyObjInfo.nModel < 0)
 	return;
@@ -73,9 +73,9 @@ if (objP->info.nType == OBJ_PLAYER) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
 			return;
 		fFade = (float) ci.nFadeValue / (float) FADE_LEVELS;
-		red *= fFade;
-		green *= fFade;
-		blue *= fFade;
+		Red () *= fFade;
+		Green () *= fFade;
+		Blue () *= fFade;
 		}
 
 	}
@@ -86,13 +86,13 @@ else if (objP->info.nType == OBJ_ROBOT) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
 			return;
 		fFade = (float) ci.nFadeValue / (float) FADE_LEVELS;
-		red *= fFade;
-		green *= fFade;
-		blue *= fFade;
+		Red () *= fFade;
+		Green () *= fFade;
+		Blue () *= fFade;
 		}
 	}
 if (!CollisionModel ()) {
-	DrawShieldSphere (objP, red, green, blue, alpha, 1);
+	DrawShieldSphere (objP, Red (), Green (), Blue (), alpha, 1);
 	return;
 	}
 else if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
@@ -122,7 +122,7 @@ for (; iBox <= nBoxes; iBox++) {
 	if ((objP->info.nType == OBJ_PLAYER) && (iBox == nDbgBox))
 		glColor4f (1.0f, 0, 0, alpha);
 	else
-		glColor4f (red, green, blue, alpha / 2);
+		glColor4f (Red (), Green (), Blue (), alpha / 2);
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
 		for (j = 0; j < 4; j++) {
@@ -137,14 +137,14 @@ for (; iBox <= nBoxes; iBox++) {
 	if ((objP->info.nType == OBJ_PLAYER) && (iBox == 1))
 		glColor4f (1.0f, 0, 0, alpha);
 	else
-		glColor4f (red, green, blue, alpha);
+		glColor4f (Red (), Green (), Blue (), alpha);
 	for (i = 0; i < 6; i++) {
 		CFixVector coord;
 		coord.SetZero ();
 		if ((objP->info.nType == OBJ_PLAYER) && (iBox == 1))
 			glColor4f (1.0f, 0, 0, alpha);
 		else
-			glColor4f (red, green, blue, alpha);
+			glColor4f (Red (), Green (), Blue (), alpha);
 		glBegin (GL_LINES);
 		for (j = 0; j < 4; j++) {
 			coord += hb [iBox].faces [i].dir [j];
@@ -195,7 +195,7 @@ void RenderPlayerShield (CObject *objP)
 	float			alpha, scale = 1;
 	tCloakInfo	ci;
 
-	static tRgbaColorf shieldColors [3] = {{0, 0.5f, 1, 1}, {1, 0.5f, 0, 1}, {1, 0.8f, 0.6f, 1}};
+	static CFloatVector shieldColors [3] = {{0, 0.5f, 1, 1}, {1, 0.5f, 0, 1}, {1, 0.8f, 0.6f, 1}};
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -248,9 +248,9 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 			SetupSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);
 		}
 #if RENDER_HITBOX
-	RenderHitbox (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, alpha);
+	RenderHitbox (objP, shieldColors [nColor].Red () * scale, shieldColors [nColor].Green () * scale, shieldColors [nColor].Blue () * scale, alpha);
 #else
-	DrawShieldSphere (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, alpha, 1);
+	DrawShieldSphere (objP, shieldColors [nColor].Red () * scale, shieldColors [nColor].Green () * scale, shieldColors [nColor].Blue () * scale, alpha, 1);
 #endif
 	ogl.StencilOn (bStencil);
 	}
@@ -260,7 +260,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 
 void RenderRobotShield (CObject *objP)
 {
-	static tRgbaColorf shieldColors [3] = {{0.75f, 0, 0.75f, 1}, {0, 0.5f, 1},{1, 0.1f, 0.25f, 1}};
+	static CFloatVector shieldColors [3] = {{0.75f, 0, 0.75f, 1}, {0, 0.5f, 1},{1, 0.1f, 0.25f, 1}};
 
 #if RENDER_HITBOX
 RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
@@ -282,7 +282,7 @@ if ((objP->info.nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
 dt = gameStates.app.nSDLTicks [0] - objP->TimeLastHit ();
 if (dt < SHIELD_EFFECT_TIME) {
 	scale *= gameOpts->render.effects.bOnlyShieldHits ? float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)) : 1;
-	DrawShieldSphere (objP, shieldColors [2].red * scale, shieldColors [2].green * scale, shieldColors [2].blue * scale, 0.5f * scale, 1);
+	DrawShieldSphere (objP, shieldColors [2].Red () * scale, shieldColors [2].Green () * scale, shieldColors [2].Blue () * scale, 0.5f * scale, 1);
 	}
 else if (!gameOpts->render.effects.bOnlyShieldHits) {
 	if ((objP->info.nType != OBJ_ROBOT) || ROBOTINFO (objP->info.nId).companion)

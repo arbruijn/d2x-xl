@@ -144,7 +144,7 @@ if (!gameOpts->ogl.bGlTexMerge) {
 
 //------------------------------------------------------------------------------
 
-int SetupGrayScaleShader (int nType, tRgbaColorf *colorP)
+int SetupGrayScaleShader (int nType, CFloatVector *colorP)
 {
 if (!gameStates.render.textures.bHaveGrayScaleShader)
 	return -1;

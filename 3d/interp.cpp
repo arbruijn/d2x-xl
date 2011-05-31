@@ -39,7 +39,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dynlight.h"
 #include "lightning.h"
 
-extern tFaceColor tMapColor;
+extern CFaceColor tMapColor;
 
 #if DBG_SHADOWS
 extern int bShadowTest;
@@ -384,7 +384,7 @@ int G3DrawPolyModel (
 	CFixVector*			vOffset,
 	fix					xModelLight,
 	fix*					xGlowValues,
-	tRgbaColorf*		colorP,
+	CFloatVector*		colorP,
 	POF::CModel*		po,
 	int					nModel)
 {
@@ -448,9 +448,9 @@ for (;;) {
 			CCanvas::Current ()->SetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * gameStates.render.grAlpha));
 			CCanvas::Current ()->FadeColorRGB (1.0);
 			if (colorP) {
-				colorP->red = (float) CCanvas::Current ()->Color ().color.red / 255.0f;
-				colorP->green = (float) CCanvas::Current ()->Color ().color.green / 255.0f;
-				colorP->blue = (float) CCanvas::Current ()->Color ().color.blue / 255.0f;
+				colorP->Red () = (float) CCanvas::Current ()->Color ().color.Red () / 255.0f;
+				colorP->Green () = (float) CCanvas::Current ()->Color ().color.Green () / 255.0f;
+				colorP->Blue () = (float) CCanvas::Current ()->Color ().color.Blue () / 255.0f;
 				}
 			p += 30;
 			for (i = 0; i < nVerts; i++)

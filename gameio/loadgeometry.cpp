@@ -389,30 +389,36 @@ short ConvertD1Texture (short nD1Texture, int bForce)
 
 //------------------------------------------------------------------------------
 
-void ReadColor (CFile& cf, tFaceColor *pc, int bFloatData, int bRegisterColor)
+typedef struct tRgbColord {
+	double red;
+	double green;
+	double blue;
+} __pack__ tRgbColord;
+
+void ReadColor (CFile& cf, CFaceColor *pc, int bFloatData, int bRegisterColor)
 {
 pc->index = cf.ReadByte ();
 if (bFloatData) {
 	tRgbColord	c;
 	cf.Read (&c, sizeof (c), 1);
-	pc->color.red = (float) c.red;
-	pc->color.green = (float) c.green;
-	pc->color.blue = (float) c.blue;
+	pc->Red () = (float) c.Red ();
+	pc->Green () = (float) c.Green ();
+	pc->Blue () = (float) c.Blue ();
 	}
 else {
 	int c = cf.ReadInt ();
-	pc->color.red = (float) c / (float) 0x7fffffff;
+	pc->Red () = (float) c / (float) 0x7fffffff;
 	c = cf.ReadInt ();
-	pc->color.green = (float) c / (float) 0x7fffffff;
+	pc->Green () = (float) c / (float) 0x7fffffff;
 	c = cf.ReadInt ();
-	pc->color.blue = (float) c / (float) 0x7fffffff;
+	pc->Blue () = (float) c / (float) 0x7fffffff;
 	}
 if (bRegisterColor &&
-	 (((pc->color.red > 0) && (pc->color.red < 1)) ||
-	 ((pc->color.green > 0) && (pc->color.green < 1)) ||
-	 ((pc->color.blue > 0) && (pc->color.blue < 1))))
+	 (((pc->Red () > 0) && (pc->Red () < 1)) ||
+	 ((pc->Green () > 0) && (pc->Green () < 1)) ||
+	 ((pc->Blue () > 0) && (pc->Blue () < 1))))
 	gameStates.render.bColored = 1;
-pc->color.alpha = 1;
+pc->Alpha () = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -497,7 +503,7 @@ if (gameStates.app.bD2XLevel) {
 int HasColoredLight (void)
 {
 	int			i, bColored = 0;
-	tFaceColor	*pvc = gameData.render.color.ambient.Buffer ();
+	CFaceColor	*pvc = gameData.render.color.ambient.Buffer ();
 
 if (!gameStates.app.bD2XLevel)
 	return 0;
@@ -507,11 +513,11 @@ for (i = 0; i < gameData.segs.nVertices; i++, pvc++) {
 	if (pvc->index <= 0)
 		continue;
 #endif
-	if ((pvc->color.red == 0) && (pvc->color.green == 0) && (pvc->color.blue == 0)) {
+	if ((pvc->Red () == 0) && (pvc->Green () == 0) && (pvc->Blue () == 0)) {
 		pvc->index = 0;
 		continue;
 		}
-	if ((pvc->color.red < 1) || (pvc->color.green < 1) || (pvc->color.blue < 1))
+	if ((pvc->Red () < 1) || (pvc->Green () < 1) || (pvc->Blue () < 1))
 		bColored = 1;
 	}
 return bColored;
@@ -522,15 +528,15 @@ return bColored;
 void InitTexColors (void)
 {
 	int			i;
-	tFaceColor	*pf = gameData.render.color.textures.Buffer ();
+	CFaceColor	*pf = gameData.render.color.textures.Buffer ();
 	int			bBW = gameStates.app.bNostalgia; // || (gameOpts->render.color.nLevel < 2);
 
 for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
 	pf->index = IsLight (i);
 	if (bBW)
-		pf->color.red =
-		pf->color.green =
-		pf->color.blue = 1;
+		pf->Red () =
+		pf->Green () =
+		pf->Blue () = 1;
 	}
 }
 
@@ -553,7 +559,7 @@ if (gameStates.app.bD2XLevel) {
 
 void LoadSideLightsCompiled (int i, CFile& cf)
 {
-	tFaceColor	*pc;
+	CFaceColor	*pc;
 	int			j;
 
 gameData.render.shadows.nLights = 0;

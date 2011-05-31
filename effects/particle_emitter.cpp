@@ -119,7 +119,7 @@ return 1;
 int CParticleEmitter::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 										short nSegment, int nObject, int nMaxParts, float fScale,
 										/*int nDensity, int nPartsPerPos, */int nLife, int nSpeed, char nType,
-										tRgbaColorf *colorP, int nCurTime, int bBlowUpParts, CFixVector *vEmittingFace)
+										CFloatVector *colorP, int nCurTime, int bBlowUpParts, CFixVector *vEmittingFace)
 {
 if (!m_particles.Create (nMaxParts))
 	return 0;

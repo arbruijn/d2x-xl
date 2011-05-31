@@ -55,7 +55,7 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 
 //------------------------------------------------------------------------------
 
-tRgbColorb *VClipColor (CObject *objP)
+CRGBColor *VClipColor (CObject *objP)
 {
 	int				nVClip = gameData.weapons.info [objP->info.nId].nVClipIndex;
 	tBitmapIndex	bmi;
@@ -108,7 +108,7 @@ return nFrames;
 #define	THRUSTER_ALPHA		(1.0 / 4.0)
 #define	WEAPON_ALPHA		0.7
 
-void DrawVClipObject (CObject *objP, fix timeToLive, int bLit, int nVClip, tRgbaColorf *color)
+void DrawVClipObject (CObject *objP, fix timeToLive, int bLit, int nVClip, CFloatVector *color)
 {
 	double		ta = 0, alpha = 0;
 	tVideoClip*	vcP = gameData.eff.vClips [0] + nVClip;
@@ -163,9 +163,9 @@ void DrawExplBlast (CObject *objP)
 	CSphereData	sd;
 	CFloatVector	p = {0,0,0};
 #endif
-	tRgbaColorf	color;
+	CFloatVector	color;
 #if 0
-	static tRgbaColorf blastColors [] = {
+	static CFloatVector blastColors [] = {
 	 {0.5, 0.0f, 0.5f, 1},
 	 {1, 0.5f, 0, 1},
 	 {1, 0.75f, 0, 1},
@@ -187,17 +187,17 @@ vPos += vDir;
 ogl.SetDepthWrite (false);
 #if BLAST_TYPE == 0
 fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft) * 3);
-color.red =
-color.green =
-color.blue =
-color.alpha = fAlpha;
+color.Red () =
+color.Green () =
+color.Blue () =
+color.Alpha () = fAlpha;
 explBlast.Bitmap ()->SetColor (&color);
 ogl.RenderSprite (explBlast.Bitmap (), vPos, xSize, xSize, fAlpha, 2, 10);
 #elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
 fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft)) / 4;
 for (i = 0; i < 4; i++, xSize -= xSize2)
-	ogl.RenderSprite (explBlast.Bitmap (), &vPos, xSize, xSize, &color, fAlpha * blastColors [i].alpha, 0);
+	ogl.RenderSprite (explBlast.Bitmap (), &vPos, xSize, xSize, &color, fAlpha * blastColors [i].Alpha (), 0);
 #elif BLAST_TYPE == 2
 CreateSphere (&sd);
 fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft) * 3);
@@ -227,7 +227,7 @@ if (!bmP)
 	CFloatVector	v, vertices [4];
 
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
-	static tRgbaColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
+	static CFloatVector color = {1.0f, 1.0f, 1.0f, 1.0f};
 
 if (objP->info.xLifeLeft <= 0)
 	return;

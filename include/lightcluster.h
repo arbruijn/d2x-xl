@@ -22,7 +22,7 @@ class CLightClusterManager {
 		bool Init (void);
 		void Destroy (void);
 		void Reset (void);
-		int Add (short nObject, tRgbaColorf *color, fix xObjIntensity);
+		int Add (short nObject, CFloatVector *color, fix xObjIntensity);
 		void Add (short nObject, short nLightObj);
 		void AddForAI (CObject *objP, short nObject, short nShot);
 		short Create (CObject *objP);

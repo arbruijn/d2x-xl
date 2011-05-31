@@ -18,8 +18,8 @@ void FlushFaceBuffer (int bForce);
 int SetupPerPixelLightingShader (CSegFace *faceP, int nType, bool bHeadlight);
 int SetupLightmapShader (CSegFace *faceP, int nType, bool bHeadlight);
 int SetupTexMergeShader (int bColorKey, int bColored, int nType);
-int SetupGrayScaleShader (int nType, tRgbaColorf *colorP);
-int SetupShader (CSegFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);
+int SetupGrayScaleShader (int nType, CFloatVector *colorP);
+int SetupShader (CSegFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, CFloatVector *colorP);
 void InitGrayScaleShader (void);
 
 //------------------------------------------------------------------------------

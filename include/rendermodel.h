@@ -40,17 +40,17 @@ class CRenderVertex {
 	public:
 		CFloatVector3			m_vertex;
 		CFloatVector3			m_normal;
-		tRgbaColorf				m_color;
+		CFloatVector				m_color;
 		tTexCoord2f				m_texCoord;
 		};
 
 class CVertex {
 	public:
 		tTexCoord2f				m_texCoord;
-		tRgbaColorf				m_renderColor;
+		CFloatVector				m_renderColor;
 		CFloatVector3			m_vertex;
 		CFloatVector3			m_normal;
-		tRgbaColorf				m_baseColor;
+		CFloatVector				m_baseColor;
 		ushort					m_nIndex;
 		char						m_bTextured;
 	};
@@ -151,12 +151,12 @@ class CModel {
 		int										m_teamTextures [8];
 		CArray<CFloatVector3>				m_verts;
 		CArray<CFloatVector3>				m_vertNorms;
-		CArray<tFaceColor>					m_color;
+		CArray<CFaceColor>					m_color;
 		CArray<CVertex>						m_faceVerts;
 		CArray<CVertex>						m_sortedVerts;
 		CArray<ubyte>							m_vbData;
 		CArray<tTexCoord2f>					m_vbTexCoord;
-		CArray<tRgbaColorf>					m_vbColor;
+		CArray<CFloatVector>					m_vbColor;
 		CArray<CFloatVector3>				m_vbVerts;
 		CArray<CFloatVector3>				m_vbNormals;
 		CArray<CSubModel>						m_subModels;
@@ -202,7 +202,7 @@ class CModel {
 
 		int BuildFromASE (CObject *objP, int nModel);
 		int BuildFromOOF (CObject *objP, int nModel);
-		int BuildFromPOF (CObject* objP, int nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, tRgbaColorf* objColorP);
+		int BuildFromPOF (CObject* objP, int nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP);
 
 	private:
 		void CountASEModelItems (ASE::CModel *pa);
@@ -213,9 +213,9 @@ class CModel {
 
 		void AssignPOFFaces (void);
 		int CountPOFModelItems (void* modelDataP, ushort* pnSubModels, ushort* pnVerts, ushort* pnFaces, ushort* pnFaceVerts);
-		CFace* AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CArray<CBitmap*>& modelBitmaps, tRgbaColorf* objColorP, bool bTextured = true);
+		CFace* AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP, bool bTextured = true);
 		int GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int nThis, int nParent,
-									 int bSubObject, CArray<CBitmap*>& modelBitmaps, tRgbaColorf *objColorP);
+									 int bSubObject, CArray<CBitmap*>& modelBitmaps, CFloatVector *objColorP);
 
 	};	
 

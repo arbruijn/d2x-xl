@@ -918,7 +918,7 @@ if (!(bHaveTGA || HaveHiresBitmap (bmName, bD1) || HaveHiresModel (bmName)))	// 
 nPrevIndex = nIndex;
 strcpy (szPrevBm, bmName);
 #endif
-tRgbColorf color;
+CFloatVector3 color;
 if (0 <= (bmP->AvgColor (&color)))
 	bmP->SetAvgColorIndex (ubyte (bmP->Palette ()->ClosestColor (&color)));
 StartTime (0);
@@ -1099,7 +1099,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 		bm.SetBuffer (NULL);
 		gameData.pig.tex.bitmapP [j].SetOverride (gameData.pig.tex.altBitmapP + j);
 		CBitmap* bmP = gameData.pig.tex.altBitmapP + j;
-		tRgbColorf color;
+		CFloatVector3 color;
 		if (0 <= bmP->AvgColor (&color))
 			bmP->SetAvgColorIndex (bmP->Palette ()->ClosestColor (&color));
 		UseBitmapCache (gameData.pig.tex.altBitmapP + j, (int) bm.Width () * (int) bm.RowSize ());
@@ -1114,7 +1114,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 
 //------------------------------------------------------------------------------
 
-void LoadTextureColors (const char *pszLevelName, tFaceColor *colorP)
+void LoadTextureColors (const char *pszLevelName, CFaceColor *colorP)
 {
 	char			szFilename [SHORT_FILENAME_LEN];
 	CFile			cf;

@@ -67,26 +67,26 @@ void CLightManager::SetColor (short nLight, float red, float green, float blue, 
 	int			i;
 
 if ((lightP->info.nType == 2) ? (gameOpts->render.color.nLevel >= 1) : (gameOpts->render.color.nLevel == 2)) {
-	lightP->info.color.red = red;
-	lightP->info.color.green = green;
-	lightP->info.color.blue = blue;
+	lightP->info.color.Red () = red;
+	lightP->info.color.Green () = green;
+	lightP->info.color.Blue () = blue;
 	}
 else if (gameStates.app.bNostalgia) {
-	lightP->info.color.red =
-	lightP->info.color.green =
-	lightP->info.color.blue = 1.0f;
+	lightP->info.color.Red () =
+	lightP->info.color.Green () =
+	lightP->info.color.Blue () = 1.0f;
 	}
 else {
-	lightP->info.color.red =
-	lightP->info.color.green =
-	lightP->info.color.blue = (red + green + blue) / 3.0f;
+	lightP->info.color.Red () =
+	lightP->info.color.Green () =
+	lightP->info.color.Blue () = (red + green + blue) / 3.0f;
 	}
-lightP->info.color.alpha = 1.0;
+lightP->info.color.Alpha () = 1.0;
 lightP->info.fBrightness = fBrightness;
 lightP->info.fRange = (float) sqrt (fBrightness / 2.0f);
-lightP->fSpecular.v.color.r = red;
-lightP->fSpecular.v.color.g = green;
-lightP->fSpecular.v.color.b = blue;
+lightP->fSpecular.Red () = red;
+lightP->fSpecular.Green () = green;
+lightP->fSpecular.Blue () = blue;
 for (i = 0; i < 3; i++) {
 #if USE_OGL_LIGHTS
 	lightP->info.fAmbient.dir [i] = lightP->info.fDiffuse [i] * 0.01f;
@@ -146,7 +146,7 @@ return (i < 0) ? false : m_data.lights [i].info.bAmbient != 0;
 
 //------------------------------------------------------------------------------
 
-short CLightManager::Update (tRgbaColorf *colorP, float fBrightness, short nSegment, short nSide, short nObject)
+short CLightManager::Update (CFloatVector *colorP, float fBrightness, short nSegment, short nSide, short nObject)
 {
 	short	nLight = Find (nSegment, nSide, nObject);
 
@@ -157,8 +157,8 @@ if (nLight >= 0) {
 	if (nObject >= 0)
 		lightP->info.vPos = OBJECTS [nObject].info.position.vPos;
 	if ((lightP->info.fBrightness != fBrightness) ||
-		 (lightP->info.color.red != colorP->red) || (lightP->info.color.green != colorP->green) || (lightP->info.color.blue != colorP->blue)) {
-		SetColor (nLight, colorP->red, colorP->green, colorP->blue, fBrightness);
+		 (lightP->info.color.Red () != colorP->Red ()) || (lightP->info.color.Green () != colorP->Green ()) || (lightP->info.color.Blue () != colorP->Blue ())) {
+		SetColor (nLight, colorP->Red (), colorP->Green (), colorP->Blue (), fBrightness);
 		}
 	}
 return nLight;
@@ -211,7 +211,7 @@ return nLight;
 
 //------------------------------------------------------------------------------
 
-void CLightManager::Register (tFaceColor *colorP, short nSegment, short nSide)
+void CLightManager::Register (CFaceColor *colorP, short nSegment, short nSide)
 {
 #if 0
 if (!colorP || colorP->index) {
@@ -315,7 +315,7 @@ return j ? i / j : 1;
 
 //------------------------------------------------------------------------------
 
-int CLightManager::Add (CSegFace* faceP, tRgbaColorf *colorP, fix xBrightness, short nSegment,
+int CLightManager::Add (CSegFace* faceP, CFloatVector *colorP, fix xBrightness, short nSegment,
 							   short nSide, short nObject, short nTexture, CFixVector *vPos, ubyte bAmbient)
 {
 	CDynLight*	lightP;
@@ -337,13 +337,13 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	nSegment = nSegment;
 if ((nDbgObj >= 0) && (nObject == nDbgObj))
 	nDbgObj = nDbgObj;
-if (colorP && ((colorP->red > 1) || (colorP->green > 1) || (colorP->blue > 1)))
+if (colorP && ((colorP->Red () > 1) || (colorP->Green () > 1) || (colorP->Blue () > 1)))
 	colorP = colorP;
 #endif
 
 if (gameStates.render.nLightingMethod && (nSegment >= 0) && (nSide >= 0)) {
 #if 1
-	fBrightness /= Intensity (colorP->red, colorP->green, colorP->blue);
+	fBrightness /= Intensity (colorP->Red (), colorP->Green (), colorP->Blue ());
 #else
 	if (fBrightness < 1)
 		fBrightness = (float) sqrt (fBrightness);
@@ -352,15 +352,15 @@ if (gameStates.render.nLightingMethod && (nSegment >= 0) && (nSide >= 0)) {
 #endif
 	}
 if (colorP)
-	colorP->alpha = 1.0f;
+	colorP->Alpha () = 1.0f;
 if (0 <= (h = Update (colorP, fBrightness, nSegment, nSide, nObject)))
 	return h;
 if (!colorP)
 	return -1;
-if ((colorP->red == 0.0f) && (colorP->green == 0.0f) && (colorP->blue == 0.0f)) {
+if ((colorP->Red () == 0.0f) && (colorP->Green () == 0.0f) && (colorP->Blue () == 0.0f)) {
 	if (gameStates.app.bD2XLevel && gameStates.render.bColored)
 		return -1;
-	colorP->red = colorP->green = colorP->blue = 1.0f;
+	colorP->Red () = colorP->Green () = colorP->Blue () = 1.0f;
 	}
 if (m_data.nLights [0] >= MAX_OGL_LIGHTS) {
 	gameStates.render.bHaveDynLights = 0;
@@ -458,7 +458,7 @@ PrintLog ("adding light %d,%d\n", m_data.nLights [0], lightP - m_data.lights [0]
 #endif
 lightP->info.bOn = 1;
 lightP->bTransform = 1;
-SetColor (m_data.nLights [0], colorP->red, colorP->green, colorP->blue, fBrightness);
+SetColor (m_data.nLights [0], colorP->Red (), colorP->Green (), colorP->Blue (), fBrightness);
 return m_data.nLights [0]++;
 }
 
@@ -845,7 +845,7 @@ void CLightManager::AddGeometryLights (void)
 {
 	int			nFace, nSegment, nSide, nTexture, nLight;
 	CSegFace*	faceP;
-	tFaceColor*	colorP;
+	CFaceColor*	colorP;
 
 #if 0
 for (nTexture = 0; nTexture < 910; nTexture++)
@@ -911,7 +911,7 @@ PrintLog ("\n");
 
 void CLightManager::GatherStaticVertexLights (int nVertex, int nMax, int nThread)
 {
-	tFaceColor*		pf = gameData.render.color.ambient + nVertex;
+	CFaceColor*		pf = gameData.render.color.ambient + nVertex;
 	CFloatVector	vVertex;
 	int				bColorize = !gameStates.render.nLightingMethod;
 
@@ -961,7 +961,7 @@ if (gameStates.render.bPerPixelLighting/* && lightmapManager.HaveLightmaps ()*/)
 	return;
 	}
 if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
-		tFaceColor*	pfh, *pf = gameData.render.color.ambient.Buffer ();
+		CFaceColor*	pfh, *pf = gameData.render.color.ambient.Buffer ();
 		CSegment*	segP;
 
 	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
@@ -988,10 +988,10 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 			short* sv = segP->m_verts;
 			for (j = 8; j; j--, sv++) {
 				pfh = pf + *sv;
-				pfh->color.red =
-				pfh->color.green =
-				pfh->color.blue =
-				pfh->color.alpha = 1;
+				pfh->Red () =
+				pfh->Green () =
+				pfh->Blue () =
+				pfh->Alpha () = 1;
 				}
 			}
 		}

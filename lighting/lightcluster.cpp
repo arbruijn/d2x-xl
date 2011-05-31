@@ -82,10 +82,10 @@ FORALL_LIGHT_OBJS (objP, i) {
 				objP->info.position.vPos.v.coord.y /= h;
 				objP->info.position.vPos.v.coord.z /= h;
 #if 1
-				objP->cType.lightInfo.color.red /= h;
-				objP->cType.lightInfo.color.green /= h;
-				objP->cType.lightInfo.color.blue /= h;
-				objP->cType.lightInfo.color.alpha /= h;
+				objP->cType.lightInfo.color.Red () /= h;
+				objP->cType.lightInfo.color.Green () /= h;
+				objP->cType.lightInfo.color.Blue () /= h;
+				objP->cType.lightInfo.color.Alpha () /= h;
 #endif
 				}
 			if (1 || (objP->cType.lightInfo.nSegment < 0)) {
@@ -114,7 +114,7 @@ return nObject;
 
 //--------------------------------------------------------------------------
 
-int CLightClusterManager::Add (short nObject, tRgbaColorf *color, fix xObjIntensity)
+int CLightClusterManager::Add (short nObject, CFloatVector *color, fix xObjIntensity)
 {
 if (!m_bUse)
 	return 0;
@@ -146,16 +146,16 @@ else {
 	}
 lightObjP->cType.lightInfo.intensity += xObjIntensity;
 if (color) {
-	lightObjP->cType.lightInfo.color.red += color->red;
-	lightObjP->cType.lightInfo.color.green += color->green;
-	lightObjP->cType.lightInfo.color.blue += color->blue;
-	lightObjP->cType.lightInfo.color.alpha += color->alpha;
+	lightObjP->cType.lightInfo.color.Red () += color->Red ();
+	lightObjP->cType.lightInfo.color.Green () += color->Green ();
+	lightObjP->cType.lightInfo.color.Blue () += color->Blue ();
+	lightObjP->cType.lightInfo.color.Alpha () += color->Alpha ();
 	}
 else {
-	lightObjP->cType.lightInfo.color.red += 1;
-	lightObjP->cType.lightInfo.color.green += 1;
-	lightObjP->cType.lightInfo.color.blue += 1;
-	lightObjP->cType.lightInfo.color.alpha += 1;
+	lightObjP->cType.lightInfo.color.Red () += 1;
+	lightObjP->cType.lightInfo.color.Green () += 1;
+	lightObjP->cType.lightInfo.color.Blue () += 1;
+	lightObjP->cType.lightInfo.color.Alpha () += 1;
 	}
 return 1;
 }

@@ -25,7 +25,7 @@ extern void gr_pal_setone( int index, ubyte red, ubyte green, ubyte blue );
 
 void gr_linear_movsb( ubyte * source, ubyte * dest, int nbytes);
 void gr_linear_movsw( ubyte * source, ubyte * dest, int nbytes);
-void gr_linear_stosd( ubyte * dest, tCanvasColor *color, uint nbytes);
+void gr_linear_stosd( ubyte * dest, CCanvasColor *color, uint nbytes);
 
 extern uint gr_var_color;
 extern uint gr_var_bwidth;
