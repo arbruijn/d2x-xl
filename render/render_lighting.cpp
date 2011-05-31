@@ -231,7 +231,6 @@ for (i = nStart; i < nEnd; i++) {
 							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 							lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 							lightManager.ResetNearestToVertex (nVertex, nThread);
-							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 							}
 #if DBG
 						if (nVertex == nDbgVertex)
