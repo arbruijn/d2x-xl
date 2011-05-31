@@ -387,7 +387,7 @@ CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (
 ogl.SetTexturing (false);
 OglDrawFilledRect (left, top, right, bottom);
 CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
-glLineWidth (GLfloat (nLineWidth) /** sqrt (GLfloat (screen.Width ()) / 640.0f)*/);
+glLineWidth (GLfloat (nLineWidth) * sqrt (GLfloat (screen.Width ()) / 640.0f));
 OglDrawEmptyRect (left, top, right, bottom);
 glLineWidth (1);
 }
