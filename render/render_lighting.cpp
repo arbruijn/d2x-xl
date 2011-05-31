@@ -164,7 +164,7 @@ PROF_START
 #endif
 	short				nVertex, nSegment, nSide;
 	float				fAlpha;
-	int				h, i, bUpdate, nColor, nLights = 0;
+	int				h, i, nColor, nLights = 0;
 	//int				bVertexLight = gameStates.render.bPerPixelLighting != 2;
 	int				bLightmaps = lightmapManager.HaveLightmaps ();
 	bool				bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
@@ -320,7 +320,7 @@ PROF_START
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, nColor, bUpdate, nLights = 0,
+	int			h, i, j, nColor, nLights = 0,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
 					bLightmaps = lightmapManager.HaveLightmaps ();
 	static		CStaticFaceColor<1,1,1,1> brightColor;
@@ -448,7 +448,7 @@ PROF_START
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, k, nIndex, nColor, bUpdate, nLights = 0;
+	int			h, i, j, k, nIndex, nColor, nLights = 0;
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 
 	static		CStaticFaceColor<1,1,1,1> brightColor;
@@ -521,7 +521,6 @@ for (i = nStart; i < nEnd; i++) {
 						if (nLights + lightManager.VariableVertLights (nVertex) == 0) { // no dynamic lights => only ambient light contribution
 							vertColorP->Assign (c);
 							*vertColorP += gameData.render.color.ambient [nVertex];
-							vertColorP->count = 1;
 							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 							}
 						else {
