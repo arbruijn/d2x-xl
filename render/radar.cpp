@@ -80,7 +80,7 @@ int i;
 
 for (i = 0; i < 8; i++) {
 	shipColors [i].Set (playerColors [i].r, playerColors [i].g, playerColors [i].b);
-	shipColors /= (255.0f * 0.5f);
+	shipColors [i] /= (255.0f * 0.5f);
 	}
 
 for (i = 0; i < RADAR_SLICES; i++) {

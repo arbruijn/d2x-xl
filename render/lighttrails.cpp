@@ -182,7 +182,7 @@ static CFloatVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{
 
 void RenderLightTrail (CObject *objP)
 {
-	CFloatVector		color, *colorP;
+	CFloatVector	color, *colorP;
 	int				/*nTrailItem = -1, nCoronaItem = -1,*/ bGatling = 0;
 
 if (!SHOW_OBJ_FX)
@@ -196,8 +196,8 @@ bGatling = objP->IsGatlingRound ();
 if (objP->info.renderType == RT_POLYOBJ)
 	colorP = gameData.weapons.color + objP->info.nId;
 else {
-	CRGBColor* colorP = VClipColor (objP);
-	color.Set (colorP->r, colorP->g, colorP->b);
+	CRGBColor* clipColorP = VClipColor (objP);
+	color.Set (clipColorP->r, clipColorP->g, clipColorP->b);
 	color /= 255.0f;
 	colorP = &color;
 	}

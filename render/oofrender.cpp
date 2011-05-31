@@ -353,7 +353,7 @@ int CSubModel::Draw (CObject *objP, CModel *po, float *fLight)
 	CFace*			pf;
 	CFaceVert*		pfv;
 	CFloatVector*	pv, * pvn, * phv;
-	CFaceColor*		vertColorP, vertColor, segColor = {{{1.0f,1.0f, 1.0f, 1.0f}}, 1};
+	CFaceColor*		vertColorP, vertColor, segColor = {1.0f, 1.0f, 1.0f, 1.0f, 1};
 	CBitmap*			bmP = NULL;
 	int				h, i, j, nVerts [3];
 	int				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0), bTextured = -1, bReverse;
