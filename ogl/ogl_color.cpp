@@ -500,7 +500,17 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 
 	vertColor = *gameData.render.vertColor.matAmbient.XYZ ();
-	if (bDiffuse) {
+	if (!bDiffuse) {
+#if TEST_AMBIENT > 0
+		vertColor.Set (1.0f, 1.0f, 1.0f);
+#elif TEST_AMBIENT < 0
+		vertColor.SetZero ();
+#else
+		// make ambient light behind the light source decay with angle and in front of it full strength 
+		vertColor *= lightColor * fLightAngle /** fLightAngle*/;  // may use quadratic dampening to emphasize attenuation do to point being behind light source
+#endif
+		}
+	else {
 		if (lightP->info.bSpot) {
 			if (NdotL <= 0.0f)
 				continue;
@@ -516,18 +526,29 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
 			}
 		else {
-#if 1
 			if (NdotL > 0.0f)
 				vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
-#else
-			if (NdotL > 0.1f)
-				vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
-			else if (NdotL >= 0.0f)
-				vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * 0.1f);
-#endif
 			else
 				NdotL = 0.0f;
 			}
+#if 1
+		if (bSpecular && (NdotL > 0.0f) && (fLightDist > 0.0f)) {
+			if (!lightP->info.bSpot)	//need direction from light to vertex now
+				lightRayDir.Neg ();
+			vReflect = CFloatVector3::Reflect (lightRayDir, colorData.vertNorm);
+			//CFloatVector3::Normalize (vReflect);
+#	if DBG
+			if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
+				nDbgVertex = nDbgVertex;
+#	endif
+			RdotE = CFloatVector3::Dot (vReflect, vertPos);
+			if (RdotE > 0.0f) {
+				vertColor += (lightColor * (float) pow (RdotE, colorData.fMatShininess));
+				vertColor.Set (0.0f, 0.0f, (float) pow (RdotE, colorData.fMatShininess)); //test
+				}
+			}
+#endif
+
 #if TEST_AMBIENT > 0
 		vertColor.SetZero ();
 #elif TEST_AMBIENT < 0
@@ -536,34 +557,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		vertColor *= lightColor;
 #endif
 		}
-	else {
-#if TEST_AMBIENT > 0
-		vertColor.Set (1.0f, 1.0f, 1.0f);
-#elif TEST_AMBIENT < 0
-		vertColor.SetZero ();
-#else
-		// make ambient light behind the light source decay with angle and in front of it full strength 
-		vertColor *= lightColor * fLightAngle /** fLightAngle*/;  // may use quadratic dampening to emphasize attenuation do to point being behind light source
-#endif
-	}
-
-#if 1
-	if (bSpecular && bDiffuse && (NdotL > 0.0f) && (fLightDist > 0.0f)) {
-		if (!lightP->info.bSpot)	//need direction from light to vertex now
-			lightRayDir.Neg ();
-		vReflect = CFloatVector3::Reflect (lightRayDir, colorData.vertNorm);
-		//CFloatVector3::Normalize (vReflect);
-#if DBG
-		if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
-			nDbgVertex = nDbgVertex;
-#endif
-		RdotE = CFloatVector3::Dot (vReflect, vertPos);
-		if (RdotE > 0.0f) {
-			vertColor += (lightColor * (float) pow (RdotE, colorData.fMatShininess));
-			vertColor.Set (0.0f, 0.0f, (float) pow (RdotE, colorData.fMatShininess)); //test
-			}
-		}
-#endif
 
 	vertColor /= fAttenuation;
 

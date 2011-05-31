@@ -216,10 +216,8 @@ for (i = nStart; i < nEnd; i++) {
 							G3_SLEEP (0);
 						}
 					else {
-						if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
+						if (nLights + lightManager.VariableVertLights (nVertex) == 0)
 							*vertColorP = c;
-							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
-							}
 						else {
 #if DBG
 							if (nVertex == nDbgVertex)
@@ -228,10 +226,10 @@ for (i = nStart; i < nEnd; i++) {
 							G3VertexColor (nSegment, nSide, nVertex,
 												gameData.segs.points [nVertex].GetNormal ()->XYZ (), gameData.segs.fVertices [nVertex].XYZ (),
 											   NULL, &c, 1, 0, nThread);
-							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 							lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 							lightManager.ResetNearestToVertex (nVertex, nThread);
 							}
+						vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 #if DBG
 						if (nVertex == nDbgVertex)
 							nVertex = nVertex;
@@ -393,10 +391,8 @@ for (i = nStart; i < nEnd; i++) {
 								nSegment = nSegment;
 #endif
 							if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
-								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								vertColorP->Assign (c);
 								*vertColorP += gameData.render.color.ambient [nVertex];
-								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								}
 							else {
 #if DBG
@@ -406,10 +402,10 @@ for (i = nStart; i < nEnd; i++) {
 								G3VertexColor (nSegment, nSide, nVertex,
 													gameData.segs.points [nVertex].GetNormal ()->XYZ (), gameData.segs.fVertices [nVertex].XYZ (), 
 													NULL, &c, 1, 0, nThread);
-								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
+							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 #if DBG
 							if (nVertex == nDbgVertex)
 								nVertex = nVertex;
@@ -536,17 +532,18 @@ for (i = nStart; i < nEnd; i++) {
 							if (nLights + lightManager.VariableVertLights (nVertex) == 0) { // no dynamic lights => only ambient light contribution
 								vertColorP->Assign (c);
 								*vertColorP += gameData.render.color.ambient [nVertex];
-								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								}
 							else {
 								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
-								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
+							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 #	if DBG
-							if (nVertex == nDbgVertex)
+							if (nVertex == nDbgVertex) {
 								nVertex = nVertex;
+								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
+								}
 #	endif
 							}
 						*colorP = *vertColorP;
