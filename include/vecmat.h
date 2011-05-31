@@ -229,7 +229,6 @@ class __pack__ CFloatVector {
 		CFloatVector& Neg (void);
 		CFloatVector& Scale (CFloatVector& scale);
 		CFloatVector3* XYZ (void);
-		CFloatVector3* RGB (void);
 
 		const CFloatVector operator- (void) const;
 		const bool operator== (const CFloatVector& other);
@@ -260,6 +259,8 @@ class __pack__ CFloatVector {
 		inline float& Green (void) { return v.color.g; }
 		inline float& Blue (void) { return v.color.b; }
 		inline float& Alpha (void) { return v.color.a; }
+		inline float Max (void) { return (v.coord.x > v.coord.y) ? (v.coord.x > v.coord.z) ? v.coord.x : v.coord.z : (v.coord.y > v.coord.z) ? v.coord.y : v.coord.z; }
+		inline float Sum (void) { return v.coord.x + v.coord.y + v.coord.z; }
 };
 
 //const float operator* (const CFloatVector& v0, const CFloatVector& v1);
@@ -347,6 +348,8 @@ class __pack__ CFloatVector3 {
 		inline float& Red (void) { return v.color.r; }
 		inline float& Green (void) { return v.color.g; }
 		inline float& Blue (void) { return v.color.b; }
+		inline float Max (void) { return (v.coord.x > v.coord.y) ? (v.coord.x > v.coord.z) ? v.coord.x : v.coord.z : (v.coord.y > v.coord.z) ? v.coord.y : v.coord.z; }
+		inline float Sum (void) { return v.coord.x + v.coord.y + v.coord.z; }
 };
 
 //const float operator* (const CFloatVector3& v0, const CFloatVector3& v1);
@@ -497,8 +500,6 @@ inline CFloatVector& CFloatVector::Neg (void) {
 	}
 
 inline CFloatVector3* CFloatVector::XYZ (void) { return reinterpret_cast<CFloatVector3*> (&v.coord.x); }
-
-inline CFloatVector3* CFloatVector::RGB (void) { return reinterpret_cast<CFloatVector3*> (&v.color.r); }
 
 inline const CFloatVector CFloatVector::operator- (void) const {
 	CFloatVector vec;

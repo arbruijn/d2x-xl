@@ -29,7 +29,7 @@ class CFaceColor : public CFloatVector {
 	public:
 		char	index;
 
-	CFaceColor () : index (1) { Set (1.0f, 1.0f, 1.0f, 1.0f); }
+	explicit CFaceColor () : index (1) { Set (1.0f, 1.0f, 1.0f, 1.0f); }
 	};
 
 class CCanvasColor : public CRGBAColor {
@@ -37,6 +37,19 @@ class CCanvasColor : public CRGBAColor {
 		short				index;       // current color
 		ubyte				rgb;
 	};
+
+template <ubyte red, ubyte green, ubyte blue, ubyte alpha>
+class CStaticFaceColor : public CFaceColor {
+	public:
+		explicit CStaticFaceColor () : index (1) { Set (red, green, blue, alpha); }
+	};
+
+template <ubyte red, ubyte green, ubyte blue, ubyte alpha>
+class CStaticCanvasColor : public CCanvasColor {
+	public:
+		explicit CStaticCanvasColor () : index (-1), rgb (1) { Set (red, green, blue, alpha); }
+	};
+
 
 //-----------------------------------------------------------------------------
 

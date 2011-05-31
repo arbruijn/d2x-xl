@@ -119,9 +119,9 @@ if (!canvColorP) {
 		glColor4f (1.0f, 1.0f, 1.0f, gameStates.render.grAlpha);
 	}
 else if (canvColorP->rgb) {
-	color.Assign (*canvColorP);
+	color.Set (canvColorP->Red (), canvColorP->Green (), canvColorP->Blue (), canvColorP->Alpha ());
 	color /= 255.0f;
-	color.Alpha () = float (canvColorP->Alpha ()) / 255.0f * gameStates.render.grAlpha;
+	color.Alpha () *= gameStates.render.grAlpha;
 	if (color.Alpha () < 1.0f)
 		ogl.SetBlendMode (ogl.m_data.nSrcBlendMode, ogl.m_data.nDestBlendMode);
 	if (colorP)
@@ -264,7 +264,7 @@ if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
 else if (colorP) {
 	if (tMapColor.index) {
 		ScaleColor (&tMapColor, l);
-		*colorP = tMapColor.color;
+		colorP->Assign (tMapColor);
 		*colorP *= gameData.render.fBrightness;
 		if (l >= 0)
 			tMapColor.Set (1.0f, 1.0f, 1.0f);
@@ -275,7 +275,7 @@ else if (colorP) {
 			CFaceColor* vertColorP = vertColors + i;
 
 		colorP->Assign (vertColors [i]);
-		colorP *= gameData.render.fBrightness;
+		*colorP *= gameData.render.fBrightness;
 		if (bResetColor)
 			vertColorP->Set (1.0f, 1.0f, 1.0f);
 		}
@@ -692,7 +692,8 @@ if (!(gameStates.render.nState || colorData.bExclusive || colorData.bMatEmissive
 #pragma omp critical
 			{
 			vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
-			*vertColorP = *colorP * fScale;
+			vertColorP->Assign (*colorP);
+			*vertColorP *= fScale;
 			vertColorP->Alpha () = 1;
 			}
 		if (bSetColor > 0)
@@ -763,7 +764,7 @@ else {
 		}
 	if ((nVertex >= 0) && !(gameStates.render.nState || gameData.render.vertColor.bDarkness)) {
 #if 1
-		colorSum += gameData.render.color.ambient [nVertex].RGB () * fScale;
+		colorSum += *gameData.render.color.ambient [nVertex].XYZ () * fScale;
 #else
 		CFaceColor *faceColorP = gameData.render.color.ambient + nVertex;
 		colorSum.Red () += faceColorP->Red () * fScale;
@@ -771,7 +772,7 @@ else {
 		colorSum.Blue () += faceColorP->Blue () * fScale;
 #endif
 #if DBG
-		if (!gameStates.render.nState && (nVertex == nDbgVertex) && (colorSum.Red () + colorSum.Green () + colorSum.Blue () < 0.1f))
+		if (!gameStates.render.nState && (nVertex == nDbgVertex) && (colorSum.Sum () < 0.1f))
 			nVertex = nVertex;
 #endif
 		}

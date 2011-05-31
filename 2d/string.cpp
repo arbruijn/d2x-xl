@@ -275,7 +275,7 @@ if ((c >= 1) && (c <= 3)) {
 	if (textP [1]) {
 		if (grMsgColorLevel >= c) {
 			CCanvas::Current ()->FontColor (0).rgb = 1;
-			CCanvas::Current ()->FontColor (0).Set ((textP [1] - nOffset) * nScalem, (textP [2] - nOffset) * nScale, (textP [3] - nOffset) * nScale, 255);
+			CCanvas::Current ()->FontColor (0).Set ((textP [1] - nOffset) * nScale, (textP [2] - nOffset) * nScale, (textP [3] - nOffset) * nScale, 255);
 			}
 		return textP + 4;
 		}
@@ -594,7 +594,7 @@ x = 0;
 				memset (&hc, 0xff, sizeof (hc));
 			else {
 				if (CCanvas::Current ()->FontColor (0).rgb) {
-					hc = CCanvas::Current ()->FontColor (0).color;
+					hc = CCanvas::Current ()->FontColor (0);
 					}
 				else {
 					colorP = palP->Color () + CCanvas::Current ()->FontColor (0).index;

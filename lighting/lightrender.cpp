@@ -641,7 +641,7 @@ else {
 		nSegment = nSegment;
 #endif
 	c *= 0.125f; // => / 8.0f
-	*segColorP.Assign (c);
+	segColorP->Assign (c);
 #if 0
 	if (lightManager.SetNearestToSegment (nSegment, 1)) {
 		CDynLight*		lightP;
