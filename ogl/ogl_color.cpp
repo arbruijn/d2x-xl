@@ -771,10 +771,7 @@ if (bSetColor)
 if (!colorData.bMatEmissive && colorP) 
 #pragma omp critical
 	{
-	if (colorP->count++) 
-		*colorP->XYZ () += colorSum;
-	else
-		colorP->Assign (colorSum);
+	colorP->Assign (colorSum);
 	colorP->index = gameStates.render.nFrameFlipFlop + 1;
 	}
 if (vertColorP) 

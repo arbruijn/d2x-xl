@@ -173,7 +173,7 @@ class __pack__ CFixVector {
  * \class __pack__ CFloatVector
  * A 4 element floating point vector class
  */
-class __pack__ CFloatVector {
+class CFloatVector {
 #if 1
 	public:
 		union {
@@ -276,7 +276,7 @@ class __pack__ CFloatVector {
  * \class __pack__ CFloatVector3
  * A 3 element floating point vector class
  */
-class __pack__ CFloatVector3 {
+class CFloatVector3 {
 #if 1
 	public:
 		union {
