@@ -396,6 +396,7 @@ for (i = nStart; i < nEnd; i++) {
 								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								vertColorP->Assign (c);
 								*vertColorP += gameData.render.color.ambient [nVertex];
+								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								}
 							else {
 #if DBG
@@ -535,6 +536,7 @@ for (i = nStart; i < nEnd; i++) {
 							if (nLights + lightManager.VariableVertLights (nVertex) == 0) { // no dynamic lights => only ambient light contribution
 								vertColorP->Assign (c);
 								*vertColorP += gameData.render.color.ambient [nVertex];
+								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								}
 							else {
 								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
