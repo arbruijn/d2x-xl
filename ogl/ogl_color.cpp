@@ -464,7 +464,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		lightPos = *lightP->render.vPosf [bTransform].XYZ ();
 	lightRayDir = lightPos - *colorData.vertPosP;
 	fLightDist = lightRayDir.Mag ();
-	lightRayDir /= fLightDist; // normalize
 
 #if DBG
 	CFloatVector3 hDir = *lightP->render.vPosf [bTransform].XYZ () - *colorData.vertPosP;
@@ -475,18 +474,23 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		nDbgSeg = nDbgSeg;
 #endif
 
-	if (IsLightVert (nVertex, lightP)) { // inside the light emitting face
-		fLightDist = 0.0f;
+//	if (IsLightVert (nVertex, lightP)) { // inside the light emitting face
+	if (fLightDist == 0.0f) {
 		NdotL = 1.0f;
 		bDiffuse = 1;
+		lightRayDir = colorData.vertNorm;
 		}
 	else if (bDiffuse = lightP->info.bDiffuse [nThread]) {
-		if (fLightDist < 1.e-6f) {
+#if 0
+		if (fLightDist < 0.001f) {
 			fLightDist = 0.0f;
 			lightRayDir = colorData.vertNorm;
 			NdotL = 1.0f; // full light contribution for adjacent points
 			}
-		else {
+		else 
+#endif
+			{
+			lightRayDir /= fLightDist; // normalize
 			if (colorData.vertNorm.IsZero ())
 				NdotL = 1.0f;
 			else {
