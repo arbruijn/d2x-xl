@@ -80,7 +80,7 @@ typedef enum tTranspSphereType {
 
 typedef struct tTranspSphere {
 	tTranspSphereType	nType;
-	CFloatVector			color;
+	CFloatVector		color;
 	CObject				*objP;
 	int					nSize;
 	char					bAdditive;

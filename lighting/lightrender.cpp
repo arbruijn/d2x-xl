@@ -51,7 +51,7 @@ for (i = 0; i < m_data.nLights [0]; i++, lightP++) {
 		}
 	lightP->render.vPosf [0].v.coord.w = 1;
 	lightP->render.nType = lightP->info.nType;
-	lightP->render.bState = lightP->info.bState && (lightP->info.color.Red () + lightP->info.color.Green () + lightP->info.color.Blue () > 0.0);
+	lightP->render.bState = lightP->info.bState && (lightP->info.Red () + lightP->info.Green () + lightP->info.Blue () > 0.0);
 	lightP->render.bLightning = (lightP->info.nObject < 0) && (lightP->info.nSide < 0);
 	for (int j = 0; j < gameStates.app.nThreads; j++)
 		ResetUsed (lightP, j);
@@ -565,7 +565,7 @@ return m_data.index [0][0].nActive;
 
 CFaceColor* CLightManager::AvgSgmColor (int nSegment, CFixVector *vPosP, int nThread)
 {
-	CFaceColor	c, *pvc, *psc = gameData.render.color.segments + nSegment;
+	CFaceColor	c, *vertColorP, *segColorP = gameData.render.segments + nSegment;
 	short			i, *pv;
 	CFixVector	vCenter, vVertex;
 	float			d, ds;
@@ -574,22 +574,22 @@ CFaceColor* CLightManager::AvgSgmColor (int nSegment, CFixVector *vPosP, int nTh
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-if (!vPosP && (psc->index == (char) (gameData.app.nFrameCount & 0xff)) && (psc->Red () + psc->Green () + psc->Blue () != 0))
-	return psc;
+if (!vPosP && (segColorP->index == (char) (gameData.app.nFrameCount & 0xff)) && (segColorP->Red () + segColorP->Green () + segColorP->Blue () != 0))
+	return segColorP;
 #if DBG
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 nThread = ThreadId (nThread);
 if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
-	psc->Red () = psc->Green () = psc->Blue () = psc->Alpha () = 1.0f;
-	psc->index = 1;
+	segColorP->Red () = segColorP->Green () = segColorP->Blue () = segColorP->Alpha () = 1.0f;
+	segColorP->index = 1;
 	}
 else if (gameStates.render.bPerPixelLighting) {
-	psc->Red () =
-	psc->Green () =
-	psc->Blue () = 0;
-	psc->Alpha () = 1.0f;
+	segColorP->Red () =
+	segColorP->Green () =
+	segColorP->Blue () = 0;
+	segColorP->Alpha () = 1.0f;
 	if (SetNearestToSgmAvg (nSegment, nThread)) {
 			CVertColorData	vcd;
 
@@ -603,11 +603,11 @@ else if (gameStates.render.bPerPixelLighting) {
 			}
 		vcd.vertPosP = &vcd.vertPos;
 		vcd.fMatShininess = 4;
-		G3AccumVertColor (-1, reinterpret_cast<CFloatVector3*> (psc), &vcd, 0);
+		G3AccumVertColor (-1, reinterpret_cast<CFloatVector3*> (segColorP), &vcd, 0);
 		}
 #if DBG
-	if (psc->Red () + psc->Green () + psc->Blue () == 0)
-		psc = psc;
+	if (segColorP->Red () + segColorP->Green () + segColorP->Blue () == 0)
+		segColorP = segColorP;
 #endif
 	lightManager.ResetAllUsed (0, nThread);
 	m_data.index [0][0].nActive = -1;
@@ -621,32 +621,26 @@ else {
 	else
 		ds = 1.0f;
 	pv = SEGMENTS [nSegment].m_verts;
-	c.color.Red () = c.color.Green () = c.color.Blue () = 0.0f;
+	c.Set (0.0f, 0.0f, 0.0f, 1.0f);
 	c.index = 0;
 	for (i = 0; i < 8; i++, pv++) {
-		pvc = gameData.render.color.vertices + *pv;
+		vertColorP = gameData.render.vertices + *pv;
 		if (vPosP) {
 			vVertex = gameData.segs.vertices [*pv];
 			//transformation.Transform (&vVertex, &vVertex);
 			d = 2.0f - X2F (CFixVector::Dist(vVertex, *vPosP)) / X2F (CFixVector::Dist(vCenter, vVertex));
-			c.color.Red () += pvc->Red () * d;
-			c.color.Green () += pvc->Green () * d;
-			c.color.Blue () += pvc->Blue () * d;
+			c += *vertColorP * d;
 			ds += d;
 			}
 		else {
-			c.color.Red () += pvc->Red ();
-			c.color.Green () += pvc->Green ();
-			c.color.Blue () += pvc->Blue ();
+			c += *vertColorP;
 			}
 		}
 #if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	psc->Red () = c.color.Red () / 8.0f;
-	psc->Green () = c.color.Green () / 8.0f;
-	psc->Blue () = c.color.Blue () / 8.0f;
+	*segColorP = c * 0.125f;
 #if 0
 	if (lightManager.SetNearestToSegment (nSegment, 1)) {
 		CDynLight*		lightP;
@@ -668,26 +662,26 @@ else {
 			else
 #endif
 			 {
-				VmVecInc (reinterpret_cast<CFloatVector*> (&psc->color), reinterpret_cast<CFloatVector*> (&lightP->render.color);
+				VmVecInc (reinterpret_cast<CFloatVector*> (&segColorP->color), reinterpret_cast<CFloatVector*> (&lightP->render.color);
 				}
 			}
 		}
 #endif
 #if 0
-	d = psc->Red ();
-	if (d < psc->Green ())
-		d = psc->Green ();
-	if (d < psc->Blue ())
-		d = psc->Blue ();
+	d = segColorP->Red ();
+	if (d < segColorP->Green ())
+		d = segColorP->Green ();
+	if (d < segColorP->Blue ())
+		d = segColorP->Blue ();
 	if (d > 1.0f) {
-		psc->Red () /= d;
-		psc->Green () /= d;
-		psc->Blue () /= d;
+		segColorP->Red () /= d;
+		segColorP->Green () /= d;
+		segColorP->Blue () /= d;
 		}
 #endif
 	}
-psc->index = (char) (gameData.app.nFrameCount & 0xff);
-return psc;
+segColorP->index = (char) (gameData.app.nFrameCount & 0xff);
+return segColorP;
 }
 
 //------------------------------------------------------------------------------
@@ -695,7 +689,7 @@ return psc;
 void CLightManager::ResetSegmentLights (void)
 {
 for (short i = 0; i < gameData.segs.nSegments; i++)
-	gameData.render.color.segments [i].index = -1;
+	gameData.render.segments [i].index = -1;
 }
 
 //------------------------------------------------------------------------------

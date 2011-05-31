@@ -1167,12 +1167,12 @@ void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1, true);
 if (item->nType == riSphereShield) {
-	DrawShieldSphere (item->objP, item->Red (), item->Green (), item->Blue (), item->Alpha (), item->bAdditive, item->nSize);
+	DrawShieldSphere (item->objP, item->color.Red (), item->color.Green (), item->color.Blue (), item->color.Alpha (), item->bAdditive, item->nSize);
 	}
 else if (item->nType == riMonsterball) {
 	if (glowRenderer.End ())
 		ResetBitmaps ();
-	DrawMonsterball (item->objP, item->Red (), item->Green (), item->Blue (), item->Alpha ());
+	DrawMonsterball (item->objP, item->color.Red (), item->color.Green (), item->color.Blue (), item->Alpha ());
 	}
 //shaderManager.Deploy (-1);
 ResetBitmaps ();

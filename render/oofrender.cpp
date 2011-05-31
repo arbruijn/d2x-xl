@@ -353,7 +353,7 @@ int CSubModel::Draw (CObject *objP, CModel *po, float *fLight)
 	CFace*			pf;
 	CFaceVert*		pfv;
 	CFloatVector*	pv, * pvn, * phv;
-	CFaceColor*		vertColorP, vertColor, segColor = {1.0f, 1.0f, 1.0f, 1.0f, 1};
+	CFaceColor*		vertColorP, vertColor, segColor;
 	CBitmap*			bmP = NULL;
 	int				h, i, j, nVerts [3];
 	int				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0), bTextured = -1, bReverse;
@@ -364,6 +364,8 @@ int CSubModel::Draw (CObject *objP, CModel *po, float *fLight)
 	CFloatVector*	pcb;
 	tTexCoord2f*	ptb;
 
+segColor.Set (1.0f, 1.0f, 1.0f, 1.0f);
+segColor.index = 1;
 #if DBG_SHADOWS
 if (bShadowTest && (bShadowTest < 4))
 	return 1;
@@ -449,12 +451,12 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 					vertColor.Green () = (float) sqrt (vertColorP [h].Green ());
 					vertColor.Blue () = (float) sqrt (vertColorP [h].Blue ());
 					if (bBright) {
-						vertColor.Red () += (1.0f - vertColor.Red ()) * 0.5f
+						vertColor.Red () += (1.0f - vertColor.Red ()) * 0.5f;
 						vertColor.Green () += (1.0f - vertColor.Green ()) * 0.5f;
-						vertColor.Blue () += (1.0f - vertColor.Blue ()) * 0.5f
+						vertColor.Blue () += (1.0f - vertColor.Blue ()) * 0.5f;
 						}
 					vertColor.Alpha () = m_pfAlpha [pfv->m_nIndex] * fAlpha;
-					*pcb++ = vertColor.color;
+					*pcb++ = vertColor;
 					}
 				ptb->v.u = pfv->m_fu;
 				ptb->v.v = pfv->m_fv;
@@ -492,9 +494,9 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 				bmP = NULL;
 				}
 			fl = fLight [1];
-			r = fl * (float) pf->m_texProps.Red () / 255.0f;
-			g = fl * (float) pf->m_texProps.Green () / 255.0f;
-			b = fl * (float) pf->m_texProps.Blue () / 255.0f;
+			r = fl * (float) pf->m_texProps.color.Red () / 255.0f;
+			g = fl * (float) pf->m_texProps.color.Green () / 255.0f;
+			b = fl * (float) pf->m_texProps.color.Blue () / 255.0f;
 			glColor4f (r, g, b, m_pfAlpha [pfv->m_nIndex] * fAlpha);
 			*pvb++ = pv [pfv->m_nIndex];
 			}

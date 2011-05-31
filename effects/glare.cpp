@@ -431,9 +431,9 @@ glLineWidth (1);
 void CGlareRenderer::RenderHardGlare (CFloatVector *sprite, CFloatVector *vCenter, int nTexture, float fLight,
 												  float fIntensity, tIntervalf *zRangeP, int bAdditive, int bColored)
 {
-	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
+	tTexCoord2f		tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	CFloatVector	color;
-	CBitmap*		bmP;
+	CBitmap*			bmP;
 
 fLight /= 4;
 if (fLight < 0.01f)
@@ -443,7 +443,7 @@ if (color.Alpha () < zRangeP->fRad)
 	fIntensity *= color.Alpha () / zRangeP->fRad;
 
 if (gameStates.render.bAmbientColor) {
-	color = gameData.render.color.textures [nTexture].color;
+	color = gameData.render.color.textures [nTexture];
 	color.Alpha () = (float) (color.Red () * 3 + color.Green () * 5 + color.Blue () * 2) / 30 * 2;
 	}
 else {
@@ -523,7 +523,7 @@ void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCente
 if (!(bmP = (bAdditive ? glare.Bitmap () : corona.Bitmap ())))
 	return;
 if (gameStates.render.bAmbientColor)
-	color = gameData.render.color.textures [nTexture].color;
+	color = gameData.render.color.textures [nTexture];
 else
 	color.Red () = color.Green () = color.Blue () = X2F (IsLight (nTexture)) / 2;
 if (!bColored)

@@ -230,7 +230,7 @@ for (i = 0, colorP = m_vld.colors; i < m_vld.nVertices; i++) {
 			}
 		}
 	vertColorP = gameData.render.color.vertices + nVertex;
-	*vertColorP = vertColor;
+	(CFloatVector) *vertColorP = vertColor;
 	vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 	}
 m_vld.nVertices = 0;
@@ -340,7 +340,7 @@ else if (nState == 1) {
 	if (nLights) {
 		m_vld.index [m_vld.nVertices].nVertex = nVertex;
 		m_vld.index [m_vld.nVertices].nLights = nLights;
-		m_vld.index [m_vld.nVertices].color = colorP->color;
+		m_vld.index [m_vld.nVertices].color = (CFloatVector) *colorP;
 		m_vld.nVertices++;
 		m_vld.nLights += nLights;
 		}

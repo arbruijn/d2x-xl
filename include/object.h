@@ -462,7 +462,7 @@ public:
 	char			bRandom;
 	char			bInPlane;
 	char			bEnabled;
-	CRGBAColor color;
+	CRGBAColor	color;
 } __pack__ tLightningInfo;
 
 class CLightningInfo {

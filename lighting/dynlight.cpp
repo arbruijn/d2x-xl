@@ -879,7 +879,7 @@ for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--
 		continue;
 	colorP = gameData.render.color.textures + nTexture;
 	if ((nLight = IsLight (nTexture)))
-		Add (faceP, &colorP->color, nLight, (short) nSegment, (short) nSide, -1, nTexture, NULL, 1);
+		Add (faceP, colorP, nLight, (short) nSegment, (short) nSide, -1, nTexture, NULL, 1);
 	faceP->m_info.nOvlTex = SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->m_nOvlTex;
 	nTexture = faceP->m_info.nOvlTex;
 #if 0//DBG
@@ -888,7 +888,7 @@ for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--
 #endif
 	if ((nTexture > 0) && (nTexture < MAX_WALL_TEXTURES) && (nLight = IsLight (nTexture)) /*gameData.pig.tex.info.fBrightness [nTexture]*/) {
 		colorP = gameData.render.color.textures + nTexture;
-		Add (faceP, &colorP->color, nLight, (short) nSegment, (short) nSide, -1, nTexture, NULL);
+		Add (faceP, colorP, nLight, (short) nSegment, (short) nSide, -1, nTexture, NULL);
 		}
 	//if (m_data.nLights [0])
 	//	return;

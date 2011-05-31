@@ -118,7 +118,7 @@ faceP->m_info.bTransparent |= bTransparent;
 if (faceP->m_info.bSegColor) {
 	if ((faceP->m_info.nSegColor = IsColoredSegFace (nSegment, nSide))) {
 		faceP->m_info.color = *ColoredSegmentColor (nSegment, nSide, faceP->m_info.nSegColor);
-		faceColorP [2] = faceP->m_info.color;
+		faceColorP [2].Assign (faceP->m_info.color);
 		if (faceP->m_info.nBaseTex < 0)
 			*fAlphaP = faceP->m_info.color.Alpha ();
 		nColor = 2;
@@ -138,7 +138,7 @@ void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 PROF_START
 	CSegFace*		faceP;
 	CFloatVector*	colorP;
-	CFaceColor		c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
+	CFaceColor		c, faceColor [3];
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
@@ -150,6 +150,10 @@ PROF_START
 	bool				bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 	static			CFaceColor brightColor = {{{1.0f, 1.0f, 1.0f, 1.0f}}, 1};
 
+for (i = 0; i < 3; i++)
+	faceColor [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
+	faceColor [i].index = 1;
+	}
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 ogl.SetTransform (1);
 gameStates.render.nState = 0;

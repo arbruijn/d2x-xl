@@ -484,10 +484,10 @@ FORALL_EFFECT_OBJS (objP, i) {
 		v = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * I2X (pli->nLength);
 		vEnd = &v;
 		}
-	color.Red () = float (pli->Red ()) / 255.0f;
-	color.Green () = float (pli->Green ()) / 255.0f;
-	color.Blue () = float (pli->Blue ()) / 255.0f;
-	color.Alpha () = float (pli->Alpha ()) / 255.0f;
+	color.Red () = float (pli->color.Red ()) / 255.0f;
+	color.Green () = float (pli->color.Green ()) / 255.0f;
+	color.Blue () = float (pli->color.Blue ()) / 255.0f;
+	color.Alpha () = float (pli->color.Alpha ()) / 255.0f;
 	vDelta = pli->bInPlane ? &objP->info.position.mOrient.m.dir.r : NULL;
 	h = Create (pli->nBolts, &objP->info.position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, I2X (pli->nLength),
 				   I2X (pli->nAmplitude), pli->nAngle, I2X (pli->nOffset), pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
@@ -538,10 +538,10 @@ else {
 		}
 	llP->nLights++;
 	llP->vPos += *vPosP;
-	llP->Red () += colorP->Red ();
-	llP->Green () += colorP->Green ();
-	llP->Blue () += colorP->Blue ();
-	llP->Alpha () += colorP->Alpha ();
+	llP->color.Red () += colorP->Red ();
+	llP->color.Green () += colorP->Green ();
+	llP->color.Blue () += colorP->Blue ();
+	llP->color.Alpha () += colorP->Alpha ();
 	}
 }
 
@@ -561,9 +561,9 @@ if ((SHOW_LIGHTNING || bForce) && m_lights.Buffer ()) {
 		llP->nLights = 0;
 		llP->nNext = -1;
 		llP->vPos.SetZero ();
-		llP->Red () =
-		llP->Green () =
-		llP->Blue () = 0;
+		llP->color.Red () =
+		llP->color.Green () =
+		llP->color.Blue () = 0;
 		llP->nBrightness = 0;
 		if (llP->nDynLight >= 0) {
 			llP->nDynLight = -1;
@@ -623,12 +623,12 @@ if (SHOW_LIGHTNING) {
 		llP->vPos.v.coord.x /= n;
 		llP->vPos.v.coord.y /= n;
 		llP->vPos.v.coord.z /= n;
-		llP->Red () /= n;
-		llP->Green () /= n;
-		llP->Blue () /= n;
+		llP->color.Red () /= n;
+		llP->color.Green () /= n;
+		llP->color.Blue () /= n;
 
 #if 1
-		llP->nBrightness = F2X (sqrt (10 * (llP->Red () + llP->Green () + llP->Blue ()) * llP->Alpha ()));
+		llP->color.nBrightness = F2X (sqrt (10 * (llP->color.Red () + llP->color.Green () + llP->color.Blue ()) * llP->color.Alpha ()));
 #else
 		if (gameStates.render.bPerPixelLighting == 2)
 			llP->nBrightness = F2X (sqrt (10 * (llP->Red () + llP->Green () + llP->Blue ()) * llP->Alpha ()));

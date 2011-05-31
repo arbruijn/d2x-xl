@@ -300,7 +300,8 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 						ScaleColor (colorP, fl + dl);
 						}
 					else {
-						*colorP = dynColor * dl;
+						*colorP.Assign (dynColor);
+						*colorP *= dl;
 						ScaleColor (colorP, dl);
 						}
 					}
@@ -327,7 +328,8 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 		else {
 			float dl = X2F (light);
 			dl = (float) pow (dl, 1.0f / 3.0f);
-			*colorP = dynColor * dl;
+			*colorP.Assign (dynColor);
+			*colorP *= dl;
 			}
 		}
 	else {

@@ -728,7 +728,7 @@ inline const float CFloatVector3::Mag (void) const {
 }
 
 inline CFloatVector3& CFloatVector3::Assign (const CFloatVector3& other) {
-	v.coord.x = other.v.coord.x, v.coord.y = other.v.coord.y, v.coord.z = other.v.coord.z;
+	v = other.v;
 	return *this;
 }
 
