@@ -301,7 +301,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 
 	if (xStereoSeparation <= 0) {
 		ResetFaceList ();
-		gameStates.render.nThreads = GetNumThreads ();
+		gameStates.render.nThreads = gameStates.app.nThreads;
 		lightManager.ResetSegmentLights ();
 		lightManager.ResetIndex ();
 		if ((gameStates.render.bPerPixelLighting == 2) || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)

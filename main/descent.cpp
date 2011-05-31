@@ -815,6 +815,7 @@ error_init (NULL, NULL);
 *szAutoMission = '\0';
 EvalArgs ();
 gameOptions [1].Init ();
+GetNumThreads ();
 DefaultAllSettings ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 /*---*/PrintLog ("Loading text resources\n");

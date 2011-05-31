@@ -169,7 +169,7 @@ if (m_bmP->BPP () == 3) {
 					}
 				}
 			}
-		for (i = 0, j = GetNumThreads (); i < j; i++) {
+		for (i = 0, j = gameStates.app.nThreads; i < j; i++) {
 			avgColor.Red () += ac [i].Red ();
 			avgColor.Green () += ac [i].Green ();
 			avgColor.Blue () += ac [i].Blue ();
@@ -242,7 +242,7 @@ else {
 				avc [tId].Blue () += float (p [i].Blue ()) * a;
 				}
 			}
-		for (int i = 0, j = GetNumThreads (); i < j; i++) {
+		for (int i = 0, j = gameStates.app.nThreads; i < j; i++) {
 			avgColor.Red () += avc [i].Red ();
 			avgColor.Green () += avc [i].Green ();
 			avgColor.Blue () += avc [i].Blue ();

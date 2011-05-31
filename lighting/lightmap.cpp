@@ -544,7 +544,6 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 		Build (-1);
 	else {
 #if USE_OPENMP
-		GetNumThreads ();
 #	pragma omp parallel
 			{
 		#pragma omp for
