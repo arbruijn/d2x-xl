@@ -658,7 +658,7 @@ extern int nDbgVertex;
 void G3VertexColor (int nSegment, int nSide, int nVertex,
 						  CFloatVector3* vVertNormP, CFloatVector3* vVertPosP, 
 						  CFaceColor* vertColorP, CFaceColor* baseColorP,
-						  float fScale, int bSetColor, int nThread)
+						  float fScale, int bSetColor, int bForce, int nThread)
 {
 PROF_START
 	CFloatVector3	colorSum = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
@@ -687,7 +687,7 @@ if (fScale > 1)
 #if 1//!DBG //cache light values per frame
 if (!(gameStates.render.nState || colorData.bExclusive || colorData.bMatEmissive) && (nVertex >= 0)) {
 	colorP = gameData.render.color.vertices + nVertex;
-	if (colorP->index == gameStates.render.nFrameFlipFlop + 1) {
+	if (!bForce && (colorP->index == gameStates.render.nFrameFlipFlop + 1)) { // vertex color has already been computed this frame
 		if (vertColorP)
 #pragma omp critical
 			{

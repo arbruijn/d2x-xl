@@ -783,24 +783,14 @@ else { // check whether light only contributes ambient light to point
 			fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 			if (xPathLength < 0)
 				return 0;
-#if 0
-			if (xPathLength > xMaxLightRange)
-				return 0;
-			xDistance = xPathLength;
-#else
 			if (xDistance < xPathLength) {
 				// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
-#if 1
 				xDistance = (xDistance + xPathLength) / 2; 
-#else
-				xDistance = (xDistance + 2 * xPathLength) / 3; 
-#endif
 				if (xDistance - xRad > xMaxLightRange)
 					return 0;
 				}
 			}
 		}
-#endif
 	}
 #if DBG
 if ((nDbgSeg == nDestSeg) && ((nDbgSide < 0) || (nDestSide == nDbgSide)) && info.bDiffuse [nThread])
@@ -925,7 +915,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	lightManager.ResetAllUsed (0, nThread);
 	lightManager.SetNearestToVertex (-1, -1, nVertex, NULL, 1, 1, bColorize, nThread);
 	gameData.render.color.vertices [nVertex].index = 0;
-	G3VertexColor (-1, -1, nVertex, gameData.segs.points [nVertex].GetNormal ()->XYZ (), vVertex.XYZ (), pf, NULL, 1, 0, nThread);
+	G3VertexColor (-1, -1, nVertex, gameData.segs.points [nVertex].GetNormal ()->XYZ (), vVertex.XYZ (), pf, NULL, 1, 0, 0, nThread);
 	}
 }
 

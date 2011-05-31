@@ -144,7 +144,7 @@ PROF_START
 #endif
 	short				nVertex, nSegment, nSide;
 	float				fAlpha;
-	int				h, i, nColor, nLights = 0;
+	int				h, i, bUpdate, nColor, nLights = 0;
 	//int				bVertexLight = gameStates.render.bPerPixelLighting != 2;
 	int				bLightmaps = lightmapManager.HaveLightmaps ();
 	bool				bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
@@ -205,10 +205,14 @@ for (i = nStart; i < nEnd; i++) {
 				else {
 					c = gameData.render.color.ambient [nVertex];
 					CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
-					if (vertColorP->index != gameStates.render.nFrameFlipFlop + 1) {
-						if (nLights + lightManager.VariableVertLights (nVertex) == 0) 
 #pragma omp critical
-							{
+					{
+					if ((bUpdate = vertColorP->index != gameStates.render.nFrameFlipFlop + 1))
+						vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
+					}
+// end critical section
+					if (bUpdate) {
+						if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
 							*vertColorP = c;
 							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 							}
@@ -219,7 +223,7 @@ for (i = nStart; i < nEnd; i++) {
 #endif
 							G3VertexColor (nSegment, nSide, nVertex,
 												gameData.segs.points [nVertex].GetNormal ()->XYZ (), gameData.segs.fVertices [nVertex].XYZ (),
-											   NULL, &c, 1, 0, nThread);
+											   NULL, &c, 1, 0, 1, nThread);
 							lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 							lightManager.ResetNearestToVertex (nVertex, nThread);
 							}
@@ -303,7 +307,7 @@ PROF_START
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, nColor, nLights = 0,
+	int			h, i, j, nColor, bUpdate, nLights = 0,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
 					bLightmaps = lightmapManager.HaveLightmaps ();
 	static		CStaticFaceColor<1,1,1,1> brightColor;
@@ -368,14 +372,18 @@ for (i = nStart; i < nEnd; i++) {
 						colorP->Assign (gameData.render.color.ambient [nVertex]);
 					else {
 						CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
-						if (vertColorP->index != gameStates.render.nFrameFlipFlop + 1) {
+#pragma omp critical
+						{
+						if ((bUpdate = vertColorP->index != gameStates.render.nFrameFlipFlop + 1))
+							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
+						}
+// end critical section
+						if (bUpdate) {
 #if DBG
 							if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 								nSegment = nSegment;
 #endif
-							if (nLights + lightManager.VariableVertLights (nVertex) == 0) 
-#pragma omp critical
-								{
+							if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
 								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								vertColorP->Assign (c);
 								*vertColorP += gameData.render.color.ambient [nVertex];
@@ -387,7 +395,7 @@ for (i = nStart; i < nEnd; i++) {
 #endif
 								G3VertexColor (nSegment, nSide, nVertex,
 													gameData.segs.points [nVertex].GetNormal ()->XYZ (), gameData.segs.fVertices [nVertex].XYZ (), 
-													NULL, &c, 1, 0, nThread);
+													NULL, &c, 1, 0, 1, nThread);
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
@@ -434,7 +442,7 @@ PROF_START
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, k, nIndex, nColor, nLights = 0;
+	int			h, i, j, k, nIndex, nColor, bUpdate, nLights = 0;
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 
 	static		CStaticFaceColor<1,1,1,1> brightColor;
@@ -503,21 +511,19 @@ for (i = nStart; i < nEnd; i++) {
 						*colorP = gameData.render.color.ambient [nVertex];
 					else {
 						CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
-#if 0 //DBG
-						vertColorP->Red () = 
-						vertColorP->Green () = 
-						vertColorP->Blue () = 1.0f;
-#else
-						if (vertColorP->index != gameStates.render.nFrameFlipFlop + 1) {
-							if (nLights + lightManager.VariableVertLights (nVertex) == 0) 
 #pragma omp critical
-								{
-								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
+						{
+						if ((bUpdate = vertColorP->index != gameStates.render.nFrameFlipFlop + 1))
+							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
+						}
+// end critical section
+						if (bUpdate) {
+							if (nLights + lightManager.VariableVertLights (nVertex) == 0) { // no dynamic lights => only ambient light contribution
 								vertColorP->Assign (c);
 								*vertColorP += gameData.render.color.ambient [nVertex];
 								}
 							else {
-								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
+								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, 1, nThread);
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
@@ -526,7 +532,6 @@ for (i = nStart; i < nEnd; i++) {
 								nVertex = nVertex;
 #	endif
 							}
-#endif
 						*colorP = *vertColorP;
 						}
 					if (nColor) 
