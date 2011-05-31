@@ -213,7 +213,7 @@ for (i = nStart; i < nEnd; i++) {
 // end critical section
 					if (!bUpdate) {
 						while (vertColorP->index < 0)
-							;
+							G3_SLEEP (0);
 						}
 					else {
 						if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
@@ -385,7 +385,7 @@ for (i = nStart; i < nEnd; i++) {
 // end critical section
 						if (!bUpdate) {
 							while (vertColorP->index < 0)
-								;
+								G3_SLEEP (0);
 							}
 						else {
 #if DBG
@@ -530,7 +530,7 @@ for (i = nStart; i < nEnd; i++) {
 // end critical section
 						if (!bUpdate) {
 							while (vertColorP->index < 0)
-								;
+								G3_SLEEP (0);
 							}
 						else {
 							if (nLights + lightManager.VariableVertLights (nVertex) == 0) { // no dynamic lights => only ambient light contribution
