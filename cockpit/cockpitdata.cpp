@@ -388,7 +388,7 @@ tGaugeBox hudWindowAreas [8] = {
 
 //	-----------------------------------------------------------------------------
 
-CCanvasColor CCockpit::gaugeFadeColors [2][4];
+CStaticCanvasColor<0,0,0,255> gaugeFadeColors [2][4];
 
 //	-----------------------------------------------------------------------------
 

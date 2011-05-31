@@ -51,12 +51,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 CGenericCockpit::CGenericCockpit ()
 {
 m_save.Create (10);
-for (int i = 0; i < 2; i++)
-	for (int j = 0; j < 4; j++) {
-		gaugeFadeColors [i][j].Set (0, 0, 0, 255);
-		gaugeFadeColors [i][j].index = -1;
-		gaugeFadeColors [i][j].rgb = 1;
-		}
 }
 
 //	-----------------------------------------------------------------------------

@@ -41,13 +41,20 @@ class CCanvasColor : public CRGBAColor {
 template <ubyte red, ubyte green, ubyte blue, ubyte alpha>
 class CStaticFaceColor : public CFaceColor {
 	public:
-		explicit CStaticFaceColor () : index (1) { Set (red, green, blue, alpha); }
+		explicit CStaticFaceColor () { 
+			Set (red, green, blue, alpha); 
+			index = 1;
+			}
 	};
 
 template <ubyte red, ubyte green, ubyte blue, ubyte alpha>
 class CStaticCanvasColor : public CCanvasColor {
 	public:
-		explicit CStaticCanvasColor () : index (-1), rgb (1) { Set (red, green, blue, alpha); }
+		explicit CStaticCanvasColor () { 
+			Set (red, green, blue, alpha); 
+			index = -1;
+			rgb = 1;
+			}
 	};
 
 

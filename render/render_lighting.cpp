@@ -591,7 +591,7 @@ for (i = nStart; i < nEnd; i++) {
 			}
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
-		faceP->m_info.color = faceColor [nColor].color;
+		faceP->m_info.color.Assign (faceColor [nColor]);
 		colorP = FACES.color + faceP->m_info.nIndex;
 		uvlP = segP->m_sides [nSide].m_uvls;
 		for (h = 0, uvi = 0 /*(segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13)*/; h < 4; h++, colorP++, uvi++) {

@@ -137,8 +137,6 @@ class CGenericCockpit {
 		static CStack<int>	m_save;
 
 	public:
-		static CCanvasColor gaugeFadeColors [2][4];
-
 		CGenericCockpit();
 		void Init (void);
 
