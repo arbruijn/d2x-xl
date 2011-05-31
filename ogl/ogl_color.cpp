@@ -119,9 +119,9 @@ if (!canvColorP) {
 		glColor4f (1.0f, 1.0f, 1.0f, gameStates.render.grAlpha);
 	}
 else if (canvColorP->rgb) {
-	color.Set (canvColorP->Red (), canvColorP->Green (), canvColorP->Blue (), canvColorP->Alpha ());
+	color.Set (canvColorP->Red (), canvColorP->Green (), canvColorP->Blue ());
 	color /= 255.0f;
-	color.Alpha () *= gameStates.render.grAlpha;
+	color.Alpha () = float (canvColorP->Alpha ()) / 255.0f * gameStates.render.grAlpha;
 	if (color.Alpha () < 1.0f)
 		ogl.SetBlendMode (ogl.m_data.nSrcBlendMode, ogl.m_data.nDestBlendMode);
 	if (colorP)
