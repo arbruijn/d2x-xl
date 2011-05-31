@@ -1140,7 +1140,7 @@ int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short n
 	CWall*			wallP;
 	CFloatVector	intersection, v0, v1;
 	float				l0, l1;
-	short				nSide, nFace, nChildSeg, nPredSeg = 0x7FFF;
+	short				nSide, nFace, nFaceCount, nChildSeg, nPredSeg = 0x7FFF;
 	uint*				bVisited = segVisList [nThread];
 
 if (!nDepth) {
@@ -1164,7 +1164,8 @@ for (;;) {
 		nChildSeg = segP->m_children [nSide];
 		if ((nChildSeg >= 0) && (bVisited [nChildSeg] == bFlag))
 			continue;
-		for (nFace = 0; nFace < sideP->m_nFaces; nFace++) {
+		nFaceCount = sideP->m_nFaces;
+		for (nFace = 0; nFace < nFaceCount; nFace++) {
 			CFloatVector* n = sideP->m_fNormals + nFace;
 			if (!FindPlaneLineIntersection (intersection, &FVERTICES [sideP->m_vertices [nFace * 3]], n, p0, p1))
 				continue;
@@ -1172,7 +1173,7 @@ for (;;) {
 			v1 = *p1 - intersection;
 			l0 = v0.Mag ();
 			l1 = v1.Mag ();
-			if ((l0 > X2F (PLANE_DIST_TOLERANCE)) && (l1 > X2F (PLANE_DIST_TOLERANCE))) {
+			if ((l0 >= 0.001) && (l1 >= 0.001)) {
 				v0 /= l0;
 				v1 /= l1;
 				if (CFloatVector::Dot (v0, *n) == CFloatVector::Dot (v1, *n))
@@ -1182,19 +1183,21 @@ for (;;) {
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (!PointIsOutsideFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - sideP->m_nFaces)) {
-				if (l1 <= X2F (PLANE_DIST_TOLERANCE)) { // end point lies in this face
-					if (nDestSeg < 0)
-						return 1;
-					if (nStartSeg == nDestSeg)
-						return 1;
-					if ((nChildSeg == nDestSeg) && !((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL)))
-						return 1;
-					}
+			if (PointIsOutsideFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - nFaceCount))
+				continue;
+			if (l1 >= 0.001) 
 				break;
-				}
+			// end point lies in this face
+			if (nDestSeg < 0)
+				return 1; // any segment acceptable
+			if (nStartSeg == nDestSeg)
+				return 1; // point is in desired segment
+			if ((nChildSeg == nDestSeg) && !((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL)))
+				return 1; // point at border to destination segment and the portal to that segment is passable
+			nFace = nFaceCount; // no eligible child segment, so try next segment side
+			break; 
 			}
-		if (nFace == sideP->m_nFaces)
+		if (nFace == nFaceCount)
 			continue; // line doesn't intersect with this side
 		if (0 > nChildSeg) // solid wall
 			continue;
