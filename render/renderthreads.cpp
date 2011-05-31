@@ -401,18 +401,22 @@ int GetNumThreads (void)
 if (!gameStates.app.bMultiThreaded)
 	return gameStates.app.nThreads = 1;
 #if USE_OPENMP
-gameStates.app.nThreads = omp_get_num_threads ();
-if (gameStates.app.nThreads < 2)
+int nThreads = omp_get_num_threads ();
+if (nThreads < 2)
 #pragma omp parallel 
 	{
-	gameStates.app.nThreads = omp_get_max_threads ();
+	nThreads = omp_get_max_threads ();
 	}
 
 if (gameStates.app.nThreads > MAX_THREADS)
+	gameStates.app.nThreads = MAX_THREADS;
+if (nThreads < gameStates.app.nThreads)
+	gameStates.app.nThreads = nThreads;
+else if (nThreads > gameStates.app.nThreads)
 #	if 0 //DBG
 	omp_set_num_threads (gameStates.app.nThreads = 2);
 #	else
-	omp_set_num_threads (gameStates.app.nThreads = MAX_THREADS);
+	omp_set_num_threads (gameStates.app.nThreads);
 #	endif
 #endif
 return gameStates.app.nThreads;
