@@ -26,12 +26,17 @@ int SetupCoronas (void);
 static inline void ComputeFaceLight (int nStart, int nEnd, int nThread)
 {
 if (gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE)) {
+	int i;
+	for (i = 0; i < gameData.segs.nVertices; i++)
+		gameData.render.color.vertices [i].count = 0;
 	if (gameStates.render.bTriangleMesh)
 		ComputeDynamicTriangleLight (nStart, nEnd, nThread);
 	else if (gameData.render.mine.nRenderSegs [0] < gameData.segs.nSegments)
 		ComputeDynamicQuadLight (nStart, nEnd, nThread);
 	else
 		ComputeDynamicFaceLight (nStart, nEnd, nThread);
+	for (i = 0; i < gameData.segs.nVertices; i++)
+		gameData.render.color.vertices [i] /= gameData.render.color.vertices [i].count;
 	}
 else
 	ComputeStaticFaceLight (nStart, nEnd, nThread);

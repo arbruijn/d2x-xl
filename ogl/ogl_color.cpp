@@ -654,7 +654,7 @@ void G3VertexColor (int nSegment, int nSide, int nVertex,
 						  float fScale, int bSetColor, int nThread)
 {
 PROF_START
-	CFloatVector3	colorSum = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
+	CFloatVector3	colorSum = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
 	CFloatVector3	vertPos;
 	CFaceColor*		colorP = NULL;
 	int				bVertexLights;
@@ -771,16 +771,19 @@ if (bSetColor)
 if (!colorData.bMatEmissive && colorP) 
 #pragma omp critical
 	{
+	if (colorP->count++) 
+		*colorP->XYZ () += colorSum;
+	else
+		colorP->Assign (colorSum);
 	colorP->index = gameStates.render.nFrameFlipFlop + 1;
-	colorP->Assign (colorSum);
 	}
 if (vertColorP) 
 #pragma omp critical
 	{
-	vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 	colorSum *= fScale;
 	vertColorP->Assign (colorSum);
 	vertColorP->Alpha () = 1;
+	vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 	}
 
 #if DBG

@@ -518,39 +518,40 @@ for (i = nStart; i < nEnd; i++) {
 						*colorP = gameData.render.color.ambient [nVertex];
 					else {
 						CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
+						bUpdate = false;
+						for (;;) {
 #pragma omp critical
-						{
-						if ((bUpdate = (vertColorP->index >= 0) && (vertColorP->index != gameStates.render.nFrameFlipFlop + 1)))
-							vertColorP->index = -1;
-						}
-// end critical section
-						if (!bUpdate) {
-							while (vertColorP->index < 0)
-								G3_SLEEP (0);
+							{
+							if (vertColorP->index >= 0) {
+								vertColorP->index = -1;
+								bUpdate = true;
+								}
+							}
+							if (bUpdate)
+								break;
+							G3_SLEEP (0);
+							}
+						if (nLights + lightManager.VariableVertLights (nVertex) == 0) { // no dynamic lights => only ambient light contribution
+							vertColorP->Assign (c);
+							*vertColorP += gameData.render.color.ambient [nVertex];
+							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 							}
 						else {
-							if (nLights + lightManager.VariableVertLights (nVertex) == 0) { // no dynamic lights => only ambient light contribution
-								vertColorP->Assign (c);
-								*vertColorP += gameData.render.color.ambient [nVertex];
-								}
-							else {
-								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
-								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
-								lightManager.ResetNearestToVertex (nVertex, nThread);
-								}
-							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
-#	if DBG
-							if (nVertex == nDbgVertex) {
-								nVertex = nVertex;
-								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
-								}
-#	endif
+							G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
+							lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
+							lightManager.ResetNearestToVertex (nVertex, nThread);
 							}
+#	if DBG
+						if (nVertex == nDbgVertex) {
+							nVertex = nVertex;
+							G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
+							}
+#	endif
 						*colorP = *vertColorP;
+						if (nColor) 
+							*colorP *= faceColor [nColor];
+						colorP->Alpha () = fAlpha;
 						}
-					if (nColor) 
-						*colorP *= faceColor [nColor];
-					colorP->Alpha () = fAlpha;
 					}
 				}
 			}
