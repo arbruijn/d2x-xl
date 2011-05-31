@@ -126,7 +126,7 @@ int CPalette::ClosestColor (int r, int g, int b)
 {
 	int				i, n;
 	int				nBestValue, nBestIndex, value;
-	tComputedColor	*pci, *pcj;
+	CComputedColor	*pci, *pcj;
 
 #if 0
 if (!palette)
@@ -145,7 +145,7 @@ for (i = 0; i < n; i++, pci++)
 		if (i <= 4)
 			return pci->nIndex;
 		else {
-			tComputedColor	h;
+			CComputedColor	h;
 			pcj = pci - 1;
 			h = *pcj;
 			*pcj = *pci;

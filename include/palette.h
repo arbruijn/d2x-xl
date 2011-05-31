@@ -40,15 +40,14 @@ typedef union tPalette {
 	CRGBColor	rgb [PALETTE_SIZE];
 } __pack__ tPalette;
 
-typedef struct tComputedColor {
+class CComputedColor : CRGBColor {
 	ubyte			nIndex;
-	CRGBColor	color;
-} __pack__ tComputedColor;
+	};
 
 class CPalette {
 	private:
 		tPalette			m_data;
-		tComputedColor	m_computedColors [MAX_COMPUTED_COLORS];
+		CComputedColor	m_computedColors [MAX_COMPUTED_COLORS];
 		short				m_nComputedColors;
 		int				m_transparentColor;
 		int				m_superTranspColor;
