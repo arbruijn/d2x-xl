@@ -41,7 +41,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 void G3VertexColor (int nSegment, int nSide, int nVertex, 
 						  CFloatVector3 *pvVertNorm, CFloatVector3 *pVertPos, 
 						  CFaceColor *pVertColor, CFaceColor *pBaseColor, 
-						  float fScale, int bSetColor, int bForce, int nThread);
+						  float fScale, int bSetColor, int nThread);
 void InitVertColorData (CVertColorData& vcd);
 
 //------------------------------------------------------------------------------
