@@ -715,11 +715,7 @@ if (!gameStates.render.nState && (nVertex == nDbgVertex))
 	nVertex = nVertex;
 #endif
 if (ogl.m_states.bUseTransform)
-#if 1
 	colorData.vertNorm = *vVertNormP;
-#else
-	CFloatVector::Normalize (&colorData.vertNorm, vVertNormP);
-#endif
 else {
 	if (gameStates.render.nState)
 		transformation.Rotate (colorData.vertNorm, *vVertNormP, 0);
@@ -734,8 +730,7 @@ if ((bVertexLights = !(gameStates.render.nState || vertColorP))) {
 	lightManager.SetNearestToVertex (nSegment, nSide, nVertex, NULL, 1, 0, 1, nThread);
 	}
 colorData.vertPosP = vVertPosP;
-//VmVecNegate (&vertNorm);
-//if (nLights)
+
 #if MULTI_THREADED_LIGHTS
 if (gameStates.app.bMultiThreaded) {
 	SDL_SemPost (gameData.threads.vertColor.info [0].exec);
@@ -750,7 +745,7 @@ else
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
 	colorSum.Red () =
 	colorSum.Green () =
-	colorSum.Blue () = 1;
+	colorSum.Blue () = 1.0f;
 	}
 else {
 	if (lightManager.Index (0, nThread).nActive) {
@@ -763,19 +758,13 @@ else {
 		G3AccumVertColor (nVertex, &colorSum, &colorData, nThread);
 		}
 	if ((nVertex >= 0) && !(gameStates.render.nState || gameData.render.vertColor.bDarkness)) {
-#if 1
 		colorSum += *gameData.render.color.ambient [nVertex].XYZ () * fScale;
-#else
-		CFaceColor *faceColorP = gameData.render.color.ambient + nVertex;
-		colorSum.Red () += faceColorP->Red () * fScale;
-		colorSum.Green () += faceColorP->Green () * fScale;
-		colorSum.Blue () += faceColorP->Blue () * fScale;
-#endif
 #if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex) && (colorSum.Sum () < 0.1f))
 			nVertex = nVertex;
 #endif
 		}
+	colorSum *= gameData.render.fBrightness;
 	if (colorSum.Red () > 1.0)
 		colorSum.Red () = 1.0;
 	if (colorSum.Green () > 1.0)
@@ -783,7 +772,6 @@ else {
 	if (colorSum.Blue () > 1.0)
 		colorSum.Blue () = 1.0;
 	}
-colorSum *= gameData.render.fBrightness;
 if (bSetColor)
 	OglColor4sf (colorSum.Red () * fScale, colorSum.Green () * fScale, colorSum.Blue () * fScale, 1.0);
 
