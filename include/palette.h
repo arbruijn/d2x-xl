@@ -41,7 +41,8 @@ typedef union tPalette {
 } __pack__ tPalette;
 
 class CComputedColor : public CRGBColor {
-	ubyte			nIndex;
+	public:
+		ubyte			nIndex;
 	};
 
 class CPalette {
