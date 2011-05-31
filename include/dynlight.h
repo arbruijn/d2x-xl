@@ -57,7 +57,7 @@ class CDynLightInfo {
 		CSegFace*		faceP;
 		CFixVector		vPos;
 		CFloatVector	vDirf;
-		CFloatVector		color;
+		CFloatVector	color;
 		float				fBrightness;
 		float				fBoost;
 		float				fRange;

@@ -51,7 +51,7 @@ for (i = 0; i < m_data.nLights [0]; i++, lightP++) {
 		}
 	lightP->render.vPosf [0].v.coord.w = 1;
 	lightP->render.nType = lightP->info.nType;
-	lightP->render.bState = lightP->info.bState && (lightP->info.Red () + lightP->info.Green () + lightP->info.Blue () > 0.0);
+	lightP->render.bState = lightP->info.bState && (lightP->info.color.Red () + lightP->info.color.Green () + lightP->info.color.Blue () > 0.0);
 	lightP->render.bLightning = (lightP->info.nObject < 0) && (lightP->info.nSide < 0);
 	for (int j = 0; j < gameStates.app.nThreads; j++)
 		ResetUsed (lightP, j);

@@ -395,30 +395,30 @@ typedef struct tRgbColord {
 	double blue;
 } __pack__ tRgbColord;
 
-void ReadColor (CFile& cf, CFaceColor *pc, int bFloatData, int bRegisterColor)
+void ReadColor (CFile& cf, CFaceColor *colorP, int bFloatData, int bRegisterColor)
 {
-pc->index = cf.ReadByte ();
+colorP->index = cf.ReadByte ();
 if (bFloatData) {
 	tRgbColord	c;
 	cf.Read (&c, sizeof (c), 1);
-	pc->Red () = (float) c.Red ();
-	pc->Green () = (float) c.Green ();
-	pc->Blue () = (float) c.Blue ();
+	colorP->Red () = (float) c.red;
+	colorP->Green () = (float) c.green;
+	colorP->Blue () = (float) c.blue;
 	}
 else {
 	int c = cf.ReadInt ();
-	pc->Red () = (float) c / (float) 0x7fffffff;
+	colorP->Red () = (float) c / (float) 0x7fffffff;
 	c = cf.ReadInt ();
-	pc->Green () = (float) c / (float) 0x7fffffff;
+	colorP->Green () = (float) c / (float) 0x7fffffff;
 	c = cf.ReadInt ();
-	pc->Blue () = (float) c / (float) 0x7fffffff;
+	colorP->Blue () = (float) c / (float) 0x7fffffff;
 	}
 if (bRegisterColor &&
-	 (((pc->Red () > 0) && (pc->Red () < 1)) ||
-	 ((pc->Green () > 0) && (pc->Green () < 1)) ||
-	 ((pc->Blue () > 0) && (pc->Blue () < 1))))
+	 (((colorP->Red () > 0) && (colorP->Red () < 1)) ||
+	 ((colorP->Green () > 0) && (colorP->Green () < 1)) ||
+	 ((colorP->Blue () > 0) && (colorP->Blue () < 1))))
 	gameStates.render.bColored = 1;
-pc->Alpha () = 1;
+colorP->Alpha () = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -559,15 +559,15 @@ if (gameStates.app.bD2XLevel) {
 
 void LoadSideLightsCompiled (int i, CFile& cf)
 {
-	CFaceColor	*pc;
+	CFaceColor	*colorP;
 	int			j;
 
 gameData.render.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments * 6);
-	pc = gameData.render.color.lights + i;
-	for (; i < j; i++, pc++) {
-		ReadColor (cf, pc, gameData.segs.nLevelVersion <= 13, 1);
+	colorP = gameData.render.color.lights + i;
+	for (; i < j; i++, colorP++) {
+		ReadColor (cf, colorP, gameData.segs.nLevelVersion <= 13, 1);
 		}
 	}
 }

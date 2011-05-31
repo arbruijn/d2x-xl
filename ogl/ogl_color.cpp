@@ -51,18 +51,10 @@
 
 //------------------------------------------------------------------------------
 
-CFaceColor lightColor = {{{1.0f, 1.0f, 1.0f, 1.0f}}, 0};
-CFaceColor tMapColor = {{{1.0f, 1.0f, 1.0f, 1.0f}}, 0};
-CFaceColor vertColors [8] = {
-	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
-	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
-	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
-	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
-	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
-	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
-	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}},
-	{{{1.0f, 1.0f, 1.0f, 1.0f}}, 0}
-	};
+CFaceColor lightColor;
+CFaceColor tMapColor;
+CFaceColor vertColors [8];
+
 CFloatVector shadowColor [2] = {{1.0f, 0.0f, 0.0f, 0.8f}, {0.0f, 0.0f, 1.0f, 0.8f}};
 CFloatVector modelColor [2] = {{0.0f, 0.5f, 1.0f, 0.5f}, {0.0f, 1.0f, 0.5f, 0.5f}};
 

@@ -1039,7 +1039,7 @@ for (i = 0; i < 4; i++) {
 	m_texCoordP++;
 	m_ovlTexCoordP++;
 	if (!gameStates.app.bNostalgia)
-		*m_faceColorP = gameData.render.color.ambient [j].color;
+		*m_faceColorP = gameData.render.color.ambient [j];
 	else {
 		m_faceColorP->Red () = 
 		m_faceColorP->Green () = 
@@ -1217,10 +1217,7 @@ for (i = 0; i < 4; i++) {
 	texCoord.v.v += X2F (m_sideP->m_uvls [i].v + m_sideP->m_uvls [j].v) / 8;
 	h = m_sideVerts [i];
 	k = m_sideVerts [j];
-	color.Red () += (gameData.render.color.ambient [h].color.Red () + gameData.render.color.ambient [k].color.Red ()) / 8;
-	color.Green () += (gameData.render.color.ambient [h].color.Green () + gameData.render.color.ambient [k].color.Green ()) / 8;
-	color.Blue () += (gameData.render.color.ambient [h].color.Blue () + gameData.render.color.ambient [k].color.Blue ()) / 8;
-	color.Alpha () += (gameData.render.color.ambient [h].color.Alpha () + gameData.render.color.ambient [k].color.Alpha ()) / 8;
+	color += (gameData.render.color.ambient [h] + gameData.render.color.ambient [k]) * 0.125f;
 	}
 vSide [0] = CFloatVector::Avg (gameData.segs.fVertices [m_sideVerts [0]], gameData.segs.fVertices [m_sideVerts [1]]);
 vSide [2] = CFloatVector::Avg (gameData.segs.fVertices [m_sideVerts [2]], gameData.segs.fVertices [m_sideVerts [3]]);

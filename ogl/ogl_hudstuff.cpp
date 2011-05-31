@@ -44,7 +44,11 @@ void OglDrawMouseIndicator (void)
 	static tSinCosf sinCos12 [12];
 	static int bInitSinCos = 1;
 
-	static CCanvasColor color = {-1, 1, {255, 255, 255, 96}};
+	static CCanvasColor color;// = {-1, 1, {255, 255, 255, 96}};
+
+	color.Set (255, 255, 255, 96);
+	color.index = -1;
+	color.rgb = 1;
 
 	float	r, w, h;
 

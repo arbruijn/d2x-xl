@@ -25,6 +25,8 @@ class CRGBColor {
 class CFaceColor : public CFloatVector {
 	public:
 		char	index;
+
+	CFaceColor () : index (1) { Set (1.0f, 1.0f, 1.0f, 1.0f); }
 	};
 
 class CCanvasColor : public CRGBAColor {
