@@ -137,7 +137,9 @@ class CGenericCockpit {
 		static CStack<int>	m_save;
 
 	public:
-		CGenericCockpit() { m_save.Create (10); }
+		static CCanvasColor gaugeFadeColors [2][4];
+
+		CGenericCockpit();
 		void Init (void);
 
 		static bool Save (bool bInitial = false);

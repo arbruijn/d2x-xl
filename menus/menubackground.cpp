@@ -383,7 +383,7 @@ if (right >= screen.Width ())
 	right = screen.Width () - 1;
 if (bottom >= screen.Height ())
 	bottom = screen.Height () - 1;
-CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.Alpha () * fAlpha));
+CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
 ogl.SetTexturing (false);
 OglDrawFilledRect (left, top, right, bottom);
 CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);

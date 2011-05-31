@@ -1172,7 +1172,7 @@ if (item->nType == riSphereShield) {
 else if (item->nType == riMonsterball) {
 	if (glowRenderer.End ())
 		ResetBitmaps ();
-	DrawMonsterball (item->objP, item->color.Red (), item->color.Green (), item->color.Blue (), item->Alpha ());
+	DrawMonsterball (item->objP, item->color.Red (), item->color.Green (), item->color.Blue (), item->color.Alpha ());
 	}
 //shaderManager.Deploy (-1);
 ResetBitmaps ();

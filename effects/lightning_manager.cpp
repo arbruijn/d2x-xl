@@ -628,7 +628,7 @@ if (SHOW_LIGHTNING) {
 		llP->color.Blue () /= n;
 
 #if 1
-		llP->color.nBrightness = F2X (sqrt (10 * (llP->color.Red () + llP->color.Green () + llP->color.Blue ()) * llP->color.Alpha ()));
+		llP->nBrightness = F2X (sqrt (10 * (llP->color.Red () + llP->color.Green () + llP->color.Blue ()) * llP->color.Alpha ()));
 #else
 		if (gameStates.render.bPerPixelLighting == 2)
 			llP->nBrightness = F2X (sqrt (10 * (llP->Red () + llP->Green () + llP->Blue ()) * llP->Alpha ()));

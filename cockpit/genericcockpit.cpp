@@ -1624,7 +1624,11 @@ if ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepair
 if (gameOpts->render.cockpit.bTextGauges) {
 	int				nColor, nDamage [3], h [4], w [4], aw [4], tw = 0;
 	char				szDamage [3][10];
-	CCanvasColor	dmgColor = {-1, 1, {0, 0, 0, 128}};
+	CCanvasColor	dmgColor;
+
+	dmgColor.Set (0, 0, 0, 128);
+	dmgColor.index = -1;
+	dmgColor.rgb = 1;
 
 	fontManager.SetScale (max (1.0f, floor (fScale + 0.5f)));
 	for (i = 0; i < 3; i++) {
@@ -1642,9 +1646,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 	CCanvas::Current ()->SetFontColor (dmgColor, 1);	// black background
 	for (i = 0; i < 3; i++) {
 		nColor = dmgColors [1][nDamage [i] / 33];
-		dmgColor.color.Red () = RGBA_RED (nColor);
-		dmgColor.color.Green () = RGBA_GREEN (nColor);
-		dmgColor.color.Blue () = RGBA_BLUE (nColor);
+		dmgColor.Set (RGBA_RED (nColor), RGBA_GREEN (nColor), RGBA_BLUE (nColor));
 		CCanvas::Current ()->SetFontColor (dmgColor, 0);
 		if (nDamage [i] < 100)
 			szDamage [i][2] = '\0'; // remove the trailing blank, it causes rendering artifacts

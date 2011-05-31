@@ -66,9 +66,9 @@ else {
 	glNewList (mouseIndList, GL_COMPILE_AND_EXECUTE);
 #endif
 	if (joyMouse.Load ()) {
-		color.color.Alpha () = 255;
+		color.Alpha () = 255;
 		joyMouse.Bitmap ()->RenderScaled (mouseData.x - 8, mouseData.y - 8, 16, 16, I2X (1), 0, &color);
-		color.color.Alpha () = 96;
+		color.Alpha () = 96;
 		}
 	else {
 		glPushMatrix ();

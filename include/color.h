@@ -7,6 +7,9 @@ class CRGBAColor {
 	public:
 		ubyte	r, g, b, a;
 
+	inline void Set (ubyte red, ubyte green, ubyte blue, ubyte alpha = 255) {
+		r = red, g = green, b = blue, a = alpha;
+		}
 	inline ubyte& Red (void) { return r; }
 	inline ubyte& Green (void) { return g; }
 	inline ubyte& Blue (void) { return b; }
@@ -30,8 +33,9 @@ class CFaceColor : public CFloatVector {
 	};
 
 class CCanvasColor : public CRGBAColor {
-	short				index;       // current color
-	ubyte				rgb;
+	public:
+		short				index;       // current color
+		ubyte				rgb;
 	};
 
 //-----------------------------------------------------------------------------

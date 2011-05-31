@@ -1087,7 +1087,8 @@ for (i = 0; i < 2; i++, m_triP++) {
 		m_ovlTexCoordP++;
 		m_lMapTexCoordP++;
 		m_colorP = gameData.render.color.ambient + v;
-		*m_faceColorP++ = m_colorP->color;
+		m_faceColorP->Assign (*m_colorP);
+		++m_faceColorP;
 		}
 	m_normalP = SetTriNormals (m_triP, m_normalP);
 	}
@@ -1249,7 +1250,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 			m_texCoordP [j].v.u = X2F (m_sideP->m_uvls [k].u);
 			m_texCoordP [j].v.v = X2F (m_sideP->m_uvls [k].v);
 			m_colorP = gameData.render.color.ambient + v;
-			m_faceColorP [j] = m_colorP->color;
+			m_faceColorP [j] = *m_colorP;
 			}
 		RotateTexCoord2f (*m_ovlTexCoordP, m_texCoordP [j], (ubyte) m_sideP->m_nOvlOrient);
 		m_ovlTexCoordP++;

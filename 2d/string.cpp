@@ -180,15 +180,15 @@ int GrInternalString0 (int x, int y, const char *s)
 	
 if (CCanvas::Current ()->FontColor (0).rgb) {
 	CCanvas::Current ()->FontColor (0).rgb = 0;
-	CCanvas::Current ()->FontColor (0).index = palette->ClosestColor (CCanvas::Current ()->FontColor (0).color.Red (), 
-																							CCanvas::Current ()->FontColor (0).color.Green (), 
-																							CCanvas::Current ()->FontColor (0).color.Blue ());
+	CCanvas::Current ()->FontColor (0).index = palette->ClosestColor (CCanvas::Current ()->FontColor (0).Red (), 
+																							CCanvas::Current ()->FontColor (0).Green (), 
+																							CCanvas::Current ()->FontColor (0).Blue ());
 	}
 if (CCanvas::Current ()->FontColor (1).rgb) {
 	CCanvas::Current ()->FontColor (1).rgb = 0;
-	CCanvas::Current ()->FontColor (1).index = palette->ClosestColor (CCanvas::Current ()->FontColor (1).color.Red (), 
-																							CCanvas::Current ()->FontColor (1).color.Green (), 
-																							CCanvas::Current ()->FontColor (1).color.Blue ());
+	CCanvas::Current ()->FontColor (1).index = palette->ClosestColor (CCanvas::Current ()->FontColor (1).Red (), 
+																							CCanvas::Current ()->FontColor (1).Green (), 
+																							CCanvas::Current ()->FontColor (1).Blue ());
 	}
 bits = 0;
 videoOffset1 = y * rowSize + x;
@@ -275,10 +275,7 @@ if ((c >= 1) && (c <= 3)) {
 	if (textP [1]) {
 		if (grMsgColorLevel >= c) {
 			CCanvas::Current ()->FontColor (0).rgb = 1;
-			CCanvas::Current ()->FontColor (0).color.Red () = (textP [1] - nOffset) * nScale;
-			CCanvas::Current ()->FontColor (0).color.Green () = (textP [2] - nOffset) * nScale;
-			CCanvas::Current ()->FontColor (0).color.Blue () = (textP [3] - nOffset) * nScale;
-			CCanvas::Current ()->FontColor (0).color.Alpha () = 255;
+			CCanvas::Current ()->FontColor (0).Set ((textP [1] - nOffset) * nScalem, (textP [2] - nOffset) * nScale, (textP [3] - nOffset) * nScale, 255);
 			}
 		return textP + 4;
 		}
@@ -310,11 +307,11 @@ int GrInternalString0m (int x, int y, const char *s)
 
 if (CCanvas::Current ()->FontColor (0).rgb) {
 	CCanvas::Current ()->FontColor (0).rgb = 0;
-	CCanvas::Current ()->FontColor (0).index = fontManager.Current ()->ParentBitmap ().Palette ()->ClosestColor (CCanvas::Current ()->FontColor (0).color.Red (), CCanvas::Current ()->FontColor (0).color.Green (), CCanvas::Current ()->FontColor (0).color.Blue ());
+	CCanvas::Current ()->FontColor (0).index = fontManager.Current ()->ParentBitmap ().Palette ()->ClosestColor (CCanvas::Current ()->FontColor (0).Red (), CCanvas::Current ()->FontColor (0).Green (), CCanvas::Current ()->FontColor (0).Blue ());
 	}
 if (CCanvas::Current ()->FontColor (1).rgb) {
 	CCanvas::Current ()->FontColor (1).rgb = 0;
-	CCanvas::Current ()->FontColor (1).index = fontManager.Current ()->ParentBitmap ().Palette ()->ClosestColor (CCanvas::Current ()->FontColor (1).color.Red (), CCanvas::Current ()->FontColor (1).color.Green (), CCanvas::Current ()->FontColor (1).color.Blue ());
+	CCanvas::Current ()->FontColor (1).index = fontManager.Current ()->ParentBitmap ().Palette ()->ClosestColor (CCanvas::Current ()->FontColor (1).Red (), CCanvas::Current ()->FontColor (1).Green (), CCanvas::Current ()->FontColor (1).Blue ());
 	}
 origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
 bits=0;

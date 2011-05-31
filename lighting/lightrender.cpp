@@ -565,7 +565,7 @@ return m_data.index [0][0].nActive;
 
 CFaceColor* CLightManager::AvgSgmColor (int nSegment, CFixVector *vPosP, int nThread)
 {
-	CFaceColor	c, *vertColorP, *segColorP = gameData.render.segments + nSegment;
+	CFaceColor	c, *vertColorP, *segColorP = gameData.render.color.segments + nSegment;
 	short			i, *pv;
 	CFixVector	vCenter, vVertex;
 	float			d, ds;
@@ -624,7 +624,7 @@ else {
 	c.Set (0.0f, 0.0f, 0.0f, 1.0f);
 	c.index = 0;
 	for (i = 0; i < 8; i++, pv++) {
-		vertColorP = gameData.render.vertices + *pv;
+		vertColorP = gameData.render.color.vertices + *pv;
 		if (vPosP) {
 			vVertex = gameData.segs.vertices [*pv];
 			//transformation.Transform (&vVertex, &vVertex);
@@ -640,7 +640,8 @@ else {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	*segColorP = c * 0.125f;
+	c *= 0.125f; // => / 8.0f
+	*segColorP.Assign (c);
 #if 0
 	if (lightManager.SetNearestToSegment (nSegment, 1)) {
 		CDynLight*		lightP;
@@ -689,7 +690,7 @@ return segColorP;
 void CLightManager::ResetSegmentLights (void)
 {
 for (short i = 0; i < gameData.segs.nSegments; i++)
-	gameData.render.segments [i].index = -1;
+	gameData.render.color.segments [i].index = -1;
 }
 
 //------------------------------------------------------------------------------

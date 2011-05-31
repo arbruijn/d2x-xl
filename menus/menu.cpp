@@ -794,7 +794,7 @@ while (!done) {
 
 		case KEY_COMMAND + KEY_T:
 		case KEY_CTRLED + KEY_T:
-			gameData.menu.Alpha () = (gameData.menu.Alpha () + 16) & 0xFF;
+			gameData.menu.alpha = (gameData.menu.alpha + 16) & 0xFF;
 			break;
 
 		case KEY_COMMAND + KEY_P:

@@ -148,12 +148,10 @@ PROF_START
 	//int				bVertexLight = gameStates.render.bPerPixelLighting != 2;
 	int				bLightmaps = lightmapManager.HaveLightmaps ();
 	bool				bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
-	static			CFaceColor brightColor = {{{1.0f, 1.0f, 1.0f, 1.0f}}, 1};
+	static			CFaceColor brightColor;
 
 for (i = 0; i < 3; i++)
 	faceColor [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
-	faceColor [i].index = 1;
-	}
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 ogl.SetTransform (1);
 gameStates.render.nState = 0;
@@ -185,7 +183,7 @@ for (i = nStart; i < nEnd; i++) {
 		}
 #endif
 	AddFaceListItem (faceP, nThread);
-	faceP->m_info.color = faceColor [nColor].color;
+	faceP->m_info.color.Assign (faceColor [nColor]);
 	colorP = FACES.color + faceP->m_info.nIndex;
 	for (h = 0; h < 4; h++, colorP++) {
 		if (gameStates.render.bFullBright)
@@ -194,7 +192,7 @@ for (i = nStart; i < nEnd; i++) {
 			if (bLightmaps) {
 				c = faceColor [nColor];
 				if (nColor)
-					*colorP = c.color;
+					colorP->Assign (c);
 				}
 			else {
 				nVertex = faceP->m_info.index [h];
@@ -299,7 +297,7 @@ PROF_START
 	tSegFaces*		segFaceP;
 	CSegFace*		faceP;
 	CFloatVector*	colorP;
-	CFaceColor		c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
+	CFaceColor		c, faceColor [3];
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
@@ -311,6 +309,8 @@ PROF_START
 	static		CFaceColor brightColor = {{1,1,1,1},1};
 
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
+for (i = 0; i < 3; i++)
+	faceColor [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
 ogl.SetTransform (1);
 gameStates.render.nState = 0;
 #	if GPGPU_VERTEX_LIGHTING

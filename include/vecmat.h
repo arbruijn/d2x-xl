@@ -229,6 +229,7 @@ class __pack__ CFloatVector {
 		CFloatVector& Neg (void);
 		CFloatVector& Scale (CFloatVector& scale);
 		CFloatVector3* XYZ (void);
+		CFloatVector3* RGB (void);
 
 		const CFloatVector operator- (void) const;
 		const bool operator== (const CFloatVector& other);
@@ -496,6 +497,8 @@ inline CFloatVector& CFloatVector::Neg (void) {
 	}
 
 inline CFloatVector3* CFloatVector::XYZ (void) { return reinterpret_cast<CFloatVector3*> (&v.coord.x); }
+
+inline CFloatVector3* CFloatVector::RGB (void) { return reinterpret_cast<CFloatVector3*> (&v.color.r); }
 
 inline const CFloatVector CFloatVector::operator- (void) const {
 	CFloatVector vec;
