@@ -23,6 +23,9 @@ class CRGBColor {
 	inline ubyte& Red (void) { return r; }
 	inline ubyte& Green (void) { return g; }
 	inline ubyte& Blue (void) { return b; }
+	inline void Set (ubyte red, ubyte green, ubyte blue) {
+		r = red, g = green, b = blue;
+		}
 	};
 
 class CFaceColor : public CFloatVector {

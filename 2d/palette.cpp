@@ -79,9 +79,8 @@ return cf.File () && (cf.Write (&m_data, sizeof (m_data), 1) == 1);
 
 void CPalette::ToRgbaf (ubyte nIndex, CFloatVector& color)
 {
-color.Red () = float (m_data.rgb [nIndex].Red ()) / 63.0f;
-color.Green () = float (m_data.rgb [nIndex].Green ()) / 63.0f;
-color.Blue () = float (m_data.rgb [nIndex].Blue ()) / 63.0f;
+color.Set (m_data.rgb [nIndex].Red (), m_data.rgb [nIndex].Green (), m_data.rgb [nIndex].Blue ());
+color /= 64.0f;
 color.Alpha () = -1;
 }
 
@@ -100,9 +99,7 @@ if (m_nComputedColors < MAX_COMPUTED_COLORS) {
 	} 
 else
 	i = (RandShort () * MAX_COMPUTED_COLORS) >> 15;
-m_computedColors [i].color.Red () = r;
-m_computedColors [i].color.Green () = g;
-m_computedColors [i].color.Blue () = b;
+m_computedColors [i].Set (r, g, b);
 m_computedColors [i].nIndex = nIndex;
 }
 
@@ -156,7 +153,7 @@ for (i = 0; i < n; i++, pci++)
 
 nBestValue = 3 * Sqr (255) + 1;	// max. possible value + 1
 nBestIndex = 0;
-// only go to 254, 'cause we dont want to check the transparent color.
+// only go to 254, 'cause we dont want to check the transparent 
 for (i = 0; i < 255; i++) {
 	if (!(value = ColorDelta (m_data.rgb [i], r, g, b))) {
 		AddComputedColor (r, g, b, i);

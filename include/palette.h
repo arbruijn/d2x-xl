@@ -40,7 +40,7 @@ typedef union tPalette {
 	CRGBColor	rgb [PALETTE_SIZE];
 } __pack__ tPalette;
 
-class CComputedColor : CRGBColor {
+class CComputedColor : public CRGBColor {
 	ubyte			nIndex;
 	};
 
