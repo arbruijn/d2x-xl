@@ -480,17 +480,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		bDiffuse = 1;
 		lightRayDir = colorData.vertNorm;
 		}
-	else if (bDiffuse = lightP->info.bDiffuse [nThread]) {
-#if 0
-		if (fLightDist < 0.001f) {
-			fLightDist = 0.0f;
-			lightRayDir = colorData.vertNorm;
-			NdotL = 1.0f; // full light contribution for adjacent points
-			}
-		else 
-#endif
-			{
-			lightRayDir /= fLightDist; // normalize
+	else {
+		lightRayDir /= fLightDist; // normalize
+		if (bDiffuse = lightP->info.bDiffuse [nThread]) {
 			if (colorData.vertNorm.IsZero ())
 				NdotL = 1.0f;
 			else {
@@ -507,12 +499,12 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			else
 				fLightAngle = 1.0f;
 			}
-		}
-	else {
-		NdotL = 1.0f;
-		fLightDist = X2F (lightP->render.xDistance [nThread]);
-		fLightAngle = CFloatVector3::Dot (lightRayDir, lightDir);
-		fLightAngle = (fLightAngle < 0.0f) ? 1.0f : 1.0f - fLightAngle; 
+		else {
+			NdotL = 1.0f;
+			fLightDist = X2F (lightP->render.xDistance [nThread]);
+			fLightAngle = CFloatVector3::Dot (lightRayDir, lightDir);
+			fLightAngle = (fLightAngle < 0.0f) ? 1.0f : 1.0f - fLightAngle; 
+			}
 		}
 
 #if DBG
