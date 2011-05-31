@@ -533,7 +533,7 @@ if (bHaveMonitorBg) {
 #else
 		faceP->bmTop = cameraP;
 		for (i = 0; i < 4; i++)
-			gameData.render.color.vertices [faceP->m_info.index [i]].color.Alpha () = 0.7f;
+			gameData.render.color.vertices [faceP->m_info.index [i]].Alpha () = 0.7f;
 #endif
 		}
 	else if (/*gameOpts->render.cameras.bFitToWall ||*/ (faceP->m_info.nOvlTex == 0) || !faceP->bmBot)
