@@ -80,7 +80,7 @@ for (i = iFaceVerts, h = iFaceVerts, pmv = modelP->m_faceVerts + iFaceVerts; i <
 		modelP->m_vbColor [h].Alpha () = fAlpha;
 		}
 	else if (pmv->m_bTextured)
-		modelP->m_vbColor [h] = modelP->m_color [pmv->m_nIndex].color;
+		modelP->m_vbColor [h].Assign (modelP->m_color [pmv->m_nIndex]);
 	else {
 		colorP = modelP->m_color + pmv->m_nIndex;
 		modelP->m_vbColor [h].Red () = pmv->m_baseColor.Red () * colorP->Red ();
@@ -98,7 +98,7 @@ void G3LightModel (CObject *objP, int nModel, fix xModelLight, fix *xGlowValues,
 	RenderModel::CModel*		modelP = gameData.models.renderModels [bHires] + nModel;
 	RenderModel::CVertex*	pmv;
 	RenderModel::CFace*		pmf;
-	CFloatVector					baseColor, *colorP;
+	CFloatVector				baseColor, *colorP;
 	float							fLight, fAlpha = gameStates.render.grAlpha;
 	int							h, i, j, l;
 	int							bEmissive = (objP->info.nType == OBJ_MARKER) || (objP->IsWeapon () && !objP->IsMissile ());
@@ -120,9 +120,9 @@ if (SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting ||
 	}
 else {
 	if (gameData.objs.color.index)
-		baseColor = gameData.objs.color.color;
+		baseColor.Assign (gameData.objs.color);
 	else
-		baseColor.Red () = baseColor.Green () = baseColor.Blue () = 1;
+		baseColor.Set (1.0f, 1.0f, 1.0f);
 	baseColor.Alpha () = fAlpha;
 	for (i = modelP->m_nFaces, pmf = modelP->m_faces.Buffer (); i; i--, pmf++) {
 		if (pmf->m_nBitmap >= 0)

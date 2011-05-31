@@ -448,9 +448,9 @@ for (;;) {
 			CCanvas::Current ()->SetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * gameStates.render.grAlpha));
 			CCanvas::Current ()->FadeColorRGB (1.0);
 			if (colorP) {
-				colorP->Red () = (float) CCanvas::Current ()->Color ().color.Red () / 255.0f;
-				colorP->Green () = (float) CCanvas::Current ()->Color ().color.Green () / 255.0f;
-				colorP->Blue () = (float) CCanvas::Current ()->Color ().color.Blue () / 255.0f;
+				colorP->Red () = (float) CCanvas::Current ()->Color ().Red () / 255.0f;
+				colorP->Green () = (float) CCanvas::Current ()->Color ().Green () / 255.0f;
+				colorP->Blue () = (float) CCanvas::Current ()->Color ().Blue () / 255.0f;
 				}
 			p += 30;
 			for (i = 0; i < nVerts; i++)

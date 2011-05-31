@@ -154,7 +154,7 @@ else {
 		bmP = bmP->Override (-1);
 		bmP->SetupTexture (1, 0);
 		bmP->SetTexCoord (texCoords);
-		bmP->SetColor (&gameData.objs.color.color);
+		bmP->SetColor (&gameData.objs.color);
 		ogl.RenderQuad (bmP, vertices, 3);
 		}
 	}
