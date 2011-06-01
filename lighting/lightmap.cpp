@@ -659,7 +659,7 @@ for (CSegFace* faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, faceP++
 		m_data.nWhiteLightmaps++;
 		}
 	else {
-		//Blur (faceP, m_data);
+		Blur (faceP, m_data);
 		Copy (m_data.m_texColor, m_list.nLightmaps);
 		faceP->m_info.nLightmap = m_list.nLightmaps++;
 		}
