@@ -342,21 +342,16 @@ else {
 		}
 	}
 
-if (m_nType == SIDE_IS_QUAD) {
-	AddToVertexNormal (m_vertices [0], vNormal);
-	AddToVertexNormal (m_vertices [1], vNormal);
-	AddToVertexNormal (m_vertices [2], vNormal);
-	AddToVertexNormal (m_vertices [3], vNormal);
-	}
-else {
-	int i;
-	for (i = 0; i < 3; i++)
-		AddToVertexNormal (m_vertices [i], m_normals [0]);
-	for (; i < 6; i++)
-		AddToVertexNormal (m_vertices [i], m_normals [1]);
-	}
 m_normals [2] = CFixVector::Avg (m_normals [0], m_normals [1]);
 m_fNormals [2] = CFloatVector::Avg (m_fNormals [0], m_fNormals [1]);
+if (m_nType == SIDE_IS_QUAD) {
+	for (int i = 0; i < 4; i++)
+		AddToVertexNormal (m_vertices [i], vNormal);
+	}
+else {
+	for (int i = 0; i < 3; i++)
+		AddToVertexNormal (m_vertices [i], m_normals [2]);
+	}
 }
 
 // -------------------------------------------------------------------------------

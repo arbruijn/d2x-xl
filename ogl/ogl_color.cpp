@@ -555,7 +555,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			RdotE = CFloatVector3::Dot (vReflect, vertPos);
 			if (RdotE > 0.0f) {
 				vertColor += (lightColor * (float) pow (RdotE, colorData.fMatShininess));
-				vertColor.Set (0.0f, 0.0f, (float) pow (RdotE, colorData.fMatShininess)); //test
 				}
 			}
 #endif
