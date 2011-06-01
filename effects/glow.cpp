@@ -19,7 +19,7 @@ CGlowRenderer glowRenderer;
 
 int hBlurShader = -1;
 
-#	if 1
+#	if 0
 
 // linear sampling
 const char *blurFS = 
