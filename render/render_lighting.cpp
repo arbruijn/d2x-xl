@@ -244,7 +244,7 @@ for (i = nStart; i < nEnd; i++) {
 							if (nVertex == nDbgVertex)
 								nDbgVertex = nDbgVertex;
 #endif
-							G3VertexColor (nSegment, nSide, nVertex, POINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &c, 1, 0, nThread);
+							G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &c, 1, 0, nThread);
 							lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 							lightManager.ResetNearestToVertex (nVertex, nThread);
 							}
@@ -417,7 +417,7 @@ for (i = nStart; i < nEnd; i++) {
 								if (nVertex == nDbgVertex)
 									nDbgVertex = nDbgVertex;
 #endif
-								G3VertexColor (nSegment, nSide, nVertex, POINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &c, 1, 0, nThread);
+								G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &c, 1, 0, nThread);
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
@@ -464,7 +464,7 @@ PROF_START
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, k, nIndex, nColor, nLights = 0, bUdate;
+	int			h, i, j, k, nIndex, nColor, nLights = 0, bUpdate;
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 
 	static		CStaticFaceColor<1,1,1,1> brightColor;
@@ -549,7 +549,7 @@ for (i = nStart; i < nEnd; i++) {
 								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								}
 							else {
-								G3VertexColor (nSegment, nSide, nVertex, POINTS [nVertex].GetNormal ()->XYZ (), FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
+								G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
