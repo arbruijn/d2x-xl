@@ -335,10 +335,9 @@ if (SEGMENTS [faceP->m_info.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
 	faceP->m_info.nLightmap = 1;
 	return true;
 	}
-if (SEGMENTS [faceP->m_info.nSegment].m_children [faceP->m_info.nSide] < 0) {
-	faceP->m_info.nLightmap = 0;
-	return true;
-	}
+if (SEGMENTS [faceP->m_info.nSegment].m_children [faceP->m_info.nSide] < 0)
+	return false;
+
 CWall* wallP = SEGMENTS [faceP->m_info.nSegment].m_sides [faceP->m_info.nSide].Wall ();
 if (!wallP || (wallP->nType != WALL_OPEN)) 
 	return false;
@@ -666,7 +665,7 @@ for (CSegFace* faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, faceP++
 		m_data.nWhiteLightmaps++;
 		}
 	else {
-		Blur (faceP, m_data);
+		//Blur (faceP, m_data);
 		Copy (m_data.m_texColor, m_list.nLightmaps);
 		faceP->m_info.nLightmap = m_list.nLightmaps++;
 		}
