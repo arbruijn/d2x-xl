@@ -998,7 +998,7 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 
 // -----------------------------------------------------------------------------------
 
-bool CWall::IsTriggerTarget (int i)
+int CWall::IsTriggerTarget (int i)
 {
 CTrigger *triggerP = TRIGGERS.Buffer (i);
 for (; i < gameData.trigs.m_nTriggers; i++, triggerP++) {
