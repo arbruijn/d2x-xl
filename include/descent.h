@@ -3556,16 +3556,17 @@ extern fix nDebrisLife [];
 
 #define CLEAR(_v)		memset (_v, 0, sizeof (_v))
 
-#define SEGMENTS		gameData.segs.segments
-#define VERTICES		gameData.segs.vertices
-#define FVERTICES		gameData.segs.fVertices
-#define SEGFACES		gameData.segs.segFaces
-#define OBJECTS		gameData.objs.objects
-#define WALLS			gameData.walls.walls
-#define TRIGGERS		gameData.trigs.triggers
-#define OBJTRIGGERS	gameData.trigs.objTriggers
-#define FACES			gameData.segs.faces
-#define TRIANGLES		FACES.tris
+#define SEGMENTS			gameData.segs.segments
+#define VERTICES			gameData.segs.vertices
+#define FVERTICES			gameData.segs.fVertices
+#define SEGFACES			gameData.segs.segFaces
+#define OBJECTS			gameData.objs.objects
+#define WALLS				gameData.walls.walls
+#define TRIGGERS			gameData.trigs.triggers
+#define OBJTRIGGERS		gameData.trigs.objTriggers
+#define FACES				gameData.segs.faces
+#define RENDERPOINTS		gameData.segs.points
+#define TRIANGLES			FACES.tris
 
 #define SPECTATOR(_objP)	((gameStates.render.bFreeCam > 0) && OBJECTS.IsElement (_objP) && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))
 #define OBJPOS(_objP)		(SPECTATOR (_objP) ? &gameStates.app.playerPos : &(_objP)->info.position)
