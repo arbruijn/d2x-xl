@@ -119,7 +119,7 @@ class CEffectArea {
 
 typedef struct tPartPos {
 	float		x, y, z;
-} __pack__ tPartPos;
+} tPartPos;
 
 typedef struct tParticleVertex {
 	CFloatVector3	vertex;
@@ -172,7 +172,7 @@ typedef struct tParticle {
 	char			m_bAnimate;
 	char			m_bRotate;
 	char			m_nDelayPosUpdate;
-} __pack__ tParticle;
+} tParticle;
 
 class CParticle : public tParticle {
 	public:
