@@ -457,7 +457,18 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			if (colorData.vertNorm.IsZero ())
 				NdotL = 1.0f;
 			else {
-				NdotL = CFloatVector3::Dot (colorData.vertNorm, lightRayDir);
+				if (nType > 1)
+					NdotL = CFloatVector3::Dot (colorData.vertNorm, lightRayDir);
+				else {
+					// for rectangular light sources, using the light source's closest point to the light receiving point
+					// can yield a incident angle too low if the point lies in an adjacent face. In that case use the angle
+					// from the light source's center if it is better
+					CFloatVector3 d = *lightP->render.vPosf [bTransform].XYZ () - *colorData.vertPosP;
+					CFloatVector3::Normalize (d);
+					float dotCenter = CFloatVector3::Dot (colorData.vertNorm, d);
+					float dotNearest = CFloatVector3::Dot (colorData.vertNorm, lightRayDir);
+					NdotL = (dotCenter > dotNearest) ? dotCenter : dotNearest;
+					}
 				if ((NdotL < 0.0f) && (NdotL > -0.01f)) // compensate for faces almost planar with the light emitting face
 					NdotL = 0.0f;
 				}
