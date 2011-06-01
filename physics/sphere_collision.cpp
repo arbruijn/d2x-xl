@@ -262,14 +262,19 @@ int FindPlaneLineIntersection (CFloatVector& intersection, CFloatVector* vPlane,
 CFloatVector u = *p1;
 u -= *p0;
 float d = -CFloatVector::Dot (*vNormal, u);
-if ((d > -1e-10f) && (d < 1e-10f)) // ~ parallel
+if ((d > -1e-6f) && (d < 1e-6f)) {// ~ parallel
 	return 0;
+	}
 CFloatVector w = *p0;
 w -= *vPlane;
 float n = CFloatVector::Dot (*vNormal, w);
 float s = n / d;
-if ((s < 0.0f) || (s > 1.0f))
+if ((s < -0.001f) || (s > 1.001f)) // compensate small numerical errors
 	return 0;
+if (s < 0.0f)
+	s = 0.0f;
+else if (s > 1.0f)
+	s = 1.0f;
 u *= s;
 intersection = *p0;
 intersection += u;
@@ -1162,8 +1167,14 @@ for (;;) {
 	sideP = segP->Side (0);
 	for (nSide = 0; nSide < 6; nSide++, sideP++) {
 		nChildSeg = segP->m_children [nSide];
-		if ((nChildSeg >= 0) && (bVisited [nChildSeg] == bFlag))
-			continue;
+		if (nChildSeg < 0) {
+			if ((nDestSeg >= 0) && (nStartSeg != nDestSeg))
+				continue;
+			}
+		else {
+			if (bVisited [nChildSeg] == bFlag)
+				continue;
+			}
 		nFaceCount = sideP->m_nFaces;
 		for (nFace = 0; nFace < nFaceCount; nFace++) {
 			CFloatVector* n = sideP->m_fNormals + nFace;
