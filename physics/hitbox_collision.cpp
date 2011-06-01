@@ -57,17 +57,17 @@ else {
 	j = ijTable [projPlane][0];
 	}
 //now do the 2d problem in the i, j plane
-vRef.i = point.v.vec [i];
-vRef.j = point.v.vec [j];
+vRef.x = point.v.vec [i];
+vRef.y = point.v.vec [j];
 v1 = vertP [0];
 for (iEdge = 1; iEdge <= 4; iEdge++) {
 	v0 = v1;
 	v1 = vertP [iEdge % 4];
-	vEdge.i = v1.v.vec [i] - v0.v.vec [i];
-	vEdge.j = v1.v.vec [j] - v0.v.vec [j];
-	vCheck.i = vRef.i - v0.v.vec [i];
-	vCheck.j = vRef.j - v0.v.vec [j];
-	if (FixMul (vCheck.i, vEdge.j) - FixMul (vCheck.j, vEdge.i) < 0)
+	vEdge.x = v1.v.vec [i] - v0.v.vec [i];
+	vEdge.y = v1.v.vec [j] - v0.v.vec [j];
+	vCheck.x = vRef.x - v0.v.vec [i];
+	vCheck.y = vRef.y - v0.v.vec [j];
+	if (FixMul (vCheck.x, vEdge.y) - FixMul (vCheck.y, vEdge.x) < 0)
 		return false;
 	}
 return true;

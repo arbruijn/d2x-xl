@@ -323,11 +323,11 @@ check_j = refP->v.vec [j];
 for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
 	v0 = vertList + nEdge;
 	v1 = vertList + ((nEdge + 1) % nVerts);
-	vEdge.i = v1->v.vec [i] - v0->v.vec [i];
-	vEdge.j = v1->v.vec [j] - v0->v.vec [j];
-	vCheck.i = check_i - v0->v.vec [i];
-	vCheck.j = check_j - v0->v.vec [j];
-	d = FixMul (vCheck.i, vEdge.j) - FixMul (vCheck.j, vEdge.i);
+	vEdge.x = v1->v.vec [i] - v0->v.vec [i];
+	vEdge.y = v1->v.vec [j] - v0->v.vec [j];
+	vCheck.x = check_i - v0->v.vec [i];
+	vCheck.y = check_j - v0->v.vec [j];
+	d = FixMul (vCheck.x, vEdge.y) - FixMul (vCheck.y, vEdge.x);
 	if (d < 0)              		//we are outside of triangle
 		nEdgeMask |= (1 << nEdge);
 	}
