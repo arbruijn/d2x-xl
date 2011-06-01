@@ -357,22 +357,16 @@ return true;
 //------------------------------------------------------------------------------
 
 static float offset [2] = {1.3846153846f, 3.2307692308f};
-static float weight [3] = {0.2270270270f, 0.3162162162f, 0.0702702703f};
+//static float weight [3] = {0.2270270270f, 0.3162162162f, 0.0702702703f};
+static float weight [5] = {0.2270270270f, 0.1945945946f, 0.1216216216f, 0.0540540541f, 0.0162162162f};
 
 
-static inline void Scale (CRGBColor& color, int i)
+static inline void Add (CLightmapFaceData& source, int x, int y, int offset, CFloatVector3& color)
 {
-color.r = ubyte (float (color.r) * weight [i] + 0.5f);
-color.g = ubyte (float (color.g) * weight [i] + 0.5f);
-color.b = ubyte (float (color.b) * weight [i] + 0.5f);
-}
+	//float w = float (LM_W), h = float (LM_H);
 
-static inline void Add (CLightmapFaceData& source, float x0, float y0, int i, CRGBColor& color)
-{
-	float w = float (LM_W), h = float (LM_H);
-
-int x = int (x0 * w + 0.5f);
-int y = int (y0 * h + 0.5f);
+//int x = int (x0 * w + 0.5f);
+//int y = int (y0 * h + 0.5f);
 if (x < 0)
 	x = 0;
 else if (x >= LM_W)
@@ -381,32 +375,32 @@ if (y < 0)
 	y = 0;
 else if (y >= LM_H)
 	y = LM_H - 1;
-CRGBColor c = source.m_texColor [y * LM_W + x];
-Scale (c, i);
+CRGBColor& sourceColor = source.m_texColor [y * LM_W + x];
+CFloatVector3 c;
+c.Set (sourceColor.r, sourceColor.g, sourceColor.b);
+c *= weight [offset];
+color += c;
 }
 
 
 void CLightmapManager::Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest, int direction)
 {
-	int			w = LM_W, h = LM_H;
-	float			xScale = (1.0f - float (direction)), yScale = float (direction), xo, yo;
-	CRGBColor	color, * destColor = dest.m_texColor;
+	int				w = LM_W, h = LM_H;
+	int				xScale = 1 - direction, yScale = direction, xo, yo;
+	CRGBColor*		destColor = dest.m_texColor;
+	CFloatVector3	color;
 
 for (int y = 0; y < h; y++) {
-	float y0 = float (y) / float (h);
-	for (int x = 0; x < w; x++) {
-		float x0 = float (x) / float (w);
-		color.r = color.g = color.b = 0;
-		Add (source, x0, y0, 0, color);
-		xo = offset [0] * xScale;
-		yo = offset [0] * yScale;
-		Add (source, x0 - xo, y0 - xo, 1, color);
-		Add (source, x0 + xo, y0 + xo, 1, color);
-		xo = offset [1] * xScale;
-		yo = offset [1] * yScale;
-		Add (source, x0 - xo, y0 - xo, 2, color);
-		Add (source, x0 + xo, y0 + xo, 2, color);
-		*destColor++ = color;
+	for (int x = 0; x < w; x++, destColor++) {
+		color.Set (0.0f, 0.0f, 0.0f);
+		Add (source, x, y, 0, color);
+		for (int offset = 1; offset < 5; offset++) {
+			xo = offset * xScale;
+			yo = offset * yScale;
+			Add (source, x - xo, y - xo, 1, color);
+			Add (source, x + yo, y + yo, 1, color);
+			}
+		destColor->Set (ubyte (color.Red () + 0.5f), ubyte (color.Green () + 0.5f), ubyte (color.Blue () + 0.5f));
 		}
 	}
 }
