@@ -643,7 +643,7 @@ for (CSegFace* faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, faceP++
 			}
 #else
 		if (!RunRenderThreads (rtLightmap, gameStates.app.nThreads))
-			Build (-1);
+			Build (faceP, -1);
 #endif
 		}
 #if DBG
