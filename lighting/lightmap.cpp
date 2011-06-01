@@ -329,26 +329,6 @@ for (i = 512; i; i--, brightmap++)
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::Copy (CRGBColor *texColorP, ushort nLightmap)
-{
-tLightmapBuffer *bufP = &m_list.buffers [nLightmap / LIGHTMAP_BUFSIZE];
-int i = nLightmap % LIGHTMAP_BUFSIZE;
-int x = (i % LIGHTMAP_ROWSIZE) * LM_W;
-int y = (i / LIGHTMAP_ROWSIZE) * LM_H;
-for (i = 0; i < LM_H; i++, y++, texColorP += LM_W)
-	memcpy (&bufP->bmP [y][x], texColorP, LM_W * sizeof (CRGBColor));
-}
-
-//------------------------------------------------------------------------------
-
-void CLightmapManager::CreateSpecial (CRGBColor *texColorP, ushort nLightmap, ubyte nColor)
-{
-memset (texColorP, nColor, LM_W * LM_H * sizeof (CRGBColor));
-Copy (texColorP, nLightmap);
-}
-
-//------------------------------------------------------------------------------
-
 bool CLightmapManager::FaceIsInvisible (CSegFace* faceP)
 {
 if (SEGMENTS [faceP->m_info.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
@@ -443,13 +423,30 @@ Blur (faceP, tempData, source, 1);
 }
 
 //------------------------------------------------------------------------------
+
+void CLightmapManager::Copy (CRGBColor *texColorP, ushort nLightmap)
+{
+tLightmapBuffer *bufP = &m_list.buffers [nLightmap / LIGHTMAP_BUFSIZE];
+int i = nLightmap % LIGHTMAP_BUFSIZE;
+int x = (i % LIGHTMAP_ROWSIZE) * LM_W;
+int y = (i / LIGHTMAP_ROWSIZE) * LM_H;
+for (i = 0; i < LM_H; i++, y++, texColorP += LM_W)
+	memcpy (&bufP->bmP [y][x], texColorP, LM_W * sizeof (CRGBColor));
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapManager::CreateSpecial (CRGBColor *texColorP, ushort nLightmap, ubyte nColor)
+{
+memset (texColorP, nColor, LM_W * LM_H * sizeof (CRGBColor));
+Copy (texColorP, nLightmap);
+}
+
+//------------------------------------------------------------------------------
 // build one entire lightmap in single threaded mode or the upper and lower halves when multi threaded
 
 void CLightmapManager::Build (CSegFace* faceP, int nThread)
 {
-	if (FaceIsInvisible (faceP))
-		return;
-
 	CFixVector		*pixelPosP;
 	CRGBColor		*texColorP;
 	CFloatVector3	color;
@@ -457,44 +454,57 @@ void CLightmapManager::Build (CSegFace* faceP, int nThread)
 	struct {
 		CFixVector	x, y;
 	} offset;
-	int				w = LM_W, h = LM_H, x, y;
+	int				w, h, x, y, yMin, yMax;
 	int				i0, i1, i2; 
 	bool				bBlack, bWhite;
 
-if (nThread < 0)
-	nThread = omp_get_thread_num();
+	CVertColorData	vcd = m_data.m_vcd; // need a local copy for each thread!
 
-CLightmapFaceData	faceData;
-faceData.Setup (faceP);
 
 #if 0// DBG
 if ((faceP->m_info.nSegment != nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide != nDbgSide))) {
-	faceData.m_nColor |= 1;
+	m_data.m_nColor |= 1;
 	return;
 	}
 #endif
+
+h = LM_H;
+w = LM_W;
+
+if (nThread < 0) {
+	yMin = 0;
+	yMax = h;
+	nThread = 0;
+	}
+else {
+	int nStep = (h + gameStates.app.nThreads - 1) / gameStates.app.nThreads;
+	yMin = nStep * nThread;
+	yMax = yMin + nStep;
+	if (yMax > h)
+		yMax = h;
+	}
 
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-faceData.m_vcd.vertPosP = &faceData.m_vcd.vertPos;
-pixelPosP = faceData.m_pixelPos;
-if (faceData.m_nType) {
-	i1 = faceData.m_sideVerts [0]; 
+vcd.vertPosP = &vcd.vertPos;
+pixelPosP = m_data.m_pixelPos + yMin * w;
+if (m_data.m_nType) {
+	i1 = m_data.m_sideVerts [0]; 
 	v1 = VERTICES [i1];
-	i2 = faceData.m_sideVerts [2]; 
+	i2 = m_data.m_sideVerts [2]; 
 	v2 = VERTICES [i2];
-	for (y = 0; y < h; y++) {
+	for (y = yMin; y < yMax; y++) {
 		for (x = 0; x < w; x++, pixelPosP++) {
 			if (y >= x) {
-				i0 = faceData.m_sideVerts [1]; 
+				i0 = m_data.m_sideVerts [1]; 
 				v0 = VERTICES [i0];
 				offset.x = (v0 - v1) * m_data.nOffset [y];
 				offset.y = (v2 - v0) * m_data.nOffset [x];
 				}
 			else {
-				i0 = faceData.m_sideVerts [3]; 
+				i0 = m_data.m_sideVerts [3]; 
 				v0 = VERTICES [i0];
 				offset.y = (v0 - v1) * m_data.nOffset [x]; 
 				offset.x = (v2 - v0) * m_data.nOffset [y]; 
@@ -505,20 +515,20 @@ if (faceData.m_nType) {
 	}
 else {//SIDE_IS_TRI_02
 	h--;
-	i1 = faceData.m_sideVerts [1]; 
+	i1 = m_data.m_sideVerts [1]; 
 	v1 = VERTICES [i1];
-	i2 = faceData.m_sideVerts [3]; 
+	i2 = m_data.m_sideVerts [3]; 
 	v2 = VERTICES [i2];
-	for (y = 0; y < h; y++) {
+	for (y = yMin; y < yMax; y++) {
 		for (x = 0; x < w; x++, pixelPosP++) {
 			if (h - y >= x) {
-				i0 = faceData.m_sideVerts [0]; 
+				i0 = m_data.m_sideVerts [0]; 
 				v0 = VERTICES [i0];
 				offset.x = (v1 - v0) * m_data.nOffset [y];  
 				offset.y = (v2 - v0) * m_data.nOffset [x];
 				}
 			else {
-				i0 = faceData.m_sideVerts [2]; 
+				i0 = m_data.m_sideVerts [2]; 
 				v0 = VERTICES [i0];
 				offset.y = (v1 - v0) * m_data.nOffset [h - x];  
 				offset.x = (v2 - v0) * m_data.nOffset [h - y]; 
@@ -529,8 +539,8 @@ else {//SIDE_IS_TRI_02
 	}
 
 bBlack = bWhite = true;
-pixelPosP = faceData.m_pixelPos;
-for (y = 0; y < h; y++) {
+pixelPosP = m_data.m_pixelPos + yMin * w;
+for (y = yMin; y < yMax; y++) {
 #if DBG
 	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
@@ -551,11 +561,11 @@ for (y = 0; y < h; y++) {
 				nDbgSeg = nDbgSeg;
 			}
 #endif
-		if (0 < lightManager.SetNearestToPixel (faceP->m_info.nSegment, faceP->m_info.nSide, &faceData.m_vNormal, 
+		if (0 < lightManager.SetNearestToPixel (faceP->m_info.nSegment, faceP->m_info.nSide, &m_data.m_vNormal, 
 															 pixelPosP, faceP->m_info.fRads [1] / 10.0f, nThread)) {
-			faceData.m_vcd.vertPos.Assign (*pixelPosP);
+			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
-			G3AccumVertColor (-1, &color, &faceData.m_vcd, nThread);
+			G3AccumVertColor (-1, &color, &vcd, nThread);
 			if ((color.Red () >= 1.0f / 255.0f) || (color.Green () >= 1.0f / 255.0f) || (color.Blue () >= 1.0f / 255.0f)) {
 					bBlack = false;
 				if (color.Red () >= 254.0f / 255.0f)
@@ -571,34 +581,22 @@ for (y = 0; y < h; y++) {
 				else
 					bWhite = false;
 				}
-			texColorP = faceData.m_texColor + x * w + y;
+			texColorP = m_data.m_texColor + x * w + y;
 			texColorP->Red () = (ubyte) (255 * color.Red ());
 			texColorP->Green () = (ubyte) (255 * color.Green ());
 			texColorP->Blue () = (ubyte) (255 * color.Blue ());
 			}
 		}
 	}
-
-if (bBlack) {
-	faceP->m_info.nLightmap = 0;
-#pragma omp atomic
-	m_data.nBlackLightmaps++;
-	return;
-	}
-if (bWhite) {
-	faceP->m_info.nLightmap = 1;
-#pragma omp atomic
-	m_data.nWhiteLightmaps++;
-	return;
-	}
-
-Blur (faceP, faceData);
 #pragma omp critical
 {
-faceP->m_info.nLightmap = m_list.nLightmaps++;
+if (bBlack)
+	m_data.m_nColor |= 1;
+else if (bWhite)
+	m_data.m_nColor |= 2;
+else 
+	m_data.m_nColor |= 4;
 }
-Copy (faceData.m_texColor, faceP->m_info.nLightmap);
-
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
@@ -617,38 +615,60 @@ return (k < m) ? -1 : (k > m) ? 1 : 0;
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::BuildAll (int nFirstFace)
+void CLightmapManager::BuildAll (int nFace)
 {
-	int nLastFace; 
+	int	nLastFace; 
 
-if (nFirstFace <= 0) {
-	m_data.nBlackLightmaps = 0,
-	m_data.nWhiteLightmaps = 0; 
-	CLightmapFaceData faceData;
-	CreateSpecial (faceData.m_texColor, 0, 0);
-	CreateSpecial (faceData.m_texColor, 1, 255);
+INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
+if (nFace <= 0) {
+	CreateSpecial (m_data.m_texColor, 0, 0);
+	CreateSpecial (m_data.m_texColor, 1, 255);
 	m_list.nLightmaps = 2;
-	float h = 1.0f / float (LM_W - 1);
-	for (int i = 0; i < LM_W; i++)
-		m_data.nOffset [i] = F2X (i * h);
 	}
-
-if (nFirstFace >= 0)
-	Build (&FACES.faces [nFirstFace], 0);
-else {
-	INIT_PROGRESS_LOOP (nFirstFace, nLastFace, gameData.segs.nFaces);
-#if USE_OPENMP
-	if (gameStates.app.bMultiThreaded) {
-		nLastFace -= nFirstFace;
-#	pragma omp parallel
-		#pragma omp for
-		for (int nFace = 0; nFace < nLastFace; nFace++) 
-			Build (&FACES.faces [nFirstFace + nFace], -1);
+//Next Go through each surface and create a lightmap for it.
+for (CSegFace* faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, faceP++) {
+#if DBG
+	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
+	if (SEGMENTS [faceP->m_info.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
+		faceP->m_info.nLightmap = 1;
+		continue;
 		}
-	else 
-#endif // USE_OPENMP
-	for (int nFace = nFirstFace; nFace < nLastFace; nFace++) 
-		Build (&FACES.faces [nFace], 0);
+	if (FaceIsInvisible (faceP))
+		continue;
+	m_data.Setup (faceP);
+	if (!gameStates.app.bMultiThreaded)
+		Build (faceP, -1);
+	else {
+#if USE_OPENMP
+#	pragma omp parallel
+			{
+		#pragma omp for
+			for (int i = 0; i < gameStates.app.nThreads; i++)
+				Build (faceP, i);
+			}
+#else
+		if (!RunRenderThreads (rtLightmap, gameStates.app.nThreads))
+			Build (-1);
+#endif
+		}
+#if DBG
+	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
+	if (m_data.m_nColor == 1) {
+		faceP->m_info.nLightmap = 0;
+		m_data.nBlackLightmaps++;
+		}
+	else if (m_data.m_nColor == 2) {
+		faceP->m_info.nLightmap = 1;
+		m_data.nWhiteLightmaps++;
+		}
+	else {
+		Copy (m_data.m_texColor, m_list.nLightmaps);
+		faceP->m_info.nLightmap = m_list.nLightmaps++;
+		}
 	}
 }
 
@@ -817,10 +837,16 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		int nSaturation = gameOpts->render.color.nSaturation;
 		gameOpts->render.color.nSaturation = 1;
 		gameStates.render.bHaveLightmaps = 1;
+		//gameData.render.fAttScale [0] = 2.0f;
 		lightManager.Index (0,0).nFirst = MAX_OGL_LIGHTS;
 		lightManager.Index (0,0).nLast = 0;
 		gameStates.render.bSpecularColor = 0;
 		gameStates.render.nState = 0;
+		float h = 1.0f / float (LM_W - 1);
+		for (int i = 0; i < LM_W; i++)
+			m_data.nOffset [i] = F2X (i * h);
+		m_data.nBlackLightmaps = 
+		m_data.nWhiteLightmaps = 0; 
 		//PLANE_DIST_TOLERANCE = fix (I2X (1) * 0.001f);
 		//SetupSegments (); // set all faces up as triangles
 		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
@@ -842,8 +868,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		Realloc ((m_list.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE);
 		}
 	else {
-		CLightmapFaceData faceData;
-		CreateSpecial (faceData.m_texColor, 0, 0);
+		CreateSpecial (m_data.m_texColor, 0, 0);
 		m_list.nLightmaps = 1;
 		for (int i = 0; i < gameData.segs.nFaces; i++)
 			FACES.faces [i].m_info.nLightmap = 0;

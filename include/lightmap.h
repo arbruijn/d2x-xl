@@ -57,14 +57,11 @@ class CLightmapFaceData {
 		CVertColorData			m_vcd;
 		CRGBColor				m_texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
 		CFixVector				m_pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
-		int						nOffset [MAX_LIGHTMAP_WIDTH];
-		CArray<tSegFacePtr>	faceList;
-		CSegFace*				faceP;
 
 	void Setup (CSegFace* faceP);
 	};
 
-class CLightmapData {
+class CLightmapData : public CLightmapFaceData {
 	public:
 		int						nOffset [MAX_LIGHTMAP_WIDTH];
 		CArray<tSegFacePtr>	faceList;
