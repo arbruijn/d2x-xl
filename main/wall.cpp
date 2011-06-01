@@ -998,17 +998,17 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 
 // -----------------------------------------------------------------------------------
 
-bool CWall::IsTriggerTarget (void)
+bool CWall::IsTriggerTarget (int i)
 {
-CTrigger *triggerP = TRIGGERS.Buffer ();
-for (int i = gameData.trigs.m_nTriggers; i; i--, triggerP++) {
+CTrigger *triggerP = TRIGGERS.Buffer (i);
+for (; i < gameData.trigs.m_nTriggers; i++, triggerP++) {
 	short *nSegP = triggerP->m_segments;
 	short *nSideP = triggerP->m_sides;
 	for (int j = triggerP->m_nLinks; j; j--, nSegP++, nSideP++)
 		if ((*nSegP == nSegment) && (*nSideP == nSide))
-			return true;
+			return i;
 	}
-return false;
+return -1;
 }
 
 // -----------------------------------------------------------------------------------
@@ -1017,7 +1017,7 @@ bool CWall::IsVolatile (void)
 {
 if ((nType == WALL_DOOR) || (nType == WALL_BLASTABLE))
 	return true;
-return CWall::IsTriggerTarget ();
+return IsTriggerTarget () >= 0;
 }
 
 // -----------------------------------------------------------------------------------
@@ -1034,10 +1034,10 @@ bool CWall::IsInvisible (void)
 {
 if ((nType != WALL_OPEN) && ((nType != WALL_CLOAKED) || (cloakValue <  FADE_LEVELS)))
 	return false;
-if (IsTriggerTarget ())
+if (IsTriggerTarget () >= 0)
 	return false;
 CWall* wallP = OppositeWall ();
-return (wallP != NULL) && !wallP->IsTriggerTarget ();
+return (wallP != NULL) && (wallP->IsTriggerTarget () < 0);
 }
 
 // -----------------------------------------------------------------------------------

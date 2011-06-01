@@ -209,7 +209,7 @@ class CWall {
 		void LoadTextures (void);
 		int IsDoorWay (CObject* objP, bool bIgnoreDoors = false);
 		bool IsOpenableDoor (void);
-		bool IsTriggerTarget (void);
+		int IsTriggerTarget (int i = 0);
 		bool IsVolatile (void);
 		bool IsInvisible (void);
 		CActiveDoor* OpenDoor (void);

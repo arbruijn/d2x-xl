@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 bool PointIsInQuad (CFixVector point, CFixVector* vertP, CFixVector vNormal)
 {
 	CFixVector		t, v0, v1;
-	CFixVector2D 	vEdge, vCheck, vRef;
+	CFixVector2 	vEdge, vCheck, vRef;
 	int 				i, j, iEdge, projPlane;
 
 //now do 2d check to see if vRef is in side

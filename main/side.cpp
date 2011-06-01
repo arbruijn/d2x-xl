@@ -639,14 +639,14 @@ uint CSide::PointToFaceRelation (CFixVector& intersection, short nFace, CFixVect
 {
 #if 0
 
-	CFixVector	t;
-	int			biggest;
-	int 			h, i, j, nEdge, nVerts;
-	uint 			nEdgeMask;
-	fix 			check_i, check_j;
-	CFixVector	*v0, *v1;
-	CFixVector2D 		vEdge, vCheck;
-	QLONG			d;
+	CFixVector		t;
+	int				biggest;
+	int 				h, i, j, nEdge, nVerts;
+	uint 				nEdgeMask;
+	fix 				check_i, check_j;
+	CFixVector		*v0, *v1;
+	CFixVector2		vEdge, vCheck;
+	QLONG				d;
 
 //now do 2d check to see if refP is in CSide
 //project polygon onto plane by finding largest component of Normal
@@ -700,7 +700,7 @@ return nEdgeMask;
 	int 				h, i, j, nEdge, nVerts, projPlane;
 	uint 				nEdgeMask;
 	CFixVector*		v0, * v1;
-	CFixVector2D	vEdge, vCheck, vRef;
+	CFixVector2		vEdge, vCheck, vRef;
 
 //now do 2d check to see if refP is in CSide
 //project polygon onto plane by finding largest component of Normal
@@ -718,8 +718,8 @@ else {
 	j = ijTable [projPlane][0];
 	}
 //now do the 2d problem in the i, j plane
-vRef.i = intersection.v.vec [i];
-vRef.j = intersection.v.vec [j];
+vRef.x = intersection.v.vec [i];
+vRef.y = intersection.v.vec [j];
 nVerts = 5 - m_nFaces;
 h = nFace * 3;
 v1 = gameStates.render.bRendering ? &gameData.segs.points [m_vertices [h]].ViewPos () : VERTICES + m_vertices [h];
@@ -728,11 +728,11 @@ for (nEdge = 1, nEdgeMask = 0; nEdge <= nVerts; nEdge++) {
 	v1 = gameStates.render.bRendering 
 		  ? &gameData.segs.points [m_vertices [h + nEdge % nVerts]].ViewPos ()
 		  : VERTICES + m_vertices [h + nEdge % nVerts];
-	vEdge.i = v1->v.vec [i] - v0->v.vec [i];
-	vEdge.j = v1->v.vec [j] - v0->v.vec [j];
-	vCheck.i = vRef.i - v0->v.vec [i];
-	vCheck.j = vRef.j - v0->v.vec [j];
-	if (FixMul64 (vCheck.i, vEdge.j) - FixMul64 (vCheck.j, vEdge.i) < PLANE_DIST_TOLERANCE) //we are outside of triangle
+	vEdge.x = v1->v.vec [i] - v0->v.vec [i];
+	vEdge.y = v1->v.vec [j] - v0->v.vec [j];
+	vCheck.x = vRef.x - v0->v.vec [i];
+	vCheck.y = vRef.y - v0->v.vec [j];
+	if (FixMul64 (vCheck.x, vEdge.y) - FixMul64 (vCheck.y, vEdge.x) < PLANE_DIST_TOLERANCE) //we are outside of triangle
 		nEdgeMask |= (1 << (nEdge - 1));
 	}
 return nEdgeMask;
@@ -934,7 +934,7 @@ void CSide::HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iF
 	CFixVector*		vPoints;
 	CFixVector		vNormal;
 	int				projPlane, ii, jj;
- 	CFixVector2D	vRef, vec0, vec1, vHit;
+ 	CFixVector2		vRef, vec0, vec1, vHit;
 	tUVL				uvls [3];
 	fix				k0, k1;
 	int				h;
@@ -958,22 +958,22 @@ jj = (projPlane == 2) ? 1 : 2;
 //vec from 1 -> 0
 h = iFace * 3;
 vPoints = VERTICES + m_vertices [h+1];
-vRef.i = vPoints->v.vec [ii];
-vRef.j = vPoints->v.vec [jj];
+vRef.x = vPoints->v.vec [ii];
+vRef.y = vPoints->v.vec [jj];
 
 vPoints = VERTICES + m_vertices [h];
-vec0.i = vPoints->v.vec [ii] - vRef.i;
-vec0.j = vPoints->v.vec [jj] - vRef.j;
+vec0.x = vPoints->v.vec [ii] - vRef.x;
+vec0.y = vPoints->v.vec [jj] - vRef.y;
 
 //vec from 1 -> 2
 vPoints = VERTICES + m_vertices [h+2];
-vec1.i = vPoints->v.vec [ii] - vRef.i;
-vec1.j = vPoints->v.vec [jj] - vRef.j;
+vec1.x = vPoints->v.vec [ii] - vRef.x;
+vec1.y = vPoints->v.vec [jj] - vRef.y;
 
 //vec from 1 -> checkPoint
 //vPoints = reinterpret_cast<CFixVector*> (refP);
-vHit.i = intersection.v.vec [ii];
-vHit.j = intersection.v.vec [jj];
+vHit.x = intersection.v.vec [ii];
+vHit.y = intersection.v.vec [jj];
 
 #if 1 // the MSVC 9 optimizer doesn't seem to like the code in the else branch ...
 //ii = Cross2D (vHit, vec0) + Cross2D (vec0, vRef);
@@ -984,10 +984,10 @@ k1 = -FixDiv (ii, jj);
 #else
 k1 = -FixDiv (vRef.Cross (vec0) + vec0.Cross (vRef), vec0.Cross (vec0));
 #endif
-if (abs (vec0.i) > abs (vec0.j))
-	k0 = FixDiv (FixMul (-k1, vec1.i) + vHit.i - vRef.i, vec0.i);
+if (abs (vec0.x) > abs (vec0.y))
+	k0 = FixDiv (FixMul (-k1, vec1.x) + vHit.x - vRef.x, vec0.x);
 else
-	k0 = FixDiv (FixMul (-k1, vec1.j) + vHit.j - vRef.j, vec0.j);
+	k0 = FixDiv (FixMul (-k1, vec1.y) + vHit.y - vRef.y, vec0.y);
 uvls [0] = m_uvls [m_faceVerts [h]];
 uvls [1] = m_uvls [m_faceVerts [h+1]];
 uvls [2] = m_uvls [m_faceVerts [h+2]];

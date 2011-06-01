@@ -114,7 +114,7 @@ return (int (u < -0.001f)) + ((int (v < -0.001f)) << 1) + ((int (u + v > 1.001f)
 	CFloatVector	t, *v0, *v1;
 	int 				i, j, nEdge, biggest;
 	float				check_i, check_j;
-	CFloatVector2D 			vEdge, vCheck;
+	CFloatVector2	vEdge, vCheck;
 
 //now do 2d check to see if refP is in side
 //project polygon onto plane by finding largest component of Normal
@@ -148,11 +148,11 @@ v1 = FVERTICES + nVertIndex [0];
 for (nEdge = 1; nEdge <= nVerts; nEdge++) {
 	v0 = v1; //FVERTICES + nVertIndex [nEdge];
 	v1 = FVERTICES + nVertIndex [nEdge % nVerts];
-	vEdge.i = v1->v.vec [i] - v0->v.vec [i];
-	vEdge.j = v1->v.vec [j] - v0->v.vec [j];
-	vCheck.i = check_i - v0->v.vec [i];
-	vCheck.j = check_j - v0->v.vec [j];
-	if (vCheck.i * vEdge.j - vCheck.j * vEdge.i < -X2F (PLANE_DIST_TOLERANCE))
+	vEdge.x = v1->v.vec [i] - v0->v.vec [i];
+	vEdge.y = v1->v.vec [j] - v0->v.vec [j];
+	vCheck.x = check_i - v0->v.vec [i];
+	vCheck.y = check_j - v0->v.vec [j];
+	if (vCheck.x * vEdge.y - vCheck.y * vEdge.x < -X2F (PLANE_DIST_TOLERANCE))
 		return false;
 	}
 return true;
@@ -292,7 +292,7 @@ if (nVerts == 3)
 	uint 			nEdgeMask;
 	fix 			check_i, check_j;
 	CFixVector	*v0, *v1;
-	CFixVector2D 		vEdge, vCheck;
+	CFixVector2	vEdge, vCheck;
 	fix 			d;
 
 //now do 2d check to see if refP is in side

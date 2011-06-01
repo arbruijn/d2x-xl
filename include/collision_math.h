@@ -24,18 +24,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define HIT_OBJECT	2		//we hit an CObject - which one?  no way to tell...
 #define HIT_BAD_P0	3		//start point is not in specified CSegment
 
-class CFixVector2D {
+class CFixVector2 {
 	public:
-		fix i, j;
+		fix x, y;
 
-	inline fix Cross (CFixVector2D& other) { return FixMul (i, other.j) - FixMul (j, other.i); }
+	inline fix Cross (CFixVector2& other) { return FixMul (x, other.y) - FixMul (y, other.x); }
 	};
 
-class CFloatVector2D {
+class CFloatVector2 {
 	public:
-		float i, j;
+		float x, y;
 
-	inline float Cross (CFloatVector2D& other) { return i * other.j - j * other.i; }
+	inline float Cross (CFloatVector2& other) { return x * other.y - y * other.x; }
 	};
 
 
