@@ -1404,7 +1404,7 @@ typedef union tFloatMatrixData {
 	} dir;
 	CFloatVector	mat [4];
 	float				vec [16];
-} __pack__ tFloatMatrixData;
+} tFloatMatrixData;
 
 class __pack__ CFloatMatrix {
 	friend class CFixMatrix;
