@@ -376,6 +376,73 @@ return true;
 }
 
 //------------------------------------------------------------------------------
+
+static float offset [2] = {1.3846153846f, 3.2307692308f};
+static float weight [3] = {0.2270270270f, 0.3162162162f, 0.0702702703f};
+
+
+static inline void Scale (CRGBColor& color, int i)
+{
+color.r = ubyte (float (color.r) * weight [i] + 0.5f);
+color.g = ubyte (float (color.g) * weight [i] + 0.5f);
+color.b = ubyte (float (color.b) * weight [i] + 0.5f);
+}
+
+static inline void Add (CLightmapFaceData& source, float x0, float y0, int i, CRGBColor& color)
+{
+	float w = float (LM_W), h = float (LM_H);
+
+int x = int (x0 * w + 0.5f);
+int y = int (y0 * h + 0.5f);
+if (x < 0)
+	x = 0;
+else if (x >= LM_W)
+	x = LM_W - 1;
+if (y < 0)
+	y = 0;
+else if (y >= LM_H)
+	y = LM_H - 1;
+CRGBColor c = source.m_texColor [y * LM_W + x];
+Scale (c, i);
+}
+
+
+void CLightmapManager::Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest, int direction)
+{
+	int			w = LM_W, h = LM_H;
+	float			xScale = (1.0f - float (direction)), yScale = float (direction), xo, yo;
+	CRGBColor	color, * destColor = dest.m_texColor;
+
+for (int y = 0; y < h; y++) {
+	float y0 = float (y) / float (h);
+	for (int x = 0; x < w; x++) {
+		float x0 = float (x) / float (w);
+		color.r = color.g = color.b = 0;
+		Add (source, x0, y0, 0, color);
+		xo = offset [0] * xScale;
+		yo = offset [0] * yScale;
+		Add (source, x0 - xo, y0 - xo, 1, color);
+		Add (source, x0 + xo, y0 + xo, 1, color);
+		xo = offset [1] * xScale;
+		yo = offset [1] * yScale;
+		Add (source, x0 - xo, y0 - xo, 2, color);
+		Add (source, x0 + xo, y0 + xo, 2, color);
+		*destColor++ = color;
+		}
+	}
+}
+
+
+
+void CLightmapManager::Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest)
+{
+	CLightmapFaceData	tempData;
+
+Blur (faceP, source, tempData, 0);
+Blur (faceP, tempData, source, 1);
+}
+
+//------------------------------------------------------------------------------
 // build one entire lightmap in single threaded mode or the upper and lower halves when multi threaded
 
 void CLightmapManager::Build (CSegFace* faceP, int nThread)
