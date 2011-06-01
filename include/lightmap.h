@@ -106,7 +106,7 @@ class CLightmapManager {
 		int Load (int nLevel);
 		char* Filename (char *pszFilename, int nLevel);
 		void Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest, int direction);
-		void Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest);
+		void Blur (CSegFace* faceP, CLightmapFaceData& source);
 
 		static int CompareFaces (const tSegFacePtr* pf, const tSegFacePtr* pm);
 	};

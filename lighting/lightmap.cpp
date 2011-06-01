@@ -434,7 +434,7 @@ for (int y = 0; y < h; y++) {
 
 
 
-void CLightmapManager::Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest)
+void CLightmapManager::Blur (CSegFace* faceP, CLightmapFaceData& source)
 {
 	CLightmapFaceData	tempData;
 
@@ -592,6 +592,7 @@ if (bWhite) {
 	return;
 	}
 
+Blur (faceP, faceData);
 #pragma omp critical
 {
 faceP->m_info.nLightmap = m_list.nLightmaps++;
