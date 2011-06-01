@@ -1214,7 +1214,7 @@ typedef union tFixMatrixData {
 } __pack__ tFixMatrixData;
 
 
-class __pack__ CFixMatrix {
+class CFixMatrix {
 	friend class CFloatMatrix;
 #if 1
 	public:
@@ -1406,7 +1406,7 @@ typedef union tFloatMatrixData {
 	float				vec [16];
 } tFloatMatrixData;
 
-class __pack__ CFloatMatrix {
+class CFloatMatrix {
 	friend class CFixMatrix;
 
 #if 1
