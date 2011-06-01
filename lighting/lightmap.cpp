@@ -376,10 +376,10 @@ if (y < 0)
 else if (y >= LM_H)
 	y = LM_H - 1;
 CRGBColor& sourceColor = source.m_texColor [y * LM_W + x];
-CFloatVector3 c;
-c.Set (sourceColor.r, sourceColor.g, sourceColor.b);
-c *= weight [offset];
-color += c;
+float w = weight [offset];
+color.Red () += sourceColor.r * w;
+color.Green () += sourceColor.g * w;
+color.Blue () += sourceColor.b * w;
 }
 
 
@@ -397,8 +397,8 @@ for (int y = 0; y < h; y++) {
 		for (int offset = 1; offset < 5; offset++) {
 			xo = offset * xScale;
 			yo = offset * yScale;
-			Add (source, x - xo, y - xo, 1, color);
-			Add (source, x + yo, y + yo, 1, color);
+			Add (source, x - xo, y - yo, offset, color);
+			Add (source, x + xo, y + yo, offset, color);
 			}
 		destColor->Set (ubyte (color.Red () + 0.5f), ubyte (color.Green () + 0.5f), ubyte (color.Blue () + 0.5f));
 		}
