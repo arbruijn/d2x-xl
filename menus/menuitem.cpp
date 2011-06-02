@@ -433,11 +433,11 @@ if (val > maxVal)
 w1 = (val > maxVal) ? w : w * val / maxVal;
 if (w1 < w) {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	OglDrawFilledRect (x + w1 + 1, y, x + w, y + h - 2);
+	OglDrawFilledRect (x + w1, y, x + w, y + h - 1);
 	}
 CCanvas::Current ()->SetColorRGB (200, 0, 0, 255);
 if (w1)
-	OglDrawFilledRect (x + 1, y, x + w1, y + h - 2);
+	OglDrawFilledRect (x, y, x + w1, y + h - 1);
 glLineWidth (sqrt (float (screen.Width ()) / 640.0f));
 OglDrawEmptyRect (x, y, x + w - 1, y + h - 1);
 glLineWidth (1);

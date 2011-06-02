@@ -451,7 +451,7 @@ if ((t = FindArg ("-multithreaded"))) {
 	if (gameStates.app.nThreads == 0)
 		gameStates.app.nThreads = 1;
 	else if (gameStates.app.nThreads == 1)
-		gameStates.app.nThreads = 2;
+		gameStates.app.nThreads = MAX_THREADS;
 	else if (gameStates.app.nThreads > MAX_THREADS)
 		gameStates.app.nThreads = MAX_THREADS;
 	}
