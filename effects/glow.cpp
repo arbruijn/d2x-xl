@@ -19,7 +19,7 @@ CGlowRenderer glowRenderer;
 
 int hBlurShader = -1;
 
-#	if 1
+#	if 0
 
 // linear sampling
 const char *blurFS = 
@@ -50,24 +50,22 @@ const char *blurFS =
 	"uniform float direction;\r\n" \
 	"uniform float scale; // render target width/height\r\n" \
 	"uniform float brightness; // render target width/height\r\n" \
-	"float offset[5] = float[5](0.0, 1.0, 2.0, 3.0, 4.0);\r\n" \
-	"float weight[5] = float[5](0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162);\r\n" \
 	"void main() {\r\n" \
 	"float xScale = (1.0 - direction) * scale, yScale = direction * scale;\r\n" \
 	"vec2 uv = gl_TexCoord [0].xy;\r\n" \
-	"vec3 tc = texture2D (glowSource, uv).rgb * weight.x;\r\n" \
-	"vec2 v = vec2 (offset [1] * xScale, offset [1] * yScale);\r\n" \
-	"tc += texture2D (glowSource, uv + v).rgb * weight.y;\r\n" \
-	"tc += texture2D (glowSource, uv - v).rgb * weight.y;\r\n" \
-	"v = vec2 (offset [2] * xScale, offset [2] * yScale);\r\n" \
-	"tc += texture2D (glowSource, uv + v).rgb * weight.z;\r\n" \
-	"tc += texture2D (glowSource, uv - v).rgb * weight.z;\r\n" \
-	"v = vec2 (offset [3] * xScale, offset [3] * yScale);\r\n" \
-	"tc += texture2D (glowSource, uv + v).rgb * weight [3];\r\n" \
-	"tc += texture2D (glowSource, uv - v).rgb * weight [3];\r\n" \
-	"v = vec2 (offset [4] * xScale, offset [4] * yScale);\r\n" \
-	"tc += texture2D (glowSource, uv + v).rgb * weight [4];\r\n" \
-	"tc += texture2D (glowSource, uv - v).rgb * weight [4];\r\n" \
+	"vec3 tc = texture2D (glowSource, uv).rgb * 0.2270270270;\r\n" \
+	"vec2 v = vec2 (xScale, yScale);\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * 0.1945945946;\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * 0.1945945946;\r\n" \
+	"v = vec2 (2 * xScale, 2 * yScale);\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * 0.1216216216;\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * 0.1216216216;\r\n" \
+	"v = vec2 (3 * xScale, 3 * yScale);\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * 0.0540540541;\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * 0.0540540541;\r\n" \
+	"v = vec2 (4 * xScale, 4 * yScale);\r\n" \
+	"tc += texture2D (glowSource, uv + v).rgb * 0.0162162162;\r\n" \
+	"tc += texture2D (glowSource, uv - v).rgb * 0.0162162162;\r\n" \
 	"gl_FragColor = vec4 (tc, 1.0) * brightness;\r\n" \
 	"}\r\n";
 
