@@ -37,6 +37,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gpgpu_lighting.h"
 #include "fastrender.h"
 
+// 0: use average of the normals of all faces a vertex belongs to for lighting and only compute light once per frame and vertex (faster and smoother)
+// 1: compute light for each face using the face's normal, computing lights multiple times for each vertex per frame (more correct)
+#define LIGHTING_QUALITY 0 
+
 // -----------------------------------------------------------------------------------
 
 static void WaitWithUpdate (CFaceColor* colorP)
@@ -51,10 +55,30 @@ for (;;) {
 		bUpdate = true;
 		}
 	}
+// end critical section
 	if (bUpdate)
 		return;
 	G3_SLEEP (0);
 	}
+}
+
+// -----------------------------------------------------------------------------------
+
+static int UpdateColor (CFaceColor* colorP)
+{
+	int bUpdate;
+
+#pragma omp critical
+{
+bUpdate = (colorP->index >= 0) && (colorP->index != gameStates.render.nFrameFlipFlop + 1);
+}
+if (bUpdate) { // another thread is already updating this vertex
+	colorP->index = -1;
+	return 1;
+	}
+while (colorP->index < 0) // wait until that thread is done
+	G3_SLEEP (0);
+return 0;
 }
 
 // -----------------------------------------------------------------------------------
@@ -164,7 +188,7 @@ PROF_START
 #endif
 	short				nVertex, nSegment, nSide;
 	float				fAlpha;
-	int				h, i, nColor, nLights = 0, bUpdate;
+	int				h, i, nColor, nLights = 0;
 	//int				bVertexLight = gameStates.render.bPerPixelLighting != 2;
 	int				bLightmaps = lightmapManager.HaveLightmaps ();
 	bool				bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
@@ -225,16 +249,7 @@ for (i = nStart; i < nEnd; i++) {
 				else {
 					c = gameData.render.color.ambient [nVertex];
 					CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
-#pragma omp critical
-					{
-					if ((bUpdate = (vertColorP->index >= 0) && (vertColorP->index != gameStates.render.nFrameFlipFlop + 1)))
-						vertColorP->index = -1;
-					}
-					if (!bUpdate) { // another thread is already updating this vertex
-						while (vertColorP->index < 0) // wait until that thread is done
-							G3_SLEEP (0);
-						}
-					else {
+					if (UpdateColor (vertColorP)) {
 						if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
 							*vertColorP = c;
 							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
@@ -328,7 +343,7 @@ PROF_START
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, nColor, nLights = 0, bUpdate,
+	int			h, i, j, nColor, nLights = 0,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
 					bLightmaps = lightmapManager.HaveLightmaps ();
 	static		CStaticFaceColor<1,1,1,1> brightColor;
@@ -393,16 +408,7 @@ for (i = nStart; i < nEnd; i++) {
 						colorP->Assign (gameData.render.color.ambient [nVertex]);
 					else {
 						CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
-#pragma omp critical
-						{
-						if ((bUpdate = (vertColorP->index >= 0) && (vertColorP->index != gameStates.render.nFrameFlipFlop + 1)))
-							vertColorP->index = -1;
-						}
-						if (!bUpdate) { // another thread is already updating this vertex
-							while (vertColorP->index < 0) // wait until that thread is done
-								G3_SLEEP (0);
-							}
-						else {
+						if (UpdateColor (vertColorP)) {
 #if DBG
 							if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 								nSegment = nSegment;
@@ -464,7 +470,7 @@ PROF_START
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, k, nIndex, nColor, nLights = 0, bUpdate;
+	int			h, i, j, k, nIndex, nColor, nLights = 0;
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 
 	static		CStaticFaceColor<1,1,1,1> brightColor;
@@ -533,23 +539,23 @@ for (i = nStart; i < nEnd; i++) {
 						*colorP = gameData.render.color.ambient [nVertex];
 					else {
 						CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
-#pragma omp critical
-						{
-						if ((bUpdate = (vertColorP->index >= 0) && (vertColorP->index != gameStates.render.nFrameFlipFlop + 1)))
-							vertColorP->index = -1;
-						}
-						if (!bUpdate) { // another thread is already updating this vertex
-							while (vertColorP->index < 0) // wait until that thread is done
-								G3_SLEEP (0);
-							}
-						else {
+#if LIGHTING_QUALITY == 1
+						WaitWithUpdate (vertColorP);
+#else
+						if (UpdateColor (vertColorP))
+#endif
+							{
 							if (nLights + lightManager.VariableVertLights (nVertex) == 0) { // no dynamic lights => only ambient light contribution
 								vertColorP->Assign (c);
 								*vertColorP += gameData.render.color.ambient [nVertex];
 								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								}
 							else {
+#if LIGHTING_QUALITY == 1
+								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
+#else
 								G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
+#endif
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
