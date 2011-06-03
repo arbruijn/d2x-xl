@@ -540,6 +540,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			if (NdotL < -0.01f)
 				NdotL = 0.0f;
 			else {
+#if 1
 				// increase brightness for nearby points regardless of the angle between the light direction and the point's normal
 				// to prevent big faces with small light textures on them being much brighter than their adjacent faces
 				// because D2X-XL will in such cases consider the entire face to be emitting light
@@ -547,6 +548,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 					NdotL = 1.0f;
 				else
 					NdotL += (1.0f - NdotL) / fLightDist; 
+#endif
 				vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL); 
 				}
 			}
