@@ -928,8 +928,10 @@ if (!bTextured) {
 #endif
 ogl.SetupTransform (1);
 if (gameStates.render.bFullBright)
-	glColor4f (1,1,1,item->color [0].Alpha ());
-else if (!bColored)
+	glColor4f (1.0f, 1.0f, 1.0f, item->color [0].Alpha ());
+else if (bColored && bLightmaps)
+	glColor4f (0.0f, 0.0f, 0.0f, 1.0f);
+else
 	glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 ogl.SetBlendMode (bAdditive);
 
