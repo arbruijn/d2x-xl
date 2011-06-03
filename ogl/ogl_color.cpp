@@ -473,10 +473,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 					NdotL = 0.0f;
 				}
 			if ((gameStates.render.nState || (nType < 2)) && (fLightDist > 0.1f)) {
-				// check whether the vertex is behind the light or the light shines at the vertice's back
-				// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
 				fLightAngle = -CFloatVector3::Dot (lightRayDir, lightDir);
-				fLightAngle = (fLightAngle < 0.99f) ? fLightAngle + 0.01f : 1.0f;
+				if (fLightAngle >= -0.01f) // compensate for faces almost planar with the light emitting face
+					fLightAngle += (1.0f - fLightAngle) / fLightDist; 
 				}
 			else
 				fLightAngle = 1.0f;
@@ -485,7 +484,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			NdotL = 1.0f;
 			fLightDist = X2F (lightP->render.xDistance [nThread]);
 			fLightAngle = CFloatVector3::Dot (lightRayDir, lightDir);
-			fLightAngle = (fLightAngle < 0.0f) ? 1.0f : 1.0f - fLightAngle; 
+			if (fLightAngle <= 0.99f)
+				fLightAngle += 0.1f;
 			}
 		}
 
@@ -537,10 +537,18 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
 			}
 		else {
-			if (NdotL > 0.0f)
-				vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
-			else
+			if (NdotL < -0.01f)
 				NdotL = 0.0f;
+			else {
+				// increase brightness for nearby points regardless of the angle between the light direction and the point's normal
+				// to prevent big faces with small light textures on them being much brighter than their adjacent faces
+				// because D2X-XL will in such cases consider the entire face to be emitting light
+				if (fLightDist <= 1.0f)
+					NdotL = 1.0f;
+				else
+					NdotL += (1.0f - NdotL) / fLightDist; 
+				vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL); 
+				}
 			}
 #if 1
 		if (bSpecular && (NdotL > 0.0f) && (fLightDist > 0.0f)) {
