@@ -513,7 +513,7 @@ inline CFloatVector& CFloatVector::Assign (const CFloatVector3& other) {
 }
 
 inline CFloatVector& CFloatVector::Assign (const CFloatVector& other) {
-	v.coord.x = other.v.coord.x, v.coord.y = other.v.coord.y, v.coord.z = other.v.coord.z;
+	v.coord.x = other.v.coord.x, v.coord.y = other.v.coord.y, v.coord.z = other.v.coord.z, v.coord.w = other.v.coord.w;
 	return *this;
 }
 

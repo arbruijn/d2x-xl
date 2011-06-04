@@ -467,12 +467,8 @@ if (*bCloaked || *bTransparent || (widFlags & WID_TRANSPARENT_FLAG)) {
 			colorP->Green () /= fAlpha;
 			colorP->Blue () /= fAlpha;
 			}
-		fMaxColor = colorP->Red ();
-		if (fMaxColor < colorP->Green ())
-			fMaxColor = colorP->Green ();
-		if (fMaxColor < colorP->Blue ())
-			fMaxColor = colorP->Blue ();
-		if (fMaxColor > 1) {
+		fMaxColor = colorP->Max ();
+		if (fMaxColor > 1.0f) {
 			colorP->Red () /= fMaxColor;
 			colorP->Green () /= fMaxColor;
 			colorP->Blue () /= fMaxColor;
