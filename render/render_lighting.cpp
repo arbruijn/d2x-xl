@@ -565,14 +565,14 @@ for (i = nStart; i < nEnd; i++) {
 #	if DBG
 						if (nVertex == nDbgVertex) {
 							nVertex = nVertex;
+							vertColorP->index = -1;
 							G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
 							}
 #	endif
 						*colorP = *vertColorP;
+						colorP->Alpha () = 1.0f; //fAlpha;
 						if (nColor) 
-							*colorP *= faceColor [nColor];
-						else
-							colorP->Alpha () = 1.0f; //fAlpha;
+							*colorP *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
 						}
 					}
 				}

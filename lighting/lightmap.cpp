@@ -898,13 +898,13 @@ int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
 if (!lightmapManager.Bind (i))
 	return 0;
 GLuint h = lightmapManager.Buffer (i)->handle;
-#if 0 //!DBG
+#if 1 //!DBG
 if (0 <= ogl.IsBound (h))
 	return 1;
 #endif
 ogl.SelectTMU (GL_TEXTURE0, true);
 ogl.SetTexturing (true);
-glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 ogl.BindTexture (h);
 gameData.render.nStateChanges++;
 return 1;

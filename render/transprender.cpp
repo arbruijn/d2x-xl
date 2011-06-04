@@ -895,7 +895,10 @@ else {
 	m_data.bmP [1] = m_data.bmP [2] = NULL;
 	}
 
-ogl.EnableClientStates (bTextured, bColored && !bLightmaps, !bLightmaps, GL_TEXTURE0 + bLightmaps);
+if (bLightmaps)
+	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0 + !bColored);
+else
+	ogl.EnableClientStates (bTextured, bColored, 1, GL_TEXTURE0);
 if (!LoadTexture (bmBot, 0, 0, bLightmaps, item->nWrap)) {
 	if (bAdditive & 3)
 		glowRenderer.Done (GLOW_FACES);
@@ -911,15 +914,14 @@ if (!bLightmaps) {
 OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 
 if (bLightmaps) {
-	ogl.EnableClientStates (bTextured, bColored, 1, GL_TEXTURE0);
-	if (bTextured)
-		OglTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
+	ogl.EnableClientStates (1, bColored, 1, GL_TEXTURE0);
+	OglTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
 	if (bColored)
 		OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
 	OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 	}
-#if 1
+#if 0
 if (!bTextured) {
 	ogl.BindTexture (0);
 	ogl.SetTexturing (false);
@@ -936,8 +938,9 @@ ogl.SetBlendMode (bAdditive);
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
-else
-	return;
+//else
+//	return;
+//shaderManager.Deploy (-1);
 #endif
 
 if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
