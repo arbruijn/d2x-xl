@@ -896,7 +896,7 @@ else {
 	}
 
 if (bLightmaps)
-	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0 + !bColored);
+	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0 + bTextured);
 else
 	ogl.EnableClientStates (bTextured, bColored, 1, GL_TEXTURE0);
 if (!LoadTexture (bmBot, 0, 0, bLightmaps, item->nWrap)) {
