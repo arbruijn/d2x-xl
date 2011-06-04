@@ -350,7 +350,7 @@ return 0;
 
 float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
-int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *colorDataP, int nThread)
+int G3AccumVertColor (int nVertex, CFloatVector3 *colorSumP, CVertColorData *colorDataP, int nThread)
 {
 	CDynLight*			lightP;
 	CDynLightIndex*	sliP = &lightManager.Index (0, nThread);
@@ -372,7 +372,7 @@ if (nThread == 0)
 if (nThread == 1)
 	nThread = nThread;
 #endif
-colorSum = *pColorSum;
+colorSum = *colorSumP;
 vertPos = *transformation.m_info.posf [1].XYZ () - *colorData.vertPosP;
 CFloatVector3::Normalize (vertPos);
 nLights = sliP->nActive;
@@ -484,8 +484,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			NdotL = 1.0f;
 			fLightDist = X2F (lightP->render.xDistance [nThread]);
 			fLightAngle = CFloatVector3::Dot (lightRayDir, lightDir);
-			if (fLightAngle <= 0.99f)
-				fLightAngle += 0.1f;
+			if (fLightAngle < -0.01f) 
+				fLightAngle = 1.0f - fLightAngle; 
+			else if (fLightAngle <= 0.99f)
+				fLightAngle += 0.01f;
 			}
 		}
 
@@ -602,18 +604,14 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	}
 if (j) {
 	if ((nSaturation == 1) || gameStates.render.bHaveLightmaps) { //if a color component is > 1, cap color components using highest component value
-		float	cMax = colorSum.Red ();
-		if (cMax < colorSum.Green ())
-			cMax = colorSum.Green ();
-		if (cMax < colorSum.Blue ())
-			cMax = colorSum.Blue ();
-		if (cMax > 1) {
-			colorSum.Red () /= cMax;
-			colorSum.Green () /= cMax;
-			colorSum.Blue () /= cMax;
+		float	maxColor = colorSum.Max ();
+		if (maxColor > 1.0f) {
+			colorSum.Red () /= maxColor;
+			colorSum.Green () /= maxColor;
+			colorSum.Blue () /= maxColor;
 			}
 		}
-	*pColorSum = colorSum;
+	*colorSumP = colorSum;
 	}
 #if DBG
 if (nLights)
