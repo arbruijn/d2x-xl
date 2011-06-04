@@ -35,7 +35,6 @@ if (l < right)
 	SortAscending (buffer, l, right);
 if (left < r)
 	SortAscending (buffer, left, r);
-median.info.visibleVertices = NULL;
 };
 
 //-----------------------------------------------------------------------------

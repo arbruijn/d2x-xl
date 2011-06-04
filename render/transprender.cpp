@@ -929,15 +929,15 @@ if (!bTextured) {
 ogl.SetupTransform (1);
 if (gameStates.render.bFullBright)
 	glColor4f (1.0f, 1.0f, 1.0f, item->color [0].Alpha ());
-else if (bColored && bLightmaps)
-	glColor4f (0.0f, 0.0f, 0.0f, 1.0f);
-else
+else 
 	glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 ogl.SetBlendMode (bAdditive);
 
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
+else
+	return;
 #endif
 
 if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {

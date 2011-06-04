@@ -512,7 +512,7 @@ for (i = nStart; i < nEnd; i++) {
 			}
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
-			faceP->m_info.color.Assign (faceColor [nColor]);
+		faceP->m_info.color.Assign (faceColor [nColor]);
 		if (!(bNeedLight || nColor) && faceP->m_info.bHasColor)
 			continue;
 		if (bComputeLight) {
@@ -567,9 +567,10 @@ for (i = nStart; i < nEnd; i++) {
 							}
 #	endif
 						*colorP = *vertColorP;
-						if (nColor) 
+						if (nColor && !gameStates.render.bPerPixelLighting) 
 							*colorP *= faceColor [nColor];
-						colorP->Alpha () = fAlpha;
+						else
+							colorP->Alpha () = fAlpha;
 						}
 					}
 				}

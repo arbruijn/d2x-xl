@@ -217,6 +217,8 @@ for (i = 0; i < MAX_THREADS; i++)
 	DESTROY (active [i]);
 for (i = 0; i < 2; i++)
 	DESTROY (index [i]);
+for (i = 0; i < nLights [0]; i++)
+	lights [i].Destroy ();
 }
 
 // ----------------------------------------------------------------------------

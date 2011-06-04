@@ -37,7 +37,7 @@ const char *pszLMLightingFS [] = {
 	"uniform float fLightScale;\r\n" \
 	"void main() {\r\n" \
 	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale + gl_Color;\r\n" \
-	"gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * gl_Color.a);\r\n" \
+	"gl_FragColor = vec4 (matColor.rgb * min (vec3 (1.0, 1.0, 1.0), color.rgb), matColor.a * gl_Color.a);\r\n" \
 	"}"
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
