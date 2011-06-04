@@ -520,6 +520,8 @@ for (i = nStart; i < nEnd; i++) {
 			bComputeLight = false;
 			}
 		faceP->m_info.bHasColor = 1;
+		if (gameStates.render.bPerPixelLighting)
+			nColor = 0;
 		for (k = faceP->m_info.nTris, triP = FACES.tris + faceP->m_info.nTriIndex; k; k--, triP++) {
 			nIndex = triP->nIndex;
 			colorP = FACES.color + nIndex;
@@ -567,10 +569,10 @@ for (i = nStart; i < nEnd; i++) {
 							}
 #	endif
 						*colorP = *vertColorP;
-						if (nColor && !gameStates.render.bPerPixelLighting) 
+						if (nColor) 
 							*colorP *= faceColor [nColor];
 						else
-							colorP->Alpha () = fAlpha;
+							colorP->Alpha () = 1.0f; //fAlpha;
 						}
 					}
 				}
