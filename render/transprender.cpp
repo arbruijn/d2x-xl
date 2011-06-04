@@ -1123,8 +1123,8 @@ if (USE_PARTICLE_SHADER) {
 	p.m_nRotFrame = (item->nRotFrame + item->nFrame) % 64;
 	p.m_vPosf = item->position;
 	p.m_vPos.Assign (item->position);
-	p.m_texCoord.v.v = nCol / 8.0f;
-	p.m_texCoord.v.u = nRow / 8.0f; 
+	p.m_texCoord.v.v = nCol* 0.125f;
+	p.m_texCoord.v.u = nRow* 0.125f; 
 	particleManager.Add (&p, 1.0f);
 	}
 else {
@@ -1141,26 +1141,26 @@ else {
 	vertexP->vPos.v.coord.x = vPos.v.coord.x - nSize;
 	vertexP->vPos.v.coord.y = vPos.v.coord.y + nSize;
 	vertexP->vPos.v.coord.z = vPos.v.coord.z;
-	vertexP->texCoord.v.u = nCol / 8.0f;
-	vertexP->texCoord.v.v = (nRow + 1) / 8.0f;
+	vertexP->texCoord.v.u = nCol* 0.125f;
+	vertexP->texCoord.v.v = (nRow + 1)* 0.125f;
 	vertexP++;
 	vertexP->vPos.v.coord.x = vPos.v.coord.x + nSize;
 	vertexP->vPos.v.coord.y = vPos.v.coord.y + nSize;
 	vertexP->vPos.v.coord.z = vPos.v.coord.z;
-	vertexP->texCoord.v.u = (nCol + 1) / 8.0f;
-	vertexP->texCoord.v.v = (nRow + 1) / 8.0f;
+	vertexP->texCoord.v.u = (nCol + 1)* 0.125f;
+	vertexP->texCoord.v.v = (nRow + 1)* 0.125f;
 	vertexP++;
 	vertexP->vPos.v.coord.x = vPos.v.coord.x + nSize;
 	vertexP->vPos.v.coord.y = vPos.v.coord.y - nSize;
 	vertexP->vPos.v.coord.z = vPos.v.coord.z;
-	vertexP->texCoord.v.u = (nCol + 1) / 8.0f;
-	vertexP->texCoord.v.v = nRow / 8.0f;
+	vertexP->texCoord.v.u = (nCol + 1)* 0.125f;
+	vertexP->texCoord.v.v = nRow* 0.125f;
 	vertexP++;
 	vertexP->vPos.v.coord.x = vPos.v.coord.x - nSize;
 	vertexP->vPos.v.coord.y = vPos.v.coord.y - nSize;
 	vertexP->vPos.v.coord.z = vPos.v.coord.z;
-	vertexP->texCoord.v.u = nCol / 8.0f;
-	vertexP->texCoord.v.v = nRow / 8.0f;
+	vertexP->texCoord.v.u = nCol* 0.125f;
+	vertexP->texCoord.v.v = nRow* 0.125f;
 	}
 sparkBuffer.nSparks++;
 }
@@ -1430,6 +1430,10 @@ void CTransparencyRenderer::Render (int nWindow)
 if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
+#if DBG
+if (gameStates.render.cameras.bActive)
+	nWindow = nWindow;
+#endif
 PROF_START
 gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
 shaderManager.Deploy (-1);

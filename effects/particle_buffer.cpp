@@ -247,10 +247,11 @@ if (ogl.m_features.bShaders) {
 		}
 	else
 #endif
-	if (gameStates.render.cameras.bActive /*|| !gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)*/)
-		shaderManager.Deploy (-1);
+	//if (gameStates.render.cameras.bActive /*|| !gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)*/)
+	//	shaderManager.Deploy (-1);
+	//else 
 #if HAVE_PARTICLE_SHADER
-	else if (0 <= (nShader = UseParticleShader ())) {
+	if (0 <= (nShader = UseParticleShader ())) {
 		if (!particleManager.LoadShader (nShader, dMax))
 			shaderManager.Deploy (-1);
 		else {
@@ -268,8 +269,9 @@ if (ogl.m_features.bShaders) {
 				}	
 			}
 		}
+	else 
 #endif
-	else if (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES) && ((m_nType <= WATERFALL_PARTICLES) || (m_nType >= PARTICLE_TYPES))) { // load soft blending shader
+	if (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES) && ((m_nType <= WATERFALL_PARTICLES) || (m_nType >= PARTICLE_TYPES))) { // load soft blending shader
 		if (!glareRenderer.LoadShader (5, (m_nType < PARTICLE_TYPES) ? m_bEmissive : -1))
 			shaderManager.Deploy (-1);
 		}

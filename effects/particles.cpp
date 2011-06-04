@@ -1398,7 +1398,7 @@ else {
 	float hy = ParticleImageInfo (m_nType).yBorder;
 	pb [(int) m_nOrient].texCoord.v.v = pb [int (m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + hy;
 	pb [int (m_nOrient + 2) % 4].texCoord.v.v = pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - hy;
-	pb [0].texCoord.v.l = pb [1].texCoord.v.l = pb [2].texCoord.v.l = pb [3].texCoord.v.l = ((m_nType == SMOKE_PARTICLES) ? 1.0f : 2.0f);
+	pb [0].texCoord.v.l = pb [1].texCoord.v.l = pb [2].texCoord.v.l = pb [3].texCoord.v.l = (((m_nType == SMOKE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : 2.0f);
 	}
 
 if (m_nType == RAIN_PARTICLES) {
