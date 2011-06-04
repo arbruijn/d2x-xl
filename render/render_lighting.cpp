@@ -228,6 +228,8 @@ for (i = nStart; i < nEnd; i++) {
 #endif
 	AddFaceListItem (faceP, nThread);
 	faceP->m_info.color.Assign (faceColor [nColor]);
+	if (gameStates.render.bPerPixelLighting)
+		nColor = 0;
 	colorP = FACES.color + faceP->m_info.nIndex;
 	for (h = 0; h < 4; h++, colorP++) {
 		if (gameStates.render.bFullBright)
@@ -388,6 +390,8 @@ for (i = nStart; i < nEnd; i++) {
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
 		FixTriangleFan (segP, faceP);
+		if (gameStates.render.bPerPixelLighting)
+			nColor = 0;
 		faceP->m_info.color.Assign (faceColor [nColor]);
 //			SetDynLightMaterial (nSegment, faceP->m_info.nSide, -1);
 		colorP = FACES.color + faceP->m_info.nIndex;
