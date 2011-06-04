@@ -440,17 +440,14 @@ if (*bCloaked || *bTransparent || (widFlags & WID_TRANSPARENT_FLAG)) {
 		*colorP = cloakColor;
 		*nColor = 1;
 		*bTextured = !*bCloaked;
-		colorP->Alpha () = (c >= FADE_LEVELS) ? 0 : 1.0f - float (c) / float (FADE_LEVELS);
+		fAlpha = (c >= FADE_LEVELS) ? 0.0f : 1.0f - float (c) / float (FADE_LEVELS);
 		if (*bTransparent)
 			colorP->Red () =
 			colorP->Green () =
 			colorP->Blue () = colorP->Alpha ();
-#if DBG
-		if (colorP->Alpha () < 1)
-			return colorP->Alpha ();
-#endif
 		return colorP->Alpha ();
 		}
+
 	if (!gameOpts->render.color.bWalls)
 		c = 0;
 	if (WALLS [nWall].hps)
@@ -459,7 +456,7 @@ if (*bCloaked || *bTransparent || (widFlags & WID_TRANSPARENT_FLAG)) {
 		fAlpha = COMPETITION ? 0.5f : (float) (FADE_LEVELS - extraGameInfo [1].grWallTransparency) / (float) FADE_LEVELS;
 	else
 		fAlpha = 1.0f - extraGameInfo [0].grWallTransparency / (float) FADE_LEVELS;
-	if (fAlpha < 1) {
+	if (fAlpha < 1.0f) {
 		//fAlpha = (float) sqrt (fAlpha);
 		paletteManager.Game ()->ToRgbaf ((ubyte) c, *colorP);
 		if (bAdditive) {
@@ -480,11 +477,11 @@ if (*bCloaked || *bTransparent || (widFlags & WID_TRANSPARENT_FLAG)) {
 	}
 if (gameStates.app.bD2XLevel) {
 	c = wallP->cloakValue;
-	return colorP->Alpha () = (c && (c < FADE_LEVELS)) ? (float) (FADE_LEVELS - c) / (float) FADE_LEVELS : 1;
+	return colorP->Alpha () = (c && (c < FADE_LEVELS)) ? (float) (FADE_LEVELS - c) / (float) FADE_LEVELS : 1.0f;
 	}
 if (gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (SEGMENTS [nSegment].m_sides [nSide].m_nBaseTex))
 	return colorP->Alpha () = 0.8f;
-return colorP->Alpha () = 1;
+return colorP->Alpha () = 1.0f;
 }
 
 //------------------------------------------------------------------------------

@@ -155,7 +155,7 @@ if (bWall)
 	*fAlphaP = WallAlpha (nSegment, nSide, faceP->m_info.nWall, faceP->m_info.widFlags, faceP->m_info.nCamera >= 0, faceP->m_info.bAdditive,
 								 &faceColorP [1], &nColor, &bTextured, &bCloaked, &bTransparent);
 else
-	*fAlphaP = 1;
+	*fAlphaP = 1.0f;
 faceP->m_info.bTextured = bTextured;
 faceP->m_info.bCloaked = bCloaked;
 faceP->m_info.bTransparent |= bTransparent;
@@ -170,7 +170,7 @@ if (faceP->m_info.bSegColor) {
 	else
 		faceP->m_info.bVisible = (faceP->m_info.nBaseTex >= 0);
 	}
-if ((*fAlphaP < 1) || ((nColor == 2) && (faceP->m_info.nBaseTex < 0)))
+if ((*fAlphaP < 1.0f) || ((nColor == 2) && (faceP->m_info.nBaseTex < 0)))
 	faceP->m_info.bTransparent = 1;
 return nColor;
 }
@@ -182,7 +182,7 @@ void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 PROF_START
 	CSegFace*		faceP;
 	CFloatVector*	colorP;
-	CFaceColor		c, faceColor [3];
+	CFaceColor		faceColor [3];
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
@@ -227,6 +227,7 @@ for (i = nStart; i < nEnd; i++) {
 		}
 #endif
 	AddFaceListItem (faceP, nThread);
+	faceColor [nColor].Alpha () = fAlpha;
 	faceP->m_info.color.Assign (faceColor [nColor]);
 	if (gameStates.render.bPerPixelLighting)
 		nColor = 0;
@@ -235,45 +236,33 @@ for (i = nStart; i < nEnd; i++) {
 		if (gameStates.render.bFullBright)
 			*colorP = nColor ? faceColor [nColor] : brightColor;
 		else {
-			if (bLightmaps) {
-				c = faceColor [nColor];
-				if (nColor)
-					colorP->Assign (c);
-				}
-			else {
-				nVertex = faceP->m_info.index [h];
+			nVertex = faceP->m_info.index [h];
+#if DBG
+			if (nVertex == nDbgVertex)
+				nDbgVertex = nDbgVertex;
+#endif
+			CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
+			if (UpdateColor (vertColorP)) {
+				if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
+					*vertColorP = gameData.render.color.ambient [nVertex];
+					vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
+					}
+				else {
+#if DBG
+					if (nVertex == nDbgVertex)
+						nDbgVertex = nDbgVertex;
+#endif
+					G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &gameData.render.color.ambient [nVertex], 1, 0, nThread);
+					lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
+					lightManager.ResetNearestToVertex (nVertex, nThread);
+					}
 #if DBG
 				if (nVertex == nDbgVertex)
-					nDbgVertex = nDbgVertex;
+					nVertex = nVertex;
 #endif
-				if (gameStates.render.bPerPixelLighting == 2)
-					*colorP = gameData.render.color.ambient [nVertex];
-				else {
-					c = gameData.render.color.ambient [nVertex];
-					CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
-					if (UpdateColor (vertColorP)) {
-						if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
-							*vertColorP = c;
-							vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
-							}
-						else {
-#if DBG
-							if (nVertex == nDbgVertex)
-								nDbgVertex = nDbgVertex;
-#endif
-							G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &c, 1, 0, nThread);
-							lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
-							lightManager.ResetNearestToVertex (nVertex, nThread);
-							}
-#if DBG
-						if (nVertex == nDbgVertex)
-							nVertex = nVertex;
-#endif
-						}
-					*colorP = *vertColorP;
-					}
 				}
-			if (nColor == 1)
+			*colorP = *vertColorP;
+			if (nColor)
 				*colorP *= faceColor [nColor];
 			colorP->Alpha () = fAlpha;
 			}
@@ -339,7 +328,7 @@ PROF_START
 	tSegFaces*		segFaceP;
 	CSegFace*		faceP;
 	CFloatVector*	colorP;
-	CFaceColor		c, faceColor [3];
+	CFaceColor		faceColor [3];
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
@@ -390,57 +379,48 @@ for (i = nStart; i < nEnd; i++) {
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
 		FixTriangleFan (segP, faceP);
-		if (gameStates.render.bPerPixelLighting)
-			nColor = 0;
+		faceColor [nColor].Alpha () = fAlpha;
 		faceP->m_info.color.Assign (faceColor [nColor]);
+		if (gameStates.render.bPerPixelLighting && (nColor == 1))
+			nColor = -1;
 //			SetDynLightMaterial (nSegment, faceP->m_info.nSide, -1);
 		colorP = FACES.color + faceP->m_info.nIndex;
 		for (h = 0; h < 4; h++, colorP++) {
 			if (gameStates.render.bFullBright)
 				colorP->Assign (nColor ? faceColor [nColor] : brightColor);
 			else {
-				c = faceColor [nColor];
-				if (nColor)
-					*colorP = c;
-				if (!bLightmaps) {
-					nVertex = faceP->m_info.index [h];
+				nVertex = faceP->m_info.index [h];
 #if DBG
-					if (nVertex == nDbgVertex)
-						nDbgVertex = nDbgVertex;
+				if (nVertex == nDbgVertex)
+					nDbgVertex = nDbgVertex;
 #endif
-					if (gameStates.render.bPerPixelLighting == 2)
-						colorP->Assign (gameData.render.color.ambient [nVertex]);
+				CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
+				if (UpdateColor (vertColorP)) {
+#if DBG
+					if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+						nSegment = nSegment;
+#endif
+					if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
+						*vertColorP = gameData.render.color.ambient [nVertex];
+						vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
+						}
 					else {
-						CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
-						if (UpdateColor (vertColorP)) {
-#if DBG
-							if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-								nSegment = nSegment;
-#endif
-							if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
-								vertColorP->Assign (c);
-								*vertColorP += gameData.render.color.ambient [nVertex];
-								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
-								}
-							else {
-#if DBG
-								if (nVertex == nDbgVertex)
-									nDbgVertex = nDbgVertex;
-#endif
-								G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &c, 1, 0, nThread);
-								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
-								lightManager.ResetNearestToVertex (nVertex, nThread);
-								}
-							}
 #if DBG
 						if (nVertex == nDbgVertex)
-							nVertex = nVertex;
+							nDbgVertex = nDbgVertex;
 #endif
-						*colorP = *vertColorP;
+						G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &gameData.render.color.ambient [nVertex], 1, 0, nThread);
+						lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
+						lightManager.ResetNearestToVertex (nVertex, nThread);
 						}
 					}
-				if (nColor == 1)
-					*colorP *= faceColor [nColor];
+#if DBG
+				if (nVertex == nDbgVertex)
+					nVertex = nVertex;
+#endif
+				*colorP = *vertColorP;
+				if (nColor)
+					*colorP *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
 				colorP->Alpha () = fAlpha;
 				}
 			}
@@ -468,7 +448,7 @@ PROF_START
 	CSegFace*		faceP;
 	tFaceTriangle*	triP;
 	CFloatVector*	colorP;
-	CFaceColor		c, faceColor [3];
+	CFaceColor		faceColor [3];
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
@@ -480,7 +460,7 @@ PROF_START
 	static		CStaticFaceColor<1,1,1,1> brightColor;
 
 for (i = 0; i < 3; i++)
-	faceColor [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
+	faceColor [i].Set (1.0f, 1.0f, 1.0f, 1.0f);
 ogl.SetTransform (1);
 gameStates.render.nState = 0;
 #	if GPGPU_VERTEX_LIGHTING
@@ -516,6 +496,7 @@ for (i = nStart; i < nEnd; i++) {
 			}
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
+		faceColor [nColor].Alpha () = fAlpha;
 		faceP->m_info.color.Assign (faceColor [nColor]);
 		if (!(bNeedLight || nColor) && faceP->m_info.bHasColor)
 			continue;
@@ -523,9 +504,9 @@ for (i = nStart; i < nEnd; i++) {
 			nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 			bComputeLight = false;
 			}
+		if (gameStates.render.bPerPixelLighting && (nColor == 1))
+			nColor = -1;
 		faceP->m_info.bHasColor = 1;
-		if (gameStates.render.bPerPixelLighting)
-			nColor = 0;
 		for (k = faceP->m_info.nTris, triP = FACES.tris + faceP->m_info.nTriIndex; k; k--, triP++) {
 			nIndex = triP->nIndex;
 			colorP = FACES.color + nIndex;
@@ -533,9 +514,6 @@ for (i = nStart; i < nEnd; i++) {
 				if (gameStates.render.bFullBright)
 					*colorP = nColor ? faceColor [nColor] : brightColor;
 				else {
-					c = faceColor [nColor];
-					if (nColor)
-						*colorP = c;
 					nVertex = triP->index [h];
 #if DBG
 					if (nVertex == nDbgVertex)
@@ -552,15 +530,14 @@ for (i = nStart; i < nEnd; i++) {
 #endif
 							{
 							if (nLights + lightManager.VariableVertLights (nVertex) == 0) { // no dynamic lights => only ambient light contribution
-								vertColorP->Assign (c);
-								*vertColorP += gameData.render.color.ambient [nVertex];
+								*vertColorP = gameData.render.color.ambient [nVertex];
 								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
 								}
 							else {
 #if LIGHTING_QUALITY == 1
 								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
 #else
-								G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
+								G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FACES.vertices + nIndex, NULL, NULL, 1, 0, nThread);
 #endif
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
@@ -570,13 +547,16 @@ for (i = nStart; i < nEnd; i++) {
 						if (nVertex == nDbgVertex) {
 							nVertex = nVertex;
 							vertColorP->index = -1;
-							G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
+							G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, NULL, 1, 0, nThread);
 							}
 #	endif
 						*colorP = *vertColorP;
-						colorP->Alpha () = 1.0f; //fAlpha;
-						if (nColor) 
+						if (!nColor) 
+							colorP->Alpha () = fAlpha;
+						else if (nColor > 0) {
 							*colorP *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
+							colorP->Alpha () = fAlpha;
+							}
 						}
 					}
 				}
