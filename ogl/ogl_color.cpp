@@ -484,10 +484,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			NdotL = 1.0f;
 			fLightDist = X2F (lightP->render.xDistance [nThread]);
 			fLightAngle = CFloatVector3::Dot (lightRayDir, lightDir);
-			if (fLightAngle < -0.01f) 
-				fLightAngle = 1.0f - fLightAngle; 
-			else if (fLightAngle <= 0.99f)
-				fLightAngle += 0.01f;
+			fLightAngle = (fLightAngle < 0.0f) ? 1.0f : 1.0f - fLightAngle; 
 			}
 		}
 
