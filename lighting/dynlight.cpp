@@ -945,13 +945,12 @@ for (i = 0; i < gameData.segs.nVertices; i++) {
 		nDbgVertex = nDbgVertex;
 #endif
 	m_data.variableVertLights [i] = VariableVertexLights (i);
+	gameData.render.color.ambient [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
 	}
-if (gameStates.render.bPerPixelLighting/* && lightmapManager.HaveLightmaps ()*/) {
-	gameData.render.color.ambient.Clear ();
+if (gameStates.render.bPerPixelLighting/* && lightmapManager.HaveLightmaps ()*/)
 	return;
-	}
 if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
-		CFaceColor*	pfh, *pf = gameData.render.color.ambient.Buffer ();
+		CFaceColor*	pf = gameData.render.color.ambient.Buffer ();
 		CSegment*	segP;
 
 	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
@@ -976,13 +975,8 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 	for (i = 0, segP = SEGMENTS.Buffer (); i < gameData.segs.nSegments; i++, segP++) {
 		if (segP->m_function == SEGMENT_FUNC_SKYBOX) {
 			short* sv = segP->m_verts;
-			for (j = 8; j; j--, sv++) {
-				pfh = pf + *sv;
-				pfh->Red () =
-				pfh->Green () =
-				pfh->Blue () =
-				pfh->Alpha () = 1;
-				}
+			for (j = 8; j; j--, sv++)
+				pf [*sv].Set (1.0f, 1.0f, 1.0f, 1.0f);
 			}
 		}
 	}

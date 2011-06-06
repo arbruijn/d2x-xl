@@ -794,7 +794,7 @@ InitArgs (argc, argv);
 EvalArgs ();
 CheckAndFixSetup ();
 GetAppFolders ();
-gameStates.app.nLogLevel = FindArg ("-printlog");
+gameStates.app.nLogLevel = appConfig.Value ("-printlog", 1);
 if (gameStates.app.nLogLevel > 0) {
 	   char fnErr [FILENAME_LEN];
 #ifdef __unix__
