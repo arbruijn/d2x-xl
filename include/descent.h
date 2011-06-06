@@ -1210,6 +1210,7 @@ class CApplicationStates {
 		int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
 		int bShowError;
 		int bClearMessage;
+		int nLogLevel;
 		int iDownloadTimeout;
 		int bHaveSDLNet;
 		bool bCustomData;

@@ -512,7 +512,8 @@ static int ReadLoresBitmap (CBitmap* bmP, int nIndex, int bD1)
 {
 nDescentCriticalError = 0;
 
-PrintLog ("loading lores texture '%s'\n", bmP->Name ());
+if (gameStates.app.nLogLevel > 1)
+	PrintLog ("loading lores texture '%s'\n", bmP->Name ());
 CFile* cfP = cfPiggy + bD1;
 if (!cfP->File ())
 	PiggyInitPigFile (NULL);
@@ -753,7 +754,8 @@ if (!pszFile)
 	return (nIndex < 0) ? -1 : 0;
 
 #if 0
-PrintLog ("loading hires texture '%s' (quality: %d)\n", pszFile, min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
+if (gameStates.app.nLogLevel > 1)
+	PrintLog ("loading hires texture '%s' (quality: %d)\n", pszFile, min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
 #endif
 if (nFile < 2)	//was level specific mod folder
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);

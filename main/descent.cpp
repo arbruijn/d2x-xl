@@ -794,7 +794,8 @@ InitArgs (argc, argv);
 EvalArgs ();
 CheckAndFixSetup ();
 GetAppFolders ();
-if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
+gameStates.app.nLogLevel = FindArg ("-printlog");
+if (gameStates.app.nLogLevel > 0) {
 	   char fnErr [FILENAME_LEN];
 #ifdef __unix__
 	sprintf (fnErr, "%s/d2x.log", getenv ("HOME"));

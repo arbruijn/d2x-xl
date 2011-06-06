@@ -786,7 +786,8 @@ h = 0;
 for (i = 0, j = int (OBJECTS.Length ()); i < j; i++, objP++) {
 	if ((objP->info.nSegment >= 0) && (objP->info.nType != 255) && (objP->info.renderType == RT_POLYOBJ) &&
 		 !G3HaveModel (objP->ModelId ())) {
-		PrintLog ("      building model %d\n", objP->ModelId ());
+		if (gameStates.app.nLogLevel > 1)
+			PrintLog ("      building model %d\n", objP->ModelId ());
 #if DBG
 		if (objP->ModelId () == nDbgModel)
 			nDbgModel = nDbgModel;
@@ -829,7 +830,8 @@ for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 		if (o.ModelId () == nDbgModel)
 			nDbgModel = nDbgModel;
 #endif
-		PrintLog ("      building model %d (%s)\n", o.ModelId (), pszHires ? pszHires : "n/a");
+		if (gameStates.app.nLogLevel > 1)
+			PrintLog ("      building model %d (%s)\n", o.ModelId (), pszHires ? pszHires : "n/a");
 		if (DrawPolygonObject (&o, 0))
 			h++;
 		}
