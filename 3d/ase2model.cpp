@@ -143,7 +143,8 @@ if (!pa) {
 #if DBG
 HUDMessage (0, "optimizing model");
 #endif
-PrintLog ("         optimizing ASE model %d\n", nModel);
+if (gameStates.app.nLogLevel > 1)
+	PrintLog ("         optimizing ASE model %d\n", nModel);
 CountASEModelItems (pa);
 if (!Create ())
 	return 0;

@@ -150,7 +150,8 @@ if (!po) {
 #if DBG
 HUDMessage (0, "optimizing model");
 #endif
-PrintLog ("         optimizing OOF model %d\n", nModel);
+if (gameStates.app.nLogLevel > 1)
+	PrintLog ("         optimizing OOF model %d\n", nModel);
 CountOOFModelItems (po);
 if (!Create ())
 	return 0;
