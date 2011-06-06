@@ -200,6 +200,9 @@ GetOSXAppFolder (szDataRootDir, gameFolders.szGameDir);
 #	else
 strcpy (szDataRootDir, gameFolders.szGameDir);
 #	endif //__macosx__
+int j = (int) strlen (gameFolders.szGameDir);
+if (j && (gameFolders.szGameDir [j-1] != '\\') && (gameFolders.szGameDir [j-1] != '/'))
+	strcat (gameFolders.szGameDir, "/");
 if (*gameFolders.szGameDir)
 	chdir (gameFolders.szGameDir);
 #endif //Linux, OS X
