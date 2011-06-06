@@ -51,12 +51,11 @@ int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, con
 {
 	FFS	ffs;
 	char	szDir [FILENAME_LEN];
-	int	i, bAddSlash;
 
 if (!(szName && *szName))
 	return 1;
-i = (int) strlen (szRootDir);
-bAddSlash = i && (szRootDir [i-1] != '\\') && (szRootDir [i-1] != '/');
+int i = (int) strlen (szRootDir);
+int bAddSlash = i && (szRootDir [i-1] != '\\') && (szRootDir [i-1] != '/');
 PrintLog ("GetAppFolder ('%s', '%s', '%s', '%s')\n", szRootDir, szFolder, szName, szFilter);
 sprintf (szDir, "%s%s%s%s%s", szRootDir, bAddSlash ? "/" : "", szName, *szFilter ? "/" : "", szFilter);
 if (!(i = FFF (szDir, &ffs, *szFilter == '\0'))) {
