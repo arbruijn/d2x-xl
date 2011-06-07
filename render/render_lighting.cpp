@@ -519,10 +519,10 @@ for (i = nStart; i < nEnd; i++) {
 					if (nVertex == nDbgVertex)
 						nDbgVertex = nDbgVertex;
 #endif
-					if (gameStates.render.bPerPixelLighting == 2)
+					CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
+					if (!bNeedLight)
 						*colorP = gameData.render.color.ambient [nVertex];
 					else {
-						CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
 #if LIGHTING_QUALITY == 1
 						WaitWithUpdate (vertColorP);
 #else
@@ -550,13 +550,13 @@ for (i = nStart; i < nEnd; i++) {
 							G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, NULL, 1, 0, nThread);
 							}
 #	endif
-						*colorP = *vertColorP;
-						if (!nColor) 
-							colorP->Alpha () = fAlpha;
-						else if (nColor > 0) {
-							*colorP *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
-							colorP->Alpha () = fAlpha;
-							}
+						}
+					*colorP = *vertColorP;
+					if (!nColor) 
+						colorP->Alpha () = fAlpha;
+					else if (nColor > 0) {
+						*colorP *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
+						colorP->Alpha () = fAlpha;
 						}
 					}
 				}
