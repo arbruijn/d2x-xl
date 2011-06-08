@@ -10,6 +10,7 @@
 #include "ogl_color.h"
 #include "ogl_shader.h"
 #include "ogl_render.h"
+#include "cockpit.h"
 #include "transformation.h"
 #include "postprocessing.h"
 
@@ -55,14 +56,12 @@ const char* shockwaveFS =
 	"  float d = length (v); //distance of screen coordinate to center of effect\r\n" \
 	"  float r = gl_LightSource [i].constantAttenuation; //effect radius in screen space\r\n" \
 	"  float offset = d - r;\r\n" \
-	"  float dampen = gl_LightSource [i].quadraticAttenuation;\r\n" \
-	"  float range = effectStrength.z * dampen;\r\n" \
-	"  float absOffset = abs (offset);\r\n" \
-	"  if (absOffset <= range) { // effect range from the wavefront\r\n" \
+	"  float range = effectStrength.z * gl_LightSource [i].quadraticAttenuation;\r\n" \
+	"  if (abs (offset) <= range) { // effect range from the wavefront\r\n" \
 	"    r += range;\r\n" \
 	"    float z = sqrt (r * r - d * d) / r * gl_LightSource [i].linearAttenuation;\r\n" \
 	"    if (gl_LightSource [i].position.z - z <= ZEYE (texture2D (depthTex, gl_TexCoord [0].xy).r)) \r\n" \
-	"      tcDest -= v * gl_LightSource [i].spotExponent /** dampen*/ * (0.5 + cos (Pi * offset / range) * 0.5);\r\n" \
+	"      tcDest -= v * gl_LightSource [i].spotExponent * (0.5 + cos (Pi * offset / range) * 0.5);\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
 	"gl_FragColor = texture2D (sceneTex, tcDest / screenSize);\r\n" \
@@ -166,7 +165,8 @@ if (i == 5)
 tScreenPos s [5];
 for (int i = 0; i < 5; i++) {
 	ProjectPoint (p [i], s [i], 0, 0);
-	s [i].y = screen.Height () - s [i].y;
+	if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
+		s [i].y = screen.Height () - s [i].y;
 	}
 
 int d = 0;
@@ -201,7 +201,6 @@ glEnable (GL_LIGHT0 + m_nShockwaves);
 glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&m_renderPos));
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, m_screenRad);
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_LINEAR_ATTENUATION, m_rad);
-HUDMessage (0, "effect dampen: %1.2f", (float) pow (0.5f - (float) cos (2.0 * Pi * (1.0f - m_ttl)) * 0.5f, 0.25f));
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, (float) pow (0.5f - (float) cos (2.0 * Pi * (1.0f - m_ttl)) * 0.5f, 0.25f)); //pow (1.0f - m_ttl, 0.25f));
 glLighti (GL_LIGHT0 + m_nShockwaves, GL_SPOT_EXPONENT, m_nBias);
 shaderManager.Set ("nShockwaves", ++m_nShockwaves);
