@@ -219,6 +219,9 @@ for (i = 0; i < 2; i++)
 	DESTROY (index [i]);
 for (i = 0; i < nLights [0]; i++)
 	lights [i].Destroy ();
+nLights [0] =
+nLights [1] =
+nLights [2] = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -292,6 +295,7 @@ DESTROY (objects);
 DESTROY (coronaQueries);
 DESTROY (coronaSamples);
 flicker.Destroy ();
+lightManager.Destroy ();
 }
 
 //------------------------------------------------------------------------------
