@@ -165,8 +165,11 @@ if (i == 5)
 tScreenPos s [5];
 for (int i = 0; i < 5; i++) {
 	ProjectPoint (p [i], s [i], 0, 0);
-	if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
-		s [i].y = screen.Height () - s [i].y;
+	if (gameStates.render.cockpit.nType == CM_LETTERBOX)
+		s [i].y += (screen.Height () - CCanvas::Current ()->Height ()) / 2;
+	else if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
+		s [i].y += screen.Height () - CCanvas::Current ()->Height ();
+	//	s [i].y = screen.Height () - s [i].y;
 	}
 
 int d = 0;
