@@ -109,6 +109,8 @@ if (info.visibleVertices) {
 	delete info.visibleVertices;
 	info.visibleVertices = NULL;
 	}
+for (int i = 0; i < MAX_THREADS; i++)
+	render.activeLightsP [i] = NULL;
 }
 
 // ----------------------------------------------------------------------------
@@ -198,8 +200,7 @@ CREATE (nearestSegLights, LEVEL_SEGMENTS * MAX_NEAREST_LIGHTS, 0xff);
 CREATE (nearestVertLights, LEVEL_VERTICES * MAX_NEAREST_LIGHTS, 0xff);
 CREATE (variableVertLights, LEVEL_VERTICES, 0xff);
 CREATE (owners, LEVEL_OBJECTS, (char) 0xff);
-int i;
-for (i = 0; i < MAX_THREADS; i++)
+for (int i = 0; i < MAX_THREADS; i++)
 	CREATE (active [i], MAX_OGL_LIGHTS, 0);
 return true;
 }
@@ -216,7 +217,7 @@ int i;
 for (i = 0; i < MAX_THREADS; i++)
 	DESTROY (active [i]);
 for (i = 0; i < 2; i++)
-	DESTROY (index [i]);
+	index [i].Clear ();
 for (i = 0; i < nLights [0]; i++)
 	lights [i].Destroy ();
 nLights [0] =
