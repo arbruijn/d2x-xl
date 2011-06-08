@@ -35,31 +35,37 @@ const char* shockwaveFS =
 	"uniform vec2 screenSize;\r\n" \
 	"uniform vec3 effectStrength;\r\n" \
 	"//#define LinearDepth(_z) 10000.0 / (5001.0 - (_z) * 4999.0)\r\n" \
-	"#define LinearDepth(_z) (5000.0 / 4999.0) / ((5000.0 / 4999.0) - (_z))\r\n" \
+	"//#define LinearDepth(_z) (5000.0 / 4999.0) / ((5000.0 / 4999.0) - (_z))\r\n" \
+	"#define Pi 3.141592653589793240\r\n" \
+	"//const float Pi = 2.0 * asin (1.0);\r\n" \
+	"#define ZNEAR 1.0\r\n" \
+	"#define ZFAR 5000.0\r\n" \
+	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
+	"#define A (ZNEAR + ZFAR)\r\n" \
+	"#define B (ZNEAR - ZFAR)\r\n" \
+	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
+	"#define D(z) (NDC (z) * B)\r\n" \
+	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
 	"void main() {\r\n" \
 	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
 	"vec2 tcDest = tcSrc; //vec2 (0.0, 0.0);\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
 	"  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
-	"  float r = gl_LightSource [i].constantAttenuation;\r\n" \
-	"  float d = length (v);\r\n" \
+	"  float d = length (v); //distance of screen coordinate to center of effect\r\n" \
+	"  float r = gl_LightSource [i].constantAttenuation; //effect radius in screen space\r\n" \
 	"  float offset = d - r;\r\n" \
-	"  if (abs (offset) <= effectStrength.z) {\r\n" \
-	"    r += effectStrength.z;\r\n" \
+	"  float dampen = gl_LightSource [i].quadraticAttenuation;\r\n" \
+	"  float range = effectStrength.z * dampen;\r\n" \
+	"  float absOffset = abs (offset);\r\n" \
+	"  if (absOffset <= range) { // effect range from the wavefront\r\n" \
+	"    r += range;\r\n" \
 	"    float z = sqrt (r * r - d * d) / r * gl_LightSource [i].linearAttenuation;\r\n" \
-	"    if (gl_LightSource [i].position.z - z <= LinearDepth (texture2D (depthTex, gl_TexCoord [0].xy).r)) {\r\n" \
-	"      offset /= screenSize.x;\r\n" \
-	"      offset *= (1.0 - pow (abs (offset) * effectStrength.x, effectStrength.y));\r\n" \
-	"      offset *= pow (gl_LightSource [i].quadraticAttenuation, 0.25);\r\n" \
-	"      tcDest -= v * (gl_LightSource [i].spotExponent * offset / d) * screenSize;\r\n" \
-	"      }\r\n" \
+	"    if (gl_LightSource [i].position.z - z <= ZEYE (texture2D (depthTex, gl_TexCoord [0].xy).r)) \r\n" \
+	"      tcDest -= v * gl_LightSource [i].spotExponent /** dampen*/ * (0.5 + cos (Pi * offset / range) * 0.5);\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
 	"gl_FragColor = texture2D (sceneTex, tcDest / screenSize);\r\n" \
-	"//float z = LinearDepth (texture2D (depthTex, gl_TexCoord [0].xy).r);\r\n" \
-	"//float r = pow (1.0 - z / 5000.0, 8);\r\n" \
-	"//gl_FragColor = (z < 240.0) ? vec4 (1.0, 0.5, 0.0, 1.0) : vec4 (r, r, r, 1.0);\r\n" \
 	"}\r\n";
 
 //------------------------------------------------------------------------------
@@ -84,7 +90,7 @@ if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders) {
 
 bool CPostEffectShockwave::SetupShader (void)
 {
-	static CFloatVector3 effectStrength = {{10.0f, 0.8f, screen.Width () * 0.1f}};
+	static CFloatVector3 effectStrength = {{10.0f, 0.8f, screen.Width () / 10.0f}};
 
 if (m_nShockwaves > 0)
 	return true;
@@ -177,7 +183,7 @@ if (n == 0)
 m_renderPos.v.coord.x = float (s [0].x);
 m_renderPos.v.coord.y = float (s [0].y);
 m_renderPos.v.coord.z = X2F (p [0].v.coord.z);
-m_effectRad = float (d) / float (n);
+m_screenRad = /*sqrt*/ (float (d) / float (n));
 return m_bValid = true;
 }
 
@@ -193,9 +199,10 @@ if (!SetupShader ())
 
 glEnable (GL_LIGHT0 + m_nShockwaves);
 glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&m_renderPos));
-glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, m_effectRad);
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, m_screenRad);
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_LINEAR_ATTENUATION, m_rad);
-glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, 1.0f - m_ttl);
+HUDMessage (0, "effect dampen: %1.2f", (float) pow (0.5f - (float) cos (2.0 * Pi * (1.0f - m_ttl)) * 0.5f, 0.25f));
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, (float) pow (0.5f - (float) cos (2.0 * Pi * (1.0f - m_ttl)) * 0.5f, 0.25f)); //pow (1.0f - m_ttl, 0.25f));
 glLighti (GL_LIGHT0 + m_nShockwaves, GL_SPOT_EXPONENT, m_nBias);
 shaderManager.Set ("nShockwaves", ++m_nShockwaves);
 return true;

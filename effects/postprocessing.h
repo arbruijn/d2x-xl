@@ -73,8 +73,8 @@ class CPostEffectShockwave : public CPostEffect {
 
 		CFloatVector3	m_renderPos;
 		float				m_rad;
+		float				m_screenRad;
 		float				m_ttl;
-		float				m_effectRad;
 
 	public:
 		static bool m_bRendered;
@@ -84,7 +84,7 @@ class CPostEffectShockwave : public CPostEffect {
 	public:
 		CPostEffectShockwave (int nStart = 0, int nLife = 0, int nSize = 0, int nBias = 1, CFixVector pos = CFixVector::ZERO, int nObject = -1) :
 			CPostEffect (PP_EFFECT_SHOCKWAVE), 
-			m_nStart (nStart), m_nLife (int (1000 * X2F (nLife))), m_nSize (nSize), m_nBias (nBias), m_nObject (nObject)
+			m_nStart (nStart), m_nLife (int (10000 * X2F (nLife))), m_nSize (nSize), m_nBias (nBias), m_nObject (nObject)
 			{ m_pos = pos; }
 
 		void Setup (int nStart, int nLife, int nSize, int nBias, CFixVector pos, int nObject) {
