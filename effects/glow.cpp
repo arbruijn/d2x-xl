@@ -5,6 +5,7 @@
 #include "ogl_shader.h"
 #include "automap.h"
 #include "glow.h"
+#include "cockpit.h"
 
 CGlowRenderer glowRenderer;
 
@@ -257,6 +258,10 @@ float h = (float) ScreenHeight () / 2.0f;
 s.x = fix (w - float (v.v.coord.x) * w / v.v.coord.z);
 s.y = fix (h - float (v.v.coord.y) * h / v.v.coord.z);
 #endif
+if (gameStates.render.cockpit.nType == CM_LETTERBOX)
+	s.y += (screen.Height () - CCanvas::Current ()->Height ()) / 2;
+else if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
+	s.y += screen.Height () - CCanvas::Current ()->Height ();
 #pragma omp critical
 if (m_screenMin.x > s.x)
 	m_screenMin.x = s.x;

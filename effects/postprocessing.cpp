@@ -169,7 +169,6 @@ for (int i = 0; i < 5; i++) {
 		s [i].y += (screen.Height () - CCanvas::Current ()->Height ()) / 2;
 	else if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 		s [i].y += screen.Height () - CCanvas::Current ()->Height ();
-	//	s [i].y = screen.Height () - s [i].y;
 	}
 
 int d = 0;
