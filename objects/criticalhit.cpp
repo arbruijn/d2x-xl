@@ -158,8 +158,11 @@ float CObject::DamageRate (void)
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
 	return 0.0f;
 float	fShieldScale = (info.nType == OBJ_PLAYER) ? 2.0f : X2F (RobotDefaultShield (this)) / 100.0f;
-if (fShieldScale < 1.0f)
+if (fShieldScale < 1.0f) {
+	if (fShieldScale <= 0.0f)
+		return 0.0f;
 	fShieldScale = 1.0f;
+	}
 return 1.0f - 0.25f / fShieldScale;
 }
 

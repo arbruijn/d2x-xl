@@ -763,8 +763,8 @@ if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 		ExplodeSplashDamageWeapon (vHitPt);
 	else
 		CreateSplashDamageExplosion (this, nHitSeg, vHitPt, weaponInfoP->xImpactSize + VOLATILE_WALL_IMPACT_SIZE, tVideoClip,
-									  nStrength / 4 + VOLATILE_WALL_EXPL_STRENGTH, weaponInfoP->xDamageRadius+VOLATILE_WALL_DAMAGE_RADIUS,
-									  nStrength / 2 + VOLATILE_WALL_DAMAGE_FORCE, cType.laserInfo.parent.nObject);
+											  nStrength / 4 + VOLATILE_WALL_EXPL_STRENGTH, weaponInfoP->xDamageRadius+VOLATILE_WALL_DAMAGE_RADIUS,
+											  nStrength / 2 + VOLATILE_WALL_DAMAGE_FORCE, cType.laserInfo.parent.nObject);
 	Die ();		//make flares die in lava
 	}
 else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
@@ -777,7 +777,7 @@ else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
 			audio.CreateObjectSound (IsSplashDamageWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 			//	MK: 09/13/95: SplashDamage in water is 1/2 Normal intensity.
 			CreateSplashDamageExplosion (this, nHitSeg, vHitPt, weaponInfoP->xImpactSize/2, weaponInfoP->nRobotHitVClip,
-										  nStrength / 4, weaponInfoP->xDamageRadius, nStrength / 2, cType.laserInfo.parent.nObject);
+												  nStrength / 4, weaponInfoP->xDamageRadius, nStrength / 2, cType.laserInfo.parent.nObject);
 			}
 		else
 			CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, weaponInfoP->nWallHitVClip);
@@ -1246,6 +1246,8 @@ if (info.nFlags & OF_EXPLODING)
 	return 0;
 if (info.xShield < 0)
 	return 0;	//this already dead...
+if (ROBOTINFO (info.nId).strength <= 0) // indestructible static object
+	return 0; 
 if (gameData.time.xGame - CreationTime () < I2X (1))
 	return 0;
 if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
@@ -1543,7 +1545,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 		if (bInvulBoss) {			//don't make badass sound
 			//this code copied from ExplodeSplashDamageWeapon ()
 			CreateSplashDamageExplosion (this, info.nSegment, vHitPt, wInfoP->xImpactSize, wInfoP->nRobotHitVClip, 
-										  nStrength, wInfoP->xDamageRadius, nStrength, cType.laserInfo.parent.nObject);
+												  nStrength, wInfoP->xDamageRadius, nStrength, cType.laserInfo.parent.nObject);
 
 			}
 		else		//Normal splash damage explosion

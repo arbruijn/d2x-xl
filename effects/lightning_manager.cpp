@@ -754,10 +754,11 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP
 void CLightningManager::CreateForDamage (CObject* objP, CFloatVector *colorP)
 {
 if (SHOW_LIGHTNING && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (objP)) {
-		int h, n, i = objP->Index ();
-
-	n = X2IR (RobotDefaultShield (objP));
-	h = X2IR (objP->info.xShield) * 100 / n;
+	int i = objP->Index ();
+	int n = X2IR (RobotDefaultShield (objP));
+	if (0 >= n)
+		return;
+	int h = X2IR (objP->info.xShield) * 100 / n;
 	if ((h < 0) || (h >= 50))
 		return;
 	n = (5 - h / 10) * 2;

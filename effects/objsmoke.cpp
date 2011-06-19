@@ -465,6 +465,8 @@ if ((objP->info.xShield < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DES
 	nParts = 0;
 else {
 	nShield = X2IR (RobotDefaultShield (objP));
+	if (0 >= nShield)
+		return;
 	h = X2IR (objP->info.xShield) * 100 / nShield;
 	}
 if (h < 0)

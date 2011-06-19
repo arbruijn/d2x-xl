@@ -164,10 +164,10 @@ void DoThiefFrame (CObject *objP)
 						//	If path is real short, try again, allowing to go through CPlayerData's CSegment
 						if (aip->nPathLength < 4) {
 							CreateNSegmentPath (objP, 10, -1);
-						} else if (objP->info.xShield* 4 < ROBOTINFO (objP->info.nId).strength) {
+						} else if (objP->info.xShield * 4 < ROBOTINFO (objP->info.nId).strength) {
 							//	If robot really low on hits, will run through CPlayerData with even longer path
 							if (aip->nPathLength < 8) {
-								CreateNSegmentPath(objP, 10, -1);
+								CreateNSegmentPath (objP, 10, -1);
 							}
 						}
 
@@ -188,8 +188,8 @@ void DoThiefFrame (CObject *objP)
 				ailp->targetAwarenessType = 0;
 				if (RandShort () > 8192) {
 					CreateNSegmentPath (objP, 10, gameData.objs.consoleP->info.nSegment);
-					gameData.ai.localInfo[objP->Index ()].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
-					gameData.ai.localInfo[objP->Index ()].mode = AIM_THIEF_RETREAT;
+					gameData.ai.localInfo [objP->Index ()].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
+					gameData.ai.localInfo [objP->Index ()].mode = AIM_THIEF_RETREAT;
 				}
 			} else if (ailp->nextActionTime < 0) {
 				//	This forces him to create a new path every second.

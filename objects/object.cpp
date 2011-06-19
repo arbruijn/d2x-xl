@@ -223,7 +223,8 @@ float CObject::Damage (void)
 if (info.nType == OBJ_PLAYER)
 	fDmg = X2F (gameData.multiplayer.players [info.nId].Shield ()) / 100;
 else if (info.nType == OBJ_ROBOT) {
-	xMaxShield = RobotDefaultShield (this);
+	if (0 >= (xMaxShield = RobotDefaultShield (this)))
+		return 1.0f;
 	fDmg = X2F (info.xShield) / X2F (xMaxShield);
 #if 0
 	if (gameData.bots.info [0][info.nId].companion)
