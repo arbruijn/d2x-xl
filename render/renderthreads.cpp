@@ -171,8 +171,8 @@ do {
 	else if (tiRender.nTask == rtPolyModel) {
 		LightObjectsThread (&nId);
 		}
-	//else if (tiRender.nTask == rtLightmap)
-	//	lightmapManager.Build (nStart, nId);
+	else if (tiRender.nTask == rtLightmap)
+		lightmapManager.Build (lightmapManager.CurrentFace (), nId);
 	else if (tiRender.nTask == rtParticles) 
 		particleManager.SetupParticles (nId);
 	tiRender.ti [nId].bExec = 0;

@@ -67,6 +67,7 @@ class CLightmapData : public CLightmapFaceData {
 		CArray<tSegFacePtr>	faceList;
 		int						nBlackLightmaps;
 		int						nWhiteLightmaps;
+		CSegFace*				faceP;
 	};
 
 class CLightmapManager {
@@ -89,6 +90,7 @@ class CLightmapManager {
 		void BuildAll (int nFace);
 		inline tLightmapBuffer* Buffer (uint i = 0) { return &m_list.buffers [i]; }
 		inline int HaveLightmaps (void) { return !gameStates.app.bNostalgia && (m_list.buffers.Buffer () != NULL); }
+		inline CSegFace* CurrentFace (void) { return m_data.faceP; }
 
 	private:
 		int Init (int bVariable);

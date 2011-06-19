@@ -351,7 +351,7 @@ cf.GetS (lineBuf, sizeof (lineBuf));
 if ((p = strchr (lineBuf, ';')))
 	*p = '\0';
 key = Trim (strtok (lineBuf, "="));
-if (stricmp (key, "name") && stricmp (key, "xname") && stricmp (key, "zname") && stricmp (key, "d2x-name")) {
+if (!key || stricmp (key, "name") && stricmp (key, "xname") && stricmp (key, "zname") && stricmp (key, "d2x-name")) {
 	cf.Close ();
 	return 0;
 	}

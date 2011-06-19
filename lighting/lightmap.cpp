@@ -619,49 +619,49 @@ if (nFace <= 0) {
 	m_list.nLightmaps = 2;
 	}
 //Next Go through each surface and create a lightmap for it.
-for (CSegFace* faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, faceP++) {
+for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.faceP++) {
 #if DBG
-	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (SEGMENTS [faceP->m_info.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
-		faceP->m_info.nLightmap = 1;
+	if (SEGMENTS [m_data.faceP->m_info.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
+		m_data.faceP->m_info.nLightmap = 1;
 		continue;
 		}
-	if (FaceIsInvisible (faceP))
+	if (FaceIsInvisible (m_data.faceP))
 		continue;
-	m_data.Setup (faceP);
+	m_data.Setup (m_data.faceP);
 	if (!gameStates.app.bMultiThreaded)
-		Build (faceP, -1);
+		Build (m_data.faceP, -1);
 	else {
 #if USE_OPENMP
 #	pragma omp parallel
 			{
 		#pragma omp for
 			for (int i = 0; i < gameStates.app.nThreads; i++)
-				Build (faceP, i);
+				Build (m_data.faceP, i);
 			}
 #else
 		if (!RunRenderThreads (rtLightmap, gameStates.app.nThreads))
-			Build (faceP, -1);
+			Build (m_data.faceP, -1);
 #endif
 		}
 #if DBG
-	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
 	if (m_data.m_nColor == 1) {
-		faceP->m_info.nLightmap = 0;
+		m_data.faceP->m_info.nLightmap = 0;
 		m_data.nBlackLightmaps++;
 		}
 	else if (m_data.m_nColor == 2) {
-		faceP->m_info.nLightmap = 1;
+		m_data.faceP->m_info.nLightmap = 1;
 		m_data.nWhiteLightmaps++;
 		}
 	else {
-		Blur (faceP, m_data);
+		Blur (m_data.faceP, m_data);
 		Copy (m_data.m_texColor, m_list.nLightmaps);
-		faceP->m_info.nLightmap = m_list.nLightmaps++;
+		m_data.faceP->m_info.nLightmap = m_list.nLightmaps++;
 		}
 	}
 }
