@@ -200,7 +200,7 @@ nVerts = sideP->m_corners;
 for (i = 1; i <= 4; i++) {
 	v0 = v1;
 	v1 = &FVERTICES [nVerts [i % 4]];
-	VmPointLineIntersection (h, *v0, *v1, r, 1);
+	FindPointLineIntersection (h, *v0, *v1, r, 1);
 	d = CFloatVector::Dist (h, r);
 	if (minDist > d) {
 		minDist = d;
@@ -463,7 +463,7 @@ int bSimpleFVI = 0;
 //vector defined by p0, p1
 //returns dist if intersects, and fills in intP
 //else returns 0
-int CheckVectorToSphere1 (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *vSpherePos, fix xSphereRad)
+int CheckVectorSphereCollision (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *vSpherePos, fix xSphereRad)
 {
 	CFixVector	d, dn, w, vClosestPoint;
 	fix			mag_d, dist, wDist, intDist;
@@ -534,10 +534,10 @@ if ((bThisPoly = UseHitbox (thisObjP)))
 else
 #endif
 vPos = thisObjP->info.position.vPos;
-if (CollisionModel () &&
+if ((CollisionModel () || (otherObjP->cType.aiInfo.behavior == AIB_STATIC)) &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
-	VmPointLineIntersection (vHit, *p0, *p1, vPos, 0);
+	FindPointLineIntersection (vHit, *p0, *p1, vPos, 0);
 #if 1 //!DBG
 	dist = VmLinePointDist (*p0, *p1, OBJPOS (thisObjP)->vPos);
 	if (dist > thisObjP->info.xSize + otherObjP->info.xSize + I2X (2))
@@ -545,21 +545,21 @@ if (CollisionModel () &&
 #endif
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
-		if (!(dist = CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1, nModel))) {
+		if (!(dist = CheckHitboxCollision (vHit, otherObjP, thisObjP, p0, p1, nModel))) {
 			if (!CFixVector::Dist (*p0, *p1))
 				return 0;
-			dist = CheckVectorToHitbox (vHit, p0, p1, NULL, thisObjP, 0, nModel);
+			dist = CheckVectorHitboxCollision (vHit, p0, p1, NULL, thisObjP, 0, nModel);
 			if ((dist == 0x7fffffff) || (dist > thisObjP->info.xSize))
 				return 0;
 			}
-		CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1, nModel);
-		VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
+		CheckHitboxCollision (vHit, otherObjP, thisObjP, p0, p1, nModel);
+		FindPointLineIntersection (vHit, *p0, *p1, vHit, 1);
 		}
 	else {
 		if (bThisPoly) {
 			// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere
 			// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
-			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, p0, p1, NULL, thisObjP, otherObjP->info.xSize, nModel)))
+			if (0x7fffffff == (dist = CheckVectorHitboxCollision (vHit, p0, p1, NULL, thisObjP, otherObjP->info.xSize, nModel)))
 				return 0;
 			}
 		else {
@@ -569,13 +569,13 @@ if (CollisionModel () &&
 			vn = otherObjP->info.position.vPos - v0;
 			CFixVector::Normalize (vn);
 			v1 = v0 + vn * thisObjP->info.xSize;
-			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, &v0, &v0, p1, otherObjP, thisObjP->info.xSize, nModel)))
+			if (0x7fffffff == (dist = CheckVectorHitboxCollision (vHit, &v0, &v0, p1, otherObjP, thisObjP->info.xSize, nModel)))
 				return 0;
 			}
 		}
 	}
 else {
-	if (!(dist = CheckVectorToSphere1 (vHit, p0, p1, &vPos, size + rad)))
+	if (!(dist = CheckVectorSphereCollision (vHit, p0, p1, &vPos, size + rad)))
 		return 0;
 	nModel = 0;
 	}
@@ -764,33 +764,42 @@ return 0;
 #define FVI_NEWCODE 2
 
 int ComputeHitpoint (CFixVector *vIntP, short *nHitSegP, CFixVector *p0, short nStartSeg, CFixVector *p1,
-							fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int nFlags, short *segList,
+							fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList,
 							short *nSegments, int nEntrySeg)
 {
-	CFixVector	vHitPoint, vClosestHitPoint; 	
-	fix			d, dMin = 0x7fffffff;			
-	int			nHitType = HIT_NONE;				
+	CSegment		*segP;				//the CSegment we're looking at
+	int			startMask, endMask, centerMask;	//mask of faces
+	CSegMasks	masks;
+	CFixVector	vHitPoint, vClosestHitPoint; 	//where we hit
+	fix			d, dMin = 0x7fffffff;					//distance to hit refP
+	int			nHitType = HIT_NONE;							//what sort of hit
 	int			nHitSegment = -1;
 	int			nHitNoneSegment = -1;
 	int			nHitNoneSegs = 0;
 	int			hitNoneSegList [MAX_FVI_SEGS];
 	int			nCurNestLevel = gameData.collisions.hitData.nNestCount;
-	bool			bCheckVisibility = ((nFlags & FQ_VISIBILITY) != 0);
+	int			nChildSeg;
+#if FVI_NEWCODE
+	int			nFaces;
+	int			nFaceHitType;
+#endif
+	bool			bCheckVisibility = ((flags & FQ_VISIBILITY) != 0);
 
 vClosestHitPoint.SetZero ();
 //PrintLog ("Entry ComputeHitpoint\n");
-if (nFlags & FQ_GET_SEGLIST)
+if (flags & FQ_GET_SEGLIST)
 	*segList = nStartSeg;
 *nSegments = 1;
 gameData.collisions.hitData.nNestCount++;
 //first, see if vector hit any objects in this CSegment
 #if 1
-if (nFlags & FQ_CHECK_OBJS) {
+if (flags & FQ_CHECK_OBJS) {
 	//PrintLog ("   checking objects...");
-	dMin = ComputeObjectHitpoint (nThisObject, nStartSeg, p0, p1, radP0, radP1, nFlags, ignoreObjList, vClosestHitPoint, nHitType);
+	dMin = ComputeObjectHitpoint (nThisObject, nStartSeg, p0, p1, radP0, radP1, flags, ignoreObjList, vClosestHitPoint, nHitType);
 	}
 #endif
 
+segP = SEGMENTS + nStartSeg;
 if ((nThisObject > -1) && (gameData.objs.collisionResult [OBJECTS [nThisObject].info.nType][OBJ_WALL] == RESULT_NOTHING))
 	radP1 = 0;		//HACK - ignore when edges hit walls
 //now, check segment walls
@@ -798,57 +807,52 @@ if ((nThisObject > -1) && (gameData.objs.collisionResult [OBJECTS [nThisObject].
 if (nStartSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-
-CSegment* startSegP = SEGMENTS + nStartSeg;
-int startMask = startSegP->Masks (*p0, radP0).m_face;
-CSegMasks masks = startSegP->Masks (*p1, radP1);    //on back of which faces?
-int centerMask = masks.m_center;
-int endMask = masks.m_face;
-
-if (!centerMask)
+startMask = segP->Masks (*p0, radP0).m_face;
+masks = segP->Masks (*p1, radP1);    //on back of which faces?
+if (!(centerMask = masks.m_center))
 	nHitNoneSegment = nStartSeg;
-if (endMask) { //on the back of at least one face
-	short nSide, nFace, bit;
+if ((endMask = masks.m_face)) { //on the back of at least one face
+	short nSide, iFace, bit;
 
 	//for each face we are on the back of, check if intersected
 	for (nSide = 0, bit = 1; (nSide < 6) && (endMask >= bit); nSide++) {
-		int nChildSeg = startSegP->m_children [nSide];
+		nChildSeg = segP->m_children [nSide];
 #if 0
 		if (bCheckVisibility && (0 > nChildSeg))	// poking through a wall into the void around the level?
 			continue;
 #endif
-		int nFaces = startSegP->Side (nSide)->m_nFaces;
-		for (nFace = 0; nFace < 2; nFace++, bit <<= 1) {
+		nFaces = segP->Side (nSide)->m_nFaces;
+		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
 			if (nChildSeg == nEntrySeg)	//must be executed here to have bit shifted
 				continue;		//don't go back through entry nSide
 			if (!(endMask & bit))	//on the back of this face?
 				continue;
-			if (nFace >= nFaces)
+			if (iFace >= nFaces)
 				continue;
 			//did we go through this wall/door?
-			int nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
-									 ? startSegP->CheckLineToFaceSpecial (vHitPoint, p0, p1, radP1, nSide, nFace)
-									 : startSegP->CheckLineToFaceRegular (vHitPoint, p0, p1, radP1, nSide, nFace);
+			nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
+								? segP->CheckLineToFaceSpecial (vHitPoint, p0, p1, radP1, nSide, iFace)
+								: segP->CheckLineToFaceRegular (vHitPoint, p0, p1, radP1, nSide, iFace);
 #if 1
 			if (bCheckVisibility && !nFaceHitType)
-				continue;
+					continue;
 #endif
 #if DBG
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-#if 1
-			if (PassThrough (nThisObject, nStartSeg, nSide, nFace, nFlags, vHitPoint))
+#if 0
+			if (PassThrough (nThisObject, nStartSeg, nSide, iFace, flags, vHitPoint))
 #else
-			int widResult = startSegP->IsDoorWay (nSide, (nThisObject < 0) ? NULL : OBJECTS + nThisObject);
+			int widResult = segP->IsDoorWay (nSide, (nThisObject < 0) ? NULL : OBJECTS + nThisObject);
 			if (((widResult & WID_FLY_FLAG) ||
 				 (((widResult & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) == (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) &&
-				  ((nFlags & FQ_TRANSWALL) || ((nFlags & FQ_TRANSPOINT) && startSegP->CheckForTranspPixel (vHitPoint, nSide, nFace))))) ||
-				 // check whether a cheat code allowing passing through walls is enabled. If so, allow player to pass through blocked segments and 
-			    ((nChildSeg >= 0) && (gameStates.app.cheats.bPhysics == 0xBADA55) && (nThisObject == LOCALPLAYER.nObject) &&
+				  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && segP->CheckForTranspPixel (vHitPoint, nSide, iFace))))) ||
+				 // check whether a cheat code allowing passing through walls is enabled. If so, allow player to pass through blocked segments
+			    (!(widResult & WID_FLY_FLAG) && (nChildSeg >= 0) && (gameStates.app.cheats.bPhysics == 0xBADA55) && (nThisObject == LOCALPLAYER.nObject) &&
 				  (SEGMENTS [nChildSeg].HasBlockedProp () ||
 				   (gameData.objs.speedBoost [nThisObject].bBoosted &&
-				    ((SEGMENTS [nStartSeg].m_function != SEGMENT_FUNC_SPEEDBOOST) || (SEGMENTS [nChildSeg].m_function == SEGMENT_FUNC_SPEEDBOOST))))))
+				   ((segP->m_function != SEGMENT_FUNC_SPEEDBOOST) || (SEGMENTS [nChildSeg].m_function == SEGMENT_FUNC_SPEEDBOOST))))))
 #endif
 				{
 
@@ -857,7 +861,7 @@ if (endMask) { //on the back of at least one face
 				CFixVector	subHitPoint, vSaveWallNorm = gameData.collisions.hitData.vNormal;
 
 				//do the check recursively on the next CSegment.p.
-				nNewSeg = startSegP->m_children [nSide];
+				nNewSeg = segP->m_children [nSide];
 #if DBG
 				if (nNewSeg == nDbgSeg)
 					nDbgSeg = nDbgSeg;
@@ -870,7 +874,7 @@ if (endMask) { //on the back of at least one face
 						goto fviSegsDone;		//we've looked a long time, so give up
 					gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nNewSeg;
 					subHitType = ComputeHitpoint (&subHitPoint, &subHitSeg, p0, (short) nNewSeg,
-															p1, radP0, radP1, nThisObject, ignoreObjList, nFlags,
+															p1, radP0, radP1, nThisObject, ignoreObjList, flags,
 															tempSegList, &nTempSegs, nStartSeg);
 					if (subHitType != HIT_NONE) {
 						d = CFixVector::Dist (subHitPoint, *p0);
@@ -881,7 +885,7 @@ if (endMask) { //on the back of at least one face
 							if (subHitSeg != -1)
 								nHitSegment = subHitSeg;
 							//copy segList
-							if (nFlags & FQ_GET_SEGLIST) {
+							if (flags & FQ_GET_SEGLIST) {
 #if FVI_NEWCODE != 2
 								int i;
 								for (i = 0; (i < nTempSegs) && (*nSegments < MAX_FVI_SEGS - 1); i++)
@@ -908,7 +912,7 @@ if (endMask) { //on the back of at least one face
 						if (subHitSeg != -1)
 							nHitNoneSegment = subHitSeg;
 						//copy segList
-						if (nFlags & FQ_GET_SEGLIST) {
+						if (flags & FQ_GET_SEGLIST) {
 #if FVI_NEWCODE != 2
 							int i;
 							for (i = 0; (i < nTempSegs) && (i < MAX_FVI_SEGS - 1); i++)
@@ -934,15 +938,15 @@ if (endMask) { //on the back of at least one face
 						dMin = d;
 						vClosestHitPoint = vHitPoint;
 						nHitType = HIT_WALL;
-						gameData.collisions.hitData.vNormal = startSegP->m_sides [nSide].m_normals [nFace];
+						gameData.collisions.hitData.vNormal = segP->m_sides [nSide].m_normals [iFace];
 						gameData.collisions.hitData.nNormals = 1;
-						if (!SEGMENTS [nStartSeg].Masks (vHitPoint, radP1).m_center)
+						if (!segP->Masks (vHitPoint, radP1).m_center)
 							nHitSegment = nStartSeg;             //hit in this CSegment
 						else
 							gameData.collisions.hitData.nSegment2 = nStartSeg;
 						gameData.collisions.hitData.nSegment = nHitSegment;
 						gameData.collisions.hitData.nSide = nSide;
-						gameData.collisions.hitData.nFace = nFace;
+						gameData.collisions.hitData.nFace = iFace;
 						gameData.collisions.hitData.nSideSegment = nStartSeg;
 						}
 					}
@@ -959,7 +963,7 @@ if (nHitType == HIT_NONE) {     //didn't hit anything, return end refP
 	*vIntP = *p1;
 	*nHitSegP = nHitNoneSegment;
 	if (nHitNoneSegment != -1) {			//(centerMask == 0)
-		if (nFlags & FQ_GET_SEGLIST) {
+		if (flags & FQ_GET_SEGLIST) {
 #if FVI_NEWCODE != 2
 			for (i = 0; (i < nHitNoneSegs) && (*nSegments < MAX_FVI_SEGS - 1);)
 				segList [(*nSegments)++] = hitNoneSegList [i++];
@@ -1216,7 +1220,7 @@ for (;;) {
 			v1 = *p1 - intersection;
 			l0 = v0.Mag ();
 			l1 = v1.Mag ();
-			if ((l0 >= 0.001f) && (l1 >= 0.001f)) {
+			if ((l0 >= 0.001) && (l1 >= 0.001)) {
 				v0 /= l0;
 				v1 /= l1;
 				if (CFloatVector::Dot (v0, *n) == CFloatVector::Dot (v1, *n))
@@ -1228,7 +1232,7 @@ for (;;) {
 #endif
 			if (PointIsOutsideFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - nFaceCount))
 				continue;
-			if (l1 >= 0.001f) 
+			if (l1 >= 0.001) 
 				break;
 			// end point lies in this face
 			if (nDestSeg < 0)

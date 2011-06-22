@@ -548,7 +548,7 @@ for (i = j = 0; i < m_nFaces; i++, j += 3) {
 if (minDist < 0x7fffffff)
 	return 0;
 for (i = 0; i < 4; i++) {
-	VmPointLineIntersection (h, VERTICES [m_corners [i]], VERTICES [m_corners [(i + 1) % 4]], v, 1);
+	FindPointLineIntersection (h, VERTICES [m_corners [i]], VERTICES [m_corners [(i + 1) % 4]], v, 1);
 	dist = CFixVector::Dist (h, v);
 	if (minDist > dist)
 		minDist = dist;
@@ -579,7 +579,7 @@ for (i = j = 0; i < m_nFaces; i++, j += 3) {
 if (minDist < 1e30f)
 	return 0;
 for (i = 0; i < 4; i++) {
-	VmPointLineIntersection (h, FVERTICES [m_corners [i]], FVERTICES [m_corners [(i + 1) % 4]], v, 1);
+	FindPointLineIntersection (h, FVERTICES [m_corners [i]], FVERTICES [m_corners [(i + 1) % 4]], v, 1);
 	dist = CFloatVector::Dist (h, v);
 	if (minDist > dist)
 		minDist = dist;

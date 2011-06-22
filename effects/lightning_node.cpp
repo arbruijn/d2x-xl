@@ -110,7 +110,7 @@ m_vOffs *= (I2X (1) / nSteps);
 int CLightningNode::Clamp (CFixVector *vPos, CFixVector *vBase, int nAmplitude)
 {
 	CFixVector	vRoot;
-	int			nDist = VmPointLineIntersection (vRoot, vBase [0], vBase [1], *vPos, 0);
+	int			nDist = FindPointLineIntersection (vRoot, vBase [0], vBase [1], *vPos, 0);
 
 if (nDist < nAmplitude)
 	return nDist;
@@ -128,7 +128,7 @@ void CLightningNode::Rotate (CFloatVector &v0, float len0, CFloatVector &v1, flo
 
 vPos.Assign (m_vNewPos);
 vPos -= vBase;
-VmPointLineIntersection (vi, CFloatVector::ZERO, v1, vPos, 0);
+FindPointLineIntersection (vi, CFloatVector::ZERO, v1, vPos, 0);
 vj = v0 * (vi.Mag () / len1 * len0);
 vi -= vPos;
 vj -= vi;
@@ -144,7 +144,7 @@ void CLightningNode::Scale (CFloatVector vStart, CFloatVector vEnd, float scale,
 	CFloatVector	vPos, vi;
 
 vPos.Assign (m_vNewPos);
-VmPointLineIntersection (vi, vStart, vEnd, vPos, 0);
+FindPointLineIntersection (vi, vStart, vEnd, vPos, 0);
 vPos -= vi;
 vPos = vi + vPos * scale;
 m_vNewPos.Assign (vPos);
@@ -340,7 +340,7 @@ void CLightningNode::Move (const CFixVector& vOldPos, const CFixVector& vOldEnd,
 {
 	CFixVector	vi, vj, vo;
 
-VmPointLineIntersection (vi, vOldPos, vOldEnd, m_vPos, 0);
+FindPointLineIntersection (vi, vOldPos, vOldEnd, m_vPos, 0);
 float fOffset = X2F (CFixVector::Dist (vi, vOldPos)) * fScale;
 vo = vNewEnd - vNewPos;
 fOffset /= X2F (vo.Mag ());

@@ -85,7 +85,7 @@ if (PointIsInQuad (vRef, vertP, vNormal))
 	fix			dist, minDist = 0x7fffffff;
 
 for (int i = 0; i < 4; i++) {
-	VmPointLineIntersection (v, vertP [i], vertP [(i + 1) % 4], vRef, 0);
+	FindPointLineIntersection (v, vertP [i], vertP [(i + 1) % 4], vRef, 0);
 	dist = CFixVector::Dist (vRef, v);
 	if (minDist > dist)
 		minDist = dist;
@@ -285,7 +285,7 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, short& nModel)
+fix CheckHitboxCollision (CFixVector& intersection, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, short& nModel)
 {
 	CFixVector		vHit, vRef = OBJPOS (objP2)->vPos;
 	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
@@ -350,7 +350,7 @@ return nHits ? dMin ? dMin : 1 : 0;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckVectorToHitbox (CFixVector& intersection, CFixVector* p0, CFixVector* p1, CFixVector* vRef, CObject *objP, fix rad, short& nModel)
+fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector* p0, CFixVector* p1, CFixVector* vRef, CObject *objP, fix rad, short& nModel)
 {
 	int				iModel, nModels;
 	fix				xDist = 0x7fffffff, dMin = 0x7fffffff;

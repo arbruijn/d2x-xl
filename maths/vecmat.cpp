@@ -708,7 +708,7 @@ return CFixVector::Dot (i, t) - CFixVector::Dot (p1, t) < 0;
 // If intersection is not between p1 and p2 and vPos is given, return
 // further away point of p1 and p2 to vPos. Otherwise return intersection.
 // returns 1 if intersection outside of p1,p2, otherwise 0.
-const int VmPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int bClampToFarthest)
+const int FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int bClampToFarthest)
 {
 	CFixVector	d31, d21;
 	double		m, u;
@@ -745,7 +745,7 @@ return bClamped;
 // ------------------------------------------------------------------------
 
 // Version with vPos
-const int VmPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, 
+const int FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, 
 											  const CFloatVector& vPos, int bClamp) 
 {
 	CFloatVector	d31, d21;
@@ -779,7 +779,7 @@ return bClamped;
 
 
 // Version without vPos
-const int VmPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, int bClamp) 
+const int FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, int bClamp) 
 {
 	CFloatVector	d31, d21;
 	float		m, u;
@@ -810,7 +810,7 @@ return bClamped;
 
 // ------------------------------------------------------------------------
 
-const int VmPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int bClamp) 
+const int FindPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int bClamp) 
 {
 	CFloatVector3	d31, d21;
 	float		m, u;
@@ -849,7 +849,7 @@ const fix VmLinePointDist (const CFixVector& a, const CFixVector& b, const CFixV
 {
 	CFixVector	h;
 
-VmPointLineIntersection (h, a, b, p, 0);
+FindPointLineIntersection (h, a, b, p, 0);
 return CFixVector::Dist (h, p);
 }
 
@@ -859,7 +859,7 @@ const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const
 {
 	CFloatVector	h;
 
-VmPointLineIntersection (h, a, b, p, bClamp);
+FindPointLineIntersection (h, a, b, p, bClamp);
 return CFloatVector::Dist (h, p);
 }
 
@@ -869,7 +869,7 @@ const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, con
 {
 	CFloatVector3	h;
 
-VmPointLineIntersection (h, a, b, p, NULL, bClamp);
+FindPointLineIntersection (h, a, b, p, NULL, bClamp);
 return CFloatVector3::Dist (h, p);
 }
 
