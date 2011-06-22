@@ -168,7 +168,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 			if (nStartSeg != nDestSeg) {
 				if (0 > (nSide = segP->ConnectedSide (SEGMENTS + nDestSeg)))
 					continue;
-				if (!((segP->IsDoorWay (nSide, NULL) & WID_FLY_FLAG) || (AIDoorIsOpenable (objP, segP, nSide))))
+				if (!((segP->IsDoorWay (nSide, NULL) & WID_PASSABLE_FLAG) || (AIDoorIsOpenable (objP, segP, nSide))))
 					continue;
 
 				CHitQuery fq (0, &objP->info.position.vPos, &vNewPos, nStartSeg, objP->Index (), objP->info.xSize, objP->info.xSize);
@@ -457,7 +457,7 @@ if (bMoveToCenter) {
 	}
 else {
 	for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
-		if (segP->IsDoorWay ((short) i, objP) & WID_FLY_FLAG) {
+		if (segP->IsDoorWay ((short) i, objP) & WID_PASSABLE_FLAG) {
 			vSegCenter = SEGMENTS [segP->m_children [i]].Center ();
 			objP->info.position.vPos = vSegCenter;
 			if (ObjectIntersectsWall (objP))

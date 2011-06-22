@@ -110,10 +110,10 @@ while (tail != head) {
 		childSeg = segP->m_children [nSide];
 		if (!bOneWallHack) {
 			w = segP->IsDoorWay (nSide, NULL);
-			if (!(w & WID_FLY_FLAG))
+			if (!(w & WID_PASSABLE_FLAG))
 				continue;
 			}
-		//	If we get here and w == WID_WALL, then we want to process through this CWall, else not.
+		//	If we get here and w == WID_SOLID_WALL, then we want to process through this CWall, else not.
 		if (!IS_CHILD (childSeg))
 			continue;
 		if (bOneWallHack)

@@ -251,7 +251,7 @@ void CSegment::LoadSideTextures (int nSide)
 if ((Index () == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if (!(IsDoorWay (nSide, NULL) & WID_RENDER_FLAG))
+if (!(IsDoorWay (nSide, NULL) & WID_VISIBLE_FLAG))
 	return;
 m_sides [nSide].LoadTextures ();
 }

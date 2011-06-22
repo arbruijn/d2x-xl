@@ -321,7 +321,7 @@ while (nCurSeg != nEndSeg) {
 		hSide = bRandom ? randomXlate [nSide] : nSide;
 		if (!IS_CHILD (segP->m_children [hSide]))
 			continue;
-		if (!((segP->IsDoorWay (hSide, NULL) & WID_FLY_FLAG) ||
+		if (!((segP->IsDoorWay (hSide, NULL) & WID_PASSABLE_FLAG) ||
 			  (AIDoorIsOpenable (objP, segP, hSide))))
 			continue;
 		nDestSeg = segP->m_children [hSide];
@@ -908,7 +908,7 @@ if (!(nTargetVisibility || nPrevVisibility) && (xDistToTarget > I2X (200)) && !I
 		// int	nConnSide = ConnectedSide (objP->info.nSegment, nGoalSeg);
 		//	Only move to goal if allowed to fly through the CSide.p.
 		//	Buddy-bot can create paths he can't fly, waiting for player.
-		// -- bah, this isn't good enough, buddy will fail to get through any door!if (WALL_IS_DOORWAY (&SEGMENTS]objP->info.nSegment], nConnSide) & WID_FLY_FLAG) {
+		// -- bah, this isn't good enough, buddy will fail to get through any door!if (WALL_IS_DOORWAY (&SEGMENTS]objP->info.nSegment], nConnSide) & WID_PASSABLE_FLAG) {
 		if (!(botInfoP->companion || botInfoP->thief)) {
 			if ((xCoverableDist >= xDistToGoal) || ((RandShort () >> 1) < FixDiv (xCoverableDist, xDistToGoal)))
 				MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);

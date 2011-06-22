@@ -73,7 +73,7 @@ if ((gameData.ai.target.xDist > I2X (50)) && (ailP->nextActionTime > 0))
 ailP->nextActionTime = SNIPE_WAIT_TIME;
 xConnectedDist = simpleRouter [0].PathLength (objP->info.position.vPos, objP->info.nSegment, 
 															 gameData.ai.target.vBelievedPos, gameData.ai.target.nBelievedSeg, 
-															 30, WID_FLY_FLAG, 1);
+															 30, WID_PASSABLE_FLAG, 1);
 if (xConnectedDist < MAX_SNIPE_DIST) {
 	CreatePathToTarget (objP, 30, 1);
 	ailP->mode = AIM_SNIPE_ATTACK;

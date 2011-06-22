@@ -432,7 +432,7 @@ else {
 	*bTransparent = 0;
 	*bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
 	}
-if (*bCloaked || *bTransparent || (widFlags & WID_TRANSPARENT_FLAG)) {
+if (*bCloaked || *bTransparent || (widFlags & WID_SEETHRU_FLAG)) {
 	if (bIsMonitor)
 		return 1;
 	c = wallP->cloakValue;
@@ -776,7 +776,7 @@ for (i = 0, j = 1; nRadius; nRadius--) {
 		segP = SEGMENTS + nSegment;
 		for (nChild = 0; nChild < 6; nChild++) {
 			nChildSeg = segP->m_children [nChild];
-			if ((nChildSeg >= 0) && !visitedP [nChildSeg] && (segP->IsDoorWay (nChild, NULL) & WID_RENDPAST_FLAG)) {
+			if ((nChildSeg >= 0) && !visitedP [nChildSeg] && (segP->IsDoorWay (nChild, NULL) & WID_SEETHRU_FLAG)) {
 				segListP [j++] = nChildSeg;
 				visitedP [nChildSeg] = 1;
 				}

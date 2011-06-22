@@ -255,7 +255,7 @@ while (nSegment == -1) {
 	//bail if not far enough from original position
 	if (nSegment > -1) {
 		tempv = segP->Center ();
-		nDist = simpleRouter [0].PathLength (*vPlayerPos, nPlayerSeg, tempv, nSegment, -1, WID_FLY_FLAG, -1);
+		nDist = simpleRouter [0].PathLength (*vPlayerPos, nPlayerSeg, tempv, nSegment, -1, WID_PASSABLE_FLAG, -1);
 		if ((nDist < 0) || (nDist >= I2X (20) * nDepth))
 			break;
 		}

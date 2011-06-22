@@ -731,10 +731,10 @@ static inline int PassThrough (short nObject, short nSegment, short nSide, short
 CSegment* segP = SEGMENTS + nSegment;
 int widResult = segP->IsDoorWay (nSide, (nObject < 0) ? NULL : OBJECTS + nObject);
 
-if (widResult & WID_FLY_FLAG) // check whether side can be passed through
+if (widResult & WID_PASSABLE_FLAG) // check whether side can be passed through
 	return 1; 
 
-if ((widResult & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) == (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) { // check whether side can be seen through
+if ((widResult & (WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)) == (WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)) { // check whether side can be seen through
     if (flags & FQ_TRANSWALL) 
 		 return 1;
 	 if (!(flags & FQ_TRANSPOINT))
@@ -841,15 +841,15 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-#if 0
+#if 1
 			if (PassThrough (nThisObject, nStartSeg, nSide, iFace, flags, vHitPoint))
 #else
 			int widResult = segP->IsDoorWay (nSide, (nThisObject < 0) ? NULL : OBJECTS + nThisObject);
-			if (((widResult & WID_FLY_FLAG) ||
-				 (((widResult & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) == (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) &&
+			if (((widResult & WID_PASSABLE_FLAG) ||
+				 (((widResult & (WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)) == (WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)) &&
 				  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && segP->CheckForTranspPixel (vHitPoint, nSide, iFace))))) ||
 				 // check whether a cheat code allowing passing through walls is enabled. If so, allow player to pass through blocked segments
-			    (!(widResult & WID_FLY_FLAG) && (nChildSeg >= 0) && (gameStates.app.cheats.bPhysics == 0xBADA55) && (nThisObject == LOCALPLAYER.nObject) &&
+			    (!(widResult & WID_PASSABLE_FLAG) && (nChildSeg >= 0) && (gameStates.app.cheats.bPhysics == 0xBADA55) && (nThisObject == LOCALPLAYER.nObject) &&
 				  (SEGMENTS [nChildSeg].HasBlockedProp () ||
 				   (gameData.objs.speedBoost [nThisObject].bBoosted &&
 				   ((segP->m_function != SEGMENT_FUNC_SPEEDBOOST) || (SEGMENTS [nChildSeg].m_function == SEGMENT_FUNC_SPEEDBOOST))))))
@@ -1170,6 +1170,7 @@ return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, obj
 }
 
 //------------------------------------------------------------------------------
+// Check whether point p1 from segment nDestSeg can be seen from point p0 located in segment nStartSeg.
 
 int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short nDestSeg, int nDepth, int nThread)
 {
@@ -1201,6 +1202,7 @@ for (;;) {
 	bVisited [nStartSeg] = bFlag;
 	segP = &SEGMENTS [nStartSeg];
 	sideP = segP->Side (0);
+	// check all sides of current segment whether they are penetrated by the vector p0,p1.
 	for (nSide = 0; nSide < 6; nSide++, sideP++) {
 		nChildSeg = segP->m_children [nSide];
 		if (nChildSeg < 0) {
@@ -1239,7 +1241,7 @@ for (;;) {
 				return 1; // any segment acceptable
 			if (nStartSeg == nDestSeg)
 				return 1; // point is in desired segment
-			if ((nChildSeg == nDestSeg) && !((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL)))
+			if ((nChildSeg == nDestSeg) && !((wallP = sideP->Wall ()) && !(wallP->IsDoorWay (NULL, false) & WID_SEETHRU_FLAG)))
 				return 1; // point at border to destination segment and the portal to that segment is passable
 			nFace = nFaceCount; // no eligible child segment, so try next segment side
 			break; 
@@ -1248,7 +1250,7 @@ for (;;) {
 			continue; // line doesn't intersect with this side
 		if (0 > nChildSeg) // solid wall
 			continue;
-		if ((wallP = sideP->Wall ()) && (wallP->IsDoorWay (NULL, false) & WID_WALL)) // impassable
+		if ((wallP = sideP->Wall ()) && !(wallP->IsDoorWay (NULL, false) & WID_SEETHRU_FLAG)) // impassable
 			continue;
 		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDepth + 1, nThread))
 			return 1;

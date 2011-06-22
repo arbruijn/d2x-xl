@@ -1427,7 +1427,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 				break;
 			case WALL_CLOSED:
 				// Make bGrates draw properly
-				if (segP->IsDoorWay (nSide, NULL) & WID_RENDPAST_FLAG)
+				if (segP->IsDoorWay (nSide, NULL) & WID_SEETHRU_FLAG)
 					bIsGrate = 1;
 				else
 					bHidden = 1;

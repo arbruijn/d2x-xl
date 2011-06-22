@@ -1270,7 +1270,7 @@ void move_object_to_legal_spot(CObject *objP)
 	CSegment*	segP = SEGMENTS + objP->info.nSegment;
 
 	for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
-		if (segP->IsDoorWay (i, objP) & WID_FLY_FLAG) {
+		if (segP->IsDoorWay (i, objP) & WID_PASSABLE_FLAG) {
 			CFixVector	vSegCenter, goal_dir;
 			fix			dist_to_center;
 
@@ -1383,7 +1383,7 @@ int get_random_child(int nSegment)
 {
 CSegment	*segP = SEGMENTS + nSegment;
 int sidenum = (RandShort () * 6) >> 15;
-while (!(segP->IsDoorWay (sidenum, NULL) & WID_FLY_FLAG))
+while (!(segP->IsDoorWay (sidenum, NULL) & WID_PASSABLE_FLAG))
 	sidenum = (RandShort () * 6) >> 15;
 return segP->m_children [sidenum];
 }

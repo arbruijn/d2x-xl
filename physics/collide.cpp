@@ -1847,7 +1847,7 @@ if (info.nId != gameData.multiplayer.nLocalPlayer)
 	return 1;
 CSegment* segP = SEGMENTS + info.nSegment;
 for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
-	if (segP->IsDoorWay (nSide, this) & WID_FLY_FLAG) {
+	if (segP->IsDoorWay (nSide, this) & WID_PASSABLE_FLAG) {
 		vExitDir = segP->SideCenter (nSide) - info.position.vPos;
 		CFixVector::Normalize (vExitDir);
 		CFixVector vRand = CFixVector::Random();
@@ -1875,7 +1875,7 @@ if (ROBOTINFO (info.nId).nExp1VClip > -1)
 	CreateExplosion ((short) info.nSegment, info.position.vPos, (info.xSize/2*3)/4, (ubyte) ROBOTINFO (info.nId).nExp1VClip);
 vExitDir.SetZero ();
 for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
-	if (segP->IsDoorWay (nSide, NULL) & WID_FLY_FLAG) {
+	if (segP->IsDoorWay (nSide, NULL) & WID_PASSABLE_FLAG) {
 		vExitDir = segP->SideCenter (nSide) - info.position.vPos;
 		CFixVector::Normalize (vExitDir);
 		}

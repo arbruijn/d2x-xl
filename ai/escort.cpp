@@ -793,7 +793,7 @@ else {
 			gameData.escort.nGoalObject = ESCORT_GOAL_SCRAM;
 			xDistToPlayer = simpleRouter [0].PathLength (objP->info.position.vPos, objP->info.nSegment, 
 																		gameData.ai.target.vBelievedPos, gameData.ai.target.nBelievedSeg, 
-																		100, WID_FLY_FLAG, 1);
+																		100, WID_PASSABLE_FLAG, 1);
 			if (xDistToPlayer > MIN_ESCORT_DISTANCE)
 				CreatePathToTarget (objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
 			else {

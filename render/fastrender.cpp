@@ -45,7 +45,7 @@ PROF_END(ptFaceList)
 
 int AddFaceListItem (CSegFace *faceP, int nThread)
 {
-if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
+if (!(faceP->m_info.widFlags & WID_VISIBLE_FLAG))
 	return 0;
 #if 1
 if (faceP->m_info.nFrame == gameData.app.nMineRenderCount)
@@ -697,7 +697,7 @@ for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 		nSegment = nSegment;
 #endif
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++)
-		if (faceP->m_info.bVisible && (faceP->m_info.widFlags & WID_RENDER_FLAG) && faceP->m_info.bIsLight && (faceP->m_info.nCamera < 0) &&
+		if (faceP->m_info.bVisible && (faceP->m_info.widFlags & WID_VISIBLE_FLAG) && faceP->m_info.bIsLight && (faceP->m_info.nCamera < 0) &&
 			 glareRenderer.FaceHasCorona (nSegment, faceP->m_info.nSide, NULL, NULL))
 			faceP->m_info.nCorona = ++gameData.render.lights.nCoronas;
 		else

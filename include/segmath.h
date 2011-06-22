@@ -34,8 +34,8 @@ short FindClosestSeg (CFixVector& vPos);
 
 // -----------------------------------------------------------------------------
 // Determine whether seg0 and seg1 are reachable using widFlag to go through walls.
-// For example, set to WID_RENDPAST_FLAG to see if sound can get from one CSegment to the other.
-// set to WID_FLY_FLAG to see if a robot could fly from one to the other.
+// For example, set to WID_SEETHRU_FLAG to see if sound can get from one CSegment to the other.
+// set to WID_PASSABLE_FLAG to see if a robot could fly from one to the other.
 // Search up to a maximum depth of max_depth.
 // Return the distance.
 //create a matrix that describes the orientation of the given CSegment

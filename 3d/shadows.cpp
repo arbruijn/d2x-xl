@@ -1071,8 +1071,8 @@ for (;;) {
 		break;
 		}
 	nWID = segP->IsDoorWay (nHitSide, OBJECTS + nObject);
-	if (!(nWID & WID_FLY_FLAG) &&
-		 (((nWID & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) != (WID_RENDER_FLAG | WID_RENDPAST_FLAG)))) {
+	if (!(nWID & WID_PASSABLE_FLAG) &&
+		 (((nWID & (WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)) != (WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)))) {
 		bHit = 1;
 		break;
 		}

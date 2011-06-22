@@ -78,29 +78,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define D1_MAX_CLIP_FRAMES      20
 
 // WALL_IS_DOORWAY flags.
-#define WID_FLY_FLAG            1
-#define WID_RENDER_FLAG         2
-#define WID_RENDPAST_FLAG       4
-#define WID_EXTERNAL_FLAG       8
+#define WID_PASSABLE_FLAG			1
+#define WID_VISIBLE_FLAG         2
+#define WID_SEETHRU_FLAG			4
+#define WID_EXTERNAL_FLAG			8
 #define WID_CLOAKED_FLAG        16
-#define WID_TRANSPARENT_FLAG    32
 
-//define these here so I don't have to change WallIsDoorWay and run
-//the risk of screwing it up.
-#define WID_WALL						2	// 0/1/0		CWall
-#define WID_TRANSPARENT_WALL		6	//	0/1/1		transparent CWall
-#define WID_ILLUSORY_WALL			3	//	1/1/0		illusory CWall
-#define WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory CWall
-#define WID_NO_WALL					5	//	1/0/1		no CWall, can fly through
-#define WID_EXTERNAL					8	// 0/0/0/1	don't see it, dont fly through it
-
-//@@//  WALL_IS_DOORWAY return values          F/R/RP
-//@@#define WID_WALL                    2   // 0/1/0        CWall
-//@@#define WID_TRANSPARENT_WALL        6   // 0/1/1        transparent CWall
-//@@#define WID_ILLUSORY_WALL           3   // 1/1/0        illusory CWall
-//@@#define WID_TRANSILLUSORY_WALL      7   // 1/1/1        transparent illusory CWall
-//@@#define WID_NO_WALL                 5   //  1/0/1       no CWall, can fly through
-//@@#define WID_EXTERNAL                8   // 0/0/0/1  don't see it, dont fly through it
+#define WID_SOLID_WALL				WID_VISIBLE_FLAG
+#define WID_TRANSPARENT_WALL		(WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)
+#define WID_ILLUSORY_WALL			(WID_PASSABLE_FLAG | WID_VISIBLE_FLAG)
+#define WID_TRANSILLUSORY_WALL	(WID_PASSABLE_FLAG | WID_TRANSPARENT_WALL)
+#define WID_NO_WALL					(WID_PASSABLE_FLAG | WID_SEETHRU_FLAG)
 
 #define MAX_STUCK_OBJECTS   64
 

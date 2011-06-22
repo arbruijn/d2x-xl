@@ -140,7 +140,7 @@ void DoThiefFrame (CObject *objP)
 
 			connectedDistance = simpleRouter [0].PathLength (objP->info.position.vPos, objP->info.nSegment, 
 																			 gameData.ai.target.vBelievedPos, gameData.ai.target.nBelievedSeg, 
-																			 30, WID_FLY_FLAG, 1);
+																			 30, WID_PASSABLE_FLAG, 1);
 			if (connectedDistance < I2X (500)) {
 				CreatePathToTarget(objP, 30, 1);
 				ailp->mode = AIM_THIEF_ATTACK;

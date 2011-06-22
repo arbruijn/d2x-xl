@@ -920,7 +920,7 @@ if (info.controlType == CT_AI) {
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
 		int nSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + nOrigSegment);
 		if (nSide != -1) {
-			if (!(SEGMENTS [nOrigSegment].IsDoorWay (nSide, (info.nType == OBJ_PLAYER) ? this : NULL) & WID_FLY_FLAG)) {
+			if (!(SEGMENTS [nOrigSegment].IsDoorWay (nSide, (info.nType == OBJ_PLAYER) ? this : NULL) & WID_PASSABLE_FLAG)) {
 				//bump object back
 				CSide* sideP = SEGMENTS [nOrigSegment].m_sides + nSide;
 				if (nOrigSegment == -1)

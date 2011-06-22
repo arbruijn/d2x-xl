@@ -401,7 +401,7 @@ int CSegment::IsDoorWay (int nSide, CObject *objP, bool bIgnoreDoors)
 	int	nChildSeg = m_children [nSide];
 
 if (nChildSeg == -1)
-	return WID_RENDER_FLAG;
+	return WID_VISIBLE_FLAG;
 if (nChildSeg == -2)
 	return WID_EXTERNAL_FLAG;
 
@@ -415,25 +415,25 @@ if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 
 if (!objP) 
-	return wallP ? wallP->IsDoorWay (NULL, bIgnoreDoors) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
+	return wallP ? wallP->IsDoorWay (NULL, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_SEETHRU_FLAG;
 
 ubyte nChildType = SEGMENTS [nChildSeg].m_function;
 if (SEGMENTS [nChildSeg].HasBlockedProp ()) {
 	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_POWERUP))
-		return WID_RENDER_FLAG;
+		return WID_VISIBLE_FLAG;
 	}
 else if ((m_function == SEGMENT_FUNC_SPEEDBOOST) && (nChildType != SEGMENT_FUNC_SPEEDBOOST)) {
 	// handle the player in a speed boost area. The player must only exit speed boost areas through a segment side with a speed boost trigger
 	if ((objP == gameData.objs.consoleP) && gameData.objs.speedBoost [objP->Index ()].bBoosted) {
 		if (!wallP)
-			return WID_RENDER_FLAG;
+			return WID_VISIBLE_FLAG;
 		CTrigger* trigP = wallP->Trigger ();
 		if (!trigP || (trigP->m_info.nType != TT_SPEEDBOOST))
-			return WID_RENDER_FLAG;
+			return WID_VISIBLE_FLAG;
 		return wallP->IsDoorWay (objP, bIgnoreDoors);
 		}
 	}
-return wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
+return wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_SEETHRU_FLAG;
 }
 
 #else
@@ -443,7 +443,7 @@ int CSegment::IsDoorWay (int nSide, CObject *objP, bool bIgnoreDoors)
 	int	nChild = m_children [nSide];
 
 if (nChild == -1)
-	return WID_RENDER_FLAG;
+	return WID_VISIBLE_FLAG;
 if (nChild == -2)
 	return WID_EXTERNAL_FLAG;
 
@@ -461,15 +461,15 @@ if ((objP == gameData.objs.consoleP) &&
 	 gameData.objs.speedBoost [objP->Index ()].bBoosted &&
 	 (m_function == SEGMENT_FUNC_SPEEDBOOST) && (childP->m_function != SEGMENT_FUNC_SPEEDBOOST) &&
 	 (!wallP || (TRIGGERS [wallP->nTrigger].m_info.nType != TT_SPEEDBOOST)))
-	return WID_RENDER_FLAG;
+	return WID_VISIBLE_FLAG;
 
 if (childP->HasBlockedProp ())
 	return (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_POWERUP)))
-			 ? WID_RENDER_FLAG
-			 : wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
+			 ? WID_VISIBLE_FLAG
+			 : wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_SEETHRU_FLAG;
 
 if (!wallP)
-	return WID_FLY_FLAG | WID_RENDPAST_FLAG;
+	return WID_PASSABLE_FLAG | WID_SEETHRU_FLAG;
 
 return wallP->IsDoorWay (objP, bIgnoreDoors);
 }

@@ -162,7 +162,7 @@ if (distance < maxDistance) {
 		nSearchSegs = 3;
 	pathDistance = gameData.segs.SegVis (nListenerSeg, nSoundSeg) 
 						? distance
-						: simpleRouter [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
+						: simpleRouter [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_SEETHRU_FLAG | WID_PASSABLE_FLAG, 0);
 	if (pathDistance > -1) {
 		if (!nDecay)
 #if 1
@@ -985,7 +985,7 @@ audio.InitSounds ();		//clear old sounds
 gameStates.sound.bDontStartObjects = 1;
 for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++)
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		if (!(segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG))
+		if (!(segP->IsDoorWay (nSide, NULL) & WID_VISIBLE_FLAG))
 			continue;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -1006,7 +1006,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 		//CSegment.
 
 		if (IS_CHILD (nConnSeg) && (nConnSeg < nSegment) &&
-			 (segP->IsDoorWay (nSide, NULL) & (WID_FLY_FLAG | WID_RENDPAST_FLAG))) {
+			 (segP->IsDoorWay (nSide, NULL) & (WID_PASSABLE_FLAG | WID_SEETHRU_FLAG))) {
 			connSegP = SEGMENTS + segP->m_children [nSide];
 			nConnSide = segP->ConnectedSide (connSegP);
 			if (connSegP->m_sides [nConnSide].m_nOvlTex == segP->m_sides [nSide].m_nOvlTex)

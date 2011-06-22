@@ -105,18 +105,19 @@ return NULL;
 }
 
 //------------------------------------------------------------------------------
-// This function checks whether we can fly through the given nSide.
+// This function checks whether we can fly through the given side.
 //	In other words, whether or not we have a 'doorway'
 //	 Flags:
-//		WID_FLY_FLAG				1
-//		WID_RENDER_FLAG			2
-//		WID_RENDPAST_FLAG			4
+//		WID_PASSABLE_FLAG			1
+//		WID_VISIBLE_FLAG			2
+//		WID_SEETHRU_FLAG			4
 //	 Return values:
-//		WID_WALL						2	// 0/1/0		CWall
-//		WID_TRANSPARENT_WALL		6	//	0/1/1		transparent CWall
-//		WID_ILLUSORY_WALL			3	//	1/1/0		illusory CWall
-//		WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory CWall
-//		WID_NO_WALL					5	//	1/0/1		no CWall, can fly through
+//		WID_SOLID_WALL				2	// 0/1/0		solid wall
+//		WID_TRANSPARENT_WALL		6	//	0/1/1		transparent wall
+//		WID_ILLUSORY_WALL			3	//	1/1/0		illusory wall
+//		WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory wall
+//		WID_NO_WALL					5	//	1/0/1		no wall, can fly through
+
 int CWall::IsDoorWay (CObject *objP, bool bIgnoreDoors)
 {
 #if DBG
@@ -139,19 +140,17 @@ if (nType == WALL_BLASTABLE) {
 		return WID_TRANSILLUSORY_WALL;
 	if ((cloakValue < FADE_LEVELS) || SEGMENTS [nSegment].CheckTransparency (nSide))
 		return WID_TRANSPARENT_WALL;
-	return WID_WALL;
+	return WID_SOLID_WALL;
 	}
 
 if (flags & WALL_DOOR_OPENED)
 	return WID_TRANSILLUSORY_WALL;
 
 if (nType == WALL_CLOAKED)
-	return WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_CLOAKED_FLAG;
+	return WID_TRANSPARENT_WALL | WID_CLOAKED_FLAG;
 
 if (nType == WALL_COLORED)
-	return (hps < 0) ?
-			 WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_TRANSPARENT_FLAG | WID_FLY_FLAG :
-			 WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_TRANSPARENT_FLAG;
+	return (hps < 0) ? WID_TRANSILLUSORY_WALL : WID_TRANSPARENT_WALL;
 
 if (nType == WALL_DOOR) {
 	if (bIgnoreDoors)
@@ -160,8 +159,9 @@ if (nType == WALL_DOOR) {
 		return WID_TRANSPARENT_WALL;
 	if ((cloakValue && (cloakValue < FADE_LEVELS)) || SEGMENTS [nSegment].CheckTransparency (nSide))
 		return WID_TRANSPARENT_WALL;
-	return WID_WALL;
+	return WID_SOLID_WALL;
 	}
+
 if (nType == WALL_CLOSED) {
 	if (objP && (objP->info.nType == OBJ_PLAYER)) {
 		if (IsTeamGame && ((keys >> 1) == GetTeam (objP->info.nId) + 1))
@@ -175,7 +175,7 @@ if (nType == WALL_CLOSED) {
 // If none of the above flags are set, there is no doorway.
 if ((cloakValue && (cloakValue < FADE_LEVELS)) || SEGMENTS [nSegment].CheckTransparency (nSide)) 
 	return WID_TRANSPARENT_WALL;
-return WID_WALL; // There are children behind the door.
+return WID_SOLID_WALL; // There are children behind the door.
 }
 
 //------------------------------------------------------------------------------
@@ -977,7 +977,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 			pnt = segP->SideCenter (nSide);
 			dist = CFixVector::Dist(pnt, objP->info.position.vPos);
 			if (dist < damage / 2) {
-				dist = simpleRouter [0].PathLength (pnt, segP->Index (), objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, -1);
+				dist = simpleRouter [0].PathLength (pnt, segP->Index (), objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_SEETHRU_FLAG, -1);
 				if ((dist > 0) && (dist < damage / 2) &&
 					 segP->CheckEffectBlowup (nSide, pnt, (objP->cType.laserInfo.parent.nObject < 0) ? NULL : OBJECTS + objP->cType.laserInfo.parent.nObject, 1))
 						segP->OperateTrigger (nSide, OBJECTS + objP->cType.laserInfo.parent.nObject, 1);
@@ -989,7 +989,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	short nSegment = segP->m_children [i];
 
-	if ((nSegment != -1) && !visited [nSegment] && (segP->IsDoorWay (i, NULL) & WID_FLY_FLAG)) {
+	if ((nSegment != -1) && !visited [nSegment] && (segP->IsDoorWay (i, NULL) & WID_PASSABLE_FLAG)) {
 		visited [nSegment] = 1;
 		BngProcessSegment (objP, damage, &SEGMENTS [nSegment], depth, visited);
 		}

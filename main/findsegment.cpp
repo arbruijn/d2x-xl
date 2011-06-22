@@ -251,7 +251,7 @@ if (nDepth < 0)
 markedSegs [nSegment] = 1;
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	child = SEGMENTS [nSegment].m_children [i];
-	if (IS_CHILD (child) && (SEGMENTS [nSegment].IsDoorWay (i, NULL) & WID_RENDPAST_FLAG) && !markedSegs [child])
+	if (IS_CHILD (child) && (SEGMENTS [nSegment].IsDoorWay (i, NULL) & WID_SEETHRU_FLAG) && !markedSegs [child])
 		AmbientMarkBfs (child, markedSegs, nDepth - 1);
 	}
 }

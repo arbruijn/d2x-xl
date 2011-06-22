@@ -142,11 +142,11 @@ if (!FaceIsVisible (faceP))
 bWall = IS_WALL (faceP->m_info.nWall);
 if (bWall) {
 	faceP->m_info.widFlags = segP->IsDoorWay (nSide, NULL);
-	if (!(faceP->m_info.widFlags & WID_RENDER_FLAG)) //(WID_RENDER_FLAG | WID_RENDPAST_FLAG)))
+	if (!(faceP->m_info.widFlags & WID_VISIBLE_FLAG)) //(WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)))
 		return -1;
 	}
 else
-	faceP->m_info.widFlags = WID_RENDER_FLAG;
+	faceP->m_info.widFlags = WID_VISIBLE_FLAG;
 faceP->m_info.nCamera = IsMonitorFace (nSegment, nSide, 0);
 bTextured = 1;
 bCloaked = 0;
