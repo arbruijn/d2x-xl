@@ -1222,7 +1222,7 @@ for (;;) {
 			v1 = *p1 - intersection;
 			l0 = v0.Mag ();
 			l1 = v1.Mag ();
-			if ((l0 >= 0.001) && (l1 >= 0.001)) {
+			if ((l0 >= 0.001f) && (l1 >= 0.001f)) {
 				v0 /= l0;
 				v1 /= l1;
 				if (CFloatVector::Dot (v0, *n) == CFloatVector::Dot (v1, *n))
@@ -1234,7 +1234,7 @@ for (;;) {
 #endif
 			if (PointIsOutsideFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - nFaceCount))
 				continue;
-			if (l1 >= 0.001) 
+			if (l1 >= 0.001f) 
 				break;
 			// end point lies in this face
 			if (nDestSeg < 0)
