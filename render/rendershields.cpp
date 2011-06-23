@@ -53,7 +53,7 @@ for (i = 0; i < 8; i++) {
 
 static int nDbgBox = -1, nDbgBoxFace = -1;
 
-void RenderHitbox (CObject *objP, float Red (), float Green (), float Blue (), float alpha)
+void RenderHitbox (CObject *objP, float red, float green, float blue, float alpha)
 {
 if (objP->rType.polyObjInfo.nModel < 0)
 	return;
@@ -73,9 +73,9 @@ if (objP->info.nType == OBJ_PLAYER) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
 			return;
 		fFade = (float) ci.nFadeValue / (float) FADE_LEVELS;
-		Red () *= fFade;
-		Green () *= fFade;
-		Blue () *= fFade;
+		red *= fFade;
+		green *= fFade;
+		blue *= fFade;
 		}
 
 	}
@@ -86,13 +86,13 @@ else if (objP->info.nType == OBJ_ROBOT) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
 			return;
 		fFade = (float) ci.nFadeValue / (float) FADE_LEVELS;
-		Red () *= fFade;
-		Green () *= fFade;
-		Blue () *= fFade;
+		red *= fFade;
+		green *= fFade;
+		blue *= fFade;
 		}
 	}
 if (!CollisionModel ()) {
-	DrawShieldSphere (objP, Red (), Green (), Blue (), alpha, 1);
+	DrawShieldSphere (objP, red, green, blue, alpha, 1);
 	return;
 	}
 else if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
@@ -122,11 +122,11 @@ for (; iBox <= nBoxes; iBox++) {
 	if ((objP->info.nType == OBJ_PLAYER) && (iBox == nDbgBox))
 		glColor4f (1.0f, 0, 0, alpha);
 	else
-		glColor4f (Red (), Green (), Blue (), alpha / 2);
+		glColor4f (red, green, blue, alpha / 2);
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
 		for (j = 0; j < 4; j++) {
-			dir.Assign (hb [iBox].faces [i].dir [j]);
+			dir.Assign (hb [iBox].faces [i].v [j]);
 			transformation.Transform (dir, dir, 0);
 			glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
 		//	glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));
@@ -137,18 +137,18 @@ for (; iBox <= nBoxes; iBox++) {
 	if ((objP->info.nType == OBJ_PLAYER) && (iBox == 1))
 		glColor4f (1.0f, 0, 0, alpha);
 	else
-		glColor4f (Red (), Green (), Blue (), alpha);
+		glColor4f (red, green, blue, alpha);
 	for (i = 0; i < 6; i++) {
 		CFixVector coord;
 		coord.SetZero ();
 		if ((objP->info.nType == OBJ_PLAYER) && (iBox == 1))
 			glColor4f (1.0f, 0, 0, alpha);
 		else
-			glColor4f (Red (), Green (), Blue (), alpha);
+			glColor4f (red, green, blue, alpha);
 		glBegin (GL_LINES);
 		for (j = 0; j < 4; j++) {
-			coord += hb [iBox].faces [i].dir [j];
-			dir.Assign (hb [iBox].faces [i].dir [j]);
+			coord += hb [iBox].faces [i].v [j];
+			dir.Assign (hb [iBox].faces [i].v [j]);
 			transformation.Transform (dir, dir, 0);
 			glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
 			//glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));

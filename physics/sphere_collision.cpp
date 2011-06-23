@@ -517,7 +517,7 @@ if (rad < 0)
 	size = 0;
 else {
 	size = thisObjP->info.xSize;
-	if ((thisObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (thisObjP->info.nId).attackType)
+	if (!thisObjP->IsStatic () && (thisObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (thisObjP->info.nId).attackType)
 		size = 3 * size / 4;
 	//if obj is CPlayerData, and bumping into other CPlayerData or a weapon of another coop CPlayerData, reduce radius
 	if ((thisObjP->info.nType == OBJ_PLAYER) &&
@@ -526,15 +526,17 @@ else {
 		size /= 2;
 	}
 
-	// check hit sphere collisions
+#if DBG
+if (thisObjP->Index () == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
+// check hit sphere collisions
 bOtherPoly = UseHitbox (otherObjP);
-#if 1
 if ((bThisPoly = UseHitbox (thisObjP)))
 	PolyObjPos (thisObjP, &vPos);
 else
-#endif
-vPos = thisObjP->info.position.vPos;
-if ((CollisionModel () || otherObjP->IsStatic ()) &&
+	vPos = thisObjP->info.position.vPos;
+if ((CollisionModel () || thisObjP->IsStatic () || otherObjP->IsStatic ()) &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
 	FindPointLineIntersection (vHit, *p0, *p1, vPos, 0);

@@ -954,7 +954,6 @@ fix xLastThiefHitTime;
 int CObject::CollideRobotAndPlayer (CObject* playerObjP, CFixVector& vHitPt)
 {
 if (!IsStatic ()) {
-
 		int	bTheftAttempt = 0;
 		short	nCollisionSeg;
 
