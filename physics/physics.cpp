@@ -861,37 +861,36 @@ retryMove:
 		CFixVector vOldVel = mType.physInfo.velocity;
 		CollideTwoObjects (this, hitObjP, vHitPos);
 #if 1
-		if (!vOldVel.IsZero ())
-			vFrame = vOldVel;
-		else {
-			vFrame = OBJPOS (this)->vPos - OBJPOS (hitObjP)->vPos;
-			CFixVector::Normalize (vFrame);
-			vFrame *= info.xSize;
-			}	
-		info.position.vPos = vSavePos;
-		for (int i = 0, s = -I2X (1); i < 8; i++) {
-			vFrame /= I2X (2);
-			if (info.position.vPos != vNewPos)
-				vNewPos -= vFrame * s;
-			else {
-				vNewPos -= vFrame * s;
-				info.position.vPos = vNewPos;
+		if (CollisionModel () || hitObjP->IsStatic ()) {
+			if (vOldVel.IsZero ()) {
+				vFrame = OBJPOS (hitObjP)->vPos - OBJPOS (this)->vPos;
+				CFixVector::Normalize (vFrame);
+				vFrame *= info.xSize;
+				}	
+			info.position.vPos = vSavePos;
+			for (int i = 0, s = -I2X (1); i < 8; i++) {
+				vFrame /= I2X (2);
+				if (info.position.vPos != vNewPos)
+					vNewPos += vFrame * s;
+				else {
+					vNewPos += vFrame * s;
+					info.position.vPos = vNewPos;
+					}
+				s = CheckVectorToObject (vHitPos, &info.position.vPos, &vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
 				}
-			s = CheckVectorToObject (vHitPos, &info.position.vPos, &vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
+			info.position.vPos = vNewPos;
 			}
-		info.position.vPos = vNewPos;
 #endif
 		if (sbd.bBoosted && (this == gameData.objs.consoleP))
 			mType.physInfo.velocity = vOldVel;
 		// Let object continue its movement
 		if (!(info.nFlags & OF_SHOULD_BE_DEAD)) {
 			if ((mType.physInfo.flags & PF_PERSISTENT) || (vOldVel == mType.physInfo.velocity)) {
-				if (OBJECTS [hi.hit.nObject].info.nType == OBJ_POWERUP) {
+				if (OBJECTS [hi.hit.nObject].info.nType == OBJ_POWERUP) 
 					nTries--;
-					gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
-					}
+				gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
+				bRetry = 1;
 				}
-			bRetry = 1;
 			}
 		}
 	else if (fviResult == HIT_NONE) {
