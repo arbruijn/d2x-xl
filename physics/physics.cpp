@@ -48,6 +48,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int bFloorLeveling = 0;
 
+fix CheckVectorToObject (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, CObject *thisObjP, CObject *otherObjP, bool bCheckVisibility);
+
 //	-----------------------------------------------------------------------------------------------------------
 
 #if DBG
@@ -486,8 +488,10 @@ if (mType.physInfo.velocity.IsZero ()) {
 #	endif
 	if (this == gameData.objs.consoleP)
 		gameData.objs.speedBoost [nObject].bBoosted = sbd.bBoosted = 0;
+#if 0
 	if (mType.physInfo.thrust.IsZero ())
 		return;
+#endif
 	}
 
 #if DBG
@@ -603,7 +607,7 @@ do {	//Move the object
 			vFrame *= (fix) (I2X (1) / gameStates.gameplay.slowmo [i].fSpeed);
 			}
 		}
-	if (vFrame.IsZero ())
+	if (nTries && !fviResult && vFrame.IsZero ())
 		break;
 
 retryMove:
@@ -843,35 +847,57 @@ retryMove:
 			}
 		}
 	else if (fviResult == HIT_OBJECT) {
-		CFixVector	vOldVel;
-		CFixVector	*ppos0, *ppos1, vHitPos;
-		fix			size0, size1;
-		// Mark the hit CObject so that on a retry the fvi code
-		// ignores this CObject.
-		//if (bSpeedBoost && (this == gameData.objs.consoleP))
-		//	break;
 		Assert (hi.hit.nObject != -1);
-		ppos0 = &OBJECTS [hi.hit.nObject].info.position.vPos;
-		ppos1 = &info.position.vPos;
-		size0 = OBJECTS [hi.hit.nObject].info.xSize;
-		size1 = info.xSize;
+		CFixVector* ppos0 = &OBJECTS [hi.hit.nObject].info.position.vPos;
+		CFixVector* ppos1 = &info.position.vPos;
+		fix size0 = OBJECTS [hi.hit.nObject].info.xSize;
+		fix size1 = info.xSize;
 		//	Calculate the hit point between the two objects.
 		Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
-		vHitPos = *ppos1 - *ppos0;
-		vHitPos = *ppos0 + vHitPos * FixDiv(size0, size0 + size1);
-		vOldVel = mType.physInfo.velocity;
+		CFixVector vHitPos = *ppos1 - *ppos0;
+		vHitPos = *ppos0 + vHitPos * FixDiv (size0, size0 + size1);
+		CObject* hitObjP = OBJECTS + hi.hit.nObject;
 		//if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + hi.hit.nObject)))
-			CollideTwoObjects (this, OBJECTS + hi.hit.nObject, vHitPos);
+		if (mType.physInfo.velocity.IsZero ()) {
+			mType.physInfo.velocity = ;
+			fix l = mType.physInfo.velocity.Mag ();
+			mType.physInfo.velocity /= l;
+			mType.physInfo.velocity *= (size0 + size1 - l) * xSimTime;
+			}
+		CFixVector vOldVel = mType.physInfo.velocity;
+		CollideTwoObjects (this, hitObjP, vHitPos);
+#if 1
+		if (!vOldVel.IsZero ())
+			vFrame = vOldVel;
+		else {
+			vFrame = OBJPOS (this)->vPos - OBJPOS (hitObjP)->vPos;
+			CFixVector::Normalize (vFrame);
+			vFrame *= info.xSize;
+			}	
+		info.position.vPos = vSavePos;
+		for (int i = 0, s = -I2X (1); i < 8; i++) {
+			vFrame /= I2X (2);
+			if (info.position.vPos != vNewPos)
+				vNewPos -= vFrame * s;
+			else {
+				vNewPos -= vFrame * s;
+				info.position.vPos = vNewPos;
+				}
+			s = CheckVectorToObject (vHitPos, &info.position.vPos, &vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
+			}
+		info.position.vPos = vNewPos;
+#endif
 		if (sbd.bBoosted && (this == gameData.objs.consoleP))
 			mType.physInfo.velocity = vOldVel;
 		// Let object continue its movement
 		if (!(info.nFlags & OF_SHOULD_BE_DEAD)) {
 			if ((mType.physInfo.flags & PF_PERSISTENT) || (vOldVel == mType.physInfo.velocity)) {
-				if (OBJECTS [hi.hit.nObject].info.nType == OBJ_POWERUP)
+				if (OBJECTS [hi.hit.nObject].info.nType == OBJ_POWERUP) {
 					nTries--;
-				gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
-				bRetry = 1;
+					gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
+					}
 				}
+			bRetry = 1;
 			}
 		}
 	else if (fviResult == HIT_NONE) {

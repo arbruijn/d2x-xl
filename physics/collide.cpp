@@ -268,8 +268,6 @@ if (info.nType == OBJ_PLAYER) {
 	}
 else if (info.nType == OBJ_MONSTERBALL)
 	gameData.hoard.nLastHitter = (otherObjP->info.nType == OBJ_PLAYER) ? OBJ_IDX (otherObjP) : otherObjP->cType.laserInfo.parent.nObject;
-if (otherObjP->IsStatic ())
-	vForce *= I2X (2);
 mType.physInfo.velocity = vForce;
 ApplyRotForce (vRotForce);
 //TurnTowardsVector (vRotForce, I2X (1));
@@ -307,7 +305,7 @@ vDist = pos1 - pos0;
 #if 0
 if (CFixVector::Dot (vel0, vel1) <= 0)
 #else
-if ((CFixVector::Dot (vel0, vDist) <= 0) && (CFixVector::Dot (vel1, vDist) >= 0))
+if ((CFixVector::Dot (vel0, vDist) < 0) && (CFixVector::Dot (vel1, vDist) > 0))
 #endif
 	return 0;	//objects separating already
 
