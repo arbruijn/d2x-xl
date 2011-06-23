@@ -858,12 +858,6 @@ retryMove:
 		vHitPos = *ppos0 + vHitPos * FixDiv (size0, size0 + size1);
 		CObject* hitObjP = OBJECTS + hi.hit.nObject;
 		//if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + hi.hit.nObject)))
-		if (mType.physInfo.velocity.IsZero ()) {
-			mType.physInfo.velocity = ;
-			fix l = mType.physInfo.velocity.Mag ();
-			mType.physInfo.velocity /= l;
-			mType.physInfo.velocity *= (size0 + size1 - l) * xSimTime;
-			}
 		CFixVector vOldVel = mType.physInfo.velocity;
 		CollideTwoObjects (this, hitObjP, vHitPos);
 #if 1
