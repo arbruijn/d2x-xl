@@ -1244,7 +1244,7 @@ void MultiSendFinishGame ();
 
 //	------------------------------------------------------------------------------------------------------
 
-bool CObject::Indestructable (void)
+bool CObject::Indestructible (void)
 {
 return ROBOTINFO (info.nId).strength <= 0; // indestructible static object
 }

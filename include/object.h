@@ -1035,8 +1035,8 @@ class CObject : public CObjectInfo {
 		inline bool IsMissile (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsMissile (Id ()); }
 		inline bool IsEquipment (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsEquipment (Id ()); }
 		inline bool IsStatic (void) { return cType.aiInfo.behavior == AIB_STATIC; }
-		bool Indestructable (void);
-		inline bool IsGeometry (void) { return IsStatic () && IsIndestructible (); }
+		bool Indestructible (void);
+		inline bool IsGeometry (void) { return IsStatic () && Indestructible (); }
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);
