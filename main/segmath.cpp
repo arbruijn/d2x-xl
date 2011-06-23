@@ -188,7 +188,7 @@ for (i = 1; i < 4; i++)
 			Swap (index [i], index [j]);
 			}
 
-Assert ((vSorted [0] < vSorted [1]) && (vSorted [1] < vSorted [2]) && (vSorted [2] < vSorted [3]));
+//Assert ((vSorted [0] < vSorted [1]) && (vSorted [1] < vSorted [2]) && (vSorted [2] < vSorted [3]));
 //	Now, if for any index [i] & index [i+1]: index [i+1] = (index [i]+3)%4, then must flip Normal
 return (((index [0] + 3) % 4) == index [1]) || (((index [1] + 3) % 4) == index [2]);
 }

@@ -259,7 +259,8 @@ void CObject::Bump (CObject* otherObjP, CFixVector vForce, CFixVector vRotForce,
 {
 if (mType.physInfo.flags & PF_PERSISTENT)
 	return;
-
+if (cType.aiInfo.behavior == AIB_STATIC)
+	return;
 if (info.nType == OBJ_PLAYER) {
 	if ((this == gameData.objs.consoleP) && gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted)
 		return;
@@ -292,7 +293,7 @@ else
 	t = NULL;
 if (t) {
 	Assert (t->info.movementType == MT_PHYSICS);
-	vForce = t->mType.physInfo.velocity * (-t->mType.physInfo.mass);
+	vForce = t->mType.physInfo.velocity * -2 * t->mType.physInfo.mass;
 	if (!vForce.IsZero ())
 		t->ApplyForce (vForce);
 	return 1;

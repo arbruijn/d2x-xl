@@ -1521,6 +1521,9 @@ return 1;
 
 int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAngleP, int nModel)
 {
+if (objP->cType.aiInfo.behavior == AIB_STATIC)
+	return 0;
+
 	CFixVector	v;
 	short*		nearestLightP;
 	int			h, i, j, nShadowQuality = gameOpts->render.ShadowQuality () - 1;
