@@ -534,7 +534,7 @@ if ((bThisPoly = UseHitbox (thisObjP)))
 else
 #endif
 vPos = thisObjP->info.position.vPos;
-if ((CollisionModel () || (otherObjP->cType.aiInfo.behavior == AIB_STATIC)) &&
+if ((CollisionModel () || otherObjP->IsStatic ()) &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
 	FindPointLineIntersection (vHit, *p0, *p1, vPos, 0);

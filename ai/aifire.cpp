@@ -76,7 +76,7 @@ void DoAIRobotHitAttack (CObject *robotP, CObject *targetP, CFixVector *vCollisi
 
 if (!gameStates.app.cheats.bRobotsFiring)
 	return;
-if (robotP->cType.aiInfo.behavior == AIB_STATIC)
+if (robotP->IsStatic ())
 	return;
 //	If CPlayerData is dead, stop firing.
 if (OBJECTS [LOCALPLAYER.nObject].info.nType == OBJ_GHOST)

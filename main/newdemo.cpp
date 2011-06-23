@@ -834,7 +834,7 @@ if ((o.info.nType == OBJ_ROBOT) && (o.info.nId == SPECIAL_REACTOR_ROBOT))
 #endif
 if (o.info.nType == OBJ_EFFECT)
 	return 0;
-if (o.cType.aiInfo.behavior == AIB_STATIC)
+if (o.IsStatic ())
 	o.info.movementType = MT_PHYSICS;
 // Do renderType first so on read, we can make determination of
 // what else to read in

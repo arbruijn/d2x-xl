@@ -1521,7 +1521,7 @@ return 1;
 
 int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAngleP, int nModel)
 {
-if (objP->cType.aiInfo.behavior == AIB_STATIC)
+if (objP->IsStatic ())
 	return 0;
 
 	CFixVector	v;

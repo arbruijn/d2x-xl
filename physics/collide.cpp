@@ -259,7 +259,7 @@ void CObject::Bump (CObject* otherObjP, CFixVector vForce, CFixVector vRotForce,
 {
 if (mType.physInfo.flags & PF_PERSISTENT)
 	return;
-if (cType.aiInfo.behavior == AIB_STATIC)
+if (IsStatic ())
 	return;
 if (info.nType == OBJ_PLAYER) {
 	if ((this == gameData.objs.consoleP) && gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted)
@@ -285,9 +285,9 @@ int BumpTwoObjects (CObject* thisP, CObject* otherP, int bDamage, CFixVector& vH
 	fix			speed0, speed1, mass0, mass1, offset0, offset1;
 	CObject		*t;
 
-if ((thisP->info.movementType != MT_PHYSICS) && (thisP->cType.aiInfo.behavior != AIB_STATIC))
+if ((thisP->info.movementType != MT_PHYSICS) && !thisP->IsStatic ())
 	t = otherP;
-else if ((otherP->info.movementType != MT_PHYSICS) && (otherP->cType.aiInfo.behavior != AIB_STATIC))
+else if ((otherP->info.movementType != MT_PHYSICS) && !otherP->IsStatic ())
 	t = thisP;
 else
 	t = NULL;
@@ -335,7 +335,7 @@ if (!CollisionModel () &&
 	}
 
 // check if objects are penetrating and move apart
-if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL) || (thisP->cType.aiInfo.behavior == AIB_STATIC)) {
+if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL) || thisP->IsStatic ()) {
 	mass0 = thisP->mType.physInfo.mass;
 	mass1 = otherP->mType.physInfo.mass;
 
@@ -953,7 +953,7 @@ fix xLastThiefHitTime;
 
 int CObject::CollideRobotAndPlayer (CObject* playerObjP, CFixVector& vHitPt)
 {
-if (cType.aiInfo.behavior != AIB_STATIC) {
+if (!IsStatic ()) {
 
 		int	bTheftAttempt = 0;
 		short	nCollisionSeg;
@@ -1243,6 +1243,13 @@ extern int MultiAllPlayersAlive ();
 void MultiSendFinishGame ();
 
 //	------------------------------------------------------------------------------------------------------
+
+bool CObject::Indestructable (void)
+{
+return ROBOTINFO (info.nId).strength <= 0; // indestructible static object
+}
+
+//	------------------------------------------------------------------------------------------------------
 //	Return 1 if this died, else return 0
 int CObject::ApplyDamageToRobot (fix xDamage, int nKillerObj)
 {
@@ -1254,7 +1261,7 @@ if (info.nFlags & OF_EXPLODING)
 	return 0;
 if (info.xShield < 0)
 	return 0;	//this already dead...
-if (ROBOTINFO (info.nId).strength <= 0) // indestructible static object
+if (Indestructible ()) // indestructible static object
 	return 0; 
 if (gameData.time.xGame - CreationTime () < I2X (1))
 	return 0;
@@ -1489,7 +1496,7 @@ return 1;
 
 int CObject::CollideWeaponAndRobot (CObject* robotP, CFixVector& vHitPt)
 {
-if (robotP->cType.aiInfo.behavior == AIB_STATIC)
+if (robotP->IsGeometry ())
 	return CollideWeaponAndWall (WI_speed (info.nId, gameStates.app.nDifficultyLevel), robotP->Segment (), -1, vHitPt);
 
 	int			bDamage = 1;
