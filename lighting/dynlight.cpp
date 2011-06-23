@@ -591,7 +591,7 @@ int CDynLight::LightPathLength (const short nLightSeg, const short nDestSeg, con
 {
 fix dist = (bFastRoute) 
 			  ? gameData.segs.SegDist (nLightSeg, nDestSeg)
-			  : simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, nDestSeg, X2I (xMaxLightRange / 5), WID_SEETHRU_FLAG | WID_PASSABLE_FLAG, 0);
+			  : simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, nDestSeg, X2I (xMaxLightRange / 5), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 if (dist < 0)
 	return -1;
 return fix (dist / info.fRange);

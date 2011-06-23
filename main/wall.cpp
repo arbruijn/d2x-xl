@@ -110,7 +110,7 @@ return NULL;
 //	 Flags:
 //		WID_PASSABLE_FLAG			1
 //		WID_VISIBLE_FLAG			2
-//		WID_SEETHRU_FLAG			4
+//		WID_TRANSPARENT_FLAG			4
 //	 Return values:
 //		WID_SOLID_WALL				2	// 0/1/0		solid wall
 //		WID_TRANSPARENT_WALL		6	//	0/1/1		transparent wall
@@ -150,7 +150,7 @@ if (nType == WALL_CLOAKED)
 	return WID_TRANSPARENT_WALL | WID_CLOAKED_FLAG;
 
 if (nType == WALL_COLORED)
-	return (hps < 0) ? WID_TRANSILLUSORY_WALL : WID_TRANSPARENT_WALL;
+	return (hps < 0) ? WID_TRANSILLUSORY_WALL | WID_TRANSPCOLOR_FLAG : WID_TRANSPARENT_WALL | WID_TRANSPCOLOR_FLAG;
 
 if (nType == WALL_DOOR) {
 	if (bIgnoreDoors)
@@ -977,7 +977,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 			pnt = segP->SideCenter (nSide);
 			dist = CFixVector::Dist(pnt, objP->info.position.vPos);
 			if (dist < damage / 2) {
-				dist = simpleRouter [0].PathLength (pnt, segP->Index (), objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_SEETHRU_FLAG, -1);
+				dist = simpleRouter [0].PathLength (pnt, segP->Index (), objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_TRANSPARENT_FLAG, -1);
 				if ((dist > 0) && (dist < damage / 2) &&
 					 segP->CheckEffectBlowup (nSide, pnt, (objP->cType.laserInfo.parent.nObject < 0) ? NULL : OBJECTS + objP->cType.laserInfo.parent.nObject, 1))
 						segP->OperateTrigger (nSide, OBJECTS + objP->cType.laserInfo.parent.nObject, 1);

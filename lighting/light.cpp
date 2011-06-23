@@ -925,7 +925,7 @@ if (i == nChangedSegs) {
 
 if (nCallDepth < 2)
 	for (nSide=0; nSide<6; nSide++) {
-		if (segP->IsDoorWay (nSide, NULL) & WID_SEETHRU_FLAG)
+		if (segP->IsDoorWay (nSide, NULL) & WID_TRANSPARENT_FLAG)
 			ApplyLightToSegment (&SEGMENTS [segP->m_children [nSide]], vSegCenter, xBrightness, nCallDepth+1);
 		}
 }

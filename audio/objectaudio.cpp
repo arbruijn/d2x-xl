@@ -162,7 +162,7 @@ if (distance < maxDistance) {
 		nSearchSegs = 3;
 	pathDistance = gameData.segs.SegVis (nListenerSeg, nSoundSeg) 
 						? distance
-						: simpleRouter [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_SEETHRU_FLAG | WID_PASSABLE_FLAG, 0);
+						: simpleRouter [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 	if (pathDistance > -1) {
 		if (!nDecay)
 #if 1
@@ -1006,7 +1006,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 		//CSegment.
 
 		if (IS_CHILD (nConnSeg) && (nConnSeg < nSegment) &&
-			 (segP->IsDoorWay (nSide, NULL) & (WID_PASSABLE_FLAG | WID_SEETHRU_FLAG))) {
+			 (segP->IsDoorWay (nSide, NULL) & (WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG))) {
 			connSegP = SEGMENTS + segP->m_children [nSide];
 			nConnSide = segP->ConnectedSide (connSegP);
 			if (connSegP->m_sides [nConnSide].m_nOvlTex == segP->m_sides [nSide].m_nOvlTex)

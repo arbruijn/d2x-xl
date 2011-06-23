@@ -734,7 +734,7 @@ int widResult = segP->IsDoorWay (nSide, (nObject < 0) ? NULL : OBJECTS + nObject
 if (widResult & WID_PASSABLE_FLAG) // check whether side can be passed through
 	return 1; 
 
-if ((widResult & (WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)) == (WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)) { // check whether side can be seen through
+if ((widResult & (WID_VISIBLE_FLAG | WID_TRANSPARENT_FLAG)) == (WID_VISIBLE_FLAG | WID_TRANSPARENT_FLAG)) { // check whether side can be seen through
     if (flags & FQ_TRANSWALL) 
 		 return 1;
 	 if (!(flags & FQ_TRANSPOINT))
@@ -846,7 +846,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 #else
 			int widResult = segP->IsDoorWay (nSide, (nThisObject < 0) ? NULL : OBJECTS + nThisObject);
 			if (((widResult & WID_PASSABLE_FLAG) ||
-				 (((widResult & (WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)) == (WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)) &&
+				 (((widResult & (WID_VISIBLE_FLAG | WID_TRANSPARENT_FLAG)) == (WID_VISIBLE_FLAG | WID_TRANSPARENT_FLAG)) &&
 				  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && segP->CheckForTranspPixel (vHitPoint, nSide, iFace))))) ||
 				 // check whether a cheat code allowing passing through walls is enabled. If so, allow player to pass through blocked segments
 			    (!(widResult & WID_PASSABLE_FLAG) && (nChildSeg >= 0) && (gameStates.app.cheats.bPhysics == 0xBADA55) && (nThisObject == LOCALPLAYER.nObject) &&
@@ -1241,7 +1241,7 @@ for (;;) {
 				return 1; // any segment acceptable
 			if (nStartSeg == nDestSeg)
 				return 1; // point is in desired segment
-			if ((nChildSeg == nDestSeg) && !((wallP = sideP->Wall ()) && !(wallP->IsDoorWay (NULL, false) & WID_SEETHRU_FLAG)))
+			if ((nChildSeg == nDestSeg) && !((wallP = sideP->Wall ()) && !(wallP->IsDoorWay (NULL, false) & WID_TRANSPARENT_FLAG)))
 				return 1; // point at border to destination segment and the portal to that segment is passable
 			nFace = nFaceCount; // no eligible child segment, so try next segment side
 			break; 
@@ -1250,7 +1250,7 @@ for (;;) {
 			continue; // line doesn't intersect with this side
 		if (0 > nChildSeg) // solid wall
 			continue;
-		if ((wallP = sideP->Wall ()) && !(wallP->IsDoorWay (NULL, false) & WID_SEETHRU_FLAG)) // impassable
+		if ((wallP = sideP->Wall ()) && !(wallP->IsDoorWay (NULL, false) & WID_TRANSPARENT_FLAG)) // impassable
 			continue;
 		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDepth + 1, nThread))
 			return 1;

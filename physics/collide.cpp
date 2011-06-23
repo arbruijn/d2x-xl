@@ -302,11 +302,12 @@ vel1 = otherP->mType.physInfo.velocity;
 pos0 = thisP->info.position.vPos;
 pos1 = otherP->info.position.vPos;
 vDist = pos1 - pos0;
-if ((CFixVector::Dot (vel0, vDist) <= 0) && (CFixVector::Dot (vel1, vDist) >= 0))
+if (CFixVector::Dot (vel0, vel1) <= 0)
+//if ((CFixVector::Dot (vel0, vDist) <= 0) && (CFixVector::Dot (vel1, vDist) >= 0))
 	return 0;	//objects separating already
 
 if (!CollisionModel () &&
-	 ((thisP->info.nType == OBJ_PLAYER) || (thisP->info.nType == OBJ_ROBOT)||  (thisP->info.nType == OBJ_REACTOR)) &&
+	 ((thisP->info.nType == OBJ_PLAYER) || (thisP->info.nType == OBJ_ROBOT) || (thisP->info.nType == OBJ_REACTOR)) &&
 	 ((otherP->info.nType == OBJ_PLAYER) || (otherP->info.nType == OBJ_ROBOT) || (otherP->info.nType == OBJ_REACTOR))) {
 	fix dist = vDist.Mag ();
 	fix intrusion = (thisP->info.xSize + otherP->info.xSize) - dist;

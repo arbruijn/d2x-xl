@@ -142,7 +142,7 @@ if (!FaceIsVisible (faceP))
 bWall = IS_WALL (faceP->m_info.nWall);
 if (bWall) {
 	faceP->m_info.widFlags = segP->IsDoorWay (nSide, NULL);
-	if (!(faceP->m_info.widFlags & WID_VISIBLE_FLAG)) //(WID_VISIBLE_FLAG | WID_SEETHRU_FLAG)))
+	if (!(faceP->m_info.widFlags & WID_VISIBLE_FLAG)) //(WID_VISIBLE_FLAG | WID_TRANSPARENT_FLAG)))
 		return -1;
 	}
 else

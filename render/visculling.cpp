@@ -766,7 +766,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			nChildSeg = segP->m_children [nChild];
 			if (nChildSeg < 0)
 				continue;
-			if (!(segP->IsDoorWay (nChild, NULL, bIgnoreDoors) & WID_SEETHRU_FLAG))
+			if (!(segP->IsDoorWay (nChild, NULL, bIgnoreDoors) & WID_TRANSPARENT_FLAG))
 				continue;
 #if DBG
 			if (nChildSeg == nDbgSeg)
