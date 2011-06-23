@@ -672,7 +672,7 @@ return 0;
 int CObject::CollideWeaponAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt)
 {
 	CSegment*		segP = SEGMENTS + nHitSeg;
-	CSide*			sideP = segP->m_sides + nHitWall;
+	CSide*			sideP = (nHitWall < 0) ? NULL : segP->m_sides + nHitWall;
 	CWeaponInfo*	weaponInfoP = gameData.weapons.info + info.nId;
 	CObject*			parentObjP = OBJECTS + cType.laserInfo.parent.nObject;
 
@@ -685,7 +685,7 @@ if (info.nId == OMEGA_ID)
 
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (info.nId == GUIDEDMSL_ID) {
-	fix dot = CFixVector::Dot (info.position.mOrient.m.dir.f, sideP->m_normals[0]);
+	fix dot = (nHitWall < 0) ? -1 : CFixVector::Dot (info.position.mOrient.m.dir.f, sideP->m_normals [0]);
 #if TRACE
 	console.printf (CON_DBG, "Guided missile dot = %7.3f \n", X2F (dot));
 #endif
@@ -706,7 +706,7 @@ bBounce = (mType.physInfo.flags & PF_BOUNCE) != 0;
 if (!bBounce)
 	CreateWeaponEffects (1);
 //if an energy this hits a forcefield, let it bounce
-if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_FORCE_FIELD) &&
+if (sideP && (gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_FORCE_FIELD) &&
 	 ((info.nType != OBJ_WEAPON) || weaponInfoP->xEnergyUsage)) {
 
 	//make sound
@@ -734,7 +734,7 @@ if (mType.physInfo.velocity.IsZero ()) {
 	return 1;
 	}
 #endif
-bBlewUp = segP->CheckEffectBlowup (nHitWall, vHitPt, this, 0);
+bBlewUp = (nHitWall < 0) ? 0 : segP->CheckEffectBlowup (nHitWall, vHitPt, this, 0);
 if ((bEscort = parentObjP->IsGuideBot ())) {
 	if (IsMultiGame) {
 		Int3 ();  // Get Jason!
@@ -751,9 +751,9 @@ if (bBlewUp) {		//could be a wall switch - only player or guidebot can activate 
 	}
 if (info.nId == EARTHSHAKER_ID)
 	ShakerRockStuff ();
-wallType = segP->ProcessWallHit (nHitWall, info.xShield, nPlayer, this);
+wallType = (nHitWall < 0) ? WHP_NOT_SPECIAL : segP->ProcessWallHit (nHitWall, info.xShield, nPlayer, this);
 // Wall is volatile if either tmap 1 or 2 is volatile
-if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
+if (sideP && (gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 	 (sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_VOLATILE))) {
 	ubyte tVideoClip;
 	//we've hit a volatile CWall
@@ -769,7 +769,7 @@ if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 											  nStrength / 2 + VOLATILE_WALL_DAMAGE_FORCE, cType.laserInfo.parent.nObject);
 	Die ();		//make flares die in lava
 	}
-else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
+else if (sideP && (gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
 			(sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_WATER))) {
 	//we've hit water
 	//	MK: 09/13/95: SplashDamage in water is 1/2 Normal intensity.
@@ -795,7 +795,7 @@ else {
 		//if it's not the CPlayerData's this, or it is the CPlayerData's and there
 		//is no CWall, and no blowing up monitor, then play sound
 		if ((cType.laserInfo.parent.nType != OBJ_PLAYER) ||
-			 ((!sideP->IsWall () || wallType == WHP_NOT_SPECIAL) && !bBlewUp))
+			 (((wallType == WHP_NOT_SPECIAL)) && !bBlewUp))
 			if ((weaponInfoP->nWallHitSound > -1) && !(info.nFlags & OF_SILENT))
 				CreateSound (weaponInfoP->nWallHitSound);
 		if (weaponInfoP->nWallHitVClip > -1) {
@@ -820,7 +820,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 		}
 
 	//don't let flares stick in vForce fields
-	if ((info.nId == FLARE_ID) && (gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_FORCE_FIELD)) {
+	if ((info.nId == FLARE_ID) && (!sideP || (gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_FORCE_FIELD))) {
 		Die ();
 		}
 	if (!(info.nFlags & OF_SILENT)) {
@@ -1486,6 +1486,9 @@ return 1;
 
 int CObject::CollideWeaponAndRobot (CObject* robotP, CFixVector& vHitPt)
 {
+if (robotP->cType.aiInfo.behavior == AIB_STATIC)
+	return CollideWeaponAndWall (WI_speed (info.nId, gameStates.app.nDifficultyLevel), robotP->Segment (), -1, vHitPt);
+
 	int			bDamage = 1;
 	int			bInvulBoss = 0;
 	fix			nStrength = WI_strength (info.nId, gameStates.app.nDifficultyLevel);
