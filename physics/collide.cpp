@@ -293,7 +293,7 @@ else
 	t = NULL;
 if (t) {
 	Assert (t->info.movementType == MT_PHYSICS);
-	vForce = t->mType.physInfo.velocity * -2 * t->mType.physInfo.mass;
+	vForce = t->mType.physInfo.velocity * (-2 * t->mType.physInfo.mass);
 	if (!vForce.IsZero ())
 		t->ApplyForce (vForce);
 	return 1;
@@ -950,55 +950,58 @@ fix xLastThiefHitTime;
 
 int CObject::CollideRobotAndPlayer (CObject* playerObjP, CFixVector& vHitPt)
 {
-	int	bTheftAttempt = 0;
-	short	nCollisionSeg;
+if (cType.aiInfo.behavior != AIB_STATIC) {
 
-if (info.nFlags & OF_EXPLODING)
-	return 1;
-nCollisionSeg = FindSegByPos (vHitPt, playerObjP->info.nSegment, 1, 0);
-if (nCollisionSeg != -1)
-	CreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].xImpactSize, gameData.weapons.info [0].nWallHitVClip);
-if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
-	if (ROBOTINFO (info.nId).companion)	//	Player and companion don't Collide.
+		int	bTheftAttempt = 0;
+		short	nCollisionSeg;
+
+	if (info.nFlags & OF_EXPLODING)
 		return 1;
-	if (ROBOTINFO (info.nId).kamikaze) {
-		ApplyDamageToRobot (info.xShield + 1, OBJ_IDX (playerObjP));
-#if DBG
-		if (playerObjP == gameData.objs.consoleP)
-#else
-		if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS) && (playerObjP == gameData.objs.consoleP))
-#endif
-			cockpit->AddPointsToScore (ROBOTINFO (info.nId).scoreValue);
-		}
-	if (ROBOTINFO (info.nId).thief) {
-		if (gameData.ai.localInfo [OBJ_IDX (this)].mode == AIM_THIEF_ATTACK) {
-			xLastThiefHitTime = gameData.time.xGame;
-			AttemptToStealItem (this, playerObjP->info.nId);
-			bTheftAttempt = 1;
+	nCollisionSeg = FindSegByPos (vHitPt, playerObjP->info.nSegment, 1, 0);
+	if (nCollisionSeg != -1)
+		CreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].xImpactSize, gameData.weapons.info [0].nWallHitVClip);
+	if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
+		if (ROBOTINFO (info.nId).companion)	//	Player and companion don't Collide.
+			return 1;
+		if (ROBOTINFO (info.nId).kamikaze) {
+			ApplyDamageToRobot (info.xShield + 1, OBJ_IDX (playerObjP));
+	#if DBG
+			if (playerObjP == gameData.objs.consoleP)
+	#else
+			if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS) && (playerObjP == gameData.objs.consoleP))
+	#endif
+				cockpit->AddPointsToScore (ROBOTINFO (info.nId).scoreValue);
 			}
-		else if (gameData.time.xGame - xLastThiefHitTime < I2X (2))
-			return 1;	//	ZOUNDS! BRILLIANT! Thief not Collide with CPlayerData if not stealing!
-							// NO! VERY DUMB! makes thief look very stupid if CPlayerData hits him while cloaked!-AP
-		else
-			xLastThiefHitTime = gameData.time.xGame;
+		if (ROBOTINFO (info.nId).thief) {
+			if (gameData.ai.localInfo [OBJ_IDX (this)].mode == AIM_THIEF_ATTACK) {
+				xLastThiefHitTime = gameData.time.xGame;
+				AttemptToStealItem (this, playerObjP->info.nId);
+				bTheftAttempt = 1;
+				}
+			else if (gameData.time.xGame - xLastThiefHitTime < I2X (2))
+				return 1;	//	ZOUNDS! BRILLIANT! Thief not Collide with CPlayerData if not stealing!
+								// NO! VERY DUMB! makes thief look very stupid if CPlayerData hits him while cloaked!-AP
+			else
+				xLastThiefHitTime = gameData.time.xGame;
+			}
+		CreateAwarenessEvent (playerObjP, PA_PLAYER_COLLISION);			// CObject this can attract attention to CPlayerData
+		if (USE_D1_AI) {
+			DoD1AIRobotHitAttack (this, playerObjP, &vHitPt);
+			DoD1AIRobotHit (this, WEAPON_ROBOT_COLLISION);
+			}
+		else {
+			DoAIRobotHitAttack (this, playerObjP, &vHitPt);
+			DoAIRobotHit (this, WEAPON_ROBOT_COLLISION);
+			}
 		}
-	CreateAwarenessEvent (playerObjP, PA_PLAYER_COLLISION);			// CObject this can attract attention to CPlayerData
-	if (USE_D1_AI) {
-		DoD1AIRobotHitAttack (this, playerObjP, &vHitPt);
-		DoD1AIRobotHit (this, WEAPON_ROBOT_COLLISION);
-		}
-	else {
-		DoAIRobotHitAttack (this, playerObjP, &vHitPt);
-		DoAIRobotHit (this, WEAPON_ROBOT_COLLISION);
-		}
+	else
+		MultiRobotRequestChange (this, playerObjP->info.nId);
+	// added this if to remove the bump sound if it's the thief.
+	// A "steal" sound was added and it was getting obscured by the bump. -AP 10/3/95
+	//	Changed by MK to make this sound unless the this stole.
+	if (!(bTheftAttempt || ROBOTINFO (info.nId).energyDrain))
+		audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, playerObjP->info.nSegment, 0, vHitPt);
 	}
-else
-	MultiRobotRequestChange (this, playerObjP->info.nId);
-// added this if to remove the bump sound if it's the thief.
-// A "steal" sound was added and it was getting obscured by the bump. -AP 10/3/95
-//	Changed by MK to make this sound unless the this stole.
-if (!(bTheftAttempt || ROBOTINFO (info.nId).energyDrain))
-	audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, playerObjP->info.nSegment, 0, vHitPt);
 BumpTwoObjects (this, playerObjP, 1, vHitPt);
 return 1;
 }
