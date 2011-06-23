@@ -285,9 +285,9 @@ int BumpTwoObjects (CObject* thisP, CObject* otherP, int bDamage, CFixVector& vH
 	fix			speed0, speed1, mass0, mass1, offset0, offset1;
 	CObject		*t;
 
-if (thisP->info.movementType != MT_PHYSICS)
+if ((thisP->info.movementType != MT_PHYSICS) && (thisP->cType.aiInfo.behavior != AIB_STATIC))
 	t = otherP;
-else if (otherP->info.movementType != MT_PHYSICS)
+else if ((otherP->info.movementType != MT_PHYSICS) && (otherP->cType.aiInfo.behavior != AIB_STATIC))
 	t = thisP;
 else
 	t = NULL;
@@ -303,8 +303,11 @@ vel1 = otherP->mType.physInfo.velocity;
 pos0 = thisP->info.position.vPos;
 pos1 = otherP->info.position.vPos;
 vDist = pos1 - pos0;
+#if 0
 if (CFixVector::Dot (vel0, vel1) <= 0)
-//if ((CFixVector::Dot (vel0, vDist) <= 0) && (CFixVector::Dot (vel1, vDist) >= 0))
+#else
+if ((CFixVector::Dot (vel0, vDist) <= 0) && (CFixVector::Dot (vel1, vDist) >= 0))
+#endif
 	return 0;	//objects separating already
 
 if (!CollisionModel () &&
@@ -332,7 +335,7 @@ if (!CollisionModel () &&
 	}
 
 // check if objects are penetrating and move apart
-if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL)) {
+if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL) || (thisP->cType.aiInfo.behavior == AIB_STATIC)) {
 	mass0 = thisP->mType.physInfo.mass;
 	mass1 = otherP->mType.physInfo.mass;
 
@@ -753,8 +756,8 @@ if (info.nId == EARTHSHAKER_ID)
 	ShakerRockStuff ();
 wallType = (nHitWall < 0) ? WHP_NOT_SPECIAL : segP->ProcessWallHit (nHitWall, info.xShield, nPlayer, this);
 // Wall is volatile if either tmap 1 or 2 is volatile
-if (sideP && (gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
-	 (sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_VOLATILE))) {
+if (sideP && ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
+	           (sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_VOLATILE)))) {
 	ubyte tVideoClip;
 	//we've hit a volatile CWall
 	audio.CreateSegmentSound (SOUND_VOLATILE_WALL_HIT, nHitSeg, 0, vHitPt);
@@ -769,8 +772,8 @@ if (sideP && (gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATIL
 											  nStrength / 2 + VOLATILE_WALL_DAMAGE_FORCE, cType.laserInfo.parent.nObject);
 	Die ();		//make flares die in lava
 	}
-else if (sideP && (gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
-			(sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_WATER))) {
+else if (sideP && ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
+			          (sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_WATER)))) {
 	//we've hit water
 	//	MK: 09/13/95: SplashDamage in water is 1/2 Normal intensity.
 	if (weaponInfoP->matter) {
