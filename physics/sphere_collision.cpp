@@ -540,7 +540,7 @@ if ((CollisionModel () || thisObjP->IsStatic () || otherObjP->IsStatic ()) &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
 	FindPointLineIntersection (vHit, *p0, *p1, vPos, 0);
-#if 1 //!DBG
+#if 0 //!DBG
 	dist = VmLinePointDist (*p0, *p1, OBJPOS (thisObjP)->vPos);
 	if (dist > thisObjP->info.xSize + otherObjP->info.xSize + I2X (2))
 		return 0;

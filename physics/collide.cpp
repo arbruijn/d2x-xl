@@ -266,9 +266,10 @@ if (info.nType == OBJ_PLAYER) {
 		return;
 	vRotForce *= (I2X (1) / 4);
 	}
-else if (info.nType == OBJ_MONSTERBALL) {
+else if (info.nType == OBJ_MONSTERBALL)
 	gameData.hoard.nLastHitter = (otherObjP->info.nType == OBJ_PLAYER) ? OBJ_IDX (otherObjP) : otherObjP->cType.laserInfo.parent.nObject;
-	}
+if (otherObjP->IsStatic ())
+	vForce *= I2X (2);
 mType.physInfo.velocity = vForce;
 ApplyRotForce (vRotForce);
 //TurnTowardsVector (vRotForce, I2X (1));
@@ -388,15 +389,15 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL)
 		}
 
 	vRes0 = (vForce0 * diffMass + vForce1 * (2 * mass1)) / totalMass;
-	vRes1 = (vForce1 * -diffMass + vForce0 * (2 * mass0)) / totalMass;
 	vRot0 = (vRotForce0 * diffMass + vRotForce1 * (2 * mass1)) / totalMass;
+	vRes1 = (vForce1 * -diffMass + vForce0 * (2 * mass0)) / totalMass;
 	vRot1 = (vRotForce1 * -diffMass + vRotForce0 * (2 * mass0)) / totalMass;
-
+#if 0
 	if (thisP == gameData.objs.consoleP)
 		vRes0 *= (I2X (1) / 4);
 	else if (otherP == gameData.objs.consoleP)
 		vRes1 *= (I2X (1) / 4);
-
+#endif
 	thisP->Bump (otherP, vel0 + vRes0, vRot0, bDamage);
 	otherP->Bump (thisP, vel1 + vRes1, vRot1, bDamage);
 	}
@@ -1546,7 +1547,7 @@ if (cType.laserInfo.parent.nSignature == robotP->info.nSignature)
 //	Changed, 10/04/95, put out blobs based on skill level and power of this doing damage.
 //	Also, only a this hit from a tPlayer this causes smart blobs.
 if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
-	if ((robotP->info.xShield > 0) && IsEnergyWeapon ()) {
+	if (!robotP->IsStatic () && (robotP->info.xShield > 0) && IsEnergyWeapon ()) {
 		fix xProb = (gameStates.app.nDifficultyLevel+2) * min (info.xShield, robotP->info.xShield);
 		xProb = botInfoP->energyBlobs * xProb / (NDL * 32);
 		int nBlobs = xProb >> 16;
