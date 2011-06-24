@@ -1228,7 +1228,7 @@ int ObjectCount (int nType)
 	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_OBJS (objP, i)
-	if (objP->info.nType == nType)
+	if ((objP->info.nType == nType) && !objP->IsGeometry ())
 		h++;
 return h;
 }

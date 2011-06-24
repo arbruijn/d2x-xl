@@ -200,6 +200,8 @@ if (bVerbose)
 FORALL_OBJS (objP, i) {
 	switch (objP->info.nType) {
 		case OBJ_ROBOT:
+			if (objP->IsGeometry ())
+				break;
 		case OBJ_REACTOR:
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 			break;
