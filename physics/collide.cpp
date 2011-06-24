@@ -348,12 +348,11 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL)
 	CFixVector	vDistNorm, vVelNorm, vForce0, vForce1, vRotForce0, vRotForce1, vRes0, vRes1, vRot0, vRot1;
 	fix			mag, dot, totalMass = mass0 + mass1, diffMass = mass0 - mass1;
 
-	vDist = pos1 - pos0;
-	vDistNorm = vDist;
-	CFixVector::Normalize (vDistNorm);
 	if (vel0.IsZero ())
 		vForce0.SetZero (), vRotForce0.SetZero ();
 	else {
+		vDistNorm = vHitPt - pos0;
+		CFixVector::Normalize (vDistNorm);
 		vVelNorm = vel0;
 		mag = CFixVector::Normalize (vVelNorm);
 		dot = CFixVector::Dot (vVelNorm, vDistNorm);	// angle between objects movement vector and vector to other object
@@ -371,7 +370,8 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL)
 	if (vel1.IsZero ())
 		vForce1.SetZero (), vRotForce1.SetZero ();
 	else {
-		vDistNorm.Neg ();
+		vDistNorm = vHitPt - pos1;
+		CFixVector::Normalize (vDistNorm);
 		vVelNorm = vel1;
 		mag = CFixVector::Normalize (vVelNorm);
 		dot = CFixVector::Dot (vVelNorm, vDistNorm);
@@ -391,9 +391,9 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL)
 	vRes1 = (vForce1 * -diffMass + vForce0 * (2 * mass0)) / totalMass;
 	vRot1 = (vRotForce1 * -diffMass + vRotForce0 * (2 * mass0)) / totalMass;
 #if 0
-	if (thisP == gameData.objs.consoleP)
+	if (thisP->info.nType == OBJ_PLAYER)
 		vRes0 *= (I2X (1) / 4);
-	else if (otherP == gameData.objs.consoleP)
+	else if (otherP->info.nType == OBJ_PLAYER)
 		vRes1 *= (I2X (1) / 4);
 #endif
 	thisP->Bump (otherP, vel0 + vRes0, vRot0, bDamage);
