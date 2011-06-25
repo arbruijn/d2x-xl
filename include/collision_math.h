@@ -167,7 +167,7 @@ int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short n
 
 //	-----------------------------------------------------------------------------
 
-static inline fix RegisterHit (CFixVector *vBestHit, CFixVector *vCurHit, CFixVector *vRef, fix dMin)
+static inline fix RegisterHit (CFixVector *vBestHit, CFixVector *vCurHit, CFixVector *vRef, fix& dMin)
 {
    fix d = CFixVector::Dist (*vRef, *vCurHit);
 
@@ -180,7 +180,7 @@ return dMin;
 
 //	-----------------------------------------------------------------------------
 
-static inline fix RegisterHit (CFixVector *vBestHit, CFixVector *vBestNormal, CFixVector *vCurHit, CFixVector* vCurNormal, CFixVector *vRef, fix dMin)
+static inline fix RegisterHit (CFixVector *vBestHit, CFixVector *vBestNormal, CFixVector *vCurHit, CFixVector* vCurNormal, CFixVector *vRef, fix& dMin)
 {
    fix d = CFixVector::Dist (*vRef, *vCurHit);
 

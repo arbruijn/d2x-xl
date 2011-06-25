@@ -888,8 +888,8 @@ if (endMask) { //on the back of at least one face
 					d = CFixVector::Dist (curHit.vPoint, *hitQuery.p0);
 					if (d < dMin) {
 						dMin = d;
-						bestHit.nType = HIT_WALL;
 						bestHit = curHit;
+						bestHit.nType = HIT_WALL;
 						bestHit.vNormal = gameData.collisions.hitResult.vNormal = segP->m_sides [nSide].m_normals [iFace];
 						gameData.collisions.hitResult.nNormals = 1;
 						if (!segP->Masks (curHit.vPoint, hitQuery.radP1).m_center)
