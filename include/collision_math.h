@@ -50,7 +50,10 @@ class CHitData {
 		CFixVector	vNormal;
 
 	public:
-		CHitData () { memset (this, 0xff, sizeof (*this)); }
+		CHitData () { 
+			memset (this, 0xff, sizeof (*this)); 
+			nType = 0;
+			}
 			
 	};
 

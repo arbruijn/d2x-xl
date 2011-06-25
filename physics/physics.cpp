@@ -506,8 +506,8 @@ if (Index () == nDbgObj) {
 //if uses thrust, cannot have zero xDrag
 //Assert (!(mType.physInfo.flags & PF_USES_THRUST) || mType.physInfo.drag);
 //do thrust & xDrag
-if (mType.physInfo.drag) {
-	CFixVector accel, &vel = mType.physInfo.velocity;
+if (mType.physInfo.drag && !mType.physInfo.velocity.IsZero ()) {
+	CFixVector	accel;
 	int			nTries = xSimTime / FT;
 	fix			xDrag = mType.physInfo.drag;
 	fix			r = xSimTime % FT;
@@ -523,36 +523,36 @@ if (mType.physInfo.drag) {
 		accel = mType.physInfo.thrust * FixDiv (I2X (1), mType.physInfo.mass);
 		a = !accel.IsZero ();
 		if (bDoSpeedBoost && !(a || gameStates.input.bControlsSkipFrame))
-			vel = sbd.vVel;
+			mType.physInfo.velocity = sbd.vVel;
 		else {
 			if (a) {
 				while (nTries--) {
-					vel += accel;
-					vel *= d;
+					mType.physInfo.velocity += accel;
+					mType.physInfo.velocity *= d;
 					}
 				}
 			else {
 				while (nTries--) {
-					vel *= d;
+					mType.physInfo.velocity *= d;
 					}
 			}
 			//do linear scale on remaining bit of time
-			vel += accel * k;
+			mType.physInfo.velocity += accel * k;
 			if (xDrag)
-				vel *= (I2X (1) - FixMul (k, xDrag));
+				mType.physInfo.velocity *= (I2X (1) - FixMul (k, xDrag));
 			if (bDoSpeedBoost) {
-				if (vel.v.coord.x < sbd.vMinVel.v.coord.x)
-					vel.v.coord.x = sbd.vMinVel.v.coord.x;
-				else if (vel.v.coord.x > sbd.vMaxVel.v.coord.x)
-					vel.v.coord.x = sbd.vMaxVel.v.coord.x;
-				if (vel.v.coord.y < sbd.vMinVel.v.coord.y)
-					vel.v.coord.y = sbd.vMinVel.v.coord.y;
-				else if (vel.v.coord.y > sbd.vMaxVel.v.coord.y)
-					vel.v.coord.y = sbd.vMaxVel.v.coord.y;
-				if (vel.v.coord.z < sbd.vMinVel.v.coord.z)
-					vel.v.coord.z = sbd.vMinVel.v.coord.z;
-				else if (vel.v.coord.z > sbd.vMaxVel.v.coord.z)
-					vel.v.coord.z = sbd.vMaxVel.v.coord.z;
+				if (mType.physInfo.velocity.v.coord.x < sbd.vMinVel.v.coord.x)
+					mType.physInfo.velocity.v.coord.x = sbd.vMinVel.v.coord.x;
+				else if (mType.physInfo.velocity.v.coord.x > sbd.vMaxVel.v.coord.x)
+					mType.physInfo.velocity.v.coord.x = sbd.vMaxVel.v.coord.x;
+				if (mType.physInfo.velocity.v.coord.y < sbd.vMinVel.v.coord.y)
+					mType.physInfo.velocity.v.coord.y = sbd.vMinVel.v.coord.y;
+				else if (mType.physInfo.velocity.v.coord.y > sbd.vMaxVel.v.coord.y)
+					mType.physInfo.velocity.v.coord.y = sbd.vMaxVel.v.coord.y;
+				if (mType.physInfo.velocity.v.coord.z < sbd.vMinVel.v.coord.z)
+					mType.physInfo.velocity.v.coord.z = sbd.vMinVel.v.coord.z;
+				else if (mType.physInfo.velocity.v.coord.z > sbd.vMaxVel.v.coord.z)
+					mType.physInfo.velocity.v.coord.z = sbd.vMaxVel.v.coord.z;
 				}
 			}
 		}
