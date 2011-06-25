@@ -853,14 +853,14 @@ retryMove:
 		fix size1 = info.xSize;
 		//	Calculate the hit point between the two objects.
 		Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
-		CFixVector vHitNormal, vHitPos;
-		vHitPos = *ppos0 + vHitPos * FixDiv (size0, size0 + size1);
+		CFixVector vHitPos;
 		CObject* hitObjP = OBJECTS + hitResult.hit.nObject;
 		//if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + hitResult.hit.nObject)))
 		CFixVector vOldVel = mType.physInfo.velocity;
 		CollideTwoObjects (this, hitObjP, vHitPos);
 #if 1
 		if (CollisionModel () || hitObjP->IsStatic ()) {
+			vHitPos = hitResult.hit.vPoint;
 			if (vOldVel.IsZero ()) {
 				vFrame = OBJPOS (hitObjP)->vPos - OBJPOS (this)->vPos;
 				CFixVector::Normalize (vFrame);

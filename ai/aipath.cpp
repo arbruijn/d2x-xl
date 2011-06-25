@@ -215,16 +215,16 @@ for (i = 1, --j; i < j; i++) {
 	vGoalPos = ptSegs [i].point + e * (xSegSize/4);
 	count = 3;
 	while (count) {
-		CHitQuery fq (0, &ptSegs [i].point, &vGoalPos, ptSegs [i].nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
-		nHitType = FindHitpoint (&fq, &hitResult);
+		CHitQuery hitQuery (0, &ptSegs [i].point, &vGoalPos, ptSegs [i].nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
+		nHitType = FindHitpoint (hitQuery, hitResult);
 		if (nHitType == HIT_NONE)
 			count = 0;
 		else {
 			if ((count == 3) && (nHitType == HIT_BAD_P0))
 				return;
-			vGoalPos.v.coord.x = ((*fq.p0).v.coord.x + hitResult.hit.vPoint.v.coord.x)/2;
-			vGoalPos.v.coord.y = ((*fq.p0).v.coord.y + hitResult.hit.vPoint.v.coord.y)/2;
-			vGoalPos.v.coord.z = ((*fq.p0).v.coord.z + hitResult.hit.vPoint.v.coord.z)/2;
+			vGoalPos.v.coord.x = ((*hitQuery.p0).v.coord.x + hitResult.hit.vPoint.v.coord.x)/2;
+			vGoalPos.v.coord.y = ((*hitQuery.p0).v.coord.y + hitResult.hit.vPoint.v.coord.y)/2;
+			vGoalPos.v.coord.z = ((*hitQuery.p0).v.coord.z + hitResult.hit.vPoint.v.coord.z)/2;
 			if (!--count)	//	Couldn't move towards outside, that's ok, sometimes things can't be moved.
 				vGoalPos = ptSegs [i].point;
 			}
@@ -329,8 +329,8 @@ while (nCurSeg != nEndSeg) {
 			continue;
 		if (bAvoidTarget && ((nCurSeg == nAvoidSeg) || (nDestSeg == nAvoidSeg))) {
 			vCenter = segP->SideCenter (hSide);
-			CHitQuery fq (0, &objP->Position (), &vCenter, objP->info.nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
-			hitType = FindHitpoint (&fq, &hitResult);
+			CHitQuery hitQuery (0, &objP->Position (), &vCenter, objP->info.nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
+			hitType = FindHitpoint (hitQuery, hitResult);
 			if (hitType != HIT_NONE)
 				continue;
 			}
@@ -1062,8 +1062,8 @@ while (xDistToGoal < thresholdDistance) {
 			//--Int3_if (( (nOppositeEndIndex >= 0) && (nOppositeEndIndex < aiP->nPathLength));
 			vOppositeEndPoint = &gameData.ai.routeSegs [aiP->nHideIndex + nOppositeEndIndex].point;
 
-			CHitQuery fq (0, &objP->Position (), vOppositeEndPoint, objP->info.nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
-			fate = FindHitpoint (&fq, &hitResult);
+			CHitQuery hitQuery (0, &objP->Position (), vOppositeEndPoint, objP->info.nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
+			fate = FindHitpoint (hitQuery, hitResult);
 			if (fate != HIT_WALL) {
 				//	We can be circular! Do it!
 				//	Path direction is unchanged.

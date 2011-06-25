@@ -45,15 +45,15 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 int AICanSeeTarget (CObject *objP, CFixVector *vPos, fix fieldOfView, CFixVector *vVecToTarget)
 {
 	fix			dot;
-	CHitQuery	fq (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER | FQ_VISIBILITY,
-						 vPos, &gameData.ai.target.vBelievedPos, -1, objP->Index (), I2X (1) / 4, I2X (1) / 4);
+	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER | FQ_VISIBILITY,
+								 vPos, &gameData.ai.target.vBelievedPos, -1, objP->Index (), I2X (1) / 4, I2X (1) / 4);
 
 //	Assume that robot's gun tip is in same CSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 if ((*vPos) != objP->info.position.vPos) {
 	short nSegment = FindSegByPos (*vPos, objP->info.nSegment, 1, 0);
 	if (nSegment == -1) {
-		fq.nSegment = objP->info.nSegment;
+		hitQuery.nSegment = objP->info.nSegment;
 		*vPos = objP->info.position.vPos;
 #if TRACE
 		console.printf (1, "Object %i, gun is outside mine, moving towards center.\n", objP->Index ());
@@ -63,13 +63,13 @@ if ((*vPos) != objP->info.position.vPos) {
 	else {
 		if (nSegment != objP->info.nSegment)
 			objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
-		fq.nSegment = nSegment;
+		hitQuery.nSegment = nSegment;
 		}
 	}
 else
-	fq.nSegment	= objP->info.nSegment;
+	hitQuery.nSegment	= objP->info.nSegment;
 
-gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitResult);
+gameData.ai.nHitType = FindHitpoint (hitQuery, gameData.ai.hitResult);
 gameData.ai.vHitPos = gameData.ai.hitResult.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitResult.hit.nSegment;
 if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitResult.hit.nObject != TARGETOBJ->Index ()))
@@ -104,20 +104,20 @@ if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
 	return 1;
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 
-CHitQuery fq (FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_VISIBILITY,
+CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_VISIBILITY,
 				  vGun, vTarget, -1, objP->Index (), I2X (1), I2X (1), ignoreObjs);
 
 if (((*vGun).v.coord.x == objP->info.position.vPos.v.coord.x) &&
 	 ((*vGun).v.coord.y == objP->info.position.vPos.v.coord.y) &&
 	 ((*vGun).v.coord.z == objP->info.position.vPos.v.coord.z))
-	fq.nSegment	= objP->info.nSegment;
+	hitQuery.nSegment	= objP->info.nSegment;
 else {
 	short nSegment = FindSegByPos (*vGun, objP->info.nSegment, 1, 0);
 	if (nSegment == -1)
 		return -1;
 	if (nSegment != objP->info.nSegment)
 		objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
-	fq.nSegment = nSegment;
+	hitQuery.nSegment = nSegment;
 	}
 h = CFixVector::Dist (*vGun, objP->info.position.vPos);
 h = CFixVector::Dist (*vGun, *vTarget);
@@ -126,10 +126,10 @@ nSize = objP->info.xSize;
 objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested
 objP->info.xSize = I2X (2);						//chose some meaningful small size to simulate a weapon
 
-gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitResult);
+gameData.ai.nHitType = FindHitpoint (hitQuery, gameData.ai.hitResult);
 #if DBG
 if (gameData.ai.nHitType == 0)
-	FindHitpoint (&fq, &gameData.ai.hitResult);
+	FindHitpoint (hitQuery, gameData.ai.hitResult);
 #endif
 gameData.ai.vHitPos = gameData.ai.hitResult.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitResult.hit.nSegment;

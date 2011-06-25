@@ -288,15 +288,15 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	perturbed_fvec = bSpectate ? gameStates.app.playerPos.mOrient.m.dir.f : parentObjP->info.position.mOrient.m.dir.f
 	               + vPerturb * (I2X (1) / 16);
 	vTargetPos = *vMuzzle + perturbed_fvec * MAX_OMEGA_DIST;
-	CHitQuery	fq (FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS, vMuzzle, &vTargetPos, nFiringSeg, OBJ_IDX (parentObjP));
-	CHitResult		hitResult;
-	int fate = FindHitpoint (&fq, &hitResult);
+	CHitQuery	hitQuery (FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS, vMuzzle, &vTargetPos, nFiringSeg, OBJ_IDX (parentObjP));
+	CHitResult	hitResult;
+	int fate = FindHitpoint (hitQuery, hitResult);
 	if (fate != HIT_NONE) {
 		if (hitResult.hit.nSegment != -1)		//	How can this be?  We went from inside the mine to outside without hitting anything?
 			vTargetPos = hitResult.hit.vPoint;
 		else {
 #if DBG
-			fate = FindHitpoint (&fq, &hitResult);
+			fate = FindHitpoint (hitQuery, hitResult);
 #endif
 			return;
 			}
