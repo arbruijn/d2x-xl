@@ -707,17 +707,11 @@ restart:
 #endif
 		fix d = CheckVectorObjectCollision (curHit, hitQuery.p0, hitQuery.p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
 		if (d && (d < dMin)) {
-#if DBG
-			CheckVectorObjectCollision (curHit, hitQuery.p0, hitQuery.p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
-#endif
-			Assert (gameData.collisions.hitResult.nObject != -1);
 			dMin = d;
 			hitData = curHit;
 			hitData.nType = HIT_OBJECT;
 			hitData.nObject = gameData.collisions.hitResult.nObject = nObject;
-#if DBG
-			CheckVectorObjectCollision (curHit, hitQuery.p0, hitQuery.p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
-#endif
+			Assert (gameData.collisions.hitResult.nObject != -1);
 			if (hitQuery.flags & FQ_ANY_OBJECT)
 				return dMin;
 			}
