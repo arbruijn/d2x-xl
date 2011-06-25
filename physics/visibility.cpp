@@ -150,7 +150,7 @@ int CanSeeObject (int nObject, int bCheckObjs)
 	CHitResult		hitResult;
 
 int nHitType = FindHitpoint (hitQuery, hitResult);
-return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.hit.nObject == nObject) : (nHitType != HIT_WALL);
+return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -211,7 +211,7 @@ CHitQuery fq (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TRANSWAL
 int nHitType = FindHitpoint (&fq, &hitResult);
 if (nHitType != HIT_OBJECT)
 	return 0;
-objP = OBJECTS + hitResult.hit.nObject;
+objP = OBJECTS + hitResult.nObject;
 nType = objP->Type ();
 if (nType == OBJ_ROBOT) 
 	return int (!objP->IsGuideBot ());

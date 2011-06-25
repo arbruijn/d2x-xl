@@ -518,8 +518,8 @@ if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndL
 		CHitResult	hitResult;
 
 		FindHitpoint (hitQuery, hitResult);
-		if ((hitResult.hit.nType == HIT_WALL) && (hitResult.hit.nSegment != -1))
-			CreateExplosion ((short) hitResult.hit.nSegment, hitResult.hit.vPoint, I2X (3) + RandShort () * 6, VCLIP_SMALL_EXPLOSION);
+		if ((hitResult.nType == HIT_WALL) && (hitResult.nSegment != -1))
+			CreateExplosion ((short) hitResult.nSegment, hitResult.vPoint, I2X (3) + RandShort () * 6, VCLIP_SMALL_EXPLOSION);
 		explosion_wait2 = (0xa00 + RandShort () / 8) / 2;
 		}
 

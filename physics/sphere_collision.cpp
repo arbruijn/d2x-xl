@@ -579,6 +579,7 @@ else {
 	if (!(dist = CheckVectorSphereCollision (vHit, p0, p1, &vPos, size + rad)))
 		return 0;
 	nModel = 0;
+	vNormal.SetZero ();
 	}
 hitData.vPoint = vHit;
 hitData.vNormal = vNormal;
@@ -876,11 +877,11 @@ if (endMask) { //on the back of at least one face
 							*nSegments += CopySegList (segList, *nSegments, subSegList, nSubSegments, hitQuery.flags);
 							}
 						else {
-							(CHitData) gameData.collisions.hitResult = saveHitData;    
+							gameData.collisions.hitResult = saveHitData;    
  							}
 						}
 					else {
-						(CHitData) gameData.collisions.hitResult = saveHitData;    
+						gameData.collisions.hitResult = saveHitData;    
 						if (subHit.nSegment != -1)
 							nHitNoneSegment = subHit.nSegment;
 						nHitNoneSegs = CopySegList (hitNoneSegList, 0, subSegList, nSubSegments, hitQuery.flags);
@@ -959,14 +960,14 @@ Assert((hitQuery.nSegment <= gameData.segs.nLastSegment) && (hitQuery.nSegment >
 if ((hitQuery.nSegment > gameData.segs.nLastSegment) || (hitQuery.nSegment < 0)) {
 	hitQuery.nSegment = FindSegByPos (*hitQuery.p0, -1, 0, 0);
 	if (hitQuery.nSegment < 0) {
-		hitResult.hit.nType = HIT_BAD_P0;
-		hitResult.hit.vPoint = *hitQuery.p0;
-		hitResult.hit.nSegment = hitQuery.nSegment;
-		hitResult.hit.nSide = 0;
-		hitResult.hit.nObject = 0;
-		hitResult.hit.nSideSegment = -1;
+		hitResult.nType = HIT_BAD_P0;
+		hitResult.vPoint = *hitQuery.p0;
+		hitResult.nSegment = hitQuery.nSegment;
+		hitResult.nSide = 0;
+		hitResult.nObject = 0;
+		hitResult.nSideSegment = -1;
 		hitResult.nSegments = 0;
-		return hitResult.hit.nType;
+		return hitResult.nType;
 		}
 	}
 
@@ -980,14 +981,14 @@ gameData.collisions.hitResult.nObject = -1;
 // gameData.objs.viewerP is not in CSegment as claimed, so say there is no hit.
 CSegMasks masks = SEGMENTS [hitQuery.nSegment].Masks (*hitQuery.p0, 0);
 if (masks.m_center) {
-	hitResult.hit.nType = HIT_BAD_P0;
-	hitResult.hit.vPoint = *hitQuery.p0;
-	hitResult.hit.nSegment = hitQuery.nSegment;
-	hitResult.hit.nSide = 0;
-	hitResult.hit.nObject = 0;
-	hitResult.hit.nSideSegment = -1;
+	hitResult.nType = HIT_BAD_P0;
+	hitResult.vPoint = *hitQuery.p0;
+	hitResult.nSegment = hitQuery.nSegment;
+	hitResult.nSide = 0;
+	hitResult.nObject = 0;
+	hitResult.nSideSegment = -1;
 	hitResult.nSegments = 0;
-	return hitResult.hit.nType;
+	return hitResult.nType;
 	}
 gameData.collisions.segsVisited [0] = hitQuery.nSegment;
 gameData.collisions.nSegsVisited = 1;
@@ -1033,7 +1034,7 @@ if ((curHit.nSegment != -1) && (hitQuery.flags & FQ_GET_SEGLIST))
 			break;
 		}
 hitResult.hit = gameData.collisions.hitResult;
-(CHitData) hitResult.hit = curHit;
+hitResult.hit = curHit;
 Assert ((curHit.nType != HIT_OBJECT) || (gameData.collisions.hitResult.nObject != -1));
 return curHit.nType;
 }

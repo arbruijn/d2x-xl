@@ -1256,7 +1256,7 @@ if (nObject < 0)
 	CHitResult hitResult;
 
 int nHitType = FindHitpoint (hitQuery, hitResult);
-return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.hit.nObject == nObject) : (nHitType != HIT_WALL);
+return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
 //	-----------------------------------------------------------------------------

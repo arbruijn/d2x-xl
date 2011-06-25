@@ -91,10 +91,10 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 	if (vPlayerCameraOffs.IsZero ())
 		vPlayerCameraOffs.v.coord.x += I2X (1)/16;
 
-	hitResult.hit.nType = HIT_WALL;
+	hitResult.nType = HIT_WALL;
 	xFarScale = I2X (1);
 
-	while ((hitResult.hit.nType != HIT_NONE) && (count++ < 6)) {
+	while ((hitResult.nType != HIT_NONE) && (count++ < 6)) {
 		CFixVector	closer_p1;
 		CFixVector::Normalize (vPlayerCameraOffs);
 		vPlayerCameraOffs *= xCameraToPlayerDistGoal;
@@ -106,7 +106,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 		CHitQuery hitQuery (0, &objP->info.position.vPos, &local_p1, objP->info.nSegment, objP->Index ());
 
 		FindHitpoint (hitQuery, hitResult);
-		if (hitResult.hit.nType == HIT_NONE)
+		if (hitResult.nType == HIT_NONE)
 			*vCameraPos = closer_p1;
 		else {
 			vPlayerCameraOffs = CFixVector::Random();

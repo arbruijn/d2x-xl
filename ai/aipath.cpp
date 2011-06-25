@@ -222,9 +222,9 @@ for (i = 1, --j; i < j; i++) {
 		else {
 			if ((count == 3) && (nHitType == HIT_BAD_P0))
 				return;
-			vGoalPos.v.coord.x = ((*hitQuery.p0).v.coord.x + hitResult.hit.vPoint.v.coord.x)/2;
-			vGoalPos.v.coord.y = ((*hitQuery.p0).v.coord.y + hitResult.hit.vPoint.v.coord.y)/2;
-			vGoalPos.v.coord.z = ((*hitQuery.p0).v.coord.z + hitResult.hit.vPoint.v.coord.z)/2;
+			vGoalPos.v.coord.x = ((*hitQuery.p0).v.coord.x + hitResult.vPoint.v.coord.x)/2;
+			vGoalPos.v.coord.y = ((*hitQuery.p0).v.coord.y + hitResult.vPoint.v.coord.y)/2;
+			vGoalPos.v.coord.z = ((*hitQuery.p0).v.coord.z + hitResult.vPoint.v.coord.z)/2;
 			if (!--count)	//	Couldn't move towards outside, that's ok, sometimes things can't be moved.
 				vGoalPos = ptSegs [i].point;
 			}

@@ -292,8 +292,8 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	CHitResult	hitResult;
 	int fate = FindHitpoint (hitQuery, hitResult);
 	if (fate != HIT_NONE) {
-		if (hitResult.hit.nSegment != -1)		//	How can this be?  We went from inside the mine to outside without hitting anything?
-			vTargetPos = hitResult.hit.vPoint;
+		if (hitResult.nSegment != -1)		//	How can this be?  We went from inside the mine to outside without hitting anything?
+			vTargetPos = hitResult.vPoint;
 		else {
 #if DBG
 			fate = FindHitpoint (hitQuery, hitResult);

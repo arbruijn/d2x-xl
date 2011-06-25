@@ -50,10 +50,12 @@ class CHitData {
 		CFixVector	vNormal;
 
 	public:
-		CHitData () { 
-			memset (this, 0xff, sizeof (*this)); 
-			nType = 0;
+		CHitData () : nType (0), nSegment (-1), nObject (-1) { 
+			vPoint.SetZero (); 
+			vNormal.SetZero ();
 			}
+
+	inline CHitData& operator= (CHitData& other) { memcpy (this, &other, sizeof (CHitData)); }
 			
 	};
 
@@ -67,18 +69,17 @@ class CHitInfo : public CHitData {
 		int			nNestCount;
 
 	public:
-		CHitInfo () { memset (this, 0xff, sizeof (*this)); }
+		CHitInfo () : nAltSegment (-1), nSide (0), nFace (0), nSideSegment (-1), nNormals (0), nNestCount (0) {}
 	};
 
 //this data structure gets filled in by FindHitpoint()
-class CHitResult {
+class CHitResult : public CHitInfo {
 	public:
-		CHitInfo	hit;
 		short 	nSegments;					//how many segs we went through
 		short 	segList [MAX_FVI_SEGS];	//list of segs vector went through
 
 	public:
-		CHitResult () { nSegments = 0; }
+		CHitResult () : nSegments (0) {}
 	};
 
 //flags for fvi query

@@ -611,17 +611,17 @@ for (i = 4; i >= -4; i--) {
 #if 0
 		int canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, 0);
 		int nHitType = FindHitpoint (&fq, &hitResult);
-		if (canSee != (!nHitType || ((nHitType == HIT_WALL) && (hitResult.hit.nSegment == nDestSeg)))) {
+		if (canSee != (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg)))) {
 			canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, 0);
 			nHitType = FindHitpoint (&fq, &hitResult);
 			}
-		if (!nHitType || ((nHitType == HIT_WALL) && (hitResult.hit.nSegment == nDestSeg))) {
+		if (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg))) {
 #else
 #	if FAST_POINTVIS
 		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, 0)) {
 #	else
 		int nHitType = FindHitpoint (&fq, &hitResult);
-		if (!nHitType || ((nHitType == HIT_WALL) && (hitResult.hit.nSegment == nDestSeg))) {
+		if (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg))) {
 #	endif
 #endif
 			i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);

@@ -332,7 +332,7 @@ CHitQuery			hitQuery (FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS, &posP->vPos, &vLaserPo
 CHitResult				hitResult;
 
 nFate = FindHitpoint (hitQuery, hitResult);
-nLaserSeg = hitResult.hit.nSegment;
+nLaserSeg = hitResult.nSegment;
 if (nLaserSeg == -1) {	//some sort of annoying error
 	return -1;
 	}

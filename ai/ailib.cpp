@@ -70,9 +70,9 @@ else
 	hitQuery.nSegment	= objP->info.nSegment;
 
 gameData.ai.nHitType = FindHitpoint (hitQuery, gameData.ai.hitResult);
-gameData.ai.vHitPos = gameData.ai.hitResult.hit.vPoint;
-gameData.ai.nHitSeg = gameData.ai.hitResult.hit.nSegment;
-if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitResult.hit.nObject != TARGETOBJ->Index ()))
+gameData.ai.vHitPos = gameData.ai.hitResult.vPoint;
+gameData.ai.nHitSeg = gameData.ai.hitResult.nSegment;
+if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitResult.nObject != TARGETOBJ->Index ()))
 	return 0;
 dot = CFixVector::Dot (*vVecToTarget, objP->info.position.mOrient.m.dir.f);
 if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9))
@@ -131,8 +131,8 @@ gameData.ai.nHitType = FindHitpoint (hitQuery, gameData.ai.hitResult);
 if (gameData.ai.nHitType == 0)
 	FindHitpoint (hitQuery, gameData.ai.hitResult);
 #endif
-gameData.ai.vHitPos = gameData.ai.hitResult.hit.vPoint;
-gameData.ai.nHitSeg = gameData.ai.hitResult.hit.nSegment;
+gameData.ai.vHitPos = gameData.ai.hitResult.vPoint;
+gameData.ai.nHitSeg = gameData.ai.hitResult.nSegment;
 objP->rType.polyObjInfo.nModel = nModel;
 objP->info.xSize = nSize;
 return (gameData.ai.nHitType == HIT_NONE);

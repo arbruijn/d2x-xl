@@ -420,11 +420,11 @@ int CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, short 
 
 CHitQuery hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS, &parentObjP->info.position.vPos, vPosition, parentObjP->info.nSegment, OBJ_IDX (parentObjP));
 fate = FindHitpoint (hitQuery, hitResult);
-if ((fate != HIT_NONE)  || (hitResult.hit.nSegment == -1))
+if ((fate != HIT_NONE)  || (hitResult.nSegment == -1))
 	return -1;
 
 #if DBG
-if (!hitResult.hit.nSegment) {
+if (!hitResult.nSegment) {
 	hitQuery.p0					= &parentObjP->info.position.vPos;
 	hitQuery.nSegment			= parentObjP->info.nSegment;
 	hitQuery.p1					= vPosition;
@@ -438,7 +438,7 @@ if (!hitResult.hit.nSegment) {
 	}
 #endif
 
-return CreateNewWeapon (vDirection, &hitResult.hit.vPoint, (short) hitResult.hit.nSegment, parent, nWeaponType, bMakeSound);
+return CreateNewWeapon (vDirection, &hitResult.vPoint, (short) hitResult.nSegment, parent, nWeaponType, bMakeSound);
 }
 
 //	-------------------------------------------------------------------------------------------

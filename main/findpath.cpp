@@ -447,7 +447,7 @@ for (int i = 0, j; i < h; i = j) {
 #else
 		fq.p1 = &SEGMENTS [nDestSeg].Center ();
 		int nHitType = FindHitpoint (&fq, &hitResult);
-		if (nHitType && ((nHitType != HIT_WALL) || (hitResult.hit.nSegment != nDestSeg)))
+		if (nHitType && ((nHitType != HIT_WALL) || (hitResult.nSegment != nDestSeg)))
 			break;
 		p1 = fq.p1;
 #endif
