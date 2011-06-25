@@ -278,7 +278,7 @@ ApplyRotForce (vRotForce);
 //to each robotP.  The flags tells whether the objects should take damage from
 //the collision.
 
-int BumpTwoObjects (CObject* thisP, CObject* otherP, int bDamage, CFixVector& vHitPt)
+int BumpTwoObjects (CObject* thisP, CObject* otherP, int bDamage, CFixVector& vHitPt, CFixVector* vNormal = NULL)
 {
 	CFixVector	vDist, vForce, pos0, pos1, vel0, vel1;
 	fix			speed0, speed1, mass0, mass1, offset0, offset1;
@@ -351,8 +351,12 @@ if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL
 	if (vel0.IsZero ())
 		vForce0.SetZero (), vRotForce0.SetZero ();
 	else {
-		vDistNorm = vHitPt - pos0;
-		CFixVector::Normalize (vDistNorm);
+		if (thisP->IsStatic ())
+			vDistNorm = *vNormal;
+		else {
+			vDistNorm = vDist;
+			CFixVector::Normalize (vDistNorm);
+			}
 		vVelNorm = vel0;
 		mag = CFixVector::Normalize (vVelNorm);
 		dot = CFixVector::Dot (vVelNorm, vDistNorm);	// angle between objects movement vector and vector to other object
@@ -370,7 +374,10 @@ if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL
 	if (vel1.IsZero ())
 		vForce1.SetZero (), vRotForce1.SetZero ();
 	else {
-		vDistNorm = vHitPt - pos1;
+		if (thisP->IsStatic ())
+			vDistNorm = *vNormal;
+		else
+			vDistNorm.Neg ();
 		CFixVector::Normalize (vDistNorm);
 		vVelNorm = vel1;
 		mag = CFixVector::Normalize (vVelNorm);
@@ -916,7 +923,7 @@ return 1;
 
 //	-------------------------------------------------------------------------------------------------------------------
 
-int CObject::CollideRobotAndRobot (CObject* other, CFixVector& vHitPt)
+int CObject::CollideRobotAndRobot (CObject* other, CFixVector& vHitPt, CFixVector* vNormal)
 {
 //		robot1-OBJECTS, X2I (robot1->info.position.vPos.x), X2I (robot1->info.position.vPos.y), X2I (robot1->info.position.vPos.z),
 //		robot2-OBJECTS, X2I (robot2->info.position.vPos.x), X2I (robot2->info.position.vPos.y), X2I (robot2->info.position.vPos.z),
@@ -928,7 +935,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollideRobotAndReactor (CObject* reactorP, CFixVector& vHitPt)
+int CObject::CollideRobotAndReactor (CObject* reactorP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (info.nType == OBJ_ROBOT) {
 	CFixVector vHit = reactorP->info.position.vPos - info.position.vPos;
@@ -950,7 +957,7 @@ return 1;
 
 fix xLastThiefHitTime;
 
-int CObject::CollideRobotAndPlayer (CObject* playerObjP, CFixVector& vHitPt)
+int CObject::CollideRobotAndPlayer (CObject* playerObjP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (!IsStatic ()) {
 		int	bTheftAttempt = 0;
@@ -1003,7 +1010,7 @@ if (!IsStatic ()) {
 	if (!(bTheftAttempt || ROBOTINFO (info.nId).energyDrain))
 		audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, playerObjP->info.nSegment, 0, vHitPt);
 	}
-BumpTwoObjects (this, playerObjP, 1, vHitPt);
+BumpTwoObjects (this, playerObjP, 1, vHitPt, vNormal);
 return 1;
 }
 
@@ -1086,7 +1093,7 @@ if ((info.xShield < 0) && !(info.nFlags & (OF_EXPLODING | OF_DESTROYED))) {
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollidePlayerAndReactor (CObject* reactorP, CFixVector& vHitPt)
+int CObject::CollidePlayerAndReactor (CObject* reactorP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 	int	i;
 
@@ -1102,7 +1109,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollidePlayerAndMarker (CObject* markerP, CFixVector& vHitPt)
+int CObject::CollidePlayerAndMarker (CObject* markerP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 #if TRACE
 console.printf (CON_DBG, "Collided with markerP %d! \n", markerP->info.nId);
@@ -1151,7 +1158,7 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollideWeaponAndReactor (CObject* reactorP, CFixVector& vHitPt)
+int CObject::CollideWeaponAndReactor (CObject* reactorP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 	int	i;
 
@@ -1181,7 +1188,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollideWeaponAndClutter (CObject* clutterP, CFixVector& vHitPt)
+int CObject::CollideWeaponAndClutter (CObject* clutterP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 ubyte exp_vclip = VCLIP_SMALL_EXPLOSION;
 if (clutterP->info.xShield >= 0)
@@ -1492,7 +1499,7 @@ return 1;
 
 //	------------------------------------------------------------------------------------------------------
 
-int CObject::CollideWeaponAndRobot (CObject* robotP, CFixVector& vHitPt)
+int CObject::CollideWeaponAndRobot (CObject* robotP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (robotP->IsGeometry ())
 	return CollideWeaponAndWall (WI_speed (info.nId, gameStates.app.nDifficultyLevel), robotP->Segment (), -1, vHitPt);
@@ -1629,7 +1636,7 @@ return 1;
 }
 //	-----------------------------------------------------------------------------
 
-int CObject::CollidePlayerAndHostage (CObject* hostageP, CFixVector& vHitPt)
+int CObject::CollidePlayerAndHostage (CObject* hostageP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (this == gameData.objs.consoleP) {
 	DetectEscortGoalAccomplished (OBJ_IDX (hostageP));
@@ -1682,7 +1689,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollidePlayerAndPlayer (CObject* otherP, CFixVector& vHitPt)
+int CObject::CollidePlayerAndPlayer (CObject* otherP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (gameStates.app.bD2XLevel &&
 	 (SEGMENTS [info.nSegment].HasNoDamageProp ()))
@@ -1781,7 +1788,7 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlaye
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollideWeaponAndPlayer (CObject* playerObjP, CFixVector& vHitPt)
+int CObject::CollideWeaponAndPlayer (CObject* playerObjP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 	fix xDamage = info.xShield;
 
@@ -1839,7 +1846,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 //	Nasty robots are the ones that attack you by running into you and doing lots of damage.
-int CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt)
+int CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 //	if (!(ROBOTINFO (objP->info.nId).energyDrain && gameData.multiplayer.players [info.nId].energy))
 CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
@@ -1907,7 +1914,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollidePlayerAndPowerup (CObject* powerupP, CFixVector& vHitPt)
+int CObject::CollidePlayerAndPowerup (CObject* powerupP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 1;
@@ -1941,7 +1948,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollidePlayerAndMonsterball (CObject* monsterball, CFixVector& vHitPt)
+int CObject::CollidePlayerAndMonsterball (CObject* monsterball, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 	(info.nId == gameData.multiplayer.nLocalPlayer)) {
@@ -1956,7 +1963,7 @@ return 1;
 //##	return;
 //##}
 
-int CObject::CollideActorAndClutter (CObject* clutter, CFixVector& vHitPt)
+int CObject::CollideActorAndClutter (CObject* clutter, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (gameStates.app.bD2XLevel &&
 	 (SEGMENTS [info.nSegment].HasNoDamageProp ()))
@@ -2008,7 +2015,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollideWeaponAndWeapon (CObject* other, CFixVector& vHitPt)
+int CObject::CollideWeaponAndWeapon (CObject* other, CFixVector& vHitPt, CFixVector* vNormal)
 {
 	int	id1 = info.nId;
 	int	id2 = other->info.nId;
@@ -2039,7 +2046,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollideWeaponAndMonsterball (CObject* mBallP, CFixVector& vHitPt)
+int CObject::CollideWeaponAndMonsterball (CObject* mBallP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
@@ -2065,7 +2072,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollideWeaponAndDebris (CObject* debrisP, CFixVector& vHitPt)
+int CObject::CollideWeaponAndDebris (CObject* debrisP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 //	Hack! Prevent debrisP from causing bombs spewed at CPlayerData death to detonate!
 if (IsMine ()) {
@@ -2113,9 +2120,9 @@ return 1;
 
 #define	DO_COLLISION(type1, type2, collisionHandler) \
 			case COLLISION_OF ((type1), (type2)): \
-				return ((A)->collisionHandler) ((B), vHitPt); \
+				return ((A)->collisionHandler) ((B), vHitPt, vNormal); \
 			case COLLISION_OF ((type2), (type1)): \
-				return ((B)->collisionHandler) ((A), vHitPt);
+				return ((B)->collisionHandler) ((A), vHitPt, vNormal);
 
 #define	DO_SAME_COLLISION(type1, type2, collisionHandler) \
 				case COLLISION_OF ((type1), (type1)): \
@@ -2134,7 +2141,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CollideTwoObjects (CObject* A, CObject* B, CFixVector& vHitPt)
+int CollideTwoObjects (CObject* A, CObject* B, CFixVector& vHitPt, CFixVector* vNormal = NULL)
 {
 	int collisionType = COLLISION_OF (A->info.nType, B->info.nType);
 

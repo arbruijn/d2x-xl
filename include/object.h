@@ -903,30 +903,32 @@ class CObject : public CObjectInfo {
 		void CollideRobotAndWall (fix xHitSpeed, short nHitSeg, short nHitSide, CFixVector& vHitPt);
 		int CollideWeaponAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt);
 		int CollideDebrisAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt);
-		int CollideRobotAndPlayer (CObject* playerObjP, CFixVector& vHitPt);
-		int CollideRobotAndReactor (CObject* reactorP, CFixVector& vHitPt);
-		int CollideRobotAndMatCen (void);
-		int CollideRobotAndRobot (CObject* other, CFixVector& vHitPt);
-
-		int CollidePlayerAndMatCen (void);
-		int CollidePlayerAndReactor (CObject* reactorP, CFixVector& vHitPt);
-		int CollidePlayerAndPowerup (CObject* powerupP, CFixVector& vHitPt);
-		int CollidePlayerAndMonsterball (CObject* monsterball, CFixVector& vHitPt);
-		int CollidePlayerAndHostage (CObject* hostageP, CFixVector& vHitPt);
-		int CollidePlayerAndMarker (CObject* markerP, CFixVector& vHitPt);
-		int CollidePlayerAndPlayer (CObject* other, CFixVector& vHitPt);
-		int CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt);
-
-		int CollideWeaponAndRobot (CObject* robotP, CFixVector& vHitPt);
-		int CollideWeaponAndReactor (CObject* reactorP, CFixVector& vHitPt);
-		int CollideWeaponAndClutter (CObject *clutterP, CFixVector& vHitPt);
-		int CollideWeaponAndDebris (CObject *debrisP, CFixVector& vHitPt);
-		int CollideWeaponAndPlayer (CObject *playerObjP, CFixVector& vHitPt);
-		int CollideWeaponAndMonsterball (CObject *mBallP, CFixVector& vHitPt);
-		int CollideWeaponAndWeapon (CObject *other, CFixVector& vHitPt);
-
-		int CollideActorAndClutter (CObject* clutter, CFixVector& vHitPt);
 		int CollideObjectAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt);
+
+		int CollideRobotAndPlayer (CObject* playerObjP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollideRobotAndReactor (CObject* reactorP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollideRobotAndRobot (CObject* other, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+
+		int CollidePlayerAndReactor (CObject* reactorP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollidePlayerAndPowerup (CObject* powerupP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollidePlayerAndMonsterball (CObject* monsterball, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollidePlayerAndHostage (CObject* hostageP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollidePlayerAndMarker (CObject* markerP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollidePlayerAndPlayer (CObject* other, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+
+		int CollideWeaponAndRobot (CObject* robotP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollideWeaponAndReactor (CObject* reactorP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollideWeaponAndClutter (CObject *clutterP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollideWeaponAndDebris (CObject *debrisP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollideWeaponAndPlayer (CObject *playerObjP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollideWeaponAndMonsterball (CObject *mBallP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int CollideWeaponAndWeapon (CObject *other, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+
+		int CollideActorAndClutter (CObject* clutter, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+
+		int CollideRobotAndMatCen (void);
+		int CollidePlayerAndMatCen (void);
 
 		inline void RequestEffects (ubyte nEffects);
 		CObject* CreateExplBlast (void);

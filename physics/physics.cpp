@@ -853,14 +853,12 @@ retryMove:
 		fix size1 = info.xSize;
 		//	Calculate the hit point between the two objects.
 		Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
-		CFixVector vHitPos;
 		CObject* hitObjP = OBJECTS + hitResult.nObject;
 		//if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + hitResult.nObject)))
 		CFixVector vOldVel = mType.physInfo.velocity;
-		CollideTwoObjects (this, hitObjP, vHitPos);
 #if 1
 		if (CollisionModel () || hitObjP->IsStatic ()) {
-			vHitPos = hitResult.vPoint;
+			CollideTwoObjects (this, hitObjP, hitResult.vPoint, &hitResult.vNormal);
 			if (vOldVel.IsZero ()) {
 				vFrame = OBJPOS (hitObjP)->vPos - OBJPOS (this)->vPos;
 				CFixVector::Normalize (vFrame);
@@ -879,8 +877,10 @@ retryMove:
 				}
 			info.position.vPos = vNewPos;
 			}
-		else
-			vHitPos = *ppos1 - *ppos0;
+		else {
+			hitResult.vPoint = *ppos1 - *ppos0;
+			CollideTwoObjects (this, hitObjP, hitResult.vPoint);
+			}
 #endif
 		if (sbd.bBoosted && (this == gameData.objs.consoleP))
 			mType.physInfo.velocity = vOldVel;
