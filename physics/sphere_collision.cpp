@@ -623,8 +623,8 @@ int ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery)
 nObjSegList [0] = hitQuery.nSegment;
 #	if DBG
 if ((thisObjP->info.nType == OBJ_WEAPON) && (thisObjP->info.nSegment == gameData.objs.consoleP->info.nSegment))
-	flags = flags;
-if (nStartSeg == nDbgSeg)
+	hitQuery.flags = hitQuery.flags;
+if (hitQuery.nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #	endif
 #if 1
@@ -844,7 +844,7 @@ if (endMask) { //on the back of at least one face
 					continue;
 #endif
 #if DBG
-			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide)))
+			if ((hitQuery.nSegment == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide)))
 				nDbgSeg = nDbgSeg;
 #endif
 			if (PassThrough (hitQuery.nObject, hitQuery.nSegment, nSide, iFace, hitQuery.flags, curHit.vPoint)) {
@@ -1007,18 +1007,18 @@ if ((curHit.nType == HIT_WALL) && (curHit.nSegment == -1))
 		curHit.nSegment = gameData.collisions.hitResult.nAltSegment;
 
 if (curHit.nSegment == -1) {
-	CHitData newHit;
-	CHitQuery newQuery = hitQuery;
-	newQuery.radP0 = newQuery.radP1 = 0;
+	CHitData altHit;
+	CHitQuery altQuery = hitQuery;
+	altQuery.radP0 = altQuery.radP1 = 0;
 
 	//because the code that deals with objects with non-zero radius has
 	//problems, try using zero radius and see if we hit a wall
 	if (hitQuery.flags & FQ_VISIBILITY)
 		extraGameInfo [IsMultiGame].nHitboxes = 0;
-	nNewHitType = ComputeHitpoint (newHit, newQuery, hitResult.segList, &hitResult.nSegments, -2);
+	nNewHitType = ComputeHitpoint (altHit, altQuery, hitResult.segList, &hitResult.nSegments, -2);
 	extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
-	if (newHit.nSegment != -1)
-		curHit = newHit;
+	if (altHit.nSegment != -1)
+		curHit = altHit;
 	}
 
 if ((curHit.nSegment != -1) && (hitQuery.flags & FQ_GET_SEGLIST))
@@ -1032,9 +1032,9 @@ if ((curHit.nSegment != -1) && (hitQuery.flags & FQ_GET_SEGLIST))
 			hitResult.nSegments = i + 1;
 			break;
 		}
-Assert ((nHitType != HIT_OBJECT) || (gameData.collisions.hitResult.nObject != -1));
 hitResult.hit = gameData.collisions.hitResult;
 (CHitData) hitResult.hit = curHit;
+Assert ((curHit.nType != HIT_OBJECT) || (gameData.collisions.hitResult.nObject != -1));
 return curHit.nType;
 }
 

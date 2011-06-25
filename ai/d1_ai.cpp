@@ -276,6 +276,8 @@ ubyte	john_cheats_2 [2*JOHN_CHEATS_SIZE_2] = { 	KEY_P ^ 0x00 ^ 0x43, 0x66,
 																KEY_Y ^ 0x40 ^ 0x43, 0x0,
 																KEY_S ^ 0x50 ^ 0x43 };
 
+static CHitResult aiHitResult;
+
 // ---------------------------------------------------------
 //	On entry, gameData.bots.nTypes [1] had darn sure better be set.
 //	Mallocs gameData.bots.nTypes [1] tRobotInfo structs into global tRobotInfo.
@@ -550,34 +552,33 @@ int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfVie
 {
 	fix			dot;
 
-	CHitQuery	fq (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER | FQ_VISIBILITY,
-						 pos, &gameData.ai.target.vBelievedPos,
-						 -1, objP->Index (), 0, I2X (1) / 4);
+	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER | FQ_VISIBILITY,
+								 pos, &gameData.ai.target.vBelievedPos,
+								 -1, objP->Index (), 0, I2X (1) / 4);
 
 if ((*pos) == objP->info.position.vPos)
-	fq.nSegment	= objP->info.nSegment;
+	hitQuery.nSegment	= objP->info.nSegment;
 else {
 	int nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
 	if (nSegment != -1)
-		fq.nSegment = nSegment;
+		hitQuery.nSegment = nSegment;
 	else {
-		fq.nSegment = objP->info.nSegment;
+		hitQuery.nSegment = objP->info.nSegment;
 		*pos = objP->info.position.vPos;
 		move_towards_segment_center (objP);
 		}
 	}
 #if DBG
-if (fq.nSegment == nDbgSeg)
+if (hitQuery.nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 #if DBG
-if (fq.nObject == nDbgObj)
+if (hitQuery.nObject == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
-hitType = FindHitpoint (&fq, &hitResult);
-Hit_pos = hitResult.hit.vPoint;
-Hit_seg = hitResult.hit.nSegment;
-if (/*(hitType == HIT_NONE) ||*/ ((hitType == HIT_OBJECT) && (hitResult.hit.nObject == LOCALPLAYER.nObject))) {
+CHitResult hitResult;
+FindHitpoint (hitQuery, aiHitResult);
+if (/*(hitType == HIT_NONE) ||*/ ((aiHitResult.hit.nType == HIT_OBJECT) && (aiHitResult.hit.nObject == LOCALPLAYER.nObject))) {
 	dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.m.dir.f);
 	return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 	}
@@ -1617,54 +1618,37 @@ void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *
 {
 	fix	dot;
 
-	if (player_visibility == 2) {
-		//	Changed by mk, 01/04/94, onearm would take about 9 seconds until he can fire at you.
-		// if (((!object_animates) || (ailP->achievedState [aiP->CURRENT_GUN] == D1_AIS_FIRE)) && (ailP->nextPrimaryFire <= 0)) {
-		if (!object_animates || (ailP->nextPrimaryFire <= 0)) {
-			dot = CFixVector::Dot (objP->info.position.mOrient.m.dir.f, *vec_to_player);
-			if (dot >= I2X (7)/8) {
+if (player_visibility == 2) {
+	//	Changed by mk, 01/04/94, onearm would take about 9 seconds until he can fire at you.
+	// if (((!object_animates) || (ailP->achievedState [aiP->CURRENT_GUN] == D1_AIS_FIRE)) && (ailP->nextPrimaryFire <= 0)) {
+	if (!object_animates || (ailP->nextPrimaryFire <= 0)) {
+		dot = CFixVector::Dot (objP->info.position.mOrient.m.dir.f, *vec_to_player);
+		if (dot >= I2X (7)/8) {
 
-				if (aiP->CURRENT_GUN < gameData.bots.info [1][objP->info.nId].nGuns) {
-					if (botInfoP->attackType == 1) {
-						if (!gameStates.app.bPlayerExploded && (dist_to_player < objP->info.xSize + gameData.objs.consoleP->info.xSize + I2X (2))) {		// botInfoP->circle_distance [gameStates.app.nDifficultyLevel] + gameData.objs.consoleP->info.xSize) {
-							if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION-2))
-								return;
-							DoD1AIRobotHitAttack(objP, gameData.objs.consoleP, &objP->info.position.vPos);
-						} else {
+			if (aiP->CURRENT_GUN < gameData.bots.info [1][objP->info.nId].nGuns) {
+				if (botInfoP->attackType == 1) {
+					if (!gameStates.app.bPlayerExploded && (dist_to_player < objP->info.xSize + gameData.objs.consoleP->info.xSize + I2X (2))) {		// botInfoP->circle_distance [gameStates.app.nDifficultyLevel] + gameData.objs.consoleP->info.xSize) {
+						if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION-2))
 							return;
-						}
+						DoD1AIRobotHitAttack(objP, gameData.objs.consoleP, &objP->info.position.vPos);
 					} else {
-						if (vGunPoint->IsZero ()) {
-							;
-						} else {
-							if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION))
-								return;
-							ai_fire_laser_at_player(objP, vGunPoint);
-						}
+						return;
 					}
-
-					//	Wants to fire, so should go into chase mode, probably.
-					if ((aiP->behavior != D1_AIB_RUN_FROM) && (aiP->behavior != D1_AIB_STILL) &&
-						 (aiP->behavior != D1_AIB_FOLLOW_PATH) && ((ailP->mode == D1_AIM_FOLLOW_PATH) || (ailP->mode == D1_AIM_STILL)))
-						ailP->mode = D1_AIM_CHASE_OBJECT;
+				} else {
+					if (vGunPoint->IsZero ()) {
+						;
+					} else {
+						if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION))
+							return;
+						ai_fire_laser_at_player(objP, vGunPoint);
+					}
 				}
 
-				aiP->GOAL_STATE = D1_AIS_RECO;
-				ailP->goalState [aiP->CURRENT_GUN] = D1_AIS_RECO;
-
-				// Switch to next gun for next fire.
-				aiP->CURRENT_GUN++;
-				if (aiP->CURRENT_GUN >= gameData.bots.info [1][objP->info.nId].nGuns)
-					aiP->CURRENT_GUN = 0;
+				//	Wants to fire, so should go into chase mode, probably.
+				if ((aiP->behavior != D1_AIB_RUN_FROM) && (aiP->behavior != D1_AIB_STILL) &&
+					 (aiP->behavior != D1_AIB_FOLLOW_PATH) && ((ailP->mode == D1_AIM_FOLLOW_PATH) || (ailP->mode == D1_AIM_STILL)))
+					ailP->mode = D1_AIM_CHASE_OBJECT;
 			}
-		}
-	} else if (WI_homingFlag (objP->info.nId) == 1) {
-		//	Robots which fire homing weapons might fire even if they don't have a bead on the playerP.
-		if (((!object_animates) || (ailP->achievedState [aiP->CURRENT_GUN] == D1_AIS_FIRE)) &&
-			 (ailP->nextPrimaryFire <= 0) && (CFixVector::Dist(Hit_pos, objP->info.position.vPos) > I2X (40))) {
-			if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION))
-				return;
-			ai_fire_laser_at_player(objP, vGunPoint);
 
 			aiP->GOAL_STATE = D1_AIS_RECO;
 			ailP->goalState [aiP->CURRENT_GUN] = D1_AIS_RECO;
@@ -1673,11 +1657,29 @@ void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *
 			aiP->CURRENT_GUN++;
 			if (aiP->CURRENT_GUN >= gameData.bots.info [1][objP->info.nId].nGuns)
 				aiP->CURRENT_GUN = 0;
-		} else {
-			// Switch to next gun for next fire.
-			aiP->CURRENT_GUN++;
-			if (aiP->CURRENT_GUN >= gameData.bots.info [1][objP->info.nId].nGuns)
-				aiP->CURRENT_GUN = 0;
+			}
+		}
+	} 
+else if (WI_homingFlag (objP->info.nId) == 1) {
+	//	Robots which fire homing weapons might fire even if they don't have a bead on the playerP.
+	if (((!object_animates) || (ailP->achievedState [aiP->CURRENT_GUN] == D1_AIS_FIRE)) &&
+		 (ailP->nextPrimaryFire <= 0) && (CFixVector::Dist (aiHitResult.hit.vPoint, objP->info.position.vPos) > I2X (40))) {
+		if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION))
+			return;
+		ai_fire_laser_at_player(objP, vGunPoint);
+
+		aiP->GOAL_STATE = D1_AIS_RECO;
+		ailP->goalState [aiP->CURRENT_GUN] = D1_AIS_RECO;
+
+		// Switch to next gun for next fire.
+		aiP->CURRENT_GUN++;
+		if (aiP->CURRENT_GUN >= gameData.bots.info [1][objP->info.nId].nGuns)
+			aiP->CURRENT_GUN = 0;
+	} else {
+		// Switch to next gun for next fire.
+		aiP->CURRENT_GUN++;
+		if (aiP->CURRENT_GUN >= gameData.bots.info [1][objP->info.nId].nGuns)
+			aiP->CURRENT_GUN = 0;
 		}
 	}
 }

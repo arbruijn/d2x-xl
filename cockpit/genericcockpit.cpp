@@ -1246,16 +1246,16 @@ int CGenericCockpit::CanSeeObject (int nObject, int bCheckObjs)
 if (nObject < 0)
 	return 0;
 
-	CHitQuery fq ((bCheckObjs ? FQ_VISIBILITY | FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_VISIBILITY | FQ_TRANSWALL),
-					  &gameData.objs.viewerP->info.position.vPos,
-					  &OBJECTS [nObject].info.position.vPos,
-					  gameData.objs.viewerP->info.nSegment,
-					  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP)
-					 );
+	CHitQuery hitQuery ((bCheckObjs ? FQ_VISIBILITY | FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_VISIBILITY | FQ_TRANSWALL),
+							  &gameData.objs.viewerP->info.position.vPos,
+							  &OBJECTS [nObject].info.position.vPos,
+							  gameData.objs.viewerP->info.nSegment,
+							  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP)
+							 );
 
 	CHitResult hitResult;
 
-int nHitType = FindHitpoint (&fq, &hitResult);
+int nHitType = FindHitpoint (hitQuery, hitResult);
 return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.hit.nObject == nObject) : (nHitType != HIT_WALL);
 }
 

@@ -125,7 +125,7 @@ class CHitQuery {
 //  ingore_obj_list	NULL, or ptr to a list of objnums to ignore, terminated with -1
 //  check_objFlag	determines whether collisions with objects are checked
 //Returns the hitResult->hitType
-int FindHitpoint (CHitQuery *fq, CHitResult* hitResult);
+int FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult);
 
 //finds the uv coords of the given point on the given seg & CSide
 //fills in u & v. if l is non-NULL fills it in also

@@ -126,10 +126,10 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 		return 0;		//	Done processing this CObject.
 	}
 #endif
-	CHitQuery	fq (FQ_TRANSWALL, vObjPos, vVertPos, nObjSeg, nObject);
-	CHitResult		hitResult;
+	CHitQuery	hitQuery (FQ_TRANSWALL, vObjPos, vVertPos, nObjSeg, nObject);
+	CHitResult	hitResult;
 
-	int hitType = FindHitpoint (&fq, &hitResult);
+	int hitType = FindHitpoint (hitQuery, hitResult);
 	// gameData.ai.vHitPos = gameData.ai.hitResult.hit.vPoint;
 	// gameData.ai.nHitSeg = gameData.ai.hitResult.hit_seg;
 	if (hitType == HIT_OBJECT)
@@ -315,10 +315,10 @@ if (xObjIntensity) {
 				if (objP->info.nId != gameData.multiplayer.nLocalPlayer) {
 					CFixVector tVec = *vObjPos + objP->info.position.mOrient.m.dir.f * I2X (200);
 
-					CHitQuery	fq (FQ_TRANSWALL, vObjPos, &tVec, objP->info.nSegment, nObject);
-					CHitResult		hitResult;
+					CHitQuery	hitQuery (FQ_TRANSWALL, vObjPos, &tVec, objP->info.nSegment, nObject);
+					CHitResult	hitResult;
 
-					int fate = FindHitpoint (&fq, &hitResult);
+					int fate = FindHitpoint (hitQuery, hitResult);
 					if (fate != HIT_NONE) {
 						tVec = hitResult.hit.vPoint - *vObjPos;
 						maxHeadlightDist = tVec.Mag() + I2X (4);

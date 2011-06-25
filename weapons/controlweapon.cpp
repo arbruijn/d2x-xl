@@ -760,21 +760,21 @@ FORALL_WEAPON_OBJS (bombP, i) {
 			//	Object which is close enough to detonate smart mine is not in same CSegment as smart mine.
 			//	Need to do a more expensive check to make sure there isn't an obstruction.
 			if (((gameData.app.nFrameCount ^ (i+j)) % 4) == 0) {
-				CHitQuery	fq (0, &bombP->Position (), &actorP->Position (), bombP->Segment (), i);
-				CHitResult		hitResult;
+				CHitQuery	hitQuery (0, &bombP->Position (), &actorP->Position (), bombP->Segment (), i);
+				CHitResult	hitResult;
 				int			fate;
 #if 0
-				fq.p0	= &bombP->info.position.vPos;
-				fq.p1 = &actorP->info.position.vPos;
-				fq.nSegment = bombP->info.nSegment;
-				fq.radP0 =
-				fq.radP1 = 0;
-				fq.nObject = i;
-				fq.ignoreObjList = NULL;
-				fq.flags	= 0;
-				fq.bCheckVisibility = false;
+				hitQuery.p0	= &bombP->info.position.vPos;
+				hitQuery.p1 = &actorP->info.position.vPos;
+				hitQuery.nSegment = bombP->info.nSegment;
+				hitQuery.radP0 =
+				hitQuery.radP1 = 0;
+				hitQuery.nObject = i;
+				hitQuery.ignoreObjList = NULL;
+				hitQuery.flags	= 0;
+				hitQuery.bCheckVisibility = false;
 #endif
-				fate = FindHitpoint (&fq, &hitResult);
+				fate = FindHitpoint (hitQuery, hitResult);
 				if (fate != HIT_WALL)
 					bombP->SetLife (1);
 				}

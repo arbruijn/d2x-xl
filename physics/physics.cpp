@@ -323,8 +323,6 @@ return 0;
 
 void UnstickObject (CObject *objP)
 {
-	CHitResult			hi;
-
 if ((objP->info.nType == OBJ_PLAYER) &&
 	 (objP->info.nId == gameData.multiplayer.nLocalPlayer) &&
 	 (gameStates.app.cheats.bPhysics == 0xBADA55))
@@ -335,14 +333,15 @@ if (objP->info.nType == OBJ_WEAPON)
 if (objP->info.nType != OBJ_MONSTERBALL)
 	return;
 #endif
-CHitQuery fq (0, &objP->info.position.vPos, &objP->info.position.vPos, objP->info.nSegment, objP->Index (), 0, objP->info.xSize);
-int fviResult = FindHitpoint (&fq, &hi);
+CHitQuery hitQuery (0, &objP->info.position.vPos, &objP->info.position.vPos, objP->info.nSegment, objP->Index (), 0, objP->info.xSize);
+CHitResult hitResult;
+int fviResult = FindHitpoint (hitQuery, hitResult);
 if (fviResult == HIT_WALL)
 #if 1
 #	if 0
 	DoBumpHack (objP);
 #	else
-	BounceObject (objP, hi, 0.1f, NULL);
+	BounceObject (objP, hitResult, 0.1f, NULL);
 #	endif
 #else
 	BounceObject (objP, hi, X2F (objP->info.xSize - VmVecDist (&objP->info.position.vPos, &hi.hit.vPoint)) /*0.25f*/, NULL);
@@ -475,7 +474,7 @@ if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBO
 	if (Index () == nDbgObj)
 		nDbgObj = nDbgObj;
 #endif
-	if (FindHitpoint (&hitQuery, &hitResult) != HIT_NONE)
+	if (FindHitpoint (hitQuery, hitResult) != HIT_NONE)
 		info.position.mOrient = mSaveOrient;
 	}
 
@@ -656,13 +655,13 @@ retryMove:
 		HUDMessage (0, "BAD P0 %d", nBadP0++);
 #endif
 		memset (&hitResult, 0, sizeof (hitResult));
-		fviResult = FindHitpoint (&hitQuery, &hitResult);
+		fviResult = FindHitpoint (hitQuery, hitResult);
 		hitQuery.nSegment = FindSegByPos (vNewPos, info.nSegment, 1, 0);
 		if ((hitQuery.nSegment < 0) || (hitQuery.nSegment == info.nSegment)) {
 			info.position.vPos = vSavePos;
 			break;
 			}
-		fviResult = FindHitpoint (&hitQuery, &hitResult);
+		fviResult = FindHitpoint (hitQuery, hitResult);
 		if (fviResult == HIT_BAD_P0) {
 			info.position.vPos = vSavePos;
 			break;
@@ -862,7 +861,6 @@ retryMove:
 		CollideTwoObjects (this, hitObjP, vHitPos);
 #if 1
 		if (CollisionModel () || hitObjP->IsStatic ()) {
-			vHitPos = hitData.vPoint;
 			if (vOldVel.IsZero ()) {
 				vFrame = OBJPOS (hitObjP)->vPos - OBJPOS (this)->vPos;
 				CFixVector::Normalize (vFrame);
@@ -877,7 +875,7 @@ retryMove:
 					vNewPos += vFrame * s;
 					info.position.vPos = vNewPos;
 					}
-				s = CheckVectorObjectCollision (vHitPos, vHitNormal, &info.position.vPos, &vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
+				s = CheckVectorObjectCollision (hitResult.hit.vPoint, hitResult.hit.vNormal, &info.position.vPos, &vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
 				}
 			info.position.vPos = vNewPos;
 			}

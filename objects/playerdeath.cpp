@@ -103,9 +103,9 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 		vPlayerCameraOffs *= xFarScale;				//	...but find a point 50% further away...
 		local_p1 = objP->info.position.vPos + vPlayerCameraOffs;		//	...so we won't have to do as many cuts.
 
-		CHitQuery fq (0, &objP->info.position.vPos, &local_p1, objP->info.nSegment, objP->Index ());
+		CHitQuery hitQuery (0, &objP->info.position.vPos, &local_p1, objP->info.nSegment, objP->Index ());
 
-		FindHitpoint (&fq, &hitResult);
+		FindHitpoint (hitQuery, hitResult);
 		if (hitResult.hit.nType == HIT_NONE)
 			*vCameraPos = closer_p1;
 		else {
