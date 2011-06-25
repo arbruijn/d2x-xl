@@ -2141,7 +2141,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CollideTwoObjects (CObject* A, CObject* B, CFixVector& vHitPt, CFixVector* vNormal = NULL)
+int CollideTwoObjects (CObject* A, CObject* B, CFixVector& vHitPt, CFixVector* vNormal)
 {
 	int collisionType = COLLISION_OF (A->info.nType, B->info.nType);
 
