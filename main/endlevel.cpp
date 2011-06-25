@@ -514,10 +514,10 @@ if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndL
 			vPos += gameData.objs.consoleP->info.position.mOrient.m.dir.f * (RandShort () * 60);
 
 		//find hit point on CWall
-		CHitQuery	fq (0, &gameData.objs.consoleP->info.position.vPos, &vPos, gameData.objs.consoleP->info.nSegment);
-		CHitResult		hitResult;
+		CHitQuery	hitQuery (0, &gameData.objs.consoleP->info.position.vPos, &vPos, gameData.objs.consoleP->info.nSegment);
+		CHitResult	hitResult;
 
-		FindHitpoint (&fq, &hitResult);
+		FindHitpoint (hitQuery, hitResult);
 		if ((hitResult.hit.nType == HIT_WALL) && (hitResult.hit.nSegment != -1))
 			CreateExplosion ((short) hitResult.hit.nSegment, hitResult.hit.vPoint, I2X (3) + RandShort () * 6, VCLIP_SMALL_EXPLOSION);
 		explosion_wait2 = (0xa00 + RandShort () / 8) / 2;

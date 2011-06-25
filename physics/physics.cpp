@@ -48,7 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int bFloorLeveling = 0;
 
-fix CheckVectorObjectCollision (CFixVector& intersection, CFixVector& normal, CFixVector *p0, CFixVector *p1, fix rad, CObject *thisObjP, CObject *otherObjP, bool bCheckVisibility);
+fix CheckVectorObjectCollision (CHitData& hitData, CFixVector *p0, CFixVector *p1, fix rad, CObject *thisObjP, CObject *otherObjP, bool bCheckVisibility);
 
 //	-----------------------------------------------------------------------------------------------------------
 
@@ -875,7 +875,7 @@ retryMove:
 					vNewPos += vFrame * s;
 					info.position.vPos = vNewPos;
 					}
-				s = CheckVectorObjectCollision (hitResult.hit.vPoint, hitResult.hit.vNormal, &info.position.vPos, &vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
+				s = CheckVectorObjectCollision (hitResult.hit, &info.position.vPos, &vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
 				}
 			info.position.vPos = vNewPos;
 			}
