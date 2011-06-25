@@ -854,7 +854,6 @@ if (endMask) { //on the back of at least one face
 				CHitData		subHit, saveHitData = gameData.collisions.hitResult;
 				CHitQuery	subHitQuery = hitQuery;
 
-				//do the check recursively on the next CSegment.p.
 				subHitQuery.nSegment = segP->m_children [nSide];
 #if DBG
 				if (subHitQuery.nSegment == nDbgSeg)
@@ -877,11 +876,11 @@ if (endMask) { //on the back of at least one face
 							*nSegments += CopySegList (segList, *nSegments, subSegList, nSubSegments, hitQuery.flags);
 							}
 						else {
-							(CHitData) gameData.collisions.hitResult = saveHitData;     //global could be trashed
+							(CHitData) gameData.collisions.hitResult = saveHitData;    
  							}
 						}
 					else {
-						(CHitData) gameData.collisions.hitResult = saveHitData;     //global could be trashed
+						(CHitData) gameData.collisions.hitResult = saveHitData;    
 						if (subHit.nSegment != -1)
 							nHitNoneSegment = subHit.nSegment;
 						nHitNoneSegs = CopySegList (hitNoneSegList, 0, subSegList, nSubSegments, hitQuery.flags);

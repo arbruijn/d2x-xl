@@ -37,7 +37,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 ubyte PointIsInTriangle (CFixVector* vRef, CFixVector vNormal, CFixVector* vertices)
 {
-#if 1
 CFloatVector v0, v1, v2;
 v0.Assign (vertices [2] - vertices [0]);
 v1.Assign (vertices [1] - vertices [0]);
@@ -50,14 +49,6 @@ float dot12 = CFloatVector::Dot (v1, v2);
 float invDenom = 1.0f / (dot00 * dot11 - dot01 * dot01);
 float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
 float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-// Check if point is in triangle
-#if 0 //DBG
-CFloatVector p = vertices [0];
-p += v0 * u;
-p += v1 * v;
-p -= *vRef;
-float l = p.Mag ();
-#endif
 return (u >= -0.001f) && (v >= -0.001f) && (u + v <= 1.001f);
 }
 
@@ -66,7 +57,7 @@ return (u >= -0.001f) && (v >= -0.001f) && (u + v <= 1.001f);
 bool PointIsInQuad (CFixVector point, CFixVector* vertP, CFixVector vNormal)
 {
 #if 1
-return PointIsInTriangle (point, vNormal, vertP) || PointIsInTriangle (point, vNormal, vertP + 1);
+return PointIsInTriangle (&point, vNormal, vertP) || PointIsInTriangle (&point, vNormal, vertP + 1);
 #else
 	CFixVector		t, v0, v1;
 	CFixVector2 	vEdge, vCheck, vRef;
@@ -256,6 +247,7 @@ int FindLineHitboxIntersection (CFixVector& intersection, CFixVector& normal, tB
 	int			i, nHits = 0;
 	fix			dist;
 	tQuad			*pf;
+	CFixVector	vHit;
 
 // create all faces of hitbox 2 and their normals before testing because they will
 // be used multiple times
@@ -295,7 +287,7 @@ return nHits;
 
 fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, short& nModel)
 {
-	CFixVector		vHit, vRef = OBJPOS (objP2)->vPos;
+	CFixVector		vRef = OBJPOS (objP2)->vPos;
 	int				iModel1, nModels1, iModel2, nModels2, nHits, nTotalHits = 0;
 	CModelHitboxes	*pmhb1 = gameData.models.hitboxes + objP1->ModelId ();
 	CModelHitboxes	*pmhb2 = gameData.models.hitboxes + objP2->ModelId ();
