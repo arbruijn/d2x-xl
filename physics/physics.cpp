@@ -48,7 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int bFloorLeveling = 0;
 
-fix CheckVectorToObject (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, CObject *thisObjP, CObject *otherObjP, bool bCheckVisibility);
+fix CheckVectorObjectCollision (CFixVector& intersection, CFixVector& normal, CFixVector *p0, CFixVector *p1, fix rad, CObject *thisObjP, CObject *otherObjP, bool bCheckVisibility);
 
 //	-----------------------------------------------------------------------------------------------------------
 
@@ -854,7 +854,7 @@ retryMove:
 		fix size1 = info.xSize;
 		//	Calculate the hit point between the two objects.
 		Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
-		CFixVector vHitPos = *ppos1 - *ppos0;
+		CFixVector vHitNormal, vHitPos = *ppos1 - *ppos0;
 		vHitPos = *ppos0 + vHitPos * FixDiv (size0, size0 + size1);
 		CObject* hitObjP = OBJECTS + hi.hit.nObject;
 		//if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + hi.hit.nObject)))
@@ -876,7 +876,7 @@ retryMove:
 					vNewPos += vFrame * s;
 					info.position.vPos = vNewPos;
 					}
-				s = CheckVectorToObject (vHitPos, &info.position.vPos, &vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
+				s = CheckVectorObjectCollision (vHitPos, vHitNormal, &info.position.vPos, &vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
 				}
 			info.position.vPos = vNewPos;
 			}

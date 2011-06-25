@@ -232,12 +232,15 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 				gameData.hoard.nLastHitter = otherObjP->cType.laserInfo.parent.nObject;
 				mq = double (I2X (nMonsterballForces [otherObjP->info.nId]) / 100) / double (mType.physInfo.mass);
 				}
+			mq /= double (h);
 			vForce.v.coord.x = (fix) (double (vForce.v.coord.x) * mq);
 			vForce.v.coord.y = (fix) (double (vForce.v.coord.y) * mq);
 			vForce.v.coord.z = (fix) (double (vForce.v.coord.z) * mq);
+#if 0
 			vRotForce.v.coord.x = vForce.v.coord.x / h;
 			vRotForce.v.coord.y = vForce.v.coord.y / h;
 			vRotForce.v.coord.z = vForce.v.coord.z / h;
+#endif
 			ApplyForce (vForce);
 			ApplyRotForce (vRotForce);
 			if (gameData.hoard.nLastHitter == LOCALPLAYER.nObject)

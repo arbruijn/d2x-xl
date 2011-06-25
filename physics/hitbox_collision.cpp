@@ -34,9 +34,40 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collision_math.h"
 
 //	-----------------------------------------------------------------------------
+
+ubyte PointIsInTriangle (CFixVector* vRef, CFixVector vNormal, CFixVector* vertices)
+{
+#if 1
+CFloatVector v0, v1, v2;
+v0.Assign (vertices [2] - vertices [0]);
+v1.Assign (vertices [1] - vertices [0]);
+v2.Assign (*vRef - vertices [0]);
+float dot00 = CFloatVector::Dot (v0, v0);
+float dot11 = CFloatVector::Dot (v1, v1);
+float dot01 = CFloatVector::Dot (v0, v1);
+float dot02 = CFloatVector::Dot (v0, v2);
+float dot12 = CFloatVector::Dot (v1, v2);
+float invDenom = 1.0f / (dot00 * dot11 - dot01 * dot01);
+float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+// Check if point is in triangle
+#if 0 //DBG
+CFloatVector p = vertices [0];
+p += v0 * u;
+p += v1 * v;
+p -= *vRef;
+float l = p.Mag ();
+#endif
+return (u >= -0.001f) && (v >= -0.001f) && (u + v <= 1.001f);
+}
+
+//	-----------------------------------------------------------------------------
 //see if a point is inside a face by projecting into 2d
 bool PointIsInQuad (CFixVector point, CFixVector* vertP, CFixVector vNormal)
 {
+#if 1
+return PointIsInTriangle (point, vNormal, vertP) || PointIsInTriangle (point, vNormal, vertP + 1);
+#else
 	CFixVector		t, v0, v1;
 	CFixVector2 	vEdge, vCheck, vRef;
 	int 				i, j, iEdge, projPlane;
@@ -71,6 +102,7 @@ for (iEdge = 1; iEdge <= 4; iEdge++) {
 		return false;
 	}
 return true;
+#endif
 }
 
 //	-----------------------------------------------------------------------------
@@ -128,8 +160,7 @@ return 0;
 // vPlanePoint & vPlaneNorm describe the plane
 // p0 & p1 are the ends of the line
 
-int FindLineQuadIntersectionSub (CFixVector& intersection, CFixVector* vPlanePoint, CFixVector* vPlaneNorm,
-										   CFixVector* p0, CFixVector* p1, fix rad)
+int FindLineQuadIntersectionSub (CFixVector& intersection, CFixVector* vPlanePoint, CFixVector* vPlaneNorm, CFixVector* p0, CFixVector* p1, fix rad)
 {
 	CFixVector	d, w;
 	double		num, den;
@@ -198,86 +229,63 @@ return dist;
 // Simple intersection check by checking whether any of the edges of plane p1
 // penetrate p2. Returns average of all penetration points.
 
-int FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector* p1, CFixVector* vn1, CFixVector* p2, CFixVector* vn2, CFixVector* vRef)
+int FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector& normal, CFixVector* p1, CFixVector* vn1, CFixVector* p2, CFixVector* vn2, CFixVector* vRef, fix& dMin)
 {
 	int			i, nHits = 0;
-	fix			dMin = 0x7fffffff;
 	CFixVector	vHit;
 
 for (i = 0; i < 4; i++)
-	if (FindLineQuadIntersection (vHit, p2, vn2, p1 + i, p1 + ((i + 1) % 4), 0) < 0x7fffffff) {
-		dMin = RegisterHit (&intersection, &vHit, vRef, dMin);
-		nHits++;
-		}
+	if (FindLineQuadIntersection (vHit, p2, vn2, p1 + i, p1 + ((i + 1) % 4), 0) < 0x7fffffff) 
+		nHits += RegisterHit (&intersection, &normal, &vHit, vn2, vRef, dMin);
 return nHits;
 }
 
 //	-----------------------------------------------------------------------------
 
-int FindQuadQuadIntersection (CFixVector& intersection, CFixVector* p0, CFixVector* vn1, CFixVector* p1, CFixVector* vn2, CFixVector* vRef)
+int FindQuadQuadIntersection (CFixVector& intersection, CFixVector& normal, CFixVector* p0, CFixVector* vn1, CFixVector* p1, CFixVector* vn2, CFixVector* vRef, fix& dMin)
 {
-	CFixVector	vHit;
-	int			nHits = 0;
-	fix			dMin = 0x7fffffff;
-
 // test whether any edges of p0 penetrate p1
-if (FindQuadQuadIntersectionSub (vHit, p0, vn1, p1, vn2, vRef)) {
-	dMin = RegisterHit (&intersection, &vHit, vRef, dMin);
-	nHits++;
-	}
-// test whether any edges of p1 penetrate p0
-if (FindQuadQuadIntersectionSub (vHit, p1, vn2, p0, vn1, vRef)) {
-	dMin = RegisterHit (&intersection, &vHit, vRef, dMin);
-	nHits++;
-	}
-return nHits;
+return FindQuadQuadIntersectionSub (intersection, normal, p0, vn1, p1, vn2, vRef, dMin) + 
+		 FindQuadQuadIntersectionSub (intersection, normal, p1, vn2, p0, vn1, vRef, dMin);
 }
 
 //	-----------------------------------------------------------------------------
 
-int FindLineHitboxIntersection (CFixVector& intersection, tBox *phb, CFixVector* p0, CFixVector* p1, CFixVector* vRef, fix rad)
+int FindLineHitboxIntersection (CFixVector& intersection, CFixVector& normal, tBox *phb, CFixVector* p0, CFixVector* p1, CFixVector* vRef, fix rad, fix& dMin)
 {
 	int			i, nHits = 0;
-	fix			dist, dMin = 0x7fffffff;
-	CFixVector	vHit;
+	fix			dist;
 	tQuad			*pf;
 
 // create all faces of hitbox 2 and their normals before testing because they will
 // be used multiple times
 for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
 	dist = FindLineQuadIntersection (vHit, pf->v, pf->n + 1, p0, p1, rad);
-	if (dist < 0x7fffffff) {
-		dMin = RegisterHit (&intersection, &vHit, vRef, dMin);
-		nHits++;
-		}
+	if (dist < 0x7fffffff)
+		nHits += RegisterHit (&intersection, &normal, &vHit, pf->n + 1, vRef, dMin);
 	}
 return nHits;
 }
 
 //	-----------------------------------------------------------------------------
 
-int FindHitboxIntersection (CFixVector& intersection, tBox *phb1, tBox *phb2, CFixVector* vRef)
+int FindHitboxIntersection (CFixVector& intersection, CFixVector& normal, tBox *phb1, tBox *phb2, CFixVector* vRef, fix& dMin)
 {
 	int			i, j, nHits = 0;
-	fix			dMin = 0x7fffffff;
-	CFixVector	vHit;
 	tQuad			*pf1, *pf2;
 
 // create all faces of hitbox 2 and their normals before testing because they will
 // be used multiple times
 for (i = 0, pf1 = phb1->faces; i < 6; i++, pf1++) {
 	for (j = 0, pf2 = phb2->faces; j < 6; j++, pf2++) {
-#if 1
+#if 0
 		if (CFixVector::Dot (pf1->n [1], pf2->n [1]) >= 0)
 			continue;
 #endif
-		if (FindQuadQuadIntersection (vHit, pf1->v, pf1->n + 1, pf2->v, pf2->n + 1, vRef)) {
-			dMin = RegisterHit (&intersection, &vHit, vRef, dMin);
-			nHits++;
+		nHits += FindQuadQuadIntersection (intersection, normal, pf1->v, pf1->n + 1, pf2->v, pf2->n + 1, vRef, dMin);
 #if DBG
-			pf1->t = pf2->t = gameStates.app.nSDLTicks [0];
+		pf1->t = pf2->t = gameStates.app.nSDLTicks [0];
 #endif
-			}
 		}
 	}
 return nHits;
@@ -285,15 +293,15 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckHitboxCollision (CFixVector& intersection, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, short& nModel)
+fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, short& nModel)
 {
 	CFixVector		vHit, vRef = OBJPOS (objP2)->vPos;
-	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
+	int				iModel1, nModels1, iModel2, nModels2, nHits, nTotalHits = 0;
 	CModelHitboxes	*pmhb1 = gameData.models.hitboxes + objP1->ModelId ();
 	CModelHitboxes	*pmhb2 = gameData.models.hitboxes + objP2->ModelId ();
 	tBox				hb1 [MAX_HITBOXES + 1];
 	tBox				hb2 [MAX_HITBOXES + 1];
-	fix				xDist = 0x7fffffff, dMin = 0x7fffffff;
+	fix				dMin = 0x7fffffff;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel1 =
@@ -317,26 +325,14 @@ TransformHitboxes (objP2, &vRef, hb2);
 int i, j;
 for (i = iModel1; i <= nModels1; i++) {
 	for (j = iModel2; j <= nModels2; j++) {
-		if (FindHitboxIntersection (vHit, hb1 + i, hb2 + j, p0)) {
-			xDist = RegisterHit (&intersection, &vHit, &vRef, dMin);
-			if (dMin > xDist) {
-				nHits++;
-				dMin = xDist;
-				nModel = iModel1;
-				}
-			}
+		if ((nHits = FindHitboxIntersection (intersection, normal, hb1 + i, hb2 + j, p0, dMin)))
+			nModel = iModel1;
 		}
 	}
 if (!nHits) {
 	for (j = iModel2; j <= nModels2; j++) {
-		if (FindLineHitboxIntersection (vHit, hb2 + j, p0, p1, p0, 0)) {
-			xDist = RegisterHit (&intersection, &vHit, &vRef, dMin);
-			if (dMin > xDist) {
-				nHits++;
-				dMin = xDist;
-				nModel = iModel1;
-				}
-			}
+		if ((nHits = FindLineHitboxIntersection (intersection, normal, hb2 + j, p0, p1, p0, 0, dMin)))
+			nModel = iModel1;
 		}
 	}
 #if DBG
@@ -345,18 +341,17 @@ if (nHits) {
 	pmhb1->tHit = pmhb2->tHit = gameStates.app.nSDLTicks [0];
 	}
 #endif
-return nHits ? dMin ? dMin : 1 : 0;
+return (nHits) ? dMin ? dMin : 1 : 0;
 }
 
 //	-----------------------------------------------------------------------------
 
-fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector* p0, CFixVector* p1, CFixVector* vRef, CObject *objP, fix rad, short& nModel)
+fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CFixVector* p0, CFixVector* p1, CFixVector* vRef, CObject *objP, fix rad, short& nModel)
 {
 	int				iModel, nModels;
-	fix				xDist = 0x7fffffff, dMin = 0x7fffffff;
+	fix				dMin = 0x7fffffff;
 	CModelHitboxes	*pmhb = gameData.models.hitboxes + objP->ModelId ();
 	tBox				hb [MAX_HITBOXES + 1];
-	CFixVector		vHit;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel =
@@ -371,15 +366,10 @@ if (!vRef)
 intersection.Create (0x7fffffff, 0x7fffffff, 0x7fffffff);
 TransformHitboxes (objP, vRef, hb);
 for (; iModel <= nModels; iModel++) {
-	if (FindLineHitboxIntersection (vHit, hb + iModel, p0, p1, p0, rad)) {
-		xDist = RegisterHit (&intersection, &vHit, vRef, dMin);
-		if (dMin > xDist) {
-			dMin = xDist;
-			nModel = iModel;
-			}
-		}
+	if (FindLineHitboxIntersection (intersection, normal, hb + iModel, p0, p1, p0, rad, dMin)) 
+		nModel = iModel;
 	}
-return xDist;
+return dMin;
 }
 
 //	-----------------------------------------------------------------------------
