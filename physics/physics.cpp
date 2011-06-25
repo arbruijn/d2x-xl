@@ -506,7 +506,7 @@ if (Index () == nDbgObj) {
 //if uses thrust, cannot have zero xDrag
 //Assert (!(mType.physInfo.flags & PF_USES_THRUST) || mType.physInfo.drag);
 //do thrust & xDrag
-if (mType.physInfo.drag && !mType.physInfo.velocity.IsZero ()) {
+if (mType.physInfo.drag && !mType.physInfo.thrust.IsZero ()) {
 	CFixVector	accel;
 	int			nTries = xSimTime / FT;
 	fix			xDrag = mType.physInfo.drag;
