@@ -1253,10 +1253,10 @@ if (nObject < 0)
 					  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP)
 					 );
 
-	CHitData hitData;
+	CHitResult hitResult;
 
-int nHitType = FindHitpoint (&fq, &hitData);
-return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitData.hit.nObject == nObject) : (nHitType != HIT_WALL);
+int nHitType = FindHitpoint (&fq, &hitResult);
+return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.hit.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
 //	-----------------------------------------------------------------------------

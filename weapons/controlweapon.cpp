@@ -761,7 +761,7 @@ FORALL_WEAPON_OBJS (bombP, i) {
 			//	Need to do a more expensive check to make sure there isn't an obstruction.
 			if (((gameData.app.nFrameCount ^ (i+j)) % 4) == 0) {
 				CHitQuery	fq (0, &bombP->Position (), &actorP->Position (), bombP->Segment (), i);
-				CHitData		hitData;
+				CHitResult		hitResult;
 				int			fate;
 #if 0
 				fq.p0	= &bombP->info.position.vPos;
@@ -774,7 +774,7 @@ FORALL_WEAPON_OBJS (bombP, i) {
 				fq.flags	= 0;
 				fq.bCheckVisibility = false;
 #endif
-				fate = FindHitpoint (&fq, &hitData);
+				fate = FindHitpoint (&fq, &hitResult);
 				if (fate != HIT_WALL)
 					bombP->SetLife (1);
 				}

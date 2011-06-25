@@ -41,17 +41,25 @@ class CFloatVector2 {
 
 extern int ijTable [3][2];
 
-class CHitInfo {
+class CHitData {
 	public:
 		int 			nType;						//what sort of intersection
-		short 		nSegment;					//what CSegment hit_pnt is in
-		short			nSegment2;
-		short 		nSide;						//if hit CWall, which CSide
+		short			nSegment;
+		short			nObject;
+		CFixVector	vPoint;
+		CFixVector	vNormal;
+
+	public:
+		CHitData () { memset (this, 0xff, sizeof (*this)); }
+			
+	};
+
+class CHitInfo : public CHitData {
+	public:
+		short			nAltSegment;
+		short 		nSide;						//if hit wall, which side
 		short			nFace;
-		short 		nSideSegment;				//what CSegment the hit CSide is in
-		short 		nObject;						//if CObject hit, which CObject
-		CFixVector	vPoint;						//where we hit
-		CFixVector 	vNormal;						//if hit CWall, ptr to its surface normal
+		short 		nSideSegment;				//what segment the hit side is in
 		int			nNormals;
 		int			nNestCount;
 
@@ -60,14 +68,14 @@ class CHitInfo {
 	};
 
 //this data structure gets filled in by FindHitpoint()
-class CHitData {
+class CHitResult {
 	public:
 		CHitInfo	hit;
 		short 	nSegments;					//how many segs we went through
 		short 	segList [MAX_FVI_SEGS];	//list of segs vector went through
 
 	public:
-		CHitData () { nSegments = 0; }
+		CHitResult () { nSegments = 0; }
 	};
 
 //flags for fvi query
@@ -92,11 +100,11 @@ class CHitData {
 class CHitQuery {
 	public:
 		int			flags;
-		CFixVector	*p0, *p1;
+		CFixVector* p0, * p1;
 		short			nSegment;
 		short			nObject;
 		fix			radP0, radP1;
-		short			*ignoreObjList;
+		short*		ignoreObjList;
 
 	public:
 		CHitQuery () { memset (this, 0xff, sizeof (*this)); }
@@ -108,7 +116,7 @@ class CHitQuery {
 //	-----------------------------------------------------------------------------
 
 //Find out if a vector intersects with anything.
-//Fills in hitData, a CHitData structure (see above).
+//Fills in hitResult, a CHitResult structure (see above).
 //Parms:
 //  p0 & startseg 	describe the start of the vector
 //  p1 					the end of the vector
@@ -116,8 +124,8 @@ class CHitQuery {
 //  thisobjnum 		used to prevent an CObject with colliding with itself
 //  ingore_obj_list	NULL, or ptr to a list of objnums to ignore, terminated with -1
 //  check_objFlag	determines whether collisions with objects are checked
-//Returns the hitData->hitType
-int FindHitpoint (CHitQuery *fq, CHitData* hitData);
+//Returns the hitResult->hitType
+int FindHitpoint (CHitQuery *fq, CHitResult* hitResult);
 
 //finds the uv coords of the given point on the given seg & CSide
 //fills in u & v. if l is non-NULL fills it in also

@@ -668,9 +668,9 @@ else {
 #else
 
 CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &info.vPos, vPoint, nLightSeg, -1, 1, 0);
-CHitData	hitData;
-int nHitType = FindHitpoint (&fq, &hitData);
-return (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)));
+CHitResult	hitResult;
+int nHitType = FindHitpoint (&fq, &hitResult);
+return (!nHitType || ((nHitType == HIT_WALL) && (hitResult.hit.nSegment == nDestSeg)));
 
 #endif
 }

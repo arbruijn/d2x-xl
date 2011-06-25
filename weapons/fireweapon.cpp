@@ -329,10 +329,10 @@ TransformGunPoint (objP, vGunPoints, nGun, xDelay, nLaserType, &vLaserPos, &m);
 CHitQuery			fq (FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS, &posP->vPos, &vLaserPos,
 							 (bSpectate ? gameStates.app.nPlayerSegment : objP->info.nSegment), objP->Index (),
 							 0x10, 0x10);
-CHitData				hitData;
+CHitResult				hitResult;
 
-nFate = FindHitpoint (&fq, &hitData);
-nLaserSeg = hitData.hit.nSegment;
+nFate = FindHitpoint (&fq, &hitResult);
+nLaserSeg = hitResult.hit.nSegment;
 if (nLaserSeg == -1) {	//some sort of annoying error
 	return -1;
 	}
@@ -347,9 +347,9 @@ if (nFate == HIT_WALL) {
 //as of 12/6/94, we don't care if the laser is stuck in an object. We
 //just fire away normally
 if (nFate == HIT_OBJECT) {
-	if (OBJECTS [hitData.hitObject].nType == OBJ_ROBOT)
-		OBJECTS [hitData.hitObject].Die ();
-	if (OBJECTS [hitData.hitObject].nType != OBJ_POWERUP)
+	if (OBJECTS [hitResult.hitObject].nType == OBJ_ROBOT)
+		OBJECTS [hitResult.hitObject].Die ();
+	if (OBJECTS [hitResult.hitObject].nType != OBJ_POWERUP)
 		return;
 	}
 #endif

@@ -134,7 +134,7 @@ void MoveAwayFromOtherRobots (CObject *objP, CFixVector& vVecToTarget)
 	short				nStartSeg, nDestSeg, nObject, nSide, nAvoidObjs;
 	CObject			*avoidObjP;
 	CSegment			*segP;
-	CHitData			hitData;
+	CHitResult			hitResult;
 	int				hitType;
 
 vAvoidPos.SetZero ();
@@ -172,7 +172,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 					continue;
 
 				CHitQuery fq (0, &objP->info.position.vPos, &vNewPos, nStartSeg, objP->Index (), objP->info.xSize, objP->info.xSize);
-				hitType = FindHitpoint (&fq, &hitData);
+				hitType = FindHitpoint (&fq, &hitResult);
 				if (hitType != HIT_NONE)
 					continue;
 				}

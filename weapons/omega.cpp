@@ -289,14 +289,14 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	               + vPerturb * (I2X (1) / 16);
 	vTargetPos = *vMuzzle + perturbed_fvec * MAX_OMEGA_DIST;
 	CHitQuery	fq (FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS, vMuzzle, &vTargetPos, nFiringSeg, OBJ_IDX (parentObjP));
-	CHitData		hitData;
-	int fate = FindHitpoint (&fq, &hitData);
+	CHitResult		hitResult;
+	int fate = FindHitpoint (&fq, &hitResult);
 	if (fate != HIT_NONE) {
-		if (hitData.hit.nSegment != -1)		//	How can this be?  We went from inside the mine to outside without hitting anything?
-			vTargetPos = hitData.hit.vPoint;
+		if (hitResult.hit.nSegment != -1)		//	How can this be?  We went from inside the mine to outside without hitting anything?
+			vTargetPos = hitResult.hit.vPoint;
 		else {
 #if DBG
-			fate = FindHitpoint (&fq, &hitData);
+			fate = FindHitpoint (&fq, &hitResult);
 #endif
 			return;
 			}

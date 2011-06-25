@@ -565,7 +565,7 @@ if (gameData.segs.bSegVis [1][i >> 2] & (3 << ((i & 3) << 1))) // face visible
 #endif
 
 	CHitQuery		fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nLightSeg, -1, 1, 0);
-	CHitData			hitData;
+	CHitResult			hitResult;
 #if !FAST_POINTVIS
 	CFixVector		p0;
 #endif
@@ -610,18 +610,18 @@ for (i = 4; i >= -4; i--) {
 			dMin = d;
 #if 0
 		int canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, 0);
-		int nHitType = FindHitpoint (&fq, &hitData);
-		if (canSee != (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg)))) {
+		int nHitType = FindHitpoint (&fq, &hitResult);
+		if (canSee != (!nHitType || ((nHitType == HIT_WALL) && (hitResult.hit.nSegment == nDestSeg)))) {
 			canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, 0);
-			nHitType = FindHitpoint (&fq, &hitData);
+			nHitType = FindHitpoint (&fq, &hitResult);
 			}
-		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
+		if (!nHitType || ((nHitType == HIT_WALL) && (hitResult.hit.nSegment == nDestSeg))) {
 #else
 #	if FAST_POINTVIS
 		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, 0)) {
 #	else
-		int nHitType = FindHitpoint (&fq, &hitData);
-		if (!nHitType || ((nHitType == HIT_WALL) && (hitData.hit.nSegment == nDestSeg))) {
+		int nHitType = FindHitpoint (&fq, &hitResult);
+		if (!nHitType || ((nHitType == HIT_WALL) && (hitResult.hit.nSegment == nDestSeg))) {
 #	endif
 #endif
 			i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);

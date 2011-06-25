@@ -69,10 +69,10 @@ if ((*vPos) != objP->info.position.vPos) {
 else
 	fq.nSegment	= objP->info.nSegment;
 
-gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitData);
-gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
-gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
-if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitData.hit.nObject != TARGETOBJ->Index ()))
+gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitResult);
+gameData.ai.vHitPos = gameData.ai.hitResult.hit.vPoint;
+gameData.ai.nHitSeg = gameData.ai.hitResult.hit.nSegment;
+if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitResult.hit.nObject != TARGETOBJ->Index ()))
 	return 0;
 dot = CFixVector::Dot (*vVecToTarget, objP->info.position.mOrient.m.dir.f);
 if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9))
@@ -126,13 +126,13 @@ nSize = objP->info.xSize;
 objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested
 objP->info.xSize = I2X (2);						//chose some meaningful small size to simulate a weapon
 
-gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitData);
+gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitResult);
 #if DBG
 if (gameData.ai.nHitType == 0)
-	FindHitpoint (&fq, &gameData.ai.hitData);
+	FindHitpoint (&fq, &gameData.ai.hitResult);
 #endif
-gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
-gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
+gameData.ai.vHitPos = gameData.ai.hitResult.hit.vPoint;
+gameData.ai.nHitSeg = gameData.ai.hitResult.hit.nSegment;
 objP->rType.polyObjInfo.nModel = nModel;
 objP->info.xSize = nSize;
 return (gameData.ai.nHitType == HIT_NONE);

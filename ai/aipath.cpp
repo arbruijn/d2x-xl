@@ -149,7 +149,7 @@ void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, CObject *objP, int bRa
 	CFixVector	vGoalPos;
 	int			count;
 	int			nTempSeg;
-	CHitData		hitData;
+	CHitResult		hitResult;
 	int			nHitType;
 
 j = *nPoints;
@@ -216,15 +216,15 @@ for (i = 1, --j; i < j; i++) {
 	count = 3;
 	while (count) {
 		CHitQuery fq (0, &ptSegs [i].point, &vGoalPos, ptSegs [i].nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
-		nHitType = FindHitpoint (&fq, &hitData);
+		nHitType = FindHitpoint (&fq, &hitResult);
 		if (nHitType == HIT_NONE)
 			count = 0;
 		else {
 			if ((count == 3) && (nHitType == HIT_BAD_P0))
 				return;
-			vGoalPos.v.coord.x = ((*fq.p0).v.coord.x + hitData.hit.vPoint.v.coord.x)/2;
-			vGoalPos.v.coord.y = ((*fq.p0).v.coord.y + hitData.hit.vPoint.v.coord.y)/2;
-			vGoalPos.v.coord.z = ((*fq.p0).v.coord.z + hitData.hit.vPoint.v.coord.z)/2;
+			vGoalPos.v.coord.x = ((*fq.p0).v.coord.x + hitResult.hit.vPoint.v.coord.x)/2;
+			vGoalPos.v.coord.y = ((*fq.p0).v.coord.y + hitResult.hit.vPoint.v.coord.y)/2;
+			vGoalPos.v.coord.z = ((*fq.p0).v.coord.z + hitResult.hit.vPoint.v.coord.z)/2;
 			if (!--count)	//	Couldn't move towards outside, that's ok, sometimes things can't be moved.
 				vGoalPos = ptSegs [i].point;
 			}
@@ -273,7 +273,7 @@ int CreatePathPoints (CObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	CSegment*			segP;
 	CFixVector			vCenter;
 	int					nParentSeg, nDestSeg;
-	CHitData				hitData;
+	CHitResult				hitResult;
 	int					hitType;
 	int					bAvoidTarget;
 
@@ -330,7 +330,7 @@ while (nCurSeg != nEndSeg) {
 		if (bAvoidTarget && ((nCurSeg == nAvoidSeg) || (nDestSeg == nAvoidSeg))) {
 			vCenter = segP->SideCenter (hSide);
 			CHitQuery fq (0, &objP->Position (), &vCenter, objP->info.nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
-			hitType = FindHitpoint (&fq, &hitData);
+			hitType = FindHitpoint (&fq, &hitResult);
 			if (hitType != HIT_NONE)
 				continue;
 			}
@@ -450,7 +450,7 @@ int SmoothPath (CObject *objP, tPointSeg *pointSegP, int numPoints)
 return numPoints;
 #else
 	int			i, nFirstPoint = 0;
-	CHitData		hitData;
+	CHitResult		hitResult;
 	int			hitType;
 
 
@@ -466,7 +466,7 @@ if (ROBOTINFO (objP->info.nId).companion) {
 CHitQuery fq (0, &objP->Position (), NULL, objP->info.nSegment, objP->info.xSize, objP->info.xSize, objP->Index ());
 for (i = 0; i < 2; i++) {
 	fq.p1 = &pointSegP [i].point;
-	hitType = FindHitpoint (&fq, &hitData);
+	hitType = FindHitpoint (&fq, &hitResult);
 	if (hitType != HIT_NONE)
 		break;
 	nFirstPoint = i + 1;
@@ -785,7 +785,7 @@ else
 // -- too much work -- int attackKillObject (CObject *objP)
 // -- too much work -- {
 // -- too much work -- 	CObject		*kill_objp;
-// -- too much work -- 	CHitData		hitData;
+// -- too much work -- 	CHitResult		hitResult;
 // -- too much work -- 	int			fate;
 // -- too much work -- 	CHitQuery	fq;
 // -- too much work --
@@ -802,7 +802,7 @@ else
 // -- too much work -- 	fq.ignoreObjList	= NULL;
 // -- too much work -- 	fq.flags					= 0;
 // -- too much work --
-// -- too much work -- 	fate = FindHitpoint (&fq, &hitData);
+// -- too much work -- 	fate = FindHitpoint (&fq, &hitResult);
 // -- too much work --
 // -- too much work -- 	if (fate == HIT_NONE)
 // -- too much work -- 		return 1;
@@ -1047,7 +1047,7 @@ while (xDistToGoal < thresholdDistance) {
 			//	If not, turn around.
 			int			nOppositeEndIndex;
 			CFixVector	*vOppositeEndPoint;
-			CHitData		hitData;
+			CHitResult		hitResult;
 			int			fate;
 
 			// See which end we're nearer and look at the opposite end point.
@@ -1063,7 +1063,7 @@ while (xDistToGoal < thresholdDistance) {
 			vOppositeEndPoint = &gameData.ai.routeSegs [aiP->nHideIndex + nOppositeEndIndex].point;
 
 			CHitQuery fq (0, &objP->Position (), vOppositeEndPoint, objP->info.nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);
-			fate = FindHitpoint (&fq, &hitData);
+			fate = FindHitpoint (&fq, &hitResult);
 			if (fate != HIT_WALL) {
 				//	We can be circular! Do it!
 				//	Path direction is unchanged.

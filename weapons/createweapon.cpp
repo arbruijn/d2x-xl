@@ -407,7 +407,7 @@ return nObject;
 //	Calls CreateNewWeapon, but takes care of the CSegment and point computation for you.
 int CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, short parent, ubyte nWeaponType, int bMakeSound)
 {
-	CHitData		hitData;
+	CHitResult		hitResult;
 	CObject*		parentObjP = OBJECTS + parent;
 	int			fate;
 
@@ -419,12 +419,12 @@ int CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, short 
 	//	in the same CSegment as the source point.
 
 CHitQuery fq (FQ_TRANSWALL | FQ_CHECK_OBJS, &parentObjP->info.position.vPos, vPosition, parentObjP->info.nSegment, OBJ_IDX (parentObjP));
-fate = FindHitpoint (&fq, &hitData);
-if ((fate != HIT_NONE)  || (hitData.hit.nSegment == -1))
+fate = FindHitpoint (&fq, &hitResult);
+if ((fate != HIT_NONE)  || (hitResult.hit.nSegment == -1))
 	return -1;
 
 #if DBG
-if (!hitData.hit.nSegment) {
+if (!hitResult.hit.nSegment) {
 	fq.p0					= &parentObjP->info.position.vPos;
 	fq.nSegment			= parentObjP->info.nSegment;
 	fq.p1					= vPosition;
@@ -434,11 +434,11 @@ if (!hitData.hit.nSegment) {
 	fq.ignoreObjList	= NULL;
 	fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
 
-	fate = FindHitpoint (&fq, &hitData);
+	fate = FindHitpoint (&fq, &hitResult);
 	}
 #endif
 
-return CreateNewWeapon (vDirection, &hitData.hit.vPoint, (short) hitData.hit.nSegment, parent, nWeaponType, bMakeSound);
+return CreateNewWeapon (vDirection, &hitResult.hit.vPoint, (short) hitResult.hit.nSegment, parent, nWeaponType, bMakeSound);
 }
 
 //	-------------------------------------------------------------------------------------------

@@ -427,7 +427,7 @@ if (m_nDestSeg >= 0)
 
 #if 0
 	CHitQuery	fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], route [0].nNode, -1, 1, 0);
-	CHitData		hitData;
+	CHitResult		hitResult;
 #endif
 	CFixVector* p0, *p1;
 	short			nStartSeg, nDestSeg;
@@ -446,8 +446,8 @@ for (int i = 0, j; i < h; i = j) {
 		p1 = &SEGMENTS [nDestSeg].Center ();
 #else
 		fq.p1 = &SEGMENTS [nDestSeg].Center ();
-		int nHitType = FindHitpoint (&fq, &hitData);
-		if (nHitType && ((nHitType != HIT_WALL) || (hitData.hit.nSegment != nDestSeg)))
+		int nHitType = FindHitpoint (&fq, &hitResult);
+		if (nHitType && ((nHitType != HIT_WALL) || (hitResult.hit.nSegment != nDestSeg)))
 			break;
 		p1 = fq.p1;
 #endif

@@ -170,9 +170,6 @@ typedef struct awareness_event {
 
 //	These globals are set by a call to FindHitpoint, which is a slow routine,
 //	so we don't want to call it again (for this CObject) unless we have to.
-CFixVector	Hit_pos;
-int			hitType, Hit_seg;
-CHitData		hitData;
 
 #define	D1_AIS_MAX	8
 #define	D1_AIE_MAX	4
@@ -577,10 +574,10 @@ if (fq.nSegment == nDbgSeg)
 if (fq.nObject == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
-hitType = FindHitpoint (&fq, &hitData);
-Hit_pos = hitData.hit.vPoint;
-Hit_seg = hitData.hit.nSegment;
-if (/*(hitType == HIT_NONE) ||*/ ((hitType == HIT_OBJECT) && (hitData.hit.nObject == LOCALPLAYER.nObject))) {
+hitType = FindHitpoint (&fq, &hitResult);
+Hit_pos = hitResult.hit.vPoint;
+Hit_seg = hitResult.hit.nSegment;
+if (/*(hitType == HIT_NONE) ||*/ ((hitType == HIT_OBJECT) && (hitResult.hit.nObject == LOCALPLAYER.nObject))) {
 	dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.m.dir.f);
 	return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 	}

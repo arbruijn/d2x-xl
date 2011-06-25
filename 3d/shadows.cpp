@@ -1088,7 +1088,7 @@ return G3_INFINITY;
 #else //slower method
 
 	CHitQuery	fq;
-	CHitData		fi;
+	CHitResult		fi;
 	CFixVector	dir;
 
 if (!gameOpts->render.shadows.nClip)

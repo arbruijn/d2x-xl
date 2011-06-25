@@ -125,14 +125,14 @@ return nTranspType;
 int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment, fix xRad)
 {
 	CHitQuery	fq (FQ_TRANSWALL, vSource, vDest, -1, objP ? objP->Index () : -1, 1, xRad);
-	CHitData		hitData;
+	CHitResult		hitResult;
 
 if (SPECTATOR (objP))
 	fq.nSegment = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 else
 	fq.nSegment = objP ? objP->info.nSegment : nSegment;
 
-int nHitType = FindHitpoint (&fq, &hitData);
+int nHitType = FindHitpoint (&fq, &hitResult);
 return nHitType != HIT_WALL;
 }
 
@@ -147,10 +147,10 @@ int CanSeeObject (int nObject, int bCheckObjs)
 						 gameData.objs.viewerP->info.nSegment,
 						 gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP)
 						);
-	CHitData		hitData;
+	CHitResult		hitResult;
 
-int nHitType = FindHitpoint (&fq, &hitData);
-return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitData.hit.nObject == nObject) : (nHitType != HIT_WALL);
+int nHitType = FindHitpoint (&fq, &hitResult);
+return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.hit.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -159,7 +159,7 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitData.hit.nObject == nObject)
 int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType)
 {
 	CHitQuery	fq;
-	CHitData		hitData;
+	CHitResult		hitResult;
 	int			fate, nTries = 0, bSpectate = SPECTATOR (objP1);
 
 do {
@@ -181,7 +181,7 @@ do {
 		}
 	else
 		fq.nSegment	= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
-	fate = gameData.segs.SegVis (fq.nSegment, objP2->Segment ()) ? FindHitpoint (&fq, &hitData) : HIT_WALL;
+	fate = gameData.segs.SegVis (fq.nSegment, objP2->Segment ()) ? FindHitpoint (&fq, &hitResult) : HIT_WALL;
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));
 return (fate == HIT_NONE) || (fate == HIT_BAD_P0);
@@ -195,7 +195,7 @@ int TargetInLineOfFire (void)
 return 0;
 #else
 	int			nType;
-	CHitData		hitData;
+	CHitResult		hitResult;
 	CObject*		objP;
 
 	//see if we can see this CPlayerData
@@ -208,10 +208,10 @@ CHitQuery fq (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TRANSWAL
 				  OBJ_IDX (gameData.objs.viewerP)
 				 );
 
-int nHitType = FindHitpoint (&fq, &hitData);
+int nHitType = FindHitpoint (&fq, &hitResult);
 if (nHitType != HIT_OBJECT)
 	return 0;
-objP = OBJECTS + hitData.hit.nObject;
+objP = OBJECTS + hitResult.hit.nObject;
 nType = objP->Type ();
 if (nType == OBJ_ROBOT) 
 	return int (!objP->IsGuideBot ());
