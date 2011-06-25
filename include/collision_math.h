@@ -55,7 +55,10 @@ class CHitData {
 			vNormal.SetZero ();
 			}
 
-	inline CHitData& operator= (CHitData& other) { memcpy (this, &other, sizeof (CHitData)); }
+	inline CHitData& operator= (const CHitData& other) { 
+		memcpy (this, &other, sizeof (CHitData)); 
+		return *this;
+		}
 			
 	};
 

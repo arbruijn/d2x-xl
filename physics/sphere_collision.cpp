@@ -877,11 +877,11 @@ if (endMask) { //on the back of at least one face
 							*nSegments += CopySegList (segList, *nSegments, subSegList, nSubSegments, hitQuery.flags);
 							}
 						else {
-							gameData.collisions.hitResult = saveHitData;    
+							*((CHitData *) &gameData.collisions.hitResult) = saveHitData;    
  							}
 						}
 					else {
-						gameData.collisions.hitResult = saveHitData;    
+						*((CHitData *) &gameData.collisions.hitResult) = saveHitData;    
 						if (subHit.nSegment != -1)
 							nHitNoneSegment = subHit.nSegment;
 						nHitNoneSegs = CopySegList (hitNoneSegList, 0, subSegList, nSubSegments, hitQuery.flags);
@@ -1033,8 +1033,8 @@ if ((curHit.nSegment != -1) && (hitQuery.flags & FQ_GET_SEGLIST))
 			hitResult.nSegments = i + 1;
 			break;
 		}
-hitResult.hit = gameData.collisions.hitResult;
-hitResult.hit = curHit;
+*((CHitInfo *) &hitResult) = gameData.collisions.hitResult;
+*((CHitData *) &hitResult) = curHit;
 Assert ((curHit.nType != HIT_OBJECT) || (gameData.collisions.hitResult.nObject != -1));
 return curHit.nType;
 }

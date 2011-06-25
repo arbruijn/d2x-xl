@@ -578,7 +578,7 @@ if (hitQuery.nObject == nDbgObj)
 #endif
 CHitResult hitResult;
 FindHitpoint (hitQuery, aiHitResult);
-if (/*(hitType == HIT_NONE) ||*/ ((aiHitResult.hit.nType == HIT_OBJECT) && (aiHitResult.hit.nObject == LOCALPLAYER.nObject))) {
+if (/*(hitType == HIT_NONE) ||*/ ((aiHitResult.nType == HIT_OBJECT) && (aiHitResult.nObject == LOCALPLAYER.nObject))) {
 	dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.m.dir.f);
 	return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 	}
@@ -1663,7 +1663,7 @@ if (player_visibility == 2) {
 else if (WI_homingFlag (objP->info.nId) == 1) {
 	//	Robots which fire homing weapons might fire even if they don't have a bead on the playerP.
 	if (((!object_animates) || (ailP->achievedState [aiP->CURRENT_GUN] == D1_AIS_FIRE)) &&
-		 (ailP->nextPrimaryFire <= 0) && (CFixVector::Dist (aiHitResult.hit.vPoint, objP->info.position.vPos) > I2X (40))) {
+		 (ailP->nextPrimaryFire <= 0) && (CFixVector::Dist (aiHitResult.vPoint, objP->info.position.vPos) > I2X (40))) {
 		if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION))
 			return;
 		ai_fire_laser_at_player(objP, vGunPoint);

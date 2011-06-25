@@ -278,16 +278,16 @@ if (SEGMENTS [objP->info.nSegment].m_function == SEGMENT_FUNC_CONTROLCEN)
 
 #if 1 //UNSTICK_OBJS
 
-int BounceObject (CObject *objP, CHitResult	hi, float fOffs, fix *pxSideDists)
+int BounceObject (CObject *objP, CHitResult hitResult, float fOffs, fix *pxSideDists)
 {
 	fix	xSideDist, xSideDists [6];
 	short	nSegment;
 
 if (!pxSideDists) {
-	SEGMENTS [hi.hit.nSideSegment].GetSideDists (objP->info.position.vPos, xSideDists, 1);
+	SEGMENTS [hitResult.nSideSegment].GetSideDists (objP->info.position.vPos, xSideDists, 1);
 	pxSideDists = xSideDists;
 	}
-xSideDist = pxSideDists [hi.hit.nSide];
+xSideDist = pxSideDists [hitResult.nSide];
 if (/*(0 <= xSideDist) && */
 	 (xSideDist < objP->info.xSize - objP->info.xSize / 100)) {
 #if 0
@@ -298,9 +298,9 @@ if (/*(0 <= xSideDist) && */
 	xSideDist = objP->info.xSize - xSideDist;
 	r = ((float) xSideDist / (float) objP->info.xSize) * X2F (objP->info.xSize);
 #	endif
-	objP->info.position.vPos.v.coord.x += (fix) ((float) hi.hit.vNormal.v.coord.x * fOffs);
-	objP->info.position.vPos.v.coord.y += (fix) ((float) hi.hit.vNormal.v.coord.y * fOffs);
-	objP->info.position.vPos.v.coord.z += (fix) ((float) hi.hit.vNormal.v.coord.z * fOffs);
+	objP->info.position.vPos.v.coord.x += (fix) ((float) hitResult.vNormal.v.coord.x * fOffs);
+	objP->info.position.vPos.v.coord.y += (fix) ((float) hitResult.vNormal.v.coord.y * fOffs);
+	objP->info.position.vPos.v.coord.z += (fix) ((float) hitResult.vNormal.v.coord.z * fOffs);
 #endif
 	nSegment = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments)) {
@@ -312,7 +312,7 @@ if (/*(0 <= xSideDist) && */
 	objP->RelinkToSeg (nSegment);
 #if DBG
 	if (objP->info.nType == OBJ_PLAYER)
-		HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->info.xSize - pxSideDists [hi.hit.nSide], r);
+		HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->info.xSize - pxSideDists [hitResult.nSide], r);
 #endif
 	return 1;
 	}
@@ -875,7 +875,7 @@ retryMove:
 					vNewPos += vFrame * s;
 					info.position.vPos = vNewPos;
 					}
-				s = CheckVectorObjectCollision (hitResult.hit, &info.position.vPos, &vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
+				s = CheckVectorObjectCollision (hitResult, &info.position.vPos, &vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
 				}
 			info.position.vPos = vNewPos;
 			}
