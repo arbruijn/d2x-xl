@@ -239,7 +239,7 @@ int FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector* p1, CFixV
 	CFixVector	vHit;
 
 intersection.SetZero ();
-for (i = 0; i <= 4; i++)
+for (i = 0; i < 4; i++)
 	if (FindLineQuadIntersection (vHit, p2, vn2, p1 + i, p1 + ((i + 1) % 4), 0) < 0x7fffffff) {
 #if DBG
 		FindLineQuadIntersection (vHit, p2, vn2, p1 + i, p1 + ((i + 1) % 4), 0);
