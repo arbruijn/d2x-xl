@@ -114,7 +114,9 @@ class CHitQuery {
 		short*		ignoreObjList;
 
 	public:
-		CHitQuery () { memset (this, 0xff, sizeof (*this)); }
+		CHitQuery () 
+			: flags (0), p0 (NULL), p1 (NULL), nSegment (-1), nObject (-1), radP0 (0), radP1 (0), ignoreObjList (NULL) 
+			{}
 		CHitQuery (int flags, CFixVector* p0, CFixVector* p1, short nSegment, short nObject = -1, fix radP0 = 0, fix radP1 = 0, short* ignoreObjList = NULL)
 			: flags (flags), p0 (p0), p1 (p1), nSegment (nSegment), nObject (nObject), radP0 (radP0), radP1 (radP1), ignoreObjList (ignoreObjList)
 			{}

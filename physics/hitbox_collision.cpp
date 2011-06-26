@@ -270,7 +270,7 @@ int FindHitboxIntersection (CFixVector& intersection, CFixVector& normal, tBox *
 // be used multiple times
 for (i = 0, pf1 = phb1->faces; i < 6; i++, pf1++) {
 	for (j = 0, pf2 = phb2->faces; j < 6; j++, pf2++) {
-#if 0
+#if 1
 		if (CFixVector::Dot (pf1->n [1], pf2->n [1]) >= 0)
 			continue;
 #endif
