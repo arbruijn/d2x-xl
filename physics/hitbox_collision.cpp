@@ -151,28 +151,41 @@ return 0;
 // vPlanePoint & vPlaneNorm describe the plane
 // p0 & p1 are the ends of the line
 
-int FindLineQuadIntersectionSub (CFixVector& intersection, CFixVector* vPlanePoint, CFixVector* vPlaneNorm, CFixVector* p0, CFixVector* p1, fix rad)
+int FindLineQuadIntersectionSub (CFixVector& intersection, CFixVector* vPlane, CFixVector* vNormal, CFixVector* p0, CFixVector* p1, fix rad)
 {
+#if 1
+	CFloatVector n, u, w;
+
+u.Assign (*p1 - *p0);
+n.Assign (*vNormal);
+float den = -CFloatVector::Dot (n, u);
+if ((den > -1e-6f) && (den < 1e-6f)) {// ~ parallel
+	return 0;
+	}
+w.Assign (*p0 - *vPlane);
+float num = CFloatVector::Dot (n, w);
+float s = num / den;
+if ((s < -0.001f) || (s > 1.001f)) // compensate small numerical errors
+	return 0;
+if (s < 0.0f)
+	s = 0.0f;
+else if (s > 1.0f)
+	s = 1.0f;
+u *= s;
+intersection.Assign (u);
+intersection += *p0;
+#else
 	CFixVector	d, w;
 	double		num, den;
 
-w = *vPlanePoint - *p0;
+w = *vPlane - *p0;
 d = *p1 - *p0;
-num = double (CFixVector::Dot (*vPlaneNorm, w) - rad) / 65536.0;
-den = double (CFixVector::Dot (*vPlaneNorm, d)) / 65536.0;
+num = double (CFixVector::Dot (*vNormal, w) - rad) / 65536.0;
+den = double (CFixVector::Dot (*vNormal, d)) / 65536.0;
 if (fabs (den) < 1e-10)
 	return 0;
 if (fabs (num) > fabs (den))
 	return 0;
-#if 0
-//do check for potential overflow
-if (labs (num) / (I2X (1) / 2) >= labs (den))
-return 0;
-#endif
-#if 0
-d *= FixDiv (num, den);
-intersection = (*p0) + d;
-#else
 num /= den;
 intersection.v.coord.x = fix (double (p0->v.coord.x) + double (d.v.coord.x) * num);
 intersection.v.coord.y = fix (double (p0->v.coord.y) + double (d.v.coord.y) * num);
@@ -220,14 +233,21 @@ return dist;
 // Simple intersection check by checking whether any of the edges of plane p1
 // penetrate p2. Returns average of all penetration points.
 
-int FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector& normal, CFixVector* p1, CFixVector* vn1, CFixVector* p2, CFixVector* vn2, CFixVector* vRef, fix& dMin)
+int FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector& normal, CFixVector* p1, CFixVector* p2, CFixVector* vn2, CFixVector* vRef, fix& dMin)
 {
 	int			i, nHits = 0;
-	CFixVector	vHit;
+	CFixVector	vHit, p0;
 
-for (i = 0; i < 4; i++)
-	if (FindLineQuadIntersection (vHit, p2, vn2, p1 + i, p1 + ((i + 1) % 4), 0) < 0x7fffffff) 
-		nHits += RegisterHit (&intersection, &normal, &vHit, vn2, vRef, dMin);
+vHit.SetZero ();
+for (i = 0; i <= 4; i++)
+	if (FindLineQuadIntersection (p0, p2, vn2, p1 + i, p1 + ((i + 1) % 4), 0) < 0x7fffffff) {
+		nHits++;
+		vHit += p0;
+		}
+if (nHits) {
+	vHit /= I2X (nHits);
+	nHits = RegisterHit (&intersection, &normal, &vHit, vn2, vRef, dMin);
+	}
 return nHits;
 }
 
@@ -236,8 +256,8 @@ return nHits;
 int FindQuadQuadIntersection (CFixVector& intersection, CFixVector& normal, CFixVector* p0, CFixVector* vn1, CFixVector* p1, CFixVector* vn2, CFixVector* vRef, fix& dMin)
 {
 // test whether any edges of p0 penetrate p1
-return FindQuadQuadIntersectionSub (intersection, normal, p0, vn1, p1, vn2, vRef, dMin) + 
-		 FindQuadQuadIntersectionSub (intersection, normal, p1, vn2, p0, vn1, vRef, dMin);
+return FindQuadQuadIntersectionSub (intersection, normal, p0, p1, vn2, vRef, dMin) + 
+		 FindQuadQuadIntersectionSub (intersection, normal, p1, p0, vn1, vRef, dMin);
 }
 
 //	-----------------------------------------------------------------------------
