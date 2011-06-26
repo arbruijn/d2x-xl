@@ -1563,7 +1563,7 @@ CFixMatrix *CObject::View (void)
 
 if (viewP->nFrame != gameData.objs.nFrameCount) {
 	viewP->mView = OBJPOS (this)->mOrient.Transpose ();
-	viewP->nFrame = gameStates.render.nFrameCount;
+	viewP->nFrame = gameData.objs.nFrameCount;
 	}
 return &viewP->mView;
 }

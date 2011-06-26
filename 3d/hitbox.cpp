@@ -246,8 +246,8 @@ gameData.models.hitboxes [nId].nFrame = gameData.objs.nFrameCount;
 	int			i, j, iBox, nBoxes;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
-	iBox =
-	nBoxes = 0;
+	iBox = 0;
+	nBoxes = 1;
 	}
 else {
 	iBox = 1;
@@ -255,7 +255,7 @@ else {
 	}
 if (!vPos)
 	vPos = &objP->info.position.vPos;
-for (phb += iBox, pmhb += iBox; iBox <= nBoxes; iBox++, phb++, pmhb++) {
+for (phb += iBox, pmhb += iBox; iBox < nBoxes; iBox++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++) {
 		rotVerts [i] = *viewP * pmhb->box.vertices [i];
 		rotVerts [i] += *vPos;

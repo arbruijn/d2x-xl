@@ -132,14 +132,14 @@ for (; iBox <= nBoxes; iBox++) {
 		}
 	glEnd ();
 	glLineWidth (3);
-	if ((objP->info.nType == OBJ_PLAYER) && (iBox == 1))
+	if ((objP->info.nType == OBJ_PLAYER) && (iBox == nDbgBox))
 		glColor4f (1.0f, 0, 0, alpha);
 	else
 		glColor4f (red, green, blue, alpha);
 	for (i = 0; i < 6; i++) {
 		CFixVector coord;
 		coord.SetZero ();
-		if ((objP->info.nType == OBJ_PLAYER) && (iBox == 1))
+		if ((objP->info.nType == OBJ_PLAYER) && (iBox == nDbgBox))
 			glColor4f (1.0f, 0, 0, alpha);
 		else
 			glColor4f (red, green, blue, alpha);

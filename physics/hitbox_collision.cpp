@@ -153,7 +153,7 @@ return 0;
 
 int FindLineQuadIntersectionSub (CFixVector& intersection, CFixVector* vPlane, CFixVector* vNormal, CFixVector* p0, CFixVector* p1, fix rad)
 {
-#if 1
+#if 0
 	CFloatVector n, u, w;
 
 u.Assign (*p1 - *p0);
@@ -241,6 +241,9 @@ int FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector* p1, CFixV
 intersection.SetZero ();
 for (i = 0; i <= 4; i++)
 	if (FindLineQuadIntersection (vHit, p2, vn2, p1 + i, p1 + ((i + 1) % 4), 0) < 0x7fffffff) {
+#if DBG
+		FindLineQuadIntersection (vHit, p2, vn2, p1 + i, p1 + ((i + 1) % 4), 0);
+#endif
 		++nHits;
 		intersection += vHit;
 		}
