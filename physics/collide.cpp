@@ -351,7 +351,7 @@ if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL
 	if (vel0.IsZero ())
 		vForce0.SetZero (), vRotForce0.SetZero ();
 	else {
-		if (thisP->IsStatic ())
+		if (otherP->IsStatic ())
 			vDistNorm = *vNormal;
 		else {
 			vDistNorm = vDist;
@@ -376,9 +376,11 @@ if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL
 	else {
 		if (thisP->IsStatic ())
 			vDistNorm = *vNormal;
-		else
-			vDistNorm.Neg ();
-		CFixVector::Normalize (vDistNorm);
+		else {
+			vDistNorm = vDist;
+			CFixVector::Normalize (vDistNorm);
+			}
+		vDistNorm.Neg ();
 		vVelNorm = vel1;
 		mag = CFixVector::Normalize (vVelNorm);
 		dot = CFixVector::Dot (vVelNorm, vDistNorm);
