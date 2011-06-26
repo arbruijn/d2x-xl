@@ -366,7 +366,7 @@ if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL
 			if (dot > I2X (1))
 				dot = I2X (1);
 			vForce0 = vDistNorm * FixMul (dot, mag);	// scale objects movement vector with the angle to calculate the impulse on the other object
-			vRotForce0 = vVelNorm * FixMul (dot, I2X (1) - mag);
+			vRotForce0 = vVelNorm * FixMul (I2X (1) - dot, mag);
 			vel0 -= vForce0;
 			}
 		}
@@ -390,15 +390,16 @@ if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL
 			if (dot > I2X (1))
 				dot = I2X (1);
 			vForce1 = vDistNorm * FixMul (dot, mag); 
-			vRotForce1 = vVelNorm * FixMul (dot, I2X (1) - mag);
+			vRotForce1 = vVelNorm * FixMul (I2X (1) - dot, mag);
 			vel1 -= vForce1;
 			}
 		}
 
 	vRes0 = (vForce0 * diffMass + vForce1 * (2 * mass1)) / totalMass;
-	vRot0 = (vRotForce0 * diffMass + vRotForce1 * (2 * mass1)) / totalMass;
 	vRes1 = (vForce1 * -diffMass + vForce0 * (2 * mass0)) / totalMass;
-	vRot1 = (vRotForce1 * -diffMass + vRotForce0 * (2 * mass0)) / totalMass;
+	// don't divide by the total mass here or ApplyRotForce() will scale down the forces too much
+	vRot0 = (vRotForce0 * diffMass + vRotForce1 * (2 * mass1)) /*/ totalMass*/;
+	vRot1 = (vRotForce1 * -diffMass + vRotForce0 * (2 * mass0)) /*/ totalMass*/;
 #if 1
 	if (thisP->info.nType == OBJ_PLAYER)
 		vRes0 *= (I2X (1) / 4);
