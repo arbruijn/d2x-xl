@@ -233,21 +233,19 @@ return dist;
 // Simple intersection check by checking whether any of the edges of plane p1
 // penetrate p2. Returns average of all penetration points.
 
-int FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector& normal, CFixVector* p1, CFixVector* p2, CFixVector* vn2, CFixVector* vRef, fix& dMin)
+int FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector* p1, CFixVector* p2, CFixVector* vn2, CFixVector* vRef, fix& dMin)
 {
 	int			i, nHits = 0;
-	CFixVector	vHit, p0;
+	CFixVector	vHit;
 
-vHit.SetZero ();
+intersection.SetZero ();
 for (i = 0; i <= 4; i++)
-	if (FindLineQuadIntersection (p0, p2, vn2, p1 + i, p1 + ((i + 1) % 4), 0) < 0x7fffffff) {
-		nHits++;
-		vHit += p0;
+	if (FindLineQuadIntersection (vHit, p2, vn2, p1 + i, p1 + ((i + 1) % 4), 0) < 0x7fffffff) {
+		++nHits;
+		intersection += vHit;
 		}
-if (nHits) {
-	vHit /= I2X (nHits);
-	nHits = RegisterHit (&intersection, &normal, &vHit, vn2, vRef, dMin);
-	}
+if (nHits > 1)
+	intersection /= I2X (nHits);
 return nHits;
 }
 
@@ -255,9 +253,15 @@ return nHits;
 
 int FindQuadQuadIntersection (CFixVector& intersection, CFixVector& normal, CFixVector* p0, CFixVector* vn1, CFixVector* p1, CFixVector* vn2, CFixVector* vRef, fix& dMin)
 {
+	CFixVector	vHit;
+	int			nHits = 0;
+
 // test whether any edges of p0 penetrate p1
-return FindQuadQuadIntersectionSub (intersection, normal, p0, p1, vn2, vRef, dMin) + 
-		 FindQuadQuadIntersectionSub (intersection, normal, p1, p0, vn1, vRef, dMin);
+if (FindQuadQuadIntersectionSub (vHit, p0, p1, vn2, vRef, dMin))
+	nHits += RegisterHit (&intersection, &normal, &vHit, vn2, vRef, dMin);
+if (FindQuadQuadIntersectionSub (vHit, p1, p0, vn1, vRef, dMin))
+	nHits += RegisterHit (&intersection, &normal, &vHit, vn2, vRef, dMin);
+return nHits;
 }
 
 //	-----------------------------------------------------------------------------
@@ -357,6 +361,7 @@ if (nTotalHits) {
 	pmhb1->tHit = pmhb2->tHit = gameStates.app.nSDLTicks [0];
 	}
 #endif
+HUDMessage (0, "%d hits", nTotalHits);
 return (nTotalHits) ? dMin ? dMin : 1 : 0;
 }
 

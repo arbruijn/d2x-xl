@@ -546,15 +546,23 @@ if ((CollisionModel () || thisObjP->IsStatic () || otherObjP->IsStatic ()) &&
 #endif
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
+#if 1
+		dist = CheckHitboxCollision (vHit, vNormal, otherObjP, thisObjP, p0, p1, nModel);
+		if ((dist == 0x7fffffff) || (dist > thisObjP->info.xSize))
+			return 0;
+#else
+		// check whether one object is stuck inside the other
 		if (!(dist = CheckHitboxCollision (vHit, vNormal, otherObjP, thisObjP, p0, p1, nModel))) {
 			if (!CFixVector::Dist (*p0, *p1))
 				return 0;
+			// check whether objects collide at all
 			dist = CheckVectorHitboxCollision (vHit, vNormal, p0, p1, NULL, thisObjP, 0, nModel);
 			if ((dist == 0x7fffffff) || (dist > thisObjP->info.xSize))
 				return 0;
 			}
 		CheckHitboxCollision (vHit, vNormal, otherObjP, thisObjP, p0, p1, nModel);
 		FindPointLineIntersection (vHit, *p0, *p1, vHit, 1);
+#endif
 		}
 	else {
 		if (bThisPoly) {
