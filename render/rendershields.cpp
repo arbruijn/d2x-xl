@@ -112,7 +112,6 @@ ogl.SetDepthWrite (false);
 tBox hb [MAX_HITBOXES + 1];
 TransformHitboxes (objP, &objP->info.position.vPos, hb);
 
-//transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 for (; iBox <= nBoxes; iBox++) {
 #if 0
 	if (iBox)
@@ -129,7 +128,6 @@ for (; iBox <= nBoxes; iBox++) {
 			dir.Assign (hb [iBox].faces [i].v [j]);
 			transformation.Transform (dir, dir, 0);
 			glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
-		//	glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));
 			}
 		}
 	glEnd ();
@@ -151,7 +149,6 @@ for (; iBox <= nBoxes; iBox++) {
 			dir.Assign (hb [iBox].faces [i].v [j]);
 			transformation.Transform (dir, dir, 0);
 			glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
-			//glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));
 			}
 		coord /= I2X (4);
 		dir.Assign (coord);
@@ -164,10 +161,7 @@ for (; iBox <= nBoxes; iBox++) {
 		glEnd ();
 		}
 	glLineWidth (1);
-//	if (iBox)
-//		transformation.End ();
 	}
-//transformation.End ();
 float r = X2F (CFixVector::Dist (pmhb->vMin, pmhb->vMax) / 2);
 #if 0 //DBG //display collision point
 if (gameStates.app.nSDLTicks [0] - gameData.models.hitboxes [objP->ModelId ()].tHit < 500) {

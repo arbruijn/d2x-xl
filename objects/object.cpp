@@ -1559,7 +1559,7 @@ return GetChildObjN (OBJ_IDX (pParent), pChildRef);
 
 CFixMatrix *CObject::View (void)
 {
-	tObjectViewData	*viewP = gameData.objs.viewData +Index ();
+	tObjectViewData* viewP = gameData.objs.viewData + Index ();
 
 if (viewP->nFrame != gameData.objs.nFrameCount) {
 	viewP->mView = OBJPOS (this)->mOrient.Transpose ();

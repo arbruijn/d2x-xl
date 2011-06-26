@@ -2362,7 +2362,8 @@ class CWeaponData {
 
 class CModelHitboxes {
 	public:
-		ubyte			nHitboxes;
+		int			nHitboxes;
+		int			nFrame;
 		CStaticArray< tHitbox, MAX_HITBOXES + 1 >	hitboxes; // [MAX_HITBOXES + 1];
 #if DBG
 		CFixVector	vHit;

@@ -190,6 +190,11 @@ for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
 }
 
 //------------------------------------------------------------------------------
+// This function rotates and positions an object's hitboxes relative to the 
+// object's orientation and position in world space. It must not transform the
+// hitbox coordinates to view space since that's not necessary to test collisions
+// of different objects, and since collision tests with geometry are done using
+// the geometry's world space coordinates.
 
 #define G3_HITBOX_TRANSFORM	0
 #define HITBOX_CACHE				0
@@ -228,7 +233,13 @@ transformation.End ();
 
 void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb)
 {
-	tHitbox*		pmhb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
+	int			nId = objP->ModelId ();
+
+if (gameData.models.hitboxes [nId].nFrame == gameData.objs.nFrameCount)
+	return;
+gameData.models.hitboxes [nId].nFrame = gameData.objs.nFrameCount;
+
+	tHitbox*		pmhb = &gameData.models.hitboxes [nId].hitboxes [0];
 	tQuad*		pf;
 	CFixVector	rotVerts [8];
 	CFixMatrix*	viewP = objP->View ();
@@ -248,6 +259,7 @@ for (phb += iBox, pmhb += iBox; iBox <= nBoxes; iBox++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++) {
 		rotVerts [i] = *viewP * pmhb->box.vertices [i];
 		rotVerts [i] += *vPos;
+		transformation.Transform (rotVerts [i], rotVerts [i], 0);
 		}
 	for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
 		for (j = 0; j < 4; j++)

@@ -619,6 +619,7 @@ UpdatePlayerOrient ();
 #if USE_OPENMP > 1
 gameData.objs.update.Reset ();
 #endif
+++gameData.objs.nFrameCount;
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;
 	if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ()) {
