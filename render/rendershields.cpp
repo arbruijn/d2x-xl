@@ -143,13 +143,15 @@ for (; iBox <= nBoxes; iBox++) {
 			glColor4f (1.0f, 0, 0, alpha);
 		else
 			glColor4f (red, green, blue, alpha);
-		glBegin (GL_LINES);
+		glBegin (GL_LINE_LOOP);
 		for (j = 0; j < 4; j++) {
 			coord += hb [iBox].faces [i].v [j];
 			dir.Assign (hb [iBox].faces [i].v [j]);
 			transformation.Transform (dir, dir, 0);
 			glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
 			}
+		glEnd ();
+		glBegin (GL_LINES);
 		coord /= I2X (4);
 		dir.Assign (coord);
 		glColor4f (1.0f, 0.5f, 0.0f, alpha);
