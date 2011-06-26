@@ -234,11 +234,11 @@ transformation.End ();
 void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb)
 {
 	int			nId = objP->ModelId ();
-
+#if 0
 if (gameData.models.hitboxes [nId].nFrame == gameData.objs.nFrameCount)
 	return;
 gameData.models.hitboxes [nId].nFrame = gameData.objs.nFrameCount;
-
+#endif
 	tHitbox*		pmhb = &gameData.models.hitboxes [nId].hitboxes [0];
 	tQuad*		pf;
 	CFixVector	rotVerts [8];

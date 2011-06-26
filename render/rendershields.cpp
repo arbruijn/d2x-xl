@@ -136,7 +136,7 @@ for (; iBox <= nBoxes; iBox++) {
 		glColor4f (1.0f, 0, 0, alpha);
 	else
 		glColor4f (red, green, blue, alpha);
-	for (i = 0; i < 6; i++) {
+	for (i = 0; i < 1; i++) {
 		CFixVector coord;
 		coord.SetZero ();
 		if ((objP->info.nType == OBJ_PLAYER) && (iBox == 1))
