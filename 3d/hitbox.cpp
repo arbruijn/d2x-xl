@@ -259,7 +259,6 @@ for (phb += iBox, pmhb += iBox; iBox <= nBoxes; iBox++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++) {
 		rotVerts [i] = *viewP * pmhb->box.vertices [i];
 		rotVerts [i] += *vPos;
-		transformation.Transform (rotVerts [i], rotVerts [i], 0);
 		}
 	for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
 		for (j = 0; j < 4; j++)
