@@ -334,7 +334,7 @@ if (!CollisionModel () &&
 	}
 
 // check if objects are penetrating and move apart
-if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL)) && !thisP->IsStatic ()) {
+if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL)) || thisP->IsStatic ()) { //&& !thisP->IsStatic ()) {
 	mass0 = thisP->mType.physInfo.mass;
 	mass1 = otherP->mType.physInfo.mass;
 

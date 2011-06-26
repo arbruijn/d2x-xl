@@ -56,7 +56,7 @@ return (u >= -0.001f) && (v >= -0.001f) && (u + v <= 1.001f);
 //see if a point is inside a face by projecting into 2d
 bool PointIsInQuad (CFixVector point, CFixVector* vertP, CFixVector vNormal)
 {
-#if 1
+#if 0
 return PointIsInTriangle (&point, vNormal, vertP) || PointIsInTriangle (&point, vNormal, vertP + 1);
 #else
 	CFixVector		t, v0, v1;
@@ -317,23 +317,27 @@ TransformHitboxes (objP2, &vRef, hb2);
 int i, j;
 for (i = iModel1; i <= nModels1; i++) {
 	for (j = iModel2; j <= nModels2; j++) {
-		if ((nHits = FindHitboxIntersection (intersection, normal, hb1 + i, hb2 + j, p0, dMin)))
+		if ((nHits = FindHitboxIntersection (intersection, normal, hb1 + i, hb2 + j, p0, dMin))) {
+			nTotalHits += nHits;
 			nModel = iModel1;
+			}
 		}
 	}
 if (!nHits) {
 	for (j = iModel2; j <= nModels2; j++) {
-		if ((nHits = FindLineHitboxIntersection (intersection, normal, hb2 + j, p0, p1, p0, 0, dMin)))
+		if ((nHits = FindLineHitboxIntersection (intersection, normal, hb2 + j, p0, p1, p0, 0, dMin))) {
+			nTotalHits += nHits;
 			nModel = iModel1;
+			}
 		}
 	}
 #if DBG
-if (nHits) {
+if (nTotalHits) {
 	pmhb1->vHit = pmhb2->vHit = intersection;
 	pmhb1->tHit = pmhb2->tHit = gameStates.app.nSDLTicks [0];
 	}
 #endif
-return (nHits) ? dMin ? dMin : 1 : 0;
+return (nTotalHits) ? dMin ? dMin : 1 : 0;
 }
 
 //	-----------------------------------------------------------------------------

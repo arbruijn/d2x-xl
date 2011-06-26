@@ -896,10 +896,10 @@ if (endMask) { //on the back of at least one face
 							bestHit.nSegment = hitQuery.nSegment;             
 						else
 							gameData.collisions.hitResult.nAltSegment = hitQuery.nSegment;
-						gameData.collisions.hitResult.nSideSegment =
 						gameData.collisions.hitResult.nSegment = bestHit.nSegment;
 						gameData.collisions.hitResult.nSide = nSide;
 						gameData.collisions.hitResult.nFace = iFace;
+						gameData.collisions.hitResult.nSideSegment = hitQuery.nSegment;
 						}
 					}
 				}
