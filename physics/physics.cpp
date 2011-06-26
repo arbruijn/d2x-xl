@@ -856,9 +856,9 @@ retryMove:
 		CObject* hitObjP = OBJECTS + hitResult.nObject;
 		//if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + hitResult.nObject)))
 		CFixVector vOldVel = mType.physInfo.velocity;
-#if 1
 		if (CollisionModel () || hitObjP->IsStatic ()) {
 			CollideTwoObjects (this, hitObjP, hitResult.vPoint, &hitResult.vNormal);
+#if 1
 			if (vOldVel.IsZero ()) {
 				vFrame = OBJPOS (hitObjP)->vPos - OBJPOS (this)->vPos;
 				CFixVector::Normalize (vFrame);
@@ -876,12 +876,12 @@ retryMove:
 				s = CheckVectorObjectCollision (hitResult, &info.position.vPos, &vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
 				}
 			info.position.vPos = vNewPos;
+#endif
 			}
 		else {
 			hitResult.vPoint = *ppos1 - *ppos0;
 			CollideTwoObjects (this, hitObjP, hitResult.vPoint);
 			}
-#endif
 		if (sbd.bBoosted && (this == gameData.objs.consoleP))
 			mType.physInfo.velocity = vOldVel;
 		// Let object continue its movement

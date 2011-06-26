@@ -201,7 +201,7 @@ int FindLineQuadIntersection (CFixVector& intersection, CFixVector* planeP, CFix
 	CFixVector	vHit;
 	fix			dist;
 
-#if 1
+#if 0
 if (CFixVector::Dot (*p1 - *p0, *planeNormP) > 0)
 	return 0x7fffffff;	// hit back of face
 #endif
@@ -297,9 +297,9 @@ fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject 
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel1 =
-	nModels1 =
+	nModels1 = 0;
 	iModel2 =
-	nModels2 = 0;
+	nModels2 = 1;
 	}
 else {
 	iModel1 =
@@ -315,8 +315,8 @@ TransformHitboxes (objP1, p1, hb1);
 TransformHitboxes (objP2, &vRef, hb2);
 
 int i, j;
-for (i = iModel1; i <= nModels1; i++) {
-	for (j = iModel2; j <= nModels2; j++) {
+for (i = iModel1; i < nModels1; i++) {
+	for (j = iModel2; j < nModels2; j++) {
 		if ((nHits = FindHitboxIntersection (intersection, normal, hb1 + i, hb2 + j, p0, dMin))) {
 			nTotalHits += nHits;
 			nModel = iModel1;
@@ -324,7 +324,7 @@ for (i = iModel1; i <= nModels1; i++) {
 		}
 	}
 if (!nHits) {
-	for (j = iModel2; j <= nModels2; j++) {
+	for (j = iModel2; j < nModels2; j++) {
 		if ((nHits = FindLineHitboxIntersection (intersection, normal, hb2 + j, p0, p1, p0, 0, dMin))) {
 			nTotalHits += nHits;
 			nModel = iModel1;
