@@ -255,7 +255,7 @@ else {
 	}
 if (!vPos)
 	vPos = &objP->info.position.vPos;
-for (phb += iBox, pmhb += iBox; iBox < nBoxes; iBox++, phb++, pmhb++) {
+for (phb += iBox, pmhb += iBox; iBox <= nBoxes; iBox++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++) {
 		rotVerts [i] = *viewP * pmhb->box.vertices [i];
 		rotVerts [i] += *vPos;

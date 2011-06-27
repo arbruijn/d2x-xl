@@ -528,6 +528,8 @@ else {
 #if DBG
 if (thisObjP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
+if ((thisObjP->info.nType == OBJ_WEAPON) || (otherObjP->info.nType == OBJ_WEAPON))
+	nDbgObj = nDbgObj;
 #endif
 // check hit sphere collisions
 bOtherPoly = UseHitbox (otherObjP);
