@@ -364,7 +364,6 @@ if (nTotalHits) {
 	pmhb1->tHit = pmhb2->tHit = gameStates.app.nSDLTicks [0];
 	}
 #endif
-HUDMessage (0, "%d hits", nTotalHits);
 return (nTotalHits) ? dMin ? dMin : 1 : 0;
 }
 
