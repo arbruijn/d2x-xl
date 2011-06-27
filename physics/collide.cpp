@@ -351,7 +351,7 @@ if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL
 	if (vel0.IsZero ())
 		vForce0.SetZero (), vRotForce0.SetZero ();
 	else {
-		if (otherP->IsStatic ())
+		if (vNormal && otherP->IsStatic ())
 			vDistNorm = *vNormal;
 		else {
 			vDistNorm = vDist;
@@ -374,7 +374,7 @@ if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL
 	if (vel1.IsZero ())
 		vForce1.SetZero (), vRotForce1.SetZero ();
 	else {
-		if (thisP->IsStatic ())
+		if (vNormal && thisP->IsStatic ())
 			vDistNorm = *vNormal;
 		else {
 			vDistNorm = vDist;
