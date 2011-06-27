@@ -201,14 +201,14 @@ return 0;
 	//see if we can see this CPlayerData
 
 CFixVector vEndPos = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.m.dir.f * I2X (2000);
-CHitQuery fq (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TRANSWALL | FQ_VISIBILITY,
-				  &gameData.objs.viewerP->info.position.vPos,
-				  &vEndPos,
-				  gameData.objs.viewerP->info.nSegment,
-				  OBJ_IDX (gameData.objs.viewerP)
-				 );
+CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TRANSWALL | FQ_VISIBILITY,
+						  &gameData.objs.viewerP->info.position.vPos,
+						  &vEndPos,
+						  gameData.objs.viewerP->info.nSegment,
+						  OBJ_IDX (gameData.objs.viewerP)
+						  );
 
-int nHitType = FindHitpoint (&fq, &hitResult);
+int nHitType = FindHitpoint (hitQuery, hitResult);
 if (nHitType != HIT_OBJECT)
 	return 0;
 objP = OBJECTS + hitResult.nObject;
