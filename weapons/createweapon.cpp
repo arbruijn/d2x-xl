@@ -83,6 +83,8 @@ switch (gameData.weapons.info [nWeaponType].renderType) {
 Assert (xLaserRadius != -1);
 Assert (rType != -1);
 nObject = CreateWeapon (nWeaponType, nParent, nSegment, *vPosition, 0, 255);
+if (nObject < 0)
+	return -1;
 #if DBG
 if (nObject == nDbgObj)
 	nDbgObj = nDbgObj;
