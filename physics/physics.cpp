@@ -865,8 +865,10 @@ retryMove:
 				vFrame *= info.xSize;
 				}	
 			info.position.vPos = vSavePos;
-			for (int i = 0, s = -I2X (1); i < 8; i++) {
+			for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
 				vFrame /= I2X (2);
+				if (vFrame.IsZero ())
+					break;
 				if (info.position.vPos != vNewPos)
 					vNewPos += vFrame * s;
 				else {
