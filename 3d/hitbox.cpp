@@ -234,10 +234,10 @@ transformation.End ();
 tHitbox* TransformHitboxes (CObject *objP, CFixVector *vPos)
 {
 	int			nId = objP->ModelId ();
-	tHitbox*		pmhb = &gameData.models.hitboxes [nId].hitboxes [0];
+	tHitbox*		hb = &gameData.models.hitboxes [nId].hitboxes [0];
 #if 1
 if (gameData.models.hitboxes [nId].nFrame == gameData.objs.nFrameCount)
-	return pmhb;
+	return hb;
 gameData.models.hitboxes [nId].nFrame = gameData.objs.nFrameCount;
 #endif
 	tQuad*		pf;
@@ -255,18 +255,18 @@ else {
 	}
 if (!vPos)
 	vPos = &objP->info.position.vPos;
-for (pmhb += iBox; iBox <= nBoxes; iBox++, pmhb++) {
+for (; iBox <= nBoxes; iBox++) {
 	for (i = 0; i < 8; i++) {
-		rotVerts [i] = *viewP * pmhb->box.vertices [i];
+		rotVerts [i] = *viewP * hb [iBox].box.vertices [i];
 		rotVerts [i] += *vPos;
 		}
-	for (i = 0, pf = pmhb->box.faces; i < 6; i++, pf++) {
+	for (i = 0, pf = hb [iBox].box.faces; i < 6; i++, pf++) {
 		for (j = 0; j < 4; j++)
 			pf->v [j] = rotVerts [hitboxFaceVerts [i][j]];
 		pf->n [1] = CFixVector::Normal (pf->v [0], pf->v [1], pf->v [2]);
 		}
 	}
-return pmhb;
+return hb;
 }
 
 #endif //G3_HITBOX_TRANSFORM
