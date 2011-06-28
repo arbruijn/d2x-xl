@@ -109,7 +109,7 @@ ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetTexturing (false);
 ogl.SetDepthWrite (false);
 
-tHitbox* hb = TransformHitboxes (objP, &objP->info.position.vPos, hb);
+tHitbox* hb = TransformHitboxes (objP, &objP->info.position.vPos);
 
 for (; iBox <= nBoxes; iBox++) {
 #if 0
