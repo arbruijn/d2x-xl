@@ -109,8 +109,7 @@ ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetTexturing (false);
 ogl.SetDepthWrite (false);
 
-tBox hb [MAX_HITBOXES + 1];
-TransformHitboxes (objP, &objP->info.position.vPos, hb);
+tHitbox* hb = TransformHitboxes (objP, &objP->info.position.vPos, hb);
 
 for (; iBox <= nBoxes; iBox++) {
 #if 0
@@ -125,7 +124,7 @@ for (; iBox <= nBoxes; iBox++) {
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
 		for (j = 0; j < 4; j++) {
-			dir.Assign (hb [iBox].faces [i].v [j]);
+			dir.Assign (hb [iBox].box.faces [i].v [j]);
 			transformation.Transform (dir, dir, 0);
 			glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
 			}
@@ -145,8 +144,8 @@ for (; iBox <= nBoxes; iBox++) {
 			glColor4f (red, green, blue, alpha);
 		glBegin (GL_LINE_LOOP);
 		for (j = 0; j < 4; j++) {
-			coord += hb [iBox].faces [i].v [j];
-			dir.Assign (hb [iBox].faces [i].v [j]);
+			coord += hb [iBox].box.faces [i].v [j];
+			dir.Assign (hb [iBox].box.faces [i].v [j]);
 			transformation.Transform (dir, dir, 0);
 			glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
 			}
@@ -157,7 +156,7 @@ for (; iBox <= nBoxes; iBox++) {
 		glColor4f (1.0f, 0.5f, 0.0f, alpha);
 		transformation.Transform (dir, dir, 0);
 		glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
-		dir.Assign (coord + hb [iBox].faces [i].n [1] * I2X (2));
+		dir.Assign (coord + hb [iBox].box.faces [i].n [1] * I2X (2));
 		transformation.Transform (dir, dir, 0);
 		glVertex3fv (reinterpret_cast<GLfloat*> (&dir));
 		glEnd ();

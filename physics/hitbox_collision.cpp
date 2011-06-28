@@ -316,10 +316,8 @@ fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject 
 {
 	CFixVector		vRef = OBJPOS (objP2)->vPos;
 	int				iModel1, nModels1, iModel2, nModels2, nHits, nTotalHits = 0;
-	CModelHitboxes	*pmhb1 = gameData.models.hitboxes + objP1->ModelId ();
-	CModelHitboxes	*pmhb2 = gameData.models.hitboxes + objP2->ModelId ();
-	tBox				hb1 [MAX_HITBOXES + 1];
-	tBox				hb2 [MAX_HITBOXES + 1];
+	CModelHitboxList	*pmhb1 = gameData.models.hitboxes + objP1->ModelId ();
+	CModelHitboxList	*pmhb2 = gameData.models.hitboxes + objP2->ModelId ();
 	fix				dMin = 0x7fffffff;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
@@ -334,17 +332,14 @@ else {
 	nModels1 = pmhb1->nHitboxes;
 	nModels2 = pmhb2->nHitboxes;
 	}
-#if DBG
-memset (hb1, 0, sizeof (hb1));
-memset (hb2, 0, sizeof (hb2));
-#endif
-TransformHitboxes (objP1, p1, hb1);
-TransformHitboxes (objP2, &vRef, hb2);
+
+tHitbox* hb1 = TransformHitboxes (objP1, p1);
+tHitbox* hb2 = TransformHitboxes (objP2, &vRef);
 
 int i, j;
 for (i = iModel1; i <= nModels1; i++) {
 	for (j = iModel2; j <= nModels2; j++) {
-		if ((nHits = FindHitboxIntersection (intersection, normal, hb1 + i, hb2 + j, p0, dMin))) {
+		if ((nHits = FindHitboxIntersection (intersection, normal, &hb1 [i].box, &hb2 [j].box, p0, dMin))) {
 			nTotalHits += nHits;
 			nModel = iModel1;
 			}
@@ -352,7 +347,7 @@ for (i = iModel1; i <= nModels1; i++) {
 	}
 if (!nHits) {
 	for (j = iModel2; j <= nModels2; j++) {
-		if ((nHits = FindLineHitboxIntersection (intersection, normal, hb2 + j, p0, p1, p0, 0, dMin))) {
+		if ((nHits = FindLineHitboxIntersection (intersection, normal, &hb2 [j].box, p0, p1, p0, 0, dMin))) {
 			nTotalHits += nHits;
 			nModel = iModel1;
 			}
@@ -371,10 +366,9 @@ return (nTotalHits) ? dMin ? dMin : 1 : 0;
 
 fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CFixVector* p0, CFixVector* p1, CFixVector* vRef, CObject *objP, fix rad, short& nModel)
 {
-	int				iModel, nModels;
-	fix				dMin = 0x7fffffff;
-	CModelHitboxes	*pmhb = gameData.models.hitboxes + objP->ModelId ();
-	tBox				hb [MAX_HITBOXES + 1];
+	int					iModel, nModels;
+	fix					dMin = 0x7fffffff;
+	CModelHitboxList*	pmhb = gameData.models.hitboxes + objP->ModelId ();
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel =
@@ -387,9 +381,9 @@ else {
 if (!vRef)
 	vRef = &OBJPOS (objP)->vPos;
 intersection.Create (0x7fffffff, 0x7fffffff, 0x7fffffff);
-TransformHitboxes (objP, vRef, hb);
+tHitbox* hb = TransformHitboxes (objP, vRef);
 for (; iModel <= nModels; iModel++) {
-	if (FindLineHitboxIntersection (intersection, normal, hb + iModel, p0, p1, p0, rad, dMin)) 
+	if (FindLineHitboxIntersection (intersection, normal, &hb [iModel].box, p0, p1, p0, rad, dMin)) 
 		nModel = iModel;
 	}
 return dMin;

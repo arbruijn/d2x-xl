@@ -143,9 +143,6 @@ if (nType == WALL_BLASTABLE) {
 	return WID_SOLID_WALL;
 	}
 
-if (flags & WALL_DOOR_OPENED)
-	return WID_TRANSILLUSORY_WALL;
-
 if (nType == WALL_CLOAKED)
 	return WID_TRANSPARENT_WALL | WID_CLOAKED_FLAG;
 
@@ -155,6 +152,8 @@ if (nType == WALL_COLORED)
 if (nType == WALL_DOOR) {
 	if (bIgnoreDoors)
 		return WID_TRANSPARENT_WALL;
+	if (flags & WALL_DOOR_OPENED)
+		return WID_TRANSILLUSORY_WALL;
 	if ((state == WALL_DOOR_OPENING) || (state == WALL_DOOR_CLOSING))
 		return WID_TRANSPARENT_WALL;
 	if ((cloakValue && (cloakValue < FADE_LEVELS)) || SEGMENTS [nSegment].CheckTransparency (nSide))

@@ -2360,7 +2360,7 @@ class CWeaponData {
 
 #define MAX_HITBOXES		100
 
-class CModelHitboxes {
+class CModelHitboxList {
 	public:
 		int			nHitboxes;
 		int			nFrame;
@@ -2433,7 +2433,7 @@ class CModelData {
 		CArray<CFloatVector>				fPolyModelVerts ; //[MAX_POLYGON_VERTS];
 		CArray<CBitmap*>					textures ; //[MAX_POLYOBJ_TEXTURES];
 		CArray<tBitmapIndex>				textureIndex ; //[MAX_POLYOBJ_TEXTURES];
-		CStaticArray< CModelHitboxes,MAX_POLYGON_MODELS >	hitboxes ; //[MAX_POLYGON_MODELS];
+		CStaticArray< CModelHitboxList,MAX_POLYGON_MODELS >	hitboxes ; //[MAX_POLYGON_MODELS];
 		CStaticArray< CModelThrusters,MAX_POLYGON_MODELS >	thrusters ; //[MAX_POLYGON_MODELS];
 		CArray<RenderModel::CModel>	renderModels [2]; //[MAX_POLYGON_MODELS];
 		CArray<CFixVector>				offsets ; //[MAX_POLYGON_MODELS];
