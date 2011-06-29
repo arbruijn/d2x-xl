@@ -432,8 +432,8 @@ return nHits;
 
 int FindTriangleHitboxIntersection (CFixVector& intersection, CFixVector& normal, short* triangleVerts, CFixVector* triangleNormal, tBox *phb, CFixVector* vRef, fix& dMin)
 {
-	int		i, nHits = 0;
-	tQuad*	pf;
+	int			i, nHits = 0;
+	tQuad*		pf;
 	CFixVector	vHit;
 
 // create all faces of hitbox 2 and their normals before testing because they will
@@ -472,7 +472,7 @@ CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 
 for (int i = 0; i < 2; i++) {
 	for (int j = iModel; j <= nModels; j++) {
-		nHits += FindTriangleHitboxIntersection (intersection, normal, sideP->m_faceVerts + 3 * i, sideP->m_normals + i, &hb [j].box, p1, dMin);
+		nHits += FindTriangleHitboxIntersection (intersection, normal, sideP->m_vertices + 3 * i, sideP->m_normals + i, &hb [j].box, p1, dMin);
 		}
 	}
 return nHits ? dMin : 0x7FFFFFFF;
