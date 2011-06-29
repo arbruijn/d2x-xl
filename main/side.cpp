@@ -46,13 +46,12 @@ return gameStates.render.bRendering ? m_rotNorms [nFace] : m_normals [nFace];
 //	The center point is defined to be the average of the 4 points defining the CSide.
 void CSide::ComputeCenter (void)
 {
-m_vCenter = VERTICES [m_vertices [0]];
-m_vCenter += VERTICES [m_vertices [1]];
-m_vCenter += VERTICES [m_vertices [2]];
-m_vCenter += VERTICES [m_vertices [3]];
-m_vCenter.v.coord.x /= 4;
-m_vCenter.v.coord.y /= 4;
-m_vCenter.v.coord.z /= 4;
+CFloatVector vCenter = FVERTICES [m_vertices [0]];
+vCenter += FVERTICES [m_vertices [1]];
+vCenter += FVERTICES [m_vertices [2]];
+vCenter += FVERTICES [m_vertices [3]];
+vCenter /= 4;
+m_vCenter.Assign (vCenter);
 // make sure side center is inside segment
 CFixVector v0 = m_vCenter + m_normals [2];
 CFixVector v1 = m_vCenter - m_normals [2];

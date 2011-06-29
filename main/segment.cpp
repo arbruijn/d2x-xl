@@ -231,17 +231,20 @@ for (int i = 0; i < 6; i++)
 
 void CSegment::ComputeCenter (void)
 {
-m_vCenter = gameData.segs.vertices [m_verts [0]];
-m_vCenter += gameData.segs.vertices [m_verts [1]];
-m_vCenter += gameData.segs.vertices [m_verts [2]];
-m_vCenter += gameData.segs.vertices [m_verts [3]];
-m_vCenter += gameData.segs.vertices [m_verts [4]];
-m_vCenter += gameData.segs.vertices [m_verts [5]];
-m_vCenter += gameData.segs.vertices [m_verts [6]];
-m_vCenter += gameData.segs.vertices [m_verts [7]];
-m_vCenter.v.coord.x /= 8;
-m_vCenter.v.coord.y /= 8;
-m_vCenter.v.coord.z /= 8;
+#if 1 //DBG
+if (Index () == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
+CFloatVector vCenter = FVERTICES [m_verts [0]];
+vCenter += FVERTICES [m_verts [1]];
+vCenter += FVERTICES [m_verts [2]];
+vCenter += FVERTICES [m_verts [3]];
+vCenter += FVERTICES [m_verts [4]];
+vCenter += FVERTICES [m_verts [5]];
+vCenter += FVERTICES [m_verts [6]];
+vCenter += FVERTICES [m_verts [7]];
+vCenter /= 8;
+m_vCenter.Assign (vCenter);
 }
 
 // -----------------------------------------------------------------------------
