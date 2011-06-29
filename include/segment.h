@@ -181,7 +181,7 @@ class CSide {
 		CFixVector		m_vCenter;
 		fix				m_rads [2];
 		short				m_vertices [6];
-		short				m_faceVerts [6];
+		short				m_faceVerts [6]; // vertex indices of the side's two triangles
 		short				m_corners [4];
 		short				m_nMinVertex [2];
 		short				m_nSegment;
