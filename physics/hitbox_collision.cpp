@@ -449,9 +449,9 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, short nSegment, short nSide, CFixVector* p0, CFixVector* p1, CObject *objP, short& nModel)
+fix CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, short nSegment, short nSide, CFixVector* p0, CFixVector* p1, CObject *objP)
 {
-	int					iModel, nModels;
+	int					iModel, nModels, nHits = 0;
 	fix					dMin = 0x7fffffff;
 	CModelHitboxList*	pmhb = gameData.models.hitboxes + objP->ModelId ();
 
@@ -472,11 +472,10 @@ CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 
 for (int i = 0; i < 2; i++) {
 	for (; iModel <= nModels; iModel++) {
-		if (FindTriangleHitboxIntersection (intersection, normal, sideP->m_faceVerts + 3 * i, sideP->m_rotNorms + i, &hb [iModel].box, p1, dMin)) 
-			nModel = iModel;
+		nHits += FindTriangleHitboxIntersection (intersection, normal, sideP->m_faceVerts + 3 * i, sideP->m_rotNorms + i, &hb [iModel].box, p1, dMin);
 		}
 	}
-return dMin;
+return nHits ? dMin : 0x7FFFFFFF;
 }
 
 //	-----------------------------------------------------------------------------

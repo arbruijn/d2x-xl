@@ -792,6 +792,8 @@ int ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, short* segList, sho
 	short			nHitNoneSegs = 0;
 	int			nCurNestLevel = gameData.collisions.hitResult.nNestCount;
 	bool			bCheckVisibility = ((hitQuery.flags & FQ_VISIBILITY) != 0);
+	CObject*		objP = (hitQuery.nObject < 0) ? NULL : OBJECTS + hitQuery.nObject;
+	bool			bCheckHitbox = objP && CollisionModel () && UseHitbox (objP);
 
 bestHit.vPoint.SetZero ();
 //PrintLog ("Entry ComputeHitpoint\n");
@@ -841,9 +843,13 @@ if (endMask) { //on the back of at least one face
 			if (iFace >= nFaces)
 				continue;
 			//did we go through this wall/door?
-			int nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
-									 ? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
-									 : segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
+			int nFaceHitType;
+			if (bCheckHitbox)
+				nFaceHitType = CheckFaceHitboxCollision (curHit.vPoint, curHit.vNormal, hitQuery.nSegment, nSide, hitQuery.p0, hitQuery.p1, objP) ? IT_FACE : IT_NONE;
+			else
+				nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
+									? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
+									: segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
 #if 1
 			if (bCheckVisibility && !nFaceHitType)
 					continue;
