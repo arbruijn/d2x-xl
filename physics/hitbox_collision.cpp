@@ -471,8 +471,8 @@ tHitbox* hb = TransformHitboxes (objP, p1);
 CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 
 for (int i = 0; i < 2; i++) {
-	for (; iModel <= nModels; iModel++) {
-		nHits += FindTriangleHitboxIntersection (intersection, normal, sideP->m_faceVerts + 3 * i, sideP->m_rotNorms + i, &hb [iModel].box, p1, dMin);
+	for (int j = iModel; j <= nModels; j++) {
+		nHits += FindTriangleHitboxIntersection (intersection, normal, sideP->m_faceVerts + 3 * i, sideP->m_rotNorms + i, &hb [j].box, p1, dMin);
 		}
 	}
 return nHits ? dMin : 0x7FFFFFFF;
