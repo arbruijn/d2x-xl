@@ -813,7 +813,7 @@ if (m_nFaces <= iFace) {
 	}
 #endif
 #if 1
-if (p1 == p0) {
+if (*p1 == *p0) {
 #if 0
 	return SphereToFaceRelation (p0, rad, iFace, vNormal);
 #else
@@ -836,14 +836,7 @@ if (m_nFaces == 1) {
 	if (nVertex > m_vertices [3])
 		nVertex = m_vertices [3];
 	}
-//PrintLog ("         FindPlaneLineIntersection...");
-pli = FindPlaneLineIntersection (intersection,
-											gameStates.render.bRendering 
-											? &gameData.segs.points [nVertex].ViewPos () 
-											: VERTICES + nVertex,
-											&vNormal, p0, p1, rad);
-//PrintLog ("done\n");
-if (!pli)
+if (!(pli = FindPlaneLineIntersection (intersection, gameStates.render.bRendering ? &gameData.segs.points [nVertex].ViewPos () : VERTICES + nVertex, &vNormal, p0, p1, rad)))
 	return IT_NONE;
 CFixVector vHit = intersection;
 //if rad != 0, project the refP down onto the plane of the polygon

@@ -463,6 +463,7 @@ fix CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, shor
 	int					iModel, nModels, nHits = 0;
 	fix					dMin = 0x7fffffff;
 	CModelHitboxList*	pmhb = gameData.models.hitboxes + objP->ModelId ();
+	CFixVector			vHit;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel =
@@ -481,10 +482,13 @@ CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 
 for (int i = 0; i < 2; i++) {
 	for (int j = iModel; j <= nModels; j++) {
-		nHits += FindTriangleHitboxIntersection (intersection, normal, sideP->m_vertices + 3 * i, sideP->m_normals + i, &hb [j].box, p0, dMin);
+		nHits += FindTriangleHitboxIntersection (vHit, normal, sideP->m_vertices + 3 * i, sideP->m_normals + i, &hb [j].box, p0, dMin);
 		}
 	}
-return nHits ? dMin : 0x7FFFFFFF;
+if (!nHits)
+	return 0x7FFFFFFF;
+FindPointLineIntersection (intersection, *p0, *p1, vHit, -1);
+return 0; //CFixVector::Dist (*p0, intersection);
 }
 
 //	-----------------------------------------------------------------------------

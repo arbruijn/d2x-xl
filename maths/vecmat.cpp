@@ -708,7 +708,7 @@ return CFixVector::Dot (i, t) - CFixVector::Dot (p1, t) < 0;
 // If intersection is not between p1 and p2 and vPos is given, return
 // further away point of p1 and p2 to vPos. Otherwise return intersection.
 // returns 1 if intersection outside of p1,p2, otherwise 0.
-const int FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int bClampToFarthest)
+const int FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int bClamp)
 {
 	CFixVector	d31, d21;
 	double		m, u;
@@ -724,12 +724,12 @@ if (!m) {
 d31 = p3 - p1;
 u = double (d31.v.coord.x) * double (d21.v.coord.x) + double (d31.v.coord.y) * double (d21.v.coord.y) + double (d31.v.coord.z) * double (d21.v.coord.z);
 u /= m;
-if (u < 0)
-	bClamped = bClampToFarthest ? 2 : 1;
-else if (u > 1)
-	bClamped = bClampToFarthest ? 1 : 2;
-else
-	bClamped = 0;
+if (bClamp >= 0) {
+	if (u < 0.0)
+		bClamped = bClamp ? 2 : 1;
+	else if (u > 1.0)
+		bClamped = bClamp ? 1 : 2;
+	}
 if (bClamped == 2)
 	hitP = p2;
 else if (bClamped == 1)

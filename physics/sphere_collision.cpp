@@ -220,15 +220,41 @@ return minDist;
 
 static inline double DblRound (double v) { return (v < 0.0) ? v - 0.5 : v + 0.5; }
 
-int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
+int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlane, CFixVector *vNormal,
 										 CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow)
 {
+#if 1
+	CFloatVector n, u, w;
+
+u.Assign (*p1 - *p0);
+n.Assign (*vNormal);
+float den = -CFloatVector::Dot (n, u);
+if ((den > -1e-10f) && (den < 1e-10f)) {// ~ parallel
+	return 0;
+	}
+w.Assign (*p0 - *vPlane);
+float num = CFloatVector::Dot (n, w) - X2F (rad);
+float s = num / den;
+if (s < 0.0f) {
+	if (s < -0.001f) // compensate small numerical errors
+		return 0;
+	s = 0.0f;
+	}
+else if (s > 1.0f) {
+	if (s > 1.001f) // compensate small numerical errors
+		return 0;
+	s = 1.0f;
+	}
+u *= s;
+intersection.Assign (u);
+intersection += *p0;
+#else
 CFixVector u = *p1 - *p0;
-fix den = -CFixVector::Dot (*vPlaneNorm, u);
+fix den = -CFixVector::Dot (*vNormal, u);
 if (!den)
 	return 0;
-CFixVector w = *p0 - *vPlanePoint;
-fix num = CFixVector::Dot (*vPlaneNorm, w) - rad;
+CFixVector w = *p0 - *vPlane;
+fix num = CFixVector::Dot (*vNormal, w) - rad;
 //do check for potential overflow
 if (bCheckOverflow) {
 	if (den > 0) {
@@ -252,6 +278,7 @@ else {
 	u.v.coord.z = fix (DblRound (double (u.v.coord.z) * scale));
 	}
 intersection = *p0 + u;
+#endif
 return 1;
 }
 
@@ -262,19 +289,23 @@ int FindPlaneLineIntersection (CFloatVector& intersection, CFloatVector* vPlane,
 CFloatVector u = *p1;
 u -= *p0;
 float d = -CFloatVector::Dot (*vNormal, u);
-if ((d > -1e-6f) && (d < 1e-6f)) {// ~ parallel
+if ((d > -1e-10f) && (d < 1e-10f)) {// ~ parallel
 	return 0;
 	}
 CFloatVector w = *p0;
 w -= *vPlane;
 float n = CFloatVector::Dot (*vNormal, w);
 float s = n / d;
-if ((s < -0.001f) || (s > 1.001f)) // compensate small numerical errors
-	return 0;
-if (s < 0.0f)
+if (s < 0.0f) {
+	if (s < -0.001f) // compensate small numerical errors
+		return 0;
 	s = 0.0f;
-else if (s > 1.0f)
+	}
+else if (s > 1.0f) {
+	if (s > 1.001f) // compensate small numerical errors
+		return 0;
 	s = 1.0f;
+	}
 u *= s;
 intersection = *p0;
 intersection += u;
@@ -848,8 +879,10 @@ if (endMask) { //on the back of at least one face
 			if (bCheckHitbox) {
 				 if (CheckFaceHitboxCollision (curHit.vPoint, curHit.vNormal, hitQuery.nSegment, nSide, hitQuery.p0, hitQuery.p1, objP) == 0x7FFFFFFF)
 					continue;
-				 bCheckHitbox = false;
+				 nFaceHitType = IT_FACE;
+				 bCheckHitbox = bCheckHitbox;
 				}
+			//else
 			nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
 					? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
 					: segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);

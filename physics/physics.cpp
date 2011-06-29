@@ -412,7 +412,6 @@ void CObject::DoPhysicsSim (void)
 if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	return;
 
-
 	short					nIgnoreObjs = 0;
 	int					iSeg, i;
 	int					bRetry;
@@ -422,16 +421,15 @@ if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	int					nTries = 0;
 	short					nObject = OBJ_IDX (this);
 	short					nWallHitSeg, nWallHitSide;
-	CHitResult				hitResult;
+	CHitResult			hitResult;
 	CHitQuery			hitQuery;
-	CFixVector			vSavePos;
+	CFixVector			vOldPos;
 	CFixMatrix			mSaveOrient;
-	int					nSaveSeg;
+	int					nOldSeg;
 	fix					xSimTime, xOldSimTime, xTimeScale;
 	CFixVector			vStartPos;
 	int					bGetPhysSegs, bObjStopped = 0;
 	fix					xMovedTime;			//how long objected moved before hit something
-	CFixVector			vSaveP0, vSaveP1;
 	short					nOrigSegment = info.nSegment;
 	int					nBadSeg = 0, bBounced = 0;
 	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
@@ -622,6 +620,8 @@ retryMove:
 			}
 		}
 
+	vOldPos = info.position.vPos;			//save the CObject's position
+	nOldSeg = info.nSegment;
 	vNewPos = info.position.vPos + vFrame;
 	gameData.physics.ignoreObjs [nIgnoreObjs] = -1;
 	hitQuery.p0 = &info.position.vPos;
@@ -632,38 +632,34 @@ retryMove:
 	hitQuery.nObject = nObject;
 	hitQuery.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
 	hitQuery.flags = FQ_CHECK_OBJS;
-
 	if (info.nType == OBJ_WEAPON)
 		hitQuery.flags |= FQ_TRANSPOINT;
 	if ((bGetPhysSegs = ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT))))
 		hitQuery.flags |= FQ_GET_SEGLIST;
 
-	vSaveP0 = *hitQuery.p0;
-	vSaveP1 = *hitQuery.p1;
-	memset (&hitResult, 0, sizeof (hitResult));
 #if DBG
 	if (info.nType == OBJ_POWERUP)
 		nDbgObj = nDbgObj;
 #endif
 	fviResult = FindHitpoint (hitQuery, hitResult);
 	UpdateStats (this, fviResult);
-	vSavePos = info.position.vPos;			//save the CObject's position
-	nSaveSeg = info.nSegment;
 	if (fviResult == HIT_BAD_P0) {
 #if DBG
 		static int nBadP0 = 0;
 		HUDMessage (0, "BAD P0 %d", nBadP0++);
+		if (info.position.vPos != vOldPos)
+			nDbgSeg = nDbgSeg;
 #endif
 		memset (&hitResult, 0, sizeof (hitResult));
 		fviResult = FindHitpoint (hitQuery, hitResult);
 		hitQuery.nSegment = FindSegByPos (vNewPos, info.nSegment, 1, 0);
 		if ((hitQuery.nSegment < 0) || (hitQuery.nSegment == info.nSegment)) {
-			info.position.vPos = vSavePos;
+			info.position.vPos = vOldPos;
 			break;
 			}
 		fviResult = FindHitpoint (hitQuery, hitResult);
 		if (fviResult == HIT_BAD_P0) {
-			info.position.vPos = vSavePos;
+			info.position.vPos = vOldPos;
 			break;
 			}
 		}
@@ -748,16 +744,35 @@ retryMove:
 		}
 
 	//calulate new sim time
-	CFixVector vMoveNormal;
 	fix attemptedDist, actualDist;
 
 	xOldSimTime = xSimTime;
-	actualDist = CFixVector::NormalizedDir (vMoveNormal, info.position.vPos, vSavePos);
-	if ((fviResult == HIT_WALL) && (CFixVector::Dot (vMoveNormal, vFrame) < 0)) {		//moved backwards
+	CFixVector vMoved = info.position.vPos - vOldPos;
+	actualDist = vMoved.Mag ();
+	if ((fviResult == HIT_WALL) && (CFixVector::Dot (vMoved, vFrame) < 0)) {		//moved backwards
+#if DBG
+		CFixVector vi;
+		FindPointLineIntersection (vi, vOldPos, vNewPos, iPos, -1);
+
+		hitQuery.p0 = &info.position.vPos;
+		hitQuery.nSegment = info.nSegment;
+		hitQuery.p1 = &vNewPos;
+		hitQuery.radP0 = 
+		hitQuery.radP1 = info.xSize;
+		hitQuery.nObject = nObject;
+		hitQuery.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
+		hitQuery.flags = FQ_CHECK_OBJS;
+		if (info.nType == OBJ_WEAPON)
+			hitQuery.flags |= FQ_TRANSPOINT;
+		if ((bGetPhysSegs = ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT))))
+			hitQuery.flags |= FQ_GET_SEGLIST;
+		CHitResult hitResult2;
+		FindHitpoint (hitQuery, hitResult2);
+#endif
 		//don't change position or xSimTime
-		info.position.vPos = vSavePos;
-		if (nSaveSeg != iSeg)
-			OBJECTS [nObject].RelinkToSeg (nSaveSeg);
+		info.position.vPos = vOldPos;
+		if (nOldSeg != iSeg)
+			OBJECTS [nObject].RelinkToSeg (nOldSeg);
 		if (bDoSpeedBoost) {
 			info.position.vPos = vStartPos;
 			SetSpeedBoostVelocity (nObject, -1, -1, -1, -1, -1, &vStartPos, &sbd.vDest, 0);
@@ -777,12 +792,10 @@ retryMove:
 		}
 
 	if (fviResult == HIT_WALL) {
-		CFixVector	vMoved;
 		fix			xHitSpeed, xWallPart;
 		// Find hit speed
 
-		vMoved = info.position.vPos - vSavePos;
-		xWallPart = CFixVector::Dot (vMoved, hitResult.vNormal) / gameData.collisions.hitResult.nNormals;
+		xWallPart = gameData.collisions.hitResult.nNormals ? CFixVector::Dot (vMoved, hitResult.vNormal) / gameData.collisions.hitResult.nNormals : 0;
 		if (xWallPart && (xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0)) {
 			CollideObjectAndWall (xHitSpeed, nWallHitSeg, nWallHitSide, hitResult.vPoint);
 			}
@@ -864,7 +877,7 @@ retryMove:
 				CFixVector::Normalize (vFrame);
 				vFrame *= info.xSize;
 				}	
-			info.position.vPos = vSavePos;
+			info.position.vPos = vOldPos;
 			for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
 				vFrame /= I2X (2);
 				if (vFrame.IsZero ())
