@@ -731,7 +731,7 @@ for (i = gameData.segs.nVertices; i; i--, pointP++) {
 #if DBG
 int nIterations = 0;
 #endif
-int nRenderDepth = min (4 * int (gameStates.render.detail.nRenderDepth), gameData.segs.nSegments);
+int nRenderDepth = min (4 * (int (gameStates.render.detail.nRenderDepth) + 1), gameData.segs.nSegments);
 
 // Starting at the viewer's segment, the following code looks through each open side of a segment
 // the projected rectangular area of that side is that side's "portal".
