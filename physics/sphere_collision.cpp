@@ -740,7 +740,7 @@ int widResult = segP->IsDoorWay (nSide, (nObject < 0) ? NULL : OBJECTS + nObject
 if (widResult & WID_PASSABLE_FLAG) // check whether side can be passed through
 	return 1; 
 
-if ((widResult & (WID_VISIBLE_FLAG | WID_TRANSPARENT_FLAG)) == (WID_VISIBLE_FLAG | WID_TRANSPARENT_FLAG)) { // check whether side can be seen through
+if ((widResult & WID_TRANSPARENT_WALL) == WID_TRANSPARENT_WALL) { // check whether side can be seen through
     if (flags & FQ_TRANSWALL) 
 		 return 1;
 	 if (!(flags & FQ_TRANSPOINT))
@@ -844,12 +844,23 @@ if (endMask) { //on the back of at least one face
 				continue;
 			//did we go through this wall/door?
 			int nFaceHitType;
+#if DBG
+			if (bCheckHitbox) {
+				 if (CheckFaceHitboxCollision (curHit.vPoint, curHit.vNormal, hitQuery.nSegment, nSide, hitQuery.p0, hitQuery.p1, objP) == 0x7FFFFFFF)
+					continue;
+				 bCheckHitbox = false;
+				}
+			nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
+					? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
+					: segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
+#else
 			if (bCheckHitbox)
 				nFaceHitType = (CheckFaceHitboxCollision (curHit.vPoint, curHit.vNormal, hitQuery.nSegment, nSide, hitQuery.p0, hitQuery.p1, objP) == 0x7FFFFFFF) ? IT_NONE : IT_FACE;
 			else
 				nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
 									? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
 									: segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
+#endif
 #if 1
 			if (bCheckVisibility && !nFaceHitType)
 					continue;
@@ -874,7 +885,7 @@ if (endMask) { //on the back of at least one face
 					;
 				if (i == gameData.collisions.nSegsVisited) {                //haven't visited here yet
 					if (gameData.collisions.nSegsVisited >= MAX_SEGS_VISITED)
-						goto hitPointDone;		//we've looked a long time, so give up
+						goto hitPointDone;	//we've looked a long time, so give up
 					gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = subHitQuery.nSegment;
 					subHit.nType = ComputeHitpoint (subHit, subHitQuery, subSegList, &nSubSegments, hitQuery.nSegment);
 					if (subHit.nType != HIT_NONE) {

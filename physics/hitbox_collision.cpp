@@ -38,9 +38,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static ubyte PointIsInTriangle (CFixVector* vRef, CFixVector* vNormal, short* triangleVerts)
 {
 CFloatVector v0, v1, v2;
-v0.Assign (VERTICES [triangleVerts [2]] - VERTICES [triangleVerts [0]]);
-v1.Assign (VERTICES [triangleVerts [1]] - VERTICES [triangleVerts [0]]);
-v2.Assign (*vRef - VERTICES [triangleVerts [0]]);
+v0 = FVERTICES [triangleVerts [2]] - FVERTICES [triangleVerts [0]];
+v1 = FVERTICES [triangleVerts [1]] - FVERTICES [triangleVerts [0]];
+v2.Assign (*vRef);
+v2 -= FVERTICES [triangleVerts [0]];
 float dot00 = CFloatVector::Dot (v0, v0);
 float dot11 = CFloatVector::Dot (v1, v1);
 float dot01 = CFloatVector::Dot (v0, v1);
@@ -48,8 +49,12 @@ float dot02 = CFloatVector::Dot (v0, v2);
 float dot12 = CFloatVector::Dot (v1, v2);
 float invDenom = 1.0f / (dot00 * dot11 - dot01 * dot01);
 float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+if (u < -0.001f)
+	return 0;
 float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-return (u >= -0.001f) && (v >= -0.001f) && (u + v <= 1.001f);
+if (v < -0.001f)
+	return 0;
+return (u + v <= 1.001f);
 }
 
 //	-----------------------------------------------------------------------------
@@ -154,7 +159,7 @@ return 0;
 
 static int FindLinePlaneIntersection (CFixVector& intersection, CFixVector* vPlane, CFixVector* vNormal, CFixVector* p0, CFixVector* p1, fix rad)
 {
-#if 0
+#if 1
 	CFloatVector n, u, w;
 
 u.Assign (*p1 - *p0);
@@ -166,25 +171,26 @@ if ((den > -1e-6f) && (den < 1e-6f)) {// ~ parallel
 w.Assign (*p0 - *vPlane);
 float num = CFloatVector::Dot (n, w);
 float s = num / den;
-if ((s < -0.001f) || (s > 1.001f)) // compensate small numerical errors
-	return 0;
-if (s < 0.0f)
+if (s < 0.0f) {
+	if (s < -0.001f) // compensate small numerical errors
+		return 0;
 	s = 0.0f;
-else if (s > 1.0f)
+	}
+else if (s > 1.0f) {
+	if (s > 1.001f) // compensate small numerical errors
+		return 0;
 	s = 1.0f;
+	}
 u *= s;
 intersection.Assign (u);
 intersection += *p0;
 #else
-	CFixVector	d, w;
-	double		num, den;
-
-w = *vPlane - *p0;
-d = *p1 - *p0;
-num = double (CFixVector::Dot (*vNormal, w) - rad) / 65536.0;
-den = double (CFixVector::Dot (*vNormal, d)) / 65536.0;
+CFixVector d = *p1 - *p0;
+double den = double (CFixVector::Dot (*vNormal, d)) / 65536.0;
 if (fabs (den) < 1e-10)
 	return 0;
+CFixVector w = *p0 - *vPlane;
+double num = double (CFixVector::Dot (*vNormal, w) - rad) / 65536.0;
 if (fabs (num) > fabs (den))
 	return 0;
 num /= den;
@@ -420,6 +426,9 @@ int FindTriangleQuadIntersection (CFixVector& intersection, short* triangleVerts
 intersection.SetZero ();
 for (i = 0; i < 4; i++)
 	if (FindLineTriangleIntersection (vHit, triangleVerts, triangleNormal, vQuad + i, vQuad + ((i + 1) % 4)) < 0x7fffffff) {
+#if DBG
+	FindLineTriangleIntersection (vHit, triangleVerts, triangleNormal, vQuad + i, vQuad + ((i + 1) % 4));
+#endif
 		++nHits;
 		intersection += vHit;
 		}
@@ -457,7 +466,7 @@ fix CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, shor
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel =
-	nModels = 0;
+	nModels = 1;
 	}
 else {
 	iModel = 1;
@@ -472,7 +481,7 @@ CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 
 for (int i = 0; i < 2; i++) {
 	for (int j = iModel; j <= nModels; j++) {
-		nHits += FindTriangleHitboxIntersection (intersection, normal, sideP->m_vertices + 3 * i, sideP->m_normals + i, &hb [j].box, p1, dMin);
+		nHits += FindTriangleHitboxIntersection (intersection, normal, sideP->m_vertices + 3 * i, sideP->m_normals + i, &hb [j].box, p0, dMin);
 		}
 	}
 return nHits ? dMin : 0x7FFFFFFF;
