@@ -472,7 +472,7 @@ CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 
 for (int i = 0; i < 2; i++) {
 	for (int j = iModel; j <= nModels; j++) {
-		nHits += FindTriangleHitboxIntersection (intersection, normal, sideP->m_faceVerts + 3 * i, sideP->m_rotNorms + i, &hb [j].box, p1, dMin);
+		nHits += FindTriangleHitboxIntersection (intersection, normal, sideP->m_faceVerts + 3 * i, sideP->m_normals + i, &hb [j].box, p1, dMin);
 		}
 	}
 return nHits ? dMin : 0x7FFFFFFF;

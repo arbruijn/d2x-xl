@@ -235,7 +235,8 @@ tHitbox* TransformHitboxes (CObject *objP, CFixVector *vPos)
 {
 	int			nId = objP->ModelId ();
 	tHitbox*		hb = &gameData.models.hitboxes [nId].hitboxes [0];
-#if 1
+
+#if !DBG
 if (gameData.models.hitboxes [nId].nFrame == gameData.objs.nFrameCount)
 	return hb;
 gameData.models.hitboxes [nId].nFrame = gameData.objs.nFrameCount;
