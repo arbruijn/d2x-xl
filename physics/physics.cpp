@@ -435,6 +435,24 @@ else
 }
 
 //	-----------------------------------------------------------------------------
+
+void CPhysSimData::GetPhysSegs (void)
+{
+if (bGetPhysSegs) {
+	if (gameData.physics.nSegments && (gameData.physics.segments [gameData.physics.nSegments-1] == hitResult.segList [0]))
+		gameData.physics.nSegments--;
+	int i = MAX_FVI_SEGS - gameData.physics.nSegments - 1;
+	if (i > 0) {
+		if (i > hitResult.nSegments)
+			i = hitResult.nSegments;
+		if (i > 0)
+			memcpy (gameData.physics.segments + gameData.physics.nSegments, hitResult.segList, i * sizeof (gameData.physics.segments [0]));
+		gameData.physics.nSegments += i;
+		}
+	}
+}
+
+//	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
@@ -553,7 +571,7 @@ void CObject::ProcessBadCollision (CPhysSimData& simData) // hit point outside o
 
 //	-----------------------------------------------------------------------------
 
-void CObject::HandleDrag (CPhysSimData& simData)
+void CObject::ProcessDrag (CPhysSimData& simData)
 {
 int nTries = simData.xSimTime / FT;
 fix xDrag = mType.physInfo.drag;
@@ -657,7 +675,7 @@ if (Index () == nDbgObj) {
 	}
 #endif
 
-HandleDrag (simData);
+ProcessDrag (simData);
 
 #if DBG
 if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
@@ -707,20 +725,7 @@ retryMove:
 			simData.nTries--;
 		}
 
-	//RegisterHit (simData.hitResult.vPoint);
-	if (simData.bGetPhysSegs) {
-		if (gameData.physics.nSegments && (gameData.physics.segments [gameData.physics.nSegments-1] == simData.hitResult.segList [0]))
-			gameData.physics.nSegments--;
-		i = MAX_FVI_SEGS - gameData.physics.nSegments - 1;
-		if (i > 0) {
-			if (i > simData.hitResult.nSegments)
-				i = simData.hitResult.nSegments;
-			if (i > 0)
-				memcpy (gameData.physics.segments + gameData.physics.nSegments, simData.hitResult.segList, i * sizeof (gameData.physics.segments [0]));
-			gameData.physics.nSegments += i;
-			}
-		}
-
+	simData.GetPhysSegs ();
 	if (simData.hitResult.nSegment == -1) {		//some sort of horrible error
 		if (info.nType == OBJ_WEAPON)
 			Die ();

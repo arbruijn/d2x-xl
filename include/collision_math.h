@@ -175,7 +175,7 @@ class CPhysSimData {
 
 		explicit CPhysSimData (short nObject = -1) : nObject (nObject), nTries (0) { Setup (); }
 		void Setup (void);
-		int GetPhysSegs (void);
+		void GetPhysSegs (void);
 	};
 
 //	-----------------------------------------------------------------------------

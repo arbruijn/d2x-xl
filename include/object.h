@@ -1060,7 +1060,7 @@ class CObject : public CObjectInfo {
 		int FindTargetWindow (void);
 		void AddHomingTarget (CObject* targetP, CFixVector* vTrackerPos, fix maxTrackableDist, fix& xBestDot, int& nBestObj);
 
-		void HandleDrag (CPhysSimData& simData);
+		void ProcessDrag (CPhysSimData& simData);
 		int HandleObjectCollision (CPhysSimData& simData);
 		int HandleWallCollision (CPhysSimData& simData);
 		int HandleBadCollision (CPhysSimData& simData);
