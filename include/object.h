@@ -1073,7 +1073,9 @@ class CObject : public CObjectInfo {
 		void SetupHitQuery (CHitQuery& hitQuery, int nFlags, CFixVector* vNewPos = NULL);
 		int Bounce (CHitResult hitResult, float fOffs, fix *pxSideDists);
 		void DoBumpHack (void);
+#if DBG
 		void DoPhysicsSimOld (void);
+#endif
 
 	public:
 		void UpdateHomingWeapon (int nThread = 0);

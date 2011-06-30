@@ -1137,7 +1137,7 @@ mType.physInfo.thrust = mType.physInfo.velocity * k;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-//Simulate a physics CObject for this frame
+#if DBG
 
 void CObject::DoPhysicsSimOld (void)
 {
@@ -1718,5 +1718,7 @@ if (Index () == nDbgObj) {
 Unstick ();
 #endif
 }
+
+#endif
 
 //	-----------------------------------------------------------------------------
