@@ -1072,11 +1072,11 @@ class CObject : public CObjectInfo {
 		void FixPosition (CPhysSimData& simData);
 		void SetupHitQuery (CHitQuery& hitQuery, int nFlags);
 		int Bounce (CHitResult hitResult, float fOffs, fix *pxSideDists);
-		void Unstick (void);
 		void DoBumpHack (void);
 
 	public:
 		void UpdateHomingWeapon (int nThread = 0);
+		void Unstick (void);
 	};
 
 inline int operator- (CObject* o, CArray<CObject>& a) { return a.Index (o); }
