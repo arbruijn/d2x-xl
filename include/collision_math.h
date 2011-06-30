@@ -18,11 +18,35 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segment.h"
 #include "object.h"
 
+//	-----------------------------------------------------------------------------
+
 //return values for FindHitpoint() - what did we hit?
 #define HIT_NONE		0		//we hit nothing
 #define HIT_WALL		1		//we hit - guess - a CWall
 #define HIT_OBJECT	2		//we hit an CObject - which one?  no way to tell...
 #define HIT_BAD_P0	3		//start point is not in specified CSegment
+
+//flags for fvi query
+#define FQ_CHECK_OBJS		1		//check against objects?
+#define FQ_TRANSWALL			2		//go through transparent walls
+#define FQ_TRANSPOINT		4		//go through trans CWall if hit point is transparent
+#define FQ_GET_SEGLIST		8		//build a list of segments
+#define FQ_IGNORE_POWERUPS	16		//ignore powerups
+#define FQ_VISIBLE_OBJS		32
+#define FQ_ANY_OBJECT		64
+#define FQ_CHECK_PLAYER		128
+#define FQ_VISIBILITY		256
+
+//intersection types
+#define IT_ERROR	-1
+#define IT_NONE	0       //doesn't touch face at all
+#define IT_FACE	1       //touches face
+#define IT_EDGE	2       //touches edge of face
+#define IT_POINT  3       //touches vertex
+
+#define MAX_FVI_SEGS 200
+
+//	-----------------------------------------------------------------------------
 
 class CFixVector2 {
 	public:
@@ -31,6 +55,8 @@ class CFixVector2 {
 	inline fix Cross (CFixVector2& other) { return FixMul (x, other.y) - FixMul (y, other.x); }
 	};
 
+//	-----------------------------------------------------------------------------
+
 class CFloatVector2 {
 	public:
 		float x, y;
@@ -38,8 +64,7 @@ class CFloatVector2 {
 	inline float Cross (CFloatVector2& other) { return x * other.y - y * other.x; }
 	};
 
-
-extern int ijTable [3][2];
+//	-----------------------------------------------------------------------------
 
 class CHitData {
 	public:
@@ -62,6 +87,8 @@ class CHitData {
 			
 	};
 
+//	-----------------------------------------------------------------------------
+
 class CHitInfo : public CHitData {
 	public:
 		short			nAltSegment;
@@ -75,7 +102,9 @@ class CHitInfo : public CHitData {
 		CHitInfo () : nAltSegment (-1), nSide (0), nFace (0), nSideSegment (-1), nNormals (0), nNestCount (0) {}
 	};
 
+//	-----------------------------------------------------------------------------
 //this data structure gets filled in by FindHitpoint()
+
 class CHitResult : public CHitInfo {
 	public:
 		short 	nSegments;					//how many segs we went through
@@ -85,23 +114,7 @@ class CHitResult : public CHitInfo {
 		CHitResult () : nSegments (0) {}
 	};
 
-//flags for fvi query
-#define FQ_CHECK_OBJS		1		//check against objects?
-#define FQ_TRANSWALL			2		//go through transparent walls
-#define FQ_TRANSPOINT		4		//go through trans CWall if hit point is transparent
-#define FQ_GET_SEGLIST		8		//build a list of segments
-#define FQ_IGNORE_POWERUPS	16		//ignore powerups
-#define FQ_VISIBLE_OBJS		32
-#define FQ_ANY_OBJECT		64
-#define FQ_CHECK_PLAYER		128
-#define FQ_VISIBILITY		256
-
-//intersection types
-#define IT_ERROR	-1
-#define IT_NONE	0       //doesn't touch face at all
-#define IT_FACE	1       //touches face
-#define IT_EDGE	2       //touches edge of face
-#define IT_POINT  3       //touches vertex
+//	-----------------------------------------------------------------------------
 
 //this data contains the parms to fvi()
 class CHitQuery {
@@ -120,6 +133,39 @@ class CHitQuery {
 		CHitQuery (int flags, CFixVector* p0, CFixVector* p1, short nSegment, short nObject = -1, fix radP0 = 0, fix radP1 = 0, short* ignoreObjList = NULL)
 			: flags (flags), p0 (p0), p1 (p1), nSegment (nSegment), nObject (nObject), radP0 (radP0), radP1 (radP1), ignoreObjList (ignoreObjList)
 			{}
+	};
+
+//------------------------------------------------------------------------------
+
+typedef struct tSpeedBoostData {
+	int						bBoosted;
+	CFixVector				vVel;
+	CFixVector				vMinVel;
+	CFixVector				vMaxVel;
+	CFixVector				vSrc;
+	CFixVector				vDest;
+} tSpeedBoostData;
+
+//	-----------------------------------------------------------------------------
+
+class CPhysSimData {
+	public:
+		short					nObject;
+		short					nStartSeg;
+		CFixVector			vStartPos;
+		short					nOldSeg;
+		CFixVector			vOldPos;
+		CFixVector			vNewPos;
+		CFixVector			vHitPos;
+		CFixVector			vFrame;
+		CFixVector			vMoved;
+		fix					xSimTime;
+		fix					xMovedTime;
+		tSpeedBoostData	speedBoost;
+		CHitResult			hitResult;
+		CHitQuery			hitQuery;
+
+		explicit CPhysSimData (short nObject = -1, short nStartSeg = -1) : nObject (nObject), nStartSeg (nStartSeg) {}
 	};
 
 //	-----------------------------------------------------------------------------
@@ -198,21 +244,8 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-static inline int UseHitbox (CObject *objP)
-{
-return !gameStates.app.bNostalgia &&
-		 (objP->info.renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel >= 0) && 
-		 ((objP->info.nType != OBJ_WEAPON) || ((objP->info.nId != GAUSS_ID) && (objP->info.nId != VULCAN_ID)));
-}
-
-//	-----------------------------------------------------------------------------
-
-static inline int UseSphere (CObject *objP)
-{
-	int nType = objP->info.nType;
-
-return gameStates.app.bNostalgia || (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POWERUP) || objP->IsMine ();
-}
+int UseHitbox (CObject *objP);
+int UseSphere (CObject *objP);
 
 //	-----------------------------------------------------------------------------
 

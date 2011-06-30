@@ -746,6 +746,8 @@ class CObjDamageInfo {
 
 #define MAX_WEAPONS	100
 
+#include "collision_math.h"
+
 class CObject : public CObjectInfo {
 	private:
 		static CArray<ushort>	m_weaponInfo;
@@ -1058,6 +1060,10 @@ class CObject : public CObjectInfo {
 		int FindTargetWindow (void);
 		void AddHomingTarget (CObject* targetP, CFixVector* vTrackerPos, fix maxTrackableDist, fix& xBestDot, int& nBestObj);
 
+		void HandleDrag (CPhysSimData& simData);
+		void HandleObjectCollision (CPhysSimData& simData);
+		void HandleWallCollision (CPhysSimData& simData);
+		void SetupHitQuery (CHitQuery& hitQuery, int nFlags);
 
 	public:
 		void UpdateHomingWeapon (int nThread = 0);

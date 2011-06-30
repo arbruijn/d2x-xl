@@ -1982,17 +1982,6 @@ class CObjTypeData {
 
 //------------------------------------------------------------------------------
 
-typedef struct tSpeedBoostData {
-	int						bBoosted;
-	CFixVector				vVel;
-	CFixVector				vMinVel;
-	CFixVector				vMaxVel;
-	CFixVector				vSrc;
-	CFixVector				vDest;
-} tSpeedBoostData;
-
-//------------------------------------------------------------------------------
-
 typedef struct tQuad {
 	CFixVector			v [4];	//corner vertices
 	CFixVector			n [2];	//normal, transformed normal
@@ -2120,8 +2109,6 @@ class CObjectData {
 #define DESTROY_SMOKE		128
 
 //------------------------------------------------------------------------------
-
-#define MAX_FVI_SEGS 200
 
 class CFVISideData {
 	public:

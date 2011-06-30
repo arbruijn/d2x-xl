@@ -329,7 +329,7 @@ fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject 
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel1 =
-	nModels1 = 
+	nModels1 = 0;
 	iModel2 =
 	nModels2 = 1;
 	}
@@ -470,6 +470,10 @@ fix CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, shor
 	fix					dMin = 0x7fffffff;
 	CModelHitboxList*	pmhb = gameData.models.hitboxes + objP->ModelId ();
 
+#if 1 // always only use the primary hitbox (containing the entire object) here
+iModel =
+nModels = 1;
+#else
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel =
 	nModels = 1;
@@ -478,6 +482,7 @@ else {
 	iModel = 1;
 	nModels = pmhb->nHitboxes;
 	}
+#endif
 if (!p1)
 	p1 = &OBJPOS (objP)->vPos;
 intersection.Create (0x7fffffff, 0x7fffffff, 0x7fffffff);
@@ -491,6 +496,15 @@ for (int i = 0; i < 2; i++) {
 		}
 	}
 return nHits ? 0 : 0x7FFFFFFF;
+}
+
+//	-----------------------------------------------------------------------------
+
+int UseHitbox (CObject *objP)
+{
+return !gameStates.app.bNostalgia &&
+		 (objP->info.renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel >= 0) && 
+		 ((objP->info.nType != OBJ_WEAPON) || ((objP->info.nId != GAUSS_ID) && (objP->info.nId != VULCAN_ID)));
 }
 
 //	-----------------------------------------------------------------------------

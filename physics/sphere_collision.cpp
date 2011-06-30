@@ -481,12 +481,6 @@ d = det.Det();
 return 1;		//found refP
 }
 
-#ifdef NEW_FVI_STUFF
-int bSimpleFVI = 0;
-#else
-#define bSimpleFVI 1
-#endif
-
 //	-----------------------------------------------------------------------------
 //maybe this routine should just return the distance and let the caller
 //decide it it's close enough to hit
@@ -1243,4 +1237,14 @@ for (;;) {
 }
 
 //	-----------------------------------------------------------------------------
+
+int UseSphere (CObject *objP)
+{
+	int nType = objP->info.nType;
+
+return gameStates.app.bNostalgia || (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POWERUP) || objP->IsMine ();
+}
+
+//	-----------------------------------------------------------------------------
+
 //eof
