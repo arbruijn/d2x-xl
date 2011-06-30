@@ -649,19 +649,14 @@ if (info.nType != OBJ_DEBRIS) {
 		bRetry = 1;
 		}
 	}
+return bRetry;
 }
 
 //	-----------------------------------------------------------------------------
 
-void CObject::ProcessObjectCollision (CPhysSimData& simData)
+int CObject::ProcessObjectCollision (CPhysSimData& simData)
 {
 Assert (simData.nObject != -1);
-CFixVector* ppos0 = &OBJECTS [simData.nObject].info.position.vPos;
-CFixVector* ppos1 = &info.position.vPos;
-fix size0 = OBJECTS [simData.nObject].info.xSize;
-fix size1 = info.xSize;
-//	Calculate the hit point between the two objects.
-Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
 CObject* hitObjP = OBJECTS + simData.nObject;
 //if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + simData.nObject)))
 CFixVector vOldVel = mType.physInfo.velocity;
@@ -690,26 +685,28 @@ if (CollisionModel () || hitObjP->IsStatic ()) {
 #endif
 	}
 else {
-	simData.hitResult.vPoint = *ppos1 - *ppos0;
+	simData.hitResult.vPoint = info.position.vPos - OBJECTS [simData.nObject].info.position.vPos;
 	CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint);
 	}
 if (simData.bSpeedBoost && (this == gameData.objs.consoleP))
 	mType.physInfo.velocity = vOldVel;
 // Let object continue its movement
-if (!(info.nFlags & OF_SHOULD_BE_DEAD)) {
-	if ((mType.physInfo.flags & PF_PERSISTENT) || (vOldVel == mType.physInfo.velocity)) {
-		if (OBJECTS [simData.nObject].info.nType == OBJ_POWERUP) 
-			simData.nTries--;
-		gameData.physics.ignoreObjs [nIgnoreObjs++] = simData.nObject;
-		bRetry = 1;
-		}
+if (info.nFlags & OF_SHOULD_BE_DEAD)
+	return -1;
+if ((mType.physInfo.flags & PF_PERSISTENT) || (vOldVel == mType.physInfo.velocity)) {
+	if (OBJECTS [simData.nObject].info.nType == OBJ_POWERUP) 
+		simData.nTries--;
+	gameData.physics.ignoreObjs [simData.nIgnoredObjs++] = simData.nObject;
+	return 1;
 	}
+return 0;
 }
 
 //	-----------------------------------------------------------------------------
 
-void CObject::ProcessBadCollision (CPhysSimData& simData) // hit point outside of level
+int CObject::ProcessBadCollision (CPhysSimData& simData) // hit point outside of level
 {
+return 1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -813,8 +810,8 @@ simData.vMoved = info.position.vPos - simData.vOldPos;
 fix actualDist = simData.vMoved.Mag ();
 fix attemptedDist = simData.vOffset.Mag ();
 simData.xSimTime = FixMulDiv (simData.xSimTime, attemptedDist - actualDist, attemptedDist);
-simData.xMovedTime = xOldSimTime - simData.xSimTime;
-if ((simData.xSimTime < 0) || (simData.xSimTime > xOldSimTime)) {
+simData.xMovedTime = simData.xOldSimTime - simData.xSimTime;
+if ((simData.xSimTime < 0) || (simData.xSimTime > simData.xOldSimTime)) {
 	simData.xSimTime = simData.xOldSimTime;
 	simData.xMovedTime = 0;
 	}
@@ -830,13 +827,9 @@ void CObject::DoPhysicsSim (void)
 if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	return;
 
-	short					nIgnoreObjs = 0;
-	int					i;
-	int					bRetry;
-	CFixMatrix			mSaveOrient;
-	CPhysSimData		simData (OBJ_IDX (this)); // must be called after initializing gameData.physics.xTime! Will call simData.Setup ()!
+	CPhysSimData simData (OBJ_IDX (this)); // must be called after initializing gameData.physics.xTime! Will call simData.Setup ()!
 
-mSaveOrient = info.position.mOrient;
+CFixMatrix mSaveOrient = info.position.mOrient;
 if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && CollisionModel ()) {
 	SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0));
 	if (FindHitpoint (simData.hitQuery, simData.hitResult) != HIT_NONE)
@@ -871,6 +864,7 @@ if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
 
+int bRetry;
 
 simData.nTries = 0;
 do {	//Move the object
@@ -922,13 +916,14 @@ do {	//Move the object
 		return;
 
 	if (simData.hitResult.nType == HIT_WALL) {
-		if (0 > (bRetry = ProcessWallCollision (simData)))
-			return;
+		bRetry = ProcessWallCollision (simData);
 		}
 	//calulate new sim time
 	else if (simData.hitResult.nType == HIT_OBJECT) {
-		ProcessObjectCollision (simData);
+		bRetry = ProcessObjectCollision (simData);
 		}
+	if (bRetry < 0)
+		return;
 	} while (bRetry);
 
 //	Pass retry attempts info to AI.

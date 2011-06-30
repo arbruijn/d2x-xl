@@ -175,9 +175,10 @@ class CPhysSimData {
 		int					bScaleSpeed;
 		int					bStopped;
 		int					bBounced;
+		int					nIgnoredObjs;
 		int					nTries;
 
-		explicit CPhysSimData (short nObject = -1) : nObject (nObject), bUpdateOffset (1), bStopped (0), bBounced (0), nTries (0) { Setup (); }
+		explicit CPhysSimData (short nObject = -1) : nObject (nObject), bUpdateOffset (1), bStopped (0), bBounced (0), nIgnoredObjs (0), nTries (0) { Setup (); }
 		void Setup (void);
 		void GetPhysSegs (void);
 	};
