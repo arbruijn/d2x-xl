@@ -1061,12 +1061,13 @@ class CObject : public CObjectInfo {
 		void AddHomingTarget (CObject* targetP, CFixVector* vTrackerPos, fix maxTrackableDist, fix& xBestDot, int& nBestObj);
 
 		void ProcessDrag (CPhysSimData& simData);
+		int ProcessOffset (CPhysSimData& simData);
 		int HandleObjectCollision (CPhysSimData& simData);
 		int HandleWallCollision (CPhysSimData& simData);
 		int HandleBadCollision (CPhysSimData& simData);
-		void ProcessObjectCollision (CPhysSimData& simData);
-		void ProcessWallCollision (CPhysSimData& simData);
-		void ProcessBadCollision (CPhysSimData& simData);
+		int ProcessObjectCollision (CPhysSimData& simData);
+		int ProcessWallCollision (CPhysSimData& simData);
+		int ProcessBadCollision (CPhysSimData& simData);
 		void SetupHitQuery (CHitQuery& hitQuery, int nFlags);
 		int UpdateOffset (CPhysSimData& simData);
 

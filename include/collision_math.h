@@ -161,19 +161,23 @@ class CPhysSimData {
 		CFixVector			vOffset;
 		CFixVector			vMoved;
 		fix					xSimTime;
+		fix					xOldSimTime;
 		fix					xTimeScale;
 		fix					xMovedTime;
 		tSpeedBoostData	speedBoost;
 		CHitResult			hitResult;
 		CHitQuery			hitQuery;
 		int					bInitialize;
+		int					bUpdateOffset;
 		int					bUseHitbox;
 		int					bGetPhysSegs;
 		int					bSpeedBoost;
 		int					bScaleSpeed;
+		int					bStopped;
+		int					bBounced;
 		int					nTries;
 
-		explicit CPhysSimData (short nObject = -1) : nObject (nObject), nTries (0) { Setup (); }
+		explicit CPhysSimData (short nObject = -1) : nObject (nObject), bUpdateOffset (1), bStopped (0), bBounced (0), nTries (0) { Setup (); }
 		void Setup (void);
 		void GetPhysSegs (void);
 	};

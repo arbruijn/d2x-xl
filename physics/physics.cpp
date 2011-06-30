@@ -553,14 +553,157 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-void CObject::ProcessWallCollision (CPhysSimData& simData)
+int CObject::ProcessWallCollision (CPhysSimData& simData)
 {
+if (CFixVector::Dot (simData.vMoved, simData.vOffset) < 0) {		//moved backwards
+#if DBG
+	CFixVector vi;
+	FindPointLineIntersection (vi, simData.vOldPos, simData.vNewPos, simData.hitResult.vPoint, -1);
+
+	CFixVector v0 = simData.vOldPos;
+	simData.hitQuery.p0 = &v0;
+	simData.hitQuery.nSegment = info.nSegment;
+	simData.hitQuery.p1 = &simData.vNewPos;
+	simData.hitQuery.radP0 = 
+	simData.hitQuery.radP1 = info.xSize;
+	simData.hitQuery.nObject = simData.nObject;
+	simData.hitQuery.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
+	simData.hitQuery.flags = FQ_CHECK_OBJS;
+	if (info.nType == OBJ_WEAPON)
+		simData.hitQuery.flags |= FQ_TRANSPOINT;
+	if ((simData.bGetPhysSegs = ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT))))
+		simData.hitQuery.flags |= FQ_GET_SEGLIST;
+	CHitResult hitResult2;
+	FindHitpoint (simData.hitQuery, hitResult2);
+#endif
+	//don't change position or simData.xSimTime
+	info.position.vPos = simData.vOldPos;
+	if (simData.nOldSeg != simData.hitResult.nSegment)
+		RelinkToSeg (simData.nOldSeg);
+	if (simData.bSpeedBoost) {
+		info.position.vPos = simData.vStartPos;
+		SetSpeedBoostVelocity (Index (), -1, -1, -1, -1, -1, &simData.vStartPos, &simData.speedBoost.vDest, 0);
+		simData.vOffset = simData.speedBoost.vVel * simData.xSimTime;
+		simData.bUpdateOffset = 0;
+		return 1;
+		}
+	simData.xMovedTime = 0;
+	}
+
+fix xWallPart = gameData.collisions.hitResult.nNormals ? CFixVector::Dot (simData.vMoved, simData.hitResult.vNormal) / gameData.collisions.hitResult.nNormals : 0;
+fix xHitSpeed;
+
+if (xWallPart && (simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0))
+	CollideObjectAndWall (xHitSpeed, simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
+else if ((info.nType == OBJ_WEAPON) && simData.vMoved.IsZero ()) 
+	return -1;
+ScrapeOnWall (simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
+
+#if UNSTICK_OBJS == 2
+fix	xSideDists [6];
+SEGMENTS [simData.hitResult.nSideSegment].GetSideDists (&info.position.vPos, xSideDists);
+int bRetry = BounceObject (this, simData.hitResult, 0.1f, xSideDists);
+#else
+int bRetry = 0;
+#endif
+
+if (info.nType != OBJ_DEBRIS) {
+	int bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENTS [simData.hitResult.nSideSegment].m_sides [simData.hitResult.nSide].m_nBaseTex].flags & TMI_FORCE_FIELD);
+	if (!bForceFieldBounce && (mType.physInfo.flags & PF_STICK)) {		//stop moving
+		AddStuckObject (this, simData.hitResult.nSideSegment, simData.hitResult.nSide);
+		mType.physInfo.velocity.SetZero ();
+		simData.bStopped = 1;
+		bRetry = 0;
+		}
+	else {				// Slide CObject along CWall
+		int bCheckVel = 0;
+		//We're constrained by a wall, so subtract wall part from velocity vector
+
+		xWallPart = CFixVector::Dot (simData.hitResult.vNormal, mType.physInfo.velocity);
+		if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWall
+			xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
+			if (bForceFieldBounce) {
+				bCheckVel = 1;				//check for max velocity
+				if (info.nType == OBJ_PLAYER)
+					xWallPart *= 2;		//CPlayerData bounce twice as much
+				}
+			if ((mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
+				//Assert (mType.physInfo.flags & PF_BOUNCE);
+				if (mType.physInfo.flags & PF_HAS_BOUNCED)
+					mType.physInfo.flags &= ~(PF_BOUNCE | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
+				else
+					mType.physInfo.flags |= PF_HAS_BOUNCED;
+				}
+			simData.bBounced = 1;		//this CObject simData.bBounced
+			}
+		mType.physInfo.velocity += simData.hitResult.vNormal * (-xWallPart);
+		if (bCheckVel) {
+			fix vel = mType.physInfo.velocity.Mag ();
+			if (vel > MAX_OBJECT_VEL)
+				mType.physInfo.velocity *= (FixDiv (MAX_OBJECT_VEL, vel));
+			}
+		if (simData.bBounced && (info.nType == OBJ_WEAPON)) {
+			info.position.mOrient = CFixMatrix::CreateFU (mType.physInfo.velocity, info.position.mOrient.m.dir.u);
+			SetOrigin (simData.hitResult.vPoint);
+			}
+		bRetry = 1;
+		}
+	}
 }
 
 //	-----------------------------------------------------------------------------
 
 void CObject::ProcessObjectCollision (CPhysSimData& simData)
 {
+Assert (simData.nObject != -1);
+CFixVector* ppos0 = &OBJECTS [simData.nObject].info.position.vPos;
+CFixVector* ppos1 = &info.position.vPos;
+fix size0 = OBJECTS [simData.nObject].info.xSize;
+fix size1 = info.xSize;
+//	Calculate the hit point between the two objects.
+Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
+CObject* hitObjP = OBJECTS + simData.nObject;
+//if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + simData.nObject)))
+CFixVector vOldVel = mType.physInfo.velocity;
+if (CollisionModel () || hitObjP->IsStatic ()) {
+	CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint, &simData.hitResult.vNormal);
+#if 1
+	if (vOldVel.IsZero ()) {
+		simData.vOffset = OBJPOS (hitObjP)->vPos - OBJPOS (this)->vPos;
+		CFixVector::Normalize (simData.vOffset);
+		simData.vOffset *= info.xSize;
+		}	
+	info.position.vPos = simData.vOldPos;
+	for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
+		simData.vOffset /= I2X (2);
+		if (simData.vOffset.IsZero ())
+			break;
+		if (info.position.vPos != simData.vNewPos)
+			simData.vNewPos += simData.vOffset * s;
+		else {
+			simData.vNewPos += simData.vOffset * s;
+			info.position.vPos = simData.vNewPos;
+			}
+		s = CheckVectorObjectCollision (simData.hitResult, &info.position.vPos, &simData.vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
+		}
+	info.position.vPos = simData.vNewPos;
+#endif
+	}
+else {
+	simData.hitResult.vPoint = *ppos1 - *ppos0;
+	CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint);
+	}
+if (simData.bSpeedBoost && (this == gameData.objs.consoleP))
+	mType.physInfo.velocity = vOldVel;
+// Let object continue its movement
+if (!(info.nFlags & OF_SHOULD_BE_DEAD)) {
+	if ((mType.physInfo.flags & PF_PERSISTENT) || (vOldVel == mType.physInfo.velocity)) {
+		if (OBJECTS [simData.nObject].info.nType == OBJ_POWERUP) 
+			simData.nTries--;
+		gameData.physics.ignoreObjs [nIgnoreObjs++] = simData.nObject;
+		bRetry = 1;
+		}
+	}
 }
 
 //	-----------------------------------------------------------------------------
@@ -632,6 +775,54 @@ else if (xDrag) {
 
 //	-----------------------------------------------------------------------------
 
+int CObject::ProcessOffset (CPhysSimData& simData)
+{
+// update CObject's position and CSegment number
+info.position.vPos = simData.hitResult.vPoint;
+if (simData.hitResult.nSegment != info.nSegment)
+	RelinkToSeg (simData.hitResult.nSegment);
+//if start point not in segment, move object to center of segment
+if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {	//object stuck
+	int n = FindSegment ();
+	if (n == -1) {
+		if (simData.bGetPhysSegs)
+			n = FindSegByPos (info.vLastPos, info.nSegment, 1, 0);
+		if (n == -1) {
+			info.position.vPos = info.vLastPos;
+			RelinkToSeg (info.nSegment);
+			}
+		else {
+			CFixVector vCenter;
+			vCenter = SEGMENTS [info.nSegment].Center ();
+			vCenter -= info.position.vPos;
+			if (vCenter.Mag() > I2X (1)) {
+				CFixVector::Normalize (vCenter);
+				vCenter /= 10;
+				}
+			info.position.vPos -= vCenter;
+			}
+		if (info.nType == OBJ_WEAPON) {
+			Die ();
+			return 0;
+			}
+		}
+	}
+
+simData.xOldSimTime = simData.xSimTime;
+simData.vMoved = info.position.vPos - simData.vOldPos;
+fix actualDist = simData.vMoved.Mag ();
+fix attemptedDist = simData.vOffset.Mag ();
+simData.xSimTime = FixMulDiv (simData.xSimTime, attemptedDist - actualDist, attemptedDist);
+simData.xMovedTime = xOldSimTime - simData.xSimTime;
+if ((simData.xSimTime < 0) || (simData.xSimTime > xOldSimTime)) {
+	simData.xSimTime = simData.xOldSimTime;
+	simData.xMovedTime = 0;
+	}
+return 1;
+}
+
+//	-----------------------------------------------------------------------------
+
 //Simulate a physics CObject for this frame
 
 void CObject::DoPhysicsSim (void)
@@ -643,8 +834,6 @@ if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	int					i;
 	int					bRetry;
 	CFixMatrix			mSaveOrient;
-	fix					xOldSimTime;
-	int					bBounced = 0, bObjStopped = 0;
 	CPhysSimData		simData (OBJ_IDX (this)); // must be called after initializing gameData.physics.xTime! Will call simData.Setup ()!
 
 mSaveOrient = info.position.mOrient;
@@ -685,12 +874,12 @@ if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
 
 simData.nTries = 0;
 do {	//Move the object
-	if (!UpdateOffset (simData))
+	if (!simData.bUpdateOffset)
+		simData.bUpdateOffset = 1;
+	else if (!UpdateOffset (simData))
 		break;
 
 	bRetry = 0;
-
-retryMove:
 
 	//	If retry count is getting large, then we are trying to do something stupid.
 	if (++simData.nTries > 3) {
@@ -703,16 +892,11 @@ retryMove:
 			}
 		}
 
-	simData.vOldPos = info.position.vPos;			//save the CObject's position
+	simData.vOldPos = info.position.vPos;			
 	simData.nOldSeg = info.nSegment;
 	simData.vNewPos = info.position.vPos + simData.vOffset;
 
 	SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0));
-
-#if DBG
-	if (info.nType == OBJ_POWERUP)
-		nDbgObj = nDbgObj;
-#endif
 	simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
 	UpdateStats (this, simData.hitResult.nType);
 
@@ -734,197 +918,16 @@ retryMove:
 
 	Assert ((simData.hitResult.nType != HIT_WALL) || ((simData.hitResult.nSideSegment > -1) && (simData.hitResult.nSideSegment <= gameData.segs.nLastSegment)));
 
-	// update CObject's position and CSegment number
-	info.position.vPos = simData.hitResult.vPoint;
-	if (simData.hitResult.nSegment != info.nSegment)
-		OBJECTS [simData.nObject].RelinkToSeg (simData.hitResult.nSegment);
-	//if start point not in segment, move object to center of segment
-	if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {	//object stuck
-		int n = FindSegment ();
-		if (n == -1) {
-			if (simData.bGetPhysSegs)
-				n = FindSegByPos (info.vLastPos, info.nSegment, 1, 0);
-			if (n == -1) {
-				info.position.vPos = info.vLastPos;
-				OBJECTS [simData.nObject].RelinkToSeg (info.nSegment);
-				}
-			else {
-				CFixVector vCenter;
-				vCenter = SEGMENTS [info.nSegment].Center ();
-				vCenter -= info.position.vPos;
-				if (vCenter.Mag() > I2X (1)) {
-					CFixVector::Normalize (vCenter);
-					vCenter /= 10;
-					}
-				info.position.vPos -= vCenter;
-				}
-			if (info.nType == OBJ_WEAPON) {
-				Die ();
-				return;
-				}
-			}
-		}
-
-	//calulate new sim time
-	xOldSimTime = simData.xSimTime;
-	simData.vMoved = info.position.vPos - simData.vOldPos;
-	fix actualDist = simData.vMoved.Mag ();
-	if ((simData.hitResult.nType == HIT_WALL) && (CFixVector::Dot (simData.vMoved, simData.vOffset) < 0)) {		//moved backwards
-#if DBG
-		CFixVector vi;
-		FindPointLineIntersection (vi, simData.vOldPos, simData.vNewPos, simData.hitResult.vPoint, -1);
-
-		CFixVector v0 = simData.vOldPos;
-		simData.hitQuery.p0 = &v0;
-		simData.hitQuery.nSegment = info.nSegment;
-		simData.hitQuery.p1 = &simData.vNewPos;
-		simData.hitQuery.radP0 = 
-		simData.hitQuery.radP1 = info.xSize;
-		simData.hitQuery.nObject = simData.nObject;
-		simData.hitQuery.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
-		simData.hitQuery.flags = FQ_CHECK_OBJS;
-		if (info.nType == OBJ_WEAPON)
-			simData.hitQuery.flags |= FQ_TRANSPOINT;
-		if ((simData.bGetPhysSegs = ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT))))
-			simData.hitQuery.flags |= FQ_GET_SEGLIST;
-		CHitResult hitResult2;
-		FindHitpoint (simData.hitQuery, hitResult2);
-#endif
-		//don't change position or simData.xSimTime
-		info.position.vPos = simData.vOldPos;
-		if (simData.nOldSeg != simData.hitResult.nSegment)
-			OBJECTS [simData.nObject].RelinkToSeg (simData.nOldSeg);
-		if (simData.bSpeedBoost) {
-			info.position.vPos = simData.vStartPos;
-			SetSpeedBoostVelocity (simData.nObject, -1, -1, -1, -1, -1, &simData.vStartPos, &simData.speedBoost.vDest, 0);
-			simData.vOffset = simData.speedBoost.vVel * simData.xSimTime;
-			goto retryMove;
-			}
-		simData.xMovedTime = 0;
-		}
-	else {
-		fix attemptedDist = simData.vOffset.Mag();
-		simData.xSimTime = FixMulDiv (simData.xSimTime, attemptedDist - actualDist, attemptedDist);
-		simData.xMovedTime = xOldSimTime - simData.xSimTime;
-		if ((simData.xSimTime < 0) || (simData.xSimTime > xOldSimTime)) {
-			simData.xSimTime = xOldSimTime;
-			simData.xMovedTime = 0;
-			}
-		}
+	if (!ProcessOffset (simData))
+		return;
 
 	if (simData.hitResult.nType == HIT_WALL) {
-		fix xHitSpeed, xWallPart = gameData.collisions.hitResult.nNormals ? CFixVector::Dot (simData.vMoved, simData.hitResult.vNormal) / gameData.collisions.hitResult.nNormals : 0;
-		if (xWallPart && (simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0))
-			CollideObjectAndWall (xHitSpeed, simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
-		else if ((info.nType == OBJ_WEAPON) && simData.vMoved.IsZero ()) 
-			Die ();
-		else
-			ScrapeOnWall (simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
-		Assert (simData.hitResult.nSideSegment > -1);
-		Assert (simData.hitResult.nSide > -1);
-#if UNSTICK_OBJS == 2
-		fix	xSideDists [6];
-		SEGMENTS [simData.hitResult.nSideSegment].GetSideDists (&info.position.vPos, xSideDists);
-		bRetry = BounceObject (this, simData.hitResult, 0.1f, xSideDists);
-#else
-		bRetry = 0;
-#endif
-		if (!(info.nFlags & OF_SHOULD_BE_DEAD) && (info.nType != OBJ_DEBRIS)) {
-			int bForceFieldBounce;		//bounce off a forcefield
-
-			///Assert (gameStates.app.cheats.bBouncingWeapons || ((mType.physInfo.flags & (PF_STICK | PF_BOUNCE)) != (PF_STICK | PF_BOUNCE)));	//can't be bounce and stick
-			bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENTS [simData.hitResult.nSideSegment].m_sides [simData.hitResult.nSide].m_nBaseTex].flags & TMI_FORCE_FIELD);
-			if (!bForceFieldBounce && (mType.physInfo.flags & PF_STICK)) {		//stop moving
-				AddStuckObject (this, simData.hitResult.nSideSegment, simData.hitResult.nSide);
-				mType.physInfo.velocity.SetZero ();
-				bObjStopped = 1;
-				bRetry = 0;
-				}
-			else {				// Slide CObject along CWall
-				int bCheckVel = 0;
-				//We're constrained by a wall, so subtract wall part from velocity vector
-
-				xWallPart = CFixVector::Dot (simData.hitResult.vNormal, mType.physInfo.velocity);
-				if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWall
-					xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
-					if (bForceFieldBounce) {
-						bCheckVel = 1;				//check for max velocity
-						if (info.nType == OBJ_PLAYER)
-							xWallPart *= 2;		//CPlayerData bounce twice as much
-						}
-					if ((mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
-						//Assert (mType.physInfo.flags & PF_BOUNCE);
-						if (mType.physInfo.flags & PF_HAS_BOUNCED)
-							mType.physInfo.flags &= ~(PF_BOUNCE | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
-						else
-							mType.physInfo.flags |= PF_HAS_BOUNCED;
-						}
-					bBounced = 1;		//this CObject bBounced
-					}
-				mType.physInfo.velocity += simData.hitResult.vNormal * (-xWallPart);
-				if (bCheckVel) {
-					fix vel = mType.physInfo.velocity.Mag();
-					if (vel > MAX_OBJECT_VEL)
-						mType.physInfo.velocity *= (FixDiv (MAX_OBJECT_VEL, vel));
-					}
-				if (bBounced && (info.nType == OBJ_WEAPON)) {
-					info.position.mOrient = CFixMatrix::CreateFU (mType.physInfo.velocity, info.position.mOrient.m.dir.u);
-					SetOrigin (simData.hitResult.vPoint);
-					}
-				bRetry = 1;
-				}
-			}
+		if (0 > (bRetry = ProcessWallCollision (simData)))
+			return;
 		}
+	//calulate new sim time
 	else if (simData.hitResult.nType == HIT_OBJECT) {
-		Assert (simData.nObject != -1);
-		CFixVector* ppos0 = &OBJECTS [simData.nObject].info.position.vPos;
-		CFixVector* ppos1 = &info.position.vPos;
-		fix size0 = OBJECTS [simData.nObject].info.xSize;
-		fix size1 = info.xSize;
-		//	Calculate the hit point between the two objects.
-		Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
-		CObject* hitObjP = OBJECTS + simData.nObject;
-		//if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + simData.nObject)))
-		CFixVector vOldVel = mType.physInfo.velocity;
-		if (CollisionModel () || hitObjP->IsStatic ()) {
-			CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint, &simData.hitResult.vNormal);
-#if 1
-			if (vOldVel.IsZero ()) {
-				simData.vOffset = OBJPOS (hitObjP)->vPos - OBJPOS (this)->vPos;
-				CFixVector::Normalize (simData.vOffset);
-				simData.vOffset *= info.xSize;
-				}	
-			info.position.vPos = simData.vOldPos;
-			for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
-				simData.vOffset /= I2X (2);
-				if (simData.vOffset.IsZero ())
-					break;
-				if (info.position.vPos != simData.vNewPos)
-					simData.vNewPos += simData.vOffset * s;
-				else {
-					simData.vNewPos += simData.vOffset * s;
-					info.position.vPos = simData.vNewPos;
-					}
-				s = CheckVectorObjectCollision (simData.hitResult, &info.position.vPos, &simData.vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
-				}
-			info.position.vPos = simData.vNewPos;
-#endif
-			}
-		else {
-			simData.hitResult.vPoint = *ppos1 - *ppos0;
-			CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint);
-			}
-		if (simData.bSpeedBoost && (this == gameData.objs.consoleP))
-			mType.physInfo.velocity = vOldVel;
-		// Let object continue its movement
-		if (!(info.nFlags & OF_SHOULD_BE_DEAD)) {
-			if ((mType.physInfo.flags & PF_PERSISTENT) || (vOldVel == mType.physInfo.velocity)) {
-				if (OBJECTS [simData.nObject].info.nType == OBJ_POWERUP) 
-					simData.nTries--;
-				gameData.physics.ignoreObjs [nIgnoreObjs++] = simData.nObject;
-				bRetry = 1;
-				}
-			}
+		ProcessObjectCollision (simData);
 		}
 	} while (bRetry);
 
@@ -937,7 +940,7 @@ if (info.controlType == CT_AI) {
 	// If the ship has thrust, but the velocity is zero or the current position equals the start position
 	// stored when entering this function, it has been stopped forcefully by something, so bounce it back to
 	// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
-	if (((simData.hitResult.nType == HIT_WALL) || (simData.hitResult.nType == HIT_BAD_P0)) && !(simData.bSpeedBoost || bObjStopped || bBounced)) {	//Set velocity from actual movement
+	if (((simData.hitResult.nType == HIT_WALL) || (simData.hitResult.nType == HIT_BAD_P0)) && !(simData.bSpeedBoost || simData.bStopped || simData.bBounced)) {	//Set velocity from actual movement
 		fix s = FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), simData.xTimeScale, 100);
 
 		simData.vMoved = info.position.vPos - simData.vStartPos;
