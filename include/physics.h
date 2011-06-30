@@ -40,6 +40,4 @@ int physics_lookahead(CObject *obj, fix t, int fviFlags, fix *hitTime, CHitResul
 // (hopefully) maintain the CObject's current velocity
 void SetThrustFromVelocity(CObject *obj);
 
-void UnstickObject (CObject *objP);
-
 #endif /* _PHYSICS_H */

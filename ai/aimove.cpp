@@ -530,7 +530,7 @@ else {
 		MoveObjectToLegalSpot (objP, xMinDist > 0);
 		}
 	}
-UnstickObject (objP);
+objP->Unstick ();
 return xDistToGoal;
 }
 
