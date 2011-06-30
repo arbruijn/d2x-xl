@@ -818,7 +818,11 @@ int ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, short* segList, sho
 	int			nCurNestLevel = gameData.collisions.hitResult.nNestCount;
 	bool			bCheckVisibility = ((hitQuery.flags & FQ_VISIBILITY) != 0);
 	CObject*		objP = (hitQuery.nObject < 0) ? NULL : OBJECTS + hitQuery.nObject;
+#if DBG
 	bool			bUseHitbox = objP && (objP->info.nType == OBJ_PLAYER) && CollisionModel () && UseHitbox (objP);
+#else
+	bool			bUseHitbox = false;
+#endif
 
 bestHit.vPoint.SetZero ();
 //PrintLog ("Entry ComputeHitpoint\n");

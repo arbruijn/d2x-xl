@@ -405,7 +405,11 @@ objP = &OBJECTS [nObject];
 bGetPhysSegs = (objP->Type () == OBJ_PLAYER) || (objP->Type () == OBJ_ROBOT);
 vStartPos = objP->Position ();
 nStartSeg = objP->Segment ();
+#if DBG
 bUseHitbox = (objP->Type () == OBJ_PLAYER) && CollisionModel () && UseHitbox (objP);
+#else
+bUseHitbox = 0;
+#endif
 bScaleSpeed = !(gameStates.app.bNostalgia || bInitialize) && (IS_MISSILE (objP) && (objP->Id () != EARTHSHAKER_MEGA_ID) && (objP->Id () != ROBOT_SHAKER_MEGA_ID)) ;
 
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
