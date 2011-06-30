@@ -1070,9 +1070,10 @@ class CObject : public CObjectInfo {
 		int ProcessBadCollision (CPhysSimData& simData);
 		int UpdateOffset (CPhysSimData& simData);
 		void FixPosition (CPhysSimData& simData);
-		void SetupHitQuery (CHitQuery& hitQuery, int nFlags);
+		void SetupHitQuery (CHitQuery& hitQuery, int nFlags, CFixVector* vNewPos = NULL);
 		int Bounce (CHitResult hitResult, float fOffs, fix *pxSideDists);
 		void DoBumpHack (void);
+		void DoPhysicsSimOld (void);
 
 	public:
 		void UpdateHomingWeapon (int nThread = 0);
