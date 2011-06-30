@@ -151,21 +151,31 @@ typedef struct tSpeedBoostData {
 class CPhysSimData {
 	public:
 		short					nObject;
+		CObject*				objP;
 		short					nStartSeg;
 		CFixVector			vStartPos;
 		short					nOldSeg;
 		CFixVector			vOldPos;
 		CFixVector			vNewPos;
 		CFixVector			vHitPos;
-		CFixVector			vFrame;
+		CFixVector			vOffset;
 		CFixVector			vMoved;
 		fix					xSimTime;
+		fix					xTimeScale;
 		fix					xMovedTime;
 		tSpeedBoostData	speedBoost;
 		CHitResult			hitResult;
 		CHitQuery			hitQuery;
+		int					bInitialize;
+		int					bUseHitbox;
+		int					bGetPhysSegs;
+		int					bSpeedBoost;
+		int					bScaleSpeed;
+		int					nTries;
 
-		explicit CPhysSimData (short nObject = -1, short nStartSeg = -1) : nObject (nObject), nStartSeg (nStartSeg) {}
+		explicit CPhysSimData (short nObject = -1) : nObject (nObject), nTries (0) { Setup (); }
+		void Setup (void);
+		int GetPhysSegs (void);
 	};
 
 //	-----------------------------------------------------------------------------

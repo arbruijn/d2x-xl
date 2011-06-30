@@ -1061,9 +1061,14 @@ class CObject : public CObjectInfo {
 		void AddHomingTarget (CObject* targetP, CFixVector* vTrackerPos, fix maxTrackableDist, fix& xBestDot, int& nBestObj);
 
 		void HandleDrag (CPhysSimData& simData);
-		void HandleObjectCollision (CPhysSimData& simData);
-		void HandleWallCollision (CPhysSimData& simData);
+		int HandleObjectCollision (CPhysSimData& simData);
+		int HandleWallCollision (CPhysSimData& simData);
+		int HandleBadCollision (CPhysSimData& simData);
+		void ProcessObjectCollision (CPhysSimData& simData);
+		void ProcessWallCollision (CPhysSimData& simData);
+		void ProcessBadCollision (CPhysSimData& simData);
 		void SetupHitQuery (CHitQuery& hitQuery, int nFlags);
+		int UpdateOffset (CPhysSimData& simData);
 
 	public:
 		void UpdateHomingWeapon (int nThread = 0);
