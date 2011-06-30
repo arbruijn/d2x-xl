@@ -864,16 +864,12 @@ if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
 
-int bRetry;
-
 simData.nTries = 0;
-do {	//Move the object
+for (;;) {	//Move the object
 	if (!simData.bUpdateOffset)
 		simData.bUpdateOffset = 1;
 	else if (!UpdateOffset (simData))
 		break;
-
-	bRetry = 0;
 
 	//	If retry count is getting large, then we are trying to do something stupid.
 	if (++simData.nTries > 3) {
@@ -903,28 +899,27 @@ do {	//Move the object
 			simData.nTries--;
 		}
 
-	simData.GetPhysSegs ();
-	if (simData.hitResult.nSegment == -1) {		//some sort of horrible error
+	if (simData.hitResult.nSegment == -1) {		
 		if (info.nType == OBJ_WEAPON)
 			Die ();
-		break;
+		return;
 		}
 
 	Assert ((simData.hitResult.nType != HIT_WALL) || ((simData.hitResult.nSideSegment > -1) && (simData.hitResult.nSideSegment <= gameData.segs.nLastSegment)));
 
+	simData.GetPhysSegs ();
 	if (!ProcessOffset (simData))
 		return;
-
-	if (simData.hitResult.nType == HIT_WALL) {
+	int bRetry = 0;
+	if (simData.hitResult.nType == HIT_WALL)
 		bRetry = ProcessWallCollision (simData);
-		}
-	//calulate new sim time
-	else if (simData.hitResult.nType == HIT_OBJECT) {
+	else if (simData.hitResult.nType == HIT_OBJECT) 
 		bRetry = ProcessObjectCollision (simData);
-		}
 	if (bRetry < 0)
 		return;
-	} while (bRetry);
+	if (!bRetry) 
+		break;
+	}
 
 //	Pass retry attempts info to AI.
 if (info.controlType == CT_AI) {
