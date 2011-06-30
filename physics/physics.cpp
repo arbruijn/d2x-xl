@@ -435,6 +435,8 @@ if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
 	int					bDoSpeedBoost = sbd.bBoosted; // && (this == gameData.objs.consoleP);
 	int					bInitialize = gameData.physics.xTime < 0;
+	bool					bUseHitbox = (info.nType == OBJ_PLAYER) && CollisionModel () && UseHitbox (this);
+
 
 Assert (info.nType != OBJ_NONE);
 Assert (info.movementType == MT_PHYSICS);
@@ -754,7 +756,8 @@ retryMove:
 		CFixVector vi;
 		FindPointLineIntersection (vi, vOldPos, vNewPos, iPos, -1);
 
-		hitQuery.p0 = &info.position.vPos;
+		CFixVector v0 = vOldPos;
+		hitQuery.p0 = &v0;
 		hitQuery.nSegment = info.nSegment;
 		hitQuery.p1 = &vNewPos;
 		hitQuery.radP0 = 

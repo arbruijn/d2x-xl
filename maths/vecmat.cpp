@@ -710,30 +710,27 @@ return CFixVector::Dot (i, t) - CFixVector::Dot (p1, t) < 0;
 // returns 1 if intersection outside of p1,p2, otherwise 0.
 const int FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int bClamp)
 {
-	CFixVector	d31, d21;
-	double		m, u;
-	int			bClamped = 0;
-
-d21 = p2 - p1;
-m = fabs (double (d21.v.coord.x) * double (d21.v.coord.x) + double (d21.v.coord.y) * double (d21.v.coord.y) + double (d21.v.coord.z) * double (d21.v.coord.z));
-if (!m) {
-	//	if (hitP)
+CFixVector d21 = p2 - p1;
+double m = fabs (double (d21.v.coord.x) * double (d21.v.coord.x) + double (d21.v.coord.y) * double (d21.v.coord.y) + double (d21.v.coord.z) * double (d21.v.coord.z));
+if (m == 0.0) {
 	hitP = p1;
 	return 0;
-}
-d31 = p3 - p1;
-u = double (d31.v.coord.x) * double (d21.v.coord.x) + double (d31.v.coord.y) * double (d21.v.coord.y) + double (d31.v.coord.z) * double (d21.v.coord.z);
-u /= m;
-if (bClamp >= 0) {
-	if (u < 0.0)
-		bClamped = bClamp ? 2 : 1;
-	else if (u > 1.0)
-		bClamped = bClamp ? 1 : 2;
 	}
-if (bClamped == 2)
-	hitP = p2;
-else if (bClamped == 1)
-	hitP = p1;
+CFixVector d31 = p3 - p1;
+double u = double (d31.v.coord.x) * double (d21.v.coord.x) + double (d31.v.coord.y) * double (d21.v.coord.y) + double (d31.v.coord.z) * double (d21.v.coord.z);
+u /= m;
+
+int bClamped = 0;
+if (u < 0.0)
+	bClamped = bClamp ? 2 : 1;
+else if (u > 1.0)
+	bClamped = bClamp ? 1 : 2;
+if ((bClamp >= 0) && bClamped) {
+	if (bClamped == 2)
+		hitP = p2;
+	else if (bClamped == 1)
+		hitP = p1;
+	}
 else {
 	hitP.v.coord.x = p1.v.coord.x + (fix) (u * d21.v.coord.x);
 	hitP.v.coord.y = p1.v.coord.y + (fix) (u * d21.v.coord.y);

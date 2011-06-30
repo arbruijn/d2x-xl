@@ -441,7 +441,7 @@ return nHits;
 
 int FindTriangleHitboxIntersection (CFixVector& intersection, CFixVector& normal, short* triangleVerts, CFixVector* triangleNormal, tBox *phb, CFixVector* vRef, fix& dMin)
 {
-	int			i, nHits = 0;
+	int			i, h, nHits = 0;
 	tQuad*		pf;
 	CFixVector	vHit;
 
@@ -450,20 +450,25 @@ int FindTriangleHitboxIntersection (CFixVector& intersection, CFixVector& normal
 for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
 	if (CFixVector::Dot (pf->n [1], *triangleNormal) >= 0)
 		continue;
-	if (FindTriangleQuadIntersection (vHit, triangleVerts, triangleNormal, pf->v, vRef, dMin))
-		nHits += RegisterHit (&intersection, &normal, &vHit, triangleNormal, vRef, dMin);
+	if ((h = FindTriangleQuadIntersection (vHit, triangleVerts, triangleNormal, pf->v, vRef, dMin)) &&
+		 RegisterHit (&intersection, &normal, &vHit, triangleNormal, vRef, dMin))
+		nHits += h;
 	}
 return nHits;
 }
 
 //	-----------------------------------------------------------------------------
 
+int DropMarkerObject (CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyte nMarker);
+
+static int nMarker = -1;
+static int tMarker = -1;
+
 fix CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, short nSegment, short nSide, CFixVector* p0, CFixVector* p1, CObject *objP)
 {
 	int					iModel, nModels, nHits = 0;
 	fix					dMin = 0x7fffffff;
 	CModelHitboxList*	pmhb = gameData.models.hitboxes + objP->ModelId ();
-	CFixVector			vHit;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel =
@@ -482,13 +487,10 @@ CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 
 for (int i = 0; i < 2; i++) {
 	for (int j = iModel; j <= nModels; j++) {
-		nHits += FindTriangleHitboxIntersection (vHit, normal, sideP->m_vertices + 3 * i, sideP->m_normals + i, &hb [j].box, p0, dMin);
+		nHits += FindTriangleHitboxIntersection (intersection, normal, sideP->m_vertices + 3 * i, sideP->m_normals + i, &hb [j].box, p0, dMin);
 		}
 	}
-if (!nHits)
-	return 0x7FFFFFFF;
-FindPointLineIntersection (intersection, *p0, *p1, vHit, -1);
-return 0; //CFixVector::Dist (*p0, intersection);
+return nHits ? 0 : 0x7FFFFFFF;
 }
 
 //	-----------------------------------------------------------------------------
