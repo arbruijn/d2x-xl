@@ -257,62 +257,50 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-void DoBumpHack (CObject *objP)
+void CObject::DoBumpHack (void)
 {
 	CFixVector vCenter, vBump;
 
 //bump CPlayerData a little towards vCenter of CSegment to unstick
-vCenter = SEGMENTS [objP->info.nSegment].Center ();
+CSegment* segP = &SEGMENTS [info.nSegment];
+vCenter = segP->Center ();
 //don't bump CPlayerData towards center of reactor CSegment
-CFixVector::NormalizedDir (vBump, vCenter, objP->info.position.vPos);
-if (SEGMENTS [objP->info.nSegment].m_function == SEGMENT_FUNC_CONTROLCEN)
+CFixVector::NormalizedDir (vBump, vCenter, info.position.vPos);
+if (segP->m_function == SEGMENT_FUNC_CONTROLCEN)
 	vBump.Neg ();
-objP->info.position.vPos += vBump * (objP->info.xSize / 5);
+info.position.vPos += vBump * (info.xSize / 5);
 //if moving away from seg, might move out of seg, so update
-if (SEGMENTS [objP->info.nSegment].m_function == SEGMENT_FUNC_CONTROLCEN)
-	UpdateObjectSeg (objP);
+if (segP->m_function == SEGMENT_FUNC_CONTROLCEN)
+	UpdateObjectSeg (this);
 }
 
 //	-----------------------------------------------------------------------------
 
-#if 1 //UNSTICK_OBJS
-
-int BounceObject (CObject *objP, CHitResult hitResult, float fOffs, fix *pxSideDists)
+int CObject::Bounce (CHitResult hitResult, float fOffs, fix *pxSideDists)
 {
 	fix	xSideDist, xSideDists [6];
 	short	nSegment;
 
 if (!pxSideDists) {
-	SEGMENTS [hitResult.nSideSegment].GetSideDists (objP->info.position.vPos, xSideDists, 1);
+	SEGMENTS [hitResult.nSideSegment].GetSideDists (info.position.vPos, xSideDists, 1);
 	pxSideDists = xSideDists;
 	}
 xSideDist = pxSideDists [hitResult.nSide];
-if (/*(0 <= xSideDist) && */
-	 (xSideDist < objP->info.xSize - objP->info.xSize / 100)) {
-#if 0
-	objP->info.position.vPos = objP->info.vLastPos;
-#else
-#	if 1
+if (xSideDist < info.xSize - info.xSize / 100) {
 	float r;
-	xSideDist = objP->info.xSize - xSideDist;
-	r = ((float) xSideDist / (float) objP->info.xSize) * X2F (objP->info.xSize);
-#	endif
-	objP->info.position.vPos.v.coord.x += (fix) ((float) hitResult.vNormal.v.coord.x * fOffs);
-	objP->info.position.vPos.v.coord.y += (fix) ((float) hitResult.vNormal.v.coord.y * fOffs);
-	objP->info.position.vPos.v.coord.z += (fix) ((float) hitResult.vNormal.v.coord.z * fOffs);
-#endif
-	nSegment = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
+	xSideDist = info.xSize - xSideDist;
+	r = ((float) xSideDist / (float) info.xSize) * X2F (info.xSize);
+	info.position.vPos.v.coord.x += (fix) ((float) hitResult.vNormal.v.coord.x * fOffs);
+	info.position.vPos.v.coord.y += (fix) ((float) hitResult.vNormal.v.coord.y * fOffs);
+	info.position.vPos.v.coord.z += (fix) ((float) hitResult.vNormal.v.coord.z * fOffs);
+	nSegment = FindSegByPos (info.position.vPos, info.nSegment, 1, 0);
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments)) {
-		objP->info.position.vPos = objP->info.vLastPos;
-		nSegment = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
+		info.position.vPos = info.vLastPos;
+		nSegment = FindSegByPos (info.position.vPos, info.nSegment, 1, 0);
 		}
-	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments) || (nSegment == objP->info.nSegment))
+	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments) || (nSegment == info.nSegment))
 		return 0;
-	objP->RelinkToSeg (nSegment);
-#if DBG
-	if (objP->info.nType == OBJ_PLAYER)
-		HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->info.xSize - pxSideDists [hitResult.nSide], r);
-#endif
+	RelinkToSeg (nSegment);
 	return 1;
 	}
 return 0;
@@ -320,34 +308,32 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-void UnstickObject (CObject *objP)
+void CObject::Unstick (void)
 {
-if ((objP->info.nType == OBJ_PLAYER) &&
-	 (objP->info.nId == gameData.multiplayer.nLocalPlayer) &&
+if ((info.nType == OBJ_PLAYER) &&
+	 (info.nId == gameData.multiplayer.nLocalPlayer) &&
 	 (gameStates.app.cheats.bPhysics == 0xBADA55))
 	return;
-if (objP->info.nType == OBJ_WEAPON) 
+if (info.nType == OBJ_WEAPON) 
 	return;
 #if UNSTICK_OBJS < 2
-if (objP->info.nType != OBJ_MONSTERBALL)
+if (info.nType != OBJ_MONSTERBALL)
 	return;
 #endif
-CHitQuery hitQuery (0, &objP->info.position.vPos, &objP->info.position.vPos, objP->info.nSegment, objP->Index (), 0, objP->info.xSize);
+CHitQuery hitQuery (0, &info.position.vPos, &info.position.vPos, info.nSegment, Index (), 0, info.xSize);
 CHitResult hitResult;
 int fviResult = FindHitpoint (hitQuery, hitResult);
 if (fviResult == HIT_WALL)
 #if 1
 #	if 0
-	DoBumpHack (objP);
+	DoBumpHack ();
 #	else
-	BounceObject (objP, hitResult, 0.1f, NULL);
+	Bounce (hitResult, 0.1f, NULL);
 #	endif
 #else
-	BounceObject (objP, hi, X2F (objP->info.xSize - VmVecDist (&objP->info.position.vPos, &hi.hit.vPoint)) /*0.25f*/, NULL);
+	Bounce (hi, X2F (info.xSize - VmVecDist (&info.position.vPos, &hi.hit.vPoint)) /*0.25f*/, NULL);
 #endif
 }
-
-#endif
 
 //	-----------------------------------------------------------------------------
 
@@ -839,7 +825,7 @@ if (info.controlType == CT_AI) {
 		if (!simData.bSpeedBoost)
 			mType.physInfo.velocity = simData.vMoved;
 		if ((this == gameData.objs.consoleP) && simData.vMoved.IsZero () && !mType.physInfo.thrust.IsZero ())
-			DoBumpHack (this);
+			DoBumpHack ();
 		}
 
 	if (mType.physInfo.flags & PF_LEVELLING)
@@ -900,7 +886,7 @@ if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBO
 
 if (mType.physInfo.velocity.IsZero ()) {
 #	if UNSTICK_OBJS
-	UnstickObject (this);
+	Unstick ();
 #	endif
 	if (this == gameData.objs.consoleP)
 		gameData.objs.speedBoost [simData.nObject].bBoosted = simData.bSpeedBoost = 0;
@@ -987,7 +973,7 @@ FixPosition (simData);
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
 #if UNSTICK_OBJS
-UnstickObject (this);
+Unstick ();
 #endif
 }
 

@@ -1071,6 +1071,9 @@ class CObject : public CObjectInfo {
 		int UpdateOffset (CPhysSimData& simData);
 		void FixPosition (CPhysSimData& simData);
 		void SetupHitQuery (CHitQuery& hitQuery, int nFlags);
+		int Bounce (CHitResult hitResult, float fOffs, fix *pxSideDists);
+		void Unstick (void);
+		void DoBumpHack (void);
 
 	public:
 		void UpdateHomingWeapon (int nThread = 0);
