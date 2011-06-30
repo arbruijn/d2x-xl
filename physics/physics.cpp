@@ -400,13 +400,13 @@ xSimTime = gameData.physics.xTime;
 gameData.physics.nSegments = 0;
 speedBoost = gameData.objs.speedBoost [nObject];
 bSpeedBoost = speedBoost.bBoosted;
-bScaleSpeed = !(gameStates.app.bNostalgia || bInitialize) && (IS_MISSILE (objP) && (objP->Id () != EARTHSHAKER_MEGA_ID) && (objP->Id () != ROBOT_SHAKER_MEGA_ID)) ;
 
 objP = &OBJECTS [nObject];
 bGetPhysSegs = (objP->Type () == OBJ_PLAYER) || (objP->Type () == OBJ_ROBOT);
 vStartPos = objP->Position ();
 nStartSeg = objP->Segment ();
 bUseHitbox = (objP->Type () == OBJ_PLAYER) && CollisionModel () && UseHitbox (objP);
+bScaleSpeed = !(gameStates.app.bNostalgia || bInitialize) && (IS_MISSILE (objP) && (objP->Id () != EARTHSHAKER_MEGA_ID) && (objP->Id () != ROBOT_SHAKER_MEGA_ID)) ;
 
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
 	if (SEGMENTS [nStartSeg].HasWaterProp ())
