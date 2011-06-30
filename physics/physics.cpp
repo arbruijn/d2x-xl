@@ -820,6 +820,68 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
+void CObject::FixPosition (CPhysSimData& simData)
+{
+if (info.controlType == CT_AI) {
+	//	pass retry attempts info to AI.
+	if (simData.nTries > 0)
+		gameData.ai.localInfo [simData.nObject].nRetryCount = simData.nTries - 1;
+	}
+	// If the ship has thrust, but the velocity is zero or the current position equals the start position
+	// stored when entering this function, it has been stopped forcefully by something, so bounce it back to
+	// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
+	if (((simData.hitResult.nType == HIT_WALL) || (simData.hitResult.nType == HIT_BAD_P0)) && !(simData.bSpeedBoost || simData.bStopped || simData.bBounced)) {	//Set velocity from actual movement
+		fix s = FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), simData.xTimeScale, 100);
+
+		simData.vMoved = info.position.vPos - simData.vStartPos;
+		s = simData.vMoved.Mag ();
+		simData.vMoved *= (FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), simData.xTimeScale, 100));
+		if (!simData.bSpeedBoost)
+			mType.physInfo.velocity = simData.vMoved;
+		if ((this == gameData.objs.consoleP) && simData.vMoved.IsZero () && !mType.physInfo.thrust.IsZero ())
+			DoBumpHack (this);
+		}
+
+	if (mType.physInfo.flags & PF_LEVELLING)
+		DoPhysicsAlignObject (this);
+	//hack to keep player from going through closed doors
+	if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && (info.nSegment != simData.nStartSeg) && (gameStates.app.cheats.bPhysics != 0xBADA55)) {
+		int nSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + simData.nStartSeg);
+		if (nSide != -1) {
+			if (!(SEGMENTS [simData.nStartSeg].IsDoorWay (nSide, (info.nType == OBJ_PLAYER) ? this : NULL) & WID_PASSABLE_FLAG)) {
+				//bump object back
+				CSide* sideP = SEGMENTS [simData.nStartSeg].m_sides + nSide;
+				if (simData.nStartSeg == -1)
+					Error ("simData.nStartSeg == -1 in physics");
+				fix dist = simData.vStartPos.DistToPlane (sideP->m_normals [0], gameData.segs.vertices [sideP->m_nMinVertex [0]]);
+				info.position.vPos = simData.vStartPos + sideP->m_normals [0] * (info.xSize - dist);
+				UpdateObjectSeg (this);
+				}
+			}
+		}
+
+//if end point not in segment, move object to last pos, or segment center
+if ((info.nSegment >= 0) && SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
+	if (FindSegment () == -1) {
+		int n;
+
+		if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) &&
+			 (n = FindSegByPos (info.vLastPos, info.nSegment, 1, 0)) != -1) {
+			info.position.vPos = info.vLastPos;
+			OBJECTS [simData.nObject].RelinkToSeg (n);
+			}
+		else {
+			info.position.vPos = SEGMENTS [info.nSegment].Center ();
+			info.position.vPos.v.coord.x += simData.nObject;
+			}
+		if (info.nType == OBJ_WEAPON)
+			Die ();
+		}
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
 //Simulate a physics CObject for this frame
 
 void CObject::DoPhysicsSim (void)
@@ -921,75 +983,9 @@ for (;;) {	//Move the object
 		break;
 	}
 
-//	Pass retry attempts info to AI.
-if (info.controlType == CT_AI) {
-	Assert (simData.nObject >= 0);
-	if (simData.nTries > 0)
-		gameData.ai.localInfo [simData.nObject].nRetryCount = simData.nTries - 1;
-	}
-	// If the ship has thrust, but the velocity is zero or the current position equals the start position
-	// stored when entering this function, it has been stopped forcefully by something, so bounce it back to
-	// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
-	if (((simData.hitResult.nType == HIT_WALL) || (simData.hitResult.nType == HIT_BAD_P0)) && !(simData.bSpeedBoost || simData.bStopped || simData.bBounced)) {	//Set velocity from actual movement
-		fix s = FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), simData.xTimeScale, 100);
-
-		simData.vMoved = info.position.vPos - simData.vStartPos;
-		s = simData.vMoved.Mag();
-		simData.vMoved *= (FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), simData.xTimeScale, 100));
-		if (!simData.bSpeedBoost)
-			mType.physInfo.velocity = simData.vMoved;
-		if ((this == gameData.objs.consoleP) && simData.vMoved.IsZero () && !mType.physInfo.thrust.IsZero ())
-			DoBumpHack (this);
-		}
-
-	if (mType.physInfo.flags & PF_LEVELLING)
-		DoPhysicsAlignObject (this);
-	//hack to keep CPlayerData from going through closed doors
-	if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && (info.nSegment != simData.nStartSeg) &&
-		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
-		int nSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + simData.nStartSeg);
-		if (nSide != -1) {
-			if (!(SEGMENTS [simData.nStartSeg].IsDoorWay (nSide, (info.nType == OBJ_PLAYER) ? this : NULL) & WID_PASSABLE_FLAG)) {
-				//bump object back
-				CSide* sideP = SEGMENTS [simData.nStartSeg].m_sides + nSide;
-				if (simData.nStartSeg == -1)
-					Error ("simData.nStartSeg == -1 in physics");
-				fix dist = simData.vStartPos.DistToPlane (sideP->m_normals [0], gameData.segs.vertices [sideP->m_nMinVertex [0]]);
-				info.position.vPos = simData.vStartPos + sideP->m_normals [0] * (info.xSize - dist);
-				UpdateObjectSeg (this);
-				}
-			}
-		}
-
-//if end point not in segment, move object to last pos, or segment center
-if ((info.nSegment >= 0) && SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
-	if (FindSegment () == -1) {
-		int n;
-
-		if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) &&
-			 (n = FindSegByPos (info.vLastPos, info.nSegment, 1, 0)) != -1) {
-			info.position.vPos = info.vLastPos;
-			OBJECTS [simData.nObject].RelinkToSeg (n);
-			}
-		else {
-			info.position.vPos = SEGMENTS [info.nSegment].Center ();
-			info.position.vPos.v.coord.x += simData.nObject;
-			}
-		if (info.nType == OBJ_WEAPON)
-			Die ();
-		}
-	}
-
+FixPosition (simData);
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
-CATCH_OBJ (this, mType.physInfo.velocity.v.coord.y == 0);
-#if DBG
-if (Index () == nDbgObj) {
-	nDbgObj = nDbgObj;
-	HUDMessage (0, "%1.2f", X2F (mType.physInfo.velocity.Mag ()));
-	}
-#endif
-
 #if UNSTICK_OBJS
 UnstickObject (this);
 #endif

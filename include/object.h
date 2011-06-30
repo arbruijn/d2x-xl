@@ -1068,8 +1068,9 @@ class CObject : public CObjectInfo {
 		int ProcessObjectCollision (CPhysSimData& simData);
 		int ProcessWallCollision (CPhysSimData& simData);
 		int ProcessBadCollision (CPhysSimData& simData);
-		void SetupHitQuery (CHitQuery& hitQuery, int nFlags);
 		int UpdateOffset (CPhysSimData& simData);
+		void FixPosition (CPhysSimData& simData);
+		void SetupHitQuery (CHitQuery& hitQuery, int nFlags);
 
 	public:
 		void UpdateHomingWeapon (int nThread = 0);
