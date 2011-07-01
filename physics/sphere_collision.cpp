@@ -223,7 +223,7 @@ static inline double DblRound (double v) { return (v < 0.0) ? v - 0.5 : v + 0.5;
 int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlane, CFixVector *vNormal,
 										 CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow)
 {
-#if 1
+#if 0
 	CFloatVector n, u, w;
 
 u.Assign (*p1 - *p0);
@@ -236,12 +236,12 @@ w.Assign (*p0 - *vPlane);
 float num = CFloatVector::Dot (n, w) - X2F (rad);
 float s = num / den;
 if (s < 0.0f) {
-	if (s < -0.001f) // compensate small numerical errors
+	if (s < -0.000001f) // compensate small numerical errors
 		return 0;
 	s = 0.0f;
 	}
 else if (s > 1.0f) {
-	if (s > 1.001f) // compensate small numerical errors
+	if (s > 1.000001f) // compensate small numerical errors
 		return 0;
 	s = 1.0f;
 	}
@@ -271,7 +271,7 @@ if (bCheckOverflow) {
 	}
 else {
 	double scale = double (num) / double (den);
-	if ((scale < 1e-10f) || (scale > 1.0f))
+	if ((scale < -0.000001f) || (scale > 1.000001f))
 		return 0;
 	u.v.coord.x = fix (DblRound (double (u.v.coord.x) * scale));
 	u.v.coord.y = fix (DblRound (double (u.v.coord.y) * scale));
@@ -297,12 +297,12 @@ w -= *vPlane;
 float n = CFloatVector::Dot (*vNormal, w);
 float s = n / d;
 if (s < 0.0f) {
-	if (s < -0.001f) // compensate small numerical errors
+	if (s < -0.000001f) // compensate small numerical errors
 		return 0;
 	s = 0.0f;
 	}
 else if (s > 1.0f) {
-	if (s > 1.001f) // compensate small numerical errors
+	if (s > 1.000001f) // compensate small numerical errors
 		return 0;
 	s = 1.0f;
 	}
@@ -873,7 +873,7 @@ if (endMask) { //on the back of at least one face
 				continue;
 			//did we go through this wall/door?
 			int nFaceHitType;
-#if DBG
+#if 0// DBG
 			if (bUseHitbox) {
 				 if (CheckFaceHitboxCollision (curHit.vPoint, curHit.vNormal, hitQuery.nSegment, nSide, hitQuery.p0, hitQuery.p1, objP) == 0x7FFFFFFF)
 					continue;
@@ -885,9 +885,11 @@ if (endMask) { //on the back of at least one face
 					? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
 					: segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
 #else
+#	if 0
 			if (bUseHitbox)
 				nFaceHitType = (CheckFaceHitboxCollision (curHit.vPoint, curHit.vNormal, hitQuery.nSegment, nSide, hitQuery.p0, hitQuery.p1, objP) == 0x7FFFFFFF) ? IT_NONE : IT_FACE;
 			else
+#	endif
 				nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
 									? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
 									: segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);

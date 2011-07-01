@@ -319,6 +319,11 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
+int DropMarkerObject (CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyte nMarker);
+
+static int nMarker = -1;
+static int tMarker = -1;
+
 fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, short& nModel)
 {
 	CFixVector		vRef = OBJPOS (objP2)->vPos;
@@ -364,6 +369,14 @@ if (!nHits) {
 if (nTotalHits) {
 	pmhb1->vHit = pmhb2->vHit = intersection;
 	pmhb1->tHit = pmhb2->tHit = gameStates.app.nSDLTicks [0];
+#	if 0
+	if (gameStates.app.nSDLTicks [0] - tMarker > 3000) {
+		if (nMarker >= 0)
+			OBJECTS [nMarker].Die ();
+		nMarker = DropMarkerObject (intersection, objP1->Segment (), objP1->Orientation (), 0);
+		tMarker = gameStates.app.nSDLTicks [0];
+		}
+#	endif
 	}
 #endif
 return (nTotalHits) ? dMin ? dMin : 1 : 0;
@@ -458,11 +471,6 @@ return nHits;
 }
 
 //	-----------------------------------------------------------------------------
-
-int DropMarkerObject (CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyte nMarker);
-
-static int nMarker = -1;
-static int tMarker = -1;
 
 fix CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, short nSegment, short nSide, CFixVector* p0, CFixVector* p1, CObject *objP)
 {

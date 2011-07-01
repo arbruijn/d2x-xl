@@ -546,7 +546,7 @@ return 1;
 int CObject::ProcessWallCollision (CPhysSimData& simData)
 {
 if (CFixVector::Dot (simData.vMoved, simData.vOffset) < 0) {		//moved backwards
-#if DBG
+#if 0 //DBG
 	CFixVector vi;
 	FindPointLineIntersection (vi, simData.vOldPos, simData.vNewPos, simData.hitResult.vPoint, -1);
 
@@ -878,8 +878,9 @@ void CObject::DoPhysicsSim (void)
 if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	return;
 
-#if 0
-if (gameStates.render.nFrameCount & 1) {
+#if 0 //DBG
+//if (gameStates.render.nFrameCount & 1) 
+	{
 	DoPhysicsSimOld ();
 	return;
 	}
@@ -962,8 +963,6 @@ for (;;) {	//Move the object
 			Die ();
 		return;
 		}
-
-	Assert ((simData.hitResult.nType != HIT_WALL) || ((simData.hitResult.nSideSegment > -1) && (simData.hitResult.nSideSegment <= gameData.segs.nLastSegment)));
 
 	simData.GetPhysSegs ();
 	if (!ProcessOffset (simData))
@@ -1140,7 +1139,7 @@ mType.physInfo.thrust = mType.physInfo.velocity * k;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-#if DBG
+#if 1 //DBG
 
 void CObject::DoPhysicsSimOld (void)
 {
@@ -1449,7 +1448,6 @@ retryMove:
 			Die ();
 		break;
 		}
-	Assert ((fviResult != HIT_WALL) || ((nWallHitSeg > -1) && (nWallHitSeg <= gameData.segs.nLastSegment)));
 	// update CObject's position and CSegment number
 	info.position.vPos = iPos;
 	if (iSeg != info.nSegment)
@@ -1524,8 +1522,6 @@ retryMove:
 			Die ();
 		else
 			ScrapeOnWall (nWallHitSeg, nWallHitSide, hitResult.vPoint);
-		Assert (nWallHitSeg > -1);
-		Assert (nWallHitSide > -1);
 #if UNSTICK_OBJS == 2
 		fix	xSideDists [6];
 		SEGMENTS [nWallHitSeg].GetSideDists (&info.position.vPos, xSideDists);

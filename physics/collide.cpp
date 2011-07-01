@@ -400,7 +400,7 @@ if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL
 	// don't divide by the total mass here or ApplyRotForce() will scale down the forces too much
 	vRot0 = (vRotForce0 * diffMass + vRotForce1 * (2 * mass1)) /*/ totalMass*/;
 	vRot1 = (vRotForce1 * -diffMass + vRotForce0 * (2 * mass0)) /*/ totalMass*/;
-#if 1
+#if 0
 	if (thisP->info.nType == OBJ_PLAYER)
 		vRes0 *= (I2X (1) / 4);
 	else if (otherP->info.nType == OBJ_PLAYER)
