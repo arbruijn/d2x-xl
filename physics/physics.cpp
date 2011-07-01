@@ -646,9 +646,8 @@ return bRetry;
 
 int CObject::ProcessObjectCollision (CPhysSimData& simData)
 {
-Assert (simData.nObject != -1);
-CObject* hitObjP = OBJECTS + simData.nObject;
-//if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + simData.nObject)))
+Assert (simData.hitResult.nObject != -1);
+CObject* hitObjP = OBJECTS + simData.hitResult.nObject;
 CFixVector vOldVel = mType.physInfo.velocity;
 if (CollisionModel () || hitObjP->IsStatic ()) {
 	CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint, &simData.hitResult.vNormal);
@@ -675,7 +674,7 @@ if (CollisionModel () || hitObjP->IsStatic ()) {
 #endif
 	}
 else {
-	simData.hitResult.vPoint = info.position.vPos - OBJECTS [simData.nObject].info.position.vPos;
+	simData.hitResult.vPoint = info.position.vPos - OBJECTS [simData.hitResult.nObject].info.position.vPos;
 	CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint);
 	}
 if (simData.bSpeedBoost && (this == gameData.objs.consoleP))
@@ -684,9 +683,9 @@ if (simData.bSpeedBoost && (this == gameData.objs.consoleP))
 if (info.nFlags & OF_SHOULD_BE_DEAD)
 	return -1;
 if ((mType.physInfo.flags & PF_PERSISTENT) || (vOldVel == mType.physInfo.velocity)) {
-	if (OBJECTS [simData.nObject].info.nType == OBJ_POWERUP) 
+	if (OBJECTS [simData.hitResult.nObject].info.nType == OBJ_POWERUP) 
 		simData.nTries--;
-	gameData.physics.ignoreObjs [simData.nIgnoredObjs++] = simData.nObject;
+	gameData.physics.ignoreObjs [simData.nIgnoredObjs++] = simData.hitResult.nObject;
 	return 1;
 	}
 return 0;
@@ -858,7 +857,7 @@ if ((info.nSegment >= 0) && SEGMENTS [info.nSegment].Masks (info.position.vPos, 
 		if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) &&
 			 (n = FindSegByPos (info.vLastPos, info.nSegment, 1, 0)) != -1) {
 			info.position.vPos = info.vLastPos;
-			OBJECTS [simData.nObject].RelinkToSeg (n);
+			RelinkToSeg (n);
 			}
 		else {
 			info.position.vPos = SEGMENTS [info.nSegment].Center ();
