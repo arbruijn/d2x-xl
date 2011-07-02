@@ -326,10 +326,10 @@ if (!(vGunPoints = GetGunPoints (objP, nGun)))
 TransformGunPoint (objP, vGunPoints, nGun, xDelay, nLaserType, &vLaserPos, &m);
 
 //--------------- Find vLaserPos and nLaserSeg ------------------
-CHitQuery			hitQuery (FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS, &posP->vPos, &vLaserPos,
+CHitQuery	hitQuery (FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS, &posP->vPos, &vLaserPos,
 							 (bSpectate ? gameStates.app.nPlayerSegment : objP->info.nSegment), objP->Index (),
-							 0x10, 0x10);
-CHitResult				hitResult;
+							 0x10, 0x10, ++gameData.physics.bIgnoreObjFlag);
+CHitResult	hitResult;
 
 nFate = FindHitpoint (hitQuery, hitResult);
 nLaserSeg = hitResult.nSegment;

@@ -2126,7 +2126,6 @@ class CFVISideData {
 class CPhysicsData {
 	public:
 		CStaticArray< short, MAX_FVI_SEGS >	segments;
-		CArray<short>		ignoreObjs;
 		CFVISideData		side;
 		float					fLastTick;
 		fix					xTime;
@@ -2134,6 +2133,7 @@ class CPhysicsData {
 		fix					xBossInvulDot;
 		CFixVector			playerThrust;
 		int					nSegments;
+		int					bIgnoreObjFlag;
 
 	public:
 		CPhysicsData ();

@@ -790,6 +790,7 @@ class CObject : public CObjectInfo {
 		bool				m_bMultiplayer;
 		bool				m_bRotate;
 		int				m_nFrame;
+		int				m_bIgnore;
 
 	public:
 		CObject ();
@@ -1041,6 +1042,8 @@ class CObject : public CObjectInfo {
 		inline bool IsStatic (void) { return cType.aiInfo.behavior == AIB_STATIC; }
 		bool Indestructible (void);
 		inline bool IsGeometry (void) { return IsStatic () && Indestructible (); }
+		inline void Ignore (int bFlag) { m_bIgnore = bFlag; }
+		inline bool Ignored (int bFlag) { return m_bIgnore == bFlag; }
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);
@@ -1073,9 +1076,6 @@ class CObject : public CObjectInfo {
 		void SetupHitQuery (CHitQuery& hitQuery, int nFlags, CFixVector* vNewPos = NULL);
 		int Bounce (CHitResult hitResult, float fOffs, fix *pxSideDists);
 		void DoBumpHack (void);
-#if 1 //DBG
-		void DoPhysicsSimOld (void);
-#endif
 
 	public:
 		void UpdateHomingWeapon (int nThread = 0);

@@ -420,7 +420,7 @@ int CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, short 
 	//	Note that while FindHitpoint is pretty slow, it is not terribly slow if the destination point is
 	//	in the same CSegment as the source point.
 
-CHitQuery hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS, &parentObjP->info.position.vPos, vPosition, parentObjP->info.nSegment, OBJ_IDX (parentObjP));
+CHitQuery hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS, &parentObjP->info.position.vPos, vPosition, parentObjP->info.nSegment, OBJ_IDX (parentObjP), 0, 0, ++gameData.physics.bIgnoreObjFlag);
 fate = FindHitpoint (hitQuery, hitResult);
 if ((fate != HIT_NONE)  || (hitResult.nSegment == -1))
 	return -1;
@@ -433,7 +433,7 @@ if (!hitResult.nSegment) {
 	hitQuery.radP0				=
 	hitQuery.radP1				= 0;
 	hitQuery.nObject			= OBJ_IDX (parentObjP);
-	hitQuery.ignoreObjList	= NULL;
+	hitQuery.bIgnoreObjFlag	= ++gameData.physics.bIgnoreObjFlag;
 	hitQuery.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
 
 	fate = FindHitpoint (hitQuery, hitResult);

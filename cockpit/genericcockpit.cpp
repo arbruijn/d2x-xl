@@ -1250,7 +1250,9 @@ if (nObject < 0)
 							  &gameData.objs.viewerP->info.position.vPos,
 							  &OBJECTS [nObject].info.position.vPos,
 							  gameData.objs.viewerP->info.nSegment,
-							  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP)
+							  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP),
+							  0, 0,
+							  ++gameData.physics.bIgnoreObjFlag
 							 );
 
 	CHitResult hitResult;

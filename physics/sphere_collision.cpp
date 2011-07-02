@@ -704,7 +704,7 @@ restart:
 			continue;
 		if (hitQuery.nObject == nObject)
 			continue;
-		if (hitQuery.ignoreObjList && ObjectInList (nObject, hitQuery.ignoreObjList))
+		if (otherObjP->Ignored (gameData.physics.bIgnoreObjFlag))
 			continue;
 		if (LasersAreRelated (nObject, hitQuery.nObject))
 			continue;
@@ -1007,7 +1007,6 @@ int FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult)
 	CHitData		curHit, newHit;
 	int			i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes;
 
-Assert(hitQuery.ignoreObjList != reinterpret_cast<short*> (-1));
 gameData.collisions.hitResult.vNormal.SetZero ();
 gameData.collisions.hitResult.nNormals = 0;
 Assert((hitQuery.nSegment <= gameData.segs.nLastSegment) && (hitQuery.nSegment >= 0));

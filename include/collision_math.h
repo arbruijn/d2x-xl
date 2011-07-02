@@ -124,14 +124,14 @@ class CHitQuery {
 		short			nSegment;
 		short			nObject;
 		fix			radP0, radP1;
-		short*		ignoreObjList;
+		int			bIgnoreObjFlag;
 
 	public:
 		CHitQuery () 
-			: flags (0), p0 (NULL), p1 (NULL), nSegment (-1), nObject (-1), radP0 (0), radP1 (0), ignoreObjList (NULL) 
+			: flags (0), p0 (NULL), p1 (NULL), nSegment (-1), nObject (-1), radP0 (0), radP1 (0), bIgnoreObjFlag (0)
 			{}
-		CHitQuery (int flags, CFixVector* p0, CFixVector* p1, short nSegment, short nObject = -1, fix radP0 = 0, fix radP1 = 0, short* ignoreObjList = NULL)
-			: flags (flags), p0 (p0), p1 (p1), nSegment (nSegment), nObject (nObject), radP0 (radP0), radP1 (radP1), ignoreObjList (ignoreObjList)
+		CHitQuery (int flags, CFixVector* p0, CFixVector* p1, short nSegment, short nObject = -1, fix radP0 = 0, fix radP1 = 0, int bIgnoreObjFlag = 0)
+			: flags (flags), p0 (p0), p1 (p1), nSegment (nSegment), nObject (nObject), radP0 (radP0), radP1 (radP1), bIgnoreObjFlag (bIgnoreObjFlag)
 			{}
 	};
 
@@ -175,10 +175,10 @@ class CPhysSimData {
 		int					bScaleSpeed;
 		int					bStopped;
 		int					bBounced;
-		int					nIgnoredObjs;
+		int					bIgnoreObjFlag;
 		int					nTries;
 
-		explicit CPhysSimData (short nObject = -1) : nObject (nObject), bUpdateOffset (1), bStopped (0), bBounced (0), nIgnoredObjs (0), nTries (0) { Setup (); }
+		explicit CPhysSimData (short nObject = -1) : nObject (nObject), bUpdateOffset (1), bStopped (0), bBounced (0), bIgnoreObjFlag (0), nTries (0) { Setup (); }
 		void Setup (void);
 		void GetPhysSegs (void);
 	};

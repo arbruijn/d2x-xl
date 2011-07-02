@@ -145,7 +145,9 @@ int CanSeeObject (int nObject, int bCheckObjs)
 								 &gameData.objs.viewerP->info.position.vPos,
 								 &OBJECTS [nObject].info.position.vPos,
 								 gameData.objs.viewerP->info.nSegment,
-								 gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP)
+								 gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP),
+								 0, 0,
+								 ++gameData.physics.bIgnoreObjFlag
 								);
 	CHitResult		hitResult;
 
@@ -169,7 +171,6 @@ do {
 	hitQuery.radP0 =
 	hitQuery.radP1 = 0x10;
 	hitQuery.nObject = OBJ_IDX (objP1);
-	hitQuery.ignoreObjList = NULL;
 	if (nTries++) {
 		hitQuery.nSegment	= bSpectate 
 								  ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) 
@@ -205,7 +206,9 @@ CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TR
 						  &gameData.objs.viewerP->info.position.vPos,
 						  &vEndPos,
 						  gameData.objs.viewerP->info.nSegment,
-						  OBJ_IDX (gameData.objs.viewerP)
+						  OBJ_IDX (gameData.objs.viewerP),
+						  0, 0,
+						  ++gameData.physics.bIgnoreObjFlag
 						  );
 
 int nHitType = FindHitpoint (hitQuery, hitResult);

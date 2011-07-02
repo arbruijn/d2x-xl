@@ -762,19 +762,7 @@ FORALL_WEAPON_OBJS (bombP, i) {
 			if (((gameData.app.nFrameCount ^ (i+j)) % 4) == 0) {
 				CHitQuery	hitQuery (0, &bombP->Position (), &actorP->Position (), bombP->Segment (), i);
 				CHitResult	hitResult;
-				int			fate;
-#if 0
-				hitQuery.p0	= &bombP->info.position.vPos;
-				hitQuery.p1 = &actorP->info.position.vPos;
-				hitQuery.nSegment = bombP->info.nSegment;
-				hitQuery.radP0 =
-				hitQuery.radP1 = 0;
-				hitQuery.nObject = i;
-				hitQuery.ignoreObjList = NULL;
-				hitQuery.flags	= 0;
-				hitQuery.bCheckVisibility = false;
-#endif
-				fate = FindHitpoint (hitQuery, hitResult);
+				int fate = FindHitpoint (hitQuery, hitResult);
 				if (fate != HIT_WALL)
 					bombP->SetLife (1);
 				}

@@ -554,7 +554,7 @@ int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfVie
 
 	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER | FQ_VISIBILITY,
 								 pos, &gameData.ai.target.vBelievedPos,
-								 -1, objP->Index (), 0, I2X (1) / 4);
+								 -1, objP->Index (), 0, I2X (1) / 4, 0, 0, ++gameData.physics.bIgnoreObjFlag);
 
 if ((*pos) == objP->info.position.vPos)
 	hitQuery.nSegment	= objP->info.nSegment;

@@ -1421,13 +1421,13 @@ xBossInvulDot = 0;
 playerThrust.SetZero ();
 segments.Clear (0xff);
 nSegments = 0;
+bIgnoreObjFlag = 0;
 }
 
 // ----------------------------------------------------------------------------
 
 bool CPhysicsData::Create (void)
 {
-CREATE (gameData.physics.ignoreObjs, LEVEL_OBJECTS, 0);
 return true;
 }
 
@@ -1435,7 +1435,6 @@ return true;
 
 void CPhysicsData::Destroy (void)
 {
-DESTROY (gameData.physics.ignoreObjs);
 }
 
 // ----------------------------------------------------------------------------

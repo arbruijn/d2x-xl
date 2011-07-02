@@ -288,7 +288,7 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	perturbed_fvec = bSpectate ? gameStates.app.playerPos.mOrient.m.dir.f : parentObjP->info.position.mOrient.m.dir.f
 	               + vPerturb * (I2X (1) / 16);
 	vTargetPos = *vMuzzle + perturbed_fvec * MAX_OMEGA_DIST;
-	CHitQuery	hitQuery (FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS, vMuzzle, &vTargetPos, nFiringSeg, OBJ_IDX (parentObjP));
+	CHitQuery	hitQuery (FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS, vMuzzle, &vTargetPos, nFiringSeg, OBJ_IDX (parentObjP), 0, 0, ++gameData.physics.bIgnoreObjFlag);
 	CHitResult	hitResult;
 	int fate = FindHitpoint (hitQuery, hitResult);
 	if (fate != HIT_NONE) {
