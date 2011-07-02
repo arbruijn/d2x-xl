@@ -480,7 +480,7 @@ hitQuery.nSegment = info.nSegment;
 hitQuery.radP0 = 
 hitQuery.radP1 = info.xSize;
 hitQuery.nObject = Index ();
-hitQuery.bIgnoreObjFlag = ++gameData.physics.bIgnoreObjFlag;
+hitQuery.bIgnoreObjFlag = gameData.physics.bIgnoreObjFlag;
 hitQuery.flags = nFlags;
 }
 
@@ -860,6 +860,7 @@ if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 
 CFixMatrix mSaveOrient = info.position.mOrient;
 if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && CollisionModel ()) {
+	++gameData.physics.bIgnoreObjFlag;
 	SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0));
 	if (FindHitpoint (simData.hitQuery, simData.hitResult) != HIT_NONE)
 		info.position.mOrient = mSaveOrient;
@@ -894,6 +895,7 @@ if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
 #endif
 
 simData.nTries = 0;
+++gameData.physics.bIgnoreObjFlag;
 for (;;) {	//Move the object
 	if (!simData.bUpdateOffset)
 		simData.bUpdateOffset = 1;
