@@ -46,7 +46,7 @@ int AICanSeeTarget (CObject *objP, CFixVector *vPos, fix fieldOfView, CFixVector
 {
 	fix			dot;
 	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER | FQ_VISIBILITY,
-								 vPos, &gameData.ai.target.vBelievedPos, -1, objP->Index (), I2X (1) / 4, I2X (1) / 4, 0, 0, ++gameData.physics.bIgnoreObjFlag);
+								 vPos, &gameData.ai.target.vBelievedPos, -1, objP->Index (), I2X (1) / 4, I2X (1) / 4, ++gameData.physics.bIgnoreObjFlag);
 
 //	Assume that robot's gun tip is in same CSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
@@ -105,7 +105,7 @@ if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 
 CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_VISIBILITY,
-						  vGun, vTarget, -1, objP->Index (), I2X (1), I2X (1), ignoreObjs, 0, 0, ++gameData.physics.bIgnoreObjFlag);
+						  vGun, vTarget, -1, objP->Index (), I2X (1), I2X (1), ++gameData.physics.bIgnoreObjFlag);
 
 if (((*vGun).v.coord.x == objP->info.position.vPos.v.coord.x) &&
 	 ((*vGun).v.coord.y == objP->info.position.vPos.v.coord.y) &&
