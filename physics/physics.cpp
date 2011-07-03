@@ -544,7 +544,7 @@ return 1;
 
 int CObject::ProcessWallCollision (CPhysSimData& simData)
 {
-	CFixVector n = simeData.vMoved / simData.xMovedDist; // movement normal
+	CFixVector n = simData.vMoved / simData.xMovedDist; // movement normal
 
 if (CFixVector::Dot (n, simData.vOffset) < 0) {		//moved backwards
 	//don't change position or simData.xSimTime
@@ -578,13 +578,16 @@ int bRetry = BounceObject (this, simData.hitResult, 0.1f, xSideDists);
 int bRetry = 0;
 #endif
 
+if (info.nFlags & OF_SHOULD_BE_DEAD)
+	return -1;
+
 if (info.nType != OBJ_DEBRIS) {
 	int bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENTS [simData.hitResult.nSideSegment].m_sides [simData.hitResult.nSide].m_nBaseTex].flags & TMI_FORCE_FIELD);
 	if (!bForceFieldBounce && (mType.physInfo.flags & PF_STICK)) {		//stop moving
 		AddStuckObject (this, simData.hitResult.nSideSegment, simData.hitResult.nSide);
 		mType.physInfo.velocity.SetZero ();
 		simData.bStopped = 1;
-		bRetry = 0;
+		return 0;
 		}
 	else {				// Slide CObject along CWall
 		int bCheckVel = 0;
@@ -617,7 +620,7 @@ if (info.nType != OBJ_DEBRIS) {
 			info.position.mOrient = CFixMatrix::CreateFU (mType.physInfo.velocity, info.position.mOrient.m.dir.u);
 			SetOrigin (simData.hitResult.vPoint);
 			}
-		bRetry = 1;
+		return 1;
 		}
 	}
 return bRetry;
