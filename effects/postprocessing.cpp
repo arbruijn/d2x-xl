@@ -3,6 +3,8 @@
 	22.3.2011
 */
 
+#include <math.h>
+
 #include "descent.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
@@ -219,8 +221,6 @@ for (int i = 0; i < 5; i++) {
 		s [i].y += screen.Height () - CCanvas::Current ()->Height ();
 	}
 
-int d = 0;
-int n = 0;
 #if 1
 fix xMin = 0x7FFFFFFF, yMin = 0x7FFFFFFF, xMax = -0x7FFFFFFF, yMax = -0x7FFFFFFF;
 for (int i = 1; i < 5; i++) {
@@ -235,12 +235,14 @@ for (int i = 1; i < 5; i++) {
 	}
 xMax -= xMin;
 yMax -= yMin;
-#ifdef _WIN32
+#	ifdef _WIN32
 m_screenRad = (float) _hypot (double (xMax), double (yMax)) * 0.125f;
-#else
+#	else
 m_screenRad = (float) hypot (double (xMax), double (yMax)) * 0.125f;
-#endif
+#	endif
 #else
+int d = 0;
+int n = 0;
 for (int i = 1; i < 5; i++) {
 	if ((s [i].x >= 0) && (s [i].x < screen.Width ()) && (s [i].y >= 0) && (s [i].y < screen.Height ())) {
 		d += labs (s [0].x - s [i].x) + labs (s [0].y - s [i].y);
