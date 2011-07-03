@@ -235,7 +235,11 @@ for (int i = 1; i < 5; i++) {
 	}
 xMax -= xMin;
 yMax -= yMin;
+#ifdef _WIN32
 m_screenRad = (float) _hypot (double (xMax), double (yMax)) * 0.125f;
+#else
+m_screenRad = (float) hypot (double (xMax), double (yMax)) * 0.125f;
+#endif
 #else
 for (int i = 1; i < 5; i++) {
 	if ((s [i].x >= 0) && (s [i].x < screen.Width ()) && (s [i].y >= 0) && (s [i].y < screen.Height ())) {
