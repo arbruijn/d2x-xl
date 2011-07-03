@@ -546,8 +546,8 @@ void CObject::ComputeMovedTime (CPhysSimData& simData)
 {
 simData.vMoved = info.position.vPos - simData.vOldPos;
 simData.xMovedDist = simData.vMoved.Mag ();
-fix attemptedDist = simData.vOffset.Mag ();
-simData.xSimTime = FixMulDiv (simData.xSimTime, attemptedDist - simData.xMovedDist, attemptedDist);
+simData.xAttemptedDist = simData.vOffset.Mag ();
+simData.xSimTime = FixMulDiv (simData.xSimTime, simData.xAttemptedDist - simData.xMovedDist, simData.xAttemptedDist);
 simData.xMovedTime = simData.xOldSimTime - simData.xSimTime;
 if ((simData.xSimTime < 0) || (simData.xSimTime > simData.xOldSimTime)) {
 	simData.xSimTime = simData.xOldSimTime;
@@ -579,7 +579,7 @@ if (simData.xMovedTime) {
 		if (s > 0)
 			simData.vNewPos = vTestPos;
 		}
-	if (CFixVector::Distance (info.position.vPos, simData.vNewPos) < simData.xMovedDist) {
+	if (CFixVector::Dist (info.position.vPos, simData.vNewPos) < simData.xMovedDist) {
 		info.position.vPos = simData.vNewPos;
 		ComputeMovedTime (simData);
 		}
@@ -659,6 +659,9 @@ if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWa
 	simData.bBounced = 1;		//this CObject simData.bBounced
 	}
 mType.physInfo.velocity -= simData.hitResult.vNormal * xWallPart;
+#if DBG
+HUDMessage (0, "vel %1.2f %1.2f %1.2f", X2F (mType.physInfo.velocity.x), X2F (mType.physInfo.velocity.y), X2F (mType.physInfo.velocity.z));
+#endif
 if (bCheckVel) {
 	fix vel = mType.physInfo.velocity.Mag ();
 	if (vel > MAX_OBJECT_VEL)
