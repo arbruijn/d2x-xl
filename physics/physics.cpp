@@ -564,11 +564,35 @@ if (CFixVector::Dot (n, simData.vOffset) < 0) {		//moved backwards
 fix xWallPart = gameData.collisions.hitResult.nNormals ? CFixVector::Dot (simData.vMoved, simData.hitResult.vNormal) / gameData.collisions.hitResult.nNormals : 0;
 fix xHitSpeed;
 
-if (xWallPart && (simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0))
+if (xWallPart && (simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0)) {
+	CFixVector vOldVel = mType.physInfo.velocity;
 	CollideObjectAndWall (xHitSpeed, simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
+#if 1
+	if (vOldVel.IsZero ()) {
+		simData.vOffset = simData.hitResult.vPoint - OBJPOS (this)->vPos;
+		CFixVector::Normalize (simData.vOffset);
+		simData.vOffset *= info.xSize;
+		}	
+	info.position.vPos = simData.vOldPos;
+	int bMoved = (info.position.vPos != simData.vNewPos);
+	int nSideMask = 3 << (simData.hitResult.nSide * 2);
+	for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
+		simData.vOffset /= I2X (2);
+		if (simData.vOffset.IsZero ())
+			break;
+		simData.vNewPos += simData.vOffset * s;
+		if (!bMoved)
+			info.position.vPos = simData.vNewPos;
+		int mask = SEGMENTS [simData.hitResult.nSideSegment].Masks (simData.vNewPos, simData.hitQuery.radP1).m_face;
+		s = (mask & nSideMask) ? -I2X (1) : I2X (1);
+		}
+	info.position.vPos = simData.vNewPos;
+#endif
+	}
 else if ((info.nType == OBJ_WEAPON) && simData.vMoved.IsZero ()) 
 	return -1;
-ScrapeOnWall (simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
+else
+	ScrapeOnWall (simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
 
 #if UNSTICK_OBJS == 2
 fix	xSideDists [6];
