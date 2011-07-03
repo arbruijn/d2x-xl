@@ -952,6 +952,7 @@ class CObject : public CObjectInfo {
 		void SetTurnRoll (void);
 		int DoPhysicsSimRot (void);
 		void DoPhysicsSim (void);
+		void DoPhysicsSimOld (void);
 		void Spin (void);
 		int Update (void);
 		int Index (void);
