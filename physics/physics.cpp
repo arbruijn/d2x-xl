@@ -660,7 +660,7 @@ if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWa
 	}
 mType.physInfo.velocity -= simData.hitResult.vNormal * xWallPart;
 #if DBG
-HUDMessage (0, "vel %1.2f %1.2f %1.2f", X2F (mType.physInfo.velocity.x), X2F (mType.physInfo.velocity.y), X2F (mType.physInfo.velocity.z));
+HUDMessage (0, "vel %1.2f %1.2f %1.2f", X2F (mType.physInfo.velocity.v.coord.x), X2F (mType.physInfo.velocity.v.coord.y), X2F (mType.physInfo.velocity.v.coord.z));
 #endif
 if (bCheckVel) {
 	fix vel = mType.physInfo.velocity.Mag ();
