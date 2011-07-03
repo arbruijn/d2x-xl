@@ -617,12 +617,14 @@ if ((simData.xMovedTime > 0) &&
 	 ((xWallPart = gameData.collisions.hitResult.nNormals ? CFixVector::Dot (simData.vMoved, simData.hitResult.vNormal) / gameData.collisions.hitResult.nNormals : 0)) &&
 	 ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0)) {
 	CollideObjectAndWall (xHitSpeed, simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
-	mType.physInfo.velocity *= fix ((float) simData.xMovedDist / (float) simData.xAttemptedDist);
+	HUDMessage (0, "collide");
 	}
 else if ((info.nType == OBJ_WEAPON) && !simData.xMovedDist) 
 	return -1;
-else
+else {
 	ScrapeOnWall (simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
+	HUDMessage (0, "scrape");
+	}
 
 if (info.nFlags & OF_SHOULD_BE_DEAD)
 	return -1;
@@ -659,9 +661,14 @@ if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWa
 		}
 	simData.bBounced = 1;		//this CObject simData.bBounced
 	}
+#if 1
+CFixVector vNewVel = mType.physInfo.velocity - simData.hitResult.vNormal * xWallPart;
+if (CFixVector::Dot (vNewVel, mType.physInfo.velocity) < 0)
+	mType.physInfo.velocity *= fix ((float) simData.xMovedDist / (float) simData.xAttemptedDist);
+#endif
 mType.physInfo.velocity -= simData.hitResult.vNormal * xWallPart;
 #if DBG
-HUDMessage (0, "vel %1.2f %1.2f %1.2f", X2F (mType.physInfo.velocity.v.coord.x), X2F (mType.physInfo.velocity.v.coord.y), X2F (mType.physInfo.velocity.v.coord.z));
+//HUDMessage (0, "vel %1.2f %1.2f %1.2f", X2F (mType.physInfo.velocity.v.coord.x), X2F (mType.physInfo.velocity.v.coord.y), X2F (mType.physInfo.velocity.v.coord.z));
 #endif
 if (bCheckVel) {
 	fix vel = mType.physInfo.velocity.Mag ();
