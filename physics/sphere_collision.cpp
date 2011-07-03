@@ -229,7 +229,7 @@ int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlane, CFi
 u.Assign (*p1 - *p0);
 n.Assign (*vNormal);
 float den = -CFloatVector::Dot (n, u);
-if ((den > -1e-10f) && (den < 1e-10f)) {// ~ parallel
+if ((den > -1e-6f) && (den < 1e-6f)) {// ~ parallel
 	return 0;
 	}
 w.Assign (*p0 - *vPlane);

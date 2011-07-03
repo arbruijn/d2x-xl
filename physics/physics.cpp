@@ -559,27 +559,31 @@ if ((simData.xSimTime < 0) || (simData.xSimTime > simData.xOldSimTime)) {
 
 void CObject::UnstickFromWall (CPhysSimData& simData, CFixVector& vOldVel)
 {
-if (vOldVel.IsZero ()) {
-	simData.vOffset = simData.hitResult.vPoint - OBJPOS (this)->vPos;
-	fix l = CFixVector::Normalize (simData.vOffset);
-	simData.vOffset *= (l - info.xSize);
-	}	
-int nSideMask = 3 << (simData.hitResult.nSide * 2);
-CFixVector vTestPos = simData.vNewPos;
-CFixVector vOffset = simData.vOffset;
-simData.vNewPos = simData.vOldPos;
-for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
-	vOffset /= I2X (2);
-	if (vOffset.IsZero ())
-		break;
-	vTestPos += vOffset * s;
-	int mask = SEGMENTS [simData.hitResult.nSideSegment].Masks (vTestPos, simData.hitQuery.radP1).m_face;
-	s = (mask & nSideMask) ? -I2X (1) : I2X (1);
-	if (s > 0)
-		simData.vNewPos = vTestPos;
+if (simData.xMovedTime) {
+	if (vOldVel.IsZero ()) {
+		simData.vOffset = simData.hitResult.vPoint - OBJPOS (this)->vPos;
+		fix l = CFixVector::Normalize (simData.vOffset);
+		simData.vOffset *= (l - info.xSize);
+		}	
+	int nSideMask = 3 << (simData.hitResult.nSide * 2);
+	CFixVector vTestPos = simData.vOldPos;
+	CFixVector vOffset = simData.vMoved;
+	simData.vNewPos = simData.vOldPos;
+	for (int i = 0, s = I2X (1); (i < 8) || (s < 0); i++) {
+		vOffset /= I2X (2);
+		if (vOffset.IsZero ())
+			break;
+		vTestPos += vOffset * s;
+		int mask = SEGMENTS [simData.hitResult.nSideSegment].Masks (vTestPos, simData.hitQuery.radP1).m_face;
+		s = (mask & nSideMask) ? -I2X (1) : I2X (1);
+		if (s > 0)
+			simData.vNewPos = vTestPos;
+		}
+	if (CFixVector::Distance (info.position.vPos, simData.vNewPos) < simData.xMovedDist) {
+		info.position.vPos = simData.vNewPos;
+		ComputeMovedTime (simData);
+		}
 	}
-info.position.vPos = simData.vNewPos;
-ComputeMovedTime (simData);
 }
 
 //	-----------------------------------------------------------------------------
@@ -603,14 +607,15 @@ if (CFixVector::Dot (n, simData.vOffset) < 0) {		//moved backwards
 	simData.xMovedTime = 0;
 	}
 
-#if 1 // unstick object from wall
+#if 0 // unstick object from wall
 UnstickFromWall (simData, mType.physInfo.velocity);
 #endif
 
-fix xWallPart = gameData.collisions.hitResult.nNormals ? CFixVector::Dot (simData.vMoved, simData.hitResult.vNormal) / gameData.collisions.hitResult.nNormals : 0;
-fix xHitSpeed;
+fix xWallPart, xHitSpeed;
 
-if (xWallPart && (simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0)) {
+if ((simData.xMovedTime > 0) && 
+	 ((xWallPart = gameData.collisions.hitResult.nNormals ? CFixVector::Dot (simData.vMoved, simData.hitResult.vNormal) / gameData.collisions.hitResult.nNormals : 0)) &&
+	 ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0)) {
 	CollideObjectAndWall (xHitSpeed, simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
 	}
 else if ((info.nType == OBJ_WEAPON) && simData.vMoved.IsZero ()) 
