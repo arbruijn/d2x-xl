@@ -574,17 +574,17 @@ if (xWallPart && (simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, s
 		simData.vOffset *= info.xSize;
 		}	
 	info.position.vPos = simData.vOldPos;
-	int bMoved = (info.position.vPos != simData.vNewPos);
 	int nSideMask = 3 << (simData.hitResult.nSide * 2);
+	CFixVector vTestPos = simData.vNewPos;
 	for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
 		simData.vOffset /= I2X (2);
 		if (simData.vOffset.IsZero ())
 			break;
-		simData.vNewPos += simData.vOffset * s;
-		if (!bMoved)
-			info.position.vPos = simData.vNewPos;
-		int mask = SEGMENTS [simData.hitResult.nSideSegment].Masks (simData.vNewPos, simData.hitQuery.radP1).m_face;
+		vTestPos += simData.vOffset * s;
+		int mask = SEGMENTS [simData.hitResult.nSideSegment].Masks (vTestPos, simData.hitQuery.radP1).m_face;
 		s = (mask & nSideMask) ? -I2X (1) : I2X (1);
+		if (s > 0)
+			simData.vNewPos = vTestPos;
 		}
 	info.position.vPos = simData.vNewPos;
 #endif
@@ -668,14 +668,17 @@ if (CollisionModel () || hitObjP->IsStatic ()) {
 		}	
 	info.position.vPos = simData.vOldPos;
 	int bMoved = (info.position.vPos != simData.vNewPos);
+	CFixVector vTestPos = simData.vNewPos;
 	for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
 		simData.vOffset /= I2X (2);
 		if (simData.vOffset.IsZero ())
 			break;
-		simData.vNewPos += simData.vOffset * s;
+		vTestPos += simData.vOffset * s;
 		if (!bMoved)
-			info.position.vPos = simData.vNewPos;
-		s = CheckVectorObjectCollision (simData.hitResult, &info.position.vPos, &simData.vNewPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
+			info.position.vPos = vTestPos;
+		s = CheckVectorObjectCollision (simData.hitResult, &info.position.vPos, &vTestPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
+		if (s > 0)
+			simData.vNewPos = vTestPos;
 		}
 	info.position.vPos = simData.vNewPos;
 #endif
