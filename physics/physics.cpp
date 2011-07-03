@@ -576,17 +576,19 @@ if (xWallPart && (simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, s
 	info.position.vPos = simData.vOldPos;
 	int nSideMask = 3 << (simData.hitResult.nSide * 2);
 	CFixVector vTestPos = simData.vNewPos;
+	CFixVector vOffset = simData.vOffset;
 	for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
-		simData.vOffset /= I2X (2);
-		if (simData.vOffset.IsZero ())
+		vOffset /= I2X (2);
+		if (vOffset.IsZero ())
 			break;
-		vTestPos += simData.vOffset * s;
+		vTestPos += vOffset * s;
 		int mask = SEGMENTS [simData.hitResult.nSideSegment].Masks (vTestPos, simData.hitQuery.radP1).m_face;
 		s = (mask & nSideMask) ? -I2X (1) : I2X (1);
 		if (s > 0)
 			simData.vNewPos = vTestPos;
 		}
 	info.position.vPos = simData.vNewPos;
+	simData.vMoved = info.position.vPos - simData.vOldPos;
 #endif
 	}
 else if ((info.nType == OBJ_WEAPON) && simData.vMoved.IsZero ()) 
@@ -669,11 +671,12 @@ if (CollisionModel () || hitObjP->IsStatic ()) {
 	info.position.vPos = simData.vOldPos;
 	int bMoved = (info.position.vPos != simData.vNewPos);
 	CFixVector vTestPos = simData.vNewPos;
+	CFixVector vOffset = simData.vOffset;
 	for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
-		simData.vOffset /= I2X (2);
-		if (simData.vOffset.IsZero ())
+		vOffset /= I2X (2);
+		if (vOffset.IsZero ())
 			break;
-		vTestPos += simData.vOffset * s;
+		vTestPos += vOffset * s;
 		if (!bMoved)
 			info.position.vPos = vTestPos;
 		s = CheckVectorObjectCollision (simData.hitResult, &info.position.vPos, &vTestPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
@@ -990,7 +993,7 @@ for (;;) {	//Move the object
 FixPosition (simData);
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
-#if UNSTICK_OBJS
+#if 0 //UNSTICK_OBJS
 Unstick ();
 #endif
 }
