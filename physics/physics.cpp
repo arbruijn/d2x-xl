@@ -542,6 +542,48 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
+void CObject::ComputeMovedTime (CPhysSimData& simData)
+{
+simData.vMoved = info.position.vPos - simData.vOldPos;
+simData.xMovedDist = simData.vMoved.Mag ();
+fix attemptedDist = simData.vOffset.Mag ();
+simData.xSimTime = FixMulDiv (simData.xSimTime, attemptedDist - simData.xMovedDist, attemptedDist);
+simData.xMovedTime = simData.xOldSimTime - simData.xSimTime;
+if ((simData.xSimTime < 0) || (simData.xSimTime > simData.xOldSimTime)) {
+	simData.xSimTime = simData.xOldSimTime;
+	simData.xMovedTime = 0;
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void CObject::UnstickFromWall (CPhysSimData& simData, CFixVector& vOldVel)
+{
+if (vOldVel.IsZero ()) {
+	simData.vOffset = simData.hitResult.vPoint - OBJPOS (this)->vPos;
+	fix l = CFixVector::Normalize (simData.vOffset);
+	simData.vOffset *= (l - info.xSize);
+	}	
+int nSideMask = 3 << (simData.hitResult.nSide * 2);
+CFixVector vTestPos = simData.vNewPos;
+CFixVector vOffset = simData.vOffset;
+simData.vNewPos = simData.vOldPos;
+for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
+	vOffset /= I2X (2);
+	if (vOffset.IsZero ())
+		break;
+	vTestPos += vOffset * s;
+	int mask = SEGMENTS [simData.hitResult.nSideSegment].Masks (vTestPos, simData.hitQuery.radP1).m_face;
+	s = (mask & nSideMask) ? -I2X (1) : I2X (1);
+	if (s > 0)
+		simData.vNewPos = vTestPos;
+	}
+info.position.vPos = simData.vNewPos;
+ComputeMovedTime (simData);
+}
+
+//	-----------------------------------------------------------------------------
+
 int CObject::ProcessWallCollision (CPhysSimData& simData)
 {
 	CFixVector n = simData.vMoved / simData.xMovedDist; // movement normal
@@ -561,35 +603,15 @@ if (CFixVector::Dot (n, simData.vOffset) < 0) {		//moved backwards
 	simData.xMovedTime = 0;
 	}
 
+#if 1 // unstick object from wall
+UnstickFromWall (simData, mType.physInfo.velocity);
+#endif
+
 fix xWallPart = gameData.collisions.hitResult.nNormals ? CFixVector::Dot (simData.vMoved, simData.hitResult.vNormal) / gameData.collisions.hitResult.nNormals : 0;
 fix xHitSpeed;
 
 if (xWallPart && (simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0)) {
-	CFixVector vOldVel = mType.physInfo.velocity;
 	CollideObjectAndWall (xHitSpeed, simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
-#if 1 // unstick object from wall
-	if (vOldVel.IsZero ()) {
-		simData.vOffset = simData.hitResult.vPoint - OBJPOS (this)->vPos;
-		fix l = CFixVector::Normalize (simData.vOffset);
-		simData.vOffset *= (l - info.xSize);
-		}	
-	info.position.vPos = simData.vOldPos;
-	int nSideMask = 3 << (simData.hitResult.nSide * 2);
-	CFixVector vTestPos = simData.vNewPos;
-	CFixVector vOffset = simData.vOffset;
-	for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
-		vOffset /= I2X (2);
-		if (vOffset.IsZero ())
-			break;
-		vTestPos += vOffset * s;
-		int mask = SEGMENTS [simData.hitResult.nSideSegment].Masks (vTestPos, simData.hitQuery.radP1).m_face;
-		s = (mask & nSideMask) ? -I2X (1) : I2X (1);
-		if (s > 0)
-			simData.vNewPos = vTestPos;
-		}
-	info.position.vPos = simData.vNewPos;
-	simData.vMoved = info.position.vPos - simData.vOldPos;
-#endif
 	}
 else if ((info.nType == OBJ_WEAPON) && simData.vMoved.IsZero ()) 
 	return -1;
@@ -654,6 +676,35 @@ return bRetry;
 
 //	-----------------------------------------------------------------------------
 
+void CObject::UnstickFromObject (CPhysSimData& simData, CFixVector& vOldVel)
+{
+	CObject* hitObjP = OBJECTS + simData.hitResult.nObject;
+
+if (vOldVel.IsZero ()) {
+	simData.vOffset = OBJPOS (hitObjP)->vPos - OBJPOS (this)->vPos;
+	CFixVector::Normalize (simData.vOffset);
+	simData.vOffset *= info.xSize;
+	}	
+info.position.vPos = simData.vOldPos;
+int bMoved = (info.position.vPos != simData.vNewPos);
+CFixVector vTestPos = simData.vNewPos;
+CFixVector vOffset = simData.vOffset;
+for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
+	vOffset /= I2X (2);
+	if (vOffset.IsZero ())
+		break;
+	vTestPos += vOffset * s;
+	if (!bMoved)
+		info.position.vPos = vTestPos;
+	s = CheckVectorObjectCollision (simData.hitResult, &info.position.vPos, &vTestPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
+	if (s > 0)
+		simData.vNewPos = vTestPos;
+	}
+info.position.vPos = simData.vNewPos;
+}
+
+//	-----------------------------------------------------------------------------
+
 int CObject::ProcessObjectCollision (CPhysSimData& simData)
 {
 if (simData.hitResult.nObject < 0)
@@ -663,27 +714,7 @@ CFixVector vOldVel = mType.physInfo.velocity;
 if (CollisionModel () || hitObjP->IsStatic ()) {
 	CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint, &simData.hitResult.vNormal);
 #if 1 // unstick objects
-	if (vOldVel.IsZero ()) {
-		simData.vOffset = OBJPOS (hitObjP)->vPos - OBJPOS (this)->vPos;
-		CFixVector::Normalize (simData.vOffset);
-		simData.vOffset *= info.xSize;
-		}	
-	info.position.vPos = simData.vOldPos;
-	int bMoved = (info.position.vPos != simData.vNewPos);
-	CFixVector vTestPos = simData.vNewPos;
-	CFixVector vOffset = simData.vOffset;
-	for (int i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
-		vOffset /= I2X (2);
-		if (vOffset.IsZero ())
-			break;
-		vTestPos += vOffset * s;
-		if (!bMoved)
-			info.position.vPos = vTestPos;
-		s = CheckVectorObjectCollision (simData.hitResult, &info.position.vPos, &vTestPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
-		if (s > 0)
-			simData.vNewPos = vTestPos;
-		}
-	info.position.vPos = simData.vNewPos;
+	UnstickFromObject (simData, vOldVel);
 #endif
 	}
 else {
@@ -808,15 +839,7 @@ if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {	//object 
 	}
 
 simData.xOldSimTime = simData.xSimTime;
-simData.vMoved = info.position.vPos - simData.vOldPos;
-simData.xMovedDist = simData.vMoved.Mag ();
-fix attemptedDist = simData.vOffset.Mag ();
-simData.xSimTime = FixMulDiv (simData.xSimTime, attemptedDist - simData.xMovedDist, attemptedDist);
-simData.xMovedTime = simData.xOldSimTime - simData.xSimTime;
-if ((simData.xSimTime < 0) || (simData.xSimTime > simData.xOldSimTime)) {
-	simData.xSimTime = simData.xOldSimTime;
-	simData.xMovedTime = 0;
-	}
+ComputeMovedTime (simData);
 return 1;
 }
 
@@ -936,6 +959,11 @@ if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
 
 simData.nTries = 0;
 ++gameData.physics.bIgnoreObjFlag;
+
+#if DBG
+HUDMessage (0, "vel = %1.2f %1.2f %1.2f", X2F (mType.physInfo.velocity.v.coord.x), X2F (mType.physInfo.velocity.v.coord.y), X2F (mType.physInfo.velocity.v.coord.z));
+#endif
+
 for (;;) {	//Move the object
 	if (!simData.bUpdateOffset)
 		simData.bUpdateOffset = 1;

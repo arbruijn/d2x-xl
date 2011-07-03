@@ -1074,6 +1074,9 @@ class CObject : public CObjectInfo {
 		int ProcessBadCollision (CPhysSimData& simData);
 		int UpdateOffset (CPhysSimData& simData);
 		void FixPosition (CPhysSimData& simData);
+		void ComputeMovedTime (CPhysSimData& simData);
+		void UnstickFromWall (CPhysSimData& simData, CFixVector& vOldVel);
+		void UnstickFromObject (CPhysSimData& simData, CFixVector& vOldVel);
 		void SetupHitQuery (CHitQuery& hitQuery, int nFlags, CFixVector* vNewPos = NULL);
 		int Bounce (CHitResult hitResult, float fOffs, fix *pxSideDists);
 		void DoBumpHack (void);
