@@ -29,9 +29,9 @@ const char* shockwaveVS =
 	"gl_TexCoord[0] = gl_MultiTexCoord0;\r\n" \
 	"}";
 
-#define NEW_STYLE 1
+#define SHOCKWAVE_STYLE 0
 
-#if NEW_STYLE
+#if SHOCKWAVE_STYLE
 
 const char* shockwaveFS = 
 	"uniform sampler2D sceneTex;\r\n" \
@@ -235,7 +235,7 @@ for (int i = 1; i < 5; i++) {
 	}
 xMax -= xMin;
 yMax -= yMin;
-m_screenRad = (float) _hypot (double (xMax), double (yMax)) * 0.5f;
+m_screenRad = (float) _hypot (double (xMax), double (yMax)) * 0.125f;
 #else
 for (int i = 1; i < 5; i++) {
 	if ((s [i].x >= 0) && (s [i].x < screen.Width ()) && (s [i].y >= 0) && (s [i].y < screen.Height ())) {
@@ -268,7 +268,7 @@ glEnable (GL_LIGHT0 + m_nShockwaves);
 glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&m_renderPos));
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, m_screenRad);
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_LINEAR_ATTENUATION, m_rad);
-#if NEW_STYLE
+#if SHOCKWAVE_STYLE
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, (float) pow (0.5f - (float) cos (2.0 * Pi * (1.0f - m_ttl)) * 0.5f, 0.25f) * m_nBias); 
 #else
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, (float) pow (1.0 - m_ttl, 0.25) * m_nBias);
