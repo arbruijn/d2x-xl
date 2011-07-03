@@ -570,8 +570,8 @@ if (xWallPart && (simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, s
 #if 1 // unstick object from wall
 	if (vOldVel.IsZero ()) {
 		simData.vOffset = simData.hitResult.vPoint - OBJPOS (this)->vPos;
-		CFixVector::Normalize (simData.vOffset);
-		simData.vOffset *= info.xSize;
+		fix l = CFixVector::Normalize (simData.vOffset);
+		simData.vOffset *= (l - info.xSize);
 		}	
 	info.position.vPos = simData.vOldPos;
 	int nSideMask = 3 << (simData.hitResult.nSide * 2);
