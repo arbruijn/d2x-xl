@@ -607,7 +607,7 @@ if (CFixVector::Dot (n, simData.vOffset) < 0) {		//moved backwards
 	simData.xMovedTime = 0;
 	}
 
-#if 0 // unstick object from wall
+#if 1 // unstick object from wall
 UnstickFromWall (simData, mType.physInfo.velocity);
 #endif
 
@@ -617,8 +617,9 @@ if ((simData.xMovedTime > 0) &&
 	 ((xWallPart = gameData.collisions.hitResult.nNormals ? CFixVector::Dot (simData.vMoved, simData.hitResult.vNormal) / gameData.collisions.hitResult.nNormals : 0)) &&
 	 ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0)) {
 	CollideObjectAndWall (xHitSpeed, simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
+	mType.physInfo.velocity *= fix ((float) simData.xMovedDist / (float) simData.xAttemptedDist);
 	}
-else if ((info.nType == OBJ_WEAPON) && simData.vMoved.IsZero ()) 
+else if ((info.nType == OBJ_WEAPON) && !simData.xMovedDist) 
 	return -1;
 else
 	ScrapeOnWall (simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
