@@ -164,6 +164,7 @@ class CPhysSimData {
 		fix					xOldSimTime;
 		fix					xTimeScale;
 		fix					xMovedTime;
+		fix					xMovedDist;
 		tSpeedBoostData	speedBoost;
 		CHitResult			hitResult;
 		CHitQuery			hitQuery;

@@ -467,7 +467,7 @@ if (!(IsMultiGame || simData.bInitialize)) {
 		simData.vOffset *= (fix) (I2X (1) / gameStates.gameplay.slowmo [i].fSpeed);
 		}
 	}
-return !(simData.nTries && !simData.hitResult.nType && simData.vOffset.IsZero ());
+return !(/*simData.nTries && !simData.hitResult.nType &&*/ simData.vOffset.IsZero ());
 }
 
 //	-----------------------------------------------------------------------------
@@ -544,7 +544,9 @@ return 1;
 
 int CObject::ProcessWallCollision (CPhysSimData& simData)
 {
-if (CFixVector::Dot (simData.vMoved, simData.vOffset) < 0) {		//moved backwards
+	CFixVector n = simeData.vMoved / simData.xMovedDist; // movement normal
+
+if (CFixVector::Dot (n, simData.vOffset) < 0) {		//moved backwards
 	//don't change position or simData.xSimTime
 	info.position.vPos = simData.vOldPos;
 	if (simData.nOldSeg != simData.hitResult.nSegment)
@@ -774,9 +776,9 @@ if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {	//object 
 
 simData.xOldSimTime = simData.xSimTime;
 simData.vMoved = info.position.vPos - simData.vOldPos;
-fix actualDist = simData.vMoved.Mag ();
+simData.xMovedDist = simData.vMoved.Mag ();
 fix attemptedDist = simData.vOffset.Mag ();
-simData.xSimTime = FixMulDiv (simData.xSimTime, attemptedDist - actualDist, attemptedDist);
+simData.xSimTime = FixMulDiv (simData.xSimTime, attemptedDist - simData.xMovedDist, attemptedDist);
 simData.xMovedTime = simData.xOldSimTime - simData.xSimTime;
 if ((simData.xSimTime < 0) || (simData.xSimTime > simData.xOldSimTime)) {
 	simData.xSimTime = simData.xOldSimTime;
@@ -1130,7 +1132,6 @@ if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	CFixVector			vNewPos, iPos;		//position after this frame
 	int					nTries = 0;
 	short					nObject = OBJ_IDX (this);
-	short					nWallHitSeg, nWallHitSide;
 	CHitResult			hitResult;
 	CHitQuery			hitQuery;
 	CFixVector			vSavePos;
@@ -1412,18 +1413,15 @@ retryMove:
 		}
 	iPos = hitResult.vPoint;
 	iSeg = hitResult.nSegment;
-	nWallHitSide = hitResult.nSide;
-	nWallHitSeg = hitResult.nSideSegment;
-	if (iSeg == -1) {		//some sort of horrible error
+	if (hitResult.nSegment == -1) {		//some sort of horrible error
 		if (info.nType == OBJ_WEAPON)
 			Die ();
 		break;
 		}
-	Assert ((fviResult != HIT_WALL) || ((nWallHitSeg > -1) && (nWallHitSeg <= gameData.segs.nLastSegment)));
 	// update CObject's position and CSegment number
-	info.position.vPos = iPos;
-	if (iSeg != info.nSegment)
-		OBJECTS [nObject].RelinkToSeg (iSeg);
+	info.position.vPos = hitResult.vPoint;
+	if (hitResult.nSegment != info.nSegment)
+		RelinkToSeg (hitResult.nSegment);
 	//if start point not in segment, move object to center of segment
 	if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {	//object stuck
 		int n = FindSegment ();
@@ -1432,7 +1430,7 @@ retryMove:
 				n = FindSegByPos (info.vLastPos, info.nSegment, 1, 0);
 			if (n == -1) {
 				info.position.vPos = info.vLastPos;
-				OBJECTS [nObject].RelinkToSeg (info.nSegment);
+				RelinkToSeg (info.nSegment);
 				}
 			else {
 				CFixVector vCenter;
@@ -1452,16 +1450,17 @@ retryMove:
 		}
 
 	//calulate new sim time
-	CFixVector vMoveNormal;
 	fix attemptedDist, actualDist;
 
 	xOldSimTime = xSimTime;
-	actualDist = CFixVector::NormalizedDir (vMoveNormal, info.position.vPos, vSavePos);
+	CFixVector vMoved = info.position.vPos - vSavePos;
+	CFixVector vMoveNormal = vMoved;
+	actualDist = CFixVector::Normalize (vMoveNormal);
 	if ((fviResult == HIT_WALL) && (CFixVector::Dot (vMoveNormal, vFrame) < 0)) {		//moved backwards
 		//don't change position or xSimTime
 		info.position.vPos = vSavePos;
-		if (nSaveSeg != iSeg)
-			OBJECTS [nObject].RelinkToSeg (nSaveSeg);
+		if (nSaveSeg != hitResult.nSegment)
+			RelinkToSeg (nSaveSeg);
 		if (bDoSpeedBoost) {
 			info.position.vPos = vStartPos;
 			SetSpeedBoostVelocity (nObject, -1, -1, -1, -1, -1, &vStartPos, &sbd.vDest, 0);
@@ -1481,24 +1480,20 @@ retryMove:
 		}
 
 	if (fviResult == HIT_WALL) {
-		CFixVector	vMoved;
 		fix			xHitSpeed, xWallPart;
 		// Find hit speed
 
-		vMoved = info.position.vPos - vSavePos;
-		xWallPart = CFixVector::Dot (vMoved, hitResult.vNormal) / gameData.collisions.hitResult.nNormals;
+		xWallPart = gameData.collisions.hitResult.nNormals ? CFixVector::Dot (vMoved, hitResult.vNormal) / gameData.collisions.hitResult.nNormals : 0;
 		if (xWallPart && (xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0)) {
-			CollideObjectAndWall (xHitSpeed, nWallHitSeg, nWallHitSide, hitResult.vPoint);
+			CollideObjectAndWall (xHitSpeed, hitResult.nSideSegment, hitResult.nSide, hitResult.vPoint);
 			}
 		else if ((info.nType == OBJ_WEAPON) && vMoved.IsZero ()) 
 			Die ();
 		else
-			ScrapeOnWall (nWallHitSeg, nWallHitSide, hitResult.vPoint);
-		Assert (nWallHitSeg > -1);
-		Assert (nWallHitSide > -1);
+			ScrapeOnWall (hitResult.nSideSegment, hitResult.nSide, hitResult.vPoint);
 #if UNSTICK_OBJS == 2
 		fix	xSideDists [6];
-		SEGMENTS [nWallHitSeg].GetSideDists (&info.position.vPos, xSideDists);
+		SEGMENTS [hitResult.nSideSegment].GetSideDists (&info.position.vPos, xSideDists);
 		bRetry = BounceObject (this, hitResult, 0.1f, xSideDists);
 #else
 		bRetry = 0;
@@ -1507,9 +1502,9 @@ retryMove:
 			int bForceFieldBounce;		//bounce off a forcefield
 
 			///Assert (gameStates.app.cheats.bBouncingWeapons || ((mType.physInfo.flags & (PF_STICK | PF_BOUNCE)) != (PF_STICK | PF_BOUNCE)));	//can't be bounce and stick
-			bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENTS [nWallHitSeg].m_sides [nWallHitSide].m_nBaseTex].flags & TMI_FORCE_FIELD);
+			bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENTS [hitResult.nSideSegment].m_sides [hitResult.nSide].m_nBaseTex].flags & TMI_FORCE_FIELD);
 			if (!bForceFieldBounce && (mType.physInfo.flags & PF_STICK)) {		//stop moving
-				AddStuckObject (this, nWallHitSeg, nWallHitSide);
+				AddStuckObject (this, hitResult.nSideSegment, hitResult.nSide);
 				mType.physInfo.velocity.SetZero ();
 				bObjStopped = 1;
 				bRetry = 0;
@@ -1647,7 +1642,7 @@ if ((info.nSegment >= 0) && SEGMENTS [info.nSegment].Masks (info.position.vPos, 
 		if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) &&
 			 (n = FindSegByPos (info.vLastPos, info.nSegment, 1, 0)) != -1) {
 			info.position.vPos = info.vLastPos;
-			OBJECTS [nObject].RelinkToSeg (n);
+			RelinkToSeg (n);
 			}
 		else {
 			info.position.vPos = SEGMENTS [info.nSegment].Center ();
