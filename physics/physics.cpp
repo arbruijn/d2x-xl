@@ -662,8 +662,11 @@ if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWa
 	simData.bBounced = 1;		//this CObject simData.bBounced
 	}
 #if 1
-CFixVector vNewVel = mType.physInfo.velocity - simData.hitResult.vNormal * xWallPart;
-if (CFixVector::Dot (vNewVel, mType.physInfo.velocity) < 0)
+CFixVector vReflect = simData.hitResult.vNormal * xWallPart;
+CFixVector::Normalize (vReflect);
+CFixVector vVelNorm = mType.physInfo.velocity;
+CFixVector::Normalize (vVelNorm);
+if (CFixVector::Dot (vReflect, vVelNorm) > I2X (1) / 2)
 	mType.physInfo.velocity *= fix ((float) simData.xMovedDist / (float) simData.xAttemptedDist);
 #endif
 mType.physInfo.velocity -= simData.hitResult.vNormal * xWallPart;
