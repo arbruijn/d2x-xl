@@ -623,60 +623,52 @@ else if ((info.nType == OBJ_WEAPON) && simData.vMoved.IsZero ())
 else
 	ScrapeOnWall (simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
 
-#if UNSTICK_OBJS == 2
-fix	xSideDists [6];
-SEGMENTS [simData.hitResult.nSideSegment].GetSideDists (&info.position.vPos, xSideDists);
-int bRetry = BounceObject (this, simData.hitResult, 0.1f, xSideDists);
-#else
-int bRetry = 0;
-#endif
-
 if (info.nFlags & OF_SHOULD_BE_DEAD)
 	return -1;
 
-if (info.nType != OBJ_DEBRIS) {
-	int bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENTS [simData.hitResult.nSideSegment].m_sides [simData.hitResult.nSide].m_nBaseTex].flags & TMI_FORCE_FIELD);
-	if (!bForceFieldBounce && (mType.physInfo.flags & PF_STICK)) {		//stop moving
-		AddStuckObject (this, simData.hitResult.nSideSegment, simData.hitResult.nSide);
-		mType.physInfo.velocity.SetZero ();
-		simData.bStopped = 1;
-		return 0;
-		}
-	else {				// Slide CObject along CWall
-		int bCheckVel = 0;
-		//We're constrained by a wall, so subtract wall part from velocity vector
+if (info.nType == OBJ_DEBRIS)
+	return 0;
 
-		xWallPart = CFixVector::Dot (simData.hitResult.vNormal, mType.physInfo.velocity);
-		if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWall
-			xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
-			if (bForceFieldBounce) {
-				bCheckVel = 1;				//check for max velocity
-				if (info.nType == OBJ_PLAYER)
-					xWallPart *= 2;		//CPlayerData bounce twice as much
-				}
-			if ((mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
-				//Assert (mType.physInfo.flags & PF_BOUNCE);
-				if (mType.physInfo.flags & PF_HAS_BOUNCED)
-					mType.physInfo.flags &= ~(PF_BOUNCE | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
-				else
-					mType.physInfo.flags |= PF_HAS_BOUNCED;
-				}
-			simData.bBounced = 1;		//this CObject simData.bBounced
-			}
-		mType.physInfo.velocity += simData.hitResult.vNormal * (-xWallPart);
-		if (bCheckVel) {
-			fix vel = mType.physInfo.velocity.Mag ();
-			if (vel > MAX_OBJECT_VEL)
-				mType.physInfo.velocity *= (FixDiv (MAX_OBJECT_VEL, vel));
-			}
-		if (simData.bBounced && (info.nType == OBJ_WEAPON)) {
-			info.position.mOrient = CFixMatrix::CreateFU (mType.physInfo.velocity, info.position.mOrient.m.dir.u);
-			SetOrigin (simData.hitResult.vPoint);
-			}
-		return 1;
-		}
+int bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENTS [simData.hitResult.nSideSegment].m_sides [simData.hitResult.nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0;
+if (!bForceFieldBounce && (mType.physInfo.flags & PF_STICK)) {		//stop moving
+	AddStuckObject (this, simData.hitResult.nSideSegment, simData.hitResult.nSide);
+	mType.physInfo.velocity.SetZero ();
+	simData.bStopped = 1;
+	return 0;
 	}
-return bRetry;
+
+// slide object along wall
+int bCheckVel = 0;
+//We're constrained by a wall, so subtract wall part from velocity vector
+
+xWallPart = CFixVector::Dot (simData.hitResult.vNormal, mType.physInfo.velocity);
+if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWall
+	xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
+	if (bForceFieldBounce) {
+		bCheckVel = 1;				//check for max velocity
+		if (info.nType == OBJ_PLAYER)
+			xWallPart *= 2;		//CPlayerData bounce twice as much
+		}
+	if ((mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
+		//Assert (mType.physInfo.flags & PF_BOUNCE);
+		if (mType.physInfo.flags & PF_HAS_BOUNCED)
+			mType.physInfo.flags &= ~(PF_BOUNCE | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
+		else
+			mType.physInfo.flags |= PF_HAS_BOUNCED;
+		}
+	simData.bBounced = 1;		//this CObject simData.bBounced
+	}
+mType.physInfo.velocity -= simData.hitResult.vNormal * xWallPart;
+if (bCheckVel) {
+	fix vel = mType.physInfo.velocity.Mag ();
+	if (vel > MAX_OBJECT_VEL)
+		mType.physInfo.velocity *= (FixDiv (MAX_OBJECT_VEL, vel));
+	}
+if (simData.bBounced && (info.nType == OBJ_WEAPON)) {
+	info.position.mOrient = CFixMatrix::CreateFU (mType.physInfo.velocity, info.position.mOrient.m.dir.u);
+	SetOrigin (simData.hitResult.vPoint);
+	}
+return 1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -964,10 +956,6 @@ if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
 
 simData.nTries = 0;
 ++gameData.physics.bIgnoreObjFlag;
-
-#if DBG
-HUDMessage (0, "vel = %1.2f %1.2f %1.2f", X2F (mType.physInfo.velocity.v.coord.x), X2F (mType.physInfo.velocity.v.coord.y), X2F (mType.physInfo.velocity.v.coord.z));
-#endif
 
 for (;;) {	//Move the object
 	if (!simData.bUpdateOffset)
