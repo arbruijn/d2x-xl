@@ -29,7 +29,7 @@ const char* shockwaveVS =
 	"gl_TexCoord[0] = gl_MultiTexCoord0;\r\n" \
 	"}";
 
-#define NEW_STYLE 0
+#define NEW_STYLE 1
 
 #if NEW_STYLE
 
@@ -58,20 +58,20 @@ const char* shockwaveFS =
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
 	"  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
 	"  float d = length (v); //distance of screen coordinate to center of effect\r\n" \
-	"  float r = gl_LightSource [i].constantAttenuation - effectStrength.z; //effect radius in screen space\r\n" \
-	"  if (r >= 0) { // effect range from the wavefront\r\n" \
+	"  float r = gl_LightSource [i].constantAttenuation; //effect radius in screen space\r\n" \
+	"  //if (r >= 0) { // effect range from the wavefront\r\n" \
 	"     float offset = r - d;\r\n" \
 	"     if (abs (offset) <= effectStrength.z) { // effect range from the wavefront\r\n" \
 	"       r += effectStrength.z;\r\n" \
 	"       float z = sqrt (r * r - d * d) / r * gl_LightSource [i].linearAttenuation;\r\n" \
 	"       if (gl_LightSource [i].position.z - z <= ZEYE (texture2D (depthTex, gl_TexCoord [0].xy).r)) {\r\n" \
-	"         offset = sign (offset) * (0.25 - cos (2.0 * Pi * offset / effectStrength.z) * 0.25);\r\n" \
+	"         offset = sign (offset) * (0.33 - cos (2.0 * Pi * offset / effectStrength.z) * 0.33);\r\n" \
 	"         v *= effectStrength.z / d;\r\n" \
-	"         tcDest += v * (offset * gl_LightSource [i].quadraticAttenuation /** gl_LightSource [i].spotExponent*/);\r\n" \
+	"         tcDest += v * (offset * gl_LightSource [i].quadraticAttenuation);\r\n" \
 	"         }\r\n" \
 	"      }\r\n" \
 	"    }\r\n" \
-	"  }\r\n" \
+	"  //}\r\n" \
 	"gl_FragColor = texture2D (sceneTex, tcDest / screenSize);\r\n" \
 	"}\r\n";
 
@@ -106,15 +106,11 @@ const char* shockwaveFS =
 	"    if (gl_LightSource [i].position.z - z <= ZEYE (texture2D (depthTex, gl_TexCoord [0].xy).r)) {\r\n" \
 	"      offset /= screenSize.x;\r\n" \
 	"      offset *= (1.0 - pow (abs (offset) * effectStrength.x, effectStrength.y));\r\n" \
-	"      offset *= gl_LightSource [i].quadraticAttenuation;\r\n" \
-	"      tcDest -= v * (gl_LightSource [i].spotExponent * offset / d * screenSize);\r\n" \
+	"      tcDest -= v * (gl_LightSource [i].quadraticAttenuation * offset / d * screenSize);\r\n" \
 	"      }\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
 	"gl_FragColor = texture2D (sceneTex, tcDest / screenSize);\r\n" \
-	"//float z = LinearDepth (texture2D (depthTex, gl_TexCoord [0].xy).r);\r\n" \
-	"//float r = pow (1.0 - z / 5000.0, 8);\r\n" \
-	"//gl_FragColor = (z < 240.0) ? vec4 (1.0, 0.5, 0.0, 1.0) : vec4 (r, r, r, 1.0);\r\n" \
 	"}\r\n";
 
 #endif
@@ -274,10 +270,10 @@ glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, m_screenRad);
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_LINEAR_ATTENUATION, m_rad);
 #if NEW_STYLE
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, (float) pow (0.5f - (float) cos (2.0 * Pi * (1.0f - m_ttl)) * 0.5f, 0.25f) * m_nBias); 
-//glLighti (GL_LIGHT0 + m_nShockwaves, GL_SPOT_EXPONENT, m_nBias);
 #else
-glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, (float) pow (1.0 - m_ttl, 0.25));
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, (float) pow (1.0 - m_ttl, 0.25) * m_nBias);
 #endif
+//glLighti (GL_LIGHT0 + m_nShockwaves, GL_SPOT_EXPONENT, m_nBias);
 shaderManager.Set ("nShockwaves", ++m_nShockwaves);
 return true;
 }
