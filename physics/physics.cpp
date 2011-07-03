@@ -567,7 +567,7 @@ fix xHitSpeed;
 if (xWallPart && (simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0)) {
 	CFixVector vOldVel = mType.physInfo.velocity;
 	CollideObjectAndWall (xHitSpeed, simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
-#if 1
+#if 1 // unstick object from wall
 	if (vOldVel.IsZero ()) {
 		simData.vOffset = simData.hitResult.vPoint - OBJPOS (this)->vPos;
 		CFixVector::Normalize (simData.vOffset);
@@ -660,7 +660,7 @@ CObject* hitObjP = OBJECTS + simData.hitResult.nObject;
 CFixVector vOldVel = mType.physInfo.velocity;
 if (CollisionModel () || hitObjP->IsStatic ()) {
 	CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint, &simData.hitResult.vNormal);
-#if 1
+#if 1 // unstick objects
 	if (vOldVel.IsZero ()) {
 		simData.vOffset = OBJPOS (hitObjP)->vPos - OBJPOS (this)->vPos;
 		CFixVector::Normalize (simData.vOffset);
