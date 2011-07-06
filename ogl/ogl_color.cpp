@@ -429,8 +429,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 
 	if (nType < 2)
 		DistToFace (*colorData.vertPosP, lightP->info.nSegment, ubyte (lightP->info.nSide), &lightPos);
-		//if (fabs (fLightDist) < 1.0f)
-		//	fLightDist = 0.0f;
 	else 
 		lightPos = *lightP->render.vPosf [bTransform].XYZ ();
 	lightRayDir = lightPos - *colorData.vertPosP;
@@ -445,7 +443,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		nDbgSeg = nDbgSeg;
 #endif
 
-//	if (IsLightVert (nVertex, lightP)) { // inside the light emitting face
 	if (fLightDist == 0.0f) {
 		NdotL = 1.0f;
 		bDiffuse = 1;
@@ -511,14 +508,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 
 	vertColor = *gameData.render.vertColor.matAmbient.XYZ ();
 	if (!bDiffuse) {
-#if TEST_AMBIENT > 0
-		vertColor.Set (1.0f, 1.0f, 1.0f);
-#elif TEST_AMBIENT < 0
-		vertColor.SetZero ();
-#else
 		// make ambient light behind the light source decay with angle and in front of it full strength 
-		vertColor *= lightColor * fLightAngle /** fLightAngle*/;  // may use quadratic dampening to emphasize attenuation do to point being behind light source
-#endif
+		vertColor *= fLightAngle /** fLightAngle*/;  // may use quadratic dampening to emphasize attenuation due to point being behind light source
 		}
 	else {
 		if (lightP->info.bSpot) {
@@ -567,16 +558,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 				}
 			}
 #endif
-
-#if TEST_AMBIENT > 0
-		vertColor.SetZero ();
-#elif TEST_AMBIENT < 0
-		vertColor.Set (0.0f, 0.0f, 3.0f);
-#else
-		vertColor *= lightColor;
-#endif
 		}
 
+	vertColor *= lightColor;
 	vertColor /= fAttenuation;
 
 	if ((nSaturation < 2) || gameStates.render.bHaveLightmaps) {//sum up color components

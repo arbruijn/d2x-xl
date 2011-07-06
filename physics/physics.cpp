@@ -45,6 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_OBJECT_VEL I2X (100)
 
 #define BUMP_HACK	1	//if defined, bump CPlayerData when he gets stuck
+#define DAMPEN_KICKBACK 1 // if defined, ship will not bounce endlessly back from walls while having thrust
 
 int bFloorLeveling = 0;
 
@@ -659,7 +660,7 @@ if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWa
 		}
 	simData.bBounced = 1;		//this CObject simData.bBounced
 	}
-#if 1
+#if DAMPEN_KICKBACK
 if (simData.xMovedDist < simData.xAttemptedDist) {
 	CFixVector vVelNorm = mType.physInfo.velocity;
 	CFixVector::Normalize (vVelNorm);
