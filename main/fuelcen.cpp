@@ -773,7 +773,7 @@ return amount;
 // use same values as fuel centers
 fix CSegment::Repair (fix nMaxShield)
 {
-	static fix lastPlayTime=0;
+	static fix lastPlayTime = 0;
 	fix amount;
 
 if (gameOpts->legacy.bFuelCens)

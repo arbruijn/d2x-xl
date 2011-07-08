@@ -95,16 +95,15 @@ void PlayTestSound(void);
 
 void TransferEnergyToShield (fix time)
 {
-	fix e;		//how much energy gets transferred
 	static fix last_playTime = 0;
 
 if (time <= 0)
 	return;
-e = min (time * CONVERTER_RATE, LOCALPLAYER.Energy () - INITIAL_ENERGY);
+fix e = min (time * CONVERTER_RATE, LOCALPLAYER.Energy () - LOCALPLAYER.InitialEnergy ());
 e = min (e, (LOCALPLAYER.MaxShield () - LOCALPLAYER.Shield ()) * CONVERTER_SCALE);
 if (e <= 0) {
 	if (LOCALPLAYER.Energy () <= INITIAL_ENERGY)
-		HUDInitMessage (TXT_TRANSFER_ENERGY, X2I(INITIAL_ENERGY));
+		HUDInitMessage (TXT_TRANSFER_ENERGY, X2I (LOCALPLAYER.InitialEnergy ()));
 	else
 		HUDInitMessage (TXT_TRANSFER_SHIELDS);
 	return;

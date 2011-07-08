@@ -652,30 +652,29 @@ if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWa
 			xWallPart *= 2;		//CPlayerData bounce twice as much
 		}
 	if ((mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
-		//Assert (mType.physInfo.flags & PF_BOUNCE);
 		if (mType.physInfo.flags & PF_HAS_BOUNCED)
 			mType.physInfo.flags &= ~(PF_BOUNCE | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
 		else
 			mType.physInfo.flags |= PF_HAS_BOUNCED;
 		}
 	simData.bBounced = 1;		//this CObject simData.bBounced
+	mType.physInfo.velocity -= simData.hitResult.vNormal * xWallPart;
 	}
+else {
 #if DAMPEN_KICKBACK
-if (simData.xMovedDist < simData.xAttemptedDist) {
-	CFixVector vVelNorm = mType.physInfo.velocity;
-	CFixVector::Normalize (vVelNorm);
-	CFixVector vReflect = simData.hitResult.vNormal * xWallPart;
-	CFixVector::Normalize (vReflect);
-	if (CFixVector::Dot (vReflect, vVelNorm) > I2X (1) / 2)
-		mType.physInfo.velocity *= fix ((float) simData.xMovedDist / (float) simData.xAttemptedDist);
-	mType.physInfo.velocity -= vReflect;
+	if ((simData.xMovedDist < simData.xAttemptedDist) && (info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) {
+		CFixVector vVelNorm = mType.physInfo.velocity;
+		CFixVector::Normalize (vVelNorm);
+		CFixVector vReflect = simData.hitResult.vNormal * xWallPart;
+		CFixVector::Normalize (vReflect);
+		if (CFixVector::Dot (vReflect, vVelNorm) > I2X (1) / 2)
+			mType.physInfo.velocity *= fix ((float) simData.xMovedDist / (float) simData.xAttemptedDist);
+		mType.physInfo.velocity -= vReflect;
+		}
+	else
+#endif
+	mType.physInfo.velocity -= simData.hitResult.vNormal * xWallPart;
 	}
-else
-#endif
-mType.physInfo.velocity -= simData.hitResult.vNormal * xWallPart;
-#if DBG
-//HUDMessage (0, "vel %1.2f %1.2f %1.2f", X2F (mType.physInfo.velocity.v.coord.x), X2F (mType.physInfo.velocity.v.coord.y), X2F (mType.physInfo.velocity.v.coord.z));
-#endif
 if (bCheckVel) {
 	fix vel = mType.physInfo.velocity.Mag ();
 	if (vel > MAX_OBJECT_VEL)
