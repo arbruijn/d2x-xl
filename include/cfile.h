@@ -161,14 +161,14 @@ typedef struct tGameFolders {
 	char szSoundDir [7][FILENAME_LEN];
 	char szTextureCacheDir [4][FILENAME_LEN];
 	char szTextureDir [4][FILENAME_LEN];
-	char szWallpaperDir [FILENAME_LEN];
+	char szWallpaperDir [2][FILENAME_LEN];
 	int bAltHogDirInited;
 } tGameFolders;
 
 int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, const char *szFilter);
 char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);
 void MakeTexSubFolders (char* pszParentFolder);
-void MakeModFolders (const char* pszMission);
+void MakeModFolders (const char* pszMission, int nLevel);
 void ResetModFolders (void);
 
 #ifdef _WIN32

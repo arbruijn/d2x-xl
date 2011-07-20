@@ -316,9 +316,9 @@ GetAppFolder (szDataRootDir, gameFolders.szDemoDir, DEMODIR, "");
 if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "*.ini"))
 	strcpy (gameFolders.szConfigDir, gameFolders.szGameDir);
 #ifdef __unix__
-GetAppFolder (szDataRootDir, gameFolders.szWallpaperDir, WALLPAPERDIR, "");
+GetAppFolder (szDataRootDir, gameFolders.szWallpaperDir [0], WALLPAPERDIR, "");
 #else
-GetAppFolder (gameFolders.szTextureDir [0], gameFolders.szWallpaperDir, WALLPAPERDIR, "");
+GetAppFolder (gameFolders.szTextureDir [0], gameFolders.szWallpaperDir [0], WALLPAPERDIR, "");
 #endif
 #ifdef _WIN32
 sprintf (gameFolders.szMissionDir, "%s%s", gameFolders.szGameDir, BASE_MISSION_DIR);
@@ -357,7 +357,7 @@ gameStates.app.bHaveMod = 0;
 
 // ----------------------------------------------------------------------------
 
-void MakeModFolders (const char* pszMission)
+void MakeModFolders (const char* pszMission, int nLevel)
 {
 int bDefault, bBuiltIn;
 
@@ -398,6 +398,18 @@ else {
 	else {
 		sprintf (gameFolders.szModelDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
 		sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
+		}
+	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szWallpaperDir [1], MODELDIR, "*.tga") &&
+		 GetAppFolder (gameFolders.szModDir [1], gameFolders.szWallpaperDir [1], MODELDIR, "*.png")) {
+		*gameFolders.szWallpaperDir [1] = '\0';
+		*gameOpts->menus.altBg.szName [1] = '\0';
+		}
+	else {
+		sprintf (gameFolders.szWallpaperDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
+		if (nLevel < 0)
+			sprintf (gameOpts->menus.altBg.szName [1], "slevel%d.tga", -nLevel);
+		else
+			sprintf (gameOpts->menus.altBg.szName [1], "level%d.tga", nLevel);
 		}
 	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szMusicDir, MUSICDIR, "*.ogg"))
 		*gameFolders.szMusicDir = '\0';

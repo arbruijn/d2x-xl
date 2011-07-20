@@ -430,7 +430,9 @@ if (!(bmP = CBitmap::Create (0, 0, 0, 1)))
 
 CTGA tga (bmP);
 
-if (!tga. Read (gameOpts->menus.altBg.szName, gameFolders.szWallpaperDir, 
+int bModBg = (*gameFolders.szWallpaperDir [1] != '\0') && (*gameOpts->menus.altBg.szName [1] != '\0');
+
+if (!tga. Read (gameOpts->menus.altBg.szName [bModBg], gameFolders.szWallpaperDir [bModBg], 
 					 (gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255),
 					 gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale)) {
 	delete bmP;

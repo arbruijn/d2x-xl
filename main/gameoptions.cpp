@@ -584,7 +584,7 @@ if (i) {
 	altBg.brightness = 0;
 	altBg.grayscale = 0;
 	nHotKeys = 0;
-	strcpy (altBg.szName, "");
+	*altBg.szName [0] = '\0';
 	}
 else {
 	nStyle = 0;
@@ -596,8 +596,9 @@ else {
 	altBg.brightness = 0.5;
 	altBg.grayscale = 0;
 	nHotKeys = gameStates.app.bEnglish ? 1 : -1;
-	strcpy (altBg.szName, "menubg.tga");
+	strcpy (altBg.szName [0], "menubg.tga");
 	}
+*altBg.szName [1] = '\0';
 }
 
 // ----------------------------------------------------------------------------

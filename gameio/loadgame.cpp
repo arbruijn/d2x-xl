@@ -896,9 +896,9 @@ CleanupBeforeGame (nLevel, bRestore);
 /*---*/PrintLog ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (missionManager [missionManager.nCurrentMission].nDescentVersion == 1);
-MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
+MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName, nLevel);
 if (!(gameStates.app.bHaveMod || missionManager.IsBuiltIn (hogFileManager.m_files.MsnHogFiles.szName)))
-	 MakeModFolders (gameStates.app.bD1Mission ? "Descent: First Strike" : "Descent 2: Counterstrike!");
+	 MakeModFolders (gameStates.app.bD1Mission ? "Descent: First Strike" : "Descent 2: Counterstrike!", nLevel);
 if (gameStates.app.bHaveMod)
 	songManager.LoadPlayList (szDefaultPlayList, 1);
 songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
@@ -2091,7 +2091,7 @@ int StartNewLevel (int nLevel, bool bNewGame)
 	gameStates.app.xThisLevelTime = 0;
 
 gameData.reactor.bDestroyed = 0;
-MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
+MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName, nLevel);
 if (nLevel < 0)
 	return PrepareSecretLevel (nLevel, false);
 MaybeSetFirstSecretVisit (nLevel);

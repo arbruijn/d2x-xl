@@ -594,7 +594,7 @@ typedef struct tAltBgOptions {
 	double alpha;
 	double brightness;
 	int grayscale;
-	char szName [FILENAME_LEN];
+	char szName [2][FILENAME_LEN];
 } tAltBgOptions;
 
 //------------------------------------------------------------------------------
