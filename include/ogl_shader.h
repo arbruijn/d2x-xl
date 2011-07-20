@@ -59,6 +59,8 @@ class CShaderManager {
 			}
 		inline GLint Addr (const char* name) { return (m_nCurrent < 0) ? -1 : glGetUniformLocation (m_shaders [m_nCurrent].program, name); }
 
+		inline bool Active (void) { return (m_nCurrent >= 0) && !m_bSuspendable; }
+
 		inline bool Set (const char* name, int var) { 
 			GLint addr = Addr (name);
 			if (addr < 0)

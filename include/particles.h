@@ -392,7 +392,7 @@ class CParticleBuffer : public CEffectArea {
 		CParticleBuffer () : CEffectArea (), m_iBuffer (0), m_nType (-1), m_bEmissive (false), m_dMax (0.0f) {}
 
 	private:
-		static int bCompatible [PARTICLE_TYPES];
+		static int bCompatible [2 * PARTICLE_TYPES];
 
 		int Init (void);
 		int UseParticleShader (void);

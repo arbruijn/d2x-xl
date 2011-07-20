@@ -57,7 +57,7 @@ int iFlushed = 0;
 bool CParticleBuffer::AlphaControl (void)
 {
 #if HAVE_PARTICLE_SHADER
-return (!gameStates.render.cameras.bActive && (m_nType <= WATERFALL_PARTICLES) && USE_PARTICLE_SHADER);
+return (!gameStates.render.cameras.bActive && (m_nType <= WATERFALL_PARTICLES) && USE_PARTICLE_SHADER && shaderManager.Active ());
 #else
 return false;
 #endif
@@ -128,13 +128,19 @@ for (int i = nStart; i < nEnd; i++)
 
 //------------------------------------------------------------------------------
 
-int CParticleBuffer::bCompatible [PARTICLE_TYPES] = {0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1};
+int CParticleBuffer::bCompatible [2 * PARTICLE_TYPES] = {0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 bool CParticleBuffer::Compatible (CParticle* particleP)
 {
-if (USE_PARTICLE_SHADER && bCompatible [m_nType] && bCompatible [particleP->RenderType ()])
+#if DBG
+if (m_nType == FIRE_PARTICLES)
+	m_nType = m_nType;
+#endif
+int nParticleType = particleP->RenderType ();
+if ((nParticleType == m_nType) && (particleP->m_bEmissive == m_bEmissive))
 	return 1;
-return (particleP->RenderType () == m_nType) && (particleP->m_bEmissive == m_bEmissive);
+return USE_PARTICLE_SHADER && bCompatible [m_nType] && bCompatible [nParticleType];
 }
 
 //------------------------------------------------------------------------------
@@ -222,6 +228,13 @@ if (toFlushed.Expired ()) {
 		p += nPartsFlushed [i], f = nFlushes [i];
 if (f)
 	HUDMessage (0, "%1.2f particles/flush", float (p) / float (f));
+
+if (m_nType % PARTICLE_TYPES == FIRE_PARTICLES)
+	m_nType = m_nType;
+else {
+	Reset ();
+	return false;
+	}
 #endif
 #if ENABLE_FLUSH
 PROF_START
@@ -280,21 +293,21 @@ if (ogl.m_features.bShaders) {
 	}
 
 if (!bHaveTexture) {
-CBitmap* bmP = ParticleImageInfo (m_nType % PARTICLE_TYPES).bmP;
-if (!bmP) {
-	PROF_END(ptParticles)
-	Reset ();
-	return false;
+	CBitmap* bmP = ParticleImageInfo (m_nType % PARTICLE_TYPES).bmP;
+	if (!bmP) {
+		PROF_END(ptParticles)
+		Reset ();
+		return false;
+		}
+	if (bmP->CurFrame ())
+		bmP = bmP->CurFrame ();
+	if (bmP->Bind (0)) {
+		PROF_END(ptParticles)
+		Reset ();
+		return false;
+		}
+	ogl.SetBlendMode ((m_nType < PARTICLE_TYPES) ? m_bEmissive : OGL_BLEND_MULTIPLY);
 	}
-if (bmP->CurFrame ())
-	bmP = bmP->CurFrame ();
-if (bmP->Bind (0)) {
-	PROF_END(ptParticles)
-	Reset ();
-	return false;
-	}
-ogl.SetBlendMode ((m_nType < PARTICLE_TYPES) ? m_bEmissive : OGL_BLEND_MULTIPLY);
-}
 
 glNormal3f (0, 0, -1);
 #if !TRANSFORM_PARTICLE_VERTICES
