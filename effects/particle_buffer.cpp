@@ -57,7 +57,7 @@ int iFlushed = 0;
 bool CParticleBuffer::AlphaControl (void)
 {
 #if HAVE_PARTICLE_SHADER
-return (!gameStates.render.cameras.bActive && (m_nType <= WATERFALL_PARTICLES) && USE_PARTICLE_SHADER && shaderManager.Active ());
+return !gameStates.render.cameras.bActive && (m_nType <= WATERFALL_PARTICLES) && USE_PARTICLE_SHADER && (ogl.m_features.bDepthBlending > -1) && gameOpts->SoftBlend (SOFT_BLEND_PARTICLES);
 #else
 return false;
 #endif
