@@ -781,6 +781,7 @@ class CObject : public CObjectInfo {
 		ubyte				m_nTracers;
 		fix				m_xCreationTime;
 		fix				m_xTimeLastHit;
+		fix				m_xTimeLastEffect;
 		tShotInfo		m_shots;
 		CFixVector		m_vStartVel;
 		CFixVector		m_vOrigin;
@@ -833,6 +834,7 @@ class CObject : public CObjectInfo {
 		inline ubyte Tracers (void) { return m_nTracers; }
 		inline fix CreationTime (void) { return m_xCreationTime; }
 		inline fix TimeLastHit (void) { return m_xTimeLastHit; }
+		inline fix TimeLastEffect (void) { return m_xTimeLastEffect; }
 		inline tShotInfo& Shots (void) { return m_shots; }
 		inline CFixVector StartVel (void) { return m_vStartVel; }
 		inline CFixVector RenderPos (void) { return m_vRenderPos.IsZero () ? info.position.vPos : m_vRenderPos; }
@@ -845,6 +847,7 @@ class CObject : public CObjectInfo {
 		void SetCreationTime (fix xCreationTime = -1);
 		fix LifeTime (void);
 		inline void SetTimeLastHit (fix xTimeLastHit) { m_xTimeLastHit = xTimeLastHit; }
+		inline void SetTimeLastEffect (fix xTimeLastEffect) { m_xTimeLastEffect = xTimeLastEffect; }
 		inline void SetStartVel (CFixVector* vStartVel) { m_vStartVel = *vStartVel; }
 		inline void SetRenderPos (CFixVector& vRenderPos) { m_vRenderPos = vRenderPos; }
 		inline CFixVector Origin (void) { return m_vOrigin; }

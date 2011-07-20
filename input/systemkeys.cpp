@@ -409,7 +409,7 @@ switch (key) {
 		gameData.demo.nVcrState = ND_STATE_PRINTSCREEN;
 		//RenderMonoFrame ();
 		gameStates.app.bSaveScreenshot = 1;
-		SaveScreenShot (NULL, 0);
+		//SaveScreenShot (NULL, 0);
 		gameData.demo.nVcrState = oldState;
 		break;
 		}
@@ -479,7 +479,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
 		case KEY_PRINT_SCREEN:
 			gameStates.app.bSaveScreenshot = 1;
-			SaveScreenShot (NULL, 0);
+			//SaveScreenShot (NULL, 0);
 			break;
 
 		case KEY_F1:

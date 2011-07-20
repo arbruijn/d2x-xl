@@ -28,6 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "multibot.h"
 #include "collide.h"
 #include "lightcluster.h"
+#include "postprocessing.h"
 
 #if DBG
 #include "string.h"
@@ -307,6 +308,12 @@ if (nWeaponType < 0)
 	return;
 if (0 > (nShot = CreateNewWeaponSimple (&vFire, vFirePoint, objP->Index (), (ubyte) nWeaponType, 1)))
 	return;
+
+if ((nWeaponType == FUSION_ID) && (gameStates.app.nSDLTicks [0] - objP->TimeLastEffect () > 1000)) {
+	objP->SetTimeLastEffect (gameStates.app.nSDLTicks [0]);
+	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 3, objP->info.xSize, 1, 
+									OBJPOS (objP)->vPos + OBJPOS (objP)->mOrient.m.dir.f * objP->info.xSize, objP->Index ()));
+	}
 
 lightClusterManager.AddForAI (objP, nObject, nShot);
 objP->Shots ().nObject = nShot;

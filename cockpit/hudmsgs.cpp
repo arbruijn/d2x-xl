@@ -83,6 +83,9 @@ for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
 
 void HUDRenderMessages (ubyte nType)
 {
+if (gameStates.app.bSaveScreenshot)
+	return;
+
 	int			h, i, n, w, y, aw, yStart, nMsg;
 	char			*pszMsg;
 	CHUDMessage *pMsgs = gameData.hud.msgs + nType;

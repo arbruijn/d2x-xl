@@ -298,7 +298,7 @@ return explObjP;
 //------------------------------------------------------------------------------
 
 CObject* CreateSplashDamageExplosion (CObject* objP, short nSegment, CFixVector& position, fix size, ubyte nVClip,
-										  fix maxDamage, fix maxDistance, fix maxForce, short parent)
+												  fix maxDamage, fix maxDistance, fix maxForce, short parent)
 {
 CObject* explObjP = CreateExplosion (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
 if (explObjP) {

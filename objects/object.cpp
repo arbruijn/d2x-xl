@@ -401,6 +401,7 @@ m_shots.nObject = -1;
 m_shots.nSignature = -1;
 m_xCreationTime =
 m_xTimeLastHit = 0;
+m_xTimeLastEffect = 0;
 m_vStartVel.SetZero ();
 }
 

@@ -1009,7 +1009,7 @@ launchOption:
 		case KEY_ALTED + KEY_F9:
 			gameStates.app.bSaveScreenshot = 1;
 			SaveScreenShot (NULL, 0);
-			for (i = 0;i < int (ToS ());i++)
+			for (i = 0; i < int (ToS ()); i++)
 				Item (i).m_bRedraw = 1;
 		
 			break;
