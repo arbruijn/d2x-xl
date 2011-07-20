@@ -168,7 +168,7 @@ typedef struct tGameFolders {
 int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, const char *szFilter);
 char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);
 void MakeTexSubFolders (char* pszParentFolder);
-void MakeModFolders (const char* pszMission, int nLevel);
+void MakeModFolders (const char* pszMission, int nLevel = 0);
 void ResetModFolders (void);
 
 #ifdef _WIN32

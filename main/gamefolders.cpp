@@ -399,7 +399,8 @@ else {
 		sprintf (gameFolders.szModelDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
 		sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
 		}
-	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szWallpaperDir [1], MODELDIR, "*.tga") &&
+	if (nLevel &&
+		 GetAppFolder (gameFolders.szModDir [1], gameFolders.szWallpaperDir [1], MODELDIR, "*.tga") &&
 		 GetAppFolder (gameFolders.szModDir [1], gameFolders.szWallpaperDir [1], MODELDIR, "*.png")) {
 		*gameFolders.szWallpaperDir [1] = '\0';
 		*gameOpts->menus.altBg.szName [1] = '\0';
