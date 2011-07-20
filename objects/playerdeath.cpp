@@ -234,8 +234,6 @@ if (gameStates.app.bPlayerIsDead) {
 
 void StartPlayerDeathSequence (CObject* playerObjP)
 {
-	int	nObject;
-
 Assert (playerObjP == gameData.objs.consoleP);
 gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted = 0;
 if (gameStates.app.bPlayerIsDead)
@@ -274,7 +272,7 @@ playerObjP->mType.physInfo.rotThrust.SetZero ();
 playerObjP->mType.physInfo.thrust.SetZero ();
 playerObjP->ResetDamage ();
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
-nObject = CreateCamera (playerObjP);
+int nObject = CreateCamera (playerObjP);
 viewerSaveP = gameData.objs.viewerP;
 if (nObject != -1)
 	gameData.objs.viewerP = gameData.objs.deadPlayerCamera = OBJECTS + nObject;

@@ -1906,6 +1906,8 @@ void CGenericCockpit::Render (int bExtraInfo, fix xStereoSeparation)
 {
 if (Hide ())
 	return;
+if (gameStates.app.bPlayerIsDead)
+	return;
 if (gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0)) {
 #if DBG
 	HUDRenderMessageFrame ();
