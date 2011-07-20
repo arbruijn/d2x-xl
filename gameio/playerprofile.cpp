@@ -1728,6 +1728,8 @@ extraGameInfo [0].bFlickerLights = gameOpts->app.bEpilepticFriendly;
 if ((extraGameInfo [0].bFastPitch < 1) || (extraGameInfo [0].bFastPitch > 2))
 	extraGameInfo [0].bFastPitch = 2;
 extraGameInfo [1].bFastPitch = 2;
+for (i = 0; i < UNIQUE_JOY_AXES; i++)
+	JoySetDeadzone (gameOpts->input.joystick.deadzones [i], i);
 DefaultAllSettings ();
 #if _WIN32
 if (gameStates.render.bVSyncOk)

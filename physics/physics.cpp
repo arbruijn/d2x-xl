@@ -45,7 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_OBJECT_VEL I2X (100)
 
 #define BUMP_HACK	1	//if defined, bump CPlayerData when he gets stuck
-#define DAMPEN_KICKBACK 1 // if defined, ship will not bounce endlessly back from walls while having thrust
+#define DAMPEN_KICKBACK 0 // if defined, ship will not bounce endlessly back from walls while having thrust
 
 int bFloorLeveling = 0;
 
