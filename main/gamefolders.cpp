@@ -38,6 +38,7 @@
 #		include <SDL_mixer.h>
 #	endif
 #endif
+#include "menubackground.h"
 #include "vers_id.h"
 
 // ----------------------------------------------------------------------------
@@ -399,18 +400,19 @@ else {
 		sprintf (gameFolders.szModelDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
 		sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
 		}
-	if (nLevel &&
-		 GetAppFolder (gameFolders.szModDir [1], gameFolders.szWallpaperDir [1], MODELDIR, "*.tga") &&
-		 GetAppFolder (gameFolders.szModDir [1], gameFolders.szWallpaperDir [1], MODELDIR, "*.png")) {
+	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szWallpaperDir [1], WALLPAPERDIR, "*.tga")) {
 		*gameFolders.szWallpaperDir [1] = '\0';
 		*gameOpts->menus.altBg.szName [1] = '\0';
 		}
 	else {
-		sprintf (gameFolders.szWallpaperDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
+		sprintf (gameFolders.szWallpaperDir [1], "%s/%s", gameFolders.szModDir [1], WALLPAPERDIR);
 		if (nLevel < 0)
-			sprintf (gameOpts->menus.altBg.szName [1], "slevel%d.tga", -nLevel);
-		else
-			sprintf (gameOpts->menus.altBg.szName [1], "level%d.tga", nLevel);
+			sprintf (gameOpts->menus.altBg.szName [1], "slevel%02d.tga", -nLevel);
+		else if (nLevel > 0)
+			sprintf (gameOpts->menus.altBg.szName [1], "level%02d.tga", nLevel);
+		else 
+			sprintf (gameOpts->menus.altBg.szName [1], "default.tga");
+		backgroundManager.Rebuild ();
 		}
 	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szMusicDir, MUSICDIR, "*.ogg"))
 		*gameFolders.szMusicDir = '\0';

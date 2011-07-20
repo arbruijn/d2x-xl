@@ -247,7 +247,7 @@ if (*pfn == '\x01')
 	pfn++;
 else {
 	bNoHOG = (*pfn == '\x02');
-	if ((fp = GetFileHandle (pfn + bNoHOG, folder, "rb"))) { // Check for non-hogP file first...
+	if ((fp = GetFileHandle (pfn + bNoHOG, folder, "rb"))) { // Check for non-hog file first...
 		fclose (fp);
 		return 1;
 		}

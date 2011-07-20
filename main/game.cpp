@@ -86,6 +86,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "playerprofile.h"
 #include "addon_bitmaps.h"
 #include "postprocessing.h"
+#include "menubackground.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -601,6 +602,8 @@ gameData.Destroy ();
 missionConfig.Init ();
 PiggyCloseFile ();
 SavePlayerProfile ();
+ResetModFolders ();
+backgroundManager.Rebuild ();
 SetFunctionMode (FMODE_MENU);	
 }
 

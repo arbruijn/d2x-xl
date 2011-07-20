@@ -430,7 +430,16 @@ if (!(bmP = CBitmap::Create (0, 0, 0, 1)))
 
 CTGA tga (bmP);
 
-int bModBg = (*gameFolders.szWallpaperDir [1] != '\0') && (*gameOpts->menus.altBg.szName [1] != '\0');
+int bModBg = (*gameFolders.szWallpaperDir [1] != '\0');
+
+if (bModBg) {
+	if (CFile::Exist (gameOpts->menus.altBg.szName [1], gameFolders.szWallpaperDir [1], 0))
+		bModBg = 1;
+	else {
+		strcpy (gameOpts->menus.altBg.szName [1], "default.tga");
+		bModBg = CFile::Exist (gameOpts->menus.altBg.szName [1], gameFolders.szWallpaperDir [1], 0);
+		}
+	}
 
 if (!tga. Read (gameOpts->menus.altBg.szName [bModBg], gameFolders.szWallpaperDir [bModBg], 
 					 (gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255),
