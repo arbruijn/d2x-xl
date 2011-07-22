@@ -312,14 +312,16 @@ bool CParticleManager::Flush (float fBrightness, bool bForce)
 
 for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 	float d = 0;
-	int h = 0;
+	int h = -1;
 	// flush most distant particles first
 	for (int j = 0; j < MAX_PARTICLE_BUFFERS; j++) {
-		if (d < particleBuffer [j].m_dMax) {
+		if (particleBuffer [j].m_iBuffer && (d < particleBuffer [j].m_dMax)) {
 			d = particleBuffer [j].m_dMax;
 			h = j;
 			}
 		}
+	if (h < 0)
+		break;
 	if (particleBuffer [h].Flush (fBrightness, bForce))
 		bFlushed = true;
 	}

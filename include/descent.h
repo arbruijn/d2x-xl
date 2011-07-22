@@ -1869,7 +1869,7 @@ class CSegmentData {
 
 		inline int SegVis (int i, int j) {
 			i = SegVisIdx (i, j);	// index in triangular matrix, enforce j <= i
-			return (bSegVis [0][i >> 3] & (1 << (i & 7))) != 0;
+			return (i >= 0) && (bSegVis [0][i >> 3] & (1 << (i & 7))) != 0;
 			}
 
 		inline int LightVisSize (int nElements = 0) {
