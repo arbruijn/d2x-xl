@@ -77,14 +77,6 @@ if (gameStates.app.bMultiThreaded) {
 #	endif
 	for (int i = 0; i < m_iBuffer; i++) {
 		m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
-if (m_iBuffer < 0) 
-	return ;
-if (m_iBuffer > PART_BUF_SIZE) 
-	return ;
-if (m_nType >= 2 * PARTICLE_TYPES)
-	return ;
-if (m_nType < -1)
-	return ;
 		}
 #	if (LAZY_RENDER_SETUP < 2)
 else
@@ -95,14 +87,6 @@ else
 #	pragma omp for 
 		for (int i = 0; i < m_iBuffer; i++) {
 			m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
-if (m_iBuffer < 0) 
-	m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
-else if (m_iBuffer > PART_BUF_SIZE) 
-	m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
-else if (m_nType >= 2 * PARTICLE_TYPES)
-	m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
-else if (m_nType < -1)
-	m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
 			}
 		}
 	}
@@ -166,13 +150,6 @@ return USE_PARTICLE_SHADER && bCompatible [m_nType] && bCompatible [nParticleTyp
 bool CParticleBuffer::Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad)
 {
 	bool bFlushed = false;
-
-if (m_iBuffer > PART_BUF_SIZE) 
-	return false;
-if (m_nType >= 2 * PARTICLE_TYPES)
-	return false;
-if (m_nType < -1)
-	return false;
 
 if ((m_iBuffer == PART_BUF_SIZE) || !Compatible (particleP)) 
 	bFlushed = Flush (brightness, true);
@@ -268,27 +245,9 @@ if (!Init ()) {
 	return false;
 	}
 
-if (m_iBuffer < 0) 
-	return false;
-if (m_iBuffer > PART_BUF_SIZE) 
-	return false;
-if (m_nType >= 2 * PARTICLE_TYPES)
-	return false;
-if (m_nType < -1)
-	return false;
-
 #if LAZY_RENDER_SETUP
 	Setup ();
 #endif
-
-if (m_iBuffer < 0) 
-	return false;
-if (m_iBuffer > PART_BUF_SIZE) 
-	return false;
-if (m_nType >= 2 * PARTICLE_TYPES)
-	return false;
-if (m_nType < -1)
-	return false;
 
 if (ogl.m_features.bShaders) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
@@ -360,6 +319,7 @@ try {
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
 	}
 catch (...) {
+	ArrayError ("Particle buffer overflow");
 	}
 ogl.SetFaceCulling (true);
 #if !TRANSFORM_PARTICLE_VERTICES
