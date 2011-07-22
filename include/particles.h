@@ -367,8 +367,13 @@ typedef struct tRenderParticle {
 
 class CParticleBuffer : public CEffectArea {
 	public:
+#if DBG
 		CStaticArray< tRenderParticle, PART_BUF_SIZE> m_particles;
 		CStaticArray< tParticleVertex, PART_BUF_SIZE * 4> m_vertices;
+#else
+		tRenderParticle m_particles [PART_BUF_SIZE];
+		tParticleVertex m_vertices [PART_BUF_SIZE * 4];
+#endif
 		int m_iBuffer;
 		int m_nType;
 		char m_bEmissive;
