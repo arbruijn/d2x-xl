@@ -1393,6 +1393,8 @@ if (m_bEmissive < 0) {
 	}
 else {
 	float hx = ParticleImageInfo (m_nType).xBorder;
+	if ((m_nOrient < 0) || (m_nOrient > 3))
+		m_nOrient = 0;
 	pb [(int) m_nOrient].texCoord.v.u = pb [int (m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + hx;
 	pb [int (m_nOrient + 1) % 4].texCoord.v.u = pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - hx;
 	float hy = ParticleImageInfo (m_nType).yBorder;
@@ -1428,10 +1430,12 @@ else {
 	}
 uVec *= m_nHeight * fScale;
 rVec *= m_nWidth * fScale;
-pb [0].vertex = vCenter - rVec - uVec;
-pb [1].vertex = vCenter - rVec + uVec;
-pb [2].vertex = vCenter + rVec + uVec;
-pb [3].vertex = vCenter + rVec - uVec;
+pb [0].vertex = pb [1].vertex = vCenter - rVec;
+pb [0].vertex -= uVec;
+pb [1].vertex += uVec;
+pb [2].vertex = pb [3].vertex = vCenter + rVec;
+pb [2].vertex += uVec;
+pb [3].vertex -= uVec;
 }
 
 #endif
