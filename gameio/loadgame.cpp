@@ -1875,6 +1875,7 @@ if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBA
 		ShowLevelIntro (nLevel);
 	//songManager.PlayLevelSong (missionManager.nCurrentLevel, 0);
 	InitRobotsForLevel ();
+	InitReactorForLevel (0);
 	InitAIObjects ();
 	InitShakerDetonates ();
 	MorphInit ();
@@ -1907,12 +1908,12 @@ else {
 		InitSecretLevel (nLevel);
 		return 1;
 		}
+	InitReactorForLevel (0);
 	}
 
 if (gameStates.app.bFirstSecretVisit)
 	CopyDefaultsToRobotsAll ();
 TurnCheatsOff ();
-InitReactorForLevel (0);
 //	Say CPlayerData can use FLASH cheat to mark path to exit.
 nLastLevelPathCreated = -1;
 gameStates.app.bFirstSecretVisit = 0;
