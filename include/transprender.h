@@ -8,7 +8,7 @@
 //------------------------------------------------------------------------------
 
 #define ITEM_DEPTHBUFFER_SIZE	250000
-#define ITEM_BUFFER_SIZE		5000000
+#define ITEM_BUFFER_SIZE		75000000
 #define TRANSP_DEPTH_HASH		1
 
 typedef enum tTranspItemType {
