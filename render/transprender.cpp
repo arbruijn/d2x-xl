@@ -42,7 +42,7 @@ int nDbgPoly = -1, nDbgItem = -1;
 
 CTransparencyRenderer transparencyRenderer;
 
-#define LAZY_RESET 1
+#define LAZY_RESET 0
 
 //------------------------------------------------------------------------------
 
@@ -1425,9 +1425,7 @@ m_data.nCurType = -1;
 
 for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {
 	if ((currentP = listP->head)) {
-		if (bCleanup)
-			listP->head = NULL;
-			//listP->tail = NULL;
+		listP->head = NULL;
 		nDepth = 0;
 		prevP = NULL;
 		do {
@@ -1438,33 +1436,13 @@ for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (
 			nItems--;
 			RenderItem (currentP);
 			nextP = currentP->nextItemP;
-			if (bCleanup)
-				currentP->nextItemP = NULL;
-			else if (currentP->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
-				currentP->nextItemP = m_data.freeList.head;
-				m_data.freeList.head = currentP;
-				m_data.nFreeItems++;
-				if (prevP)
-					prevP->nextItemP = nextP;
-				else
-					listP->head = nextP;
-				}
-			else
-				prevP = currentP;
+			currentP->nextItemP = NULL;
 			currentP = nextP;
 			nDepth++;
 			} while (currentP);
 		}
 	}
 
-#if 0 //DBG
-if (bCleanup) {
-	currentP = m_data.itemHeap.Buffer ();
-	for (int i = m_data.itemHeap.Length (); i; i--, currentP++)
-		if (currentP->nextItemP)
-			currentP->nextItemP = NULL;
-	}
-#endif
 FlushBuffers (-1);
 particleManager.EndRender ();
 shaderManager.Deploy (-1);
@@ -1475,14 +1453,14 @@ ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
 ogl.StencilOn (bStencil);
-if (bCleanup) {
-	ResetFreeList ();
-	m_data.nItems [1] = 	m_data.nItems [0];
-	m_data.nItems [0] = 0;
-	m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
-	m_data.nMaxOffs = 0;
-	m_data.nFreeItems = ITEM_BUFFER_SIZE;
-	}
+
+m_data.nItems [1] = 	m_data.nItems [0];
+m_data.nItems [0] = 0;
+m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
+m_data.nMaxOffs = 0;
+m_data.nFreeItems = ITEM_BUFFER_SIZE;
+m_data.nHeapSize = 0;
+
 PROF_END(ptTranspPolys)
 #endif
 }
