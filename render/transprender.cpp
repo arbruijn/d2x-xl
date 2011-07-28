@@ -1346,8 +1346,6 @@ if (!itemP->bRendered) {
 	catch(...) {
 		PrintLog ("invalid transparent render item (type: %d)\n", m_data.nCurType);
 		}
-	if (itemP->parentP)
-		RenderItem (itemP->parentP);
 	}
 return m_data.nCurType;
 }
