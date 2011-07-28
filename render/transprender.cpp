@@ -583,9 +583,8 @@ if (!m_data.itemHeap.Create (ITEM_BUFFER_SIZE)) {
 	m_data.depthBuffer.Destroy ();
 	return 0;
 	}
-m_data.nFreeItems = 0;
-m_data.nHeapSize = 0;
 ResetBuffers ();
+m_data.nHeapSize = 0;
 return 1;
 }
 
@@ -609,28 +608,15 @@ return (CTranspItem*) m_data.itemHeap.Buffer (m_data.nHeapSize - size);
 
 //------------------------------------------------------------------------------
 
-void CTransparencyRenderer::ResetFreeList (void)
-{
-	CTranspItem* item, * pn;
-
-for (item = m_data.freeList.head; item; item = pn) {
-	pn = item->nextItemP;
-	item->nextItemP = NULL;
-	}
-m_data.freeList.head = NULL;
-}
-
-//------------------------------------------------------------------------------
-
 void CTransparencyRenderer::ResetBuffers (void)
 {
 if (m_data.depthBuffer.Buffer ())
 	m_data.depthBuffer.Clear ();
+#if DBG
 if (m_data.itemHeap.Buffer ())
 	memset (m_data.itemHeap.Buffer (), 0, m_data.nHeapSize);
+#endif
 memset (&sparkBuffer, 0, sizeof (sparkBuffer));
-m_data.nFreeItems = ITEM_BUFFER_SIZE;
-ResetFreeList ();
 }
 
 
@@ -691,12 +677,12 @@ if (nDepth >= I2X (nOffset))
 
 if (nDepth < 0) {
 	if (!bClamp)
-		return m_data.nFreeItems;
+		return 1;
 	nDepth = m_data.zMin;
 	}
 else if (nDepth > m_data.zMax) {
 	if (!bClamp)
-		return m_data.nFreeItems;
+		return 1;
 	nDepth = m_data.zMax;
 	}
 
@@ -713,21 +699,13 @@ if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 CTranspItem* ph = AllocItem (item->Size ());
 if (!ph) 
 	return 0;
-tTranspItemList* pd = m_data.depthBuffer + nOffset;
-#if 0
-if (!m_data.freeList.head)
-	ph = m_data.itemHeap + m_data.nFreeItems;
-else {
-	ph = m_data.freeList.head;
-	m_data.freeList.head = ph->nextItemP;
-	}
-#endif
+CTranspItem** pd = m_data.depthBuffer + nOffset;
 memcpy (ph, item, item->Size ());
 ph->nItem = m_data.nItems [0]++;
 ph->bRendered = 0;
 ph->bTransformed = bTransformed;
 ph->z = nDepth;
-ph->bValid = true;
+ph->bValid = 1;
 #if 0 // sort by depth
 CTranspItem* pi;
 for (pi = pd->head; pi; pi = pi->nextItemP) {
@@ -741,8 +719,8 @@ if (pi) {
 else 
 #endif
 	{
-	ph->nextItemP = pd->head;
-	pd->head = ph;
+	ph->nextItemP = *pd;
+	*pd = ph;
 	}
 if (m_data.nMinOffs > nOffset)
 	m_data.nMinOffs = nOffset;
@@ -1388,10 +1366,9 @@ extern int bLog;
 void CTransparencyRenderer::Render (int nWindow)
 {
 #if RENDER_TRANSPARENCY
-	CTranspItem*		currentP, * nextP, * prevP;
-	tTranspItemList*	listP;
-	int					nItems, nDepth, bStencil;
-	bool					bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || nWindow;
+	CTranspItem*	currentP, * nextP, * prevP, * listP;
+	int				nItems, nDepth, bStencil;
+	bool				bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || nWindow;
 
 if (!AllocBuffers ())
 	return;
@@ -1430,8 +1407,8 @@ particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 
 for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {
-	if ((currentP = listP->head)) {
-		listP->head = NULL;
+	if ((currentP = *listP)) {
+		*listP = NULL;
 		nDepth = 0;
 		prevP = NULL;
 		do {
@@ -1451,6 +1428,7 @@ for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (
 
 FlushBuffers (-1);
 particleManager.EndRender ();
+ResetBuffers ();
 shaderManager.Deploy (-1);
 glowRenderer.End ();
 ogl.ResetClientStates ();
@@ -1464,7 +1442,6 @@ m_data.nItems [1] = 	m_data.nItems [0];
 m_data.nItems [0] = 0;
 m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 m_data.nMaxOffs = 0;
-m_data.nFreeItems = ITEM_BUFFER_SIZE;
 m_data.nHeapSize = 0;
 
 PROF_END(ptTranspPolys)

@@ -27,7 +27,6 @@ typedef enum tTranspItemType {
 class CTranspItem {
 	public:
 		CTranspItem*		nextItemP;
-		tTranspItemType	nType;
 		int					nItem;
 		int					z;
 		ushort				bTransformed :1;
@@ -176,20 +175,14 @@ class CTranspThruster : public CTranspItem {
 		virtual inline tTranspItemType Type (void) { return tiThruster; }
 	};
 
-typedef struct tTranspItemList {
-	CTranspItem*	head;
-	CTranspItem*	tail;
-} tTranspItemList;
-
 typedef struct tTranspItemBuffer {
-	CArray<tTranspItemList> depthBuffer;
+	CArray<CTranspItem*> depthBuffer;
 	CByteArray			itemHeap;
 	int					nHeapSize;
 	int					nMinOffs;
 	int					nMaxOffs;
 	int					nItems [2];
 	int					nFreeItems;
-	tTranspItemList	freeList;
 	int					nCurType;
 	int					nPrevType;
 	int					zMin;
