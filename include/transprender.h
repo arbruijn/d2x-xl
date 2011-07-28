@@ -27,13 +27,12 @@ typedef enum tTranspItemType {
 class CTranspItem {
 	public:
 		CTranspItem*		nextItemP;
-		CTranspItem*		parentP;
 		tTranspItemType	nType;
 		int					nItem;
 		int					z;
-		int					bTransformed;
-		bool					bValid;
-		bool					bRendered;
+		ushort				bTransformed :1;
+		ushort				bValid :1;
+		ushort				bRendered :1;
 
 		virtual int Size (void) = 0;
 		virtual void Render (void) = 0;

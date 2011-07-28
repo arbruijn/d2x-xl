@@ -231,12 +231,12 @@ if (toFlushed.Expired ()) {
 if (f)
 	HUDMessage (0, "%1.2f particles/flush", float (p) / float (f));
 
-if (m_nType % PARTICLE_TYPES == FIRE_PARTICLES)
-	m_nType = m_nType;
-else {
-	Reset ();
-	return false;
-	}
+//if (m_nType % PARTICLE_TYPES == FIRE_PARTICLES)
+//	m_nType = m_nType;
+//else {
+//	Reset ();
+//	return false;
+//	}
 #endif
 #if ENABLE_FLUSH
 PROF_START
