@@ -8,7 +8,7 @@
 //------------------------------------------------------------------------------
 
 #define ITEM_DEPTHBUFFER_SIZE	250000
-#define ITEM_BUFFER_SIZE		250000
+#define ITEM_BUFFER_SIZE		10000000
 #define TRANSP_DEPTH_HASH		1
 
 typedef enum tTranspItemType {
@@ -24,117 +24,171 @@ typedef enum tTranspItemType {
 	tiPoly
 } tTranspItemType;
 
-typedef struct tTranspPoly {
-	CSegFace*			faceP;
-	tFaceTriangle*		triP;
-	CBitmap*				bmP;
-	CFloatVector		vertices [8];
-	tTexCoord2f			texCoord [8];
-	CFloatVector			color [8];
-	short					sideLength [8];
-	short					nSegment;
-	int					nWrap;
-	int					nPrimitive;
-	char					nVertices;
-	char					nColors;
-	char					bDepthMask;
-	char					bAdditive;
-} tTranspPoly;
+class CTranspItem {
+	public:
+		CTranspItem*		nextItemP;
+		CTranspItem*		parentP;
+		tTranspItemType	nType;
+		int					nItem;
+		int					z;
+		int					bTransformed;
+		bool					bValid;
+		bool					bRendered;
 
-typedef struct tTranspObject {
-	CObject				*objP;
-	CFixVector			vScale;
-} tTranspObject;
+		virtual int Size (void) = 0;
+		virtual void Render (void) = 0;
+		virtual inline tTranspItemType Type (void) = 0;
+		inline CTranspItem& operator= (CTranspItem& other) { 
+			memcpy (this, &other, Size ());
+			return *this;
+			}
+	};
 
-typedef struct tTranspSprite {
-	CBitmap				*bmP;
-	CFloatVector		position;
-	CFloatVector			color;
-	int					nWidth;
-	int					nHeight;
-	char					nFrame;
-	char					bColor;
-	char					bAdditive;
-	char					bDepthMask;
-	float					fSoftRad;
-} tTranspSprite;
+class CTranspPoly : public CTranspItem {
+	public:
+		CSegFace*			faceP;
+		tFaceTriangle*		triP;
+		CBitmap*				bmP;
+		CFloatVector		vertices [8];
+		tTexCoord2f			texCoord [8];
+		CFloatVector		color [8];
+		short					sideLength [8];
+		short					nSegment;
+		int					nWrap;
+		int					nPrimitive;
+		char					nVertices;
+		char					nColors;
+		char					bDepthMask;
+		char					bAdditive;
 
-typedef struct tTranspSpark {
-	CFloatVector		position;
-	int					nSize;
-	char					nFrame;
-	char					nRotFrame;
-	char					nOrient;
-	char					nType;
-} tTranspSpark;
+		virtual int Size (void) { return sizeof (*this); }
+		virtual void Render (void);
+		virtual inline tTranspItemType Type (void) { return tiPoly; }
+	};
 
-typedef struct tTranspParticle {
-	CParticle			*particle;
-	float					fBrightness;
-} tTranspParticle;
+class CTranspFace : public CTranspPoly {
+	public:
+		virtual void Render (void);
+		virtual inline tTranspItemType Type (void) { return tiFace; }
+	};
+
+class CTranspObject : public CTranspItem {
+	public:
+		CObject*				objP;
+		CFixVector			vScale;
+
+	virtual int Size (void) { return sizeof (*this); }
+	virtual void Render (void);
+	virtual inline tTranspItemType Type (void) { return tiObject; }
+	};
+
+class CTranspSprite : public CTranspItem {
+	public:
+		CBitmap*				bmP;
+		CFloatVector		position;
+		CFloatVector		color;
+		int					nWidth;
+		int					nHeight;
+		char					nFrame;
+		char					bColor;
+		char					bAdditive;
+		char					bDepthMask;
+		float					fSoftRad;
+
+		virtual int Size (void) { return sizeof (*this); }
+		virtual void Render (void);
+		virtual inline tTranspItemType Type (void) { return tiSprite; }
+	};
+
+class CTranspSpark : public CTranspItem {
+	public:
+		CFloatVector		position;
+		int					nSize;
+		char					nFrame;
+		char					nRotFrame;
+		char					nOrient;
+		char					nType;
+
+		virtual int Size (void) { return sizeof (*this); }
+		virtual void Render (void);
+		virtual inline tTranspItemType Type (void) { return tiSpark; }
+	};
+
+class	CTranspParticle : public CTranspItem {
+	public:
+		CParticle*			particle;
+		float					fBrightness;
+
+		virtual int Size (void) { return sizeof (*this); }
+		virtual void Render (void);
+		virtual inline tTranspItemType Type (void) { return tiParticle; }
+
+	private:
+		void RenderBullet (CParticle *bullet);
+
+	};
 
 typedef enum tTranspSphereType {
 	riSphereShield,
 	riMonsterball
 } tTranspSphereType;
 
-typedef struct tTranspSphere {
-	tTranspSphereType	nType;
-	CFloatVector		color;
-	CObject				*objP;
-	int					nSize;
-	char					bAdditive;
-} tTranspSphere;
+class CTranspSphere : public CTranspItem {
+	public:
+		tTranspSphereType	nType;
+		CFloatVector		color;
+		CObject				*objP;
+		int					nSize;
+		char					bAdditive;
 
-typedef struct tTranspLightning {
-	CLightning			*lightning;
-	short					nDepth;
-} tTranspLightning;
+		virtual int Size (void) { return sizeof (*this); }
+		virtual void Render (void);
+		virtual inline tTranspItemType Type (void) { return tiSphere; }
+	};
 
-typedef struct tTranspLightTrail {
-	CBitmap					*bmP;
-	CFloatVector			vertices [8];
-	tTexCoord2f				texCoord [8];
-	CFloatVector				color;
-	char						bTrail;
-} tTranspLightTrail;
+class CTranspLightning : public CTranspItem {
+	public:
+		CLightning			*lightning;
+		short					nDepth;
 
-typedef struct tTranspThruster {
-	CObject*					objP;
-	tThrusterInfo			info;
-	int						nThruster;
-} tTranspThruster;
+		virtual int Size (void) { return sizeof (*this); }
+		virtual void Render (void);
+		virtual inline tTranspItemType Type (void) { return tiLightning; }
+	};
 
-typedef struct tTranspItem {
-	struct tTranspItem	*pNextItem;
-	struct tTranspItem	*parentP;
-	tTranspItemType		nType;
-	int						nItem;
-	int						z;
-	int						bTransformed;
-	bool						bValid;
-	bool						bRendered;
-	union {
-		tTranspPoly					poly;
-		tTranspObject				object;
-		tTranspSprite				sprite;
-		tTranspSpark				spark;
-		tTranspParticle			particle;
-		tTranspSphere				sphere;
-		tTranspLightning			lightning;
-		tTranspLightTrail			lightTrail;
-		tTranspThruster			thruster;
-	} item;
-} tTranspItem;
+class CTranspLightTrail : public CTranspItem {
+	public:
+		CBitmap*					bmP;
+		CFloatVector			vertices [8];
+		tTexCoord2f				texCoord [8];
+		CFloatVector			color;
+		char						bTrail;
+
+		virtual int Size (void) { return sizeof (*this); }
+		virtual void Render (void);
+		virtual inline tTranspItemType Type (void) { return tiLightTrail; }
+	};
+
+class CTranspThruster : public CTranspItem {
+	public:
+		CObject*					objP;
+		tThrusterInfo			info;
+		int						nThruster;
+
+		virtual int Size (void) { return sizeof (*this); }
+		virtual void Render (void);
+		virtual inline tTranspItemType Type (void) { return tiThruster; }
+	};
 
 typedef struct tTranspItemList {
-	tTranspItem*	head;
-	tTranspItem*	tail;
+	CTranspItem*	head;
+	CTranspItem*	tail;
 } tTranspItemList;
 
 typedef struct tTranspItemBuffer {
 	CArray<tTranspItemList> depthBuffer;
-	CArray<tTranspItem> itemLists;
+	CByteArray			itemHeap;
+	int					nHeapSize;
 	int					nMinOffs;
 	int					nMaxOffs;
 	int					nItems [2];
@@ -166,13 +220,13 @@ typedef struct tTranspItemBuffer {
 	CFloatVector		vViewerf [2];
 } tTranspItemBuffer;
 
-typedef struct tTranspItemData {
-	tTranspItem		item;
-	int				nType;
-	int				nSize;
-	int				nDepth;
-	int				nIndex;
-	} tTranspItemData;
+class CTranspItemData : public CTranspItem {
+	public:
+		int				nType;
+		int				nSize;
+		int				nDepth;
+		int				nIndex;
+		};
 
 //------------------------------------------------------------------------------
 
@@ -185,13 +239,14 @@ class CTransparencyRenderer {
 		void FreeBuffers (void);
 		void ResetBuffers (void);
 		void InitBuffer (int zMin, int zMax, int nWindow);
+		inline CTranspItem* AllocItem (int size);
 		inline void Init (void) {
 			m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 			m_data.nMaxOffs = 0;
 			}
 		inline void Reset (void) { m_data.nItems [0] = 0; }
 		inline int ItemCount (int i = 1) { return m_data.nItems [i]; }
-		int Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset = 0, bool bClamp = false, int bTransformed = 0);
+		int Add (CTranspItem* item, CFixVector vPos, int nOffset = 0, bool bClamp = false, int bTransformed = 0);
 		inline int AddFace (CSegFace *faceP) {
 			return gameStates.render.bTriangleMesh ? AddFaceTris (faceP) : AddFaceQuads (faceP);
 			}
@@ -212,7 +267,6 @@ class CTransparencyRenderer {
 		void StartRenderThreads (void);
 		void EndRenderThreads (void);
 		void Free (void);
-		tTranspItem *SetParent (int nChild, int nParent);
 
 		inline int Depth (CFixVector vPos, int bTransformed) {
 #if TRANSP_DEPTH_HASH
@@ -234,31 +288,36 @@ class CTransparencyRenderer {
 #endif
 			}
 
+		void FlushSparkBuffer (void);
+		void FlushParticleBuffer (int nType);
+		void FlushBuffers (int nType, CTranspItem *itemP = NULL);
+
+		int SoftBlend (int nFlag);
+		int LoadTexture (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap);
+		void ResetBitmaps (void);
+
+		inline tTranspItemBuffer& Data (void) { return m_data; }
+
 	private:
 		void ResetFreeList (void);
 		int AddFaceTris (CSegFace *faceP);
 		int AddFaceQuads (CSegFace *faceP);
-		void ResetBitmaps (void);
-		int LoadTexture (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap);
 
 		int NeedDepthBuffer (void);
-		int SoftBlend (int nFlag);
-
-		void FlushSparkBuffer (void);
-		void FlushParticleBuffer (int nType);
-		void FlushBuffers (int nType, struct tTranspItem *itemP = NULL);
-		void RenderFace (tTranspPoly *item);
-		void RenderPoly (tTranspPoly *item);
-		void RenderObject (tTranspObject *item);
-		void RenderSprite (tTranspSprite *item);
-		void RenderSpark (tTranspSpark *item);
-		void RenderSphere (tTranspSphere *item);
+#if 0
+		void RenderFace (CTranspPoly *item);
+		void RenderPoly (CTranspPoly *item);
+		void RenderObject (CTranspObject *item);
+		void RenderSprite (CTranspSprite *item);
+		void RenderSpark (CTranspSpark *item);
+		void RenderSphere (CTranspSphere *item);
 		void RenderBullet (CParticle *pParticle);
-		void RenderParticle (tTranspParticle *item);
-		void RenderLightning (tTranspLightning *item);
-		void RenderLightTrail (tTranspLightTrail *item);
-		void RenderThruster (tTranspThruster *item);
-		int RenderItem (struct tTranspItem *item);
+		void RenderParticle (CTranspParticle *item);
+		void RenderLightning (CTranspLightning *item);
+		void RenderLightTrail (CTranspLightTrail *item);
+		void RenderThruster (CTranspThruster *item);
+#endif
+		int RenderItem (CTranspItem *item);
 	};
 
 extern CTransparencyRenderer transparencyRenderer;

@@ -600,7 +600,7 @@ return fix (dist / info.fRange);
 //------------------------------------------------------------------------------
 // Check whether a point can be seen from a light emitting face. Returns:
 // -1: Point is behind light face or light face is on rear side of point
-// 0: Point is occluded by geometry
+// 0: Point is occluded by geometry or too far away
 // 1: Point is visible
 
 #define LIGHTING_LEVEL 1
@@ -623,7 +623,9 @@ if (info.nSide < 0) {
 	v1.Assign (*vPoint);
 	v0.Assign (info.vPos);
 	vLightToPointf = v1 - v0;
-	CFloatVector::Normalize (vLightToPointf);
+	float dist = CFloatVector::Normalize (vLightToPointf);
+	if (dist > info.fRange * X2F (MAX_LIGHT_RANGE))
+		return 0;
 	if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
 		return 0;
 	if (vNormal) {

@@ -28,12 +28,6 @@ typedef struct tRenderThreadInfo {
 
 extern tRenderThreadInfo tiRender;
 
-typedef struct tTranspRenderThreadInfo {
-	tTranspItemData	itemData [MAX_THREADS];
-	tThreadInfo			ti [MAX_THREADS];
-	} tTranspRenderThreadInfo;
-
-extern tTranspRenderThreadInfo tiTranspRender;
 extern tThreadInfo tiEffects;
 
 int RunRenderThreads (int nTask, int nThreads = -1);

@@ -22,7 +22,6 @@
 #define TRANSPRENDER_THREADS	0
 
 tRenderThreadInfo tiRender;
-tTranspRenderThreadInfo tiTranspRender;
 tThreadInfo tiEffects;
 
 int _CDECL_ LightObjectsThread (void* nThreadP);
@@ -182,83 +181,6 @@ if (myContext)
 	wglDeleteContext (myContext);
 #endif
 return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int _CDECL_ TranspRenderThread (void *pThreadId)
-{
-#if TRANSPRENDER_THREADS
-do {
-	while (!(tiTranspRender.ti [0].bExec || tiTranspRender.ti [1].bExec))
-		G3_SLEEP (0);
-	for (int i = 0; i < 2; i++) {
-		if (tiTranspRender.ti [i].bExec) {
-			transparencyRenderer.Add ((tTranspItemType) tiTranspRender.itemData [i].nType, 
-											  &tiTranspRender.itemData [i].item, 
-											  tiTranspRender.itemData [i].nSize, 
-											  tiTranspRender.itemData [i].nDepth, 
-											  tiTranspRender.itemData [i].nIndex);
-			tiTranspRender.ti [i].bExec = 0;
-			}
-		}
-	} while (!(tiTranspRender.ti [0].bDone && tiTranspRender.ti [1].bDone));
-#endif
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-void StartTranspRenderThread (void)
-{
-#if TRANSPRENDER_THREADS
-static bool bInitialized = false;
-
-if (!bInitialized) {
-	memset (&tiTranspRender, 0, sizeof (tiTranspRender));
-	bInitialized = true;
-	}
-for (int i = 0; i < 2; i++) {
-if (!tiTranspRender.ti [i].pThread)
-	tiTranspRender.ti [i].bDone =
-	tiTranspRender.ti [i].bExec = 0;
-	tiTranspRender.ti [i].nId = i;
-	tiTranspRender.ti [i].pThread = SDL_CreateThread (TranspRenderThread, NULL);
-	}
-#else
-gameData.app.bUseMultiThreading [rtTranspRender] = 0;
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-void EndTranspRenderThread (void)
-{
-#if TRANSPRENDER_THREADS
-tiTranspRender.ti [0].bDone =
-tiTranspRender.ti [1].bDone = 1;
-G3_SLEEP (10);
-for (int i = 0; i < 2; i++) {
-	if (tiTranspRender.ti [i].pThread) {
-		//SDL_KillThread (tiTranspRender.ti [0].pThread);
-		tiTranspRender.ti [i].pThread = NULL;
-		}
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-void ControlTranspRenderThread (void)
-{
-#if TRANSPRENDER_THREADS
-if (gameData.app.bUseMultiThreading [rtTranspRender])
-	StartTranspRenderThread ();
-else
-	EndTranspRenderThread ();
-#else
-gameData.app.bUseMultiThreading [rtTranspRender] = 0;
-#endif
 }
 
 //------------------------------------------------------------------------------
