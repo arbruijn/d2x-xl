@@ -584,6 +584,7 @@ if (!m_data.itemHeap.Create (ITEM_BUFFER_SIZE)) {
 	return 0;
 	}
 ResetBuffers ();
+m_data.nFreeItems = 0;
 m_data.nHeapSize = 0;
 return 1;
 }
@@ -693,45 +694,50 @@ else if (nDepth > m_data.zMax) {
 if (gameStates.app.bMultiThreaded)
 	SDL_mutexP (tiRender.semaphore);
 #endif
-nOffset = int (double (nDepth) * m_data.zScale);
-if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
-	return 0;
-CTranspItem* ph = AllocItem (item->Size ());
-if (!ph) 
-	return 0;
-CTranspItem** pd = m_data.depthBuffer + nOffset;
-memcpy (ph, item, item->Size ());
-ph->nItem = m_data.nItems [0]++;
-ph->bRendered = 0;
-ph->bTransformed = bTransformed;
-ph->z = nDepth;
-ph->bValid = 1;
-#if 0 // sort by depth
-CTranspItem* pi;
-for (pi = pd->head; pi; pi = pi->nextItemP) {
-	if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
-		break;
-	}
-if (pi) {
-	ph->nextItemP = pi->nextItemP;
-	pi->nextItemP = ph;
-	}
-else 
-#endif
-	{
-	ph->nextItemP = *pd;
-	*pd = ph;
-	}
-if (m_data.nMinOffs > nOffset)
-	m_data.nMinOffs = nOffset;
-if (m_data.nMaxOffs < nOffset)
-	m_data.nMaxOffs = nOffset;
+	{ // begin critical section
+	nOffset = int (double (nDepth) * m_data.zScale);
+	if (nOffset < ITEM_DEPTHBUFFER_SIZE) {
+		CTranspItem* ph = AllocItem (item->Size ());
+		if (m_data.nFreeItems > 0) {
+			--m_data.nFreeItems;
+			if (ph) {
+				CTranspItem** pd = m_data.depthBuffer + nOffset;
+				memcpy (ph, item, item->Size ());
+				ph->nItem = m_data.nItems [0]++;
+				ph->bRendered = 0;
+				ph->bTransformed = bTransformed;
+				ph->z = nDepth;
+				ph->bValid = 1;
+				#if 0 // sort by depth
+				CTranspItem* pi;
+				for (pi = pd->head; pi; pi = pi->nextItemP) {
+					if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
+						break;
+					}
+				if (pi) {
+					ph->nextItemP = pi->nextItemP;
+					pi->nextItemP = ph;
+					}
+				else 
+				#endif
+					{
+					ph->nextItemP = *pd;
+					*pd = ph;
+					}
+				if (m_data.nMinOffs > nOffset)
+					m_data.nMinOffs = nOffset;
+				if (m_data.nMaxOffs < nOffset)
+					m_data.nMaxOffs = nOffset;
+				}
+			}
+		}
+	} // end critical section
 #if !USE_OPENMP
 if (gameStates.app.bMultiThreaded)
 	SDL_mutexV (tiRender.semaphore);
 #endif
 
-return 1;
+return m_data.nFreeItems;
 #else
 return 0;
 #endif
@@ -1366,11 +1372,13 @@ extern int bLog;
 void CTransparencyRenderer::Render (int nWindow)
 {
 #if RENDER_TRANSPARENCY
-	CTranspItem*	currentP, * nextP, * prevP, * listP;
+	CTranspItem*	currentP, * nextP, * prevP, ** listP;
 	int				nItems, nDepth, bStencil;
 	bool				bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || nWindow;
 
 if (!AllocBuffers ())
+	return;
+if (m_data.nFreeItems == ITEM_BUFFER_SIZE)
 	return;
 #if DBG
 if (gameStates.render.cameras.bActive)
@@ -1406,7 +1414,7 @@ m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 
-for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {
+for (listP = &m_data.depthBuffer [m_data.nMaxOffs], nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {
 	if ((currentP = *listP)) {
 		*listP = NULL;
 		nDepth = 0;
@@ -1441,6 +1449,7 @@ ogl.StencilOn (bStencil);
 m_data.nItems [1] = 	m_data.nItems [0];
 m_data.nItems [0] = 0;
 m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
+m_data.nFreeItems = ITEM_BUFFER_SIZE;
 m_data.nMaxOffs = 0;
 m_data.nHeapSize = 0;
 
