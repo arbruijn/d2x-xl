@@ -726,7 +726,6 @@ memcpy (ph, item, item->Size ());
 ph->nItem = m_data.nItems [0]++;
 ph->bRendered = 0;
 ph->bTransformed = bTransformed;
-ph->parentP = NULL;
 ph->z = nDepth;
 ph->bValid = true;
 #if 0 // sort by depth
