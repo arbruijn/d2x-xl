@@ -94,52 +94,56 @@ return *this;
 
 void CTranspPoly::Render (void)
 {
-PROF_START
-	int			bSoftBlend = transparencyRenderer.SoftBlend (SOFT_BLEND_SPRITES);
+if (faceP || triP)
+	RenderFace ();
+else {
+	PROF_START
+		int			bSoftBlend = transparencyRenderer.SoftBlend (SOFT_BLEND_SPRITES);
 
-ogl.ResetClientStates (1);
-transparencyRenderer.Data ().bmP [1] = transparencyRenderer.Data ().bmP [2] = NULL;
-if (bAdditive & 3)
-	glowRenderer.Begin (GLOW_POLYS, 2, false, 1.0f);
-ogl.EnableClientStates (bmP != NULL, nColors == nVertices, 0, GL_TEXTURE0);
-if (transparencyRenderer.LoadTexture (bmP, 0, 0, 0, nWrap)) {
-	if (bmP)
-		OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
-	if (nColors == nVertices)
-		OglColorPointer (4, GL_FLOAT, 0, color);
+	ogl.ResetClientStates (1);
+	transparencyRenderer.Data ().bmP [1] = transparencyRenderer.Data ().bmP [2] = NULL;
+	if (bAdditive & 3)
+		glowRenderer.Begin (GLOW_POLYS, 2, false, 1.0f);
+	ogl.EnableClientStates (bmP != NULL, nColors == nVertices, 0, GL_TEXTURE0);
+	if (transparencyRenderer.LoadTexture (bmP, 0, 0, 0, nWrap)) {
+		if (bmP)
+			OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
+		if (nColors == nVertices)
+			OglColorPointer (4, GL_FLOAT, 0, color);
+		else
+			glColor4fv (reinterpret_cast<GLfloat*> (color));
+		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertices);
+		ogl.SetBlendMode (bAdditive);
+		if (!(bSoftBlend && glareRenderer.LoadShader (5, bAdditive != 0)))
+			shaderManager.Deploy (-1, true);
+		//ogl.SetTexturing (false);
+		//glLineWidth (5);
+		ogl.SetFaceCulling (false);
+		ogl.SetupTransform (0);
+		OglDrawArrays (nPrimitive, 0, nVertices);
+		ogl.ResetTransform (0);
+		ogl.SetFaceCulling (true);
+		//glLineWidth (1);
+		}
+	if (bAdditive & 3)
+		glowRenderer.Done (GLOW_POLYS);
+	#if DBG
 	else
-		glColor4fv (reinterpret_cast<GLfloat*> (color));
-	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertices);
-	ogl.SetBlendMode (bAdditive);
-	if (!(bSoftBlend && glareRenderer.LoadShader (5, bAdditive != 0)))
-		shaderManager.Deploy (-1, true);
-	//ogl.SetTexturing (false);
-	//glLineWidth (5);
-	ogl.SetFaceCulling (false);
-	ogl.SetupTransform (0);
-	OglDrawArrays (nPrimitive, 0, nVertices);
-	ogl.ResetTransform (0);
-	ogl.SetFaceCulling (true);
-	//glLineWidth (1);
+		HUDMessage (0, "Couldn't load '%s'", bmP->Name ());
+	#endif
+	#if TI_POLY_OFFSET
+	if (!bmP) {
+		glPolygonOffset (0,0);
+		glDisable (GL_POLYGON_OFFSET_FILL);
+		}
+	#endif
+	PROF_END(ptRenderFaces)
 	}
-if (bAdditive & 3)
-	glowRenderer.Done (GLOW_POLYS);
-#if DBG
-else
-	HUDMessage (0, "Couldn't load '%s'", bmP->Name ());
-#endif
-#if TI_POLY_OFFSET
-if (!bmP) {
-	glPolygonOffset (0,0);
-	glDisable (GL_POLYGON_OFFSET_FILL);
-	}
-#endif
-PROF_END(ptRenderFaces)
 }
 
 //------------------------------------------------------------------------------
 
-void CTranspFace::Render (void)
+void CTranspPoly::RenderFace (void)
 {
 PROF_START
 	CSegFace*		faceP;
@@ -718,7 +722,7 @@ else {
 	m_data.freeList.head = ph->nextItemP;
 	}
 #endif
-*ph = *item;
+memcpy (ph, item, item->Size ());
 ph->nItem = m_data.nItems [0]++;
 ph->bRendered = 0;
 ph->bTransformed = bTransformed;
@@ -880,9 +884,9 @@ int CTransparencyRenderer::AddPoly (CSegFace *faceP, tFaceTriangle *triP, CBitma
 if (gameStates.render.nShadowMap)
 	return 0;
 
-	CTranspFace	item;
-	int			i;
-	float			s = gameStates.render.grAlpha;
+	CTranspPoly		item;
+	int				i;
+	float				s = gameStates.render.grAlpha;
 	//fix			zCenter;
 
 item.faceP = faceP;
@@ -928,9 +932,8 @@ if (bDepthMask && m_data.bSplitPolys) {
 else
 #endif
 	{
-	if (faceP) {
+	if (faceP)
 		return Add (&item, SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->Center (), 0, true, false);
-		}
 	CFloatVector v = item.vertices [0];
 	for (i = 1; i < item.nVertices; i++) 
 		v += item.vertices [i];
@@ -941,10 +944,7 @@ else
 		m_data.bRenderGlow = 1;
 	if (gameOpts->SoftBlend (SOFT_BLEND_SPRITES) != 0)
 		m_data.bSoftBlend = 1;
-	if (triP)
-		return Add (&item, vPos, 0, true);
-	CTranspPoly polyItem = item;
-		return Add (&polyItem, vPos, 0, true);
+	return Add (&item, vPos, 0, true);
 	}
 }
 

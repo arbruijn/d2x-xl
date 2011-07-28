@@ -64,12 +64,9 @@ class CTranspPoly : public CTranspItem {
 		virtual int Size (void) { return sizeof (*this); }
 		virtual void Render (void);
 		virtual inline tTranspItemType Type (void) { return tiPoly; }
-	};
 
-class CTranspFace : public CTranspPoly {
-	public:
-		virtual void Render (void);
-		virtual inline tTranspItemType Type (void) { return tiFace; }
+	private:
+		void RenderFace (void);
 	};
 
 class CTranspObject : public CTranspItem {
