@@ -1384,7 +1384,7 @@ if (m_data.nFreeItems == ITEM_BUFFER_SIZE)
 if (gameStates.render.cameras.bActive)
 	nWindow = nWindow;
 #endif
-HUDMessage (0, "transp. render heap size: %d", m_data.nHeapSize);
+HUDMessage (0, "transp. render heap size: %d.%03d.%03d", m_data.nHeapSize / 1000000, (m_data.nHeapSize % 1000000) / 1000, m_data.nHeapSize % 1000);
 PROF_START
 gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
 shaderManager.Deploy (-1);
@@ -1436,7 +1436,6 @@ for (listP = &m_data.depthBuffer [m_data.nMaxOffs], nItems = m_data.nItems [0]; 
 
 FlushBuffers (-1);
 particleManager.EndRender ();
-ResetBuffers ();
 shaderManager.Deploy (-1);
 glowRenderer.End ();
 ogl.ResetClientStates ();
