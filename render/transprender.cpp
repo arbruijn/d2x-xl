@@ -1249,6 +1249,9 @@ return 1;
 
 void CTransparencyRenderer::FlushSparkBuffer (void)
 {
+if (!m_data.depthBuffer.Buffer ())
+	return;
+
 if (!sparkBuffer.nSparks)
 	return;
 
@@ -1278,6 +1281,9 @@ if (LoadTexture (sparks.Bitmap (), 0, 0, 0, GL_CLAMP)) {
 
 void CTransparencyRenderer::FlushParticleBuffer (int nType)
 {
+if (!m_data.depthBuffer.Buffer ())
+	return;
+
 if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))) {
 	ResetBitmaps ();
 	if (sparkBuffer.nSparks && !USE_PARTICLE_SHADER && particleManager.Overlap (sparkArea))
@@ -1297,6 +1303,9 @@ if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))
 
 void CTransparencyRenderer::FlushBuffers (int nType, CTranspItem *item)
 {
+if (!m_data.depthBuffer.Buffer ())
+	return;
+
 if (glowRenderer.Available (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_THRUSTERS) && 
 	 (nType != tiLightning) && (nType != tiSphere) && (nType != tiSprite) && (nType != tiThruster)) {
 	if (glowRenderer.End ())
