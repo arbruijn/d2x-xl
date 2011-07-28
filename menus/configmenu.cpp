@@ -75,7 +75,6 @@ for (i = rtSound; i < h; i++)
 if (gameStates.app.bGameRunning) {
 	ControlRenderThreads ();
 	ControlSoundThread ();
-	ControlTranspRenderThread ();
 	ControlEffectsThread ();
 	}
 }

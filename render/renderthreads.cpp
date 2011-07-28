@@ -236,7 +236,6 @@ for (int i = 0; i < gameStates.app.nThreads; i++) {
 	}
 SDL_DestroyMutex (tiRender.semaphore);
 tiRender.semaphore = NULL;
-EndTranspRenderThread ();
 #endif
 EndEffectsThread ();
 }

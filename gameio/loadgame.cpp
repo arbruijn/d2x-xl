@@ -644,7 +644,6 @@ paletteManager.EnableEffect (true);
 if (bQuit)
 	EndRenderThreads ();
 else {
-	EndTranspRenderThread ();
 	EndEffectsThread ();
 	}
 ResetModFolders ();
@@ -1077,7 +1076,6 @@ BuildSkyBoxSegList ();
 //songManager.StopAll ();
 audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32768) / 8, 1);
 audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
-ControlTranspRenderThread ();
 ControlEffectsThread ();
 ControlSoundThread ();
 gameStates.render.bDepthSort = 1;
