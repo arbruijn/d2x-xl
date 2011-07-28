@@ -704,7 +704,7 @@ if (gameStates.app.bMultiThreaded)
 	SDL_mutexP (tiRender.semaphore);
 #endif
 nOffset = int (double (nDepth) * m_data.zScale);
-if (nOffset < ITEM_DEPTHBUFFER_SIZE)
+if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 	return 0;
 CTranspItem* ph = AllocItem (item->Size ());
 if (!ph) 
@@ -1387,9 +1387,8 @@ void CTransparencyRenderer::Render (int nWindow)
 	int					nItems, nDepth, bStencil;
 	bool					bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || nWindow;
 
-if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
+if (!AllocBuffers ())
 	return;
-	}
 #if DBG
 if (gameStates.render.cameras.bActive)
 	nWindow = nWindow;
