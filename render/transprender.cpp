@@ -1383,8 +1383,8 @@ if (m_data.nFreeItems == ITEM_BUFFER_SIZE)
 #if DBG
 if (gameStates.render.cameras.bActive)
 	nWindow = nWindow;
-#endif
 HUDMessage (0, "transp. render heap size: %d.%03d.%03d", m_data.nHeapSize / 1000000, (m_data.nHeapSize % 1000000) / 1000, m_data.nHeapSize % 1000);
+#endif
 PROF_START
 gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
 shaderManager.Deploy (-1);
