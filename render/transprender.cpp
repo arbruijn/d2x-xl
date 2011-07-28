@@ -1398,8 +1398,8 @@ if (!AllocBuffers ())
 #if DBG
 if (gameStates.render.cameras.bActive)
 	nWindow = nWindow;
-HUDMessage (0, "transp. render heap size: %d", m_data.nHeapSize);
 #endif
+HUDMessage (0, "transp. render heap size: %d", m_data.nHeapSize);
 PROF_START
 gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
 shaderManager.Deploy (-1);
