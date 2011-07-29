@@ -584,7 +584,6 @@ if (!m_data.itemHeap.Create (ITEM_BUFFER_SIZE)) {
 	return 0;
 	}
 ResetBuffers ();
-m_data.nFreeItems = 0;
 m_data.nHeapSize = 0;
 return 1;
 }
@@ -698,37 +697,34 @@ if (gameStates.app.bMultiThreaded)
 	nOffset = int (double (nDepth) * m_data.zScale);
 	if (nOffset < ITEM_DEPTHBUFFER_SIZE) {
 		CTranspItem* ph = AllocItem (item->Size ());
-		if (m_data.nFreeItems > 0) {
-			--m_data.nFreeItems;
-			if (ph) {
-				CTranspItem** pd = m_data.depthBuffer + nOffset;
-				memcpy (ph, item, item->Size ());
-				ph->nItem = m_data.nItems [0]++;
-				ph->bRendered = 0;
-				ph->bTransformed = bTransformed;
-				ph->z = nDepth;
-				ph->bValid = 1;
-				#if 0 // sort by depth
-				CTranspItem* pi;
-				for (pi = pd->head; pi; pi = pi->nextItemP) {
-					if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
-						break;
-					}
-				if (pi) {
-					ph->nextItemP = pi->nextItemP;
-					pi->nextItemP = ph;
-					}
-				else 
-				#endif
-					{
-					ph->nextItemP = *pd;
-					*pd = ph;
-					}
-				if (m_data.nMinOffs > nOffset)
-					m_data.nMinOffs = nOffset;
-				if (m_data.nMaxOffs < nOffset)
-					m_data.nMaxOffs = nOffset;
+		if (ph) {
+			CTranspItem** pd = m_data.depthBuffer + nOffset;
+			memcpy (ph, item, item->Size ());
+			ph->nItem = m_data.nItems [0]++;
+			ph->bRendered = 0;
+			ph->bTransformed = bTransformed;
+			ph->z = nDepth;
+			ph->bValid = 1;
+			#if 0 // sort by depth
+			CTranspItem* pi;
+			for (pi = pd->head; pi; pi = pi->nextItemP) {
+				if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
+					break;
 				}
+			if (pi) {
+				ph->nextItemP = pi->nextItemP;
+				pi->nextItemP = ph;
+				}
+			else 
+			#endif
+				{
+				ph->nextItemP = *pd;
+				*pd = ph;
+				}
+			if (m_data.nMinOffs > nOffset)
+				m_data.nMinOffs = nOffset;
+			if (m_data.nMaxOffs < nOffset)
+				m_data.nMaxOffs = nOffset;
 			}
 		}
 	} // end critical section
@@ -737,7 +733,7 @@ if (gameStates.app.bMultiThreaded)
 	SDL_mutexV (tiRender.semaphore);
 #endif
 
-return m_data.nFreeItems;
+return 1;
 #else
 return 0;
 #endif
@@ -1267,6 +1263,8 @@ void CTransparencyRenderer::FlushParticleBuffer (int nType)
 {
 if (!m_data.depthBuffer.Buffer ())
 	return;
+if (!m_data.nHeapSize)
+	return;
 
 if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))) {
 	ResetBitmaps ();
@@ -1288,6 +1286,8 @@ if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))
 void CTransparencyRenderer::FlushBuffers (int nType, CTranspItem *item)
 {
 if (!m_data.depthBuffer.Buffer ())
+	return;
+if (!m_data.nHeapSize)
 	return;
 
 if (glowRenderer.Available (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_THRUSTERS) && 
@@ -1378,7 +1378,7 @@ void CTransparencyRenderer::Render (int nWindow)
 
 if (!AllocBuffers ())
 	return;
-if (m_data.nFreeItems == ITEM_BUFFER_SIZE)
+if (!m_data.nHeapSize)
 	return;
 #if DBG
 if (gameStates.render.cameras.bActive)
@@ -1448,7 +1448,6 @@ ogl.StencilOn (bStencil);
 m_data.nItems [1] = 	m_data.nItems [0];
 m_data.nItems [0] = 0;
 m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
-m_data.nFreeItems = ITEM_BUFFER_SIZE;
 m_data.nMaxOffs = 0;
 m_data.nHeapSize = 0;
 

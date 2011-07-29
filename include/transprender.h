@@ -182,7 +182,6 @@ typedef struct tTranspItemBuffer {
 	int					nMinOffs;
 	int					nMaxOffs;
 	int					nItems [2];
-	int					nFreeItems;
 	int					nCurType;
 	int					nPrevType;
 	int					zMin;
