@@ -84,6 +84,7 @@ void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
 	fix xMaxDist = 0;
 	ubyte scale = 1;
+	fix round = 0;
 
 G3_SLEEP (0);
 #if DBG
@@ -101,9 +102,10 @@ while (xMaxDist & 0xFFFF0000) {
 	xMaxDist >>= 1;
 	scale <<= 1;
 	}
+round = 1 << (scale - 1);
 gameData.segs.segDistScale [nSegment] = scale;
 for (int i = 0; i < gameData.segs.nSegments; i++)
-	gameData.segs.SetSegDist (nSegment, i, dacsRouter [nThread].Distance (i));
+	gameData.segs.SetSegDist (nSegment, i, dacsRouter [nThread].Distance (i), round);
 gameData.segs.SetSegDist (nSegment, nSegment, 0);
 }
 
