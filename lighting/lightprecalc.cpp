@@ -37,7 +37,7 @@ int SegmentIsVisible (CSegment *segP);
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 22
+#define LIGHT_DATA_VERSION 23
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis.Buffer () ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
@@ -83,7 +83,7 @@ return (nStart < 0) ? 0 : nStart;
 void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
 	fix xMaxDist = 0;
-	ubyte scale = 1;
+	ubyte scale = 0;
 	fix round = 0;
 
 G3_SLEEP (0);
@@ -100,9 +100,9 @@ for (int i = 0; i < gameData.segs.nSegments; i++) {
 // find constant factor to scale all distances from current segment down to 16 bits
 while (xMaxDist & 0xFFFF0000) {
 	xMaxDist >>= 1;
-	scale <<= 1;
+	++scale;
 	}
-round = 1 << (scale - 1);
+round = (1 << scale) / 2;
 gameData.segs.segDistScale [nSegment] = scale;
 for (int i = 0; i < gameData.segs.nSegments; i++)
 	gameData.segs.SetSegDist (nSegment, i, dacsRouter [nThread].Distance (i), round);
