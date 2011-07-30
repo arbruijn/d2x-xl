@@ -106,7 +106,7 @@ round = 1 << (scale - 1);
 gameData.segs.segDistScale [nSegment] = scale;
 for (int i = 0; i < gameData.segs.nSegments; i++)
 	gameData.segs.SetSegDist (nSegment, i, dacsRouter [nThread].Distance (i), round);
-gameData.segs.SetSegDist (nSegment, nSegment, 0);
+gameData.segs.SetSegDist (nSegment, nSegment, 0, 0);
 }
 
 //------------------------------------------------------------------------------
