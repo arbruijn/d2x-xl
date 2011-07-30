@@ -625,6 +625,7 @@ CREATE (sideCenters, LEVEL_SEGMENTS * 6, 0);
 CREATE (bSegVis [0], SegVisSize (), 0);
 CREATE (bSegVis [1], LightVisSize (), 0);
 CREATE (segDist, SegDistSize (), 0);
+CREATE (segDistScale, LEVEL_SEGMENTS, 0);
 CREATE (slideSegs, LEVEL_SEGMENTS, 0);
 CREATE (segFaces, LEVEL_SEGMENTS, 0);
 for (int i = 0; i < LEVEL_SEGMENTS; i++)

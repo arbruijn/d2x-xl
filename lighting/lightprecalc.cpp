@@ -37,7 +37,7 @@ int SegmentIsVisible (CSegment *segP);
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 21
+#define LIGHT_DATA_VERSION 22
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis.Buffer () ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
@@ -82,29 +82,28 @@ return (nStart < 0) ? 0 : nStart;
 
 void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
+	fix xMaxDist = 0;
+	ubyte scale = 1;
+
 G3_SLEEP (0);
 #if DBG
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 dacsRouter [nThread].PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, 0x7FFFFFFF, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
-for (int i = 0; i < gameData.segs.nSegments; i++)
-#if DBG
-	{	
-#if DBG
-	if (i == nDbgSeg)
-		nDbgSeg = nDbgSeg;
-#endif
+for (int i = 0; i < gameData.segs.nSegments; i++) {
 	fix xDist = dacsRouter [nThread].Distance (i);
-#if DBG
-	if (!xDist && (i != nSegment))
-		dacsRouter [nThread].Distance (i);
-#endif
-	gameData.segs.SetSegDist (nSegment, i, xDist);
+	if (xMaxDist < xDist)
+		xMaxDist = xDist;
 	}
-#else
+// find constant factor to scale all distances from current segment down to 16 bits
+while (xMaxDist & 0xFFFF0000) {
+	xMaxDist >>= 1;
+	scale <<= 1;
+	}
+gameData.segs.segDistScale [nSegment] = scale;
+for (int i = 0; i < gameData.segs.nSegments; i++)
 	gameData.segs.SetSegDist (nSegment, i, dacsRouter [nThread].Distance (i));
-#endif
 gameData.segs.SetSegDist (nSegment, nSegment, 0);
 }
 
@@ -819,6 +818,7 @@ if (bOk)
 if (bOk)
 	bOk = (gameData.segs.bSegVis [0].Read (cf, gameData.segs.SegVisSize (ldh.nSegments), 0) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
 			(gameData.segs.bSegVis [1].Read (cf, gameData.segs.LightVisSize (ldh.nSegments), 0) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
+			(gameData.segs.segDistScale.Read (cf, LEVEL_SEGMENTS) == size_t (LEVEL_SEGMENTS)) &&
 			(gameData.segs.segDist.Read (cf, gameData.segs.SegDistSize (ldh.nSegments), 0) == size_t (gameData.segs.SegDistSize (ldh.nSegments))) &&
 			(lightManager.NearestSegLights  ().Read (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 			(lightManager.NearestVertLights ().Read (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
@@ -849,6 +849,7 @@ if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "w
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
 		(gameData.segs.bSegVis [0].Write (cf, gameData.segs.SegVisSize (ldh.nSegments)) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
 		(gameData.segs.bSegVis [1].Write (cf, gameData.segs.LightVisSize (ldh.nSegments)) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
+		(gameData.segs.segDistScale.Write (cf, LEVEL_SEGMENTS) == size_t (LEVEL_SEGMENTS)) &&
 		(gameData.segs.segDist.Write (cf, gameData.segs.SegDistSize (ldh.nSegments)) == size_t (gameData.segs.SegDistSize (ldh.nSegments))) &&
 		(lightManager.NearestSegLights  ().Write (cf, ldh.nSegments * MAX_NEAREST_LIGHTS) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 		(lightManager.NearestVertLights ().Write (cf, ldh.nVertices * MAX_NEAREST_LIGHTS) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
