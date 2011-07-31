@@ -1,4 +1,4 @@
-246 _VERS_ID_H
+#ifndef _VERS_ID_H
 #define _VERS_ID_H
 
 //246 HAVE_CONFIG_H
@@ -9,13 +9,13 @@
 
 #define D2X_NAME		"D2X-XL "
 
-246 D2X_MAJOR
+#ifndef D2X_MAJOR
 #	define D2X_MAJOR	1
 #endif
-246 D2X_MINOR
+#ifndef D2X_MINOR
 #	define D2X_MINOR	15
 #endif
-246 D2X_MICRO
+#ifndef D2X_MICRO
 #	define D2X_MICRO	246
 #endif
 
