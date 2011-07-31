@@ -490,7 +490,7 @@ hitQuery.flags = nFlags;
 int CObject::HandleWallCollision (CPhysSimData& simData)
 {
 if (gameStates.render.bHaveSkyBox && (info.nType == OBJ_WEAPON) && (simData.hitResult.nSegment >= 0)) {
-	if (SEGMENTS [simData.hitResult.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
+	if (SEGMENTS [simData.hitResult.nSegment].m_function == SEGMENT_FUNC_SKYBOX) { // allow missiles and shots to leave the level and enter a skybox
 		short nConnSeg = SEGMENTS [simData.hitResult.nSegment].m_children [simData.hitResult.nSide];
 		if ((nConnSeg < 0) && (info.xLifeLeft > I2X (1))) {	//leaving the mine
 			info.xLifeLeft = 0;
@@ -1000,6 +1000,10 @@ for (;;) {	//Move the object
 
 	if (simData.hitResult.nType == HIT_BAD_P0) {
 		if (!HandleBadCollision (simData))
+			break;
+		}
+	else if (simData.hitResult.nType == HIT_WALL) {
+		if (!HandleWallCollision (simData))
 			break;
 		}
 	else if (simData.hitResult.nType == HIT_OBJECT) {

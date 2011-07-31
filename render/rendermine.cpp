@@ -271,7 +271,6 @@ PROF_START
 if (gameStates.render.bHaveSkyBox && (!automap.Display () || gameOpts->render.automap.bSkybox)) {
 	ogl.SetDepthWrite (true);
 	RenderSkyBoxFaces ();
-	RenderSkyBoxObjects ();
 	}
 PROF_END(ptRenderPass)
 }
@@ -633,6 +632,7 @@ ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 RenderSegmentList (RENDER_TYPE_ZCULL);	// render depth only
 --gameStates.render.bFullBright;
 #endif
+RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);	// render opaque geometry
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 	if (!gameStates.app.bNostalgia &&

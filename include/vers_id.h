@@ -1,7 +1,7 @@
 #ifndef _VERS_ID_H
 #define _VERS_ID_H
 
-//246 HAVE_CONFIG_H
+//#ifndef HAVE_CONFIG_H
 #	ifndef VERSION
 #		define VERSION		"1.15.246"
 #	endif
