@@ -42,6 +42,21 @@ int nDbgPoly = -1, nDbgItem = -1;
 
 CTransparencyRenderer transparencyRenderer;
 
+// Lazy reset controls when the entire list of transparent items is cleared
+// This is an optimization for anaglyph rendering, where all transparent items
+// need to be rendered twice. Now some of these items are passed to the 
+// transparency renderer with their coordinate already transformed into view
+// space, while others are passed with their world space coordinates, and 
+// coordinate transformation is done by OpenGL when these items are rendered.
+// The further kind of transparent items needs to be passed to the transparency
+// renderer everytime the transformation changes, while the latter doesn't
+// (since transformation changes are handled via OpenGL when rendering them).
+// Smoke particles, which usually appear in greater numbers, belong to the latter
+// category, so not having to process them twice for anaglyph rendering is quite
+// a performance improvement. Lazy reset makes sure such transparent items are
+// only cleared from the buffer after the complete image (in the case of anaglyph
+// rendering left and right frame) have been rendered.
+
 #define LAZY_RESET 1
 
 //------------------------------------------------------------------------------
