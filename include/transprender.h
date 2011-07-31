@@ -179,6 +179,7 @@ typedef struct tTranspItemBuffer {
 	CArray<CTranspItem*> depthBuffer;
 	CByteArray			itemHeap;
 	int					nHeapSize;
+	CTranspItem*		freeList [tiPoly + 1];
 	int					nMinOffs;
 	int					nMaxOffs;
 	int					nItems [2];
@@ -227,7 +228,7 @@ class CTransparencyRenderer {
 		void FreeBuffers (void);
 		void ResetBuffers (void);
 		void InitBuffer (int zMin, int zMax, int nWindow);
-		inline CTranspItem* AllocItem (int size);
+		inline CTranspItem* AllocItem (int nType, int nSize);
 		inline void Init (void) {
 			m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 			m_data.nMaxOffs = 0;

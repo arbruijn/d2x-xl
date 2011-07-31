@@ -42,7 +42,7 @@ int nDbgPoly = -1, nDbgItem = -1;
 
 CTransparencyRenderer transparencyRenderer;
 
-#define LAZY_RESET 0
+#define LAZY_RESET 1
 
 //------------------------------------------------------------------------------
 
@@ -584,6 +584,7 @@ if (!m_data.itemHeap.Create (ITEM_BUFFER_SIZE)) {
 	return 0;
 	}
 ResetBuffers ();
+ResetFreeList ();
 m_data.nHeapSize = 0;
 return 1;
 }
@@ -598,12 +599,25 @@ m_data.depthBuffer.Destroy ();
 
 //------------------------------------------------------------------------------
 
-inline CTranspItem* CTransparencyRenderer::AllocItem (int size)
+void CTransparencyRenderer::ResetFreeList (void)
 {
-if (m_data.nHeapSize + size >= (int) m_data.itemHeap.Length ())
+memset (m_data.freeList, 0, sizeof (m_data.freeList));
+}
+
+//------------------------------------------------------------------------------
+
+inline CTranspItem* CTransparencyRenderer::AllocItem (int nType, int nSize)
+{
+	CTranspItem* ti = m_data.freeList [nType];
+
+if (ti) {
+	m_data.freeList [nType] = ti->nextItemP;
+	return ti;
+	}
+if (m_data.nHeapSize + nSize >= (int) m_data.itemHeap.Length ())
 	return NULL;
-m_data.nHeapSize += size;
-return (CTranspItem*) m_data.itemHeap.Buffer (m_data.nHeapSize - size);
+m_data.nHeapSize += nSize;
+return (CTranspItem*) m_data.itemHeap.Buffer (m_data.nHeapSize - nSize);
 }
 
 //------------------------------------------------------------------------------
@@ -696,7 +710,7 @@ if (gameStates.app.bMultiThreaded)
 	{ // begin critical section
 	nOffset = int (double (nDepth) * m_data.zScale);
 	if (nOffset < ITEM_DEPTHBUFFER_SIZE) {
-		CTranspItem* ph = AllocItem (item->Size ());
+		CTranspItem* ph = AllocItem (item->Type (), item->Size ());
 		if (ph) {
 			CTranspItem** pd = m_data.depthBuffer + nOffset;
 			memcpy (ph, item, item->Size ());
@@ -1416,7 +1430,8 @@ m_data.nCurType = -1;
 
 for (listP = &m_data.depthBuffer [m_data.nMaxOffs], nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {
 	if ((currentP = *listP)) {
-		*listP = NULL;
+		if (bCleanup)
+			*listP = NULL;
 		nDepth = 0;
 		prevP = NULL;
 		do {
@@ -1426,6 +1441,21 @@ for (listP = &m_data.depthBuffer [m_data.nMaxOffs], nItems = m_data.nItems [0]; 
 #endif
 			nItems--;
 			RenderItem (currentP);
+
+			if (bCleanup)
+				currentP->nextItemP = NULL;
+			else if (currentP->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
+				int nType = currentP->Type ();
+				currentP->nextItemP = m_data.freeList [nType];
+				m_data.freeList [nType] = currentP;
+				if (prevP)
+					prevP->nextItemP = nextP;
+				else
+					*listP = nextP;
+				}
+			else
+				prevP = currentP;
+
 			nextP = currentP->nextItemP;
 			currentP->nextItemP = NULL;
 			currentP = nextP;
@@ -1445,11 +1475,14 @@ ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
 ogl.StencilOn (bStencil);
 
-m_data.nItems [1] = 	m_data.nItems [0];
-m_data.nItems [0] = 0;
-m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
-m_data.nMaxOffs = 0;
-m_data.nHeapSize = 0;
+if (bCleanup) {
+	ResetFreeList ();
+	m_data.nItems [1] = 	m_data.nItems [0];
+	m_data.nItems [0] = 0;
+	m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
+	m_data.nMaxOffs = 0;
+	m_data.nHeapSize = 0;
+	}
 
 PROF_END(ptTranspPolys)
 #endif
