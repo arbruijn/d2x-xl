@@ -1,22 +1,22 @@
-#ifndef _VERS_ID_H
+246 _VERS_ID_H
 #define _VERS_ID_H
 
-//#ifndef HAVE_CONFIG_H
+//246 HAVE_CONFIG_H
 #	ifndef VERSION
-#		define VERSION		"1.15.245"
+#		define VERSION		"1.15.246"
 #	endif
 //#endif
 
 #define D2X_NAME		"D2X-XL "
 
-#ifndef D2X_MAJOR
+246 D2X_MAJOR
 #	define D2X_MAJOR	1
 #endif
-#ifndef D2X_MINOR
+246 D2X_MINOR
 #	define D2X_MINOR	15
 #endif
-#ifndef D2X_MICRO
-#	define D2X_MICRO	245
+246 D2X_MICRO
+#	define D2X_MICRO	246
 #endif
 
 #define VERSION_TYPE		"Full Version"
