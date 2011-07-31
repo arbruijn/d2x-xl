@@ -1461,6 +1461,7 @@ for (listP = &m_data.depthBuffer [m_data.nMaxOffs], nItems = m_data.nItems [0]; 
 			nItems--;
 			RenderItem (currentP);
 
+			nextP = currentP->nextItemP;
 			if (bCleanup)
 				currentP->nextItemP = NULL;
 			else if (currentP->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
@@ -1474,9 +1475,6 @@ for (listP = &m_data.depthBuffer [m_data.nMaxOffs], nItems = m_data.nItems [0]; 
 				}
 			else
 				prevP = currentP;
-
-			nextP = currentP->nextItemP;
-			currentP->nextItemP = NULL;
 			currentP = nextP;
 			nDepth++;
 			} while (currentP);
