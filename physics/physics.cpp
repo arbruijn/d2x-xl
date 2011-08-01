@@ -731,7 +731,14 @@ if (CollisionModel () || hitObjP->IsStatic ()) {
 #endif
 	}
 else {
-	simData.hitResult.vPoint = info.position.vPos - hitObjP->Position ();
+	CFixVector& pos0 = OBJECTS [simData.hitResult.nObject].info.position.vPos;
+	CFixVector& pos1 = info.position.vPos;
+	fix size0 = OBJECTS [simData.hitResult.nObject].info.xSize;
+	fix size1 = info.xSize;
+	//	Calculate the hit point between the two objects.
+	simData.hitResult.vPoint = pos1 - pos0;
+	simData.hitResult.vPoint *= FixDiv (size0, size0 + size1);
+	simData.hitResult.vPoint += pos0;
 	CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint);
 	}
 if (simData.bSpeedBoost && (this == gameData.objs.consoleP))

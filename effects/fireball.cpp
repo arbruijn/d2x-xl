@@ -334,9 +334,9 @@ if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is 
 else
 	v = vPos;
 return CreateSplashDamageExplosion (this, info.nSegment, v, wi->xImpactSize, wi->nRobotHitVClip,
-                              wi->strength [gameStates.app.nDifficultyLevel], 
-										wi->xDamageRadius, wi->strength [gameStates.app.nDifficultyLevel],
-                              cType.laserInfo.parent.nObject);
+												wi->strength [gameStates.app.nDifficultyLevel], 
+												wi->xDamageRadius, wi->strength [gameStates.app.nDifficultyLevel],
+												cType.laserInfo.parent.nObject);
 }
 
 //------------------------------------------------------------------------------
