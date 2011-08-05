@@ -485,12 +485,14 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
 
-CFloatVector va, vb, vo, vr;
+CFloatVector va, vb, vo, vc;
 
 CSide* sideP = SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide);
 float dot = 1.0f - CFloatVector::Dot (sideP->m_fNormals [0], sideP->m_fNormals [1]);
-if ((dot >= -0.001f) && (dot <= 0.001f)) { // ~planar
+if (0 && (dot >= -0.001f) && (dot <= 0.001f)) { // ~planar
 	v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
+	v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
+	v2.Assign (VERTICES [m_data.m_sideVerts [2]]);
 	v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
 	CFloatVector l0 = v1 - v0;
 	CFloatVector l2 = v2 - v3;
@@ -505,42 +507,44 @@ if ((dot >= -0.001f) && (dot <= 0.001f)) { // ~planar
 		}
 	}
 else {
-	if (m_data.m_nType == SIDE_IS_TRI_02) {
+	if (m_data.m_nType == SIDE_IS_TRI_13) {
+		v0.Assign (VERTICES [m_data.m_sideVerts [3]]);
+		v1.Assign (VERTICES [m_data.m_sideVerts [2]]);
+		v2.Assign (VERTICES [m_data.m_sideVerts [1]]);
+		v3.Assign (VERTICES [m_data.m_sideVerts [0]]);
+		}
+	else {
 		v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
 		v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
 		v2.Assign (VERTICES [m_data.m_sideVerts [2]]);
 		v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
 		}
-	else {
-		v0.Assign (VERTICES [m_data.m_sideVerts [3]]);
-		v1.Assign (VERTICES [m_data.m_sideVerts [2]]);
-		v2.Assign (VERTICES [m_data.m_sideVerts [1]]);
-		v3.Assign (VERTICES [m_data.m_sideVerts [0]]);
-		}		
 	CFloatVector l0 = v1 - v0;
 	CFloatVector l1 = v2 - v0;
 	CFloatVector l2 = v2 - v3;
 	CFloatVector l3 = v3 - v0;
-	for (y = yMin; y < yMax; y++) {
+	for (y = yMin; y < yMax; y++, pixelPosP += w) {
 		va = v0 + l0 * m_data.nOffset [y];
-		vr = v0 + l1 * m_data.nOffset [y];
+		vc = v0 + l1 * m_data.nOffset [y];
 		vb = v3 + l2 * m_data.nOffset [y];
-		float la = CFloatVector::Dist (va, vr);
-		float lb = CFloatVector::Dist (vb, vr);
+		float la = CFloatVector::Dist (va, vc);
+		float lb = CFloatVector::Dist (vb, vc);
 		float l = la + lb;
-		int pivot = int (w * la / l);
+		float step = float (w) / l;
+		float scale = la / step;
+		int pivot = int (scale);
 		if (pivot) {
-			vo = (vr - va) / float (pivot);
-			for (x = 0; x < pivot; x++, pixelPosP++) {
-				pixelPosP->Assign (va);
+			vo = (vc - va) / scale;
+			for (x = 0; x < pivot; x++) {
+				pixelPosP [x].Assign (va);
 				va += vo;
 				}
 			}
 		pivot = w - pivot;
 		if (pivot) {
-			vo = (vr - vb) / float (pivot);
-			for (x = 0; x < pivot; x++, pixelPosP++) {
-				pixelPosP->Assign (vb);
+			vo = (vc - vb) / lb * step;
+			for (x = w; x > pivot; ) {
+				pixelPosP [--x].Assign (vb);
 				vb += vo;
 				}
 			}
