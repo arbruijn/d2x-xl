@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
-static ubyte PointIsInTriangle (CFixVector* vRef, CFixVector* vNormal, short* triangleVerts)
+ubyte PointIsInTriangle (CFixVector* vRef, CFixVector* vNormal, short* triangleVerts)
 {
 CFloatVector v0, v1, v2;
 v0 = FVERTICES [triangleVerts [2]] - FVERTICES [triangleVerts [0]];

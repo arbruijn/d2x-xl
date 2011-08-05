@@ -743,7 +743,7 @@ return bClamped;
 
 // Version with vPos
 const int FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, 
-											  const CFloatVector& vPos, int bClamp) 
+											    const CFloatVector& vPos, int bClamp) 
 {
 	CFloatVector	d31, d21;
 	float		m, u;

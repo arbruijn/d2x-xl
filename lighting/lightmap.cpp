@@ -440,16 +440,18 @@ Copy (texColorP, nLightmap);
 //------------------------------------------------------------------------------
 // build one entire lightmap in single threaded mode or the upper and lower halves when multi threaded
 
+ubyte PointIsInTriangle (CFixVector* vRef, CFixVector* vNormal, short* triangleVerts);
+
 void CLightmapManager::Build (CSegFace* faceP, int nThread)
 {
 	CFixVector		*pixelPosP;
 	CRGBColor		*texColorP;
 	CFloatVector3	color;
-	CFixVector		v0, v1, v2, v3, l0, l1, l2, l3, va, vb, vr;
+	CFloatVector	v0, v1, v2, v3;
 	struct {
 		CFixVector	x, y;
 	} offset;
-	int				w, h, x, y, hx, hy, yMin, yMax;
+	int				w, h, x, y, yMin, yMax;
 	int				i0, i1, i2; 
 	bool				bBlack, bWhite;
 
@@ -484,47 +486,66 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 	nDbgSeg = nDbgSeg;
 #endif
 
-v0 = VERTICES [m_data.m_sideVerts [0]];
-v1 = VERTICES [m_data.m_sideVerts [1]];
-v2 = VERTICES [m_data.m_sideVerts [2]];
-v3 = VERTICES [m_data.m_sideVerts [3]];
-l0 = v1 - v0;
-l1 = v1 - v2;
-l2 = v3 - v0;
-l3 = v3 - v2;
-
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
 if (m_data.m_nType != SIDE_IS_TRI_02) {
+#if 0
+	v0 = VERTICES [m_data.m_sideVerts [0]];
+	v1 = VERTICES [m_data.m_sideVerts [1]];
+	v2 = VERTICES [m_data.m_sideVerts [2]];
+	v3 = VERTICES [m_data.m_sideVerts [3]];
 	for (y = yMin; y < yMax; y++) {
-		for (x = 0; x < w; x++) {
-			if (x <= y) {
-				hy = y - x;
-				va = v0 + l0 * m_data.nOffset [hy];
-				if (x == 0)
-					vr.SetZero ();
-				else {
-					vb = v2 + l1 * m_data.nOffset [hy];
-					vr = vb - va;
-					vr *= I2X (x) / (h - hy - 1);
-					}
+		for (x = 0; x < w; x++, pixelPosP++) {
+			if (y >= x) {
+				offset.x = (v1 - v0) * m_data.nOffset [y];
+				offset.y = (v2 - v1) * m_data.nOffset [x];
 				}
 			else {
-				hx = x - y;
-				va = v0 + l2 * m_data.nOffset [hx];
-				if (y == 0)
-					vr.SetZero ();
-				else {
-					vb = v2 + l3 * m_data.nOffset [hx];
-					vr = vb - va;
-					vr *= I2X (y) / (w - hx - 1);
-					}
+				offset.y = (v3 - v0) * m_data.nOffset [x]; 
+				offset.x = (v2 - v3) * m_data.nOffset [y]; 
 				}
-			*pixelPosP++ = va + vr;
+			*pixelPosP = v0 + offset.x + offset.y; 
 			}
 		}
+#else
+	v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
+	v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
+	v2.Assign (VERTICES [m_data.m_sideVerts [2]]);
+	v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
+	CFloatVector l0 = v1 - v0;
+	CFloatVector l1 = v2 - v0;
+	CFloatVector l2 = v2 - v3;
+	CFloatVector l3 = v3 - v0;
+	CFloatVector va, vb, vc, vr, vo;
+
+	for (y = yMin; y < yMax; y++) {
+		va = v0 + l0 * m_data.nOffset [y];
+		vr = v0 + l1 * m_data.nOffset [y];
+		vb = v3 + l2 * m_data.nOffset [y];
+		float la = CFloatVector::Dist (va, vr);
+		float lb = CFloatVector::Dist (vb, vr);
+		float l = la + lb;
+		int pivot = int (w * la / l);
+		if (pivot) {
+			vo = (vr - va) / float (pivot);
+			for (x = 0; x < pivot; x++, pixelPosP++) {
+				pixelPosP->Assign (va);
+				va += vo;
+				}
+			}
+		pivot = w - pivot;
+		if (pivot) {
+			vo = (vr - vb) / float (pivot);
+			for (x = 0; x < pivot; x++, pixelPosP++) {
+				pixelPosP->Assign (vb);
+				vb -= vo;
+				}
+			}
+		}
+#endif
 	}
 else {//SIDE_IS_TRI_02
+#if 0
 	h--;
 	i1 = m_data.m_sideVerts [1]; 
 	v1 = VERTICES [i1];
@@ -547,6 +568,7 @@ else {//SIDE_IS_TRI_02
 			*pixelPosP = v0 + offset.x + offset.y; 
 			}
 		}
+#endif
 	}
 
 bBlack = bWhite = true;
@@ -572,6 +594,7 @@ for (y = yMin; y < yMax; y++) {
 				nDbgSeg = nDbgSeg;
 			}
 #endif
+		fix dist = x ? CFixVector::Dist (*pixelPosP, *(pixelPosP - 1)) : 0;
 		if (0 < lightManager.SetNearestToPixel (faceP->m_info.nSegment, faceP->m_info.nSide, &m_data.m_vNormal, 
 															 pixelPosP, faceP->m_info.fRads [1] / 10.0f, nThread)) {
 			vcd.vertPos.Assign (*pixelPosP);
@@ -856,7 +879,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		gameStates.render.nState = 0;
 		float h = 1.0f / float (LM_W - 1);
 		for (int i = 0; i < LM_W; i++)
-			m_data.nOffset [i] = F2X (i * h);
+			m_data.nOffset [i] = i * h;
 		m_data.nBlackLightmaps = 
 		m_data.nWhiteLightmaps = 0; 
 		//PLANE_DIST_TOLERANCE = fix (I2X (1) * 0.001f);

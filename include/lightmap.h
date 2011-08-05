@@ -63,7 +63,7 @@ class CLightmapFaceData {
 
 class CLightmapData : public CLightmapFaceData {
 	public:
-		int						nOffset [MAX_LIGHTMAP_WIDTH];
+		float						nOffset [MAX_LIGHTMAP_WIDTH];
 		CArray<tSegFacePtr>	faceList;
 		int						nBlackLightmaps;
 		int						nWhiteLightmaps;
