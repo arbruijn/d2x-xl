@@ -117,7 +117,11 @@ if (*pszParentFolder) {
 #	define	TEXTUREDIR		"textures"
 #	define	TEXTUREDIR_D2	"textures"
 #	define	TEXTUREDIR_D1	"textures/d1"
-#	define	CACHEDIR			"cache"
+#	if DBG
+#		define	CACHEDIR			"cache/debug"
+#	else
+#		define	CACHEDIR			"cache"
+#	endif
 #	define	MODDIR			"mods"
 #	define	MUSICDIR			"music"
 #	define	DOWNLOADDIR		"downloads"

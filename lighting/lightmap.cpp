@@ -63,7 +63,7 @@ GLhandleARB lmShaderProgs [3] = {0,0,0};
 GLhandleARB lmFS [3] = {0,0,0}; 
 GLhandleARB lmVS [3] = {0,0,0}; 
 
-#if 0 //DBG
+#if 1 //DBG
 int lightmapWidth [5] = {8, 16, 32, 64, 128};
 #else
 int lightmapWidth [5] = {16, 32, 64, 128, 256};
@@ -409,10 +409,12 @@ for (int y = 0; y < h; y++) {
 
 void CLightmapManager::Blur (CSegFace* faceP, CLightmapFaceData& source)
 {
+#if !DBG
 	CLightmapFaceData	tempData;
 
 Blur (faceP, source, tempData, 0);
 Blur (faceP, tempData, source, 1);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -443,11 +445,11 @@ void CLightmapManager::Build (CSegFace* faceP, int nThread)
 	CFixVector		*pixelPosP;
 	CRGBColor		*texColorP;
 	CFloatVector3	color;
-	CFixVector		v0, v1, v2;
+	CFixVector		v0, v1, v2, v3, l0, l1, l2, l3, va, vb, vr;
 	struct {
 		CFixVector	x, y;
 	} offset;
-	int				w, h, x, y, yMin, yMax;
+	int				w, h, x, y, hx, hy, yMin, yMax;
 	int				i0, i1, i2; 
 	bool				bBlack, bWhite;
 
@@ -481,28 +483,44 @@ else {
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
+
+v0 = VERTICES [m_data.m_sideVerts [0]];
+v1 = VERTICES [m_data.m_sideVerts [1]];
+v2 = VERTICES [m_data.m_sideVerts [2]];
+v3 = VERTICES [m_data.m_sideVerts [3]];
+l0 = v1 - v0;
+l1 = v1 - v2;
+l2 = v3 - v0;
+l3 = v3 - v2;
+
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
-if (m_data.m_nType) {
-	i1 = m_data.m_sideVerts [0]; 
-	v1 = VERTICES [i1];
-	i2 = m_data.m_sideVerts [2]; 
-	v2 = VERTICES [i2];
+if (m_data.m_nType != SIDE_IS_TRI_02) {
 	for (y = yMin; y < yMax; y++) {
-		for (x = 0; x < w; x++, pixelPosP++) {
-			if (y >= x) {
-				i0 = m_data.m_sideVerts [1]; 
-				v0 = VERTICES [i0];
-				offset.x = (v0 - v1) * m_data.nOffset [y];
-				offset.y = (v2 - v0) * m_data.nOffset [x];
+		for (x = 0; x < w; x++) {
+			if (x <= y) {
+				hy = y - x;
+				va = v0 + l0 * m_data.nOffset [hy];
+				if (x == 0)
+					vr.SetZero ();
+				else {
+					vb = v2 + l1 * m_data.nOffset [hy];
+					vr = vb - va;
+					vr *= I2X (x) / (h - hy - 1);
+					}
 				}
 			else {
-				i0 = m_data.m_sideVerts [3]; 
-				v0 = VERTICES [i0];
-				offset.y = (v0 - v1) * m_data.nOffset [x]; 
-				offset.x = (v2 - v0) * m_data.nOffset [y]; 
+				hx = x - y;
+				va = v0 + l2 * m_data.nOffset [hx];
+				if (y == 0)
+					vr.SetZero ();
+				else {
+					vb = v2 + l3 * m_data.nOffset [hx];
+					vr = vb - va;
+					vr *= I2X (y) / (w - hx - 1);
+					}
 				}
-			*pixelPosP = v1 + offset.x + offset.y; 
+			*pixelPosP++ = va + vr;
 			}
 		}
 	}
