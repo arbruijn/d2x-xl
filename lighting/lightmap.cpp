@@ -530,7 +530,7 @@ else {
 		float la = CFloatVector::Dist (va, vc);
 		float lb = CFloatVector::Dist (vb, vc);
 		float l = la + lb;
-		float step = float (w) / l;
+		float step = l / float (w);
 		float scale = la / step;
 		int pivot = int (scale);
 		if (pivot) {
@@ -540,8 +540,7 @@ else {
 				va += vo;
 				}
 			}
-		pivot = w - pivot;
-		if (pivot) {
+		if (pivot < w) {
 			vo = (vc - vb) / lb * step;
 			for (x = w; x > pivot; ) {
 				pixelPosP [--x].Assign (vb);
