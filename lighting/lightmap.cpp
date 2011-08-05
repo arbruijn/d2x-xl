@@ -82,7 +82,7 @@ int InitLightData (int bVariable);
 void CLightmapFaceData::Setup (CSegFace* faceP)
 {
 CSide* sideP = SEGMENTS [faceP->m_info.nSegment].m_sides + faceP->m_info.nSide;
-m_nType = (sideP->m_nType == SIDE_IS_QUAD) || (sideP->m_nType == SIDE_IS_TRI_02);
+m_nType = sideP->m_nType;
 m_vNormal = sideP->m_normals [2];
 CFixVector::Normalize (m_vNormal);
 m_vcd.vertNorm.Assign (m_vNormal);
@@ -485,18 +485,11 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
 
-	v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
-	v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
-	v2.Assign (VERTICES [m_data.m_sideVerts [2]]);
-	v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
-	CFloatVector l0 = v1 - v0;
-	CFloatVector l1 = v2 - v0;
-	CFloatVector l2 = v2 - v3;
-	CFloatVector l3 = v3 - v0;
-	CFloatVector va, vb, vr, vo;
+CFloatVector va, vb, vo, vr;
 
 CSide* sideP = SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide);
-if (sideP->Normal (0) == sideP->Normal (1)) { // planar
+float dot = 1.0f - CFloatVector::Dot (sideP->m_fNormals [0], sideP->m_fNormals [1]);
+if ((dot >= -0.001f) && (dot <= 0.001f)) { // ~planar
 	v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
 	v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
 	CFloatVector l0 = v1 - v0;
@@ -511,45 +504,19 @@ if (sideP->Normal (0) == sideP->Normal (1)) { // planar
 			}
 		}
 	}
-else if (m_data.m_nType == SIDE_IS_TRI_02) {
-	v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
-	v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
-	v2.Assign (VERTICES [m_data.m_sideVerts [2]]);
-	v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
-	CFloatVector l0 = v1 - v0;
-	CFloatVector l1 = v2 - v0;
-	CFloatVector l2 = v2 - v3;
-	CFloatVector l3 = v3 - v0;
-	for (y = yMin; y < yMax; y++) {
-		va = v0 + l0 * m_data.nOffset [y];
-		vr = v0 + l1 * m_data.nOffset [y];
-		vb = v3 + l2 * m_data.nOffset [y];
-		float la = CFloatVector::Dist (va, vr);
-		float lb = CFloatVector::Dist (vb, vr);
-		float l = la + lb;
-		int pivot = int (w * la / l);
-		if (pivot) {
-			vo = (vr - va) / float (pivot);
-			for (x = 0; x < pivot; x++, pixelPosP++) {
-				pixelPosP->Assign (va);
-				va += vo;
-				}
-			}
-		pivot = w - pivot;
-		if (pivot) {
-			vo = (vr - vb) / float (pivot);
-			for (x = 0; x < pivot; x++, pixelPosP++) {
-				pixelPosP->Assign (vb);
-				vb += vo;
-				}
-			}
+else {
+	if (m_data.m_nType == SIDE_IS_TRI_02) {
+		v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
+		v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
+		v2.Assign (VERTICES [m_data.m_sideVerts [2]]);
+		v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
 		}
-	}
-else {//SIDE_IS_TRI_13
-	v0.Assign (VERTICES [m_data.m_sideVerts [3]]);
-	v1.Assign (VERTICES [m_data.m_sideVerts [2]]);
-	v2.Assign (VERTICES [m_data.m_sideVerts [1]]);
-	v3.Assign (VERTICES [m_data.m_sideVerts [0]]);
+	else {
+		v0.Assign (VERTICES [m_data.m_sideVerts [3]]);
+		v1.Assign (VERTICES [m_data.m_sideVerts [2]]);
+		v2.Assign (VERTICES [m_data.m_sideVerts [1]]);
+		v3.Assign (VERTICES [m_data.m_sideVerts [0]]);
+		}		
 	CFloatVector l0 = v1 - v0;
 	CFloatVector l1 = v2 - v0;
 	CFloatVector l2 = v2 - v3;
