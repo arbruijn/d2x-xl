@@ -448,11 +448,7 @@ void CLightmapManager::Build (CSegFace* faceP, int nThread)
 	CRGBColor		*texColorP;
 	CFloatVector3	color;
 	CFloatVector	v0, v1, v2, v3;
-	struct {
-		CFixVector	x, y;
-	} offset;
 	int				w, h, x, y, yMin, yMax;
-	int				i0, i1, i2; 
 	bool				bBlack, bWhite;
 
 	CVertColorData	vcd = m_data.m_vcd; // need a local copy for each thread!
@@ -488,26 +484,7 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
-if (m_data.m_nType != SIDE_IS_TRI_02) {
-#if 0
-	v0 = VERTICES [m_data.m_sideVerts [0]];
-	v1 = VERTICES [m_data.m_sideVerts [1]];
-	v2 = VERTICES [m_data.m_sideVerts [2]];
-	v3 = VERTICES [m_data.m_sideVerts [3]];
-	for (y = yMin; y < yMax; y++) {
-		for (x = 0; x < w; x++, pixelPosP++) {
-			if (y >= x) {
-				offset.x = (v1 - v0) * m_data.nOffset [y];
-				offset.y = (v2 - v1) * m_data.nOffset [x];
-				}
-			else {
-				offset.y = (v3 - v0) * m_data.nOffset [x]; 
-				offset.x = (v2 - v3) * m_data.nOffset [y]; 
-				}
-			*pixelPosP = v0 + offset.x + offset.y; 
-			}
-		}
-#else
+
 	v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
 	v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
 	v2.Assign (VERTICES [m_data.m_sideVerts [2]]);
@@ -516,8 +493,33 @@ if (m_data.m_nType != SIDE_IS_TRI_02) {
 	CFloatVector l1 = v2 - v0;
 	CFloatVector l2 = v2 - v3;
 	CFloatVector l3 = v3 - v0;
-	CFloatVector va, vb, vc, vr, vo;
+	CFloatVector va, vb, vr, vo;
 
+CSide* sideP = SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide);
+if (sideP->Normal (0) == sideP->Normal (1)) { // planar
+	v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
+	v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
+	CFloatVector l0 = v1 - v0;
+	CFloatVector l2 = v2 - v3;
+	for (y = yMin; y < yMax; y++) {
+		va = v0 + l0 * m_data.nOffset [y];
+		vb = v3 + l2 * m_data.nOffset [y];
+		vo = (vb - va) / float (w);
+		for (x = 0; x < w; x++, pixelPosP++) {
+			pixelPosP->Assign (va);
+			va += vo;
+			}
+		}
+	}
+else if (m_data.m_nType == SIDE_IS_TRI_02) {
+	v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
+	v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
+	v2.Assign (VERTICES [m_data.m_sideVerts [2]]);
+	v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
+	CFloatVector l0 = v1 - v0;
+	CFloatVector l1 = v2 - v0;
+	CFloatVector l2 = v2 - v3;
+	CFloatVector l3 = v3 - v0;
 	for (y = yMin; y < yMax; y++) {
 		va = v0 + l0 * m_data.nOffset [y];
 		vr = v0 + l1 * m_data.nOffset [y];
@@ -538,37 +540,44 @@ if (m_data.m_nType != SIDE_IS_TRI_02) {
 			vo = (vr - vb) / float (pivot);
 			for (x = 0; x < pivot; x++, pixelPosP++) {
 				pixelPosP->Assign (vb);
-				vb -= vo;
+				vb += vo;
 				}
 			}
 		}
-#endif
 	}
-else {//SIDE_IS_TRI_02
-#if 0
-	h--;
-	i1 = m_data.m_sideVerts [1]; 
-	v1 = VERTICES [i1];
-	i2 = m_data.m_sideVerts [3]; 
-	v2 = VERTICES [i2];
+else {//SIDE_IS_TRI_13
+	v0.Assign (VERTICES [m_data.m_sideVerts [3]]);
+	v1.Assign (VERTICES [m_data.m_sideVerts [2]]);
+	v2.Assign (VERTICES [m_data.m_sideVerts [1]]);
+	v3.Assign (VERTICES [m_data.m_sideVerts [0]]);
+	CFloatVector l0 = v1 - v0;
+	CFloatVector l1 = v2 - v0;
+	CFloatVector l2 = v2 - v3;
+	CFloatVector l3 = v3 - v0;
 	for (y = yMin; y < yMax; y++) {
-		for (x = 0; x < w; x++, pixelPosP++) {
-			if (h - y >= x) {
-				i0 = m_data.m_sideVerts [0]; 
-				v0 = VERTICES [i0];
-				offset.x = (v1 - v0) * m_data.nOffset [y];  
-				offset.y = (v2 - v0) * m_data.nOffset [x];
+		va = v0 + l0 * m_data.nOffset [y];
+		vr = v0 + l1 * m_data.nOffset [y];
+		vb = v3 + l2 * m_data.nOffset [y];
+		float la = CFloatVector::Dist (va, vr);
+		float lb = CFloatVector::Dist (vb, vr);
+		float l = la + lb;
+		int pivot = int (w * la / l);
+		if (pivot) {
+			vo = (vr - va) / float (pivot);
+			for (x = 0; x < pivot; x++, pixelPosP++) {
+				pixelPosP->Assign (va);
+				va += vo;
 				}
-			else {
-				i0 = m_data.m_sideVerts [2]; 
-				v0 = VERTICES [i0];
-				offset.y = (v1 - v0) * m_data.nOffset [h - x];  
-				offset.x = (v2 - v0) * m_data.nOffset [h - y]; 
+			}
+		pivot = w - pivot;
+		if (pivot) {
+			vo = (vr - vb) / float (pivot);
+			for (x = 0; x < pivot; x++, pixelPosP++) {
+				pixelPosP->Assign (vb);
+				vb += vo;
 				}
-			*pixelPosP = v0 + offset.x + offset.y; 
 			}
 		}
-#endif
 	}
 
 bBlack = bWhite = true;
