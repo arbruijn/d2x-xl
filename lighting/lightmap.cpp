@@ -485,21 +485,31 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
 
-CFloatVector va, vb, vo, vc;
+v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
+v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
+v2.Assign (VERTICES [m_data.m_sideVerts [2]]);
+v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
+
+CFloatVector l0 = v1 - v0;
+CFloatVector l1 = v2 - v3;
+CFloatVector va, vb, vc, vo;
+
+// move the corner vertices a little inward in order to make all lightmap pixel coordinates lie inside the lightmap
+vo = l0 / float (w);
+v0 += vo * 0.5f;
+l0 -= vo;
+vo = l1 / float (w);
+v3 += vo * 0.5f;
+l1 -= vo;
 
 CSide* sideP = SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide);
 float dot = 1.0f - CFloatVector::Dot (sideP->m_fNormals [0], sideP->m_fNormals [1]);
 if (0 && (dot >= -0.001f) && (dot <= 0.001f)) { // ~planar
-	v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
-	v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
-	v2.Assign (VERTICES [m_data.m_sideVerts [2]]);
-	v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
-	CFloatVector l0 = v1 - v0;
-	CFloatVector l2 = v2 - v3;
 	for (y = yMin; y < yMax; y++) {
 		va = v0 + l0 * m_data.nOffset [y];
-		vb = v3 + l2 * m_data.nOffset [y];
+		vb = v3 + l1 * m_data.nOffset [y];
 		vo = (vb - va) / float (w);
+		va += vo * 0.5f;
 		for (x = 0; x < w; x++, pixelPosP++) {
 			pixelPosP->Assign (va);
 			va += vo;
@@ -507,30 +517,22 @@ if (0 && (dot >= -0.001f) && (dot <= 0.001f)) { // ~planar
 		}
 	}
 else {
-	if (m_data.m_nType == SIDE_IS_TRI_13) {
-		v0.Assign (VERTICES [m_data.m_sideVerts [3]]);
-		v1.Assign (VERTICES [m_data.m_sideVerts [2]]);
-		v2.Assign (VERTICES [m_data.m_sideVerts [1]]);
-		v3.Assign (VERTICES [m_data.m_sideVerts [0]]);
-		}
-	else {
-		v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
-		v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
-		v2.Assign (VERTICES [m_data.m_sideVerts [2]]);
-		v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
-		}
-	CFloatVector l0 = v1 - v0;
-	CFloatVector l1 = v2 - v0;
-	CFloatVector l2 = v2 - v3;
-	CFloatVector l3 = v3 - v0;
+	CFloatVector l2 = (m_data.m_nType == SIDE_IS_TRI_13) ? v1 - v3 : v2 - v0;
+	CFloatVector vh = (m_data.m_nType == SIDE_IS_TRI_13) ? v3 : v0;
+	vo = l2 / float (w);
+	vh += vo * 0.5f;
+	l2 -= vo;
+	vo = (v3 - v0) / (2 * float (w));
+	v0 += vo;
+	v3 -= vo;
 	for (y = yMin; y < yMax; y++, pixelPosP += w) {
 		va = v0 + l0 * m_data.nOffset [y];
-		vc = v0 + l1 * m_data.nOffset [y];
-		vb = v3 + l2 * m_data.nOffset [y];
+		vb = v3 + l1 * m_data.nOffset [y];
+		vc = vh + l2 * m_data.nOffset [y];
 		float la = CFloatVector::Dist (va, vc);
 		float lb = CFloatVector::Dist (vb, vc);
 		float l = la + lb;
-		float step = l / float (w);
+		float step = l / float (w - 1);
 		float scale = la / step;
 		int pivot = int (scale);
 		if (pivot) {
@@ -549,6 +551,7 @@ else {
 			}
 		}
 	}
+
 
 bBlack = bWhite = true;
 pixelPosP = m_data.m_pixelPos + yMin * w;
