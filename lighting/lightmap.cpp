@@ -40,7 +40,7 @@ CLightmapManager lightmapManager;
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 35
+#define LIGHTMAP_DATA_VERSION 36
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
 
@@ -63,7 +63,7 @@ GLhandleARB lmShaderProgs [3] = {0,0,0};
 GLhandleARB lmFS [3] = {0,0,0}; 
 GLhandleARB lmVS [3] = {0,0,0}; 
 
-#if 1 //DBG
+#if DBG
 int lightmapWidth [5] = {8, 16, 32, 64, 128};
 #else
 int lightmapWidth [5] = {16, 32, 64, 128, 256};
@@ -447,7 +447,6 @@ void CLightmapManager::Build (CSegFace* faceP, int nThread)
 	CFixVector		*pixelPosP;
 	CRGBColor		*texColorP;
 	CFloatVector3	color;
-	CFloatVector	v0, v1, v2, v3;
 	int				w, h, x, y, yMin, yMax;
 	bool				bBlack, bWhite;
 
@@ -484,6 +483,61 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
+
+#if 1
+
+CFixVector	v0, v1, v2, v3;
+
+v0 = VERTICES [m_data.m_sideVerts [0]];
+v1 = VERTICES [m_data.m_sideVerts [1]];
+v2 = VERTICES [m_data.m_sideVerts [2]];
+v3 = VERTICES [m_data.m_sideVerts [3]];
+
+struct {
+	CFixVector	x, y;
+} offset;
+
+if (m_data.m_nType != SIDE_IS_TRI_13) {
+	for (y = yMin; y < yMax; y++) {
+		for (x = 0; x < w; x++, pixelPosP++) {
+			if (y >= x) {
+				offset.x = (v1 - v0);
+				offset.y = (v2 - v1);
+				}
+			else {
+				offset.x = (v3 - v0); 
+				offset.y = (v2 - v3); 
+				}
+			offset.x *= F2X (m_data.nOffset [x]);
+			offset.y *= F2X (m_data.nOffset [y]);
+			*pixelPosP = v0;
+			*pixelPosP += offset.x;
+			*pixelPosP += offset.y;
+			}
+		}
+	}
+else {//SIDE_IS_TRI_02
+	h--;
+	for (y = yMin; y < yMax; y++) {
+		for (x = 0; x < w; x++, pixelPosP++) {
+			if (h - y >= x) {
+				offset.x = (v1 - v0) * F2X (m_data.nOffset [y]);  
+				offset.y = (v3 - v0) * F2X (m_data.nOffset [x]);
+				}
+			else {
+				offset.y = (v1 - v2) * F2X (m_data.nOffset [h - x]);  
+				offset.x = (v3 - v2) * F2X (m_data.nOffset [h - y]); 
+				}
+			*pixelPosP = v0;
+			*pixelPosP += offset.x;
+			*pixelPosP += offset.y;
+			}
+		}
+	}
+
+#else
+
+CFloatVector	v0, v1, v2, v3;
 
 v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
 v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
@@ -532,7 +586,7 @@ else {
 		float la = CFloatVector::Dist (va, vc);
 		float lb = CFloatVector::Dist (vb, vc);
 		float l = la + lb;
-		float step = l / float (w - 1);
+		float step = l / float (w);
 		float scale = la / step;
 		int pivot = int (scale);
 		if (pivot) {
@@ -552,6 +606,7 @@ else {
 		}
 	}
 
+#endif
 
 bBlack = bWhite = true;
 pixelPosP = m_data.m_pixelPos + yMin * w;
