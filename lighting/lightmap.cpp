@@ -40,7 +40,7 @@ CLightmapManager lightmapManager;
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 36
+#define LIGHTMAP_DATA_VERSION 35
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
 
@@ -497,12 +497,16 @@ struct {
 	CFixVector	x, y;
 } offset;
 
+v0 = VERTICES [m_data.m_sideVerts [0]];
+v1 = VERTICES [m_data.m_sideVerts [1]];
+v2 = VERTICES [m_data.m_sideVerts [2]];
+v3 = VERTICES [m_data.m_sideVerts [3]];
 if (m_data.m_nType != SIDE_IS_TRI_13) {
 	for (y = yMin; y < yMax; y++) {
 		for (x = 0; x < w; x++, pixelPosP++) {
 			if (y >= x) {
-				offset.x = (v1 - v0);
-				offset.y = (v2 - v1);
+				offset.x = (v2 - v1);
+				offset.y = (v1 - v0);
 				}
 			else {
 				offset.x = (v3 - v0); 
@@ -510,27 +514,24 @@ if (m_data.m_nType != SIDE_IS_TRI_13) {
 				}
 			offset.x *= F2X (m_data.nOffset [x]);
 			offset.y *= F2X (m_data.nOffset [y]);
-			*pixelPosP = v0;
-			*pixelPosP += offset.x;
-			*pixelPosP += offset.y;
+			*pixelPosP = v0 + offset.x + offset.y; 
 			}
 		}
 	}
-else {//SIDE_IS_TRI_02
+else { 
 	h--;
 	for (y = yMin; y < yMax; y++) {
 		for (x = 0; x < w; x++, pixelPosP++) {
 			if (h - y >= x) {
-				offset.x = (v1 - v0) * F2X (m_data.nOffset [y]);  
-				offset.y = (v3 - v0) * F2X (m_data.nOffset [x]);
+				offset.y = (v1 - v0) * F2X (m_data.nOffset [y]);  
+				offset.x = (v3 - v0) * F2X (m_data.nOffset [x]);
+				*pixelPosP = v0 + offset.x + offset.y; 
 				}
 			else {
-				offset.y = (v1 - v2) * F2X (m_data.nOffset [h - x]);  
-				offset.x = (v3 - v2) * F2X (m_data.nOffset [h - y]); 
+				offset.x = (v1 - v2) * F2X (m_data.nOffset [h - x]);  
+				offset.y = (v3 - v2) * F2X (m_data.nOffset [h - y]); 
+				*pixelPosP = v2 + offset.x + offset.y; 
 				}
-			*pixelPosP = v0;
-			*pixelPosP += offset.x;
-			*pixelPosP += offset.y;
 			}
 		}
 	}
@@ -549,21 +550,31 @@ CFloatVector l1 = v2 - v3;
 CFloatVector va, vb, vc, vo;
 
 // move the corner vertices a little inward in order to make all lightmap pixel coordinates lie inside the lightmap
-vo = l0 / float (w);
-v0 += vo * 0.5f;
-l0 -= vo;
-vo = l1 / float (w);
-v3 += vo * 0.5f;
-l1 -= vo;
+#if 0
+float scale = 0.5f / float (w);
+vo = l0 * scale;
+v0 += vo;
+v1 -= vo;
+l0 -= vo * 2.0f;
+vo = l1 * scale;
+v3 += vo;
+v2 -= vo;
+l1 -= vo * 2.0f;
+vo = (v3 - v0) * scale;
+v0 += vo;
+v3 -= vo;
+vo = (v2 - v1) * scale;
+v1 += vo;
+v2 -= vo;
+#endif
 
 CSide* sideP = SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide);
 float dot = 1.0f - CFloatVector::Dot (sideP->m_fNormals [0], sideP->m_fNormals [1]);
-if (0 && (dot >= -0.001f) && (dot <= 0.001f)) { // ~planar
+if ((dot >= -0.001f) && (dot <= 0.001f)) { // ~planar
 	for (y = yMin; y < yMax; y++) {
 		va = v0 + l0 * m_data.nOffset [y];
 		vb = v3 + l1 * m_data.nOffset [y];
-		vo = (vb - va) / float (w);
-		va += vo * 0.5f;
+		vo = (vb - va) / float (w - 1);
 		for (x = 0; x < w; x++, pixelPosP++) {
 			pixelPosP->Assign (va);
 			va += vo;
@@ -571,14 +582,8 @@ if (0 && (dot >= -0.001f) && (dot <= 0.001f)) { // ~planar
 		}
 	}
 else {
-	CFloatVector l2 = (m_data.m_nType == SIDE_IS_TRI_13) ? v1 - v3 : v2 - v0;
 	CFloatVector vh = (m_data.m_nType == SIDE_IS_TRI_13) ? v3 : v0;
-	vo = l2 / float (w);
-	vh += vo * 0.5f;
-	l2 -= vo;
-	vo = (v3 - v0) / (2 * float (w));
-	v0 += vo;
-	v3 -= vo;
+	CFloatVector l2 = ((m_data.m_nType == SIDE_IS_TRI_13) ? v1 : v2) - vh;
 	for (y = yMin; y < yMax; y++, pixelPosP += w) {
 		va = v0 + l0 * m_data.nOffset [y];
 		vb = v3 + l1 * m_data.nOffset [y];
@@ -586,7 +591,7 @@ else {
 		float la = CFloatVector::Dist (va, vc);
 		float lb = CFloatVector::Dist (vb, vc);
 		float l = la + lb;
-		float step = l / float (w);
+		float step = l / float (w - 1);
 		float scale = la / step;
 		int pivot = int (scale);
 		if (pivot) {
