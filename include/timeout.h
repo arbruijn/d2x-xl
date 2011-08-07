@@ -30,7 +30,7 @@ class CTimeout {
 		time_t	m_duration;
 
 	public:
-		CTimeout (time_t duration = 1000, bool bImmediate = false) : m_duration(duration) { Start (bImmediate); }
+		CTimeout (time_t duration = 1000, bool bImmediate = false) : m_duration(duration) { Start (-1, bImmediate); }
 
 		inline void Setup (time_t duration) { m_duration = duration; }
 

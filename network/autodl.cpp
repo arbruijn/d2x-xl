@@ -350,11 +350,11 @@ if ((int) client.cf.Read (client.data + 5, 1, l) != l)
 	return -1;
 client.fLen -= l;
 if (!SendData (DL_DATA, client))
-	return -1;
+	return -1; // error 
 if (0 < client.fLen)
-	return 0;
+	return 0; // something left to send
 client.cf.Close ();
-return 1;
+return 1; // all sent
 }
 
 //------------------------------------------------------------------------------
