@@ -1416,7 +1416,7 @@ if (!m_data.nHeapSize)
 #if DBG
 if (gameStates.render.cameras.bActive)
 	nWindow = nWindow;
-HUDMessage (0, "transp. render heap size: %d.%03d.%03d", m_data.nHeapSize / 1000000, (m_data.nHeapSize % 1000000) / 1000, m_data.nHeapSize % 1000);
+//HUDMessage (0, "transp. render heap size: %d.%03d.%03d", m_data.nHeapSize / 1000000, (m_data.nHeapSize % 1000000) / 1000, m_data.nHeapSize % 1000);
 #endif
 PROF_START
 gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
