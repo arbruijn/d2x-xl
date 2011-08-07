@@ -1779,7 +1779,7 @@ if (!(IsMultiGame || (gameStates.app.cheats.bEnabled & 2))) {
 else
 	LoadPlayerProfile (1);		//get window sizes
 ResetSpecialEffects ();
-if (networkData.nJoinState == 1){
+if (networkData.nJoinState == 1) {
 	networkData.nJoinState = 0;
 	StartLevel (nLevel, 1);
 	}

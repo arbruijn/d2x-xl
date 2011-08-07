@@ -418,14 +418,14 @@ int ExecMultiMenuOption (int nChoice)
 
 tracker.m_bUse = 0;
 if ((nChoice == multiOpts.nStartUdpTracker) ||(nChoice == multiOpts.nJoinUdpTracker)) {
-	if (gameStates.app.bNostalgia > 1)
+	if (!DBG && gameStates.app.bNostalgia > 1)
 		return 0;
 	tracker.m_bUse = 1;
 	bUDP = 1;
 	bStart = (nChoice == multiOpts.nStartUdpTracker);
 	}
 else if ((nChoice == multiOpts.nStartUdp) || (nChoice == multiOpts.nJoinUdp)) {
-	if (gameStates.app.bNostalgia > 1)
+	if (!DBG && gameStates.app.bNostalgia > 1)
 		return 0;
 	bUDP = 1;
 	bStart = (nChoice == multiOpts.nStartUdp);
@@ -497,7 +497,7 @@ do {
 	nOldGameMode = gameData.app.nGameMode;
 	m.Destroy ();
 	m.Create (15);
-	if (gameStates.app.bNostalgia < 2) {
+	if (DBG || gameStates.app.bNostalgia < 2) {
 		optCreate = m.AddMenu (TXT_CREATE_GAME, KEY_S, HTX_NETWORK_SERVER);
 		optJoin = m.AddMenu (TXT_JOIN_GAME, KEY_J, HTX_NETWORK_CLIENT);
 		m.AddText ("", 0);
@@ -527,7 +527,7 @@ do {
 		}
 	i = m.Menu (NULL, TXT_MULTIPLAYER, NULL, &choice);
 	if (i > -1) {      
-		if (gameStates.app.bNostalgia > 1)
+		if (!DBG && gameStates.app.bNostalgia > 1)
 			i = choice;
 		else {
 			for (gameStates.multi.nConnection = 0; 

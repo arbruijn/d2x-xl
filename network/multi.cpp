@@ -1369,7 +1369,7 @@ if (gameData.multigame.menu.bLeave)
 	return -1;
 xOldShield = LOCALPLAYER.Shield ();
 bPlayerWasDead = gameStates.app.bPlayerIsDead;
-if (!gameOpts->menus.nStyle) {
+if (!gameOpts->menus.nStyle && gameStates.app.bGameRunning) {
 	gameData.multigame.menu.bInvoked++; // Track level of menu nesting
 	GameFrame (0, -1, 40);
 	gameData.multigame.menu.bInvoked--;

@@ -898,7 +898,7 @@ void LoadGameTexts(void);
 #define TXT_UDP_QUAL						GT(118)
 #define TXT_SMART_SEARCH				GT(119)
 #define TXT_SHOW_LVL_VERSION			GT(120)
-#define TXT_DL_ENABLE				GT(121)
+#define TXT_DL_ENABLE					GT(121)
 #define TXT_UDP_START					GT(122)
 #define TXT_UDP_JOIN						GT(123)
 #define TXT_TRACKER_START				GT(124)

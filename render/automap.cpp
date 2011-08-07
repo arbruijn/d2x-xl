@@ -471,7 +471,7 @@ else {
 	G3SetViewMatrix (m_data.viewer.vPos, m_data.viewer.mOrient, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
 	}
 UpdateSlidingFaces ();
-if (!m_bRadar && (gameOpts->render.automap.bTextured & 1)) {
+if (!m_bRadar && (gameStates.app.bNostalgia < 2) && (gameOpts->render.automap.bTextured & 1)) {
 	gameData.render.mine.viewer = m_data.viewer;
 	RenderMine (gameData.objs.consoleP->info.nSegment, 0, 0);
 	RenderEffects (0);
