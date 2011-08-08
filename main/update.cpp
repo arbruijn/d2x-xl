@@ -282,9 +282,7 @@ return CLinuxDownload::Handler ()->Execute (pszSrc, pszDest, bProgressBar);
 
 class CWindowsDownload : public CDownload, public CDownloadCallback {
 	protected:
-		CWindowsDownload () : CDownload () { 
-			m_handler = new CWindowsDownload(); 
-			}
+		CWindowsDownload () : CDownload () {}
 
 		CWindowsDownload (CDownload const&) {}
 
