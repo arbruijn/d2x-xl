@@ -211,7 +211,7 @@ class CMenu : public CStack<CMenuItem> {
 
 	public:
 		CMenu () { Init (); }
-		CMenu (uint nLength) {
+		explicit CMenu (uint nLength) {
 			Init ();
 			Create (nLength);
 			}

@@ -16,10 +16,12 @@
 
 #ifdef __macosx__
 #	include "SDL/SDL_main.h"
+#	include <SDL/SDL_thread.h>
 #	include "SDL/SDL_keyboard.h"
 #	include "FolderDetector.h"
 #else
 #	include "SDL_main.h"
+#	include "SDL_thread.h"
 #	include "SDL_keyboard.h"
 #endif
 #include "descent.h"
@@ -31,7 +33,7 @@
 #if defined(__unix__)
 
 #	define FILEEXT		"rar"
-#	define FILETYPE		"src"
+#	define FILETYPE	"src"
 
 #include <curl/curl.h>
 #include <cstdio>
@@ -78,10 +80,139 @@ return 0;
 #	include <process.h>
 #	include "errno.h"
 
-#	define DownloadFile(_src,_dest)	URLDownloadToFile (NULL, _src, _dest, NULL, NULL)
+//#	define DownloadFile(_src,_dest)	URLDownloadToFile (NULL, _src, _dest, NULL, NULL)
 
 #	define FILEEXT		"exe"
-#	define FILETYPE		"win"
+#	define FILETYPE	"win"
+
+class CDownload : public IBindStatusCallback {
+	private:
+		int			m_nStatus;
+		int			m_nProgress;
+		int			m_nProgressMax;
+		bool			m_bRunning;
+		SDL_Thread*	m_thread;
+		const char* m_pszSrc;
+		const char* m_pszDest;
+		int			m_nOptPercentage;
+		int			m_nOptProgress;
+		CMenu	m_menu;
+
+		static CDownload* m_handler;
+
+	private:
+		void Setup (const char* pszSrc, const char* pszDest) {
+			m_pszSrc = pszSrc;
+			m_pszDest = pszDest;
+			m_menu.AddText ("", 0);
+			char szProgress [50];
+			sprintf (szProgress, "0%c done", '%');
+			m_nOptPercentage = m_menu.AddText (szProgress, 0);
+			m_menu [m_nOptPercentage].m_x = (short) 0x8000;	//centered
+			m_menu [m_nOptPercentage].m_bCentered = 1;
+			m_nOptProgress = m_menu.AddGauge ("                    ", -1, 100);
+			m_bRunning = false;
+			}
+
+	public:
+		static CDownload* Handler (void) {
+			if (!m_handler)
+				m_handler = new CDownload();
+			return m_handler;
+			}
+
+		int Update (void) {
+			if (!(m_nProgress && m_nProgressMax))
+				return 1;
+			int h = int (m_nProgress * 100 / m_nProgressMax);
+			if (h == m_nProgress)
+				return 1;
+			if (h >= 100)
+				return 0;
+			m_nProgress = h;
+			sprintf (m_menu [m_nOptPercentage].m_text, TXT_PROGRESS, m_nProgress, '%');
+			m_menu [m_nOptPercentage].m_bRebuild = 1;
+			h = m_nProgress;
+			if (m_menu [m_nOptProgress].m_value != h) {
+				m_menu [m_nOptProgress].m_value = h;
+				m_menu [m_nOptProgress].m_bRebuild = 1;
+				}
+			return 1;
+			}
+
+
+		virtual HRESULT STDMETHODCALLTYPE OnProgress (ULONG ulProgress, ULONG ulProgressMax, ULONG ulStatusCode, LPCWSTR szStatusText) {
+			m_nProgress = int (ulProgress);
+			m_nProgressMax = int (ulProgressMax);
+			return S_OK;
+			}
+
+		virtual ULONG STDMETHODCALLTYPE AddRef (void) { return E_NOTIMPL; } 
+
+		virtual ULONG STDMETHODCALLTYPE Release (void) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE QueryInterface (const IID &,void **) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE OnStartBinding (DWORD dwReserved, __RPC__in_opt IBinding *pib) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE GetPriority (__RPC__out LONG *pnPriority) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE OnLowResource (DWORD reserved) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE OnStopBinding (HRESULT hresult,__RPC__in_opt LPCWSTR szError) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE GetBindInfo (DWORD *grfBINDF, BINDINFO *pbindinfo) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE OnDataAvailable (DWORD grfBSCF, DWORD dwSize, FORMATETC *pformatetc, STGMEDIUM *pstgmed) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE OnObjectAvailable (__RPC__in REFIID riid, __RPC__in_opt IUnknown *punk) { return E_NOTIMPL; } 
+
+	protected:
+		CDownload () : m_nStatus (0), m_nProgress (0) , m_nProgressMax (0), m_bRunning (false), m_thread (NULL) {}
+		CDownload (CDownload const&) {}
+		CDownload& operator= (CDownload const&) {}
+
+	public:
+		static int MenuPoll (CMenu& menu, int& key, int nCurItem, int nState) {
+			if (!nState) {
+				CDownload::Handler ()->Start ();
+				key = CDownload::Handler ()->Update () ? 0 : 2;
+				}
+			return nCurItem;
+			}
+
+		static int _CDECL_ Download (void* downloadHandler) {
+			return CDownload::Handler ()->Fetch ();
+			}
+
+		int Execute (const char* pszSrc, const char* pszDest) {
+			Setup (pszSrc, pszDest);
+			for (; m_menu.Menu (NULL, "Downloading...", &CDownload::MenuPoll) >= 0; )
+				;
+			m_thread = NULL;
+			return Status ();
+			}
+
+		void Start (void) {
+			if (!m_thread) 
+				m_thread = SDL_CreateThread (&CDownload::Download, NULL);
+			}
+
+		int Fetch (void) {
+			return m_nStatus = URLDownloadToFile (NULL, m_pszSrc, m_pszDest, NULL, this);
+			}
+
+		inline int Status (void) { return m_nStatus; }
+	};
+
+
+CDownload* CDownload::m_handler = NULL;
+
+
+int DownloadFile (const char* pszSrc, const char* pszDest)
+{
+return CDownload::Handler ()->Execute (pszSrc, pszDest);
+}
 
 #endif
 
@@ -96,7 +227,11 @@ int CheckForUpdate (void)
 
 	static const char* pszSource [2] = {
 		"http://www.descent2.de/files", 
-		"http://sourceforge.net/projects/d2x-xl/files"
+#if defined(_WIN32)
+		"http://sourceforge.net/projects/d2x-xl/files/Windows"
+#else
+		"http://sourceforge.net/projects/d2x-xl/files/Linux"
+#endif
 	};
 
 sprintf (szDest, "%s/d2x-xl-version.txt", gameFolders.szDownloadDir);
@@ -124,7 +259,7 @@ if (D2X_IVER >= nVersion [0] * 100000 + nVersion [1] * 1000 + nVersion [2]) {
 	}
 #endif
 
-if (MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "An update has been found. Download it?"))
+if (MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "An update has been found.\nDownload it?"))
 	return 0;
 sprintf (szDest, "%s/d2x-xl-%s-%d.%d.%d.%s", gameFolders.szDownloadDir,
 			FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
