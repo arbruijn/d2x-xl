@@ -199,9 +199,7 @@ CDownload* CDownload::m_handler = NULL;
 
 class CLinuxDownload : public CDownload {
 	protected:
-		CLinuxDownload () : CDownload () { 
-			m_handler = new CLinuxDownload(); 
-			}
+		CLinuxDownload () : CDownload () {}
 
 		CLinuxDownload (CDownload const&) {}
 
@@ -223,6 +221,12 @@ class CLinuxDownload : public CDownload {
 			CURL* hCurl;
 			if (!(hCurl = curl_easy_init ()))
 				return m_nResult = 1;
+			if (m_bProgressBar) {
+				curl_easy_setopt (hCurl, CURLOPT_NOPROGRESS, 0);
+				curl_easy_setopt (hCurl, CURLOPT_PROGRESSFUNCTION, &CLinuxDownload::OnProgress);
+				}
+			else
+				curl_easy_setopt (hCurl, CURLOPT_NOPROGRESS, 1);
 			if (curl_easy_setopt (hCurl, CURLOPT_URL, m_pszSrc)) {
 				curl_easy_cleanup (hCurl);
 				return m_nResult = 1;
@@ -239,12 +243,6 @@ class CLinuxDownload : public CDownload {
 				curl_easy_cleanup (hCurl);
 				return m_nResult = 1;
 				}
-			if (m_bProgressBar) {
-				curl_easy_setopt (hCurl, CURLOPT_NOPROGRESS, 0);
-				curl_easy_setopt (hCurl, CURLOPT_PROGRESSFUNCTION, &CLinuxDownload::OnProgress);
-				}
-			else
-				curl_easy_setopt (hCurl, CURLOPT_NOPROGRESS, 1);
 			if (curl_easy_perform (hCurl)) {
 				curl_easy_cleanup (hCurl);
 				std::fclose (file);
@@ -347,6 +345,7 @@ else {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 	return -1;
 	}
+G3_SLEEP (1000);
 if (!cf.Open ("d2x-xl-version.txt", gameFolders.szDownloadDir, "rb", -1)) {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 	return -1;
