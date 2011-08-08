@@ -29,63 +29,45 @@
 #include "menu.h"
 
 // ----------------------------------------------------------------------------
-
-#if defined(__unix__)
-
-#	define FILEEXT		"rar"
-#	define FILETYPE	"src"
-
-#include <curl/curl.h>
-#include <cstdio>
-
-// link with libcurl (-lcurl)
-
-int DownloadFile (const char* pszSrc, const char* pszDest)
-{
-CURL* hCurl;
-if (!(hCurl = curl_easy_init ()))
-	return 1;
-if (curl_easy_setopt (hCurl, CURLOPT_URL, pszSrc)) {
-	curl_easy_cleanup (hCurl);
-	return 1;
-	}
-std::FILE* file;
-if (!(file = std::fopen (pszDest, "w"))) {
-	curl_easy_cleanup (hCurl);
-	return 1;
-	}
-#if DBG
-curl_easy_setopt (hCurl, CURLOPT_VERBOSE, 1);
-#endif
-if (curl_easy_setopt (hCurl, CURLOPT_WRITEDATA, file)) {
-	curl_easy_cleanup (hCurl);
-	return 1;
-	}
-if (curl_easy_perform (hCurl)) {
-	curl_easy_cleanup (hCurl);
-	std::fclose (file);
-	unlink (pszDest);
-	return 1;
-	}
-curl_easy_cleanup (hCurl);
-std::fclose (file);
-return 0;
-}
-
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-#elif defined(_WIN32)
+#if defined(WIN32)
+class CDownloadCallback : public IBindStatusCallback {
+	public:
+		virtual HRESULT STDMETHODCALLTYPE OnProgress (ULONG ulProgress, ULONG ulProgressMax, ULONG ulResultCode, LPCWSTR szResultText) { return E_NOTIMPL; } 
 
-#	include "urlmon.h"
-#	include <process.h>
-#	include "errno.h"
+		virtual ULONG STDMETHODCALLTYPE AddRef (void) { return E_NOTIMPL; } 
 
-//#	define DownloadFile(_src,_dest)	URLDownloadToFile (NULL, _src, _dest, NULL, NULL)
+		virtual ULONG STDMETHODCALLTYPE Release (void) { return E_NOTIMPL; } 
 
-#	define FILEEXT		"exe"
-#	define FILETYPE	"win"
+		virtual HRESULT STDMETHODCALLTYPE QueryInterface (const IID &,void **) { return E_NOTIMPL; } 
 
-class CDownload : public IBindStatusCallback {
+		virtual HRESULT STDMETHODCALLTYPE OnStartBinding (DWORD dwReserved, __RPC__in_opt IBinding *pib) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE GetPriority (__RPC__out LONG *pnPriority) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE OnLowResource (DWORD reserved) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE OnStopBinding (HRESULT hresult,__RPC__in_opt LPCWSTR szError) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE GetBindInfo (DWORD *grfBINDF, BINDINFO *pbindinfo) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE OnDataAvailable (DWORD grfBSCF, DWORD dwSize, FORMATETC *pformatetc, STGMEDIUM *pstgmed) { return E_NOTIMPL; } 
+
+		virtual HRESULT STDMETHODCALLTYPE OnObjectAvailable (__RPC__in REFIID riid, __RPC__in_opt IUnknown *punk) { return E_NOTIMPL; } 
+	};
+#endif
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+class CDownload 
+#if defined(_WIN32)
+	: public CDownloadCallback 
+#endif
+	{
 	private:
 		int			m_nResult;
 		int			m_nStatus;
@@ -147,37 +129,25 @@ class CDownload : public IBindStatusCallback {
 			return 1;
 			}
 
-
+#if defined(WIN32)
 		virtual HRESULT STDMETHODCALLTYPE OnProgress (ULONG ulProgress, ULONG ulProgressMax, ULONG ulResultCode, LPCWSTR szResultText) {
-			m_nProgress = int (ulProgress);
-			m_nProgressMax = int (ulProgressMax);
+			CDownload::Handler ()->SetProgress (int (ulProgress), int (ulProgressMax));
 			return S_OK;
 			}
-
-		virtual ULONG STDMETHODCALLTYPE AddRef (void) { return E_NOTIMPL; } 
-
-		virtual ULONG STDMETHODCALLTYPE Release (void) { return E_NOTIMPL; } 
-
-		virtual HRESULT STDMETHODCALLTYPE QueryInterface (const IID &,void **) { return E_NOTIMPL; } 
-
-		virtual HRESULT STDMETHODCALLTYPE OnStartBinding (DWORD dwReserved, __RPC__in_opt IBinding *pib) { return E_NOTIMPL; } 
-
-		virtual HRESULT STDMETHODCALLTYPE GetPriority (__RPC__out LONG *pnPriority) { return E_NOTIMPL; } 
-
-		virtual HRESULT STDMETHODCALLTYPE OnLowResource (DWORD reserved) { return E_NOTIMPL; } 
-
-		virtual HRESULT STDMETHODCALLTYPE OnStopBinding (HRESULT hresult,__RPC__in_opt LPCWSTR szError) { return E_NOTIMPL; } 
-
-		virtual HRESULT STDMETHODCALLTYPE GetBindInfo (DWORD *grfBINDF, BINDINFO *pbindinfo) { return E_NOTIMPL; } 
-
-		virtual HRESULT STDMETHODCALLTYPE OnDataAvailable (DWORD grfBSCF, DWORD dwSize, FORMATETC *pformatetc, STGMEDIUM *pstgmed) { return E_NOTIMPL; } 
-
-		virtual HRESULT STDMETHODCALLTYPE OnObjectAvailable (__RPC__in REFIID riid, __RPC__in_opt IUnknown *punk) { return E_NOTIMPL; } 
+#elif defined (__unix__)
+		static int OnProgress (void *clientp, double dltotal, double dlnow, double ultotal, double ulnow) {
+			CDownload::Handler ()->SetProgress (int (dlnow), int (dltotal));
+			return 0;
+			}
+#endif
 
 	protected:
 		CDownload () : m_nStatus (-1), m_nResult (0), m_nProgress (0), m_nProgressMax (0), m_nPercent (0), m_thread (NULL) {}
+
 		CDownload (CDownload const&) {}
+
 		CDownload& operator= (CDownload const&) {}
+
 
 	public:
 		static int MenuPoll (CMenu& menu, int& key, int nCurItem, int nState) {
@@ -187,6 +157,8 @@ class CDownload : public IBindStatusCallback {
 				}
 			return nCurItem;
 			}
+
+		int Fetch (void);
 
 		static int _CDECL_ Download (void* downloadHandler) {
 			return CDownload::Handler ()->Fetch ();
@@ -211,10 +183,9 @@ class CDownload : public IBindStatusCallback {
 				}
 			}
 
-		int Fetch (void) {
-			m_nResult = URLDownloadToFile (NULL, m_pszSrc, m_pszDest, NULL, Handler ());
-			m_nStatus = 1;
-			return m_nResult;
+		void SetProgress (int nProgress, int nProgressMax) {
+			m_nProgress = nProgress;
+			m_nProgressMax = nProgressMax;
 			}
 
 		inline int Status (void) { return m_nStatus; }
@@ -223,13 +194,93 @@ class CDownload : public IBindStatusCallback {
 	};
 
 
+// ----------------------------------------------------------------------------
+
+#if defined(__unix__)
+
+#	define FILEEXT		"rar"
+#	define FILETYPE	"src"
+
+#include <curl/curl.h>
+#include <cstdio>
+
+// link with libcurl (-lcurl)
+
+int CDownload::Fetch (void)
+{
+CURL* hCurl;
+if (!(hCurl = curl_easy_init ()))
+	return m_nResult = 1;
+if (curl_easy_setopt (hCurl, CURLOPT_URL, pszSrc)) {
+	curl_easy_cleanup (hCurl);
+	return m_nResult = 1;
+	}
+std::FILE* file;
+if (!(file = std::fopen (pszDest, "w"))) {
+	curl_easy_cleanup (hCurl);
+	return m_nResult = 1;
+	}
+#if DBG
+curl_easy_setopt (hCurl, CURLOPT_VERBOSE, 1);
+#endif
+if (curl_easy_setopt (hCurl, CURLOPT_WRITEDATA, file)) {
+	curl_easy_cleanup (hCurl);
+	return m_nResult = 1;
+	}
+if (bProgressBar) {
+	curl_easy_setopt (curl, CURLOPT_NOPROGRESS, FALSE);
+	curl_easy_setopt (curl, CURLOPT_PROGRESSFUNCTION, &CDownload::OnProgress);
+	}
+if (curl_easy_perform (hCurl)) {
+	curl_easy_cleanup (hCurl);
+	std::fclose (file);
+	unlink (pszDest);
+	return m_nResult = 1;
+	}
+curl_easy_cleanup (hCurl);
+std::fclose (file);
+m_nStatus = 1;
+return m_nResult = 0;
+}
+
+#elif defined (_WIN32) // -----------------------------------------------------
+
+int CDownload::Fetch (void) 
+{
+m_nResult = URLDownloadToFile (NULL, m_pszSrc, m_pszDest, NULL, Handler ());
+m_nStatus = 1;
+return m_nResult;
+}
+
+#endif
+
+// ----------------------------------------------------------------------------
+
 CDownload* CDownload::m_handler = NULL;
 
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 int DownloadFile (const char* pszSrc, const char* pszDest, bool bProgressBar)
 {
 return CDownload::Handler ()->Execute (pszSrc, pszDest, bProgressBar);
 }
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+#if defined(_WIN32)
+
+#	include "urlmon.h"
+#	include <process.h>
+#	include "errno.h"
+
+//#	define DownloadFile(_src,_dest)	URLDownloadToFile (NULL, _src, _dest, NULL, NULL)
+
+#	define FILEEXT		"exe"
+#	define FILETYPE	"win"
 
 #endif
 
