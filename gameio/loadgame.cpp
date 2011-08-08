@@ -1617,6 +1617,10 @@ OBJECTS [nPlayerObj].info.position.mOrient = gameData.segs.secret.returnOrient;
 //called when the CPlayerData is starting a level (new game or new ship)
 void StartLevel (int nLevel, int bRandom)
 {
+if (nLevel == 0x7fffffff)
+	PrintLog ("restarting level\n");
+else
+	PrintLog ("starting level %d\n", nLevel);
 Assert (!gameStates.app.bPlayerIsDead);
 VerifyConsoleObject ();
 InitPlayerPosition (bRandom);

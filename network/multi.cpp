@@ -1138,7 +1138,7 @@ else {
 					networkData.packetSource.src_node [1],
 					networkData.packetSource.src_node [2],
 					networkData.packetSource.src_node [3],
-					*reinterpret_cast<ushort*> (networkData.packetSource.src_node + 4));
+					htons (*reinterpret_cast<ushort*> (networkData.packetSource.src_node + 4)));
 		killerP->netKillsTotal++;
 		killerP->nScoreGoalCount++;
 		}

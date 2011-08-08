@@ -595,15 +595,17 @@ return m_cameras.ToS ();
 
 void CCameraManager::Destroy (void)
 {
-PrintLog ("Destroying cameras\n");
-for (uint i = 0; i < m_cameras.ToS (); i++)
-	m_cameras [i].Destroy ();
-m_cameras.Destroy ();
-m_faceCameras.Destroy ();
-m_objectCameras.Destroy ();
+if (m_cameras.Buffer ()) {
+	PrintLog ("Destroying cameras\n");
+	for (uint i = 0; i < m_cameras.ToS (); i++)
+		m_cameras [i].Destroy ();
+	m_cameras.Destroy ();
+	m_faceCameras.Destroy ();
+	m_objectCameras.Destroy ();
 #if MAX_SHADOWMAPS
-m_shadowMaps.Clear (0xFF);
+	m_shadowMaps.Clear (0xFF);
 #endif
+	}
 }
 
 //------------------------------------------------------------------------------

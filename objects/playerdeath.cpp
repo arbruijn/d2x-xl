@@ -125,9 +125,11 @@ if (!gameStates.app.bPlayerIsDead)
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordRestoreCockpit ();
 if (gameData.objs.deadPlayerCamera) {
+	PrintLog ("   releasing death camera\n");
 	ReleaseObject (OBJ_IDX (gameData.objs.deadPlayerCamera));
 	gameData.objs.deadPlayerCamera = NULL;
 	}
+PrintLog ("   resetting cockpit\n");
 CGenericCockpit::Rewind ();
 gameStates.app.bPlayerIsDead = 0;
 gameStates.app.bPlayerExploded = 0;
@@ -170,12 +172,12 @@ if (gameStates.app.bPlayerIsDead) {
 
 	if (xTimeDead > DEATH_SEQUENCE_EXPLODE_TIME) {
 		if (!gameStates.app.bPlayerExploded) {
-		if (LOCALPLAYER.hostages.nOnBoard > 1)
-			HUDInitMessage (TXT_SHIP_DESTROYED_2, LOCALPLAYER.hostages.nOnBoard);
-		else if (LOCALPLAYER.hostages.nOnBoard == 1)
-			HUDInitMessage (TXT_SHIP_DESTROYED_1);
-		else
-			HUDInitMessage (TXT_SHIP_DESTROYED_0);
+			if (LOCALPLAYER.hostages.nOnBoard > 1)
+				HUDInitMessage (TXT_SHIP_DESTROYED_2, LOCALPLAYER.hostages.nOnBoard);
+			else if (LOCALPLAYER.hostages.nOnBoard == 1)
+				HUDInitMessage (TXT_SHIP_DESTROYED_1);
+			else
+				HUDInitMessage (TXT_SHIP_DESTROYED_0);
 
 #ifdef TACTILE
 			if (TactileStick)
