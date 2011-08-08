@@ -112,7 +112,6 @@ class CDownload : public IBindStatusCallback {
 			m_pszSrc = pszSrc;
 			m_pszDest = pszDest;
 			if (m_bProgressBar = bProgressBar) {
-				m_menu.AddText ("", 0);
 				char szProgress [50];
 				sprintf (szProgress, "0%c done", '%');
 				m_nOptPercentage = m_menu.AddText (szProgress, 0);
@@ -133,7 +132,7 @@ class CDownload : public IBindStatusCallback {
 			Start ();
 			if (!(m_nProgress && m_nProgressMax))
 				return 1;
-			int h = int (m_nProgress * 100 / m_nProgressMax);
+			int h = int (float (m_nProgress) * 100.0f / float (m_nProgressMax));
 			if (h == m_nPercent)
 				return 1;
 			if (h >= 100)
