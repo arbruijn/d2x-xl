@@ -65,10 +65,11 @@ class CDownloadCallback : public IBindStatusCallback {
 
 class CDownload {
 	protected:
+		int			m_nState;
 		int			m_nResult;
-		int			m_nStatus;
 		const char* m_pszSrc;
 		const char* m_pszDest;
+		bool		m_bProgressBar;
 
 		static CDownload* m_handler;
 
@@ -79,19 +80,18 @@ class CDownload {
 		SDL_Thread*	m_thread;
 		int			m_nOptPercentage;
 		int			m_nOptProgress;
-		bool			m_bProgressBar;
 		CMenu			m_menu;
 
 	private:
 		void Setup (const char* pszSrc, const char* pszDest, bool bProgressBar) {
-			m_nStatus = -1;
+			m_nState = -1;
 			m_nResult = 0;
 			m_nPercent = 0;
 			m_nProgress = 0;
 			m_nProgressMax = 0;
 			m_pszSrc = pszSrc;
 			m_pszDest = pszDest;
-			if (m_bProgressBar = bProgressBar) {
+			if ((m_bProgressBar = bProgressBar)) {
 				char szProgress [50];
 				sprintf (szProgress, "0%c done", '%');
 				m_nOptPercentage = m_menu.AddText (szProgress, 0);
@@ -102,11 +102,11 @@ class CDownload {
 			}
 
 	protected:
-		CDownload () : m_nStatus (-1), m_nResult (0), m_nProgress (0), m_nProgressMax (0), m_nPercent (0), m_thread (NULL) {}
+		CDownload () : m_nState (-1), m_nResult (0), m_nProgress (0), m_nProgressMax (0), m_nPercent (0), m_thread (NULL) {}
 
 		CDownload (CDownload const&) {}
 
-		CDownload& operator= (CDownload const&) {}
+		CDownload& operator= (CDownload const&) { return *this; }
 
 	public:
 		static CDownload* Handler (void) {
@@ -133,10 +133,14 @@ class CDownload {
 			}
 
 	public:
+		inline int State (void) { return m_nState; }
+
+		inline int Result (void) { return m_nResult; }
+
 		static int MenuPoll (CMenu& menu, int& key, int nCurItem, int nState) {
 			if (!nState) {
 				CDownload::Handler ()->Update ();
-				key = (CDownload::Handler ()->Status () == 1) ? -2 : 0;
+				key = (CDownload::Handler ()->State () == 1) ? -2 : 0;
 				}
 			return nCurItem;
 			}
@@ -160,8 +164,8 @@ class CDownload {
 			}
 
 		void Start (void) {
-			if (m_nStatus < 0) {
-				m_nStatus = 0;
+			if (m_nState < 0) {
+				m_nState = 0;
 				m_thread = SDL_CreateThread (&CDownload::Download, NULL);
 				}
 			}
@@ -170,10 +174,6 @@ class CDownload {
 			m_nProgress = nProgress;
 			m_nProgressMax = nProgressMax;
 			}
-
-		inline int Status (void) { return m_nStatus; }
-
-		inline int Result (void) { return m_nResult; }
 	};
 
 
@@ -205,7 +205,7 @@ class CLinuxDownload : public CDownload {
 
 		CLinuxDownload (CDownload const&) {}
 
-		CLinuxDownload& operator= (CLinuxDownload const&) {}
+		CLinuxDownload& operator= (CLinuxDownload const&) { return *this; }
 
 	public:
 		static CDownload* Handler (void) {
@@ -223,12 +223,12 @@ class CLinuxDownload : public CDownload {
 			CURL* hCurl;
 			if (!(hCurl = curl_easy_init ()))
 				return m_nResult = 1;
-			if (curl_easy_setopt (hCurl, CURLOPT_URL, pszSrc)) {
+			if (curl_easy_setopt (hCurl, CURLOPT_URL, m_pszSrc)) {
 				curl_easy_cleanup (hCurl);
 				return m_nResult = 1;
 				}
 			std::FILE* file;
-			if (!(file = std::fopen (pszDest, "w"))) {
+			if (!(file = std::fopen (m_pszDest, "w"))) {
 				curl_easy_cleanup (hCurl);
 				return m_nResult = 1;
 				}
@@ -239,19 +239,21 @@ class CLinuxDownload : public CDownload {
 				curl_easy_cleanup (hCurl);
 				return m_nResult = 1;
 				}
-			if (bProgressBar) {
-				curl_easy_setopt (curl, CURLOPT_NOPROGRESS, FALSE);
-				curl_easy_setopt (curl, CURLOPT_PROGRESSFUNCTION, &CLinuxDownload::OnProgress);
+			if (m_bProgressBar) {
+				curl_easy_setopt (hCurl, CURLOPT_NOPROGRESS, 0);
+				curl_easy_setopt (hCurl, CURLOPT_PROGRESSFUNCTION, &CLinuxDownload::OnProgress);
 				}
+			else
+				curl_easy_setopt (hCurl, CURLOPT_NOPROGRESS, 1);
 			if (curl_easy_perform (hCurl)) {
 				curl_easy_cleanup (hCurl);
 				std::fclose (file);
-				unlink (pszDest);
+				unlink (m_pszDest);
 				return m_nResult = 1;
 				}
 			curl_easy_cleanup (hCurl);
 			std::fclose (file);
-			m_nStatus = 1;
+			m_nState = 1;
 			return m_nResult = 0;
 			}
 	};
@@ -302,7 +304,7 @@ class CWindowsDownload : public CDownload, public CDownloadCallback {
 
 		virtual int Fetch (void) {
 			m_nResult = URLDownloadToFile (NULL, m_pszSrc, m_pszDest, NULL, (CWindowsDownload*) Handler ());
-			m_nStatus = 1;
+			m_nState = 1;
 			return m_nResult;
 			}
 	};
