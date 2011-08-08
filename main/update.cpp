@@ -288,7 +288,7 @@ class CWindowsDownload : public CDownload, public CDownloadCallback {
 
 		CWindowsDownload (CDownload const&) {}
 
-		CWindowsDownload& operator= (CWindowsDownload const&) {}
+		CWindowsDownload& operator= (CWindowsDownload const&) { return *this; }
 
 	public:
 		static CDownload* Handler (void) {
