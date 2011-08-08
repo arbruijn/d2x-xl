@@ -70,6 +70,8 @@ class CDownload {
 		const char* m_pszSrc;
 		const char* m_pszDest;
 
+		static CDownload* m_handler;
+
 	private:
 		int			m_nProgress;
 		int			m_nProgressMax;
@@ -78,9 +80,7 @@ class CDownload {
 		int			m_nOptPercentage;
 		int			m_nOptProgress;
 		bool			m_bProgressBar;
-		CMenu	m_menu;
-
-		static CDownload* m_handler;
+		CMenu			m_menu;
 
 	private:
 		void Setup (const char* pszSrc, const char* pszDest, bool bProgressBar) {
@@ -108,12 +108,8 @@ class CDownload {
 
 		CDownload& operator= (CDownload const&) {}
 
-		virtual CDownload* Create (void);
-
 	public:
 		static CDownload* Handler (void) {
-			if (!m_handler)
-				m_handler = Create ();
 			return m_handler;
 			}
 
@@ -203,7 +199,14 @@ CDownload* CDownload::m_handler = NULL;
 
 class CLinuxDownload : public CDownload {
 	protected:
-		virtual CDownload* Create (void) { return new CLinuxDownload(); }
+		CLinuxDownload () : CDownload () { 
+			m_handler = new CLinuxDownload(); 
+			}
+
+		CLinuxDownload (CDownload const&) {}
+
+		CLinuxDownload& operator= (CLinuxDownload const&) {}
+
 
 	static int OnProgress (void *clientp, double dltotal, double dlnow, double ultotal, double ulnow) {
 		CDownload::Handler ()->SetProgress (int (dlnow), int (dltotal));
@@ -273,7 +276,13 @@ return CLinuxDownload::Handler ()->Execute (pszSrc, pszDest, bProgressBar);
 
 class CWindowsDownload : public CDownload, public CDownloadCallback {
 	protected:
-		virtual CDownload* Create (void) { return new CWindowsDownload(); }
+		CWindowsDownload () : CDownload () { 
+			m_handler = new CWindowsDownload(); 
+			}
+
+		CWindowsDownload (CDownload const&) {}
+
+		CWindowsDownload& operator= (CWindowsDownload const&) {}
 
 	public:
 		virtual HRESULT STDMETHODCALLTYPE OnProgress (ULONG ulProgress, ULONG ulProgressMax, ULONG ulResultCode, LPCWSTR szResultText) {
