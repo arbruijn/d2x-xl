@@ -91,28 +91,35 @@ class CDownload : public IBindStatusCallback {
 		int			m_nStatus;
 		int			m_nProgress;
 		int			m_nProgressMax;
+		int			m_nPercent;
 		SDL_Thread*	m_thread;
 		const char* m_pszSrc;
 		const char* m_pszDest;
 		int			m_nOptPercentage;
 		int			m_nOptProgress;
+		bool			m_bProgressBar;
 		CMenu	m_menu;
 
 		static CDownload* m_handler;
 
 	private:
-		void Setup (const char* pszSrc, const char* pszDest) {
+		void Setup (const char* pszSrc, const char* pszDest, bool bProgressBar) {
 			m_nStatus = -1;
 			m_nResult = 0;
+			m_nPercent = 0;
+			m_nProgress = 0;
+			m_nProgressMax = 0;
 			m_pszSrc = pszSrc;
 			m_pszDest = pszDest;
-			m_menu.AddText ("", 0);
-			char szProgress [50];
-			sprintf (szProgress, "0%c done", '%');
-			m_nOptPercentage = m_menu.AddText (szProgress, 0);
-			m_menu [m_nOptPercentage].m_x = (short) 0x8000;	//centered
-			m_menu [m_nOptPercentage].m_bCentered = 1;
-			m_nOptProgress = m_menu.AddGauge ("                    ", -1, 100);
+			if (m_bProgressBar = bProgressBar) {
+				m_menu.AddText ("", 0);
+				char szProgress [50];
+				sprintf (szProgress, "0%c done", '%');
+				m_nOptPercentage = m_menu.AddText (szProgress, 0);
+				m_menu [m_nOptPercentage].m_x = (short) 0x8000;	//centered
+				m_menu [m_nOptPercentage].m_bCentered = 1;
+				m_nOptProgress = m_menu.AddGauge ("                    ", -1, 100);
+				}
 			}
 
 	public:
@@ -127,16 +134,15 @@ class CDownload : public IBindStatusCallback {
 			if (!(m_nProgress && m_nProgressMax))
 				return 1;
 			int h = int (m_nProgress * 100 / m_nProgressMax);
-			if (h == m_nProgress)
+			if (h == m_nPercent)
 				return 1;
 			if (h >= 100)
 				return 0;
-			m_nProgress = h;
-			sprintf (m_menu [m_nOptPercentage].m_text, TXT_PROGRESS, m_nProgress, '%');
+			m_nPercent = h;
+			sprintf (m_menu [m_nOptPercentage].m_text, TXT_PROGRESS, m_nPercent, '%');
 			m_menu [m_nOptPercentage].m_bRebuild = 1;
-			h = m_nProgress;
-			if (m_menu [m_nOptProgress].m_value != h) {
-				m_menu [m_nOptProgress].m_value = h;
+			if (m_menu [m_nOptProgress].m_value != m_nPercent) {
+				m_menu [m_nOptProgress].m_value = m_nPercent;
 				m_menu [m_nOptProgress].m_bRebuild = 1;
 				}
 			return 1;
@@ -170,7 +176,7 @@ class CDownload : public IBindStatusCallback {
 		virtual HRESULT STDMETHODCALLTYPE OnObjectAvailable (__RPC__in REFIID riid, __RPC__in_opt IUnknown *punk) { return E_NOTIMPL; } 
 
 	protected:
-		CDownload () : m_nStatus (-1), m_nResult (0), m_nProgress (0), m_nProgressMax (0), m_thread (NULL) {}
+		CDownload () : m_nStatus (-1), m_nResult (0), m_nProgress (0), m_nProgressMax (0), m_nPercent (0), m_thread (NULL) {}
 		CDownload (CDownload const&) {}
 		CDownload& operator= (CDownload const&) {}
 
@@ -187,12 +193,15 @@ class CDownload : public IBindStatusCallback {
 			return CDownload::Handler ()->Fetch ();
 			}
 
-		int Execute (const char* pszSrc, const char* pszDest) {
-			Setup (pszSrc, pszDest);
-			for (; m_menu.Menu (NULL, "Downloading...", &CDownload::MenuPoll) >= 0; )
-				;
+		int Execute (const char* pszSrc, const char* pszDest, bool bProgressBar) {
+			Setup (pszSrc, pszDest, bProgressBar);
+			if (m_bProgressBar)
+				for (; m_menu.Menu (NULL, "Downloading...", &CDownload::MenuPoll) >= 0; )
+					;
+			else
+				Start ();
 			m_thread = NULL;
-			Destroy ();
+			m_menu.Destroy ();
 			return Result ();
 			}
 
@@ -218,9 +227,9 @@ class CDownload : public IBindStatusCallback {
 CDownload* CDownload::m_handler = NULL;
 
 
-int DownloadFile (const char* pszSrc, const char* pszDest)
+int DownloadFile (const char* pszSrc, const char* pszDest, bool bProgressBar)
 {
-return CDownload::Handler ()->Execute (pszSrc, pszDest);
+return CDownload::Handler ()->Execute (pszSrc, pszDest, bProgressBar);
 }
 
 #endif
@@ -244,9 +253,9 @@ int CheckForUpdate (void)
 	};
 
 sprintf (szDest, "%s/d2x-xl-version.txt", gameFolders.szDownloadDir);
-if (!DownloadFile ("http://www.descent2.de/files/d2x-xl-version.txt", szDest))
+if (!DownloadFile ("http://www.descent2.de/files/d2x-xl-version.txt", szDest, false))
 	nLocation = 0;
-else if (!DownloadFile ("http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest))
+else if (!DownloadFile ("http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest, false))
 	nLocation = 1;
 else {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
@@ -275,7 +284,7 @@ sprintf (szDest, "%s/d2x-xl-%s-%d.%d.%d.%s", gameFolders.szDownloadDir,
 #if 1
 messageBox.Show ("Downloading...");
 sprintf (szSrc, "%s/d2x-xl-%s-%d.%d.%d.%s", pszSource [nLocation], FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
-if (DownloadFile (szSrc, szDest)) {
+if (DownloadFile (szSrc, szDest, true)) {
 	messageBox.Clear ();
 	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 	return -1;
