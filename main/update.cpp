@@ -207,47 +207,53 @@ class CLinuxDownload : public CDownload {
 
 		CLinuxDownload& operator= (CLinuxDownload const&) {}
 
+	public:
+		static CDownload* Handler (void) {
+			if (!m_handler)
+				m_handler = new CLinuxDownload ();
+			return m_handler;
+			}
 
-	static int OnProgress (void *clientp, double dltotal, double dlnow, double ultotal, double ulnow) {
-		CDownload::Handler ()->SetProgress (int (dlnow), int (dltotal));
-		return 0;
-		}
+		static int OnProgress (void *clientp, double dltotal, double dlnow, double ultotal, double ulnow) {
+			CDownload::Handler ()->SetProgress (int (dlnow), int (dltotal));
+			return 0;
+			}
 
-	virtual int Fetch (void) {
-		CURL* hCurl;
-		if (!(hCurl = curl_easy_init ()))
-			return m_nResult = 1;
-		if (curl_easy_setopt (hCurl, CURLOPT_URL, pszSrc)) {
-			curl_easy_cleanup (hCurl);
-			return m_nResult = 1;
-			}
-		std::FILE* file;
-		if (!(file = std::fopen (pszDest, "w"))) {
-			curl_easy_cleanup (hCurl);
-			return m_nResult = 1;
-			}
-		#if DBG
-		curl_easy_setopt (hCurl, CURLOPT_VERBOSE, 1);
-		#endif
-		if (curl_easy_setopt (hCurl, CURLOPT_WRITEDATA, file)) {
-			curl_easy_cleanup (hCurl);
-			return m_nResult = 1;
-			}
-		if (bProgressBar) {
-			curl_easy_setopt (curl, CURLOPT_NOPROGRESS, FALSE);
-			curl_easy_setopt (curl, CURLOPT_PROGRESSFUNCTION, &CLinuxDownload::OnProgress);
-			}
-		if (curl_easy_perform (hCurl)) {
+		virtual int Fetch (void) {
+			CURL* hCurl;
+			if (!(hCurl = curl_easy_init ()))
+				return m_nResult = 1;
+			if (curl_easy_setopt (hCurl, CURLOPT_URL, pszSrc)) {
+				curl_easy_cleanup (hCurl);
+				return m_nResult = 1;
+				}
+			std::FILE* file;
+			if (!(file = std::fopen (pszDest, "w"))) {
+				curl_easy_cleanup (hCurl);
+				return m_nResult = 1;
+				}
+			#if DBG
+			curl_easy_setopt (hCurl, CURLOPT_VERBOSE, 1);
+			#endif
+			if (curl_easy_setopt (hCurl, CURLOPT_WRITEDATA, file)) {
+				curl_easy_cleanup (hCurl);
+				return m_nResult = 1;
+				}
+			if (bProgressBar) {
+				curl_easy_setopt (curl, CURLOPT_NOPROGRESS, FALSE);
+				curl_easy_setopt (curl, CURLOPT_PROGRESSFUNCTION, &CLinuxDownload::OnProgress);
+				}
+			if (curl_easy_perform (hCurl)) {
+				curl_easy_cleanup (hCurl);
+				std::fclose (file);
+				unlink (pszDest);
+				return m_nResult = 1;
+				}
 			curl_easy_cleanup (hCurl);
 			std::fclose (file);
-			unlink (pszDest);
-			return m_nResult = 1;
+			m_nStatus = 1;
+			return m_nResult = 0;
 			}
-		curl_easy_cleanup (hCurl);
-		std::fclose (file);
-		m_nStatus = 1;
-		return m_nResult = 0;
-		}
 	};
 
 // ----------------------------------------------------------------------------
@@ -285,6 +291,12 @@ class CWindowsDownload : public CDownload, public CDownloadCallback {
 		CWindowsDownload& operator= (CWindowsDownload const&) {}
 
 	public:
+		static CDownload* Handler (void) {
+			if (!m_handler)
+				m_handler = new CWindowsDownload ();
+			return m_handler;
+			}
+
 		virtual HRESULT STDMETHODCALLTYPE OnProgress (ULONG ulProgress, ULONG ulProgressMax, ULONG ulResultCode, LPCWSTR szResultText) {
 			CDownload::Handler ()->SetProgress (int (ulProgress), int (ulProgressMax));
 			return S_OK;
