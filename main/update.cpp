@@ -87,10 +87,10 @@ return 0;
 
 class CDownload : public IBindStatusCallback {
 	private:
+		int			m_nResult;
 		int			m_nStatus;
 		int			m_nProgress;
 		int			m_nProgressMax;
-		bool			m_bRunning;
 		SDL_Thread*	m_thread;
 		const char* m_pszSrc;
 		const char* m_pszDest;
@@ -102,6 +102,8 @@ class CDownload : public IBindStatusCallback {
 
 	private:
 		void Setup (const char* pszSrc, const char* pszDest) {
+			m_nStatus = -1;
+			m_nResult = 0;
 			m_pszSrc = pszSrc;
 			m_pszDest = pszDest;
 			m_menu.AddText ("", 0);
@@ -111,7 +113,6 @@ class CDownload : public IBindStatusCallback {
 			m_menu [m_nOptPercentage].m_x = (short) 0x8000;	//centered
 			m_menu [m_nOptPercentage].m_bCentered = 1;
 			m_nOptProgress = m_menu.AddGauge ("                    ", -1, 100);
-			m_bRunning = false;
 			}
 
 	public:
@@ -122,6 +123,7 @@ class CDownload : public IBindStatusCallback {
 			}
 
 		int Update (void) {
+			Start ();
 			if (!(m_nProgress && m_nProgressMax))
 				return 1;
 			int h = int (m_nProgress * 100 / m_nProgressMax);
@@ -141,7 +143,7 @@ class CDownload : public IBindStatusCallback {
 			}
 
 
-		virtual HRESULT STDMETHODCALLTYPE OnProgress (ULONG ulProgress, ULONG ulProgressMax, ULONG ulStatusCode, LPCWSTR szStatusText) {
+		virtual HRESULT STDMETHODCALLTYPE OnProgress (ULONG ulProgress, ULONG ulProgressMax, ULONG ulResultCode, LPCWSTR szResultText) {
 			m_nProgress = int (ulProgress);
 			m_nProgressMax = int (ulProgressMax);
 			return S_OK;
@@ -168,7 +170,7 @@ class CDownload : public IBindStatusCallback {
 		virtual HRESULT STDMETHODCALLTYPE OnObjectAvailable (__RPC__in REFIID riid, __RPC__in_opt IUnknown *punk) { return E_NOTIMPL; } 
 
 	protected:
-		CDownload () : m_nStatus (0), m_nProgress (0) , m_nProgressMax (0), m_bRunning (false), m_thread (NULL) {}
+		CDownload () : m_nStatus (-1), m_nResult (0), m_nProgress (0), m_nProgressMax (0), m_thread (NULL) {}
 		CDownload (CDownload const&) {}
 		CDownload& operator= (CDownload const&) {}
 
@@ -176,7 +178,7 @@ class CDownload : public IBindStatusCallback {
 		static int MenuPoll (CMenu& menu, int& key, int nCurItem, int nState) {
 			if (!nState) {
 				CDownload::Handler ()->Start ();
-				key = CDownload::Handler ()->Update () ? 0 : 2;
+				key = (CDownload::Handler ()->Status () == 1) ? -2 : 0;
 				}
 			return nCurItem;
 			}
@@ -190,19 +192,25 @@ class CDownload : public IBindStatusCallback {
 			for (; m_menu.Menu (NULL, "Downloading...", &CDownload::MenuPoll) >= 0; )
 				;
 			m_thread = NULL;
-			return Status ();
+			return Result ();
 			}
 
 		void Start (void) {
-			if (!m_thread) 
+			if (m_nStatus < 0) {
+				m_nStatus = 0;
 				m_thread = SDL_CreateThread (&CDownload::Download, NULL);
+				}
 			}
 
 		int Fetch (void) {
-			return m_nStatus = URLDownloadToFile (NULL, m_pszSrc, m_pszDest, NULL, this);
+			m_nResult = URLDownloadToFile (NULL, m_pszSrc, m_pszDest, NULL, Handler ());
+			m_nStatus = 1;
+			return m_nResult;
 			}
 
 		inline int Status (void) { return m_nStatus; }
+
+		inline int Result (void) { return m_nResult; }
 	};
 
 
