@@ -177,7 +177,7 @@ class CDownload : public IBindStatusCallback {
 	public:
 		static int MenuPoll (CMenu& menu, int& key, int nCurItem, int nState) {
 			if (!nState) {
-				CDownload::Handler ()->Start ();
+				CDownload::Handler ()->Update ();
 				key = (CDownload::Handler ()->Status () == 1) ? -2 : 0;
 				}
 			return nCurItem;
@@ -192,6 +192,7 @@ class CDownload : public IBindStatusCallback {
 			for (; m_menu.Menu (NULL, "Downloading...", &CDownload::MenuPoll) >= 0; )
 				;
 			m_thread = NULL;
+			Destroy ();
 			return Result ();
 			}
 
