@@ -63,20 +63,18 @@ class CDownloadCallback : public IBindStatusCallback {
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-class CDownload 
-#if defined(_WIN32)
-	: public CDownloadCallback 
-#endif
-	{
-	private:
+class CDownload {
+	protected:
 		int			m_nResult;
 		int			m_nStatus;
+		const char* m_pszSrc;
+		const char* m_pszDest;
+
+	private:
 		int			m_nProgress;
 		int			m_nProgressMax;
 		int			m_nPercent;
 		SDL_Thread*	m_thread;
-		const char* m_pszSrc;
-		const char* m_pszDest;
 		int			m_nOptPercentage;
 		int			m_nOptProgress;
 		bool			m_bProgressBar;
@@ -103,10 +101,19 @@ class CDownload
 				}
 			}
 
+	protected:
+		CDownload () : m_nStatus (-1), m_nResult (0), m_nProgress (0), m_nProgressMax (0), m_nPercent (0), m_thread (NULL) {}
+
+		CDownload (CDownload const&) {}
+
+		CDownload& operator= (CDownload const&) {}
+
+		virtual CDownload* Create (void);
+
 	public:
 		static CDownload* Handler (void) {
 			if (!m_handler)
-				m_handler = new CDownload();
+				m_handler = Create ();
 			return m_handler;
 			}
 
@@ -129,26 +136,6 @@ class CDownload
 			return 1;
 			}
 
-#if defined(WIN32)
-		virtual HRESULT STDMETHODCALLTYPE OnProgress (ULONG ulProgress, ULONG ulProgressMax, ULONG ulResultCode, LPCWSTR szResultText) {
-			CDownload::Handler ()->SetProgress (int (ulProgress), int (ulProgressMax));
-			return S_OK;
-			}
-#elif defined (__unix__)
-		static int OnProgress (void *clientp, double dltotal, double dlnow, double ultotal, double ulnow) {
-			CDownload::Handler ()->SetProgress (int (dlnow), int (dltotal));
-			return 0;
-			}
-#endif
-
-	protected:
-		CDownload () : m_nStatus (-1), m_nResult (0), m_nProgress (0), m_nProgressMax (0), m_nPercent (0), m_thread (NULL) {}
-
-		CDownload (CDownload const&) {}
-
-		CDownload& operator= (CDownload const&) {}
-
-
 	public:
 		static int MenuPoll (CMenu& menu, int& key, int nCurItem, int nState) {
 			if (!nState) {
@@ -158,7 +145,7 @@ class CDownload
 			return nCurItem;
 			}
 
-		int Fetch (void);
+		virtual int Fetch (void) = 0;
 
 		static int _CDECL_ Download (void* downloadHandler) {
 			return CDownload::Handler ()->Fetch ();
@@ -196,6 +183,12 @@ class CDownload
 
 // ----------------------------------------------------------------------------
 
+CDownload* CDownload::m_handler = NULL;
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
 #if defined(__unix__)
 
 #	define FILEEXT		"rar"
@@ -204,68 +197,64 @@ class CDownload
 #include <curl/curl.h>
 #include <cstdio>
 
+// ----------------------------------------------------------------------------
+
 // link with libcurl (-lcurl)
 
-int CDownload::Fetch (void)
-{
-CURL* hCurl;
-if (!(hCurl = curl_easy_init ()))
-	return m_nResult = 1;
-if (curl_easy_setopt (hCurl, CURLOPT_URL, pszSrc)) {
-	curl_easy_cleanup (hCurl);
-	return m_nResult = 1;
-	}
-std::FILE* file;
-if (!(file = std::fopen (pszDest, "w"))) {
-	curl_easy_cleanup (hCurl);
-	return m_nResult = 1;
-	}
-#if DBG
-curl_easy_setopt (hCurl, CURLOPT_VERBOSE, 1);
-#endif
-if (curl_easy_setopt (hCurl, CURLOPT_WRITEDATA, file)) {
-	curl_easy_cleanup (hCurl);
-	return m_nResult = 1;
-	}
-if (bProgressBar) {
-	curl_easy_setopt (curl, CURLOPT_NOPROGRESS, FALSE);
-	curl_easy_setopt (curl, CURLOPT_PROGRESSFUNCTION, &CDownload::OnProgress);
-	}
-if (curl_easy_perform (hCurl)) {
-	curl_easy_cleanup (hCurl);
-	std::fclose (file);
-	unlink (pszDest);
-	return m_nResult = 1;
-	}
-curl_easy_cleanup (hCurl);
-std::fclose (file);
-m_nStatus = 1;
-return m_nResult = 0;
-}
+class CLinuxDownload : public CDownload {
+	protected:
+		virtual CDownload* Create (void) { return new CLinuxDownload(); }
 
-#elif defined (_WIN32) // -----------------------------------------------------
+	static int OnProgress (void *clientp, double dltotal, double dlnow, double ultotal, double ulnow) {
+		CDownload::Handler ()->SetProgress (int (dlnow), int (dltotal));
+		return 0;
+		}
 
-int CDownload::Fetch (void) 
-{
-m_nResult = URLDownloadToFile (NULL, m_pszSrc, m_pszDest, NULL, Handler ());
-m_nStatus = 1;
-return m_nResult;
-}
+	virtual int Fetch (void) {
+		CURL* hCurl;
+		if (!(hCurl = curl_easy_init ()))
+			return m_nResult = 1;
+		if (curl_easy_setopt (hCurl, CURLOPT_URL, pszSrc)) {
+			curl_easy_cleanup (hCurl);
+			return m_nResult = 1;
+			}
+		std::FILE* file;
+		if (!(file = std::fopen (pszDest, "w"))) {
+			curl_easy_cleanup (hCurl);
+			return m_nResult = 1;
+			}
+		#if DBG
+		curl_easy_setopt (hCurl, CURLOPT_VERBOSE, 1);
+		#endif
+		if (curl_easy_setopt (hCurl, CURLOPT_WRITEDATA, file)) {
+			curl_easy_cleanup (hCurl);
+			return m_nResult = 1;
+			}
+		if (bProgressBar) {
+			curl_easy_setopt (curl, CURLOPT_NOPROGRESS, FALSE);
+			curl_easy_setopt (curl, CURLOPT_PROGRESSFUNCTION, &CLinuxDownload::OnProgress);
+			}
+		if (curl_easy_perform (hCurl)) {
+			curl_easy_cleanup (hCurl);
+			std::fclose (file);
+			unlink (pszDest);
+			return m_nResult = 1;
+			}
+		curl_easy_cleanup (hCurl);
+		std::fclose (file);
+		m_nStatus = 1;
+		return m_nResult = 0;
+		}
+	};
 
-#endif
-
-// ----------------------------------------------------------------------------
-
-CDownload* CDownload::m_handler = NULL;
-
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 int DownloadFile (const char* pszSrc, const char* pszDest, bool bProgressBar)
 {
-return CDownload::Handler ()->Execute (pszSrc, pszDest, bProgressBar);
+return CLinuxDownload::Handler ()->Execute (pszSrc, pszDest, bProgressBar);
 }
+
+#endif
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -277,10 +266,36 @@ return CDownload::Handler ()->Execute (pszSrc, pszDest, bProgressBar);
 #	include <process.h>
 #	include "errno.h"
 
-//#	define DownloadFile(_src,_dest)	URLDownloadToFile (NULL, _src, _dest, NULL, NULL)
-
 #	define FILEEXT		"exe"
 #	define FILETYPE	"win"
+
+// ----------------------------------------------------------------------------
+
+class CWindowsDownload : public CDownload, public CDownloadCallback {
+	protected:
+		virtual CDownload* Create (void) { return new CWindowsDownload(); }
+
+	public:
+		virtual HRESULT STDMETHODCALLTYPE OnProgress (ULONG ulProgress, ULONG ulProgressMax, ULONG ulResultCode, LPCWSTR szResultText) {
+			CDownload::Handler ()->SetProgress (int (ulProgress), int (ulProgressMax));
+			return S_OK;
+			}
+
+		virtual int Fetch (void) {
+			m_nResult = URLDownloadToFile (NULL, m_pszSrc, m_pszDest, NULL, (CWindowsDownload*) Handler ());
+			m_nStatus = 1;
+			return m_nResult;
+			}
+	};
+
+// ----------------------------------------------------------------------------
+
+int DownloadFile (const char* pszSrc, const char* pszDest, bool bProgressBar)
+{
+return CWindowsDownload::Handler ()->Execute (pszSrc, pszDest, bProgressBar);
+}
+
+// ----------------------------------------------------------------------------
 
 #endif
 
