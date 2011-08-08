@@ -221,7 +221,8 @@ void CCamera::Destroy (void)
 {
 this->CBitmap::Destroy ();
 //ReleaseTexture ();
-ogl.DeleteTextures (1, &m_data.glTexId);
+if (m_data.glTexId)
+	ogl.DeleteTextures (1, &m_data.glTexId);
 if (m_data.screenBuf && (m_data.screenBuf != Buffer ())) {
 	delete m_data.screenBuf;
 	m_data.screenBuf = NULL;
