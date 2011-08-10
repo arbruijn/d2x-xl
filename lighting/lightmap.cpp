@@ -643,8 +643,8 @@ for (y = yMin; y < yMax; y++) {
 			if (y == w - 1)
 				nDbgSeg = nDbgSeg;
 			}
-#endif
 		fix dist = x ? CFixVector::Dist (*pixelPosP, *(pixelPosP - 1)) : 0;
+#endif
 		if (0 < lightManager.SetNearestToPixel (faceP->m_info.nSegment, faceP->m_info.nSide, &m_data.m_vNormal, 
 															 pixelPosP, faceP->m_info.fRads [1] / 10.0f, nThread)) {
 			vcd.vertPos.Assign (*pixelPosP);
