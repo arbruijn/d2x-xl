@@ -711,7 +711,8 @@ return &OBJECTS [gameData.multiplayer.players [info.nPlayer].nObject];
 
 //------------------------------------------------------------------------------
 
-int CDynLight::Contribute (const short nDestSeg, const short nDestSide, const short nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread)
+int CDynLight::Contribute (const short nDestSeg, const short nDestSide, const short nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
+									fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread)
 {
 	short nLightSeg = info.nSegment;
 
@@ -776,7 +777,9 @@ else if (info.bVariable && (nDestVertex >= 0)) {
 else { // check whether light only contributes ambient light to point
 	int bDiffuse = info.bDiffuse [nThread] && SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
 	if (nDestSeg >= 0) {
-		int bSeesPoint = (info.nSide < 0) ? bDiffuse : SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (vDestPos, nDestSeg, bDiffuse ? gameOpts->render.nLightmapPrecision : -gameOpts->render.nLightmapPrecision - 1, nThread);
+		int bSeesPoint = (info.nSide < 0) 
+							  ? bDiffuse 
+							  : SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (vDestPos, nDestSeg, bDiffuse ? gameOpts->render.nLightmapPrecision : -gameOpts->render.nLightmapPrecision - 1, nThread);
 		info.bDiffuse [nThread] = bDiffuse && bSeesPoint;
 
 		// if point is occluded, use segment path distance to point for light range and attenuation

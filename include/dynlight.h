@@ -103,7 +103,8 @@ class CDynLight {
 		int SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const int nLevel, int nThread);
 		int SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const int nLevel, int nThread);
 		int LightPathLength (const short nLightSeg, const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int bFastRoute, int nThread);
-		int Contribute (const short nDestSeg, const short nDestSide, const short nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread);
+		int Contribute (const short nDestSeg, const short nDestSide, const short nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
+							 fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread);
 		int ComputeVisibleVertices (int nThread);
 		int Compare (CDynLight& other);
 		inline bool operator< (CDynLight& other)
