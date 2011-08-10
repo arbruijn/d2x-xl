@@ -127,6 +127,7 @@ class __pack__ CFixVector {
 		const CFixVector& operator*= (const CFixVector& other);
 		const CFixVector& operator*= (const fix s);
 		const CFixVector& operator/= (const fix s);
+		const CFixVector& operator*= (const float s);
 		const CFixVector operator+ (const CFixVector& other) const;
 		const CFixVector operator+ (const CFloatVector& other) const;
 		const CFixVector operator- (const CFixVector& other) const;
@@ -1074,6 +1075,14 @@ inline const CFixVector& CFixVector::operator*= (const fix s)
 v.coord.x = FixMul (v.coord.x, s);
 v.coord.y = FixMul (v.coord.y, s);
 v.coord.z = FixMul (v.coord.z, s);
+return *this;
+}
+
+inline const CFixVector& CFixVector::operator*= (const float s)
+{
+v.coord.x = fix (v.coord.x * s);
+v.coord.y = fix (v.coord.y * s);
+v.coord.z = fix (v.coord.z * s);
 return *this;
 }
 

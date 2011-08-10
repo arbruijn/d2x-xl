@@ -488,11 +488,6 @@ pixelPosP = m_data.m_pixelPos + yMin * w;
 
 CFixVector	v0, v1, v2, v3;
 
-v0 = VERTICES [m_data.m_sideVerts [0]];
-v1 = VERTICES [m_data.m_sideVerts [1]];
-v2 = VERTICES [m_data.m_sideVerts [2]];
-v3 = VERTICES [m_data.m_sideVerts [3]];
-
 struct {
 	CFixVector	x, y;
 } offset;
@@ -501,37 +496,54 @@ v0 = VERTICES [m_data.m_sideVerts [0]];
 v1 = VERTICES [m_data.m_sideVerts [1]];
 v2 = VERTICES [m_data.m_sideVerts [2]];
 v3 = VERTICES [m_data.m_sideVerts [3]];
+
 if (m_data.m_nType != SIDE_IS_TRI_13) {
+	CFixVector l0 = v2 - v1;
+	CFixVector l1 = v1 - v0;
+	CFixVector l2 = v3 - v0;
+	CFixVector l3 = v2 - v3;
 	for (y = yMin; y < yMax; y++) {
 		for (x = 0; x < w; x++, pixelPosP++) {
-			if (y >= x) {
-				offset.x = (v2 - v1);
-				offset.y = (v1 - v0);
+			if (x <= y) {
+				offset.x = l0;
+				offset.y = l1;
 				}
 			else {
-				offset.x = (v3 - v0); 
-				offset.y = (v2 - v3); 
+				offset.x = l2; 
+				offset.y = l3; 
 				}
-			offset.x *= F2X (m_data.nOffset [x]);
-			offset.y *= F2X (m_data.nOffset [y]);
-			*pixelPosP = v0 + offset.x + offset.y; 
+			offset.x *= m_data.nOffset [x];
+			offset.y *= m_data.nOffset [y];
+			*pixelPosP = v0;
+			*pixelPosP += offset.x; 
+			*pixelPosP += offset.y; 
 			}
 		}
 	}
 else { 
 	h--;
+	CFixVector l0 = v3 - v0;
+	CFixVector l1 = v1 - v0;
+	CFixVector l2 = v1 - v2;
+	CFixVector l3 = v3 - v2;
 	for (y = yMin; y < yMax; y++) {
 		for (x = 0; x < w; x++, pixelPosP++) {
 			if (h - y >= x) {
-				offset.y = (v1 - v0) * F2X (m_data.nOffset [y]);  
-				offset.x = (v3 - v0) * F2X (m_data.nOffset [x]);
-				*pixelPosP = v0 + offset.x + offset.y; 
+				offset.x = l0;
+				offset.x * m_data.nOffset [x];
+				offset.y = l1;
+				offset.y *= m_data.nOffset [y];  
+				*pixelPosP = v0;
 				}
 			else {
-				offset.x = (v1 - v2) * F2X (m_data.nOffset [h - x]);  
-				offset.y = (v3 - v2) * F2X (m_data.nOffset [h - y]); 
-				*pixelPosP = v2 + offset.x + offset.y; 
+				offset.x = l2;
+				offset.x *= m_data.nOffset [h - x];  
+				offset.y = l3;
+				offset.y *= m_data.nOffset [h - y]; 
+				*pixelPosP = v2; 
 				}
+			*pixelPosP += offset.x; 
+			*pixelPosP += offset.y; 
 			}
 		}
 	}
