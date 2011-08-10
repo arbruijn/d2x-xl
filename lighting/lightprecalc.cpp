@@ -91,7 +91,7 @@ G3_SLEEP (0);
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-dacsRouter [nThread].PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, 0x7FFFFFFF, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
+dacsRouter [nThread].PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, I2X (512), 0x7FFFFFFF, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
 for (int i = 0; i < gameData.segs.nSegments; i++) {
 	fix xDist = dacsRouter [nThread].Distance (i);
 	if (xMaxDist < xDist)
@@ -276,7 +276,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 				CSide* sideP = SEGMENTS [lightP->info.nSegment].m_sides + lightP->info.nSide;
 				if ((CFixVector::Dot (sideP->m_normals [0], vLightToVert) < 0) &&
 					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals [1], vLightToVert) < 0))) {
-					h = simpleRouter [nThread].PathLength (VERTICES [nVertex], -1, lightP->info.vPos, lightP->info.nSegment, X2I (xMaxLightRange / 5), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+					h = simpleRouter [nThread].PathLength (VERTICES [nVertex], 100, lightP->info.vPos, lightP->info.nSegment, X2I (xMaxLightRange / 5), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 					if (h > 4 * MAX_LIGHT_RANGE / 3 * lightP->info.fRange)
 						continue;
 					}

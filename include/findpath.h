@@ -68,7 +68,7 @@ class CSimpleHeap {
 		short			m_nHead;
 		short			m_nTail;
 		int			m_nDir;
-		int			m_nMaxDepth;
+		int			m_nMaxDist;
 
 		void Setup (short nStartSeg, short nDestSeg, uint flag, int dir);
 		short Expand (CScanInfo& scanInfo);
@@ -82,13 +82,13 @@ class CSimpleHeap {
 class CScanInfo {
 	public:
 		uint				m_bFlag;
-		int				m_maxDepth;
+		int				m_maxDist;
 		int				m_widFlag;
 		short 			m_bScanning;
 		short				m_nLinkSeg;
 		CSimpleHeap*	m_heap;
 
-		int Setup (CSimpleHeap* heap, int nWidFlag, int nMaxDepth);
+		int Setup (CSimpleHeap* heap, int nWidFlag, int nMaxDist);
 		inline int Scanning (int nDir) {
 			m_bScanning &= ~(1 << nDir);
 			return m_bScanning;
@@ -117,7 +117,7 @@ class CRouter {
 		CFixVector	m_p0, m_p1;
 		short			m_nStartSeg;
 		short			m_nDestSeg;
-		int			m_maxDepth;
+		int			m_maxDist;
 		int			m_widFlag;
 		int			m_cacheType;
 		int			m_nNodes;
@@ -127,7 +127,8 @@ class CRouter {
 
 		virtual bool Create (int nNodes) { return true; }
 
-		fix PathLength (const CFixVector& p0, const short nStartSeg, const CFixVector& p1, const short nDestSeg, const int nMaxDepth, const int widFlag, const int nCacheType);
+		fix PathLength (const CFixVector& p0, const short nStartSeg, const CFixVector& p1, 
+							 const short nDestSeg, const int nMaxDist, const int widFlag, const int nCacheType);
 
 		void Flush (void) {
 			m_cache [0].Flush ();
