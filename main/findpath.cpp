@@ -277,7 +277,7 @@ m_widFlag = nWidFlag;
 fix distance = FindPath ();
 
 if ((distance < 0) && (m_cacheType >= 0))
-	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, 10000, I2X (10000));
+	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, 1024, I2X (1024));
 
 return distance;
 }
