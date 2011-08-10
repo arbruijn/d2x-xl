@@ -486,16 +486,12 @@ pixelPosP = m_data.m_pixelPos + yMin * w;
 
 #if 1
 
-CFixVector	v0, v1, v2, v3;
+CFixVector v0 = VERTICES [m_data.m_sideVerts [0]];
+CFixVector v1 = VERTICES [m_data.m_sideVerts [1]];
+CFixVector v2 = VERTICES [m_data.m_sideVerts [2]];
+CFixVector v3 = VERTICES [m_data.m_sideVerts [3]];
 
-struct {
-	CFixVector	x, y;
-} offset;
-
-v0 = VERTICES [m_data.m_sideVerts [0]];
-v1 = VERTICES [m_data.m_sideVerts [1]];
-v2 = VERTICES [m_data.m_sideVerts [2]];
-v3 = VERTICES [m_data.m_sideVerts [3]];
+CFixVector a, b;
 
 if (m_data.m_nType != SIDE_IS_TRI_13) {
 	CFixVector l0 = v2 - v1;
@@ -504,24 +500,24 @@ if (m_data.m_nType != SIDE_IS_TRI_13) {
 	CFixVector l3 = v2 - v3;
 	for (y = yMin; y < yMax; y++) {
 		for (x = 0; x < w; x++, pixelPosP++) {
-			if (x <= y) {
-				offset.x = l0;
-				offset.y = l1;
+			if (y >= x) {
+				a = l0;
+				b = l1;
 				}
 			else {
-				offset.x = l2; 
-				offset.y = l3; 
+				a = l2; 
+				b = l3; 
 				}
-			offset.x *= m_data.nOffset [x];
-			offset.y *= m_data.nOffset [y];
+			a *= m_data.nOffset [x];
+			b *= m_data.nOffset [y];
 			*pixelPosP = v0;
-			*pixelPosP += offset.x; 
-			*pixelPosP += offset.y; 
+			*pixelPosP += a; 
+			*pixelPosP += b; 
 			}
 		}
 	}
 else { 
-	h--;
+	--h;
 	CFixVector l0 = v3 - v0;
 	CFixVector l1 = v1 - v0;
 	CFixVector l2 = v1 - v2;
@@ -529,21 +525,21 @@ else {
 	for (y = yMin; y < yMax; y++) {
 		for (x = 0; x < w; x++, pixelPosP++) {
 			if (h - y >= x) {
-				offset.x = l0;
-				offset.x * m_data.nOffset [x];
-				offset.y = l1;
-				offset.y *= m_data.nOffset [y];  
+				a = l0;
+				a *= m_data.nOffset [x];
+				b = l1;
+				b *= m_data.nOffset [y];  
 				*pixelPosP = v0;
 				}
 			else {
-				offset.x = l2;
-				offset.x *= m_data.nOffset [h - x];  
-				offset.y = l3;
-				offset.y *= m_data.nOffset [h - y]; 
+				a = l2;
+				a *= m_data.nOffset [h - x];  
+				b = l3;
+				b *= m_data.nOffset [h - y]; 
 				*pixelPosP = v2; 
 				}
-			*pixelPosP += offset.x; 
-			*pixelPosP += offset.y; 
+			*pixelPosP += a; 
+			*pixelPosP += b; 
 			}
 		}
 	}
