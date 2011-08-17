@@ -313,7 +313,7 @@ return Index () == gameData.multiplayer.nLocalPlayer;
 fix CPlayerData::SetShield (fix s, bool bScale) 
 { 
 if (m_shield.Set (s, bScale)) {
-	if ((nObject >= 0) && (IsLocalPlayer () || (nObject != LOCALPLAYER.nObject)))
+	if (OBJECTS.Buffer () && (nObject >= 0) && (IsLocalPlayer () || (nObject != LOCALPLAYER.nObject)))
 		OBJECTS [nObject].SetShield (s); 
 	MultiSendShield ();
 	}
