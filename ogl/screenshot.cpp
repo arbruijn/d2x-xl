@@ -125,8 +125,8 @@ extern char *pszSystemNames [];
 
 void SaveScreenShot (ubyte *buf, int bAutomap)
 {
-	char				szMessage [100];
-	char				szSaveName [FILENAME_LEN], szLevelName [128];
+	char				szMessage [1000];
+	char				szSaveName [FILENAME_LEN], szLevelName [FILENAME_LEN];
 	int				i, j, bTmpBuf;
 	static int		nSaveNum = 0;
 	GLenum			glErrCode;
@@ -134,6 +134,7 @@ void SaveScreenShot (ubyte *buf, int bAutomap)
 if (!gameStates.app.bSaveScreenshot)
 	return;
 gameStates.app.bSaveScreenshot = 0;
+// only use alpha-numeric characters and underscores from the level name
 for (i = j = 0; missionManager.szCurrentLevel [i]; i++)
 	if (isalnum (missionManager.szCurrentLevel [i]))
 		szLevelName [j++] = missionManager.szCurrentLevel [i];

@@ -942,9 +942,6 @@ extern DECLSPEC SDL_GrabMode SDLCALL SDL_WM_GrabInput(SDL_GrabMode mode);
 extern DECLSPEC int SDLCALL SDL_SoftStretch(SDL_Surface *src, SDL_Rect *srcrect,
                                     SDL_Surface *dst, SDL_Rect *dstrect);
                     
-
-extern DECLSPEC void *SDLCALL SDL_GetWindowHandle(void);
-
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 }
