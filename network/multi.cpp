@@ -1132,13 +1132,6 @@ else {
 		}
 	else {
 		static int nKillMsgs = 0;
-	PrintLog ("received kill message %d from %d.%d.%d.%d:%u\n",
-				++nKillMsgs,
-					networkData.packetSource.src_node [0],
-					networkData.packetSource.src_node [1],
-					networkData.packetSource.src_node [2],
-					networkData.packetSource.src_node [3],
-					htons (*reinterpret_cast<ushort*> (networkData.packetSource.src_node + 4)));
 		killerP->netKillsTotal++;
 		killerP->nScoreGoalCount++;
 		}
