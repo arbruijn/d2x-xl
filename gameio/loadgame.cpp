@@ -716,6 +716,7 @@ int LoadModData (char* pszLevelName, int bLoadTextures, int nStage)
 	char	szFile [FILENAME_LEN];
 
 // try to read mod files, and load default files if that fails
+PrintLog ("   loading mod data (state %d)\n", nStage);
 if (nStage == 0) {
 	SetD1Sound ();
 	SetDataVersion (-1);
@@ -822,7 +823,7 @@ return nLoadRes;
 
 static void CleanupBeforeGame (int nLevel, int bRestore)
 {
-/*---*/PrintLog ("Loading level...\n");
+/*---*/PrintLog ("   cleaning up...\n");
 EndRenderThreads ();
 transparencyRenderer.ResetBuffers ();
 gameData.Destroy ();
@@ -891,8 +892,9 @@ int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 
 	static char szDefaultPlayList [] = "playlist.txt";
 
+strlwr (pszLevelName = LevelName (nLevel));
+/*---*/PrintLog ("   loading level '%s'\n", pszLevelName);
 CleanupBeforeGame (nLevel, bRestore);
-/*---*/PrintLog ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (missionManager [missionManager.nCurrentMission].nDescentVersion == 1);
 MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName, nLevel);
@@ -909,7 +911,7 @@ if (LoadModData (NULL, 0, 0) < 0) {
 	return -1;
 	}
 #endif
-/*---*/PrintLog ("   Initializing smoke manager\n");
+/*---*/PrintLog ("   Initializing particle manager\n");
 InitObjectSmoke ();
 gameData.pig.tex.bitmapColors.Clear ();
 gameData.models.thrusters.Clear ();
@@ -927,8 +929,6 @@ if (!gameStates.app.bAutoRunMission &&
 	Warning ("Invalid level number!");
 	return 0;
 	}
-strlwr (pszLevelName = LevelName (nLevel));
-/*---*/PrintLog ("   loading level '%s'\n", pszLevelName);
 #if 0
 CCanvas::SetCurrent (NULL);
 GrClearCanvas (BLACK_RGBA);		//so palette switching is less obvious
@@ -950,6 +950,7 @@ memcpy (gameData.pig.tex.brightness.Buffer (),
 LoadTextureBrightness (pszLevelName, NULL);
 gameData.render.color.textures = gameData.render.color.defaultTextures [gameStates.app.bD1Mission];
 LoadTextureColors (pszLevelName, NULL);
+/*---*/PrintLog ("   loading mission configuration info\n");
 missionConfig.Init ();
 missionConfig.Load ();
 missionConfig.Load (pszLevelName);

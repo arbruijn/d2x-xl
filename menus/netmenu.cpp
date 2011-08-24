@@ -1483,8 +1483,10 @@ switch (nIpxError) {
 #endif
 	networkData.bActive = 0;		// Assume no network
 	}
-IpxReadUserFile ("descent.usr");
-IpxReadNetworkFile ("descent.net");
+if (gameStates.multi.nGameType != UDP_GAME) {
+	IpxReadUserFile ("descent.usr");
+	IpxReadNetworkFile ("descent.net");
+	}
 }
 
 //------------------------------------------------------------------------------

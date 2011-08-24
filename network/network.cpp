@@ -170,6 +170,7 @@ if (NetworkFindGame ()) {
 	return 0;
 	}
 bAutoRun = InitAutoNetGame ();
+PrintLog ("   Getting network game params\n");
 if (0 > (i = NetworkGetGameParams (bAutoRun)))
 	return 0;
 gameData.multiplayer.nPlayers = 0;

@@ -445,6 +445,7 @@ if (bUDP) {
 	gameStates.multi.nGameType = UDP_GAME;
 	IpxSetDriver (IPX_DRIVER_UDP); 
 	if (nChoice == multiOpts.nStartUdpTracker) {
+		PrintLog ("   Looking for active trackers\n");
 		int n = tracker.ActiveCount (1);
 		if (n < -2) {
 			if (n == -4)

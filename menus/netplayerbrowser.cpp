@@ -165,6 +165,7 @@ int NetworkSelectPlayers (int bAutoRun)
 	char		title [50];
 	int		nSavePlayers;              //how may people would like to join
 
+PrintLog ("   Selecting netgame players\n");
 NetworkAddPlayer (&networkData.thisPlayer);
 if (bAutoRun)
 	return 1;

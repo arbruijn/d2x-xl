@@ -1111,6 +1111,7 @@ int LoadLevelData (char * pszFilename, int nLevel)
 	int	sig, nMineDataOffset, nGameDataOffset;
 	int	nError;
 
+/*---*/PrintLog ("   loading level data\n");
 SetDataVersion (-1);
 gameData.segs.bHaveSlideSegs = 0;
 if (gameData.app.nGameMode & GM_NETWORK) {
@@ -1209,6 +1210,7 @@ for (;;) {
 		}
 	cf.Close ();
 	networkData.nSegmentCheckSum = CalcSegmentCheckSum ();
+	/*---*/PrintLog ("   building geometry mesh\n");
 	if (meshBuilder.Build (nLevel))
 		break;
 	if (gameStates.render.nMeshQuality <= 0)
@@ -1222,6 +1224,7 @@ if (!(gameData.render.lights.Create () &&
 		gameData.render.shadows.Create ()))
 	return 7;
 #endif	
+	/*---*/PrintLog ("   allocating render buffers\n");
 if (!gameData.render.mine.Create ())
 	return 4;
 //lightManager.Setup (nLevel); 
