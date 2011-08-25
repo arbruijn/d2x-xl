@@ -145,6 +145,8 @@ void D2SignalHandler (int nSignal)
 void __cdecl D2SignalHandler (int nSignal)
 #endif
 {
+	static int nErrors = 0;
+
 if (nSignal == SIGABRT)
 	PrintLog ("+++ Abnormal program termination\n");
 else if (nSignal == SIGFPE)
@@ -159,9 +161,8 @@ else if (nSignal == SIGTERM)
 	PrintLog ("+++ Termination request\n");
 else
 	PrintLog ("+++ Unknown signal\n");
-#if DBG
-//exit (1);
-#endif
+if (++nErrors > 5)
+	exit (1);
 }
 
 // ----------------------------------------------------------------------------
