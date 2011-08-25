@@ -38,7 +38,10 @@ class CArray : public CQuickSort < _T > {
 			uint	pos;
 			int	nMode;
 			bool	bWrap;
-			};
+
+		public:
+			inline uint Length (void) { return length; }
+		};
 
 	protected:
 		CArrayData<_T>	m_data;
@@ -78,16 +81,21 @@ class CArray : public CQuickSort < _T > {
 				_V* End (void) { m_p = m_start = m_a.End (); m_end = m_a.Start (); }
 			};
 
-		CArray () { 
+		explicit CArray<_T> () { 
 			Init (); 
 			}
 		
-		CArray (uint nLength) { 
+		explicit CArray<_T> (const uint nLength) { 
 			Init (); 
 			Create (nLength);
 			}
 		
-		~CArray() { Destroy (); }
+		explicit CArray<_T> (const CArray& other) { 
+			Init (); 
+			Copy (other);
+			}
+		
+		~CArray<_T>() { Destroy (); }
 		
 		void Init (void) { 
 			m_data.buffer = reinterpret_cast<_T *> (NULL); 
@@ -247,8 +255,10 @@ class CArray : public CQuickSort < _T > {
 				}
 			}
 #else
-		inline _T& operator[] (uint i) { return m_data.buffer [i]; }
+		inline _T& operator[] (const uint i) { return m_data.buffer [i]; }
 #endif
+
+		inline _T operator* () const { return m_data.buffer; }
 
 		inline _T& operator= (CArray<_T>& source) { return Copy (source); }
 
@@ -267,7 +277,13 @@ class CArray : public CQuickSort < _T > {
 			return m_data.buffer [0];
 			}
 
-		inline _T& operator+ (CArray<_T>& source) { 
+		inline _T operator+ (CArray<_T>& source) { 
+			CArray<_T> a (*this);
+			a += source;
+			return a;
+			}
+
+		inline _T& operator+= (CArray<_T>& source) { 
 			uint offset = m_data.length;
 			if (m_data.buffer) 
 				Resize (m_data.length + source.m_data.length);

@@ -161,7 +161,7 @@ else if (nSignal == SIGTERM)
 	PrintLog ("+++ Termination request\n");
 else
 	PrintLog ("+++ Unknown signal\n");
-if (++nErrors > 5)
+if (++nErrors > 4)
 	exit (1);
 }
 
