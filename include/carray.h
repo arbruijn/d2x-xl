@@ -258,7 +258,7 @@ class CArray : public CQuickSort < _T > {
 		inline _T& operator[] (const uint i) { return m_data.buffer [i]; }
 #endif
 
-		inline _T operator* () const { return m_data.buffer; }
+		inline _T& operator* () const { return m_data.buffer; }
 
 		inline _T& operator= (CArray<_T>& source) { return Copy (source); }
 

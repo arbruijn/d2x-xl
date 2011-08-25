@@ -1125,11 +1125,11 @@ int NetworkGetGameParams (int bAutoRun)
 {
 	int	i, key, choice = 1, nState = 0;
 	CMenu	m;
-	char	szName [NETGAME_NAME_LEN+1];
-	char	szLevelText [32];
+	char	szName [80]; //NETGAME_NAME_LEN+1];
+	char	szLevelText [80]; //32];
 	char	szMaxNet [50];
 	char	szIpAddr [80];
-	char	szLevel [5];
+	char	szLevel [10]; //5];
 
 	int nNewMission = missionManager.nLastMission;
 
