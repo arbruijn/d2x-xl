@@ -21,8 +21,7 @@
 #include "pstypes.h"
 #include "cquicksort.h"
 #include "cfile.h"
-
-void ArrayError (const char* pszMsg);
+#include "carray.h"
 
 //-----------------------------------------------------------------------------
 
@@ -32,52 +31,57 @@ class CString : public CArray < char > {
 
 	public:
 		explicit CString (char* s, int l = -1) {
-			Length () = (uint) ((l < 0) ? strlen (s) : l);
+			m_length = (uint) ((l < 0) ? strlen (s) : l);
 			Init (); 
 			Create (Length () + 1);
 			memcpy (Buffer (), s, Length ());
 			Buffer () [Length ()] = '\0';
 			}
 
-		explicit CString (const CString& other) : CArray<char> (other) {
-			Length () = other.Length ();
+		CString (const CString& other) : CArray<char> (other) {
+			m_length = other.Length ();
 		}
 
-		inline uint Length (void) { return m_length; }
+		inline uint Length (void) const { return m_length; }
 
 		inline operator char*() { return Buffer (); }
 
 		inline CString& operator= (char* s) {
 			uint l = strlen (s);
-			if (l + 1 > m_data.length ()) {
+			if (l + 1 > m_data.Length ()) {
 				Resize (l + 1);
-				if (l + 1 > m_data.length ())
+				if (l + 1 > m_data.Length ())
 					return *this;
 				}
 			memcpy (Buffer (), s, l + 1);
 			return *this;
 			}
 
-		inline bool operator== (const CString& other) { 
+		inline const bool operator== (CString const & other) { 
 			return strcmp (Buffer (), other.Buffer ()) == 0; 
 			}
 
-		inline bool operator!= (const CString& other) { 
+		inline bool operator!= (CString const & other) { 
 			return strcmp (Buffer (), other.Buffer ()) != 0; 
 			}
 
 		inline CString& operator+= (char* s) {
 			uint l = strlen (s);
-			if (Length () + l + 1 > m_data.length ()) {
+			if (Length () + l + 1 > m_data.Length ()) {
 				Resize (Length () + l + 1);
-				if Length () + l + 1 > m_data.length ())
+				if (Length () + l + 1 > m_data.Length ())
 					return *this;
 				}
 			memcpy (Buffer (Length ()), s, l + 1);
 			return *this;
 			}
 
-		inline CString operator+ (const CString other) {
+		inline CString& operator+= (CString const & other) { 
+			*this += other.Buffer (); 
+			return *this;
+			}
+
+		inline CString operator+ (const CString& other) {
 			uint l = Length () + other.Length ();
 			if (l > m_data.Length ()) {
 				Resize (l + 1);
@@ -89,7 +93,7 @@ class CString : public CArray < char > {
 			return s;
 			}
 		
-		inline CString SubStr (int nOffset, int nLength) {
+		inline CString SubStr (uint nOffset, uint nLength) {
 			if (nOffset > Length ())
 				nLength = 0;
 			else if (nLength > Length () + 1 - nOffset)
@@ -97,13 +101,14 @@ class CString : public CArray < char > {
 			return CString (Buffer () + nOffset, nLength);
 			}
 
-		inline CString& Delete (int nOffset, int nLength) {
+		inline CString& Delete (uint nOffset, uint nLength) {
 			if (nOffset > Length ())
 				return *this;
-			if (if (nLength > Length () + 1 - nOffset)
+			if (nLength > Length () + 1 - nOffset)
 				nLength = Length () + 1 - nOffset;
 			memcpy (Buffer () + nOffset, Buffer () + nOffset + nLength, Length () + 2 - nOffset + nLength);
-			Length () -= nLength;
+			m_length -= nLength;
+			return *this;
 			}
 	};
 

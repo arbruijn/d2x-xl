@@ -191,7 +191,7 @@ class CArray : public CQuickSort < _T > {
 			return m_data.buffer;
 			}
 			
-		inline _T* Buffer (uint i = 0) { return m_data.buffer + i; }
+		inline _T* Buffer (uint i = 0) const { return m_data.buffer + i; }
 		
 		void SetBuffer (_T *buffer, int nMode = 0, uint length = 0xffffffff) {
 			if (m_data.buffer != buffer) {
@@ -268,7 +268,7 @@ class CArray : public CQuickSort < _T > {
 			return m_data.buffer [0];
 			}
 
-		_T& Copy (CArray<_T>& source, uint offset = 0) { 
+		_T& Copy (CArray<_T> const & source, uint offset = 0) { 
 			if (((static_cast<int> (m_data.length)) >= 0) && (static_cast<int> (source.m_data.length) > 0)) {
 				if ((m_data.buffer && (m_data.length >= source.m_data.length + offset)) || Resize (source.m_data.length + offset, false)) {
 					memcpy (m_data.buffer + offset, source.m_data.buffer, ((m_data.length - offset < source.m_data.length) ? m_data.length - offset : source.m_data.length) * sizeof (_T)); 
