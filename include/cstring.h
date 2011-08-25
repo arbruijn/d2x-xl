@@ -47,7 +47,7 @@ class CString : public CArray < char > {
 		inline operator char*() { return Buffer (); }
 
 		inline CString& operator= (char* s) {
-			uint l = strlen (s);
+			uint l = (uint) strlen (s);
 			if (l + 1 > m_data.Length ()) {
 				Resize (l + 1);
 				if (l + 1 > m_data.Length ())
@@ -66,7 +66,7 @@ class CString : public CArray < char > {
 			}
 
 		inline CString& operator+= (char* s) {
-			uint l = strlen (s);
+			uint l = (uint) strlen (s);
 			if (Length () + l + 1 > m_data.Length ()) {
 				Resize (Length () + l + 1);
 				if (Length () + l + 1 > m_data.Length ())

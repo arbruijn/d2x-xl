@@ -989,10 +989,12 @@ lastMaxNet = gameData.multiplayer.nMaxPlayers - 2;
 optMaxNet = m.AddSlider (szMaxNet + 1, lastMaxNet, 0, lastMaxNet, KEY_X, HTX_MULTI_MAXPLRS); 
 m.AddText ("", 0);
 optMoreOpts = m.AddMenu (TXT_MORE_OPTS, KEY_M, HTX_MULTI_MOREOPTS);
-optConfigMenu =
 optD2XOpts =
 optEntOpts =
-optMBallOpts = -1;
+optMBallOpts =
+optConfigMenu =
+optLoadoutMenu =
+optMissileMenu = -1;
 if (!gameStates.app.bNostalgia) {
 	optD2XOpts = m.AddMenu (TXT_MULTI_D2X_OPTS, KEY_X, HTX_MULTI_D2XOPTS);
 	if ((optEntropy >= 0) && m [optEntropy].m_value)
@@ -1020,7 +1022,8 @@ if (m [optMissionName].m_bRebuild) {
 	m [optMissionName].SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nNewMission].szMissionName));
 	if ((nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, missionManager.nLastLevel);
-		Assert (strlen (szLevelText) < 32);
+		if (strlen (szLevelText) < 32)
+			szLevelText [31] = '\0';
 		m [optLevelText].m_bRebuild = 1;
 		}
 	mpParams.nLevel = 1;
@@ -1158,7 +1161,9 @@ nGameItem = -1;
 *szLevel = '\0';
 
 do {
+	PrintLog ("   building game parameters menu\n");
 	BuildGameParamsMenu (m, szName, szLevelText, szLevel, szIpAddr, szMaxNet, nNewMission);
+	PrintLog ("   loading game parameters menu\n");
 	do {
 		nState = GameParamsMenu (m, key, choice, szName, szLevelText, szLevel, szIpAddr, nNewMission);
 		if ((nNewMission < 0) && (nState == 0)) {

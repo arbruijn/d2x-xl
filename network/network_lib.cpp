@@ -383,17 +383,13 @@ networkData.nNamesInfoSecurity = activeNetGames [n].m_info.nSecurity;
 
 //------------------------------------------------------------------------------
 
-int HoardEquipped ()
+int HoardEquipped (void)
 {
-	static int checked=-1;
+	static int bHoard = -1;
 
-if (checked == -1) {
-	if (CFile::Exist ("hoard.ham", gameFolders.szDataDir [0], 0))
-		checked=1;
-	else
-		checked=0;
-	}
-return (checked);
+if (bHoard == -1)
+	bHoard = CFile::Exist ("hoard.ham", gameFolders.szDataDir [0], 0) ? 1 : 0;
+return bHoard;
 }
 
 //------------------------------------------------------------------------------
