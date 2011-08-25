@@ -36,7 +36,9 @@
 #include "monsterball.h"
 #include "menubackground.h"
 #include "console.h"
-#include "cstring.h"
+#if DBG
+#	include "cstring.h"
+#endif
 
 #define LHX(x)      (gameStates.menus.bHires?2* (x):x)
 #define LHY(y)      (gameStates.menus.bHires? (24* (y))/10:y)
