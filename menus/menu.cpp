@@ -1438,11 +1438,11 @@ return ToS () - 1;
 
 int CMenu::AddRadio (const char* szId, const char* szText, int nValue, int nKey, const char* szHelp)
 {
+if (!ToS () || (Top ()->m_nType != NM_TYPE_RADIO))
+	NewGroup ();
 CMenuItem* item = AddItem ();
 if (!item)
 	return -1;
-if (!ToS () || (Top ()->m_nType != NM_TYPE_RADIO))
-	NewGroup ();
 item->m_nType = NM_TYPE_RADIO;
 item->m_pszText = NULL;
 item->SetText (szText);
