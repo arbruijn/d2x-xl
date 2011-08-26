@@ -68,31 +68,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "songs.h"
 
 //------------------------------------------------------------------------------
-//static int FirstTime = 1;
-
-static struct {
-	int	nNew;
-	int	nSingle;
-	int	nLoad;
-	int	nLoadDirect;
-	int	nMulti;
-	int	nConfig;
-	int	nPilots;
-	int	nDemo;
-	int	nScores;
-	int	nMovies;
-	int	nSongs;
-	int	nCredits;
-	int	nQuit;
-	int	nOrder;
-	int	nHelp;
-	int	nChoice;
-#if defined(_WIN32) || defined(__unix__)
-	int	nUpdate;
-#endif
-} mainOpts;
-
-//------------------------------------------------------------------------------
 
 // Function Prototypes added after LINTING
 int ExecMainMenuOption (CMenu& m, int nChoice);
@@ -154,7 +129,6 @@ return nCurItem;
 //      Create the main menu.
 int SetupMainMenu (CMenu& m)
 {
-memset (&mainOpts, 0xff, sizeof (mainOpts));
 m.Destroy ();
 m.Create (25);
 SetScreenMode (SCREEN_MENU);
@@ -164,23 +138,23 @@ m.AddText ("", "", 0);
 m.Top ()->m_bNoScroll = 1;
 m.AddText ("", "", 0);
 m.Top ()->m_bNoScroll = 1;
-mainOpts.nNew = m.AddMenu ("new game", TXT_NEW_GAME1, KEY_N, HTX_MAIN_NEW);
+m.AddMenu ("new game", TXT_NEW_GAME1, KEY_N, HTX_MAIN_NEW);
 if (!gameStates.app.bNostalgia)
-	mainOpts.nSingle = m.AddMenu ("new singleplayer game", TXT_NEW_SPGAME, KEY_I, HTX_MAIN_SINGLE);
-mainOpts.nLoad = m.AddMenu ("load game", TXT_LOAD_GAME, KEY_L, HTX_MAIN_LOAD);
-mainOpts.nMulti = m.AddMenu ("multiplayer game", TXT_MULTIPLAYER_, KEY_M, HTX_MAIN_MULTI);
-mainOpts.nConfig = m.AddMenu ("program settings", gameStates.app.bNostalgia ? TXT_OPTIONS_ : TXT_CONFIGURE, KEY_O, HTX_MAIN_CONF);
-mainOpts.nPilots = m.AddMenu ("choose pilot", TXT_CHANGE_PILOTS, KEY_P, HTX_MAIN_PILOT);
-mainOpts.nDemo = m.AddMenu ("view demo", TXT_VIEW_DEMO, KEY_D, HTX_MAIN_DEMO);
-mainOpts.nScores = m.AddMenu ("view highscores", TXT_VIEW_SCORES, KEY_H, HTX_MAIN_SCORES);
-mainOpts.nMovies = m.AddMenu ("play movies", TXT_PLAY_MOVIES, KEY_V, HTX_MAIN_MOVIES);
+	m.AddMenu ("new singleplayer game", TXT_NEW_SPGAME, KEY_I, HTX_MAIN_SINGLE);
+m.AddMenu ("load game", TXT_LOAD_GAME, KEY_L, HTX_MAIN_LOAD);
+m.AddMenu ("multiplayer game", TXT_MULTIPLAYER_, KEY_M, HTX_MAIN_MULTI);
+m.AddMenu ("program settings", gameStates.app.bNostalgia ? TXT_OPTIONS_ : TXT_CONFIGURE, KEY_O, HTX_MAIN_CONF);
+m.AddMenu ("choose pilot", TXT_CHANGE_PILOTS, KEY_P, HTX_MAIN_PILOT);
+m.AddMenu ("view demo", TXT_VIEW_DEMO, KEY_D, HTX_MAIN_DEMO);
+m.AddMenu ("view highscores", TXT_VIEW_SCORES, KEY_H, HTX_MAIN_SCORES);
+m.AddMenu ("play movies", TXT_PLAY_MOVIES, KEY_V, HTX_MAIN_MOVIES);
 if (!gameStates.app.bNostalgia)
-	mainOpts.nSongs = m.AddMenu ("play songs", TXT_PLAY_SONGS, KEY_S, HTX_MAIN_SONGS);
-mainOpts.nCredits = m.AddMenu ("view credits", TXT_CREDITS, KEY_C, HTX_MAIN_CREDITS);
+	m.AddMenu ("play songs", TXT_PLAY_SONGS, KEY_S, HTX_MAIN_SONGS);
+m.AddMenu ("view credits", TXT_CREDITS, KEY_C, HTX_MAIN_CREDITS);
 #if defined(_WIN32) || defined(__unix__)
-mainOpts.nUpdate = m.AddMenu ("check update", TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
+m.AddMenu ("check update", TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
 #endif
-mainOpts.nQuit = m.AddMenu ("quit", TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
+m.AddMenu ("quit", TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
 return m.ToS ();
 }
 
@@ -223,7 +197,7 @@ do {
 if (gameStates.app.nFunctionMode == FMODE_GAME)
 	paletteManager.DisableEffect ();
 controls.FlushInput ();
-return mainOpts.nChoice;
+return nChoice;
 }
 
 //------------------------------------------------------------------------------
@@ -317,8 +291,8 @@ else if (nChoice == m.IndexOf ("load game")) {
 	if (!saveGameManager.Load (0, 0, 0, NULL))
 		SetFunctionMode (FMODE_MENU);
 	}
-#if DBG
-else if (nChoice == mainOpts.nLoadDirect) {
+#if 0 //DBG
+else if (nChoice == m.IndexOf ("load direct")) {
 	CMenu	m (1);
 	char	szLevel [10] = "";
 	int	nLevel;
