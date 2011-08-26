@@ -1524,7 +1524,7 @@ return ToS () - 1;
 
 int CMenu::AddInput (const char* szId, const char* szText, char* szValue, int nLen, const char* szHelp)
 {
-if (AddText (szId, szText, -1) < 0)
+if (AddText ("", szText, -1) < 0)
 	return -1;
 return AddInput (szId, szValue, nLen, szHelp);
 }

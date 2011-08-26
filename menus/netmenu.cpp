@@ -533,7 +533,7 @@ mpParams.bIndestructibleLights = ubyte (m.Value ("indestructible lights"));
 mpParams.nDifficulty = m.Value ("difficulty");
 mpParams.bShowPlayersOnAutomap = m.Value ("show players on map");
 mpParams.bShortPackets = m.Value ("short packets");
-mpParams.nPPS = atoi ("PPS");
+mpParams.nPPS = atoi (m ["PPS"]->Text ());
 if (mpParams.nPPS > 20) {
 	mpParams.nPPS = 20;
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
