@@ -132,7 +132,7 @@ SEGMENTS [h].ChangeTexture (newOwner);
 
 void StartConquerWarning (void)
 {
-if (extraGameInfo [1].entropy.bDoConquerWarning) {
+if (extraGameInfo [1].entropy.bDoCaptureWarning) {
 	gameStates.sound.nConquerWarningSoundChannel = audio.PlaySound (SOUND_CONTROL_CENTER_WARNING_SIREN, SOUNDCLASS_GENERIC, I2X (3));
 	MultiSendConquerWarning ();
 	gameStates.entropy.bConquerWarning = 1;
@@ -173,7 +173,7 @@ if (playerP->Shield () < 0) {
 	StopConquerWarning ();
 	return 0;
 	}
-if (playerP->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].nCaptureVirusLimit) {
+if (playerP->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].nCaptureVirusThreshold) {
 	HUDMessage (0, "too few viruses");
 	StopConquerWarning ();
 	return 0;
@@ -191,7 +191,7 @@ if (m_owner == team) {
 #else
 if ((gameStates.entropy.nTimeLastMoved < 0) || 
 	 (playerP->Shield () < 0) || 
-	 (playerP->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].entropy.nCaptureVirusLimit) ||
+	 (playerP->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].entropy.nCaptureVirusThreshold) ||
 	 (m_owner < 0) || 
 	 (m_owner == team)) {
 	StopConquerWarning ();
@@ -210,7 +210,7 @@ if (t - gameStates.entropy.nTimeLastMoved < extraGameInfo [1].entropy.nCaptureTi
 StopConquerWarning ();
 if (m_owner)
 	MultiSendCaptureBonus ((char) gameData.multiplayer.nLocalPlayer);
-playerP->secondaryAmmo [PROXMINE_INDEX] -= extraGameInfo [1].entropy.nCaptureVirusLimit;
+playerP->secondaryAmmo [PROXMINE_INDEX] -= extraGameInfo [1].entropy.nCaptureVirusThreshold;
 if (playerP->secondaryAmmo [SMARTMINE_INDEX] > extraGameInfo [1].entropy.nBashVirusCapacity)
 	playerP->secondaryAmmo [SMARTMINE_INDEX] -= extraGameInfo [1].entropy.nBashVirusCapacity;
 else

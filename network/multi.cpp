@@ -3924,11 +3924,11 @@ if (t == 2)	// no team as at least one room -> this is probably not an entropy e
 	return;
 for (h = i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (GetTeam (i) != t) {
-		if (gameData.multiplayer.players [i].secondaryAmmo [PROXMINE_INDEX]  >= extraGameInfo [1].entropy.nCaptureVirusLimit)
+		if (gameData.multiplayer.players [i].secondaryAmmo [PROXMINE_INDEX]  >= extraGameInfo [1].entropy.nCaptureVirusThreshold)
 			return;
 		h += gameData.multiplayer.players [i].secondaryAmmo [PROXMINE_INDEX];
 		}
-if ((h  >= extraGameInfo [1].entropy.nCaptureVirusLimit) && extraGameInfo [1].entropy.nVirusStability)
+if ((h  >= extraGameInfo [1].entropy.nCaptureVirusThreshold) && extraGameInfo [1].entropy.nVirusStability)
 	return;
 HUDInitMessage (TXT_WINNING_TEAM, t ? TXT_RED : TXT_BLUE);
 for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++) {

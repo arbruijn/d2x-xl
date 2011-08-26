@@ -330,27 +330,27 @@ do {
 	m.Destroy ();
 	m.Create (20);
 
-	m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD, "show hud");
-	m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_S, HTX_CPIT_SHOWRETICLE, "show reticle");
-	m.AddCheck (TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_M, HTX_CPIT_MSLVIEW, "missile view");
-	m.AddCheck (TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_CPIT_GFXGAUGES, "text gauges");
-	m.AddCheck (TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY, "object tally");
-	m.AddCheck (TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_O, HTX_GPLAY_ZOOMSMOOTH, "zoom style");
+	m.AddCheck ("show hud", TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
+	m.AddCheck ("show reticle", TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_S, HTX_CPIT_SHOWRETICLE);
+	m.AddCheck ("missile view", TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_M, HTX_CPIT_MSLVIEW);
+	m.AddCheck ("text gauges", TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_CPIT_GFXGAUGES);
+	m.AddCheck ("object tally", TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY);
+	m.AddCheck ("zoom style", TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_O, HTX_GPLAY_ZOOMSMOOTH);
 #if 0
-	cockpitOpts.nTgtInd = mat.AddCheck (TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
+	m.AddCheck ("target indicators", TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 #else
 	m.AddText ("", 0);
 	sprintf (szSlider, TXT_TARGET_INDICATORS, szTgtInd [nTgtInd]);
-	m.AddSlider (szSlider, nTgtInd, 0, 2, KEY_T, HTX_CPIT_TGTIND, "target indicators");
+	m.AddSlider ("target indicators", szSlider, nTgtInd, 0, 2, KEY_T, HTX_CPIT_TGTIND);
 #endif
 #if WEAPON_ICONS
 	m.AddText ("", 0);
 	mat.AddCheck (TXT_SHOW_WEAPONICONS, bShowWeaponIcons, KEY_W, HTX_CPIT_WPNICONS, "weapon icons");
 	if (bShowWeaponIcons) {
-		m.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS, "icon pos top");
-		m.AddRadio (TXT_WPNICONS_BTM, 0, KEY_I, HTX_CPIT_ICONPOS, "icon pos btm");
-		m.AddRadio (TXT_WPNICONS_LRB, 0, KEY_I, HTX_CPIT_ICONPOS, "icon pos lrb");
-		m.AddRadio (TXT_WPNICONS_LRT, 0, KEY_I, HTX_CPIT_ICONPOS, "icon pos lrt");
+		m.AddRadio ("icon pos top", TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio ("icon pos btm", TXT_WPNICONS_BTM, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio ("icon pos lrb", TXT_WPNICONS_LRB, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio ("icon pos lrt", TXT_WPNICONS_LRT, 0, KEY_I, HTX_CPIT_ICONPOS);
 		m [m.IndexOf ("icon pos top") + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].Value () = 1;
 		}
 #endif
@@ -360,37 +360,37 @@ do {
 
 	for (i = 0; i < 2; i++) {
 		sprintf (szSlider, GT (1163 + i), szWindowType [winFunc [i]]);
-		m.AddSlider (szSlider, winFunc [i], 0, nWinFuncs - 1, i ? KEY_R : KEY_L, HTX_CPIT_WINTYPE, windowTypeIds [i]);
+		m.AddSlider (windowTypeIds [i], szSlider, winFunc [i], 0, nWinFuncs - 1, i ? KEY_R : KEY_L, HTX_CPIT_WINTYPE);
 		}
 
 	sprintf (szSlider, TXT_AUXWIN_SIZE, szWindowSize [gameOpts->render.cockpit.nWindowSize]);
-	m.AddSlider (szSlider, gameOpts->render.cockpit.nWindowSize, 0, 3, KEY_I, HTX_CPIT_WINSIZE, "cockpit window size");
+	m.AddSlider ("cockpit window size", szSlider, gameOpts->render.cockpit.nWindowSize, 0, 3, KEY_I, HTX_CPIT_WINSIZE);
 
-	sprintf (szSlider, TXT_AUXWIN_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1, "cockpit window zoom");
-	m.AddSlider (szSlider, gameOpts->render.cockpit.nWindowZoom, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);
+	sprintf (szSlider, TXT_AUXWIN_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1);
+	m.AddSlider ("cockpit window zoom", szSlider, gameOpts->render.cockpit.nWindowZoom, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);
 
 	sprintf (szSlider, TXT_AUXWIN_POSITION, szWindowPos [nWindowPos]);
-	m.AddSlider (szSlider, nWindowPos, 0, 1, KEY_P, HTX_AUXWIN_POSITION, "cockpit window pos");
+	m.AddSlider ("cockpit window pos", szSlider, nWindowPos, 0, 1, KEY_P, HTX_AUXWIN_POSITION);
 
 	sprintf (szSlider, TXT_AUXWIN_ALIGNMENT, szWindowAlign [nWindowAlign]);
-	m.AddSlider (szSlider, nWindowAlign, 0, 2, KEY_A, HTX_AUXWIN_ALIGNMENT, "cockpit window align");
+	m.AddSlider ("cockpit window align", szSlider, nWindowAlign, 0, 2, KEY_A, HTX_AUXWIN_ALIGNMENT);
 
 	m.AddText ("", 0);
 
 	sprintf (szSlider, TXT_RADAR_POSITION, szWindowPos [gameOpts->render.cockpit.nRadarPos]);
-	m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarPos, 0, 1, KEY_O, HTX_CPIT_RADARPOS, "cockpit radar pos");
+	m.AddSlider ("cockpit radar pos", szSlider, gameOpts->render.cockpit.nRadarPos, 0, 1, KEY_O, HTX_CPIT_RADARPOS);
 
 	sprintf (szSlider, TXT_RADAR_SIZE, szRadarSize [gameOpts->render.cockpit.nRadarSize]);
-	m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarSize, 0, 2, KEY_O, HTX_CPIT_RADARSIZE, "cockpit radar size");
+	m.AddSlider ("cockpit radar size", szSlider, gameOpts->render.cockpit.nRadarSize, 0, 2, KEY_O, HTX_CPIT_RADARSIZE);
 
 	sprintf (szSlider, TXT_RADAR_RANGE, szRadarRange [gameOpts->render.cockpit.nRadarRange]);
-	m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarRange, 0, 4, KEY_R, HTX_CPIT_RADARRANGE, "cockpit radar range");
+	m.AddSlider ("cockpit radar range", szSlider, gameOpts->render.cockpit.nRadarRange, 0, 4, KEY_R, HTX_CPIT_RADARRANGE);
 
 	sprintf (szSlider, TXT_RADAR_COLOR, szRadarColor [gameOpts->render.cockpit.nRadarColor]);
-	m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarColor, 0, 2, KEY_C, HTX_CPIT_RADARCOLOR, "cockpit radar color");
+	m.AddSlider ("cockpit radar color", szSlider, gameOpts->render.cockpit.nRadarColor, 0, 2, KEY_C, HTX_CPIT_RADARCOLOR);
 
 	sprintf (szSlider, TXT_RADAR_STYLE, szRadarStyle [gameOpts->render.cockpit.nRadarStyle]);
-	m.AddSlider (szSlider, gameOpts->render.cockpit.nRadarStyle, 0, 1, KEY_S, HTX_CPIT_RADARSTYLE, "cockpit radar style");
+	m.AddSlider ("cockpit radar style", szSlider, gameOpts->render.cockpit.nRadarStyle, 0, 1, KEY_S, HTX_CPIT_RADARSTYLE);
 
 	do {
 		i = m.Menu (NULL, TXT_COCKPIT_OPTS, &CockpitOptionsCallback, &choice);

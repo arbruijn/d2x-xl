@@ -1403,7 +1403,7 @@ return m_nChoice;
 //------------------------------------------------------------------------------ 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddCheck (const char* szText, int nValue, int nKey, const char* szHelp, const char* szId)
+int CMenu::AddCheck (const char* szId, const char* szText, int nValue, int nKey, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_CHECK;
@@ -1419,7 +1419,7 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddRadio (const char* szText, int nValue, int nKey, const char* szHelp, const char* szId)
+int CMenu::AddRadio (const char* szId, const char* szText, int nValue, int nKey, const char* szHelp)
 {
 CMenuItem item;
 if (!ToS () || (Top ()->m_nType != NM_TYPE_RADIO))
@@ -1438,7 +1438,7 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddMenu (const char* szText, int nKey, const char* szHelp, const char* szId)
+int CMenu::AddMenu (const char* szId, const char* szText, int nKey, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_MENU;
@@ -1453,7 +1453,7 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddText (const char* szText, int nKey, const char* szId)
+int CMenu::AddText (const char* szId, const char* szText, int nKey)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_TEXT;
@@ -1467,7 +1467,7 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddSlider (const char* szText, int nValue, int nMin, int nMax, int nKey, const char* szHelp, const char* szId)
+int CMenu::AddSlider (const char* szId, const char* szText, int nValue, int nMin, int nMax, int nKey, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_SLIDER;
@@ -1485,7 +1485,7 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (const char* szText, int nLen, const char* szHelp, const char* szId)
+int CMenu::AddInput (const char* szId, const char* szText, int nLen, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_INPUT;
@@ -1500,7 +1500,7 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (const char* szText, char* szValue, int nLen, const char* szHelp, const char* szId)
+int CMenu::AddInput (const char* szId, const char* szText, char* szValue, int nLen, const char* szHelp)
 {
 AddText (szText, -1, szId);
 return AddInput (szValue, nLen, szHelp, szId);
@@ -1508,7 +1508,7 @@ return AddInput (szValue, nLen, szHelp, szId);
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (const char* szText, char* szValue, int nValue, int nLen, const char* szHelp, const char* szId)
+int CMenu::AddInput (const char* szId, const char* szText, char* szValue, int nValue, int nLen, const char* szHelp)
 {
 sprintf (szValue, "%d", nValue);
 return AddInput (szText, szValue, nLen, szHelp, szId);
@@ -1516,7 +1516,7 @@ return AddInput (szText, szValue, nLen, szHelp, szId);
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInputBox (const char* szText, int nLen, int nKey, const char* szHelp, const char* szId)
+int CMenu::AddInputBox (const char* szId, const char* szText, int nLen, int nKey, const char* szHelp)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_INPUT_MENU;
@@ -1532,7 +1532,7 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddNumber (const char* szText, int nValue, int nMin, int nMax, const char* szId)
+int CMenu::AddNumber (const char* szId, const char* szText, int nValue, int nMin, int nMax)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_NUMBER;
@@ -1548,7 +1548,7 @@ return ToS () - 1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddGauge (const char* szText, int nValue, int nMax, const char* szId)
+int CMenu::AddGauge (const char* szId, const char* szText, int nValue, int nMax)
 {
 CMenuItem item;
 item.m_nType = NM_TYPE_GAUGE;

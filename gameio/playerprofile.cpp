@@ -402,7 +402,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bShowWeapons, 0, 0);
 		RP (extraGameInfo [i].nFusionRamp, 0, 0);
 
-		RP (extraGameInfo [i].entropy.nCaptureVirusLimit, 0, 0);
+		RP (extraGameInfo [i].entropy.nCaptureVirusThreshold, 0, 0);
 		RP (extraGameInfo [i].entropy.nCaptureTimeLimit, 0, 0);
 		RP (extraGameInfo [i].entropy.nMaxVirusCapacity, 0, 0);
 		RP (extraGameInfo [i].entropy.nBumpVirusCapacity, 0, 0);
@@ -414,7 +414,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].entropy.nShieldFillRate, 0, 0);
 		RP (extraGameInfo [i].entropy.nShieldDamageRate, 0, 0);
 		RP (extraGameInfo [i].entropy.bRevertRooms, 0, 0);
-		RP (extraGameInfo [i].entropy.bDoConquerWarning, 0, 0);
+		RP (extraGameInfo [i].entropy.bDoCaptureWarning, 0, 0);
 		RP (extraGameInfo [i].entropy.nOverrideTextures, 0, 0);
 		RP (extraGameInfo [i].entropy.bBrightenRooms, 0, 0);
 		RP (extraGameInfo [i].entropy.bPlayerHandicap, 0, 0);
@@ -869,7 +869,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].nWeaponDropMode", "1"},
 	 {"extraGameInfo[0].nWeaponIcons", "3"},
 	 {"extraGameInfo[0].nZoomMode", "1"},
-	 {"extraGameInfo[0].entropy.nCaptureVirusLimit", "1"},
+	 {"extraGameInfo[0].entropy.nCaptureVirusThreshold", "1"},
 	 {"extraGameInfo[0].entropy.nCaptureTimeLimit", "1"},
 	 {"extraGameInfo[0].entropy.nMaxVirusCapacity", "0"},
 	 {"extraGameInfo[0].entropy.nBumpVirusCapacity", "2"},
@@ -881,7 +881,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].entropy.nShieldFillRate", "11"},
 	 {"extraGameInfo[0].entropy.nShieldDamageRate", "11"},
 	 {"extraGameInfo[0].entropy.bRevertRooms", "0"},
-	 {"extraGameInfo[0].entropy.bDoConquerWarning", "0"},
+	 {"extraGameInfo[0].entropy.bDoCaptureWarning", "0"},
 	 {"extraGameInfo[0].entropy.nOverrideTextures", "2"},
 	 {"extraGameInfo[0].entropy.bBrightenRooms", "0"},
 	 {"extraGameInfo[0].entropy.bPlayerHandicap", "0"},

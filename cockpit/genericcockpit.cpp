@@ -599,7 +599,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 	if (gameData.app.nGameMode & GM_ENTROPY) {
 		char	szInfo [20];
 		int	w, h, aw;
-		if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] >= extraGameInfo [1].entropy.nCaptureVirusLimit)
+		if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] >= extraGameInfo [1].entropy.nCaptureVirusThreshold)
 			fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 		else
 			fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);

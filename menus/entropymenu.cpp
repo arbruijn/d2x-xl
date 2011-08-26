@@ -38,11 +38,6 @@
 #define LHX(x)      (gameStates.menus.bHires?2* (x):x)
 #define LHY(y)      (gameStates.menus.bHires? (24* (y))/10:y)
 
-static int 
-	optCapVirLim, optCapTimLim, optMaxVirCap, optBumpVirCap, optBashVirCap, optVirGenTim, 
-	optVirLife, optVirStab, optConqWarn, optRevRooms, optEnergyFill, optShieldFill, optShieldDmg, 
-	optOvrTex, optBrRooms;
-
 //------------------------------------------------------------------------------
 
 void NetworkEntropyToggleOptions (void)
@@ -50,26 +45,26 @@ void NetworkEntropyToggleOptions (void)
 	CMenu	m (12);
 	int	optPlrHand;
 
-optPlrHand = m.AddCheck (TXT_ENT_HANDICAP, extraGameInfo [0].entropy.bPlayerHandicap, KEY_H, HTX_ONLINE_MANUAL);
-optConqWarn = m.AddCheck (TXT_ENT_CONQWARN, extraGameInfo [0].entropy.bDoConquerWarning, KEY_W, HTX_ONLINE_MANUAL);
-optRevRooms = m.AddCheck (TXT_ENT_REVERT, extraGameInfo [0].entropy.bRevertRooms, KEY_R, HTX_ONLINE_MANUAL);
+m.AddCheck (TXT_ENT_HANDICAP, extraGameInfo [0].entropy.bPlayerHandicap, KEY_H, HTX_ONLINE_MANUAL, "player handicap");
+m.AddCheck (TXT_ENT_CONQWARN, extraGameInfo [0].entropy.bDoCaptureWarning, KEY_W, HTX_ONLINE_MANUAL, "capture warning");
+m.AddCheck (TXT_ENT_REVERT, extraGameInfo [0].entropy.bRevertRooms, KEY_R, HTX_ONLINE_MANUAL, "revert rooms");
 m.AddText ("");
-optVirStab = m.AddText (TXT_ENT_VIRSTAB);
+m.AddText (TXT_ENT_VIRSTAB, -1, "virus stability");
 m.AddRadio (TXT_ENT_VIRSTAB_DROP, 0, KEY_D);
 m.AddRadio (TXT_ENT_VIRSTAB_ENEMY, 0, KEY_T);
 m.AddRadio (TXT_ENT_VIRSTAB_TOUCH, 0, KEY_L);
 m.AddRadio (TXT_ENT_VIRSTAB_NEVER, 0, KEY_N);
-m [optVirStab + extraGameInfo [0].entropy.nVirusStability].m_value = 1;
+m [m.IndexOf ("virus stability") + extraGameInfo [0].entropy.nVirusStability].Value () = 1;
 
 m.Menu (NULL, TXT_ENT_TOGGLES, NULL, 0);
 
-extraGameInfo [0].entropy.bRevertRooms = m [optRevRooms].m_value;
-extraGameInfo [0].entropy.bDoConquerWarning = m [optConqWarn].m_value;
-extraGameInfo [0].entropy.bPlayerHandicap = m [optPlrHand].m_value;
+extraGameInfo [0].entropy.bRevertRooms = m ["revert rooms"]->Value ();
+extraGameInfo [0].entropy.bDoCaptureWarning = m ["capture warning"]->Value ();
+extraGameInfo [0].entropy.bPlayerHandicap = m ["player handicap"]->Value ();
 for (extraGameInfo [0].entropy.nVirusStability = 0; 
 	  extraGameInfo [0].entropy.nVirusStability < 3; 
 	  extraGameInfo [0].entropy.nVirusStability++)
-	if (m [optVirStab + extraGameInfo [0].entropy.nVirusStability].m_value)
+	if (m [m.IndexOf ("virus stability") + extraGameInfo [0].entropy.nVirusStability].Value ())
 		break;
 }
 
@@ -79,20 +74,20 @@ void NetworkEntropyTextureOptions (void)
 {
 	CMenu	m (7);
 
-optOvrTex = m.AddRadio (TXT_ENT_TEX_KEEP, 0, KEY_K, HTX_ONLINE_MANUAL);
+m.AddRadio (TXT_ENT_TEX_KEEP, 0, KEY_K, HTX_ONLINE_MANUAL, "texture override");
 m.AddRadio (TXT_ENT_TEX_OVERRIDE, 0, KEY_O, HTX_ONLINE_MANUAL);
 m.AddRadio (TXT_ENT_TEX_COLOR, 0, KEY_C, HTX_ONLINE_MANUAL);
-m [optOvrTex + extraGameInfo [0].entropy.nOverrideTextures].m_value = 1;
+m [optOvrTex + extraGameInfo [0].entropy.nOverrideTextures]->Value () = 1;
 m.AddText ("");
-optBrRooms = m.AddCheck (TXT_ENT_TEX_BRIGHTEN, extraGameInfo [0].entropy.bBrightenRooms, KEY_B, HTX_ONLINE_MANUAL);
+m.AddCheck (TXT_ENT_TEX_BRIGHTEN, extraGameInfo [0].entropy.bBrightenRooms, KEY_B, HTX_ONLINE_MANUAL, "brighten rooms");
 
 m.Menu (NULL, TXT_ENT_TEXTURES, NULL, 0);
 
-extraGameInfo [0].entropy.bBrightenRooms = m [optBrRooms].m_value;
+extraGameInfo [0].entropy.bBrightenRooms = m ["brighten rooms"]->Value ();
 for (extraGameInfo [0].entropy.nOverrideTextures = 0; 
 	  extraGameInfo [0].entropy.nOverrideTextures < 3; 
 	  extraGameInfo [0].entropy.nOverrideTextures++)
-	if (m [optOvrTex + extraGameInfo [0].entropy.nOverrideTextures].m_value)
+	if (m [m.IndexOf ("texture override") + extraGameInfo [0].entropy.nOverrideTextures].Value ())
 		break;
 }
 
@@ -106,19 +101,19 @@ void NetworkEntropyOptions (void)
 				szBashVirCap [10], szVirGenTim [10], szVirLife [10], 
 				szEnergyFill [10], szShieldFill [10], szShieldDmg [10];
 
-optCapVirLim = m.AddInput (TXT_ENT_VIRLIM, szCapVirLim, extraGameInfo [0].entropy.nCaptureVirusLimit, 3, HTX_ONLINE_MANUAL);
-optCapTimLim = m.AddInput (TXT_ENT_CAPTIME, szCapTimLim, extraGameInfo [0].entropy.nCaptureTimeLimit, 3, HTX_ONLINE_MANUAL);
-optMaxVirCap = m.AddInput (TXT_ENT_MAXCAP, szMaxVirCap, extraGameInfo [0].entropy.nMaxVirusCapacity, 6, HTX_ONLINE_MANUAL);
-optBumpVirCap = m.AddInput (TXT_ENT_BUMPCAP, szBumpVirCap, extraGameInfo [0].entropy.nBumpVirusCapacity, 3, HTX_ONLINE_MANUAL);
-optBashVirCap = m.AddInput (TXT_ENT_BASHCAP, szBashVirCap, extraGameInfo [0].entropy.nBashVirusCapacity, 3, HTX_ONLINE_MANUAL);
-optVirGenTim = m.AddInput (TXT_ENT_GENTIME, szVirGenTim, extraGameInfo [0].entropy.nVirusGenTime, 3, HTX_ONLINE_MANUAL);
-optVirLife = m.AddInput (TXT_ENT_VIRLIFE, szVirLife, extraGameInfo [0].entropy.nVirusLifespan, 3, HTX_ONLINE_MANUAL);
-optEnergyFill = m.AddInput (TXT_ENT_EFILL, szEnergyFill, extraGameInfo [0].entropy.nEnergyFillRate, 3, HTX_ONLINE_MANUAL);
-optShieldFill = m.AddInput (TXT_ENT_SFILL, szShieldFill, extraGameInfo [0].entropy.nShieldFillRate, 3, HTX_ONLINE_MANUAL);
-optShieldDmg = m.AddInput (TXT_ENT_DMGRATE, szShieldDmg, extraGameInfo [0].entropy.nShieldDamageRate, 3, HTX_ONLINE_MANUAL);
+m.AddInput (TXT_ENT_VIRUS_THRESHOLD, szCapVirLim, extraGameInfo [0].entropy.nCaptureVirusThreshold, 3, HTX_ONLINE_MANUAL, "capture virus threshold");
+m.AddInput (TXT_ENT_CAPTURE_TIME, szCapTimLim, extraGameInfo [0].entropy.nCaptureTimeThreshold, 3, HTX_ONLINE_MANUAL, "capture time threshold");
+m.AddInput (TXT_ENT_MAXCAP, szMaxVirCap, extraGameInfo [0].entropy.nMaxVirusCapacity, 6, HTX_ONLINE_MANUAL, "virus capacity");
+m.AddInput (TXT_ENT_BUMPCAP, szBumpVirCap, extraGameInfo [0].entropy.nBumpVirusCapacity, 3, HTX_ONLINE_MANUAL, "virus capacity increase"); // cap. increase when scoring a kill
+m.AddInput (TXT_ENT_BASHCAP, szBashVirCap, extraGameInfo [0].entropy.nBashVirusCapacity, 3, HTX_ONLINE_MANUAL, "virus capacity decrease"); // cap. decrease when being killed
+m.AddInput (TXT_ENT_GENTIME, szVirGenTim, extraGameInfo [0].entropy.nVirusGenTime, 3, HTX_ONLINE_MANUAL, "virus creation delay");
+m.AddInput (TXT_ENT_VIRLIFE, szVirLife, extraGameInfo [0].entropy.nVirusLifespan, 3, HTX_ONLINE_MANUAL, "virus lifetime");
+m.AddInput (TXT_ENT_EFILL, szEnergyFill, extraGameInfo [0].entropy.nEnergyFillRate, 3, HTX_ONLINE_MANUAL, "refuel rate");
+m.AddInput (TXT_ENT_SFILL, szShieldFill, extraGameInfo [0].entropy.nShieldFillRate, 3, HTX_ONLINE_MANUAL, "repair rate");
+m.AddInput (TXT_ENT_DMGRATE, szShieldDmg, extraGameInfo [0].entropy.nShieldDamageRate, 3, HTX_ONLINE_MANUAL, "damage rate");
 m.AddText ("");
-optTogglesMenu = m.AddMenu (TXT_ENT_TGLMENU, KEY_E);
-optTextureMenu = m.AddMenu (TXT_ENT_TEXMENU, KEY_T);
+m.AddMenu (TXT_ENT_TGLMENU, KEY_E, "toggle options");
+m.AddMenu (TXT_ENT_TEXMENU, KEY_T, "texture options");
 
 for (;;) {
 	i = m.Menu (NULL, "Entropy Options", NULL, 0);
@@ -129,16 +124,16 @@ for (;;) {
 	else
 		break;
 	}
-extraGameInfo [0].entropy.nCaptureVirusLimit = (char) atol (m [optCapVirLim].m_text);
-extraGameInfo [0].entropy.nCaptureTimeLimit = (char) atol (m [optCapTimLim].m_text);
-extraGameInfo [0].entropy.nMaxVirusCapacity = (ushort) atol (m [optMaxVirCap].m_text);
-extraGameInfo [0].entropy.nBumpVirusCapacity = (char) atol (m [optBumpVirCap].m_text);
-extraGameInfo [0].entropy.nBashVirusCapacity = (char) atol (m [optBashVirCap].m_text);
-extraGameInfo [0].entropy.nVirusGenTime = (char) atol (m [optVirGenTim].m_text);
-extraGameInfo [0].entropy.nVirusLifespan = (char) atol (m [optVirLife].m_text);
-extraGameInfo [0].entropy.nEnergyFillRate = (ushort) atol (m [optEnergyFill].m_text);
-extraGameInfo [0].entropy.nShieldFillRate = (ushort) atol (m [optShieldFill].m_text);
-extraGameInfo [0].entropy.nShieldDamageRate = (ushort) atol (m [optShieldDmg].m_text);
+extraGameInfo [0].entropy.nCaptureVirusThreshold = (char) atol (m ["capture virus threshold"]->Text ());
+extraGameInfo [0].entropy.nCaptureTimeThreshold = (char) atol (m ["capture time threshold"]->Text ());
+extraGameInfo [0].entropy.nMaxVirusCapacity = (ushort) atol (m ["virus capacity"]->Text ());
+extraGameInfo [0].entropy.nBumpVirusCapacity = (char) atol (m ["virus capacity increase"]->Text ());
+extraGameInfo [0].entropy.nBashVirusCapacity = (char) atol (m ["virus capacity decrease"]->Text ());
+extraGameInfo [0].entropy.nVirusGenTime = (char) atol (m ["virus creation time"]->Text ());
+extraGameInfo [0].entropy.nVirusLifespan = (char) atol (m ["virus lifetime"]->Text ());
+extraGameInfo [0].entropy.nEnergyFillRate = (ushort) atol (m ["refule rate"]->Text ());
+extraGameInfo [0].entropy.nShieldFillRate = (ushort) atol (m ["repair rate"]->Text ());
+extraGameInfo [0].entropy.nShieldDamageRate = (ushort) atol (m ["damage rage"]->Text ());
 }
 
 //------------------------------------------------------------------------------
