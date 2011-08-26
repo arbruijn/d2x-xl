@@ -222,8 +222,6 @@ if (!StartNewGame (nNewLevel))
 
 //------------------------------------------------------------------------------
 
-static int nOptDifficulty = -1;
-
 int NewGameMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
@@ -232,13 +230,14 @@ if (nState)
 	CMenuItem*	m;
 	int			v;
 
-m = menu + nOptDifficulty;
-v = m->Value ();
-if (gameStates.app.nDifficultyLevel != v) {
-	gameStates.app.nDifficultyLevel = v;
-	gameData.bosses.InitGateIntervals ();
-	sprintf (m->m_text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
-	m->m_bRebuild = 1;
+if ((m = menu ["difficulty"])) {
+	v = m->Value ();
+	if (gameStates.app.nDifficultyLevel != v) {
+		gameStates.app.nDifficultyLevel = v;
+		gameData.bosses.InitGateIntervals ();
+		sprintf (m->Text (), TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
+		m->Rebuild ();
+		}
 	}
 return nCurItem;
 }
