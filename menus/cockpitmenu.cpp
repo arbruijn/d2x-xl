@@ -339,12 +339,12 @@ do {
 #if 0
 	m.AddCheck ("target indicators", TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 #else
-	m.AddText ("", 0);
+	m.AddText ("", "");
 	sprintf (szSlider, TXT_TARGET_INDICATORS, szTgtInd [nTgtInd]);
 	m.AddSlider ("target indicators", szSlider, nTgtInd, 0, 2, KEY_T, HTX_CPIT_TGTIND);
 #endif
 #if WEAPON_ICONS
-	m.AddText ("", 0);
+	m.AddText ("", "");
 	mat.AddCheck (TXT_SHOW_WEAPONICONS, bShowWeaponIcons, KEY_W, HTX_CPIT_WPNICONS, "weapon icons");
 	if (bShowWeaponIcons) {
 		m.AddRadio ("icon pos top", TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS);
@@ -354,9 +354,9 @@ do {
 		m [m.IndexOf ("icon pos top") + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].Value () = 1;
 		}
 #endif
-	m.AddText ("", 0);
+	m.AddText ("", "");
 	m [m.AddText (TXT_COCKPIT_WINDOWS, 0)].m_bCentered = 1;
-	m.AddText ("", 0);
+	m.AddText ("", "");
 
 	for (i = 0; i < 2; i++) {
 		sprintf (szSlider, GT (1163 + i), szWindowType [winFunc [i]]);
@@ -375,7 +375,7 @@ do {
 	sprintf (szSlider, TXT_AUXWIN_ALIGNMENT, szWindowAlign [nWindowAlign]);
 	m.AddSlider ("cockpit window align", szSlider, nWindowAlign, 0, 2, KEY_A, HTX_AUXWIN_ALIGNMENT);
 
-	m.AddText ("", 0);
+	m.AddText ("", "");
 
 	sprintf (szSlider, TXT_RADAR_POSITION, szWindowPos [gameOpts->render.cockpit.nRadarPos]);
 	m.AddSlider ("cockpit radar pos", szSlider, gameOpts->render.cockpit.nRadarPos, 0, 1, KEY_O, HTX_CPIT_RADARPOS);

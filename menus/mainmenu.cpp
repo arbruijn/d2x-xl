@@ -132,11 +132,11 @@ int SetupMainMenu (CMenu& m)
 m.Destroy ();
 m.Create (25);
 SetScreenMode (SCREEN_MENU);
-m.AddText ("", "", 0);
+m.AddText ("", "");
 m.Top ()->m_bNoScroll = 1;
-m.AddText ("", "", 0);
+m.AddText ("", "");
 m.Top ()->m_bNoScroll = 1;
-m.AddText ("", "", 0);
+m.AddText ("", "");
 m.Top ()->m_bNoScroll = 1;
 m.AddMenu ("new game", TXT_NEW_GAME1, KEY_N, HTX_MAIN_NEW);
 if (!gameStates.app.bNostalgia)

@@ -209,13 +209,13 @@ for (i = opt = 0; i < h; i++, opt++, pf++) {
 	sprintf (szSlider, szWeaponTexts [i], float (pf->nForce) / 100.0f);
 	m.AddSlider (szWeaponIds [i], szSlider, ForceToOption (pf->nForce), 0, j - 1, 0, NULL);
 	if (pf->nWeaponId == FLARE_ID)
-		m.AddText ("", "", 0);
+		m.AddText ("", "");
 	}
-m.AddText ("", "", 0);
+m.AddText ("", "");
 sprintf (szSlider + 1, TXT_MBALL_PYROFORCE, pf->nForce);
 *szSlider = *(TXT_MBALL_PYROFORCE - 1);
 m.AddSlider ("pyro force", szSlider + 1, pf->nForce - 1, 0, 9, 0, NULL);
-m.AddText ("", "", 0);
+m.AddText ("", "");
 sprintf (szSlider + 1, TXT_GOAL_BONUS, extraGameInfo [0].monsterball.nBonus);
 *szSlider = *(TXT_GOAL_BONUS - 1);
 m.AddSlider ("bonus", szSlider + 1, extraGameInfo [0].monsterball.nBonus - 1, 0, 9, 0, HTX_GOAL_BONUS);
@@ -223,7 +223,7 @@ i = extraGameInfo [0].monsterball.nSizeMod;
 sprintf (szSlider + 1, TXT_MBALL_SIZE, i / 2, (i & 1) ? 5 : 0);
 *szSlider = *(TXT_MBALL_SIZE - 1);
 m.AddSlider ("size mod", szSlider + 1, extraGameInfo [0].monsterball.nSizeMod - 2, 0, 8, 0, HTX_MBALL_SIZE);
-m.AddText ("", 0);
+m.AddText ("", "");
 m.AddMenu ("default values", "Set default values", 0, NULL);
 
 for (;;) {

@@ -175,7 +175,7 @@ void LoadoutOptionsMenu (void)
 m.AddText ("", TXT_GUN_LOADOUT, 0);
 for (i = 0; i < (int) sizeofa (pszGuns); i++, nOptions++)
 	m.AddCheck (pszGuns [i], pszGuns [i], (extraGameInfo [0].loadout.nGuns & (1 << i)) != 0, 0, HTX_GUN_LOADOUT);
-m.AddText ("", 0);
+m.AddText ("", "");
 m.AddText ("", TXT_DEVICE_LOADOUT, 0);
 for (i = 0; i < (int) sizeofa (pszDevices); i++, nOptions++)
 	m.AddCheck (pszDevices [i], pszDevices [i], (extraGameInfo [0].loadout.nDevice & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
@@ -342,7 +342,7 @@ do {
 	*szSlider = *(TXT_WEAPON_SWITCH - 1);
 	m.AddSlider ("weapon switch", szSlider + 1, gameOpts->gameplay.nAutoSelectWeapon, 0, 2, KEY_W, HTX_WEAPON_SWITCH);
 
-	m.AddText ("", "", 0);
+	m.AddText ("", "");
 	m.AddCheck ("smart weapon switch", TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_M, HTX_GPLAY_SMARTSWITCH);
 	m.AddCheck ("built-in headlight", TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_H, HTX_HEADLIGHT_BUILTIN);
 	m.AddCheck ("headlight drains power", TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_O, HTX_HEADLIGHT_POWERDRAIN);
@@ -354,7 +354,7 @@ do {
 	//if (gameStates.app.bGameRunning)
 		AddShipSelection (m, optShip);
 	if (!(gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)) {
-		m.AddText ("", "", 0);
+		m.AddText ("", "");
 		m.AddMenu ("loadout options", TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
 		}
 

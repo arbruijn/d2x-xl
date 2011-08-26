@@ -304,7 +304,7 @@ for (;;) {
 		MakeModFolders (bBuiltIn ? hogFileManager.m_files.MsnHogFiles.szName : missionManager [nMission].filename);
 		gameOpts->app.bEnableMods = bEnableMod;
 		if (gameStates.app.bHaveMod == bBuiltIn) {
-			m.AddText ("", "", 0);
+			m.AddText ("", "");
 			m.AddCheck ("enable mods", TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
 			}
 		}
@@ -321,11 +321,11 @@ for (;;) {
 	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
 	m.AddSlider ("difficulty", szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
 	AddShipSelection (m, optShip);
-	m.AddText ("", "", 0);
+	m.AddText ("", "");
 	m.AddMenu ("loadout", TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
 
 	if (nMission >= 0) {
-		m.AddText ("", "", 0);
+		m.AddText ("", "");
 		m.AddMenu ("launch game", TXT_LAUNCH_GAME, KEY_L, "");
 		m ["launch game"]->m_bCentered = 1;
 		}
@@ -494,7 +494,7 @@ do {
 	if (DBG || gameStates.app.bNostalgia < 2) {
 		m.AddMenu ("create game", TXT_CREATE_GAME, KEY_S, HTX_NETWORK_SERVER);
 		m.AddMenu ("join game", TXT_JOIN_GAME, KEY_J, HTX_NETWORK_CLIENT);
-		m.AddText ("", "", 0);
+		m.AddText ("", "");
 		m.AddRadio ("ipx game", TXT_NGTYPE_IPX, 0, KEY_I, HTX_NETWORK_IPX);
 		m.AddRadio ("udp game", TXT_NGTYPE_UDP, 0, KEY_U, HTX_NETWORK_UDP);
 		m.AddRadio ("tracker game", TXT_NGTYPE_TRACKER, 0, KEY_T, HTX_NETWORK_TRACKER);

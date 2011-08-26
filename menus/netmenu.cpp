@@ -494,9 +494,9 @@ do {
 	m.AddCheck ("show players names", TXT_SHOW_NAMES, mpParams.bShowAllNames, KEY_E, HTX_MULTI2_SHOWNAMES);
 	m.AddCheck ("show players on map", TXT_SHOW_PLAYERS, mpParams.bShowPlayersOnAutomap, KEY_A, HTX_MULTI2_SHOWPLRS);
 	m.AddCheck ("short packets", TXT_SHORT_PACKETS, mpParams.bShortPackets, KEY_H, HTX_MULTI2_SHORTPKTS);
-	m.AddText ("", "", 0);
+	m.AddText ("", "");
 	m.AddMenu ("allowed weapons", TXT_WAOBJECTS_MENU, KEY_O, HTX_MULTI2_OBJECTS);
-	m.AddText ("", "", 0);
+	m.AddText ("", "");
 	sprintf (szSocket, "%d", (gameStates.multi.nGameType == UDP_GAME) ? mpParams.udpPorts [0] + networkData.nPortOffset : networkData.nPortOffset);
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		m.AddText ("", TXT_SOCKET2, KEY_N);
@@ -693,7 +693,7 @@ do {
 
 	m.AddCheck ("check ports", TXT_CHECK_PORT, extraGameInfo [0].bCheckUDPPort, KEY_P, HTX_MULTI2_CHECKPORT);
 	if (extraGameInfo [1].bDarkness)
-		m.AddText ("", "", 0);
+		m.AddText ("", "");
 	m.AddCheck ("darkness", TXT_DARKNESS, extraGameInfo [1].bDarkness, KEY_D, HTX_DARKNESS);
 	if (extraGameInfo [1].bDarkness) {
 		m.AddCheck ("powerups cast light", TXT_POWERUPLIGHTS, !extraGameInfo [1].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
@@ -727,7 +727,7 @@ do {
 	sprintf (szSlider + 1, TXT_RESPAWN_DELAY, extraGameInfo [0].nSpawnDelay / 1000);
 	*szSlider = *(TXT_RESPAWN_DELAY - 1);
 	m.AddSlider ("spawn delay", szSlider + 1, extraGameInfo [0].nSpawnDelay / 5000, 0, 12, KEY_R, HTX_GPLAY_SPAWNDELAY);
-	m.AddText ("", 0);
+	m.AddText ("", "");
 
 	i = m.Menu (NULL, TXT_D2XOPTIONS_TITLE, NetworkD2XOptionsPoll, &choice);
   //mpParams."reactor life" = atoi (szInvul)*I2X (60);
@@ -920,7 +920,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 					mpParams.udpPorts [0]);
 		}
 	}
-m.AddText (TXT_DESCRIPTION, 0); 
+m.AddText ("", TXT_DESCRIPTION, 0); 
 m.AddInput ("game name", szName, NETGAME_NAME_LEN, HTX_MULTI_NAME); 
 m.AddMenu ("mission selector", TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
 m.AddText ("mission name", "", 0);
@@ -929,7 +929,7 @@ if ((nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
 	m.AddText ("level number text", szLevelText, 0); 
 	m.AddInput ("level number", szLevel, 4, HTX_MULTI_LEVEL);
 	}
-m.AddText ("", 0); 
+m.AddText ("", ""); 
 nGameTypes = m.ToS ();
 m.AddRadio ("anarchy", TXT_ANARCHY, 0, KEY_A, HTX_MULTI_ANARCHY);
 m.AddRadio ("team anarchy", TXT_TEAM_ANARCHY, 0, KEY_T, HTX_MULTI_TEAMANA);
@@ -950,18 +950,18 @@ if (bHoard) {
 nGameTypes = m.ToS () - nGameTypes;
 m [m.IndexOf ("anarchy") + NMCLAMP (mpParams.nGameType, 0, nGameTypes)].Value () = 1;
 
-m.AddText ("", 0); 
+m.AddText ("", ""); 
 
 m.AddRadio ("open game", TXT_OPEN_GAME, 0, KEY_O, HTX_MULTI_OPENGAME);
 m.AddRadio ("closed game", TXT_CLOSED_GAME, 0, KEY_C, HTX_MULTI_CLOSEDGAME);
 m.AddRadio ("restricted game", TXT_RESTR_GAME, 0, KEY_R, HTX_MULTI_RESTRGAME);
 m [m.IndexOf ("open game") + NMCLAMP (mpParams.nGameAccess, 0, 2)].Value () = 1;
-m.AddText ("", 0);
+m.AddText ("", "");
 sprintf (szMaxPlayers + 1, TXT_MAX_PLAYERS, gameData.multiplayer.nMaxPlayers);
 *szMaxPlayers = *(TXT_MAX_PLAYERS - 1);
 nLastMaxPlayers = gameData.multiplayer.nMaxPlayers - 2;
 m.AddSlider ("max. players", szMaxPlayers + 1, nLastMaxPlayers, 0, nLastMaxPlayers, KEY_X, HTX_MULTI_MAXPLRS); 
-m.AddText ("", "", 0);
+m.AddText ("", "");
 m.AddMenu ("more options", TXT_MORE_OPTS, KEY_M, HTX_MULTI_MOREOPTS);
 if (!gameStates.app.bNostalgia) {
 	m.AddMenu ("d2x options", TXT_MULTI_D2X_OPTS, KEY_X, HTX_MULTI_D2XOPTS);

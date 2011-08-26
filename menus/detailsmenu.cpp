@@ -107,7 +107,7 @@ for (i = 0; i < 5; i++) {
 	sprintf (szMenuDetails [i], "%d. %s", i + 1, MENU_DETAIL_TEXT (i));
 	m.AddMenu ("", szMenuDetails [i], 0, HTX_ONLINE_MANUAL);
 	}
-m.AddText ("", "", 0);
+m.AddText ("", "");
 m.AddMenu ("", MENU_DETAIL_TEXT (5), KEY_C, HTX_ONLINE_MANUAL);
 m.AddCheck ("hires movies", TXT_HIRES_MOVIES, gameOpts->movies.bHires, KEY_S, HTX_ONLINE_MANUAL);
 i = m.Menu (NULL, TXT_DETAIL_LEVEL, NULL, &choice);

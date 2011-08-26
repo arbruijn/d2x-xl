@@ -266,7 +266,7 @@ do {
 	m.AddSlider ("music volume", redbook.Enabled () ? TXT_CD_VOLUME : TXT_MIDI_VOLUME, 
 					 redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume, 
 					 0, 8, KEY_M, HTX_ONLINE_MANUAL);
-	m.AddText ("", "", 0);
+	m.AddText ("", "");
 	m.AddCheck ("link volumes", TXT_LINK_AUDIO_VOLUMES, gameOpts->sound.bLinkVolumes, KEY_L, HTX_ONLINE_MANUAL);
 	m.AddCheck ("redbook sound", TXT_REDBOOK_ENABLED, redbook.Enabled (), KEY_C, HTX_ONLINE_MANUAL);
 	m.AddCheck ("reverse stereo", TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
@@ -275,7 +275,7 @@ do {
 		if (!redbook.Enabled () && gameConfig.nMidiVolume)
 			m.AddCheck ("fade music", TXT_FADE_MUSIC, gameOpts->sound.bFadeMusic, KEY_F, HTX_FADE_MUSIC);
 #endif
-		m.AddText ("", "", 0);
+		m.AddText ("", "");
 		m.AddCheck ("ship sound", TXT_SHIP_SOUND, gameOpts->sound.bShip, KEY_S, HTX_SHIP_SOUND);
 		m.AddCheck ("missile sound", TXT_MISSILE_SOUND, gameOpts->sound.bMissiles, KEY_M, HTX_MISSILE_SOUND);
 		m.AddCheck ("gatling sound", TXT_GATLING_SOUND, gameOpts->sound.bGatling, KEY_G, HTX_GATLING_SOUND);

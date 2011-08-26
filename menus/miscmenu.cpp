@@ -168,7 +168,7 @@ do {
 	sprintf (szSlider + 1, TXT_EXPERT_MODE, pszExpertMode [gameOpts->app.bExpertMode]);
 	*szSlider = *(TXT_EXPERT_MODE - 1);
 	m.AddSlider ("expert mode", szSlider + 1, gameOpts->app.bExpertMode, 0, sizeofa (pszExpertMode) - 1, KEY_X, HTX_EXPERT_MODE);  
-	m.AddText ("", "", 0);
+	m.AddText ("", "");
 	if (gameStates.app.bNostalgia) {
 		m.AddCheck ("auto leveling", TXT_AUTO_LEVEL, gameOpts->gameplay.nAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
 		m.AddCheck ("show reticle", TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
@@ -183,7 +183,7 @@ do {
 		}
 
 	if ((gameStates.app.bNostalgia < 2) && gameOpts->app.bExpertMode) {
-		m.AddText ("", "", 0);
+		m.AddText ("", "");
 		if (gameOpts->app.nScreenShotInterval)
 			sprintf (szSlider + 1, TXT_SCREENSHOTS, screenShotIntervals [gameOpts->app.nScreenShotInterval]);
 		else
@@ -192,7 +192,7 @@ do {
 		m.AddSlider ("screenshots", szSlider + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
 
 		if (gameStates.app.bHaveSDLNet) {
-			m.AddText ("", "", 0);
+			m.AddText ("", "");
 			m.AddCheck ("auto download", TXT_DL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_M, HTX_MISC_MISSIONDL);
 			if (extraGameInfo [0].bAutoDownload) {
 				sprintf (szSlider + 1, TXT_DL_TIMEOUT, downloadManager.GetTimeoutSecs ());

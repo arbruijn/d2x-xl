@@ -269,11 +269,11 @@ do {
 		sprintf (szSlider + 1, TXT_SLOWMOTION_SPEEDUP, float (gameOpts->gameplay.nSlowMotionSpeedup) / 2);
 		*szSlider = *(TXT_SLOWMOTION_SPEEDUP - 1);
 		m.AddSlider ("slow motion speedup", szSlider + 1, gameOpts->gameplay.nSlowMotionSpeedup - 4, 0, 4, KEY_M, HTX_SLOWMOTION_SPEEDUP);
-		m.AddText ("", "", 0);
+		m.AddText ("", "");
 		if (extraGameInfo [0].nDrag)
 			m.AddCheck ("wiggle", TXT_WIGGLE_SHIP, extraGameInfo [0].bWiggle, KEY_W, HTX_MISC_WIGGLE);
 		}
-	m.AddText ("", "", 0);
+	m.AddText ("", "");
 
 	sprintf (szSlider + 1, TXT_AUTOLEVEL, pszAutoLevel [gameOpts->gameplay.nAutoLeveling]);
 	*szSlider = *(TXT_AUTOLEVEL - 1);

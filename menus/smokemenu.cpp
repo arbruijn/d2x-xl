@@ -325,7 +325,7 @@ do {
 	m.AddCheck ("rotate", TXT_ROTATE_SMOKE, gameOpts->render.particles.bRotate, KEY_R, HTX_ROTATE_SMOKE);
 	m.AddCheck ("aux views", TXT_SMOKE_AUXVIEWS, gameOpts->render.particles.bAuxViews, KEY_W, HTX_SMOKE_AUXVIEWS);
 	m.AddCheck ("monitors", TXT_SMOKE_MONITORS, gameOpts->render.particles.bMonitors, KEY_M, HTX_SMOKE_MONITORS);
-	m.AddText ("", "", 0);
+	m.AddText ("", "");
 
 	do {
 		i = m.Menu (NULL, TXT_SMOKE_DETAILS_TITLE, SmokeOptionsCallback, &choice);

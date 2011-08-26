@@ -648,7 +648,7 @@ gameStates.multi.bTryAutoDL = 0;
 if (!(/*gameStates.app.bHaveExtraGameInfo [1] &&*/ extraGameInfo [0].bAutoDownload))
 	return 0;
 #endif
-m.AddText ("", 0);
+m.AddText ("", "");
 sprintf (szProgress, "0%c done", '%');
 m_nOptPercentage = m.AddText (szProgress, 0);
 m [m_nOptPercentage].m_x = (short) 0x8000;	//centered

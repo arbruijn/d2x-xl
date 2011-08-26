@@ -257,7 +257,7 @@ do {
 		if (gameOpts->input.mouse.bUse || gameStates.app.bNostalgia) {
 			if (gameOpts->input.mouse.bUse)
 				m.AddMenu ("customize device", TXT_CUST_MOUSE, KEY_O, HTX_CONF_CUSTMOUSE);
-			m.AddText ("", "", 0);
+			m.AddText ("", "");
 			if (gameStates.app.bNostalgia) 
 				gameOpts->input.mouse.bSyncAxis = 1;
 			else
@@ -265,12 +265,12 @@ do {
 			AddAxisControls (m, "sensitivity", &szMouseSens [0][0], TXT_MOUSE_SENS, TXT_MOUSE_SENS_N, szAxis3D, HTX_CONF_MOUSESENS, 
 								  3, gameOpts->input.mouse.sensitivity, 16, NULL, KEY_O, axis3DHotkeys, gameOpts->input.mouse.bSyncAxis);
 			if (gameOpts->input.mouse.bUse && !gameStates.app.bNostalgia) {
-				m.AddText ("", "", 0);
+				m.AddText ("", "");
 				m.AddCheck ("mouse look", TXT_MOUSELOOK, extraGameInfo [0].bMouseLook, KEY_L, HTX_CONF_MOUSELOOK);
 				m.AddCheck ("joystick simulation", TXT_JOYMOUSE, gameOpts->input.mouse.bJoystick, KEY_J, HTX_CONF_JOYMOUSE);
 				if (gameOpts->input.mouse.bJoystick && gameOpts->app.bExpertMode)
 					AddDeadzoneControl (m, szMouseDeadzone, TXT_MOUSE_DEADZONE, HTX_MOUSE_DEADZONE, szDZoneSizes, gameOpts->input.mouse.nDeadzone, KEY_U);
-				m.AddText ("", "", 0);
+				m.AddText ("", "");
 				m.AddRadio ("standard mouse", TXT_STD_MOUSE, 0, 0, HTX_CONF_STDMOUSE);
 				m.AddRadio ("cyberman", TXT_CYBERMAN, 0, 0, HTX_CONF_CYBERMAN);
 				m [m.IndexOf ("standard mouse") + NMCLAMP (gameStates.input.nMouseType - CONTROL_MOUSE, 0, 1)].Value () = 1;
@@ -427,7 +427,7 @@ do {
 			if (!gameStates.app.bNostalgia) {
 				AddAxisControls (m, "deadzone", &szJoyDeadzone [0][0], TXT_JOY_DEADZONE, TXT_JOY_DEADZONE_N, szJoyAxis, HTX_CONF_JOYDZONE, 
 									  UNIQUE_JOY_AXES, gameOpts->input.joystick.deadzones, 16, nJoyDeadzones, KEY_S, joyHotkeys, gameOpts->input.joystick.bSyncAxis);
-				m.AddText ("", "", 0);
+				m.AddText ("", "");
 				m.AddRadio ("standard joystick", TXT_STD_JOY, 0, 0, HTX_CONF_STDJOY);
 				m.AddRadio ("fs pro", TXT_FSPRO_JOY, 0, 0, HTX_CONF_FSPRO);
 				m.AddRadio ("fcx", TXT_FCS_JOY, 0, 0, HTX_CONF_FCS);
@@ -570,7 +570,7 @@ do {
 		m.AddRadio (trackirModeIds [1], TXT_TRACKIR_STEER, 0, KEY_S, HTX_TRACKIR_STEER);
 		m.AddRadio (trackirModeIds [2], TXT_TRACKIR_LOOK, 0, KEY_L, HTX_TRACKIR_LOOK);
 		m [m.IndexOf (trackirModeIds [0]) + gameOpts->input.trackIR.nMode].Value () = 1;
-		m.AddText ("", "", 0);
+		m.AddText ("", "");
 		tirOpts.nMove = m.ToS ();
 		for (i = 0; i < 5; i++) {
 			sprintf (szId, "move %d", i + 1); 
@@ -582,7 +582,7 @@ do {
 			 gameOpts->input.trackIR.bMove [2] || 
 			 gameOpts->input.trackIR.bMove [3] || 
 			 gameOpts->input.trackIR.bMove [4]) {
-			m.AddText ("", "", 0);
+			m.AddText ("", "");
 			m.AddCheck ("sync axis", TXT_SYNC_TRACKIR_AXES, gameOpts->input.trackIR.bSyncAxis, KEY_K, HTX_SYNC_TRACKIR_AXES);
 			AddAxisControls (m, "sensitivity", &szTrackIRSens [0][0], TXT_TRACKIR_SENS, TXT_TRACKIR_SENS_N, szAxis3D, HTX_TRACKIR_SENS, 
 								  3, gameOpts->input.trackIR.sensitivity, 16, NULL, KEY_S, axis3DHotkeys, gameOpts->input.trackIR.bSyncAxis);
@@ -657,7 +657,7 @@ do {
 		else {
 			m.AddMenu ("customize hotkeys", TXT_CUST_HOTKEYS, KEY_W, HTX_CONF_CUSTHOT);
 			if (gameOpts->app.bExpertMode || gameOpts->app.bNotebookFriendly) {
-				m.AddText ("", "", 0);
+				m.AddText ("", "");
 				sprintf (szKeyRampScale + 1, TXT_KBD_RAMP, gameOpts->input.keyboard.nRamp, HTX_CONF_KBDRAMP);
 				*szKeyRampScale = *(TXT_KBD_RAMP - 1);
 				m.AddSlider ("ramp scale", szKeyRampScale + 1, gameOpts->input.keyboard.nRamp / 10, 0, 10, KEY_R, HTX_CONF_RAMPSCALE);   
@@ -668,7 +668,7 @@ do {
 					}
 				}
 			}
-		m.AddText ("", "", 0);
+		m.AddText ("", "");
 		m.AddText (TXT_KEYBOARD_LAYOUT, 0);
 		m.AddRadio (kbdLayoutIds [0], TXT_QWERTY, gameOpts->input.keyboard.nType == 0, KEY_E, HTX_KEYBOARD_LAYOUT);
 		m.AddRadio (kbdLayoutIds [1], TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_G, HTX_KEYBOARD_LAYOUT);
@@ -715,7 +715,7 @@ do {
 #endif
 	if (!gameStates.app.bNostalgia && gameStates.input.bHaveTrackIR) 
 		m.AddMenu ("trackir options", TXT_TRACKIRCFG_MENUCALL, KEY_I, HTX_TRACKIR_CONFIG);
-	m.AddText ("", "", 0);
+	m.AddText ("", "");
 	if (gameOpts->app.bExpertMode && (gameStates.app.bNostalgia < 3)) {
 		m.AddCheck ("fast pitch", TXT_FASTPITCH, (extraGameInfo [0].bFastPitch == 1) ? 1 : 0, KEY_T, HTX_CONF_FASTPITCH);
 		extraGameInfo [0].bFastPitch = m ["fast pitch"]->Value () ? 1 : 2;

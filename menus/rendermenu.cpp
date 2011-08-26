@@ -535,7 +535,7 @@ do {
 		sprintf (szSlider + 1, TXT_LIGHTCOLOR, pszColorLevel [gameOpts->render.color.nLevel]);
 		*szSlider = *(TXT_LIGHTCOLOR - 1);
 		m.AddSlider ("colorization", szSlider + 1, gameOpts->render.color.nLevel, 0, 2, KEY_C, HTX_RENDER_LIGHTCOLOR);
-		m.AddText ("", "", 0);
+		m.AddText ("", "");
 		}
 	sprintf (szSlider + 1, TXT_IMAGE_QUALITY, pszImgQual [gameOpts->render.nImageQuality]);
 	*szSlider = *(TXT_IMAGE_QUALITY - 1);
@@ -601,7 +601,7 @@ do {
 
 #if DBG
 	if (EXPERTMODE) {
-		m.AddText ("", "", 0);
+		m.AddText ("", "");
 		m.AddCheck ("draw wire frame", "Draw wire frame", gameOpts->render.debug.bWireFrame, 0, NULL);
 		m.AddCheck ("draw textures", "Draw textures", gameOpts->render.debug.bTextures, 0, NULL);
 		m.AddCheck ("draw walls", "Draw walls", gameOpts->render.debug.bWalls, 0, NULL);

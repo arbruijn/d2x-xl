@@ -117,9 +117,9 @@ do {
 	m.Destroy ();
 	m.Create (20);
 	m.AddMenu ("sound options", TXT_SOUND_MUSIC, KEY_M, HTX_OPTIONS_SOUND);
-	m.AddText ("", 0);
+	m.AddText ("", "");
 	m.AddMenu ("config options", TXT_CONTROLS_, KEY_O, HTX_OPTIONS_CONFIG);
-	m.AddText ("", 0);
+	m.AddText ("", "");
 	if (gameStates.app.bNostalgia) {
 		sprintf (szSlider + 1, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
 		*szSlider = *(TXT_BRIGHTNESS - 1);
@@ -129,7 +129,7 @@ do {
 	if (gameStates.app.bNostalgia)
 		m.AddMenu ("performance options", TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL);
 	m.AddMenu ("screen res options", TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
-	m.AddText ("", 0);
+	m.AddText ("", "");
 	if (gameStates.app.bNostalgia) {
 		m.AddMenu ("reorder guns", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
 		m.AddMenu ("reorder missiles", TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
