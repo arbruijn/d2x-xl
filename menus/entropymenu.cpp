@@ -95,7 +95,7 @@ for (extraGameInfo [0].entropy.nOverrideTextures = 0;
 void NetworkEntropyOptions (void)
 {
 	CMenu		m (25);
-	int		i, optTogglesMenu, optTextureMenu;
+	int		i;
 	char		szCapVirLim [10], szCapTimLim [10], szMaxVirCap [10], szBumpVirCap [10], 
 				szBashVirCap [10], szVirGenTim [10], szVirLife [10], 
 				szEnergyFill [10], szShieldFill [10], szShieldDmg [10];
@@ -116,9 +116,9 @@ m.AddMenu ("texture options", TXT_ENT_TEXMENU, KEY_T);
 
 for (;;) {
 	i = m.Menu (NULL, "Entropy Options", NULL, 0);
-	if (i == optTogglesMenu)
+	if (i == m.IndexOf ("toggle options"))
 		NetworkEntropyToggleOptions ();
-	else if (i == optTextureMenu)
+	else if (i == m.IndexOf ("texture options"))
 		NetworkEntropyTextureOptions ();
 	else
 		break;

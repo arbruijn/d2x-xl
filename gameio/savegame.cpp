@@ -369,7 +369,7 @@ int CSaveGameManager::GetSaveFile (int bMulti)
 for (i = 0; i < NUM_SAVES; i++) {
 	sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);
 	saveGameInfo [i].Load (filename [i], -1);
-	m.AddInputBox (saveGameInfo [i].Label (), DESC_LENGTH - 1, -1, NULL);
+	m.AddInputBox ("", saveGameInfo [i].Label (), DESC_LENGTH - 1, -1, NULL);
 	}
 
 m_nLastSlot = -1;
@@ -404,7 +404,7 @@ for (i = 0; i < NM_IMG_SPACE; i++) {
 for (i = 0; i < NUM_SAVES + 1; i++) {
 	sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);
 	if (saveGameInfo [i].Load (filename [i], i)) {
-		m.AddMenu (saveGameInfo [i].Label (), (i < NUM_SAVES) ? -1 : 0, NULL);
+		m.AddMenu ("", saveGameInfo [i].Label (), (i < NUM_SAVES) ? -1 : 0, NULL);
 		nSaves++;
 		}
 	else {

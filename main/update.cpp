@@ -97,7 +97,7 @@ class CDownload {
 				m_nOptPercentage = m_menu.AddText (szProgress, 0);
 				m_menu [m_nOptPercentage].m_x = (short) 0x8000;	//centered
 				m_menu [m_nOptPercentage].m_bCentered = 1;
-				m_nOptProgress = m_menu.AddGauge ("                    ", -1, 100);
+				m_nOptProgress = m_menu.AddGauge ("progressbar", "                    ", -1, 100);
 				}
 			}
 
