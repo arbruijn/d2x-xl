@@ -269,15 +269,15 @@ for (uint i = 0; i < ToS (); i++) {
 		int fm = -1;	// ffs first marked one
 		for (uint j = 0; j < ToS (); j++) {
 			if ((Item (j).m_nType == NM_TYPE_RADIO) && (Item (j).m_group == Item (i).m_group)) {
-				if ((fm == -1) && Item (j).m_value)
+				if ((fm == -1) && Item (j).Value ())
 					fm = j;
-				Item (j).m_value = 0;
+				Item (j).Value () = 0;
 				}
 			}
 		if ( fm >= 0)
-			Item (fm).m_value = 1;
+			Item (fm).Value () = 1;
 		else
-			Item (i).m_value = 1;
+			Item (i).Value () = 1;
 		}
 	}
 }
@@ -841,11 +841,11 @@ while (!done) {
 					}
 				} while (Item (m_nChoice).m_nType == NM_TYPE_TEXT);
 			if ((Item (m_nChoice).m_nType == NM_TYPE_INPUT) && (m_nChoice != oldChoice))
-				Item (m_nChoice).m_value = -1;
+				Item (m_nChoice).Value () = -1;
 			if ((oldChoice> - 1) && (Item (oldChoice).m_nType == NM_TYPE_INPUT_MENU) && (oldChoice != m_nChoice)) {
 				Item (oldChoice).m_group = 0;
 				strcpy (Item (oldChoice).m_text, Item (oldChoice).m_savedText);
-				Item (oldChoice).m_value = -1;
+				Item (oldChoice).Value () = -1;
 				}
 			if (oldChoice> - 1) 
 				Item (oldChoice).m_bRedraw = 1;
@@ -883,11 +883,11 @@ while (!done) {
 					} while (Item (m_nChoice).m_nType == NM_TYPE_TEXT);
  
 			if ((Item (m_nChoice).m_nType == NM_TYPE_INPUT) && (m_nChoice != oldChoice))
-				Item (m_nChoice).m_value = -1;
+				Item (m_nChoice).Value () = -1;
 			if ((oldChoice> - 1) && (Item (oldChoice).m_nType == NM_TYPE_INPUT_MENU) && (oldChoice != m_nChoice)) {
 				Item (oldChoice).m_group = 0;
 				strcpy (Item (oldChoice).m_text, Item (oldChoice).m_savedText);
-				Item (oldChoice).m_value = -1;
+				Item (oldChoice).Value () = -1;
 			}
 			if (oldChoice> - 1)
 				Item (oldChoice).m_bRedraw = 1;
@@ -904,10 +904,10 @@ radioOption:
 				case NM_TYPE_INPUT_MENU:
 					break;
 				case NM_TYPE_CHECK:
-					if (Item (m_nChoice).m_value)
-						Item (m_nChoice).m_value = 0;
+					if (Item (m_nChoice).Value ())
+						Item (m_nChoice).Value () = 0;
 					else
-						Item (m_nChoice).m_value = 1;
+						Item (m_nChoice).Value () = 1;
 					if (m_props.bIsScrollBox) {
 						if (m_nChoice == (m_props.nMaxOnMenu + m_props.nScrollOffset - 1) || m_nChoice == m_props.nScrollOffset)
 							m_nLastScrollCheck = - 1;				
@@ -919,12 +919,12 @@ radioOption:
 					break;
 				case NM_TYPE_RADIO:
 					for (i = 0; i < int (ToS ()); i++) {
-						if ((i != m_nChoice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == Item (m_nChoice).m_group) && (Item (i).m_value)) {
-							Item (i).m_value = 0;
+						if ((i != m_nChoice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == Item (m_nChoice).m_group) && (Item (i).Value ())) {
+							Item (i).Value () = 0;
 							Item (i).m_bRedraw = 1;
 						}
 					}
-					Item (m_nChoice).m_value = 1;
+					Item (m_nChoice).Value () = 1;
 					Item (m_nChoice).m_bRedraw = 1;
 					if (bLaunchOption)
 						goto launchOption;
@@ -936,7 +936,7 @@ radioOption:
 		case KEY_SHIFTED + KEY_UP:
 			if (gameStates.menus.bReordering && m_nChoice != topChoice) {
 				SwapText (m_nChoice, m_nChoice - 1);
-				::Swap (Item (m_nChoice).m_value, Item (m_nChoice - 1).m_value);
+				::Swap (Item (m_nChoice).Value (), Item (m_nChoice - 1).Value ());
 				Item (m_nChoice).m_bRebuild = 
 				Item (m_nChoice - 1).m_bRebuild = 1;
 				m_nChoice--;
@@ -946,7 +946,7 @@ radioOption:
 		case KEY_SHIFTED + KEY_DOWN:
 			if (gameStates.menus.bReordering && m_nChoice !=(int (ToS ()) - 1)) {
 				SwapText (m_nChoice, m_nChoice + 1);
-				::Swap (Item (m_nChoice).m_value, Item (m_nChoice + 1).m_value);
+				::Swap (Item (m_nChoice).Value (), Item (m_nChoice + 1).Value ());
 				Item (m_nChoice).m_bRebuild = 
 				Item (m_nChoice + 1).m_bRebuild = 1;
 				m_nChoice++;
@@ -977,7 +977,7 @@ launchOption:
 				Item (m_nChoice).m_bRedraw = 1;
 				if (!strnicmp (Item (m_nChoice).m_savedText, TXT_EMPTY, strlen (TXT_EMPTY))) {
 					Item (m_nChoice).m_text [0] = '\0';
-					Item (m_nChoice).m_value = -1;
+					Item (m_nChoice).Value () = -1;
 					}
 				else {
 					Item (m_nChoice).TrimWhitespace ();
@@ -995,7 +995,7 @@ launchOption:
 				Item (m_nChoice).m_group = 0;
 				strcpy (Item (m_nChoice).m_text, Item (m_nChoice).m_savedText);
 				Item (m_nChoice).m_bRedraw = 1;
-				Item (m_nChoice).m_value = -1;
+				Item (m_nChoice).Value () = -1;
 				}
 			else {
 				done = 1;
@@ -1045,19 +1045,19 @@ launchOption:
 					if (m_nChoice >= 0 && m_nChoice < int (ToS ()))
 						switch (Item (m_nChoice).m_nType) {
 							case NM_TYPE_CHECK:
-								Item (m_nChoice).m_value = !Item (m_nChoice).m_value;
+								Item (m_nChoice).Value () = !Item (m_nChoice).Value ();
 								Item (m_nChoice).m_bRedraw = 1;
 								if (m_props.bIsScrollBox)
 									m_nLastScrollCheck = - 1;
 								break;
 							case NM_TYPE_RADIO:
 								for (i = 0; i < int (ToS ()); i++) {
-									if ((i!= m_nChoice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == Item (m_nChoice).m_group) && (Item (i).m_value)) {
-										Item (i).m_value = 0;
+									if ((i!= m_nChoice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == Item (m_nChoice).m_group) && (Item (i).Value ())) {
+										Item (i).Value () = 0;
 										Item (i).m_bRedraw = 1;
 									}
 								}
-								Item (m_nChoice).m_value = 1;
+								Item (m_nChoice).Value () = 1;
 								Item (m_nChoice).m_bRedraw = 1;
 								break;
 							}
@@ -1146,20 +1146,20 @@ launchOption:
 
 							x1 = CCanvas::Current ()->Left () + Item (m_nChoice).m_x + Item (m_nChoice).m_w - slider_width;
 							x2 = x1 + slider_width + sright_width;
-							if ((mx > x1) && (mx < (x1 + sleft_width)) && (Item (m_nChoice).m_value != Item (m_nChoice).m_minValue)) {
-								Item (m_nChoice).m_value = Item (m_nChoice).m_minValue;
+							if ((mx > x1) && (mx < (x1 + sleft_width)) && (Item (m_nChoice).Value () != Item (m_nChoice).MinValue ())) {
+								Item (m_nChoice).Value () = Item (m_nChoice).MinValue ();
 								Item (m_nChoice).m_bRedraw = 2;
-							} else if ((mx < x2) && (mx > (x2 - sright_width)) && (Item (m_nChoice).m_value != Item (m_nChoice).m_maxValue)) {
-								Item (m_nChoice).m_value = Item (m_nChoice).m_maxValue;
+							} else if ((mx < x2) && (mx > (x2 - sright_width)) && (Item (m_nChoice).Value () != Item (m_nChoice).MaxValue ())) {
+								Item (m_nChoice).Value () = Item (m_nChoice).MaxValue ();
 								Item (m_nChoice).m_bRedraw = 2;
 							} else if ((mx > (x1 + sleft_width)) && (mx < (x2 - sright_width))) {
 								int numValues, value_width, newValue;
 							
-								numValues = Item (m_nChoice).m_maxValue - Item (m_nChoice).m_minValue + 1;
+								numValues = Item (m_nChoice).MaxValue () - Item (m_nChoice).MinValue () + 1;
 								value_width = (slider_width - sleft_width - sright_width) / numValues;
 								newValue = (mx - x1 - sleft_width) / value_width;
-								if (Item (m_nChoice).m_value != newValue) {
-									Item (m_nChoice).m_value = newValue;
+								if (Item (m_nChoice).Value () != newValue) {
+									Item (m_nChoice).Value () = newValue;
 									Item (m_nChoice).m_bRedraw = 2;
 								}
 							}
@@ -1169,11 +1169,11 @@ launchOption:
 					if (m_nChoice == oldChoice)
 						break;
 					if ((Item (m_nChoice).m_nType == NM_TYPE_INPUT) && (m_nChoice != oldChoice))
-						Item (m_nChoice).m_value = -1;
+						Item (m_nChoice).Value () = -1;
 					if ((oldChoice> - 1) && (Item (oldChoice).m_nType == NM_TYPE_INPUT_MENU) && (oldChoice != m_nChoice)) {
 						Item (oldChoice).m_group = 0;
 						strcpy (Item (oldChoice).m_text, Item (oldChoice).m_savedText);
-						Item (oldChoice).m_value = -1;
+						Item (oldChoice).Value () = -1;
 					}
 					if (oldChoice> - 1) 
 						Item (oldChoice).m_bRedraw = 1;
@@ -1215,7 +1215,7 @@ launchOption:
 			Item (m_nChoice).m_bRedraw = 1;
 			if (!strnicmp (Item (m_nChoice).m_savedText, TXT_EMPTY, strlen (TXT_EMPTY))) {
 				Item (m_nChoice).m_text [0] = '\0';
-				Item (m_nChoice).m_value = -1;
+				Item (m_nChoice).Value () = -1;
 			} else {
 				Item (m_nChoice).TrimWhitespace ();
 			}
@@ -1245,28 +1245,28 @@ launchOption:
 			if (((Item (m_nChoice).m_nType == NM_TYPE_INPUT) || 
 				 ((Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU) && (Item (m_nChoice).m_group == 1))) && (oldChoice == m_nChoice)) {
 				if (m_nKey == KEY_LEFT || m_nKey == KEY_BACKSPACE || m_nKey == KEY_PAD4) {
-					if (Item (m_nChoice).m_value == -1) 
-						Item (m_nChoice).m_value = (int) strlen (Item (m_nChoice).m_text);
-					if (Item (m_nChoice).m_value > 0)
-						Item (m_nChoice).m_value--;
-					Item (m_nChoice).m_text [Item (m_nChoice).m_value] = '\0';
+					if (Item (m_nChoice).Value () == -1) 
+						Item (m_nChoice).Value () = (int) strlen (Item (m_nChoice).m_text);
+					if (Item (m_nChoice).Value () > 0)
+						Item (m_nChoice).Value ()--;
+					Item (m_nChoice).m_text [Item (m_nChoice).Value ()] = '\0';
 					Item (m_nChoice).m_bRedraw = 1;
 					}
 				else {
 					ascii = KeyToASCII (m_nKey);
-					if ((ascii < 255) && (Item (m_nChoice).m_value < Item (m_nChoice).m_nTextLen)) {
+					if ((ascii < 255) && (Item (m_nChoice).Value () < Item (m_nChoice).m_nTextLen)) {
 						int bAllowed;
 
-						if (Item (m_nChoice).m_value== -1)
-							Item (m_nChoice).m_value = 0;
+						if (Item (m_nChoice).Value ()== -1)
+							Item (m_nChoice).Value () = 0;
 						bAllowed = CharAllowed ((char) ascii);
 						if (!bAllowed && ascii == ' ' && CharAllowed ('_')) {
 							ascii = '_';
 							bAllowed = 1;
 							}
 						if (bAllowed) {
-							Item (m_nChoice).m_text [Item (m_nChoice).m_value++] = ascii;
-							Item (m_nChoice).m_text [Item (m_nChoice).m_value] = '\0';
+							Item (m_nChoice).m_text [Item (m_nChoice).Value ()++] = ascii;
+							Item (m_nChoice).m_text [Item (m_nChoice).Value ()] = '\0';
 							Item (m_nChoice).m_bRedraw = 1;
 							}
 						}
@@ -1330,36 +1330,36 @@ launchOption:
 				}
 
 			if ((Item (m_nChoice).m_nType == NM_TYPE_NUMBER) || (Item (m_nChoice).m_nType == NM_TYPE_SLIDER)) {
-				int ov = Item (m_nChoice).m_value;
+				int ov = Item (m_nChoice).Value ();
 				switch (m_nKey) {
 				case KEY_PAD4:
 			 	case KEY_LEFT:
 			 	case KEY_MINUS:
 				case KEY_MINUS + KEY_SHIFTED:
 				case KEY_PADMINUS:
-					Item (m_nChoice).m_value--;
+					Item (m_nChoice).Value ()--;
 					break;
 			 	case KEY_RIGHT:
 				case KEY_PAD6:
 			 	case KEY_EQUALS:
 				case KEY_EQUALS + KEY_SHIFTED:
 				case KEY_PADPLUS:
-					Item (m_nChoice).m_value++;
+					Item (m_nChoice).Value ()++;
 					break;
 				case KEY_PAGEUP:
 				case KEY_PAD9:
 				case KEY_SPACEBAR:
-					Item (m_nChoice).m_value += 10;
+					Item (m_nChoice).Value () += 10;
 					break;
 				case KEY_PAGEDOWN:
 				case KEY_BACKSPACE:
 				case KEY_PAD3:
-					Item (m_nChoice).m_value -= 10;
+					Item (m_nChoice).Value () -= 10;
 					break;
 				}
 			if ((Item (m_nChoice).m_nType == NM_TYPE_SLIDER) || (Item (m_nChoice).m_nType == NM_TYPE_NUMBER))
-				Item (m_nChoice).m_value = NMCLAMP (Item (m_nChoice).m_value, Item (m_nChoice).m_minValue, Item (m_nChoice).m_maxValue);
-			if (ov != Item (m_nChoice).m_value)
+				Item (m_nChoice).Value () = NMCLAMP (Item (m_nChoice).Value (), Item (m_nChoice).MinValue (), Item (m_nChoice).MaxValue ());
+			if (ov != Item (m_nChoice).Value ())
 				Item (m_nChoice).m_bRedraw = 1;
 			}
 		}
@@ -1409,7 +1409,7 @@ CMenuItem item;
 item.m_nType = NM_TYPE_CHECK;
 item.m_pszText = NULL;
 item.SetText (szText);
-item.m_value = NMBOOL (nValue);
+item.Value () = NMBOOL (nValue);
 item.m_nKey = gameStates.app.bEnglish ? nKey : int (*(szText - 1));
 item.m_szHelp = szHelp;
 item.m_szId = szId;
@@ -1427,7 +1427,7 @@ if (!ToS () || (Top ()->m_nType != NM_TYPE_RADIO))
 item.m_nType = NM_TYPE_RADIO;
 item.m_pszText = NULL;
 item.SetText (szText);
-item.m_value = nValue;
+item.Value () = nValue;
 item.m_nKey = gameStates.app.bEnglish ? nKey : int (*(szText - 1));
 item.m_group = m_nGroup;
 item.m_szHelp = szHelp;
@@ -1473,9 +1473,9 @@ CMenuItem item;
 item.m_nType = NM_TYPE_SLIDER;
 item.m_pszText = NULL;
 item.SetText (szText);
-item.m_value = NMCLAMP (nValue, nMin, nMax);
-item.m_minValue = nMin;
-item.m_maxValue = nMax;
+item.Value () = NMCLAMP (nValue, nMin, nMax);
+item.MinValue () = nMin;
+item.MaxValue () = nMax;
 item.m_nKey = gameStates.app.bEnglish ? nKey : int (*(szText - 1));
 item.m_szHelp = szHelp;
 item.m_szId = szId;
@@ -1502,8 +1502,8 @@ return ToS () - 1;
 
 int CMenu::AddInput (const char* szId, const char* szText, char* szValue, int nLen, const char* szHelp)
 {
-AddText (szText, -1, szId);
-return AddInput (szValue, nLen, szHelp, szId);
+AddText (szId, szText, -1);
+return AddInput (szId, szValue, nLen, szHelp);
 }
 
 //------------------------------------------------------------------------------ 
@@ -1511,7 +1511,7 @@ return AddInput (szValue, nLen, szHelp, szId);
 int CMenu::AddInput (const char* szId, const char* szText, char* szValue, int nValue, int nLen, const char* szHelp)
 {
 sprintf (szValue, "%d", nValue);
-return AddInput (szText, szValue, nLen, szHelp, szId);
+return AddInput (szId, szText, szValue, nLen, szHelp);
 }
 
 //------------------------------------------------------------------------------ 
@@ -1538,9 +1538,9 @@ CMenuItem item;
 item.m_nType = NM_TYPE_NUMBER;
 item.m_pszText = (char*) (szText);
 item.SetText (szText);
-item.m_value = NMCLAMP (nValue, nMin, nMax);
-item.m_minValue = nMin;
-item.m_maxValue = nMax;
+item.Value () = NMCLAMP (nValue, nMin, nMax);
+item.MinValue () = nMin;
+item.MaxValue () = nMax;
 item.m_szId = szId;
 Push (item);
 return ToS () - 1;
@@ -1555,8 +1555,8 @@ item.m_nType = NM_TYPE_GAUGE;
 item.m_pszText = NULL;
 item.SetText (szText);
 item.m_nTextLen = *szText ? (int) strlen (szText) : 20;
-item.m_value = NMCLAMP (nValue, 0, nMax);
-item.m_maxValue = nMax;
+item.Value () = NMCLAMP (nValue, 0, nMax);
+item.MaxValue () = nMax;
 item.m_szId = szId;
 Push (item);
 m_bThrottle = false;
@@ -1604,9 +1604,9 @@ void ProgressBar (const char* szCaption, int nCurProgress, int nMaxProgress, pMe
 	CMenu	menu;
 
 menu.Create (3);
-menu.AddGauge ("                    ", -1, nMaxProgress); //the blank string denotes the screen width of the gauge
+menu.AddGauge ("progressbar", "                    ", -1, nMaxProgress); //the blank string denotes the screen width of the gauge
 menu.Item (0).m_bCentered = 1;
-menu.Item (0).m_value = nCurProgress;
+menu.Item (0).Value () = nCurProgress;
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
 gameData.app.bGamePaused = 1;

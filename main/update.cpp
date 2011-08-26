@@ -125,8 +125,8 @@ class CDownload {
 			m_nPercent = h;
 			sprintf (m_menu [m_nOptPercentage].m_text, TXT_PROGRESS, m_nPercent, '%');
 			m_menu [m_nOptPercentage].m_bRebuild = 1;
-			if (m_menu [m_nOptProgress].m_value != m_nPercent) {
-				m_menu [m_nOptProgress].m_value = m_nPercent;
+			if (m_menu [m_nOptProgress].Value () != m_nPercent) {
+				m_menu [m_nOptProgress].Value () = m_nPercent;
 				m_menu [m_nOptProgress].m_bRebuild = 1;
 				}
 			return 1;
