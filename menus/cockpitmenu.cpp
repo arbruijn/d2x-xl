@@ -100,7 +100,7 @@ static int nWinFuncs, winFunc [2], winFuncList [CV_FUNC_COUNT], winFuncMap [CV_F
 
 //------------------------------------------------------------------------------
 
-static char* windowTypeIds [2] = {"left window type", "left window type"};
+static char* windowTypeIds [2] = {"left window type", "right window type"};
 
 int CockpitOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
@@ -355,7 +355,7 @@ do {
 		}
 #endif
 	m.AddText ("", "");
-	m [m.AddText (TXT_COCKPIT_WINDOWS, 0)].m_bCentered = 1;
+	m [m.AddText ("", TXT_COCKPIT_WINDOWS)].m_bCentered = 1;
 	m.AddText ("", "");
 
 	for (i = 0; i < 2; i++) {

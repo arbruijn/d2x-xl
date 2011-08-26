@@ -181,7 +181,7 @@ do {
 			cShortCut = 'A';
 		else
 			cShortCut++;
-		m.AddRadio (szMode, 0, -1);
+		m.AddRadio ("", szMode, 0, -1);
 		}
 
 	screenResOpts.nCustom = m.AddRadio ("custom resolution", TXT_CUSTOM_SCRRES, 0, KEY_U, HTX_CUSTOM_SCRRES);
@@ -202,8 +202,9 @@ do {
 	bStdRes = 0;
 	if (m.Value ("custom resolution")) {
 		key = -2;
-		if (m.Available ("custom width") && m.Available ("custom height") &&
-			 (0 < (nCustW = atoi (szCustX))) && (0 < (nCustH = atoi (szCustY)))) {
+		nCustW = m.ToInt ("custom width");
+		nCustH = m.ToInt ("custom height");
+		if ((0 < nCustW) && (0 < nCustH)) {
 			i = CUSTOM_DISPLAY_MODE;
 			if (SetCustomDisplayMode (nCustW, nCustH))
 				key = 0;
