@@ -284,7 +284,7 @@ class CMenu : public CStack<CMenuItem> {
 			return -1;
 			}
 
-		inline bool Available (const char* szId) { return IndexOf (szId) >= 0; }
+		inline bool Available (const char* szId) { return IndexOf (szId, false) >= 0; }
 
 		inline int Value (const char* szId) {
 			int i = IndexOf (szId);
