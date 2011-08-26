@@ -107,7 +107,7 @@ if ((m = menu ["channels"])) {
 		}
 	}
 
-if ((m = menu ["gatling"])) {
+if ((m = menu ["gatling sound"])) {
 	v = m->Value ();
 	if (gameOpts->sound.bGatling != v) {
 		gameOpts->sound.bGatling = v;
@@ -147,7 +147,7 @@ if ((m = menu ["link volumes"])) {
 		}
 	}
 
-if ((m = menu ["redbook volume"])) {
+if ((m = menu ["redbook sound"])) {
 	v = m->Value ();
 	if (redbook.Enabled () != v) {
 		if (v && !gameOpts->sound.bUseRedbook) {
@@ -268,7 +268,7 @@ do {
 					 0, 8, KEY_M, HTX_ONLINE_MANUAL);
 	m.AddText ("", "", 0);
 	m.AddCheck ("link volumes", TXT_LINK_AUDIO_VOLUMES, gameOpts->sound.bLinkVolumes, KEY_L, HTX_ONLINE_MANUAL);
-	m.AddCheck ("redbook", TXT_REDBOOK_ENABLED, redbook.Enabled (), KEY_C, HTX_ONLINE_MANUAL);
+	m.AddCheck ("redbook sound", TXT_REDBOOK_ENABLED, redbook.Enabled (), KEY_C, HTX_ONLINE_MANUAL);
 	m.AddCheck ("reverse stereo", TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
 #if 1
 	if (!redbook.Enabled () && gameConfig.nMidiVolume)
@@ -286,7 +286,7 @@ do {
 		}
 
 	i = m.Menu (NULL, TXT_SOUND_OPTS, SoundMenuCallback, &choice);
-	redbook.Enable (m ["redbook"]->Value ());
+	redbook.Enable (m ["redbook sound"]->Value ());
 	gameConfig.bReverseChannels = m ["reverse stereo"]->Value ();
 	if (!gameStates.app.bNostalgia) {
 		GET_VAL (gameOpts->sound.bFadeMusic, "fade music");
