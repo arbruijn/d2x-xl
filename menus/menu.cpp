@@ -1405,7 +1405,7 @@ return m_nChoice;
 
 void CMenu::SetId (CMenuItem& item, const char* szId)
 {
-if (IndexOf (szId) > 0)
+if (IndexOf (szId, false) > 0)
 	PrintLog ("duplicate menu id '%s'\n", szId);
 item.SetId (szId);
 }
