@@ -575,13 +575,24 @@ if ((m = menu ["competition"])) {
 		}
 	}
 
-if ((m = menu ["coop penalty"])) {
-	v = m->Value ();
-	if (v != extraGameInfo [1].nCoopPenalty) {
-		extraGameInfo [1].nCoopPenalty = v;
-		sprintf (m->Text (), TXT_COOP_PENALTY, nCoopPenalties [v], '%');
-		m->Rebuild ();
-		return nCurItem;
+if (!extraGameInfo [1].bCompetition) {
+	if ((m = menu ["coop penalty"])) {
+		v = m->Value ();
+		if (v != extraGameInfo [1].nCoopPenalty) {
+			extraGameInfo [1].nCoopPenalty = v;
+			sprintf (m->Text (), TXT_COOP_PENALTY, nCoopPenalties [v], '%');
+			m->Rebuild ();
+			return nCurItem;
+			}
+		}
+
+	if ((m = menu ["target indicators"])) {
+		v = m->Value ();
+		if (v != (extraGameInfo [1].bTargetIndicators != 0)) {
+			extraGameInfo [1].bTargetIndicators = v;
+			key = -2;
+			return nCurItem;
+			}
 		}
 	}
 
@@ -594,34 +605,27 @@ if ((m = menu ["darkness"])) {
 		}
 	}
 
-if ((m = menu ["target indicators"])) {
-	v = m->Value ();
-	if (v != (extraGameInfo [1].bTargetIndicators != 0)) {
-		extraGameInfo [1].bTargetIndicators = v;
-		key = -2;
-		return nCurItem;
+if (extraGameInfo [1].bDarkness) {
+	if ((m = menu ["allow headlights"])) {
+		v = m->Value ();
+		if (v == extraGameInfo [1].headlight.bAvailable) {
+			extraGameInfo [1].headlight.bAvailable = !v;
+			key = -2;
+			return nCurItem;
+			}
 		}
-	}
 
-if ((m = menu ["headlights"])) {
-	v = m->Value ();
-	if (v == extraGameInfo [1].headlight.bAvailable) {
-		extraGameInfo [1].headlight.bAvailable = !v;
-		key = -2;
-		return nCurItem;
+	if (extraGameInfo [1].headlight.bAvailable && (m = menu ["spot size"])) {
+		v = m->Value ();
+		if (v != extraGameInfo [1].nSpotSize) {
+			extraGameInfo [1].nSpotSize =
+			extraGameInfo [1].nSpotStrength = v;
+			sprintf (m->Text (), TXT_SPOTSIZE, GT (664 + v));
+			m->Rebuild ();
+			return nCurItem;
+			}
 		}
-	}
-
-if ((m = menu ["spot size"])) {
-	v = m->Value ();
-	if (v != extraGameInfo [1].nSpotSize) {
-		extraGameInfo [1].nSpotSize =
-		extraGameInfo [1].nSpotStrength = v;
-		sprintf (m->Text (), TXT_SPOTSIZE, GT (664 + v));
-		m->Rebuild ();
-		return nCurItem;
-		}
-	}
+	}	
 
 if ((m = menu ["smoke grenades"])) {
 	v = m->Value ();
@@ -696,8 +700,8 @@ do {
 		m.AddText ("", "");
 	m.AddCheck ("darkness", TXT_DARKNESS, extraGameInfo [1].bDarkness, KEY_D, HTX_DARKNESS);
 	if (extraGameInfo [1].bDarkness) {
-		m.AddCheck ("powerups cast light", TXT_POWERUPLIGHTS, !extraGameInfo [1].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
-		m.AddCheck ("headlights", TXT_HEADLIGHTS, !extraGameInfo [1].headlight.bAvailable, KEY_H, HTX_HEADLIGHTS);
+		m.AddCheck ("bright powerups", TXT_POWERUPLIGHTS, !extraGameInfo [1].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
+		m.AddCheck ("allow headlights", TXT_HEADLIGHTS, !extraGameInfo [1].headlight.bAvailable, KEY_H, HTX_HEADLIGHTS);
 		if (extraGameInfo [1].headlight.bAvailable) {
 			sprintf (szSlider + 1, TXT_SPOTSIZE, GT (664 + extraGameInfo [1].nSpotSize));
 			strupr (szSlider + 1);
@@ -735,7 +739,7 @@ do {
 	if (m.Available ("darkness")) {
 		if ((mpParams.bDarkness = extraGameInfo [1].bDarkness)) {
 			extraGameInfo [1].headlight.bAvailable = !m.Value ("headlights");
-			extraGameInfo [1].bPowerupLights = !m.Value ("powerups cast light");
+			extraGameInfo [1].bPowerupLights = !m.Value ("bright powerups");
 			}
 		}
 	GET_VAL (extraGameInfo [1].bTowFlags, "tow flags");
