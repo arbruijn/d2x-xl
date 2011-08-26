@@ -1022,7 +1022,7 @@ void LoadGameTexts(void);
 #define TXT_KBD_RAMP						GT(242)
 #define TXT_USE_MOUSE					GT(243)
 #define TXT_CUST_MOUSE					GT(244)
-#define TXT_SYNC_MOUSE_AXES			GT(245)
+#define TXT_SYNC_MOUSE_AXIS			GT(245)
 #define TXT_MOUSE_SENS					GT(246)
 #define TXT_MOUSE_SENS_N				GT(247)
 #define TXT_STD_MOUSE					GT(248)

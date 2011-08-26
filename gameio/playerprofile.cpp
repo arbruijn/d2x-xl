@@ -449,10 +449,10 @@ for (i = 0; i < 2; i++) {
 			}
 		RP (gameOptions [i].input.bUseHotKeys, i, 0);
 		RP (gameOptions [i].input.mouse.bJoystick, i, 0);
-		RP (gameOptions [i].input.mouse.bSyncAxes, i, 0);
+		RP (gameOptions [i].input.mouse.bSyncAxis, i, 0);
 		RP (gameOptions [i].input.mouse.nDeadzone, i, 0);
 		RP (gameOptions [i].input.joystick.bLinearSens, i, 0);
-		RP (gameOptions [i].input.joystick.bSyncAxes, i, 0);
+		RP (gameOptions [i].input.joystick.bSyncAxis, i, 0);
 		RP (gameOptions [i].input.trackIR.nMode, i, 0);
 		RP (gameOptions [i].input.trackIR.nDeadzone, i, 0);
 		RP (gameOptions [i].input.keyboard.nType, i, 0);
@@ -984,10 +984,10 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].input.joystick.sensitivity[4]", "7"},
 	 {"gameOptions[0].input.trackIR.bMove [4]", "1"},
 	 {"gameOptions[0].input.mouse.bJoystick", "0"},
-	 {"gameOptions[0].input.mouse.bSyncAxes", "1"},
+	 {"gameOptions[0].input.mouse.bSyncAxis", "1"},
 	 {"gameOptions[0].input.mouse.nDeadzone", "2"},
 	 {"gameOptions[0].input.joystick.bLinearSens", "0"},
-	 {"gameOptions[0].input.joystick.bSyncAxes", "1"},
+	 {"gameOptions[0].input.joystick.bSyncAxis", "1"},
 	 {"gameOptions[0].input.trackIR.nMode", "0"},
 	 {"gameOptions[0].input.trackIR.nDeadzone", "4"},
 	 {"gameOptions[0].input.keyboard.nType", "0"},

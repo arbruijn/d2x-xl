@@ -509,7 +509,7 @@ class CGameplayOptions {
 
 typedef struct tMouseInputOptions {
 	int bUse;
-	int bSyncAxes;
+	int bSyncAxis;
 	int bJoystick;
 	int nDeadzone;
 	int sensitivity [3];
@@ -519,7 +519,7 @@ typedef struct tMouseInputOptions {
 
 typedef struct tJoystickInputOptions {
 	int bUse;
-	int bSyncAxes;
+	int bSyncAxis;
 	int bLinearSens;
 	int sensitivity [UNIQUE_JOY_AXES];
 	int deadzones [UNIQUE_JOY_AXES];
@@ -534,7 +534,7 @@ typedef struct tTrackIRInputOptions {
 	int bMove [5];
 	int nDeadzone;
 	int sensitivity [3];
-	int bSyncAxes;
+	int bSyncAxis;
 	} tTrackIRInputOptions;
 
 //------------------------------------------------------------------------------

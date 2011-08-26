@@ -179,7 +179,7 @@ int CControlsManager::ReadJoyAxis (int i, int rawJoyAxis [])
 {
 int joyDeadzoneScaled = joyDeadzone [i % 4] / 128;
 int h = JoyGetScaledReading (rawJoyAxis [i], i);
-if (gameOpts->input.joystick.bSyncAxes &&
+if (gameOpts->input.joystick.bSyncAxis &&
 	 ((kcJoystick [18].value == i) || (kcJoystick [48].value == i)))		// If this is the throttle
 	joyDeadzoneScaled *= 2;				// Then use a larger dead-zone
 if (h > joyDeadzoneScaled)

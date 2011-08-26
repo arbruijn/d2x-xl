@@ -482,10 +482,10 @@ if (i) {
 	nMinTurnRate = 20;	//turn time for a 360 deg rotation around a single ship axis in 1/10 sec units
 	if (joystick.bUse)
 		mouse.bUse = 0;
-	mouse.bSyncAxes = 1;
+	mouse.bSyncAxis = 1;
 	mouse.bJoystick = 0;
 	mouse.nDeadzone = 0;
-	joystick.bSyncAxes = 1;
+	joystick.bSyncAxis = 1;
 	keyboard.bUse = 1;
 	bUseHotKeys = 1;
 	keyboard.nRamp = 100;
@@ -515,10 +515,10 @@ else {
 	keyboard.bRamp [2] = 0;
 	mouse.bUse = 1;
 	joystick.bUse = 0;
-	mouse.bSyncAxes = 1;
+	mouse.bSyncAxis = 1;
 	mouse.nDeadzone = 0;
 	mouse.bJoystick = 0;
-	joystick.bSyncAxes = 1;
+	joystick.bSyncAxis = 1;
 	keyboard.bUse = 1;
 	bUseHotKeys = 1;
 	mouse.nDeadzone = 2;
