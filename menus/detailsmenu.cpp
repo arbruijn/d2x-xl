@@ -127,7 +127,7 @@ if (i > -1) {
 			break;
 		}
 	}
-gameOpts->movies.bHires = m [7].m_value;
+gameOpts->movies.bHires = m [7].Value ();
 }
 
 // -----------------------------------------------------------------------------
@@ -139,13 +139,13 @@ if (nState)
 
 	nCurItem = nCurItem;
 
-gameStates.render.detail.nObjectComplexity = m [0].m_value;
-gameStates.render.detail.nObjectDetail = m [1].m_value;
-gameStates.render.detail.nWallDetail = m [2].m_value;
-gameStates.render.detail.nWallRenderDepth = m [3].m_value;
-gameStates.render.detail.nDebrisAmount = m [4].m_value;
+gameStates.render.detail.nObjectComplexity = m [0].Value ();
+gameStates.render.detail.nObjectDetail = m [1].Value ();
+gameStates.render.detail.nWallDetail = m [2].Value ();
+gameStates.render.detail.nWallRenderDepth = m [3].Value ();
+gameStates.render.detail.nDebrisAmount = m [4].Value ();
 if (!gameStates.app.bGameRunning)
-	gameStates.sound.nSoundChannels = m [5].m_value;
+	gameStates.sound.nSoundChannels = m [5].Value ();
 return nCurItem;
 }
 

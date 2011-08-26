@@ -59,19 +59,6 @@ void SmokeDetailsMenu (void);
 
 //------------------------------------------------------------------------------
 
-static struct {
-	int	nSmoke;
-	int	nShadows;
-	int	nLightning;
-	int	nCoronas;
-	int	nShockwaves;
-	int	nExplShrapnels;
-	int	nLightTrails;
-	int	nSparks;
-	int	nThrusters;
-	int	nGlow;
-} effectOpts;
-
 //------------------------------------------------------------------------------
 
 static int nShadows, nCoronas, nLightTrails;
@@ -92,55 +79,55 @@ if (nState)
 	CMenuItem	*m;
 	int			v;
 
-if (effectOpts.nShockwaves >= 0) {
-	m = menu + effectOpts.nShockwaves;
-	v = m->m_value;
+if ((m = menu ["shockwaves"])) {
+	v = m->Value ();
 	if (gameOpts->render.effects.nShockwaves != v) {
 		gameOpts->render.effects.nShockwaves = v;
 		sprintf (m->m_text, TXT_EXPLOSION_BLASTS, pszNoneBasicFull [v]);
-		m->m_bRebuild = 1;
+		m->Rebuild ();
 		}
 	}
 
-if (effectOpts.nExplShrapnels >= 0) {
-	m = menu + effectOpts.nExplShrapnels;
-	v = m->m_value;
+if ((m = menu ["shrapnels"])) {
+	v = m->Value ();
 	if (gameOpts->render.effects.nShrapnels != v) {
 		gameOpts->render.effects.nShrapnels = v;
 		sprintf (m->m_text, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [v]);
-		m->m_bRebuild = 1;
+		m->Rebuild ();
 		}
 	}
 
-m = menu + effectOpts.nThrusters;
-v = m->m_value;
-if (extraGameInfo [0].bThrusterFlames != v) {
-	extraGameInfo [0].bThrusterFlames = v;
-	sprintf (m->m_text, TXT_THRUSTER_FLAMES, pszThrusters [v]);
-	m->m_bRebuild = 1;
+if ((m = menu ["thrusters"])) {
+	v = m->Value ();
+	if (extraGameInfo [0].bThrusterFlames != v) {
+		extraGameInfo [0].bThrusterFlames = v;
+		sprintf (m->m_text, TXT_THRUSTER_FLAMES, pszThrusters [v]);
+		m->Rebuild ();
+		}
 	}
 
-m = menu + effectOpts.nLightTrails;
-v = m->m_value;
-if (nLightTrails != v) {
-	nLightTrails = v;
-	key = -2;
-	}
-
-m = menu + effectOpts.nSmoke;
-v = m->m_value;
-if (gameOpts->render.particles.nQuality != v) {
-	if (!gameOpts->render.particles.nQuality || !v)
+if ((m = menu ["light trails"])) {
+	v = m->Value ();
+	if (nLightTrails != v) {
+		nLightTrails = v;
 		key = -2;
-	else
-		m->m_bRebuild = -1;
-	gameOpts->render.particles.nQuality = v;
-	sprintf (m->m_text, TXT_SMOKE, pszSmokeQuality [gameOpts->render.particles.nQuality]);
+		}
 	}
 
-if (effectOpts.nShadows >= 0) {
-	m = menu + effectOpts.nShadows;
-	v = m->m_value;
+if ((m = menu ["particles"])) {
+	v = m->Value ();
+	if (gameOpts->render.particles.nQuality != v) {
+		if (!gameOpts->render.particles.nQuality || !v)
+			key = -2;
+		else
+			m->m_bRebuild = -1;
+		gameOpts->render.particles.nQuality = v;
+		sprintf (m->m_text, TXT_SMOKE, pszSmokeQuality [gameOpts->render.particles.nQuality]);
+		}
+	}
+
+if ((m = menu ["shadows"])) {
+	v = m->Value ();
 	if (nShadows != v) {
 		nShadows = v;
 		sprintf (m->m_text, TXT_SHADOWS, pszNoneBasicFull [nShadows]);
@@ -148,25 +135,26 @@ if (effectOpts.nShadows >= 0) {
 		}
 	}
 
-m = menu + effectOpts.nLightning;
-v = m->m_value;
-if (extraGameInfo [0].bUseLightning != v) {
-	extraGameInfo [0].bUseLightning = v;
-	sprintf (m->m_text, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
-	m->m_bRebuild = -1;
+if ((m = menu ["lightning"])) {
+	v = m->Value ();
+	if (extraGameInfo [0].bUseLightning != v) {
+		extraGameInfo [0].bUseLightning = v;
+		sprintf (m->m_text, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
+		m->m_bRebuild = -1;
+		}
 	}
 
-m = menu + effectOpts.nGlow;
-v = m->m_value;
-if (gameOpts->render.effects.bGlow != v) {
-	gameOpts->render.effects.bGlow = v;
-	sprintf (m->m_text, TXT_EFFECTS_GLOW, pszNoneStdHigh [gameOpts->render.effects.bGlow]);
-	m->m_bRebuild = -1;
+if ((m = menu ["glow"])) {
+	v = m->Value ();
+	if (gameOpts->render.effects.bGlow != v) {
+		gameOpts->render.effects.bGlow = v;
+		sprintf (m->m_text, TXT_EFFECTS_GLOW, pszNoneStdHigh [gameOpts->render.effects.bGlow]);
+		m->m_bRebuild = -1;
+		}
 	}
 
-if (effectOpts.nCoronas >= 0) {
-	m = menu + effectOpts.nCoronas;
-	v = m->m_value;
+if ((m = menu ["coronas"])) {
+	v = m->Value ();
 	if (nCoronas != v) {
 		nCoronas = v;
 		sprintf (m->m_text, TXT_CORONAS, pszOffOn [nCoronas]);
@@ -220,13 +208,14 @@ pszOffOn [1] = TXT_ON;
 
 //------------------------------------------------------------------------------
 
+static char* softParticleIds [] = {"soft sprites", "soft sparks", "soft smoke"};
+
 void EffectOptionsMenu (void)
 {
 	static int choice = 0;
 
 	CMenu	m;
 	int	i, j;
-	int	optEnableFx, optGatlingTrails, optStaticSmoke, optSoftParticles [3], optSmokeDetails;
 #if 0
 	int	optShockwaves;
 #endif
@@ -243,112 +232,95 @@ do {
 	m.Destroy ();
 	m.Create (30);
 
-	optEnableFx = m.AddCheck (TXT_ENABLE_EFFECTS, gameOpts->render.effects.bEnabled, KEY_F, HTX_ENABLE_EFFECTS);
+	m.AddCheck (TXT_ENABLE_EFFECTS, gameOpts->render.effects.bEnabled, KEY_F, HTX_ENABLE_EFFECTS, "enable fx");
 	m.AddText ("");
 	sprintf (szSlider + 1, TXT_SMOKE, pszSmokeQuality [gameOpts->render.particles.nQuality]);
 	*szSlider = *(TXT_SMOKE - 1);
-	effectOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, MAX_PARTICLE_QUALITY, KEY_P, HTX_SMOKE);
-	if (!ogl.m_features.bStencilBuffer)
-		effectOpts.nShadows = -1;
-	else {
+	m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, MAX_PARTICLE_QUALITY, KEY_P, HTX_SMOKE, "particles");
+	if (ogl.m_features.bStencilBuffer) {
 		sprintf (szSlider + 1, TXT_SHADOWS, pszNoneBasicFull [nShadows]);
 		*szSlider = *(TXT_SHADOWS - 1);
-		effectOpts.nShadows = m.AddSlider (szSlider + 1, nShadows, 0, 2, KEY_S, HTX_SHADOWS);
+		m.AddSlider (szSlider + 1, nShadows, 0, 2, KEY_S, HTX_SHADOWS, "shadows");
 		}
 	if (ogl.m_features.bDepthBlending > 0) {
 		sprintf (szSlider + 1, TXT_CORONAS, pszOffOn [nCoronas]);
 		*szSlider = *(TXT_CORONAS - 1);
-		effectOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1, KEY_O, HTX_CORONAS);
+		m.AddSlider (szSlider + 1, nCoronas, 0, 1, KEY_O, HTX_CORONAS, "coronas");
 		}
-	else
-		effectOpts.nCoronas = -1;
 
 	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
 	*szSlider = *(TXT_LIGHTNING - 1);
-	effectOpts.nLightning = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_L, HTX_LIGHTNING);
+	m.AddSlider (szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_L, HTX_LIGHTNING, "lightning");
 	sprintf (szSlider + 1, TXT_EFFECTS_GLOW, pszNoneStdHigh [gameOpts->render.effects.bGlow]);
 	*szSlider = *(TXT_EFFECTS_GLOW - 1);
-	effectOpts.nGlow = m.AddSlider (szSlider + 1, gameOpts->render.effects.bGlow, 0, 2, KEY_W, HTX_EFFECTS_GLOW);
+	m.AddSlider (szSlider + 1, gameOpts->render.effects.bGlow, 0, 2, KEY_W, HTX_EFFECTS_GLOW, "glow");
 	m.AddText ("");
 
 	if (extraGameInfo [0].bUseParticles) {
 		sprintf (szSlider + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
 		*szSlider = *(TXT_EXPLOSION_SHRAPNELS - 1);
-		effectOpts.nExplShrapnels = m.AddSlider (szSlider + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_A, HTX_EXPLOSION_SHRAPNELS);
+		m.AddSlider (szSlider + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_A, HTX_EXPLOSION_SHRAPNELS, "shrapnels");
 		}
-	else
-		effectOpts.nExplShrapnels = -1;
 
 	sprintf (szSlider + 1, TXT_EXPLOSION_BLASTS, pszNoneBasicFull [gameOpts->render.effects.nShockwaves]);
 	*szSlider = *(TXT_EXPLOSION_BLASTS - 1);
-	effectOpts.nShockwaves = m.AddSlider (szSlider + 1, gameOpts->render.effects.nShockwaves, 0, 2, KEY_K, HTX_EXPLOSION_BLASTS);
+	m.AddSlider (szSlider + 1, gameOpts->render.effects.nShockwaves, 0, 2, KEY_K, HTX_EXPLOSION_BLASTS, "shockwaves");
 
 	sprintf (szSlider + 1, TXT_LIGHTTRAIL_QUAL, pszNoneBasicAdv [nLightTrails]);
 	*szSlider = *(TXT_LIGHTTRAIL_QUAL - 1);
-	effectOpts.nLightTrails = m.AddSlider (szSlider + 1, nLightTrails, 0, 1 + extraGameInfo [0].bUseParticles, KEY_T, HTX_LIGHTTRAIL_QUAL);
+	m.AddSlider (szSlider + 1, nLightTrails, 0, 1 + extraGameInfo [0].bUseParticles, KEY_T, HTX_LIGHTTRAIL_QUAL, "light trails");
 
 	sprintf (szSlider + 1, TXT_THRUSTER_FLAMES, pszThrusters [int (extraGameInfo [0].bThrusterFlames)]);
 	*szSlider = *(TXT_THRUSTER_FLAMES - 1);
-	effectOpts.nThrusters = m.AddSlider (szSlider + 1, extraGameInfo [0].bThrusterFlames, 0, 2, KEY_U, HTX_THRUSTER_FLAMES);
+	m.AddSlider (szSlider + 1, extraGameInfo [0].bThrusterFlames, 0, 2, KEY_U, HTX_THRUSTER_FLAMES, "thrusters");
 
 	m.AddText ("");
 	if (extraGameInfo [0].bUseParticles) {
-		optStaticSmoke = m.AddCheck (TXT_SMOKE_STATIC, gameOpts->render.particles.bStatic, KEY_X, HTX_ADVRND_STATICSMOKE);
-		optGatlingTrails = m.AddCheck (TXT_GATLING_TRAILS, extraGameInfo [0].bGatlingTrails, KEY_G, HTX_GATLING_TRAILS);
+		m.AddCheck (TXT_SMOKE_STATIC, gameOpts->render.particles.bStatic, KEY_X, HTX_ADVRND_STATICSMOKE, "static smoke");
+		m.AddCheck (TXT_GATLING_TRAILS, extraGameInfo [0].bGatlingTrails, KEY_G, HTX_GATLING_TRAILS, "gatling trails");
 		}
-	else
-		optStaticSmoke =
-		optGatlingTrails = -1;
 
-	if ((gameOptions [0].render.nQuality < 3) || (gameOpts->app.bExpertMode != SUPERUSER))
-		optSoftParticles [0] = 
-		optSoftParticles [1] = 
-		optSoftParticles [2] = -1;
-	else {
+	if ((gameOptions [0].render.nQuality > 2) && (gameOpts->app.bExpertMode == SUPERUSER)) {
 		m.AddText ("");
-		optSoftParticles [0] = m.AddCheck (TXT_SOFT_SPRITES, gameOpts->SoftBlend (SOFT_BLEND_SPRITES) != 0, KEY_I, HTX_SOFT_SPRITES);
-		optSoftParticles [1] = m.AddCheck (TXT_SOFT_SPARKS, gameOpts->SoftBlend (SOFT_BLEND_SPARKS) != 0, KEY_A, HTX_SOFT_SPARKS);
+		m.AddCheck (TXT_SOFT_SPRITES, gameOpts->SoftBlend (SOFT_BLEND_SPRITES) != 0, KEY_I, HTX_SOFT_SPRITES, softParticleIds [0]);
+		m.AddCheck (TXT_SOFT_SPARKS, gameOpts->SoftBlend (SOFT_BLEND_SPARKS) != 0, KEY_A, HTX_SOFT_SPARKS, softParticleIds [1]);
 		if (extraGameInfo [0].bUseParticles)
-			optSoftParticles [2] = m.AddCheck (TXT_SOFT_SMOKE, gameOpts->SoftBlend (SOFT_BLEND_PARTICLES) != 0, KEY_O, HTX_SOFT_SMOKE);
-		else
-			optSoftParticles [2] = -1;
+			m.AddCheck (TXT_SOFT_SMOKE, gameOpts->SoftBlend (SOFT_BLEND_PARTICLES) != 0, KEY_O, HTX_SOFT_SMOKE, softParticleIds [2]);
 		}
 	if (gameOpts->app.bExpertMode && extraGameInfo [0].bUseParticles) {
 		m.AddText ("");
-		optSmokeDetails = m.AddMenu (TXT_SMOKE_DETAILS, KEY_D, HTX_SMOKE_DETAILS);
+		m.AddMenu (TXT_SMOKE_DETAILS, KEY_D, HTX_SMOKE_DETAILS, "smoke details");
 		}
-	else
-		optSmokeDetails = -1;
 
 	for (;;) {
 		i = m.Menu (NULL, TXT_EFFECT_MENUTITLE, EffectOptionsCallback, &choice);
 		if (i < 0)
 			break;
-		if (i == optSmokeDetails)
+		if (i == m.IndexOf ("smoke details"))
 			SmokeDetailsMenu ();
 		}
 
 	extraGameInfo [0].bUseParticles = (gameOpts->render.particles.nQuality != 0);
-	if (effectOpts.nShadows >= 0) {
+	if (m.Available ("shadows")) {
 		if ((extraGameInfo [0].bShadows = (nShadows != 0)))
 			gameOpts->render.shadows.nReach =
 			gameOpts->render.shadows.nClip = nShadows;
 		}
-	if (effectOpts.nShadows >= 0) {
+	if (m.Available ("coronas")) {
 		if ((gameOpts->render.coronas.bUse = (nCoronas != 0)))
 			gameOpts->render.coronas.nStyle = nCoronas;
 		}
 	for (j = 0; j < 3; j++) {
-		if (optSoftParticles [j] >= 0) {
-			if (m [optSoftParticles [j]].m_value)
+		if (m.Available (softParticleIds [i])) {
+			if (m [softParticleIds [j]]->Value ())
 				gameOpts->render.effects.bSoftParticles |= 1 << j;
 			else
 				gameOpts->render.effects.bSoftParticles &= ~(1 << j);
 			}
 		}
-	GET_VAL (gameOpts->render.effects.bEnabled, optEnableFx);
-	GET_VAL (gameOpts->render.particles.bStatic, optStaticSmoke);
-	GET_VAL (extraGameInfo [0].bGatlingTrails, optGatlingTrails);
+	GET_VAL (gameOpts->render.effects.bEnabled, "enable fx");
+	GET_VAL (gameOpts->render.particles.bStatic, "static smoke");
+	GET_VAL (extraGameInfo [0].bGatlingTrails, "gatling trails");
 	if ((extraGameInfo [0].bLightTrails = (nLightTrails != 0)))
 		gameOpts->render.particles.bPlasmaTrails = (nLightTrails == 2);
 	} while (i == -2);

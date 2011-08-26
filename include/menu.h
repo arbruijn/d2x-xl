@@ -63,7 +63,7 @@ extern char DOWN_ARROW_MARKER [2];
 #define NMCLAMP(_v,_min,_max)	((_v) < (_min) ? (_min) : (_v) > (_max) ? (_max) : (_v))
 #define NMBOOL(_v) ((_v) != 0)
 
-#define GET_VAL(_v,_id)	if (m.Available (_id)) (_v) = m [_id].Value()
+#define GET_VAL(_v,_id)	if (m.Available (_id)) (_v) = m [_id]->Value()
 
 #define MENU_KEY(_k,_d)	((_k) < 0) ? (_d) : ((_k) == 0) ? 0 : gameStates.app.bEnglish ? toupper (KeyToASCII (_k)) : (_k)
 
@@ -306,9 +306,9 @@ class CMenu : public CStack<CMenuItem> {
 
 		inline CMenuItem& operator[] (const int i) { return CStack::operator[] (i); }
 
-		inline CMenuItem& operator[] (const char* szId) {
+		inline CMenuItem* operator[] (const char* szId) {
 			int i = IndexOf (szId);
-			return (i < 0) ? m_null : *Buffer (i);
+			return (i < 0) ? NULL : Buffer (i);
 			}
 
 		int AddCheck (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL, const char* szId = NULL);

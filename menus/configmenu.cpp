@@ -91,12 +91,12 @@ if (nState)
 	return nCurItem;
 
 if (gameStates.app.bNostalgia) {
-	CMenuItem& m = menu ["brightness"];
-	int v = m.Value ();
+	CMenuItem* m = menu ["brightness"];
+	int v = m->Value ();
 	if ((nCurItem == menu.IndexOf ("brightness")) && (v != paletteManager.GetGamma ())) {
 		paletteManager.SetGamma (v);
-		sprintf (m.m_text, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
-		m.Rebuild ();
+		sprintf (m->m_text, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
+		m->Rebuild ();
 		}
 	}
 return nCurItem;
