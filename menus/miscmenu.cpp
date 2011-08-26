@@ -76,19 +76,19 @@ if (nState)
 	CMenuItem * m;
 	int			v;
 
-m = menu + miscOpts.nExpertMode;
-v = m->m_value;
-if (gameOpts->app.bExpertMode != v) {
-	gameOpts->app.bExpertMode = v;
-	sprintf (m->m_text, TXT_EXPERT_MODE, pszExpertMode [v]);
-	m->m_bRebuild = 1;
-	key = -2;
-	return nCurItem;
+if ((m = menu ["expert mode"])) {
+	v = m->Value ();
+	if (gameOpts->app.bExpertMode != v) {
+		gameOpts->app.bExpertMode = v;
+		sprintf (m->m_text, TXT_EXPERT_MODE, pszExpertMode [v]);
+		m->m_bRebuild = 1;
+		key = -2;
+		return nCurItem;
+		}
 	}
 
-if (miscOpts.nScreenshots >= 0) {
-	m = menu + miscOpts.nScreenshots;
-	v = m->m_value;
+if ((m = menu ["screenshots"])) {
+	v = m->Value ();
 	if (gameOpts->app.nScreenShotInterval != v) {
 		gameOpts->app.nScreenShotInterval = v;
 		if (v)
@@ -101,18 +101,16 @@ if (miscOpts.nScreenshots >= 0) {
 		}
 	}
 
-if (miscOpts.nAutoDl >= 0) {
-	CMenuItem* m = menu + miscOpts.nAutoDl;
-	int v = m->m_value;
+if ((m = menu ["auto download"])) {
+	int v = m->Value ();
 	if (extraGameInfo [0].bAutoDownload != v) {
 		extraGameInfo [0].bAutoDownload = v;
 		key = -2;
 		return nCurItem;
 		}
 
-	if (extraGameInfo [0].bAutoDownload && (miscOpts.nDlTimeout >= 0)) {
-		m = menu + miscOpts.nDlTimeout;
-		v = m->m_value;
+	if (extraGameInfo [0].bAutoDownload && (m = menu ["download timeout"])) {
+		v = m->Value ();
 		if (downloadManager.GetTimeoutIndex () != v) {
 			v = downloadManager.SetTimeoutIndex (v);
 			sprintf (m->m_text, TXT_DL_TIMEOUT, downloadManager.GetTimeoutSecs ());
@@ -149,8 +147,6 @@ void MiscellaneousMenu (void)
 
 	CMenu m;
 	int	i;
-	int	optHeadlight, optAutoLevel, optEpileptic, optColorblind, optNotebook,
-			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
 
 InitStrings ();
 
@@ -171,44 +167,37 @@ do {
 	memset (&miscOpts, 0xff, sizeof (miscOpts));
 	sprintf (szSlider + 1, TXT_EXPERT_MODE, pszExpertMode [gameOpts->app.bExpertMode]);
 	*szSlider = *(TXT_EXPERT_MODE - 1);
-	miscOpts.nExpertMode = m.AddSlider (szSlider + 1, gameOpts->app.bExpertMode, 0, sizeofa (pszExpertMode) - 1, KEY_X, HTX_EXPERT_MODE);  
-	m.AddText ("", 0);
-	optReticle = optMissileView = optGuided = optSmartSearch = optLevelVer = optDemoFmt = optEpileptic = optColorblind = -1;
+	m.AddSlider ("expert mode", szSlider + 1, gameOpts->app.bExpertMode, 0, sizeofa (pszExpertMode) - 1, KEY_X, HTX_EXPERT_MODE);  
+	m.AddText ("", "", 0);
 	if (gameStates.app.bNostalgia) {
-		optAutoLevel = m.AddCheck (TXT_AUTO_LEVEL, gameOpts->gameplay.nAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
-		optReticle = m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
-		optMissileView = m.AddCheck (TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPIT_MSLVIEW);
-		optGuided = m.AddCheck (TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_G, HTX_CPIT_GUIDEDVIEW);
-		optHeadlight = m.AddCheck (TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadlightOnWhenPickedUp, KEY_H, HTX_MISC_HEADLIGHT);
-		optNotebook = -1;
+		m.AddCheck ("auto leveling", TXT_AUTO_LEVEL, gameOpts->gameplay.nAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
+		m.AddCheck ("show reticle", TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
+		m.AddCheck ("missile view", TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPIT_MSLVIEW);
+		m.AddCheck ("guided in mainview", TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_G, HTX_CPIT_GUIDEDVIEW);
+		m.AddCheck ("headlight on", TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadlightOnWhenPickedUp, KEY_H, HTX_MISC_HEADLIGHT);
 		}
 	else {
-		optEpileptic = m.AddCheck (TXT_EPILEPTIC_FRIENDLY, gameOpts->app.bEpilepticFriendly, KEY_E, HTX_EPILEPTIC_FRIENDLY);
-		optColorblind = m.AddCheck (TXT_COLORBLIND_FRIENDLY, gameOpts->app.bColorblindFriendly, KEY_C, HTX_COLORBLIND_FRIENDLY);
-		optNotebook = m.AddCheck (TXT_NOTEBOOK_FRIENDLY, gameOpts->app.bNotebookFriendly, KEY_N, HTX_COLORBLIND_FRIENDLY);
-		optHeadlight = 
-		optAutoLevel = -1;
+		m.AddCheck ("epileptic friendly", TXT_EPILEPTIC_FRIENDLY, gameOpts->app.bEpilepticFriendly, KEY_E, HTX_EPILEPTIC_FRIENDLY);
+		m.AddCheck ("colorblind friendly", TXT_COLORBLIND_FRIENDLY, gameOpts->app.bColorblindFriendly, KEY_C, HTX_COLORBLIND_FRIENDLY);
+		m.AddCheck ("notebook friendly", TXT_NOTEBOOK_FRIENDLY, gameOpts->app.bNotebookFriendly, KEY_N, HTX_COLORBLIND_FRIENDLY);
 		}
 
-	miscOpts.nAutoDl = 
-	miscOpts.nDlTimeout = 
-	miscOpts.nScreenshots = -1;
 	if ((gameStates.app.bNostalgia < 2) && gameOpts->app.bExpertMode) {
-		m.AddText ("", 0);
+		m.AddText ("", "", 0);
 		if (gameOpts->app.nScreenShotInterval)
 			sprintf (szSlider + 1, TXT_SCREENSHOTS, screenShotIntervals [gameOpts->app.nScreenShotInterval]);
 		else
 			strcpy (szSlider + 1, TXT_NO_SCREENSHOTS);
 		*szSlider = *(TXT_SCREENSHOTS - 1);
-		miscOpts.nScreenshots = m.AddSlider (szSlider + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
+		m.AddSlider ("screenshots", szSlider + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
 
 		if (gameStates.app.bHaveSDLNet) {
-			m.AddText ("", 0);
-			miscOpts.nAutoDl = m.AddCheck (TXT_DL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_M, HTX_MISC_MISSIONDL);
+			m.AddText ("", "", 0);
+			m.AddCheck ("auto download", TXT_DL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_M, HTX_MISC_MISSIONDL);
 			if (extraGameInfo [0].bAutoDownload) {
 				sprintf (szSlider + 1, TXT_DL_TIMEOUT, downloadManager.GetTimeoutSecs ());
 				*szSlider = *(TXT_DL_TIMEOUT - 1);
-				miscOpts.nDlTimeout = m.AddSlider (szSlider + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_DLTIMEOUT);
+				m.AddSlider ("download timeout", szSlider + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_DLTIMEOUT);
 				}
 			}
 		}
@@ -218,17 +207,17 @@ do {
 	} while (i >= 0);
 
 	if (gameStates.app.bNostalgia) {
-		gameOpts->gameplay.nAutoLeveling = m [optAutoLevel].m_value;
-		gameOpts->render.cockpit.bReticle = m [optReticle].m_value;
-		gameOpts->render.cockpit.bMissileView = m [optMissileView].m_value;
-		gameOpts->render.cockpit.bGuidedInMainView = m [optGuided].m_value;
-		gameOpts->gameplay.bHeadlightOnWhenPickedUp = m [optHeadlight].m_value;
+		gameOpts->gameplay.nAutoLeveling = m ["auto leveling"]->Value ();
+		gameOpts->render.cockpit.bReticle = m ["show reticle"]->Value ();
+		gameOpts->render.cockpit.bMissileView = m ["missile view"]->Value ();
+		gameOpts->render.cockpit.bGuidedInMainView = m ["guided in mainview"]->Value ();
+		gameOpts->gameplay.bHeadlightOnWhenPickedUp = m ["headlight on"]->Value ();
 		}
 
 	if (!gameStates.app.bNostalgia) {
-		GET_VAL (gameOpts->app.bEpilepticFriendly, optEpileptic);
-		GET_VAL (gameOpts->app.bColorblindFriendly, optColorblind);
-		GET_VAL (gameOpts->app.bNotebookFriendly, optNotebook);
+		GET_VAL (gameOpts->app.bEpilepticFriendly, "epileptic friendly");
+		GET_VAL (gameOpts->app.bColorblindFriendly, "colorblind friendly");
+		GET_VAL (gameOpts->app.bNotebookFriendly, "notebook friendly");
 		}
 	} while (i == -2);
 
