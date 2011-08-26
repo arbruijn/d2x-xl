@@ -174,7 +174,7 @@ else
 	opt++;
 	}
 for (i = 0; i < opt; i++)
-	m.AddText (reinterpret_cast<char*> (mTexts + i));
+	m.AddText ("", reinterpret_cast<char*> (mTexts + i));
 bAlreadyShowingInfo = 1;
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;

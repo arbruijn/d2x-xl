@@ -44,11 +44,12 @@
 int NetworkSelectTeams (void)
 {
 	CMenu		m;
-	int		choice, opt_team_b;
+	int		choice;
 	ushort	teamVector = 0;
 	char		teamNames [2][CALLSIGN_LEN+1];
-	int		i;
+	int		i, j;
 	int		playerIds [MAX_PLAYERS+2];
+	char		szId [100];
 
 // one time initialization
 for (i = gameData.multiplayer.nPlayers / 2; i < gameData.multiplayer.nPlayers; i++) // Put first half of players on team A
@@ -60,36 +61,41 @@ for (;;) {
 	m.Destroy ();
 	m.Create (MAX_PLAYERS + 4);
 
-	m.AddInput (teamNames [0], CALLSIGN_LEN);
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	m.AddInput ("red team", teamNames [0], CALLSIGN_LEN);
+	for (i = j = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (!(teamVector & (1 << i))) {
-			m.AddMenu (netPlayers [0].m_info.players [i].callsign);
+			sprintf (szId, "red player %d", ++j);
+			m.AddMenu (szId, netPlayers [0].m_info.players [i].callsign);
 			playerIds [m.ToS () - 1] = i;
 			}
 		}
-	opt_team_b = m.AddInput (teamNames [1], CALLSIGN_LEN); 
+	m.AddInput ("blue team", teamNames [1], CALLSIGN_LEN); 
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (teamVector & (1 << i)) {
-			m.AddMenu (netPlayers [0].m_info.players [i].callsign);
+			sprintf (szId, "blue player %d", ++j);
+			m.AddMenu (szId, netPlayers [0].m_info.players [i].callsign);
 			playerIds [m.ToS () - 1] = i;
 			}
 		}
-	m.AddText ("");
-	m.AddMenu (TXT_ACCEPT, KEY_A);
+	m.AddText ("end of teams", "");
+	m.AddMenu ("accept teams", TXT_ACCEPT, KEY_A);
 
 	choice = m.Menu (NULL, TXT_TEAM_SELECTION, NULL, NULL);
 
+	int redTeam = m.IndexOf ("red team");
+	int blueTeam = m.IndexOf ("blue team");
+	int endOfTeams = m.IndexOf ("end of teams");
 	if (choice == int (m.ToS ()) - 1) {
-		if ((m.ToS () - 2 - opt_team_b < 2) || (opt_team_b == 1)) 
+		if ((endOfTeams - blueTeam < 2) || (blueTeam - redTeam < 2))
 			MsgBox (NULL, NULL, 1, TXT_OK, TXT_TEAM_MUST_ONE);
 		netGame.m_info.SetTeamVector (teamVector);
 		strcpy (netGame.m_info.szTeamName [0], teamNames [0]);
 		strcpy (netGame.m_info.szTeamName [1], teamNames [1]);
 		return 1;
 		}
-	else if ((choice > 0) && (choice < opt_team_b)) 
+	else if ((choice > redTeam) && (choice < blueTeam)) 
 		teamVector |= (1 << playerIds [choice]);
-	else if ((choice > opt_team_b) && (choice < int (m.ToS ()) - 2)) 
+	else if ((choice > blueTeam) && (choice < endOfTeams)) 
 		teamVector &= ~ (1 << playerIds [choice]);
 	else if (choice == -1)
 		return 0;
@@ -103,7 +109,7 @@ static bool GetSelectedPlayers (CMenu& m, int nSavePlayers)
 // Count number of players chosen
 gameData.multiplayer.nPlayers = 0;
 for (int i = 0; i < nSavePlayers; i++) {
-	if (m [i].m_value) 
+	if (m [i].Value ()) 
 		gameData.multiplayer.nPlayers++;
 	}
 if (gameData.multiplayer.nPlayers > netGame.m_info.nMaxPlayers) {
@@ -170,15 +176,15 @@ NetworkAddPlayer (&networkData.thisPlayer);
 if (bAutoRun)
 	return 1;
 
-m [0].m_value = 1;                         // Assume server will play...
+m [0].Value () = 1;                         // Assume server will play...
 if (gameOpts->multi.bNoRankings)
 	sprintf (text [0], "%d. %-20s", 1, LOCALPLAYER.callsign);
 else
 	sprintf (text [0], "%d. %s%-20s", 1, pszRankStrings [netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].rank], LOCALPLAYER.callsign);
-m.AddCheck (text [0], 0);
+m.AddCheck ("", text [0], 0);
 for (i = 1; i < MAX_PLAYERS + 4; i++) {
 	sprintf (text [i], "%d.  %-20s", i + 1, "");
-	m.AddCheck (text [i], 0);
+	m.AddCheck ("", text [i], 0);
 	}
 sprintf (title, "%s %d %s", TXT_TEAM_SELECT, gameData.multiplayer.nMaxPlayers, TXT_TEAM_PRESS_ENTER);
 
@@ -192,7 +198,7 @@ do {
 // Remove players that aren't marked.
 gameData.multiplayer.nPlayers = 0;
 for (i = 0; i < nSavePlayers; i++) {
-	if (m [i].m_value) {
+	if (m [i].Value ()) {
 		if (i > gameData.multiplayer.nPlayers) {
 			if (gameStates.multi.nGameType >= IPX_GAME) {
 				memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.Node (), 
