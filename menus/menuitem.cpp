@@ -105,6 +105,10 @@ for (int i = 0; i < 2; i++)
 		delete m_bmText [i];
 		m_bmText [i] = NULL;
 		}
+if (m_szId) {
+	delete m_szId;
+	m_szId = NULL;
+	}
 }
 
 //------------------------------------------------------------------------------ 
@@ -690,6 +694,17 @@ char* CMenuItem::GetInput (void)
 if (m_pszText)
 	strcpy (m_pszText, m_text);
 return m_pszText;
+}
+
+//------------------------------------------------------------------------------
+
+void CMenuItem::SetId (const char* pszId)
+{
+if (pszId) {
+	size_t l = strlen (pszId) + 1;
+	if ((m_szId = new char [l]))
+		memcpy (m_szId, pszId, l);
+	}
 }
 
 //------------------------------------------------------------------------------

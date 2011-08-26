@@ -122,7 +122,7 @@ class CMenuItem {
 		char*			m_pszText;
 		CBitmap*		m_bmText [2];
 		const char*	m_szHelp;
-		const char*	m_szId;
+		char*			m_szId;
 
 	protected:
 		int			m_value;          // For checkboxes and radio buttons, this is 1 if marked initially, else 0
@@ -169,6 +169,7 @@ class CMenuItem {
 
 		inline bool Selectable (void) { return (m_nType != NM_TYPE_TEXT) && !m_bUnavailable && *m_text; }
 
+		void SetId (const char* pszId);
 	};
 
 //------------------------------------------------------------------------------
@@ -359,6 +360,7 @@ class CMenu : public CStack<CMenuItem> {
 		void RestoreScreen (char* filename, int bDontRestore);
 		void FreeTextBms (void);
 		void SwapText (int i, int j);
+		void SetId (CMenuItem& item, const char* pszId);
 	};
 
 //------------------------------------------------------------------------------

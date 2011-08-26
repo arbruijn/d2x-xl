@@ -270,11 +270,11 @@ do {
 	m.AddCheck ("link volumes", TXT_LINK_AUDIO_VOLUMES, gameOpts->sound.bLinkVolumes, KEY_L, HTX_ONLINE_MANUAL);
 	m.AddCheck ("redbook sound", TXT_REDBOOK_ENABLED, redbook.Enabled (), KEY_C, HTX_ONLINE_MANUAL);
 	m.AddCheck ("reverse stereo", TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
-#if 1
-	if (!redbook.Enabled () && gameConfig.nMidiVolume)
-		m.AddCheck ("fade music", TXT_FADE_MUSIC, gameOpts->sound.bFadeMusic, KEY_F, HTX_FADE_MUSIC);
-#endif
 	if (!gameStates.app.bNostalgia) {
+#if 1
+		if (!redbook.Enabled () && gameConfig.nMidiVolume)
+			m.AddCheck ("fade music", TXT_FADE_MUSIC, gameOpts->sound.bFadeMusic, KEY_F, HTX_FADE_MUSIC);
+#endif
 		m.AddText ("", "", 0);
 		m.AddCheck ("ship sound", TXT_SHIP_SOUND, gameOpts->sound.bShip, KEY_S, HTX_SHIP_SOUND);
 		m.AddCheck ("missile sound", TXT_MISSILE_SOUND, gameOpts->sound.bMissiles, KEY_M, HTX_MISSILE_SOUND);
@@ -289,7 +289,8 @@ do {
 	redbook.Enable (m ["redbook sound"]->Value ());
 	gameConfig.bReverseChannels = m ["reverse stereo"]->Value ();
 	if (!gameStates.app.bNostalgia) {
-		GET_VAL (gameOpts->sound.bFadeMusic, "fade music");
+		if (!redbook.Enabled () && gameConfig.nMidiVolume)
+			GET_VAL (gameOpts->sound.bFadeMusic, "fade music");
 		GET_VAL (gameOpts->sound.bShip, "ship sound");
 		GET_VAL (gameOpts->sound.bMissiles, "missile sound");
 		GET_VAL (gameOpts->sound.bGatling, "gatling sound");

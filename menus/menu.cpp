@@ -1403,6 +1403,15 @@ return m_nChoice;
 //------------------------------------------------------------------------------ 
 //------------------------------------------------------------------------------ 
 
+void CMenu::SetId (CMenuItem& item, const char* szId)
+{
+if (IndexOf (szId) > 0)
+	PrintLog ("duplicate menu id '%s'\n", szId);
+item.SetId (szId);
+}
+
+//------------------------------------------------------------------------------ 
+
 int CMenu::AddCheck (const char* szId, const char* szText, int nValue, int nKey, const char* szHelp)
 {
 CMenuItem item;
@@ -1412,7 +1421,7 @@ item.SetText (szText);
 item.Value () = NMBOOL (nValue);
 item.m_nKey = gameStates.app.bEnglish ? nKey : int (*(szText - 1));
 item.m_szHelp = szHelp;
-item.m_szId = szId;
+SetId (item, szId);
 Push (item);
 return ToS () - 1;
 }
@@ -1431,7 +1440,7 @@ item.Value () = nValue;
 item.m_nKey = gameStates.app.bEnglish ? nKey : int (*(szText - 1));
 item.m_group = m_nGroup;
 item.m_szHelp = szHelp;
-item.m_szId = szId;
+SetId (item, szId);
 Push (item);
 return ToS () - 1;
 }
@@ -1446,7 +1455,7 @@ item.m_pszText = NULL;
 item.SetText (szText);
 item.m_nKey = gameStates.app.bEnglish ? nKey : int (*(szText - 1));
 item.m_szHelp = szHelp;
-item.m_szId = szId;
+SetId (item, szId);
 Push (item);
 return ToS () - 1;
 }
@@ -1460,7 +1469,7 @@ item.m_nType = NM_TYPE_TEXT;
 item.m_pszText = NULL;
 item.SetText (szText);
 item.m_nKey = gameStates.app.bEnglish ? nKey : int (*(szText - 1));
-item.m_szId = szId;
+SetId (item, szId);
 Push (item);
 return ToS () - 1;
 }
@@ -1478,7 +1487,7 @@ item.MinValue () = nMin;
 item.MaxValue () = nMax;
 item.m_nKey = gameStates.app.bEnglish ? nKey : int (*(szText - 1));
 item.m_szHelp = szHelp;
-item.m_szId = szId;
+SetId (item, szId);
 Push (item);
 return ToS () - 1;
 }
@@ -1493,7 +1502,7 @@ item.m_pszText = const_cast<char*> (szText);
 item.SetText (szText);
 item.m_nTextLen = nLen;
 item.m_szHelp = szHelp;
-item.m_szId = szId;
+SetId (item, szId);
 Push (item);
 return ToS () - 1;
 }
@@ -1525,7 +1534,7 @@ item.SetText (szText);
 item.m_nTextLen = nLen;
 item.m_nKey = gameStates.app.bEnglish ? nKey : int (*(szText - 1));
 item.m_szHelp = szHelp;
-item.m_szId = szId;
+SetId (item, szId);
 Push (item);
 return ToS () - 1;
 }
@@ -1541,7 +1550,7 @@ item.SetText (szText);
 item.Value () = NMCLAMP (nValue, nMin, nMax);
 item.MinValue () = nMin;
 item.MaxValue () = nMax;
-item.m_szId = szId;
+SetId (item, szId);
 Push (item);
 return ToS () - 1;
 }
@@ -1557,7 +1566,7 @@ item.SetText (szText);
 item.m_nTextLen = *szText ? (int) strlen (szText) : 20;
 item.Value () = NMCLAMP (nValue, 0, nMax);
 item.MaxValue () = nMax;
-item.m_szId = szId;
+SetId (item, szId);
 Push (item);
 m_bThrottle = false;
 return ToS () - 1;
