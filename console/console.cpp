@@ -1122,9 +1122,9 @@ if (priority <= ((int) m_threshold->Value ())) {
 	va_start (arglist, fmt);
 	vsprintf (buffer,  fmt, arglist);
 	va_end (arglist);
-	if (fErr) {
-	   fprintf(fErr, buffer);
-	   fflush(fErr);
+	if (fLog) {
+	   fprintf(fLog, buffer);
+	   fflush(fLog);
 		}
 #ifdef CONSOLE
 	Out (buffer);

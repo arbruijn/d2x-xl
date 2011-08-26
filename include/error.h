@@ -66,7 +66,7 @@ extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture, nDbgLight;
 
 #endif
 
-extern FILE *fErr;
+extern FILE *fLog;
 
 #ifdef _WIN32
 #	if DBG

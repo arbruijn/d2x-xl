@@ -412,7 +412,7 @@ else {
 		char filename [14];
 
 #if TRACE
-	console.printf(CON_DBG, "\nShowing loading screen...\n"); fflush (fErr);
+	console.printf(CON_DBG, "\nShowing loading screen...\n"); fflush (fLog);
 #endif
 	strcpy (filename, gameStates.menus.bHires ? "descentb.pcx" : "descent.pcx");
 	if (!CFile::Exist (filename, gameFolders.szDataDir [0], 0))
@@ -800,10 +800,10 @@ if (gameStates.app.nLogLevel > 0) {
 	   char fnErr [FILENAME_LEN];
 #ifdef __unix__
 	sprintf (fnErr, "%s/d2x.log", getenv ("HOME"));
-	fErr = fopen (fnErr, "wt");
+	fLog = fopen (fnErr, "wt");
 #else
 	sprintf (fnErr, "%s/d2x.log", gameFolders.szGameDir);
-	fErr = fopen (fnErr, "wt");
+	fLog = fopen (fnErr, "wt");
 #endif
 	}
 PrintLog ("%s\n", DESCENT_VERSION);

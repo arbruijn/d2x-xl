@@ -39,7 +39,7 @@ using namespace OOF;
 
 static int nIndent = 0;
 static int bLogOOF = 0;
-extern  FILE *fErr;
+extern  FILE *fLog;
 
 static void _CDECL_ OOF_PrintLog (const char *fmt, ...)
 {
@@ -51,7 +51,7 @@ if (bLogOOF) {
 	va_start (arglist, fmt);
 	vsprintf (szLog + nIndent, fmt, arglist);
 	va_end (arglist);
-	fprintf (fErr, szLog);
+	fprintf (fLog, szLog);
 	}
 }
 
@@ -1566,7 +1566,7 @@ if (m_nModel >= 0)
 	char			fileId [4];
 	int			i, nLength, nFrames, nSubModels, bTimed = 0;
 
-bLogOOF = (fErr != NULL) && FindArg ("-printoof");
+bLogOOF = (fLog != NULL) && FindArg ("-printoof");
 nIndent = 0;
 OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir [bCustom], filename);
 if (!(*filename && cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0))) {

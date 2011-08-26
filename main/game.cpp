@@ -887,9 +887,9 @@ banList.Destroy ();
 SDL_Quit (); // hangs on Linux
 #endif
 #if 0
-if (fErr) {
-	fclose (fErr);
-	fErr = NULL;
+if (fLog) {
+	fclose (fLog);
+	fLog = NULL;
 	}
 #endif
 }

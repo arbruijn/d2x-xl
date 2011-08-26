@@ -35,7 +35,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_MSG_LEN 1024
 
-FILE *fErr = NULL;
+FILE *fLog = NULL;
 
 //edited 05/17/99 Matt Mueller added err_ prefix to prevent conflicts with statically linking SDL
 int err_initialized=0;
@@ -436,15 +436,19 @@ exit (1);
 
 void _CDECL_ PrintLog (const char *fmt, ...)
 {
-if (fErr) {
+if (fLog) {
 		va_list arglist;
-		static char	szErr [100000];
+		static char	szLogLine [2][100000] = {'\0', '\0'};
+		static int nLogLine = 0;
 
 	va_start (arglist, fmt);
-	vsprintf (szErr, fmt, arglist);
+	vsprintf (szLogLine [nLogLine], fmt, arglist);
 	va_end (arglist);
-	fprintf (fErr, szErr);
-	fflush (fErr);
+	if (strcmp (szLogLine [nLogLine], szLogLine [!nLogLine]) {
+		fprintf (fLog, szLogLine [nLogLine]);
+		fflush (fLog);
+		nLogLine = !nLogLine;
+		}
 	}
 }
 
