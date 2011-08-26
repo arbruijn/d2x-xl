@@ -90,7 +90,7 @@ if (!mm.Create (5))
 va_start (args, nChoices);
 for (i = 0; i < nChoices; i++) {
 	s = va_arg (args, char *);
-	mm.AddMenu (s, - 1);
+	mm.AddMenu ("msgbox", s, - 1);
 	}
 format = va_arg (args, char*);
 vsprintf (szSubTitle, format, args);
@@ -122,9 +122,9 @@ for (i = l = 0; i < nChoices; i++) {
 		break;
 	l += h;
 	if (!bTiny || i) 
-		mm.AddMenu (s, - 1);
+		mm.AddMenu ("msgbox", s, - 1);
 	else {
-		mm.AddText (s);
+		mm.AddText ("", s);
 		mm.Item (i).m_bUnavailable = 1;
 		}
 	if (bTiny)
@@ -161,7 +161,7 @@ if (!mm.Create (5))
 va_start (args, nChoices);
 for (i = 0; i < nChoices; i++) {
 	s = va_arg (args, char*);
-	mm.AddMenu (s);
+	mm.AddMenu ("msgbox", s);
 	}
 format = va_arg (args, char* );
 vsprintf (szSubTitle, format, args);
