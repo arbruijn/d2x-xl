@@ -100,11 +100,25 @@ char DOWN_ARROW_MARKER [2] = {(char) 136, 0};
 
 void CMenuItem::Destroy (void)
 {
+FreeTextBms ();
+FreeId ();
+}
+
+//------------------------------------------------------------------------------ 
+
+void CMenuItem::FreeTextBms (void)
+{
 for (int i = 0; i < 2; i++)
 	if (m_bmText [i]) {
 		delete m_bmText [i];
 		m_bmText [i] = NULL;
 		}
+}
+
+//------------------------------------------------------------------------------ 
+
+void CMenuItem::FreeId (void)
+{
 if (m_szId) {
 	delete m_szId;
 	m_szId = NULL;
@@ -700,7 +714,7 @@ return m_pszText;
 
 void CMenuItem::SetId (const char* pszId)
 {
-if (pszId) {
+if (pszId && *pszId) {
 	size_t l = strlen (pszId) + 1;
 	if ((m_szId = new char [l]))
 		memcpy (m_szId, pszId, l);

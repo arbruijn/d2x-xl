@@ -132,6 +132,8 @@ class CMenuItem {
 		CMenuItem () { memset (this, 0, sizeof (*this)); }
 		~CMenuItem () { Destroy (); }
 		void Destroy (void);
+		void FreeTextBms (void);
+		void FreeId (void);
 		int GetSize (int h, int aw, int& nStringWidth, int& nStringHeight, int& nAverageWidth, int& nMenus, int& nOthers, int bTiny);
 		short SetColor (int bIsCurrent, int bTiny);
 

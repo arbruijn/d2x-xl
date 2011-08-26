@@ -392,7 +392,7 @@ GrabMouse (1, 0);
 void CMenu::FreeTextBms (void)
 {
 for (int i = 0; i < int (ToS ()); i++)
-	Item (i).Destroy ();
+	Item (i).FreeTextBms ();
 }
 
 //------------------------------------------------------------------------------ 
