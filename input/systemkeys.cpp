@@ -1084,7 +1084,7 @@ void HandleTestKey(int key)
 			char text [FILENAME_LEN] = "";
 			int item;
 
-			m.AddInput (text, FILENAME_LEN);
+			m.AddInput ("", text, FILENAME_LEN);
 			item = m.Menu (NULL, "Briefing to play?");
 			if (item != -1)
 				briefing.Run (text, 1);
