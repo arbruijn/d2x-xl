@@ -403,7 +403,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].nFusionRamp, 0, 0);
 
 		RP (extraGameInfo [i].entropy.nCaptureVirusThreshold, 0, 0);
-		RP (extraGameInfo [i].entropy.nCaptureTimeLimit, 0, 0);
+		RP (extraGameInfo [i].entropy.nCaptureTimeThreshold, 0, 0);
 		RP (extraGameInfo [i].entropy.nMaxVirusCapacity, 0, 0);
 		RP (extraGameInfo [i].entropy.nBumpVirusCapacity, 0, 0);
 		RP (extraGameInfo [i].entropy.nBashVirusCapacity, 0, 0);
@@ -870,7 +870,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].nWeaponIcons", "3"},
 	 {"extraGameInfo[0].nZoomMode", "1"},
 	 {"extraGameInfo[0].entropy.nCaptureVirusThreshold", "1"},
-	 {"extraGameInfo[0].entropy.nCaptureTimeLimit", "1"},
+	 {"extraGameInfo[0].entropy.nCaptureTimeThreshold", "1"},
 	 {"extraGameInfo[0].entropy.nMaxVirusCapacity", "0"},
 	 {"extraGameInfo[0].entropy.nBumpVirusCapacity", "2"},
 	 {"extraGameInfo[0].entropy.nBashVirusCapacity", "1"},
@@ -1534,7 +1534,7 @@ InitWeaponOrdering ();		//setup default weapon priorities
 RetrySelection:
 
 for (i = 0; i < mct; i++ )
-	m.AddMenu (const_cast<char*> (CONTROL_TEXT(i)), -1);
+	m.AddMenu ("new player", const_cast<char*> (CONTROL_TEXT(i)), -1);
 nitems = i;
 m [0].SetText (const_cast<char*> (TXT_CONTROL_KEYBOARD));
 choice = gameConfig.nControlType;				// Assume keyboard
@@ -1880,7 +1880,7 @@ strncpy (text, LOCALPLAYER.callsign,CALLSIGN_LEN);
 for (;;) {
 	m.Destroy ();
 	m.Create (1);
-	m.AddInput (text, 8);
+	m.AddInput ("", text, 8);
 
 	nmAllowedChars = playername_allowed_chars;
 	x = m.Menu (NULL, TXT_ENTER_PILOT_NAME, NULL, NULL);

@@ -598,9 +598,9 @@ else {
 					sprintf (menu [m_nOptPercentage].m_text, TXT_PROGRESS, m_nProgress, '%');
 					menu [m_nOptPercentage].m_bRebuild = 1;
 					h = m_nProgress;
-					if (menu [m_nOptProgress].m_value != h) {
-						menu [m_nOptProgress].m_value = h;
-						menu [m_nOptProgress].m_bRebuild = 1;
+					if (menu [m_nOptProgress].Value () != h) {
+						menu [m_nOptProgress].v = h;
+						menu [m_nOptProgress].Rebuild ();
 						}
 					}
 				}

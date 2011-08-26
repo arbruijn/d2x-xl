@@ -284,9 +284,9 @@ else if ((t = (SDL_GetTicks () - nQueryTimeout)) > 60000)
 	key = -4;
 else {
 	int v = (int) (t / 60);
-	if (menu [0].m_value != v) {
-		menu [0].m_value = v;
-		menu [0].m_bRebuild = 1;
+	if (menu [0].Value () != v) {
+		menu [0].Value () = v;
+		menu [0].Rebuild ();
 		tracker.RequestServerList ();
 		}
 	key = 0;
@@ -304,9 +304,9 @@ int CTracker::Query (void)
 NetworkInit ();
 if (!RequestServerList ())
 	return 0;
-menu.AddGauge ("                    ", -1, 1000); 
-menu.AddText ("", 0);
-menu.AddText ("(Press Escape to cancel)", 0);
+menu.AddGauge ("progressbar", "                    ", -1, 1000); 
+menu.AddText ("", "", 0);
+menu.AddText ("", "(Press Escape to cancel)", 0);
 menu.Top ()->m_bCentered = 1;
 nQueryTimeout = SDL_GetTicks ();
 do {

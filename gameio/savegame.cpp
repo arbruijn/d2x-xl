@@ -398,7 +398,7 @@ int CSaveGameManager::GetLoadFile (int bMulti)
 
 nSaves = 0;
 for (i = 0; i < NM_IMG_SPACE; i++) {
-	m.AddText ("");
+	m.AddText ("", "");
 	m.Top ()->m_bNoScroll = 1;
 	}
 for (i = 0; i < NUM_SAVES + 1; i++) {
@@ -408,7 +408,7 @@ for (i = 0; i < NUM_SAVES + 1; i++) {
 		nSaves++;
 		}
 	else {
-		m.AddMenu (saveGameInfo [i].Label ());
+		m.AddMenu ("", saveGameInfo [i].Label ());
 		}
 	}
 if (nSaves < 1) {

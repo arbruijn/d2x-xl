@@ -737,8 +737,8 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 	if (loadOp == InitGaugeSize ())
 		key = -2;
 	else {
-		menu [0].m_value++;
-		menu [0].m_bRebuild = 1;
+		menu [0].Value ()++;
+		menu [0].Rebuild ();
 		key = 0;
 		}
 	}

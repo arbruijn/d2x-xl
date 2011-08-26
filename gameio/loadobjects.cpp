@@ -688,7 +688,7 @@ if (matCen.nSegment >= 0) {
 	segP = &SEGMENTS [matCen.nSegment];
 	if (segP->m_function != nFunction) // this matcen has an invalid segment
 		return -1;
-	tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [matCen.nFuelCen = segP->Value ()];
+	tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [matCen.nFuelCen = segP->m_value];
 	if (!(fuelCen.bFlag & bFlag)) // this segment already has a matcen assigned
 		return -1;
 	fuelCen.bFlag = 0;
@@ -698,7 +698,7 @@ else if (matCen.nFuelCen >= 0) {
 	if (fuelCen.nSegment < 0)
 		return -1;
 	segP = &SEGMENTS [fuelCen.nSegment];
-	if (segP->Value () != matCen.nFuelCen)
+	if (segP->m_value != matCen.nFuelCen)
 		return -1;
 	if (!(fuelCen.bFlag & bFlag)) // this segment already has a matcen assigned
 		return -1;
@@ -712,11 +712,11 @@ if (matCen.nSegment < 0)
 segP = &SEGMENTS [matCen.nSegment];
 if (segP->m_function != nFunction) // this matcen has an invalid segment
 	return false;
-tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [segP->Value ()];
+tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [segP->m_value];
 if (!(fuelCen.bFlag & 1)) // this segment already has a matcen assigned
 	return false;
 fuelCen.bFlag = 0;
-matCen.nFuelCen = segP->Value ();
+matCen.nFuelCen = segP->m_value;
 #endif
 return segP->m_nMatCen;
 }
@@ -787,7 +787,7 @@ void CleanupMatCenInfo (void)
 CSegment* segP = SEGMENTS.Buffer ();
 for (int i = gameData.segs.nSegments; i; i--, segP++) {
 	if (segP->m_function == SEGMENT_FUNC_ROBOTMAKER) {
-		tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [segP->Value ()];
+		tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [segP->m_value];
 		if (fuelCen.bFlag) {
 			fuelCen.bFlag = 0;
 			segP->m_function = SEGMENT_FUNC_NONE;

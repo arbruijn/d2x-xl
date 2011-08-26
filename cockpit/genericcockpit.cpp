@@ -609,7 +609,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 			LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX]);
 		nIdEntropy [0] = GrPrintF (nIdEntropy, x, y, szInfo);
 		if (gameStates.entropy.bConquering) {
-			int t = (extraGameInfo [1].entropy.nCaptureTimeLimit * 1000) -
+			int t = (extraGameInfo [1].entropy.nCaptureTimeThreshold * 1000) -
 					   (gameStates.app.nSDLTicks [0] - gameStates.entropy.nTimeLastMoved);
 
 			if (t < 0)

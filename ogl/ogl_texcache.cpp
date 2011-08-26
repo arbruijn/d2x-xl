@@ -180,8 +180,8 @@ else {
 	key = -2;
 	return nCurItem;
 	}
-menu [0].m_value++;
-menu [0].m_bRebuild = 1;
+menu [0].Value ()++;
+menu [0].Rebuild ();
 key = 0;
 return nCurItem;
 }
@@ -193,7 +193,7 @@ int OglCacheTextures (void)
 	CMenu	m (3);
 	int	i;
 
-m.AddGauge ("                    ", -1, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
+m.AddGauge ("progressbar", "                    ", -1, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
 nCacheSeg = 0;
 nCacheObj = -3;
 do {

@@ -153,7 +153,7 @@ typedef struct tEntropyGameInfo {
 	char		nVirusLifespan; 
 	char		nVirusStability;
 	char		nCaptureVirusThreshold; 
-	char		nCaptureTimeLimit; 
+	char		nCaptureTimeThreshold; 
 	char		bRevertRooms;
 	char		bDoCaptureWarning;
 	char		nOverrideTextures;

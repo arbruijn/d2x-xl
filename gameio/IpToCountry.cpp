@@ -128,8 +128,8 @@ static int LoadIpToCountryPoll (CMenu& menu, int& key, int nCurItem, int nState)
 if (!ReadIpToCountryRecord ())
 	key = -2;
 else {
-	if (++(menu [0].m_value) % nProgressStep == 0)
-		menu [0].m_bRebuild = 1;
+	if (++(menu [0].Value ()) % nProgressStep == 0)
+		menu [0].Rebuild ();
 	key = 0;
 	}
 return nCurItem;

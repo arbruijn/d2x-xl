@@ -248,7 +248,7 @@ extraGameInfo [i].entropy.nVirusGenTime = 2;
 extraGameInfo [i].entropy.nVirusLifespan = 0; 
 extraGameInfo [i].entropy.nVirusStability = 0;
 extraGameInfo [i].entropy.nCaptureVirusThreshold = 1; 
-extraGameInfo [i].entropy.nCaptureTimeLimit = 1; 
+extraGameInfo [i].entropy.nCaptureTimeThreshold = 1; 
 extraGameInfo [i].entropy.bRevertRooms = 0;
 extraGameInfo [i].entropy.bDoCaptureWarning = 0;
 extraGameInfo [i].entropy.nOverrideTextures = 2;
@@ -490,7 +490,7 @@ else {
 	PrintLog ("   nVirusLifespan: %d\n", extraGameInfo [1].entropy.nVirusLifespan); 
 	PrintLog ("   nVirusStability: %d\n", extraGameInfo [1].entropy.nVirusStability);
 	PrintLog ("   nCaptureVirusThreshold: %d\n", extraGameInfo [1].entropy.nCaptureVirusThreshold); 
-	PrintLog ("   nCaptureTimeLimit: %d\n", extraGameInfo [1].entropy.nCaptureTimeLimit); 
+	PrintLog ("   nCaptureTimeThreshold: %d\n", extraGameInfo [1].entropy.nCaptureTimeThreshold); 
 	PrintLog ("   bRevertRooms: %d\n", extraGameInfo [1].entropy.bRevertRooms);
 	PrintLog ("   bDoCaptureWarning: %d\n", extraGameInfo [1].entropy.bDoCaptureWarning);
 	PrintLog ("   nOverrideTextures: %d\n", extraGameInfo [1].entropy.nOverrideTextures);

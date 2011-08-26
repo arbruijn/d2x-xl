@@ -105,11 +105,11 @@ void DetailLevelMenu (void)
 
 for (i = 0; i < 5; i++) {
 	sprintf (szMenuDetails [i], "%d. %s", i + 1, MENU_DETAIL_TEXT (i));
-	m.AddMenu (szMenuDetails [i], 0, HTX_ONLINE_MANUAL);
+	m.AddMenu ("", szMenuDetails [i], 0, HTX_ONLINE_MANUAL);
 	}
-m.AddText ("", 0);
-m.AddMenu (MENU_DETAIL_TEXT (5), KEY_C, HTX_ONLINE_MANUAL);
-m.AddCheck (TXT_HIRES_MOVIES, gameOpts->movies.bHires, KEY_S, HTX_ONLINE_MANUAL);
+m.AddText ("", "", 0);
+m.AddMenu ("", MENU_DETAIL_TEXT (5), KEY_C, HTX_ONLINE_MANUAL);
+m.AddCheck ("hires movies", TXT_HIRES_MOVIES, gameOpts->movies.bHires, KEY_S, HTX_ONLINE_MANUAL);
 i = m.Menu (NULL, TXT_DETAIL_LEVEL, NULL, &choice);
 if (i > -1) {
 	switch (choice) {
@@ -188,14 +188,14 @@ void CustomDetailsMenu (void)
 do {
 	m.Destroy ();
 	m.Create (DL_MAX);
-	m.AddSlider (TXT_OBJ_COMPLEXITY, gameStates.render.detail.nObjectComplexity, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	m.AddSlider (TXT_OBJ_DETAIL, gameStates.render.detail.nObjectDetail, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	m.AddSlider (TXT_WALL_DETAIL, gameStates.render.detail.nWallDetail, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	m.AddSlider (TXT_WALL_RENDER_DEPTH, gameStates.render.detail.nWallRenderDepth, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	m.AddSlider (TXT_DEBRIS_AMOUNT, gameStates.render.detail.nDebrisAmount, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("object complexity", TXT_OBJ_COMPLEXITY, gameStates.render.detail.nObjectComplexity, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("object detail", TXT_OBJ_DETAIL, gameStates.render.detail.nObjectDetail, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("wall detail", TXT_WALL_DETAIL, gameStates.render.detail.nWallDetail, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("render depth", TXT_WALL_RENDER_DEPTH, gameStates.render.detail.nWallRenderDepth, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("debris amount", TXT_DEBRIS_AMOUNT, gameStates.render.detail.nDebrisAmount, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
 	if (!gameStates.app.bGameRunning)
-		m.AddSlider (TXT_SOUND_CHANNELS, gameStates.sound.nSoundChannels, 0, sizeofa (detailData.nSoundChannels) - 1, 0, HTX_ONLINE_MANUAL);
-	m.AddText (TXT_LO_HI, 0);
+		m.AddSlider ("sound channels", TXT_SOUND_CHANNELS, gameStates.sound.nSoundChannels, 0, sizeofa (detailData.nSoundChannels) - 1, 0, HTX_ONLINE_MANUAL);
+	m.AddText ("", TXT_LO_HI, 0);
 	i = m.Menu (NULL, TXT_DETAIL_CUSTOM, CustomDetailsCallback, &choice);
 } while (i > -1);
 InitCustomDetails ();

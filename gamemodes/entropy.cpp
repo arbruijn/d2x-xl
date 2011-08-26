@@ -201,7 +201,7 @@ if ((gameStates.entropy.nTimeLastMoved < 0) ||
 t = SDL_GetTicks ();
 if (!gameStates.entropy.nTimeLastMoved)
 	gameStates.entropy.nTimeLastMoved = (int) t;
-if (t - gameStates.entropy.nTimeLastMoved < extraGameInfo [1].entropy.nCaptureTimeLimit * 1000) {
+if (t - gameStates.entropy.nTimeLastMoved < extraGameInfo [1].entropy.nCaptureTimeThreshold * 1000) {
 	gameStates.entropy.bConquering = 1;
 	if (m_owner > 0)
 		StartConquerWarning ();
