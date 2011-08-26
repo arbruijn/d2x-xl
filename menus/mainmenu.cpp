@@ -95,8 +95,8 @@ static struct {
 //------------------------------------------------------------------------------
 
 // Function Prototypes added after LINTING
-int ExecMainMenuOption (int nChoice);
-int ExecMultiMenuOption (int nChoice);
+int ExecMainMenuOption (CMenu& m, int nChoice);
+int ExecMultiMenuOption (CMenu& m, int nChoice);
 
 //returns the number of demo files on the disk
 int NDCountDemos (void);
@@ -158,32 +158,29 @@ memset (&mainOpts, 0xff, sizeof (mainOpts));
 m.Destroy ();
 m.Create (25);
 SetScreenMode (SCREEN_MENU);
-m.AddText ("", 0);
+m.AddText ("", "", 0);
 m.Top ()->m_bNoScroll = 1;
-m.AddText ("", 0);
+m.AddText ("", "", 0);
 m.Top ()->m_bNoScroll = 1;
-m.AddText ("", 0);
+m.AddText ("", "", 0);
 m.Top ()->m_bNoScroll = 1;
-mainOpts.nNew = m.AddMenu (TXT_NEW_GAME1, KEY_N, HTX_MAIN_NEW);
+mainOpts.nNew = m.AddMenu ("new game", TXT_NEW_GAME1, KEY_N, HTX_MAIN_NEW);
 if (!gameStates.app.bNostalgia)
-	mainOpts.nSingle = m.AddMenu (TXT_NEW_SPGAME, KEY_I, HTX_MAIN_SINGLE);
-mainOpts.nLoad = m.AddMenu (TXT_LOAD_GAME, KEY_L, HTX_MAIN_LOAD);
-mainOpts.nMulti = m.AddMenu (TXT_MULTIPLAYER_, KEY_M, HTX_MAIN_MULTI);
-if (gameStates.app.bNostalgia)
-	mainOpts.nConfig = m.AddMenu (TXT_OPTIONS_, KEY_O, HTX_MAIN_CONF);
-else
-	mainOpts.nConfig = m.AddMenu (TXT_CONFIGURE, KEY_O, HTX_MAIN_CONF);
-mainOpts.nPilots = m.AddMenu (TXT_CHANGE_PILOTS, KEY_P, HTX_MAIN_PILOT);
-mainOpts.nDemo = m.AddMenu (TXT_VIEW_DEMO, KEY_D, HTX_MAIN_DEMO);
-mainOpts.nScores = m.AddMenu (TXT_VIEW_SCORES, KEY_H, HTX_MAIN_SCORES);
-mainOpts.nMovies = m.AddMenu (TXT_PLAY_MOVIES, KEY_V, HTX_MAIN_MOVIES);
+	mainOpts.nSingle = m.AddMenu ("new singleplayer game", TXT_NEW_SPGAME, KEY_I, HTX_MAIN_SINGLE);
+mainOpts.nLoad = m.AddMenu ("load game", TXT_LOAD_GAME, KEY_L, HTX_MAIN_LOAD);
+mainOpts.nMulti = m.AddMenu ("multiplayer game", TXT_MULTIPLAYER_, KEY_M, HTX_MAIN_MULTI);
+mainOpts.nConfig = m.AddMenu ("program settings", gameStates.app.bNostalgia ? TXT_OPTIONS_ : TXT_CONFIGURE, KEY_O, HTX_MAIN_CONF);
+mainOpts.nPilots = m.AddMenu ("choose pilot", TXT_CHANGE_PILOTS, KEY_P, HTX_MAIN_PILOT);
+mainOpts.nDemo = m.AddMenu ("view demo", TXT_VIEW_DEMO, KEY_D, HTX_MAIN_DEMO);
+mainOpts.nScores = m.AddMenu ("view highscores", TXT_VIEW_SCORES, KEY_H, HTX_MAIN_SCORES);
+mainOpts.nMovies = m.AddMenu ("play movies", TXT_PLAY_MOVIES, KEY_V, HTX_MAIN_MOVIES);
 if (!gameStates.app.bNostalgia)
-	mainOpts.nSongs = m.AddMenu (TXT_PLAY_SONGS, KEY_S, HTX_MAIN_SONGS);
-mainOpts.nCredits = m.AddMenu (TXT_CREDITS, KEY_C, HTX_MAIN_CREDITS);
+	mainOpts.nSongs = m.AddMenu ("play songs", TXT_PLAY_SONGS, KEY_S, HTX_MAIN_SONGS);
+mainOpts.nCredits = m.AddMenu ("view credits", TXT_CREDITS, KEY_C, HTX_MAIN_CREDITS);
 #if defined(_WIN32) || defined(__unix__)
-mainOpts.nUpdate = m.AddMenu (TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
+mainOpts.nUpdate = m.AddMenu ("check update", TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
 #endif
-mainOpts.nQuit = m.AddMenu (TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
+mainOpts.nQuit = m.AddMenu ("quit", TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
 return m.ToS ();
 }
 
@@ -219,7 +216,7 @@ do {
 	if (gameStates.app.bNostalgia)
 		gameOpts->app.nVersionFilter = 3;
 	if (i > -1) {
-		ExecMainMenuOption (nChoice);
+		ExecMainMenuOption (m, nChoice);
 		SavePlayerProfile ();
 		}
 } while (gameStates.app.nFunctionMode == FMODE_MENU);
@@ -304,19 +301,19 @@ for (;;) {
 void ShowOrderForm (void);      // John didn't want this in inferno[HA] so I just externed it.
 
 //returns flag, true means quit menu
-int ExecMainMenuOption (int nChoice) 
+int ExecMainMenuOption (CMenu& m, int nChoice) 
 {
 	CFileSelector	fs;
 
-if (nChoice == mainOpts.nNew) {
+if (nChoice == m.IndexOf ("new game")) {
 	gameOpts->app.bSinglePlayer = 0;
 	NewGameMenu ();
 	}
-else if (nChoice == mainOpts.nSingle) {
+else if (nChoice == m.IndexOf ("new singleplayer game")) {
 	gameOpts->app.bSinglePlayer = 1;
 	NewGameMenu ();
 	}
-else if (nChoice == mainOpts.nLoad) {
+else if (nChoice == m.IndexOf ("load game")) {
 	if (!saveGameManager.Load (0, 0, 0, NULL))
 		SetFunctionMode (FMODE_MENU);
 	}
@@ -335,44 +332,44 @@ else if (nChoice == mainOpts.nLoadDirect) {
 		}
 	}
 #endif
-else if (nChoice == mainOpts.nMulti)
+else if (nChoice == m.IndexOf ("multiplayer game"))
 		MultiplayerMenu ();
-else if (nChoice == mainOpts.nConfig) 
+else if (nChoice == m.IndexOf ("program settings")) 
 	ConfigMenu ();
-else if (nChoice == mainOpts.nPilots)
+else if (nChoice == m.IndexOf ("choose pilot"))
 	SelectPlayer ();
-else if (nChoice == mainOpts.nDemo) {
+else if (nChoice == m.IndexOf ("play demo")) {
 	char demoPath [FILENAME_LEN], demoFile [FILENAME_LEN];
 
 	sprintf (demoPath, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : ""); 
 	if (fs.FileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
 		NDStartPlayback (demoFile);
 	}
-else if (nChoice == mainOpts.nScores) {
+else if (nChoice == m.IndexOf ("view highscores")) {
 	paletteManager.DisableEffect ();
 	ScoresView (-1);
 	}
-else if (nChoice == mainOpts.nMovies)
+else if (nChoice == m.IndexOf ("play movies"))
 	PlayMenuMovie ();
-else if (nChoice == mainOpts.nSongs)
+else if (nChoice == m.IndexOf ("play songs"))
 	PlayMenuSong ();
-else if (nChoice == mainOpts.nCredits) {
+else if (nChoice == m.IndexOf ("view credits")) {
 	paletteManager.DisableEffect ();
 	songManager.StopAll ();
 	creditsManager.Show (NULL); 
 	}
-else if (nChoice == mainOpts.nHelp) 
-	ShowHelp ();
-else if (nChoice == mainOpts.nQuit) {
+//else if (nChoice == m.IndexOf ("show help")) 
+//	ShowHelp ();
+//else if (nChoice == mainOpts.nOrder) 
+//	ShowOrderForm ();
+#if defined(_WIN32) || defined(__unix__)
+else if (nChoice == m.IndexOf ("check update"))
+	CheckForUpdate ();
+#endif
+else if (nChoice == m.IndexOf ("quit")) {
 	paletteManager.DisableEffect ();
 	SetFunctionMode (FMODE_EXIT);
 	}
-else if (nChoice == mainOpts.nOrder) 
-	ShowOrderForm ();
-#if defined(_WIN32) || defined(__unix__)
-else if (nChoice == mainOpts.nUpdate)
-	CheckForUpdate ();
-#endif
 else
 	return 0;
 return 1;
@@ -382,21 +379,21 @@ return 1;
 
 int QuitSaveLoadMenu (void)
 {
-	CMenu menu (5);
+	CMenu m (5);
 	int	i, choice = 0, optQuit, optOptions, optLoad, optSave;
 
-optQuit = menu.AddMenu (TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
-optOptions = menu.AddMenu (TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
-optLoad = menu.AddMenu (TXT_LOAD_GAME2, KEY_L, HTX_LOAD_GAME);
-optSave = menu.AddMenu (TXT_SAVE_GAME2, KEY_S, HTX_SAVE_GAME);
-i = menu.Menu (NULL, TXT_ABORT_GAME, NULL, &choice);
-if (!i)
+optQuit = m.AddMenu ("quit", TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
+optOptions = m.AddMenu ("settings", TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
+optLoad = m.AddMenu ("load game", TXT_LOAD_GAME2, KEY_L, HTX_LOAD_GAME);
+optSave = m.AddMenu ("save game", TXT_SAVE_GAME2, KEY_S, HTX_SAVE_GAME);
+i = m.Menu (NULL, TXT_ABORT_GAME, NULL, &choice);
+if (i == m.IndexOf ("quit"))
 	return 0;
-if (i == optOptions)
+else if (i == m.IndexOf ("settings"))
 	ConfigMenu ();
-else if (i == optLoad)
+else if (i == m.IndexOf ("load"))
 	saveGameManager.Load (1, 0, 0, NULL);
-else if (i == optSave)
+else if (i == m.IndexOf ("save"))
 	saveGameManager.Save (0, 0, 0, NULL);
 return 1;
 }
