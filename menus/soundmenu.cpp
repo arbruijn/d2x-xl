@@ -128,7 +128,7 @@ if ((m = menu ["fx volume"])) {
 		}
 	}
 
-if ((m = menu ["ambient volume"])) {
+if (!gameOpts->sound.bLinkVolumes && (m = menu ["ambient volume"])) {
 	v = m->Value ();
 	if (gameConfig.nAudioVolume [1] != v) {
 		gameConfig.nAudioVolume [1] = v;
