@@ -265,6 +265,7 @@ class CMenu : public CStack<CMenuItem> {
 		inline int IndexOf (const char* szId, bool bLogErrors = true) {
 			if (szId) {
 				if (m_current && m_current->m_szId && !stricmp (szId, m_current->m_szId))
+					return m_current - Buffer ();
 				m_current = Buffer ();
 				for (uint i = 0; i < m_tos; i++, m_current++) {
 					if (m_current->m_szId && !stricmp (szId, m_current->m_szId))
