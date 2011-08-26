@@ -1022,25 +1022,25 @@ void DoCheatMenu ()
 
 	sprintf (szScore, "%d", LOCALPLAYER.score);
 
-	m.AddCheck ("Invulnerability", LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE); 
-	m.AddCheck ("Cloaked", LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED);
-	m.AddCheck ("All keys", 0);
-	m.AddNumber ("% Energy", X2I (LOCALPLAYER.Energy ()), 0, 200);
-	m.AddNumber ("% Shield", X2I (LOCALPLAYER.Shield ()), 0, 200);
-	m.AddText ("Score:");
-	m.AddInput (szScore, 10);
-	m.AddNumber ("Laser Level", LOCALPLAYER.laserLevel + 1, 0, MAX_SUPER_LASER_LEVEL + 1); 
-	m.AddNumber ("Missiles", LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX], 0, 200);
+	m.AddCheck ("invul", "Invulnerability", LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE); 
+	m.AddCheck ("cloak", "Cloaked", LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED);
+	m.AddCheck ("all keys", "All keys", 0);
+	m.AddNumber ("energy", "% Energy", X2I (LOCALPLAYER.Energy ()), 0, 200);
+	m.AddNumber ("shield", "% Shield", X2I (LOCALPLAYER.Shield ()), 0, 200);
+	m.AddText ("", "Score:");
+	m.AddInput ("score", szScore, 10);
+	m.AddNumber ("laser level", "Laser Level", LOCALPLAYER.laserLevel + 1, 0, MAX_SUPER_LASER_LEVEL + 1); 
+	m.AddNumber ("missiles", "Missiles", LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX], 0, 200);
 
 	mmn = m.Menu ("Wimp Menu", NULL);
 
 	if (mmn > -1)  {
-		if (m [0].m_value)  {
+		if (m [0].Value ()) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 			LOCALPLAYER.invulnerableTime = gameData.time.xGame+I2X (1000);
 		} else
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
-		if (m [1].m_value) {
+		if (m [1].Value ()) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_CLOAKED;
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendCloak ();
@@ -1050,16 +1050,16 @@ void DoCheatMenu ()
 		else
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_CLOAKED;
 
-		if (m [2].m_value) LOCALPLAYER.flags |= PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY;
-		LOCALPLAYER.SetEnergy (I2X (m [3].m_value));
-		LOCALPLAYER.SetShield (I2X (m [4].m_value));
+		if (m [2].Value ()) LOCALPLAYER.flags |= PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY;
+		LOCALPLAYER.SetEnergy (I2X (m [3].Value ()));
+		LOCALPLAYER.SetShield (I2X (m [4].Value ()));
 		LOCALPLAYER.score = atoi (m [6].m_text);
-		//if (m [7].m_value) LOCALPLAYER.laserLevel=0;
-		//if (m [8].m_value) LOCALPLAYER.laserLevel=1;
-		//if (m [9].m_value) LOCALPLAYER.laserLevel=2;
-		//if (m [10].m_value) LOCALPLAYER.laserLevel=3;
-		LOCALPLAYER.laserLevel = m [7].m_value - 1;
-		LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX] = m [8].m_value;
+		//if (m [7].Value ()) LOCALPLAYER.laserLevel=0;
+		//if (m [8].Value ()) LOCALPLAYER.laserLevel=1;
+		//if (m [9].Value ()) LOCALPLAYER.laserLevel=2;
+		//if (m [10].Value ()) LOCALPLAYER.laserLevel=3;
+		LOCALPLAYER.laserLevel = m [7].Value () - 1;
+		LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX] = m [8].Value ();
 	}
 }
 #endif
