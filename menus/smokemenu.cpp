@@ -99,53 +99,53 @@ if (nState)
 	int			i, v;
 
 m = menu + smokeOpts.nSyncSizes;
-v = m->m_value;
+v = m->Value ();
 if (v != gameOpts->render.particles.bSyncSizes) {
 	gameOpts->render.particles.bSyncSizes = v;
 	key = -2;
 	return nCurItem;
 	}
 m = menu + smokeOpts.nPlayer;
-v = m->m_value;
+v = m->Value ();
 if (gameOpts->render.particles.bPlayers != v) {
 	gameOpts->render.particles.bPlayers = v;
 	key = -2;
 	}
 m = menu + smokeOpts.nRobots;
-v = m->m_value;
+v = m->Value ();
 if (gameOpts->render.particles.bRobots != v) {
 	gameOpts->render.particles.bRobots = v;
 	key = -2;
 	}
 m = menu + smokeOpts.nMissiles;
-v = m->m_value;
+v = m->Value ();
 if (gameOpts->render.particles.bMissiles != v) {
 	gameOpts->render.particles.bMissiles = v;
 	key = -2;
 	}
 m = menu + smokeOpts.nDebris;
-v = m->m_value;
+v = m->Value ();
 if (gameOpts->render.particles.bDebris != v) {
 	gameOpts->render.particles.bDebris = v;
 	key = -2;
 	}
 if (gameOpts->render.particles.bSyncSizes) {
 	m = menu + smokeOpts.nDensity [0];
-	v = m->m_value;
+	v = m->Value ();
 	if (gameOpts->render.particles.nDens [0] != v) {
 		gameOpts->render.particles.nDens [0] = v;
 		sprintf (m->m_text, TXT_SMOKE_DENS, pszSmokeAmount [v]);
 		m->m_bRebuild = 1;
 		}
 	m = menu + smokeOpts.nSize [0];
-	v = m->m_value;
+	v = m->Value ();
 	if (gameOpts->render.particles.nSize [0] != v) {
 		gameOpts->render.particles.nSize [0] = v;
 		sprintf (m->m_text, TXT_SMOKE_SIZE, pszSmokeSize [v]);
 		m->m_bRebuild = 1;
 		}
 	m = menu + smokeOpts.nAlpha [0];
-	v = m->m_value;
+	v = m->Value ();
 	if (v != gameOpts->render.particles.nAlpha [0]) {
 		gameOpts->render.particles.nAlpha [0] = v;
 		sprintf (m->m_text, TXT_SMOKE_ALPHA, pszSmokeAlpha [v]);
@@ -156,7 +156,7 @@ else {
 	for (i = 1; i < 5; i++) {
 		if (smokeOpts.nDensity [i] >= 0) {
 			m = menu + smokeOpts.nDensity [i];
-			v = m->m_value;
+			v = m->Value ();
 			if (gameOpts->render.particles.nDens [i] != v) {
 				gameOpts->render.particles.nDens [i] = v;
 				sprintf (m->m_text, TXT_SMOKE_DENS, pszSmokeAmount [v]);
@@ -165,7 +165,7 @@ else {
 			}
 		if (smokeOpts.nSize [i] >= 0) {
 			m = menu + smokeOpts.nSize [i];
-			v = m->m_value;
+			v = m->Value ();
 			if (gameOpts->render.particles.nSize [i] != v + 1) {
 				gameOpts->render.particles.nSize [i] = v + 1;
 				sprintf (m->m_text, TXT_SMOKE_SIZE, pszSmokeSize [v]);
@@ -174,7 +174,7 @@ else {
 			}
 		if (smokeOpts.nLife [i] >= 0) {
 			m = menu + smokeOpts.nLife [i];
-			v = m->m_value;
+			v = m->Value ();
 			if (gameOpts->render.particles.nLife [i] != v + 1) {
 				gameOpts->render.particles.nLife [i] = v + 1;
 				sprintf (m->m_text, TXT_SMOKE_LIFE, pszSmokeLife [v]);
@@ -183,7 +183,7 @@ else {
 			}
 		if (smokeOpts.nAlpha [i] >= 0) {
 			m = menu + smokeOpts.nAlpha [i];
-			v = m->m_value;
+			v = m->Value ();
 			if (v != gameOpts->render.particles.nAlpha [i]) {
 				gameOpts->render.particles.nAlpha [i] = v;
 				sprintf (m->m_text, TXT_SMOKE_ALPHA, pszSmokeAlpha [v]);
@@ -204,22 +204,29 @@ static char szSmokeAlpha [5][50];
 
 void AddSmokeSliders (CMenu& m, int i)
 {
+	char szId [100];
+
 sprintf (szSmokeDens [i] + 1, TXT_SMOKE_DENS, pszSmokeAmount [NMCLAMP (gameOpts->render.particles.nDens [i], 0, 4)]);
 *szSmokeDens [i] = *(TXT_SMOKE_DENS - 1);
-smokeOpts.nDensity [i] = m.AddSlider (szSmokeDens [i] + 1, gameOpts->render.particles.nDens [i], 0, 4, KEY_P, HTX_ADVRND_SMOKEDENS);
+sprintf (szId, "density %d", i + 1);
+m.AddSlider (szId, szSmokeDens [i] + 1, gameOpts->render.particles.nDens [i], 0, 4, KEY_P, HTX_ADVRND_SMOKEDENS);
+
 sprintf (szSmokeSize [i] + 1, TXT_SMOKE_SIZE, pszSmokeSize [NMCLAMP (gameOpts->render.particles.nSize [i] - 1, 0, 3)]);
 *szSmokeSize [i] = *(TXT_SMOKE_SIZE - 1);
-smokeOpts.nSize [i] = m.AddSlider (szSmokeSize [i] + 1, gameOpts->render.particles.nSize [i] - 1, 0, 3, KEY_Z, HTX_ADVRND_PARTSIZE);
-if (i < 3)
-	smokeOpts.nLife [i] = -1;
-else {
+sprintf (szId, "size %d", i + 1);
+m.AddSlider (szId, szSmokeSize [i] + 1, gameOpts->render.particles.nSize [i] - 1, 0, 3, KEY_Z, HTX_ADVRND_PARTSIZE);
+
+if (i > 2) {
 	sprintf (szSmokeLife [i] + 1, TXT_SMOKE_LIFE, pszSmokeLife [NMCLAMP (gameOpts->render.particles.nLife [i] - 1, 0, 3)]);
 	*szSmokeLife [i] = *(TXT_SMOKE_LIFE - 1);
-	smokeOpts.nLife [i] = m.AddSlider (szSmokeLife [i] + 1, gameOpts->render.particles.nLife [i] - 1, 0, 2, KEY_L, HTX_SMOKE_LIFE);
+	sprintf (szId, "life %d", i + 1);
+	m.AddSlider (szId, szSmokeLife [i] + 1, gameOpts->render.particles.nLife [i] - 1, 0, 2, KEY_L, HTX_SMOKE_LIFE);
 	}
+
 sprintf (szSmokeAlpha [i] + 1, TXT_SMOKE_ALPHA, pszSmokeAlpha [NMCLAMP (gameOpts->render.particles.nAlpha [i], 0, 4)]);
 *szSmokeAlpha [i] = *(TXT_SMOKE_SIZE - 1);
-smokeOpts.nAlpha [i] = m.AddSlider (szSmokeAlpha [i] + 1, gameOpts->render.particles.nAlpha [i], 0, 4, KEY_Z, HTX_ADVRND_SMOKEALPHA);
+sprintf (szId, "alpha %d", i + 1);
+m.AddSlider (szId, szSmokeAlpha [i] + 1, gameOpts->render.particles.nAlpha [i], 0, 4, KEY_Z, HTX_ADVRND_SMOKEALPHA);
 }
 
 //------------------------------------------------------------------------------
@@ -227,7 +234,7 @@ smokeOpts.nAlpha [i] = m.AddSlider (szSmokeAlpha [i] + 1, gameOpts->render.parti
 inline void AddSpace (CMenu& m, bool bNeedSpace)
 {
 if (!gameOpts->render.particles.bSyncSizes && bNeedSpace)
-	m.AddText ("");
+	m.AddText ("", "");
 }
 
 //------------------------------------------------------------------------------
@@ -238,8 +245,6 @@ void SmokeDetailsMenu (void)
 
 	CMenu m;
 	int	i, j;
-	int	nOptSmokeLag, optCollisions, optDisperse, 
-			optRotate = -1, optAuxViews = -1, optMonitors = -1, optWiggle = -1, optWobble = -1;
 
 pszSmokeSize [0] = TXT_SMALL;
 pszSmokeSize [1] = TXT_MEDIUM;
@@ -270,13 +275,12 @@ do {
 	m.Destroy ();
 	m.Create (50);
 	memset (&smokeOpts, 0xff, sizeof (smokeOpts));
-	nOptSmokeLag = optCollisions = optDisperse = -1;
 
 	for (j = 1; j < 5; j++)
 		smokeOpts.nSize [j] =
 		smokeOpts.nDensity [j] = 
 		smokeOpts.nAlpha [j] = -1;
-	smokeOpts.nSyncSizes = m.AddCheck (TXT_SYNC_SIZES, gameOpts->render.particles.bSyncSizes, KEY_M, HTX_ADVRND_SYNCSIZES);
+	m.AddCheck ("sync sizes", TXT_SYNC_SIZES, gameOpts->render.particles.bSyncSizes, KEY_M, HTX_ADVRND_SYNCSIZES);
 	if (gameOpts->render.particles.bSyncSizes) {
 		AddSmokeSliders (m, 0);
 		for (j = 1; j < 5; j++) {
@@ -290,63 +294,61 @@ do {
 		smokeOpts.nSize [0] = -1;
 		}
 
-	m.AddText ("");
-	smokeOpts.nPlayer = m.AddCheck (TXT_SMOKE_PLAYERS, gameOpts->render.particles.bPlayers, KEY_Y, HTX_ADVRND_PLRSMOKE);
+	m.AddText ("", "");
+	m.AddCheck ("player ships", TXT_SMOKE_PLAYERS, gameOpts->render.particles.bPlayers, KEY_Y, HTX_ADVRND_PLRSMOKE);
 	if (gameOpts->render.particles.bPlayers) {
 		if (!gameOpts->render.particles.bSyncSizes)
 			AddSmokeSliders (m, 1);
-		nOptSmokeLag = m.AddCheck (TXT_SMOKE_DECREASE_LAG, gameOpts->render.particles.bDecreaseLag, KEY_R, HTX_ADVREND_DECSMOKELAG);
+		m.AddCheck ("reduce lag", TXT_SMOKE_DECREASE_LAG, gameOpts->render.particles.bDecreaseLag, KEY_R, HTX_ADVREND_DECSMOKELAG);
 		}
-	else
-		nOptSmokeLag = -1;
 
 	AddSpace (m, gameOpts->render.particles.bPlayers || gameOpts->render.particles.bRobots);
-	smokeOpts.nRobots = m.AddCheck (TXT_SMOKE_ROBOTS, gameOpts->render.particles.bRobots, KEY_O, HTX_ADVRND_BOTSMOKE);
+	m.AddCheck ("robots", TXT_SMOKE_ROBOTS, gameOpts->render.particles.bRobots, KEY_O, HTX_ADVRND_BOTSMOKE);
 	if (gameOpts->render.particles.bRobots && !gameOpts->render.particles.bSyncSizes)
 		AddSmokeSliders (m, 2);
 
 	AddSpace (m, gameOpts->render.particles.bRobots || gameOpts->render.particles.bMissiles);
-	smokeOpts.nMissiles = m.AddCheck (TXT_SMOKE_MISSILES, gameOpts->render.particles.bMissiles, KEY_M, HTX_ADVRND_MSLSMOKE);
+	m.AddCheck ("missiles", TXT_SMOKE_MISSILES, gameOpts->render.particles.bMissiles, KEY_M, HTX_ADVRND_MSLSMOKE);
 	if (gameOpts->render.particles.bMissiles && !gameOpts->render.particles.bSyncSizes)
 		AddSmokeSliders (m, 3);
 
 	AddSpace (m, gameOpts->render.particles.bMissiles || gameOpts->render.particles.bDebris);
-	smokeOpts.nDebris = m.AddCheck (TXT_SMOKE_DEBRIS, gameOpts->render.particles.bDebris, KEY_D, HTX_ADVRND_DEBRISSMOKE);
+	m.AddCheck ("debris", TXT_SMOKE_DEBRIS, gameOpts->render.particles.bDebris, KEY_D, HTX_ADVRND_DEBRISSMOKE);
 	if (gameOpts->render.particles.bDebris && !gameOpts->render.particles.bSyncSizes)
 		AddSmokeSliders (m, 4);
 
-	m.AddText ("");
+	m.AddText ("", "");
 #if 1
-	optCollisions = m.AddCheck (TXT_SMOKE_COLLISION, gameOpts->render.particles.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
+	m.AddCheck ("check collisions", TXT_SMOKE_COLLISION, gameOpts->render.particles.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
 #endif
-	optDisperse = m.AddCheck (TXT_SMOKE_DISPERSE, gameOpts->render.particles.bDisperse, KEY_D, HTX_ADVRND_SMOKEDISP);
-	optRotate = m.AddCheck (TXT_ROTATE_SMOKE, gameOpts->render.particles.bRotate, KEY_R, HTX_ROTATE_SMOKE);
-	optAuxViews = m.AddCheck (TXT_SMOKE_AUXVIEWS, gameOpts->render.particles.bAuxViews, KEY_W, HTX_SMOKE_AUXVIEWS);
-	optMonitors = m.AddCheck (TXT_SMOKE_MONITORS, gameOpts->render.particles.bMonitors, KEY_M, HTX_SMOKE_MONITORS);
-	m.AddText ("", 0);
+	m.AddCheck ("disperse", TXT_SMOKE_DISPERSE, gameOpts->render.particles.bDisperse, KEY_D, HTX_ADVRND_SMOKEDISP);
+	m.AddCheck ("rotate", TXT_ROTATE_SMOKE, gameOpts->render.particles.bRotate, KEY_R, HTX_ROTATE_SMOKE);
+	m.AddCheck ("aux views", TXT_SMOKE_AUXVIEWS, gameOpts->render.particles.bAuxViews, KEY_W, HTX_SMOKE_AUXVIEWS);
+	m.AddCheck ("monitors", TXT_SMOKE_MONITORS, gameOpts->render.particles.bMonitors, KEY_M, HTX_SMOKE_MONITORS);
+	m.AddText ("", "", 0);
 
 	do {
 		i = m.Menu (NULL, TXT_SMOKE_DETAILS_TITLE, SmokeOptionsCallback, &choice);
 		} while (i >= 0);
-	GET_VAL (gameOpts->render.particles.bPlayers, smokeOpts.nPlayer);
-	GET_VAL (gameOpts->render.particles.bRobots, smokeOpts.nRobots);
-	GET_VAL (gameOpts->render.particles.bMissiles, smokeOpts.nMissiles);
-	GET_VAL (gameOpts->render.particles.bDebris, smokeOpts.nDebris);
+	GET_VAL (gameOpts->render.particles.bPlayers, "players");
+	GET_VAL (gameOpts->render.particles.bRobots, "robots");
+	GET_VAL (gameOpts->render.particles.bMissiles, "missiles");
+	GET_VAL (gameOpts->render.particles.bDebris, "debris");
 #if 1
-	GET_VAL (gameOpts->render.particles.bCollisions, optCollisions);
+	GET_VAL (gameOpts->render.particles.bCollisions, "check collisions");
 #else
 	gameOpts->render.particles.bCollisions = 0;
 #endif
-	GET_VAL (gameOpts->render.particles.bDisperse, optDisperse);
-	GET_VAL (gameOpts->render.particles.bRotate, optRotate);
-	GET_VAL (gameOpts->render.particles.bDecreaseLag, nOptSmokeLag);
-	GET_VAL (gameOpts->render.particles.bAuxViews, optAuxViews);
-	GET_VAL (gameOpts->render.particles.bMonitors, optMonitors);
+	GET_VAL (gameOpts->render.particles.bDisperse, "disperse");
+	GET_VAL (gameOpts->render.particles.bRotate, "rotate");
+	GET_VAL (gameOpts->render.particles.bDecreaseLag, "reduce lag");
+	GET_VAL (gameOpts->render.particles.bAuxViews, "aux views");
+	GET_VAL (gameOpts->render.particles.bMonitors, "monitors");
 	if (gameOpts->render.particles.bBubbles) {
-		GET_VAL (gameOpts->render.particles.bWiggleBubbles, optWiggle);
-		GET_VAL (gameOpts->render.particles.bWobbleBubbles, optWobble);
+		GET_VAL (gameOpts->render.particles.bWiggleBubbles, "wiggle");
+		GET_VAL (gameOpts->render.particles.bWobbleBubbles, "wobble");
 		}
-	//GET_VAL (gameOpts->render.particles.bSyncSizes, smokeOpts.nSyncSizes);
+	//GET_VAL (gameOpts->render.particles.bSyncSizes, "sync sizes");
 	if (gameOpts->render.particles.bSyncSizes) {
 		for (j = 1; j < 4; j++) {
 			gameOpts->render.particles.nSize [j] = gameOpts->render.particles.nSize [0];
