@@ -444,7 +444,7 @@ if (fLog) {
 	va_start (arglist, fmt);
 	vsprintf (szLogLine [nLogLine], fmt, arglist);
 	va_end (arglist);
-	if (strcmp (szLogLine [nLogLine], szLogLine [!nLogLine]) {
+	if (strcmp (szLogLine [nLogLine], szLogLine [!nLogLine])) {
 		fprintf (fLog, szLogLine [nLogLine]);
 		fflush (fLog);
 		nLogLine = !nLogLine;
