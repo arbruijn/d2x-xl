@@ -152,9 +152,16 @@ class CMenuItem {
 		char* GetInput (void);
 
 		inline int& Value (void) { return m_value; }
+		inline void SetValue (int value) {
+			if (m_value == value)
+				return;
+			m_value = value;
+			Rebuild ();
+			}
 		inline int& MinValue (void) { return m_minValue; }
 		inline int& MaxValue (void) { return m_maxValue; }
 		inline void Redraw (void) { m_bRedraw = 1; }
+		inline void Rebuild (void) { m_bRebuild = 1; }
 		inline char* Text (void) { return m_text; }
 
 		inline bool Selectable (void) { return (m_nType != NM_TYPE_TEXT) && !m_bUnavailable && *m_text; }
@@ -254,7 +261,7 @@ class CMenu : public CStack<CMenuItem> {
 
 		inline int IndexOf (const char* szId, bool bLogErrors = true) {
 			if (szId) {
-				if (m_current && m_current.m_szId && !stricmp (szId, m_current->m_szId))
+				if (m_current && m_current->m_szId && !stricmp (szId, m_current->m_szId))
 				m_current = Buffer ();
 				for (uint i = 0; i < m_tos; i++, m_current++) {
 					if (m_current->m_szId && !stricmp (szId, m_current->m_szId))
@@ -267,30 +274,39 @@ class CMenu : public CStack<CMenuItem> {
 			return -1;
 			}
 
-		inline bool Available (const char* szId, false) { return IndexOf (szId) >= 0; }
+		inline bool Available (const char* szId) { return IndexOf (szId) >= 0; }
 
 		inline int Value (const char* szId) {
 			int i = IndexOf (szId);
-			return (i < 0) ? 0 : Buffer (i)->m_value;
+			return (i < 0) ? 0 : Buffer (i)->Value ();
 			}
 
 		inline int MinValue (const char* szId) {
 			int i = IndexOf (szId);
 			if (i >= 0)
-				return Buffer (i)->m_minValue;
+				return Buffer (i)->MinValue ();
 			return 0;
 			}
 
 		inline int MaxValue (const char* szId) {
 			int i = IndexOf (szId);
 			if (i >= 0)
-				return Buffer (i)->m_maxValue;
+				return Buffer (i)->MaxValue ();
 			return 0;
 			}
 
-		inline CMenuItem& operator[] (const char* szId) const {
+		inline char* Text (const char* szId) {
 			int i = IndexOf (szId);
-			return (i < 0) ? m_null : Buffer (i);
+			if (i >= 0)
+				return Buffer (i)->Text ();
+			return 0;
+			}
+
+		inline CMenuItem& operator[] (const int i) { return CStack::operator[] (i); }
+
+		inline CMenuItem& operator[] (const char* szId) {
+			int i = IndexOf (szId);
+			return (i < 0) ? m_null : *Buffer (i);
 			}
 
 		int AddCheck (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL, const char* szId = NULL);

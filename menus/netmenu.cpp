@@ -55,80 +55,76 @@ extern ubyte ipx_MyAddress [10];
 //------------------------------------------------------------------------------
 
 void NetworkSetWeaponsAllowed (void)
- {
-  CMenu	m (40);
-  
-  optPrimary = 0;
-  m.AddCheck (TXT_WA_LASER, netGame.m_info.DoLaserUpgrade, 0, NULL, "laser upgrade");
-  m.AddCheck (TXT_WA_SLASER, netGame.m_info.DoSuperLaser, 0, NULL, "super laser");
-  m.AddCheck (TXT_WA_QLASER, netGame.m_info.DoQuadLasers, 0, NULL, "quad lasers");
-  m.AddCheck (TXT_WA_VULCAN, netGame.m_info.DoVulcan, 0, NULL, "vulcan");
-  m.AddCheck (TXT_WA_SPREAD, netGame.m_info.DoSpread, 0, NULL, "spreadfire");
-  m.AddCheck (TXT_WA_PLASMA, netGame.m_info.DoPlasma, 0, NULL, "plasma");
-  m.AddCheck (TXT_WA_FUSION, netGame.m_info.DoFusions, 0, NULL, "fusion");
-  m.AddCheck (TXT_WA_GAUSS, netGame.m_info.DoGauss, 0, NULL, "gauss");
-  m.AddCheck (TXT_WA_HELIX, netGame.m_info.DoHelix, 0, NULL, "helix");
-  m.AddCheck (TXT_WA_PHOENIX, netGame.m_info.DoPhoenix, 0, NULL, "phoenix");
-  m.AddCheck (TXT_WA_OMEGA, netGame.m_info.DoOmega, 0, NULL, "omage");
-  
-  optSecondary = m.ToS ();  
-  m.AddCheck (TXT_WA_HOMING_MSL, netGame.m_info.DoHoming, 0, NULL, "homingmsl");
-  m.AddCheck (TXT_WA_PROXBOMB, netGame.m_info.DoProximity, 0, NULL, "proxmine");
-  m.AddCheck (TXT_WA_SMART_MSL, netGame.m_info.DoSmarts, 0, NULL, "smartmsl");
-  m.AddCheck (TXT_WA_MEGA_MSL, netGame.m_info.DoMegas, 0, NULL, "megamsl");
-  m.AddCheck (TXT_WA_FLASH_MSL, netGame.m_info.DoFlash, 0, NULL, "flashmsl");
-  m.AddCheck (TXT_WA_GUIDED_MSL, netGame.m_info.DoGuided, 0, NULL, "guidedmsl");
-  m.AddCheck (TXT_WA_SMARTMINE, netGame.m_info.DoSmartMine, 0, NULL, "smartmine");
-  m.AddCheck (TXT_WA_MERC_MSL, netGame.m_info.DoMercury, 0, NULL, "mercurymsl");
-  m.AddCheck (TXT_WA_SHAKER_MSL, netGame.m_info.DoEarthShaker, 0, NULL, "eshakermsl");
+{
+CMenu	m (40);
 
-  m.AddCheck (TXT_WA_INVUL, netGame.m_info.DoInvulnerability, 0, NULL, "invul");
-  m.AddCheck (TXT_WA_CLOAK, netGame.m_info.DoCloak, 0, NULL, "cloak");
-  m.AddCheck (TXT_WA_BURNER, netGame.m_info.DoAfterburner, 0, NULL, "afterburner");
-  m.AddCheck (TXT_WA_AMMORACK, netGame.m_info.DoAmmoRack, 0, NULL, "ammorack");
-  m.AddCheck (TXT_WA_CONVERTER, netGame.m_info.DoConverter, 0, NULL, "converter");
-  m.AddCheck (TXT_WA_HEADLIGHT, netGame.m_info.DoHeadlight, 0, NULL, "headlight");
-  
-  m.Menu (NULL, TXT_WA_OBJECTS);
+m.AddCheck (TXT_WA_LASER, netGame.m_info.DoLaserUpgrade, 0, NULL, "laser upgrade");
+m.AddCheck (TXT_WA_SLASER, netGame.m_info.DoSuperLaser, 0, NULL, "super laser");
+m.AddCheck (TXT_WA_QLASER, netGame.m_info.DoQuadLasers, 0, NULL, "quad lasers");
+m.AddCheck (TXT_WA_VULCAN, netGame.m_info.DoVulcan, 0, NULL, "vulcan");
+m.AddCheck (TXT_WA_SPREAD, netGame.m_info.DoSpread, 0, NULL, "spreadfire");
+m.AddCheck (TXT_WA_PLASMA, netGame.m_info.DoPlasma, 0, NULL, "plasma");
+m.AddCheck (TXT_WA_FUSION, netGame.m_info.DoFusions, 0, NULL, "fusion");
+m.AddCheck (TXT_WA_GAUSS, netGame.m_info.DoGauss, 0, NULL, "gauss");
+m.AddCheck (TXT_WA_HELIX, netGame.m_info.DoHelix, 0, NULL, "helix");
+m.AddCheck (TXT_WA_PHOENIX, netGame.m_info.DoPhoenix, 0, NULL, "phoenix");
+m.AddCheck (TXT_WA_OMEGA, netGame.m_info.DoOmega, 0, NULL, "omage");
 
-  netGame.m_info.DoLaserUpgrade = m.Value ("laser upgrade"); 
-  netGame.m_info.DoSuperLaser = m.Value ("super laser");
-  netGame.m_info.DoQuadLasers = m.Value ("quad lasers");  
-  netGame.m_info.DoVulcan = m.Value ("vulcan");
-  netGame.m_info.DoSpread = m.Value ("spreadfire");
-  netGame.m_info.DoPlasma = m.Value ("plasma");
-  netGame.m_info.DoFusions = m.Value ("fusion");
-  netGame.m_info.DoGauss = m.Value ("gauss");
-  netGame.m_info.DoHelix = m.Value ("helix");
-  netGame.m_info.DoPhoenix = m.Value ("phoenix");
-  netGame.m_info.DoOmega = m.Value ("omega");
-  
-  netGame.m_info.DoHoming = m.Value ("homingmsl");
-  netGame.m_info.DoProximity = m.Value ("proxmine");
-  netGame.m_info.DoSmarts = m.Value ("smartmsl");
-  netGame.m_info.DoMegas = m.Value ("megamsl");
-  netGame.m_info.DoFlash = m.Value ("flashmsl");
-  netGame.m_info.DoGuided = m.Value ("guidedmsl");
-  netGame.m_info.DoSmartMine = m.Value ("smartmine");
-  netGame.m_info.DoMercury = m.Value ("mercuymsl");
-  netGame.m_info.DoEarthShaker = m.Value ("eshakermsl");
+m.AddCheck (TXT_WA_HOMING_MSL, netGame.m_info.DoHoming, 0, NULL, "homingmsl");
+m.AddCheck (TXT_WA_PROXBOMB, netGame.m_info.DoProximity, 0, NULL, "proxmine");
+m.AddCheck (TXT_WA_SMART_MSL, netGame.m_info.DoSmarts, 0, NULL, "smartmsl");
+m.AddCheck (TXT_WA_MEGA_MSL, netGame.m_info.DoMegas, 0, NULL, "megamsl");
+m.AddCheck (TXT_WA_FLASH_MSL, netGame.m_info.DoFlash, 0, NULL, "flashmsl");
+m.AddCheck (TXT_WA_GUIDED_MSL, netGame.m_info.DoGuided, 0, NULL, "guidedmsl");
+m.AddCheck (TXT_WA_SMARTMINE, netGame.m_info.DoSmartMine, 0, NULL, "smartmine");
+m.AddCheck (TXT_WA_MERC_MSL, netGame.m_info.DoMercury, 0, NULL, "mercurymsl");
+m.AddCheck (TXT_WA_SHAKER_MSL, netGame.m_info.DoEarthShaker, 0, NULL, "eshakermsl");
 
-  netGame.m_info.DoInvulnerability = m.Value ("invul");
-  netGame.m_info.DoCloak = m.Value ("cloak");
-  netGame.m_info.DoAfterburner = m.Value ("afterburner");
-  netGame.m_info.DoAmmoRack = m.Value ("ammorack");
-  netGame.m_info.DoConverter = m.Value ("converter");     
-  netGame.m_info.DoHeadlight = m.Value ("headlight");     
-  
- }
+m.AddCheck (TXT_WA_INVUL, netGame.m_info.DoInvulnerability, 0, NULL, "invul");
+m.AddCheck (TXT_WA_CLOAK, netGame.m_info.DoCloak, 0, NULL, "cloak");
+m.AddCheck (TXT_WA_BURNER, netGame.m_info.DoAfterburner, 0, NULL, "afterburner");
+m.AddCheck (TXT_WA_AMMORACK, netGame.m_info.DoAmmoRack, 0, NULL, "ammorack");
+m.AddCheck (TXT_WA_CONVERTER, netGame.m_info.DoConverter, 0, NULL, "converter");
+m.AddCheck (TXT_WA_HEADLIGHT, netGame.m_info.DoHeadlight, 0, NULL, "headlight");
+
+m.Menu (NULL, TXT_WA_OBJECTS);
+
+netGame.m_info.DoLaserUpgrade = m.Value ("laser upgrade"); 
+netGame.m_info.DoSuperLaser = m.Value ("super laser");
+netGame.m_info.DoQuadLasers = m.Value ("quad lasers");  
+netGame.m_info.DoVulcan = m.Value ("vulcan");
+netGame.m_info.DoSpread = m.Value ("spreadfire");
+netGame.m_info.DoPlasma = m.Value ("plasma");
+netGame.m_info.DoFusions = m.Value ("fusion");
+netGame.m_info.DoGauss = m.Value ("gauss");
+netGame.m_info.DoHelix = m.Value ("helix");
+netGame.m_info.DoPhoenix = m.Value ("phoenix");
+netGame.m_info.DoOmega = m.Value ("omega");
+
+netGame.m_info.DoHoming = m.Value ("homingmsl");
+netGame.m_info.DoProximity = m.Value ("proxmine");
+netGame.m_info.DoSmarts = m.Value ("smartmsl");
+netGame.m_info.DoMegas = m.Value ("megamsl");
+netGame.m_info.DoFlash = m.Value ("flashmsl");
+netGame.m_info.DoGuided = m.Value ("guidedmsl");
+netGame.m_info.DoSmartMine = m.Value ("smartmine");
+netGame.m_info.DoMercury = m.Value ("mercuymsl");
+netGame.m_info.DoEarthShaker = m.Value ("eshakermsl");
+
+netGame.m_info.DoInvulnerability = m.Value ("invul");
+netGame.m_info.DoCloak = m.Value ("cloak");
+netGame.m_info.DoAfterburner = m.Value ("afterburner");
+netGame.m_info.DoAmmoRack = m.Value ("ammorack");
+netGame.m_info.DoConverter = m.Value ("converter");     
+netGame.m_info.DoHeadlight = m.Value ("headlight");     
+}
 
 //------------------------------------------------------------------------------
 
-fix nLastPTA = -1;
+fix nLastPlayTime = -1;
 int nLastReactorLife = 0;
 int nLastScoreGoal = -1;
 int nLastMaxPlayers = -1;
-int  = -1;
 
 //static struct {
 //	int nSuicide, nFriendlyFire;
@@ -307,21 +303,21 @@ if (nState)
 	nCurItem = nCurItem;
 
 Assert (networkData.nStatus == NETSTAT_STARTING);
-if (!menu [0)) {
-	menu [0) = 1;
+if (!menu [0].Value ()) {
+	menu [0].Value () = 1;
 	menu [0].Rebuild ();
 	}
 for (i = 1; i < int (menu.ToS ()); i++) {
-	if ((i >= gameData.multiplayer.nPlayers) && menu [i]) {
-		menu [i] = 0;
+	if ((i >= gameData.multiplayer.nPlayers) && menu [i].Value ()) {
+		menu [i].Value () = 0;
 		menu [i].Rebuild ();
 		}
 	}
 nm = 0;
 for (i = 0; i < int (menu.ToS ()); i++) {
-	if (menu [i]) {
+	if (menu [i].Value ()) {
 		if (++nm > gameData.multiplayer.nPlayers) {
-			menu [i] = 0;
+			menu [i].Value () = 0;
 			menu [i].Rebuild ();
 			}
 		}
@@ -330,8 +326,8 @@ if (nm > gameData.multiplayer.nMaxPlayers) {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
 	// Turn off the last CPlayerData highlighted
 	for (i = gameData.multiplayer.nPlayers; i > 0; i--)
-		if (menu [i] == 1) {
-			menu [i] = 0;
+		if (menu [i].Value () == 1) {
+			menu [i].Value () = 0;
 			menu [i].Rebuild ();
 			break;
 			}
@@ -355,7 +351,7 @@ if (n < netGame.m_info.nNumPlayers) {
 					netPlayers [0].m_info.players [gameData.multiplayer.nPlayers-1].callsign);
 	menu [gameData.multiplayer.nPlayers - 1].Rebuild ();
 	if (gameData.multiplayer.nPlayers <= gameData.multiplayer.nMaxPlayers)
-		menu [gameData.multiplayer.nPlayers - 1] = 1;
+		menu [gameData.multiplayer.nPlayers - 1].Value () = 1;
 	} 
 else if (n > netGame.m_info.nNumPlayers) {
 	// One got removed...
@@ -365,12 +361,12 @@ else if (n > netGame.m_info.nNumPlayers) {
 			sprintf (menu [i].Text (), "%d. %-20s", i+1, netPlayers [0].m_info.players [i].callsign);
 		else
 			sprintf (menu [i].Text (), "%d. %s%-20s", i+1, pszRankStrings [netPlayers [0].m_info.players [i].rank], netPlayers [0].m_info.players [i].callsign);
-		menu [i] = (i < gameData.multiplayer.nMaxPlayers);
+		menu [i].Value () = (i < gameData.multiplayer.nMaxPlayers);
 		menu [i].Rebuild ();
 		}
 	for (i = gameData.multiplayer.nPlayers; i<n; i++)  {
 		sprintf (menu [i].Text (), "%d. ", i+1);          // Clear out the deleted entries...
-		menu [i] = 0;
+		menu [i].Value () = 0;
 		menu [i].Rebuild ();
 		}
    }
@@ -392,15 +388,16 @@ CMenuItem& maxPlayers = menu ["max. players"];
 
 	static int oldMaxPlayers = 0;
 
-if ((nCurItem >= nGameTypes) && (nCurItem < nGameTypes + nGameTypes)) {
-	if ((nCurItem != nGameItem) && (menu [nCurItem))) {
+int i = menu.IndexOf ("anarchy");
+if ((nCurItem >= i) && (nCurItem < i + nGameTypes)) {
+	if ((nCurItem != nGameItem) && menu [nCurItem].Value ()) {
 		nGameItem = nCurItem;
 		key = -2;
 		return nCurItem;
 		}
 	}
-if ((menu.Available ("entropy") && (menu.Value ("entropy") == (networkMenuOpts.nEntOpts < 0))) ||
-	 (menu.Available ("monsterball") && (gameOpts->app.bExpertMode == SUPERUSER) && (menu.Value (nMonsterball) == (networkMenuOpts.nMBallOpts < 0))))
+if ((menu.Available ("entropy") && ((bool) menu.Value ("entropy") == menu.Available ("entropy options"))) ||
+	 ((gameOpts->app.bExpertMode == SUPERUSER) && menu.Available ("monsterball") && ((bool) menu.Value ("monsterball") == menu.Available ("monsterball options"))))
 	key = -2;
 //force restricted game for team games
 //obsolete with D2X-W32 as it can assign players to teams automatically
@@ -425,7 +422,7 @@ if (menu.Value ("coop")) {
 else {// if !Coop game
 	if (oldMaxPlayers) {
 		oldMaxPlayers = 0;
-		max.Players.Value () = 
+		maxPlayers.Value () = 
 		maxPlayers.MaxValue () = MAX_NUM_NET_PLAYERS - 2;
 		}
 	}         
@@ -450,15 +447,15 @@ if (nLastReactorLife != menu.Value ("reactor life"))   {
 	menu ["reactor life"].Rebuild ();
    }
   
-if ((networkMenuOpts."play time" >= 0) && (menu.Value ("play time") != nLastPTA)) {
-	nLastPTA = mpParams.nMaxTime;
+if (menu.Available ("play time") && (menu.Value ("play time") != nLastPlayTime)) {
+	nLastPlayTime = mpParams.nMaxTime;
 	mpParams.nMaxTime = menu.Value ("play time");
-	sprintf (menu.Value ("play time"].Text (), TXT_MAXTIME, nLastPTA * 5, TXT_MINUTES_ABBREV);
+	sprintf (menu ["play time"].Text (), TXT_MAXTIME, nLastPlayTime * 5, TXT_MINUTES_ABBREV);
 	menu ["play time"].Rebuild ();
 	}
-if (("score goal" >= 0) && (menu ["score goal") != nLastScoreGoal)) {
-	nLastScoreGoal = mpParams."score goal";
-	mpParams."score goal" = menu ["score goal");
+if (menu.Available ("score goal") && (menu.Value ("score goal") != nLastScoreGoal)) {
+	nLastScoreGoal = mpParams.nScoreGoal;
+	mpParams.nScoreGoal = menu.Value ("score goal");
 	sprintf (menu ["score goal"].Text (), TXT_SCOREGOAL, mpParams.nScoreGoal * 5);
 	menu ["score goal"].Rebuild ();
 	}
@@ -485,7 +482,7 @@ do {
 	*szInvul = * (TXT_REACTOR_LIFE - 1);
 	m.AddSlider (szInvul + 1, mpParams.networkMenuOpts."reactor life", 0, 10, KEY_R, HTX_MULTI2_REACTOR, "reactor life"); 
 	if (IsCoopGame) {
-		nLastPTA =
+		nLastPlayTime =
 		nLastScoreGoal = 0;
 		}
 	else {
@@ -517,7 +514,7 @@ do {
 	nPPS = m.AddInput (szPPS, 2, HTX_MULTI2_PPS, "PPS");
 
 	nLastScoreGoal = netGame.GetScoreGoal ();
-	nLastPTA = mpParams.nMaxTime;
+	nLastPlayTime = mpParams.nMaxTime;
 
 doMenu:
 
@@ -952,7 +949,7 @@ if (bHoard) {
 		}
 	} 
 nGameTypes = m.ToS () - nGameTypes;
-m [nGameTypes + NMCLAMP (mpParams.nGameType, 0, nGameTypes)].Value () = 1;
+m [mIndexOf ("anarchy") + NMCLAMP (mpParams.nGameType, 0, nGameTypes)].Value () = 1;
 
 m.AddText ("", 0); 
 
@@ -991,12 +988,12 @@ if (m.Value (nMissionName].m_bRebuild) {
 	strncpy (netGame.m_info.szMissionName, 
 				(nNewMission < 0) ? "" : missionManager [nNewMission].filename, 
 				sizeof (netGame.m_info.szMissionName) - 1);
-	m.Value (nMissionName].SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nNewMission].szMissionName));
+	m ["mission name"].SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nNewMission].szMissionName));
 	if ((nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, missionManager.nLastLevel);
 		if (strlen (szLevelText) < 32)
 			szLevelText [31] = '\0';
-		m.Value (nLevelText].Rebuild ();
+		m ["level number text"].Rebuild ();
 		}
 	mpParams.nLevel = 1;
 	}
@@ -1006,8 +1003,8 @@ key = m.Menu (NULL, (gameStates.multi.nGameType == UDP_GAME) ? szIpAddr : NULL, 
 								//TXT_NETGAME_SETUP
 if (key == -1)
 	return -1;
-else if (choice == nMoreOpts) {
-	if (m.Value (nGameTypes + 3))
+else if (choice == m.IndexOf ("more options")) {
+	if (m [nGameTypes + 3].Value ())
 		gameData.app.nGameMode = GM_MULTI_COOP;
 	NetworkMoreGameOptions ();
 	gameData.app.nGameMode = 0;
@@ -1017,44 +1014,44 @@ else if (choice == nMoreOpts) {
 		}
 	return 1;
 	}
-else if (!gameStates.app.bNostalgia && (nD2XOpts >= 0) && (choice == nD2XOpts)) {
+else if (!gameStates.app.bNostalgia && (choice == m.IndexOf ("d2x options"))) {
 	NetworkGetGameType (m, bAnarchyOnly);
 	NetworkD2XOptions ();
 	return 1;
 	}
-else if (!gameStates.app.bNostalgia && (nEntOpts >= 0) && (choice == nEntOpts)) {
+else if (!gameStates.app.bNostalgia && (choice == m.IndexOf ("entropy options"))) {
 	NetworkEntropyOptions ();
 	return 1;
 	}
-else if (!gameStates.app.bNostalgia && (nMBallOpts >= 0) && (choice == nMBallOpts)) {
+else if (!gameStates.app.bNostalgia && (choice == m.IndexOf ("monsterball options"))) {
 	NetworkMonsterballOptions ();
 	return 1;
 	}
-else if (!gameStates.app.bNostalgia && (nConfigMenu >= 0) && (choice == nConfigMenu)) {
+else if (!gameStates.app.bNostalgia && (choice == m.IndexOf ("config options"))) {
 	ConfigMenu ();
 	return 1;
 	}
-else if (!gameStates.app.bNostalgia && (nLoadoutMenu >= 0) && (choice == nLoadoutMenu)) {
+else if (!gameStates.app.bNostalgia && (choice == m.IndexOf ("loadout options"))) {
 	LoadoutOptionsMenu ();
 	return 1;
 	}
-else if (!gameStates.app.bNostalgia && (nMissileMenu >= 0) && (choice == nMissileMenu)) {
+else if (!gameStates.app.bNostalgia && (choice == m.IndexOf ("missile options"))) {
 	MissileLoadoutMenu ();
 	return 1;
 	}
-else if (choice == nMission) {
+else if (choice == IndexOf ("mission selector")) {
 	int h = SelectAndLoadMission (1, &bAnarchyOnly);
 	if (h < 0)
 		return 1;
 	missionManager.nLastMission = nNewMission = h;
-	m.Value (nMissionName].Rebuild ();
+	m ["mission name"].Rebuild ();
 	return 2;
 	}
 
 if (key != -1) {
-	int j;
+	int h, j;
 		   
-	gameData.multiplayer.nMaxPlayers = m.Value (networkMenuOpts."max. players") + 2;
+	gameData.multiplayer.nMaxPlayers = m.Value ("max. players") + 2;
 	netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
 			
 	for (j = 0; j < networkData.nActiveGames; j++)
@@ -1070,23 +1067,23 @@ if (key != -1) {
 		return 1;
 	}
 
-	for (i = nGameTypes; i < nOpenGame; i++)
-		if (m.Value (i)) {
-			mpParams.nGameType = i - nGameTypes;
+	for (h = i = mIndexOf ("anarchy"), j = m.IndexOf ("open game"); i < j; i++)
+		if (m [i].Value ()) {
+			mpParams.nGameType = i - h;
 			break;
 			}
 
-	for (i = nOpenGame; i < networkMenuOpts."max. players"; i++)
-		if (m.Value (i)) {
-			mpParams.nGameAccess = i - nOpenGame;
+	for (i = j, j = m.IndexOf ("max. players"); i < j; i++)
+		if (m [i].Value ()) {
+			mpParams.nGameAccess = i - j;
 			break;
 			}
 
 	if (!NetworkGetGameType (m, bAnarchyOnly))
 		return 1;
-	if (m.Value (nClosedGame))
+	if (m.Value ("closed game"))
 		netGame.m_info.gameFlags |= NETGAME_FLAG_CLOSED;
-	netGame.m_info.bRefusePlayers = m.Value (nRestrictedGame);
+	netGame.m_info.bRefusePlayers = m.Value ("restricted game");
 	}
 NetworkSetGameMode (mpParams.nGameMode);
 if (key == -2)
@@ -1113,7 +1110,7 @@ SetAllAllowablesTo (mpParams.nWeaponFilter);
 networkData.nNamesInfoSecurity = -1;
 
 for (i = 0; i < MAX_PLAYERS; i++)
-	if (i!= gameData.multiplayer.nLocalPlayer)
+	if (i != gameData.multiplayer.nLocalPlayer)
 		gameData.multiplayer.players [i].callsign [0] = 0;
 
 gameData.multiplayer.nMaxPlayers = MAX_NUM_NET_PLAYERS;
