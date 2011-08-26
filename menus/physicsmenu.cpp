@@ -105,82 +105,89 @@ if (nState)
 	CMenuItem*	m;
 	int			v;
 
-m = menu + physOpts.nFusionRamp;
-v = m->m_value + 1;
-if (nFusionRamp != v) {
-	nFusionRamp = v;
-	extraGameInfo [0].nFusionRamp = 6 - 2 * nFusionRamp;
-	sprintf (m->m_text, TXT_FUSION_RAMP, nFusionRamp);
-	m->m_bRebuild = 1;
+if ((m = menu ["fusion ramp"])) {
+	v = m->Value () + 1;
+	if (nFusionRamp != v) {
+		nFusionRamp = v;
+		extraGameInfo [0].nFusionRamp = 6 - 2 * nFusionRamp;
+		sprintf (m->m_text, TXT_FUSION_RAMP, nFusionRamp);
+		m->m_bRebuild = 1;
+		}
 	}
 
-	m = menu + physOpts.nAutoLevel;
-	v = m->m_value;
+if ((m = menu ["auto leveling"])) {
+	v = m->Value ();
 	if (gameOpts->gameplay.nAutoLeveling != v) {
 		gameOpts->gameplay.nAutoLeveling = v;
 		sprintf (m->m_text, TXT_AUTOLEVEL, pszAutoLevel [v]);
 		m->m_bRebuild = 1;
 		}
+	}
 
-	if (physOpts.nHitDetection >= 0) {
-		m = menu + physOpts.nHitDetection;
-		v = m->m_value;
-		if (extraGameInfo [0].nHitboxes != v) {
-			extraGameInfo [0].nHitboxes = v;
-			sprintf (m->m_text, TXT_HIT_DETECTION, pszStdAdv [v]);
-			m->m_bRebuild = 1;
-			}
+if ((m = menu ["hit detection"])) {
+	v = m->Value ();
+	if (extraGameInfo [0].nHitboxes != v) {
+		extraGameInfo [0].nHitboxes = v;
+		sprintf (m->m_text, TXT_HIT_DETECTION, pszStdAdv [v]);
+		m->m_bRebuild = 1;
 		}
+	}
 
-	m = menu + physOpts.nCollHandling;
-	v = m->m_value;
+if ((m = menu ["collision handling"])) {
+	v = m->Value ();
 	if (extraGameInfo [0].bUseHitAngles != v) {
 		extraGameInfo [0].bUseHitAngles = v;
 		sprintf (m->m_text, TXT_COLLISION_HANDLING, pszStdAdv [v]);
 		m->m_bRebuild = 1;
 		}
+	}
 
-	m = menu + physOpts.nDamageModel;
-	v = m->m_value;
+if ((m = menu ["damage model"])) {
+	v = m->Value ();
 	if (extraGameInfo [0].nDamageModel != v) {
 		extraGameInfo [0].nDamageModel = v;
 		sprintf (m->m_text, TXT_DAMAGE_MODEL, pszStdAdv [v]);
 		m->m_bRebuild = 1;
 		}
+	}
 
-	m = menu + physOpts.nDrag;
-	v = m->m_value;
+if ((m = menu ["drag"])) {
+	v = m->Value ();
 	if (nDrag != v) {
 		nDrag = v;
 		sprintf (m->m_text, TXT_PLAYER_DRAG, pszDrag [v]);
 		m->m_bRebuild = 1;
 		}
+	}
 
 if (gameOpts->app.bExpertMode == SUPERUSER) {
-	m = menu + physOpts.nMslTurnSpeed;
-	v = m->m_value;
-	if (extraGameInfo [0].nMslTurnSpeed != v) {
-		extraGameInfo [0].nMslTurnSpeed = v;
-		sprintf (m->m_text, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [v]);
-		m->m_bRebuild = 1;
+	if ((m = menu ["msl turn speed"])) {
+		v = m->Value ();
+		if (extraGameInfo [0].nMslTurnSpeed != v) {
+			extraGameInfo [0].nMslTurnSpeed = v;
+			sprintf (m->m_text, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [v]);
+			m->m_bRebuild = 1;
+			}
 		}
 
-	m = menu + physOpts.nMslStartSpeed;
-	v = m->m_value;
-	if (extraGameInfo [0].nMslStartSpeed != 3 - v) {
-		extraGameInfo [0].nMslStartSpeed = 3 - v;
-		sprintf (m->m_text, TXT_MSL_STARTSPEED, pszMslStartSpeeds [v]);
-		m->m_bRebuild = 1;
+	if ((m = menu ["msl start speed"])) {
+		v = m->Value ();
+		if (extraGameInfo [0].nMslStartSpeed != 3 - v) {
+			extraGameInfo [0].nMslStartSpeed = 3 - v;
+			sprintf (m->m_text, TXT_MSL_STARTSPEED, pszMslStartSpeeds [v]);
+			m->m_bRebuild = 1;
+			}
 		}
 
-	m = menu + physOpts.nSlomoSpeedup;
-	v = m->m_value + 4;
-	if (gameOpts->gameplay.nSlowMotionSpeedup != v) {
-		gameOpts->gameplay.nSlowMotionSpeedup = v;
-		sprintf (m->m_text, TXT_SLOWMOTION_SPEEDUP, (float) v / 2);
-		m->m_bRebuild = 1;
-		return nCurItem;
-		}
+	if ((m = menu ["slow motion speedup"])) {
+		v = m->Value () + 4;
+		if (gameOpts->gameplay.nSlowMotionSpeedup != v) {
+			gameOpts->gameplay.nSlowMotionSpeedup = v;
+			sprintf (m->m_text, TXT_SLOWMOTION_SPEEDUP, (float) v / 2);
+			m->m_bRebuild = 1;
+			return nCurItem;
+			}
+		}	
 	}
 return nCurItem;
 }
@@ -248,45 +255,41 @@ do {
 	m.Create (30);
 	sprintf (szSlider + 1, TXT_FUSION_RAMP, nFusionRamp);
 	*szSlider = *(TXT_FUSION_RAMP - 1);
-	physOpts.nFusionRamp = m.AddSlider (szSlider + 1, nFusionRamp - 1, 0, 1, KEY_F, HTX_FUSION_RAMP);
+	m.AddSlider ("fusion ramp", szSlider + 1, nFusionRamp - 1, 0, 1, KEY_F, HTX_FUSION_RAMP);
 	sprintf (szSlider + 1, TXT_PLAYER_DRAG, pszDrag [nDrag]);
 	*szSlider = *(TXT_PLAYER_DRAG - 1);
-	physOpts.nDrag = m.AddSlider (szSlider + 1, nDrag, 0, 3, KEY_P, HTX_PLAYER_DRAG);
+	m.AddSlider ("drag", szSlider + 1, nDrag, 0, 3, KEY_P, HTX_PLAYER_DRAG);
 	if (gameOpts->app.bExpertMode == SUPERUSER) {
 		sprintf (szSlider + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [int (extraGameInfo [0].nMslTurnSpeed)]);
 		*szSlider = *(TXT_MSL_TURNSPEED - 1);
-		physOpts.nMslTurnSpeed = m.AddSlider (szSlider + 1, extraGameInfo [0].nMslTurnSpeed, 0, 2, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
+		m.AddSlider ("msl turn speed", szSlider + 1, extraGameInfo [0].nMslTurnSpeed, 0, 2, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
 		sprintf (szSlider + 1, TXT_MSL_STARTSPEED, pszMslStartSpeeds [int (3) - extraGameInfo [0].nMslStartSpeed]);
 		*szSlider = *(TXT_MSL_STARTSPEED - 1);
-		physOpts.nMslStartSpeed = m.AddSlider (szSlider + 1, 3 - extraGameInfo [0].nMslStartSpeed, 0, 3, KEY_S, HTX_MSL_STARTSPEED);
+		m.AddSlider ("msl start speed", szSlider + 1, 3 - extraGameInfo [0].nMslStartSpeed, 0, 3, KEY_S, HTX_MSL_STARTSPEED);
 		sprintf (szSlider + 1, TXT_SLOWMOTION_SPEEDUP, float (gameOpts->gameplay.nSlowMotionSpeedup) / 2);
 		*szSlider = *(TXT_SLOWMOTION_SPEEDUP - 1);
-		physOpts.nSlomoSpeedup = m.AddSlider (szSlider + 1, gameOpts->gameplay.nSlowMotionSpeedup - 4, 0, 4, KEY_M, HTX_SLOWMOTION_SPEEDUP);
-		m.AddText ("", 0);
+		m.AddSlider ("slow motion speedup", szSlider + 1, gameOpts->gameplay.nSlowMotionSpeedup - 4, 0, 4, KEY_M, HTX_SLOWMOTION_SPEEDUP);
+		m.AddText ("", "", 0);
 		if (extraGameInfo [0].nDrag)
-			optWiggle = m.AddCheck (TXT_WIGGLE_SHIP, extraGameInfo [0].bWiggle, KEY_W, HTX_MISC_WIGGLE);
-		else
-			optWiggle = -1;
+			m.AddCheck ("wiggle", TXT_WIGGLE_SHIP, extraGameInfo [0].bWiggle, KEY_W, HTX_MISC_WIGGLE);
 		}
-	m.AddText ("", 0);
+	m.AddText ("", "", 0);
 
 	sprintf (szSlider + 1, TXT_AUTOLEVEL, pszAutoLevel [gameOpts->gameplay.nAutoLeveling]);
 	*szSlider = *(TXT_AUTOLEVEL - 1);
-	physOpts.nAutoLevel = m.AddSlider (szSlider + 1, gameOpts->gameplay.nAutoLeveling, 0, 3, KEY_S, HTX_AUTO_LEVELING);
+	m.AddSlider ("auto leveling", szSlider + 1, gameOpts->gameplay.nAutoLeveling, 0, 3, KEY_S, HTX_AUTO_LEVELING);
 
 #if 0
 	sprintf (szSlider + 1, TXT_HIT_DETECTION, pszStdAdv [extraGameInfo [0].nHitboxes]);
 	*szSlider = *(TXT_HIT_DETECTION - 1);
-	physOpts.nHitDetection = mat.AddSlider (szSlider + 1, extraGameInfo [0].nHitboxes, 0, 1, KEY_H, HTX_GPLAY_HITBOXES);
-#else
-	physOpts.nHitDetection = -1;
+	mat.AddSlider ("hit detection", szSlider + 1, extraGameInfo [0].nHitboxes, 0, 1, KEY_H, HTX_GPLAY_HITBOXES);
 #endif
 	sprintf (szSlider + 1, TXT_COLLISION_HANDLING, pszStdAdv [int (extraGameInfo [0].bUseHitAngles)]);
 	*szSlider = *(TXT_COLLISION_HANDLING - 1);
-	physOpts.nCollHandling = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseHitAngles, 0, 1, KEY_C, HTX_GPLAY_COLLHANDLING);
+	m.AddSlider ("collision handling", szSlider + 1, extraGameInfo [0].bUseHitAngles, 0, 1, KEY_C, HTX_GPLAY_COLLHANDLING);
 	sprintf (szSlider + 1, TXT_DAMAGE_MODEL, pszStdAdv [int (extraGameInfo [0].nDamageModel)]);
 	*szSlider = *(TXT_DAMAGE_MODEL - 1);
-	physOpts.nDamageModel = m.AddSlider (szSlider + 1, extraGameInfo [0].nDamageModel, 0, 1, KEY_D, HTX_DAMAGE_MODEL);
+	m.AddSlider ("damage model", szSlider + 1, extraGameInfo [0].nDamageModel, 0, 1, KEY_D, HTX_DAMAGE_MODEL);
 	do {
 		i = m.Menu (NULL, TXT_PHYSICS_MENUTITLE, PhysicsOptionsCallback, &choice);
 		} while (i >= 0);
@@ -299,8 +302,8 @@ extraGameInfo [0].nHitboxes = extraGameInfo [0].bUseHitAngles << 1;
 #endif
 extraGameInfo [0].nDrag = nDragTable [nDrag];
 if (gameOpts->app.bExpertMode == SUPERUSER) {
-	if (optWiggle >= 0)
-		extraGameInfo [0].bWiggle = m [optWiggle].m_value;
+	if (m.Available ("wiggle"))
+		extraGameInfo [0].bWiggle = m ["wiggle"]->Value ();
 	}
 DefaultPhysicsSettings ();
 if (IsMultiGame)
