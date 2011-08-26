@@ -62,7 +62,7 @@ extern char DOWN_ARROW_MARKER [2];
 #define NMCLAMP(_v,_min,_max)	((_v) < (_min) ? (_min) : (_v) > (_max) ? (_max) : (_v))
 #define NMBOOL(_v) ((_v) != 0)
 
-#define GET_VAL(_v,_n)	if ((_n) >= 0) (_v) = m [_n].m_value
+#define GET_VAL(_v,_id)	if (m.Available (_id)) (_v) = m [_id].Value()
 
 #define MENU_KEY(_k,_d)	((_k) < 0) ? (_d) : ((_k) == 0) ? 0 : gameStates.app.bEnglish ? toupper (KeyToASCII (_k)) : (_k)
 
@@ -102,8 +102,6 @@ typedef char tMenuText [MENU_MAX_TEXTLEN];
 class CMenuItem {
 	public:
 		int			m_nType;           // What kind of item this is, see NM_TYPE_????? defines
-		int			m_value;          // For checkboxes and radio buttons, this is 1 if marked initially, else 0
-		int			m_minValue, m_maxValue;   // For sliders and number bars.
 		int			m_group;          // What group this belongs to for radio buttons.
 		int			m_nTextLen;       // The maximum length of characters that can be entered by this inputboxes
 		uint			m_color;
@@ -122,6 +120,11 @@ class CMenuItem {
 		char*			m_pszText;
 		CBitmap*		m_bmText [2];
 		const char*	m_szHelp;
+		const char*	m_szId;
+
+	protected:
+		int			m_value;          // For checkboxes and radio buttons, this is 1 if marked initially, else 0
+		int			m_minValue, m_maxValue;   // For sliders and number bars.
 
 	public:
 		CMenuItem () { memset (this, 0, sizeof (*this)); }
@@ -147,6 +150,12 @@ class CMenuItem {
 		void SaveText (void);
 		void RestoreText (void);
 		char* GetInput (void);
+
+		inline int& Value (void) { return m_value; }
+		inline int& MinValue (void) { return m_minValue; }
+		inline int& MaxValue (void) { return m_maxValue; }
+		inline void Redraw (void) { m_bRedraw = 1; }
+		inline char* Text (void) { return m_text; }
 
 		inline bool Selectable (void) { return (m_nType != NM_TYPE_TEXT) && !m_bUnavailable && *m_text; }
 
@@ -208,18 +217,29 @@ class CMenu : public CStack<CMenuItem> {
 		int				m_nKey;
 		bool				m_bThrottle;
 		pMenuCallback	m_callback;
+		CMenuItem		m_null;
+		CMenuItem*		m_current;
 
 	public:
 		CMenu () { Init (); }
+
 		explicit CMenu (uint nLength) {
 			Init ();
 			Create (nLength);
 			}
+
 		inline void Init (void) {
 			SetGrowth (10);
 			m_nGroup = 0;
 			m_to.Setup (10);
 			m_bThrottle = true;
+			m_null.m_szId = "@@NULLITEM@@";
+			m_current = NULL;
+			}
+
+		void Destroy (void) {
+			CStack::Destroy ();
+			m_current = NULL;
 			}
 
 		inline int NewGroup (int nGroup = 0) {
@@ -232,17 +252,58 @@ class CMenu : public CStack<CMenuItem> {
 			return m_nGroup;
 			}
 
-		int AddCheck (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
-		int AddRadio (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
-		int AddMenu (const char* szText, int nKey = 0, const char* szHelp = NULL);
-		int AddText (const char* szText, int nKey = 0);
-		int AddSlider (const char* szText, int nValue, int nMin, int nMax, int nKey = 0, const char* szHelp = NULL);
-		int AddInput (const char* szText, int nLen, const char* szHelp = NULL);
-		int AddInput (const char* szText, char* szValue, int nLen, const char* szHelp = NULL);
-		int AddInput (const char* szText, char* szValue, int nValue, int nLen, const char* szHelp = NULL);
-		int AddInputBox (const char* szText, int nLen, int nKey = 0, const char* szHelp = NULL);
-		int AddNumber (const char* szText, int nValue, int nMin, int nMax);
-		int AddGauge (const char* szText, int nValue, int nMax);
+		inline int IndexOf (const char* szId, bool bLogErrors = true) {
+			if (szId) {
+				if (m_current && m_current.m_szId && !stricmp (szId, m_current->m_szId))
+				m_current = Buffer ();
+				for (uint i = 0; i < m_tos; i++, m_current++) {
+					if (m_current->m_szId && !stricmp (szId, m_current->m_szId))
+						return i;
+					}
+				}
+			m_current = NULL;
+			if (bLogErrors)
+				PrintLog ("invalid menu id '%s' queried\n", szId ? szId : "n/a");
+			return -1;
+			}
+
+		inline bool Available (const char* szId, false) { return IndexOf (szId) >= 0; }
+
+		inline int Value (const char* szId) {
+			int i = IndexOf (szId);
+			return (i < 0) ? 0 : Buffer (i)->m_value;
+			}
+
+		inline int MinValue (const char* szId) {
+			int i = IndexOf (szId);
+			if (i >= 0)
+				return Buffer (i)->m_minValue;
+			return 0;
+			}
+
+		inline int MaxValue (const char* szId) {
+			int i = IndexOf (szId);
+			if (i >= 0)
+				return Buffer (i)->m_maxValue;
+			return 0;
+			}
+
+		inline CMenuItem& operator[] (const char* szId) const {
+			int i = IndexOf (szId);
+			return (i < 0) ? m_null : Buffer (i);
+			}
+
+		int AddCheck (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL, const char* szId = NULL);
+		int AddRadio (const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL, const char* szId = NULL);
+		int AddMenu (const char* szText, int nKey = 0, const char* szHelp = NULL, const char* szId = NULL);
+		int AddText (const char* szText, int nKey = 0, const char* szId = NULL);
+		int AddSlider (const char* szText, int nValue, int nMin, int nMax, int nKey = 0, const char* szHelp = NULL, const char* szId = NULL);
+		int AddInput (const char* szText, int nLen, const char* szHelp = NULL, const char* szId = NULL);
+		int AddInput (const char* szText, char* szValue, int nLen, const char* szHelp = NULL, const char* szId = NULL);
+		int AddInput (const char* szText, char* szValue, int nValue, int nLen, const char* szHelp = NULL, const char* szId = NULL);
+		int AddInputBox (const char* szText, int nLen, int nKey = 0, const char* szHelp = NULL, const char* szId = NULL);
+		int AddNumber (const char* szText, int nValue, int nMin, int nMax, const char* szId = NULL);
+		int AddGauge (const char* szText, int nValue, int nMax, const char* szId = NULL);
 		inline CMenuItem& Item (int i = -1) { return (i < 0) ? m_data.buffer [ToS () - 1] : m_data.buffer [i]; }
 
 		int Menu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callback = NULL,

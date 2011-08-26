@@ -57,83 +57,100 @@ extern ubyte ipx_MyAddress [10];
 void NetworkSetWeaponsAllowed (void)
  {
   CMenu	m (40);
-  int		opt = 0, choice, optPrimary, optSecond, opt_power;
   
   optPrimary = 0;
-  m.AddCheck (TXT_WA_LASER, netGame.m_info.DoLaserUpgrade, 0, NULL);
-  m.AddCheck (TXT_WA_SLASER, netGame.m_info.DoSuperLaser, 0, NULL);
-  m.AddCheck (TXT_WA_QLASER, netGame.m_info.DoQuadLasers, 0, NULL);
-  m.AddCheck (TXT_WA_VULCAN, netGame.m_info.DoVulcan, 0, NULL);
-  m.AddCheck (TXT_WA_SPREAD, netGame.m_info.DoSpread, 0, NULL);
-  m.AddCheck (TXT_WA_PLASMA, netGame.m_info.DoPlasma, 0, NULL);
-  m.AddCheck (TXT_WA_FUSION, netGame.m_info.DoFusions, 0, NULL);
-  m.AddCheck (TXT_WA_GAUSS, netGame.m_info.DoGauss, 0, NULL);
-  m.AddCheck (TXT_WA_HELIX, netGame.m_info.DoHelix, 0, NULL);
-  m.AddCheck (TXT_WA_PHOENIX, netGame.m_info.DoPhoenix, 0, NULL);
-  m.AddCheck (TXT_WA_OMEGA, netGame.m_info.DoOmega, 0, NULL);
+  m.AddCheck (TXT_WA_LASER, netGame.m_info.DoLaserUpgrade, 0, NULL, "laser upgrade");
+  m.AddCheck (TXT_WA_SLASER, netGame.m_info.DoSuperLaser, 0, NULL, "super laser");
+  m.AddCheck (TXT_WA_QLASER, netGame.m_info.DoQuadLasers, 0, NULL, "quad lasers");
+  m.AddCheck (TXT_WA_VULCAN, netGame.m_info.DoVulcan, 0, NULL, "vulcan");
+  m.AddCheck (TXT_WA_SPREAD, netGame.m_info.DoSpread, 0, NULL, "spreadfire");
+  m.AddCheck (TXT_WA_PLASMA, netGame.m_info.DoPlasma, 0, NULL, "plasma");
+  m.AddCheck (TXT_WA_FUSION, netGame.m_info.DoFusions, 0, NULL, "fusion");
+  m.AddCheck (TXT_WA_GAUSS, netGame.m_info.DoGauss, 0, NULL, "gauss");
+  m.AddCheck (TXT_WA_HELIX, netGame.m_info.DoHelix, 0, NULL, "helix");
+  m.AddCheck (TXT_WA_PHOENIX, netGame.m_info.DoPhoenix, 0, NULL, "phoenix");
+  m.AddCheck (TXT_WA_OMEGA, netGame.m_info.DoOmega, 0, NULL, "omage");
   
-  optSecond = m.ToS ();  
-  m.AddCheck (TXT_WA_HOMING_MSL, netGame.m_info.DoHoming, 0, NULL);
-  m.AddCheck (TXT_WA_PROXBOMB, netGame.m_info.DoProximity, 0, NULL);
-  m.AddCheck (TXT_WA_SMART_MSL, netGame.m_info.DoSmarts, 0, NULL);
-  m.AddCheck (TXT_WA_MEGA_MSL, netGame.m_info.DoMegas, 0, NULL);
-  m.AddCheck (TXT_WA_FLASH_MSL, netGame.m_info.DoFlash, 0, NULL);
-  m.AddCheck (TXT_WA_GUIDED_MSL, netGame.m_info.DoGuided, 0, NULL);
-  m.AddCheck (TXT_WA_SMARTMINE, netGame.m_info.DoSmartMine, 0, NULL);
-  m.AddCheck (TXT_WA_MERC_MSL, netGame.m_info.DoMercury, 0, NULL);
-  m.AddCheck (TXT_WA_SHAKER_MSL, netGame.m_info.DoEarthShaker, 0, NULL);
+  optSecondary = m.ToS ();  
+  m.AddCheck (TXT_WA_HOMING_MSL, netGame.m_info.DoHoming, 0, NULL, "homingmsl");
+  m.AddCheck (TXT_WA_PROXBOMB, netGame.m_info.DoProximity, 0, NULL, "proxmine");
+  m.AddCheck (TXT_WA_SMART_MSL, netGame.m_info.DoSmarts, 0, NULL, "smartmsl");
+  m.AddCheck (TXT_WA_MEGA_MSL, netGame.m_info.DoMegas, 0, NULL, "megamsl");
+  m.AddCheck (TXT_WA_FLASH_MSL, netGame.m_info.DoFlash, 0, NULL, "flashmsl");
+  m.AddCheck (TXT_WA_GUIDED_MSL, netGame.m_info.DoGuided, 0, NULL, "guidedmsl");
+  m.AddCheck (TXT_WA_SMARTMINE, netGame.m_info.DoSmartMine, 0, NULL, "smartmine");
+  m.AddCheck (TXT_WA_MERC_MSL, netGame.m_info.DoMercury, 0, NULL, "mercurymsl");
+  m.AddCheck (TXT_WA_SHAKER_MSL, netGame.m_info.DoEarthShaker, 0, NULL, "eshakermsl");
 
-  opt_power = opt;
-  m.AddCheck (TXT_WA_INVUL, netGame.m_info.DoInvulnerability, 0, NULL);
-  m.AddCheck (TXT_WA_CLOAK, netGame.m_info.DoCloak, 0, NULL);
-  m.AddCheck (TXT_WA_BURNER, netGame.m_info.DoAfterburner, 0, NULL);
-  m.AddCheck (TXT_WA_AMMORACK, netGame.m_info.DoAmmoRack, 0, NULL);
-  m.AddCheck (TXT_WA_CONVERTER, netGame.m_info.DoConverter, 0, NULL);
-  m.AddCheck (TXT_WA_HEADLIGHT, netGame.m_info.DoHeadlight, 0, NULL);
+  m.AddCheck (TXT_WA_INVUL, netGame.m_info.DoInvulnerability, 0, NULL, "invul");
+  m.AddCheck (TXT_WA_CLOAK, netGame.m_info.DoCloak, 0, NULL, "cloak");
+  m.AddCheck (TXT_WA_BURNER, netGame.m_info.DoAfterburner, 0, NULL, "afterburner");
+  m.AddCheck (TXT_WA_AMMORACK, netGame.m_info.DoAmmoRack, 0, NULL, "ammorack");
+  m.AddCheck (TXT_WA_CONVERTER, netGame.m_info.DoConverter, 0, NULL, "converter");
+  m.AddCheck (TXT_WA_HEADLIGHT, netGame.m_info.DoHeadlight, 0, NULL, "headlight");
   
-  choice = m.Menu (NULL, TXT_WA_OBJECTS);
+  m.Menu (NULL, TXT_WA_OBJECTS);
 
-  netGame.m_info.DoLaserUpgrade = m [optPrimary].m_value; 
-  netGame.m_info.DoSuperLaser = m [optPrimary+1].m_value;
-  netGame.m_info.DoQuadLasers = m [optPrimary+2].m_value;  
-  netGame.m_info.DoVulcan = m [optPrimary+3].m_value;
-  netGame.m_info.DoSpread = m [optPrimary+4].m_value;
-  netGame.m_info.DoPlasma = m [optPrimary+5].m_value;
-  netGame.m_info.DoFusions = m [optPrimary+6].m_value;
-  netGame.m_info.DoGauss = m [optPrimary+7].m_value;
-  netGame.m_info.DoHelix = m [optPrimary+8].m_value;
-  netGame.m_info.DoPhoenix = m [optPrimary+9].m_value;
-  netGame.m_info.DoOmega = m [optPrimary+10].m_value;
+  netGame.m_info.DoLaserUpgrade = m.Value ("laser upgrade"); 
+  netGame.m_info.DoSuperLaser = m.Value ("super laser");
+  netGame.m_info.DoQuadLasers = m.Value ("quad lasers");  
+  netGame.m_info.DoVulcan = m.Value ("vulcan");
+  netGame.m_info.DoSpread = m.Value ("spreadfire");
+  netGame.m_info.DoPlasma = m.Value ("plasma");
+  netGame.m_info.DoFusions = m.Value ("fusion");
+  netGame.m_info.DoGauss = m.Value ("gauss");
+  netGame.m_info.DoHelix = m.Value ("helix");
+  netGame.m_info.DoPhoenix = m.Value ("phoenix");
+  netGame.m_info.DoOmega = m.Value ("omega");
   
-  netGame.m_info.DoHoming = m [optSecond].m_value;
-  netGame.m_info.DoProximity = m [optSecond+1].m_value;
-  netGame.m_info.DoSmarts = m [optSecond+2].m_value;
-  netGame.m_info.DoMegas = m [optSecond+3].m_value;
-  netGame.m_info.DoFlash = m [optSecond+4].m_value;
-  netGame.m_info.DoGuided = m [optSecond+5].m_value;
-  netGame.m_info.DoSmartMine = m [optSecond+6].m_value;
-  netGame.m_info.DoMercury = m [optSecond+7].m_value;
-  netGame.m_info.DoEarthShaker = m [optSecond+8].m_value;
+  netGame.m_info.DoHoming = m.Value ("homingmsl");
+  netGame.m_info.DoProximity = m.Value ("proxmine");
+  netGame.m_info.DoSmarts = m.Value ("smartmsl");
+  netGame.m_info.DoMegas = m.Value ("megamsl");
+  netGame.m_info.DoFlash = m.Value ("flashmsl");
+  netGame.m_info.DoGuided = m.Value ("guidedmsl");
+  netGame.m_info.DoSmartMine = m.Value ("smartmine");
+  netGame.m_info.DoMercury = m.Value ("mercuymsl");
+  netGame.m_info.DoEarthShaker = m.Value ("eshakermsl");
 
-  netGame.m_info.DoInvulnerability = m [opt_power].m_value;
-  netGame.m_info.DoCloak = m [opt_power+1].m_value;
-  netGame.m_info.DoAfterburner = m [opt_power+2].m_value;
-  netGame.m_info.DoAmmoRack = m [opt_power+3].m_value;
-  netGame.m_info.DoConverter = m [opt_power+4].m_value;     
-  netGame.m_info.DoHeadlight = m [opt_power+5].m_value;     
+  netGame.m_info.DoInvulnerability = m.Value ("invul");
+  netGame.m_info.DoCloak = m.Value ("cloak");
+  netGame.m_info.DoAfterburner = m.Value ("afterburner");
+  netGame.m_info.DoAmmoRack = m.Value ("ammorack");
+  netGame.m_info.DoConverter = m.Value ("converter");     
+  netGame.m_info.DoHeadlight = m.Value ("headlight");     
   
  }
 
 //------------------------------------------------------------------------------
 
-static int optFF, optSuicide;
-
+fix nLastPTA = -1;
 int nLastReactorLife = 0;
-int optReactorLife, optAnarchy, optTeamAnarchy, optRobotAnarchy, optCoop;
-int optPlayersOnMap, optMaxNet;
-int optEntOpts, optMBallOpts;
-int lastMaxNet, optCTF, optEnhancedCTF, optHoard, optTeamHoard, optEntropy, optMonsterball;
-int optOpenGame, optClosedGame, optRestrictedGame;
+int nLastScoreGoal = -1;
+int nLastMaxPlayers = -1;
+int  = -1;
+
+//static struct {
+//	int nSuicide, nFriendlyFire;
+//	int "reactor life", nAnarchy, nTeamAnarchy, nRobotAnarchy, nCoop;
+//	int nPlayersOnMap;
+//	int nEntOpts, nMBallOpts;
+//	int "max. players";
+//	int nGameTypes, nCTF, nEnhancedCTF, nHoard, nTeamHoard;
+//	int nOpenGame, nClosedGame, nRestrictedGame;
+//	int nSetPower, networkMenuOpts."play time", "score goal", nSocket, nMarkerView, nLight;
+//	int nDifficulty, nPPS, nShortPkts, nBrightPlayers, nStartInvul;
+//	int nDarkness, nTeamDoors, nMultiCheats, nTgtInd;
+//	int nHeadlights, nPowerupLights, nSpotSize, nSmokeGrenades, nMaxSmokeGrens;
+//	int nShowNames, nAutoTeams, nRotateLevels, nDisableReactor;
+//	int nMouseLook, nFastPitch, nSafeUDP, nTowFlags, nCompetition, nPenalty;
+//	int nFixedSpawn, nSpawnDelay;
+//	int nGameName, nLevel, nLevelText, nMoreOpts, nMission, nMissionName, nD2XOpts, nConfigMenu, nLoadoutMenu, nMissileMenu;
+//	//int nDualMiss;
+//} networkMenuOpts;
+
+//------------------------------------------------------------------------------
+
 
 #define	WF(_f)	 ((short) (( (nFilter) & (1 << (_f))) != 0))
 
@@ -290,22 +307,22 @@ if (nState)
 	nCurItem = nCurItem;
 
 Assert (networkData.nStatus == NETSTAT_STARTING);
-if (!menu [0].m_value) {
-	menu [0].m_value = 1;
-	menu [0].m_bRebuild = 1;
+if (!menu [0)) {
+	menu [0) = 1;
+	menu [0].Rebuild ();
 	}
 for (i = 1; i < int (menu.ToS ()); i++) {
-	if ((i >= gameData.multiplayer.nPlayers) && menu [i].m_value) {
-		menu [i].m_value = 0;
-		menu [i].m_bRebuild = 1;
+	if ((i >= gameData.multiplayer.nPlayers) && menu [i]) {
+		menu [i] = 0;
+		menu [i].Rebuild ();
 		}
 	}
 nm = 0;
 for (i = 0; i < int (menu.ToS ()); i++) {
-	if (menu [i].m_value) {
+	if (menu [i]) {
 		if (++nm > gameData.multiplayer.nPlayers) {
-			menu [i].m_value = 0;
-			menu [i].m_bRebuild = 1;
+			menu [i] = 0;
+			menu [i].Rebuild ();
 			}
 		}
 	}
@@ -313,9 +330,9 @@ if (nm > gameData.multiplayer.nMaxPlayers) {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
 	// Turn off the last CPlayerData highlighted
 	for (i = gameData.multiplayer.nPlayers; i > 0; i--)
-		if (menu [i].m_value == 1) {
-			menu [i].m_value = 0;
-			menu [i].m_bRebuild = 1;
+		if (menu [i] == 1) {
+			menu [i] = 0;
+			menu [i].Rebuild ();
 			break;
 			}
 	}
@@ -328,33 +345,33 @@ NetworkListen ();
 if (n < netGame.m_info.nNumPlayers) {
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	if (gameOpts->multi.bNoRankings)
-	   sprintf (menu [gameData.multiplayer.nPlayers - 1].m_text, "%d. %-20s", 
+	   sprintf (menu [gameData.multiplayer.nPlayers - 1].Text (), "%d. %-20s", 
 					gameData.multiplayer.nPlayers, 
 					netPlayers [0].m_info.players [gameData.multiplayer.nPlayers-1].callsign);
 	else
-	   sprintf (menu [gameData.multiplayer.nPlayers - 1].m_text, "%d. %s%-20s", 
+	   sprintf (menu [gameData.multiplayer.nPlayers - 1].Text (), "%d. %s%-20s", 
 					gameData.multiplayer.nPlayers, 
 					pszRankStrings [netPlayers [0].m_info.players [gameData.multiplayer.nPlayers-1].rank], 
 					netPlayers [0].m_info.players [gameData.multiplayer.nPlayers-1].callsign);
-	menu [gameData.multiplayer.nPlayers - 1].m_bRebuild = 1;
+	menu [gameData.multiplayer.nPlayers - 1].Rebuild ();
 	if (gameData.multiplayer.nPlayers <= gameData.multiplayer.nMaxPlayers)
-		menu [gameData.multiplayer.nPlayers - 1].m_value = 1;
+		menu [gameData.multiplayer.nPlayers - 1] = 1;
 	} 
 else if (n > netGame.m_info.nNumPlayers) {
 	// One got removed...
    audio.PlaySound (SOUND_HUD_KILL);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (gameOpts->multi.bNoRankings)
-			sprintf (menu [i].m_text, "%d. %-20s", i+1, netPlayers [0].m_info.players [i].callsign);
+			sprintf (menu [i].Text (), "%d. %-20s", i+1, netPlayers [0].m_info.players [i].callsign);
 		else
-			sprintf (menu [i].m_text, "%d. %s%-20s", i+1, pszRankStrings [netPlayers [0].m_info.players [i].rank], netPlayers [0].m_info.players [i].callsign);
-		menu [i].m_value = (i < gameData.multiplayer.nMaxPlayers);
-		menu [i].m_bRebuild = 1;
+			sprintf (menu [i].Text (), "%d. %s%-20s", i+1, pszRankStrings [netPlayers [0].m_info.players [i].rank], netPlayers [0].m_info.players [i].callsign);
+		menu [i] = (i < gameData.multiplayer.nMaxPlayers);
+		menu [i].Rebuild ();
 		}
 	for (i = gameData.multiplayer.nPlayers; i<n; i++)  {
-		sprintf (menu [i].m_text, "%d. ", i+1);          // Clear out the deleted entries...
-		menu [i].m_value = 0;
-		menu [i].m_bRebuild = 1;
+		sprintf (menu [i].Text (), "%d. ", i+1);          // Clear out the deleted entries...
+		menu [i] = 0;
+		menu [i].Rebuild ();
 		}
    }
 return nCurItem;
@@ -362,37 +379,41 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-static int optGameTypes, nGameTypes, nGameItem;
+static int nGameTypes = -1, nGameItem = -1, nEntropy = -1, nMonsterball = -1;
 
 int NetworkGameParamPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
+if (!menu.Available ("max. players"))
+	return nCurItem;
 
-	static int oldmaxnet = 0;
+CMenuItem& maxPlayers = menu ["max. players"];
 
-if ((nCurItem >= optGameTypes) && (nCurItem < optGameTypes + nGameTypes)) {
-	if ((nCurItem != nGameItem) && (menu [nCurItem].m_value)) {
+	static int oldMaxPlayers = 0;
+
+if ((nCurItem >= nGameTypes) && (nCurItem < nGameTypes + nGameTypes)) {
+	if ((nCurItem != nGameItem) && (menu [nCurItem))) {
 		nGameItem = nCurItem;
 		key = -2;
 		return nCurItem;
 		}
 	}
-if (((optEntropy >= 0) && (menu [optEntropy].m_value == (optEntOpts < 0))) ||
-	 ((optMonsterball >= 0) && (gameOpts->app.bExpertMode == SUPERUSER) && (menu [optMonsterball].m_value == (optMBallOpts < 0))))
+if ((menu.Available ("entropy") && (menu.Value ("entropy") == (networkMenuOpts.nEntOpts < 0))) ||
+	 (menu.Available ("monsterball") && (gameOpts->app.bExpertMode == SUPERUSER) && (menu.Value (nMonsterball) == (networkMenuOpts.nMBallOpts < 0))))
 	key = -2;
 //force restricted game for team games
 //obsolete with D2X-W32 as it can assign players to teams automatically
 //even in a match and progress, and allows players to switch teams
-if (menu [optCoop].m_value) {
-	oldmaxnet = 1;
-	if (menu [optMaxNet].m_value > 2)  {
-		menu [optMaxNet].m_value = 2;
-		menu [optMaxNet].m_bRedraw = 1;
+if (menu.Value ("coop")) {
+	oldMaxPlayers = 1;
+	if (maxPlayers.Value () > 2)  {
+		maxPlayers.Value () = 2;
+		maxPlayers.Redraw ();
 		}
-	if (menu [optMaxNet].m_maxValue > 2) {
-		menu [optMaxNet].m_maxValue = 2;
-		menu [optMaxNet].m_bRedraw = 1;
+	if (maxPlayers.MaxValue () > 2) {
+		maxPlayers.MaxValue () = 2;
+		maxPlayers.Redraw ();
 		}
 	if (!(netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
 		netGame.m_info.gameFlags |= NETGAME_FLAG_SHOW_MAP;
@@ -402,33 +423,19 @@ if (menu [optCoop].m_value) {
 		}
 	}
 else {// if !Coop game
-	if (oldmaxnet) {
-		oldmaxnet = 0;
-		menu [optMaxNet].m_value = 
-		menu [optMaxNet].m_maxValue = MAX_NUM_NET_PLAYERS - 2;
+	if (oldMaxPlayers) {
+		oldMaxPlayers = 0;
+		max.Players.Value () = 
+		maxPlayers.MaxValue () = MAX_NUM_NET_PLAYERS - 2;
 		}
 	}         
-if (lastMaxNet != menu [optMaxNet].m_value)  {
-	sprintf (menu [optMaxNet].m_text, TXT_MAX_PLAYERS, menu [optMaxNet].m_value + 2);
-	lastMaxNet = menu [optMaxNet].m_value;
-	menu [optMaxNet].m_bRebuild = 1;
+if (nLastMaxPlayers != menu.Value ("max. players"))  {
+	sprintf (maxPlayers.Text (), TXT_MAX_PLAYERS, maxPlayers.Value () + 2);
+	nLastMaxPlayers = maxPlayers.Value ();
+	maxPlayers.Rebuild ();
 	}               
 return nCurItem;
 }
-
-//------------------------------------------------------------------------------
-
-fix nLastPTA;
-int nLastScoreGoal;
-
-int optSetPower, optPlayTime, optScoreGoal, optSocket, optMarkerView, optLight;
-int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
-int optDarkness, optTeamDoors, optMultiCheats, optTgtInd;
-int optHeadlights, optPowerupLights, optSpotSize, optSmokeGrenades, optMaxSmokeGrens;
-int optShowNames, optAutoTeams, optRotateLevels, optDisableReactor;
-int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPenalty;
-int optFixedSpawn, optSpawnDelay;
-//int optDualMiss;
 
 //------------------------------------------------------------------------------
 
@@ -437,23 +444,23 @@ int NetworkMoreOptionsPoll (CMenu& menu, int& key, int nCurItem, int nState)
 if (nState)
 	return nCurItem;
 
-if (nLastReactorLife != menu [optReactorLife].m_value)   {
-	sprintf (menu [optReactorLife].m_text, "%s: %d %s", TXT_REACTOR_LIFE, menu [optReactorLife].m_value*5, TXT_MINUTES_ABBREV);
-	nLastReactorLife = menu [optReactorLife].m_value;
-	menu [optReactorLife].m_bRebuild = 1;
+if (nLastReactorLife != menu.Value ("reactor life"))   {
+	sprintf (menu ["reactor life"].Text (), "%s: %d %s", TXT_REACTOR_LIFE, menu.Value ("reactor life") * 5, TXT_MINUTES_ABBREV);
+	nLastReactorLife = menu.Value ("reactor life");
+	menu ["reactor life"].Rebuild ();
    }
   
-if ((optPlayTime >= 0) && (menu [optPlayTime].m_value != nLastPTA)) {
+if ((networkMenuOpts."play time" >= 0) && (menu.Value ("play time") != nLastPTA)) {
 	nLastPTA = mpParams.nMaxTime;
-	mpParams.nMaxTime = menu [optPlayTime].m_value;
-	sprintf (menu [optPlayTime].m_text, TXT_MAXTIME, nLastPTA * 5, TXT_MINUTES_ABBREV);
-	menu [optPlayTime].m_bRebuild = 1;
+	mpParams.nMaxTime = menu.Value ("play time");
+	sprintf (menu.Value ("play time"].Text (), TXT_MAXTIME, nLastPTA * 5, TXT_MINUTES_ABBREV);
+	menu ["play time"].Rebuild ();
 	}
-if ((optScoreGoal >= 0) && (menu [optScoreGoal].m_value != nLastScoreGoal)) {
-	nLastScoreGoal = mpParams.nScoreGoal;
-	mpParams.nScoreGoal = menu [optScoreGoal].m_value;
-	sprintf (menu [optScoreGoal].m_text, TXT_SCOREGOAL, mpParams.nScoreGoal * 5);
-	menu [optScoreGoal].m_bRebuild = 1;
+if (("score goal" >= 0) && (menu ["score goal") != nLastScoreGoal)) {
+	nLastScoreGoal = mpParams."score goal";
+	mpParams."score goal" = menu ["score goal");
+	sprintf (menu ["score goal"].Text (), TXT_SCOREGOAL, mpParams.nScoreGoal * 5);
+	menu ["score goal"].Rebuild ();
 	}
 
 return nCurItem;
@@ -472,44 +479,42 @@ void NetworkMoreGameOptions (void)
 do {
 	m.Destroy ();
 	m.Create (40);
-	optDifficulty = m.AddSlider (TXT_DIFFICULTY, mpParams.nDifficulty, 0, NDL - 1, KEY_D, HTX_GPLAY_DIFFICULTY); 
-	sprintf (szInvul + 1, "%s: %d %s", TXT_REACTOR_LIFE, mpParams.nReactorLife * 5, TXT_MINUTES_ABBREV);
+	m.AddSlider (TXT_DIFFICULTY, mpParams.nDifficulty, 0, NDL - 1, KEY_D, HTX_GPLAY_DIFFICULTY, "difficulty"); 
+	sprintf (szInvul + 1, "%s: %d %s", TXT_REACTOR_LIFE, mpParams.networkMenuOpts.nReactorLife * 5, TXT_MINUTES_ABBREV);
 	strupr (szInvul + 1);
 	*szInvul = * (TXT_REACTOR_LIFE - 1);
-	optReactorLife = m.AddSlider (szInvul + 1, mpParams.nReactorLife, 0, 10, KEY_R, HTX_MULTI2_REACTOR); 
+	m.AddSlider (szInvul + 1, mpParams.networkMenuOpts."reactor life", 0, 10, KEY_R, HTX_MULTI2_REACTOR, "reactor life"); 
 	if (IsCoopGame) {
-		optPlayTime =
-		optScoreGoal = -1;
 		nLastPTA =
 		nLastScoreGoal = 0;
 		}
 	else {
 		sprintf (szPlayTime + 1, TXT_MAXTIME, mpParams.nMaxTime * 5, TXT_MINUTES_ABBREV);
 		*szPlayTime = * (TXT_MAXTIME - 1);
-		optPlayTime = m.AddSlider (szPlayTime + 1, mpParams.nMaxTime, 0, 10, KEY_T, HTX_MULTI2_LVLTIME); 
-		sprintf (szScoreGoal + 1, TXT_SCOREGOAL, mpParams.nScoreGoal * 5);
+		m.AddSlider (szPlayTime + 1, mpParams.nMaxTime, 0, 10, KEY_T, HTX_MULTI2_LVLTIME, "play time"); 
+		sprintf (szScoreGoal + 1, TXT_SCOREGOAL, mpParams."score goal" * 5);
 		*szScoreGoal = * (TXT_SCOREGOAL - 1);
-		optScoreGoal = m.AddSlider (szScoreGoal + 1, mpParams.nScoreGoal, 0, 10, KEY_K, HTX_MULTI2_SCOREGOAL);
+		m.AddSlider (szScoreGoal + 1, mpParams."score goal", 0, 10, KEY_K, HTX_MULTI2_SCOREGOAL, "score goal");
 		}
-	optStartInvul = m.AddCheck (TXT_INVUL_RESPAWN, mpParams.bInvul, KEY_I, HTX_MULTI2_INVUL);
-	optMarkerView = m.AddCheck (TXT_MARKER_CAMS, mpParams.bMarkerView, KEY_C, HTX_MULTI2_MARKERCAMS);
-	optLight = m.AddCheck (TXT_KEEP_LIGHTS, mpParams.bIndestructibleLights, KEY_L, HTX_MULTI2_KEEPLIGHTS);
-	optBrightPlayers = m.AddCheck (TXT_BRIGHT_SHIPS, mpParams.bBrightPlayers ? 0 : 1, KEY_S, HTX_MULTI2_BRIGHTSHIP);
-	optShowNames = m.AddCheck (TXT_SHOW_NAMES, mpParams.bShowAllNames, KEY_E, HTX_MULTI2_SHOWNAMES);
-	optPlayersOnMap = m.AddCheck (TXT_SHOW_PLAYERS, mpParams.bShowPlayersOnAutomap, KEY_A, HTX_MULTI2_SHOWPLRS);
-	optShortPkts = m.AddCheck (TXT_SHORT_PACKETS, mpParams.bShortPackets, KEY_H, HTX_MULTI2_SHORTPKTS);
+	m.AddCheck (TXT_INVUL_RESPAWN, mpParams.bInvul, KEY_I, HTX_MULTI2_INVUL, "spawn invul");
+	m.AddCheck (TXT_MARKER_CAMS, mpParams.bMarkerView, KEY_C, HTX_MULTI2_MARKERCAMS, "marker cameras");
+	m.AddCheck (TXT_KEEP_LIGHTS, mpParams.bIndestructibleLights, KEY_L, HTX_MULTI2_KEEPLIGHTS, "indestructible lights");
+	m.AddCheck (TXT_BRIGHT_SHIPS, mpParams.bBrightPlayers ? 0 : 1, KEY_S, HTX_MULTI2_BRIGHTSHIP, "bright ships");
+	m.AddCheck (TXT_SHOW_NAMES, mpParams.bShowAllNames, KEY_E, HTX_MULTI2_SHOWNAMES, "show players names");
+	m.AddCheck (TXT_SHOW_PLAYERS, mpParams.bShowPlayersOnAutomap, KEY_A, HTX_MULTI2_SHOWPLRS, "show players on map");
+	m.AddCheck (TXT_SHORT_PACKETS, mpParams.bShortPackets, KEY_H, HTX_MULTI2_SHORTPKTS, "short packets");
 	m.AddText ("", 0);
-	optSetPower = m.AddMenu (TXT_WAOBJECTS_MENU, KEY_O, HTX_MULTI2_OBJECTS);
+	m.AddMenu (TXT_WAOBJECTS_MENU, KEY_O, HTX_MULTI2_OBJECTS, "allowed weapons");
 	m.AddText ("", 0);
 	sprintf (szSocket, "%d", (gameStates.multi.nGameType == UDP_GAME) ? mpParams.udpPorts [0] + networkData.nPortOffset : networkData.nPortOffset);
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		m.AddText (TXT_SOCKET2, KEY_N);
-		optSocket = m.AddInput (szSocket, 5, HTX_MULTI2_SOCKET);
+		nSocket = m.AddInput (szSocket, 5, HTX_MULTI2_SOCKET, "socket");
 		}
 
 	sprintf (szPPS, "%d", mpParams.nPPS);
 	m.AddText (TXT_PPS, KEY_P);
-	optPPS = m.AddInput (szPPS, 2, HTX_MULTI2_PPS);
+	nPPS = m.AddInput (szPPS, 2, HTX_MULTI2_PPS, "PPS");
 
 	nLastScoreGoal = netGame.GetScoreGoal ();
 	nLastPTA = mpParams.nMaxTime;
@@ -520,24 +525,24 @@ doMenu:
 	i = m.Menu (NULL, TXT_MORE_MPOPTIONS, NetworkMoreOptionsPoll, &choice);
 	} while (i == -2);
 
-   //mpParams.nReactorLife = atoi (szInvul)*I2X (60);
-mpParams.nReactorLife = m [optReactorLife].m_value;
+   //mpParams.networkMenuOpts."reactor life" = atoi (szInvul)*I2X (60);
+mpParams.networkMenuOpts.nReactorLife = m.Value ("reactor life");
 
-if (i == optSetPower) {
+if (i == m.IndexOf ("allowed weapons")) {
 	NetworkSetWeaponsAllowed ();
 	GetAllAllowables ();
 	goto doMenu;
 	}
 
-mpParams.bInvul = ubyte (m [optStartInvul].m_value);
-mpParams.bBrightPlayers = ubyte (m [optBrightPlayers].m_value ? 0 : 1);
-mpParams.bShowAllNames = ubyte (m [optShowNames].m_value);
-mpParams.bMarkerView = ubyte (m [optMarkerView].m_value);
-mpParams.bIndestructibleLights = ubyte (m [optLight].m_value);
-mpParams.nDifficulty = m [optDifficulty].m_value;
-mpParams.bShowPlayersOnAutomap = m [optPlayersOnMap].m_value;
-mpParams.bShortPackets = m [optShortPkts].m_value;
-mpParams.nPPS = atoi (szPPS);
+mpParams.bInvul = ubyte (m.Value ("spawn invul"));
+mpParams.bBrightPlayers = ubyte (m.Value ("bright ships") ? 0 : 1);
+mpParams.bShowAllNames = ubyte (m.Value ("show player names"));
+mpParams.bMarkerView = ubyte (m.Value ("marker cameras"));
+mpParams.bIndestructibleLights = ubyte (m.Value ("indestructible lights"));
+mpParams.nDifficulty = m.Value ("difficulty");
+mpParams.bShowPlayersOnAutomap = m.Value ("show players on map");
+mpParams.bShortPackets = m.Value ("short packets");
+mpParams.nPPS = atoi ("PPS");
 if (mpParams.nPPS > 20) {
 	mpParams.nPPS = 20;
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
@@ -569,32 +574,32 @@ if (nState)
 
 	int	v;
 
-v = menu [optCompetition].m_value;
+v = menu [nCompetition);
 if (v != extraGameInfo [1].bCompetition) {
 	extraGameInfo [1].bCompetition = v;
 	key = -2;
 	return nCurItem;
 	}
 
-if (optPenalty > 0) {
-	v = menu [optPenalty].m_value;
+if (nPenalty > 0) {
+	v = menu.Value ("coop penalty");
 	if (v != extraGameInfo [1].nCoopPenalty) {
 		extraGameInfo [1].nCoopPenalty = v;
-		sprintf (menu [optPenalty].m_text, TXT_COOP_PENALTY, nCoopPenalties [v], '%');
-		menu [optPenalty].m_bRebuild = 1;
+		sprintf (menu ["coop penalty"].Text (), TXT_COOP_PENALTY, nCoopPenalties [v], '%');
+		menu ["coop penalty"].Rebuild ();
 		return nCurItem;
 		}
 	}
 
-v = menu [optDarkness].m_value;
+v = menu.Value ("darkness");
 if (v != extraGameInfo [1].bDarkness) {
 	extraGameInfo [1].bDarkness = v;
 	key = -2;
 	return nCurItem;
 	}
 
-if (optTgtInd >= 0) {
-	v = menu [optTgtInd].m_value;
+if (nTgtInd >= 0) {
+	v = menu.Value ("target indicators");
 	if (v != (extraGameInfo [1].bTargetIndicators != 0)) {
 		extraGameInfo [1].bTargetIndicators = v;
 		key = -2;
@@ -602,8 +607,8 @@ if (optTgtInd >= 0) {
 		}
 	}
 
-if (optHeadlights >= 0) {
-	v = menu [optHeadlights].m_value;
+if (nHeadlights >= 0) {
+	v = menu.Value ("headlights");
 	if (v == extraGameInfo [1].headlight.bAvailable) {
 		extraGameInfo [1].headlight.bAvailable = !v;
 		key = -2;
@@ -611,39 +616,39 @@ if (optHeadlights >= 0) {
 		}
 	}
 
-if (optSpotSize >= 0) {
-	v = menu [optSpotSize].m_value;
+if (nSpotSize >= 0) {
+	v = menu.Value ("spot size");
 	if (v != extraGameInfo [1].nSpotSize) {
 		extraGameInfo [1].nSpotSize =
 		extraGameInfo [1].nSpotStrength = v;
-		sprintf (menu [optSpotSize].m_text, TXT_SPOTSIZE, GT (664 + v));
-		menu [optSpotSize].m_bRebuild = 1;
+		sprintf (menu ["spot size"].Text (), TXT_SPOTSIZE, GT (664 + v));
+		menu [nSpotSize].Rebuild ();
 		return nCurItem;
 		}
 	}
 
-v = menu [optSmokeGrenades].m_value;
+v = menu.Value ("smoke grenades");
 if (extraGameInfo [0].bSmokeGrenades != v) {
 	extraGameInfo [0].bSmokeGrenades = v;
 	key = -2;
 	return nCurItem;
 	}
 
-if (extraGameInfo [0].bSmokeGrenades && (optMaxSmokeGrens >= 0)) {
-	v = menu [optMaxSmokeGrens].m_value;
+if (extraGameInfo [0].bSmokeGrenades && (nMaxSmokeGrens >= 0)) {
+	v = menu.Value ("max. smoke grenades");
 	if (extraGameInfo [0].nMaxSmokeGrenades != v) {
 		extraGameInfo [0].nMaxSmokeGrenades = v;
-		sprintf (menu [optMaxSmokeGrens].m_text, TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
-		menu [optMaxSmokeGrens].m_bRebuild = 1;
+		sprintf (menu ["max. smoke grenades"].Text (), TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
+		menu [nMaxSmokeGrens].Rebuild ();
 		}
 	}
 
-if (optSpawnDelay >= 0) {
-	v = menu [optSpawnDelay].m_value * 5;
+if (nSpawnDelay >= 0) {
+	v = menu.Value ("spawn delay") * 5;
 	if (extraGameInfo [0].nSpawnDelay != v * 1000) {
 		extraGameInfo [0].nSpawnDelay = v * 1000;
-		sprintf (menu [optSpawnDelay].m_text, TXT_RESPAWN_DELAY, v);
-		menu [optSpawnDelay].m_bRebuild = 1;
+		sprintf (menu ["spawn delay"].Text (), TXT_RESPAWN_DELAY, v);
+		menu ["spawn delay"].Rebuild ();
 		}
 	}
 
@@ -663,125 +668,102 @@ void NetworkD2XOptions (void)
 do {
 	m.Destroy ();
 	m.Create (40);
-	optCompetition = m.AddCheck (TXT_COMPETITION_MODE, extraGameInfo [1].bCompetition, KEY_C, HTX_MULTI2_COMPETITION);
+	m.AddCheck (TXT_COMPETITION_MODE, extraGameInfo [1].bCompetition, KEY_C, HTX_MULTI2_COMPETITION, "competition");
 	if (!extraGameInfo [1].bCompetition) {
-		optFF = m.AddCheck (TXT_FRIENDLY_FIRE, extraGameInfo [0].bFriendlyFire, KEY_F, HTX_MULTI2_FFIRE);
-		optSuicide = m.AddCheck (TXT_NO_SUICIDE, extraGameInfo [0].bInhibitSuicide, KEY_U, HTX_MULTI2_SUICIDE);
-		optMouseLook = m.AddCheck (TXT_MOUSELOOK, extraGameInfo [1].bMouseLook, KEY_O, HTX_MULTI2_MOUSELOOK);
-		optFastPitch = m.AddCheck (TXT_FASTPITCH, (extraGameInfo [1].bFastPitch == 1) ? 1 : 0, KEY_P, HTX_MULTI2_FASTPITCH);
-		//optDualMiss = m.AddCheck (TXT_DUAL_LAUNCH, extraGameInfo [1].bDualMissileLaunch, KEY_M, HTX_GPLAY_DUALLAUNCH);
+		m.AddCheck (TXT_FRIENDLY_FIRE, extraGameInfo [0].bFriendlyFire, KEY_F, HTX_MULTI2_FFIRE, "friendly fire");
+		m.AddCheck (TXT_NO_SUICIDE, extraGameInfo [0].bInhibitSuicide, KEY_U, HTX_MULTI2_SUICIDE, "inhibit suicide");
+		m.AddCheck (TXT_MOUSELOOK, extraGameInfo [1].bMouseLook, KEY_O, HTX_MULTI2_MOUSELOOK, "mouselook");
+		m.AddCheck (TXT_FASTPITCH, (extraGameInfo [1].bFastPitch == 1) ? 1 : 0, KEY_P, HTX_MULTI2_FASTPITCH, "fast pitch");
+		//m.AddCheck (TXT_DUAL_LAUNCH, extraGameInfo [1].bDualMissileLaunch, KEY_M, HTX_GPLAY_DUALLAUNCH, "dual missile launch");
 		}
-	else
-		optFF =
-		optSuicide =
-		optMouseLook =
-		optFastPitch = -1;
-		//optDualMiss = -1;
 	if (IsTeamGame) {
-		optAutoTeams = m.AddCheck (TXT_AUTOBALANCE, extraGameInfo [0].bAutoBalanceTeams, KEY_B, HTX_MULTI2_BALANCE);
-		optTeamDoors = m.AddCheck (TXT_TEAMDOORS, mpParams.bTeamDoors, KEY_T, HTX_TEAMDOORS);
+		m.AddCheck (TXT_AUTOBALANCE, extraGameInfo [0].bAutoBalanceTeams, KEY_B, HTX_MULTI2_BALANCE, "auto balance");
+		m.AddCheck (TXT_TEAMDOORS, mpParams.bTeamDoors, KEY_T, HTX_TEAMDOORS, "team doors");
 		}
-	else
-		optTeamDoors =
-		optAutoTeams = -1;
 	if (mpParams.nGameMode == NETGAME_CAPTURE_FLAG)
-		optTowFlags = m.AddCheck (TXT_TOW_FLAGS, extraGameInfo [1].bTowFlags, KEY_F, HTX_TOW_FLAGS);
-	else
-		optTowFlags = -1;
+		m.AddCheck (TXT_TOW_FLAGS, extraGameInfo [1].bTowFlags, KEY_F, HTX_TOW_FLAGS, "tow flags");
 	if (!extraGameInfo [1].bCompetition)
-		optMultiCheats = m.AddCheck (TXT_MULTICHEATS, mpParams.bEnableCheats, KEY_T, HTX_MULTICHEATS);
-	else
-		optMultiCheats = -1;
-	optRotateLevels = m.AddCheck (TXT_MSN_CYCLE, extraGameInfo [1].bRotateLevels, KEY_Y, HTX_MULTI2_MSNCYCLE); 
+		m.AddCheck (TXT_MULTICHEATS, mpParams.bEnableCheats, KEY_T, HTX_MULTICHEATS, "multiplayer cheats");
+	m.AddCheck (TXT_MSN_CYCLE, extraGameInfo [1].bRotateLevels, KEY_Y, HTX_MULTI2_MSNCYCLE, "cycle levels"); 
+
 #if 0
-		optDisableReactor = mat.AddCheck (TXT_NO_REACTOR, extraGameInfo [1].bDisableReactor, KEY_R, HTX_MULTI2_NOREACTOR); 
-#else
-		optDisableReactor = -1;
+	mat.AddCheck (TXT_NO_REACTOR, extraGameInfo [1].bDisableReactor, KEY_R, HTX_MULTI2_NOREACTOR, "disable reactor"); 
 #endif
 #if UDP_SAFEMODE
-	optSafeUDP = mat.AddCheck (TXT_UDP_QUAL, extraGameInfo [0].bSafeUDP, KEY_Q, HTX_MULTI2_UDPQUAL);
+	m.AddCheck (TXT_UDP_QUAL, extraGameInfo [0].bSafeUDP, KEY_Q, HTX_MULTI2_UDPQUAL, "safe udp");
 #endif
-	optCheckPort = m.AddCheck (TXT_CHECK_PORT, extraGameInfo [0].bCheckUDPPort, KEY_P, HTX_MULTI2_CHECKPORT);
+
+	m.AddCheck (TXT_CHECK_PORT, extraGameInfo [0].bCheckUDPPort, KEY_P, HTX_MULTI2_CHECKPORT, "check ports");
 	if (extraGameInfo [1].bDarkness)
 		m.AddText ("", 0);
-	optDarkness = m.AddCheck (TXT_DARKNESS, extraGameInfo [1].bDarkness, KEY_D, HTX_DARKNESS);
+	m.AddCheck (TXT_DARKNESS, extraGameInfo [1].bDarkness, KEY_D, HTX_DARKNESS, "darkness");
 	if (extraGameInfo [1].bDarkness) {
-		optPowerupLights = m.AddCheck (TXT_POWERUPLIGHTS, !extraGameInfo [1].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
-		optHeadlights = m.AddCheck (TXT_HEADLIGHTS, !extraGameInfo [1].headlight.bAvailable, KEY_H, HTX_HEADLIGHTS);
+		m.AddCheck (TXT_POWERUPLIGHTS, !extraGameInfo [1].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS, "powerups are light sources");
+		m.AddCheck (TXT_HEADLIGHTS, !extraGameInfo [1].headlight.bAvailable, KEY_H, HTX_HEADLIGHTS, "headlights");
 		if (extraGameInfo [1].headlight.bAvailable) {
 			sprintf (szSlider + 1, TXT_SPOTSIZE, GT (664 + extraGameInfo [1].nSpotSize));
 			strupr (szSlider + 1);
 			*szSlider = *(TXT_SPOTSIZE - 1);
-			optSpotSize = m.AddSlider (szSlider + 1, extraGameInfo [1].nSpotSize, 0, 2, KEY_O, HTX_SPOTSIZE); 
+			m.AddSlider (szSlider + 1, extraGameInfo [1].nSpotSize, 0, 2, KEY_O, HTX_SPOTSIZE, "spot size"); 
 			}
-		else
-			optSpotSize = -1;
 		}
-	else
-		optHeadlights =
-		optPowerupLights =
-		optSpotSize = -1;
 	if (!extraGameInfo [1].bCompetition) {
 		if (mpParams.nGameMode == NETGAME_COOPERATIVE) {
 			sprintf (szSlider + 1, TXT_COOP_PENALTY, nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty], '%');
 			strupr (szSlider + 1);
 			*szSlider = *(TXT_COOP_PENALTY - 1);
-			optPenalty = m.AddSlider (szSlider + 1, extraGameInfo [1].nCoopPenalty, 0, 9, KEY_O, HTX_COOP_PENALTY); 
+			m.AddSlider (szSlider + 1, extraGameInfo [1].nCoopPenalty, 0, 9, KEY_O, HTX_COOP_PENALTY, "coop penalty"); 
 			}
 		else
-			optPenalty = -1;
-		optTgtInd = m.AddCheck (TXT_MULTI_TGTIND, extraGameInfo [1].bTargetIndicators != 0, KEY_A, HTX_CPIT_TGTIND);
+			nPenalty = -1;
+		m.AddCheck (TXT_MULTI_TGTIND, extraGameInfo [1].bTargetIndicators != 0, KEY_A, HTX_CPIT_TGTIND, "target indicators");
 		}
-	else
-		optTgtInd = -1;
 
-	optSmokeGrenades = m.AddCheck (TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES);
+	m.AddCheck (TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES, "smoke grenades");
 	if (extraGameInfo [0].bSmokeGrenades) {
 		sprintf (szSlider + 1, TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
 		*szSlider = *(TXT_MAX_SMOKEGRENS - 1);
-		optMaxSmokeGrens = m.AddSlider (szSlider + 1, extraGameInfo [0].nMaxSmokeGrenades - 1, 0, 3, KEY_X, HTX_GPLAY_MAXGRENADES);
+		m.AddSlider (szSlider + 1, extraGameInfo [0].nMaxSmokeGrenades - 1, 0, 3, KEY_X, HTX_GPLAY_MAXGRENADES, "max. smoke grenades");
 		}
-	else
-		optMaxSmokeGrens = -1;
-	optFixedSpawn = m.AddCheck (TXT_FIXED_SPAWN, extraGameInfo [0].bFixedRespawns, KEY_F, HTX_GPLAY_FIXEDSPAWN);
+	m.AddCheck (TXT_FIXED_SPAWN, extraGameInfo [0].bFixedRespawns, KEY_F, HTX_GPLAY_FIXEDSPAWN, "fixed spawn points");
 	if (extraGameInfo [0].nSpawnDelay < 0)
 		extraGameInfo [0].nSpawnDelay = 0;
 	sprintf (szSlider + 1, TXT_RESPAWN_DELAY, extraGameInfo [0].nSpawnDelay / 1000);
 	*szSlider = *(TXT_RESPAWN_DELAY - 1);
-	optSpawnDelay = m.AddSlider (szSlider + 1, extraGameInfo [0].nSpawnDelay / 5000, 0, 12, KEY_R, HTX_GPLAY_SPAWNDELAY);
+	m.AddSlider (szSlider + 1, extraGameInfo [0].nSpawnDelay / 5000, 0, 12, KEY_R, HTX_GPLAY_SPAWNDELAY, "spawn delay");
 	m.AddText ("", 0);
 
 	i = m.Menu (NULL, TXT_D2XOPTIONS_TITLE, NetworkD2XOptionsPoll, &choice);
-  //mpParams.nReactorLife = atoi (szInvul)*I2X (60);
-	extraGameInfo [1].bDarkness = (ubyte) m [optDarkness].m_value;
-	if (optDarkness >= 0) {
+  //mpParams.networkMenuOpts."reactor life" = atoi (szInvul)*I2X (60);
+	extraGameInfo [1].bDarkness = (ubyte) m.Value ("darkness");
+	if (nDarkness >= 0) {
 		if ((mpParams.bDarkness = extraGameInfo [1].bDarkness)) {
-			extraGameInfo [1].headlight.bAvailable = !m [optHeadlights].m_value;
-			extraGameInfo [1].bPowerupLights = !m [optPowerupLights].m_value;
+			extraGameInfo [1].headlight.bAvailable = !m.Value ("headlights");
+			extraGameInfo [1].bPowerupLights = !m.Value ("powerups are light sources");
 			}
 		}
-	GET_VAL (extraGameInfo [1].bTowFlags, optTowFlags);
-	GET_VAL (extraGameInfo [1].bTeamDoors, optTeamDoors);
+	GET_VAL (extraGameInfo [1].bTowFlags, "tow flags");
+	GET_VAL (extraGameInfo [1].bTeamDoors, "team doors");
 	mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
-	if (optAutoTeams >= 0)
-		extraGameInfo [0].bAutoBalanceTeams = (m [optAutoTeams].m_value != 0);
-	#if UDP_SAFEMODE
-	extraGameInfo [0].bSafeUDP = (mat [optSafeUDP].m_value != 0);
-	#endif
-	extraGameInfo [0].bCheckUDPPort = (m [optCheckPort].m_value != 0);
-	extraGameInfo [1].bRotateLevels = m [optRotateLevels].m_value;
+	if (m.Available ("auto balance"))
+		extraGameInfo [0].bAutoBalanceTeams = (m.Value ("auto balance") != 0);
+#if UDP_SAFEMODE
+	extraGameInfo [0].bSafeUDP = (m.Value ("safe UDP") != 0);
+#endif
+	extraGameInfo [0].bCheckUDPPort = (m.Value ("check ports") != 0);
+	extraGameInfo [1].bRotateLevels = m.Value ("cycle levels");
 	if (!COMPETITION) {
-		GET_VAL (extraGameInfo [1].bEnableCheats, optMultiCheats);
+		GET_VAL (extraGameInfo [1].bEnableCheats, "multiplayer cheats");
 		mpParams.bEnableCheats = extraGameInfo [1].bEnableCheats;
-		GET_VAL (extraGameInfo [0].bFriendlyFire, optFF);
-		GET_VAL (extraGameInfo [0].bInhibitSuicide, optSuicide);
-		GET_VAL (extraGameInfo [1].bMouseLook, optMouseLook);
-		if (optFastPitch >= 0)
-			extraGameInfo [1].bFastPitch = m [optFastPitch].m_value ? 1 : 2;
-		//GET_VAL (extraGameInfo [1].bDualMissileLaunch, optDualMiss);
-		GET_VAL (extraGameInfo [1].bDisableReactor, optDisableReactor);
-		GET_VAL (extraGameInfo [1].bTargetIndicators, optTgtInd);
-		GET_VAL (extraGameInfo [1].bFixedRespawns, optFixedSpawn);
+		GET_VAL (extraGameInfo [0].bFriendlyFire, "friendly fire");
+		GET_VAL (extraGameInfo [0].bInhibitSuicide, "inhibit suicide");
+		GET_VAL (extraGameInfo [1].bMouseLook, "mouselook");
+		if (m.Available ("fast pitch"))
+			extraGameInfo [1].bFastPitch = m.Value ("fast pitch") ? 1 : 2;
+		//GET_VAL (extraGameInfo [1].bDualMissileLaunch, nDualMiss);
+		GET_VAL (extraGameInfo [1].bDisableReactor, "disable reactor");
+		GET_VAL (extraGameInfo [1].bTargetIndicators, "target indicators");
+		GET_VAL (extraGameInfo [1].bFixedRespawns, "fixed spawn points");
 		extraGameInfo [1].bDamageIndicators = extraGameInfo [1].bTargetIndicators;
 		extraGameInfo [1].bMslLockIndicators = extraGameInfo [1].bTargetIndicators;
 		extraGameInfo [1].bFriendlyIndicators = 1;
@@ -838,10 +820,10 @@ if (nState)
 for (i = 0; i < int (menu.ToS ()); i++) {
 	if (menu [i].m_nType != NM_TYPE_TEXT) {
 		h = powerupMap [i];
-		v = menu [i].m_value;
+		v = menu [i];
 		if (v != extraGameInfo [0].loadout.nMissiles [h]) {
 			extraGameInfo [0].loadout.nMissiles [h] = v;
-			sprintf (menu [i].m_text, szMslNames [i], v);
+			sprintf (menu [i].Text (), szMslNames [i], v);
 			menu [i].m_bRebuild = true;
 			}
 		}
@@ -866,7 +848,7 @@ do {
 	for (i = 0; i < j; i++) {
 		if ((h = powerupMap [i]) < 0) {
 			h = m.AddText (szMslNames [i]);
-			m [h].m_bCentered = 1;
+			m.Value (h].m_bCentered = 1;
 			}
 		else {
 			if (extraGameInfo [0].loadout.nMissiles [h] > nMaxSecondaryAmmo [h])
@@ -886,45 +868,43 @@ int NetworkGetGameType (CMenu& m, int bAnarchyOnly)
 {
 	int bHoard = HoardEquipped ();
 		   
-if (m [optAnarchy].m_value)
+if (m.Value ("anarchy"))
 	mpParams.nGameMode = NETGAME_ANARCHY;
-else if (m [optTeamAnarchy].m_value)
+else if (m.Value ("team anarchy"))
 	mpParams.nGameMode = NETGAME_TEAM_ANARCHY;
-else if (m [optCTF].m_value) {
+else if (m.Value ("CTF")) {
 	mpParams.nGameMode = NETGAME_CAPTURE_FLAG;
 	extraGameInfo [0].bEnhancedCTF = 0;
 	}
-else if (m [optEnhancedCTF].m_value) {
+else if (m.Value ("CTF+")) {
 	mpParams.nGameMode = NETGAME_CAPTURE_FLAG;
 	extraGameInfo [0].bEnhancedCTF = 1;
 	}
-else if (bHoard && m [optHoard].m_value)
+else if (bHoard && m.Value ("hoard"))
 	mpParams.nGameMode = NETGAME_HOARD;
-else if (bHoard && m [optTeamHoard].m_value)
+else if (bHoard && m.Value ("team hoard"))
 	mpParams.nGameMode = NETGAME_TEAM_HOARD;
-else if (bHoard && m [optEntropy].m_value)
+else if (bHoard && m.Value ("entropy"))
 	mpParams.nGameMode = NETGAME_ENTROPY;
-else if (bHoard && m [optMonsterball].m_value)
+else if (bHoard && m.Value ("monsterball"))
 	mpParams.nGameMode = NETGAME_MONSTERBALL;
 else if (bAnarchyOnly) {
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
-	m [optAnarchy].m_value = 1;
-	m [optRobotAnarchy].m_value =
-	m [optCoop].m_value = 0;
+	m.Value (nAnarchy) = 1;
+	m.Value (nRobotAnarchy) =
+	m.Value (nCoop) = 0;
 	return 0;
 	}               
-else if (m [optRobotAnarchy].m_value) 
+else if (m.Value ("robot anarchy")) 
 	mpParams.nGameMode = NETGAME_ROBOT_ANARCHY;
-else if (m [optCoop].m_value) 
+else if (m.Value ("coop")) 
 	mpParams.nGameMode = NETGAME_COOPERATIVE;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-static int optGameName, optLevel, optLevelText, optMoreOpts, optMission, optMissionName, optD2XOpts, optConfigMenu, optLoadoutMenu, optMissileMenu;
-
-void BuildGameParamsMenu (CMenu& m, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, char* szMaxNet, int nNewMission)
+void BuildGameParamsMenu (CMenu& m, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, char* szMaxPlayers, int nNewMission)
 {
 	int bHoard = HoardEquipped ();
 
@@ -945,69 +925,59 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		}
 	}
 m.AddText (TXT_DESCRIPTION, 0); 
-optGameName = m.AddInput (szName, NETGAME_NAME_LEN, HTX_MULTI_NAME); 
-optMission = m.AddMenu (TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
-optMissionName = m.AddText ("", 0);
-m [optMissionName].m_bRebuild = 1; 
+m.AddInput (szName, NETGAME_NAME_LEN, HTX_MULTI_NAME, "game name"); 
+m.AddMenu (TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION, "mission selector");
+m.AddText ("", 0, "mission name");
+m ["mission name"].Rebuild (); 
 if ((nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
-	optLevelText = m.AddText (szLevelText, 0); 
-	optLevel = m.AddInput (szLevel, 4, HTX_MULTI_LEVEL);
+	m.AddText (szLevelText, 0, "level number text"); 
+	m.AddInput (szLevel, 4, HTX_MULTI_LEVEL, "level number");
 	}
-else
-	optLevelText = -1;
 m.AddText ("", 0); 
-optGameTypes = 
-optAnarchy = m.AddRadio (TXT_ANARCHY, 0, KEY_A, HTX_MULTI_ANARCHY);
-optTeamAnarchy = m.AddRadio (TXT_TEAM_ANARCHY, 0, KEY_T, HTX_MULTI_TEAMANA);
-optRobotAnarchy = m.AddRadio (TXT_ANARCHY_W_ROBOTS, 0, KEY_R, HTX_MULTI_BOTANA);
-optCoop = m.AddRadio (TXT_COOP, 0, KEY_P, HTX_MULTI_COOP);
-optCTF = m.AddRadio (TXT_CTF, 0, KEY_F, HTX_MULTI_CTF);
+nGameTypes = m.ToS ();
+m.AddRadio (TXT_ANARCHY, 0, KEY_A, HTX_MULTI_ANARCHY, "anarchy");
+m.AddRadio (TXT_TEAM_ANARCHY, 0, KEY_T, HTX_MULTI_TEAMANA, "team anarchy");
+m.AddRadio (TXT_ANARCHY_W_ROBOTS, 0, KEY_R, HTX_MULTI_BOTANA, "robot anarchy");
+m.AddRadio (TXT_COOP, 0, KEY_P, HTX_MULTI_COOP, "coop");
+m.AddRadio (TXT_CTF, 0, KEY_F, HTX_MULTI_CTF, "CTF");
 if (!gameStates.app.bNostalgia)
-	optEnhancedCTF = m.AddRadio (TXT_CTF_PLUS, 0, KEY_T, HTX_MULTI_CTFPLUS);
+	m.AddRadio (TXT_CTF_PLUS, 0, KEY_T, HTX_MULTI_CTFPLUS, "CTF+");
 
-optEntropy =
-optMonsterball = -1;
 if (bHoard) {
-	optHoard = m.AddRadio (TXT_HOARD, 0, KEY_H, HTX_MULTI_HOARD);
-	optTeamHoard = m.AddRadio (TXT_TEAM_HOARD, 0, KEY_O, HTX_MULTI_TEAMHOARD);
+	m.AddRadio (TXT_HOARD, 0, KEY_H, HTX_MULTI_HOARD, "hoard");
+	nTeamHoard = m.AddRadio (TXT_TEAM_HOARD, 0, KEY_O, HTX_MULTI_TEAMHOARD, "team hoard");
 	if (!gameStates.app.bNostalgia) {
-		optEntropy = m.AddRadio (TXT_ENTROPY, 0, KEY_Y, HTX_MULTI_ENTROPY);
-		optMonsterball = m.AddRadio (TXT_MONSTERBALL, 0, KEY_B, HTX_MULTI_MONSTERBALL);
+		m.AddRadio (TXT_ENTROPY, 0, KEY_Y, HTX_MULTI_ENTROPY, "entropy");
+		m.AddRadio (TXT_MONSTERBALL, 0, KEY_B, HTX_MULTI_MONSTERBALL, "monsterball");
 		}
 	} 
-nGameTypes = m.ToS () - 1 - optGameTypes;
-m [optGameTypes + NMCLAMP (mpParams.nGameType, 0, nGameTypes)].m_value = 1;
+nGameTypes = m.ToS () - nGameTypes;
+m [nGameTypes + NMCLAMP (mpParams.nGameType, 0, nGameTypes)].Value () = 1;
 
 m.AddText ("", 0); 
 
-optOpenGame = m.AddRadio (TXT_OPEN_GAME, 0, KEY_O, HTX_MULTI_OPENGAME);
-optClosedGame = m.AddRadio (TXT_CLOSED_GAME, 0, KEY_C, HTX_MULTI_CLOSEDGAME);
-optRestrictedGame = m.AddRadio (TXT_RESTR_GAME, 0, KEY_R, HTX_MULTI_RESTRGAME);
-m [optOpenGame + NMCLAMP (mpParams.nGameAccess, 0, 2)].m_value = 1;
+m.AddRadio (TXT_OPEN_GAME, 0, KEY_O, HTX_MULTI_OPENGAME, "open game");
+m.AddRadio (TXT_CLOSED_GAME, 0, KEY_C, HTX_MULTI_CLOSEDGAME, "closed game");
+m.AddRadio (TXT_RESTR_GAME, 0, KEY_R, HTX_MULTI_RESTRGAME, "restricted game");
+m [IndexOf ("open game") + NMCLAMP (mpParams.nGameAccess, 0, 2)].Value () = 1;
 m.AddText ("", 0);
-sprintf (szMaxNet + 1, TXT_MAX_PLAYERS, gameData.multiplayer.nMaxPlayers);
-*szMaxNet = *(TXT_MAX_PLAYERS - 1);
-lastMaxNet = gameData.multiplayer.nMaxPlayers - 2;
-optMaxNet = m.AddSlider (szMaxNet + 1, lastMaxNet, 0, lastMaxNet, KEY_X, HTX_MULTI_MAXPLRS); 
+sprintf (szMaxPlayers + 1, TXT_MAX_PLAYERS, gameData.multiplayer.nMaxPlayers);
+*szMaxPlayers = *(TXT_MAX_PLAYERS - 1);
+nLastMaxPlayers = gameData.multiplayer.nMaxPlayers - 2;
+m.AddSlider (szMaxPlayers + 1, nLastMaxPlayers, 0, nLastMaxPlayers, KEY_X, HTX_MULTI_MAXPLRS, "max. players"); 
 m.AddText ("", 0);
-optMoreOpts = m.AddMenu (TXT_MORE_OPTS, KEY_M, HTX_MULTI_MOREOPTS);
-optD2XOpts =
-optEntOpts =
-optMBallOpts =
-optConfigMenu =
-optLoadoutMenu =
-optMissileMenu = -1;
+m.AddMenu (TXT_MORE_OPTS, KEY_M, HTX_MULTI_MOREOPTS, "more options");
 if (!gameStates.app.bNostalgia) {
-	optD2XOpts = m.AddMenu (TXT_MULTI_D2X_OPTS, KEY_X, HTX_MULTI_D2XOPTS);
-	if ((optEntropy >= 0) && m [optEntropy].m_value)
-		optEntOpts = m.AddMenu (TXT_ENTROPY_OPTS, KEY_E, HTX_MULTI_ENTOPTS);
-	if (m [optMonsterball].m_value && (gameOpts->app.bExpertMode == SUPERUSER))
-		optMBallOpts = m.AddMenu (TXT_MONSTERBALL_OPTS, KEY_O, HTX_MULTI_MBALLOPTS);
+	m.AddMenu (TXT_MULTI_D2X_OPTS, KEY_X, HTX_MULTI_D2XOPTS, "d2x options");
+	if ((nEntropy >= 0) && m.Value (nEntropy))
+		m.AddMenu (TXT_ENTROPY_OPTS, KEY_E, HTX_MULTI_ENTOPTS, "entropy options");
+	if (m.Value (nMonsterball) && (gameOpts->app.bExpertMode == SUPERUSER))
+		m.AddMenu (TXT_MONSTERBALL_OPTS, KEY_O, HTX_MULTI_MBALLOPTS, "monsterball options");
 	else
 		InitMonsterballSettings (&extraGameInfo [0].monsterball);
-	optConfigMenu = m.AddMenu (TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
-	optLoadoutMenu = m.AddMenu (TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
-	optMissileMenu = m.AddMenu (TXT_MISSILE_LOADOUT, KEY_I, HTX_MISSILE_LOADOUT);
+	m.AddMenu (TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF, "config options");
+	m.AddMenu (TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT, "loadout options");
+	m.AddMenu (TXT_MISSILE_LOADOUT, KEY_I, HTX_MISSILE_LOADOUT, "missile options");
 	}
 }
 
@@ -1017,16 +987,16 @@ int GameParamsMenu (CMenu& m, int& key, int& choice, char* szName, char* szLevel
 {
 	int i, bAnarchyOnly = (nNewMission < 0) ? 0 : missionManager [nNewMission].bAnarchyOnly;
 
-if (m [optMissionName].m_bRebuild) {
+if (m.Value (nMissionName].m_bRebuild) {
 	strncpy (netGame.m_info.szMissionName, 
 				(nNewMission < 0) ? "" : missionManager [nNewMission].filename, 
 				sizeof (netGame.m_info.szMissionName) - 1);
-	m [optMissionName].SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nNewMission].szMissionName));
+	m.Value (nMissionName].SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nNewMission].szMissionName));
 	if ((nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, missionManager.nLastLevel);
 		if (strlen (szLevelText) < 32)
 			szLevelText [31] = '\0';
-		m [optLevelText].m_bRebuild = 1;
+		m.Value (nLevelText].Rebuild ();
 		}
 	mpParams.nLevel = 1;
 	}
@@ -1036,8 +1006,8 @@ key = m.Menu (NULL, (gameStates.multi.nGameType == UDP_GAME) ? szIpAddr : NULL, 
 								//TXT_NETGAME_SETUP
 if (key == -1)
 	return -1;
-else if (choice == optMoreOpts) {
-	if (m [optGameTypes + 3].m_value)
+else if (choice == nMoreOpts) {
+	if (m.Value (nGameTypes + 3))
 		gameData.app.nGameMode = GM_MULTI_COOP;
 	NetworkMoreGameOptions ();
 	gameData.app.nGameMode = 0;
@@ -1047,44 +1017,44 @@ else if (choice == optMoreOpts) {
 		}
 	return 1;
 	}
-else if (!gameStates.app.bNostalgia && (optD2XOpts >= 0) && (choice == optD2XOpts)) {
+else if (!gameStates.app.bNostalgia && (nD2XOpts >= 0) && (choice == nD2XOpts)) {
 	NetworkGetGameType (m, bAnarchyOnly);
 	NetworkD2XOptions ();
 	return 1;
 	}
-else if (!gameStates.app.bNostalgia && (optEntOpts >= 0) && (choice == optEntOpts)) {
+else if (!gameStates.app.bNostalgia && (nEntOpts >= 0) && (choice == nEntOpts)) {
 	NetworkEntropyOptions ();
 	return 1;
 	}
-else if (!gameStates.app.bNostalgia && (optMBallOpts >= 0) && (choice == optMBallOpts)) {
+else if (!gameStates.app.bNostalgia && (nMBallOpts >= 0) && (choice == nMBallOpts)) {
 	NetworkMonsterballOptions ();
 	return 1;
 	}
-else if (!gameStates.app.bNostalgia && (optConfigMenu >= 0) && (choice == optConfigMenu)) {
+else if (!gameStates.app.bNostalgia && (nConfigMenu >= 0) && (choice == nConfigMenu)) {
 	ConfigMenu ();
 	return 1;
 	}
-else if (!gameStates.app.bNostalgia && (optLoadoutMenu >= 0) && (choice == optLoadoutMenu)) {
+else if (!gameStates.app.bNostalgia && (nLoadoutMenu >= 0) && (choice == nLoadoutMenu)) {
 	LoadoutOptionsMenu ();
 	return 1;
 	}
-else if (!gameStates.app.bNostalgia && (optMissileMenu >= 0) && (choice == optMissileMenu)) {
+else if (!gameStates.app.bNostalgia && (nMissileMenu >= 0) && (choice == nMissileMenu)) {
 	MissileLoadoutMenu ();
 	return 1;
 	}
-else if (choice == optMission) {
+else if (choice == nMission) {
 	int h = SelectAndLoadMission (1, &bAnarchyOnly);
 	if (h < 0)
 		return 1;
 	missionManager.nLastMission = nNewMission = h;
-	m [optMissionName].m_bRebuild = 1;
+	m.Value (nMissionName].Rebuild ();
 	return 2;
 	}
 
 if (key != -1) {
 	int j;
 		   
-	gameData.multiplayer.nMaxPlayers = m [optMaxNet].m_value + 2;
+	gameData.multiplayer.nMaxPlayers = m.Value (networkMenuOpts."max. players") + 2;
 	netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
 			
 	for (j = 0; j < networkData.nActiveGames; j++)
@@ -1100,23 +1070,23 @@ if (key != -1) {
 		return 1;
 	}
 
-	for (i = optGameTypes; i < optOpenGame; i++)
-		if (m [i].m_value) {
-			mpParams.nGameType = i - optGameTypes;
+	for (i = nGameTypes; i < nOpenGame; i++)
+		if (m.Value (i)) {
+			mpParams.nGameType = i - nGameTypes;
 			break;
 			}
 
-	for (i = optOpenGame; i < optMaxNet; i++)
-		if (m [i].m_value) {
-			mpParams.nGameAccess = i - optOpenGame;
+	for (i = nOpenGame; i < networkMenuOpts."max. players"; i++)
+		if (m.Value (i)) {
+			mpParams.nGameAccess = i - nOpenGame;
 			break;
 			}
 
 	if (!NetworkGetGameType (m, bAnarchyOnly))
 		return 1;
-	if (m [optClosedGame].m_value)
+	if (m.Value (nClosedGame))
 		netGame.m_info.gameFlags |= NETGAME_FLAG_CLOSED;
-	netGame.m_info.bRefusePlayers = m [optRestrictedGame].m_value;
+	netGame.m_info.bRefusePlayers = m.Value (nRestrictedGame);
 	}
 NetworkSetGameMode (mpParams.nGameMode);
 if (key == -2)
@@ -1132,7 +1102,7 @@ int NetworkGetGameParams (int bAutoRun)
 	CMenu	m;
 	char	szName [80]; //NETGAME_NAME_LEN+1];
 	char	szLevelText [80]; //32];
-	char	szMaxNet [50];
+	char	szMaxPlayers [50];
 	char	szIpAddr [80];
 	char	szLevel [10]; //5];
 
@@ -1158,13 +1128,13 @@ if (bAutoRun)
 nGameItem = -1;
 
 *szLevelText = 
-*szMaxNet =
+*szMaxPlayers =
 *szIpAddr =
 *szLevel = '\0';
 
 do {
 	PrintLog ("   building game parameters menu\n");
-	BuildGameParamsMenu (m, szName, szLevelText, szLevel, szIpAddr, szMaxNet, nNewMission);
+	BuildGameParamsMenu (m, szName, szLevelText, szLevel, szIpAddr, szMaxPlayers, nNewMission);
 	PrintLog ("   loading game parameters menu\n");
 	do {
 		nState = GameParamsMenu (m, key, choice, szName, szLevelText, szLevel, szIpAddr, nNewMission);
@@ -1189,7 +1159,7 @@ if (gameStates.app.bNostalgia) {
 	extraGameInfo [0].bInhibitSuicide = 0;
 	extraGameInfo [0].bAutoBalanceTeams = 0;
 #if UDP_SAFEMODE
-	extraGameInfo [0].bSafeUDP = (mat [optSafeUDP].m_value != 0);
+	extraGameInfo [0].bSafeUDP = (mat [nSafeUDP) != 0);
 #endif
 	extraGameInfo [1].bMouseLook = 0;
 	extraGameInfo [1].bFastPitch = 2;
@@ -1205,9 +1175,9 @@ if (gameStates.app.bNostalgia) {
 netGame.m_info.szMissionName [sizeof (netGame.m_info.szMissionName) - 1] = '\0';
 strncpy (netGame.m_info.szMissionTitle, missionManager [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0), sizeof (netGame.m_info.szMissionTitle));
 netGame.m_info.szMissionTitle [sizeof (netGame.m_info.szMissionTitle) - 1] = '\0';
-netGame.SetControlInvulTime (mpParams.nReactorLife * 5 * I2X (60));
+netGame.SetControlInvulTime (mpParams.networkMenuOpts."reactor life" * 5 * I2X (60));
 netGame.SetPlayTimeAllowed (mpParams.nMaxTime);
-netGame.SetScoreGoal (mpParams.nScoreGoal * 5);
+netGame.SetScoreGoal (mpParams."score goal" * 5);
 netGame.SetPacketsPerSec (mpParams.nPPS);
 netGame.m_info.invul = mpParams.bInvul;
 netGame.m_info.BrightPlayers = mpParams.bBrightPlayers;
@@ -1243,9 +1213,9 @@ else if ((t = SDL_GetTicks () - nQueryTimeout) > 5000)
 	key = -4;
 else {
 	int v = (int) (t / 5);
-	if (menu [0].m_value != v) {
-		menu [0].m_value = v;
-		menu [0].m_bRebuild = 1;
+	if (menu [0) != v) {
+		menu [0) = v;
+		menu [0].Rebuild ();
 		}
 	key = 0;
 	}
@@ -1269,7 +1239,7 @@ NetworkSendGameListRequest ();
 m.AddGauge ("                    ", -1, 1000); 
 m.AddText ("");
 m.AddText (TXT_PRESS_ESC);
-m [2].m_bCentered = 1;
+m.Value (2].m_bCentered = 1;
 nQueryTimeout = SDL_GetTicks ();
 do {
 	i = m.Menu (NULL, TXT_NET_SEARCH, QueryPoll, 0, NULL);
@@ -1387,7 +1357,7 @@ int NetworkGetIpAddr (bool bServer, bool bUDP)
 {
 	CMenu	m (9);
 	int	h, i, j, choice = 0;
-	int	optServer = -1, optCheckPort, optPort [2] = {-1, -1};
+	int	nServer = -1, optCheckPort, nPort [2] = {-1, -1};
 	bool	bError;
 
 	static char szPort [2][7] = {{'\0','\0','\0','\0','\0','\0','\0'}, {'\0','\0','\0','\0','\0','\0','\0'}};
@@ -1408,7 +1378,7 @@ if (bUDP && !tracker.m_bUse) {
 			}
 		}
 	m.AddText (TXT_HOST_IP, 0);
-	optServer = m.AddInput (mpParams.szServerIpAddr, sizeof (mpParams.szServerIpAddr) - 1, HTX_GETIP_SERVER);
+	nServer = m.AddInput (mpParams.szServerIpAddr, sizeof (mpParams.szServerIpAddr) - 1, HTX_GETIP_SERVER);
 	j = 0;
 	h = bServer ? 1 : 2;
 	}
@@ -1425,7 +1395,7 @@ for (i = j; i < h; i++) {
 		mpParams.udpPorts [i] = UDP_BASEPORT;
 	sprintf (szPort [i], "%u", mpParams.udpPorts [i]);
 	m.AddText (GT (1100 + i));
-	optPort [i] = m.AddInput (szPort [i], sizeof (szPort [i]) - 1, HTX_GETIP_CLIENT);
+	nPort [i] = m.AddInput (szPort [i], sizeof (szPort [i]) - 1, HTX_GETIP_CLIENT);
 	}
 
 m.AddText (TXT_PORT_HELP1, 0);
@@ -1439,7 +1409,7 @@ for (;;) {
 	if (i >= int (m.ToS ()))
 		continue;
 	bError = false;
-	extraGameInfo [0].bCheckUDPPort = m [optCheckPort].m_value != 0;
+	extraGameInfo [0].bCheckUDPPort = m.Value (optCheckPort) != 0;
 	for (i = j; i < h; i++) { 
 		stoport (szPort [i], &mpParams.udpPorts [i], &nSign);
 		if (extraGameInfo [0].bCheckUDPPort && !mpParams.udpPorts [i])
@@ -1508,7 +1478,7 @@ void DoNewIPAddress (void)
 m.AddText ("Enter an address or hostname:", 0);
 m.AddInput (szIP, 50, NULL);
 choice = m.Menu (NULL, TXT_JOIN_TCP);
-if ((choice == -1) || !*m [1].m_text)
+if ((choice == -1) || !*m.Value (1].Text ())
 	return;
 MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
 }
