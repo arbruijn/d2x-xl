@@ -123,7 +123,7 @@ if ((m = menu ["auto leveling"])) {
 		m->m_bRebuild = 1;
 		}
 	}
-
+#if 0
 if ((m = menu ["hit detection"])) {
 	v = m->Value ();
 	if (extraGameInfo [0].nHitboxes != v) {
@@ -132,7 +132,7 @@ if ((m = menu ["hit detection"])) {
 		m->m_bRebuild = 1;
 		}
 	}
-
+#endif
 if ((m = menu ["collision handling"])) {
 	v = m->Value ();
 	if (extraGameInfo [0].bUseHitAngles != v) {
