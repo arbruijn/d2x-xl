@@ -244,7 +244,7 @@ class CMenu : public CStack<CMenuItem> {
 			m_nGroup = 0;
 			m_to.Setup (10);
 			m_bThrottle = true;
-			m_null.m_szId = "@@NULLITEM@@";
+			m_null.SetId ("(null)");
 			m_current = NULL;
 			}
 
