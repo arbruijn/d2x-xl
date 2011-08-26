@@ -360,6 +360,8 @@ class CMenu : public CStack<CMenuItem> {
 		void RestoreScreen (char* filename, int bDontRestore);
 		void FreeTextBms (void);
 		void SwapText (int i, int j);
+
+		CMenuItem* AddItem (void);
 		void SetId (CMenuItem& item, const char* pszId);
 	};
 
