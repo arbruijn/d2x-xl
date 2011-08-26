@@ -202,9 +202,9 @@ if (nHighestPlayerLevel > 1) {
 		strcpy (szNumber, "1");
 		m.AddInput ("start level", szNumber, 10, "");
 		choice = m.Menu (NULL, TXT_SELECT_START_LEV);
-		if ((choice == -1) || !*m ["start level"]->Text ())
+		if ((choice == -1) || !*m.Text ("start level"))
 			return;
-		nNewLevel = atoi (m ["start level"]->Text ());
+		nNewLevel = m.ToInt ("start level");
 		if ((nNewLevel > 0) && (nNewLevel <= nHighestPlayerLevel)) 
 			break;
 		m [0].SetText (const_cast<char*> (TXT_ENTER_TO_CONT));
@@ -352,7 +352,7 @@ for (;;) {
 			}
 		}
 	else if (choice == m.IndexOf ("level number")) {
-		i = atoi (m ["level number"]->Text ());
+		i = m.ToInt ("level number");
 #if DBG
 		if (!i || (i < -missionManager.nSecretLevels) || (i > nPlayerMaxLevel) || (i > missionManager.nLastLevel))
 #else
@@ -365,7 +365,7 @@ for (;;) {
 			nLevel = i;
 		}
 	else if (nMission >= 0) {
-		if (m.Available ("level number") && !(nLevel = atoi (m ["level number"]->Text ()))) {
+		if (m.Available ("level number") && !(nLevel = m.ToInt ("level number"))) {
 			MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 			nLevel = 1;
 			}
@@ -374,14 +374,14 @@ for (;;) {
 		}
 #if DBG
 	else {
-		i = atoi (m ["initial lives"]->Text ());
+		i = m.ToInt ("initial lives");
 		if (i > 0)
 			gameStates.gameplay.nInitialLives = min (i, 255);
 		}
 #endif
 	}
 
-i = m ["difficulty"]->Value ();
+i = m.Value ("difficulty");
 if (gameStates.app.nDifficultyLevel != i) {
 	gameStates.app.nDifficultyLevel = i;
 	gameData.bosses.InitGateIntervals ();

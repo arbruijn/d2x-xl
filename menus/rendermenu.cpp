@@ -311,10 +311,10 @@ if (renderOpts.n3DGlasses >= 0) {
 			}
 
 		if (renderOpts.nFlipFrames >= 0) 
-			gameOpts->render.stereo.bFlipFrames = menu ["flip frames"]->Value ();
+			gameOpts->render.stereo.bFlipFrames = menu.Value ("flip frames");
 
 		if (renderOpts.nBrighten >= 0) 
-			gameOpts->render.stereo.bBrighten = menu ["brighten scene"]->Value ();
+			gameOpts->render.stereo.bBrighten = menu.Value ("brighten scene");
 		}
 	}
 
@@ -619,14 +619,14 @@ do {
 	if ((gameOpts->render.powerups.b3D = (nPowerups != 0) || gameStates.app.bStandalone))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
 	if (m.Available ("movie subtitles"))
-		gameOpts->movies.bSubTitles = (m ["movie subtitles"]->Value () != 0);
+		gameOpts->movies.bSubTitles = (m.Value ("movie subtitles") != 0);
 
 #if !DBG
 	if (!gameOpts->app.bNotebookFriendly)
-		gameOpts->render.nMaxFPS = m ["frame cap"]->Value () ? 1 : 120;
+		gameOpts->render.nMaxFPS = m.Value ("frame cap") ? 1 : 120;
 #endif
 	if (!gameStates.app.bNostalgia)
-		paletteManager.SetGamma (m ["brightness"]->Value ());
+		paletteManager.SetGamma (m.Value ("brightness"));
 	if (nRendQualSave != gameOpts->render.nImageQuality)
 		ogl.SetRenderQuality ();
 
@@ -639,11 +639,11 @@ do {
 
 #if DBG
 	if (EXPERTMODE) {
-		gameOpts->render.debug.bWireFrame = m ["draw wire frame"]->Value ();
-		gameOpts->render.debug.bTextures = m ["draw textures"]->Value ();
-		gameOpts->render.debug.bObjects = m ["draw objects"]->Value ();
-		gameOpts->render.debug.bWalls = m ["draw walls"]->Value ();
-		gameOpts->render.debug.bDynamicLight = m ["dynamic light"]->Value ();
+		gameOpts->render.debug.bWireFrame = m.Value ("draw wire frame");
+		gameOpts->render.debug.bTextures = m.Value ("draw textures");
+		gameOpts->render.debug.bObjects = m.Value ("draw objects");
+		gameOpts->render.debug.bWalls = m.Value ("draw walls");
+		gameOpts->render.debug.bDynamicLight = m.Value ("dynamic light");
 		}
 #endif
 	} while (i == -2);

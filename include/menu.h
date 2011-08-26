@@ -64,7 +64,7 @@ extern char DOWN_ARROW_MARKER [2];
 #define NMCLAMP(_v,_min,_max)	((_v) < (_min) ? (_min) : (_v) > (_max) ? (_max) : (_v))
 #define NMBOOL(_v) ((_v) != 0)
 
-#define GET_VAL(_v,_id)	if (m.Available (_id)) (_v) = m [_id]->Value()
+#define GET_VAL(_v,_id)	if (m.Available (_id)) (_v) = m.Value(_id)
 
 #define MENU_KEY(_k,_d)	((_k) < 0) ? (_d) : ((_k) == 0) ? 0 : gameStates.app.bEnglish ? toupper (KeyToASCII (_k)) : (_k)
 
@@ -168,6 +168,7 @@ class CMenuItem {
 		inline void Rebuild (void) { m_bRebuild = 1; }
 		inline int Rebuilding (void) { return m_bRebuild; }
 		inline char* Text (void) { return m_text; }
+		inline int ToInt (void) { return atol (m_text); }
 
 		inline bool Selectable (void) { return (m_nType != NM_TYPE_TEXT) && !m_bUnavailable && *m_text; }
 
@@ -290,6 +291,12 @@ class CMenu : public CStack<CMenuItem> {
 			return (i < 0) ? 0 : Buffer (i)->Value ();
 			}
 
+		inline void SetValue (const char* szId, int value) {
+			int i = IndexOf (szId);
+			if (i >= 0) 
+				Buffer (i)->Value () = value;
+			}
+
 		inline int MinValue (const char* szId) {
 			int i = IndexOf (szId);
 			if (i >= 0)
@@ -308,6 +315,13 @@ class CMenu : public CStack<CMenuItem> {
 			int i = IndexOf (szId);
 			if (i >= 0)
 				return Buffer (i)->Text ();
+			return NULL;
+			}
+
+		inline int ToInt (const char* szId) {
+			int i = IndexOf (szId);
+			if (i >= 0)
+				return Buffer (i)->ToInt ();
 			return 0;
 			}
 

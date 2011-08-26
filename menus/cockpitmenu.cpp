@@ -414,10 +414,10 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bMissileView, "missile view");
 	GET_VAL (gameOpts->render.cockpit.bObjectTally, "object tally");
 	//GET_VAL (extraGameInfo [0].bTargetIndicators, "target indicators");
-	gameOpts->render.cockpit.bTextGauges = !m ["text gauges"]->Value ();
+	gameOpts->render.cockpit.bTextGauges = !m.Value ("text gauges");
 	gameOpts->render.cockpit.nWindowPos = nWindowPos * 3 + nWindowAlign;
 //if (gameOpts->app.bExpertMode)
-	extraGameInfo [IsMultiGame].nZoomMode = m ["zoom style"]->Value () + 1;
+	extraGameInfo [IsMultiGame].nZoomMode = m.Value ("zoom style") + 1;
 #if WEAPON_ICONS
 	if (bShowWeaponIcons) {
 		int h = m.IndexOf ("weapon icons top");

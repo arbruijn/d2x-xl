@@ -286,8 +286,8 @@ do {
 		}
 
 	i = m.Menu (NULL, TXT_SOUND_OPTS, SoundMenuCallback, &choice);
-	redbook.Enable (m ["redbook sound"]->Value ());
-	gameConfig.bReverseChannels = m ["reverse stereo"]->Value ();
+	redbook.Enable (m.Value ("redbook sound"));
+	gameConfig.bReverseChannels = m.Value ("reverse stereo");
 	if (!gameStates.app.bNostalgia) {
 		if (!redbook.Enabled () && gameConfig.nMidiVolume)
 			GET_VAL (gameOpts->sound.bFadeMusic, "fade music");

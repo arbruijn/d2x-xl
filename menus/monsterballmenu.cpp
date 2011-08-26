@@ -235,21 +235,21 @@ for (;;) {
 	InitMonsterballSettings (&extraGameInfo [0].monsterball);
 	pf = extraGameInfo [0].monsterball.forces;
 	for (i = 0; i <= h; i++, pf++) {
-		m [szWeaponIds [i]]->Value () = ForceToOption (pf->nForce);
+		m.SetValue (szWeaponIds [i], ForceToOption (pf->nForce));
 		if (pf->nWeaponId == FLARE_ID)
 			i++;
 		}
-	m ["pyro force"]->Value () = pf->nForce - 1;
-	m ["size mod"]->Value () = extraGameInfo [0].monsterball.nSizeMod - 2;
+	m.SetValue ("pyro force", pf->nForce - 1);
+	m.SetValue ("size mod", extraGameInfo [0].monsterball.nSizeMod - 2);
 	}
 #if 0
 pf = extraGameInfo [0].monsterball.forces;
 for (i = 0; i < h; i++, pf++)
 	pf->nForce = nOptionToForce [m [i].Value ()];
 #endif
-pf->nForce = m ["pyro force"]->Value () + 1;
-extraGameInfo [0].monsterball.nSizeMod = m ["size mod"]->Value () + 2;
-extraGameInfo [0].monsterball.nBonus = m ["bonus"]->Value () + 1;
+pf->nForce = m.Value ("pyro force") + 1;
+extraGameInfo [0].monsterball.nSizeMod = m.Value ("size mod") + 2;
+extraGameInfo [0].monsterball.nBonus = m.Value ("bonus") + 1;
 }
 
 //------------------------------------------------------------------------------

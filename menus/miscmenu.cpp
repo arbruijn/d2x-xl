@@ -207,11 +207,11 @@ do {
 	} while (i >= 0);
 
 	if (gameStates.app.bNostalgia) {
-		gameOpts->gameplay.nAutoLeveling = m ["auto leveling"]->Value ();
-		gameOpts->render.cockpit.bReticle = m ["show reticle"]->Value ();
-		gameOpts->render.cockpit.bMissileView = m ["missile view"]->Value ();
-		gameOpts->render.cockpit.bGuidedInMainView = m ["guided in mainview"]->Value ();
-		gameOpts->gameplay.bHeadlightOnWhenPickedUp = m ["headlight on"]->Value ();
+		gameOpts->gameplay.nAutoLeveling = m.Value ("auto leveling");
+		gameOpts->render.cockpit.bReticle = m.Value ("show reticle");
+		gameOpts->render.cockpit.bMissileView = m.Value ("missile view");
+		gameOpts->render.cockpit.bGuidedInMainView = m.Value ("guided in mainview");
+		gameOpts->gameplay.bHeadlightOnWhenPickedUp = m.Value ("headlight on");
 		}
 
 	if (!gameStates.app.bNostalgia) {

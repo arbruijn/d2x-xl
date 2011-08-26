@@ -379,7 +379,7 @@ else {
 	gameOpts->gameplay.nAIAggressivity = nAIAggressivity;
 	}
 
-extraGameInfo [0].bSmartWeaponSwitch = m ["smart weapon switch"]->Value ();
+extraGameInfo [0].bSmartWeaponSwitch = m.Value ("smart weapon switch");
 GET_VAL (gameOpts->gameplay.bInventory, "use inventory");
 GET_VAL (gameOpts->gameplay.bNoThief, "suppress thief");
 GET_VAL (extraGameInfo [0].headlight.bDrainPower, "headlight drains power");

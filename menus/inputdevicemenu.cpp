@@ -212,7 +212,7 @@ if (gameOpts->input.mouse.bUse) {
 	h = gameOpts->input.mouse.bSyncAxis ? 1 : 3;
 	for (i = 0; i < h; i++) {
 		sprintf (szId, "axis %d:sensitivity", i + 1);
-		gameOpts->input.mouse.sensitivity [i] = menu [szId]->Value ();
+		gameOpts->input.mouse.sensitivity [i] = menu.Value (szId);
 		}
 	for (i = h; i < 3; i++)
 		gameOpts->input.mouse.sensitivity [i] = gameOpts->input.mouse.sensitivity [0];
@@ -277,13 +277,13 @@ do {
 				}
 			}
 		i = m.Menu (NULL, TXT_MOUSE_CONFIG, MouseConfigCallback, &choice);
-		gameOpts->input.mouse.bUse = m ["use device"]->Value ();
+		gameOpts->input.mouse.bUse = m.Value ("use device");
 		if (gameOpts->input.mouse.bUse && !gameStates.app.bNostalgia) {
 			if (!m.Available ("standard mouse")) {
 				gameStates.input.nMouseType = CONTROL_MOUSE;
 				}
 			else {
-				extraGameInfo [0].bMouseLook = m ["mouselook"]->Value ();
+				extraGameInfo [0].bMouseLook = m.Value ("mouselook");
 				for (j = 0; j < 2; j++) {
 					if (m [m.IndexOf ("standard mouse") + j].Value ()) {
 						gameStates.input.nMouseType = CONTROL_MOUSE + j;
@@ -369,7 +369,7 @@ if (gameStates.input.nJoysticks && gameOpts->input.joystick.bUse) {
 	j = menu.IndexOf ("sensitivity");
 	for (i = 0; i < h; i++) {
 		sprintf (szId, "axis %d:sensitivity", i + 1);
-		gameOpts->input.joystick.sensitivity [i] = menu [szId]->Value ();
+		gameOpts->input.joystick.sensitivity [i] = menu.Value (szId);
 		}
 	for (i = h; i < UNIQUE_JOY_AXES; i++)
 		gameOpts->input.joystick.sensitivity [i] = gameOpts->input.joystick.sensitivity [0];
@@ -436,13 +436,13 @@ do {
 				}
 			}
 		i = m.Menu (NULL, TXT_JOYSTICK_CONFIG, JoystickConfigCallback, &choice);
-		gameOpts->input.joystick.bUse = m ["use device"]->Value ();
+		gameOpts->input.joystick.bUse = m.Value ("use device");
 		if (gameOpts->input.joystick.bUse && !gameStates.app.bNostalgia) {
 			if (!m.Available ("standard joystick"))
 				gameStates.input.nJoyType = CONTROL_JOYSTICK;
 			else {
 				if (gameOpts->app.bExpertMode) {
-					gameOpts->input.joystick.bLinearSens = m ["linear sensitivity"]->Value ();
+					gameOpts->input.joystick.bLinearSens = m.Value ("linear sensitivity");
 				for (j = 0, h = m.IndexOf ("standard joystick"); j < UNIQUE_JOY_AXES; j++)
 					if (m [h + j].Value ()) {
 						gameStates.input.nJoyType = CONTROL_JOYSTICK + j;
@@ -483,7 +483,7 @@ if ((m = menu ["use device"])) {
 
 if (gameOpts->input.trackIR.bUse) {
 	for (i = 0; i < 3; i++) {
-		if (menu [trackirModeIds [i]]->Value () && (gameOpts->input.trackIR.nMode != i)) {
+		if (menu.Value (trackirModeIds [i]) && (gameOpts->input.trackIR.nMode != i)) {
 			gameOpts->input.trackIR.nMode = i;
 			if (i == 0) {
 				gameData.trackIR.x = 
@@ -528,7 +528,7 @@ if (gameOpts->input.trackIR.bUse) {
 	h = gameOpts->input.trackIR.bSyncAxis ? 1 : 3;
 	for (i = 0; i < h; i++) {
 		sprintf (szId, "axis %d:sensitivity", i + 1);
-		gameOpts->input.trackIR.sensitivity [i] = menu [szId]->Value ();
+		gameOpts->input.trackIR.sensitivity [i] = menu.Value (szId);
 		}
 	for (i = h; i < 3; i++)
 		gameOpts->input.trackIR.sensitivity [i] = gameOpts->input.trackIR.sensitivity [0];
@@ -679,7 +679,7 @@ do {
 	if (i == -1)
 		return;
 	for (int j = 0; j < 4; j++)
-		if (m [kbdLayoutIds [j]]->Value () != 0) {
+		if (m.Value (kbdLayoutIds [j]) != 0) {
 			gameOpts->input.keyboard.nType = j;
 			break;
 			}
@@ -718,13 +718,13 @@ do {
 	m.AddText ("", "");
 	if (gameOpts->app.bExpertMode && (gameStates.app.bNostalgia < 3)) {
 		m.AddCheck ("fast pitch", TXT_FASTPITCH, (extraGameInfo [0].bFastPitch == 1) ? 1 : 0, KEY_T, HTX_CONF_FASTPITCH);
-		extraGameInfo [0].bFastPitch = m ["fast pitch"]->Value () ? 1 : 2;
+		extraGameInfo [0].bFastPitch = m.Value ("fast pitch") ? 1 : 2;
 		}
 	i = m.Menu (NULL, TXT_CONTROLS, NULL, &choice);
 	if (i == -1)
 		return;
 	if (m.Available ("fast pitch"))
-		extraGameInfo [0].bFastPitch = m ["fast pitch"]->Value () ? 1 : 2;
+		extraGameInfo [0].bFastPitch = m.Value ("fast pitch") ? 1 : 2;
 	if (choice == m.IndexOf ("keyboard options"))
 		KeyboardConfigMenu ();
 	else if (choice == m.IndexOf ("mouse options"))

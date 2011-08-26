@@ -200,7 +200,7 @@ do {
 	if (key == -1)
 		return;
 	bStdRes = 0;
-	if (m ["custom resolution"]->Value ()) {
+	if (m.Value ("custom resolution")) {
 		key = -2;
 		if (m.Available ("custom width") && m.Available ("custom height") &&
 			 (0 < (nCustW = atoi (szCustX))) && (0 < (nCustH = atoi (szCustY)))) {

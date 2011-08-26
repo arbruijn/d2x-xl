@@ -303,7 +303,7 @@ extraGameInfo [0].nHitboxes = extraGameInfo [0].bUseHitAngles << 1;
 extraGameInfo [0].nDrag = nDragTable [nDrag];
 if (gameOpts->app.bExpertMode == SUPERUSER) {
 	if (m.Available ("wiggle"))
-		extraGameInfo [0].bWiggle = m ["wiggle"]->Value ();
+		extraGameInfo [0].bWiggle = m.Value ("wiggle");
 	}
 DefaultPhysicsSettings ();
 if (IsMultiGame)

@@ -533,7 +533,7 @@ mpParams.bIndestructibleLights = ubyte (m.Value ("indestructible lights"));
 mpParams.nDifficulty = m.Value ("difficulty");
 mpParams.bShowPlayersOnAutomap = m.Value ("show players on map");
 mpParams.bShortPackets = m.Value ("short packets");
-mpParams.nPPS = atoi (m ["PPS"]->Text ());
+mpParams.nPPS = m.ToInt ("PPS");
 if (mpParams.nPPS > 20) {
 	mpParams.nPPS = 20;
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
@@ -886,9 +886,9 @@ else if (bHoard && m.Value ("monsterball"))
 	mpParams.nGameMode = NETGAME_MONSTERBALL;
 else if (bAnarchyOnly) {
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
-	m ["anarchy"]->Value () = 1;
-	m ["robot anarchy"]->Value () = 0;
-	m ["coop"]->Value () = 0;
+	m.SetValue ("anarchy", 1);
+	m.SetValue ("robot anarchy", 0);
+	m.SetValue ("coop", 0);
 	return 0;
 	}               
 else if (m.Value ("robot anarchy")) 

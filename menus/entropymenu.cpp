@@ -57,9 +57,9 @@ m [m.IndexOf ("virus stability") + extraGameInfo [0].entropy.nVirusStability].Va
 
 m.Menu (NULL, TXT_ENT_TOGGLES, NULL, 0);
 
-extraGameInfo [0].entropy.bRevertRooms = m ["revert rooms"]->Value ();
-extraGameInfo [0].entropy.bDoCaptureWarning = m ["capture warning"]->Value ();
-extraGameInfo [0].entropy.bPlayerHandicap = m ["player handicap"]->Value ();
+extraGameInfo [0].entropy.bRevertRooms = m.Value ("revert rooms");
+extraGameInfo [0].entropy.bDoCaptureWarning = m.Value ("capture warning");
+extraGameInfo [0].entropy.bPlayerHandicap = m.Value ("player handicap");
 for (extraGameInfo [0].entropy.nVirusStability = 0; 
 	  extraGameInfo [0].entropy.nVirusStability < 3; 
 	  extraGameInfo [0].entropy.nVirusStability++)
@@ -82,7 +82,7 @@ m.AddCheck ("brighten rooms", TXT_ENT_TEX_BRIGHTEN, extraGameInfo [0].entropy.bB
 
 m.Menu (NULL, TXT_ENT_TEXTURES, NULL, 0);
 
-extraGameInfo [0].entropy.bBrightenRooms = m ["brighten rooms"]->Value ();
+extraGameInfo [0].entropy.bBrightenRooms = m.Value ("brighten rooms");
 for (extraGameInfo [0].entropy.nOverrideTextures = 0; 
 	  extraGameInfo [0].entropy.nOverrideTextures < 3; 
 	  extraGameInfo [0].entropy.nOverrideTextures++)
@@ -123,16 +123,16 @@ for (;;) {
 	else
 		break;
 	}
-extraGameInfo [0].entropy.nCaptureVirusThreshold = (char) atol (m ["capture virus threshold"]->Text ());
-extraGameInfo [0].entropy.nCaptureTimeThreshold = (char) atol (m ["capture time threshold"]->Text ());
-extraGameInfo [0].entropy.nMaxVirusCapacity = (ushort) atol (m ["virus capacity"]->Text ());
-extraGameInfo [0].entropy.nBumpVirusCapacity = (char) atol (m ["virus capacity increase"]->Text ());
-extraGameInfo [0].entropy.nBashVirusCapacity = (char) atol (m ["virus capacity decrease"]->Text ());
-extraGameInfo [0].entropy.nVirusGenTime = (char) atol (m ["virus creation time"]->Text ());
-extraGameInfo [0].entropy.nVirusLifespan = (char) atol (m ["virus lifetime"]->Text ());
-extraGameInfo [0].entropy.nEnergyFillRate = (ushort) atol (m ["refule rate"]->Text ());
-extraGameInfo [0].entropy.nShieldFillRate = (ushort) atol (m ["repair rate"]->Text ());
-extraGameInfo [0].entropy.nShieldDamageRate = (ushort) atol (m ["damage rage"]->Text ());
+extraGameInfo [0].entropy.nCaptureVirusThreshold = (char) m.ToInt ("capture virus threshold");
+extraGameInfo [0].entropy.nCaptureTimeThreshold = (char) m.ToInt ("capture time threshold");
+extraGameInfo [0].entropy.nMaxVirusCapacity = (ushort) m.ToInt ("virus capacity");
+extraGameInfo [0].entropy.nBumpVirusCapacity = (char) m.ToInt ("virus capacity increase");
+extraGameInfo [0].entropy.nBashVirusCapacity = (char) m.ToInt ("virus capacity decrease");
+extraGameInfo [0].entropy.nVirusGenTime = (char) m.ToInt ("virus creation delay");
+extraGameInfo [0].entropy.nVirusLifespan = (char) m.ToInt ("virus lifetime");
+extraGameInfo [0].entropy.nEnergyFillRate = (ushort) m.ToInt ("refule rate");
+extraGameInfo [0].entropy.nShieldFillRate = (ushort) m.ToInt ("repair rate");
+extraGameInfo [0].entropy.nShieldDamageRate = (ushort) m.ToInt ("damage rage");
 }
 
 //------------------------------------------------------------------------------

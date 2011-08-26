@@ -312,7 +312,7 @@ do {
 		}
 	for (j = 0; j < 3; j++) {
 		if (m.Available (softParticleIds [i])) {
-			if (m [softParticleIds [j]]->Value ())
+			if (m.Value (softParticleIds [j]))
 				gameOpts->render.effects.bSoftParticles |= 1 << j;
 			else
 				gameOpts->render.effects.bSoftParticles &= ~(1 << j);
