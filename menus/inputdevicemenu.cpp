@@ -708,7 +708,7 @@ do {
 	m.AddMenu ("keyboard options", TXT_KBDCFG_MENUCALL, KEY_K, HTX_KEYBOARD_CONFIG);
 	m.AddMenu ("mouse options", TXT_MOUSECFG_MENUCALL, KEY_M, HTX_MOUSE_CONFIG);
 #if DBG
-	nJoystickOpt = m.AddMenu (TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
+	m.AddMenu ("joystick options", TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
 #else
 	if (gameStates.input.nJoysticks)
 		m.AddMenu ("joystick options", TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);

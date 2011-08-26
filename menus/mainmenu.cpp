@@ -323,7 +323,7 @@ else if (nChoice == mainOpts.nLoadDirect) {
 	char	szLevel [10] = "";
 	int	nLevel;
 
-	m.AddInput (szLevel, sizeof (szLevel), NULL);
+	m.AddInput ("level number", szLevel, sizeof (szLevel), NULL);
 	m.Menu (NULL, "Enter level to load", NULL, NULL);
 	nLevel = atoi (m [0].m_text);
 	if (nLevel && (nLevel >= missionManager.nLastSecretLevel) && (nLevel <= missionManager.nLastLevel)) {
