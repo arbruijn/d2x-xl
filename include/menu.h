@@ -18,6 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "timeout.h"
 #include "font.h"
 #include "error.h"
+#include "strutil.h"
 // returns number of item chosen
 
 //------------------------------------------------------------------------------
