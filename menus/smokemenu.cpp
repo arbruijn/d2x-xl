@@ -107,7 +107,7 @@ if ((m = menu ["sync sizes"])) {
 		return nCurItem;
 		}
 	}
-if ((m = menu ["player"])) {
+if ((m = menu ["player ships"])) {
 	v = m->Value ();
 	if (gameOpts->render.particles.bPlayers != v) {
 		gameOpts->render.particles.bPlayers = v;
