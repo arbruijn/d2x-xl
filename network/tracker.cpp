@@ -304,7 +304,7 @@ int CTracker::Query (void)
 NetworkInit ();
 if (!RequestServerList ())
 	return 0;
-menu.AddGauge ("progressbar", "                    ", -1, 1000); 
+menu.AddGauge ("progress bar", "                    ", -1, 1000); 
 menu.AddText ("", "", 0);
 menu.AddText ("", "(Press Escape to cancel)", 0);
 menu.Top ()->m_bCentered = 1;

@@ -653,7 +653,7 @@ sprintf (szProgress, "0%c done", '%');
 m_nOptPercentage = m.AddText (szProgress, 0);
 m [m_nOptPercentage].m_x = (short) 0x8000;	//centered
 m [m_nOptPercentage].m_bCentered = 1;
-m_nOptProgress = m.AddGauge ("progressbar", "                    ", -1, 100);
+m_nOptProgress = m.AddGauge ("progress bar", "                    ", -1, 100);
 m_socket = 0;
 m_nFiles = 0;
 m_nResult = 1;

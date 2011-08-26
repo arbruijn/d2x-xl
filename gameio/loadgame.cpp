@@ -1197,7 +1197,7 @@ sprintf (szMenu [c++], "%s%i  ", TXT_TOTAL_BONUS,
 			nShieldPoints + nEnergyPoints + nHostagePoints + nSkillPoints + nAllHostagePoints + nEndGamePoints);
 sprintf (szMenu [c++], "%s%i  ", TXT_TOTAL_SCORE, LOCALPLAYER.score);
 for (i = 0; i < c; i++)
-	m.AddText (szMenu [i]);
+	m.AddText ("", szMenu [i]);
 sprintf (szTitle,
 			"%s%s %d %s\n%s %s",
 			gameOpts->menus.nStyle ? "" : bIsLastLevel ? "\n\n\n":"\n",
@@ -1844,7 +1844,7 @@ static int PrepareSecretLevel (int nLevel, bool bLoadTextures)
 	CMenu	menu (1);
 
 gameStates.app.xThisLevelTime = 0;
-menu.AddText (" ");
+menu.AddText ("", " ");
 gameStates.render.cockpit.nLastDrawn [0] = -1;
 gameStates.render.cockpit.nLastDrawn [1] = -1;
 

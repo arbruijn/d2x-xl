@@ -433,8 +433,8 @@ int NetworkWaitForSync (void)
 	tSequencePacket	me;
 
 networkData.nStatus = NETSTAT_WAITING;
-m.AddText (text);
-m.AddText (const_cast<char*> (TXT_NET_LEAVE));
+m.AddText ("", text);
+m.AddText ("", const_cast<char*> (TXT_NET_LEAVE));
 networkData.nJoinState = 0;
 i = NetworkSendRequest ();
 if (i < 0) {
@@ -515,7 +515,7 @@ int NetworkWaitForAllInfo (int choice)
   
   CMenu m (2);
 
-m.AddText ("Press Escape to cancel");
+m.AddText ("", "Press Escape to cancel");
 networkData.bWaitAllChoice = choice;
 networkData.nStartWaitAllTime=TimerGetApproxSeconds ();
 networkData.nSecurityCheck = activeNetGames [choice].m_info.nSecurity;
@@ -715,7 +715,7 @@ void NetworkWaitForRequests (void)
 	CMenu	m (1);
 
 networkData.nStatus = NETSTAT_WAITING;
-m.AddText (const_cast<char*> (TXT_NET_LEAVE));
+m.AddText ("", const_cast<char*> (TXT_NET_LEAVE));
 NetworkFlush ();
 LOCALPLAYER.connected = CONNECT_PLAYING;
 

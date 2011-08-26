@@ -331,7 +331,7 @@ if (dataP [count] == 99) {
 	sprintf (mText [num++], TXT_PPS2, dataP [count+2]);
 	}
 for (i = 0; i < num; i++) 
-	m.AddText (mText [i]);	
+	m.AddText ("", mText [i]);	
 bAlreadyShowingInfo = 1;
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;

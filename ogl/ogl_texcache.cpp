@@ -193,7 +193,7 @@ int OglCacheTextures (void)
 	CMenu	m (3);
 	int	i;
 
-m.AddGauge ("progressbar", "                    ", -1, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
+m.AddGauge ("progress bar", "                    ", -1, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
 nCacheSeg = 0;
 nCacheObj = -3;
 do {

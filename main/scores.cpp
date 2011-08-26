@@ -248,8 +248,8 @@ void MaybeAddPlayerScore (int abortFlag)
 
 		if (position == 0) {
 			strcpy (text1,  "");
-			m.AddText (const_cast<char*> (TXT_COOL_SAYING));
-			m.AddInput (text1, COOL_MESSAGE_LEN - 5);
+			m.AddText ("", const_cast<char*> (TXT_COOL_SAYING));
+			m.AddInput ("", text1, COOL_MESSAGE_LEN - 5);
 			m.Menu (TXT_HIGH_SCORE, TXT_YOU_PLACED_1ST);
 			strncpy (Scores.cool_saying, text1, COOL_MESSAGE_LEN);
 			if (strlen (Scores.cool_saying)<1)

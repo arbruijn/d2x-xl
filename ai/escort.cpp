@@ -288,11 +288,11 @@ void ChangeGuidebotName (void)
 	int	item;
 
 strcpy (text,gameData.escort.szName);
-m.AddInput (text, GUIDEBOT_NAME_LEN);
+m.AddInput ("guidebot name", text, GUIDEBOT_NAME_LEN);
 item = m.Menu (NULL, "Enter Guide-bot name:");
 if (item != -1) {
-	strcpy (gameData.escort.szName,text);
-	strcpy (gameData.escort.szRealName,text);
+	strcpy (gameData.escort.szName, text);
+	strcpy (gameData.escort.szRealName, text);
 	SavePlayerProfile ();
 	}
 }
@@ -1100,13 +1100,13 @@ int ShowEscortHelp (char *pszGoal, char *tstr)
 
 sprintf (szGoal, TXT_GOAL_NEXT, pszGoal);
 sprintf (szMsgs, TXT_GOAL_MESSAGES, tstr);
-m.AddText (szGoal);
+m.AddText ("", szGoal);
 for (nItems = 1; nItems < 10; nItems++) {
-	m.AddText (const_cast<char*> (GT (343 + nItems)), -1);
+	m.AddText ("", const_cast<char*> (GT (343 + nItems)), -1);
 	if (*m.Top ()->m_text)
 		m.Top ()->m_nType = NM_TYPE_MENU;
 	}
-m.AddText (szMsgs, KEY_T);
+m.AddText ("", szMsgs, KEY_T);
 return m.TinyMenu (NULL, "Guide-Bot Commands");
 }
 

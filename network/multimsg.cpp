@@ -509,7 +509,7 @@ void MultiSendMsgDialog (void)
 if (!(gameData.app.nGameMode & GM_MULTI))
 	return;
 gameData.multigame.msg.szMsg [0] = 0;             // Get rid of old contents
-m.AddInput (gameData.multigame.msg.szMsg, MAX_MESSAGE_LEN - 1);
+m.AddInput ("", gameData.multigame.msg.szMsg, MAX_MESSAGE_LEN - 1);
 choice = m.Menu (NULL, TXT_SEND_MESSAGE);
 if ((choice > -1) && (strlen (gameData.multigame.msg.szMsg) > 0)) {
 	gameData.multigame.msg.nReceiver = 100;

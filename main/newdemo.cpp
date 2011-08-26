@@ -3393,19 +3393,19 @@ do {
 		nmAllowedChars = szAllowedDemoNameChars;
 		if (!gameData.demo.bNoSpace) {
 			m.Create (1);
-			m.AddInput (filename, 8);
+			m.AddInput ("", filename, 8);
 			exit = m.Menu (NULL, TXT_SAVE_DEMO_AS);
 			}
 		else if (gameData.demo.bNoSpace == 1) {
 			m.Create (2);
-			m.AddText (const_cast<char*> (TXT_DEMO_SAVE_BAD));
-			m.AddInput (filename, 8);
+			m.AddText ("", const_cast<char*> (TXT_DEMO_SAVE_BAD));
+			m.AddInput ("", filename, 8);
 			exit = m.Menu (NULL, NULL);
 			} 
 		else if (gameData.demo.bNoSpace == 2) {
 			m.Create (3);
-			m.AddText (const_cast<char*> (TXT_DEMO_SAVE_NOSPACE));
-			m.AddInput (filename, 8);
+			m.AddText ("", const_cast<char*> (TXT_DEMO_SAVE_NOSPACE));
+			m.AddInput ("", filename, 8);
 			exit = m.Menu (NULL, NULL);
 			}
 		nmAllowedChars = NULL;

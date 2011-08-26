@@ -1604,7 +1604,7 @@ void ProgressBar (const char* szCaption, int nCurProgress, int nMaxProgress, pMe
 	CMenu	menu;
 
 menu.Create (3);
-menu.AddGauge ("progressbar", "                    ", -1, nMaxProgress); //the blank string denotes the screen width of the gauge
+menu.AddGauge ("progress bar", "                    ", -1, nMaxProgress); //the blank string denotes the screen width of the gauge
 menu.Item (0).m_bCentered = 1;
 menu.Item (0).Value () = nCurProgress;
 nInMenu = gameStates.menus.nInMenu;

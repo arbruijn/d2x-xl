@@ -84,16 +84,16 @@ void ReorderPrimary (void)
 ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
 for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++) {
 	if (primaryOrder [i] == 255)
-		m.AddMenu (szSeparator);
+		m.AddMenu ("", szSeparator);
 	else
-		m.AddMenu (const_cast<char*> (PRIMARY_WEAPON_NAMES (primaryOrder [i])));
-	m [i].m_value = primaryOrder [i];
+		m.AddMenu ("", const_cast<char*> (PRIMARY_WEAPON_NAMES (primaryOrder [i])));
+	m [i].Value () = primaryOrder [i];
 }
 gameStates.menus.bReordering = 1;
 i = m.Menu ("Reorder Primary", "Shift+Up/Down arrow to move item");
 gameStates.menus.bReordering = 0;
 for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++)
-	primaryOrder [i] = m [i].m_value;
+	primaryOrder [i] = m [i].Value ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -106,16 +106,16 @@ void ReorderSecondary (void)
 ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);
 for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++) {
 	if (secondaryOrder [i] == 255)
-		m.AddMenu (szSeparator);
+		m.AddMenu ("", szSeparator);
 	else
-		m.AddMenu (const_cast<char*> (SECONDARY_WEAPON_NAMES (secondaryOrder [i])));
-	m [i].m_value = secondaryOrder [i];
+		m.AddMenu ("", const_cast<char*> (SECONDARY_WEAPON_NAMES (secondaryOrder [i])));
+	m [i].Value () = secondaryOrder [i];
 }
 gameStates.menus.bReordering = 1;
 i = m.Menu ("Reorder Secondary", "Shift+Up/Down arrow to move item");
 gameStates.menus.bReordering = 0;
 for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
-	secondaryOrder [i] = m [i].m_value;
+	secondaryOrder [i] = m [i].Value ();
 }
 
 //	-----------------------------------------------------------------------------

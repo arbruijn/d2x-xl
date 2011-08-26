@@ -98,7 +98,7 @@ int MenuGetValues (const char *pszMsg, int *valueP, int nValues)
 	CMenu	m (1);
 	char	text [20] = "", *psz;
 
-m.AddInput (text, 20);
+m.AddInput ("", text, 20);
 if (m.Menu (NULL, pszMsg) < 0) 
 	return 0;
 valueP [0] = atoi (m [0].m_text);

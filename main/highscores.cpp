@@ -544,7 +544,7 @@ while (true) {
 		}
 	if (m_bNetwork) {
 		CMenu m (1);
-		m.AddGauge ("", -1, 1000); //dummy for NetworkEndLevelPoll2()
+		m.AddGauge ("", "", -1, 1000); //dummy for NetworkEndLevelPoll2()
 		NetworkEndLevelPoll2 (m, key, 0, 0); // check the states of the other players
 		if (!WaitForPlayers ())
 			break;
