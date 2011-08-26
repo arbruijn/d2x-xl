@@ -377,8 +377,8 @@ if ((nCurItem >= i) && (nCurItem < i + nGameTypes)) {
 		return nCurItem;
 		}
 	}
-if ((menu.Available ("entropy") && ((bool) menu.Value ("entropy") == menu.Available ("entropy options"))) ||
-	 ((gameOpts->app.bExpertMode == SUPERUSER) && menu.Available ("monsterball") && ((bool) menu.Value ("monsterball") == menu.Available ("monsterball options"))))
+if ((menu.Available ("entropy") && ((bool) menu.Value ("entropy") == !menu.Available ("entropy options"))) ||
+	 ((gameOpts->app.bExpertMode == SUPERUSER) && menu.Available ("monsterball") && ((bool) menu.Value ("monsterball") == !menu.Available ("monsterball options"))))
 	key = -2;
 //force restricted game for team games
 //obsolete with D2X-W32 as it can assign players to teams automatically

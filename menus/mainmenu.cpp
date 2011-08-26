@@ -365,9 +365,9 @@ if (i == m.IndexOf ("quit"))
 	return 0;
 else if (i == m.IndexOf ("settings"))
 	ConfigMenu ();
-else if (i == m.IndexOf ("load"))
+else if (i == m.IndexOf ("load game"))
 	saveGameManager.Load (1, 0, 0, NULL);
-else if (i == m.IndexOf ("save"))
+else if (i == m.IndexOf ("save game"))
 	saveGameManager.Save (0, 0, 0, NULL);
 return 1;
 }

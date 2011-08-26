@@ -274,7 +274,7 @@ for (uint i = 0; i < ToS (); i++) {
 				Item (j).Value () = 0;
 				}
 			}
-		if ( fm >= 0)
+		if (fm >= 0)
 			Item (fm).Value () = 1;
 		else
 			Item (i).Value () = 1;
