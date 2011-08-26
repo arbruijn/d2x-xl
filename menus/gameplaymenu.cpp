@@ -122,41 +122,41 @@ if (nState)
 	return nCurItem;
 
 	CMenuItem	*m = menu + nCurItem;
-	int			v = m->m_value;
+	int			v = m->Value ();
 
-if (nCurItem == optGuns) {	//checked/unchecked lasers
+if (nCurItem == menu.IndexOf (pszGuns [0])) {	//checked/unchecked lasers
 	if (v != GetGunLoadoutFlag (0)) {
 		SetGunLoadoutFlag (0, v);
 		if (!v) {	//if lasers unchecked, also uncheck super lasers
 			SetGunLoadoutFlag (5, 0);
-			menu [optGuns + 5].m_value = 0;
+			menu [optGuns + 5].Value () = 0;
 			}
 		}
 	}
-else if (nCurItem == optGuns + 5) {	//checked/unchecked super lasers
+else if (nCurItem == menu.IndexOf (pszGuns [5])) {	//checked/unchecked super lasers
 	if (v != GetGunLoadoutFlag (5)) {
 		SetGunLoadoutFlag (5, v);
 		if (v) {	// if super lasers checked, also check lasers
 			SetGunLoadoutFlag (0, 1);
-			menu [optGuns].m_value = 1;
+			menu [optGuns].Value () = 1;
 			}
 		}
 	}
-else if (nCurItem == optDevices + 6) {	//checked/unchecked super lasers
+else if (nCurItem == menu.IndexOf (pszDevices [6])) {	//checked/unchecked super lasers
 	if (v != GetDeviceLoadoutFlag (6)) {
 		SetDeviceLoadoutFlag (6, v);
 		if (!v) {	// if super lasers checked, also check lasers
 			SetDeviceLoadoutFlag (7, 0);
-			menu [optDevices + 7].m_value = 0;
+			menu [optDevices + 7].Value () = 0;
 			}
 		}
 	}
-else if (nCurItem == optDevices + 7) {	//checked/unchecked super lasers
+else if (nCurItem == menu.IndexOf (pszDevices [7])) {	//checked/unchecked super lasers
 	if (v != GetDeviceLoadoutFlag (7)) {
 		SetDeviceLoadoutFlag (7, v);
 		if (v) {	// if super lasers checked, also check lasers
 			SetDeviceLoadoutFlag (6, 1);
-			menu [optDevices + 6].m_value = 1;
+			menu [optDevices + 6].Value () = 1;
 			}
 		}
 	}
@@ -170,30 +170,32 @@ void LoadoutOptionsMenu (void)
 	static int choice = 0;
 
 	CMenu	m (25);
-	int	i, nOptions = 0;
+	int	i, j, nOptions = 0;
 
-m.AddText (TXT_GUN_LOADOUT, 0);
-optGuns = m.ToS ();
+m.AddText ("", TXT_GUN_LOADOUT, 0);
 for (i = 0; i < (int) sizeofa (pszGuns); i++, nOptions++)
-	m.AddCheck (pszGuns [i], (extraGameInfo [0].loadout.nGuns & (1 << i)) != 0, 0, HTX_GUN_LOADOUT);
+	m.AddCheck (pszGuns [i], pszGuns [i], (extraGameInfo [0].loadout.nGuns & (1 << i)) != 0, 0, HTX_GUN_LOADOUT);
 m.AddText ("", 0);
-m.AddText (TXT_DEVICE_LOADOUT, 0);
-optDevices = m.ToS ();
+m.AddText ("", TXT_DEVICE_LOADOUT, 0);
 for (i = 0; i < (int) sizeofa (pszDevices); i++, nOptions++)
-	m.AddCheck (pszDevices [i], (extraGameInfo [0].loadout.nDevice & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
+	m.AddCheck (pszDevices [i], pszDevices [i], (extraGameInfo [0].loadout.nDevice & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
+
 do {
 	i = m.Menu (NULL, TXT_LOADOUT_MENUTITLE, LoadoutCallback, &choice);
 	} while (i != -1);
+
 extraGameInfo [0].loadout.nGuns = 0;
-for (i = 0; i < (int) sizeofa (pszGuns); i++) {
-	if (m [optGuns + i].m_value)
+for (i = 0, j = m.IndexOf (pszGuns [0]); i < (int) sizeofa (pszGuns); i++) {
+	if (m [j + i].Value ())
 		extraGameInfo [0].loadout.nGuns |= (1 << i);
 	}
+
 extraGameInfo [0].loadout.nDevice = 0;
-for (i = 0; i < (int) sizeofa (pszDevices); i++) {
-	if (m [optDevices + i].m_value)
+for (i = 0, j = m.IndexOf (pszDevices [0]); i < (int) sizeofa (pszDevices); i++) {
+	if (m [j + i].Value ())
 		extraGameInfo [0].loadout.nDevice |= nDeviceFlags [i];
 	}
+
 AddPlayerLoadout ();
 }
 
@@ -209,32 +211,35 @@ if (nState)
 	CMenuItem*	m;
 	int			v;
 
-m = menu + gplayOpts.nDifficulty;
-v = m->m_value;
-if (gameStates.app.nDifficultyLevel != v) {
-	gameStates.app.nDifficultyLevel = v;
-	if (!IsMultiGame) {
+if ((m = menu ["difficulty"])) {
+	v = m->Value ();
+	if (gameStates.app.nDifficultyLevel != v) {
 		gameStates.app.nDifficultyLevel = v;
-		gameData.bosses.InitGateIntervals ();
+		if (!IsMultiGame) {
+			gameStates.app.nDifficultyLevel = v;
+			gameData.bosses.InitGateIntervals ();
+			}
+		sprintf (m->m_text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
+		m->m_bRebuild = 1;
 		}
-	sprintf (m->m_text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
-	m->m_bRebuild = 1;
 	}
 
-m = menu + gplayOpts.nAIAggressivity;
-v = m->m_value;
-if (nAIAggressivity != v) {
-	nAIAggressivity = v;
-	sprintf (m->m_text, TXT_AI_AGGRESSIVITY, pszAggressivities [v]);
-	m->m_bRebuild = 1;
+if ((m = menu ["ai aggressivity"])) {
+	v = m->Value ();
+	if (nAIAggressivity != v) {
+		nAIAggressivity = v;
+		sprintf (m->m_text, TXT_AI_AGGRESSIVITY, pszAggressivities [v]);
+		m->m_bRebuild = 1;
+		}
 	}
 
-m = menu + gplayOpts.nWeaponSwitch;
-v = m->m_value;
-if (gameOpts->gameplay.nAutoSelectWeapon != v) {
-	gameOpts->gameplay.nAutoSelectWeapon = v;
-	sprintf (m->m_text, TXT_WEAPON_SWITCH, pszWeaponSwitch [v]);
-	m->m_bRebuild = 1;
+if ((m = menu ["weapon switch"])) {
+	v = m->Value ();
+	if (gameOpts->gameplay.nAutoSelectWeapon != v) {
+		gameOpts->gameplay.nAutoSelectWeapon = v;
+		sprintf (m->m_text, TXT_WEAPON_SWITCH, pszWeaponSwitch [v]);
+		m->m_bRebuild = 1;
+		}
 	}
 
 return nCurItem;
@@ -251,19 +256,19 @@ for (h = i = 0; i < 3; i++) {
 		h++;
 	}
 if (h > 1) { // more than one ship to chose from
-	m.AddText (TXT_PLAYERSHIP);
-	optShip = missionConfig.m_ships [0] ? m.AddRadio (TXT_STANDARD_SHIP, 0, KEY_S, HTX_PLAYERSHIP) : -1;
+	m.AddText ("", TXT_PLAYERSHIP);
+	optShip = (missionConfig.m_ships [0]) ? m.AddRadio ("standard ship", TXT_STANDARD_SHIP, 0, KEY_S, HTX_PLAYERSHIP) : -1;
 	if (missionConfig.m_ships [1]) {
-		h = m.AddRadio (TXT_LIGHT_SHIP, 0, KEY_I, HTX_PLAYERSHIP);
+		h = m.AddRadio ("light ship", TXT_LIGHT_SHIP, 0, KEY_I, HTX_PLAYERSHIP);
 		if (optShip < 0)
 			optShip = h;
 		}
 	if (missionConfig.m_ships [2])
-		m.AddRadio (TXT_HEAVY_SHIP, 0, KEY_F, HTX_PLAYERSHIP);
+		m.AddRadio ("heavy ship", TXT_HEAVY_SHIP, 0, KEY_F, HTX_PLAYERSHIP);
 
 	for (h = i = 0; i < MAX_SHIP_TYPES; i++) {
 		if (missionConfig.m_ships [i])
-			m [optShip + h++].m_value = (i == gameOpts->gameplay.nShip [0]);
+			m [optShip + h++].Value () = (i == gameOpts->gameplay.nShip [0]);
 		}	
 	}
 }
@@ -275,7 +280,7 @@ void GetShipSelection (CMenu& m, int& optShip)
 if (optShip >= 0) {
 	for (int i = 0, j = -1; i < MAX_SHIP_TYPES; i++) {
 		if (missionConfig.m_ships [i]) {
-			if (m [optShip + ++j].m_value) {
+			if (m [optShip + ++j].Value ()) {
 				gameOpts->gameplay.nShip [1] = i;
 				break;
 				}
@@ -314,9 +319,7 @@ void GameplayOptionsMenu (void)
 
 	CMenu m;
 	int	i;
-	int	optSmartWeaponSwitch = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optNoThief = -1, optLoadout = -1;
-	int	optInventory = -1, optShip = -1;
-	int	optReorderPrim, optReorderSec;
+	int	optShip = -1;
 	int	nShip = gameOpts->gameplay.nShip [0];
 	char	szSlider [50];
 
@@ -329,44 +332,44 @@ do {
 
 	sprintf (szSlider + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	*szSlider = *(TXT_DIFFICULTY2 - 1);
-	gplayOpts.nDifficulty = m.AddSlider (szSlider + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
+	m.AddSlider ("difficulty", szSlider + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
 
 	sprintf (szSlider + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [nAIAggressivity]);
 	*szSlider = *(TXT_AI_AGGRESSIVITY - 1);
-	gplayOpts.nAIAggressivity = m.AddSlider (szSlider + 1, nAIAggressivity, 0, 5, KEY_A, HTX_AI_AGGRESSIVITY);
+	m.AddSlider ("ai aggressivity", szSlider + 1, nAIAggressivity, 0, 5, KEY_A, HTX_AI_AGGRESSIVITY);
 
 	sprintf (szSlider + 1, TXT_WEAPON_SWITCH, pszWeaponSwitch [gameOpts->gameplay.nAutoSelectWeapon]);
 	*szSlider = *(TXT_WEAPON_SWITCH - 1);
-	gplayOpts.nWeaponSwitch = m.AddSlider (szSlider + 1, gameOpts->gameplay.nAutoSelectWeapon, 0, 2, KEY_W, HTX_WEAPON_SWITCH);
+	m.AddSlider ("weapon switch", szSlider + 1, gameOpts->gameplay.nAutoSelectWeapon, 0, 2, KEY_W, HTX_WEAPON_SWITCH);
 
-	m.AddText ("", 0);
-	optSmartWeaponSwitch = m.AddCheck (TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_M, HTX_GPLAY_SMARTSWITCH);
-	optHeadlightBuiltIn = m.AddCheck (TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_H, HTX_HEADLIGHT_BUILTIN);
-	optHeadlightPowerDrain = m.AddCheck (TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_O, HTX_HEADLIGHT_POWERDRAIN);
-	optNoThief = m.AddCheck (TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
-	optInventory = m.AddCheck (TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_U, HTX_GPLAY_INVENTORY);
-	m.AddText ("");
-	optReorderPrim = m.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
-	optReorderSec = m.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
+	m.AddText ("", "", 0);
+	m.AddCheck ("smart weapon switch", TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_M, HTX_GPLAY_SMARTSWITCH);
+	m.AddCheck ("built-in headlight", TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_H, HTX_HEADLIGHT_BUILTIN);
+	m.AddCheck ("headlight drains power", TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_O, HTX_HEADLIGHT_POWERDRAIN);
+	m.AddCheck ("suppress thief", TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
+	m.AddCheck ("use inventory", TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_U, HTX_GPLAY_INVENTORY);
+	m.AddText ("", "");
+	m.AddMenu ("reorder guns", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
+	m.AddMenu ("reorder missles", TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
 	//if (gameStates.app.bGameRunning)
 		AddShipSelection (m, optShip);
-	if (gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)
-		optLoadout = -1;
-	else {
-		m.AddText ("", 0);
-		optLoadout = m.AddMenu (TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
+	if (!(gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)) {
+		m.AddText ("", "", 0);
+		m.AddMenu ("loadout options", TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
 		}
+
 	for (;;) {
 		if (0 > (i = m.Menu (NULL, TXT_GAMEPLAY_OPTS, GameplayOptionsCallback, &choice)))
 			break;
-		if ((optLoadout >= 0) && (choice == optLoadout))
+		if (choice == m.IndexOf ("loadout options"))
 			LoadoutOptionsMenu ();
-		else if (choice == optReorderPrim)
+		else if (choice == m.IndexOf ("reorder guns"))
 			ReorderPrimary ();
-		else if (choice == optReorderSec)
+		else if (choice == m.IndexOf ("reorder missiles"))
 			ReorderSecondary ();
 		}
 	} while (i == -2);
+
 if (nAIAggressivity == 5) {
 	gameOpts->gameplay.nAIAwareness = 1;
 	gameOpts->gameplay.nAIAggressivity = 4;
@@ -376,12 +379,11 @@ else {
 	gameOpts->gameplay.nAIAggressivity = nAIAggressivity;
 	}
 
-extraGameInfo [0].headlight.bAvailable = m [gplayOpts.nHeadlightAvailable].m_value;
-extraGameInfo [0].bSmartWeaponSwitch = m [optSmartWeaponSwitch].m_value;
-GET_VAL (gameOpts->gameplay.bInventory, optInventory);
-GET_VAL (gameOpts->gameplay.bNoThief, optNoThief);
-GET_VAL (extraGameInfo [0].headlight.bDrainPower, optHeadlightPowerDrain);
-GET_VAL (extraGameInfo [0].headlight.bBuiltIn, optHeadlightBuiltIn);
+extraGameInfo [0].bSmartWeaponSwitch = m ["smart weapon switch"]->Value ();
+GET_VAL (gameOpts->gameplay.bInventory, "use inventory");
+GET_VAL (gameOpts->gameplay.bNoThief, "suppress thief");
+GET_VAL (extraGameInfo [0].headlight.bDrainPower, "headlight drains power");
+GET_VAL (extraGameInfo [0].headlight.bBuiltIn, "built-in headlight");
 if (gameStates.app.bGameRunning)
 	GetShipSelection (m, optShip);
 DefaultGameplaySettings ();

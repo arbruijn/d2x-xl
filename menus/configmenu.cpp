@@ -131,8 +131,8 @@ do {
 	m.AddMenu ("screen res options", TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
 	m.AddText ("", 0);
 	if (gameStates.app.bNostalgia) {
-		m.AddMenu ("reorder primaries", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
-		m.AddMenu ("reorder secondaries", TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
+		m.AddMenu ("reorder guns", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
+		m.AddMenu ("reorder missiles", TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
 		}
 	m.AddMenu ("miscellaneous", gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISCELLANEOUS, gameStates.app.bNostalgia ? KEY_T : KEY_I, HTX_OPTIONS_MISC);
 	if (!gameStates.app.bNostalgia) {
@@ -163,9 +163,9 @@ do {
 			}
 		else if (i == m.IndexOf ("screen res options"))
 			ScreenResMenu ();
-		else if (i == m.IndexOf ("reorder primaries"))
+		else if (i == m.IndexOf ("k"))
 			ReorderPrimary ();
-		else if (i == m.IndexOf ("reorder secondaries"))
+		else if (i == m.IndexOf ("reorder missiles"))
 			ReorderSecondary ();
 		else if (i == m.IndexOf ("miscellaneous"))
 			MiscellaneousMenu ();
