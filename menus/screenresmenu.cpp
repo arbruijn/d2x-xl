@@ -97,12 +97,12 @@ int ScreenResCallback (CMenu& menu, int& nKey, int nCurItem, int nState)
 if (nState)
 	return nCurItem;
 
-	int	i, j;
+	int	h, i, j;
 
-if (menu [screenResOpts.nCustom].m_value != (gameStates.video.nDisplayMode == CUSTOM_DISPLAY_MODE)) 
+if ((h = menu.IndexOf ("custom resolution")) && menu [h].Value () != (gameStates.video.nDisplayMode == CUSTOM_DISPLAY_MODE)) 
 	nKey = -2;
-for (i = 0; i < screenResOpts.nCustom; i++)
-	if (menu [i].m_value) {
+for (i = 0; i < h; i++)
+	if (menu [i].Value ()) {
 		j = ScreenResMenuItemToMode (i);
 		if ((j < NUM_DISPLAY_MODES) && (j != gameStates.video.nDisplayMode)) {
 			//SetDisplayMode (j, 0);
@@ -120,8 +120,7 @@ int SwitchDisplayMode (int dir)
 	int	i, h = NUM_DISPLAY_MODES;
 
 for (i = 0; i < h; i++)
-	displayModeInfo [i].bAvailable =
-		 ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].dim);
+	displayModeInfo [i].bAvailable = ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].dim);
 i = gameStates.video.nDisplayMode;
 do {
 	i += dir;
@@ -145,13 +144,12 @@ void ScreenResMenu (void)
 
 	CMenu		m;
 	int		choice;
-	int		i, j, key, nCustWOpt, nCustHOpt, nCustW, nCustH, bStdRes;
+	int		i, j, key, nCustW, nCustH, bStdRes;
 	char		szMode [40];
 	char		cShortCut, szCustX [7], szCustY [7];
 
 if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE)) {				//special VR mode
-	MsgBox (TXT_SORRY, NULL, 1, TXT_OK, 
-			"You may not change screen\nresolution when VR modes enabled.");
+	MsgBox (TXT_SORRY, NULL, 1, TXT_OK, "You may not change screen\nresolution when VR modes enabled.");
 	return;
 	}
 
@@ -161,11 +159,10 @@ do {
 	m.Destroy ();
 	m.Create (N_SCREENRES_ITEMS);
 	for (i = 0, j = NUM_DISPLAY_MODES - 1; i < j; i++) {
-		if (!(displayModeInfo [i].bAvailable = 
-				 ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].dim)))
-				continue;
+		if (!(displayModeInfo [i].bAvailable = ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].dim)))
+			continue;
 		if (displayModeInfo [i].bWideScreen && !displayModeInfo [i-1].bWideScreen) {
-			m.AddText (TXT_WIDESCREEN_RES, 0);
+			m.AddText ("wide screen", TXT_WIDESCREEN_RES, 0);
 			m.NewGroup (-1);
 			if (screenResOpts.nWideScreen < 0)
 				screenResOpts.nWideScreen = m.ToS () - 1;
@@ -187,25 +184,25 @@ do {
 		m.AddRadio (szMode, 0, -1);
 		}
 
-	screenResOpts.nCustom = m.AddRadio (TXT_CUSTOM_SCRRES, 0, KEY_U, HTX_CUSTOM_SCRRES);
+	screenResOpts.nCustom = m.AddRadio ("custom resolution", TXT_CUSTOM_SCRRES, 0, KEY_U, HTX_CUSTOM_SCRRES);
 	*szCustX = *szCustY = '\0';
 	if (displayModeInfo [CUSTOM_DISPLAY_MODE].w)
 		sprintf (szCustX, "%d", displayModeInfo [CUSTOM_DISPLAY_MODE].w);
 	if (displayModeInfo [CUSTOM_DISPLAY_MODE].h)
 		sprintf (szCustY, "%d", displayModeInfo [CUSTOM_DISPLAY_MODE].h);
-	nCustWOpt = m.AddInput (szCustX, 4, NULL);
-	nCustHOpt = m.AddInput (szCustY, 4, NULL);
+	m.AddInput ("custom width", szCustX, 4, NULL);
+	m.AddInput ("custom height", szCustY, 4, NULL);
 
 	choice = ScreenResModeToMenuItem (gameStates.video.nDisplayMode);
-	m [choice].m_value = 1;
+	m [choice].Value () = 1;
 
 	key = m.Menu (NULL, TXT_SELECT_SCRMODE, ScreenResCallback, &choice);
 	if (key == -1)
 		return;
 	bStdRes = 0;
-	if (m [screenResOpts.nCustom].m_value) {
+	if (m ["custom resolution"]->Value ()) {
 		key = -2;
-		if ((nCustWOpt > 0) && (nCustHOpt > 0) &&
+		if (m.Available ("custom width") && m.Available ("custom height") &&
 			 (0 < (nCustW = atoi (szCustX))) && (0 < (nCustH = atoi (szCustY)))) {
 			i = CUSTOM_DISPLAY_MODE;
 			if (SetCustomDisplayMode (nCustW, nCustH))
@@ -218,8 +215,10 @@ do {
 		}
 	else 
 		{
-		for (i = 0; i <= screenResOpts.nCustom; i++)
-			if ((i != screenResOpts.nWideScreen) && (m [i].m_value)) {
+		int nCustom = m.IndexOf ("custom resolution");
+		int nWideScreen = m.IndexOf ("wide screen");
+		for (i = 0; i <= nCustom; i++)
+			if ((i != nWideScreen) && (m [i].Value ())) {
 				bStdRes = 1;
 				i = ScreenResMenuItemToMode(i);
 				break;
