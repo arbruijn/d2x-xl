@@ -169,7 +169,7 @@ if (ocType != gameConfig.nControlType) {
 	KCSetControls(0);
 	}
 
-if ((m = menu ["use mouse"])) {
+if ((m = menu ["use device"])) {
 	v = m->Value ();
 	if (gameOpts->input.mouse.bUse != v) {
 		if (gameStates.app.bNostalgia) {
@@ -252,11 +252,11 @@ do {
 
 		nCustMouseOpt = nMouseTypeOpt = -1;
 		controls.SetType ();
-		mouseOpts.nUse = m.AddCheck ("use mouse", TXT_USE_MOUSE, gameOpts->input.mouse.bUse, KEY_M, HTX_CONF_USEMOUSE);
+		mouseOpts.nUse = m.AddCheck ("use device", TXT_USE_MOUSE, gameOpts->input.mouse.bUse, KEY_M, HTX_CONF_USEMOUSE);
 		mouseOpts.nDeadzone = -1;
 		if (gameOpts->input.mouse.bUse || gameStates.app.bNostalgia) {
 			if (gameOpts->input.mouse.bUse)
-				m.AddMenu ("customize mouse", TXT_CUST_MOUSE, KEY_O, HTX_CONF_CUSTMOUSE);
+				m.AddMenu ("customize device", TXT_CUST_MOUSE, KEY_O, HTX_CONF_CUSTMOUSE);
 			m.AddText ("", "", 0);
 			if (gameStates.app.bNostalgia) 
 				gameOpts->input.mouse.bSyncAxis = 1;
@@ -277,7 +277,7 @@ do {
 				}
 			}
 		i = m.Menu (NULL, TXT_MOUSE_CONFIG, MouseConfigCallback, &choice);
-		gameOpts->input.mouse.bUse = m ["use mouse"]->Value ();
+		gameOpts->input.mouse.bUse = m ["use device"]->Value ();
 		if (gameOpts->input.mouse.bUse && !gameStates.app.bNostalgia) {
 			if (!m.Available ("standard mouse")) {
 				gameStates.input.nMouseType = CONTROL_MOUSE;
@@ -296,7 +296,7 @@ do {
 		if (i == -1)
 			return;
 		gameConfig.nControlType = gameOpts->input.mouse.bUse ? CONTROL_MOUSE : gameConfig.nControlType;
-		if (choice == m.IndexOf (customize mouse"))
+		if (choice == m.IndexOf ("customize device"))
 			controlConfig.Run (2, TXT_CFG_MOUSE);
 	} while (i >= 0);
 }
@@ -414,9 +414,9 @@ do {
 
 		nCustJoyOpt = nJoyTypeOpt = -1;
 		controls.SetType ();
-		m.AddCheck ("use joystick", TXT_USE_JOY, gameOpts->input.joystick.bUse, KEY_J, HTX_CONF_USEJOY);
+		m.AddCheck ("use device", TXT_USE_JOY, gameOpts->input.joystick.bUse, KEY_J, HTX_CONF_USEJOY);
 		if (gameOpts->input.joystick.bUse || gameStates.app.bNostalgia) {
-			m.AddMenu ("customize joystick", TXT_CUST_JOY, KEY_C, HTX_CONF_CUSTJOY);
+			m.AddMenu ("customize device", TXT_CUST_JOY, KEY_C, HTX_CONF_CUSTJOY);
 			if (!gameStates.app.bNostalgia && gameOpts->app.bExpertMode) {
 				m.AddCheck ("linear sensitivity", TXT_JOY_LINSCALE, gameOpts->input.joystick.bLinearSens, KEY_I, HTX_CONF_LINJOY);
 				m.AddCheck ("sync axis", TXT_SYNC_JOY_AXES, gameOpts->input.joystick.bSyncAxis, KEY_Y, HTX_CONF_SYNCJOY);
@@ -436,14 +436,14 @@ do {
 				}
 			}
 		i = m.Menu (NULL, TXT_JOYSTICK_CONFIG, JoystickConfigCallback, &choice);
-		gameOpts->input.joystick.bUse = m ["use joystick"]->Value ();
+		gameOpts->input.joystick.bUse = m ["use device"]->Value ();
 		if (gameOpts->input.joystick.bUse && !gameStates.app.bNostalgia) {
 			if (!m.Available ("standard joystick"))
 				gameStates.input.nJoyType = CONTROL_JOYSTICK;
 			else {
 				if (gameOpts->app.bExpertMode) {
 					gameOpts->input.joystick.bLinearSens = m ["linear sensitivity"]->Value ();
-				for (j = 0, h = IndexOf ("standard joystick"); j < UNIQUE_JOY_AXES; j++)
+				for (j = 0, h = m.IndexOf ("standard joystick"); j < UNIQUE_JOY_AXES; j++)
 					if (m [h + j].Value ()) {
 						gameStates.input.nJoyType = CONTROL_JOYSTICK + j;
 						break;
@@ -454,12 +454,14 @@ do {
 		} while (i == -2);
 	if (i == -1)
 		return;
-	if (choice == nCustJoyOpt)
+	if (choice == m.IndexOf ("customize device"))
 		controlConfig.Run (1, TXT_CFG_JOY);
 	} while (i >= 0);
 }
 
 //------------------------------------------------------------------------------
+
+char* trackirModeIds [] = {"aim", "steer", "look"};
 
 int TrackIRConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
@@ -468,17 +470,20 @@ if (nState)
 
 	int			h, i, v;
 	CMenuItem*	m;
+	char			szId [100];
 
-m = menu + tirOpts.nUse;
-v = m->Value ();
-if (gameOpts->input.trackIR.bUse != v) {
-	gameOpts->input.trackIR.bUse = v;
-	key = -2;
-	return nCurItem;
+if ((m = menu ["use device"])) {
+	v = m->Value ();
+	if (gameOpts->input.trackIR.bUse != v) {
+		gameOpts->input.trackIR.bUse = v;
+		key = -2;
+		return nCurItem;
+		}
 	}
+
 if (gameOpts->input.trackIR.bUse) {
 	for (i = 0; i < 3; i++) {
-		if (m [tirOpts.nMode + i].Value () && (gameOpts->input.trackIR.nMode != i)) {
+		if (menu [trackirModeIds [i]]->Value () && (gameOpts->input.trackIR.nMode != i)) {
 			gameOpts->input.trackIR.nMode = i;
 			if (i == 0) {
 				gameData.trackIR.x = 
@@ -488,9 +493,9 @@ if (gameOpts->input.trackIR.bUse) {
 			return nCurItem;
 			}
 		}
+
 	for (i = 0; i < 3; i++) {
-		if (gameOpts->app.bExpertMode) {
-			m = menu + tirOpts.nSyncAxes;
+		if (gameOpts->app.bExpertMode && (m = menu ["sync axis"])) {
 			v = m->Value ();
 			if (gameOpts->input.trackIR.bSyncAxis != v) {
 				gameOpts->input.trackIR.bSyncAxis = v;
@@ -504,8 +509,8 @@ if (gameOpts->input.trackIR.bUse) {
 			}
 		}
 	for (i = 0; i < 5; i++) {
-		if (tirOpts.nMove >= 0) {
-			m = menu + tirOpts.nMove + i;
+		sprintf (szId, "move %d", i + 1);
+		if ((m = menu [szId])) {
 			v = m->Value ();
 			if (gameOpts->input.trackIR.bMove [i] != v) {
 				gameOpts->input.trackIR.bMove [i] = v;
@@ -518,16 +523,17 @@ if (gameOpts->input.trackIR.bUse) {
 				}
 			}
 		}
-	if (tirOpts.nSyncAxes < 0)
+	if (!menu.Available ("sync axis"))
 		return nCurItem;
 	h = gameOpts->input.trackIR.bSyncAxis ? 1 : 3;
-	for (i = 0; i < h; i++)
-		gameOpts->input.trackIR.sensitivity [i] = menu [tirOpts.nSensitivity + i].Value ();
+	for (i = 0; i < h; i++) {
+		sprintf (szId, "axis %d:sensitivity", i + 1);
+		gameOpts->input.trackIR.sensitivity [i] = menu [szId]->Value ();
+		}
 	for (i = h; i < 3; i++)
 		gameOpts->input.trackIR.sensitivity [i] = gameOpts->input.trackIR.sensitivity [0];
-	if (tirOpts.nDeadzone < 0)
+	if (!(m = menu ["deadzone"]))
 		return nCurItem;
-	m = menu + tirOpts.nDeadzone;
 	v = m->Value ();
 	if (gameOpts->input.trackIR.nDeadzone != v) {
 		gameOpts->input.trackIR.nDeadzone = v;
@@ -546,6 +552,7 @@ void TrackIRConfigMenu (void)
 	int	i, choice = 0;
 	char	szTrackIRSens [3][50];
 	char	szTrackIRDeadzone [50];
+	char	szId [100];
 
 szDZoneSizes [0] = TXT_NONE;
 szDZoneSizes [1] = TXT_SMALL;
@@ -557,27 +564,29 @@ do {
 	m.Destroy ();
 	m.Create (20);
 
-	tirOpts.nUse = m.AddCheck (TXT_USE_TRACKIR, gameOpts->input.trackIR.bUse, KEY_M, HTX_USE_TRACKIR);
+	m.AddCheck ("use device", TXT_USE_TRACKIR, gameOpts->input.trackIR.bUse, KEY_M, HTX_USE_TRACKIR);
 	if (gameOpts->input.trackIR.bUse) {
-		tirOpts.nMode = m.AddRadio (TXT_TRACKIR_AIM, 0, KEY_A, HTX_TRACKIR_AIM);
-		m.AddRadio (TXT_TRACKIR_STEER, 0, KEY_S, HTX_TRACKIR_STEER);
-		m.AddRadio (TXT_TRACKIR_LOOK, 0, KEY_L, HTX_TRACKIR_LOOK);
-		m [tirOpts.nMode + gameOpts->input.trackIR.nMode].Value () = 1;
-		m.AddText ("", 0);
+		m.AddRadio (trackirModeIds [0], TXT_TRACKIR_AIM, 0, KEY_A, HTX_TRACKIR_AIM);
+		m.AddRadio (trackirModeIds [1], TXT_TRACKIR_STEER, 0, KEY_S, HTX_TRACKIR_STEER);
+		m.AddRadio (trackirModeIds [2], TXT_TRACKIR_LOOK, 0, KEY_L, HTX_TRACKIR_LOOK);
+		m [m.IndexOf (trackirModeIds [0]) + gameOpts->input.trackIR.nMode].Value () = 1;
+		m.AddText ("", "", 0);
 		tirOpts.nMove = m.ToS ();
-		for (i = 0; i < 5; i++)
-			m.AddCheck (GT (924 + i), gameOpts->input.trackIR.bMove [i], tirMoveHotkeys [i], HT (281 + i));
+		for (i = 0; i < 5; i++) {
+			sprintf (szId, "move %d", i + 1); 
+			m.AddCheck (szId, GT (924 + i), gameOpts->input.trackIR.bMove [i], tirMoveHotkeys [i], HT (281 + i));
+			}	
 		if ((gameOpts->input.trackIR.nMode != 1) ||
 			 gameOpts->input.trackIR.bMove [0] || 
 			 gameOpts->input.trackIR.bMove [1] || 
 			 gameOpts->input.trackIR.bMove [2] || 
 			 gameOpts->input.trackIR.bMove [3] || 
 			 gameOpts->input.trackIR.bMove [4]) {
-			m.AddText ("", 0);
-			tirOpts.nSyncAxes = m.AddCheck (TXT_SYNC_TRACKIR_AXES, gameOpts->input.trackIR.bSyncAxis, KEY_K, HTX_SYNC_TRACKIR_AXES);
-			tirOpts.nSensitivity = AddAxisControls (m, "sensitivity", &szTrackIRSens [0][0], TXT_TRACKIR_SENS, TXT_TRACKIR_SENS_N, szAxis3D, HTX_TRACKIR_SENS, 
-																 3, gameOpts->input.trackIR.sensitivity, 16, NULL, KEY_S, axis3DHotkeys, gameOpts->input.trackIR.bSyncAxis);
-			tirOpts.nDeadzone = AddDeadzoneControl (m, szTrackIRDeadzone, TXT_TRACKIR_DEADZONE, HTX_TRACKIR_DEADZONE, NULL, gameOpts->input.trackIR.nDeadzone, KEY_U);
+			m.AddText ("", "", 0);
+			m.AddCheck ("sync axis", TXT_SYNC_TRACKIR_AXES, gameOpts->input.trackIR.bSyncAxis, KEY_K, HTX_SYNC_TRACKIR_AXES);
+			AddAxisControls (m, "sensitivity", &szTrackIRSens [0][0], TXT_TRACKIR_SENS, TXT_TRACKIR_SENS_N, szAxis3D, HTX_TRACKIR_SENS, 
+								  3, gameOpts->input.trackIR.sensitivity, 16, NULL, KEY_S, axis3DHotkeys, gameOpts->input.trackIR.bSyncAxis);
+			AddDeadzoneControl (m, szTrackIRDeadzone, TXT_TRACKIR_DEADZONE, HTX_TRACKIR_DEADZONE, NULL, gameOpts->input.trackIR.nDeadzone, KEY_U);
 			}
 		}
 	i = m.Menu (NULL, TXT_TRACKIR_CONFIG, TrackIRConfigCallback, &choice);
@@ -588,6 +597,9 @@ do {
 
 //------------------------------------------------------------------------------
 
+static char* kbdRampIds [] = {"acceleration", "rotation", "sliding"};
+static char* kbdLayoutIds [] = {"qwerty", "qwertz", "azerty", "dvorak"};
+
 int KeyboardConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
@@ -596,24 +608,25 @@ if (nState)
 	int			i, v;
 	CMenuItem*	m;
 
-
 if (gameOpts->app.bExpertMode || gameOpts->app.bNotebookFriendly) {
-	m = menu + kbdOpts.nRamp;
-	v = m->Value () * 10;
-	if (gameOpts->input.keyboard.nRamp != v) {
-		if (!(gameOpts->input.keyboard.nRamp && v))
-			key = -2;
-		gameOpts->input.keyboard.nRamp = v;
-		sprintf(m->Text (), TXT_KBD_RAMP, gameOpts->input.keyboard.nRamp);
-		m->Rebuild ();
+	if ((m = menu ["ramp scale"])) {
+		v = m->Value () * 10;
+		if (gameOpts->input.keyboard.nRamp != v) {
+			if (!(gameOpts->input.keyboard.nRamp && v))
+				key = -2;
+			gameOpts->input.keyboard.nRamp = v;
+			sprintf(m->Text (), TXT_KBD_RAMP, gameOpts->input.keyboard.nRamp);
+			m->Rebuild ();
+			}
 		}
 
 	for (i = 0; i < 3; i++) {
-		m = menu + kbdOpts.nRampValues + i;
-		v = (m->Value () != 0);
-		if (gameOpts->input.keyboard.bRamp [i] != v) {
-			gameOpts->input.keyboard.bRamp [i] = v;
-			m->Redraw ();
+		if ((m = menu [kbdRampIds [i]])) {
+			v = (m->Value () != 0);
+			if (gameOpts->input.keyboard.bRamp [i] != v) {
+				gameOpts->input.keyboard.bRamp [i] = v;
+				m->Redraw ();
+				}
 			}
 		}
 	}
@@ -628,7 +641,6 @@ void KeyboardConfigMenu (void)
 {
 	CMenu	m;
 	int	i, choice = 0;
-	int	nCustKbdOpt, nCustHotKeysOpt, optKeyboard;
 	char	szKeyRampScale [50];
 
 do {
@@ -636,45 +648,44 @@ do {
 		m.Destroy ();
 		m.Create (20);
 
-		nCustHotKeysOpt = -1;
 		controls.SetType ();
-		nCustKbdOpt = m.AddMenu (TXT_CUST_JOY, KEY_K, HTX_CONF_CUSTKBD);
+		m.AddMenu ("customize device", TXT_CUST_JOY, KEY_K, HTX_CONF_CUSTKBD);
 		if (gameStates.app.bNostalgia) {
 			gameOpts->input.keyboard.nRamp = 100;
 			gameOpts->input.bUseHotKeys = 0;
 			}
 		else {
-			nCustHotKeysOpt = m.AddMenu (TXT_CUST_HOTKEYS, KEY_W, HTX_CONF_CUSTHOT);
+			m.AddMenu ("customize hotkeys", TXT_CUST_HOTKEYS, KEY_W, HTX_CONF_CUSTHOT);
 			if (gameOpts->app.bExpertMode || gameOpts->app.bNotebookFriendly) {
-				m.AddText ("", 0);
+				m.AddText ("", "", 0);
 				sprintf (szKeyRampScale + 1, TXT_KBD_RAMP, gameOpts->input.keyboard.nRamp, HTX_CONF_KBDRAMP);
 				*szKeyRampScale = *(TXT_KBD_RAMP - 1);
-				kbdOpts.nRamp = m.AddSlider (szKeyRampScale + 1, gameOpts->input.keyboard.nRamp / 10, 0, 10, KEY_R, HTX_CONF_RAMPSCALE);   
+				m.AddSlider ("ramp scale", szKeyRampScale + 1, gameOpts->input.keyboard.nRamp / 10, 0, 10, KEY_R, HTX_CONF_RAMPSCALE);   
 				if (gameOpts->input.keyboard.nRamp > 0) {
-					kbdOpts.nRampValues = m.AddCheck (TXT_RAMP_ACCEL, gameOpts->input.keyboard.bRamp [0], KEY_A, HTX_CONF_RAMPACC);
-					m.AddCheck (TXT_RAMP_ROT, gameOpts->input.keyboard.bRamp [1], KEY_O, HTX_CONF_RAMPROT);
-					m.AddCheck (TXT_RAMP_SLIDE, gameOpts->input.keyboard.bRamp [2], KEY_D, HTX_CONF_RAMPSLD);
+					m.AddCheck (kbdRampIds [0], TXT_RAMP_ACCEL, gameOpts->input.keyboard.bRamp [0], KEY_A, HTX_CONF_RAMPACC);
+					m.AddCheck (kbdRampIds [1], TXT_RAMP_ROT, gameOpts->input.keyboard.bRamp [1], KEY_O, HTX_CONF_RAMPROT);
+					m.AddCheck (kbdRampIds [2], TXT_RAMP_SLIDE, gameOpts->input.keyboard.bRamp [2], KEY_D, HTX_CONF_RAMPSLD);
 					}
 				}
 			}
-		m.AddText ("", 0);
+		m.AddText ("", "", 0);
 		m.AddText (TXT_KEYBOARD_LAYOUT, 0);
-		optKeyboard = m.AddRadio (TXT_QWERTY, gameOpts->input.keyboard.nType == 0, KEY_E, HTX_KEYBOARD_LAYOUT);
-		m.AddRadio (TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_G, HTX_KEYBOARD_LAYOUT);
-		m.AddRadio (TXT_AZERTY, gameOpts->input.keyboard.nType == 2, KEY_F, HTX_KEYBOARD_LAYOUT);
-		m.AddRadio (TXT_DVORAK, gameOpts->input.keyboard.nType == 3, KEY_D, HTX_KEYBOARD_LAYOUT);
+		m.AddRadio (kbdLayoutIds [0], TXT_QWERTY, gameOpts->input.keyboard.nType == 0, KEY_E, HTX_KEYBOARD_LAYOUT);
+		m.AddRadio (kbdLayoutIds [1], TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_G, HTX_KEYBOARD_LAYOUT);
+		m.AddRadio (kbdLayoutIds [2], TXT_AZERTY, gameOpts->input.keyboard.nType == 2, KEY_F, HTX_KEYBOARD_LAYOUT);
+		m.AddRadio (kbdLayoutIds [3], TXT_DVORAK, gameOpts->input.keyboard.nType == 3, KEY_D, HTX_KEYBOARD_LAYOUT);
 		i = m.Menu (NULL, TXT_KEYBOARD_CONFIG, KeyboardConfigCallback, &choice);
 		} while (i == -2);
 	if (i == -1)
 		return;
 	for (int j = 0; j < 4; j++)
-		if (m [optKeyboard + j].Value () != 0) {
+		if (m [kbdLayoutIds [j]]->Value () != 0) {
 			gameOpts->input.keyboard.nType = j;
 			break;
 			}
-	if (choice == nCustKbdOpt)
+	if (choice == m.IndexOf ("customize device"))
 		controlConfig.Run (0, TXT_CFG_KBD);
-	else if (choice == nCustHotKeysOpt)
+	else if (choice == m.IndexOf ("customize hotkeys"))
 		controlConfig.Run (4, TXT_CFG_HOTKEYS);
 	} while (i >= 0);
 DefaultKeyboardSettings ();
@@ -686,7 +697,6 @@ void InputDeviceConfig (void)
 {
 	CMenu	m;
 	int	i, choice = 0;
-	int	nMouseOpt, nJoystickOpt, nTrackIROpt, nKeyboardOpt, nFastPitchOpt;
 
 do {
 	if (TIRLoad ())
@@ -695,39 +705,33 @@ do {
 	m.Create (10);
 
 	controls.SetType ();
-	nKeyboardOpt = m.AddMenu (TXT_KBDCFG_MENUCALL, KEY_K, HTX_KEYBOARD_CONFIG);
-	nMouseOpt = m.AddMenu (TXT_MOUSECFG_MENUCALL, KEY_M, HTX_MOUSE_CONFIG);
+	m.AddMenu ("keyboard options", TXT_KBDCFG_MENUCALL, KEY_K, HTX_KEYBOARD_CONFIG);
+	m.AddMenu ("mouse options", TXT_MOUSECFG_MENUCALL, KEY_M, HTX_MOUSE_CONFIG);
 #if DBG
 	nJoystickOpt = m.AddMenu (TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
 #else
 	if (gameStates.input.nJoysticks)
-		nJoystickOpt = m.AddMenu (TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
-	else
-		nJoystickOpt = -1;
+		m.AddMenu ("joystick options", TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
 #endif
 	if (!gameStates.app.bNostalgia && gameStates.input.bHaveTrackIR) 
-		nTrackIROpt = m.AddMenu (TXT_TRACKIRCFG_MENUCALL, KEY_I, HTX_TRACKIR_CONFIG);
-	else
-		nTrackIROpt = -1;
-	m.AddText ("", 0);
+		m.AddMenu ("trackir options", TXT_TRACKIRCFG_MENUCALL, KEY_I, HTX_TRACKIR_CONFIG);
+	m.AddText ("", "", 0);
 	if (gameOpts->app.bExpertMode && (gameStates.app.bNostalgia < 3)) {
-		nFastPitchOpt = m.AddCheck (TXT_FASTPITCH, (extraGameInfo [0].bFastPitch == 1) ? 1 : 0, KEY_T, HTX_CONF_FASTPITCH);
-		extraGameInfo [0].bFastPitch = m [nFastPitchOpt].Value () ? 1 : 2;
+		m.AddCheck ("fast pitch", TXT_FASTPITCH, (extraGameInfo [0].bFastPitch == 1) ? 1 : 0, KEY_T, HTX_CONF_FASTPITCH);
+		extraGameInfo [0].bFastPitch = m ["fast pitch"]->Value () ? 1 : 2;
 		}
-	else
-		nFastPitchOpt = -1;
 	i = m.Menu (NULL, TXT_CONTROLS, NULL, &choice);
 	if (i == -1)
 		return;
-	if (nFastPitchOpt >= 0)
-		extraGameInfo [0].bFastPitch = m [nFastPitchOpt].Value () ? 1 : 2;
-	if (choice == nKeyboardOpt)
+	if (m.Available ("fast pitch"))
+		extraGameInfo [0].bFastPitch = m ["fast pitch"]->Value () ? 1 : 2;
+	if (choice == m.IndexOf ("keyboard options"))
 		KeyboardConfigMenu ();
-	else if (choice == nMouseOpt)
+	else if (choice == m.IndexOf ("mouse options"))
 		MouseConfigMenu ();
-	else if ((nJoystickOpt >= 0) && (choice == nJoystickOpt))
+	else if (choice == m.IndexOf ("joystick options"))
 		JoystickConfigMenu ();
-	else if ((nTrackIROpt >= 0) && (choice == nTrackIROpt))
+	else if (choice == m.IndexOf ("trackir options"))
 		TrackIRConfigMenu ();
 	} while (i >= 0);
 }
