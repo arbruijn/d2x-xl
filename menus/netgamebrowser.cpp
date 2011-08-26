@@ -47,11 +47,11 @@ char szGameList [MAX_ACTIVE_NETGAMES + 5][100];
 void InitNetGameMenuOption (CMenu& menu, int j)
 {
 if (j >= int (menu.ToS ()))
-	menu.AddMenu (szGameList [j]);
+	menu.AddMenu ("", szGameList [j]);
 CMenuItem* m = menu + j;
 sprintf (m->m_text, "%2d.                                                     ", j - 1 - tracker.m_bUse);
-m->m_value = 0;
-m->m_bRebuild = 1;
+m->Value () = 0;
+m->Rebuild ();
 }
 
 //------------------------------------------------------------------------------
@@ -293,7 +293,7 @@ memset (activeNetGames, 0, sizeof (activeNetGames));
 memset (activeNetPlayers, 0, sizeof (activeNetPlayers));
 if (!bAutoLaunch) {
 	fontManager.SetColorRGBi (RGB_PAL (15, 15, 23), 1, 0, 0);
-	menu.AddText (szGameList [0]);
+	menu.AddText ("", szGameList [0]);
 	menu.Top ()->m_bNoScroll = 1;
 	menu.Top ()->m_x = (short) 0x8000;	//centered
 	if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -303,12 +303,12 @@ if (!bAutoLaunch) {
 			*menu.Top ()->m_text = '\0';
 		}
 	if (tracker.m_bUse) {
-		menu.AddText (szGameList [1]);
+		menu.AddText ("", szGameList [1]);
 		strcpy (menu.Top ()->m_text, TXT_0TRACKERS);
 		menu.Top ()->m_x = (short) 0x8000;
 		menu.Top ()->m_bNoScroll = 1;
 		}
-	menu.AddText (szGameList [1 + tracker.m_bUse]);
+	menu.AddText ("", szGameList [1 + tracker.m_bUse]);
 	strcpy (menu.Top ()->m_text, TXT_GAME_BROWSER);
 	menu.Top ()->m_bNoScroll = 1;
 	InitNetGameMenu (menu, 0);
