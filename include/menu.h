@@ -162,6 +162,7 @@ class CMenuItem {
 		inline int& MaxValue (void) { return m_maxValue; }
 		inline void Redraw (void) { m_bRedraw = 1; }
 		inline void Rebuild (void) { m_bRebuild = 1; }
+		inline int Rebuilding (void) { return m_bRebuild; }
 		inline char* Text (void) { return m_text; }
 
 		inline bool Selectable (void) { return (m_nType != NM_TYPE_TEXT) && !m_bUnavailable && *m_text; }
