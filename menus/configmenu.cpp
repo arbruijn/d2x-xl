@@ -116,38 +116,38 @@ void ConfigMenu (void)
 do {
 	m.Destroy ();
 	m.Create (20);
-	m.AddMenu (TXT_SOUND_MUSIC, KEY_M, HTX_OPTIONS_SOUND, "sound options");
+	m.AddMenu ("sound options", TXT_SOUND_MUSIC, KEY_M, HTX_OPTIONS_SOUND);
 	m.AddText ("", 0);
-	m.AddMenu (TXT_CONTROLS_, KEY_O, HTX_OPTIONS_CONFIG, "config options");
+	m.AddMenu ("config options", TXT_CONTROLS_, KEY_O, HTX_OPTIONS_CONFIG);
 	m.AddText ("", 0);
 	if (gameStates.app.bNostalgia) {
 		sprintf (szSlider + 1, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
 		*szSlider = *(TXT_BRIGHTNESS - 1);
-		m.AddSlider (szSlider + 1, paletteManager.GetGamma (), 0, 15, KEY_B, HTX_RENDER_BRIGHTNESS, "brightness");
+		m.AddSlider ("brightness", szSlider + 1, paletteManager.GetGamma (), 0, 15, KEY_B, HTX_RENDER_BRIGHTNESS);
 		}
 
 	if (gameStates.app.bNostalgia)
-		m.AddMenu (TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL, "performance options");
-	m.AddMenu (TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES, "screen res options");
+		m.AddMenu ("performance options", TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL);
+	m.AddMenu ("screen res options", TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
 	m.AddText ("", 0);
 	if (gameStates.app.bNostalgia) {
-		m.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO, "reorder primaries");
-		m.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO, "reorder secondaries");
+		m.AddMenu ("reorder primaries", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
+		m.AddMenu ("reorder secondaries", TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
 		}
-	m.AddMenu (gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISCELLANEOUS, gameStates.app.bNostalgia ? KEY_T : KEY_I, HTX_OPTIONS_MISC, "miscellaneous");
+	m.AddMenu ("miscellaneous", gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISCELLANEOUS, gameStates.app.bNostalgia ? KEY_T : KEY_I, HTX_OPTIONS_MISC);
 	if (!gameStates.app.bNostalgia) {
-		m.AddMenu (TXT_COCKPIT_OPTS2, KEY_C, HTX_OPTIONS_COCKPIT, "cockpit options");
-		m.AddMenu (TXT_RENDER_OPTS2, KEY_R, HTX_OPTIONS_RENDER, "render options");
-		m.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS, "effect options");
+		m.AddMenu ("cockpit options", TXT_COCKPIT_OPTS2, KEY_C, HTX_OPTIONS_COCKPIT);
+		m.AddMenu ("render options", TXT_RENDER_OPTS2, KEY_R, HTX_OPTIONS_RENDER);
+		m.AddMenu ("effect options", TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
 #ifndef DBG
 		if (!(gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame))
 #endif
 			{
-			m.AddMenu (TXT_GAMEPLAY_OPTS2, KEY_G, HTX_OPTIONS_GAMEPLAY, "gameplay options");
-			m.AddMenu (TXT_PHYSICS_MENUCALL, KEY_P, HTX_OPTIONS_PHYSICS, "physics options");
+			m.AddMenu ("gameplay options", TXT_GAMEPLAY_OPTS2, KEY_G, HTX_OPTIONS_GAMEPLAY);
+			m.AddMenu ("physics options", TXT_PHYSICS_MENUCALL, KEY_P, HTX_OPTIONS_PHYSICS);
 			}
 #if 0
-		m.AddMenu (TXT_MT_MENU_OPTION, KEY_U, HTX_MULTI_THREADING, "multithreading");
+		m.AddMenu ("multithreading", TXT_MT_MENU_OPTION, KEY_U, HTX_MULTI_THREADING);
 #endif
 		}
 
