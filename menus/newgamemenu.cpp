@@ -124,7 +124,7 @@ int DifficultyMenu (void)
 	CMenu		m (5);
 
 for (i = 0; i < 5; i++)
-	m.AddMenu ( MENU_DIFFICULTY_TEXT (i), 0, "");
+	m.AddMenu ("difficulty", MENU_DIFFICULTY_TEXT (i), 0, "");
 i = m.Menu (NULL, TXT_DIFFICULTY_LEVEL, NULL, &choice);
 if (i <= -1)
 	return 0;
@@ -196,20 +196,19 @@ if (nHighestPlayerLevel > 1) {
 	char	szInfo [80];
 	char	szNumber [10];
 
-try_again:
-
-	sprintf (szInfo, "%s %d", TXT_START_ANY_LEVEL, nHighestPlayerLevel);
-	m.AddText (szInfo, 0);
-	strcpy (szNumber, "1");
-	m.AddInput (szNumber, 10, "");
-	choice = m.Menu (NULL, TXT_SELECT_START_LEV);
-	if ((choice == -1) || !m [1].m_text [0])
-		return;
-	nNewLevel = atoi (m [1].m_text);
-	if ((nNewLevel <= 0) || (nNewLevel > nHighestPlayerLevel)) {
+	for (;;) {
+		sprintf (szInfo, "%s %d", TXT_START_ANY_LEVEL, nHighestPlayerLevel);
+		m.AddText ("", szInfo, 0);
+		strcpy (szNumber, "1");
+		m.AddInput ("start level", szNumber, 10, "");
+		choice = m.Menu (NULL, TXT_SELECT_START_LEV);
+		if ((choice == -1) || !*m ["start level"]->Text ())
+			return;
+		nNewLevel = atoi (m ["start level"]->Text ());
+		if ((nNewLevel > 0) && (nNewLevel <= nHighestPlayerLevel)) 
+			break;
 		m [0].SetText (const_cast<char*> (TXT_ENTER_TO_CONT));
 		MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
-		goto try_again;
 		}
 	}
 
@@ -234,7 +233,7 @@ if (nState)
 	int			v;
 
 m = menu + nOptDifficulty;
-v = m->m_value;
+v = m->Value ();
 if (gameStates.app.nDifficultyLevel != v) {
 	gameStates.app.nDifficultyLevel = v;
 	gameData.bosses.InitGateIntervals ();
@@ -249,7 +248,6 @@ return nCurItem;
 void NewGameMenu (void)
 {
 	CMenu				m;
-	int				optSelMsn, optMsnName, optLevelText, optLevel, optUseMod, optLaunch, optLoadout, optShip;
 	int				nMission = missionManager.nLastMission, bMsnLoaded = 0;
 	int				i, choice = 0, bBuiltIn, bEnableMod = gameOpts->app.bEnableMods;
 	char				szDifficulty [50];
@@ -259,6 +257,7 @@ void NewGameMenu (void)
 	int				optLives;
 	char				szLives [5];
 #endif
+	int				optShip = -1;
 
 	static int		nPlayerMaxLevel = 1;
 	static int		nLevel = 1;
@@ -289,18 +288,15 @@ for (;;) {
 	m.Destroy ();
 	m.Create (15);
 
-	optLevel = 
-	optUseMod = -1;
-
-	optSelMsn = m.AddMenu (TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
-	optMsnName = m.AddText ((nMission < 0) ? TXT_NONE_SELECTED : missionManager [nMission].szMissionName, 0);
+	m.AddMenu ("mission selector", TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
+	m.AddText ("mission name", (nMission < 0) ? TXT_NONE_SELECTED : missionManager [nMission].szMissionName, 0);
 	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, nPlayerMaxLevel);
 		Assert (strlen (szLevelText) < 100);
-		optLevelText = m.AddText (szLevelText, 0); 
-		m [optLevelText].m_bRebuild = 1;
+		m.AddText ("level text", szLevelText, 0); 
+		m ["level text"]->Rebuild ();
 		sprintf (szLevel, "%d", nLevel);
-		optLevel = m.AddInput (szLevel, 4, HTX_MULTI_LEVEL);
+		m.AddInput ("level number", szLevel, 4, HTX_MULTI_LEVEL);
 		}
 
 	if (nMission >= 0) {
@@ -309,33 +305,31 @@ for (;;) {
 		MakeModFolders (bBuiltIn ? hogFileManager.m_files.MsnHogFiles.szName : missionManager [nMission].filename);
 		gameOpts->app.bEnableMods = bEnableMod;
 		if (gameStates.app.bHaveMod == bBuiltIn) {
-			m.AddText ("", 0);
-			optUseMod = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
+			m.AddText ("", "", 0);
+			m.AddCheck ("enable mods", TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
 			}
 		}
 
 #if DBG
-	m.AddText ("");
-	m.AddText ("Initial Lives:");
+	m.AddText ("", "");
+	m.AddText ("", "Initial Lives:");
 	sprintf (szLives, "%d", gameStates.gameplay.nInitialLives);
-	optLives = m.AddInput (szLives, 4);
+	optLives = m.AddInput ("initial lives", szLives, 4);
 #endif
 
-	m.AddText ("                              ", 0);
+	m.AddText ("", "                              ", 0);
 	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
-	nOptDifficulty = m.AddSlider (szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
+	m.AddSlider ("difficulty", szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
 	AddShipSelection (m, optShip);
-	m.AddText ("", 0);
-	optLoadout = m.AddMenu (TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
+	m.AddText ("", "", 0);
+	m.AddMenu ("loadout", TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
 
 	if (nMission >= 0) {
-		m.AddText ("", 0);
-		optLaunch = m.AddMenu (TXT_LAUNCH_GAME, KEY_L, "");
-		m [optLaunch].m_bCentered = 1;
+		m.AddText ("", "", 0);
+		m.AddMenu ("launch game", TXT_LAUNCH_GAME, KEY_L, "");
+		m ["launch game"]->m_bCentered = 1;
 		}
-	else
-		optLaunch = -1;
 
 	i = m.Menu (NULL, TXT_NEWGAME_MENUTITLE, NewGameMenuCallback, &choice);
 
@@ -343,10 +337,10 @@ for (;;) {
 		SetFunctionMode (FMODE_MENU);
 		return;
 		}
-	GET_VAL (gameOpts->app.bEnableMods, optUseMod);
-	if (choice == optLoadout)
+	GET_VAL (gameOpts->app.bEnableMods, "use mod");
+	if (choice == m.IndexOf ("loadout"))
 		LoadoutOptionsMenu ();
-	else if (choice == optSelMsn) {
+	else if (choice == m.IndexOf ("mission selector")) {
 		i = SelectAndLoadMission (0, NULL);
 		if (i >= 0) {
 			bMsnLoaded = 1;
@@ -358,8 +352,8 @@ for (;;) {
 				nPlayerMaxLevel = missionManager.nLastLevel;
 			}
 		}
-	else if (choice == optLevel) {
-		i = atoi (m [optLevel].m_text);
+	else if (choice == m.IndexOf ("level number")) {
+		i = atoi (m ["level number"]->Text ());
 #if DBG
 		if (!i || (i < -missionManager.nSecretLevels) || (i > nPlayerMaxLevel) || (i > missionManager.nLastLevel))
 #else
@@ -372,7 +366,7 @@ for (;;) {
 			nLevel = i;
 		}
 	else if (nMission >= 0) {
-		if ((optLevel > 0) && !(nLevel = atoi (m [optLevel].m_text))) {
+		if (m.Available ("level number") && !(nLevel = atoi (m ["level number"]->Text ()))) {
 			MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 			nLevel = 1;
 			}
@@ -381,14 +375,14 @@ for (;;) {
 		}
 #if DBG
 	else {
-		i = atoi (m [optLives].m_text);
+		i = atoi (m ["initial lives"]->Text ());
 		if (i > 0)
 			gameStates.gameplay.nInitialLives = min (i, 255);
 		}
 #endif
 	}
 
-i = m [nOptDifficulty].m_value;
+i = m ["difficulty"]->Value ();
 if (gameStates.app.nDifficultyLevel != i) {
 	gameStates.app.nDifficultyLevel = i;
 	gameData.bosses.InitGateIntervals ();
@@ -412,7 +406,7 @@ return *(reinterpret_cast<int*> (&multiOpts) + 2 * nType + bJoin);
 
 //------------------------------------------------------------------------------
 
-int ExecMultiMenuOption (int nChoice)
+int ExecMultiMenuOption (CMenu& m, int nChoice)
 {
 	int	bUDP = 0, bStart = 0;
 
@@ -455,15 +449,15 @@ if (bUDP) {
 			}
 		}
 	}
-else if ((nChoice == multiOpts.nStartIpx) || (nChoice == multiOpts.nJoinIpx)) {
+else if ((nChoice == m.IndexOf ("start ipx game")) || (nChoice == m.IndexOf ("join ipx game"))) {
 	gameStates.multi.nGameType = IPX_GAME;
 	IpxSetDriver (IPX_DRIVER_IPX); 
 	}
-else if ((nChoice == multiOpts.nStartKali) || (nChoice == multiOpts.nJoinKali)) {
+else if ((nChoice == m.IndexOf ("start kali game")) || (nChoice == m.IndexOf ("join kali game"))) {
 	gameStates.multi.nGameType = IPX_GAME;
 	IpxSetDriver (IPX_DRIVER_KALI); 
 	}
-else if ((nChoice == multiOpts.nStartMCast4) || (nChoice == multiOpts.nJoinMCast4)) {
+else if ((nChoice == m.IndexOf ("start mcast4 game")) || (nChoice == m.IndexOf ("join mcast4 game"))) {
 #if 0 //DBG
 	NetworkGetIpAddr (bStart != 0, false);
 #endif
@@ -485,13 +479,13 @@ return 0;
 int MultiplayerMenu (void)
 {
 	CMenu	m;
-	int	choice = 0, i, optCreate, optJoin = -1, optConn = -1, nConnections = 0;
+	int	choice = 0, i, nConnections = 0;
 	int	nOldGameMode;
 
 if ((gameStates.app.bNostalgia < 2) && (gameData.multiplayer.autoNG.bValid > 0)) {
 	i = MultiChoice (gameData.multiplayer.autoNG.uConnect, !gameData.multiplayer.autoNG.bHost);
 	if (i >= 0)
-		return ExecMultiMenuOption (i);
+		return ExecMultiMenuOption (m, i);
 	}
 
 do {
@@ -499,32 +493,32 @@ do {
 	m.Destroy ();
 	m.Create (15);
 	if (DBG || gameStates.app.bNostalgia < 2) {
-		optCreate = m.AddMenu (TXT_CREATE_GAME, KEY_S, HTX_NETWORK_SERVER);
-		optJoin = m.AddMenu (TXT_JOIN_GAME, KEY_J, HTX_NETWORK_CLIENT);
-		m.AddText ("", 0);
-		optConn = m.AddRadio (TXT_NGTYPE_IPX, 0, KEY_I, HTX_NETWORK_IPX);
-		m.AddRadio (TXT_NGTYPE_UDP, 0, KEY_U, HTX_NETWORK_UDP);
-		m.AddRadio (TXT_NGTYPE_TRACKER, 0, KEY_T, HTX_NETWORK_TRACKER);
-		m.AddRadio (TXT_NGTYPE_MCAST4, 0, KEY_M, HTX_NETWORK_MCAST);
+		m.AddMenu ("create game", TXT_CREATE_GAME, KEY_S, HTX_NETWORK_SERVER);
+		m.AddMenu ("join game", TXT_JOIN_GAME, KEY_J, HTX_NETWORK_CLIENT);
+		m.AddText ("", "", 0);
+		m.AddRadio ("ipx game", TXT_NGTYPE_IPX, 0, KEY_I, HTX_NETWORK_IPX);
+		m.AddRadio ("udp game", TXT_NGTYPE_UDP, 0, KEY_U, HTX_NETWORK_UDP);
+		m.AddRadio ("tracker game", TXT_NGTYPE_TRACKER, 0, KEY_T, HTX_NETWORK_TRACKER);
+		m.AddRadio ("multicast game", TXT_NGTYPE_MCAST4, 0, KEY_M, HTX_NETWORK_MCAST);
 #ifdef KALINIX
-		m.AddRadio (TXT_NGTYPE_KALI, 0, KEY_K, HTX_NETWORK_KALI);
+		m.AddRadio ("kali game", TXT_NGTYPE_KALI, 0, KEY_K, HTX_NETWORK_KALI);
 #endif
 		nConnections = m.ToS ();
-		m [optConn + NMCLAMP (gameStates.multi.nConnection, 0, nConnections - optConn)].m_value = 1;
+		m [m.IndexOf ("ipx game") + NMCLAMP (gameStates.multi.nConnection, 0, nConnections - m.IndexOf ("ipx game"))].Value () = 1;
 		}
 	else {
 #ifdef NATIVE_IPX
-		multiOpts.nStartIpx = m.AddMenu (TXT_START_IPX_NET_GAME,  -1, HTX_NETWORK_IPX);
-		multiOpts.nJoinIpx = m.AddMenu (TXT_JOIN_IPX_NET_GAME, -1, HTX_NETWORK_IPX);
+		m.AddMenu ("start ipx game", TXT_START_IPX_NET_GAME,  -1, HTX_NETWORK_IPX);
+		m.AddMenu ("join ipx game", TXT_JOIN_IPX_NET_GAME, -1, HTX_NETWORK_IPX);
 #endif //NATIVE_IPX
-		multiOpts.nStartMCast4 = m.AddMenu (TXT_MULTICAST_START, KEY_M, HTX_NETWORK_MCAST);
-		multiOpts.nJoinMCast4 = m.AddMenu (TXT_MULTICAST_JOIN, KEY_N, HTX_NETWORK_MCAST);
+		m.AddMenu ("start mcast4 game", TXT_MULTICAST_START, KEY_M, HTX_NETWORK_MCAST);
+		m.AddMenu ("join mcast4 game", TXT_MULTICAST_JOIN, KEY_N, HTX_NETWORK_MCAST);
 #ifdef KALINIX
-		multiOpts.nStartKali = m.AddMenu (TXT_KALI_START, KEY_K, HTX_NETWORK_KALI);
-		multiOpts.nJoinKali = m.AddMenu (TXT_KALI_JOIN, KEY_I, HTX_NETWORK_KALI);
+		m.AddMenu ("start kali game", TXT_KALI_START, KEY_K, HTX_NETWORK_KALI);
+		m.AddMenu ("join kali game", TXT_KALI_JOIN, KEY_I, HTX_NETWORK_KALI);
 #endif // KALINIX
 		if (gameStates.app.bNostalgia > 2)
-			multiOpts.nSerial = m.AddMenu (TXT_MODEM_GAME2, KEY_G, HTX_NETWORK_MODEM);
+			multiOpts.nSerial = m.AddMenu ("serial game", TXT_MODEM_GAME2, KEY_G, HTX_NETWORK_MODEM);
 		}
 	i = m.Menu (NULL, TXT_MULTIPLAYER, NULL, &choice);
 	if (i > -1) {      
@@ -534,11 +528,11 @@ do {
 			for (gameStates.multi.nConnection = 0; 
 				  gameStates.multi.nConnection < nConnections; 
 				  gameStates.multi.nConnection++)
-				if (m [optConn + gameStates.multi.nConnection].m_value)
+				if (m [m.IndexOf ("ipx game") + gameStates.multi.nConnection].Value ())
 					break;
-			i = MultiChoice (gameStates.multi.nConnection, choice == optJoin);
+			i = MultiChoice (gameStates.multi.nConnection, choice == m.IndexOf ("join game"));
 			}
-		ExecMultiMenuOption (i);
+		ExecMultiMenuOption (m, i);
 		}
 	if (nOldGameMode != gameData.app.nGameMode)
 		break;          // leave menu
