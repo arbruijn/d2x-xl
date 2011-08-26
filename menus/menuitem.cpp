@@ -515,7 +515,7 @@ void CMenuItem::Draw (int bIsCurrent, int bTiny)
 {
 SetColor (bIsCurrent, bTiny);
 if (m_bRebuild) {
-	Destroy ();
+	FreeTextBms ();
 	m_bRebuild = 0;
 	}
 switch (m_nType) {
