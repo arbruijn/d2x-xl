@@ -84,6 +84,24 @@ static struct {
 
 //------------------------------------------------------------------------------
 
+static int HaveSmokeSliders (int i)
+{
+switch (i) {
+	case 1:
+		return gameOpts->render.particles.bPlayers;
+	case 2:
+		return gameOpts->render.particles.bRobots;
+	case 3:
+		return gameOpts->render.particles.bMissiles;
+	case 4:
+		return gameOpts->render.particles.bDebris;
+	default:
+		return 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 static const char* pszSmokeAmount [5];
 static const char* pszSmokeSize [4];
 static const char* pszSmokeLife [3];
@@ -163,24 +181,8 @@ if (gameOpts->render.particles.bSyncSizes) {
 	}
 else {
 	for (i = 1; i < 5; i++) {
-		switch (i) {
-			case 1:
-				if (!gameOpts->render.particles.bPlayers)
-					continue;
-				break;
-			case 2:
-				if (!gameOpts->render.particles.bRobots)
-					continue;
-				break;
-			case 3:
-				if (!gameOpts->render.particles.bMissiles)
-					continue;
-				break;
-			case 4:
-				if (!gameOpts->render.particles.bDebris)
-					continue;
-				break;
-			}
+		if (!HaveSmokeSliders (i))
+			continue;
 
 		sprintf (szId, "density [%d]", i);
 		if ((m = menu [szId])) {
