@@ -338,11 +338,12 @@ Init ();
 void CBackgroundManager::Remove (void)
 {
 if (m_nDepth >= 0) {
-	if (m_nDepth <= 2) {
-		m_bg [m_nDepth].Destroy ();
+	if (m_nDepth > 2) 
+		--m_nDepth;
+	else {
+		m_bg [m_nDepth--].Destroy ();
 		Redraw (true);
 		}
-	--m_nDepth;
 	//paletteManager.ResumeEffect (gameStates.app.bGameRunning);
 	}
 }
