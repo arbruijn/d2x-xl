@@ -271,7 +271,7 @@ class CMenu : public CStack<CMenuItem> {
 				if (*szId == '?')
 					return IndexOf (szId + 1, false);
 				if (m_current && m_current->m_szId && !stricmp (szId, m_current->m_szId))
-					return m_current - Buffer ();
+					return (int) (m_current - Buffer ());
 				m_current = Buffer ();
 				for (uint i = 0; i < m_tos; i++, m_current++) {
 					if (m_current->m_szId && !stricmp (szId, m_current->m_szId))
