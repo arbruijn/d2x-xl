@@ -1273,26 +1273,17 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (nServerPlayer > 0) {
 		nOtherObjNum = restoredPlayers [0].nObject;
 		nServerObjNum = restoredPlayers [nServerPlayer].nObject;
-	 {
-		tNetPlayerInfo h = netPlayers [0].m_info.players [0];
-		netPlayers [0].m_info.players [0] = netPlayers [0].m_info.players [nServerPlayer];
-		netPlayers [0].m_info.players [nServerPlayer] = h;
-		}
-	 {
-		CPlayerData h = restoredPlayers [0];
-		restoredPlayers [0] = restoredPlayers [nServerPlayer];
-		restoredPlayers [nServerPlayer] = h;
-		}
+		Swap (netPlayers [0].m_info.players [0], netPlayers [0].m_info.players [nServerPlayer]);
+		Swap (restoredPlayers [0], restoredPlayers [nServerPlayer]);
 		if (IAmGameHost ())
 			gameData.multiplayer.nLocalPlayer = 0;
 		else if (!gameData.multiplayer.nLocalPlayer)
 			gameData.multiplayer.nLocalPlayer = nServerPlayer;
 		}
 #if 0
-	memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node (), 
-			 IpxGetMyLocalAddress (), 6);
-	*reinterpret_cast<ushort*> ((netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node () + 4)) = 
-		htons (*reinterpret_cast<ushort*> ((netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node () + 4)));
+	memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node (), IpxGetMyLocalAddress (), 6);
+	netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Port () = 
+		htons (netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Port ());
 #endif
 	}
 *pnOtherObjNum = nOtherObjNum;

@@ -59,7 +59,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players [i].connected) {
 		if (gameStates.multi.nGameType == IPX_GAME)
 			return i;
-		if (*netPlayers [0].m_info.players [i].network.Port () == ushort (mpParams.udpPorts [0] + networkData.nPortOffset))
+		if (htons (netPlayers [0].m_info.players [i].network.Port ()) == ushort (mpParams.udpPorts [0] + networkData.nPortOffset))
 			return i;
 		}
 	}
