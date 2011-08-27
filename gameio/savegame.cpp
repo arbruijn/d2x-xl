@@ -807,8 +807,7 @@ void CSaveGameManager::SaveGameData (void)
 m_cf.WriteInt (gameData.segs.nMaxSegments);
 // Save the Between levels flag...
 m_cf.WriteInt (m_bBetweenLevels);
-if (STATE_VERSION >= 55)
-	m_cf.WriteInt (gameOpts->app.bEnableMods);
+m_cf.WriteInt (gameOpts->app.bEnableMods);
 // Save the mission info...
 m_cf.Write (missionManager [missionManager.nCurrentMission].filename, sizeof (char), 9);
 //Save level info
@@ -1329,7 +1328,8 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 		memset (netPlayers [0].m_info.players [i].network.Node (), 0xFF, 6);
 		}
 	}
-memcpy (gameData.multiplayer.players, restoredPlayers, sizeof (CPlayerData) * nPlayers);
+for (i = 0; i < nPlayers; i++) 
+	(CPlayerInfo&) gameData.multiplayer.players [i] = (CPlayerInfo&) restoredPlayers [i];
 gameData.multiplayer.nPlayers = nPlayers;
 if (IAmGameHost ()) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
@@ -1967,7 +1967,6 @@ if (!m_bBetweenLevels) {
 	gameData.laser.xLastFiredTime = 
 	gameData.missiles.xLastFiredTime = gameData.time.xGame;
 	}
-gameData.app.nStateGameId = 0;
 gameData.app.nStateGameId = (uint) m_cf.ReadInt ();
 gameStates.app.cheats.bLaserRapidFire = m_cf.ReadInt ();
 gameStates.app.bLunacy = m_cf.ReadInt ();		//	Yes, reading this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
@@ -2215,7 +2214,7 @@ if (!m_bBetweenLevels) {
 	gameData.missiles.xNextFireTime = gameData.time.xGame;
 	gameData.laser.xLastFiredTime = 
 	gameData.missiles.xLastFiredTime = gameData.time.xGame;
-}
+	}
 gameData.app.nStateGameId = 0;
 
 if (m_nVersion >= 7) {
@@ -2398,7 +2397,7 @@ if (m_nVersion < STATE_COMPATIBLE_VERSION) {
 	return 0;
 	}
 // skip the description, current image, palette, mission name, between levels flag and mission info
-m_cf.Seek (DESC_LENGTH + ImageSize () + 768 + 9 * sizeof (char) + 5 * sizeof (int), SEEK_CUR);
+m_cf.Seek (DESC_LENGTH + ImageSize () + 768 + 9 * sizeof (char) + (5 + (m_nVersion >= 55)) * sizeof (int), SEEK_CUR);
 m_nGameId = m_cf.ReadInt ();
 m_cf.Close ();
 return m_nGameId;
