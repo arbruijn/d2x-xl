@@ -3570,7 +3570,9 @@ if ((uint) saveGameManager.GetGameId (szFile, (slot < 0) ? -1 : 0) != id) {
 	gameData.app.bGamePaused = 0;
 	return;
 	}
+int bGameRunning = gameStates.app.bGameRunning;
 saveGameManager.LoadState (1, (slot < 0) ? -1 : 0, szFile);
+gameStates.app.bGameRunning = bGameRunning;
 ogl.RebuildContext (1);
 gameData.app.bGamePaused = 0;
 }
