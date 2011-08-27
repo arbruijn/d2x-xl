@@ -97,7 +97,7 @@ class CBackgroundManager : public CStack<CBackground> {
 		inline void SetShadow (bool bShadow) { m_bShadow = bShadow; }
 		inline void Draw (bool bUpdate = false) { 
 			if (m_nDepth >= 0) 
-				m_bg [m_nDepth].Draw (bUpdate); 
+				m_bg [m_nDepth].Draw (true, bUpdate); 
 			}
 		inline void DrawArea (int left, int top, int right, int bottom)
 		 { m_bg [m_nDepth].DrawArea (left, top, right, bottom); }
