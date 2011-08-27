@@ -1485,7 +1485,7 @@ gameData.multigame.score.pFlags [objP->info.nId] = 0;
 void MultiDoPlayerExplode (char *buf)
 {
 	CObject*			objP;
-	CPlayerInfo*	playerP;
+	CPlayerData*	playerP;
 	int				bufI, nPlayer, i;
 	short				nRemoteObj;
 	char				nRemoteCreated;
@@ -3491,7 +3491,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	gameId ^= *((uint*) &gameData.multiplayer.players [i].callsign [0]);
 if (gameId == 0)
 	gameId = 1; // 0 is invalid
-if (slot > 0)
+if (slot >= 0)
 	MultiSendSaveGame (slot, gameId, saveGameManager.Description ());
 MultiDoFrame ();
 MultiSaveGame (slot, gameId, saveGameManager.Description ());
@@ -3521,7 +3521,7 @@ gameData.app.nStateGameId = saveGameManager.GetGameId (saveGameManager.Filename 
 if (!gameData.app.nStateGameId)
 	return;
 //StartTime (0);
-if (slot > 0)
+if (slot >= 0)
 	MultiSendRestoreGame (slot, gameData.app.nStateGameId);
 MultiDoFrame ();
 MultiRestoreGame (slot, gameData.app.nStateGameId);

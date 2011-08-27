@@ -1023,7 +1023,7 @@ else if ((gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD)) ||
 gameData.render.lights.segDeltas.Clear ();
 /*---*/PrintLog ("   initializing door animations\n");
 InitDoorAnims ();
-LOCALPLAYER = savePlayer;
+(CPlayerInfo&) LOCALPLAYER = savePlayer;
 gameData.hoard.nMonsterballSeg = -1;
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
