@@ -1738,8 +1738,8 @@ return 1;
 
 void CObject::ApplyDamageToPlayer (CObject* killerObjP, fix damage)
 {
-CPlayerInfo *playerP = gameData.multiplayer.players + info.nId;
-CPlayerInfo *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? gameData.multiplayer.players + killerObjP->info.nId : NULL;
+CPlayerData *playerP = gameData.multiplayer.players + info.nId;
+CPlayerData *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? gameData.multiplayer.players + killerObjP->info.nId : NULL;
 if (gameStates.app.bPlayerIsDead)
 	return;
 
