@@ -265,7 +265,7 @@ void WallInit();
 int AnimFrameCount (tWallClip *anim);
 
 // Determines what happens when a CWall is shot
-//obj is the CObject that hit...either a weapon or the CPlayerData himself
+//obj is the CObject that hit...either a weapon or the player himself
 // Tidy up Walls array for load/save purposes.
 void ResetWalls();
 

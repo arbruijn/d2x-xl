@@ -579,7 +579,7 @@ if (!matCenP->bFlag) {
 		matCenP->xTimer /= 2;
 		return;
 		}
-		//	Whack on any robot or CPlayerData in the matcen CSegment.
+		//	Whack on any robot or player in the matcen CSegment.
 	nCount = 0;
 	nSegment = matCenP->nSegment;
 #if DBG

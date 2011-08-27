@@ -96,8 +96,8 @@ if (nRemOwner == gameData.multiplayer.nLocalPlayer) { // Already my robot!
 	return 1;
 	}
 if ((nRemOwner != -1) || (agitation < MIN_TO_ADD)) {
-	if (agitation == ROBOT_FIRE_AGITATION) // Special case for firing at non-CPlayerData
-		return 1; // Try to vFire at CPlayerData even tho we're not in control!
+	if (agitation == ROBOT_FIRE_AGITATION) // Special case for firing at non-player
+		return 1; // Try to vFire at player even tho we're not in control!
 	return 0;
 	}
 return MultiAddControlledRobot (nObject, agitation);
@@ -135,8 +135,8 @@ if (gameData.time.xGame > lastcheck + I2X (1)) {
 
 void MultiStripRobots (int nPlayer)
 {
-	// Grab all robots away from a CPlayerData 
-	// (CPlayerData died or exited the game)
+	// Grab all robots away from a player 
+	// (player died or exited the game)
 
 	int 		i;
 	CObject	*objP;
@@ -349,7 +349,7 @@ MultiSendData (reinterpret_cast<char*> (gameData.multigame.msg.buf), bufP, 1);
 }
 
 //-----------------------------------------------------------------------------
-// Send robot position to other CPlayerData (s).  Includes a byte
+// Send robot position to other player (s).  Includes a byte
 // value describing whether or not they fired a weapon
 
 void MultiSendRobotPosition (int nObject, int force)
@@ -474,7 +474,7 @@ void MultiSendBossActions (int bossobjnum, int action, int secondary, int nObjec
 
 gameData.multigame.msg.buf [bufP++] = MULTI_BOSS_ACTIONS;					
 gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.nLocalPlayer;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, bossobjnum);  // Which CPlayerData is controlling the boss        
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, bossobjnum);  // Which player is controlling the boss        
 bufP += 2; // We won't network map this nObject since it's the boss
 gameData.multigame.msg.buf [bufP++] = (sbyte)action;  // What is the boss doing?
 gameData.multigame.msg.buf [bufP++] = (sbyte)secondary;  // More info for what he is doing
@@ -592,7 +592,7 @@ OBJECTS [nRobot].cType.aiInfo.REMOTE_SLOT_NUM = 0;
 }
 
 //-----------------------------------------------------------------------------
-// Process robot movement sent by another CPlayerData
+// Process robot movement sent by another player
 
 void MultiDoRobotPosition (char *buf)
 {
@@ -614,7 +614,7 @@ if ((OBJECTS [nRobot].info.nType != OBJ_ROBOT) ||
 if (OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER != nPlayer) {
 	if (OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER != -1)
 		return;
-		// Robot claim packet must have gotten lost, let this CPlayerData claim it.
+		// Robot claim packet must have gotten lost, let this player claim it.
 	else if (OBJECTS [nRobot].cType.aiInfo.REMOTE_SLOT_NUM > 3) {
 		OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER = nPlayer;
 		OBJECTS [nRobot].cType.aiInfo.REMOTE_SLOT_NUM = 0;
@@ -737,7 +737,7 @@ return MultiDestroyRobot (OBJECTS + nRobot);
 
 void MultiDoRobotExplode (char *buf)
 {
-	// Explode robot controlled by other CPlayerData
+	// Explode robot controlled by other player
 
 	int	nPlayer, nRobot, rval, bufP = 1;
 	short nRemoteBot, nKiller, nRemoteKiller;
@@ -972,7 +972,7 @@ if (gameStates.multi.nGameType == UDP_GAME)
 	d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
 
 if (delObjP->info.contains.nCount > 0) { 
-	//	If dropping a weapon that the CPlayerData has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
+	//	If dropping a weapon that the player has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
 	if (delObjP->info.contains.nType == OBJ_POWERUP) {
 		MaybeReplacePowerupWithEnergy (delObjP);
 		if (!MultiPowerupIsAllowed (delObjP->info.contains.nId))
@@ -1013,10 +1013,10 @@ if (nEggObj >= 0) // Transmit the object creation to the other players
 }
 
 //	-----------------------------------------------------------------------------
-//	Robot *robot got whacked by CPlayerData player_num and requests permission to do something about it.
+//	Robot *robot got whacked by player player_num and requests permission to do something about it.
 //	Note: This function will be called regardless of whether gameData.app.nGameMode is a multiplayer mode, so it
 //	should quick-out if not in a multiplayer mode.  On the other hand, it only gets called when a
-//	CPlayerData or CPlayerData weapon whacks a robot, so it happens rarely.
+//	player or player weapon whacks a robot, so it happens rarely.
 void MultiRobotRequestChange (CObject *robot, int player_num)
 {
 	int	slot, nRemoteObj;

@@ -559,8 +559,8 @@ for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; wallP++, i++) {
 //------------------------------------------------------------------------------
 // Determines what happens when a CWall is shot
 //returns info about CWall.  see wall[HA] for codes
-//obj is the CObject that hit...either a weapon or the CPlayerData himself
-//nPlayer is the number the CPlayerData who hit the CWall or fired the weapon,
+//obj is the CObject that hit...either a weapon or the player himself
+//nPlayer is the number the player who hit the CWall or fired the weapon,
 //or -1 if a robot fired the weapon
 
 int CWall::ProcessHit (int nPlayer, CObject* objP)

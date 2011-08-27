@@ -111,7 +111,7 @@ ubyte nDefaultWeaponOrder [2][11]= {{9,8,7,6,5,4,3,2,1,0,255},{9,8,4,3,1,5,0,255
 
 ubyte bCycling = 0;
 
-//allow CPlayerData to reorder menus?
+//allow player to reorder menus?
 
 //char	*Primary_weapon_names [MAX_PRIMARY_WEAPONS] = {
 //	"Laser Cannon",
@@ -313,7 +313,7 @@ if (!bSecondary) {
 	else
 		if (WI_ammo_usage (nWeaponIndex) <= playerP->primaryAmmo [nWeapon])
 			returnValue |= HAS_AMMO_FLAG;
-	if (nWeapon == OMEGA_INDEX) {	// Hack: Make sure CPlayerData has energy to omega
+	if (nWeapon == OMEGA_INDEX) {	// Hack: Make sure player has energy to omega
 		if (playerP->energy || gameData.omega.xCharge)
 			returnValue |= HAS_ENERGY_FLAG;
 		}
@@ -779,7 +779,7 @@ int ArmedBomb (void)
 
 	//use the last one selected, unless there aren't any, in which case use
 	//the other if there are any
-   // If hoard game, only let the CPlayerData drop smart mines
+   // If hoard game, only let the player drop smart mines
 if (gameData.app.nGameMode & GM_ENTROPY)
    return PROXMINE_INDEX; //allow for dropping orbs
 if (gameData.app.nGameMode & GM_HOARD)

@@ -122,7 +122,7 @@ int CreateNewWeapon(CFixVector * direction, CFixVector * position, short nSegmen
 
 // Fires a laser-nType weapon (a Primary weapon)
 // Fires from CObject nObject, weapon nType weapon_id.
-// Assumes that it is firing from a CPlayerData CObject, so it knows which
+// Assumes that it is firing from a player CObject, so it knows which
 // gun to fire from.
 // Returns the number of shots actually fired, which will typically be
 // 1, but could be higher for low frame rates when rapidfire weapons,

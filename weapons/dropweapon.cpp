@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SPIT_SPEED 20
 
-//this function is for when the CPlayerData intentionally drops a powerup
+//this function is for when the player intentionally drops a powerup
 //this function is based on DropPowerup()
 int SpitPowerup (CObject *spitterP, ubyte id, int seed)
 {
@@ -49,7 +49,7 @@ newVelocity.v.coord.z += (SRandShort ()) * SPIT_SPEED * 2;
 // Give keys zero velocity so they can be tracked better in multi
 if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 	newVelocity.SetZero ();
-//there's a piece of code which lets the CPlayerData pick up a powerup if
+//there's a piece of code which lets the player pick up a powerup if
 //the distance between him and the powerup is less than 2 time their
 //combined radii.  So we need to create powerups pretty far out from
 //the player.

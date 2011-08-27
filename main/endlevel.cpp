@@ -415,7 +415,7 @@ PlayerFinishedLevel (0);
 
 //--unused-- CFixVector upvec = {0, I2X (1), 0};
 
-//find the angle between the CPlayerData's heading & the station
+//find the angle between the player's heading & the station
 inline void GetAnglesToObject (CAngleVector *av, CFixVector *targ_pos, CFixVector *cur_pos)
 {
 	CFixVector tv = *targ_pos - *cur_pos;
@@ -479,7 +479,7 @@ if (!gameStates.render.bOutsideMine) {
 			}
 		}
 
-	//do explosions chasing CPlayerData
+	//do explosions chasing player
 	if ((explosion_wait1 -= gameData.time.xFrame) < 0) {
 		CFixVector	vPos;
 		short			nSegment;
@@ -924,14 +924,14 @@ exitFlightDataP = exitFlightObjects + n;
 objP = exitFlightDataP->objP;
 nOldPlayerSeg = objP->info.nSegment;
 
-//move the CPlayerData for this frame
+//move the player for this frame
 
 if (!exitFlightDataP->firstTime) {
 	objP->info.position.vPos += exitFlightDataP->step * gameData.time.xFrame;
 	angvec_add2_scale (&exitFlightDataP->angles, &exitFlightDataP->angstep, gameData.time.xFrame);
 	objP->info.position.mOrient = CFixMatrix::Create (exitFlightDataP->angles);
 	}
-//check new CPlayerData seg
+//check new player seg
 if (UpdateObjectSeg (objP, false)) {
 	segP = SEGMENTS + objP->info.nSegment;
 	if (exitFlightDataP->firstTime || (objP->info.nSegment != nOldPlayerSeg)) {		//moved into new seg

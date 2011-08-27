@@ -1067,7 +1067,7 @@ void HandleTestKey(int key)
 				FlyInit(gameData.objs.consoleP);
 				gameStates.app.bGameSuspended &= ~SUSP_ROBOTS;	//robots move
 			} else {
-				slew_init(gameData.objs.consoleP);			//start CPlayerData slewing
+				slew_init(gameData.objs.consoleP);			//start player slewing
 				gameStates.app.bGameSuspended |= SUSP_ROBOTS;	//robots don't move
 			}
 			break;
@@ -1138,7 +1138,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 	}
 if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.consoleP->flags & OF_EXPLODING)) {
 	if (!explodingFlag)  {
-		explodingFlag = 1;			// When CPlayerData starts exploding, clear all input devices...
+		explodingFlag = 1;			// When player starts exploding, clear all input devices...
 		GameFlushInputs ();
 		}
 	else {

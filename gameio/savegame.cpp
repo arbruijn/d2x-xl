@@ -673,7 +673,7 @@ void CSaveGameManager::SavePlayer (CPlayerData *playerP)
 
 m_cf.Write (playerP->callsign, 1, CALLSIGN_LEN + 1); // The callsign of this CPlayerData, for net purposes.
 m_cf.Write (playerP->netAddress, 1, 6);					// The network address of the player.
-m_cf.WriteByte (playerP->connected);            // Is the CPlayerData connected or not?
+m_cf.WriteByte (playerP->connected);            // Is the player connected or not?
 m_cf.WriteInt (playerP->nObject);                // What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
 m_cf.WriteInt (playerP->nPacketsGot);         // How many packets we got from them
 m_cf.WriteInt (playerP->nPacketsSent);        // How many packets we sent to them
@@ -683,10 +683,10 @@ m_cf.WriteFix (playerP->Shield ());               // shield remaining (protectio
 m_cf.WriteByte (playerP->lives);                // Lives remaining, 0 = game over.
 m_cf.WriteByte (playerP->level);                // Current level CPlayerData is playing. (must be signed for secret levels)
 m_cf.WriteByte ((sbyte) playerP->laserLevel);  // Current level of the laser.
-m_cf.WriteByte (playerP->startingLevel);       // What level the CPlayerData started on.
+m_cf.WriteByte (playerP->startingLevel);       // What level the player started on.
 m_cf.WriteShort (playerP->nKillerObj);       // Who killed me.... (-1 if no one)
-m_cf.WriteShort ((short) playerP->primaryWeaponFlags);   // bit set indicates the CPlayerData has this weapon.
-m_cf.WriteShort ((short) playerP->secondaryWeaponFlags); // bit set indicates the CPlayerData has this weapon.
+m_cf.WriteShort ((short) playerP->primaryWeaponFlags);   // bit set indicates the player has this weapon.
+m_cf.WriteShort ((short) playerP->secondaryWeaponFlags); // bit set indicates the player has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 	m_cf.WriteShort ((short) playerP->primaryAmmo [i]); // How much ammo of each nType.
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
@@ -1534,7 +1534,7 @@ void CSaveGameManager::LoadPlayer (CPlayerData *playerP)
 
 m_cf.Read (playerP->callsign, 1, CALLSIGN_LEN + 1); // The callsign of this CPlayerData, for net purposes.
 m_cf.Read (playerP->netAddress, 1, 6);					// The network address of the player.
-playerP->connected = m_cf.ReadByte ();					// Is the CPlayerData connected or not?
+playerP->connected = m_cf.ReadByte ();					// Is the player connected or not?
 playerP->nObject = m_cf.ReadInt ();						// What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
 playerP->nPacketsGot = m_cf.ReadInt ();				// How many packets we got from them
 playerP->nPacketsSent = m_cf.ReadInt ();				// How many packets we sent to them
@@ -1545,10 +1545,10 @@ playerP->SetShield (m_cf.ReadFix (), false);			// shield remaining (protection)
 playerP->lives = m_cf.ReadByte ();						// Lives remaining, 0 = game over.
 playerP->level = m_cf.ReadByte ();						// Current level CPlayerData is playing. (must be signed for secret levels)
 playerP->laserLevel = (ubyte) m_cf.ReadByte ();		// Current level of the laser.
-playerP->startingLevel = m_cf.ReadByte ();			// What level the CPlayerData started on.
+playerP->startingLevel = m_cf.ReadByte ();			// What level the player started on.
 playerP->nKillerObj = m_cf.ReadShort ();				// Who killed me.... (-1 if no one)
-playerP->primaryWeaponFlags = (ushort) m_cf.ReadShort ();   // bit set indicates the CPlayerData has this weapon.
-playerP->secondaryWeaponFlags = (ushort) m_cf.ReadShort (); // bit set indicates the CPlayerData has this weapon.
+playerP->primaryWeaponFlags = (ushort) m_cf.ReadShort ();   // bit set indicates the player has this weapon.
+playerP->secondaryWeaponFlags = (ushort) m_cf.ReadShort (); // bit set indicates the player has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 	playerP->primaryAmmo [i] = (ushort) m_cf.ReadShort (); // How much ammo of each nType.
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)

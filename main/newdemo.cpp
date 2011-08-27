@@ -90,7 +90,7 @@ PrintLog ("Error in demo playback\n");
 #define ND_EVENT_PALETTE_EFFECT     16  // Followed by short r, g, b
 #define ND_EVENT_PLAYER_ENERGY      17  // followed by byte energy
 #define ND_EVENT_PLAYER_SHIELD      18  // followed by byte shield
-#define ND_EVENT_PLAYER_FLAGS       19  // followed by CPlayerData flags
+#define ND_EVENT_PLAYER_FLAGS       19  // followed by player flags
 #define ND_EVENT_PLAYER_WEAPON      20  // followed by weapon nType and weapon number
 #define ND_EVENT_EFFECT_BLOWUP      21  // followed by CSegment, nSide, and pnt
 #define ND_EVENT_HOMING_DISTANCE    22  // followed by homing distance
@@ -100,14 +100,14 @@ PrintLog ("Error in demo playback\n");
 #define ND_EVENT_WALL_SET_TMAP_NUM1 26  // Wall changed
 #define ND_EVENT_WALL_SET_TMAP_NUM2 27  // Wall changed
 #define ND_EVENT_NEW_LEVEL          28  // followed by level number
-#define ND_EVENT_MULTI_CLOAK        29  // followed by CPlayerData num
-#define ND_EVENT_MULTI_DECLOAK      30  // followed by CPlayerData num
+#define ND_EVENT_MULTI_CLOAK        29  // followed by player num
+#define ND_EVENT_MULTI_DECLOAK      30  // followed by player num
 #define ND_EVENT_RESTORE_REARVIEW   31  // restore cockpit after rearview mode
-#define ND_EVENT_MULTI_DEATH        32  // with CPlayerData number
-#define ND_EVENT_MULTI_KILL         33  // with CPlayerData number
-#define ND_EVENT_MULTI_CONNECT      34  // with CPlayerData number
-#define ND_EVENT_MULTI_RECONNECT    35  // with CPlayerData number
-#define ND_EVENT_MULTI_DISCONNECT   36  // with CPlayerData number
+#define ND_EVENT_MULTI_DEATH        32  // with player number
+#define ND_EVENT_MULTI_KILL         33  // with player number
+#define ND_EVENT_MULTI_CONNECT      34  // with player number
+#define ND_EVENT_MULTI_RECONNECT    35  // with player number
+#define ND_EVENT_MULTI_DISCONNECT   36  // with player number
 #define ND_EVENT_MULTI_SCORE        37  // playernum / score
 #define ND_EVENT_PLAYER_SCORE       38  // followed by score
 #define ND_EVENT_PRIMARY_AMMO       39  // with old/new ammo count
@@ -918,7 +918,7 @@ switch (o.info.controlType) {
 	case CT_FLYING:
 	case CT_DEBRIS:
 	case CT_POWERUP:
-	case CT_SLEW:       //the CPlayerData is generally saved as slew
+	case CT_SLEW:       //the player is generally saved as slew
 	case CT_CNTRLCEN:
 	case CT_REMOTE:
 	case CT_MORPH:
@@ -2125,16 +2125,16 @@ while (!bDone) {
 			break;
 
 		case ND_EVENT_WALL_HIT_PROCESS: {
-				int CPlayerData, nSegment;
+				int player, nSegment;
 				fix damage;
 
 			nSegment = NDReadInt ();
 			nSide = NDReadInt ();
 			damage = NDReadFix ();
-			CPlayerData = NDReadInt ();
+			player = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				SEGMENTS [nSegment].ProcessWallHit ((short) nSide, damage, CPlayerData, &(OBJECTS [0]));
+				SEGMENTS [nSegment].ProcessWallHit ((short) nSide, damage, player, &(OBJECTS [0]));
 			break;
 		}
 
@@ -2374,7 +2374,7 @@ while (!bDone) {
 
 			//create a dummy CObject which will be the weapon that hits
 			//the monitor. the blowup code wants to know who the parent of the
-			//laser is, so create a laser whose parent is the CPlayerData
+			//laser is, so create a laser whose parent is the player
 			dummy.cType.laserInfo.parent.nType = OBJ_PLAYER;
 			nSegment = NDReadShort ();
 			nSide = NDReadByte ();
@@ -3555,7 +3555,7 @@ else
 bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
 strncpy (gameData.demo.callSignSave, LOCALPLAYER.callsign, CALLSIGN_LEN);
-gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS.Buffer ();   // play properly as if console CPlayerData
+gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS.Buffer ();   // play properly as if console player
 if (NDReadDemoStart (bRandom)) {
 	ndInFile.Close ();
 	ndOutFile.Close ();

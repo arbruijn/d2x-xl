@@ -104,7 +104,7 @@ if (gameStates.app.bPlayerIsDead || gameStates.app.bEnterGame) {
 	}
 
 if ((info.nType != OBJ_PLAYER) || (info.nId != gameData.multiplayer.nLocalPlayer))
-	return;	//references to CPlayerShip require that this obj be the CPlayerData
+	return;	//references to CPlayerShip require that this obj be the player
 
 tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
 gmObjP = gmiP->objP;
@@ -114,7 +114,7 @@ if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
 	fix				speed;
 
 	//this is a horrible hack.  guided missile stuff should not be
-	//handled in the middle of a routine that is dealing with the CPlayerData
+	//handled in the middle of a routine that is dealing with the player
 	mType.physInfo.rotThrust.SetZero ();
 	vRotAngs.v.coord.p = controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
 	vRotAngs.v.coord.b = controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude / 16;
@@ -132,7 +132,7 @@ else {
 	}
 forwardThrustTime = controls [0].forwardThrustTime;
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [gameData.multiplayer.nLocalPlayer].DriveDamage ())) {
-	if (controls [0].afterburnerState) {			//CPlayerData has key down
+	if (controls [0].afterburnerState) {			//player has key down
 		fix xAfterburnerScale;
 		int oldCount, newCount;
 

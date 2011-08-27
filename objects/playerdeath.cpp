@@ -74,7 +74,7 @@ extern char bMultiSuicide;
 
 //------------------------------------------------------------------------------
 
-//	Camera is less than size of CPlayerData away from
+//	Camera is less than size of player away from
 void SetCameraPos (CFixVector *vCameraPos, CObject *objP)
 {
 	CFixVector	vPlayerCameraOffs = *vCameraPos - objP->info.position.vPos;
@@ -84,7 +84,7 @@ void SetCameraPos (CFixVector *vCameraPos, CObject *objP)
 
 xCameraPlayerDist = vPlayerCameraOffs.Mag ();
 if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
-	//	Camera is too close to CPlayerData CObject, so move it away.
+	//	Camera is too close to player CObject, so move it away.
 	CHitResult		hitResult;
 	CFixVector	local_p1;
 
@@ -196,7 +196,7 @@ if (gameStates.app.bPlayerIsDead) {
 			gameData.objs.consoleP->ExplodeSplashDamagePlayer ();
 			//is this next line needed, given the splash damage call above?
 			gameData.objs.consoleP->Explode (0);
-			gameData.objs.consoleP->info.nFlags &= ~OF_SHOULD_BE_DEAD;		//don't really kill CPlayerData
+			gameData.objs.consoleP->info.nFlags &= ~OF_SHOULD_BE_DEAD;		//don't really kill player
 			gameData.objs.consoleP->info.renderType = RT_NONE;				//..just make him disappear
 			gameData.objs.consoleP->SetType (OBJ_GHOST);						//..and kill intersections
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;

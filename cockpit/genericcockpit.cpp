@@ -1302,7 +1302,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
 		nObject = gameData.multiplayer.players [nPlayer].nObject;
 	else {
-		//if this is a demo, the nObject in the CPlayerData struct is wrong,
+		//if this is a demo, the nObject in the player struct is wrong,
 		//so we search the CObject list for the nObject
 		CObject *objP;
 		nObject = -1;
@@ -2145,7 +2145,7 @@ CCanvas::SetCurrent (&windowCanv);
 fontManager.SetCurrent (GAME_FONT);
 transformation.Push ();
 nZoomSave = gameStates.zoom.nFactor;
-gameStates.zoom.nFactor = float (I2X (gameOpts->render.cockpit.nWindowZoom + 1));					//the CPlayerData's zoom factor
+gameStates.zoom.nFactor = float (I2X (gameOpts->render.cockpit.nWindowZoom + 1));					//the player's zoom factor
 if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
 	if (!IsMultiGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP)) {
 		automap.m_bDisplay = -1;

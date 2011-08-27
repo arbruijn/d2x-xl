@@ -118,7 +118,7 @@ typedef struct tMatCenInfo {
 
 //--repair-- extern CObject *RepairObj;  // which CObject getting repaired, or NULL
 
-// Called when a materialization center gets triggered by the CPlayerData
+// Called when a materialization center gets triggered by the player
 // flying through some CTrigger!
 int StartMatCen (short nSegment);
 void DisableMatCens (void);

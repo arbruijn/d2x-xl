@@ -467,7 +467,7 @@ int GetBossId (void)
 
 //	-----------------------------------------------------------------------------
 //	Return bject index if CObject of objType, objId exists in mine, else return -1
-//	"special" is used to find OBJECTS spewed by CPlayerData which is hacked into flags field of powerup.
+//	"special" is used to find OBJECTS spewed by player which is hacked into flags field of powerup.
 int ExistsInMine2 (int nSegment, int objType, int objId, int special)
 {
 if ((objType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
@@ -808,7 +808,7 @@ else {
 }
 
 //	-----------------------------------------------------------------------------
-//	Escort robot chooses goal CObject based on CPlayerData's keys, location.
+//	Escort robot chooses goal CObject based on player's keys, location.
 //	Returns goal CObject.
 int EscortSetGoalObject (void)
 {
@@ -841,8 +841,8 @@ fix	xBuddyLastSeenPlayer = 0, Buddy_last_player_path_created;
 
 int TimeToVisitPlayer (CObject *objP, tAILocalInfo *ailp, tAIStaticInfo *aip)
 {
-	//	Note: This one has highest priority because, even if already going towards CPlayerData,
-	//	might be necessary to create a new path, as CPlayerData can move.
+	//	Note: This one has highest priority because, even if already going towards player,
+	//	might be necessary to create a new path, as player can move.
 if (gameData.time.xGame - xBuddyLastSeenPlayer > MAX_ESCORT_TIME_AWAY)
 	if (gameData.time.xGame - Buddy_last_player_path_created > I2X (1))
 		return 1;
@@ -991,7 +991,7 @@ if (!gameData.escort.bMayTalk)
 		aip->SKIP_AI_COUNT = (sbyte) ((I2X (1) / 4) / (gameData.time.xFrame ? gameData.time.xFrame : 1));
 //	AIM_WANDER has been co-opted for buddy behavior (didn't want to modify aistruct.h)
 //	It means the CObject has been told to get lost and has come to the end of its path.
-//	If the CPlayerData is now visible, then create a path.
+//	If the player is now visible, then create a path.
 if (ailp->mode == AIM_WANDER)
 	if (nPlayerVisibility) {
 		CreateNSegmentPath (objP, 16 + RandShort () * 16, -1);

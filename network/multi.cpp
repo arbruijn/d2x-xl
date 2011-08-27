@@ -226,8 +226,8 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{7, -1}   // MULTI_PLAYER_THRUST
 };
 
-void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
-void UseNetPlayerStats (CPlayerData * ps, tNetPlayerStats *pd);
+void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerInfo * pd);
+void UseNetPlayerStats (CPlayerInfo * ps, tNetPlayerStats *pd);
 
 CPlayerShip defaultPlayerShip;
 #if 0
@@ -995,7 +995,7 @@ void MultiComputeKill (int nKiller, int nKilled, int nKillerPlayer = -1)
 	int				killerType, nKillerId;
 	char				szKilled [CALLSIGN_LEN * 2 + 4];
 	char				szKiller [CALLSIGN_LEN * 2 + 4];
-	CPlayerData*	killerP, * killedP;
+	CPlayerInfo*	killerP, * killedP;
 	CObject*			objP;
 
 gameData.score.nKillsChanged = 1;
@@ -1416,7 +1416,7 @@ else if (weapon >= MISSILE_ADJUST) {
 	int h = weapon - MISSILE_ADJUST;
 	ubyte weaponId = secondaryWeaponToWeaponInfo [h];
 	int weaponGun = secondaryWeaponToGunNum [h] + (flags & 1);
-	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerInfo *playerP = gameData.multiplayer.players + nPlayer;
 	if (h == GUIDED_INDEX)
 		gameData.multigame.bIsGuided = 1;
 	if (playerP->secondaryAmmo [h] > 0)
@@ -1485,7 +1485,7 @@ gameData.multigame.score.pFlags [objP->info.nId] = 0;
 void MultiDoPlayerExplode (char *buf)
 {
 	CObject*			objP;
-	CPlayerData*	playerP;
+	CPlayerInfo*	playerP;
 	int				bufI, nPlayer, i;
 	short				nRemoteObj;
 	char				nRemoteCreated;
@@ -3551,14 +3551,13 @@ saveGameManager.SaveState ((slot < 0) ? -1 : 0, szFile, description);
 void MultiRestoreGame (char slot, uint id)
 {
 	char			szFile [FILENAME_LEN];
-	CPlayerData	nSavedPlayer;
+	//CPlayerInfo	savedPlayer = LOCALPLAYER;
 	int			i;
 
 #if !DBG
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return;
 #endif
-nSavedPlayer = LOCALPLAYER;
 if (slot < 0)
 	missionManager.LevelStateName (szFile, -slot);
 else
@@ -3578,7 +3577,7 @@ gameData.app.bGamePaused = 0;
 
 //-----------------------------------------------------------------------------
 
-void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd)
+void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerInfo * pd)
 {
 	int i;
 
@@ -3614,7 +3613,7 @@ ps->nHostagesOnBoard = pd->hostages.nOnBoard;                        // Number o
 
 //-----------------------------------------------------------------------------
 
-void UseNetPlayerStats (CPlayerData * ps, tNetPlayerStats *pd)
+void UseNetPlayerStats (CPlayerInfo * ps, tNetPlayerStats *pd)
 {
 	int i;
 

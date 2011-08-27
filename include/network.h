@@ -59,7 +59,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PID_GAME_INFO					57 // 0x39 here's a game i've started
 #define PID_PING_SEND					58
 #define PID_PING_RETURN					59
-#define PID_GAME_UPDATE					60 // inform about new CPlayerData/team change
+#define PID_GAME_UPDATE					60 // inform about new player/team change
 #define PID_ENDLEVEL_SHORT				61
 #define PID_NAKED_PDATA					62
 #define PID_GAME_PLAYERS				63
@@ -404,8 +404,8 @@ extern int Network_status;
 extern fix LastPacketTime [MAX_PLAYERS];
 
 // By putting an up-to-20-char-message into Network_message and
-// setting Network_message_reciever to the CPlayerData num you want to
-// send it to (100 for broadcast) the next frame the CPlayerData will
+// setting Network_message_reciever to the player num you want to
+// send it to (100 for broadcast) the next frame the player will
 // get your message.
 
 // Call once at the beginning of a frame
@@ -554,7 +554,7 @@ void DeleteSyncData (short nConnection);
 char *iptos (char *pszIP, char *addr);
 
 #define DUMP_CLOSED     0 // no new players allowed after game started
-#define DUMP_FULL       1 // CPlayerData cound maxed out
+#define DUMP_FULL       1 // player cound maxed out
 #define DUMP_ENDLEVEL   2
 #define DUMP_DORK       3
 #define DUMP_ABORTED    4

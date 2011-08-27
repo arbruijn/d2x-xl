@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void NetworkSendDoorUpdates (int nPlayer)
 {
-	// Send door status when new CPlayerData joins
+	// Send door status when new player joins
 
 	int i;
 	CWall *wallP;
@@ -64,7 +64,7 @@ for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
 
 void NetworkSendMarkers (void)
  {
-  // send marker positions/text to new CPlayerData
+  // send marker positions/text to new player
   int i, j;
 
 for (i = j = 0; i < gameData.multiplayer.nPlayers; i++, j++) {
@@ -249,7 +249,7 @@ void NetworkSendEndLevelSub (int nPlayer)
 	CEndLevelInfo end;
 	int i;
 
-	// Send an endlevel packet for a CPlayerData
+	// Send an endlevel packet for a player
 *end.Type () = PID_ENDLEVEL;
 *end.Player () = nPlayer;
 *end.Connected () = gameData.multiplayer.players [nPlayer].connected;
@@ -688,7 +688,7 @@ void NetworkSendPlayerNames (tSequencePacket *their)
 
 if (!their) {
 #if 1			
-	console.printf (CON_DBG, "Got a CPlayerData name without a return address! Get Jason\n");
+	console.printf (CON_DBG, "Got a player name without a return address! Get Jason\n");
 #endif
 	return;
 	}

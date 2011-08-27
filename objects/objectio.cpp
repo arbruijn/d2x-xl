@@ -159,7 +159,7 @@ switch (info.controlType) {
 	case CT_DEBRIS:
 		break;
 
-	case CT_SLEW:		//the CPlayerData is generally saved as slew
+	case CT_SLEW:		//the player is generally saved as slew
 		break;
 
 	case CT_CNTRLCEN:

@@ -557,7 +557,7 @@ if (objP->info.nType == OBJ_WEAPON) {
 		}
 	}
 if (objP == gameData.objs.viewerP)		//deleting the viewerP?
-	gameData.objs.viewerP = gameData.objs.consoleP;						//..make the CPlayerData the viewerP
+	gameData.objs.viewerP = gameData.objs.consoleP;						//..make the player the viewerP
 if (objP->info.nFlags & OF_ATTACHED)		//detach this from CObject
 	DetachFromParent (objP);
 if (objP->info.nAttachedObj != -1)		//detach all OBJECTS from this

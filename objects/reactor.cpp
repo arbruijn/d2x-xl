@@ -54,7 +54,7 @@ props = &gameData.reactor.props [objP->info.nId];
 
 //	-----------------------------------------------------------------------------
 //	Look at control center guns, find best one to fire at *objP.
-//	Return best gun number (one whose direction dotted with vector to CPlayerData is largest).
+//	Return best gun number (one whose direction dotted with vector to player is largest).
 //	If best gun has negative dot, return -1, meaning no gun is good.
 int CalcBestReactorGun (int nGunCount, CFixVector *vGunPos, CFixVector *vGunDir, CFixVector *vObjPos)
 {
@@ -134,7 +134,7 @@ if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {  // get countdown in OEM and
 		}
 	}
 
-//	Control center destroyed, rock the CPlayerData's ship.
+//	Control center destroyed, rock the player's ship.
 fc = gameData.reactor.countdown.nSecsLeft;
 if (fc > 16)
 	fc = 16;
@@ -295,7 +295,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 
 		// This is a hack.  Since the control center is not processed by
 		// ai_do_frame, it doesn't know how to deal with cloaked dudes.  It
-		// seems to work in single-CPlayerData mode because it is actually using
+		// seems to work in single-player mode because it is actually using
 		// the value of Believed_player_position that was set by the last
 		// person to go through ai_do_frame.  But since a no-robots game
 		// never goes through ai_do_frame, I'm making it so the control
@@ -322,7 +322,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 	return;
 	}
 
-//	Periodically, make the reactor fall asleep if CPlayerData not visible.
+//	Periodically, make the reactor fall asleep if player not visible.
 if (rStatP->bHit || rStatP->bSeenPlayer) {
 	if ((rStatP->xLastVisCheckTime + I2X (5) < gameData.time.xGame) || 
 		 (rStatP->xLastVisCheckTime > gameData.time.xGame)) {
@@ -366,7 +366,7 @@ if ((rStatP->nNextFireTime < 0) &&
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendCtrlcenFire (&vecToGoal, nBestGun, objP->Index ());
 		CreateNewWeaponSimple (&vecToGoal, &rStatP->vGunPos [nBestGun], objP->Index (), CONTROLCEN_WEAPON_NUM, 1);
-		//	some of time, based on level, fire another thing, not directly at CPlayerData, so it might hit him if he's constantly moving.
+		//	some of time, based on level, fire another thing, not directly at player, so it might hit him if he's constantly moving.
 		nRandProb = I2X (1) / (abs (missionManager.nCurrentLevel) / 4 + 2);
 		count = 0;
 		while ((RandShort () > nRandProb) && (count < 4)) {

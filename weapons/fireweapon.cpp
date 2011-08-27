@@ -84,7 +84,7 @@ if (gameData.multigame.laser.nFired [0] < sizeofa (gameData.multigame.laser.nObj
 
 //---------------------------------------------------------------------------------
 // Called by render code.... determines if the laser is from a robot or the
-// CPlayerData and calls the appropriate routine.
+// player and calls the appropriate routine.
 
 void RenderLaser (CObject *objP)
 {
@@ -388,7 +388,7 @@ if (!bMakeSound)
 if (bHarmless)
 	laserP->info.nFlags |= OF_HARMLESS;
 
-//	If the object firing the laser is the CPlayerData, then indicate the laser object so robots can dodge.
+//	If the object firing the laser is the player, then indicate the laser object so robots can dodge.
 //	New by MK on 6/8/95, don't let robots evade proximity bombs, thereby decreasing uselessness of bombs.
 if ((objP == gameData.objs.consoleP) && !laserP->IsPlayerMine ())
 	gameStates.app.bPlayerFiredLaserThisFrame = nObject;
@@ -398,7 +398,7 @@ if (gameStates.app.cheats.bHomingWeapons || gameData.weapons.info [nLaserType].h
 		laserP->cType.laserInfo.nHomingTarget = laserP->FindVisibleHomingTarget (vLaserPos);
 		gameData.multigame.laser.nTrack = laserP->cType.laserInfo.nHomingTarget;
 		}
-	else {// Some other CPlayerData shot the homing thing
+	else {// Some other player shot the homing thing
 		Assert (IsMultiGame);
 		laserP->cType.laserInfo.nHomingTarget = gameData.multigame.laser.nTrack;
 		}
@@ -640,7 +640,7 @@ controls.StopSecondaryFire ();
 }
 
 //	--------------------------------------------------------------------------------------------------
-// Assumption: This is only called by the actual console CPlayerData, not for network players
+// Assumption: This is only called by the actual console player, not for network players
 
 int LocalPlayerFireGun (void)
 {
@@ -687,7 +687,7 @@ else {
 	nPrimaryAmmo = playerP->primaryAmmo [VULCAN_INDEX];
 	}
 if	 ((playerP->energy < xEnergyUsed) || (nPrimaryAmmo < nAmmoUsed))
-	AutoSelectWeapon (0, 1);		//	Make sure the CPlayerData can fire from this weapon.
+	AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
 
 if ((gameData.laser.xLastFiredTime + 2 * gameData.time.xFrame < gameData.time.xGame) ||
 	 (gameData.time.xGame < gameData.laser.xLastFiredTime))
@@ -748,10 +748,10 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 				playerP->primaryAmmo [VULCAN_INDEX] -= nAmmoUsed;
 			}
 #endif
-		AutoSelectWeapon (0, 1);		//	Make sure the CPlayerData can fire from this weapon.
+		AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
 		}
 	else {
-		AutoSelectWeapon (0, 1);		//	Make sure the CPlayerData can fire from this weapon.
+		AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
 		StopPrimaryFire ();
 		break;	//	Couldn't fire weapon, so abort.
 		}

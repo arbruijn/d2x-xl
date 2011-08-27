@@ -60,7 +60,7 @@ class __pack__ CWeaponInfo {
 		fix	xFireWait;            // Time until this weapon can be fired again.
 
 		/* not present in shareware datafiles */
-		fix xMultiDamageScale;      // Scale damage by this amount when applying to CPlayerData in multiplayer.  I2X (1) means no change.
+		fix xMultiDamageScale;      // Scale damage by this amount when applying to player in multiplayer.  I2X (1) means no change.
 
 		tBitmapIndex bitmap;        // Pointer to bitmap if rendertype==0 or 1.
 
@@ -200,7 +200,7 @@ class __pack__ CD2D1WeaponInfo {
 //given a weapon index, return the flag value
 #define  HAS_FLAG(index)  (1<<(index))
 
-// Weapon flags, if CPlayerData->weaponFlags & WEAPON_FLAG is set, then the CPlayerData has this weapon
+// Weapon flags, if player->weaponFlags & WEAPON_FLAG is set, then the player has this weapon
 #define HAS_LASER_FLAG      HAS_FLAG(LASER_INDEX)
 #define HAS_VULCAN_FLAG     HAS_FLAG(VULCAN_INDEX)
 #define HAS_SPREADFIRE_FLAG HAS_FLAG(SPREADFIRE_INDEX)
@@ -307,7 +307,7 @@ int PickupVulcanAmmo (CObject *objP, int nPlayer);
 
 int AttemptToStealItem (CObject *objp, int player_num);
 
-//this function is for when the CPlayerData intentionally drops a powerup
+//this function is for when the player intentionally drops a powerup
 int SpitPowerup (CObject *spitter, ubyte id, int seed = -1);
 
 #define SMEGA_ID    40

@@ -51,7 +51,7 @@ void DoAIFrame (CObject *objP);
 void DoD1AIFrame (CObject *objP);
 void InitAIObject (short nObject, short initial_mode, short nHideSegment);
 void UpdatePlayerAwareness (CObject *objP, fix new_awareness);
-void CreateAwarenessEvent (CObject *objP, int nType);         // CObject *objP can create awareness of CPlayerData, amount based on "nType"
+void CreateAwarenessEvent (CObject *objP, int nType);         // CObject *objP can create awareness of player, amount based on "nType"
 void DoAIFrameAll (void);
 void DoD1AIFrameAll (void);
 void InitAISystem (void);
@@ -83,8 +83,8 @@ void DoBossDyingFrame (CObject *objP);
 void CreatePathToTarget (CObject *objP, int max_length, int safetyFlag);
 void AttemptToResumePath (CObject *objP);
 
-// When a robot and a CPlayerData collide, some robots attack!
-void DoAIRobotHitAttack (CObject *robot, CObject *CPlayerData, CFixVector *collision_point);
+// When a robot and a player collide, some robots attack!
+void DoAIRobotHitAttack (CObject *robot, CObject *player, CFixVector *collision_point);
 void DoD1AIRobotHitAttack(CObject *robot, CObject *player, CFixVector *collision_point);
 void AIOpenDoorsInSegment (CObject *robot);
 int AIDoorIsOpenable (CObject *objP, CSegment *segp, short nSide);

@@ -88,7 +88,7 @@ return NULL;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Return true if there is a door here and it is openable
-//	It is assumed that the CPlayerData has all keys.
+//	It is assumed that the player has all keys.
 int PlayerCanOpenDoor (CSegment *segP, short nSide)
 {
 CWall* wallP = segP->Wall (nSide);
@@ -504,7 +504,7 @@ switch (delObjP->info.contains.nId) {
 		break;
 	}
 
-//	Don't drop vulcan ammo if CPlayerData maxed out.
+//	Don't drop vulcan ammo if player maxed out.
 if (( (nWeapon == VULCAN_INDEX) || (delObjP->info.contains.nId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 	delObjP->info.contains.nCount = 0;
 else if (( (nWeapon == GAUSS_INDEX) || (delObjP->info.contains.nId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
@@ -829,7 +829,7 @@ if (gameData.multiplayer.players [playerObjP->info.nId].secondaryWeaponFlags & n
 
 //	-----------------------------------------------------------------------------
 
-void MaybeDropDeviceEgg (CPlayerData *playerP, CObject *playerObjP, int nDeviceFlag, int nPowerupId)
+void MaybeDropDeviceEgg (CPlayerInfo *playerP, CObject *playerObjP, int nDeviceFlag, int nPowerupId)
 {
 if ((gameData.multiplayer.players [playerObjP->info.nId].flags & nDeviceFlag) &&
 	 !(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nDevice & nDeviceFlag)))
@@ -860,7 +860,7 @@ if ((nMissiles = gameData.multiplayer.players [playerObjP->info.nId].secondaryAm
 //	-----------------------------------------------------------------------------
 //	If the player had mines, maybe arm up to 3 of them.
 
-static void MaybeArmMines (CObject *playerObjP, CPlayerData* playerP, int nType, int nId)
+static void MaybeArmMines (CObject *playerObjP, CPlayerInfo* playerP, int nType, int nId)
 {
 if (gameStates.multi.nGameType == UDP_GAME) {
 	int nAmmo = playerP->secondaryAmmo [nType];
@@ -910,7 +910,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 	int				nPlayer = playerObjP->info.nId;
 	short				nObject;
 	int				nVulcanAmmo = 0;
-	CPlayerData*	playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerInfo*	playerP = gameData.multiplayer.players + nPlayer;
 
 	// Seed the Random number generator so in net play the eggs will always
 	// drop the same way
@@ -1029,7 +1029,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 	if (!(gameData.app.nGameMode & GM_ENTROPY))
 		MaybeDropSecondaryWeaponEgg (playerObjP, SMARTMINE_INDEX, (playerP->secondaryAmmo [SMARTMINE_INDEX])/4);
 	MaybeDropSecondaryWeaponEgg (playerObjP, EARTHSHAKER_INDEX, playerP->secondaryAmmo [EARTHSHAKER_INDEX]);
-	//	Drop the CPlayerData's missiles in packs of 1 and/or 4
+	//	Drop the player's missiles in packs of 1 and/or 4
 	DropMissile1or4 (playerObjP, HOMING_INDEX);
 	DropMissile1or4 (playerObjP, GUIDED_INDEX);
 	DropMissile1or4 (playerObjP, CONCUSSION_INDEX);

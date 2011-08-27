@@ -277,7 +277,7 @@ return 1;
 //------------------------------------------------------------------------------
 //The following code is an attempt to find all objects that cast a shadow visible
 //to the player. To accomplish that, for each robot the line of sight to each
-//CSegment visible to the CPlayerData is computed. If there is a los to any of these 
+//CSegment visible to the player is computed. If there is a los to any of these 
 //segments, the CObject's shadow is rendered. Far from perfect solution though. :P
 
 void RenderObjectShadows (void)

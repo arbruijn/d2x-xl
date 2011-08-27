@@ -178,7 +178,7 @@ void CObject::LoadTextures (void)
 
 switch (info.renderType) {
 	case RT_NONE:
-		break;		//doesn't render, like the CPlayerData
+		break;		//doesn't render, like the player
 
 	case RT_POLYOBJ:
 		if (rType.polyObjInfo.nTexOverride == -1)

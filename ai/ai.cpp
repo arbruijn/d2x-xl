@@ -49,7 +49,7 @@ gameData.ai.target.nBelievedSeg = gameData.ai.cloakInfo [0].nLastSeg;
 // Returns false if awareness is considered too puny to add, else returns true.
 int AddAwarenessEvent (CObject *objP, int nType)
 {
-	// If CPlayerData cloaked and hit a robot, then increase awareness
+	// If player cloaked and hit a robot, then increase awareness
 if (nType >= WEAPON_WALL_COLLISION)
 	AIDoCloakStuff ();
 
@@ -67,8 +67,8 @@ return 1;
 }
 
 // ----------------------------------------------------------------------------------
-// Robots will become aware of the CPlayerData based on something that occurred.
-// The CObject (probably CPlayerData or weapon) which created the awareness is objP.
+// Robots will become aware of the player based on something that occurred.
+// The CObject (probably player or weapon) which created the awareness is objP.
 void CreateAwarenessEvent (CObject *objP, int nType)
 {
 	// If not in multiplayer, or in multiplayer with robots, do this, else unnecessary!
@@ -139,7 +139,7 @@ FORALL_OBJS (objP, i)
 // ----------------------------------------------------------------------------------
 // Do things which need to get done for all AI OBJECTS each frame.
 // This includes:
-//  Setting player_awareness (a fix, time in seconds which CObject is aware of CPlayerData)
+//  Setting player_awareness (a fix, time in seconds which CObject is aware of player)
 void DoAIFrameAll (void)
 {
 	int		h, j;

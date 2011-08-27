@@ -213,7 +213,7 @@ FORALL_OBJS (objP, i)
 
 // -----------------------------------------------------------------------------
 //this routine checks to see if an robot rendered near the middle of
-//the screen, and if so and the CPlayerData had fired, "warns" the robot
+//the screen, and if so and the player had fired, "warns" the robot
 void SetRobotLocationInfo (CObject *objP)
 {
 if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {

@@ -335,8 +335,8 @@ pWeaponHandler weaponHandlers [] = {
 
 //	--------------------------------------------------------------------------------------------------
 //	Object "nObject" fires weapon "weapon_num" of level "level". (Right now (9/24/94) level is used only for nType 0 laser.
-//	Flags are the CPlayerData flags.  For network mode, set to 0.
-//	It is assumed that this is a CPlayerData CObject (as in multiplayer), and therefore the gun positions are known.
+//	Flags are the player flags.  For network mode, set to 0.
+//	It is assumed that this is a player CObject (as in multiplayer), and therefore the gun positions are known.
 //	Returns number of times a weapon was fired.  This is typically 1, but might be more for low frame rates.
 //	More than one shot is fired with a pseudo-delay so that players on show machines can fire (for themselves
 //	or other players) often enough for things like the vulcan cannon.

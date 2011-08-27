@@ -352,7 +352,7 @@ return explObjP;
 }
 
 //------------------------------------------------------------------------------
-//blows up the CPlayerData with a xSplashDamage explosion
+//blows up the player with a xSplashDamage explosion
 //return the explosion CObject
 CObject* CObject::ExplodeSplashDamagePlayer (void)
 {

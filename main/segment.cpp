@@ -997,8 +997,8 @@ if ((wallP->nType == WALL_DOOR) && (wallP->state == WALL_DOOR_CLOSED))
 //-----------------------------------------------------------------
 // Determines what happens when a CWall is shot
 //returns info about CWall.  see wall[HA] for codes
-//obj is the CObject that hit...either a weapon or the CPlayerData himself
-//nPlayer is the number the CPlayerData who hit the CWall or fired the weapon,
+//obj is the CObject that hit...either a weapon or the player himself
+//nPlayer is the number the player who hit the CWall or fired the weapon,
 //or -1 if a robot fired the weapon
 
 int CSegment::ProcessWallHit (int nSide, fix damage, int nPlayer, CObject *objP)
@@ -1022,7 +1022,7 @@ if (nPlayer != gameData.multiplayer.nLocalPlayer)	//return if was robot fire
 
 Assert(nPlayer > -1);
 
-//	Determine whether CPlayerData is moving forward.  If not, don't say negative
+//	Determine whether player is moving forward.  If not, don't say negative
 //	messages because he probably didn't intentionally hit the door.
 return wallP->ProcessHit (nPlayer, objP);
 }
@@ -1060,7 +1060,7 @@ int CSegment::CheckEffectBlowup (int nSide, CFixVector& vHit, CObject* blowerP, 
 	CWall*			wallP;
 	CTrigger*		trigP;
 	CObject*			parentP = (!blowerP || (blowerP->cType.laserInfo.parent.nObject < 0)) ? NULL : OBJECTS + blowerP->cType.laserInfo.parent.nObject;
-	//	If this CWall has a CTrigger and the blowerP-upper is not the CPlayerData or the buddy, abort!
+	//	If this CWall has a CTrigger and the blowerP-upper is not the player or the buddy, abort!
 
 if (parentP) {
 	if ((parentP->info.nType == OBJ_ROBOT) && ROBOTINFO (parentP->info.nId).companion)

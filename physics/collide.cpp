@@ -81,7 +81,7 @@ else if (botInfoP->companion) {
 	if (!(wallP->flags & WALL_DOOR_LOCKED) || ((wallP->keys != KEY_NONE) && (wallP->keys & LOCALPLAYER.flags)))
 		SEGMENTS [nHitSeg].OpenDoor (nHitSide);
 	}
-else if (botInfoP->thief) {		//	Thief allowed to go through doors to which CPlayerData has key.
+else if (botInfoP->thief) {		//	Thief allowed to go through doors to which player has key.
 	if ((wallP->keys != KEY_NONE) && (wallP->keys & LOCALPLAYER.flags))
 		SEGMENTS [nHitSeg].OpenDoor (nHitSide);
 	}
@@ -449,7 +449,7 @@ void CObject::CollidePlayerAndWall (fix xHitSpeed, short nHitSeg, short nHitSide
 	char bForceFieldHit = 0;
 	int nBaseTex, nOvlTex;
 
-if (info.nId != gameData.multiplayer.nLocalPlayer) // Execute only for local CPlayerData
+if (info.nId != gameData.multiplayer.nLocalPlayer) // Execute only for local player
 	return;
 nBaseTex = SEGMENTS [nHitSeg].m_sides [nHitSide].m_nBaseTex;
 //	If this CWall does damage, don't make *BONK* sound, we'll be making another sound.
@@ -458,7 +458,7 @@ if (gameData.pig.tex.tMapInfoP [nBaseTex].damage > 0)
 if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
 	CFixVector vForce;
 	paletteManager.BumpEffect (0, 0, 60);	//flash blue
-	//knock CPlayerData around
+	//knock player around
 	vForce.v.coord.x = 40 * SRandShort ();
 	vForce.v.coord.y = 40 * SRandShort ();
 	vForce.v.coord.z = 40 * SRandShort ();
@@ -488,7 +488,7 @@ else {
 if (gameStates.app.bD2XLevel && (SEGMENTS [nHitSeg].HasNoDamageProp ()))
 	return;
 //	** Damage from hitting CWall **
-//	If the CPlayerData has less than 10% shield, don't take damage from bump
+//	If the player has less than 10% shield, don't take damage from bump
 // Note: Does quad damage if hit a vForce field - JL
 damage = (xHitSpeed / DAMAGE_SCALE) * (bForceFieldHit * 8 + 1);
 nOvlTex = SEGMENTS [nHitSeg].m_sides [nHitSide].m_nOvlTex;
@@ -804,7 +804,7 @@ else if (sideP && ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_W
 	}
 else {
 	if (!bBounce) {
-		//if it's not the CPlayerData's this, or it is the CPlayerData's and there
+		//if it's not the player's this, or it is the player's and there
 		//is no CWall, and no blowing up monitor, then play sound
 		if ((cType.laserInfo.parent.nType != OBJ_PLAYER) ||
 			 (((wallType == WHP_NOT_SPECIAL)) && !bBlewUp))
@@ -818,11 +818,11 @@ else {
 			}
 		}
 	}
-//	If this fired by CPlayerData or companion...
+//	If this fired by player or companion...
 if ((cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 	if (!(info.nFlags & OF_SILENT) &&
 		 (cType.laserInfo.parent.nObject == LOCALPLAYER.nObject))
-		CreateAwarenessEvent (this, PA_WEAPON_WALL_COLLISION);			// CObject "this" can attract attention to CPlayerData
+		CreateAwarenessEvent (this, PA_WEAPON_WALL_COLLISION);			// CObject "this" can attract attention to player
 
 //		if (info.nId != FLARE_ID) {
 //	We now allow flares to open doors.
@@ -990,12 +990,12 @@ if (!IsStatic ()) {
 				bTheftAttempt = 1;
 				}
 			else if (gameData.time.xGame - xLastThiefHitTime < I2X (2))
-				return 1;	//	ZOUNDS! BRILLIANT! Thief not Collide with CPlayerData if not stealing!
-								// NO! VERY DUMB! makes thief look very stupid if CPlayerData hits him while cloaked!-AP
+				return 1;	//	ZOUNDS! BRILLIANT! Thief not Collide with player if not stealing!
+								// NO! VERY DUMB! makes thief look very stupid if player hits him while cloaked!-AP
 			else
 				xLastThiefHitTime = gameData.time.xGame;
 			}
-		CreateAwarenessEvent (playerObjP, PA_PLAYER_COLLISION);			// CObject this can attract attention to CPlayerData
+		CreateAwarenessEvent (playerObjP, PA_PLAYER_COLLISION);			// CObject this can attract attention to player
 		if (USE_D1_AI) {
 			DoD1AIRobotHitAttack (this, playerObjP, &vHitPt);
 			DoD1AIRobotHit (this, WEAPON_ROBOT_COLLISION);
@@ -1043,7 +1043,7 @@ void CObject::ApplyDamageToReactor (fix xDamage, short nAttacker)
 {
 	int	whotype, i;
 
-	//	Only allow a CPlayerData to xDamage the control center.
+	//	Only allow a player to xDamage the control center.
 
 if ((nAttacker < 0) || (nAttacker > gameData.objs.nLastObject [0]))
 	return;
@@ -1103,7 +1103,7 @@ int CObject::CollidePlayerAndReactor (CObject* reactorP, CFixVector& vHitPt, CFi
 if (info.nId == gameData.multiplayer.nLocalPlayer) {
 	if (0 >= (i = FindReactor (reactorP)))
 		gameData.reactor.states [i].bHit = 1;
-	AIDoCloakStuff ();				//	In case CPlayerData cloaked, make control center know where he is.
+	AIDoCloakStuff ();				//	In case player cloaked, make control center know where he is.
 	}
 if (BumpTwoObjects (reactorP, this, 1, vHitPt))
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
@@ -1231,7 +1231,7 @@ StartEndLevelSequence (0);		//pretend we hit the exit CTrigger
 void DoFinalBossHacks (void)
 {
 if (gameStates.app.bPlayerIsDead) {
-	Int3 ();		//	Uh-oh, CPlayerData is dead.  Try to rescue him.
+	Int3 ();		//	Uh-oh, player is dead.  Try to rescue him.
 	gameStates.app.bPlayerIsDead = 0;
 	}
 if (LOCALPLAYER.Shield () <= 0)
@@ -1295,7 +1295,7 @@ if (ROBOTINFO (info.nId).companion) {
 	}
 SetTimeLastHit (gameStates.app.nSDLTicks [0]);
 info.xShield -= xDamage;
-//	Do unspeakable hacks to make sure CPlayerData doesn't die after killing boss.  Or before, sort of.
+//	Do unspeakable hacks to make sure player doesn't die after killing boss.  Or before, sort of.
 if (bIsBoss) {
 	if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) &&
 		 (missionManager.nCurrentLevel == missionManager.nLastLevel) &&
@@ -1660,7 +1660,7 @@ return 1;
 //--unused-- 	//	 (A fine edict, but in contradiction to the milestone: "Robots attack hostages.")
 //--unused-- 	hostage->info.xShield -= weaponP->info.xShield/2;
 //--unused--
-//--unused-- 	CreateAwarenessEvent (weaponP, WEAPON_ROBOT_COLLISION);			// CObject "weapon" can attract attention to CPlayerData
+//--unused-- 	CreateAwarenessEvent (weaponP, WEAPON_ROBOT_COLLISION);			// CObject "weapon" can attract attention to player
 //--unused--
 //--unused-- 	//PLAY_SOUND_3D (SOUND_HOSTAGE_KILLED, vHitPt, hostage->info.nSegment);
 //--unused-- 	audio.CreateSegmentSound (SOUND_HOSTAGE_KILLED, hostage->info.nSegment, 0, vHitPt);
@@ -1738,8 +1738,8 @@ return 1;
 
 void CObject::ApplyDamageToPlayer (CObject* killerObjP, fix damage)
 {
-CPlayerData *playerP = gameData.multiplayer.players + info.nId;
-CPlayerData *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? gameData.multiplayer.players + killerObjP->info.nId : NULL;
+CPlayerInfo *playerP = gameData.multiplayer.players + info.nId;
+CPlayerInfo *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? gameData.multiplayer.players + killerObjP->info.nId : NULL;
 if (gameStates.app.bPlayerIsDead)
 	return;
 
@@ -1767,7 +1767,7 @@ if (gameStates.app.bEndLevelSequence)
 
 gameData.multiplayer.bWasHit [info.nId] = -1;
 
-if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlayerData?
+if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local player?
 	if ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
 		double h = (double) playerP->netKillsTotal / (double) (killerP->netKillsTotal + 1);
 		if (h < 0.5)
@@ -1795,7 +1795,7 @@ int CObject::CollideWeaponAndPlayer (CObject* playerObjP, CFixVector& vHitPt, CF
 {
 	fix xDamage = info.xShield;
 
-	//	In multiplayer games, only do xDamage to another CPlayerData if in first frame.
+	//	In multiplayer games, only do xDamage to another player if in first frame.
 	//	This is necessary because in multiplayer, due to varying framerates, omega blobs actually
 	//	have a bit of a lifetime.  But they start out with a lifetime of ONE_FRAME_TIME, and this
 	//	gets bashed to 1/4 second in laser_doWeapon_sequence.  This bashing occurs for visual purposes only.
@@ -1884,7 +1884,7 @@ for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
 		CFixVector::Normalize (vExitDir);
 		}
 Bump (vExitDir, I2X (64));
-ApplyDamageToPlayer (this, I2X (4));	//	Changed, MK, 2/19/96, make killer the CPlayerData, so if you die in matcen, will say you killed yourself
+ApplyDamageToPlayer (this, I2X (4));	//	Changed, MK, 2/19/96, make killer the player, so if you die in matcen, will say you killed yourself
 return 1;
 }
 
@@ -2077,7 +2077,7 @@ return 1;
 
 int CObject::CollideWeaponAndDebris (CObject* debrisP, CFixVector& vHitPt, CFixVector* vNormal)
 {
-//	Hack! Prevent debrisP from causing bombs spewed at CPlayerData death to detonate!
+//	Hack! Prevent debrisP from causing bombs spewed at player death to detonate!
 if (IsMine ()) {
 	if (cType.laserInfo.xCreationTime + I2X (1)/2 > gameData.time.xGame)
 		return 1;

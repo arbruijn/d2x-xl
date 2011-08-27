@@ -1596,7 +1596,7 @@ return 1;
 
 ubyte dosControlType,winControlType;
 
-//read in the CPlayerData's saved games.  returns errno (0 == no error)
+//read in the player's saved games.  returns errno (0 == no error)
 int LoadPlayerProfile (int nStage)
 {
 if (profile.Busy ())
@@ -1762,7 +1762,7 @@ return i;
 }
 
 //------------------------------------------------------------------------------
-//set a new highest level for CPlayerData for this mission
+//set a new highest level for player for this mission
 void SetHighestLevel (ubyte nLevel)
 {
 int ret = LoadPlayerProfile (0);
@@ -1775,7 +1775,7 @@ if ((ret == EZERO) || (ret == ENOENT))	{	//if file doesn't exist, that's ok
 }
 
 //------------------------------------------------------------------------------
-//gets the CPlayerData's highest level from the file for this mission
+//gets the player's highest level from the file for this mission
 int GetHighestLevel(void)
 {
 	int i;
@@ -1799,7 +1799,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-//write out CPlayerData's saved games.  returns errno (0 == no error)
+//write out player's saved games.  returns errno (0 == no error)
 int SavePlayerProfile (void)
 {
 if (gameStates.app.bReadOnly)
@@ -1836,7 +1836,7 @@ return funcRes;
 }
 
 //------------------------------------------------------------------------------
-//update the CPlayerData's highest level.  returns errno (0 == no error)
+//update the player's highest level.  returns errno (0 == no error)
 int UpdatePlayerFile (void)
 {
 	int ret = LoadPlayerProfile (2);
@@ -1898,7 +1898,7 @@ for (;;) {
 		continue;
 		}
 	if (!NewPlayerConfig ())
-		continue;			// They hit Esc during New CPlayerData config
+		continue;			// They hit Esc during New player config
 	break;
 	}
 strncpy (LOCALPLAYER.callsign, text, CALLSIGN_LEN);
@@ -1909,7 +1909,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-//Inputs the CPlayerData's name, without putting up the background screen
+//Inputs the player's name, without putting up the background screen
 int SelectPlayer (void)
 {
 	static int bStartup = 1;
@@ -1938,7 +1938,7 @@ if (LOCALPLAYER.callsign [0] == 0) {
 	KCSetControls (0);
 	//----------------------------------------------------------------
 
-	// Read the last CPlayerData's name from config file, not lastplr.txt
+	// Read the last player's name from config file, not lastplr.txt
 	strncpy (LOCALPLAYER.callsign, gameConfig.szLastPlayer, CALLSIGN_LEN);
 	if (gameConfig.szLastPlayer [0] == 0)
 		bAllowAbort = 0;

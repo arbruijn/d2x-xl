@@ -370,14 +370,14 @@ else {
 }
 
 //------------------------------------------------------------------------------
-//make object0 the CPlayerData, setting all relevant fields
+//make object0 the player, setting all relevant fields
 void InitPlayerObject (void)
 {
 gameData.objs.consoleP->SetType (OBJ_PLAYER, false);
-gameData.objs.consoleP->info.nId = 0;					//no sub-types for CPlayerData
-gameData.objs.consoleP->info.nSignature = 0;			//CPlayerData has zero, others start at 1
+gameData.objs.consoleP->info.nId = 0;					//no sub-types for player
+gameData.objs.consoleP->info.nSignature = 0;			//player has zero, others start at 1
 gameData.objs.consoleP->info.xSize = gameData.models.polyModels [0][gameData.pig.ship.player->nModel].Rad ();
-gameData.objs.consoleP->info.controlType = CT_SLEW;			//default is CPlayerData slewing
+gameData.objs.consoleP->info.controlType = CT_SLEW;			//default is player slewing
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;		//change this sometime
 gameData.objs.consoleP->SetLife (IMMORTAL_TIME);
 gameData.objs.consoleP->info.nAttachedObj = -1;

@@ -191,7 +191,7 @@ networkData.nStatus = NETSTAT_STARTING;
 IpxInitNetGameAuxData (netGame.AuxData ());
 NetworkSetGameMode (netGame.m_info.gameMode);
 d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
-netGame.m_info.nSecurity = RandShort ();  // For syncing NetGames with CPlayerData packets
+netGame.m_info.nSecurity = RandShort ();  // For syncing NetGames with player packets
 if (NetworkSelectPlayers (bAutoRun)) {
 	missionManager.DeleteLevelStates ();
 	missionManager.SaveLevelStates ();
@@ -273,7 +273,7 @@ while (IpxGetPacketData (packet) > 0)
 
 void NetworkTimeoutPlayer (int nPlayer)
 {
-	// Remove a CPlayerData from the game if we haven't heard from them in 
+	// Remove a player from the game if we haven't heard from them in 
 	// a long time.
 	int i, n = 0;
 
@@ -460,7 +460,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 
 	if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 		fix t = (fix) SDL_GetTicks ();
-	// Check for CPlayerData timeouts
+	// Check for player timeouts
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((i != gameData.multiplayer.nLocalPlayer) && 
 				((gameData.multiplayer.players [i].connected == 1) || downloadManager.Downloading (i))) {

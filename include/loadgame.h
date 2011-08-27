@@ -27,7 +27,7 @@ extern tObjPosition Player_init[MAX_PLAYERS];
 extern int bPlayerIsTyping [MAX_PLAYERS];
 extern int nTypingTimeout;
 #endif
-// This is the highest level the CPlayerData has ever reached
+// This is the highest level the player has ever reached
 //
 // New game sequencing functions
 //
@@ -50,11 +50,11 @@ void GameStartInitNetworkPlayers (void);
 // starts a resumed game loaded from disk
 void ResumeSavedGame (int startLevel);
 
-// called when the CPlayerData has finished a level
+// called when the player has finished a level
 // if secret flag is true, advance to secret level, else next normal level
 void PlayerFinishedLevel (int secretFlag);
 
-// called when the CPlayerData has died
+// called when the player has died
 void DoPlayerDead (void);
 
 void SetPosFromReturnSegment (int bRelink);
@@ -75,7 +75,7 @@ void UpdatePlayerStats (void);
 
 void show_high_scores(int place);
 void draw_high_scores(int place);
-int add_player_to_high_scores(CPlayerData *playerP);
+int add_player_to_high_scores(CPlayerInfo *playerP);
 void input_name (int place);
 int reset_high_scores();
 

@@ -1359,6 +1359,7 @@ int NetworkGetIpAddr (bool bServer, bool bUDP)
 	int	h, i, j, choice = 0;
 	int	nServer = -1, optCheckPort, nPort [2] = {-1, -1};
 	bool	bError;
+	char	szId [100];
 
 	static char szPort [2][7] = {{'\0','\0','\0','\0','\0','\0','\0'}, {'\0','\0','\0','\0','\0','\0','\0'}};
 	static int nSign = 0;
@@ -1395,7 +1396,8 @@ for (i = j; i < h; i++) {
 		mpParams.udpPorts [i] = UDP_BASEPORT;
 	sprintf (szPort [i], "%u", mpParams.udpPorts [i]);
 	m.AddText ("", GT (1100 + i));
-	nPort [i] = m.AddInput ("client addr", szPort [i], sizeof (szPort [i]) - 1, HTX_GETIP_CLIENT);
+	sprintf (szId, "client addr %d", i);
+	nPort [i] = m.AddInput (szId, szPort [i], sizeof (szPort [i]) - 1, HTX_GETIP_CLIENT);
 	}
 
 m.AddText ("", TXT_PORT_HELP1, 0);

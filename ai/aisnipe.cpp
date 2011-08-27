@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //	-----------------------------------------------------------------------------
-// Make a robot near the CPlayerData snipe.
+// Make a robot near the player snipe.
 #define	MNRS_SEG_MAX	70
 
 void MakeNearbyRobotSnipe (void)

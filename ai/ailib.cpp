@@ -40,7 +40,7 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 //		0		Player is not visible from object, obstruction or something.
 //		1		Player is visible, but not in field of view.
 //		2		Player is visible and in field of view.
-//	Note: Uses gameData.ai.target.vBelievedPos as CPlayerData's position for cloak effect.
+//	Note: Uses gameData.ai.target.vBelievedPos as player's position for cloak effect.
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
 int AICanSeeTarget (CObject *objP, CFixVector *vPos, fix fieldOfView, CFixVector *vVecToTarget)
 {
@@ -151,13 +151,13 @@ if ((xMaxVisibleDist > 0) && (gameData.ai.target.xDist > xMaxVisibleDist) && (ai
 // --------------------------------------------------------------------------------------------------------------------
 //	Note: This function could be optimized.  Surely AICanSeeTarget would benefit from the
 //	information of a normalized gameData.ai.target.vDir.
-//	Return CPlayerData visibility:
+//	Return player visibility:
 //		0		not visible
-//		1		visible, but robot not looking at CPlayerData (ie, on an unobstructed vector)
+//		1		visible, but robot not looking at player (ie, on an unobstructed vector)
 //		2		visible and in robot's field of view
-//		-1		CPlayerData is cloaked
-//	If the CPlayerData is cloaked, set gameData.ai.target.vDir based on time CPlayerData cloaked and last uncloaked position.
-//	Updates ailP->nPrevVisibility if CPlayerData is not cloaked, in which case the previous visibility is left unchanged
+//		-1		player is cloaked
+//	If the player is cloaked, set gameData.ai.target.vDir based on time player cloaked and last uncloaked position.
+//	Updates ailP->nPrevVisibility if player is not cloaked, in which case the previous visibility is left unchanged
 //	and is copied to gameData.ai.nTargetVisibility
 void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, tRobotInfo *botInfoP, int *flag, fix xMaxVisibleDist)
 {
@@ -299,9 +299,9 @@ if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
 	if (wallP->nType != WALL_DOOR) /*&& (wallP->nType != WALL_CLOSED))*/
 		return 1;
 
-	//	If Buddy is returning to CPlayerData, don't let him think he can get through triggered doors.
-	//	It's only valid to think that if the CPlayerData is going to get him through.  But if he's
-	//	going to the CPlayerData, the CPlayerData is probably on the opposite CSide.
+	//	If Buddy is returning to player, don't let him think he can get through triggered doors.
+	//	It's only valid to think that if the player is going to get him through.  But if he's
+	//	going to the player, the player is probably on the opposite CSide.
 	if (objP)
 		ailp_mode = gameData.ai.localInfo [objP->Index ()].mode;
 	else if (gameData.escort.nObjNum >= 0)
@@ -361,7 +361,7 @@ else if ((objP->info.nId == ROBOT_BRAIN) || (objP->cType.aiInfo.behavior == AIB_
 	if (wallP) {
 		if ((wallP->nType == WALL_DOOR) && (wallP->keys == KEY_NONE) && !(wallP->flags & WALL_DOOR_LOCKED))
 			return 1;
-		else if (wallP->keys != KEY_NONE) {	//	Allow bots to open doors to which CPlayerData has keys.
+		else if (wallP->keys != KEY_NONE) {	//	Allow bots to open doors to which player has keys.
 			if (wallP->keys & LOCALPLAYER.flags)
 				return 1;
 			}
@@ -371,7 +371,7 @@ return 0;
 }
 
 // -- // --------------------------------------------------------------------------------------------------------------------
-// -- //	Return true if a special CObject (CPlayerData or control center) is in this CSegment.
+// -- //	Return true if a special CObject (player or control center) is in this CSegment.
 // -- int specialObject_in_seg (int nSegment)
 // -- {
 // -- 	int	nObject;
@@ -406,7 +406,7 @@ return 0;
 // -- }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Return true if placing an CObject of size size at pos *pos intersects a (CPlayerData or robot or control center) in CSegment *segP.
+//	Return true if placing an CObject of size size at pos *pos intersects a (player or robot or control center) in CSegment *segP.
 int CheckObjectObjectIntersection (CFixVector *pos, fix size, CSegment *segP)
 {
 //	If this would intersect with another CObject (only check those in this CSegment), then try to move.

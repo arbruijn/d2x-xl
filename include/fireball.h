@@ -28,7 +28,7 @@ CObject *CreateSplashDamageExplosion (CObject* parentObjP, short nSegment,
 
 // blows up a splash damage weapon, creating the splash damage explosion
 // return the explosion CObject
-// blows up the CPlayerData with a splash damage explosion
+// blows up the player with a splash damage explosion
 // return the explosion CObject
 void DoDebrisFrame (CObject* objP);      // deal with debris for this frame
 void DrawFireball (CObject* objP);

@@ -68,8 +68,8 @@ else {
 }
 
 // ----------------------------------------------------------------------------------
-//	When some robots collide with the CPlayerData, they attack.
-//	If CPlayerData is cloaked, then robot probably didn't actually collide, deal with that here.
+//	When some robots collide with the player, they attack.
+//	If player is cloaked, then robot probably didn't actually collide, deal with that here.
 void DoAIRobotHitAttack (CObject *robotP, CObject *targetP, CFixVector *vCollision)
 {
 	tAILocalInfo	*ailP = gameData.ai.localInfo + OBJ_IDX (robotP);
@@ -79,7 +79,7 @@ if (!gameStates.app.cheats.bRobotsFiring)
 	return;
 if (robotP->IsStatic ())
 	return;
-//	If CPlayerData is dead, stop firing.
+//	If player is dead, stop firing.
 if (OBJECTS [LOCALPLAYER.nObject].info.nType == OBJ_GHOST)
 	return;
 if (botInfoP->attackType != 1)
@@ -107,14 +107,14 @@ SetNextFireTime (robotP, ailP, botInfoP, 1);	//	1 = nGun: 0 is special (uses nex
 #define	LEAD_RANGE			 (I2X (1)/2)
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Computes point at which projectile fired by robot can hit CPlayerData given positions, CPlayerData vel, elapsed time
+//	Computes point at which projectile fired by robot can hit player given positions, player vel, elapsed time
 inline fix ComputeLeadComponent (fix vTarget, fix vAttacker, fix player_vel, fix elapsedTime)
 {
 return FixDiv (vTarget - vAttacker, elapsedTime) + player_vel;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Lead the CPlayerData, returning point to fire at in vFirePoint.
+//	Lead the player, returning point to fire at in vFirePoint.
 //	Rules:
 //		Player not cloaked
 //		Player must be moving at a speed >= MIN_LEAD_SPEED
@@ -214,7 +214,7 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 	if ((i < 0) || (gameData.bosses [i].m_nDyingStartTime))
 		return;
 	}
-//	If CPlayerData is cloaked, maybe don't fire based on how long cloaked and randomness.
+//	If player is cloaked, maybe don't fire based on how long cloaked and randomness.
 if (TARGETOBJ->Cloaked ()) {
 	fix	xCloakTime = gameData.ai.cloakInfo [nObject % MAX_AI_CLOAK_INFO].lastTime;
 	if ((gameData.time.xGame - xCloakTime > CLOAK_TIME_MAX / 4) &&
@@ -341,7 +341,7 @@ void DoFiringStuff (CObject *objP, int nTargetVisibility, CFixVector *vVecToTarg
 {
 if ((gameData.ai.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) ||
 	 (gameData.ai.nTargetVisibility >= 1)) {
-	//	Now, if in robot's field of view, lock onto CPlayerData
+	//	Now, if in robot's field of view, lock onto player
 	fix dot = CFixVector::Dot (objP->info.position.mOrient.m.dir.f, gameData.ai.target.vDir);
 	if ((dot >= I2X (7) / 8) || TARGETOBJ->Cloaked ()) {
 		tAIStaticInfo*	aiP = &objP->cType.aiInfo;
@@ -386,7 +386,7 @@ if (objP->cType.aiInfo.behavior != AIB_STILL)
 int r = RandShort ();
 //	Attack robots (eg, green guy) shouldn't have behavior = still.
 //Assert (ROBOTINFO (objP->info.nId).attackType == 0);
-//	1/8 time, charge CPlayerData, 1/4 time create path, rest of time, do nothing
+//	1/8 time, charge player, 1/4 time create path, rest of time, do nothing
 if (r < 4096) {
 	CreatePathToTarget (objP, 10, 1);
 	objP->cType.aiInfo.behavior = AIB_STATION;
@@ -418,7 +418,7 @@ return 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	If fire_anyway, fire even if CPlayerData is not visible.  We're firing near where we believe him to be.  Perhaps he's
+//	If fire_anyway, fire even if player is not visible.  We're firing near where we believe him to be.  Perhaps he's
 //	lurking behind a corner.
 void AIDoActualFiringStuff (CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int nGun)
 {
@@ -429,7 +429,7 @@ if ((gameData.ai.nTargetVisibility == 2) ||
 	CFixVector vFirePos = gameData.ai.target.vBelievedPos;
 
 	//	Hack: If visibility not == 2, we're here because we're firing at a nearby player.
-	//	So, fire at gameData.ai.target.vLastPosFiredAt instead of the CPlayerData position.
+	//	So, fire at gameData.ai.target.vLastPosFiredAt instead of the player position.
 	if (!botInfoP->attackType && (gameData.ai.nTargetVisibility != 2))
 		vFirePos = gameData.ai.target.vLastPosFiredAt;
 

@@ -161,11 +161,11 @@ void DoThiefFrame (CObject *objP)
 						ailp->targetAwarenessType = 0;
 						CreateNSegmentPath (objP, 10, gameData.objs.consoleP->info.nSegment);
 
-						//	If path is real short, try again, allowing to go through CPlayerData's CSegment
+						//	If path is real short, try again, allowing to go through player's CSegment
 						if (aip->nPathLength < 4) {
 							CreateNSegmentPath (objP, 10, -1);
 						} else if (objP->info.xShield * 4 < ROBOTINFO (objP->info.nId).strength) {
-							//	If robot really low on hits, will run through CPlayerData with even longer path
+							//	If robot really low on hits, will run through player with even longer path
 							if (aip->nPathLength < 8) {
 								CreateNSegmentPath (objP, 10, -1);
 							}
@@ -198,7 +198,7 @@ void DoThiefFrame (CObject *objP)
 				ailp->mode = AIM_THIEF_ATTACK;
 			} else {
 				if (gameData.ai.nTargetVisibility && (gameData.ai.target.xDist < I2X (100))) {
-					//	If the CPlayerData is close to looking at the thief, thief shall run away.
+					//	If the player is close to looking at the thief, thief shall run away.
 					//	No more stupid thief trying to sneak up on you when you're looking right at him!
 					if (gameData.ai.target.xDist > I2X (60)) {
 						fix dot = CFixVector::Dot (gameData.ai.target.vDir, OBJPOS (gameData.objs.consoleP)->mOrient.m.dir.f);
@@ -348,7 +348,7 @@ int MaybeStealPrimaryWeapon (int nPlayer, int nWeapon)
 //	----------------------------------------------------------------------------
 //	Called for a thief-nType robot.
 //	If a item successfully stolen, returns true, else returns false.
-//	If a wapon successfully stolen, do everything, removing it from CPlayerData,
+//	If a wapon successfully stolen, do everything, removing it from player,
 //	updating gameData.thief.stolenItems information, deselecting, etc.
 int AttemptToStealItem3(CObject *objP, int nPlayer)
 {
@@ -375,7 +375,7 @@ int AttemptToStealItem3(CObject *objP, int nPlayer)
 	if (MaybeStealSecondaryWeapon (nPlayer, gameData.weapons.nSecondary))
 		return 1;
 
-	//	See what the CPlayerData has and try to snag something.
+	//	See what the player has and try to snag something.
 	//	Try best things first.
 	if (MaybeStealFlagItem (nPlayer, PLAYER_FLAGS_INVULNERABLE))
 		return 1;
@@ -423,7 +423,7 @@ int AttemptToStealItem2(CObject *objP, int nPlayer)
 //	----------------------------------------------------------------------------
 //	Called for a thief-nType robot.
 //	If a item successfully stolen, returns true, else returns false.
-//	If a wapon successfully stolen, do everything, removing it from CPlayerData,
+//	If a wapon successfully stolen, do everything, removing it from player,
 //	updating gameData.thief.stolenItems information, deselecting, etc.
 int AttemptToStealItem (CObject *objP, int nPlayer)
 {

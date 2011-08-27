@@ -81,22 +81,22 @@ typedef struct tRobotInfo {
 	fix     strength;       // Initial shield of robot
 	fix     mass;           // how heavy is this thing?
 	fix     drag;           // how much drag does it have?
-	fix     fieldOfView[NDL]; // compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see CPlayerData
+	fix     fieldOfView[NDL]; // compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see player
 	fix     primaryFiringWait[NDL];   //  time in seconds between shots
 	fix     secondaryFiringWait[NDL];  //  time in seconds between shots
 	fix     turnTime [NDL];     // time in seconds to rotate 360 degrees in a dimension
 // -- unused, mk, 05/25/95  fix fire_power[NDL];    //  damage done by a hit from this robot
 // -- unused, mk, 05/25/95  fix shield[NDL];        //  shield strength of this robot
 	fix     xMaxSpeed[NDL];         //  maximum speed attainable by this robot
-	fix     circleDistance [NDL];   //  distance at which robot circles CPlayerData
+	fix     circleDistance [NDL];   //  distance at which robot circles player
 
 	sbyte   nRapidFireCount[NDL];   //  number of shots fired rapidly
 	sbyte   evadeSpeed[NDL];       //  rate at which robot can evade shots, 0=none, 4=very fast
 	sbyte   cloakType;     //  0=never, 1=always, 2=except-when-firing
 	sbyte   attackType;    //  0=firing, 1=charge (like green guy)
 
-	ubyte   seeSound;      //  sound robot makes when it first sees the CPlayerData
-	ubyte   attackSound;   //  sound robot makes when it attacks the CPlayerData
+	ubyte   seeSound;      //  sound robot makes when it first sees the player
+	ubyte   attackSound;   //  sound robot makes when it attacks the player
 	ubyte   clawSound;     //  sound robot makes as it claws you (attackType should be 1)
 	ubyte   tauntSound;    //  sound robot makes after you die
 
@@ -106,7 +106,7 @@ typedef struct tRobotInfo {
 	sbyte   energyBlobs;   //  how many smart blobs are emitted when this guy gets hit by energy weapon!
 
 	sbyte   thief;          //  !0 means this guy can steal when he collides with you!
-	sbyte   pursuit;        //  !0 means pursues CPlayerData after he goes around a corner.  4 = 4/2 pursue up to 4/2 seconds after becoming invisible if up to 4 segments away
+	sbyte   pursuit;        //  !0 means pursues player after he goes around a corner.  4 = 4/2 pursue up to 4/2 seconds after becoming invisible if up to 4 segments away
 	sbyte   lightcast;      //  Amount of light cast. 1 is default.  10 is very large.
 	sbyte   bDeathRoll;     //  0 = dies without death roll. !0 means does death roll, larger = faster and louder
 	sbyte   bEndsLevel;
@@ -148,21 +148,21 @@ typedef struct D1Robot_info {
 	fix		mass;										// how heavy is this thing?
 	fix		drag;										// how much drag does it have?
 
-	fix		fieldOfView[NDL];						// compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see CPlayerData
+	fix		fieldOfView[NDL];						// compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see player
 	fix		primaryFiringWait[NDL];				//	time in seconds between shots
 	fix		turnTime [NDL];						// time in seconds to rotate 360 degrees in a dimension
 	fix		fire_power[NDL];						//	damage done by a hit from this robot
 	fix		shield[NDL];							//	shield strength of this robot
 	fix		xMaxSpeed[NDL];						//	maximum speed attainable by this robot
-	fix		circleDistance [NDL];				//	distance at which robot circles CPlayerData
+	fix		circleDistance [NDL];				//	distance at which robot circles player
 
 	sbyte		nRapidFireCount[NDL];				//	number of shots fired rapidly
 	sbyte		evadeSpeed[NDL];						//	rate at which robot can evade shots, 0=none, 4=very fast
 	sbyte		cloakType;								//	0=never, 1=always, 2=except-when-firing
 	sbyte		attackType;								//	0=firing, 1=charge (like green guy)
 	sbyte		bossFlag;								//	0 = not boss, 1 = boss.  Is that surprising?
-	ubyte		seeSound;								//	sound robot makes when it first sees the CPlayerData
-	ubyte		attackSound;							//	sound robot makes when it attacks the CPlayerData
+	ubyte		seeSound;								//	sound robot makes when it first sees the player
+	ubyte		attackSound;							//	sound robot makes when it attacks the player
 	ubyte		clawSound;								//	sound robot makes as it claws you (attackType should be 1)
 
 	//animation info

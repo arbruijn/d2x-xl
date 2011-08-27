@@ -744,7 +744,7 @@ if (!setjmp (gameExitPoint)) {
 			if (c == KEY_ALTED + KEY_CTRLED + KEY_ESC)
 				gameStates.app.bSingleStep = 0;
 			}
-		//if the CPlayerData is taking damage, give up guided missile control
+		//if the player is taking damage, give up guided missile control
 		if (LOCALPLAYER.Shield () != playerShield)
 			ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);
 		//see if redbook song needs to be restarted
@@ -1209,7 +1209,7 @@ playerP->CollidePlayerAndPowerup (powerupP, vCollision);
 //	For all powerups in this CSegment, pick them up at up to twice pickuppable distance based on dot product
 //	from CPlayerData to powerup and CPlayerData's forward vector.
 //	This has the effect of picking them up more easily left/right and up/down, but not making them disappear
-//	way before the CPlayerData gets there.
+//	way before the player gets there.
 void PowerupGrabCheatAll (void)
 {
 if (gameStates.app.tick40fps.bTick) {

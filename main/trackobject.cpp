@@ -127,7 +127,7 @@ if (nTarget == -1)
 if (IsCoopGame)
 	return 0;
 CObject* targetP = OBJECTS + nTarget;
-//	Don't track CPlayerData if he's cloaked.
+//	Don't track player if he's cloaked.
 if ((nTarget == LOCALPLAYER.nObject) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	return 0;
 //	Can't track AI CObject if he's cloaked.
@@ -330,15 +330,15 @@ if (ObjectIsTrackable (nTarget, dot)) {
 	}
 
 if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
-	//	If CPlayerData fired missile, then search for an CObject, if not, then give up.
+	//	If player fired missile, then search for an CObject, if not, then give up.
 	if (OBJECTS [cType.laserInfo.parent.nObject].Type () == OBJ_PLAYER) {
 		if (nTarget == -1) {
 			if (IsMultiGame) {
 				if (IsCoopGame)
 					rVal = FindAnyHomingTarget (Position (), OBJ_ROBOT, -1, nThread);
-				else if (gameData.app.nGameMode & GM_MULTI_ROBOTS)		//	Not cooperative, if robots, track either robot or CPlayerData
+				else if (gameData.app.nGameMode & GM_MULTI_ROBOTS)		//	Not cooperative, if robots, track either robot or player
 					rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, OBJ_ROBOT, nThread);
-				else		//	Not cooperative and no robots, track only a CPlayerData
+				else		//	Not cooperative and no robots, track only a player
 					rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, -1, nThread);
 				}
 			else

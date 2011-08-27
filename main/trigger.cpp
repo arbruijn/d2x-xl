@@ -742,7 +742,7 @@ if ((nObject >= 0) && (m_nLinks > 0)) {
 	i = RandShort () % m_nLinks;
 	nSegment = m_segments [i];
 	nSide = m_sides [i];
-	// set new CPlayerData direction, facing the destination nSide
+	// set new player direction, facing the destination nSide
 	TriggerSetObjOrient (nObject, nSegment, nSide, 1, 0);
 	TriggerSetObjPos (nObject, nSegment);
 	gameStates.render.bDoAppearanceEffect = 1;

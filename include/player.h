@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_SHIP_TYPES		3
 
-// Initial CPlayerData stat values
+// Initial player stat values
 #define INITIAL_ENERGY  I2X(100)    // 100% energy to start
 #define INITIAL_SHIELD	I2X(100)    // 100% shield to start
 
@@ -60,11 +60,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AFTERBURNER_MAX_TIME    		I2X (5)    // Max time afterburner can be on.
 #define CALLSIGN_LEN                8       // so can use as filename (was: 12)
 
-// Amount of time CPlayerData is cloaked.
+// Amount of time player is cloaked.
 #define CLOAK_TIME_MAX          I2X (30)
 #define INVULNERABLE_TIME_MAX   I2X (30)
 
-#define PLAYER_STRUCT_VERSION   17  // increment this every time CPlayerData struct changes
+#define PLAYER_STRUCT_VERSION   17  // increment this every time player struct changes
 
 void MultiSendShield (void);
 
@@ -147,10 +147,10 @@ class __pack__ CShipEnergy {
 class CPlayerInfo {
 	public:
 		// Who am I data
-		char    callsign [CALLSIGN_LEN+1];  // The callsign of this CPlayerData, for net purposes.
-		ubyte   netAddress[6];					// The network address of the CPlayerData.
-		sbyte   connected;						// Is the CPlayerData connected or not?
-		int     nObject;						   // What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
+		char    callsign [CALLSIGN_LEN+1];  // The callsign of this player, for net purposes.
+		ubyte   netAddress[6];					// The network address of the player.
+		sbyte   connected;						// Is the player connected or not?
+		int     nObject;						   // What CObject number this player is. (made an int by mk because it's very often referenced)
 		int     nPacketsGot;					   // How many packets we got from them
 		int     nPacketsSent;					// How many packets we sent to them
 
@@ -161,12 +161,12 @@ class CPlayerInfo {
 		fix     energy;						// Amount of energy remaining.
 		fix     shield;						// shield remaining (protection)
 		ubyte   lives;							// Lives remaining, 0 = game over.
-		sbyte   level;							// Current level CPlayerData is playing. (must be signed for secret levels)
+		sbyte   level;							// Current level player is playing. (must be signed for secret levels)
 		ubyte   laserLevel;					// Current level of the laser.
-		sbyte   startingLevel;				// What level the CPlayerData started on.
+		sbyte   startingLevel;				// What level the player started on.
 		short   nKillerObj;					// Who killed me.... (-1 if no one)
-		ushort  primaryWeaponFlags;		// bit set indicates the CPlayerData has this weapon.
-		ushort  secondaryWeaponFlags;		// bit set indicates the CPlayerData has this weapon.
+		ushort  primaryWeaponFlags;		// bit set indicates the player has this weapon.
+		ushort  secondaryWeaponFlags;		// bit set indicates the player has this weapon.
 		ushort  primaryAmmo [MAX_PRIMARY_WEAPONS]; // How much ammo of each nType.
 		ushort  secondaryAmmo [MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
 	#if 1 //for inventory system
@@ -257,10 +257,10 @@ class __pack__ CPlayerData : public CPlayerInfo {
 
 typedef struct player16 {
 	// Who am I data
-	char    callsign[CALLSIGN_LEN+1]; // The callsign of this CPlayerData, for net purposes.
-	ubyte   netAddress[6];         // The network address of the CPlayerData.
-	sbyte   connected;              // Is the CPlayerData connected or not?
-	int     nObject;                 // What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
+	char    callsign[CALLSIGN_LEN+1]; // The callsign of this player, for net purposes.
+	ubyte   netAddress[6];         // The network address of the player.
+	sbyte   connected;              // Is the player connected or not?
+	int     nObject;                 // What CObject number this player is. (made an int by mk because it's very often referenced)
 	int     nPacketsGot;          // How many packets we got from them
 	int     nPacketsSent;         // How many packets we sent to them
 
@@ -271,12 +271,12 @@ typedef struct player16 {
 	fix     energy;                 // Amount of energy remaining.
 	fix     shield;                // shield remaining (protection)
 	ubyte   lives;                  // Lives remaining, 0 = game over.
-	sbyte   level;                  // Current level CPlayerData is playing. (must be signed for secret levels)
+	sbyte   level;                  // Current level player is playing. (must be signed for secret levels)
 	ubyte   laserLevel;            // Current level of the laser.
-	sbyte   startingLevel;         // What level the CPlayerData started on.
+	sbyte   startingLevel;         // What level the player started on.
 	short   nKillerObj;          // Who killed me.... (-1 if no one)
-	ubyte   primaryWeaponFlags;   // bit set indicates the CPlayerData has this weapon.
-	ubyte   secondaryWeaponFlags; // bit set indicates the CPlayerData has this weapon.
+	ubyte   primaryWeaponFlags;   // bit set indicates the player has this weapon.
+	ubyte   secondaryWeaponFlags; // bit set indicates the player has this weapon.
 	ushort  primaryAmmo[MAX_PRIMARY_WEAPONS16];    // How much ammo of each nType.
 	ushort  secondaryAmmo[MAX_SECONDARY_WEAPONS16];// How much ammo of each nType.
 

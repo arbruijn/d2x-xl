@@ -161,7 +161,7 @@ sbyte aiTransitionTable [AI_MAX_EVENT][AI_MAX_STATE][AI_MAX_STATE] = {
 	 { AIS_ERROR, AIS_LOCK, AIS_LOCK, AIS_LOCK, AIS_FLINCH, AIS_FIRE, AIS_FIRE}
 	},
 
-	// Event = AIE_COLLIDE, CPlayerData collided with robot
+	// Event = AIE_COLLIDE, player collided with robot
  {
 	 { AIS_ERROR, AIS_LOCK, AIS_LOCK, AIS_LOCK, AIS_FLINCH, AIS_FIRE, AIS_RECOVER},
 	 { AIS_ERROR, AIS_LOCK, AIS_LOCK, AIS_LOCK, AIS_FLINCH, AIS_FIRE, AIS_RECOVER},
@@ -183,7 +183,7 @@ sbyte aiTransitionTable [AI_MAX_EVENT][AI_MAX_STATE][AI_MAX_STATE] = {
 	 { AIS_ERROR, AIS_LOCK, AIS_LOCK, AIS_LOCK, AIS_FLINCH, AIS_FIRE, AIS_FIRE}
 	},
 
-	// Event = AIE_HURT, CPlayerData hurt robot (by firing at and hitting it)
+	// Event = AIE_HURT, player hurt robot (by firing at and hitting it)
 	// Note, this doesn't necessarily mean the robot JUST got hit, only that that is the most recent thing that happened.
  {
 	 { AIS_ERROR, AIS_FLINCH, AIS_FLINCH, AIS_FLINCH, AIS_FLINCH, AIS_FLINCH, AIS_FLINCH},
@@ -301,7 +301,7 @@ if ((gameData.ai.nTargetVisibility < 2) && (siP->nPrevVisibility == 2)) {
 	AIMultiSendRobotPos (siP->nObject, -1);
 	}
 else if (!gameData.ai.nTargetVisibility && (gameData.ai.target.xDist > MAX_CHASE_DIST) && !siP->bMultiGame) {
-	// If pretty far from the CPlayerData, CPlayerData cannot be seen
+	// If pretty far from the player, player cannot be seen
 	// (obstructed) and in chase mode, switch to follow path mode.
 	// This has one desirable benefit of avoiding physics retries.
 	if (aiP->behavior == AIB_STATION) {
@@ -333,8 +333,8 @@ if (gameData.time.xGame - siP->ailP->timeTargetSeen > CHASE_TIME_LENGTH) {
 			AIDoActualFiringStuff (objP, aiP, siP->ailP, siP->botInfoP, aiP->CURRENT_GUN);
 		return 1;
 		}
-	// -- bad idea, robots charge CPlayerData they've never seen!-- CreatePathToTarget (objP, 10, 1);
-	// -- bad idea, robots charge CPlayerData they've never seen!-- AIMultiSendRobotPos (siP->nObject, -1);
+	// -- bad idea, robots charge player they've never seen!-- CreatePathToTarget (objP, 10, 1);
+	// -- bad idea, robots charge player they've never seen!-- AIMultiSendRobotPos (siP->nObject, -1);
 	}
 else if ((aiP->CURRENT_STATE != AIS_REST) && (aiP->GOAL_STATE != AIS_REST)) {
 	if (!AIMultiplayerAwareness (objP, 70)) {
@@ -368,7 +368,7 @@ if (gameData.ai.nTargetVisibility) {
 	if (siP->ailP->targetAwarenessType == 0)
 		siP->ailP->targetAwarenessType = PA_RETURN_FIRE;
 	}
-// If in multiplayer, only do if CPlayerData visible.  If not multiplayer, do always.
+// If in multiplayer, only do if player visible.  If not multiplayer, do always.
 if (!(siP->bMultiGame) || gameData.ai.nTargetVisibility)
 	if (AIMultiplayerAwareness (objP, 75)) {
 		AIFollowPath (objP, gameData.ai.nTargetVisibility, siP->nPrevVisibility, &gameData.ai.target.vDir);
@@ -379,10 +379,10 @@ if (aiP->GOAL_STATE != AIS_FLINCH)
 else if (aiP->CURRENT_STATE == AIS_FLINCH)
 	aiP->GOAL_STATE = AIS_LOCK;
 
-// Bad to let run_from robot fire at CPlayerData because it will cause a war in which it turns towards the CPlayerData
+// Bad to let run_from robot fire at player because it will cause a war in which it turns towards the player
 // to fire and then towards its goal to move. DoFiringStuff (objP, gameData.ai.nTargetVisibility, &gameData.ai.target.vDir);
 // Instead, do this:
-// (Note, only drop if CPlayerData is visible.  This prevents the bombs from being a giveaway, and also ensures that
+// (Note, only drop if player is visible.  This prevents the bombs from being a giveaway, and also ensures that
 // the robot is moving while it is dropping.  Also means fewer will be dropped.)
 if ((siP->ailP->nextPrimaryFire <= 0) && (gameData.ai.nTargetVisibility)) {
 	CFixVector fire_vec, fire_pos;
@@ -405,7 +405,7 @@ return 0;
 
 int AIMGotoHandler2 (CObject *objP, tAIStateInfo *siP)
 {
-AIFollowPath (objP, 2, siP->nPrevVisibility, &gameData.ai.target.vDir);    // Follows path as if CPlayerData can see robot.
+AIFollowPath (objP, 2, siP->nPrevVisibility, &gameData.ai.target.vDir);    // Follows path as if player can see robot.
 AIMultiSendRobotPos (siP->nObject, -1);
 return 0;
 }
@@ -461,7 +461,7 @@ if ((gameData.ai.nTargetVisibility == 2) &&
 		(aiP->behavior != AIB_RUN_FROM)) {
 	if (siP->botInfoP->attackType == 0)
 		siP->ailP->mode = AIM_CHASE_OBJECT;
-	// This should not just be distance based, but also time-since-CPlayerData-seen based.
+	// This should not just be distance based, but also time-since-player-seen based.
 	}
 else if ((gameData.ai.target.xDist > MAX_PURSUIT_DIST (siP->botInfoP))
 			&& (gameData.time.xGame - siP->ailP->timeTargetSeen > ((I2X (1) / 2) * (gameStates.app.nDifficultyLevel + siP->botInfoP->pursuit)))
@@ -582,7 +582,7 @@ if ((gameData.ai.target.xDist < MAX_WAKEUP_DIST) || (siP->ailP->targetAwarenessT
 			}
 		}
 	else if ((objP->info.nSegment != siP->aiP->nHideSegment) && (gameData.ai.target.xDist > MAX_CHASE_DIST) && !siP->bMultiGame) {
-		// If pretty far from the CPlayerData, CPlayerData cannot be
+		// If pretty far from the player, player cannot be
 		// seen (obstructed) and in chase mode, switch to
 		// follow path mode.
 		// This has one desirable benefit of avoiding physics retries.
@@ -696,7 +696,7 @@ if (gameData.ai.nTargetVisibility == 2) {
 	AITurnTowardsVector (&gameData.ai.target.vDir, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 	AIMultiSendRobotPos (siP->nObject, -1);
 	}
-// Fire at CPlayerData, if appropriate.
+// Fire at player, if appropriate.
 if (!siP->bHaveGunPos) {
 	if (siP->ailP->nextPrimaryFire <= 0)
 		siP->bHaveGunPos = CalcGunPoint (&gameData.ai.vGunPoint, objP, siP->aiP->CURRENT_GUN);
@@ -759,7 +759,7 @@ static pAIHandler aisHandler1 [] = {
 int AIBrainHandler (CObject *objP, tAIStateInfo *siP)
 {
 // Robots function nicely if behavior is gameData.matCens.fuelCenters.  This
-// means they won't move until they can see the CPlayerData, at
+// means they won't move until they can see the player, at
 // which time they will start wandering about opening doors.
 if (objP->info.nId != ROBOT_BRAIN)
 	return 0;
@@ -814,7 +814,7 @@ if (siP->aiP->behavior == AIB_SNIPE) {
 		}
 	if (!(siP->nObjRef & 3) || siP->nPrevVisibility) {
 		ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
-		// If this sniper is in still mode, if he was hit or can see CPlayerData, switch to snipe mode.
+		// If this sniper is in still mode, if he was hit or can see player, switch to snipe mode.
 		if (siP->ailP->mode == AIM_IDLING)
 			if (gameData.ai.nTargetVisibility || (siP->ailP->targetAwarenessType == PA_RETURN_FIRE))
 				siP->ailP->mode = AIM_SNIPE_ATTACK;
@@ -972,7 +972,7 @@ if (siP->botInfoP->bossFlag) {
 		siP->aiP->CURRENT_STATE = AIS_FIRE;
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
 	pv = gameData.ai.nTargetVisibility;
-	// If CPlayerData cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
+	// If player cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		pv = 0;
 		dtp = CFixVector::Dist(OBJPOS (TARGETOBJ)->vPos, objP->info.position.vPos) / 4;
@@ -992,7 +992,7 @@ if ((siP->aiP->behavior == AIB_SNIPE) && (siP->ailP->mode != AIM_SNIPE_WAIT))
 	return 0;
 if (siP->botInfoP->companion || siP->botInfoP->thief)
 	return 0;
-if (siP->ailP->targetAwarenessType >= PA_RETURN_FIRE - 1) // If robot got hit, he gets to attack CPlayerData always!
+if (siP->ailP->targetAwarenessType >= PA_RETURN_FIRE - 1) // If robot got hit, he gets to attack player always!
 	return 0;
 if ((siP->aiP->behavior == AIB_STATION) && (siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->aiP->nHideSegment != objP->info.nSegment)) {
 	if (gameData.ai.target.xDist > MAX_SNIPE_DIST / 2) {  // station guys not at home always processed until 250 units away.
@@ -1015,7 +1015,7 @@ if (siP->bMultiGame || (SEGMENTS [objP->info.nSegment].m_function != SEGMENT_FUN
 	return 0;
 if (!gameData.matCens.fuelCenters [SEGMENTS [objP->info.nSegment].m_value].bEnabled)
 	return 0;
-AIFollowPath (objP, 1, 1, NULL);    // 1 = CPlayerData is visible, which might be a lie, but it works.
+AIFollowPath (objP, 1, 1, NULL);    // 1 = player is visible, which might be a lie, but it works.
 return 1;
 }
 
@@ -1135,7 +1135,7 @@ return 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-// Decrease CPlayerData awareness due to the passage of time.
+// Decrease player awareness due to the passage of time.
 
 int AIAwarenessHandler (CObject *objP, tAIStateInfo *siP)
 {
@@ -1166,7 +1166,7 @@ return 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-// Decrease CPlayerData awareness due to the passage of time.
+// Decrease player awareness due to the passage of time.
 
 int AIPlayerDeadHandler (CObject *objP, tAIStateInfo *siP)
 {
@@ -1218,7 +1218,7 @@ return 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-// Decrease CPlayerData awareness due to the passage of time.
+// Decrease player awareness due to the passage of time.
 
 int AINewGoalHandler (CObject *objP, tAIStateInfo *siP)
 {
@@ -1246,7 +1246,7 @@ return 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-// Decrease CPlayerData awareness due to the passage of time.
+// Decrease player awareness due to the passage of time.
 
 int AIFireGunsHandler (CObject *objP, tAIStateInfo *siP)
 {
@@ -1371,7 +1371,7 @@ if (DoAnyRobotDyingFrame (objP))
 
 // Kind of a hack.  If a robot is flinching, but it is time for it to fire, unflinch it.
 // Else, you can turn a big nasty robot into a wimp by firing flares at it.
-// This also allows the CPlayerData to see the cool flinch effect for mechs without unbalancing the game.
+// This also allows the player to see the cool flinch effect for mechs without unbalancing the game.
 if (((si.aiP->GOAL_STATE == AIS_FLINCH) || (si.ailP->targetAwarenessType == PA_RETURN_FIRE)) &&
 	 ReadyToFire (si.botInfoP, si.ailP)) {
 	si.aiP->GOAL_STATE = AIS_FIRE;
@@ -1383,7 +1383,7 @@ if (AINextFireHandler (objP, &si))
 	return;
 
 si.nPrevVisibility = si.ailP->nPrevVisibility;    //  Must get this before we toast the master copy!
-// If only awake because of a camera, make that the believed CPlayerData position.
+// If only awake because of a camera, make that the believed player position.
 if (AITargetPosHandler (objP, &si))
 	return;
 gameData.ai.target.xDist = CFixVector::Dist (gameData.ai.target.vBelievedPos, objP->info.position.vPos);

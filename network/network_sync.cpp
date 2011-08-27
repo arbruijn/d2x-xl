@@ -51,7 +51,7 @@ for (short i = 0; i < networkData.nJoining; )
 	if (!CmpNetPlayers (networkData.sync [i].player [1].player.callsign, their->player.callsign, 
 							  &networkData.sync [i].player [1].player.network, &their->player.network)) {
 #if 1      
-		console.printf (CON_DBG, "Aborting resync for CPlayerData %s.\n", their->player.callsign);
+		console.printf (CON_DBG, "Aborting resync for player %s.\n", their->player.callsign);
 #endif
 		DeleteSyncData (i);
 		}
@@ -103,7 +103,7 @@ void NetworkSyncObjects (tNetworkSyncData *syncP)
 	int		nObjFrames = 0;
 	int		nPlayer = syncP->player [1].player.connected;
 
-// Send clear OBJECTS array CTrigger and send CPlayerData num
+// Send clear OBJECTS array CTrigger and send player num
 objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
 for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try to speed it up without
 																// over-stressing the receiver.
@@ -206,7 +206,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 	IPXSendInternetPacketData (objBuf, 8, 
 										syncP->player [1].player.network.Server (), 
 										syncP->player [1].player.network.Node ());
-// Send sync packet which tells the CPlayerData who he is and to start!
+// Send sync packet which tells the player who he is and to start!
 NetworkSendRejoinSync (nPlayer, syncP);
 
 // Turn off send CObject mode

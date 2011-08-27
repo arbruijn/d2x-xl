@@ -18,9 +18,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
-#define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 CPlayerData file version
+#define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 player file version
 #define D2XXL_PLAYER_FILE_VERSION			161
-#define PLAYER_FILE_VERSION					161	//increment this every time the CPlayerData file changes
+#define PLAYER_FILE_VERSION					161	//increment this every time the player file changes
 
 #define N_SAVE_SLOTS    10
 #define GAME_NAME_LEN   25      // +1 for terminating zero = 26
@@ -29,21 +29,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define EZERO 0
 #endif
 
-// update the CPlayerData's highest level.  returns errno (0 == no error)
+// update the player's highest level.  returns errno (0 == no error)
 int UpdatePlayerFile ();
 // Used to save KConfig values to disk.
 int SavePlayerProfile ();
 int NewPlayerConfig ();
 
-// called once at program startup to get the CPlayerData's name
+// called once at program startup to get the player's name
 int SelectPlayer (void);
 
 int LoadPlayerProfile (int nStage = 2);
 
-// set a new highest level for CPlayerData for this mission
+// set a new highest level for player for this mission
 void SetHighestLevel (ubyte nLevel);
 
-// gets the CPlayerData's highest level from the file for this mission
+// gets the player's highest level from the file for this mission
 int GetHighestLevel(void);
 
 //------------------------------------------------------------------------------

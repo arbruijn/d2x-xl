@@ -216,7 +216,7 @@ typedef struct tColorOptions {
 typedef struct tCockpitOptions {
 	int bHUD;
 	int bHUDMsgs;
-	int bSplitHUDMsgs;	//split CPlayerData and other message displays
+	int bSplitHUDMsgs;	//split player and other message displays
 	int bWideDisplays;
 	int bReticle;
 	int bMouseIndicator;
@@ -267,7 +267,7 @@ typedef struct tParticleOptions {
 	int bDisperse;
 	int bRotate;
 	int bSort;
-	int bDecreaseLag;	//only render if CPlayerData is moving forward
+	int bDecreaseLag;	//only render if player is moving forward
 	int bAuxViews;
 	int bMonitors;
 } tParticleOptions;
@@ -2444,7 +2444,7 @@ class CModelData {
 
 class CAutoNetGame {
 	public:
-		char					szPlayer [9];		//CPlayerData profile name
+		char					szPlayer [9];		//player profile name
 		char					szFile [FILENAME_LEN];
 		char					szMission [13];
 		char					szName [81];		//game name
