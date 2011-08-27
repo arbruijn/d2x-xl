@@ -1624,7 +1624,7 @@ class CFaceListIndex {
 		CFaceListIndex ();
 		~CFaceListIndex ();
 		void Create (void);
-		void Destroy (void);
+		void Destroy (bool bRebuild = false);
 		void Init (void);
 	};
 

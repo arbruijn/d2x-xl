@@ -534,6 +534,7 @@ DESTROY (lMapTexCoord);
 
 CFaceListIndex::CFaceListIndex ()
 {
+gameData.segs.nFaceKeys = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -547,7 +548,7 @@ Destroy ();
 
 void CFaceListIndex::Create (void)
 {
-Destroy ();
+Destroy (true);
 roots.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 tails.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 usedKeys.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
@@ -556,8 +557,10 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-void CFaceListIndex::Destroy (void)
+void CFaceListIndex::Destroy (bool bRebuild)
 {
+if (!bRebuild)
+	gameData.segs.nFaceKeys = -1;
 nUsedKeys = 0;
 roots.Destroy ();
 tails.Destroy ();

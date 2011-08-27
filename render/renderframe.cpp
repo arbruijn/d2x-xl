@@ -48,6 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "radar.h"
 #include "menubackground.h"
 #include "addon_bitmaps.h"
+#include "createmesh.h"
 
 #define bSavingMovieFrames 0
 
@@ -876,6 +877,8 @@ for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 
 void GameRenderFrame (void)
 {
+if (gameData.segs.nFaceKeys < 0)
+	meshBuilder.ComputeFaceKeys ();
 PROF_START
 UpdateSlidingFaces ();
 PROF_END(ptAux);

@@ -621,7 +621,8 @@ if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
 	backgroundManager.LoadStars (true);
 SDL_ShowCursor (0);
 SDL_EnableKeyRepeat(60, 30);
-gameStates.menus.nInMenu++;
+if (gameStates.menus.nInMenu >= 0)
+	gameStates.menus.nInMenu++;
 if (gameStates.app.bGameRunning && IsMultiGame)
 	gameData.multigame.nTypingTimeout = 0;
 
@@ -1384,7 +1385,8 @@ if (bTimeStopped) {
  }
 if (bSoundStopped)
 	audio.ResumeSounds ();
-gameStates.menus.nInMenu--;
+if (gameStates.menus.nInMenu > 0)
+	gameStates.menus.nInMenu--;
 paletteManager.EnableEffect ();
 //paletteManager.SetEffect (0, 0, 0);
 SDL_EnableKeyRepeat (0, 0);
