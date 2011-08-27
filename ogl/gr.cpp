@@ -482,12 +482,10 @@ screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[0],
 										0, 0, screen.Width (), screen.Height ());
 
 if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING) {
-	screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[1], 0, 
-											screen.Height (), screen.Width (), screen.Height ());
+	screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[1], 0, screen.Height (), screen.Width (), screen.Height ());
 	}
 else {
-	screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[1], 
-											0, 0, screen.Width (), screen.Height ());
+	screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[1], 0, 0, screen.Width (), screen.Height ());
 	}
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.menus.bHires = (gameStates.video.nDisplayMode > 1));
 if (gameStates.render.vr.nRenderMode != VR_NONE) {

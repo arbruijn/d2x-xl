@@ -157,13 +157,11 @@ do {
 			SoundMenu ();
 		else if (i == m.IndexOf ("config options"))
 			InputDeviceConfig ();
-		else if (i == m.IndexOf ("performance options")) {
-			if (gameStates.app.bNostalgia)
-				DetailLevelMenu ();
-			}
+		else if (i == m.IndexOf ("performance options"))
+			DetailLevelMenu ();
 		else if (i == m.IndexOf ("screen res options"))
 			ScreenResMenu ();
-		else if (i == m.IndexOf ("k"))
+		else if (i == m.IndexOf ("reorder guns"))
 			ReorderPrimary ();
 		else if (i == m.IndexOf ("reorder missiles"))
 			ReorderSecondary ();
