@@ -338,8 +338,11 @@ Init ();
 void CBackgroundManager::Remove (void)
 {
 if (m_nDepth >= 0) {
-	m_bg [m_nDepth--].Destroy ();
-	Redraw (true);
+	if (m_nDepth <= 2) {
+		m_bg [m_nDepth].Destroy ();
+		Redraw (true);
+		}
+	--m_nDepth;
 	//paletteManager.ResumeEffect (gameStates.app.bGameRunning);
 	}
 }
@@ -361,8 +364,11 @@ m_bValid = false;
 
 void CBackgroundManager::Destroy (void)
 {
-while (m_nDepth >= 0)
-	m_bg [m_nDepth--].Destroy ();
+while (m_nDepth >= 0) {
+	if (m_nDepth <= 2)
+		m_bg [m_nDepth].Destroy ();
+	m_nDepth--;
+	}
 if (m_background [1] && (m_background [1] != m_background [0]))
 	m_background [1]->Destroy ();
 if (m_background [0])
@@ -497,9 +503,9 @@ if (!m_bValid) {
 bool CBackgroundManager::Setup (char *filename, int x, int y, int width, int height, bool bTop)
 {
 Create ();
-if (m_nDepth >= 2)
+if (++m_nDepth > 2)
 	return false;
-if (!m_bg [++m_nDepth].Create (filename, x, y, width, height, bTop))
+if (!m_bg [m_nDepth].Create (filename, x, y, width, height, bTop))
 	return false;
 Redraw ();
 return true;
