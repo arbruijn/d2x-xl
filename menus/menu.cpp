@@ -595,8 +595,8 @@ int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback ca
 	int			bLaunchOption = 0;
 	int			exception = 0;
 
-if (gameStates.menus.nInMenu)
-	return - 1;
+if (gameStates.menus.nInMenu > 0)
+	return -1;
 
 m_tEnter = -1;
 m_bRedraw = 0;

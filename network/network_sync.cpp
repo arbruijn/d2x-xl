@@ -446,7 +446,9 @@ if (i < 0) {
 sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers [0].m_info.players [i].callsign, TXT_NET_TO_ENTER);
 ResetSyncTimeout (true);
 do {
+	gameStates.menus.nInMenu = -gameStates.menus.nInMenu;
 	choice = m.Menu (NULL, TXT_HOST_WAIT, NetworkSyncPoll);
+	gameStates.menus.nInMenu = -gameStates.menus.nInMenu;
 	} while (choice > -1);
 if (choice == -3)
 	return 0;
