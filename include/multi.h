@@ -323,7 +323,7 @@ class CNetworkInfo {
 		inline ubyte* Server (void) { return m_info.ipx.server; }
 		inline ubyte* Node (void) { return m_info.ipx.node.v; }
 		inline ubyte* IP (void) { return m_info.ipx.node.a.ip; }
-		inline ushort& Port (void) { return m_info.ipx.node.a.port.s; }
+		inline ushort* Port (void) { return &m_info.ipx.node.a.port.s; }
 		inline tAppleTalkAddr& AppleTalk (void) { return m_info.appletalk; }
 		inline tNetworkInfo& operator= (tNetworkInfo& other) {
 			m_info = other;

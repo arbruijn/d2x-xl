@@ -632,7 +632,7 @@ if (bFull) {
 	/*---*/PrintLog ("Setting screen mode\n");
 	SetScreenMode (SCREEN_MENU);
 	/*---*/PrintLog ("Showing loading screen\n");
-		ShowLoadingScreen ();
+	ShowLoadingScreen ();
 	}
 return 1;
 }
