@@ -57,6 +57,11 @@ class CBackground {
 		inline CCanvas* Canvas (uint i = 0) { return m_canvas [i]; }
 		inline CBitmap* Background (void) { return m_saved [0]; }
 		inline CBitmap* Saved (int i) { return m_saved [i]; }
+		inline void GetExtent (int& x, int& y, int& w, int& h) { 
+			if (m_canvas [1])
+				m_canvas [1]->GetExtent (x, y, w, h); 
+			}
+		inline char* GetFilename (void) { return m_filename; }
 
 	private:
 		CBitmap* Load (char* filename, int width, int height);

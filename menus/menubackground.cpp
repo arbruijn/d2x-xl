@@ -516,14 +516,27 @@ return true;
 
 //------------------------------------------------------------------------------
 
+typedef struct tBackgroundInfo {
+	int	x, y, w, h;
+	char*	filename;
+} tBackgroundInfo;
+
 void CBackgroundManager::Rebuild (int bGame)
 {
-if (!m_background [0])
+	tBackgroundInfo	bgInfo [3];
+	int					i, j = (m_nDepth > 2) ? 2 : m_nDepth;;
+
+for (i = 0; i <= j; i++) {
+	m_bg [i].GetExtent (bgInfo [i].x, bgInfo [i].y, bgInfo [i].w, bgInfo [i].h);
+	bgInfo [i].filename = m_bg [i].GetFilename ();
+	}
+
+Destroy ();
+if (j < 0)
 	Setup (BackgroundName (BG_MENU), 0, 0, screen.Width (), screen.Height ());
 else {
-	m_background [0]->Bind (0);
-	if (m_background [1] && (m_background [1] != m_background [0]))
-		m_background [1]->Bind (0);
+	for (i = 0; i <= j; i++) 
+		Setup (bgInfo [i].filename, bgInfo [i].x, bgInfo [i].y, bgInfo [i].w, bgInfo [i].h);
 	}
 if (!bGame)
 	GrUpdate (0);

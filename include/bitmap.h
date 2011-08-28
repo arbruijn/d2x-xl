@@ -298,6 +298,13 @@ class CBitmap : public CArray< ubyte > {
 		void NeedSetup (void);
 		inline CPalette* Palette (void) { return m_info.palette ? m_info.palette : paletteManager.Default (); }
 
+		inline void GetExtent (int& x, int& y, int& w, int& h) {
+			x = Left ();
+			y = Top ();
+			w = Width ();
+			h = Height ();
+			}
+
 		CBitmap *CreateMask (void);
 		int CreateMasks (void);
 		int CreateFrames (int bMipMaps, int bLoad);
