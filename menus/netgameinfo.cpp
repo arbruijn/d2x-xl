@@ -293,7 +293,7 @@ char* XMLGameInfo (void)
 		{"Anarchy", "Anarchy", "Anarchy", "Coop", "CTF+", "Hoard", "Hoard", "Monsterball", "Entropy"}
 		};
 	static const char* szGameState [] = {"open", "closed", "restricted"};
-	static const char* szCompMode [] = {"none", "basic", "critical"};
+	static const char* szCompMode [] = {"none", "basic", "critical", "critical"};
 
 	int nExtensions;
 
