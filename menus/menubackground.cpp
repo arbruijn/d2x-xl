@@ -516,7 +516,7 @@ return true;
 
 void CBackgroundManager::Rebuild (int bGame)
 {
-	int nDepth = (m_nDepth < 0) ? 0 : 1;
+	int nDepth = (m_nDepth <= 0) ? 0 : 1;
 
 Destroy ();
 for (int i = 0; i <= nDepth; i++)
