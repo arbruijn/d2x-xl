@@ -327,6 +327,8 @@ m_background->Render (CCanvas::Current (), dx, dy, w, h, x1, y1, w, h);
 }
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 CBackgroundManager::CBackgroundManager ()
 {
@@ -516,12 +518,10 @@ return true;
 
 void CBackgroundManager::Rebuild (int bGame)
 {
-	int nDepth = (m_nDepth <= 0) ? 0 : (m_nDepth > 2) ? 2 : m_nDepth;
-
-Destroy ();
-for (int i = 0; i <= nDepth; i++)
-	Setup (i ? NULL : BackgroundName (BG_MENU), 0, 0, screen.Width (), screen.Height ());
-m_nDepth = nDepth;
+if (m_background [0])
+	m_background [0]->Bind (0);
+if (m_background [1])
+	m_background [1]->Bind (0);
 if (!bGame)
 	GrUpdate (0);
 }
