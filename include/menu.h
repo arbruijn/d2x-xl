@@ -492,7 +492,7 @@ int MainMenu (void);
 int QuitSaveLoadMenu (void);
 int SelectAndLoadMission (int bMulti, int *bAnarchyOnly);
 
-void InitDetailLevels (int detailLevel);
+int InitDetailLevels (int detailLevel);
 
 int SwitchDisplayMode (int dir);
 

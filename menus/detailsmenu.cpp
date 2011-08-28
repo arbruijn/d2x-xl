@@ -70,9 +70,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // -----------------------------------------------------------------------------
 // Set detail level based stuff.
 // Note: Highest detail level (gameStates.render.detail.nLevel == NUM_DETAIL_LEVELS-1) is custom detail level.
-void InitDetailLevels (int nDetailLevel)
+int InitDetailLevels (int nDetailLevel)
 {
-if ((nDetailLevel >= 0) && (nDetailLevel < NUM_DETAIL_LEVELS - 1)) {
+if ((nDetailLevel < 0) || (nDetailLevel >= NUM_DETAIL_LEVELS))
+	nDetailLevel = NUM_DETAIL_LEVELS - 1;
+if (nDetailLevel < NUM_DETAIL_LEVELS - 1) {
 	gameStates.render.detail.nRenderDepth = detailData.renderDepths [nDetailLevel];
 	gameStates.render.detail.nMaxPerspectiveDepth = detailData.maxPerspectiveDepths [nDetailLevel];
 	gameStates.render.detail.nMaxLinearDepth = detailData.maxLinearDepths [nDetailLevel];
@@ -90,6 +92,7 @@ if ((nDetailLevel >= 0) && (nDetailLevel < NUM_DETAIL_LEVELS - 1)) {
 	gameStates.sound.nSoundChannels = nDetailLevel;
 	gameStates.render.detail.nLevel = nDetailLevel;
 	}
+return nDetailLevel;
 }
 
 // -----------------------------------------------------------------------------
@@ -116,8 +119,7 @@ if (i > -1) {
 		case 2:
 		case 3:
 		case 4:
-			gameStates.app.nDetailLevel = choice;
-			InitDetailLevels (gameStates.app.nDetailLevel);
+			gameStates.app.nDetailLevel = InitDetailLevels (choice);
 			break;
 		default:
 			gameStates.app.nDetailLevel = 5;
