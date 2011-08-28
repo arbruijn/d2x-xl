@@ -524,7 +524,8 @@ typedef struct tBackgroundInfo {
 void CBackgroundManager::Rebuild (int bGame)
 {
 	tBackgroundInfo	bgInfo [3];
-	int					i, j = (m_nDepth > 2) ? 2 : m_nDepth;;
+	int					nDepth = m_nDepth;
+	int					i, j = (m_nDepth > 2) ? 2 : m_nDepth;
 
 for (i = 0; i <= j; i++) {
 	m_bg [i].GetExtent (bgInfo [i].x, bgInfo [i].y, bgInfo [i].w, bgInfo [i].h);
@@ -538,6 +539,7 @@ else {
 	for (i = 0; i <= j; i++) 
 		Setup (bgInfo [i].filename, bgInfo [i].x, bgInfo [i].y, bgInfo [i].w, bgInfo [i].h);
 	}
+m_nDepth = nDepth;
 if (!bGame)
 	GrUpdate (0);
 }
