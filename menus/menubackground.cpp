@@ -518,10 +518,13 @@ return true;
 
 void CBackgroundManager::Rebuild (int bGame)
 {
-if (m_background [0])
+if (!m_background [0])
+	Setup (BackgroundName (BG_MENU), 0, 0, screen.Width (), screen.Height ());
+else {
 	m_background [0]->Bind (0);
-if (m_background [1])
-	m_background [1]->Bind (0);
+	if (m_background [1] && (m_background [1] != m_background [0]))
+		m_background [1]->Bind (0);
+	}
 if (!bGame)
 	GrUpdate (0);
 }
