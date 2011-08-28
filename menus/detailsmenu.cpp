@@ -72,9 +72,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Note: Highest detail level (gameStates.render.detail.nLevel == NUM_DETAIL_LEVELS-1) is custom detail level.
 void InitDetailLevels (int nDetailLevel)
 {
-	Assert ((nDetailLevel >= 0) && (nDetailLevel < NUM_DETAIL_LEVELS));
-
-if (nDetailLevel < NUM_DETAIL_LEVELS - 1) {
+if ((nDetailLevel >= 0) && (nDetailLevel < NUM_DETAIL_LEVELS - 1)) {
 	gameStates.render.detail.nRenderDepth = detailData.renderDepths [nDetailLevel];
 	gameStates.render.detail.nMaxPerspectiveDepth = detailData.maxPerspectiveDepths [nDetailLevel];
 	gameStates.render.detail.nMaxLinearDepth = detailData.maxLinearDepths [nDetailLevel];
@@ -121,7 +119,7 @@ if (i > -1) {
 			gameStates.app.nDetailLevel = choice;
 			InitDetailLevels (gameStates.app.nDetailLevel);
 			break;
-		case 6:
+		default:
 			gameStates.app.nDetailLevel = 5;
 			CustomDetailsMenu ();
 			break;

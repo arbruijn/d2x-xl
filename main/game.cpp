@@ -231,7 +231,7 @@ InitDefaultPlayerShip ();
 nClearWindow = 2;		//	do portal only window clear.
 /*---*/PrintLog ("  Default settings...\n");
 DefaultAllSettings ();
-/*---*/PrintLog ("  Detail levels...\n");
+/*---*/PrintLog ("  Detail levels (%e)...\n", gameStates.app.nDetailLevel);
 InitDetailLevels (gameStates.app.nDetailLevel);
 fpDrawTexPolyMulti = G3DrawTexPolyMulti;
 return true;
