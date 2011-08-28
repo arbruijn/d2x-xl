@@ -538,8 +538,8 @@ if (j < 0)
 else {
 	for (i = 0; i <= j; i++) 
 		Setup (bgInfo [i].filename, bgInfo [i].x, bgInfo [i].y, bgInfo [i].w, bgInfo [i].h);
+	m_nDepth = nDepth;
 	}
-m_nDepth = nDepth;
 if (!bGame)
 	GrUpdate (0);
 }
