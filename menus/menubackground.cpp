@@ -517,7 +517,7 @@ return true;
 void CBackgroundManager::Rebuild (int bGame)
 {
 Destroy ();
-Setup (BackgroundName (BG_MENU), 0, 0, screen.Width (), screen.Height ());
+Setup (bGame ? NULL : BackgroundName (BG_MENU), 0, 0, screen.Width (), screen.Height ());
 if (!bGame)
 	GrUpdate (0);
 }
