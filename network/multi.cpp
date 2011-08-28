@@ -1131,7 +1131,6 @@ else {
 			}
 		}
 	else {
-		static int nKillMsgs = 0;
 		killerP->netKillsTotal++;
 		killerP->nScoreGoalCount++;
 		}
