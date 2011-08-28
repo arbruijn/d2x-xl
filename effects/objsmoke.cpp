@@ -179,7 +179,7 @@ void KillPlayerBullets (CObject *objP)
 {
 	int	i = gameData.multiplayer.bulletEmitters [objP->info.nId];
 
-if (i >= 0) {
+if ((i >= 0) && (i < MAX_PLAYERS)) {
 	particleManager.SetLife (i, 0);
 	gameData.multiplayer.bulletEmitters [objP->info.nId] = -1;
 	}
@@ -191,7 +191,7 @@ void KillGatlingSmoke (CObject *objP)
 {
 	int	i = gameData.multiplayer.gatlingSmoke [objP->info.nId];
 
-if (i >= 0) {
+if ((i >= 0) && (i < MAX_PLAYERS)) {
 	particleManager.SetLife (i, 0);
 	gameData.multiplayer.gatlingSmoke [objP->info.nId] = -1;
 	}

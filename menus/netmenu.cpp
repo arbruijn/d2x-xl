@@ -954,13 +954,13 @@ if (bHoard) {
 nGameTypes = m.ToS () - nGameTypes;
 m [m.IndexOf ("anarchy") + NMCLAMP (mpParams.nGameType, 0, nGameTypes)].Value () = 1;
 
-m.AddText ("", ""); 
+m.AddText ("end of game types", ""); 
 
 m.AddRadio ("open game", TXT_OPEN_GAME, 0, KEY_O, HTX_MULTI_OPENGAME);
 m.AddRadio ("closed game", TXT_CLOSED_GAME, 0, KEY_C, HTX_MULTI_CLOSEDGAME);
 m.AddRadio ("restricted game", TXT_RESTR_GAME, 0, KEY_R, HTX_MULTI_RESTRGAME);
 m [m.IndexOf ("open game") + NMCLAMP (mpParams.nGameAccess, 0, 2)].Value () = 1;
-m.AddText ("", "");
+m.AddText ("end of game access", "");
 sprintf (szMaxPlayers + 1, TXT_MAX_PLAYERS, gameData.multiplayer.nMaxPlayers);
 *szMaxPlayers = *(TXT_MAX_PLAYERS - 1);
 nLastMaxPlayers = gameData.multiplayer.nMaxPlayers - 2;
@@ -1070,15 +1070,15 @@ if (key != -1) {
 		return 1;
 	}
 
-	for (h = i = m.IndexOf ("anarchy"), j = m.IndexOf ("open game"); i < j; i++)
+	for (h = i = m.IndexOf ("anarchy"), j = m.IndexOf ("end of game types"); i < j; i++)
 		if (m [i].Value ()) {
 			mpParams.nGameType = i - h;
 			break;
 			}
 
-	for (i = j, j = m.IndexOf ("max. players"); i < j; i++)
+	for (h = i = m.IndexOf ("open game"), j = m.IndexOf ("end of game access"); i < j; i++)
 		if (m [i].Value ()) {
-			mpParams.nGameAccess = i - j;
+			mpParams.nGameAccess = i - h;
 			break;
 			}
 
