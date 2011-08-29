@@ -506,6 +506,8 @@ gameStates.app.bGameRunning = 0;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	audio.DestroyObjectSound (gameData.multiplayer.players [i].nObject);
 
+gameStates.render.bRenderIndirect = -1;
+ogl.ChooseDrawBuffer ();
 SetScreenMode (SCREEN_MENU);
 gameData.score.bWaitingForOthers = 0;
 //@@GrPaletteFadeIn (grPalette,32, 0);
