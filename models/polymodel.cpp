@@ -835,6 +835,8 @@ for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 			PrintLog (1, "building model %d (%s)\n", o.ModelId (), pszHires ? pszHires : "n/a");
 		if (DrawPolygonObject (&o, 0))
 			h++;
+		if (gameStates.app.nLogLevel > 1)
+			PrintLog (-1);
 		}
 	if (o.info.nType == OBJ_HOSTAGE)
 		o.info.nType = OBJ_POWERUP;

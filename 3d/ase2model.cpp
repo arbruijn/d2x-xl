@@ -167,7 +167,8 @@ Setup (1, 1);
 #if 1
 SetGunPoints (objP, 1);
 #endif
-PrintLog (-1);
+if (gameStates.app.nLogLevel > 1)
+	PrintLog (-1);
 return -1;
 }
 
