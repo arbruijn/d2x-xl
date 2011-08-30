@@ -959,16 +959,22 @@ if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
 	PrintLog (1, "Computing segment visibility\n");
 	ComputeSegmentVisibility (-1);
+	PrintLog (-1);
 	PrintLog (1, "Computing segment distances\n");
 	StartLightThreads (SegDistThread);
+	PrintLog (-1);
 	PrintLog (1, "Computing light visibility\n");
 	ComputeLightVisibility (-1);
+	PrintLog (-1);
 	PrintLog (1, "Starting segment light calculation threads\n");
 	StartLightThreads (SegLightsThread);
+	PrintLog (-1);
 	PrintLog (1, "Starting vertex light calculation threads\n");
 	StartLightThreads (VertLightsThread);
+	PrintLog (-1);
 	PrintLog (1, "Computing vertices visible to lights\n");
 	ComputeLightsVisibleVertices (-1);
+	PrintLog (-1);
 	gameData.physics.side.bCache = 1;
 	}
 else {
