@@ -745,6 +745,7 @@ switch (loadOp) {
 	case 18:
 		/*---*/PrintLog (1, "Enabling TrackIR support\n");
 		TIRLoad ();
+		PrintLog (-1);
 		break;
 	}
 loadOp++;

@@ -270,8 +270,7 @@ OglInitLoadLibrary ();
 /***/PrintLog (1, "initializing SDL\n");
 #if !USE_IRRLICHT
 if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
-	PrintLog (1, "SDL library video initialisation failed: %s.\n", SDL_GetError());
-	PrintLog (-1);
+	PrintLog (-1, "SDL library video initialisation failed: %s.\n", SDL_GetError());
 	Error ("SDL library video initialisation failed: %s.", SDL_GetError());
 	}
 #endif

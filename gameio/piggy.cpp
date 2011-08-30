@@ -497,7 +497,8 @@ int PiggyInit (void)
 	int bHamOk = 0, bSoundOk = 0;
 	int i;
 
-/*---*/PrintLog (1, "Initializing hash tables\n");
+PrintLog (1);
+/*---*/PrintLog (0, "Initializing hash tables\n");
 bitmapNames [0].Create (MAX_BITMAP_FILES);
 bitmapNames [1].Create (D1_MAX_BITMAP_FILES);
 soundNames [0].Create (MAX_SOUND_FILES);
@@ -509,14 +510,14 @@ for (i = 0; i < MAX_SOUND_FILES; i++)
 	soundOffset [0][i] = 0;
 #endif
 
-/*---*/PrintLog (1, "Initializing bitmap index (%d indices)\n", MAX_BITMAP_FILES);
+/*---*/PrintLog (0, "Initializing bitmap index (%d indices)\n", MAX_BITMAP_FILES);
 for (i = 0; i < MAX_BITMAP_FILES; i++)
 	gameData.pig.tex.bitmapXlat [i] = i;
 
 if (!bogusBitmap.FrameSize ()) {
 	int i;
 	ubyte c;
-/*---*/PrintLog (1, "Initializing placeholder bitmap\n");
+/*---*/PrintLog (0, "Initializing placeholder bitmap\n");
 	bogusBitmap.Setup (0, 64, 64, 1, "Bogus Bitmap");
 	bogusBitmap.SetBuffer (new ubyte [4096 * 4096]);
 	bogusBitmap.SetPalette (paletteManager.Game ());
@@ -540,12 +541,15 @@ if (FindArg ("-bigpig"))
 
 /*---*/PrintLog (1, "Loading game data\n");
 PiggyInitPigFile (DefaultPigFile (-1));
+PrintLog (-1);
 /*---*/PrintLog (1, "Loading main ham file\n");
 bSoundOk = bHamOk = ReadHamFile ();
+PrintLog (-1);
 gameData.pig.sound.nType = -1; //none loaded
 if (gameData.pig.tex.nHamFileVersion >= 3) {
 /*---*/PrintLog (1, "Loading sound file\n");
 	bSoundOk = LoadD2Sounds ();
+	PrintLog (-1);
 	}
 //if (gameStates.app.bFixModels)
 #if 1 //!DBG
@@ -557,6 +561,7 @@ LoadTextureBrightness ("descent", gameData.pig.tex.defaultBrightness [1].Buffer 
 LoadTextureColors ("descent2", gameData.render.color.defaultTextures [0].Buffer ());
 LoadTextureColors ("descent", gameData.render.color.defaultTextures [1].Buffer ());
 atexit (PiggyClose);
+PrintLog (-1);
 return (bHamOk && bSoundOk);               //read ok
 }
 

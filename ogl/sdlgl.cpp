@@ -158,10 +158,11 @@ SDL_putenv (const_cast<char*>("SDL_VIDEO_CENTERED=1"));
 /***/PrintLog (1, "setting SDL video mode (%dx%dx%d, %s)\n", w, h, ogl.m_states.nColorBits, ogl.m_states.bFullScreen ? "fullscreen" : "windowed");
 if (!SdlGlVideoModeOK (w, h) ||
 	 !SDL_SetVideoMode (w, h, ogl.m_states.nColorBits, SDL_VIDEO_FLAGS)) {
-	Error ("Could not set %dx%dx%d opengl video mode\n", w, h, ogl.m_states.nColorBits);
 	PrintLog (-1);
+	Error ("Could not set %dx%dx%d opengl video mode\n", w, h, ogl.m_states.nColorBits);
 	return 0;
 	}
+PrintLog (-1);
 #endif
 const SDL_VideoInfo* viP = SDL_GetVideoInfo ();
 if (viP->video_mem) {

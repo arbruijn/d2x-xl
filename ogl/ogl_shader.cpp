@@ -453,7 +453,7 @@ Init ();
 glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
 ogl.m_features.bShaders = int (nTMUs >= 4);
 if (!ogl.m_features.bShaders) {
-	::PrintLog (0, "GPU has too few texture units (%d)\n", nTMUs);
+	::PrintLog (-1, "GPU has too few texture units (%d)\n", nTMUs);
 	ogl.m_states.bLowMemory = 0;
 	ogl.m_features.bTextureCompression = 0;
 	return;
