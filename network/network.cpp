@@ -199,12 +199,10 @@ if (NetworkSelectPlayers (bAutoRun)) {
 	missionManager.SaveLevelStates ();
 	StartNewLevel (netGame.m_info.GetLevel (), true);
 	ResetAllPlayerTimeouts ();
-	PrintLog (-1);
 	return 1;
 	}
 else {
 	gameData.app.nGameMode = GM_GAME_OVER;
-	PrintLog (-1);
 	return 0;
 	}
 }
