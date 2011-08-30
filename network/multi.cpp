@@ -1635,7 +1635,7 @@ audio.DestroyObjectSound (nObject);
 if (buf [2] == 0) {
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [(int) buf [1]].callsign, TXT_HAS_ESCAPED);
 	if (gameData.app.nGameMode & GM_NETWORK)
-		Connect ((int) buf [1], CONNECT_ESCAPE_TUNNEL);
+		CONNECT ((int) buf [1], CONNECT_ESCAPE_TUNNEL);
 	if (!gameData.multigame.bGotoSecret)
 		gameData.multigame.bGotoSecret = 2;
 	}
