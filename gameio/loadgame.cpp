@@ -841,6 +841,7 @@ else {
 
 	/*---*/PrintLog (1, "loading cambot\n");
 	gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", NULL, 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
+	PrintLog (-1);
 	gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
 	/*---*/PrintLog (1, "loading replacement robots\n");
 	if (0 > LoadRobotReplacements (pszLevelName, NULL, 0, 0, true)) {
