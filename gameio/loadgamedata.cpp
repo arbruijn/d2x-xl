@@ -525,11 +525,14 @@ for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++)
 	}
 PrintLog (-1);
 
-cf.Read (&gameData.bots.nTypes [1], sizeof (int), 1);
 /*---*/PrintLog (1, "Loading %d robot descriptions\n", gameData.bots.nTypes [1]);
+cf.Read (&gameData.bots.nTypes [1], sizeof (int), 1);
+PrintLog (-1);
 gameData.bots.info [1] = gameData.bots.info [0];
-if (!gameOpts->sound.bUseD1Sounds)
+if (!gameOpts->sound.bUseD1Sounds) {
+	PrintLog (-1);
 	return;
+	}
 
 for (i = 0, pr = &gameData.bots.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) {
 	//cf.Read (&r, sizeof (r), 1);

@@ -464,7 +464,7 @@ if (nHAMId != HAMFILE_ID)
 if (gameData.pig.tex.nHamFileVersion < 3) // hamfile contains sound info
 	nSoundOffset = cf.ReadInt ();
 BMReadAll (cf, bDefault);
-/*---*/PrintLog (1, "Loading bitmap index translation table\n");
+/*---*/PrintLog (0, "Loading bitmap index translation table\n");
 	gameData.pig.tex.bitmapXlat.Read (cf, MAX_BITMAP_FILES);
 if (gameData.pig.tex.nHamFileVersion < 3) {
 	cf.Seek (nSoundOffset, SEEK_SET);
@@ -472,15 +472,15 @@ if (gameData.pig.tex.nHamFileVersion < 3) {
 	int nSoundStart = cf.Tell ();
 /*---*/PrintLog (1, "Loading %d sounds\n", nSoundNum);
 	SetupSounds (cf, nSoundNum, nSoundStart);
+	PrintLog (-1);
 	}
 cf.Close ();
-/*---*/PrintLog (1, "Looking for Descent 1 data files\n");
+/*---*/PrintLog (0, "Looking for Descent 1 data files\n");
 strcpy (szD1PigFileName, "descent.pig");
 if (cfPiggy [1].File ())
 	cfPiggy [1].Seek (0, SEEK_SET);
 else
 	cfPiggy [1].Open (szD1PigFileName, gameFolders.szDataDir [0], "rb", 0);
-PrintLog (-1);
 if (cfPiggy [1].File ()) {
 	gameStates.app.bHaveD1Data = 1;
 /*---*/PrintLog (1, "Loading Descent 1 data\n");
