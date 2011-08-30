@@ -1083,8 +1083,8 @@ if (nType == 255) {
 	return 0;
 	}
 if ((gameStates.render.nShadowPass != 2) &&
-	 (objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) &&
-	 (objP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
+	 (objP == gameData.objs.guidedMissile [N_LOCALPLAYER].objP) &&
+	 (objP->info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature)) {
 	return 0;
 	}
 #if DBG

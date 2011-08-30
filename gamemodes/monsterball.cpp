@@ -130,10 +130,10 @@ if (gameData.hoard.nLastHitter != LOCALPLAYER.nObject)
 ubyte segFunc = SEGMENTS [gameData.hoard.monsterballP->info.nSegment].m_function;
 if ((segFunc != SEGMENT_FUNC_GOAL_BLUE) && (segFunc != SEGMENT_FUNC_GOAL_RED))
 	return 0;
-if ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) == (segFunc == SEGMENT_FUNC_GOAL_RED))
-	MultiSendCaptureBonus (-gameData.multiplayer.nLocalPlayer - 1);
+if ((GetTeam (N_LOCALPLAYER) == TEAM_RED) == (segFunc == SEGMENT_FUNC_GOAL_RED))
+	MultiSendCaptureBonus (-N_LOCALPLAYER - 1);
 else
-	MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
+	MultiSendCaptureBonus (N_LOCALPLAYER);
 gameData.hoard.monsterballP->CreateAppearanceEffect ();
 RemoveMonsterball ();
 CreateMonsterball ();

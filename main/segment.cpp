@@ -1017,7 +1017,7 @@ if (wallP->nType == WALL_BLASTABLE) {
 	return WHP_BLASTABLE;
 	}
 
-if (nPlayer != gameData.multiplayer.nLocalPlayer)	//return if was robot fire
+if (nPlayer != N_LOCALPLAYER)	//return if was robot fire
 	return WHP_NOT_SPECIAL;
 
 Assert(nPlayer > -1);
@@ -1036,7 +1036,7 @@ CTrigger* trigP = Trigger (nSide);
 if (!trigP)
 	return;
 
-if (trigP->Operate (objP->Index (), objP->IsPlayer () ? objP->info.nId : objP->IsGuideBot () ? gameData.multiplayer.nLocalPlayer : -1, bShot, 0))
+if (trigP->Operate (objP->Index (), objP->IsPlayer () ? objP->info.nId : objP->IsGuideBot () ? N_LOCALPLAYER : -1, bShot, 0))
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordTrigger (Index (), nSide, objP->Index (), bShot);

@@ -37,7 +37,7 @@ void MultiSendMessage (void)
 
 if (gameData.multigame.msg.nReceiver != -1) {
 	gameData.multigame.msg.buf [bufP++] = (char)MULTI_MESSAGE;            
-	gameData.multigame.msg.buf [bufP++] = (char)gameData.multiplayer.nLocalPlayer;                       
+	gameData.multigame.msg.buf [bufP++] = (char)N_LOCALPLAYER;                       
 	strncpy (gameData.multigame.msg.buf + bufP, gameData.multigame.msg.szMsg, MAX_MESSAGE_LEN); 
 	bufP += MAX_MESSAGE_LEN;
 	gameData.multigame.msg.buf [bufP-1] = '\0';
@@ -115,7 +115,7 @@ if (!bFound)
 if (!bFound)
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if ((!strnicmp (gameData.multiplayer.players [i].callsign, gameData.multigame.msg.szMsg, l)) && 
-			(i != gameData.multiplayer.nLocalPlayer) && 
+			(i != N_LOCALPLAYER) && 
 			(gameData.multiplayer.players [i].connected)) {
 			if (bFound)
 				strcat (szFeedbackResult, ", ");
@@ -187,11 +187,11 @@ gameStates.multi.bPlayerIsTyping [int (buf [1])] = 0;
 
 void MultiSendTyping (void)
 {
-if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer]) {
+if (gameStates.multi.bPlayerIsTyping [N_LOCALPLAYER]) {
 	if (gameStates.app.nSDLTicks [0] - gameData.multigame.nTypingTimeout > 1000) {
 		gameData.multigame.nTypingTimeout = gameStates.app.nSDLTicks [0];
 		gameData.multigame.msg.buf [0] = (char) MULTI_START_TYPING;
-		gameData.multigame.msg.buf [1] = (char) gameData.multiplayer.nLocalPlayer; 
+		gameData.multigame.msg.buf [1] = (char) N_LOCALPLAYER; 
 		gameData.multigame.msg.buf [2] = gameData.multigame.msg.bSending;
 		MultiSendData (gameData.multigame.msg.buf, 3, 0);
 		}
@@ -209,7 +209,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 		gameData.multigame.msg.bSending = -nMsg;
 	gameData.multigame.msg.nIndex = 0;
 	gameData.multigame.msg.szMsg [gameData.multigame.msg.nIndex] = 0;
-	gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] = 1;
+	gameStates.multi.bPlayerIsTyping [N_LOCALPLAYER] = 1;
 	gameData.multigame.nTypingTimeout = 0;
 	MultiSendTyping ();
 	}
@@ -222,9 +222,9 @@ void MultiSendMsgQuit (void)
 gameData.multigame.msg.bSending = 0;
 gameData.multigame.msg.bDefining = 0;
 gameData.multigame.msg.nIndex = 0;
-gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] = 0;
+gameStates.multi.bPlayerIsTyping [N_LOCALPLAYER] = 0;
 gameData.multigame.msg.buf [0] = (char) MULTI_QUIT_TYPING;
-gameData.multigame.msg.buf [1] = (char) gameData.multiplayer.nLocalPlayer; 
+gameData.multigame.msg.buf [1] = (char) N_LOCALPLAYER; 
 gameData.multigame.msg.buf [2] = 0;
 MultiSendData (gameData.multigame.msg.buf, 3, 0);
 }
@@ -263,7 +263,7 @@ if (gameData.multigame.msg.szMsg [name_index] == '#' && ::isdigit (gameData.mult
 			}
 		MultiGetKillList (players);
 		i = players [listpos];
-		if ((i != gameData.multiplayer.nLocalPlayer) && (gameData.multiplayer.players [i].connected))
+		if ((i != N_LOCALPLAYER) && (gameData.multiplayer.players [i].connected))
 			goto kick_player;
 		}
 	else 
@@ -273,7 +273,7 @@ if (gameData.multigame.msg.szMsg [name_index] == '#' && ::isdigit (gameData.mult
 	}
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if ((!strnicmp (gameData.multiplayer.players [i].callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && (i != gameData.multiplayer.nLocalPlayer) && (gameData.multiplayer.players [i].connected)) {
+	if ((!strnicmp (gameData.multiplayer.players [i].callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && (i != N_LOCALPLAYER) && (gameData.multiplayer.players [i].connected)) {
 kick_player:;
 		if (gameStates.multi.nGameType  >= IPX_GAME)
 			NetworkDumpPlayer (
@@ -312,7 +312,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 			}
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((!strnicmp (gameData.multiplayer.players [i].callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && 
-				 (i != gameData.multiplayer.nLocalPlayer) && (gameData.multiplayer.players [i].connected)) {
+				 (i != N_LOCALPLAYER) && (gameData.multiplayer.players [i].connected)) {
 				pingStats [i].launchTime = SDL_GetTicks (); //TimerGetFixedSeconds ();
 				NetworkSendPing ((ubyte) i);
 				HUDInitMessage (TXT_PINGING, gameData.multiplayer.players [i].callsign);
@@ -543,7 +543,7 @@ static int IsMyTeamId (char *bufP, int nLen)
 
 if (!(gameData.app.nGameMode & GM_TEAM))
 	return 0;
-i = GetTeam (gameData.multiplayer.nLocalPlayer);
+i = GetTeam (N_LOCALPLAYER);
 if (i == atoi (bufP) - 1)
 	return 1;
 if (!strnicmp (netGame.m_info.szTeamName [i], bufP, nLen))

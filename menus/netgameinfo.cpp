@@ -259,13 +259,13 @@ char* XMLPlayerInfo (char* xmlGameInfo)
 {
 strcat (xmlGameInfo, "  <PlayerInfo>\n");
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player%d name=\"%s\" ping=\"", i, netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].callsign);
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player%d name=\"%s\" ping=\"", i, netPlayers [0].m_info.players [N_LOCALPLAYER].callsign);
 	if (pingStats [i].ping < 0)
-		strcat (xmlGameInfo, (i == gameData.multiplayer.nLocalPlayer) ? "0" : "> 1s");
+		strcat (xmlGameInfo, (i == N_LOCALPLAYER) ? "0" : "> 1s");
 	else
 		sprintf (xmlGameInfo + strlen (xmlGameInfo), "\"%d\"", pingStats [i].ping);
 
-	ubyte* node = netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node ();
+	ubyte* node = netPlayers [0].m_info.players [N_LOCALPLAYER].network.Node ();
 	uint ip = (uint (node [0]) << 24) + (uint (node [1]) << 16) + (uint (node [2]) << 8) + uint (node [3]);
 
 	sprintf (xmlGameInfo + strlen (xmlGameInfo), "\" score=\"%d\" kills=\"%d\" deaths=\"%d\" country=\"%s\" />\n", 
@@ -275,7 +275,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 #if 1
 				CountryFromIP (ip));
 #else
-				CountryFromIP (*((uint*) netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node ())));
+				CountryFromIP (*((uint*) netPlayers [0].m_info.players [N_LOCALPLAYER].network.Node ())));
 #endif
 	}
 strcat (xmlGameInfo, "  </PlayerInfo>\n");
@@ -300,7 +300,7 @@ char* XMLGameInfo (void)
 sprintf (xmlGameInfo, "<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n");
 
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host Name=\"%s\" />\n",
-			 gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
+			 gameData.multiplayer.players [N_LOCALPLAYER].callsign);
 
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mission Type=\"%s\" Name=\"%s\" Level=\"%d\" ",
 			 gameStates.app.bD1Mission ? "D1" : gameStates.app.bD2XLevel ? "D2X" : "D2", AGI.szMissionTitle, AGI.nLevel);

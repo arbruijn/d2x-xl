@@ -1035,7 +1035,7 @@ NDWriteByte ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat) ? DEMO_VER
 NDWriteByte (DEMO_GAME_TYPE);
 NDWriteFix (gameData.time.xGame);
 if (IsMultiGame)
-	NDWriteInt (gameData.app.nGameMode | (gameData.multiplayer.nLocalPlayer << 16));
+	NDWriteInt (gameData.app.nGameMode | (N_LOCALPLAYER << 16));
 else
 	// NOTE LINK TO ABOVE!!!
 	NDWriteInt (gameData.app.nGameMode);
@@ -1832,7 +1832,7 @@ if (IsMultiGame) {
 		gameData.multiplayer.players [i].cloakTime = 0;
 		gameData.multiplayer.players [i].invulnerableTime = 0;
 		NDReadString (gameData.multiplayer.players [i].callsign);
-		gameData.multiplayer.players [i].connected = sbyte (NDReadByte ());
+		CONNECT (i, sbyte (NDReadByte ());
 		if (IsCoopGame)
 			gameData.multiplayer.players [i].score = NDReadInt ();
 		else {
@@ -1874,7 +1874,7 @@ shield = NDReadByte ();
 LOCALPLAYER.flags = NDReadInt ();
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 	LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-	gameData.demo.bPlayersCloaked |= (1 << gameData.multiplayer.nLocalPlayer);
+	gameData.demo.bPlayersCloaked |= (1 << N_LOCALPLAYER);
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
 	LOCALPLAYER.invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
@@ -2310,11 +2310,11 @@ while (!bDone) {
 				 ((gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD) && (oflags != 0xffff))) {
 				if (!(oflags & PLAYER_FLAGS_CLOAKED) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 					LOCALPLAYER.cloakTime = 0;
-					gameData.demo.bPlayersCloaked &= ~ (1 << gameData.multiplayer.nLocalPlayer);
+					gameData.demo.bPlayersCloaked &= ~ (1 << N_LOCALPLAYER);
 					}
 				if ((oflags & PLAYER_FLAGS_CLOAKED) && !(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 					LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-					gameData.demo.bPlayersCloaked |= (1 << gameData.multiplayer.nLocalPlayer);
+					gameData.demo.bPlayersCloaked |= (1 << N_LOCALPLAYER);
 					}
 				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 					LOCALPLAYER.invulnerableTime = 0;
@@ -2325,11 +2325,11 @@ while (!bDone) {
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				if (!(oflags & PLAYER_FLAGS_CLOAKED) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 					LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-					gameData.demo.bPlayersCloaked |= (1 << gameData.multiplayer.nLocalPlayer);
+					gameData.demo.bPlayersCloaked |= (1 << N_LOCALPLAYER);
 					}
 				if ((oflags & PLAYER_FLAGS_CLOAKED) && !(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 					LOCALPLAYER.cloakTime = 0;
-					gameData.demo.bPlayersCloaked &= ~ (1 << gameData.multiplayer.nLocalPlayer);
+					gameData.demo.bPlayersCloaked &= ~ (1 << N_LOCALPLAYER);
 					}
 				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 					LOCALPLAYER.invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
@@ -2607,7 +2607,7 @@ while (!bDone) {
 			NDReadString (pszNewCallsign);
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multiplayer.players [nPlayer].connected = CONNECT_DISCONNECTED;
+				CONNECT (nPlayer, CONNECT_DISCONNECTED);
 				if (!nNewPlayer) {
 					memcpy (gameData.multiplayer.players [nPlayer].callsign, old_callsign, CALLSIGN_LEN+1);
 					gameData.multiplayer.players [nPlayer].netKilledTotal = killedTotal;
@@ -2619,7 +2619,7 @@ while (!bDone) {
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
+				CONNECT (nPlayer, CONNECT_PLAYING);
 				gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
 				gameData.multiplayer.players [nPlayer].netKilledTotal = 0;
 				memcpy (gameData.multiplayer.players [nPlayer].callsign, pszNewCallsign, CALLSIGN_LEN+1);
@@ -2633,11 +2633,11 @@ while (!bDone) {
 			sbyte nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multiplayer.players [nPlayer].connected = CONNECT_DISCONNECTED;
+				CONNECT (nPlayer, CONNECT_DISCONNECTED;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
+				CONNECT (nPlayer, CONNECT_PLAYING);
 			}
 			break;
 
@@ -2645,11 +2645,11 @@ while (!bDone) {
 			sbyte nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING;
+				CONNECT (nPlayer, CONNECT_PLAYING);
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multiplayer.players [nPlayer].connected = CONNECT_DISCONNECTED;
+				CONNECT (nPlayer, CONNECT_DISCONNECTED);
 			}
 			break;
 
@@ -2916,7 +2916,7 @@ LOCALPLAYER.SetShield (I2X (shield));
 LOCALPLAYER.flags = NDReadInt ();
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 	LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-	gameData.demo.bPlayersCloaked |= (1 << gameData.multiplayer.nLocalPlayer);
+	gameData.demo.bPlayersCloaked |= (1 << N_LOCALPLAYER);
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
 	LOCALPLAYER.invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
@@ -2939,7 +2939,7 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 	//		NDReadByte (reinterpret_cast<sbyte*> (&gameData.multiplayer.nPlayers);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		NDReadString (gameData.multiplayer.players [i].callsign);
-		gameData.multiplayer.players [i].connected = NDReadByte ();
+		CONNECT (i, NDReadByte ());
 		if (IsCoopGame)
 			gameData.multiplayer.players [i].score = NDReadInt ();
 		else {

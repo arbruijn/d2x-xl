@@ -550,7 +550,7 @@ if (objP->info.nType == OBJ_WEAPON) {
 		RespawnDestroyedWeapon (nObject);
 	if (objP->info.nId == GUIDEDMSL_ID) {
 		nParent = OBJECTS [objP->cType.laserInfo.parent.nObject].info.nId;
-		if (nParent != gameData.multiplayer.nLocalPlayer)
+		if (nParent != N_LOCALPLAYER)
 			gameData.objs.guidedMissile [nParent].objP = NULL;
 		else if (gameData.demo.nState == ND_STATE_RECORDING)
 			NDRecordGuidedEnd ();

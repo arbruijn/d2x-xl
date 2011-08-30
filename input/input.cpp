@@ -1377,7 +1377,7 @@ gameStates.input.nCruiseSpeed = 0;
 void CControlsManager::CybermouseAdjust (void)
 {
 #if 0
-if (gameData.multiplayer.nLocalPlayer > -1) {
+if (N_LOCALPLAYER > -1) {
 	OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
 	OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
 	gameOpts->gameplay.nAutoLeveling = 0;

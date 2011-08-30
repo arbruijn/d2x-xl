@@ -155,8 +155,8 @@ if (gameStates.entropy.bConquerWarning) {
 
 int CSegment::ConquerCheck (void)
 {
-	CPlayerData	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
-	int		team = GetTeam (gameData.multiplayer.nLocalPlayer) + 1;
+	CPlayerData	*playerP = gameData.multiplayer.players + N_LOCALPLAYER;
+	int		team = GetTeam (N_LOCALPLAYER) + 1;
 	time_t	t;
 
 gameStates.entropy.bConquering = 0;
@@ -209,7 +209,7 @@ if (t - gameStates.entropy.nTimeLastMoved < extraGameInfo [1].entropy.nCaptureTi
 	}
 StopConquerWarning ();
 if (m_owner)
-	MultiSendCaptureBonus ((char) gameData.multiplayer.nLocalPlayer);
+	MultiSendCaptureBonus ((char) N_LOCALPLAYER);
 playerP->secondaryAmmo [PROXMINE_INDEX] -= extraGameInfo [1].entropy.nCaptureVirusThreshold;
 if (playerP->secondaryAmmo [SMARTMINE_INDEX] > extraGameInfo [1].entropy.nBashVirusCapacity)
 	playerP->secondaryAmmo [SMARTMINE_INDEX] -= extraGameInfo [1].entropy.nBashVirusCapacity;

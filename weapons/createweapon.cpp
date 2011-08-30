@@ -169,7 +169,7 @@ if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameDat
 		objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 		objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 		objP->rType.vClipInfo.nCurFrame = 0;
-		objP->info.nCreator = GetTeam (gameData.multiplayer.nLocalPlayer) + 1;
+		objP->info.nCreator = GetTeam (N_LOCALPLAYER) + 1;
 		}
 	return -1;
 	}
@@ -256,8 +256,8 @@ if (parentP && (parentP->info.nType == OBJ_PLAYER)) {
 		objP->cType.laserInfo.xScale = I2X (3) / 4;
 	else if (nWeaponType == GUIDEDMSL_ID) {
 		if (nParent == LOCALPLAYER.nObject) {
-			gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP = objP;
-			gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature = objP->info.nSignature;
+			gameData.objs.guidedMissile [N_LOCALPLAYER].objP = objP;
+			gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature = objP->info.nSignature;
 			if (gameData.demo.nState == ND_STATE_RECORDING)
 				NDRecordGuidedStart ();
 			}

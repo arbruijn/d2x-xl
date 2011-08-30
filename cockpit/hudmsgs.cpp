@@ -153,7 +153,7 @@ if (pMsgs->nMessages > 0) {
 		else
 			yStart = SMALL_FONT->Height () / 2;
 		if (gameOpts->render.cockpit.bGuidedInMainView) {
-			tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
+			tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + N_LOCALPLAYER;
 			CObject *gmObjP = gmiP->objP;
 			if (gmObjP && 
 				 (gmObjP->info.nType == OBJ_WEAPON) && 

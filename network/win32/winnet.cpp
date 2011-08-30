@@ -488,7 +488,7 @@ else {
 	int i;
 	//printf ("Sending game packet: gameData.multiplayer.nPlayers = %i\n", gameData.multiplayer.nPlayers);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if (gameData.multiplayer.players [i].connected && (i != gameData.multiplayer.nLocalPlayer))
+		if (gameData.multiplayer.players [i].connected && (i != N_LOCALPLAYER))
 			IPXSendPacketData (
 				data, dataSize, 
 				netPlayers [0].m_info.players [i].network.Server (), 

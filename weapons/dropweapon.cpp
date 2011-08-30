@@ -56,7 +56,7 @@ if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 newPos = posP->vPos + posP->mOrient.m.dir.f * spitterP->info.xSize;
 if (IsMultiGame && (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS))
 	return -1;
-nObject = CreatePowerup (id, short (GetTeam (gameData.multiplayer.nLocalPlayer) + 1), short (OBJSEG (spitterP)), newPos, 0);
+nObject = CreatePowerup (id, short (GetTeam (N_LOCALPLAYER) + 1), short (OBJSEG (spitterP)), newPos, 0);
 if (nObject < 0) {
 	Int3();
 	return nObject;

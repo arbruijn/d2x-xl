@@ -312,7 +312,7 @@ if (xObjIntensity) {
 					bUseColor = bForceColor = 1;
 					color->Red () = color->Green () = color->Blue () = 1.0;
 					}
-				if (objP->info.nId != gameData.multiplayer.nLocalPlayer) {
+				if (objP->info.nId != N_LOCALPLAYER) {
 					CFixVector tVec = *vObjPos + objP->info.position.mOrient.m.dir.f * I2X (200);
 
 					CHitQuery	hitQuery (FQ_TRANSWALL, vObjPos, &tVec, objP->info.nSegment, nObject);
@@ -437,7 +437,7 @@ switch (nObjType) {
 			xLight = FixMul (s,xLight);
 		   return (xLight);
 		  }
-		else if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
+		else if (objP->info.nId == N_LOCALPLAYER) {
 			return max (gameData.physics.playerThrust.Mag () / 4, I2X (2)) + I2X (1) / 2;
 			}
 		else {
@@ -786,7 +786,7 @@ void ComputeEngineGlow (CObject *objP, fix *xEngineGlowValue)
 {
 xEngineGlowValue [0] = I2X (1)/5;
 if (objP->info.movementType == MT_PHYSICS) {
-	if ((objP->info.nType == OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->info.nId == gameData.multiplayer.nLocalPlayer)) {
+	if ((objP->info.nType == OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->info.nId == N_LOCALPLAYER)) {
 		fix thrust_mag = objP->mType.physInfo.thrust.Mag();
 		xEngineGlowValue [0] += (FixDiv (thrust_mag,gameData.pig.ship.player->maxThrust)*4)/5;
 	}

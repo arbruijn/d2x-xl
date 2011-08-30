@@ -79,11 +79,11 @@ if (netGame.GetScoreGoal ())
 	sprintf (szText, TXT_INFO_SCOREGOAL, netGame.GetScoreGoal () * 5);
 sprintf (szText, " ");
 sprintf (szText, TXT_INFO_PLRSCONN);
-netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
+netPlayers [0].m_info.players [N_LOCALPLAYER].rank = GetMyNetRanking ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].connected) {
 		if (!gameOpts->multi.bNoRankings) {
-			if (i == gameData.multiplayer.nLocalPlayer)
+			if (i == N_LOCALPLAYER)
 				sprintf (szText, "%s%s (%d/%d)",
 							pszRankStrings [netPlayers [0].m_info.players [i].rank],
 							gameData.multiplayer.players [i].callsign,
@@ -93,8 +93,8 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 				sprintf (szText, "%s%s %d/%d",
 							pszRankStrings[netPlayers [0].m_info.players [i].rank],
 							gameData.multiplayer.players [i].callsign,
-							gameData.multigame.score.matrix[gameData.multiplayer.nLocalPlayer][i],
-							gameData.multigame.score.matrix[i][gameData.multiplayer.nLocalPlayer]);
+							gameData.multigame.score.matrix[N_LOCALPLAYER][i],
+							gameData.multigame.score.matrix[i][N_LOCALPLAYER]);
 			}
 		else
 			sprintf (szText, "%s", gameData.multiplayer.players [i].callsign);

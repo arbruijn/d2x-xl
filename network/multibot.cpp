@@ -85,7 +85,7 @@ else if (ROBOTINFO (objP->info.nId).bossFlag) {
 	return 1;
 	}
 nRemOwner = objP->cType.aiInfo.REMOTE_OWNER;
-if (nRemOwner == gameData.multiplayer.nLocalPlayer) { // Already my robot!
+if (nRemOwner == N_LOCALPLAYER) { // Already my robot!
 	int nSlot = objP->cType.aiInfo.REMOTE_SLOT_NUM;
    if ((nSlot < 0) || (nSlot >= MAX_ROBOTS_CONTROLLED))
 		return 0;
@@ -116,12 +116,12 @@ if (gameData.time.xGame > lastcheck + I2X (1)) {
 		if ((gameData.multigame.robots.controlled [i] != -1) && 
 			 (gameData.multigame.robots.lastSendTime [i] + ROBOT_TIMEOUT < gameData.time.xGame)) {
 			nRemOwner = OBJECTS [gameData.multigame.robots.controlled [i]].cType.aiInfo.REMOTE_OWNER;
-			if (nRemOwner != gameData.multiplayer.nLocalPlayer) {	
+			if (nRemOwner != N_LOCALPLAYER) {	
 				gameData.multigame.robots.controlled [i] = -1;
 				Int3 (); // Non-terminal but Rob is interesting, step over please...
 				return;
 				}
- 			if (nRemOwner !=gameData.multiplayer.nLocalPlayer)
+ 			if (nRemOwner !=N_LOCALPLAYER)
 				return;
 			if (gameData.multigame.robots.sendPending [i])
 				MultiSendRobotPosition (gameData.multigame.robots.controlled [i], 1);
@@ -142,16 +142,16 @@ void MultiStripRobots (int nPlayer)
 	CObject	*objP;
 
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS) {
-	if (nPlayer == gameData.multiplayer.nLocalPlayer)
+	if (nPlayer == N_LOCALPLAYER)
 		for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 			MultiDeleteControlledRobot (gameData.multigame.robots.controlled [i]);
 	FORALL_ROBOT_OBJS (objP, i)
 		if (objP->cType.aiInfo.REMOTE_OWNER == nPlayer) {
 			objP->cType.aiInfo.REMOTE_OWNER = -1;
-			objP->cType.aiInfo.REMOTE_SLOT_NUM = (nPlayer == gameData.multiplayer.nLocalPlayer) ? 4 : 0;
+			objP->cType.aiInfo.REMOTE_SLOT_NUM = (nPlayer == N_LOCALPLAYER) ? 4 : 0;
 	  		}
 	}
-// Note -- only call this with playernum == gameData.multiplayer.nLocalPlayer if all other players
+// Note -- only call this with playernum == N_LOCALPLAYER if all other players
 // already know that we are clearing house.  This does not send a release
 // message for each controlled robot!!
 }
@@ -176,7 +176,7 @@ int MultiAddControlledRobot (int nObject, int agitation)
 	int first_freeRobot = -1;
 
 if (ROBOTINFO (OBJECTS [nObject].info.nId).bossFlag) // this is a boss, so make sure he gets a slot
-	agitation = (agitation * 3) + gameData.multiplayer.nLocalPlayer;  
+	agitation = (agitation * 3) + N_LOCALPLAYER;  
 if (OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM > 0) {
 	OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM -= 1;
 	return 0;
@@ -213,7 +213,7 @@ else
 MultiSendClaimRobot (nObject);
 gameData.multigame.robots.controlled [i] = nObject;
 gameData.multigame.robots.agitation [i] = agitation;
-OBJECTS [nObject].cType.aiInfo.REMOTE_OWNER = gameData.multiplayer.nLocalPlayer;
+OBJECTS [nObject].cType.aiInfo.REMOTE_OWNER = N_LOCALPLAYER;
 OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM = i;
 gameData.multigame.robots.controlledTime [i] = gameData.time.xGame;
 gameData.multigame.robots.lastSendTime [i] = gameData.multigame.robots.lastMsgTime [i] = gameData.time.xGame;
@@ -257,7 +257,7 @@ if (OBJECTS [nObject].info.nType != OBJ_ROBOT) {
 	}
 // The AI tells us we should take control of this robot. 
 gameData.multigame.msg.buf [0] = (char)MULTI_ROBOT_CLAIM;
-gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
+gameData.multigame.msg.buf [1] = N_LOCALPLAYER;
 short nRemoteObject = ObjnumLocalToRemote (nObject, reinterpret_cast<sbyte*> (&gameData.multigame.msg.buf [4]));
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+2, nRemoteObject);
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
@@ -281,7 +281,7 @@ if (OBJECTS [nObject].info.nType != OBJ_ROBOT) {
 	}
 MultiDeleteControlledRobot (nObject);
 	gameData.multigame.msg.buf [0] = (char)MULTI_ROBOT_RELEASE;
-gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
+gameData.multigame.msg.buf [1] = N_LOCALPLAYER;
 s = ObjnumLocalToRemote (nObject, reinterpret_cast<sbyte*> (&gameData.multigame.msg.buf [4]));
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+2, s);
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
@@ -331,7 +331,7 @@ void MultiSendRobotPositionSub (int nObject)
 #endif
 
 gameData.multigame.msg.buf [bufP++] = MULTI_ROBOT_POSITION;  							
-gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.nLocalPlayer;										
+gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;										
 s = ObjnumLocalToRemote (nObject, reinterpret_cast<sbyte*> (gameData.multigame.msg.buf + bufP + 2));
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, s);
 bufP += 3;
@@ -366,7 +366,7 @@ if (OBJECTS [nObject].info.nType != OBJ_ROBOT) {
 	Int3 (); // See rob
 	return;
 	}
-if (OBJECTS [nObject].cType.aiInfo.REMOTE_OWNER != gameData.multiplayer.nLocalPlayer)
+if (OBJECTS [nObject].cType.aiInfo.REMOTE_OWNER != N_LOCALPLAYER)
 	return;
 i = OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM;
 gameData.multigame.robots.lastSendTime [i] = gameData.time.xGame;
@@ -388,7 +388,7 @@ void MultiSendRobotFire (int nObject, int nGun, CFixVector *vFire)
 #endif
 
 gameData.multigame.msg.buf [bufP++] = MULTI_ROBOT_FIRE;					
-gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.nLocalPlayer;							
+gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;							
 s = ObjnumLocalToRemote (nObject, reinterpret_cast<sbyte*> (gameData.multigame.msg.buf + bufP + 2));
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, s);
 bufP += 3;
@@ -405,7 +405,7 @@ vSwapped.dir.coord.z = (fix) INTEL_INT ((int) (*vFire).dir.coord.z);
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (CFixVector)); 
 bufP += sizeof (CFixVector);
 #endif
-if (OBJECTS [nObject].cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
+if (OBJECTS [nObject].cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER) {
 	int slot = OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM;
 	if ((slot < 0) || (slot >= MAX_ROBOTS_CONTROLLED))
 		return;
@@ -430,7 +430,7 @@ void MultiSendRobotExplode (int nObject, int nKiller, char bIsThief)
 	short nRemoteObj;
 
 gameData.multigame.msg.buf [bufP++] = MULTI_ROBOT_EXPLODE;				
-gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.nLocalPlayer;							
+gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;							
 nRemoteObj = short (ObjnumLocalToRemote (nKiller, reinterpret_cast<sbyte*> (gameData.multigame.msg.buf + bufP + 2)));
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nRemoteObj);                       
 bufP += 3;
@@ -455,7 +455,7 @@ void MultiSendCreateRobot (int station, int nObject, int nType)
 	int bufP = 0;
 
 gameData.multigame.msg.buf [bufP++] = MULTI_CREATE_ROBOT;					
-gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.nLocalPlayer;							
+gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;							
 gameData.multigame.msg.buf [bufP++] = (sbyte)station;                         
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nObject);                  
 bufP += 2;
@@ -473,7 +473,7 @@ void MultiSendBossActions (int bossobjnum, int action, int secondary, int nObjec
 	int bufP = 0;
 
 gameData.multigame.msg.buf [bufP++] = MULTI_BOSS_ACTIONS;					
-gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.nLocalPlayer;
+gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, bossobjnum);  // Which player is controlling the boss        
 bufP += 2; // We won't network map this nObject since it's the boss
 gameData.multigame.msg.buf [bufP++] = (sbyte)action;  // What is the boss doing?
@@ -515,7 +515,7 @@ void MultiSendCreateRobotPowerups (CObject *delObjP)
 #endif
 
 gameData.multigame.msg.buf [bufP++] = MULTI_CREATE_ROBOT_POWERUPS;			
-gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.nLocalPlayer;			
+gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;			
 hBufP = bufP++;
 gameData.multigame.msg.buf [bufP++] = delObjP->info.contains.nType; 				
 gameData.multigame.msg.buf [bufP++] = delObjP->info.contains.nId;					
@@ -565,7 +565,7 @@ if (OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER != -1)
 	if (MULTI_ROBOT_PRIORITY (nRemoteBot, nPlayer) <= MULTI_ROBOT_PRIORITY (nRemoteBot, OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER))
 		return;
 // Perform the requested change
-if (OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer)
+if (OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER)
 	MultiDeleteControlledRobot (nRobot);
 OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER = nPlayer;
 OBJECTS [nRobot].cType.aiInfo.REMOTE_SLOT_NUM = 0;
@@ -683,12 +683,12 @@ int MultiDestroyRobot (CObject* robotP, char bIsThief)
 if (IsCoopGame && (robotP->info.contains.nCount > 0) && (robotP->info.contains.nType == OBJ_POWERUP) && 
 	 (robotP->info.contains.nId >= POW_KEY_BLUE) && (robotP->info.contains.nId <= POW_KEY_GOLD))
 	ObjectCreateEgg (robotP);
-/*else*/ if (robotP->cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
+/*else*/ if (robotP->cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER) {
 	MultiDropRobotPowerups (nRobot);
 	MultiDeleteControlledRobot (nRobot);
 	}
 else if ((robotP->cType.aiInfo.REMOTE_OWNER == -1) && IAmGameHost ()) {
-	robotP->cType.aiInfo.REMOTE_OWNER = gameData.multiplayer.nLocalPlayer;
+	robotP->cType.aiInfo.REMOTE_OWNER = N_LOCALPLAYER;
 	MultiDropRobotPowerups (robotP->Index ());
 	robotP->cType.aiInfo.REMOTE_OWNER = -1;
 	//MultiDeleteControlledRobot (nRobot);
@@ -860,7 +860,7 @@ switch (action)  {
 		audio.DestroyObjectSound (OBJ_IDX (bossObjP));
 		audio.CreateObjectSound (SOUND_BOSS_SHARE_SEE, SOUNDCLASS_ROBOT, OBJ_IDX (bossObjP), 1, I2X (1), I2X (512));	//	I2X (5)12 means play twice as loud
 		gameData.ai.localInfo [OBJ_IDX (bossObjP)].nextPrimaryFire = 0;
-		if (bossObjP->cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
+		if (bossObjP->cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER) {
 			MultiDeleteControlledRobot (nBossObj);
 //			gameData.multigame.robots.controlled [bossObjP->cType.aiInfo.REMOTE_SLOT_NUM] = -1;
 			}
@@ -931,7 +931,7 @@ else {
 	}
 d_srand (gameStates.app.nRandSeed);
 Assert ((nPlayer >= 0) && (nPlayer < gameData.multiplayer.nPlayers));
-Assert (nPlayer != gameData.multiplayer.nLocalPlayer); // What? How'd we send ourselves this?
+Assert (nPlayer != N_LOCALPLAYER); // What? How'd we send ourselves this?
 gameData.multigame.create.nCount = 0;
 nEggObj = ObjectCreateEgg (&delObjP);
 if (nEggObj == -1)
@@ -1034,7 +1034,7 @@ if (nRemoteObj < 0)
 	return;
 if ((gameData.multigame.robots.agitation [slot] < 70) || 
 	 (MULTI_ROBOT_PRIORITY (nRemoteObj, player_num) > 
-	  MULTI_ROBOT_PRIORITY (nRemoteObj, gameData.multiplayer.nLocalPlayer)) || 
+	  MULTI_ROBOT_PRIORITY (nRemoteObj, N_LOCALPLAYER)) || 
 	  (RandShort () > 0x4400)) {
 	if (gameData.multigame.robots.sendPending [slot])
 		MultiSendRobotPosition (gameData.multigame.robots.controlled [slot], -1);

@@ -325,7 +325,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players[i].flags & PLAYER_FLAGS_CLOAKED) {
 		if (gameData.time.xGame - gameData.multiplayer.players [i].cloakTime > CLOAK_TIME_MAX) {
 			gameData.multiplayer.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
-			if (i == gameData.multiplayer.nLocalPlayer) {
+			if (i == N_LOCALPLAYER) {
 				audio.PlaySound (SOUND_CLOAK_OFF);
 				if (IsMultiGame)
 					MultiSendPlaySound (SOUND_CLOAK_OFF, I2X (1));
@@ -711,7 +711,7 @@ if (!setjmp (gameExitPoint)) {
 		gameStates.app.bConfigMenu = 0;
 		if (gameData.objs.consoleP != OBJECTS + LOCALPLAYER.nObject) {
 #if TRACE
-			 //console.printf (CON_DBG,"gameData.multiplayer.nLocalPlayer=%d nObject=%d",gameData.multiplayer.nLocalPlayer,LOCALPLAYER.nObject);
+			 //console.printf (CON_DBG,"N_LOCALPLAYER=%d nObject=%d",N_LOCALPLAYER,LOCALPLAYER.nObject);
 #endif
 			 //Assert (gameData.objs.consoleP == &OBJECTS[LOCALPLAYER.nObject]);
 			}
@@ -756,7 +756,7 @@ if (!setjmp (gameExitPoint)) {
 			}
 		//if the player is taking damage, give up guided missile control
 		if (LOCALPLAYER.Shield () != playerShield)
-			ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);
+			ReleaseGuidedMissile (N_LOCALPLAYER);
 		//see if redbook song needs to be restarted
 		redbook.CheckRepeat ();	// Handle RedBook Audio Repeating.
 		if (gameStates.app.bConfigMenu) {
@@ -1112,7 +1112,7 @@ if (gameStates.render.bDoAppearanceEffect) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 		LOCALPLAYER.invulnerableTime = gameData.time.xGame - I2X (27);
 		bFakingInvul = 1;
-		SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
+		SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
 		}
 	}
 DoSlowMotionFrame ();

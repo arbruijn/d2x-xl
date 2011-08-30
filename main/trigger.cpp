@@ -352,7 +352,7 @@ for (i = j = 0; i < MAX_PLAYERS; i++) {
 	TriggerSetOrient (&gameData.multiplayer.playerInit [i].position, nSegment, m_sides [j], 1, 0);
 	gameData.multiplayer.playerInit [i].nSegment = nSegment;
 	gameData.multiplayer.playerInit [i].nSegType = SEGMENTS [nSegment].m_function;
-	if (i == gameData.multiplayer.nLocalPlayer)
+	if (i == N_LOCALPLAYER)
 		markerManager.MoveSpawnPoint (&gameData.multiplayer.playerInit [i].position, nSegment);
 	j = (j + 1) % m_nLinks;
 	}
@@ -596,7 +596,7 @@ void CTrigger::PrintMessage (int nPlayer, int bShot, const char *message)
 {
 	static char	pluralSuffix [2][2] = {"", "s"};		//points to 's' or nothing for plural word
 
-if (!gameStates.app.bD1Mission && ((nPlayer < 0) || (nPlayer == gameData.multiplayer.nLocalPlayer))) {
+if (!gameStates.app.bD1Mission && ((nPlayer < 0) || (nPlayer == N_LOCALPLAYER))) {
 	if (!(m_info.flags & TF_NO_MESSAGE) && bShot)	// only display if not a silent trigger and the trigger has been shot (not flown through)
 		HUDInitMessage (message, pluralSuffix [m_nLinks > 1]);
 	}
@@ -916,7 +916,7 @@ if (!(COMPETITION /*|| IsCoopGame*/) || extraGameInfo [IsMultiGame].nSpeedBoost)
 
 bool CTrigger::DoExit (int nPlayer)
 {
-if (nPlayer != gameData.multiplayer.nLocalPlayer)
+if (nPlayer != N_LOCALPLAYER)
 	return false;
 if (m_info.flags & TF_DISABLED)
 	return false;
@@ -953,7 +953,7 @@ return false;
 
 bool CTrigger::DoSecretExit (int nPlayer)
 {
-if (nPlayer != gameData.multiplayer.nLocalPlayer)
+if (nPlayer != N_LOCALPLAYER)
 	return false;
 if ((LOCALPLAYER.Shield () < 0) || gameStates.app.bPlayerIsDead)
 	return false;
@@ -1204,7 +1204,7 @@ switch (m_info.nType) {
 
 	case TT_MATCEN:
 		if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_ROBOTS))
-			DoMatCen (nPlayer == gameData.multiplayer.nLocalPlayer);
+			DoMatCen (nPlayer == N_LOCALPLAYER);
 		break;
 
 	case TT_ILLUSION_ON:
@@ -1234,7 +1234,7 @@ switch (m_info.nType) {
 			}
 		else {
 			if (bIsPlayer) {
-				if (nPlayer != gameData.multiplayer.nLocalPlayer)
+				if (nPlayer != N_LOCALPLAYER)
 					break;
 				if ((LOCALPLAYER.Shield () < 0) || gameStates.app.bPlayerIsDead)
 					break;
@@ -1248,7 +1248,7 @@ switch (m_info.nType) {
 
 	case TT_SPEEDBOOST:
 		if (bIsPlayer) {
-			if (nPlayer != gameData.multiplayer.nLocalPlayer)
+			if (nPlayer != N_LOCALPLAYER)
 				break;
 			if ((LOCALPLAYER.Shield () < 0) || gameStates.app.bPlayerIsDead)
 				break;
@@ -1265,7 +1265,7 @@ switch (m_info.nType) {
 			else
 				LOCALPLAYER.UpdateShield (-fix ((float (I2X (1)) * X2F (TRIGGERS [nTrigger].m_info.value))));
 			if (LOCALPLAYER.Shield () < 0)
-				StartPlayerDeathSequence (OBJECTS + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
+				StartPlayerDeathSequence (OBJECTS + gameData.multiplayer.players [N_LOCALPLAYER].nObject);
 			}
 		break;
 
@@ -1524,7 +1524,7 @@ for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
 	if (trigP->m_info.flags & TF_DISABLED)
 		continue;
 	if ((trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (trigP->IsDelayed () || !(trigP->m_info.flags & TF_PERMANENT))) {
-		trigP->Operate (LOCALPLAYER.nObject, gameData.multiplayer.nLocalPlayer, 0, false);
+		trigP->Operate (LOCALPLAYER.nObject, N_LOCALPLAYER, 0, false);
 		if (!trigP->IsDelayed ())
 			trigP->m_info.flags |= TF_DISABLED;
 		}

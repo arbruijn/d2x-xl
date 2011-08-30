@@ -78,7 +78,7 @@ networkData.bWaitingForPlayerInfo = 0;
 
 void NetworkInit (void)
 {
-	int nPlayerSave = gameData.multiplayer.nLocalPlayer;
+	int nPlayerSave = N_LOCALPLAYER;
 
 GameDisableCheats ();
 gameStates.multi.bIWasKicked = 0;
@@ -110,7 +110,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (networkData.thisPlayer.player.network.Server (), IpxGetMyServerAddress (), 4);
 	}
 networkData.thisPlayer.player.computerType = DOS;
-gameData.multiplayer.nLocalPlayer = nPlayerSave;         
+N_LOCALPLAYER = nPlayerSave;         
 MultiNewGame ();
 networkData.bNewGame = 1;
 gameData.reactor.bDestroyed = 0;

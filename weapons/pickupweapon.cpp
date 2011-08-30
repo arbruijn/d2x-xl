@@ -63,7 +63,7 @@ if (nWeaponIndex == FUSION_INDEX) {
 			DuplicateWeaponMsg (nWeaponIndex, nPlayer);
 			return 0; // already has tri-fusion
 			}
-		if (nPlayer == gameData.multiplayer.nLocalPlayer)
+		if (nPlayer == N_LOCALPLAYER)
    		gameData.weapons.bTripleFusion = 1;
 		else
 			gameData.multiplayer.weaponStates [nPlayer].bTripleFusion = 1;
@@ -207,7 +207,7 @@ if (ammoCount > nMaxAmmo) {
 	}
 nOldAmmo = playerP->primaryAmmo [nWeaponIndex];
 playerP->primaryAmmo [nWeaponIndex] += ammoCount;
-if ((nPlayer = gameData.multiplayer.nLocalPlayer)) {
+if ((nPlayer = N_LOCALPLAYER)) {
 	nCutPoint = POrderList (255);
 	if ((gameData.weapons.nPrimary == LASER_INDEX) && (playerP->laserLevel >= 4))
 		nSupposedWeapon = SUPER_LASER_INDEX;  // allotment for stupid way of doing super laser
@@ -263,7 +263,7 @@ if (playerP->laserLevel < MAX_LASER_LEVEL) {
 	PickupPrimary (LASER_INDEX, nPlayer);
 	return 1;
 	}
-if (nPlayer == gameData.multiplayer.nLocalPlayer)
+if (nPlayer == N_LOCALPLAYER)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_LASER);
 if (IsMultiGame)
 	return 0;
@@ -294,7 +294,7 @@ if (playerP->laserLevel < MAX_SUPER_LASER_LEVEL) {
 	return 1;
 	}
 playerP->laserLevel = MAX_SUPER_LASER_LEVEL;
-if (nPlayer == gameData.multiplayer.nLocalPlayer)
+if (nPlayer == N_LOCALPLAYER)
 	HUDInitMessage (TXT_LASER_MAXEDOUT);
 if (IsMultiGame)
 	return 0;
@@ -313,7 +313,7 @@ if (!(playerP->flags & PLAYER_FLAGS_QUAD_LASERS)) {
 	cockpit->UpdateLaserWeaponInfo ();
 	return 1;
 	}
-if (nPlayer == gameData.multiplayer.nLocalPlayer)
+if (nPlayer == N_LOCALPLAYER)
 	HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE, TXT_QUAD_LASERS);
 if (IsMultiGame)
 	return 0;
@@ -325,7 +325,7 @@ return PickupEnergyBoost (objP, nPlayer);
 int PickupGun (CObject *objP, int nId, int nPlayer)
 {
 if (PickupPrimary (nId, nPlayer)) {
-	if ((nId == OMEGA_INDEX) && (nPlayer == gameData.multiplayer.nLocalPlayer))
+	if ((nId == OMEGA_INDEX) && (nPlayer == N_LOCALPLAYER))
 		gameData.omega.xCharge [IsMultiGame] = objP->cType.powerupInfo.nCount;
 	return 1;
 	}

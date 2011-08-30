@@ -373,7 +373,7 @@ if ((nLaserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
 	gameData.objs.guidedMissile [objP->info.nId].objP = laserP;
 gameData.multigame.bIsGuided = 0;
 if (CObject::IsMissile (nLaserType) && (nLaserType != GUIDEDMSL_ID)) {
-	if (!gameData.objs.missileViewerP && (objP->info.nId == gameData.multiplayer.nLocalPlayer))
+	if (!gameData.objs.missileViewerP && (objP->info.nId == N_LOCALPLAYER))
 		gameData.objs.missileViewerP = laserP;
 	}
 //	If this weapon is supposed to be silent, set that bit!
@@ -644,7 +644,7 @@ controls.StopSecondaryFire ();
 
 int LocalPlayerFireGun (void)
 {
-	CPlayerData*	playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+	CPlayerData*	playerP = gameData.multiplayer.players + N_LOCALPLAYER;
 	CObject*			objP = &OBJECTS [playerP->nObject];
 	fix				xEnergyUsed;
 	int				nAmmoUsed, nPrimaryAmmo;
@@ -722,11 +722,11 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 				if (nAmmoUsed > playerP->primaryAmmo [VULCAN_INDEX])
 					nAmmoUsed = playerP->primaryAmmo [VULCAN_INDEX];
 				playerP->primaryAmmo [VULCAN_INDEX] -= nAmmoUsed;
-				gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed += nAmmoUsed;
-				if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed >= VULCAN_AMMO_AMOUNT) {
+				gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed += nAmmoUsed;
+				if (gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed >= VULCAN_AMMO_AMOUNT) {
 					if (gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 						MaybeDropNetPowerup (-1, POW_VULCAN_AMMO, FORCE_DROP);
-					gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed -= VULCAN_AMMO_AMOUNT;
+					gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed -= VULCAN_AMMO_AMOUNT;
 					}
 				MultiSendAmmo ();
 				}
@@ -874,12 +874,12 @@ for (i = 0; i < nSmartChildren; i++) {
 //give up control of the guided missile
 void ReleaseGuidedMissile (int nPlayer)
 {
-if (nPlayer == gameData.multiplayer.nLocalPlayer) {
+if (nPlayer == N_LOCALPLAYER) {
 	if (!gameData.objs.guidedMissile [nPlayer].objP)
 		return;
 	gameData.objs.missileViewerP = gameData.objs.guidedMissile [nPlayer].objP;
 	if (IsMultiGame)
-	 	MultiSendGuidedInfo (gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP, 1);
+	 	MultiSendGuidedInfo (gameData.objs.guidedMissile [N_LOCALPLAYER].objP, 1);
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 	 	NDRecordGuidedEnd ();
 	 }
@@ -896,12 +896,12 @@ void DoMissileFiring (int bAutoSelect)
 	short		nObject;
 	ubyte		nWeaponId;
 	int		nGun;
-	CObject	*gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
-	CPlayerData	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+	CObject	*gmObjP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
+	CPlayerData	*playerP = gameData.multiplayer.players + N_LOCALPLAYER;
 
 Assert (gameData.weapons.nSecondary < MAX_SECONDARY_WEAPONS);
-if (gmObjP && (gmObjP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
-	ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);
+if (gmObjP && (gmObjP->info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature)) {
+	ReleaseGuidedMissile (N_LOCALPLAYER);
 	i = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 	gameData.missiles.xNextFireTime = gameData.time.xGame + WI_fire_wait (i);
 	return;
@@ -912,7 +912,7 @@ if (gameStates.app.bPlayerIsDead || (playerP->secondaryAmmo [gameData.weapons.nS
 
 nWeaponId = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 if ((nWeaponId == PROXMINE_ID) && IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) &&
-	 (CountPlayerObjects (gameData.multiplayer.nLocalPlayer, OBJ_WEAPON, PROXMINE_ID) >= extraGameInfo [IsMultiGame].nMaxSmokeGrenades))
+	 (CountPlayerObjects (N_LOCALPLAYER, OBJ_WEAPON, PROXMINE_ID) >= extraGameInfo [IsMultiGame].nMaxSmokeGrenades))
 	return;
 if (gameStates.app.cheats.bLaserRapidFire != 0xBADA55)
 	gameData.missiles.xNextFireTime = gameData.time.xGame + WI_fire_wait (nWeaponId);

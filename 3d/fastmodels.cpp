@@ -299,7 +299,7 @@ if (psm->m_bWeapon) {
 	CPlayerData	*playerP = gameData.multiplayer.players + nId;
 	int		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
 	int		bSuperLasers = playerP->laserLevel > MAX_LASER_LEVEL;
-	int		bQuadLasers = gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bQuadLasers;
+	int		bQuadLasers = gameData.multiplayer.weaponStates [N_LOCALPLAYER].bQuadLasers;
 	int		bCenterGun = bCenterGuns [nGunId];
 	int		nWingtip = bQuadLasers ? bSuperLasers : 2; //gameOpts->render.ship.nWingtip;
 
@@ -312,7 +312,7 @@ if (psm->m_bWeapon) {
 	if (EGI_FLAG (bShowWeapons, 0, 1, 0)) {
 		if (psm->m_nGun == nGunId + 1) {
 			if (psm->m_nGun == FUSION_INDEX + 1) {
-				if ((psm->m_nWeaponPos == 3) && !gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion)
+				if ((psm->m_nWeaponPos == 3) && !gameData.multiplayer.weaponStates [N_LOCALPLAYER].bTripleFusion)
 					return 1;
 				}
 			else if (bLasers) {
@@ -338,14 +338,14 @@ if (psm->m_bWeapon) {
 			return 0;
 			}
 		else if (psm->m_nBomb == nBombId)
-			return (nId == gameData.multiplayer.nLocalPlayer) && !AllowedToFireMissile (nId, 0);
+			return (nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0);
 		else if (psm->m_nMissile == nMissileId) {
 			if (psm->m_nWeaponPos > nMissiles)
 				return 1;
 			else {
 				static int nMslPos [] = {-1, 1, 0, 3, 2};
 				int nLaunchPos = gameData.multiplayer.weaponStates [nId].nMslLaunchPos;
-				return (nId == gameData.multiplayer.nLocalPlayer) && !AllowedToFireMissile (nId, 0) &&
+				return (nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0) &&
 						 (nLaunchPos == (nMslPos [(int) psm->m_nWeaponPos]));
 				}
 			}

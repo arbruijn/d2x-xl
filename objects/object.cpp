@@ -346,14 +346,14 @@ gameData.objs.consoleP->info.nFlags = 0;
 
 //------------------------------------------------------------------------------
 
-//sets up gameData.multiplayer.nLocalPlayer & gameData.objs.consoleP
+//sets up N_LOCALPLAYER & gameData.objs.consoleP
 void InitMultiPlayerObject (int nStage)
 {
 if (nStage == 0) {
-	Assert ((gameData.multiplayer.nLocalPlayer >= 0) && (gameData.multiplayer.nLocalPlayer < MAX_PLAYERS));
-	if (gameData.multiplayer.nLocalPlayer != 0) {
+	Assert ((N_LOCALPLAYER >= 0) && (N_LOCALPLAYER < MAX_PLAYERS));
+	if (N_LOCALPLAYER != 0) {
 		gameData.multiplayer.players [0] = LOCALPLAYER;
-		gameData.multiplayer.nLocalPlayer = 0;
+		N_LOCALPLAYER = 0;
 		}
 	LOCALPLAYER.SetObject (0);
 	LOCALPLAYER.nInvuls =
@@ -362,7 +362,7 @@ if (nStage == 0) {
 else {
 	gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
 	gameData.objs.consoleP->SetType (OBJ_PLAYER);
-	gameData.objs.consoleP->info.nId = gameData.multiplayer.nLocalPlayer;
+	gameData.objs.consoleP->info.nId = N_LOCALPLAYER;
 	gameData.objs.consoleP->info.controlType = CT_FLYING;
 	gameData.objs.consoleP->info.movementType = MT_PHYSICS;
 	gameStates.entropy.nTimeLastMoved = -1;

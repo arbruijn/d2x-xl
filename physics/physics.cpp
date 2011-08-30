@@ -103,7 +103,7 @@ else if (gameOpts->gameplay.nAutoLeveling == 2) {	 // new CPlayerData leveling c
 		desiredUpVec = SEGMENTS [objP->info.nSegment].m_sides [nBestSide].m_normals [0];
 	}
 else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
-	desiredUpVec = (*PlayerSpawnOrient (gameData.multiplayer.nLocalPlayer)).m.dir.u;
+	desiredUpVec = (*PlayerSpawnOrient (N_LOCALPLAYER)).m.dir.u;
 else
 	return;
 if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.m.dir.f)) < I2X (1)/2) {
@@ -312,7 +312,7 @@ return 0;
 void CObject::Unstick (void)
 {
 if ((info.nType == OBJ_PLAYER) &&
-	 (info.nId == gameData.multiplayer.nLocalPlayer) &&
+	 (info.nId == N_LOCALPLAYER) &&
 	 (gameStates.app.cheats.bPhysics == 0xBADA55))
 	return;
 if (info.nType == OBJ_WEAPON) 

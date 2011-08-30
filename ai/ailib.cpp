@@ -79,7 +79,7 @@ if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9))
 	return 2;
 if (gameOpts->gameplay.nAIAggressivity) {	// player visible at raised AI aggressivity when having headlight on
 	 if ((TARGETOBJ->info.nType == OBJ_PLAYER) && 
-		  (TARGETOBJ->info.nId == gameData.multiplayer.nLocalPlayer) && 
+		  (TARGETOBJ->info.nId == N_LOCALPLAYER) && 
 		  HeadlightIsOn (-1))
 		return 2;
 	if (!TARGETOBJ->Cloaked () &&

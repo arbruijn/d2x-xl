@@ -862,7 +862,7 @@ void HandleGameKey(int key)
 			break;
 
 		case KEY_ALTED + KEY_CTRLED + KEY_T:
-			SwitchTeam (gameData.multiplayer.nLocalPlayer, 0);
+			SwitchTeam (N_LOCALPLAYER, 0);
 			break;
 		case KEY_F6:
 			if (netGame.m_info.bRefusePlayers && networkData.refuse.bWaitForAnswer && !IsTeamGame) {

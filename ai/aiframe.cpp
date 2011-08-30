@@ -1079,7 +1079,7 @@ if (gameStates.app.cheats.bRobotsKillRobots || (!siP->botInfoP->thief && (RandSh
 		CObject*		robotP;
 		CFixVector	vPos = gameStates.app.cheats.bRobotsKillRobots
 								 ? objP->info.position.vPos	// find robot closest to this robot
-								 : OBJPOS (OBJECTS + gameData.multiplayer.nLocalPlayer)->vPos;	// find robot closest to player
+								 : OBJPOS (OBJECTS + N_LOCALPLAYER)->vPos;	// find robot closest to player
 
 		FORALL_ROBOT_OBJS (robotP, j) {
 			j = robotP->Index ();

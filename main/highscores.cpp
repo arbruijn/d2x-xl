@@ -362,7 +362,7 @@ void CScoreTable::Cleanup (int bQuit)
 if (m_bNetwork)
 	NetworkSendEndLevelPacket ();
 if (bQuit) {
-	LOCALPLAYER.connected = CONNECT_DISCONNECTED;
+	CONNECT (N_LOCALPLAYER, CONNECT_DISCONNECTED);
 	MultiLeaveGame ();
 	}
 gameData.score.bNoMovieMessage = 0;
@@ -383,7 +383,7 @@ if (LAST_OEM_LEVEL) {
 	Cleanup (1);
 	return true;
 	}
-LOCALPLAYER.connected = CONNECT_ADVANCE_LEVEL; // 7 means "I have arrived at the score screen and want to proceed"
+CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL); // 7 means "I have arrived at the score screen and want to proceed"
 if (m_bNetwork)
 	NetworkSendEndLevelPacket ();
 return false;
@@ -451,10 +451,10 @@ int CScoreTable::WaitForPlayers (void)
 {
 m_nEscaped = m_nReady = 0;
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (gameData.multiplayer.players [i].connected && (i != gameData.multiplayer.nLocalPlayer)) {
+	if (gameData.multiplayer.players [i].connected && (i != N_LOCALPLAYER)) {
 	// Check timeout for idle players
 		if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ENDLEVEL_IDLE_TIME) {
-			gameData.multiplayer.players [i].connected = CONNECT_DISCONNECTED;
+			CONNECT (i, CONNECT_DISCONNECTED);
 			if ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ())
 				NetworkSendEndLevelSub (i);
 			}
@@ -538,7 +538,7 @@ while (true) {
 			}
 		if ((gameData.app.nGameMode & (GM_SERIAL | GM_MODEM)) != 0) 
 			break;
-		LOCALPLAYER.connected = CONNECT_ADVANCE_LEVEL; // player is idling in score screen for MAX_VIEW_TIMES secs 
+		CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL); // player is idling in score screen for MAX_VIEW_TIMES secs 
 #if 1
 		if (t >= t0 + 2 * MAX_VIEW_TIME) // player wants to proceed and has waited for MAX_VIEW_TIME secs, so proceed
 			break;
@@ -552,7 +552,7 @@ while (true) {
 			break;
 		}
 	}
-LOCALPLAYER.connected = CONNECT_ADVANCE_LEVEL;
+CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL);
 // Restore background and exit
 paletteManager.DisableEffect ();
 GameFlushInputs ();

@@ -1671,7 +1671,7 @@ nGameMode = GM_GAME_OVER;
 
 void CGameData::SetFusionCharge (fix xCharge, bool bLocal)
 {
-gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].xFusionCharge = xCharge;
+gameData.multiplayer.weaponStates [N_LOCALPLAYER].xFusionCharge = xCharge;
 if (!bLocal)
 	MultiSendFusionCharge ();
 }
@@ -1680,7 +1680,7 @@ if (!bLocal)
 
 fix CGameData::FusionCharge (fix nId)
 {
-return gameData.multiplayer.weaponStates [(nId < 0) ? gameData.multiplayer.nLocalPlayer : nId].xFusionCharge;
+return gameData.multiplayer.weaponStates [(nId < 0) ? N_LOCALPLAYER : nId].xFusionCharge;
 }
 
 // ----------------------------------------------------------------------------
@@ -2056,7 +2056,7 @@ extraGameInfo [0].bEnhancedShakers = 1;
 gameOptions [0].gameplay.bUseD1AI = 1;
 //if (!gameOpts->app.bExpertMode)
 //	extraGameInfo [0].nZoomMode = 1;
-gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip = gameOpts->gameplay.nShip [0];
+gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip = gameOpts->gameplay.nShip [0];
 MultiSendPlayerWeapons ();
 }
 

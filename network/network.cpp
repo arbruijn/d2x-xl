@@ -250,7 +250,7 @@ if ((IAmGameHost ())) {
 	NetworkSendGameInfo (NULL);
 	gameData.multiplayer.nPlayers = nsave;
 	}
-LOCALPLAYER.connected = CONNECT_DISCONNECTED;
+CONNECT (N_LOCALPLAYER, CONNECT_DISCONNECTED);
 NetworkSendEndLevelPacket ();
 ChangePlayerNumTo (0);
 gameData.app.nGameMode = GM_GAME_OVER;
@@ -404,7 +404,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				memset (&shortSyncPack, 0, sizeof (shortSyncPack));
 				CreateShortPos (&shortSyncPack.objPos, OBJECTS + nObject, 0);
 				shortSyncPack.nType = PID_PDATA;
-				shortSyncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
+				shortSyncPack.nPlayer = N_LOCALPLAYER;
 				shortSyncPack.objRenderType = OBJECTS [nObject].info.renderType;
 				shortSyncPack.nLevel = missionManager.nCurrentLevel;
 				shortSyncPack.dataSize = networkData.syncPack.dataSize;
@@ -424,7 +424,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				}
 			else {// If long packets
 				networkData.syncPack.nType = PID_PDATA;
-				networkData.syncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
+				networkData.syncPack.nPlayer = N_LOCALPLAYER;
 				networkData.syncPack.objRenderType = OBJECTS [nObject].info.renderType;
 				networkData.syncPack.nLevel = missionManager.nCurrentLevel;
 				networkData.syncPack.nObjSeg = OBJECTS [nObject].info.nSegment;
@@ -466,7 +466,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		fix t = (fix) SDL_GetTicks ();
 	// Check for player timeouts
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if ((i != gameData.multiplayer.nLocalPlayer) && 
+			if ((i != N_LOCALPLAYER) && 
 				((gameData.multiplayer.players [i].connected == 1) || downloadManager.Downloading (i))) {
 				if ((networkData.nLastPacketTime [i] == 0) || (networkData.nLastPacketTime [i] + downloadManager.GetTimeoutSecs () * 1000 > t)) {
 					ResetPlayerTimeout (i, t);
@@ -521,7 +521,7 @@ void NetworkPing (ubyte flag, ubyte nPlayer)
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	ubyte mybuf [3];
 	mybuf [0] = flag;
-	mybuf [1] = gameData.multiplayer.nLocalPlayer;
+	mybuf [1] = N_LOCALPLAYER;
 	if (gameStates.multi.nGameType == UDP_GAME)
 		mybuf [2] = LOCALPLAYER.connected;
 	IPXSendPacketData (

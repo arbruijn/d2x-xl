@@ -255,7 +255,7 @@ FORALL_OBJS (objP, i) {
 		CFixVector	vRotForce;
 
 		//	Hack!Warning!Test code!
-		if (flash && (objP->info.nId == gameData.multiplayer.nLocalPlayer)) {
+		if (flash && (objP->info.nId == N_LOCALPLAYER)) {
 			int fe = min (I2X (4), force * flash / 32);	//	For four seconds or less
 			if (parentP->cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature) {
 				fe /= 2;

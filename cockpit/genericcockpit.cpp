@@ -280,9 +280,9 @@ void CGenericCockpit::DrawCruise (int x, int y)
 {
 if (!gameStates.render.bRearView &&
 	 (gameStates.input.nCruiseSpeed > 0) &&
-	 (gameData.multiplayer.nLocalPlayer > -1) &&
+	 (N_LOCALPLAYER > -1) &&
 	 (gameData.objs.viewerP->info.nType == OBJ_PLAYER) &&
-	 (gameData.objs.viewerP->info.nId == gameData.multiplayer.nLocalPlayer))
+	 (gameData.objs.viewerP->info.nId == N_LOCALPLAYER))
 	GrPrintF (NULL, x, y, "%s %2d%%", TXT_CRUISE, X2I (gameStates.input.nCruiseSpeed));
 }
 
@@ -578,7 +578,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && (timevar = I2X (netGame.GetPlayTime
 void CGenericCockpit::DrawFlag (int x, int y)
 {
 if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
-	BitBlt ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) ? FLAG_ICON_RED : FLAG_ICON_BLUE, x, y, false, false);
+	BitBlt ((GetTeam (N_LOCALPLAYER) == TEAM_BLUE) ? FLAG_ICON_RED : FLAG_ICON_BLUE, x, y, false, false);
 }
 
 //	-----------------------------------------------------------------------------
@@ -803,7 +803,7 @@ if (gameStates.render.cockpit.nType != CM_FULL_COCKPIT)
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 #endif
 m_info.nColor = RGBA (255, 255, 255, int (float (nCloakFadeValue) / float (FADE_LEVELS) * 255));
-BitBlt (GAUGE_SHIPS + (IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer % MAX_PLAYER_COLORS), x, y);
+BitBlt (GAUGE_SHIPS + (IsTeamGame ? GetTeam (N_LOCALPLAYER) : N_LOCALPLAYER % MAX_PLAYER_COLORS), x, y);
 m_info.nColor = WHITE_RGBA;
 gameStates.render.grAlpha = 1.0f;
 #if 0
@@ -1041,11 +1041,11 @@ fontManager.SetScale (1.0f);
 
 static inline bool GuidedMissileActive (void)
 {
-CObject *gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+CObject *gmObjP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
 return gmObjP &&
 		 (gmObjP->info.nType == OBJ_WEAPON) &&
 		 (gmObjP->info.nId == GUIDEDMSL_ID) &&
-		 (gmObjP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature);
+		 (gmObjP->info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature);
 }
 
 //------------------------------------------------------------------------------
@@ -1285,7 +1285,7 @@ bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || (netGame.m_info.
 bShowTeamNames = (gameData.multigame.bShowReticleName && (IsCoopGame || IsTeamGame));
 bShowFlags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
 
-nTeam = GetTeam (gameData.multiplayer.nLocalPlayer);
+nTeam = GetTeam (N_LOCALPLAYER);
 for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check all players
 	if (gameStates.multi.bPlayerIsTyping [nPlayer])
 		nState = 1;
@@ -1490,7 +1490,7 @@ for (i = 0; i < nPlayers; i++) {
 	else
 		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [nPlayer].Red (), playerColors [nPlayer].Green (), playerColors [nPlayer].Blue ()), 1, 0, 0);
 	if (gameData.multigame.score.bShowList == 3) {
-		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
+		if (GetTeam (N_LOCALPLAYER) == i) {
 #if 0//DBG
 			sprintf (name, "%c%-8s %d.%d.%d.%d:%d",
 						teamInd [0], netGame.m_info.szTeamName [i],
@@ -1571,7 +1571,7 @@ for (i = 0; i < nPlayers; i++) {
 												 gameData.multiplayer.players [nPlayer].nScoreGoalCount);
    else
 		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d", gameData.multiplayer.players [nPlayer].netKillsTotal);
-	if (gameStates.render.cockpit.bShowPingStats && (nPlayer != gameData.multiplayer.nLocalPlayer)) {
+	if (gameStates.render.cockpit.bShowPingStats && (nPlayer != N_LOCALPLAYER)) {
 		if (bGetPing)
 			PingPlayer (nPlayer);
 		if (pingStats [nPlayer].sent) {
@@ -1861,7 +1861,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 	      gameStates.render.nRenderingType = 255; // don't handle coop stuff
 			if ((nPlayer != -1) &&
 				 gameData.multiplayer.players [nPlayer].connected &&
-				 (IsCoopGame || (IsTeamGame && (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer)))))
+				 (IsCoopGame || (IsTeamGame && (GetTeam (nPlayer) == GetTeam (N_LOCALPLAYER)))))
 				cockpit->RenderWindow (w, &OBJECTS [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
 			else {
 				cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);

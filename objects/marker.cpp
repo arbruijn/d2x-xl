@@ -72,7 +72,7 @@ objects.Clear ();
 
 inline CObject* CMarkerManager::GetObject (int nPlayer, int nMarker)
 {
-short nObject = m_data.objects [((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer) * 2 + nMarker];
+short nObject = m_data.objects [((nPlayer < 0) ? N_LOCALPLAYER : nPlayer) * 2 + nMarker];
 return (nObject < 0) ? NULL : OBJECTS + nObject;
 }
 
@@ -201,7 +201,7 @@ return 1;
 
 void CMarkerManager::Drop (char nPlayerMarker, int bSpawn)
 {
-	ubyte		nMarker = (gameData.multiplayer.nLocalPlayer * 2) + nPlayerMarker;
+	ubyte		nMarker = (N_LOCALPLAYER * 2) + nPlayerMarker;
 	CObject	*playerP = OBJECTS + LOCALPLAYER.nObject;
 
 if (!(bSpawn && markerManager.MoveSpawnPoint (&playerP->info.position, playerP->info.nSegment))) {
@@ -214,7 +214,7 @@ if (!(bSpawn && markerManager.MoveSpawnPoint (&playerP->info.position, playerP->
 	m_data.objects [nMarker] =
 		DropMarkerObject (playerP->info.position.vPos, (short) playerP->info.nSegment, playerP->info.position.mOrient, nMarker);
 	if (IsMultiGame)
-		MultiSendDropMarker (gameData.multiplayer.nLocalPlayer, playerP->info.position.vPos, nPlayerMarker, m_data.szMessage [nMarker]);
+		MultiSendDropMarker (N_LOCALPLAYER, playerP->info.position.vPos, nPlayerMarker, m_data.szMessage [nMarker]);
 	}
 }
 
@@ -228,7 +228,7 @@ if ((!IsMultiGame || IsCoopGame) && !(gameStates.app.bPlayerExploded || gameStat
 	if (nMarker < 0)
 		nMarker = (m_data.nLast + 1) % MaxDrop ();
 	else
-		nMarker -= (gameData.multiplayer.nLocalPlayer * 2);
+		nMarker -= (N_LOCALPLAYER * 2);
 	Drop (nMarker, 1);
 	}
 }
@@ -267,7 +267,7 @@ int CMarkerManager::Last (void)
 
 //find free marker slot
 nMaxDrop = MaxDrop ();
-h = gameData.multiplayer.nLocalPlayer * 2 + nMaxDrop;
+h = N_LOCALPLAYER * 2 + nMaxDrop;
 for (i = nMaxDrop; i; i--)
 	if (m_data.objects [--h] > -1)		//found free slot!
 		return i - 1;
@@ -283,7 +283,7 @@ int CMarkerManager::SpawnIndex (int nPlayer)
 //find free marker slot
 nMaxDrop = MaxDrop ();
 if (nPlayer < 0)
-	nPlayer = gameData.multiplayer.nLocalPlayer;
+	nPlayer = N_LOCALPLAYER;
 for (i = nPlayer * 2, h = i + nMaxDrop; i < h; i++) {
 	if (m_data.objects [i] < 0)		//found free slot!
 		continue;
@@ -310,7 +310,7 @@ if (objP->info.nType == OBJ_MARKER) {
 	int nMaxDrop, h, i, nObject = objP->Index ();
 
 	nMaxDrop = MaxDrop ();
-	for (i = gameData.multiplayer.nLocalPlayer * 2, h = i + nMaxDrop; i < h; i++)
+	for (i = N_LOCALPLAYER * 2, h = i + nMaxDrop; i < h; i++)
 		if (m_data.objects [i] == nObject)		//found free slot!
 			return 1;
 	}
@@ -440,7 +440,7 @@ switch (key) {
 		break;
 
 	case KEY_ENTER:
-		nMarker = (gameData.multiplayer.nLocalPlayer * 2) + m_data.nCurrent;
+		nMarker = (N_LOCALPLAYER * 2) + m_data.nCurrent;
 		strupr (m_data.szInput);
 		strcpy (m_data.szMessage [nMarker], m_data.szInput);
 		if (IsMultiGame)

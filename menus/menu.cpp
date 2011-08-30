@@ -681,7 +681,7 @@ while (!done) {
 	if (nCurItemP)
 		*nCurItemP = m_nChoice;
 	if (gameStates.app.bGameRunning && IsMultiGame) {
-		gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] = 1;
+		gameStates.multi.bPlayerIsTyping [N_LOCALPLAYER] = 1;
 		MultiSendTyping ();
 		}
 	if (!JOYDEFS_CALIBRATING)

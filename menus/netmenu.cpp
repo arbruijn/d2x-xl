@@ -1113,7 +1113,7 @@ SetAllAllowablesTo (mpParams.nWeaponFilter);
 networkData.nNamesInfoSecurity = -1;
 
 for (i = 0; i < MAX_PLAYERS; i++)
-	if (i != gameData.multiplayer.nLocalPlayer)
+	if (i != N_LOCALPLAYER)
 		gameData.multiplayer.players [i].callsign [0] = 0;
 
 gameData.multiplayer.nMaxPlayers = MAX_NUM_NET_PLAYERS;

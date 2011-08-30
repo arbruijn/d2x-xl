@@ -1044,7 +1044,7 @@ char* CMissionManager::LevelStateName (char* szFile, int nLevel)
 {
 #if DBG
 sprintf (szFile, "%s-player%d.level%d", 
-			m_list [nCurrentMission].szMissionName + 4, IsMultiGame ? gameData.multiplayer.nLocalPlayer + 1 : 0, nLevel ? nLevel : nCurrentLevel);
+			m_list [nCurrentMission].szMissionName + 4, IsMultiGame ? N_LOCALPLAYER + 1 : 0, nLevel ? nLevel : nCurrentLevel);
 #else
 sprintf (szFile, "%s.level%d", m_list [nCurrentMission].szMissionName + 4, nLevel ? nLevel : nCurrentLevel);
 #endif

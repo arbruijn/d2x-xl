@@ -823,13 +823,13 @@ if (IsCoopGame) {
 	SaveNetPlayers ();
 	IFDBG (fPos = m_cf.Tell ());
 	m_cf.WriteInt (gameData.multiplayer.nPlayers);
-	m_cf.WriteInt (gameData.multiplayer.nLocalPlayer);
+	m_cf.WriteInt (N_LOCALPLAYER);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		SavePlayer (gameData.multiplayer.players + i);
 	IFDBG (fPos = m_cf.Tell ());
 	}
 //Save CPlayerData info
-SavePlayer (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
+SavePlayer (gameData.multiplayer.players + N_LOCALPLAYER);
 // Save the current weapon info
 m_cf.WriteByte (gameData.weapons.nPrimary);
 m_cf.WriteByte (gameData.weapons.nSecondary);
@@ -1261,7 +1261,7 @@ int CSaveGameManager::SetServerPlayer (
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (IAmGameHost ())
-		nServerPlayer = gameData.multiplayer.nLocalPlayer;
+		nServerPlayer = N_LOCALPLAYER;
 	else {
 		nServerPlayer = -1;
 		for (i = 0; i < nPlayers; i++)
@@ -1276,14 +1276,14 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		Swap (netPlayers [0].m_info.players [0], netPlayers [0].m_info.players [nServerPlayer]);
 		Swap (restoredPlayers [0], restoredPlayers [nServerPlayer]);
 		if (IAmGameHost ())
-			gameData.multiplayer.nLocalPlayer = 0;
-		else if (!gameData.multiplayer.nLocalPlayer)
-			gameData.multiplayer.nLocalPlayer = nServerPlayer;
+			N_LOCALPLAYER = 0;
+		else if (!N_LOCALPLAYER)
+			N_LOCALPLAYER = nServerPlayer;
 		}
 #if 0
-	memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Node (), IpxGetMyLocalAddress (), 6);
-	netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Port () = 
-		htons (netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].network.Port ());
+	memcpy (netPlayers [0].m_info.players [N_LOCALPLAYER].network.Node (), IpxGetMyLocalAddress (), 6);
+	netPlayers [0].m_info.players [N_LOCALPLAYER].network.Port () = 
+		htons (netPlayers [0].m_info.players [N_LOCALPLAYER].network.Port ());
 #endif
 	}
 *pnOtherObjNum = nOtherObjNum;
@@ -1307,7 +1307,7 @@ for (i = 0; i < nPlayers; i++) {
 					memcpy (netPlayers [0].m_info.players [i].network.Node (), gameData.multiplayer.players [j].netAddress, 
 							  sizeof (gameData.multiplayer.players [j].netAddress));
 					}
-				restoredPlayers [i].connected = CONNECT_PLAYING;
+				restoredPlayers [i].Connect ((sbyte) CONNECT_PLAYING);
 				break;
 				}
 			}
@@ -1324,9 +1324,9 @@ for (i = 0; i < nPlayers; i++)
 gameData.multiplayer.nPlayers = nPlayers;
 if (IAmGameHost ()) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if (i == gameData.multiplayer.nLocalPlayer)
+		if (i == N_LOCALPLAYER)
 			continue;
-   	gameData.multiplayer.players [i].connected = CONNECT_DISCONNECTED;
+   	CONNECT (i, CONNECT_DISCONNECTED);
 		}
 	}
 }
@@ -1341,11 +1341,11 @@ if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 
 	OBJECTS [nOtherObjNum] = h;
 	OBJECTS [nServerObjNum].info.nId = nServerObjNum;
 	OBJECTS [nOtherObjNum].info.nId = 0;
-	if (gameData.multiplayer.nLocalPlayer == nServerObjNum) {
+	if (N_LOCALPLAYER == nServerObjNum) {
 		OBJECTS [nServerObjNum].info.controlType = CT_FLYING;
 		OBJECTS [nOtherObjNum].info.controlType = CT_REMOTE;
 		}
-	else if (gameData.multiplayer.nLocalPlayer == nOtherObjNum) {
+	else if (N_LOCALPLAYER == nOtherObjNum) {
 		OBJECTS [nServerObjNum].info.controlType = CT_REMOTE;
 		OBJECTS [nOtherObjNum].info.controlType = CT_FLYING;
 		}
@@ -1393,7 +1393,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 
 void CSaveGameManager::AwardReturningPlayer (CPlayerData *retPlayerP, fix xOldGameTime)
 {
-CPlayerData *playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+CPlayerData *playerP = gameData.multiplayer.players + N_LOCALPLAYER;
 playerP->level = retPlayerP->level;
 playerP->lastScore = retPlayerP->lastScore;
 playerP->timeLevel = retPlayerP->timeLevel;
@@ -1511,7 +1511,7 @@ for (int i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
 	netPlayers [0].m_info.players [i].versionMajor = (ubyte) m_cf.ReadByte ();
 	netPlayers [0].m_info.players [i].versionMinor = (ubyte) m_cf.ReadByte ();
 	netPlayers [0].m_info.players [i].computerType = m_cf.ReadByte ();
-	netPlayers [0].m_info.players [i].connected = m_cf.ReadByte ();
+	netPlayers [0].m_info.players [i].connected = ((sbyte) m_cf.ReadByte ());
 	netPlayers [0].m_info.players [i].socket = (ushort) m_cf.ReadShort ();
 	netPlayers [0].m_info.players [i].rank = (ubyte) m_cf.ReadByte ();
 	}
@@ -1525,7 +1525,7 @@ void CSaveGameManager::LoadPlayer (CPlayerData *playerP)
 
 m_cf.Read (playerP->callsign, 1, CALLSIGN_LEN + 1); // The callsign of this CPlayerData, for net purposes.
 m_cf.Read (playerP->netAddress, 1, 6);					// The network address of the player.
-playerP->connected = m_cf.ReadByte ();					// Is the player connected or not?
+playerP->Connect ((sbyte) m_cf.ReadByte ());			// Is the player connected or not?
 playerP->nObject = m_cf.ReadInt ();						// What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
 playerP->nPacketsGot = m_cf.ReadInt ();				// How many packets we got from them
 playerP->nPacketsSent = m_cf.ReadInt ();				// How many packets we sent to them
@@ -1694,11 +1694,11 @@ if (IsMultiGame) {
 	CSaveGameManager::LoadNetPlayers ();
 	IFDBG (fPos = m_cf.Tell ());
 	nPlayers = m_cf.ReadInt ();
-	nSavedLocalPlayer = gameData.multiplayer.nLocalPlayer;
-	gameData.multiplayer.nLocalPlayer = m_cf.ReadInt ();
+	nSavedLocalPlayer = N_LOCALPLAYER;
+	N_LOCALPLAYER = m_cf.ReadInt ();
 	for (i = 0; i < nPlayers; i++) {
 		CSaveGameManager::LoadPlayer (restoredPlayers + i);
-		restoredPlayers [i].connected = CONNECT_DISCONNECTED;
+		restoredPlayers [i].Connect ((sbyte) CONNECT_DISCONNECTED);
 		}
 	IFDBG (fPos = m_cf.Tell ());
 	// make sure the current game host is in CPlayerData slot #0
@@ -1722,7 +1722,7 @@ if (m_nVersion >= 39) {
 
 nLocalObjNum = LOCALPLAYER.nObject;
 if (m_bSecret != 1)	//either no secret restore, or player died in scret level
-	LoadPlayer (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
+	LoadPlayer (gameData.multiplayer.players + N_LOCALPLAYER);
 else {
 	CPlayerData	retPlayer;
 	LoadPlayer (&retPlayer);
@@ -1756,7 +1756,7 @@ for (i = 0; i < 2; i++) {
 	}
 if (m_nVersion > 33) {
 	for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	   if (i != gameData.multiplayer.nLocalPlayer)
+	   if (i != N_LOCALPLAYER)
 		   gameData.multiplayer.weaponStates [i].bTripleFusion = m_cf.ReadInt ();
    	else {
    	   gameData.weapons.bTripleFusion = m_cf.ReadInt ();
@@ -2013,7 +2013,7 @@ if (m_nVersion >= 37) {
 if (m_nVersion >= 54) {
 	gameOpts->gameplay.nShip [0] = m_cf.ReadInt ();
 	gameOpts->gameplay.nShip [1] = -1;
-	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip = ubyte (gameOpts->gameplay.nShip [0]);
+	gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip = ubyte (gameOpts->gameplay.nShip [0]);
 	}
 if (LOCALPLAYER.numRobotsLevel > LOCALPLAYER.numKillsLevel + CountRobotsInLevel ()) // fix for a bug affecting savegames
 	LOCALPLAYER.numRobotsLevel = LOCALPLAYER.numKillsLevel + CountRobotsInLevel ();
@@ -2054,8 +2054,8 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	m_cf.Read (&netGame, sizeof (tNetGameInfo), 1);
 	m_cf.Read (&netPlayers [0], netPlayers [0].Size (), 1);
 	m_cf.Read (&nPlayers, sizeof (gameData.multiplayer.nPlayers), 1);
-	m_cf.Read (&gameData.multiplayer.nLocalPlayer, sizeof (gameData.multiplayer.nLocalPlayer), 1);
-	nSavedLocalPlayer = gameData.multiplayer.nLocalPlayer;
+	m_cf.Read (&N_LOCALPLAYER, sizeof (N_LOCALPLAYER), 1);
+	nSavedLocalPlayer = N_LOCALPLAYER;
 	for (i = 0; i < nPlayers; i++)
 		m_cf.Read (restoredPlayers + i, sizeof (CPlayerData), 1);
 	nServerPlayer = SetServerPlayer (restoredPlayers, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
@@ -2069,7 +2069,7 @@ if (!PrepareLevel (nCurrentLevel, true, m_bSecret == 1, true, false)) {
 	}
 nLocalObjNum = LOCALPLAYER.nObject;
 if (m_bSecret != 1)	//either no secret restore, or CPlayerData died in scret level
-	m_cf.Read (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer, sizeof (CPlayerData), 1);
+	m_cf.Read (gameData.multiplayer.players + N_LOCALPLAYER, sizeof (CPlayerData), 1);
 else {
 	CPlayerData	retPlayer;
 	m_cf.Read (&retPlayer, sizeof (CPlayerData), 1);

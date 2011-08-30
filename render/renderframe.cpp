@@ -60,11 +60,11 @@ uint	nClearWindowColor = 0;
 
 static inline bool GuidedMissileActive (void)
 {
-CObject *gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+CObject *gmObjP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
 return gmObjP &&
 		 (gmObjP->info.nType == OBJ_WEAPON) &&
 		 (gmObjP->info.nId == GUIDEDMSL_ID) &&
-		 (gmObjP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature);
+		 (gmObjP->info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature);
 }
 
 //------------------------------------------------------------------------------
@@ -303,7 +303,7 @@ else {
 	if (objP) {		//used to be active
 		if (!gameOpts->render.cockpit.bGuidedInMainView)
 			cockpit->RenderWindow (1, NULL, 0, WBU_STATIC, NULL);
-		gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP = NULL;
+		gameData.objs.guidedMissile [N_LOCALPLAYER].objP = NULL;
 		}
 	if (gameData.objs.missileViewerP && !gameStates.render.bChaseCam) {		//do missile view
 		static int mslViewerSig = -1;
@@ -646,7 +646,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 		cockpit->Activate (CM_STATUS_BAR);
 		return;
 		}
-  	gameData.objs.viewerP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+  	gameData.objs.viewerP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
 	UpdateRenderedData (0, gameData.objs.viewerP, 0, 0);
 	if ((xStereoSeparation <= 0) && cameraManager.Render ())
 		CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);

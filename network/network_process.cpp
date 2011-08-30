@@ -221,7 +221,7 @@ void NetworkProcessRequest (tSequencePacket *their)
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (!CmpNetPlayers (their->player.callsign, netPlayers [0].m_info.players [i].callsign, 
 								&their->player.network, &netPlayers [0].m_info.players [i].network)) {
-		gameData.multiplayer.players [i].connected = CONNECT_PLAYING;
+		CONNECT (i, CONNECT_PLAYING);
 		break;
 		}
 	}                       

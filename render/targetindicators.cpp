@@ -286,7 +286,7 @@ if (!EGI_FLAG (bCloakedIndicators, 0, 1, 0)) {
 		}
 	}
 if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 1, 0)) {
-	if (GetTeam (nPlayer) != GetTeam (gameData.multiplayer.nLocalPlayer)) {
+	if (GetTeam (nPlayer) != GetTeam (N_LOCALPLAYER)) {
 		if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG))
 			return;
 		pc = ObjectFrameColor (NULL, NULL);

@@ -2516,6 +2516,9 @@ class CMultiplayerData {
 		CMultiplayerData ();
 		bool Create (void);
 		void Destroy (void);
+		inline void Connect (int nPlayer, sbyte nStatus) {
+			players [nPlayer].Connect (nStatus);
+			}
 };
 
 #include "multi.h"
@@ -3532,9 +3535,13 @@ return 1.0f - float (alpha) / float (FADE_LEVELS);
 #define	CLAMP(_val,_minVal,_maxVal)	\
 		 {if ((_val) < (_minVal)) (_val) = (_minVal); else if ((_val) > (_maxVal)) (_val) = (_maxVal);}
 
-#define LOCALPLAYER	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer]
+#define N_LOCALPLAYER	gameData.multiplayer.nLocalPlayer
 
-#define ISLOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == gameData.multiplayer.nLocalPlayer))
+#define LOCALPLAYER		gameData.multiplayer.players [N_LOCALPLAYER]
+
+#define ISLOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == N_LOCALPLAYER))
+
+#define CONNECT(_nPlayer, _nStatus)	gameData.multiplayer.Connect (_nPlayer, _nStatus)
 
 #define G3_INFINITY			fInfinity [gameOpts->render.shadows.nReach]
 

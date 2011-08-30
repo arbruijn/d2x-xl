@@ -229,7 +229,7 @@ void DoOmegaStuff (CObject *parentObjP, CFixVector *vMuzzle, CObject *weaponObjP
 if (gameStates.gameplay.bMineMineCheat && (gameData.omega.xCharge [IsMultiGame] < MAX_OMEGA_CHARGE))
 	gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE - 1;
 #endif
-if (nPlayer == gameData.multiplayer.nLocalPlayer) {
+if (nPlayer == N_LOCALPLAYER) {
 	//	If charge >= min, or (some charge and zero energy), allow to fire.
 	if (((RandShort () > parentObjP->GunDamage ()) || (gameData.omega.xCharge [IsMultiGame] < MIN_OMEGA_CHARGE)) &&
 		 (!gameData.omega.xCharge [IsMultiGame] || gameData.multiplayer.players [nPlayer].energy)) {

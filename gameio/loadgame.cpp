@@ -188,11 +188,11 @@ extern int nLastMsgYCrd;
 
 void VerifyConsoleObject (void)
 {
-Assert (gameData.multiplayer.nLocalPlayer > -1);
+Assert (N_LOCALPLAYER > -1);
 Assert (LOCALPLAYER.nObject > -1);
 gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
 Assert (gameData.objs.consoleP->info.nType == OBJ_PLAYER);
-Assert (gameData.objs.consoleP->info.nId == gameData.multiplayer.nLocalPlayer);
+Assert (gameData.objs.consoleP->info.nId == N_LOCALPLAYER);
 }
 
 //------------------------------------------------------------------------------
@@ -363,7 +363,7 @@ if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
 gameData.multiplayer.nBuiltinMissiles = 2 + NDL - gameStates.app.nDifficultyLevel;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) 
 	gameData.physics.xAfterburnerCharge = I2X (1);
-OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
+OBJECTS [N_LOCALPLAYER].ResetDamage ();
 }
 
 //------------------------------------------------------------------------------
@@ -371,7 +371,7 @@ OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
 // Setup player for new game
 void ResetPlayerData (bool bNewGame, bool bSecret, bool bRestore, int nPlayer)
 {
-CPlayerData* playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
+CPlayerData* playerP = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
 
 playerP->numKillsLevel = 0;
 playerP->numRobotsLevel = CountRobotsInLevel ();
@@ -402,17 +402,17 @@ if (bNewGame) {
 	playerP->flags = 0;
 	playerP->nCloaks =
 	playerP->nInvuls = 0;
-	if (nPlayer == gameData.multiplayer.nLocalPlayer)
+	if (nPlayer == N_LOCALPLAYER)
 		ResetShipData (bRestore);
 	if (IsMultiGame && !IsCoopGame) {
 		if (IsTeamGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
-			playerP->flags |= KEY_GOLD | TEAMKEY (gameData.multiplayer.nLocalPlayer);
+			playerP->flags |= KEY_GOLD | TEAMKEY (N_LOCALPLAYER);
 		else
 			playerP->flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
 		}
 	else
 		playerP->timeLevel = 0;
-	if ((nPlayer = gameData.multiplayer.nLocalPlayer))
+	if ((nPlayer = N_LOCALPLAYER))
 		gameStates.app.bFirstSecretVisit = 1;
 	}
 else {
@@ -433,7 +433,7 @@ else {
 		playerP->invulnerableTime = 0;
 		if (IsMultiGame && !IsCoopGame) {
 			if (IsTeamGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
-				playerP->flags |= KEY_GOLD | TEAMKEY (gameData.multiplayer.nLocalPlayer);
+				playerP->flags |= KEY_GOLD | TEAMKEY (N_LOCALPLAYER);
 			else
 				playerP->flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
 			}
@@ -504,7 +504,7 @@ if (gameOpts->gameplay.nShip [1] > -1) {
 	gameOpts->gameplay.nShip [0] = gameOpts->gameplay.nShip [1];
 	gameOpts->gameplay.nShip [1] = -1;
 	}
-gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip = gameOpts->gameplay.nShip [0];
+gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip = gameOpts->gameplay.nShip [0];
 
 LOCALPLAYER.Setup ();
 LOCALPLAYER.SetEnergy (gameStates.gameplay.InitialEnergy ());
@@ -528,7 +528,7 @@ LOCALPLAYER.secondaryWeaponFlags = HAS_CONCUSSION_FLAG;
 gameData.weapons.nOverridden = 0;
 gameData.weapons.nPrimary = 0;
 gameData.weapons.nSecondary = 0;
-gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed = 0;
+gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed = 0;
 LOCALPLAYER.flags &= ~
 	(PLAYER_FLAGS_QUAD_LASERS |
 	 PLAYER_FLAGS_AFTERBURNER |
@@ -540,7 +540,7 @@ LOCALPLAYER.flags &= ~
 	 PLAYER_FLAGS_HEADLIGHT |
 	 PLAYER_FLAGS_HEADLIGHT_ON |
 	 PLAYER_FLAGS_FLAG);
-OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
+OBJECTS [N_LOCALPLAYER].ResetDamage ();
 AddPlayerLoadout (bRestore);
 gameData.physics.xAfterburnerCharge = (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) ? I2X (1) : 0;
 LOCALPLAYER.cloakTime = 0;
@@ -1451,7 +1451,7 @@ void PlayerFinishedLevel (int bSecret)
 
 LOCALPLAYER.hostages.nRescued += LOCALPLAYER.hostages.nOnBoard;
 if (gameData.app.nGameMode & GM_NETWORK)
-	LOCALPLAYER.connected = CONNECT_WAITING; // Finished but did not die
+	CONNECT (N_LOCALPLAYER, CONNECT_WAITING); // Finished but did not die
 gameStates.render.cockpit.nLastDrawn [0] =
 gameStates.render.cockpit.nLastDrawn [1] = -1;
 if (missionManager.nCurrentLevel < 0)
@@ -1810,11 +1810,11 @@ Assert (gameData.multiplayer.nPlayers <= gameData.multiplayer.nPlayerPositions);
 	//If this assert fails, there's not enough start positions
 
 if (gameData.app.nGameMode & GM_NETWORK) {
-	switch (NetworkLevelSync ()) { // After calling this, gameData.multiplayer.nLocalPlayer is set
+	switch (NetworkLevelSync ()) { // After calling this, N_LOCALPLAYER is set
 		case -1:
 			return 0;
 		case 0:
-			if (gameData.multiplayer.nLocalPlayer < 0)
+			if (N_LOCALPLAYER < 0)
 				return 0;
 			fontManager.Remap ();
 			break;
@@ -2233,7 +2233,7 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	spawnMap [i].i = i;
 	spawnMap [i].xDist = 0x7fffffff;
 	for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
-		if (j != gameData.multiplayer.nLocalPlayer) {
+		if (j != N_LOCALPLAYER) {
 			objP = OBJECTS + gameData.multiplayer.players [j].nObject;
 			if ((objP->info.nType == OBJ_PLAYER)) {
 				xDist = simpleRouter [0].PathLength (objP->info.position.vPos, objP->info.nSegment,
@@ -2259,12 +2259,12 @@ for (;;) {
 		switch (gameData.multiplayer.playerInit [nSpawnPos].nSegType) {
 			case SEGMENT_FUNC_GOAL_RED:
 			case SEGMENT_FUNC_TEAM_RED:
-				if (GetTeam (gameData.multiplayer.nLocalPlayer) != TEAM_RED)
+				if (GetTeam (N_LOCALPLAYER) != TEAM_RED)
 					continue;
 				break;
 			case SEGMENT_FUNC_GOAL_BLUE:
 			case SEGMENT_FUNC_TEAM_BLUE:
-				if (GetTeam (gameData.multiplayer.nLocalPlayer) != TEAM_BLUE)
+				if (GetTeam (N_LOCALPLAYER) != TEAM_BLUE)
 					continue;
 				break;
 			default:
@@ -2286,7 +2286,7 @@ void InitPlayerPosition (int bRandom)
 	int nSpawnPos = 0;
 
 if (!(gameData.app.nGameMode & (GM_MULTI | GM_MULTI_COOP))) // If not deathmatch
-	nSpawnPos = gameData.multiplayer.nLocalPlayer;
+	nSpawnPos = N_LOCALPLAYER;
 else if (bRandom == 1) {
 	nSpawnPos = GetRandomPlayerPosition ();
 	}
@@ -2384,7 +2384,7 @@ paletteManager.ResetEffect ();
 if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
 	LOCALPLAYER.score =
 	(LOCALPLAYER.score * (100 - nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty])) / 100;
-if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] && (gameData.app.nGameMode & GM_MULTI))
+if (gameStates.multi.bPlayerIsTyping [N_LOCALPLAYER] && (gameData.app.nGameMode & GM_MULTI))
 	MultiSendMsgQuit ();
 gameStates.entropy.bConquering = 0;
 
@@ -2401,7 +2401,7 @@ if (gameData.reactor.bDestroyed) {
 	LOCALPLAYER.hostages.nOnBoard = 0;
 	LOCALPLAYER.SetEnergy (0);
 	LOCALPLAYER.SetShield (0);
-	LOCALPLAYER.connected = CONNECT_DIED_IN_MINE;
+	CONNECT (N_LOCALPLAYER, CONNECT_DIED_IN_MINE);
 	DiedInMineMessage (); // Give them some indication of what happened
 	}
 if (bSecret && !gameStates.app.bD1Mission) {

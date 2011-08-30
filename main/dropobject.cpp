@@ -207,19 +207,19 @@ if (gameStates.multi.nGameType != UDP_GAME)
 	d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
 while (nSegment == -1) {
 	if (!IsMultiGame)
-		nPlayer = gameData.multiplayer.nLocalPlayer;
+		nPlayer = N_LOCALPLAYER;
 	else {	// chose drop segment at required minimum distance from some random player
 		nPlayer = RandShort () % gameData.multiplayer.nPlayers;
 		count = 0;
 		while ((count < gameData.multiplayer.nPlayers) &&	// make sure player is not the local player or on his team
 				 (!gameData.multiplayer.players [nPlayer].connected ||
-				  (nPlayer == gameData.multiplayer.nLocalPlayer) ||
-				  ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer))))) {
+				  (nPlayer == N_LOCALPLAYER) ||
+				  ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && (GetTeam (nPlayer) == GetTeam (N_LOCALPLAYER))))) {
 			nPlayer = (nPlayer + 1) % gameData.multiplayer.nPlayers;
 			count++;
 			}
 		if (count == gameData.multiplayer.nPlayers)
-			nPlayer = gameData.multiplayer.nLocalPlayer;
+			nPlayer = N_LOCALPLAYER;
 		}
 	nSegment = PickConnectedSegment (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, nDepth, &nDropDepth);
 #if 1
@@ -739,7 +739,7 @@ for (i = objP->info.contains.nCount; i; i--) {
 	if (nObject < 0)
 		break;
 	if (objP->info.nType == OBJ_PLAYER) {
-		if (objP->info.nId == gameData.multiplayer.nLocalPlayer)
+		if (objP->info.nId == N_LOCALPLAYER)
 			OBJECTS [nObject].info.nFlags |= OF_PLAYER_DROPPED;
 		}
 	else if (objP->info.nType == OBJ_ROBOT) {
@@ -1019,7 +1019,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 	nObject = MaybeDropPrimaryWeaponEgg (playerObjP, OMEGA_INDEX);
 	if (nObject >= 0)
 		OBJECTS [nObject].cType.powerupInfo.nCount =
-			(playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) ? gameData.omega.xCharge [IsMultiGame] : DEFAULT_MAX_OMEGA_CHARGE;
+			(playerObjP->info.nId == N_LOCALPLAYER) ? gameData.omega.xCharge [IsMultiGame] : DEFAULT_MAX_OMEGA_CHARGE;
 	//	Drop the secondary weapons
 	//	Note, proximity weapon only comes in packets of 4.  So drop n/2, but a max of 3 (handled inside maybe_drop..)  Make sense?
 	if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))

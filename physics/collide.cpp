@@ -449,7 +449,7 @@ void CObject::CollidePlayerAndWall (fix xHitSpeed, short nHitSeg, short nHitSide
 	char bForceFieldHit = 0;
 	int nBaseTex, nOvlTex;
 
-if (info.nId != gameData.multiplayer.nLocalPlayer) // Execute only for local player
+if (info.nId != N_LOCALPLAYER) // Execute only for local player
 	return;
 nBaseTex = SEGMENTS [nHitSeg].m_sides [nHitSide].m_nBaseTex;
 //	If this CWall does damage, don't make *BONK* sound, we'll be making another sound.
@@ -531,7 +531,7 @@ if (!((nType = SEGMENTS [nSegment].Physics (nSide, xDamage)) ||
 	return 0;
 if (SEGMENTS [nSegment].HasNoDamageProp ())
 	 xDamage = 0;
-if (info.nId == gameData.multiplayer.nLocalPlayer) {
+if (info.nId == N_LOCALPLAYER) {
 	if (xDamage > 0) {
 		xDamage = FixMul (xDamage, gameData.time.xFrame);
 		if (gameStates.app.nDifficultyLevel == 0)
@@ -582,7 +582,7 @@ if (xDamage > 0) {
 	if (TactileStick)
 		Tactile_Xvibrate (50, 25);
 #endif
-	if ((info.nType == OBJ_PLAYER) && (info.nId == gameData.multiplayer.nLocalPlayer))
+	if ((info.nType == OBJ_PLAYER) && (info.nId == N_LOCALPLAYER))
 		paletteManager.BumpEffect (X2I (xDamage * 4), 0, 0);	//flash red
 	if ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) {
 		mType.physInfo.rotVel.v.coord.x = SRandShort () / 4;
@@ -602,7 +602,7 @@ return nType;
 void CObject::ScrapeOnWall (short nHitSeg, short nHitSide, CFixVector& vHitPt)
 {
 if (info.nType == OBJ_PLAYER) {
-	if (info.nId == gameData.multiplayer.nLocalPlayer) {
+	if (info.nId == N_LOCALPLAYER) {
 		int nType = ApplyWallPhysics (nHitSeg, nHitSide);
 		if (nType != 0) {
 			CFixVector	vHit, vRand;
@@ -752,7 +752,7 @@ if ((bEscort = parentObjP->IsGuideBot ())) {
 		Int3 ();  // Get Jason!
 	   return 1;
 	   }
-	nPlayer = gameData.multiplayer.nLocalPlayer;		//if single player, he's the players's buddy
+	nPlayer = N_LOCALPLAYER;		//if single player, he's the players's buddy
 	parentObjP = OBJECTS + LOCALPLAYER.nObject;
 	}
 else {
@@ -971,7 +971,7 @@ if (!IsStatic ()) {
 	nCollisionSeg = FindSegByPos (vHitPt, playerObjP->info.nSegment, 1, 0);
 	if (nCollisionSeg != -1)
 		CreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].xImpactSize, gameData.weapons.info [0].nWallHitVClip);
-	if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
+	if (playerObjP->info.nId == N_LOCALPLAYER) {
 		if (ROBOTINFO (info.nId).companion)	//	Player and companion don't Collide.
 			return 1;
 		if (ROBOTINFO (info.nId).kamikaze) {
@@ -1055,7 +1055,7 @@ if (whotype != OBJ_PLAYER) {
 	return;
 	}
 if (IsMultiGame && !IsCoopGame && (LOCALPLAYER.timeLevel < netGame.GetControlInvulTime ())) {
-	if (OBJECTS [nAttacker].info.nId == gameData.multiplayer.nLocalPlayer) {
+	if (OBJECTS [nAttacker].info.nId == N_LOCALPLAYER) {
 		int t = netGame.GetControlInvulTime () - LOCALPLAYER.timeLevel;
 		int secs = X2I (t) % 60;
 		int mins = X2I (t) / 60;
@@ -1063,7 +1063,7 @@ if (IsMultiGame && !IsCoopGame && (LOCALPLAYER.timeLevel < netGame.GetControlInv
 		}
 	return;
 	}
-if (OBJECTS [nAttacker].info.nId == gameData.multiplayer.nLocalPlayer) {
+if (OBJECTS [nAttacker].info.nId == N_LOCALPLAYER) {
 	if (0 >= (i = FindReactor (this)))
 		gameData.reactor.states [i].bHit = 1;
 	AIDoCloakStuff ();
@@ -1100,7 +1100,7 @@ int CObject::CollidePlayerAndReactor (CObject* reactorP, CFixVector& vHitPt, CFi
 {
 	int	i;
 
-if (info.nId == gameData.multiplayer.nLocalPlayer) {
+if (info.nId == N_LOCALPLAYER) {
 	if (0 >= (i = FindReactor (reactorP)))
 		gameData.reactor.states [i].bHit = 1;
 	AIDoCloakStuff ();				//	In case player cloaked, make control center know where he is.
@@ -1117,7 +1117,7 @@ int CObject::CollidePlayerAndMarker (CObject* markerP, CFixVector& vHitPt, CFixV
 #if TRACE
 console.printf (CON_DBG, "Collided with markerP %d! \n", markerP->info.nId);
 #endif
-if (info.nId == gameData.multiplayer.nLocalPlayer) {
+if (info.nId == N_LOCALPLAYER) {
 	int bDrawn;
 
 	if (IsMultiGame && !IsCoopGame)
@@ -1170,7 +1170,7 @@ if (info.nId == OMEGA_ID)
 		return 1;
 if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 	fix damage = info.xShield;
-	if (OBJECTS [cType.laserInfo.parent.nObject].info.nId == gameData.multiplayer.nLocalPlayer)
+	if (OBJECTS [cType.laserInfo.parent.nObject].info.nId == N_LOCALPLAYER)
 		if (0 <= (i = FindReactor (reactorP)))
 			gameData.reactor.states [i].bHit = 1;
 	if (WI_damage_radius (info.nId))
@@ -1240,7 +1240,7 @@ if (LOCALPLAYER.Shield () <= 0)
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 	LOCALPLAYER.invulnerableTime = gameData.time.xGame;
 	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-	SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
+	SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
 	}
 if (!(gameData.app.nGameMode & GM_MULTI))
 	BuddyMessage ("Nice job, %s!", LOCALPLAYER.callsign);
@@ -1767,7 +1767,7 @@ if (gameStates.app.bEndLevelSequence)
 
 gameData.multiplayer.bWasHit [info.nId] = -1;
 
-if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local player?
+if (info.nId == N_LOCALPLAYER) {		//is this the local player?
 	if ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
 		double h = (double) playerP->netKillsTotal / (double) (killerP->netKillsTotal + 1);
 		if (h < 0.5)
@@ -1823,7 +1823,7 @@ if (mType.physInfo.flags & PF_PERSISTENT) {
 	if (AddHitObject (this, OBJ_IDX (playerObjP)) < 0)
 		return 1;
 }
-if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
+if (playerObjP->info.nId == N_LOCALPLAYER) {
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 		audio.CreateSegmentSound (SOUND_PLAYER_GOT_HIT, playerObjP->info.nSegment, 0, vHitPt);
 		if (IsMultiGame)
@@ -1869,7 +1869,7 @@ int CObject::CollidePlayerAndMatCen (void)
 CreateSound (SOUND_PLAYER_GOT_HIT);
 //	audio.PlaySound (SOUND_PLAYER_GOT_HIT);
 CreateExplosion (info.nSegment, info.position.vPos, I2X (10) / 2, VCLIP_PLAYER_HIT);
-if (info.nId != gameData.multiplayer.nLocalPlayer)
+if (info.nId != N_LOCALPLAYER)
 	return 1;
 CSegment* segP = SEGMENTS + info.nSegment;
 for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
@@ -1922,7 +1922,7 @@ int CObject::CollidePlayerAndPowerup (CObject* powerupP, CFixVector& vHitPt, CFi
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 1;
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
-	(info.nId == gameData.multiplayer.nLocalPlayer)) {
+	(info.nId == N_LOCALPLAYER)) {
 	int bPowerupUsed = DoPowerup (powerupP, info.nId);
 	if (bPowerupUsed) {
 		powerupP->Die ();
@@ -1930,7 +1930,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 			MultiSendRemoveObj (OBJ_IDX (powerupP));
 		}
 	}
-else if (IsCoopGame && (info.nId != gameData.multiplayer.nLocalPlayer)) {
+else if (IsCoopGame && (info.nId != N_LOCALPLAYER)) {
 	switch (powerupP->info.nId) {
 		case POW_KEY_BLUE:
 			gameData.multiplayer.players [info.nId].flags |= PLAYER_FLAGS_BLUE_KEY;
@@ -1954,7 +1954,7 @@ return 1;
 int CObject::CollidePlayerAndMonsterball (CObject* monsterball, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
-	(info.nId == gameData.multiplayer.nLocalPlayer)) {
+	(info.nId == N_LOCALPLAYER)) {
 	if (BumpTwoObjects (this, monsterball, 0, vHitPt))
 		audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
 	}

@@ -310,7 +310,7 @@ if (playerP->Shield () < playerP->MaxShield ()) {
 	return 1;
 	}
 else if (ISLOCALPLAYER (nPlayer)) {
-	if (OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ())
+	if (OBJECTS [N_LOCALPLAYER].ResetDamage ())
 		return 1;
 	else
 		HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
@@ -361,7 +361,7 @@ return 0;
 int PickupExtraLife (CObject *objP, int nPlayer)
 {
 gameData.multiplayer.players [nPlayer].lives++;
-if (nPlayer == gameData.multiplayer.nLocalPlayer)
+if (nPlayer == N_LOCALPLAYER)
 	PowerupBasic (15, 15, 15, 0, TXT_EXTRA_LIFE);
 return 1;
 }
@@ -375,7 +375,7 @@ int PickupHoardOrb (CObject *objP, int nPlayer)
 if (IsHoardGame) {
 	if (playerP->secondaryAmmo [PROXMINE_INDEX] < 12) {
 		if (ISLOCALPLAYER (nPlayer)) {
-			MultiSendGotOrb ((char) gameData.multiplayer.nLocalPlayer);
+			MultiSendGotOrb ((char) N_LOCALPLAYER);
 			PowerupBasic (15, 0, 15, 0, "Orb!!!", nPlayer);
 			}
 		playerP->secondaryAmmo [PROXMINE_INDEX]++;
@@ -384,7 +384,7 @@ if (IsHoardGame) {
 		}
 	}
 else if (IsEntropyGame) {
-	if (objP->info.nCreator != GetTeam ((char) gameData.multiplayer.nLocalPlayer) + 1) {
+	if (objP->info.nCreator != GetTeam ((char) N_LOCALPLAYER) + 1) {
 		if ((extraGameInfo [1].entropy.nVirusStability < 2) ||
 			 ((extraGameInfo [1].entropy.nVirusStability < 3) && 
 			 ((SEGMENTS [objP->info.nSegment].m_owner != objP->info.nCreator) ||
@@ -394,7 +394,7 @@ else if (IsEntropyGame) {
 	else if (!extraGameInfo [1].entropy.nMaxVirusCapacity ||
 				(playerP->secondaryAmmo [PROXMINE_INDEX] < playerP->secondaryAmmo [SMARTMINE_INDEX])) {
 		if (ISLOCALPLAYER (nPlayer)) {
-			MultiSendGotOrb ((char) gameData.multiplayer.nLocalPlayer);
+			MultiSendGotOrb ((char) N_LOCALPLAYER);
 			PowerupBasic (15, 0, 15, 0, "Virus!!!", nPlayer);
 			}
 		playerP->secondaryAmmo [PROXMINE_INDEX]++;
@@ -449,7 +449,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 	if (EGI_FLAG (headlight.bAvailable, 0, 0, 1)  && gameOpts->gameplay.bHeadlightOnWhenPickedUp)
 		playerP->flags |= PLAYER_FLAGS_HEADLIGHT_ON;
 	if IsMultiGame
-		MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
+		MultiSendFlags ((char) N_LOCALPLAYER);
 	}
 return 1;
 }
@@ -534,14 +534,14 @@ int PickupFlag (CObject *objP, int nThisTeam, int nOtherTeam, const char *pszFla
 if (ISLOCALPLAYER (nPlayer)) {
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 	if (gameData.app.nGameMode & GM_CAPTURE) {
-		if (GetTeam ((char) gameData.multiplayer.nLocalPlayer) == nOtherTeam) {
+		if (GetTeam ((char) N_LOCALPLAYER) == nOtherTeam) {
 			PowerupBasic (15, 0, 15, 0, nOtherTeam ? "RED FLAG!" : "BLUE FLAG!", nPlayer);
 			playerP->flags |= PLAYER_FLAGS_FLAG;
 			gameData.pig.flags [nThisTeam].path.Reset (10, -1);
-			MultiSendGotFlag ((char) gameData.multiplayer.nLocalPlayer);
+			MultiSendGotFlag ((char) N_LOCALPLAYER);
 			return 1;
 			}
-		if (GetTeam ((char) gameData.multiplayer.nLocalPlayer) == nThisTeam) {
+		if (GetTeam ((char) N_LOCALPLAYER) == nThisTeam) {
 			ReturnFlagHome (objP);
 			}
 		}
@@ -573,7 +573,7 @@ MultiSendWeapons (1);
 
 int ApplyInvul (int bForce, int nPlayer)
 {
-	CPlayerData *playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
+	CPlayerData *playerP = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
 	int bInventory = playerP->nInvuls && gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame);
 
 if (!(bForce || bInventory))
@@ -594,7 +594,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 		PowerupBasic (7, 14, 21, 0, "");
 	else
 		PowerupBasic (7, 14, 21, INVULNERABILITY_SCORE, "%s!", TXT_INVULNERABILITY);
-	SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
+	SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
 	UsePowerup (-POW_INVUL);
 	}
 return 1;
@@ -604,7 +604,7 @@ return 1;
 
 int ApplyCloak (int bForce, int nPlayer)
 {
-	CPlayerData *playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
+	CPlayerData *playerP = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
 	int bInventory = playerP->nCloaks && gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame);
 
 if (!(bForce || bInventory))
@@ -676,11 +676,11 @@ if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	int				nId, nType;
 
 if (nPlayer < 0)
-	nPlayer = gameData.multiplayer.nLocalPlayer;
+	nPlayer = N_LOCALPLAYER;
 playerP = gameData.multiplayer.players + nPlayer;
 if (SPECTATOR (OBJECTS + playerP->nObject))
 	return 0;
-bLocalPlayer = (nPlayer == gameData.multiplayer.nLocalPlayer);
+bLocalPlayer = (nPlayer == N_LOCALPLAYER);
 if (bLocalPlayer &&
 	 (gameStates.app.bPlayerIsDead || 
 	  (gameData.objs.consoleP->info.nType == OBJ_GHOST) || 
@@ -777,7 +777,7 @@ memset (&gameData.multiplayer.leftoverPowerups [nObject], 0,
 
 void CheckInventory (void)
 {
-	CPlayerData	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+	CPlayerData	*playerP = gameData.multiplayer.players + N_LOCALPLAYER;
 	CObject	*objP = OBJECTS + playerP->nObject;
 
 if (SpawnPowerup (objP, POW_CLOAK, playerP->nCloaks - MAX_INV_ITEMS))
@@ -1148,7 +1148,7 @@ short PowerupsOnShips (int nPowerup)
 if (!nClass || ((nClass < 3) && (nIndex < 0)))
 	return 0;
 for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
-	if ((i == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlayerExploded || gameStates.app.bPlayerIsDead))
+	if ((i == N_LOCALPLAYER) && (gameStates.app.bPlayerExploded || gameStates.app.bPlayerIsDead))
 		continue;
 	if (playerP->Shield () < 0)
 		continue;

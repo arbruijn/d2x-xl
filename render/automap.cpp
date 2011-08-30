@@ -223,7 +223,7 @@ void CAutomap::DrawObjects (void)
 {
 if (!((gameOpts->render.automap.bTextured & 2) || m_bRadar))
 	return;
-int color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer % MAX_PLAYER_COLORS;	// Note link to above if!
+int color = IsTeamGame ? GetTeam (N_LOCALPLAYER) : N_LOCALPLAYER % MAX_PLAYER_COLORS;	// Note link to above if!
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
 int bTextured = (gameOpts->render.automap.bTextured & 1) && !m_bRadar;
 ogl.SetFaceCulling (false);
@@ -237,7 +237,7 @@ if (!m_bRadar) {
 	if ((markerManager.Highlight () > -1) && (markerManager.Message () [0] != 0)) {
 		char msg [10 + MARKER_MESSAGE_LEN + 1];
 		sprintf (msg, TXT_MARKER_MSG, markerManager.Highlight () + 1,
-					markerManager.Message (gameData.multiplayer.nLocalPlayer * 2 + markerManager.Highlight ()));
+					markerManager.Message (N_LOCALPLAYER * 2 + markerManager.Highlight ()));
 		CCanvas::Current ()->SetColorRGB (196, 0, 0, 255);
 		fontManager.SetCurrent (SMALL_FONT);
 		GrString (5, 20, msg, NULL);
@@ -246,7 +246,7 @@ if (!m_bRadar) {
 // Draw player(s)...
 if (AM_SHOW_PLAYERS) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if ((i != gameData.multiplayer.nLocalPlayer) && AM_SHOW_PLAYER (i)) {
+		if ((i != N_LOCALPLAYER) && AM_SHOW_PLAYER (i)) {
 			if (OBJECTS [gameData.multiplayer.players [i].nObject].info.nType == OBJ_PLAYER) {
 				color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
@@ -414,7 +414,7 @@ PROF_START
 
 automap.m_bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;
 if ((m_bRadar = m_bRadar) == 2) {
-	CFixMatrix& po = gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient;
+	CFixMatrix& po = gameData.multiplayer.playerInit [N_LOCALPLAYER].position.mOrient;
 #if 1
 	mRadar.m.dir.r = po.m.dir.r;
 	mRadar.m.dir.f = po.m.dir.u;
@@ -1440,7 +1440,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 			}
 		}
 
-	if (nSegment == gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].nSegment)
+	if (nSegment == gameData.multiplayer.playerInit [N_LOCALPLAYER].nSegment)
 		color = RGBA_PAL2 (31,0,31);
 
 	if (color != WHITE_RGBA) {

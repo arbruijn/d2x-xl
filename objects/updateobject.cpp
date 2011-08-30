@@ -218,9 +218,9 @@ return nType;
 
 void CObject::HandleSegmentFunction (void)
 {
-if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId)) {
+if ((info.nType == OBJ_PLAYER) && (N_LOCALPLAYER == info.nId)) {
 	CSegment*		segP = SEGMENTS + info.nSegment;
-	CPlayerData*	playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+	CPlayerData*	playerP = gameData.multiplayer.players + N_LOCALPLAYER;
 
    if (gameData.app.nGameMode & GM_CAPTURE)
 		 segP->CheckForGoal ();
@@ -229,7 +229,7 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 	else if (controls [0].forwardThrustTime || controls [0].verticalThrustTime || controls [0].sidewaysThrustTime) {
 		gameStates.entropy.nTimeLastMoved = -1;
 		if ((gameData.app.nGameMode & GM_ENTROPY) &&
-			 ((segP->m_owner < 0) || (segP->m_owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1))) {
+			 ((segP->m_owner < 0) || (segP->m_owner == GetTeam (N_LOCALPLAYER) + 1))) {
 			StopConquerWarning ();
 			}
 		}
@@ -430,14 +430,14 @@ return 0;
 
 void CObject::CheckGuidedMissileThroughExit (short nPrevSegment)
 {
-if ((this == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) &&
-	 (info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
+if ((this == gameData.objs.guidedMissile [N_LOCALPLAYER].objP) &&
+	 (info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature)) {
 	if (nPrevSegment != info.nSegment) {
 		short	nConnSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + nPrevSegment);
 		if (nConnSide != -1) {
 			CTrigger* trigP = SEGMENTS [nPrevSegment].Trigger (nConnSide);
 			if (trigP && (trigP->m_info.nType == TT_EXIT))
-				gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP->SetLife (0);
+				gameData.objs.guidedMissile [N_LOCALPLAYER].objP->SetLife (0);
 			}
 		}
 	}
@@ -451,7 +451,7 @@ if (gameStates.render.bDropAfterburnerBlob) {
 	Assert (this == gameData.objs.consoleP);
 	DropAfterburnerBlobs (this, 2, I2X (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
 	if (IsMultiGame)
-		MultiSendDropBlobs ((char) gameData.multiplayer.nLocalPlayer);
+		MultiSendDropBlobs ((char) N_LOCALPLAYER);
 	gameStates.render.bDropAfterburnerBlob = 0;
 	}
 
@@ -696,7 +696,7 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	if (objP->info.nType != OBJ_PLAYER)
 		ReleaseObject (objP->Index ());
 	else {
-		if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
+		if (objP->info.nId == N_LOCALPLAYER) {
 			if (nLocalDeadPlayerObj == -1) {
 				StartPlayerDeathSequence (objP);
 				nLocalDeadPlayerObj = objP->Index ();

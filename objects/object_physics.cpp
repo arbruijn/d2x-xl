@@ -103,10 +103,10 @@ if (gameStates.app.bPlayerIsDead || gameStates.app.bEnterGame) {
 	return;
 	}
 
-if ((info.nType != OBJ_PLAYER) || (info.nId != gameData.multiplayer.nLocalPlayer))
+if ((info.nType != OBJ_PLAYER) || (info.nId != N_LOCALPLAYER))
 	return;	//references to CPlayerShip require that this obj be the player
 
-tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
+tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + N_LOCALPLAYER;
 gmObjP = gmiP->objP;
 if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
 	CAngleVector	vRotAngs;
@@ -131,7 +131,7 @@ else {
 	mType.physInfo.rotThrust = CFixVector::Create (controls [0].pitchTime, controls [0].headingTime, controls [0].bankTime);
 	}
 forwardThrustTime = controls [0].forwardThrustTime;
-if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [gameData.multiplayer.nLocalPlayer].DriveDamage ())) {
+if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [N_LOCALPLAYER].DriveDamage ())) {
 	if (controls [0].afterburnerState) {			//player has key down
 		fix xAfterburnerScale;
 		int oldCount, newCount;
@@ -214,7 +214,7 @@ if ((ft < I2X (1) / 2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust)
 mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
 #endif
 
-CWeaponState& ws = gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer];
+CWeaponState& ws = gameData.multiplayer.weaponStates [N_LOCALPLAYER];
 
 ubyte nOldThrusters [5];
 

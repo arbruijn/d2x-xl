@@ -81,7 +81,7 @@ void NetworkSendRejoinSync (int nPlayer, tNetworkSyncData *syncP)
 {
 	int i, j;
 
-gameData.multiplayer.players [nPlayer].connected = CONNECT_PLAYING; // connect the new guy
+CONNECT (nPlayer, CONNECT_PLAYING); // connect the new guy
 ResetPlayerTimeout (nPlayer, -1);
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	// Endlevel started before we finished sending the goods, we'll
@@ -103,7 +103,7 @@ if (networkData.bPlayerAdded) {
 
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if ((i != nPlayer) && 
-			 (i != gameData.multiplayer.nLocalPlayer) && 
+			 (i != N_LOCALPLAYER) && 
 			 gameData.multiplayer.players [i].connected &&
 			 (gameStates.multi.nGameType >= IPX_GAME)) {
 			SendSequencePacket (
@@ -266,7 +266,7 @@ if (gameData.multiplayer.players [nPlayer].connected == 1) {// Still playing
 	*end.SecondsLeft () = gameData.reactor.countdown.nSecsLeft;
 	}
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {       
-	if ((i != gameData.multiplayer.nLocalPlayer) && (i != nPlayer) && (gameData.multiplayer.players [i].connected)) {
+	if ((i != N_LOCALPLAYER) && (i != nPlayer) && (gameData.multiplayer.players [i].connected)) {
 		if (gameData.multiplayer.players [i].connected == 1)
 			NetworkSendEndLevelShortSub (nPlayer, i);
 		else if (gameStates.multi.nGameType >= IPX_GAME)
@@ -283,7 +283,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 /* Send an updated endlevel status to other hosts */
 void NetworkSendEndLevelPacket (void)
 {
-NetworkSendEndLevelSub (gameData.multiplayer.nLocalPlayer);
+NetworkSendEndLevelSub (N_LOCALPLAYER);
 }
 
 //------------------------------------------------------------------------------
@@ -295,12 +295,12 @@ if (gameStates.multi.nGameType < IPX_GAME)
 	return;
 if (!gameData.multiplayer.players [nDestPlayer].connected)
 	return;
-if (nDestPlayer == gameData.multiplayer.nLocalPlayer)
+if (nDestPlayer == N_LOCALPLAYER)
 	return;
 if (nDestPlayer == nSrcPlayer)
 	return;
 #if 1
-if ((gameStates.multi.nGameType == UDP_GAME) && (nSrcPlayer != gameData.multiplayer.nLocalPlayer) && !IAmGameHost ())
+if ((gameStates.multi.nGameType == UDP_GAME) && (nSrcPlayer != N_LOCALPLAYER) && !IAmGameHost ())
 	return;
 #endif
 
@@ -480,7 +480,7 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	netGame.m_info.gameStatus = NETSTAT_ENDLEVEL;
 PrintLog (1, "sending netgame update:\n");
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if ((gameData.multiplayer.players [i].connected) && (i != gameData.multiplayer.nLocalPlayer)) {
+	if ((gameData.multiplayer.players [i].connected) && (i != N_LOCALPLAYER)) {
 		if (gameStates.multi.nGameType >= IPX_GAME) {
 			PrintLog (1, "%s (%s)\n", netPlayers [0].m_info.players [i].callsign, 
 				iptos (szIP, reinterpret_cast<char*> (netPlayers [0].m_info.players [i].network.Node ())));
@@ -533,7 +533,7 @@ d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
 	// Randomize their starting locations...
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
 	if (gameData.multiplayer.players [i].connected)
-		gameData.multiplayer.players [i].connected = CONNECT_PLAYING; // Get rid of endlevel connect statuses
+		CONNECT (i, CONNECT_PLAYING); // Get rid of endlevel connect statuses
 if (IsCoopGame) {
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
 		*netGame.Locations (i) = i;
@@ -554,7 +554,7 @@ netGame.m_info.gameStatus = NETSTAT_PLAYING;
 netGame.m_info.nType = PID_SYNC;
 netGame.SetSegmentCheckSum (networkData.nSegmentCheckSum);
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if ((!gameData.multiplayer.players [i].connected) || (i == gameData.multiplayer.nLocalPlayer))
+	if ((!gameData.multiplayer.players [i].connected) || (i == N_LOCALPLAYER))
 		continue;
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 	// Send several times, extras will be ignored
@@ -655,7 +655,7 @@ if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;
 if (nakedData.nLength == 0) {
 	nakedData.buf [0] = PID_NAKED_PDATA;
-	nakedData.buf [1] = gameData.multiplayer.nLocalPlayer;
+	nakedData.buf [1] = N_LOCALPLAYER;
 	nakedData.nLength = 2;
 	}
 if (len + nakedData.nLength>networkData.nMaxXDataSize) {
@@ -727,7 +727,7 @@ void NetworkSendMissingObjFrames (void)
 {
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	networkData.sync [0].objs.missingFrames.pid = PID_MISSING_OBJ_FRAMES;
-	networkData.sync [0].objs.missingFrames.nPlayer = gameData.multiplayer.nLocalPlayer;
+	networkData.sync [0].objs.missingFrames.nPlayer = N_LOCALPLAYER;
 	SendInternetMissingObjFramesPacket (networkData.serverAddress, networkData.serverAddress + 4);
 	} 
 }

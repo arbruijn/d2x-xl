@@ -54,7 +54,7 @@ if (*((ubyte*) rank) > 9)
 int WhoIsGameHost (void)
 {
 if (!IsMultiGame)
-	return gameData.multiplayer.nLocalPlayer;
+	return N_LOCALPLAYER;
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players [i].connected) {
 		if (gameStates.multi.nGameType == IPX_GAME)
@@ -63,7 +63,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			return i;
 		}
 	}
-return gameData.multiplayer.nLocalPlayer;
+return N_LOCALPLAYER;
 }
 
 //------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ return gameData.multiplayer.nLocalPlayer;
 int IAmGameHost (void)
 {
 if (gameStates.app.bGameRunning) {
-	gameStates.multi.bServer [0] = (WhoIsGameHost () == gameData.multiplayer.nLocalPlayer);
+	gameStates.multi.bServer [0] = (WhoIsGameHost () == N_LOCALPLAYER);
 	// the following code is obsolete; Only a player with a local port identical to the server port can become new game host
 #if 0
 	// if player wasn't host, but is host now (probably because the former host disconnected)

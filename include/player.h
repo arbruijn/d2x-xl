@@ -243,6 +243,9 @@ class __pack__ CPlayerData : public CPlayerInfo {
 		CObject* Object (void);
 		void SetObject (short n);
 		bool IsLocalPlayer (void);
+		inline void Connect (sbyte nStatus) {
+			connected = nStatus;
+			}
 
 	private:
 		int Index (void);

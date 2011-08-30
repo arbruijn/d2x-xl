@@ -578,28 +578,28 @@ else
 
 if (keys == KEY_BLUE) {
 	if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_BLUE_KEY)) {
-		if (bShowMessage && (nPlayer == gameData.multiplayer.nLocalPlayer))
+		if (bShowMessage && (nPlayer == N_LOCALPLAYER))
 			HUDInitMessage ("%s %s", TXT_BLUE, TXT_ACCESS_DENIED);
 		return WHP_NO_KEY;
 		}
 	}
 else if (keys == KEY_RED) {
 	if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_RED_KEY)) {
-		if (bShowMessage && (nPlayer == gameData.multiplayer.nLocalPlayer))
+		if (bShowMessage && (nPlayer == N_LOCALPLAYER))
 			HUDInitMessage("%s %s", TXT_RED, TXT_ACCESS_DENIED);
 		return WHP_NO_KEY;
 		}
 	}
 else if (keys == KEY_GOLD) {
 	if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_GOLD_KEY)) {
-		if (bShowMessage && (nPlayer == gameData.multiplayer.nLocalPlayer))
+		if (bShowMessage && (nPlayer == N_LOCALPLAYER))
 			HUDInitMessage("%s %s", TXT_YELLOW, TXT_ACCESS_DENIED);
 		return WHP_NO_KEY;
 		}
 	}
 if (nType == WALL_DOOR) {
 	if ((flags & WALL_DOOR_LOCKED) && !(AllowToOpenSpecialBossDoor (nSegment, nSide))) {
-		if (bShowMessage && (nPlayer == gameData.multiplayer.nLocalPlayer))
+		if (bShowMessage && (nPlayer == N_LOCALPLAYER))
 			HUDInitMessage (TXT_CANT_OPEN_DOOR);
 		return WHP_NO_KEY;
 		}

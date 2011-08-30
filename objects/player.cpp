@@ -167,7 +167,7 @@ else if (gameData.weapons.firing [1].nDuration) {
 void UpdatePlayerWeaponInfo (void)
 {
 	int				i, bUpdate = 0;
-	CWeaponState	*wsP = gameData.multiplayer.weaponStates + gameData.multiplayer.nLocalPlayer;
+	CWeaponState	*wsP = gameData.multiplayer.weaponStates + N_LOCALPLAYER;
 	tFiringData		*fP;
 
 if (gameStates.app.bPlayerIsDead)
@@ -305,7 +305,7 @@ return ((i < 0) || (i > MAX_PLAYERS)) ? 0 : i;
 
 bool CPlayerData::IsLocalPlayer (void)
 {
-return Index () == gameData.multiplayer.nLocalPlayer;
+return Index () == N_LOCALPLAYER;
 }
 
 //-------------------------------------------------------------------------

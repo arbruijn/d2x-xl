@@ -1703,7 +1703,7 @@ else if (m_version > 0)  {
 		m_info->automapState = 1;
 	//memset (&r,0,sizeof (r);
 
-	if (gameData.multiplayer.nLocalPlayer > -1) {
+	if (N_LOCALPLAYER > -1) {
 		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
 		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
 		gameOpts->gameplay.nAutoLeveling = 0;

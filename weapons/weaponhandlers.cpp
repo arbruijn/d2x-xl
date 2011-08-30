@@ -233,7 +233,7 @@ if (bGatlingSound && (fP->nDuration <= GATLING_DELAY))
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
 if (0 <= LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD,
-										  (objP->info.nId != gameData.multiplayer.nLocalPlayer) || (gameData.laser.xNextFireTime > gameData.time.xGame), 0, -1))
+										  (objP->info.nId != N_LOCALPLAYER) || (gameData.laser.xNextFireTime > gameData.time.xGame), 0, -1))
 	nFired++;
 if (nRoundsPerShot > 1) {
 	if (0 <= LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1))

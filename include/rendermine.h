@@ -95,13 +95,13 @@ int AddFaceListItem (CSegFace *faceP, int nThread);
 
 static inline bool GuidedMslView (CObject ** objPP)
 {
-	CObject *objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+	CObject *objP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
 
 *objPP = objP;
 return objP && 
 		 (objP->info.nType == OBJ_WEAPON) && 
 		 (objP->info.nId == GUIDEDMSL_ID) && 
-		 (objP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature);
+		 (objP->info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature);
 }
 
 //------------------------------------------------------------------------------

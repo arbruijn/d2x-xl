@@ -507,7 +507,7 @@ if (bVerbose)
 void GasolineCheat (int bVerbose)
 {
 LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield (), false);
-OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
+OBJECTS [N_LOCALPLAYER].ResetDamage ();
 LOCALPLAYER.SetEnergy (MAX_ENERGY);
 if (bVerbose)
 	HUDInitMessage (TXT_SLURP);
@@ -541,7 +541,7 @@ void InvulCheat (int bVerbose)
 
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-	OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
+	OBJECTS [N_LOCALPLAYER].ResetDamage ();
 	}
 else if (LOCALPLAYER.invulnerableTime == 0x7fffffff)
 	LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
@@ -550,7 +550,7 @@ if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
 LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
 audio.PlaySound (short (gameData.objs.pwrUp.info [POW_INVUL].hitSound));
-SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
+SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
 }
 
 //------------------------------------------------------------------------------
@@ -696,7 +696,7 @@ void TriFusionCheat (int bVerbose)
 {
 	CPlayerData	*playerP = &LOCALPLAYER;
 
-if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion)
+if (gameData.multiplayer.weaponStates [N_LOCALPLAYER].bTripleFusion)
 	return;
 playerP->primaryWeaponFlags |= 1 << FUSION_INDEX;
 gameData.weapons.bTripleFusion = 1;
@@ -795,7 +795,7 @@ SetMaxOmegaCharge ();
 cockpit->UpdateLaserWeaponInfo ();
 if (bInitialize)
 	SetLastSuperWeaponStates ();
-OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
+OBJECTS [N_LOCALPLAYER].ResetDamage ();
 }
 
 //------------------------------------------------------------------------------
@@ -816,7 +816,7 @@ if (gameStates.gameplay.bMineMineCheat) {
 	LOCALPLAYER.flags &= ~(/*PLAYER_FLAGS_CLOAKED |*/ PLAYER_FLAGS_INVULNERABLE);
 	LOCALPLAYER.invulnerableTime =
 	LOCALPLAYER.cloakTime = 0;
-	OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
+	OBJECTS [N_LOCALPLAYER].ResetDamage ();
 	}
 else {
 	AccessoryCheat (bVerbose);
@@ -828,7 +828,7 @@ else {
 	LOCALPLAYER.primaryWeaponFlags |= 1 << FUSION_INDEX;
 	gameData.weapons.bTripleFusion = 1;
 	gameStates.gameplay.bMineMineCheat = 1;
-	SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
+	SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
 	}
 }
 

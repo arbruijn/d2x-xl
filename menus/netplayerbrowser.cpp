@@ -182,7 +182,7 @@ m [0].Value () = 1;                         // Assume server will play...
 if (gameOpts->multi.bNoRankings)
 	sprintf (text [0], "%d. %-20s", 1, LOCALPLAYER.callsign);
 else
-	sprintf (text [0], "%d. %s%-20s", 1, pszRankStrings [netPlayers [0].m_info.players [gameData.multiplayer.nLocalPlayer].rank], LOCALPLAYER.callsign);
+	sprintf (text [0], "%d. %s%-20s", 1, pszRankStrings [netPlayers [0].m_info.players [N_LOCALPLAYER].rank], LOCALPLAYER.callsign);
 m.AddCheck ("", text [0], 0);
 for (i = 1; i < MAX_PLAYERS + 4; i++) {
 	sprintf (text [i], "%d.  %-20s", i + 1, "");
@@ -224,8 +224,8 @@ for (i = 0; i < nSavePlayers; i++) {
 			ClipRank (reinterpret_cast<char*> (&netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].rank));
 			NetworkCheckForOldVersion ((char)i);
 			}
-		gameData.multiplayer.players [gameData.multiplayer.nPlayers].connected = CONNECT_PLAYING;
-		gameData.multiplayer.nPlayers++;
+		CONNECT (gameData.multiplayer.nPlayers, CONNECT_PLAYING);
+		++gameData.multiplayer.nPlayers;
 		}
 	else {
 		if (gameStates.multi.nGameType >= IPX_GAME)

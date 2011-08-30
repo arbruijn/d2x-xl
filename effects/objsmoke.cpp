@@ -340,7 +340,7 @@ if ((gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED) ||
 	return;
 	}
 nObject = objP->Index ();
-if (gameOpts->render.particles.bDecreaseLag && (nPlayer == gameData.multiplayer.nLocalPlayer)) {
+if (gameOpts->render.particles.bDecreaseLag && (nPlayer == N_LOCALPLAYER)) {
 	fn = objP->info.position.mOrient.m.dir.f;
 	mn = objP->info.position.vPos - objP->info.vLastPos;
 	CFixVector::Normalize (fn);
@@ -370,7 +370,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && !gameData.multiplayer.players [nPla
 	nParts = 0;
 else if (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED))
 	nParts = 0;
-else if ((nPlayer == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlayerIsDead || (gameData.multiplayer.players [nPlayer].Shield () < 0)))
+else if ((nPlayer == N_LOCALPLAYER) && (gameStates.app.bPlayerIsDead || (gameData.multiplayer.players [nPlayer].Shield () < 0)))
 	nParts = 0;
 else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 	tObjTransformation* pos = OBJPOS (objP);

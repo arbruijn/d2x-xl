@@ -691,7 +691,7 @@ fix CSegment::ShieldDamage (fix xMaxDamage)
 if (!(m_xDamage [0] || (gameData.app.nGameMode & GM_ENTROPY)))
 	return 0;
 int bEntropy = !m_xDamage [0];
-if (bEntropy && ((m_owner < 1) || (m_owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1)))
+if (bEntropy && ((m_owner < 1) || (m_owner == GetTeam (N_LOCALPLAYER) + 1)))
 	return 0;
 fix rate = bEntropy ? I2X (extraGameInfo [1].entropy.nShieldDamageRate) : m_xDamage [0];
 fix amount = FixMul (gameData.time.xFrame, rate);
@@ -732,7 +732,7 @@ fix CSegment::Refuel (fix nMaxFuel)
 
 gameData.matCens.playerSegP = this;
 if ((gameData.app.nGameMode & GM_ENTROPY) && ((m_owner < 0) ||
-	 ((m_owner > 0) && (m_owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
+	 ((m_owner > 0) && (m_owner != GetTeam (N_LOCALPLAYER) + 1))))
 	return 0;
 if (m_function != SEGMENT_FUNC_FUELCEN)
 	return 0;
@@ -780,7 +780,7 @@ if (gameOpts->legacy.bFuelCens)
 	return 0;
 gameData.matCens.playerSegP = this;
 if ((gameData.app.nGameMode & GM_ENTROPY) && ((m_owner < 0) ||
-	 ((m_owner > 0) && (m_owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
+	 ((m_owner > 0) && (m_owner != GetTeam (N_LOCALPLAYER) + 1))))
 	return 0;
 if (m_function != SEGMENT_FUNC_REPAIRCEN)
 	return 0;
@@ -923,14 +923,14 @@ int CSegment::CheckFlagDrop (int nTeamId, int nFlagId, int nGoalId)
 {
 if (m_function != nGoalId)
 	return 0;
-if (GetTeam (gameData.multiplayer.nLocalPlayer) != nTeamId)
+if (GetTeam (N_LOCALPLAYER) != nTeamId)
 	return 0;
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 	return 0;
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF &&
 	 !FlagAtHome ((nFlagId == POW_BLUEFLAG) ? POW_REDFLAG : POW_BLUEFLAG))
 	return 0;
-MultiSendCaptureBonus (char (gameData.multiplayer.nLocalPlayer));
+MultiSendCaptureBonus (char (N_LOCALPLAYER));
 LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG));
 MaybeDropNetPowerup (-1, nFlagId, FORCE_DROP);
 return 1;
@@ -949,15 +949,15 @@ CheckFlagDrop (TEAM_RED, POW_BLUEFLAG, SEGMENT_FUNC_GOAL_RED);
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 	return;
 if (segP->m_function == SEGMENT_FUNC_GOAL_BLUE) {
-	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) && FlagAtHome (POW_BLUEFLAG)) {
-		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
+	if (GetTeam (N_LOCALPLAYER) == TEAM_BLUE) && FlagAtHome (POW_BLUEFLAG)) {
+		MultiSendCaptureBonus (N_LOCALPLAYER);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_REDFLAG, FORCE_DROP);
 		}
 	}
 else if (segP->m_function == SEGMENT_FUNC_GOAL_RED) {
-	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) && FlagAtHome (POW_REDFLAG)) {
-		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
+	if (GetTeam (N_LOCALPLAYER) == TEAM_RED) && FlagAtHome (POW_REDFLAG)) {
+		MultiSendCaptureBonus (N_LOCALPLAYER);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_BLUEFLAG, FORCE_DROP);
 		}
@@ -979,7 +979,7 @@ if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX])
 #if TRACE
 console.printf (CON_DBG,"In orb goal!\n");
 #endif
-MultiSendOrbBonus ((char) gameData.multiplayer.nLocalPlayer);
+MultiSendOrbBonus ((char) N_LOCALPLAYER);
 LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG));
 LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]=0;
 }

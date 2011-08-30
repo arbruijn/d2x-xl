@@ -111,7 +111,7 @@ if (e <= 0) {
 
 LOCALPLAYER.UpdateEnergy (-e);
 LOCALPLAYER.UpdateShield (e / CONVERTER_SCALE);
-OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
+OBJECTS [N_LOCALPLAYER].ResetDamage ();
 MultiSendShield ();
 gameStates.app.bUsingConverter = 1;
 if (last_playTime > gameData.time.xGame)
@@ -294,12 +294,12 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 					gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
 					goto case_marker;
 					}
-				if (gameStates.render.cockpit.nCoopPlayerView [nWindow]==gameData.multiplayer.nLocalPlayer)
+				if (gameStates.render.cockpit.nCoopPlayerView [nWindow]==N_LOCALPLAYER)
 					continue;
 
 				if (gameData.app.nGameMode & GM_MULTI_COOP)
 					break;
-				else if (GetTeam(gameStates.render.cockpit.nCoopPlayerView [nWindow]) == GetTeam(gameData.multiplayer.nLocalPlayer))
+				else if (GetTeam(gameStates.render.cockpit.nCoopPlayerView [nWindow]) == GetTeam(N_LOCALPLAYER))
 					break;
 				}
 			break;
@@ -310,8 +310,8 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 		if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView) {	//anarchy only
 			gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
 			if (markerManager.Viewer (nWindow) == -1)
-				markerManager.SetViewer (nWindow, gameData.multiplayer.nLocalPlayer * 3);
-			else if (markerManager.Viewer (nWindow) < gameData.multiplayer.nLocalPlayer * 3 + markerManager.MaxDrop ())
+				markerManager.SetViewer (nWindow, N_LOCALPLAYER * 3);
+			else if (markerManager.Viewer (nWindow) < N_LOCALPLAYER * 3 + markerManager.MaxDrop ())
 				markerManager.SetViewer (nWindow, markerManager.Viewer (nWindow) + 1);
 			else
 				gameStates.render.cockpit.n3DView [nWindow] = CV_NONE;

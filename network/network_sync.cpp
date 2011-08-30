@@ -691,7 +691,7 @@ static CTimeout to (500);
 // tell other players that I am here
 if (to.Expired ()) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if (i != gameData.multiplayer.nLocalPlayer) {
+		if (i != N_LOCALPLAYER) {
 			pingStats [i].launchTime = -1; //TimerGetFixedSeconds ();
 			NetworkSendPing (i); // tell clients already connected server is still alive
 			}
@@ -721,7 +721,7 @@ void NetworkWaitForRequests (void)
 networkData.nStatus = NETSTAT_WAITING;
 m.AddText ("", const_cast<char*> (TXT_NET_LEAVE));
 NetworkFlush ();
-LOCALPLAYER.connected = CONNECT_PLAYING;
+CONNECT (N_LOCALPLAYER, CONNECT_PLAYING);
 
 for (;;) {
 	choice = m.Menu (NULL, TXT_CLIENT_WAIT, NetworkRequestPoll);        
@@ -735,7 +735,7 @@ for (;;) {
 		
 		// User confirmed abort
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if ((gameData.multiplayer.players [i].connected != 0) && (i != gameData.multiplayer.nLocalPlayer)) {
+			if ((gameData.multiplayer.players [i].connected != 0) && (i != N_LOCALPLAYER)) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
 					NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Server (), netPlayers [0].m_info.players [i].network.Node (), DUMP_ABORTED);
 				}
@@ -762,7 +762,7 @@ for (;;) {
 		NetworkWaitForRequests ();
 		if (IAmGameHost ()) {
 			NetworkSendSync ();
-			result = (gameData.multiplayer.nLocalPlayer < 0) ? -1 : 0;
+			result = (N_LOCALPLAYER < 0) ? -1 : 0;
 			break;
 			}
 		}
@@ -773,7 +773,7 @@ for (;;) {
 		}
 	}
 if (result < 0) {
-	LOCALPLAYER.connected = CONNECT_DISCONNECTED;
+	CONNECT (N_LOCALPLAYER, CONNECT_DISCONNECTED);
 	NetworkSendEndLevelPacket ();
 	//longjmp (gameExitPoint, 0);
 	}

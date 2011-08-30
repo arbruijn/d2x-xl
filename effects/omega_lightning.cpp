@@ -86,7 +86,7 @@ if (!objP)
 	return NULL;
 bSpectate = SPECTATOR (objP);
 posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
-if ((bSpectate || (objP->info.nId != gameData.multiplayer.nLocalPlayer)) &&
+if ((bSpectate || (objP->info.nId != N_LOCALPLAYER)) &&
 	 (vGunPoints = GetGunPoints (objP, 6))) {
 	TransformGunPoint (objP, vGunPoints, 6, 0, 0, vMuzzle, NULL);
 	}

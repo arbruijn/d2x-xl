@@ -266,7 +266,7 @@ int PlayerHasWeapon (int nWeapon, int bSecondary, int nPlayer, int bAll)
 {
 	int		returnValue = 0;
 	int		nWeaponIndex;
-	CPlayerData	*playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
+	CPlayerData	*playerP = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
 
 //	Hack! If energy goes negative, you can't fire a weapon that doesn't require energy.
 //	But energy should not go negative (but it does), so find out why it does!
@@ -566,7 +566,7 @@ return SUPER_LASER_INDEX;
 
 void SetLastSuperWeaponStates (void)
 {
-	CPlayerData	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+	CPlayerData	*playerP = gameData.multiplayer.players + N_LOCALPLAYER;
 	int		i, j;
 
 for (i = 0, j = 1 << 5; i < 5; i++, j <<= 1) {
