@@ -513,7 +513,7 @@ static int ReadLoresBitmap (CBitmap* bmP, int nIndex, int bD1)
 nDescentCriticalError = 0;
 
 if (gameStates.app.nLogLevel > 1)
-	PrintLog (1, "loading lores texture '%s'\n", bmP->Name ());
+	PrintLog (0, "loading lores texture '%s'\n", bmP->Name ());
 CFile* cfP = cfPiggy + bD1;
 if (!cfP->File ())
 	PiggyInitPigFile (NULL);
@@ -524,7 +524,7 @@ bmP->CreateBuffer ();
 if (!bmP->Buffer () || (bitmapCacheUsed > bitmapCacheSize))
 	throw (EX_OUT_OF_MEMORY);
 bmP->SetFlags (gameData.pig.tex.bitmapFlags [bD1][nIndex]);
-if (0 > ReadBitmap (bmP, bmP->FrameSize (), cfP, bD1 != 0))
+if (0 > ReadBitmap (bmP, bmP->FrameSize (), cfP, bD1 != 0)) 
 	throw (EX_IO_ERROR);
 UseBitmapCache (bmP, int (bmP->FrameSize ()));
 
@@ -753,10 +753,6 @@ char* pszFile = FindHiresBitmap (bmName, nFile, bD1, nIndex != 0x7FFFFFFF);
 if (!pszFile)
 	return (nIndex < 0) ? -1 : 0;
 
-#if 0
-if (gameStates.app.nLogLevel > 1)
-	PrintLog (1, "loading hires texture '%s' (quality: %d)\n", pszFile, min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
-#endif
 if (nFile < 2)	//was level specific mod folder
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);
 
@@ -814,7 +810,7 @@ if ((nIndex >= 0) && (nIndex < 0x7FFFFFFF)) {	// replacement texture for a lores
 				vcP->flags |= WCF_ALTFMT;
 				}
 			else {
-				Printlog (1, "couldn't find animation for '%s'\n", bmName);
+				PrintLog (0, "couldn't find animation for '%s'\n", bmName);
 				}
 			}
 		}
@@ -986,7 +982,7 @@ void LoadReplacementBitmaps (const char *pszLevelName)
 	CBitmap	bm;
 
 //first, free up data allocated for old bitmaps
-Printlog (1, "loading replacement textures\n");
+PrintLog (1, "loading replacement textures\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".pog");
 if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 	int					id, version, nBitmapNum, bHaveTGA;
@@ -998,6 +994,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 	version = cf.ReadInt ();
 	if (id != MAKE_SIG ('G','O','P','D') || version != 1) {
 		cf.Close ();
+		PrintLog (-1);
 		return;
 		}
 	nBitmapNum = cf.ReadInt ();
@@ -1112,6 +1109,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 	paletteManager.SetLastPig ("");
 	TexMergeFlush ();       //for re-merging with new textures
 	}
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -1123,7 +1121,7 @@ void LoadTextureColors (const char *pszLevelName, CFaceColor *colorP)
 	int			i;
 
 //first, free up data allocated for old bitmaps
-Printlog (1, "loading texture colors\n");
+PrintLog (1, "loading texture colors\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".clr");
 if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 	if (!colorP)
@@ -1184,7 +1182,7 @@ try {
 	bmBackground.SetPalette (NULL, -1, -1);
 	}
 catch(...) {
-	PrintLog (1, "Error reading background image '%s'\n", BACKGROUND_NAME);
+	PrintLog (0, "Error reading background image '%s'\n", BACKGROUND_NAME);
 	try {
 		bmBackground.Destroy ();
 		}

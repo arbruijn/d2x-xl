@@ -213,26 +213,35 @@ if (!gameData.Create (nSegments, nVertices))
 	return false;
 /*---*/PrintLog (1, "Initializing game data\n  Objects ...\n");
 InitObjects ();
-/*---*/Printlog (1, "Special effects...\n");
+PrintLog (-1);
+/*---*/PrintLog (1, "Special effects...\n");
 InitSpecialEffects ();
-/*---*/Printlog (1, "AI system...\n");
+PrintLog (-1);
+/*---*/PrintLog (1, "AI system...\n");
 InitAISystem ();
-//*---*/Printlog (1, "gauge canvases...\n");
+PrintLog (-1);
+//*---*/PrintLog (1, "gauge canvases...\n");
 //	InitGaugeCanvases ();
-/*---*/Printlog (1, "Exploding walls data...\n");
+/*---*/PrintLog (1, "Exploding walls data...\n");
 InitExplodingWalls ();
 ResetGenerators ();
-/*---*/Printlog (1, "Background bitmap...\n");
+PrintLog (-1);
+/*---*/PrintLog (1, "Background bitmap...\n");
 LoadGameBackground ();
-/*---*/Printlog (1, "Automap...\n");
+PrintLog (-1);
+/*---*/PrintLog (1, "Automap...\n");
 automap.Init ();
-/*---*/Printlog (1, "Default ship data...\n");
+PrintLog (-1);
+/*---*/PrintLog (1, "Default ship data...\n");
 InitDefaultPlayerShip ();
+PrintLog (-1);
 nClearWindow = 2;		//	do portal only window clear.
-/*---*/Printlog (1, "Default settings...\n");
+/*---*/PrintLog (1, "Default settings...\n");
 DefaultAllSettings ();
-/*---*/Printlog (1, "Detail levels (%d)...\n", gameStates.app.nDetailLevel);
+PrintLog (-1);
+/*---*/PrintLog (1, "Detail levels (%d)...\n", gameStates.app.nDetailLevel);
 gameStates.app.nDetailLevel = InitDetailLevels (gameStates.app.nDetailLevel);
+PrintLog (-1);
 fpDrawTexPolyMulti = G3DrawTexPolyMulti;
 return true;
 }
@@ -831,40 +840,55 @@ FreeAddonSounds ();
 if (!RunSoundThread (stCloseAudio))
 	audio.Shutdown ();
 EndSoundThread ();
+PrintLog (-1);
 RLECacheClose ();
 FreeObjExtensionBitmaps ();
 FreeModelExtensions ();
 PrintLog (1, "unloading render buffers\n");
 transparencyRenderer.FreeBuffers ();
+PrintLog (-1);
 PrintLog (1, "unloading string pool\n");
 FreeStringPool ();
+PrintLog (-1);
 PrintLog (1, "unloading level messages\n");
 FreeTextData (gameData.messages);
 FreeTextData (&gameData.sounds);
+PrintLog (-1);
 PrintLog (1, "unloading hires animations\n");
 UnloadHiresAnimations ();
 UnloadTextures ();
+PrintLog (-1);
 PrintLog (1, "freeing sound buffers\n");
 FreeSoundReplacements ();
+PrintLog (-1);
 PrintLog (1, "unloading auxiliary poly model data\n");
 gameData.models.Destroy ();
+PrintLog (-1);
 PrintLog (1, "unloading hires models\n");
 FreeHiresModels (0);
+PrintLog (-1);
 PrintLog (1, "unloading tracker list\n");
 tracker.DestroyList ();
+PrintLog (-1);
 PrintLog (1, "unloading lightmap data\n");
 lightmapManager.Destroy ();
+PrintLog (-1);
 PrintLog (1, "unloading particle data\n");
 particleManager.Shutdown ();
+PrintLog (-1);
 PrintLog (1, "unloading shield sphere data\n");
 gameData.render.shield.Destroy ();
 gameData.render.monsterball.Destroy ();
+PrintLog (-1);
 PrintLog (1, "unloading HUD icons\n");
 hudIcons.Destroy ();
+PrintLog (-1);
 PrintLog (1, "unloading extra texture data\n");
 UnloadAddonImages ();
+PrintLog (-1);
 PrintLog (1, "unloading palettes\n");
 gameData.segs.skybox.Destroy ();
+PrintLog (-1);
 #if GPGPU_VERTEX_LIGHTING
 gpgpuLighting.End ();
 #endif
@@ -874,14 +898,17 @@ if (gameStates.render.vr.buffers.offscreen) {
 }
 PrintLog (1, "restoring effect bitmaps\n");
 RestoreEffectBitmapIcons ();
+PrintLog (-1);
 if (bmBackground.Buffer ()) {
 	PrintLog (1, "unloading background bitmap\n");
 	bmBackground.DestroyBuffer ();
+	PrintLog (-1);
 	}
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
-PrintLog (1, "unloading custom background data\n");
+PrintLog (1, "unloading ban list\n");
 banList.Save ();
 banList.Destroy ();
+PrintLog (-1);
 //PrintLog (1, "peak memory consumption: %ld bytes\n", nMaxAllocd);
 #if 0 //!defined(__unix__)
 SDL_Quit (); // hangs on Linux
@@ -945,7 +972,6 @@ if (((RandShort () << 3) < gameData.time.xFrame))	//play the nSound
 
 void DoEffectsFrame (void)
 {
-//PrintLog (1, "DoEffectsFrame \n");
 #if UNIFY_THREADS
 if (!(WaitForRenderThreads () && RunRenderThreads (rtEffects, 1)))
 #else

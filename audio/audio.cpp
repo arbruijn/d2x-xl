@@ -590,7 +590,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		Mix_PlayChannel (m_info.nChannel, m_info.mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);
 		}
 	catch (...) {
-		PrintLog (1, "Error in Mix_PlayChannel\n");
+		PrintLog (0, "Error in Mix_PlayChannel\n");
 		}
 	}
 else 
@@ -715,8 +715,6 @@ m_objects.Destroy ();
 int CAudio::AudioError (void)
 {
 SDL_QuitSubSystem (SDL_INIT_AUDIO);
-//PrintLog (TXT_SDL_INIT_AUDIO, SDL_GetError ()); PrintLog (1, "\n");
-//Error (TXT_SDL_INIT_AUDIO, SDL_GetError ());
 Destroy ();
 m_bSDLInitialized = false;
 return 1;
@@ -817,7 +815,8 @@ SDL_QuitSubSystem (SDL_INIT_AUDIO);
 if (!InternalSetup (fSlowDown, nFormat, "alsa"))
 	return 0;
 SDL_QuitSubSystem (SDL_INIT_AUDIO);
-PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog (1, "\n");
+PrintLog (0, TXT_SDL_OPEN_AUDIO, SDL_GetError ()); 
+PrintLog (0, "\n");
 Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
 return 1;
 }

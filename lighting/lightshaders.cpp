@@ -943,9 +943,9 @@ if (strstr (pszFS, "#define LIGHTS ") == pszFS) {
 	pszFS [15] = *szLights;
 	}
 #if DBG
-Printlog (1, "\n\nShader program:\n");
-PrintLog (pszFS);
-Printlog (1, "\n");
+PrintLog (1, "\n\nShader program:\n");
+PrintLog (0, pszFS);
+PrintLog (-1, "\n");
 #endif
 return pszFS;
 }
@@ -1009,7 +1009,7 @@ for (h = 0; h <= 3; h++) {
 				vsP = pszLightingVS;
 				}
 			}
-		Printlog (1, "building lighting shader programs\n");
+		PrintLog (1, "building lighting shader programs\n");
 		pszFS = BuildLightingShader (fsP [h], i);
 		pszVS = BuildLightingShader (vsP [h], i);
 		bOk = (pszFS != NULL) && (pszVS != NULL) && shaderManager.Build (perPixelLightingShaderProgs [i][h], pszFS, pszVS);
@@ -1022,8 +1022,10 @@ for (h = 0; h <= 3; h++) {
 				for (j = 0; j < 4; j++)
 					shaderManager.Delete (perPixelLightingShaderProgs [i][j]);
 			nLights = 0;
+			PrintLog (-1);
 			return -1;
 			}
+		PrintLog (-1);
 		}
 	}
 return ogl.m_data.nPerPixelLights [nType] = nLights;

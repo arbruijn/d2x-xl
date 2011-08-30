@@ -564,7 +564,7 @@ for (;;) {
 		}
 	else {
 #if DBG
-		PrintLog (1, "invalid polygon model\n");
+		PrintLog (0, "invalid polygon model\n");
 #endif
 		return 0;
 		}

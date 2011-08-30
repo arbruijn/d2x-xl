@@ -642,7 +642,7 @@ if (!gameStates.app.bHaveSDLNet)
 	char	szProgress [30];
 	int	i;
 
-Printlog (1, "trying to download mission '%s'\n", pszMission);
+PrintLog (1, "trying to download mission '%s'\n", pszMission);
 gameStates.multi.bTryAutoDL = 0;
 #if 0
 if (!(/*gameStates.app.bHaveExtraGameInfo [1] &&*/ extraGameInfo [0].bAutoDownload))
@@ -676,8 +676,10 @@ m_nState = DL_DONE;
 if (i != -3) {
 	for (int i = 0; i < m_nFiles; i++)
 		CFile::Delete (m_files [i], "");
+	PrintLog (-1);
 	return 0;
 	}
+PrintLog (-1);
 return 1;
 }
 

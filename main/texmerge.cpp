@@ -510,7 +510,6 @@ void InitTexMergeShaders (void)
 {
 	int	i, b;
 
-IndentLog ();
 if (!(gameOpts->render.bUseShaders && ogl.m_features.bShaders))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
@@ -528,13 +527,13 @@ else {
 			break;
 			}
 		}
+	PrintLog (-1);
 	}
 if (!gameOpts->ogl.bGlTexMerge) {
 	ogl.m_states.bLowMemory = 0;
 	ogl.m_features.bTextureCompression = 0;
-	PrintLog (1, "+++++ OpenGL shader texture merging has been disabled! +++++\n");
+	PrintLog (0, "+++++ OpenGL shader texture merging has been disabled! +++++\n");
 	}
-PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------

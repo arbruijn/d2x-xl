@@ -1223,7 +1223,7 @@ switch (objP->info.renderType) {
 		break;
 
 	default:
-		PrintLog (1, "Unknown renderType <%d>\n", objP->info.renderType);
+		PrintLog (0, "Unknown renderType <%d>\n", objP->info.renderType);
 	}
 
 if (objP->info.renderType != RT_NONE)

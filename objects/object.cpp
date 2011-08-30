@@ -735,16 +735,6 @@ if (gameData.objs.nObjects >= LEVEL_OBJECTS - 2) {
 if (gameData.objs.nObjects >= LEVEL_OBJECTS)
 	return -1;
 nObject = gameData.objs.freeList [gameData.objs.nObjects++];
-#if DBG
-if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
-	return -1;
-if (nObject == nDbgObj) {
-	PrintLog (1, "allocating object #%d\n", nObject);
-	nDbgObj = nDbgObj;
-	if (dbgObjInstances++ > 0)
-		nDbgObj = nDbgObj;
-	}
-#endif
 if (nObject > gameData.objs.nLastObject [0]) {
 	gameData.objs.nLastObject [0] = nObject;
 	if (gameData.objs.nLastObject [1] < gameData.objs.nLastObject [0])
@@ -787,14 +777,6 @@ void CObject::Link (tObjListRef& ref, int nLink)
 {
 	CObjListLink& link = m_links [nLink];
 
-#if DBG
-if (IsInList (ref, nLink)) {
-	//PrintLog (1, "object %d, type %d, link %d is already linked\n", objP - gameData.objs.objects, objP->info.nType);
-	return;
-	}
-if (this - gameData.objs.objects == nDbgObj)
-	nDbgObj = nDbgObj;
-#endif
 link.prev = ref.tail;
 if (ref.tail)
 	ref.tail->m_links [nLink].next = this;
@@ -840,19 +822,6 @@ else if (ref.tail == this) { //this actually means the list is corrupted
 			;
 	}
 link.prev = link.next = NULL;
-#if DBG
-if (IsInList (ref, nLink)) {
-	PrintLog (1, "object %d, type %d, link %d is still linked\n", this - gameData.objs.objects, info.nType);
-	return;
-	}
-CObject *objP;
-if ((objP = ref.head)) {
-	if (objP->Links (nLink).next == objP)
-		nDbgObj = nDbgObj;
-	if (objP->Links (nLink).prev == objP)
-		nDbgObj = nDbgObj;
-	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -861,12 +830,6 @@ void CObject::Link (void)
 {
 	ubyte nType = info.nType;
 
-#if DBG
-if (this - gameData.objs.objects == nDbgObj) {
-	nDbgObj = nDbgObj;
-	//PrintLog (1, "linking object #%d, type %d\n", objP - gameData.objs.objects, nType);
-	}
-#endif
 Unlink (true);
 m_nLinkedType = nType;
 Link (gameData.objs.lists.all, 0);
@@ -904,12 +867,6 @@ void CObject::Unlink (bool bForce)
 	ubyte nType = m_nLinkedType;
 
 if (bForce || (nType != OBJ_NONE)) {
-#if DBG
-	if (this - gameData.objs.objects == nDbgObj) {
-		nDbgObj = nDbgObj;
-		//PrintLog (1, "unlinking object #%d, type %d\n", objP - gameData.objs.objects, nType);
-		}
-#endif
 	m_nLinkedType = OBJ_NONE;
 	Unlink (gameData.objs.lists.all, 0);
 	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
@@ -954,17 +911,8 @@ void FreeObject (int nObject)
 {
 if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 	return;
-#if DBG
-if (nObject == nDbgObj) {
-	//PrintLog (1, "freeing object #%d\n", nObject);
-	nDbgObj = nDbgObj;
-	if (dbgObjInstances > 0)
-		dbgObjInstances--;
-	else
-		nDbgObj = nDbgObj;
-	}
-#endif
-	CObject	*objP = OBJECTS + nObject;
+
+CObject	*objP = OBJECTS + nObject;
 
 objP->Unlink ();
 DelObjChildrenN (nObject);
@@ -1168,27 +1116,10 @@ if (info.nNextInSeg != -1)
 //from its old CSegment, and links it into the new CSegment
 void CObject::RelinkToSeg (int nNewSeg)
 {
-#if DBG
-	short nObject = OBJ_IDX (this);
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
-	PrintLog (1, "invalid object in RelinkObjToSeg\r\n");
+if ((nNewSeg < 0) || (nNewSeg >= gameData.segs.nSegments))
 	return;
-	}
-#endif
-if ((nNewSeg < 0) || (nNewSeg >= gameData.segs.nSegments)) {
-#if DBG
-	PrintLog (1, "invalid segment in RelinkObjToSeg\r\n");
-#endif
-	return;
-	}
 UnlinkFromSeg ();
 LinkToSeg (nNewSeg);
-#if DBG
-#if TRACE
-if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center)
-	console.printf (1, "CObject::RelinkToSeg violates seg masks.\n");
-#endif
-#endif
 }
 
 //------------------------------------------------------------------------------

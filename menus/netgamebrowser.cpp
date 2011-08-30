@@ -264,7 +264,6 @@ int NetworkBrowseGames (void)
 	int	choice, bAutoLaunch = (gameData.multiplayer.autoNG.bValid > 0);
 	char	callsign [CALLSIGN_LEN+1];
 
-//PrintLog (1, "launching netgame browser\n");
 memcpy (callsign, LOCALPLAYER.callsign, sizeof (callsign));
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (!networkData.bActive) {
@@ -273,7 +272,6 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		}
 	}
 LOCALPLAYER.timeLevel = 0;
-//Printlog (1, "NetworkInit\n");
 NetworkInit ();
 gameData.multiplayer.nPlayers = 0;
 setjmp (gameExitPoint);
@@ -281,11 +279,8 @@ networkData.nJoining = 0;
 networkData.nJoinState = 0;
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
-//Printlog (1, "NetworkFlush\n");
 NetworkFlush ();
-//Printlog (1, "NetworkListen\n");
 NetworkListen ();  // Throw out old info
-//Printlog (1, "NetworkSendGameListRequest\n");
 NetworkSendGameListRequest (); // broadcast a request for lists
 networkData.nActiveGames = 0;
 networkData.nLastActiveGames = 0;
@@ -373,16 +368,12 @@ if (AGI.m_info.protocolVersion != MULTI_PROTO_VERSION) {
 	goto doMenu;
 	}
 
-//if (tracker.m_bUse) {
-	//Printlog (1, "getting server lists from trackers\n");
-	//tracker.GetServerFromList (choice, networkData.serverAddress);
-//	}
 // Check for valid mission name
 memcpy (networkData.serverAddress, activeNetGames [choice].m_server, sizeof (networkData.serverAddress));
 console.printf (CON_DBG, TXT_LOADING_MSN, AGI.m_info.szMissionName);
 if (!(missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	
 	   (downloadManager.DownloadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, -1)))) {
-	PrintLog (1, "Mission '%s' not found%s\n", AGI.m_info.szMissionName);
+	PrintLog (0, "Mission '%s' not found%s\n", AGI.m_info.szMissionName);
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;
 	}
@@ -427,11 +418,7 @@ if (IpxHandleNetGameAuxData (netGame.AuxData ()) < 0) {
 	}
 NetworkSetGameMode (netGame.m_info.gameMode);
 NetworkAdjustMaxDataSize ();
-//PrintLog (1, "loading level\n");
 return StartNewLevel (netGame.m_info.GetLevel (), true);
-//PrintLog (1, "exiting netgame browser\n");
-//backgroundManager.Remove ();
-//return 1;         // look ma, we're in a game!!!
 }
 
 //------------------------------------------------------------------------------

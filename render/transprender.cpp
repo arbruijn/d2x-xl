@@ -1370,7 +1370,7 @@ if (!itemP->bRendered) {
 		itemP->Render ();
 		}
 	catch(...) {
-		PrintLog (1, "invalid transparent render item (type: %d)\n", m_data.nCurType);
+		PrintLog (0, "invalid transparent render item (type: %d)\n", m_data.nCurType);
 		}
 	}
 return m_data.nCurType;

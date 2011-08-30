@@ -181,9 +181,9 @@ va_start (argP, fmt);
 vsprintf (szFailMsg, fmt, argP);
 va_end (argP);
 #ifdef _WIN32
-PrintLog (1, "UDP Error %d (\"%s\")\n", WSAGetLastError (), szFailMsg);
+PrintLog (0, "UDP Error %d (\"%s\")\n", WSAGetLastError (), szFailMsg);
 #else
-PrintLog (1, "UDP Error (\"%s\")\n", szFailMsg);
+PrintLog (0, "UDP Error (\"%s\")\n", szFailMsg);
 #endif
 return 1;
 }
@@ -383,7 +383,7 @@ if ((sock = socket (AF_INET, SOCK_DGRAM,IPPROTO_UDP)) < 0)
 
 #ifdef SIOCGIFCOUNT
 if (ioctl (sock, SIOCGIFCOUNT, &m_nBroads)) {
-	PrintLog (1, "getting interface count");
+	PrintLog (0, "getting interface count");
 	return 0;
 	}
 else
@@ -568,7 +568,7 @@ static void PortShift (const char *pszPort)
 ushort srcPort = 0;
 int port = atoi (pszPort);
 if ((port < -PORTSHIFT_TOLERANCE) || (port > +PORTSHIFT_TOLERANCE))
-	PrintLog (1, "Invalid PortShift in \"%s\", tolerance is +/-%d\n", pszPort, PORTSHIFT_TOLERANCE);
+	PrintLog (0, "Invalid PortShift in \"%s\", tolerance is +/-%d\n", pszPort, PORTSHIFT_TOLERANCE);
 else
 	srcPort = (ushort) htons (u_short (port));
 memcpy (qhbuf + 4, &srcPort, 2);
@@ -659,15 +659,15 @@ he = gethostbyname (reinterpret_cast<char*> (buf));
 if (s)
 	*s = coord;
 if (!he) {
-	PrintLog (1, "Error resolving my hostname \"%s\"\n", buf);
+	PrintLog (0, "Error resolving my hostname \"%s\"\n", buf);
 	return NULL;
 	}
 if ((he->h_addrtype != AF_INET) || (he->h_length != 4)) {
-	PrintLog (1, "Error parsing resolved my hostname \"%s\"\n", buf);
+	PrintLog (0, "Error parsing resolved my hostname \"%s\"\n", buf);
 	return NULL;
 	}
 if (!*he->h_addr_list) {
-	PrintLog ( "My resolved hostname \"%s\" address list empty\n", buf);
+	PrintLog (0, "My resolved hostname \"%s\" address list empty\n", buf);
 	return NULL;
 	}
 memcpy (qhbuf, *he->h_addr_list, 4);
@@ -685,14 +685,14 @@ static void DumpRawAddr (ubyte *vec)
 {
 short port;
 
-PrintLog (1, "[%u.%u.%u.%u]", vec[0], vec[1], vec[2], vec[3]);
+PrintLog (0, "[%u.%u.%u.%u]", vec[0], vec[1], vec[2], vec[3]);
 console.printf (0, "[%u.%u.%u.%u]", vec[0], vec[1], vec[2], vec[3]);
 port=(signed short)ntohs (*reinterpret_cast<ushort*> (vec+4));
 if (port) {
-	PrintLog (1, ":%+d", port);
+	PrintLog (0, ":%+d", port);
 	console.printf (0, ":%+d", port);
 	}
-PrintLog (1, "\n");
+PrintLog (-1, "\n");
 }
 
 #endif
@@ -797,7 +797,7 @@ if (gameStates.multi.bServer [0] || mpParams.udpPorts [1]) {
 		return 1;
 		}
 	}
-PrintLog (1, "Opened UDP connection (socket %d, port %d)\n", sk->fd, nLocalPort);
+PrintLog (0, "Opened UDP connection (socket %d, port %d)\n", sk->fd, nLocalPort);
 nOpenSockets++;
 sk->socket = nLocalPort;
 return 0;
@@ -812,15 +812,16 @@ if (!gameStates.multi.bKeepClients)
 	clientManager.Destroy ();
 gameStates.multi.bHaveLocalAddress = 0;
 if (!nOpenSockets) {
-	PrintLog (1, "UDP interface: close w/o open\n");
+	PrintLog (0, "UDP interface: close w/o open\n");
 	return;
 	}
 PrintLog (1, "UDP interface: CloseSocket on D1X socket port %d\n", mysock->socket);
 if (closesocket (mysock->fd))
-	PrintLog (1, "UDP interface: closesocket() failed on CloseSocket D1X socket port %d.\n", mysock->socket);
+	PrintLog (0, "UDP interface: closesocket() failed on CloseSocket D1X socket port %d.\n", mysock->socket);
 mysock->fd = (UINT_PTR) (-1);
 if (--nOpenSockets)
-	PrintLog (1, "UDP interface: (closesocket) %d sockets left\n", nOpenSockets);
+	PrintLog (0, "UDP interface: (closesocket) %d sockets left\n", nOpenSockets);
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -908,8 +909,12 @@ static int UDPSendPacket
 #ifdef UDPDEBUG
 PrintLog (1, "UDP interface: SendPacket enter, dataLen=%d",dataLen);
 #endif
-if ((dataLen < 0) || (dataLen > MAX_PAYLOAD_SIZE + 4))
+if ((dataLen < 0) || (dataLen > MAX_PAYLOAD_SIZE + 4)) {
+#ifdef UDPDEBUG
+	PrintLog (-1);
+#endif
 	return -1;
+	}
 if (gameStates.multi.bTrackerCall)
 	memcpy (buf, data, dataLen);
 else {
@@ -922,8 +927,12 @@ memcpy (&destAddr.sin_addr, ipxHeader->Destination.Node, 4);
 destAddr.sin_port = *(reinterpret_cast<ushort*> (ipxHeader->Destination.Node + 4));
 memset (&(destAddr.sin_zero), '\0', 8);
 
-if (!(gameStates.multi.bTrackerCall || (clientManager.Add (&destAddr) >= 0)))
+if (!(gameStates.multi.bTrackerCall || (clientManager.Add (&destAddr) >= 0))) {
+#ifdef UDPDEBUG
+	PrintLog (-1);
+#endif
 	return -1;
+	}
 if (destAddr.sin_addr.s_addr == htonl (INADDR_BROADCAST)) {
 	bBroadcast = 1;
 	iDest = 0;
@@ -997,11 +1006,17 @@ for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 		int h = WSAGetLastError ();
 #endif
 	if (bBroadcast <= 0) {
+#ifdef UDPDEBUG
+			PrintLog (-1);
+#endif
 		if (gameStates.multi.bTrackerCall)
 			return ((nUdpRes < 1) ? -1 : nUdpRes);
 		return ((nUdpRes < extraDataLen + 8) ? -1 : nUdpRes - extraDataLen);
 		}
 	}
+#ifdef UDPDEBUG
+PrintLog (-1);
+#endif
 return dataLen;
 }
 

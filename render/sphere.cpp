@@ -95,8 +95,10 @@ if (sphereShaderProg < 0) {
 	if (!shaderManager.Build (sphereShaderProg, pszSphereFS, pszSphereVS)) {
 		ogl.m_features.bPerPixelLighting.Available (0);
 		gameStates.render.bPerPixelLighting = 0;
+		PrintLog (-1);
 		return -1;
 		}
+	PrintLog (-1);
 	}
 return 1;
 }
@@ -366,6 +368,7 @@ for (i = 0; i < 2; i++) {
 	if (!(buf [i] = new CFloatVector [nFaces * (m_nFaceNodes + 1)])) {
 		if (i)
 			delete[] buf [i - 1];
+		PrintLog (-1);
 		return -1;
 		}
 	}
@@ -375,9 +378,11 @@ j = (m_nFaceNodes == 3) ?
 delete[] buf [!j];
 if (!m_texCoord.Create (nFaces * m_nFaceNodes)) {
 	delete[] buf [j];
+	PrintLog (-1);
 	return -1;
 	}
 m_vertices.SetBuffer (buf [j]);
+PrintLog (-1);
 return nFaces;
 }
 
@@ -947,7 +952,7 @@ gameData.render.monsterball.Destroy ();
 
 void InitSpheres (void)
 {
-Printlog (1, "creating spheres\n");
+PrintLog (1, "creating spheres\n");
 CreateShieldSphere ();
 }
 

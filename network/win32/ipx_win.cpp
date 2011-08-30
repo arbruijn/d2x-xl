@@ -54,7 +54,7 @@ if (!(qhbuf = QueryHost(buf)))
   if(sock==-1)
   {
 #if TRACE
-    PrintLog (1, "IPX: could not open socket in GetMyAddress\n");
+    PrintLog (0, "IPX: could not open socket in GetMyAddress\n");
 #endif
     return(-1);
   }
@@ -71,7 +71,7 @@ if (!(qhbuf = QueryHost(buf)))
   if (bind (sock, reinterpret_cast<struct sockaddr*> (&ipxs), sizeof (ipxs)) == -1)
   {
 #if TRACE
-    PrintLog (1, "IPX: could bind to network 0 in GetMyAddress\n");
+    PrintLog (0, "IPX: could bind to network 0 in GetMyAddress\n");
 #endif
     closesocket( sock );
     return(-1);
@@ -80,7 +80,7 @@ if (!(qhbuf = QueryHost(buf)))
   len = sizeof(ipxs2);
   if (getsockname(sock, reinterpret_cast<struct sockaddr*> (&ipxs2), &len) < 0) {
 #if TRACE
-    PrintLog (1, "IPX: could not get socket name in GetMyAddress\n");
+    PrintLog (0, "IPX: could not get socket name in GetMyAddress\n");
 #endif
     closesocket( sock );
     return(-1);
@@ -112,7 +112,7 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
   /* need to convert dynamic socket open into a real socket number */
 /*  if (port == 0) {
 #if TRACE
-    PrintLog (1, "IPX: using socket %x\n", nextDynamicSocket);
+    PrintLog (0, "IPX: using socket %x\n", nextDynamicSocket);
 #endif
     port = nextDynamicSocket++;
   }
@@ -122,14 +122,14 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
 //  sock = socket(AF_IPX, SOCK_DGRAM, 0);
 sock = (int) socket(AF_IPX, SOCK_DGRAM, NSPROTO_IPX);//why NSPROTO_IPX?  I looked in the quake source and thats what they used. :) -MPM  (on w2k 0 and PF_IPX don't work)
 if (sock == -1) {
-	PrintLog (1, "IPX: could not open IPX socket.\n");
+	PrintLog (0, "IPX: could not open IPX socket.\n");
 	return -1;
 	}
 
 opt = 1;
 /* Permit broadcast output */
 if (setsockopt (sock, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<const char*> (&opt), sizeof(opt)) == -1) {
-	PrintLog (1, "IPX: could not set socket option for broadcast.\n");
+	PrintLog (0, "IPX: could not set socket option for broadcast.\n");
 	return -1;
 	}
 
@@ -140,20 +140,20 @@ ipxs.sa_socket = htons((short)port);
 
 /* now bind to this port */
 if (bind (sock, reinterpret_cast<struct sockaddr*> (&ipxs), sizeof(ipxs)) == -1) {
-	PrintLog (1, "IPX: could not bind socket to address\n");
+	PrintLog (0, "IPX: could not bind socket to address\n");
 	closesocket( sock );
 	return -1;
 	}
 
 len = sizeof (ipxs2);
 if (getsockname(sock, reinterpret_cast<struct sockaddr*> (&ipxs2), &len) < 0) {
-	PrintLog (1, "IPX interface: could not get socket name in IPXOpenSocket\n");
+	PrintLog (0, "IPX interface: could not get socket name in IPXOpenSocket\n");
 	closesocket( sock );
 	return -1;
 	} 
 if (port == 0) {
 	port = htons (ipxs2.sa_socket);
-	PrintLog (1, "IPX: opened dynamic socket %04x\n", port);
+	PrintLog (0, "IPX: opened dynamic socket %04x\n", port);
 	}
 
 memcpy (ipx_MyAddress, ipxs2.sa_netnum, 4);
@@ -168,7 +168,7 @@ return 0;
 static void ipx_win_CloseSocket(ipx_socket_t *mysock) {
   /* now close the file descriptor for the socket, and D2_FREE it */
 #if TRACE
-PrintLog (1, "IPX: closing file descriptor on socket %x\n", mysock->socket);
+PrintLog (0, "IPX: closing file descriptor on socket %x\n", mysock->socket);
 #endif
 closesocket (mysock->fd);
 }

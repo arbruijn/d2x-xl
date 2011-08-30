@@ -462,8 +462,6 @@ else if (nLogIndent > 30) {
 void _CDECL_ PrintLog (const int nIndent, const char *fmt = NULL, ...)
 {
 if (fLog) {
-	if (nIndent > 0) 
-		IndentLog (nIndent);
 	if (fmt && *fmt) {
 		va_list arglist;
 			static char	szLogLine [2][100000] = {'\0', '\0'};
@@ -480,8 +478,7 @@ if (fLog) {
 			nLogLine = !nLogLine;
 			}
 		}
-	if (nIndent < 0) 
-		IndentLog (nIndent);
+	IndentLog (nIndent);
 	}
 }
 

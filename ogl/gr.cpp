@@ -99,12 +99,12 @@ screen.Canvas ()->SetPalette (paletteManager.Default ()); //just need some valid
 //screen.Canvas ()->Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
 CCanvas::SetCurrent (NULL);
 CCanvas::Current ()->SetFont (fontManager.Current ());
-/***/Printlog (1, "initializing OpenGL window\n");
+/***/PrintLog (1, "initializing OpenGL window\n");
 if (!SdlGlInitWindow (w, h, 0))	//platform specific code
 	return 0;
-/***/Printlog (1, "initializing OpenGL view port\n");
+/***/PrintLog (1, "initializing OpenGL view port\n");
 ogl.Viewport (0, 0, w, h);
-/***/Printlog (1, "initializing OpenGL screen mode\n");
+/***/PrintLog (1, "initializing OpenGL screen mode\n");
 ogl.SetScreenMode ();
 ogl.GetVerInfo ();
 GrUpdate (0);
@@ -263,7 +263,7 @@ if (gameStates.gfx.bInstalled)
 #ifdef OGL_RUNTIME_LOAD
 OglInitLoadLibrary ();
 #endif
-/***/Printlog (1, "initializing SDL\n");
+/***/PrintLog (1, "initializing SDL\n");
 #if !USE_IRRLICHT
 if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
 	PrintLog (1, "SDL library video initialisation failed: %s.\n", SDL_GetError());
@@ -274,16 +274,16 @@ if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
 	ogl.m_states.bFullScreen = 0;
 #else
 if ((i = FindArg ("-fullscreen"))) {
-	/***/Printlog (1, "switching to fullscreen\n");
+	/***/PrintLog (1, "switching to fullscreen\n");
 	ogl.m_states.bFullScreen = NumArg (i, 1);
 	//ogl.ToggleFullScreen();
 	}
 else
 	ogl.m_states.bFullScreen = 1;
 #endif
-/***/Printlog (1, "initializing texture manager\n");
+/***/PrintLog (1, "initializing texture manager\n");
 textureManager.Init ();
-/***/Printlog (1, "allocating screen buffer\n");
+/***/PrintLog (1, "allocating screen buffer\n");
 screen.Canvas ()->SetBuffer (NULL);
 
 CreateDisplayModeInfo ();
@@ -307,7 +307,7 @@ if ((i = GrSetMode (gameStates.gfx.nStartScrSize)))
 gameStates.gfx.bInstalled = 1;
 InitGammaRamp ();
 //atexit(GrClose);
-/***/Printlog (1, "initializing OpenGL extensions\n");
+/***/PrintLog (1, "initializing OpenGL extensions\n");
 ogl.SetRenderQuality ();
 ogl.SetupExtensions ();
 ogl.DestroyDrawBuffers ();

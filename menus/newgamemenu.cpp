@@ -185,7 +185,7 @@ gameStates.app.bD1Mission = (missionManager [nMission].nDescentVersion == 1);
 missionManager.nLastMission = nMission;
 nNewLevel = 1;
 
-Printlog (1, "getting highest level allowed to play\n");
+PrintLog (0, "getting highest level allowed to play\n");
 nHighestPlayerLevel = GetHighestLevel ();
 
 if (nHighestPlayerLevel > missionManager.nLastLevel)
@@ -345,7 +345,7 @@ for (;;) {
 			bMsnLoaded = 1;
 			nMission = i;
 			nLevel = 1;
-			Printlog (1, "getting highest level allowed to play\n");
+			PrintLog (0, "getting highest level allowed to play\n");
 			nPlayerMaxLevel = GetHighestLevel ();
 			if (nPlayerMaxLevel > missionManager.nLastLevel)
 				nPlayerMaxLevel = missionManager.nLastLevel;
@@ -438,14 +438,16 @@ if (bUDP) {
 	gameStates.multi.nGameType = UDP_GAME;
 	IpxSetDriver (IPX_DRIVER_UDP); 
 	if (nChoice == multiOpts.nStartUdpTracker) {
-		Printlog (1, "Looking for active trackers\n");
+		PrintLog (1, "Looking for active trackers\n");
 		int n = tracker.ActiveCount (1);
 		if (n < -2) {
 			if (n == -4)
 				MsgBox (NULL, NULL, 1, TXT_OK, TXT_NO_TRACKERS);
 			tracker.m_bUse = 0;
+			PrintLog (-1);
 			return 0;
 			}
+		PrintLog (-1);
 		}
 	}
 else if ((nChoice == m.IndexOf ("start ipx game")) || (nChoice == m.IndexOf ("join ipx game"))) {

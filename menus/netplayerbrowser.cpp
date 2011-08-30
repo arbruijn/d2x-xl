@@ -171,10 +171,12 @@ int NetworkSelectPlayers (int bAutoRun)
 	char		title [50];
 	int		nSavePlayers;              //how may people would like to join
 
-Printlog (1, "Selecting netgame players\n");
+PrintLog (1, "Selecting netgame players\n");
 NetworkAddPlayer (&networkData.thisPlayer);
-if (bAutoRun)
+if (bAutoRun) {
+	PrintLog (-1);
 	return 1;
+	}
 
 m [0].Value () = 1;                         // Assume server will play...
 if (gameOpts->multi.bNoRankings)
@@ -192,8 +194,10 @@ do {
 	gameStates.app.nExtGameStatus = GAMESTAT_NETGAME_PLAYER_SELECT;
 	j = m.Menu (NULL, title, NetworkStartPoll, &choice);
 	nSavePlayers = gameData.multiplayer.nPlayers;
-	if (j < 0)
+	if (j < 0) {
+		PrintLog (-1);
 		return AbortPlayerSelection (nSavePlayers);
+		}
 	} while (GetSelectedPlayers (m, nSavePlayers));
 // Remove players that aren't marked.
 gameData.multiplayer.nPlayers = 0;
@@ -252,8 +256,11 @@ if (netGame.m_info.gameMode == NETGAME_TEAM_ANARCHY ||
 	 netGame.m_info.gameMode == NETGAME_TEAM_HOARD ||
 	 netGame.m_info.gameMode == NETGAME_ENTROPY ||
 	 netGame.m_info.gameMode == NETGAME_MONSTERBALL)
-	if (!NetworkSelectTeams ())
+	if (!NetworkSelectTeams ()) {
+		PrintLog (-1);
 		return AbortPlayerSelection (nSavePlayers);
+		}
+PrintLog (-1);
 return 1; 
 }
 

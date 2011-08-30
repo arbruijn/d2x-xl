@@ -46,21 +46,22 @@ void _CDECL_ free_text(void)
 {
 	char	*p = pszGameTexts [0] - 1;
 
-	PrintLog (1, "unloading game texts\n");
-	if (pszGameTexts && pszGameTexts [0]) {
-		p = pszGameTexts [0] - 1;
-		delete[] text;
-		delete[] p;
-		delete[] pszGameTexts;
-		pszGameTexts = NULL;
+PrintLog (1, "unloading game texts\n");
+if (pszGameTexts && pszGameTexts [0]) {
+	p = pszGameTexts [0] - 1;
+	delete[] text;
+	delete[] p;
+	delete[] pszGameTexts;
+	pszGameTexts = NULL;
 	}
-	if (pszHelpTexts && pszHelpTexts [0]) {
-		p = pszHelpTexts [0] - 1;
-		delete[] text;
-		delete[] p;
-		delete[] pszHelpTexts;
-		pszHelpTexts = NULL;
+if (pszHelpTexts && pszHelpTexts [0]) {
+	p = pszHelpTexts [0] - 1;
+	delete[] text;
+	delete[] p;
+	delete[] pszHelpTexts;
+	pszHelpTexts = NULL;
 	}
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -2802,7 +2803,7 @@ for (pi = pj = ph; *pi; pi++, pj++) {
 		else if (*pi == '\\')
 			*pj = '\\';
 		else
-			PrintLog (1, "Unsupported key sequence <\\%c> on line %d of file <%s>", *pi, nLine, pszFile);
+			PrintLog (0, "Unsupported key sequence <\\%c> on line %d of file <%s>", *pi, nLine, pszFile);
 		}
 	}
 *pj = 0;

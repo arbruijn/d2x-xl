@@ -820,7 +820,7 @@ ResumeLoopingSound ();
 
 void CAudio::ResumeAll (void)
 {
-Printlog (1, "restarting sounds\n");
+PrintLog (1, "restarting sounds\n");
 midi.Resume ();
 ResumeSounds ();
 StartTriggeredSounds ();

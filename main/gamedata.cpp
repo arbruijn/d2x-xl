@@ -1162,7 +1162,7 @@ void CModelData::Destroy (void)
 {
 	int	h, i;
 
-Printlog (1, "unloading polygon model data\n");
+PrintLog (1, "unloading polygon model data\n");
 for (h = 0; h < 2; h++) {
 	for (i = 0; i < MAX_POLYGON_MODELS; i++) {
 #if DBG
@@ -1174,6 +1174,7 @@ for (h = 0; h < 2; h++) {
 		gameData.models.pofData [h][1][i].Destroy ();
 		}
 	}
+PrintLog (-1);
 }
 
 // ----------------------------------------------------------------------------
@@ -1750,6 +1751,7 @@ void FreeGameData (void)
 {
 PrintLog (1, "shutting down lightning manager\n");
 lightningManager.Shutdown (1);
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------

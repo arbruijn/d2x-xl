@@ -74,6 +74,7 @@ if (DrawBuffer ()->Handle ())
 	return;
 PrintLog (1, "creating draw buffer\n");
 DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, nType, (nType != 1) ? 1 : 1 + m_features.bMultipleRenderTargets);
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------

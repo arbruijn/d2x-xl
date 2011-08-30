@@ -48,6 +48,7 @@ void CGPGPULighting::End (void)
 if (ogl.m_states.bVertexLighting) {
 	PrintLog (1, "unloading dynamic lighting buffers\n");
 	lightManager.FBO ().Destroy ();
+	PrintLog (-1);
 	}
 }
 
@@ -434,6 +435,7 @@ if (ogl.m_features.bRenderToTexture.Available () && ogl.m_features.bShaders.Avai
 		ogl.m_states.bVertexLighting = 0;
 		shaderManager.Delete (m_nShaderProg);
 		}
+	PrintLog (-1);
 	}
 #endif
 }

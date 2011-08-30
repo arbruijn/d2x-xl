@@ -113,12 +113,13 @@ gameData.segs.SetSegDist (nSegment, nSegment, 0, 0);
 
 void ComputeSegmentDistance (int startI, int nThread)
 {
-	int	i, endI;
+	int endI;
 
 PrintLog (1, "computing segment distances (%d)\n", startI);
 dacsRouter [nThread].Create (gameData.segs.nSegments);
-for (i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i < endI; i++)
+for (int i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i < endI; i++)
 	ComputeSingleSegmentDistance (i, nThread);
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -178,12 +179,15 @@ int ComputeNearestSegmentLights (int i, int nThread)
 	struct tLightDist	*pDists;
 
 PrintLog (1, "computing nearest segment lights (%d)\n", i);
-if (!lightManager.LightCount (0))
+if (!lightManager.LightCount (0)) {
+	PrintLog (-1);
 	return 0;
+	}
 
 if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
 	gameOpts->render.nLightingMethod = 0;
 	gameData.render.shadows.nLights = 0;
+	PrintLog (-1);
 	return 0;
 	}
 
@@ -214,6 +218,7 @@ for (segP = SEGMENTS + i; i < j; i++, segP++) {
 		lightManager.NearestSegLights ()[k + l] = -1;
 	}
 delete[] pDists;
+PrintLog (-1);
 return 1;
 }
 
@@ -373,7 +378,6 @@ static void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 
 	CObject			viewer;
 
 G3_SLEEP (0);
-//PrintLog (1, "computing visibility of segment %d\n", nStartSeg);
 ogl.SetTransform (1);
 #if DBG
 if (nStartSeg == nDbgSeg)
@@ -477,7 +481,6 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 	gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
 	BuildRenderSegList (nStartSeg, 0, true);
-	//Printlog (1, "flagging visible segments\n");
 	for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 		if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
 			continue;
@@ -524,6 +527,7 @@ if (startI < 0)
 	startI = 0;
 for (i = startI; i < endI; i++)
 	ComputeSingleSegmentVisibility (i);
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -654,12 +658,16 @@ PrintLog (1, "computing light visibility (%d)\n", startI);
 SetupSegments (fix (I2X (1) * 0.001f));
 if (startI <= 0) {
 	i = sizeof (gameData.segs.bVertVis [0]) * gameData.segs.nVertices * VERTVIS_FLAGS;
-	if (!gameData.segs.bVertVis.Create (i))
+	if (!gameData.segs.bVertVis.Create (i)) {
+		PrintLog (-1);
 		return;
+		}
 	gameData.segs.bVertVis.Clear ();
 	}
-else if (!gameData.segs.bVertVis)
+else if (!gameData.segs.bVertVis) {
+	PrintLog (-1);
 	return;
+	}
 if (gameStates.app.bMultiThreaded)
 	endI = lightManager.LightCount (0);
 else
@@ -685,6 +693,7 @@ for (i = endI - startI; i; i--, lightP++) {
 #endif
 		}
 	}
+PrintLog (-1);
 //PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;
 //SetupSegments ();
 }
@@ -941,8 +950,10 @@ if (!(SHOW_DYN_LIGHT ||
 loadOp = 0;
 loadIdx = 0;
 PrintLog (1, "Looking for precompiled light data\n");
-if (LoadLightData (nLevel))
+if (LoadLightData (nLevel)) {
+	PrintLog (-1);
 	return;
+	}
 
 #if MULTI_THREADED_PRECALC != 0
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
@@ -972,16 +983,22 @@ else {
 	else {
 		PrintLog (1, "Computing segment visibility\n");
 		ComputeSegmentVisibility (-1);
+		PrintLog (-1);
 		PrintLog (1, "Computing segment distances\n");
 		ComputeSegmentDistance (-1, 0);
+		PrintLog (-1);
 		PrintLog (1, "Computing light visibility\n");
 		ComputeLightVisibility (-1);
+		PrintLog (-1);
 		PrintLog (1, "Computing segment lights\n");
 		ComputeNearestSegmentLights (-1, 0);
+		PrintLog (-1);
 		PrintLog (1, "Computing vertex lights\n");
 		ComputeNearestVertexLights (-1, 0);
+		PrintLog (-1);
 		PrintLog (1, "Computing vertices visible to lights\n");
 		ComputeLightsVisibleVertices (-1);
+		PrintLog (-1);
 		}
 	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}
@@ -989,6 +1006,7 @@ else {
 gameData.segs.bVertVis.Destroy ();
 PrintLog (1, "Saving precompiled light data\n");
 SaveLightData (nLevel);
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------

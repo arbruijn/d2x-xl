@@ -193,32 +193,44 @@ return *bHaveP > 0;
 void LoadAddonImages (void)
 {
 PrintLog (1, "Loading addon images\n");
-Printlog (1, "Loading corona image\n");
+PrintLog (1, "Loading corona image\n");
 corona.Load ();
-Printlog (1, "Loading glare image\n");
+PrintLog (-1);
+PrintLog (1, "Loading glare image\n");
 glare.Load ();
-Printlog (1, "Loading halo image\n");
+PrintLog (-1);
+PrintLog (1, "Loading halo image\n");
 halo.Load ();
-Printlog (1, "Loading thruster image\n");
+PrintLog (-1);
+PrintLog (1, "Loading thruster image\n");
 thruster.Load ();
-Printlog (1, "Loading shield image\n");
+PrintLog (-1);
+PrintLog (1, "Loading shield image\n");
 shield.Load ();
-Printlog (1, "Loading explosion blast image\n");
+PrintLog (-1);
+PrintLog (1, "Loading explosion blast image\n");
 explBlast.Load ();
-Printlog (1, "Loading spark image\n");
+PrintLog (-1);
+PrintLog (1, "Loading spark image\n");
 sparks.Load ();
-Printlog (1, "Loading deadzone image\n");
+PrintLog (-1);
+PrintLog (1, "Loading deadzone image\n");
 deadzone.Load ();
-Printlog (1, "Loading zoom image\n");
+PrintLog (-1);
+PrintLog (1, "Loading zoom image\n");
 scope.Load ();
-Printlog (1, "Loading damage icons\n");
+PrintLog (-1);
+PrintLog (1, "Loading damage icons\n");
 damageIcon [0].Load (const_cast<char*>("aimdmg.tga"));
 damageIcon [1].Load (const_cast<char*>("drivedmg.tga"));
 damageIcon [2].Load (const_cast<char*>("gundmg.tga"));
-Printlog (1, "Loading joystick emulator image\n");
+PrintLog (-1);
+PrintLog (1, "Loading joystick emulator image\n");
 joyMouse.Load ();
-Printlog (1, "Loading shockwave animation\n");
+PrintLog (-1);
+PrintLog (1, "Loading shockwave animation\n");
 shockwave.Load ();
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------

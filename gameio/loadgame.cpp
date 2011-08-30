@@ -657,13 +657,17 @@ if (gameOpts->UseHiresSound () != gameOpts->sound.bHires [1]) {
 	gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
 	audio.Reset ();
 	}
-/*---*/Printlog (1, "unloading mine rendering data\n");
+/*---*/PrintLog (1, "unloading mine rendering data\n");
 gameData.render.mine.Destroy ();
+PrintLog (-1);
+
+/*---*/PrintLog (1, "stopping sounds\n");
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
-/*---*/Printlog (1, "stopping sounds\n");
 audio.StopAllChannels ();
 songManager.FreeUserSongs (1);
-/*---*/Printlog (1, "reconfiguring audio\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "reconfiguring audio\n");
 if (!bRestore) {
 	gameStates.gameplay.slowmo [0].fSpeed =
 	gameStates.gameplay.slowmo [1].fSpeed = 1;
@@ -674,40 +678,74 @@ if (!bRestore) {
 		audio.Setup (1);
 		}
 	}
-/*---*/Printlog (1, "unloading lightmaps\n");
+PrintLog (-1);
+/*---*/PrintLog (1, "unloading lightmaps\n");
 lightmapManager.Destroy ();
-/*---*/Printlog (1, "unloading hoard data\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "unloading hoard data\n");
 /*---*/FreeHoardData ();
-/*---*/Printlog (1, "unloading textures\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "unloading textures\n");
 UnloadTextures ();
-/*---*/Printlog (1, "unloading custom sounds\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "unloading custom sounds\n");
 FreeSoundReplacements ();
-/*---*/Printlog (1, "unloading addon sounds\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "unloading addon sounds\n");
 FreeAddonSounds ();
-/*---*/Printlog (1, "unloading hardware lights\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "unloading hardware lights\n");
 lightManager.Reset ();
-/*---*/Printlog (1, "unloading hires models\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "unloading hires models\n");
 FreeHiresModels (1);
-/*---*/Printlog (1, "unloading cambot\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "unloading cambot\n");
 UnloadCamBot ();
-/*---*/Printlog (1, "unloading additional models\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "unloading additional models\n");
 FreeModelExtensions ();
-/*---*/Printlog (1, "unloading additional model textures\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "unloading additional model textures\n");
 FreeObjExtensionBitmaps ();
-/*---*/Printlog (1, "unloading additional model textures\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "unloading additional model textures\n");
 UnloadHiresAnimations ();
-/*---*/Printlog (1, "freeing spark effect buffers\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "freeing spark effect buffers\n");
 sparkManager.Destroy ();
-/*---*/Printlog (1, "freeing auxiliary poly model data\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "freeing auxiliary poly model data\n");
 gameData.models.Destroy ();
-/*---*/Printlog (1, "Destroying camera objects\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "Destroying camera objects\n");
 cameraManager.Destroy ();
-/*---*/Printlog (1, "Destroying omega lightnings\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "Destroying omega lightnings\n");
 omegaLightning.Destroy (-1);
-/*---*/Printlog (1, "Destroying monsterball\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "Destroying monsterball\n");
 RemoveMonsterball ();
-/*---*/Printlog (1, "Unloading mod text messages\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "Unloading mod text messages\n");
 FreeModTexts ();
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -718,7 +756,7 @@ int LoadModData (char* pszLevelName, int bLoadTextures, int nStage)
 	char	szFile [FILENAME_LEN];
 
 // try to read mod files, and load default files if that fails
-Printlog (1, "loading mod data (state %d)\n", nStage);
+PrintLog (1, "loading mod data (state %d)\n", nStage);
 if (nStage == 0) {
 	SetD1Sound ();
 	SetDataVersion (-1);
@@ -748,38 +786,45 @@ if (nStage == 0) {
 #endif
 	if (missionManager.nEnhancedMission) {
 		sprintf (szFile, "d2x.ham");
-		/*---*/PrintLog (1, "		trying vertigo custom robots (d2x.ham)\n");
+		/*---*/PrintLog (1, "trying vertigo custom robots (d2x.ham)\n");
 		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.szMissionDir, missionManager.nEnhancedMission);
+		PrintLog (-1);
 		}
 	if (gameStates.app.bHaveMod) {
-		/*---*/PrintLog (1, "		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
+		/*---*/PrintLog (1, "trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
 		if (LoadRobotReplacements (gameFolders.szModName, gameFolders.szModDir [1], 0, 0, true, false))
 			gameStates.app.bCustomData = true;
+		PrintLog (-1);
 		}
 	if (missionManager.nEnhancedMission) {
-		/*---*/Printlog (1, "reading additional robots\n");
+		/*---*/PrintLog (1, "reading additional robots\n");
 		if (missionManager.nEnhancedMission < 3)
 			nLoadRes = 0;
 		else {
 			sprintf (szFile, "%s.vham", gameFolders.szModName);
-			/*---*/PrintLog (1, "		trying custom robots (vham) from mod '%s'\n", gameFolders.szModName);
+			/*---*/PrintLog (1, "trying custom robots (vham) from mod '%s'\n", gameFolders.szModName);
 			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szModDir [1], missionManager.nEnhancedMission);
+			PrintLog (-1);
 			}
 		if (nLoadRes == 0) {
 			sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
-			/*---*/PrintLog (1, "		trying custom robots (ham) from level '%s'\n", gameStates.app.szCurrentMissionFile);
+			/*---*/PrintLog (1, "trying custom robots (ham) from level '%s'\n", gameStates.app.szCurrentMissionFile);
 			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szMissionDirs [0], missionManager.nEnhancedMission);
+			PrintLog (-1);
 			}
 		if (nLoadRes > 0) {
 			strncpy (szFile, gameStates.app.szCurrentMissionFile, 6);
 			strcat (szFile, "-l.mvl");
-			/*---*/Printlog (1, "initializing additional robot movies\n");
+			/*---*/PrintLog (1, "initializing additional robot movies\n");
 			movieManager.InitExtraRobotLib (szFile);
+			PrintLog (-1);
 			}
+		PrintLog (-1);
 		}
 	if (gameStates.app.bD1Mission) {
-		/*---*/Printlog (1, "loading Descent 1 textures\n");
+		/*---*/PrintLog (1, "loading Descent 1 textures\n");
 		LoadD1Textures ();
+		PrintLog (-1);
 		}
 	}
 else {
@@ -794,13 +839,17 @@ else {
 		particleImageManager.LoadAll ();
 		}
 
-	/*---*/Printlog (1, "loading cambot\n");
+	/*---*/PrintLog (1, "loading cambot\n");
 	gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", NULL, 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
 	gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
-	/*---*/Printlog (1, "loading replacement robots\n");
-	if (0 > LoadRobotReplacements (pszLevelName, NULL, 0, 0, true))
+	/*---*/PrintLog (1, "loading replacement robots\n");
+	if (0 > LoadRobotReplacements (pszLevelName, NULL, 0, 0, true)) {
+		PrintLog (-1);
 		return -1;
+		}
+	PrintLog (-1);
 
+	/*---*/PrintLog (1, "loading replacement models\n");
 	if (*gameFolders.szModelDir [1]) {
 		if (missionManager.nCurrentLevel < 0) {
 			sprintf (gameFolders.szModelDir [2], "%s/slevel%02d", gameFolders.szModelDir [1], -missionManager.nCurrentLevel);
@@ -813,11 +862,16 @@ else {
 		LoadHiresModels (2);
 		}
 	LoadHiresModels (1);
-	/*---*/Printlog (1, "initializing cambot\n");
+	PrintLog (-1);
+
+	/*---*/PrintLog (1, "initializing cambot\n");
 	InitCamBots (0);
-	/*---*/Printlog (1, "loading mod texts\n");
+	PrintLog (-1);
+	/*---*/PrintLog (1, "loading mod texts\n");
 	LoadModTexts ();
+	PrintLog (-1);
 	}
+PrintLog (-1);
 return nLoadRes;
 }
 
@@ -825,7 +879,7 @@ return nLoadRes;
 
 static void CleanupBeforeGame (int nLevel, int bRestore)
 {
-/*---*/Printlog (1, "cleaning up...\n");
+/*---*/PrintLog (1, "cleaning up...\n");
 EndRenderThreads ();
 transparencyRenderer.ResetBuffers ();
 gameData.Destroy ();
@@ -875,9 +929,11 @@ gameData.multiplayer.bMoving = -1;
 missionManager.nCurrentLevel = nLevel;
 UnloadLevelData (bRestore, false);
 ControlRenderThreads ();
-/*---*/Printlog (1, "restoring default robot settings\n");
+/*---*/PrintLog (1, "restoring default robot settings\n");
 RestoreDefaultModels ();
+PrintLog (-1);
 paletteManager.EnableEffect (true);
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -895,7 +951,7 @@ int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 	static char szDefaultPlayList [] = "playlist.txt";
 
 strlwr (pszLevelName = LevelName (nLevel));
-/*---*/Printlog (1, "loading level '%s'\n", pszLevelName);
+/*---*/PrintLog (1, "loading level '%s'\n", pszLevelName);
 CleanupBeforeGame (nLevel, bRestore);
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (missionManager [missionManager.nCurrentMission].nDescentVersion == 1);
@@ -910,11 +966,13 @@ lightManager.SetMethod ();
 if (LoadModData (NULL, 0, 0) < 0) {
 	gameStates.app.bBetweenLevels = 0;
 	missionManager.nCurrentLevel = nCurrentLevel;
+	PrintLog (-1);
 	return -1;
 	}
 #endif
-/*---*/Printlog (1, "Initializing particle manager\n");
+/*---*/PrintLog (1, "Initializing particle manager\n");
 InitObjectSmoke ();
+PrintLog (-1);
 gameData.pig.tex.bitmapColors.Clear ();
 gameData.models.thrusters.Clear ();
 savePlayer = LOCALPLAYER;
@@ -929,6 +987,7 @@ if (!gameStates.app.bAutoRunMission &&
 	gameStates.app.bBetweenLevels = 0;
 	missionManager.nCurrentLevel = nCurrentLevel;
 	Warning ("Invalid level number!");
+	PrintLog (-1);
 	return 0;
 	}
 #if 0
@@ -936,14 +995,9 @@ CCanvas::SetCurrent (NULL);
 GrClearCanvas (BLACK_RGBA);		//so palette switching is less obvious
 #endif
 nLastMsgYCrd = -1;		//so we don't restore backgound under msg
-/*---*/Printlog (1, "loading palette\n");
-//paletteManager.ResumeEffect ();
- //paletteManager.Load ("groupa.256", NULL, 0, 0, 1);		//don't change screen
-//if (!gameOpts->menus.nStyle)
-//	NMLoadBackground (NULL, NULL, 0);
 if (!gameStates.app.bProgressBars)
 	messageBox.Show (TXT_LOADING);
-/*---*/Printlog (1, "loading texture brightness info\n");
+/*---*/PrintLog (1, "loading texture brightness and color info\n");
 SetDataVersion (-1);
 
 memcpy (gameData.pig.tex.brightness.Buffer (),
@@ -952,11 +1006,15 @@ memcpy (gameData.pig.tex.brightness.Buffer (),
 LoadTextureBrightness (pszLevelName, NULL);
 gameData.render.color.textures = gameData.render.color.defaultTextures [gameStates.app.bD1Mission];
 LoadTextureColors (pszLevelName, NULL);
-/*---*/Printlog (1, "loading mission configuration info\n");
+PrintLog (-1);
+
+/*---*/PrintLog (1, "loading mission configuration info\n");
 missionConfig.Init ();
 missionConfig.Load ();
 missionConfig.Load (pszLevelName);
 missionConfig.Apply ();
+PrintLog (-1);
+
 InitTexColors ();
 
 for (;;) {
@@ -975,10 +1033,11 @@ for (;;) {
 	bRetry = 1;
 	};
 if (nLoadRes) {
-	/*---*/PrintLog (1, "Couldn't load '%s' (%d)\n", pszLevelName, nLoadRes);
+	/*---*/PrintLog (0, "Couldn't load '%s' (%d)\n", pszLevelName, nLoadRes);
 	gameStates.app.bBetweenLevels = 0;
 	missionManager.nCurrentLevel = nCurrentLevel;
 	Warning (TXT_LOAD_ERROR, pszLevelName);
+	PrintLog (-1);
 	return 0;
 	}
 
@@ -990,19 +1049,21 @@ paletteManager.SetGame (paletteManager.Load (szCurrentLevelPalette, pszLevelName
 if (LoadModData (pszLevelName, bLoadTextures, 1) < 0) {
 	gameStates.app.bBetweenLevels = 0;
 	missionManager.nCurrentLevel = nCurrentLevel;
+	PrintLog (-1);
 	return -1;
 	}
 #endif
 lightManager.Setup (nLevel); 
-/*---*/Printlog (1, "loading endlevel data\n");
+/*---*/PrintLog (1, "loading endlevel data\n");
 LoadEndLevelData (nLevel);
+PrintLog (-1);
 
 ResetNetworkObjects ();
 ResetChildObjects ();
 externalView.Reset (-1, -1);
 ResetPlayerPaths ();
 FixObjectSizes ();
-/*---*/Printlog (1, "counting entropy rooms\n");
+/*---*/PrintLog (1, "counting entropy rooms\n");
 nRooms = CountRooms ();
 if (gameData.app.nGameMode & GM_ENTROPY) {
 	if (!nRooms) {
@@ -1013,16 +1074,20 @@ if (gameData.app.nGameMode & GM_ENTROPY) {
 	}
 else if ((gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD)) ||
 			((gameData.app.nGameMode & GM_MONSTERBALL) == GM_MONSTERBALL)) {
-/*---*/Printlog (1, "gathering CTF+ flag goals\n");
+/*---*/PrintLog (1, "gathering CTF+ flag goals\n");
 	if (GatherFlagGoals () != 3) {
 		Warning (TXT_NO_CTF);
 		gameData.app.nGameMode &= ~GM_CAPTURE;
 		gameData.app.nGameMode |= GM_TEAM;
 		}
 	}
+PrintLog (-1);
+
 gameData.render.lights.segDeltas.Clear ();
-/*---*/Printlog (1, "initializing door animations\n");
+/*---*/PrintLog (1, "initializing door animations\n");
 InitDoorAnims ();
+PrintLog (-1);
+
 (CPlayerInfo&) LOCALPLAYER = savePlayer;
 gameData.hoard.nMonsterballSeg = -1;
 if (!IsMultiGame)
@@ -1031,11 +1096,11 @@ if (!IsMultiGame)
 if (!gameStates.app.bProgressBars)
 	messageBox.Clear ();		//remove message before new palette loaded
 //paletteManager.ResumeEffect ();		//actually load the palette
-/*---*/Printlog (1, "rebuilding OpenGL texture data\n");
-/*---*/Printlog (1, "rebuilding effects\n");
 if (!bRestore) {
+	/*---*/PrintLog (1, "rebuilding OpenGL context\n");
 	ogl.SetRenderQuality ();
 	ogl.RebuildContext (1);
+	PrintLog (-1);
 	}
 ResetPingStats ();
 gameStates.gameplay.nDirSteps = 0;
@@ -1046,11 +1111,13 @@ gameStates.render.bHaveSkyBox = -1;
 gameStates.app.cheats.nUnlockLevel = 0;
 gameStates.render.nFrameFlipFlop = 0;
 gameStates.app.bUsingConverter = 0;
-/*---*/Printlog (1, "resetting color information\n");
+/*---*/PrintLog (1, "resetting color information\n");
 gameData.render.color.vertices.Clear ();
 gameData.render.color.segments.Clear ();
-/*---*/Printlog (1, "resetting speed boost information\n");
+PrintLog (-1);
+/*---*/PrintLog (1, "resetting speed boost information\n");
 gameData.objs.speedBoost.Clear ();
+PrintLog (-1);
 if (!ogl.m_features.bStencilBuffer)
 	extraGameInfo [0].bShadows = 0;
 D2SetCaption ();
@@ -1067,22 +1134,28 @@ if (!bRestore) {
 	}
 LoadAddonImages ();
 CreateShieldSphere ();
-Printlog (1, "initializing energy spark render data\n");
+PrintLog (1, "initializing energy spark render data\n");
 sparkManager.Setup ();
-Printlog (1, "setting robot generator vertigo robot flags\n");
+PrintLog (-1);
+PrintLog (1, "setting robot generator vertigo robot flags\n");
 SetVertigoRobotFlags ();
-Printlog (1, "initializing debris collision handlers\n");
+PrintLog (-1);
+PrintLog (1, "initializing debris collision handlers\n");
 SetDebrisCollisions ();
-Printlog (1, "building sky box segment list\n");
+PrintLog (-1);
+PrintLog (1, "building sky box segment list\n");
 BuildSkyBoxSegList ();
-/*---*/Printlog (1, "stopping music\n");
+PrintLog (-1);
+/*---*/PrintLog (1, "stopping music\n");
 //songManager.StopAll ();
 audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32768) / 8, 1);
 audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
+PrintLog (-1);
 ControlEffectsThread ();
 ControlSoundThread ();
 gameStates.render.bDepthSort = 1;
 gameStates.app.bBetweenLevels = 0;
+PrintLog (-1);
 return 1;
 }
 
@@ -1655,6 +1728,7 @@ gameStates.app.cheats.bRobotsFiring = 1;
 gameStates.app.cheats.bD1CheatsEnabled = 0;
 SetD1Sound ();
 SetDataVersion (-1);
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -1800,8 +1874,9 @@ if (!bRestore) {
 	gameData.models.Prepare ();
 	}
 if (!bRestore) {
-	/*---*/Printlog (1, "initializing sound sources\n");
+	/*---*/PrintLog (1, "initializing sound sources\n");
 	SetSoundSources ();
+	PrintLog (-1);
 	}
 #if 0
 LOCALPLAYER.nInvuls =

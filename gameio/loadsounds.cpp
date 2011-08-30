@@ -147,7 +147,7 @@ int LoadSoundReplacements (const char *pszFilename)
 if (gameOpts->UseHiresSound ())
 	return -1;
 //first, free up data allocated for old bitmaps
-Printlog (1, "loading replacement sounds\n");
+PrintLog (1, "loading replacement sounds\n");
 //FreeSoundReplacements ();
 CFile::ChangeFilenameExtension (szFilename, pszFilename, ".dtx");
 if (!cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0))
@@ -230,7 +230,7 @@ int SetupSounds (CFile& cf, int nSounds, int nSoundStart, bool bCustom, bool bUs
 	char					szSoundName [16];
 	int					nLoadedSounds [2] = {0, 0};
 
-/*---*/Printlog (1, "Loading sound data (%d sounds)\n", nSounds);
+/*---*/PrintLog (1, "Loading sound data (%d sounds)\n", nSounds);
 cf.Seek (nSoundStart, SEEK_SET);
 #if USE_OPENAL
 memset (&sound.buffer, 0xFF, sizeof (sound.buffer));

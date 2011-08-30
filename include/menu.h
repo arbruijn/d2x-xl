@@ -280,7 +280,7 @@ class CMenu : public CStack<CMenuItem> {
 				}
 			m_current = NULL;
 			if (bLogErrors)
-				PrintLog (1, "invalid menu id '%s' queried\n", szId ? szId : "n/a");
+				PrintLog (0, "invalid menu id '%s' queried\n", szId ? szId : "n/a");
 			return -1;
 			}
 

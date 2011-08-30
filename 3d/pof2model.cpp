@@ -328,16 +328,12 @@ if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
 if (gameStates.app.nLogLevel > 1)
-	Printlog (1, "optimizing POF model %d\n", nModel);
+	PrintLog (1, "optimizing POF model %d\n", nModel);
 if (!CountPOFModelItems (pp->Buffer (), &m_nSubModels, &m_nVerts, &m_nFaces, &m_nFaceVerts))
 	return 0;
 if (!Create ())
 	return 0;
 m_subModels [0].InitMinMax ();
-#if TRACE_TAGS
-if (gameStates.app.nLogLevel > 1)
-	PrintLog (1, "building model for object type %d, id %d\n", objP->info.nType, objP->info.nId);
-#endif
 if (!GetPOFModelItems (pp->Buffer (), NULL, 0, -1, 1, modelBitmaps, objColorP))
 	return 0;
 m_faces.SortAscending ();

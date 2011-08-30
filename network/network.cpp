@@ -170,9 +170,11 @@ if (NetworkFindGame ()) {
 	return 0;
 	}
 bAutoRun = InitAutoNetGame ();
-Printlog (1, "Getting network game params\n");
-if (0 > (i = NetworkGetGameParams (bAutoRun)))
+PrintLog (1, "Getting network game params\n");
+if (0 > (i = NetworkGetGameParams (bAutoRun))) {
+	PrintLog (-1);
 	return 0;
+	}
 gameData.multiplayer.nPlayers = 0;
 netGame.m_info.difficulty = gameStates.app.nDifficultyLevel;
 netGame.m_info.gameMode = mpParams.nGameMode;
@@ -197,10 +199,12 @@ if (NetworkSelectPlayers (bAutoRun)) {
 	missionManager.SaveLevelStates ();
 	StartNewLevel (netGame.m_info.GetLevel (), true);
 	ResetAllPlayerTimeouts ();
+	PrintLog (-1);
 	return 1;
 	}
 else {
 	gameData.app.nGameMode = GM_GAME_OVER;
+	PrintLog (-1);
 	return 0;
 	}
 }

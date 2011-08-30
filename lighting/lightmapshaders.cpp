@@ -125,7 +125,7 @@ if (lightmapShaderProgs [nType] >= 0)
 for (h = 0; h <= 3; h++) {
 	if (lightmapShaderProgs [h] >= 0)
 		continue;
-	Printlog (1, "building lightmap shader programs\n");
+	PrintLog (1, "building lightmap shader programs\n");
 	if (!shaderManager.Build (lightmapShaderProgs [h], pszLMLightingFS [h], pszLMLightingVS [h])) {
 		ogl.m_features.bPerPixelLighting = 0;
 		gameStates.render.bPerPixelLighting = 0;

@@ -847,14 +847,14 @@ void COGL::DrawArrays (GLenum mode, GLint first, GLsizei count)
 {
 #if 0 //DBG
 if (count < 1)
-	PrintLog (1, "glDrawArrays: invalid count\n");
+	PrintLog (0, "glDrawArrays: invalid count\n");
 else if (count > 100000)
-	PrintLog (1, "glDrawArrays: suspiciously high count\n");
+	PrintLog (0, "glDrawArrays: suspiciously high count\n");
 else if (mode > GL_POLYGON)
-	PrintLog (1, "glDrawArrays: invalid mode\n");
+	PrintLog (0, "glDrawArrays: invalid mode\n");
 #if TRACK_STATES || DBG_OGL
 else if (m_data.bUseTextures [m_data.nTMU [0]] && !m_data.clientStates [m_data.nTMU [0]][0])
-	PrintLog (1, "glDrawArrays: client data not enabled\n");
+	PrintLog (0, "glDrawArrays: client data not enabled\n");
 #endif
 else
 #endif

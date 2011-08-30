@@ -194,6 +194,7 @@ do {
 		SavePlayerProfile ();
 		}
 } while (gameStates.app.nFunctionMode == FMODE_MENU);
+PrintLog (-1);
 if (gameStates.app.nFunctionMode == FMODE_GAME)
 	paletteManager.DisableEffect ();
 controls.FlushInput ();

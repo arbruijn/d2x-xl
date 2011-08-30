@@ -123,18 +123,18 @@ return Count ();
 
 void CConfigManager::PrintLog (void)
 {
-::Printlog (1, "");
+::PrintLog (1, "");
 for (int i = 0, j = 0; i < Count (); i++, j++) {
 	if (!m_properties [i]) 
 		continue;
 	if ((m_properties [i][0] == '-') && (isalpha (m_properties [i][1]) || (j == 2))) {
-		::PrintLog (1, "\n   ");
+		::PrintLog (0, "\n   ");
 		j = 0;
 		}
-	::PrintLog (m_properties [i]);
-	::Printlog (1, "");
+	::PrintLog (0, m_properties [i]);
+	::PrintLog (0, "");
 	}
-::PrintLog (1, "\n");
+::PrintLog (-1, "\n");
 }
 
 //------------------------------------------------------------------------------

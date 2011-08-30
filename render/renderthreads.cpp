@@ -91,7 +91,7 @@ while ((nActive = ThreadsActive (nThreads)) && (clock () - t0 < 1000)) {
 		if (!t2)
 			t2 = clock ();
 		else if (clock () - t2 > 33) {	//slower threads must not take more than 33 ms over the fastest one
-			PrintLog (1, "threads locked up (task: %d)\n", nTask);
+			PrintLog (0, "thread locked up (task: %d)\n", nTask);
 			for (i = 0; i < nThreads; i++)
 				tiRender.ti [i].bExec = 0;
 			if (++nLockups > 100) {

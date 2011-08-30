@@ -833,7 +833,7 @@ gameData.collisions.hitResult.nNestCount++;
 //first, see if vector hit any objects in this CSegment
 #if 1
 if (hitQuery.flags & FQ_CHECK_OBJS) {
-	//Printlog (1, "checking objects...");
+	//PrintLog (1, "checking objects...");
 	dMin = ComputeObjectHitpoint (bestHit, hitQuery);
 	}
 #endif

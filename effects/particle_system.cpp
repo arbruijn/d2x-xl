@@ -57,7 +57,6 @@ if (nSide >= 0)
 	SEGMENTS [nSegment].GetCorners (nSide, vEmittingFace);
 nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
 if (!m_emitters.Create (nMaxEmitters)) {
-	//PrintLog (1, "cannot create m_systems\n");
 	return 0;
 	}
 if ((m_nObject = nObject) < 0x70000000) {
@@ -76,7 +75,6 @@ for (i = 0; i < nMaxEmitters; i++)
 		m_nEmitters++;
 	else {
 		particleManager.Destroy (m_nId);
-		//PrintLog (1, "cannot create particle systems\n");
 		return -1;
 		}
 m_nType = nType;

@@ -132,10 +132,14 @@ if (gameStates.sound.audio.bNoMusic)
 
 PrintLog (1, "DigiPlayMidiSong (%s)\n", pszSong);
 audio.StopCurrentSong ();
-if (!(pszSong && *pszSong))
+if (!(pszSong && *pszSong)) {
+	PrintLog (-1);
 	return 0;
-if (m_nVolume < 1)
+	}
+if (m_nVolume < 1) {
+	PrintLog (-1);
 	return 0;
+	}
 
 bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL));
 if (bCustom) {
@@ -171,7 +175,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		sprintf (fnSong, "%s/d2x-temp.mid", *gameFolders.szCacheDir ? gameFolders.szCacheDir : gameFolders.szHomeDir);
 #endif
 		if (!hmp_to_midi (m_hmp, fnSong)) {
-			PrintLog (1, "SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
+			PrintLog (0, "SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
 			return 0;
 			}
 		pfnSong = fnSong;
@@ -183,15 +187,15 @@ if (gameOpts->sound.bUseSDLMixer) {
 		SetVolume (gameConfig.nMidiVolume = 0);
 		}
 	if (!m_music) {
-		PrintLog (1, "SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
+		PrintLog (0, "SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
 		return 0;
 		}
 	if (-1 == Mix_FadeInMusicPos (m_music, bLoop ? -1 : 1, !gameOpts->sound.bFadeMusic ? 0 : songManager.Pos () ? 1000 : 1500, (double) songManager.Pos () / 1000.0)) {
-		PrintLog (1, "SDL_mixer cannot play %s\n(%s)\n", pszSong, Mix_GetError ());
+		PrintLog (0, "SDL_mixer cannot play %s\n(%s)\n", pszSong, Mix_GetError ());
 		songManager.SetPos (0);
 		return 0;
 		}
-	PrintLog (1, "SDL_mixer playing %s\n", pszSong);
+	PrintLog (0, "SDL_mixer playing %s\n", pszSong);
 	if (songManager.Pos ())
 		songManager.SetPos (0);
 	else
@@ -204,7 +208,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 #	endif
 #	if defined (_WIN32)
 if (bCustom) {
-	PrintLog (1, "Cannot play %s - enable SDL_mixer\n", pszSong);
+	PrintLog (0, "Cannot play %s - enable SDL_mixer\n", pszSong);
 	return 0;
 	}
 hmp_play (m_hmp, bLoop);
@@ -212,6 +216,7 @@ songManager.SetPlaying (1);
 SetVolume (m_nVolume);
 #	endif
 #endif
+PrintLog (-1);
 return 1;
 }
 

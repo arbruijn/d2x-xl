@@ -56,7 +56,7 @@ if (!(szName && *szName))
 	return 1;
 int i = (int) strlen (szRootDir);
 int bAddSlash = i && (szRootDir [i-1] != '\\') && (szRootDir [i-1] != '/');
-PrintLog (1, "GetAppFolder ('%s', '%s', '%s', '%s')\n", szRootDir, szFolder, szName, szFilter);
+PrintLog (0, "GetAppFolder ('%s', '%s', '%s', '%s')\n", szRootDir, szFolder, szName, szFilter);
 sprintf (szDir, "%s%s%s%s%s", szRootDir, bAddSlash ? "/" : "", szName, *szFilter ? "/" : "", szFilter);
 if (!(i = FFF (szDir, &ffs, *szFilter == '\0'))) {
 	if (szFolder != szName)
@@ -64,7 +64,7 @@ if (!(i = FFF (szDir, &ffs, *szFilter == '\0'))) {
 	}
 else if (*szRootDir)
 	strcpy (szFolder, szRootDir);
-PrintLog (1, "GetAppFolder (%s) = '%s' (%d)\n", szName, szFolder, i);
+PrintLog (0, "GetAppFolder (%s) = '%s' (%d)\n", szName, szFolder, i);
 FFC (&ffs);
 return i;
 }
@@ -177,7 +177,7 @@ else if (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogDir
    pfn = fn;
    fp = fopen (pfn, mode);
 	}
-//if (!fp) PrintLog (1, "CFGetFileHandle (): error opening %s\n", pfn);
+//if (!fp) PrintLog (0, "CFGetFileHandle (): error opening %s\n", pfn);
 return fp;
 }
 
@@ -231,7 +231,7 @@ return (m_cf.rawPosition >= m_cf.size) && (m_cf.bufPos >= m_cf.bufLen);
 int CFile::Error (void)
 {
 if ((nCFileError = ferror (m_cf.file)))
-	PrintLog (1, "error %d during file operation\n", nCFileError);
+	PrintLog (0, "error %d during file operation\n", nCFileError);
 return nCFileError;
 }
 
@@ -377,7 +377,7 @@ if (!(nElemSize * nElemCount))
 nWritten = (int) fwrite (buf, nElemSize, nElemCount, m_cf.file);
 m_cf.rawPosition = ftell (m_cf.file);
 if (Error ()) {
-	PrintLog (1, "file write error!\n");
+	PrintLog (0, "file write error!\n");
 	return 0;
 	}
 return nWritten;

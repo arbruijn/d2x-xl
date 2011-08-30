@@ -181,8 +181,11 @@ if (bProgram) {
 	glGetProgramiv (GLuint (intptr_t (handle)), GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 		glGetProgramInfoLog (GLuint (intptr_t (handle)), nLogLen, &charsWritten, infoLog);
-		if (*infoLog)
-			::PrintLog (1, "\n%s\n\n", infoLog);
+		if (*infoLog) {
+			::PrintLog (1);
+			::PrintLog (0, "\n%s\n\n", infoLog);
+			::PrintLog (-1);
+			}
 		delete[] infoLog;
 		}
 	}
@@ -190,8 +193,11 @@ else {
 	glGetShaderiv (GLuint (intptr_t (handle)), GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 		glGetShaderInfoLog (GLuint (intptr_t (handle)), nLogLen, &charsWritten, infoLog);
-		if (*infoLog)
-			::PrintLog (1, "\n%s\n\n", infoLog);
+		if (*infoLog) {
+			::PrintLog (1);
+			::PrintLog (0, "\n%s\n\n", infoLog);
+			::PrintLog (-1);
+			}
 		delete[] infoLog;
 		}
 	}
@@ -199,8 +205,11 @@ else {
 glGetObjectParameterivARB (GLuint (intptr_t (handle)), GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
 if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 	glGetInfoLogARB (GLuint (intptr_t (handle)), nLogLen, &charsWritten, infoLog);
-	if (*infoLog)
-		::PrintLog (1, "\n%s\n\n", infoLog);
+	if (*infoLog) {
+		::PrintLog (1);
+		::PrintLog (0, "\n%s\n\n", infoLog);
+		::PrintLog (-1);
+		}
 	delete[] infoLog;
 	}
 #endif
@@ -216,7 +225,7 @@ if ((nShader < 0) || (nShader >= int (m_shaders.ToS ())))
 	return 0;
 if (m_shaders [nShader].program || (m_shaders [nShader].program = glCreateProgramObjectARB ()))
 	return 1;
-::Printlog (1, "Couldn't create shader program CObject\n");
+::PrintLog (0, "Couldn't create shader program CObject\n");
 return 0;
 }
 
@@ -294,9 +303,9 @@ for (i = 0; i < 2; i++) {
 	if (!bCompiled [i]) {
 		bError = true;
 		if (i)
-			::PrintLog (1, "\nCouldn't compile fragment shader\n\n\"%s\"\n", pszFragShader);
+			::PrintLog (0, "\nCouldn't compile fragment shader\n\n\"%s\"\n", pszFragShader);
 		else
-			::PrintLog (1, "\nCouldn't compile vertex shader\n\n\"%s\"\n", pszVertShader);
+			::PrintLog (0, "\nCouldn't compile vertex shader\n\n\"%s\"\n", pszVertShader);
 		if (shader.shaders [i]) {
 			PrintLog (shader.shaders [i], 0);
 			glDeleteObjectARB (shader.shaders [i]);
@@ -341,7 +350,7 @@ GLint	bLinked;
 glGetObjectParameterivARB (shader.program, GL_OBJECT_LINK_STATUS_ARB, &bLinked);
 if (bLinked)
 	return 1;
-::Printlog (1, "Couldn't link shader programs\n");
+::PrintLog (0, "Couldn't link shader programs\n");
 PrintLog (shader.program, 1);
 Dispose (shader.program);
 return 0;
@@ -444,30 +453,37 @@ Init ();
 glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
 ogl.m_features.bShaders = int (nTMUs >= 4);
 if (!ogl.m_features.bShaders) {
-	::Printlog (1, "GPU has too few texture units (%d)\n", nTMUs);
+	::PrintLog (0, "GPU has too few texture units (%d)\n", nTMUs);
 	ogl.m_states.bLowMemory = 0;
 	ogl.m_features.bTextureCompression = 0;
 	return;
 	}
+::PrintLog (-1);
 gameStates.render.bLightmapsOk = (nTMUs >= 4);
-::Printlog (1, "initializing texture merging shader programs\n");
+::PrintLog (1, "initializing texture merging shader programs\n");
 InitTexMergeShaders ();
+::PrintLog (-1);
 ogl.m_data.nHeadlights = 0;
-::Printlog (1, "initializing lighting shader programs\n");
+::PrintLog (1, "initializing lighting shader programs\n");
 InitHeadlightShaders (1);
+::PrintLog (-1);
 #if GPGPU_VERTEX_LIGHTING
-::Printlog (1, "initializing vertex lighting shader programs\n");
+::PrintLog (1, "initializing vertex lighting shader programs\n");
 gpgpuLighting.InitShader ();
 #endif
-::Printlog (1, "initializing glare shader programs\n");
+::PrintLog (1, "initializing glare shader programs\n");
 glareRenderer.InitShader ();
-::Printlog (1, "initializing particle shader programs\n");
+::PrintLog (-1);
+::PrintLog (1, "initializing particle shader programs\n");
 particleManager.InitShader ();
-::Printlog (1, "initializing blur shader programs\n");
+::PrintLog (-1);
+::PrintLog (1, "initializing blur shader programs\n");
 glowRenderer.InitShader ();
-::Printlog (1, "initializing gray scale shader programs\n");
+::PrintLog (-1);
+::PrintLog (1, "initializing gray scale shader programs\n");
 InitGrayScaleShader ();
-::Printlog (1, "initializing enhanced 3D shader programs\n");
+::PrintLog (-1);
+::PrintLog (1, "initializing enhanced 3D shader programs\n");
 ogl.InitEnhanced3DShader ();
 ogl.InitShadowMapShader ();
 ResetPerPixelLightingShaders ();
@@ -475,6 +491,7 @@ InitPerPixelLightingShaders ();
 ResetLightmapShaders ();
 InitLightmapShaders ();
 ResetSphereShaders ();
+::PrintLog (-1);
 #if 0
 Link (Alloc ());
 #endif
@@ -497,18 +514,18 @@ PrintLog (1, "Checking shaders ...\n");
 ogl.m_features.bShaders.Available (gameOpts->render.bUseShaders);
 ogl.m_features.bShaders = 0;
 if (!ogl.m_features.bShaders.Available ())
-	Printlog (1, "Shaders have been disabled in d2x.ini\n");
+	PrintLog (0, "Shaders have been disabled in d2x.ini\n");
 else if (!ogl.m_features.bMultiTexturing.Available ())
-	Printlog (1, "Multi-texturing not supported by the OpenGL driver\n");
+	PrintLog (0, "Multi-texturing not supported by the OpenGL driver\n");
 else if (!pszOglExtensions)
-	Printlog (1, "Required Extensions not supported by the OpenGL driver\n");
+	PrintLog (0, "Required Extensions not supported by the OpenGL driver\n");
 else if (!strstr (pszOglExtensions, "GL_ARB_shading_language_100"))
-	Printlog (1, "Shading language not supported by the OpenGL driver\n");
+	PrintLog (0, "Shading language not supported by the OpenGL driver\n");
 else if (!strstr (pszOglExtensions, "GL_ARB_shader_objects"))
-	Printlog (1, "Shader objects not supported by the OpenGL driver\n");
+	PrintLog (0, "Shader objects not supported by the OpenGL driver\n");
 else
 	ogl.m_features.bShaders = 1;
-PrintLog (ogl.m_features.bShaders ? "Shaders are available\n" : "No shaders available\n");
+PrintLog (-1, ogl.m_features.bShaders ? "Shaders are available\n" : "No shaders available\n");
 }
 
 //------------------------------------------------------------------------------

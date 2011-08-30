@@ -354,7 +354,7 @@ void _CDECL_ RLECacheClose (void)
 {
 if (rle_cache_initialized) {
 	int i;
-	PrintLog (1, "deleting RLE cache\n");
+	PrintLog (0, "deleting RLE cache\n");
 	rle_cache_initialized = 0;
 	for (i=0; i<MAX_CACHE_BITMAPS; i++) {
 		delete rle_cache [i].expanded_bitmap;

@@ -126,7 +126,7 @@ if (faceBuffer.nFaces && (bForce || (faceBuffer.nFaces >= FACE_BUFFER_SIZE))) {
 			glDrawElements (GL_TRIANGLE_FAN, faceBuffer.nElements, GL_UNSIGNED_INT, faceBuffer.index);
 		}
 	catch(...) {
-		PrintLog (1, "error calling glDrawElements (%d, %d) in G3FlushFaceBuffer\n", gameStates.render.bTriangleMesh ? "GL_TRIANGLES" : "GL_TRIANGLE_FAN");
+		PrintLog (0, "error calling glDrawElements (%d, %d) in G3FlushFaceBuffer\n", gameStates.render.bTriangleMesh ? "GL_TRIANGLES" : "GL_TRIANGLE_FAN");
 		}
 	faceBuffer.nFaces =
 	faceBuffer.nElements = 0;
@@ -158,7 +158,7 @@ else
 		if (i == nDbgVertex)
 			nDbgVertex = nDbgVertex;
 		if (i + j > int (FACES.vertices.Length ())) {
-			PrintLog (1, "invalid vertex index %d in G3FillFaceBuffer\n");
+			PrintLog (0, "invalid vertex index %d in G3FillFaceBuffer\n");
 			return;
 			}
 #endif

@@ -334,11 +334,15 @@ if (filename)
 	replacementModels [i].pszHires = filename;
 if (replacementModels [i].pszHires && (gameStates.app.nLogLevel > 1))
 	PrintLog (1, "Loading model %d (%s)\n", replacementModels [i].nModel, replacementModels [i].pszHires);
-if ((j = LoadASEModel (gameData.models.aseModels [bCustom != 0] + gameData.models.nHiresModels, i, bCustom)))
+if ((j = LoadASEModel (gameData.models.aseModels [bCustom != 0] + gameData.models.nHiresModels, i, bCustom))) {
+	PrintLog (-1);
 	return j;
+	}
 #if 1
-if (bCustom && (j = LoadOOFModel (gameData.models.oofModels [bCustom != 0] + gameData.models.nHiresModels, i, bCustom)))
+if (bCustom && (j = LoadOOFModel (gameData.models.oofModels [bCustom != 0] + gameData.models.nHiresModels, i, bCustom))) {
+	PrintLog (-1);
 	return j;
+	}
 #endif
 return bCustom ? ++i : LoadLoresModel (i);
 }

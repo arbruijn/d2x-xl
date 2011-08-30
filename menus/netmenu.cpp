@@ -1133,9 +1133,10 @@ nGameItem = -1;
 *szLevel = '\0';
 
 do {
-	Printlog (1, "building game parameters menu\n");
+	PrintLog (1, "building game parameters menu\n");
 	BuildGameParamsMenu (m, szName, szLevelText, szLevel, szIpAddr, szMaxPlayers, nNewMission);
-	Printlog (1, "loading game parameters menu\n");
+	PrintLog (-1);
+	PrintLog (1, "loading game parameters menu\n");
 	do {
 		nState = GameParamsMenu (m, key, choice, szName, szLevelText, szLevel, szIpAddr, nNewMission);
 		if ((nNewMission < 0) && (nState == 0)) {
@@ -1143,6 +1144,7 @@ do {
 			nState = 1;
 			}
 		} while (nState == 1);
+	PrintLog (-1);
 	} while (nState == 2);
 
 if (nState < 0)

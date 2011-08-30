@@ -95,7 +95,7 @@ usedHandles.Clear ();
 
 void TextureError (void)
 {
-PrintLog (1, "Error in texture management\n");
+PrintLog (0, "Error in texture management\n");
 }
 
 //------------------------------------------------------------------------------

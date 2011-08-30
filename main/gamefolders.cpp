@@ -233,8 +233,8 @@ if (psz && !*(psz + 4)) {
 	}
 else
 	strcpy (szDataRootDir, gameFolders.szDataDir [0]);
-/*---*/PrintLog (1, "expected game app folder = '%s'\n", gameFolders.szGameDir);
-/*---*/PrintLog (1, "expected game data folder = '%s'\n", gameFolders.szDataDir [0]);
+/*---*/PrintLog (0, "expected game app folder = '%s'\n", gameFolders.szGameDir);
+/*---*/PrintLog (0, "expected game data folder = '%s'\n", gameFolders.szDataDir [0]);
 if (GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.ase"))
 	GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.oof");
 GetAppFolder (szDataRootDir, gameFolders.szSoundDir [0], SOUNDDIR1, "*.wav");

@@ -217,7 +217,7 @@ else if ((objP->rType.vClipInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (objP-
 	}
 #if DBG
 else
-	PrintLog (1, "invalid powerup clip index\n");
+	PrintLog (0, "invalid powerup clip index\n");
 #endif
 }
 

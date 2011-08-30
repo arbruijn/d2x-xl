@@ -84,7 +84,7 @@ CCanvas *reticleCanvas = NULL;
 void _CDECL_ FreeReticleCanvas (void)
 {
 if (reticleCanvas) {
-	PrintLog (1, "unloading reticle data\n");
+	PrintLog (0, "unloading reticle data\n");
 	reticleCanvas->Destroy ();
 	reticleCanvas = NULL;
 	}

@@ -148,19 +148,19 @@ void __cdecl D2SignalHandler (int nSignal)
 	static int nErrors = 0;
 
 if (nSignal == SIGABRT)
-	PrintLog (1, "+++ Abnormal program termination\n");
+	PrintLog (0, "+++ Abnormal program termination\n");
 else if (nSignal == SIGFPE)
-	PrintLog (1, "+++ Floating point error\n");
+	PrintLog (0, "+++ Floating point error\n");
 else if (nSignal == SIGILL)
-	PrintLog (1, "+++ Illegal instruction\n");
+	PrintLog (0, "+++ Illegal instruction\n");
 else if (nSignal == SIGINT)
-	PrintLog (1, "+++ Ctrl+C signal\n");
+	PrintLog (0, "+++ Ctrl+C signal\n");
 else if (nSignal == SIGSEGV)
-	PrintLog (1, "+++ Memory access violation\n");
+	PrintLog (0, "+++ Memory access violation\n");
 else if (nSignal == SIGTERM)
-	PrintLog (1, "+++ Termination request\n");
+	PrintLog (0, "+++ Termination request\n");
 else
-	PrintLog (1, "+++ Unknown signal\n");
+	PrintLog (0, "+++ Unknown signal\n");
 if (++nErrors > 4)
 	exit (1);
 }
@@ -615,7 +615,7 @@ int InitGraphics (bool bFull = true)
 
 /*---*/PrintLog (1, "Initializing graphics\n");
 if ((t = GrInit ())) {		//doesn't do much
-	PrintLog (1, "Cannot initialize graphics\n");
+	PrintLog (-1, "Cannot initialize graphics\n");
 	Error (TXT_CANT_INIT_GFX, t);
 	return 0;
 	}
@@ -623,17 +623,23 @@ nScreenSize = displayModeInfo [gameStates.gfx.nStartScrMode].dim;
 /*---*/PrintLog (1, "Initializing render buffers\n");
 if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
+PrintLog (-1);
 if (bFull) {
 	/*---*/PrintLog (1, "Loading default palette\n");
 	paletteManager.SetDefault (paletteManager.Load (D2_DEFAULT_PALETTE, NULL));
 	CCanvas::Current ()->SetPalette (paletteManager.Default ());	//just need some valid palette here
+	PrintLog (-1);
 	/*---*/PrintLog (1, "Initializing game fonts\n");
 	fontManager.Setup ();	// must load after palette data loaded.
+	PrintLog (-1);
 	/*---*/PrintLog (1, "Setting screen mode\n");
 	SetScreenMode (SCREEN_MENU);
+	PrintLog (-1);
 	/*---*/PrintLog (1, "Showing loading screen\n");
 	ShowLoadingScreen ();
+	PrintLog (-1);
 	}
+PrintLog (-1);
 return 1;
 }
 
@@ -658,22 +664,27 @@ switch (loadOp) {
 	case 0:
 		/*---*/PrintLog (1, "Creating default tracker list\n");
 		tracker.CreateList ();
+		PrintLog (-1);
 		break;
 	case 1:
 		/*---*/PrintLog (1, "Loading ban list\n");
 		banList.Load ();
+		PrintLog (-1);
 		break;
 	case 2:
 		/*---*/PrintLog (1, "Initializing control types\n");
 		controls.SetType ();
+		PrintLog (-1);
 		break;
 	case 3:
 		/*---*/PrintLog (1, "Initializing keyboard\n");
 		KeyInit ();
+		PrintLog (-1);
 		break;
 	case 4:
 		/*---*/PrintLog (1, "Initializing joystick\n");
 		DoJoystickInit ();
+		PrintLog (-1);
 		break;
 	case 5:
 		int i;
@@ -689,6 +700,7 @@ switch (loadOp) {
 		else
 			gameStates.menus.bHires = gameStates.menus.bHiresAvailable = 1;
 		movieManager.InitLibs ();		//init movie libraries
+		PrintLog (-1);
 		break;
 	case 7:
 		BMInit ();
@@ -696,10 +708,12 @@ switch (loadOp) {
 	case 8:
 		/*---*/PrintLog (1, "Initializing sound\n");
 		audio.Setup (1);
+		PrintLog (-1);
 		break;
 	case 9:
 		/*---*/PrintLog (1, "Loading hoard data\n");
 		LoadHoardData ();
+		PrintLog (-1);
 		break;
 	case 10:
 		error_init (ShowInGameWarning, NULL);
@@ -709,6 +723,7 @@ switch (loadOp) {
 	case 12:
 		/*---*/PrintLog (1, "Initializing texture merge buffer\n");
 		TexMergeInit (100); // 100 cache bitmaps
+		PrintLog (-1);
 		break;
 	case 13:
 		InitPowerupTables ();
@@ -764,6 +779,7 @@ PrintLog (1, "Loading program arguments\n");
 appConfig.Load (argC, argV); 
 appConfig.Load (appConfig.Filename (DBG != 0));
 appConfig.PrintLog ();
+PrintLog (-1);
 }
 
 // ----------------------------------------------------------------------------
@@ -806,7 +822,7 @@ if (gameStates.app.nLogLevel > 0) {
 	fLog = fopen (fnErr, "wt");
 #endif
 	}
-PrintLog (1, "%s\n", DESCENT_VERSION);
+PrintLog (0, "%s\n", DESCENT_VERSION);
 InitArgs (argc, argv);
 GetAppFolders ();
 #ifdef D2X_MEM_HANDLER
@@ -820,8 +836,8 @@ gameOptions [1].Init ();
 GetNumThreads ();
 DefaultAllSettings ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
-/*---*/PrintLog (1, "Loading text resources\n");
-/*---*/PrintLog (1, "Loading main hog file\n");
+/*---*/PrintLog (0, "Loading text resources\n");
+/*---*/PrintLog (0, "Loading main hog file\n");
 if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir [0]) ||
 	  (gameStates.app.bDemoData = hogFileManager.Init ("d2demo.hog", gameFolders.szDataDir [0])))) {
 	/*---*/PrintLog (1, "Descent 2 data not found\n");
@@ -829,7 +845,7 @@ if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir [0]) ||
 	}
 fontManager.SetScale (1.0f);
 LoadGameTexts ();
-/*---*/PrintLog (1, "Reading configuration file\n");
+/*---*/PrintLog (0, "Reading configuration file\n");
 ReadConfigFile ();
 if (!InitGraphics ())
 	return 1;
@@ -847,17 +863,18 @@ else {
 messageBox.Clear ();
 PrintBanner ();
 if (!gameStates.app.bAutoRunMission) {
-	/*---*/PrintLog (1, "Showing title screens\n");
+	/*---*/PrintLog (0, "Showing title screens\n");
 	if (!ShowTitleScreens ())
 		ShowLoadingScreen ();
 	}
 if (FindArg ("-norun"))
 	return 0;
-/*---*/PrintLog (1, "Loading hires models\n");
+/*---*/PrintLog (0, "Loading hires models\n");
 LoadHiresModels (0);
 LoadModelData ();
 LoadIpToCountry ();
 ogl.InitShaders (); //required for some menus to show all possible choices
+PrintLog (-1);
 return 0;
 }
 
@@ -872,11 +889,11 @@ if (gameStates.input.bHaveTrackIR) {
 songManager.StopAll ();
 audio.StopCurrentSong ();
 SaveModelData ();
-/*---*/PrintLog (1, "Saving configuration file\n");
+/*---*/PrintLog (0, "Saving configuration file\n");
 WriteConfigFile (true);
-/*---*/PrintLog (1, "Saving player profile\n");
+/*---*/PrintLog (0, "Saving player profile\n");
 SavePlayerProfile ();
-/*---*/PrintLog (1, "Releasing tracker list\n");
+/*---*/PrintLog (0, "Releasing tracker list\n");
 tracker.DestroyList ();
 profile.Destroy ();
 #if DBG
@@ -1005,6 +1022,7 @@ if (*szAutoHogFile && *szAutoMission) {
 	}
 DonationNotification ();
 BadHardwareNotification ();
+PrintLog (-1);
 /*---*/PrintLog (1, "Invoking main menu\n");
 MainLoop ();
 CleanUp ();

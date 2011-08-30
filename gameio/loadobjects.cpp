@@ -740,7 +740,7 @@ if (gameFileInfo.botGen.offset > -1) {
 			}
 		else {
 #if DBG
-			PrintLog (1, "Invalid robot generator data found\n");
+			PrintLog (0, "Invalid robot generator data found\n");
 #endif
 			--gameData.matCens.nBotCenters;
 			--gameFileInfo.botGen.count;
@@ -770,7 +770,7 @@ if (gameFileInfo.equipGen.offset > -1) {
 			}
 		else {
 #if DBG
-			PrintLog (1, "Invalid equipment generator data found\n");
+			PrintLog (0, "Invalid equipment generator data found\n");
 #endif
 			--gameData.matCens.nEquipCenters;
 			--gameFileInfo.equipGen.count;
@@ -822,7 +822,6 @@ if ((gameFileInfo.lightDeltaIndices.offset > -1) && gameFileInfo.lightDeltaIndic
 		}
 	else {
 		for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
-			//PrintLog (1, "reading DL index %d\n", i);
 			gameData.render.lights.deltaIndices [i].Read (cf);
 			}
 		}
@@ -1111,7 +1110,7 @@ int LoadLevelData (char * pszFilename, int nLevel)
 	int	sig, nMineDataOffset, nGameDataOffset;
 	int	nError;
 
-/*---*/Printlog (1, "loading level data\n");
+/*---*/PrintLog (1, "loading level data\n");
 SetDataVersion (-1);
 gameData.segs.bHaveSlideSegs = 0;
 if (gameData.app.nGameMode & GM_NETWORK) {
@@ -1126,8 +1125,10 @@ gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
 
 for (;;) {
 	strcpy (filename, pszFilename);
-	if (!cf.Open (filename, "", "rb", gameStates.app.bD1Mission))
+	if (!cf.Open (filename, "", "rb", gameStates.app.bD1Mission)) {
+		PrintLog (-1);
 		return 1;
+		}
 
 	strcpy(gameData.segs.szLevelFilename, filename);
 
@@ -1178,6 +1179,7 @@ for (;;) {
 	#endif
 		if (0 > ReadVariableLights (cf)) {
 			cf.Close ();
+			PrintLog (-1);
 			return 5;
 			}
 		}	
@@ -1199,6 +1201,7 @@ for (;;) {
 	nError = LoadMineSegmentsCompiled (cf);
 	if (nError == -1) {   //error!!
 		cf.Close ();
+		PrintLog (-1);
 		return 2;
 		}
 	cf.Seek (nGameDataOffset, SEEK_SET);
@@ -1206,29 +1209,33 @@ for (;;) {
 	nError = LoadMineDataCompiled (cf, 0);
 	if (nError == -1) {   //error!!
 		cf.Close ();
+		PrintLog (-1);
 		return 3;
 		}
 	cf.Close ();
 	networkData.nSegmentCheckSum = CalcSegmentCheckSum ();
-	/*---*/Printlog (1, "building geometry mesh\n");
-	if (meshBuilder.Build (nLevel))
+	/*---*/PrintLog (1, "building geometry mesh\n");
+	if (meshBuilder.Build (nLevel)) {
+		PrintLog (-1);
 		break;
-	if (gameStates.render.nMeshQuality <= 0)
+		}
+	PrintLog (-1);
+	if (gameStates.render.nMeshQuality <= 0) {
+		PrintLog (-1);
 		return 6;
+		}
 	gameStates.render.nMeshQuality--;
 	}
 gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
-#if 0
-if (!(gameData.render.lights.Create () &&
-		gameData.render.color.Create () &&
-		gameData.render.shadows.Create ()))
-	return 7;
-#endif	
-	/*---*/Printlog (1, "allocating render buffers\n");
-if (!gameData.render.mine.Create ())
+	/*---*/PrintLog (1, "allocating render buffers\n");
+if (!gameData.render.mine.Create ()) {
+	PrintLog (-1);
 	return 4;
+	}
+PrintLog (-1);
 //lightManager.Setup (nLevel); 
 SetAmbientSoundFlags ();
+PrintLog (-1);
 return 0;
 }
 

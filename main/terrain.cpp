@@ -267,7 +267,7 @@ for (i = iHigh - 1; i >= iViewer; i--) {
 void _CDECL_ FreeTerrainHeightmap (void)
 {
 if (gameData.render.terrain.heightmap.Buffer ()) {
-	PrintLog (1, "unloading terrain height map\n");
+	PrintLog (0, "unloading terrain height map\n");
 	gameData.render.terrain.heightmap.Destroy ();
 	}
 }
@@ -282,13 +282,14 @@ void LoadTerrain (char *filename)
 	ubyte		h, hMin, hMax;
 	CIFF		iff;
 
-Printlog (1, "loading terrain height map\n");
+PrintLog (1, "loading terrain height map\n");
 memset (&bmHeight, 0, sizeof (bmHeight));
 iffError = iff.ReadBitmap (filename, &bmHeight, BM_LINEAR);
 if (iffError != IFF_NO_ERROR) {
 #if TRACE
 	console.printf (1, "File %s - IFF error: %s", filename, iff.ErrorMsg (iffError));
 #endif
+ 	PrintLog (-1);
 	Error ("File %s - IFF error: %s", filename, iff.ErrorMsg (iffError));
 }
 gameData.render.terrain.heightmap.Destroy ();
@@ -296,7 +297,7 @@ gameData.render.terrain.nGridW = bmHeight.Width ();
 gameData.render.terrain.nGridH = bmHeight.Height ();
 Assert (gameData.render.terrain.nGridW <= TERRAIN_GRID_MAX_SIZE);
 Assert (gameData.render.terrain.nGridH <= TERRAIN_GRID_MAX_SIZE);
-Printlog (1, "heightmap loaded, size=%dx%d\n", gameData.render.terrain.nGridW, gameData.render.terrain.nGridH);
+PrintLog (0, "heightmap loaded, size=%dx%d\n", gameData.render.terrain.nGridW, gameData.render.terrain.nGridH);
 gameData.render.terrain.heightmap = bmHeight;
 hMax = 0;
 hMin = 255;
@@ -321,8 +322,10 @@ gameData.render.terrain.bmP->DestroyBuffer ();
 gameData.render.terrain.bmP->CreateBuffer (gameData.render.terrain.bmP->Height () * gameData.render.terrain.bmP->props.rowSize);
 gameData.render.terrain.bmP->Clear (0xFF);
 #endif
-Printlog (1, "building terrain light map\n");
+PrintLog (1, "building terrain light map\n");
 BuildTerrainLightmap ();
+PrintLog (-1);
+PrintLog (-1);
 }
 
 
@@ -331,7 +334,7 @@ BuildTerrainLightmap ();
 static void GetTerrainPoint (CFixVector *p, int i, int j)
 {
 if (!gameData.render.terrain.heightmap) {
-	PrintLog (1, "no heightmap available\n");
+	PrintLog (0, "no heightmap available\n");
 	return;
 	}
 if (i < 0)
@@ -384,7 +387,7 @@ return totalLight / 6;
 void _CDECL_ FreeTerrainLightmap ()
 {
 if (gameData.render.terrain.lightmap.Buffer ()) {
-	PrintLog (1, "unloading terrain light map\n");
+	PrintLog (0, "unloading terrain light map\n");
 	gameData.render.terrain.lightmap.Destroy ();
 	}
 }

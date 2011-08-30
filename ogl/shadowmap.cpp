@@ -247,6 +247,7 @@ if (gameOpts->render.bUseShaders && m_features.bShaders.Available ()) {
 	gameStates.render.textures.bHaveShadowMapShader = (0 <= shaderManager.Build (shadowShaderProg, shadowMapFS, shadowMapVS));
 	if (!gameStates.render.textures.bHaveShadowMapShader) 
 		DeleteShadowMapShader ();
+	PrintLog (-1);
 	}
 }
 

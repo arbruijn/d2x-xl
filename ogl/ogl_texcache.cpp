@@ -232,11 +232,10 @@ int OglCacheLevelTextures (void)
 
 if (gameStates.render.bBriefing)
 	return 0;
-Printlog (1);
 PrintLog (1, "caching level textures\n");
 TexMergeClose ();
 TexMergeInit (-1);
-Printlog (1);
+
 PrintLog (1, "caching effect textures\n");
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	for (i = 0, ecP = gameData.eff.effects [bD1].Buffer (); i < gameData.eff.nEffects [bD1]; i++, ecP++) {
@@ -252,6 +251,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 			ecP->xTimeLeft = -1;
 			}
 	}
+PrintLog (-1);
 
 PrintLog (1, "caching geometry textures\n");
 bLoadTextures = (ogl.m_states.nPreloadTextures > 0);
@@ -279,9 +279,11 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments
 		bmBot->SetupTexture (1, bLoadTextures);
 		}
 	}
+PrintLog (-1);
 
 PrintLog (1, "caching addon textures\n");
 CacheAddonTextures ();
+PrintLog (-1);
 
 PrintLog (1, "caching model textures\n");
 bLoadTextures = (ogl.m_states.nPreloadTextures > 1);
@@ -295,33 +297,39 @@ FORALL_OBJS (objP, i) {
 	bModelLoaded [objP->ModelId ()] = true;
 	OglCachePolyModelTextures (objP->ModelId ());
 	}
+PrintLog (-1);
 
 PrintLog (1, "caching hostage sprites\n");
 bLoadTextures = (ogl.m_states.nPreloadTextures > 3);
 OglCacheVClipTextures (33, 3);    
+PrintLog (-1);
 
 PrintLog (1, "caching weapon sprites\n");
 bLoadTextures = (ogl.m_states.nPreloadTextures > 5);
 for (i = 0; i < EXTRA_OBJ_IDS; i++)
 	OglCacheWeaponTextures (gameData.weapons.info + i);
+PrintLog (-1);
 
 PrintLog (1, "caching powerup sprites\n");
 bLoadTextures = (ogl.m_states.nPreloadTextures > 4);
 for (i = 0; i < MAX_POWERUP_TYPES; i++)
 	if (i != 9)
 		OglCacheVClipTextures (gameData.objs.pwrUp.info [i].nClipIndex, 3);
+PrintLog (-1);
 
 PrintLog (1, "caching effect textures\n");
 CacheObjectEffects ();
 bLoadTextures = (ogl.m_states.nPreloadTextures > 2);
 for (i = 0; i < gameData.eff.nClips [0]; i++)
 	OglCacheVClipTextures (i, 1);
+PrintLog (-1);
 
 PrintLog (1, "caching cockpit textures\n");
 for (i = 0; i < 2; i++)
 	for (j = 0; j < MAX_GAUGE_BMS; j++)
 		if (gameData.cockpit.gauges [i][j].index != 0xffff)
 			LoadTexture (gameData.cockpit.gauges [i][j].index, 0);
+PrintLog (-1);
 
 ResetSpecialEffects ();
 InitSpecialEffects ();

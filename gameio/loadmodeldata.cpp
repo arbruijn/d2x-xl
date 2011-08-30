@@ -69,7 +69,7 @@ void _CDECL_ FreeObjExtensionBitmaps (void)
 	int		i;
 	CBitmap*	bmP;
 
-Printlog (1, "unloading extra bitmaps\n");
+PrintLog (1, "unloading extra bitmaps\n");
 if (!gameData.pig.tex.nExtraBitmaps)
 	gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
 for (i = gameData.pig.tex.nBitmaps [0], bmP = gameData.pig.tex.bitmaps [0] + i; 
@@ -82,6 +82,7 @@ for (i = gameData.pig.tex.nBitmaps [0], bmP = gameData.pig.tex.bitmaps [0] + i;
 		}
 	}
 gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -89,7 +90,7 @@ gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
 void FreeModelExtensions (void)
 {
 	//return;
-Printlog (1, "unloading extra poly models\n");
+PrintLog (1, "unloading extra poly models\n");
 while (gameData.models.nPolyModels > N_D2_POLYGON_MODELS) {
 	gameData.models.polyModels [0][--gameData.models.nPolyModels].Destroy ();
 	gameData.models.polyModels [1][gameData.models.nPolyModels].Destroy ();
@@ -99,6 +100,7 @@ if (!gameStates.app.bDemoData)
 		gameData.models.polyModels [0][--gameData.models.nPolyModels].Destroy ();
 		gameData.models.polyModels [1][gameData.models.nPolyModels].Destroy ();
 		}
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------

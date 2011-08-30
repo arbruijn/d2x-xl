@@ -535,13 +535,19 @@ if (!(/*gameStates.app.bD2XLevel &&*/ SEGMENTS.Buffer () && OBJECTS.Buffer ()))
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return 0;
 #endif
-Printlog (1, "creating cameras\n");
-if (!m_cameras.Create (MAX_CAMERAS))
+PrintLog (1, "creating cameras\n");
+if (!m_cameras.Create (MAX_CAMERAS)) {
+	PrintLog (-1);
 	return 0;
-if (!m_faceCameras.Create (LEVEL_FACES))
+	}
+if (!m_faceCameras.Create (LEVEL_FACES)) {
+	PrintLog (-1);
 	return 0;
-if (!m_objectCameras.Create (LEVEL_OBJECTS))
+	}
+if (!m_objectCameras.Create (LEVEL_OBJECTS)) {
+	PrintLog (-1);
 	return 0;
+	}
 m_faceCameras.Clear (0xFF);
 m_objectCameras.Clear (0xFF);
 #if MAX_SHADOWMAPS
@@ -589,7 +595,7 @@ if (gameData.trigs.m_nObjTriggers) {
 			}
 		}
 	}
-return m_cameras.ToS ();
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -606,6 +612,7 @@ if (m_cameras.Buffer ()) {
 #if MAX_SHADOWMAPS
 	m_shadowMaps.Clear (0xFF);
 #endif
+	PrintLog (-1);
 	}
 }
 

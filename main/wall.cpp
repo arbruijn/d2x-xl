@@ -406,7 +406,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	doorP->time += gameData.time.xFrame;
 	nWall = doorP->nFrontWall [i];
 	if (!IS_WALL (nWall)) {
-		PrintLog (1, "Trying to open non existant door\n");
+		PrintLog (0, "Trying to open non existent door\n");
 		continue;
 		}
 	wallP = WALLS + doorP->nFrontWall [i];
@@ -416,14 +416,14 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	segP = SEGMENTS + wallP->nSegment;
 	nSide = wallP->nSide;
 	if (!segP->IsWall (nSide)) {
-		PrintLog (1, "Trying to open non existant door @ %d,%d\n", wallP->nSegment, nSide);
+		PrintLog (0, "Trying to open non existent door @ %d,%d\n", wallP->nSegment, nSide);
 		continue;
 		}
 	bFlags &= segP->AnimateOpeningDoor (nSide, doorP->time);
 	connSegP = SEGMENTS + segP->m_children [nSide];
 	nConnSide = segP->ConnectedSide (connSegP);
 	if (nConnSide < 0) {
-		PrintLog (1, "Door %d @ %d,%d has no oppposite door in %d\n", segP->WallNum (nSide), wallP->nSegment, nSide, segP->m_children [nSide]);
+		PrintLog (0, "Door %d @ %d,%d has no oppposite door in %d\n", segP->WallNum (nSide), wallP->nSegment, nSide, segP->m_children [nSide]);
 		continue;
 		}
 	if (connSegP->IsWall (nConnSide))
@@ -468,7 +468,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	nSide = wallP->nSide;
 	if (!segP->IsWall (nSide)) {
 #if DBG
-		PrintLog (1, "Trying to close non existant door\n");
+		PrintLog (0, "Trying to close non existent door\n");
 #endif
 		continue;
 		}
@@ -479,7 +479,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	connSegP = SEGMENTS + segP->m_children [nSide];
 	nConnSide = segP->ConnectedSide (connSegP);
 	if (nConnSide < 0) {
-		PrintLog (1, "Door %d @ %d,%d has no oppposite door in %d\n", 
+		PrintLog (0, "Door %d @ %d,%d has no oppposite door in %d\n", 
 					 segP->WallNum (nSide), wallP->nSegment, nSide, segP->m_children [nSide]);
 		continue;
 		}

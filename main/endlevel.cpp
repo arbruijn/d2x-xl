@@ -193,6 +193,7 @@ if (gameData.endLevel.satellite.bmInstance.Buffer ()) {
 	gameData.endLevel.satellite.bmInstance.ReleaseTexture ();
 	gameData.endLevel.satellite.bmInstance.DestroyBuffer ();
 	}
+PrintLog (-1);
 }
 
 //-----------------------------------------------------------------------------
@@ -1141,7 +1142,7 @@ if (!cf.Open (filename, gameFolders.szDataDir [0], "rb", gameStates.app.bD1Missi
 //ok...this parser is pretty simple.  It ignores comments, but
 //everything else must be in the right place
 var = 0;
-Printlog (1, "parsing endlevel description\n");
+PrintLog (1, "parsing endlevel description\n");
 while (cf.GetS (line, LINE_LEN)) {
 	if (bHaveBinary) {
 		int l = (int) strlen (line);
@@ -1162,7 +1163,7 @@ while (cf.GetS (line, LINE_LEN)) {
 			CIFF iff;
 			int iffError;
 
-			Printlog (1, "loading terrain bitmap\n");
+			PrintLog (1, "loading terrain bitmap\n");
 			if (gameData.endLevel.terrain.bmInstance.Buffer ()) {
 				gameData.endLevel.terrain.bmInstance.ReleaseTexture ();
 				gameData.endLevel.terrain.bmInstance.DestroyBuffer ();
@@ -1171,8 +1172,8 @@ while (cf.GetS (line, LINE_LEN)) {
 			iffError = iff.ReadBitmap (p, &gameData.endLevel.terrain.bmInstance, BM_LINEAR);
 			if (iffError != IFF_NO_ERROR) {
 #if DBG
-				PrintLog (TXT_EXIT_TERRAIN, p, iff.ErrorMsg (iffError));
-				PrintLog (1, "\n");
+				PrintLog (0, TXT_EXIT_TERRAIN, p, iff.ErrorMsg (iffError));
+				PrintLog (0, "\n");
 #endif
 				gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 				return;
@@ -1183,17 +1184,17 @@ while (cf.GetS (line, LINE_LEN)) {
 		}
 
 		case 1:							//height map
-			Printlog (1, "loading endlevel terrain\n");
+			PrintLog (1, "loading endlevel terrain\n");
 			LoadTerrain (p);
 			break;
 
 		case 2:
-			Printlog (1, "loading exit point\n");
+			PrintLog (1, "loading exit point\n");
 			sscanf (p, "%d, %d", &nExitPointBmX, &nExitPointBmY);
 			break;
 
 		case 3:							//exit heading
-			Printlog (1, "loading exit angle\n");
+			PrintLog (1, "loading exit angle\n");
 			vExitAngles.v.coord.h = I2X (atoi (p))/360;
 			break;
 
@@ -1201,7 +1202,7 @@ while (cf.GetS (line, LINE_LEN)) {
 			CIFF iff;
 			int iffError;
 
-			Printlog (1, "loading satellite bitmap\n");
+			PrintLog (1, "loading satellite bitmap\n");
 			if (gameData.endLevel.satellite.bmInstance.Buffer ()) {
 				gameData.endLevel.satellite.bmInstance.ReleaseTexture ();
 				gameData.endLevel.satellite.bmInstance.DestroyBuffer ();
@@ -1223,7 +1224,7 @@ while (cf.GetS (line, LINE_LEN)) {
 			CAngleVector ta;
 			int pitch, head;
 
-			Printlog (1, "loading satellite and station position\n");
+			PrintLog (1, "loading satellite and station position\n");
 			sscanf (p, "%d, %d", &head, &pitch);
 			ta.v.coord.h = I2X (head)/360;
 			ta.v.coord.p = -I2X (pitch)/360;
@@ -1238,7 +1239,7 @@ while (cf.GetS (line, LINE_LEN)) {
 		}
 
 		case 6:						//planet size
-			Printlog (1, "loading satellite size\n");
+			PrintLog (1, "loading satellite size\n");
 			xSatelliteSize = I2X (atoi (p));
 			break;
 	}
@@ -1266,7 +1267,7 @@ if (gameData.endLevel.exit.nSegNum == -1) {
 	gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 	return;
 	}
-Printlog (1, "computing endlevel element orientation\n");
+PrintLog (1, "computing endlevel element orientation\n");
 gameData.endLevel.exit.vMineExit = SEGMENTS [gameData.endLevel.exit.nSegNum].Center ();
 ExtractOrientFromSegment (&gameData.endLevel.exit.mOrient, &SEGMENTS [gameData.endLevel.exit.nSegNum]);
 gameData.endLevel.exit.vSideExit = SEGMENTS [gameData.endLevel.exit.nSegNum].SideCenter (nExitSide);

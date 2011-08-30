@@ -382,7 +382,7 @@ strcat (xmlGameInfo, "</GameInfo>\n");
 #if 0 //DBG
 PrintLog (1, "\nXML game info:\n\n");
 PrintLog (xmlGameInfo);
-PrintLog (1, "\n");
+PrintLog (-1, "\n");
 #endif
 return xmlGameInfo;
 }

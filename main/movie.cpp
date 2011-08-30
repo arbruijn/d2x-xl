@@ -514,6 +514,7 @@ PrintLog (1, "unloading movies\n");
 for (int i = 0; i < m_nLibs; i++)
 	m_libs [i].Destroy ();
 Init ();
+PrintLog (-1);
 }
 
 //-----------------------------------------------------------------------
@@ -585,7 +586,7 @@ for (int i = 0; i < j; i++) {
 	InitLib (pszMovieLibs [i], m_nLibs, bRobotMovie, 1);
 	if (m_libs [m_nLibs].m_nMovies) {
 		m_nLibs++;
-		Printlog (1, "found movie lib '%s'\n", pszMovieLibs [i]);
+		PrintLog (0, "found movie lib '%s'\n", pszMovieLibs [i]);
 		}
 	else if ((i >= FIRST_EXTRA_MOVIE_LIB) && (i < FIRST_EXTRA_MOVIE_LIB + N_EXTRA_MOVIE_LIBS))
 		m_bHaveExtras = 0;

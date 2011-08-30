@@ -159,7 +159,7 @@ if (name) {
 	strcpy (hogP->szName, name);
 	hogP->bInitialized = *name && Setup (hogP->szName, folder, hogP->files, &hogP->nFiles);
 	if (*(hogP->szName))
-		Printlog (1, "found hog file '%s'\n", hogP->szName);
+		PrintLog (0, "found hog file '%s'\n", hogP->szName);
 	if (hogP->bInitialized && (hogP->nFiles > 0)) {
 		QuickSort (hogP->files, 0, hogP->nFiles - 1);
 		return 1;
@@ -266,7 +266,6 @@ else {
 	if ((fp = Find (&m_files.D2HogFiles, gameFolders.szDataDir [0], name, length)))
 		return fp;
 	}
-//PrintLog (1, "File '%s' not found\n", name);
 return NULL;
 }
 

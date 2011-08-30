@@ -1721,6 +1721,7 @@ PrintLog (1, "releasing OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, modelP = gameData.models.oofModels [bCustom].Buffer (); i; i--, modelP++)
 		modelP->ReleaseTextures ();
+PrintLog (-1);
 return 0;
 }
 
@@ -1736,6 +1737,7 @@ for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, modelP = gameData.models.oofModels [bCustom].Buffer (); i; i--, modelP++)
 		if (!modelP->ReloadTextures ())
 			return 0;
+PrintLog (-1);
 return 1;
 }
 

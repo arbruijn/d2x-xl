@@ -414,7 +414,6 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 		else if (nType == 2)
 			nParts /= 2;
 		if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
-			//PrintLog (1, "creating CPlayerData smoke\n");
 			nSmoke = particleManager.Create (&pos->vPos, vDirP, NULL, nSegment, 2, nParts, nScale,
 														/*gameOpts->render.particles.nSize [1], 2,*/ 
 														nLife, PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, 1, -1);
@@ -492,7 +491,6 @@ if (nParts > 0) {
 		nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [2], nScale, 1);
 		}
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
-		//PrintLog (1, "creating robot %d smoke\n", nObject);
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, nScale,
 													/*gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [2], 1,*/ 
 													gameOpts->render.particles.nSize [3] * BOT_PART_LIFE / 2, BOT_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors, 1, -1);
@@ -541,7 +539,6 @@ nParts = 10 - h / 10;
 if (nParts > 0) {
 	nParts = REACTOR_MAX_PARTS;
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
-		//PrintLog (1, "creating robot %d smoke\n", nObject);
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, F2X (-4.0),
 													/*-1, 1,*/ 
 													gameOpts->render.particles.nSize [3] * BOT_PART_LIFE, BOT_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors, 1, -1);
