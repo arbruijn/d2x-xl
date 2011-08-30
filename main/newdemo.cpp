@@ -1832,7 +1832,7 @@ if (IsMultiGame) {
 		gameData.multiplayer.players [i].cloakTime = 0;
 		gameData.multiplayer.players [i].invulnerableTime = 0;
 		NDReadString (gameData.multiplayer.players [i].callsign);
-		CONNECT (i, sbyte (NDReadByte ());
+		CONNECT (i, (sbyte) NDReadByte ());
 		if (IsCoopGame)
 			gameData.multiplayer.players [i].score = NDReadInt ();
 		else {
@@ -2633,7 +2633,7 @@ while (!bDone) {
 			sbyte nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				CONNECT (nPlayer, CONNECT_DISCONNECTED;
+				CONNECT (nPlayer, CONNECT_DISCONNECTED);
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
