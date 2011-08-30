@@ -459,7 +459,7 @@ else if (nLogIndent > 30) {
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ PrintLog (const int nIndent, const char *fmt = NULL, ...)
+void _CDECL_ PrintLog (const int nIndent, const char *fmt, ...)
 {
 if (fLog) {
 	if (fmt && *fmt) {
