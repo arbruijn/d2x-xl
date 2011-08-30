@@ -120,7 +120,7 @@ return i;
 void FreeSoundReplacements (void)
 {
 for (int i = 0; i < 2; i++) {
-	CSoundSample dsP = gameData.pig.sound.sounds [i].Buffer ();
+	CSoundSample* dsP = gameData.pig.sound.sounds [i].Buffer ();
 	for (int j = 0; j < MAX_SOUND_FILES; j++, dsP++) {
 		if (dsP->bCustom) {
 			dsP->data [1].Destroy ();

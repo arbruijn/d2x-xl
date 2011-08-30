@@ -40,7 +40,7 @@ const char *pszOglExtensions = NULL;
 void COGL::SetupOcclusionQuery (void)
 {
 m_features.bOcclusionQuery = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_occlusion_query"));
-PrintLog (m_features.bOcclusionQuery ? (char *) "Occlusion query is available\n" : (char *) "No occlusion query available\n");
+PrintLog (0, m_features.bOcclusionQuery ? (char *) "Occlusion query is available\n" : (char *) "No occlusion query available\n");
 }
 
 //------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ if ((ogl.m_features.bStencilBuffer.Available (glIsEnabled (GL_STENCIL_TEST)))) {
 void COGL::SetupVBOs (void)
 {
 m_features.bVertexBufferObjects = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_vertex_buffer_object"));
-PrintLog (m_features.bVertexBufferObjects ? (char *) "VBOs are available\n" : (char *) "No VBOs available\n");
+PrintLog (0, m_features.bVertexBufferObjects ? (char *) "VBOs are available\n" : (char *) "No VBOs available\n");
 }
 
 //------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ PrintLog (m_features.bVertexBufferObjects ? (char *) "VBOs are available\n" : (c
 void COGL::SetupTextureArrays (void)
 {
 m_features.bTextureArrays = (pszOglExtensions && strstr (pszOglExtensions, "GL_EXT_texture_array"));
-PrintLog (m_features.bTextureArrays ? (char *) "Multi-texturing is available\n" : (char *) "No multi-texturing available\n");
+PrintLog (0, m_features.bTextureArrays ? (char *) "Multi-texturing is available\n" : (char *) "No multi-texturing available\n");
 }
 
 //------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ m_features.bTextureCompression = 0;
 void COGL::SetupMultiTexturing (void)
 {
 m_features.bMultiTexturing = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_multitexture"));
-PrintLog (m_features.bMultiTexturing ? (char *) "Multi-texturing is available\n" : (char *) "No multi-texturing available\n");
+PrintLog (0, m_features.bMultiTexturing ? (char *) "Multi-texturing is available\n" : (char *) "No multi-texturing available\n");
 }
 
 //------------------------------------------------------------------------------
