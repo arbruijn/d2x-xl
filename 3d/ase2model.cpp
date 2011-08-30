@@ -146,8 +146,11 @@ HUDMessage (0, "optimizing model");
 if (gameStates.app.nLogLevel > 1)
 	PrintLog (1, "optimizing ASE model %d\n", nModel);
 CountASEModelItems (pa);
-if (!Create ())
+if (!Create ()) {
+	if (gameStates.app.nLogLevel > 1)
+		PrintLog (-1);
 	return 0;
+	}
 GetASEModelItems (nModel, pa, 1.0f); //(nModel == 108) || (nModel == 110)) ? 1.145f : 1.0f);
 m_nModel = nModel;
 m_textures = pa->m_textures.m_bitmaps;
@@ -164,6 +167,7 @@ Setup (1, 1);
 #if 1
 SetGunPoints (objP, 1);
 #endif
+PrintLog (-1);
 return -1;
 }
 

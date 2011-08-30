@@ -131,8 +131,10 @@ for (h = 0; h <= 3; h++) {
 		gameStates.render.bPerPixelLighting = 0;
 		for (j = 0; j < 4; j++)
 			shaderManager.Delete (lightmapShaderProgs [j]);
+		PrintLog (-1);
 		return -1;
 		}
+	PrintLog (-1);
 	}
 return 1;
 }

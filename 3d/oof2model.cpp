@@ -153,8 +153,11 @@ HUDMessage (0, "optimizing model");
 if (gameStates.app.nLogLevel > 1)
 	PrintLog (1, "optimizing OOF model %d\n", nModel);
 CountOOFModelItems (po);
-if (!Create ())
+if (!Create ()) {
+	if (gameStates.app.nLogLevel > 1)
+		PrintLog (-1);
 	return 0;
+	}
 GetOOFModelItems (nModel, po, /*((nModel == 108) || (nModel == 110)) ? 0.805f :*/ 1.0f);
 m_nModel = nModel;
 m_textures = po->m_textures.m_bitmaps;
@@ -170,7 +173,9 @@ Setup (1, 1);
 #if 1
 SetGunPoints (objP, 0);
 #endif
-return -1;
+if (gameStates.app.nLogLevel > 1)
+	PrintLog (-1);
+ return -1;
 }
 
 //------------------------------------------------------------------------------

@@ -1467,7 +1467,7 @@ if (!(cf.Open (filename, gameFolders.szModDir [1], fileModes [bHaveBinary], game
 	strcpy (strstr (filename, ".t"), bHaveBinary ? ".txb" : ".tex");
 	if (!(cf.Open (filename, gameFolders.szModDir [1], fileModes [bHaveBinary], gameStates.app.bD1Mission) ||
 			cf.Open (filename, gameFolders.szDataDir [0], fileModes [bHaveBinary], gameStates.app.bD1Mission))) {
-		PrintLog (1, "can't open briefing '%s'!\n", filename);
+		PrintLog (0, "can't open briefing '%s'!\n", filename);
 		return 0;
 		}
 	}
@@ -1500,7 +1500,8 @@ else {
 	cf.Close ();
 	}
 m_info.nBriefingTextLen = (int) (bufP - textBuffer.Buffer ());
-return (1);
+PrintLog (-1);
+return 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -1598,13 +1599,15 @@ gameStates.render.bBriefing = 1;
 if (gameOpts->gameplay.bSkipBriefingScreens) {
 	console.printf (CON_DBG, "Skipping all briefing screens.\n");
 	gameStates.render.bBriefing = 0;
+	PrintLog (-1);
 	return;
 	}
 strcpy (fnBriefing, *missionManager.szBriefingFilename [0] ? missionManager.szBriefingFilename [0] : filename);
 console.printf (CON_DBG, "Trying briefing screen <%s>\n", fnBriefing);
-PrintLog (1, "Looking for briefing screen '%s'\n", fnBriefing);
+PrintLog (0, "Looking for briefing screen '%s'\n", fnBriefing);
 if (!*fnBriefing) {
 	gameStates.render.bBriefing = 0;
+	PrintLog (-1);
 	return;
 	}
 
@@ -1612,15 +1615,14 @@ if (gameStates.app.bNostalgia)
 	ogl.SetDrawBuffer (GL_FRONT, 0);
 
 if (gameStates.app.bD1Mission && (missionManager.nCurrentMission != missionManager.nBuiltInMission [1])) {
-	FILE	*fp;
-	int	i;
-	char	*psz;
-
+	int i;
 	for (i = 0; i < 2; i++) {
-		if ((psz = strchr (fnBriefing, '.')))
+		char* psz = strchr (fnBriefing, '.');
+		if (psz)
 			*psz = '\0';
 		strcat (fnBriefing, i ? ".txb" : ".tex");
-		if	 ((fp = hogFileManager.Find (&hogFileManager.AltFiles (), "", fnBriefing, NULL))) {
+		FILE* fp = hogFileManager.Find (&hogFileManager.AltFiles (), "", fnBriefing, NULL);
+		if	 (fp) {
 			fclose (fp);
 			break;
 			}

@@ -329,13 +329,22 @@ if (nModel == nDbgModel)
 #endif
 if (gameStates.app.nLogLevel > 1)
 	PrintLog (1, "optimizing POF model %d\n", nModel);
-if (!CountPOFModelItems (pp->Buffer (), &m_nSubModels, &m_nVerts, &m_nFaces, &m_nFaceVerts))
+if (!CountPOFModelItems (pp->Buffer (), &m_nSubModels, &m_nVerts, &m_nFaces, &m_nFaceVerts)) {
+	if (gameStates.app.nLogLevel > 1)
+		PrintLog (-1);
 	return 0;
-if (!Create ())
+	}
+if (!Create ()) {
+	if (gameStates.app.nLogLevel > 1)
+		PrintLog (-1);
 	return 0;
+	}
 m_subModels [0].InitMinMax ();
-if (!GetPOFModelItems (pp->Buffer (), NULL, 0, -1, 1, modelBitmaps, objColorP))
+if (!GetPOFModelItems (pp->Buffer (), NULL, 0, -1, 1, modelBitmaps, objColorP)) {
+	if (gameStates.app.nLogLevel > 1)
+		PrintLog (-1);
 	return 0;
+	}
 m_faces.SortAscending ();
 AssignPOFFaces ();
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
@@ -343,6 +352,8 @@ m_nType = pp->Type ();
 gameData.models.polyModels [0][nModel].SetRad (Size (objP, 0));
 Setup (0, 1);
 m_iSubModel = 0;
+if (gameStates.app.nLogLevel > 1)
+	PrintLog (-1);
 return -1;
 }
 

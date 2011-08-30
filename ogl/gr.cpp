@@ -77,7 +77,7 @@ return SdlGlVideoModeOK (SM_W (mode), SM_H (mode)); // platform specific code
 
 int GrSetMode (u_int32_t mode)
 {
-	uint w, h;
+	uint w, h, i;
 	//int bForce = (nCurrentVGAMode < 0);
 
 if (mode <= 0)
@@ -100,14 +100,18 @@ screen.Canvas ()->SetPalette (paletteManager.Default ()); //just need some valid
 CCanvas::SetCurrent (NULL);
 CCanvas::Current ()->SetFont (fontManager.Current ());
 /***/PrintLog (1, "initializing OpenGL window\n");
-if (!SdlGlInitWindow (w, h, 0))	//platform specific code
+i = SdlGlInitWindow (w, h, 0);	//platform specific code
+PrintLog (-1);
+if (!i)
 	return 0;
 /***/PrintLog (1, "initializing OpenGL view port\n");
 ogl.Viewport (0, 0, w, h);
+PrintLog (-1);
 /***/PrintLog (1, "initializing OpenGL screen mode\n");
 ogl.SetScreenMode ();
 ogl.GetVerInfo ();
 GrUpdate (0);
+PrintLog (-1);
 return 0;
 }
 
@@ -267,8 +271,9 @@ OglInitLoadLibrary ();
 #if !USE_IRRLICHT
 if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
 	PrintLog (1, "SDL library video initialisation failed: %s.\n", SDL_GetError());
+	PrintLog (-1);
 	Error ("SDL library video initialisation failed: %s.", SDL_GetError());
-}
+	}
 #endif
 #if DBG
 	ogl.m_states.bFullScreen = 0;
@@ -276,14 +281,13 @@ if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
 if ((i = FindArg ("-fullscreen"))) {
 	/***/PrintLog (1, "switching to fullscreen\n");
 	ogl.m_states.bFullScreen = NumArg (i, 1);
-	//ogl.ToggleFullScreen();
 	}
 else
 	ogl.m_states.bFullScreen = 1;
 #endif
-/***/PrintLog (1, "initializing texture manager\n");
+/***/PrintLog (0, "initializing texture manager\n");
 textureManager.Init ();
-/***/PrintLog (1, "allocating screen buffer\n");
+/***/PrintLog (0, "allocating screen buffer\n");
 screen.Canvas ()->SetBuffer (NULL);
 
 CreateDisplayModeInfo ();
@@ -307,12 +311,13 @@ if ((i = GrSetMode (gameStates.gfx.nStartScrSize)))
 gameStates.gfx.bInstalled = 1;
 InitGammaRamp ();
 //atexit(GrClose);
-/***/PrintLog (1, "initializing OpenGL extensions\n");
+/***/PrintLog (0, "initializing OpenGL extensions\n");
 ogl.SetRenderQuality ();
 ogl.SetupExtensions ();
 ogl.DestroyDrawBuffers ();
 ogl.SelectDrawBuffer (0);
 ogl.SetDrawBuffer (GL_BACK, 1);
+PrintLog (-1);
 return 0;
 }
 
@@ -327,6 +332,7 @@ screen.Destroy ();
 if (ogl_rt_loaded)
 	OpenGL_LoadLibrary(false);
 #endif
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------

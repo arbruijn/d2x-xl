@@ -453,9 +453,6 @@ else {
 	lightP->info.nType = 3;
 	lightP->info.bVariable = 0;
 	}
-#if 0
-PrintLog (1, "adding light %d,%d\n", m_data.nLights [0], lightP - m_data.lights [0]);
-#endif
 lightP->info.bOn = 1;
 lightP->bTransform = 1;
 SetColor (m_data.nLights [0], colorP->Red (), colorP->Green (), colorP->Blue (), fBrightness);
@@ -466,9 +463,6 @@ return m_data.nLights [0]++;
 
 bool CLightManager::DeleteFromList (CDynLight* lightP, short nLight)
 {
-//PrintLog (1, "removing light %d,%d\n", nLight, lightP - m_data.lights [0]);
-// if not removing last light in list, move last light down to the now free list entry
-// and keep the freed light handle thus avoiding gaps in used handles
 if (!m_data.lights.Buffer () || (nLight >= m_data.nLights [0]))
 	return false;
 lightP->Destroy ();
@@ -893,13 +887,6 @@ for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--
 		}
 	}
 Sort ();
-#if 0
-PrintLog (1, "light sources:\n");
-CDynLight* lightP = m_data.lights [0];
-for (int i = m_data.nLights [0]; i; i--, lightP++)
-	PrintLog (1, "%d,%d,%d,%d\n", lightP->info.nSegment, lightP->info.nSide, lightP->info.nObject, lightP->info.bVariable);
-PrintLog (1, "\n");
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -985,6 +972,7 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 			}
 		}
 	}
+PrintLog (-1);
 }
 
 // ----------------------------------------------------------------------------------------------

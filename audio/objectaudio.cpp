@@ -824,6 +824,7 @@ PrintLog (1, "restarting sounds\n");
 midi.Resume ();
 ResumeSounds ();
 StartTriggeredSounds ();
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------

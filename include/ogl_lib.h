@@ -624,7 +624,7 @@ class COGL {
 #if DBG_OGL
 			if (nError) {
 				const char* pszError = reinterpret_cast<const char*> (gluErrorString (nError));
-				PrintLog (1, "%s\n", pszError);
+				PrintLog (0, "%s\n", pszError);
 				if (bTrapError)
 					nError = nError;
 				}

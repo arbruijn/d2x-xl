@@ -242,6 +242,7 @@ if (ogl.m_features.bRenderToTexture.Available () && ogl.m_features.bShaders) {
 		ogl.ClearError (0);
 		ogl.m_features.bDepthBlending.Available (0);
 		}
+	PrintLog (-1);
 	}
 }
 

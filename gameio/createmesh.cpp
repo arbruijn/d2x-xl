@@ -92,10 +92,9 @@ m_edges.Destroy ();
 
 int CTriMeshBuilder::AllocData (void)
 {
-PrintLog (1);
 if (m_nMaxTriangles && m_nMaxEdges) {
 	if (!(m_edges.Resize (m_nMaxEdges * 2) && m_triangles.Resize (m_nMaxTriangles * 2))) {
-		PrintLog (-1, "Not enough memory for building the triangle mesh (%d edges, %d tris).\n", m_nMaxEdges * 2, m_nMaxTriangles * 2);
+		PrintLog (0, "Not enough memory for building the triangle mesh (%d edges, %d tris).\n", m_nMaxEdges * 2, m_nMaxTriangles * 2);
 		FreeData ();
 		return 0;
 		}
@@ -108,18 +107,17 @@ else {
 	m_nMaxTriangles = gameData.segs.nFaces * 4;
 	m_nMaxEdges = gameData.segs.nFaces * 4;
 	if (!m_edges.Create (m_nMaxEdges)) {
-		PrintLog (-1, "Not enough memory for building the triangle mesh (%d edges).\n", m_nMaxEdges);
+		PrintLog (0, "Not enough memory for building the triangle mesh (%d edges).\n", m_nMaxEdges);
 		return 0;
 		}
 	if (!m_triangles.Create (m_nMaxTriangles)) {
-		PrintLog (-1, "Not enough memory for building the triangle mesh (%d tris).\n", m_nMaxTriangles);
+		PrintLog (0, "Not enough memory for building the triangle mesh (%d tris).\n", m_nMaxTriangles);
 		FreeData ();
 		return 0;
 		}
 	m_edges.Clear (0xff);
 	m_triangles.Clear (0xff);
 	}
-PrintLog (-1);
 return 1;
 }
 
@@ -343,7 +341,7 @@ for (i = 0; i < 3; i++) {
 		break;
 	}
 if (i == 3) {
-	PrintLog (1, "Internal error during construction of the triangle mesh.\n");
+	PrintLog (0, "Internal error during construction of the triangle mesh.\n");
 	return 0;
 	}
 
@@ -485,7 +483,7 @@ do {
 #endif
 		nSplitRes = SplitTriangle (&m_triangles [i], nPass);
 		if (gameData.segs.nVertices == 65536) {
-			PrintLog (1, "Level too big for requested triangle mesh quality.\n");
+			PrintLog (-1, "Level too big for requested triangle mesh quality.\n");
 			return 0;
 			}
 		if (!nSplitRes)
@@ -499,6 +497,7 @@ do {
 			}
 		}
 	nPass++;
+	PrintLog (-1);
 	} while (bSplit && (nPass < nMaxPasses));
 return 1;
 }
@@ -620,7 +619,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 gameData.segs.nTris = m_nTriangles;
 SetupVertexNormals ();
 FreeData ();
-PrintLog (1, "created %d new triangles and %d new vertices\n",
+PrintLog (-1, "created %d new triangles and %d new vertices\n",
 			 m_nTriangles - m_nTris, gameData.segs.nVertices - m_nVertices);
 CreateFaceVertLists ();
 return 1;
@@ -867,24 +866,33 @@ int CTriMeshBuilder::Build (int nLevel, int nQuality)
 {
 PrintLog (1, "creating triangle mesh\n");
 m_nQuality = nQuality;
-if (Load (nLevel))
+if (Load (nLevel)) {
+	PrintLog (-1);
 	return 1;
+	}
 if (!CreateTriangles ()) {
 	gameData.segs.nVertices = m_nVertices;
+	PrintLog (-1);
 	return 0;
 	}
 if ((gameStates.render.bTriangleMesh > 0) && !SplitTriangles ()) {
 	gameData.segs.nVertices = m_nVertices;
+	PrintLog (-1);
 	return 0;
 	}
 if (!InsertTriangles ()) {
 	gameData.segs.nVertices = m_nVertices;
+	PrintLog (-1);
 	return 0;
 	}
-if (gameStates.app.bReadOnly)
+if (gameStates.app.bReadOnly) {
+	PrintLog (-1);
 	return 1;
+	}
 Save (nLevel);
-return Load (nLevel, true); //Load will rebuild all face data buffers, reducing their memory footprint
+int nLoadRes = Load (nLevel, true); //Load will rebuild all face data buffers, reducing their memory footprint
+PrintLog (-1);
+return nLoadRes;
 }
 
 //------------------------------------------------------------------------------
@@ -1360,7 +1368,6 @@ if (FACES.vboIndexHandle) {
 
 int CQuadMeshBuilder::Build (int nLevel, bool bRebuild)
 {
-PrintLog (1);
 m_faceP = FACES.faces.Buffer ();
 m_triP = TRIANGLES.Buffer ();
 m_vertexP = FACES.vertices.Buffer ();

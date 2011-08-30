@@ -87,8 +87,10 @@ for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
 	delete ps->bmP;
 	ps->bmP = NULL;
 	}
+PrintLog (-1);
 PrintLog (1, "initializing string pool\n");
 InitStringPool ();
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------

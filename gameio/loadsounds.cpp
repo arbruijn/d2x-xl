@@ -150,14 +150,18 @@ if (gameOpts->UseHiresSound ())
 PrintLog (1, "loading replacement sounds\n");
 //FreeSoundReplacements ();
 CFile::ChangeFilenameExtension (szFilename, pszFilename, ".dtx");
-if (!cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0))
+if (!cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
+	PrintLog (-1);
 	return -1;
+	}
 if (cf.Read (szId, 1, sizeof (szId)) != sizeof (szId)) {
 	cf.Close ();
+	PrintLog (-1);
 	return -1;
 	}
 if (strncmp (szId, "DTX2", sizeof (szId))) {
 	cf.Close ();
+	PrintLog (-1);
 	return -1;
 	}
 nLoadedSounds = cf.ReadInt ();
@@ -185,6 +189,7 @@ for (i = b11K ? 0 : nLoadedSounds / 2; i < nLoadedSounds; i++) {
 	dsP->nLength [1] = l;
 	}
 cf.Close ();
+PrintLog (-1);
 return 1;
 }
 
@@ -267,6 +272,7 @@ for (i = 0; i < nSounds; i++) {
 	if (!bCustom)
 		PiggyRegisterSound (szSoundName, 1, bCustom);
 	}
+PrintLog (-1);
 return (nLoadedSounds [1] << 16) | nLoadedSounds [0];
 }
 
