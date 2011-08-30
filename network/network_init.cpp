@@ -403,11 +403,10 @@ return 1;
 
 void LogExtraGameInfo (void)
 {
-PrintLog (1);
 if (!gameStates.app.bHaveExtraGameInfo [1])
 	PrintLog (0, "No extra game info data available\n");
 else {
-	PrintLog (0, "extra game info data:\n");
+	PrintLog (1, "extra game info data:\n");
 	PrintLog (0, "bFriendlyFire: %d\n", extraGameInfo [1].bFriendlyFire);
 	PrintLog (0, "bInhibitSuicide: %d\n", extraGameInfo [1].bInhibitSuicide);
 	PrintLog (0, "bFixedRespawns: %d\n", extraGameInfo [1].bFixedRespawns);
@@ -503,8 +502,8 @@ else {
 	PrintLog (0, "headlight.bAvailable: %d\n", extraGameInfo [1].headlight.bAvailable);
 	PrintLog (0, "headlight.bBuiltIn: %d\n", extraGameInfo [1].headlight.bBuiltIn);
 	PrintLog (0, "headlight.bDrainPower: %d\n", extraGameInfo [1].headlight.bDrainPower);
+	PrintLog (-1);
 	}
-PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
