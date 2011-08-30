@@ -480,10 +480,12 @@ if (cfPiggy [1].File ())
 	cfPiggy [1].Seek (0, SEEK_SET);
 else
 	cfPiggy [1].Open (szD1PigFileName, gameFolders.szDataDir [0], "rb", 0);
+PrintLog (-1);
 if (cfPiggy [1].File ()) {
 	gameStates.app.bHaveD1Data = 1;
 /*---*/PrintLog (1, "Loading Descent 1 data\n");
 	BMReadGameDataD1 (cfPiggy [1]);
+	PrintLog (-1);
 	}
 return 1;
 }

@@ -1132,6 +1132,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 		}
 	cf.Close ();
 	}
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------

@@ -439,9 +439,7 @@ static int nLastIndent = 0;
 
 static void IndentLog (int nIndent)
 {
-if (!nIndent)
-	nIndent = -nLastIndent;
-else {
+if (nIndent) {
 	if (abs (nIndent) == 1)
 		nIndent *= 3; // default indentation
 	nLastIndent = abs (nIndent);
@@ -468,7 +466,7 @@ if (fLog) {
 			static int nLogLine = 0;
 
 		va_start (arglist, fmt);
-		if (nLogIndent)
+		if (nLogIndent > 0)
 			memset (szLogLine [nLogLine], ' ', nLogIndent);
 		vsprintf (szLogLine [nLogLine] + nLogIndent, fmt, arglist);
 		va_end (arglist);
@@ -478,7 +476,8 @@ if (fLog) {
 			nLogLine = !nLogLine;
 			}
 		}
-	IndentLog (nIndent);
+	if (nIndent)
+		IndentLog (nIndent);
 	}
 }
 

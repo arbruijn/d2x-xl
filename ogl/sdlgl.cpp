@@ -85,7 +85,7 @@ int SdlGlSetAttribute (const char *szSwitch, const char *szAttr, SDL_GLattr attr
 if (szSwitch && (i = FindArg (szSwitch)) && appConfig [i + 1])
 	attr = (SDL_GLattr) atoi (appConfig [i + 1]);
 i = SDL_GL_SetAttribute (attr, value);
-/***/PrintLog (1, "setting %s to %d %s\n", szAttr, value, (i == -1) ? "failed" : "succeeded");
+/***/PrintLog (0, "setting %s to %d %s\n", szAttr, value, (i == -1) ? "failed" : "succeeded");
 return i;
 }
 

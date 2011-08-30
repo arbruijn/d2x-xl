@@ -83,7 +83,6 @@ for (int i = 0; i < nCacheEntries; i++) {
 
 void _CDECL_ TexMergeClose (void)
 {
-IndentLog ();
 PrintLog (1, "shutting down merged textures cache\n");
 TexMergeFlush ();
 for (int i = 0; i < nCacheEntries; i++) {
