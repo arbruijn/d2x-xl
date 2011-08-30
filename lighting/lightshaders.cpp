@@ -1026,10 +1026,8 @@ for (h = 0; h <= 3; h++) {
 				for (j = 0; j < 4; j++)
 					shaderManager.Delete (perPixelLightingShaderProgs [i][j]);
 			nLights = 0;
-			PrintLog (-1);
 			return -1;
 			}
-		PrintLog (-1);
 		}
 	}
 return ogl.m_data.nPerPixelLights [nType] = nLights;

@@ -685,8 +685,7 @@ if (!IAmGameHost ()) {
 if (nState)
 	return nCurItem;
 
-	int i = 0;
-	int nReady = 0;
+int i = 0;
 
 static CTimeout to (500);
 // tell other players that I am here
@@ -699,6 +698,9 @@ if (to.Expired ()) {
 		}
 	}
 NetworkListen ();
+
+int nReady = 0;
+
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((ubyte) gameData.multiplayer.players [i].connected < 2)
 		nReady++;
