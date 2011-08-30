@@ -868,14 +868,15 @@ if (!gameStates.app.bAutoRunMission) {
 	if (!ShowTitleScreens ())
 		ShowLoadingScreen ();
 	}
-if (FindArg ("-norun"))
+if (FindArg ("-norun")) {
+	PrintLog (-1);
 	return 0;
+	}
 /*---*/PrintLog (0, "Loading hires models\n");
 LoadHiresModels (0);
 LoadModelData ();
 LoadIpToCountry ();
 ogl.InitShaders (); //required for some menus to show all possible choices
-PrintLog (-1);
 return 0;
 }
 
