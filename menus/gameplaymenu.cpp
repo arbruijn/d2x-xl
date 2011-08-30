@@ -350,7 +350,7 @@ do {
 	m.AddCheck ("use inventory", TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_U, HTX_GPLAY_INVENTORY);
 	m.AddText ("", "");
 	m.AddMenu ("reorder guns", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
-	m.AddMenu ("reorder missles", TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
+	m.AddMenu ("reorder missiles", TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
 	//if (gameStates.app.bGameRunning)
 		AddShipSelection (m, optShip);
 	if (!(gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)) {
