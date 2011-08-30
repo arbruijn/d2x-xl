@@ -153,7 +153,7 @@ return 0;
 
 int NetworkStartGame (void)
 {
-	int i, bAutoRun;
+	int bAutoRun;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	Assert (FRAME_INFO_SIZE < MAX_PAYLOAD_SIZE);
@@ -171,10 +171,10 @@ if (NetworkFindGame ()) {
 	}
 bAutoRun = InitAutoNetGame ();
 PrintLog (1, "Getting network game params\n");
-i = NetworkGetGameParams (bAutoRun);
-PrintLog (-1);
-if (0 > i)
+if (0 > NetworkGetGameParams (bAutoRun)) {
+	PrintLog (-1);
 	return 0;
+	}
 gameData.multiplayer.nPlayers = 0;
 netGame.m_info.difficulty = gameStates.app.nDifficultyLevel;
 netGame.m_info.gameMode = mpParams.nGameMode;
@@ -199,10 +199,12 @@ if (NetworkSelectPlayers (bAutoRun)) {
 	missionManager.SaveLevelStates ();
 	StartNewLevel (netGame.m_info.GetLevel (), true);
 	ResetAllPlayerTimeouts ();
+	PrintLog (-1);
 	return 1;
 	}
 else {
 	gameData.app.nGameMode = GM_GAME_OVER;
+	PrintLog (-1);
 	return 0;
 	}
 }
