@@ -171,10 +171,10 @@ if (NetworkFindGame ()) {
 	}
 bAutoRun = InitAutoNetGame ();
 PrintLog (1, "Getting network game params\n");
-if (0 > (i = NetworkGetGameParams (bAutoRun))) {
-	PrintLog (-1);
+i = NetworkGetGameParams (bAutoRun);
+PrintLog (-1);
+if (0 > i)
 	return 0;
-	}
 gameData.multiplayer.nPlayers = 0;
 netGame.m_info.difficulty = gameStates.app.nDifficultyLevel;
 netGame.m_info.gameMode = mpParams.nGameMode;

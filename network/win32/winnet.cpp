@@ -209,12 +209,12 @@ return IPX_INIT_OK;
 
 void _CDECL_ IpxClose (void)
 {
-PrintLog (1, "closing IPX socket\n");
 if (bIpxInstalled) {
+	PrintLog (1, "closing IPX socket\n");
    WSACleanup ();
 	driver->CloseSocket (&ipxSocketData);
+	PrintLog (-1);
    }
-PrintLog (-1);
 bIpxInstalled = 0;
 }
 

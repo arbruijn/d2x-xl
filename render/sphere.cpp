@@ -954,6 +954,7 @@ void InitSpheres (void)
 {
 PrintLog (1, "creating spheres\n");
 CreateShieldSphere ();
+PrintLog (-1);
 }
 
 // -----------------------------------------------------------------------------
