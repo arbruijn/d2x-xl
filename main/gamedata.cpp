@@ -1162,7 +1162,7 @@ void CModelData::Destroy (void)
 {
 	int	h, i;
 
-PrintLog ("unloading polygon model data\n");
+Printlog (1, "unloading polygon model data\n");
 for (h = 0; h < 2; h++) {
 	for (i = 0; i < MAX_POLYGON_MODELS; i++) {
 #if DBG
@@ -1748,7 +1748,7 @@ cameraManager.Destroy ();
 
 void FreeGameData (void)
 {
-PrintLog ("shutting down lightning manager\n");
+PrintLog (1, "shutting down lightning manager\n");
 lightningManager.Shutdown (1);
 }
 

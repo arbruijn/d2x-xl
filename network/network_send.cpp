@@ -478,11 +478,11 @@ oldStatus = netGame.m_info.gameStatus;
 netGame.m_info.nType = PID_GAME_UPDATE;
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	netGame.m_info.gameStatus = NETSTAT_ENDLEVEL;
-PrintLog ("sending netgame update:\n");
+PrintLog (1, "sending netgame update:\n");
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((gameData.multiplayer.players [i].connected) && (i != gameData.multiplayer.nLocalPlayer)) {
 		if (gameStates.multi.nGameType >= IPX_GAME) {
-			PrintLog ("   %s (%s)\n", netPlayers [0].m_info.players [i].callsign, 
+			Printlog (1, "%s (%s)\n", netPlayers [0].m_info.players [i].callsign, 
 				iptos (szIP, reinterpret_cast<char*> (netPlayers [0].m_info.players [i].network.Node ())));
 			SendLiteNetGamePacket (
 				netPlayers [0].m_info.players [i].network.Server (), 

@@ -380,9 +380,9 @@ if (nExtensions) {
 	}
 strcat (xmlGameInfo, "</GameInfo>\n");
 #if 0 //DBG
-PrintLog ("\nXML game info:\n\n");
+PrintLog (1, "\nXML game info:\n\n");
 PrintLog (xmlGameInfo);
-PrintLog ("\n");
+PrintLog (1, "\n");
 #endif
 return xmlGameInfo;
 }

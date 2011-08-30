@@ -642,7 +642,7 @@ if (!gameStates.app.bHaveSDLNet)
 	char	szProgress [30];
 	int	i;
 
-PrintLog ("   trying to download mission '%s'\n", pszMission);
+Printlog (1, "trying to download mission '%s'\n", pszMission);
 gameStates.multi.bTryAutoDL = 0;
 #if 0
 if (!(/*gameStates.app.bHaveExtraGameInfo [1] &&*/ extraGameInfo [0].bAutoDownload))

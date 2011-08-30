@@ -87,7 +87,7 @@ void ConvertObjects (void)
 	CObject	*objP;
 	//int		i;
 
-PrintLog ("   converting deprecated smoke objects\n");
+Printlog (1, "converting deprecated smoke objects\n");
 FORALL_STATIC_OBJS (objP, i)
 	if (objP->info.nType == OBJ_SMOKE)
 		ConvertSmokeObject (objP);
@@ -151,7 +151,7 @@ void SetupEffects (void)
 	CObject	*objP;
 	//int		i;
 
-PrintLog ("   setting up effects\n");
+Printlog (1, "setting up effects\n");
 FORALL_EFFECT_OBJS (objP, i) 
 	if (objP->info.nId == SMOKE_ID)
 		objP->SetupSmoke ();

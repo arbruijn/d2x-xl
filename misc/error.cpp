@@ -61,7 +61,7 @@ void ShowInGameWarning (const char *s);
 
 void ArrayError (const char* pszMsg)
 {
-PrintLog (pszMsg);
+PrintLog (0, pszMsg);
 }
 
 //------------------------------------------------------------------------------
@@ -420,7 +420,7 @@ sprintf (szExitMsg, "\n%s", TXT_TITLE_ERROR);
 va_start (arglist,fmt);
 vsprintf (szExitMsg + strlen (szExitMsg), fmt, arglist);
 va_end(arglist);
-PrintLog ("ERROR: %s\n", szExitMsg);
+PrintLog (0, "ERROR: %s\n", szExitMsg);
 gameStates.app.bShowError = 1;
 D2MsgBox (szExitMsg, MB_ICONERROR);
 gameStates.app.bShowError = 0;
@@ -434,21 +434,54 @@ exit (1);
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ PrintLog (const char *fmt, ...)
+static int nLogIndent = 0;
+static int nLastIndent = 0;
+
+static void IndentLog (int nIndent)
+{
+if (!nIndent)
+	nIndent = -nLastIndent;
+else {
+	if (abs (nIndent) == 1)
+		nIndent *= 3; // default indentation
+	nLastIndent = abs (nIndent);
+	}
+nLogIndent += nIndent;
+if (nLogIndent < 0) {
+	PrintLog (0, "Log indentation error!\n");
+	nLogIndent = 0;
+	}
+else if (nLogIndent > 30) {
+	PrintLog (0, "Log indentation error!\n");
+	nLogIndent = 30;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void _CDECL_ PrintLog (const int nIndent, const char *fmt = NULL, ...)
 {
 if (fLog) {
+	if (nIndent > 0) 
+		IndentLog (nIndent);
+	if (fmt && *fmt) {
 		va_list arglist;
-		static char	szLogLine [2][100000] = {'\0', '\0'};
-		static int nLogLine = 0;
+			static char	szLogLine [2][100000] = {'\0', '\0'};
+			static int nLogLine = 0;
 
-	va_start (arglist, fmt);
-	vsprintf (szLogLine [nLogLine], fmt, arglist);
-	va_end (arglist);
-	if (strcmp (szLogLine [nLogLine], szLogLine [!nLogLine])) {
-		fprintf (fLog, szLogLine [nLogLine]);
-		fflush (fLog);
-		nLogLine = !nLogLine;
+		va_start (arglist, fmt);
+		if (nLogIndent)
+			memset (szLogLine [nLogLine], ' ', nLogIndent);
+		vsprintf (szLogLine [nLogLine] + nLogIndent, fmt, arglist);
+		va_end (arglist);
+		if (strcmp (szLogLine [nLogLine], szLogLine [!nLogLine])) {
+			fprintf (fLog, szLogLine [nLogLine]);
+			fflush (fLog);
+			nLogLine = !nLogLine;
+			}
 		}
+	if (nIndent < 0) 
+		IndentLog (nIndent);
 	}
 }
 
@@ -462,7 +495,7 @@ void _CDECL_ Warning (const char *fmt, ...)
 va_start (arglist, fmt);
 vsprintf (szWarnMsg + strlen (szWarnMsg), fmt, arglist);
 va_end (arglist);
-	//PrintLog (szWarnMsg);
+//PrintLog (0, szWarnMsg);
 gameStates.app.bShowError = 1;
 D2MsgBox (szWarnMsg, MB_ICONWARNING);
 gameStates.app.bShowError = 0;
@@ -496,7 +529,7 @@ if (fmt != NULL) {
 	len = vsprintf (szExitMsg, fmt, arglist);
 	va_end (arglist);
 	if ((len == -1) || (len > MAX_MSG_LEN))
-		PrintLog ("Message too long in error_init (len=%d, max=%d)", len, MAX_MSG_LEN);
+		PrintLog (0, "Message too long in error_init (len=%d, max=%d)", len, MAX_MSG_LEN);
 	}
 err_initialized = 1;
 return 0;

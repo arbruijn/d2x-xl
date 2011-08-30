@@ -156,7 +156,7 @@ return true;
 void CGlowRenderer::InitShader (void)
 {
 ogl.m_states.bGlowRendering = 0;
-PrintLog ("building glow shader program\n");
+PrintLog (1, "building glow shader program\n");
 //DeleteShaderProg (NULL);
 if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders) {
 	ogl.m_states.bGlowRendering = 1;

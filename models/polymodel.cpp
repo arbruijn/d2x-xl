@@ -777,7 +777,7 @@ void CModelData::Prepare (void)
 
 if (!OBJECTS.Buffer ())
 	return;
-PrintLog ("   building optimized polygon model data\n");
+Printlog (1, "building optimized polygon model data\n");
 gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nShadowPass = 1;
 gameStates.render.bBuildModels = 1;
@@ -787,7 +787,7 @@ for (i = 0, j = int (OBJECTS.Length ()); i < j; i++, objP++) {
 	if ((objP->info.nSegment >= 0) && (objP->info.nType != 255) && (objP->info.renderType == RT_POLYOBJ) &&
 		 !G3HaveModel (objP->ModelId ())) {
 		if (gameStates.app.nLogLevel > 1)
-			PrintLog ("      building model %d\n", objP->ModelId ());
+			Printlog (1, "building model %d\n", objP->ModelId ());
 #if DBG
 		if (objP->ModelId () == nDbgModel)
 			nDbgModel = nDbgModel;
@@ -801,7 +801,7 @@ memset (&o, 0, sizeof (o));
 o.info.nType = OBJ_WEAPON;
 o.info.position = OBJECTS [0].info.position;
 o.rType.polyObjInfo.nTexOverride = -1;
-PrintLog ("   building optimized replacement model data\n");
+Printlog (1, "building optimized replacement model data\n");
 #if BUILD_ALL_MODELS
 j = 0;
 for (i = 0; i < MAX_POLYGON_MODELS; i++) {
@@ -831,7 +831,7 @@ for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 			nDbgModel = nDbgModel;
 #endif
 		if (gameStates.app.nLogLevel > 1)
-			PrintLog ("      building model %d (%s)\n", o.ModelId (), pszHires ? pszHires : "n/a");
+			Printlog (1, "building model %d (%s)\n", o.ModelId (), pszHires ? pszHires : "n/a");
 		if (DrawPolygonObject (&o, 0))
 			h++;
 		}
@@ -839,9 +839,9 @@ for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 		o.info.nType = OBJ_POWERUP;
 	}
 gameStates.render.bBuildModels = 0;
-PrintLog ("   saving optimized polygon model data\n", h);
+Printlog (1, "saving optimized polygon model data\n", h);
 SaveModelData ();
-PrintLog ("   finished building optimized polygon model data (%d models converted)\n", h);
+Printlog (1, "finished building optimized polygon model data (%d models converted)\n", h);
 }
 
 //------------------------------------------------------------------------------

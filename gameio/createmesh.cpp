@@ -92,10 +92,12 @@ m_edges.Destroy ();
 
 int CTriMeshBuilder::AllocData (void)
 {
+Printlog (1);
 if (m_nMaxTriangles && m_nMaxEdges) {
 	if (!(m_edges.Resize (m_nMaxEdges * 2) && m_triangles.Resize (m_nMaxTriangles * 2))) {
-		PrintLog ("      Not enough memory for building the triangle mesh (%d edges, %d tris).\n", m_nMaxEdges * 2, m_nMaxTriangles * 2);
+		PrintLog (1, "Not enough memory for building the triangle mesh (%d edges, %d tris).\n", m_nMaxEdges * 2, m_nMaxTriangles * 2);
 		FreeData ();
+		PrintLog (-1);
 		return 0;
 		}
 	memset (&m_edges [m_nMaxTriangles], 0xff, m_nMaxTriangles * sizeof (tEdge));
@@ -107,17 +109,19 @@ else {
 	m_nMaxTriangles = gameData.segs.nFaces * 4;
 	m_nMaxEdges = gameData.segs.nFaces * 4;
 	if (!m_edges.Create (m_nMaxEdges)) {
-		PrintLog ("      Not enough memory for building the triangle mesh (%d edges).\n", m_nMaxEdges);
+		PrintLog (1, "Not enough memory for building the triangle mesh (%d edges).\n", m_nMaxEdges);
+		PrintLog (-1);
 		return 0;
 		}
 	if (!m_triangles.Create (m_nMaxTriangles)) {
-		PrintLog ("      Not enough memory for building the triangle mesh (%d tris).\n", m_nMaxTriangles);
+		PrintLog (1, "Not enough memory for building the triangle mesh (%d tris).\n", m_nMaxTriangles);
 		FreeData ();
 		return 0;
 		}
 	m_edges.Clear (0xff);
 	m_triangles.Clear (0xff);
 	}
+PrintLog (-1);
 return 1;
 }
 
@@ -262,7 +266,7 @@ for (i = 0; i < 3; i++) {
 
 int CTriMeshBuilder::CreateTriangles (void)
 {
-PrintLog ("   adding existing triangles\n");
+PrintLog (1, "adding existing triangles\n");
 m_nEdges = 0;
 m_nTriangles = 0;
 m_nMaxTriangles = 0;
@@ -288,6 +292,7 @@ if (gameStates.render.nMeshQuality) {
 for (i = gameData.segs.nTris, grsTriP = TRIANGLES.Buffer (); i; i--, grsTriP++) {
 	if (!(triP = AddTriangle (NULL, grsTriP->index, grsTriP))) {
 		FreeData ();
+		PrintLog (-1);
 		return 0;
 		}
 	if (nFace == grsTriP->nFace)
@@ -305,6 +310,7 @@ for (i = gameData.segs.nTris, grsTriP = TRIANGLES.Buffer (); i; i--, grsTriP++) 
 	if (faceP->m_info.bSlide || (faceP->m_info.nCamera >= 0))
 		triP->nPass = -2;
 	}
+PrintLog (-1);
 return m_nTris = m_nTriangles;
 }
 
@@ -339,7 +345,7 @@ for (i = 0; i < 3; i++) {
 		break;
 	}
 if (i == 3) {
-	PrintLog ("      Internal error during construction of the triangle mesh.\n");
+	Printlog (1, "Internal error during construction of the triangle mesh.\n");
 	return 0;
 	}
 
@@ -470,7 +476,7 @@ h = 0;
 do {
 	bSplit = 0;
 	j = m_nTriangles;
-	PrintLog ("   splitting triangles (pass %d)\n", nPass);
+	Printlog (1, "splitting triangles (pass %d)\n", nPass);
 	for (i = h, h = 0; i < j; i++) {
 		if (m_triangles [i].nPass != nPass - 1)
 			continue;
@@ -481,7 +487,7 @@ do {
 #endif
 		nSplitRes = SplitTriangle (&m_triangles [i], nPass);
 		if (gameData.segs.nVertices == 65536) {
-			PrintLog ("      Level too big for requested triangle mesh quality.\n");
+			Printlog (1, "Level too big for requested triangle mesh quality.\n");
 			return 0;
 			}
 		if (!nSplitRes)
@@ -566,7 +572,7 @@ int CTriMeshBuilder::InsertTriangles (void)
 	int				h, i, nFace = -1;
 	GLuint			nIndex = 0;
 
-PrintLog ("   inserting new triangles\n");
+Printlog (1, "inserting new triangles\n");
 QSortTriangles (0, m_nTriangles - 1);
 ResetVertexNormals ();
 for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
@@ -616,7 +622,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 gameData.segs.nTris = m_nTriangles;
 SetupVertexNormals ();
 FreeData ();
-PrintLog ("   created %d new triangles and %d new vertices\n",
+Printlog (1, "created %d new triangles and %d new vertices\n",
 			 m_nTriangles - m_nTris, gameData.segs.nVertices - m_nVertices);
 CreateFaceVertLists ();
 return 1;
@@ -861,7 +867,7 @@ return bOk;
 
 int CTriMeshBuilder::Build (int nLevel, int nQuality)
 {
-PrintLog ("creating triangle mesh\n");
+Printlog (1, "creating triangle mesh\n");
 m_nQuality = nQuality;
 if (Load (nLevel))
 	return 1;
@@ -1356,6 +1362,7 @@ if (FACES.vboIndexHandle) {
 
 int CQuadMeshBuilder::Build (int nLevel, bool bRebuild)
 {
+Printlog (1);
 m_faceP = FACES.faces.Buffer ();
 m_triP = TRIANGLES.Buffer ();
 m_vertexP = FACES.vertices.Buffer ();
@@ -1392,7 +1399,7 @@ if (gameStates.render.bSplitPolys)
 	gameStates.render.bSplitPolys = (gameStates.render.bPerPixelLighting || !gameStates.render.nMeshQuality) ? 1 : -1;
 if (gameStates.render.bTriangleMesh)
 	cameraManager.Create ();
-PrintLog ("   Creating face list\n");
+PrintLog (1, "Creating face list\n");
 gameData.segs.nFaces = 0;
 gameData.segs.nTris = 0;
 
@@ -1408,10 +1415,14 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 #if DBG
 	if (nSegment == nDbgSeg)
 		m_faceP = m_faceP;
-	if (m_faceP >= FACES.faces.Buffer () + FACES.faces.Length ())
+	if (m_faceP >= FACES.faces.Buffer () + FACES.faces.Length ()) {
+		PrintLog (-1);
 		return 0;
-	if (m_segFaceP >= SEGFACES.Buffer () + SEGFACES.Length ())
+		}
+	if (m_segFaceP >= SEGFACES.Buffer () + SEGFACES.Length ()) {
+		PrintLog (-1);
 		return 0;
+		}
 //	if (nSegment == nDbgSeg)
 //		FACES.Destroy ();
 #endif
@@ -1462,8 +1473,10 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 	}
 #if 1
 // any additional vertices have been stored, so prune the buffers to the minimally required size
-if (!(gameData.segs.Resize () && gameData.render.lights.Resize () && gameData.render.color.Resize ()))
+if (!(gameData.segs.Resize () && gameData.render.lights.Resize () && gameData.render.color.Resize ())) {
+	PrintLog (-1);
 	return 0;
+	}
 #endif
 for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVertices; i; i--, m_colorP++)
 	if (m_colorP->Alpha () > 1) {
@@ -1472,15 +1485,20 @@ for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVert
 		m_colorP->Blue () /= m_colorP->Alpha ();
 		m_colorP->Alpha () = 1;
 		}
-if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality))
+if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality)) {
+	PrintLog (-1);
 	return 0;
+	}
 #if 1
-if (!(gameData.render.lights.Resize () && gameData.render.color.Resize ()))
+if (!(gameData.render.lights.Resize () && gameData.render.color.Resize ())) {
+	PrintLog (-1);
 	return 0;
+	}
 #endif
 BuildSlidingFaceList ();
 if (gameStates.render.bTriangleMesh)
 	cameraManager.Destroy ();
+PrintLog (-1);
 return 1;
 }
 

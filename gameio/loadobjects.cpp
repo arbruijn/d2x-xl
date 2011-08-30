@@ -740,7 +740,7 @@ if (gameFileInfo.botGen.offset > -1) {
 			}
 		else {
 #if DBG
-			PrintLog ("Invalid robot generator data found\n");
+			PrintLog (1, "Invalid robot generator data found\n");
 #endif
 			--gameData.matCens.nBotCenters;
 			--gameFileInfo.botGen.count;
@@ -770,7 +770,7 @@ if (gameFileInfo.equipGen.offset > -1) {
 			}
 		else {
 #if DBG
-			PrintLog ("Invalid equipment generator data found\n");
+			PrintLog (1, "Invalid equipment generator data found\n");
 #endif
 			--gameData.matCens.nEquipCenters;
 			--gameFileInfo.equipGen.count;
@@ -822,7 +822,7 @@ if ((gameFileInfo.lightDeltaIndices.offset > -1) && gameFileInfo.lightDeltaIndic
 		}
 	else {
 		for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
-			//PrintLog ("reading DL index %d\n", i);
+			//PrintLog (1, "reading DL index %d\n", i);
 			gameData.render.lights.deltaIndices [i].Read (cf);
 			}
 		}
@@ -1111,7 +1111,7 @@ int LoadLevelData (char * pszFilename, int nLevel)
 	int	sig, nMineDataOffset, nGameDataOffset;
 	int	nError;
 
-/*---*/PrintLog ("   loading level data\n");
+/*---*/Printlog (1, "loading level data\n");
 SetDataVersion (-1);
 gameData.segs.bHaveSlideSegs = 0;
 if (gameData.app.nGameMode & GM_NETWORK) {
@@ -1210,7 +1210,7 @@ for (;;) {
 		}
 	cf.Close ();
 	networkData.nSegmentCheckSum = CalcSegmentCheckSum ();
-	/*---*/PrintLog ("   building geometry mesh\n");
+	/*---*/Printlog (1, "building geometry mesh\n");
 	if (meshBuilder.Build (nLevel))
 		break;
 	if (gameStates.render.nMeshQuality <= 0)
@@ -1224,7 +1224,7 @@ if (!(gameData.render.lights.Create () &&
 		gameData.render.shadows.Create ()))
 	return 7;
 #endif	
-	/*---*/PrintLog ("   allocating render buffers\n");
+	/*---*/Printlog (1, "allocating render buffers\n");
 if (!gameData.render.mine.Create ())
 	return 4;
 //lightManager.Setup (nLevel); 

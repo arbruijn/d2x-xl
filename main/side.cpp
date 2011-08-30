@@ -876,11 +876,11 @@ int CSide::CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFi
 
 vMove = *p1 - *p0;
 //figure out which edge(side) to check against
-//PrintLog ("      CheckPointToSegFace ...\n");
+//Printlog (1, "CheckPointToSegFace ...\n");
 if (!(nEdgeMask = PointToFaceRelation (*p0, iFace, vNormal))) {
-	//PrintLog ("      CheckLineToSegFace ...");
+	//Printlog (1, "CheckLineToSegFace ...");
 	return CheckLineToFaceRegular (intersection, p0, p1, rad, iFace, vNormal);
-	//PrintLog ("done\n");
+	//PrintLog (1, "done\n");
 	}
 for (nEdge = 0; !(nEdgeMask & 1); nEdgeMask >>= 1, nEdge++)
 	;
@@ -927,7 +927,7 @@ void CSide::HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iF
 	int				h;
 
 if (iFace >= m_nFaces) {
-	PrintLog ("invalid face number in CSide::HitPointUV\n");
+	PrintLog (1, "invalid face number in CSide::HitPointUV\n");
 	*u = *v = 0;
 	return;
 	}

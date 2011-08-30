@@ -277,7 +277,7 @@ if (syncP->bExtraGameInfo) {
 else if (syncP->nState == 1) {
 	syncP->objs.missingFrames.nFrame = 0;
 	NetworkSyncObjects (syncP);
-	syncP->bExtraGameInfo = 1;
+	syncP->bExtraGameInfo = 0;
 	}
 else if (syncP->nState == 2) {
 	NetworkSyncPlayer (syncP);

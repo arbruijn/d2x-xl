@@ -718,13 +718,13 @@ int CMissionManager::Parse (CFile& cf)
 	char	*t, *v;
 	char	buf [80], *bufP;
 
-PrintLog ("   parsing mission file\n");
+Printlog (1, "parsing mission file\n");
 nLastLevel = 0;
 nLastSecretLevel = 0;
 *szBriefingFilename [0] = '\0';
 *szBriefingFilename [1] = '\0';
 while (MsnGetS (buf, 80, cf)) {
-	PrintLog ("      '%s'\n", buf);
+	Printlog (1, "'%s'\n", buf);
 	MsnTrimComment (buf);
 	if (MsnIsTok (buf, "name"))
 		;						//already have name, go to next line
@@ -755,7 +755,7 @@ while (MsnGetS (buf, 80, cf)) {
 			if (strlen (v) < 13)
 				strcpy (szBriefingFilename [0], v);
 			else
-				PrintLog ("      mission file: ignoring invalid briefing name\n");
+				Printlog (1, "mission file: ignoring invalid briefing name\n");
 			}
 		}
 	else if (MsnIsTok (buf, "ending")) {
@@ -764,20 +764,20 @@ while (MsnGetS (buf, 80, cf)) {
 			if (strlen (v) < 13)
 				strcpy (szBriefingFilename [1], v);
 			else
-				PrintLog ("      mission file: ignoring invalid end briefing name\n");
+				Printlog (1, "mission file: ignoring invalid end briefing name\n");
 			}
 		}
 	else if (MsnIsTok (buf, "num_levels")) {
 		if ((v = MsnGetValue (buf))) {
 			int nLevels = atoi (v);
 			if (nLevels)
-				PrintLog ("      parsing level m_list\n");
+				Printlog (1, "parsing level m_list\n");
 			for (i = 0; (i < nLevels) && MsnGetS (buf, 80, cf); i++) {
-				PrintLog ("         '%s'\n", buf);
+				Printlog (1, "'%s'\n", buf);
 				MsnTrimComment (buf);
 				MsnAddStrTerm (buf);
 				if (strlen (buf) > 12) {
-					PrintLog ("      mission file: invalid level name\n");
+					Printlog (1, "mission file: invalid level name\n");
 					return 0;
 					}
 				strcpy (szLevelNames [i], buf);
@@ -786,28 +786,28 @@ while (MsnGetS (buf, 80, cf)) {
 			}
 		}
 	else if (MsnIsTok (buf,"num_secrets")) {
-		PrintLog ("      parsing secret level m_list\n");
+		Printlog (1, "parsing secret level m_list\n");
 		if ((v = MsnGetValue (buf))) {
 			nSecretLevels = atoi (v);
 			Assert(nSecretLevels <= MAX_SECRET_LEVELS_PER_MISSION);
 			for (i = 0; (i < nSecretLevels) && MsnGetS (buf, 80, cf); i++) {
-				PrintLog ("         '%s'\n", buf);
+				Printlog (1, "'%s'\n", buf);
 				MsnTrimComment (buf);
 				if (!(t = strchr (buf, ','))) {
-					PrintLog ("      mission file: secret level lacks link to base level\n");
+					Printlog (1, "mission file: secret level lacks link to base level\n");
 					return 0;
 					}
 				*t++ = 0;
 				MsnAddStrTerm (buf);
 				if (strlen (buf) > 12) {
-					PrintLog ("      mission file: invalid level name\n");
+					Printlog (1, "mission file: invalid level name\n");
 					return 0;
 					}
 				strcpy (szSecretLevelNames [i], buf);
 				secretLevelTable [i] = atoi (t);
 				if ((secretLevelTable [i] < 1) || 
 					 (secretLevelTable [i] > nLastLevel)) {
-					PrintLog ("      mission file: invalid secret level base level number\n");
+					Printlog (1, "mission file: invalid secret level base level number\n");
 					return 0;
 					}
 				nLastSecretLevel--;
@@ -980,7 +980,7 @@ int CMissionManager::LoadByName (char *szMissionName, int nSubFolder)
 
 if (nSubFolder < 0) {
 	*gameFolders.szMsnSubDir = '\0';
-	PrintLog ("   searching mission '%s'\n", szMissionName);
+	Printlog (1, "searching mission '%s'\n", szMissionName);
 	}
 n = BuildList (1, nSubFolder);
 for (i = 0; i < n; i++)

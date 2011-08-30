@@ -652,7 +652,7 @@ else if (i < 0)
 ResetSyncTimeout (true);
 networkData.sync [0].objs.nFrame = nFrame;
 #if DBG
-//PrintLog ("Receiving object packet %d (prev: %d)\n", networkData.nPrevFrame, networkData.sync [0].objs.nFrame);
+//PrintLog (1, "Receiving object packet %d (prev: %d)\n", networkData.nPrevFrame, networkData.sync [0].objs.nFrame);
 #endif
  for (i = 0; i < nObjects; i++) {
 	objP = NULL;
@@ -668,7 +668,7 @@ networkData.sync [0].objs.nFrame = nFrame;
 			if (networkData.nJoinState != 2)
 				return;
 #if DBG
-			PrintLog ("Receiving missing object packets\n");
+			PrintLog (1, "Receiving missing object packets\n");
 #endif
 			networkData.nJoinState = 3;
 			}
@@ -728,7 +728,7 @@ networkData.sync [0].objs.nFrame = nFrame;
 					SwapObject (objP);
 #endif
 				nSegment = objP->info.nSegment;
-				PrintLog ("receiving object %d (type: %d, segment: %d)\n", nObject, objP->info.nType, nSegment);
+				PrintLog (1, "receiving object %d (type: %d, segment: %d)\n", nObject, objP->info.nType, nSegment);
 				objP->ResetSgmLinks ();
 				objP->ResetLinks ();
 				objP->info.nAttachedObj = -1;

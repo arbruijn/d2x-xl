@@ -333,7 +333,7 @@ if ((nDbgModel >= 0) && (replacementModels [i].nModel == nDbgModel))
 if (filename)
 	replacementModels [i].pszHires = filename;
 if (replacementModels [i].pszHires && (gameStates.app.nLogLevel > 1))
-	PrintLog ("Loading model %d (%s)\n", replacementModels [i].nModel, replacementModels [i].pszHires);
+	PrintLog (1, "Loading model %d (%s)\n", replacementModels [i].nModel, replacementModels [i].pszHires);
 if ((j = LoadASEModel (gameData.models.aseModels [bCustom != 0] + gameData.models.nHiresModels, i, bCustom)))
 	return j;
 #if 1

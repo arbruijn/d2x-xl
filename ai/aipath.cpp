@@ -845,7 +845,7 @@ if (aiP->nHideIndex < 0)
 #endif
 if ((aiP->nPathLength > 0) && (aiP->nHideIndex + aiP->nPathLength > int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)))) {
 	//	This is debugging code.p.  Figure out why garbage collection didn't compress this object's path information.
-	PrintLog ("Error in AI path info garbage collection\n");
+	PrintLog (1, "Error in AI path info garbage collection\n");
 	AICollectPathGarbage ();
 	//force_dump_aiObjects_all ("Error in AIFollowPath");
 	AIResetAllPaths ();

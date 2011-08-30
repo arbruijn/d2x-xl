@@ -192,32 +192,32 @@ return *bHaveP > 0;
 
 void LoadAddonImages (void)
 {
-PrintLog ("Loading addon images\n");
-PrintLog ("   Loading corona image\n");
+PrintLog (1, "Loading addon images\n");
+Printlog (1, "Loading corona image\n");
 corona.Load ();
-PrintLog ("   Loading glare image\n");
+Printlog (1, "Loading glare image\n");
 glare.Load ();
-PrintLog ("   Loading halo image\n");
+Printlog (1, "Loading halo image\n");
 halo.Load ();
-PrintLog ("   Loading thruster image\n");
+Printlog (1, "Loading thruster image\n");
 thruster.Load ();
-PrintLog ("   Loading shield image\n");
+Printlog (1, "Loading shield image\n");
 shield.Load ();
-PrintLog ("   Loading explosion blast image\n");
+Printlog (1, "Loading explosion blast image\n");
 explBlast.Load ();
-PrintLog ("   Loading spark image\n");
+Printlog (1, "Loading spark image\n");
 sparks.Load ();
-PrintLog ("   Loading deadzone image\n");
+Printlog (1, "Loading deadzone image\n");
 deadzone.Load ();
-PrintLog ("   Loading zoom image\n");
+Printlog (1, "Loading zoom image\n");
 scope.Load ();
-PrintLog ("   Loading damage icons\n");
+Printlog (1, "Loading damage icons\n");
 damageIcon [0].Load (const_cast<char*>("aimdmg.tga"));
 damageIcon [1].Load (const_cast<char*>("drivedmg.tga"));
 damageIcon [2].Load (const_cast<char*>("gundmg.tga"));
-PrintLog ("   Loading joystick emulator image\n");
+Printlog (1, "Loading joystick emulator image\n");
 joyMouse.Load ();
-PrintLog ("   Loading shockwave animation\n");
+Printlog (1, "Loading shockwave animation\n");
 shockwave.Load ();
 }
 

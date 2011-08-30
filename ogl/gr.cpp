@@ -99,12 +99,12 @@ screen.Canvas ()->SetPalette (paletteManager.Default ()); //just need some valid
 //screen.Canvas ()->Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
 CCanvas::SetCurrent (NULL);
 CCanvas::Current ()->SetFont (fontManager.Current ());
-/***/PrintLog ("   initializing OpenGL window\n");
+/***/Printlog (1, "initializing OpenGL window\n");
 if (!SdlGlInitWindow (w, h, 0))	//platform specific code
 	return 0;
-/***/PrintLog ("   initializing OpenGL view port\n");
+/***/Printlog (1, "initializing OpenGL view port\n");
 ogl.Viewport (0, 0, w, h);
-/***/PrintLog ("   initializing OpenGL screen mode\n");
+/***/Printlog (1, "initializing OpenGL screen mode\n");
 ogl.SetScreenMode ();
 ogl.GetVerInfo ();
 GrUpdate (0);
@@ -263,10 +263,10 @@ if (gameStates.gfx.bInstalled)
 #ifdef OGL_RUNTIME_LOAD
 OglInitLoadLibrary ();
 #endif
-/***/PrintLog ("   initializing SDL\n");
+/***/Printlog (1, "initializing SDL\n");
 #if !USE_IRRLICHT
 if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
-	PrintLog ("SDL library video initialisation failed: %s.\n", SDL_GetError());
+	PrintLog (1, "SDL library video initialisation failed: %s.\n", SDL_GetError());
 	Error ("SDL library video initialisation failed: %s.", SDL_GetError());
 }
 #endif
@@ -274,16 +274,16 @@ if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
 	ogl.m_states.bFullScreen = 0;
 #else
 if ((i = FindArg ("-fullscreen"))) {
-	/***/PrintLog ("   switching to fullscreen\n");
+	/***/Printlog (1, "switching to fullscreen\n");
 	ogl.m_states.bFullScreen = NumArg (i, 1);
 	//ogl.ToggleFullScreen();
 	}
 else
 	ogl.m_states.bFullScreen = 1;
 #endif
-/***/PrintLog ("   initializing texture manager\n");
+/***/Printlog (1, "initializing texture manager\n");
 textureManager.Init ();
-/***/PrintLog ("   allocating screen buffer\n");
+/***/Printlog (1, "allocating screen buffer\n");
 screen.Canvas ()->SetBuffer (NULL);
 
 CreateDisplayModeInfo ();
@@ -307,7 +307,7 @@ if ((i = GrSetMode (gameStates.gfx.nStartScrSize)))
 gameStates.gfx.bInstalled = 1;
 InitGammaRamp ();
 //atexit(GrClose);
-/***/PrintLog ("   initializing OpenGL extensions\n");
+/***/Printlog (1, "initializing OpenGL extensions\n");
 ogl.SetRenderQuality ();
 ogl.SetupExtensions ();
 ogl.DestroyDrawBuffers ();
@@ -320,7 +320,7 @@ return 0;
 
 void _CDECL_ GrClose (void)
 {
-PrintLog ("shutting down graphics subsystem\n");
+PrintLog (1, "shutting down graphics subsystem\n");
 SdlGlClose ();//platform specific code
 screen.Destroy ();
 #ifdef OGL_RUNTIME_LOAD

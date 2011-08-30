@@ -178,7 +178,7 @@ if (gameData.multiplayer.autoNG.bValid > 0) {
 	return 0;
 	}
 
-PrintLog ("launching main menu\n");
+PrintLog (1, "launching main menu\n");
 do {
 	nOptions = SetupMainMenu (m); // may have to change, eg, maybe selected pilot and no save games.
 	gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds ();                // .. 20 seconds from now!

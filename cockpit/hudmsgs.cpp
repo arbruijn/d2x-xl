@@ -226,7 +226,7 @@ if ((pMsgs->nLast < 0) || (pMsgs->nLast >= HUD_MAX_MSGS))
 pszMsg = pMsgs->szMsgs [pMsgs->nLast];
 vsprintf (pszMsg, format, args);
 if (strlen (pszMsg) >= HUD_MESSAGE_LENGTH) {
-	PrintLog ("HUD message is too long. Limit is %i characters.\n", HUD_MESSAGE_LENGTH);
+	PrintLog (1, "HUD message is too long. Limit is %i characters.\n", HUD_MESSAGE_LENGTH);
 	return 0;
 	}
 // Produce a colorised version and send it to the console

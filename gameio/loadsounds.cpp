@@ -119,16 +119,15 @@ return i;
 
 void FreeSoundReplacements (void)
 {
-	CSoundSample	*dsP;
-	int			i, j;
-
-PrintLog ("unloading custom sounds\n");
-for (i = 0; i < 2; i++)
-	for (j = 0, dsP = gameData.pig.sound.sounds [i].Buffer (); j < MAX_SOUND_FILES; j++, dsP++)
+for (int i = 0; i < 2; i++) {
+	CSoundSample dsP = gameData.pig.sound.sounds [i].Buffer ();
+	for (int j = 0; j < MAX_SOUND_FILES; j++, dsP++) {
 		if (dsP->bCustom) {
 			dsP->data [1].Destroy ();
 			dsP->bCustom = 0;
 			}
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -148,7 +147,7 @@ int LoadSoundReplacements (const char *pszFilename)
 if (gameOpts->UseHiresSound ())
 	return -1;
 //first, free up data allocated for old bitmaps
-PrintLog ("   loading replacement sounds\n");
+Printlog (1, "loading replacement sounds\n");
 //FreeSoundReplacements ();
 CFile::ChangeFilenameExtension (szFilename, pszFilename, ".dtx");
 if (!cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0))
@@ -231,7 +230,7 @@ int SetupSounds (CFile& cf, int nSounds, int nSoundStart, bool bCustom, bool bUs
 	char					szSoundName [16];
 	int					nLoadedSounds [2] = {0, 0};
 
-/*---*/PrintLog ("      Loading sound data (%d sounds)\n", nSounds);
+/*---*/Printlog (1, "Loading sound data (%d sounds)\n", nSounds);
 cf.Seek (nSoundStart, SEEK_SET);
 #if USE_OPENAL
 memset (&sound.buffer, 0xFF, sizeof (sound.buffer));

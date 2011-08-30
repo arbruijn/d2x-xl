@@ -454,7 +454,7 @@ else {
 	lightP->info.bVariable = 0;
 	}
 #if 0
-PrintLog ("adding light %d,%d\n", m_data.nLights [0], lightP - m_data.lights [0]);
+PrintLog (1, "adding light %d,%d\n", m_data.nLights [0], lightP - m_data.lights [0]);
 #endif
 lightP->info.bOn = 1;
 lightP->bTransform = 1;
@@ -466,7 +466,7 @@ return m_data.nLights [0]++;
 
 bool CLightManager::DeleteFromList (CDynLight* lightP, short nLight)
 {
-//PrintLog ("removing light %d,%d\n", nLight, lightP - m_data.lights [0]);
+//PrintLog (1, "removing light %d,%d\n", nLight, lightP - m_data.lights [0]);
 // if not removing last light in list, move last light down to the now free list entry
 // and keep the freed light handle thus avoiding gaps in used handles
 if (!m_data.lights.Buffer () || (nLight >= m_data.nLights [0]))
@@ -894,11 +894,11 @@ for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--
 	}
 Sort ();
 #if 0
-PrintLog ("light sources:\n");
+PrintLog (1, "light sources:\n");
 CDynLight* lightP = m_data.lights [0];
 for (int i = m_data.nLights [0]; i; i--, lightP++)
-	PrintLog ("%d,%d,%d,%d\n", lightP->info.nSegment, lightP->info.nSide, lightP->info.nObject, lightP->info.bVariable);
-PrintLog ("\n");
+	PrintLog (1, "%d,%d,%d,%d\n", lightP->info.nSegment, lightP->info.nSide, lightP->info.nObject, lightP->info.bVariable);
+PrintLog (1, "\n");
 #endif
 }
 
@@ -937,7 +937,7 @@ void CLightManager::GatherStaticLights (int nLevel)
 
 int i, j, bColorize = !gameStates.render.nLightingMethod;
 
-PrintLog ("Computing static lighting\n");
+PrintLog (1, "Computing static lighting\n");
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 gameStates.render.nState = 0;
 m_data.renderLights.Clear ();

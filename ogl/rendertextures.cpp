@@ -153,7 +153,7 @@ if (t > 0) {
 	if (++nSamples > 0) {
 		nDuration += SDL_GetTicks () - t;
 		if ((nSamples >= 5) && (nDuration / nSamples > 10)) {
-			PrintLog ("Disabling depth buffer reads (average read time: %d ms)\n", nDuration / nSamples);
+			PrintLog (1, "Disabling depth buffer reads (average read time: %d ms)\n", nDuration / nSamples);
 			ogl.m_features.bDepthBlending = -1;
 			DestroyDepthTexture (nId);
 			m_states.hDepthBuffer [nId] = 0;

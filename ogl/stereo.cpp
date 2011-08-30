@@ -327,14 +327,14 @@ const char* enhance3DVS =
 void COGL::InitEnhanced3DShader (void)
 {
 if (gameOpts->render.bUseShaders && m_features.bShaders.Available ()) {
-	PrintLog ("building dubois optimization programs\n");
+	Printlog (1, "building dubois optimization programs\n");
 	gameStates.render.textures.bHaveEnhanced3DShader = (0 <= shaderManager.Build (duboisShaderProg, duboisFS, enhance3DVS));
 	if (!gameStates.render.textures.bHaveEnhanced3DShader) {
 		DeleteEnhanced3DShader ();
 		gameOpts->render.stereo.nGlasses = GLASSES_NONE;
 		return;
 		}
-	PrintLog ("building enhanced 3D shader programs\n");
+	Printlog (1, "building enhanced 3D shader programs\n");
 	for (int h = 0; h < 2; h++) {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 3; j++) {

@@ -83,7 +83,8 @@ for (int i = 0; i < nCacheEntries; i++) {
 
 void _CDECL_ TexMergeClose (void)
 {
-PrintLog ("shutting down merged textures cache\n");
+IndentLog ();
+PrintLog (1, "shutting down merged textures cache\n");
 TexMergeFlush ();
 for (int i = 0; i < nCacheEntries; i++) {
 	if (texCache [i].bitmap) {
@@ -92,6 +93,7 @@ for (int i = 0; i < nCacheEntries; i++) {
 		}
 	}
 nCacheEntries = 0;
+PrintLog (-1);
 }
 
 //-------------------------------------------------------------------------
@@ -508,10 +510,11 @@ void InitTexMergeShaders (void)
 {
 	int	i, b;
 
+IndentLog ();
 if (!(gameOpts->render.bUseShaders && ogl.m_features.bShaders))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
-	PrintLog ("building texturing shader programs\n");
+	PrintLog (1, "building texturing shader programs\n");
 	for (i = 0; i < 6; i++) {
 		b = shaderManager.Build (tmShaderProgs [i], texMergeFS [i], texMergeVS [i % 3]);
 		if (i == 2)
@@ -529,8 +532,9 @@ else {
 if (!gameOpts->ogl.bGlTexMerge) {
 	ogl.m_states.bLowMemory = 0;
 	ogl.m_features.bTextureCompression = 0;
-	PrintLog ("+++++ OpenGL shader texture merging has been disabled! +++++\n");
+	PrintLog (1, "+++++ OpenGL shader texture merging has been disabled! +++++\n");
 	}
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------

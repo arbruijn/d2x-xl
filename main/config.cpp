@@ -132,7 +132,7 @@ while (!cf.EoF ()) {
 		token = strtok (ptr, "=");
 		value = strtok (NULL, "=");
 		if (!(value && token)) {
-			PrintLog ("configuration file (descent.cfg) looks messed up.\n");
+			PrintLog (1, "configuration file (descent.cfg) looks messed up.\n");
 			continue;
 			}
 		if (value [strlen (value) - 1] == '\n')
@@ -238,7 +238,7 @@ if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rb", 0)) {
 			token = strtok(ptr, "=");
 			value = strtok(NULL, "=");
 			if (!(value  && token)) {
-				PrintLog ("configuration file (descentw.cfg) looks messed up.\n");
+				PrintLog (1, "configuration file (descentw.cfg) looks messed up.\n");
 				continue;
 				}
 			if (value [strlen(value)-1] == '\n')

@@ -1618,19 +1618,19 @@ memset (highestLevels, 0, sizeof (highestLevels));
 nHighestLevels = 0;
 sprintf (filename, "%.8s.plr", LOCALPLAYER.callsign);
 if (!cf.Open (filename, gameFolders.szProfDir, "rb", 0)) {
-	PrintLog ("   couldn't read player file '%s'\n", filename);
+	Printlog (1, "couldn't read player file '%s'\n", filename);
 	}
 else {
 	id = cf.ReadInt ();
 	if (nCFileError || ((id != SAVE_FILE_ID) && (id != SWAPINT (SAVE_FILE_ID)))) {
-		PrintLog ("Player profile '%s' is invalid\r\n", filename);
+		PrintLog (1, "Player profile '%s' is invalid\r\n", filename);
 		}
 	else {
 		gameStates.input.nPlrFileVersion = cf.ReadShort ();
 		if ((gameStates.input.nPlrFileVersion < COMPATIBLE_PLAYER_FILE_VERSION) ||
 			 ((gameStates.input.nPlrFileVersion > D2W95_PLAYER_FILE_VERSION) &&
 			  (gameStates.input.nPlrFileVersion < D2XW32_PLAYER_FILE_VERSION))) {
-			PrintLog ("Player profile '%s' is invalid\r\n", filename);
+			PrintLog (1, "Player profile '%s' is invalid\r\n", filename);
 			}
 		else {
 			if (gameStates.input.nPlrFileVersion < 161)
@@ -1638,7 +1638,7 @@ else {
 			nHighestLevels = cf.ReadShort ();
 			Assert (nHighestLevels <= MAX_MISSIONS);
 			if (cf.Read (highestLevels, sizeof (hli), nHighestLevels) != (size_t) nHighestLevels) {
-				PrintLog ("Player profile '%s' is damaged\r\n", filename);
+				PrintLog (1, "Player profile '%s' is damaged\r\n", filename);
 				nHighestLevels = 0;
 				}
 			}

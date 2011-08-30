@@ -91,7 +91,7 @@ if (!(ogl.m_features.bShaders && ogl.m_features.bPerPixelLighting.Available ()))
 	return 0;
 	}
 if (sphereShaderProg < 0) {
-	PrintLog ("building sphere shader program\n");
+	PrintLog (1, "building sphere shader program\n");
 	if (!shaderManager.Build (sphereShaderProg, pszSphereFS, pszSphereVS)) {
 		ogl.m_features.bPerPixelLighting.Available (0);
 		gameStates.render.bPerPixelLighting = 0;
@@ -351,7 +351,7 @@ int TesselateSphere (void)
 	int			nFaces, i, j;
 	CFloatVector	*buf [2];
 
-PrintLog ("Creating shield sphere\n");
+PrintLog (1, "Creating shield sphere\n");
 if (m_nFaceNodes == 3) {
 	nFaces = 8;
 	j = 6;
@@ -947,7 +947,7 @@ gameData.render.monsterball.Destroy ();
 
 void InitSpheres (void)
 {
-PrintLog ("   creating spheres\n");
+Printlog (1, "creating spheres\n");
 CreateShieldSphere ();
 }
 

@@ -79,7 +79,7 @@ if ((m_function != SEGMENT_FUNC_FUELCEN) &&
 	 (m_function != SEGMENT_FUNC_CONTROLCEN) &&
 	 (m_function != SEGMENT_FUNC_ROBOTMAKER) &&
 	 (m_function != SEGMENT_FUNC_EQUIPMAKER)) {
-	PrintLog ("Segment %d has invalid function %d in fuelcen.cpp\n", Index (), m_function);
+	PrintLog (1, "Segment %d has invalid function %d in fuelcen.cpp\n", Index (), m_function);
 	return false;
 	}
 

@@ -42,9 +42,9 @@ int CModel::Error (const char *pszMsg)
 {
 if (!bErrMsg) {
 	if (pszMsg)
-		PrintLog ("   %s: error in line %d (%s)\n", aseFile->Name (), nLine, pszMsg);
+		Printlog (1, "%s: error in line %d (%s)\n", aseFile->Name (), nLine, pszMsg);
 	else
-		PrintLog ("   %s: error in line %d\n", aseFile->Name (), nLine);
+		Printlog (1, "%s: error in line %d\n", aseFile->Name (), nLine);
 	bErrMsg = 1;
 	}
 return 0;
@@ -137,7 +137,7 @@ int ASE_ReleaseTextures (void)
 	CModel*	modelP;
 	int		bCustom, i;
 
-PrintLog ("releasing ASE model textures\n");
+PrintLog (1, "releasing ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, modelP = gameData.models.aseModels [bCustom].Buffer (); i; i--, modelP++)
 		modelP->ReleaseTextures ();
@@ -151,7 +151,7 @@ int ASE_ReloadTextures (void)
 	CModel*	modelP;
 	int		bCustom, i;
 
-PrintLog ("reloading ASE model textures\n");
+PrintLog (1, "reloading ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, modelP = gameData.models.aseModels [bCustom].Buffer (); i; i--, modelP++)
 		if (!modelP->ReloadTextures ()) {
@@ -786,7 +786,7 @@ if (gameStates.app.bCacheModelData) {
 			return 1;
 		}
 	catch(...) {
-		PrintLog ("Compiled model file 'model%03d.bin' is damaged and will be replaced\n", nModel);
+		PrintLog (1, "Compiled model file 'model%03d.bin' is damaged and will be replaced\n", nModel);
 		Destroy ();
 		}
 	}
@@ -1066,7 +1066,7 @@ for (i = 0; i < m_nSubModels; i++) {
 			}
 		}
 	catch(...) {
-		PrintLog ("Compiled model file 'model%03d.bin' is damaged and will be replaced\n", m_nModel);
+		PrintLog (1, "Compiled model file 'model%03d.bin' is damaged and will be replaced\n", m_nModel);
 		cf.Close ();
 		Destroy ();
 		return 0;

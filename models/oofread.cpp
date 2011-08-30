@@ -60,7 +60,7 @@ if (bLogOOF) {
 static sbyte OOF_ReadByte (CFile& cf, const char *pszIdent)
 {
 sbyte b = cf.ReadByte ();
-OOF_PrintLog ("      %s = %d\n", pszIdent, b);
+OOF_Printlog (1, "%s = %d\n", pszIdent, b);
 return b;
 }
 
@@ -69,7 +69,7 @@ return b;
 static int OOF_ReadInt (CFile& cf, const char *pszIdent)
 {
 int i = cf.ReadInt ();
-OOF_PrintLog ("      %s = %d\n", pszIdent, i);
+OOF_Printlog (1, "%s = %d\n", pszIdent, i);
 return i;
 }
 
@@ -78,7 +78,7 @@ return i;
 static float OOF_ReadFloat (CFile& cf, const char *pszIdent)
 {
 float f = cf.ReadFloat ();
-OOF_PrintLog ("      %s = %1.4f\n", pszIdent, f);
+OOF_Printlog (1, "%s = %1.4f\n", pszIdent, f);
 return f;
 }
 
@@ -89,7 +89,7 @@ static void OOF_ReadVector (CFile& cf, CFloatVector *pv, const char *pszIdent)
 (*pv).v.coord.x = cf.ReadFloat ();
 (*pv).v.coord.y = cf.ReadFloat ();
 (*pv).v.coord.z = cf.ReadFloat ();
-OOF_PrintLog ("      %s = %1.4f,%1.4f,%1.4f\n", pszIdent, (*pv).v.coord.x, (*pv).v.coord.y, (*pv).v.coord.z);
+OOF_Printlog (1, "%s = %1.4f,%1.4f,%1.4f\n", pszIdent, (*pv).v.coord.x, (*pv).v.coord.y, (*pv).v.coord.z);
 }
 
 //------------------------------------------------------------------------------
@@ -104,7 +104,7 @@ if (!(psz = new char [l + 1]))
 	return NULL;
 if (!l || cf.Read (psz, l, 1)) {
 	psz [l] = '\0';
-	OOF_PrintLog ("      %s = '%s'\n", pszIdent, psz);
+	OOF_Printlog (1, "%s = '%s'\n", pszIdent, psz);
 	return psz;
 	}
 delete[] psz;
@@ -235,7 +235,7 @@ m_nLastFrame = 0;
 int OOF::CFrameInfo::Read (CFile& cf, CModel* po, int bTimed)
 {
 nIndent += 2;
-OOF_PrintLog ("reading frame info\n");
+OOF_PrintLog (1, "reading frame info\n");
 if (bTimed) {
 	m_nFrames = OOF_ReadInt (cf, "nFrames");
 	m_nFirstFrame = OOF_ReadInt (cf, "nFirstFrame");
@@ -258,7 +258,7 @@ int CRotFrame::Read (CFile& cf, int bTimed)
 	float	fMag;
 
 nIndent += 2;
-OOF_PrintLog ("reading rot frame\n");
+OOF_PrintLog (1, "reading rot frame\n");
 if (bTimed)
 	m_nStartTime = OOF_ReadInt (cf, "nStartTime");
 OOF_ReadVector (cf, &m_vAxis, "vAxis");
@@ -387,7 +387,7 @@ for (i = m_frames.Length (), pf = m_frames.Buffer (); i; i--, pf++) {
 int CPosFrame::Read (CFile& cf, int bTimed)
 {
 nIndent += 2;
-OOF_PrintLog ("reading pos frame\n");
+OOF_PrintLog (1, "reading pos frame\n");
 if (bTimed)
 	m_nStartTime = OOF_ReadInt (cf, "nStartTime");
 OOF_ReadVector (cf, &m_vPos, "vPos");
@@ -451,7 +451,7 @@ int CSpecialPoint::Read (CFile& cf)
 {
 Init ();
 nIndent += 2;
-OOF_PrintLog ("reading special point\n");
+OOF_PrintLog (1, "reading special point\n");
 if (!(m_pszName = OOF_ReadString (cf, "pszName"))) {
 	nIndent -= 2;
 	return 0;
@@ -487,7 +487,7 @@ return 1;
 int CPoint::Read (CFile& cf, int bParent)
 {
 nIndent += 2;
-OOF_PrintLog ("reading point\n");
+OOF_PrintLog (1, "reading point\n");
 m_nParent = bParent ? OOF_ReadInt (cf, "nParent") : 0;
 OOF_ReadVector (cf, &m_vPos, "vPos");
 OOF_ReadVector (cf, &m_vDir, "vDir");
@@ -502,7 +502,7 @@ int CPointList::Read (CFile& cf, int bParent, int nSize)
 	int	i;
 
 nIndent += 2;
-OOF_PrintLog ("reading point list\n");
+OOF_PrintLog (1, "reading point list\n");
 i = OOF_ReadInt (cf, "nPoints");
 if (nSize < i)
 	nSize = i;
@@ -527,7 +527,7 @@ int CAttachList::Read (CFile& cf)
 	int	i;
 
 nIndent += 2;
-OOF_PrintLog ("reading attach list\n");
+OOF_PrintLog (1, "reading attach list\n");
 i = OOF_ReadInt (cf, "nPoints");
 if (!Create (i)) {
 	nIndent -= 2;
@@ -560,7 +560,7 @@ int CAttachList::ReadNormals (CFile& cf)
 	uint	i;
 
 nIndent += 2;
-OOF_PrintLog ("reading attach normals\n");
+OOF_PrintLog (1, "reading attach normals\n");
 i = OOF_ReadInt (cf, "nPoints");
 if (i != Length ()) {
 	nIndent -= 2;
@@ -595,7 +595,7 @@ m_turretIndex.Destroy ();
 int CBattery::Read (CFile& cf)
 {
 nIndent += 2;
-OOF_PrintLog ("reading battery\n");
+OOF_PrintLog (1, "reading battery\n");
 if (0 > (m_nVerts = OOF_ReadIntList (cf, m_vertIndex))) {
 	nIndent -= 2;
 	Destroy ();
@@ -619,7 +619,7 @@ int CArmament::Read (CFile& cf)
 	int	l;
 
 nIndent += 2;
-OOF_PrintLog ("reading armament\n");
+OOF_PrintLog (1, "reading armament\n");
 if (!(l = OOF_ReadInt (cf, "nBatts"))) {
 	nIndent -= 2;
 	return 1;
@@ -646,7 +646,7 @@ return 1;
 int CFaceVert::Read (CFile& cf, int bFlipV)
 {
 nIndent += 2;
-OOF_PrintLog ("reading face vertex\n");
+OOF_PrintLog (1, "reading face vertex\n");
 m_nIndex = OOF_ReadInt (cf, "nIndex");
 m_fu = OOF_ReadFloat (cf, "fu");
 m_fv = OOF_ReadFloat (cf, "fv");
@@ -702,7 +702,7 @@ int CFace::Read (CFile& cf, CSubModel *pso, CFaceVert *pfv, int bFlipV)
 	CEdge	e;
 
 nIndent += 2;
-OOF_PrintLog ("reading face\n");
+OOF_PrintLog (1, "reading face\n");
 OOF_ReadVector (cf, &m_vNormal, "vNormal");
 #if 0
 m_vNormal.x = -m_vNormal.x;
@@ -1137,7 +1137,7 @@ int CSubModel::Read (CFile& cf, CModel* po, int bFlipV)
 	char				szId [20] = "";
 
 nIndent += 2;
-OOF_PrintLog ("reading submodel\n");
+OOF_PrintLog (1, "reading submodel\n");
 Init ();
 m_nIndex = OOF_ReadInt (cf, "nIndex");
 if (m_nIndex >= OOF_MAX_SUBOBJECTS) {
@@ -1290,7 +1290,7 @@ int CModel::ReadTextures (CFile& cf)
 #endif
 
 nIndent += 2;
-OOF_PrintLog ("reading textures\n");
+OOF_PrintLog (1, "reading textures\n");
 int nBitmaps = OOF_ReadInt (cf, "nBitmaps");
 #if OOF_TEST_CUBE
 /*!!!*/m_textures.nBitmaps = 6;
@@ -1366,7 +1366,7 @@ m_nModel = -1;
 int CModel::ReadInfo (CFile& cf)
 {
 nIndent += 2;
-OOF_PrintLog ("reading OOF model\n");
+OOF_PrintLog (1, "reading OOF model\n");
 m_nSubModels = OOF_ReadInt (cf, "nSubModels");
 if (m_nSubModels >= OOF_MAX_SUBOBJECTS) {
 	nIndent -= 2;
@@ -1568,19 +1568,19 @@ if (m_nModel >= 0)
 
 bLogOOF = (fLog != NULL) && FindArg ("-printoof");
 nIndent = 0;
-OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir [bCustom], filename);
+OOF_PrintLog (1, "\nreading %s/%s\n", gameFolders.szModelDir [bCustom], filename);
 if (!(*filename && cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0))) {
-	OOF_PrintLog ("  file not found");
+	OOF_Printlog (1, "file not found");
 	return 0;
 	}
 
 if (!cf.Read (fileId, sizeof (fileId), 1)) {
-	OOF_PrintLog ("  invalid file id\n");
+	OOF_Printlog (1, "invalid file id\n");
 	cf.Close ();
 	return 0;
 	}
 if (strncmp (fileId, "PSPO", 4)) {
-	OOF_PrintLog ("  invalid file id\n");
+	OOF_Printlog (1, "invalid file id\n");
 	cf.Close ();
 	return 0;
 	}
@@ -1607,7 +1607,7 @@ while (!cf.EoF ()) {
 		cf.Close ();
 		return 0;
 		}
-	OOF_PrintLog ("  chunkID = '%c%c%c%c'\n", chunkID [0], chunkID [1], chunkID [2], chunkID [3]);
+	OOF_Printlog (1, "chunkID = '%c%c%c%c'\n", chunkID [0], chunkID [1], chunkID [2], chunkID [3]);
 	nLength = OOF_ReadInt (cf, "nLength");
 	switch (ListType (chunkID)) {
 		case 0:
@@ -1717,7 +1717,7 @@ int OOF_ReleaseTextures (void)
 	CModel*	modelP;
 	int		bCustom, i;
 
-PrintLog ("releasing OOF model textures\n");
+PrintLog (1, "releasing OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, modelP = gameData.models.oofModels [bCustom].Buffer (); i; i--, modelP++)
 		modelP->ReleaseTextures ();
@@ -1731,7 +1731,7 @@ int OOF_ReloadTextures (void)
 	CModel*	modelP;
 	int		bCustom, i;
 
-PrintLog ("reloading OOF model textures\n");
+PrintLog (1, "reloading OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, modelP = gameData.models.oofModels [bCustom].Buffer (); i; i--, modelP++)
 		if (!modelP->ReloadTextures ())

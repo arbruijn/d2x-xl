@@ -129,7 +129,7 @@ if (tiSound.ti.pThread && gameData.app.bUseMultiThreading [rtSound]) {
 	tiSound.nTask = nTask;
 	tiSound.ti.bExec = 1;
 #if 0
-	PrintLog ("running render threads (task: %d)\n", nTask);
+	PrintLog (1, "running render threads (task: %d)\n", nTask);
 #endif
 	return 1;
 	}

@@ -535,7 +535,7 @@ if (!(/*gameStates.app.bD2XLevel &&*/ SEGMENTS.Buffer () && OBJECTS.Buffer ()))
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return 0;
 #endif
-PrintLog ("   creating cameras\n");
+Printlog (1, "creating cameras\n");
 if (!m_cameras.Create (MAX_CAMERAS))
 	return 0;
 if (!m_faceCameras.Create (LEVEL_FACES))
@@ -597,7 +597,7 @@ return m_cameras.ToS ();
 void CCameraManager::Destroy (void)
 {
 if (m_cameras.Buffer ()) {
-	PrintLog ("Destroying cameras\n");
+	PrintLog (1, "Destroying cameras\n");
 	for (uint i = 0; i < m_cameras.ToS (); i++)
 		m_cameras [i].Destroy ();
 	m_cameras.Destroy ();

@@ -1467,7 +1467,7 @@ if (!(cf.Open (filename, gameFolders.szModDir [1], fileModes [bHaveBinary], game
 	strcpy (strstr (filename, ".t"), bHaveBinary ? ".txb" : ".tex");
 	if (!(cf.Open (filename, gameFolders.szModDir [1], fileModes [bHaveBinary], gameStates.app.bD1Mission) ||
 			cf.Open (filename, gameFolders.szDataDir [0], fileModes [bHaveBinary], gameStates.app.bD1Mission))) {
-		PrintLog ("can't open briefing '%s'!\n", filename);
+		PrintLog (1, "can't open briefing '%s'!\n", filename);
 		return 0;
 		}
 	}
@@ -1593,7 +1593,7 @@ void CBriefing::Run (const char* filename, int nLevel)
 	int	bEnding = strstr (filename, "endreg") || !stricmp (filename, missionManager.szBriefingFilename [1]);
 	char	fnBriefing [FILENAME_LEN];
 
-PrintLog ("Starting the briefing\n");
+PrintLog (1, "Starting the briefing\n");
 gameStates.render.bBriefing = 1;
 if (gameOpts->gameplay.bSkipBriefingScreens) {
 	console.printf (CON_DBG, "Skipping all briefing screens.\n");
@@ -1602,7 +1602,7 @@ if (gameOpts->gameplay.bSkipBriefingScreens) {
 	}
 strcpy (fnBriefing, *missionManager.szBriefingFilename [0] ? missionManager.szBriefingFilename [0] : filename);
 console.printf (CON_DBG, "Trying briefing screen <%s>\n", fnBriefing);
-PrintLog ("Looking for briefing screen '%s'\n", fnBriefing);
+PrintLog (1, "Looking for briefing screen '%s'\n", fnBriefing);
 if (!*fnBriefing) {
 	gameStates.render.bBriefing = 0;
 	return;

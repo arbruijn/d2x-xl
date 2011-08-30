@@ -71,7 +71,7 @@ void LoadTextData (const char *pszLevelName, const char *pszExt, CTextData *msgP
 	tTextIndex	*pi;
 
 //first, free up data allocated for old bitmaps
-PrintLog ("   loading mission messages\n");
+Printlog (1, "loading mission messages\n");
 FreeTextData (msgP);
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, pszExt);
 bufSize = cf.Size (szFilename, gameFolders.szDataDir [0], 0);

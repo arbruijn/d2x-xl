@@ -148,19 +148,19 @@ void __cdecl D2SignalHandler (int nSignal)
 	static int nErrors = 0;
 
 if (nSignal == SIGABRT)
-	PrintLog ("+++ Abnormal program termination\n");
+	PrintLog (1, "+++ Abnormal program termination\n");
 else if (nSignal == SIGFPE)
-	PrintLog ("+++ Floating point error\n");
+	PrintLog (1, "+++ Floating point error\n");
 else if (nSignal == SIGILL)
-	PrintLog ("+++ Illegal instruction\n");
+	PrintLog (1, "+++ Illegal instruction\n");
 else if (nSignal == SIGINT)
-	PrintLog ("+++ Ctrl+C signal\n");
+	PrintLog (1, "+++ Ctrl+C signal\n");
 else if (nSignal == SIGSEGV)
-	PrintLog ("+++ Memory access violation\n");
+	PrintLog (1, "+++ Memory access violation\n");
 else if (nSignal == SIGTERM)
-	PrintLog ("+++ Termination request\n");
+	PrintLog (1, "+++ Termination request\n");
 else
-	PrintLog ("+++ Unknown signal\n");
+	PrintLog (1, "+++ Unknown signal\n");
 if (++nErrors > 4)
 	exit (1);
 }
@@ -613,25 +613,25 @@ int InitGraphics (bool bFull = true)
 	u_int32_t	nScreenSize;
 	int			t;
 
-/*---*/PrintLog ("Initializing graphics\n");
+/*---*/PrintLog (1, "Initializing graphics\n");
 if ((t = GrInit ())) {		//doesn't do much
-	PrintLog ("Cannot initialize graphics\n");
+	PrintLog (1, "Cannot initialize graphics\n");
 	Error (TXT_CANT_INIT_GFX, t);
 	return 0;
 	}
 nScreenSize = displayModeInfo [gameStates.gfx.nStartScrMode].dim;
-/*---*/PrintLog ("Initializing render buffers\n");
+/*---*/PrintLog (1, "Initializing render buffers\n");
 if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
 if (bFull) {
-	/*---*/PrintLog ("Loading default palette\n");
+	/*---*/PrintLog (1, "Loading default palette\n");
 	paletteManager.SetDefault (paletteManager.Load (D2_DEFAULT_PALETTE, NULL));
 	CCanvas::Current ()->SetPalette (paletteManager.Default ());	//just need some valid palette here
-	/*---*/PrintLog ("Initializing game fonts\n");
+	/*---*/PrintLog (1, "Initializing game fonts\n");
 	fontManager.Setup ();	// must load after palette data loaded.
-	/*---*/PrintLog ("Setting screen mode\n");
+	/*---*/PrintLog (1, "Setting screen mode\n");
 	SetScreenMode (SCREEN_MENU);
-	/*---*/PrintLog ("Showing loading screen\n");
+	/*---*/PrintLog (1, "Showing loading screen\n");
 	ShowLoadingScreen ();
 	}
 return 1;
@@ -656,23 +656,23 @@ if (nState)
 //paletteManager.ResumeEffect ();
 switch (loadOp) {
 	case 0:
-		/*---*/PrintLog ("Creating default tracker list\n");
+		/*---*/PrintLog (1, "Creating default tracker list\n");
 		tracker.CreateList ();
 		break;
 	case 1:
-		/*---*/PrintLog ("Loading ban list\n");
+		/*---*/PrintLog (1, "Loading ban list\n");
 		banList.Load ();
 		break;
 	case 2:
-		/*---*/PrintLog ("Initializing control types\n");
+		/*---*/PrintLog (1, "Initializing control types\n");
 		controls.SetType ();
 		break;
 	case 3:
-		/*---*/PrintLog ("Initializing keyboard\n");
+		/*---*/PrintLog (1, "Initializing keyboard\n");
 		KeyInit ();
 		break;
 	case 4:
-		/*---*/PrintLog ("Initializing joystick\n");
+		/*---*/PrintLog (1, "Initializing joystick\n");
 		DoJoystickInit ();
 		break;
 	case 5:
@@ -681,7 +681,7 @@ switch (loadOp) {
 			externalControls.Init (strtol (appConfig [i+1], NULL, 0), strtol (appConfig [i+2], NULL, 0));
 		break;
 	case 6:
-		/*---*/PrintLog ("Initializing movies\n");
+		/*---*/PrintLog (1, "Initializing movies\n");
 		if (FindArg ("-nohires") || FindArg ("-nohighres") || !GrVideoModeOK (MENU_HIRES_MODE))
 			gameOpts->movies.bHires =
 			gameStates.menus.bHires =
@@ -694,11 +694,11 @@ switch (loadOp) {
 		BMInit ();
 		break;
 	case 8:
-		/*---*/PrintLog ("Initializing sound\n");
+		/*---*/PrintLog (1, "Initializing sound\n");
 		audio.Setup (1);
 		break;
 	case 9:
-		/*---*/PrintLog ("Loading hoard data\n");
+		/*---*/PrintLog (1, "Loading hoard data\n");
 		LoadHoardData ();
 		break;
 	case 10:
@@ -707,7 +707,7 @@ switch (loadOp) {
 	case 11:
 		break;
 	case 12:
-		/*---*/PrintLog ("Initializing texture merge buffer\n");
+		/*---*/PrintLog (1, "Initializing texture merge buffer\n");
 		TexMergeInit (100); // 100 cache bitmaps
 		break;
 	case 13:
@@ -728,7 +728,7 @@ switch (loadOp) {
 			MouseInit ();
 		break;
 	case 18:
-		/*---*/PrintLog ("Enabling TrackIR support\n");
+		/*---*/PrintLog (1, "Enabling TrackIR support\n");
 		TIRLoad ();
 		break;
 	}
@@ -760,7 +760,7 @@ void InitArgs (int argC, char **argV)
 { 
 appConfig.Destroy ();
 appConfig.Init ();
-PrintLog ("Loading program arguments\n");
+PrintLog (1, "Loading program arguments\n");
 appConfig.Load (argC, argV); 
 appConfig.Load (appConfig.Filename (DBG != 0));
 appConfig.PrintLog ();
@@ -770,7 +770,7 @@ appConfig.PrintLog ();
 
 int Initialize (int argc, char *argv[])
 {
-/*---*/PrintLog ("Initializing data\n");
+/*---*/PrintLog (1, "Initializing data\n");
 gameData.time.xGameTotal = 0;
 gameData.app.argC = argc;
 gameData.app.argV = reinterpret_cast<char**>(argv);
@@ -806,7 +806,7 @@ if (gameStates.app.nLogLevel > 0) {
 	fLog = fopen (fnErr, "wt");
 #endif
 	}
-PrintLog ("%s\n", DESCENT_VERSION);
+PrintLog (1, "%s\n", DESCENT_VERSION);
 InitArgs (argc, argv);
 GetAppFolders ();
 #ifdef D2X_MEM_HANDLER
@@ -820,16 +820,16 @@ gameOptions [1].Init ();
 GetNumThreads ();
 DefaultAllSettings ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
-/*---*/PrintLog ("Loading text resources\n");
-/*---*/PrintLog ("Loading main hog file\n");
+/*---*/PrintLog (1, "Loading text resources\n");
+/*---*/PrintLog (1, "Loading main hog file\n");
 if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir [0]) ||
 	  (gameStates.app.bDemoData = hogFileManager.Init ("d2demo.hog", gameFolders.szDataDir [0])))) {
-	/*---*/PrintLog ("Descent 2 data not found\n");
+	/*---*/PrintLog (1, "Descent 2 data not found\n");
 	Error (TXT_NO_HOG2);
 	}
 fontManager.SetScale (1.0f);
 LoadGameTexts ();
-/*---*/PrintLog ("Reading configuration file\n");
+/*---*/PrintLog (1, "Reading configuration file\n");
 ReadConfigFile ();
 if (!InitGraphics ())
 	return 1;
@@ -847,13 +847,13 @@ else {
 messageBox.Clear ();
 PrintBanner ();
 if (!gameStates.app.bAutoRunMission) {
-	/*---*/PrintLog ("Showing title screens\n");
+	/*---*/PrintLog (1, "Showing title screens\n");
 	if (!ShowTitleScreens ())
 		ShowLoadingScreen ();
 	}
 if (FindArg ("-norun"))
 	return 0;
-/*---*/PrintLog ("Loading hires models\n");
+/*---*/PrintLog (1, "Loading hires models\n");
 LoadHiresModels (0);
 LoadModelData ();
 LoadIpToCountry ();
@@ -872,11 +872,11 @@ if (gameStates.input.bHaveTrackIR) {
 songManager.StopAll ();
 audio.StopCurrentSong ();
 SaveModelData ();
-/*---*/PrintLog ("Saving configuration file\n");
+/*---*/PrintLog (1, "Saving configuration file\n");
 WriteConfigFile (true);
-/*---*/PrintLog ("Saving player profile\n");
+/*---*/PrintLog (1, "Saving player profile\n");
 SavePlayerProfile ();
-/*---*/PrintLog ("Releasing tracker list\n");
+/*---*/PrintLog (1, "Releasing tracker list\n");
 tracker.DestroyList ();
 profile.Destroy ();
 #if DBG
@@ -982,7 +982,7 @@ if (Initialize (argc, argv))
 	return -1;
 //	If built with editor, option to auto-load a level and quit game
 //	to write certain data.
-/*---*/PrintLog ("Loading player profile\n");
+/*---*/PrintLog (1, "Loading player profile\n");
 DoSelectPlayer ();
 StartSoundThread (); //needs to be repeated here due to dependency on data read in DoSelectPlayer()
 paletteManager.DisableEffect ();
@@ -1005,7 +1005,7 @@ if (*szAutoHogFile && *szAutoMission) {
 	}
 DonationNotification ();
 BadHardwareNotification ();
-/*---*/PrintLog ("Invoking main menu\n");
+/*---*/PrintLog (1, "Invoking main menu\n");
 MainLoop ();
 CleanUp ();
 return 0;		//presumably successful exit

@@ -98,11 +98,11 @@ void CTriggerTargets::Check (void)
 
 if (m_nLinks > MAX_TRIGGER_TARGETS) {
 	m_nLinks = MAX_TRIGGER_TARGETS;
-	PrintLog ("Invalid trigger target count (trigger #%d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer ());
+	PrintLog (1, "Invalid trigger target count (trigger #%d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer ());
 	}
 for (i = j = 0; i < m_nLinks; i++) {
 	if ((m_segments [i] < 0) || (m_segments [i] >= gameData.segs.nSegments) || (m_sides [i] < 0) || (m_sides [i] > 5)) {
-		PrintLog ("Invalid trigger target (trigger #%d, target %d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer (), i);
+		PrintLog (1, "Invalid trigger target (trigger #%d, target %d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer (), i);
 		continue;
 		}
 	if (j < i) {
@@ -529,7 +529,7 @@ for (int i = 0; i < m_nLinks; i++) {
 	bForceField = ((gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0);
 	if (!(wallP = segP->Wall (nSide))) {
 #if DBG
-		PrintLog ("WARNING: Wall trigger %d targets non-existant wall @ %d,%d\n", Index (), segP->Index (), nSide);
+		PrintLog (1, "WARNING: Wall trigger %d targets non-existant wall @ %d,%d\n", Index (), segP->Index (), nSide);
 #endif
 		continue;
 		}

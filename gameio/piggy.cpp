@@ -326,7 +326,7 @@ if (gameStates.app.bUseSwapFile) {
 	else
 		gameStates.render.nMaxTextureQuality = 1;
 #	endif
-	PrintLog ("maximum permissible texture quality: %d\n", gameStates.render.nMaxTextureQuality);
+	PrintLog (1, "maximum permissible texture quality: %d\n", gameStates.render.nMaxTextureQuality);
 	}
 #else
 gameStates.render.nMaxTextureQuality = 3;
@@ -464,17 +464,17 @@ if (nHAMId != HAMFILE_ID)
 if (gameData.pig.tex.nHamFileVersion < 3) // hamfile contains sound info
 	nSoundOffset = cf.ReadInt ();
 BMReadAll (cf, bDefault);
-/*---*/PrintLog ("      Loading bitmap index translation table\n");
+/*---*/Printlog (1, "Loading bitmap index translation table\n");
 	gameData.pig.tex.bitmapXlat.Read (cf, MAX_BITMAP_FILES);
 if (gameData.pig.tex.nHamFileVersion < 3) {
 	cf.Seek (nSoundOffset, SEEK_SET);
 	int nSoundNum = cf.ReadInt ();
 	int nSoundStart = cf.Tell ();
-/*---*/PrintLog ("      Loading %d sounds\n", nSoundNum);
+/*---*/Printlog (1, "Loading %d sounds\n", nSoundNum);
 	SetupSounds (cf, nSoundNum, nSoundStart);
 	}
 cf.Close ();
-/*---*/PrintLog ("      Looking for Descent 1 data files\n");
+/*---*/Printlog (1, "Looking for Descent 1 data files\n");
 strcpy (szD1PigFileName, "descent.pig");
 if (cfPiggy [1].File ())
 	cfPiggy [1].Seek (0, SEEK_SET);
@@ -482,7 +482,7 @@ else
 	cfPiggy [1].Open (szD1PigFileName, gameFolders.szDataDir [0], "rb", 0);
 if (cfPiggy [1].File ()) {
 	gameStates.app.bHaveD1Data = 1;
-/*---*/PrintLog ("      Loading Descent 1 data\n");
+/*---*/Printlog (1, "Loading Descent 1 data\n");
 	BMReadGameDataD1 (cfPiggy [1]);
 	}
 return 1;
@@ -495,26 +495,26 @@ int PiggyInit (void)
 	int bHamOk = 0, bSoundOk = 0;
 	int i;
 
-/*---*/PrintLog ("   Initializing hash tables\n");
+/*---*/Printlog (1, "Initializing hash tables\n");
 bitmapNames [0].Create (MAX_BITMAP_FILES);
 bitmapNames [1].Create (D1_MAX_BITMAP_FILES);
 soundNames [0].Create (MAX_SOUND_FILES);
 soundNames [1].Create (MAX_SOUND_FILES);
 
 #if 0
-/*---*/PrintLog ("   Initializing sound data (%d sounds)\n", MAX_SOUND_FILES);
+/*---*/Printlog (1, "Initializing sound data (%d sounds)\n", MAX_SOUND_FILES);
 for (i = 0; i < MAX_SOUND_FILES; i++)
 	soundOffset [0][i] = 0;
 #endif
 
-/*---*/PrintLog ("   Initializing bitmap index (%d indices)\n", MAX_BITMAP_FILES);
+/*---*/Printlog (1, "Initializing bitmap index (%d indices)\n", MAX_BITMAP_FILES);
 for (i = 0; i < MAX_BITMAP_FILES; i++)
 	gameData.pig.tex.bitmapXlat [i] = i;
 
 if (!bogusBitmap.FrameSize ()) {
 	int i;
 	ubyte c;
-/*---*/PrintLog ("   Initializing placeholder bitmap\n");
+/*---*/Printlog (1, "Initializing placeholder bitmap\n");
 	bogusBitmap.Setup (0, 64, 64, 1, "Bogus Bitmap");
 	bogusBitmap.SetBuffer (new ubyte [4096 * 4096]);
 	bogusBitmap.SetPalette (paletteManager.Game ());
@@ -536,13 +536,13 @@ if (!bogusBitmap.FrameSize ()) {
 if (FindArg ("-bigpig"))
 	bBigPig = 1;
 
-/*---*/PrintLog ("   Loading game data\n");
+/*---*/Printlog (1, "Loading game data\n");
 PiggyInitPigFile (DefaultPigFile (-1));
-/*---*/PrintLog ("   Loading main ham file\n");
+/*---*/Printlog (1, "Loading main ham file\n");
 bSoundOk = bHamOk = ReadHamFile ();
 gameData.pig.sound.nType = -1; //none loaded
 if (gameData.pig.tex.nHamFileVersion >= 3) {
-/*---*/PrintLog ("   Loading sound file\n");
+/*---*/Printlog (1, "Loading sound file\n");
 	bSoundOk = LoadD2Sounds ();
 	}
 //if (gameStates.app.bFixModels)
@@ -663,7 +663,7 @@ bmP->SetPalette (paletteManager.D1 (), TRANSPARENCY_COLOR, -1);
 void _CDECL_ FreeD1TMapNums (void)
 {
 if (d1_tmap_nums) {
-	PrintLog ("unloading D1 texture ids\n");
+	PrintLog (1, "unloading D1 texture ids\n");
 	delete[] d1_tmap_nums;
 	d1_tmap_nums = NULL;
 	}
@@ -993,9 +993,9 @@ void _CDECL_ PiggyClose (void)
 	int				i, j;
 	CSoundSample*	dsP;
 
-PrintLog ("unloading textures\n");
+PrintLog (1, "unloading textures\n");
 PiggyCloseFile ();
-PrintLog ("unloading sounds\n");
+PrintLog (1, "unloading sounds\n");
 for (i = 0; i < 2; i++) {
 	for (j = 0, dsP = gameData.pig.sound.sounds [i].Buffer (); j < MAX_SOUND_FILES; j++, dsP++)
 		if (dsP->bHires) {

@@ -88,12 +88,12 @@ int NetworkBadPacketSize (int nLength, int nExpectedLength, const char *pszId)
 if (!nExpectedLength || (nLength == nExpectedLength))
 	return 0;
 console.printf (CON_DBG, "WARNING! Received invalid size for %s\n", pszId);
-PrintLog ("Networking: Bad size for %s\n", pszId);
+PrintLog (1, "Networking: Bad size for %s\n", pszId);
 #if DBG
 HUDMessage (0, "invalid %s", pszId);
 #endif
 if (nLength == nExpectedLength - 4)
-	PrintLog ("   (Probably due to mismatched UDP/IP connection quality improvement settings)\n");
+	Printlog (1, "(Probably due to mismatched UDP/IP connection quality improvement settings)\n");
 return 1;
 }
 
@@ -106,7 +106,7 @@ if (nSecurity == netGame.m_info.nSecurity)
 #endif
 	return 0;
 console.printf (CON_DBG, "Bad security for %s\n", pszId);
-PrintLog ("Networking: Bad security for %s\n", pszId);
+PrintLog (1, "Networking: Bad security for %s\n", pszId);
 return 1;
 }
 
@@ -485,9 +485,9 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 #endif
 
 if (!piP->packetHandler)
-	PrintLog ("invalid packet id %d\n", pId);
+	PrintLog (1, "invalid packet id %d\n", pId);
 else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
-	PrintLog ("invalid status %d for packet id %d\n", networkData.nStatus, pId);
+	PrintLog (1, "invalid status %d for packet id %d\n", networkData.nStatus, pId);
 else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 	console.printf (0, "received %s\n", piP->pszInfo);
 	if (!addressFilter [pId])	// patch the proper IP address into the packet header

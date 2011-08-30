@@ -151,7 +151,7 @@ if (!po) {
 HUDMessage (0, "optimizing model");
 #endif
 if (gameStates.app.nLogLevel > 1)
-	PrintLog ("         optimizing OOF model %d\n", nModel);
+	Printlog (1, "optimizing OOF model %d\n", nModel);
 CountOOFModelItems (po);
 if (!Create ())
 	return 0;

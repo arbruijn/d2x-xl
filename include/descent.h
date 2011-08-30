@@ -3657,7 +3657,7 @@ static inline void SemWait (uint sem)
 while (gameData.app.semaphores [sem]) {
 	G3_SLEEP (0);
 	if (SDL_GetTicks () - t0 > 50) {
-		PrintLog ("multi threading got stuck (semaphore: %d)\n", sem);
+		PrintLog (1, "multi threading got stuck (semaphore: %d)\n", sem);
 		gameStates.app.bMultiThreaded = 1;
 		gameData.app.semaphores [sem] = 0;
 		break;
@@ -3670,7 +3670,7 @@ while (gameData.app.semaphores [sem]) {
 static inline void SemEnter (uint sem, const char *pszFile, int nLine)
 {
 SemWait (sem);
-//PrintLog ("SemEnter (%d) @ %s:%d\n", sem, pszFile, nLine);
+//PrintLog (1, "SemEnter (%d) @ %s:%d\n", sem, pszFile, nLine);
 gameData.app.semaphores [sem]++;
 }
 
@@ -3678,10 +3678,10 @@ static inline void SemLeave (uint sem, const char *pszFile, int nLine)
 {
 if (gameData.app.semaphores [sem]) {
 	gameData.app.semaphores [sem]--;
-	//PrintLog ("SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
+	//PrintLog (1, "SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
 	}
 else
-	PrintLog ("asymmetric SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
+	PrintLog (1, "asymmetric SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
 }
 
 #define SEM_WAIT(_sem)	if (gameStates.app.bMultiThreaded) SemWait (_sem);

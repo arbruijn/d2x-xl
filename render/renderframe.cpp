@@ -592,7 +592,7 @@ if (transformation.m_info.bUsePlayerHeadAngles)
 	Draw3DReticle (xStereoSeparation);
 #endif
 gameStates.render.nShadowPass = 0;
-//PrintLog ("G3EndFrame\n");
+//PrintLog (1, "G3EndFrame\n");
 G3EndFrame (nWindow);
 if (nWindow)
 	ogl.SetStereoSeparation (gameStates.render.xStereoSeparation = nEyeOffsetSave);

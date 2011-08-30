@@ -46,7 +46,7 @@ void _CDECL_ free_text(void)
 {
 	char	*p = pszGameTexts [0] - 1;
 
-	PrintLog ("unloading game texts\n");
+	PrintLog (1, "unloading game texts\n");
 	if (pszGameTexts && pszGameTexts [0]) {
 		p = pszGameTexts [0] - 1;
 		delete[] text;
@@ -2802,7 +2802,7 @@ for (pi = pj = ph; *pi; pi++, pj++) {
 		else if (*pi == '\\')
 			*pj = '\\';
 		else
-			PrintLog ("Unsupported key sequence <\\%c> on line %d of file <%s>", *pi, nLine, pszFile);
+			PrintLog (1, "Unsupported key sequence <\\%c> on line %d of file <%s>", *pi, nLine, pszFile);
 		}
 	}
 *pj = 0;

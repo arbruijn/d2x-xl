@@ -114,7 +114,7 @@ int BMInit (void)
 {
 if (!PiggyInit ())				// This calls BMReadAll
 	Error ("Cannot open pig and/or ham file");
-/*---*/PrintLog ("   Initializing endlevel data\n");
+/*---*/Printlog (1, "Initializing endlevel data\n");
 InitEndLevel ();		//this is in bm_init_use_tbl (), so I gues it goes here
 return 0;
 }
@@ -195,61 +195,61 @@ void BMReadAll (CFile& cf, bool bDefault)
 	int i, t;
 
 gameData.pig.tex.nTextures [0] = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d texture indices\n", gameData.pig.tex.nTextures [0]);
+/*---*/Printlog (1, "Loading %d texture indices\n", gameData.pig.tex.nTextures [0]);
 ReadBitmapIndices (gameData.pig.tex.bmIndex [0], gameData.pig.tex.nTextures [0], cf);
 BuildTextureIndex (0, gameData.pig.tex.nTextures [0]);
 ReadTMapInfoN (gameData.pig.tex.tMapInfo [0], gameData.pig.tex.nTextures [0], cf);
 
 t = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d sound indices\n", t);
+/*---*/Printlog (1, "Loading %d sound indices\n", t);
 cf.Read (Sounds [0], sizeof (ubyte), t);
 cf.Read (AltSounds [0], sizeof (ubyte), t);
 
 gameData.eff.nClips [0] = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d animation clips\n", gameData.eff.nClips [0]);
+/*---*/Printlog (1, "Loading %d animation clips\n", gameData.eff.nClips [0]);
 ReadVideoClips (gameData.eff.vClips [0], gameData.eff.nClips [0], cf);
 
 gameData.eff.nEffects [0] = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d animation descriptions\n", gameData.eff.nEffects [0]);
+/*---*/Printlog (1, "Loading %d animation descriptions\n", gameData.eff.nEffects [0]);
 ReadEffectClips (gameData.eff.effects [0], gameData.eff.nEffects [0], cf);
 // red glow texture animates way too fast
 gameData.eff.effects [0][32].vClipInfo.xTotalTime *= 10;
 gameData.eff.effects [0][32].vClipInfo.xFrameTime *= 10;
 gameData.walls.nAnims [0] = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d CWall animations\n", gameData.walls.nAnims [0]);
+/*---*/Printlog (1, "Loading %d CWall animations\n", gameData.walls.nAnims [0]);
 ReadWallClips (gameData.walls.anims [0], gameData.walls.nAnims [0], cf);
 
 gameData.bots.nTypes [0] = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d robot descriptions\n", gameData.bots.nTypes [0]);
+/*---*/Printlog (1, "Loading %d robot descriptions\n", gameData.bots.nTypes [0]);
 ReadRobotInfos (gameData.bots.info [0], gameData.bots.nTypes [0], cf);
 gameData.bots.nDefaultTypes = gameData.bots.nTypes [0];
 gameData.bots.defaultInfo = gameData.bots.info [0];
 
 gameData.bots.nJoints = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d robot joint descriptions\n", gameData.bots.nJoints);
+/*---*/Printlog (1, "Loading %d robot joint descriptions\n", gameData.bots.nJoints);
 ReadJointPositions (gameData.bots.joints, gameData.bots.nJoints, cf);
 gameData.bots.nDefaultJoints = gameData.bots.nJoints;
 gameData.bots.defaultJoints = gameData.bots.joints;
 
 gameData.weapons.nTypes [0] = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d weapon descriptions\n", gameData.weapons.nTypes [0]);
+/*---*/Printlog (1, "Loading %d weapon descriptions\n", gameData.weapons.nTypes [0]);
 ReadWeaponInfos (0, gameData.weapons.nTypes [0], cf, gameData.pig.tex.nHamFileVersion);
 gameData.weapons.info [48].light = I2X (1); // fix light for BPer shots and smart missile blobs - don't make them too bright though
 BMSetAfterburnerSizes ();
 
 gameData.objs.pwrUp.nTypes = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d powerup descriptions\n", gameData.objs.pwrUp.nTypes);
+/*---*/Printlog (1, "Loading %d powerup descriptions\n", gameData.objs.pwrUp.nTypes);
 ReadPowerupTypeInfos (gameData.objs.pwrUp.info.Buffer (), gameData.objs.pwrUp.nTypes, cf);
 
 gameData.models.nPolyModels = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d CPolyModel descriptions\n", gameData.models.nPolyModels);
+/*---*/Printlog (1, "Loading %d CPolyModel descriptions\n", gameData.models.nPolyModels);
 ReadPolyModels (gameData.models.polyModels [0], gameData.models.nPolyModels, cf);
 if (bDefault) {
 	gameData.models.nDefPolyModels = gameData.models.nPolyModels;
 	memcpy (gameData.models.polyModels [1].Buffer (), gameData.models.polyModels [0].Buffer (), gameData.models.nPolyModels * sizeof (CPolyModel));
 	}
 
-/*---*/PrintLog ("      Loading poly model data\n");
+/*---*/Printlog (1, "Loading poly model data\n");
 for (i = 0; i < gameData.models.nPolyModels; i++) {
 	gameData.models.polyModels [0][i].SetBuffer (NULL);
 	if (bDefault)
@@ -264,27 +264,27 @@ for (i = 0; i < gameData.models.nPolyModels; i++)
 	gameData.models.nDeadModels [i] = cf.ReadInt ();
 
 t = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d cockpit gauges\n", t);
+/*---*/Printlog (1, "Loading %d cockpit gauges\n", t);
 ReadBitmapIndices (gameData.cockpit.gauges [1], t, cf);
 ReadBitmapIndices (gameData.cockpit.gauges [0], t, cf);
 
 gameData.pig.tex.nObjBitmaps = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d CObject bitmap indices\n", gameData.pig.tex.nObjBitmaps);
+/*---*/Printlog (1, "Loading %d CObject bitmap indices\n", gameData.pig.tex.nObjBitmaps);
 ReadBitmapIndices (gameData.pig.tex.objBmIndex, gameData.pig.tex.nObjBitmaps, cf);
 gameData.pig.tex.defaultObjBmIndex = gameData.pig.tex.objBmIndex;
 for (i = 0; i < gameData.pig.tex.nObjBitmaps; i++)
 	gameData.pig.tex.objBmIndexP [i] = cf.ReadShort ();
 
-/*---*/PrintLog ("      Loading CPlayerData ship description\n");
+/*---*/Printlog (1, "Loading CPlayerData ship description\n");
 PlayerShipRead (&gameData.pig.ship.only, cf);
 
 gameData.models.nCockpits = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d cockpit bitmaps\n", gameData.models.nCockpits);
+/*---*/Printlog (1, "Loading %d cockpit bitmaps\n", gameData.models.nCockpits);
 ReadBitmapIndices (gameData.pig.tex.cockpitBmIndex, gameData.models.nCockpits, cf);
 gameData.pig.tex.nFirstMultiBitmap = cf.ReadInt ();
 
 gameData.reactor.nReactors = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d reactor descriptions\n", gameData.reactor.nReactors);
+/*---*/Printlog (1, "Loading %d reactor descriptions\n", gameData.reactor.nReactors);
 ReadReactors (cf);
 
 gameData.models.nMarkerModel = cf.ReadInt ();
@@ -343,7 +343,7 @@ wiP->xDamageRadius = cf.ReadFix ();
 wiP->picture.index = cf.ReadShort ();
 
 #if PRINT_WEAPON_INFO
-PrintLog ("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,{",
+PrintLog (1, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,{",
 	wiP->renderType,
 	wiP->nModel,
 	wiP->nInnerModel,
@@ -371,11 +371,11 @@ PrintLog ("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,
 	wiP->xFlashSize,
 	wiP->xImpactSize);
 for (i = 0; i < NDL; i++)
-	PrintLog ("%s%d", i ? "," : "", wiP->strength [i]);
-PrintLog ("},{");
+	PrintLog (1, "%s%d", i ? "," : "", wiP->strength [i]);
+PrintLog (1, "},{");
 for (i = 0; i < NDL; i++)
-	PrintLog ("%s%d", i ? "," : "", wiP->speed [i]);
-PrintLog ("},%d,%d,%d,%d,%d,%d,%d,{%d}},\n",
+	PrintLog (1, "%s%d", i ? "," : "", wiP->speed [i]);
+PrintLog (1, "},%d,%d,%d,%d,%d,%d,%d,{%d}},\n",
 	wiP->mass,
 	wiP->drag,
 	wiP->thrust,
@@ -439,11 +439,11 @@ void BMReadGameDataD1 (CFile& cf)
 v10DataOffset = cf.ReadInt ();
 cf.Read (&gameData.pig.tex.nTextures [1], sizeof (int), 1);
 j = (gameData.pig.tex.nTextures [1] == 70) ? 70 : D1_MAX_TEXTURES;
-/*---*/PrintLog ("         Loading %d texture indices\n", j);
+/*---*/Printlog (1, "Loading %d texture indices\n", j);
 //cf.Read (gameData.pig.tex.bmIndex [1], sizeof (tBitmapIndex), D1_MAX_TEXTURES);
 ReadBitmapIndices (gameData.pig.tex.bmIndex [1], D1_MAX_TEXTURES, cf);
 BuildTextureIndex (1, D1_MAX_TEXTURES);
-/*---*/PrintLog ("         Loading %d texture descriptions\n", j);
+/*---*/Printlog (1, "Loading %d texture descriptions\n", j);
 for (i = 0, pt = &gameData.pig.tex.tMapInfo [1][0]; i < j; i++, pt++) {
 #if DBG
 	cf.Read (t.filename, sizeof (t.filename), 1);
@@ -460,7 +460,7 @@ for (i = 0, pt = &gameData.pig.tex.tMapInfo [1][0]; i < j; i++, pt++) {
 	}
 cf.Read (Sounds [1], sizeof (ubyte), D1_MAX_SOUNDS);
 cf.Read (AltSounds [1], sizeof (ubyte), D1_MAX_SOUNDS);
-/*---*/PrintLog ("         Initializing %d sounds\n", D1_MAX_SOUNDS);
+/*---*/Printlog (1, "Initializing %d sounds\n", D1_MAX_SOUNDS);
 if (gameOpts->sound.bUseD1Sounds) {
 	memcpy (Sounds [1] + D1_MAX_SOUNDS, Sounds [0] + D1_MAX_SOUNDS, MAX_SOUNDS - D1_MAX_SOUNDS);
 	memcpy (AltSounds [1] + D1_MAX_SOUNDS, AltSounds [0] + D1_MAX_SOUNDS, MAX_SOUNDS - D1_MAX_SOUNDS);
@@ -476,13 +476,13 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 		AltSounds [1][i] = AltSounds [0][i];
 	}
 gameData.eff.nClips [1] = cf.ReadInt ();
-/*---*/PrintLog ("         Loading %d animation clips\n", gameData.eff.nClips [1]);
+/*---*/Printlog (1, "Loading %d animation clips\n", gameData.eff.nClips [1]);
 ReadVideoClips (gameData.eff.vClips [1], D1_VCLIP_MAXNUM, cf);
 gameData.eff.nEffects [1] = cf.ReadInt ();
-/*---*/PrintLog ("         Loading %d animation descriptions\n", gameData.eff.nClips [1]);
+/*---*/Printlog (1, "Loading %d animation descriptions\n", gameData.eff.nClips [1]);
 ReadEffectClips (gameData.eff.effects [1], D1_MAX_EFFECTS, cf);
 gameData.walls.nAnims [1] = cf.ReadInt ();
-/*---*/PrintLog ("         Loading %d CWall animations\n", gameData.walls.nAnims [1]);
+/*---*/Printlog (1, "Loading %d CWall animations\n", gameData.walls.nAnims [1]);
 for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++) {
 	//cf.Read (&w, sizeof (w), 1);
 	pw->xTotalTime = cf.ReadFix ();
@@ -496,7 +496,7 @@ for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++)
 	pw->pad = (char) cf.ReadByte ();
 	}
 cf.Read (&gameData.bots.nTypes [1], sizeof (int), 1);
-/*---*/PrintLog ("         Loading %d robot descriptions\n", gameData.bots.nTypes [1]);
+/*---*/Printlog (1, "Loading %d robot descriptions\n", gameData.bots.nTypes [1]);
 gameData.bots.info [1] = gameData.bots.info [0];
 if (!gameOpts->sound.bUseD1Sounds)
 	return;
@@ -532,7 +532,7 @@ cf.Seek (
 	POWERUP_TYPE_INFO_SIZE * MAX_POWERUP_TYPES_D1,
 	SEEK_CUR);
 i = cf.ReadInt ();
-/*---*/PrintLog ("         Acquiring model data size of %d polymodels\n", i);
+/*---*/Printlog (1, "Acquiring model data size of %d polymodels\n", i);
 for (h = 0; i; i--) {
 	cf.Seek (MODEL_DATA_SIZE_OFFS, SEEK_CUR);
 	model.SetDataSize (cf.ReadInt ());
@@ -549,11 +549,11 @@ cf.Seek (
 	sizeof (int) +
 	sizeof (tBitmapIndex) * D1_N_COCKPIT_BITMAPS,
 	SEEK_CUR);
-/*---*/PrintLog ("         Loading sound data\n", i);
+/*---*/Printlog (1, "Loading sound data\n", i);
 cf.Read (tmpSounds, sizeof (ubyte), D1_MAX_SOUNDS);
 //for (i = 0, pr = &gameData.bots.info [1][0]; i < gameData.bots.nTypes [1]; i++, pr++) 
 pr = gameData.bots.info [1] + 17;
-/*---*/PrintLog ("         Initializing sound data\n", i);
+/*---*/Printlog (1, "Initializing sound data\n", i);
 for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (Sounds [1][i] == tmpSounds [pr->seeSound])
 		pr->seeSound = i;
@@ -628,12 +628,12 @@ cf.Seek (
 	SEEK_CUR);
 gameData.weapons.nTypes [1] = cf.ReadInt ();
 #if PRINT_WEAPON_INFO
-PrintLog ("\nCD1WeaponInfo defaultWeaponInfosD1 [] = {\n");
+PrintLog (1, "\nCD1WeaponInfo defaultWeaponInfosD1 [] = {\n");
 #endif
 for (int i = 0; i < gameData.weapons.nTypes [1]; i++)
 	BMReadWeaponInfoD1N (cf, i);
 #if PRINT_WEAPON_INFO
-PrintLog ("};\n\n");
+PrintLog (1, "};\n\n");
 #endif
 }
 

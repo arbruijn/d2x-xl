@@ -126,7 +126,7 @@ GLhandleARB CPostEffectShockwave::m_shaderProg;
 
 void CPostEffectShockwave::InitShader (void)
 {
-PrintLog ("building shockwave shader program\n");
+PrintLog (1, "building shockwave shader program\n");
 if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders) {
 	m_shaderProg = 0;
 	if (!shaderManager.Build (hShockwaveShader, shockwaveFS, shockwaveVS)) {

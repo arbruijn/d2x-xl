@@ -914,7 +914,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 
 	// Seed the Random number generator so in net play the eggs will always
 	// drop the same way
-	PrintLog ("   dropping player equipment\n");
+	Printlog (1, "dropping player equipment\n");
 	if (IsMultiGame) {
 		gameData.multigame.create.nCount = 0;
 		if (gameStates.multi.nGameType != UDP_GAME)

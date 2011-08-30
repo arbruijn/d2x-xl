@@ -144,7 +144,7 @@ if (!pa) {
 HUDMessage (0, "optimizing model");
 #endif
 if (gameStates.app.nLogLevel > 1)
-	PrintLog ("         optimizing ASE model %d\n", nModel);
+	Printlog (1, "optimizing ASE model %d\n", nModel);
 CountASEModelItems (pa);
 if (!Create ())
 	return 0;

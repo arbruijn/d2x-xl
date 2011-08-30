@@ -281,7 +281,7 @@ if (SHOW_LIGHTNING) {
 				CreateForBlowup (objP);
 #if DBG
 			else if (objP->info.nType != 255)
-				PrintLog ("invalid effect requested\n");
+				PrintLog (1, "invalid effect requested\n");
 #endif
 			}
 		else if (h & MISSILE_LIGHTNING) {
@@ -289,7 +289,7 @@ if (SHOW_LIGHTNING) {
 				CreateForMissile (objP);
 #if DBG
 			else if (objP->info.nType != 255)
-				PrintLog ("invalid effect requested\n");
+				PrintLog (1, "invalid effect requested\n");
 #endif
 			}
 		else if (h & ROBOT_LIGHTNING) {
@@ -297,7 +297,7 @@ if (SHOW_LIGHTNING) {
 				CreateForRobot (objP, LightningColor (objP));
 #if DBG
 			else if (objP->info.nType != 255)
-				PrintLog ("invalid effect requested\n");
+				PrintLog (1, "invalid effect requested\n");
 #endif
 			}
 		else if (h & PLAYER_LIGHTNING) {
@@ -305,7 +305,7 @@ if (SHOW_LIGHTNING) {
 				CreateForPlayer (objP, LightningColor (objP));
 #if DBG
 			else if (objP->info.nType != 255)
-				PrintLog ("invalid effect requested\n");
+				PrintLog (1, "invalid effect requested\n");
 #endif
 			}
 		else if (h & MOVE_LIGHTNING) {

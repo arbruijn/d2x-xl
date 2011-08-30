@@ -125,7 +125,7 @@ void InitGrayScaleShader (void)
 if (!(gameOpts->render.bUseShaders && ogl.m_features.bShaders))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
-	PrintLog ("building grayscale shader programs\n");
+	Printlog (1, "building grayscale shader programs\n");
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 3; j++) {
 			if (!(gameStates.render.textures.bHaveGrayScaleShader = shaderManager.Build (grayscaleShaderProgs [i][j], grayScaleFS [i][j], grayScaleVS [i][j]))) {
@@ -138,7 +138,7 @@ else {
 if (!gameOpts->ogl.bGlTexMerge) {
 	ogl.m_states.bLowMemory = 0;
 	ogl.m_features.bTextureCompression = 0;
-	PrintLog ("+++++ OpenGL shader texture merging has been disabled! +++++\n");
+	PrintLog (1, "+++++ OpenGL shader texture merging has been disabled! +++++\n");
 	}
 }
 

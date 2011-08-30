@@ -115,7 +115,7 @@ void ComputeSegmentDistance (int startI, int nThread)
 {
 	int	i, endI;
 
-PrintLog ("computing segment distances (%d)\n", startI);
+PrintLog (1, "computing segment distances (%d)\n", startI);
 dacsRouter [nThread].Create (gameData.segs.nSegments);
 for (i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i < endI; i++)
 	ComputeSingleSegmentDistance (i, nThread);
@@ -177,7 +177,7 @@ int ComputeNearestSegmentLights (int i, int nThread)
 	CFixVector			center;
 	struct tLightDist	*pDists;
 
-PrintLog ("computing nearest segment lights (%d)\n", i);
+PrintLog (1, "computing nearest segment lights (%d)\n", i);
 if (!lightManager.LightCount (0))
 	return 0;
 
@@ -373,7 +373,7 @@ static void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 
 	CObject			viewer;
 
 G3_SLEEP (0);
-//PrintLog ("computing visibility of segment %d\n", nStartSeg);
+//PrintLog (1, "computing visibility of segment %d\n", nStartSeg);
 ogl.SetTransform (1);
 #if DBG
 if (nStartSeg == nDbgSeg)
@@ -477,7 +477,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 	gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
 	BuildRenderSegList (nStartSeg, 0, true);
-	//PrintLog ("   flagging visible segments\n");
+	//Printlog (1, "flagging visible segments\n");
 	for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 		if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
 			continue;
@@ -515,7 +515,7 @@ static void ComputeSegmentVisibility (int startI)
 {
 	int i, endI;
 
-PrintLog ("computing segment visibility (%d)\n", startI);
+PrintLog (1, "computing segment visibility (%d)\n", startI);
 if (gameStates.app.bMultiThreaded)
 	endI = gameData.segs.nSegments;
 else
@@ -650,7 +650,7 @@ static void ComputeLightVisibility (int startI)
 {
 	int i, j, endI;
 
-PrintLog ("computing light visibility (%d)\n", startI);
+PrintLog (1, "computing light visibility (%d)\n", startI);
 SetupSegments (fix (I2X (1) * 0.001f));
 if (startI <= 0) {
 	i = sizeof (gameData.segs.bVertVis [0]) * gameData.segs.nVertices * VERTVIS_FLAGS;
@@ -940,24 +940,24 @@ if (!(SHOW_DYN_LIGHT ||
 	return;
 loadOp = 0;
 loadIdx = 0;
-PrintLog ("Looking for precompiled light data\n");
+PrintLog (1, "Looking for precompiled light data\n");
 if (LoadLightData (nLevel))
 	return;
 
 #if MULTI_THREADED_PRECALC != 0
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
-	PrintLog ("Computing segment visibility\n");
+	PrintLog (1, "Computing segment visibility\n");
 	ComputeSegmentVisibility (-1);
-	PrintLog ("Computing segment distances\n");
+	PrintLog (1, "Computing segment distances\n");
 	StartLightThreads (SegDistThread);
-	PrintLog ("Computing light visibility\n");
+	PrintLog (1, "Computing light visibility\n");
 	ComputeLightVisibility (-1);
-	PrintLog ("Starting segment light calculation threads\n");
+	PrintLog (1, "Starting segment light calculation threads\n");
 	StartLightThreads (SegLightsThread);
-	PrintLog ("Starting vertex light calculation threads\n");
+	PrintLog (1, "Starting vertex light calculation threads\n");
 	StartLightThreads (VertLightsThread);
-	PrintLog ("Computing vertices visible to lights\n");
+	PrintLog (1, "Computing vertices visible to lights\n");
 	ComputeLightsVisibleVertices (-1);
 	gameData.physics.side.bCache = 1;
 	}
@@ -970,24 +970,24 @@ else {
 						 LoadMineGaugeSize () + PagingGaugeSize (),
 						 LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize () + SegDistGaugeSize (), SortLightsPoll);
 	else {
-		PrintLog ("Computing segment visibility\n");
+		PrintLog (1, "Computing segment visibility\n");
 		ComputeSegmentVisibility (-1);
-		PrintLog ("Computing segment distances\n");
+		PrintLog (1, "Computing segment distances\n");
 		ComputeSegmentDistance (-1, 0);
-		PrintLog ("Computing light visibility\n");
+		PrintLog (1, "Computing light visibility\n");
 		ComputeLightVisibility (-1);
-		PrintLog ("Computing segment lights\n");
+		PrintLog (1, "Computing segment lights\n");
 		ComputeNearestSegmentLights (-1, 0);
-		PrintLog ("Computing vertex lights\n");
+		PrintLog (1, "Computing vertex lights\n");
 		ComputeNearestVertexLights (-1, 0);
-		PrintLog ("Computing vertices visible to lights\n");
+		PrintLog (1, "Computing vertices visible to lights\n");
 		ComputeLightsVisibleVertices (-1);
 		}
 	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}
 
 gameData.segs.bVertVis.Destroy ();
-PrintLog ("Saving precompiled light data\n");
+PrintLog (1, "Saving precompiled light data\n");
 SaveLightData (nLevel);
 }
 

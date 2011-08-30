@@ -77,7 +77,7 @@ void FreeStringPool (void)
 	int			i;
 	grsString	*ps;
 
-PrintLog ("unloading string pool\n");
+PrintLog (1, "unloading string pool\n");
 for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
 	delete[] ps->pszText;
 	ps->pszText = NULL;
@@ -87,7 +87,7 @@ for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
 	delete ps->bmP;
 	ps->bmP = NULL;
 	}
-PrintLog ("initializing string pool\n");
+PrintLog (1, "initializing string pool\n");
 InitStringPool ();
 }
 

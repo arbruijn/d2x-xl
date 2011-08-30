@@ -45,7 +45,7 @@ Destroy ();
 
 void CRBA::Destroy (void)
 {
-PrintLog ("shutting down SDL CD service\n");
+PrintLog (1, "shutting down SDL CD service\n");
 if (m_bInitialized) {
 	SDL_CDStop (m_cdInfo);
 	SDL_CDClose (m_cdInfo);

@@ -46,7 +46,7 @@ if (ogl.m_states.bVertexLighting)
 void CGPGPULighting::End (void)
 {
 if (ogl.m_states.bVertexLighting) {
-	PrintLog ("unloading dynamic lighting buffers\n");
+	PrintLog (1, "unloading dynamic lighting buffers\n");
 	lightManager.FBO ().Destroy ();
 	}
 }
@@ -426,7 +426,7 @@ if (!ogl.m_states.bVertexLighting)
 ogl.m_states.bVertexLighting = 0;
 #if GPGPU_VERTEX_LIGHTING
 if (ogl.m_features.bRenderToTexture.Available () && ogl.m_features.bShaders.Available ()) {
-	PrintLog ("building vertex lighting shader program\n");
+	PrintLog (1, "building vertex lighting shader program\n");
 	ogl.m_states.bVertexLighting = 1;
 	if (m_nShaderProg)
 		DeleteShaderProg (&m_nShaderProg);

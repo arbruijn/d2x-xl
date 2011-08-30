@@ -973,7 +973,7 @@ else
 	hiresPicture.index = picture.index;
 
 #if PRINT_WEAPON_INFO
-PrintLog ("   {%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
+Printlog (1, "{%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
 	renderType,
 	persistent,
 	nModel,
@@ -995,7 +995,7 @@ PrintLog ("   {%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
 	flags,
 	flash,
 	nAfterburnerSize);
-PrintLog ("%d,%d,%d,%d,{%d},%d,%d,%d,{",
+PrintLog (1, "%d,%d,%d,%d,{%d},%d,%d,%d,{",
 	children,
 	xEnergyUsage,
 	xFireWait,
@@ -1005,11 +1005,11 @@ PrintLog ("%d,%d,%d,%d,{%d},%d,%d,%d,{",
 	xFlashSize,
 	xImpactSize);
 for (i = 0; i < NDL; i++)
-	PrintLog ("%s%d", i ? "," : "", strength [i]);
-PrintLog ("},{");
+	PrintLog (1, "%s%d", i ? "," : "", strength [i]);
+PrintLog (1, "},{");
 for (i = 0; i < NDL; i++)
-	PrintLog ("%s%d", i ? "," : "", speed [i]);
-PrintLog ("},%d,%d,%d,%d,%d,%d,%d,{%d},{%d}}\n",
+	PrintLog (1, "%s%d", i ? "," : "", speed [i]);
+PrintLog (1, "},%d,%d,%d,%d,%d,%d,%d,{%d},{%d}}\n",
 	mass,
 	drag,
 	thrust,
@@ -1029,12 +1029,12 @@ int ReadWeaponInfos (int nOffset, int nCount, CFile& cf, int fileVersion)
 	int i;
 
 #if PRINT_WEAPON_INFO
-PrintLog ("\nCWeaponInfo defaultWeaponInfosD2 [] = {\n");
+PrintLog (1, "\nCWeaponInfo defaultWeaponInfosD2 [] = {\n");
 #endif
 for (i = nOffset; i < nOffset + nCount; i++)
 	gameData.weapons.info [i].Read (cf, fileVersion);
 #if PRINT_WEAPON_INFO
-PrintLog ("}\n\n");
+PrintLog (1, "}\n\n");
 #endif
 return i;
 }

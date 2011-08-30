@@ -379,7 +379,7 @@ int CreatePowerup (ubyte nId, short nCreator, short nSegment, const CFixVector& 
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return -1;
 if (nId >= MAX_POWERUP_TYPES) {
-	PrintLog ("Trying to create non-existant powerup (type %d)\n", nId);
+	PrintLog (1, "Trying to create non-existant powerup (type %d)\n", nId);
 	return -1;
 	}
 if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
@@ -579,7 +579,7 @@ try {
 	FreeObject (nObject);
 	}
 catch (...) {
-	PrintLog ("Error freeing an object\n");
+	PrintLog (1, "Error freeing an object\n");
 	}
 SpawnLeftoverPowerups (nObject);
 }

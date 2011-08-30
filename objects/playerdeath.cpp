@@ -125,11 +125,11 @@ if (!gameStates.app.bPlayerIsDead)
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordRestoreCockpit ();
 if (gameData.objs.deadPlayerCamera) {
-	PrintLog ("   releasing death camera\n");
+	Printlog (1, "releasing death camera\n");
 	ReleaseObject (OBJ_IDX (gameData.objs.deadPlayerCamera));
 	gameData.objs.deadPlayerCamera = NULL;
 	}
-PrintLog ("   resetting cockpit\n");
+Printlog (1, "resetting cockpit\n");
 CGenericCockpit::Rewind ();
 gameStates.app.bPlayerIsDead = 0;
 gameStates.app.bPlayerExploded = 0;

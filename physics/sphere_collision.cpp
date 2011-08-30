@@ -825,7 +825,7 @@ int ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, short* segList, sho
 #endif
 
 bestHit.vPoint.SetZero ();
-//PrintLog ("Entry ComputeHitpoint\n");
+//PrintLog (1, "Entry ComputeHitpoint\n");
 if (hitQuery.flags & FQ_GET_SEGLIST)
 	*segList = hitQuery.nSegment;
 *nSegments = 1;
@@ -833,7 +833,7 @@ gameData.collisions.hitResult.nNestCount++;
 //first, see if vector hit any objects in this CSegment
 #if 1
 if (hitQuery.flags & FQ_CHECK_OBJS) {
-	//PrintLog ("   checking objects...");
+	//Printlog (1, "checking objects...");
 	dMin = ComputeObjectHitpoint (bestHit, hitQuery);
 	}
 #endif

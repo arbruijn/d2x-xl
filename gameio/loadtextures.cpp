@@ -513,7 +513,7 @@ static int ReadLoresBitmap (CBitmap* bmP, int nIndex, int bD1)
 nDescentCriticalError = 0;
 
 if (gameStates.app.nLogLevel > 1)
-	PrintLog ("loading lores texture '%s'\n", bmP->Name ());
+	PrintLog (1, "loading lores texture '%s'\n", bmP->Name ());
 CFile* cfP = cfPiggy + bD1;
 if (!cfP->File ())
 	PiggyInitPigFile (NULL);
@@ -755,7 +755,7 @@ if (!pszFile)
 
 #if 0
 if (gameStates.app.nLogLevel > 1)
-	PrintLog ("loading hires texture '%s' (quality: %d)\n", pszFile, min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
+	PrintLog (1, "loading hires texture '%s' (quality: %d)\n", pszFile, min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
 #endif
 if (nFile < 2)	//was level specific mod folder
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);
@@ -814,7 +814,7 @@ if ((nIndex >= 0) && (nIndex < 0x7FFFFFFF)) {	// replacement texture for a lores
 				vcP->flags |= WCF_ALTFMT;
 				}
 			else {
-				PrintLog ("   couldn't find animation for '%s'\n", bmName);
+				Printlog (1, "couldn't find animation for '%s'\n", bmName);
 				}
 			}
 		}
@@ -986,7 +986,7 @@ void LoadReplacementBitmaps (const char *pszLevelName)
 	CBitmap	bm;
 
 //first, free up data allocated for old bitmaps
-PrintLog ("   loading replacement textures\n");
+Printlog (1, "loading replacement textures\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".pog");
 if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 	int					id, version, nBitmapNum, bHaveTGA;
@@ -1123,7 +1123,7 @@ void LoadTextureColors (const char *pszLevelName, CFaceColor *colorP)
 	int			i;
 
 //first, free up data allocated for old bitmaps
-PrintLog ("   loading texture colors\n");
+Printlog (1, "loading texture colors\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".clr");
 if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 	if (!colorP)
@@ -1184,7 +1184,7 @@ try {
 	bmBackground.SetPalette (NULL, -1, -1);
 	}
 catch(...) {
-	PrintLog ("Error reading background image '%s'\n", BACKGROUND_NAME);
+	PrintLog (1, "Error reading background image '%s'\n", BACKGROUND_NAME);
 	try {
 		bmBackground.Destroy ();
 		}

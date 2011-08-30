@@ -69,7 +69,7 @@ return SDL_SetGammaRamp ((Uint16*) (gammaRamp + paletteManager.RedEffect () * 4)
 int SdlGlVideoModeOK (int w, int h)
 {
 int nColorBits = SDL_VideoModeOK (w, h, FindArg ("-gl_16bpp") ? 16 : 32, SDL_VIDEO_FLAGS);
-PrintLog ("SDL suggests %d bits/pixel\n", nColorBits);
+PrintLog (1, "SDL suggests %d bits/pixel\n", nColorBits);
 if (!nColorBits)
 	return 0;
 ogl.m_states.nColorBits = nColorBits;
@@ -85,7 +85,7 @@ int SdlGlSetAttribute (const char *szSwitch, const char *szAttr, SDL_GLattr attr
 if (szSwitch && (i = FindArg (szSwitch)) && appConfig [i + 1])
 	attr = (SDL_GLattr) atoi (appConfig [i + 1]);
 i = SDL_GL_SetAttribute (attr, value);
-/***/PrintLog ("   setting %s to %d %s\n", szAttr, value, (i == -1) ? "failed" : "succeeded");
+/***/Printlog (1, "setting %s to %d %s\n", szAttr, value, (i == -1) ? "failed" : "succeeded");
 return i;
 }
 
@@ -95,7 +95,7 @@ void SdlGlInitAttributes (void)
 {
 	int t;
 
-/***/PrintLog ("setting OpenGL attributes\n");
+/***/PrintLog (1, "setting OpenGL attributes\n");
 SdlGlSetAttribute ("-gl_red", "SDL_GL_RED_SIZE", SDL_GL_RED_SIZE, 8);
 SdlGlSetAttribute ("-gl_green", "SDL_GL_GREEN_SIZE", SDL_GL_GREEN_SIZE, 8);
 SdlGlSetAttribute ("-gl_blue", "SDL_GL_BLUE_SIZE", SDL_GL_BLUE_SIZE, 8);
@@ -154,7 +154,7 @@ if (!IrrInit (w, h, (bool) ogl.m_states.bFullScreen))
 	return 0;
 #else
 SDL_putenv (const_cast<char*>("SDL_VIDEO_CENTERED=1"));
-/***/PrintLog ("setting SDL video mode (%dx%dx%d, %s)\n",
+/***/PrintLog (1, "setting SDL video mode (%dx%dx%d, %s)\n",
 				 w, h, ogl.m_states.nColorBits, ogl.m_states.bFullScreen ? "fullscreen" : "windowed");
 if (!SdlGlVideoModeOK (w, h) ||
 	 !SDL_SetVideoMode (w, h, ogl.m_states.nColorBits, SDL_VIDEO_FLAGS)) {
