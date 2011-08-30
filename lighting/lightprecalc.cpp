@@ -115,11 +115,9 @@ void ComputeSegmentDistance (int startI, int nThread)
 {
 	int endI;
 
-PrintLog (1, "computing segment distances (%d)\n", startI);
 dacsRouter [nThread].Create (gameData.segs.nSegments);
 for (int i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i < endI; i++)
 	ComputeSingleSegmentDistance (i, nThread);
-PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -178,16 +176,12 @@ int ComputeNearestSegmentLights (int i, int nThread)
 	CFixVector			center;
 	struct tLightDist	*pDists;
 
-PrintLog (1, "computing nearest segment lights (%d)\n", i);
-if (!lightManager.LightCount (0)) {
-	PrintLog (-1);
+if (!lightManager.LightCount (0))
 	return 0;
-	}
 
 if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
 	gameOpts->render.nLightingMethod = 0;
 	gameData.render.shadows.nLights = 0;
-	PrintLog (-1);
 	return 0;
 	}
 
@@ -218,7 +212,6 @@ for (segP = SEGMENTS + i; i < j; i++, segP++) {
 		lightManager.NearestSegLights ()[k + l] = -1;
 	}
 delete[] pDists;
-PrintLog (-1);
 return 1;
 }
 
@@ -518,7 +511,6 @@ static void ComputeSegmentVisibility (int startI)
 {
 	int i, endI;
 
-PrintLog (1, "computing segment visibility (%d)\n", startI);
 if (gameStates.app.bMultiThreaded)
 	endI = gameData.segs.nSegments;
 else
@@ -527,7 +519,6 @@ if (startI < 0)
 	startI = 0;
 for (i = startI; i < endI; i++)
 	ComputeSingleSegmentVisibility (i);
-PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -654,20 +645,16 @@ static void ComputeLightVisibility (int startI)
 {
 	int i, j, endI;
 
-PrintLog (1, "computing light visibility (%d)\n", startI);
 SetupSegments (fix (I2X (1) * 0.001f));
 if (startI <= 0) {
 	i = sizeof (gameData.segs.bVertVis [0]) * gameData.segs.nVertices * VERTVIS_FLAGS;
 	if (!gameData.segs.bVertVis.Create (i)) {
-		PrintLog (-1);
 		return;
 		}
 	gameData.segs.bVertVis.Clear ();
 	}
-else if (!gameData.segs.bVertVis) {
-	PrintLog (-1);
+else if (!gameData.segs.bVertVis) 
 	return;
-	}
 if (gameStates.app.bMultiThreaded)
 	endI = lightManager.LightCount (0);
 else
@@ -693,7 +680,6 @@ for (i = endI - startI; i; i--, lightP++) {
 #endif
 		}
 	}
-PrintLog (-1);
 //PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;
 //SetupSegments ();
 }
@@ -717,6 +703,8 @@ if (nState)
 
 //paletteManager.ResumeEffect ();
 if (loadOp == 0) {
+	if (loadIdx == 0)
+		PrintLog (0, "computing segment visibility\n");
 	ComputeSegmentVisibility (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
@@ -725,6 +713,8 @@ if (loadOp == 0) {
 		}
 	}
 if (loadOp == 1) {
+	if (loadIdx == 0)
+		PrintLog (0, "computing segment distances \n");
 	ComputeSegmentDistance (loadIdx, 0);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
@@ -733,6 +723,8 @@ if (loadOp == 1) {
 		}
 	}
 if (loadOp == 2) {
+	if (loadIdx == 0)
+		PrintLog (0, "computing light visibility\n");
 	ComputeLightVisibility (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= lightManager.LightCount (0)) {
@@ -741,6 +733,8 @@ if (loadOp == 2) {
 		}
 	}
 else if (loadOp == 3) {
+	if (loadIdx == 0)
+		PrintLog (0, "computing nearest segment lights\n");
 	ComputeNearestSegmentLights (loadIdx, 0);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
@@ -749,6 +743,8 @@ else if (loadOp == 3) {
 		}
 	}
 else if (loadOp == 4) {
+	if (loadIdx == 0)
+		PrintLog (0, "computing nearest vertex lights\n");
 	ComputeNearestVertexLights (loadIdx, 0);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nVertices) {
@@ -757,6 +753,8 @@ else if (loadOp == 4) {
 		}
 	}
 else if (loadOp == 5) {
+	if (loadIdx == 0)
+		PrintLog (0, "Computing vertices visible to lights\n");
 	ComputeLightsVisibleVertices (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= lightManager.LightCount (0)) {
@@ -954,6 +952,7 @@ if (LoadLightData (nLevel)) {
 	PrintLog (-1);
 	return;
 	}
+PrintLog (-1);
 
 #if MULTI_THREADED_PRECALC != 0
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
