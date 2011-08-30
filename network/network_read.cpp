@@ -248,7 +248,7 @@ if (networkData.nJoinState) {
 gameData.multigame.score.nTeam [0] = *sp->TeamKills (0);
 gameData.multigame.score.nTeam [1] = *sp->TeamKills (1);
 CONNECT (N_LOCALPLAYER, CONNECT_PLAYING);
-netPlayers [0].m_info.players [N_LOCALPLAYER].Connect (CONNECT_PLAYING);
+netPlayers [0].m_info.players [N_LOCALPLAYER].connected = CONNECT_PLAYING;
 netPlayers [0].m_info.players [N_LOCALPLAYER].rank = GetMyNetRanking ();
 if (!networkData.nJoinState) {
 	int	j, bGotTeamSpawnPos = (IsTeamGame) && GotTeamSpawnPos ();

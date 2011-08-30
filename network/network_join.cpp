@@ -164,7 +164,7 @@ gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
 gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
 KillPlayerBullets (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 KillGatlingSmoke (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
-netPlayers [0].m_info.players [nPlayer].Connect (CONNECT_DISCONNECTED);
+netPlayers [0].m_info.players [nPlayer].connected = CONNECT_DISCONNECTED;
 for (short i = 0; i < networkData.nJoining; i++)
 	if (networkData.sync [i].nPlayer == nPlayer)
 		DeleteSyncData (i);

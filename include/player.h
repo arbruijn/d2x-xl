@@ -197,7 +197,16 @@ class CPlayerInfo {
 		fix     homingObjectDist;     // Distance of nearest homing CObject.
 		sbyte   hoursLevel;           // Hours played (since timeTotal can only go up to 9 hours)
 		sbyte   hoursTotal;           // Hours played (since timeTotal can only go up to 9 hours)
-	} ;
+
+	public:
+		inline void Connect (sbyte nStatus) {
+#if DBG
+			if (nStatus < 2)
+				nStatus = nStatus;
+#endif
+			connected = nStatus;
+			}
+	};
 
 class __pack__ CPlayerData : public CPlayerInfo {
 	public:
@@ -243,13 +252,9 @@ class __pack__ CPlayerData : public CPlayerInfo {
 		CObject* Object (void);
 		void SetObject (short n);
 		bool IsLocalPlayer (void);
-		inline void Connect (sbyte nStatus) {
-			connected = nStatus;
-			}
 
 	private:
 		int Index (void);
-
 };
 
 

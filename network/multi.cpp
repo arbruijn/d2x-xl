@@ -1035,7 +1035,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiDeath (nKilledPlayer);
 audio.PlaySound (SOUND_HUD_KILL, SOUNDCLASS_GENERIC, I2X (3));
 if (gameData.reactor.bDestroyed)
-	killedP->Connect, CONNECT_DIED_IN_MINE);
+	killedP->Connect (CONNECT_DIED_IN_MINE);
 if (killerType == OBJ_REACTOR) {
 	killedP->netKilledTotal++;
 	killedP->netKillsTotal--;
@@ -1642,7 +1642,7 @@ if (buf [2] == 0) {
 else if (buf [2] == 1) {
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [(int) buf [1]].callsign, TXT_HAS_FOUND_SECRET);
 	if (gameData.app.nGameMode & GM_NETWORK)
-		CONNECT ((int) buf [1]], CONNECT_FOUND_SECRET);
+		CONNECT ((int) buf [1], CONNECT_FOUND_SECRET);
 	if (!gameData.multigame.bGotoSecret)
 		gameData.multigame.bGotoSecret = 1;
 	}
