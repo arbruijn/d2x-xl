@@ -156,6 +156,7 @@ PrintLog (1, "reloading ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, modelP = gameData.models.aseModels [bCustom].Buffer (); i; i--, modelP++)
 		if (!modelP->ReloadTextures ()) {
+			PrintLog (-1);
 			return 0;
 			}
 PrintLog (-1);

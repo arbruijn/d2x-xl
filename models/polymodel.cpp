@@ -794,7 +794,8 @@ for (i = 0, j = int (OBJECTS.Length ()); i < j; i++, objP++) {
 #endif
 		if (DrawPolygonObject (objP, 0))
 			h++;
-		PrintLog (-1);
+		if (gameStates.app.nLogLevel > 1)
+			PrintLog (-1);
 		}
 	}
 #endif

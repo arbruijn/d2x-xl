@@ -458,7 +458,6 @@ if (!ogl.m_features.bShaders) {
 	ogl.m_features.bTextureCompression = 0;
 	return;
 	}
-::PrintLog (-1);
 gameStates.render.bLightmapsOk = (nTMUs >= 4);
 ::PrintLog (1, "initializing texture merging shader programs\n");
 InitTexMergeShaders ();
@@ -495,6 +494,7 @@ ResetSphereShaders ();
 #if 0
 Link (Alloc ());
 #endif
+::PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
