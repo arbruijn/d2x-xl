@@ -846,7 +846,6 @@ PrintLog (-1);
 gameStates.render.bBuildModels = 0;
 PrintLog (1, "saving optimized polygon model data\n", h);
 SaveModelData ();
-PrintLog (-1);
 PrintLog (-1, "finished building optimized polygon model data (%d models converted)\n", h);
 }
 
