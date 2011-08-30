@@ -68,11 +68,15 @@ return SDL_SetGammaRamp ((Uint16*) (gammaRamp + paletteManager.RedEffect () * 4)
 
 int SdlGlVideoModeOK (int w, int h)
 {
+PrintLog (1, "checking video mode (%d X %d)\n", w, h);
 int nColorBits = SDL_VideoModeOK (w, h, FindArg ("-gl_16bpp") ? 16 : 32, SDL_VIDEO_FLAGS);
 PrintLog (0, "SDL suggests %d bits/pixel\n", nColorBits);
-if (!nColorBits)
+if (!nColorBits) {
+	PrintLog (-1);
 	return 0;
+	}
 ogl.m_states.nColorBits = nColorBits;
+PrintLog (-1);
 return 1;
 }
 
