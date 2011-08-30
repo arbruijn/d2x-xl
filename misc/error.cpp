@@ -437,7 +437,7 @@ exit (1);
 static int nLogIndent = 0;
 static int nLastIndent = 0;
 
-static void IndentLog (int nIndent)
+void IndentLog (int nIndent)
 {
 if (nIndent) {
 	if (abs (nIndent) == 1)
@@ -453,6 +453,15 @@ else if (nLogIndent > 30) {
 	PrintLog (0, "Log indentation error!\n");
 	nLogIndent = 30;
 	}
+}
+
+//------------------------------------------------------------------------------
+
+int SetIndent (int nIndent)
+{
+int nOldIndent = nLogIndent;
+nLogIndent = nIndent;
+return nOldIndent;
 }
 
 //------------------------------------------------------------------------------

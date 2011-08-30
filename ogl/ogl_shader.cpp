@@ -459,30 +459,17 @@ if (!ogl.m_features.bShaders) {
 	return;
 	}
 gameStates.render.bLightmapsOk = (nTMUs >= 4);
-::PrintLog (1, "initializing texture merging shader programs\n");
 InitTexMergeShaders ();
-::PrintLog (-1);
 ogl.m_data.nHeadlights = 0;
-::PrintLog (1, "initializing lighting shader programs\n");
 InitHeadlightShaders (1);
-::PrintLog (-1);
 #if GPGPU_VERTEX_LIGHTING
 ::PrintLog (1, "initializing vertex lighting shader programs\n");
 gpgpuLighting.InitShader ();
 #endif
-::PrintLog (1, "initializing glare shader programs\n");
 glareRenderer.InitShader ();
-::PrintLog (-1);
-::PrintLog (1, "initializing particle shader programs\n");
 particleManager.InitShader ();
-::PrintLog (-1);
-::PrintLog (1, "initializing blur shader programs\n");
 glowRenderer.InitShader ();
-::PrintLog (-1);
-::PrintLog (1, "initializing gray scale shader programs\n");
 InitGrayScaleShader ();
-::PrintLog (-1);
-::PrintLog (1, "initializing enhanced 3D shader programs\n");
 ogl.InitEnhanced3DShader ();
 ogl.InitShadowMapShader ();
 ResetPerPixelLightingShaders ();
@@ -490,7 +477,6 @@ InitPerPixelLightingShaders ();
 ResetLightmapShaders ();
 InitLightmapShaders ();
 ResetSphereShaders ();
-::PrintLog (-1);
 #if 0
 Link (Alloc ());
 #endif

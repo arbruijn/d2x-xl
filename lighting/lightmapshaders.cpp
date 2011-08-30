@@ -125,16 +125,14 @@ if (lightmapShaderProgs [nType] >= 0)
 for (h = 0; h <= 3; h++) {
 	if (lightmapShaderProgs [h] >= 0)
 		continue;
-	PrintLog (1, "building lightmap shader programs\n");
+	PrintLog (0, "building lightmap shader programs\n");
 	if (!shaderManager.Build (lightmapShaderProgs [h], pszLMLightingFS [h], pszLMLightingVS [h])) {
 		ogl.m_features.bPerPixelLighting = 0;
 		gameStates.render.bPerPixelLighting = 0;
 		for (j = 0; j < 4; j++)
 			shaderManager.Delete (lightmapShaderProgs [j]);
-		PrintLog (-1);
 		return -1;
 		}
-	PrintLog (-1);
 	}
 return 1;
 }

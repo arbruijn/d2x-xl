@@ -730,7 +730,7 @@ const char *glareVS =
 void CGlareRenderer::InitShader (void)
 {
 if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders && (ogl.m_features.bDepthBlending > -1)) {
-	PrintLog (1, "building corona blending shader program\n");
+	PrintLog (0, "building corona blending shader program\n");
 	m_shaderProg = 0;
 	if (shaderManager.Build (hGlareShader, glareFS, glareVS)) {
 		ogl.m_features.bDepthBlending.Available (1);
@@ -740,7 +740,6 @@ if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders && (ogl.m_feature
 		ogl.ClearError (0);
 		ogl.m_features.bDepthBlending.Available (0);
 		}
-	PrintLog (-1);
 	}
 }
 

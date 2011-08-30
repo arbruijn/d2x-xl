@@ -125,17 +125,15 @@ void InitGrayScaleShader (void)
 if (!(gameOpts->render.bUseShaders && ogl.m_features.bShaders))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
-	PrintLog (1, "building grayscale shader programs\n");
+	PrintLog (0, "building grayscale shader programs\n");
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 3; j++) {
 			if (!(gameStates.render.textures.bHaveGrayScaleShader = shaderManager.Build (grayscaleShaderProgs [i][j], grayScaleFS [i][j], grayScaleVS [i][j]))) {
 				DeleteGrayScaleShader ();
-				PrintLog (-1);
 				return;
 				}
 			}
 		}
-	PrintLog (-1);
 	}
 if (!gameOpts->ogl.bGlTexMerge) {
 	ogl.m_states.bLowMemory = 0;

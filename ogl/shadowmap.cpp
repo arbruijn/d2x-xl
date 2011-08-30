@@ -243,11 +243,10 @@ const char* shadowMapFS =
 void COGL::InitShadowMapShader (void)
 {
 if (gameOpts->render.bUseShaders && m_features.bShaders.Available ()) {
-	PrintLog (1, "building shadow mapping program\n");
+	PrintLog (0, "building shadow mapping program\n");
 	gameStates.render.textures.bHaveShadowMapShader = (0 <= shaderManager.Build (shadowShaderProg, shadowMapFS, shadowMapVS));
 	if (!gameStates.render.textures.bHaveShadowMapShader) 
 		DeleteShadowMapShader ();
-	PrintLog (-1);
 	}
 }
 

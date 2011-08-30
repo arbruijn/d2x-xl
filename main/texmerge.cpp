@@ -512,7 +512,7 @@ void InitTexMergeShaders (void)
 if (!(gameOpts->render.bUseShaders && ogl.m_features.bShaders))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
-	PrintLog (1, "building texturing shader programs\n");
+	PrintLog (0, "building texturing shader programs\n");
 	for (i = 0; i < 6; i++) {
 		b = shaderManager.Build (tmShaderProgs [i], texMergeFS [i], texMergeVS [i % 3]);
 		if (i == 2)
@@ -526,7 +526,6 @@ else {
 			break;
 			}
 		}
-	PrintLog (-1);
 	}
 if (!gameOpts->ogl.bGlTexMerge) {
 	ogl.m_states.bLowMemory = 0;

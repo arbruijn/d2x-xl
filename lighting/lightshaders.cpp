@@ -928,6 +928,8 @@ const char *pszPP0LMLightingFS [] = {
 
 //-------------------------------------------------------------------------
 
+int SetIndent (int nIndent);
+
 char *BuildLightingShader (const char *pszTemplate, int nLights)
 {
 	int	l = (int) strlen (pszTemplate) + 1;
@@ -943,9 +945,11 @@ if (strstr (pszFS, "#define LIGHTS ") == pszFS) {
 	pszFS [15] = *szLights;
 	}
 #if DBG
-PrintLog (1, "\n\nShader program:\n");
+int nIndent = SetIndent (0);
+PrintLog (0, "\n\nShader program:\n");
 PrintLog (0, pszFS);
-PrintLog (-1, "\n");
+PrintLog (0, "\n");
+SetIndent (nIndent);
 #endif
 return pszFS;
 }
@@ -1009,7 +1013,7 @@ for (h = 0; h <= 3; h++) {
 				vsP = pszLightingVS;
 				}
 			}
-		PrintLog (1, "building lighting shader programs\n");
+		PrintLog (0, "building lighting shader programs\n");
 		pszFS = BuildLightingShader (fsP [h], i);
 		pszVS = BuildLightingShader (vsP [h], i);
 		bOk = (pszFS != NULL) && (pszVS != NULL) && shaderManager.Build (perPixelLightingShaderProgs [i][h], pszFS, pszVS);

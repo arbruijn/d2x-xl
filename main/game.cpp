@@ -211,7 +211,8 @@ bool InitGame (int nSegments, int nVertices)
 {
 if (!gameData.Create (nSegments, nVertices))
 	return false;
-/*---*/PrintLog (1, "Initializing game data\n  Objects ...\n");
+/*---*/PrintLog (1, "Initializing game data\n");
+PrintLog (1, "Objects ...\n");
 InitObjects ();
 PrintLog (-1);
 /*---*/PrintLog (1, "Special effects...\n");
