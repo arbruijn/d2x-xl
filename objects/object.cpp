@@ -1685,7 +1685,7 @@ return (fix) ((info.renderType == RT_POLYOBJ) ? gameData.models.polyModels [0][M
 
 fix CObject::PowerupSize (void)
 {
-return (fix) gameData.objs.pwrUp.info [objP->info.nId].size;
+return (fix) gameData.objs.pwrUp.info [info.nId].size;
 }
 
 //------------------------------------------------------------------------------

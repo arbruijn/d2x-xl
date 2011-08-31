@@ -671,12 +671,6 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 
 		inline void SetSignature (int nSignature) { info.nSignature = nSignature; }
 		inline void SetKey (ubyte nId) { info.nId = nId; }
-		inline void SetSize (fix xSize) { info.xSize = xSize; }
-		inline void SetSizeFromModel (int i = 0, fix scale = 0) { 
-			fix size = ModelSize (i);
-			SetSize (scale ? FixDiv (size, scale) : size); 
-			}
-		inline void SetSizeFromPowerup (void) { SetSize (PowerupSize ()); }
 		inline void SetShield (fix xShield) { info.xShield = xShield; }
 		inline void UpdateShield (fix xShield) { info.xShield += xShield; }
 		inline void SetLifeLeft (fix xLifeLeft) { info.xLifeLeft = xLifeLeft; }
@@ -691,10 +685,7 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 		inline void SetRenderType (ubyte renderType) { info.renderType = renderType; }
 		inline void SetFlags (ubyte nFlags) { info.nFlags = nFlags; }
 		inline void SetLastPos (const CFixVector& vLastPos) { info.vLastPos = vLastPos; }
-
-		fix ModelSize (int i);
-		fix PowerupSize (void);
-};
+	};
 
 //	-----------------------------------------------------------------------------
 
@@ -1056,6 +1047,15 @@ class CObject : public CObjectInfo {
 		inline bool IsGeometry (void) { return IsStatic () && Indestructible (); }
 		inline void Ignore (int bFlag) { m_bIgnore = bFlag; }
 		inline bool Ignored (int bFlag) { return m_bIgnore == bFlag; }
+
+		inline void SetSize (fix xSize) { info.xSize = xSize; }
+		inline void SetSizeFromModel (int i = 0, fix scale = 0) { 
+			fix size = ModelSize (i);
+			SetSize (scale ? FixDiv (size, scale) : size); 
+			}
+		inline void SetSizeFromPowerup (void) { SetSize (PowerupSize ()); }
+		fix ModelSize (int i);
+		fix PowerupSize (void);
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);
