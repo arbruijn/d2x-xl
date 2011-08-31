@@ -2517,6 +2517,10 @@ class CMultiplayerData {
 		bool Create (void);
 		void Destroy (void);
 		inline void Connect (int nPlayer, sbyte nStatus) {
+#if DBG
+			if ((nPlayer != nLocalPlayer) && (nStatus < 2))
+				nStatus = nStatus;
+#endif
 			players [nPlayer].Connect (nStatus);
 			}
 };
