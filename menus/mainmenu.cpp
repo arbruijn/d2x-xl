@@ -313,7 +313,7 @@ else if (nChoice == m.IndexOf ("program settings"))
 	ConfigMenu ();
 else if (nChoice == m.IndexOf ("choose pilot"))
 	SelectPlayer ();
-else if (nChoice == m.IndexOf ("play demo")) {
+else if (nChoice == m.IndexOf ("view demo")) {
 	char demoPath [FILENAME_LEN], demoFile [FILENAME_LEN];
 
 	sprintf (demoPath, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : ""); 

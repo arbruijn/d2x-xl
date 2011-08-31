@@ -22,6 +22,9 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#ifdef _WIN32
+#	include "share.h"
+#endif
 
 #if defined(__unix__) || defined(__macosx__)
 #include <unistd.h>
@@ -820,7 +823,7 @@ if (gameStates.app.nLogLevel > 0) {
 	fLog = fopen (fnErr, "wt");
 #else
 	sprintf (fnErr, "%s/d2x.log", gameFolders.szGameDir);
-	fLog = fopen (fnErr, "wt");
+	fLog = _fsopen (fnErr, "wt", _SH_DENYWR);
 #endif
 	}
 PrintLog (0, "%s\n", DESCENT_VERSION);
