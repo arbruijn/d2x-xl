@@ -1185,11 +1185,11 @@ if (!m_bQuick) {
 gameStates.app.bGameRunning = 0;
 i = LoadState (0, bSecret);
 gameData.app.bGamePaused = 0;
-/*---*/PrintLog (1, "rebuilding OpenGL texture data\n");
-/*---*/PrintLog (1, "rebuilding effects\n");
 if (i) {
+	/*---*/PrintLog (1, "rebuilding OpenGL context\n");
 	ogl.SetRenderQuality ();
 	ogl.RebuildContext (1);
+	PrintLog (-1);
 	if (bQuick)
 		HUDInitMessage (TXT_QUICKLOAD);
 	}
