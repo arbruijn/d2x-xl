@@ -466,6 +466,29 @@ return nOldIndent;
 
 //------------------------------------------------------------------------------
 
+static int nLogId = 0;
+
+#ifdef _WIN32
+#	include "share.h"
+#endif
+
+void OpenLogFile (void)
+{
+if (gameStates.app.nLogLevel > 0) {
+   char fnErr [FILENAME_LEN];
+#ifdef __unix__
+	sprintf (fnErr, "%s/d2x.log", getenv ("HOME"));
+	fLog = fopen (fnErr, "wt");
+#else
+	sprintf (fnErr, "%s/d2x.log", gameFolders.szGameDir);
+	while (!(fLog = _fsopen (fnErr, "wt", _SH_DENYWR))) 
+		sprintf (fnErr, "%s/d2x.log.%d", gameFolders.szGameDir, ++nLogId);
+#endif
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void _CDECL_ PrintLog (const int nIndent, const char *fmt, ...)
 {
 if (fLog) {

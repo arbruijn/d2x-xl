@@ -38,6 +38,7 @@ void _CDECL_ Error(const char *fmt,...);				//exit with error code=1, print mess
 void _CDECL_ Error(const char *fmt,...) __noreturn __format;				//exit with error code=1, print message
 #endif
 void Assert(int expr);
+void OpenLogFile (void);
 void _CDECL_ PrintLog (const int nIndent, const char *fmt = NULL, ...);
 void Int3();
 
