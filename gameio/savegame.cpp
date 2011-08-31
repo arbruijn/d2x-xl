@@ -2009,7 +2009,6 @@ if (m_nVersion >= 37) {
 	if (!h)
 		memcpy (gameData.multiplayer.playerInit, playerInitSave, sizeof (playerInitSave));
 	}
-/*---*/PrintLog (1, "initializing sound sources\n");
 if (m_nVersion >= 54) {
 	gameOpts->gameplay.nShip [0] = m_cf.ReadInt ();
 	gameOpts->gameplay.nShip [1] = -1;
@@ -2017,7 +2016,9 @@ if (m_nVersion >= 54) {
 	}
 if (LOCALPLAYER.numRobotsLevel > LOCALPLAYER.numKillsLevel + CountRobotsInLevel ()) // fix for a bug affecting savegames
 	LOCALPLAYER.numRobotsLevel = LOCALPLAYER.numKillsLevel + CountRobotsInLevel ();
+/*---*/PrintLog (1, "initializing sound sources\n");
 SetSoundSources ();
+PrintLog (-1);
 return 1;
 }
 

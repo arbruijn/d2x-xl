@@ -724,7 +724,7 @@ nLastSecretLevel = 0;
 *szBriefingFilename [0] = '\0';
 *szBriefingFilename [1] = '\0';
 while (MsnGetS (buf, 80, cf)) {
-	PrintLog (1, "'%s'\n", buf);
+	PrintLog (0, "'%s'\n", buf);
 	MsnTrimComment (buf);
 	if (MsnIsTok (buf, "name"))
 		;						//already have name, go to next line
@@ -987,15 +987,23 @@ if (nSubFolder < 0) {
 	}
 n = BuildList (1, nSubFolder);
 for (i = 0; i < n; i++)
-	if (!stricmp (szMissionName, m_list [i].filename))
+	if (!stricmp (szMissionName, m_list [i].filename)) {
+		if (nSubFolder < 0)
+			PrintLog (-1);
 		return Load (i);
+		}
 for (i = 0; i < n; i++)
 	if (!m_list [i].nDescentVersion && strcmp (m_list [i].szMissionName, "[..]")) {
-		if ((j = LoadByName (szMissionName, i)))
+		if ((j = LoadByName (szMissionName, i))) {
+			if (nSubFolder < 0)
+				PrintLog (-1);
 			return j;
+			}
 		MoveFolderUp ();
 		n = BuildList (1, -1);
 		}
+if (nSubFolder < 0)
+	PrintLog (-1);
 return 0;		//couldn't ffs mission
 }
 
