@@ -116,7 +116,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 			//it's marked as non-shareware.  To see what robot number,
 			//print objP->info.nId.
 		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
-		objP->info.xSize = gameData.models.polyModels [0][objP->ModelId ()].Rad ();
+		objP->SetSizeFromModel ();
 		}
 	if (objP->info.nId == 65)						//special "reactor" robots
 		objP->info.movementType = MT_NONE;
@@ -147,7 +147,7 @@ if (objP->info.nType == OBJ_POWERUP) {
 	if (objP->info.nId >= MAX_POWERUP_TYPES_D2)
 		InitAddonPowerup (objP);
 	else {
-		objP->info.xSize = gameData.objs.pwrUp.info [objP->info.nId].size;
+		objP->SetSizeFromPowerup ();
 		objP->cType.powerupInfo.xCreationTime = 0;
 		if (gameData.app.nGameMode & GM_NETWORK) {
 		if (MultiPowerupIs4Pack (objP->info.nId)) {
@@ -176,7 +176,7 @@ else if (objP->info.nType == OBJ_WEAPON) {
 		// Make sure model number & size are correct...	
 		Assert(objP->info.renderType == RT_POLYOBJ);
 		objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel;
-		objP->info.xSize = gameData.models.polyModels [0][objP->ModelId ()].Rad ();
+		objP->SetSizeFromModel ();
 		}
 	}
 else if (objP->info.nType == OBJ_REACTOR) {

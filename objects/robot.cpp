@@ -165,7 +165,7 @@ memset (camBotInfo.nRapidFireCount, 0, sizeof (camBotInfo.nRapidFireCount));
 FORALL_STATIC_OBJS (objP, i) 
 	if (objP->info.nType == OBJ_CAMBOT) {
 		objP->info.nId	= gameData.bots.nCamBotId;
-		objP->info.xSize = gameData.models.polyModels [0][gameData.bots.nCamBotModel].Size ();
+		objP->SetSizeFromModel ();
 		objP->SetLife (IMMORTAL_TIME);
 		objP->info.controlType = CT_CAMERA;
 		objP->info.movementType = MT_NONE;
@@ -173,7 +173,7 @@ FORALL_STATIC_OBJS (objP, i)
 		gameData.ai.localInfo [objP->Index ()].mode = AIM_IDLING;
 		}
 	else if (objP->info.nType == OBJ_EFFECT) {
-		objP->info.xSize = 0;
+		objP->SetSize (0);
 		objP->SetLife (IMMORTAL_TIME);
 		objP->info.controlType = CT_NONE;
 		objP->info.movementType = MT_NONE;

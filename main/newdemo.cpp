@@ -596,7 +596,7 @@ switch (objP->info.nType) {
 	case OBJ_HOSTAGE:
 		objP->info.controlType = CT_POWERUP;
 		objP->info.movementType = MT_NONE;
-		objP->info.xSize = HOSTAGE_SIZE;
+		objP->SetSize (HOSTAGE_SIZE);
 		break;
 
 	case OBJ_ROBOT:
@@ -607,8 +607,8 @@ switch (objP->info.nType) {
 			objP->info.movementType = MT_PHYSICS;
 		else
 			objP->info.movementType = MT_NONE;
-		objP->info.xSize = gameData.models.polyModels [0][ROBOTINFO (objP->info.nId).nModel].Rad ();
 		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
+		objP->SetSizeFromModel ();
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 		objP->cType.aiInfo.CLOAKED = (ROBOTINFO (objP->info.nId).cloakType?1:0);
 		break;
@@ -616,29 +616,29 @@ switch (objP->info.nType) {
 	case OBJ_POWERUP:
 		objP->info.controlType = CT_POWERUP;
 		objP->info.movementType = NDReadByte ();        // might have physics movement
-		objP->info.xSize = gameData.objs.pwrUp.info [objP->info.nId].size;
+		objP->SetSizeFromPowerup ();
 		break;
 
 	case OBJ_PLAYER:
 		objP->info.controlType = CT_NONE;
 		objP->info.movementType = MT_PHYSICS;
-		objP->info.xSize = gameData.models.polyModels [0][gameData.pig.ship.player->nModel].Rad ();
 		objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
+		objP->SetSizeFromModel ();
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 		break;
 
 	case OBJ_CLUTTER:
 		objP->info.controlType = CT_NONE;
 		objP->info.movementType = MT_NONE;
-		objP->info.xSize = gameData.models.polyModels [0][objP->info.nId].Rad ();
 		objP->rType.polyObjInfo.nModel = objP->info.nId;
+		objP->SetSizeFromModel ();
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 		break;
 
 	default:
 		objP->info.controlType = NDReadByte ();
 		objP->info.movementType = NDReadByte ();
-		objP->info.xSize = NDReadFix ();
+		objP->SetSize (NDReadFix ());
 		break;
 	}
 

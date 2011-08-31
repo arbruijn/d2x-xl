@@ -376,7 +376,7 @@ void InitPlayerObject (void)
 gameData.objs.consoleP->SetType (OBJ_PLAYER, false);
 gameData.objs.consoleP->info.nId = 0;					//no sub-types for player
 gameData.objs.consoleP->info.nSignature = 0;			//player has zero, others start at 1
-gameData.objs.consoleP->info.xSize = gameData.models.polyModels [0][gameData.pig.ship.player->nModel].Rad ();
+gameData.objs.consoleP->SetSize (gameData.models.polyModels [0][gameData.pig.ship.player->nModel].Rad ());
 gameData.objs.consoleP->info.controlType = CT_SLEW;			//default is player slewing
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;		//change this sometime
 gameData.objs.consoleP->SetLife (IMMORTAL_TIME);
@@ -1265,8 +1265,10 @@ void FixObjectSizes (void)
 	//int 		i;
 	CObject	*objP = OBJECTS.Buffer ();
 
+FORALL_PLAYER_OBJS (objP, i)
+	objP->SetSizeFromModel ();
 FORALL_ROBOT_OBJS (objP, i)
-	objP->info.xSize = gameData.models.polyModels [0][objP->ModelId ()].Rad ();
+	objP->SetSizeFromModel ();
 }
 
 //------------------------------------------------------------------------------
@@ -1670,6 +1672,20 @@ CFixVector CObject::FrontPosition (void)
 {
 tObjTransformation* objPos = OBJPOS (this);
 return objPos->vPos + objPos->mOrient.m.dir.f * info.xSize;
+}
+
+//------------------------------------------------------------------------------
+
+fix CObject::ModelSize (int i)
+{
+return (fix) ((info.renderType == RT_POLYOBJ) ? gameData.models.polyModels [0][ModelId ()].Rad (i) : 0);
+}
+
+//------------------------------------------------------------------------------
+
+fix CObject::PowerupSize (void)
+{
+return (fix) gameData.objs.pwrUp.info [objP->info.nId].size;
 }
 
 //------------------------------------------------------------------------------

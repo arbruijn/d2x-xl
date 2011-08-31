@@ -95,7 +95,7 @@ if (!InitAddonPowerup (objP)) {
 	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 	objP->rType.vClipInfo.nCurFrame = 0;
-	objP->info.xSize = gameData.objs.pwrUp.info [objP->info.nId].size;
+	objP->SetSizeFromPowerup ();
 	}
 objP->info.controlType = CT_POWERUP;
 objP->info.renderType = RT_POWERUP;
@@ -128,7 +128,7 @@ int ConvertModelToHostage (CObject *objP)
 objP->rType.vClipInfo.nClipIndex = nHostageVClips [0];
 objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 objP->rType.vClipInfo.nCurFrame = 0;
-objP->info.xSize = 289845;
+objP->SetSize (289845);
 objP->info.controlType = CT_POWERUP;
 objP->info.renderType = RT_HOSTAGE;
 objP->mType.physInfo.mass = I2X (1);
@@ -191,7 +191,7 @@ info.movementType = MT_PHYSICS;
 mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 rType.polyObjInfo.nModel = nModel;
 if (bHasModel)
-	info.xSize = gameData.models.polyModels [0][ModelId ()].Rad ();
+	SetSizeFromModel ();
 rType.polyObjInfo.nTexOverride = -1;
 SetLife (IMMORTAL_TIME);
 return 1;

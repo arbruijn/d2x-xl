@@ -274,7 +274,7 @@ objP->info.nId = nId;
 objP->info.vLastPos =
 objP->info.position.vPos = vPos;
 objP->SetOrigin (vPos);
-objP->info.xSize = xSize;
+objP->SetSize (xSize);
 objP->info.nCreator = sbyte (nCreator);
 objP->SetLife (IMMORTAL_TIME);
 if (IsMultiGame && (gameData.app.nGameMode & GM_ENTROPY) && (nType == OBJ_POWERUP) && (nId == POW_ENTROPY_VIRUS)) {

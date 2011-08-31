@@ -754,7 +754,7 @@ int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float ySc
 {
 	float	fScale = 1.0f;
 	int	bTextured = 0;
-#if 0 //DBG
+#if DBG
 	int	bEffect = 0;
 #else
 	int	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
@@ -880,6 +880,9 @@ if (gameData.render.shield.nFaces > 0)
 	if (nSize)
 		fScale = 0.5f;
 	else {
+#if DBG
+		nSize = objP->info.xSize;
+#else
 		if (objP->rType.polyObjInfo.nModel < 0) 
 			nSize = objP->info.xSize;
 		else {
@@ -887,6 +890,7 @@ if (gameData.render.shield.nFaces > 0)
 			nSize = modelP ? modelP->Rad () : objP->info.xSize;
 			}
 		fScale = gameData.render.shield.Pulse ()->fScale;
+#endif
 		}
 	float r = X2F (nSize);
 	if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)

@@ -72,17 +72,17 @@ objP->SetLife (BLAST_LIFE);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
-objP->info.xSize = info.xSize;
+objP->SetSize (info.xSize);
 objP->info.xSize /= 3;
 if (IsMissile ()) {
 	if ((Id () == EARTHSHAKER_ID) || (Id () == ROBOT_EARTHSHAKER_ID))
-		objP->info.xSize = I2X (5) / 2;
+		objP->SetSize (I2X (5) / 2);
 	else if ((Id () == MEGAMSL_ID) || (Id () == ROBOT_MEGAMSL_ID) || (Id () == EARTHSHAKER_MEGA_ID))
-		objP->info.xSize = I2X (2);
+		objP->SetSize (I2X (2));
 	else if ((Id () == SMARTMSL_ID) || (Id () == ROBOT_SMARTMSL_ID))
-		objP->info.xSize = I2X (3) / 2;
+		objP->SetSize (I2X (3) / 2);
 	else
-		objP->info.xSize = I2X (1);
+		objP->SetSize (I2X (1));
 	}
 return objP;
 }
@@ -118,13 +118,13 @@ objP->Orientation () = mRotate * Orientation ();
 
 if (IsMissile ()) {
 	if ((Id () == EARTHSHAKER_ID) || (Id () == ROBOT_EARTHSHAKER_ID))
-		objP->info.xSize = I2X (5) / 2;
+		objP->SetSize (I2X (5) / 2);
 	else if ((Id () == MEGAMSL_ID) || (Id () == ROBOT_MEGAMSL_ID) || (Id () == EARTHSHAKER_MEGA_ID))
-		objP->info.xSize = I2X (2);
+		objP->SetSize (I2X (2));
 	else if ((Id () == SMARTMSL_ID) || (Id () == ROBOT_SMARTMSL_ID))
-		objP->info.xSize = I2X (3) / 2;
+		objP->SetSize (I2X (3) / 2);
 	else 
-		objP->info.xSize = I2X (1);
+		objP->SetSize (I2X (1));
 	}
 return objP;
 }

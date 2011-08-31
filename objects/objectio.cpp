@@ -77,7 +77,7 @@ if (info.nSegment == nDbgSeg)
 info.nAttachedObj = -1;
 cf.ReadVector (info.position.vPos);
 cf.ReadMatrix (info.position.mOrient);
-info.xSize = cf.ReadFix ();
+SetSize (cf.ReadFix ());
 SetShield (cf.ReadFix ());
 cf.ReadVector (info.vLastPos);
 info.contains.nType = cf.ReadByte ();
@@ -293,7 +293,7 @@ info.nSegment = cf.ReadShort ();
 info.nAttachedObj = cf.ReadShort ();
 cf.ReadVector (info.position.vPos);     
 cf.ReadMatrix (info.position.mOrient);  
-info.xSize = cf.ReadFix (); 
+SetSize (cf.ReadFix ()); 
 SetShield (cf.ReadFix ());
 cf.ReadVector (info.vLastPos);  
 info.contains.nType = cf.ReadByte (); 

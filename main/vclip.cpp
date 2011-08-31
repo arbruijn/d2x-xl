@@ -270,7 +270,7 @@ void ConvertPowerupToVClip (CObject *objP)
 objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 objP->rType.vClipInfo.nCurFrame = 0;
-objP->info.xSize = gameData.objs.pwrUp.info [objP->info.nId].size;
+objP->SetSizeFromPowerup ();
 objP->info.controlType = CT_POWERUP;
 objP->info.renderType = RT_POWERUP;
 objP->mType.physInfo.mass = I2X (1);
@@ -288,7 +288,7 @@ objP->info.controlType = CT_WEAPON;
 objP->info.renderType = RT_WEAPON_VCLIP;
 objP->mType.physInfo.mass = gameData.weapons.info [objP->info.nId].mass;
 objP->mType.physInfo.drag = gameData.weapons.info [objP->info.nId].drag;
-objP->info.xSize = gameData.weapons.info [objP->info.nId].strength [gameStates.app.nDifficultyLevel] / 10;
+objP->SetSize (gameData.weapons.info [objP->info.nId].strength [gameStates.app.nDifficultyLevel] / 10);
 objP->info.movementType = MT_PHYSICS;
 }
 
@@ -329,8 +329,7 @@ objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 if (0 > (objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel))
 	objP->rType.polyObjInfo.nModel = nModel;
 #if 0
-objP->info.xSize = FixDiv (gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].rad,
-							gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
+objP->SetSizeFromModel (0, gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
 #endif
 objP->rType.polyObjInfo.nTexOverride = -1;
 if (objP->info.nType == OBJ_POWERUP)

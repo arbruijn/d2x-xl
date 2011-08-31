@@ -90,7 +90,7 @@ bool CBossInfo::SetupSegments (CShortArray& segments, int bSizeCheck, int bOneWa
 
 //	See if there is a boss.  If not, quick out.
 xBossSizeSave = bossObjP->info.xSize;
-// -- Causes problems!!	-- bossObjP->info.xSize = FixMul (I2X (3) / 4, bossObjP->info.xSize);
+// -- Causes problems!!	-- bossObjP->SetSize (FixMul (I2X (3) / 4, bossObjP->info.xSize));
 nBossHomeSeg = bossObjP->info.nSegment;
 vBossHomePos = bossObjP->info.position.vPos;
 nGroup = SEGMENTS [nBossHomeSeg].m_group;
@@ -151,7 +151,7 @@ segments.Destroy ();
 if (!(nSegments && segments.Create (nSegments)))
 	return false;
 memcpy (segments.Buffer (), bossSegs, nSegments * sizeof (segments [0]));
-bossObjP->info.xSize = xBossSizeSave;
+bossObjP->SetSize (xBossSizeSave);
 bossObjP->info.position.vPos = vBossHomePos;
 OBJECTS [m_nObject].RelinkToSeg (nBossHomeSeg);
 return true;

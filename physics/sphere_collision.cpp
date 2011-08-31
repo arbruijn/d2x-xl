@@ -872,35 +872,26 @@ if (endMask) { //on the back of at least one face
 			if (iFace >= nFaces)
 				continue;
 			//did we go through this wall/door?
+#if DBG
+			if ((hitQuery.nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				nDbgSeg = nDbgSeg;
+#endif
 			int nFaceHitType;
-#if 0// DBG
-			if (bUseHitbox) {
-				 if (CheckFaceHitboxCollision (curHit.vPoint, curHit.vNormal, hitQuery.nSegment, nSide, hitQuery.p0, hitQuery.p1, objP) == 0x7FFFFFFF)
-					continue;
-				 nFaceHitType = IT_FACE;
-				 bUseHitbox = bUseHitbox;
-				}
-			else
-			nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
-					? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
-					: segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
-#else
-#	if 0
-			if (bUseHitbox)
-				nFaceHitType = (CheckFaceHitboxCollision (curHit.vPoint, curHit.vNormal, hitQuery.nSegment, nSide, hitQuery.p0, hitQuery.p1, objP) == 0x7FFFFFFF) ? IT_NONE : IT_FACE;
-			else
-#	endif
 				nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
 									? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
 									: segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
-#endif
 #if 1
 			if (bCheckVisibility && !nFaceHitType)
 					continue;
 #endif
 #if DBG
-			if ((hitQuery.nSegment == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide)))
+			if ((hitQuery.nSegment == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide))) {
 				nDbgSeg = nDbgSeg;
+				if (nFaceHitType)
+					nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
+										? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
+										: segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
+				}
 #endif
 			if (PassThrough (hitQuery.nObject, hitQuery.nSegment, nSide, iFace, hitQuery.flags, curHit.vPoint)) {
 				int			i;

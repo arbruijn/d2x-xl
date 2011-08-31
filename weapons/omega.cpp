@@ -157,7 +157,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		objP->mType.physInfo.velocity = vGoal;
 		//	Only make the last one move fast, else multiple blobs might collide with target.
 		objP->mType.physInfo.velocity *= (I2X (4));
-		objP->info.xSize = gameData.weapons.info [objP->info.nId].blob_size;
+		objP->SetSize (gameData.weapons.info [objP->info.nId].blob_size);
 		objP->info.xShield = FixMul (OMEGA_DAMAGE_SCALE * gameData.time.xFrame, WI_strength (objP->info.nId, gameStates.app.nDifficultyLevel));
 		objP->cType.laserInfo.parent.nType = parentObjP->info.nType;
 		objP->cType.laserInfo.parent.nSignature = parentObjP->info.nSignature;

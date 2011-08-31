@@ -124,7 +124,7 @@ h = CFixVector::Dist (*vGun, *vTarget);
 nModel = objP->rType.polyObjInfo.nModel;
 nSize = objP->info.xSize;
 objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested
-objP->info.xSize = I2X (2);						//chose some meaningful small size to simulate a weapon
+objP->SetSize (I2X (2));					//chose some meaningful small size to simulate a weapon
 
 gameData.ai.nHitType = FindHitpoint (hitQuery, gameData.ai.hitResult);
 #if DBG
@@ -134,7 +134,7 @@ if (gameData.ai.nHitType == 0)
 gameData.ai.vHitPos = gameData.ai.hitResult.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitResult.nSegment;
 objP->rType.polyObjInfo.nModel = nModel;
-objP->info.xSize = nSize;
+objP->SetSize (nSize);
 return (gameData.ai.nHitType == HIT_NONE);
 }
 
