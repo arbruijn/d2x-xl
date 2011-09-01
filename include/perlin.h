@@ -20,7 +20,7 @@ class CPerlin {
 
 	protected:	
 #if CUSTOM_RAND
-		inline double Random (int x);
+		inline double Random (int v);
 #else
 		inline double Random (void);
 #endif

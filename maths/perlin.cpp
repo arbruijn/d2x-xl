@@ -13,10 +13,10 @@
 
 #if CUSTOM_RAND
 
-inline double CPerlin::Random (int x)
+inline double CPerlin::Random (int v)
 {
-x = (x << 13) ^ x;
-return 1.0 - ((x * (x * x * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0;    
+v = (v << 13) ^ v;
+return 1.0 - ((v * (v * v * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0;    
 }
 
 #else
@@ -38,12 +38,12 @@ return double (rand ()) / RAND_HALF - 1.0;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise (double x)
+double CPerlin::Noise (double v)
 {
 #if CUSTOM_RAND > 1
-return Random (x);
+return Random (v);
 #else
-uint i = (uint) x + 2;
+uint i = (uint) v + 2;
 #	if 1
 if (!m_valid [i]) {
 	m_valid [i] = 1;
@@ -89,32 +89,32 @@ return v1 + (v2 - v0) * x + (v0 - v1 - p) * x2 + p * x2 * x;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::SmoothedNoise (int x)
+double CPerlin::SmoothedNoise (int v)
 {
-return Noise (x) / 2  +  Noise (x-1) / 4  +  Noise (x+1) / 4;
+return Noise (v) / 2  +  Noise (v-1) / 4  +  Noise (v+1) / 4;
 }
 
 //------------------------------------------------------------------------------
 
-double CPerlin::InterpolatedNoise (double x, int octave)
+double CPerlin::InterpolatedNoise (double v, int octave)
 {
-x *= m_scale;
-x *= double (1 << octave);
-int xi = int (x);
+v *= m_scale;
+v *= double (1 << octave);
+int xi = int (v);
 double v1 = SmoothedNoise (xi);
 double v2 = SmoothedNoise (xi + 1);
 #if 1
-return CosineInterpolate (v1, v2, x - xi);
+return CosineInterpolate (v1, v2, v - xi);
 #else
 double v0 = SmoothedNoise (xi - 1);
 double v3 = SmoothedNoise (xi + 2);
-return CubicInterpolate (v0, v1, v2, v3, x - int (x));
+return CubicInterpolate (v0, v1, v2, v3, v - int (v));
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-double CPerlin::ComputeNoise (double x, double persistence, long octaves)
+double CPerlin::ComputeNoise (double v, double persistence, long octaves)
 {
 double total = 0, amplitude = 1.0;
 #if 0 //DBG
@@ -122,10 +122,10 @@ octaves = 1;
 #endif
 for (int i = 0; i < octaves; i++) {
 #if DBG
-	double n = InterpolatedNoise (x, i);
+	double n = InterpolatedNoise (v, i);
 	total += n * amplitude;
 #else
-	total += InterpolatedNoise (x, i) * amplitude;
+	total += InterpolatedNoise (v, i) * amplitude;
 #endif
 	amplitude *= persistence;
 	}
