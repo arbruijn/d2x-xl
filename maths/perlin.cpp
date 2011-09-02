@@ -58,9 +58,8 @@ return Noise (v) / 2  +  Noise (v-1) / 4  +  Noise (v+1) / 4;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::InterpolatedNoise (double v, int octave)
+double CPerlin::InterpolatedNoise (double v)
 {
-v *= double (1 << octave);
 int i = int (v);
 double v1 = SmoothedNoise (i);
 double v2 = SmoothedNoise (i + 1);
@@ -77,18 +76,19 @@ return CubicInterpolate (v0, v1, v2, v3, v - int (v));
 
 double CPerlin::ComputeNoise (double v)
 {
-double total = 0, amplitude = m_amplitude;
+double total = 0, amplitude = m_amplitude, frequency = 1.0;
 #if 0 //DBG
 octaves = 1;
 #endif
-v += m_nOffset;
+v += m_randomize;
 for (int i = 0; i < m_octaves; i++) {
 #if DBG
-	double n = InterpolatedNoise (v, i);
+	double n = InterpolatedNoise (v * frequency);
 	total += n * amplitude;
 #else
-	total += InterpolatedNoise (v, i) * amplitude;
+	total += InterpolatedNoise (v * frequency) * amplitude;
 #endif
+	frequency *= 2.0;
 	amplitude *= m_persistence;
 	}
 return total;
@@ -116,15 +116,11 @@ return corners + sides + center;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::InterpolatedNoise (double x, double y, int octave)
+double CPerlin::InterpolatedNoise (double x, double y)
 {
 #if 1
-x *= double (1 << octave);
-int xInt = int (x);
-double xFrac = x - xInt;
-y *= double (1 << octave);
-int yInt = int (y);
-double yFrac = y - yInt;
+int xInt = int (x), yInt = int (y);
+double xFrac = x - xInt, yFrac = y - yInt;
 #else
 double xInt, yInt,
 		 xFrac = modf (x, &xInt),
@@ -143,9 +139,12 @@ return CosineInterpolate (i1, i2, yFrac);
 
 double CPerlin::ComputeNoise (double x, double y)
 {
-double total = 0, amplitude = m_amplitude;
+double total = 0, amplitude = m_amplitude, frequency = 1.0;
+x += m_randomize;
+y += m_randomize;
 for (int i = 0; i < m_octaves; i++) {
-	total += InterpolatedNoise (x, y, i) * amplitude;
+	total += InterpolatedNoise (x * frequency, y * frequency) * amplitude;
+	frequency *= 2.0;
 	amplitude *= m_persistence;
 	}
 return total;
@@ -153,12 +152,12 @@ return total;
 
 //------------------------------------------------------------------------------
 
-bool CPerlin::Setup (double amplitude, double persistence, int octaves, int nDimensions, int nOffset)
+bool CPerlin::Setup (double amplitude, double persistence, int octaves, int randomize)
 {
 m_amplitude = (amplitude > 0.0) ? amplitude : 1.0;
 m_persistence = (persistence > 0.0) ? persistence : 2.0 / 3.0;
 m_octaves = (octaves > 0) ? octaves : 6;
-m_nOffset = (nOffset < 0) ? (rand () * rand ()) & 0xFFFF : nOffset;
+m_randomize = (randomize < 0) ? (rand () * rand ()) & 0xFFFF : randomize;
 return true;
 }
 

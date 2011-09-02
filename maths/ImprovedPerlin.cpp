@@ -123,18 +123,18 @@ return (((h & 1) == 0) ? u : -u) + (((h & 2) == 0) ? v : -v);
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-bool CImprovedPerlin::Setup (double amplitude, double persistence, int nOctaves, int nDimensions, int nOffset)
+bool CImprovedPerlin::Setup (double amplitude, double persistence, int octaves, int randomize)
 {
-CPerlin::Setup (amplitude, persistence, nOctaves, nDimensions, nOffset);
+CPerlin::Setup (amplitude, persistence, octaves, randomize);
 #if 1
 	m_cores [0].Initialize ();
 #else
-if (m_cores.Buffer () && (int (m_cores.Length ()) < nOctaves))
+if (m_cores.Buffer () && (int (m_cores.Length ()) < octaves))
 	m_cores.Destroy ();
-if (!(m_cores.Buffer () || m_cores.Create (nOctaves)))
+if (!(m_cores.Buffer () || m_cores.Create (octaves)))
 	return false;
-for (int i = 0; i < nOctaves; i++)
-	m_cores [i].Initialize ((ubyte) nOffset);
+for (int i = 0; i < octaves; i++)
+	m_cores [i].Initialize ((ubyte) randomize);
 #endif
 return true;
 }

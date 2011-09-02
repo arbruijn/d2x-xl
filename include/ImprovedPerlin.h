@@ -31,11 +31,11 @@ class CImprovedPerlin : public CPerlin {
 		CStaticArray<CImprovedPerlinCore, 1>	m_cores;
 
 	public:
-		virtual bool Setup (double amplitude, double persistence, int nOctaves, int nDimensions = 1, int nOffset = -1);
+		virtual bool Setup (double amplitude, double persistence, int octaves, int randomize = -1);
 
 	protected:
-		virtual double InterpolatedNoise (double x, int octave) { return m_cores [0].Noise (x * double (1 << octave)); }
-		virtual double InterpolatedNoise (double x, double y, int octave) { return m_cores [0].Noise (x * double (1 << octave), y * double (1 << octave)); }
+		virtual double InterpolatedNoise (double x) { return m_cores [0].Noise (x); }
+		virtual double InterpolatedNoise (double x, double y) { return m_cores [0].Noise (x, y); }
 		//virtual double Noise (double x, double y, double z);
 	};
 

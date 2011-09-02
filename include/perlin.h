@@ -3,11 +3,9 @@
 
 #include "carray.h"
 
-#define CUSTOM_RAND 2
-
 class CPerlin {
 	private:
-		int m_nOffset;
+		int m_randomize;
 
 	protected:	
 		double m_amplitude;
@@ -15,7 +13,7 @@ class CPerlin {
 		int m_octaves;
 
 	public:
-		virtual bool Setup (double amplitude, double persistence, int nOctaves, int nDimensions = 1, int nOffset = -1);
+		virtual bool Setup (double amplitude, double persistence, int octaves, int randomize = -1);
 		double ComputeNoise (double x);
 		double ComputeNoise (double x, double y);
 
@@ -30,8 +28,8 @@ class CPerlin {
 		double SmoothedNoise (int x);
 		double SmoothedNoise (int x, int y);
 
-		virtual double InterpolatedNoise (double x, int octave);
-		virtual double InterpolatedNoise (double x, double y, int octave);
+		virtual double InterpolatedNoise (double x);
+		virtual double InterpolatedNoise (double x, double y);
 
 	};
 
