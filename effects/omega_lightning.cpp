@@ -179,7 +179,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	OMEGA_BOLTS, // nBolts
 	-1, // nId
 	-1, // nTarget
-	-OMEGA_NODES, // nNodes
+	OMEGA_NODES, // nNodes
 	0, // nChildren
 	OMEGA_FRAMES, // nFrames
 	3, // nWidth
@@ -203,7 +203,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	OMEGA_BOLTS, // nBolts
 	-1, // nId
 	-1, // nTarget
-	-OMEGA_NODES, // nNodes
+	OMEGA_NODES, // nNodes
 	0, // nChildren
 	OMEGA_FRAMES, // nFrames
 	6, // nWidth
