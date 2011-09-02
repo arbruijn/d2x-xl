@@ -252,7 +252,7 @@ else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers
 		return &color;
 		}
 	if (f == SEGMENT_FUNC_REPAIRCEN) {
-		static CFloatVector color = {0.3f, 0.5f, 1.0f, 0.2f};
+		static CFloatVector color = {0.1f, 0.3f, 1.0f, 0.2f};
 		return &color;
 		}
 	}
