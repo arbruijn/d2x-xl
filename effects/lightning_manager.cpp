@@ -760,7 +760,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)
 		MoveForObject (objP);
 	else {
 		h = Create (2 * objP->info.xSize / I2X (1), &objP->info.position.vPos, NULL, NULL, objP->Index (), -1000, 100,
-						objP->info.xSize, objP->info.xSize / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 1, 0, 3.0f, colorP);
+						objP->info.xSize, objP->info.xSize / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 1, -1, 3.0f, colorP);
 		if (h >= 0)
 			m_objects [i] = h;
 		}
@@ -780,7 +780,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP
 		int s = objP->info.xSize;
 		int i = X2I (s);
 		h = Create (5 * i, &OBJPOS (objP)->vPos, NULL, NULL, objP->Index (), -250, 150,
-						4 * s, s, 0, 2 * s, i * 20, (i + 1) / 2, 1, 3, 1, 1, -1, 1, 1, 1, 3.0f, colorP);
+						4 * s, s, 0, 2 * s, i * 20, (i + 1) / 2, 1, 3, 1, 1, -1, 1, 1, -1, 3.0f, colorP);
 		if (h >= 0)
 			m_objects [nObject] = h;
 		}
