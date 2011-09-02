@@ -30,6 +30,10 @@ static int permutation [] = {
 
 void CImprovedPerlinCore::Initialize (void) 
 {
+#if 1
+memcpy (m_random, permutation, PERLIN_RANDOM_SIZE * sizeof (m_random [0]));
+memcpy (m_random + PERLIN_RANDOM_SIZE, permutation, PERLIN_RANDOM_SIZE * sizeof (m_random [0]));
+#else
 int i, index [PERLIN_RANDOM_SIZE];
 
 for (i = 0; i < PERLIN_RANDOM_SIZE; i++)
@@ -43,6 +47,7 @@ for (int i = 0; i < PERLIN_RANDOM_SIZE; i++) {
 	if (j < --l)
 		index [j] = index [l];
 	}
+#endif
 }
       
 //------------------------------------------------------------------------------

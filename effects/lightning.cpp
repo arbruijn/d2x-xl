@@ -28,7 +28,7 @@
 #include "automap.h"
 #include "addon_bitmaps.h"
 
-#if 0
+#if 1
 extern CPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
 #else
 extern CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
