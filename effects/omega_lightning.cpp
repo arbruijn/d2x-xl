@@ -194,7 +194,7 @@ else {
 #endif
 	handleP->nLightning =
 		lightningManager.Create (OMEGA_BOLTS, &vMuzzle, vTarget, NULL, nObject,
-										 OMEGA_LIFE, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4), 0, 0, OMEGA_NODES, 0, 1, OMEGA_STEPS, 1, 1,
+										 OMEGA_LIFE, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4) * gameOpts->render.lightning.nStyle, 0, 0, OMEGA_NODES * gameOpts->render.lightning.nStyle, 0, 1, OMEGA_STEPS, 1, 1,
 #if OMEGA_PLASMA
 										 -((parentObjP != gameData.objs.viewerP) || (gameStates.render.bFreeCam > 0) || gameStates.render.bChaseCam),
 #else
@@ -207,7 +207,7 @@ else {
 	else {
 		handleP->nLightning =
 			lightningManager.Create (OMEGA_BOLTS, &vMuzzle, vTarget, NULL, -nObject - 1,
-											 OMEGA_LIFE, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4), 0, 0, OMEGA_NODES, 0, 1, OMEGA_STEPS, 1, 1,
+											 OMEGA_LIFE, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4) * gameOpts->render.lightning.nStyle, 0, 0, OMEGA_NODES * gameOpts->render.lightning.nStyle, 0, 1, OMEGA_STEPS, 1, 1,
 	#if OMEGA_PLASMA
 											 -((parentObjP != gameData.objs.viewerP) || (gameStates.render.bFreeCam > 0) || gameStates.render.bChaseCam),
 	#else
