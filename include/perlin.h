@@ -15,7 +15,7 @@ class CPerlin {
 		int m_octaves;
 
 	public:
-		bool Setup (int nNodes, double amplitude, double persistence, int nOctaves, int nDimensions = 1, int nOffset = -1);
+		virtual bool Setup (int nNodes, double amplitude, double persistence, int nOctaves, int nDimensions = 1, int nOffset = -1);
 		double ComputeNoise (double x);
 		double ComputeNoise (double x, double y);
 

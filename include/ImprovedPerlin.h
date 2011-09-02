@@ -32,7 +32,7 @@ class CImprovedPerlin : public CPerlin {
 		CStaticArray<CImprovedPerlinCore, 1>	m_cores;
 
 	public:
-		virtual bool Setup (int nNodes, double amplitude, double persistence, int nOctaves, int nDimensions = 1, int nOffset = 0);
+		virtual bool Setup (int nNodes, double amplitude, double persistence, int nOctaves, int nDimensions = 1, int nOffset = -1);
 
 	protected:
 		virtual double InterpolatedNoise (double x, int octave) { return m_cores [0].Noise (x * double (1 << octave)); }
