@@ -246,12 +246,12 @@ else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers
 		static CFloatVector color = {0.666f, 0.0f, 0.75f, 0.2f};
 		return &color;
 		}
-	int s = SEGMENTS [objP->info.nSegment].m_function;
-	if (s == SEGMENT_FUNC_FUELCEN) {
+	int f = SEGMENTS [objP->info.nSegment].m_function;
+	if (f == SEGMENT_FUNC_FUELCEN) {
 		static CFloatVector color = {1.0f, 0.8f, 0.3f, 0.2f};
 		return &color;
 		}
-	if (s == SEGMENT_FUNC_REPAIRCEN) {
+	if (f == SEGMENT_FUNC_REPAIRCEN) {
 		static CFloatVector color = {0.3f, 0.5f, 0.1f, 0.2f};
 		return &color;
 		}
