@@ -506,7 +506,6 @@ void CLightningManager::StaticFrame (void)
 	int					h, i;
 	CObject*				objP;
 	CFixVector*			vEnd, * vDelta, v;
-	tLightningInfo*	pli;
 
 if (!SHOW_LIGHTNING)
 	return;
