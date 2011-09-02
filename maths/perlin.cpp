@@ -1,20 +1,17 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "descent.h"
 #include "maths.h"
 #include "perlin.h"
 
-//static long randSeed = 0;
+#define INTERPOLATION_METHOD 1
 
 //------------------------------------------------------------------------------
 
-#define RAND_HALF	((double (RAND_MAX) + 1.0) * 0.5)
-
-inline double CPerlin::Noise (int v)
+inline double CPerlin::Noise (int n)
 {
-v = (v << 13) ^ v;
-return 1.0 - ((v * (v * v * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0;    
+n = (n << 13) ^ n;
+return 1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0;    
 }
 
 //------------------------------------------------------------------------------
@@ -63,12 +60,14 @@ double CPerlin::InterpolatedNoise (double v)
 int i = int (v);
 double v1 = SmoothedNoise (i);
 double v2 = SmoothedNoise (i + 1);
-#if 1
-return CosineInterpolate (v1, v2, v - i);
-#else
+#if INTERPOLATION_METHOD == 2
 double v0 = SmoothedNoise (i - 1);
 double v3 = SmoothedNoise (i + 2);
-return CubicInterpolate (v0, v1, v2, v3, v - int (v));
+return CubicInterpolate (v0, v1, v2, v3, v - i);
+#elif INTERPOLATION_METHOD == 1
+return CosineInterpolate (v1, v2, v - i);
+#else
+return LinearInterpolate (v1, v2, v - i);
 #endif
 }
 
@@ -152,13 +151,12 @@ return total;
 
 //------------------------------------------------------------------------------
 
-bool CPerlin::Setup (double amplitude, double persistence, int octaves, int randomize)
+void CPerlin::Setup (double amplitude, double persistence, int octaves, int randomize)
 {
 m_amplitude = (amplitude > 0.0) ? amplitude : 1.0;
 m_persistence = (persistence > 0.0) ? persistence : 2.0 / 3.0;
 m_octaves = (octaves > 0) ? octaves : 6;
 m_randomize = (randomize < 0) ? (rand () * rand ()) & 0xFFFF : randomize;
-return true;
 }
 
 //------------------------------------------------------------------------------

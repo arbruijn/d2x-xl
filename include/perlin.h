@@ -1,8 +1,6 @@
 #ifndef __PERLIN_H
 #define __PERLIN_H
 
-#include "carray.h"
-
 class CPerlin {
 	private:
 		int m_randomize;
@@ -13,7 +11,7 @@ class CPerlin {
 		int m_octaves;
 
 	public:
-		virtual bool Setup (double amplitude, double persistence, int octaves, int randomize = -1);
+		virtual void Setup (double amplitude, double persistence, int octaves, int randomize = -1);
 		double ComputeNoise (double x);
 		double ComputeNoise (double x, double y);
 
@@ -30,7 +28,6 @@ class CPerlin {
 
 		virtual double InterpolatedNoise (double x);
 		virtual double InterpolatedNoise (double x, double y);
-
 	};
 
 #endif //__PERLIN_H

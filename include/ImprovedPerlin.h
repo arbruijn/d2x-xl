@@ -3,6 +3,8 @@
 
 #include "perlin.h"
 
+#include "carray.h"
+
 #define PERLIN_RANDOM_SIZE	256
 
 class CImprovedPerlinCore {
@@ -31,7 +33,7 @@ class CImprovedPerlin : public CPerlin {
 		CStaticArray<CImprovedPerlinCore, 1>	m_cores;
 
 	public:
-		virtual bool Setup (double amplitude, double persistence, int octaves, int randomize = -1);
+		virtual void Setup (double amplitude, double persistence, int octaves, int randomize = -1);
 
 	protected:
 		virtual double InterpolatedNoise (double x) { return m_cores [0].Noise (x); }
