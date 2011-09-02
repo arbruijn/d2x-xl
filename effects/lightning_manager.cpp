@@ -75,11 +75,23 @@ m_bDestroy = 0;
 
 //------------------------------------------------------------------------------
 
+class CLightningSettings {
+	public:
+		CFixVector	vPos;
+		CFixVector	vEnd;
+		CFixVector	vDelta;
+		int			nBolts;
+		int			nLife;
+		int			nFrames;
+	};
+
+//------------------------------------------------------------------------------
+
 int CLightningManager::Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 										 short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
-										 char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps,
+										 char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nFrames,
 										 short nSmoothe, char bClamp, char bGlow, char bSound, char bLight,
-										 char nStyle, CFloatVector *colorP)
+										 char nStyle, float nWidth, CFloatVector *colorP)
 {
 if (!(SHOW_LIGHTNING && colorP))
 	return -1;
@@ -90,8 +102,8 @@ CLightningEmitter* emitterP = m_emitters.Pop ();
 if (!emitterP)
 	return -1;
 if (!(emitterP->Create (nBolts, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
-							   nAngle, nOffset, nNodes, nChildren, nDepth, nSteps, nSmoothe, bClamp, bGlow, bSound, bLight,
-							   nStyle, colorP))) {
+							   nAngle, nOffset, nNodes, nChildren, nDepth, nFrames, nSmoothe, bClamp, bGlow, bSound, bLight,
+							   nStyle, nWidth, colorP))) {
 	m_emitters.Push (emitterP->Id ());
 	emitterP->Destroy ();
 	SEM_LEAVE (SEM_LIGHTNING)
@@ -100,6 +112,40 @@ if (!(emitterP->Create (nBolts, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLen
 emitterP->m_bValid = 1;
 SEM_LEAVE (SEM_LIGHTNING)
 return emitterP->Id ();
+}
+
+//------------------------------------------------------------------------------
+
+int CLightningManager::Create (tLightningInfo& li, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta, short nObject)
+{
+CFloatVector color;
+
+color.Red () = float (li.color.Red ()) / 255.0f;
+color.Green () = float (li.color.Green ()) / 255.0f;
+color.Blue () = float (li.color.Blue ()) / 255.0f;
+color.Alpha () = float (li.color.Alpha ()) / 255.0f;
+
+return Create (li.nBolts, 
+					vPos, vEnd, vDelta, 
+					nObject, 
+					-abs (li.nLife), 
+					li.nDelay, 
+					(li.length > 0) ? I2X (li.nLength) : CFixVector::Dist (*vPos, *vEnd),
+					(li.nAmplitude > 0) ? I2X (li.nAmplitude) : -I2X (li.nAmplitude) * gameOpts->render.lightning.nStyle, 
+					li.nAngle, 
+					I2X (li.nOffset), 
+					(li.nNodes > 0) ? li.nNodes : -li.nNodes * gameOpts->render.lightning.nStyle, 
+					li.nChildren, 
+					li.nChildren > 0, 
+					li.nFrames,
+				   li.nSmoothe, 
+					li.bClamp, 
+					li.bGlow, 
+					li.bSound, 
+					1, 
+					(li.nStyle >= 0) ? li.nStyle : gameOpts->render.lightning.nStyle, 
+					(float) li.nWidth, 
+					&color);
 }
 
 //------------------------------------------------------------------------------
@@ -457,11 +503,10 @@ return m_emitters [h].m_bValid;
 
 void CLightningManager::StaticFrame (void)
 {
-	int				h, i;
-	CObject			*objP;
-	CFixVector		*vEnd, *vDelta, v;
-	tLightningInfo	*pli;
-	CFloatVector		color;
+	int					h, i;
+	CObject*				objP;
+	CFixVector*			vEnd, * vDelta, v;
+	tLightningInfo*	pli;
 
 if (!SHOW_LIGHTNING)
 	return;
@@ -473,25 +518,19 @@ FORALL_EFFECT_OBJS (objP, i) {
 	i = objP->Index ();
 	if (m_objects [i] >= 0)
 		continue;
-	pli = &objP->rType.lightningInfo;
-	if (pli->nBolts <= 0)
+	tLightningInfo& li = objP->rType.lightningInfo;
+	if (li.nBolts <= 0)
 		continue;
-	if (pli->bRandom && !pli->nAngle)
+	if (li.bRandom && !li.nAngle)
 		vEnd = NULL;
-	else if ((vEnd = FindTargetPos (objP, pli->nTarget)))
-		pli->nLength = CFixVector::Dist (objP->info.position.vPos, *vEnd) / I2X (1);
+	else if ((vEnd = FindTargetPos (objP, li.nTarget)))
+		li.nLength = CFixVector::Dist (objP->info.position.vPos, *vEnd) / I2X (1);
 	else {
-		v = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * I2X (pli->nLength);
+		v = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * I2X (li.nLength);
 		vEnd = &v;
 		}
-	color.Red () = float (pli->color.Red ()) / 255.0f;
-	color.Green () = float (pli->color.Green ()) / 255.0f;
-	color.Blue () = float (pli->color.Blue ()) / 255.0f;
-	color.Alpha () = float (pli->color.Alpha ()) / 255.0f;
-	vDelta = pli->bInPlane ? &objP->info.position.mOrient.m.dir.r : NULL;
-	h = Create (pli->nBolts, &objP->info.position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, I2X (pli->nLength),
-				   I2X (pli->nAmplitude), pli->nAngle, I2X (pli->nOffset), pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
-				   pli->nSmoothe, pli->bClamp, pli->bGlow, pli->bSound, 1, pli->nStyle, &color);
+	vDelta = li.bInPlane ? &objP->info.position.mOrient.m.dir.r : NULL;
+	h = Create (li, &objP->info.position.vPos, vEnd, vDelta, i);
 	if (h >= 0) {
 		m_objects [i] = h;
 		if (!objP->rType.lightningInfo.bEnabled)
@@ -651,7 +690,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bExplosions) {
 	//m_objects [objP->Index ()] =
 		Create (
 			nRods, &objP->info.position.vPos, NULL, NULL, objP->Index (), nTTL, 0,
-			nRad, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 0, 0, 1, -1, colorP);
+			nRad, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 0, 0, 1, -1, 3.0f, colorP);
 	}
 }
 
@@ -722,7 +761,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)
 		MoveForObject (objP);
 	else {
 		h = Create (2 * objP->info.xSize / I2X (1), &objP->info.position.vPos, NULL, NULL, objP->Index (), -1000, 100,
-						objP->info.xSize, objP->info.xSize / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 1, 0, colorP);
+						objP->info.xSize, objP->info.xSize / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 1, 0, 3.0f, colorP);
 		if (h >= 0)
 			m_objects [i] = h;
 		}
@@ -742,7 +781,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP
 		int s = objP->info.xSize;
 		int i = X2I (s);
 		h = Create (5 * i, &OBJPOS (objP)->vPos, NULL, NULL, objP->Index (), -250, 150,
-						4 * s, s, 0, 2 * s, i * 20, (i + 1) / 2, 1, 3, 1, 1, -1, 1, 1, 1, colorP);
+						4 * s, s, 0, 2 * s, i * 20, (i + 1) / 2, 1, 3, 1, 1, -1, 1, 1, 1, 3.0f, colorP);
 		if (h >= 0)
 			m_objects [nObject] = h;
 		}
@@ -770,7 +809,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (objP)
 		Destroy (m_emitters + h, NULL);
 		}
 	h = Create (n, &objP->info.position.vPos, NULL, NULL, objP->Index (), -1000, 4000,
-					objP->info.xSize, objP->info.xSize / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 0, 0, -1, colorP);
+					objP->info.xSize, objP->info.xSize / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 0, 0, -1, 3.0f, colorP);
 	if (h >= 0)
 		m_objects [i] = h;
 	}
@@ -867,7 +906,7 @@ if (i < 0) {
 		return -1;
 	nLife = 1000 + RandShort () % 2000;
 	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, nLife, 0,
-					h, I2X (1) / 2, 0, 0, 20, 0, 1, 5, 0, 1, -1, 0, 0, 1, &color);
+					h, I2X (1) / 2, 0, 0, 20, 0, 1, 5, 0, 1, -1, 0, 0, 1, 3.0f, &color);
 	bUpdate = 1;
 	}
 if (i >= 0) {

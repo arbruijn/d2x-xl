@@ -46,12 +46,14 @@ return -1;
 void COmegaLightning::Delete (short nHandle)
 {
 if (m_nHandles > 0) {
-	if (m_handles [nHandle].nLightning >= 0)
-		lightningManager.Destroy (lightningManager.m_emitters + m_handles [nHandle].nLightning, NULL);
+	for (int i = 0; i < 2; i++) {
+		if (m_handles [nHandle].nLightning [i] >= 0)
+			lightningManager.Destroy (lightningManager.m_emitters + m_handles [nHandle].nLightning [i], NULL);
 #if DBG
-	else
-		m_handles [nHandle].nLightning = -1;
+		else
+			m_handles [nHandle].nLightning [i] = -1;
 #endif
+		}
 	if (nHandle < --m_nHandles)
 		m_handles [nHandle] = m_handles [m_nHandles];
 	memset (m_handles + m_nHandles, 0xff, sizeof (tOmegaLightningHandles));
@@ -104,7 +106,7 @@ int COmegaLightning::Update (CObject* parentObjP, CObject* targetObjP, CFixVecto
 	CFixVector					vMuzzle;
 	tOmegaLightningHandles*	handleP;
 	CWeaponState*				wsP;
-	int							i, j, nHandle, nLightning;
+	int							h, i, nHandle, nLightning;
 	short							nSegment;
 
 if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bOmega && !gameStates.render.bOmegaModded))
@@ -116,34 +118,36 @@ if ((gameData.omega.xCharge [IsMultiGame] >= MAX_OMEGA_CHARGE) && (0 <= (nHandle
 short nObject = parentObjP ? OBJ_IDX (parentObjP) : -1;
 if (nObject < 0) {
 	i = 0;
-	j = m_nHandles;
+	h = m_nHandles;
 	}
 else {
 	i = Find (OBJ_IDX (parentObjP));
 	if (i < 0)
 		return 0;
-	j = 1;
+	h = 1;
 	m_handles [i].nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;
 	}
 
-for (handleP = m_handles + i; j; j--) {
-	if ((nLightning = handleP->nLightning) >= 0) {
-		parentObjP = OBJECTS + handleP->nParentObj;
-		if (parentObjP->info.nType == OBJ_PLAYER) {
-			wsP = gameData.multiplayer.weaponStates + parentObjP->info.nId;
-			if ((wsP->nPrimary != OMEGA_INDEX) || !wsP->firing [0].nStart) {
-				Delete (short (handleP - m_handles));
-				continue;
+for (handleP = m_handles + i; h; h--) {
+	for (int j = 0; j < 2; j++) {
+		if ((nLightning = handleP->nLightning [j]) >= 0) {
+			parentObjP = OBJECTS + handleP->nParentObj;
+			if (parentObjP->info.nType == OBJ_PLAYER) {
+				wsP = gameData.multiplayer.weaponStates + parentObjP->info.nId;
+				if ((wsP->nPrimary != OMEGA_INDEX) || !wsP->firing [0].nStart) {
+					Delete (short (handleP - m_handles));
+					continue;
+					}
 				}
+			targetObjP = (handleP->nTargetObj >= 0) ? OBJECTS + handleP->nTargetObj : NULL;
+			GetGunPoint (parentObjP, &vMuzzle);
+			nSegment = SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment;
+			lightningManager.Move (nLightning, vMuzzle, nSegment);
+			if (targetObjP)
+				lightningManager.Move (nLightning, vMuzzle, targetObjP->info.position.vPos, nSegment);
+			else if (vTargetPos)
+				lightningManager.Move (nLightning, vMuzzle, *vTargetPos, nSegment);
 			}
-		targetObjP = (handleP->nTargetObj >= 0) ? OBJECTS + handleP->nTargetObj : NULL;
-		GetGunPoint (parentObjP, &vMuzzle);
-		nSegment = SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment;
-		lightningManager.Move (nLightning, vMuzzle, nSegment);
-		if (targetObjP)
-			lightningManager.Move (nLightning, vMuzzle, targetObjP->info.position.vPos, nSegment);
-		else if (vTargetPos)
-			lightningManager.Move (nLightning, vMuzzle, *vTargetPos, nSegment);
 		}
 	handleP++;
 	}
@@ -156,18 +160,69 @@ return 1;
 #if 0
 #	define OMEGA_BOLTS 1
 #	define OMEGA_NODES 150
-#	define OMEGA_STEPS 30
+#	define OMEGA_FRAMES 30
 #	define OMEGA_LIFE -50000
 #else
-#	define OMEGA_BOLTS 10
+#	define OMEGA_BOLTS 8
 #	define OMEGA_NODES 150
-#	define OMEGA_STEPS 3
+#	define OMEGA_FRAMES 3
 #	define OMEGA_LIFE -5000
 #endif
 
+static tLightningInfo omegaLightningInfo [2] = {
+	{
+	OMEGA_LIFE, // nLife
+	0, // nDelay
+	0, // nLength
+	-4, // nAmplitude
+	0, // nOffset
+	OMEGA_BOLTS, // nBolts
+	-1, // nId
+	-1, // nTarget
+	-OMEGA_NODES, // nNodes
+	0, // nChildren
+	OMEGA_FRAMES, // nFrames
+	3, // nWidth
+	0, // nAngle
+	-1, // nStyle
+	1, // nSmoothe
+	1, // bClamp
+	-1, // bGlow
+	1, // bSound
+	0, // bRandom
+	0, // bInPlane
+	1, // bEnabled
+	CRGBAColor () // color;
+	},
+	{
+	OMEGA_LIFE, // nLife
+	0, // nDelay
+	0, // nLength
+	2, // nAmplitude
+	0, // nOffset
+	OMEGA_BOLTS, // nBolts
+	-1, // nId
+	-1, // nTarget
+	-OMEGA_NODES, // nNodes
+	0, // nChildren
+	OMEGA_FRAMES, // nFrames
+	9, // nWidth
+	0, // nAngle
+	-1, // nStyle
+	1, // nSmoothe
+	1, // bClamp
+	-1, // bGlow
+	1, // bSound
+	0, // bRandom
+	0, // bInPlane
+	1, // bEnabled
+	CRGBAColor () // color;
+	}
+};
+
 int COmegaLightning::Create (CFixVector *vTargetPos, CObject* parentObjP, CObject* targetObjP)
 {
-	tOmegaLightningHandles	*handleP;
+	tOmegaLightningHandles*	handleP;
 	int							nObject;
 
 if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bOmega && !gameStates.render.bOmegaModded))
@@ -192,34 +247,12 @@ else {
 #if OMEGA_PLASMA
 	color.Alpha () = gameOpts->render.lightning.bGlow ? 0.5f : 0.3f;
 #endif
-	handleP->nLightning =
-		lightningManager.Create (OMEGA_BOLTS, &vMuzzle, vTarget, NULL, nObject,
-										 OMEGA_LIFE, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4) * gameOpts->render.lightning.nStyle, 0, 0, OMEGA_NODES * gameOpts->render.lightning.nStyle, 0, 1, OMEGA_STEPS, 1, 1,
-#if OMEGA_PLASMA
-										 -((parentObjP != gameData.objs.viewerP) || (gameStates.render.bFreeCam > 0) || gameStates.render.bChaseCam),
-#else
-										 -1,
-#endif
-										 1, 1, gameOpts->render.lightning.nStyle, &color);
-	if (handleP->nLightning >= 0)
+	for (int i = 0; i < 2; i++)
+		handleP->nLightning [i] = lightningManager.Create (omegaLightningInfo [i], &vMuzzle, vTarget, NULL, nObject);
+	if (handleP->nLightning [0] >= 0)
 		m_nHandles++;
-#if DBG
-	else {
-		handleP->nLightning =
-			lightningManager.Create (OMEGA_BOLTS, &vMuzzle, vTarget, NULL, -nObject - 1,
-											 OMEGA_LIFE, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (4) * gameOpts->render.lightning.nStyle, 0, 0, OMEGA_NODES * gameOpts->render.lightning.nStyle, 0, 1, OMEGA_STEPS, 1, 1,
-	#if OMEGA_PLASMA
-											 -((parentObjP != gameData.objs.viewerP) || (gameStates.render.bFreeCam > 0) || gameStates.render.bChaseCam),
-	#else
-											 -1,
-	#endif
-											 1, 1, gameOpts->render.lightning.nStyle, &color);
-		if (handleP->nLightning >= 0)
-			m_nHandles++;
-		}
-#endif
 	}
-return (handleP->nLightning >= 0);
+return (handleP->nLightning [0] >= 0);
 }
 
 //------------------------------------------------------------------------------

@@ -453,6 +453,7 @@ public:
 	short			nNodes;
 	short			nChildren;
 	short			nSteps;
+	char			nWidth;
 	char			nAngle;
 	char			nStyle;
 	char			nSmoothe;

@@ -35,7 +35,7 @@ class CLightningNode : public tLightningNode {
 							   int nLife, int nLength, int nAmplitude,
 							   char nAngle, short nNodes, short nChildren, char nDepth, short nSteps,
 							   short nSmoothe, char bClamp, char bGlow, char bLight,
-							   char nStyle, CFloatVector *colorP, CLightning *parentP, short nNode,
+							   char nStyle, float nWidth, CFloatVector *colorP, CLightning *parentP, short nNode,
 								int nThread);
 		void ComputeOffset (int nSteps);
 		int ComputeAttractor (CFixVector *vAttract, CFixVector *vDest, CFixVector *vPos, int nMinDist, int i);
@@ -84,7 +84,7 @@ typedef struct tLightning {
 	int							m_nAmplitude;
 	short							m_nSegment;
 	short							m_nSmoothe;
-	short							m_nSteps;
+	short							m_nFrames;
 	short							m_iStep;
 	short							m_nNodes;
 	short							m_nChildren;
@@ -106,6 +106,7 @@ class CLightning : public tLightning {
 		CArray<tTexCoord2f>		m_plasmaTexCoord;
 		CArray<CFloatVector3>	m_coreVerts;
 		CFloatVector				m_vMin, m_vMax;
+		float							m_width;
 
 	public:
 		CLightning () { m_parent = NULL, m_nodes = NULL, m_nNodes = 0; };
@@ -115,7 +116,7 @@ class CLightning : public tLightning {
 					  short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 					  char nAngle, int nOffset, short nNodes, short nChildren, short nSteps,
 					  short nSmoothe, char bClamp, char bGlow, char bLight,
-					  char nStyle, CFloatVector *colorP, CLightning *parentP, short nNode);
+					  char nStyle, float nWidth, CFloatVector *colorP, CLightning *parentP, short nNode);
 		void Setup (bool bInit);
 		void Destroy (void);
 		void DestroyNodes (void);
@@ -134,6 +135,7 @@ class CLightning : public tLightning {
 			memcpy (this, &source, sizeof (CLightning)); 
 			return *this;
 			}
+
 	private:
 		void CreatePath (int nDepth, int nThread);
 		int ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength);
@@ -174,7 +176,7 @@ class CLightningEmitter : public tLightningSystem {
 		bool Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 						 short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
 						 short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
-						 char bClamp, char bGlow, char bSound, char bLight, char nStyle, CFloatVector *colorP);
+						 char bClamp, char bGlow, char bSound, char bLight, char nStyle, float nWidth, CFloatVector *colorP);
 		void Destroy (void);
 		void Animate (int nStart, int nBolts, int nThread);
 		void Render (int nStart, int nBolts, int nThread);
@@ -199,7 +201,7 @@ class CLightningEmitter : public tLightningSystem {
 
 typedef struct tLightningLight {
 	CFixVector		vPos;
-	CFloatVector		color;
+	CFloatVector	color;
 	int				nNext;
 	int				nLights;
 	int				nBrightness;
@@ -229,7 +231,8 @@ class CLightningManager : public tLightningData {
 		int Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 						short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
 						short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
-						char bClamp, char bGlow, char bSound, char bLight, char nStyle, CFloatVector *colorP);
+						char bClamp, char bGlow, char bSound, char bLight, char nStyle, float nWidth, CFloatVector *colorP);
+		int Create (tLightningInfo& li, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta, short nObject = -1);
 		void Destroy (CLightningEmitter* systemP, CLightning *lightningP);
 		void Cleanup (void);
 		int Shutdown (bool bForce);
@@ -280,7 +283,7 @@ extern CLightningManager lightningManager;
 //------------------------------------------------------------------------------
 
 typedef struct tOmegaLightningHandles {
-	int		nLightning;
+	int		nLightning [2];
 	short		nParentObj;
 	short		nTargetObj;
 } tOmegaLightningHandles;

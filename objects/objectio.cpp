@@ -240,6 +240,10 @@ switch (info.renderType) {
 		rType.lightningInfo.nNodes = cf.ReadShort ();
 		rType.lightningInfo.nChildren = cf.ReadShort ();
 		rType.lightningInfo.nSteps = cf.ReadShort ();
+		if (gameData.segs.nLevelVersion <= 19)
+			rType.lightningInfo.nWidth = 3;
+		else
+			rType.lightningInfo.nWidth = cf.ReadByte ();
 		rType.lightningInfo.nAngle = cf.ReadByte ();
 		rType.lightningInfo.nStyle = cf.ReadByte ();
 		rType.lightningInfo.nSmoothe = cf.ReadByte ();

@@ -36,10 +36,10 @@ extern CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
 extern CPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
 #endif
 
-#define LIMIT_FLASH_FPS	1
-#define FLASH_SLOWMO 1
-#define PLASMA_WIDTH	3.0f
-#define CORE_WIDTH 3.0f
+#define LIMIT_FLASH_FPS			1
+#define FLASH_SLOWMO				1
+#define DEFAULT_PLASMA_WIDTH	3.0f
+#define DEFAULT_CORE_WIDTH		3.0f
 
 #define STYLE	(((m_nStyle < 0) || (gameOpts->render.lightning.nStyle < m_nStyle)) ? \
 					 gameOpts->render.lightning.nStyle : m_nStyle)
@@ -167,16 +167,16 @@ for (i = 0; i < m_nNodes; i++) {
 	m_nodes [i].Setup (bInit, &vPos, vDelta);
 	vPos += vDir;
 	}
-m_nSteps = -abs (m_nSteps);
+m_nFrames = -abs (m_nFrames);
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 							  short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
-							  char nAngle, int nOffset, short nNodes, short nChildren, short nSteps,
+							  char nAngle, int nOffset, short nNodes, short nChildren, short nFrames,
 							  short nSmoothe, char bClamp, char bGlow, char bLight,
-							  char nStyle, CFloatVector *colorP, CLightning *parentP, short nNode)
+							  char nStyle, float nWidth, CFloatVector *colorP, CLightning *parentP, short nNode)
 {
 	int	bRandom = (vEnd == NULL) || (nAngle > 0);
 
@@ -209,7 +209,7 @@ m_nDelay = abs (nDelay) * 10;
 m_nAmplitude = nAmplitude;
 m_nAngle = nAngle;
 m_nOffset = nOffset;
-m_nSteps = -nSteps;
+m_nFrames = -nFrames;
 m_nSmoothe = nSmoothe;
 m_bClamp = bClamp;
 m_bGlow = bGlow;
@@ -218,6 +218,7 @@ m_color = *colorP;
 m_vBase = *vPos;
 m_bLight = bLight;
 m_nStyle = nStyle;
+m_width = nWidth;
 }
 
 //------------------------------------------------------------------------------
@@ -262,12 +263,12 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 				nChildNodes = h + rand () % (nChildNodes - h);
 				double scale = sqrt (double (nChildNodes) / double (m_nNodes));
 				int l = int (m_nLength * scale + 0.5);
-				int n = int (m_nSteps * scale + 0.5);
+				int n = int (m_nFrames * scale + 0.5);
 				if (n == 0)
-					n = (m_nSteps < 0) ? -1 : 1;
+					n = (m_nFrames < 0) ? -1 : 1;
 				if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, int (m_nAmplitude * scale + 0.5), m_nAngle,
 															 nChildNodes, m_nChildren / 5, nDepth - 1, n, m_nSmoothe, m_bClamp, m_bGlow, m_bLight,
-															 m_nStyle, &m_color, this, nNode, nThread))
+															 m_nStyle, m_width, &m_color, this, nNode, nThread))
 					return false;
 				}
 			}
@@ -325,7 +326,7 @@ void CLightning::ComputeOffsets (void)
 {
 if (m_nNodes > 0)
 	for (int i = 1, j = m_nNodes - 1 - !m_bRandom; i < j; i++)
-		m_nodes [i].ComputeOffset (m_nSteps);
+		m_nodes [i].ComputeOffset (m_nFrames);
 }
 
 //------------------------------------------------------------------------------
@@ -334,10 +335,10 @@ if (m_nNodes > 0)
 void CLightning::Bump (void)
 {
 	CLightningNode	*nodeP;
-	int			h, i, nSteps, nDist, nAmplitude, nMaxDist = 0;
+	int			h, i, nFrames, nDist, nAmplitude, nMaxDist = 0;
 	CFixVector	vBase [2];
 
-nSteps = m_nSteps;
+nFrames = m_nFrames;
 nAmplitude = m_nAmplitude;
 vBase [0] = m_vPos;
 vBase [1] = m_nodes [m_nNodes - 1].m_vPos;
@@ -361,7 +362,7 @@ if ((h = nAmplitude - nMaxDist)) {
 // The end point of Perlin generated lightning do not necessarily lay at
 // the origin. This function rotates the lightning path so that it does.
 
-void CLightning::Rotate (int nSteps)
+void CLightning::Rotate (int nFrames)
 {
 CFloatVector v0, v1, vBase;
 v0.Assign (m_vEnd - m_vPos);
@@ -371,7 +372,7 @@ float len0 = v0.Mag ();
 float len1 = v1.Mag ();
 len1 *= len1;
 for (int i = 1; i < m_nNodes; i++) {
-	m_nodes [i].Rotate (v0, len0, v1, len1, vBase, nSteps);
+	m_nodes [i].Rotate (v0, len0, v1, len1, vBase, nFrames);
 	}
 }
 
@@ -379,7 +380,7 @@ for (int i = 1; i < m_nNodes; i++) {
 // Paths of lightning with style 1 isn't affected by amplitude. This function scales
 // these paths with the amplitude.
 
-void CLightning::Scale (int nSteps, int nAmplitude)
+void CLightning::Scale (int nFrames, int nAmplitude)
 {
 	fix	nOffset, nMaxOffset = 0;
 
@@ -396,7 +397,7 @@ vEnd.Assign (m_vEnd);
 float scale = X2F (nAmplitude) / X2F (nMaxOffset);
 
 for (int i = 1; i < m_nNodes; i++)
-	m_nodes [i].Scale (vStart, vEnd, scale, nSteps);
+	m_nodes [i].Scale (vStart, vEnd, scale, nFrames);
 
 }
 
@@ -415,13 +416,13 @@ static int octaves = 6;
 void CLightning::CreatePath (int nDepth, int nThread)
 {
 	CLightningNode*	plh, * nodeP [2];
-	int					h, i, j, nSteps, nStyle, nSmoothe, bClamp, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
+	int					h, i, j, nFrames, nStyle, nSmoothe, bClamp, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
 	CFixVector			vPos [2], vBase [2], vPrevOffs [2];
 
 vBase [0] = vPos [0] = m_vPos;
 vBase [1] = vPos [1] = m_vEnd;
 nStyle = STYLE;
-nSteps = m_nSteps;
+nFrames = m_nFrames;
 nSmoothe = m_nSmoothe;
 bClamp = m_bClamp;
 nAmplitude = m_nAmplitude;
@@ -435,13 +436,13 @@ if ((nDepth > 1) || m_bRandom) {
 		perlinY [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		for (i = 0; i < m_nNodes; i++)
 			m_nodes [i].CreatePerlin (m_nNodes, i, nThread);
-		Rotate (nSteps);
+		Rotate (nFrames);
 		}
 	else if (nStyle == 1) {
 		nMinDist = m_nLength / (m_nNodes - 1);
 		for (i = m_nNodes - 1, plh = m_nodes + 1; i > 0; i--, plh++, bPrevOffs [0] = 1)
-			*vPrevOffs = plh->CreateJaggy (vPos, vPos + 1, vBase, bPrevOffs [0] ? vPrevOffs : NULL, nSteps, nAmplitude, nMinDist, i, nSmoothe, bClamp);
-		Scale (nSteps, nAmplitude);
+			*vPrevOffs = plh->CreateJaggy (vPos, vPos + 1, vBase, bPrevOffs [0] ? vPrevOffs : NULL, nFrames, nAmplitude, nMinDist, i, nSmoothe, bClamp);
+		Scale (nFrames, nAmplitude);
 		}
 	else {
 		int bInPlane = m_bInPlane && (nDepth == 1); 
@@ -450,7 +451,7 @@ if ((nDepth > 1) || m_bRandom) {
 		nMinDist = m_nLength / (m_nNodes - 1);
 		nAmplitude *= (nDepth == 1) ? 4 : 16;
 		for (h = m_nNodes - 1, i = 0, plh = m_nodes + 1; i < h; i++, plh++) 
-			plh->CreateErratic (vPos, vBase, nSteps, nAmplitude, 0, bInPlane, 1, i, h + 1, nSmoothe, bClamp);
+			plh->CreateErratic (vPos, vBase, nFrames, nAmplitude, 0, bInPlane, 1, i, h + 1, nSmoothe, bClamp);
 		}
 	}
 else {
@@ -463,12 +464,12 @@ else {
 		perlinY [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++)
 			plh->CreatePerlin (m_nNodes, i, nThread);
-		Rotate (nSteps);
+		Rotate (nFrames);
 		}
 	else if (nStyle == 1) {
 		for (i = m_nNodes - 1, j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = &m_nodes [i - 1]; i > 0; i--, j = !j) {
 			plh = nodeP [j];
-			vPrevOffs [j] = plh->CreateJaggy (vPos + j, vPos + !j, vBase, bPrevOffs [j] ? vPrevOffs + j : NULL, nSteps, nAmplitude, 0, i, nSmoothe, bClamp);
+			vPrevOffs [j] = plh->CreateJaggy (vPos + j, vPos + !j, vBase, bPrevOffs [j] ? vPrevOffs + j : NULL, nFrames, nAmplitude, 0, i, nSmoothe, bClamp);
 			bPrevOffs [j] = 1;
 			if (nodeP [1] <= nodeP [0])
 				break;
@@ -477,7 +478,7 @@ else {
 			else
 				nodeP [0]++;
 			}
-		Scale (nSteps, nAmplitude);
+		Scale (nFrames, nAmplitude);
 		}
 	else {
 		int bInPlane = m_bInPlane && (nDepth == 1); 
@@ -486,7 +487,7 @@ else {
 		nAmplitude *= 4;
 		for (h = m_nNodes - 1, i = j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = &m_nodes [h - 1]; i < h; i++, j = !j) {
 			plh = nodeP [j];
-			plh->CreateErratic (vPos + j, vBase, nSteps, nAmplitude, bInPlane, j, 0, i, h, nSmoothe, bClamp);
+			plh->CreateErratic (vPos + j, vBase, nFrames, nAmplitude, bInPlane, j, 0, i, h, nSmoothe, bClamp);
 			if (nodeP [1] <= nodeP [0])
 				break;
 			if (j)
@@ -515,11 +516,11 @@ void CLightning::Animate (int nDepth, int nThread)
 
 m_nTTL -= gameStates.app.tick40fps.nTime;
 if (m_nNodes > 0) {
-	if ((bInit = (m_nSteps < 0)))
-		m_nSteps = -m_nSteps;
+	if ((bInit = (m_nFrames < 0)))
+		m_nFrames = -m_nFrames;
 	if (!m_iStep) {
 		CreatePath (nDepth + 1, nThread);
-		m_iStep = m_nSteps;
+		m_iStep = m_nFrames;
 		}
 	for (j = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; j > 0; j--, nodeP++)
 		nodeP->Animate (bInit, m_nSegment, nDepth, nThread);
@@ -652,7 +653,7 @@ if (!nodeP)
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
 	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow; // && glowRenderer.Available (GLOW_LIGHTNING);
-	float					fWidth = bGlow ? PLASMA_WIDTH / 2.0f : (m_bGlow > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bGlow < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
+	float					fWidth = bGlow ? m_width / 2.0f : (m_bGlow > 0) ? (m_width / 4.0f) : (m_bGlow < 0) ? (m_width / 16.0f) : (m_width / 8.0f);
 
 if (nThread < 0)
 	vEye.SetZero ();
@@ -672,12 +673,12 @@ for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
 		vn *= fWidth;
 		if (i == 1) {
 			vd = vPos [0] - vPos [1];
-			vd *= PLASMA_WIDTH / 4.0f;
+			vd *= m_width / 4.0f;
 			vPos [0] += vd;
 			}
 		if (i == h) {
 			vd = vPos [1] - vPos [0];
-			vd = vd * PLASMA_WIDTH / 4.0f;
+			vd = vd * m_width / 4.0f;
 			vPos [1] += vd;
 			}
 		*dstP++ = vPos [0] + vn;
@@ -841,7 +842,7 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
 	//glColor4f (colorP->Red () / 2, colorP->Green () / 2, colorP->Blue () / 2, colorP->Alpha ());
 	glColor4fv ((GLfloat*) colorP);
-	GLfloat w = nDepth ? CORE_WIDTH / 2.0f : CORE_WIDTH; // CORE_WIDTH : CORE_WIDTH * 1.5f;
+	GLfloat w = nDepth ? m_width / 2.0f : m_width; // DEFAULT_CORE_WIDTH : DEFAULT_CORE_WIDTH * 1.5f;
 	if (glowRenderer.Available (GLOW_LIGHTNING))
 		w *= 2.0f * ZScale (m_coreVerts.Buffer (), m_nNodes);
 	glLineWidth (w);
@@ -904,7 +905,7 @@ void CLightning::Draw (int nDepth, int nThread)
 	int				i, bGlow;
 	CFloatVector		color;
 
-if (!m_nodes.Buffer () || (m_nNodes <= 0) || (m_nSteps < 0))
+if (!m_nodes.Buffer () || (m_nNodes <= 0) || (m_nFrames < 0))
 	return;
 #if 0 //!USE_OPENMP
 if (gameStates.app.bMultiThreaded && (nThread > 0))
@@ -957,7 +958,7 @@ ogl.ClearError (0);
 void CLightning::Render (int nDepth, int nThread)
 {
 if ((gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) && (nThread >= 0)) {	// not in transparency renderer
-	if ((m_nNodes < 0) || (m_nSteps < 0))
+	if ((m_nNodes < 0) || (m_nFrames < 0))
 		return;
 	if (!MayBeVisible (nThread))
 		return;

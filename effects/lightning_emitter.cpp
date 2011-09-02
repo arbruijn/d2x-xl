@@ -41,7 +41,7 @@ bool CLightningEmitter::Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, 
 										 short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 										 char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps,
 										 short nSmoothe, char bClamp, char bGlow, char bSound, char bLight,
-										 char nStyle, CFloatVector *colorP)
+										 char nStyle, float nWidth, CFloatVector *colorP)
 {
 m_nObject = nObject;
 if (!(nLife && nLength && (nNodes > 4)))
@@ -61,7 +61,7 @@ m_lightning.Clear ();
 CLightning l;
 l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 		  nAngle, nOffset, nNodes, nChildren, nSteps,
-		  nSmoothe, bClamp, bGlow, bLight, nStyle, colorP, NULL, -1);
+		  nSmoothe, bClamp, bGlow, bLight, nStyle, nWidth, colorP, NULL, -1);
 
 int bChildren = (gameOpts->render.lightning.nStyle > 1);
 
