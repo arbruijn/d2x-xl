@@ -2,13 +2,13 @@
 #include <stdlib.h>
 
 #include "maths.h"
-#include "perlin.h"
+#include "PerlinNoise.h"
 
 #define INTERPOLATION_METHOD 1
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise (double v)
+double CPerlinNoise::Noise (double v)
 {
 int n = FastFloor (v);
 n = (n << 13) ^ n;
@@ -17,14 +17,14 @@ return 1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 107374
 
 //------------------------------------------------------------------------------
 
-double CPerlin::LinearInterpolate (double a, double b, double x)
+double CPerlinNoise::LinearInterpolate (double a, double b, double x)
 {
 return a * (1.0 - x) + b * x;
 }
 
 //------------------------------------------------------------------------------
 
-double CPerlin::CosineInterpolate (double a, double b, double x)
+double CPerlinNoise::CosineInterpolate (double a, double b, double x)
 {
 double f = (1.0 - cos (x * Pi)) * 0.5;
 return  a * (1.0 - f) + b * f;
@@ -32,7 +32,7 @@ return  a * (1.0 - f) + b * f;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::CubicInterpolate (double v0, double v1, double v2, double v3, double x)
+double CPerlinNoise::CubicInterpolate (double v0, double v1, double v2, double v3, double x)
 {
 #if DBG
 double p = (v3 - v2) - (v0 - v1);
@@ -49,14 +49,14 @@ return v1 + (v2 - v0) * x + (v0 - v1 - p) * x2 + p * x2 * x;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::SmoothedNoise (double v)
+double CPerlinNoise::SmoothedNoise (double v)
 {
 return Noise (v) / 2  +  Noise (v-1) / 4  +  Noise (v+1) / 4;
 }
 
 //------------------------------------------------------------------------------
 
-double CPerlin::InterpolatedNoise (double v)
+double CPerlinNoise::InterpolatedNoise (double v)
 {
 //int i = FastFloor (v);
 double v1 = SmoothedNoise (v);
@@ -74,7 +74,7 @@ return LinearInterpolate (v1, v2, v - FastFloor (v));
 
 //------------------------------------------------------------------------------
 
-double CPerlin::ComputeNoise (double v)
+double CPerlinNoise::ComputeNoise (double v)
 {
 double total = 0, amplitude = m_amplitude, frequency = 1.0;
 #if 0 //DBG
@@ -96,7 +96,7 @@ return total;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise (double x, double y)
+double CPerlinNoise::Noise (double x, double y)
 {
 int n = FastFloor (x) + FastFloor (y) * 57;
 n = (n << 13) ^ n;
@@ -106,7 +106,7 @@ return 1.0 - (double) nn / 1073741824.0;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::SmoothedNoise (double x, double y)
+double CPerlinNoise::SmoothedNoise (double x, double y)
 {
 double corners = (Noise (x-1, y-1) + Noise (x+1, y-1) + Noise (x-1, y+1) + Noise (x+1, y+1)) / 16;
 double sides = (Noise (x-1, y) + Noise (x+1, y) + Noise (x, y-1) + Noise (x, y+1)) / 8;
@@ -116,7 +116,7 @@ return corners + sides + center;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::InterpolatedNoise (double x, double y)
+double CPerlinNoise::InterpolatedNoise (double x, double y)
 {
 #if 1
 int xInt = FastFloor (x), yInt = FastFloor (y);
@@ -137,7 +137,7 @@ return CosineInterpolate (i1, i2, yFrac);
 
 //------------------------------------------------------------------------------
 
-double CPerlin::ComputeNoise (double x, double y)
+double CPerlinNoise::ComputeNoise (double x, double y)
 {
 double total = 0, amplitude = m_amplitude, frequency = 1.0;
 x += m_randomize;
@@ -152,7 +152,7 @@ return total;
 
 //------------------------------------------------------------------------------
 
-void CPerlin::Setup (double amplitude, double persistence, int octaves, int randomize)
+void CPerlinNoise::Setup (double amplitude, double persistence, int octaves, int randomize)
 {
 m_amplitude = (amplitude > 0.0) ? amplitude : 1.0;
 m_persistence = (persistence > 0.0) ? persistence : 2.0 / 3.0;

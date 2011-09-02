@@ -1,7 +1,7 @@
-#ifndef __PERLIN_H
-#define __PERLIN_H
+#ifndef __PERLINNOISE_H
+#define __PERLINNOISE_H
 
-class CPerlin {
+class CPerlinNoise {
 	private:
 		int m_randomize;
 
@@ -32,5 +32,5 @@ class CPerlin {
 		inline int FastFloor (double n) { return (n > 0) ? (int) n : (int) n - 1; }
 	};
 
-#endif //__PERLIN_H
+#endif //__PERLINNOISE_H
 

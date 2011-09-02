@@ -1,13 +1,13 @@
 #ifndef __improved_perlin_h
 #define __improved_perlin_h
 
-#include "perlin.h"
+#include "PerlinNoise.h"
 
 #include "carray.h"
 
 #define PERLIN_RANDOM_SIZE	256
 
-class CImprovedPerlin : public CPerlin {
+class CSimplexNoise : public CPerlinNoise {
 	private:
 		int m_random [2 * PERLIN_RANDOM_SIZE];
 

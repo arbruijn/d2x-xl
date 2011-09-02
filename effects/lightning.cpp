@@ -12,8 +12,8 @@
 #endif
 
 #include "descent.h"
-#include "perlin.h"
-#include "ImprovedPerlin.h"
+#include "PerlinNoise.h"
+#include "SimplexNoise.h"
 #include "segmath.h"
 
 #include "objsmoke.h"
@@ -30,10 +30,10 @@
 
 #define RENDER_LIGHTNING_OUTLINE 0
 
-#if IMPROVED_PERLIN
-extern CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
+#if NOISE_TYPE
+extern CSimplexNoise noiseX [MAX_THREADS], noiseY [MAX_THREADS];
 #else
-extern CPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
+extern CPerlinNoise noiseX [MAX_THREADS], noiseY [MAX_THREADS];
 #endif
 
 #define LIMIT_FLASH_FPS			1
@@ -403,7 +403,7 @@ for (int i = 1; i < m_nNodes; i++)
 
 //------------------------------------------------------------------------------
 
-#if IMPROVED_PERLIN
+#if NOISE_TYPE
 static double ampScale = 1.5;
 static double persistence = 0.5;
 static int octaves = 6;
@@ -432,8 +432,8 @@ plh->m_vOffs.SetZero ();
 if ((nDepth > 1) || m_bRandom) {
 	if (nStyle == 2) {
 		double h = double (m_nNodes - 1);
-		perlinX [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
-		perlinY [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
+		noiseX [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
+		noiseY [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		for (i = 0; i < m_nNodes; i++)
 			m_nodes [i].CreatePerlin (m_nNodes, i, nThread);
 		Rotate (nFrames);
@@ -460,8 +460,8 @@ else {
 	plh->m_vOffs.SetZero ();
 	if (nStyle == 2) {
 		double h = double (m_nNodes - 1);
-		perlinX [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
-		perlinY [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
+		noiseX [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
+		noiseY [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++)
 			plh->CreatePerlin (m_nNodes, i, nThread);
 		Rotate (nFrames);

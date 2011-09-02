@@ -8770,15 +8770,15 @@
 						>
 					</File>
 					<File
-						RelativePath="..\include\ImprovedPerlin.h"
-						>
-					</File>
-					<File
 						RelativePath="..\include\maths.h"
 						>
 					</File>
 					<File
-						RelativePath="..\include\perlin.h"
+						RelativePath="..\include\PerlinNoise.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\SimplexNoise.h"
 						>
 					</File>
 					<File
@@ -8858,11 +8858,11 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\maths\ImprovedPerlin.cpp"
+						RelativePath="..\maths\PerlinNoise.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\maths\perlin.cpp"
+						RelativePath="..\maths\SimplexNoise.cpp"
 						>
 					</File>
 					<File
@@ -10461,11 +10461,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

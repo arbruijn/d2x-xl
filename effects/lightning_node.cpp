@@ -12,8 +12,8 @@
 #endif
 
 #include "descent.h"
-#include "perlin.h"
-#include "ImprovedPerlin.h"
+#include "PerlinNoise.h"
+#include "SimplexNoise.h"
 #include "segmath.h"
 
 #include "objsmoke.h"
@@ -29,10 +29,10 @@
 #	include "tactile.h"
 #endif
 
-#if IMPROVED_PERLIN
-CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
+#if NOISE_TYPE
+CSimplexNoise noiseX [MAX_THREADS], noiseY [MAX_THREADS];
 #else
-CPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
+CPerlinNoise noiseX [MAX_THREADS], noiseY [MAX_THREADS];
 #endif
 
 //------------------------------------------------------------------------------
@@ -293,8 +293,8 @@ return m_vOffs;
 
 void CLightningNode::CreatePerlin (double l, double i, int nThread)
 {
-double dx = ((l - i) * perlinX [nThread].ComputeNoise (i / l) + i * perlinX [nThread].ComputeNoise ((i - l) / l)) / l;
-double dy = ((l - i) * perlinY [nThread].ComputeNoise (i / l) + i * perlinY [nThread].ComputeNoise ((i - l) / l)) / l;
+double dx = ((l - i) * noiseX [nThread].ComputeNoise (i / l) + i * noiseX [nThread].ComputeNoise ((i - l) / l)) / l;
+double dy = ((l - i) * noiseY [nThread].ComputeNoise (i / l) + i * noiseY [nThread].ComputeNoise ((i - l) / l)) / l;
 
 static double dx0 [MAX_THREADS], dy0 [MAX_THREADS];
 

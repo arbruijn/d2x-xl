@@ -2,7 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "ImprovedPerlin.h"
+#include "SimplexNoise.h"
 
 static int permutation [] = {
 	151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,
@@ -28,7 +28,7 @@ static int permutation [] = {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-double CImprovedPerlin::Noise (double v) 
+double CSimplexNoise::Noise (double v) 
 {
 int i = int (FastFloor (v)) & 255;
 v -= FastFloor (v);
@@ -45,7 +45,7 @@ return Lerp (u, Grad (m_random [i], v), Grad (m_random [i+1], v - 1));
 
 //------------------------------------------------------------------------------
 
-double CImprovedPerlin::Noise (double x, double y) 
+double CSimplexNoise::Noise (double x, double y) 
 {
 int xi = (int) FastFloor (x);
 int yi = (int) FastFloor (y);
@@ -62,7 +62,7 @@ return Lerp (v, Lerp (u, Grad (m_random [A], x, y), Grad (m_random [B], x - 1, y
 
 //------------------------------------------------------------------------------
 #if 0
-double CImprovedPerlin::Noise (double x, double y, double z) 
+double CSimplexNoise::Noise (double x, double y, double z) 
 {
 int X = (int) FastFloor (x) & 255;
 int Y = (int) FastFloor (y) & 255;
@@ -87,7 +87,7 @@ return Lerp (w, Lerp (v, Lerp (u, Grad (m_random [AA], x, y, z), Grad (m_random 
 #endif
 //------------------------------------------------------------------------------
 
-double CImprovedPerlin::Grad (int bias, double x, double y, double z) 
+double CSimplexNoise::Grad (int bias, double x, double y, double z) 
 {
 int h = bias & 15;
 double u = (h < 8) ? x : y;
@@ -97,9 +97,9 @@ return (((h & 1) == 0) ? u : -u) + (((h & 2) == 0) ? v : -v);
 
 //------------------------------------------------------------------------------
 
-void CImprovedPerlin::Setup (double amplitude, double persistence, int octaves, int randomize)
+void CSimplexNoise::Setup (double amplitude, double persistence, int octaves, int randomize)
 {
-CPerlin::Setup (amplitude * 2.0, persistence, octaves, 0);
+CPerlinNoise::Setup (amplitude * 2.0, persistence, octaves, 0);
 #if 0
 memcpy (m_random, permutation, PERLIN_RANDOM_SIZE * sizeof (m_random [0]));
 memcpy (m_random + PERLIN_RANDOM_SIZE, permutation, PERLIN_RANDOM_SIZE * sizeof (m_random [0]));
