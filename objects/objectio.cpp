@@ -240,10 +240,6 @@ switch (info.renderType) {
 		rType.lightningInfo.nNodes = cf.ReadShort ();
 		rType.lightningInfo.nChildren = cf.ReadShort ();
 		rType.lightningInfo.nFrames = cf.ReadShort ();
-		if (gameData.segs.nLevelVersion <= 21)
-			rType.lightningInfo.nWidth = 3;
-		else
-			rType.lightningInfo.nWidth = cf.ReadByte ();
 		rType.lightningInfo.nAngle = cf.ReadByte ();
 		rType.lightningInfo.nStyle = cf.ReadByte ();
 		rType.lightningInfo.nSmoothe = cf.ReadByte ();
@@ -256,10 +252,8 @@ switch (info.renderType) {
 		rType.lightningInfo.color.Green () = cf.ReadByte ();
 		rType.lightningInfo.color.Blue () = cf.ReadByte ();
 		rType.lightningInfo.color.Alpha () = cf.ReadByte ();
-		if (gameData.segs.nLevelVersion < 19)
-			rType.lightningInfo.bEnabled = 1;
-		else
-			rType.lightningInfo.bEnabled = cf.ReadByte ();
+		rType.lightningInfo.bEnabled = (gameData.segs.nLevelVersion < 19) ? 1 : cf.ReadByte ();
+		rType.lightningInfo.nWidth = (gameData.segs.nLevelVersion <= 21) ? 3 : cf.ReadByte ();
 		break;
 
 	case RT_SOUND:

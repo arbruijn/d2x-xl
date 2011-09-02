@@ -130,7 +130,7 @@ PrintLog (0, "Error in demo playback\n");
 #define INTERPOLATE_PLAYBACK    2
 #define INTERPOL_FACTOR         (I2X (1) + (I2X (1)/5))
 
-#define DEMO_VERSION_D2X        19      // last D1 version was 13
+#define DEMO_VERSION_D2X        20      // last D1 version was 13
 #define DEMO_GAME_TYPE          3       // 1 was shareware, 2 registered
 
 #define DEMO_FILENAME           "tmpdemo.dem"
@@ -789,6 +789,7 @@ switch (objP->info.renderType) {
 		objP->rType.lightningInfo.color.Blue () = NDReadByte ();
 		objP->rType.lightningInfo.color.Alpha () = NDReadByte ();
 		objP->rType.lightningInfo.bEnabled = NDReadByte ();
+		objP->rType.lightningInfo.nWidth = (gameData.demo.nVersion <= 19) ? 3 : NDReadByte ();
 		break;
 
 	case RT_SOUND:
@@ -1006,6 +1007,7 @@ switch (o.info.renderType) {
 		NDWriteByte (o.rType.lightningInfo.color.Blue ());
 		NDWriteByte (o.rType.lightningInfo.color.Alpha ());
 		NDWriteByte (o.rType.lightningInfo.bEnabled);
+		NDWriteByte (o.rType.lightningInfo.nWidth);
 		break;
 
 	case RT_SOUND:
