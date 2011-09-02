@@ -34,9 +34,9 @@ int i = int (FastFloor (v)) & 255;
 v -= FastFloor (v);
 double u = Fade (v);
 #if DBG
-double g1 = Grad (m_random [i], v);
-double g2 = Grad (m_random [i+1], v - 1);
-double l = Lerp (u, g1, g2);
+double A = Grad (m_random [i], v);
+double B = Grad (m_random [i+1], v - 1);
+double l = Lerp (u, A, B);
 return l;
 #else
 return Lerp (u, Grad (m_random [i], v), Grad (m_random [i+1], v - 1));
@@ -99,7 +99,7 @@ return (((h & 1) == 0) ? u : -u) + (((h & 2) == 0) ? v : -v);
 
 void CImprovedPerlin::Setup (double amplitude, double persistence, int octaves, int randomize)
 {
-CPerlin::Setup (amplitude, persistence, octaves, 0);
+CPerlin::Setup (amplitude * 2.0, persistence, octaves, 0);
 #if 0
 memcpy (m_random, permutation, PERLIN_RANDOM_SIZE * sizeof (m_random [0]));
 memcpy (m_random + PERLIN_RANDOM_SIZE, permutation, PERLIN_RANDOM_SIZE * sizeof (m_random [0]));
@@ -110,12 +110,15 @@ for (i = 0; i < PERLIN_RANDOM_SIZE; i++)
 	permutation [i] = i;
 int l = PERLIN_RANDOM_SIZE;
 
+int* p = m_random + PERLIN_RANDOM_SIZE;
+memcpy (p, permutation, sizeof (permutation));
 for (int i = 0; i < PERLIN_RANDOM_SIZE; i++) {
 	int j = (int) (rand () % l);
-	m_random [i + PERLIN_RANDOM_SIZE] = m_random [i] = permutation [j];
+	m_random [i] = p [j];
 	if (j < --l)
-		permutation [j] = permutation [l];
+		p [j] = p [l];
 	}
+memcpy (p, m_random, sizeof (permutation));
 #endif
 }
 

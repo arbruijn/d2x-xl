@@ -402,6 +402,16 @@ for (int i = 1; i < m_nNodes; i++)
 
 //------------------------------------------------------------------------------
 
+#if IMPROVED_PERLIN
+static double ampScale = 1.5;
+static double persistence = 0.5;
+static int octaves = 6;
+#else
+static double ampScale = 1.5;
+static double persistence = 2.0 / 3.0;
+static int octaves = 6;
+#endif
+
 void CLightning::CreatePath (int nDepth, int nThread)
 {
 	CLightningNode*	plh, * nodeP [2];
@@ -421,8 +431,8 @@ plh->m_vOffs.SetZero ();
 if ((nDepth > 1) || m_bRandom) {
 	if (nStyle == 2) {
 		double h = double (m_nNodes - 1);
-		perlinX [nThread].Setup (X2D (nAmplitude) * 1.5, 2.0 / 3.0, 6);
-		perlinY [nThread].Setup (X2D (nAmplitude) * 1.5, 2.0 / 3.0, 6);
+		perlinX [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
+		perlinY [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		for (i = 0; i < m_nNodes; i++)
 			m_nodes [i].CreatePerlin (m_nNodes, i, nThread);
 		Rotate (nSteps);
@@ -449,8 +459,8 @@ else {
 	plh->m_vOffs.SetZero ();
 	if (nStyle == 2) {
 		double h = double (m_nNodes - 1);
-		perlinX [nThread].Setup (X2D (nAmplitude) * 1.5, 2.0 / 3.0, 6);
-		perlinY [nThread].Setup (X2D (nAmplitude) * 1.5, 2.0 / 3.0, 6);
+		perlinX [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
+		perlinY [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++)
 			plh->CreatePerlin (m_nNodes, i, nThread);
 		Rotate (nSteps);
