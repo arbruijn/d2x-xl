@@ -421,10 +421,10 @@ plh->m_vOffs.SetZero ();
 if ((nDepth > 1) || m_bRandom) {
 	if (nStyle == 2) {
 		double h = double (m_nNodes - 1);
-		perlinX [nThread].Setup (m_nNodes, 6, 1);
-		perlinY [nThread].Setup (m_nNodes, 6, 1);
+		perlinX [nThread].Setup (m_nNodes, X2D (nAmplitude) * 1.5, 2.0 / 3.0, 1, 6);
+		perlinY [nThread].Setup (m_nNodes, X2D (nAmplitude) * 1.5, 2.0 / 3.0, 1, 6);
 		for (i = 0; i < m_nNodes; i++)
-			m_nodes [i].CreatePerlin (nAmplitude, m_nNodes, i, nThread);
+			m_nodes [i].CreatePerlin (m_nNodes, i, nThread);
 		Rotate (nSteps);
 		}
 	else if (nStyle == 1) {
@@ -449,10 +449,10 @@ else {
 	plh->m_vOffs.SetZero ();
 	if (nStyle == 2) {
 		double h = double (m_nNodes - 1);
-		perlinX [nThread].Setup (m_nNodes, 1, 1);
-		perlinY [nThread].Setup (m_nNodes, 1, 1);
+		perlinX [nThread].Setup (m_nNodes, X2D (nAmplitude) * 1.5, 2.0 / 3.0, 1, 6);
+		perlinY [nThread].Setup (m_nNodes, X2D (nAmplitude) * 1.5, 2.0 / 3.0, 1, 6);
 		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++)
-			plh->CreatePerlin (nAmplitude, m_nNodes, i, nThread);
+			plh->CreatePerlin (m_nNodes, i, nThread);
 		Rotate (nSteps);
 		}
 	else if (nStyle == 1) {
