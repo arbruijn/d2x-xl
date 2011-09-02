@@ -198,7 +198,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	OMEGA_LIFE, // nLife
 	0, // nDelay
 	0, // nLength
-	2, // nAmplitude
+	4, // nAmplitude
 	0, // nOffset
 	OMEGA_BOLTS, // nBolts
 	-1, // nId
