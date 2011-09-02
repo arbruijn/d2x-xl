@@ -11,48 +11,10 @@
 
 #define RAND_HALF	((double (RAND_MAX) + 1.0) * 0.5)
 
-#if CUSTOM_RAND
-
-inline double CPerlin::Random (int v)
+inline double CPerlin::Noise (int v)
 {
 v = (v << 13) ^ v;
 return 1.0 - ((v * (v * v * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0;    
-}
-
-#else
-
-inline double CPerlin::Random (void)
-{
-//return (double (rand ()) - RAND_HALF) / RAND_HALF;
-#if DBG
-double r = rand ();
-r /= double RAND_HALF;
-r -= 1.0;
-return r;
-#else
-return double (rand ()) / RAND_HALF - 1.0;
-#endif
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
-double CPerlin::Noise (double v)
-{
-#if CUSTOM_RAND > 1
-return Random (v);
-#else
-uint i = (uint) v + 2;
-#	if 1
-if (!m_valid [i]) {
-	m_valid [i] = 1;
-	m_random [i] = Random ();
-	++m_nValues;
-	}
-#	endif
-return m_random [i];
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -98,45 +60,48 @@ return Noise (v) / 2  +  Noise (v-1) / 4  +  Noise (v+1) / 4;
 
 double CPerlin::InterpolatedNoise (double v, int octave)
 {
-v *= m_scale;
 v *= double (1 << octave);
-int xi = int (v);
-double v1 = SmoothedNoise (xi);
-double v2 = SmoothedNoise (xi + 1);
+int i = int (v);
+double v1 = SmoothedNoise (i);
+double v2 = SmoothedNoise (i + 1);
 #if 1
-return CosineInterpolate (v1, v2, v - xi);
+return CosineInterpolate (v1, v2, v - i);
 #else
-double v0 = SmoothedNoise (xi - 1);
-double v3 = SmoothedNoise (xi + 2);
+double v0 = SmoothedNoise (i - 1);
+double v3 = SmoothedNoise (i + 2);
 return CubicInterpolate (v0, v1, v2, v3, v - int (v));
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-double CPerlin::ComputeNoise (double v, double persistence, long octaves)
+double CPerlin::ComputeNoise (double v)
 {
-double total = 0, amplitude = 1.0;
+double total = 0, amplitude = m_amplitude;
 #if 0 //DBG
 octaves = 1;
 #endif
-for (int i = 0; i < octaves; i++) {
+v += m_nOffset;
+for (int i = 0; i < m_octaves; i++) {
 #if DBG
 	double n = InterpolatedNoise (v, i);
 	total += n * amplitude;
 #else
 	total += InterpolatedNoise (v, i) * amplitude;
 #endif
-	amplitude *= persistence;
+	amplitude *= m_persistence;
 	}
 return total;
 }
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise (double x, double y)
+double CPerlin::Noise (int x, int y)
 {
-return (Noise (x) + Noise (y)) / 2.0;
+int n = (int) x + (int) y * 57;
+n = (n << 13) ^ n;
+int nn = (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
+return 1.0 - (double) nn / 1073741824.0;
 }
 
 //------------------------------------------------------------------------------
@@ -176,36 +141,24 @@ return CosineInterpolate (i1, i2, yFrac);
 
 //------------------------------------------------------------------------------
 
-double CPerlin::ComputeNoise (double x, double y, double persistence, long octaves)
+double CPerlin::ComputeNoise (double x, double y)
 {
-double total = 0, amplitude = 1.0;
-for (int i = 0; i < octaves; i++) {
+double total = 0, amplitude = m_amplitude;
+for (int i = 0; i < m_octaves; i++) {
 	total += InterpolatedNoise (x, y, i) * amplitude;
-	amplitude *= persistence;
+	amplitude *= m_persistence;
 	}
 return total;
 }
 
 //------------------------------------------------------------------------------
 
-bool CPerlin::Setup (int nNodes, int nOctaves, int nDimensions)
+bool CPerlin::Setup (int nNodes, double amplitude, double persistence, int octaves, int nDimensions, int nOffset)
 {
-m_nNodes = nNodes;
-m_scale = sqrt (double (m_nNodes));
-nNodes = ((nNodes + 4) * (1 << nOctaves)) * nDimensions;
-if (m_random.Buffer () && (int (m_random.Length ()) < nNodes)) {
-	m_random.Destroy ();
-	m_valid.Destroy ();
-	}
-if (!(m_random.Buffer () || (m_random.Create (nNodes) && m_valid.Create (nNodes))))
-	return false;
-#if 0
-for (int i = 0; i < nNodes; i++) 
-	m_random [i] = Random ();
-#else
-m_valid.Clear ();
-m_nValues = 0;
-#endif
+m_amplitude = (amplitude > 0.0) ? amplitude : 1.0;
+m_persistence = (persistence > 0.0) ? persistence : 2.0 / 3.0;
+m_octaves = (octaves > 0) ? octaves : 6;
+m_nOffset = (nOffset < 0) ? (rand () * rand ()) & 0xFFFF : nOffset;
 return true;
 }
 

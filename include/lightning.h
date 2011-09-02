@@ -47,7 +47,7 @@ class CLightningNode : public tLightningNode {
 									  int nSteps, int nAmplitude, int nMinDist, int i, int nSmoothe, int bClamp);
 		CFixVector CreateErratic (CFixVector *vPos, CFixVector *vBase, int nSteps, int nAmplitude,
 									    int bInPlane, int bFromEnd, int bRandom, int i, int nNodes, int nSmoothe, int bClamp);
-		void CreatePerlin (int nAmplitude, double phi, int i, int nThread);
+		void CreatePerlin (int nAmplitude, double l, double i, int nThread);
 		void Move (const CFixVector& vOffset, short nSegment, int nThread);
 		void Move (const CFixVector& vOldPos, const CFixVector& vOldEnd, 
 					  const CFixVector& vNewPos, const CFixVector& vNewEnd, 
@@ -71,7 +71,9 @@ typedef struct tLightning {
 	CFixVector					m_vRefEnd;
 	CFixVector					m_vDelta;
 	CArray<CLightningNode>	m_nodes;
-	CFloatVector					m_color;
+	CArray<double>				m_dx;
+	CArray<double>				m_dy;
+	CFloatVector				m_color;
 	int							m_nNext;
 	int							m_nLife;
 	int							m_nTTL;

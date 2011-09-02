@@ -293,30 +293,32 @@ return m_vOffs;
 // at the intended start and end points and then have increasing amplitude as 
 // moving out from them.
 
-void CLightningNode::CreatePerlin (int nAmplitude, double phi, int i, int nThread)
+void CLightningNode::CreatePerlin (int nAmplitude, double l, double i, int nThread)
 {
 #if IMPROVED_PERLIN
 double dx = perlinX [nThread].ComputeNoise (phi, 0.75, 6);
 double dy = perlinY [nThread].ComputeNoise (phi, 0.75, 6);
 #else
-double dx = perlinX [nThread].ComputeNoise (phi, 0.25, 6);
-double dy = perlinY [nThread].ComputeNoise (phi, 0.25, 6);
-//double dx = perlinX [nThread].ComputeNoise (double (i) /** 0.03125*/, 0.6, 6);
-//double dy = perlinY [nThread].ComputeNoise (double (i) /** 0.03125*/, 0.6, 6);
+static double scale = 1.333;
+double amplitude = X2D (nAmplitude) * scale;
+static double persistence = 0.666;
+static int octaves = 6;
+double dx = ((l - i) * perlinX [nThread].ComputeNoise (i / l, amplitude, persistence, octaves) + i * perlinX [nThread].ComputeNoise ((i - l) / l, amplitude, persistence, octaves)) / l;
+double dy = ((l - i) * perlinY [nThread].ComputeNoise (i / l, amplitude, persistence, octaves) + i * perlinY [nThread].ComputeNoise ((i - l) / l, amplitude, persistence, octaves)) / l;
 #endif
+
 static double dx0 [MAX_THREADS], dy0 [MAX_THREADS];
+
 if (!i) {
 	dx0 [nThread] = dx;
 	dy0 [nThread] = dy;
 	}
 dx -= dx0 [nThread];
-dx *= nAmplitude;
-#if 0 //DBG
-dy = 0;
-#else
 dy -= dy0 [nThread];
-dy *= nAmplitude;
-#endif
+dx *= I2X (1);
+dy *= I2X (1);
+//dx *= nAmplitude;
+//dy *= nAmplitude;
 m_vNewPos = m_vBase + m_vDelta [0] * int (dx);
 m_vNewPos += m_vDelta [1] * int (dy);
 }

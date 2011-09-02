@@ -424,7 +424,7 @@ if ((nDepth > 1) || m_bRandom) {
 		perlinX [nThread].Setup (m_nNodes, 6, 1);
 		perlinY [nThread].Setup (m_nNodes, 6, 1);
 		for (i = 0; i < m_nNodes; i++)
-			m_nodes [i].CreatePerlin (nAmplitude, double (i) / h, i, nThread);
+			m_nodes [i].CreatePerlin (nAmplitude, m_nNodes, i, nThread);
 		Rotate (nSteps);
 		}
 	else if (nStyle == 1) {
@@ -449,10 +449,10 @@ else {
 	plh->m_vOffs.SetZero ();
 	if (nStyle == 2) {
 		double h = double (m_nNodes - 1);
-		perlinX [nThread].Setup (m_nNodes, 6, 1);
-		perlinY [nThread].Setup (m_nNodes, 6, 1);
+		perlinX [nThread].Setup (m_nNodes, 1, 1);
+		perlinY [nThread].Setup (m_nNodes, 1, 1);
 		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++)
-			plh->CreatePerlin (nAmplitude, double (i) / h, i, nThread);
+			plh->CreatePerlin (nAmplitude, m_nNodes, i, nThread);
 		Rotate (nSteps);
 		}
 	else if (nStyle == 1) {
