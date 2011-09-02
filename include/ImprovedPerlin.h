@@ -30,9 +30,6 @@ class CImprovedPerlinCore {
 class CImprovedPerlin : public CPerlin {
 	private:
 		CStaticArray<CImprovedPerlinCore, 1>	m_cores;
-		double m_amplitude;
-		double m_persistence;
-		int m_octaves;
 
 	public:
 		virtual bool Setup (int nNodes, double amplitude, double persistence, int nOctaves, int nDimensions = 1, int nOffset = 0);

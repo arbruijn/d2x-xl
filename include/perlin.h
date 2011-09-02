@@ -7,10 +7,12 @@
 
 class CPerlin {
 	private:
+		int m_nOffset;
+
+	protected:	
 		double m_amplitude;
 		double m_persistence;
 		int m_octaves;
-		int m_nOffset;
 
 	public:
 		bool Setup (int nNodes, double amplitude, double persistence, int nOctaves, int nDimensions = 1, int nOffset = -1);
