@@ -452,7 +452,7 @@ public:
 	short			nTarget;
 	short			nNodes;
 	short			nChildren;
-	short			nSteps;
+	short			nFrames;
 	char			nWidth;
 	char			nAngle;
 	char			nStyle;
@@ -481,7 +481,7 @@ class CLightningInfo {
 		inline short GetTarget (void) { return m_info.nTarget; }
 		inline short GetNodes (void) { return m_info.nNodes; }
 		inline short GetChildren (void) { return m_info.nChildren; }
-		inline short GetSteps (void) { return m_info.nSteps; }
+		inline short GetFrames (void) { return m_info.nFrames; }
 		inline char GetAngle (void) { return m_info.nAngle; }
 		inline char GetStyle (void) { return m_info.nStyle; }
 		inline char GetSmoothe (void) { return m_info.nSmoothe; }
