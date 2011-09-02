@@ -15,13 +15,13 @@ class CImprovedPerlin : public CPerlin {
 		virtual void Setup (double amplitude, double persistence, int octaves, int randomize = -1);
 
 	protected:
-		virtual double InterpolatedNoise (double x) { return Noise (x); }
-		virtual double InterpolatedNoise (double x, double y) { return Noise (x, y); }
+		virtual double Noise (double x);
+		virtual double Noise (double x, double y);
+		//virtual double InterpolatedNoise (double x) { return Noise (x); }
+		//virtual double InterpolatedNoise (double x, double y) { return Noise (x, y); }
 		//virtual double Noise (double x, double y, double z);
 
 	private:
-		double Noise (double x);
-		double Noise (double x, double y);
 		inline double Lerp (double t, double a, double b) { return a + t * (b - a); }
 		inline double Fade (double t) { return t * t * t * (t * (t * 6.0 - 15.0) + 10.0); }
 		inline double Grad (int bias, double x) { return ((bias & 1) == 0) ? x : -x; }

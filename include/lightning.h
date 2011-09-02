@@ -7,7 +7,7 @@
 
 #define MAX_LIGHTNING_SYSTEMS	1000
 #define MAX_LIGHTNING_NODES	1000
-#define IMPROVED_PERLIN			1
+#define IMPROVED_PERLIN			0
 
 //------------------------------------------------------------------------------
 

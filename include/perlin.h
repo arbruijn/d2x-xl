@@ -20,11 +20,11 @@ class CPerlin {
 		double CosineInterpolate (double a, double b, double x);
 		double CubicInterpolate (double v0, double v1, double v2, double v3, double x);
 
-		double Noise (int v);			 
-		double Noise (int x, int y);
+		virtual double Noise (double v);			 
+		virtual double Noise (double x, double y);
 
-		double SmoothedNoise (int x);
-		double SmoothedNoise (int x, int y);
+		double SmoothedNoise (double x);
+		double SmoothedNoise (double x, double y);
 
 		virtual double InterpolatedNoise (double x);
 		virtual double InterpolatedNoise (double x, double y);

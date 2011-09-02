@@ -8,8 +8,9 @@
 
 //------------------------------------------------------------------------------
 
-inline double CPerlin::Noise (int n)
+double CPerlin::Noise (double v)
 {
+int n = FastFloor (v);
 n = (n << 13) ^ n;
 return 1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0;    
 }
@@ -48,7 +49,7 @@ return v1 + (v2 - v0) * x + (v0 - v1 - p) * x2 + p * x2 * x;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::SmoothedNoise (int v)
+double CPerlin::SmoothedNoise (double v)
 {
 return Noise (v) / 2  +  Noise (v-1) / 4  +  Noise (v+1) / 4;
 }
@@ -57,17 +58,17 @@ return Noise (v) / 2  +  Noise (v-1) / 4  +  Noise (v+1) / 4;
 
 double CPerlin::InterpolatedNoise (double v)
 {
-int i = FastFloor (v);
-double v1 = SmoothedNoise (i);
-double v2 = SmoothedNoise (i + 1);
+//int i = FastFloor (v);
+double v1 = SmoothedNoise (v);
+double v2 = SmoothedNoise (v + 1);
 #if INTERPOLATION_METHOD == 2
-double v0 = SmoothedNoise (i - 1);
-double v3 = SmoothedNoise (i + 2);
-return CubicInterpolate (v0, v1, v2, v3, v - i);
+double v0 = SmoothedNoise (v - 1);
+double v3 = SmoothedNoise (v + 2);
+return CubicInterpolate (v0, v1, v2, v3, v - FastFloor (v));
 #elif INTERPOLATION_METHOD == 1
-return CosineInterpolate (v1, v2, v - i);
+return CosineInterpolate (v1, v2, v - FastFloor (v));
 #else
-return LinearInterpolate (v1, v2, v - i);
+return LinearInterpolate (v1, v2, v - FastFloor (v));
 #endif
 }
 
@@ -95,9 +96,9 @@ return total;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise (int x, int y)
+double CPerlin::Noise (double x, double y)
 {
-int n = (int) x + (int) y * 57;
+int n = FastFloor (x) + FastFloor (y) * 57;
 n = (n << 13) ^ n;
 int nn = (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
 return 1.0 - (double) nn / 1073741824.0;
@@ -105,7 +106,7 @@ return 1.0 - (double) nn / 1073741824.0;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::SmoothedNoise (int x, int y)
+double CPerlin::SmoothedNoise (double x, double y)
 {
 double corners = (Noise (x-1, y-1) + Noise (x+1, y-1) + Noise (x-1, y+1) + Noise (x+1, y+1)) / 16;
 double sides = (Noise (x-1, y) + Noise (x+1, y) + Noise (x, y-1) + Noise (x, y+1)) / 8;

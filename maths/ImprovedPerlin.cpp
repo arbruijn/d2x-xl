@@ -80,7 +80,7 @@ int B = m_random [X + 1] + Y;
 int BA = m_random [B] + Z;
 int BB = m_random [B + 1] + Z;
 return Lerp (w, Lerp (v, Lerp (u, Grad (m_random [AA], x, y, z), Grad (m_random [BA], x - 1, y, z)),
-							Lerp (u, Grad (m_random [AB], x, y - 1, z), Grad (m_random [BB], x - 1, y - 1, z))),
+							 Lerp (u, Grad (m_random [AB], x, y - 1, z), Grad (m_random [BB], x - 1, y - 1, z))),
 					Lerp (v, Lerp (u, Grad (m_random [AA + 1], x, y, z - 1), Grad (m_random [BA + 1], x - 1, y, z - 1)),
 							Lerp (u, Grad (m_random [AB + 1], x, y - 1, z - 1), Grad (m_random [BB + 1], x - 1, y - 1, z - 1))));
 }
