@@ -163,7 +163,7 @@ return 1;
 #	define OMEGA_FRAMES 30
 #	define OMEGA_LIFE -50000
 #else
-#	define OMEGA_BOLTS 8
+#	define OMEGA_BOLTS 10
 #	define OMEGA_NODES 150
 #	define OMEGA_FRAMES 3
 #	define OMEGA_LIFE -5000
@@ -192,7 +192,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	0, // bRandom
 	0, // bInPlane
 	1, // bEnabled
-	CRGBAColor () // color;
+	{(ubyte) (255 * 0.9f), (ubyte) (255 * 0.6f), (ubyte) (255 * 0.6f), (ubyte) (255 * 0.3f)} // color;
 	},
 	{
 	OMEGA_LIFE, // nLife
@@ -206,7 +206,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	-OMEGA_NODES, // nNodes
 	0, // nChildren
 	OMEGA_FRAMES, // nFrames
-	9, // nWidth
+	6, // nWidth
 	0, // nAngle
 	-1, // nStyle
 	1, // nSmoothe
@@ -216,7 +216,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	0, // bRandom
 	0, // bInPlane
 	1, // bEnabled
-	CRGBAColor () // color;
+	{(ubyte) (255 * 0.9f), (ubyte) (255 * 0.6f), (ubyte) (255 * 0.6f), (ubyte) (255 * 0.3f)} // color;
 	}
 };
 
@@ -247,10 +247,13 @@ else {
 #if OMEGA_PLASMA
 	color.Alpha () = gameOpts->render.lightning.bGlow ? 0.5f : 0.3f;
 #endif
-	for (int i = 0; i < 2; i++)
-		handleP->nLightning [i] = lightningManager.Create (omegaLightningInfo [i], &vMuzzle, vTarget, NULL, nObject);
-	if (handleP->nLightning [0] >= 0)
+	handleP->nLightning [0] = lightningManager.Create (omegaLightningInfo [0], &vMuzzle, vTarget, NULL, nObject);
+	if (handleP->nLightning [0] < 0)
+		handleP->nLightning [1] = -1;
+	else {
 		m_nHandles++;
+		handleP->nLightning [1] = (gameOpts->render.nQuality < 3) ? -1 : lightningManager.Create (omegaLightningInfo [1], &vMuzzle, vTarget, NULL, nObject);
+		}
 	}
 return (handleP->nLightning [0] >= 0);
 }

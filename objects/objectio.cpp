@@ -240,7 +240,7 @@ switch (info.renderType) {
 		rType.lightningInfo.nNodes = cf.ReadShort ();
 		rType.lightningInfo.nChildren = cf.ReadShort ();
 		rType.lightningInfo.nFrames = cf.ReadShort ();
-		if (gameData.segs.nLevelVersion <= 19)
+		if (gameData.segs.nLevelVersion <= 21)
 			rType.lightningInfo.nWidth = 3;
 		else
 			rType.lightningInfo.nWidth = cf.ReadByte ();

@@ -775,7 +775,7 @@ switch (objP->info.renderType) {
 		objP->rType.lightningInfo.nTarget = NDReadShort ();
 		objP->rType.lightningInfo.nNodes = NDReadShort ();
 		objP->rType.lightningInfo.nChildren = NDReadShort ();
-		objP->rType.lightningInfo.nSteps = NDReadShort ();
+		objP->rType.lightningInfo.nFrames = NDReadShort ();
 		objP->rType.lightningInfo.nAngle = NDReadByte ();
 		objP->rType.lightningInfo.nStyle = NDReadByte ();
 		objP->rType.lightningInfo.nSmoothe = NDReadByte ();
@@ -992,7 +992,7 @@ switch (o.info.renderType) {
 		NDWriteShort (o.rType.lightningInfo.nTarget);
 		NDWriteShort (o.rType.lightningInfo.nNodes);
 		NDWriteShort (o.rType.lightningInfo.nChildren);
-		NDWriteShort (o.rType.lightningInfo.nSteps);
+		NDWriteShort (o.rType.lightningInfo.nFrames);
 		NDWriteByte (o.rType.lightningInfo.nAngle);
 		NDWriteByte (o.rType.lightningInfo.nStyle);
 		NDWriteByte (o.rType.lightningInfo.nSmoothe);
