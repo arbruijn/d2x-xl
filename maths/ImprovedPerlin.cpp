@@ -28,34 +28,10 @@ static int permutation [] = {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CImprovedPerlinCore::Initialize (void) 
+double CImprovedPerlin::Noise (double v) 
 {
-#if 1
-memcpy (m_random, permutation, PERLIN_RANDOM_SIZE * sizeof (m_random [0]));
-memcpy (m_random + PERLIN_RANDOM_SIZE, permutation, PERLIN_RANDOM_SIZE * sizeof (m_random [0]));
-#else
-int i, index [PERLIN_RANDOM_SIZE];
-
-for (i = 0; i < PERLIN_RANDOM_SIZE; i++)
-	index [i] = i;
-int l = PERLIN_RANDOM_SIZE;
-
-for (int i = 0; i < PERLIN_RANDOM_SIZE; i++) {
-	int h = (int) (rand () % l);
-	int j = index [h];
-	m_random [i + PERLIN_RANDOM_SIZE] = m_random [i] = permutation [i];
-	if (j < --l)
-		index [j] = index [l];
-	}
-#endif
-}
-      
-//------------------------------------------------------------------------------
-
-double CImprovedPerlinCore::Noise (double v) 
-{
-int i = int (floor (v)) & 255;
-v -= floor (v);
+int i = int (FastFloor (v)) & 255;
+v -= FastFloor (v);
 double u = Fade (v);
 #if DBG
 double g1 = Grad (m_random [i], v);
@@ -69,10 +45,10 @@ return Lerp (u, Grad (m_random [i], v), Grad (m_random [i+1], v - 1));
 
 //------------------------------------------------------------------------------
 
-double CImprovedPerlinCore::Noise (double x, double y) 
+double CImprovedPerlin::Noise (double x, double y) 
 {
-int xi = (int) floor (x);
-int yi = (int) floor (y);
+int xi = (int) FastFloor (x);
+int yi = (int) FastFloor (y);
 x -= (double) xi;
 y -= (double) yi;
 xi &= 255;
@@ -86,14 +62,14 @@ return Lerp (v, Lerp (u, Grad (m_random [A], x, y), Grad (m_random [B], x - 1, y
 
 //------------------------------------------------------------------------------
 #if 0
-double CImprovedPerlinCore::Noise (double x, double y, double z) 
+double CImprovedPerlin::Noise (double x, double y, double z) 
 {
-int X = (int) floor (x) & 255;
-int Y = (int) floor (y) & 255;
-int Z = (int) floor (z) & 255;
-x -= (double) floor (x);
-y -= (double) floor (y);
-z -= (double) floor (z);
+int X = (int) FastFloor (x) & 255;
+int Y = (int) FastFloor (y) & 255;
+int Z = (int) FastFloor (z) & 255;
+x -= (double) FastFloor (x);
+y -= (double) FastFloor (y);
+z -= (double) FastFloor (z);
 double u = Fade (x);
 double v = Fade (y);
 double w = Fade (z);
@@ -111,7 +87,7 @@ return Lerp (w, Lerp (v, Lerp (u, Grad (m_random [AA], x, y, z), Grad (m_random 
 #endif
 //------------------------------------------------------------------------------
 
-double CImprovedPerlinCore::Grad (int bias, double x, double y, double z) 
+double CImprovedPerlin::Grad (int bias, double x, double y, double z) 
 {
 int h = bias & 15;
 double u = (h < 8) ? x : y;
@@ -120,21 +96,26 @@ return (((h & 1) == 0) ? u : -u) + (((h & 2) == 0) ? v : -v);
 }
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 
 void CImprovedPerlin::Setup (double amplitude, double persistence, int octaves, int randomize)
 {
-CPerlin::Setup (amplitude, persistence, octaves, randomize);
-#if 1
-	m_cores [0].Initialize ();
+CPerlin::Setup (amplitude, persistence, octaves, 0);
+#if 0
+memcpy (m_random, permutation, PERLIN_RANDOM_SIZE * sizeof (m_random [0]));
+memcpy (m_random + PERLIN_RANDOM_SIZE, permutation, PERLIN_RANDOM_SIZE * sizeof (m_random [0]));
 #else
-if (m_cores.Buffer () && (int (m_cores.Length ()) < octaves))
-	m_cores.Destroy ();
-if (!(m_cores.Buffer () || m_cores.Create (octaves)))
-	return false;
-for (int i = 0; i < octaves; i++)
-	m_cores [i].Initialize ((ubyte) randomize);
+int i, permutation [PERLIN_RANDOM_SIZE];
+
+for (i = 0; i < PERLIN_RANDOM_SIZE; i++)
+	permutation [i] = i;
+int l = PERLIN_RANDOM_SIZE;
+
+for (int i = 0; i < PERLIN_RANDOM_SIZE; i++) {
+	int j = (int) (rand () % l);
+	m_random [i + PERLIN_RANDOM_SIZE] = m_random [i] = permutation [j];
+	if (j < --l)
+		permutation [j] = permutation [l];
+	}
 #endif
 }
 

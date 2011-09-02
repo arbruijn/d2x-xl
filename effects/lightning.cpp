@@ -28,13 +28,13 @@
 #include "automap.h"
 #include "addon_bitmaps.h"
 
-#if 1
-extern CPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
-#else
-extern CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
-#endif
-
 #define RENDER_LIGHTNING_OUTLINE 0
+
+#if IMPROVED_PERLIN
+extern CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
+#else
+extern CPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
+#endif
 
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1

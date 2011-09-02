@@ -28,6 +28,8 @@ class CPerlin {
 
 		virtual double InterpolatedNoise (double x);
 		virtual double InterpolatedNoise (double x, double y);
+
+		inline int FastFloor (double n) { return (n > 0) ? (int) n : (int) n - 1; }
 	};
 
 #endif //__PERLIN_H

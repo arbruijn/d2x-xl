@@ -57,7 +57,7 @@ return Noise (v) / 2  +  Noise (v-1) / 4  +  Noise (v+1) / 4;
 
 double CPerlin::InterpolatedNoise (double v)
 {
-int i = int (v);
+int i = FastFloor (v);
 double v1 = SmoothedNoise (i);
 double v2 = SmoothedNoise (i + 1);
 #if INTERPOLATION_METHOD == 2
@@ -118,7 +118,7 @@ return corners + sides + center;
 double CPerlin::InterpolatedNoise (double x, double y)
 {
 #if 1
-int xInt = int (x), yInt = int (y);
+int xInt = FastFloor (x), yInt = FastFloor (y);
 double xFrac = x - xInt, yFrac = y - yInt;
 #else
 double xInt, yInt,

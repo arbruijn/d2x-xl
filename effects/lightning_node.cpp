@@ -29,8 +29,6 @@
 #	include "tactile.h"
 #endif
 
-#define IMPROVED_PERLIN 0
-
 #if IMPROVED_PERLIN
 CImprovedPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
 #else
