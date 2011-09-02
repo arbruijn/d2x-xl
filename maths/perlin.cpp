@@ -153,7 +153,7 @@ return total;
 
 //------------------------------------------------------------------------------
 
-bool CPerlin::Setup (int nNodes, double amplitude, double persistence, int octaves, int nDimensions, int nOffset)
+bool CPerlin::Setup (double amplitude, double persistence, int octaves, int nDimensions, int nOffset)
 {
 m_amplitude = (amplitude > 0.0) ? amplitude : 1.0;
 m_persistence = (persistence > 0.0) ? persistence : 2.0 / 3.0;

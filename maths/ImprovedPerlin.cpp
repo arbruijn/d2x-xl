@@ -28,7 +28,7 @@ static int permutation [] = {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CImprovedPerlinCore::Initialize (ubyte nOffset) 
+void CImprovedPerlinCore::Initialize (void) 
 {
 int i, index [PERLIN_RANDOM_SIZE];
 
@@ -43,15 +43,13 @@ for (int i = 0; i < PERLIN_RANDOM_SIZE; i++) {
 	if (j < --l)
 		index [j] = index [l];
 	}
-
-m_nOffset = nOffset;
 }
       
 //------------------------------------------------------------------------------
 
 double CImprovedPerlinCore::Noise (double v) 
 {
-int i = int (floor (v) + m_nOffset) & 255;
+int i = int (floor (v)) & 255;
 v -= floor (v);
 double u = Fade (v);
 #if DBG
@@ -120,15 +118,11 @@ return (((h & 1) == 0) ? u : -u) + (((h & 2) == 0) ? v : -v);
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-bool CImprovedPerlin::Setup (int nNodes, double amplitude, double persistence, int nOctaves, int nDimensions, int nOffset)
+bool CImprovedPerlin::Setup (double amplitude, double persistence, int nOctaves, int nDimensions, int nOffset)
 {
-m_amplitude = (amplitude > 0.0) ? amplitude : 1.0;
-m_persistence = (persistence > 0.0) ? persistence : 2.0 / 3.0;
-m_octaves = (nOctaves > 0) ? nOctaves : 6;
-if (nOffset < 0) 
-	nOffset = rand () & 0xFF;
+CPerlin::Setup (amplitude, persistence, nOctaves, nDimensions, nOffset);
 #if 1
-	m_cores [0].Initialize ((ubyte) nOffset);
+	m_cores [0].Initialize ();
 #else
 if (m_cores.Buffer () && (int (m_cores.Length ()) < nOctaves))
 	m_cores.Destroy ();

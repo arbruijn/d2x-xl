@@ -8,10 +8,9 @@
 class CImprovedPerlinCore {
 	private:
 		int m_random [2 * PERLIN_RANDOM_SIZE];
-		ubyte	m_nOffset;
 
 	public:
-		void Initialize (ubyte nOffset);
+		void Initialize (void);
 		double Noise (double x);
 		double Noise (double x, double y);
 
@@ -32,7 +31,7 @@ class CImprovedPerlin : public CPerlin {
 		CStaticArray<CImprovedPerlinCore, 1>	m_cores;
 
 	public:
-		virtual bool Setup (int nNodes, double amplitude, double persistence, int nOctaves, int nDimensions = 1, int nOffset = -1);
+		virtual bool Setup (double amplitude, double persistence, int nOctaves, int nDimensions = 1, int nOffset = -1);
 
 	protected:
 		virtual double InterpolatedNoise (double x, int octave) { return m_cores [0].Noise (x * double (1 << octave)); }
