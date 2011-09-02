@@ -206,7 +206,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	OMEGA_NODES, // nNodes
 	0, // nChildren
 	OMEGA_FRAMES, // nFrames
-	6, // nWidth
+	9, // nWidth
 	0, // nAngle
 	-1, // nStyle
 	1, // nSmoothe

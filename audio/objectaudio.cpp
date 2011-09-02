@@ -69,7 +69,7 @@ if (m_volume <= 0)
 	return false;
 if (gameStates.sound.bDontStartObjects)
 	return false;
-if (m_nSound < 0)
+if ((m_nSound < 0) && !*m_szSound)
 	return false;
 // only use up to 1/4 the sound channels for "permanent" sounts
 if ((m_flags & SOF_PERMANENT) && (audio.ActiveObjects () >= max (1, 33 * audio.GetMaxChannels () / 100)) && !audio.SuspendObjectSound (m_volume))
