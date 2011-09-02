@@ -776,6 +776,7 @@ switch (objP->info.renderType) {
 		objP->rType.lightningInfo.nNodes = NDReadShort ();
 		objP->rType.lightningInfo.nChildren = NDReadShort ();
 		objP->rType.lightningInfo.nFrames = NDReadShort ();
+		objP->rType.lightningInfo.nWidth = (gameData.demo.nVersion <= 19) ? 3 : NDReadByte ();
 		objP->rType.lightningInfo.nAngle = NDReadByte ();
 		objP->rType.lightningInfo.nStyle = NDReadByte ();
 		objP->rType.lightningInfo.nSmoothe = NDReadByte ();
@@ -789,7 +790,6 @@ switch (objP->info.renderType) {
 		objP->rType.lightningInfo.color.Blue () = NDReadByte ();
 		objP->rType.lightningInfo.color.Alpha () = NDReadByte ();
 		objP->rType.lightningInfo.bEnabled = NDReadByte ();
-		objP->rType.lightningInfo.nWidth = (gameData.demo.nVersion <= 19) ? 3 : NDReadByte ();
 		break;
 
 	case RT_SOUND:
@@ -994,6 +994,7 @@ switch (o.info.renderType) {
 		NDWriteShort (o.rType.lightningInfo.nNodes);
 		NDWriteShort (o.rType.lightningInfo.nChildren);
 		NDWriteShort (o.rType.lightningInfo.nFrames);
+		NDWriteByte (o.rType.lightningInfo.nWidth);
 		NDWriteByte (o.rType.lightningInfo.nAngle);
 		NDWriteByte (o.rType.lightningInfo.nStyle);
 		NDWriteByte (o.rType.lightningInfo.nSmoothe);
@@ -1007,7 +1008,6 @@ switch (o.info.renderType) {
 		NDWriteByte (o.rType.lightningInfo.color.Blue ());
 		NDWriteByte (o.rType.lightningInfo.color.Alpha ());
 		NDWriteByte (o.rType.lightningInfo.bEnabled);
-		NDWriteByte (o.rType.lightningInfo.nWidth);
 		break;
 
 	case RT_SOUND:
