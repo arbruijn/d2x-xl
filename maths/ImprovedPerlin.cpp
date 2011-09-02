@@ -141,26 +141,5 @@ return true;
 }
 
 //------------------------------------------------------------------------------
-
-double CPerlin::ComputeNoise (double v)
-{
-double total = 0, amplitude = m_amplitude;
-#if 0 //DBG
-octaves = 1;
-#endif
-v += m_nOffset;
-for (int i = 0; i < m_octaves; i++) {
-#if DBG
-	double n = InterpolatedNoise (v, i);
-	total += n * amplitude;
-#else
-	total += InterpolatedNoise (v, i) * amplitude;
-#endif
-	amplitude *= m_persistence;
-	}
-return total;
-}
-
-//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
