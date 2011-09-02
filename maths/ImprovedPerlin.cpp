@@ -120,17 +120,45 @@ return (((h & 1) == 0) ? u : -u) + (((h & 2) == 0) ? v : -v);
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-bool CImprovedPerlin::Setup (int nNodes, int nOctaves, int nDimensions, int nOffset)
+bool CImprovedPerlin::Setup (int nNodes, double amplitude, double persistence, int nOctaves, int nDimensions, int nOffset)
 {
+m_amplitude = (amplitude > 0.0) ? amplitude : 1.0;
+m_persistence = (persistence > 0.0) ? persistence : 2.0 / 3.0;
+m_octaves = (nOctaves > 0) ? nOctaves : 6;
+if (nOffset < 0) 
+	nOffset = rand () & 0xFF;
+#if 1
+	m_cores [0].Initialize ((ubyte) nOffset);
+#else
 if (m_cores.Buffer () && (int (m_cores.Length ()) < nOctaves))
 	m_cores.Destroy ();
 if (!(m_cores.Buffer () || m_cores.Create (nOctaves)))
 	return false;
-if (nOffset < 0) 
-	nOffset = rand () & 0xFF;
 for (int i = 0; i < nOctaves; i++)
 	m_cores [i].Initialize ((ubyte) nOffset);
+#endif
 return true;
+}
+
+//------------------------------------------------------------------------------
+
+double CPerlin::ComputeNoise (double v)
+{
+double total = 0, amplitude = m_amplitude;
+#if 0 //DBG
+octaves = 1;
+#endif
+v += m_nOffset;
+for (int i = 0; i < m_octaves; i++) {
+#if DBG
+	double n = InterpolatedNoise (v, i);
+	total += n * amplitude;
+#else
+	total += InterpolatedNoise (v, i) * amplitude;
+#endif
+	amplitude *= m_persistence;
+	}
+return total;
 }
 
 //------------------------------------------------------------------------------

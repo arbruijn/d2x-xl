@@ -7,7 +7,7 @@
 
 class CImprovedPerlinCore {
 	private:
-		int	m_random [2 * PERLIN_RANDOM_SIZE];
+		int m_random [2 * PERLIN_RANDOM_SIZE];
 		ubyte	m_nOffset;
 
 	public:
@@ -29,10 +29,13 @@ class CImprovedPerlinCore {
 
 class CImprovedPerlin : public CPerlin {
 	private:
-		CArray<CImprovedPerlinCore>	m_cores;
+		CStaticArray<CImprovedPerlinCore, 1>	m_cores;
+		double m_amplitude;
+		double m_persistence;
+		int m_octaves;
 
 	public:
-		virtual bool Setup (int nNodes, int nOctaves, int nDimensions = 1, int nOffset = 0);
+		virtual bool Setup (int nNodes, double amplitude, double persistence, int nOctaves, int nDimensions = 1, int nOffset = 0);
 
 	protected:
 		virtual double InterpolatedNoise (double x, int octave) { return m_cores [0].Noise (x * double (1 << octave)); }
