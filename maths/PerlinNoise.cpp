@@ -77,17 +77,9 @@ return LinearInterpolate (v1, v2, v - FastFloor (v));
 double CPerlinNoise::ComputeNoise (double v)
 {
 double total = 0, amplitude = m_amplitude, frequency = 1.0;
-#if 0 //DBG
-octaves = 1;
-#endif
 v += m_randomize;
 for (int i = 0; i < m_octaves; i++) {
-#if DBG
-	double n = InterpolatedNoise (v * frequency);
-	total += n * amplitude;
-#else
 	total += InterpolatedNoise (v * frequency) * amplitude;
-#endif
 	frequency *= 2.0;
 	amplitude *= m_persistence;
 	}
