@@ -274,7 +274,6 @@ switch (info.renderType) {
 		rType.waypointInfo.nSuccessor [0] = cf.ReadInt ();
 		rType.waypointInfo.nSuccessor [1] = -1;
 		rType.waypointInfo.nSpeed = cf.ReadInt ();
-		rType.waypointInfo.bBounce = cf.ReadByte ();
 		break;
 
 	default:

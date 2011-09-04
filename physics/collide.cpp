@@ -688,7 +688,7 @@ int CObject::CollideWeaponAndWall (fix xHitSpeed, short nHitSeg, short nHitWall,
 	CWeaponInfo*	weaponInfoP = gameData.weapons.info + info.nId;
 	CObject*			parentObjP = OBJECTS + cType.laserInfo.parent.nObject;
 
-	int	bBounce, bBlewUp, bEscort, wallType, nPlayer;
+	int	nPlayer;
 	fix	nStrength = WI_strength (info.nId, gameStates.app.nDifficultyLevel);
 
 if (info.nId == OMEGA_ID)
@@ -714,7 +714,7 @@ if (info.nId == GUIDEDMSL_ID) {
 		}
 	}
 
-bBounce = (mType.physInfo.flags & PF_BOUNCE) != 0;
+int bBounce = (mType.physInfo.flags & PF_BOUNCE) != 0;
 if (!bBounce)
 	CreateWeaponEffects (1);
 //if an energy this hits a forcefield, let it bounce
@@ -746,8 +746,9 @@ if (mType.physInfo.velocity.IsZero ()) {
 	return 1;
 	}
 #endif
-bBlewUp = (nHitWall < 0) ? 0 : segP->CheckEffectBlowup (nHitWall, vHitPt, this, 0);
-if ((bEscort = parentObjP->IsGuideBot ())) {
+int bBlewUp = (nHitWall < 0) ? 0 : segP->CheckEffectBlowup (nHitWall, vHitPt, this, 0);
+int bEscort = parentObjP->IsGuideBot ();
+if (bEscort) {
 	if (IsMultiGame) {
 		Int3 ();  // Get Jason!
 	   return 1;
@@ -763,7 +764,7 @@ if (bBlewUp) {		//could be a wall switch - only player or guidebot can activate 
 	}
 if (info.nId == EARTHSHAKER_ID)
 	ShakerRockStuff ();
-wallType = (nHitWall < 0) ? WHP_NOT_SPECIAL : segP->ProcessWallHit (nHitWall, info.xShield, nPlayer, this);
+int wallType = (nHitWall < 0) ? WHP_NOT_SPECIAL : segP->ProcessWallHit (nHitWall, info.xShield, nPlayer, this);
 // Wall is volatile if either tmap 1 or 2 is volatile
 if (sideP && ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 	           (sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_VOLATILE)))) {

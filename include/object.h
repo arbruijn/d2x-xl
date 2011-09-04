@@ -520,7 +520,6 @@ public:
 	int	nId;
 	int	nSuccessor [2];
 	int	nSpeed;
-	ubyte	bBounce;
 } tWaypointInfo;
 
 class CWaypointInfo {
