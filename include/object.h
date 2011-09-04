@@ -465,6 +465,7 @@ public:
 	char			bRandom;
 	char			bInPlane;
 	char			bEnabled;
+	char			bDirection;
 	CRGBAColor	color;
 } __pack__ tLightningInfo;
 
@@ -517,9 +518,9 @@ class CSoundInfo {
 typedef struct tWaypointInfo {
 public:
 	int	nId;
-	int	nPredecessor;
-	int	nSuccessor;
+	int	nSuccessor [2];
 	int	nSpeed;
+	ubyte	bBounce;
 } tWaypointInfo;
 
 class CWaypointInfo {
@@ -527,10 +528,10 @@ class CWaypointInfo {
 		tWaypointInfo m_info;
 	public:
 		inline tWaypointInfo* GetInfo (void) { return &m_info; }
-		inline int Successor (void) { return m_info.nSuccessor; }
-		inline int Predecessor (void) { return m_info.nPredecessor; }
-		inline void SetSuccessor (int nSuccessor) { m_info.nSuccessor = nSuccessor; }
-		inline void SetPredecessor (int nPredecessor) { m_info.nPredecessor = nPredecessor; }
+		inline int Successor (void) { return m_info.nSuccessor [0]; }
+		inline int Predecessor (void) { return m_info.nSuccessor [1]; }
+		inline void SetSuccessor (int nSuccessor) { m_info.nSuccessor [0] = nSuccessor; }
+		inline void SetPredecessor (int nPredecessor) { m_info.nSuccessor [1] = nPredecessor; }
 	};
 
 //	-----------------------------------------------------------------------------
