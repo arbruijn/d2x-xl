@@ -106,7 +106,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_SMOKE			11
 #define RT_LIGHTNING    12
 #define RT_SOUND			13
-#define RT_SHOCKWAVE		14  // concentric shockwave effect
+#define RT_WAYPOINT     14
+#define RT_SHOCKWAVE		15  // concentric shockwave effect
 
 #define SMOKE_ID			0
 #define LIGHTNING_ID		1
@@ -447,6 +448,7 @@ public:
 	int			nLength;
 	int			nAmplitude;
 	int			nOffset;
+	int			nWaypoint;
 	short			nBolts;
 	short			nId;
 	short			nTarget;
@@ -511,6 +513,25 @@ class CSoundInfo {
 		//inline Mix_Chunk* SoundHandle (void) { return m_info.mixChunkP; }
 		//inline void SetSoundHandle (Mix_Chunk* handle) { m_info.mixChunkP = handle; }
 };
+
+typedef struct tWaypointInfo {
+public:
+	int	nId;
+	int	nPredecessor;
+	int	nSuccessor;
+	int	nSpeed;
+} tWaypointInfo;
+
+class CWaypointInfo {
+	private:
+		tWaypointInfo m_info;
+	public:
+		inline tWaypointInfo* GetInfo (void) { return &m_info; }
+		inline int Successor (void) { return m_info.nSuccessor; }
+		inline int Predecessor (void) { return m_info.nPredecessor; }
+		inline void SetSuccessor (int nSuccessor) { m_info.nSuccessor = nSuccessor; }
+		inline void SetPredecessor (int nPredecessor) { m_info.nPredecessor = nPredecessor; }
+	};
 
 //	-----------------------------------------------------------------------------
 // structures for different kinds of rendering
@@ -621,10 +642,11 @@ typedef union tObjControlInfo {
 
 typedef union tObjRenderInfo {
 	tPolyObjInfo		polyObjInfo;   // polygon model
-	tVideoClipInfo			vClipInfo;     // tVideoClip
+	tVideoClipInfo		vClipInfo;     // tVideoClip
 	tParticleInfo		particleInfo;
 	tLightningInfo		lightningInfo;
 	tSoundInfo			soundInfo;
+	tWaypointInfo		waypointInfo;
 	} __pack__ tObjRenderInfo;
 
 // TODO get rid of the structs (former unions) and the union

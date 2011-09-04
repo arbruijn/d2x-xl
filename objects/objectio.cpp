@@ -234,6 +234,7 @@ switch (info.renderType) {
 		rType.lightningInfo.nLength = cf.ReadInt ();
 		rType.lightningInfo.nAmplitude = cf.ReadInt ();
 		rType.lightningInfo.nOffset = cf.ReadInt ();
+		rType.lightningInfo.nWaypoint = (gameData.segs.nLevelVersion <= 22) ? -1 : cf.ReadByte ();
 		rType.lightningInfo.nBolts = cf.ReadShort ();
 		rType.lightningInfo.nId = cf.ReadShort ();
 		rType.lightningInfo.nTarget = cf.ReadShort ();
@@ -265,6 +266,13 @@ switch (info.renderType) {
 			rType.soundInfo.bEnabled = 1;
 		else
 			rType.soundInfo.bEnabled = cf.ReadByte ();
+		break;
+
+	case RT_WAYPOINT:
+		rType.waypointInfo.nId = cf.ReadInt ();
+		rType.waypointInfo.nPredecessor = -1;
+		rType.waypointInfo.nSuccessor = cf.ReadInt ();
+		rType.waypointInfo.nSpeed = cf.ReadInt ();
 		break;
 
 	default:
@@ -389,17 +397,12 @@ switch (info.renderType) {
 		break;
 
 	case RT_SMOKE:
-		if (saveGameManager.Version () < 49)
-			rType.particleInfo.bEnabled = 1;
-		else
-			rType.particleInfo.bEnabled = cf.ReadByte ();
+		rType.particleInfo.bEnabled = (saveGameManager.Version () < 49) ? 1 : cf.ReadByte ();
 		break;
 
 	case RT_LIGHTNING:
-		if (saveGameManager.Version () < 49)
-			rType.lightningInfo.bEnabled = 1;
-		else
-			rType.lightningInfo.bEnabled = cf.ReadByte ();
+		rType.lightningInfo.nWaypoint = (saveGameManager.Version () < 56) ? -1 : cf.ReadInt ();
+		rType.lightningInfo.bEnabled = (saveGameManager.Version () < 49) ? 1 : cf.ReadByte ();
 		break;
 
 	case RT_SOUND:
@@ -537,6 +540,7 @@ switch (info.renderType) {
 		break;
 
 	case RT_LIGHTNING:
+		cf.WriteInt (rType.lightningInfo.nWaypoint);
 		cf.WriteByte (rType.lightningInfo.bEnabled);
 		break;
 
