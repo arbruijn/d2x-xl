@@ -193,6 +193,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	0, // bRandom
 	0, // bInPlane
 	1, // bEnabled
+	0, // bDirection
 	{(ubyte) (255 * 0.9f), (ubyte) (255 * 0.6f), (ubyte) (255 * 0.6f), (ubyte) (255 * 0.3f)} // color;
 	},
 	{
@@ -218,6 +219,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	0, // bRandom
 	0, // bInPlane
 	1, // bEnabled
+	0, // bDirection
 	{(ubyte) (255 * 0.9f), (ubyte) (255 * 0.6f), (ubyte) (255 * 0.6f), (ubyte) (255 * 0.3f)} // color;
 	}
 };
