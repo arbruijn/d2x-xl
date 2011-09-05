@@ -165,6 +165,14 @@ switch (info.controlType) {
 	case CT_CNTRLCEN:
 		break;
 
+	case CT_WAYPOINT:
+		rType.waypointInfo.nId [0] = -1;
+		rType.waypointInfo.nId [1] = cf.ReadInt ();
+		rType.waypointInfo.nSuccessor [0] = cf.ReadInt ();
+		rType.waypointInfo.nSuccessor [1] = -1;
+		rType.waypointInfo.nSpeed = cf.ReadInt ();
+		break;
+
 	case CT_MORPH:
 	case CT_FLYTHROUGH:
 	case CT_REPAIRCEN:
@@ -234,7 +242,7 @@ switch (info.renderType) {
 		rType.lightningInfo.nLength = cf.ReadInt ();
 		rType.lightningInfo.nAmplitude = cf.ReadInt ();
 		rType.lightningInfo.nOffset = cf.ReadInt ();
-		rType.lightningInfo.nWaypoint = (gameData.segs.nLevelVersion <= 22) ? -1 : cf.ReadByte ();
+		rType.lightningInfo.nWayPoint = (gameData.segs.nLevelVersion <= 22) ? -1 : cf.ReadByte ();
 		rType.lightningInfo.nBolts = cf.ReadShort ();
 		rType.lightningInfo.nId = cf.ReadShort ();
 		rType.lightningInfo.nTarget = cf.ReadShort ();
@@ -267,13 +275,6 @@ switch (info.renderType) {
 			rType.soundInfo.bEnabled = 1;
 		else
 			rType.soundInfo.bEnabled = cf.ReadByte ();
-		break;
-
-	case RT_WAYPOINT:
-		rType.waypointInfo.nId = cf.ReadInt ();
-		rType.waypointInfo.nSuccessor [0] = cf.ReadInt ();
-		rType.waypointInfo.nSuccessor [1] = -1;
-		rType.waypointInfo.nSpeed = cf.ReadInt ();
 		break;
 
 	default:
@@ -402,7 +403,7 @@ switch (info.renderType) {
 		break;
 
 	case RT_LIGHTNING:
-		rType.lightningInfo.nWaypoint = (saveGameManager.Version () < 56) ? -1 : cf.ReadInt ();
+		rType.lightningInfo.nWayPoint = (saveGameManager.Version () < 56) ? -1 : cf.ReadInt ();
 		rType.lightningInfo.bDirection = (saveGameManager.Version () < 56) ? 0 : cf.ReadByte ();
 		rType.lightningInfo.bEnabled = (saveGameManager.Version () < 49) ? 1 : cf.ReadByte ();
 		break;
@@ -539,7 +540,7 @@ switch (info.renderType) {
 		break;
 
 	case RT_LIGHTNING:
-		cf.WriteInt (rType.lightningInfo.nWaypoint);
+		cf.WriteInt (rType.lightningInfo.nWayPoint);
 		cf.WriteByte (rType.lightningInfo.bDirection);
 		cf.WriteByte (rType.lightningInfo.bEnabled);
 		break;

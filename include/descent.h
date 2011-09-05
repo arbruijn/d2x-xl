@@ -2059,7 +2059,6 @@ class CObjectData {
 		CArray<fix>					xLastAfterburnerTime;
 		CArray<fix>					xLight;
 		CArray<int>					nLightSig;
-		CArray<CObject*>			waypoints;
 		CFaceColor					color;
 		short							nFirstDropped;
 		short							nLastDropped;

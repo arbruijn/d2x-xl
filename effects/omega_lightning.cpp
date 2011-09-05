@@ -176,7 +176,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	0, // nLength
 	-4, // nAmplitude
 	0, // nOffset
-	-1, // nWaypoint
+	-1, // nWayPoint
 	OMEGA_BOLTS, // nBolts
 	-1, // nId
 	-1, // nTarget
@@ -202,7 +202,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	0, // nLength
 	4, // nAmplitude
 	0, // nOffset
-	-1, // nWaypoint
+	-1, // nWayPoint
 	OMEGA_BOLTS, // nBolts
 	-1, // nId
 	-1, // nTarget

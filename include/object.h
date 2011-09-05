@@ -84,6 +84,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CT_REMOTE       15  // controlled by another net player
 #define CT_CNTRLCEN     16  // the control center/main reactor
 #define CT_CAMERA			17
+#define CT_WAYPOINT     18
 
 // Movement types
 #define MT_NONE         0   // doesn't move
@@ -106,8 +107,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_SMOKE			11
 #define RT_LIGHTNING    12
 #define RT_SOUND			13
-#define RT_WAYPOINT     14
-#define RT_SHOCKWAVE		15  // concentric shockwave effect
+#define RT_SHOCKWAVE		14  // concentric shockwave effect
 
 #define SMOKE_ID			0
 #define LIGHTNING_ID		1
@@ -448,7 +448,7 @@ public:
 	int			nLength;
 	int			nAmplitude;
 	int			nOffset;
-	int			nWaypoint;
+	int			nWayPoint;
 	short			nBolts;
 	short			nId;
 	short			nTarget;
@@ -515,18 +515,18 @@ class CSoundInfo {
 		//inline void SetSoundHandle (Mix_Chunk* handle) { m_info.mixChunkP = handle; }
 };
 
-typedef struct tWaypointInfo {
+typedef struct tWayPointInfo {
 public:
-	int	nId;
+	int	nId [2];
 	int	nSuccessor [2];
 	int	nSpeed;
-} tWaypointInfo;
+} tWayPointInfo;
 
 class CWaypointInfo {
 	private:
-		tWaypointInfo m_info;
+		tWayPointInfo m_info;
 	public:
-		inline tWaypointInfo* GetInfo (void) { return &m_info; }
+		inline tWayPointInfo* GetInfo (void) { return &m_info; }
 		inline int Successor (void) { return m_info.nSuccessor [0]; }
 		inline int Predecessor (void) { return m_info.nSuccessor [1]; }
 		inline void SetSuccessor (int nSuccessor) { m_info.nSuccessor [0] = nSuccessor; }
@@ -646,7 +646,7 @@ typedef union tObjRenderInfo {
 	tParticleInfo		particleInfo;
 	tLightningInfo		lightningInfo;
 	tSoundInfo			soundInfo;
-	tWaypointInfo		waypointInfo;
+	tWayPointInfo		waypointInfo;
 	} __pack__ tObjRenderInfo;
 
 // TODO get rid of the structs (former unions) and the union

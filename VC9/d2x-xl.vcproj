@@ -6501,6 +6501,10 @@
 						RelativePath="..\effects\sparkeffect.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\effects\waypoint.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Header Files"
@@ -6535,6 +6539,10 @@
 					</File>
 					<File
 						RelativePath="..\include\sparkeffect.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\waypoint.h"
 						>
 					</File>
 				</Filter>
@@ -10461,11 +10469,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

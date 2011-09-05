@@ -1,0 +1,25 @@
+#ifndef __WAYPOINT_H
+#define __WAYPOINT_H
+
+class CWayPointManager {
+	private:
+		CArray<CObject*>		m_wayPoints;
+		int						m_nWayPoints;
+
+	CObject* Find (int nId);
+	int Count (void);
+	void Gather (void);
+	void Remap (int& nId);
+	void Renumber (void);
+	CObject* Current (CObject* objP);
+	CObject* Successor (CObject* objP);
+	void Move (CObject* objP);
+
+	public:
+		CWayPointManager () : m_nWayPoints (0)
+			{}
+		void Setup (void);
+		void Update (void);
+	};
+
+#endif //__WAYPOINT_H
