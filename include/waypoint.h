@@ -25,4 +25,6 @@ class CWayPointManager {
 		void Destroy (void);
 	};
 
+extern CWayPointManager wayPointManager;
+
 #endif //__WAYPOINT_H
