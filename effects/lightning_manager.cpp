@@ -503,7 +503,6 @@ return m_emitters [h].m_bValid;
 
 void CLightningManager::StaticFrame (void)
 {
-	int					h, i;
 	CObject*				objP;
 	CFixVector*			vEnd, * vDelta, v;
 
@@ -514,8 +513,8 @@ if (!gameOpts->render.lightning.bStatic)
 FORALL_EFFECT_OBJS (objP, i) {
 	if (objP->info.nId != LIGHTNING_ID)
 		continue;
-	i = objP->Index ();
-	if (m_objects [i] >= 0)
+	short nObject = objP->Index ();
+	if (m_objects [nObject] >= 0)
 		continue;
 	tLightningInfo& li = objP->rType.lightningInfo;
 	if (li.nBolts <= 0)
@@ -529,9 +528,9 @@ FORALL_EFFECT_OBJS (objP, i) {
 		vEnd = &v;
 		}
 	vDelta = li.bInPlane ? &objP->info.position.mOrient.m.dir.r : NULL;
-	h = Create (li, &objP->info.position.vPos, vEnd, vDelta, i);
-	if (h >= 0) {
-		m_objects [i] = h;
+	int nHandle = Create (li, &objP->info.position.vPos, vEnd, vDelta, nObject);
+	if (nHandle >= 0) {
+		m_objects [nObject] = nHandle;
 		if (!objP->rType.lightningInfo.bEnabled)
 			m_emitters [h].m_bValid = -1;
 		}
