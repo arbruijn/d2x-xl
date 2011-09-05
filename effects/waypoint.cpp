@@ -10,6 +10,9 @@ if (!Count ())
 if (!m_wayPoints.Create (h))
 	return false;
 Gather ();
+Renumber ();
+LinkBack ();
+return true;
 }
 
 // ---------------------------------------------------------------------------------
@@ -60,15 +63,22 @@ void CWayPointManager::Renumber (void)
 {
 	CObject* objP;
 
-for (int i = 0; i < m_nWayPoints; i++) {
-	Remap (m_wayPoints [i].nSuccessor [0], );
-	Remap (m_wayPoints [i].nSuccessor [1], objP->cType.wayPointInfo.nId [0]);
-	}
+for (int i = 0; i < m_nWayPoints; i++)
+	Remap (m_wayPoints [i].nSuccessor [0]);
 
 FORALL_EFFECT_OBJS (objP, i) {
 	if (objP->Id () == LIGHTNING_ID) && (objP->rType.lightningInfo.nWayPoint >= 0))
 		Remap (objP->rType.lightningInfo.nWayPoint);
 	}
+}
+
+// ---------------------------------------------------------------------------------
+
+void CWayPointManager::LinkBack (void)
+{
+for (int i = 0; i < m_nWayPoints; i++)
+	if (m_wayPoints [m_wayPoints [i].nSuccessor [0]].nSuccessor [1] < 0)
+		m_wayPoints [m_wayPoints [i].nSuccessor [0]].nSuccessor [1] = i;
 }
 
 // ---------------------------------------------------------------------------------
@@ -87,40 +97,49 @@ return m_wayPoints [Current (objP)->cType.wayPointInfo.nSuccessor [objP->rType.l
 
 // ---------------------------------------------------------------------------------
 
-void CWayPointManager::Attach (CObject* objP, CObject* pred)
+bool CWayPointManager::Hop (CObject* objP)
 {
-do (;;) {
-	CObject* succ = m_wayPoints [pred->cType.wayPointInfo
-	objP->rType.lightningInfo.nWayPoint = wayPoint->cType.wayPointInfo.nId [0];
-	objP->Position () = wayPoint->Position ();
-	if (wayPoint->cType.wayPointInfo.nSuccessor [0] == wayPoint->cType.wayPointInfo.nSuccessor [1])
+CObject* curr = Current (objP);
+do {
+	CObject* succ = Successor (objP);
+	objP->rType.lightningInfo.nWayPoint = succ->cType.wayPointInfo.nId [0];
+	objP->Position () = succ->Position ();
+	if (succ->cType.wayPointInfo.nSuccessor [0] == succ->cType.wayPointInfo.nSuccessor [1])
 		objP->rType.lightningInfo.bDirection = !objP->rType.lightningInfo.bDirection;
-	if (wayPoint->cType.wayPointInfo.nSpeed > 0)
-		break;
-	wayPoint = m_wayPoints [wayPoint->cType.wayPointInfo.nSuccessor [0]
+	if (succ == curr)
+		return false; // avoid endless cycles
+	} while (succ->cType.wayPointInfo.nSpeed <= 0);
+return true;
 }
 
 // ---------------------------------------------------------------------------------
 
-void CWayPointManager::Move (CObject* objP, float fScale)
+void CWayPointManager::Move (CObject* objP)
 {
-CObject* wp0 = m_wayPoints [objP->rType.lightningInfo.nWayPoint];
-CObject* wp1 = m_wayPoints [wp0->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection]];
+	float fScale = 1.0f;
 
-	CFloatVector vDirf, vMovef, vLeftf;
+do {
+	CObject* wp0 = m_wayPoints [objP->rType.lightningInfo.nWayPoint];
+	CObject* wp1 = m_wayPoints [wp0->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection]];
 
-vDirf.Assign (wp1->Position () - wp0->Position ());
-vMovef = vDirf;
-CFloatVector::Normalize (vMove);
-float fMove = (float) wp0->cType.wayPointInfo.nSpeed / 40.0 * fScale;
-vMovef *= fMove;
-vLeftf.Assign (wp1->Position () - objP->Position ());
-float fLeft = vLeftf.Mag ();
-if (fLeft >= fMove) {
-	CFixVector vMove;
-	vMove.Assign (vMovef);
-	objP->Position () += vMove;
+		CFloatVector vDirf, vMovef, vLeftf;
+
+	vDirf.Assign (wp1->Position () - wp0->Position ());
+	vMovef = vDirf;
+	CFloatVector::Normalize (vMove);
+	float fMove = (float) wp0->cType.wayPointInfo.nSpeed / 40.0 * fScale;
+	vMovef *= fMove;
+	vLeftf.Assign (wp1->Position () - objP->Position ());
+	float fLeft = vLeftf.Mag ();
+	if (fLeft > fMove) {
+		objP->Position () += vMovef;
+			return;
+		}
+	if (!Hop (objP))
+		return;
 	if (fLeft == vMove)
+		return;
+	fScale = (fMove - fLeft) / fMove;
 	}
 }
 

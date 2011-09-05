@@ -13,12 +13,13 @@ class CWayPointManager {
 	void Renumber (void);
 	CObject* Current (CObject* objP);
 	CObject* Successor (CObject* objP);
+	bool Hop (CObject* objP);
 	void Move (CObject* objP);
 
 	public:
 		CWayPointManager () : m_nWayPoints (0)
 			{}
-		void Setup (void);
+		bool Setup (void);
 		void Update (void);
 	};
 
