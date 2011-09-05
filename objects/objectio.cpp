@@ -166,11 +166,11 @@ switch (info.controlType) {
 		break;
 
 	case CT_WAYPOINT:
-		rType.waypointInfo.nId [0] = -1;
-		rType.waypointInfo.nId [1] = cf.ReadInt ();
-		rType.waypointInfo.nSuccessor [0] = cf.ReadInt ();
-		rType.waypointInfo.nSuccessor [1] = -1;
-		rType.waypointInfo.nSpeed = cf.ReadInt ();
+		rType.wayPointInfo.nId [0] = -1;
+		rType.wayPointInfo.nId [1] = cf.ReadInt ();
+		rType.wayPointInfo.nSuccessor [0] = cf.ReadInt ();
+		rType.wayPointInfo.nSuccessor [1] = -1;
+		rType.wayPointInfo.nSpeed = cf.ReadInt ();
 		break;
 
 	case CT_MORPH:

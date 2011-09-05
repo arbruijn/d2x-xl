@@ -11,6 +11,7 @@ class CWayPointManager {
 	void Gather (void);
 	void Remap (int& nId);
 	void Renumber (void);
+	void LinkBack (void);
 	CObject* Current (CObject* objP);
 	CObject* Successor (CObject* objP);
 	bool Hop (CObject* objP);

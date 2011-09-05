@@ -112,6 +112,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SMOKE_ID			0
 #define LIGHTNING_ID		1
 #define SOUND_ID			2
+#define WAYPOINT_ID		3
 
 #define SINGLE_LIGHT_ID		0
 #define CLUSTER_LIGHT_ID	1
@@ -522,7 +523,7 @@ public:
 	int	nSpeed;
 } tWayPointInfo;
 
-class CWaypointInfo {
+class CWayPointInfo {
 	private:
 		tWayPointInfo m_info;
 	public:
@@ -638,6 +639,7 @@ typedef union tObjControlInfo {
 	tAIStaticInfo		aiInfo;
 	tObjLightInfo		lightInfo;     // why put this here?  Didn't know what else to do with it.
 	tPowerupInfo		powerupInfo;
+	tWayPointInfo		wayPointInfo;
 	} __pack__ tObjControlInfo;
 
 typedef union tObjRenderInfo {
@@ -646,7 +648,6 @@ typedef union tObjRenderInfo {
 	tParticleInfo		particleInfo;
 	tLightningInfo		lightningInfo;
 	tSoundInfo			soundInfo;
-	tWayPointInfo		waypointInfo;
 	} __pack__ tObjRenderInfo;
 
 // TODO get rid of the structs (former unions) and the union
@@ -888,6 +889,15 @@ class CObject : public CObjectInfo {
 #endif
 		inline fix LifeLeft (void) { return info.xLifeLeft; }
 		inline void InitLinks (void) { memset (m_links, 0, sizeof (m_links)); }
+
+		inline int& WayPointId (void) { return cType.wayPointInfo.nId [0]; }
+		inline int& NextWayPoint (void) { return cType.wayPointInfo.nSuccessor [0]; }
+		inline int& PrevWayPoint (void) { return cType.wayPointInfo.nSuccessor [1]; }
+		inline int* WayPoint (void) { 
+			if (info.renderType == RT_LIGHTNING)
+				return &rType.lightningInfo.nWayPoint; 
+			return NULL;
+			}
 
 		void Read (CFile& cf);
 		void LoadState (CFile& cf);
