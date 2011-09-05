@@ -1,6 +1,8 @@
 #include "descent.h"
 #include "wayPoint.h"
 
+CWayPointManager wayPointManager;
+
 // ---------------------------------------------------------------------------------
 
 bool CWayPointManager::Setup (void)
@@ -13,6 +15,14 @@ Gather ();
 Renumber ();
 LinkBack ();
 return true;
+}
+
+// ---------------------------------------------------------------------------------
+
+void CWayPointManager::Destroy (void)
+{
+m_nWayPoints = 0;
+m_wayPoints.Destroy ();
 }
 
 // ---------------------------------------------------------------------------------

@@ -22,6 +22,7 @@ class CWayPointManager {
 			{}
 		bool Setup (void);
 		void Update (void);
+		void Destroy (void);
 	};
 
 #endif //__WAYPOINT_H

@@ -131,6 +131,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "addon_bitmaps.h"
 #include "marker.h"
 #include "findpath.h"
+#include "waypoint.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
@@ -743,6 +744,10 @@ PrintLog (-1);
 RemoveMonsterball ();
 PrintLog (-1);
 
+/*---*/PrintLog (1, "Unloading way points\n");
+wayPointManager.Destroy ();
+PrintLog (-1);
+
 /*---*/PrintLog (1, "Unloading mod text messages\n");
 FreeModTexts ();
 PrintLog (-1);
@@ -1064,6 +1069,7 @@ ResetChildObjects ();
 externalView.Reset (-1, -1);
 ResetPlayerPaths ();
 FixObjectSizes ();
+wayPointManager.Setup ();
 /*---*/PrintLog (1, "counting entropy rooms\n");
 nRooms = CountRooms ();
 if (gameData.app.nGameMode & GM_ENTROPY) {
