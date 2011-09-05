@@ -532,7 +532,7 @@ FORALL_EFFECT_OBJS (objP, i) {
 	if (nHandle >= 0) {
 		m_objects [nObject] = nHandle;
 		if (!objP->rType.lightningInfo.bEnabled)
-			m_emitters [h].m_bValid = -1;
+			m_emitters [nHandle].m_bValid = -1;
 		}
 	}
 }
