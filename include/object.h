@@ -898,6 +898,11 @@ class CObject : public CObjectInfo {
 				return &rType.lightningInfo.nWayPoint; 
 			return NULL;
 			}
+		inline int NextWayPoint (CObject* objP) { 
+			return ((info.controlType == CT_WAYPOINT) && (objP->info.renderType == RT_LIGHTNING))
+					 ? cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection]
+					 : -1;
+			}
 
 		void Read (CFile& cf);
 		void LoadState (CFile& cf);

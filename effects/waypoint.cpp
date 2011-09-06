@@ -132,7 +132,7 @@ FORALL_EFFECT_OBJS (objP, i) {
 
 CObject* CWayPointManager::Current (CObject* objP)
 {
-return m_wayPoints [objP->rType.lightningInfo.nWayPoint];
+return m_wayPoints [*objP->WayPoint ()];
 }
 
 // ---------------------------------------------------------------------------------
@@ -175,10 +175,10 @@ void CWayPointManager::Move (CObject* objP)
 	float fScale = 1.0f;
 
 for (;;) {
-	CObject* curr = m_wayPoints [objP->rType.lightningInfo.nWayPoint];
+	CObject* curr = Current (objP);
 	if (curr->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection] < 0)
 		break;
-	CObject* succ = m_wayPoints [curr->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection]];
+	CObject* succ = m_wayPoints [curr->NextWayPoint (objP)];
 
 		CFloatVector vDir, vMove, vLeft;
 
