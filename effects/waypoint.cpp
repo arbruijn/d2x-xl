@@ -54,6 +54,26 @@ return NULL;
 }
 
 // ---------------------------------------------------------------------------------
+// Return a pointer to the target object (end point) of a lightning effect if the effect has one
+
+CObject* CWayPointManager::Target (CObject* objP)
+{
+	int nTarget = objP->rType.lightningInfo.nTarget;
+
+if (nTarget < 0)
+	return NULL;
+
+	CObject* targetP;
+
+FORALL_EFFECT_OBJS (targetP, i) {
+	if ((targetP->Id () == LIGHTNING_ID) && (targetP->rType.lightningInfo.nId == nTarget))
+		return targetP;
+	}
+
+return NULL;
+}
+
+// ---------------------------------------------------------------------------------
 // Store references to all way point objects in contiguous vector
 
 void CWayPointManager::Gather (void)
@@ -149,8 +169,9 @@ return m_wayPoints [Current (objP)->cType.wayPointInfo.nSuccessor [objP->rType.l
 
 bool CWayPointManager::Hop (CObject* objP)
 {
-CObject* succ, * curr = Current (objP);
-do {
+	CObject* succ, * curr = Current (objP);
+
+for (;;) {
 	succ = Successor (objP);
 	objP->rType.lightningInfo.nWayPoint = succ->cType.wayPointInfo.nId [0];
 	objP->Position () = succ->Position ();
@@ -158,8 +179,29 @@ do {
 		objP->rType.lightningInfo.bDirection = !objP->rType.lightningInfo.bDirection;
 	if (succ == curr)
 		return false; // avoid endless cycles
-	} while (succ->cType.wayPointInfo.nSpeed <= 0);
-return true;
+	if (succ->cType.wayPointInfo.nSpeed > 0)
+		break;
+	if (Target (objP))
+		objP->StartSync ();
+	}
+return !objP->Synchronize ();
+}
+
+// ---------------------------------------------------------------------------------
+
+bool CWayPointManager::Synchronize (CObject* objP)
+{
+if (!objP->Synchronize ()) 
+	return false;
+
+	CObject* targetP = Target (objP);
+
+if (!targetP->Synchronize ()) 
+	return true;
+
+objP->StopSync ();
+targetP->StopSync ();
+return false;
 }
 
 // ---------------------------------------------------------------------------------
@@ -172,6 +214,9 @@ return true;
 
 void CWayPointManager::Move (CObject* objP)
 {
+if (Synchronize (objP))
+	return;
+
 	float fScale = 1.0f;
 
 for (;;) {

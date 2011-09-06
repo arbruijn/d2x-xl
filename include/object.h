@@ -813,6 +813,7 @@ class CObject : public CObjectInfo {
 		CObjDamageInfo	m_damage;
 		bool				m_bMultiplayer;
 		bool				m_bRotate;
+		bool				m_bSynchronize;
 		int				m_nFrame;
 		int				m_bIgnore;
 
@@ -1094,6 +1095,10 @@ class CObject : public CObjectInfo {
 		inline void SetSizeFromPowerup (void) { SetSize (PowerupSize ()); }
 		fix ModelSize (int i);
 		fix PowerupSize (void);
+
+		inline bool Synchronize (void) { return m_bSynchronize; }
+		inline void StartSync (void) { m_bSynchronize = true; }
+		inline void StopSync (void) { m_bSynchronize = false; }
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);

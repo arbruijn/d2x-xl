@@ -7,6 +7,7 @@ class CWayPointManager {
 		int						m_nWayPoints;
 
 	CObject* Find (int nId);
+	CObject* Target (CObject* objP);
 	int Count (void);
 	void Gather (void);
 	void Remap (int& nId);
@@ -16,6 +17,7 @@ class CWayPointManager {
 	CObject* Current (CObject* objP);
 	CObject* Successor (CObject* objP);
 	bool Hop (CObject* objP);
+	bool Synchronize (CObject* obj);
 	void Move (CObject* objP);
 
 	public:

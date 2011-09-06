@@ -317,6 +317,7 @@ else if (objP->info.controlType == CT_EXPLOSION)
 
 objP->Link ();
 objP->LinkToSeg (nSegment);
+objP->StopSync ();
 
 memset (&objP->HitInfo (), 0, sizeof (CObjHitInfo));
 #if 1
