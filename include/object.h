@@ -890,7 +890,7 @@ class CObject : public CObjectInfo {
 		inline fix LifeLeft (void) { return info.xLifeLeft; }
 		inline void InitLinks (void) { memset (m_links, 0, sizeof (m_links)); }
 
-		inline int& WayPointId (void) { return cType.wayPointInfo.nId [0]; }
+		inline int& WayPointId (void) { return cType.wayPointInfo.nId [1]; }
 		inline int& NextWayPoint (void) { return cType.wayPointInfo.nSuccessor [0]; }
 		inline int& PrevWayPoint (void) { return cType.wayPointInfo.nSuccessor [1]; }
 		inline int* WayPoint (void) { 

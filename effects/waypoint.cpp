@@ -72,7 +72,14 @@ FORALL_EFFECT_OBJS (objP, i) {
 void CWayPointManager::Remap (int& nId)
 {
 CObject* objP = Find (nId);
+#if DBG
+if (objP)
+	nId = objP->cType.wayPointInfo.nId [0];
+else
+	nId = -1;
+#else
 nId = objP ? objP->cType.wayPointInfo.nId [0] : -1;
+#endif
 }
 
 // ---------------------------------------------------------------------------------
