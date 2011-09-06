@@ -1069,7 +1069,7 @@ ResetChildObjects ();
 externalView.Reset (-1, -1);
 ResetPlayerPaths ();
 FixObjectSizes ();
-wayPointManager.Setup ();
+wayPointManager.Setup (!bRestore);
 /*---*/PrintLog (1, "counting entropy rooms\n");
 nRooms = CountRooms ();
 if (gameData.app.nGameMode & GM_ENTROPY) {

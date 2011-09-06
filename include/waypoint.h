@@ -12,6 +12,7 @@ class CWayPointManager {
 	void Remap (int& nId);
 	void Renumber (void);
 	void LinkBack (void);
+	void Attach (void);
 	CObject* Current (CObject* objP);
 	CObject* Successor (CObject* objP);
 	bool Hop (CObject* objP);
@@ -20,7 +21,7 @@ class CWayPointManager {
 	public:
 		CWayPointManager () : m_nWayPoints (0)
 			{}
-		bool Setup (void);
+		bool Setup (bool bAttach = true);
 		void Update (void);
 		void Destroy (void);
 	};
