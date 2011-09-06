@@ -229,14 +229,14 @@ if (Synchronize (objP))
 
 for (;;) {
 	CObject* curr = Current (objP);
-	if (curr->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection] < 0)
+	int nSucc = curr->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection];
+	if (nSucc < 0)
 		break;
-	CObject* succ = m_wayPoints [curr->NextWayPoint (objP)];
+	CObject* succ = m_wayPoints [nSucc];
 
-		CFloatVector vDir, vMove, vLeft;
+		CFloatVector vMove, vLeft;
 
-	vDir.Assign (succ->Position () - curr->Position ());
-	vMove = vDir;
+	vMove.Assign (succ->Position () - curr->Position ());
 	CFloatVector::Normalize (vMove);
 	float fMove = (float) curr->cType.wayPointInfo.nSpeed / 40.0f * fScale;
 	vMove *= fMove;
