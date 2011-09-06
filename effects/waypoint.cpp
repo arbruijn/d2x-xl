@@ -188,6 +188,14 @@ return !objP->Synchronize ();
 }
 
 // ---------------------------------------------------------------------------------
+// Use zero speed way points to synchronize linked pairs of effect objects (e.g. a 
+// lightning emitter and it's lightning end point).
+// Check if moving effect object has a target effect (e.g. lightning end point) and 
+// has hopped to the current way point from a zero speed way point.
+// If so, check if the target effect has also hopped to its current way point from a
+// zero speed way point. If so, end synchronizing the movement of the two effects
+// by allowing them to move again. If not, halt the effect until the other effect 
+// has made such a hop, too.
 
 bool CWayPointManager::Synchronize (CObject* objP)
 {
