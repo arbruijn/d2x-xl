@@ -90,8 +90,10 @@ void CWayPointManager::Renumber (void)
 {
 	CObject* objP;
 
-for (int i = 0; i < m_nWayPoints; i++)
+for (int i = 0; i < m_nWayPoints; i++) {
+	m_wayPoints [i]->cType.wayPointInfo.nId [0] = i;
 	Remap (m_wayPoints [i]->NextWayPoint ());
+	}
 
 FORALL_EFFECT_OBJS (objP, i) {
 	if ((objP->Id () == LIGHTNING_ID) && (*objP->WayPoint () >= 0))
