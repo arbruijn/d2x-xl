@@ -262,7 +262,7 @@ for (;;) {
 		return;
 	if (fLeft == fMove)
 		return;
-	fScale = (fMove - fLeft) / fMove;
+	fScale = 1.0f - fLeft / fMove;
 	}
 }
 
