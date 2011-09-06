@@ -108,7 +108,7 @@ FORALL_EFFECT_OBJS (objP, i) {
 void CWayPointManager::LinkBack (void)
 {
 for (int i = 0; i < m_nWayPoints; i++)
-	if (m_wayPoints [m_wayPoints [i]->NextWayPoint ()]->PrevWayPoint () < 0)
+	if ((m_wayPoints [i]->NextWayPoint () >= 0) && (m_wayPoints [m_wayPoints [i]->NextWayPoint ()]->PrevWayPoint () < 0))
 		m_wayPoints [m_wayPoints [i]->NextWayPoint ()]->PrevWayPoint () = i;
 }
 
