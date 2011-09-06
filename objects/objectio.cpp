@@ -62,7 +62,7 @@ if (info.nType == 9)
 #endif
 info.nId = cf.ReadByte ();
 #if DBG
-if (info.nId == WAYPOINT_ID)
+if ((info.nType == OBJ_EFFECT) && (info.nId == WAYPOINT_ID))
 	info.nId = WAYPOINT_ID;
 #endif
 info.controlType = cf.ReadByte ();

@@ -83,8 +83,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CT_LIGHT        14  // doesn't actually do anything
 #define CT_REMOTE       15  // controlled by another net player
 #define CT_CNTRLCEN     16  // the control center/main reactor
-#define CT_CAMERA			17
-#define CT_WAYPOINT     18
+#define CT_WAYPOINT     17
+#define CT_CAMERA			18
 
 // Movement types
 #define MT_NONE         0   // doesn't move
