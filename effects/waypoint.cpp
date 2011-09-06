@@ -174,6 +174,8 @@ void CWayPointManager::Move (CObject* objP)
 
 for (;;) {
 	CObject* wp0 = m_wayPoints [objP->rType.lightningInfo.nWayPoint];
+	if (wp0->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection] < 0)
+		break;
 	CObject* wp1 = m_wayPoints [wp0->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection]];
 
 		CFloatVector vDir, vMove, vLeft;
