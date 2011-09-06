@@ -260,9 +260,9 @@ for (;;) {
 		}
 	if (!Hop (objP))
 		return;
-	if (fLeft == fMove)
-		return;
 	fScale = 1.0f - fLeft / fMove;
+	if (fScale < 1e-6)
+		return;
 	}
 }
 
