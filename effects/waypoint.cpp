@@ -276,7 +276,10 @@ if (gameStates.app.tick40fps.bTick) {
 
 	FORALL_EFFECT_OBJS (objP, i) {
 		if ((objP->Id () == LIGHTNING_ID) && (*objP->WayPoint () >= 0))
-			Move (objP);
+#if DBG
+			if (objP->rType.lightningInfo.bEnabled)
+#endif
+				Move (objP);
 		}
 	}
 }

@@ -591,7 +591,7 @@ if ((vNewPos == m_vPos) && (vNewEnd == m_vEnd))
 for (int i = m_nNodes; i; i--, nodeP++) 
 	nodeP->Move (m_vPos, m_vEnd, vNewPos, vNewEnd, fScale, nSegment, nThread);
 m_nodes [0].m_vPos =
-m_vPos = vNewPos;
+m_vPos = m_vBase = vNewPos;
 m_nodes [m_nNodes - 1].m_vPos =
 m_vEnd = vNewEnd;
 m_vDir = m_vEnd - m_vPos;
