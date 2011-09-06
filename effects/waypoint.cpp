@@ -14,6 +14,8 @@ if (!m_wayPoints.Create (m_nWayPoints))
 Gather ();
 Renumber ();
 LinkBack ();
+if (bAttach)
+	Attach ();
 return true;
 }
 
@@ -173,23 +175,35 @@ void CWayPointManager::Move (CObject* objP)
 	float fScale = 1.0f;
 
 for (;;) {
-	CObject* wp0 = m_wayPoints [objP->rType.lightningInfo.nWayPoint];
-	if (wp0->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection] < 0)
+	CObject* curr = m_wayPoints [objP->rType.lightningInfo.nWayPoint];
+	if (curr->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection] < 0)
 		break;
-	CObject* wp1 = m_wayPoints [wp0->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection]];
+	CObject* succ = m_wayPoints [curr->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection]];
 
 		CFloatVector vDir, vMove, vLeft;
 
-	vDir.Assign (wp1->Position () - wp0->Position ());
+	vDir.Assign (succ->Position () - curr->Position ());
 	vMove = vDir;
 	CFloatVector::Normalize (vMove);
-	float fMove = (float) wp0->cType.wayPointInfo.nSpeed / 40.0f * fScale;
+	float fMove = (float) curr->cType.wayPointInfo.nSpeed / 40.0f * fScale;
 	vMove *= fMove;
-	vLeft.Assign (wp1->Position () - objP->Position ());
+	vLeft.Assign (succ->Position () - objP->Position ());
+#if DBG
+	if (CFloatVector::Dot (vLeft, vMove) < 0.0f)
+		nDbgSeg = nDbgSeg;
+#endif
 	float fLeft = vLeft.Mag ();
 	if (fLeft > fMove) {
 		objP->Position () += vMove;
+#if DBG
+		vLeft.Assign (succ->Position () - objP->Position ());
+		if (CFloatVector::Dot (vLeft, vMove) < 0.0f)
+			nDbgSeg = nDbgSeg;
+		else
 			return;
+#else
+		return;
+#endif
 		}
 	if (!Hop (objP))
 		return;
