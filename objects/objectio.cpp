@@ -242,7 +242,7 @@ switch (info.renderType) {
 		rType.lightningInfo.nLength = cf.ReadInt ();
 		rType.lightningInfo.nAmplitude = cf.ReadInt ();
 		rType.lightningInfo.nOffset = cf.ReadInt ();
-		rType.lightningInfo.nWayPoint = (gameData.segs.nLevelVersion <= 22) ? -1 : cf.ReadByte ();
+		rType.lightningInfo.nWayPoint = (gameData.segs.nLevelVersion <= 22) ? -1 : cf.ReadInt ();
 		rType.lightningInfo.nBolts = cf.ReadShort ();
 		rType.lightningInfo.nId = cf.ReadShort ();
 		rType.lightningInfo.nTarget = cf.ReadShort ();
