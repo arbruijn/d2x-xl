@@ -61,6 +61,10 @@ if (info.nType == 9)
 	info.nType = 9;
 #endif
 info.nId = cf.ReadByte ();
+#if DBG
+if (info.nId == WAYPOINT_ID)
+	info.nId = WAYPOINT_ID;
+#endif
 info.controlType = cf.ReadByte ();
 info.movementType = cf.ReadByte ();
 info.renderType = cf.ReadByte ();
