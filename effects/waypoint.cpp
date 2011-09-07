@@ -119,8 +119,12 @@ for (int i = 0; i < m_nWayPoints; i++)
 	Remap (m_wayPoints [i]->NextWayPoint ());
 
 FORALL_EFFECT_OBJS (objP, i) {
-	if ((objP->Id () == LIGHTNING_ID) && (*objP->WayPoint () >= 0))
+	if ((objP->Id () == LIGHTNING_ID) && (*objP->WayPoint () >= 0)) {
+		CObject* targetP = Target (objP);
+		if (targetP && !Target (targetP))
+			targetP->rType.lightningInfo.nTarget = objP->rType.lightningInfo.nId;
 		Remap (*objP->WayPoint ());
+		}
 	}
 }
 
