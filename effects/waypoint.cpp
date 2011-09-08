@@ -1,5 +1,5 @@
 #include "descent.h"
-#include "wayPoint.h"
+#include "waypoint.h"
 
 CWayPointManager wayPointManager;
 
