@@ -91,9 +91,9 @@ G3_SLEEP (0);
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-dacsRouter [nThread].PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, I2X (1024), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
+uniDacsRouter [nThread].PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, I2X (1024), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
 for (int i = 0; i < gameData.segs.nSegments; i++) {
-	fix xDist = dacsRouter [nThread].Distance (i);
+	fix xDist = uniDacsRouter [nThread].Distance (i);
 	if (xMaxDist < xDist)
 		xMaxDist = xDist;
 	}
@@ -105,7 +105,7 @@ while (xMaxDist & 0xFFFF0000) {
 round = (1 << scale) / 2;
 gameData.segs.segDistScale [nSegment] = scale;
 for (int i = 0; i < gameData.segs.nSegments; i++)
-	gameData.segs.SetSegDist (nSegment, i, dacsRouter [nThread].Distance (i), round);
+	gameData.segs.SetSegDist (nSegment, i, uniDacsRouter [nThread].Distance (i), round);
 gameData.segs.SetSegDist (nSegment, nSegment, 0, 0);
 }
 
@@ -115,7 +115,7 @@ void ComputeSegmentDistance (int startI, int nThread)
 {
 	int endI;
 
-dacsRouter [nThread].Create (gameData.segs.nSegments);
+uniDacsRouter [nThread].Create (gameData.segs.nSegments);
 for (int i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i < endI; i++)
 	ComputeSingleSegmentDistance (i, nThread);
 }

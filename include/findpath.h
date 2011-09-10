@@ -227,7 +227,7 @@ class CDACSBiDirRouter : public CDACSRouter {
 // -----------------------------------------------------------------------------
 
 extern CSimpleBiDirRouter simpleRouter [MAX_THREADS];
-extern CDACSUniDirRouter dacsRouter [MAX_THREADS];
+extern CDACSUniDirRouter uniDacsRouter [MAX_THREADS];
 
 // -----------------------------------------------------------------------------
 

@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 CSimpleBiDirRouter simpleRouter [MAX_THREADS];
-CDACSUniDirRouter dacsRouter [MAX_THREADS];
+CDACSUniDirRouter uniDacsRouter [MAX_THREADS];
 
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
