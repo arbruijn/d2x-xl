@@ -476,9 +476,12 @@ FORALL_ACTOR_OBJS (objP, i) {
 		if ((BOSS_COUNT < int (gameData.bosses.ToS ())) || gameData.bosses.Grow ()) {
 			gameData.bosses [BOSS_COUNT].m_nObject = objP->Index ();
 			++extraGameInfo [0].nBossCount [1];
-			if (ROBOTINFO (objP->info.nId).bEndsLevel)
+			if (ROBOTINFO (objP->info.nId).bEndsLevel) {
 				++extraGameInfo [0].nBossCount [0];
-			if (BOSS_COUNT < 2)
+				if ((nBossObj >= 0) && !ROBOTINFO (OBJECTS [nBossObj].info.nId).bEndsLevel)
+					nBossObj = objP->Index ();
+				}
+			else if (nBossObj < 0)
 				nBossObj = objP->Index ();
 #if TRACE
 			else
