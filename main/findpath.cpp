@@ -43,6 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 CSimpleBiDirRouter simpleRouter [MAX_THREADS];
 CDACSUniDirRouter uniDacsRouter [MAX_THREADS];
+CDACSBiDirRouter biDacsRouter [MAX_THREADS];
 
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
@@ -585,6 +586,7 @@ for (;;) {
 		m_nSegments [1] = Expand (1);
 		}
 	if ((m_nSegments [0] < 0) && (m_nSegments [1] < 0))
+		return -1;
 	if (m_nSegments [0] == m_nDestSeg) {
 		nSegment = m_nSegments [0];
 		m_nSegments [1] = -1;

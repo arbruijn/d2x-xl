@@ -162,7 +162,7 @@ if (distance < maxDistance) {
 		nSearchSegs = 3;
 	pathDistance = gameData.segs.SegVis (nListenerSeg, nSoundSeg) 
 						? distance
-						: /*simpleRouter*/ uniDacsRouter [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+						: simpleRouter /*uniDacsRouter*/ [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 	if (pathDistance > -1) {
 		if (!nDecay)
 #if 1
