@@ -215,13 +215,12 @@ if ((gameData.app.nGameMode & GM_MULTI_ROBOTS) && gameData.reactor.bDestroyed)
 if ((!objP || (objP->info.nType == OBJ_ROBOT)) && gameStates.gameplay.bKillBossCheat)
 	return;
 // And start the countdown stuff.
-bFinalCountdown = !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses && extraGameInfo [0].nBossCount);
+bFinalCountdown = !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses && extraGameInfo [0].nBossCount [0]);
 if (bFinalCountdown ||
 	 (gameStates.app.bD2XLevel && bReactor && (trigP = FindObjTrigger (objP->Index (), TT_COUNTDOWN, -1)))) {
 //	If a secret level, delete secret.sgc to indicate that we can't return to our secret level.
 	if (bFinalCountdown) {
-		//if (extraGameInfo [0].nBossCount)
-			KillAllBossRobots (0);
+		KillAllBossRobots (0);
 		for (i = 0; i < gameData.reactor.triggers.m_nLinks; i++)
 			SEGMENTS [gameData.reactor.triggers.m_segments [i]].ToggleWall (gameData.reactor.triggers.m_sides [i]);
 		if (missionManager.nCurrentLevel < 0)
@@ -417,7 +416,8 @@ void InitReactorForLevel (int bRestore)
 	tReactorStates*	rStatP = &gameData.reactor.states [0];
 
 gameStates.gameplay.bMultiBosses = gameStates.app.bD2XLevel && EGI_FLAG (bMultiBosses, 0, 0, 0);
-extraGameInfo [0].nBossCount = 0;
+extraGameInfo [0].nBossCount [0] = 
+extraGameInfo [0].nBossCount [1] = 0;
 gameStates.gameplay.nReactorCount [0] =
 gameStates.gameplay.nReactorCount [1] = 0;
 gameData.reactor.bPresent = 0;
@@ -464,7 +464,8 @@ FORALL_ACTOR_OBJS (objP, i) {
 					rStatP->bSeenPlayer = 0;
 					rStatP->nNextFireTime = 0;
 					}
-				extraGameInfo [0].nBossCount++;
+				++extraGameInfo [0].nBossCount [0];
+				++extraGameInfo [0].nBossCount [1];
 				gameStates.gameplay.nLastReactor = gameStates.gameplay.nReactorCount [0];
 				gameStates.gameplay.nReactorCount [0]++;
 				}
@@ -474,8 +475,9 @@ FORALL_ACTOR_OBJS (objP, i) {
 	if (IS_BOSS (objP)) {
 		if ((BOSS_COUNT < int (gameData.bosses.ToS ())) || gameData.bosses.Grow ()) {
 			gameData.bosses [BOSS_COUNT].m_nObject = objP->Index ();
+			++extraGameInfo [0].nBossCount [1];
 			if (ROBOTINFO (objP->info.nId).bEndsLevel)
-				extraGameInfo [0].nBossCount++;
+				++extraGameInfo [0].nBossCount [0];
 			if (BOSS_COUNT < 2)
 				nBossObj = objP->Index ();
 #if TRACE
@@ -501,14 +503,14 @@ else if (gameData.bosses.ToS () > 0) {
 	for (j = 0; j < gameStates.gameplay.nReactorCount [0]; j++) {
 		objP = &OBJECTS [gameData.reactor.states [j].nObject];
 		objP->BashToShield (true);
-		if (ROBOTINFO (objP->info.nId).bEndsLevel)
-			extraGameInfo [0].nBossCount--;
+		--extraGameInfo [0].nBossCount [1];
+		if (ROBOTINFO (objP->info.nId).bEndsLevel) 
+			--extraGameInfo [0].nBossCount [0];
 		if (j < --gameStates.gameplay.nReactorCount [0])
 			gameData.reactor.states [j] = gameData.reactor.states [gameStates.gameplay.nReactorCount [0]];
 		}
 	gameData.reactor.bPresent = 0;
 	gameData.reactor.bDisabled = 1;
-	//extraGameInfo [0].nBossCount = 1;
 	}
 gameStates.gameplay.nReactorCount [1] = gameStates.gameplay.nReactorCount [0];
 }

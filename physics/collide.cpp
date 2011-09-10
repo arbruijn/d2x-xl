@@ -1026,8 +1026,9 @@ return 1;
 //	was actually in another CObject.
 int NetDestroyReactor (CObject* reactorP)
 {
-if (extraGameInfo [0].nBossCount && !gameData.reactor.bDestroyed) {
-	extraGameInfo [0].nBossCount--;
+if (extraGameInfo [0].nBossCount [0] && !gameData.reactor.bDestroyed) {
+	--extraGameInfo [0].nBossCount [0];
+	--extraGameInfo [0].nBossCount [1];
 	DoReactorDestroyedStuff (reactorP);
 	if (reactorP && !(reactorP->info.nFlags & (OF_EXPLODING|OF_DESTROYED))) {
 		audio.CreateSegmentSound (SOUND_CONTROL_CENTER_DESTROYED, reactorP->info.nSegment, 0, reactorP->info.position.vPos);
@@ -1073,7 +1074,8 @@ if (info.xShield >= 0)
 	info.xShield -= xDamage;
 if ((info.xShield < 0) && !(info.nFlags & (OF_EXPLODING | OF_DESTROYED))) {
 	/*if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)*/
-	extraGameInfo [0].nBossCount--;
+	--extraGameInfo [0].nBossCount [0];
+	--extraGameInfo [0].nBossCount [1];
 	DoReactorDestroyedStuff (this);
 	if (IsMultiGame) {
 #if DBG
@@ -1300,7 +1302,7 @@ info.xShield -= xDamage;
 if (bIsBoss) {
 	if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) &&
 		 (missionManager.nCurrentLevel == missionManager.nLastLevel) &&
-		 (info.xShield < 0) && (extraGameInfo [0].nBossCount == 1)) {
+		 (info.xShield < 0) && (extraGameInfo [0].nBossCount [0] == 1)) {
 		if (IsMultiGame) {
 			if (!MultiAllPlayersAlive ()) // everyones gotta be alive
 				SetShield (1);

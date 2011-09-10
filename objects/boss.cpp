@@ -392,7 +392,7 @@ if (!m_info.Grow ())
 m_info.Top ()->Init ();
 m_info.Top ()->Setup (nObject);
 if (ROBOTINFO (OBJECTS [nObject].info.nId).bEndsLevel)
-	extraGameInfo [0].nBossCount++;
+	extraGameInfo [0].nBossCount [0]++;
 return nBoss;
 }
 
@@ -407,7 +407,7 @@ short nObject = m_info [nBoss].m_nObject;
 
 if (m_info.Delete (nBoss)) {
 	if (ROBOTINFO (OBJECTS [nObject].info.nId).bEndsLevel)
-		extraGameInfo [0].nBossCount--;
+		extraGameInfo [0].nBossCount [0]--;
 	memset (&m_info [m_info.ToS ()], 0, sizeof (CBossInfo));
 	}
 }

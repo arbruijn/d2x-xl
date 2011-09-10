@@ -210,7 +210,7 @@ typedef struct tExtraGameInfo {
 	char		nOmegaRamp;
 	char		bWiggle;
 	char		bMultiBosses;
-	char		nBossCount;
+	char		nBossCount [2];
 	char		bSmartWeaponSwitch;
 	char		bFluidPhysics;
 	char		nWeaponDropMode;

@@ -1773,7 +1773,7 @@ if (!m_bBetweenLevels) {
 	IFDBG (fPos = m_cf.Tell ());
 	h = m_cf.ReadInt ();
 	gameData.objs.nLastObject [0] = h - 1;
-	extraGameInfo [0].nBossCount = 0;
+	extraGameInfo [0].nBossCount [0] = 0;
 	for (i = 0; i < h; i++) {
 		OBJECTS [i].LoadState (m_cf);
 		if ((m_nVersion < 32) && IS_BOSS (OBJECTS + i))
@@ -2363,7 +2363,7 @@ gameData.objs.viewerP =
 gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
 StartTriggeredSounds ();
 StartTime (1);
-if (!extraGameInfo [0].nBossCount && (!IsMultiGame || IsCoopGame) && OpenExits ())
+if (!extraGameInfo [0].nBossCount [0] && (!IsMultiGame || IsCoopGame) && OpenExits ())
 	InitCountdown (NULL, gameData.reactor.bDestroyed, gameData.reactor.countdown.nTimer);
 return 1;
 }

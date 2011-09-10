@@ -757,7 +757,7 @@ class CGameplayStates {
 
 //------------------------------------------------------------------------------
 
-#define BOSS_COUNT	(extraGameInfo [0].nBossCount - gameStates.gameplay.nReactorCount [0])
+#define BOSS_COUNT	(extraGameInfo [0].nBossCount [1] - gameStates.gameplay.nReactorCount [0])
 
 
 class CKeyStates {

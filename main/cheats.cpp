@@ -210,8 +210,10 @@ FORALL_OBJS (objP, i) {
 			break;
 		}
 	}
-extraGameInfo [0].nBossCount =
-extraGameInfo [1].nBossCount = 0;
+extraGameInfo [0].nBossCount [0] =
+extraGameInfo [0].nBossCount [1] =
+extraGameInfo [1].nBossCount [0] = 
+extraGameInfo [1].nBossCount [1] = 0;
 DoReactorDestroyedStuff (NULL);
 for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
 	if (TRIGGERS [i].IsExit ()) {
