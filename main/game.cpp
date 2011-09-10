@@ -87,6 +87,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "addon_bitmaps.h"
 #include "postprocessing.h"
 #include "menubackground.h"
+#include "findpath.h"
 #include "waypoint.h"
 
 u_int32_t nCurrentVGAMode;
