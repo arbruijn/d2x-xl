@@ -1690,7 +1690,7 @@ return (fix) gameData.objs.pwrUp.info [info.nId].size;
 
 //------------------------------------------------------------------------------
 
-void CObject::DrainEnergy (CObject* targetP) 
+void CObject::DrainEnergy (void) 
 { 
 tRobotInfo* botInfoP = &ROBOTINFO (info.nId);
 if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {

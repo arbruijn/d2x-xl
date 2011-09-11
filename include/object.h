@@ -1049,7 +1049,7 @@ class CObject : public CObjectInfo {
 		inline void SetTarget (CObject* targetP) { m_target = targetP; }
 		CObject* Target (void);
 		CObject* Parent (void);
-		void DrainEnergy (CObject* targetP);
+		void DrainEnergy (void);
 
 		inline CObjHitInfo& HitInfo (void) { return m_hitInfo; }
 		inline CFixVector HitPoint (int i) { return m_hitInfo.v [i]; }
