@@ -101,12 +101,6 @@ SEM_ENTER (SEM_LIGHTNING)
 CLightningEmitter* emitterP = m_emitters.Pop ();
 if (!emitterP)
 	return -1;
-#if DBG
-if (nStyle < 0)
-	nStyle = nStyle;
-if (nStyle == 2)
-	nStyle = nStyle;
-#endif
 if (!(emitterP->Create (nBolts, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 							   nAngle, nOffset, nNodes, nChildren, nDepth, nFrames, nSmoothe, bClamp, bGlow, bSound, bLight,
 							   nStyle, nWidth, colorP))) {
