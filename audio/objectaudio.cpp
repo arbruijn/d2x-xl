@@ -150,7 +150,7 @@ if (nSearchSegs < 3)
 if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
 	return distance;
 if (!HaveRouter ())
-	 return simpleRouter /*uniDacsRouter*/ [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+	 return uniDacsRouter [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 
 if (m_nListenerSeg != nListenerSeg) {
 	m_nListenerSeg = nListenerSeg;
@@ -170,22 +170,13 @@ if (l < 3)
 
 CSegment* segP = &SEGMENTS [nListenerSeg];
 short nChild = m_router.Route (1)->nNode;
-if (nChild < 0)
-	PrintLog (0, "sound path finding error\n");
-else {
-	pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
-	pathDistance += CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ());
-	}
-
+pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
+pathDistance += CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ());
 segP = &SEGMENTS [nSoundSeg];
 nChild = m_router.Route (l - 2)->nNode;
-if (nChild < 0)
-	PrintLog (0, "sound path finding error\n");
-else {
-	pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
-	pathDistance += CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ());
-	}	
-return pathDistance;
+pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
+pathDistance += CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ());
+return (pathDistance < maxDistance) ? pathDistance : -1;
 }
 
 //------------------------------------------------------------------------------
