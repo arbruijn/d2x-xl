@@ -169,20 +169,20 @@ if (l < 3)
 	return distance;
 
 CSegment* segP = &SEGMENTS [nListenerSeg];
-short nChild = segP->ChildIndex (m_router.Route (1)->nNode);
+short nChild = m_router.Route (1)->nNode;
 if (nChild < 0)
 	PrintLog (0, "sound path finding error\n");
 else {
-	pathDistance -= segP->m_childDists [0][nChild];
+	pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
 	pathDistance += CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ());
 	}
 
 segP = &SEGMENTS [nSoundSeg];
-nChild = segP->ChildIndex (m_router.Route (l - 2)->nNode);
+nChild = m_router.Route (l - 2)->nNode;
 if (nChild < 0)
 	PrintLog (0, "sound path finding error\n");
 else {
-	pathDistance -= segP->m_childDists [0][nChild];
+	pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
 	pathDistance += CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ());
 	}	
 return pathDistance;
