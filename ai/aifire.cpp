@@ -89,11 +89,7 @@ if (ailP->nextPrimaryFire > 0)
 if (!TARGETOBJ->Cloaked ()) {
 	if (CFixVector::Dist (OBJPOS (TARGETOBJ)->vPos, robotP->info.position.vPos) < robotP->info.xSize + TARGETOBJ->info.xSize + I2X (2)) {
 		targetP->CollidePlayerAndNastyRobot (robotP, *vCollision);
-		if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
-			robotP->m_xTimeEnergyDrain = gameStates.app.nSDLTicks;
-			robotP->SetTarget (target);
-			LOCALPLAYER.UpdateEnergy (-I2X (botInfoP->energyDrain));
-			}
+		robotP->DrainEnergy ();
 		}
 	}
 robotP->cType.aiInfo.GOAL_STATE = AIS_RECOVER;
