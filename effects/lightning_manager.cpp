@@ -792,7 +792,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)
 		MoveForObject (objP);
 	else {
 		robotLightningInfo.color.Set (ubyte (255 * colorP->v.color.r), ubyte (255 * colorP->v.color.g), ubyte (255 * colorP->v.color.b));
-		int h = lightningManager.Create (robotLightningInfo, &objP->Position (), &OBJECTS [LOCALPLAYER.nObject].Position (), NULL, nObject);
+		int h = lightningManager.Create (robotLightningInfo, &objP->Position (), &OBJPOS (OBJECTS + LOCALPLAYER.nObject)->vPos, NULL, nObject);
 		if (h >= 0)
 			m_objects [nObject] = h;
 		}
