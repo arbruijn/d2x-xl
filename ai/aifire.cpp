@@ -91,7 +91,7 @@ if (!TARGETOBJ->Cloaked ()) {
 		targetP->CollidePlayerAndNastyRobot (robotP, *vCollision);
 		if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
 			robotP->m_xTimeEnergyDrain = gameStates.app.nSDLTicks;
-			robotP->m_target = target;
+			robotP->SetTarget (target);
 			LOCALPLAYER.UpdateEnergy (-I2X (botInfoP->energyDrain));
 			}
 		}

@@ -786,15 +786,15 @@ static tLightningInfo robotLightningInfo = {
 void CLightningManager::CreateForRobot (CObject* objP, CFloatVector *colorP)
 {
 if (SHOW_LIGHTNING && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)) {
-		int h, i = objP->Index ();
+		int nObject = objP->Index ();
 
-	if (0 <= m_objects [i])
+	if (0 <= m_objects [nObject])
 		MoveForObject (objP);
 	else {
 		robotLightningInfo.color.Set (ubyte (255 * colorP->v.color.r), ubyte (255 * colorP->v.color.g), ubyte (255 * colorP->v.color.b));
-		h = lightningManager.Create (robotLightningInfo, &objP->Position (), objP->m_target->Position (), NULL, i);
+		int h = lightningManager.Create (robotLightningInfo, &objP->Position (), objP->Target ()->Position (), NULL, nObject);
 		if (h >= 0)
-			m_objects [i] = h;
+			m_objects [nObject] = h;
 		}
 	}
 }

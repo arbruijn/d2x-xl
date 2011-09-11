@@ -507,8 +507,8 @@ void CObject::UpdateEffects (void)
 	bool bNeedEffect, bHaveEffect = lightningManager.GetObjectSystem (Index ()) >= 0;
 	ubyte nEffect;
 
-if ((info.nType == OBJ_ROBOT)  && gameOpts->render.lightning.bRobots) {
-	bNeedEffect = ROBOTINFO (info.nId).energyDrain && (gameStates.app.nSDLTicks - m_xTimeEnergyDrain <= 500);
+if ((info.nType == OBJ_ROBOT) && gameOpts->render.lightning.bRobots) {
+	bNeedEffect = ROBOTINFO (info.nId).energyDrain && (gameStates.app.nSDLTicks [0] - m_xTimeEnergyDrain <= 500);
 	nEffect = ROBOT_LIGHTNING;
 	}
 else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
