@@ -201,6 +201,10 @@ class CDACSUniDirRouter : public CDACSRouter {
 		virtual bool Create (int nNodes);
 
 		virtual fix Distance (short nSegment);
+
+		inline short RouteLength (short nNode) { return m_heap.RouteLength (nNode); }
+		inline CDialHeap::tPathNode* Route (uint i = 0) { return m_heap.Route (i); }
+
 };
 
 // -----------------------------------------------------------------------------

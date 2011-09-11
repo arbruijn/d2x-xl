@@ -826,7 +826,8 @@ return 1;
 
 void CAudio::SetupRouter (void)
 {
-m_bHaveRouter = m_router.Create (gameData.segs.nSegments);
+m_segDists.Destroy ();
+m_bHaveRouter = m_router.Create (gameData.segs.nSegments) && m_segDists.Create (gameData.segs.nSegments);
 }
 
 //------------------------------------------------------------------------------
@@ -1030,7 +1031,7 @@ if (!(nType || songManager.Playing ()))
 #endif
 SyncSounds ();
 }
-//end edit by adb
+
 //------------------------------------------------------------------------------
 
 void CAudio::SetVolumes (int fxVolume, int midiVolume)

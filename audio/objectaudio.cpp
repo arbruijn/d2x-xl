@@ -147,9 +147,29 @@ if (distance > maxDistance)
 int nSearchSegs = X2I (maxDistance / 10);
 if (nSearchSegs < 3)
 	nSearchSegs = 3;
-return gameData.segs.SegVis (nListenerSeg, nSoundSeg) 
-		 ? distance
-		 : simpleRouter /*uniDacsRouter*/ [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
+	return distance;
+if (!HaveRouter ())
+	 return simpleRouter /*uniDacsRouter*/ [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+
+fix pathDistance = m_router.Distance (nSoundSeg);
+if (pathDistance < 0)
+	return distance;
+
+short l = m_router.RouteLength (nSoundSeg);
+if (l < 3)
+	return distance;
+
+CSegment* segP = &SEGMENTS [nListenerSeg];
+short nChild = m_router.Route (1)->nNode;
+pathDistance -= segP->m_childDists [0][nChild];
+pathDistance += CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ());
+
+segP = &SEGMENTS [nSoundSeg];
+nChild = m_router.Route (l - 2)->nNode;
+pathDistance -= segP->m_childDists [0][nChild];
+pathDistance += CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ());
+return pathDistance;
 }
 
 //------------------------------------------------------------------------------
@@ -646,6 +666,7 @@ if (!OBJECTS.Buffer ())
 
 	int				nOldVolume, nNewVolume, nOldPan, 
 						nAudioVolume [2] = {audio.Volume (0), audio.Volume (1)};
+	uint				i;
 	CObject*			objP = NULL;
 	CFixVector		vListenerPos = gameData.objs.viewerP->info.position.vPos;
 	CFixMatrix		mListenerOrient = gameData.objs.viewerP->info.position.mOrient;
@@ -658,9 +679,16 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	}
 else
 	gameStates.sound.bWasRecording = 0;
+
+if (HaveRouter ()) {
+	m_router.PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, I2X (5 * 256 / 4), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
+	for (i = 0; i < (uint) gameData.segs.nSegments; i++)
+		m_segDists [i] = m_router.Distance (i);
+	}
+
 soundQueue.Process ();
 
-	uint i = m_objects.ToS ();
+	i = m_objects.ToS ();
 	CSoundObject*	soundObjP = m_objects.Buffer () + i;
 
 while (i) {
