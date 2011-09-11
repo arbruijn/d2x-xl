@@ -760,7 +760,7 @@ static tLightningInfo robotLightningInfo = {
 	-5000, // nLife
 	0, // nDelay
 	0, // nLength
-	-8, // nAmplitude
+	-4, // nAmplitude
 	0, // nOffset
 	-1, // nWayPoint
 	5, // nBolts
