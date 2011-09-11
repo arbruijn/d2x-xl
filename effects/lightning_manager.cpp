@@ -149,7 +149,7 @@ return Create (li.nBolts,
 					li.bGlow, 
 					li.bSound, 
 					1, 
-					(li.nStyle >= 0) ? li.nStyle : gameOpts->render.lightning.nStyle, 
+					li.nStyle, 
 					(float) li.nWidth, 
 					&color);
 }
