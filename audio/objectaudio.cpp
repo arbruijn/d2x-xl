@@ -696,8 +696,6 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 else
 	gameStates.sound.bWasRecording = 0;
 
-m_nListenerSeg = -1;
-
 soundQueue.Process ();
 
 	i = m_objects.ToS ();

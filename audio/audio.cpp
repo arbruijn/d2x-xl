@@ -827,6 +827,7 @@ return 1;
 
 void CAudio::SetupRouter (void)
 {
+m_nListenerSeg = -1;
 m_bHaveRouter = m_router.Create (gameData.segs.nSegments) /*&& m_segDists.Create (gameData.segs.nSegments)*/;
 }
 
