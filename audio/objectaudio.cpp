@@ -152,6 +152,14 @@ if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
 if (!HaveRouter ())
 	 return simpleRouter /*uniDacsRouter*/ [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 
+if (m_nListenerSeg != nListenerSeg) {
+	m_nListenerSeg = nListenerSeg;
+	m_router.PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, I2X (5 * 256 / 4), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
+	//for (i = 0; i < (uint) gameData.segs.nSegments; i++)
+	//	m_segDists [i] = m_router.Distance (i);
+	}
+
+
 fix pathDistance = m_router.Distance (nSoundSeg);
 if (pathDistance < 0)
 	return distance;
@@ -680,11 +688,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 else
 	gameStates.sound.bWasRecording = 0;
 
-if (HaveRouter ()) {
-	m_router.PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, I2X (5 * 256 / 4), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
-	for (i = 0; i < (uint) gameData.segs.nSegments; i++)
-		m_segDists [i] = m_router.Distance (i);
-	}
+m_nListenerSeg = -1;
 
 soundQueue.Process ();
 

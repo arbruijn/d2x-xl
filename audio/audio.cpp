@@ -699,6 +699,7 @@ m_usedChannels.Resize (m_info.nMaxChannels);
 m_objects.Resize (MAX_SOUND_OBJECTS);
 m_bHaveRouter = false;
 m_bSDLInitialized = false;
+m_nListenerSeg = -1;
 InitSounds ();
 }
 
@@ -826,8 +827,7 @@ return 1;
 
 void CAudio::SetupRouter (void)
 {
-m_segDists.Destroy ();
-m_bHaveRouter = m_router.Create (gameData.segs.nSegments) && m_segDists.Create (gameData.segs.nSegments);
+m_bHaveRouter = m_router.Create (gameData.segs.nSegments) /*&& m_segDists.Create (gameData.segs.nSegments)*/;
 }
 
 //------------------------------------------------------------------------------
