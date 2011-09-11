@@ -31,12 +31,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "text.h"
 #include "kconfig.h"
-#include "findpath.h"
 #include "segmath.h"
 #include "midi.h"
-#include "audio.h"
 #include "network.h"
 #include "lightning.h"
+#include "audio.h"
 
 //------------------------------------------------------------------------------
 
@@ -133,6 +132,27 @@ return (nSound < 0) ? -1 : CAudio::UnXlatSound (nSound);
 }
 
 //------------------------------------------------------------------------------
+
+int CAudio::Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound)
+{
+if (nDecay)
+	maxDistance *= 2;
+else
+	maxDistance = (5 * maxDistance) / 4;	// Make all sounds travel 1.25 times as far.
+
+fix distance = CFixVector::NormalizedDir (vecToSound, vSoundPos, vListenerPos);
+if (distance > maxDistance) 
+	return -1;
+
+int nSearchSegs = X2I (maxDistance / 10);
+if (nSearchSegs < 3)
+	nSearchSegs = 3;
+return gameData.segs.SegVis (nListenerSeg, nSoundSeg) 
+		 ? distance
+		 : simpleRouter /*uniDacsRouter*/ [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+}
+
+//------------------------------------------------------------------------------
 // determine nVolume and panning of a sound created at location nSoundSeg,vSoundPos
 // as heard by nListenerSeg,vListenerPos
 
@@ -140,67 +160,37 @@ void CAudio::GetVolPan (CFixMatrix& mListener, CFixVector& vListenerPos, short n
 								CFixVector& vSoundPos, short nSoundSeg,
 								fix maxVolume, int *nVolume, int *pan, fix maxDistance, int nDecay)
 {
-	CFixVector	vecToSound;
-	fix 			angleFromEar, cosang, sinang;
-	fix			distance, pathDistance;
-#if DBG
-	static fix	prevDistance [2] = {0, 0}, prevPathDistance [2] = {0, 0};
-	static int	nPrevVolume [2] = {0, 0};
-#endif
-	float			fDecay;
 
 *nVolume = 0;
 *pan = 0;
-if (nDecay)
-	maxDistance *= 2;
-else
-	maxDistance = (5 * maxDistance) / 4;	// Make all sounds travel 1.25 times as far.
-distance = CFixVector::NormalizedDir (vecToSound, vSoundPos, vListenerPos);
-if (distance < maxDistance) {
-	int nSearchSegs = X2I (maxDistance / 10);
-	if (nSearchSegs < 3)
-		nSearchSegs = 3;
-	pathDistance = gameData.segs.SegVis (nListenerSeg, nSoundSeg) 
-						? distance
-						: simpleRouter /*uniDacsRouter*/ [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
-	if (pathDistance > -1) {
-		if (!nDecay)
-#if 1
-			//*nVolume = FixMulDiv (maxVolume, maxDistance - pathDistance, maxDistance);
-			*nVolume = fix (float (maxVolume) * (1.0f - float (pathDistance) / float (maxDistance)));
-#else
-			*nVolume = maxVolume - FixDiv (pathDistance, maxDistance);
-#endif
-		else if (nDecay == 1) {
-			fDecay = (float) exp (-log (2.0f) * 4.0f * X2F (pathDistance) / X2F (maxDistance / 2));
-			*nVolume = (int) (maxVolume * fDecay);
-			}
-		else {
-			fDecay = 1.0f - X2F (pathDistance) / X2F (maxDistance);
-			*nVolume = (int) (maxVolume * fDecay * fDecay * fDecay);
-			}
 
-		if (*nVolume <= 0)
-			*nVolume = 0;
-		else {
-			angleFromEar = CFixVector::DeltaAngleNorm (mListener.m.dir.r, vecToSound, &mListener.m.dir.u);
-			FixSinCos (angleFromEar, &sinang, &cosang);
-			if (gameConfig.bReverseChannels != gameOpts->UseHiresSound ())
-				cosang = -cosang;
-			*pan = (cosang + I2X (1)) / 2;
-			}
-		}
-#if DBG
-	prevPathDistance [1] = prevPathDistance [0];
-	prevPathDistance [0] = pathDistance;
-#endif
+CFixVector vecToSound;
+fix distance = Distance (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, maxDistance, nDecay, vecToSound);
+if (distance < 0)
+	return;
+
+if (!nDecay)
+	//*nVolume = FixMulDiv (maxVolume, maxDistance - distance, maxDistance);
+	*nVolume = fix (float (maxVolume) * (1.0f - float (distance) / float (maxDistance)));
+else if (nDecay == 1) {
+	float fDecay = (float) exp (-log (2.0f) * 4.0f * X2F (distance) / X2F (maxDistance / 2));
+	*nVolume = (int) (maxVolume * fDecay);
 	}
-#if DBG
-prevDistance [1] = prevDistance [0];
-prevDistance [0] = distance;
-nPrevVolume [1] = nPrevVolume [0];
-nPrevVolume [0] = *nVolume;
-#endif
+else {
+	float fDecay = 1.0f - X2F (distance) / X2F (maxDistance);
+	*nVolume = (int) (maxVolume * fDecay * fDecay * fDecay);
+	}
+
+if (*nVolume <= 0)
+	*nVolume = 0;
+else {
+	fix angleFromEar = CFixVector::DeltaAngleNorm (mListener.m.dir.r, vecToSound, &mListener.m.dir.u);
+	fix cosAng, sinAng;
+	FixSinCos (angleFromEar, &sinAng, &cosAng);
+	if (gameConfig.bReverseChannels != gameOpts->UseHiresSound ())
+		cosAng = -cosAng;
+	*pan = (cosAng + I2X (1)) / 2;
+	}
 }
 
 //------------------------------------------------------------------------------

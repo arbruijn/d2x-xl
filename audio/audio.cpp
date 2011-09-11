@@ -697,6 +697,7 @@ m_info.fSlowDown = 1.0f;
 m_channels.Resize (m_info.nMaxChannels);
 m_usedChannels.Resize (m_info.nMaxChannels);
 m_objects.Resize (MAX_SOUND_OBJECTS);
+m_bHaveRouter = false;
 m_bSDLInitialized = false;
 InitSounds ();
 }
@@ -819,6 +820,13 @@ PrintLog (0, TXT_SDL_OPEN_AUDIO, SDL_GetError ());
 PrintLog (0, "\n");
 Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CAudio::SetupRouter (void)
+{
+m_bHaveRouter = m_router.Create (gameData.segs.nSegments);
 }
 
 //------------------------------------------------------------------------------

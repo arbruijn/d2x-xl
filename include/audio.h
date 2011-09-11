@@ -11,6 +11,8 @@
 #include "vecmat.h"
 #include "carray.h"
 #include "cfile.h"
+#include "descent.h"
+#include "findpath.h"
 
 #ifdef _MSC_VER
 #	if DBG
@@ -272,6 +274,8 @@ class CAudio {
 		CArray<CAudioChannel>	m_channels;
 		CStack<CSoundObject>		m_objects;
 		CStack<int>					m_usedChannels;
+		CDACSUniDirRouter			m_router;
+		bool							m_bHaveRouter;
 		bool							m_bSDLInitialized;
 
 	private:
@@ -287,6 +291,7 @@ class CAudio {
 #endif
 		void Destroy (void);
 		int Setup (float fSlowDown, int nFormat = -1);
+		void SetupRouter (void);
 		void Cleanup (void);
 		void Shutdown (void);
 		void Close (void);
@@ -389,6 +394,10 @@ class CAudio {
 		int VerifyChannelFree (int channel);
 #endif
 		static void _CDECL_ MixCallback (void* userdata, Uint8* stream, int len);
+
+		inline bool HaveRouter (void) { return m_bHaveRouter; }
+		int Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound);
+
 
 	private:
 		CAudioChannel* FindFreeChannel (int nSoundClass);
