@@ -1200,12 +1200,20 @@ return bmBot ? bmBot : bmTop;
 
 //------------------------------------------------------------------------------
 
+int CSegment::ChildIndex (int nChild)
+{
+for (int i = 0; i < 6; i++)
+	if (m_children [i] == nChild)
+		return i;
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
 CSide* CSegment::AdjacentSide (int nSegment)
 {
-for (int i = 0; i < 5; i++)
-	if (m_children [i] == nSegment)
-		return m_sides + i;
-return NULL;
+int i = ChildIndex (nSegment);
+return (i < 0) ? NULL : m_sides + i;
 }
 
 //------------------------------------------------------------------------------

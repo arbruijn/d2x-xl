@@ -337,6 +337,7 @@ class CSegment {
 		void ComputeChildDists (void);
 		inline void ComputeSideCenter (int nSide) { m_sides [nSide].ComputeCenter (); }
 		inline CSide* Side (int nSide) { return m_sides + nSide; }
+		int ChildIndex (int nChild);
 		CSide* AdjacentSide (int nSegment);
 		CSide* OppositeSide (int nSide);
 		inline CWall* Wall (int nSide) { return m_sides [nSide].Wall (); }
