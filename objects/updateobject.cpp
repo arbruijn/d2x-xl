@@ -504,33 +504,37 @@ if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].nAfterburner
 
 void CObject::UpdateEffects (void)
 {
-if (info.nType == OBJ_ROBOT) {
-	if (ROBOTINFO (info.nId).energyDrain) {
-		RequestEffects (ROBOT_LIGHTNING);
-		}
+	bool bNeedEffect, bHaveEffect = lightningManager.GetObjectSystem (Index ()) >= 0;
+	ubyte nEffect;
+
+if ((info.nType == OBJ_ROBOT)  && gameOpts->render.lightning.bRobots) {
+	bNeedEffect = ROBOTINFO (info.nId).energyDrain && (gameStates.app.nSDLTicks - m_xTimeEnergyDrain <= 500);
+	nEffect = ROBOT_LIGHTNING;
 	}
 else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
-	bool bNeedEffect, bHaveEffect = lightningManager.GetObjectSystem (Index ()) >= 0;
+	nEffect = PLAYER_LIGHTNING;
 	int nType = SEGMENTS [OBJSEG (this)].m_function;
 	if (gameData.FusionCharge (info.nId) > I2X (2))
 		bNeedEffect = true;
 	else if (nType == SEGMENT_FUNC_FUELCEN)
 #if DBG
-		bNeedEffect = 1;
+		bNeedEffect = true;
 #else
 		bNeedEffect = gameData.multiplayer.players [info.nId].energy < I2X (100);
 #endif
 	else if (nType == SEGMENT_FUNC_REPAIRCEN)
 #if DBG
-		bNeedEffect = 1;
+		bNeedEffect = true;
 #else
 		bNeedEffect = gameData.multiplayer.players [info.nId].Shield () < gameData.multiplayer.players [info.nId].MaxShield ();
 #endif
 	else
 		bNeedEffect = false;
-	if (bHaveEffect != bNeedEffect)
-		RequestEffects (bNeedEffect ? PLAYER_LIGHTNING : DESTROY_LIGHTNING);
 	}
+else
+	return;
+if (bHaveEffect != bNeedEffect)
+	RequestEffects (bNeedEffect ? nEffect : DESTROY_LIGHTNING);
 }
 
 // -----------------------------------------------------------------------------

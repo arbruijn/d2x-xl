@@ -101,6 +101,12 @@ SEM_ENTER (SEM_LIGHTNING)
 CLightningEmitter* emitterP = m_emitters.Pop ();
 if (!emitterP)
 	return -1;
+#if DBG
+if (nStyle < 0)
+	nStyle = nStyle;
+if (nStyle == 2)
+	nStyle = nStyle;
+#endif
 if (!(emitterP->Create (nBolts, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 							   nAngle, nOffset, nNodes, nChildren, nDepth, nFrames, nSmoothe, bClamp, bGlow, bSound, bLight,
 							   nStyle, nWidth, colorP))) {
@@ -750,6 +756,33 @@ CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 
 
 //------------------------------------------------------------------------------
 
+static tLightningInfo robotLightningInfo = {
+	-5000, // nLife
+	0, // nDelay
+	0, // nLength
+	-8, // nAmplitude
+	0, // nOffset
+	-1, // nWayPoint
+	5, // nBolts
+	-1, // nId
+	-1, // nTarget
+	100, // nNodes
+	0, // nChildren
+	3, // nFrames
+	3, // nWidth
+	0, // nAngle
+	-1, // nStyle
+	1, // nSmoothe
+	1, // bClamp
+	-1, // bGlow
+	1, // bSound
+	0, // bRandom
+	0, // bInPlane
+	1, // bEnabled
+	0, // bDirection
+	{(ubyte) (255 * 0.9f), (ubyte) (255 * 0.6f), (ubyte) (255 * 0.6f), (ubyte) (255 * 0.3f)} // color;
+	};
+
 void CLightningManager::CreateForRobot (CObject* objP, CFloatVector *colorP)
 {
 if (SHOW_LIGHTNING && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)) {
@@ -758,8 +791,8 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)
 	if (0 <= m_objects [i])
 		MoveForObject (objP);
 	else {
-		h = Create (2 * objP->info.xSize / I2X (1), &objP->info.position.vPos, NULL, NULL, objP->Index (), -1000, 100,
-						objP->info.xSize, objP->info.xSize / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 1, -1, 3.0f, colorP);
+		robotLightningInfo.color.Set (ubyte (255 * colorP->v.color.r), ubyte (255 * colorP->v.color.g), ubyte (255 * colorP->v.color.b));
+		h = lightningManager.Create (robotLightningInfo, &objP->Position (), objP->m_target->Position (), NULL, i);
 		if (h >= 0)
 			m_objects [i] = h;
 		}

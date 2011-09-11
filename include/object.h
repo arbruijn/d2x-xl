@@ -805,6 +805,7 @@ class CObject : public CObjectInfo {
 		fix				m_xCreationTime;
 		fix				m_xTimeLastHit;
 		fix				m_xTimeLastEffect;
+		fix				m_xTimeEnergyDrain;
 		tShotInfo		m_shots;
 		CFixVector		m_vStartVel;
 		CFixVector		m_vOrigin;

@@ -484,7 +484,7 @@ else {
 		int bInPlane = m_bInPlane && (nDepth == 1); 
 		if (bInPlane)
 			nStyle = 0;
-		nAmplitude *= 4;
+		nAmplitude *= 3;
 		for (h = m_nNodes - 1, i = j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = &m_nodes [h - 1]; i < h; i++, j = !j) {
 			plh = nodeP [j];
 			plh->CreateErratic (vPos + j, vBase, nFrames, nAmplitude, bInPlane, j, 0, i, h, nSmoothe, bClamp);
