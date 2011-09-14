@@ -266,7 +266,7 @@ do {
 								  3, gameOpts->input.mouse.sensitivity, 16, NULL, KEY_O, axis3DHotkeys, gameOpts->input.mouse.bSyncAxis);
 			if (gameOpts->input.mouse.bUse && !gameStates.app.bNostalgia) {
 				m.AddText ("", "");
-				m.AddCheck ("mouse look", TXT_MOUSELOOK, extraGameInfo [0].bMouseLook, KEY_L, HTX_CONF_MOUSELOOK);
+				m.AddCheck ("mouselook", TXT_MOUSELOOK, extraGameInfo [0].bMouseLook, KEY_L, HTX_CONF_MOUSELOOK);
 				m.AddCheck ("joystick simulation", TXT_JOYMOUSE, gameOpts->input.mouse.bJoystick, KEY_J, HTX_CONF_JOYMOUSE);
 				if (gameOpts->input.mouse.bJoystick && gameOpts->app.bExpertMode)
 					AddDeadzoneControl (m, szMouseDeadzone, TXT_MOUSE_DEADZONE, HTX_MOUSE_DEADZONE, szDZoneSizes, gameOpts->input.mouse.nDeadzone, KEY_U);

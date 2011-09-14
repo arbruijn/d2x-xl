@@ -540,6 +540,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.particles.bMonitors, i, 0);
 		RP (gameOptions [i].render.particles.bDecreaseLag, i, 0);
 		RP (gameOptions [i].render.particles.bDebris, i, 0);
+		RP (gameOptions [i].render.particles.bCollisions, i, 0);
 		RP (gameOptions [i].render.particles.bDisperse, i, 0);
 		RP (gameOptions [i].render.particles.bRotate, i, 0);
 		RP (gameOptions [i].render.particles.bMissiles, i, 0);
@@ -1368,6 +1369,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.particles.bPlasmaTrails", "0"},
 	 {"gameOptions[0].render.particles.bDecreaseLag", "0"},
 	 {"gameOptions[0].render.particles.bDebris", "1"},
+	 {"gameOptions[0].render.particles.bCollisions", "1"},
 	 {"gameOptions[0].render.particles.bDisperse", "1"},
 	 {"gameOptions[0].render.particles.bRotate", "1"},
 	 {"gameOptions[0].render.particles.bMissiles", "1"},
