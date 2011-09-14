@@ -556,8 +556,7 @@ do {
 		m.AddCheck ("flip frames", TXT_FLIPFRAMES, gameOpts->render.stereo.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
 #endif
 		}
-	else
-		m.AddText ("", "");
+	m.AddText ("", "");
 	m.AddCheck ("movie subtitles", TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_V, HTX_RENDER_SUBTTL);
 
 #if DBG
