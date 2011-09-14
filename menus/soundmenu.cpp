@@ -267,7 +267,7 @@ do {
 					 redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume, 
 					 0, 8, KEY_M, HTX_ONLINE_MANUAL);
 	m.AddText ("", "");
-	m.AddCheck ("link volumes", TXT_LINK_AUDIO_VOLUMES, gameOpts->sound.bLinkVolumes, KEY_L, HTX_ONLINE_MANUAL);
+	m.AddCheck ("link volumes", TXT_LINK_AUDIO_VOLUMES, gameOpts->sound.bLinkVolumes, KEY_L, HTX_SYNC_VOLUME);
 	m.AddCheck ("redbook sound", TXT_REDBOOK_ENABLED, redbook.Enabled (), KEY_C, HTX_ONLINE_MANUAL);
 	m.AddCheck ("reverse stereo", TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
 	if (!gameStates.app.bNostalgia) {
