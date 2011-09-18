@@ -89,7 +89,6 @@ float scale = X2F (CFixVector::Dist (objP->Position (), gameData.objs.viewerP->P
 scale = /*ZFAR **/ 1.0f - sqrt (scale / ZFAR);
 //scale = NDC (scale);
 //scale /= ZFAR;
-scale *= scale;
 return scale * scale;
 }
 
@@ -129,6 +128,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	fVerts [0].v.coord.z = fVerts [1].v.coord.z = fVerts [2].v.coord.z = fVerts [3].v.coord.z = vPosf.v.coord.z;
 	fVerts [0].v.coord.w = fVerts [1].v.coord.w = fVerts [2].v.coord.w = fVerts [3].v.coord.w = 1;
 	float alphaScale = AlphaScale (objP);
+	alphaScale *= alphaScale;
 	glColor4f (pc->Red (), pc->Green (), pc->Blue (), alphaScale * 2.0f / 3.0f);
 	ogl.SetTexturing (false);
 	ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
@@ -349,6 +349,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	transformation.Transform (fPos, fPos, 0);
 	r = X2F (objP->info.xSize);
 	float alphaScale = AlphaScale (objP);
+	alphaScale *= alphaScale;
 	glColor4f (pc->Red (), pc->Green (), pc->Blue (), alphaScale);
 	fVerts [0].v.coord.w = fVerts [1].v.coord.w = fVerts [2].v.coord.w = fVerts [3].v.coord.w = 1;
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
