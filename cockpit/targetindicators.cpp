@@ -80,10 +80,15 @@ return ((_C / d - _A) / _B + 1.0f) * 0.5f;
 }
 
 // -----------------------------------------------------------------------------
+// Scale the distance between target and viewer with the view range and stretch
+// the scale to increase the alpha scaling effect.
 
 static float AlphaScale (CObject* objP)
 {
-float scale = NDC (X2F (CFixVector::Dist (objP->Position (), gameData.objs.viewerP->Position ())));
+float scale = X2F (CFixVector::Dist (objP->Position (), gameData.objs.viewerP->Position ()));
+scale = /*ZFAR **/ 1.0f - sqrt (scale / ZFAR);
+//scale = NDC (scale);
+//scale /= ZFAR;
 return scale * scale;
 }
 
