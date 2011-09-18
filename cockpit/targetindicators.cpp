@@ -59,6 +59,26 @@ return &defaultColor;
 
 // -----------------------------------------------------------------------------
 
+static float NDC (float d)
+{
+#define NDC(z) (2.0f * z - 1.0f)
+#define A (ZNEAR + ZFAR)
+#define B (ZNEAR - ZFAR)
+#define C (2.0f * ZNEAR * ZFAR)
+#define D(z) (NDC (z) * B)
+#define ZEYE(z) (C / (A + D (z)))
+
+//d = C / (A + (2.0 * zNDC - 1.0) * B)
+//C / d = A + (2.0f * zNDC - 1.0f) * B
+//C / d - A = (2.0f * zNDC - 1.0f) * B
+//(C / d - A) / B = 2.0f * zNDC - 1.0f
+//(C / d - A) / B + 1.0 = 2.0f * zNDC
+//((C / d - A) / B + 1.0) / 2.0 = zNDC
+return ((C / d - A) / B + 1.0f) * 0.25f + 0.5f;
+}
+
+// -----------------------------------------------------------------------------
+
 void RenderDamageIndicator (CObject *objP, CFloatVector3 *pc)
 {
 	CFixVector		vPos;
@@ -92,14 +112,16 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	fVerts [2].v.coord.y = fVerts [3].v.coord.y = vPosf.v.coord.y - r2;
 	fVerts [0].v.coord.z = fVerts [1].v.coord.z = fVerts [2].v.coord.z = fVerts [3].v.coord.z = vPosf.v.coord.z;
 	fVerts [0].v.coord.w = fVerts [1].v.coord.w = fVerts [2].v.coord.w = fVerts [3].v.coord.w = 1;
-	glColor4f (pc->Red (), pc->Green (), pc->Blue (), 2.0f / 3.0f);
+	float colorScale = NDC (X2F (objP->Position ().Mag ()));
+	glColor4f (pc->Red (), pc->Green (), pc->Blue (), colorScale * 2.0f / 3.0f);
 	ogl.SetTexturing (false);
 	ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	OglDrawArrays (GL_QUADS, 0, 4);
 	w = 2 * r;
 	fVerts [1].v.coord.x = fVerts [2].v.coord.x = vPosf.v.coord.x + w;
-	glColor3fv (reinterpret_cast<GLfloat*> (pc));
+	//glColor3fv (reinterpret_cast<GLfloat*> (pc));
+	glColor4f (pc->Red (), pc->Green (), pc->Blue (), colorScale);
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	OglDrawArrays (GL_LINE_LOOP, 0, 4);
 	ogl.DisableClientState (GL_VERTEX_ARRAY);
@@ -144,6 +166,7 @@ if (gameStates.app.nSDLTicks [0] - t0 [bMarker] > tDelay [bMarker]) {
 		nMslLockColorIncr [bMarker] = -nMslLockColorIncr [bMarker];
 	nMslLockColor [bMarker] += nMslLockColorIncr [bMarker];
 	trackGoalColor [bMarker].Green () = fMslLockGreen [bMarker] + (float) nMslLockColor [bMarker] / 100.0f;
+	trackGoalColor [bMarker].Alpha () = NDC (X2F (objP->Position ().Mag ()));
 	nMslLockIndPos [bMarker] = (nMslLockIndPos [bMarker] + 1) % INDICATOR_POSITIONS;
 	}
 PolyObjPos (objP, &vPos);

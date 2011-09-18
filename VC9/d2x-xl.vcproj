@@ -6334,10 +6334,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\render\targetindicators.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\render\thrusterflames.cpp"
 						>
 					</File>
@@ -9277,6 +9273,10 @@
 							/>
 						</FileConfiguration>
 					</File>
+					<File
+						RelativePath="..\cockpit\targetindicators.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Header Files"
@@ -10469,11 +10469,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
