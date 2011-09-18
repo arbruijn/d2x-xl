@@ -89,6 +89,7 @@ float scale = X2F (CFixVector::Dist (objP->Position (), gameData.objs.viewerP->P
 scale = /*ZFAR **/ 1.0f - sqrt (scale / ZFAR);
 //scale = NDC (scale);
 //scale /= ZFAR;
+scale *= scale;
 return scale * scale;
 }
 
@@ -330,9 +331,13 @@ if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 1, 0)) {
 		pc = ObjectFrameColor (NULL, NULL);
 		}
 	}
+
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 RenderMslLockIndicator (objP);
+
 if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (objP->Damage () >= 1.0f))
 	return;
+
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	bStencil = ogl.StencilOff ();
 	ogl.SetTexturing (false);
@@ -343,7 +348,8 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	fPos.Assign (vPos);
 	transformation.Transform (fPos, fPos, 0);
 	r = X2F (objP->info.xSize);
-	glColor3fv (reinterpret_cast<GLfloat*> (pc));
+	float alphaScale = AlphaScale (objP);
+	glColor4f (pc->Red (), pc->Green (), pc->Blue (), alphaScale);
 	fVerts [0].v.coord.w = fVerts [1].v.coord.w = fVerts [2].v.coord.w = fVerts [3].v.coord.w = 1;
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	if (extraGameInfo [IsMultiGame].bTargetIndicators == 1) {	//square brackets
@@ -414,7 +420,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 				//fVerts [2].v.c.y = fPos.v.c.y + r - r2;
 				}
 			}
-		glColor4f (pc->Red (), pc->Green (), pc->Blue (), 2.0f / 3.0f);
+		glColor4f (pc->Red (), pc->Green (), pc->Blue (), alphaScale * 2.0f / 3.0f);
 		if (bDrawArrays) {
 			OglDrawArrays (GL_TRIANGLES, 0, 3);
 			ogl.DisableClientState (GL_VERTEX_ARRAY);
