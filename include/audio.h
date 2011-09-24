@@ -292,6 +292,7 @@ class CAudio {
 		int InitThread (void);
 #endif
 		void Destroy (void);
+		void Prepare (void);
 		int Setup (float fSlowDown, int nFormat = -1);
 		void SetupRouter (void);
 		void Cleanup (void);

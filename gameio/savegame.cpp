@@ -1886,6 +1886,7 @@ if (!m_bBetweenLevels) {
 		SEGMENTS [i].LoadState (m_cf);
 	IFDBG (fPos = m_cf.Tell ());
 	//Restore the fuelcen info
+	audio.Prepare ();
 	SetupWalls ();
 	gameData.reactor.bDestroyed = m_cf.ReadInt ();
 	gameData.reactor.countdown.nTimer = m_cf.ReadFix ();

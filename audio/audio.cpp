@@ -705,6 +705,14 @@ InitSounds ();
 
 //------------------------------------------------------------------------------
 
+void CAudio::Prepare (void)
+{
+for (int i = 0; i < gameStates.app.nThreads; i++)
+	uniDacsRouter [i].Create (gameData.segs.nSegments);
+}
+
+//------------------------------------------------------------------------------
+
 void CAudio::Destroy (void)
 {
 Close ();

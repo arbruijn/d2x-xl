@@ -557,8 +557,7 @@ gameStates.app.nSDLTicks [1] =
 gameData.time.xGameStart = SDL_GetTicks ();
 gameData.physics.fLastTick = float (gameData.time.xGameStart);
 ogl.m_features.bShaders.Available (gameOpts->render.bUseShaders);
-for (int i = 0; i < gameStates.app.nThreads; i++)
-	uniDacsRouter [i].Create (gameData.segs.nSegments);
+audio.Prepare ();
 audio.SetupRouter ();
 }
 
