@@ -107,8 +107,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameOpts->demo.bOldFormat)
 	return;
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
-if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
-	 (extraGameInfo [IsMultiGame].bTargetIndicators < 2)) {
+if (EGI_FLAG (bDamageIndicators, 0, 1, 0) && (extraGameInfo [IsMultiGame].bTargetIndicators < 2)) {
 	bStencil = ogl.StencilOff ();
 	pc = ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
@@ -131,6 +130,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	alphaScale *= alphaScale;
 	glColor4f (pc->Red (), pc->Green (), pc->Blue (), alphaScale * 2.0f / 3.0f);
 	ogl.SetTexturing (false);
+	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	OglDrawArrays (GL_QUADS, 0, 4);
@@ -141,6 +141,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	OglDrawArrays (GL_LINE_LOOP, 0, 4);
 	ogl.DisableClientState (GL_VERTEX_ARRAY);
+	ogl.SetDepthMode (GL_LEQUAL);
 	ogl.StencilOn (bStencil);
 	}
 }
@@ -164,7 +165,7 @@ void RenderMslLockIndicator (CObject *objP)
 	CFixVector			vPos;
 	CFloatVector		fPos, fVerts [3];
 	float					r, r2;
-	int					nTgtInd, bHasDmg, bVertexArrays, bMarker = (objP->info.nType == OBJ_MARKER);
+	int					nTgtInd, bHasDmg, bMarker = (objP->info.nType == OBJ_MARKER);
 
 if (bMarker) {
 	if (objP != markerManager.SpawnObject (-1))
@@ -195,8 +196,9 @@ r2 = r / 4;
 
 ogl.SetFaceCulling (false);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
-bVertexArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
+ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 ogl.SelectTMU (GL_TEXTURE0);
+ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetTexturing (false);
 glColor4fv (reinterpret_cast<GLfloat*> (trackGoalColor + bMarker));
 if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
@@ -230,8 +232,7 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 	fVerts [0].v.coord.y =
 	fVerts [1].v.coord.y = +r;
 	fVerts [2].v.coord.y = +r - r2;
-	if (bVertexArrays)
-		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), rotVerts);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), rotVerts);
 	for (j = 0; j < 4; j++) {
 		for (i = 0; i < 3; i++) {
 			rotVerts [i] = mRot * fVerts [i];
@@ -240,8 +241,7 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 			}
 		if (bMarker)
 			glLineWidth (2);
-		if (bVertexArrays)
-			OglDrawArrays (bMarker ? GL_LINE_LOOP : GL_TRIANGLES, 0, 3);
+		OglDrawArrays (bMarker ? GL_LINE_LOOP : GL_TRIANGLES, 0, 3);
 #if GL_FALLBACK
 		else {
 			glBegin (bMarker ? GL_LINE_LOOP : GL_TRIANGLES);
@@ -298,6 +298,7 @@ else {
 	OglDrawArrays (GL_TRIANGLES, 0, 3);
 	}
 ogl.DisableClientState (GL_VERTEX_ARRAY);
+ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetFaceCulling (true);
 }
 
@@ -308,7 +309,7 @@ void RenderTargetIndicator (CObject *objP, CFloatVector3 *pc)
 	CFixVector		vPos;
 	CFloatVector	fPos, fVerts [4];
 	float				r, r2, r3;
-	int				bStencil, bDrawArrays, nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1;
+	int				bStencil, nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -340,6 +341,7 @@ if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (objP->Damage () >= 1.0f))
 
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	bStencil = ogl.StencilOff ();
+	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetTexturing (false);
 	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) &&
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ?
@@ -363,30 +365,12 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [1].v.coord.z =
 		fVerts [2].v.coord.z =
 		fVerts [3].v.coord.z = fPos.v.coord.z;
-		if ((bDrawArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0)))
-			OglDrawArrays (GL_LINE_STRIP, 0, 4);
-#if GL_FALLBACK
-		else {
-			glBegin (GL_LINE_STRIP);
-			for (i = 0; i < 4; i++)
-				glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
-			glEnd ();
-			}
-#endif
+		ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
+		OglDrawArrays (GL_LINE_STRIP, 0, 4);
 		fVerts [0].v.coord.x = fVerts [3].v.coord.x = fPos.v.coord.x + r2;
 		fVerts [1].v.coord.x = fVerts [2].v.coord.x = fPos.v.coord.x + r;
-		if (bDrawArrays) {
-			OglDrawArrays (GL_LINE_STRIP, 0, 4);
-			ogl.DisableClientState (GL_VERTEX_ARRAY);
-			}
-#if GL_FALLBACK
-		else {
-			glBegin (GL_LINE_STRIP);
-			for (int i = 0; i < 4; i++)
-				glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
-			glEnd ();
-			}
-#endif
+		OglDrawArrays (GL_LINE_STRIP, 0, 4);
+		ogl.DisableClientState (GL_VERTEX_ARRAY);
 		}
 	else {	//triangle
 		r2 = r / 3;
@@ -398,17 +382,8 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [0].v.coord.z =
 		fVerts [1].v.coord.z =
 		fVerts [2].v.coord.z = fPos.v.coord.z;
-		if ((bDrawArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0)))
-			OglDrawArrays (GL_LINE_LOOP, 0, 3);
-#if GL_FALLBACK
-		else {
-			glBegin (GL_LINE_LOOP);
-			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts));
-			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + 1));
-			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + 2));
-			glEnd ();
-			}
-#endif
+		ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
+		OglDrawArrays (GL_LINE_LOOP, 0, 3);
 		if (EGI_FLAG (bDamageIndicators, 0, 1, 0)) {
 			r3 = objP->Damage ();
 			if (r3 < 1.0f) {
@@ -422,19 +397,10 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 				}
 			}
 		glColor4f (pc->Red (), pc->Green (), pc->Blue (), alphaScale * 2.0f / 3.0f);
-		if (bDrawArrays) {
-			OglDrawArrays (GL_TRIANGLES, 0, 3);
-			ogl.DisableClientState (GL_VERTEX_ARRAY);
-			}
-#if GL_FALLBACK
-		else {
-			glBegin (GL_TRIANGLES);
-			for (i = 0; i < 3; i++)
-			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
-			glEnd ();
-			}
-#endif
+		OglDrawArrays (GL_TRIANGLES, 0, 3);
+		ogl.DisableClientState (GL_VERTEX_ARRAY);
 		}
+	ogl.SetDepthMode (GL_LEQUAL);
 	ogl.StencilOn (bStencil);
 	}
 RenderDamageIndicator (objP, pc);
