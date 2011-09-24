@@ -336,7 +336,7 @@ if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel1 =
 	nModels1 = 0;
 	iModel2 =
-	nModels2 = 1;
+	nModels2 = 0;
 	}
 else {
 	iModel1 =

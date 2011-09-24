@@ -1082,6 +1082,8 @@ if (nType == 255) {
 	objP->Die ();
 	return 0;
 	}
+if ((nType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
+	return 0;
 if ((gameStates.render.nShadowPass != 2) &&
 	 (objP == gameData.objs.guidedMissile [N_LOCALPLAYER].objP) &&
 	 (objP->info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature)) {

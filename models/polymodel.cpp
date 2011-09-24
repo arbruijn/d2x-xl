@@ -640,7 +640,7 @@ for (i = 0; i < MAX_SUBMODELS; i++)
 	cf.ReadVector (m_info.subModels.maxs [i]);
 cf.ReadVector (m_info.mins);
 cf.ReadVector (m_info.maxs);
-m_info.rad [1] = cf.ReadFix ();
+SetRad (cf.ReadFix (), 1);
 m_info.nTextures = cf.ReadByte ();
 m_info.nFirstTexture = cf.ReadShort ();
 m_info.nSimplerModel = cf.ReadByte ();

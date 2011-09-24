@@ -1091,11 +1091,11 @@ class CObject : public CObjectInfo {
 
 		inline void SetSize (fix xSize) { info.xSize = xSize; }
 		inline void SetSizeFromModel (int i = 0, fix scale = 0) { 
-			fix size = ModelSize (i);
+			fix size = ModelRadius (i);
 			SetSize (scale ? FixDiv (size, scale) : size); 
 			}
 		inline void SetSizeFromPowerup (void) { SetSize (PowerupSize ()); }
-		fix ModelSize (int i);
+		fix ModelRadius (int i);
 		fix PowerupSize (void);
 
 		inline bool Synchronize (void) { return m_bSynchronize; }

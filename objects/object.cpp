@@ -1676,9 +1676,9 @@ return objPos->vPos + objPos->mOrient.m.dir.f * info.xSize;
 
 //------------------------------------------------------------------------------
 
-fix CObject::ModelSize (int i)
+fix CObject::ModelRadius (int i)
 {
-return (fix) ((info.renderType == RT_POLYOBJ) ? gameData.models.polyModels [0][ModelId ()].Rad (i) : 0);
+return (fix) ((info.renderType == RT_POLYOBJ) ? gameData.models.polyModels [0][ModelId ()].Rad (i) : info.xSize);
 }
 
 //------------------------------------------------------------------------------

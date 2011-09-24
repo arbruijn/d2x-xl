@@ -355,8 +355,10 @@ else {		// Note link to above if!!!
 
 void InitAmmoAndEnergy (void)
 {
-LOCALPLAYER.ResetEnergy (gameStates.gameplay.InitialEnergy ());
-LOCALPLAYER.ResetShield (gameStates.gameplay.InitialShield ());
+if (LOCALPLAYER.Energy (false) < gameStates.gameplay.InitialEnergy ())
+	LOCALPLAYER.ResetEnergy (gameStates.gameplay.InitialEnergy ());
+if (LOCALPLAYER.Shield (false) < gameStates.gameplay.InitialEnergy ())
+	LOCALPLAYER.ResetShield (gameStates.gameplay.InitialShield ());
 if (LOCALPLAYER.primaryWeaponFlags & (1 << OMEGA_INDEX))
 	SetMaxOmegaCharge ();
 if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)

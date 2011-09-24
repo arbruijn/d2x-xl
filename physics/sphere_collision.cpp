@@ -565,17 +565,17 @@ else
 if ((CollisionModel () || thisObjP->IsStatic () || otherObjP->IsStatic ()) &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
+#if 1 //DBG
 	FindPointLineIntersection (vHit, *p0, *p1, vPos, 0);
-#if 0 //!DBG
 	dist = VmLinePointDist (*p0, *p1, OBJPOS (thisObjP)->vPos);
-	if (dist > thisObjP->info.xSize + otherObjP->info.xSize + I2X (2))
+	if (dist > thisObjP->ModelRadius (0) + otherObjP->ModelRadius (0))
 		return 0;
 #endif
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
 #if 1
 		dist = CheckHitboxCollision (vHit, vNormal, otherObjP, thisObjP, p0, p1, nModel);
-		if ((dist == 0x7fffffff) || (dist > thisObjP->info.xSize))
+		if ((dist == 0x7fffffff) /*|| (dist > thisObjP->info.xSize)*/)
 			return 0;
 #else
 		// check whether one object is stuck inside the other
