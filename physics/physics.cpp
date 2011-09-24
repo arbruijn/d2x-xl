@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //Global variables for physics system
 
-#define UNSTICK_OBJS		1
+#define UNSTICK_OBJS		2
 
 #define ROLL_RATE 		0x2000
 #define DAMP_ANG 			0x400                  //min angle to bank
@@ -279,8 +279,29 @@ if (segP->m_function == SEGMENT_FUNC_CONTROLCEN)
 
 int CObject::Bounce (CHitResult hitResult, float fOffs, fix *pxSideDists)
 {
+#if 1
+	CFloatVector3 pos;
+	pos.Assign (Position ());
+	float intrusion = X2F (ModelRadius (0)) - DistToFace (pos, hitResult.nSideSegment, (ubyte) hitResult.nSide);
+	if (intrusion < 0)
+		return 0;
+#if 0 // slow down
+	if (intrusion > 1.0f)
+		intrusion = 1.0f;
+#endif
+	Position () += hitResult.vNormal * F2X (intrusion);
+	short nSegment = FindSegByPos (Position (), info.nSegment, 1, 0);
+	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments)) {
+		Position () = info.vLastPos;
+		nSegment = FindSegByPos (Position (), info.nSegment, 1, 0);
+		}
+	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments) || (nSegment == info.nSegment))
+		return 0;
+	RelinkToSeg (nSegment);
+	return 1;
+
+#else
 	fix	xSideDist, xSideDists [6];
-	short	nSegment;
 
 if (!pxSideDists) {
 	SEGMENTS [hitResult.nSideSegment].GetSideDists (info.position.vPos, xSideDists, 1);
@@ -294,7 +315,7 @@ if (xSideDist < info.xSize - info.xSize / 100) {
 	info.position.vPos.v.coord.x += (fix) ((float) hitResult.vNormal.v.coord.x * fOffs);
 	info.position.vPos.v.coord.y += (fix) ((float) hitResult.vNormal.v.coord.y * fOffs);
 	info.position.vPos.v.coord.z += (fix) ((float) hitResult.vNormal.v.coord.z * fOffs);
-	nSegment = FindSegByPos (info.position.vPos, info.nSegment, 1, 0);
+	short nSegment = FindSegByPos (info.position.vPos, info.nSegment, 1, 0);
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments)) {
 		info.position.vPos = info.vLastPos;
 		nSegment = FindSegByPos (info.position.vPos, info.nSegment, 1, 0);
@@ -304,6 +325,7 @@ if (xSideDist < info.xSize - info.xSize / 100) {
 	RelinkToSeg (nSegment);
 	return 1;
 	}
+#endif
 return 0;
 }
 
@@ -311,16 +333,18 @@ return 0;
 
 void CObject::Unstick (void)
 {
-if ((info.nType == OBJ_PLAYER) &&
-	 (info.nId == N_LOCALPLAYER) &&
-	 (gameStates.app.cheats.bPhysics == 0xBADA55))
-	return;
-if (info.nType == OBJ_WEAPON) 
-	return;
+if (info.nType == OBJ_PLAYER) {
+	if ((info.nId == N_LOCALPLAYER) && (gameStates.app.cheats.bPhysics == 0xBADA55))
+		return;
+	}
+else {
 #if UNSTICK_OBJS < 2
-if (info.nType != OBJ_MONSTERBALL)
-	return;
+	if (info.nType != OBJ_MONSTERBALL)
+		return;
 #endif
+	if (info.nType != OBJ_ROBOT)
+		return;
+	}
 CHitQuery hitQuery (0, &info.position.vPos, &info.position.vPos, info.nSegment, Index (), 0, info.xSize);
 CHitResult hitResult;
 int fviResult = FindHitpoint (hitQuery, hitResult);
@@ -980,6 +1004,8 @@ if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
 simData.nTries = 0;
 ++gameData.physics.bIgnoreObjFlag;
 
+bool bUnstick = false;
+
 for (;;) {	//Move the object
 	if (!simData.bUpdateOffset)
 		simData.bUpdateOffset = 1;
@@ -1028,8 +1054,10 @@ for (;;) {	//Move the object
 	if (!ProcessOffset (simData))
 		return;
 	int bRetry = 0;
-	if (simData.hitResult.nType == HIT_WALL)
+	if (simData.hitResult.nType == HIT_WALL) {
 		bRetry = ProcessWallCollision (simData);
+		bUnstick = true;
+		}
 	else if (simData.hitResult.nType == HIT_OBJECT) 
 		bRetry = ProcessObjectCollision (simData);
 	if (bRetry < 0)
@@ -1041,8 +1069,9 @@ for (;;) {	//Move the object
 FixPosition (simData);
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
-#if 0 //UNSTICK_OBJS
-Unstick ();
+#if UNSTICK_OBJS
+if (bUnstick)
+	Unstick ();
 #endif
 }
 
@@ -1574,7 +1603,7 @@ retryMove:
 			Die ();
 		else
 			ScrapeOnWall (hitResult.nSideSegment, hitResult.nSide, hitResult.vPoint);
-#if UNSTICK_OBJS == 2
+#if UNSTICK_OBJS == 3
 		fix	xSideDists [6];
 		SEGMENTS [hitResult.nSideSegment].GetSideDists (&info.position.vPos, xSideDists);
 		bRetry = BounceObject (this, hitResult, 0.1f, xSideDists);

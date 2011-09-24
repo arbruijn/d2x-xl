@@ -283,6 +283,7 @@ switch (info.controlType) {
 			mType.physInfo.velocity.SetZero ();
 			mType.physInfo.thrust.SetZero ();
 			mType.physInfo.rotThrust.SetZero ();
+			Unstick ();
 			DoAnyRobotDyingFrame (this);
 #if 1//!DBG
 			return 1;
