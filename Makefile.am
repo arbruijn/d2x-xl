@@ -50,6 +50,7 @@ d2x_LDADD = \
 	render/librender.a \
 	lighting/liblighting.a \
 	menus/libmenus.a \
+	cockpit/libcockpit.a \
 	weapons/libweapons.a \
 	2d/lib2d.a \
 	3d/lib3d.a \
