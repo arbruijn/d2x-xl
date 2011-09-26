@@ -52,7 +52,7 @@ class CFixVector2 {
 	public:
 		fix x, y;
 
-	inline fix Cross (CFixVector2& other) { return FixMul (x, other.y) - FixMul (y, other.x); }
+	inline fix Cross (CFixVector2& other) { return fix (double (x) / 65536.0 * double (other.y) - double (y) / 65536.0 * double (other.x)); }
 	};
 
 //	-----------------------------------------------------------------------------
@@ -61,7 +61,13 @@ class CFloatVector2 {
 	public:
 		float x, y;
 
+	CFloatVector2 (fix x = 0, fix y = 0) : x (X2F (x)), y (X2F (y)) {}
 	inline float Cross (CFloatVector2& other) { return x * other.y - y * other.x; }
+	inline CFloatVector2& operator-= (CFloatVector2& other) { 
+		x -= other.x;
+		y -= other.y;
+		return *this;
+		}
 	};
 
 //	-----------------------------------------------------------------------------

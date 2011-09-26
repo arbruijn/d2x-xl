@@ -917,9 +917,7 @@ void CSide::HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iF
 	CFixVector*		vPoints;
 	CFixVector		vNormal;
 	int				projPlane, ii, jj;
- 	CFixVector2		vRef, vec0, vec1, vHit;
 	tUVL				uvls [3];
-	fix				k0, k1;
 	int				h;
 
 if (iFace >= m_nFaces) {
@@ -930,56 +928,48 @@ if (iFace >= m_nFaces) {
 //now the hard work.
 //1. find what plane to project this CWall onto to make it a 2d case
 vNormal = m_normals [iFace];
+#if 0
 projPlane = 0;
 if (abs (vNormal.v.coord.y) > abs (vNormal.v.vec [projPlane]))
 	projPlane = 1;
 if (abs (vNormal.v.coord.z) > abs (vNormal.v.vec [projPlane]))
 	projPlane = 2;
+#else
+if (vNormal.v.coord.x > vNormal.v.coord.y)
+   projPlane = (vNormal.v.coord.x > vNormal.v.coord.z) ? 0 : 2;
+else 
+   projPlane = (vNormal.v.coord.y > vNormal.v.coord.z) ? 1 : 2;
+#endif
 ii = (projPlane == 0);
 jj = (projPlane == 2) ? 1 : 2;
 //2. compute u, v of intersection refP
 //vec from 1 -> 0
 h = iFace * 3;
 vPoints = VERTICES + m_vertices [h+1];
-vRef.x = vPoints->v.vec [ii];
-vRef.y = vPoints->v.vec [jj];
-
+CFloatVector2 vRef (vPoints->v.vec [ii], vPoints->v.vec [jj]);
 vPoints = VERTICES + m_vertices [h];
-vec0.x = vPoints->v.vec [ii] - vRef.x;
-vec0.y = vPoints->v.vec [jj] - vRef.y;
-
-//vec from 1 -> 2
+CFloatVector2 vec0 (vPoints->v.vec [ii], vPoints->v.vec [jj]);
 vPoints = VERTICES + m_vertices [h+2];
-vec1.x = vPoints->v.vec [ii] - vRef.x;
-vec1.y = vPoints->v.vec [jj] - vRef.y;
-
+CFloatVector2 vec1 (vPoints->v.vec [ii], vPoints->v.vec [jj]);
+vec0 -= vRef;
+vec1 -= vRef;
 //vec from 1 -> checkPoint
-//vPoints = reinterpret_cast<CFixVector*> (refP);
-vHit.x = intersection.v.vec [ii];
-vHit.y = intersection.v.vec [jj];
-
-#if 1 // the MSVC 9 optimizer doesn't seem to like the code in the else branch ...
-//ii = Cross2D (vHit, vec0) + Cross2D (vec0, vRef);
-//jj = Cross2D (vec0, vec1);
-ii = vHit.Cross (vec0) + vec0.Cross (vRef);
-jj = vec0.Cross (vec1);
-k1 = -FixDiv (ii, jj);
-#else
-k1 = -FixDiv (vRef.Cross (vec0) + vec0.Cross (vRef), vec0.Cross (vec0));
-#endif
-if (abs (vec0.x) > abs (vec0.y))
-	k0 = FixDiv (FixMul (-k1, vec1.x) + vHit.x - vRef.x, vec0.x);
-else
-	k0 = FixDiv (FixMul (-k1, vec1.y) + vHit.y - vRef.y, vec0.y);
+CFloatVector2 vHit (intersection.v.vec [ii], intersection.v.vec [jj]);
+float k1 = -(vHit.Cross (vec0) + vec0.Cross (vRef)) / vec0.Cross (vec1);
+float k0 = (fabs (vec0.x) > abs (vec0.y))
+			  ? (-k1 * vec1.x + vHit.x - vRef.x) / vec0.x
+			  : (-k1 * vec1.y + vHit.y - vRef.y) / vec0.y;
 uvls [0] = m_uvls [m_faceVerts [h]];
 uvls [1] = m_uvls [m_faceVerts [h+1]];
 uvls [2] = m_uvls [m_faceVerts [h+2]];
-if (0 > (*u = uvls [1].u + FixMul (k0, uvls [0].u - uvls [1].u) + FixMul (k1, uvls [2].u - uvls [1].u)))
+*u = uvls [1].u + fix (k0 * (uvls [0].u - uvls [1].u) + k1 * (uvls [2].u - uvls [1].u));
+*v = uvls [1].v + fix (k0 * (uvls [0].v - uvls [1].v) + k1 * (uvls [2].v - uvls [1].v));
+if (0 > *u)
 	*u += I2X (1);
-if (0 > (*v = uvls [1].v + FixMul (k0, uvls [0].v - uvls [1].v) + FixMul (k1, uvls [2].v - uvls [1].v)))
+if (0 > *v)
 	*v += I2X (1);
 if (l)
-	*l = uvls [1].l + FixMul (k0, uvls [0].l - uvls [1].l) + FixMul (k1, uvls [2].l - uvls [1].l);
+	*l = uvls [1].l + fix (k0 * (uvls [0].l - uvls [1].l) + k1 * (uvls [2].l - uvls [1].l));
 }
 
 //------------------------------------------------------------------------------
