@@ -928,7 +928,7 @@ if (iFace >= m_nFaces) {
 //now the hard work.
 //1. find what plane to project this CWall onto to make it a 2d case
 vNormal = m_normals [iFace];
-#if 0
+#if 1
 projPlane = 0;
 if (abs (vNormal.v.coord.y) > abs (vNormal.v.vec [projPlane]))
 	projPlane = 1;
@@ -955,19 +955,23 @@ vec0 -= vRef;
 vec1 -= vRef;
 //vec from 1 -> checkPoint
 CFloatVector2 vHit (intersection.v.vec [ii], intersection.v.vec [jj]);
-float k1 = -(vHit.Cross (vec0) + vec0.Cross (vRef)) / vec0.Cross (vec1);
+float k1 = (vHit.Cross (vec0) + vec0.Cross (vRef)) / vec0.Cross (vec1);
 float k0 = (fabs (vec0.x) > fabs (vec0.y))
-			  ? (-k1 * vec1.x + vHit.x - vRef.x) / vec0.x
-			  : (-k1 * vec1.y + vHit.y - vRef.y) / vec0.y;
+			  ? (k1 * vec1.x + vHit.x - vRef.x) / vec0.x
+			  : (k1 * vec1.y + vHit.y - vRef.y) / vec0.y;
 uvls [0] = m_uvls [m_faceVerts [h]];
 uvls [1] = m_uvls [m_faceVerts [h+1]];
 uvls [2] = m_uvls [m_faceVerts [h+2]];
-*u = uvls [1].u + fix (k0 * (uvls [0].u - uvls [1].u) + k1 * (uvls [2].u - uvls [1].u));
-*v = uvls [1].v + fix (k0 * (uvls [0].v - uvls [1].v) + k1 * (uvls [2].v - uvls [1].v));
+*u = uvls [1].u + fix (k0 * (uvls [0].u - uvls [1].u) - k1 * (uvls [2].u - uvls [1].u));
+*v = uvls [1].v + fix (k0 * (uvls [0].v - uvls [1].v) - k1 * (uvls [2].v - uvls [1].v));
 if (0 > *u)
-	*u += I2X (1);
+	*u = I2X (1) - (-*u) % I2X (1);
+else
+	*u %= I2X (1);
 if (0 > *v)
-	*v += I2X (1);
+	*v = I2X (1) - (-*v) % I2X (1);
+else
+	*v %= I2X (1);
 if (l)
 	*l = uvls [1].l + fix (k0 * (uvls [0].l - uvls [1].l) + k1 * (uvls [2].l - uvls [1].l));
 }
