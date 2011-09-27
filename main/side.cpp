@@ -928,18 +928,11 @@ if (iFace >= m_nFaces) {
 //now the hard work.
 //1. find what plane to project this CWall onto to make it a 2d case
 vNormal = m_normals [iFace];
-#if 1
 projPlane = 0;
 if (abs (vNormal.v.coord.y) > abs (vNormal.v.vec [projPlane]))
 	projPlane = 1;
 if (abs (vNormal.v.coord.z) > abs (vNormal.v.vec [projPlane]))
 	projPlane = 2;
-#else
-if (vNormal.v.coord.x > vNormal.v.coord.y)
-   projPlane = (vNormal.v.coord.x > vNormal.v.coord.z) ? 0 : 2;
-else 
-   projPlane = (vNormal.v.coord.y > vNormal.v.coord.z) ? 1 : 2;
-#endif
 ii = (projPlane == 0);
 jj = (projPlane == 2) ? 1 : 2;
 //2. compute u, v of intersection refP
