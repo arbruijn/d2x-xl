@@ -956,7 +956,7 @@ vec1 -= vRef;
 //vec from 1 -> checkPoint
 CFloatVector2 vHit (intersection.v.vec [ii], intersection.v.vec [jj]);
 float k1 = -(vHit.Cross (vec0) + vec0.Cross (vRef)) / vec0.Cross (vec1);
-float k0 = (fabs (vec0.x) > abs (vec0.y))
+float k0 = (fabs (vec0.x) > fabs (vec0.y))
 			  ? (-k1 * vec1.x + vHit.x - vRef.x) / vec0.x
 			  : (-k1 * vec1.y + vHit.y - vRef.y) / vec0.y;
 uvls [0] = m_uvls [m_faceVerts [h]];
