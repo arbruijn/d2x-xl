@@ -130,7 +130,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) && (extraGameInfo [IsMultiGame].bTarge
 	alphaScale *= alphaScale;
 	glColor4f (pc->Red (), pc->Green (), pc->Blue (), alphaScale * 2.0f / 3.0f);
 	ogl.SetTexturing (false);
-	if (extraGameInfo [IsMultiGame].bHideIndicators)
+	if (!extraGameInfo [IsMultiGame].bHideIndicators)
 		ogl.SetDepthMode (GL_ALWAYS);
 	ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
@@ -199,7 +199,7 @@ ogl.SetFaceCulling (false);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
 ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 ogl.SelectTMU (GL_TEXTURE0);
-if (extraGameInfo [IsMultiGame].bHideIndicators)
+if (!extraGameInfo [IsMultiGame].bHideIndicators)
 	ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetTexturing (false);
 glColor4fv (reinterpret_cast<GLfloat*> (trackGoalColor + bMarker));
@@ -343,7 +343,7 @@ if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (objP->Damage () >= 1.0f))
 
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	bStencil = ogl.StencilOff ();
-	if (extraGameInfo [IsMultiGame].bHideIndicators)
+	if (!extraGameInfo [IsMultiGame].bHideIndicators)
 		ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetTexturing (false);
 	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) &&
