@@ -415,6 +415,7 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bHUD, "show hud");
 	GET_VAL (gameOpts->render.cockpit.bMissileView, "missile view");
 	GET_VAL (gameOpts->render.cockpit.bObjectTally, "object tally");
+	GET_VAL (extraGameInfo [0].bHideIndicators, "hide target indicators");
 	//GET_VAL (extraGameInfo [0].bTargetIndicators, "target indicators");
 	gameOpts->render.cockpit.bTextGauges = !m.Value ("text gauges");
 	gameOpts->render.cockpit.nWindowPos = nWindowPos * 3 + nWindowAlign;
