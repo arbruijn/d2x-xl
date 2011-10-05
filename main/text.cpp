@@ -1946,7 +1946,7 @@ const char *defaultGameTexts [][2] = {
  {"mehrfarbig", "multi color"},
  {"~Helligkeit: %s", "~Brightness: %s"},
  {"Gespeicherte Spiele loeschen", "Delete saved games"},
- {"Zielmarkierungen hinter %Hindernissen verbergen", "%Hide target indicators behind obstacles"},
+ {"hinter ~Hindernissen verbergen", "~Hide behind obstacles"},
 #if 0
  {"", ""},
 #endif
