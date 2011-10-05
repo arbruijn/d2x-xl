@@ -55,6 +55,8 @@ class CBackground {
 		void DrawBox (void);
 
 		inline CCanvas* Canvas (uint i = 0) { return m_canvas [i]; }
+		inline CBitmap* Bitmap (void) { return m_background; }
+		inline void SetBitmap (CBitmap* bmP) { m_background = bmP; }
 		inline CBitmap* Background (void) { return m_saved [0]; }
 		inline CBitmap* Saved (int i) { return m_saved [i]; }
 		inline void GetExtent (int& x, int& y, int& w, int& h) { 
@@ -94,6 +96,7 @@ class CBackgroundManager : public CStack<CBackground> {
 
 		CBitmap* LoadBackground (char* filename);
 		bool IsDefault (char* filename);
+		bool IsDefault (CBitmap* background);
 
 		inline char* Filename (uint i = 0) { return m_filename [i]; }
 		inline CBitmap* Background (uint i = 0) { return m_background [i]; }

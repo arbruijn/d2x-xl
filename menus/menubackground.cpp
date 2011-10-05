@@ -134,9 +134,7 @@ gameStates.app.bClearMessage = 0;
 
 void CBackground::Destroy (void)
 {
-if (m_background &&
-	 (m_background != backgroundManager.Background (0)) &&
-	 (m_background != backgroundManager.Background (1)))
+if (!backgroundManager.IsDefault (m_background))
 	delete m_background;
 if (m_saved [0]) {
 	delete m_saved [0];
@@ -365,6 +363,15 @@ m_bValid = false;
 
 //------------------------------------------------------------------------------
 
+bool CBackgroundManager::IsDefault (CBitmap* background)
+{
+return !background || 
+		 (background == backgroundManager.Background (0)) ||
+		 (background == backgroundManager.Background (1));
+}
+
+//------------------------------------------------------------------------------
+
 void CBackgroundManager::Destroy (void)
 {
 while (m_nDepth >= 0) {
@@ -372,9 +379,9 @@ while (m_nDepth >= 0) {
 		m_bg [m_nDepth].Destroy ();
 	m_nDepth--;
 	}
-if (m_background [1] && (m_background [1] != m_background [0]))
+if (!IsDefault (m_background [1]) && (m_background [1] != m_background [0]))
 	m_background [1]->Destroy ();
-if (m_background [0])
+if (!IsDefault (m_background [0]))
 	m_background [0]->Destroy ();
 Init ();
 }
