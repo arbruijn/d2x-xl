@@ -2090,7 +2090,7 @@ gameOptions [0].render.cockpit.bHUDMsgs = 1;
 gameOptions [0].render.cockpit.bSplitHUDMsgs = 1;
 gameOptions [0].render.cockpit.bWideDisplays = 1;
 
-extraGameInfo [0].bDamageIndicators = extraGameInfo [0].bTargetIndicators;
+extraGameInfo [0].bDamageIndicators = abs (extraGameInfo [0].bTargetIndicators);
 extraGameInfo [0].bTagOnlyHitObjs = 1;
 //extraGameInfo [0].bMslLockIndicators = 1;
 gameOptions [0].render.cockpit.bRotateMslLockInd = 1;

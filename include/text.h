@@ -1982,10 +1982,10 @@ void LoadGameTexts(void);
 #define TXT_MULTICOLOR					GT(1198)
 #define TXT_BRIGHTNESS					GT(1199)
 #define TXT_DELETE_SAVEGAMES			GT(1200)
+#define TXT_HIDE_TGTIND					GT(1201)
 
 #if 0
 
-#define TXT_					GT(1201)
 #define TXT_					GT(1202)
 #define TXT_					GT(1203)
 #define TXT_					GT(1204)
@@ -2632,11 +2632,10 @@ void LoadGameTexts(void);
 #define HTX_CPIT_RADARRANGE			HT(426)
 #define HTX_CPIT_RADARCOLOR			HT(427)
 #define HTX_CPIT_RADARSTYLE			HT(428)
+#define HTX_HIDE_TGTIND					HT(429)
 
 #if 0
 
-#define HTX_						HT(428)
-#define HTX_						HT(429)
 #define HTX_						HT(430)
 #define HTX_						HT(431)
 #define HTX_						HT(432)

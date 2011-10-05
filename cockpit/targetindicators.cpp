@@ -107,7 +107,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameOpts->demo.bOldFormat)
 	return;
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
-if (EGI_FLAG (bDamageIndicators, 0, 1, 0) && (extraGameInfo [IsMultiGame].bTargetIndicators < 2)) {
+if (EGI_FLAG (bDamageIndicators, 0, 1, 0) && (abs (extraGameInfo [IsMultiGame].bTargetIndicators) < 2)) {
 	bStencil = ogl.StencilOff ();
 	pc = ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
@@ -130,7 +130,8 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) && (extraGameInfo [IsMultiGame].bTarge
 	alphaScale *= alphaScale;
 	glColor4f (pc->Red (), pc->Green (), pc->Blue (), alphaScale * 2.0f / 3.0f);
 	ogl.SetTexturing (false);
-	ogl.SetDepthMode (GL_ALWAYS);
+	if (extraGameInfo [IsMultiGame].bTargetIndicators < 0)
+		ogl.SetDepthMode (GL_ALWAYS);
 	ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	OglDrawArrays (GL_QUADS, 0, 4);
@@ -198,7 +199,8 @@ ogl.SetFaceCulling (false);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
 ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 ogl.SelectTMU (GL_TEXTURE0);
-ogl.SetDepthMode (GL_ALWAYS);
+if (extraGameInfo [IsMultiGame].bTargetIndicators < 0)
+	ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetTexturing (false);
 glColor4fv (reinterpret_cast<GLfloat*> (trackGoalColor + bMarker));
 if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
@@ -271,7 +273,7 @@ else {
 	fVerts [1].v.coord.x = fPos.v.coord.x + r2;
 	fVerts [2].v.coord.x = fPos.v.coord.x;
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
-	nTgtInd = extraGameInfo [IsMultiGame].bTargetIndicators;
+	nTgtInd = abs (extraGameInfo [IsMultiGame].bTargetIndicators);
 	bHasDmg = !EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) | (objP->Damage () < 1);
 	if (!nTgtInd ||
 		 ((nTgtInd == 1) && (!EGI_FLAG (bDamageIndicators, 0, 1, 0) || !bHasDmg)) ||
@@ -341,10 +343,11 @@ if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (objP->Damage () >= 1.0f))
 
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	bStencil = ogl.StencilOff ();
-	ogl.SetDepthMode (GL_ALWAYS);
+	if (extraGameInfo [IsMultiGame].bTargetIndicators < 0)
+		ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetTexturing (false);
 	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) &&
-			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ?
+			!gameOpts->render.cockpit.bRotateMslLockInd && (abs (extraGameInfo [IsMultiGame].bTargetIndicators) != 1)) ?
 		  reinterpret_cast<CFloatVector3*> (&trackGoalColor [0]) : ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
 	fPos.Assign (vPos);
@@ -355,7 +358,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	glColor4f (pc->Red (), pc->Green (), pc->Blue (), alphaScale);
 	fVerts [0].v.coord.w = fVerts [1].v.coord.w = fVerts [2].v.coord.w = fVerts [3].v.coord.w = 1;
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
-	if (extraGameInfo [IsMultiGame].bTargetIndicators == 1) {	//square brackets
+	if (abs (extraGameInfo [IsMultiGame].bTargetIndicators) == 1) {	//square brackets
 		r2 = r * 2 / 3;
 		fVerts [0].v.coord.x = fVerts [3].v.coord.x = fPos.v.coord.x - r2;
 		fVerts [1].v.coord.x = fVerts [2].v.coord.x = fPos.v.coord.x - r;

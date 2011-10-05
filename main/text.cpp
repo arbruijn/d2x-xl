@@ -1946,6 +1946,7 @@ const char *defaultGameTexts [][2] = {
  {"mehrfarbig", "multi color"},
  {"~Helligkeit: %s", "~Brightness: %s"},
  {"Gespeicherte Spiele loeschen", "Delete saved games"},
+ {"Zielmarkierungen hinter %Hindernissen verbergen", "%Hide target indicators behind obstacles"},
 #if 0
  {"", ""},
 #endif
@@ -2669,6 +2670,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann die Reichweite des Radars eingestellt werden.", "Chose the RADAR's range here."},
  {"Hier kann die Farbe des Radars ausgewaehlt werden.", "Chose a color for the RADAR here."},
  {"Hier kann eingestellt werden, ob die gestrichelten Kreise um\ndas Radar ein- oder mehrfarbig sind.", "Chose monochrome or multi colored dashed circles around the\nRADAR here."},
+ {"Wenn angekreuzt, werden Zielmarkierungen von Hindernissen\nverborgen, die sich vor Ihnen befinden.", "If checked, target indicators are hidden behind obstacles\nin front of them"},
 #if 0
  {"", ""},
 #endif
