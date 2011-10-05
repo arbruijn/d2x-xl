@@ -160,7 +160,7 @@ Init ();
 CBitmap* CBackground::Load (char* filename, int width, int height)
 {
 m_filename = filename;
-if (!m_filename)
+if (!(m_filename && *m_filename))
 	return (gameOpts->menus.nStyle && !backgroundManager.IsDefault (backgroundManager.Filename ()))
 			 ? backgroundManager.Background (0)
 			 : backgroundManager.Background (1); //->CreateChild (0, 0, width, height);
@@ -379,9 +379,9 @@ while (m_nDepth >= 0) {
 		m_bg [m_nDepth].Destroy ();
 	m_nDepth--;
 	}
-if (!IsDefault (m_background [1]) && (m_background [1] != m_background [0]))
+if (m_background [1] && (m_background [1] != m_background [0]))
 	m_background [1]->Destroy ();
-if (!IsDefault (m_background [0]))
+if (m_background [0])
 	m_background [0]->Destroy ();
 Init ();
 }
