@@ -325,7 +325,6 @@ bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
 #endif
 
 nTgtInd = extraGameInfo [0].bMslLockIndicators ? extraGameInfo [0].bTargetIndicators ? 2 : 1 : 0;
-bHideTgtInd = (extraGameInfo [0].bTargetIndicators > 0);
 
 do {
 	m.Destroy ();
@@ -343,8 +342,8 @@ do {
 	m.AddText ("", "");
 	sprintf (szSlider, TXT_TARGET_INDICATORS, szTgtInd [nTgtInd]);
 	m.AddSlider ("target indicators", szSlider, nTgtInd, 0, 2, KEY_T, HTX_CPIT_TGTIND);
-	if (extraGameInfo [0].bTargetIndicators)
-		m.AddCheck ("hide target indicators", TXT_HIDE_TGTIND, bHideTgtInd, KEY_H, HTX_HIDE_TGTIND);
+	if (nTgtInd)
+		m.AddCheck ("hide target indicators", TXT_HIDE_TGTIND, extraGameInfo [0].bHideIndicators, KEY_H, HTX_HIDE_TGTIND);
 #endif
 #if WEAPON_ICONS
 	m.AddText ("", "");
@@ -438,8 +437,6 @@ do {
 
 extraGameInfo [0].bMslLockIndicators = (nTgtInd > 0);
 extraGameInfo [0].bTargetIndicators = (nTgtInd > 1);
-if (!bHideTgtInd)
-	extraGameInfo [0].bTargetIndicators = -extraGameInfo [0].bTargetIndicators;
 
 DefaultCockpitSettings ();
 }

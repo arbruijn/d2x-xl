@@ -650,6 +650,7 @@ for (i = 0; i < 2; i++) {
 	RP (extraGameInfo [i].bMouseLook, i, 0);
 	RP (extraGameInfo [i].bPowerupLights, i, 0);
 	RP (extraGameInfo [i].bTargetIndicators, i, 0);
+	RP (extraGameInfo [i].bHideIndicators, i, 0);
 	RP (extraGameInfo [i].bTowFlags, i, 0);
 	RP (extraGameInfo [i].bTeamDoors, i, 0);
 	RP (extraGameInfo [i].nCoopPenalty, i, 0);
@@ -1110,6 +1111,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[1].bMslLockIndicators", "1"},
 	 {"extraGameInfo[1].bTagOnlyHitObjs", "0"},
 	 {"extraGameInfo[1].bTargetIndicators", "1"},
+	 {"extraGameInfo[1].bHideIndicators", "1"},
 	 {"extraGameInfo[1].bTowFlags", "1"},
 	 {"extraGameInfo[1].bTeamDoors", "0"},
 	 {"extraGameInfo[1].nCoopPenalty", "1"},

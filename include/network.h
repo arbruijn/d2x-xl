@@ -238,6 +238,7 @@ typedef struct tExtraGameInfo {
 	char		bFriendlyIndicators;
 	char		bCloakedIndicators;
 	char		bMslLockIndicators;
+	char		bHideIndicators;
 	char		bTagOnlyHitObjs;
 	char		bTowFlags;
 	char		bUseHitAngles;
