@@ -496,6 +496,8 @@ int CSaveGameManager::Save (int bBetweenLevels, int bSecret, int bQuick, const c
 {
 if (gameStates.app.bReadOnly)
 	return 1;
+if (gameStates.app.bPlayerIsDead)
+	return 0;
 
 	int	rval,nSaveSlot = -1;
 
@@ -1137,6 +1139,9 @@ if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 
 int CSaveGameManager::Load (int bInGame, int bSecret, int bQuick, const char *pszFilenameOverride)
 {
+if (gameStates.app.bPlayerIsDead)
+	return 0;
+
 	int	i, nSaveSlot = -1;
 
 m_bInGame = bInGame;
