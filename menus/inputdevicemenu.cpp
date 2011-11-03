@@ -349,51 +349,54 @@ if (gameOpts->input.joystick.bUse != v) {
 if (gameStates.app.bNostalgia)
 	return nCurItem;
 
+if (!(gameStates.input.nJoysticks && gameOpts->input.joystick.bUse))
+	return nCurItem;
 
-if (gameStates.input.nJoysticks && gameOpts->input.joystick.bUse) {
-	if (gameOpts->app.bExpertMode && (m = menu ["sync axis"])) {
-		v = m->Value ();
-		if (gameOpts->input.joystick.bSyncAxis != v) {
-			gameOpts->input.joystick.bSyncAxis = v;
-			if (gameOpts->input.joystick.bSyncAxis)
-				for (i = 1; i < UNIQUE_JOY_AXES; i++) {
-					gameOpts->input.joystick.deadzones [i] = gameOpts->input.joystick.deadzones [0];
-					gameOpts->input.joystick.sensitivity [i] = gameOpts->input.joystick.sensitivity [0];
-					}
-			m->Rebuild ();
-			key = -2;
-			return nCurItem;
-			}
-		}
-	h = gameOpts->input.joystick.bSyncAxis ? 1 : UNIQUE_JOY_AXES;
-	j = menu.IndexOf ("sensitivity");
-	for (i = 0; i < h; i++) {
-		sprintf (szId, "axis %d:sensitivity", i + 1);
-		gameOpts->input.joystick.sensitivity [i] = menu.Value (szId);
-		}
-	for (i = h; i < UNIQUE_JOY_AXES; i++)
-		gameOpts->input.joystick.sensitivity [i] = gameOpts->input.joystick.sensitivity [0];
-
-	for (i = 0; i < h; i++) {
-		sprintf (szId, "axis %d:deadzone", i + 1);
-		if ((m = menu [szId])) {
-			v = nJoyDeadzones [m->Value ()];
-			if (gameOpts->input.joystick.deadzones [i] != v) {
-				gameOpts->input.joystick.deadzones [i] = v;
-				JoySetDeadzone (gameOpts->input.joystick.deadzones [i], i);
-				if (gameOpts->input.joystick.bSyncAxis)
-					sprintf (m->Text (), TXT_JOY_DEADZONE, gameOpts->input.joystick.deadzones [i]);
-				else
-					sprintf (m->Text (), TXT_JOY_DEADZONE_N, szJoyAxis [i], gameOpts->input.joystick.deadzones [i]);
-				m->Rebuild ();
+if (gameOpts->app.bExpertMode && (m = menu ["sync axis"])) {
+	v = m->Value ();
+	if (gameOpts->input.joystick.bSyncAxis != v) {
+		gameOpts->input.joystick.bSyncAxis = v;
+		if (gameOpts->input.joystick.bSyncAxis)
+			for (i = 1; i < UNIQUE_JOY_AXES; i++) {
+				gameOpts->input.joystick.deadzones [i] = gameOpts->input.joystick.deadzones [0];
+				gameOpts->input.joystick.sensitivity [i] = gameOpts->input.joystick.sensitivity [0];
 				}
-			}
-		}
-	for (i = h; i < UNIQUE_JOY_AXES; i++) {
-		gameOpts->input.joystick.deadzones [i] = gameOpts->input.joystick.deadzones [0];
-		JoySetDeadzone (gameOpts->input.joystick.deadzones [i], i);
+		m->Rebuild ();
+		key = -2;
+		return nCurItem;
 		}
 	}
+
+h = gameOpts->input.joystick.bSyncAxis ? 1 : UNIQUE_JOY_AXES;
+j = menu.IndexOf ("sensitivity");
+for (i = 0; i < h; i++) {
+	sprintf (szId, "axis %d:sensitivity", i + 1);
+	gameOpts->input.joystick.sensitivity [i] = menu.Value (szId);
+	}
+
+for (i = h; i < UNIQUE_JOY_AXES; i++)
+	gameOpts->input.joystick.sensitivity [i] = gameOpts->input.joystick.sensitivity [0];
+
+for (i = 0; i < h; i++) {
+	sprintf (szId, "axis %d:deadzone", i + 1);
+	if ((m = menu [szId])) {
+		v = nJoyDeadzones [m->Value ()];
+		if (gameOpts->input.joystick.deadzones [i] != v) {
+			gameOpts->input.joystick.deadzones [i] = v;
+			JoySetDeadzone (gameOpts->input.joystick.deadzones [i], i);
+			if (gameOpts->input.joystick.bSyncAxis)
+				sprintf (m->Text (), TXT_JOY_DEADZONE, gameOpts->input.joystick.deadzones [i]);
+			else
+				sprintf (m->Text (), TXT_JOY_DEADZONE_N, szJoyAxis [i], gameOpts->input.joystick.deadzones [i]);
+			m->Rebuild ();
+			}
+		}
+	}
+for (i = h; i < UNIQUE_JOY_AXES; i++) {
+	gameOpts->input.joystick.deadzones [i] = gameOpts->input.joystick.deadzones [0];
+	JoySetDeadzone (gameOpts->input.joystick.deadzones [i], i);
+	}
+
 return nCurItem;
 }
 
@@ -403,7 +406,6 @@ void JoystickConfigMenu (void)
 {
 	CMenu m;
 	int	h, i, j, choice = 0;
-	int	nCustJoyOpt, nJoyTypeOpt;
 	char	szJoySens [UNIQUE_JOY_AXES][50];
 	char	szJoyDeadzone [UNIQUE_JOY_AXES][50];
 
@@ -412,7 +414,6 @@ do {
 		m.Destroy ();
 		m.Create (20);
 
-		nCustJoyOpt = nJoyTypeOpt = -1;
 		controls.SetType ();
 		m.AddCheck ("use device", TXT_USE_JOY, gameOpts->input.joystick.bUse, KEY_J, HTX_CONF_USEJOY);
 		if (gameOpts->input.joystick.bUse || gameStates.app.bNostalgia) {
@@ -428,11 +429,11 @@ do {
 				AddAxisControls (m, "deadzone", &szJoyDeadzone [0][0], TXT_JOY_DEADZONE, TXT_JOY_DEADZONE_N, szJoyAxis, HTX_CONF_JOYDZONE, 
 									  UNIQUE_JOY_AXES, gameOpts->input.joystick.deadzones, 16, nJoyDeadzones, KEY_S, joyHotkeys, gameOpts->input.joystick.bSyncAxis);
 				m.AddText ("", "");
-				m.AddRadio ("standard joystick", TXT_STD_JOY, 0, 0, HTX_CONF_STDJOY);
+				i = m.AddRadio ("standard joystick", TXT_STD_JOY, 0, 0, HTX_CONF_STDJOY);
 				m.AddRadio ("fs pro", TXT_FSPRO_JOY, 0, 0, HTX_CONF_FSPRO);
 				m.AddRadio ("fcx", TXT_FCS_JOY, 0, 0, HTX_CONF_FCS);
 				m.AddRadio ("gravis", TXT_GRAVIS_JOY, 0, 0, HTX_CONF_GRAVIS);
-				m [nJoyTypeOpt + NMCLAMP (gameStates.input.nJoyType - CONTROL_JOYSTICK, 0, 3)].Value () = 1;
+				m [i + NMCLAMP (gameStates.input.nJoyType - CONTROL_JOYSTICK, 0, 3)].Value () = 1;
 				}
 			}
 		i = m.Menu (NULL, TXT_JOYSTICK_CONFIG, JoystickConfigCallback, &choice);
