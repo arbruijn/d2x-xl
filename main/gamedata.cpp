@@ -506,7 +506,7 @@ CREATE (faceVerts, LEVEL_FACES * 16, 0);
 CREATE (normals, LEVEL_TRIANGLES * 3 * 2, 0);
 CREATE (color, LEVEL_TRIANGLES * 3, 0);
 CREATE (texCoord, LEVEL_TRIANGLES * 2 * 2, 0);
-CREATE (ovlTexCoord, LEVEL_TRIANGLES * 2, 0);
+CREATE (ovlTexCoord, LEVEL_TRIANGLES * 2 * 2, 0);
 CREATE (lMapTexCoord, LEVEL_TRIANGLES * 2, 0);
 Init ();
 return true;

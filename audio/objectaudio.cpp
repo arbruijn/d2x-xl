@@ -152,7 +152,7 @@ if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
 if (!HaveRouter ())
 	 return uniDacsRouter [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 
-if (m_nListenerSeg != nListenerSeg) {
+if ((m_nListenerSeg != nListenerSeg) || (m_nListenerSeg != m_router.StartSeg ())) {
 	m_nListenerSeg = nListenerSeg;
 	m_router.PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, I2X (5 * 256 / 4), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
 	//for (i = 0; i < (uint) gameData.segs.nSegments; i++)
@@ -161,8 +161,10 @@ if (m_nListenerSeg != nListenerSeg) {
 
 
 fix pathDistance = m_router.Distance (nSoundSeg);
-if (pathDistance < 0)
+if (pathDistance < 0) {
+	m_nListenerSeg = -1;
 	return distance;
+	}
 
 short l = m_router.RouteLength (nSoundSeg);
 if (l < 3)

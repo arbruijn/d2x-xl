@@ -419,6 +419,9 @@ fix CDACSUniDirRouter::BuildPath (short nSegment)
 if (m_heap.Cost (nSegment) == 0xFFFFFFFF)
 	return -1;
 
+#if DBG
+rebuildRoute:
+#endif
 	int h = m_heap.BuildRoute (nSegment);
 
 if (m_nDestSeg >= 0)
@@ -439,6 +442,12 @@ for (int i = 0, j; i < h; i = j) {
 	// the center of segment route [i].nNode. That way, the distance calculation is corrected by using direct lines of sight between
 	// segments of the route that can "see" each other even if they aren't directly connected.
 	nStartSeg = route [i].nNode;
+	if ((nStartSeg < 0) || (nStartSeg >= gameData.segs.nSegments))
+#if DBG
+		goto rebuildRoute;
+#else
+		return -2;
+#endif
 	/*fq.*/p0 = &SEGMENTS [nStartSeg].Center ();
 	for (j = i + 1; j < h; j++) { 
 		nDestSeg = route [j].nNode;

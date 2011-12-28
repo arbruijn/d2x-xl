@@ -137,6 +137,9 @@ class CRouter {
 
 		virtual fix Distance (short nSegment) { return -1; }
 
+		inline int StartSeg (void) { return m_nStartSeg; }
+		inline int DestSeg (void) { return m_nDestSeg; }
+
 	protected:
 		int SetSegment (const short nSegment, const CFixVector& p);
 		virtual fix FindPath (void) { return -1; }
