@@ -1355,6 +1355,8 @@ if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
 gameData.reactor.bDestroyed = 0;
 cockpit->Init ();
 paletteManager.ResetEffect ();
+audio.Prepare ();
+audio.SetupRouter ();
 }
 
 //------------------------------------------------------------------------------
@@ -1853,6 +1855,8 @@ gameData.reactor.bDestroyed = 0;
 gameStates.render.glFOV = DEFAULT_FOV;
 SetScreenMode (SCREEN_GAME);
 cockpit->Init ();
+audio.Prepare ();
+audio.SetupRouter ();
 InitRobotsForLevel ();
 InitShakerDetonates ();
 MorphInit ();

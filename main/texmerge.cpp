@@ -85,6 +85,7 @@ void _CDECL_ TexMergeClose (void)
 {
 PrintLog (1, "shutting down merged textures cache\n");
 TexMergeFlush ();
+PrintLog (0, "deleting %d bitmaps\n", nCacheEntries);
 for (int i = 0; i < nCacheEntries; i++) {
 	if (texCache [i].bitmap) {
 		delete texCache [i].bitmap;

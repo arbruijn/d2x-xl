@@ -557,8 +557,6 @@ gameStates.app.nSDLTicks [1] =
 gameData.time.xGameStart = SDL_GetTicks ();
 gameData.physics.fLastTick = float (gameData.time.xGameStart);
 ogl.m_features.bShaders.Available (gameOpts->render.bUseShaders);
-audio.Prepare ();
-audio.SetupRouter ();
 }
 
 //------------------------------------------------------------------------------
