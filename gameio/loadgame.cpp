@@ -543,8 +543,6 @@ LOCALPLAYER.flags &= ~
 	 PLAYER_FLAGS_HEADLIGHT |
 	 PLAYER_FLAGS_HEADLIGHT_ON |
 	 PLAYER_FLAGS_FLAG);
-OBJECTS [N_LOCALPLAYER].ResetDamage ();
-AddPlayerLoadout (bRestore);
 gameData.physics.xAfterburnerCharge = (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) ? I2X (1) : 0;
 LOCALPLAYER.cloakTime = 0;
 LOCALPLAYER.invulnerableTime = 0;
@@ -552,7 +550,7 @@ gameStates.app.bPlayerIsDead = 0;		//player no longer dead
 LOCALPLAYER.homingObjectDist = -I2X (1); // Added by RH
 controls [0].afterburnerState = 0;
 gameStates.gameplay.bLastAfterburnerState = 0;
-audio.DestroyObjectSound (LOCALPLAYER.nObject);
+audio.DestroyObjectSound (N_LOCALPLAYER);
 gameData.objs.missileViewerP = NULL;		///reset missile camera if out there
 #ifdef TACTILE
 	if (TactileStick)
@@ -562,13 +560,16 @@ gameData.objs.missileViewerP = NULL;		///reset missile camera if out there
 #endif
 // When the ship got blown up, its root submodel had been converted to a debris object.
 // Make it a player object again.
-CObject* objP = OBJECTS + LOCALPLAYER.nObject;
-objP->info.nType = OBJ_PLAYER;
-objP->SetLife (IMMORTAL_TIME);
-objP->info.nFlags = 0;
-objP->rType.polyObjInfo.nSubObjFlags = 0;
-objP->mType.physInfo.flags = PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST;
-
+CObject* objP = OBJECTS.Buffer () ? OBJECTS + LOCALPLAYER.nObject : NULL;
+if (objP) {
+	OBJECTS [N_LOCALPLAYER].ResetDamage ();
+	AddPlayerLoadout (bRestore);
+	objP->info.nType = OBJ_PLAYER;
+	objP->SetLife (IMMORTAL_TIME);
+	objP->info.nFlags = 0;
+	objP->rType.polyObjInfo.nSubObjFlags = 0;
+	objP->mType.physInfo.flags = PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST;
+	}
 InitAIForShip ();
 }
 
@@ -2416,7 +2417,8 @@ if (gameData.reactor.bDestroyed) {
 	CONNECT (N_LOCALPLAYER, CONNECT_DIED_IN_MINE);
 	DiedInMineMessage (); // Give them some indication of what happened
 	}
-if (bSecret && !gameStates.app.bD1Mission) {
+// if player dead, always leave D2 secret level, but only leave D1 secret level if reactor destroyed
+if (bSecret && (!gameStates.app.bD1Mission || gameData.reactor.bDestroyed)) {
 	ExitSecretLevel ();
 	ResetShipData ();
 	gameStates.render.cockpit.nLastDrawn [0] =
@@ -2425,7 +2427,7 @@ if (bSecret && !gameStates.app.bD1Mission) {
 else {
 	if (gameData.reactor.bDestroyed) {
 		FindNextLevel ();
-		AdvanceLevel (0, bSecret);
+		AdvanceLevel (0, 0);
 		ResetShipData ();
 		}
 	else if (!gameStates.entropy.bExitSequence) {
