@@ -1176,12 +1176,13 @@ while (cf.GetS (line, LINE_LEN)) {
 				PrintLog (0, "\n");
 #endif
 				gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
+				PrintLog (-1);
 				return;
 				}
 			gameData.endLevel.terrain.bmP = &gameData.endLevel.terrain.bmInstance;
 			//GrRemapBitmapGood (gameData.endLevel.terrain.bmP, NULL, iff_transparent_color, -1);
 			break;
-		}
+			}
 
 		case 1:							//height map
 			PrintLog (1, "loading endlevel terrain\n");
@@ -1211,12 +1212,13 @@ while (cf.GetS (line, LINE_LEN)) {
 			if (iffError != IFF_NO_ERROR) {
 				Warning (TXT_SATELLITE, p, iff.ErrorMsg (iffError));
 				gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
+				PrintLog (-1);
 				return;
-			}
+				}
 			gameData.endLevel.satellite.bmP = &gameData.endLevel.satellite.bmInstance;
 			//GrRemapBitmapGood (gameData.endLevel.satellite.bmP, NULL, iff_transparent_color, -1);
 			break;
-		}
+			}
 
 		case 5:							//earth pos
 		case 7: {						//station pos
@@ -1236,14 +1238,15 @@ while (cf.GetS (line, LINE_LEN)) {
 			else
 				gameData.endLevel.station.vPos = tm.m.dir.f;
 			break;
-		}
+			}
 
 		case 6:						//planet size
 			PrintLog (1, "loading satellite size\n");
 			xSatelliteSize = I2X (atoi (p));
 			break;
-	}
+		}
 	var++;
+	PrintLog (-1);
 }
 
 Assert (var == NUM_VARS);
