@@ -545,14 +545,11 @@ if (SHOW_SHADOWS &&
 #endif
 		RenderMine (nStartSeg, xStereoSeparation, nWindow);
 		PROF_START
-		RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
-		PROF_END(ptEffects)
 		if (FAST_SHADOWS)
-			;//RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
+			RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
 		else {
 			PROF_START
 			RenderNeatShadows (xStereoSeparation, nWindow, nStartSeg);
-			PROF_END(ptEffects)
 			}
 #if SOFT_SHADOWS
 		if (gameOpts->render.shadows.bSoft) {
@@ -567,6 +564,7 @@ if (SHOW_SHADOWS &&
 			RenderShadowTexture ();
 			}
 #endif
+		PROF_END(ptEffects)
 		nWindow = 0;
 		}
 	}

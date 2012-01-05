@@ -659,9 +659,11 @@ extern COGL ogl;
 
 static inline void OglCullFace (int bFront)
 {
+#if 0
 if (gameStates.render.bRearView)
 	ogl.SetCullMode (bFront ? GL_BACK : GL_FRONT);
 else
+#endif
 	ogl.SetCullMode (bFront ? GL_FRONT : GL_BACK);
 }
 

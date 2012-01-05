@@ -549,8 +549,8 @@ if (gameStates.render.nShadowPass) {
 			infProj [2][3] = -1.0f;
 			glLoadMatrixf (reinterpret_cast<float*> (infProj));
 #endif
-			glMatrixMode (GL_MODELVIEW);
 #if 0
+			glMatrixMode (GL_MODELVIEW);
 			glLoadIdentity ();
 #endif
 			SetDepthTest (true);

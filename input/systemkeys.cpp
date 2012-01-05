@@ -140,6 +140,12 @@ return 1;
 
 void CheckRearView (void)
 {
+#if DBG
+if (controls [0].rearViewDownCount) {		//key/button has gone down
+	controls [0].rearViewDownCount = 0;
+	ToggleRearView ();
+	}
+#else
 	#define LEAVE_TIME 0x1000		//how long until we decide key is down	 (Used to be 0x4000)
 
 	static int nLeaveMode;
@@ -158,6 +164,7 @@ else if (controls [0].rearViewDownState) {
 	}
 else if (nLeaveMode)
 	SetRearView (0);
+#endif
 }
 
 //------------------------------------------------------------------------------
