@@ -385,7 +385,7 @@ while (!done) {
 			break;
 			
 		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
-		case KEY_ALTED + KEY_F9:
+		case KEY_PRINT_SCREEN:
 			gameStates.app.bSaveScreenshot = 1;
 			//SaveScreenShot (NULL, 0);
 			break;

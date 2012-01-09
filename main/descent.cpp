@@ -212,7 +212,7 @@ SDL_WM_SetCaption (szCaption, "Descent II");
 
 void PrintVersionInfo (void)
 {
-if (gameStates.app.bGameRunning || gameStates.app.bBetweenLevels)
+if ((gameStates.app.bGameRunning || gameStates.app.bBetweenLevels) && !gameStates.app.bSaveScreenshot)
 	return;
 
 	static int bVertigo = -1;
@@ -234,59 +234,80 @@ else
 	y = 37;
 
 gameStates.menus.bDrawCopyright = 0;
-CCanvas::Push ();
-CCanvas::SetCurrent (NULL);
-fontManager.SetCurrent (GAME_FONT);
-fontManager.Current ()->StringSize ("V2.2", w, h, aw);
-fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
-h += 2;
-GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - h, "visit www.descent2.de");
-fontManager.SetColorRGBi (RGB_PAL (51, 34, 0), 1, 0, 0);
-fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
-GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 3 * h - 6, "Press F1 for help in menus");
-fontManager.SetColorRGBi (RGB_PAL (31, 31, 31), 1, 0, 0);
-CCanvas::Current ()->SetColor (CCanvas::Current ()->FontColor (0));
-OglDrawLine (CCanvas::Current ()->Width () / 2 - 275,
-				 CCanvas::Current ()->Height () - 2 * h - 5,
-				 CCanvas::Current ()->Width () / 2 + 275,
-				 CCanvas::Current ()->Height () - 2 * h - 5,
-				 NULL);
+if (!gameStates.app.bSaveScreenshot) {
+	CCanvas::Push ();
+	CCanvas::SetCurrent (NULL);
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.Current ()->StringSize ("V2.2", w, h, aw);
+	fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
+	h += 2;
+	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - h, "visit www.descent2.de");
+	fontManager.SetColorRGBi (RGB_PAL (51, 34, 0), 1, 0, 0);
+	fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
+	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 3 * h - 6, "Press F1 for help in menus");
+	fontManager.SetColorRGBi (RGB_PAL (31, 31, 31), 1, 0, 0);
+	CCanvas::Current ()->SetColor (CCanvas::Current ()->FontColor (0));
+	OglDrawLine (CCanvas::Current ()->Width () / 2 - 275,
+					 CCanvas::Current ()->Height () - 2 * h - 5,
+					 CCanvas::Current ()->Width () / 2 + 275,
+					 CCanvas::Current ()->Height () - 2 * h - 5,
+					 NULL);
 #if 0
-OglDrawLine (2, //CCanvas::Current ()->Width () / 2 - 200,
-		CCanvas::Current ()->Height () - h - 2,
-		CCanvas::Current ()->Width () - 2, // / 2 + 200,
-		CCanvas::Current ()->Height () - h - 2,
-		NULL);
+	OglDrawLine (2, //CCanvas::Current ()->Width () / 2 - 200,
+			CCanvas::Current ()->Height () - h - 2,
+			CCanvas::Current ()->Width () - 2, // / 2 + 200,
+			CCanvas::Current ()->Height () - h - 2,
+			NULL);
 #endif
-GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 2 * h - 2, TXT_COPYRIGHT);
-GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, CCanvas::Current ()->Height () - 2 * h - 2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
-if (bVertigo < 0)
-	bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionDir, 0);
-if (bVertigo) {
+	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 2 * h - 2, TXT_COPYRIGHT);
+	GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, CCanvas::Current ()->Height () - 2 * h - 2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
+	if (bVertigo < 0)
+		bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionDir, 0);
+	if (bVertigo) {
+		fontManager.SetCurrent (MEDIUM2_FONT);
+		fontManager.Current ()->StringSize (TXT_VERTIGO, w, h, aw);
+		GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS,
+					 y + (gameOpts->menus.altBg.bHave ? h + 2 : 0), TXT_VERTIGO);
+		}
+	fontManager.SetCurrent (SMALL_FONT);
+	fontManager.Current ()->StringSize (VERSION, ws, hs, aw);
+	fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
+	GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1,
+				 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
+#if 0
+	if (!ogl.m_features.bShaders) {
+		fontManager.SetColorRGBi (RGB_PAL (63, 0, 0), 1, 0, 0);
+		GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 5 * (fontManager.Current ()->Height () + 2), "due to insufficient graphics hardware,");
+		GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 4 * (fontManager.Current ()->Height () + 2), "D2X-XL will run at reduced settings.");
+		}
+#endif
+	}
+#if 1
+if (!gameStates.app.bSaveScreenshot) {
 	fontManager.SetCurrent (MEDIUM2_FONT);
-	fontManager.Current ()->StringSize (TXT_VERTIGO, w, h, aw);
-	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS,
-				 y + (gameOpts->menus.altBg.bHave ? h + 2 : 0), TXT_VERTIGO);
+	fontManager.Current ()->StringSize (D2X_NAME, w, h, aw);
+	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
+	CCanvas::Pop ();
 	}
-fontManager.SetCurrent (MEDIUM2_FONT);
-fontManager.Current ()->StringSize (D2X_NAME, w, h, aw);
-GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS,
-			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
-fontManager.SetCurrent (NORMAL_FONT);
-fontManager.SetCurrent (SMALL_FONT);
-fontManager.Current ()->StringSize (VERSION, ws, hs, aw);
-fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
-GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1,
-			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
-#if 0
-if (!ogl.m_features.bShaders) {
-	fontManager.SetColorRGBi (RGB_PAL (63, 0, 0), 1, 0, 0);
-	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 5 * (fontManager.Current ()->Height () + 2), "due to insufficient graphics hardware,");
-	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 4 * (fontManager.Current ()->Height () + 2), "D2X-XL will run at reduced settings.");
+else {
+	//gameStates.render.grAlpha = 0.75f;
+	int w2, h2;
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.Current ()->StringSize ("www.descent2.de", w2, h2, aw);
+	fontManager.SetCurrent (MEDIUM2_FONT);
+	fontManager.Current ()->StringSize ("D2X-XL", w, h, aw);
+	int l = CCanvas::Current ()->Width () - 70 - w;
+	int t = CCanvas::Current ()->Height () - 40 - h - h2 - 2;
+	GrPrintF (NULL, l, t, "D2X-XL");
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
+	//fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
+	GrPrintF (NULL, l - (w2 - w + 1) / 2, t + h + 2, "www.descent2.de");
+	//gameStates.render.grAlpha = 1.0f;
 	}
 #endif
+fontManager.SetCurrent (NORMAL_FONT);
 fontManager.SetColorRGBi (RGB_PAL (6, 6, 6), 1, 0, 0);
-CCanvas::Pop ();
 gameStates.render.grAlpha = grAlpha;
 }
 
@@ -360,17 +381,17 @@ exit (0);
 void PrintBanner (void)
 {
 #if (defined (_WIN32) || defined (__unix__))
-console.printf(CON_NORMAL, "\nDESCENT 2 %s v%d.%d.%d\n", VERSION_TYPE, D2X_MAJOR, D2X_MINOR, D2X_MICRO);
+console.printf (CON_NORMAL, "\nDESCENT 2 %s v%d.%d.%d\n", VERSION_TYPE, D2X_MAJOR, D2X_MINOR, D2X_MICRO);
 #elif defined(__macosx__)
-console.printf(CON_NORMAL, "\nDESCENT 2 %s -- %s\n", VERSION_TYPE, DESCENT_VERSION);
+console.printf (CON_NORMAL, "\nDESCENT 2 %s -- %s\n", VERSION_TYPE, DESCENT_VERSION);
 #endif
 if (hogFileManager.D2XFiles ().bInitialized)
 	console.printf ((int) CON_NORMAL, "  Vertigo Enhanced\n");
-console.printf(CON_NORMAL, "\nBuilt: %s %s\n", __DATE__, __TIME__);
+console.printf (CON_NORMAL, "\nBuilt: %s %s\n", __DATE__, __TIME__);
 #ifdef __VERSION__
-console.printf(CON_NORMAL, "Compiler: %s\n", __VERSION__);
+console.printf (CON_NORMAL, "Compiler: %s\n", __VERSION__);
 #endif
-console.printf(CON_NORMAL, "\n");
+console.printf (CON_NORMAL, "\n");
 }
 
 // ----------------------------------------------------------------------------

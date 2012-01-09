@@ -1904,7 +1904,7 @@ gameData.demo.nState = saveNewDemoState;
 
 void CGenericCockpit::Render (int bExtraInfo, fix xStereoSeparation)
 {
-if (Hide ())
+if (Hide ()) 
 	return;
 if (gameStates.app.bPlayerIsDead)
 	return;
