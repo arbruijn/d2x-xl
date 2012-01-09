@@ -300,8 +300,11 @@ else {
 	int t = CCanvas::Current ()->Height () - 40 - h - h2 - 2;
 	GrPrintF (NULL, l, t, "D2X-XL");
 	fontManager.SetCurrent (GAME_FONT);
+#if 0
 	fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
-	//fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
+#else
+	fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
+#endif
 	GrPrintF (NULL, l - (w2 - w + 1) / 2, t + h + 2, "www.descent2.de");
 	//gameStates.render.grAlpha = 1.0f;
 	}

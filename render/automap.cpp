@@ -507,6 +507,8 @@ DrawLevelId ();
 PROF_END(ptRenderFrame)
 #endif
 FlushFrame (xStereoSeparation);
+if (gameStates.app.bSaveScreenshot)
+	SaveScreenShot (NULL, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -761,7 +763,6 @@ while ((c = KeyInKey ())) {
 			if (m_data.bHires)
 				CCanvas::SetCurrent (NULL);
 			gameStates.app.bSaveScreenshot = 1;
-			SaveScreenShot (NULL, 1);
 			break;
 			}
 
