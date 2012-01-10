@@ -451,7 +451,7 @@ bool CGlowRenderer::Begin (int const nType, int const nStrength, bool const bRep
 {
 if (!Available (nType))
 	return false;
-if (automap.Display ())
+if ((gameOptions [0].render.nQuality < 3) && automap.Display ())
 	return false;
 #if 0
 if (nType != m_nType) {

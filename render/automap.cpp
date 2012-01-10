@@ -344,6 +344,8 @@ void CAutomap::DrawLevelId (void)
 {
 if (gameStates.app.bNostalgia)
 	return;
+if (gameStates.app.bSaveScreenshot && cockpit->Hide ())
+	return;
 
 	CFont*	curFont = CCanvas::Current ()->Font ();
 	int		w, h, aw, offs = m_data.bHires ? 10 : 5;

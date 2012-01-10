@@ -225,7 +225,7 @@ if ((nShader < 0) || (nShader >= int (m_shaders.ToS ())))
 	return 0;
 if (m_shaders [nShader].program || (m_shaders [nShader].program = glCreateProgramObjectARB ()))
 	return 1;
-::PrintLog (0, "Couldn't create shader program CObject\n");
+::PrintLog (0, "Couldn't create shader program object\n");
 return 0;
 }
 
