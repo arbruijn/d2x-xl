@@ -75,42 +75,50 @@ if (!f) {
 #endif
 	}
 else {
-		tTGAHeader	hdr;
-		int			i, j, r;
-		tBGR			*outBuf = new tBGR [w * h * sizeof (tBGR)];
-		tBGR			*bgrP;
-		tRGB			*rgbP;
+	static tBGR* outBuf = NULL;
+	static int outBufSize = 0;
 
-	memset (&hdr, 0, sizeof (hdr));
-#ifdef _WIN32
-	hdr.imageType = 2;
-	hdr.width = w;
-	hdr.height = h;
-	hdr.bits = 24;
-	//write .TGA header.
-	fwrite (&hdr, sizeof (hdr), 1, f);
-#else	// if only I knew how to control struct member packing with gcc or XCode ... ^_^
-	*(reinterpret_cast<char*> (&hdr) + 2) = 2;
-	*reinterpret_cast<short*> (reinterpret_cast<char*> (&hdr) + 12) = w;
-	*reinterpret_cast<short*> (reinterpret_cast<char*> (&hdr) + 14) = h;
-	*(reinterpret_cast<char*> (&hdr) + 16) = 24;
-	//write .TGA header.
-	fwrite (&hdr, 18, 1, f);
-#endif
-	rgbP = ((tRGB *) buf);// + w * (h - 1);
-	bgrP = outBuf;
-	for (i = h; i; i--) {
-		for (j = w; j; j--, rgbP++, bgrP++) {
-			bgrP->r = rgbP->r;
-			bgrP->g = rgbP->g;
-			bgrP->b = rgbP->b;
-			}
+	int imgSize = w * h * sizeof (tBGR);
+
+	if (outBufSize < imgSize) {
+		outBufSize = imgSize;
+		if (outBuf)
+			delete outBuf;
+		outBuf = new tBGR [outBufSize];
 		}
-	r = (int) fwrite (outBuf, w * h * 3, 1, f);
-#if TRACE
-	if (r <= 0)
-		console.printf (CON_DBG,"screenshot error, couldn't write to %s (err %i)\n",szSaveName,errno);
+	if (outBuf) {
+		tTGAHeader hdr;
+		memset (&hdr, 0, sizeof (hdr));
+#ifdef _WIN32
+		hdr.imageType = 2;
+		hdr.width = w;
+		hdr.height = h;
+		hdr.bits = 24;
+		//write .TGA header.
+		fwrite (&hdr, sizeof (hdr), 1, f);
+#else	// if only I knew how to control struct member packing with gcc or XCode ... ^_^
+		*(reinterpret_cast<char*> (&hdr) + 2) = 2;
+		*reinterpret_cast<short*> (reinterpret_cast<char*> (&hdr) + 12) = w;
+		*reinterpret_cast<short*> (reinterpret_cast<char*> (&hdr) + 14) = h;
+		*(reinterpret_cast<char*> (&hdr) + 16) = 24;
+		//write .TGA header.
+		fwrite (&hdr, 18, 1, f);
 #endif
+		tRGB* rgbP = ((tRGB *) buf);// + w * (h - 1);
+		tBGR* bgrP = outBuf;
+		for (int i = h; i; i--) {
+			for (int j = w; j; j--, rgbP++, bgrP++) {
+				bgrP->r = rgbP->r;
+				bgrP->g = rgbP->g;
+				bgrP->b = rgbP->b;
+				}
+			}
+		int r = (int) fwrite (outBuf, imgSize, 1, f);
+#if TRACE
+		if (r <= 0)
+			console.printf (CON_DBG,"screenshot error, couldn't write to %s (err %i)\n",szSaveName,errno);
+#endif
+		}
 	fclose (f);
 	}
 }
