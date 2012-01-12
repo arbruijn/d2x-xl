@@ -147,6 +147,8 @@ else {
 	m_xDamage [1] = I2X (cf.ReadShort ());
 	}
 m_xAvgSegLight = cf.ReadFix ();
+if (gameStates.app.bD2XLevel && (m_function == 2))
+	m_function = 0;
 }
 
 //------------------------------------------------------------------------------
