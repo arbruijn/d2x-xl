@@ -221,6 +221,10 @@ if (nSegment < 0)
 for (i = gameData.render.mine.objRenderList.ref [nSegment], j = 0; i >= 0; i = pi->nNextItem) {
 	pi = gameData.render.mine.objRenderList.objs + i;
 	objRenderList [j++] = *pi;
+#if DBG
+	if (OBJECTS [pi->nObject].info.nSegment != nSegment)
+		nDbgSeg = nDbgSeg;
+#endif
 	}
 #if 1
 if (j > 1)

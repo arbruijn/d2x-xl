@@ -309,6 +309,10 @@ FORALL_OBJS (objP, i) {
 			break;
 
 		case OBJ_POWERUP:
+#if DBG
+			if (objP->info.nSegment == nDbgSeg)
+				nDbgSeg = nDbgSeg;
+#endif
 			switch (objP->info.nId) {
 				case POW_KEY_RED:
 					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 5, 5));
@@ -328,6 +332,10 @@ FORALL_OBJS (objP, i) {
 					CCanvas::Current ()->SetColorRGBi (ORANGE_RGBA); //orange
 					break;
 				}
+#if DBG
+			if (objP->info.nSegment == nDbgSeg)
+				nDbgSeg = nDbgSeg;
+#endif
 			spherePoint.TransformAndEncode (objP->info.position.vPos);
 			G3DrawSphere (&spherePoint, size, !m_bRadar);
 			break;

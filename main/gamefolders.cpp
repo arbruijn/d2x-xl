@@ -395,7 +395,7 @@ else {
 		*gameFolders.szTextureDir [2] = '\0';
 	else {
 		sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], TEXTUREDIR);
-		gameOpts->render.textures.bUseHires [0] = 1;
+		//gameOpts->render.textures.bUseHires [0] = 1;
 		}
 	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szModelDir [1], MODELDIR, "*.ase") &&
 		 GetAppFolder (gameFolders.szModDir [1], gameFolders.szModelDir [1], MODELDIR, "*.oof"))

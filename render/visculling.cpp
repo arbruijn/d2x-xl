@@ -417,7 +417,12 @@ while (head != tail) {
 		if (bVisited [nSegment])
 			continue;
 		CSegment* childSegP = &SEGMENTS [nSegment];
+		// quick check whether object could reach into this child segment
 		if (CFixVector::Dist (Position (), childSegP->Center ()) >= info.xSize + childSegP->MaxRad ())
+			continue;
+		// check whether the object actually penetrates the side between the current segment and the child segment
+		CSegMasks mask = SEGMENTS [info.nSegment].Masks (Position (), info.xSize);
+		if (!(mask.m_side & (1 << i)))
 			continue;
 		if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible)
 			return nSegment;
@@ -487,8 +492,13 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 					segP = SEGMENTS + nNewSeg;
 					if (segP->IsDoorWay (nSide, NULL) & WID_PASSABLE_FLAG) {	//can explosion migrate through
 						nChild = segP->m_children [nSide];
-						if (gameData.render.mine.bVisible [nChild] == gameData.render.mine.nVisible)
+						if (gameData.render.mine.bVisible [nChild] == gameData.render.mine.nVisible) {
 							nNewSeg = nChild;	// only migrate to segment in render list
+#if DBG
+							if (nNewSeg == nDbgSeg)
+								nDbgSeg = nDbgSeg;
+#endif
+							}
 						}
 					}
 				}
