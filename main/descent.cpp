@@ -212,7 +212,13 @@ SDL_WM_SetCaption (szCaption, "Descent II");
 
 void PrintVersionInfo (void)
 {
-if ((gameStates.app.bGameRunning || gameStates.app.bBetweenLevels) && !(gameStates.app.bSaveScreenshot || (gameData.demo.nState == ND_STATE_RECORDING)))
+	int nInfoType;
+	
+if (!(gameStates.app.bGameRunning || gameStates.app.bBetweenLevels))
+	nInfoType = 0;
+else if (gameStates.app.bSaveScreenshot)
+	nInfoType = 1;
+else
 	return;
 
 	static int bVertigo = -1;
@@ -234,7 +240,7 @@ else
 	y = 37;
 
 gameStates.menus.bDrawCopyright = 0;
-if (!(gameStates.app.bSaveScreenshot || (gameData.demo.nState == ND_STATE_RECORDING))) {
+if (!nInfoType) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (NULL);
 	fontManager.SetCurrent (GAME_FONT);
@@ -283,7 +289,7 @@ if (!(gameStates.app.bSaveScreenshot || (gameData.demo.nState == ND_STATE_RECORD
 #endif
 	}
 #if 1
-if (!(gameStates.app.bSaveScreenshot || (gameData.demo.nState == ND_STATE_RECORDING))) {
+if (!nInfoType) {
 	fontManager.SetCurrent (MEDIUM2_FONT);
 	fontManager.Current ()->StringSize (D2X_NAME, w, h, aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
