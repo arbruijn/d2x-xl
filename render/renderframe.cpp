@@ -362,7 +362,7 @@ if (gameStates.app.bGameRunning && !automap.Display ()) {
 paletteManager.RenderEffect ();
 console.Draw ();
 FlashMine ();
-if (gameStates.app.bSaveScreenshot)
+if (gameStates.app.bSaveScreenshot || (gameData.demo.nState == ND_STATE_RECORDING))
 	PrintVersionInfo ();
 ogl.SetStereoSeparation (xStereoSeparation);
 }
