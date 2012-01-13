@@ -259,6 +259,7 @@ else {
 	}
 #endif
 
+ogl.SetDepthWrite (true);
 ogl.m_states.bDepthBuffer [0] =
 ogl.m_states.bDepthBuffer [1] = 0;
 gameData.render.nUsedFaces =

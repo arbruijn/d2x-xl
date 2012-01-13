@@ -891,8 +891,8 @@ else {
 			if (objP->IsGatlingRound ()) {
 				if (SHOW_OBJ_FX && extraGameInfo [0].bTracers) {
 					//RenderLightTrail (objP);
-					gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (3) / 2);
 					CFixVector vSavedPos = objP->info.position.vPos;
+					gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (3) / 2);
 					objP->info.position.vPos += objP->info.position.mOrient.m.dir.f;
 					DrawPolygonObject (objP, 0);
 					objP->info.position.vPos = vSavedPos;

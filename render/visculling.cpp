@@ -437,6 +437,7 @@ return -1;
 
 void GatherLeftoutVisibleObjects (void)
 {
+#if 1
 	CObject*	objP;
 	//int		i;
 
@@ -448,6 +449,7 @@ FORALL_OBJS (objP, i) {
 		continue;
 	AddObjectToSegList (objP->Index (), nSegment);
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------

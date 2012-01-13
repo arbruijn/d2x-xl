@@ -321,6 +321,7 @@ gameStates.render.history.bmMask = NULL;
 gameStates.render.bQueryCoronas = 0;
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
+ogl.SetDepthWrite (1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 #if 0
