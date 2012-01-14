@@ -357,6 +357,7 @@
 		89D7959E138898BE009C4B5C /* vesa.h in Headers */ = {isa = PBXBuildFile; fileRef = 89D7907913888E14009C4B5C /* vesa.h */; };
 		89D7959F138898BE009C4B5C /* visibility.h in Headers */ = {isa = PBXBuildFile; fileRef = 89D7907A13888E14009C4B5C /* visibility.h */; };
 		89D795A0138898BE009C4B5C /* wall.h in Headers */ = {isa = PBXBuildFile; fileRef = 89D7907B13888E14009C4B5C /* wall.h */; };
+		89D795A1138898BE009C4B5C /* weapon.h in Headers */ = {isa = PBXBuildFile; fileRef = 89D7907C13888E14009C4B5C /* weapon.h */; };
 		89D795A2138898BE009C4B5C /* wglew.h in Headers */ = {isa = PBXBuildFile; fileRef = 89D7907D13888E14009C4B5C /* wglew.h */; };
 		89D795A3138898BE009C4B5C /* wglext.h in Headers */ = {isa = PBXBuildFile; fileRef = 89D7907E13888E14009C4B5C /* wglext.h */; };
 		89D795A4138898D9009C4B5C /* event.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89D7916113888E9C009C4B5C /* event.cpp */; };
@@ -385,6 +386,7 @@
 		89D795C6138899B1009C4B5C /* decoders.h in Headers */ = {isa = PBXBuildFile; fileRef = 89D791A513888FFA009C4B5C /* decoders.h */; };
 		89D795C7138899B1009C4B5C /* mve_audio.h in Headers */ = {isa = PBXBuildFile; fileRef = 89D791A713888FFA009C4B5C /* mve_audio.h */; };
 		89D795C8138899B1009C4B5C /* mvelib.h in Headers */ = {isa = PBXBuildFile; fileRef = 89D791AA13888FFA009C4B5C /* mvelib.h */; };
+		89D795C9138899C3009C4B5C /* dynlight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89D791B51388903D009C4B5C /* dynlight.cpp */; };
 		89D795CA138899C3009C4B5C /* grayscaleshaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89D791B61388903D009C4B5C /* grayscaleshaders.cpp */; };
 		89D795CB138899C3009C4B5C /* headlight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89D791B71388903D009C4B5C /* headlight.cpp */; };
 		89D795CC138899C3009C4B5C /* light.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89D791B81388903D009C4B5C /* light.cpp */; };
@@ -451,6 +453,7 @@
 		89D7961413889A57009C4B5C /* inputdevicemenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89D79248138890C9009C4B5C /* inputdevicemenu.cpp */; };
 		89D7961513889A57009C4B5C /* listbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89D79249138890C9009C4B5C /* listbox.cpp */; };
 		89D7961613889A57009C4B5C /* mainmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89D7924A138890C9009C4B5C /* mainmenu.cpp */; };
+		89D7961713889A57009C4B5C /* menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89D7924C138890C9009C4B5C /* menu.cpp */; };
 		89D7961813889A57009C4B5C /* menubackground.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89D7924D138890C9009C4B5C /* menubackground.cpp */; };
 		89D7961913889A57009C4B5C /* menuitem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89D7924E138890C9009C4B5C /* menuitem.cpp */; };
 		89D7961A13889A57009C4B5C /* messagebox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89D7924F138890C9009C4B5C /* messagebox.cpp */; };
@@ -578,28 +581,13 @@
 		A40B253E0E21EDAF0061DFCB /* d2doc.icns in Resources */ = {isa = PBXBuildFile; fileRef = A40B253C0E21EDAF0061DFCB /* d2doc.icns */; };
 		B9006CD114141BD100AA5095 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9006CD014141BD100AA5095 /* SDL.framework */; };
 		B9006CD214141BF600AA5095 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B9006CD014141BD100AA5095 /* SDL.framework */; };
-		B92CB9B21415873A00030390 /* SimplexNoise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B92CB9B11415873A00030390 /* SimplexNoise.cpp */; };
-		B92CB9B41415874300030390 /* PerlinNoise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B92CB9B31415874300030390 /* PerlinNoise.cpp */; };
-		B92CB9B61415877B00030390 /* cstring.h in Headers */ = {isa = PBXBuildFile; fileRef = B92CB9B51415877B00030390 /* cstring.h */; };
-		B92CB9B81415878800030390 /* SimplexNoise.h in Headers */ = {isa = PBXBuildFile; fileRef = B92CB9B71415878800030390 /* SimplexNoise.h */; };
-		B92CB9BA141587BF00030390 /* PerlinNoise.h in Headers */ = {isa = PBXBuildFile; fileRef = B92CB9B9141587BF00030390 /* PerlinNoise.h */; };
-		B9CC1532141E6F0C00DBF9BF /* basiccockpit.h in Headers */ = {isa = PBXBuildFile; fileRef = B9CC1531141E6F0C00DBF9BF /* basiccockpit.h */; };
-		B9CC1534141E6F6D00DBF9BF /* cntrlcen.h in Headers */ = {isa = PBXBuildFile; fileRef = B9CC1533141E6F6D00DBF9BF /* cntrlcen.h */; };
-		B9CC1536141E701E00DBF9BF /* genericcockpit.h in Headers */ = {isa = PBXBuildFile; fileRef = B9CC1535141E701E00DBF9BF /* genericcockpit.h */; };
-		B9CC153A141E70A000DBF9BF /* globvars.h in Headers */ = {isa = PBXBuildFile; fileRef = B9CC1539141E70A000DBF9BF /* globvars.h */; };
-		B9CC153E141E713000DBF9BF /* bmread.h in Headers */ = {isa = PBXBuildFile; fileRef = B9CC153D141E713000DBF9BF /* bmread.h */; };
-		B9CC1543141E71F500DBF9BF /* iff.h in Headers */ = {isa = PBXBuildFile; fileRef = B9CC1542141E71F500DBF9BF /* iff.h */; };
-		B9CC1549141E728B00DBF9BF /* gameseg.h in Headers */ = {isa = PBXBuildFile; fileRef = B9CC1548141E728B00DBF9BF /* gameseg.h */; };
-		B9CC154F141E72DE00DBF9BF /* inferno.h in Headers */ = {isa = PBXBuildFile; fileRef = B9CC154E141E72DE00DBF9BF /* inferno.h */; };
-		B9CC1551141E730700DBF9BF /* joydefs.h in Headers */ = {isa = PBXBuildFile; fileRef = B9CC1550141E730700DBF9BF /* joydefs.h */; };
-		B9CC155B141E742600DBF9BF /* Simplex.h in Headers */ = {isa = PBXBuildFile; fileRef = B9CC155A141E742600DBF9BF /* Simplex.h */; };
-		B9CC1567141E758D00DBF9BF /* ipx_bsd.h in Headers */ = {isa = PBXBuildFile; fileRef = B9CC1566141E758D00DBF9BF /* ipx_bsd.h */; };
-		B9CC1579141E7AA600DBF9BF /* waypoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9CC1578141E7AA600DBF9BF /* waypoint.cpp */; };
-		B9CC157B141E7AD000DBF9BF /* waypoint.h in Headers */ = {isa = PBXBuildFile; fileRef = B9CC157A141E7ACF00DBF9BF /* waypoint.h */; };
-		B9CC157F141E7E7A00DBF9BF /* menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9CC157E141E7E7A00DBF9BF /* menu.cpp */; };
+		B92CB98414156D8500030390 /* perlin.h in Headers */ = {isa = PBXBuildFile; fileRef = B92CB98314156D8500030390 /* perlin.h */; };
+		B92CB98614156D8D00030390 /* ImprovedPerlin.h in Headers */ = {isa = PBXBuildFile; fileRef = B92CB98514156D8D00030390 /* ImprovedPerlin.h */; };
+		B92CB98814156DA500030390 /* ImprovedPerlin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B92CB98714156DA500030390 /* ImprovedPerlin.cpp */; };
+		B92CB98A14156DAD00030390 /* perlin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B92CB98914156DAD00030390 /* perlin.cpp */; };
+		B932D36614140EEA008C3A4E /* globvars.h in Headers */ = {isa = PBXBuildFile; fileRef = B932D36514140EEA008C3A4E /* globvars.h */; };
 		B9E306C613FD7DDC008068E4 /* SDLMain.h in Headers */ = {isa = PBXBuildFile; fileRef = B9E306C413FD7DDC008068E4 /* SDLMain.h */; };
 		B9E306C713FD7DDC008068E4 /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = B9E306C513FD7DDC008068E4 /* SDLMain.m */; };
-		B9F766A5141EA79C00DD102A /* dynlight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9F766A4141EA79C00DD102A /* dynlight.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -955,6 +943,7 @@
 		89D7907913888E14009C4B5C /* vesa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vesa.h; sourceTree = "<group>"; };
 		89D7907A13888E14009C4B5C /* visibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = visibility.h; sourceTree = "<group>"; };
 		89D7907B13888E14009C4B5C /* wall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wall.h; sourceTree = "<group>"; };
+		89D7907C13888E14009C4B5C /* weapon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = weapon.h; sourceTree = "<group>"; };
 		89D7907D13888E14009C4B5C /* wglew.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wglew.h; sourceTree = "<group>"; };
 		89D7907E13888E14009C4B5C /* wglext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wglext.h; sourceTree = "<group>"; };
 		89D7916113888E9C009C4B5C /* event.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = event.cpp; sourceTree = "<group>"; };
@@ -991,6 +980,7 @@
 		89D791A913888FFA009C4B5C /* mvelib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mvelib.cpp; sourceTree = "<group>"; };
 		89D791AA13888FFA009C4B5C /* mvelib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mvelib.h; sourceTree = "<group>"; };
 		89D791AB13888FFA009C4B5C /* mveplay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mveplay.cpp; sourceTree = "<group>"; };
+		89D791B51388903D009C4B5C /* dynlight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dynlight.cpp; sourceTree = "<group>"; };
 		89D791B61388903D009C4B5C /* grayscaleshaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = grayscaleshaders.cpp; sourceTree = "<group>"; };
 		89D791B71388903D009C4B5C /* headlight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = headlight.cpp; sourceTree = "<group>"; };
 		89D791B81388903D009C4B5C /* light.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = light.cpp; sourceTree = "<group>"; };
@@ -1057,6 +1047,7 @@
 		89D79248138890C9009C4B5C /* inputdevicemenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = inputdevicemenu.cpp; sourceTree = "<group>"; };
 		89D79249138890C9009C4B5C /* listbox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = listbox.cpp; sourceTree = "<group>"; };
 		89D7924A138890C9009C4B5C /* mainmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mainmenu.cpp; sourceTree = "<group>"; };
+		89D7924C138890C9009C4B5C /* menu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = menu.cpp; sourceTree = "<group>"; };
 		89D7924D138890C9009C4B5C /* menubackground.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = menubackground.cpp; sourceTree = "<group>"; };
 		89D7924E138890C9009C4B5C /* menuitem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = menuitem.cpp; sourceTree = "<group>"; };
 		89D7924F138890C9009C4B5C /* messagebox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = messagebox.cpp; sourceTree = "<group>"; };
@@ -1197,28 +1188,13 @@
 		B2F67ED704C74A3F00A80002 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		B2F67F1E04C773E400A80002 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
 		B9006CD014141BD100AA5095 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL.framework; sourceTree = "<group>"; };
-		B92CB9B11415873A00030390 /* SimplexNoise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimplexNoise.cpp; sourceTree = "<group>"; };
-		B92CB9B31415874300030390 /* PerlinNoise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PerlinNoise.cpp; sourceTree = "<group>"; };
-		B92CB9B51415877B00030390 /* cstring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cstring.h; sourceTree = "<group>"; };
-		B92CB9B71415878800030390 /* SimplexNoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimplexNoise.h; sourceTree = "<group>"; };
-		B92CB9B9141587BF00030390 /* PerlinNoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PerlinNoise.h; sourceTree = "<group>"; };
-		B9CC1531141E6F0C00DBF9BF /* basiccockpit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basiccockpit.h; sourceTree = "<group>"; };
-		B9CC1533141E6F6D00DBF9BF /* cntrlcen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cntrlcen.h; sourceTree = "<group>"; };
-		B9CC1535141E701E00DBF9BF /* genericcockpit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genericcockpit.h; sourceTree = "<group>"; };
-		B9CC1539141E70A000DBF9BF /* globvars.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = globvars.h; sourceTree = "<group>"; };
-		B9CC153D141E713000DBF9BF /* bmread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bmread.h; sourceTree = "<group>"; };
-		B9CC1542141E71F500DBF9BF /* iff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iff.h; sourceTree = "<group>"; };
-		B9CC1548141E728B00DBF9BF /* gameseg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gameseg.h; sourceTree = "<group>"; };
-		B9CC154E141E72DE00DBF9BF /* inferno.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = inferno.h; sourceTree = "<group>"; };
-		B9CC1550141E730700DBF9BF /* joydefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = joydefs.h; sourceTree = "<group>"; };
-		B9CC155A141E742600DBF9BF /* Simplex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Simplex.h; sourceTree = "<group>"; };
-		B9CC1566141E758D00DBF9BF /* ipx_bsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ipx_bsd.h; sourceTree = "<group>"; };
-		B9CC1578141E7AA600DBF9BF /* waypoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = waypoint.cpp; sourceTree = "<group>"; };
-		B9CC157A141E7ACF00DBF9BF /* waypoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = waypoint.h; sourceTree = "<group>"; };
-		B9CC157E141E7E7A00DBF9BF /* menu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = menu.cpp; sourceTree = "<group>"; };
+		B92CB98314156D8500030390 /* perlin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = perlin.h; sourceTree = "<group>"; };
+		B92CB98514156D8D00030390 /* ImprovedPerlin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImprovedPerlin.h; sourceTree = "<group>"; };
+		B92CB98714156DA500030390 /* ImprovedPerlin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImprovedPerlin.cpp; sourceTree = "<group>"; };
+		B92CB98914156DAD00030390 /* perlin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = perlin.cpp; sourceTree = "<group>"; };
+		B932D36514140EEA008C3A4E /* globvars.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = globvars.h; path = "../../d2x-xl-1.15.260/include/globvars.h"; sourceTree = "<group>"; };
 		B9E306C413FD7DDC008068E4 /* SDLMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDLMain.h; sourceTree = "<group>"; };
-		B9E306C513FD7DDC008068E4 /* SDLMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDLMain.m; sourceTree = "<group>"; };
-		B9F766A4141EA79C00DD102A /* dynlight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dynlight.cpp; sourceTree = "<group>"; };
+		B9E306C513FD7DDC008068E4 /* SDLMain.m */ = {isa = PBXFileReference; fileEncoding = 4; path = SDLMain.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1380,7 +1356,7 @@
 		A450124E0F3F93EA00D04D61 /* lighting */ = {
 			isa = PBXGroup;
 			children = (
-				B9F766A4141EA79C00DD102A /* dynlight.cpp */,
+				89D791B51388903D009C4B5C /* dynlight.cpp */,
 				89D791B61388903D009C4B5C /* grayscaleshaders.cpp */,
 				89D791B71388903D009C4B5C /* headlight.cpp */,
 				89D791B81388903D009C4B5C /* light.cpp */,
@@ -1443,7 +1419,6 @@
 		A45012610F3F93EA00D04D61 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				B9CC1566141E758D00DBF9BF /* ipx_bsd.h */,
 				89D792B61388916E009C4B5C /* ipx_drv.h */,
 				89D792B71388916E009C4B5C /* ipx_hlpr.h */,
 				89D792B81388916E009C4B5C /* ipx_kali.h */,
@@ -1458,9 +1433,9 @@
 		A450128C0F3F93EA00D04D61 /* maths */ = {
 			isa = PBXGroup;
 			children = (
-				B92CB9B31415874300030390 /* PerlinNoise.cpp */,
-				B92CB9B11415873A00030390 /* SimplexNoise.cpp */,
 				89D79235138890AF009C4B5C /* fixc.cpp */,
+				B92CB98914156DAD00030390 /* perlin.cpp */,
+				B92CB98714156DA500030390 /* ImprovedPerlin.cpp */,
 				89D79238138890AF009C4B5C /* rand.cpp */,
 				89D79239138890AF009C4B5C /* tables.cpp */,
 				89D7923A138890AF009C4B5C /* vecmat.cpp */,
@@ -1693,13 +1668,8 @@
 		A45013440F3F93EB00D04D61 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				89D78FFD13888E14009C4B5C /* ipx.h */,
-				B9CC1584141E84A100DBF9BF /* linux */,
-				B9CC1542141E71F500DBF9BF /* iff.h */,
-				B9CC153D141E713000DBF9BF /* bmread.h */,
-				B92CB9B51415877B00030390 /* cstring.h */,
+				B932D36514140EEA008C3A4E /* globvars.h */,
 				89B7AD77138D438400C7D02F /* dialheap.h */,
-				B92CB9B9141587BF00030390 /* PerlinNoise.h */,
 				89D78F9D13888E14009C4B5C /* 3d.h */,
 				89D78F9E13888E14009C4B5C /* addon_bitmaps.h */,
 				89D78F9F13888E14009C4B5C /* ai.h */,
@@ -1707,8 +1677,6 @@
 				89D78FA113888E14009C4B5C /* altsound.h */,
 				89D78FA213888E14009C4B5C /* args.h */,
 				89D78FA313888E14009C4B5C /* ase.h */,
-				B9CC1531141E6F0C00DBF9BF /* basiccockpit.h */,
-				B92CB9B71415878800030390 /* SimplexNoise.h */,
 				89D78FA413888E14009C4B5C /* audio.h */,
 				89D78FA513888E14009C4B5C /* autodl.h */,
 				89D78FA613888E14009C4B5C /* automap.h */,
@@ -1722,7 +1690,6 @@
 				89D78FAE13888E14009C4B5C /* canvas.h */,
 				89D78FAF13888E14009C4B5C /* carray.h */,
 				89D78FB013888E14009C4B5C /* cdatapool.h */,
-				B9CC1533141E6F6D00DBF9BF /* cntrlcen.h */,
 				89D78FB113888E14009C4B5C /* cfile.h */,
 				89D78FB213888E14009C4B5C /* cheats.h */,
 				89D78FB313888E14009C4B5C /* checker.h */,
@@ -1767,9 +1734,7 @@
 				89D78FDA13888E14009C4B5C /* fvi_a.h */,
 				89D78FDB13888E14009C4B5C /* game.h */,
 				89D78FDC13888E14009C4B5C /* gameargs.h */,
-				B9CC1535141E701E00DBF9BF /* genericcockpit.h */,
 				89D78FDD13888E14009C4B5C /* gamecntl.h */,
-				B9CC1548141E728B00DBF9BF /* gameseg.h */,
 				89D78FDE13888E14009C4B5C /* gamefont.h */,
 				89D78FDF13888E14009C4B5C /* gamepal.h */,
 				89D78FE013888E14009C4B5C /* gamestat.h */,
@@ -1797,12 +1762,11 @@
 				89D78FF613888E14009C4B5C /* i86.h */,
 				89D78FF713888E14009C4B5C /* ibitblt.h */,
 				89D78FF813888E14009C4B5C /* iff.h */,
-				B9CC154E141E72DE00DBF9BF /* inferno.h */,
 				89D78FFA13888E14009C4B5C /* input.h */,
 				89D78FFB13888E14009C4B5C /* interp.h */,
 				89D78FFC13888E14009C4B5C /* IpToCountry.h */,
+				89D78FFD13888E14009C4B5C /* ipx.h */,
 				89D78FFE13888E14009C4B5C /* irrstuff.h */,
-				B9CC1550141E730700DBF9BF /* joydefs.h */,
 				89D78FFF13888E14009C4B5C /* kconfig.h */,
 				89D7900013888E14009C4B5C /* laser.h */,
 				89D7900113888E14009C4B5C /* libmve.h */,
@@ -1851,6 +1815,7 @@
 				89D7902C13888E14009C4B5C /* ogl_render.h */,
 				89D7902D13888E14009C4B5C /* ogl_shader.h */,
 				89D7902E13888E14009C4B5C /* ogl_texcache.h */,
+				B92CB98314156D8500030390 /* perlin.h */,
 				89D7902F13888E14009C4B5C /* ogl_texture.h */,
 				89D7903013888E14009C4B5C /* ogl_tmu.h */,
 				89D7903113888E14009C4B5C /* oglmatrix.h */,
@@ -1863,6 +1828,7 @@
 				89D7903813888E14009C4B5C /* pbuffer.h */,
 				89D7903913888E14009C4B5C /* pcx.h */,
 				89D7903B13888E14009C4B5C /* physics.h */,
+				B92CB98514156D8D00030390 /* ImprovedPerlin.h */,
 				89D7903C13888E14009C4B5C /* piggy.h */,
 				89D7903D13888E14009C4B5C /* player.h */,
 				89D7903E13888E14009C4B5C /* playerdeath.h */,
@@ -1901,7 +1867,6 @@
 				89D7905F13888E14009C4B5C /* sphere.h */,
 				89D7906013888E14009C4B5C /* statusbar.h */,
 				89D7906113888E14009C4B5C /* strio.h */,
-				B9CC155A141E742600DBF9BF /* Simplex.h */,
 				89D7906213888E14009C4B5C /* strutil.h */,
 				89D7906313888E14009C4B5C /* systemkeys.h */,
 				89D7906413888E14009C4B5C /* terrain.h */,
@@ -1928,8 +1893,8 @@
 				89D7907913888E14009C4B5C /* vesa.h */,
 				89D7907A13888E14009C4B5C /* visibility.h */,
 				89D7907B13888E14009C4B5C /* wall.h */,
+				89D7907C13888E14009C4B5C /* weapon.h */,
 				89D7907D13888E14009C4B5C /* wglew.h */,
-				B9CC157A141E7ACF00DBF9BF /* waypoint.h */,
 				89D7907E13888E14009C4B5C /* wglext.h */,
 			);
 			path = include;
@@ -1973,13 +1938,13 @@
 				89D79248138890C9009C4B5C /* inputdevicemenu.cpp */,
 				89D79249138890C9009C4B5C /* listbox.cpp */,
 				89D7924A138890C9009C4B5C /* mainmenu.cpp */,
+				89D7924C138890C9009C4B5C /* menu.cpp */,
 				89D7924D138890C9009C4B5C /* menubackground.cpp */,
 				89D7924E138890C9009C4B5C /* menuitem.cpp */,
 				89D7924F138890C9009C4B5C /* messagebox.cpp */,
 				89D79250138890C9009C4B5C /* miscmenu.cpp */,
 				89D79251138890C9009C4B5C /* monsterballmenu.cpp */,
 				89D79252138890C9009C4B5C /* msgbox.cpp */,
-				B9CC157E141E7E7A00DBF9BF /* menu.cpp */,
 				89D79253138890C9009C4B5C /* netgamebrowser.cpp */,
 				89D79254138890C9009C4B5C /* netgamehelp.cpp */,
 				89D79255138890C9009C4B5C /* netgameinfo.cpp */,
@@ -2069,7 +2034,6 @@
 		A45014830F3F93EC00D04D61 /* 3d */ = {
 			isa = PBXGroup;
 			children = (
-				B9CC1539141E70A000DBF9BF /* globvars.h */,
 				89D78E9813888D16009C4B5C /* ase2model.cpp */,
 				89D78E9913888D16009C4B5C /* buildmodel.cpp */,
 				89D78E9B13888D16009C4B5C /* draw.cpp */,
@@ -2113,7 +2077,6 @@
 				89D78F1713888DBD009C4B5C /* postprocessing.h */,
 				89D78F1813888DBD009C4B5C /* shrapnel.cpp */,
 				89D78F1913888DBD009C4B5C /* sparkeffect.cpp */,
-				B9CC1578141E7AA600DBF9BF /* waypoint.cpp */,
 			);
 			path = effects;
 			sourceTree = "<group>";
@@ -2185,13 +2148,6 @@
 				89D78EF013888D6E009C4B5C /* midi.cpp */,
 			);
 			path = win32;
-			sourceTree = "<group>";
-		};
-		B9CC1584141E84A100DBF9BF /* linux */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = linux;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2429,6 +2385,7 @@
 				89D7959E138898BE009C4B5C /* vesa.h in Headers */,
 				89D7959F138898BE009C4B5C /* visibility.h in Headers */,
 				89D795A0138898BE009C4B5C /* wall.h in Headers */,
+				89D795A1138898BE009C4B5C /* weapon.h in Headers */,
 				89D795A2138898BE009C4B5C /* wglew.h in Headers */,
 				89D795A3138898BE009C4B5C /* wglext.h in Headers */,
 				89D794AB13889881009C4B5C /* glow.h in Headers */,
@@ -2447,21 +2404,9 @@
 				89B7AD78138D438400C7D02F /* dialheap.h in Headers */,
 				89B7AD83138D444000C7D02F /* findpath.h in Headers */,
 				B9E306C613FD7DDC008068E4 /* SDLMain.h in Headers */,
-				B92CB9B61415877B00030390 /* cstring.h in Headers */,
-				B92CB9B81415878800030390 /* SimplexNoise.h in Headers */,
-				B92CB9BA141587BF00030390 /* PerlinNoise.h in Headers */,
-				B9CC1532141E6F0C00DBF9BF /* basiccockpit.h in Headers */,
-				B9CC1534141E6F6D00DBF9BF /* cntrlcen.h in Headers */,
-				B9CC1536141E701E00DBF9BF /* genericcockpit.h in Headers */,
-				B9CC153A141E70A000DBF9BF /* globvars.h in Headers */,
-				B9CC153E141E713000DBF9BF /* bmread.h in Headers */,
-				B9CC1543141E71F500DBF9BF /* iff.h in Headers */,
-				B9CC1549141E728B00DBF9BF /* gameseg.h in Headers */,
-				B9CC154F141E72DE00DBF9BF /* inferno.h in Headers */,
-				B9CC1551141E730700DBF9BF /* joydefs.h in Headers */,
-				B9CC155B141E742600DBF9BF /* Simplex.h in Headers */,
-				B9CC1567141E758D00DBF9BF /* ipx_bsd.h in Headers */,
-				B9CC157B141E7AD000DBF9BF /* waypoint.h in Headers */,
+				B932D36614140EEA008C3A4E /* globvars.h in Headers */,
+				B92CB98414156D8500030390 /* perlin.h in Headers */,
+				B92CB98614156D8D00030390 /* ImprovedPerlin.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2623,6 +2568,7 @@
 				89D7961413889A57009C4B5C /* inputdevicemenu.cpp in Sources */,
 				89D7961513889A57009C4B5C /* listbox.cpp in Sources */,
 				89D7961613889A57009C4B5C /* mainmenu.cpp in Sources */,
+				89D7961713889A57009C4B5C /* menu.cpp in Sources */,
 				89D7961813889A57009C4B5C /* menubackground.cpp in Sources */,
 				89D7961913889A57009C4B5C /* menuitem.cpp in Sources */,
 				89D7961A13889A57009C4B5C /* messagebox.cpp in Sources */,
@@ -2714,6 +2660,7 @@
 				89D795FC138899F0009C4B5C /* update.cpp in Sources */,
 				89D795FD138899F0009C4B5C /* vclip.cpp in Sources */,
 				89D795FE138899F0009C4B5C /* wall.cpp in Sources */,
+				89D795C9138899C3009C4B5C /* dynlight.cpp in Sources */,
 				89D795CA138899C3009C4B5C /* grayscaleshaders.cpp in Sources */,
 				89D795CB138899C3009C4B5C /* headlight.cpp in Sources */,
 				89D795CC138899C3009C4B5C /* light.cpp in Sources */,
@@ -2845,11 +2792,8 @@
 				893B4BDB138A94C9000D3A7D /* MacErrorMsg.mm in Sources */,
 				89B7AD76138D434500C7D02F /* dialheap.cpp in Sources */,
 				B9E306C713FD7DDC008068E4 /* SDLMain.m in Sources */,
-				B92CB9B21415873A00030390 /* SimplexNoise.cpp in Sources */,
-				B92CB9B41415874300030390 /* PerlinNoise.cpp in Sources */,
-				B9CC1579141E7AA600DBF9BF /* waypoint.cpp in Sources */,
-				B9CC157F141E7E7A00DBF9BF /* menu.cpp in Sources */,
-				B9F766A5141EA79C00DD102A /* dynlight.cpp in Sources */,
+				B92CB98814156DA500030390 /* ImprovedPerlin.cpp in Sources */,
+				B92CB98A14156DAD00030390 /* perlin.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2954,7 +2898,6 @@
 					../../include,
 					"./Frameworks/SDL.framework/Headers/**",
 					"./Frameworks/include/**",
-					"../../network/**",
 					"../../network/linux/include/**",
 					"./Frameworks/SDL_net.framework/headers/**",
 					"./Frameworks/SDL_mixer.framework/headers/**",
@@ -2969,7 +2912,7 @@
 				PRODUCT_NAME = "d2x-xl";
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = NO;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "../../include/** ./Frameworks/SDL.framework/Headers/** ./Frameworks/include/** ../../network/** ../../network/linux/include/** ./Frameworks/SDL_net.framework/headers/** ./Frameworks/SDL_mixer.framework/headers/** ./Frameworks/GLEW.framework/headers/** ./Frameworks/SDL_image.framework/headers/**";
+				USER_HEADER_SEARCH_PATHS = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
@@ -3001,7 +2944,6 @@
 					../../include,
 					"./Frameworks/SDL.framework/Headers/**",
 					"./Frameworks/include/**",
-					"../../network/**",
 					"../../network/linux/include/**",
 					"./Frameworks/SDL_net.framework/headers/**",
 					"./Frameworks/SDL_mixer.framework/headers/**",
@@ -3018,7 +2960,7 @@
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = NO;
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = YES;
-				USER_HEADER_SEARCH_PATHS = "../../include/** ./Frameworks/SDL.framework/Headers/** ./Frameworks/include/** ../../network/** ../../network/linux/include/** ./Frameworks/SDL_net.framework/headers/** ./Frameworks/SDL_mixer.framework/headers/** ./Frameworks/GLEW.framework/headers/** ./Frameworks/SDL_image.framework/headers/**";
+				USER_HEADER_SEARCH_PATHS = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
