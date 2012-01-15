@@ -1008,7 +1008,7 @@ launchOption:
 
 		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
 		case KEY_PRINT_SCREEN:
-			gameStates.app.bSaveScreenshot = 1;
+			gameStates.app.bSaveScreenShot = 1;
 			SaveScreenShot (NULL, 0);
 			for (i = 0; i < int (ToS ()); i++)
 				Item (i).m_bRedraw = 1;

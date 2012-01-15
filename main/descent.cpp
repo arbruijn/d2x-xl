@@ -216,7 +216,7 @@ void PrintVersionInfo (void)
 	
 if (!(gameStates.app.bGameRunning || gameStates.app.bBetweenLevels))
 	nInfoType = 0;
-else if (gameStates.app.bSaveScreenshot)
+else if (gameStates.app.bShowVersionInfo || gameStates.app.bSaveScreenShot || (gameData.demo.nState == ND_STATE_PLAYBACK))
 	nInfoType = 1;
 else
 	return;

@@ -134,7 +134,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 		}
 #endif
 	SDL_GL_SwapBuffers ();
-	if (gameStates.app.bSaveScreenshot)
+	if (gameStates.app.bSaveScreenShot)
 		SaveScreenShot (NULL, 0);
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect > 0);
 #if 1

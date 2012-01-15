@@ -426,6 +426,8 @@ if ((t = FindArg ("-gpgpu_lights")))
 if ((t = FindArg ("-linux_msgbox")))
 	gameStates.app.bLinuxMsgBox = NumArg (t, 1);
 #endif
+if ((t = FindArg ("-show_version_info")))
+	gameStates.app.bShowVersionInfo = NumArg (t, 1);
 if ((t = FindArg ("-check_setup")))
 	gameStates.app.bCheckAndFixSetup = NumArg (t, 1);
 #if 0

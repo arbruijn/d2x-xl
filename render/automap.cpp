@@ -352,7 +352,7 @@ void CAutomap::DrawLevelId (void)
 {
 if (gameStates.app.bNostalgia)
 	return;
-if (gameStates.app.bSaveScreenshot && cockpit->Hide ())
+if (gameStates.app.bSaveScreenShot && cockpit->Hide ())
 	return;
 
 	CFont*	curFont = CCanvas::Current ()->Font ();
@@ -517,7 +517,7 @@ DrawLevelId ();
 PROF_END(ptRenderFrame)
 #endif
 FlushFrame (xStereoSeparation);
-if (gameStates.app.bSaveScreenshot)
+if (gameStates.app.bSaveScreenShot)
 	SaveScreenShot (NULL, 1);
 }
 
@@ -772,7 +772,7 @@ while ((c = KeyInKey ())) {
 		case KEY_PRINT_SCREEN: {
 			if (m_data.bHires)
 				CCanvas::SetCurrent (NULL);
-			gameStates.app.bSaveScreenshot = 1;
+			gameStates.app.bSaveScreenShot = 1;
 			break;
 			}
 

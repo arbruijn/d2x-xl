@@ -1128,6 +1128,7 @@ class CObject : public CObjectInfo {
 		int ProcessObjectCollision (CPhysSimData& simData);
 		int ProcessWallCollision (CPhysSimData& simData);
 		int ProcessBadCollision (CPhysSimData& simData);
+		int UpdateSimTime (CPhysSimData& simData);
 		int UpdateOffset (CPhysSimData& simData);
 		void FixPosition (CPhysSimData& simData);
 		void ComputeMovedTime (CPhysSimData& simData);

@@ -245,7 +245,7 @@ bool CCreditsManager::HandleInput (void)
 int k = KeyInKey ();
 
 if ((k == KEY_PRINT_SCREEN) || (k == KEY_COMMAND + KEY_SHIFTED + KEY_P)) {
-	gameStates.app.bSaveScreenshot = 1;
+	gameStates.app.bSaveScreenShot = 1;
 	SaveScreenShot (NULL, 0);
 	}
 else if (k == KEY_PADPLUS)

@@ -139,9 +139,9 @@ void SaveScreenShot (ubyte *buf, int bAutomap)
 	static int		nSaveNum = 0;
 	GLenum			glErrCode;
 
-if (!gameStates.app.bSaveScreenshot)
+if (!gameStates.app.bSaveScreenShot)
 	return;
-gameStates.app.bSaveScreenshot = 0;
+gameStates.app.bSaveScreenShot = 0;
 // only use alpha-numeric characters and underscores from the level name
 for (i = j = 0; missionManager.szCurrentLevel [i]; i++)
 	if (isalnum (missionManager.szCurrentLevel [i]))
@@ -207,7 +207,7 @@ if (!(h = screenShotIntervals [gameOpts->app.nScreenShotInterval]))
 if (gameStates.app.nSDLTicks [0] - t0 < h * 1000)
 	return;
 t0 = gameStates.app.nSDLTicks [0];
-gameStates.app.bSaveScreenshot = 1;
+gameStates.app.bSaveScreenShot = 1;
 //SaveScreenShot (0, 0);
 }
 

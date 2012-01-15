@@ -1160,7 +1160,8 @@ class CApplicationStates {
 		int bInitialized;
 		int bD2XLevel;
 		int bEnterGame;
-		int bSaveScreenshot;
+		int bSaveScreenShot;
+		int bShowVersionInfo;
 		int bGameRunning;
 		int bGameSuspended;
 		int bGameAborted;
