@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //Global variables for physics system
+#define NEW_PHYS_CODE	1
 
 #define UNSTICK_OBJS		2
 
@@ -932,6 +933,34 @@ if ((info.nSegment >= 0) && SEGMENTS [info.nSegment].Masks (info.position.vPos, 
 
 int CObject::UpdateSimTime (CPhysSimData& simData)
 {
+#if 1
+simData.xOldSimTime = simData.xSimTime;
+CFixVector vMoved = info.position.vPos - simData.vOldPos;
+CFixVector vMoveNormal = vMoved;
+fix actualDist = CFixVector::Normalize (vMoveNormal);
+if ((simData.hitResult.nType == HIT_WALL) && (CFixVector::Dot (vMoveNormal, simData.vOffset) < 0)) {		//moved backwards
+	//don't change position or simData.xSimTime
+	info.position.vPos = simData.vOldPos;
+	if (simData.nOldSeg != simData.hitResult.nSegment)
+		RelinkToSeg (simData.nOldSeg);
+	if (simData.bSpeedBoost) {
+		info.position.vPos = simData.vStartPos;
+		SetSpeedBoostVelocity (simData.nObject, -1, -1, -1, -1, -1, &simData.vStartPos, &simData.speedBoost.vDest, 0);
+		simData.vOffset = simData.speedBoost.vVel * simData.xSimTime;
+		return 0;
+		}
+	simData.xMovedTime = 0;
+	}
+else {
+	fix attemptedDist = simData.vOffset.Mag ();
+	simData.xSimTime = FixMulDiv (simData.xSimTime, attemptedDist - actualDist, attemptedDist);
+	simData.xMovedTime = simData.xOldSimTime - simData.xSimTime;
+	if ((simData.xSimTime < 0) || (simData.xSimTime > simData.xOldSimTime)) {
+		simData.xSimTime = simData.xOldSimTime;
+		simData.xMovedTime = 0;
+		}
+	}
+#else
 	CFixVector n = simData.vMoved / simData.xMovedDist; // movement normal
 
 if (CFixVector::Dot (n, simData.vOffset) < 0) {		//moved backwards
@@ -948,18 +977,20 @@ if (CFixVector::Dot (n, simData.vOffset) < 0) {		//moved backwards
 		}
 	simData.xMovedTime = 0;
 	}
-#if 1 // unstick object from wall
+#if 0 // unstick object from wall
 UnstickFromWall (simData, mType.physInfo.velocity);
+#endif
 #endif
 return 1;
 }
+
 
 //	-----------------------------------------------------------------------------
 
 //Simulate a physics CObject for this frame
 
 #if DBG
-static bool bUseOldCode = false;
+static bool bUseOldCode = true;
 #endif
 
 void CObject::DoPhysicsSim (void)
@@ -1023,6 +1054,7 @@ for (;;) {	//Move the object
 	else if (!UpdateOffset (simData))
 		break;
 
+	int bRetry = 0;
 	do {
 		//	If retry count is getting large, then we are trying to do something stupid.
 		if (++simData.nTries > 3) {
@@ -1031,6 +1063,7 @@ for (;;) {	//Move the object
 			if (simData.nTries > 8) {
 				if (simData.bSpeedBoost)
 					simData.bSpeedBoost = 0;
+				bRetry = -1;
 				break;
 				}
 			}
@@ -1065,9 +1098,10 @@ for (;;) {	//Move the object
 		simData.GetPhysSegs ();
 		if (!ProcessOffset (simData))
 			return;
-	} while (!UpdateSimTime (simData));
+		} while (!UpdateSimTime (simData));
 
-	int bRetry = 0;
+	if (bRetry < 0)
+		break;
 	if (simData.hitResult.nType == HIT_WALL) {
 		bRetry = ProcessWallCollision (simData);
 		bUnstick = true;
@@ -1249,7 +1283,6 @@ void CObject::DoPhysicsSimOld (void)
 if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	return;
 
-
 	CPhysSimData simData (OBJ_IDX (this)); // must be called after initializing gameData.physics.xTime! Will call simData.Setup ()!
 
 Assert (info.nType != OBJ_NONE);
@@ -1314,7 +1347,7 @@ if (Index () == nDbgObj) {
 //if uses thrust, cannot have zero xDrag
 //Assert (!(mType.physInfo.flags & PF_USES_THRUST) || mType.physInfo.drag);
 //do thrust & xDrag
-#if 1
+#if NEW_PHYS_CODE
 ProcessDrag (simData);
 #else
 if (mType.physInfo.drag) {
@@ -1400,10 +1433,15 @@ simData.nTries = 0;
 int bRetry;
 
 do {	//Move the object
+	bRetry = 0;
+
+#if 0 //NEW_PHYS_CODE
+	if (!UpdateOffset (simData))
+		break;
+#else
 	float fScale = !(gameStates.app.bNostalgia || simData.bInitialize) && (IS_MISSILE (this) && (info.nId != EARTHSHAKER_MEGA_ID) && (info.nId != ROBOT_SHAKER_MEGA_ID)) 
 						? MissileSpeedScale (this) 
 						: 1;
-	bRetry = 0;
 	if (fScale < 1) {
 		CFixVector vStartVel = StartVel ();
 		CFixVector::Normalize (vStartVel);
@@ -1423,6 +1461,7 @@ do {	//Move the object
 		}
 	if (simData.vOffset.IsZero ())
 		break;
+#endif
 
 retryMove:
 
@@ -1437,6 +1476,15 @@ retryMove:
 			}
 		}
 
+#if NEW_PHYS_CODE
+	simData.vOldPos = info.position.vPos;			
+	simData.nOldSeg = info.nSegment;
+	simData.vNewPos = info.position.vPos + simData.vOffset;
+
+	SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
+	simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+	UpdateStats (this, simData.hitResult.nType);
+#else
 	simData.vNewPos = info.position.vPos + simData.vOffset;
 	simData.hitQuery.bIgnoreObjFlag = gameData.physics.bIgnoreObjFlag;
 	simData.hitQuery.p0 = &info.position.vPos;
@@ -1461,7 +1509,13 @@ retryMove:
 	UpdateStats (this, simData.hitResult.nType);
 	simData.vOldPos = info.position.vPos;			//save the CObject's position
 	simData.nOldSeg = info.nSegment;
+#endif
+
 	if (simData.hitResult.nType == HIT_BAD_P0) {
+#if 0 //NEW_PHYS_CODE
+		if (!HandleBadCollision (simData))
+			break;
+#else
 #if DBG
 		static int nBadP0 = 0;
 		HUDMessage (0, "BAD P0 %d", nBadP0++);
@@ -1478,10 +1532,12 @@ retryMove:
 			info.position.vPos = simData.vOldPos;
 			break;
 			}
+#endif
 		}
 	else if (simData.hitResult.nType == HIT_WALL) {
-#if 1
-		HandleWallCollision (simData);
+#if 0 //NEW_PHYS_CODE
+		if (!HandleWallCollision (simData))
+			break;
 #else
 		if (gameStates.render.bHaveSkyBox && (info.nType == OBJ_WEAPON) && (simData.hitResult.nSegment >= 0)) {
 			if (SEGMENTS [simData.hitResult.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
@@ -1503,12 +1559,22 @@ retryMove:
 #endif
 		}
 	else if (simData.hitResult.nType == HIT_OBJECT) {
+#if NEW_PHYS_CODE
+		if (!HandleObjectCollision (simData))
+			break;
+#else
 		CObject	*hitObjP = OBJECTS + simData.hitResult.nObject;
 
 		if (hitObjP->IsPlayerMine ())
 			simData.nTries--;
+#endif
 		}
 
+#if NEW_PHYS_CODE
+	simData.GetPhysSegs ();
+	if (!ProcessOffset (simData))
+		return;
+#else
 	//RegisterHit (simData.hitResult.vPoint);
 	if (simData.bGetPhysSegs) {
 		if (gameData.physics.nSegments && (gameData.physics.segments [gameData.physics.nSegments-1] == simData.hitResult.segList [0]))
@@ -1557,8 +1623,12 @@ retryMove:
 				}
 			}
 		}
-
+#endif
 	//calulate new sim time
+#if NEW_PHYS_CODE
+	if (!UpdateSimTime (simData))
+		goto retryMove;
+#else
 	simData.xOldSimTime = simData.xSimTime;
 	CFixVector vMoved = info.position.vPos - simData.vOldPos;
 	CFixVector vMoveNormal = vMoved;
@@ -1585,9 +1655,10 @@ retryMove:
 			simData.xMovedTime = 0;
 			}
 		}
+#endif
 
 	if (simData.hitResult.nType == HIT_WALL) {
-#if 1
+#if NEW_PHYS_CODE
 		bRetry = ProcessWallCollision (simData);
 #else
 		fix xHitSpeed, xWallPart;
@@ -1656,6 +1727,9 @@ retryMove:
 #endif
 		}
 	else if (simData.hitResult.nType == HIT_OBJECT) {
+#if NEW_PHYS_CODE
+		bRetry = ProcessObjectCollision (simData);
+#else
 		CFixVector	vOldVel;
 		CFixVector	*ppos0, *ppos1, vHitPos;
 		fix			size0, size1;
@@ -1686,6 +1760,7 @@ retryMove:
 				bRetry = 1;
 				}
 			}
+#endif
 		}
 	else if (simData.hitResult.nType == HIT_NONE) {
 #ifdef TACTILE
@@ -1704,7 +1779,7 @@ retryMove:
 #endif
 	} while (bRetry);
 
-#if 1
+#if NEW_PHYS_CODE
 FixPosition (simData);
 #else
 //	Pass retry attempts info to AI.
