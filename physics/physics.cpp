@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //Global variables for physics system
-#define NEW_PHYS_CODE	1
+#define NEW_PHYS_CODE	0
 
 #define UNSTICK_OBJS		2
 
@@ -846,8 +846,7 @@ if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {	//object 
 			RelinkToSeg (info.nSegment);
 			}
 		else {
-			CFixVector vCenter;
-			vCenter = SEGMENTS [info.nSegment].Center ();
+			CFixVector vCenter = SEGMENTS [info.nSegment].Center ();
 			vCenter -= info.position.vPos;
 			if (vCenter.Mag() > I2X (1)) {
 				CFixVector::Normalize (vCenter);
@@ -861,9 +860,8 @@ if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {	//object 
 			}
 		}
 	}
-
-simData.xOldSimTime = simData.xSimTime;
-ComputeMovedTime (simData);
+//simData.xOldSimTime = simData.xSimTime;
+//ComputeMovedTime (simData);
 return 1;
 }
 
@@ -977,9 +975,9 @@ if (CFixVector::Dot (n, simData.vOffset) < 0) {		//moved backwards
 		}
 	simData.xMovedTime = 0;
 	}
-#if 0 // unstick object from wall
-UnstickFromWall (simData, mType.physInfo.velocity);
 #endif
+#if 1 // unstick object from wall
+UnstickFromWall (simData, mType.physInfo.velocity);
 #endif
 return 1;
 }
@@ -990,7 +988,7 @@ return 1;
 //Simulate a physics CObject for this frame
 
 #if DBG
-static bool bUseOldCode = true;
+static bool bUseOldCode = false;
 #endif
 
 void CObject::DoPhysicsSim (void)
@@ -1003,6 +1001,9 @@ if (bUseOldCode) {
 	DoPhysicsSimOld ();
 	return;
 	}
+#else
+DoPhysicsSimOld ();
+return;
 #endif
 
 	CPhysSimData simData (OBJ_IDX (this)); // must be called after initializing gameData.physics.xTime! Will call simData.Setup ()!
@@ -1048,14 +1049,16 @@ simData.nTries = 0;
 
 bool bUnstick = false;
 
+int bRetry;
+
 for (;;) {	//Move the object
 	if (!simData.bUpdateOffset)
 		simData.bUpdateOffset = 1;
 	else if (!UpdateOffset (simData))
 		break;
 
-	int bRetry = 0;
 	do {
+		bRetry = -1;
 		//	If retry count is getting large, then we are trying to do something stupid.
 		if (++simData.nTries > 3) {
 			if (info.nType != OBJ_PLAYER)
@@ -1063,10 +1066,10 @@ for (;;) {	//Move the object
 			if (simData.nTries > 8) {
 				if (simData.bSpeedBoost)
 					simData.bSpeedBoost = 0;
-				bRetry = -1;
 				break;
 				}
 			}
+		bRetry = 0;
 
 		simData.vOldPos = info.position.vPos;			
 		simData.nOldSeg = info.nSegment;
@@ -1089,13 +1092,12 @@ for (;;) {	//Move the object
 				simData.nTries--;
 			}
 
+		simData.GetPhysSegs ();
 		if (simData.hitResult.nSegment == -1) {		
 			if (info.nType == OBJ_WEAPON)
 				Die ();
 			return;
 			}
-
-		simData.GetPhysSegs ();
 		if (!ProcessOffset (simData))
 			return;
 		} while (!UpdateSimTime (simData));
@@ -1572,6 +1574,11 @@ retryMove:
 
 #if NEW_PHYS_CODE
 	simData.GetPhysSegs ();
+	if (simData.hitResult.nSegment == -1) {		//some sort of horrible error
+		if (info.nType == OBJ_WEAPON)
+			Die ();
+		break;
+		}
 	if (!ProcessOffset (simData))
 		return;
 #else
