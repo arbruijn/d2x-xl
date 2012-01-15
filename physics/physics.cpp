@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //Global variables for physics system
-#define NEW_PHYS_CODE	0
+#define NEW_PHYS_CODE	1
 
 #define UNSTICK_OBJS		2
 
@@ -931,11 +931,10 @@ if ((info.nSegment >= 0) && SEGMENTS [info.nSegment].Masks (info.position.vPos, 
 
 int CObject::UpdateSimTime (CPhysSimData& simData)
 {
-#if 1
 simData.xOldSimTime = simData.xSimTime;
-CFixVector vMoved = info.position.vPos - simData.vOldPos;
-CFixVector vMoveNormal = vMoved;
-fix actualDist = CFixVector::Normalize (vMoveNormal);
+simData.vMoved = info.position.vPos - simData.vOldPos;
+CFixVector vMoveNormal = simData.vMoved;
+simData.xMovedDist = CFixVector::Normalize (vMoveNormal);
 if ((simData.hitResult.nType == HIT_WALL) && (CFixVector::Dot (vMoveNormal, simData.vOffset) < 0)) {		//moved backwards
 	//don't change position or simData.xSimTime
 	info.position.vPos = simData.vOldPos;
@@ -945,43 +944,25 @@ if ((simData.hitResult.nType == HIT_WALL) && (CFixVector::Dot (vMoveNormal, simD
 		info.position.vPos = simData.vStartPos;
 		SetSpeedBoostVelocity (simData.nObject, -1, -1, -1, -1, -1, &simData.vStartPos, &simData.speedBoost.vDest, 0);
 		simData.vOffset = simData.speedBoost.vVel * simData.xSimTime;
+		simData.bUpdateOffset = 0;
 		return 0;
 		}
+#if 0 // unstick object from wall
+	UnstickFromWall (simData, mType.physInfo.velocity);
+#endif
 	simData.xMovedTime = 0;
 	}
 else {
-	fix attemptedDist = simData.vOffset.Mag ();
-	simData.xSimTime = FixMulDiv (simData.xSimTime, attemptedDist - actualDist, attemptedDist);
+	simData.xAttemptedDist = simData.vOffset.Mag();
+	simData.xSimTime = FixMulDiv (simData.xSimTime, simData.xAttemptedDist - simData.xMovedDist, simData.xAttemptedDist);
 	simData.xMovedTime = simData.xOldSimTime - simData.xSimTime;
 	if ((simData.xSimTime < 0) || (simData.xSimTime > simData.xOldSimTime)) {
 		simData.xSimTime = simData.xOldSimTime;
 		simData.xMovedTime = 0;
 		}
 	}
-#else
-	CFixVector n = simData.vMoved / simData.xMovedDist; // movement normal
-
-if (CFixVector::Dot (n, simData.vOffset) < 0) {		//moved backwards
-	//don't change position or simData.xSimTime
-	info.position.vPos = simData.vOldPos;
-	if (simData.nOldSeg != simData.hitResult.nSegment)
-		RelinkToSeg (simData.nOldSeg);
-	if (simData.bSpeedBoost) {
-		info.position.vPos = simData.vStartPos;
-		SetSpeedBoostVelocity (Index (), -1, -1, -1, -1, -1, &simData.vStartPos, &simData.speedBoost.vDest, 0);
-		simData.vOffset = simData.speedBoost.vVel * simData.xSimTime;
-		simData.bUpdateOffset = 0;
-		return 0;
-		}
-	simData.xMovedTime = 0;
-	}
-#endif
-#if 1 // unstick object from wall
-UnstickFromWall (simData, mType.physInfo.velocity);
-#endif
 return 1;
 }
-
 
 //	-----------------------------------------------------------------------------
 
@@ -1001,7 +982,7 @@ if (bUseOldCode) {
 	DoPhysicsSimOld ();
 	return;
 	}
-#else
+#elif 0
 DoPhysicsSimOld ();
 return;
 #endif
@@ -1437,7 +1418,7 @@ int bRetry;
 do {	//Move the object
 	bRetry = 0;
 
-#if 0 //NEW_PHYS_CODE
+#if NEW_PHYS_CODE
 	if (!UpdateOffset (simData))
 		break;
 #else
@@ -1637,9 +1618,9 @@ retryMove:
 		goto retryMove;
 #else
 	simData.xOldSimTime = simData.xSimTime;
-	CFixVector vMoved = info.position.vPos - simData.vOldPos;
-	CFixVector vMoveNormal = vMoved;
-	fix actualDist = CFixVector::Normalize (vMoveNormal);
+	simData.vMoved = info.position.vPos - simData.vOldPos;
+	CFixVector vMoveNormal = simData.vMoved;
+	simData.xMovedDist = CFixVector::Normalize (vMoveNormal);
 	if ((simData.hitResult.nType == HIT_WALL) && (CFixVector::Dot (vMoveNormal, simData.vOffset) < 0)) {		//moved backwards
 		//don't change position or simData.xSimTime
 		info.position.vPos = simData.vOldPos;
@@ -1654,8 +1635,8 @@ retryMove:
 		simData.xMovedTime = 0;
 		}
 	else {
-		fix attemptedDist = simData.vOffset.Mag();
-		simData.xSimTime = FixMulDiv (simData.xSimTime, attemptedDist - actualDist, attemptedDist);
+		simData.xAttemptedDist = simData.vOffset.Mag();
+		simData.xSimTime = FixMulDiv (simData.xSimTime, simData.xAttemptedDist - simData.xMovedDist, simData.xAttemptedDist);
 		simData.xMovedTime = simData.xOldSimTime - simData.xSimTime;
 		if ((simData.xSimTime < 0) || (simData.xSimTime > simData.xOldSimTime)) {
 			simData.xSimTime = simData.xOldSimTime;
@@ -1671,11 +1652,11 @@ retryMove:
 		fix xHitSpeed, xWallPart;
 		// Find hit speed
 
-		xWallPart = gameData.collisions.hitResult.nNormals ? CFixVector::Dot (vMoved, simData.hitResult.vNormal) / gameData.collisions.hitResult.nNormals : 0;
+		xWallPart = gameData.collisions.hitResult.nNormals ? CFixVector::Dot (simData.vMoved, simData.hitResult.vNormal) / gameData.collisions.hitResult.nNormals : 0;
 		if (xWallPart && (simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0)) {
 			CollideObjectAndWall (xHitSpeed, simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
 			}
-		else if ((info.nType == OBJ_WEAPON) && vMoved.IsZero ()) 
+		else if ((info.nType == OBJ_WEAPON) && simData.vMoved.IsZero ()) 
 			Die ();
 		else
 			ScrapeOnWall (simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
@@ -1799,10 +1780,9 @@ if (info.controlType == CT_AI) {
 	// stored when entering this function, it has been stopped forcefully by something, so bounce it back to
 	// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
 	if (((simData.hitResult.nType == HIT_WALL) || (simData.hitResult.nType == HIT_BAD_P0)) && !(simData.speedBoost.bBoosted || simData.bStopped || simData.bBounced)) {	//Set velocity from actual movement
-		CFixVector vMoved;
 		fix s = FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), simData.xTimeScale, 100);
 
-		vMoved = info.position.vPos - simData.vStartPos;
+		CFixVector vMoved = info.position.vPos - simData.vStartPos;
 		s = vMoved.Mag();
 		vMoved *= (FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), simData.xTimeScale, 100));
 		if (!simData.bSpeedBoost)
