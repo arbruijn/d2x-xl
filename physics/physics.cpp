@@ -1296,6 +1296,7 @@ CFixMatrix mSaveOrient = info.position.mOrient;
 ++gameData.physics.bIgnoreObjFlag;
 if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && CollisionModel ()) {
 	simData.hitQuery.bIgnoreObjFlag = gameData.physics.bIgnoreObjFlag;
+	simData.hitQuery.p0 =
 	simData.hitQuery.p1 = &info.position.vPos;
 	simData.hitQuery.nSegment = info.nSegment;
 	simData.hitQuery.radP0 = 
