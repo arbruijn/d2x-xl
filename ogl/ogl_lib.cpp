@@ -537,6 +537,7 @@ if (gameStates.render.nShadowPass) {
 #endif
 
 	SetDepthMode (GL_LESS);
+	SetDepthWrite (true);
 	if (gameStates.render.nShadowPass == 1) {	//render unlit/final scene
 		if (!gameStates.render.nShadowMap) {
 #if GL_INFINITY

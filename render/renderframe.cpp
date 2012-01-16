@@ -550,7 +550,6 @@ if (SHOW_SHADOWS &&
 		if (FAST_SHADOWS)
 			RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
 		else {
-			PROF_START
 			RenderNeatShadows (xStereoSeparation, nWindow, nStartSeg);
 			}
 #if SOFT_SHADOWS

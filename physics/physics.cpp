@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //Global variables for physics system
-#define NEW_PHYS_CODE	1
+#define NEW_PHYS_CODE	0
 
 #define UNSTICK_OBJS		2
 
@@ -947,7 +947,7 @@ if ((simData.hitResult.nType == HIT_WALL) && (CFixVector::Dot (vMoveNormal, simD
 		simData.bUpdateOffset = 0;
 		return 0;
 		}
-#if 0 // unstick object from wall
+#if DBG // unstick object from wall
 	UnstickFromWall (simData, mType.physInfo.velocity);
 #endif
 	simData.xMovedTime = 0;
@@ -967,6 +967,8 @@ return 1;
 //	-----------------------------------------------------------------------------
 
 //Simulate a physics CObject for this frame
+
+#if NEW_PHYS_CODE == 2
 
 #if DBG
 static bool bUseOldCode = false;
@@ -1105,6 +1107,8 @@ if (bUnstick)
 	Unstick ();
 #endif
 }
+
+#endif //NEW_PHYS_CODE == 2
 
 //	----------------------------------------------------------------
 //Applies an instantaneous force on an CObject, resulting in an instantaneous
@@ -1261,7 +1265,11 @@ mType.physInfo.thrust = mType.physInfo.velocity * k;
 
 //Simulate a physics CObject for this frame
 
+#if NEW_PHYS_CODE
 void CObject::DoPhysicsSimOld (void)
+#else
+void CObject::DoPhysicsSim (void)
+#endif
 {
 if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	return;
@@ -1495,7 +1503,7 @@ retryMove:
 #endif
 
 	if (simData.hitResult.nType == HIT_BAD_P0) {
-#if 0 //NEW_PHYS_CODE
+#if NEW_PHYS_CODE
 		if (!HandleBadCollision (simData))
 			break;
 #else
@@ -1518,7 +1526,7 @@ retryMove:
 #endif
 		}
 	else if (simData.hitResult.nType == HIT_WALL) {
-#if 0 //NEW_PHYS_CODE
+#if NEW_PHYS_CODE
 		if (!HandleWallCollision (simData))
 			break;
 #else
@@ -1840,7 +1848,7 @@ if (Index () == nDbgObj) {
 	}
 #endif
 
-#if 0// UNSTICK_OBJS
+#if UNSTICK_OBJS
 Unstick ();
 #endif
 }
