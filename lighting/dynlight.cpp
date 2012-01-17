@@ -937,7 +937,8 @@ for (i = 0; i < gameData.segs.nVertices; i++) {
 		nDbgVertex = nDbgVertex;
 #endif
 	m_data.variableVertLights [i] = VariableVertexLights (i);
-	//gameData.render.color.ambient [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
+	if (gameStates.render.nLightingMethod)
+		gameData.render.color.ambient [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
 	}
 if (gameStates.render.bPerPixelLighting/* && lightmapManager.HaveLightmaps ()*/)
 	return;
