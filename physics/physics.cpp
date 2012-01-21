@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //Global variables for physics system
-#define NEW_PHYS_CODE	0
+#define NEW_PHYS_CODE	2
 
 #define UNSTICK_OBJS		2
 

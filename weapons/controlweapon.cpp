@@ -940,10 +940,10 @@ else
 		}
 xEnergyUsage = cf.ReadFix ();
 xFireWait = cf.ReadFix ();
-if (fileVersion >= 3)
-	xMultiDamageScale = cf.ReadFix ();
-else /* FIXME: hack this to set the real values */
+if (fileVersion < 3)
 	xMultiDamageScale = I2X (1);
+else if (0x7fffffff == (xMultiDamageScale = cf.ReadFix ()))
+		xMultiDamageScale = I2X (1);
 ReadBitmapIndex (&bitmap, cf);
 blob_size = cf.ReadFix ();
 xFlashSize = cf.ReadFix ();
