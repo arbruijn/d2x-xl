@@ -320,7 +320,7 @@ void tactile_set_button_jolt (void);
 /*
  * reads n CWeaponInfo structs from a CFILE
  */
-int ReadWeaponInfos (int nOffset, int nCount, CFile& cf, int fileVersion);
+int ReadWeaponInfos (int nOffset, int nCount, CFile& cf, int fileVersion, bool bDefault);
 
 extern ubyte nWeaponOrder [2][11];
 extern ubyte nDefaultWeaponOrder [2][11];
