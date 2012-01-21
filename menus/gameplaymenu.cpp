@@ -386,6 +386,8 @@ GET_VAL (gameOpts->gameplay.bNoThief, "suppress thief");
 GET_VAL (extraGameInfo [0].headlight.bDrainPower, "headlight drains power");
 GET_VAL (extraGameInfo [0].headlight.bBuiltIn, "built-in headlight");
 GET_VAL (extraGameInfo [IsMultiGame].bAllowWeaponMods, "allow weapon mods");
+if (!extraGameInfo [IsMultiGame].bAllowWeaponMods)
+	MultiProtectGame ();
 if (gameStates.app.bGameRunning)
 	GetShipSelection (m, optShip);
 DefaultGameplaySettings ();

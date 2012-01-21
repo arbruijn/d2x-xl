@@ -526,7 +526,8 @@ if (i == m.IndexOf ("allowed weapons")) {
 	goto doMenu;
 	}
 
-extraGameInfo [1].bAllowWeaponMods = ubyte (m.Value ("allow weapon mods"));
+if (!(extraGameInfo [1].bAllowWeaponMods = ubyte (m.Value ("allow weapon mods"))))
+	MultiProtectGame ();
 mpParams.bInvul = ubyte (m.Value ("spawn invul"));
 mpParams.bBrightPlayers = ubyte (m.Value ("bright ships") ? 0 : 1);
 mpParams.bShowAllNames = ubyte (m.Value ("show player names"));
