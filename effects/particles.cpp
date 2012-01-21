@@ -769,6 +769,9 @@ static CFixVector* wallNorm [MAX_THREADS];
 
 int CParticle::CollideWithWall (int nThread) 
 {
+if (m_nSegment < 0)
+	return 0;
+
 	CSegment* segP;
 	CSide* sideP;
 	int bInit, nSide, nChild, nFace, nFaces, nInFront;
