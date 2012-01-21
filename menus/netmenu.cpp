@@ -494,7 +494,8 @@ do {
 	m.AddCheck ("show players names", TXT_SHOW_NAMES, mpParams.bShowAllNames, KEY_E, HTX_MULTI2_SHOWNAMES);
 	m.AddCheck ("show players on map", TXT_SHOW_PLAYERS, mpParams.bShowPlayersOnAutomap, KEY_A, HTX_MULTI2_SHOWPLRS);
 	m.AddCheck ("short packets", TXT_SHORT_PACKETS, mpParams.bShortPackets, KEY_H, HTX_MULTI2_SHORTPKTS);
-	m.AddCheck ("allow weapon mods", TXT_ALLOW_WEAPON_MODS, extraGameInfo [1].bAllowWeaponMods, KEY_W, HTX_ALLOW_WEAPON_MODS);
+	if (!gameStates.app.bGameRunning)
+		m.AddCheck ("allow weapon mods", TXT_ALLOW_WEAPON_MODS, extraGameInfo [1].bAllowWeaponMods, KEY_C, HTX_ALLOW_WEAPON_MODS);
 	m.AddText ("", "");
 	m.AddMenu ("allowed weapons", TXT_WAOBJECTS_MENU, KEY_O, HTX_MULTI2_OBJECTS);
 	m.AddText ("", "");
@@ -526,8 +527,11 @@ if (i == m.IndexOf ("allowed weapons")) {
 	goto doMenu;
 	}
 
-if (!(extraGameInfo [1].bAllowWeaponMods = ubyte (m.Value ("allow weapon mods"))))
-	MultiProtectGame ();
+if (!gameStates.app.bGameRunning) {
+	extraGameInfo [1].bAllowWeaponMods = ubyte (m.Value ("allow weapon mods"));
+	if (!extraGameInfo [1].bAllowWeaponMods)
+		MultiProtectGame ();
+	}	
 mpParams.bInvul = ubyte (m.Value ("spawn invul"));
 mpParams.bBrightPlayers = ubyte (m.Value ("bright ships") ? 0 : 1);
 mpParams.bShowAllNames = ubyte (m.Value ("show player names"));

@@ -1947,7 +1947,7 @@ const char *defaultGameTexts [][2] = {
  {"~Helligkeit: %s", "~Brightness: %s"},
  {"Gespeicherte Spiele loeschen", "Delete saved games"},
  {"hinter ~Hindernissen verbergen", "~Hide behind obstacles"},
- {"~Waffenmods zulassen", "allow ~Weapon mods"},
+ {"modifizierte waffen ~Zulassen", "allow ~Custom weapons"},
 #if 0
  {"", ""},
 #endif
