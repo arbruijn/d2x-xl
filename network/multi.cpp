@@ -379,10 +379,10 @@ if (IsMultiGame && !IsCoopGame) {
 	gameData.pig.ship.player->reverseThrust = defaultPlayerShip.reverseThrust;
 	gameData.pig.ship.player->brakes = defaultPlayerShip.brakes;
 	gameData.pig.ship.player->wiggle = defaultPlayerShip.wiggle;
-#if 0
-	for (int i = 0; i < int (sizeofa (defaultWeaponInfoD2)); i++)
-		gameData.weapons.info [i] = defaultWeaponInfoD2 [i];
-#endif
+	if (!EGI_FLAG (bAllowWeaponMods, 0, 0, 1)) {
+		for (int i = 0; i < int (sizeofa (defaultWeaponInfoD2)); i++)
+			gameData.weapons.info [i] = defaultWeaponInfoD2 [i];
+		}
 	}
 return 1;
 }

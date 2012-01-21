@@ -942,8 +942,11 @@ xEnergyUsage = cf.ReadFix ();
 xFireWait = cf.ReadFix ();
 if (fileVersion < 3)
 	xMultiDamageScale = I2X (1);
-else if (0x7fffffff == (xMultiDamageScale = cf.ReadFix ()))
+else {
+	xMultiDamageScale = cf.ReadFix ();
+	if (!xMultiDamageScale || (xMultiDamageScale == 0x7fffffff))
 		xMultiDamageScale = I2X (1);
+	}
 ReadBitmapIndex (&bitmap, cf);
 blob_size = cf.ReadFix ();
 xFlashSize = cf.ReadFix ();
@@ -1024,15 +1027,22 @@ PrintLog (0, "},%d,%d,%d,%d,%d,%d,%d,{%d},{%d}}\n",
 
 //	-----------------------------------------------------------------------------
 
-int ReadWeaponInfos (int nOffset, int nCount, CFile& cf, int fileVersion)
+int ReadWeaponInfos (int nOffset, int nCount, CFile& cf, int fileVersion, bool bDefault)
 {
 	int i;
 
 #if PRINT_WEAPON_INFO
 PrintLog (1, "\nCWeaponInfo defaultWeaponInfosD2 [] = {\n");
 #endif
-for (i = nOffset; i < nOffset + nCount; i++)
-	gameData.weapons.info [i].Read (cf, fileVersion);
+if (bDefault || EGI_FLAG (bAllowWeaponMods, 0, 0, 1)) {
+	for (i = nOffset; i < nOffset + nCount; i++)
+		gameData.weapons.info [i].Read (cf, fileVersion);
+	}
+else {
+	CWeaponInfo wi;
+	for (i = nOffset; i < nOffset + nCount; i++)
+		wi.Read (cf, fileVersion);
+	}
 #if PRINT_WEAPON_INFO
 PrintLog (-1, "}\n\n");
 #endif

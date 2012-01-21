@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //Global variables for physics system
-#define NEW_PHYS_CODE	2
+#define NEW_PHYS_CODE	0
 
 #define UNSTICK_OBJS		2
 
@@ -1727,23 +1727,16 @@ retryMove:
 #if NEW_PHYS_CODE
 		bRetry = ProcessObjectCollision (simData);
 #else
-		CFixVector	vOldVel;
-		CFixVector	*ppos0, *ppos1, vHitPos;
-		fix			size0, size1;
-		// Mark the hit CObject so that on a retry the fvi code
-		// ignores this CObject.
-		//if (bSpeedBoost && (this == gameData.objs.consoleP))
-		//	break;
-		Assert (simData.hitResult.nObject != -1);
-		ppos0 = &OBJECTS [simData.hitResult.nObject].info.position.vPos;
-		ppos1 = &info.position.vPos;
-		size0 = OBJECTS [simData.hitResult.nObject].info.xSize;
-		size1 = info.xSize;
+		CObject* hitObjP = OBJECTS + simData.hitResult.nObject;
 		//	Calculate the hit point between the two objects.
-		Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
-		vHitPos = *ppos1 - *ppos0;
-		vHitPos = *ppos0 + vHitPos * FixDiv(size0, size0 + size1);
-		vOldVel = mType.physInfo.velocity;
+		CFixVector vHitPos = Position () - hitObjP->Position ();
+		vHitPos *= FixDiv (hitObjP->info.xSize, hitObjP->info.xSize + info.xSize);
+#if DBG
+		int l = vHitPos.Mag ();
+		l = CFixVector::Dist (hitObjP->Position (), simData.hitResult.vPoint);
+#endif
+		vHitPos += hitObjP->Position ();
+		CFixVector vOldVel = mType.physInfo.velocity;
 		//if (!(SPECTATOR (this) || SPECTATOR (OBJECTS + simData.hitResult.nObject)))
 			CollideTwoObjects (this, OBJECTS + simData.hitResult.nObject, vHitPos);
 		if (simData.speedBoost.bBoosted && (this == gameData.objs.consoleP))

@@ -330,6 +330,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bKillMissiles = 0;
 	extraGameInfo [i].bTripleFusion = 0;
 	extraGameInfo [i].bShowWeapons = 0;
+	extraGameInfo [i].bAllowWeaponMos = 1;
 	extraGameInfo [i].bEnhancedShakers = 0;
 	extraGameInfo [i].nHitboxes = 0;
 	extraGameInfo [i].nRadar = 0;
@@ -476,6 +477,7 @@ else {
 	PrintLog (0, "bKillMissiles: %d\n", extraGameInfo [1].bKillMissiles);
 	PrintLog (0, "bTripleFusion: %d\n", extraGameInfo [1].bTripleFusion);
 	PrintLog (0, "bShowWeapons: %d\n", extraGameInfo [1].bShowWeapons);
+	PrintLog (0, "bAllowWeaponMods: %d\n", extraGameInfo [1].bAllowWeaponMods);
 	PrintLog (0, "bEnhancedShakers: %d\n", extraGameInfo [1].bEnhancedShakers);
 	PrintLog (0, "nHitboxes: %d\n", extraGameInfo [1].nHitboxes);
 	PrintLog (0, "nRadar: %d\n", extraGameInfo [1].nRadar);

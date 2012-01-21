@@ -1947,6 +1947,7 @@ const char *defaultGameTexts [][2] = {
  {"~Helligkeit: %s", "~Brightness: %s"},
  {"Gespeicherte Spiele loeschen", "Delete saved games"},
  {"hinter ~Hindernissen verbergen", "~Hide behind obstacles"},
+ {"~Waffenmods zulassen", "allow ~Weapon mods"},
 #if 0
  {"", ""},
 #endif
@@ -2671,6 +2672,8 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann die Farbe des Radars ausgewaehlt werden.", "Chose a color for the RADAR here."},
  {"Hier kann eingestellt werden, ob die gestrichelten Kreise um\ndas Radar ein- oder mehrfarbig sind.", "Chose monochrome or multi colored dashed circles around the\nRADAR here."},
  {"Wenn angekreuzt, werden Zielmarkierungen von Hindernissen\nverborgen, die sich vor Ihnen befinden.", "If checked, target indicators are hidden behind obstacles\nin front of them"},
+ {"Wenn angekreuzt, werden von Levelautoren modifizierte Waffen\nverwendet; andernfalls kommen die Standardwaffen zum Einsatz.", 
+  "If checked, weapon modifications made by level authors are\nused;otherwise standard weapons are deployed."},
 #if 0
  {"", ""},
 #endif

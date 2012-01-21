@@ -1747,7 +1747,7 @@ if (gameStates.app.bPlayerIsDead)
 
 if (gameStates.app.bD2XLevel && (SEGMENTS [info.nSegment].HasNoDamageProp ()))
 	return;
-if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
+if ((info.nId == N_LOCALPLAYER) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 	return;
 if (killerObjP && (killerObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (killerObjP->info.nId).companion)
 	return;
@@ -1755,8 +1755,7 @@ if (killerObjP == this) {
 	if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bInhibitSuicide)
 		return;
 	}
-else if (killerP && gameStates.app.bHaveExtraGameInfo [1] &&
-			!(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
+else if (killerP && gameStates.app.bHaveExtraGameInfo [1] && !(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
 	if (IsTeamGame) {
 		if (GetTeam (info.nId) == GetTeam (killerObjP->info.nId))
 			return;
