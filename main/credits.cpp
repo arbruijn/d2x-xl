@@ -393,7 +393,6 @@ if (nPcxError != PCX_ERROR_NONE) {
 	return;
 	}
 songManager.Play (SONG_CREDITS, 1);
-m_bmBackdrop.SetPalette (NULL, -1, -1);
 
 KeyFlush ();
 m_xTimeout = SDL_GetTicks () + m_xDelay;
