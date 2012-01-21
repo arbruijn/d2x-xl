@@ -996,7 +996,7 @@ return 0;
 void ChangeLight (short nSegment, short nSide, int dir)
 {
 	int					i, j, k;
-	fix					dl, lNew, *pSegLightDelta;
+	fix					dl, lNew, *segLightDeltaP;
 	tUVL*					uvlP;
 	CLightDeltaIndex*	dliP;
 	CLightDelta*		dlP;
@@ -1025,14 +1025,18 @@ if ((!gameStates.render.nLightingMethod || gameStates.app.bNostalgia) && gameDat
 			for (j = dliP->count; j; j--, dlP++) {
 				if (!dlP->bValid)
 					continue;	//bogus data!
+#if DBG
+				if (dlP->nSegment == nDbgSeg)
+					nDbgSeg = nDbgSeg;
+#endif
 				uvlP = SEGMENTS [dlP->nSegment].m_sides [dlP->nSide].m_uvls;
-				pSegLightDelta = gameData.render.lights.segDeltas + dlP->nSegment * 6 + dlP->nSide;
+				segLightDeltaP = gameData.render.lights.segDeltas + dlP->nSegment * 6 + dlP->nSide;
 				for (k = 0; k < 4; k++, uvlP++) {
 					dl = dir * dlP->vertLight [k] * DL_SCALE;
-					lNew = (uvlP->l += dl);
-					if (lNew < 0)
+					uvlP->l += dl;
+					if (uvlP->l < 0)
 						uvlP->l = 0;
-					*pSegLightDelta += dl;
+					*segLightDeltaP += dl;
 					}
 				}
 			}
