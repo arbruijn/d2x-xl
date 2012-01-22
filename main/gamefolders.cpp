@@ -357,7 +357,9 @@ gameStates.app.bHaveMod = 0;
 *gameFolders.szModelDir [1] =
 *gameFolders.szModelCacheDir [1] =
 *gameFolders.szModelDir [2] =
-*gameFolders.szModelCacheDir [2] = '\0';
+*gameFolders.szModelCacheDir [2] = 
+*gameFolders.szWallpaperDir [1] = '\0';
+sprintf (gameOpts->menus.altBg.szName [1], "default.tga");
 }
 
 // ----------------------------------------------------------------------------
