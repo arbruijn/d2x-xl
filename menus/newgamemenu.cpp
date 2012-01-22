@@ -336,7 +336,7 @@ for (;;) {
 		SetFunctionMode (FMODE_MENU);
 		return;
 		}
-	GET_VAL (gameOpts->app.bEnableMods, "use mod");
+	GET_VAL (gameOpts->app.bEnableMods, "enable mods");
 	if (choice == m.IndexOf ("loadout"))
 		LoadoutOptionsMenu ();
 	else if (choice == m.IndexOf ("mission selector")) {
