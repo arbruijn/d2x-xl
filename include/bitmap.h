@@ -29,6 +29,7 @@
 #define BM_FLAG_RLE_BIG             32  // for bitmaps that RLE to > 255 per row (i.e. cockpits)
 #define BM_FLAG_SEE_THRU				64  // door or other texture containing see-through areas
 #define BM_FLAG_TGA						128
+#define BM_FLAG_OPAQUE					256
 
 #define BM_FRAMECOUNT(_bmP)	((_bmP)->m_info.frames.nCount)
 #define BM_FRAMES(_bmP)			((_bmP)->m_info.frames)
@@ -60,8 +61,8 @@ typedef struct tBmProps {
 	short   x, y;		// Offset from parentP's origin
 	short   w, h;		// width, height
 	short   rowSize;	// ubyte offset to next row
+	ushort  flags;
 	sbyte	  nMode;		// 0=Linear, 1=ModeX, 2=SVGA
-	ubyte	  flags;
 } tBmProps;
 
 class CFrameInfo {
@@ -252,7 +253,7 @@ class CBitmap : public CArray< ubyte > {
 		inline short Right (void) { return m_info.props.x + m_info.props.w; }
 		inline short Bottom (void) { return m_info.props.y + m_info.props.h; }
 		inline short RowSize (void) { return m_info.props.rowSize; }
-		inline ubyte Flags (void) { return m_info.props.flags; }
+		inline ushort Flags (void) { return m_info.props.flags; }
 		inline sbyte Mode (void) { return m_info.props.nMode; }
 		inline ubyte BPP (void) { return m_info.nBPP; }
 		inline ubyte Type (void) { return m_info.nType; }
@@ -274,9 +275,9 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetLeft (short x) { m_info.props.x = x; }
 		inline void SetTop (short y) { m_info.props.y = y; }
 		inline void SetRowSize (short rowSize) { m_info.props.rowSize = rowSize; }
-		inline void SetFlags (ubyte flags) { m_info.props.flags = flags; }
-		inline void AddFlags (ubyte flags) { m_info.props.flags |= flags; }
-		inline void DelFlags (ubyte flags) { m_info.props.flags &= ~flags; }
+		inline void SetFlags (ushort flags) { m_info.props.flags = flags; }
+		inline void AddFlags (ushort flags) { m_info.props.flags |= flags; }
+		inline void DelFlags (ushort flags) { m_info.props.flags &= ~flags; }
 		inline void SetMode (sbyte nMode) { m_info.props.nMode = nMode; }
 		inline void SetBPP (ubyte nBPP) { m_info.nBPP = nBPP; m_info.props.rowSize = m_info.props.w * m_info.nBPP; }
 		inline void SetType (ubyte nType) { m_info.nType = nType; }

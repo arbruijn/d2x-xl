@@ -147,7 +147,7 @@ m_info.props.rowSize = w * bpp;
 m_info.texP = &m_info.texture;
 m_info.texture.SetBitmap (this);
 if (bpp > 2)
-	m_info.props.flags = (char) BM_FLAG_TGA;
+	m_info.props.flags = (ushort) BM_FLAG_TGA;
 SetBuffer (buffer, 0, FrameSize ());
 }
 
@@ -276,6 +276,8 @@ int CBitmap::HasTransparency (void)
 
 if (m_info.nType && (m_info.nBPP == 4))
 	return 1;
+if (m_info.props.flags & BM_FLAG_OPAQUE)
+	return 0;
 if (m_info.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
 if (m_info.props.w) {
