@@ -257,7 +257,7 @@ if (gameOpts->movies.bFullScreen) {
 	ogl.SetBlending (false);
 	bmFrame.AddFlags (BM_FLAG_OPAQUE);
 	bmFrame.SetTranspType (0);
-q	bmFrame.Render (CCanvas::Current (), 0, yOffs, CCanvas::Current ()->Width (), dh, sx, sy, bufw, bufh, 0, 0, gameOpts->movies.nQuality);
+	bmFrame.Render (CCanvas::Current (), 0, yOffs, CCanvas::Current ()->Width (), dh, sx, sy, bufw, bufh, 0, 0, gameOpts->movies.nQuality);
 	ogl.SetBlending (true);
 	}
 else {
