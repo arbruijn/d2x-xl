@@ -103,4 +103,9 @@ int ReadHamFile (bool bDefault = true);
 int LoadD2Sounds (bool bCustom = false);
 void _CDECL_ FreeObjExtensionBitmaps (void);
 
+void InitDefaultShipProps (void);
+void SetDefaultShipProps (void);
+void SetDefaultWeaponProps (void);
+
+
 #endif //_LOADGAMEDATA_H

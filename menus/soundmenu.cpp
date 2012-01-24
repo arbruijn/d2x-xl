@@ -279,8 +279,6 @@ do {
 		m.AddCheck ("ship sound", TXT_SHIP_SOUND, gameOpts->sound.bShip, KEY_S, HTX_SHIP_SOUND);
 		m.AddCheck ("missile sound", TXT_MISSILE_SOUND, gameOpts->sound.bMissiles, KEY_M, HTX_MISSILE_SOUND);
 		m.AddCheck ("gatling sound", TXT_GATLING_SOUND, gameOpts->sound.bGatling, KEY_G, HTX_GATLING_SOUND);
-		if (gameOpts->sound.bGatling)
-			m.AddCheck ("spinup sound", TXT_SPINUP_SOUND, extraGameInfo [0].bGatlingSpeedUp, KEY_U, HTX_SPINUP_SOUND);
 		if (!gameOpts->render.cockpit.bTextGauges)
 			m.AddCheck ("shield warning", TXT_SHIELD_WARNING, gameOpts->gameplay.bShieldWarning, KEY_W, HTX_CPIT_SHIELDWARN);
 		}
@@ -294,7 +292,6 @@ do {
 		GET_VAL (gameOpts->sound.bShip, "ship sound");
 		GET_VAL (gameOpts->sound.bMissiles, "missile sound");
 		GET_VAL (gameOpts->sound.bGatling, "gatling sound");
-		GET_VAL (extraGameInfo [0].bGatlingSpeedUp, "spinup sound");
 		GET_VAL (gameOpts->gameplay.bShieldWarning, "shield warning");
 		if (gameStates.app.bGameRunning && !(gameOpts->sound.bShip && gameOpts->sound.bGatling))
 			audio.DestroyObjectSound (LOCALPLAYER.nObject);

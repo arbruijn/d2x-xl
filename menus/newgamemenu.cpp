@@ -303,10 +303,10 @@ for (;;) {
 		gameOpts->app.bEnableMods = 1;
 		MakeModFolders (bBuiltIn ? hogFileManager.m_files.MsnHogFiles.szName : missionManager [nMission].filename);
 		gameOpts->app.bEnableMods = bEnableMod;
-		if (gameStates.app.bHaveMod == bBuiltIn) {
-			m.AddText ("", "");
+		m.AddText ("", "");
+		if (gameStates.app.bHaveMod == bBuiltIn)
 			m.AddCheck ("enable mods", TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
-			}
+		m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [IsMultiGame].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
 		}
 
 #if DBG
@@ -337,6 +337,9 @@ for (;;) {
 		return;
 		}
 	GET_VAL (gameOpts->app.bEnableMods, "enable mods");
+	GET_VAL (extraGameInfo [IsMultiGame].bAllowCustomWeapons, "allow custom weapons");
+	if (!extraGameInfo [IsMultiGame].bAllowCustomWeapons)
+		SetDefaultWeaponProps ();
 	if (choice == m.IndexOf ("loadout"))
 		LoadoutOptionsMenu ();
 	else if (choice == m.IndexOf ("mission selector")) {

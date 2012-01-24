@@ -168,8 +168,8 @@ void NetworkProcessExtraGameInfo (ubyte *dataP)
 	int	i;
 
 ReceiveExtraGameInfoPacket (dataP, extraGameInfo + 1);
-if (!extraGameInfo [1].bAllowWeaponMods)
-	MultiProtectGame ();
+if (!extraGameInfo [1].bAllowCustomWeapons)
+	SetDefaultWeaponProps ();
 SetMonsterballForces ();
 LogExtraGameInfo ();
 gameStates.app.bHaveExtraGameInfo [1] = 1;

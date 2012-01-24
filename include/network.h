@@ -266,7 +266,7 @@ typedef struct tExtraGameInfo {
 	char		nSpotSize;
 	char		nSpotStrength;
 	char		bRotateMarkers;
-	char		bAllowWeaponMods;
+	char		bAllowCustomWeapons;
 	int		nLightRange;
 	tMonsterballInfo	monsterball;
 	char		szGameName [NETGAME_NAME_LEN + 1];

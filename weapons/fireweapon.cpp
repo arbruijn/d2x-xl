@@ -680,7 +680,7 @@ if (addval > I2X (1))
 if (!bGatling)
 	nPrimaryAmmo = playerP->primaryAmmo [gameData.weapons.nPrimary];
 else {
-	if ((gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling &&
+	if ((gameOpts->UseHiresSound () == 2) && /*gameOpts->sound.bGatling &&*/
 		 gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bGatlingSpeedUp, 1, 0, 0) &&
 		 (gameData.weapons.firing [0].nDuration < GATLING_DELAY))
 		return 0;

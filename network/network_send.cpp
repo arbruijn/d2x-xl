@@ -384,7 +384,7 @@ extraGameInfo [1].bDarkness = egi1Save.bDarkness;
 extraGameInfo [1].headlight.bAvailable = egi1Save.headlight.bAvailable;
 extraGameInfo [1].bPowerupLights = egi1Save.bPowerupLights;
 extraGameInfo [1].bBrightObjects = egi1Save.bBrightObjects;
-extraGameInfo [1].bAllowWeaponMods = egi1Save.bAllowWeaponMods;
+extraGameInfo [1].bAllowCustomWeapons = egi1Save.bAllowCustomWeapons;
 extraGameInfo [1].nSpotSize = egi1Save.nSpotSize;
 extraGameInfo [1].nCoopPenalty = egi1Save.nCoopPenalty;
 extraGameInfo [1].bRadarEnabled = ((netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0);

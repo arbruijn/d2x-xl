@@ -624,6 +624,6 @@ void MultiSetObjectTextures (CObject *objP);
 void MultiSendSeismic (fix start, fix end);
 void MultiSendDropBlobs (char nPlayer);
 
-void InitDefaultPlayerShip (void);
+void InitDefaultShipProps (void);
 
 #endif /* _MULTI_H */

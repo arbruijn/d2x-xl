@@ -348,8 +348,9 @@ do {
 	m.AddCheck ("headlight drains power", TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_O, HTX_HEADLIGHT_POWERDRAIN);
 	m.AddCheck ("suppress thief", TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
 	m.AddCheck ("use inventory", TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_U, HTX_GPLAY_INVENTORY);
+	m.AddCheck ("spinup gatling", TXT_SPINUP_GATLING, extraGameInfo [0].bGatlingSpeedUp, KEY_G, HTX_SPINUP_GATLING);
 	if (!gameStates.app.bGameRunning)
-		m.AddCheck ("allow weapon mods", TXT_ALLOW_WEAPON_MODS, extraGameInfo [IsMultiGame].bAllowWeaponMods, KEY_C, HTX_ALLOW_WEAPON_MODS);
+		m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [IsMultiGame].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
 	m.AddText ("", "");
 	m.AddMenu ("reorder guns", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
 	m.AddMenu ("reorder missiles", TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
@@ -386,10 +387,11 @@ GET_VAL (gameOpts->gameplay.bInventory, "use inventory");
 GET_VAL (gameOpts->gameplay.bNoThief, "suppress thief");
 GET_VAL (extraGameInfo [0].headlight.bDrainPower, "headlight drains power");
 GET_VAL (extraGameInfo [0].headlight.bBuiltIn, "built-in headlight");
+GET_VAL (extraGameInfo [0].bGatlingSpeedUp, "spinup gatling");
 if (!gameStates.app.bGameRunning) {
-	GET_VAL (extraGameInfo [IsMultiGame].bAllowWeaponMods, "allow weapon mods");
-	if (!extraGameInfo [IsMultiGame].bAllowWeaponMods)
-		MultiProtectGame ();
+	GET_VAL (extraGameInfo [IsMultiGame].bAllowCustomWeapons, "allow custom weapons");
+	if (!extraGameInfo [IsMultiGame].bAllowCustomWeapons)
+		SetDefaultWeaponProps ();
 	}
 if (gameStates.app.bGameRunning)
 	GetShipSelection (m, optShip);

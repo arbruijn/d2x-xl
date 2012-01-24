@@ -400,7 +400,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].nWeaponIcons, 0, 0);
 		RP (extraGameInfo [i].nZoomMode, 0, 0);
 		RP (extraGameInfo [i].bShowWeapons, 0, 0);
-		RP (extraGameInfo [i].bAllowWeaponMods, 0, 0);
+		RP (extraGameInfo [i].bAllowCustomWeapons, 0, 0);
 		RP (extraGameInfo [i].nFusionRamp, 0, 0);
 
 		RP (extraGameInfo [i].entropy.nCaptureVirusThreshold, 0, 0);
@@ -958,7 +958,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].loadout.nMissiles[8]", "-1"},
 	 {"extraGameInfo[0].loadout.nMissiles[9]", "-1"},
 	 {"extraGameInfo [0].bShowWeapons", "1"},
-	 {"extraGameInfo [0].bAllowWeaponMods", "1"},
+	 {"extraGameInfo [0].bAllowCustomWeapons", "1"},
 	 {"extraGameInfo [0].bBrightObjects", "0"},
 	 {"extraGameInfo[0].nFusionRamp", "2"},
 	 {"gameOptions[0].input.keyboard.bRamp[0]", "0"},

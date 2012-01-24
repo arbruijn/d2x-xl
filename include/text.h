@@ -1825,7 +1825,7 @@ void LoadGameTexts(void);
 #define TXT_SHIP_RENDEROPTIONS		GT(1041)
 #define TXT_MSL_STARTSPEED				GT(1042)
 #define TXT_GATLING_SOUND				GT(1043)
-#define TXT_SPINUP_SOUND				GT(1044)
+#define TXT_SPINUP_GATLING				GT(1044)
 #define TXT_SHIP_WHITE					GT(1045)
 #define TXT_SHIP_BLUE					GT(1046)
 #define TXT_SHIP_RED						GT(1047)
@@ -1983,7 +1983,7 @@ void LoadGameTexts(void);
 #define TXT_BRIGHTNESS					GT(1199)
 #define TXT_DELETE_SAVEGAMES			GT(1200)
 #define TXT_HIDE_TGTIND					GT(1201)
-#define TXT_ALLOW_WEAPON_MODS			GT(1202)
+#define TXT_ALLOW_CUSTOM_WEAPONS			GT(1202)
 
 #if 0
 
@@ -2555,7 +2555,7 @@ void LoadGameTexts(void);
 #define HTX_RENDER_SHIPOPTS			HT(350)
 #define HTX_MSL_STARTSPEED				HT(351)
 #define HTX_GATLING_SOUND				HT(352)
-#define HTX_SPINUP_SOUND				HT(353)
+#define HTX_SPINUP_GATLING				HT(353)
 #define HTX_SHIPCOLOR					HT(354)
 #define HTX_AUTOMAP_GRAYOUT			HT(355)
 #define HTX_LIGHTNING_ROBOT_OMEGA	HT(356)
@@ -2633,7 +2633,7 @@ void LoadGameTexts(void);
 #define HTX_CPIT_RADARCOLOR			HT(427)
 #define HTX_CPIT_RADARSTYLE			HT(428)
 #define HTX_HIDE_TGTIND					HT(429)
-#define HTX_ALLOW_WEAPON_MODS			HT(430)
+#define HTX_ALLOW_CUSTOM_WEAPONS			HT(430)
 
 #if 0
 

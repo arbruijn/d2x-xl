@@ -236,7 +236,7 @@ PrintLog (-1);
 automap.Init ();
 PrintLog (-1);
 /*---*/PrintLog (1, "Default ship data...\n");
-InitDefaultPlayerShip ();
+InitDefaultShipProps ();
 PrintLog (-1);
 nClearWindow = 2;		//	do portal only window clear.
 /*---*/PrintLog (1, "Default settings...\n");

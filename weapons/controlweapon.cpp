@@ -1034,7 +1034,7 @@ int ReadWeaponInfos (int nOffset, int nCount, CFile& cf, int fileVersion, bool b
 #if PRINT_WEAPON_INFO
 PrintLog (1, "\nCWeaponInfo defaultWeaponInfosD2 [] = {\n");
 #endif
-if (bDefault || EGI_FLAG (bAllowWeaponMods, 0, 0, 1)) {
+if (bDefault || EGI_FLAG (bAllowCustomWeapons, 0, 0, 1)) {
 	for (i = nOffset; i < nOffset + nCount; i++)
 		gameData.weapons.info [i].Read (cf, fileVersion);
 	}

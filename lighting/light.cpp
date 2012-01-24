@@ -996,7 +996,7 @@ return 0;
 void ChangeLight (short nSegment, short nSide, int dir)
 {
 	int					i, j, k;
-	fix					dl, lNew, *segLightDeltaP;
+	fix					dl, * segLightDeltaP;
 	tUVL*					uvlP;
 	CLightDeltaIndex*	dliP;
 	CLightDelta*		dlP;

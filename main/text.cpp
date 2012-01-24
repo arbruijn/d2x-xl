@@ -1787,7 +1787,7 @@ const char *defaultGameTexts [][2] = {
  {"~Schiffs-Einstellungen...", "s~Hip options..."},
  {"Raketen~Start: %s", "missile launch ~Speed: %s"},
  {"Gatlinggeraeusche erzeugen", "play ~Gatling sounds"},
- {"Anlaufgeraeusch abspielen", "play speed~Up sound"},
+ {"Maschinenkanonen hoch~Drehen", "spin up ~Gatling guns"},
  {"weiss", "white"},
  {"blau", "blue"},
  {"rot", "red"},

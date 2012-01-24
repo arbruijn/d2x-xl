@@ -120,7 +120,7 @@ else
 		ADDFLAG (AXI.bPlayerShield, "Shield");
 		ADDFLAG (AXI.bDamageExplosions, "Damage");
 		ADDFLAG (AXI.bShowWeapons, "Weapons");
-		ADDFLAG (AXI.bAllowWeaponMods, "Weapon mods");
+		ADDFLAG (AXI.bAllowCustomWeapons, "Custom weapons");
 		ADDFLAG (AXI.bGatlingSpeedUp, "Gatling speedup");
 		}
 	else
