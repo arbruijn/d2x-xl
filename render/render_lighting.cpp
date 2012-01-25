@@ -262,8 +262,12 @@ for (i = nStart; i < nEnd; i++) {
 #endif
 				}
 			*colorP = *vertColorP;
-			if (nColor)
-				*colorP *= faceColor [nColor];
+			if (nColor) {
+				if (gameStates.render.bPerPixelLighting == 2)
+					*colorP = faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
+				else
+					*colorP *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
+				}
 			colorP->Alpha () = fAlpha;
 			}
 		}
@@ -419,8 +423,12 @@ for (i = nStart; i < nEnd; i++) {
 					nVertex = nVertex;
 #endif
 				*colorP = *vertColorP;
-				if (nColor)
-					*colorP *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
+				if (nColor) {
+					if (gameStates.render.bPerPixelLighting == 2)
+						*colorP = faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
+					else
+						*colorP *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
+					}
 				colorP->Alpha () = fAlpha;
 				}
 			}
@@ -555,7 +563,10 @@ for (i = nStart; i < nEnd; i++) {
 					if (!nColor) 
 						colorP->Alpha () = fAlpha;
 					else if (nColor > 0) {
-						*colorP *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
+						if (gameStates.render.bPerPixelLighting == 2)
+							*colorP = faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
+						else
+							*colorP *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
 						colorP->Alpha () = fAlpha;
 						}
 					}

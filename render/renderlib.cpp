@@ -145,23 +145,32 @@ ogl.SetDepthMode (depthFunc);
 char IsColoredSegFace (short nSegment, short nSide)
 {
 	CSegment*	segP = SEGMENTS + nSegment;
-	short			nConnSeg;
+	short			nConnSeg = segP->m_children [nSide];
 	int			owner;
 
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) &&
 	 ((owner = segP->m_owner) > 0)) {
-	nConnSeg = segP->m_children [nSide];
 	if ((nConnSeg < 0) || (SEGMENTS [nConnSeg].m_owner != owner))
 		return (owner == 1) ? 2 : 1;
 	}
-nConnSeg = segP->m_children [nSide];
-if ((nConnSeg >= 0) && (segP->m_function == SEGMENTS [nConnSeg].m_function))
-	return 0;
-if (segP->HasWaterProp ())
+
+if (nConnSeg < 0) {
+	if (segP->HasWaterProp ())
+		return 3;
+	if (segP->HasLavaProp ())
+		return 4;
+	}
+CSegment *connSegP = SEGMENTS + nConnSeg;
+if (segP->HasWaterProp () != connSegP->HasWaterProp ())
 	return 3;
-if (segP->HasLavaProp ())
+if (segP->HasLavaProp () != connSegP->HasLavaProp ())
 	return 4;
-return 0;
+if (segP->m_function == connSegP->m_function)
+	return 0;
+return (segP->m_function == SEGMENT_FUNC_TEAM_BLUE) || 
+		 (segP->m_function == SEGMENT_FUNC_TEAM_RED) || 
+		 (connSegP->m_function == SEGMENT_FUNC_TEAM_BLUE) || 
+		 (connSegP->m_function == SEGMENT_FUNC_TEAM_RED);
 }
 
 // ----------------------------------------------------------------------------
@@ -196,7 +205,17 @@ else {
 		return NULL;
 	nConnSeg = segP->m_children [nSide];
 	if (nConnSeg >= 0) {
-		if (segP->m_function == SEGMENTS [nConnSeg].m_function)
+		CSegment *connSegP = SEGMENTS + nConnSeg;
+		if (segP->HasWaterProp () == connSegP->HasWaterProp ())
+			return NULL;
+		if (segP->HasLavaProp () == connSegP->HasLavaProp ())
+			return NULL;
+		if (segP->m_function == connSegP->m_function)
+			return NULL;
+		if ((segP->m_function != SEGMENT_FUNC_TEAM_BLUE) &&
+			 (segP->m_function != SEGMENT_FUNC_TEAM_RED) &&
+			 (connSegP->m_function != SEGMENT_FUNC_TEAM_BLUE) &&
+			 (connSegP->m_function != SEGMENT_FUNC_TEAM_RED))
 			return NULL;
 		if (IS_WALL (segP->WallNum (nSide)))
 			return NULL;

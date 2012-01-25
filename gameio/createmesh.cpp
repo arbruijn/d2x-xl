@@ -985,6 +985,10 @@ m_faceP->m_info.bSegColor = 1;
 m_faceP->m_info.bAdditive = 
 	(SEGMENTS [nSegment].m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA)) || 
 	(SEGMENTS [nSegment].m_function >= SEGMENT_FUNC_TEAM_BLUE);
+#if DBG
+if (SEGMENTS [nSegment].m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA))
+	 nDbgSeg = nDbgSeg;
+#endif
 }
 
 //------------------------------------------------------------------------------
