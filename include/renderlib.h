@@ -60,6 +60,7 @@ int SetVertexColors (tFaceProps *propsP);
 fix SetVertexLight (int nSegment, int nSide, int nVertex, CFaceColor *pc, fix light);
 int SetFaceLight (tFaceProps *propsP);
 void AdjustVertexColor (CBitmap *bmP, CFaceColor *pc, fix xLight);
+char IsColoredSeg (short nSegment);
 char IsColoredSegFace (short nSegment, short nSide);
 CFloatVector *ColoredSegmentColor (int nSegment, int nSide, char nColor);
 int IsMonitorFace (short nSegment, short nSide, int bForce);

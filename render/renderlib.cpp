@@ -142,25 +142,42 @@ ogl.SetDepthMode (depthFunc);
 
 // ----------------------------------------------------------------------------
 
+char IsColoredSeg (short nSegment)
+{
+if (nSegment < 0)
+	return 0;
+CSegment* segP = SEGMENTS + nSegment;
+if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0))
+	return (segP->m_owner == 1) ? 2 : 1;
+	if (segP->HasWaterProp ())
+		return 3;
+	if (segP->HasLavaProp ())
+		return 4;
+if (segP->m_function == SEGMENT_FUNC_TEAM_BLUE) 
+	return 1;
+if (segP->m_function == SEGMENT_FUNC_TEAM_RED)
+	return 2;
+return 0;
+}
+
+// ----------------------------------------------------------------------------
+
 char IsColoredSegFace (short nSegment, short nSide)
 {
 	CSegment*	segP = SEGMENTS + nSegment;
-	short			nConnSeg = segP->m_children [nSide];
-	int			owner;
+	CSegment*	connSegP = (segP->m_children [nSide] < 0) ? NULL : SEGMENTS + segP->m_children [nSide];
 
-if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) &&
-	 ((owner = segP->m_owner) > 0)) {
-	if ((nConnSeg < 0) || (SEGMENTS [nConnSeg].m_owner != owner))
-		return (owner == 1) ? 2 : 1;
+if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0)) {
+	if (!connSegP || (connSegP->m_owner != segP->m_owner))
+		return (segP->m_owner == 1) ? 2 : 1;
 	}
 
-if (nConnSeg < 0) {
+if (!connSegP) {
 	if (segP->HasWaterProp ())
 		return 3;
 	if (segP->HasLavaProp ())
 		return 4;
 	}
-CSegment *connSegP = SEGMENTS + nConnSeg;
 if (segP->HasWaterProp () != connSegP->HasWaterProp ())
 	return 3;
 if (segP->HasLavaProp () != connSegP->HasLavaProp ())
@@ -184,18 +201,20 @@ CFloatVector segmentColors [4] = {
 CFloatVector *ColoredSegmentColor (int nSegment, int nSide, char nColor)
 {
 	CSegment*	segP = SEGMENTS + nSegment;
-	short			nConnSeg;
-	int			owner;
+	CSegment*	connSegP = (segP->m_children [nSide] < 0) ? NULL : SEGMENTS + segP->m_children [nSide];
+
+#if DBG
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 
 if (nColor > 0)
 	nColor--;
 else {
-	if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) &&
-		((owner = segP->m_owner) > 0)) {
-		nConnSeg = segP->m_children [nSide];
-		if ((nConnSeg >= 0) && (SEGMENTS [nConnSeg].m_owner == owner))
+	if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0)) {
+		if (connSegP && (connSegP->m_owner == segP->m_owner))
 			return NULL;
-		nColor = (owner == 1);
+		nColor = (segP->m_owner == 1);
 		}
 	if (segP->HasWaterProp ())
 		nColor = 2;
@@ -203,9 +222,7 @@ else {
 		nColor = 3;
 	else
 		return NULL;
-	nConnSeg = segP->m_children [nSide];
-	if (nConnSeg >= 0) {
-		CSegment *connSegP = SEGMENTS + nConnSeg;
+	if (connSegP >= 0) {
 		if (segP->HasWaterProp () == connSegP->HasWaterProp ())
 			return NULL;
 		if (segP->HasLavaProp () == connSegP->HasLavaProp ())

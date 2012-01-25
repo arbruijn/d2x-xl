@@ -269,8 +269,10 @@ m_nMaxTriangles = 0;
 m_nMaxTriangles = 0;
 m_nFreeEdges = -1;
 m_nVertices = gameData.segs.nVertices;
-if (!AllocData ())
+if (!AllocData ()) {
+	PrintLog (-1);
 	return 0;
+	}
 
 CSegFace *faceP;
 tFaceTriangle *grsTriP;
@@ -982,9 +984,9 @@ void CQuadMeshBuilder::InitColoredFace (short nSegment)
 m_faceP->m_info.nBaseTex = -1;
 m_faceP->m_info.bTransparent = 1;
 m_faceP->m_info.bSegColor = 1;
-m_faceP->m_info.bAdditive = 
-	(SEGMENTS [nSegment].m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA)) || 
-	(SEGMENTS [nSegment].m_function >= SEGMENT_FUNC_TEAM_BLUE);
+m_faceP->m_info.bAdditive = 0;
+	//(SEGMENTS [nSegment].m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA)) || 
+	//(SEGMENTS [nSegment].m_function >= SEGMENT_FUNC_TEAM_BLUE);
 #if DBG
 if (SEGMENTS [nSegment].m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA))
 	 nDbgSeg = nDbgSeg;
@@ -1418,9 +1420,10 @@ gameData.segs.fVertices.Resize (LEVEL_VERTICES + LEVEL_SIDES);
 gameData.segs.points.Resize (LEVEL_VERTICES + LEVEL_SIDES);
 
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
-	m_bColoredSeg = ((m_segP->m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA)) ||
-						  ((m_segP->m_function >= SEGMENT_FUNC_TEAM_BLUE) && (m_segP->m_function <= SEGMENT_FUNC_TEAM_RED))) ||
-					     (m_segP->m_group >= 0);
+	bool bColoredSeg = IsColoredSeg (nSegment);
+						 //((m_segP->m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA)) ||
+						 // ((m_segP->m_function >= SEGMENT_FUNC_TEAM_BLUE) && (m_segP->m_function <= SEGMENT_FUNC_TEAM_RED))) ||
+					  //   (m_segP->m_group >= 0);
 #if DBG
 	if (nSegment == nDbgSeg)
 		m_faceP = m_faceP;
@@ -1443,18 +1446,19 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
-		m_nWall = SEGMENTS [nSegment].WallNum (nSide);
+		m_nWall = m_segP->WallNum (nSide);
 		m_nWallType = IS_WALL (m_nWall) ? WALLS [m_nWall].IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
-		if (m_bColoredSeg || m_nWallType) {
+		bool bColoredChild = IsColoredSeg (m_segP->m_children [nSide]);
+		if (bColoredSeg || bColoredChild || m_nWallType) {
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			memcpy (m_sideVerts, SEGMENTS [nSegment].Corners (nSide), 4 * sizeof (ushort));
+			memcpy (m_sideVerts, m_segP->Corners (nSide), 4 * sizeof (ushort));
 			InitFace (nSegment, nSide, bRebuild);
 			if (m_nWallType)
 				InitTexturedFace ();
-			else if (m_bColoredSeg)
+			else if (bColoredSeg || bColoredChild)
 				InitColoredFace (nSegment);
 			if (gameStates.render.bTriangleMesh) {
 				// split in four triangles, using the quad's center of gravity as additional vertex

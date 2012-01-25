@@ -87,7 +87,7 @@ class CQuadMeshBuilder {
 		short				m_nOvlTexCount;
 		short				m_nWall;
 		short				m_nWallType;
-		bool				m_bColoredSeg;
+		//bool				m_bColoredSeg;
 
 		CTriMeshBuilder	m_triMeshBuilder;
 
