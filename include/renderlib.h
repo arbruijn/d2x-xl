@@ -55,7 +55,8 @@ void TransformSideCenters (void);
 #endif
 
 int IsTransparentTexture (short nTexture);
-int SetVertexColor (int nVertex, CFaceColor *pc);
+void AlphaBlend (CFloatVector& dest, CFloatVector& other);
+int SetVertexColor (int nVertex, CFaceColor *pc, int bBlend = 0);
 int SetVertexColors (tFaceProps *propsP);
 fix SetVertexLight (int nSegment, int nSide, int nVertex, CFaceColor *pc, fix light);
 int SetFaceLight (tFaceProps *propsP);

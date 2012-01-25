@@ -258,14 +258,40 @@ if (m > l)
 
 //------------------------------------------------------------------------------
 
-int SetVertexColor (int nVertex, CFaceColor *colorP)
+void AlphaBlend (CFloatVector& dest, CFloatVector& src)
+{
+float da = 1.0f - src.v.color.a;
+dest.v.color.r = dest.v.color.r * da + src.v.color.r * src.v.color.a;
+dest.v.color.g = dest.v.color.g * da + src.v.color.g * src.v.color.a;
+dest.v.color.b = dest.v.color.b * da + src.v.color.b * src.v.color.a;
+//dest.v.color.a += other.v.color.a;
+//if (dest.v.color.a > 1.0f)
+//	dest.v.color.a = 1.0f;
+}
+
+//------------------------------------------------------------------------------
+
+int SetVertexColor (int nVertex, CFaceColor *colorP, int bBlend)
 {
 #if DBG
 if (nVertex == nDbgVertex)
 	nVertex = nVertex;
 #endif
-if (gameStates.render.bAmbientColor) 
-	*colorP += gameData.render.color.ambient [nVertex];
+if (gameStates.render.bAmbientColor) { 
+	if (bBlend) {
+#if 1
+		*colorP *= gameData.render.color.ambient [nVertex];
+#else
+		CFaceColor* vertColorP = &gameData.render.color.ambient [nVertex];
+		float a = colorP->v.color.a, da = 1.0f - a;
+		colorP->v.color.r = colorP->v.color.r * a + vertColorP->v.color.r * da;
+		colorP->v.color.g = colorP->v.color.g * a + vertColorP->v.color.g * da;
+		colorP->v.color.b = colorP->v.color.b * a + vertColorP->v.color.b * da;
+#endif
+		}
+	else
+		*colorP += gameData.render.color.ambient [nVertex];
+	}
 return 1;
 }
 

@@ -631,7 +631,7 @@ const char *pszPPXLMLightingFS [] = {
 	"  discard;\r\n" \
 	"else {\r\n" \
 	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
-	"	vec4 texColor = (nType == 0) ? vec4 (1.0, 1.0, 1.0, 1.0) : texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"	vec4 texColor = (nType == 0) ? vec4 (gl_Color.rgb, 1.0) : texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = (nType == 1) ? vec4 (0.0, 0.0, 0.0, 0.0) : texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
@@ -663,9 +663,7 @@ const char *pszPPXLMLightingFS [] = {
 	"			}\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"  //colorSum *= texColor;\r\n" \
-	"  colorSum *= mix (texColor, gl_Color, gl_Color.a);\r\n" \
-	"  colorSum.rgb *= gl_Color.rgb;\r\n" \
+	"  colorSum *= texColor;\r\n" \
 	"	gl_FragColor = vec4 (min (texColor.rgb, colorSum.rgb) * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	"}"
@@ -1243,8 +1241,8 @@ if (shaderManager.Rebuild (shaderProg) || (nType != nLastType));
 			}
 		}
 	}
-//if (!nType)
-//	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
+if (!nType)
+	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
 glUniform1i (glGetUniformLocation (shaderProg, "nType"), GLint (nType));
 glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
 glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"), (nLights ? GLfloat (nLights) / GLfloat (ogl.m_states.nLights) : 1.0f) * gameData.render.fBrightness);

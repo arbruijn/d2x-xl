@@ -163,7 +163,7 @@ if (faceP->m_info.bSegColor) {
 	if ((faceP->m_info.nSegColor = IsColoredSegFace (nSegment, nSide))) {
 		faceP->m_info.color = *ColoredSegmentColor (nSegment, nSide, faceP->m_info.nSegColor);
 		faceColorP [2].Assign (faceP->m_info.color);
-		//if (faceP->m_info.nBaseTex < 0)
+		if (faceP->m_info.nBaseTex < 0)
 			*fAlphaP = faceP->m_info.color.Alpha ();
 		nColor = 2;
 		}
@@ -423,13 +423,13 @@ for (i = nStart; i < nEnd; i++) {
 					nVertex = nVertex;
 #endif
 				*colorP = *vertColorP;
-				if (nColor) {
-					if (gameStates.render.bPerPixelLighting == 2)
-						*colorP = faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
-					else
-						*colorP *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
-					}
 				colorP->Alpha () = fAlpha;
+				if (!gameStates.render.bPerPixelLighting && (nColor > 0)) {
+					AlphaBlend (*colorP, faceColor [nColor]);
+					//*colorP *= faceColor [nColor]; // set the material color for lightmap driven lighting models
+					if (faceP->m_info.bTextured)
+						colorP->Alpha () = fAlpha;
+					}
 				}
 			}
 		lightManager.Material ().bValid = 0;
@@ -504,7 +504,7 @@ for (i = nStart; i < nEnd; i++) {
 			}
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
-		faceColor [nColor].Alpha () = fAlpha;
+		//faceColor [nColor].Alpha () = fAlpha;
 		faceP->m_info.color.Assign (faceColor [nColor]);
 		if (!(bNeedLight || nColor) && faceP->m_info.bHasColor)
 			continue;
@@ -537,6 +537,10 @@ for (i = nStart; i < nEnd; i++) {
 						if (UpdateColor (vertColorP))
 #endif
 							{
+#if DBG
+							if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+								nSegment = nSegment;
+#endif
 							if (nLights + lightManager.VariableVertLights (nVertex) == 0) { // no dynamic lights => only ambient light contribution
 								*vertColorP = gameData.render.color.ambient [nVertex];
 								vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
@@ -560,14 +564,12 @@ for (i = nStart; i < nEnd; i++) {
 #	endif
 						*colorP = *vertColorP;
 						}
-					if (!nColor) 
-						colorP->Alpha () = fAlpha;
-					else if (nColor > 0) {
-						if (gameStates.render.bPerPixelLighting == 2)
-							*colorP = faceColor [nColor]; // set the material color for lightmap driven lighting models
-						else
-							*colorP *= faceColor [nColor]; // multiply the material color in for lighting models not lightmap driven
-						colorP->Alpha () = faceP->m_info.bTextured ? 1.0f : fAlpha;
+					colorP->Alpha () = fAlpha;
+					if (!gameStates.render.bPerPixelLighting && (nColor > 0)) {
+						AlphaBlend (*colorP, faceColor [nColor]);
+						//*colorP *= faceColor [nColor]; // set the material color for lightmap driven lighting models
+						//if (faceP->m_info.bTextured)
+						//	colorP->Alpha () = fAlpha;
 						}
 					}
 				}
@@ -641,7 +643,7 @@ for (i = nStart; i < nEnd; i++) {
 				if (nVertex == nDbgVertex)
 					nDbgVertex = nDbgVertex;
 #endif
-				SetVertexColor (nVertex, &c);
+				SetVertexColor (nVertex, &c, nColor != 0);
 				xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % 4].l);
 				AdjustVertexColor (NULL, &c, xLight);
 				}

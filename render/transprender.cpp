@@ -165,13 +165,13 @@ else {
 void CTranspPoly::RenderFace (void)
 {
 PROF_START
-	CSegFace*		faceP;
-	tFaceTriangle*	triP;
+	//CSegFace*		faceP = this->faceP;
+	//tFaceTriangle*	triP = this->triP;
 	CBitmap*			bmBot = bmP, *bmTop, *bmMask;
 	int				bDecal, 
 						bLightmaps = transparencyRenderer.Data ().bLightmaps && !gameStates.render.bFullBright,
-						bTextured = (bmBot != NULL), 
-						bColored = (nColors == nVertices) && !(bTextured && gameStates.render.bFullBright);
+						bTextured = (faceP->m_info.nSegColor == 0) && (bmBot != NULL), 
+						bColored = (nColors == nVertices) && (bTextured || (gameStates.render.bPerPixelLighting != 2)) && !gameStates.render.bFullBright;
 
 #if TI_POLY_OFFSET
 if (!bmBot) {
@@ -180,9 +180,6 @@ if (!bmBot) {
 	glPolygonMode (GL_FRONT, GL_FILL);
 	}
 #endif
-
-faceP = this->faceP;
-triP = this->triP;
 
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
@@ -277,9 +274,11 @@ if (!bTextured) {
 	}
 #endif
 ogl.SetupTransform (1);
-if (gameStates.render.bFullBright)
+if (!(bColored || bTextured))
+	glColor4fv (reinterpret_cast<GLfloat*> (&faceP->m_info.color));
+else if (gameStates.render.bFullBright)
 	glColor4f (1.0f, 1.0f, 1.0f, color [0].Alpha ());
-else 
+else
 	glColor4fv (reinterpret_cast<GLfloat*> (color));
 ogl.SetBlendMode (bAdditive);
 
@@ -298,14 +297,14 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 		}
 	else {
 		if (gameStates.render.bPerPixelLighting == 1) {
-			SetupLightmapShader (faceP, int (faceP->m_info.nRenderType), false);
+			SetupLightmapShader (faceP, bTextured ? int (faceP->m_info.nRenderType) : 0, false);
 			OglDrawArrays (nPrimitive, 0, nVertices);
 			}
 		else {
 			ogl.m_states.iLight = 0;
 			lightManager.Index (0,0).nActive = -1;
 			for (;;) {
-				SetupPerPixelLightingShader (faceP, int (faceP->m_info.nRenderType), false);
+				SetupPerPixelLightingShader (faceP, bTextured ? int (faceP->m_info.nRenderType) : 0, false);
 				OglDrawArrays (nPrimitive, 0, nVertices);
 				if (ogl.m_states.iLight >= ogl.m_states.nLights) 
 					break;

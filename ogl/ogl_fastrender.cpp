@@ -197,7 +197,7 @@ else
 #endif
 if (!bColored && gameOpts->render.automap.bGrayOut)
 	nShader = SetupGrayScaleShader (nType, colorP);
-else if (faceP && (gameStates.render.bPerPixelLighting == 2))
+else if (!gameStates.render.bFullBright && faceP && (gameStates.render.bPerPixelLighting == 2))
 	nShader = SetupPerPixelLightingShader (faceP, nType, false);
 else if (gameStates.render.bHeadlights)
 	nShader = lightManager.Headlights ().SetupShader (nType, lightmapManager.HaveLightmaps (), colorP);
@@ -425,11 +425,12 @@ if (bmTop) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
 gameStates.render.history.nType = (bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL));
-if (/*gameOpts->render.bUseShaders &&*/ bTransparent && (gameStates.render.nType < RENDER_TYPE_SKYBOX) && !bMonitor) {
+if ((bTransparent || (faceP->m_info.nSegColor && gameStates.render.bPerPixelLighting)) && (gameStates.render.nType < RENDER_TYPE_SKYBOX) && !bMonitor) {
 	faceP->m_info.nRenderType = gameStates.render.history.nType;
 	faceP->m_info.bColored = bColored;
 	transparencyRenderer.AddFace (faceP);
-	return 0;
+	if (!(faceP->m_info.nSegColor && bmBot))
+		return 0;
 	}
 
 #if 1
