@@ -278,16 +278,14 @@ if (nVertex == nDbgVertex)
 	nVertex = nVertex;
 #endif
 if (gameStates.render.bAmbientColor) { 
-	if (bBlend) {
-#if 1
+	if (bBlend == 1)
 		*colorP *= gameData.render.color.ambient [nVertex];
-#else
+	else if (bBlend == 2) {
 		CFaceColor* vertColorP = &gameData.render.color.ambient [nVertex];
 		float a = colorP->v.color.a, da = 1.0f - a;
 		colorP->v.color.r = colorP->v.color.r * a + vertColorP->v.color.r * da;
 		colorP->v.color.g = colorP->v.color.g * a + vertColorP->v.color.g * da;
 		colorP->v.color.b = colorP->v.color.b * a + vertColorP->v.color.b * da;
-#endif
 		}
 	else
 		*colorP += gameData.render.color.ambient [nVertex];

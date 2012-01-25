@@ -643,7 +643,7 @@ for (i = nStart; i < nEnd; i++) {
 				if (nVertex == nDbgVertex)
 					nDbgVertex = nDbgVertex;
 #endif
-				SetVertexColor (nVertex, &c, nColor != 0);
+				SetVertexColor (nVertex, &c, nColor ? faceP->m_info.bTextured ? 2 : 1 : 0);
 				xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % 4].l);
 				AdjustVertexColor (NULL, &c, xLight);
 				}
