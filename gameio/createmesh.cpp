@@ -1456,10 +1456,10 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 #endif
 			memcpy (m_sideVerts, m_segP->Corners (nSide), 4 * sizeof (ushort));
 			InitFace (nSegment, nSide, bRebuild);
+			if (bColoredSeg || bColoredChild)
+				InitColoredFace (nSegment);
 			if (m_nWallType)
 				InitTexturedFace ();
-			else if (bColoredSeg || bColoredChild)
-				InitColoredFace (nSegment);
 			if (gameStates.render.bTriangleMesh) {
 				// split in four triangles, using the quad's center of gravity as additional vertex
 				if (!gameStates.render.bPerPixelLighting && (m_sideP->m_nType == SIDE_IS_QUAD) &&

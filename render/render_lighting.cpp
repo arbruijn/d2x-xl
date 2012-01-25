@@ -163,7 +163,7 @@ if (faceP->m_info.bSegColor) {
 	if ((faceP->m_info.nSegColor = IsColoredSegFace (nSegment, nSide))) {
 		faceP->m_info.color = *ColoredSegmentColor (nSegment, nSide, faceP->m_info.nSegColor);
 		faceColorP [2].Assign (faceP->m_info.color);
-		if (faceP->m_info.nBaseTex < 0)
+		//if (faceP->m_info.nBaseTex < 0)
 			*fAlphaP = faceP->m_info.color.Alpha ();
 		nColor = 2;
 		}
@@ -558,16 +558,16 @@ for (i = nStart; i < nEnd; i++) {
 							G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, NULL, 1, 0, nThread);
 							}
 #	endif
+						*colorP = *vertColorP;
 						}
-					*colorP = *vertColorP;
 					if (!nColor) 
 						colorP->Alpha () = fAlpha;
 					else if (nColor > 0) {
 						if (gameStates.render.bPerPixelLighting == 2)
-							*colorP = faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
+							*colorP = faceColor [nColor]; // set the material color for lightmap driven lighting models
 						else
-							*colorP *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
-						colorP->Alpha () = fAlpha;
+							*colorP *= faceColor [nColor]; // multiply the material color in for lighting models not lightmap driven
+						colorP->Alpha () = faceP->m_info.bTextured ? 1.0f : fAlpha;
 						}
 					}
 				}
