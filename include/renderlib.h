@@ -109,11 +109,4 @@ return IsTransparentTexture (SEGMENTS [propsP->segNum].m_sides [propsP->sideNum]
 
 //------------------------------------------------------------------------------
 
-static inline int IsWaterTexture (short nTexture)
-{
-return ((nTexture >= 399) && (nTexture <= 403));
-}
-
-//------------------------------------------------------------------------------
-
 #endif // _RENDERLIB_H

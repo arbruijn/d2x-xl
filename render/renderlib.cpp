@@ -151,14 +151,16 @@ if (!gameStates.render.nLightingMethod)
 CSegment* segP = SEGMENTS + nSegment;
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0))
 	return (segP->m_owner == 1) ? 2 : 1;
-	if (segP->HasWaterProp ())
-		return 3;
-	if (segP->HasLavaProp ())
-		return 4;
+if (segP->HasWaterProp ())
+	return 3;
+if (segP->HasLavaProp ())
+	return 4;
+#if 0
 if (segP->m_function == SEGMENT_FUNC_TEAM_BLUE) 
 	return 1;
 if (segP->m_function == SEGMENT_FUNC_TEAM_RED)
 	return 2;
+#endif
 return 0;
 }
 
@@ -188,12 +190,16 @@ if (segP->HasWaterProp () != connSegP->HasWaterProp ())
 	return 3;
 if (segP->HasLavaProp () != connSegP->HasLavaProp ())
 	return 4;
+#if 1
+return 0;
+#else
 if (segP->m_function == connSegP->m_function)
 	return 0;
 return (segP->m_function == SEGMENT_FUNC_TEAM_BLUE) || 
 		 (segP->m_function == SEGMENT_FUNC_TEAM_RED) || 
 		 (connSegP->m_function == SEGMENT_FUNC_TEAM_BLUE) || 
 		 (connSegP->m_function == SEGMENT_FUNC_TEAM_RED);
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -236,6 +242,7 @@ else {
 			return NULL;
 		if (segP->HasLavaProp () == connSegP->HasLavaProp ())
 			return NULL;
+#if 1
 		if (segP->m_function == connSegP->m_function)
 			return NULL;
 		if ((segP->m_function != SEGMENT_FUNC_TEAM_BLUE) &&
@@ -244,6 +251,7 @@ else {
 			 (connSegP->m_function != SEGMENT_FUNC_TEAM_RED))
 			return NULL;
 		if (IS_WALL (segP->WallNum (nSide)))
+#endif
 			return NULL;
 		}
 	}
@@ -430,37 +438,6 @@ for (i = 0; i < propsP->nVertices; i++) {
 	}
 return 1;
 }
-
-//------------------------------------------------------------------------------
-
-#if 0
-
-static inline int IsLava (tFaceProps *propsP)
-{
-	short	nTexture = SEGMENTS [propsP->segNum].m_sides [propsP->sideNum].m_nBaseTex;
-
-return (nTexture == 378) || ((nTexture >= 404) && (nTexture <= 409));
-}
-
-//------------------------------------------------------------------------------
-
-static inline int IsWater (tFaceProps *propsP)
-{
-	short	nTexture = SEGMENTS [propsP->segNum].m_sides [propsP->sideNum].m_nBaseTex;
-
-return ((nTexture >= 399) && (nTexture <= 403));
-}
-
-//------------------------------------------------------------------------------
-
-static inline int IsWaterOrLava (tFaceProps *propsP)
-{
-	short	nTexture = SEGMENTS [propsP->segNum].m_sides [propsP->sideNum].m_nBaseTex;
-
-return (nTexture == 378) || ((nTexture >= 399) && (nTexture <= 409));
-}
-
-#endif
 
 //------------------------------------------------------------------------------
 

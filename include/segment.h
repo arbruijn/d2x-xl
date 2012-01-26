@@ -157,6 +157,20 @@ typedef struct tUVL {
 
 //------------------------------------------------------------------------------
 
+static inline int IsWaterTexture (short nTexture)
+{
+return ((nTexture >= 399) && (nTexture <= 403));
+}
+
+//------------------------------------------------------------------------------
+
+static inline int IsLavaTexture (short nTexture)
+{
+return (nTexture == 378) || ((nTexture >= 404) && (nTexture <= 409));
+}
+
+//------------------------------------------------------------------------------
+
 class CTrigger;
 class CWall;
 class CObject;
@@ -245,6 +259,9 @@ class CSide {
 
 		bool IsOpenableDoor (void);
 		bool IsTextured (void);
+
+		inline int IsLava (void) { return IsLavaTexture (m_nBaseTex) || (m_nOvlTex && (IsLavaTexture (m_nOvlTex))); }
+		inline int IsWater (void) { return IsWaterTexture (m_nBaseTex) || (m_nOvlTex && (IsWaterTexture (m_nOvlTex))); }
 
 	private:
 		void SetupCorners (short* verts, short* index);
@@ -413,6 +430,12 @@ class CSegment {
 		inline int HasWaterProp (void) { return HasProp (SEGMENT_PROP_WATER); }
 		inline int HasLavaProp (void) { return HasProp (SEGMENT_PROP_LAVA); }
 		inline int HasOutdoorsProp (void) { return HasProp (SEGMENT_PROP_OUTDOORS); }
+
+		inline int HasTexture (ubyte nSide) { return (m_children [nSide] >= 0) || m_sides [nSide].IsWall (); }
+
+		inline int IsLava (ubyte nSide) { return HasTexture (nSide) && m_sides [nSide].IsLava (); }
+		inline int IsWater (ubyte nSide) { return HasTexture (nSide) && m_sides [nSide].IsWater (); }
+
 
 	private:
 		inline int PokesThrough (int nObject, int nSide);
