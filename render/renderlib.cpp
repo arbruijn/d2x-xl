@@ -182,6 +182,7 @@ if (!connSegP) {
 		return 3;
 	if (segP->HasLavaProp ())
 		return 4;
+	return 0;
 	}
 if (segP->HasWaterProp () != connSegP->HasWaterProp ())
 	return 3;
