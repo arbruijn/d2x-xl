@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //Global variables for physics system
-static int bNewPhysCode = 2;
+static int bNewPhysCode = 1;
 
 #define UNSTICK_OBJS		2
 
@@ -947,7 +947,7 @@ if ((simData.hitResult.nType == HIT_WALL) && (CFixVector::Dot (vMoveNormal, simD
 		simData.bUpdateOffset = 0;
 		return 0;
 		}
-#if DBG // unstick object from wall
+#if 0 //DBG // unstick object from wall
 	UnstickFromWall (simData, mType.physInfo.velocity);
 #endif
 	simData.xMovedTime = 0;
@@ -968,19 +968,17 @@ return 1;
 
 //Simulate a physics CObject for this frame
 
-#if DBG
-static int bUseOldCode = 0;
-#endif
-
 void CObject::DoPhysicsSim (void)
 {
 if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	return;
 
-if (bNewPhysCode < 2) {
+#if DBG
+if (!(bNewPhysCode & 1)) {
 	DoPhysicsSimOld ();
 	return;
 	}
+#endif
 
 	CPhysSimData simData (OBJ_IDX (this)); // must be called after initializing gameData.physics.xTime! Will call simData.Setup ()!
 
@@ -1253,8 +1251,9 @@ mType.physInfo.thrust = mType.physInfo.velocity * k;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
-
 //Simulate a physics CObject for this frame
+
+#if DBG
 
 void CObject::DoPhysicsSimOld (void)
 {
@@ -1326,7 +1325,7 @@ if (Index () == nDbgObj) {
 //if uses thrust, cannot have zero xDrag
 //Assert (!(mType.physInfo.flags & PF_USES_THRUST) || mType.physInfo.drag);
 //do thrust & xDrag
-if (bNewPhysCode)
+if (bNewPhysCode & 2)
 	ProcessDrag (simData);
 else {
 	if (mType.physInfo.drag) {
@@ -1414,34 +1413,34 @@ int bRetry;
 do {	//Move the object
 	bRetry = 0;
 
-if (bNewPhysCode) {
-	if (!UpdateOffset (simData))
-		break;
-	}
-else {
-	float fScale = !(gameStates.app.bNostalgia || simData.bInitialize) && (IS_MISSILE (this) && (info.nId != EARTHSHAKER_MEGA_ID) && (info.nId != ROBOT_SHAKER_MEGA_ID)) 
-						? MissileSpeedScale (this) 
-						: 1;
-	if (fScale < 1) {
-		CFixVector vStartVel = StartVel ();
-		CFixVector::Normalize (vStartVel);
-		fix xDot = CFixVector::Dot (info.position.mOrient.m.dir.f, vStartVel);
-		simData.vOffset = mType.physInfo.velocity + StartVel ();
-		simData.vOffset *= F2X (fScale * fScale);
-		simData.vOffset += StartVel () * ((xDot > 0) ? -xDot : xDot);
-		simData.vOffset *= FixMulDiv (simData.xSimTime, simData.xTimeScale, 100);
+	if (bNewPhysCode & 4) {
+		if (!UpdateOffset (simData))
+			break;
 		}
-	else
-		simData.vOffset = mType.physInfo.velocity * FixMulDiv (simData.xSimTime, simData.xTimeScale, 100);
-	if (!(IsMultiGame || simData.bInitialize)) {
-		int i = (this != gameData.objs.consoleP) ? 0 : 1;
-		if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
-			simData.vOffset *= (fix) (I2X (1) / gameStates.gameplay.slowmo [i].fSpeed);
+	else {
+		float fScale = !(gameStates.app.bNostalgia || simData.bInitialize) && (IS_MISSILE (this) && (info.nId != EARTHSHAKER_MEGA_ID) && (info.nId != ROBOT_SHAKER_MEGA_ID)) 
+							? MissileSpeedScale (this) 
+							: 1;
+		if (fScale < 1) {
+			CFixVector vStartVel = StartVel ();
+			CFixVector::Normalize (vStartVel);
+			fix xDot = CFixVector::Dot (info.position.mOrient.m.dir.f, vStartVel);
+			simData.vOffset = mType.physInfo.velocity + StartVel ();
+			simData.vOffset *= F2X (fScale * fScale);
+			simData.vOffset += StartVel () * ((xDot > 0) ? -xDot : xDot);
+			simData.vOffset *= FixMulDiv (simData.xSimTime, simData.xTimeScale, 100);
 			}
+		else
+			simData.vOffset = mType.physInfo.velocity * FixMulDiv (simData.xSimTime, simData.xTimeScale, 100);
+		if (!(IsMultiGame || simData.bInitialize)) {
+			int i = (this != gameData.objs.consoleP) ? 0 : 1;
+			if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
+				simData.vOffset *= (fix) (I2X (1) / gameStates.gameplay.slowmo [i].fSpeed);
+				}
+			}
+		if (simData.vOffset.IsZero ())
+			break;
 		}
-	if (simData.vOffset.IsZero ())
-		break;
-	}
 
 retryMove:
 
@@ -1456,43 +1455,43 @@ retryMove:
 			}
 		}
 
-if (bNewPhysCode) {
-	simData.vOldPos = info.position.vPos;			
-	simData.nOldSeg = info.nSegment;
-	simData.vNewPos = info.position.vPos + simData.vOffset;
+	if (bNewPhysCode & 8) {
+		simData.vOldPos = info.position.vPos;			
+		simData.nOldSeg = info.nSegment;
+		simData.vNewPos = info.position.vPos + simData.vOffset;
 
-	SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
-	simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
-	UpdateStats (this, simData.hitResult.nType);
-	}
-else {
-	simData.vNewPos = info.position.vPos + simData.vOffset;
-	simData.hitQuery.bIgnoreObjFlag = gameData.physics.bIgnoreObjFlag;
-	simData.hitQuery.p0 = &info.position.vPos;
-	simData.hitQuery.nSegment = info.nSegment;
-	simData.hitQuery.p1 = &simData.vNewPos;
-	simData.hitQuery.radP0 = 
-	simData.hitQuery.radP1 = info.xSize;
-	simData.hitQuery.nObject = simData.nObject;
-	simData.hitQuery.flags = FQ_CHECK_OBJS;
+		SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
+		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+		UpdateStats (this, simData.hitResult.nType);
+		}
+	else {
+		simData.vNewPos = info.position.vPos + simData.vOffset;
+		simData.hitQuery.bIgnoreObjFlag = gameData.physics.bIgnoreObjFlag;
+		simData.hitQuery.p0 = &info.position.vPos;
+		simData.hitQuery.nSegment = info.nSegment;
+		simData.hitQuery.p1 = &simData.vNewPos;
+		simData.hitQuery.radP0 = 
+		simData.hitQuery.radP1 = info.xSize;
+		simData.hitQuery.nObject = simData.nObject;
+		simData.hitQuery.flags = FQ_CHECK_OBJS;
 
-	if (info.nType == OBJ_WEAPON)
-		simData.hitQuery.flags |= FQ_TRANSPOINT;
-	if (simData.bGetPhysSegs)
-		simData.hitQuery.flags |= FQ_GET_SEGLIST;
-	memset (&simData.hitResult, 0, sizeof (simData.hitResult));
-#if DBG
-	if (info.nType == OBJ_POWERUP)
-		nDbgObj = nDbgObj;
-#endif
-	simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
-	UpdateStats (this, simData.hitResult.nType);
-	simData.vOldPos = info.position.vPos;			//save the CObject's position
-	simData.nOldSeg = info.nSegment;
-	}
+		if (info.nType == OBJ_WEAPON)
+			simData.hitQuery.flags |= FQ_TRANSPOINT;
+		if (simData.bGetPhysSegs)
+			simData.hitQuery.flags |= FQ_GET_SEGLIST;
+		memset (&simData.hitResult, 0, sizeof (simData.hitResult));
+	#if DBG
+		if (info.nType == OBJ_POWERUP)
+			nDbgObj = nDbgObj;
+	#endif
+		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+		UpdateStats (this, simData.hitResult.nType);
+		simData.vOldPos = info.position.vPos;			//save the CObject's position
+		simData.nOldSeg = info.nSegment;
+		}
 
 	if (simData.hitResult.nType == HIT_BAD_P0) {
-		if (bNewPhysCode) {
+		if (bNewPhysCode & 16) {
 			if (!HandleBadCollision (simData))
 				break;
 			}
@@ -1516,7 +1515,7 @@ else {
 			}
 		}
 	else if (simData.hitResult.nType == HIT_WALL) {
-		if (bNewPhysCode) {
+		if (bNewPhysCode & 32) {
 			if (!HandleWallCollision (simData))
 				break;
 			}
@@ -1541,7 +1540,7 @@ else {
 			}
 		}
 	else if (simData.hitResult.nType == HIT_OBJECT) {
-		if (bNewPhysCode) {
+		if (bNewPhysCode & 64) {
 			if (!HandleObjectCollision (simData))
 				break;
 			}
@@ -1552,102 +1551,102 @@ else {
 			}
 		}
 
-if (bNewPhysCode) {
-	simData.GetPhysSegs ();
-	if (simData.hitResult.nSegment == -1) {		//some sort of horrible error
-		if (info.nType == OBJ_WEAPON)
-			Die ();
-		break;
-		}
-	if (!ProcessOffset (simData))
-		return;
-	}
-else {
-	//RegisterHit (simData.hitResult.vPoint);
-	if (simData.bGetPhysSegs) {
-		if (gameData.physics.nSegments && (gameData.physics.segments [gameData.physics.nSegments-1] == simData.hitResult.segList [0]))
-			gameData.physics.nSegments--;
-		int i = MAX_FVI_SEGS - gameData.physics.nSegments - 1;
-		if (i > 0) {
-			if (i > simData.hitResult.nSegments)
-				i = simData.hitResult.nSegments;
-			if (i > 0)
-				memcpy (gameData.physics.segments + gameData.physics.nSegments, simData.hitResult.segList, i * sizeof (gameData.physics.segments [0]));
-			gameData.physics.nSegments += i;
-			}
-		}
-	if (simData.hitResult.nSegment == -1) {		//some sort of horrible error
-		if (info.nType == OBJ_WEAPON)
-			Die ();
-		break;
-		}
-	// update CObject's position and CSegment number
-	info.position.vPos = simData.hitResult.vPoint;
-	if (simData.hitResult.nSegment != info.nSegment)
-		RelinkToSeg (simData.hitResult.nSegment);
-	//if start point not in segment, move object to center of segment
-	if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {	//object stuck
-		int n = FindSegment ();
-		if (n == -1) {
-			if (simData.bGetPhysSegs)
-				n = FindSegByPos (info.vLastPos, info.nSegment, 1, 0);
-			if (n == -1) {
-				info.position.vPos = info.vLastPos;
-				RelinkToSeg (info.nSegment);
-				}
-			else {
-				CFixVector vCenter;
-				vCenter = SEGMENTS [info.nSegment].Center ();
-				vCenter -= info.position.vPos;
-				if (vCenter.Mag() > I2X (1)) {
-					CFixVector::Normalize (vCenter);
-					vCenter /= 10;
-					}
-				info.position.vPos -= vCenter;
-				}
-			if (info.nType == OBJ_WEAPON) {
+	if (bNewPhysCode & 128) {
+		simData.GetPhysSegs ();
+		if (simData.hitResult.nSegment == -1) {		//some sort of horrible error
+			if (info.nType == OBJ_WEAPON)
 				Die ();
-				return;
-				}
+			break;
 			}
-		}
-	}
-	//calulate new sim time
-if (bNewPhysCode) {
-	if (!UpdateSimTime (simData))
-		goto retryMove;
-	}
-else {
-	simData.xOldSimTime = simData.xSimTime;
-	simData.vMoved = info.position.vPos - simData.vOldPos;
-	CFixVector vMoveNormal = simData.vMoved;
-	simData.xMovedDist = CFixVector::Normalize (vMoveNormal);
-	if ((simData.hitResult.nType == HIT_WALL) && (CFixVector::Dot (vMoveNormal, simData.vOffset) < 0)) {		//moved backwards
-		//don't change position or simData.xSimTime
-		info.position.vPos = simData.vOldPos;
-		if (simData.nOldSeg != simData.hitResult.nSegment)
-			RelinkToSeg (simData.nOldSeg);
-		if (simData.bSpeedBoost) {
-			info.position.vPos = simData.vStartPos;
-			SetSpeedBoostVelocity (simData.nObject, -1, -1, -1, -1, -1, &simData.vStartPos, &simData.speedBoost.vDest, 0);
-			simData.vOffset = simData.speedBoost.vVel * simData.xSimTime;
-			goto retryMove;
-			}
-		simData.xMovedTime = 0;
+		if (!ProcessOffset (simData))
+			return;
 		}
 	else {
-		simData.xAttemptedDist = simData.vOffset.Mag();
-		simData.xSimTime = FixMulDiv (simData.xSimTime, simData.xAttemptedDist - simData.xMovedDist, simData.xAttemptedDist);
-		simData.xMovedTime = simData.xOldSimTime - simData.xSimTime;
-		if ((simData.xSimTime < 0) || (simData.xSimTime > simData.xOldSimTime)) {
-			simData.xSimTime = simData.xOldSimTime;
-			simData.xMovedTime = 0;
+		//RegisterHit (simData.hitResult.vPoint);
+		if (simData.bGetPhysSegs) {
+			if (gameData.physics.nSegments && (gameData.physics.segments [gameData.physics.nSegments-1] == simData.hitResult.segList [0]))
+				gameData.physics.nSegments--;
+			int i = MAX_FVI_SEGS - gameData.physics.nSegments - 1;
+			if (i > 0) {
+				if (i > simData.hitResult.nSegments)
+					i = simData.hitResult.nSegments;
+				if (i > 0)
+					memcpy (gameData.physics.segments + gameData.physics.nSegments, simData.hitResult.segList, i * sizeof (gameData.physics.segments [0]));
+				gameData.physics.nSegments += i;
+				}
+			}
+		if (simData.hitResult.nSegment == -1) {		//some sort of horrible error
+			if (info.nType == OBJ_WEAPON)
+				Die ();
+			break;
+			}
+		// update CObject's position and CSegment number
+		info.position.vPos = simData.hitResult.vPoint;
+		if (simData.hitResult.nSegment != info.nSegment)
+			RelinkToSeg (simData.hitResult.nSegment);
+		//if start point not in segment, move object to center of segment
+		if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {	//object stuck
+			int n = FindSegment ();
+			if (n == -1) {
+				if (simData.bGetPhysSegs)
+					n = FindSegByPos (info.vLastPos, info.nSegment, 1, 0);
+				if (n == -1) {
+					info.position.vPos = info.vLastPos;
+					RelinkToSeg (info.nSegment);
+					}
+				else {
+					CFixVector vCenter;
+					vCenter = SEGMENTS [info.nSegment].Center ();
+					vCenter -= info.position.vPos;
+					if (vCenter.Mag() > I2X (1)) {
+						CFixVector::Normalize (vCenter);
+						vCenter /= 10;
+						}
+					info.position.vPos -= vCenter;
+					}
+				if (info.nType == OBJ_WEAPON) {
+					Die ();
+					return;
+					}
+				}
 			}
 		}
-	}
+		//calulate new sim time
+	if (bNewPhysCode & 256) {
+		if (!UpdateSimTime (simData))
+			goto retryMove;
+		}
+	else {
+		simData.xOldSimTime = simData.xSimTime;
+		simData.vMoved = info.position.vPos - simData.vOldPos;
+		CFixVector vMoveNormal = simData.vMoved;
+		simData.xMovedDist = CFixVector::Normalize (vMoveNormal);
+		if ((simData.hitResult.nType == HIT_WALL) && (CFixVector::Dot (vMoveNormal, simData.vOffset) < 0)) {		//moved backwards
+			//don't change position or simData.xSimTime
+			info.position.vPos = simData.vOldPos;
+			if (simData.nOldSeg != simData.hitResult.nSegment)
+				RelinkToSeg (simData.nOldSeg);
+			if (simData.bSpeedBoost) {
+				info.position.vPos = simData.vStartPos;
+				SetSpeedBoostVelocity (simData.nObject, -1, -1, -1, -1, -1, &simData.vStartPos, &simData.speedBoost.vDest, 0);
+				simData.vOffset = simData.speedBoost.vVel * simData.xSimTime;
+				goto retryMove;
+				}
+			simData.xMovedTime = 0;
+			}
+		else {
+			simData.xAttemptedDist = simData.vOffset.Mag ();
+			simData.xSimTime = FixMulDiv (simData.xSimTime, simData.xAttemptedDist - simData.xMovedDist, simData.xAttemptedDist);
+			simData.xMovedTime = simData.xOldSimTime - simData.xSimTime;
+			if ((simData.xSimTime < 0) || (simData.xSimTime > simData.xOldSimTime)) {
+				simData.xSimTime = simData.xOldSimTime;
+				simData.xMovedTime = 0;
+				}
+			}
+		}
 
 	if (simData.hitResult.nType == HIT_WALL) {
-		if (bNewPhysCode)
+		if (bNewPhysCode & 512)
 			bRetry = ProcessWallCollision (simData);
 		else {
 			fix xHitSpeed, xWallPart;
@@ -1716,7 +1715,7 @@ else {
 			}
 		}
 	else if (simData.hitResult.nType == HIT_OBJECT) {
-		if (bNewPhysCode)
+		if (bNewPhysCode & 1024)
 			bRetry = ProcessObjectCollision (simData);
 		else {
 			CObject* hitObjP = OBJECTS + simData.hitResult.nObject;
@@ -1761,7 +1760,7 @@ else {
 #endif
 	} while (bRetry);
 
-if (bNewPhysCode)
+if (bNewPhysCode & 2048)
 	FixPosition (simData);
 else {
 //	Pass retry attempts info to AI.
@@ -1838,5 +1837,7 @@ if (Index () == nDbgObj) {
 Unstick ();
 #endif
 }
+
+#endif //DBG
 
 //	-----------------------------------------------------------------------------
