@@ -117,7 +117,7 @@ if (faceP || triP)
 	RenderFace ();
 else {
 	PROF_START
-		int			bSoftBlend = transparencyRenderer.SoftBlend (SOFT_BLEND_SPRITES);
+		int bSoftBlend = transparencyRenderer.SoftBlend (SOFT_BLEND_SPRITES);
 
 	ogl.ResetClientStates (1);
 	transparencyRenderer.Data ().bmP [1] = transparencyRenderer.Data ().bmP [2] = NULL;
