@@ -174,16 +174,17 @@ PROF_START
 						bColored = (nColors == nVertices) && (bTextured || (gameStates.render.bPerPixelLighting != 2)) && !gameStates.render.bFullBright;
 
 #if TI_POLY_OFFSET
-if (!bmBot) {
+if (faceP->m_info.nSegColor) {
 	glEnable (GL_POLYGON_OFFSET_FILL);
-	glPolygonOffset (1,1);
-	glPolygonMode (GL_FRONT, GL_FILL);
+	glPolygonOffset (1.0, -1.0);
+	//glPolygonMode (GL_FRONT, GL_FILL);
 	}
 #endif
 
 #if DBG
-if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide))) {
 	nDbgSeg = nDbgSeg;
+	}
 #endif
 
 if (bTextured) {
@@ -341,7 +342,7 @@ ogl.ResetTransform (faceP != NULL);
 gameData.render.nTotalFaces++;
 
 #if TI_POLY_OFFSET
-if (!bmBot) {
+if (faceP->m_info.nSegColor) {
 	glPolygonOffset (0,0);
 	glDisable (GL_POLYGON_OFFSET_FILL);
 	}

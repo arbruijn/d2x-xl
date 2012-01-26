@@ -168,7 +168,9 @@ return 0;
 
 char IsColoredSegFace (short nSegment, short nSide)
 {
+#if 1 //!DBG
 if (!gameStates.render.nLightingMethod)
+#endif
 	return 0;
 
 	CSegment*	segP = SEGMENTS + nSegment;

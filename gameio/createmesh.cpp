@@ -60,7 +60,7 @@ void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP);
 
 #define	MAX_EDGE_LEN(nMeshQuality)	fMaxEdgeLen [nMeshQuality]
 
-#define MESH_DATA_VERSION 11
+#define MESH_DATA_VERSION 12
 
 //------------------------------------------------------------------------------
 
@@ -1448,6 +1448,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 #endif
 		m_nWall = m_segP->WallNum (nSide);
 		m_nWallType = IS_WALL (m_nWall) ? WALLS [m_nWall].IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
+		CSegment* childSegP = (m_segP->m_children [nSide] < 0) ? NULL : SEGMENTS + m_segP->m_children [nSide];
 		bool bColoredChild = IsColoredSeg (m_segP->m_children [nSide]);
 		if (bColoredSeg || bColoredChild || m_nWallType) {
 #if DBG
@@ -1456,7 +1457,9 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 #endif
 			memcpy (m_sideVerts, m_segP->Corners (nSide), 4 * sizeof (ushort));
 			InitFace (nSegment, nSide, bRebuild);
-			if ((bColoredSeg || bColoredChild) && !((m_segP->HasWaterProp () && m_segP->IsWater (nSide)) || (m_segP->HasLavaProp () && m_segP->IsLava (nSide))))
+			if ((bColoredSeg || bColoredChild) && 
+				 !(m_segP->IsWater (nSide) && (m_segP->HasWaterProp () || (childSegP && childSegP->HasWaterProp ()))) && 
+				 !(m_segP->IsLava (nSide) && (m_segP->HasLavaProp () || (childSegP && childSegP->HasLavaProp ()))))
 				InitColoredFace (nSegment);
 			if (m_nWallType)
 				InitTexturedFace ();
