@@ -202,7 +202,7 @@ if (bTextured) {
 		}
 	}
 else {
-	bmTop = bmMask = NULL;
+	bmBot = bmTop = bmMask = NULL;
 	bDecal = 0;
 	}
 
