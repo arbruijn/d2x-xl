@@ -569,6 +569,8 @@ switch (nType) {
 	case OBJ_POWERUP:
 		if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 			return -1;
+		if (nId >= MAX_WEAPON_ID)
+			return -1;
 		for (i = 0; i < nCount; i++) {
 			int	nRandScale, nOffset;
 			vNewVel = vInitVel;
