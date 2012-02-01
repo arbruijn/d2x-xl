@@ -631,8 +631,9 @@ const char *pszPPXLMLightingFS [] = {
 	"  discard;\r\n" \
 	"else {\r\n" \
 	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
-	"	vec4 texColor = (nType == 0) ? vec4 (gl_Color.rgb, 1.0) : texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"	vec4 texColor = (nType == 0) ? vec4 (1.0, 1.0, 1.0, 1.0) : texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = (nType == 1) ? vec4 (0.0, 0.0, 0.0, 0.0) : texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
+	"  texColor.rgb *= gl_Color.rgb;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	int i;\r\n" \

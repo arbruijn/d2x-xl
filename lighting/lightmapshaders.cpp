@@ -33,11 +33,12 @@
 
 const char *pszLMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
-	"uniform vec4 matColor;\r\n" \
+	"//uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale;\r\n" \
 	"void main() {\r\n" \
-	"vec4 color = (texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color) * fLightScale;\r\n" \
-	"gl_FragColor = vec4 (matColor.rgb * min (vec3 (1.0, 1.0, 1.0), color.rgb), matColor.a * gl_Color.a);\r\n" \
+	"gl_FragColor = texture2D (lMapTex, gl_TexCoord [0].xy) * gl_Color * fLightScale;\r\n" \
+	"//vec4 color = (texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color) * fLightScale;\r\n" \
+	"//vec4 (matColor.rgb * min (vec3 (1.0, 1.0, 1.0), color.rgb), matColor.a * gl_Color.a);\r\n" \
 	"}"
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
@@ -193,9 +194,8 @@ if (shaderManager.Rebuild (shaderProg))
 			}
 		}
 	}
-if (!nType) {
-	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
-	}
+//if (!nType)
+//	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 #if CONST_LIGHT_COUNT

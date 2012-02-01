@@ -214,6 +214,8 @@ transparencyRenderer.Data ().bmP [0] = NULL;
 ogl.ResetClientStates (bLightmaps);
 #else
 ogl.ResetClientStates (bTextured + bLightmaps + (bmTop != NULL) + (bmMask != NULL));
+if (!bTextured)
+	ogl.SetTexturing (false);
 #endif
 
 if (bmTop) {
@@ -242,7 +244,7 @@ else {
 	}
 
 if (bLightmaps)
-	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0 + bTextured);
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0 + bTextured);
 else
 	ogl.EnableClientStates (bTextured, bColored, 1, GL_TEXTURE0);
 if (!transparencyRenderer.LoadTexture (bmBot, 0, 0, bLightmaps, nWrap)) {
@@ -252,6 +254,7 @@ if (!transparencyRenderer.LoadTexture (bmBot, 0, 0, bLightmaps, nWrap)) {
 	}	
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, (bDecal < 0) ? FACES.ovlTexCoord + nIndex : FACES.texCoord + nIndex);
+
 if (!bLightmaps) {
 	if (bColored)
 		OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
@@ -1442,6 +1445,7 @@ ogl.ResetClientStates ();
 m_data.bHaveParticles = particleImageManager.LoadAll ();
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
+ogl.SetDepthWrite (false);
 ogl.SetFaceCulling (true);
 m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);

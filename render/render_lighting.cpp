@@ -512,15 +512,15 @@ for (i = nStart; i < nEnd; i++) {
 			nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 			bComputeLight = false;
 			}
-		if (gameStates.render.bPerPixelLighting && (nColor == 1))
-			nColor = -1;
+		//if (gameStates.render.bPerPixelLighting && (nColor == 1))
+		//	nColor = -1;
 		faceP->m_info.bHasColor = 1;
 		for (k = faceP->m_info.nTris, triP = FACES.tris + faceP->m_info.nTriIndex; k; k--, triP++) {
 			nIndex = triP->nIndex;
 			colorP = FACES.color + nIndex;
 			for (h = 0; h < 3; h++, colorP++, nIndex++) {
-				if (gameStates.render.bFullBright)
-					*colorP = nColor ? faceColor [nColor] : brightColor;
+				if (!bNeedLight)
+					*colorP = brightColor;
 				else {
 					nVertex = triP->index [h];
 #if DBG
@@ -528,9 +528,10 @@ for (i = nStart; i < nEnd; i++) {
 						nDbgVertex = nDbgVertex;
 #endif
 					CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
-					if (!bNeedLight)
-						*colorP = gameData.render.color.ambient [nVertex];
-					else {
+					//if (!bNeedLight)
+					//	*colorP = gameData.render.color.ambient [nVertex];
+					//else 
+						{
 #if LIGHTING_QUALITY == 1
 						WaitWithUpdate (vertColorP);
 #else
@@ -564,14 +565,10 @@ for (i = nStart; i < nEnd; i++) {
 #	endif
 						*colorP = *vertColorP;
 						}
-					colorP->Alpha () = fAlpha;
-					if (!gameStates.render.bPerPixelLighting && (nColor > 0)) {
-						AlphaBlend (*colorP, faceColor [nColor]);
-						//*colorP *= faceColor [nColor]; // set the material color for lightmap driven lighting models
-						//if (faceP->m_info.bTextured)
-						//	colorP->Alpha () = fAlpha;
-						}
 					}
+				colorP->Alpha () = fAlpha;
+				if (nColor > 0) 
+					AlphaBlend (*colorP, faceColor [nColor]);
 				}
 			}
 		lightManager.Material ().bValid = 0;
