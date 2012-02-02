@@ -503,7 +503,7 @@ switch (m_nState = m_data [0]) {
 			return DownloadError (2);
 		strlwr (pszFile);
 		CFile::SplitPath (pszFile, NULL, szFile [0], szExt);
-		CFile::SplitPath (hogFileManager.m_files.MsnHogFiles.szName, szFolder, szFile [1], NULL);
+		CFile::SplitPath (hogFileManager.MissionName (), szFolder, szFile [1], NULL);
 		strlwr (szFile [1]);
 		for (int i = 1 + (strcmp (szFile [0], szFile [1]) == 0); i > 0; i--) {
 			if (i == 2)

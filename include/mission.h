@@ -125,7 +125,7 @@ class CMissionManager : public CMissionData {
 		int LoadByName (char *szMissionName, int nSubFolder);
 		int FindByName (char *szMissionName, int nSubFolder);
 
-		int IsBuiltIn (char* pszMission);
+		int IsBuiltIn (const char* pszMission);
 		int LoadLevelStates (void);
 		int SaveLevelStates (void);
 

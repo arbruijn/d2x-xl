@@ -38,6 +38,7 @@
 #		include <SDL_mixer.h>
 #	endif
 #endif
+#include "hogfile.h"
 #include "menubackground.h"
 #include "vers_id.h"
 
@@ -377,12 +378,17 @@ if ((bDefault = (*pszMission == '\0')))
 else
 	CFile::SplitPath (pszMission, NULL, gameFolders.szModName, NULL);
 
-if ((bBuiltIn = (strstr (pszMission, "Descent: First Strike") != NULL)))
+#if 1
+if ((bBuiltIn = missionManager.IsBuiltIn (pszMission)))
+	strcpy (gameFolders.szModName, (bBuiltIn == 1) ? "descent" : "descent2");
+#else
+if ((bBuiltIn = (strstr (pszMission, "Descent: First Strike") != NULL) ? 1 : 0))
 	strcpy (gameFolders.szModName, "descent");
-else if ((bBuiltIn = (strstr (pszMission, "Descent 2: Counterstrike!") != NULL)))
+else if ((bBuiltIn = (strstr (pszMission, "Descent 2: Counterstrike!") != NULL) ? 2 : 0))
 	strcpy (gameFolders.szModName, "descent2");
-else if ((bBuiltIn = (strstr (pszMission, "d2x.hog") != NULL)))
+else if ((bBuiltIn = (strstr (pszMission, "d2x.hog") != NULL) ? 3 : 0))
 	strcpy (gameFolders.szModName, "descent2");
+#endif
 else if (bDefault)
 	return;
 
@@ -411,11 +417,13 @@ else {
 		*gameOpts->menus.altBg.szName [1] = '\0';
 		}
 	else {
+		srand (SDL_GetTicks ());
 		sprintf (gameFolders.szWallpaperDir [1], "%s/%s", gameFolders.szModDir [1], WALLPAPERDIR);
 		if (nLevel < 0)
 			sprintf (gameOpts->menus.altBg.szName [1], "slevel%02d.tga", -nLevel);
 		else if (nLevel > 0)
-			sprintf (gameOpts->menus.altBg.szName [1], "level%02d.tga", nLevel);
+			sprintf (gameOpts->menus.altBg.szName [1], "level%02d.tga", 
+						((bBuiltIn == 2) && missionManager.IsBuiltIn (hogFileManager.MissionName ())) ? nLevel : rand () % 24 + 1);
 		else 
 			sprintf (gameOpts->menus.altBg.szName [1], "default.tga");
 		backgroundManager.Rebuild ();

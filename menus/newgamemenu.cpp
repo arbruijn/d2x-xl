@@ -301,7 +301,7 @@ for (;;) {
 	if (nMission >= 0) {
 		bBuiltIn = missionManager.IsBuiltIn (missionManager [nMission].szMissionName);
 		gameOpts->app.bEnableMods = 1;
-		MakeModFolders (bBuiltIn ? hogFileManager.m_files.MsnHogFiles.szName : missionManager [nMission].filename);
+		MakeModFolders (bBuiltIn ? hogFileManager.MissionName () : missionManager [nMission].filename);
 		gameOpts->app.bEnableMods = bEnableMod;
 		m.AddText ("", "");
 		if (gameStates.app.bHaveMod == bBuiltIn)

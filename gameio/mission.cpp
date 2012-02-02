@@ -1033,17 +1033,22 @@ return 0;		//couldn't find mission
 
 //------------------------------------------------------------------------------
 
-int CMissionManager::IsBuiltIn (char* pszMission)
+int CMissionManager::IsBuiltIn (const char* pszMission)
 {
 #if 0
 if (*pszMission)
 	return false;
 #endif
-pszMission = m_list [nCurrentMission].szMissionName;
+if (!pszMission)
+	pszMission = m_list [nCurrentMission].szMissionName;
 
-return (strstr (pszMission, "Descent: First Strike") != NULL) ||
-		 (strstr (pszMission, "Descent 2: Counterstrike!") != NULL) ||
-		 (strstr (pszMission, "Descent 2: Vertigo") != NULL);
+return (strstr (pszMission, "Descent: First Strike") != NULL) 
+		 ? 1
+		 : (strstr (pszMission, "Descent 2: Counterstrike!") != NULL)
+			? 2
+			: (strstr (pszMission, "Descent 2: Vertigo") != NULL)
+				? 3
+				: 0;
 }
 
 //------------------------------------------------------------------------------

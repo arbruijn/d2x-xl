@@ -616,6 +616,7 @@ FORALL_ROBOT_OBJS (objP, i)
 		gameData.objs.nVertigoBotFlags |= (1 << (objP->info.nId - 64));
 }
 
+
 //------------------------------------------------------------------------------
 
 char *LevelName (int nLevel)
@@ -964,8 +965,8 @@ strlwr (pszLevelName = LevelName (nLevel));
 CleanupBeforeGame (nLevel, bRestore);
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (missionManager [missionManager.nCurrentMission].nDescentVersion == 1);
-MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName, nLevel);
-if (!(gameStates.app.bHaveMod || missionManager.IsBuiltIn (hogFileManager.m_files.MsnHogFiles.szName)))
+MakeModFolders (hogFileManager.MissionName (), nLevel);
+if (!(gameStates.app.bHaveMod || missionManager.IsBuiltIn (hogFileManager.MissionName ())))
 	 MakeModFolders (gameStates.app.bD1Mission ? "Descent: First Strike" : "Descent 2: Counterstrike!", nLevel);
 if (gameStates.app.bHaveMod)
 	songManager.LoadPlayList (szDefaultPlayList, 1);
@@ -2186,7 +2187,7 @@ int StartNewLevel (int nLevel, bool bNewGame)
 	gameStates.app.xThisLevelTime = 0;
 
 gameData.reactor.bDestroyed = 0;
-MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName, nLevel);
+MakeModFolders (hogFileManager.MissionName (), nLevel);
 if (nLevel < 0)
 	return PrepareSecretLevel (nLevel, false);
 MaybeSetFirstSecretVisit (nLevel);

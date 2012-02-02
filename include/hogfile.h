@@ -52,6 +52,7 @@ typedef struct tGameHogFiles {
 class CHogFile {
 	public:
 		tGameHogFiles	m_files;
+
 	public:
 		CHogFile () {};
 		~CHogFile () {};
@@ -73,6 +74,7 @@ class CHogFile {
 		inline tHogFileList& ExtraFiles (void) { return m_files.ExtraHogFiles; }
 		inline tHogFileList& AltFiles (void) { return m_files.MsnHogFiles; }
 		char *AltHogFile (void) { return m_files.szAltHogFile; }
+		inline char *MissionName (void) { return m_files.MsnHogFiles.szName; }
 
 	private:
 		void QuickSort (tHogFile *hogFiles, int left, int right);
