@@ -367,6 +367,9 @@ sprintf (gameOpts->menus.altBg.szName [1], "default.tga");
 
 void MakeModFolders (const char* pszMission, int nLevel)
 {
+
+	static int nLoadingScreen = -1;
+
 int bDefault, bBuiltIn;
 
 ResetModFolders ();
@@ -417,13 +420,22 @@ else {
 		*gameOpts->menus.altBg.szName [1] = '\0';
 		}
 	else {
-		srand (SDL_GetTicks ());
 		sprintf (gameFolders.szWallpaperDir [1], "%s/%s", gameFolders.szModDir [1], WALLPAPERDIR);
 		if (nLevel < 0)
 			sprintf (gameOpts->menus.altBg.szName [1], "slevel%02d.tga", -nLevel);
-		else if (nLevel > 0)
-			sprintf (gameOpts->menus.altBg.szName [1], "level%02d.tga", 
-						((bBuiltIn == 2) && missionManager.IsBuiltIn (hogFileManager.MissionName ())) ? nLevel : rand () % 24 + 1);
+		else if (nLevel > 0) {
+			// chose a random custom loading screen for missions other than D2:CS that do not have their own custom loading screens
+			if ((bBuiltIn == 2) && (missionManager.IsBuiltIn (hogFileManager.MissionName ()) != 2)) {
+				if (nLoadingScreen < 0) { // create a random offset the first time this function is called and use it later on
+					srand (SDL_GetTicks ());
+					nLoadingScreen = rand () % 24;
+					}
+				else
+					nLoadingScreen = (nLoadingScreen + 1) % 24;
+				nLevel = nLoadingScreen + 1;
+				}
+			sprintf (gameOpts->menus.altBg.szName [1], "level%02d.tga", nLevel);
+			}
 		else 
 			sprintf (gameOpts->menus.altBg.szName [1], "default.tga");
 		backgroundManager.Rebuild ();
