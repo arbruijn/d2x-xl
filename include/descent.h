@@ -2212,7 +2212,7 @@ class CSoundData {
 class CTextureData {
 	public:
 		CArray<tBitmapFile>		bitmapFiles [2]; //[MAX_BITMAP_FILES];
-		CArray<sbyte>				bitmapFlags [2]; //[MAX_BITMAP_FILES];
+		CArray<ushort>				bitmapFlags [2]; //[MAX_BITMAP_FILES];
 		CArray<CBitmap>			bitmaps [2]; //[MAX_BITMAP_FILES];
 		CArray<CBitmap>			altBitmaps [2]; //[MAX_BITMAP_FILES];
 		CArray<CBitmap>			addonBitmaps ; //[MAX_ADDON_BITMAP_FILES];
