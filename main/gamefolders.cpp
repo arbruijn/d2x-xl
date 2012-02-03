@@ -369,6 +369,7 @@ void MakeModFolders (const char* pszMission, int nLevel)
 {
 
 	static int nLoadingScreen = -1;
+	static int nShuffledLevels [24];
 
 int bDefault, bBuiltIn;
 
@@ -427,11 +428,17 @@ else {
 			// chose a random custom loading screen for missions other than D2:CS that do not have their own custom loading screens
 			if ((bBuiltIn == 2) && (missionManager.IsBuiltIn (hogFileManager.MissionName ()) != 2)) {
 				if (nLoadingScreen < 0) { // create a random offset the first time this function is called and use it later on
+					int i;
+					for (i = 0; i < 24; i++)
+						nShuffledLevels [i] = i;
 					srand (SDL_GetTicks ());
-					nLoadingScreen = rand () % 24;
+					for (i = 0; i < 23; i++) {
+						int h = 23 - i;
+						int j = h ? rand () % h : 0;
+						Swap (nShuffledLevels [i], nShuffledLevels [i + j]);
+						}
 					}
-				else
-					nLoadingScreen = (nLoadingScreen + 1) % 24;
+				nLoadingScreen = (nLoadingScreen + 1) % 24;
 				nLevel = nLoadingScreen + 1;
 				}
 			sprintf (gameOpts->menus.altBg.szName [1], "level%02d.tga", nLevel);
