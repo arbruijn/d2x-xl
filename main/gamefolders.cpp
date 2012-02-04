@@ -430,7 +430,7 @@ else {
 				if (nLoadingScreen < 0) { // create a random offset the first time this function is called and use it later on
 					int i;
 					for (i = 0; i < 24; i++)
-						nShuffledLevels [i] = i;
+						nShuffledLevels [i] = i + 1;
 					srand (SDL_GetTicks ());
 					for (i = 0; i < 23; i++) {
 						int h = 23 - i;
@@ -439,7 +439,7 @@ else {
 						}
 					}
 				nLoadingScreen = (nLoadingScreen + 1) % 24;
-				nLevel = nLoadingScreen + 1;
+				nLevel = nShuffledLevels [nLoadingScreen];
 				}
 			sprintf (gameOpts->menus.altBg.szName [1], "level%02d.tga", nLevel);
 			}
