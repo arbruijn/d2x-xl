@@ -898,6 +898,10 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
+			<File
+				RelativePath="..\d2x-xl.rc"
+				>
+			</File>
 			<Filter
 				Name="3d"
 				>
@@ -2399,6 +2403,10 @@
 					</File>
 					<File
 						RelativePath="..\resource.h"
+						>
+					</File>
+					<File
+						RelativePath=".\resource1.h"
 						>
 					</File>
 					<File
@@ -10461,31 +10469,7 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="..\d2x-w32.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\d2x-xl-2.ico"
-				>
-			</File>
-			<File
 				RelativePath="..\d2x-xl.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\d2x.w32.rc"
-				>
-			</File>
-			<File
-				RelativePath="..\descent.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\descent.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\icon1.ico"
 				>
 			</File>
 			<File
@@ -11451,6 +11435,10 @@
 		</Filter>
 		<File
 			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
+		<File
+			RelativePath="..\d2x-xl-icon-64x64.png"
 			>
 		</File>
 	</Files>
