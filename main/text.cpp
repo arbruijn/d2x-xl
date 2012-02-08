@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cfile.h"
 
 #if DBG
-#	define DUMP_TEXTS 0
+#	define DUMP_TEXTS 2
 #else
 #	define DUMP_TEXTS 0
 #endif

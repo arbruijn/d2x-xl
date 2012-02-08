@@ -2398,6 +2398,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\resource.h"
+						>
+					</File>
+					<File
 						RelativePath="..\include\scores.h"
 						>
 					</File>
@@ -10461,6 +10465,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\d2x-xl-2.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\d2x-xl.ico"
 				>
 			</File>
@@ -10469,11 +10477,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
