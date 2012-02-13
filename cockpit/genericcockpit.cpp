@@ -1904,6 +1904,11 @@ gameData.demo.nState = saveNewDemoState;
 
 void CGenericCockpit::Render (int bExtraInfo, fix xStereoSeparation)
 {
+#if DBG
+extern int bHave3DCockpit;
+if (bHave3DCockpit)
+	return;
+#endif
 if (Hide ()) 
 	return;
 if (gameStates.app.bPlayerIsDead)
