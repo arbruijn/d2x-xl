@@ -828,14 +828,14 @@ if (vOffsetP)
 int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
 						 CAngleVector *animAnglesP, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, CFloatVector *pObjColor)
 {
-if (objP && (objP->info.nType == OBJ_PLAYER) && (nModel > 0))
+if (objP && (objP->info.nType == OBJ_PLAYER) && (nModel > 0) && (nModel != COCKPIT_MODEL))
 	nModel += gameData.multiplayer.weaponStates [objP->info.nId].nShip;
 
-	int						i = 0, 
-								bHires = (nModel > 0), 
-								bUseVBO = ogl.m_features.bVertexBufferObjects && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
-								bEmissive = (objP != NULL) && objP->IsWeapon () && !objP->IsMissile (),
-								nGunId, nBombId, nMissileId, nMissiles;
+	int	i = 0, 
+			bHires = (nModel > 0), 
+			bUseVBO = ogl.m_features.bVertexBufferObjects && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
+			bEmissive = (objP != NULL) && objP->IsWeapon () && !objP->IsMissile (),
+			nGunId, nBombId, nMissileId, nMissiles;
 
 nModel = abs (nModel);
 RenderModel::CModel*	modelP = gameData.models.renderModels [bHires] + nModel;

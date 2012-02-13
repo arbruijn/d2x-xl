@@ -783,7 +783,7 @@ if (m_nModel >= 0)
 
 if (gameStates.app.bCacheModelData) {
 	try {
-		if (IsPlayerShip (nModel)
+		if ((IsPlayerShip (nModel) || (nModel == COCKPIT_MODEL))
 			 ? ReadBinary (filename, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0))
 			 : ReadBinary (nModel, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0)))
 			return 1;

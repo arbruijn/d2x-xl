@@ -621,6 +621,27 @@ PROF_END(ptEffects)
 }
 
 //------------------------------------------------------------------------------
+
+void RenderCockpitModel (void)
+{
+	static int bCockpit = 1;
+	static float xOffset = 0.0f;
+	static float yOffset = 5.0f;
+
+if (bCockpit) {
+	int bFullBright = gameStates.render.bFullBright;
+	gameStates.render.bFullBright = 1;
+	ogl.SetTransform (1);
+	CFixVector vOffset = OBJECTS [0].Orientation ().m.dir.f * F2X (xOffset) + OBJECTS [0].Orientation ().m.dir.u * F2X (yOffset);
+	OBJECTS [0].Position () -= vOffset;
+	G3RenderModel (&OBJECTS [0], COCKPIT_MODEL, -1, /*modelP*/NULL, gameData.models.textures, NULL, NULL, 0, NULL, NULL);
+	OBJECTS [0].Position () += vOffset;
+	ogl.SetTransform (0);
+	gameStates.render.bFullBright = bFullBright;
+	}
+}
+
+//------------------------------------------------------------------------------
 //renders onto current canvas
 
 extern int bLog;
@@ -635,6 +656,9 @@ ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 ++gameStates.render.bFullBright;
 RenderSegmentList (RENDER_TYPE_ZCULL);	// render depth only
 --gameStates.render.bFullBright;
+#endif
+#if DBG
+RenderCockpitModel ();
 #endif
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);	// render opaque geometry

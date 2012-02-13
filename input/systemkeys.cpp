@@ -479,6 +479,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			break;
 
 		case KEY_CTRLED + KEY_ALTED + KEY_S:
+		case KEY_ALTED + KEY_F11:
 			if (!ToggleFreeCam ())
 				return 0;
 			break;
