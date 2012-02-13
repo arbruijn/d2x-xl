@@ -625,16 +625,18 @@ PROF_END(ptEffects)
 void RenderCockpitModel (void)
 {
 	static int bCockpit = 1;
-	static float xOffset = 0.0f;
+	static float xOffset = 1.0f;
 	static float yOffset = 5.0f;
 
-if (bCockpit) {
+if (bCockpit && (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)) {
 	int bFullBright = gameStates.render.bFullBright;
 	gameStates.render.bFullBright = 1;
 	ogl.SetTransform (1);
 	CFixVector vOffset = OBJECTS [0].Orientation ().m.dir.f * F2X (xOffset) + OBJECTS [0].Orientation ().m.dir.u * F2X (yOffset);
 	OBJECTS [0].Position () -= vOffset;
-	G3RenderModel (&OBJECTS [0], COCKPIT_MODEL, -1, /*modelP*/NULL, gameData.models.textures, NULL, NULL, 0, NULL, NULL);
+	ogl.Viewport (0, 0, screen.Width (), screen.Height ());
+	G3RenderModel (&OBJECTS [0], COCKPIT_MODEL, -1, NULL, gameData.models.textures, NULL, NULL, 0, NULL, NULL);
+	ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	OBJECTS [0].Position () += vOffset;
 	ogl.SetTransform (0);
 	gameStates.render.bFullBright = bFullBright;
