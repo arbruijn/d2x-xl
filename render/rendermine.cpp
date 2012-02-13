@@ -625,7 +625,7 @@ PROF_END(ptEffects)
 void RenderCockpitModel (void)
 {
 	static int bCockpit = 1;
-	static float xOffset = 1.0f;
+	static float xOffset = 0.0f;
 	static float yOffset = 5.0f;
 
 if (bCockpit && (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)) {
