@@ -672,9 +672,11 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 	nVClip = (ubyte) GetExplosionVClip (delObjP, 1);
 	if ((delObjP->info.nType == OBJ_ROBOT) && xSplashDamage)
 		explObjP = CreateSplashDamageExplosion (NULL, delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE),
-													 nVClip, I2X (xSplashDamage), I2X (4) * xSplashDamage, I2X (35) * xSplashDamage, -1);
+															 nVClip, I2X (xSplashDamage), I2X (4) * xSplashDamage, I2X (35) * xSplashDamage, -1);
 	else
 		explObjP = CreateExplosion (delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);
+	explObjP->m_xMoveDist = /*(delObjP && (delObjP->info.xSize > explObjP->info.xSize)) ? delObjP->info.xSize :*/ explObjP->info.xSize;
+	explObjP->m_xMoveTime = explObjP->info.xLifeLeft;
 	if (!IsMultiGame) { // Multiplayer handled outside of this code!!
 		if (delObjP->info.contains.nCount > 0) {
 			//	If dropping a weapon that the player has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
@@ -709,10 +711,12 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 	//make debris
 	if (delObjP->info.renderType == RT_POLYOBJ) {
 		delObjP->ExplodePolyModel ();		//explode a polygon model
+#if 0
 		if (explObjP) {
 			explObjP->m_xMoveDist = (delObjP->info.xSize < explObjP->info.xSize) ? explObjP->info.xSize : delObjP->info.xSize;
 			explObjP->m_xMoveTime = explObjP->info.xLifeLeft;
 			}	
+#endif
 		}
 
 	//set some parm in explosion
