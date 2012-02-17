@@ -152,6 +152,8 @@ explObjP->SetLife (gameData.eff.vClips [0][nVClip].xTotalTime);
 explObjP->cType.explInfo.nSpawnTime = -1;
 explObjP->cType.explInfo.nDeleteObj = -1;
 explObjP->cType.explInfo.nDeleteTime = -1;
+explObjP->SetMoveDist (3 * explObjP->info.xSize / 2);
+explObjP->SetMoveTime (explObjP->info.xLifeLeft);
 
 if ((parentP && (nVClip == VCLIP_POWERUP_DISAPPEARANCE)) || (nVClip == VCLIP_MORPHING_ROBOT))
 	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), explObjP->LifeLeft (), explObjP->info.xSize, -1, explObjP->Position ()));
@@ -641,7 +643,7 @@ if (info.renderType == RT_SHRAPNELS) {
 if (m_xMoveTime) {
 	CFixVector vOffset = gameData.objs.viewerP->Position () - Origin ();
 	CFixVector::Normalize (vOffset);
-	fix xOffset = fix (2 * m_xMoveDist * double (m_xMoveTime - info.xLifeLeft) / double (m_xMoveTime));
+	fix xOffset = fix (m_xMoveDist * double (m_xMoveTime - info.xLifeLeft) / double (m_xMoveTime));
 	vOffset *= xOffset;
 	Position () = Origin () + vOffset;
 	}
@@ -675,8 +677,6 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 															 nVClip, I2X (xSplashDamage), I2X (4) * xSplashDamage, I2X (35) * xSplashDamage, -1);
 	else
 		explObjP = CreateExplosion (delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);
-	explObjP->m_xMoveDist = /*(delObjP && (delObjP->info.xSize > explObjP->info.xSize)) ? delObjP->info.xSize :*/ explObjP->info.xSize;
-	explObjP->m_xMoveTime = explObjP->info.xLifeLeft;
 	if (!IsMultiGame) { // Multiplayer handled outside of this code!!
 		if (delObjP->info.contains.nCount > 0) {
 			//	If dropping a weapon that the player has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
