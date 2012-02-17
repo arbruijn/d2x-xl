@@ -1906,7 +1906,7 @@ void CGenericCockpit::Render (int bExtraInfo, fix xStereoSeparation)
 {
 #if DBG
 extern int bHave3DCockpit;
-if (bHave3DCockpit)
+if (bHave3DCockpit > 0)
 	return;
 #endif
 if (Hide ()) 

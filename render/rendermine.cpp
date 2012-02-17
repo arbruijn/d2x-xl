@@ -622,23 +622,22 @@ PROF_END(ptEffects)
 
 //------------------------------------------------------------------------------
 
-int bHave3DCockpit = 0;
+int bHave3DCockpit = -1;
 
 void RenderCockpitModel (void)
 {
 	static int bCockpit = 1;
 	static float xOffset = 0.0f;
 	static float yOffset = 5.0f;
-	static float xScale = 1.33333f;
 
-if (bCockpit && (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)) {
+if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)) {
 	int bFullBright = gameStates.render.bFullBright;
 	gameStates.render.bFullBright = 1;
 	ogl.SetTransform (1);
-	CFixVector vOffset = OBJECTS [0].Orientation ().m.dir.f * F2X (xOffset) + OBJECTS [0].Orientation ().m.dir.u * F2X (yOffset);
+	CFixVector vOffset = /*OBJECTS [0].Orientation ().m.dir.f * F2X (xOffset) +*/ OBJECTS [0].Orientation ().m.dir.u * F2X (yOffset);
 	OBJECTS [0].Position () -= vOffset;
 	ogl.Viewport (0, 0, screen.Width (), screen.Height ());
-	gameData.models.vScale.Set (F2X (xScale) / 2, I2X (1), I2X (1));
+	gameData.models.vScale.Set (F2X (float (screen.Width ()) / float (screen.Height ()) * 0.75f), I2X (1), I2X (1));
 	bHave3DCockpit = (G3RenderModel (&OBJECTS [0], COCKPIT_MODEL, -1, NULL, gameData.models.textures, NULL, NULL, 0, NULL, NULL) > 0);
 	gameData.models.vScale.Set (I2X (1), I2X (1), I2X (1));
 	ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());

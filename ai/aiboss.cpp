@@ -312,7 +312,7 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 
 	if (i < 0)
 		StartRobotDeathSequence (objP);	//kill it anyway, somehow
-	else {
+	else if (!gameData.bosses [i].m_nDyingStartTime) { // not already dying
 		gameData.bosses [i].m_nDying = nObject;
 		gameData.bosses [i].m_nDyingStartTime = gameData.time.xGame;
 		}

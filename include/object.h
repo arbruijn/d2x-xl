@@ -799,10 +799,12 @@ class CObject : public CObjectInfo {
 		CObject*			m_prev;
 		CObject*			m_next;
 		CObject*			m_target;
-		CObjListLink	m_links [3];		// link into list of objects in same category (0: all, 1: same type, 2: same class)
+		CObjListLink	m_links [3]; // link into list of objects in same category (0: all, 1: same type, 2: same class)
 		ubyte				m_nLinkedType;
 		ubyte				m_nTracers;
 		fix				m_xCreationTime;
+		fix				m_xMoveTime; // move object explosions out of their origin towards the viewer during the explosion's life time
+		fix				m_xMoveDist;
 		fix				m_xTimeLastHit;
 		fix				m_xTimeLastEffect;
 		fix				m_xTimeEnergyDrain;

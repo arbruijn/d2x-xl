@@ -240,9 +240,11 @@ return (StartTime + xRollDuration < gameData.time.xGame);
 
 void StartRobotDeathSequence (CObject *objP)
 {
-objP->cType.aiInfo.xDyingStartTime = gameData.time.xGame;
-objP->cType.aiInfo.bDyingSoundPlaying = 0;
-objP->cType.aiInfo.SKIP_AI_COUNT = 0;
+if (!objP->cType.aiInfo.xDyingStartTime) { // if not already dying
+	objP->cType.aiInfo.xDyingStartTime = gameData.time.xGame;
+	objP->cType.aiInfo.bDyingSoundPlaying = 0;
+	objP->cType.aiInfo.SKIP_AI_COUNT = 0;
+	}
 }
 
 //	----------------------------------------------------------------------

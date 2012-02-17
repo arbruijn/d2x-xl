@@ -318,7 +318,7 @@ if ((nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->info.nId == nDbgObjId))
 #endif
 if (gameOpts->render.textures.bUseHires [0] || gameOpts->render.effects.bTransparent) {
 	if (fAlpha) {
-		bAdditive = ((nType == OBJ_FIREBALL) || (nType == OBJ_EXPLOSION)) ? 1 : ((nType == OBJ_WEAPON) && (objP->info.nId == OMEGA_ID)) ? 2 : 0;
+		bAdditive = ((nType == OBJ_FIREBALL) || (nType == OBJ_EXPLOSION)) ? /*1*/2 : ((nType == OBJ_WEAPON) && (objP->info.nId == OMEGA_ID)) ? 2 : 0;
 #if 0
 		bMuzzleFlash = (nType == OBJ_FIREBALL) && ((nId == 11) || (nId == 12) || (nId == 15) || (nId == 22) || (nId == 86));
 #endif
@@ -335,7 +335,7 @@ if (gameOpts->render.textures.bUseHires [0] || gameOpts->render.effects.bTranspa
 		else if ((nType != OBJ_FIREBALL) && (nType != OBJ_EXPLOSION))
 			fAlpha = 1.0f;
 		else {
-			fAlpha = 2.0f / 3.0f;
+			fAlpha = 1.0f; //2.0f / 3.0f;
 			bAdditive = 1;
 			}
 		}

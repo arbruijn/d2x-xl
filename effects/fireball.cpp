@@ -637,6 +637,14 @@ if (info.renderType == RT_SHRAPNELS) {
 	//- moved to DoSmokeFrame() - UpdateShrapnels (this);
 	return;
 	}
+
+if (m_xMoveTime) {
+	CFixVector vOffset = gameData.objs.viewerP->Position () - Origin ();
+	CFixVector::Normalize (vOffset);
+	fix xOffset = fix (2 * m_xMoveDist * double (m_xMoveTime - info.xLifeLeft) / double (m_xMoveTime));
+	vOffset *= xOffset;
+	Position () = Origin () + vOffset;
+	}
 //See if we should create a secondary explosion
 if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj >= 0)) {
 	CObject		*explObjP, *delObjP;
@@ -699,8 +707,14 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 		//PLAY_SOUND_3D (ROBOTINFO (delObjP->info.nId).nExp2Sound, vSpawnPos, delObjP->info.nSegment);
 	cType.explInfo.nSpawnTime = -1;
 	//make debris
-	if (delObjP->info.renderType == RT_POLYOBJ)
+	if (delObjP->info.renderType == RT_POLYOBJ) {
 		delObjP->ExplodePolyModel ();		//explode a polygon model
+		if (explObjP) {
+			explObjP->m_xMoveDist = (delObjP->info.xSize < explObjP->info.xSize) ? explObjP->info.xSize : delObjP->info.xSize;
+			explObjP->m_xMoveTime = explObjP->info.xLifeLeft;
+			}	
+		}
+
 	//set some parm in explosion
 	if (explObjP) {
 		if (delObjP->info.movementType == MT_PHYSICS) {
