@@ -149,8 +149,10 @@ if (nObject < 0)
 explObjP = OBJECTS + nObject;
 //now set explosion-specific data
 explObjP->SetLife (gameData.eff.vClips [0][nVClip].xTotalTime);
-explObjP->SetMoveDist (2 * explObjP->info.xSize);
-explObjP->SetMoveTime (explObjP->info.xLifeLeft);
+if (xMaxDamage) {
+	explObjP->SetMoveDist (2 * explObjP->info.xSize);
+	explObjP->SetMoveTime (explObjP->info.xLifeLeft);
+	}
 explObjP->cType.explInfo.nSpawnTime = -1;
 explObjP->cType.explInfo.nDeleteObj = -1;
 explObjP->cType.explInfo.nDeleteTime = -1;
