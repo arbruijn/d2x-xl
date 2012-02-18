@@ -882,7 +882,7 @@ class CObject : public CObjectInfo {
 		inline void SetFrame (int nFrame) { m_nFrame = nFrame; }
 		inline int Frame (void) { return m_nFrame; }
 		inline void SetMoveDist (fix moveDist) { m_xMoveDist = moveDist; }
-		inline void SetMoveTime (fix moveTime) { m_xMoveDist = moveTime; }
+		inline void SetMoveTime (fix moveTime) { m_xMoveTime = moveTime; }
 
 		inline CFixVector& Position (void) { return info.position.vPos; }
 		CFixVector FrontPosition (void);

@@ -149,11 +149,11 @@ if (nObject < 0)
 explObjP = OBJECTS + nObject;
 //now set explosion-specific data
 explObjP->SetLife (gameData.eff.vClips [0][nVClip].xTotalTime);
+explObjP->SetMoveDist (2 * explObjP->info.xSize);
+explObjP->SetMoveTime (explObjP->info.xLifeLeft);
 explObjP->cType.explInfo.nSpawnTime = -1;
 explObjP->cType.explInfo.nDeleteObj = -1;
 explObjP->cType.explInfo.nDeleteTime = -1;
-explObjP->SetMoveDist (3 * explObjP->info.xSize / 2);
-explObjP->SetMoveTime (explObjP->info.xLifeLeft);
 
 if ((parentP && (nVClip == VCLIP_POWERUP_DISAPPEARANCE)) || (nVClip == VCLIP_MORPHING_ROBOT))
 	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), explObjP->LifeLeft (), explObjP->info.xSize, -1, explObjP->Position ()));
