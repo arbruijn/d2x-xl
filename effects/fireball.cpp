@@ -517,7 +517,7 @@ if (gameData.models.nDyingModels [ModelId ()] != -1)
 if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
 	int nModels = gameData.models.polyModels [0][ModelId ()].ModelCount ();
 
-	if (gameOpts->render.effects.nShrapnels && (nModels > 1)) {
+	if (gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShrapnels && (nModels > 1)) {
 		int j = int (X2F (info.xSize) + 0.5) * (gameOpts->render.effects.nShrapnels + 1);
 		for (int i = 0; i < j; i++) {// "i = int (j > 0)" => use the models fuselage only once
 			int h = i % nModels;
