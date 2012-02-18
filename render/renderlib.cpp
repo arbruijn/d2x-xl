@@ -477,8 +477,8 @@ if (SHOW_DYN_LIGHT) {
 	bCloaked = !bTransparent && ((widFlags & WID_CLOAKED_FLAG) != 0);
 	}
 else {
-	bTransparent = 0;
 	bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
+	bTransparent = bCloaked;
 	}
 if (bCloaked || bTransparent || (widFlags & WID_TRANSPCOLOR_FLAG)) {
 	if (bIsMonitor)

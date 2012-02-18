@@ -151,11 +151,10 @@ faceP->m_info.nCamera = IsMonitorFace (nSegment, nSide, 0);
 bTextured = 1;
 bCloaked = 0;
 bTransparent = 0;
-if (bWall)
-	fAlpha = bWall
-				? WallAlpha (nSegment, nSide, faceP->m_info.nWall, faceP->m_info.widFlags, faceP->m_info.nCamera >= 0, faceP->m_info.bAdditive,
-								 &faceColorP [1], nColor, bTextured, bCloaked, bTransparent)
-				: 1.0f;
+fAlpha = bWall
+			? WallAlpha (nSegment, nSide, faceP->m_info.nWall, faceP->m_info.widFlags, faceP->m_info.nCamera >= 0, faceP->m_info.bAdditive,
+							 &faceColorP [1], nColor, bTextured, bCloaked, bTransparent)
+			: 1.0f;
 faceP->m_info.bTextured = bTextured;
 faceP->m_info.bCloaked = bCloaked;
 faceP->m_info.bTransparent |= bTransparent;
@@ -169,6 +168,10 @@ if (faceP->m_info.bSegColor) {
 		}
 	else
 		faceP->m_info.bVisible = (faceP->m_info.nBaseTex >= 0);
+	}
+else if (!bTextured) {
+	faceP->m_info.color = faceColorP [nColor];
+	faceP->m_info.color.Alpha () = fAlpha;
 	}
 if ((fAlpha < 1.0f) || ((nColor == 2) && (faceP->m_info.nBaseTex < 0)))
 	faceP->m_info.bTransparent = 1;
@@ -423,14 +426,9 @@ for (i = nStart; i < nEnd; i++) {
 					nVertex = nVertex;
 #endif
 				*colorP = *vertColorP;
-				if (!gameStates.render.bPerPixelLighting && (nColor > 0)) {
+				if (!gameStates.render.bPerPixelLighting && (nColor > 0))
 					AlphaBlend (*colorP, faceColor [nColor], fAlpha);
-					//*colorP *= faceColor [nColor]; // set the material color for lightmap driven lighting models
-					if (faceP->m_info.bTextured)
-						colorP->Alpha () = fAlpha;
-					}
-				else
-					colorP->Alpha () = fAlpha;
+				colorP->Alpha () = fAlpha;
 				}
 			}
 		lightManager.Material ().bValid = 0;
@@ -567,8 +565,7 @@ for (i = nStart; i < nEnd; i++) {
 						}
 					if (nColor > 0) 
 						AlphaBlend (*colorP, faceColor [nColor], fAlpha);
-					else
-						colorP->Alpha () = fAlpha;
+					colorP->Alpha () = fAlpha;
 					}
 				}
 			}
