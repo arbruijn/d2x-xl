@@ -357,7 +357,7 @@ if (3 != fscanf (cf.File (), "%d.%d.%d", &nVersion [0], &nVersion [1], &nVersion
 
 #if !DBG
 if (D2X_IVER >= nVersion [0] * 100000 + nVersion [1] * 1000 + nVersion [2]) {
-	MsgBox (NULL, NULL, 1, TXT_CLOSE, TXT_NO_UPDATE_AVAILABLE);
+	MsgBox (NULL, NULL, 1, TXT_CLOSE, TXT_NO_UPDATE_FOUND);
 	return 0;
 	}
 #endif
