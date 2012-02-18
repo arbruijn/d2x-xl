@@ -125,7 +125,7 @@ return faceP->m_info.bVisible = 1;
 
 //------------------------------------------------------------------------------
 
-int SetupFace (short nSegment, short nSide, CSegment *segP, CSegFace *faceP, CFaceColor *faceColorP, float& fAlpha)
+int SetupFace (short nSegment, short nSide, CSegment *segP, CSegFace *faceP, CFaceColor *faceColors, float& fAlpha)
 {
 	ubyte	bTextured, bCloaked, bTransparent, bWall;
 	int	nColor = 0;
@@ -153,7 +153,7 @@ bCloaked = 0;
 bTransparent = 0;
 fAlpha = bWall
 			? WallAlpha (nSegment, nSide, faceP->m_info.nWall, faceP->m_info.widFlags, faceP->m_info.nCamera >= 0, faceP->m_info.bAdditive,
-							 &faceColorP [1], nColor, bTextured, bCloaked, bTransparent)
+							 &faceColors [1], nColor, bTextured, bCloaked, bTransparent)
 			: 1.0f;
 faceP->m_info.bTextured = bTextured;
 faceP->m_info.bCloaked = bCloaked;
@@ -161,7 +161,7 @@ faceP->m_info.bTransparent |= bTransparent;
 if (faceP->m_info.bSegColor) {
 	if ((faceP->m_info.nSegColor = IsColoredSegFace (nSegment, nSide))) {
 		faceP->m_info.color = *ColoredSegmentColor (nSegment, nSide, faceP->m_info.nSegColor);
-		faceColorP [2].Assign (faceP->m_info.color);
+		faceColors [2].Assign (faceP->m_info.color);
 		if (faceP->m_info.nBaseTex < 0)
 			fAlpha = faceP->m_info.color.Alpha ();
 		nColor = 2;
@@ -170,8 +170,8 @@ if (faceP->m_info.bSegColor) {
 		faceP->m_info.bVisible = (faceP->m_info.nBaseTex >= 0);
 	}
 else if (!bTextured) {
-	faceP->m_info.color = faceColorP [nColor];
-	faceP->m_info.color.Alpha () = fAlpha;
+	faceColors [nColor].Alpha () = fAlpha;
+	faceP->m_info.color = faceColors [nColor];
 	}
 if ((fAlpha < 1.0f) || ((nColor == 2) && (faceP->m_info.nBaseTex < 0)))
 	faceP->m_info.bTransparent = 1;
@@ -563,8 +563,8 @@ for (i = nStart; i < nEnd; i++) {
 							}
 						*colorP = *vertColorP;
 						}
-					if (nColor > 0) 
-						AlphaBlend (*colorP, faceColor [nColor], fAlpha);
+					if (nColor > 0)
+						*colorP *= faceColor [nColor];
 					colorP->Alpha () = fAlpha;
 					}
 				}
@@ -643,6 +643,8 @@ for (i = nStart; i < nEnd; i++) {
 				AdjustVertexColor (NULL, &c, xLight);
 				}
 			*colorP = c;
+			if (nColor > 0)
+				*colorP *= faceColor [nColor];
 			colorP->Alpha () = fAlpha;
 			}
 		}

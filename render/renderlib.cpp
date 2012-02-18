@@ -146,8 +146,8 @@ char IsColoredSeg (short nSegment)
 {
 if (nSegment < 0)
 	return 0;
-if (!gameStates.render.nLightingMethod)
-	return 0;
+//if (!gameStates.render.nLightingMethod)
+//	return 0;
 CSegment* segP = SEGMENTS + nSegment;
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0))
 	return (segP->m_owner == 1) ? 2 : 1;
@@ -168,10 +168,10 @@ return 0;
 
 char IsColoredSegFace (short nSegment, short nSide)
 {
-#if 1 //!DBG
+#if 0 //!DBG
 if (!gameStates.render.nLightingMethod)
-#endif
 	return 0;
+#endif
 
 	CSegment*	segP = SEGMENTS + nSegment;
 	CSegment*	connSegP = (segP->m_children [nSide] < 0) ? NULL : SEGMENTS + segP->m_children [nSide];
@@ -214,8 +214,8 @@ CFloatVector segmentColors [4] = {
 
 CFloatVector *ColoredSegmentColor (int nSegment, int nSide, char nColor)
 {
-if (!gameStates.render.nLightingMethod)
-	return NULL;
+//if (!gameStates.render.nLightingMethod)
+//	return NULL;
 
 	CSegment*	segP = SEGMENTS + nSegment;
 	CSegment*	connSegP = (segP->m_children [nSide] < 0) ? NULL : SEGMENTS + segP->m_children [nSide];
@@ -477,8 +477,8 @@ if (SHOW_DYN_LIGHT) {
 	bCloaked = !bTransparent && ((widFlags & WID_CLOAKED_FLAG) != 0);
 	}
 else {
+	bTransparent = 0;
 	bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
-	bTransparent = bCloaked;
 	}
 if (bCloaked || bTransparent || (widFlags & WID_TRANSPCOLOR_FLAG)) {
 	if (bIsMonitor)
