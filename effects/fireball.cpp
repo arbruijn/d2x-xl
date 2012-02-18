@@ -149,7 +149,10 @@ if (nObject < 0)
 explObjP = OBJECTS + nObject;
 //now set explosion-specific data
 explObjP->SetLife (gameData.eff.vClips [0][nVClip].xTotalTime);
-if (xMaxDamage) {
+if ((nVClip != VCLIP_MORPHING_ROBOT) && 
+	 (nVClip != VCLIP_PLAYER_APPEARANCE) &&
+	 (nVClip != VCLIP_POWERUP_DISAPPEARANCE) &&
+	 (nVClip != VCLIP_AFTERBURNER_BLOB)) {
 	explObjP->SetMoveDist (2 * explObjP->info.xSize);
 	explObjP->SetMoveTime (explObjP->info.xLifeLeft);
 	}
