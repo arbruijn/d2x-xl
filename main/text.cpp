@@ -1948,6 +1948,13 @@ const char *defaultGameTexts [][2] = {
  {"Gespeicherte Spiele loeschen", "Delete saved games"},
  {"hinter ~Hindernissen verbergen", "~Hide behind obstacles"},
  {"modifizierte waffen ~Zulassen", "allow ~Custom weapons"},
+ {"Kein Update verfuegbar.", "No updates were found."},
+ {"Ein Update wurde gefunden.\nSoll es heruntergeladen werden?", "An update has been found.\nDownload it?"},
+ {"Download fehlgeschlagen", "Download failed."},
+ {"\nDie Datei\n\n%s\n\nwurde erfolgreich heruntergeladen.", "\nThe file\n\n%s\n\nwas sucessfully downloaded."},
+ {"\nDie Datei\n\n%s\n\nwurde erfolgreich heruntergeladen,\nkonnte aber nicht ausgefuehrt werden.\nBitte beende D2X-XL und starte die Installation manuell.", 
+  "\nThe file\n\n%s\n\nwas sucessfully downloaded, but couldn't be excuted.\nPlease leave D2X-XL and start the installer manually."},
+ 
 #if 0
  {"", ""},
 #endif

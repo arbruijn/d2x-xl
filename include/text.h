@@ -1983,15 +1983,15 @@ void LoadGameTexts(void);
 #define TXT_BRIGHTNESS					GT(1199)
 #define TXT_DELETE_SAVEGAMES			GT(1200)
 #define TXT_HIDE_TGTIND					GT(1201)
-#define TXT_ALLOW_CUSTOM_WEAPONS			GT(1202)
+#define TXT_ALLOW_CUSTOM_WEAPONS		GT(1202)
+#define TXT_NO_UPDATE_FOUND         GT(1203)
+#define TXT_UPDATE_FOUND            GT(1204)
+#define TXT_DOWNLOAD_SUCCEEDED      GT(1205)
+#define TXT_DOWNLOAD_FAILED         GT(1206)
+#define TXT_PATCH_FAILED            GT(1207)
 
 #if 0
 
-#define TXT_					GT(1203)
-#define TXT_					GT(1204)
-#define TXT_					GT(1205)
-#define TXT_					GT(1206)
-#define TXT_					GT(1207)
 #define TXT_					GT(1208)
 #define TXT_					GT(1209)
 #define TXT_					GT(1210)

@@ -168,7 +168,7 @@ int NetworkSelectPlayers (int bAutoRun)
 	int		i, j, choice = 1;
    CMenu		m (MAX_PLAYERS + 4);
    char		text [MAX_PLAYERS+4][45];
-	char		title [50];
+	char		title [200];
 	int		nSavePlayers;              //how may people would like to join
 
 PrintLog (1, "Selecting netgame players\n");
