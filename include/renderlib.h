@@ -55,7 +55,7 @@ void TransformSideCenters (void);
 #endif
 
 int IsTransparentTexture (short nTexture);
-void AlphaBlend (CFloatVector& dest, CFloatVector& other);
+void AlphaBlend (CFloatVector& dest, CFloatVector& other, float fAlpha);
 int SetVertexColor (int nVertex, CFaceColor *pc, int bBlend = 0);
 int SetVertexColors (tFaceProps *propsP);
 fix SetVertexLight (int nSegment, int nSide, int nVertex, CFaceColor *pc, fix light);
@@ -66,7 +66,7 @@ char IsColoredSegFace (short nSegment, short nSide);
 CFloatVector *ColoredSegmentColor (int nSegment, int nSide, char nColor);
 int IsMonitorFace (short nSegment, short nSide, int bForce);
 float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, ubyte bAdditive,
-					  CFloatVector *pc, int *bCloaking, ubyte *bTextured, ubyte* bCloaked, ubyte* bTransparent);
+					  CFloatVector *colorP, int& nColor, ubyte& bTextured, ubyte& bCloaked, ubyte& bTransparent);
 int SetupMonitorFace (short nSegment, short nSide, short nCamera, CSegFace *faceP);
 CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures = 1);
 void DrawOutline (int nVertices, CRenderPoint **pointList);

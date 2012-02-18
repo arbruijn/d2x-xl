@@ -277,12 +277,12 @@ if (m > l)
 
 //------------------------------------------------------------------------------
 
-void AlphaBlend (CFloatVector& dest, CFloatVector& src)
+void AlphaBlend (CFloatVector& dest, CFloatVector& src, float fAlpha)
 {
-float da = 1.0f - src.v.color.a;
-dest.v.color.r = dest.v.color.r * da + src.v.color.r * src.v.color.a;
-dest.v.color.g = dest.v.color.g * da + src.v.color.g * src.v.color.a;
-dest.v.color.b = dest.v.color.b * da + src.v.color.b * src.v.color.a;
+float da = 1.0f - fAlpha;
+dest.v.color.r = dest.v.color.r * da + src.v.color.r * fAlpha;
+dest.v.color.g = dest.v.color.g * da + src.v.color.g * fAlpha;
+dest.v.color.b = dest.v.color.b * da + src.v.color.b * fAlpha;
 //dest.v.color.a += other.v.color.a;
 //if (dest.v.color.a > 1.0f)
 //	dest.v.color.a = 1.0f;
@@ -456,9 +456,9 @@ return !gameStates.app.bD1Mission &&
 //------------------------------------------------------------------------------
 
 float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, ubyte bAdditive,
-					  CFloatVector *colorP, int *nColor, ubyte *bTextured, ubyte *bCloaked, ubyte* bTransparent)
+					  CFloatVector *colorP, int& nColor, ubyte& bTextured, ubyte& bCloaked, ubyte& bTransparent)
 {
-	static CFloatVector cloakColor = {1, 1, 1, 0};
+	static CFloatVector cloakColor = {0.0f, 0.0f, 0.0f, 0};
 
 	CWall	*wallP;
 	float fAlpha, fMaxColor;
@@ -473,27 +473,27 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 if (!(wallP = WALLS + nWall))
 	return 1;
 if (SHOW_DYN_LIGHT) {
-	*bTransparent = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING);
-	*bCloaked = !*bTransparent && ((widFlags & WID_CLOAKED_FLAG) != 0);
+	bTransparent = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING);
+	bCloaked = !bTransparent && ((widFlags & WID_CLOAKED_FLAG) != 0);
 	}
 else {
-	*bTransparent = 0;
-	*bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
+	bTransparent = 0;
+	bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
 	}
-if (*bCloaked || *bTransparent || (widFlags & WID_TRANSPCOLOR_FLAG)) {
+if (bCloaked || bTransparent || (widFlags & WID_TRANSPCOLOR_FLAG)) {
 	if (bIsMonitor)
 		return 1;
 	c = wallP->cloakValue;
-	if (*bCloaked || *bTransparent) {
+	if (bCloaked || bTransparent) {
 		*colorP = cloakColor;
-		*nColor = 1;
-		*bTextured = !*bCloaked;
+		nColor = 1;
+		bTextured = !bCloaked;
 		fAlpha = (c >= FADE_LEVELS) ? 0.0f : 1.0f - float (c) / float (FADE_LEVELS);
-		if (*bTransparent)
+		if (bTransparent)
 			colorP->Red () =
 			colorP->Green () =
-			colorP->Blue () = colorP->Alpha ();
-		return colorP->Alpha ();
+			colorP->Blue () = fAlpha;
+		return fAlpha;
 		}
 
 	if (!gameOpts->render.color.bWalls)
@@ -518,8 +518,8 @@ if (*bCloaked || *bTransparent || (widFlags & WID_TRANSPCOLOR_FLAG)) {
 			colorP->Green () /= fMaxColor;
 			colorP->Blue () /= fMaxColor;
 			}
-		*bTextured = 0;
-		*nColor = 1;
+		bTextured = 0;
+		nColor = 1;
 		}
 	return colorP->Alpha () = fAlpha;
 	}

@@ -125,7 +125,7 @@ return faceP->m_info.bVisible = 1;
 
 //------------------------------------------------------------------------------
 
-int SetupFace (short nSegment, short nSide, CSegment *segP, CSegFace *faceP, CFaceColor *faceColorP, float *fAlphaP)
+int SetupFace (short nSegment, short nSide, CSegment *segP, CSegFace *faceP, CFaceColor *faceColorP, float& fAlpha)
 {
 	ubyte	bTextured, bCloaked, bTransparent, bWall;
 	int	nColor = 0;
@@ -152,10 +152,10 @@ bTextured = 1;
 bCloaked = 0;
 bTransparent = 0;
 if (bWall)
-	*fAlphaP = WallAlpha (nSegment, nSide, faceP->m_info.nWall, faceP->m_info.widFlags, faceP->m_info.nCamera >= 0, faceP->m_info.bAdditive,
-								 &faceColorP [1], &nColor, &bTextured, &bCloaked, &bTransparent);
-else
-	*fAlphaP = 1.0f;
+	fAlpha = bWall
+				? WallAlpha (nSegment, nSide, faceP->m_info.nWall, faceP->m_info.widFlags, faceP->m_info.nCamera >= 0, faceP->m_info.bAdditive,
+								 &faceColorP [1], nColor, bTextured, bCloaked, bTransparent)
+				: 1.0f;
 faceP->m_info.bTextured = bTextured;
 faceP->m_info.bCloaked = bCloaked;
 faceP->m_info.bTransparent |= bTransparent;
@@ -164,13 +164,13 @@ if (faceP->m_info.bSegColor) {
 		faceP->m_info.color = *ColoredSegmentColor (nSegment, nSide, faceP->m_info.nSegColor);
 		faceColorP [2].Assign (faceP->m_info.color);
 		if (faceP->m_info.nBaseTex < 0)
-			*fAlphaP = faceP->m_info.color.Alpha ();
+			fAlpha = faceP->m_info.color.Alpha ();
 		nColor = 2;
 		}
 	else
 		faceP->m_info.bVisible = (faceP->m_info.nBaseTex >= 0);
 	}
-if ((*fAlphaP < 1.0f) || ((nColor == 2) && (faceP->m_info.nBaseTex < 0)))
+if ((fAlpha < 1.0f) || ((nColor == 2) && (faceP->m_info.nBaseTex < 0)))
 	faceP->m_info.bTransparent = 1;
 return nColor;
 }
@@ -213,7 +213,7 @@ for (i = nStart; i < nEnd; i++) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	if (0 > (nColor = SetupFace (nSegment, nSide, SEGMENTS + nSegment, faceP, faceColor, &fAlpha))) {
+	if (0 > (nColor = SetupFace (nSegment, nSide, SEGMENTS + nSegment, faceP, faceColor, fAlpha))) {
 		faceP->m_info.bVisible = 0;
 		continue;
 		}
@@ -376,7 +376,7 @@ for (i = nStart; i < nEnd; i++) {
 				nSegment = nSegment;
 			}
 #endif
-		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
+		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, fAlpha))) {
 			faceP->m_info.bVisible = 0;
 			continue;
 			}
@@ -423,13 +423,14 @@ for (i = nStart; i < nEnd; i++) {
 					nVertex = nVertex;
 #endif
 				*colorP = *vertColorP;
-				colorP->Alpha () = fAlpha;
 				if (!gameStates.render.bPerPixelLighting && (nColor > 0)) {
-					AlphaBlend (*colorP, faceColor [nColor]);
+					AlphaBlend (*colorP, faceColor [nColor], fAlpha);
 					//*colorP *= faceColor [nColor]; // set the material color for lightmap driven lighting models
 					if (faceP->m_info.bTextured)
 						colorP->Alpha () = fAlpha;
 					}
+				else
+					colorP->Alpha () = fAlpha;
 				}
 			}
 		lightManager.Material ().bValid = 0;
@@ -498,7 +499,7 @@ for (i = nStart; i < nEnd; i++) {
 				nSegment = nSegment;
 			}
 #endif
-		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
+		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, fAlpha))) {
 			faceP->m_info.bVisible = 0;
 			continue;
 			}
@@ -564,9 +565,10 @@ for (i = nStart; i < nEnd; i++) {
 							}
 						*colorP = *vertColorP;
 						}
-					colorP->Alpha () = fAlpha;
 					if (nColor > 0) 
-						AlphaBlend (*colorP, faceColor [nColor]);
+						AlphaBlend (*colorP, faceColor [nColor], fAlpha);
+					else
+						colorP->Alpha () = fAlpha;
 					}
 				}
 			}
@@ -620,7 +622,7 @@ for (i = nStart; i < nEnd; i++) {
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nSegment = nSegment;
 #endif
-		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
+		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, fAlpha))) {
 			faceP->m_info.bVisible = 0;
 			continue;
 			}
