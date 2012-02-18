@@ -399,7 +399,7 @@ char*	args [2] = {szDest, NULL};
 if (0 <= _execv (szDest, args))
 	exit (1);
 #endif
-sprintf (szMsg, "\nThe file\n\n%s\n\nwas sucessfully downloaded, but couldn't be excuted.\nPlease leave D2X-XL and start the installer manually.", szDest);
+sprintf (szMsg, TXT_PATCH_FAILED, szDest);
 //Warning (szMsg);
 MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, szMsg);
 #endif
