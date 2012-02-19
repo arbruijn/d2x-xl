@@ -688,7 +688,7 @@ switch (nType) {
 		break;
 
 	default:
-		Error ("Error: Illegal nType (%i) in function DropPowerup.\n", nType);
+		PrintLog (0, "Illegal nType (%i) in function DropPowerup.\n", nType);
 	}
 return nObject;
 }
