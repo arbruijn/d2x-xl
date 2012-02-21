@@ -417,22 +417,26 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 	for (i = m_faces.m_nFaces, faceP = m_faces.m_list.Buffer (); i; i--, faceP++) {
 		if (faceP->m_bReverse != bReverse)
 			continue;
-		if (nVerts && (nFaceVerts != -1) && (nFaceVerts != faceP->m_nVerts)) {
-			ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, nVerts, 3, bTextured, bTextured);
-			nVerts = 0;
+		if (nFaceVerts != faceP->m_nVerts) {
+			if (nVerts && (nFaceVerts != -1)) {
+				ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : /*(nFaceVerts == 4) ? GL_QUADS :*/ GL_TRIANGLE_FAN, nVerts, 3, bTextured, bTextured);
+				nVerts = 0;
+				bTextured = -1;
+				}
 			nFaceVerts = faceP->m_nVerts;
-			bTextured = -1;
 			}
 		faceVertP = faceP->m_verts;
 		if (faceP->m_bTextured) {
 			if (bTextured == 0) {
-				ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, nVerts, 3, 0, 0);
+				ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : /*(nFaceVerts == 4) ? GL_QUADS :*/ GL_TRIANGLE_FAN, nVerts, 3, 0, 0);
+				nFaceVerts = faceP->m_nVerts;
 				nVerts = 0;
 				}
 
 			if (bmP != po->m_textures.m_bitmaps + faceP->m_texProps.nTexId) {
 				if (bTextured == 1) { // didn't flush already above
-					ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts, 3, 1, 1);
+					ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : /*(nFaceVerts == 4) ? GL_QUADS :*/ GL_TRIANGLE_FAN, nVerts, 3, 1, 1);
+					nFaceVerts = faceP->m_nVerts;
 					nVerts = 0;
 					}
 				bmP = po->m_textures.m_bitmaps + faceP->m_texProps.nTexId;
@@ -449,20 +453,23 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			fl = *fLight * (0.75f - 0.25f * (faceP->m_vNormal * mView.m.dir.f));
 			if (fl > 1)
 				fl = 1;
+#if DBG
+			if (m_nFlags & OOF_SOF_LAYER)
+				m_nFlags = m_nFlags;
+#endif
 			if (m_nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
-				colorP->Red () = fl * m_glowInfo.m_color.Red ();
-				colorP->Green () = fl * m_glowInfo.m_color.Green ();
-				colorP->Blue () = fl * m_glowInfo.m_color.Blue ();
-				colorP->Alpha () = m_pfAlpha [faceVertP->m_nIndex] * fAlpha;
-				colorP++;
+				colorP [nVerts].Red () = fl * m_glowInfo.m_color.Red ();
+				colorP [nVerts].Green () = fl * m_glowInfo.m_color.Green ();
+				colorP [nVerts].Blue () = fl * m_glowInfo.m_color.Blue ();
+				colorP [nVerts].Alpha () = m_pfAlpha [faceVertP->m_nIndex] * fAlpha;
 				}
 			else if (!bDynLighting) {
 				if (bBright)
 					fl += (1 - fl) / 2;
-				colorP->Red () = segColor.Red () * fl;
-				colorP->Green () = segColor.Green () * fl;
-				colorP->Blue () = segColor.Blue () * fl;
-				colorP->Alpha () = m_pfAlpha [faceVertP->m_nIndex] * fAlpha;
+				colorP [nVerts].Red () = segColor.Red () * fl;
+				colorP [nVerts].Green () = segColor.Green () * fl;
+				colorP [nVerts].Blue () = segColor.Blue () * fl;
+				colorP [nVerts].Alpha () = m_pfAlpha [faceVertP->m_nIndex] * fAlpha;
 				colorP++;
 				}
 			for (j = faceP->m_nVerts; j; j--, faceVertP++) {
@@ -480,14 +487,12 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 						vertColor.Blue () += (1.0f - vertColor.Blue ()) * 0.5f;
 						}
 					vertColor.Alpha () = m_pfAlpha [faceVertP->m_nIndex] * fAlpha;
-					*colorP++ = vertColor;
+					colorP [nVerts] = vertColor;
 					}
-				texCoordP->v.u = faceVertP->m_fu;
-				texCoordP->v.v = faceVertP->m_fv;
-				texCoordP++;
-				*vertP++ = modelVertP [faceVertP->m_nIndex];
+				texCoordP [nVerts].v.u = faceVertP->m_fu;
+				texCoordP [nVerts].v.v = faceVertP->m_fv;
+				vertP [nVerts++] = *phv;
 				}
-			nVerts += faceP->m_nVerts;
 #if DBG_SHADOWS
 			if (faceP->m_bFacingLight && (bShadowTest > 3)) {
 					CFloatVector	fv0;
@@ -514,6 +519,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 		else {
 			if (bTextured == 1) {
 				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts, 3, 1, 1);
+				nFaceVerts = faceP->m_nVerts;
 				nVerts = 0;
 				ogl.SetTexturing (false);
 				bmP = NULL;
@@ -525,13 +531,11 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			b = fl * (float) faceP->m_texProps.color.Blue () / 255.0f;
 			glColor4f (r, g, b, m_pfAlpha [faceVertP->m_nIndex] * fAlpha);
 			for (j = faceP->m_nVerts; j; j--, faceVertP++) 
-				*vertP++ = modelVertP [faceVertP->m_nIndex];
-			nVerts += faceP->m_nVerts;
-			nFaceVerts = faceP->m_nVerts;
+				vertP [nVerts++] = modelVertP [faceVertP->m_nIndex];
 			}
 		}
 	if (bTextured != -1)
-		ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, nVerts, 3, bTextured, bTextured);
+		ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : /*(nFaceVerts == 4) ? GL_QUADS :*/ GL_TRIANGLE_FAN, nVerts, 3, bTextured, bTextured);
 
 	}
 glFrontFace (GL_CW);
