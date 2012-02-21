@@ -1135,8 +1135,7 @@ void CLightDelta::Read (CFile& cf)
 nSegment = cf.ReadShort ();
 nSide = cf.ReadByte ();
 cf.ReadByte ();
-if (!(bValid = (nSegment >= 0) && (nSegment < gameData.segs.nSegments) && (nSide >= 0) && (nSide < 6)))
-	PrintLog (0, "Invalid light delta data %d (%d,%d)\n", this - gameData.render.lights.deltas, nSegment, nSide);
+bValid = (nSegment >= 0) && (nSegment < gameData.segs.nSegments) && (nSide >= 0) && (nSide < 6);
 cf.Read (vertLight, sizeof (vertLight [0]), sizeofa (vertLight));
 }
 

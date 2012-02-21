@@ -858,9 +858,9 @@ if ((gameFileInfo.lightDeltas.offset > -1) && gameFileInfo.lightDeltas.count) {
 			console.printf (CON_DBG, "Warning: Old mine version.  Not reading delta light info.\n");
 #endif
 			}
-		if (h < gameFileInfo.lightDeltas.count)
-			PrintLog (0, "Invalid light delta data found (%d records affected)\n", gameFileInfo.lightDeltas.count - h);
 		}
+	if (h < gameFileInfo.lightDeltas.count)
+		PrintLog (0, "Invalid light delta data found (%d records affected)\n", gameFileInfo.lightDeltas.count - h);
 	}
 return 0;
 }
