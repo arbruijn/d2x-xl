@@ -635,7 +635,7 @@ return 1;
 
 //---------------------------------------------------------------
 
-int CTGA::Read (const char *pszFile, const char *pszFolder, int alpha, double brightness, int bGrayScale)
+int CTGA::Read (const char *pszFile, const char *pszFolder, int alpha, double brightness, int bGrayScale, bool bAutoComplete)
 {
 #if USE_SDL_IMAGE
 

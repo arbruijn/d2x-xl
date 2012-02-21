@@ -835,7 +835,7 @@ return 0;
 static int ReadLightDeltaInfo (CFile& cf)
 {
 if ((gameFileInfo.lightDeltas.offset > -1) && gameFileInfo.lightDeltas.count) {
-	int	i;
+	int	h, i;
 
 #if TRACE
 	console.printf(CON_DBG, "   loading light data ...\n");
@@ -848,14 +848,18 @@ if ((gameFileInfo.lightDeltas.offset > -1) && gameFileInfo.lightDeltas.count) {
 		Error ("Error seeking to light delta data\n(file damaged or invalid)");
 		return -1;
 		}
-	for (i = 0; i < gameFileInfo.lightDeltas.count; i++) {
-		if (gameTopFileInfo.fileinfoVersion >= 29) 
+	for (h = i = 0; i < gameFileInfo.lightDeltas.count; i++) {
+		if (gameTopFileInfo.fileinfoVersion >= 29) {
 			gameData.render.lights.deltas [i].Read (cf);
+			h += gameData.render.lights.deltas [i].bValid;
+			}
 		else {
 #if TRACE
 			console.printf (CON_DBG, "Warning: Old mine version.  Not reading delta light info.\n");
 #endif
 			}
+		if (h < gameFileInfo.lightDeltas.count)
+			PrintLog (0, "Invalid light delta data found (%d records affected)\n", gameFileInfo.lightDeltas.count - h);
 		}
 	}
 return 0;

@@ -427,16 +427,15 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			}
 		faceVertP = faceP->m_verts;
 		if (faceP->m_bTextured) {
-			if (bTextured == 0) {
-				ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : /*(nFaceVerts == 4) ? GL_QUADS :*/ GL_TRIANGLE_FAN, nVerts, 3, 0, 0);
-				nFaceVerts = faceP->m_nVerts;
-				nVerts = 0;
-				}
+			//if (bTextured == 0) {
+			//	ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : /*(nFaceVerts == 4) ? GL_QUADS :*/ GL_TRIANGLE_FAN, nVerts, 3, 0, 0);
+			//	nFaceVerts = faceP->m_nVerts;
+			//	nVerts = 0;
+			//	}
 
 			if (bmP != po->m_textures.m_bitmaps + faceP->m_texProps.nTexId) {
-				if (bTextured == 1) { // didn't flush already above
+				if (nVerts) {
 					ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : /*(nFaceVerts == 4) ? GL_QUADS :*/ GL_TRIANGLE_FAN, nVerts, 3, 1, 1);
-					nFaceVerts = faceP->m_nVerts;
 					nVerts = 0;
 					}
 				bmP = po->m_textures.m_bitmaps + faceP->m_texProps.nTexId;
@@ -470,7 +469,6 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 				colorP [nVerts].Green () = segColor.Green () * fl;
 				colorP [nVerts].Blue () = segColor.Blue () * fl;
 				colorP [nVerts].Alpha () = m_pfAlpha [faceVertP->m_nIndex] * fAlpha;
-				colorP++;
 				}
 			for (j = faceP->m_nVerts; j; j--, faceVertP++) {
 				phv = modelVertP + (h = faceVertP->m_nIndex);
@@ -517,9 +515,8 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 #endif
 			}
 		else {
-			if (bTextured == 1) {
+			if (bTextured > 0) {
 				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts, 3, 1, 1);
-				nFaceVerts = faceP->m_nVerts;
 				nVerts = 0;
 				ogl.SetTexturing (false);
 				bmP = NULL;
