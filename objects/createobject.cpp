@@ -369,8 +369,11 @@ return nObject;
 
 int CreateRobot (ubyte nId, short nSegment, const CFixVector& vPos)
 {
-return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.models.polyModels [0][ROBOTINFO (nId).nModel].Rad (),
-							CT_AI, MT_PHYSICS, RT_POLYOBJ);
+if (nId >= gameData.bots.nTypes [gameStates.app.bD1Mission]) {
+	PrintLog (0, "Trying to create non-existent robot (type %d)\n", nId);
+	return -1;
+	}
+return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.models.polyModels [0][ROBOTINFO (nId).nModel].Rad (),CT_AI, MT_PHYSICS, RT_POLYOBJ);
 }
 
 //------------------------------------------------------------------------------

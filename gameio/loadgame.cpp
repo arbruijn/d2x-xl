@@ -1537,7 +1537,7 @@ if (!IsMultiGame) {
 		char szBriefing [FILENAME_LEN];
 		PlayLevelExtroMovie (missionManager.nCurrentLevel);
 		sprintf (szBriefing, "%s.tex", gameStates.app.szCurrentMissionFile);
-		briefing.Run (szBriefing, missionManager.nLastLevel + 1);   //level past last is endgame breifing
+		briefing.Run (szBriefing, missionManager.nLastLevel + 1);   //level past last is endgame briefing
 
 		//try doing special credits
 		sprintf (szBriefing,"%s.ctb",gameStates.app.szCurrentMissionFile);
