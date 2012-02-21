@@ -275,10 +275,6 @@ bool CTexture::Register (void)
 if (m_bRegistered)
 	return false;	// already registered
 textureManager.Register (this);
-#if DBG
-if (strstr (m_info.bmP->Name (), "SHADOW#"))
-	m_bRegistered = true;
-#endif
 return m_bRegistered = true;
 }
 
@@ -444,10 +440,6 @@ return 0;
 
 ubyte* CTexture::Convert (int dxo, int dyo, CBitmap* bmP, int nTranspType, int bSuperTransp)
 {
-#if DBG
-if (strstr (bmP->Name (), "hoard"))
-	bmP = bmP;
-#endif
 paletteManager.SetTexture (bmP->Parent () ? bmP->Parent ()->Palette () : bmP->Palette ());
 if (!paletteManager.Texture ())
 	return NULL;
@@ -1202,8 +1194,6 @@ if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
 	return Parent ()->PrepareTexture (bMipMap, bMask, renderBuffer);
 
 #if DBG
-if (strstr (m_info.szName, "pwr02"))
-	nDbgTexture = nDbgTexture;
 if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
 	nDbgTexture = nDbgTexture;
 #endif
@@ -1459,8 +1449,6 @@ bool CBitmap::SetupTexture (int bMipMaps, int bLoad)
 	CBitmap *bmP;
 
 #if DBG
-if (strstr (m_info.szName, "pwr02"))
-	nDbgTexture = nDbgTexture;
 if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
 	nDbgTexture = nDbgTexture;
 if (bMipMaps < 0)

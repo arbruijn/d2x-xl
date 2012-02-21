@@ -407,7 +407,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 		pfv = pf->m_verts;
 		if (pf->m_bTextured) {
 			if (bTextured == 0) {
-				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [0], 0, 0);
+				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [0], 3, 0, 0);
 				bTextured = 1;
 				}
 
@@ -420,6 +420,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 					return 0;
 				bmP->Texture ()->Wrap (GL_REPEAT);
 				ogl.SetTexturing (true);
+				bTextured = 1;
 				}
 
 			fl = *fLight * (0.75f - 0.25f * (pf->m_vNormal * mView.m.dir.f));
@@ -488,7 +489,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			}
 		else {
 			if (bTextured == 1) {
-				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [0], 1, 1);
+				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [1], 3, 1, 1);
 				bTextured = 0;
 				ogl.SetTexturing (false);
 				bmP = NULL;
@@ -501,8 +502,8 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			*pvb++ = pv [pfv->m_nIndex];
 			}
 		}
-	if (bTextured >= 0)
-		ogl.FlushBuffers (GL_TRIANGLE_FAN, bTextured, bTextured);
+	if (bTextured != -1)
+		ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [bTextured], 3, bTextured, bTextured);
 	}
 glFrontFace (GL_CW);
 return 1;
