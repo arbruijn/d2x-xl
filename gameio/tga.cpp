@@ -657,7 +657,7 @@ if (!pszFolder) {
 if (m_bmP->ReadS3TC (pszFolder, m_szFilename))
 	return 1;
 #endif
-if (!(psz = const_cast<char*> (strstr (pszFile, ".tga")))) {
+if (bAutoComplete && !(psz = const_cast<char*> (strstr (pszFile, ".tga")))) {
 	strcpy (szFile, pszFile);
 	if ((psz = strchr (szFile, '.')))
 		*psz = '\0';
@@ -1027,7 +1027,8 @@ if (nShrinkFactor > 1) {
 		return m_bmP;
 		}
 	}
-if (!Read (pszFile, gameFolders.szModelDir [bCustom], -1, 1.0, 0))
+if (!(Read (pszFile, gameFolders.szModelDir [bCustom], -1, 1.0, 0, false) ||
+	   Read (pszFile, gameFolders.szModelDir [bCustom], -1, 1.0, 0, true)))
 	return NULL;
 UseBitmapCache (m_bmP, int (m_bmP->Height ()) * int (m_bmP->RowSize ()));
 if (gameStates.app.bCacheTextures && (nShrinkFactor > 1) &&

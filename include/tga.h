@@ -90,7 +90,7 @@ class CTGA {
 		int ReadData (CFile& cf, int alpha, double brightness, int bGrayScale, int bReverse);
 		int WriteData (void);
 		int Load (int alpha, double brightness, int bGrayScale);
-		int Read (const char* pszFile, const char* pszFolder, int alpha = -1, double brightness = 1.0, int bGrayScale = 0);
+		int Read (const char* pszFile, const char* pszFolder, int alpha = -1, double brightness = 1.0, int bGrayScale = 0, bool bAutoComplete = true);
 		int Write (void);
 		CBitmap* CreateAndRead (char* pszFile);
 		int Save (const char *pszFile, const char *pszFolder);
