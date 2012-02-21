@@ -55,59 +55,59 @@ static CFloatMatrix mView;
 
 //------------------------------------------------------------------------------
 
-int OOF_FacingPoint (CFloatVector *pv, CFloatVector *pn, CFloatVector *pp)
+int OOF_FacingPoint (CFloatVector *modelVertP, CFloatVector *pn, CFloatVector *pp)
 {
-	CFloatVector	v = *pp - *pv;
+	CFloatVector	v = *pp - *modelVertP;
 
 return CFloatVector::Dot (v, *pn) > 0;
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_FacingViewer (CFloatVector *pv, CFloatVector *pn)
+int OOF_FacingViewer (CFloatVector *modelVertP, CFloatVector *pn)
 {
-return OOF_FacingPoint (pv, pn, &vPos);
+return OOF_FacingPoint (modelVertP, pn, &vPos);
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_FacingLight (CFloatVector *pv, CFloatVector *pn)
+int OOF_FacingLight (CFloatVector *modelVertP, CFloatVector *pn)
 {
-return OOF_FacingPoint (pv, pn, &vrLightPos);
+return OOF_FacingPoint (modelVertP, pn, &vrLightPos);
 }
 
 //------------------------------------------------------------------------------
 
-CFloatVector *OOF_CalcFacePerp (CSubModel *pso, CFace *pf)
+CFloatVector *OOF_CalcFacePerp (CSubModel *pso, CFace *faceP)
 {
-	CFloatVector*	pv = pso->m_verts.Buffer ();
-	CFaceVert*		pfv = pf->m_verts;
+	CFloatVector*	modelVertP = pso->m_verts.Buffer ();
+	CFaceVert*		faceVertP = faceP->m_verts;
 
-CFloatVector::Normalize (CFloatVector::Perp (pf->m_vRotNormal, pv [pfv [0].m_nIndex], pv [pfv [1].m_nIndex], pv [pfv [2].m_nIndex]));
-return &pf->m_vRotNormal;
+CFloatVector::Normalize (CFloatVector::Perp (faceP->m_vRotNormal, modelVertP [faceVertP [0].m_nIndex], modelVertP [faceVertP [1].m_nIndex], modelVertP [faceVertP [2].m_nIndex]));
+return &faceP->m_vRotNormal;
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_LitFace (CSubModel *pso, CFace *pf)
+int OOF_LitFace (CSubModel *pso, CFace *faceP)
 {
-//OOF_CalcFacePerp (pso, pf);
-return pf->m_bFacingLight = 
+//OOF_CalcFacePerp (pso, faceP);
+return faceP->m_bFacingLight = 
 #if 1
-	OOF_FacingLight (&pf->m_vRotCenter, &pf->m_vRotNormal); 
+	OOF_FacingLight (&faceP->m_vRotCenter, &faceP->m_vRotNormal); 
 #else
-	OOF_FacingLight (pso->m_rotVerts + pf->m_verts->m_nIndex, &pf->m_vRotNormal); //OOF_CalcFacePerp (pso, pf)); 
+	OOF_FacingLight (pso->m_rotVerts + faceP->m_verts->m_nIndex, &faceP->m_vRotNormal); //OOF_CalcFacePerp (pso, faceP)); 
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_FrontFace (CSubModel *pso, CFace *pf)
+int OOF_FrontFace (CSubModel *pso, CFace *faceP)
 {
 #if 0
-return OOF_FacingViewer (&pf->m_vRotCenter, &pf->m_vRotNormal);
+return OOF_FacingViewer (&faceP->m_vRotCenter, &faceP->m_vRotNormal);
 #else
-return OOF_FacingViewer (pso->m_rotVerts + pf->m_verts->m_nIndex, &pf->m_vRotNormal);	//OOF_CalcFacePerp (pso, pf));
+return OOF_FacingViewer (pso->m_rotVerts + faceP->m_verts->m_nIndex, &faceP->m_vRotNormal);	//OOF_CalcFacePerp (pso, faceP));
 #endif
 }
 
@@ -115,14 +115,14 @@ return OOF_FacingViewer (pso->m_rotVerts + pf->m_verts->m_nIndex, &pf->m_vRotNor
 
 int OOF_GetLitFaces (CSubModel *pso)
 {
-	CFace		*pf;
+	CFace		*faceP;
 	int				i;
 
-for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++) {
-	pf->m_bFacingLight = OOF_LitFace (pso, pf);
+for (i = pso->m_faces.m_nFaces, faceP = pso->m_faces.m_list.Buffer (); i; i--, faceP++) {
+	faceP->m_bFacingLight = OOF_LitFace (pso, faceP);
 #if 0
 	if (bSWCulling)
-		pf->m_bFacingViewer = OOF_FrontFace (pso, pf);
+		faceP->m_bFacingViewer = OOF_FrontFace (pso, faceP);
 #endif
 	}
 return pso->m_faces.m_nFaces;
@@ -133,11 +133,11 @@ return pso->m_faces.m_nFaces;
 int OOF_GetSilhouette (CSubModel *pso)
 {
 	CEdge		*pe;
-	CFloatVector		*pv;
+	CFloatVector		*modelVertP;
 	int				h, i, j;
 
 OOF_GetLitFaces (pso);
-pv = pso->m_rotVerts.Buffer ();
+modelVertP = pso->m_rotVerts.Buffer ();
 for (h = j = 0, i = pso->m_edges.m_nEdges, pe = pso->m_edges.m_list.Buffer (); i; i--, pe++) {
 	if (pe->m_faces [0] && pe->m_faces [1]) {
 		if ((pe->m_bContour = (pe->m_faces [0]->m_bFacingLight != pe->m_faces [1]->m_bFacingLight)))
@@ -173,7 +173,7 @@ if (bCullFront && ogl.m_features.bSeparateStencilOps.Available ())
 	return 1;
 
 	CEdge*					pe;
-	CFloatVector*			pv;
+	CFloatVector*			modelVertP;
 	int						nVerts, nEdges;
 
 if (!bCullFront)
@@ -202,7 +202,7 @@ else if (bShadowTest > 1)
 nEdges = pso->m_edges.m_nContourEdges;
 if (!ogl.Buffers ().SizeVertices (nEdges * 4))
 	return 1;
-pv = pso->m_rotVerts.Buffer ();
+modelVertP = pso->m_rotVerts.Buffer ();
 for (nVerts = 0, pe = pso->m_edges.m_list.Buffer (); nEdges; pe++) {
 	if (pe->m_bContour) {
 		nEdges--;
@@ -212,8 +212,8 @@ for (nVerts = 0, pe = pso->m_edges.m_list.Buffer (); nEdges; pe++) {
 			int h = (pe->m_faces [1] && pe->m_faces [1]->m_bFacingLight);
 			if (pe->m_faces [h]->m_bReverse)
 				h = !h;
-			ogl.VertexBuffer () [nVerts] = pv [pe->m_v1 [h]];
-			ogl.VertexBuffer () [nVerts + 1] = pv [pe->m_v0 [h]];
+			ogl.VertexBuffer () [nVerts] = modelVertP [pe->m_v1 [h]];
+			ogl.VertexBuffer () [nVerts + 1] = modelVertP [pe->m_v0 [h]];
 			ogl.VertexBuffer () [nVerts + 2] = ogl.VertexBuffer () [1] - vrLightPos;
 			ogl.VertexBuffer () [nVerts + 3] = ogl.VertexBuffer () [0] - vrLightPos;
 #if NORM_INF
@@ -229,8 +229,8 @@ for (nVerts = 0, pe = pso->m_edges.m_list.Buffer (); nEdges; pe++) {
 #if DBG_SHADOWS
 			}
 		else {
-			ogl.VertexBuffer () [nVerts++] = pv [pe->m_v0 [0]];
-			ogl.VertexBuffer () [nVerts++] = pv [pe->m_v1 [0]];
+			ogl.VertexBuffer () [nVerts++] = modelVertP [pe->m_v0 [0]];
+			ogl.VertexBuffer () [nVerts++] = modelVertP [pe->m_v1 [0]];
 			}
 #endif
 		}
@@ -254,9 +254,9 @@ int OOF_DrawShadowCaps (CModel *po, CSubModel *pso, int bCullFront)
 if (bCullFront && ogl.m_features.bSeparateStencilOps.Available ())
 	return 1;
 
-	CFace*			pf;
-	CFaceVert*		pfv;
-	CFloatVector*	pv, v0, v1;
+	CFace*			faceP;
+	CFaceVert*		faceVertP;
+	CFloatVector*	modelVertP, v0, v1;
 	int				nVerts, i, j, bReverse;
 
 #if DBG_SHADOWS
@@ -266,12 +266,12 @@ if (bShadowTest > 4)
 	return 1;
 glColor4fv (reinterpret_cast<GLfloat*> (modelColor));
 #endif
-pv = pso->m_rotVerts.Buffer ();
+modelVertP = pso->m_rotVerts.Buffer ();
 OOF_SetCullAndStencil (bCullFront);
 
 nVerts = 0;
-for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++)
-	nVerts += pf->m_nVerts;
+for (i = pso->m_faces.m_nFaces, faceP = pso->m_faces.m_list.Buffer (); i; i--, faceP++)
+	nVerts += faceP->m_nVerts;
 
 //if (bCullFront) 
 {
@@ -283,14 +283,14 @@ for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++
 		nVerts = 0;
 		if (bReverse)
 			glFrontFace (GL_CCW);
-		for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++) {
-			if (pf->m_bReverse == bReverse) {
-				j = pf->m_nVerts;
+		for (i = pso->m_faces.m_nFaces, faceP = pso->m_faces.m_list.Buffer (); i; i--, faceP++) {
+			if (faceP->m_bReverse == bReverse) {
+				j = faceP->m_nVerts;
 				if (!ogl.Buffers ().SizeVertices (j))
 					return 1;
 				nVerts = 0;
-				for (pfv = pf->m_verts; j; j--, pfv++) {
-					v0 = pv [pfv->m_nIndex];
+				for (faceVertP = faceP->m_verts; j; j--, faceVertP++) {
+					v0 = modelVertP [faceVertP->m_nIndex];
 					v1 = v0 - vrLightPos;
 #if NORM_INF
 					v1 *= G3_INFINITY / v1.Mag ();
@@ -314,14 +314,14 @@ for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++
 #endif
 	for (bReverse = 0; bReverse <= 1; bReverse++) {
 		nVerts = 0;
-		for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++) {
-			if (pf->m_bReverse == bReverse) {
-				j = pf->m_nVerts;
+		for (i = pso->m_faces.m_nFaces, faceP = pso->m_faces.m_list.Buffer (); i; i--, faceP++) {
+			if (faceP->m_bReverse == bReverse) {
+				j = faceP->m_nVerts;
 				if (!ogl.Buffers ().SizeVertices (j))
 					return 1;
 				nVerts = 0;
-				for (pfv = pf->m_verts; j; j--, pfv++)
-					ogl.VertexBuffer () [nVerts++] = pv [pfv->m_nIndex];
+				for (faceVertP = faceP->m_verts; j; j--, faceVertP++)
+					ogl.VertexBuffer () [nVerts++] = modelVertP [faceVertP->m_nIndex];
 				}
 			ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 			}
@@ -348,21 +348,31 @@ return OOF_DrawShadowVolume (po, pso, 0) &&
 
 //------------------------------------------------------------------------------
 
+static int FlushBuffers (int* nVerts, int bTextured)
+{
+ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [bTextured], 3, bTextured, bTextured);
+bTextured = !bTextured;
+nVerts [bTextured] = 0;
+return bTextured;
+}
+
+//------------------------------------------------------------------------------
+
 int CSubModel::Draw (CObject *objP, CModel *po, float *fLight)
 {
-	CFace*			pf;
-	CFaceVert*		pfv;
-	CFloatVector*	pv, * pvn, * phv;
+	CFace*			faceP;
+	CFaceVert*		faceVertP;
+	CFloatVector*	modelVertP, * modelNormalP, * phv;
 	CFaceColor*		vertColorP, vertColor, segColor;
 	CBitmap*			bmP = NULL;
-	int				h, i, j, nVerts [3];
+	int				h, i, j, nModelVerts [2], nVerts, nFaceVerts;
 	int				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0), bTextured = -1, bReverse;
 	int				bDynLighting = gameStates.render.bApplyDynLight;
 	float				fl, r, g, b, fAlpha = po->m_fAlpha;
 	// helper pointers into render buffers
-	CFloatVector*	pvb;
-	CFloatVector*	pcb;
-	tTexCoord2f*	ptb;
+	CFloatVector*	vertP;
+	CFloatVector*	colorP;
+	tTexCoord2f*	texCoordP;
 
 segColor.Set (1.0f, 1.0f, 1.0f, 1.0f);
 segColor.index = 1;
@@ -370,13 +380,14 @@ segColor.index = 1;
 if (bShadowTest && (bShadowTest < 4))
 	return 1;
 #endif
-pv = m_rotVerts.Buffer ();
-pvn = m_normals.Buffer ();
+modelVertP = m_rotVerts.Buffer ();
+modelNormalP = m_normals.Buffer ();
 vertColorP = m_vertColors.Buffer ();
 //memset (vertColorP, 0, m_nVerts * sizeof (CFaceColor));
 ogl.SetFaceCulling (true);
 OglCullFace (0);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
+ogl.SelectTMU (GL_TEXTURE0);
 if (!bDynLighting) {
 	segColor = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos, 0);
 	if (segColor.index != gameStates.render.nFrameFlipFlop + 1)
@@ -384,69 +395,81 @@ if (!bDynLighting) {
 	}
 
 for (bReverse = 0; bReverse <= 1; bReverse++) {
-	nVerts [1] = nVerts [2] = 0;
-	for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
-		if (pf->m_bReverse == bReverse)
-			nVerts [pf->m_bTextured] += pf->m_nVerts;
+	nModelVerts [0] = nModelVerts [1] = 0;
+	for (i = m_faces.m_nFaces, faceP = m_faces.m_list.Buffer (); i; i--, faceP++) {
+		if (faceP->m_bReverse == bReverse)
+			nModelVerts [faceP->m_bTextured] += faceP->m_nVerts;
 		}
-	nVerts [2] = nVerts [nVerts [1] > nVerts [0]];
-	if (!ogl.Buffers ().SizeBuffers (nVerts [2]))
+	if (!(nVerts = nModelVerts [nModelVerts [1] > nModelVerts [0]]))
+		continue;
+	if (!ogl.Buffers ().SizeBuffers (nVerts))
 		return 0;
 
 	if (bReverse)
 		glFrontFace (GL_CCW);
 
-	nVerts [0] = 0;
-	pvb = ogl.VertexBuffer ().Buffer ();
-	pcb = ogl.ColorBuffer ().Buffer ();
-	ptb = ogl.TexCoordBuffer ().Buffer ();
+	vertP = ogl.VertexBuffer ().Buffer ();
+	colorP = ogl.ColorBuffer ().Buffer ();
+	texCoordP = ogl.TexCoordBuffer ().Buffer ();
 
-	for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
-		if (pf->m_bReverse != bReverse)
+	nVerts = 0;
+	nFaceVerts = -1;
+	for (i = m_faces.m_nFaces, faceP = m_faces.m_list.Buffer (); i; i--, faceP++) {
+		if (faceP->m_bReverse != bReverse)
 			continue;
-		pfv = pf->m_verts;
-		if (pf->m_bTextured) {
+		if (nVerts && (nFaceVerts != -1) && (nFaceVerts != faceP->m_nVerts)) {
+			ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, nVerts, 3, bTextured, bTextured);
+			nVerts = 0;
+			nFaceVerts = faceP->m_nVerts;
+			bTextured = -1;
+			}
+		faceVertP = faceP->m_verts;
+		if (faceP->m_bTextured) {
 			if (bTextured == 0) {
-				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [0], 3, 0, 0);
-				bTextured = 1;
+				ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, nVerts, 3, 0, 0);
+				nVerts = 0;
 				}
 
-			if (bmP != po->m_textures.m_bitmaps + pf->m_texProps.nTexId) {
-				bmP = po->m_textures.m_bitmaps + pf->m_texProps.nTexId;
+			if (bmP != po->m_textures.m_bitmaps + faceP->m_texProps.nTexId) {
+				if (bTextured == 1) { // didn't flush already above
+					ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts, 3, 1, 1);
+					nVerts = 0;
+					}
+				bmP = po->m_textures.m_bitmaps + faceP->m_texProps.nTexId;
 				if (bmP->Texture () && ((int) bmP->Texture ()->Handle () < 0))
 					bmP->Texture ()->SetHandle (0);
 				bmP->SetTranspType (0);
+				ogl.SetTexturing (true);
 				if (bmP->Bind (1))
 					return 0;
 				bmP->Texture ()->Wrap (GL_REPEAT);
-				ogl.SetTexturing (true);
-				bTextured = 1;
 				}
+			bTextured = 1;
 
-			fl = *fLight * (0.75f - 0.25f * (pf->m_vNormal * mView.m.dir.f));
+			fl = *fLight * (0.75f - 0.25f * (faceP->m_vNormal * mView.m.dir.f));
 			if (fl > 1)
 				fl = 1;
 			if (m_nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
-				pcb->Red () = fl * m_glowInfo.m_color.Red ();
-				pcb->Green () = fl * m_glowInfo.m_color.Green ();
-				pcb->Blue () = fl * m_glowInfo.m_color.Blue ();
-				pcb->Alpha () = m_pfAlpha [pfv->m_nIndex] * fAlpha;
-				pcb++;
+				colorP->Red () = fl * m_glowInfo.m_color.Red ();
+				colorP->Green () = fl * m_glowInfo.m_color.Green ();
+				colorP->Blue () = fl * m_glowInfo.m_color.Blue ();
+				colorP->Alpha () = m_pfAlpha [faceVertP->m_nIndex] * fAlpha;
+				colorP++;
 				}
 			else if (!bDynLighting) {
 				if (bBright)
 					fl += (1 - fl) / 2;
-				pcb->Red () = segColor.Red () * fl;
-				pcb->Green () = segColor.Green () * fl;
-				pcb->Blue () = segColor.Blue () * fl;
-				pcb->Alpha () = m_pfAlpha [pfv->m_nIndex] * fAlpha;
-				pcb++;
+				colorP->Red () = segColor.Red () * fl;
+				colorP->Green () = segColor.Green () * fl;
+				colorP->Blue () = segColor.Blue () * fl;
+				colorP->Alpha () = m_pfAlpha [faceVertP->m_nIndex] * fAlpha;
+				colorP++;
 				}
-			for (j = pf->m_nVerts; j; j--, pfv++) {
-				phv = pv + (h = pfv->m_nIndex);
+			for (j = faceP->m_nVerts; j; j--, faceVertP++) {
+				phv = modelVertP + (h = faceVertP->m_nIndex);
 				if (bDynLighting) {
 					if (vertColorP [h].index != gameStates.render.nFrameFlipFlop + 1)
-						G3VertexColor (-1, -1, -1, reinterpret_cast<CFloatVector3*> (pvn + h), reinterpret_cast<CFloatVector3*> (phv), vertColorP + h, NULL, 1, 0, 0);
+						G3VertexColor (-1, -1, -1, reinterpret_cast<CFloatVector3*> (modelNormalP + h), reinterpret_cast<CFloatVector3*> (phv), vertColorP + h, NULL, 1, 0, 0);
 					
 					vertColor.Red () = (float) sqrt (vertColorP [h].Red ());
 					vertColor.Green () = (float) sqrt (vertColorP [h].Green ());
@@ -456,29 +479,30 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 						vertColor.Green () += (1.0f - vertColor.Green ()) * 0.5f;
 						vertColor.Blue () += (1.0f - vertColor.Blue ()) * 0.5f;
 						}
-					vertColor.Alpha () = m_pfAlpha [pfv->m_nIndex] * fAlpha;
-					*pcb++ = vertColor;
+					vertColor.Alpha () = m_pfAlpha [faceVertP->m_nIndex] * fAlpha;
+					*colorP++ = vertColor;
 					}
-				ptb->v.u = pfv->m_fu;
-				ptb->v.v = pfv->m_fv;
-				ptb++;
-				*pvb++ = *phv;
-			}
+				texCoordP->v.u = faceVertP->m_fu;
+				texCoordP->v.v = faceVertP->m_fv;
+				texCoordP++;
+				*vertP++ = modelVertP [faceVertP->m_nIndex];
+				}
+			nVerts += faceP->m_nVerts;
 #if DBG_SHADOWS
-			if (pf->m_bFacingLight && (bShadowTest > 3)) {
+			if (faceP->m_bFacingLight && (bShadowTest > 3)) {
 					CFloatVector	fv0;
 
 				glLineWidth (3);
 				glColor4f (1.0f, 0.0f, 0.5f, 1.0f);
 				glBegin (GL_LINES);
-				fv0 = pf->m_vRotCenter;
+				fv0 = faceP->m_vRotCenter;
 				glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
-				fv0 += pf->m_vRotNormal;
+				fv0 += faceP->m_vRotNormal;
 				glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
 				glEnd ();
 				glColor4f (0.0f, 1.0f, 0.5f, 1.0f);
 				glBegin (GL_LINES);
-				fv0 = pf->m_vRotCenter;
+				fv0 = faceP->m_vRotCenter;
 				glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
 				fv0 = vrLightPos;
 				glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
@@ -489,21 +513,26 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			}
 		else {
 			if (bTextured == 1) {
-				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [1], 3, 1, 1);
-				bTextured = 0;
+				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts, 3, 1, 1);
+				nVerts = 0;
 				ogl.SetTexturing (false);
 				bmP = NULL;
+				bTextured = 0;
 				}
 			fl = fLight [1];
-			r = fl * (float) pf->m_texProps.color.Red () / 255.0f;
-			g = fl * (float) pf->m_texProps.color.Green () / 255.0f;
-			b = fl * (float) pf->m_texProps.color.Blue () / 255.0f;
-			glColor4f (r, g, b, m_pfAlpha [pfv->m_nIndex] * fAlpha);
-			*pvb++ = pv [pfv->m_nIndex];
+			r = fl * (float) faceP->m_texProps.color.Red () / 255.0f;
+			g = fl * (float) faceP->m_texProps.color.Green () / 255.0f;
+			b = fl * (float) faceP->m_texProps.color.Blue () / 255.0f;
+			glColor4f (r, g, b, m_pfAlpha [faceVertP->m_nIndex] * fAlpha);
+			for (j = faceP->m_nVerts; j; j--, faceVertP++) 
+				*vertP++ = modelVertP [faceVertP->m_nIndex];
+			nVerts += faceP->m_nVerts;
+			nFaceVerts = faceP->m_nVerts;
 			}
 		}
 	if (bTextured != -1)
-		ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [bTextured], 3, bTextured, bTextured);
+		ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, nVerts, 3, bTextured, bTextured);
+
 	}
 glFrontFace (GL_CW);
 return 1;
@@ -511,14 +540,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-inline void CSubModel::TransformVertex (CFloatVector *prv, CFloatVector *pv, CFloatVector *vo)
+inline void CSubModel::TransformVertex (CFloatVector *prv, CFloatVector *modelVertP, CFloatVector *vo)
 {
 	CFloatVector	v;
 
 if (ogl.m_states.bUseTransform)
-	*prv = *pv + *vo;
+	*prv = *modelVertP + *vo;
 else {
-	v = *pv - vPos;
+	v = *modelVertP - vPos;
 	v += *vo;
 	*prv = mView * v;
 	}
@@ -528,25 +557,25 @@ else {
 
 void CSubModel::Transform (CFloatVector vo)
 {
-	CFloatVector	*pv, *prv;
-	CFace				*pf;
+	CFloatVector	*modelVertP, *prv;
+	CFace				*faceP;
 	int				i;
 
-for (i = m_nVerts, pv = m_verts.Buffer (), prv = m_rotVerts.Buffer (); i; i--, pv++, prv++)
-	TransformVertex (prv, pv, &vo);
-for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
+for (i = m_nVerts, modelVertP = m_verts.Buffer (), prv = m_rotVerts.Buffer (); i; i--, modelVertP++, prv++)
+	TransformVertex (prv, modelVertP, &vo);
+for (i = m_faces.m_nFaces, faceP = m_faces.m_list.Buffer (); i; i--, faceP++) {
 #if OOF_TEST_CUBE
 	if (i == 6)
-		pf->m_bReverse = 1;
+		faceP->m_bReverse = 1;
 	else
 #endif
-	pf->m_bReverse = 0; //(pf->m_vRotNormal * pf->m_vNormal) < 0;
+	faceP->m_bReverse = 0; //(faceP->m_vRotNormal * faceP->m_vNormal) < 0;
 #if OOF_TEST_CUBE
 	if (i == 6)
-		pf->m_vNormal.z = (float) fabs (pf->m_vNormal.z);	//fix flaw in model data
+		faceP->m_vNormal.z = (float) fabs (faceP->m_vNormal.z);	//fix flaw in model data
 #endif
-	CFloatVector::Normalize (pf->m_vRotNormal = mView * pf->m_vNormal);
-	TransformVertex (&pf->m_vRotCenter, &pf->m_vCenter, &vo);
+	CFloatVector::Normalize (faceP->m_vRotNormal = mView * faceP->m_vNormal);
+	TransformVertex (&faceP->m_vRotCenter, &faceP->m_vCenter, &vo);
 	}
 }
 
