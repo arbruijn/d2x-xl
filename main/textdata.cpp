@@ -147,6 +147,9 @@ PrintLog (-1);
 
 tTextIndex *FindTextData (CTextData *msgP, int nId)
 {
+if (!msgP->index)
+	return NULL;
+
 	int	h, m, l = 0, r = msgP->nMessages - 1;
 
 do {
