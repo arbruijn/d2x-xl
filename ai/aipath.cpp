@@ -608,6 +608,8 @@ void CreatePathToSegment (CObject *objP, short goalseg, int nMaxDepth, int bSafe
 
 if (nMaxDepth == -1)
 	nMaxDepth = MAX_DEPTH_TO_SEARCH_FOR_PLAYER;
+else if (nMaxDepth > gameData.segs.nSegments)
+	nMaxDepth = gameData.segs.nSegments;
 ailP->timeTargetSeen = gameData.time.xGame;			//	Prevent from resetting path quickly.
 ailP->nGoalSegment = goalseg;
 nStartSeg = objP->info.nSegment;

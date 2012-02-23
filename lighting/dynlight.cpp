@@ -593,8 +593,8 @@ return fix (dist / info.fRange);
 //------------------------------------------------------------------------------
 // Check whether a point can be seen from a light emitting face. Returns:
 // -1: Point is behind light face or light face is on rear side of point
-// 0: Point is occluded by geometry or too far away
-// 1: Point is visible
+//  0: Point is occluded by geometry or too far away
+//  1: Point is visible
 
 #define LIGHTING_LEVEL 1
 

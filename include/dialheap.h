@@ -4,7 +4,7 @@
 #ifndef DIALHEAP_H
 #define DIALHEAP_H
 
-#include "carray.h"
+#include "cstack.h"
 
 class CDialHeap {
 	public:
@@ -15,6 +15,7 @@ class CDialHeap {
 
 	private:
 		CShortArray			m_index;
+		CStack<ushort>		m_indexList;
 		CUIntArray			m_cost;
 		CShortArray			m_links;
 		CShortArray			m_pred;

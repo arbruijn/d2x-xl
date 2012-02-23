@@ -367,9 +367,10 @@ return 0;
 }
 
 //	-----------------------------------------------------------------------------
-void EscortSetSpecialGoal (int special_key)
+
+void EscortSetSpecialGoal (int specialKey)
 {
-	int marker_key;
+	int markerKey;
 
 gameData.escort.bMsgsSuppressed = 0;
 if (!gameData.escort.bMayTalk) {
@@ -388,16 +389,16 @@ if (!gameData.escort.bMayTalk) {
 		}
 	}
 
-special_key = special_key & (~KEY_SHIFTED);
-marker_key = special_key;
+specialKey = specialKey & (~KEY_SHIFTED);
+markerKey = specialKey;
 
-if (gameData.escort.nLastKey == special_key) {
-	if ((gameData.escort.bSearchingMarker == -1) && (special_key != KEY_0)) {
-		if (MarkerExistsInMine (marker_key - KEY_1))
-			gameData.escort.bSearchingMarker = marker_key - KEY_1;
+if (gameData.escort.nLastKey == specialKey) {
+	if ((gameData.escort.bSearchingMarker == -1) && (specialKey != KEY_0)) {
+		if (MarkerExistsInMine (markerKey - KEY_1))
+			gameData.escort.bSearchingMarker = markerKey - KEY_1;
 		else {
 			gameData.escort.xLastMsgTime = 0;	//	Force this message to get through.
-			BuddyMessage ("Marker %i not placed.", marker_key - KEY_1 + 1);
+			BuddyMessage ("Marker %i not placed.", markerKey - KEY_1 + 1);
 			gameData.escort.bSearchingMarker = -1;
 			}
 		} 
@@ -405,13 +406,13 @@ if (gameData.escort.nLastKey == special_key) {
 		gameData.escort.bSearchingMarker = -1;
 		}
 	}
-gameData.escort.nLastKey = special_key;
-if (special_key == KEY_0)
+gameData.escort.nLastKey = specialKey;
+if (specialKey == KEY_0)
 	gameData.escort.bSearchingMarker = -1;
 	if (gameData.escort.bSearchingMarker != -1)
-		gameData.escort.nSpecialGoal = ESCORT_GOAL_MARKER1 + marker_key - KEY_1;
+		gameData.escort.nSpecialGoal = ESCORT_GOAL_MARKER1 + markerKey - KEY_1;
 else {
-	switch (special_key) {
+	switch (specialKey) {
 		case KEY_1:
 			gameData.escort.nSpecialGoal = ESCORT_GOAL_ENERGY;
 			break;
@@ -778,7 +779,7 @@ if ((gameData.escort.nGoalIndex < 0) && (gameData.escort.nGoalIndex != -3)) {	//
 	}
 else {
 	if (nGoalSeg == -3) {
-		CreateNSegmentPath (objP, 16 + RandShort () * 16, -1);
+		CreateNSegmentPath (objP, 16 + RandShort () % 16, -1);
 		aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 		}
 	else {
@@ -1144,97 +1145,97 @@ if (!IS_OBJECT (objP, i)) {
 #endif
 	}
 
-	BuddyMayTalk ();	//	Needed here or we might not know buddy can talk when he can.
+BuddyMayTalk ();	//	Needed here or we might not know buddy can talk when he can.
 
-	if (!gameData.escort.bMayTalk) {
-		HUDInitMessage (TXT_GB_RELEASE, gameData.escort.szName);
-		return;
+if (!gameData.escort.bMayTalk) {
+	HUDInitMessage (TXT_GB_RELEASE, gameData.escort.szName);
+	return;
 	}
 
-	audio.PauseSounds ();
-	if (!gameOpts->menus.nStyle)
-		StopTime ();
+audio.PauseSounds ();
+if (!gameOpts->menus.nStyle)
+	StopTime ();
 
-	//paletteManager.SuspendEffect ();
-	GameFlushInputs ();
-	paused = 1;
-	SetPopupScreenMode ();
-	//paletteManager.ResumeEffect ();
+//paletteManager.SuspendEffect ();
+GameFlushInputs ();
+paused = 1;
+SetPopupScreenMode ();
+//paletteManager.ResumeEffect ();
 
-	//	This prevents the buddy from coming back if you've told him to scram.
-	//	If we don't set next_goal, we get garbage there.
-	if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
-		gameData.escort.nSpecialGoal = -1;	//	Else setting next goal might fail.
-		next_goal = EscortSetGoalObject ();
-		gameData.escort.nSpecialGoal = ESCORT_GOAL_SCRAM;
-	} else {
-		gameData.escort.nSpecialGoal = -1;	//	Else setting next goal might fail.
-		next_goal = EscortSetGoalObject ();
+//	This prevents the buddy from coming back if you've told him to scram.
+//	If we don't set next_goal, we get garbage there.
+if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
+	gameData.escort.nSpecialGoal = -1;	//	Else setting next goal might fail.
+	next_goal = EscortSetGoalObject ();
+	gameData.escort.nSpecialGoal = ESCORT_GOAL_SCRAM;
+	}
+else {
+	gameData.escort.nSpecialGoal = -1;	//	Else setting next goal might fail.
+	next_goal = EscortSetGoalObject ();
 	}
 
-	switch (next_goal) {
-	#if DBG
-		case ESCORT_GOAL_UNSPECIFIED:
-			Int3 ();
-			sprintf (szGoal, "ERROR");
-			break;
-	#endif
+switch (next_goal) {
+#if DBG
+	case ESCORT_GOAL_UNSPECIFIED:
+		Int3 ();
+		sprintf (szGoal, "ERROR");
+		break;
+#endif
 
-		case ESCORT_GOAL_BLUE_KEY:
-			sprintf (szGoal, TXT_GB_BLUEKEY);
-			break;
-		case ESCORT_GOAL_GOLD_KEY:
-			sprintf (szGoal, TXT_GB_YELLOWKEY);
-			break;
-		case ESCORT_GOAL_RED_KEY:
-			sprintf (szGoal, TXT_GB_REDKEY);
-			break;
-		case ESCORT_GOAL_CONTROLCEN:
-			sprintf (szGoal, TXT_GB_REACTOR);
-			break;
-		case ESCORT_GOAL_BOSS:
-			sprintf (szGoal, TXT_GB_BOSS);
-			break;
-		case ESCORT_GOAL_EXIT:
-			sprintf (szGoal, TXT_GB_EXIT);
-			break;
-		case ESCORT_GOAL_MARKER1:
-		case ESCORT_GOAL_MARKER2:
-		case ESCORT_GOAL_MARKER3:
-		case ESCORT_GOAL_MARKER4:
-		case ESCORT_GOAL_MARKER5:
-		case ESCORT_GOAL_MARKER6:
-		case ESCORT_GOAL_MARKER7:
-		case ESCORT_GOAL_MARKER8:
-		case ESCORT_GOAL_MARKER9:
-			sprintf (szGoal, TXT_GB_MARKER, next_goal-ESCORT_GOAL_MARKER1+1);
-			break;
-
+	case ESCORT_GOAL_BLUE_KEY:
+		sprintf (szGoal, TXT_GB_BLUEKEY);
+		break;
+	case ESCORT_GOAL_GOLD_KEY:
+		sprintf (szGoal, TXT_GB_YELLOWKEY);
+		break;
+	case ESCORT_GOAL_RED_KEY:
+		sprintf (szGoal, TXT_GB_REDKEY);
+		break;
+	case ESCORT_GOAL_CONTROLCEN:
+		sprintf (szGoal, TXT_GB_REACTOR);
+		break;
+	case ESCORT_GOAL_BOSS:
+		sprintf (szGoal, TXT_GB_BOSS);
+		break;
+	case ESCORT_GOAL_EXIT:
+		sprintf (szGoal, TXT_GB_EXIT);
+		break;
+	case ESCORT_GOAL_MARKER1:
+	case ESCORT_GOAL_MARKER2:
+	case ESCORT_GOAL_MARKER3:
+	case ESCORT_GOAL_MARKER4:
+	case ESCORT_GOAL_MARKER5:
+	case ESCORT_GOAL_MARKER6:
+	case ESCORT_GOAL_MARKER7:
+	case ESCORT_GOAL_MARKER8:
+	case ESCORT_GOAL_MARKER9:
+		sprintf (szGoal, TXT_GB_MARKER, next_goal-ESCORT_GOAL_MARKER1+1);
+		break;
 	}
 
-	if (!gameData.escort.bMsgsSuppressed)
-		sprintf (tstr, TXT_GB_SUPPRESS);
-	else
-		sprintf (tstr, TXT_GB_ENABLE);
+if (!gameData.escort.bMsgsSuppressed)
+	sprintf (tstr, TXT_GB_SUPPRESS);
+else
+	sprintf (tstr, TXT_GB_ENABLE);
 
-	i = ShowEscortHelp (szGoal, tstr);
-	if (i < 11) {
-		gameData.escort.bSearchingMarker = -1;
-		gameData.escort.nLastKey = -1;
-		EscortSetSpecialGoal (i ? KEY_1 + i - 1 : KEY_0);
-		gameData.escort.nLastKey = -1;
-		paused = 0;
-		}
-	else if (i == 11) {
-		BuddyMessage (gameData.escort.bMsgsSuppressed ? TXT_GB_MSGS_ON : TXT_GB_MSGS_OFF);
-		gameData.escort.bMsgsSuppressed = !gameData.escort.bMsgsSuppressed;
-		paused = 0;
-		}
-	GameFlushInputs ();
-	//paletteManager.ResumeEffect ();
-	if (!gameOpts->menus.nStyle)
-		StartTime (0);
-	audio.ResumeSounds ();
+i = ShowEscortHelp (szGoal, tstr);
+if (i < 11) {
+	gameData.escort.bSearchingMarker = -1;
+	gameData.escort.nLastKey = -1;
+	EscortSetSpecialGoal (i ? KEY_1 + i - 1 : KEY_0);
+	gameData.escort.nLastKey = -1;
+	paused = 0;
+	}
+else if (i == 11) {
+	BuddyMessage (gameData.escort.bMsgsSuppressed ? TXT_GB_MSGS_ON : TXT_GB_MSGS_OFF);
+	gameData.escort.bMsgsSuppressed = !gameData.escort.bMsgsSuppressed;
+	paused = 0;
+	}
+GameFlushInputs ();
+//paletteManager.ResumeEffect ();
+if (!gameOpts->menus.nStyle)
+	StartTime (0);
+audio.ResumeSounds ();
 }
 
 // --------------------------------------------------------------------------------------------------------------------

@@ -1082,7 +1082,7 @@ for (int i = 0; i < MAX_BOSS_COUNT; i++)
 CEscortData::CEscortData ()
 {
 memset (this, 0, sizeof (*this));
-nMaxLength = 200;
+nMaxLength = 1000;
 nKillObject = -1;
 nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 nSpecialGoal = -1;

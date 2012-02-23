@@ -154,7 +154,7 @@ if (!HaveRouter ())
 
 if ((m_nListenerSeg != nListenerSeg) || (m_nListenerSeg != m_router.StartSeg ())) {
 	m_nListenerSeg = nListenerSeg;
-	m_router.PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, I2X (5 * 256 / 4), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
+	m_router.PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, /*I2X (5 * 256 / 4)*/maxDistance, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
 	//for (i = 0; i < (uint) gameData.segs.nSegments; i++)
 	//	m_segDists [i] = m_router.Distance (i);
 	}
