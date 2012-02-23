@@ -191,6 +191,7 @@ class CWall {
 		sbyte		controllingTrigger;	// which CTrigger causes something to happen here.  Not like "CTrigger" above, which is the CTrigger on this CWall.
 												//  Note: This gets stuffed at load time in gamemine.c.  Don't try to use it in the editor.  You will be sorry!
 		sbyte		cloakValue;				// if this CWall is cloaked, the fade value
+		sbyte		bVolatile;
 	
 	public:
 		void Init (void);

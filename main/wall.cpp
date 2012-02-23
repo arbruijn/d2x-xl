@@ -1014,9 +1014,29 @@ return -1;
 
 bool CWall::IsVolatile (void)
 {
-if ((nType == WALL_DOOR) || (nType == WALL_BLASTABLE))
-	return true;
-return IsTriggerTarget () >= 0;
+if (bVolatile < 0) {
+	bVolatile = 0;
+	if ((nType == WALL_OPEN) || (nType == WALL_DOOR) || (nType == WALL_BLASTABLE) || (nType == WALL_COLORED))
+		bVolatile = 1;
+	else if ((nType == WALL_CLOAKED) && (cloakValue < FADE_LEVELS))
+		bVolatile = 1;
+	else {
+		CTrigger *triggerP = TRIGGERS.Buffer ();
+		for (int i = 0; i < gameData.trigs.m_nTriggers; i++, triggerP++) {
+			short *nSegP = triggerP->m_segments;
+			short *nSideP = triggerP->m_sides;
+			for (int j = triggerP->m_nLinks; j; j--, nSegP++, nSideP++) {
+				if ((*nSegP != nSegment) && (*nSideP != nSide))
+					continue;
+				if ((triggerP->m_info.nType == TT_OPEN_DOOR) || (triggerP->m_info.nType == TT_ILLUSION_OFF) || (triggerP->m_info.nType == TT_OPEN_WALL)) {
+					bVolatile = 1;
+					break;
+					}
+				}
+			}
+		}
+	}
+return (bVolatile > 0);
 }
 
 // -----------------------------------------------------------------------------------
@@ -1062,7 +1082,7 @@ BngProcessSegment(objP, damage, cursegp, 0, visited);
 /*
  * reads a tWallClip structure from a CFile
  */
-int ReadD1WallClips(tWallClip *wc, int n, CFile& cf)
+int ReadD1WallClips (tWallClip *wc, int n, CFile& cf)
 {
 	int i, j;
 
@@ -1155,6 +1175,7 @@ nClip = cf.ReadByte ();
 keys = cf.ReadByte ();
 controllingTrigger = cf.ReadByte ();
 cloakValue = cf.ReadByte ();
+bVolatile = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -1194,6 +1215,7 @@ nClip = cf.ReadByte ();
 keys = (ubyte) cf.ReadByte ();       
 controllingTrigger = cf.ReadByte ();
 cloakValue = cf.ReadByte (); 
+bVolatile = -1;
 }
 
 // -----------------------------------------------------------------------------------

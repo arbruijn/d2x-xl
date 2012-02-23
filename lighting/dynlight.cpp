@@ -433,8 +433,7 @@ else if (nSegment >= 0) {
 		lightP->info.nType = 0;
 		lightP->info.fRad = faceP ? faceP->m_info.fRads [1] / 2.0f : 0;
 		//RegisterLight (NULL, nSegment, nSide);
-		lightP->info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || 
-									SEGMENTS [nSegment].Side (nSide)->IsVolatile ();
+		lightP->info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || SEGMENTS [nSegment].Side (nSide)->IsVolatile ();
 		m_data.nVariable += lightP->info.bVariable;
 		CSide* sideP = SEGMENTS [nSegment].m_sides + nSide;
 		lightP->info.vPos = sideP->Center ();

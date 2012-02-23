@@ -1219,7 +1219,7 @@ for (;;) {
 			continue; // line doesn't intersect with this side
 		if (0 > nChildSeg) // solid wall
 			continue;
-		if ((wallP = sideP->Wall ()) && !(wallP->IsDoorWay (NULL, false) & WID_TRANSPARENT_FLAG)) // impassable
+		if ((wallP = sideP->Wall ()) && !(wallP->IsVolatile () || wallP->IsDoorWay (NULL, false) & WID_TRANSPARENT_FLAG)) // impassable
 			continue;
 		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDepth + 1, nThread))
 			return 1;
