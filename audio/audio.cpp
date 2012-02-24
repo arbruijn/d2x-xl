@@ -190,6 +190,10 @@ if (m_info.bPlaying) {
 	nVolume = FixMulDiv (nVolume, audio.Volume (m_info.bAmbient), I2X (1));
 	if (m_info.nVolume != nVolume) {
 		m_info.nVolume = nVolume;
+#if DBG
+		if (nVolume == 0)
+			nVolume = nVolume;
+#endif
 #if USE_SDL_MIXER
 		if (gameOpts->sound.bUseSDLMixer)
 			Mix_VolPan (int (this - audio.Channel ()), m_info.nVolume, -1);

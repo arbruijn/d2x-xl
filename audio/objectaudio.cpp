@@ -135,6 +135,9 @@ return (nSound < 0) ? -1 : CAudio::UnXlatSound (nSound);
 
 int CAudio::Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound)
 {
+	static float fCorrFactor = 1.0f;
+	static uint  nRouteCount = 1;
+
 if (nDecay)
 	maxDistance *= 2;
 else
@@ -143,34 +146,32 @@ else
 fix distance = CFixVector::NormalizedDir (vecToSound, vSoundPos, vListenerPos);
 if (distance > maxDistance) 
 	return -1;
-
-int nSearchSegs = X2I (maxDistance / 10);
-if (nSearchSegs < 3)
-	nSearchSegs = 3;
+#if 0
 if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
 	return distance;
-if (!HaveRouter ())
+#endif
+if (!HaveRouter ()) {
+	int nSearchSegs = X2I (maxDistance / 10);
+	if (nSearchSegs < 3)
+		nSearchSegs = 3;
 	 return uniDacsRouter [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+	}
 
 if (m_nListenerSeg != nListenerSeg) 
 	m_nListenerSeg = nListenerSeg;
 if ((m_nListenerSeg != m_router.StartSeg ()) || (m_router.DestSeg () > -1)) { // either we had a different start last time, or the last calculation was a 1:1 routing
-	m_nListenerSeg = nListenerSeg;
 	m_router.PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, /*I2X (5 * 256 / 4)*/maxDistance, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
-	//for (i = 0; i < (uint) gameData.segs.nSegments; i++)
-	//	m_segDists [i] = m_router.Distance (i);
 	}
 
 
 fix pathDistance = m_router.Distance (nSoundSeg);
 if (pathDistance < 0) {
-	//m_nListenerSeg = -1;
-	return 3 * distance / 2;
+	return -1; //fix (distance * fCorrFactor + 0.5f);
 	}
 
 short l = m_router.RouteLength (nSoundSeg);
 if (l < 3)
-	return distance;
+	return fix (distance * fCorrFactor / float (nRouteCount));
 
 CSegment* segP = &SEGMENTS [nListenerSeg];
 short nChild = m_router.Route (1)->nNode;
@@ -180,6 +181,8 @@ segP = &SEGMENTS [nSoundSeg];
 nChild = m_router.Route (l - 2)->nNode;
 pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
 pathDistance += CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ());
+fCorrFactor += pathDistance / distance;
+++nRouteCount;
 return (pathDistance < maxDistance) ? pathDistance : -1;
 }
 
@@ -702,7 +705,11 @@ while (i) {
 	if (soundObjP->m_flags & SOF_USED) {
 		nOldVolume = FixMulDiv (soundObjP->m_volume, soundObjP->m_audioVolume, I2X (1));
 #if USE_SDL_MIXER
-		nOldVolume = fix (X2F (nOldVolume) * MIX_MAX_VOLUME + 0.5f);
+		nOldVolume = fix (X2F (2 * nOldVolume) * MIX_MAX_VOLUME + 0.5f);
+#endif
+#if DBG
+		if ((nOldVolume <= 0) && (soundObjP->m_channel >= 0))
+			nDbgSeg = nDbgSeg;
 #endif
 		nOldPan = soundObjP->m_pan;
 		// Check if its done.
@@ -749,7 +756,7 @@ while (i) {
 #if USE_SDL_MIXER
 			nNewVolume = fix (X2F (2 * nNewVolume) * MIX_MAX_VOLUME + 0.5f);
 #endif
-			if ((nOldVolume != nNewVolume) || ((nNewVolume > 0) && (soundObjP->m_channel < 0))) {
+			if ((nOldVolume != nNewVolume) || ((nNewVolume <= 0) != (soundObjP->m_channel < 0))) {
 #if DBG
 				if (soundObjP->m_linkType.pos.nSegment == nDbgSeg)
 					nDbgSeg = nDbgSeg;

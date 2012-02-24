@@ -68,7 +68,7 @@ if (!nNewCost)
 
 	ushort nIndex = ushort (nNewCost & 0xFFFF);
 
-if (nOldCost < 0xFFFFFFFF) {	// node already in heap with higher cost, so unlink
+if (nOldCost < 0x7FFFFFFF) {	// node already in heap with higher cost, so unlink
 	int h = ushort (nOldCost & 0xFFFF);
 	for (int i = m_index [h], j = -1; i >= 0; j = i, i = m_links [i]) {
 		if (i == nNode) {
