@@ -165,12 +165,12 @@ if ((m_nListenerSeg != m_router.StartSeg ()) || (m_router.DestSeg () > -1)) { //
 fix pathDistance = m_router.Distance (nSoundSeg);
 if (pathDistance < 0) {
 	//m_nListenerSeg = -1;
-	return distance;
+	return 3 * distance / 2;
 	}
 
 short l = m_router.RouteLength (nSoundSeg);
 if (l < 3)
-	return distance;
+	return 3 * distance / 2;
 
 CSegment* segP = &SEGMENTS [nListenerSeg];
 short nChild = m_router.Route (1)->nNode;
@@ -749,7 +749,7 @@ while (i) {
 #if USE_SDL_MIXER
 			nNewVolume = fix (X2F (2 * nNewVolume) * MIX_MAX_VOLUME + 0.5f);
 #endif
-			if ((nOldVolume != nNewVolume) || (soundObjP->m_channel < 0)) {
+			if ((nOldVolume != nNewVolume) || ((nNewVolume > 0) && (soundObjP->m_channel < 0))) {
 #if DBG
 				if (soundObjP->m_linkType.pos.nSegment == nDbgSeg)
 					nDbgSeg = nDbgSeg;
@@ -777,7 +777,7 @@ while (i) {
 						SetVolume (soundObjP->m_channel, soundObjP->m_volume);
 					}
 				}
-			if ((nOldPan != soundObjP->m_pan) && (soundObjP->m_channel > -1))
+			if ((nNewVolume > 0) && (nOldPan != soundObjP->m_pan) && (soundObjP->m_channel > -1))
 				SetPan (soundObjP->m_channel, soundObjP->m_pan);
 			}
 		}
