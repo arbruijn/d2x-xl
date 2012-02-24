@@ -122,6 +122,7 @@ if (ogl.SizeVertexBuffer (nPoints [nMarker])) {
 	basePoint.TransformAndEncode (GetObject (-1, nMarker)->info.position.vPos);
 	glPushMatrix ();
 	glTranslatef (X2F (basePoint.ViewPos ().v.coord.x), X2F (basePoint.ViewPos ().v.coord.y), X2F (basePoint.ViewPos ().v.coord.z));
+	ogl.SelectTMU (GL_TEXTURE0);
 	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
 	px = xCoord [nMarker];
@@ -135,8 +136,8 @@ if (ogl.SizeVertexBuffer (nPoints [nMarker])) {
 		j++;
 		}
 	ogl.FlushBuffers (GL_LINES, nPoints [nMarker], 2);
+	glPopMatrix ();
 	}
-glPopMatrix ();
 }
 
 //------------------------------------------------------------------------------
@@ -161,12 +162,12 @@ for (i = 0; i < nMaxDrop; i++)
 	if ((objP = GetObject (-1, i))) {
 		bSpawn = (objP == markerManager.SpawnObject (-1));
 		colorP = &colors [bSpawn][0];
+		DrawNumber (i);
 		spherePoint.TransformAndEncode (objP->info.position.vPos);
 		for (j = 0; j < 3; j++, colorP++) {
 			CCanvas::Current ()->SetColorRGB (PAL2RGBA (*colorP), 0, 0, 255);
 			G3DrawSphere (&spherePoint, int (m_data.fScale * MARKER_SPHERE_SIZE) >> j, 1);
 			}
-		DrawNumber (i);
 		}
 if (cycdir) {
 	cyc += 2;

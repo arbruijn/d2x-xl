@@ -1171,22 +1171,22 @@ while ((key = KeyInKeyTime (&keyTime)) != 0) {
 		markerManager.InputMessage (key);
 		continue;
 		}
-if (IsMultiGame && (gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining)) {
-	MultiMsgInputSub (key);
-	continue;		//get next key
-	}
+	if (IsMultiGame && (gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining)) {
+		MultiMsgInputSub (key);
+		continue;		//get next key
+		}
 #if DBG
-if ((key&KEYDBGGED) && IsMultiGame) {
-	gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
-	sprintf(gameData.multigame.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
-	}
+	if ((key&KEYDBGGED) && IsMultiGame) {
+		gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
+		sprintf(gameData.multigame.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
+		}
 #endif
 #ifdef CONSOLE
-if(!console.Events (key))
-	continue;
+	if (!console.Events (key))
+		continue;
 #endif
-if (gameStates.app.bPlayerIsDead)
-	HandleDeathKey (key);
+	if (gameStates.app.bPlayerIsDead)
+		HandleDeathKey (key);
 	if (gameStates.app.bEndLevelSequence)
 		HandleEndlevelKey (key);
 	else if (gameData.demo.nState == ND_STATE_PLAYBACK) {
