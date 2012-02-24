@@ -139,6 +139,8 @@ class CRouter {
 
 		inline int StartSeg (void) { return m_nStartSeg; }
 		inline int DestSeg (void) { return m_nDestSeg; }
+		inline void SetStartSeg (short nSegment) { m_nStartSeg = nSegment; }
+		inline void SetDestSeg (short nSegment) { m_nDestSeg = nSegment; }
 
 	protected:
 		int SetSegment (const short nSegment, const CFixVector& p);

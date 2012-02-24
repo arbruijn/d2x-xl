@@ -699,6 +699,9 @@ soundQueue.Process ();
 	i = m_objects.ToS ();
 	CSoundObject*	soundObjP = m_objects.Buffer () + i;
 
+m_router.SetStartSeg (-1);
+m_router.SetDestSeg (-1);
+
 while (i) {
 	i--;
 	soundObjP--;
