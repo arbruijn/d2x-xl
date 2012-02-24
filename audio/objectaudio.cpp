@@ -170,7 +170,7 @@ if (pathDistance < 0) {
 
 short l = m_router.RouteLength (nSoundSeg);
 if (l < 3)
-	return 3 * distance / 2;
+	return distance;
 
 CSegment* segP = &SEGMENTS [nListenerSeg];
 short nChild = m_router.Route (1)->nNode;
