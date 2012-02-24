@@ -1036,7 +1036,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 		nDbgSeg = nDbgSeg;
 #endif
 	for (nSide = 0, nSegSoundSources = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
-		if (0 > (nSideSounds [nSide] = SideIsSoundSource (nSegment, nSide)))
+		if (0 <= (nSideSounds [nSide] = SideIsSoundSource (nSegment, nSide)))
 			nSegSoundSources++;
 	for (nSide = 0, nSegSoundSources = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
 		if (nSideSounds [nSide] >= 0)
