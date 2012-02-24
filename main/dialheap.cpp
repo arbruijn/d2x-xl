@@ -45,7 +45,7 @@ for (uint i = 0, j = m_dirtyIndex.ToS (); i < j; i++)
 for (uint i = 0, j = m_dirtyCost.ToS (); i < j; i++)
 	m_index [m_dirtyCost [i]] = 0xFFFFFFFF;
 #	else
-ushort* indexP = m_index.Buffer ();
+short* indexP = m_index.Buffer ();
 ushort* dirtyIndexP = m_dirtyIndex.Buffer ();
 uint i;
 for (i = m_dirtyIndex.ToS (); i; i--, dirtyIndexP++)
