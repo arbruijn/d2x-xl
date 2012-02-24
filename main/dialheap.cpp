@@ -47,12 +47,13 @@ for (uint i = 0, j = m_dirtyCost.ToS (); i < j; i++)
 #	else
 ushort* indexP = m_index.Buffer ();
 ushort* dirtyIndexP = m_dirtyIndex.Buffer ();
-for (uint i = m_dirtyIndex.ToS (); i; i--, dirtyIndexP++)
+uint i;
+for (i = m_dirtyIndex.ToS (); i; i--, dirtyIndexP++)
 	indexP [*dirtyIndexP] = -1;
 
-uint* costP = m_index.Buffer ();
+uint* costP = m_cost.Buffer ();
 uint* dirtyCostP = m_dirtyCost.Buffer ();
-for (uint i = m_dirtyCost.ToS (); i; i--, dirtyCostP++)
+for (i = m_dirtyCost.ToS (); i; i--, dirtyCostP++)
 	costP [*dirtyCostP] = 0xFFFFFFFF;
 #	endif
 m_dirtyIndex.Reset ();
