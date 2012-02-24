@@ -401,6 +401,7 @@ if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
 if (gameStates.app.bGameRunning && (gameOpts->gameplay.nShip [1] != nShip)) {
+	missionConfig.m_playerShip = gameOpts->gameplay.nShip [1];
 	SetChaseCam (0);
 	SetFreeCam (0);
 	SetRearView (0);
