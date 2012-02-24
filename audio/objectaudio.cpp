@@ -135,6 +135,9 @@ return (nSound < 0) ? -1 : CAudio::UnXlatSound (nSound);
 
 int CAudio::Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound)
 {
+	static float fCorrFactor = 1.0f;
+	static uint  nRouteCount = 1;
+
 if (nDecay)
 	maxDistance *= 2;
 else
@@ -177,6 +180,8 @@ segP = &SEGMENTS [nSoundSeg];
 nChild = m_router.Route (l - 2)->nNode;
 pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
 pathDistance += CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ());
+fCorrFactor += pathDistance / distance;
+++nRouteCount;
 return (pathDistance < maxDistance) ? pathDistance : -1;
 }
 
