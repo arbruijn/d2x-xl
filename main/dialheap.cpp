@@ -3,14 +3,18 @@
 
 #include "dialheap.h"
 
+#define FAST_RESET 1
+
 //-----------------------------------------------------------------------------
 
 bool CDialHeap::Create (short nNodes)
 {
 Destroy ();
 m_nNodes = nNodes;
-if (!(m_index.Create (65536) && m_indexList.Create (65536) && m_cost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes) && m_edge.Create (nNodes)))
+if (!(m_index.Create (65536) && m_dirtyIndex.Create (65536) && m_cost.Create (nNodes) && m_dirtyCost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes) && m_edge.Create (nNodes)))
 	return false;
+m_index.Clear (0xFF);
+m_cost.Clear (0xFF);
 return true;
 }
 
@@ -19,8 +23,9 @@ return true;
 void CDialHeap::Destroy (void)
 {
 m_index.Destroy ();
-m_indexList.Destroy ();
+m_dirtyIndex.Destroy ();
 m_cost.Destroy ();
+m_dirtyCost.Destroy ();
 m_links.Destroy ();
 m_pred.Destroy ();
 m_edge.Destroy ();
@@ -33,13 +38,28 @@ static int bFastReset = 1;
 
 void CDialHeap::Reset (void)
 {
-if (bFastReset) {
-for (uint i = 0, j = m_indexList.ToS (); i < j; i++)
-	m_index [m_indexList [i]] = -1;
-	m_indexList.Reset ();
-	}
-else
-	m_index.Clear (0xFF);
+#if FAST_RESET
+#	if DBG
+for (uint i = 0, j = m_dirtyIndex.ToS (); i < j; i++)
+	m_index [m_dirtyIndex [i]] = -1;
+for (uint i = 0, j = m_dirtyCost.ToS (); i < j; i++)
+	m_index [m_dirtyCost [i]] = 0xFFFFFFFF;
+#	else
+ushort* indexP = m_index.Buffer ();
+ushort* dirtyIndexP = m_dirtyIndex.Buffer ();
+for (uint i = m_dirtyIndex.ToS (); i; i--, dirtyIndexP++)
+	indexP [*dirtyIndexP] = -1;
+
+uint* costP = m_index.Buffer ();
+uint* dirtyCostP = m_dirtyCost.Buffer ();
+for (uint i = m_dirtyCost.ToS (); i; i--, dirtyCostP++)
+	costP [*dirtyCostP] = 0xFFFFFFFF;
+#	endif
+m_dirtyIndex.Reset ();
+m_dirtyCost.Reset ();
+#else
+m_index.Clear (0xFF);
+#endif
 m_cost.Clear (0xFF);
 m_nIndex = 0;
 }
@@ -80,11 +100,15 @@ if (nOldCost < 0x7FFFFFFF) {	// node already in heap with higher cost, so unlink
 			}
 		}
 	}
-if (0 > (m_links [nNode] = m_index [nIndex]))
-	if (bFastReset)
-		m_indexList.Push (nIndex);
-m_index [nIndex] = nNode;
+#if FAST_RESET
+else
+	m_dirtyIndex.Push (nNode);
+if (0 > m_index [nIndex])
+	m_dirtyIndex.Push (nIndex);
+#endif
+m_links [nNode] = m_index [nIndex];
 m_cost [nNode] = nNewCost;
+m_index [nIndex] = nNode;
 m_pred [nNode] = nPredNode;
 m_edge [nNode] = nEdge;
 return true;

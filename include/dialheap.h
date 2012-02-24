@@ -15,8 +15,9 @@ class CDialHeap {
 
 	private:
 		CShortArray			m_index;
-		CStack<ushort>		m_indexList;
 		CUIntArray			m_cost;
+		CStack<ushort>		m_dirtyIndex;
+		CUIntArray			m_dirtyCost;
 		CShortArray			m_links;
 		CShortArray			m_pred;
 		CShortArray			m_edge;

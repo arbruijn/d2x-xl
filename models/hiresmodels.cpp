@@ -193,8 +193,11 @@ tReplacementModel replacementModels [] = {
 	{"slowmotion", NULL, MAX_POLYGON_MODELS - 33, 0, 1, -1},
 	{"bullettime", NULL, MAX_POLYGON_MODELS - 34, 0, 1, -1},
 	{"hostage", NULL, HOSTAGE_MODEL, 0, 1, -1},
-	{"bullet", NULL, BULLET_MODEL, 0, 1, -1},
+	{"bullet", NULL, BULLET_MODEL, 0, 1, -1}
+#if DBG
+	,
 	{"cockpit", NULL, COCKPIT_MODEL, 0, 1, -1}
+#endif
 	};
 
 // ----------------------------------------------------------------------------
