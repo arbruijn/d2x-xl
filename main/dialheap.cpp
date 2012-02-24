@@ -29,15 +29,17 @@ m_route.Destroy ();
 
 //-----------------------------------------------------------------------------
 
+static int bFastReset = 1;
+
 void CDialHeap::Reset (void)
 {
-#if 1
+if (bFastReset) {
 for (uint i = 0, j = m_indexList.ToS (); i < j; i++)
 	m_index [m_indexList [i]] = -1;
-m_indexList.Reset ();
-#else
-m_index.Clear (0xFF);
-#endif
+	m_indexList.Reset ();
+	}
+else
+	m_index.Clear (0xFF);
 m_cost.Clear (0xFF);
 m_nIndex = 0;
 }
@@ -79,7 +81,8 @@ if (nOldCost < 0xFFFFFFFF) {	// node already in heap with higher cost, so unlink
 		}
 	}
 if (0 > (m_links [nNode] = m_index [nIndex]))
-	m_indexList.Push (nIndex);
+	if (bFastReset)
+		m_indexList.Push (nIndex);
 m_index [nIndex] = nNode;
 m_cost [nNode] = nNewCost;
 m_pred [nNode] = nPredNode;

@@ -152,7 +152,9 @@ if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
 if (!HaveRouter ())
 	 return uniDacsRouter [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 
-if ((m_nListenerSeg != nListenerSeg) || (m_nListenerSeg != m_router.StartSeg ())) {
+if (m_nListenerSeg != nListenerSeg) 
+	m_nListenerSeg = nListenerSeg;
+if (m_nListenerSeg != m_router.StartSeg ()) {
 	m_nListenerSeg = nListenerSeg;
 	m_router.PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, /*I2X (5 * 256 / 4)*/maxDistance, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
 	//for (i = 0; i < (uint) gameData.segs.nSegments; i++)
@@ -162,7 +164,7 @@ if ((m_nListenerSeg != nListenerSeg) || (m_nListenerSeg != m_router.StartSeg ())
 
 fix pathDistance = m_router.Distance (nSoundSeg);
 if (pathDistance < 0) {
-	m_nListenerSeg = -1;
+	//m_nListenerSeg = -1;
 	return distance;
 	}
 
@@ -711,21 +713,14 @@ while (i) {
 		if (soundObjP->m_flags & SOF_LINK_TO_POS) {
 			int nVolume = soundObjP->m_volume;
 			int nPan = soundObjP->m_pan;
+#if DBG
+			if (soundObjP->m_linkType.pos.nSegment == nDbgSeg)
+				nDbgSeg = nDbgSeg;
+#endif
 			GetVolPan (
 				mListenerOrient, vListenerPos, nListenerSeg,
 				soundObjP->m_linkType.pos.position, soundObjP->m_linkType.pos.nSegment, soundObjP->m_maxVolume,
 				&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
-#if USE_SDL_MIXER
-			if (gameOpts->sound.bUseSDLMixer && ((soundObjP->m_volume != nVolume) || (soundObjP->m_pan != nPan))) {
-#	if 0 //DBG
-				if (soundObjP->m_volume != nVolume)
-					GetVolPan (
-						mListenerOrient, vListenerPos, nListenerSeg,
-						soundObjP->m_linkType.coord.position, soundObjP->m_linkType.coord.nSegment, soundObjP->m_maxVolume,
-						&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
-#	endif
-				}
-#endif
 			}
 		else if (soundObjP->m_flags & SOF_LINK_TO_OBJ) {
 			if (gameData.demo.nState == ND_STATE_PLAYBACK) {
@@ -755,13 +750,9 @@ while (i) {
 			nNewVolume = fix (X2F (nNewVolume) * MIX_MAX_VOLUME + 0.5f);
 #endif
 			if ((nOldVolume != nNewVolume) || (soundObjP->m_channel < 0)) {
-#if 0 //DBG
-				if (!strcmp (soundObjP->m_szSound, "steam.wav")) {
-					GetVolPan (
-						mListenerOrient, vListenerPos, nListenerSeg,
-						OBJPOS (objP)->vPos, OBJSEG (objP), soundObjP->m_maxVolume,
-						&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
-					}
+#if DBG
+				if (soundObjP->m_linkType.pos.nSegment == nDbgSeg)
+					nDbgSeg = nDbgSeg;
 #endif
 				soundObjP->m_audioVolume = nAudioVolume [soundObjP->m_bAmbient];
 				if (nNewVolume <= 0) {	// sound is too far away or muted, so stop it playing.
@@ -994,49 +985,63 @@ gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameOpts->sound.bUseD1S
 
 //------------------------------------------------------------------------------
 
+static int SideIsSoundSource (short nSegment, short nSide)
+{
+CSegment* segP = &SEGMENTS [nSegment];
+if (!(segP->IsDoorWay (nSide, NULL) & WID_VISIBLE_FLAG))
+	return -1;
+short nOvlTex = segP->m_sides [nSide].m_nOvlTex;
+short nEffect = nOvlTex ? gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip : -1;
+if (nEffect < 0)
+	nEffect = gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].nEffectClip;
+if (nEffect < 0)
+	return -1;
+int nSound = gameData.eff.effectP [nEffect].nSound;
+if (nSound == -1)
+	return -1;
+short nConnSeg = segP->m_children [nSide];
+
+//check for sound on other CSide of CWall.  Don't add on
+//both walls if sound travels through CWall.  If sound
+//does travel through CWall, add sound for lower-numbered
+//CSegment.
+
+if (IS_CHILD (nConnSeg) && (nConnSeg < nSegment) &&
+	 (segP->IsDoorWay (nSide, NULL) & (WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG))) {
+	CSegment* connSegP = SEGMENTS + segP->m_children [nSide];
+	short nConnSide = segP->ConnectedSide (connSegP);
+	if (connSegP->m_sides [nConnSide].m_nOvlTex == segP->m_sides [nSide].m_nOvlTex)
+		return -1;		//skip this one
+	}
+return nSound;
+}
+
+//------------------------------------------------------------------------------
+
 //go through this level and start any effect sounds
 void SetSoundSources (void)
 {
-	short			nSegment, nSide, nConnSeg, nConnSide, nSound;
-	CSegment*	segP, * connSegP;
+	short			nSegment, nSide;
+	CSegment*	segP;
 	CObject*		objP;
-	int			nOvlTex, nEffect;
+	int			nSegSoundSources, nSideSounds [6];
 	//int			i;
 
 SetD1Sound ();
 audio.InitSounds ();		//clear old sounds
 gameStates.sound.bDontStartObjects = 1;
-for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++)
-	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		if (!(segP->IsDoorWay (nSide, NULL) & WID_VISIBLE_FLAG))
-			continue;
+for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++) {
 #if DBG
-		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-			nDbgSeg = nDbgSeg;
+	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
 #endif
-		nEffect = (nOvlTex = segP->m_sides [nSide].m_nOvlTex) ? gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip : -1;
-		if (nEffect < 0)
-			nEffect = gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].nEffectClip;
-		if (nEffect < 0)
-			continue;
-		if ((nSound = gameData.eff.effectP [nEffect].nSound) == -1)
-			continue;
-		nConnSeg = segP->m_children [nSide];
-
-		//check for sound on other CSide of CWall.  Don't add on
-		//both walls if sound travels through CWall.  If sound
-		//does travel through CWall, add sound for lower-numbered
-		//CSegment.
-
-		if (IS_CHILD (nConnSeg) && (nConnSeg < nSegment) &&
-			 (segP->IsDoorWay (nSide, NULL) & (WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG))) {
-			connSegP = SEGMENTS + segP->m_children [nSide];
-			nConnSide = segP->ConnectedSide (connSegP);
-			if (connSegP->m_sides [nConnSide].m_nOvlTex == segP->m_sides [nSide].m_nOvlTex)
-				continue;		//skip this one
-			}
-		audio.CreateSegmentSound (nSound, nSegment, nSide, segP->SideCenter (nSide), 1, I2X (1) / 2);
-		}
+	for (nSide = 0, nSegSoundSources = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
+		if (0 > (nSideSounds [nSide] = SideIsSoundSource (nSegment, nSide)))
+			nSegSoundSources++;
+	for (nSide = 0, nSegSoundSources = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
+		if (nSideSounds [nSide])
+			audio.CreateSegmentSound (nSideSounds [nSide], nSegment, nSide, segP->SideCenter (nSide), 1, I2X (1) / (2 * nSegSoundSources));
+	}
 
 FORALL_EFFECT_OBJS (objP, i)
 	if (objP->info.nId == SOUND_ID) {
@@ -1049,7 +1054,8 @@ FORALL_EFFECT_OBJS (objP, i)
 		audio.CreateObjectSound (-1, SOUNDCLASS_AMBIENT, objP->Index (), 1, objP->rType.soundInfo.nVolume, I2X (256), 0, 0, fn);
 		}
 
-if (0 <= (nSound = audio.GetSoundByName ("explode2"))) {
+short nSound = audio.GetSoundByName ("explode2");
+if (0 <= nSound) {
 	FORALL_STATIC_OBJS (objP, i)
 		if (objP->info.nType == OBJ_EXPLOSION) {
 			objP->info.renderType = RT_POWERUP;
