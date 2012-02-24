@@ -747,7 +747,7 @@ while (i) {
 		if (!soundObjP->m_bCustom) {
 			nNewVolume = FixMulDiv (soundObjP->m_volume, nAudioVolume [soundObjP->m_bAmbient], I2X (1));
 #if USE_SDL_MIXER
-			nNewVolume = fix (X2F (nNewVolume) * MIX_MAX_VOLUME + 0.5f);
+			nNewVolume = fix (X2F (2 * nNewVolume) * MIX_MAX_VOLUME + 0.5f);
 #endif
 			if ((nOldVolume != nNewVolume) || (soundObjP->m_channel < 0)) {
 #if DBG
