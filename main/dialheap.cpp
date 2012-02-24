@@ -103,7 +103,7 @@ if (nOldCost < 0x7FFFFFFF) {	// node already in heap with higher cost, so unlink
 	}
 #if FAST_RESET
 else
-	m_dirtyIndex.Push (nNode);
+	m_dirtyCost.Push (nNode);
 if (0 > m_index [nIndex])
 	m_dirtyIndex.Push (nIndex);
 #endif
