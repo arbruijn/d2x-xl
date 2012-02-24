@@ -39,11 +39,11 @@ static int bFastReset = 1;
 void CDialHeap::Reset (void)
 {
 #if FAST_RESET
-#	if DBG
+#	if 0 //DBG
 for (uint i = 0, j = m_dirtyIndex.ToS (); i < j; i++)
 	m_index [m_dirtyIndex [i]] = -1;
 for (uint i = 0, j = m_dirtyCost.ToS (); i < j; i++)
-	m_index [m_dirtyCost [i]] = 0xFFFFFFFF;
+	m_cost [m_dirtyCost [i]] = 0xFFFFFFFF;
 #	else
 short* indexP = m_index.Buffer ();
 ushort* dirtyIndexP = m_dirtyIndex.Buffer ();
