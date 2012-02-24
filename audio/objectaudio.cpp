@@ -154,7 +154,7 @@ if (!HaveRouter ())
 
 if (m_nListenerSeg != nListenerSeg) 
 	m_nListenerSeg = nListenerSeg;
-if (m_nListenerSeg != m_router.StartSeg ()) {
+if ((m_nListenerSeg != m_router.StartSeg ()) || (m_router.DestSeg () > -1)) { // either we had a different start last time, or the last calculation was a 1:1 routing
 	m_nListenerSeg = nListenerSeg;
 	m_router.PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, /*I2X (5 * 256 / 4)*/maxDistance, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
 	//for (i = 0; i < (uint) gameData.segs.nSegments; i++)
@@ -1035,9 +1035,20 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	for (nSide = 0, nSegSoundSources = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
+	for (nSide = 0, nSegSoundSources = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+#if DBG
+		if (nDbgSeg >= 0) {
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				;
+			else {
+				nSideSounds [nSide] = -1;
+				continue;
+				}
+			}
+#endif
 		if (0 <= (nSideSounds [nSide] = SideIsSoundSource (nSegment, nSide)))
 			nSegSoundSources++;
+		}
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
 		if (nSideSounds [nSide] >= 0)
 			audio.CreateSegmentSound (nSideSounds [nSide], nSegment, nSide, segP->SideCenter (nSide), 1, I2X (1) / (2 * nSegSoundSources));

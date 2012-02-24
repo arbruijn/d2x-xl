@@ -50,6 +50,8 @@ char bOldHomingStates [20];
 
 char szCheatBuf[] = "AAAAAAAAAAAAAAA";
 
+extern int MarkPlayerPathToSegment (int nSegment);
+
 //------------------------------------------------------------------------------
 
 void DoCheatPenalty ()
@@ -434,7 +436,7 @@ audio.PlaySound (short (gameData.objs.pwrUp.info [POW_CLOAK].hitSound));
 
 //------------------------------------------------------------------------------
 
-void CubeWarpCheat (int bVerbose)
+void SegmentWarpCheat (int bVerbose)
 {
 	int nNewSegSide [2] = {0, 0};
 
@@ -459,6 +461,20 @@ if (BoostVal (&LOCALPLAYER.energy, MAX_ENERGY))
 	 PowerupBasic (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.Energy ()));
 else if (bVerbose)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
+}
+
+//------------------------------------------------------------------------------
+
+void SegmentPathCheat (int bVerbose)
+{
+	int nSegment = 0; 
+
+if (!MenuGetValues (TXT_ENTER_SEGNUM, &nSegment, 1))
+	return;
+if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
+	DoCheatPenalty ();
+	MarkPlayerPathToSegment (nSegment);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -909,6 +925,7 @@ char szCloakCheat [9]				= "itsarock";
 char szCubeWarpCheat [9]			= "subspace";		// subspace
 char szElectroCheat [9]				= "electro";
 char szExitPathCheat [9]			= "glebells";		//jin-glebless
+char szAnyPathCheat [9]				= "minotaur";		//well ... minotaur
 char szFinishLevelCheat [9]		= "%bG_bZ<D";		//only Matt knows / d-elshiftb
 char szFramerateCheat [9]			= "rQ60#ZBN";		// f-rametime
 char szFullMapCheat [9]				= "PI<XQHRI";		//only Matt knows / rockrgrl
@@ -942,9 +959,10 @@ tCheat cheats [] = {
  {szBuddyDudeCheat, BuddyDudeCheat, 1, 1, 0}, 
  {szBuddyLifeCheat, BuddyLifeCheat, 1, 1, 0}, 
  {szCloakCheat, CloakCheat, 1, 0, 0}, 
- {szCubeWarpCheat, CubeWarpCheat, -1, 0, -1}, 
+ {szCubeWarpCheat, SegmentWarpCheat, -1, 0, -1}, 
  {szElectroCheat, ElectroCheat, 1, 0, 0}, 
  {szExitPathCheat, ExitPathCheat, 1, 0, 0}, 
+ {szAnyPathCheat, SegmentPathCheat, 1, 0, 0}, 
  {szFinishLevelCheat, FinishLevelCheat, 1, 1, 0}, 
  {szFramerateCheat, FramerateCheat, 0, 1, -1}, 
  {szGasolineCheat, GasolineCheat, 1, 1, 0}, 

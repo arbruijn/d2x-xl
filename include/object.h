@@ -818,7 +818,7 @@ class CObject : public CObjectInfo {
 		bool				m_bRotate;
 		bool				m_bSynchronize;
 		int				m_nFrame;
-		int				m_bIgnore;
+		int				m_bIgnore [2]; // ignore this object (physics: type = 0, pickup powerup: type = 1)
 
 	public:
 		CObject ();
@@ -1090,8 +1090,8 @@ class CObject : public CObjectInfo {
 		inline bool IsStatic (void) { return cType.aiInfo.behavior == AIB_STATIC; }
 		bool Indestructible (void);
 		inline bool IsGeometry (void) { return IsStatic () && Indestructible (); }
-		inline void Ignore (int bFlag) { m_bIgnore = bFlag; }
-		inline bool Ignored (int bFlag) { return m_bIgnore == bFlag; }
+		inline void Ignore (int bFlag, int nType = 0) { m_bIgnore [nType] = bFlag; }
+		inline bool Ignored (int bFlag, int nType = 0) { return m_bIgnore [nType] == bFlag; }
 
 		inline void SetSize (fix xSize) { info.xSize = xSize; }
 		inline void SetSizeFromModel (int i = 0, fix scale = 0) { 

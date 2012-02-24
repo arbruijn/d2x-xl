@@ -1262,21 +1262,21 @@ int nLastLevelPathCreated = -1;
 int MarkPlayerPathToSegment (int nSegment)
 {
 	int		i;
-	CObject	*objP = gameData.objs.consoleP;
-	short		player_path_length=0;
-	int		player_hide_index=-1;
+	CObject* objP = gameData.objs.consoleP;
+	short		playerPathLength = 0;
+	int		playerHideIndex = -1;
 
 if (nLastLevelPathCreated == missionManager.nCurrentLevel)
 	return 0;
 nLastLevelPathCreated = missionManager.nCurrentLevel;
-if (CreatePathPoints (objP, objP->info.nSegment, nSegment, gameData.ai.freePointSegs, &player_path_length, 100, 0, 0, -1) == -1) {
+if (CreatePathPoints (objP, objP->info.nSegment, nSegment, gameData.ai.freePointSegs, &playerPathLength, 100, 0, 0, -1) == -1) {
 #if TRACE
 	//console.printf (CON_DBG, "Unable to form path of length %i for myself\n", 100);
 #endif
 	return 0;
 	}
-player_hide_index = int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs));
-gameData.ai.freePointSegs += player_path_length;
+playerHideIndex = int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs));
+gameData.ai.freePointSegs += playerPathLength;
 if (int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) + MAX_PATH_LENGTH * 2 > MAX_POINT_SEGS) {
 #if TRACE
 	//console.printf (1, "Can't create path.  Not enough tPointSegs.\n");
@@ -1284,16 +1284,16 @@ if (int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) + MAX_PATH_LEN
 	AIResetAllPaths ();
 	return 0;
 	}
-for (i = 1; i < player_path_length; i++) {
+for (i = 1; i < playerPathLength; i++) {
 	short			nSegment, nObject;
 	CFixVector	vSegCenter;
 	CObject		*objP;
 
-	nSegment = gameData.ai.routeSegs [player_hide_index + i].nSegment;
+	nSegment = gameData.ai.routeSegs [playerHideIndex + i].nSegment;
 #if TRACE
 	//console.printf (CON_DBG, "%3i ", nSegment);
 #endif
-	vSegCenter = gameData.ai.routeSegs[player_hide_index+i].point;
+	vSegCenter = gameData.ai.routeSegs[playerHideIndex+i].point;
 	nObject = CreatePowerup (POW_ENERGY, -1, nSegment, vSegCenter, 1);
 	if (nObject == -1) {
 		Int3 ();		//	Unable to drop energy powerup for path
@@ -1304,6 +1304,7 @@ for (i = 1; i < player_path_length; i++) {
 	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 	objP->rType.vClipInfo.nCurFrame = 0;
 	objP->SetLife (I2X (100) + RandShort () * 4);
+	objP->Ignore (1, 1);
 	}
 return 1;
 }

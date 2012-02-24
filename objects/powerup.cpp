@@ -668,6 +668,8 @@ int DoPowerup (CObject *objP, int nPlayer)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 0;
+if (objP->Ignored (1, 1))
+	return 0;
 
 	CPlayerData*	playerP;
 	int				bUsed = 0;
