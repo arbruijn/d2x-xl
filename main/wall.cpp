@@ -65,6 +65,60 @@ bool DoDoorClose (int nDoor);
 
 //------------------------------------------------------------------------------
 
+static CActiveDoor* AddActiveDoor (void)
+{
+if (!gameData.walls.activeDoors.Grow ())
+	return NULL;
+audio.Update ();
+return gameData.walls.activeDoors.Top ();
+}
+
+//------------------------------------------------------------------------------
+
+static CCloakingWall*	AddCloakingWall (void)
+{
+if (!gameData.walls.cloaking.Grow ())
+	return NULL;
+audio.Update ();
+return gameData.walls.cloaking.Top ();
+}
+
+//------------------------------------------------------------------------------
+
+static CExplodingWall* AddExplodingWall (void)
+{
+if (!gameData.walls.exploding.Grow ())
+	return NULL;
+audio.Update ();
+return gameData.walls.exploding.Top ();
+}
+
+//------------------------------------------------------------------------------
+
+static void DeleteActiveDoor (int nDoor)
+{
+gameData.walls.activeDoors.Delete (static_cast<uint> (nDoor));
+audio.Update ();
+}
+
+//------------------------------------------------------------------------------
+
+static void DeleteCloakingWall (int nWall)
+{
+gameData.walls.cloaking.Delete (static_cast<uint> (nWall));
+audio.Update ();
+}
+
+//------------------------------------------------------------------------------
+
+static void DeleteExplodingWall (int nWall)
+{
+gameData.walls.exploding.Delete (static_cast<uint> (nWall));
+audio.Update ();
+}
+
+//------------------------------------------------------------------------------
+
 int AnimFrameCount (tWallClip *anim)
 {
 	int	n;
@@ -199,9 +253,8 @@ if (state == WALL_DOOR_CLOSING) {		//closing, so reuse door
 else if (state != WALL_DOOR_CLOSED)
 	return NULL;
 if (!doorP) {
-	if (!gameData.walls.activeDoors.Grow ())
+	if (!(doorP = AddActiveDoor ()))
 		return NULL;
-	doorP = gameData.walls.activeDoors.Top ();
 	doorP->time = 0;
 	}
 state = WALL_DOOR_OPENING;
@@ -220,30 +273,6 @@ for (uint i = gameData.walls.cloaking.ToS (); i; i--, cloakWallP++) {		//find do
 		return cloakWallP;
 	}
 return NULL;
-}
-
-//------------------------------------------------------------------------------
-
-void DeleteActiveDoor (int nDoor)
-{
-gameData.walls.activeDoors.Delete (static_cast<uint> (nDoor));
-audio.Update ();
-}
-
-//------------------------------------------------------------------------------
-
-void DeleteCloakingWall (int nWall)
-{
-gameData.walls.cloaking.Delete (static_cast<uint> (nWall));
-audio.Update ();
-}
-
-//------------------------------------------------------------------------------
-
-void DeleteExplodingWall (int nWall)
-{
-gameData.walls.exploding.Delete (static_cast<uint> (nWall));
-audio.Update ();
 }
 
 //------------------------------------------------------------------------------
@@ -270,9 +299,8 @@ if (state == WALL_DOOR_DECLOAKING) {	//decloaking, so reuse door
 	cloakWallP->time = (fix) (CLOAKING_WALL_TIME * gameStates.gameplay.slowmo [0].fSpeed) - cloakWallP->time;
 	}
 else if (state == WALL_DOOR_CLOSED) {	//create new door
-	if (!gameData.walls.cloaking.Grow ()) 
+	if (!(cloakWallP = AddCloakingWall ()))
 		return NULL;
-	cloakWallP = gameData.walls.cloaking.Top ();
 	cloakWallP->time = 0;
 	}
 else
@@ -293,9 +321,8 @@ if (state == WALL_DOOR_CLOAKING) {	//cloaking, so reuse door
 	cloakWallP->time = (fix) (CLOAKING_WALL_TIME * gameStates.gameplay.slowmo [0].fSpeed) - cloakWallP->time;
 	}
 else if (state == WALL_DOOR_CLOSED) {	//create new door
-	if (!gameData.walls.cloaking.Grow ())
+	if (!(cloakWallP = AddCloakingWall ()))
 		return NULL;
-	cloakWallP = gameData.walls.cloaking.Top ();
 	cloakWallP->time = 0;
 	}
 else
@@ -339,9 +366,8 @@ if ((state == WALL_DOOR_OPENING) ||
 else if (state != WALL_DOOR_OPEN)
 	return NULL;
 if (!doorP) {
-	if (!gameData.walls.activeDoors.Grow ())
+	if (!(doorP = AddActiveDoor ()))
 		return NULL;
-	doorP = gameData.walls.activeDoors.Top ();
 	doorP->time = 0;
 	}
 state = WALL_DOOR_CLOSING;
@@ -1368,10 +1394,12 @@ gameData.walls.exploding.Reset ();
 //explode the given CWall
 void ExplodeWall (short nSegment, short nSide)
 {
-if (gameData.walls.exploding.Grow ()) {
-	gameData.walls.exploding.Top ()->nSegment = nSegment;
-	gameData.walls.exploding.Top ()->nSide = nSide;
-	gameData.walls.exploding.Top ()->time = 0;
+	CExplodingWall * explodingWallP = AddExplodingWall ();
+
+if (explodingWallP) {
+	explodingWallP->nSegment = nSegment;
+	explodingWallP->nSide = nSide;
+	explodingWallP->time = 0;
 	SEGMENTS [nSegment].CreateSound (SOUND_EXPLODING_WALL, nSide);
 	}
 }
