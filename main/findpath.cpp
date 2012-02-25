@@ -420,11 +420,13 @@ if (m_heap.Cost (nSegment) == 0xFFFFFFFF)
 	return -1;
 
 	int h = m_heap.BuildRoute (nSegment);
+	CDialHeap::tPathNode* route = m_heap.Route ();
 
+if (route [0].nNode == nSegment)
+	return 0;
 if (m_nDestSeg >= 0)
 	h -= 2;
 
-	CDialHeap::tPathNode* route = m_heap.Route ();
 	fix xDist = 0;
 
 #if 0

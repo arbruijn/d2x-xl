@@ -146,6 +146,8 @@ else
 fix distance = CFixVector::NormalizedDir (vecToSound, vSoundPos, vListenerPos);
 if (distance > maxDistance) 
 	return -1;
+if (nListenerSeg == nSoundSeg)
+	return distance;
 #if 0
 if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
 	return distance;
