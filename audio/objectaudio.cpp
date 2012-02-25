@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "lightning.h"
 #include "audio.h"
+#include "automap.h"
 
 //------------------------------------------------------------------------------
 
@@ -677,6 +678,8 @@ for (uint i = 0; i < m_objects.ToS (); i++) {
 void CAudio::SyncSounds (void)
 {
 if (!OBJECTS.Buffer ())
+	return;
+if (automap.Display ())
 	return;
 
 	int				nOldVolume, nNewVolume, nOldPan, 
