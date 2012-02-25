@@ -679,8 +679,6 @@ void CAudio::SyncSounds (void)
 {
 if (!OBJECTS.Buffer ())
 	return;
-if (automap.Display ())
-	return;
 
 	int				nOldVolume, nNewVolume, nOldPan, 
 						nAudioVolume [2] = {audio.Volume (0), audio.Volume (1)};
