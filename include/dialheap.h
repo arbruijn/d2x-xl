@@ -38,6 +38,9 @@ class CDialHeap {
 		inline bool Pushed (short nNode) { return Cost (nNode) < 0xFFFFFFFF; }
 		inline bool Popped (short nNode) { return !Pushed (nNode) && ((Cost (nNode) & 0x80000000) != 0); }
 		inline tPathNode* Route (uint i = 0) { return m_route.Buffer (i); }
+
+	private:
+		ushort CDialHeap::Scan (short* buffer, int nStart, int nLength);
 };
 
 
