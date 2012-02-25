@@ -240,7 +240,7 @@ audio.Update ();
 
 //------------------------------------------------------------------------------
 
-void DeleteExploadingWall (int nWall)
+void DeleteExplodingWall (int nWall)
 {
 gameData.walls.exploding.Delete (static_cast<uint> (nWall));
 audio.Update ();
@@ -732,7 +732,7 @@ void DoDecloakingWallFrame (int nCloakingWall)
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
 
-CWall* cloakWallP = gameData.walls.cloaking + nCloakingWall;
+CCloakingWall* cloakWallP = gameData.walls.cloaking + nCloakingWall;
 CWall* frontWallP = WALLS + cloakWallP->nFrontWall;
 CWall* backWallP = IS_WALL (cloakWallP->nBackWall) ? WALLS + cloakWallP->nBackWall : NULL;
 
