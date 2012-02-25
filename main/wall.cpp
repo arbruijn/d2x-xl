@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dynlight.h"
 #include "loadobjects.h"
 #include "savegame.h"
+#include "audio.h"
 
 //	Special door on boss level which is locked if not in multiplayer...sorry for this awful solution --MK.
 #define	BOSS_LOCKED_DOOR_LEVEL	7
@@ -204,6 +205,7 @@ if (!doorP) {
 	doorP->time = 0;
 	}
 state = WALL_DOOR_OPENING;
+audio.Update ();
 return doorP;
 }
 
@@ -225,6 +227,23 @@ return NULL;
 void DeleteActiveDoor (int nDoor)
 {
 gameData.walls.activeDoors.Delete (static_cast<uint> (nDoor));
+audio.Update ();
+}
+
+//------------------------------------------------------------------------------
+
+void DeleteCloakingWall (int nWall)
+{
+gameData.walls.cloaking.Delete (static_cast<uint> (nWall));
+audio.Update ();
+}
+
+//------------------------------------------------------------------------------
+
+void DeleteExploadingWall (int nWall)
+{
+gameData.walls.exploding.Delete (static_cast<uint> (nWall));
+audio.Update ();
 }
 
 //------------------------------------------------------------------------------
@@ -662,7 +681,8 @@ if (cloakWallP->time > CLOAKING_WALL_TIME) {
 			lightManager.Toggle (backWallP->nSegment, backWallP->nSide, -1, 0);
 		backWallP->state = WALL_DOOR_CLOSED;		//why closed? why not?
 		}
-	gameData.walls.cloaking.Delete (nCloakingWall);
+	DeleteCloakingWall (nCloakingWall);
+	audio.Update ();
 	}
 else if (SHOW_DYN_LIGHT || (cloakWallP->time > CLOAKING_WALL_TIME / 2)) {
 	int oldType = frontWallP->nType;
@@ -709,30 +729,26 @@ return bDeleted;
 
 void DoDecloakingWallFrame (int nCloakingWall)
 {
-	CCloakingWall	*cloakWallP;
-	CWall				*frontWallP,*backWallP;
-
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
-return;
+	return;
 
-cloakWallP = gameData.walls.cloaking + nCloakingWall;
-frontWallP = WALLS + cloakWallP->nFrontWall;
-backWallP = IS_WALL (cloakWallP->nBackWall) ? WALLS + cloakWallP->nBackWall : NULL;
+CWall* cloakWallP = gameData.walls.cloaking + nCloakingWall;
+CWall* frontWallP = WALLS + cloakWallP->nFrontWall;
+CWall* backWallP = IS_WALL (cloakWallP->nBackWall) ? WALLS + cloakWallP->nBackWall : NULL;
 
 cloakWallP->time += gameData.time.xFrame;
 if (cloakWallP->time > CLOAKING_WALL_TIME) {
-	uint i;
 	frontWallP->state = WALL_DOOR_CLOSED;
 	if (backWallP)
-	backWallP->state = WALL_DOOR_CLOSED;
-	for (i = 0; i < 4; i++) {
+		backWallP->state = WALL_DOOR_CLOSED;
+	for (uint i = 0; i < 4; i++) {
 		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = cloakWallP->front_ls [i];
 		if (backWallP)
 			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = cloakWallP->back_ls [i];
 		}
-	gameData.walls.cloaking.Delete (nCloakingWall);
+		DeleteCloakingWall (nCloakingWall);
 	}
-else if (cloakWallP->time > CLOAKING_WALL_TIME/2) {		//fading in
+else if (cloakWallP->time > CLOAKING_WALL_TIME / 2) {		//fading in
 	frontWallP->nType = WALL_CLOSED;
 	if (SHOW_DYN_LIGHT)
 		lightManager.Toggle (frontWallP->nSegment, frontWallP->nSide, -1, 0);
@@ -741,15 +757,15 @@ else if (cloakWallP->time > CLOAKING_WALL_TIME/2) {		//fading in
 		if (SHOW_DYN_LIGHT)
 			lightManager.Toggle (backWallP->nSegment, backWallP->nSide, -1, 0);
 		}
-	fix xLightScale = FixDiv(cloakWallP->time-CLOAKING_WALL_TIME/2,CLOAKING_WALL_TIME/2);
+	fix xLightScale = FixDiv (cloakWallP->time-CLOAKING_WALL_TIME/2,CLOAKING_WALL_TIME / 2);
 	for (int i = 0; i < 4; i++) {
-		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = FixMul(cloakWallP->front_ls [i],xLightScale);
+		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = FixMul (cloakWallP->front_ls [i], xLightScale);
 		if (backWallP)
-			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = FixMul(cloakWallP->back_ls [i],xLightScale);
+			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = FixMul (cloakWallP->back_ls [i], xLightScale);
 		}
 	}
 else {		//cloaking in
-	frontWallP->cloakValue = ((CLOAKING_WALL_TIME/2 - cloakWallP->time) * (FADE_LEVELS-2)) / (CLOAKING_WALL_TIME/2);
+	frontWallP->cloakValue = ((CLOAKING_WALL_TIME / 2 - cloakWallP->time) * (FADE_LEVELS - 2)) / (CLOAKING_WALL_TIME / 2);
 	frontWallP->nType = WALL_CLOAKED;
 	if (backWallP) {
 		backWallP->cloakValue = frontWallP->cloakValue;
@@ -806,8 +822,7 @@ for (i = 0; i < gameData.walls.activeDoors.ToS (); i++) {
 		//this shouldn't happen.  if the CWall is in one of these states,
 		//there shouldn't be an activedoor entry for it.  So we'll kill
 		//the activedoor entry.  Tres simple.
-		gameData.walls.activeDoors.Delete (i);
-		i--;
+		DeleteActiveDoor (i--);
 		}
 	}
 
@@ -1369,7 +1384,7 @@ void DoExplodingWallFrame (void)
 for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 	short nSegment = gameData.walls.exploding [i].nSegment;
 	if (nSegment < 0) {
-		gameData.walls.exploding.Delete (i);
+		DeleteExplodingWall (i);
 		continue;
 		}
 	short nSide = gameData.walls.exploding [i].nSide;
@@ -1424,7 +1439,7 @@ for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 										  size, (ubyte) VCLIP_SMALL_EXPLOSION, I2X (4), I2X (20), I2X (50), -1);
 		}
 	if (gameData.walls.exploding [i].time >= EXPL_WALL_TIME)
-		gameData.walls.exploding.Delete (i);
+		DeleteExplodingWall (i);
 	else
 		i++;
 	}

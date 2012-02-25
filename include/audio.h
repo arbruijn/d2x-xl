@@ -401,6 +401,10 @@ class CAudio {
 		inline bool HaveRouter (void) { return m_bHaveRouter; }
 		int Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound);
 
+		void Update (void) { 
+			m_router.SetStartSeg (-1); 
+			m_router.SetDestSeg (-1);
+			}
 
 	private:
 		CAudioChannel* FindFreeChannel (int nSoundClass);

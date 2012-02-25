@@ -176,6 +176,7 @@ void CTrigger::DoChangeTexture (void)
 
 for (int i = 0; i < m_nLinks; i++)
 	SEGMENTS [m_segments [i]].SetTextures (m_sides [i], baseTex, ovlTex);
+audio.Update (); // react to a wall becoming passable / impassable
 }
 
 //------------------------------------------------------------------------------
