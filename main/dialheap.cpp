@@ -117,25 +117,25 @@ return true;
 
 //-----------------------------------------------------------------------------
 
-ushort CDialHeap::Scan (short* buffer, int nStart, int nLength)
+int CDialHeap::Scan (short* buffer, int nStart, int nLength)
 {
 	short* bufP = buffer + nStart;
 
 for (; nLength; nLength--, bufP++)
 	if (*bufP >= 0)
-		return ushort (bufP - buffer);
+		return int (bufP - buffer);
 return -1;
 }
 
 short CDialHeap::Pop (uint& nCost)
 {
 #if 1
-ushort i = Scan (m_index.Buffer (), m_nIndex, m_index.Length () - m_nIndex); // scan beginning at m_nIndex to the end of the buffer
+int i = Scan (m_index.Buffer (), m_nIndex, m_index.Length () - m_nIndex); // scan beginning at m_nIndex to the end of the buffer
 if (i < 0)
 	i = Scan (m_index.Buffer (), 0, m_nIndex); // wrap around and scan from the end of the buffer to m_nIndex
 if (i < 0)
 	return -1;
-m_nIndex = i;
+m_nIndex = ushort (i);
 short nNode = m_index [m_nIndex];
 m_index [m_nIndex] = m_links [nNode];
 nCost = m_cost [nNode];
