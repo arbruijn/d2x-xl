@@ -192,6 +192,8 @@ m_parent = parentP;
 m_nNode = nNode;
 m_nNodes = nNodes;
 m_nChildren = (extraGameInfo [0].bUseLightning > 1) ? (nChildren < 0) ? nNodes / 10 : nChildren : 0;
+if (m_nChildren > m_nNodes)
+	m_nChildren = m_nNodes;
 if (vEnd) {
 	m_vRefEnd = *vEnd;
 	m_vEnd = *vEnd;
@@ -254,7 +256,7 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 	int nBranches = 0;
 	double nProb = double (m_nChildren) / double (m_nNodes);
 	int nOffset = m_nNodes / m_nChildren / 2;
-	for (int nNode = 1 + rand () % nOffset; (nNode < m_nNodes - nOffset) && (nBranches < m_nChildren); nNode++) {
+	for (int nNode = 1 + (nOffset ? rand () % nOffset : 0); (nNode < m_nNodes - nOffset) && (nBranches < m_nChildren); nNode++) {
 		if (RandDouble () <= nProb) {
 			nBranches++;
 			int nChildNodes = m_nNodes - nNode;
