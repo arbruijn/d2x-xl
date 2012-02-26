@@ -91,7 +91,7 @@ class CBitmapCompressionData {
 
 class CBitmapInfo {
 	public:
-		char					szName [20];
+		char					szName [FILENAME_LEN];
 		tBmProps				props;
 		ubyte					flags;
 		ushort				nId;

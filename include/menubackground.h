@@ -123,7 +123,7 @@ class CBackgroundManager : public CStack<CBackground> {
 		void LoadStars (bool bTop = false);
 
 	private:
-		CBitmap* LoadCustomBackground (void);
+		CBitmap* LoadCustomBackground (char* filename = NULL);
 	};
 
 //------------------------------------------------------------------------------

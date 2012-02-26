@@ -213,7 +213,7 @@ if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameSta
 		CCanvas::Pop ();
 		}
 	}
-if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) || backgroundManager.IsDefault (GetFilename ()))) {
+if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) || m_bFullScreen || backgroundManager.IsDefault (GetFilename ()))) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (m_canvas [1]);
 	if (m_bMenuBox)
@@ -433,9 +433,11 @@ return filename && !strcmp (filename, m_filename [0]);
 
 //------------------------------------------------------------------------------
 
-CBitmap* CBackgroundManager::LoadCustomBackground (void)
+CBitmap* CBackgroundManager::LoadCustomBackground (char* filename)
 {
-if (m_background [0] || gameStates.app.bNostalgia)
+if (gameStates.app.bNostalgia)
+	return NULL;
+if (m_background [0])
 	return m_background [0];
 
 CBitmap* bmP;
@@ -457,6 +459,8 @@ if (bModBg) {
 		}
 	}
 
+if (filename && strcmp (filename, gameOpts->menus.altBg.szName [bModBg]))
+	return NULL;
 if (!tga. Read (gameOpts->menus.altBg.szName [bModBg], gameFolders.szWallpaperDir [bModBg], 
 					 (gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255),
 					 gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale)) {
@@ -472,20 +476,22 @@ return bmP;
 
 CBitmap* CBackgroundManager::LoadBackground (char* filename)
 {
-	int width, height;
+CBitmap* bmP = LoadCustomBackground (filename);
+if (!bmP) {
+		int width, height;
 
-if (PCXGetDimensions (filename, &width, &height) != PCX_ERROR_NONE) {
-	Error ("Could not open menu background file <%s>\n", filename);
-	return NULL;
-	}
-CBitmap* bmP;
-if (!(bmP = CBitmap::Create (0, width, height, 1))) {
-	Error ("Not enough memory for menu background\n");
-	return NULL;
-	}
-if (PCXReadBitmap (filename, bmP, bmP->Mode (), 0) != PCX_ERROR_NONE) {
-	Error ("Could not read menu background file <%s>\n", filename);
-	return NULL;
+	if (PCXGetDimensions (filename, &width, &height) != PCX_ERROR_NONE) {
+		Error ("Could not open menu background file <%s>\n", filename);
+		return NULL;
+		}
+	if (!(bmP = CBitmap::Create (0, width, height, 1))) {
+		Error ("Not enough memory for menu background\n");
+		return NULL;
+		}
+	if (PCXReadBitmap (filename, bmP, bmP->Mode (), 0) != PCX_ERROR_NONE) {
+		Error ("Could not read menu background file <%s>\n", filename);
+		return NULL;
+		}
 	}
 bmP->SetName (filename);
 bmP->SetTranspType (3);

@@ -159,6 +159,9 @@ CCreditsManager creditsManager;
 
 void CCreditsManager::RenderBackdrop (void)
 {
+#if 1
+m_bmBackdrop.RenderStretched ();
+#else
 if (gameOpts->menus.nStyle)
 	m_bmBackdrop.RenderStretched ();
 else {
@@ -168,6 +171,7 @@ else {
 		OglDrawEmptyRect (m_xOffs, m_yOffs, m_xOffs + m_bmBackdrop.Width () + 1, m_yOffs + m_bmBackdrop.Height () + 1);
 		}
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
