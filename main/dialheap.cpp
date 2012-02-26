@@ -118,13 +118,13 @@ return true;
 
 //-----------------------------------------------------------------------------
 
-int CDialHeap::Scan (short* buffer, int nStart, int nLength)
+int CDialHeap::Scan (int nStart, int nLength)
 {
 	short* bufP = m_index.Buffer (nStart);
 
 for (; nLength; nLength--, bufP++)
 	if (*bufP >= 0)
-		return int (bufP - buffer);
+		return int (bufP - m_index.Buffer ());
 return -1;
 }
 
