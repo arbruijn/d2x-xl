@@ -120,7 +120,7 @@ return true;
 
 int CDialHeap::Scan (short* buffer, int nStart, int nLength)
 {
-	short* bufP = buffer + nStart;
+	short* bufP = m_index.Buffer (nStart);
 
 for (; nLength; nLength--, bufP++)
 	if (*bufP >= 0)
@@ -133,9 +133,9 @@ return -1;
 short CDialHeap::Pop (uint& nCost)
 {
 #if FAST_SCAN
-int i = Scan (m_index.Buffer (), m_nIndex, m_index.Length () - m_nIndex); // scan beginning at m_nIndex to the end of the buffer
+int i = Scan (m_nIndex, m_index.Length () - m_nIndex); // scan beginning at m_nIndex to the end of the buffer
 if (i < 0)
-	i = Scan (m_index.Buffer (), 0, m_nIndex); // wrap around and scan from the end of the buffer to m_nIndex
+	i = Scan (0, m_nIndex); // wrap around and scan from the end of the buffer to m_nIndex
 if (i < 0)
 	return -1;
 m_nIndex = ushort (i);

@@ -40,7 +40,7 @@ class CDialHeap {
 		inline tPathNode* Route (uint i = 0) { return m_route.Buffer (i); }
 
 	private:
-		int Scan (short* buffer, int nStart, int nLength);
+		int Scan (int nStart, int nLength);
 };
 
 
