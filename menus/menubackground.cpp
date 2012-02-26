@@ -123,10 +123,10 @@ m_canvas [1] = NULL;
 m_saved [0] = NULL;
 m_saved [1] = NULL;
 m_bitmap = NULL;
-m_filename = NULL;
 m_bIgnoreCanv = false;
 m_bIgnoreBg = false;
 m_bSetup = false;
+m_bFullScreen = false;
 gameStates.app.bClearMessage = 0;
 }
 
@@ -159,8 +159,7 @@ Init ();
 
 CBitmap* CBackground::Load (char* filename, int width, int height)
 {
-m_filename = filename;
-if (!(m_filename && *m_filename))
+if (!(filename && *filename))
 	return (gameOpts->menus.nStyle && !backgroundManager.IsDefault (backgroundManager.Filename ()))
 			 ? backgroundManager.Background (0)
 			 : backgroundManager.Background (1); //->CreateChild (0, 0, width, height);
@@ -194,7 +193,7 @@ m_bTopMenu = (backgroundManager.Depth () == 0) || bTop;
 m_bMenuBox = !gameStates.app.bNostalgia; // && (gameOpts->menus.altBg.bHave > 0);
 if (!(m_bitmap = Load (filename, width, height)))
 	return false;
-m_filename = m_bitmap->Name ();
+m_bFullScreen = (filename != NULL) && (*filename != '\0');
 Setup (x, y, width, height);
 Draw (false);
 return true;
@@ -206,7 +205,7 @@ void CBackground::Draw (bool bDrawBox, bool bUpdate)
 {
 //paletteManager.SetEffect (0, 0, 0);
 if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameStates.app.bNostalgia))) {
-	if (m_filename) {
+	if (m_bFullScreen) {
 		CCanvas::Push ();
 		CCanvas::SetCurrent (m_canvas [0]);
 		m_bitmap->RenderStretched ();
@@ -214,7 +213,7 @@ if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameSta
 		CCanvas::Pop ();
 		}
 	}
-if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) || backgroundManager.IsDefault (m_filename))) {
+if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) || backgroundManager.IsDefault (GetFilename ()))) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (m_canvas [1]);
 	if (m_bMenuBox)

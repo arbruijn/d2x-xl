@@ -35,12 +35,12 @@ class CBackground {
 		CCanvas*	m_canvas [2];		// canvas (screen area) of a menu
 		CBitmap*	m_saved [2];		// copy of a screen area covered by a menu
 		CBitmap*	m_bitmap;			// complete background
-		char*		m_filename;
 		bool		m_bIgnoreCanv;
 		bool		m_bIgnoreBg;
 		bool		m_bTopMenu;
 		bool		m_bMenuBox;
 		bool		m_bSetup;
+		bool		m_bFullScreen;
 
 	public:
 		CBackground () { Init (); }
