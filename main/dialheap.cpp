@@ -4,6 +4,7 @@
 #include "dialheap.h"
 
 #define SPARSE_RESET 1
+#define FAST_SCAN 1
 
 //-----------------------------------------------------------------------------
 
@@ -127,9 +128,11 @@ for (; nLength; nLength--, bufP++)
 return -1;
 }
 
+//-----------------------------------------------------------------------------
+
 short CDialHeap::Pop (uint& nCost)
 {
-#if 1
+#if FAST_SCAN
 int i = Scan (m_index.Buffer (), m_nIndex, m_index.Length () - m_nIndex); // scan beginning at m_nIndex to the end of the buffer
 if (i < 0)
 	i = Scan (m_index.Buffer (), 0, m_nIndex); // wrap around and scan from the end of the buffer to m_nIndex
