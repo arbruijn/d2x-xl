@@ -122,7 +122,7 @@ m_canvas [0] = NULL;
 m_canvas [1] = NULL;
 m_saved [0] = NULL;
 m_saved [1] = NULL;
-m_background = NULL;
+m_bitmap = NULL;
 m_filename = NULL;
 m_bIgnoreCanv = false;
 m_bIgnoreBg = false;
@@ -134,8 +134,8 @@ gameStates.app.bClearMessage = 0;
 
 void CBackground::Destroy (void)
 {
-if (!backgroundManager.IsDefault (m_background))
-	delete m_background;
+if (!backgroundManager.IsDefault (m_bitmap))
+	delete m_bitmap;
 if (m_saved [0]) {
 	delete m_saved [0];
 	m_saved [0] = NULL;
@@ -164,9 +164,9 @@ if (!(m_filename && *m_filename))
 	return (gameOpts->menus.nStyle && !backgroundManager.IsDefault (backgroundManager.Filename ()))
 			 ? backgroundManager.Background (0)
 			 : backgroundManager.Background (1); //->CreateChild (0, 0, width, height);
-else if (backgroundManager.IsDefault (filename) || !(m_background = backgroundManager.LoadBackground (filename)))
+else if (backgroundManager.IsDefault (filename) || !(m_bitmap = backgroundManager.LoadBackground (filename)))
 	return backgroundManager.Background (0);
-return m_background;
+return m_bitmap;
 }
 
 //------------------------------------------------------------------------------
@@ -192,8 +192,9 @@ bool CBackground::Create (char* filename, int x, int y, int width, int height, b
 Destroy ();
 m_bTopMenu = (backgroundManager.Depth () == 0) || bTop;
 m_bMenuBox = !gameStates.app.bNostalgia; // && (gameOpts->menus.altBg.bHave > 0);
-if (!(m_background = Load (filename, width, height)))
+if (!(m_bitmap = Load (filename, width, height)))
 	return false;
+m_filename = m_bitmap->Name ();
 Setup (x, y, width, height);
 Draw (false);
 return true;
@@ -208,7 +209,7 @@ if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameSta
 	if (m_filename) {
 		CCanvas::Push ();
 		CCanvas::SetCurrent (m_canvas [0]);
-		m_background->RenderStretched ();
+		m_bitmap->RenderStretched ();
 		PrintVersionInfo ();
 		CCanvas::Pop ();
 		}
@@ -249,12 +250,12 @@ ogl.SetBlending (false);
 if (!backgroundManager.Shadow ()) {
 	CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () + LHX (10));
 	CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () + LHX (10));
-	m_background->RenderFixed (NULL, left, top, width, height); //, LHX (10), LHY (10));
+	m_bitmap->RenderFixed (NULL, left, top, width, height); //, LHX (10), LHY (10));
 	CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () - LHX (10));
 	CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () - LHX (10));
 	}
 else {
-	m_background->RenderFixed (NULL, left, top, width, height); //, 0, 0);
+	m_bitmap->RenderFixed (NULL, left, top, width, height); //, 0, 0);
 	gameStates.render.grAlpha = GrAlpha (2 * 7);
 	ogl.SetBlending (true);
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
@@ -296,7 +297,7 @@ void CBackground::Restore (void)
 {
 if (!gameStates.app.bGameRunning) {
 	CCanvas::SetCurrent (m_canvas [0]);
-	m_background->RenderStretched ();
+	m_bitmap->RenderStretched ();
 	}
 }
 
@@ -314,14 +315,14 @@ if (x1 < 0)
 if (y1 < 0)
 	y1 = 0;
 
-if (x2 >= m_background->Width ())
-	x2 = m_background->Width () - 1;
-if (y2 >= m_background->Height ())
-	y2 = m_background->Height () - 1;
+if (x2 >= m_bitmap->Width ())
+	x2 = m_bitmap->Width () - 1;
+if (y2 >= m_bitmap->Height ())
+	y2 = m_bitmap->Height () - 1;
 
 w = x2 - x1 + 1;
 h = y2 - y1 + 1;
-m_background->Render (CCanvas::Current (), dx, dy, w, h, x1, y1, w, h);
+m_bitmap->Render (CCanvas::Current (), dx, dy, w, h, x1, y1, w, h);
 }
 
 //------------------------------------------------------------------------------

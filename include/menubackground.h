@@ -34,7 +34,7 @@ class CBackground {
 	private:
 		CCanvas*	m_canvas [2];		// canvas (screen area) of a menu
 		CBitmap*	m_saved [2];		// copy of a screen area covered by a menu
-		CBitmap*	m_background;		// complete background
+		CBitmap*	m_bitmap;			// complete background
 		char*		m_filename;
 		bool		m_bIgnoreCanv;
 		bool		m_bIgnoreBg;
@@ -55,15 +55,15 @@ class CBackground {
 		void DrawBox (void);
 
 		inline CCanvas* Canvas (uint i = 0) { return m_canvas [i]; }
-		inline CBitmap* Bitmap (void) { return m_background; }
-		inline void SetBitmap (CBitmap* bmP) { m_background = bmP; }
+		inline CBitmap* Bitmap (void) { return m_bitmap; }
+		inline void SetBitmap (CBitmap* bmP) { m_bitmap = bmP; }
 		inline CBitmap* Background (void) { return m_saved [0]; }
 		inline CBitmap* Saved (int i) { return m_saved [i]; }
 		inline void GetExtent (int& x, int& y, int& w, int& h) { 
 			if (m_canvas [1])
 				m_canvas [1]->GetExtent (x, y, w, h); 
 			}
-		inline char* GetFilename (void) { return m_filename; }
+		inline char* GetFilename (void) { return m_bitmap ? m_bitmap->Name () : NULL; }
 
 	private:
 		CBitmap* Load (char* filename, int width, int height);
