@@ -192,7 +192,9 @@ if ((m_nListenerSeg != m_router.StartSeg ()) || (m_router.DestSeg () > -1)) { //
 fix pathDistance = m_router.Distance (nSoundSeg);
 if (pathDistance < 0)
 	return -1;
-if (!gameData.segs.SegVis (nListenerSeg, nSoundSeg)) {
+if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
+	distance += fix (distance * 0.6f * float (distance) / float (maxDistance));
+else {
 	short l = m_router.RouteLength (nSoundSeg);
 	if (l > 2) {
 		CSegment* segP = &SEGMENTS [nListenerSeg];
@@ -209,7 +211,6 @@ if (!gameData.segs.SegVis (nListenerSeg, nSoundSeg)) {
 		//++nRouteCount;
 		}
 	}
-distance += fix (distance * 0.6f * float (distance) / float (maxDistance));
 return (distance < maxDistance) ? distance : -1;
 }
 
