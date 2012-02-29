@@ -192,33 +192,24 @@ if ((m_nListenerSeg != m_router.StartSeg ()) || (m_router.DestSeg () > -1)) { //
 fix pathDistance = m_router.Distance (nSoundSeg);
 if (pathDistance < 0)
 	return -1;
-#if 1
-if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
-	return distance + fix (distance * 0.6f * float (distance) / float (maxDistance));
-//	return fix (distance); // * fCorrFactor / float (nRouteCount));
-#endif
-#if 0 //DBG
-short l = m_router.RouteLength (nSoundSeg);
-if (l > 2) {
-	CSegment* segP = &SEGMENTS [nListenerSeg];
-	short nChild = m_router.Route (1)->nNode;
-	pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
-	pathDistance += CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ());
-	segP = &SEGMENTS [nSoundSeg];
-	nChild = m_router.Route (l - 2)->nNode;
-	pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
-	pathDistance += CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ());
-#if DBG
-	if (pathDistance < 0)
-		pathDistance = 0;
-#endif
-	//fCorrFactor += float (pathDistance) / float (distance);
-	//++nRouteCount;
+if (!gameData.segs.SegVis (nListenerSeg, nSoundSeg)) {
+	short l = m_router.RouteLength (nSoundSeg);
+	if (l > 2) {
+		CSegment* segP = &SEGMENTS [nListenerSeg];
+		short nChild = m_router.Route (1)->nNode;
+		pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
+		pathDistance += CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ());
+		segP = &SEGMENTS [nSoundSeg];
+		nChild = m_router.Route (l - 2)->nNode;
+		pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
+		pathDistance += CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ());
+		if (pathDistance > 0)
+			distance = pathDistance;
+		//fCorrFactor += float (pathDistance) / float (distance);
+		//++nRouteCount;
+		}
 	}
-distance += fix (distance * (1.0f + (fCorrFactor - 1.0f) * (float (distance) / float (maxDistance))) / float (nRouteCount));
-#else
 distance += fix (distance * 0.6f * float (distance) / float (maxDistance));
-#endif
 return (distance < maxDistance) ? distance : -1;
 }
 
