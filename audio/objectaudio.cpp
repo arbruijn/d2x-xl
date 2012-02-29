@@ -133,6 +133,11 @@ return (nSound < 0) ? -1 : CAudio::UnXlatSound (nSound);
 }
 
 //------------------------------------------------------------------------------
+// distances will be scaled by a factor of 1.0 + 0.6 * distance / maxDistance
+// 1.6 is an empirically determined factor reflecting that sound cannot usually travel on a direct line to the listener
+// The fractional part is scaled with the relation of the distance to the possible max. distance
+// to reflect that on shorter distances sound may be able to travel along a more direct path than on longer distances
+// This method leads to a uniform, plausible effect audio experience during gameplay
 
 int CAudio::Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound)
 {
@@ -149,43 +154,72 @@ if (distance > maxDistance)
 	return -1;
 if (nListenerSeg == nSoundSeg)
 	return distance;
-#if 0
-if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
-	return distance;
-#endif
 if (!HaveRouter ()) {
 	int nSearchSegs = X2I (maxDistance / 10);
 	if (nSearchSegs < 3)
 		nSearchSegs = 3;
-	 return uniDacsRouter [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+	return uniDacsRouter [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 	}
 
 if (m_nListenerSeg != nListenerSeg) 
 	m_nListenerSeg = nListenerSeg;
 if ((m_nListenerSeg != m_router.StartSeg ()) || (m_router.DestSeg () > -1)) { // either we had a different start last time, or the last calculation was a 1:1 routing
 	m_router.PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, /*I2X (5 * 256 / 4)*/maxDistance, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
+#if 0 //DBG
+	for (int i = 0; i < gameData.segs.nSegments; i++) {
+		fix pathDistance = m_router.Distance (i);
+		if (pathDistance <= 0)
+			continue;
+		short l = m_router.RouteLength (nSoundSeg);
+		if (l < 3)
+			continue;
+		CSegment* segP = &SEGMENTS [nListenerSeg];
+		short nChild = m_router.Route (1)->nNode;
+		fix corrStart = CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ()) - segP->m_childDists [0][segP->ChildIndex (nChild)];
+		segP = &SEGMENTS [nSoundSeg];
+		nChild = m_router.Route (l - 2)->nNode;
+		fix corrEnd = CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ()) - segP->m_childDists [0][segP->ChildIndex (nChild)];
+		if (corrStart + corrEnd < pathDistance)
+		pathDistance += corrStart + corrEnd;
+		if (pathDistance <= 0)
+			continue;
+		fCorrFactor += float (pathDistance) / float (distance);
+		++nRouteCount;
+		}
+#endif
 	}
-
 
 fix pathDistance = m_router.Distance (nSoundSeg);
 if (pathDistance < 0)
 	return -1;
-
+#if 1
+if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
+	return distance + fix (distance * 0.6f * float (distance) / float (maxDistance));
+//	return fix (distance); // * fCorrFactor / float (nRouteCount));
+#endif
+#if 0 //DBG
 short l = m_router.RouteLength (nSoundSeg);
-if (l < 3)
-	return fix (distance * fCorrFactor / float (nRouteCount));
-
-CSegment* segP = &SEGMENTS [nListenerSeg];
-short nChild = m_router.Route (1)->nNode;
-pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
-pathDistance += CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ());
-segP = &SEGMENTS [nSoundSeg];
-nChild = m_router.Route (l - 2)->nNode;
-pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
-pathDistance += CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ());
-fCorrFactor += pathDistance / distance;
-++nRouteCount;
-return (pathDistance < maxDistance) ? pathDistance : -1;
+if (l > 2) {
+	CSegment* segP = &SEGMENTS [nListenerSeg];
+	short nChild = m_router.Route (1)->nNode;
+	pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
+	pathDistance += CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ());
+	segP = &SEGMENTS [nSoundSeg];
+	nChild = m_router.Route (l - 2)->nNode;
+	pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
+	pathDistance += CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ());
+#if DBG
+	if (pathDistance < 0)
+		pathDistance = 0;
+#endif
+	//fCorrFactor += float (pathDistance) / float (distance);
+	//++nRouteCount;
+	}
+distance += fix (distance * (1.0f + (fCorrFactor - 1.0f) * (float (distance) / float (maxDistance))) / float (nRouteCount));
+#else
+distance += fix (distance * 0.6f * float (distance) / float (maxDistance));
+#endif
+return (distance < maxDistance) ? distance : -1;
 }
 
 //------------------------------------------------------------------------------

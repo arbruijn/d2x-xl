@@ -1098,11 +1098,41 @@ void	SetAmbientSoundFlags (void);
 //6 -> 7  added flickering lights
 //7 -> 8  made version 8 to be not compatible with D2 1.0 & 1.1
 
-#if DBG
-char *Level_being_loaded=NULL;
-#endif
+// ----------------------------------------------------------------------------
 
-int no_oldLevel_file_error=0;
+class CVertSegRef {
+public:
+	int	nIndex;
+	short	nSegments;
+};
+
+void CreateVertexSegmentList (void)
+{
+CArray<short> segCount;
+segCount.Create (gameData.segs.nVertices);
+segCount.Clear ();
+for (int i = 0; i < gameData.segs.nSegments; i++) {
+	for (int j = 0; j < 8; j++)
+		segCount [SEGMENTS [i].m_verts [j]]++;
+	}
+
+CArray<CVertSegRef> vertSegIndex;
+vertSegIndex.Create (gameData.segs.nVertices);
+vertSegIndex.Clear ();
+CArray<short> vertSegs;
+vertSegs.Create (8 * gameData.segs.nSegments);
+vertSegs.Clear ();
+for (int h = 0, i = 0; i < gameData.segs.nSegments; i++) {
+	vertSegIndex [i].nIndex = h;
+	h += segCount [i];
+	}
+for (int i = 0; i < gameData.segs.nSegments; i++) {
+	for (int j = 0; j < 8; j++) {
+		CVertSegRef* refP = &vertSegIndex [SEGMENTS [i].m_verts [j]];
+		vertSegs [refP->nIndex + refP->nSegments++] = i;
+		}
+	}
+}
 
 // ----------------------------------------------------------------------------
 //loads a level (.LVL) file from disk
@@ -1121,10 +1151,6 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	gameData.multiplayer.maxPowerupsAllowed.Clear (0);
 	gameData.multiplayer.powerupsInMine.Clear (0);
 	}
-#if DBG
-Level_being_loaded = pszFilename;
-#endif
-
 gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
 
 for (;;) {
@@ -1218,6 +1244,7 @@ for (;;) {
 		}
 	cf.Close ();
 	networkData.nSegmentCheckSum = CalcSegmentCheckSum ();
+	CreateVertexSegmentList ();
 	/*---*/PrintLog (1, "building geometry mesh\n");
 	if (meshBuilder.Build (nLevel)) {
 		PrintLog (-1);
@@ -1242,54 +1269,6 @@ SetAmbientSoundFlags ();
 PrintLog (-1);
 return 0;
 }
-
-// ----------------------------------------------------------------------------
-#if DBG
-void dump_mine_info(void)
-{
-	int	nSegment, nSide;
-	fix	min_u, max_u, min_v, max_v, min_l, max_l, max_sl;
-
-	min_u = I2X (1000);
-	min_v = min_u;
-	min_l = min_u;
-
-	max_u = -min_u;
-	max_v = max_u;
-	max_l = max_u;
-
-	max_sl = 0;
-
-	for (nSegment=0; nSegment<=gameData.segs.nLastSegment; nSegment++) {
-		for (nSide=0; nSide<MAX_SIDES_PER_SEGMENT; nSide++) {
-			int	vertnum;
-			CSide	*sideP = &SEGMENTS [nSegment].m_sides [nSide];
-
-			if (SEGMENTS [nSegment].m_xAvgSegLight > max_sl)
-				max_sl = SEGMENTS [nSegment].m_xAvgSegLight;
-
-			for (vertnum=0; vertnum < 4; vertnum++) {
-				if (sideP->m_uvls [vertnum].u < min_u)
-					min_u = sideP->m_uvls [vertnum].u;
-				else if (sideP->m_uvls [vertnum].u > max_u)
-					max_u = sideP->m_uvls [vertnum].u;
-
-				if (sideP->m_uvls [vertnum].v < min_v)
-					min_v = sideP->m_uvls [vertnum].v;
-				else if (sideP->m_uvls [vertnum].v > max_v)
-					max_v = sideP->m_uvls [vertnum].v;
-
-				if (sideP->m_uvls [vertnum].l < min_l)
-					min_l = sideP->m_uvls [vertnum].l;
-				else if (sideP->m_uvls [vertnum].l > max_l)
-					max_l = sideP->m_uvls [vertnum].l;
-			}
-
-		}
-	}
-}
-
-#endif
 
 // ----------------------------------------------------------------------------
 //eof

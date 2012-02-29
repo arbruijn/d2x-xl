@@ -1836,6 +1836,7 @@ class CSegmentData {
 		CArray<ubyte>				bVertVis;
 		CArray<ushort>				segDist;
 		CArray<ubyte>				segDistScale;
+		CArray<short>				vertexSegments; // all segments using this vertex
 		int							nVertices;
 		int							nFaceVerts;
 		int							nLastVertex;
