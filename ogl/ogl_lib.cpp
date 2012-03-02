@@ -865,10 +865,12 @@ else if (m_data.bUseTextures [m_data.nTMU [0]] && !m_data.clientStates [m_data.n
 #endif
 else
 #endif
-if (m_data.clientBuffers [/*m_data.nTMU [0]*/0][0].buffer)
-	glDrawArrays (mode, first, count);
-else
+#if DBG_OGL
+if (!m_data.clientBuffers [/*m_data.nTMU [0]*/0][0].buffer)
 	PrintLog (0, "glDrawArrays: client data not enabled\n");
+else
+#endif
+	glDrawArrays (mode, first, count);
 }
 
 //------------------------------------------------------------------------------
