@@ -344,6 +344,8 @@ for (int nDir = 0; nDir < 2; nDir++) {
 	nSuccSeg = m_scanInfo.m_nLinkSeg;
 	for (;;) {
 		nPredSeg = heap.m_path [nSuccSeg].m_nPred;
+		if (nPredSeg < 0)
+			break;
 		if (nPredSeg == heap.m_nStartSeg) {
 			xDist += CFixVector::Dist (nDir ? m_p1 : m_p0, SEGMENTS [nSuccSeg].Center ());
 			break;
@@ -355,6 +357,8 @@ for (int nDir = 0; nDir < 2; nDir++) {
 		nSuccSeg = nPredSeg;
 		}
 	}
+if (xDist == 0)
+	return -0x7FFFFFFF;
 if (m_cacheType >= 0) 
 	m_cache [m_cacheType].Add (m_heap [0].m_nStartSeg, m_heap [0].m_nDestSeg, nLength + 3, xDist);
 return xDist;
