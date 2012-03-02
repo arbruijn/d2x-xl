@@ -323,14 +323,12 @@ ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
 OglTexCoordPointer (3, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].texCoord);
 OglColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].color);
 OglVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].vertex);
-ogl.Lock ();
 try {
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
 	}
 catch (...) {
 	ArrayError ("Particle buffer overflow");
 	}
-ogl.Unlock ();
 ogl.SetFaceCulling (true);
 #if !TRANSFORM_PARTICLE_VERTICES
 ogl.ResetTransform (1);
