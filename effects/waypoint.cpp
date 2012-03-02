@@ -279,7 +279,7 @@ if (gameStates.app.tick40fps.bTick) {
 	int i = 0;
 
 	FORALL_EFFECT_OBJS (objP, i) {
-		if ((objP->Id () == LIGHTNING_ID) && (*objP->WayPoint () >= 0))
+		if ((objP->Id () == LIGHTNING_ID) && objP->WayPoint () && (*objP->WayPoint () >= 0))
 #if DBG
 			if (objP->rType.lightningInfo.bEnabled)
 #endif
