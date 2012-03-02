@@ -242,6 +242,7 @@ if (f)
 PROF_START
 #if 1
 ogl.ResetClientStates (1);
+ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
 #else
 if (!Init ()) {
 	Reset ();
