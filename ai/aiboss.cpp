@@ -276,7 +276,7 @@ if (gameData.bosses [i].m_nTeleportSegs <= 0)
 if (gameData.bosses [i].m_nDyingStartTime > 0)
 	return;
 do {
-	nRandIndex = (RandShort () * gameData.bosses [i].m_nTeleportSegs) >> 15;
+	nRandIndex = RandShort () % gameData.bosses [i].m_nTeleportSegs;
 	nRandSeg = gameData.bosses [i].m_teleportSegs [nRandIndex];
 	Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segs.nLastSegment));
 	if (IsMultiGame)

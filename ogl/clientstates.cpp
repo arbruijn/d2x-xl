@@ -153,6 +153,10 @@ ClearError (0);
 
 int COGL::EnableClientState (GLuint nState, int nTMU)
 {
+#if DBG_OGL
+if (Locked ())
+	return -1;
+#endif
 if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
 #if TRACK_STATES
@@ -180,6 +184,10 @@ return glGetError () == 0;
 
 int COGL::DisableClientState (GLuint nState, int nTMU)
 {
+#if DBG_OGL
+if (Locked ())
+	return -1;
+#endif
 if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
 #if TRACK_STATES

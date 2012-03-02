@@ -166,7 +166,7 @@ const char *particleFS [4] = {
 	"if (bSuspended != 0)\r\n" \
 	"   gl_FragColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"else {\r\n" \
-	"   int nType = int (floor (gl_TexCoord [0].z + 0.5));\r\n" \
+	"   int nType = int (clamp (floor (gl_TexCoord [0].z + 0.5), 0.0, 2.0));\r\n" \
 	"   float dm = dMax [nType];\r\n" \
 	"   float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \

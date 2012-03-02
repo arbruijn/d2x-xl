@@ -580,9 +580,9 @@ if ((objP->info.xShield < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DES
 	nParts = 0;
 else {
 	nSpeed = WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel);
-	nLife = float (gameOpts->render.particles.nLife [3]) * float (WI_speed (CONCUSSION_ID, gameStates.app.nDifficultyLevel)) / float (nSpeed);
+	nLife = float (gameOpts->render.particles.nLife [3]) * sqrt (float (nSpeed) / float (WI_speed (CONCUSSION_ID, gameStates.app.nDifficultyLevel)));
 #if 1
-	nParts = MSL_MAX_PARTS; //int (MSL_MAX_PARTS * X2F (nSpeed) / (15.0f * (4 - nLife)));
+	nParts = int (MSL_MAX_PARTS * nLife); //int (MSL_MAX_PARTS * X2F (nSpeed) / (15.0f * (4 - nLife)));
 	if ((objP->info.nId == EARTHSHAKER_MEGA_ID) || (objP->info.nId == ROBOT_SHAKER_MEGA_ID))
 		nParts /= 2;
 

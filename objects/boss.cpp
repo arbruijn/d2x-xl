@@ -94,18 +94,17 @@ xBossSizeSave = bossObjP->info.xSize;
 nBossHomeSeg = bossObjP->info.nSegment;
 vBossHomePos = bossObjP->info.position.vPos;
 nGroup = SEGMENTS [nBossHomeSeg].m_group;
-head =
-tail = 0;
-if (!queue.Create (nQueueSize))
+if (!queue.Create (gameData.segs.nSegments))
 	return false;
-queue [head++] = nBossHomeSeg;
+head = 1;
+tail = 0;
+queue [0] = nBossHomeSeg;
 bossSegs [nSegments++] = nBossHomeSeg;
 nMaxSegments = min (MAX_BOSS_TELEPORT_SEGS, LEVEL_SEGMENTS);
 gameData.render.mine.bVisited.Clear ();
 
 while (tail != head) {
 	segP = SEGMENTS + queue [tail++];
-	tail &= QUEUE_SIZE-1;
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		childSeg = segP->m_children [nSide];
 		if (!bOneWallHack) {
@@ -122,25 +121,16 @@ while (tail != head) {
 			continue;
 		if (nGroup != SEGMENTS [childSeg].m_group)
 			continue;
-		queue [head++] = childSeg;
 		gameData.render.mine.bVisited [childSeg] = 1;
-		head &= QUEUE_SIZE - 1;
-		if (head > tail) {
-			if (head == tail + nQueueSize - 1) {
-				if (!queue.Resize (2 * nQueueSize))
-					goto done;	
-				nQueueSize *= 2;
-				}
-			}
-		else if (head + QUEUE_SIZE == tail + QUEUE_SIZE - 1) {
-			if (!queue.Resize (2 * nQueueSize))
-				goto done;	
-			nQueueSize *= 2;
-			}
 		if (bSizeCheck && !BossFitsInSeg (bossObjP, childSeg))
 			continue;
+		queue [head++] = childSeg;
 		if (nSegments >= nMaxSegments - 1)
 			goto done;
+#if DBG
+		if (bSizeCheck && (childSeg == nDbgSeg))
+			nDbgSeg = nDbgSeg;
+#endif
 		bossSegs [nSegments++] = childSeg;
 		}
 	}
