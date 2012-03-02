@@ -240,11 +240,14 @@ if (f)
 #endif
 #if ENABLE_FLUSH
 PROF_START
+#if 1
+ogl.ResetClientStates (1);
+#else
 if (!Init ()) {
 	Reset ();
 	return false;
 	}
-ogl.Lock ();
+#endif
 
 #if LAZY_RENDER_SETUP
 	Setup ();
@@ -316,9 +319,11 @@ glNormal3f (0, 0, -1);
 ogl.SetupTransform (1);
 #endif
 ogl.SetFaceCulling (false);
-//OglTexCoordPointer (3, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].texCoord);
-//OglColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].color);
-//OglVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].vertex);
+ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
+OglTexCoordPointer (3, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].texCoord);
+OglColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].color);
+OglVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].vertex);
+ogl.Lock ();
 try {
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
 	}

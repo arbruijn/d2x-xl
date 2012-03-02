@@ -72,7 +72,7 @@ void COGL::VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid*
 {
 if (Locked ())
 	return;
-if (m_data.clientBuffers [m_data.nTMU [0]][0].buffer)
+if ((m_data.clientBuffers [m_data.nTMU [0]][0].buffer) && (m_data.clientBuffers [m_data.nTMU [0]][0].buffer != pointer))
 	return;
 m_data.clientBuffers [m_data.nTMU [0]][0].buffer = pointer;
 m_data.clientBuffers [m_data.nTMU [0]][0].pszFile = pszFile;
@@ -86,7 +86,7 @@ void COGL::NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, co
 {
 if (Locked ())
 	return;
-if (m_data.clientBuffers [m_data.nTMU [0]][1].buffer)
+if ((m_data.clientBuffers [m_data.nTMU [0]][1].buffer) && (m_data.clientBuffers [m_data.nTMU [0]][0].buffer != pointer))
 	return;
 m_data.clientBuffers [m_data.nTMU [0]][1].buffer = pointer;
 m_data.clientBuffers [m_data.nTMU [0]][1].pszFile = pszFile;
@@ -100,7 +100,7 @@ void COGL::ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* 
 {
 if (Locked ())
 	return;
-if (m_data.clientBuffers [m_data.nTMU [0]][2].buffer)
+if ((m_data.clientBuffers [m_data.nTMU [0]][2].buffer) && (m_data.clientBuffers [m_data.nTMU [0]][0].buffer != pointer))
 	return;
 m_data.clientBuffers [m_data.nTMU [0]][2].buffer = pointer;
 m_data.clientBuffers [m_data.nTMU [0]][2].pszFile = pszFile;
@@ -114,7 +114,7 @@ void COGL::TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoi
 {
 if (Locked ())
 	return;
-if (m_data.clientBuffers [m_data.nTMU [0]][3].buffer)
+if ((m_data.clientBuffers [m_data.nTMU [0]][3].buffer) && (m_data.clientBuffers [m_data.nTMU [0]][0].buffer != pointer))
 	return;
 m_data.clientBuffers [m_data.nTMU [0]][4].buffer = pointer;
 m_data.clientBuffers [m_data.nTMU [0]][4].pszFile = pszFile;
@@ -163,7 +163,7 @@ glEnableClientState (nState);
 #if DBG_OGL
 if (Locked ())
 	nDbgSeg = nDbgSeg;
-//memset (&m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY]));
+memset (&m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY]));
 #endif
 GLenum nError = glGetError ();
 if (!nError) {
