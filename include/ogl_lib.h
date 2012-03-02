@@ -651,6 +651,16 @@ class COGL {
 		void DeleteEnhanced3DShader (void);
 		void InitShadowMapShader (void);
 		void DeleteShadowMapShader (void);
+
+#if DBG_OGL
+	private:
+		int m_bLocked;
+
+	public:
+		inline int Lock (void) { return m_bLocked ? 0 : ++m_bLocked; }
+		inline int Unlock (void) { return m_bLocked ? --m_bLocked : 0; }
+		inline bool Locked (void) { return m_bLocked != 0; }
+#endif
 };
 
 extern COGL ogl;

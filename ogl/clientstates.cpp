@@ -70,6 +70,10 @@
 
 void COGL::VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
 {
+if (Locked ())
+	return;
+if (m_data.clientBuffers [m_data.nTMU [0]][0].buffer)
+	return;
 m_data.clientBuffers [m_data.nTMU [0]][0].buffer = pointer;
 m_data.clientBuffers [m_data.nTMU [0]][0].pszFile = pszFile;
 m_data.clientBuffers [m_data.nTMU [0]][0].nLine = nLine;
@@ -80,6 +84,10 @@ glVertexPointer (size, type, stride, pointer);
 
 void COGL::NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
 {
+if (Locked ())
+	return;
+if (m_data.clientBuffers [m_data.nTMU [0]][1].buffer)
+	return;
 m_data.clientBuffers [m_data.nTMU [0]][1].buffer = pointer;
 m_data.clientBuffers [m_data.nTMU [0]][1].pszFile = pszFile;
 m_data.clientBuffers [m_data.nTMU [0]][1].nLine = nLine;
@@ -90,6 +98,10 @@ glNormalPointer (type, stride, pointer);
 
 void COGL::ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
 {
+if (Locked ())
+	return;
+if (m_data.clientBuffers [m_data.nTMU [0]][2].buffer)
+	return;
 m_data.clientBuffers [m_data.nTMU [0]][2].buffer = pointer;
 m_data.clientBuffers [m_data.nTMU [0]][2].pszFile = pszFile;
 m_data.clientBuffers [m_data.nTMU [0]][2].nLine = nLine;
@@ -100,6 +112,10 @@ glColorPointer (size, type, stride, pointer);
 
 void COGL::TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
 {
+if (Locked ())
+	return;
+if (m_data.clientBuffers [m_data.nTMU [0]][3].buffer)
+	return;
 m_data.clientBuffers [m_data.nTMU [0]][4].buffer = pointer;
 m_data.clientBuffers [m_data.nTMU [0]][4].pszFile = pszFile;
 m_data.clientBuffers [m_data.nTMU [0]][4].nLine = nLine;
@@ -145,7 +161,9 @@ if (m_data.clientStates [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY])
 #endif
 glEnableClientState (nState);
 #if DBG_OGL
-memset (&m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY]));
+if (Locked ())
+	nDbgSeg = nDbgSeg;
+//memset (&m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY]));
 #endif
 GLenum nError = glGetError ();
 if (!nError) {
@@ -174,7 +192,7 @@ if (!m_data.clientStates [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY])
 #endif
 	}
 #if DBG_OGL
-//memset (&m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY]));
+memset (&m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY]));
 #endif
 return glGetError () == 0;
 }

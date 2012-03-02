@@ -244,6 +244,7 @@ if (!Init ()) {
 	Reset ();
 	return false;
 	}
+ogl.Lock ();
 
 #if LAZY_RENDER_SETUP
 	Setup ();
@@ -274,12 +275,12 @@ if (ogl.m_features.bShaders) {
 				particleImageManager.LoadMultipleTextures (GL_TEXTURE1); // texture arrays don't seem to like being bound to another than GL_TEXTURE0 though - this doesn't work
 				}
 			else {
-				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
-				ParticleImageInfo (SMOKE_PARTICLES).bmP->Bind (0);
-				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
-				ParticleImageInfo (SPARK_PARTICLES).bmP->Bind (0);
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE2);
 				ParticleImageInfo (BUBBLE_PARTICLES).bmP->Bind (0);
+				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
+				ParticleImageInfo (SPARK_PARTICLES).bmP->Bind (0);
+				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
+				ParticleImageInfo (SMOKE_PARTICLES).bmP->Bind (0);
 				}	
 			}
 		}
@@ -315,12 +316,16 @@ glNormal3f (0, 0, -1);
 ogl.SetupTransform (1);
 #endif
 ogl.SetFaceCulling (false);
+//OglTexCoordPointer (3, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].texCoord);
+//OglColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].color);
+//OglVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &m_vertices [0].vertex);
 try {
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
 	}
 catch (...) {
 	ArrayError ("Particle buffer overflow");
 	}
+ogl.Unlock ();
 ogl.SetFaceCulling (true);
 #if !TRANSFORM_PARTICLE_VERTICES
 ogl.ResetTransform (1);

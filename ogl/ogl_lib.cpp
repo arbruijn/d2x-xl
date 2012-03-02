@@ -351,6 +351,9 @@ CLEAR (lightPos);
 bLightmaps = 0;
 nHeadlights = 0;
 drawBufferP = &drawBuffers [0];
+#if DBG_OGL
+memset (clientBuffers, sizeof (clientBuffers), 0);
+#endif
 };
 
 //------------------------------------------------------------------------------
@@ -363,6 +366,9 @@ void COGL::Initialize (void)
 {
 m_features.bPerPixelLighting = 2;
 m_features.bRenderToTexture = 1;
+#if DBG_OGL
+m_bLocked = 0;
+#endif
 //m_states.Initialize ();
 //m_data.Initialize ();
 //if (!semaphore)
@@ -859,7 +865,10 @@ else if (m_data.bUseTextures [m_data.nTMU [0]] && !m_data.clientStates [m_data.n
 #endif
 else
 #endif
+if (m_data.clientBuffers [/*m_data.nTMU [0]*/0][0].buffer)
 	glDrawArrays (mode, first, count);
+else
+	PrintLog (0, "glDrawArrays: client data not enabled\n");
 }
 
 //------------------------------------------------------------------------------
