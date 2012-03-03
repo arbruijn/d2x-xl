@@ -61,14 +61,14 @@ d2x_LDADD = \
 
 if MINGW32
 if USE_NETWORK
-d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm -lwsock32 -lcurl -lGLEW -lXm -lXt -lX11 -lstdc++
+d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm -lwsock32
 else
-d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm -lcurl -lGLEW -lXm -lXt -lX11
+d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm
 endif
 else
-d2x_sdl_LDADD = ${d2x_LDADD} -lm -lcurl -lGLEW -lXm -lXt -lX11
+d2x_sdl_LDADD = ${d2x_LDADD} -lm
 endif
-d2x_xl_LDADD = ${d2x_sdl_LDADD} ${OGL_LIBS}
+d2x_xl_LDADD = ${d2x_sdl_LDADD} -lcurl -lGLEW -lXm -lXt -lX11 -lstdc++ ${OGL_LIBS}
 
 dist-hook:
 	rm -rf `find $(distdir) -name CVS`
