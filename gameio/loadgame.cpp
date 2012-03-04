@@ -2036,7 +2036,7 @@ for (i = 0; i < -missionManager.nLastSecretLevel; i++)
 		missionManager.SetNextLevel (-i - 1);
 		break;
 		}
-	else if (missionManager.secretLevelTable [i] > missionManager.nCurrentLevel) {	//	Allows multiple exits in same group.
+	else if (i && (missionManager.secretLevelTable [i] > missionManager.nCurrentLevel)) {	//	Allows multiple exits in same group.
 		missionManager.SetNextLevel (-i);
 		break;
 		}

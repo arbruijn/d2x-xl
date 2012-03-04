@@ -431,6 +431,7 @@ if (gameStates.render.bShowFrameRate) {
 		y = 7;
 	else
 		y = 6;
+	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 	nIdFrameRate = GrPrintF (&nIdFrameRate,
 									 CCanvas::Current ()->Width () - (x * GAME_FONT->Width ()),

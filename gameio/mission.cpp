@@ -721,6 +721,7 @@ int CMissionManager::Parse (CFile& cf)
 PrintLog (1, "parsing mission file\n");
 nLastLevel = 0;
 nLastSecretLevel = 0;
+memset (secretLevelTable, 0, sizeof (secretLevelTable));
 *szBriefingFilename [0] = '\0';
 *szBriefingFilename [1] = '\0';
 while (MsnGetS (buf, 80, cf)) {
@@ -736,7 +737,7 @@ while (MsnGetS (buf, 80, cf)) {
 		}
 	else if (MsnIsTok (buf, "d2x-name")) {
 		if (gameStates.app.bNostalgia > 2) {
-			PrintLog (-1);
+			PrintLog (-1, "trying to load a D2X-XL level in nostalgia mode\n");
 			return 0;
 			}
 		nEnhancedMission = 3;
@@ -785,6 +786,7 @@ while (MsnGetS (buf, 80, cf)) {
 				strcpy (szLevelNames [i], buf);
 				nLastLevel++;
 				}
+			PrintLog (0, "found %d regular levels\n", nLastLevel);
 			}
 		}
 	else if (MsnIsTok (buf,"num_secrets")) {
@@ -792,26 +794,33 @@ while (MsnGetS (buf, 80, cf)) {
 		if ((v = MsnGetValue (buf))) {
 			nSecretLevels = atoi (v);
 			Assert(nSecretLevels <= MAX_SECRET_LEVELS_PER_MISSION);
+			int nLinks = 0;
 			for (i = 0; (i < nSecretLevels) && MsnGetS (buf, 80, cf); i++) {
 				PrintLog (0, "'%s'\n", buf);
 				MsnTrimComment (buf);
-				if (!(t = strchr (buf, ','))) {
+				for (;;) {
+					if (!(t = strrchr (buf, ',')))
+						break;
+					nLinks++;
+					*t++ = 0;
+					int j = atoi (t);
+					if ((j < 1) || (j > nLastLevel)) {
+						PrintLog (-1, "mission file: invalid secret level base level number '%s'\n", t);
+						return 0;
+						}
+					if (!secretLevelTable [i] || (secretLevelTable [i] > j))
+						secretLevelTable [i] = j;
+					} 
+				if (!nLinks) {
 					PrintLog (-1, "mission file: secret level lacks link to base level\n");
 					return 0;
 					}
-				*t++ = 0;
 				MsnAddStrTerm (buf);
 				if (strlen (buf) > 12) {
 					PrintLog (-1, "mission file: invalid level name\n");
 					return 0;
 					}
 				strcpy (szSecretLevelNames [i], buf);
-				secretLevelTable [i] = atoi (t);
-				if ((secretLevelTable [i] < 1) || 
-					 (secretLevelTable [i] > nLastLevel)) {
-					PrintLog (-1, "mission file: invalid secret level base level number\n");
-					return 0;
-					}
 				nLastSecretLevel--;
 				}
 			}

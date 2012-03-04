@@ -97,6 +97,9 @@ PrintLog (-1);
 
 grsString *CreatePoolString (const char *s, int *idP)
 {
+if (!fontManager.Current ())
+	return NULL;
+
 	grsString*	ps;
 	int			l, w, h, aw;
 

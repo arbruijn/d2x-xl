@@ -277,8 +277,6 @@ gameFileInfo.fileinfo_sizeof = cf.ReadInt ();
 cf.Read (gameFileInfo.mine_filename, sizeof (char), 15);
 gameFileInfo.level = cf.ReadInt ();
 gameFileInfo.player.offset = cf.ReadInt ();				// Player info
-#if 1
-
 gameFileInfo.player.size = cf.ReadInt ();
 gameFileInfo.objects.Read (cf);
 gameFileInfo.walls.Read (cf);
@@ -293,46 +291,6 @@ if (gameTopFileInfo.fileinfoVersion >= 29) {
 	}
 if (gameData.segs.nLevelVersion >= 17)
 	gameFileInfo.equipGen.Read (cf);
-
-#else
-
-gameFileInfo.objects.offset = cf.ReadInt ();				// Object info
-gameFileInfo.objects.count = cf.ReadInt ();    
-gameFileInfo.objects.size = cf.ReadInt ();  
-gameFileInfo.walls.offset = cf.ReadInt ();
-gameFileInfo.walls.count = cf.ReadInt ();
-gameFileInfo.walls.size = cf.ReadInt ();
-gameFileInfo.doors.offset = cf.ReadInt ();
-gameFileInfo.doors.count = cf.ReadInt ();
-gameFileInfo.doors.size = cf.ReadInt ();
-gameFileInfo.triggers.offset = cf.ReadInt ();
-gameFileInfo.triggers.count = cf.ReadInt ();
-gameFileInfo.triggers.size = cf.ReadInt ();
-gameFileInfo.links.offset = cf.ReadInt ();
-gameFileInfo.links.count = cf.ReadInt ();
-gameFileInfo.links.size = cf.ReadInt ();
-gameFileInfo.control.offset = cf.ReadInt ();
-gameFileInfo.control.count = cf.ReadInt ();
-gameFileInfo.control.size = cf.ReadInt ();
-gameFileInfo.botGen.offset = cf.ReadInt ();
-gameFileInfo.botGen.count = cf.ReadInt ();
-gameFileInfo.botGen.size = cf.ReadInt ();
-if (gameTopFileInfo.fileinfoVersion >= 29) {
-	gameFileInfo.lightDeltaIndices.offset = cf.ReadInt ();
-	gameFileInfo.lightDeltaIndices.count = cf.ReadInt ();
-	gameFileInfo.lightDeltaIndices.size = cf.ReadInt ();
-
-	gameFileInfo.lightDeltas.offset = cf.ReadInt ();
-	gameFileInfo.lightDeltas.count = cf.ReadInt ();
-	gameFileInfo.lightDeltas.size = cf.ReadInt ();
-	}
-if (gameData.segs.nLevelVersion >= 17) {
-	gameFileInfo.equipGen.offset = cf.ReadInt ();
-	gameFileInfo.equipGen.count = cf.ReadInt ();
-	gameFileInfo.equipGen.size = cf.ReadInt ();
-	}
-
-#endif
 return 0;
 }
 

@@ -568,8 +568,8 @@ void DoMissileSmoke (CObject *objP)
 {
 #if MISSILE_SMOKE
 	int				nParts, nSpeed, nObject, nSmoke;
-	float				nSizeScale = 1.5f + float (gameOpts->render.particles.nQuality) / 2.0f, 
-						nLifeScale, nLife;
+	float				nScale = 1.5f + float (gameOpts->render.particles.nQuality) / 2.0f, 
+						nLife;
 
 nObject = objP->Index ();
 if (!(SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
@@ -581,27 +581,20 @@ if ((objP->info.xShield < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DES
 	nParts = 0;
 else {
 	nSpeed = WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel);
-	nLifeScale = sqrt (float (nSpeed) / float (WI_speed (CONCUSSION_ID, gameStates.app.nDifficultyLevel)));
-	nLife = float (gameOpts->render.particles.nLife [3]) * nLifeScale;
-#if 1
+	nLife = float (gameOpts->render.particles.nLife [3]) * sqrt (float (nSpeed) / float (WI_speed (CONCUSSION_ID, gameStates.app.nDifficultyLevel)));
 	nParts = int (MSL_MAX_PARTS /** nLife*/); //int (MSL_MAX_PARTS * X2F (nSpeed) / (15.0f * (4 - nLife)));
+#if 0
 	if ((objP->info.nId == EARTHSHAKER_MEGA_ID) || (objP->info.nId == ROBOT_SHAKER_MEGA_ID))
 		nParts /= 2;
-
-#else
-	nParts = (objP->info.nId == EARTHSHAKER_ID) ? 1500 :
-				(objP->info.nId == MEGAMSL_ID) ? 1400 :
-				(objP->info.nId == SMARTMSL_ID) ? 1300 :
-				1200;
 #endif
 	}
 if (nParts) {
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		if (!gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [3]);
-			nSizeScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nSizeScale, 1);
+			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nScale, 1);
 			}
-		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, int (nParts * nLife * nLife), nSizeScale,
+		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, int (nParts * nLife * nLife), nScale,
 													/*gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3], 1,*/ 
 													int (nLife * MSL_PART_LIFE * 0.5), MSL_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);
 		if (nSmoke < 0)
