@@ -503,6 +503,7 @@ if (dist < xSphereRad) {
 	float r = X2F (xSphereRad);
 	v *= F2X (sqrt (r * r - d * d));
 	intersection += v;
+	dist = xSphereRad;
 	}
 return dist;
 
