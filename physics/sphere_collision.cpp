@@ -490,24 +490,43 @@ return 1;		//found refP
 //else returns 0
 int CheckVectorSphereCollision (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *vSpherePos, fix xSphereRad)
 {
+#if 1
+FindPointLineIntersection (intersection, *p0, *p1, *vSpherePos, 0);
+fix dist = CFixVector::Dist (intersection, *vSpherePos);
+if ((xSphereRad > 0) || (dist > xSphereRad))
+	return 0;
+if (dist < xSphereRad) {
+	CFixVector v = *p0;
+	v -= intersection;
+	CFixVector::Normalize (v);
+	float d = X2F (dist);
+	float r = X2F (xSphereRad);
+	v *= F2X (sqrt (r * r - d * d));
+	intersection += v;
+	}
+return dist;
+
+#else
 	CFixVector	d, dn, w, vClosestPoint;
-	fix			mag_d, dist, wDist, intDist;
+	fix			mag, dist, wDist, intDist;
 
 //this routine could be optimized if it's taking too much time!
 
 d = *p1 - *p0;
 w = *vSpherePos - *p0;
 dn = d; 
-mag_d = CFixVector::Normalize (dn);
-if (mag_d == 0) {
+vecLen = CFixVector::Mag (w);
+vecLen = CFixVector::Normalize (dn);
+if (vecLen == 0) {
 	intDist = w.Mag ();
 	intersection = *p0;
 	return ((xSphereRad < 0) || (intDist < xSphereRad)) ? intDist : 0;
 	}
+wDist = CFixVector::Dot (d, w);
 wDist = CFixVector::Dot (dn, w);
 if (wDist < 0)
 	return 0;	//moving away from CObject
-if (wDist > mag_d + xSphereRad)
+if (wDist > vecLen + xSphereRad)
 	return 0;	//cannot hit
 vClosestPoint = *p0 + dn * wDist;
 dist = CFixVector::Dist (vClosestPoint, *vSpherePos);
@@ -516,7 +535,7 @@ if  (dist < xSphereRad) {
 	fix radius2 = FixMul (xSphereRad, xSphereRad);
 	fix nShorten = FixSqrt (radius2 - dist2);
 	intDist = wDist - nShorten;
-	if ((intDist > mag_d) || (intDist < 0)) {
+	if ((intDist > vecLen) || (intDist < 0)) {
 		//paste one or the other end of vector, which means we're inside
 		intersection = *p0;		//don't move at all
 		return 1;
@@ -524,6 +543,7 @@ if  (dist < xSphereRad) {
 	intersection = *p0 + dn * intDist;         //calc intersection refP
 	return intDist;
 	}
+#endif
 return 0;
 }
 
@@ -723,7 +743,7 @@ restart:
 			if ((hitQuery.flags & FQ_ANY_OBJECT) ? (nOtherType != OBJ_ROBOT) : (nOtherType == OBJ_ROBOT))
 				continue;
 			if (ROBOTINFO (thisObjP->info.nId).attackType)
-				nFudgedRad = (hitQuery.radP1 * 3) / 4;
+				nFudgedRad = 3 * hitQuery.radP1 / 4;
 			}
 		//if obj is CPlayerData, and bumping into other CPlayerData or a weapon of another coop CPlayerData, reduce radius
 		if (nThisType == OBJ_PLAYER) {
@@ -742,6 +762,9 @@ restart:
 #endif
 		fix d = CheckVectorObjectCollision (curHit, hitQuery.p0, hitQuery.p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
 		if (d && (d < dMin)) {
+#if DBG
+			CheckVectorObjectCollision (curHit, hitQuery.p0, hitQuery.p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
+#endif
 			dMin = d;
 			hitData = curHit;
 			hitData.nType = HIT_OBJECT;

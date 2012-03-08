@@ -190,14 +190,14 @@ ogl.ResetTransform (1);
 //------------------------------------------------------------------------------
 
 #if DBG
-static int bDbgFullBright = 0;
+static int bDbgFullBright = -1;
 #endif
 
 int BeginRenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
 PROF_START
 #if DBG
-gameStates.render.bFullBright = bDbgFullBright;
+gameStates.render.bFullBright = (bDbgFullBright < 0) ? (automap.Display () && gameOpts->render.automap.bBright) : bDbgFullBright;
 #else
 gameStates.render.bFullBright = (automap.Display () && gameOpts->render.automap.bBright)
 #if MAX_SHADOWMAPS
