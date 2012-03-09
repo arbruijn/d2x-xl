@@ -511,14 +511,13 @@ return dist ? dist : 1;
 
 #else
 	CFixVector	d, dn, w, vClosestPoint;
-	fix			mag, dist, wDist, intDist;
+	fix			vecLen, dist, wDist, intDist;
 
 //this routine could be optimized if it's taking too much time!
 
 d = *p1 - *p0;
 w = *vSpherePos - *p0;
 dn = d; 
-vecLen = CFixVector::Mag (w);
 vecLen = CFixVector::Normalize (dn);
 if (vecLen == 0) {
 	intDist = w.Mag ();
@@ -687,9 +686,12 @@ if (hitQuery.nSegment == nDbgSeg)
 #	endif
 #if 1
 CSegment* segP = SEGMENTS + hitQuery.nSegment;
-for (int iObjSeg = 0; iObjSeg < 6; iObjSeg++) {
-	short nSegment = segP->m_children [iObjSeg];
+for (int nSide = 0; nSide < 6; nSide++) {
+	short nSegment = segP->m_children [nSide];
 	if (0 > nSegment)
+		continue;
+	CWall* wallP = segP->Wall (nSide);
+	if (wallP && (wallP->IsDoorWay (NULL) & (WID_TRANSPARENT_WALL | WID_SOLID_WALL)))
 		continue;
 	for (i = 0; i < gameData.collisions.nSegsVisited && (nSegment != gameData.collisions.segsVisited [i]); i++)
 		;

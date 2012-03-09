@@ -165,7 +165,7 @@ return NULL;
 //	 Flags:
 //		WID_PASSABLE_FLAG			1
 //		WID_VISIBLE_FLAG			2
-//		WID_TRANSPARENT_FLAG			4
+//		WID_TRANSPARENT_FLAG		4
 //	 Return values:
 //		WID_SOLID_WALL				2	// 0/1/0		solid wall
 //		WID_TRANSPARENT_WALL		6	//	0/1/1		transparent wall
