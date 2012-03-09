@@ -1089,7 +1089,7 @@ void CObject::LinkToSeg (int nSegment)
 {
 if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments)) {
 	nSegment = FindSegByPos (*GetPos (), 0, 0, 0);
-	if (nSegment < 0)
+	if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments))
 		return;
 	}
 SetSegment (nSegment);

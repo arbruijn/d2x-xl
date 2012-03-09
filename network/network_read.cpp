@@ -602,7 +602,7 @@ return -1;
 
 inline bool ObjectIsLinked (CObject *objP, short nSegment)
 {
-if (nSegment != -1) {
+if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
 	short nObject = objP->Index ();
 	for (short i = SEGMENTS [nSegment].m_objects, j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNextInSeg) {
 		if (i == nObject) {
@@ -730,8 +730,11 @@ networkData.sync [0].objs.nFrame = nFrame;
 				objP->ResetLinks ();
 				objP->info.nAttachedObj = -1;
 				objP->Link ();
-				if (nSegment < 0)
+				if (nSegment < 0) {
 					nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0);
+					if (nSegment < 0) 
+						nSegment = FindSegByPos (objP->info.position.vPos, -1, 0, 0);
+					}
 				if (!ObjectIsLinked (objP, nSegment))
 					objP->LinkToSeg (nSegment);
 				if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_GHOST))
