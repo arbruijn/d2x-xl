@@ -490,7 +490,7 @@ return 1;		//found refP
 //else returns 0
 int CheckVectorSphereCollision (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *vSpherePos, fix xSphereRad)
 {
-#if 1
+#if 0
 FindPointLineIntersection (intersection, *p0, *p1, *vSpherePos, 0);
 fix dist = CFixVector::Dist (intersection, *vSpherePos);
 if (xSphereRad < 0)
@@ -500,10 +500,15 @@ if (dist > xSphereRad)
 if (dist < xSphereRad) {
 	CFixVector v = *p0;
 	v -= intersection;
-	CFixVector::Normalize (v);
+	fix l1 = CFixVector::Normalize (v);
 	float d = X2F (dist);
 	float r = X2F (xSphereRad);
-	v *= F2X (sqrt (r * r - d * d));
+	fix l2 = F2X (sqrt (r * r - d * d));
+	if (l2 >= l1) {
+		intersection = *p0;
+		return 1;
+		}
+	v *= l2;
 	intersection += v;
 	}
 dist = CFixVector::Dist (*p0, intersection);
@@ -541,7 +546,8 @@ if  (dist < xSphereRad) {
 		intersection = *p0;		//don't move at all
 		return 1;
 		}
-	intersection = *p0 + dn * intDist;         //calc intersection refP
+	dn *= intDist;
+	intersection = *p0 + dn;         //calc intersection refP
 	return intDist;
 	}
 #endif
