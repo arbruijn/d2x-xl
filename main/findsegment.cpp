@@ -159,8 +159,10 @@ if ((nStartSeg >= 0) && (PointInSeg (SEGMENTS + nStartSeg, vPos)))
 
 if (gameData.segs.HaveGrid (bSkyBox)) {
 	for (i = gameData.segs.GetSegList (vPos, segListP, bSkyBox); i; i--, segListP++) {
+#if 1 //DBG
 		if ((*segListP < 0) || (*segListP >= gameData.segs.nSegments))
 			continue;
+#endif
 		if (PointInSeg (SEGMENTS + *segListP, vPos))
 			return *segListP;
 		}

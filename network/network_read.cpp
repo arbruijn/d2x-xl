@@ -732,8 +732,12 @@ networkData.sync [0].objs.nFrame = nFrame;
 				objP->Link ();
 				if (nSegment < 0) {
 					nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0);
-					if (nSegment < 0) 
+					if (nSegment < 0) {
+#if 1 //DBG
+						nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0); 
+#endif
 						nSegment = FindSegByPos (objP->info.position.vPos, -1, 0, 0);
+						}
 					}
 				if (!ObjectIsLinked (objP, nSegment))
 					objP->LinkToSeg (nSegment);
