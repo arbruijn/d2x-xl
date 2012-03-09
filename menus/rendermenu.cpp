@@ -51,6 +51,7 @@
 #include "sparkeffect.h"
 #include "renderthreads.h"
 #include "soundthreads.h"
+#include "paging.h"
 #include "menubackground.h"
 
 //------------------------------------------------------------------------------
@@ -578,6 +579,8 @@ do {
 		gameOpts->render.cameras.bHires = (nCameras == 2);
 	if ((gameOpts->render.powerups.b3D = (nPowerups != 0) || gameStates.app.bStandalone))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
+	if (!gameOpts->render.powerups.b3D)
+		LoadPowerupTextures ();
 	if (m.Available ("movie subtitles"))
 		gameOpts->movies.bSubTitles = (m.Value ("movie subtitles") != 0);
 

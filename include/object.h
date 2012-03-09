@@ -1082,6 +1082,7 @@ class CObject : public CObjectInfo {
 
 		short Visible (void);
 
+		inline bool IsPowerup (void) { return (Type () == OBJ_POWERUP); }
 		inline bool IsWeapon (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsWeapon (Id ()); }
 		inline bool IsEnergyWeapon (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsEnergyWeapon (Id ()); }
 		inline bool HasLightTrail (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && HasLightTrail (Id ()); }

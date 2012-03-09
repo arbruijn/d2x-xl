@@ -529,7 +529,6 @@ void BMReadGameDataD1 (CFile& cf)
 {
 	int				h, i, j, v10DataOffset;
 #if 1
-	tD1WallClip		w;
 	D1_tmap_info	t;
 	//D1Robot_info	r;
 #endif

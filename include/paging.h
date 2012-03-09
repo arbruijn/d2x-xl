@@ -24,6 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void LoadLevelTextures (void);
 int PagingGaugeSize (void);
+void LoadPowerupTextures (void);
 void LoadObjectTextures (int nType);
 int LoadModelTextures (CPolyModel* modelP, tBitmapIndex* altTextures);
 

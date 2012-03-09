@@ -970,7 +970,7 @@ return 1;
 
 void CObject::DoPhysicsSim (void)
 {
-if ((Type () == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
+if (IsPowerup () && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	return;
 
 #if DBG
@@ -1064,7 +1064,11 @@ for (;;) {	//Move the object
 		else if (simData.hitResult.nType == HIT_OBJECT) {
 			if (OBJECTS [simData.hitResult.nObject].IsPlayerMine ())
 				simData.nTries--;
+			else if (OBJECTS [simData.hitResult.nObject].IsPowerup ())
+				simData.hitResult.vPoint = simData.vNewPos;
 			}
+		else
+			simData.hitResult.vPoint = simData.vNewPos;
 
 		simData.GetPhysSegs ();
 		if (simData.hitResult.nSegment == -1) {		
