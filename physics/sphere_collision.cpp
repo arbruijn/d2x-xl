@@ -493,7 +493,9 @@ int CheckVectorSphereCollision (CFixVector& intersection, CFixVector *p0, CFixVe
 #if 1
 FindPointLineIntersection (intersection, *p0, *p1, *vSpherePos, 0);
 fix dist = CFixVector::Dist (intersection, *vSpherePos);
-if ((xSphereRad > 0) || (dist > xSphereRad))
+if (xSphereRad < 0)
+	return dist;
+if (dist > xSphereRad)
 	return 0;
 if (dist < xSphereRad) {
 	CFixVector v = *p0;
@@ -503,9 +505,9 @@ if (dist < xSphereRad) {
 	float r = X2F (xSphereRad);
 	v *= F2X (sqrt (r * r - d * d));
 	intersection += v;
-	dist = xSphereRad;
 	}
-return dist;
+dist = CFixVector::Dist (*p0, intersection);
+return dist ? dist : 1;
 
 #else
 	CFixVector	d, dn, w, vClosestPoint;
@@ -523,7 +525,6 @@ if (vecLen == 0) {
 	intersection = *p0;
 	return ((xSphereRad < 0) || (intDist < xSphereRad)) ? intDist : 0;
 	}
-wDist = CFixVector::Dot (d, w);
 wDist = CFixVector::Dot (dn, w);
 if (wDist < 0)
 	return 0;	//moving away from CObject
@@ -717,7 +718,7 @@ restart:
 			}
 #endif
 		int nOtherType = otherObjP->info.nType;
-		if ((nOtherType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
+		if ((nOtherType == OBJ_POWERUP) && ((hitQuery.flags & FQ_IGNORE_POWERUPS) || (gameStates.app.bGameSuspended & SUSP_POWERUPS)))
 			continue;
 		if ((hitQuery.flags & FQ_CHECK_PLAYER) && (nOtherType != OBJ_PLAYER))
 			continue;
@@ -736,9 +737,6 @@ restart:
 			}
 		int nFudgedRad = hitQuery.radP1;
 
-		//	If this is a powerup, don't do collision if flag FQ_IGNORE_POWERUPS is set
-		if ((nOtherType == OBJ_POWERUP) && (hitQuery.flags & FQ_IGNORE_POWERUPS))
-			continue;
 		//	If this is a robot:robot collision, only do it if both of them have attackType != 0 (eg, green guy)
 		if (nThisType == OBJ_ROBOT) {
 			if ((hitQuery.flags & FQ_ANY_OBJECT) ? (nOtherType != OBJ_ROBOT) : (nOtherType == OBJ_ROBOT))
@@ -747,7 +745,7 @@ restart:
 				nFudgedRad = 3 * hitQuery.radP1 / 4;
 			}
 		//if obj is CPlayerData, and bumping into other CPlayerData or a weapon of another coop CPlayerData, reduce radius
-		if (nThisType == OBJ_PLAYER) {
+		else if (nThisType == OBJ_PLAYER) {
 			if (nOtherType == OBJ_ROBOT) {
 				if ((hitQuery.flags & FQ_VISIBLE_OBJS) && otherObjP->Cloaked ())
 					continue;

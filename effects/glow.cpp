@@ -522,7 +522,7 @@ float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 #endif
 
-ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+//ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 #if 1 //!DBG
 if (direction >= 0)
 	LoadShader (direction, radius);
@@ -613,6 +613,7 @@ else
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 
 	radius += RAD_INCR;
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.SelectBlurBuffer (0); 
 	ClearViewport (radius);
 	Render (-1, 0, radius); // Glow -> Blur 0
@@ -648,7 +649,7 @@ else
 	if (!m_bReplace)
 #endif
 		Render (-1, -1, radius, scale); // render the unblurred stuff on top of the blur
-
+	ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 	glMatrixMode (GL_PROJECTION);
 	glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);

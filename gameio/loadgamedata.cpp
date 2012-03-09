@@ -606,7 +606,7 @@ for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++)
 	pw->openSound = cf.ReadShort ();
 	pw->closeSound = cf.ReadShort ();
 	pw->flags = cf.ReadShort ();
-	cf.Read (pw->filename, sizeof (w.filename), 1);
+	cf.Read (pw->filename, sizeof (pw->filename), 1);
 	pw->pad = (char) cf.ReadByte ();
 	}
 PrintLog (-1);
