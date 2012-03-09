@@ -320,7 +320,7 @@ void GameplayOptionsMenu (void)
 	CMenu m;
 	int	i;
 	int	optShip = -1;
-	int	nShip = gameOpts->gameplay.nShip [0];
+	int	nShip = (gameOpts->gameplay.nShip [0] < 0) ? 0 : gameOpts->gameplay.nShip [0];
 	char	szSlider [50];
 
 InitStrings ();
@@ -393,27 +393,33 @@ if (!gameStates.app.bGameRunning) {
 	if (!extraGameInfo [IsMultiGame].bAllowCustomWeapons)
 		SetDefaultWeaponProps ();
 	}
-if (gameStates.app.bGameRunning)
+//if (gameStates.app.bGameRunning)
 	GetShipSelection (m, optShip);
 DefaultGameplaySettings ();
 if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
-if (gameStates.app.bGameRunning && (gameOpts->gameplay.nShip [1] != nShip)) {
+if (gameOpts->gameplay.nShip [1] != nShip) {
 	missionConfig.m_playerShip = gameOpts->gameplay.nShip [1];
-	SetChaseCam (0);
-	SetFreeCam (0);
-	SetRearView (0);
+	if (!gameStates.app.bGameRunning) {
+		gameOpts->gameplay.nShip [0] = gameOpts->gameplay.nShip [1];
+		//gameOpts->gameplay.nShip [1] = -1;
+		}
+	else {
+		SetChaseCam (0);
+		SetFreeCam (0);
+		SetRearView (0);
 #if 1 //DBG
-	LOCALPLAYER.lives++;
+		LOCALPLAYER.lives++;
 #endif
-	gameStates.gameplay.xInitialShield [1] = LOCALPLAYER.Shield (false);
-	gameStates.gameplay.xInitialEnergy [1] = LOCALPLAYER.Energy (false);
-	LOCALPLAYER.SetShield (-1);
-	if (LOCALPLAYER.Object ())
-		LOCALPLAYER.Object ()->Die ();
-	MultiSendPlayerWeapons ();
+		gameStates.gameplay.xInitialShield [1] = LOCALPLAYER.Shield (false);
+		gameStates.gameplay.xInitialEnergy [1] = LOCALPLAYER.Energy (false);
+		LOCALPLAYER.SetShield (-1);
+		if (LOCALPLAYER.Object ())
+			LOCALPLAYER.Object ()->Die ();
+		MultiSendPlayerWeapons ();
+		}
 	}
 }
 
