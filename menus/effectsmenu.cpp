@@ -88,7 +88,7 @@ if ((m = menu ["shockwaves"])) {
 		}
 	}
 
-if ((m = menu ["shrapnels"])) {
+if ((m = menu ["debris"])) {
 	v = m->Value ();
 	if (gameOpts->render.effects.nShrapnels != v) {
 		gameOpts->render.effects.nShrapnels = v;
@@ -258,7 +258,7 @@ do {
 
 	sprintf (szSlider + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
 	*szSlider = *(TXT_EXPLOSION_SHRAPNELS - 1);
-	m.AddSlider ("shrapnels", szSlider + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_A, HTX_EXPLOSION_SHRAPNELS);
+	m.AddSlider ("debris", szSlider + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_A, HTX_EXPLOSION_SHRAPNELS);
 
 	sprintf (szSlider + 1, TXT_EXPLOSION_BLASTS, pszNoneBasicFull [gameOpts->render.effects.nShockwaves]);
 	*szSlider = *(TXT_EXPLOSION_BLASTS - 1);

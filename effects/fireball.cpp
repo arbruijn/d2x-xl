@@ -526,13 +526,13 @@ if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
 		int j = int (X2F (info.xSize) + 0.5) * (gameOpts->render.effects.nShrapnels + 1);
 		for (int i = 0; i < j; i++) {// "i = int (j > 0)" => use the models fuselage only once
 			int h = i % nModels;
-			if (((i == 0) || (h != 0)) &&
+			if (/*((i == 0) || (h != 0)) &&*/
 				 ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (h != 5))) 	//energy sucker energy part
-					CreateDebris (h);
+					CreateDebris (h ? h : rand () % (nModels - 1) + 1);
 			}
 		}
 	else {
-		for (int i = 0; i < nModels; i++) // "i = int (j > 0)" => use the models fuselage only once
+		for (int i = 1; i < nModels; i++) // "i = int (j > 0)" => use the models fuselage only once
 			if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
 				CreateDebris (i);
 		}
