@@ -649,7 +649,6 @@ else
 #endif //USE_SDL_IMAGE
 {
 	char	szFile [FILENAME_LEN], *psz;
-	int	r;
 
 if (!pszFolder) {
 	m_cf.SplitPath (pszFile, szFile, NULL, NULL);
