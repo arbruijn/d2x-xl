@@ -10469,7 +10469,23 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
+				RelativePath="..\d2x-w32.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\d2x-xl-2.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\d2x-xl.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\descent.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\icon5.ico"
 				>
 			</File>
 			<File
