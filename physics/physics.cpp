@@ -728,7 +728,7 @@ if (simData.hitResult.nObject < 0)
 	return 1;
 CObject* hitObjP = OBJECTS + simData.hitResult.nObject;
 CFixVector vOldVel = mType.physInfo.velocity;
-if (CollisionModel () || hitObjP->IsStatic ()) {
+if (!hitObjP->IsPowerup () && (CollisionModel () || hitObjP->IsStatic ())) {
 	CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint, &simData.hitResult.vNormal);
 #if 1 // unstick objects
 	UnstickFromObject (simData, vOldVel);

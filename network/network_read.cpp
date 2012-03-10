@@ -733,10 +733,14 @@ networkData.sync [0].objs.nFrame = nFrame;
 				if (nSegment < 0) {
 					nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0);
 					if (nSegment < 0) {
-#if 1 //DBG
+#if DBG
 						nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0); 
 #endif
 						nSegment = FindSegByPos (objP->info.position.vPos, -1, 0, 0);
+						if (nSegment < 0) {
+							NetworkAbortSync ();
+							return;
+							}
 						}
 					}
 				if (!ObjectIsLinked (objP, nSegment))

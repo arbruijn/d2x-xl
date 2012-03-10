@@ -1712,11 +1712,13 @@ else
 	PrintLog (1, "starting level %d\n", nLevel);
 Assert (!gameStates.app.bPlayerIsDead);
 VerifyConsoleObject ();
+PrintLog (0, "initializing player position\n");
 InitPlayerPosition (bRandom);
 gameData.objs.consoleP->info.controlType = CT_FLYING;
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;
 MultiSendShield ();
 DisableMatCens ();
+PrintLog (0, "clearing transient objects\n");
 ClearTransientObjects (0);		//0 means leave proximity bombs
 // gameData.objs.consoleP->CreateAppearanceEffect ();
 gameStates.render.bDoAppearanceEffect = 1;
@@ -1726,10 +1728,13 @@ if (IsMultiGame) {
 	MultiSendPosition (LOCALPLAYER.nObject);
 	MultiSendReappear ();
 	}
+PrintLog (0, "keeping network busy\n");
 if (gameData.app.nGameMode & GM_NETWORK)
 	NetworkDoFrame (1, 1);
+PrintLog (0, "resetting AI paths\n");
 AIResetAllPaths ();
 gameData.bosses.ResetHitTimes ();
+PrintLog (0, "clearing stuck objects\n");
 ClearStuckObjects ();
 if (nLevel != 0x7fffffff)
 	meshBuilder.ComputeFaceKeys ();

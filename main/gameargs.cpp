@@ -446,7 +446,7 @@ if (!gameStates.app.bNostalgia && (t = FindArg ("-standalone")))
 else
 	gameStates.app.bStandalone = 0;
 
-#if 1 //MULTI_THREADED
+#ifdef _OPENMP //MULTI_THREADED
 if ((t = FindArg ("-multithreaded"))) {
 	gameStates.app.nThreads = NumArg (t, 1);
 	gameStates.app.bMultiThreaded = (gameStates.app.nThreads > 0);
@@ -457,8 +457,12 @@ if ((t = FindArg ("-multithreaded"))) {
 	else if (gameStates.app.nThreads > MAX_THREADS)
 		gameStates.app.nThreads = MAX_THREADS;
 	}
-else
+else 
+#else
+	{
 	gameStates.app.nThreads = 1;
+	gameStates.app.bMultiThreaded = 0;
+	}
 #endif
 if ((t = FindArg ("-nosound")))
 	gameStates.app.bUseSound = (NumArg (t, 1) == 0);
