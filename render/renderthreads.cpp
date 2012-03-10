@@ -321,7 +321,7 @@ int GetNumThreads (void)
 {
 if (!gameStates.app.bMultiThreaded)
 	return gameStates.app.nThreads = 1;
-#if USE_OPENMP
+#if USE_OPENMP && defined(_OPENMP)
 int nThreads = omp_get_num_threads ();
 if (nThreads < 2)
 #pragma omp parallel 
