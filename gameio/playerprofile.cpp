@@ -1832,6 +1832,7 @@ if (cf.File ()) {
 if (gameStates.video.nDefaultDisplayMode >= CUSTOM_DISPLAY_MODE)
 	gameStates.video.nDefaultDisplayMode = -1;
 customDisplayMode = displayModeInfo [CUSTOM_DISPLAY_MODE];
+gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 if (!profile.Save ()) {
 	funcRes = errno;
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_WRITING_PLR, strerror (funcRes));
@@ -1855,11 +1856,9 @@ return SavePlayerProfile ();
 //------------------------------------------------------------------------------
 
 int GetLifetimeChecksum (int a, int b)
- {
-  int num;
-
+{
 // confusing enough to beat amateur disassemblers? Lets hope so
-num = (a << 8 ^ b);
+int num = (a << 8 ^ b);
 num ^= (a | b);
 num *= num >> 2;
 return num;

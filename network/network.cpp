@@ -588,13 +588,10 @@ for (i = 0; i < 100; i++)
 
 int GetMyNetRanking (void)
  {
-  int rank;
-  int eff;
-
 if (networkData.nNetLifeKills+networkData.nNetLifeKilled == 0)
 	return 1;
-rank = (int) (((double)networkData.nNetLifeKills/3000.0)*8.0);
-eff = (int) ((double) ((double)networkData.nNetLifeKills/ ((double)networkData.nNetLifeKilled+ (double)networkData.nNetLifeKills))*100.0);
+int rank = (int) (((double) networkData.nNetLifeKills / 3000.0) * 8.0);
+int eff = (int) ((double) ((double)networkData.nNetLifeKills / ((double) networkData.nNetLifeKilled + (double) networkData.nNetLifeKills)) * 100.0);
 if (rank > 8)
 	rank = 8;
 if (eff < 0)
@@ -609,7 +606,7 @@ else if (rank > 8)
 #if 1			
 console.printf (CON_DBG, "Rank is %d (%s)\n", rank+1, pszRankStrings [rank+1]);
 #endif
-return (rank+1);
+return rank + 1;
  }
 
 //------------------------------------------------------------------------------

@@ -4857,14 +4857,11 @@ TRIGGERS [(int) ((ubyte) buf [1])].m_info.flags |= TF_DISABLED;
 
 void MultiAddLifetimeKills (void)
 {
-
-	int oldrank;
-
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;
-oldrank = GetMyNetRanking ();
-networkData.nNetLifeKills++;
-if (oldrank!=GetMyNetRanking ()) {
+int oldrank = GetMyNetRanking ();
+gameData.app.nLifetimeChecksum = GetLifetimeChecksum (++networkData.nNetLifeKills, networkData.nNetLifeKilled);
+if (oldrank != GetMyNetRanking ()) {
 	MultiSendRanking ();
 	if (!gameOpts->multi.bNoRankings) {
 		HUDInitMessage (TXT_PROMOTED, pszRankStrings [GetMyNetRanking ()]);
@@ -4883,12 +4880,10 @@ void MultiAddLifetimeKilled (void)
 	// This function adds a "nKilled" to lifetime stats of this player, and possibly
 	// gives a demotion.  If so, it will tell everyone else
 
-	int oldrank;
-
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;
-oldrank = GetMyNetRanking ();
-networkData.nNetLifeKilled++;
+int oldrank = GetMyNetRanking ();
+gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, ++networkData.nNetLifeKilled);
 if (oldrank != GetMyNetRanking ()) {
 	MultiSendRanking ();
 	netPlayers [0].m_info.players [N_LOCALPLAYER].rank = GetMyNetRanking ();
