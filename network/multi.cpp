@@ -4860,7 +4860,7 @@ void MultiAddLifetimeKills (void)
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;
 int oldrank = GetMyNetRanking ();
-gameData.app.nLifetimeChecksum = GetLifetimeChecksum (++networkData.nNetLifeKills, networkData.nNetLifeKilled);
+++networkData.nNetLifeKills;
 if (oldrank != GetMyNetRanking ()) {
 	MultiSendRanking ();
 	if (!gameOpts->multi.bNoRankings) {
@@ -4883,7 +4883,7 @@ void MultiAddLifetimeKilled (void)
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;
 int oldrank = GetMyNetRanking ();
-gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, ++networkData.nNetLifeKilled);
+++networkData.nNetLifeKilled;
 if (oldrank != GetMyNetRanking ()) {
 	MultiSendRanking ();
 	netPlayers [0].m_info.players [N_LOCALPLAYER].rank = GetMyNetRanking ();
