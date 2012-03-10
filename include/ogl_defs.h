@@ -15,7 +15,7 @@
 #	define DBG_OGL					1
 #else
 #	define DBG_SHADERS			0
-#	define DBG_OGL					1
+#	define DBG_OGL					0
 #endif
 
 #define RENDER2TEXTURE			2	//0: glCopyTexSubImage, 1: pixel buffers, 2: frame buffers
