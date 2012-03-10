@@ -1818,8 +1818,13 @@ if (info.nId == EARTHSHAKER_ID)
 xDamage = FixMul (xDamage, cType.laserInfo.xScale);
 if (info.nId == FUSION_ID)
 	xDamage = gameData.FusionDamage (xDamage);
-if (IsMultiGame)
+if (IsMultiGame) {
+	if (gameData.weapons.info [info.nId].xMultiDamageScale <= 0) {
+		PrintLog (0, "invalid multiplayer damage scale for weapon %d!\n", info.nId);
+		gameData.weapons.info [info.nId].xMultiDamageScale = I2X (1);
+		}
 	xDamage = FixMul (xDamage, gameData.weapons.info [info.nId].xMultiDamageScale);
+	}
 if (mType.physInfo.flags & PF_PERSISTENT) {
 	if (AddHitObject (this, OBJ_IDX (playerObjP)) < 0)
 		return 1;
