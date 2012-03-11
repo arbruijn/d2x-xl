@@ -430,7 +430,8 @@ bSpeedBoost = speedBoost.bBoosted;
 objP = &OBJECTS [nObject];
 bGetPhysSegs = (objP->Type () == OBJ_PLAYER) || (objP->Type () == OBJ_ROBOT);
 velocity = objP->Velocity ();
-velocity *= I2X (extraGameInfo [IsMultiGame].nSpeedScale + 2) / 2;
+velocity *= (extraGameInfo [IsMultiGame].nSpeedScale + 2);
+velocity /= 2;
 vStartPos = objP->Position ();
 nStartSeg = objP->Segment ();
 #if DBG
@@ -972,7 +973,9 @@ return 1;
 
 void CObject::FinishPhysicsSim (CPhysSimData& simData)
 {
-Velocity () = simData.velocity / I2X (extraGameInfo [IsMultiGame].nSpeedScale + 2) / 2;
+simData.velocity *= 2;
+simData.velocity /= (extraGameInfo [IsMultiGame].nSpeedScale + 2);
+Velocity () = simData.velocity;
 }
 
 //	-----------------------------------------------------------------------------
