@@ -245,9 +245,9 @@ if (!m_info.bActive) {
 		glReadBuffer (GL_NONE);
 		}
 	glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
-	if (m_info.nType != 3)
-		SelectColorBuffers (nColorBuffers);
 	}
+if (m_info.nType != 3)
+	SelectColorBuffers (nColorBuffers);
 return m_info.bActive = 1;
 }
 
