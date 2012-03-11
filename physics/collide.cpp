@@ -1753,7 +1753,6 @@ if ((info.nId == N_LOCALPLAYER) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABL
 	return;
 	}
 
-CPlayerData *playerP = gameData.multiplayer.players + info.nId;
 CPlayerData *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? gameData.multiplayer.players + killerObjP->info.nId : NULL;
 
 if (killerObjP) {
@@ -1787,6 +1786,7 @@ gameData.multiplayer.bWasHit [info.nId] = -1;
 
 if (info.nId == N_LOCALPLAYER) {		//is this the local player?
 	PrintLog (0, "ApplyDamageToPlayer: Processing local player damage %d\n", xDamage);
+	CPlayerData *playerP = gameData.multiplayer.players + info.nId;
 	if ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
 		double h = (double) playerP->netKillsTotal / (double) (killerP->netKillsTotal + 1);
 		if (h < 0.5)
