@@ -10,7 +10,7 @@
 CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT 1
-#define BLUR 1
+#define BLUR 2
 #define START_RAD (m_bViewport ? 2.0f : 0.0f)
 #define RAD_INCR (m_bViewport ? 2.0f : 0.0f)
 
@@ -637,11 +637,11 @@ else
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	if (!ogl.SelectBlurBuffer (0))
 		return Reset (0);
-	ClearViewport (-radius);
+	ClearViewport (radius);
 	Render (-1, 0, radius); // Glow -> Blur 0
 	if (!ogl.SelectBlurBuffer (1))
 		return Reset (0);
-	ClearViewport (-radius);
+	ClearViewport (radius);
 	Render (0, 1, radius); // Blur 0 -> Blur 1
 	if (m_nType != BLUR_SHADOW)
 		ogl.SetBlendMode (OGL_BLEND_ADD);
