@@ -633,7 +633,7 @@ if (ogl.UseTransform ()) {
 	for (nCull = 0; nCull < 2; nCull++) {
 		svP [0] = svP [1] = m_vertices.Buffer ();
 		ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
-		for (i = 0; i < h; i++) {
+		for (i = 1; i < h; i++) {
 			RenderRing (i, nQuads, bTextured, GL_QUAD_STRIP);
 #if 0
 			if (!bTextured) {
@@ -775,7 +775,7 @@ ogl.SetBlendMode (bAdditive);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 #endif
 glowRenderer.Begin (GLOW_SHIELDS, 2, false, 0.75f);
-if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, xScale)) {
+if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, 4 * xScale / 3)) {
 	glowRenderer.Done (GLOW_SHIELDS);
 	return 0;
 	}
