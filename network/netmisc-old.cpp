@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //#define WORDS_BIGENDIAN
 
-#if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
+#if 1 //defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 
 #include "byteswap.h"
 #include "segment.h"

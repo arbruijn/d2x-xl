@@ -283,8 +283,7 @@ return 1;
 int ExtraGameInfoHandler (ubyte *dataP, int nLength)
 {
 if (gameStates.multi.nGameType >= IPX_GAME)
-	NetworkProcessExtraGameInfo (dataP);
-return 1;
+	return NetworkProcessExtraGameInfo (dataP);
 }
 
 //------------------------------------------------------------------------------

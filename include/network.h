@@ -177,9 +177,9 @@ typedef struct tMonsterballInfo {
 } __pack__ tMonsterballInfo;
 
 typedef struct tHeadlightInfo {
-	int bAvailable;
-	int bDrainPower;
-	int bBuiltIn;
+	char	bAvailable;
+	char	bDrainPower;
+	char	bBuiltIn;
 }  tHeadlightInfo;
 
 typedef struct tLoadoutInfo {
@@ -201,7 +201,6 @@ typedef struct tExtraGameInfo {
 	char		bFriendlyFire;
 	char		bInhibitSuicide;
 	char		bFixedRespawns;
-	int		nSpawnDelay;
 	char		bEnhancedCTF;
 	char		bRadarEnabled;
 	char		bPowerupsOnRadar;
@@ -277,6 +276,7 @@ typedef struct tExtraGameInfo {
 	char		nSpotSize;
 	char		nSpotStrength;
 
+	int		nSpawnDelay;
 	int		nLightRange;
 	int		nSpeedScale;
 	int		nSecurity;

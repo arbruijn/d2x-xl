@@ -27,7 +27,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 
 #include "segment.h"
-//#include "gameseg.h"
 #include "network.h"
 #include "network_lib.h"
 #include "wall.h"
@@ -60,7 +59,7 @@ return bufP;
 
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 
-static ubyte nmDataBuf [MAX_PACKETSIZE];    // used for tmp netGame packets as well as sending CObject data
+static ubyte nmDataBuf [MAX_PACKET_SIZE];    // used for tmp netGame packets as well as sending CObject data
 static ubyte *nmBufP = NULL;
 
 // if using the following macros in loops, the loop's body *must* be enclosed in curly braces,
@@ -107,8 +106,8 @@ void BEReceiveNetPlayerInfo (ubyte *data, tNetPlayerInfo *info)
 
 nmBufP = data;
 BE_GET_BYTES (info->callsign, CALLSIGN_LEN + 1);       
-BE_GET_BYTES (info->network.ipx.server, 4);       
-BE_GET_BYTES (info->network.ipx.node, 6);         
+BE_GET_BYTES (info->network.m_info.ipx.server, 4);       
+BE_GET_BYTES (&info->network.m_info.ipx.node, 6);         
 BE_GET_BYTE (info->versionMajor);                            
 BE_GET_BYTE (info->versionMinor);                            
 BE_GET_BYTE (info->computerType);            
@@ -128,20 +127,20 @@ void BESendNetPlayersPacket (ubyte *server, ubyte *node)
 
 nmBufP = nmDataBuf;
 #if DBG
-memset (nmBufP, 0, IPX_DATALIMIT);	//this takes time and shouldn't be necessary
+memset (nmBufP, 0, sizeof (nmDataBuf));	//this takes time and shouldn't be necessary
 #endif
-BE_SET_BYTE (netPlayers.m_info.nType);                            
-BE_SET_INT (netPlayers.m_info.nSecurity);
+BE_SET_BYTE (netPlayers [0].m_info.nType);                            
+BE_SET_INT (netPlayers [0].m_info.nSecurity);
 for (i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
-	BE_SET_BYTES (netPlayers.m_info.players [i].callsign, CALLSIGN_LEN + 1); 
-	BE_SET_BYTES (netPlayers.m_info.players [i].network.ipx.server, 4);    
-	BE_SET_BYTES (netPlayers.m_info.players [i].network.ipx.node, 6);      
-	BE_SET_BYTE (netPlayers.m_info.players [i].versionMajor);      
-	BE_SET_BYTE (netPlayers.m_info.players [i].versionMinor);      
-	BE_SET_BYTE (netPlayers.m_info.players [i].computerType);      
-	BE_SET_BYTE (netPlayers.m_info.players [i].connected);          
-	BE_SET_SHORT (netPlayers.m_info.players [i].socket);
-	BE_SET_BYTE (netPlayers.m_info.players [i].rank);               
+	BE_SET_BYTES (netPlayers [0].m_info.players [i].callsign, CALLSIGN_LEN + 1); 
+	BE_SET_BYTES (netPlayers [0].m_info.players [i].network.m_info.ipx.server, 4);    
+	BE_SET_BYTES (&netPlayers [0].m_info.players [i].network.m_info.ipx.node, 6);      
+	BE_SET_BYTE (netPlayers [0].m_info.players [i].versionMajor);      
+	BE_SET_BYTE (netPlayers [0].m_info.players [i].versionMinor);      
+	BE_SET_BYTE (netPlayers [0].m_info.players [i].computerType);      
+	BE_SET_BYTE (netPlayers [0].m_info.players [i].connected);          
+	BE_SET_SHORT (netPlayers [0].m_info.players [i].socket);
+	BE_SET_BYTE (netPlayers [0].m_info.players [i].rank);               
 	}
 if (!server && !node)
 	IPXSendBroadcastData (nmBufP, nmBufI);
@@ -170,13 +169,13 @@ void BESendSequencePacket (tSequencePacket seq, ubyte *server, ubyte *node, ubyt
 
 nmBufP = nmDataBuf;
 #if DBG
-memset (nmBufP, 0, IPX_DATALIMIT);	//this takes time and shouldn't be necessary
+memset (nmBufP, 0, sizeof (nmDataBuf));	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (seq.nType);                                       
 BE_SET_INT (seq.nSecurity);                           
 BE_SET_BYTES (seq.player.callsign, CALLSIGN_LEN + 1);
-BE_SET_BYTES (seq.player.network.ipx.server, 4);   
-BE_SET_BYTES (seq.player.network.ipx.node, 6);     
+BE_SET_BYTES (seq.player.network.m_info.ipx.server, 4);   
+BE_SET_BYTES (&seq.player.network.m_info.ipx.node, 6);     
 BE_SET_BYTE (seq.player.versionMajor);                     
 BE_SET_BYTE (seq.player.versionMinor);                     
 BE_SET_BYTE (seq.player.computerType);                     
@@ -213,7 +212,7 @@ void BESendNetGamePacket (ubyte *server, ubyte *node, ubyte *netAddress, int bLi
 
 nmBufP = nmDataBuf;
 #if DBG
-memset (nmBufP, 0, MAX_PACKETSIZE);	//this takes time and shouldn't be necessary
+memset (nmBufP, 0, sizeof (nmDataBuf));	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (netGame.m_info.nType);                 
 BE_SET_INT (netGame.m_info.nSecurity);                           
@@ -358,11 +357,17 @@ netGame->SetShortPackets (BEGetByte (nmBufI));
 #define EGI_INTEL_INT_2BUF(_m) \
 	*(reinterpret_cast<int*> (nmBufP) + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))) = INTEL_INT (extraGameInfo [1]._m);
 
+#define EGI_INTEL_UINT_2BUF(_m) \
+	*(reinterpret_cast<uint*> (nmBufP) + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))) = INTEL_INT (extraGameInfo [1]._m);
+
 #define BUF2_EGI_INTEL_SHORT(_m) \
 	extraGameInfo [1]._m = INTEL_SHORT (*reinterpret_cast<short*> (nmBufP + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))));
 
 #define BUF2_EGI_INTEL_INT(_m) \
 	extraGameInfo [1]._m = INTEL_INT (*reinterpret_cast<int*> (nmBufP + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))));
+
+#define BUF2_EGI_INTEL_UINT(_m) \
+	extraGameInfo [1]._m = INTEL_INT (*reinterpret_cast<uint*> (nmBufP + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))));
 
 //------------------------------------------------------------------------------
 
@@ -374,7 +379,15 @@ EGI_INTEL_SHORT_2BUF (entropy.nMaxVirusCapacity);
 EGI_INTEL_SHORT_2BUF (entropy.nEnergyFillRate);
 EGI_INTEL_SHORT_2BUF (entropy.nShieldFillRate);
 EGI_INTEL_SHORT_2BUF (entropy.nShieldDamageRate);
+for (int i = 0; i < MAX_MONSTERBALL_FORCES; i++)
+	EGI_INTEL_SHORT_2BUF (monsterball.forces [i].nForce);
+EGI_INTEL_UINT_2BUF (loadout.nGuns);
+EGI_INTEL_UINT_2BUF (loadout.nDevice);
+EGI_INTEL_INT_2BUF (nVersion);
 EGI_INTEL_INT_2BUF (nSpawnDelay);
+EGI_INTEL_INT_2BUF (nLightRange);
+EGI_INTEL_INT_2BUF (nSpeedScale);
+EGI_INTEL_INT_2BUF (nSecurity);
 if (netAddress)
 	IPXSendPacketData (nmBufP, sizeof (extraGameInfo [0]), server, node, netAddress);
 else if (!server && !node)
@@ -393,7 +406,15 @@ BUF2_EGI_INTEL_SHORT (entropy.nMaxVirusCapacity);
 BUF2_EGI_INTEL_SHORT (entropy.nEnergyFillRate);
 BUF2_EGI_INTEL_SHORT (entropy.nShieldFillRate);
 BUF2_EGI_INTEL_SHORT (entropy.nShieldDamageRate);
+for (int i = 0; i < MAX_MONSTERBALL_FORCES; i++)
+	BUF2_EGI_INTEL_SHORT (monsterball.forces [i].nForce);
+BUF2_EGI_INTEL_UINT (loadout.nGuns);
+BUF2_EGI_INTEL_UINT (loadout.nDevice);
+BUF2_EGI_INTEL_INT (nVersion);
 BUF2_EGI_INTEL_INT (nSpawnDelay);
+BUF2_EGI_INTEL_INT (nLightRange);
+BUF2_EGI_INTEL_INT (nSpeedScale);
+BUF2_EGI_INTEL_INT (nSecurity);
 }
 
 //------------------------------------------------------------------------------

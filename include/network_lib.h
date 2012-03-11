@@ -211,7 +211,7 @@ void NetworkReadObjectPacket (ubyte *dataP);
 void NetworkProcessMonitorVector (int vector);
 void NetworkProcessGameInfo (ubyte *dataP);
 void NetworkProcessLiteInfo (ubyte *dataP);
-void NetworkProcessExtraGameInfo (ubyte *dataP);
+int NetworkProcessExtraGameInfo (ubyte *dataP);
 void NetworkProcessDump (tSequencePacket *their);
 void NetworkProcessRequest (tSequencePacket *their);
 void NetworkProcessPData (char *dataP);
