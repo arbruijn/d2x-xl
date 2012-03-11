@@ -1753,13 +1753,18 @@ if ((info.nId == N_LOCALPLAYER) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABL
 	return;
 	}
 
-CPlayerData *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? gameData.multiplayer.players + killerObjP->info.nId : NULL;
+CPlayerData *killerP; 
 
-if (killerObjP) {
+if (!killerObjP) 
+	killerP = NULL;
+else {
 	if ((killerObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (killerObjP->info.nId).companion) {
 		PrintLog (0, "ApplyDamageToPlayer: Player was hit by Guidebot\n");
 		return;
 		}
+	killerP = (killerObjP->info.nType == OBJ_PLAYER) ? gameData.multiplayer.players + killerObjP->info.nId : NULL;
+	if (killerP)
+		PrintLog (0, "ApplyDamageToPlayer: Damage was inflicted by %s\n", killerP->callsign);
 	if (gameStates.app.bHaveExtraGameInfo [1]) {
 		if ((killerObjP == this) && !COMPETITION && extraGameInfo [1].bInhibitSuicide) {
 			PrintLog (0, "ApplyDamageToPlayer: Suicide inhibited\n");
@@ -1795,7 +1800,7 @@ if (info.nId == N_LOCALPLAYER) {		//is this the local player?
 			h = 1.0;
 		if (!(xDamage = (fix) ((double) xDamage * h)))
 			xDamage = 1;
-		PrintLog (0, "ApplyDamageToPlayer: Applying player handicap (resultung damage = %d)\n", xDamage);
+		PrintLog (0, "ApplyDamageToPlayer: Applying player handicap (resulting damage = %d)\n", xDamage);
 		}
 	playerP->UpdateShield (-xDamage);
 	paletteManager.BumpEffect (X2I (xDamage) * 4, -X2I (xDamage / 2), -X2I (xDamage / 2));	//flash red
