@@ -32,12 +32,14 @@ class CGlowRenderer {
 		bool LoadShader (int const direction, float const radius);
 		void Render (int const source, int const direction = -1, float const radius = 1.0f, float const scale = 1.0f);
 		bool Blur (int const direction);
-		void Activate (void);
+		int Activate (void);
 		void SetupProjection (void);
 		void SetExtent (CFloatVector3 v, bool bTransformed = false);
 		void InitViewport (void);
 		void ClearViewport (float const radius);
 		void ChooseDrawBuffer (void);
+		bool Reset (int bGlow);
+
 	};
 
 extern CGlowRenderer glowRenderer;

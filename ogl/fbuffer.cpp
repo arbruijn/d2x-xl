@@ -235,25 +235,25 @@ if (m_info.hFBO) {
 
 //------------------------------------------------------------------------------
 
-int CFBO::Enable (bool bFallback)
+int CFBO::Enable (int nColorBuffers)
 {
-if (m_info.bActive)
-	return 1;
-if (Available () <= 0)
-	return 0;
-if (m_info.nType == 3) {
-	glDrawBuffer (GL_NONE);
-	glReadBuffer (GL_NONE);
+if (!m_info.bActive) {
+	if (Available () <= 0)
+		return 0;
+	if (m_info.nType == 3) {
+		glDrawBuffer (GL_NONE);
+		glReadBuffer (GL_NONE);
+		}
+	glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
+	if (m_info.nType != 3)
+		SelectColorBuffers (nColorBuffers);
 	}
-glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
-if (m_info.nType != 3)
-	SetDrawBuffers ();
 return m_info.bActive = 1;
 }
 
 //------------------------------------------------------------------------------
 
-int CFBO::Disable (bool bFallback)
+int CFBO::Disable (void)
 {
 if (!m_info.bActive)
 	return 1;

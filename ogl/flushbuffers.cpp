@@ -159,7 +159,7 @@ if (nEffects & 5) {
 		SetDrawBuffer (GL_BACK, 0);
 	else {
 		SelectDrawBuffer (1);
-		SetDrawBuffer (GL_BACK, 1);
+		//SetDrawBuffer (GL_BACK, 1);
 		}
 	postProcessManager.Render ();
 	}

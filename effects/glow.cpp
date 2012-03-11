@@ -194,14 +194,26 @@ return false;
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Activate (void)
+int CGlowRenderer::Activate (void)
 {
-ogl.SelectGlowBuffer ();
+if (!ogl.SelectGlowBuffer ())
+	return 0;
 if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else
 	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 glClear (GL_COLOR_BUFFER_BIT);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+bool CGlowRenderer::Reset (int bGlow)
+{
+m_nType = -1;
+m_nStrength = -1;
+m_bViewport = 0;
+return 0 != (gameOpts->render.effects.bGlow = bGlow);
 }
 
 //------------------------------------------------------------------------------
@@ -457,7 +469,7 @@ if ((gameOptions [0].render.nQuality < 3) && automap.Display ())
 if (nType != m_nType) {
 #else
 if ((m_bReplace == bReplace) && (m_nStrength == nStrength) && (m_brightness == brightness) && ((nType == GLOW_LIGHTNING) == (m_nType == GLOW_LIGHTNING))) 
-	ogl.SelectGlowBuffer ();
+	gameOpts->render.effects.bGlow = ogl.SelectGlowBuffer ();
 else {
 #endif
 	End ();
@@ -467,9 +479,12 @@ else {
 	m_brightness = brightness;
 	m_bViewport = 0;
 	InitViewport ();
-	Activate ();
+	gameOpts->render.effects.bGlow = Activate ();
 	}
-return true;
+if (gameOpts->render.effects.bGlow)
+	return true;
+Reset (0);
+return false;
 }
 
 //------------------------------------------------------------------------------
@@ -570,9 +585,11 @@ ogl.ChooseDrawBuffer ();
 
 void CGlowRenderer::Done (const int nType)
 {
-#if 1
 if (Available (nType))
-	ogl.DrawBuffer ()->SetDrawBuffers (0);
+#if 1
+	ogl.DrawBuffer ()->SelectColorBuffers (0);
+#else
+	ogl.ChooseDrawBuffer ();
 #endif
 }
 
@@ -614,10 +631,12 @@ else
 
 	radius += RAD_INCR;
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	ogl.SelectBlurBuffer (0); 
+	if (!ogl.SelectBlurBuffer (0))
+		return Reset (0);
 	ClearViewport (radius);
 	Render (-1, 0, radius); // Glow -> Blur 0
-	ogl.SelectBlurBuffer (1); 
+	if (!ogl.SelectBlurBuffer (1))
+		return Reset (0);
 	ClearViewport (radius);
 	Render (0, 1, radius); // Blur 0 -> Blur 1
 	if (m_nType != BLUR_SHADOW)
@@ -625,9 +644,11 @@ else
 #	if BLUR > 1
 	for (int i = 1; i < m_nStrength; i++) {
 		radius += RAD_INCR;
-		ogl.SelectBlurBuffer (0); 
+		if (!ogl.SelectBlurBuffer (0))
+			return Reset (0);
 		Render (1, 0, radius); // Blur 1 -> Blur 0
-		ogl.SelectBlurBuffer (1); 
+		if (!ogl.SelectBlurBuffer (1))
+			return Reset (0);
 		Render (0, 1, radius); // Blur 0 -> Blur 1
 		}
 	//radius += RAD_INCR;
@@ -660,11 +681,7 @@ else
 	ogl.SetDepthMode (nDepthMode);
 	ogl.SetStencilTest (false);
 	}
-
-m_nType = -1;
-m_nStrength = -1;
-m_bViewport = 0;
-return true;
+return Reset (1);
 }
 
 //------------------------------------------------------------------------------

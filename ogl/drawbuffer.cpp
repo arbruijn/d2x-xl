@@ -123,7 +123,7 @@ bSemaphore++;
 
 if (bFBO && (nBuffer == GL_BACK) && m_features.bRenderToTexture && DrawBuffer ()->Handle ()) {
 	if (DrawBuffer ()->Active ()) 
-		DrawBuffer ()->SetDrawBuffers ();
+		DrawBuffer ()->SelectColorBuffers ();
 	else if (!DrawBuffer ()->Enable ()) {
 		DestroyDrawBuffers ();
 		SelectDrawBuffer (0);
@@ -160,7 +160,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int COGL::SelectDrawBuffer (int nBuffer) 
+int COGL::SelectDrawBuffer (int nBuffer, int nColorBuffers) 
 { 
 //if (gameStates.render.nShadowMap > 0)
 //	nBuffer = gameStates.render.nShadowMap + 5;
@@ -174,7 +174,7 @@ CCamera* cameraP;
 
 if (nBuffer != nPrevBuffer) {
 	if (m_data.drawBufferP)
-		m_data.drawBufferP->Disable (false);
+		m_data.drawBufferP->Disable ();
 	if (nBuffer >= 0) {
 		m_states.nCamera = 0;
 		m_data.drawBufferP = m_data.GetDrawBuffer (nBuffer); 
@@ -185,9 +185,7 @@ if (nBuffer != nPrevBuffer) {
 		m_data.drawBufferP = &cameraP->FrameBuffer ();
 		}
 	}
-m_data.drawBufferP->Enable (false);
-m_data.drawBufferP->SetDrawBuffers (0);
-return nPrevBuffer;
+return m_data.drawBufferP->Enable (nColorBuffers) ? nPrevBuffer : -1;
 }
 
 //------------------------------------------------------------------------------
@@ -231,19 +229,16 @@ else {
 
 //------------------------------------------------------------------------------
 
-void COGL::SelectGlowBuffer (void) 
+int COGL::SelectGlowBuffer (void) 
 { 
-SelectDrawBuffer (int (m_data.xStereoSeparation > 0));
-SetDrawBuffer (GL_BACK, 1);
-DrawBuffer ()->SetDrawBuffers (1);
+return SelectDrawBuffer (int (m_data.xStereoSeparation > 0), 1);
 }
 
 //------------------------------------------------------------------------------
 
-void COGL::SelectBlurBuffer (int nBuffer) 
+int COGL::SelectBlurBuffer (int nBuffer) 
 { 
-SelectDrawBuffer (nBuffer + 3);
-SetDrawBuffer (GL_BACK, 1);
+return SelectDrawBuffer (nBuffer + 3);
 }
 
 //------------------------------------------------------------------------------

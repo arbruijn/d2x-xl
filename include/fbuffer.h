@@ -40,8 +40,8 @@ class CFBO {
 		int Create (int nWidth, int nHeight, int nType, int nColorBuffers = 1);
 		void Destroy (void);
 		int Available (void);
-		int Enable (bool bFallback = true);
-		int Disable (bool bFallback = true);
+		int Enable (int nColorBuffers = -1);
+		int Disable (void);
 		inline int GetType (void) { return m_info.nType; }
 		inline void SetType (int nType) { m_info.nType = nType; }
 		inline int GetWidth (void) { return m_info.nWidth; }
@@ -65,7 +65,7 @@ class CFBO {
 			return nFirst;
 			}
 
-		inline void SetDrawBuffers (int nBuffer = 0) { 
+		inline void SelectColorBuffers (int nBuffer = 0) { 
 			if ((m_info.nBufferCount == 1) || (nBuffer >= m_info.nBufferCount))
 				glDrawBuffer (m_info.bufferIds [0]);
 			else if (nBuffer < 0)

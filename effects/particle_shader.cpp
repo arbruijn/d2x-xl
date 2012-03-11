@@ -57,7 +57,7 @@ if (ogl.m_features.bDepthBlending < 0)
 if ((nShader > 1) && !ogl.CopyDepthTexture (0, (nShader & 1) ? GL_TEXTURE2 : GL_TEXTURE3))
 	nShader -= 2;
 //ogl.DrawBuffer ()->FlipBuffers (0, 1); // color buffer 1 becomes render target, color buffer 0 becomes render source (scene texture)
-//ogl.DrawBuffer ()->SetDrawBuffers ();
+//ogl.DrawBuffer ()->SelectColorBuffers ();
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hParticleShader [nShader], true));
 if (!m_shaderProg)
 	return false;

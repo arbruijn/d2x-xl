@@ -537,11 +537,11 @@ class COGL {
 			return m_data.nCullMode;
 			}
 
-		int SelectDrawBuffer (int nBuffer);
+		int SelectDrawBuffer (int nBuffer, int nColorBuffers = -1);
 
-		void SelectGlowBuffer (void);
+		int SelectGlowBuffer (void);
 
-		void SelectBlurBuffer (int nBuffer);
+		int SelectBlurBuffer (int nBuffer);
 
 		inline CFBO* DrawBuffer (int nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDrawBuffer (nBuffer); }
 

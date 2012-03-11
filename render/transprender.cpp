@@ -391,25 +391,22 @@ ogl.ResetClientStates (1);
 transparencyRenderer.Data ().bmP [1] = transparencyRenderer.Data ().bmP [2] = NULL;
 transparencyRenderer.Data ().bUseLightmaps = 0;
 ogl.SelectTMU (GL_TEXTURE0, true);
-#if 1
-if (!transparencyRenderer.LoadTexture (bmP, 0, 0, 0, GL_CLAMP))
-	return;
-#else
-ogl.SetTexturing (true);
-transparencyRenderer.ResetBitmaps ();
-#endif
-if (bColor)
-	glColor4fv (reinterpret_cast<GLfloat*> (&color));
-else
-	glColor3f (1,1,1);
-ogl.SetBlendMode (bAdditive);
-if (!(bSoftBlend && glareRenderer.LoadShader (fSoftRad, bAdditive != 0)))
-	shaderManager.Deploy (-1, true);
-bmP->SetColor ();
-CFloatVector vPosf;
-transformation.Transform (vPosf, position, 0);
-if (!bGlow || glowRenderer.SetViewport (GLOW_SPRITES, *vPosf.XYZ (), X2F (nWidth), X2F (nHeight), true))
-	ogl.RenderQuad (bmP, vPosf, X2F (nWidth), X2F (nHeight), 3);
+if (transparencyRenderer.LoadTexture (bmP, 0, 0, 0, GL_CLAMP)) {
+	ogl.SetTexturing (true);
+	transparencyRenderer.ResetBitmaps ();
+	if (bColor)
+		glColor4fv (reinterpret_cast<GLfloat*> (&color));
+	else
+		glColor3f (1,1,1);
+	ogl.SetBlendMode (bAdditive);
+	if (!(bSoftBlend && glareRenderer.LoadShader (fSoftRad, bAdditive != 0)))
+		shaderManager.Deploy (-1, true);
+	bmP->SetColor ();
+	CFloatVector vPosf;
+	transformation.Transform (vPosf, position, 0);
+	if (!bGlow || glowRenderer.SetViewport (GLOW_SPRITES, *vPosf.XYZ (), X2F (nWidth), X2F (nHeight), true))
+		ogl.RenderQuad (bmP, vPosf, X2F (nWidth), X2F (nHeight), 3);
+	}
 if (bGlow)
 	glowRenderer.Done (GLOW_SPRITES);
 #endif
@@ -1066,6 +1063,7 @@ return Add (&item, position);
 
 int CTransparencyRenderer::AddSpark (const CFixVector& position, char nType, int nSize, char nFrame, char nRotFrame, char nOrient)
 {
+#if 0
 if (gameStates.render.nShadowMap)
 	return 0;
 
@@ -1081,6 +1079,9 @@ item.position.Assign (position);
 if (gameOpts->SoftBlend (SOFT_BLEND_SPARKS))
 	m_data.bSoftBlend = 1;
 return Add (&item, position);
+#else
+return 0;
+#endif
 }
 
 //------------------------------------------------------------------------------
