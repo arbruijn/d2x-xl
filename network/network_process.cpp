@@ -167,6 +167,7 @@ int NetworkProcessExtraGameInfo (ubyte *dataP)
 ReceiveExtraGameInfoPacket (dataP, extraGameInfo + 1);
 if (extraGameInfo [1].nVersion != EGI_DATA_VERSION) {
 	MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_D2X_VERSION_MISMATCH);
+	networkData.nStatus = NETSTAT_MENU;
 	return 0;
 	}
 if (!extraGameInfo [1].bAllowCustomWeapons)
