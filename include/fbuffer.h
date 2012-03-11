@@ -21,6 +21,7 @@ typedef struct tFrameBuffer {
 	int		nColorBuffers;
 	int		nFirstBuffer;
 	int		nBufferCount;
+	int		nBuffer;
 	int		nType;
 	int		nWidth;
 	int		nHeight;
@@ -66,12 +67,13 @@ class CFBO {
 			}
 
 		inline void SelectColorBuffers (int nBuffer = 0) { 
-			if ((m_info.nBufferCount == 1) || (nBuffer >= m_info.nBufferCount))
-				glDrawBuffer (m_info.bufferIds [0]);
+			if ((m_info.nBufferCount == 1) || (nBuffer >= m_info.nBufferCount)) 
+				glDrawBuffer (m_info.bufferIds [nBuffer = 0]);
 			else if (nBuffer < 0)
 				glDrawBuffers (m_info.nBufferCount, m_info.bufferIds); 
 			else
 				glDrawBuffer (m_info.bufferIds [nBuffer]);
+			m_info.nBuffer = nBuffer;
 			}
 
 		void FlipBuffers (int i, int j) {

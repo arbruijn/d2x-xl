@@ -58,6 +58,7 @@ switch (m_info.nStatus = glCheckFramebufferStatusEXT (GL_FRAMEBUFFER_EXT)) {
 void CFBO::Init (void)
 {
 memset (&m_info, 0, sizeof (m_info));
+m_info.nBuffer = 0x7FFFFFFF;
 }
 
 //------------------------------------------------------------------------------
@@ -260,11 +261,9 @@ if (!m_info.bActive)
 if (Available () <= 0)
 	return 0;
 m_info.bActive = 0;
-//if (bFallback) 
-	{
-	glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-	ogl.SetDrawBuffer (GL_BACK, 0);
-	}
+m_info.nBuffer = 0x7FFFFFFF;
+glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+ogl.SetDrawBuffer (GL_BACK, 0);
 return 1;
 }
 
