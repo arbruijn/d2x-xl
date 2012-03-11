@@ -350,7 +350,7 @@ do {
 	m.AddCheck ("use inventory", TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_U, HTX_GPLAY_INVENTORY);
 	m.AddCheck ("spinup gatling", TXT_SPINUP_GATLING, extraGameInfo [0].bGatlingSpeedUp, KEY_G, HTX_SPINUP_GATLING);
 	if (!gameStates.app.bGameRunning)
-		m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [IsMultiGame].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
+		m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [0].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
 	m.AddText ("", "");
 	m.AddMenu ("reorder guns", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
 	m.AddMenu ("reorder missiles", TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
@@ -389,8 +389,9 @@ GET_VAL (extraGameInfo [0].headlight.bDrainPower, "headlight drains power");
 GET_VAL (extraGameInfo [0].headlight.bBuiltIn, "built-in headlight");
 GET_VAL (extraGameInfo [0].bGatlingSpeedUp, "spinup gatling");
 if (!gameStates.app.bGameRunning) {
-	GET_VAL (extraGameInfo [IsMultiGame].bAllowCustomWeapons, "allow custom weapons");
-	if (!extraGameInfo [IsMultiGame].bAllowCustomWeapons)
+	GET_VAL (extraGameInfo [0].bAllowCustomWeapons, "allow custom weapons");
+	extraGameInfo [1].bAllowCustomWeapons = extraGameInfo [0].bAllowCustomWeapons;
+	if (!extraGameInfo [0].bAllowCustomWeapons)
 		SetDefaultWeaponProps ();
 	}
 //if (gameStates.app.bGameRunning)

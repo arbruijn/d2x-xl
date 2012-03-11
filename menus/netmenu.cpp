@@ -377,8 +377,8 @@ if ((nCurItem >= i) && (nCurItem < i + nGameTypes)) {
 		return nCurItem;
 		}
 	}
-if ((menu.Available ("entropy") && ((bool) menu.Value ("entropy") == !menu.Available ("entropy options"))) ||
-	 ((gameOpts->app.bExpertMode == SUPERUSER) && menu.Available ("monsterball") && ((bool) menu.Value ("monsterball") == !menu.Available ("monsterball options"))))
+if ((menu.Available ("entropy") && ((menu.Value ("entropy") != 0) == !menu.Available ("entropy options"))) ||
+	 ((gameOpts->app.bExpertMode == SUPERUSER) && menu.Available ("monsterball") && ((menu.Value ("monsterball") != 0) == !menu.Available ("monsterball options"))))
 	key = -2;
 //force restricted game for team games
 //obsolete with D2X-W32 as it can assign players to teams automatically
@@ -495,7 +495,7 @@ do {
 	m.AddCheck ("show players on map", TXT_SHOW_PLAYERS, mpParams.bShowPlayersOnAutomap, KEY_A, HTX_MULTI2_SHOWPLRS);
 	m.AddCheck ("short packets", TXT_SHORT_PACKETS, mpParams.bShortPackets, KEY_H, HTX_MULTI2_SHORTPKTS);
 	if (!gameStates.app.bGameRunning)
-		m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [1].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
+		m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [0].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
 	m.AddText ("", "");
 	m.AddMenu ("allowed weapons", TXT_WAOBJECTS_MENU, KEY_O, HTX_MULTI2_OBJECTS);
 	m.AddText ("", "");
@@ -528,8 +528,9 @@ if (i == m.IndexOf ("allowed weapons")) {
 	}
 
 if (!gameStates.app.bGameRunning) {
-	extraGameInfo [1].bAllowCustomWeapons = ubyte (m.Value ("allow custom weapons"));
-	if (!extraGameInfo [1].bAllowCustomWeapons)
+	extraGameInfo [0].bAllowCustomWeapons = ubyte (m.Value ("allow custom weapons"));
+	extraGameInfo [1].bAllowCustomWeapons = extraGameInfo [0].bAllowCustomWeapons;
+	if (!extraGameInfo [0].bAllowCustomWeapons)
 		SetDefaultWeaponProps ();
 	}	
 mpParams.bInvul = ubyte (m.Value ("spawn invul"));
@@ -661,6 +662,15 @@ if ((m = menu ["spawn delay"])) {
 		}
 	}
 
+if (!(IsMultiGame && gameStates.app.bGameRunning) && (m = menu ["speed"])) {
+	v = m->Value ();
+	if (extraGameInfo [0].nSpeedScale != v) {
+		extraGameInfo [0].nSpeedScale = v;
+		v = 5 * (v + 2);
+		sprintf (m->m_text, TXT_GAME_SPEED, v / 10, v % 10);
+		m->m_bRebuild = 1;
+		}
+	}
 return nCurItem;
 }
 
@@ -738,6 +748,13 @@ do {
 	sprintf (szSlider + 1, TXT_RESPAWN_DELAY, extraGameInfo [0].nSpawnDelay / 1000);
 	*szSlider = *(TXT_RESPAWN_DELAY - 1);
 	m.AddSlider ("spawn delay", szSlider + 1, extraGameInfo [0].nSpawnDelay / 5000, 0, 12, KEY_R, HTX_GPLAY_SPAWNDELAY);
+	if (!(IsMultiGame && gameStates.app.bGameRunning)) {
+		int v = 5 * (extraGameInfo [0].nSpeedScale + 2);
+		sprintf (szSlider + 1, TXT_GAME_SPEED, v / 10, v % 10);
+		*szSlider = *(TXT_GAME_SPEED - 1);
+		m.AddSlider ("speed", szSlider + 1, extraGameInfo [0].nSpeedScale, 0, 4, KEY_S, HTX_GAME_SPEED);
+		}
+
 	m.AddText ("", "");
 
 	i = m.Menu (NULL, TXT_D2XOPTIONS_TITLE, NetworkD2XOptionsPoll, &choice);

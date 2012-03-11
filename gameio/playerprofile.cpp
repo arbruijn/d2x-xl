@@ -402,6 +402,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bShowWeapons, 0, 0);
 		RP (extraGameInfo [i].bAllowCustomWeapons, 0, 0);
 		RP (extraGameInfo [i].nFusionRamp, 0, 0);
+		RP (extraGameInfo [i].nSpeedScale, 0, 0);
 
 		RP (extraGameInfo [i].entropy.nCaptureVirusThreshold, 0, 0);
 		RP (extraGameInfo [i].entropy.nCaptureTimeThreshold, 0, 0);
@@ -961,6 +962,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo [0].bAllowCustomWeapons", "1"},
 	 {"extraGameInfo [0].bBrightObjects", "0"},
 	 {"extraGameInfo[0].nFusionRamp", "2"},
+	 {"extraGameInfo[0].nSpeedScale", "0"},
 	 {"gameOptions[0].input.keyboard.bRamp[0]", "0"},
 	 {"gameOptions[0].input.mouse.sensitivity[0]", "8"},
 	 {"gameOptions[0].input.trackIR.sensitivity[0]", "8"},

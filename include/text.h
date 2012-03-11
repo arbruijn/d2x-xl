@@ -1989,11 +1989,11 @@ void LoadGameTexts(void);
 #define TXT_DOWNLOAD_SUCCEEDED      GT(1205)
 #define TXT_DOWNLOAD_FAILED         GT(1206)
 #define TXT_PATCH_FAILED            GT(1207)
+#define TXT_GAME_SPEED					GT(1208)
+#define TXT_D2X_VERSION_MISMATCH		GT(1209)
 
 #if 0
 
-#define TXT_					GT(1208)
-#define TXT_					GT(1209)
 #define TXT_					GT(1210)
 #define TXT_					GT(1211)
 #define TXT_					GT(1212)
@@ -2633,11 +2633,11 @@ void LoadGameTexts(void);
 #define HTX_CPIT_RADARCOLOR			HT(427)
 #define HTX_CPIT_RADARSTYLE			HT(428)
 #define HTX_HIDE_TGTIND					HT(429)
-#define HTX_ALLOW_CUSTOM_WEAPONS			HT(430)
+#define HTX_ALLOW_CUSTOM_WEAPONS		HT(430)
+#define HTX_GAME_SPEED					HT(431)
 
 #if 0
 
-#define HTX_						HT(431)
 #define HTX_						HT(432)
 #define HTX_						HT(433)
 #define HTX_						HT(434)

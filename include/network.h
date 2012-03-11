@@ -20,6 +20,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 #include "loadgame.h"
 
+#define EGI_DATA_VERSION				1
+
 #define NETWORK_OEM						0x10
 
 #define NETSTAT_MENU                0
@@ -188,6 +190,14 @@ typedef struct tLoadoutInfo {
 
 typedef struct tExtraGameInfo {
 	ubyte   	nType;
+	int		nVersion;
+
+	char					szGameName [NETGAME_NAME_LEN + 1];
+	tEntropyGameInfo	entropy;
+	tMonsterballInfo	monsterball;
+	tHeadlightInfo		headlight;
+	tLoadoutInfo		loadout;
+
 	char		bFriendlyFire;
 	char		bInhibitSuicide;
 	char		bFixedRespawns;
@@ -214,7 +224,6 @@ typedef struct tExtraGameInfo {
 	char		bSmartWeaponSwitch;
 	char		bFluidPhysics;
 	char		nWeaponDropMode;
-	tEntropyGameInfo entropy;
 	char		bRotateLevels;
 	char		bDisableReactor;
 	char		bMouseLook;
@@ -259,20 +268,18 @@ typedef struct tExtraGameInfo {
 	char		bEnhancedShakers;
 	char		bShowWeapons;
 	char		bGatlingSpeedUp;
+	char		bRotateMarkers;
+	char		bAllowCustomWeapons;
 	char		nHitboxes;
 	char		nDamageModel;
 	char		nRadar;
 	char		nDrag;
 	char		nSpotSize;
 	char		nSpotStrength;
-	char		bRotateMarkers;
-	char		bAllowCustomWeapons;
+
 	int		nLightRange;
-	tMonsterballInfo	monsterball;
-	char		szGameName [NETGAME_NAME_LEN + 1];
+	int		nSpeedScale;
 	int		nSecurity;
-	tHeadlightInfo	headlight;
-	tLoadoutInfo	loadout;
 } __pack__ tExtraGameInfo;
 
 typedef struct tMpParams {

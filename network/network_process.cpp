@@ -61,7 +61,6 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 
 void NetworkProcessGameInfo (ubyte *dataP)
 {
-	int				i;
 	CNetGameInfo	newGame (reinterpret_cast<tNetGameInfo*> (dataP));
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
@@ -80,7 +79,7 @@ if (newGame.m_info.nSecurity != playerInfoP->m_info.nSecurity) {
    }
 #endif
 Assert (playerInfoP != NULL);
-i = FindActiveNetGame (newGame.m_info.szGameName, newGame.m_info.nSecurity);
+int i = FindActiveNetGame (newGame.m_info.szGameName, newGame.m_info.nSecurity);
 if (i == MAX_ACTIVE_NETGAMES) {
 #if 1
 	console.printf (CON_DBG, "Too many netgames.\n");
@@ -163,21 +162,24 @@ if (actGameP->m_info.nNumPlayers == 0)
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessExtraGameInfo (ubyte *dataP)
+int NetworkProcessExtraGameInfo (ubyte *dataP)
 {
-	int	i;
-
 ReceiveExtraGameInfoPacket (dataP, extraGameInfo + 1);
+if (extraGameInfo [1].nVersion != EGI_DATA_VERSION) {
+	MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_D2X_VERSION_MISMATCH);
+	return 0;
+	}
 if (!extraGameInfo [1].bAllowCustomWeapons)
 	SetDefaultWeaponProps ();
 SetMonsterballForces ();
 LogExtraGameInfo ();
 gameStates.app.bHaveExtraGameInfo [1] = 1;
-i = FindActiveNetGame (extraGameInfo [1].szGameName, extraGameInfo [1].nSecurity);
+int i = FindActiveNetGame (extraGameInfo [1].szGameName, extraGameInfo [1].nSecurity);
 if (i < networkData.nActiveGames)
 	activeExtraGameInfo [i] = extraGameInfo [1];
 else
 	memset (activeExtraGameInfo + i, 0, sizeof (activeExtraGameInfo [i]));
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -186,19 +188,17 @@ void NetworkProcessDump (tSequencePacket *their)
 {
 	// Our request for join was denied.  Tell the user why.
 
-	char temp [40];
-	int i;
-
 if (their->player.connected != 7) {
 	MsgBox (NULL, NULL, 1, TXT_OK, NET_DUMP_STRINGS (their->player.connected));
 	networkData.nStatus = NETSTAT_MENU;
 	}
 else {
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (!stricmp (their->player.callsign, gameData.multiplayer.players [i].callsign)) {
-			if (i!=WhoIsGameHost ()) 
+			if (i != WhoIsGameHost ()) 
 				HUDInitMessage (TXT_KICK_ATTEMPT, their->player.callsign);
 			else {
+				char temp [40];
 				sprintf (temp, TXT_KICKED_YOU, their->player.callsign);
 				MsgBox (NULL, NULL, 1, TXT_OK, &temp);
 				if (networkData.nStatus == NETSTAT_PLAYING) {

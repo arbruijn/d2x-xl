@@ -161,6 +161,7 @@ class CPhysSimData {
 		short					nStartSeg;
 		CFixVector			vStartPos;
 		short					nOldSeg;
+		CFixVector			velocity;
 		CFixVector			vOldPos;
 		CFixVector			vNewPos;
 		CFixVector			vHitPos;

@@ -1954,6 +1954,8 @@ const char *defaultGameTexts [][2] = {
  {"\nDie Datei\n\n%s\n\nwurde erfolgreich heruntergeladen.", "\nThe file\n\n%s\n\nwas sucessfully downloaded."},
  {"\nDie Datei\n\n%s\n\nwurde erfolgreich heruntergeladen,\nkonnte aber nicht ausgefuehrt werden.\nBitte beende D2X-XL und starte die Installation manuell.", 
   "\nThe file\n\n%s\n\nwas sucessfully downloaded, but couldn't be excuted.\nPlease leave D2X-XL and start the installer manually."},
+ {"Spiel~Geschwindigkeit: x %d.%d", "game ~Speed: x %d.%d"},
+ {"Deine Version von D2X-XL\npasst nicht zu der Version,\ndie fuer dieses Spiel verwendet wird.", "Your version of D2X-XL\ndoes not match the version\nin use for that game."},
  
 #if 0
  {"", ""},

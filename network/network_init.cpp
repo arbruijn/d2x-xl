@@ -485,6 +485,7 @@ else {
 	PrintLog (0, "nSpotSize: %d\n", extraGameInfo [1].nSpotSize);
 	PrintLog (0, "nSpotStrength: %d\n", extraGameInfo [1].nSpotStrength);
 	PrintLog (0, "nLightRange: %d\n", extraGameInfo [1].nLightRange);
+	PrintLog (0, "nSpeedScale: %d.%d\n", 5 * (extraGameInfo [1].nSpeedScale + 2) / 10, 5 * (extraGameInfo [1].nSpeedScale + 2) % 10);
 	PrintLog (0, "entropy info data:\n");
 	PrintLog (0, "nEnergyFillRate: %d\n", extraGameInfo [1].entropy.nEnergyFillRate);
 	PrintLog (0, "nShieldFillRate: %d\n", extraGameInfo [1].entropy.nShieldFillRate);
