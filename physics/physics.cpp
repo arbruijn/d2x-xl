@@ -43,7 +43,7 @@ static int bNewPhysCode = 1;
 
 #define TURNROLL_SCALE	 (0x4ec4/2)
 
-#define MAX_OBJECT_VEL ((extraGameInfo [IsMultiGame].nSpeedScale + 2) * I2X (100) / 2)
+#define MAX_OBJECT_VEL (I2X (100) + extraGameInfo [IsMultiGame].nSpeedScale * I2X (100) / 4)
 
 #define BUMP_HACK	1	//if defined, bump CPlayerData when he gets stuck
 #define DAMPEN_KICKBACK 0 // if defined, ship will not bounce endlessly back from walls while having thrust
@@ -430,8 +430,11 @@ bSpeedBoost = speedBoost.bBoosted;
 objP = &OBJECTS [nObject];
 bGetPhysSegs = (objP->Type () == OBJ_PLAYER) || (objP->Type () == OBJ_ROBOT);
 velocity = objP->Velocity ();
-velocity *= (extraGameInfo [IsMultiGame].nSpeedScale + 2);
-velocity /= 2;
+#if DBG
+if (!velocity.IsZero ())
+	nDbgSeg = nDbgSeg;
+#endif
+//velocity *= I2X (extraGameInfo [IsMultiGame].nSpeedScale + 2) / 2;
 vStartPos = objP->Position ();
 nStartSeg = objP->Segment ();
 #if DBG
@@ -451,6 +454,7 @@ if (extraGameInfo [IsMultiGame].bFluidPhysics) {
 	}
 else
 	xTimeScale = 100;
+xTimeScale += extraGameInfo [IsMultiGame].nSpeedScale * xTimeScale / 4;
 }
 
 //	-----------------------------------------------------------------------------
@@ -973,8 +977,7 @@ return 1;
 
 void CObject::FinishPhysicsSim (CPhysSimData& simData)
 {
-simData.velocity *= 2;
-simData.velocity /= (extraGameInfo [IsMultiGame].nSpeedScale + 2);
+//simData.velocity /= I2X (extraGameInfo [IsMultiGame].nSpeedScale + 2) / 2;
 Velocity () = simData.velocity;
 }
 

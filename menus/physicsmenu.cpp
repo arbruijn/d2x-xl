@@ -155,8 +155,8 @@ if (!(IsMultiGame && gameStates.app.bGameRunning) && (m = menu ["speed"])) {
 	v = m->Value ();
 	if (extraGameInfo [0].nSpeedScale != v) {
 		extraGameInfo [0].nSpeedScale = v;
-		v = 5 * (v + 2);
-		sprintf (m->m_text, TXT_GAME_SPEED, v / 10, v % 10);
+		v = 100 + v * 25;
+		sprintf (m->m_text, TXT_GAME_SPEED, v / 100, v % 100);
 		m->m_bRebuild = 1;
 		}
 	}
@@ -266,8 +266,8 @@ do {
 	*szSlider = *(TXT_FUSION_RAMP - 1);
 	m.AddSlider ("fusion ramp", szSlider + 1, nFusionRamp - 1, 0, 1, KEY_F, HTX_FUSION_RAMP);
 	if (!(IsMultiGame && gameStates.app.bGameRunning)) {
-		int v = 5 * (extraGameInfo [0].nSpeedScale + 2);
-		sprintf (szSlider + 1, TXT_GAME_SPEED, v / 10, v % 10);
+		int v = 100 + extraGameInfo [0].nSpeedScale * 25;
+		sprintf (szSlider + 1, TXT_GAME_SPEED, v / 100, v % 100);
 		*szSlider = *(TXT_GAME_SPEED - 1);
 		m.AddSlider ("speed", szSlider + 1, extraGameInfo [0].nSpeedScale, 0, 4, KEY_S, HTX_GAME_SPEED);
 		}

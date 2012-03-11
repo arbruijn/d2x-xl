@@ -68,6 +68,7 @@ if (!gameStates.app.bNostalgia && (!EGI_FLAG (nDrag, 0, 0, 0) || !EGI_FLAG (bWig
 nParent = gameData.objs.parentObjs [Index ()];
 parentP = (nParent < 0) ? NULL : OBJECTS + nParent;
 FixFastSinCos (fix (gameData.time.xGame / gameStates.gameplay.slowmo [1].fSpeed), &xWiggle, NULL);
+xWiggle = 100 * xWiggle / (100 + extraGameInfo [0].nSpeedScale * 25);
 if (gameData.time.xFrame < I2X (1))// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
 	xWiggle = FixMul (xWiggle * 20, gameData.time.xFrame); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 if (SPECTATOR (this))
