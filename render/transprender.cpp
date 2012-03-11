@@ -1489,6 +1489,11 @@ for (listP = &m_data.depthBuffer [m_data.nMaxOffs], nItems = m_data.nItems [0]; 
 		}
 	}
 
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
+ogl.SetDepthWrite (false);
+ogl.SetDepthMode (GL_LEQUAL);
+ogl.SetDepthTest (true);
+glowRenderer.End ();
 FlushBuffers (-1);
 particleManager.EndRender ();
 shaderManager.Deploy (-1);

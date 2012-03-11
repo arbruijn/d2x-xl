@@ -726,7 +726,7 @@ else
 		SetDepthTest (true);
 		SetDepthMode (GL_LESS);
 		SetAlphaTest (true);
-		glAlphaFunc (GL_GEQUAL, (float) 0.01);
+		glAlphaFunc (GL_GEQUAL, (float) 0.005);
 		}
 	SetBlending (true);
 	SetBlendMode (OGL_BLEND_ALPHA);

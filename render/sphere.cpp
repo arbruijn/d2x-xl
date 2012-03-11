@@ -572,44 +572,20 @@ return 1;
 
 void CSphere::RenderRing (int nOffset, int nItems, int bTextured, int nPrimitive)
 {
-if (ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0)) {
-	if (bTextured)
-		OglTexCoordPointer (2, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].uv));
-	OglVertexPointer (3, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].vPos));
-	OglDrawArrays (nPrimitive, 0, nItems);
-	ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-	}
-else {
-	glBegin (nPrimitive);
-	for (int i = 0, j = nOffset * nItems; i < nItems; i++, j++) {
-		if (bTextured)
-			glTexCoord2fv (reinterpret_cast<GLfloat*> (&m_vertices [j].uv));
-		glVertex3fv (reinterpret_cast<GLfloat*> (&m_vertices [j].vPos));
-		}
-	glEnd ();
-	}
+if (bTextured)
+	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].uv));
+OglVertexPointer (3, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].vPos));
+OglDrawArrays (nPrimitive, 0, nItems);
 }
 
 // -----------------------------------------------------------------------------
 
 void CSphere::RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int nItems, int bTextured, int nPrimitive)
 {
-if (ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0)) {
-	if (bTextured)
-		OglTexCoordPointer (2, GL_FLOAT, 0, texCoordP);
-	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
-	OglDrawArrays (nPrimitive, 0, nItems);
-	ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-	}
-else {
-	glBegin (nPrimitive);
-	for (int i = 0; i < nItems; i++) {
-		if (bTextured)
-			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP + i));
-		glVertex3fv (reinterpret_cast<GLfloat*> (vertexP + i));
-		}
-	glEnd ();
-	}
+if (bTextured)
+	OglTexCoordPointer (2, GL_FLOAT, 0, texCoordP);
+OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
+OglDrawArrays (nPrimitive, 0, nItems);
 }
 
 // -----------------------------------------------------------------------------
@@ -628,7 +604,7 @@ if (!Create (nRings, nTiles))
 h = nRings / 2;
 nQuads = 2 * nRings + 2;
 
-ogl.ResetClientStates ();
+ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 if (ogl.UseTransform ()) {
 	glScalef (fRadius, fRadius, fRadius);
 	for (nCull = 0; nCull < 2; nCull++) {
@@ -684,6 +660,7 @@ else {
 			}
 		}
 	}
+ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 OglCullFace (0);
 }
 
@@ -771,7 +748,7 @@ else
 	bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, &fScale);
 ogl.SetDepthMode (GL_LEQUAL);
 #if ADDITIVE_SPHERE_BLENDING
-ogl.SetBlendMode (bAdditive);
+ogl.SetBlendMode (glowRenderer.Available (GLOW_SHIELDS) ? OGL_BLEND_REPLACE : bAdditive);
 #else
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 #endif

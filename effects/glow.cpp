@@ -202,7 +202,7 @@ if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else
 	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-glClear (GL_COLOR_BUFFER_BIT);
+glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 return 1;
 }
 
@@ -571,7 +571,7 @@ if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else
 	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-glClear (GL_COLOR_BUFFER_BIT);
+glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 ogl.RestoreViewport ();
 #else
 glClear (GL_COLOR_BUFFER_BIT);
@@ -624,6 +624,7 @@ else
 	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
 
 	ogl.SetDepthWrite (false);
+	ogl.SetAlphaTest (false);
 	ogl.ResetClientStates (1);
 	//glClearColor (0.0, 0.375, 0.75, 0.5);
 	//glClear (GL_COLOR_BUFFER_BIT);
@@ -682,6 +683,7 @@ else
 	ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
 	ogl.SetDepthWrite (bDepthWrite);
+	ogl.SetAlphaTest (true);
 	ogl.SetDepthMode (nDepthMode);
 	ogl.SetStencilTest (false);
 	}
