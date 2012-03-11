@@ -179,6 +179,10 @@ for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	pathNode.m_bVisited = scanInfo.m_bFlag;
 	pathNode.m_nDepth = m_nDepth;
 	m_queue [m_nHead++] = nSuccSeg;
+	if (m_nHead >= gameData.segs.nSegments) {
+		PrintLog (0, "internal error in simple router!\n");
+		return 1;
+		}
 	}
 return 0;
 }
@@ -350,8 +354,8 @@ for (int nDir = 0; nDir < 2; nDir++) {
 			xDist += CFixVector::Dist (nDir ? m_p1 : m_p0, SEGMENTS [nSuccSeg].Center ());
 			break;
 			}
-		nLength++;
-		if (nLength > 2 * m_scanInfo.m_maxDist + 2)
+		++nLength;
+		if ((nLength > 2 * m_scanInfo.m_maxDist + 2) || (nLength > gameData.segs.nSegments))
 			return -0x7FFFFFFF;
 		xDist += SEGMENTS [nPredSeg].m_childDists [0][heap.m_path [nSuccSeg].m_nEdge];
 		nSuccSeg = nPredSeg;
