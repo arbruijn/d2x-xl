@@ -884,8 +884,8 @@ class CObject : public CObjectInfo {
 		inline void SetMoveDist (fix moveDist) { m_xMoveDist = moveDist; }
 		inline void SetMoveTime (fix moveTime) { m_xMoveTime = moveTime; }
 
-		inline fix& Mass (void) { return mType.physInfo.mass; }
-		inline fix& Drag (void) { return mType.physInfo.drag; }
+		inline fix Mass (void) { return mType.physInfo.mass; }
+		inline fix Drag (void) { return mType.physInfo.drag; }
 		inline CFixVector& Thrust (void) { return mType.physInfo.thrust; }
 		inline CFixVector& Velocity (void) { return mType.physInfo.velocity; }
 		inline CFixVector& Position (void) { return info.position.vPos; }

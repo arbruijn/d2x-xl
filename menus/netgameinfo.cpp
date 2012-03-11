@@ -169,6 +169,7 @@ else
 		ADDFLAG (AXI.bTripleFusion, "tri fusion");
 		ADDFLAG (AXI.bEnhancedShakers, "enh shakers");
 		ADDFLAG (AXI.nHitboxes, "hit boxes");
+		ADDFLAG (AXI.nSpeedScale, "speed up");
 		}
 	else
 		strcat (mTexts [opt], "Gameplay ext.: None");
