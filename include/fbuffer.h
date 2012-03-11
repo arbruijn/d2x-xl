@@ -40,7 +40,7 @@ class CFBO {
 		int Create (int nWidth, int nHeight, int nType, int nColorBuffers = 1);
 		void Destroy (void);
 		int Available (void);
-		int Enable (int nColorBuffers = -1);
+		int Enable (int nColorBuffers = 0);
 		int Disable (void);
 		inline int GetType (void) { return m_info.nType; }
 		inline void SetType (int nType) { m_info.nType = nType; }

@@ -537,7 +537,7 @@ class COGL {
 			return m_data.nCullMode;
 			}
 
-		int SelectDrawBuffer (int nBuffer, int nColorBuffers = -1);
+		int SelectDrawBuffer (int nBuffer, int nColorBuffers = 0);
 
 		int SelectGlowBuffer (void);
 
