@@ -1738,30 +1738,47 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-void CObject::ApplyDamageToPlayer (CObject* killerObjP, fix damage)
+void CObject::ApplyDamageToPlayer (CObject* killerObjP, fix xDamage)
 {
+if (gameStates.app.bPlayerIsDead) {
+	PrintLog (0, "ApplyDamageToPlayer: Player is already dead\n");
+	return;
+	}
+if (gameStates.app.bD2XLevel && (SEGMENTS [info.nSegment].HasNoDamageProp ())) {
+	PrintLog (0, "ApplyDamageToPlayer: No damage segment\n");
+	return;
+	}
+if ((info.nId == N_LOCALPLAYER) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
+	PrintLog (0, "ApplyDamageToPlayer: Player is invulnerable\n");
+	return;
+	}
+
 CPlayerData *playerP = gameData.multiplayer.players + info.nId;
 CPlayerData *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? gameData.multiplayer.players + killerObjP->info.nId : NULL;
-if (gameStates.app.bPlayerIsDead)
-	return;
 
-if (gameStates.app.bD2XLevel && (SEGMENTS [info.nSegment].HasNoDamageProp ()))
-	return;
-if ((info.nId == N_LOCALPLAYER) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
-	return;
-if (killerObjP && (killerObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (killerObjP->info.nId).companion)
-	return;
-if (killerObjP == this) {
-	if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bInhibitSuicide)
+if (killerObjP) {
+	if ((killerObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (killerObjP->info.nId).companion) {
+		PrintLog (0, "ApplyDamageToPlayer: Player was hit by Guidebot\n");
 		return;
-	}
-else if (killerP && gameStates.app.bHaveExtraGameInfo [1] && !(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
-	if (IsTeamGame) {
-		if (GetTeam (info.nId) == GetTeam (killerObjP->info.nId))
-			return;
 		}
-	else if (IsCoopGame)
-		return;
+	if (gameStates.app.bHaveExtraGameInfo [1]) {
+		if ((killerObjP == this) && !COMPETITION && extraGameInfo [1].bInhibitSuicide) {
+			PrintLog (0, "ApplyDamageToPlayer: Suicide inhibited\n");
+			return;
+			}
+		else if (killerP && !(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
+			if (IsTeamGame) {
+				if (GetTeam (info.nId) == GetTeam (killerObjP->info.nId)) {
+					PrintLog (0, "ApplyDamageToPlayer: Friendly fire suppressed (team game)\n");
+					return;
+					}
+				}
+			else if (IsCoopGame) {
+				PrintLog (0, "ApplyDamageToPlayer: Friendly fire suppressed (coop game)\n");
+				return;
+				}
+			}
+		}
 	}
 if (gameStates.app.bEndLevelSequence)
 	return;
@@ -1769,17 +1786,19 @@ if (gameStates.app.bEndLevelSequence)
 gameData.multiplayer.bWasHit [info.nId] = -1;
 
 if (info.nId == N_LOCALPLAYER) {		//is this the local player?
+	PrintLog (0, "ApplyDamageToPlayer: Processing local player damage %d\n", xDamage);
 	if ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
 		double h = (double) playerP->netKillsTotal / (double) (killerP->netKillsTotal + 1);
 		if (h < 0.5)
 			h = 0.5;
 		else if (h > 1.0)
 			h = 1.0;
-		if (!(damage = (fix) ((double) damage * h)))
-			damage = 1;
+		if (!(xDamage = (fix) ((double) xDamage * h)))
+			xDamage = 1;
+		PrintLog (0, "ApplyDamageToPlayer: Applying player handicap (resultung damage = %d)\n", xDamage);
 		}
-	playerP->UpdateShield (-damage);
-	paletteManager.BumpEffect (X2I (damage) * 4, -X2I (damage / 2), -X2I (damage / 2));	//flash red
+	playerP->UpdateShield (-xDamage);
+	paletteManager.BumpEffect (X2I (xDamage) * 4, -X2I (xDamage / 2), -X2I (xDamage / 2));	//flash red
 	if (playerP->Shield () < 0) {
   		playerP->nKillerObj = OBJ_IDX (killerObjP);
 		Die ();
