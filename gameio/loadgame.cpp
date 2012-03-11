@@ -2248,6 +2248,7 @@ int GetRandomPlayerPosition (void)
 
 // find the smallest distance between each spawn point and any player in the mine
 d_srand (gameStates.app.nRandSeed = short (clock ()));
+for (int h = 0; h < 100; h++)
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	spawnMap [i].i = i;
 	spawnMap [i].xDist = 0x7fffffff;

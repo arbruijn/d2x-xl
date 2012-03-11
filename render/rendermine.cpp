@@ -663,7 +663,7 @@ ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 RenderSegmentList (RENDER_TYPE_ZCULL);	// render depth only
 --gameStates.render.bFullBright;
 #endif
-#if DBG
+#if 0 //DBG
 RenderCockpitModel ();
 #endif
 RenderSkyBoxObjects ();

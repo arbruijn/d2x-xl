@@ -168,6 +168,10 @@ for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 #if DBG_SCAN
 	if (nSuccSeg == nDbgSeg)
 		nDbgSeg = nDbgSeg;
+	if (nSuccSeg >= gameData.segs.nSegments) {
+		PrintLog (0, "internal error in simple router!\n");
+		return -1;
+		}
 #endif
 	CPathNode& pathNode = m_path [nSuccSeg];
 	if (pathNode.m_bVisited == scanInfo.m_bFlag)
@@ -179,10 +183,12 @@ for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	pathNode.m_bVisited = scanInfo.m_bFlag;
 	pathNode.m_nDepth = m_nDepth;
 	m_queue [m_nHead++] = nSuccSeg;
+#if DBG_SCAN
 	if (m_nHead >= gameData.segs.nSegments) {
 		PrintLog (0, "internal error in simple router!\n");
-		return 1;
+		return -1;
 		}
+#endif
 	}
 return 0;
 }
@@ -259,10 +265,12 @@ if (m_nDestSeg >= 0) {
 		}
 #endif
 	// adjacent segments?
-	short nSide = SEGMENTS [m_nStartSeg].ConnectedSide (SEGMENTS + m_nDestSeg);
-	if ((nSide != -1) && (SEGMENTS [m_nDestSeg].IsDoorWay (nSide, NULL) & m_widFlag)) {
-		m_cache [m_cacheType].SetPathLength (1);
-		return CFixVector::Dist (m_p0, m_p1);
+	if (m_cacheType >= 0) {
+		short nSide = SEGMENTS [m_nStartSeg].ConnectedSide (SEGMENTS + m_nDestSeg);
+		if ((nSide != -1) && (SEGMENTS [m_nDestSeg].IsDoorWay (nSide, NULL) & m_widFlag)) {
+			m_cache [m_cacheType].SetPathLength (1);
+			return CFixVector::Dist (m_p0, m_p1);
+			}
 		}
 
 #if !DBG

@@ -1,5 +1,5 @@
-#ifndef CON_console_H
-#define CON_console_H
+#ifndef _CONSOLE_H
+#define _CONSOLE_H
 
 /*! \mainpage
 
