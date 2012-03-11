@@ -238,7 +238,7 @@ return SelectDrawBuffer (int (m_data.xStereoSeparation > 0), 1) > -1;
 
 int COGL::SelectBlurBuffer (int nBuffer) 
 { 
-return SelectDrawBuffer (nBuffer + 3);
+return SelectDrawBuffer (nBuffer + 3) > -1;
 }
 
 //------------------------------------------------------------------------------
