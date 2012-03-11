@@ -499,6 +499,7 @@ else if (nType == riMonsterball) {
 	DrawMonsterball (objP, color.Red (), color.Green (), color.Blue (), color.Alpha ());
 	}
 //shaderManager.Deploy (-1);
+ogl.SetDepthWrite (false);
 transparencyRenderer.ResetBitmaps ();
 }
 

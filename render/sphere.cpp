@@ -628,6 +628,7 @@ if (!Create (nRings, nTiles))
 h = nRings / 2;
 nQuads = 2 * nRings + 2;
 
+ogl.ResetClientStates ();
 if (ogl.UseTransform ()) {
 	glScalef (fRadius, fRadius, fRadius);
 	for (nCull = 0; nCull < 2; nCull++) {
