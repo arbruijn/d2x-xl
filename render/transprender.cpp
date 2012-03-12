@@ -1373,8 +1373,8 @@ if (!itemP->bRendered) {
 		ogl.SetDepthMode (GL_LEQUAL);
 		ogl.SetDepthTest (true);
 		itemP->Render ();
-		//if ((m_data.nCurType == tiSprite) && (m_data.nPrevType == tiSphere))
-		//	glowRenderer.End ();
+		if ((m_data.nCurType != tiSphere) && (m_data.nPrevType == tiSphere)) // spheres somehow mess up the glow renderer; I cannot determine why though
+			glowRenderer.End ();
 		}
 	catch(...) {
 		PrintLog (0, "invalid transparent render item (type: %d)\n", m_data.nCurType);
