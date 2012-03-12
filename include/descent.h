@@ -2522,6 +2522,7 @@ class CMultiplayerData {
 #if DBG
 			if ((nPlayer != nLocalPlayer) && (nStatus < 2))
 				nStatus = nStatus;
+			if (nPlayer < MAX_PLAYERS + 4)
 #endif
 			players [nPlayer].Connect (nStatus);
 			}

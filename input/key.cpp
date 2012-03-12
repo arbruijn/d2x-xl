@@ -645,7 +645,7 @@ SDL_EnableUNICODE (1);
 gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds ();
 gameStates.input.keys.nBufferType = 1;
 gameStates.input.keys.bRepeat = 1;
-for(i = 0; i < 256; i++)
+for(i = 0; i < 255; i++)
 	pszKeyText [i] = keyProperties [i].pszKeyText;
 // Clear the tKeyboard array
 KeyFlush ();

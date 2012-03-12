@@ -90,10 +90,10 @@ extern GLhandleARB	activeShaderProg;
 
 //------------------------------------------------------------------------------
 
-static inline int G3DrawTexPoly (int nVerts, CRenderPoint **pointList, tUVL *uvlList,
+static inline int G3DrawTexPoly (int nVerts, CRenderPoint **points, tUVL *uvls,
 											CBitmap *bmP, CFixVector *pvNormal, int bBlend, int bAdditive, short nSegment)
 {
-return fpDrawTexPolyMulti (nVerts, pointList, uvlList, NULL, bmP, NULL, NULL, pvNormal, 0, bBlend, bAdditive, nSegment);
+return fpDrawTexPolyMulti (nVerts, points, uvls, NULL, bmP, NULL, NULL, pvNormal, 0, bBlend, bAdditive, nSegment);
 }
 
 //------------------------------------------------------------------------------

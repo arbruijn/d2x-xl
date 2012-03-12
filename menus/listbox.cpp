@@ -140,7 +140,7 @@ fontManager.SetCurrent (SUBTITLE_FONT);
 
 m_nWidth = 0;
 for (i = 0; i < int (items.ToS ()); i++) {
-	int w, h, aw;
+//	int w, h, aw;
 	fontManager.Current ()->StringSize (items [i], w, h, aw);	
 	if (w > m_nWidth)
 		m_nWidth = w;

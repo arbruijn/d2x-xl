@@ -263,12 +263,19 @@ class CArray : public CQuickSort < _T > {
 		inline _T& operator= (CArray<_T>& source) { return Copy (source); }
 
 		inline _T& operator= (_T* source) { 
-			if (m_data.buffer) 
-				memcpy (m_data.buffer, source, m_data.length * sizeof (_T)); 
+#if DBG_ARRAYS
+			if (!m_data.buffer) 
+				return m_data.null;
+#endif
+			memcpy (m_data.buffer, source, m_data.length * sizeof (_T)); 
 			return m_data.buffer [0];
 			}
 
 		_T& Copy (CArray<_T> const & source, uint offset = 0) { 
+#if DBG_ARRAYS
+			if (!m_data.buffer) 
+				return m_data.null;
+#endif
 			if (((static_cast<int> (m_data.length)) >= 0) && (static_cast<int> (source.m_data.length) > 0)) {
 				if ((m_data.buffer && (m_data.length >= source.m_data.length + offset)) || Resize (source.m_data.length + offset, false)) {
 					memcpy (m_data.buffer + offset, source.m_data.buffer, ((m_data.length - offset < source.m_data.length) ? m_data.length - offset : source.m_data.length) * sizeof (_T)); 

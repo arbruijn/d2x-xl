@@ -274,7 +274,7 @@ else {
 	fVerts [2].v.coord.x = fPos.v.coord.x;
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	nTgtInd = extraGameInfo [IsMultiGame].bTargetIndicators;
-	bHasDmg = !EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) | (objP->Damage () < 1);
+	bHasDmg = !EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) || (objP->Damage () < 1);
 	if (!nTgtInd ||
 		 ((nTgtInd == 1) && (!EGI_FLAG (bDamageIndicators, 0, 1, 0) || !bHasDmg)) ||
 		 ((nTgtInd == 2) && !bHasDmg)) {

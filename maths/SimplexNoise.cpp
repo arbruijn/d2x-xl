@@ -34,9 +34,9 @@ int i = int (FastFloor (v)) & 255;
 v -= FastFloor (v);
 double u = Fade (v);
 #if DBG
-double A = Grad (m_random [i], v);
-double B = Grad (m_random [i+1], v - 1);
-double l = Lerp (u, A, B);
+double a = Grad (m_random [i], v);
+double b = Grad (m_random [i+1], v - 1);
+double l = Lerp (u, a, b);
 return l;
 #else
 return Lerp (u, Grad (m_random [i], v), Grad (m_random [i+1], v - 1));

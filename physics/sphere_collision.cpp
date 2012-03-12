@@ -167,7 +167,6 @@ float DistToFace (CFloatVector3 vRef, short nSegment, ubyte nSide, CFloatVector3
 	CFloatVector	h, r;
 	short*			nVerts = sideP->m_vertices;
 	int				i, j;
-	float				d;
 
 r.Assign (vRef);
 
@@ -201,7 +200,7 @@ for (i = 1; i <= 4; i++) {
 	v0 = v1;
 	v1 = &FVERTICES [nVerts [i % 4]];
 	FindPointLineIntersection (h, *v0, *v1, r, 1);
-	d = CFloatVector::Dist (h, r);
+	float d = CFloatVector::Dist (h, r);
 	if (minDist > d) {
 		minDist = d;
 		if (vHit)

@@ -1070,12 +1070,12 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 			bm.SetKey (j);
 			}
 		else {
+			ReadBitmap (&bm, int (bm.Width ()) * int (bm.Height ()), &cf, false);
+			j = indices [i];
 #if DBG
 			if (j == nDbgTexture)
 				nDbgTexture = nDbgTexture;
 #endif
-			ReadBitmap (&bm, int (bm.Width ()) * int (bm.Height ()), &cf, false);
-			j = indices [i];
 			bm.SetKey (j);
 			bm.RLEExpand (NULL, 0);
 			*bm.Props () = *gameData.pig.tex.bitmapP [j].Props ();

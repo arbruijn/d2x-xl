@@ -327,7 +327,7 @@ static int tMarker = -1;
 fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, short& nModel)
 {
 	CFixVector		vRef = OBJPOS (objP2)->vPos;
-	int				iModel1, nModels1, iModel2, nModels2, nHits, nTotalHits = 0;
+	int				iModel1, nModels1, iModel2, nModels2, nHits = 0, nTotalHits = 0;
 	CModelHitboxList	*pmhb1 = gameData.models.hitboxes + objP1->ModelId ();
 	CModelHitboxList	*pmhb2 = gameData.models.hitboxes + objP2->ModelId ();
 	fix				dMin = 0x7fffffff;

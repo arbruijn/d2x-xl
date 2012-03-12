@@ -179,7 +179,7 @@ extern CMissionManager missionManager;
 
 static inline bool MsnHasGameVer (const char *pszMission)
 {
-return (pszMission [0] == '[') && ::isdigit (pszMission [1]) && (pszMission [2] == ']');
+return (pszMission [0] == '[') && ::isdigit ((ubyte) pszMission [1]) && (pszMission [2] == ']');
 }
 
 //------------------------------------------------------------------------------

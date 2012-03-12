@@ -659,7 +659,7 @@ if ((info.nType == OBJ_WEAPON) && IsMissile ()) {
 		CreateExplBlast ();
 		CreateShockwave ();
 		}
-	if ((info.nId == EARTHSHAKER_ID) || (info.nId == EARTHSHAKER_ID))
+	if (info.nId == EARTHSHAKER_ID)
 		RequestEffects (MISSILE_LIGHTNING);
 	else if ((info.nId == EARTHSHAKER_MEGA_ID) || (info.nId == ROBOT_SHAKER_MEGA_ID))
 		RequestEffects (MISSILE_LIGHTNING);
@@ -2153,13 +2153,13 @@ return 1;
 
 #define	DO_COLLISION(type1, type2, collisionHandler) \
 			case COLLISION_OF ((type1), (type2)): \
-				return ((A)->collisionHandler) ((B), vHitPt, vNormal); \
+				return ((objA)->collisionHandler) ((objB), vHitPt, vNormal); \
 			case COLLISION_OF ((type2), (type1)): \
-				return ((B)->collisionHandler) ((A), vHitPt, vNormal);
+				return ((objB)->collisionHandler) ((objA), vHitPt, vNormal);
 
 #define	DO_SAME_COLLISION(type1, type2, collisionHandler) \
 				case COLLISION_OF ((type1), (type1)): \
-					return ((A)->collisionHandler) ((B), vHitPt);
+					return ((objA)->collisionHandler) ((objB), vHitPt);
 
 //these next two macros define a case that does nothing
 #define	NO_COLLISION(type1, type2, collisionHandler) \
@@ -2174,9 +2174,9 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CollideTwoObjects (CObject* A, CObject* B, CFixVector& vHitPt, CFixVector* vNormal)
+int CollideTwoObjects (CObject* objA, CObject* objB, CFixVector& vHitPt, CFixVector* vNormal)
 {
-	int collisionType = COLLISION_OF (A->info.nType, B->info.nType);
+	int collisionType = COLLISION_OF (objA->info.nType, objB->info.nType);
 
 switch (collisionType) {
 	NO_SAME_COLLISION (OBJ_FIREBALL, OBJ_FIREBALL,  CollideFireballAndFireball)
