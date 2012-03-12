@@ -218,6 +218,7 @@ if (bOgl) {
 	glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
+	ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	}
 return 0 != (gameOpts->render.effects.bGlow = bGlow);
 }
