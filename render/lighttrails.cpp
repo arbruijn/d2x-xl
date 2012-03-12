@@ -75,7 +75,7 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 	color *= fScale;
 	color.Alpha () = alpha;
 	glare.Bitmap ()->SetColor (&color);
-	ogl.RenderSprite (glare.Bitmap (), objP->info.position.vPos, xSize, xSize, alpha, LIGHTTRAIL_BLENDMODE, 5);
+	ogl.RenderSprite (glare.Bitmap (), objP->info.position.vPos, xSize, xSize, alpha, -LIGHTTRAIL_BLENDMODE, 5);
 	glare.Bitmap ()->SetColor (NULL);
 	}
 }

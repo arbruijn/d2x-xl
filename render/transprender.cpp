@@ -371,11 +371,12 @@ void CTranspSprite::Render (void)
 {
 #if 1
 	int bSoftBlend = (fSoftRad > 0) && transparencyRenderer.SoftBlend (SOFT_BLEND_SPRITES);
-	int bGlow = 1;
+	int bGlow = 0;
 
-if (!glowRenderer.Available (GLOW_SPRITES)) 
-	bGlow = 0;
-else {
+if (bAdditive < 0)
+	bAdditive = -bAdditive;
+else if (glowRenderer.Available (GLOW_SPRITES)) {
+	bGlow = 1;
 	if (bAdditive == 1) 
 		glowRenderer.Begin (GLOW_SPRITES, 2, false, 0.85f);
 	else if (bAdditive == 2)

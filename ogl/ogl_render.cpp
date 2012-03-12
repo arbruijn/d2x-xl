@@ -1156,7 +1156,7 @@ else {
 	else {
 		if (!colorP)
 			glColor4f (1, 1, 1, alpha);
-		SetBlendMode (bAdditive);
+		SetBlendMode (abs (bAdditive));
 		ogl.SetDepthWrite (false);
 		ogl.RenderQuad (bmP, vPosf, X2F (xWidth), X2F (xHeight), 3);
 		ogl.SetDepthWrite (true);
