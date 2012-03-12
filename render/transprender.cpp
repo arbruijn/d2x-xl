@@ -1508,35 +1508,33 @@ return m_data.bHaveDepthBuffer && !gameStates.render.cameras.bActive && (gameOpt
 void CTransparencyRenderer::RenderBuffer (CTranspItemBuffers buffer, CTranspItem** listP, bool bCleanup)
 {
 CTranspItem* currentP = *listP, * nextP, * prevP;
-if (currentP) {
-	if (bCleanup)
-		*listP = NULL;
-	prevP = NULL;
-	do {
+if (bCleanup)
+	*listP = NULL;
+prevP = NULL;
+do {
 #if DBG
-		if (currentP->nItem == nDbgItem)
-			nDbgItem = nDbgItem;
+	if (currentP->nItem == nDbgItem)
+		nDbgItem = nDbgItem;
 #endif
-		buffer.nItems [0]--;
-		RenderItem (currentP);
+	buffer.nItems [0]--;
+	RenderItem (currentP);
 
-		nextP = currentP->nextItemP;
-		if (bCleanup)
-			currentP->nextItemP = NULL;
-		else if (currentP->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
-			int nType = currentP->Type ();
-			currentP->nextItemP = buffer.freeList [nType];
-			buffer.freeList [nType] = currentP;
-			if (prevP)
-				prevP->nextItemP = nextP;
-			else
-				*listP = nextP;
-			}
+	nextP = currentP->nextItemP;
+	if (bCleanup)
+		currentP->nextItemP = NULL;
+	else if (currentP->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
+		int nType = currentP->Type ();
+		currentP->nextItemP = buffer.freeList [nType];
+		buffer.freeList [nType] = currentP;
+		if (prevP)
+			prevP->nextItemP = nextP;
 		else
-			prevP = currentP;
-		currentP = nextP;
-		} while (currentP);
-	}
+			*listP = nextP;
+		}
+	else
+		prevP = currentP;
+	currentP = nextP;
+	} while (currentP);
 }
 
 //------------------------------------------------------------------------------
@@ -1588,8 +1586,12 @@ m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 
-if (gameStates.app.nThreads < 2)
-	RenderBuffer (m_data.buffers [0], &m_data.buffers [0].depthBuffer [m_data.buffers [0].nMaxOffs], bCleanup);
+if (gameStates.app.nThreads < 2) {
+	CTranspItem	** listP;
+	int nItems;
+	for (listP = &m_data.buffers [0].depthBuffer [m_data.nMaxOffs], nItems = m_data.buffers [0].nItems [0]; (listP >= m_data.buffers [0].depthBuffer.Buffer ()) && nItems; listP--)
+		if (*listP)
+			RenderBuffer (m_data.buffers [0], listP, bCleanup);
 else {
 	CTranspItem	** listP [MAX_THREADS];
 	int			nBuffers = 0;
@@ -1602,7 +1604,8 @@ else {
 
 	while (nBuffers) {
 		for (int i = 0; i < nBuffers; i++)
-			RenderBuffer (m_data.buffers [i], listP [i], bCleanup);
+			if (*listP [i])
+				RenderBuffer (m_data.buffers [i], listP [i], bCleanup);
 		for (int i = 0; i < nBuffers; i++) {
 			if (!m_data.buffers [i].nItems [0] || (--listP [i] <= m_data.buffers [i].depthBuffer.Buffer ())) {
 				if (i < --nBuffers)
