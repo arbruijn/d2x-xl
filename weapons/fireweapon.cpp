@@ -600,7 +600,7 @@ if ((gameData.laser.xUpdateTime >= I2X (1) / 40) &&
 	 !((info.nId == GUIDEDMSL_ID) &&
 	   (this == (gmObjP = gameData.objs.guidedMissile [OBJECTS [cType.laserInfo.parent.nObject].info.nId].objP)) &&
 		(info.nSignature == gmObjP->info.nSignature))) {
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 	if (gameStates.app.bMultiThreaded)
 		gameData.objs.update.Push (this);
 	else

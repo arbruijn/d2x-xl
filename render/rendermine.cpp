@@ -488,7 +488,7 @@ RenderObjectsST ();
 if (!gameStates.app.bMultiThreaded || (gameStates.render.nShadowPass == 2) || (gameStates.app.nThreads < 3) || (gameData.render.mine.nRenderSegs [1] < 2 * (gameStates.app.nThreads - 1)))
 	RenderObjectsST ();
 else {
-#if USE_OPENMP > 1
+#if USE_OPENMP // > 1
 	if (!threadLock)
 		threadLock = SDL_CreateMutex ();
 	nThreads = gameStates.app.nThreads - 1;

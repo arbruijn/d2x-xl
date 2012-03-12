@@ -175,39 +175,58 @@ class CTranspThruster : public CTranspItem {
 		virtual inline tTranspItemType Type (void) { return tiThruster; }
 	};
 
-typedef struct tTranspItemBuffer {
-	CArray<CTranspItem*> depthBuffer;
-	CByteArray			itemHeap;
-	int					nHeapSize;
-	CTranspItem*		freeList [tiPoly + 1];
-	int					nMinOffs;
-	int					nMaxOffs;
-	int					nItems [2];
-	int					nCurType;
-	int					nPrevType;
-	int					zMin;
-	int					zMax;
-	double				zScale;
-	int					nWrap;
-	char					nFrame;
-	char					bClientState;
-	char					bTextured;
-	char					bClientColor;
-	char					bClientTexCoord;
-	char					bDisplay;
-	char					bHaveParticles;
-	char					bLightmaps;
-	char					bUseLightmaps;
-	char					bDecal;
-	char					bSplitPolys;
-	char					bAllowAdd;
-	char					bHaveDepthBuffer;
-	char					bRenderGlow;
-	char					bSoftBlend;
-	CBitmap*				bmP [3];
-	CFixVector			vViewer [2];
-	CFloatVector		vViewerf [2];
-} tTranspItemBuffer;
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+class CTranspItemBuffers {
+	public:
+		CArray<CTranspItem*> depthBuffer;
+		CByteArray				itemHeap;
+		int						nHeapSize;
+		CTranspItem*			freeList [tiPoly + 1];
+		int						nMinOffs;
+		int						nMaxOffs;
+		int						nItems [2];
+
+	int Create (void);
+	void Destroy (void);
+	void Clear (void);
+	inline void Reset (void) { nItems [0] = 0; }
+	void ResetFreeList (void);
+	inline CTranspItem* AllocItem (int nType, int nSize);
+	};
+
+class CTranspRenderData {
+	public:
+		CTranspItemBuffers buffers [MAX_THREADS];
+		int					nCurType;
+		int					nPrevType;
+		int					zMin;
+		int					zMax;
+		int					nMinOffs;
+		int					nMaxOffs;
+		double				zScale;
+		int					nWrap;
+		char					nFrame;
+		char					bClientState;
+		char					bTextured;
+		char					bClientColor;
+		char					bClientTexCoord;
+		char					bDisplay;
+		char					bHaveParticles;
+		char					bLightmaps;
+		char					bUseLightmaps;
+		char					bDecal;
+		char					bSplitPolys;
+		char					bAllowAdd;
+		char					bHaveDepthBuffer;
+		char					bRenderGlow;
+		char					bSoftBlend;
+		CBitmap*				bmP [3];
+		CFixVector			vViewer [2];
+		CFloatVector		vViewerf [2];
+	};
 
 class CTranspItemData : public CTranspItem {
 	public:
@@ -221,28 +240,28 @@ class CTranspItemData : public CTranspItem {
 
 class CTransparencyRenderer {
 	private:
-		tTranspItemBuffer	m_data;
+		CTranspRenderData m_data;
 
 	public:
 		int AllocBuffers (void);
 		void FreeBuffers (void);
 		void ResetBuffers (void);
 		void InitBuffer (int zMin, int zMax, int nWindow);
-		inline CTranspItem* AllocItem (int nType, int nSize);
+		inline CTranspItem* AllocItem (int nType, int nSize, int nThread);
 		inline void Init (void) {
 			m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 			m_data.nMaxOffs = 0;
 			}
-		inline void Reset (void) { m_data.nItems [0] = 0; }
-		inline int ItemCount (int i = 1) { return m_data.nItems [i]; }
+		void Reset (void);
+		int ItemCount (int i = 1);
 		int Add (CTranspItem* item, CFixVector vPos, int nOffset = 0, bool bClamp = false, int bTransformed = 0);
 		inline int AddFace (CSegFace *faceP) {
 			return gameStates.render.bTriangleMesh ? AddFaceTris (faceP) : AddFaceQuads (faceP);
 			}
 		int AddPoly (CSegFace *faceP, tFaceTriangle *triP, CBitmap *bmP,
-							CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, CFloatVector *color,
-							CFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
-							short nSegment);
+						 CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, CFloatVector *color,
+						 CFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
+						 short nSegment);
 		int AddObject (CObject *objP);
 		int AddSprite (CBitmap *bmP, const CFixVector& position, CFloatVector *color,
 							  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad);
@@ -285,9 +304,11 @@ class CTransparencyRenderer {
 		int LoadTexture (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap);
 		void ResetBitmaps (void);
 
-		inline tTranspItemBuffer& Data (void) { return m_data; }
+		inline CTranspRenderData& Data (void) { return m_data; }
 
 	private:
+		inline int HeapSize (void);
+		inline int DepthBuffer (void);
 		void ResetFreeList (void);
 		int AddFaceTris (CSegFace *faceP);
 		int AddFaceQuads (CSegFace *faceP);

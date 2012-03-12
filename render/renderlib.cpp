@@ -752,7 +752,7 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 
 ubyte BumpVisitedFlag (void)
 {
-#if USE_OPENMP > 1
+#if USE_OPENMP // > 1
 #	pragma omp critical
 #endif
 	{
@@ -768,7 +768,7 @@ return gameData.render.mine.nVisited;
 
 ubyte BumpProcessedFlag (void)
 {
-#if USE_OPENMP > 1
+#if USE_OPENMP // > 1
 #	pragma omp critical
 #endif
 	{
@@ -784,7 +784,7 @@ return gameData.render.mine.nProcessed;
 
 ubyte BumpVisibleFlag (void)
 {
-#if USE_OPENMP > 1
+#if USE_OPENMP // > 1
 #	pragma omp critical
 #endif
 	{

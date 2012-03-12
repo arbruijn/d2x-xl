@@ -56,7 +56,7 @@ if (faceP - FACES.faces >= gameData.segs.nFaces)
 	return 0;
 #endif
 
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 #	pragma omp critical
 #elif !USE_OPENMP
 SDL_mutexP (tiRender.semaphore);

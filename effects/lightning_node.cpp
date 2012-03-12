@@ -348,7 +348,7 @@ bool CLightningNode::SetLight (short nSegment, CFloatVector *colorP)
 {
 if (0 > (nSegment = FindSegByPos (m_vPos, nSegment, 0, 0)))
 	return false;
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 #	pragma omp critical
 #endif
 	{

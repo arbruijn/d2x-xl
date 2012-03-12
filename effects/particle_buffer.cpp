@@ -70,7 +70,7 @@ void CParticleBuffer::Setup (void)
 	bool alphaControl = AlphaControl ();
 
 PROF_START
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 if (gameStates.app.bMultiThreaded) {
 #	if (LAZY_RENDER_SETUP < 2)
 	if (m_iBuffer <= 1000)

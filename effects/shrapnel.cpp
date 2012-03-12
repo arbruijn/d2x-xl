@@ -128,11 +128,11 @@ uint CShrapnelCloud::Update (void)
 {
 	int i;
 
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 #	pragma omp parallel
 #endif
 	{
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 #	pragma omp for 
 #endif
 	for (i = 0; i < int (m_tos); i++)
@@ -154,11 +154,11 @@ return 0;
 void CShrapnelCloud::Draw (void)
 {
 if (explBlast.Load ())
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 #	pragma omp parallel
 #endif
 	{
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 #	pragma omp for
 #endif
 	for (int i = 0; i < int (m_tos); i++)
@@ -188,11 +188,11 @@ if (!CStack<CShrapnel>::Create (h))
 if (!Grow (h))
 	return 0;
 fScale = 7.0f / fScale;
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 #	pragma omp parallel
 #endif
 	{
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 #	pragma omp for 
 #endif
 	for (i = 0; i < h; i++) {
@@ -210,11 +210,11 @@ return 1;
 
 void CShrapnelCloud::Destroy (void)
 {
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 #	pragma omp parallel
 #endif
 	{
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 #	pragma omp for 
 #endif
 	for (int i = 0; i < int (m_tos); i++)

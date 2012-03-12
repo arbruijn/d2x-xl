@@ -289,7 +289,7 @@ if (SHOW_LIGHTNING) {
 			}
 		}
 	int nCurrent = -1;
-#if USE_OPENMP > 1
+#if USE_OPENMP // > 1
 	if (gameStates.app.bMultiThreaded && m_emitterList.Buffer ()) {
 		int nSystems = 0;
 		CLightningEmitter* emitterP, * nextP;
@@ -625,7 +625,7 @@ if (SHOW_LIGHTNING) {
 	m_nFirstLight = -1;
 	int nCurrent = -1;
 
-#if USE_OPENMP > 1
+#if USE_OPENMP // > 1
 	if (gameStates.app.bMultiThreaded && m_emitterList.Buffer ()) {
 		CLightningEmitter* emitterP;
 		int nSystems = 0;

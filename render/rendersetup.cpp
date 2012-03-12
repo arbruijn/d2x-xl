@@ -323,7 +323,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			else
 				ComputeFaceLight (0, gameData.segs.nSegments, 0);
 			}
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 		else {
 				int	nStart, nEnd, nMax;
 

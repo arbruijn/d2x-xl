@@ -194,7 +194,7 @@ tReplacementModel replacementModels [] = {
 	{"bullettime", NULL, MAX_POLYGON_MODELS - 34, 0, 1, -1},
 	{"hostage", NULL, HOSTAGE_MODEL, 0, 1, -1},
 	{"bullet", NULL, BULLET_MODEL, 0, 1, -1}
-#if DBG
+#if 0 //DBG
 	,
 	{"cockpit", NULL, COCKPIT_MODEL, 0, 1, -1}
 #endif

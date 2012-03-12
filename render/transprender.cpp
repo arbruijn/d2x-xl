@@ -592,21 +592,116 @@ transparencyRenderer.ResetBitmaps ();
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+int CTranspItemBuffers::Create (void)
+{
+	float scale = sqrt (float (gameStates.app.nThreads));
+
+if (depthBuffer.Buffer ())
+	return 1;
+if (!depthBuffer.Create (uint (ITEM_DEPTHBUFFER_SIZE * scale)))
+	return 0;
+if (!itemHeap.Create (uint (ITEM_BUFFER_SIZE * scale))) {
+	depthBuffer.Destroy ();
+	return 0;
+	}
+nHeapSize = 0;
+Clear ();
+ResetFreeList ();
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CTranspItemBuffers::Destroy (void)
+{
+itemHeap.Destroy ();
+depthBuffer.Destroy ();
+}
+
+//------------------------------------------------------------------------------
+
+void CTranspItemBuffers::Clear (void)
+{
+if (depthBuffer.Buffer ())
+	depthBuffer.Clear ();
+#if DBG
+if (itemHeap.Buffer ())
+	memset (itemHeap.Buffer (), 0, nHeapSize);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void CTranspItemBuffers::ResetFreeList (void)
+{
+memset (freeList, 0, sizeof (freeList));
+}
+
+//------------------------------------------------------------------------------
+
+inline CTranspItem* CTranspItemBuffers::AllocItem (int nType, int nSize)
+{
+	CTranspItem* ti = freeList [nType];
+
+if (ti) {
+	freeList [nType] = ti->nextItemP;
+	return ti;
+	}
+if (nHeapSize + nSize >= (int) itemHeap.Length ())
+	return NULL;
+nHeapSize += nSize;
+return (CTranspItem*) itemHeap.Buffer (nHeapSize - nSize);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 static tTexCoord2f tcDefault [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
+
+//------------------------------------------------------------------------------
+
+int CTransparencyRenderer::ItemCount (int i) 
+{ 
+	int nCount = 0;
+
+for (int j = 0; j < gameStates.app.nThreads; j++)
+	nCount += m_data.buffers [j].nItems [i];
+return nCount;
+}
+
+//------------------------------------------------------------------------------
+
+inline int CTransparencyRenderer::HeapSize (void)
+{
+	int nHeapSize = 0;
+
+for (int i = 0; i < gameStates.app.nThreads; i++) 
+	nHeapSize += m_data.buffers [i].nHeapSize;
+return nHeapSize;
+}
+
+//------------------------------------------------------------------------------
+
+inline int CTransparencyRenderer::DepthBuffer (void)
+{
+	int nHeapSize = 0;
+
+for (int i = 0; i < gameStates.app.nThreads; i++) 
+	if (m_data.buffers [i].depthBuffer.Buffer ())
+		return i;
+return -1;
+}
+
+//------------------------------------------------------------------------------
 
 inline int CTransparencyRenderer::AllocBuffers (void)
 {
-if (m_data.depthBuffer.Buffer ())
-	return 1;
-if (!m_data.depthBuffer.Create (ITEM_DEPTHBUFFER_SIZE))
-	return 0;
-if (!m_data.itemHeap.Create (ITEM_BUFFER_SIZE)) {
-	m_data.depthBuffer.Destroy ();
-	return 0;
-	}
-ResetBuffers ();
-ResetFreeList ();
-m_data.nHeapSize = 0;
+	float scale = sqrt (float (gameStates.app.nThreads));
+
+for (int i = 0; i < gameStates.app.nThreads; i++) 
+	if (!m_data.buffers [i].Create ())
+		return 0;
 return 1;
 }
 
@@ -614,46 +709,40 @@ return 1;
 
 void CTransparencyRenderer::FreeBuffers (void)
 {
-m_data.itemHeap.Destroy ();
-m_data.depthBuffer.Destroy ();
-}
-
-//------------------------------------------------------------------------------
-
-void CTransparencyRenderer::ResetFreeList (void)
-{
-memset (m_data.freeList, 0, sizeof (m_data.freeList));
-}
-
-//------------------------------------------------------------------------------
-
-inline CTranspItem* CTransparencyRenderer::AllocItem (int nType, int nSize)
-{
-	CTranspItem* ti = m_data.freeList [nType];
-
-if (ti) {
-	m_data.freeList [nType] = ti->nextItemP;
-	return ti;
-	}
-if (m_data.nHeapSize + nSize >= (int) m_data.itemHeap.Length ())
-	return NULL;
-m_data.nHeapSize += nSize;
-return (CTranspItem*) m_data.itemHeap.Buffer (m_data.nHeapSize - nSize);
+for (int i = 0; i < gameStates.app.nThreads; i++) 
+	m_data.buffers [i].Destroy ();
 }
 
 //------------------------------------------------------------------------------
 
 void CTransparencyRenderer::ResetBuffers (void)
 {
-if (m_data.depthBuffer.Buffer ())
-	m_data.depthBuffer.Clear ();
-#if DBG
-if (m_data.itemHeap.Buffer ())
-	memset (m_data.itemHeap.Buffer (), 0, m_data.nHeapSize);
-#endif
-memset (&sparkBuffer, 0, sizeof (sparkBuffer));
+for (int i = 0; i < gameStates.app.nThreads; i++) 
+	m_data.buffers [i].Clear ();
 }
 
+//------------------------------------------------------------------------------
+
+void CTransparencyRenderer::ResetFreeList (void)
+{
+for (int i = 0; i < gameStates.app.nThreads; i++) 
+	m_data.buffers [i].ResetFreeList ();
+}
+
+//------------------------------------------------------------------------------
+
+void CTransparencyRenderer::Reset (void)
+{
+for (int i = 0; i < gameStates.app.nThreads; i++) 
+	m_data.buffers [i].Reset ();
+}
+
+//------------------------------------------------------------------------------
+
+inline CTranspItem* CTransparencyRenderer::AllocItem (int nType, int nSize, int nThread)
+{
+return m_data.buffers [nThread].AllocItem (nType, nSize);
+}
 
 //------------------------------------------------------------------------------
 
@@ -722,52 +811,62 @@ else if (nDepth > m_data.zMax) {
 	}
 
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
+nOffset = int (double (nDepth) * m_data.zScale);
+
 #if USE_OPENMP > 1
-#	pragma omp critical (transpRender)
-#elif !USE_OPENMP
-if (gameStates.app.bMultiThreaded)
-	SDL_mutexP (tiRender.semaphore);
-#endif
-	{ // begin critical section
-	nOffset = int (double (nDepth) * m_data.zScale);
-	if (nOffset < ITEM_DEPTHBUFFER_SIZE) {
-		CTranspItem* ph = AllocItem (item->Type (), item->Size ());
-		if (ph) {
-			CTranspItem** pd = m_data.depthBuffer + nOffset;
-			memcpy (ph, item, item->Size ());
-			ph->nItem = m_data.nItems [0]++;
-			ph->bRendered = 0;
-			ph->bTransformed = bTransformed;
-			ph->z = nDepth;
-			ph->bValid = 1;
-			#if 0 // sort by depth
-			CTranspItem* pi;
-			for (pi = pd->head; pi; pi = pi->nextItemP) {
-				if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
-					break;
-				}
-			if (pi) {
-				ph->nextItemP = pi->nextItemP;
-				pi->nextItemP = ph;
-				}
-			else 
-			#endif
-				{
-				ph->nextItemP = *pd;
-				*pd = ph;
-				}
-			if (m_data.nMinOffs > nOffset)
-				m_data.nMinOffs = nOffset;
-			if (m_data.nMaxOffs < nOffset)
-				m_data.nMaxOffs = nOffset;
-			}
-		}
-	} // end critical section
-#if !USE_OPENMP
-if (gameStates.app.bMultiThreaded)
-	SDL_mutexV (tiRender.semaphore);
+int nThread = omp_get_thread_num ();
+#else
+int nThread = 0;
 #endif
 
+CTranspItemBuffers& buffer = m_data.buffers [nThread];
+
+if (nOffset < ITEM_DEPTHBUFFER_SIZE) {
+//#if USE_OPENMP > 1
+//#	pragma omp critical (transpRender)
+//#elif !USE_OPENMP
+//if (gameStates.app.bMultiThreaded)
+//	SDL_mutexP (tiRender.semaphore);
+//#endif
+	{ // begin critical section
+	CTranspItem* ph = buffer.AllocItem (item->Type (), item->Size ());
+	if (ph) {
+		memcpy (ph, item, item->Size ());
+#if DBG
+		ph->nItem = buffer.nItems [0]++;
+#endif
+		ph->bRendered = 0;
+		ph->bTransformed = bTransformed;
+		ph->z = nDepth;
+		ph->bValid = 1;
+		CTranspItem** pd = buffer.depthBuffer + nOffset;
+#if 0 // sort by depth
+		CTranspItem* pi;
+		for (pi = pd->head; pi; pi = pi->nextItemP) {
+			if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
+				break;
+			}
+		if (pi) {
+			ph->nextItemP = pi->nextItemP;
+			pi->nextItemP = ph;
+			}
+		else 
+#endif
+			{
+			ph->nextItemP = *pd;
+			*pd = ph;
+			}
+		if (buffer.nMinOffs > nOffset)
+			buffer.nMinOffs = nOffset;
+		if (buffer.nMaxOffs < nOffset)
+			buffer.nMaxOffs = nOffset;
+			}
+		} // end critical section
+	}
+//#if !USE_OPENMP
+//if (gameStates.app.bMultiThreaded)
+//	SDL_mutexV (tiRender.semaphore);
+//#endif
 return 1;
 #else
 return 0;
@@ -1268,7 +1367,7 @@ return 1;
 
 void CTransparencyRenderer::FlushSparkBuffer (void)
 {
-if (!m_data.depthBuffer.Buffer ())
+if (DepthBuffer () < 0)
 	return;
 
 if (!sparkBuffer.nSparks)
@@ -1300,9 +1399,9 @@ if (LoadTexture (sparks.Bitmap (), 0, 0, 0, GL_CLAMP)) {
 
 void CTransparencyRenderer::FlushParticleBuffer (int nType)
 {
-if (!m_data.depthBuffer.Buffer ())
+if (DepthBuffer () < 0)
 	return;
-if (!m_data.nHeapSize)
+if (!HeapSize ())
 	return;
 
 if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))) {
@@ -1324,9 +1423,9 @@ if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))
 
 void CTransparencyRenderer::FlushBuffers (int nType, CTranspItem *item)
 {
-if (!m_data.depthBuffer.Buffer ())
+if (DepthBuffer () < 0)
 	return;
-if (!m_data.nHeapSize)
+if (!HeapSize ())
 	return;
 
 if (glowRenderer.Available (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_THRUSTERS) && 
@@ -1413,18 +1512,17 @@ extern int bLog;
 void CTransparencyRenderer::Render (int nWindow)
 {
 #if RENDER_TRANSPARENCY
-	CTranspItem*	currentP, * nextP, * prevP, ** listP;
-	int				nItems, nDepth, bStencil;
+	int				nDepth, bStencil;
 	bool				bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || nWindow;
 
 if (!AllocBuffers ())
 	return;
-if (!m_data.nHeapSize)
+if (!HeapSize ())
 	return;
 #if DBG
 if (gameStates.render.cameras.bActive)
 	nWindow = nWindow;
-//HUDMessage (0, "transp. render heap size: %d.%03d.%03d", m_data.nHeapSize / 1000000, (m_data.nHeapSize % 1000000) / 1000, m_data.nHeapSize % 1000);
+//HUDMessage (0, "transp. render heap size: %d.%03d.%03d", HeapSize () / 1000000, (HeapSize () % 1000000) / 1000, HeapSize () % 1000);
 #endif
 PROF_START
 gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
@@ -1456,37 +1554,57 @@ m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 
-for (listP = &m_data.depthBuffer [m_data.nMaxOffs], nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {
-	if ((currentP = *listP)) {
-		if (bCleanup)
-			*listP = NULL;
-		nDepth = 0;
-		prevP = NULL;
-		do {
-#if DBG
-			if (currentP->nItem == nDbgItem)
-				nDbgItem = nDbgItem;
-#endif
-			nItems--;
-			RenderItem (currentP);
+	CTranspItem	** listP [MAX_THREADS];
+	int			nBuffers = 0;
 
-			nextP = currentP->nextItemP;
+for (int i = 0; i < gameStates.app.nThreads; i++)
+	if (m_data.buffers [i].nItems [0]) {
+		listP [nBuffers++] = &m_data.buffers [i].depthBuffer [m_data.buffers [i].nMaxOffs];
+		m_data.buffers [i].nItems [1] = m_data.buffers [i].nItems [0];
+		}
+
+//for (listP = &m_data.buffers [0].depthBuffer [m_data.nMaxOffs], nItems = m_data.nItems [0]; (listP >= m_data.buffers [0].depthBuffer.Buffer ()) && nItems; listP--) {
+while (nBuffers) {
+	for (int i = 0; i < nBuffers; i++) {
+		CTranspItemBuffers& buffer = m_data.buffers [i];
+		CTranspItem* currentP = *listP [i], * nextP, * prevP;
+		if (currentP) {
 			if (bCleanup)
-				currentP->nextItemP = NULL;
-			else if (currentP->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
-				int nType = currentP->Type ();
-				currentP->nextItemP = m_data.freeList [nType];
-				m_data.freeList [nType] = currentP;
-				if (prevP)
-					prevP->nextItemP = nextP;
+				*listP [i] = NULL;
+			nDepth = 0;
+			prevP = NULL;
+			do {
+#if DBG
+				if (currentP->nItem == nDbgItem)
+					nDbgItem = nDbgItem;
+#endif
+				buffer.nItems [0]--;
+				RenderItem (currentP);
+
+				nextP = currentP->nextItemP;
+				if (bCleanup)
+					currentP->nextItemP = NULL;
+				else if (currentP->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
+					int nType = currentP->Type ();
+					currentP->nextItemP = buffer.freeList [nType];
+					buffer.freeList [nType] = currentP;
+					if (prevP)
+						prevP->nextItemP = nextP;
+					else
+						*listP [i] = nextP;
+					}
 				else
-					*listP = nextP;
-				}
-			else
-				prevP = currentP;
-			currentP = nextP;
-			nDepth++;
-			} while (currentP);
+					prevP = currentP;
+				currentP = nextP;
+				nDepth++;
+				} while (currentP);
+			}
+		}
+	for (int i = 0; i < nBuffers; i++) {
+		if (!m_data.buffers [i].nItems [0] || (--listP [i] <= m_data.buffers [i].depthBuffer.Buffer ())) {
+			if (i < --nBuffers)
+				listP [i--] = listP [nBuffers];
+			}
 		}
 	}
 
@@ -1507,11 +1625,12 @@ ogl.StencilOn (bStencil);
 
 if (bCleanup) {
 	ResetFreeList ();
-	m_data.nItems [1] = 	m_data.nItems [0];
-	m_data.nItems [0] = 0;
-	m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
-	m_data.nMaxOffs = 0;
-	m_data.nHeapSize = 0;
+	for (int i = 0; i < gameStates.app.nThreads; i++) {
+		m_data.buffers [i].nItems [0] = 0;
+		m_data.buffers [i].nMinOffs = ITEM_DEPTHBUFFER_SIZE;
+		m_data.buffers [i].nMaxOffs = 0;
+		m_data.buffers [i].nHeapSize = 0;
+		}
 	}
 
 PROF_END(ptTranspPolys)

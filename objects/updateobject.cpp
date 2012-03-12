@@ -621,7 +621,7 @@ gameData.laser.xUpdateTime += gameData.time.xFrame;
 gameStates.entropy.bConquering = 0;
 UpdatePlayerOrient ();
 //WaitForEffectsThread ();
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 gameData.objs.update.Reset ();
 #endif
 ++gameData.objs.nFrameCount;
@@ -633,7 +633,7 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 		}
 	}
 
-#if USE_OPENMP > 1
+#if USE_OPENMP //> 1
 #pragma omp parallel 
 if (gameStates.app.bMultiThreaded) {
 	int h = int (gameData.objs.update.ToS ());

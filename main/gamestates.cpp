@@ -288,7 +288,7 @@ gameStates.app.bLunacy = 0;
 gameStates.app.bHaveExtraGameInfo [0] = 1;
 gameStates.app.bHaveExtraGameInfo [1] = 0;
 gameStates.app.nSDLTicks [0] = -1;
-#if USE_OPENMP > 1
+#if USE_OPENMP
 gameStates.app.bMultiThreaded = 1;
 #else
 gameStates.app.bMultiThreaded = 0;

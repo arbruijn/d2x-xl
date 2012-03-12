@@ -65,7 +65,7 @@ l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 
 int bChildren = (gameOpts->render.lightning.nStyle > 1);
 
-#if USE_OPENMP > 1
+#if USE_OPENMP // > 1
 
 if (gameStates.app.bMultiThreaded) {
 	int bFail = 0;
