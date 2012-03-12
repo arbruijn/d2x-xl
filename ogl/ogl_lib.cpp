@@ -865,7 +865,7 @@ else if (m_data.bUseTextures [m_data.nTMU [0]] && !m_data.clientStates [m_data.n
 #endif
 else
 #endif
-#if DBG_OGL
+#if 0 //DBG_OGL
 if (!m_data.clientBuffers [/*m_data.nTMU [0]*/0][0].buffer)
 	PrintLog (0, "glDrawArrays: client data not enabled\n");
 else

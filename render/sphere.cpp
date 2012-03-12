@@ -577,7 +577,6 @@ if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].uv));
 OglVertexPointer (3, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].vPos));
 OglDrawArrays (nPrimitive, 0, nItems);
-ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 }
 
 // -----------------------------------------------------------------------------
@@ -589,7 +588,6 @@ if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, texCoordP);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
 OglDrawArrays (nPrimitive, 0, nItems);
-ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 }
 
 // -----------------------------------------------------------------------------
@@ -608,6 +606,7 @@ if (!Create (nRings, nTiles))
 h = nRings / 2;
 nQuads = 2 * nRings + 2;
 
+ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 if (ogl.UseTransform ()) {
 	glScalef (fRadius, fRadius, fRadius);
 	for (nCull = 0; nCull < 2; nCull++) {
@@ -663,6 +662,7 @@ else {
 			}
 		}
 	}
+ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 OglCullFace (0);
 }
 
@@ -738,6 +738,7 @@ int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float ySc
 	int	bEffect = 0;
 #else
 	int	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
+	int	bGlow = (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
 #endif
 
 CFixVector vPos;
@@ -750,14 +751,16 @@ else
 	bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, &fScale);
 ogl.SetDepthMode (GL_LEQUAL);
 #if ADDITIVE_SPHERE_BLENDING
-ogl.SetBlendMode (glowRenderer.Available (GLOW_SHIELDS) ? OGL_BLEND_REPLACE : bAdditive);
+ogl.SetBlendMode (bGlow ? OGL_BLEND_REPLACE : bAdditive);
 #else
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 #endif
-glowRenderer.Begin (GLOW_SHIELDS, 2, false, 0.85f);
-if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, 4 * xScale / 3)) {
-	glowRenderer.Done (GLOW_SHIELDS);
-	return 0;
+if (bGlow) {
+	glowRenderer.Begin (GLOW_SHIELDS, 2, false, 0.85f);
+	if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, 4 * xScale / 3)) {
+		glowRenderer.Done (GLOW_SHIELDS);
+		return 0;
+		}
 	}
 #if RINGED_SPHERE
 #if 1
@@ -769,7 +772,8 @@ if (ogl.m_states.bUseTransform = !bEffect)
 	UnloadSphereShader ();
 else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
 	if (!SetupSphereShader (objP, alpha)) {
-		glowRenderer.Done (GLOW_SHIELDS);
+		if (bGlow)
+			glowRenderer.Done (GLOW_SHIELDS);
 		return 0;
 		}
 	}
@@ -780,7 +784,8 @@ RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
 ogl.ResetTransform (0);
 ogl.SetTransform (0);
-glowRenderer.Done (GLOW_SHIELDS);
+if (bGlow)
+	glowRenderer.Done (GLOW_SHIELDS);
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
 #endif //RINGED_SPHERE
