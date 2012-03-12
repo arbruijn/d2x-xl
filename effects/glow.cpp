@@ -202,17 +202,23 @@ if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else
 	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+glClear (GL_COLOR_BUFFER_BIT);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::Reset (int bGlow)
+bool CGlowRenderer::Reset (int bGlow, int bOgl)
 {
 m_nType = -1;
 m_nStrength = -1;
 m_bViewport = 0;
+if (bOgl) {
+	glMatrixMode (GL_PROJECTION);
+	glPopMatrix ();
+	glMatrixMode (GL_MODELVIEW);
+	glPopMatrix ();
+	}
 return 0 != (gameOpts->render.effects.bGlow = bGlow);
 }
 
@@ -571,7 +577,7 @@ if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else
 	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+glClear (GL_COLOR_BUFFER_BIT);
 ogl.RestoreViewport ();
 #else
 glClear (GL_COLOR_BUFFER_BIT);
@@ -589,12 +595,14 @@ ogl.ChooseDrawBuffer ();
 
 void CGlowRenderer::Done (const int nType)
 {
-if (Available (nType))
+if (Available (nType)) {
 #if 1
 	ogl.DrawBuffer ()->SelectColorBuffers (0);
 #else
 	ogl.ChooseDrawBuffer ();
 #endif
+	ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+	}	
 }
 
 //------------------------------------------------------------------------------
@@ -637,11 +645,11 @@ else
 	radius += RAD_INCR;
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	if (!ogl.SelectBlurBuffer (0))
-		return Reset (0);
+		return Reset (0, 1);
 	ClearViewport (radius);
 	Render (-1, 0, radius); // Glow -> Blur 0
 	if (!ogl.SelectBlurBuffer (1))
-		return Reset (0);
+		return Reset (0, 1);
 	ClearViewport (radius);
 	Render (0, 1, radius); // Blur 0 -> Blur 1
 	if (m_nType != BLUR_SHADOW)
@@ -650,10 +658,10 @@ else
 	for (int i = 1; i < m_nStrength; i++) {
 		radius += RAD_INCR;
 		if (!ogl.SelectBlurBuffer (0))
-			return Reset (0);
+			return Reset (0, 1);
 		Render (1, 0, radius); // Blur 1 -> Blur 0
 		if (!ogl.SelectBlurBuffer (1))
-			return Reset (0);
+			return Reset (0, 1);
 		Render (0, 1, radius); // Blur 0 -> Blur 1
 		}
 	//radius += RAD_INCR;

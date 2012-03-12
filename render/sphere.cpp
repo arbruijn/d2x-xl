@@ -610,7 +610,7 @@ if (ogl.UseTransform ()) {
 	for (nCull = 0; nCull < 2; nCull++) {
 		svP [0] = svP [1] = m_vertices.Buffer ();
 		ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
-		for (i = 1; i < h; i++) {
+		for (i = 0; i < h; i++) {
 			RenderRing (i, nQuads, bTextured, GL_QUAD_STRIP);
 #if 0
 			if (!bTextured) {

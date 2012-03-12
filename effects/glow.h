@@ -38,7 +38,7 @@ class CGlowRenderer {
 		void InitViewport (void);
 		void ClearViewport (float const radius);
 		void ChooseDrawBuffer (void);
-		bool Reset (int bGlow);
+		bool Reset (int bGlow, int bOgl = 0);
 
 	};
 
