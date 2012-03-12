@@ -1064,7 +1064,7 @@ return Add (&item, position);
 
 int CTransparencyRenderer::AddSpark (const CFixVector& position, char nType, int nSize, char nFrame, char nRotFrame, char nOrient)
 {
-#if 0
+#if 1
 if (gameStates.render.nShadowMap)
 	return 0;
 
@@ -1373,8 +1373,8 @@ if (!itemP->bRendered) {
 		ogl.SetDepthMode (GL_LEQUAL);
 		ogl.SetDepthTest (true);
 		itemP->Render ();
-		if ((m_data.nCurType == tiSprite) && (m_data.nPrevType == tiSphere))
-			glowRenderer.End ();
+		//if ((m_data.nCurType == tiSprite) && (m_data.nPrevType == tiSphere))
+		//	glowRenderer.End ();
 		}
 	catch(...) {
 		PrintLog (0, "invalid transparent render item (type: %d)\n", m_data.nCurType);
