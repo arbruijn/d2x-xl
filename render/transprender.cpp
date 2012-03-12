@@ -1505,12 +1505,48 @@ return m_data.bHaveDepthBuffer && !gameStates.render.cameras.bActive && (gameOpt
 
 //------------------------------------------------------------------------------
 
+void CTransparencyRenderer::RenderBuffer (CTranspItemBuffers buffer, CTranspItem** listP, bool bCleanup)
+{
+CTranspItem* currentP = *listP, * nextP, * prevP;
+if (currentP) {
+	if (bCleanup)
+		*listP = NULL;
+	prevP = NULL;
+	do {
+#if DBG
+		if (currentP->nItem == nDbgItem)
+			nDbgItem = nDbgItem;
+#endif
+		buffer.nItems [0]--;
+		RenderItem (currentP);
+
+		nextP = currentP->nextItemP;
+		if (bCleanup)
+			currentP->nextItemP = NULL;
+		else if (currentP->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
+			int nType = currentP->Type ();
+			currentP->nextItemP = buffer.freeList [nType];
+			buffer.freeList [nType] = currentP;
+			if (prevP)
+				prevP->nextItemP = nextP;
+			else
+				*listP = nextP;
+			}
+		else
+			prevP = currentP;
+		currentP = nextP;
+		} while (currentP);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 extern int bLog;
 
 void CTransparencyRenderer::Render (int nWindow)
 {
 #if RENDER_TRANSPARENCY
-	int				nDepth, bStencil;
+	int				bStencil;
 	bool				bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || nWindow;
 
 if (!AllocBuffers ())
@@ -1552,56 +1588,26 @@ m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 
+if (gameStates.app.nThreads < 2)
+	RenderBuffer (m_data.buffers [0], &m_data.buffers [0].depthBuffer [m_data.buffers [0].nMaxOffs], bCleanup);
+else {
 	CTranspItem	** listP [MAX_THREADS];
 	int			nBuffers = 0;
 
-for (int i = 0; i < gameStates.app.nThreads; i++)
-	if (m_data.buffers [i].nItems [0]) {
-		listP [nBuffers++] = &m_data.buffers [i].depthBuffer [m_data.buffers [i].nMaxOffs];
-		m_data.buffers [i].nItems [1] = m_data.buffers [i].nItems [0];
-		}
-
-//for (listP = &m_data.buffers [0].depthBuffer [m_data.nMaxOffs], nItems = m_data.nItems [0]; (listP >= m_data.buffers [0].depthBuffer.Buffer ()) && nItems; listP--) {
-while (nBuffers) {
-	for (int i = 0; i < nBuffers; i++) {
-		CTranspItemBuffers& buffer = m_data.buffers [i];
-		CTranspItem* currentP = *listP [i], * nextP, * prevP;
-		if (currentP) {
-			if (bCleanup)
-				*listP [i] = NULL;
-			nDepth = 0;
-			prevP = NULL;
-			do {
-#if DBG
-				if (currentP->nItem == nDbgItem)
-					nDbgItem = nDbgItem;
-#endif
-				buffer.nItems [0]--;
-				RenderItem (currentP);
-
-				nextP = currentP->nextItemP;
-				if (bCleanup)
-					currentP->nextItemP = NULL;
-				else if (currentP->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
-					int nType = currentP->Type ();
-					currentP->nextItemP = buffer.freeList [nType];
-					buffer.freeList [nType] = currentP;
-					if (prevP)
-						prevP->nextItemP = nextP;
-					else
-						*listP [i] = nextP;
-					}
-				else
-					prevP = currentP;
-				currentP = nextP;
-				nDepth++;
-				} while (currentP);
+	for (int i = 0; i < gameStates.app.nThreads; i++)
+		if (m_data.buffers [i].nItems [0]) {
+			listP [nBuffers++] = &m_data.buffers [i].depthBuffer [m_data.buffers [i].nMaxOffs];
+			m_data.buffers [i].nItems [1] = m_data.buffers [i].nItems [0];
 			}
-		}
-	for (int i = 0; i < nBuffers; i++) {
-		if (!m_data.buffers [i].nItems [0] || (--listP [i] <= m_data.buffers [i].depthBuffer.Buffer ())) {
-			if (i < --nBuffers)
-				listP [i] = listP [nBuffers];
+
+	while (nBuffers) {
+		for (int i = 0; i < nBuffers; i++)
+			RenderBuffer (m_data.buffers [i], listP [i], bCleanup);
+		for (int i = 0; i < nBuffers; i++) {
+			if (!m_data.buffers [i].nItems [0] || (--listP [i] <= m_data.buffers [i].depthBuffer.Buffer ())) {
+				if (i < --nBuffers)
+					listP [i] = listP [nBuffers];
+				}
 			}
 		}
 	}
