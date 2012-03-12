@@ -594,7 +594,7 @@ transparencyRenderer.ResetBitmaps ();
 
 int CTranspItemBuffers::Create (void)
 {
-	float scale = sqrt (float (gameStates.app.nThreads));
+	float scale = 1.0f / sqrt (float (gameStates.app.nThreads));
 
 if (depthBuffer.Buffer ())
 	return 1;
@@ -832,9 +832,7 @@ if (nOffset < ITEM_DEPTHBUFFER_SIZE) {
 	CTranspItem* ph = buffer.AllocItem (item->Type (), item->Size ());
 	if (ph) {
 		memcpy (ph, item, item->Size ());
-#if DBG
 		ph->nItem = buffer.nItems [0]++;
-#endif
 		ph->bRendered = 0;
 		ph->bTransformed = bTransformed;
 		ph->z = nDepth;
@@ -1603,7 +1601,7 @@ while (nBuffers) {
 	for (int i = 0; i < nBuffers; i++) {
 		if (!m_data.buffers [i].nItems [0] || (--listP [i] <= m_data.buffers [i].depthBuffer.Buffer ())) {
 			if (i < --nBuffers)
-				listP [i--] = listP [nBuffers];
+				listP [i] = listP [nBuffers];
 			}
 		}
 	}
