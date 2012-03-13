@@ -85,7 +85,7 @@ class CStaticCanvasColor : public CCanvasColor {
 #define RGBA_GREEN(_i)				((uint (_i) >> 16) & 0xff)
 #define RGBA_BLUE(_i)				((uint (_i) >> 8) & 0xff)
 #define RGBA_ALPHA(_i)				((uint (_i)) & 0xff)
-#define PAL2RGBA(_c)					(ubyte ((uint (_c) * 255) / 63))
+#define PAL2RGBA(_c)					(((_c) >= 63) ? 255 : ubyte ((uint (_c) * 255) / 63))
 #define RGBA_PAL(_r,_g,_b,_a)		RGBA (PAL2RGBA (_r), PAL2RGBA (_g), PAL2RGBA (_b), _a)
 #define RGB_PAL(_r,_g,_b)			RGBA_PAL (_r, _g, _b, 255)
 #define RGBA_PALX(_r,_g,_b,_x)	RGB_PAL ((_r) * (_x), (_g) * (_x), (_b) * (_x))

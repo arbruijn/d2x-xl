@@ -1132,6 +1132,7 @@ else if (missionManager.nCurrentLevel > 0) {
 		missionManager.SetNextLevel (missionManager.nCurrentLevel + 1);
 	else 
 		missionManager.SetNextLevel ((nNextLevel > 0) ? nNextLevel : missionManager.nCurrentLevel + 1);
+	}
 }
 
 //------------------------------------------------------------------------------
