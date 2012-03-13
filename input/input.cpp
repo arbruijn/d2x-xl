@@ -177,18 +177,17 @@ else {
 
 int CControlsManager::ReadJoyAxis (int i, int rawJoyAxis [])
 {
-int joyDeadzoneScaled = joyDeadzone [i % 4] / 128;
-int h = JoyGetScaledReading (rawJoyAxis [i], i);
-if (gameOpts->input.joystick.bSyncAxis &&
-	 ((kcJoystick [18].value == i) || (kcJoystick [48].value == i)))		// If this is the throttle
-	joyDeadzoneScaled *= 2;				// Then use a larger dead-zone
-if (h > joyDeadzoneScaled)
-	h = ((h - joyDeadzoneScaled) * 128) / (128 - joyDeadzoneScaled);
-else if (h < -joyDeadzoneScaled)
-	h = ((h + joyDeadzoneScaled) * 128) / (128 - joyDeadzoneScaled);
+int dz = joyDeadzone [i % UNIQUE_JOY_AXES]; // / 128;
+int h = rawJoyAxis [i]; // JoyGetScaledReading (rawJoyAxis [i], i);
+if (gameOpts->input.joystick.bSyncAxis && (dz < 16384) && ((kcJoystick [18].value == i) || (kcJoystick [48].value == i)))		// If this is the throttle
+	dz *= 2;				// Then use a larger dead-zone
+if (h > dz)
+	h = int ((h - dz) * 32767.0f / float (32767 - dz) + 0.5f);
+else if (h < -dz)
+	h = int ((h + dz) * 32767.0f / float (32767 - dz) + 0.5f);
 else
 	h = 0;
-return (int) ((AttenuateAxis (h, i) * m_pollTime) / 128);
+return (int) ((AttenuateAxis (h / 256, i) * m_pollTime) / 128);
 }
 
 //------------------------------------------------------------------------------

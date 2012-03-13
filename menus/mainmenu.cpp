@@ -355,7 +355,9 @@ return 1;
 int QuitSaveLoadMenu (void)
 {
 	CMenu m (5);
-	int	i, choice = 0, optQuit, optOptions, optLoad, optSave;
+	int	i, optQuit, optOptions, optLoad, optSave;
+
+	int choice = 0;
 
 optQuit = m.AddMenu ("quit", TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
 optOptions = m.AddMenu ("settings", TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);

@@ -378,9 +378,9 @@ void JoySetSlowReading (int flag)
 
 int JoySetDeadzone (int nRelZone, int nAxis)
 {
-nAxis %= 4;
+nAxis %= UNIQUE_JOY_AXES;
 gameOpts->input.joystick.deadzones [nAxis] = (nRelZone > 100) ? 100 : (nRelZone < 0) ? 0 : nRelZone;
-return joyDeadzone [nAxis] = (32767 * gameOpts->input.joystick.deadzones [nAxis] / 2) / 100;
+return joyDeadzone [nAxis] = (fix) (32767.0f * (float) gameOpts->input.joystick.deadzones [nAxis] / 100.0f + 0.5f);
 }
 
 //------------------------------------------------------------------------------

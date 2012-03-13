@@ -363,8 +363,10 @@ m_nLastSlot = 0;
 int CSaveGameManager::GetSaveFile (int bMulti)
 {
 	CMenu	m (NUM_SAVES + 2);
-	int	i, menuRes, choice;
+	int	i, menuRes;
 	char	filename [NUM_SAVES + 1][30];
+
+	static int choice = 0;
 
 for (i = 0; i < NUM_SAVES; i++) {
 	sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);

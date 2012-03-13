@@ -1532,9 +1532,11 @@ for (i = sizeofa (defaultParams), pv = defaultParams; i; i--, pv++) {
 int NewPlayerConfig (void)
 {
 	int	nitems;
-	int	i, j, choice;
+	int	i, j;
 	CMenu	m (8);
    int	mct = CONTROL_MAX_TYPES;
+
+	static int choice = 0;
 
 mct--;
 InitWeaponOrdering ();		//setup default weapon priorities

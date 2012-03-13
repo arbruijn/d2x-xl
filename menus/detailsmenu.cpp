@@ -182,8 +182,10 @@ audio.SetMaxChannels (detailData.nSoundChannels [gameStates.sound.nSoundChannels
 
 void CustomDetailsMenu (void)
 {
-	int	i, choice = 0;
+	int	i;
 	CMenu m;
+
+	static int choice = 0;
 
 do {
 	m.Destroy ();

@@ -234,10 +234,12 @@ return nCurItem;
 void MouseConfigMenu (void)
 {
 	CMenu	m;
-	int	i, j, choice = 0;
+	int	i, j;
 	int	nCustMouseOpt, nMouseTypeOpt;
 	char	szMouseSens [3][50];
 	char	szMouseDeadzone [50];
+
+	static int choice = 0;
 
 szDZoneSizes [0] = TXT_NONE;
 szDZoneSizes [1] = TXT_SMALL;
@@ -405,9 +407,11 @@ return nCurItem;
 void JoystickConfigMenu (void)
 {
 	CMenu m;
-	int	h, i, j, choice = 0;
+	int	h, i, j;
 	char	szJoySens [UNIQUE_JOY_AXES][50];
 	char	szJoyDeadzone [UNIQUE_JOY_AXES][50];
+
+	static int choice = 0;
 
 do {
 	do {
@@ -550,10 +554,12 @@ return nCurItem;
 void TrackIRConfigMenu (void)
 {
 	CMenu	m;
-	int	i, choice = 0;
+	int	i;
 	char	szTrackIRSens [3][50];
 	char	szTrackIRDeadzone [50];
 	char	szId [100];
+
+	static int choice = 0;
 
 szDZoneSizes [0] = TXT_NONE;
 szDZoneSizes [1] = TXT_SMALL;
@@ -641,8 +647,10 @@ void DefaultKeyboardSettings (void);
 void KeyboardConfigMenu (void)
 {
 	CMenu	m;
-	int	i, choice = 0;
+	int	i;
 	char	szKeyRampScale [50];
+
+	static int choice = 0;
 
 do {
 	do {
@@ -697,7 +705,9 @@ DefaultKeyboardSettings ();
 void InputDeviceConfig (void)
 {
 	CMenu	m;
-	int	i, choice = 0;
+	int	i;
+
+	static int choice = 0;
 
 do {
 	if (TIRLoad ())
