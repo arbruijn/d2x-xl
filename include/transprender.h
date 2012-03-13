@@ -328,7 +328,7 @@ class CTransparencyRenderer {
 		void RenderThruster (CTranspThruster *item);
 #endif
 		int RenderItem (CTranspItem *item);
-		void RenderBuffer (CTranspItemBuffers buffer, CTranspItem** listP, bool bCleanup);
+		void RenderBuffer (CTranspItemBuffers& buffer, CTranspItem** listP, bool bCleanup);
 	};
 
 extern CTransparencyRenderer transparencyRenderer;

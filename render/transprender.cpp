@@ -766,7 +766,7 @@ if (m_data.bAllowAdd > 0)
 	if (zMax < 0)
 		zMax = zMax;
 #endif
-	m_data.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (m_data.zMax);
+	m_data.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (m_data.zMax * sqrt (double (gameStates.app.nThreads)));
 	if (m_data.zScale < 0)
 		m_data.zScale = 1;
 	else if (m_data.zScale > 1)
@@ -1505,7 +1505,7 @@ return m_data.bHaveDepthBuffer && !gameStates.render.cameras.bActive && (gameOpt
 
 //------------------------------------------------------------------------------
 
-void CTransparencyRenderer::RenderBuffer (CTranspItemBuffers buffer, CTranspItem** listP, bool bCleanup)
+void CTransparencyRenderer::RenderBuffer (CTranspItemBuffers& buffer, CTranspItem** listP, bool bCleanup)
 {
 CTranspItem* currentP = *listP, * nextP, * prevP;
 if (bCleanup)
@@ -1586,26 +1586,36 @@ m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 
-if (gameStates.app.nThreads < 2) {
+int nBuffers = 0;
+
+for (int i = 0; i < gameStates.app.nThreads; i++)
+	if (m_data.buffers [i].nItems [0])
+		nBuffers++;
+
+if (nBuffers < 2) {
 	CTranspItem	** listP;
 	int nItems;
 	for (listP = &m_data.buffers [0].depthBuffer [m_data.nMaxOffs], nItems = m_data.buffers [0].nItems [0]; (listP >= m_data.buffers [0].depthBuffer.Buffer ()) && nItems; listP--)
 		if (*listP)
 			RenderBuffer (m_data.buffers [0], listP, bCleanup);
+	}
 else {
 	CTranspItem	** listP [MAX_THREADS];
-	int			nBuffers = 0;
-
+	
+	nBuffers = 0;
 	for (int i = 0; i < gameStates.app.nThreads; i++)
 		if (m_data.buffers [i].nItems [0]) {
 			listP [nBuffers++] = &m_data.buffers [i].depthBuffer [m_data.buffers [i].nMaxOffs];
 			m_data.buffers [i].nItems [1] = m_data.buffers [i].nItems [0];
 			}
 
+	int h = 0;
 	while (nBuffers) {
 		for (int i = 0; i < nBuffers; i++)
-			if (*listP [i])
+			if (*listP [i]) {
+				h++;
 				RenderBuffer (m_data.buffers [i], listP [i], bCleanup);
+				}
 		for (int i = 0; i < nBuffers; i++) {
 			if (!m_data.buffers [i].nItems [0] || (--listP [i] <= m_data.buffers [i].depthBuffer.Buffer ())) {
 				if (i < --nBuffers)
