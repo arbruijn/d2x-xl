@@ -1613,7 +1613,6 @@ else {
 	while (nBuffers) {
 		for (int i = 0; i < h; i++)
 			if (listP [i] && *listP [i]) {
-				h++;
 				RenderBuffer (m_data.buffers [i], listP [i], bCleanup);
 				}
 		for (int i = 0; i < nBuffers; i++) {
