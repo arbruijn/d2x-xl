@@ -131,6 +131,7 @@ class CMissionManager : public CMissionData {
 
 		inline int NextLevel (int i = 0) { return nNextLevel [i]; }
 		inline void SetNextLevel (int nLevel, int i = 0) { nNextLevel [i] = nLevel; }
+		void AdvanceLevel (int nNextLevel = 0);
 
 		inline int LastLevel (void) { return nLastLevel; }
 		inline int LastSecretLevel (void) { return nLastSecretLevel; }

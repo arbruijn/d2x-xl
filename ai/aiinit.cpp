@@ -227,7 +227,7 @@ for (int i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 void InitRobotsForLevel (void)
 {
 gameData.ai.nOverallAgitation = 0;
-gameStates.gameplay.bFinalBossIsDead=0;
+gameStates.gameplay.bFinalBossIsDead = 0;
 gameData.escort.nObjNum = 0;
 gameData.escort.bMayTalk = 0;
 gameData.physics.xBossInvulDot = I2X (1)/4 - I2X (gameStates.app.nDifficultyLevel)/8;

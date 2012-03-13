@@ -1247,6 +1247,7 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 	}
 if (!(gameData.app.nGameMode & GM_MULTI))
 	BuddyMessage ("Nice job, %s!", LOCALPLAYER.callsign);
+missionManager.AdvanceLevel ();
 gameStates.gameplay.bFinalBossIsDead = 1;
 }
 

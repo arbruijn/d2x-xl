@@ -1122,4 +1122,17 @@ memset (nLevelState, 0, sizeof (nLevelState));
 }
 
 //------------------------------------------------------------------------------
+
+void CMissionManager::AdvanceLevel (int nNextLevel)
+{
+if (gameStates.app.bD1Mission) 
+	missionManager.SetNextLevel (((missionManager.nCurrentLevel < 0) ? missionManager.nEntryLevel : missionManager.nCurrentLevel) + 1);
+else if (missionManager.nCurrentLevel > 0) {
+	if (gameData.segs.nLevelVersion <= 20)
+		missionManager.SetNextLevel (missionManager.nCurrentLevel + 1);
+	else 
+		missionManager.SetNextLevel ((nNextLevel > 0) ? nNextLevel : missionManager.nCurrentLevel + 1);
+}
+
+//------------------------------------------------------------------------------
 // eof
