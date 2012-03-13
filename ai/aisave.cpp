@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int CSaveGameManager::LoadAIBinFormat (void)
 {
-	int	i, j;
+	int	h, i, j;
 
 gameData.ai.localInfo.Clear ();
 gameData.ai.routeSegs.Clear ();
@@ -86,10 +86,14 @@ if (m_nVersion >= 15) {
 else
 	AIResetAllPaths ();
 if (m_nVersion >= 21) {
-	for (i = 0; i < j; i++)
-		m_cf.Read (&gameData.bosses [i].m_nTeleportSegs, sizeof (gameData.bosses [i].m_nTeleportSegs), 1);
-	for (i = 0; i < j; i++)
-		m_cf.Read (&gameData.bosses [i].m_nGateSegs, sizeof (gameData.bosses [i].m_nGateSegs), 1);
+	for (i = 0; i < j; i++) {
+		m_cf.Read (&h, sizeof (h), 1);
+		gameData.bosses [i].m_nTeleportSegs = short (h);
+		}
+	for (i = 0; i < j; i++) {
+		m_cf.Read (&h, sizeof (h), 1);
+		gameData.bosses [i].m_nGateSegs = short (h);
+		}
 	for (i = 0; i < j; i++) {
 		if (gameData.bosses [i].m_nGateSegs && gameData.bosses [i].m_gateSegs.Create (gameData.bosses [i].m_nGateSegs))
 			gameData.bosses [i].m_gateSegs.Read (m_cf);

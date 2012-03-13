@@ -480,14 +480,18 @@ cf.Write (m_data.szMessage, sizeof (m_data.szMessage), 1);
 
 void CMarkerManager::LoadState (CFile& cf, bool bBinary)
 {
-if (bBinary)
-	m_data.objects.Read (cf);
+if (bBinary) {
+	for (int i = 0; i < NUM_MARKERS_D2; i++)
+		m_data.objects [i] = short (cf.ReadInt ());
+	cf.Read (m_data.szOwner, sizeof (m_data.szOwner [0]) * NUM_MARKERS_D2, 1);
+	cf.Read (m_data.szMessage, sizeof (m_data.szMessage [0]) * NUM_MARKERS_D2, 1);
+	}
 else {
 	for (int i = 0; i < NUM_MARKERS; i++)
 		m_data.objects [i] = cf.ReadShort ();
+	cf.Read (m_data.szOwner, sizeof (m_data.szOwner), 1);
+	cf.Read (m_data.szMessage, sizeof (m_data.szMessage), 1);
 	}
-cf.Read (m_data.szOwner, sizeof (m_data.szOwner), 1);
-cf.Read (m_data.szMessage, sizeof (m_data.szMessage), 1);
 }
 
 //------------------------------------------------------------------------------

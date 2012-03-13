@@ -22,8 +22,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define NUM_MARKERS         (MAX_PLAYERS * 3)
-#define MARKER_MESSAGE_LEN  40
+#define NUM_MARKERS        (MAX_PLAYERS * 3)
+#define NUM_MARKERS_D2		16
+#define MARKER_MESSAGE_LEN	40
 
 class CMarkerData {
 	public:
