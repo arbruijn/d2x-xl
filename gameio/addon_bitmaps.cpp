@@ -164,7 +164,7 @@ return (nFrame >= m_nFrames) ? NULL : m_frames [nFrame].Bitmap ();
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP)
+int LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP, bool bBind)
 {
 if (!*bHaveP) {
 	char	szFilename [FILENAME_LEN];
@@ -181,7 +181,8 @@ if (!*bHaveP) {
 		*bHaveP = 1;
 		bmP->SetFrameCount ();
 		bmP->SetTranspType (-1);
-		bmP->Bind (1);
+		if (bBind)
+			bmP->Bind (1);
 		}
 	*bmPP = bmP;
 	}

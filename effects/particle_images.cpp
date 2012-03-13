@@ -215,6 +215,14 @@ delete[] fFrameBright;
 
 //	-----------------------------------------------------------------------------
 
+	static inline bool Bind (int nType)
+	{
+	if (!ogl.m_features.bTextureArrays.Available ())
+		return true;
+	return (nType != SPARK_PARTICLES) && (nType != SMOKE_PARTICLES) && (nType != BUBBLE_PARTICLES);
+	}
+
+
 int CParticleImageManager::Load (int nType)
 {
 nType = particleImageManager.GetType (nType);
@@ -223,7 +231,7 @@ nType = particleImageManager.GetType (nType);
 
 if (pii.bHave)
 	return 1;
-if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave))
+if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave, Bind (nType)))
 	return 0;
 
 #if 0

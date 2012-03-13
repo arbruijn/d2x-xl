@@ -53,7 +53,7 @@ class CAnimation {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP);
+int LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP, bool bBind = true);
 
 void LoadAddonImages (void);
 void UnloadAddonImages (void);
