@@ -1505,11 +1505,11 @@ return m_data.bHaveDepthBuffer && !gameStates.render.cameras.bActive && (gameOpt
 
 //------------------------------------------------------------------------------
 
-void CTransparencyRenderer::RenderBuffer (CTranspItemBuffers& buffer, CTranspItem** listP, bool bCleanup)
+void CTransparencyRenderer::RenderBuffer (CTranspItemBuffers& buffer, bool bCleanup)
 {
-CTranspItem* currentP = *listP, * nextP, * prevP;
+CTranspItem* currentP = *buffer.bufP, * nextP, * prevP;
 if (bCleanup)
-	*listP = NULL;
+	*buffer.bufP = NULL;
 prevP = NULL;
 do {
 #if DBG
@@ -1529,7 +1529,7 @@ do {
 		if (prevP)
 			prevP->nextItemP = nextP;
 		else
-			*listP = nextP;
+			*buffer.bufP = nextP;
 		}
 	else
 		prevP = currentP;
@@ -1596,30 +1596,31 @@ if (nBuffers < 2) {
 	CTranspItem	** listP;
 	CTranspItemBuffers& buffer = m_data.buffers [0];
 
-	for (listP = &buffer.depthBuffer [m_data.buffers [0].nMaxOffs]; buffer.nItems [0] && (listP >= buffer.depthBuffer.Buffer ()); listP--)
+	for (listP = &buffer.depthBuffer [buffer.nMaxOffs]; buffer.nItems [0] && (listP >= buffer.depthBuffer.Buffer ()); listP--)
 		if (*listP)
-			RenderBuffer (buffer, listP, bCleanup);
+			RenderBuffer (buffer, bCleanup);
 	}
 else {
-	CTranspItem	** listP [MAX_THREADS];
+	CTranspItemBuffers* buffers [MAX_THREADS];
 	
 	nBuffers = 0;
 	for (int i = 0; i < gameStates.app.nThreads; i++)
 		if (m_data.buffers [i].nItems [0]) {
-			listP [nBuffers++] = &m_data.buffers [i].depthBuffer [m_data.buffers [i].nMaxOffs];
+			buffers [nBuffers] = &m_data.buffers [i];
+			buffers [nBuffers]->bufP = &buffers [nBuffers]->depthBuffer [buffers [nBuffers]->nMaxOffs];
 			m_data.buffers [i].nItems [1] = m_data.buffers [i].nItems [0];
+			nBuffers++;
 			}
 
 	int h = nBuffers;
 	while (nBuffers > 0) {
-		for (int i = 0; i < h; i++) {
-			if (listP [i]) {
-				CTranspItemBuffers& buffer = m_data.buffers [i];
-				if (*listP [i]) 
-					RenderBuffer (buffer, listP [i], bCleanup);
-				if (!buffer.nItems [0] || (--listP [i] < buffer.depthBuffer.Buffer ())) {
-					listP [i] = NULL;
-					nBuffers--;
+		for (int i = 0; i < nBuffers; i++) {
+			if (buffers [i]->bufP) {
+				if (*buffers [i]->bufP) 
+					RenderBuffer (*buffers [i], bCleanup);
+				if (!buffers [i]->nItems [0] || (--buffers [i]->bufP < buffers [i]->depthBuffer.Buffer ())) {
+					if (i < --nBuffers)
+						buffers [i--] = buffers [nBuffers];
 					}
 				}
 			}

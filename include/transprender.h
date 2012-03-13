@@ -188,6 +188,7 @@ class CTranspItemBuffers {
 		int						nMinOffs;
 		int						nMaxOffs;
 		int						nItems [2];
+		CTranspItem**			bufP;
 
 	int Create (void);
 	void Destroy (void);
@@ -328,7 +329,7 @@ class CTransparencyRenderer {
 		void RenderThruster (CTranspThruster *item);
 #endif
 		int RenderItem (CTranspItem *item);
-		void RenderBuffer (CTranspItemBuffers& buffer, CTranspItem** listP, bool bCleanup);
+		void RenderBuffer (CTranspItemBuffers& buffer, bool bCleanup);
 	};
 
 extern CTransparencyRenderer transparencyRenderer;
