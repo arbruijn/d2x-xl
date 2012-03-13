@@ -68,14 +68,14 @@ for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 				fc = 1;
 			gameStates.gameplay.seismic.nVolume += fc;
 			h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
-			rx = FixMul (SRandShort (), h);
-			rz = FixMul (SRandShort (), h);
+			rx = fix (FixMul (SRandShort (), h) * eshakerDetonateScale [i] + 0.5f);
+			rz = fix (FixMul (SRandShort (), h) * eshakerDetonateScale [i] + 0.5f);
 			gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
 			gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
 			//	Shake the buddy!
 			if (gameData.escort.nObjNum != -1) {
-				OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.x += rx * 4;
-				OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.z += rz * 4;
+				OBJECTS [gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.x += rx * 4;
+				OBJECTS [gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.z += rz * 4;
 				}
 			//	Shake a guided missile!
 			gameStates.gameplay.seismic.nMagnitude += rx;
@@ -132,13 +132,12 @@ return rval;
 void SeismicDisturbanceFrame (void)
 {
 if (gameStates.gameplay.seismic.nShakeFrequency) {
-	if (((gameStates.gameplay.seismic.nStartTime < gameData.time.xGame) && 
-		  (gameStates.gameplay.seismic.nEndTime > gameData.time.xGame)) || StartSeismicDisturbance()) {
+	if (((gameStates.gameplay.seismic.nStartTime < gameData.time.xGame) && (gameStates.gameplay.seismic.nEndTime > gameData.time.xGame)) || StartSeismicDisturbance ()) {
 		fix	deltaTime = gameData.time.xGame - gameStates.gameplay.seismic.nStartTime;
 		int	fc, rx, rz;
 		fix	h;
 
-		fc = abs(deltaTime - (gameStates.gameplay.seismic.nEndTime - gameStates.gameplay.seismic.nStartTime) / 2);
+		fc = abs (deltaTime - (gameStates.gameplay.seismic.nEndTime - gameStates.gameplay.seismic.nStartTime) / 2);
 		fc /= I2X (1) / 16;
 		if (fc > 16)
 			fc = 16;
@@ -146,14 +145,14 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 			fc = 1;
 		gameStates.gameplay.seismic.nVolume += fc;
 		h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
-		rx = FixMul(SRandShort (), h);
-		rz = FixMul(SRandShort (), h);
+		rx = FixMul (SRandShort (), h);
+		rz = FixMul (SRandShort (), h);
 		gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
 		gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
 		//	Shake the buddy!
 		if (gameData.escort.nObjNum != -1) {
-			OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.x += rx*4;
-			OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.z += rz*4;
+			OBJECTS [gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.x += rx * 4;
+			OBJECTS [gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.z += rz * 4;
 			}
 		//	Shake a guided missile!
 		gameStates.gameplay.seismic.nMagnitude += rx;
@@ -172,7 +171,16 @@ void ShakerRockStuff (CFixVector* vPos)
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 	if (eshakerDetonateTimes [i] + ESHAKER_SHAKE_TIME < gameData.time.xGame)
 		eshakerDetonateTimes [i] = 0;
-float fScale = (vPos != NULL) ? 1.0f / sqrt (X2F (CFixVector::Dist (*vPos, gameData.objs.consoleP->Position ()))) : 1.0f;
+float fScale;
+if (vPos != NULL) 
+	fScale = 1.0f;
+else {
+	fScale = X2F (CFixVector::Dist (*vPos, gameData.objs.consoleP->Position ()));
+	if (fScale < 1.0f)
+		fScale = 1.0f;
+	else
+		fScale = (float) pow (1.0f / fScale, 0.25f);
+	}
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 	if (eshakerDetonateTimes [i] == 0) {
 		eshakerDetonateTimes [i] = gameData.time.xGame;
