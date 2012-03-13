@@ -1609,16 +1609,18 @@ else {
 			m_data.buffers [i].nItems [1] = m_data.buffers [i].nItems [0];
 			}
 
-	int h = 0;
+	int h = nBuffers;
 	while (nBuffers) {
-		for (int i = 0; i < nBuffers; i++)
+		for (int i = 0; i < h; i++)
 			if (listP [i] && *listP [i]) {
 				h++;
 				RenderBuffer (m_data.buffers [i], listP [i], bCleanup);
 				}
 		for (int i = 0; i < nBuffers; i++) {
-			if (!m_data.buffers [i].nItems [0] || (--listP [i] <= m_data.buffers [i].depthBuffer.Buffer ())) 
+			if (!m_data.buffers [i].nItems [0] || (--listP [i] <= m_data.buffers [i].depthBuffer.Buffer ())) {
 				listP [i] = NULL;
+				nBuffers--;
+				}
 			}
 		}
 	}
