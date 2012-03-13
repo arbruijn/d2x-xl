@@ -673,6 +673,7 @@ for (int i = 0; i < MAX_SHIP_TYPES; i++)
 	m_ships [i] = 1;
 m_playerShip = -1;
 m_bTeleport = 1;
+m_bColoredSegments = 1;
 m_bSecretSave = 1;
 }
 
@@ -705,6 +706,7 @@ if (args.Parse (&cf)) {
 	m_playerShip = args.Value ("-player_ship", bLocal ? m_playerShip : -1);
 	m_bTeleport = args.Value ("-teleport", bLocal ? m_bTeleport : 1);
 	m_bSecretSave = args.Value ("-secret_save", bLocal ? m_bSecretSave : 1);
+	m_bColoredSegments = args.Value ("-colored_segments", bLocal ? m_bColoredSegments : 1);
 	m_nCollisionModel = args.Value ("-collision_model", bLocal ? m_nCollisionModel : 1);
 	}
 cf.Close ();

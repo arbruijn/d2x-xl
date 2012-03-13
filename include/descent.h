@@ -1280,6 +1280,7 @@ class CMissionConfig {
 		int	m_playerShip;
 		int	m_bTeleport;
 		int	m_bSecretSave;
+		int	m_bColoredSegments;
 		int	m_nCollisionModel;
 
 	public:
