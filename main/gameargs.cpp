@@ -177,13 +177,14 @@ void EvalMovieArgs (void)
 {
 	int	t;
 
-if ((t = FindArg ("-nomovies"))) {
+if ((t = FindArg ("-nomovies")))
 	gameOptions [0].movies.nLevel = 2 - NumArg (t, 2);
-	if (gameOptions [0].movies.nLevel < 0)
-		gameOptions [0].movies.nLevel = 0;
-	else if (gameOptions [0].movies.nLevel > 2)
-		gameOptions [0].movies.nLevel = 2;
-	}
+if ((t = FindArg ("-movies")))
+	gameOptions [0].movies.nLevel = NumArg (t, 2);
+if (gameOptions [0].movies.nLevel < 0)
+	gameOptions [0].movies.nLevel = 0;
+else if (gameOptions [0].movies.nLevel > 2)
+	gameOptions [0].movies.nLevel = 2;
 if (FindArg ("-subtitles"))
 	gameOptions [0].movies.bSubTitles = NumArg (t, 1);
 if ((t = FindArg ("-movie_quality")))
@@ -288,6 +289,8 @@ void EvalGameplayArgs (void)
 {
 	int	t;
 
+if ((t = FindArg ("-briefings")))
+	gameOpts->gameplay.bSkipBriefingScreens = !NumArg (t, 1);
 if ((t = FindArg ("-noscreens")))
 	gameOpts->gameplay.bSkipBriefingScreens = NumArg (t, 1);
 if ((t = FindArg ("-secretsave")))
