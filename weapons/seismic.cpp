@@ -68,8 +68,8 @@ for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 				fc = 1;
 			gameStates.gameplay.seismic.nVolume += fc;
 			h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
-			rx = fix (FixMul (SRandShort (), h) * eshakerDetonateScale [i] + 0.5f);
-			rz = fix (FixMul (SRandShort (), h) * eshakerDetonateScale [i] + 0.5f);
+			rx = (fix) (FixMul (SRandShort (), h) * eshakerDetonateScales [i] + 0.5f);
+			rz = (fix) (FixMul (SRandShort (), h) * eshakerDetonateScales [i] + 0.5f);
 			gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
 			gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
 			//	Shake the buddy!
@@ -172,14 +172,11 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 	if (eshakerDetonateTimes [i] + ESHAKER_SHAKE_TIME < gameData.time.xGame)
 		eshakerDetonateTimes [i] = 0;
 float fScale;
-if (vPos != NULL) 
+if (gameStates.app.bNostalgia || COMPETITION || (vPos == NULL))
 	fScale = 1.0f;
 else {
-	fScale = X2F (CFixVector::Dist (*vPos, gameData.objs.consoleP->Position ()));
-	if (fScale < 1.0f)
-		fScale = 1.0f;
-	else
-		fScale = (float) pow (1.0f / fScale, 0.25f);
+	float fScale = X2F (CFixVector::Dist (*vPos, gameData.objs.consoleP->Position ()));
+	fScale = (fScale <= 200.0f) ? 1.0f : 200.0f / fScale;
 	}
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 	if (eshakerDetonateTimes [i] == 0) {
