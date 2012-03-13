@@ -389,7 +389,7 @@ while (!done) {
 
 	if (nCurItem > -1) {
 		t1	= SDL_GetTicks ();
-		if (t1 - t0 >= 100) {
+		if (t1 - t0 >= 10) {
 			t0 = t1;
 			c = 7 + fades [looper];
 			fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
