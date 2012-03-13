@@ -448,8 +448,6 @@ return rval;
 //	Indicate no items have been stolen.
 void InitThiefForLevel(void)
 {
-	int	i;
-
 gameData.thief.stolenItems.Clear (char (0xff));
 Assert (MAX_STOLEN_ITEMS >= 3*2);	//	Oops!  Loop below will overwrite memory!
 if (!(gameData.app.nGameMode & GM_MULTI))
