@@ -1594,10 +1594,11 @@ for (int i = 0; i < gameStates.app.nThreads; i++)
 
 if (nBuffers < 2) {
 	CTranspItem	** listP;
-	int nItems;
-	for (listP = &m_data.buffers [0].depthBuffer [m_data.nMaxOffs], nItems = m_data.buffers [0].nItems [0]; (listP >= m_data.buffers [0].depthBuffer.Buffer ()) && nItems; listP--)
+	CTranspItemBuffers& buffer = m_data.buffers [0];
+
+	for (listP = &buffer.depthBuffer [m_data.buffers [0].nMaxOffs]; buffer.nItems [0] && (listP >= buffer.depthBuffer.Buffer ()); listP--)
 		if (*listP)
-			RenderBuffer (m_data.buffers [0], listP, bCleanup);
+			RenderBuffer (buffer, listP, bCleanup);
 	}
 else {
 	CTranspItem	** listP [MAX_THREADS];
@@ -1610,15 +1611,16 @@ else {
 			}
 
 	int h = nBuffers;
-	while (nBuffers) {
-		for (int i = 0; i < h; i++)
-			if (listP [i] && *listP [i]) {
-				RenderBuffer (m_data.buffers [i], listP [i], bCleanup);
-				}
-		for (int i = 0; i < nBuffers; i++) {
-			if (!m_data.buffers [i].nItems [0] || (--listP [i] <= m_data.buffers [i].depthBuffer.Buffer ())) {
-				listP [i] = NULL;
-				nBuffers--;
+	while (nBuffers > 0) {
+		for (int i = 0; i < h; i++) {
+			if (listP [i]) {
+				CTranspItemBuffers& buffer = m_data.buffers [i];
+				if (*listP [i]) 
+					RenderBuffer (buffer, listP [i], bCleanup);
+				if (!buffer.nItems [0] || (--listP [i] < buffer.depthBuffer.Buffer ())) {
+					listP [i] = NULL;
+					nBuffers--;
+					}
 				}
 			}
 		}
