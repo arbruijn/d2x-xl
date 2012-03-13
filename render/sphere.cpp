@@ -572,7 +572,9 @@ return 1;
 
 void CSphere::RenderRing (int nOffset, int nItems, int bTextured, int nPrimitive)
 {
-//ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+#if DBG
+ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+#endif
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].uv));
 OglVertexPointer (3, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].vPos));
@@ -583,7 +585,9 @@ OglDrawArrays (nPrimitive, 0, nItems);
 
 void CSphere::RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int nItems, int bTextured, int nPrimitive)
 {
-//ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+#if DBG
+ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+#endif
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, texCoordP);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
