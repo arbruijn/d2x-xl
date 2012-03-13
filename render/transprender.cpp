@@ -1593,11 +1593,10 @@ for (int i = 0; i < gameStates.app.nThreads; i++)
 		nBuffers++;
 
 if (nBuffers < 2) {
-	CTranspItem	** listP;
 	CTranspItemBuffers& buffer = m_data.buffers [0];
 
-	for (listP = &buffer.depthBuffer [buffer.nMaxOffs]; buffer.nItems [0] && (listP >= buffer.depthBuffer.Buffer ()); listP--)
-		if (*listP)
+	for (buffer.bufP = &buffer.depthBuffer [buffer.nMaxOffs]; buffer.nItems [0] && (buffer.bufP >= buffer.depthBuffer.Buffer ()); buffer.bufP--)
+		if (*buffer.bufP)
 			RenderBuffer (buffer, bCleanup);
 	}
 else {
