@@ -118,6 +118,17 @@ typedef struct tTriggerV30 {
 //the CTrigger really should have both a nType & a flags, since most of the
 //flags bits are exclusive of the others.
 
+typedef struct tCompatibleTrigger {
+	ubyte   type;       //what this trigger does
+	ubyte   flags;      //currently unused
+	sbyte   num_links;  //how many doors, etc. linked to this
+	sbyte   pad;        //keep alignment
+	fix     value;
+	fix     time;
+	short   seg [MAX_TRIGGER_TARGETS];
+	short   side [MAX_TRIGGER_TARGETS];
+} __pack__ tCompatibleTrigger;
+
 class __pack__ CTriggerInfo {
 	public:
 		ubyte		nType;   //what this CTrigger does

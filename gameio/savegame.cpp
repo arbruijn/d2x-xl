@@ -2078,10 +2078,10 @@ if (!PrepareLevel (nCurrentLevel, true, m_bSecret == 1, true, false)) {
 	}
 nLocalObjNum = LOCALPLAYER.nObject;
 if (m_bSecret != 1)	//either no secret restore, or CPlayerData died in scret level
-	m_cf.Read (gameData.multiplayer.players + N_LOCALPLAYER, sizeof (CPlayerData), 1);
+	m_cf.Read (gameData.multiplayer.players + N_LOCALPLAYER, sizeof (CPlayerInfo), 1);
 else {
 	CPlayerData	retPlayer;
-	m_cf.Read (&retPlayer, sizeof (CPlayerData), 1);
+	m_cf.Read (&retPlayer, sizeof (CPlayerInfo), 1);
 	AwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
 LOCALPLAYER.SetObject (nLocalObjNum);
@@ -2104,9 +2104,10 @@ if (!m_bBetweenLevels) {
 	ResetSegObjLists ();
 	ResetObjects (1);
 	//Read objects, and pop 'em into their respective segments.
-	m_cf.Read (&i, sizeof (int), 1);
-	gameData.objs.nLastObject [0] = i - 1;
-	OBJECTS.Read (m_cf, i);
+	m_cf.Read (&gameData.objs.nObjects, sizeof (int), 1);
+	gameData.objs.nLastObject [0] = gameData.objs.nObjects - 1;
+	for (i = 0; i < gameData.objs.nObjects; i++)
+		m_cf.Read (&OBJECTS [i], sizeof (tBaseObject), 1);
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	FixObjects ();
 	SpecialResetObjects ();
@@ -2122,7 +2123,23 @@ if (!m_bBetweenLevels) {
 	//Restore CWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
 		return 0;
-	WALLS.Read (m_cf, gameData.walls.nWalls);
+	for (i = 0; i < gameData.walls.nWalls; i++) {
+		tCompatibleWall w;
+		m_cf.Read (&w, sizeof (w), 1);
+		WALLS [i].nSegment = w.nSegment;
+		WALLS [i].nSide = w.nSide;
+		WALLS [i].hps = w.hps;
+		WALLS [i].nLinkedWall = w.nLinkedWall;
+		WALLS [i].nType = w.nType;
+		WALLS [i].flags = w.flags;
+		WALLS [i].state = w.state;
+		WALLS [i].nTrigger = w.nTrigger;
+		WALLS [i].nClip = w.nClip;
+		WALLS [i].keys = w.keys;
+		WALLS [i].controllingTrigger = w.controllingTrigger;
+		WALLS [i].cloakValue = w.cloakValue;
+		WALLS [i].bVolatile = 0;
+		}
 	//now that we have the walls, check if any sounds are linked to
 	//walls that are now open
 	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++)
@@ -2131,23 +2148,41 @@ if (!m_bBetweenLevels) {
 	//Restore exploding wall info
 	if (m_nVersion >= 10) {
 		m_cf.Read (&i, sizeof (int), 1);
-		gameData.walls.exploding.Read (m_cf, i);
+		if (i > 0) {
+			gameData.walls.exploding.Grow (static_cast<uint> (i));
+			gameData.walls.exploding.Read (m_cf, i);
+			}
 		}
 	//Restore door info
 	if (ReadBoundedInt (MAX_DOORS, &i))
 		return 0;
-	gameData.walls.activeDoors.Grow (static_cast<uint> (i));
-	gameData.walls.activeDoors.Read (m_cf, gameData.walls.activeDoors.ToS ());
+	if (i > 0) {
+		gameData.walls.activeDoors.Grow (static_cast<uint> (i));
+		gameData.walls.activeDoors.Read (m_cf, gameData.walls.activeDoors.ToS ());
+		}
 	if (m_nVersion >= 14) {		//Restore cloaking CWall info
 		if (ReadBoundedInt (MAX_WALLS, &i))
 			return 0;
-		gameData.walls.cloaking.Grow (static_cast<uint> (i));
-		gameData.walls.cloaking.Read (m_cf, gameData.walls.cloaking.ToS ());
+		if (i > 0) {
+			gameData.walls.cloaking.Grow (static_cast<uint> (i));
+			gameData.walls.cloaking.Read (m_cf, gameData.walls.cloaking.ToS ());
+			}
 		}
 	//Restore CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.m_nTriggers))
 		return 0;
-	TRIGGERS.Read (m_cf, gameData.trigs.m_nTriggers);
+	for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
+		tCompatibleTrigger t;
+		m_cf.Read (&t, sizeof (t), 1);
+		TRIGGERS [i].m_info.nType = t.type;
+		TRIGGERS [i].m_info.flags = t.flags;
+		TRIGGERS [i].m_info.value = t.value;
+		TRIGGERS [i].m_info.time [0] = t.time;
+		TRIGGERS [i].m_info.time [1] = -1;
+		TRIGGERS [i].m_nLinks = t.num_links;
+		memcpy (TRIGGERS [i].m_segments, t.seg, sizeof (t.seg));
+		memcpy (TRIGGERS [i].m_sides, t.side, sizeof (t.side));
+		}
 	if (m_nVersion >= 26) {
 		//Restore CObject CTrigger info
 

@@ -105,8 +105,8 @@ typedef struct tStuckObject {
 class CActiveDoor {
 	public:
 		int     nPartCount;           // for linked walls
-		short   nFrontWall[2];			// front CWall numbers for this door
-		short   nBackWall[2];			// back CWall numbers for this door
+		short   nFrontWall [2];			// front CWall numbers for this door
+		short   nBackWall [2];			// back CWall numbers for this door
 		fix     time;						// how long been opening, closing, waiting
 
 	public:
@@ -133,8 +133,8 @@ class CCloakingWall {
 	public:
 		short   nFrontWall;			 // front CWall numbers for this door
 		short   nBackWall;			 // back CWall numbers for this door
-		fix     front_ls[4];        // front CWall saved light values
-		fix     back_ls[4];         // back CWall saved light values
+		fix     front_ls [4];       // front CWall saved light values
+		fix     back_ls [4];        // back CWall saved light values
 		fix     time;               // how long been cloaking or decloaking
 
 	public:
@@ -164,6 +164,20 @@ typedef struct tWallV19 {
 	sbyte   keys;
 	int nLinkedWall;            // number of linked CWall
 } __pack__ tWallV19;
+
+typedef struct tCompatibleWall {
+	int		nSegment, nSide;
+	fix		hps;				
+	int		nLinkedWall;	
+	ubyte		nType;			
+	ubyte		flags;			
+	ubyte		state;			
+	ubyte		nTrigger;		
+	sbyte		nClip;			
+	ubyte		keys;				
+	sbyte		controllingTrigger;
+	sbyte		cloakValue;			
+} __pack__ tCompatibleWall;
 
 typedef struct v19_door {
 	int     nPartCount;            // for linked walls

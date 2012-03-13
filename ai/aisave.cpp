@@ -47,10 +47,12 @@ gameData.ai.routeSegs.Clear ();
 m_cf.Read (&gameData.ai.bInitialized, sizeof (int), 1);
 m_cf.Read (&gameData.ai.nOverallAgitation, sizeof (int), 1);
 gameData.ai.localInfo.Read (m_cf, (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2);
-gameData.ai.routeSegs.Read (m_cf, (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2);
-gameData.ai.cloakInfo.Read (m_cf);
+for (i = 0, j = (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2; i < j; i++) {
+	gameData.ai.routeSegs [i].nSegment = m_cf.ReadInt ();
+	m_cf.ReadVector (gameData.ai.routeSegs [i].point);
+	}
+gameData.ai.cloakInfo.Read (m_cf, MAX_AI_CLOAK_INFO_D2);
 gameData.bosses.Destroy ();
-	return 0;
 if (m_nVersion < 29)
 	j = 1;
 else 
