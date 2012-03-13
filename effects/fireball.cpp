@@ -329,7 +329,7 @@ CObject* CObject::ExplodeSplashDamageWeapon (CFixVector& vPos)
 
 Assert (wi->xDamageRadius);
 if ((info.nId == EARTHSHAKER_ID) || (info.nId == ROBOT_EARTHSHAKER_ID))
-	ShakerRockStuff ();
+	ShakerRockStuff (&vPos);
 audio.CreateObjectSound (IsSplashDamageWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 CFixVector v;
 if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall

@@ -313,7 +313,7 @@ int SpitPowerup (CObject *spitter, ubyte id, int seed = -1);
 #define SMEGA_ID    40
 
 void RockTheMineFrame (void);
-void ShakerRockStuff (void);
+void ShakerRockStuff (CFixVector* vPos = NULL);
 void InitShakerDetonates (void);
 void tactile_set_button_jolt (void);
 

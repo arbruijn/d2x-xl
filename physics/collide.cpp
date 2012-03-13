@@ -763,7 +763,7 @@ if (bBlewUp) {		//could be a wall switch - only player or guidebot can activate 
 	segP->OperateTrigger (nHitWall, parentObjP, 1);
 	}
 if (info.nId == EARTHSHAKER_ID)
-	ShakerRockStuff ();
+	ShakerRockStuff (&Position ());
 int wallType = (nHitWall < 0) ? WHP_NOT_SPECIAL : segP->ProcessWallHit (nHitWall, info.xShield, nPlayer, this);
 // Wall is volatile if either tmap 1 or 2 is volatile
 if (sideP && ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
@@ -1546,7 +1546,7 @@ if (botInfoP->companion && (cType.laserInfo.parent.nType != OBJ_ROBOT))
 	return 1;
 CreateWeaponEffects (1);
 if (info.nId == EARTHSHAKER_ID)
-	ShakerRockStuff ();
+	ShakerRockStuff (&Position ());
 //	If a persistent this hit robotP most recently, quick abort, else we cream the same robotP many times,
 //	depending on frame rate.
 if (mType.physInfo.flags & PF_PERSISTENT) {
@@ -1839,7 +1839,7 @@ if ((info.nId == SMARTMINE_ID) &&
 gameData.multiplayer.bWasHit [playerObjP->info.nId] = -1;
 CreateWeaponEffects (1);
 if (info.nId == EARTHSHAKER_ID)
-	ShakerRockStuff ();
+	ShakerRockStuff (&Position ());
 xDamage = FixMul (xDamage, cType.laserInfo.xScale);
 if (info.nId == FUSION_ID)
 	xDamage = gameData.FusionDamage (xDamage);
@@ -2085,7 +2085,7 @@ int CObject::CollideWeaponAndMonsterball (CObject* mBallP, CFixVector& vHitPt, C
 if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
 	if (info.nId == EARTHSHAKER_ID)
-		ShakerRockStuff ();
+		ShakerRockStuff (&Position ());
 	if (mType.physInfo.flags & PF_PERSISTENT) {
 		if (AddHitObject (this, OBJ_IDX (mBallP)) < 0)
 			return 1;

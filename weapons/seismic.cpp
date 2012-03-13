@@ -30,12 +30,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	MAX_ESHAKER_DETONATES	4
 
 fix	eshakerDetonateTimes [MAX_ESHAKER_DETONATES];
+float	eshakerDetonateScales [MAX_ESHAKER_DETONATES];
 
 //	Call this to initialize for a new level.
 //	Sets all super mega missile detonation times to 0 which means there aren't any.
 void InitShakerDetonates (void)
 {
 memset (eshakerDetonateTimes, 0, sizeof (eshakerDetonateTimes));
+memset (eshakerDetonateScales, 0, sizeof (eshakerDetonateScales));
 }
 
 //	-----------------------------------------------------------------------------
@@ -45,9 +47,7 @@ memset (eshakerDetonateTimes, 0, sizeof (eshakerDetonateTimes));
 //	Maybe this should affect all robots, being called when they get their physics done.
 void RockTheMineFrame (void)
 {
-	int	i;
-
-for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
+for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 	if (eshakerDetonateTimes [i] != 0) {
 		fix	deltaTime = gameData.time.xGame - eshakerDetonateTimes [i];
 		if (!gameStates.gameplay.seismic.bSound) {
@@ -74,8 +74,8 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
 			//	Shake the buddy!
 			if (gameData.escort.nObjNum != -1) {
-				OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.x += rx*4;
-				OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.z += rz*4;
+				OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.x += rx * 4;
+				OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.z += rz * 4;
 				}
 			//	Shake a guided missile!
 			gameStates.gameplay.seismic.nMagnitude += rx;
@@ -164,17 +164,19 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 
 //	-----------------------------------------------------------------------------
 //	Call this when a smega detonates to start the process of rocking the mine.
-void ShakerRockStuff (void)
+void ShakerRockStuff (CFixVector* vPos)
 {
-#if !DBG
+#if 1 //!DBG
 	int	i;
 
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 	if (eshakerDetonateTimes [i] + ESHAKER_SHAKE_TIME < gameData.time.xGame)
 		eshakerDetonateTimes [i] = 0;
+float fScale = (vPos != NULL) ? 1.0f / sqrt (X2F (CFixVector::Dist (*vPos, gameData.objs.consoleP->Position ()))) : 1.0f;
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 	if (eshakerDetonateTimes [i] == 0) {
 		eshakerDetonateTimes [i] = gameData.time.xGame;
+		eshakerDetonateScales [i] = fScale;
 		break;
 		}
 #endif
@@ -192,8 +194,8 @@ if (gameStates.limitFPS.bSeismic && !gameStates.app.tick40fps.bTick)
 stv_save = gameStates.gameplay.seismic.nVolume;
 gameStates.gameplay.seismic.nMagnitude = 0;
 gameStates.gameplay.seismic.nVolume = 0;
-RockTheMineFrame();
-SeismicDisturbanceFrame();
+RockTheMineFrame ();
+SeismicDisturbanceFrame ();
 if (stv_save != 0) {
 	if (gameStates.gameplay.seismic.nVolume == 0) {
 		audio.StopLoopingSound ();
