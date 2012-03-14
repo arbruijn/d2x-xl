@@ -680,7 +680,7 @@ void NetworkD2XOptions (void)
 {
 	static int choice = 0;
 
-	int		i, optCheckPort = -1;
+	int		i;
 	char		szSlider [50];
 	CMenu		m;
 
@@ -743,6 +743,14 @@ do {
 		m.AddSlider ("max. smoke grenades", szSlider + 1, extraGameInfo [0].nMaxSmokeGrenades - 1, 0, 3, KEY_X, HTX_GPLAY_MAXGRENADES);
 		}
 	m.AddCheck ("fixed spawn points", TXT_FIXED_SPAWN, extraGameInfo [0].bFixedRespawns, KEY_F, HTX_GPLAY_FIXEDSPAWN);
+	m.AddText ("", TXT_PLAYERSHIP);
+
+	if (!COMPETITION) {
+		m.AddCheck ("standard ship", TXT_STANDARD_SHIP, extraGameInfo [0].shipsAllowed [0], KEY_S, HTX_PLAYERSHIP);
+		m.AddCheck ("light ship", TXT_LIGHT_SHIP, extraGameInfo [0].shipsAllowed [1], KEY_I, HTX_PLAYERSHIP);
+		m.AddCheck ("heavy ship", TXT_HEAVY_SHIP, extraGameInfo [0].shipsAllowed [2], KEY_F, HTX_PLAYERSHIP);
+		}
+
 	if (extraGameInfo [0].nSpawnDelay < 0)
 		extraGameInfo [0].nSpawnDelay = 0;
 	sprintf (szSlider + 1, TXT_RESPAWN_DELAY, extraGameInfo [0].nSpawnDelay / 1000);
@@ -759,13 +767,25 @@ do {
 
 	i = m.Menu (NULL, TXT_D2XOPTIONS_TITLE, NetworkD2XOptionsPoll, &choice);
   //mpParams."reactor life" = atoi (szInvul)*I2X (60);
-	extraGameInfo [1].bDarkness = (ubyte) m.Value ("darkness");
 	if (m.Available ("darkness")) {
+		extraGameInfo [1].bDarkness = (ubyte) m.Value ("darkness");
 		if ((mpParams.bDarkness = extraGameInfo [1].bDarkness)) {
 			extraGameInfo [1].headlight.bAvailable = !m.Value ("headlights");
 			extraGameInfo [1].bPowerupLights = !m.Value ("bright powerups");
 			}
 		}
+	if (m.Available ("standard ship")) {
+		GET_VAL (extraGameInfo [0].shipsAllowed [0], "standard ship");
+		GET_VAL (extraGameInfo [0].shipsAllowed [1], "light ship");
+		GET_VAL (extraGameInfo [0].shipsAllowed [2], "heavy ship");
+		int j;
+		for (j = 0; j < MAX_SHIP_TYPES; j++)
+			if (extraGameInfo [0].shipsAllowed [j])
+				break;
+		if (j == MAX_SHIP_TYPES)
+			extraGameInfo [0].shipsAllowed [0] = 1;
+		}
+
 	GET_VAL (extraGameInfo [1].bTowFlags, "tow flags");
 	GET_VAL (extraGameInfo [1].bTeamDoors, "team doors");
 	mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;

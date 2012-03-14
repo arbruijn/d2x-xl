@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 #include "loadgame.h"
 
-#define EGI_DATA_VERSION				2
+#define EGI_DATA_VERSION				3
 
 #define NETWORK_OEM						0x10
 
@@ -280,6 +280,7 @@ typedef struct tExtraGameInfo {
 	int		nLightRange;
 	int		nSpeedScale;
 	int		nSecurity;
+	int		shipsAllowed [MAX_SHIP_TYPES];
 } __pack__ tExtraGameInfo;
 
 typedef struct tMpParams {

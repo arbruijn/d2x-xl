@@ -180,6 +180,8 @@ if (i < networkData.nActiveGames)
 	activeExtraGameInfo [i] = extraGameInfo [1];
 else
 	memset (activeExtraGameInfo + i, 0, sizeof (activeExtraGameInfo [i]));
+for (i = 0; i < 3; i++)
+	missionConfig.m_shipsAllowed [i] = extraGameInfo [i].shipsAllowed [i];
 return 1;
 }
 

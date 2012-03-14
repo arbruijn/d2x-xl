@@ -670,7 +670,7 @@ CMissionConfig missionConfig;
 void CMissionConfig::Init (void)
 {
 for (int i = 0; i < MAX_SHIP_TYPES; i++)
-	m_ships [i] = 1;
+	m_shipsAllowed [i] = 1;
 m_playerShip = -1;
 m_bTeleport = 1;
 m_bColoredSegments = 1;
@@ -698,11 +698,11 @@ if (!cf.Open (szConfig, gameFolders.szDataDir [0], "rb", 0))
 if (args.Parse (&cf)) {
 	int h = 0;
 	for (int i = 0; i < MAX_SHIP_TYPES; i++) {
-		if ((m_ships [i] = args.Value (szShipArgs [i], bLocal ? m_ships [i] : 1))) // use the global setting as default when parsing a level config
+		if ((m_shipsAllowed [i] = args.Value (szShipArgs [i], bLocal ? m_shipsAllowed [i] : 1))) // use the global setting as default when parsing a level config
 			h++;
 		}
 	if (!h)
-		m_ships [0] = 1; // medium ship, the standard ship
+		m_shipsAllowed [0] = 1; // medium ship, the standard ship
 	m_playerShip = args.Value ("-player_ship", bLocal ? m_playerShip : -1);
 	m_bTeleport = args.Value ("-teleport", bLocal ? m_bTeleport : 1);
 	m_bSecretSave = args.Value ("-secret_save", bLocal ? m_bSecretSave : 1);
@@ -730,7 +730,7 @@ if (m_playerShip == -1) {
 		m_playerShip = gameOpts->gameplay.nShip [0];
 	}
 for (int i = 0; i < MAX_SHIP_TYPES; i++) {
-	if (m_ships [m_playerShip])
+	if (m_shipsAllowed [m_playerShip])
 		break;
 	m_playerShip = (m_playerShip + 1) % MAX_SHIP_TYPES;
 	}
@@ -755,6 +755,22 @@ else if (m_playerShip == 1) {
 else if (m_playerShip == 2) {
 	LOCALPLAYER.flags &= ~(PLAYER_FLAGS_AFTERBURNER);
 	}
+}
+
+// ----------------------------------------------------------------------------
+
+int CMissionConfig::SelectShip (int nShip)
+{
+if (COMPETITION)
+	return m_playerShip = 0;
+if ((nShip < 0) || (nShip >= MAX_SHIP_TYPES))
+	nShip = 0;
+if (m_shipsAllowed [nShip])
+	return m_playerShip = nShip;
+for (nShip = 0; nShip < MAX_SHIP_TYPES; nShip++)
+if (m_shipsAllowed [nShip])
+	return m_playerShip = nShip;
+return m_playerShip = 0;
 }
 
 // ----------------------------------------------------------------------------

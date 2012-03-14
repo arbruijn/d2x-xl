@@ -1277,7 +1277,7 @@ extern CGameOptions	*gameOpts;
 
 class CMissionConfig {
 	public:
-		int	m_ships [MAX_SHIP_TYPES];
+		int	m_shipsAllowed [MAX_SHIP_TYPES];
 		int	m_playerShip;
 		int	m_bTeleport;
 		int	m_bSecretSave;
@@ -1289,6 +1289,7 @@ class CMissionConfig {
 		void Init (void);
 		int Load (char* szFilename = NULL);
 		void Apply (void);
+		int SelectShip (int nShip);
 };
 
 extern CMissionConfig missionConfig;

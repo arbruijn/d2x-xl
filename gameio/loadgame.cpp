@@ -503,9 +503,9 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	}
 
 if (gameOpts->gameplay.nShip [1] < 0)
-	gameOpts->gameplay.nShip [1] = missionConfig.m_playerShip;
+	gameOpts->gameplay.nShip [1] = (missionConfig.m_playerShip < 0) ? missionConfig.SelectShip (gameOpts->gameplay.nShip [0]) : missionConfig.SelectShip (missionConfig.m_playerShip);
 if (gameOpts->gameplay.nShip [1] > -1) {
-	gameOpts->gameplay.nShip [0] = gameOpts->gameplay.nShip [1];
+	gameOpts->gameplay.nShip [0] = missionConfig.SelectShip (gameOpts->gameplay.nShip [1]);
 	gameOpts->gameplay.nShip [1] = -1;
 	}
 gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip = gameOpts->gameplay.nShip [0];

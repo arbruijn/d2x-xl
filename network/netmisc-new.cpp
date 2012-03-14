@@ -388,6 +388,8 @@ EGI_INTEL_INT_2BUF (nSpawnDelay);
 EGI_INTEL_INT_2BUF (nLightRange);
 EGI_INTEL_INT_2BUF (nSpeedScale);
 EGI_INTEL_INT_2BUF (nSecurity);
+for (int i = 0; i < MAX_SHIP_TYPES; i++)
+	EGI_INTEL_INT_2BUF (shipsAllowed [i]);
 if (netAddress)
 	IPXSendPacketData (nmBufP, sizeof (extraGameInfo [0]), server, node, netAddress);
 else if (!server && !node)
@@ -415,6 +417,8 @@ BUF2_EGI_INTEL_INT (nSpawnDelay);
 BUF2_EGI_INTEL_INT (nLightRange);
 BUF2_EGI_INTEL_INT (nSpeedScale);
 BUF2_EGI_INTEL_INT (nSecurity);
+for (int i = 0; i < MAX_SHIP_TYPES; i++)
+	BUF2_EGI_INTEL_INT (shipsAllowed [i]);
 }
 
 //------------------------------------------------------------------------------
