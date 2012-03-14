@@ -49,16 +49,17 @@ void RockTheMineFrame (void)
 {
 for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 	if (eshakerDetonateTimes [i] != 0) {
-		fix	deltaTime = gameData.time.xGame - eshakerDetonateTimes [i];
+		fix deltaTime = gameData.time.xGame - eshakerDetonateTimes [i];
 		if (!gameStates.gameplay.seismic.bSound) {
 			audio.PlayLoopingSound ((short) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
 			gameStates.gameplay.seismic.bSound = 1;
 			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + RandShort () / 2;
 			}
-		if (deltaTime < ESHAKER_SHAKE_TIME) {
+		if (deltaTime >= ESHAKER_SHAKE_TIME) 
+			eshakerDetonateTimes [i] = 0;
+		else {
 			//	Control center destroyed, rock the player's ship.
 			int	fc, rx, rz;
-			fix	h;
 			// -- fc = abs(deltaTime - ESHAKER_SHAKE_TIME/2);
 			//	Changed 10/23/95 to make decreasing for super mega missile.
 			fc = (ESHAKER_SHAKE_TIME - deltaTime) / (ESHAKER_SHAKE_TIME / 16);
@@ -67,9 +68,12 @@ for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			else if (fc == 0)
 				fc = 1;
 			gameStates.gameplay.seismic.nVolume += fc;
-			h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
-			rx = (fix) (FixMul (SRandShort (), h) * eshakerDetonateScales [i] + 0.5f);
-			rz = (fix) (FixMul (SRandShort (), h) * eshakerDetonateScales [i] + 0.5f);
+			float fScale = X2F (I2X (3) / 16 + (I2X (16 - fc)) / 32);
+			if (eshakerDetonateScales [i] > 0.0f)
+				fScale *= eshakerDetonateScales [i];
+			//HUDMessage (0, "shaker rock scale %d: %1.2f", i, fScale);
+			rx = fix (SRandShort () * fScale + 0.5f);
+			rz = fix (SRandShort () * fScale + 0.5f);
 			gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
 			gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
 			//	Shake the buddy!
@@ -80,8 +84,6 @@ for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			//	Shake a guided missile!
 			gameStates.gameplay.seismic.nMagnitude += rx;
 			} 
-		else
-			eshakerDetonateTimes [i] = 0;
 		}
 	}
 //	Hook in the rumble sound effect here.
@@ -171,17 +173,20 @@ void ShakerRockStuff (CFixVector* vPos)
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 	if (eshakerDetonateTimes [i] + ESHAKER_SHAKE_TIME < gameData.time.xGame)
 		eshakerDetonateTimes [i] = 0;
-float fScale;
+
+float fScale, fDist = 0.0f;
 if (gameStates.app.bNostalgia || COMPETITION || (vPos == NULL))
 	fScale = 1.0f;
 else {
-	float fScale = X2F (CFixVector::Dist (*vPos, gameData.objs.consoleP->Position ()));
-	fScale = (fScale <= 200.0f) ? 1.0f : 200.0f / fScale;
+	float fDist = X2F (CFixVector::Dist (*vPos, gameData.objs.consoleP->Position ()));
+	fScale = (fDist <= 200.0f) ? 1.0f : 200.0f / fDist;
 	}
+
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 	if (eshakerDetonateTimes [i] == 0) {
 		eshakerDetonateTimes [i] = gameData.time.xGame;
 		eshakerDetonateScales [i] = fScale;
+		//HUDMessage (0, "shaker rock scale %d: %1.2f (dist %1.2f)", i, fScale, fDist);
 		break;
 		}
 #endif
