@@ -781,6 +781,8 @@ do {
 		GET_VAL (extraGameInfo [0].shipsAllowed [2], "heavy ship");
 		int j;
 		for (j = 0; j < MAX_SHIP_TYPES; j++)
+			missionConfig.m_shipsAllowed [j] = extraGameInfo [0].shipsAllowed [j];
+		for (j = 0; j < MAX_SHIP_TYPES; j++)
 			if (extraGameInfo [0].shipsAllowed [j])
 				break;
 		if (j == MAX_SHIP_TYPES)
