@@ -1991,10 +1991,10 @@ void LoadGameTexts(void);
 #define TXT_PATCH_FAILED            GT(1207)
 #define TXT_GAME_SPEED					GT(1208)
 #define TXT_D2X_VERSION_MISMATCH		GT(1209)
+#define TXT_SHIPS_ALLOWED				GT(1210)
 
 #if 0
 
-#define TXT_					GT(1210)
 #define TXT_					GT(1211)
 #define TXT_					GT(1212)
 #define TXT_					GT(1213)

@@ -1956,6 +1956,7 @@ const char *defaultGameTexts [][2] = {
   "\nThe file\n\n%s\n\nwas sucessfully downloaded, but couldn't be excuted.\nPlease leave D2X-XL and start the installer manually."},
  {"Spiel~Geschwindigkeit: x %d.%d", "game ~Speed: x %d.%d"},
  {"Deine Version von D2X-XL\npasst nicht zu der Version,\ndie fuer dieses Spiel verwendet wird.", "Your version of D2X-XL\ndoes not match the version\nin use for that game."},
+ {"\nerlaubte Schiffe:", "\nships allowed:"},
  
 #if 0
  {"", ""},
