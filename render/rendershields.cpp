@@ -95,7 +95,7 @@ if (!CollisionModel ()) {
 	DrawShieldSphere (objP, red, green, blue, alpha, 1);
 	return;
 	}
-else if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
+else if (CollisionModel () == 1) {
 	iBox =
 	nBoxes = 0;
 	}

@@ -332,7 +332,7 @@ fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject 
 	CModelHitboxList	*pmhb2 = gameData.models.hitboxes + objP2->ModelId ();
 	fix				dMin = 0x7fffffff;
 
-if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
+if (CollisionModel () == 1) {
 	iModel1 =
 	nModels1 = 0;
 	iModel2 =
@@ -390,7 +390,7 @@ fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CF
 	fix					dMin = 0x7fffffff;
 	CModelHitboxList*	pmhb = gameData.models.hitboxes + objP->ModelId ();
 
-if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
+if (CollisionModel () == 1) {
 	iModel =
 	nModels = 0;
 	}
@@ -482,7 +482,7 @@ fix CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, shor
 iModel =
 nModels = 1;
 #else
-if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
+if (CollisionModel () == 1) {
 	iModel =
 	nModels = 1;
 	}

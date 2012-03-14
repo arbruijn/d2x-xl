@@ -208,7 +208,7 @@ void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb)
 	CFixVector	rotVerts [8];
 	int			i, j, iModel, nModels;
 
-if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
+if (CollisionModel () == 1) {
 	iModel =
 	nModels = 0;
 	}
@@ -246,7 +246,7 @@ gameData.models.hitboxes [nId].nFrame = gameData.objs.nFrameCount;
 	CFixMatrix*	viewP = objP->View ();
 	int			i, j, iBox, nBoxes;
 
-if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
+if (CollisionModel () == 1) {
 	iBox = 0;
 	nBoxes = 1;
 	}
