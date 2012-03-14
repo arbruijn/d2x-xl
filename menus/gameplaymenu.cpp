@@ -255,7 +255,9 @@ for (h = i = 0; i < 3; i++) {
 	if (missionConfig.m_shipsAllowed [i])
 		h++;
 	}
-if (h > 1) { // more than one ship to chose from
+if (h < 2) 
+	optShip = -1;
+else { // more than one ship to chose from
 	m.AddText ("", TXT_PLAYERSHIP);
 	optShip = (missionConfig.m_shipsAllowed [0]) ? m.AddRadio ("standard ship", TXT_STANDARD_SHIP, 0, KEY_S, HTX_PLAYERSHIP) : -1;
 	if (missionConfig.m_shipsAllowed [1]) {
@@ -401,7 +403,7 @@ if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
-if (gameOpts->gameplay.nShip [1] != nShip) {
+if ((optShip >= 0) && (gameOpts->gameplay.nShip [1] != nShip)) {
 	missionConfig.m_playerShip = gameOpts->gameplay.nShip [1];
 	if (!gameStates.app.bGameRunning) {
 		gameOpts->gameplay.nShip [0] = gameOpts->gameplay.nShip [1];
