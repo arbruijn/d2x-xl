@@ -261,10 +261,15 @@ cf.Read (&m_nCloakDuration, sizeof (fix), 1);
 cf.Read (&m_nLastGateTime, sizeof (fix), 1);
 cf.Read (&m_nGateInterval, sizeof (fix), 1);
 cf.Read (&m_nDyingStartTime, sizeof (fix), 1);
-cf.Read (&m_nDying, sizeof (int), 1);
-if (m_nDying && (m_nDyingStartTime > gameData.time.xGame))
+int h;
+cf.Read (&h, sizeof (int), 1);
+m_nDying = short (h);
+if ((m_nDying < 0) || (m_nDying >= gameData.objs.nObjects) || !ROBOTINFO (OBJECTS [m_nDying].info.nId).bossFlag)
+	m_nDying = 0;
+else if (m_nDying && (m_nDyingStartTime > gameData.time.xGame))
 	m_nDyingStartTime = gameData.time.xGame;
-cf.Read (&m_bDyingSoundPlaying, sizeof (int), 1);
+cf.Read (&h, sizeof (int), 1);
+m_bDyingSoundPlaying = sbyte (h);
 cf.Read (&m_nHitTime, sizeof (fix), 1);
 }
 

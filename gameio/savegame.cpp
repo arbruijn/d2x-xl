@@ -2078,10 +2078,10 @@ if (!PrepareLevel (nCurrentLevel, true, m_bSecret == 1, true, false)) {
 	}
 nLocalObjNum = LOCALPLAYER.nObject;
 if (m_bSecret != 1)	//either no secret restore, or CPlayerData died in scret level
-	m_cf.Read (gameData.multiplayer.players + N_LOCALPLAYER, sizeof (CPlayerInfo), 1);
+	m_cf.Read (&gameData.multiplayer.players [N_LOCALPLAYER].callsign, sizeof (CPlayerInfo), 1);
 else {
 	CPlayerData	retPlayer;
-	m_cf.Read (&retPlayer, sizeof (CPlayerInfo), 1);
+	m_cf.Read (&retPlayer.callsign, sizeof (CPlayerInfo), 1);
 	AwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
 LOCALPLAYER.SetObject (nLocalObjNum);
@@ -2107,7 +2107,7 @@ if (!m_bBetweenLevels) {
 	m_cf.Read (&gameData.objs.nObjects, sizeof (int), 1);
 	gameData.objs.nLastObject [0] = gameData.objs.nObjects - 1;
 	for (i = 0; i < gameData.objs.nObjects; i++)
-		m_cf.Read (&OBJECTS [i], sizeof (tBaseObject), 1);
+		m_cf.Read (&OBJECTS [i].info, sizeof (tBaseObject), 1);
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	FixObjects ();
 	SpecialResetObjects ();
@@ -2290,9 +2290,9 @@ else {
 	m_cf.Read (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
 	paletteManager.SetFlashDuration ((fix) m_cf.ReadInt ());
 	paletteManager.SetLastEffectTime ((fix) m_cf.ReadInt ());
-	paletteManager.SetRedEffect ((ubyte) m_cf.ReadShort ());
-	paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());
-	paletteManager.SetBlueEffect ((ubyte) m_cf.ReadShort ());
+	paletteManager.SetRedEffect ((ubyte) m_cf.ReadInt ());
+	paletteManager.SetGreenEffect ((ubyte) m_cf.ReadInt ());
+	paletteManager.SetBlueEffect ((ubyte) m_cf.ReadInt ());
 	}
 
 //	Load gameData.render.lights.subtracted

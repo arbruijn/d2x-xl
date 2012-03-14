@@ -193,7 +193,7 @@ m_bTopMenu = (backgroundManager.Depth () == 0) || bTop;
 m_bMenuBox = !gameStates.app.bNostalgia; // && (gameOpts->menus.altBg.bHave > 0);
 if (!(m_bitmap = Load (filename, width, height)))
 	return false;
-m_bFullScreen = (filename != NULL) && (*filename != '\0');
+m_bFullScreen = (filename != NULL) && (*filename != '\0') && m_bTopMenu;
 Setup (x, y, width, height);
 Draw (false);
 return true;
