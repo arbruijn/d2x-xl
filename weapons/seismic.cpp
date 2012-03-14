@@ -55,8 +55,10 @@ for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			gameStates.gameplay.seismic.bSound = 1;
 			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + RandShort () / 2;
 			}
-		if (deltaTime >= ESHAKER_SHAKE_TIME) 
+		if (deltaTime >= ESHAKER_SHAKE_TIME) {
 			eshakerDetonateTimes [i] = 0;
+			eshakerDetonateScales [i] = 0.0f;
+			}
 		else {
 			//	Control center destroyed, rock the player's ship.
 			int	fc, rx, rz;
