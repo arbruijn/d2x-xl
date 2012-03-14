@@ -408,6 +408,7 @@ if (gameOpts->gameplay.nShip [1] != nShip) {
 		//gameOpts->gameplay.nShip [1] = -1;
 		}
 	else {
+		gameStates.app.bChangingShip = 1;
 		SetChaseCam (0);
 		SetFreeCam (0);
 		SetRearView (0);

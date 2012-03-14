@@ -1170,6 +1170,7 @@ class CApplicationStates {
 		int bPlayerExploded;
 		int bPlayerEggsDropped;
 		int bDeathSequenceAborted;
+		int bChangingShip;
 		int bPlayerFiredLaserThisFrame;
 		int bUseSound;
 		int bMacData;

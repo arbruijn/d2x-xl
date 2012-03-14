@@ -495,6 +495,7 @@ void ResetShipData (bool bRestore)
 {
 	int	i;
 
+gameStates.app.bChangingShip = 0;
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDRecordLaserLevel (LOCALPLAYER.laserLevel, 0);
 	NDRecordPlayerWeapon (0, 0);

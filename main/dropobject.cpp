@@ -1039,7 +1039,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 	DropMissile1or4 (playerObjP, MERCURY_INDEX);
 
 		//	Always drop a shield and energy powerup.
-	if (IsMultiGame) {
+	if (IsMultiGame && !gameStates.app.bChangingShip) {
 		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_SHIELD_BOOST);
 		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_ENERGY);
 		}
