@@ -1428,7 +1428,7 @@ gameData.multigame.create.nCount = 0;
 //if (gameStates.multi.nGameType != UDP_GAME) 
 	{
 	fix shield = playerP->Shield ();
-	playerP->SetShield (-1);
+	playerP->SetShield (-1, false);
 #if 0
 	if (multiMessageLengths [1][MULTI_PLAYER_EXPLODE] < 0)
 	if (gameStates.multi.nGameType != UDP_GAME)
