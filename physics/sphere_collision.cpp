@@ -1025,7 +1025,7 @@ int FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult)
 	int			nNewHitType;
 	short			nAltHitSegment;
 	CHitData		curHit, newHit;
-	int			i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes;
+	int			i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes; // save value
 
 gameData.collisions.hitResult.vNormal.SetZero ();
 gameData.collisions.hitResult.nNormals = 0;

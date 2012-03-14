@@ -375,7 +375,7 @@ return (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [IsMultiGame]) &&
 
 static inline bool CollisionModel (void)
 {
-return (missionConfig.m_nCollisionModel || EGI_FLAG (nHitboxes, 0, 0, 0)) ? COLLISION_MODEL_BOXES : COLLISION_MODEL_SPHERES;
+return (((!IsMultiGame || IsCoopGame) && missionConfig.m_nCollisionModel) || EGI_FLAG (nHitboxes, 0, 0, extraGameInfo [0].nHitboxes)) ? COLLISION_MODEL_BOXES : COLLISION_MODEL_SPHERES;
 }
 
 //	-----------------------------------------------------------------------------
