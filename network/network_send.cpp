@@ -363,6 +363,9 @@ MultiSendMonsterball (1, 1);
 
 void NetworkSendExtraGameInfo (tSequencePacket *their)
 {
+if (!IAmGameHost ())
+	return;
+
 	tExtraGameInfo	egi1Save = extraGameInfo [1];
 
 extraGameInfo [1] = extraGameInfo [0];
