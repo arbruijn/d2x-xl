@@ -743,12 +743,13 @@ do {
 		m.AddSlider ("max. smoke grenades", szSlider + 1, extraGameInfo [0].nMaxSmokeGrenades - 1, 0, 3, KEY_X, HTX_GPLAY_MAXGRENADES);
 		}
 	m.AddCheck ("fixed spawn points", TXT_FIXED_SPAWN, extraGameInfo [0].bFixedRespawns, KEY_F, HTX_GPLAY_FIXEDSPAWN);
-	m.AddText ("", TXT_PLAYERSHIP);
+	m.AddText ("", "");
 
 	if (!COMPETITION) {
 		m.AddCheck ("standard ship", TXT_STANDARD_SHIP, extraGameInfo [0].shipsAllowed [0], KEY_S, HTX_PLAYERSHIP);
 		m.AddCheck ("light ship", TXT_LIGHT_SHIP, extraGameInfo [0].shipsAllowed [1], KEY_I, HTX_PLAYERSHIP);
 		m.AddCheck ("heavy ship", TXT_HEAVY_SHIP, extraGameInfo [0].shipsAllowed [2], KEY_F, HTX_PLAYERSHIP);
+		m.AddText ("", "");
 		}
 
 	if (extraGameInfo [0].nSpawnDelay < 0)
