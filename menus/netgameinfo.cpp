@@ -149,7 +149,7 @@ else
 	if (!AXI.bCompetition && (AXI.bMouseLook || AXI.bFastPitch)) {
 		INITFLAGS ("Controls ext.: ");
 		ADDFLAG (AXI.bMouseLook, "mouselook");
-		ADDFLAG (AXI.bFastPitch, "fast pitch");
+		ADDFLAG (AXI.bFastPitch == 1, "fast pitch");
 		}
 	else
 		strcat (mTexts [opt], "Controls ext.: None");
@@ -173,6 +173,14 @@ else
 		}
 	else
 		strcat (mTexts [opt], "Gameplay ext.: None");
+	if (AXI.bCompetition)
+		strcat (mTexts [opt], "Ships: Standard");
+	else {
+		INITFLAGS ("Ships: ");
+		ADDFLAG (AXI.shipsAllowed [0], "Standard");
+		ADDFLAG (AXI.shipsAllowed [1], "Light");
+		ADDFLAG (AXI.shipsAllowed [2], "Heavy");
+		}
 	opt++;
 	}
 for (i = 0; i < opt; i++)
