@@ -63,7 +63,7 @@ return downloadManager.Upload (*((int*) pThreadId));
 
 void CDownloadManager::Init (void)
 {
-	int i, j;
+	int i;
 
 for (i = 0; i < MAX_PLAYERS; i++) 
 	m_freeList [i] = i;
