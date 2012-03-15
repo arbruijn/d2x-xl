@@ -2293,7 +2293,7 @@ void MultiCapObjects (void)
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
-	nType = int (primaryWeaponToPowerup [i]);
+	nType = (i == SUPER_LASER_INDEX) ? POW_SUPERLASER : int (primaryWeaponToPowerup [i]);
 	if (!LOCALPLAYER.primaryWeaponFlags & (1 << i))
 		continue;
 	h = gameData.multiplayer.maxPowerupsAllowed [nType] - gameData.multiplayer.powerupsInMine [nType];

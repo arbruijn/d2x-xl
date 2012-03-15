@@ -149,8 +149,8 @@ if (objP->info.nType == OBJ_POWERUP) {
 	else {
 		objP->SetSizeFromPowerup ();
 		objP->cType.powerupInfo.xCreationTime = 0;
-		if (gameData.app.nGameMode & GM_NETWORK) {
-		if (MultiPowerupIs4Pack (objP->info.nId)) {
+		if (IsMultiGame) {
+			if (MultiPowerupIs4Pack (objP->info.nId)) {
 				gameData.multiplayer.powerupsInMine [objP->info.nId-1] += 4;
 	 			gameData.multiplayer.maxPowerupsAllowed [objP->info.nId-1] += 4;
 				}
