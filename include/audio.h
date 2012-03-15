@@ -336,7 +336,8 @@ class CAudio {
 		int CreateObjectSound (short nSound, int nSoundClass, short nObject, int bForever = 0, fix maxVolume = I2X (1), fix maxDistance = I2X (256),
 									  int nLoopStart = -1, int nLoopEnd = -1, const char *pszSound = NULL, int nDecay = 0, ubyte bCustom = 0);
 		int ChangeObjectSound (int nObject, fix nVolume);
-		int DestroyObjectSound (int nObject);
+		int FindObjectSound (int nObject, short nSound);
+		int DestroyObjectSound (int nObject, short nSound = -1);
 		bool SuspendObjectSound (int nThreshold);
 		void DeleteSoundObject (int i);
 

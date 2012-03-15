@@ -546,10 +546,21 @@ m_objects.Delete (i);
 
 //------------------------------------------------------------------------------
 
-int CAudio::DestroyObjectSound (int nObject)
+int CAudio::FindObjectSound (int nObject, short nSound)
 {
+	CSoundObject*	soundObjP = m_objects.Buffer ();
 
-	int				nKilled = 0;
+for (uint i = m_objects.ToS (); i; i--, soundObjP++) 
+	if ((soundObjP->m_linkType.obj.nObject != nObject) && (soundObjP->m_nSound == nSound))
+		return int (m_objects.ToS () - i);
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+int CAudio::DestroyObjectSound (int nObject, short nSound)
+{
+	int nKilled = 0;
 
 if ((nObject >= 0) && (gameData.demo.nState == ND_STATE_RECORDING))
 	NDRecordDestroySoundObject (nObject);
@@ -568,8 +579,7 @@ while (i) {
 	if ((soundObjP->m_flags & (SOF_USED | SOF_LINK_TO_OBJ)) != (SOF_USED | SOF_LINK_TO_OBJ))
 		continue;
 	if (nObject < 0) { // kill all sounds belonging to disappeared objects
-		if ((soundObjP->m_linkType.obj.nObject >= 0) &&
-			 (OBJECTS [soundObjP->m_linkType.obj.nObject].Signature () == soundObjP->m_linkType.obj.nObjSig))
+		if ((soundObjP->m_linkType.obj.nObject >= 0) && (OBJECTS [soundObjP->m_linkType.obj.nObject].Signature () == soundObjP->m_linkType.obj.nObjSig))
 			continue;
 		}
 	else {
@@ -578,7 +588,7 @@ while (i) {
 		}
 	if ((nObject < 0) && (soundObjP->m_flags & SOF_PLAY_FOREVER))
 		soundObjP->Stop ();
-	else {
+	else if ((nSound < 0) || (soundObjP->m_nSound == nSound)) {
 		DeleteSoundObject (i);
 		nKilled++;
 		}

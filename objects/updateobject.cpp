@@ -174,7 +174,8 @@ if (m_bRotate && EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.
 
 int CObject::CheckWallPhysics (void)
 {
-	int	nType = 0, sideMask;
+	int	nType = 0, sideMask, nSoundObj;
+	short nObject = OBJ_IDX (this);
 
 if (info.nType != OBJ_PLAYER)
 	return 0;
@@ -199,17 +200,20 @@ if (nType) {
 		nSound = mType.physInfo.thrust.IsZero () ? 0 : SOUND_SHIP_IN_WATER;
 	else
 		nSound = (nType & 1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
-	if (nSound != gameData.objs.nSoundPlaying [info.nId]) {
-		if (gameData.objs.nSoundPlaying [info.nId])
-			audio.DestroyObjectSound (OBJ_IDX (this));
-		if (nSound)
-			audio.CreateObjectSound (nSound, SOUNDCLASS_GENERIC, OBJ_IDX (this), 1);
-		gameData.objs.nSoundPlaying [info.nId] = nSound;
-		}
+	nSoundObj = audio.FindObjectSound (nObject, nSound);
+	if (nSound && (nSoundObj < 0)) 
+		audio.CreateObjectSound (nSound, SOUNDCLASS_GENERIC, nObject, 1);
+	else if (!nSound && (nSoundObj >= 0))
+		audio.DeleteSoundObject (nSoundObj);
 	}
-else if (gameData.objs.nSoundPlaying [info.nId]) {
-	audio.DestroyObjectSound (OBJ_IDX (this));
-	gameData.objs.nSoundPlaying [info.nId] = 0;
+else {
+	for (;;) {
+		if (0 > (nSoundObj = audio.FindObjectSound (nObject, SOUND_SHIP_IN_WATER))) &&
+			(0 > (nSoundObj = audio.FindObjectSound (nObject, SOUND_SHIP_IN_WATERFALL))) &&
+			(0 > (nSoundObj = audio.FindObjectSound (nObject, SOUND_LAVAFALL_HISS)))
+			break;
+		audio.DeleteSoundObject (nSoundObj);
+		}
 	}
 return nType;
 }

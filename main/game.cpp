@@ -390,17 +390,20 @@ if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
 	if (audio.DestroyObjectSound (LOCALPLAYER.nObject))
 		MultiSendSoundFunction (0,0);
 	}
-else if ((gameStates.gameplay.xLastAfterburnerCharge && (controls [0].afterburnerState != gameStates.gameplay.bLastAfterburnerState)) || 
-	 		(gameStates.gameplay.bLastAfterburnerState && (gameStates.gameplay.xLastAfterburnerCharge && !gameData.physics.xAfterburnerCharge))) {
+else /*if ((gameStates.gameplay.xLastAfterburnerCharge && (controls [0].afterburnerState != gameStates.gameplay.bLastAfterburnerState)) || 
+	 		(gameStates.gameplay.bLastAfterburnerState && (gameStates.gameplay.xLastAfterburnerCharge && !gameData.physics.xAfterburnerCharge)))*/ {
+	int nSoundObj = audio.FindObjectSound (LOCALPLAYER.nObject, SOUND_AFTERBURNER_IGNITE);
 	if (gameData.physics.xAfterburnerCharge && controls [0].afterburnerState && (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
-		audio.CreateObjectSound ((short) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject, 
-										 1, I2X (1), I2X (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
-		if (IsMultiGame)
-			MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_IGNITE);
+		if (nSound < 0) {
+			audio.CreateObjectSound ((short) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject, 
+											 1, I2X (1), I2X (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
+			if (IsMultiGame)
+				MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_IGNITE);
+			}
 		}
-	else {
+	else if (nSoundObj >= 0) { //gameStates.gameplay.xLastAfterburnerCharge || gameStates.gameplay.bLastAfterburnerState) {
 #if 1
-		audio.DestroyObjectSound (LOCALPLAYER.nObject);
+		audio.DeleteSoundObject (nSoundObj);
 		audio.CreateObjectSound ((short) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject);
 		if (IsMultiGame) {
 			if (gameStates.multi.nGameType == UDP_GAME)
