@@ -249,7 +249,7 @@ if (parentP && (parentP->info.nType == OBJ_PLAYER)) {
 		else
 			objP->cType.laserInfo.xScale = I2X (4);
 		}
-	else if (/* (nWeaponType >= LASER_ID) &&*/ (nWeaponType <= MAX_SUPER_LASER_LEVEL) &&
+	else if (/* (nWeaponType >= LASER_ID) &&*/ (nWeaponType <= MAX_SUPERLASER_LEVEL) &&
 				(gameData.multiplayer.players [parentP->info.nId].flags & PLAYER_FLAGS_QUAD_LASERS))
 		objP->cType.laserInfo.xScale = I2X (3) / 4;
 	else if (nWeaponType == GUIDEDMSL_ID) {

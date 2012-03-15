@@ -279,25 +279,19 @@ if (!bSecondary) {
 	nWeaponIndex = primaryWeaponToWeaponInfo [nWeapon];
 
 	if (nWeapon == SUPER_LASER_INDEX) {
-		if ((playerP->primaryWeaponFlags & (1 << LASER_INDEX)) &&
-				(bAll || (playerP->laserLevel > MAX_LASER_LEVEL)))
+		if ((playerP->primaryWeaponFlags & (1 << LASER_INDEX)) && (bAll || playerP->HasSuperLaser ()))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else if (nWeapon == LASER_INDEX) {
-		if ((playerP->primaryWeaponFlags & (1 << LASER_INDEX)) &&
-			 (bAll || (playerP->laserLevel <= MAX_LASER_LEVEL)))
+		if ((playerP->primaryWeaponFlags & (1 << LASER_INDEX)) && (bAll || playerP->HasStandardLaser ()))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else if (nWeapon == SPREADFIRE_INDEX) {
-		if ((playerP->primaryWeaponFlags & (1 << nWeapon)) &&
-			 (bAll || !(extraGameInfo [0].bSmartWeaponSwitch && 
-							(playerP->primaryWeaponFlags & (1 << HELIX_INDEX)))))
+		if ((playerP->primaryWeaponFlags & (1 << nWeapon)) && (bAll || !(extraGameInfo [0].bSmartWeaponSwitch && (playerP->primaryWeaponFlags & (1 << HELIX_INDEX)))))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else if (nWeapon == VULCAN_INDEX) {
-		if ((playerP->primaryWeaponFlags & (1 << nWeapon)) &&
-			(bAll || !(extraGameInfo [0].bSmartWeaponSwitch && 
-						  (playerP->primaryWeaponFlags & (1 << GAUSS_INDEX)))))
+		if ((playerP->primaryWeaponFlags & (1 << nWeapon)) && (bAll || !(extraGameInfo [0].bSmartWeaponSwitch && (playerP->primaryWeaponFlags & (1 << GAUSS_INDEX)))))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else {
@@ -570,7 +564,7 @@ void SetLastSuperWeaponStates (void)
 	int		i, j;
 
 for (i = 0, j = 1 << 5; i < 5; i++, j <<= 1) {
-	bLastPrimaryWasSuper [i] = i ? ((playerP->primaryWeaponFlags & j) != 0) : (playerP->laserLevel > MAX_LASER_LEVEL);
+	bLastPrimaryWasSuper [i] = i ? ((playerP->primaryWeaponFlags & j) != 0) : playerP->HasSuperLaser ();
 	bLastSecondaryWasSuper [i] = (playerP->secondaryWeaponFlags & j) != 0;
 	}
 }

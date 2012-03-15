@@ -140,7 +140,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{8, -1}, //9 + MAX_FIRED_OBJECTS * sizeof (short)},  // FIRE
 	{5, -1},  // KILL
 	{4, -1},  // REMOVE_OBJECT
-	{97+9, 97+11}, // PLAYER_EXPLODE
+	{97+9, 97+13}, // PLAYER_EXPLODE
 	{37, -1}, // MESSAGE (MAX_MESSAGE_LENGTH = 40)
 	{2, -1},  // QUIT
 	{4, -1},  // PLAY_SOUND
@@ -1414,6 +1414,7 @@ bufI += 4;
 #if 1
 if (multiMessageLengths [MULTI_PLAYER_EXPLODE][1] > 0) {
 	if (gameStates.multi.nGameType == UDP_GAME) {
+		playerP->SetLaserLevels (buf [bufI++], buf [bufI++]);
 		gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufI);
 		bufI += 2;
 		}
@@ -2243,6 +2244,8 @@ bufI += 4;
 #if 1
 if (multiMessageLengths [(int) nType][1] > 0) {
 	if (gameStates.multi.nGameType == UDP_GAME) {
+		gameData.multigame.msg.buf [bufI++] = char (LOCALPLAYER.m_laserLevels [0]);
+		gameData.multigame.msg.buf [bufI++] = char (LOCALPLAYER.m_laserLevels [1]);
 		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameStates.app.nRandSeed);
 		bufI += 2;
 		}
@@ -3473,7 +3476,7 @@ ps->flags = INTEL_INT (pd->flags);                                   // Powerup 
 ps->energy = (fix)INTEL_INT (pd->energy);                            // Amount of energy remaining.
 ps->shield = (fix)INTEL_INT (pd->shield);                          // shield remaining (protection)
 ps->lives = pd->lives;                                              // Lives remaining, 0 = game over.
-ps->laserLevel = pd->laserLevel;                                  // Current level of the laser.
+ps->laserLevel = pd->LaserLevel ();                                  // Current level of the laser.
 ps->primaryWeaponFlags = (ubyte) pd->primaryWeaponFlags;                  // bit set indicates the player has this weapon.
 ps->secondaryWeaponFlags = (ubyte) pd->secondaryWeaponFlags;              // bit set indicates the player has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)

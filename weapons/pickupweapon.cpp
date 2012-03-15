@@ -79,8 +79,7 @@ playerP->primaryWeaponFlags |= flag;
 
 if (ISLOCALPLAYER (nPlayer)) {
 	nCutPoint = POrderList (255);
-	if ((gameData.weapons.nPrimary == LASER_INDEX) && 
-		(playerP->laserLevel >= 4))
+	if ((gameData.weapons.nPrimary == LASER_INDEX) && playerP->HasSuperLaser ())
 		nSupposedWeapon = SUPER_LASER_INDEX;  // allotment for stupid way of doing super laser
 	if ((gameOpts->gameplay.nAutoSelectWeapon == 2) && 
 		 (POrderList (nWeaponIndex) < nCutPoint) && 
@@ -209,7 +208,7 @@ nOldAmmo = playerP->primaryAmmo [nWeaponIndex];
 playerP->primaryAmmo [nWeaponIndex] += ammoCount;
 if ((nPlayer = N_LOCALPLAYER)) {
 	nCutPoint = POrderList (255);
-	if ((gameData.weapons.nPrimary == LASER_INDEX) && (playerP->laserLevel >= 4))
+	if ((gameData.weapons.nPrimary == LASER_INDEX) && playerP->HasSuperLaser ())
 		nSupposedWeapon = SUPER_LASER_INDEX;  // allotment for stupid way of doing super laser
 	if ((playerP->primaryWeaponFlags & (1<<nWeaponIndex)) && 
 		(nWeaponIndex > gameData.weapons.nPrimary) && 
@@ -254,11 +253,10 @@ int PickupLaser (CObject *objP, int nId, int nPlayer)
 {
 	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
 
-if (playerP->laserLevel < MAX_LASER_LEVEL) {
+if (playerP->AddStandardLaser ()) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordLaserLevel ((sbyte) playerP->laserLevel, (sbyte) playerP->laserLevel + 1);
-	playerP->laserLevel++;
-	PowerupBasic (10, 0, 10, LASER_SCORE, "%s %s %d", TXT_LASER, TXT_BOOSTED_TO, playerP->laserLevel+1);
+		NDRecordLaserLevel ((sbyte) playerP->LaserLevel (0) - 1, (sbyte) playerP->LaserLevel (0));
+	PowerupBasic (10, 0, 10, LASER_SCORE, "%s %s %d", TXT_LASER, TXT_BOOSTED_TO, playerP->LaserLevel ());
 	cockpit->UpdateLaserWeaponInfo ();
 	PickupPrimary (LASER_INDEX, nPlayer);
 	return 1;
@@ -276,24 +274,18 @@ int PickupSuperLaser (CObject *objP, int nId, int nPlayer)
 {
 	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
 
-if (playerP->laserLevel < MAX_SUPER_LASER_LEVEL) {
-	ubyte nOldLevel = playerP->laserLevel;
-
-	if (playerP->laserLevel <= MAX_LASER_LEVEL)
-		playerP->laserLevel = MAX_LASER_LEVEL;
-	playerP->laserLevel++;
+if (playerP->AddSuperLaser ()) {
 	bLastPrimaryWasSuper [LASER_INDEX] = 1;
 	if (ISLOCALPLAYER (nPlayer)) {
 		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordLaserLevel (nOldLevel, playerP->laserLevel);
-		PowerupBasic (10, 0, 10, LASER_SCORE, TXT_SUPERBOOST, playerP->laserLevel + 1, nPlayer);
+			NDRecordLaserLevel (playerP->LaserLevel () - 1, playerP->LaserLevel ());
+		PowerupBasic (10, 0, 10, LASER_SCORE, TXT_SUPERBOOST, playerP->LaserLevel (), nPlayer);
 		cockpit->UpdateLaserWeaponInfo ();
 		if (gameData.weapons.nPrimary != LASER_INDEX)
 		   CheckToUsePrimary (SUPER_LASER_INDEX);
 		}
 	return 1;
 	}
-playerP->laserLevel = MAX_SUPER_LASER_LEVEL;
 if (nPlayer == N_LOCALPLAYER)
 	HUDInitMessage (TXT_LASER_MAXEDOUT);
 if (IsMultiGame)

@@ -401,7 +401,7 @@ if (bNewGame) {
 	playerP->hostages.nLevel = CountHostagesInLevel ();
 	playerP->hostages.nTotal += playerP->hostages.nLevel;
 	playerP->hostages.nOnBoard = 0;
-	playerP->laserLevel = 0;
+	playerP->SetLaserLevels (0, 0);
 	playerP->flags = 0;
 	playerP->nCloaks =
 	playerP->nInvuls = 0;

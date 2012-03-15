@@ -806,7 +806,7 @@ LOCALPLAYER.SetEnergy (MAX_ENERGY);
 if (gameStates.app.bD1Mission)
 	LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
 else
-	LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;
+	LOCALPLAYER.laserLevel = MAX_SUPERLASER_LEVEL;
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 gameData.physics.xAfterburnerCharge = I2X (1);
 SetMaxOmegaCharge ();
@@ -1049,7 +1049,7 @@ void DoCheatMenu ()
 	m.AddNumber ("shield", "% Shield", X2I (LOCALPLAYER.Shield ()), 0, 200);
 	m.AddText ("", "Score:");
 	m.AddInput ("score", szScore, 10);
-	m.AddNumber ("laser level", "Laser Level", LOCALPLAYER.laserLevel + 1, 0, MAX_SUPER_LASER_LEVEL + 1); 
+	m.AddNumber ("laser level", "Laser Level", LOCALPLAYER.laserLevel + 1, 0, MAX_SUPERLASER_LEVEL + 1); 
 	m.AddNumber ("missiles", "Missiles", LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX], 0, 200);
 
 	mmn = m.Menu ("Wimp Menu", NULL);

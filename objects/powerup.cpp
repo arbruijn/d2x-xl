@@ -259,7 +259,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 LOCALPLAYER.SetEnergy (I2X (200));
 LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield ());
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
-LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;
+LOCALPLAYER.laserLevel = MAX_SUPERLASER_LEVEL;
 if (gameData.app.nGameMode & GM_HOARD)
 	LOCALPLAYER.secondaryAmmo[PROXMINE_INDEX] = 12;
 else if (gameData.app.nGameMode & GM_ENTROPY)
@@ -1167,12 +1167,11 @@ for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	else {	// guns
 		if (!(extraGameInfo [0].loadout.nGuns & 1)) {
 			if (nIndex == LASER_INDEX) {
-				if (!(extraGameInfo [0].loadout.nGuns & (1 << 5)))
-					h += min (playerP->laserLevel, MAX_LASER_LEVEL);
+				//if (!(extraGameInfo [0].loadout.nGuns & (1 << 5)))
+					h += playerP->LaserLevel (0);
 				}
 			else if (nIndex == SUPER_LASER_INDEX) {
-				if (playerP->laserLevel > MAX_LASER_LEVEL)
-					h += playerP->laserLevel - MAX_LASER_LEVEL;
+				h += playerP->LaserLevel (1);
 				}
 			else if (playerP->primaryWeaponFlags & (1 << nIndex)) {
 				h++;

@@ -686,7 +686,7 @@ m_cf.WriteFix (playerP->energy);                // Amount of energy remaining.
 m_cf.WriteFix (playerP->Shield ());               // shield remaining (protection)
 m_cf.WriteByte (playerP->lives);                // Lives remaining, 0 = game over.
 m_cf.WriteByte (playerP->level);                // Current level CPlayerData is playing. (must be signed for secret levels)
-m_cf.WriteByte ((sbyte) playerP->laserLevel);  // Current level of the laser.
+m_cf.WriteByte ((sbyte) playerP->LaserLevel ());  // Current level of the laser.
 m_cf.WriteByte (playerP->startingLevel);       // What level the player started on.
 m_cf.WriteShort (playerP->nKillerObj);       // Who killed me.... (-1 if no one)
 m_cf.WriteShort ((short) playerP->primaryWeaponFlags);   // bit set indicates the player has this weapon.
@@ -1542,7 +1542,7 @@ playerP->SetEnergy (m_cf.ReadFix (), false);			// Amount of energy remaining.
 playerP->SetShield (m_cf.ReadFix (), false);			// shield remaining (protection)
 playerP->lives = m_cf.ReadByte ();						// Lives remaining, 0 = game over.
 playerP->level = m_cf.ReadByte ();						// Current level CPlayerData is playing. (must be signed for secret levels)
-playerP->laserLevel = (ubyte) m_cf.ReadByte ();		// Current level of the laser.
+playerP->ComputeLaserLevels (m_cf.ReadByte ());		// Current level of the laser.
 playerP->startingLevel = m_cf.ReadByte ();			// What level the player started on.
 playerP->nKillerObj = m_cf.ReadShort ();				// Who killed me.... (-1 if no one)
 playerP->primaryWeaponFlags = (ushort) m_cf.ReadShort ();   // bit set indicates the player has this weapon.

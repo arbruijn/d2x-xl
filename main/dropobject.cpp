@@ -928,15 +928,15 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 		MaybeArmMines (playerObjP, playerP, PROXMINE_INDEX, PROXMINE_ID);
 
 	//	If the player dies and he has powerful lasers, create the powerups here.
-	if (playerP->laserLevel > MAX_LASER_LEVEL) {
+	if (playerP->LaserLevel (1)) {
 		if (!IsBuiltinWeapon (SUPER_LASER_INDEX)) {
-			CallObjectCreateEgg (playerObjP, playerP->laserLevel - MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
+			CallObjectCreateEgg (playerObjP, playerP->LaserLevel (1), OBJ_POWERUP, POW_SUPERLASER);
 			CallObjectCreateEgg (playerObjP, MAX_LASER_LEVEL, OBJ_POWERUP, POW_LASER);
 			}
 		}
-	else if (playerP->laserLevel >= 1) {
+	if (playerP->LaserLevel (0) > 0) {
 		if (!(IsBuiltinWeapon (LASER_INDEX) || IsBuiltinWeapon (SUPER_LASER_INDEX)))
-			CallObjectCreateEgg (playerObjP, playerP->laserLevel, OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
+			CallObjectCreateEgg (playerObjP, playerP->LaserLevel (0), OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
 		}
 
 	//	Drop quad laser if appropos

@@ -96,16 +96,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define LASER_HELIX_FLAG1           8   // helix uses 3 bits for angle
 #define LASER_HELIX_FLAG2           16  // helix uses 3 bits for angle
 
-#define LASER_HELIX_SHIFT       2   // how far to shift count to put in flags
-#define LASER_HELIX_MASK        7   // must match number of bits in flags
+#define LASER_HELIX_SHIFT				2   // how far to shift count to put in flags
+#define LASER_HELIX_MASK				7   // must match number of bits in flags
 
-#define MAX_LASER_LEVEL         3   // Note, laser levels are numbered from 0.
-#define MAX_SUPER_LASER_LEVEL   5   // Note, laser levels are numbered from 0.
-
-#define MAX_LASER_BITMAPS   6
+#define MAX_LASER_BITMAPS				6
 
 // For muzzle firing casting light.
-#define MUZZLE_QUEUE_MAX    8
+#define MUZZLE_QUEUE_MAX				8
 
 void RenderLaser (CObject *obj);
 void find_goal_texture (CObject * obj, ubyte nType, int gun_num, int makeSound, int harmlessFlag);

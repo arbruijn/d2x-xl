@@ -143,6 +143,8 @@ class __pack__ CShipEnergy {
 	};
 
 
+#define MAX_LASER_LEVEL					3   // Note, laser levels are numbered from 0.
+#define MAX_SUPERLASER_LEVEL			5   // Note, laser levels are numbered from 0.
 
 class CPlayerInfo {
 	public:
@@ -212,6 +214,7 @@ class __pack__ CPlayerData : public CPlayerInfo {
 	public:
 		CShipEnergy	m_shield;
 		CShipEnergy	m_energy;
+		ubyte			m_laserLevels [2];
 
 	public:
 		CPlayerData () { 
@@ -248,6 +251,34 @@ class __pack__ CPlayerData : public CPlayerInfo {
 		inline float ShieldScale (void) { return m_shield.Scale (); }
 		inline float EnergyScale (void) { return m_energy.Scale (); }
 		inline int RemainingRobots (void) { return numRobotsLevel - numKillsLevel; }
+
+		inline void UpdateLaserLevel (void) { laserLevel = LaserLevel (); }
+		inline ubyte LaserLevel (int bSuperLaser = -1) { return (bSuperLaser < 0) ? m_laserLevels [1] ? MAX_LASER_LEVEL + m_laserLevels [1] : m_laserLevels [0] : m_laserLevels [bSuperLaser]; }
+		inline bool AddLaser (int bSuperLaser) { 
+			if (m_laserLevels [bSuperLaser] >= (bSuperLaser ? MAX_SUPERLASER_LEVEL - MAX_LASER_LEVEL : MAX_LASER_LEVEL)) 
+				return false;
+			++m_laserLevels [bSuperLaser];
+			UpdateLaserLevel ();
+			return true;
+			}
+		inline bool DropLaser (void) { 
+			int bSuperLaser = m_laserLevels [1] > 0;
+			if (!m_laserLevels [bSuperLaser]) 
+				return false;
+			--m_laserLevels [bSuperLaser];
+			UpdateLaserLevel ();
+			return true;
+			}
+		inline bool AddStandardLaser (void) { return AddLaser (0); }
+		inline bool AddSuperLaser (void) { return AddLaser (1); }
+		inline ubyte HasSuperLaser (void) { return ubyte (m_laserLevels [1] > 0); }
+		inline ubyte HasStandardLaser (void) { return ubyte (m_laserLevels [1] == 0); }
+		inline void SetLaserLevels (ubyte nStandard, ubyte nSuper) {
+			m_laserLevels [0] = nStandard;
+			m_laserLevels [1] = nSuper;
+			UpdateLaserLevel ();
+			}
+		inline void ComputeLaserLevels (ubyte nLevel) { SetLaserLevels (nLevel % MAX_LASER_LEVEL, (nLevel > MAX_LASER_LEVEL) ? nLevel - MAX_LASER_LEVEL : 0); }
 #endif
 		CObject* Object (void);
 		void SetObject (short n);
