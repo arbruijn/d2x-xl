@@ -371,8 +371,8 @@ if (AGI.m_info.protocolVersion != MULTI_PROTO_VERSION) {
 // Check for valid mission name
 memcpy (networkData.serverAddress, activeNetGames [choice].m_server, sizeof (networkData.serverAddress));
 console.printf (CON_DBG, TXT_LOADING_MSN, AGI.m_info.szMissionName);
-if (!(missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	
-	   (downloadManager.DownloadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, -1)))) {
+if (!(missionManager.LoadByName (AGI.m_info.szMissionName, 0, "downloads/") || missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	
+	   (downloadManager.DownloadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, 0, "downloads/")))) {
 	PrintLog (0, "Mission '%s' not found%s\n", AGI.m_info.szMissionName);
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;

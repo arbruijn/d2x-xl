@@ -986,7 +986,7 @@ return 1;
 //------------------------------------------------------------------------------
 //loads the named mission if exists.
 //Returns true if mission loaded ok, else false.
-int CMissionManager::LoadByName (char *szMissionName, int nSubFolder)
+int CMissionManager::LoadByName (char *szMissionName, int nSubFolder, char* szSubFolder)
 {
 	int n, i, j;
 
@@ -994,6 +994,8 @@ if (nSubFolder < 0) {
 	*gameFolders.szMsnSubDir = '\0';
 	PrintLog (1, "searching mission '%s'\n", szMissionName);
 	}
+else if (szSubFolder && *szSubFolder)
+	strcpy (gameFolders.szMsnSubDir, szSubFolder);
 n = BuildList (1, nSubFolder);
 for (i = 0; i < n; i++)
 	if (!stricmp (szMissionName, m_list [i].filename)) {
