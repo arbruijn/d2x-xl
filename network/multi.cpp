@@ -1414,7 +1414,8 @@ bufI += 4;
 #if 1
 if (multiMessageLengths [MULTI_PLAYER_EXPLODE][1] > 0) {
 	if (gameStates.multi.nGameType == UDP_GAME) {
-		playerP->SetLaserLevels (buf [bufI++], buf [bufI++]);
+		playerP->SetLaserLevels (buf [bufI], buf [bufI+ 1]);
+		bufI += 2;
 		gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufI);
 		bufI += 2;
 		}
