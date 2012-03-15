@@ -394,7 +394,7 @@ else /*if ((gameStates.gameplay.xLastAfterburnerCharge && (controls [0].afterbur
 	 		(gameStates.gameplay.bLastAfterburnerState && (gameStates.gameplay.xLastAfterburnerCharge && !gameData.physics.xAfterburnerCharge)))*/ {
 	int nSoundObj = audio.FindObjectSound (LOCALPLAYER.nObject, SOUND_AFTERBURNER_IGNITE);
 	if (gameData.physics.xAfterburnerCharge && controls [0].afterburnerState && (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
-		if (nSound < 0) {
+		if (nSoundObj < 0) {
 			audio.CreateObjectSound ((short) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject, 
 											 1, I2X (1), I2X (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
 			if (IsMultiGame)
