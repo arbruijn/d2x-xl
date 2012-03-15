@@ -372,7 +372,7 @@ int CDownloadManager::InitUpload (ubyte *data)
 if (m_nSemaphore)
 	return 0;
 m_nSemaphore++;
-if (gameStates.app.bHaveSDLNet && extraGameInfo [0].bAutoDownload && (data [1] != PID_DL_START) && (0 <= AcceptClient ())) {
+if (gameStates.app.bHaveSDLNet && extraGameInfo [0].bAutoDownload && (data [1] == PID_DL_START) && (0 <= AcceptClient ())) {
 	m_nSemaphore--;
 	return 0;
 	}
