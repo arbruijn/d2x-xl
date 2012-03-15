@@ -270,6 +270,11 @@ if (gameStates.app.bMultiThreaded && m_systemList.Buffer ()) {
 	int h = 0;
 	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 		m_systemList [h++] = systemP;
+	if (h == 0)
+		return;
+	if (h == 1)
+		m_systemList [0]->Render (0);
+	else
 #	pragma omp parallel
 		{
 		int nThread = omp_get_thread_num();

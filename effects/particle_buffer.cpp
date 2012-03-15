@@ -308,9 +308,11 @@ if (!bHaveTexture) {
 	if (bmP->CurFrame ())
 		bmP = bmP->CurFrame ();
 	if (bmP->Bind (0)) {
-		PROF_END(ptParticles)
-		Reset ();
-		return false;
+		if (!particleImageManager.Load (m_nType % PARTICLE_TYPES, 1)) {
+			PROF_END(ptParticles)
+			Reset ();
+			return false;
+			}
 		}
 	ogl.SetBlendMode ((m_nType < PARTICLE_TYPES) ? m_bEmissive : OGL_BLEND_MULTIPLY);
 	}

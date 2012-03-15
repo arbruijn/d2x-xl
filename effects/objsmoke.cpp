@@ -436,9 +436,9 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 		for (int i = 0; i < 2; i++)
 			if ((emitterP = particleManager.GetEmitter (nSmoke, i)))
 				emitterP->SetPos (ti.vPos + i, NULL, nSegment);
-		DoGatlingSmoke (objP);
-		return;
 		}
+	DoGatlingSmoke (objP);
+	return;
 	}
 KillObjectSmoke (nObject);
 KillGatlingSmoke (objP);

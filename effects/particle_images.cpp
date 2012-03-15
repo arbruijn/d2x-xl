@@ -223,16 +223,16 @@ delete[] fFrameBright;
 	}
 
 
-int CParticleImageManager::Load (int nType)
+int CParticleImageManager::Load (int nType, int bForce)
 {
 nType = particleImageManager.GetType (nType);
 
 	tParticleImageInfo&	pii = ParticleImageInfo (nType);
 
-if (pii.bHave)
+if (pii.bHave && !bForce)
 	return 1;
 if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave, Bind (nType)))
-	return 0;
+	return pii.bHave = 0;
 
 #if 0
 if (strstr (pii.szName, "smoke")) {

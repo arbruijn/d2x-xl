@@ -252,6 +252,7 @@ class CTransparencyRenderer {
 		inline void Init (void) {
 			m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 			m_data.nMaxOffs = 0;
+			AllocBuffers ();
 			}
 		void Reset (void);
 		int ItemCount (int i = 1);

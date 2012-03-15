@@ -603,7 +603,7 @@ class CParticleImageManager {
 	public:
 		CParticleImageManager () : m_textureArray (0) {};
 		~CParticleImageManager () {};
-		int Load (int nType);
+		int Load (int nType, int bForce = 0);
 		int LoadAll (void);
 		void FreeAll (void);
 		bool SetupMultipleTextures (CBitmap* bmP1, CBitmap* bmP2, CBitmap* bmP3);
