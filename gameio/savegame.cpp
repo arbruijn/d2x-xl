@@ -1231,7 +1231,7 @@ m_cf.Read (szMission, sizeof (char), 9);
 szMission [9] = '\0';
 gameOpts->app.nVersionFilter = 3;
 strcpy (gameFolders.szMsnSubDir, "downloads/");
-i = missionManager.LoadByName (szMission, -1);
+i = missionManager.LoadByName (szMission, 0);
 if (!i) {
 	*gameFolders.szMsnSubDir = '\0';
 	i = missionManager.LoadByName (szMission, -1);
