@@ -86,6 +86,7 @@ m_nClients = 0;
 m_socket = 0;
 m_nState = DL_CONNECT;
 m_nResult = 1;
+nSemaphore = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -362,21 +363,15 @@ return 1; // all sent
 
 int CDownloadManager::InitUpload (ubyte *data)
 {
-	static int semaphore = 0;
-
-if (semaphore)
+if (m_nSemaphore)
 	return 0;
-semaphore++;
-if (!gameStates.app.bHaveSDLNet)
-	return -1;
-if (!extraGameInfo [0].bAutoDownload)
-	return -1;
-if (data [1] != PID_DL_START)
-	return -1;
-if (0 > AcceptClient ())
-	return -1;
-semaphore--;
-return 0;
+m_nSemaphore++;
+if (gameStates.app.bHaveSDLNet && extraGameInfo [0].bAutoDownload && (data [1] != PID_DL_START) && (0 <= AcceptClient ())) {
+	m_nSemaphore--;
+	return 0;
+	}
+m_nSemaphore--;
+return -1;
 }
 
 //------------------------------------------------------------------------------

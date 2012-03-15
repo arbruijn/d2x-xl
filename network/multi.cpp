@@ -1394,7 +1394,7 @@ playerP->primaryWeaponFlags = GET_INTEL_SHORT (buf + bufI);
 bufI += 2;
 playerP->secondaryWeaponFlags = GET_INTEL_SHORT (buf + bufI);
 bufI += 2;
-playerP->laserLevel = buf [bufI++];
+playerP->ComputeLaserLevels (buf [bufI++]);
 playerP->secondaryAmmo [HOMING_INDEX] = buf [bufI++];
 playerP->secondaryAmmo [CONCUSSION_INDEX] = buf [bufI++];
 playerP->secondaryAmmo [SMART_INDEX] = buf [bufI++];

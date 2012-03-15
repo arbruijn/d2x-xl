@@ -290,7 +290,12 @@ class __pack__ CPlayerData : public CPlayerInfo {
 			m_laserLevels [1] = nSuper;
 			UpdateLaserLevel ();
 			}
-		inline void ComputeLaserLevels (ubyte nLevel) { SetLaserLevels (nLevel % MAX_LASER_LEVEL, (nLevel > MAX_LASER_LEVEL) ? nLevel - MAX_LASER_LEVEL : 0); }
+		inline void ComputeLaserLevels (ubyte nLevel) { 
+			if (nLevel > MAX_LASER_LEVEL) 
+				SetLaserLevels (0, nLevel - MAX_LASER_LEVEL);
+			else
+				SetLaserLevels (nLevel, 0);
+			}
 #endif
 		CObject* Object (void);
 		void SetObject (short n);
