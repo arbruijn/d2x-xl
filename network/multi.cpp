@@ -3476,7 +3476,7 @@ ps->flags = INTEL_INT (pd->flags);                                   // Powerup 
 ps->energy = (fix)INTEL_INT (pd->energy);                            // Amount of energy remaining.
 ps->shield = (fix)INTEL_INT (pd->shield);                          // shield remaining (protection)
 ps->lives = pd->lives;                                              // Lives remaining, 0 = game over.
-ps->laserLevel = pd->LaserLevel ();                                  // Current level of the laser.
+ps->laserLevel = pd->laserLevel;                                  // Current level of the laser.
 ps->primaryWeaponFlags = (ubyte) pd->primaryWeaponFlags;                  // bit set indicates the player has this weapon.
 ps->secondaryWeaponFlags = (ubyte) pd->secondaryWeaponFlags;              // bit set indicates the player has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
