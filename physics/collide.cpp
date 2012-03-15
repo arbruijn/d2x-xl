@@ -1742,15 +1742,15 @@ return 1;
 void CObject::ApplyDamageToPlayer (CObject* killerObjP, fix xDamage)
 {
 if (gameStates.app.bPlayerIsDead) {
-	PrintLog (0, "ApplyDamageToPlayer: Player is already dead\n");
+	// PrintLog (0, "ApplyDamageToPlayer: Player is already dead\n");
 	return;
 	}
 if (gameStates.app.bD2XLevel && (SEGMENTS [info.nSegment].HasNoDamageProp ())) {
-	PrintLog (0, "ApplyDamageToPlayer: No damage segment\n");
+	// PrintLog (0, "ApplyDamageToPlayer: No damage segment\n");
 	return;
 	}
 if ((info.nId == N_LOCALPLAYER) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
-	PrintLog (0, "ApplyDamageToPlayer: Player is invulnerable\n");
+	// PrintLog (0, "ApplyDamageToPlayer: Player is invulnerable\n");
 	return;
 	}
 
@@ -1760,26 +1760,26 @@ if (!killerObjP)
 	killerP = NULL;
 else {
 	if ((killerObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (killerObjP->info.nId).companion) {
-		PrintLog (0, "ApplyDamageToPlayer: Player was hit by Guidebot\n");
+		// PrintLog (0, "ApplyDamageToPlayer: Player was hit by Guidebot\n");
 		return;
 		}
 	killerP = (killerObjP->info.nType == OBJ_PLAYER) ? gameData.multiplayer.players + killerObjP->info.nId : NULL;
 	if (killerP)
-		PrintLog (0, "ApplyDamageToPlayer: Damage was inflicted by %s\n", killerP->callsign);
+		// PrintLog (0, "ApplyDamageToPlayer: Damage was inflicted by %s\n", killerP->callsign);
 	if (gameStates.app.bHaveExtraGameInfo [1]) {
 		if ((killerObjP == this) && !COMPETITION && extraGameInfo [1].bInhibitSuicide) {
-			PrintLog (0, "ApplyDamageToPlayer: Suicide inhibited\n");
+			// PrintLog (0, "ApplyDamageToPlayer: Suicide inhibited\n");
 			return;
 			}
 		else if (killerP && !(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
 			if (IsTeamGame) {
 				if (GetTeam (info.nId) == GetTeam (killerObjP->info.nId)) {
-					PrintLog (0, "ApplyDamageToPlayer: Friendly fire suppressed (team game)\n");
+					// PrintLog (0, "ApplyDamageToPlayer: Friendly fire suppressed (team game)\n");
 					return;
 					}
 				}
 			else if (IsCoopGame) {
-				PrintLog (0, "ApplyDamageToPlayer: Friendly fire suppressed (coop game)\n");
+				// PrintLog (0, "ApplyDamageToPlayer: Friendly fire suppressed (coop game)\n");
 				return;
 				}
 			}
@@ -1791,7 +1791,7 @@ if (gameStates.app.bEndLevelSequence)
 gameData.multiplayer.bWasHit [info.nId] = -1;
 
 if (info.nId == N_LOCALPLAYER) {		//is this the local player?
-	PrintLog (0, "ApplyDamageToPlayer: Processing local player damage %d\n", xDamage);
+	// PrintLog (0, "ApplyDamageToPlayer: Processing local player damage %d\n", xDamage);
 	CPlayerData *playerP = gameData.multiplayer.players + info.nId;
 	if ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
 		double h = (double) playerP->netKillsTotal / (double) (killerP->netKillsTotal + 1);
@@ -1801,7 +1801,7 @@ if (info.nId == N_LOCALPLAYER) {		//is this the local player?
 			h = 1.0;
 		if (!(xDamage = (fix) ((double) xDamage * h)))
 			xDamage = 1;
-		PrintLog (0, "ApplyDamageToPlayer: Applying player handicap (resulting damage = %d)\n", xDamage);
+		// PrintLog (0, "ApplyDamageToPlayer: Applying player handicap (resulting damage = %d)\n", xDamage);
 		}
 	playerP->UpdateShield (-xDamage);
 	paletteManager.BumpEffect (X2I (xDamage) * 4, -X2I (xDamage / 2), -X2I (xDamage / 2));	//flash red
