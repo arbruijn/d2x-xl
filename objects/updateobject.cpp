@@ -208,9 +208,9 @@ if (nType) {
 	}
 else {
 	for (;;) {
-		if (0 > (nSoundObj = audio.FindObjectSound (nObject, SOUND_SHIP_IN_WATER))) &&
-			(0 > (nSoundObj = audio.FindObjectSound (nObject, SOUND_SHIP_IN_WATERFALL))) &&
-			(0 > (nSoundObj = audio.FindObjectSound (nObject, SOUND_LAVAFALL_HISS)))
+		if ((0 > (nSoundObj = audio.FindObjectSound (nObject, SOUND_SHIP_IN_WATER))) &&
+			 (0 > (nSoundObj = audio.FindObjectSound (nObject, SOUND_SHIP_IN_WATERFALL))) &&
+			 (0 > (nSoundObj = audio.FindObjectSound (nObject, SOUND_LAVAFALL_HISS))))
 			break;
 		audio.DeleteSoundObject (nSoundObj);
 		}
