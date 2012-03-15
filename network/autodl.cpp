@@ -63,8 +63,14 @@ return downloadManager.Upload (*((int*) pThreadId));
 
 void CDownloadManager::Init (void)
 {
-for (int i = 0; i < MAX_PLAYERS; i++)
+	int i, j;
+
+for (i = 0; i < MAX_PLAYERS; i++) 
 	m_freeList [i] = i;
+for (i = 0; i < m_nClients; i++) {
+	SDLNet_TCP_Close (m_clients [i].socket);
+	m_clients [i].cf.Close ();
+	}
 m_timeouts [0] = 1;
 m_timeouts [1] = 2;
 m_timeouts [2] = 3;
@@ -76,6 +82,7 @@ m_timeouts [7] = 30;
 m_timeouts [8] = 45;
 m_timeouts [9] = 60;
 m_nPollTime = -1;
+m_nSemaphore = 0;
 #if DBG
 m_iTimeout = 5;
 #else
@@ -86,7 +93,6 @@ m_nClients = 0;
 m_socket = 0;
 m_nState = DL_CONNECT;
 m_nResult = 1;
-nSemaphore = 0;
 }
 
 //------------------------------------------------------------------------------

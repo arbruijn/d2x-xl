@@ -54,10 +54,10 @@
 #include "menubackground.h"
 
 static struct {
-	int	nStartIpx;
-	int	nJoinIpx;
-	int	nStartUdp;
-	int	nJoinUdp;
+	int	nStartIPX;
+	int	nJoinIPX;
+	int	nStartUDP;
+	int	nJoinUDP;
 	int	nStartUdpTracker;
 	int	nJoinUdpTracker;
 	int	nStartMCast4;
@@ -420,15 +420,15 @@ if ((nChoice == multiOpts.nStartUdpTracker) ||(nChoice == multiOpts.nJoinUdpTrac
 	bUDP = 1;
 	bStart = (nChoice == multiOpts.nStartUdpTracker);
 	}
-else if ((nChoice == multiOpts.nStartUdp) || (nChoice == multiOpts.nJoinUdp)) {
+else if ((nChoice == multiOpts.nStartUDP) || (nChoice == multiOpts.nJoinUDP)) {
 	if (!DBG && gameStates.app.bNostalgia > 1)
 		return 0;
 	bUDP = 1;
-	bStart = (nChoice == multiOpts.nStartUdp);
+	bStart = (nChoice == multiOpts.nStartUDP);
 	}
-else if ((nChoice == multiOpts.nStartIpx) || (nChoice == multiOpts.nStartKali) || (nChoice == multiOpts.nStartMCast4))
+else if ((nChoice == multiOpts.nStartIPX) || (nChoice == multiOpts.nStartKali) || (nChoice == multiOpts.nStartMCast4))
 	bStart = 1;
-else if ((nChoice != multiOpts.nJoinIpx) && (nChoice != multiOpts.nJoinKali) && (nChoice != multiOpts.nJoinMCast4))
+else if ((nChoice != multiOpts.nJoinIPX) && (nChoice != multiOpts.nJoinKali) && (nChoice != multiOpts.nJoinMCast4))
 	return 0;
 gameOpts->app.bSinglePlayer = 0;
 missionManager.Load (missionManager.nLastMission);
