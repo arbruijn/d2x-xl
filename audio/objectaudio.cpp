@@ -550,8 +550,10 @@ int CAudio::FindObjectSound (int nObject, short nSound)
 {
 	CSoundObject*	soundObjP = m_objects.Buffer ();
 
+if (nSound >= 0)
+	nSound = XlatSound (nSound);
 for (uint i = m_objects.ToS (); i; i--, soundObjP++) 
-	if ((soundObjP->m_linkType.obj.nObject != nObject) && (soundObjP->m_nSound == nSound))
+	if ((soundObjP->m_linkType.obj.nObject == nObject) && (soundObjP->m_nSound == nSound))
 		return int (m_objects.ToS () - i);
 return -1;
 }
@@ -567,6 +569,9 @@ if ((nObject >= 0) && (gameData.demo.nState == ND_STATE_RECORDING))
 
 if (nObject == LOCALPLAYER.nObject)
 	gameData.multiplayer.bMoving = -1;
+
+if (nSound >= 0)
+	nSound = XlatSound (nSound);
 
 #pragma omp critical
 {
