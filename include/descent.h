@@ -2070,7 +2070,6 @@ class CObjectData {
 		short							nFreeDropped;
 		short							nDropped;
 		tGuidedMissileInfo		guidedMissile [MAX_PLAYERS];
-		short							nSoundPlaying [MAX_PLAYERS];
 		CObject*						consoleP;
 		CObject*						viewerP;
 		CObject*						trackGoals [2];
