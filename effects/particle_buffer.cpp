@@ -307,7 +307,7 @@ if (!bHaveTexture) {
 		}
 	if (bmP->CurFrame ())
 		bmP = bmP->CurFrame ();
-	if (bmP->Bind (0)) {
+	if (bmP->Bind (1)) {
 		if (!particleImageManager.Load (m_nType % PARTICLE_TYPES, 1)) {
 			PROF_END(ptParticles)
 			Reset ();

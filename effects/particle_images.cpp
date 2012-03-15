@@ -231,8 +231,9 @@ nType = particleImageManager.GetType (nType);
 
 if (pii.bHave && !bForce)
 	return 1;
+pii.bHave = 0;
 if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave, Bind (nType)))
-	return pii.bHave = 0;
+	return 0;
 
 #if 0
 if (strstr (pii.szName, "smoke")) {
