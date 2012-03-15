@@ -1230,7 +1230,12 @@ int CSaveGameManager::LoadMission (void)
 m_cf.Read (szMission, sizeof (char), 9);
 szMission [9] = '\0';
 gameOpts->app.nVersionFilter = 3;
+strcpy (gameFolders.szMsnSubDir, "downloads/");
 i = missionManager.LoadByName (szMission, -1);
+if (!i) {
+	*gameFolders.szMsnSubDir = '\0';
+	i = missionManager.LoadByName (szMission, -1);
+	}	
 gameOpts->app.nVersionFilter = nVersionFilter;
 if (i)
 	return 1;
