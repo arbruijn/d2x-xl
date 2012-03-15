@@ -151,7 +151,8 @@ else {
 							  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
 		}
 	else if ((bPlayer) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
-		gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect); 
+		if (!(gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect)))
+			gameStates.zoom.nMinFactor = I2X (1);
 		gameStates.zoom.nMaxFactor = gameStates.zoom.nMinFactor * 5;
 		HandleZoom ();
 		if ((bPlayer) &&
