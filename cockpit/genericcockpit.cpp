@@ -848,7 +848,7 @@ else {
 //	For laser, show level and quadness
 if (nIndex == LASER_ID || nIndex == SUPERLASER_ID) {
 	sprintf (szName, "%s: 0", TXT_LVL);
-	szName [5] = LOCALPLAYER.laserLevel + 1 + '0';
+	szName [5] = LOCALPLAYER.LaserLevel () + 1 + '0';
 	nIdLaser [0] = PrintF (&nIdLaser [0], xText, yText + m_info.nLineSpacing, szName);
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) {
 		strcpy (szName, TXT_QUAD);
@@ -907,7 +907,7 @@ int CGenericCockpit::DrawWeaponDisplay (int nWeaponType, int nWeaponId)
 {
 int bLaserLevelChanged = ((nWeaponType == 0) &&
 								  (nWeaponId == LASER_INDEX) &&
-								  ((LOCALPLAYER.laserLevel != m_history [gameStates.render.vr.nCurrentPage].laserLevel)));
+								  ((LOCALPLAYER.LaserLevel () != m_history [gameStates.render.vr.nCurrentPage].laserLevel)));
 
 if ((m_info.weaponBoxStates [nWeaponType] == WS_SET) &&
 	 ((nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType]) || bLaserLevelChanged)) {
@@ -931,12 +931,12 @@ if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_OUT) {
 		m_history [0].weapon [nWeaponType] =
 		m_history [1].weapon [nWeaponType] = nWeaponId;
 		m_history [0].laserLevel =
-		m_history [1].laserLevel = LOCALPLAYER.laserLevel;
+		m_history [1].laserLevel = LOCALPLAYER.LaserLevel ();
 		m_info.weaponBoxFadeValues [nWeaponType] = 0;
 		}
 	}
 else if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_IN) {
-	DrawWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
+	DrawWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.LaserLevel ());
 	if ((m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] >= 0) &&
 		 (nWeaponId != m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType])) {
 		m_info.weaponBoxStates [nWeaponType] = WS_FADING_OUT;
@@ -953,11 +953,11 @@ else if (m_info.weaponBoxStates [nWeaponType] == WS_FADING_IN) {
 		}
 	}
 else {
-	DrawWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.laserLevel);
+	DrawWeaponInfo (nWeaponType, nWeaponId, LOCALPLAYER.LaserLevel ());
 	m_history [gameStates.render.vr.nCurrentPage].weapon [nWeaponType] = nWeaponId;
 	m_history [gameStates.render.vr.nCurrentPage].ammo [nWeaponType] = -1;
 	m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = -1;
-	m_history [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.laserLevel;
+	m_history [gameStates.render.vr.nCurrentPage].laserLevel = LOCALPLAYER.LaserLevel ();
 	m_info.weaponBoxStates [nWeaponType] = WS_SET;
 	}
 

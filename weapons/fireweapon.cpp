@@ -702,7 +702,7 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 			gameData.laser.xNextFireTime += I2X (1) / 25;
 		else
 			gameData.laser.xNextFireTime += WI_fire_wait (nWeaponIndex);
-		nLaserLevel = LOCALPLAYER.laserLevel;
+		nLaserLevel = LOCALPLAYER.LaserLevel ();
 		if (gameData.weapons.nPrimary == SPREADFIRE_INDEX) {
 			if (nSpreadfireToggle)
 				flags |= LASER_SPREADFIRE_TOGGLED;

@@ -470,10 +470,9 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	if (gameStates.app.bD1Mission)
 	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
 	if (!gameStates.app.bD1Mission && IsBuiltinWeapon (SUPER_LASER_INDEX))
-		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL + 2;
+		LOCALPLAYER.SetSuperLaser (MAX_SUPERLASER_LEVEL - MAX_LASER_LEVEL);
 	else if (IsBuiltinWeapon (LASER_INDEX)) {
-		if (LOCALPLAYER.laserLevel < MAX_LASER_LEVEL)
-			LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
+		LOCALPLAYER.SetStandardLaser (MAX_LASER_LEVEL);
 		}
 	if (!bRestore && IsBuiltinWeapon (VULCAN_INDEX) | IsBuiltinWeapon (GAUSS_INDEX))
 		LOCALPLAYER.primaryAmmo [1] = GAUSS_WEAPON_AMMO_AMOUNT;
@@ -496,7 +495,7 @@ void ResetShipData (bool bRestore)
 
 gameStates.app.bChangingShip = 0;
 if (gameData.demo.nState == ND_STATE_RECORDING) {
-	NDRecordLaserLevel (LOCALPLAYER.laserLevel, 0);
+	NDRecordLaserLevel (LOCALPLAYER.LaserLevel (), 0);
 	NDRecordPlayerWeapon (0, 0);
 	NDRecordPlayerWeapon (1, 0);
 	}
@@ -512,7 +511,7 @@ gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip = gameOpts->gameplay.nSh
 LOCALPLAYER.Setup ();
 LOCALPLAYER.SetEnergy (gameStates.gameplay.InitialEnergy ());
 LOCALPLAYER.SetShield (gameStates.gameplay.InitialShield ());
-LOCALPLAYER.laserLevel = 0;
+LOCALPLAYER.SetLaserLevels (0, 0);
 LOCALPLAYER.nKillerObj = -1;
 LOCALPLAYER.hostages.nOnBoard = 0;
 

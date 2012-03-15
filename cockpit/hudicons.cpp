@@ -249,7 +249,7 @@ void CHUDIcons::DrawWeapons (void)
 	static int bInitIcons = 1;
 	static int nIdIcons [2][10] = {{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0}};
 
-ll = LOCALPLAYER.laserLevel;
+ll = LOCALPLAYER.LaserLevel ();
 if (gameOpts->render.weaponIcons.bShowAmmo) {
 	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);

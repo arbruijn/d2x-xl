@@ -1657,42 +1657,6 @@ if (this == gameData.objs.consoleP) {
 return 1;
 }
 
-//--unused-- void CollideHostageAndWeapon (CObject* hostage, CObject* weaponP, CFixVector& vHitPt)
-//--unused-- {
-//--unused-- 	//	Cannot kill hostages, as per Matt's edict!
-//--unused-- 	//	 (A fine edict, but in contradiction to the milestone: "Robots attack hostages.")
-//--unused-- 	hostage->info.xShield -= weaponP->info.xShield/2;
-//--unused--
-//--unused-- 	CreateAwarenessEvent (weaponP, WEAPON_ROBOT_COLLISION);			// CObject "weapon" can attract attention to player
-//--unused--
-//--unused-- 	//PLAY_SOUND_3D (SOUND_HOSTAGE_KILLED, vHitPt, hostage->info.nSegment);
-//--unused-- 	audio.CreateSegmentSound (SOUND_HOSTAGE_KILLED, hostage->info.nSegment, 0, vHitPt);
-//--unused--
-//--unused--
-//--unused-- 	if (hostage->info.xShield <= 0) {
-//--unused-- 		ExplodeObject (hostage, 0);
-//--unused-- 		hostage->Die ();
-//--unused-- 	}
-//--unused--
-//--unused-- 	if (WI_damage_radius (weaponP->info.nId))
-//--unused-- 		ExplodeSplashDamageWeapon (weaponP);
-//--unused--
-//--unused-- 	MaybeKillWeapon (weaponP, hostage);
-//--unused--
-//--unused-- }
-
-//##void CollideHostageAndCamera (CObject* hostage, CObject* camera, CFixVector& vHitPt) {
-//##	return;
-//##}
-
-//##void CollideHostageAndPowerup (CObject* hostage, CObject* powerup, CFixVector& vHitPt) {
-//##	return;
-//##}
-
-//##void CollideHostageAndDebris (CObject* hostage, CObject* debris, CFixVector& vHitPt) {
-//##	return;
-//##}
-
 //	-----------------------------------------------------------------------------
 
 int CObject::CollidePlayerAndPlayer (CObject* otherP, CFixVector& vHitPt, CFixVector* vNormal)
@@ -1704,38 +1668,6 @@ if (BumpTwoObjects (this, otherP, 1, vHitPt))
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
 return 1;
 }
-
-// -- removed, 09/06/95, MK -- void destroyPrimaryWeapon (int weapon_index)
-// -- removed, 09/06/95, MK -- {
-// -- removed, 09/06/95, MK -- 	if (weapon_index == MAX_PRIMARY_WEAPONS) {
-// -- removed, 09/06/95, MK -- 		HUDInitMessage ("Quad lasers destroyed!");
-// -- removed, 09/06/95, MK -- 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_QUAD_LASERS;
-// -- removed, 09/06/95, MK -- 		update_laserWeapon_info ();
-// -- removed, 09/06/95, MK -- 	} else if (weapon_index == 0) {
-// -- removed, 09/06/95, MK -- 		Assert (LOCALPLAYER.laserLevel > 0);
-// -- removed, 09/06/95, MK -- 		HUDInitMessage ("%s degraded!", Text_string [104+weapon_index]);		//	Danger!Danger!Use of literal! Danger!
-// -- removed, 09/06/95, MK -- 		LOCALPLAYER.laserLevel--;
-// -- removed, 09/06/95, MK -- 		update_laserWeapon_info ();
-// -- removed, 09/06/95, MK -- 	} else {
-// -- removed, 09/06/95, MK -- 		HUDInitMessage ("%s destroyed!", Text_string [104+weapon_index]);		//	Danger!Danger!Use of literal! Danger!
-// -- removed, 09/06/95, MK -- 		LOCALPLAYER.primaryWeaponFlags &= ~ (1 << weapon_index);
-// -- removed, 09/06/95, MK -- 		AutoSelectWeapon (0);
-// -- removed, 09/06/95, MK -- 	}
-// -- removed, 09/06/95, MK --
-// -- removed, 09/06/95, MK -- }
-// -- removed, 09/06/95, MK --
-// -- removed, 09/06/95, MK -- void destroySecondaryWeapon (int weapon_index)
-// -- removed, 09/06/95, MK -- {
-// -- removed, 09/06/95, MK -- 	if (LOCALPLAYER.secondaryAmmo <= 0)
-// -- removed, 09/06/95, MK -- 		return;
-// -- removed, 09/06/95, MK --
-// -- removed, 09/06/95, MK -- 	HUDInitMessage ("%s destroyed!", Text_string [114+weapon_index]);		//	Danger!Danger!Use of literal! Danger!
-// -- removed, 09/06/95, MK -- 	if (--LOCALPLAYER.secondaryAmmo [weapon_index] == 0)
-// -- removed, 09/06/95, MK -- 		AutoSelectWeapon (1);
-// -- removed, 09/06/95, MK --
-// -- removed, 09/06/95, MK -- }
-// -- removed, 09/06/95, MK --
-// -- removed, 09/06/95, MK -- #define	LOSE_WEAPON_THRESHOLD	 (I2X (30))
 
 //	-----------------------------------------------------------------------------
 

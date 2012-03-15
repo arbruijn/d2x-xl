@@ -799,14 +799,14 @@ else {
 	}
 bLastSecondaryWasSuper [PROXMINE_INDEX] = 1;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
+	NDRecordLaserLevel (LOCALPLAYER.LaserLevel (), MAX_LASER_LEVEL);
 
 LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield (), false);
 LOCALPLAYER.SetEnergy (MAX_ENERGY);
 if (gameStates.app.bD1Mission)
-	LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
+	LOCALPLAYER.ComputeLaserLevels (MAX_LASER_LEVEL);
 else
-	LOCALPLAYER.laserLevel = MAX_SUPERLASER_LEVEL;
+	LOCALPLAYER.ComputeLaserLevels (MAX_SUPERLASER_LEVEL);
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 gameData.physics.xAfterburnerCharge = I2X (1);
 SetMaxOmegaCharge ();
@@ -1049,7 +1049,7 @@ void DoCheatMenu ()
 	m.AddNumber ("shield", "% Shield", X2I (LOCALPLAYER.Shield ()), 0, 200);
 	m.AddText ("", "Score:");
 	m.AddInput ("score", szScore, 10);
-	m.AddNumber ("laser level", "Laser Level", LOCALPLAYER.laserLevel + 1, 0, MAX_SUPERLASER_LEVEL + 1); 
+	m.AddNumber ("laser level", "Laser Level", LOCALPLAYER.LaserLevel () + 1, 0, MAX_SUPERLASER_LEVEL + 1); 
 	m.AddNumber ("missiles", "Missiles", LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX], 0, 200);
 
 	mmn = m.Menu ("Wimp Menu", NULL);
@@ -1074,11 +1074,7 @@ void DoCheatMenu ()
 		LOCALPLAYER.SetEnergy (I2X (m [3].Value ()));
 		LOCALPLAYER.SetShield (I2X (m [4].Value ()));
 		LOCALPLAYER.score = atoi (m [6].m_text);
-		//if (m [7].Value ()) LOCALPLAYER.laserLevel=0;
-		//if (m [8].Value ()) LOCALPLAYER.laserLevel=1;
-		//if (m [9].Value ()) LOCALPLAYER.laserLevel=2;
-		//if (m [10].Value ()) LOCALPLAYER.laserLevel=3;
-		LOCALPLAYER.laserLevel = m [7].Value () - 1;
+		LOCALPLAYER.ComputeLaserLevels (m [7].Value () - 1);
 		LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX] = m [8].Value ();
 	}
 }

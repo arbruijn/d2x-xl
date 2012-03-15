@@ -255,11 +255,11 @@ for (i = 0; i < 3; i++)
 for (i = 3; i < MAX_SECONDARY_WEAPONS; i++)
 	LOCALPLAYER.secondaryAmmo[i] = quantity/5;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
+	NDRecordLaserLevel (LOCALPLAYER.LaserLevel (), MAX_LASER_LEVEL);
 LOCALPLAYER.SetEnergy (I2X (200));
 LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield ());
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
-LOCALPLAYER.laserLevel = MAX_SUPERLASER_LEVEL;
+LOCALPLAYER.SetSuperLaser (MAX_SUPERLASER_LEVEL - MAX_LASER_LEVEL);
 if (gameData.app.nGameMode & GM_HOARD)
 	LOCALPLAYER.secondaryAmmo[PROXMINE_INDEX] = 12;
 else if (gameData.app.nGameMode & GM_ENTROPY)

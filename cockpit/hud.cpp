@@ -434,9 +434,9 @@ pszWeapon = PRIMARY_WEAPON_NAMES_SHORT (gameData.weapons.nPrimary);
 switch (gameData.weapons.nPrimary) {
 	case LASER_INDEX:
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS)
-			sprintf (szWeapon, "%s %s %i", TXT_QUAD, pszWeapon, LOCALPLAYER.laserLevel + 1);
+			sprintf (szWeapon, "%s %s %i", TXT_QUAD, pszWeapon, LOCALPLAYER.LaserLevel () + 1);
 		else
-			sprintf (szWeapon, "%s %i", pszWeapon, LOCALPLAYER.laserLevel + 1);
+			sprintf (szWeapon, "%s %i", pszWeapon, LOCALPLAYER.LaserLevel () + 1);
 		break;
 
 	case SUPER_LASER_INDEX:

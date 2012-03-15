@@ -211,7 +211,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{6, -1},	 // MULTI_PLAYER_SHIELDS, -1},
 	{2, -1},	 // MULTI_INVUL
 	{2, -1},	 // MULTI_DEINVUL
-	{31, -1}, // MULTI_WEAPONS
+	{32, -1}, // MULTI_WEAPONS
 	{40, -1}, // MULTI_MONSTERBALL
 	{2, -1},  // MULTI_CHEATING
 	{5, -1},  // MULTI_TRIGGER_EXT
@@ -2286,8 +2286,8 @@ extern ubyte primaryWeaponToPowerup [];
 static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER};
 static int nDevicePowerups [] = {POW_FULL_MAP, POW_AMMORACK, POW_CONVERTER, POW_QUADLASER, POW_AFTERBURNER};
 
-// put a lid on how many OBJECTS will be spewed by an exploding player
-// to prevent rampant powerups in netgames
+// This function is called if a player ship is about to explode. It will make sure the ship doesn't drop more powerups of each kind than 
+// the entire mine initially contained to prevent rampant powerups in netgames
 
 void MultiCapObjects (void)
 {
@@ -2301,12 +2301,12 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 		continue;
 	h = gameData.multiplayer.maxPowerupsAllowed [nType] - gameData.multiplayer.powerupsInMine [nType];
 	if (i == LASER_INDEX) {
-		if ((LOCALPLAYER.laserLevel <= MAX_LASER_LEVEL) && (h < MAX_LASER_LEVEL))
-			LOCALPLAYER.laserLevel = h;
+		if (LOCALPLAYER.LaserLevel (0) > h)
+			LOCALPLAYER.SetStandardLaser (h);
 		}
 	else if (i == SUPER_LASER_INDEX) {
-		if (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL)
-			LOCALPLAYER.laserLevel = MAX_LASER_LEVEL + h;
+		if (LOCALPLAYER.LaserLevel (1) > h)
+			LOCALPLAYER.SetSuperLaser (h);
 		}
 	else {
 		if ((i == FUSION_INDEX) && (h < 2))
@@ -3988,7 +3988,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 	gameData.multiplayer.players [nPlayer].secondaryAmmo [i] = GET_INTEL_SHORT (buf + bufP);
 	bufP += 2;
 	}
-gameData.multiplayer.players [nPlayer].laserLevel = gameData.multigame.msg.buf [bufP++];
+gameData.multiplayer.players [nPlayer].SetLaserLevels (gameData.multigame.msg.buf [bufP++], gameData.multigame.msg.buf [bufP++]);
 gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = GET_INTEL_SHORT (buf + bufP);
 }
 
@@ -4033,7 +4033,8 @@ if (bForce || (t - nTimeout > 1000)) {
 		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.secondaryAmmo [i]);
 		bufP += 2;
 		}
-	gameData.multigame.msg.buf [bufP++] = LOCALPLAYER.laserLevel;
+	gameData.multigame.msg.buf [bufP++] = LOCALPLAYER.LaserLevel (0);
+	gameData.multigame.msg.buf [bufP++] = LOCALPLAYER.LaserLevel (1);
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed);
 	bufP += 2;
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);

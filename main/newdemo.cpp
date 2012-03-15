@@ -1066,7 +1066,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 	NDWriteShort ((short)LOCALPLAYER.primaryAmmo [i]);
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 	NDWriteShort ((short)LOCALPLAYER.secondaryAmmo [i]);
-NDWriteByte ((sbyte)LOCALPLAYER.laserLevel);
+NDWriteByte ((sbyte)LOCALPLAYER.LaserLevel ());
 //  Support for missions added here
 NDWriteString (gameStates.app.szCurrentMissionFile);
 NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.Energy ())));
@@ -1853,8 +1853,8 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 	LOCALPLAYER.secondaryAmmo [i] = NDReadShort ();
 laserLevel = NDReadByte ();
-if (laserLevel != LOCALPLAYER.laserLevel) {
-	LOCALPLAYER.laserLevel = laserLevel;
+if (laserLevel != LOCALPLAYER.LaserLevel ()) {
+	LOCALPLAYER.ComputeLaserLevels (laserLevel);
 	cockpit->UpdateLaserWeaponInfo ();
 	}
 // Support for missions
@@ -2741,13 +2741,13 @@ while (!bDone) {
 			newLevel = (sbyte) NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				LOCALPLAYER.laserLevel = oldLevel;
+				LOCALPLAYER.ComputeLaserLevels (oldLevel);
 				cockpit->UpdateLaserWeaponInfo ();
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				LOCALPLAYER.laserLevel = newLevel;
+				LOCALPLAYER.ComputeLaserLevels (newLevel);
 				cockpit->UpdateLaserWeaponInfo ();
 				}
 			}
@@ -2929,8 +2929,8 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 	LOCALPLAYER.secondaryAmmo [i] = NDReadShort ();
 laserLevel = NDReadByte ();
-if (laserLevel != LOCALPLAYER.laserLevel) {
-	LOCALPLAYER.laserLevel = laserLevel;
+if (laserLevel != LOCALPLAYER.LaserLevel ()) {
+	LOCALPLAYER.ComputeLaserLevels (laserLevel);
 	cockpit->UpdateLaserWeaponInfo ();
 	}
 if (gameData.demo.nGameMode & GM_MULTI) {
@@ -3324,7 +3324,7 @@ for (l = 0; l < MAX_PRIMARY_WEAPONS; l++)
 for (l = 0; l < MAX_SECONDARY_WEAPONS; l++)
 	NDWriteShort ((short)LOCALPLAYER.secondaryAmmo [l]);
 byteCount += (sizeof (short) * (MAX_PRIMARY_WEAPONS + MAX_SECONDARY_WEAPONS));
-NDWriteByte (LOCALPLAYER.laserLevel);
+NDWriteByte (LOCALPLAYER.LaserLevel ());
 byteCount++;
 if (gameData.demo.nGameMode & GM_MULTI) {
 	NDWriteByte ((sbyte)gameData.multiplayer.nPlayers);

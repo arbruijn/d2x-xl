@@ -113,14 +113,21 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 			}
 		HUDInitMessage(TXT_DROP_QLASER);
 		}
-	else if ((LOCALPLAYER.laserLevel > MAX_LASER_LEVEL) && !IsBuiltinWeapon (SUPER_LASER_INDEX)) {
-		LOCALPLAYER.laserLevel--;
+	else if (!IsBuiltinWeapon (SUPER_LASER_INDEX) && LOCALPLAYER.DropSuperLaser ()) {
 		nObject = SpitPowerup (gameData.objs.consoleP, POW_SUPERLASER);
 		if (nObject < 0) {
-			LOCALPLAYER.laserLevel++;
+			LOCALPLAYER.AddSuperLaser ();
 			return;
 			}
 		HUDInitMessage (TXT_DROP_SLASER);
+		}
+	else if (!IsBuiltinWeapon (SUPER_LASER_INDEX) && LOCALPLAYER.DropStandardLaser ()) {
+		nObject = SpitPowerup (gameData.objs.consoleP, POW_SUPERLASER);
+		if (nObject < 0) {
+			LOCALPLAYER.AddStandardLaser ();
+			return;
+			}
+		HUDInitMessage (TXT_DROP_LASER);
 		}
 	}
 else {

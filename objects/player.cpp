@@ -217,8 +217,8 @@ if (wsP->nMissiles != LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]) {
 	wsP->nMissiles = (char) LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 	bUpdate = 1;
 	}
-if (wsP->nLaserLevel != LOCALPLAYER.laserLevel) {
-	wsP->nLaserLevel = LOCALPLAYER.laserLevel;
+if (wsP->nLaserLevel != LOCALPLAYER.LaserLevel ()) {
+	wsP->nLaserLevel = LOCALPLAYER.LaserLevel ();
 	bUpdate = 1;
 	}
 if (wsP->bTripleFusion != gameData.weapons.bTripleFusion) {

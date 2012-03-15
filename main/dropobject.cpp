@@ -912,7 +912,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 	int				nPlayer = playerObjP->info.nId;
 	short				nObject;
 	int				nVulcanAmmo = 0;
-	CPlayerInfo*	playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData*	playerP = gameData.multiplayer.players + nPlayer;
 
 	// Seed the Random number generator so in net play the eggs will always
 	// drop the same way

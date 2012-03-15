@@ -449,7 +449,7 @@ else {
 
 if (bPrintMessage) {
 	if (nWeaponNum == LASER_INDEX && !bSecondary)
-		HUDInitMessage (TXT_WPN_LEVEL, szWeaponName, LOCALPLAYER.laserLevel + 1, TXT_SELECTED);
+		HUDInitMessage (TXT_WPN_LEVEL, szWeaponName, LOCALPLAYER.LaserLevel () + 1, TXT_SELECTED);
 	else
 		HUDInitMessage ("%s %s", szWeaponName, TXT_SELECTED);
 	}
@@ -487,10 +487,10 @@ void DoSelectWeapon (int nWeapon, int bSecondary)
 
 if (!bSecondary) {
 	nCurrent = gameData.weapons.nPrimary;
-	if ((nCurrent == LASER_INDEX) && (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL))
+	if ((nCurrent == LASER_INDEX) && LOCALPLAYER.HasSuperLaser ())
 		nCurrent = SUPER_LASER_INDEX;
 	bLastWasSuper = bLastPrimaryWasSuper [nWeapon];
-	if ((nWeapon == LASER_INDEX) && (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL))
+	if ((nWeapon == LASER_INDEX) && LOCALPLAYER.HasSuperLaser ())
 		nWeapon = SUPER_LASER_INDEX;
 	hasFlag = HAS_WEAPON_FLAG;
 	LOCALPLAYER.UpdateEnergy (gameData.FusionCharge ());
@@ -551,7 +551,7 @@ inline int WeaponId (int w)
 {
 if (w != LASER_INDEX)
 	return w;
-if ((LOCALPLAYER.laserLevel <= MAX_LASER_LEVEL) || !bLastPrimaryWasSuper [LASER_INDEX])
+if (LOCALPLAYER.HasStandardLaser () || !bLastPrimaryWasSuper [LASER_INDEX])
 	return LASER_INDEX;
 return SUPER_LASER_INDEX;
 }
