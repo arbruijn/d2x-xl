@@ -379,19 +379,20 @@ class CArray : public CQuickSort < _T > {
 				nCount = m_data.length - nOffset;
 			if (!bCompressed) 
 				return cf.Read (m_data.buffer + nOffset, sizeof (_T), nCount);
-			uLongf nCompressedCount;
-			if (cf.Read (&nCount, 1, sizeof (nCount)) + cf.Read (&nCompressedCount, 1, sizeof (nCompressedCount)) != sizeof (nCount) + sizeof (nCompressedCount))
+			uLongf nCompressedSize;
+			if (cf.Read (&nCount, 1, sizeof (nCount)) + cf.Read (&nCompressedSize, 1, sizeof (nCompressedSize)) != sizeof (nCount) + sizeof (nCompressedSize))
 				return -1;
-			ubyte* compressedBuffer = new ubyte [nCompressedCount];
 			if ((m_data.length < nCount) && !Resize (nCount))
 				return -1;
+			ubyte* compressedBuffer = new ubyte [nCompressedSize];
 			if (!compressedBuffer)
 				return -1;
-			if (cf.Read (compressedBuffer, sizeof (byte), nCompressedCount) != nCompressedCount)
+			if (cf.Read (compressedBuffer, sizeof (byte), nCompressedSize) != nCompressedSize)
 				return -1;
-			if (uncompress ((byte*) &m_data.buffer [0], &nCompressedCount, compressedBuffer, nCompressedCount) != Z_OK)
+			uLongf nSize = nCount * sizeof (_T);
+			if (uncompress ((byte*) &m_data.buffer [0], &nSize, compressedBuffer, nCompressedSize) != Z_OK)
 				return -1;
-			return nCompressedCount / sizeof (_T);
+			return nSize / sizeof (_T);
 			}
 
 		size_t Write (CFile& cf, uint nCount = 0, uint nOffset = 0, int bCompressed = 0) { 
@@ -404,10 +405,10 @@ class CArray : public CQuickSort < _T > {
 			else if (nCount > m_data.length - nOffset)
 				nCount = m_data.length - nOffset;
 			if (bCompressed) {
-				uLongf nCompressedCount = compressBound (nCount * sizeof (_T));
-				ubyte* compressedBuffer = new ubyte [nCompressedCount];
-				if (compressedBuffer && (compress (compressedBuffer, &nCompressedCount, (ubyte*) &m_data.buffer [nOffset], nCount * sizeof (_T)) == Z_OK)) 
-					return (cf.Write (&nCount, 1, sizeof (nCount)) + cf.Write (&nCompressedCount, 1, sizeof (nCompressedCount)) + cf.Write (compressedBuffer, sizeof (byte), nCompressedCount) == sizeof (nCount) + sizeof (nCompressedCount) + nCompressedCount) ? nCount : -1;
+				uLongf nCompressedSize = compressBound (nCount * sizeof (_T));
+				ubyte* compressedBuffer = new ubyte [nCompressedSize];
+				if (compressedBuffer && (compress (compressedBuffer, &nCompressedSize, (ubyte*) &m_data.buffer [nOffset], nCount * sizeof (_T)) == Z_OK)) 
+					return (cf.Write (&nCount, 1, sizeof (nCount)) + cf.Write (&nCompressedSize, 1, sizeof (nCompressedSize)) + cf.Write (compressedBuffer, sizeof (byte), nCompressedSize) == sizeof (nCount) + sizeof (nCompressedSize) + nCompressedSize) ? nCount : -1;
 				}
 			return cf.Write (m_data.buffer + nOffset, sizeof (_T), nCount);
 			}
