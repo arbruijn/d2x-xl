@@ -685,8 +685,6 @@ return nHeapSize;
 
 inline int CTransparencyRenderer::DepthBuffer (void)
 {
-	int nHeapSize = 0;
-
 for (int i = 0; i < gameStates.app.nThreads; i++) 
 	if (m_data.buffers [i].depthBuffer.Buffer ())
 		return i;
@@ -695,10 +693,8 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-inline int CTransparencyRenderer::AllocBuffers (void)
+int CTransparencyRenderer::AllocBuffers (void)
 {
-	float scale = sqrt (float (gameStates.app.nThreads));
-
 for (int i = 0; i < gameStates.app.nThreads; i++) 
 	if (!m_data.buffers [i].Create ())
 		return 0;
