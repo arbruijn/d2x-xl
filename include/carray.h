@@ -380,7 +380,7 @@ class CArray : public CQuickSort < _T > {
 			if (!bCompressed) 
 				return cf.Read (m_data.buffer + nOffset, sizeof (_T), nCount);
 			uLongf nCompressedCount;
-			if (cf.Read (&nCount, sizeof (nCount), 1) + cf.Read (&nCompressedCount, sizeof (nCompressedCount), 1) != sizeof (nCount) + sizeof (nCompressedCount))
+			if (cf.Read (&nCount, 1, sizeof (nCount)) + cf.Read (&nCompressedCount, 1, sizeof (nCompressedCount)) != sizeof (nCount) + sizeof (nCompressedCount))
 				return -1;
 			ubyte* compressedBuffer = new ubyte [nCompressedCount];
 			if (!compressedBuffer)
