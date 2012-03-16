@@ -21,6 +21,7 @@
 #include "pstypes.h"
 #include "cquicksort.h"
 #include "cfile.h"
+#include "zlib.h"
 
 void ArrayError (const char* pszMsg);
 
@@ -367,7 +368,7 @@ class CArray : public CQuickSort < _T > {
 
 		inline void Pos (uint pos) { m_data.pos = pos % m_data.length; }
 
-		size_t Read (CFile& cf, uint nCount = 0, uint nOffset = 0) { 
+		size_t Read (CFile& cf, uint nCount = 0, uint nOffset = 0, int bCompressed = 0) { 
 			if (!m_data.buffer)
 				return -1;
 			if (nOffset >= m_data.length)
@@ -376,10 +377,22 @@ class CArray : public CQuickSort < _T > {
 				nCount = m_data.length - nOffset;
 			else if (nCount > m_data.length - nOffset)
 				nCount = m_data.length - nOffset;
-			return cf.Read (m_data.buffer + nOffset, sizeof (_T), nCount);
+			if (!bCompressed) 
+				return cf.Read (m_data.buffer + nOffset, sizeof (_T), nCount);
+			uLongf nCompressedCount;
+			if (cf.Read (&nCount, sizeof (nCount), 1) + cf.Read (&nCompressedCount, sizeof (nCompressedCount), 1) != sizeof (nCount) + sizeof (nCompressedCount))
+				return -1;
+			ubyte* compressedBuffer = new ubyte [nCompressedCount];
+			if (!compressedBuffer)
+				return -1;
+			if ((m_data.length < nCount) && !Resize (nCount))
+				return -1;
+			if (uncompress ((byte*) &m_data.buffer [0], &nCompressedCount, compressedBuffer, nCompressedCount) != Z_OK)
+				return -1;
+			return nCompressedCount;
 			}
 
-		size_t Write (CFile& cf, uint nCount = 0, uint nOffset = 0) { 
+		size_t Write (CFile& cf, uint nCount = 0, uint nOffset = 0, int bCompressed = 0) { 
 			if (!m_data.buffer)
 				return -1;
 			if (nOffset >= m_data.length)
@@ -388,6 +401,12 @@ class CArray : public CQuickSort < _T > {
 				nCount = m_data.length - nOffset;
 			else if (nCount > m_data.length - nOffset)
 				nCount = m_data.length - nOffset;
+			if (bCompressed) {
+				uLongf nCompressedCount = compressBound (nCount);
+				ubyte* compressedBuffer = new ubyte [nCompressedCount];
+				if (compressedBuffer && (compress (compressedBuffer, &nCompressedCount, (ubyte*) &m_data.buffer [nOffset], nCount) == Z_OK)) 
+					return (cf.Write (&nCount, sizeof (nCount), 1) + cf.Write (&nCompressedCount, sizeof (nCompressedCount), 1) + cf.Write (compressedBuffer, sizeof (byte), nCompressedCount) == sizeof (nCount) + sizeof (nCompressedCount) + nCompressedCount) ? nCount * sizeof (_T) : -1;
+				}
 			return cf.Write (m_data.buffer + nOffset, sizeof (_T), nCount);
 			}
 
