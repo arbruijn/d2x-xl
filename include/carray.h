@@ -401,13 +401,14 @@ class CArray : public CQuickSort < _T > {
 				nCount = m_data.length - nOffset;
 			else if (nCount > m_data.length - nOffset)
 				nCount = m_data.length - nOffset;
+			nCount *= sizeof (_T);
 			if (bCompressed) {
 				uLongf nCompressedCount = compressBound (nCount);
 				ubyte* compressedBuffer = new ubyte [nCompressedCount];
 				if (compressedBuffer && (compress (compressedBuffer, &nCompressedCount, (ubyte*) &m_data.buffer [nOffset], nCount) == Z_OK)) 
 					return (cf.Write (&nCount, sizeof (nCount), 1) + cf.Write (&nCompressedCount, sizeof (nCompressedCount), 1) + cf.Write (compressedBuffer, sizeof (byte), nCompressedCount) == sizeof (nCount) + sizeof (nCompressedCount) + nCompressedCount) ? nCount * sizeof (_T) : -1;
 				}
-			return cf.Write (m_data.buffer + nOffset, sizeof (_T), nCount);
+			return cf.Write (m_data.buffer + nOffset, nCount, 1);
 			}
 
 		inline void SetWrap (bool bWrap) { m_data.bWrap = bWrap; }
