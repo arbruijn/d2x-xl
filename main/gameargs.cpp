@@ -503,7 +503,10 @@ if ((t = FindArg ("-autodemo"))) {
 else
 	gameData.demo.bAuto = 0;
 gameStates.app.bMacData = FindArg ("-macdata");
-gameStates.app.bCompressData = FindArg ("-compress_data");
+if ((t = FindArg ("-compress_data")))
+	gameStates.app.bCompressData = (NumArg (t, 1) == 1);
+else
+	gameStates.app.bCompressData = 0;
 if (gameStates.app.bNostalgia)
 	gameData.segs.nMaxSegments = MAX_SEGMENTS_D2;
 }
