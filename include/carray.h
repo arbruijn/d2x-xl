@@ -21,7 +21,6 @@
 #include "pstypes.h"
 #include "cquicksort.h"
 #include "cfile.h"
-#include "zlib.h"
 
 void ArrayError (const char* pszMsg);
 

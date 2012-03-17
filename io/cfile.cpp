@@ -38,9 +38,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "console.h"
 #include "findfile.h"
 #include "text.h"
-extern "C" {
+
+#define ZLIB_DLL
+#define ZLIB_WINAPI
+
 #include "zlib.h"
-}
+
+#undef ZLIB_DLL
+#undef ZLIB_WINAPI
 
 #define SORT_HOGFILES 1
 

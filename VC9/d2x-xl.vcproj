@@ -309,11 +309,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib urlmon.lib "
+				UseLibraryDependencyInputs="true"
+				AdditionalDependencies="zlib1.lib odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib urlmon.lib "
 				OutputFile="\programs\d2\d2x-xl.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\..\libraries\glew-1.5.3\win32\lib"
+				AdditionalLibraryDirectories="&quot;\projects\Libraries\zlib-1.2.5\VC9\DLL Release\Win32&quot;;&quot;..\..\..\libraries\glew-1.5.3\win32\lib&quot;"
 				IgnoreDefaultLibraryNames="msvcrtd.lib"
 				GenerateDebugInformation="false"
 				GenerateMapFile="false"
@@ -456,7 +457,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release-OMP|Win32"
-			OutputDirectory="$(ConfigurationName)\$(PlatformName)\"
+			OutputDirectory="\programs\d2"
 			IntermediateDirectory="$(ConfigurationName)\$(PlatformName)\"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -497,7 +498,7 @@
 				EnableFiberSafeOptimizations="true"
 				WholeProgramOptimization="false"
 				AdditionalIncludeDirectories="&quot;..\..\..\libraries\zlib-1.2.5&quot;;&quot;..\..\..\libraries\SDL_net-1.2.7&quot;;&quot;..\..\..\libraries\SDL-1.2.14\include&quot;;&quot;..\..\..\libraries\SDL_mixer-1.2.11&quot;;&quot;..\..\..\libraries\SDL_image-1.2.7&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects"
-				PreprocessorDefinitions="USE_OPENMP=2;ZLIB_DLL;_WINNT_WIN32=0x0700;OPENMP;DBG=0;NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC"
+				PreprocessorDefinitions="USE_OPENMP=2;_WINNT_WIN32=0x0700;OPENMP;DBG=0;NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC"
 				StringPooling="true"
 				MinimalRebuild="false"
 				RuntimeLibrary="2"
@@ -510,7 +511,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				CallingConvention="1"
 				CompileAs="0"
 			/>
@@ -533,7 +534,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="msvcrtd.lib"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				GenerateMapFile="false"
 				SubSystem="2"
 				LinkTimeCodeGeneration="0"
@@ -566,7 +567,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release-OMP|x64"
-			OutputDirectory="$(ConfigurationName)\$(PlatformName)\"
+			OutputDirectory="\programs\d2\bin\x64-omp\"
 			IntermediateDirectory="$(ConfigurationName)\$(PlatformName)\"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -637,6 +638,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				UseLibraryDependencyInputs="true"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib urlmon.lib"
 				OutputFile="\programs\d2\bin\x64-omp\d2x-xl-x64.exe"
 				LinkIncremental="1"
