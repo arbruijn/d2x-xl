@@ -750,52 +750,80 @@ if (bOk)
 			(mdh.nCheckSum == CalcSegmentCheckSum ()) &&
 			(mdh.nSegments == gameData.segs.nSegments) &&
 			(mdh.nFaces == gameData.segs.nFaces);
+
 	uint	nTriVerts = mdh.nTris * 3;
-if (bOk)
-	nSize =
+	int nSizes [] = {
+		(int) sizeof (gameData.segs.vertices [0]) * mdh.nVertices,
+		(int) sizeof (gameData.segs.fVertices [0]) * mdh.nVertices,
+		-(int) sizeof (CSegFaceInfo) * mdh.nFaces,
+		(int) sizeof (FACES.tris [0]) * mdh.nTris,
+		(int) sizeof (FACES.vertices [0]) * nTriVerts,
+		(int) sizeof (FACES.normals [0]) * nTriVerts,
+		(int) sizeof (FACES.texCoord [0]) * nTriVerts,
+		(int) sizeof (FACES.ovlTexCoord [0]) * nTriVerts,
+		(int) sizeof (FACES.color [0]) * nTriVerts,
+		(int) sizeof (FACES.lMapTexCoord [0]) * nTriVerts,
+		(int) sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts,
+		0
+		};
+
+
+if (bOk) {
+	nSize = 0;
+	for (int i = 0; i < sizeofa (nSizes); i++)
+		nSize += abs (nSizes [i]);
+	if (nSize != 
 		(sizeof (gameData.segs.vertices [0]) + sizeof (gameData.segs.fVertices [0])) * mdh.nVertices +
 		 sizeof (CSegFaceInfo) * mdh.nFaces +
 		 sizeof (FACES.tris [0]) * mdh.nTris +
 		(sizeof (FACES.vertices [0]) + sizeof (FACES.normals [0]) + sizeof (FACES.texCoord [0]) + 
 		 sizeof (FACES.ovlTexCoord [0]) + sizeof (FACES.color [0]) + sizeof (FACES.lMapTexCoord [0])) * nTriVerts +
-		 sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts;
+		 sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts) {
+		 PrintLog (0, "Mesh builder: invalid mesh size\n");
+		bOk = false;
+		}
+	}
 if (bOk)
 	bOk = ((ioBuffer = new char [nSize]) != NULL);
 if (bOk) {
 	if (!gameStates.app.bCompressData)
 		bOk = cf.Read (ioBuffer, nSize, 1) == 1;
 	else {
-		int h;
 		nSize = 0;
-		bOk = cf.Read (ioBuffer + nSize, h = sizeof (gameData.segs.vertices [0]) * mdh.nVertices, 1, 1) == 1;
-		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (gameData.segs.fVertices [0]) * mdh.nVertices, 1, 1) == 1);
-		nSize += h;
-		if (bOk) {
-			for (int i = 0; i < mdh.nFaces; i++) {
-				if (cf.Read (ioBuffer + nSize, sizeof (CSegFaceInfo), 1) != 1) {
-					bOk = false;
-					break;
-					}
-				nSize += sizeof (CSegFaceInfo);
+		int i;
+		for (i = 0; nSizes [i] > 0; i++) {
+			if (cf.Read (ioBuffer + nSize, nSizes [i], 1, 1) != 1) {
+				PrintLog (0, "Mesh builder: reading mesh element #%d failed\n", i + 1);
+				bOk = false;
+				break;
 				}
+			nSize += nSizes [i];
 			}
-		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.tris [0]) * mdh.nTris, 1, 1) == 1);
-		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.vertices [0]) * nTriVerts, 1, 1) == 1);
-		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.normals [0]) * nTriVerts, 1, 1) == 1);
-		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.texCoord [0]) * nTriVerts, 1, 1) == 1);
-		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.ovlTexCoord [0]) * nTriVerts, 1, 1) == 1);
-		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.color [0]) * nTriVerts, 1, 1) == 1);
-		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.lMapTexCoord [0]) * nTriVerts, 1, 1) == 1);
-		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts, 1, 1) == 1);
-		nSize += h;
+		if (bOk) {
+			if (cf.Read (ioBuffer + nSize, sizeof (CSegFaceInfo) * mdh.nFaces, 1) != 1) {
+				PrintLog (0, "Mesh builder: reading face info failed\n");
+				bOk = false;
+				}
+			nSize += sizeof (CSegFaceInfo) * mdh.nFaces;
+			}
+		for (++i; nSizes [i] > 0; i++) {
+			if (cf.Read (ioBuffer + nSize, nSizes [i], 1, 1) != 1) {
+				PrintLog (0, "Mesh builder: reading mesh element #%d failed\n", i + 1);
+				bOk = false;
+				break;
+				}
+			nSize += nSizes [i];
+			}
+		if (bOk && (nSize != 
+			(sizeof (gameData.segs.vertices [0]) + sizeof (gameData.segs.fVertices [0])) * mdh.nVertices +
+			 sizeof (CSegFaceInfo) * mdh.nFaces +
+			 sizeof (FACES.tris [0]) * mdh.nTris +
+			(sizeof (FACES.vertices [0]) + sizeof (FACES.normals [0]) + sizeof (FACES.texCoord [0]) + 
+			 sizeof (FACES.ovlTexCoord [0]) + sizeof (FACES.color [0]) + sizeof (FACES.lMapTexCoord [0])) * nTriVerts +
+			 sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts)) {
+			 PrintLog (0, "Mesh builder: invalid mesh size\n");
+			bOk = false;
+			}
 		}
 	}
 if (bOk) {
