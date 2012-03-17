@@ -60,7 +60,7 @@ void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP);
 
 #define	MAX_EDGE_LEN(nMeshQuality)	fMaxEdgeLen [nMeshQuality]
 
-#define MESH_DATA_VERSION 12
+#define MESH_DATA_VERSION 13
 
 //------------------------------------------------------------------------------
 
@@ -72,6 +72,7 @@ typedef struct tMeshDataHeader {
 	int	nFaceVerts;
 	int	nFaces;
 	int	nTris;
+	int	bCompressed;
 	} tMeshHeaderData;
 
 //------------------------------------------------------------------------------
@@ -760,8 +761,43 @@ if (bOk)
 		 sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts;
 if (bOk)
 	bOk = ((ioBuffer = new char [nSize]) != NULL);
-if (bOk)
-	bOk = cf.Read (ioBuffer, nSize, 1) == 1;
+if (bOk) {
+	if (!gameStates.app.bCompressData)
+		bOk = cf.Read (ioBuffer, nSize, 1) == 1;
+	else {
+		int h;
+		nSize = 0;
+		bOk = cf.Read (ioBuffer + nSize, h = sizeof (gameData.segs.vertices [0]) * mdh.nVertices, 1, 1) == 1;
+		nSize += h;
+		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (gameData.segs.fVertices [0]) * mdh.nVertices, 1, 1) == 1);
+		nSize += h;
+		if (bOk) {
+			for (int i = 0; i < mdh.nFaces; i++) {
+				if (cf.Read (&FACES.faces [i].m_info, sizeof (CSegFaceInfo), 1) != 1) {
+					bOk = false;
+					break;
+					}
+				nSize += sizeof (CSegFaceInfo);
+				}
+			}
+		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.tris [0]) * mdh.nTris, 1, 1) == 1);
+		nSize += h;
+		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.tris [0]) * mdh.nTris, 1, 1) == 1);
+		nSize += h;
+		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.vertices [0]) * nTriVerts, 1, 1) == 1);
+		nSize += h;
+		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.normals [0]) * nTriVerts, 1, 1) == 1);
+		nSize += h;
+		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.texCoord [0]) * nTriVerts, 1, 1) == 1);
+		nSize += h;
+		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.color [0]) * nTriVerts, 1, 1) == 1);
+		nSize += h;
+		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.lMapTexCoord [0]) * nTriVerts, 1, 1) == 1);
+		nSize += h;
+		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts, 1, 1) == 1);
+		nSize += h;
+		}
+	}
 if (bOk) {
 	bufP = ioBuffer;
 	FACES.Destroy ();
@@ -827,7 +863,9 @@ bool CTriMeshBuilder::Save (int nLevel)
 								  gameData.segs.nVertices,
 								  gameData.segs.nFaceVerts,
 								  gameData.segs.nFaces,
-								  gameData.segs.nTris};
+								  gameData.segs.nTris,
+								  gameStates.app.bCompressData
+								};
 
 	CFile					cf;
 	bool					bOk;
@@ -839,8 +877,8 @@ if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
-		(gameData.segs.vertices.Write (cf, mdh.nVertices) == uint (mdh.nVertices)) &&
-		(gameData.segs.fVertices.Write (cf, mdh.nVertices) == uint (mdh.nVertices));
+		(gameData.segs.vertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices)) &&
+		(gameData.segs.fVertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices));
 if (bOk) {
 	for (int i = 0; i < mdh.nFaces; i++) {
 		if (cf.Write (&FACES.faces [i].m_info, sizeof (CSegFaceInfo), 1) != 1) {
@@ -850,14 +888,14 @@ if (bOk) {
 		}
 	}
 if (bOk)
-	bOk = (FACES.tris.Write (cf, mdh.nTris) == uint (mdh.nTris)) &&
-			(FACES.vertices.Write (cf, nTriVerts) == nTriVerts) &&
-			(FACES.normals.Write (cf, nTriVerts) == nTriVerts) &&
-			(FACES.texCoord.Write (cf, nTriVerts) == nTriVerts) &&
-			(FACES.ovlTexCoord.Write (cf, nTriVerts) == nTriVerts) &&
-			(FACES.color.Write (cf, nTriVerts) == nTriVerts) &&
-			(FACES.lMapTexCoord.Write (cf, nTriVerts) == nTriVerts) &&
-			(FACES.faceVerts.Write (cf, mdh.nFaceVerts) == uint (mdh.nFaceVerts));
+	bOk = (FACES.tris.Write (cf, mdh.nTris, 0, mdh.bCompressed) == uint (mdh.nTris)) &&
+			(FACES.vertices.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
+			(FACES.normals.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
+			(FACES.texCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
+			(FACES.ovlTexCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
+			(FACES.color.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
+			(FACES.lMapTexCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
+			(FACES.faceVerts.Write (cf, mdh.nFaceVerts, 0, mdh.bCompressed) == uint (mdh.nFaceVerts));
 cf.Close ();
 return bOk;
 }
