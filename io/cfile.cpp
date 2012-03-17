@@ -38,7 +38,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "console.h"
 #include "findfile.h"
 #include "text.h"
+extern "C" {
 #include "zlib.h"
+}
 
 #define SORT_HOGFILES 1
 
