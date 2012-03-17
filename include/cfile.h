@@ -67,7 +67,7 @@ class CFile {
 		void Init (void);
 		int Open (const char *filename, const char *folder, const char *mode, int bUseD1Hog);
 		int Length (void);							// Returns actual size of file...
-		size_t Read (void *buf, size_t elsize, size_t nelem);
+		size_t Read (void *buf, size_t elsize, size_t nelem, int bCompressed = 0);
 		int Close (void);
 		int Size (const char *hogname, const char *folder, int bUseD1Hog);
 		int Seek (long int offset, int where);
@@ -75,7 +75,7 @@ class CFile {
 		char *GetS (char *buf, size_t n);
 		int EoF (void);
 		int Error (void);
-		int Write (const void *buf, int elsize, int nelem);
+		int Write (const void *buf, int elsize, int nelem, int bCompressed = 0);
 		inline int GetC (void) { return (FillBuffer () == EOF) ? EOF : m_cf.buffer [m_cf.bufPos++]; }
 
 		size_t ReadCompressed (void* buf, uint bufLen);

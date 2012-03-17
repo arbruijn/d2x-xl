@@ -367,15 +367,16 @@ return m_cf.size;
 // returns:   number of full elements actually written
 //
 //
-int CFile::Write (const void *buf, int nElemSize, int nElemCount)
+int CFile::Write (const void *buf, int nElemSize, int nElemCount, int bCompressed)
 {
-	int nWritten;
+if (bCompressed)
+	return WriteCompressed (buf, (uint) (nElemSize * nElemCount)) == (uint) (nElemSize * nElemCount);
 
 if (!m_cf.file)
 	return 0;
 if (!(nElemSize * nElemCount))
 	return 0;
-nWritten = (int) fwrite (buf, nElemSize, nElemCount, m_cf.file);
+int nWritten = (int) fwrite (buf, nElemSize, nElemCount, m_cf.file);
 m_cf.rawPosition = ftell (m_cf.file);
 if (Error ()) {
 	PrintLog (0, "file write error!\n");
@@ -470,9 +471,12 @@ return buf;
 
 // ----------------------------------------------------------------------------
 
-size_t CFile::Read (void *buf, size_t elSize, size_t nElems) 
+size_t CFile::Read (void *buf, size_t elSize, size_t nElems, int bCompressed) 
 {
-size_t i, size = (int) (elSize * nElems);
+size_t i, size = elSize * nElems;
+
+if (bCompressed)
+	return ReadCompressed (buf, (uint) size) == (uint) size;
 
 if (!m_cf.file || (m_cf.size < 1) || !size) 
 	return 0;

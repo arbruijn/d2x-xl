@@ -55,6 +55,7 @@ typedef struct tLightmapDataHeader {
 	int	nLights;
 	int	nMaxLightRange;
 	int	nBuffers;
+	int	bCompressed;
 	} tLightmapDataHeader;
 
 //------------------------------------------------------------------------------
@@ -815,7 +816,9 @@ int CLightmapManager::Save (int nLevel)
 										gameData.segs.nFaces, 
 										m_list.nLights, 
 										MAX_LIGHT_RANGE,
-										m_list.nBuffers};
+										m_list.nBuffers,
+										gameStates.app.bCompressData
+										};
 	int				i, bOk;
 	char				szFilename [FILENAME_LEN];
 	CSegFace			*faceP;
