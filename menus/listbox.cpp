@@ -337,7 +337,7 @@ while (!done) {
 
 			MouseGetPos (&mx, &my);
 			for (i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
-				if (i > int (items.ToS ()))
+				if (i >= int (items.ToS ()))
 					break;
 				fontManager.Current ()->StringSize (items [i], w, h, aw);
 				x1 = m_xOffset;
