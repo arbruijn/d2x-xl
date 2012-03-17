@@ -362,6 +362,9 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide
 // Do this for each side of the current segment, using the side Normal (s) as forward vector
 // of the viewer
 
+long nSegVisRange = 0;
+long nSegVisCount = 0;
+
 static void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, short nLastSide = 5, int bLights = 0)
 {
 	CSegment*		startSegP;
@@ -474,6 +477,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 	gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
 	BuildRenderSegList (nStartSeg, 0, true);
+	short nMinSeg = 0x7fff, nMaxSeg = -0x7fff;
 	for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 		if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
 			continue;
@@ -494,7 +498,13 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			continue;
 #endif
 		SetSegAndVertVis (nStartSeg, nSegment, bLights);
+		if (nMinSeg > nSegment)
+			nMinSeg = nSegment;
+		if (nMaxSeg < nSegment)
+			nMaxSeg = nSegment;
+		nSegVisCount++;
 		}
+	nSegVisRange += nMaxSeg - nMinSeg + 1;
 	gameStates.render.nShadowPass = 0;
 	CCanvas::Current ()->SetWidth (w);
 	CCanvas::Current ()->SetHeight (h);
@@ -858,7 +868,7 @@ if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "w
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
 		(gameData.segs.bSegVis [0].Write (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, 1) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
 		(gameData.segs.bSegVis [1].Write (cf, gameData.segs.LightVisSize (ldh.nSegments), 0, 1) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
-		(gameData.segs.segDistScale.Write (cf, LEVEL_SEGMENTS) == size_t (LEVEL_SEGMENTS), 0, 1) &&
+		(gameData.segs.segDistScale.Write (cf, LEVEL_SEGMENTS, 0, 1) == size_t (LEVEL_SEGMENTS)) &&
 		(gameData.segs.segDist.Write (cf, gameData.segs.SegDistSize (ldh.nSegments), 0, 1) == size_t (gameData.segs.SegDistSize (ldh.nSegments))) &&
 		(lightManager.NearestSegLights  ().Write (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0, 1) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 		(lightManager.NearestVertLights ().Write (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0, 1) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
