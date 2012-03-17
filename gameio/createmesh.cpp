@@ -773,7 +773,7 @@ if (bOk) {
 		nSize += h;
 		if (bOk) {
 			for (int i = 0; i < mdh.nFaces; i++) {
-				if (cf.Read (&FACES.faces [i].m_info, sizeof (CSegFaceInfo), 1) != 1) {
+				if (cf.Read (ioBuffer + nSize, sizeof (CSegFaceInfo), 1) != 1) {
 					bOk = false;
 					break;
 					}
@@ -782,17 +782,19 @@ if (bOk) {
 			}
 		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.tris [0]) * mdh.nTris, 1, 1) == 1);
 		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.vertices [0]) * nTriVerts, 1, 1) == 1);
+		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.vertices [0]) * nTriVerts, 1, 1) == 1);
 		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.normals [0]) * nTriVerts, 1, 1) == 1);
+		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.normals [0]) * nTriVerts, 1, 1) == 1);
 		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.texCoord [0]) * nTriVerts, 1, 1) == 1);
+		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.texCoord [0]) * nTriVerts, 1, 1) == 1);
 		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.color [0]) * nTriVerts, 1, 1) == 1);
+		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.ovlTexCoord [0]) * nTriVerts, 1, 1) == 1);
 		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.lMapTexCoord [0]) * nTriVerts, 1, 1) == 1);
+		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.color [0]) * nTriVerts, 1, 1) == 1);
 		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts, 1, 1) == 1);
+		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.lMapTexCoord [0]) * nTriVerts, 1, 1) == 1);
+		nSize += h;
+		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts, 1, 1) == 1);
 		nSize += h;
 		}
 	}
