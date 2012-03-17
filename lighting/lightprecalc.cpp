@@ -81,6 +81,9 @@ return (nStart < 0) ? 0 : nStart;
 
 //------------------------------------------------------------------------------
 
+static int nNoDist [MAX_THREADS];
+static int nDistRange [MAX_THREADS];
+
 void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
 	fix xMaxDist = 0;
@@ -106,8 +109,18 @@ while (xMaxDist & 0xFFFF0000) {
 round = (1 << scale) / 2;
 gameData.segs.segDistScale [nSegment] = scale;
 gameData.segs.SetSegDist (nSegment, nSegment, 0, 0);
-for (int i = 0; i < gameData.segs.nSegments; i++)
+short nMinSeg = -1, nMaxSeg = -1;
+for (int i = 0; i < gameData.segs.nSegments; i++) {
 	gameData.segs.SetSegDist (nSegment, i, uniDacsRouter [nThread].Distance (i), round);
+	if (gameData.segs.SegDist (nSegment, i) < 0)
+		nNoDist [nThread]++;
+	else {
+		if (nMinSeg < 0)
+			nMinSeg = i;
+		nMaxSeg = i;
+		}
+	}
+nDistRange [nThread] += nMaxSeg - nMinSeg + 1;
 }
 
 //------------------------------------------------------------------------------
@@ -869,13 +882,44 @@ cf.Close ();
 return bOk;
 }
 
+#if MULTI_THREADED_PRECALC //---------------------------------------------------
+#ifdef _OPENMP //---------------------------------------------------------------
+
+void _CDECL_ SegDistThread (int nId)
+{
+ComputeSegmentDistance (nId * (gameData.segs.nSegments + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
+}
+
 //------------------------------------------------------------------------------
 
-#if MULTI_THREADED_PRECALC
+void _CDECL_ SegLightsThread (int nId)
+{
+ComputeNearestSegmentLights (nId * (gameData.segs.nSegments + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
+}
+
+//------------------------------------------------------------------------------
+
+void _CDECL_ VertLightsThread (int nId)
+{
+ComputeNearestVertexLights (nId * (gameData.segs.nVertices + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
+}
+
+//------------------------------------------------------------------------------
+
+static void StartLightThreads (pThreadFunc threadFunc)
+{
+#pragma omp parallel
+{
+#	pragma omp for
+for (int i = 0; i < gameStates.app.nThreads; i++) 
+	threadFunc (i);
+}
+}
+
+#else // _OPENMP ---------------------------------------------------------------
 
 static tThreadInfo	ti [MAX_THREADS];
 
-//------------------------------------------------------------------------------
 
 int _CDECL_ SegDistThread (void *pThreadId)
 {
@@ -913,7 +957,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static void StartLightThreads (pThreadFunc pFunc)
+static void StartLightThreads (pThreadFunc threadFunc)
 {
 	int	i;
 
@@ -921,7 +965,7 @@ for (i = 0; i < gameStates.app.nThreads; i++) {
 	ti [i].bDone = 0;
 	ti [i].done = SDL_CreateSemaphore (0);
 	ti [i].nId = i;
-	ti [i].pThread = SDL_CreateThread (pFunc, &ti [i].nId);
+	ti [i].pThread = SDL_CreateThread (threadFunc, &ti [i].nId);
 	}
 #if 1
 for (i = 0; i < gameStates.app.nThreads; i++)
@@ -936,9 +980,8 @@ for (i = 0; i < gameStates.app.nThreads; i++) {
 	}
 }
 
-#endif //MULTI_THREADED_PRECALC
-
-//------------------------------------------------------------------------------
+#endif // _OPENMP --------------------------------------------------------------
+#endif //MULTI_THREADED_PRECALC ------------------------------------------------
 
 void ComputeNearestLights (int nLevel)
 {
@@ -964,8 +1007,14 @@ if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	ComputeSegmentVisibility (-1);
 	PrintLog (-1);
 	PrintLog (1, "Computing segment distances\n");
+	memset (nNoDist, 0, sizeof (nNoDist));
+	memset (nDistRange, 0, sizeof (nDistRange));
 	StartLightThreads (SegDistThread);
 	PrintLog (-1);
+	for (int i = 1; i < gameStates.app.nThreads; i++) {
+		nNoDist [0] += nNoDist [i];
+		nDistRange [0] += nDistRange [i];
+		}
 	PrintLog (1, "Computing light visibility\n");
 	ComputeLightVisibility (-1);
 	PrintLog (-1);

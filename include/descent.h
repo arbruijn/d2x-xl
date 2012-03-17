@@ -146,7 +146,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-typedef int _CDECL_	tThreadFunc (void *);
+#ifdef _OPENMP
+typedef void _CDECL_ tThreadFunc (int);
+#else
+typedef int _CDECL_ tThreadFunc (void *);
+#endif
+
 typedef tThreadFunc *pThreadFunc;
 
 typedef struct tThreadInfo {
