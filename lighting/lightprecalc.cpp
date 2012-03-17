@@ -56,6 +56,7 @@ typedef struct tLightDataHeader {
 	int	nMaxLightRange;
 	int	nMethod;
 	int	bPerPixelLighting;
+	int	bCompressed;
 	} tLightDataHeader;
 
 //------------------------------------------------------------------------------
@@ -106,12 +107,12 @@ while (xMaxDist & 0xFFFF0000) {
 	}
 round = (1 << scale) / 2;
 gameData.segs.segDistScale [nSegment] = scale;
+gameData.segs.SetSegDist (nSegment, nSegment, 0, 0);
 for (int i = 0; i < gameData.segs.nSegments; i++) {
 	gameData.segs.SetSegDist (nSegment, i, uniDacsRouter [nThread].Distance (i), round);
 	if (gameData.segs.SegDist (nSegment, i) < 0)
 		nNoDist++;
 	}
-gameData.segs.SetSegDist (nSegment, nSegment, 0, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -842,12 +843,12 @@ if (bOk)
 			(ldh.nMethod = LightingMethod () &&
 			((ldh.bPerPixelLighting != 0) == (gameStates.render.bPerPixelLighting != 0)));
 if (bOk)
-	bOk = (gameData.segs.bSegVis [0].Read (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, 1) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
-			(gameData.segs.bSegVis [1].Read (cf, gameData.segs.LightVisSize (ldh.nSegments), 0, 1) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
-			(gameData.segs.segDistScale.Read (cf, LEVEL_SEGMENTS, 0, 1) == size_t (LEVEL_SEGMENTS)) &&
-			(gameData.segs.segDist.Read (cf, gameData.segs.SegDistSize (ldh.nSegments), 0, 1) == size_t (gameData.segs.SegDistSize (ldh.nSegments))) &&
-			(lightManager.NearestSegLights  ().Read (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0, 1) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
-			(lightManager.NearestVertLights ().Read (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0, 1) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
+	bOk = (gameData.segs.bSegVis [0].Read (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
+			(gameData.segs.bSegVis [1].Read (cf, gameData.segs.LightVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
+			(gameData.segs.segDistScale.Read (cf, LEVEL_SEGMENTS, 0, ldh.bCompressed) == size_t (LEVEL_SEGMENTS)) &&
+			(gameData.segs.segDist.Read (cf, gameData.segs.SegDistSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegDistSize (ldh.nSegments))) &&
+			(lightManager.NearestSegLights  ().Read (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
+			(lightManager.NearestVertLights ().Read (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
 cf.Close ();
 return bOk;
 }
@@ -864,7 +865,9 @@ int SaveLightData (int nLevel)
 								   lightManager.LightCount (0),
 									MAX_LIGHT_RANGE,
 									LightingMethod (),
-									gameStates.render.bPerPixelLighting};
+									gameStates.render.bPerPixelLighting,
+									gameStates.app.bCompressed
+									};
 	int				bOk;
 	char				szFilename [FILENAME_LEN];
 
@@ -873,12 +876,12 @@ if (!gameStates.app.bCacheLights)
 if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
-		(gameData.segs.bSegVis [0].Write (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, 1) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
-		(gameData.segs.bSegVis [1].Write (cf, gameData.segs.LightVisSize (ldh.nSegments), 0, 1) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
-		(gameData.segs.segDistScale.Write (cf, LEVEL_SEGMENTS, 0, 1) == size_t (LEVEL_SEGMENTS)) &&
-		(gameData.segs.segDist.Write (cf, gameData.segs.SegDistSize (ldh.nSegments), 0, 1) == size_t (gameData.segs.SegDistSize (ldh.nSegments))) &&
-		(lightManager.NearestSegLights  ().Write (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0, 1) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
-		(lightManager.NearestVertLights ().Write (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0, 1) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
+		(gameData.segs.bSegVis [0].Write (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
+		(gameData.segs.bSegVis [1].Write (cf, gameData.segs.LightVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
+		(gameData.segs.segDistScale.Write (cf, LEVEL_SEGMENTS, 0, ldh.bCompressed) == size_t (LEVEL_SEGMENTS)) &&
+		(gameData.segs.segDist.Write (cf, gameData.segs.SegDistSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegDistSize (ldh.nSegments))) &&
+		(lightManager.NearestSegLights  ().Write (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
+		(lightManager.NearestVertLights ().Write (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
 cf.Close ();
 return bOk;
 }
