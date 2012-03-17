@@ -1917,13 +1917,23 @@ class CSegmentData {
 
 		inline int SegDist (int i, int j) {
 			ushort dist = segDist [SegDistIdx (i, j)];
+#if 1
+			if (!dist)
+				return -1;
+			return (fix) (dist - 1) << (fix) segDistScale [i];
+#else
 			if (dist == 0xFFFF)
 				return -1;
 			return (fix) dist << (fix) segDistScale [i];
+#endif
 			}
 
 		inline void SetSegDist (int i, int j, fix xDistance, fix xRound) {
+#if 1
+			segDist [SegDistIdx (i, j)] = (xDistance < 0) ? 0 : (ushort) ((xDistance >> (fix) segDistScale [i]) + 1);
+#else
 			segDist [SegDistIdx (i, j)] = (xDistance < 0) ? 0xFFFF : (ushort) (xDistance >> (fix) segDistScale [i]);
+#endif
 			}
 
 		inline bool BuildGrid (int nSize, int bSkyBox) { return grids [bSkyBox].Create (nSize, bSkyBox); }

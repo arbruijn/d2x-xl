@@ -80,6 +80,8 @@ return (nStart < 0) ? 0 : nStart;
 
 //------------------------------------------------------------------------------
 
+static int nNoDist = 0;
+
 void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
 	fix xMaxDist = 0;
@@ -104,8 +106,11 @@ while (xMaxDist & 0xFFFF0000) {
 	}
 round = (1 << scale) / 2;
 gameData.segs.segDistScale [nSegment] = scale;
-for (int i = 0; i < gameData.segs.nSegments; i++)
+for (int i = 0; i < gameData.segs.nSegments; i++) {
 	gameData.segs.SetSegDist (nSegment, i, uniDacsRouter [nThread].Distance (i), round);
+	if (gameData.segs.SegDist (nSegment, i) < 0)
+		nNoDist++;
+	}
 gameData.segs.SetSegDist (nSegment, nSegment, 0, 0);
 }
 
@@ -513,7 +518,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	G3EndFrame (0);
 	gameStates.render.nShadowMap = 0;
 	}
-nSegVisRange += nMaxSeg - nMinSeg + 1;
+nSegVisRange += (nMaxSeg - nMinSeg + 8) / 8 + 8;
 ogl.SetTransform (0);
 }
 
