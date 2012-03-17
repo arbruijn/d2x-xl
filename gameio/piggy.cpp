@@ -399,8 +399,8 @@ if (pig_id != PIGFILE_ID || pigVersion != PIGFILE_VERSION) {
 strncpy (szCurrentPigFile [0], szPigName, sizeof (szCurrentPigFile [0]));
 nBitmapNum = cfP->ReadInt ();
 nHeaderSize = nBitmapNum * sizeof (tPIGBitmapHeader);
-nDataStart = nHeaderSize + cfP->Tell ();
-nDataSize = cfP->Length () - nDataStart;
+nDataStart = nHeaderSize + (int) cfP->Tell ();
+nDataSize = (int) cfP->Length () - nDataStart;
 gameData.pig.tex.nBitmaps [0] = 1;
 SetDataVersion (0);
 for (i = 0; i < nBitmapNum; i++) {
@@ -469,7 +469,7 @@ BMReadAll (cf, bDefault);
 if (gameData.pig.tex.nHamFileVersion < 3) {
 	cf.Seek (nSoundOffset, SEEK_SET);
 	int nSoundNum = cf.ReadInt ();
-	int nSoundStart = cf.Tell ();
+	int nSoundStart = (int) cf.Tell ();
 /*---*/PrintLog (1, "Loading %d sounds\n", nSoundNum);
 	SetupSounds (cf, nSoundNum, nSoundStart);
 	PrintLog (-1);

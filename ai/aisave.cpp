@@ -252,23 +252,23 @@ gameData.ai.bInitialized = m_cf.ReadInt ();
 gameData.ai.nOverallAgitation = m_cf.ReadInt ();
 
 h = (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2;
-fPos = m_cf.Tell ();
+fPos = (int) m_cf.Tell ();
 j = min (h, int (gameData.ai.localInfo.Length ()));
 gameData.ai.localInfo.Clear ();
 for (i = 0; i < j; i++)
 	LoadAILocalInfo (gameData.ai.localInfo + i);
 if (i < h)
-	m_cf.Seek ((h - i) * (m_cf.Tell () - fPos) / i, SEEK_CUR);
+	m_cf.Seek ((h - i) * ((int) m_cf.Tell () - fPos) / i, SEEK_CUR);
 
 h = (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
 nRouteSegs = h;
-fPos = m_cf.Tell ();
+fPos = (int) m_cf.Tell ();
 gameData.ai.routeSegs.Clear ();
 j = min (h, int (gameData.ai.routeSegs.Length ()));
 for (i = 0; i < j; i++)
 	LoadAIPointSeg (gameData.ai.routeSegs + i);
 if (i < h)
-	m_cf.Seek ((h - i) * (m_cf.Tell () - fPos) / i, SEEK_CUR);
+	m_cf.Seek ((h - i) * ((int) m_cf.Tell () - fPos) / i, SEEK_CUR);
 
 j = (m_nVersion < 42) ? 8 : MAX_AI_CLOAK_INFO;
 gameData.ai.cloakInfo.Clear ();

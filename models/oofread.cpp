@@ -1215,7 +1215,7 @@ if (!m_faces.m_list.Create (m_faces.m_nFaces)) {
 	return 0;
 	}
 #if OOF_MEM_OPT
-nPos = cf.Tell ();
+nPos = (int) cf.Tell ();
 m_edges.m_nEdges = 0;
 for (bReadData = 0; bReadData < 2; bReadData++) {
 	cf.Seek (nPos, SEEK_SET);

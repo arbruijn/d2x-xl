@@ -122,7 +122,7 @@ void scores_read ()
 		return;
 	}
 	
-	fsize = cf.Length ();
+	fsize = (int) cf.Length ();
 
 	if (fsize != sizeof (all_scores)) {
 		cf.Close ();

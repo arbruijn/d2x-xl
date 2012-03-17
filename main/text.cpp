@@ -2964,7 +2964,7 @@ if (!tFile.Open (filename, gameFolders.szDataDir [0], "rb", 0)) {
 		return;
 	}
 	bBinary = 1;
-	len = iFile.Length ();
+	len = (int) iFile.Length ();
 	text = new char [len];
 	atexit (free_text);
 	iFile.Read (text, 1, len);
@@ -2974,7 +2974,7 @@ else {
 	int i;
 	char *pi, *pj;
 
-	len = tFile.Length ();
+	len = (int) tFile.Length ();
 	text = new char [len];
 	atexit (free_text);
 #if 1

@@ -383,7 +383,7 @@ void CMissionManager::AddBuiltinD1Mission (void)
 
 if (!cf.Exist ("descent.hog", gameFolders.szDataDir [0], 1))
 	return;
-nBuiltInHogSize [1] = cf.Size ("descent.hog", gameFolders.szDataDir [0], 0);
+nBuiltInHogSize [1] = (int) cf.Size ("descent.hog", gameFolders.szDataDir [0], 0);
 switch (nBuiltInHogSize [1]) {
 	case D1_SHAREWARE_MISSION_HOGSIZE:
 	case D1_SHAREWARE_10_MISSION_HOGSIZE:
@@ -452,9 +452,9 @@ void CMissionManager::AddBuiltinMission (void)
 {
 	CFile	cf;
 
-nBuiltInHogSize [0] = cf.Size ("descent2.hog", gameFolders.szDataDir [0], 0);
+nBuiltInHogSize [0] = (int) cf.Size ("descent2.hog", gameFolders.szDataDir [0], 0);
 if (nBuiltInHogSize [0] == -1)
-	nBuiltInHogSize [0] = cf.Size ("d2demo.hog", gameFolders.szDataDir [0], 0);
+	nBuiltInHogSize [0] = (int) cf.Size ("d2demo.hog", gameFolders.szDataDir [0], 0);
 
 switch (nBuiltInHogSize [0]) {
 	case SHAREWARE_MISSION_HOGSIZE:

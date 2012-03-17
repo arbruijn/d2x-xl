@@ -74,7 +74,7 @@ void LoadTextData (const char *pszLevelName, const char *pszExt, CTextData *msgP
 PrintLog (1, "loading mission messages\n");
 FreeTextData (msgP);
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, pszExt);
-bufSize = cf.Size (szFilename, gameFolders.szDataDir [0], 0);
+bufSize = (int) cf.Size (szFilename, gameFolders.szDataDir [0], 0);
 if (bufSize <= 0) {
 	PrintLog (-1);
 	return;

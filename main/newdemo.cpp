@@ -250,7 +250,7 @@ gameData.demo.nFrameBytesWritten += nTotalSize;
 gameData.demo.nWritten += nTotalSize;
 Assert (&ndOutFile.File () != NULL);
 CHK();
-nWritten = ndOutFile.Write (buffer, elsize, nelem);
+nWritten = (int) ndOutFile.Write (buffer, elsize, nelem);
 if ((bRevertFormat < 1) && (gameData.demo.nWritten > gameData.demo.nSize) && !gameData.demo.bNoSpace)
 	gameData.demo.bNoSpace = 1;
 if ((nWritten == nelem) && !gameData.demo.bNoSpace)
@@ -2903,7 +2903,7 @@ byteCount = NDReadShort ();
 ndInFile.Seek (-2 - byteCount, SEEK_CUR);
 
 nFrameLength = NDReadShort ();
-loc = ndInFile.Tell ();
+loc = (int) ndInFile.Tell ();
 if (gameData.demo.nGameMode & GM_MULTI)
 	gameData.demo.bPlayersCloaked = NDReadByte ();
 else
@@ -3570,7 +3570,7 @@ gameData.app.nGameMode = GM_NORMAL;
 gameData.demo.nState = ND_STATE_PLAYBACK;
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
 gameData.demo.nOldCockpit = gameStates.render.cockpit.nType;
-gameData.demo.nSize = ndInFile.Length ();
+gameData.demo.nSize = (int) ndInFile.Length ();
 bNDBadRead = 0;
 gameData.demo.bEof = 0;
 gameData.demo.nFrameCount = 0;
@@ -3590,7 +3590,7 @@ NDPlayBackOneFrame ();       // get all of the OBJECTS to renderb game
 void NDStopPlayback ()
 {
 if (bRevertFormat > 0) {
-	int h = ndInFile.Length () - ndInFile.Tell ();
+	int h = (int) (ndInFile.Length () - ndInFile.Tell ());
 	char *p = new char [h];
 	if (p) {
 		bRevertFormat = 0;

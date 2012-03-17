@@ -1472,7 +1472,7 @@ if (!(cf.Open (filename, gameFolders.szModDir [1], fileModes [bHaveBinary], game
 		}
 	}
 if (bHaveBinary) {
-	len = cf.Length ();
+	len = (int) cf.Length ();
 	if (!textBuffer.Create (len))
 		return 0;
 	bufP = &textBuffer [0];
@@ -1487,7 +1487,7 @@ if (bHaveBinary) {
 			*bufP = EncodeRotateLeft ((char) (EncodeRotateLeft (*bufP) ^ BITMAP_TBL_XOR));
 	}
 else {
-	len = cf.Length ();
+	len = (int) cf.Length ();
 	if (!textBuffer.Create (len + 500))
 		return 0;
 	bufP = &textBuffer [0];

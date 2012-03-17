@@ -121,7 +121,7 @@ if (!cf.Open (filename, gameFolders.szDataDir [0], "rb", 0)) { // first try text
 	bHaveBinary = 1;
 	}
 
-size = cf.Length ();
+size = (int) cf.Length ();
 m_rawDataP = new ubyte [size+1];
 readCount = (int) cf.Read (m_rawDataP, 1, size);
 cf.Close ();
@@ -318,7 +318,7 @@ void CMovie::Rewind (void)
 {
 if (m_cf.File ()) {
 	m_cf.Seek (m_offset, SEEK_SET);
-	m_pos = m_cf.Tell ();
+	m_pos = (int) m_cf.Tell ();
 	}
 }
 
@@ -406,9 +406,9 @@ return nFiles;
 
 int CMovieLib::Count (CFile& cf)
 {
-	int	size = cf.Size ();
+	int	size = (int) cf.Size ();
 	int	nFiles = 0;
-	int	fPos = cf.Tell ();
+	int	fPos = (int) cf.Tell ();
 
 for (;;) {
 	if (size < 17) // name + length
@@ -434,7 +434,7 @@ if (!m_movies.Create (nFiles))
 for (int i = 0; i < nFiles; i++) {
 	cf.Read (m_movies [i].m_name, 13, 1);
 	m_movies [i].m_len = cf.ReadInt ();
-	m_movies [i].m_offset = cf.Tell ();
+	m_movies [i].m_offset = (int) cf.Tell ();
 	cf.Seek (m_movies [i].m_len, SEEK_CUR);       //skip data
 	}
 return nFiles;
