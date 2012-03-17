@@ -866,7 +866,7 @@ int SaveLightData (int nLevel)
 									MAX_LIGHT_RANGE,
 									LightingMethod (),
 									gameStates.render.bPerPixelLighting,
-									gameStates.app.bCompressed
+									gameStates.app.bCompressData
 									};
 	int				bOk;
 	char				szFilename [FILENAME_LEN];
