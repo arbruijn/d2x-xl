@@ -386,6 +386,8 @@ sideP = startSegP->m_sides + nFirstSide;
 viewer.info.nSegment = nStartSeg;
 gameData.objs.viewerP = &viewer;
 
+short nMinSeg = 0x7fff, nMaxSeg = -0x7fff;
+
 for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #if DBG
 	sideP = startSegP->m_sides + nSide;
@@ -477,7 +479,6 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 	gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
 	BuildRenderSegList (nStartSeg, 0, true);
-	short nMinSeg = 0x7fff, nMaxSeg = -0x7fff;
 	for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 		if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
 			continue;
@@ -497,14 +498,14 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		if (bLights && (gameData.segs.SegDist (nStartSeg, nSegment) < 0))
 			continue;
 #endif
+		if (!gameData.segs.SegVis (nStartSeg, nSegment))
+			nSegVisCount++;
 		SetSegAndVertVis (nStartSeg, nSegment, bLights);
 		if (nMinSeg > nSegment)
 			nMinSeg = nSegment;
 		if (nMaxSeg < nSegment)
 			nMaxSeg = nSegment;
-		nSegVisCount++;
 		}
-	nSegVisRange += nMaxSeg - nMinSeg + 1;
 	gameStates.render.nShadowPass = 0;
 	CCanvas::Current ()->SetWidth (w);
 	CCanvas::Current ()->SetHeight (h);
@@ -512,6 +513,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	G3EndFrame (0);
 	gameStates.render.nShadowMap = 0;
 	}
+nSegVisRange += nMaxSeg - nMinSeg + 1;
 ogl.SetTransform (0);
 }
 
