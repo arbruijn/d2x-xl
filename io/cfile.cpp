@@ -38,6 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "console.h"
 #include "findfile.h"
 #include "text.h"
+#include "zlib.h"
 
 #define SORT_HOGFILES 1
 
@@ -471,15 +472,44 @@ return buf;
 
 size_t CFile::Read (void *buf, size_t elSize, size_t nElems) 
 {
-uint i, size = (int) (elSize * nElems);
+size_t i, size = (int) (elSize * nElems);
 
 if (!m_cf.file || (m_cf.size < 1) || !size) 
 	return 0;
-i = (int) fread (buf, 1, size, m_cf.file);
+i = fread (buf, 1, size, m_cf.file);
 m_cf.rawPosition += i;
 return i / elSize;
 }
 
+// ----------------------------------------------------------------------------
+
+size_t CFile::ReadCompressed (void* buf, uint bufLen) 
+{
+uLongf nSize, nCompressedSize;
+if (Read (&nSize, 1, sizeof (nSize)) + Read (&nCompressedSize, 1, sizeof (nCompressedSize)) != sizeof (nSize) + sizeof (nCompressedSize))
+	return -1;
+if (bufLen < nSize)
+	return -1;
+ubyte* compressedBuffer = new ubyte [nCompressedSize];
+if (!compressedBuffer)
+	return -1;
+if (Read (compressedBuffer, sizeof (byte), nCompressedSize) != nCompressedSize)
+	return -1;
+if (uncompress ((byte*) buf, &nSize, compressedBuffer, nCompressedSize) != Z_OK)
+	return -1;
+return (size_t) nSize;
+}
+
+// ----------------------------------------------------------------------------
+
+size_t CFile::WriteCompressed (void* buf, uint bufLen) 
+{
+uLongf nCompressedSize = compressBound (bufLen);
+ubyte* compressedBuffer = new ubyte [nCompressedSize];
+if (compressedBuffer && (compress (compressedBuffer, &nCompressedSize, (ubyte*) buf, bufLen) == Z_OK)) 
+	return (Write (&bufLen, 1, sizeof (bufLen)) + Write (&nCompressedSize, 1, sizeof (nCompressedSize)) + Write (compressedBuffer, sizeof (byte), nCompressedSize) == sizeof (bufLen) + sizeof (nCompressedSize) + nCompressedSize) ? bufLen : -1;
+return -1;
+}
 
 // ----------------------------------------------------------------------------
 

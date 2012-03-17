@@ -45,9 +45,9 @@ class CFilename {
 typedef struct CFILE {
 	FILE		*file;
 	char		*filename;
-	int		size;
-	int		libOffset;
-	int		rawPosition;
+	size_t	size;
+	size_t	libOffset;
+	size_t	rawPosition;
 	char		buffer [16384];
 	int		bufLen;
 	int		bufPos;
@@ -77,6 +77,9 @@ class CFile {
 		int Error (void);
 		int Write (const void *buf, int elsize, int nelem);
 		inline int GetC (void) { return (FillBuffer () == EOF) ? EOF : m_cf.buffer [m_cf.bufPos++]; }
+
+		size_t ReadCompressed (void* buf, uint bufLen);
+		size_t WriteCompressed (void* buf, uint bufLen);
 
 		int PutC (int c);
 		int PutS (const char *str);
