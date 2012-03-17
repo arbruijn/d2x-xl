@@ -369,13 +369,16 @@ return m_cf.size;
 //
 int CFile::Write (const void *buf, int nElemSize, int nElemCount, int bCompressed)
 {
-if (bCompressed)
-	return WriteCompressed (buf, (uint) (nElemSize * nElemCount)) == (uint) (nElemSize * nElemCount);
-
 if (!m_cf.file)
 	return 0;
 if (!(nElemSize * nElemCount))
 	return 0;
+
+if (bCompressed) {
+	size_t i = WriteCompressed (buf, (uint) (nElemSize * nElemCount));
+	return (i < 0)? i : i / nElemSize;
+	}
+
 int nWritten = (int) fwrite (buf, nElemSize, nElemCount, m_cf.file);
 m_cf.rawPosition = ftell (m_cf.file);
 if (Error ()) {
@@ -475,11 +478,14 @@ size_t CFile::Read (void *buf, size_t elSize, size_t nElems, int bCompressed)
 {
 size_t i, size = elSize * nElems;
 
-if (bCompressed)
-	return ReadCompressed (buf, (uint) size) == (uint) size;
-
 if (!m_cf.file || (m_cf.size < 1) || !size) 
 	return 0;
+
+if (bCompressed) {
+	i = ReadCompressed (buf, (uint) size);
+	return (i < 0) ? i : i / elSize;
+	}
+
 i = fread (buf, 1, size, m_cf.file);
 m_cf.rawPosition += i;
 return i / elSize;
@@ -487,31 +493,32 @@ return i / elSize;
 
 // ----------------------------------------------------------------------------
 
-size_t CFile::ReadCompressed (void* buf, uint bufLen) 
+size_t CFile::ReadCompressed (const void* buf, uint bufLen) 
 {
 uLongf nSize, nCompressedSize;
 if (Read (&nSize, 1, sizeof (nSize)) + Read (&nCompressedSize, 1, sizeof (nCompressedSize)) != sizeof (nSize) + sizeof (nCompressedSize))
 	return -1;
 if (bufLen < nSize)
 	return -1;
-ubyte* compressedBuffer = new ubyte [nCompressedSize];
-if (!compressedBuffer)
+CByteArray compressedBuffer;
+if (!compressedBuffer.Create (nCompressedSize))
 	return -1;
-if (Read (compressedBuffer, sizeof (byte), nCompressedSize) != nCompressedSize)
+if (Read (compressedBuffer.Buffer (), sizeof (byte), nCompressedSize) != nCompressedSize)
 	return -1;
-if (uncompress ((byte*) buf, &nSize, compressedBuffer, nCompressedSize) != Z_OK)
+if (uncompress ((byte*) buf, &nSize, compressedBuffer.Buffer (), nCompressedSize) != Z_OK)
 	return -1;
 return (size_t) nSize;
 }
 
 // ----------------------------------------------------------------------------
 
-size_t CFile::WriteCompressed (void* buf, uint bufLen) 
+size_t CFile::WriteCompressed (const void* buf, uint bufLen) 
 {
 uLongf nCompressedSize = compressBound (bufLen);
-ubyte* compressedBuffer = new ubyte [nCompressedSize];
-if (compressedBuffer && (compress (compressedBuffer, &nCompressedSize, (ubyte*) buf, bufLen) == Z_OK)) 
-	return (Write (&bufLen, 1, sizeof (bufLen)) + Write (&nCompressedSize, 1, sizeof (nCompressedSize)) + Write (compressedBuffer, sizeof (byte), nCompressedSize) == sizeof (bufLen) + sizeof (nCompressedSize) + nCompressedSize) ? bufLen : -1;
+CByteArray compressedBuffer;
+if (compressedBuffer.Create (nCompressedSize) && (compress (compressedBuffer.Buffer (), &nCompressedSize, (ubyte*) buf, bufLen) == Z_OK)) 
+	return (Write (&bufLen, 1, sizeof (bufLen)) + Write (&nCompressedSize, 1, sizeof (nCompressedSize)) + Write (compressedBuffer.Buffer (), sizeof (byte), nCompressedSize) == 
+			  sizeof (bufLen) + sizeof (nCompressedSize) + nCompressedSize) ? bufLen : -1;
 return -1;
 }
 

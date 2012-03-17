@@ -78,8 +78,8 @@ class CFile {
 		int Write (const void *buf, int elsize, int nelem, int bCompressed = 0);
 		inline int GetC (void) { return (FillBuffer () == EOF) ? EOF : m_cf.buffer [m_cf.bufPos++]; }
 
-		size_t ReadCompressed (void* buf, uint bufLen);
-		size_t WriteCompressed (void* buf, uint bufLen);
+		size_t ReadCompressed (const void* buf, uint bufLen);
+		size_t WriteCompressed (const void* buf, uint bufLen);
 
 		int PutC (int c);
 		int PutS (const char *str);

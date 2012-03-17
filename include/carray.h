@@ -377,22 +377,7 @@ class CArray : public CQuickSort < _T > {
 				nCount = m_data.length - nOffset;
 			else if (nCount > m_data.length - nOffset)
 				nCount = m_data.length - nOffset;
-			if (!bCompressed) 
-				return cf.Read (m_data.buffer + nOffset, sizeof (_T), nCount);
-			uLongf nCompressedSize;
-			if (cf.Read (&nCount, 1, sizeof (nCount)) + cf.Read (&nCompressedSize, 1, sizeof (nCompressedSize)) != sizeof (nCount) + sizeof (nCompressedSize))
-				return -1;
-			if ((m_data.length < nCount) && !Resize (nCount))
-				return -1;
-			ubyte* compressedBuffer = new ubyte [nCompressedSize];
-			if (!compressedBuffer)
-				return -1;
-			if (cf.Read (compressedBuffer, sizeof (byte), nCompressedSize) != nCompressedSize)
-				return -1;
-			uLongf nSize = nCount * sizeof (_T);
-			if (uncompress ((byte*) &m_data.buffer [0], &nSize, compressedBuffer, nCompressedSize) != Z_OK)
-				return -1;
-			return nSize / sizeof (_T);
+			return cf.Read (m_data.buffer + nOffset, sizeof (_T), nCount, bCompressed);
 			}
 
 		size_t Write (CFile& cf, uint nCount = 0, uint nOffset = 0, int bCompressed = 0) { 
@@ -404,13 +389,7 @@ class CArray : public CQuickSort < _T > {
 				nCount = m_data.length - nOffset;
 			else if (nCount > m_data.length - nOffset)
 				nCount = m_data.length - nOffset;
-			if (bCompressed) {
-				uLongf nCompressedSize = compressBound (nCount * sizeof (_T));
-				ubyte* compressedBuffer = new ubyte [nCompressedSize];
-				if (compressedBuffer && (compress (compressedBuffer, &nCompressedSize, (ubyte*) &m_data.buffer [nOffset], nCount * sizeof (_T)) == Z_OK)) 
-					return (cf.Write (&nCount, 1, sizeof (nCount)) + cf.Write (&nCompressedSize, 1, sizeof (nCompressedSize)) + cf.Write (compressedBuffer, sizeof (byte), nCompressedSize) == sizeof (nCount) + sizeof (nCompressedSize) + nCompressedSize) ? nCount : -1;
-				}
-			return cf.Write (m_data.buffer + nOffset, sizeof (_T), nCount);
+			return cf.Write (m_data.buffer + nOffset, sizeof (_T), nCount, bCompressed);
 			}
 
 		inline void SetWrap (bool bWrap) { m_data.bWrap = bWrap; }
