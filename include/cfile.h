@@ -66,16 +66,16 @@ class CFile {
 		~CFile () { Close (); };
 		void Init (void);
 		int Open (const char *filename, const char *folder, const char *mode, int bUseD1Hog);
-		int Length (void);							// Returns actual size of file...
+		size_t Length (void);							// Returns actual size of file...
 		size_t Read (void *buf, size_t elsize, size_t nelem, int bCompressed = 0);
 		int Close (void);
-		int Size (const char *hogname, const char *folder, int bUseD1Hog);
-		int Seek (long int offset, int where);
-		int Tell (void);
+		size_t Size (const char *hogname, const char *folder, int bUseD1Hog);
+		size_t Seek (long offset, int where);
+		size_t Tell (void);
 		char *GetS (char *buf, size_t n);
 		int EoF (void);
 		int Error (void);
-		int Write (const void *buf, int elsize, int nelem, int bCompressed = 0);
+		size_t Write (const void *buf, int elsize, int nelem, int bCompressed = 0);
 		inline int GetC (void) { return (FillBuffer () == EOF) ? EOF : m_cf.buffer [m_cf.bufPos++]; }
 
 		size_t ReadCompressed (const void* buf, uint bufLen);
@@ -84,7 +84,7 @@ class CFile {
 		int PutC (int c);
 		int PutS (const char *str);
 
-		inline int Size (void) { return m_cf.size; }
+		inline size_t Size (void) { return m_cf.size; }
 
 		// prototypes for reading basic types from fp
 		int ReadInt (void);

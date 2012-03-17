@@ -184,7 +184,7 @@ return fp;
 
 // ----------------------------------------------------------------------------
 
-int CFile::Size (const char *hogname, const char *folder, int bUseD1Hog)
+size_t CFile::Size (const char *hogname, const char *folder, int bUseD1Hog)
 {
 #if ! (defined (_WIN32_WCE) || defined (_WIN32))
 	struct stat statbuf;
@@ -200,7 +200,7 @@ fstat (fileno (m_cf.file), &statbuf);
 Close ();
 return statbuf.st_size;
 #else
-	DWORD size;
+	size_t size;
 
 //sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", hogname);
 if (!Open (hogname, gameFolders.szDataDir [0], "rb", bUseD1Hog))
@@ -356,7 +356,7 @@ m_cf.rawPosition = -1;
 
 // ----------------------------------------------------------------------------
 
-int CFile::Length (void) 
+size_t CFile::Length (void) 
 {
 return m_cf.size;
 }
@@ -367,7 +367,7 @@ return m_cf.size;
 // returns:   number of full elements actually written
 //
 //
-int CFile::Write (const void *buf, int nElemSize, int nElemCount, int bCompressed)
+size_t CFile::Write (const void *buf, int nElemSize, int nElemCount, int bCompressed)
 {
 if (!m_cf.file)
 	return 0;
@@ -413,9 +413,9 @@ int CFile::FillBuffer (void)
 if (m_cf.bufPos >= m_cf.bufLen) {
 	if (m_cf.rawPosition >= m_cf.size) 
 		return EOF;
-	int h = m_cf.size - m_cf.rawPosition;
-	if (h > (int) sizeof (m_cf.buffer))
-		h = (int) sizeof (m_cf.buffer);
+	size_t h = m_cf.size - m_cf.rawPosition;
+	if (h > sizeof (m_cf.buffer))
+		h = sizeof (m_cf.buffer);
 	m_cf.bufPos = 0;
 	m_cf.bufLen = int (Read (m_cf.buffer, 1, h));
 	m_cf.rawPosition = ftell (m_cf.file) - m_cf.libOffset;
@@ -524,19 +524,19 @@ return -1;
 
 // ----------------------------------------------------------------------------
 
-int CFile::Tell (void) 
+size_t CFile::Tell (void) 
 {
 return m_cf.rawPosition;
 }
 
 // ----------------------------------------------------------------------------
 
-int CFile::Seek (long int offset, int whence) 
+size_t CFile::Seek (long offset, int whence) 
 {
 if (!m_cf.size)
 	return -1;
 
-	int destPos;
+	size_t destPos;
 
 switch (whence) {
 	case SEEK_SET:
@@ -551,7 +551,7 @@ switch (whence) {
 	default:
 		return 1;
 	}
-int c = fseek (m_cf.file, m_cf.libOffset + destPos, SEEK_SET);
+size_t c = fseek (m_cf.file, long (m_cf.libOffset + destPos), SEEK_SET);
 m_cf.rawPosition = ftell (m_cf.file) - m_cf.libOffset;
 return c;
 }
@@ -744,7 +744,7 @@ do {
 int CFile::WriteInt (int i)
 {
 i = INTEL_INT (i);
-return Write (&i, sizeof (i), 1);
+return (int) Write (&i, sizeof (i), 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -752,14 +752,14 @@ return Write (&i, sizeof (i), 1);
 int CFile::WriteShort (short s)
 {
 s = INTEL_SHORT (s);
-return Write(&s, sizeof (s), 1);
+return (int) Write (&s, sizeof (s), 1);
 }
 
 // ----------------------------------------------------------------------------
 
 int CFile::WriteByte (sbyte b)
 {
-return Write (&b, sizeof (b), 1);
+return (int) Write (&b, sizeof (b), 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -767,7 +767,7 @@ return Write (&b, sizeof (b), 1);
 int CFile::WriteFloat (float f)
 {
 f = INTEL_FLOAT (f);
-return Write (&f, sizeof (f), 1);
+return (int) Write (&f, sizeof (f), 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -776,7 +776,7 @@ return Write (&f, sizeof (f), 1);
 int CFile::WriteDouble (double d)
 {
 d = INTEL_DOUBLE (d);
-return Write (&d, sizeof (d), 1);
+return (int) Write (&d, sizeof (d), 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -784,7 +784,7 @@ return Write (&d, sizeof (d), 1);
 int CFile::WriteFix (fix x)
 {
 x = INTEL_INT (x);
-return Write (&x, sizeof (x), 1);
+return (int) Write (&x, sizeof (x), 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -792,7 +792,7 @@ return Write (&x, sizeof (x), 1);
 int CFile::WriteFixAng (fixang a)
 {
 a = INTEL_SHORT (a);
-return Write (&a, sizeof (a), 1);
+return (int) Write (&a, sizeof (a), 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -848,7 +848,7 @@ int CFile::Extract (const char *filename, const char *folder, int bUseD1Hog, con
 	FILE		*fp;
 	char		szDest [FILENAME_LEN], fn [FILENAME_LEN];
 	static	char buf [4096];
-	int		h, l;
+	size_t	h, l;
 
 if (!Open (filename, folder, "rb", bUseD1Hog))
 	return 0;
@@ -996,9 +996,8 @@ if (!Open (filename, folder, "rb", 0))
 
 bool bNewl = true;
 char buf [16384];
-uint 	h = m_cf.size - m_cf.rawPosition,
-		i = h + 1, 
-		lineC = 0;
+size_t h = m_cf.size - m_cf.rawPosition, i = h + 1;
+int lineC = 0;
 
 while (!EoF () || (i < h)) {
 	if (i >= h) {
