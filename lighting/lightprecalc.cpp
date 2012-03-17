@@ -81,8 +81,6 @@ return (nStart < 0) ? 0 : nStart;
 
 //------------------------------------------------------------------------------
 
-static int nNoDist = 0;
-
 void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
 	fix xMaxDist = 0;
@@ -108,11 +106,8 @@ while (xMaxDist & 0xFFFF0000) {
 round = (1 << scale) / 2;
 gameData.segs.segDistScale [nSegment] = scale;
 gameData.segs.SetSegDist (nSegment, nSegment, 0, 0);
-for (int i = 0; i < gameData.segs.nSegments; i++) {
+for (int i = 0; i < gameData.segs.nSegments; i++)
 	gameData.segs.SetSegDist (nSegment, i, uniDacsRouter [nThread].Distance (i), round);
-	if (gameData.segs.SegDist (nSegment, i) < 0)
-		nNoDist++;
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -368,9 +363,6 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide
 // Do this for each side of the current segment, using the side Normal (s) as forward vector
 // of the viewer
 
-long nSegVisRange = 0;
-long nSegVisCount = 0;
-
 static void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, short nLastSide = 5, int bLights = 0)
 {
 	CSegment*		startSegP;
@@ -391,8 +383,6 @@ sideP = startSegP->m_sides + nFirstSide;
 	
 viewer.info.nSegment = nStartSeg;
 gameData.objs.viewerP = &viewer;
-
-short nMinSeg = 0x7fff, nMaxSeg = -0x7fff;
 
 for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #if DBG
@@ -504,13 +494,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		if (bLights && (gameData.segs.SegDist (nStartSeg, nSegment) < 0))
 			continue;
 #endif
-		if (!gameData.segs.SegVis (nStartSeg, nSegment))
-			nSegVisCount++;
 		SetSegAndVertVis (nStartSeg, nSegment, bLights);
-		if (nMinSeg > nSegment)
-			nMinSeg = nSegment;
-		if (nMaxSeg < nSegment)
-			nMaxSeg = nSegment;
 		}
 	gameStates.render.nShadowPass = 0;
 	CCanvas::Current ()->SetWidth (w);
@@ -519,7 +503,6 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	G3EndFrame (0);
 	gameStates.render.nShadowMap = 0;
 	}
-nSegVisRange += (nMaxSeg - nMinSeg + 8) / 8 + 8;
 ogl.SetTransform (0);
 }
 
