@@ -1009,8 +1009,8 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 	for (i = 0; i < nBitmapNum; i++)
 		PIGBitmapHeaderRead (bmh + i, cf);
 #endif
-	bmDataOffset = cf.Tell ();
-	bmDataSize = cf.Length () - bmDataOffset;
+	bmDataOffset = (int) cf.Tell ();
+	bmDataSize = (int) cf.Length () - bmDataOffset;
 
 	for (i = 0; i < nBitmapNum; i++) {
 		bmOffset = bmh [i].offset;

@@ -989,7 +989,7 @@ int LoadMineDataCompiled (CFile& cf, int bFileInfo)
 {
 	int 	nStartOffset;
 
-nStartOffset = cf.Tell ();
+nStartOffset = (int) cf.Tell ();
 InitGameFileInfo ();
 if (ReadGameFileInfo (cf, nStartOffset))
 	return -1;

@@ -551,7 +551,7 @@ int CIFF::Open (const char *cfname)
 Data() = NULL;
 if (!cf.Open (cfname, gameFolders.szDataDir [0], "rb", gameStates.app.bD1Mission))
 	return IFF_NO_FILE;
-SetLen (cf.Length ());
+SetLen ((int) cf.Length ());
 Data() = new ubyte [Len ()];
 if (cf.Read (Data(), 1, Len()) < (size_t) Len())
 	ret = IFF_READ_ERROR;

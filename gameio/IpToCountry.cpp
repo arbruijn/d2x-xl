@@ -44,7 +44,7 @@ if ((tBIN < 0) || ((t1 > 0) && (tBIN < t1)) || ((t0 > 0) && (tBIN < t0)))
 
 if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "rb", 0))
 	return false;
-int h = cf.Size () - sizeof (int);
+int h = (int) cf.Size () - sizeof (int);
 if ((h < 0) || (h / sizeof (CIpToCountry) < 1) || (h % sizeof (CIpToCountry) != 0)) {
 	cf.Close ();
 	return false;

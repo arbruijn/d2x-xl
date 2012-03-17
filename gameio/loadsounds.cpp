@@ -205,7 +205,7 @@ if (!((*gameFolders.szSoundDir [5] && cf.Open (szSoundFile, gameFolders.szSoundD
 	   (*gameFolders.szSoundDir [4] && cf.Open (szSoundFile, gameFolders.szSoundDir [4], "rb", 0)) ||
 	   ((/*bCustom ||*/ gameOpts->UseHiresSound ()) && cf.Open (szSoundFile, gameFolders.szSoundDir [HIRES_SOUND_FOLDER (gameStates.sound.bD1Sound)], "rb", 0))))
 	return 0;
-if (0 >= (soundP->nLength [0] = cf.Length ())) {
+if (0 >= (soundP->nLength [0] = (int) cf.Length ())) {
 	cf.Close ();
 	return 0;
 	}
@@ -398,7 +398,7 @@ else {
 		}
 	nSounds = cf.ReadInt ();
 
-	nLoadedSounds = SetupSounds (cf, nSounds, cf.Tell (), bCustom, bUseLowRes);
+	nLoadedSounds = SetupSounds (cf, nSounds, (int) cf.Tell (), bCustom, bUseLowRes);
 	if (bCustom)
 		gameOpts->sound.bHires [0] = (nLoadedSounds & 0xffff) ? 0 : 2;
 	else if (gameOpts->sound.bHires [0] && ((nLoadedSounds >> 16) == 0))
