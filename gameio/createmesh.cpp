@@ -782,8 +782,6 @@ if (bOk) {
 			}
 		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.tris [0]) * mdh.nTris, 1, 1) == 1);
 		nSize += h;
-		bOk = bOk && (cf.Read (ioBuffer + nSize, h = sizeof (FACES.tris [0]) * mdh.nTris, 1, 1) == 1);
-		nSize += h;
 		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.vertices [0]) * nTriVerts, 1, 1) == 1);
 		nSize += h;
 		bOk = bOk && (cf.Read (ioBuffer + nSize, sizeof (FACES.normals [0]) * nTriVerts, 1, 1) == 1);
