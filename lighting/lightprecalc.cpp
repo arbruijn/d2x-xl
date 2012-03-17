@@ -81,9 +81,6 @@ return (nStart < 0) ? 0 : nStart;
 
 //------------------------------------------------------------------------------
 
-static int nNoDist [MAX_THREADS];
-static int nDistRange [MAX_THREADS];
-
 void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
 	fix xMaxDist = 0;
@@ -110,17 +107,8 @@ round = (1 << scale) / 2;
 gameData.segs.segDistScale [nSegment] = scale;
 gameData.segs.SetSegDist (nSegment, nSegment, 0, 0);
 short nMinSeg = -1, nMaxSeg = -1;
-for (int i = 0; i < gameData.segs.nSegments; i++) {
+for (int i = 0; i < gameData.segs.nSegments; i++)
 	gameData.segs.SetSegDist (nSegment, i, uniDacsRouter [nThread].Distance (i), round);
-	if (gameData.segs.SegDist (nSegment, i) < 0)
-		nNoDist [nThread]++;
-	else {
-		if (nMinSeg < 0)
-			nMinSeg = i;
-		nMaxSeg = i;
-		}
-	}
-nDistRange [nThread] += nMaxSeg - nMinSeg + 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1007,14 +995,8 @@ if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	ComputeSegmentVisibility (-1);
 	PrintLog (-1);
 	PrintLog (1, "Computing segment distances\n");
-	memset (nNoDist, 0, sizeof (nNoDist));
-	memset (nDistRange, 0, sizeof (nDistRange));
 	StartLightThreads (SegDistThread);
 	PrintLog (-1);
-	for (int i = 1; i < gameStates.app.nThreads; i++) {
-		nNoDist [0] += nNoDist [i];
-		nDistRange [0] += nDistRange [i];
-		}
 	PrintLog (1, "Computing light visibility\n");
 	ComputeLightVisibility (-1);
 	PrintLog (-1);
