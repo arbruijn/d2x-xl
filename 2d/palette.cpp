@@ -463,7 +463,7 @@ if (!i) {
 	Error(TXT_PAL_FILES, pszFile, DEFAULT_LEVEL_PALETTE);
 	return NULL;
 	}
-fsize	= cf.Length ();
+fsize	= (int) cf.Length ();
 Assert (fsize == 9472);
 palette.Read (cf);
 cf.Read (m_data.fadeTable, sizeof (m_data.fadeTable), 1);
