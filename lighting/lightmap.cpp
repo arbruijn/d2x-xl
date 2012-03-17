@@ -837,7 +837,7 @@ if (bOk) {
 	}
 if (bOk) {
 	for (i = 0; i < m_list.nBuffers; i++) {
-		bOk = cf.Write (m_list.buffers [i].bmP, sizeof (m_list.buffers [i].bmP), 1) == 1;
+		bOk = cf.Write (m_list.buffers [i].bmP, sizeof (m_list.buffers [i].bmP), 1, ldh.bCompressed) == 1;
 		if (!bOk)
 			break;
 		}
@@ -878,7 +878,7 @@ if (bOk) {
 	}
 if (bOk) {
 	for (i = 0; i < ldh.nBuffers; i++) {
-		bOk = cf.Read (m_list.buffers [i].bmP, sizeof (m_list.buffers [i].bmP), 1) == 1;
+		bOk = cf.Read (m_list.buffers [i].bmP, sizeof (m_list.buffers [i].bmP), 1, ldh.bCompressed) == 1;
 		if (!bOk)
 			break;
 		}
