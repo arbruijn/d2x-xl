@@ -383,8 +383,10 @@ else {
 	bUseLowRes = !gameOpts->UseHiresSound ();
 	}
 
-if (!cf.Open (pszFile, pszFolder, "rb", 0))
+if (!cf.Open (pszFile, pszFolder, "rb", 0)) {
+	PrintLog (0, "Couldn't open sound file '%s/%s'\n", pszFile ? pszFile : "", pszFolder ? pszFolder : "");
 	return 0;
+	}
 
 if (gameStates.app.bDemoData) 
 	gameOpts->sound.soundSampleRate = SAMPLE_RATE_11K;
@@ -394,6 +396,7 @@ else {
 	sndVersion = cf.ReadInt ();
 	if ((sndId != SNDFILE_ID) || (sndVersion != SNDFILE_VERSION)) {
 		cf.Close ();						//out of date sound file
+		PrintLog (0, "Invalid sound file '%s/%s'\n", pszFile ? pszFile : "", pszFolder ? pszFolder : "");
 		return 0;
 		}
 	nSounds = cf.ReadInt ();

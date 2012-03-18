@@ -68,7 +68,7 @@ endif
 else
 d2x_sdl_LDADD = ${d2x_LDADD} -lm
 endif
-d2x_xl_LDADD = ${d2x_sdl_LDADD} -lcurl -lGLEW -lXm -lXt -lX11 -lstdc++ ${OGL_LIBS}
+d2x_xl_LDADD = ${d2x_sdl_LDADD} -lcurl -lz -lGLEW -lXm -lXt -lX11 -lstdc++ ${OGL_LIBS}
 
 dist-hook:
 	rm -rf `find $(distdir) -name CVS`

@@ -916,6 +916,10 @@ PrintLog (1, "unloading ban list\n");
 banList.Save ();
 banList.Destroy ();
 PrintLog (-1);
+#if defined(__unix__)
+ogl.m_states.bFullScreen = 0;
+GrSetMode (displayModeInfo [MAX_DISPLAY_MODE].dim);
+#endif
 //PrintLog (1, "peak memory consumption: %ld bytes\n", nMaxAllocd);
 #if 0 //!defined(__unix__)
 SDL_Quit (); // hangs on Linux

@@ -221,7 +221,7 @@ do {
 		for (i = 0; i <= nCustom; i++)
 			if ((i != nWideScreen) && (m [i].Value ())) {
 				bStdRes = 1;
-				i = ScreenResMenuItemToMode(i);
+				i = ScreenResMenuItemToMode (i);
 				break;
 				}
 		}
