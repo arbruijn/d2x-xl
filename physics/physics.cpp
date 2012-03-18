@@ -1151,7 +1151,8 @@ if (!gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted || (this != gameData.obj
 	vForce *= xScale;
 	Velocity () += vForce;
 #else
-	Velocity () += (vForce * FixDiv (I2X (1), mType.physInfo.mass));
+	vForce *= 1.0f / X2F (mType.physInfo.mass);
+	Velocity () += vForce;
 #	if DBG
 if (Index () == nDbgObj) {
 	fix xMag = Velocity ().Mag ();

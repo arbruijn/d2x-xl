@@ -176,7 +176,7 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 	if (eshakerDetonateTimes [i] + ESHAKER_SHAKE_TIME < gameData.time.xGame)
 		eshakerDetonateTimes [i] = 0;
 
-float fScale, fDist = 0.0f;
+float fScale;
 if (gameStates.app.bNostalgia || COMPETITION || (vPos == NULL))
 	fScale = 1.0f;
 else {
