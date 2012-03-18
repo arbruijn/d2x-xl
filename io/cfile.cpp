@@ -39,15 +39,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "findfile.h"
 #include "text.h"
 
-#define ZLIB_DLL
-#define ZLIB_WINAPI
+#ifdef WIN32
+#	define ZLIB_WINAPI
+#endif
 
-extern "C" {
 #include "zlib.h"
-}
 
-#undef ZLIB_DLL
-#undef ZLIB_WINAPI
+#ifdef WIN32
+#	undef ZLIB_WINAPI
+#endif
 
 #define SORT_HOGFILES 1
 
@@ -430,7 +430,7 @@ if (m_cf.bufPos >= m_cf.bufLen) {
 	m_cf.bufPos = 0;
 	m_cf.bufLen = int (Read (m_cf.buffer, 1, h));
 	m_cf.rawPosition = ftell (m_cf.file) - m_cf.libOffset;
-	if (m_cf.bufLen < h)
+	if (m_cf.bufLen < (int) h)
 		m_cf.size = m_cf.rawPosition;
 	}
 return m_cf.bufPos;
