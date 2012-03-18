@@ -173,9 +173,6 @@ if ((otherObjP->info.nType == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 
 void CObject::Bump (CObject* otherObjP, CFixVector vForce, int bDamage)
 {
-	fix			xForceMag;
-	CFixVector	vRotForce;
-
 #if DBG
 if (vForce.Mag () > I2X (1) * 1000)
 	return;
@@ -186,42 +183,19 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 			float mq;
 
 			mq = float (otherObjP->mType.physInfo.mass) / (float (mType.physInfo.mass) * float (nMonsterballPyroForce));
-			vForce.v.coord.x = (fix) (float (vForce.v.coord.x * mq));
-			vForce.v.coord.y = (fix) (float (vForce.v.coord.y * mq));
-			vForce.v.coord.z = (fix) (float (vForce.v.coord.z * mq));
+			vForce *= mq;
 			ApplyForce (vForce);
 			}
 		else {
-			CFixVector force2;
-			force2.v.coord.x = vForce.v.coord.x / 4;
-			force2.v.coord.y = vForce.v.coord.y / 4;
-			force2.v.coord.z = vForce.v.coord.z / 4;
-			ApplyForce (force2);
-			if (bDamage && ((otherObjP->info.nType != OBJ_ROBOT) || !ROBOTINFO (otherObjP->info.nId).companion)) {
-				xForceMag = force2.Mag ();
-				ApplyForceDamage (xForceMag, otherObjP);
-				}
+			vForce *= 0.25f;
+			ApplyForce (vForce);
+			if (bDamage && ((otherObjP->info.nType != OBJ_ROBOT) || !ROBOTINFO (otherObjP->info.nId).companion)) 
+				ApplyForceDamage (vForce.Mag (), otherObjP);
 			}
 		}
 	else {
-		fix h = (4 + gameStates.app.nDifficultyLevel);
-		if (info.nType == OBJ_ROBOT) {
-			if (ROBOTINFO (info.nId).bossFlag)
-				return;
-			vRotForce.v.coord.x = vForce.v.coord.x / h;
-			vRotForce.v.coord.y = vForce.v.coord.y / h;
-			vRotForce.v.coord.z = vForce.v.coord.z / h;
-			ApplyForce (vForce);
-			ApplyRotForce (vRotForce);
-			}
-		else if ((info.nType == OBJ_CLUTTER) || (info.nType == OBJ_DEBRIS) || (info.nType == OBJ_REACTOR)) {
-			vRotForce.v.coord.x = vForce.v.coord.x / h;
-			vRotForce.v.coord.y = vForce.v.coord.y / h;
-			vRotForce.v.coord.z = vForce.v.coord.z / h;
-			ApplyForce (vForce);
-			ApplyRotForce (vRotForce);
-			}
-		else if (info.nType == OBJ_MONSTERBALL) {
+		float h = 1.0f / float (4 + gameStates.app.nDifficultyLevel);
+		if (info.nType == OBJ_MONSTERBALL) {
 			float mq;
 
 			if (otherObjP->info.nType == OBJ_PLAYER) {
@@ -232,23 +206,21 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 				gameData.hoard.nLastHitter = otherObjP->cType.laserInfo.parent.nObject;
 				mq = float (I2X (nMonsterballForces [otherObjP->info.nId]) / 100) / float (mType.physInfo.mass);
 				}
-			vForce.v.coord.x = (fix) (float (vForce.v.coord.x) * mq);
-			vForce.v.coord.y = (fix) (float (vForce.v.coord.y) * mq);
-			vForce.v.coord.z = (fix) (float (vForce.v.coord.z) * mq);
-			vRotForce.v.coord.x = vForce.v.coord.x / h;
-			vRotForce.v.coord.y = vForce.v.coord.y / h;
-			vRotForce.v.coord.z = vForce.v.coord.z / h;
-			ApplyForce (vForce);
-			ApplyRotForce (vRotForce);
+			vForce *= mq;
 			if (gameData.hoard.nLastHitter == LOCALPLAYER.nObject)
 				MultiSendMonsterball (1, 0);
 			}
-		else
-			return;
-		if (bDamage) {
-			xForceMag = vForce.Mag ();
-			ApplyForceDamage (xForceMag, otherObjP);
+		else if (info.nType == OBJ_ROBOT) {
+			if (ROBOTINFO (info.nId).bossFlag)
+				return;
 			}
+		else if ((info.nType != OBJ_CLUTTER) && (info.nType != OBJ_DEBRIS) && (info.nType != OBJ_REACTOR))
+			return;
+		ApplyForce (vForce);
+		vForce *= h;
+		ApplyRotForce (vForce);
+		if (bDamage)
+			ApplyForceDamage (vForce.Mag (), otherObjP);
 		}
 	}
 }
