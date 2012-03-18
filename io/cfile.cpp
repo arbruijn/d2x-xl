@@ -42,7 +42,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ZLIB_DLL
 #define ZLIB_WINAPI
 
+extern "C" {
 #include "zlib.h"
+}
 
 #undef ZLIB_DLL
 #undef ZLIB_WINAPI

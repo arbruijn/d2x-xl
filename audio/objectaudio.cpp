@@ -1122,7 +1122,7 @@ if (0 <= nSound) {
 		if (objP->info.nType == OBJ_EXPLOSION) {
 			objP->info.renderType = RT_POWERUP;
 			objP->rType.vClipInfo.nClipIndex = objP->info.nId;
-			audio.CreateObjectSound (nSound, SOUNDCLASS_AMBIENT, objP->Index ());
+			audio.CreateObjectSound (nSound, SOUNDCLASS_AMBIENT, objP->Index (), 1);
 			}
 	}
 //gameStates.sound.bD1Sound = 0;
