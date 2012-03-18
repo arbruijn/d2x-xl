@@ -1646,6 +1646,10 @@ if (bCleanup) {
 		m_data.buffers [i].nHeapSize = 0;
 		}
 	}
+else {
+	for (int i = 0; i < gameStates.app.nThreads; i++)
+		m_data.buffers [i].nItems [0] = m_data.buffers [i].nItems [1];
+	}
 
 PROF_END(ptTranspPolys)
 #endif
