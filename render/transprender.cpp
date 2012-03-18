@@ -1591,6 +1591,7 @@ for (int i = 0; i < gameStates.app.nThreads; i++)
 if (nBuffers < 2) {
 	CTranspItemBuffers& buffer = m_data.buffers [0];
 
+	m_data.buffers [0].nItems [1] = m_data.buffers [0].nItems [0];
 	for (buffer.bufP = &buffer.depthBuffer [buffer.nMaxOffs]; buffer.nItems [0] && (buffer.bufP >= buffer.depthBuffer.Buffer ()); buffer.bufP--)
 		if (*buffer.bufP)
 			RenderBuffer (buffer, bCleanup);
