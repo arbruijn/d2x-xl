@@ -200,7 +200,7 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 
 			if (otherObjP->info.nType == OBJ_PLAYER) {
 				gameData.hoard.nLastHitter = OBJ_IDX (otherObjP);
-				mq = float (nMonsterballPyroForce) / 10.0f * float (otherObjP->mType.physInfo.mass) / float (mType.physInfo.mass);
+				mq = float (otherObjP->mType.physInfo.mass) / float (mType.physInfo.mass) * float (nMonsterballPyroForce) / 10.0f;
 				}
 			else {
 				gameData.hoard.nLastHitter = otherObjP->cType.laserInfo.parent.nObject;
