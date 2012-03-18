@@ -917,8 +917,10 @@ banList.Save ();
 banList.Destroy ();
 PrintLog (-1);
 #if defined(__unix__)
-ogl.m_states.bFullScreen = 0;
-GrSetMode (displayModeInfo [MAX_DISPLAY_MODE].dim);
+if (ogl.m_states.bFullScreen) {
+	ogl.m_states.bFullScreen = 0;
+	GrSetMode (displayModeInfo [MAX_DISPLAY_MODE].dim);
+	}
 #endif
 //PrintLog (1, "peak memory consumption: %ld bytes\n", nMaxAllocd);
 #if 0 //!defined(__unix__)
