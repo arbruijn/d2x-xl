@@ -957,7 +957,7 @@ radioOption:
 		case KEY_ALTED + KEY_ENTER: {
 			//int bLoadCustomBg = NMFreeCustomBg ();
 			FreeTextBms ();
-			backgroundManager.Restore ();
+			backgroundManager.Remove ();
 			//NMRestoreScreen (filename, & m_bDontRestore);
 			GrToggleFullScreenGame ();
 			GrabMouse (0, 0);
