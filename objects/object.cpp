@@ -1595,7 +1595,7 @@ return (m_weaponInfo [nId] & OBJ_IS_PLAYER_MINE) != 0;
 
 bool CObject::IsPlayerMine (void) 
 { 
-return IsWeapon () && IsPlayerMine (Id ()); 
+return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsPlayerMine (Id ()); 
 }
 
 //------------------------------------------------------------------------------
