@@ -716,7 +716,7 @@ int CMissionManager::Parse (CFile& cf)
 {
 	int	i;
 	char	*t, *v;
-	char	buf [80], *bufP;
+	char	buf [256], *bufP;
 
 PrintLog (1, "parsing mission file\n");
 nLastLevel = 0;
@@ -779,7 +779,7 @@ while (MsnGetS (buf, 80, cf)) {
 				PrintLog (0, "'%s'\n", buf);
 				MsnTrimComment (buf);
 				MsnAddStrTerm (buf);
-				if (strlen (buf) > 12) {
+				if (strlen (buf) > (nEnhancedMission ? 255 : 12)) {
 					PrintLog (-1, "mission file: invalid level name\n");
 					return 0;
 					}

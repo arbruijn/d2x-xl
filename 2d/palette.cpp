@@ -31,7 +31,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 CPaletteManager paletteManager;
 
-char szCurrentLevelPalette [SHORT_FILENAME_LEN];
+char szCurrentLevelPalette [FILENAME_LEN];
 
 //	-----------------------------------------------------------------------------
 

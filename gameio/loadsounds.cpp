@@ -142,7 +142,7 @@ int LoadSoundReplacements (const char *pszFilename)
 	tPIGSoundHeader	dsh;
 	CSoundSample*		dsP;
 	size_t				nHeaderOffs, nDataOffs;
-	char					szFilename [SHORT_FILENAME_LEN];
+	char					szFilename [FILENAME_LEN];
 
 if (gameOpts->UseHiresSound ())
 	return -1;

@@ -172,7 +172,7 @@ int nameLen = lh.NameSize () - 1;
 for (;;) {
 	if (*nFiles >= MAX_HOGFILES) {
 		fclose (fp);
-		Error ("HOGFILE is limited to %d files.\n",  MAX_HOGFILES);
+		Warning ("HOG file is limited to %d files.\n",  MAX_HOGFILES);
 		}
 	if (!lh.Read (fp)) {		//eof here is ok
 		fclose (fp);

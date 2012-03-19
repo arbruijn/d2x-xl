@@ -64,7 +64,7 @@ if (left < r)
 
 void LoadTextData (const char *pszLevelName, const char *pszExt, CTextData *msgP)
 {
-	char			szFilename [SHORT_FILENAME_LEN];
+	char			szFilename [FILENAME_LEN];
 	CFile			cf;
 	int			bufSize, nLines;
 	char			*p, *q;

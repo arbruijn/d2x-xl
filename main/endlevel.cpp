@@ -147,7 +147,7 @@ return -1;
 //returns movie played status.  see movie.h
 int StartEndLevelMovie (void)
 {
-	char szMovieName [SHORT_FILENAME_LEN];
+	char szMovieName [FILENAME_LEN];
 	int r;
 
 strcpy (szMovieName, gameStates.app.bD1Mission ? "exita.mve" : "esa.mve");

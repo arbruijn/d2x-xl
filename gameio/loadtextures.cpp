@@ -976,7 +976,7 @@ return 0;
 
 void LoadReplacementBitmaps (const char *pszLevelName)
 {
-	char		szFilename [SHORT_FILENAME_LEN];
+	char		szFilename [FILENAME_LEN];
 	CFile		cf;
 	int		i, j;
 	CBitmap	bm;
@@ -1116,7 +1116,7 @@ PrintLog (-1);
 
 void LoadTextureColors (const char *pszLevelName, CFaceColor *colorP)
 {
-	char			szFilename [SHORT_FILENAME_LEN];
+	char			szFilename [FILENAME_LEN];
 	CFile			cf;
 	int			i;
 
