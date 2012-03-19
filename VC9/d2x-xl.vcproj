@@ -312,7 +312,7 @@
 				UseLibraryDependencyInputs="true"
 				AdditionalDependencies="zlib1.lib odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib urlmon.lib "
 				OutputFile="\programs\d2\d2x-xl.exe"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;\projects\Libraries\zlib-1.2.5\VC9\DLL Release\Win32&quot;;&quot;..\..\..\libraries\glew-1.5.3\win32\lib&quot;"
 				IgnoreDefaultLibraryNames="msvcrtd.lib"

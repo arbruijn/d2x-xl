@@ -42,6 +42,48 @@ CHogFile hogFileManager;
 void MakeModFolders (const char* pszMission);
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+class CLevelHeader {
+	public:
+		int	m_size;
+		char	m_name [13];
+		char	m_longName [256];
+		int	m_bExtended;
+
+	public:
+		explicit CLevelHeader (int bExtended = 0) : m_size (0), m_bExtended (bExtended) { m_name [0] = '\0'; m_longName [0] = '\0'; }
+
+		inline char* Name (void) { return m_bExtended ? m_longName : m_name; }
+		inline int NameSize (void) { return m_bExtended ? sizeof (m_longName) : sizeof (m_name); }
+		inline int Size (void) { return sizeof (m_size) + sizeof (m_name) + m_bExtended * sizeof (m_longName); }
+		inline int FileSize (void) { return m_bExtended ? -m_size : m_size; }
+		inline void SetFileSize (int size) { m_size = m_bExtended ? -size : size; }
+		inline int Extended (void) { return m_size < 0; }
+
+		int Read (FILE* fp);
+	};
+
+//------------------------------------------------------------------------------
+
+int CLevelHeader::Read (FILE* fp) 
+{
+if (fread (m_name, 1, sizeof (m_name), fp) != sizeof (m_name))
+	return 0;
+if (fread (&m_size, sizeof (m_size), 1, fp) != 1)
+	return 1;
+m_size = INTEL_INT (m_size);
+if ((m_bExtended = m_size < 0)) {
+	if (fread (m_longName, 1, sizeof (m_longName), fp) != sizeof (m_longName))
+		return 0;
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 void CHogFile::QuickSort (tHogFile *hogFiles, int left, int right)
 {
@@ -70,7 +112,7 @@ if (r > left)
 	QuickSort (hogFiles, left, r);
 }
 
-// ----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 tHogFile *CHogFile::BinSearch (tHogFile *hogFiles, int nFiles, const char *pszFile)
 {
@@ -95,11 +137,8 @@ return NULL;
 //returns 1 if file loaded with no errors
 int CHogFile::Setup (const char *pszFile, const char *folder, tHogFile *hogFiles, int *nFiles) 
 {
-	char	id [4];
 	FILE	*fp;
-	int	i, len;
 	char	fn [FILENAME_LEN];
-	const char  *psz;
 
 if (*folder) {
 	sprintf (fn, "%s/%s", folder, pszFile);
@@ -108,44 +147,43 @@ if (*folder) {
 *nFiles = 0;
 if (! (fp = CFile::GetFileHandle (pszFile, "", "rb")))
 	return 0;
+
+const char* psz;
 if ((psz = strstr (pszFile, ".rdl")) || (psz = strstr (pszFile, ".rl2"))) {
 	while ((psz >= pszFile) && (*psz != '\\') && (*psz != '/') && (*psz != ':'))
 		psz--;
 	*nFiles = 1;
-	strncpy (hogFiles [0].name, psz + 1, 13);
+	strncpy (hogFiles [0].name, psz + 1, sizeof (hogFiles [0].name));
 	hogFiles [0].offset = 0;
 	hogFiles [0].length = -1;
 	return 1;
 	}
 
-fread (id, 3, 1, fp);
-if (strncmp (id, "DHF", 3)) {
+char sig [4];
+fread (sig, 3, 1, fp);
+if (strncmp (sig, "DHF", 3) && strncmp (sig, "D2X", 3)) {
 	fclose (fp);
 	return 0;
 	}
+
+CLevelHeader lh;
+int nameLen = lh.NameSize () - 1;
 
 for (;;) {
 	if (*nFiles >= MAX_HOGFILES) {
 		fclose (fp);
 		Error ("HOGFILE is limited to %d files.\n",  MAX_HOGFILES);
 		}
-	i = (int) fread (hogFiles [*nFiles].name, 13, 1, fp);
-	if (i != 1) {		//eof here is ok
+	if (!lh.Read (fp)) {		//eof here is ok
 		fclose (fp);
 		return 1;
 		}
-	hogFiles [*nFiles].name [12] = '\0';
-	i = (int) fread (&len, 4, 1, fp);
-	if (i != 1) {
-		fclose (fp);
-		return 0;
-		}
-	len = INTEL_INT (len);
-	hogFiles [*nFiles].length = len;
+	strcpy (hogFiles [*nFiles].name, lh.Name ());
+	hogFiles [*nFiles].length = lh.FileSize ();
 	hogFiles [*nFiles].offset = ftell (fp);
-	 (*nFiles)++;
+	(*nFiles)++;
 	// Skip over
-	i = fseek (fp, len, SEEK_CUR);
+	fseek (fp, lh.FileSize (), SEEK_CUR);
 	}
 }
 

@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_HOGFILES			300
 
 typedef struct tHogFile {
-	char		name [13];
+	char		name [256];
 	int		offset;
 	int		length;
 } tHogFile;
