@@ -384,7 +384,7 @@ if (!IsMultiGame)
 	return 0;
 if (!PowerupClass (nPowerup))
 	return 0;
-if (PowerupsInMine (nPowerup) < gameData.multiplayer.maxPowerupsAllowed [_nPowerup])
+if (PowerupsInMine (nPowerup) < gameData.multiplayer.maxPowerupsAllowed [nPowerup])
 	return 0;
 return 1;
 }
