@@ -57,6 +57,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "tactile.h"
 #endif
 
+int MultiPowerupIs4Pack (int);
+
 //------------------------------------------------------------------------------
 
 void CObject::SetCreationTime (fix xCreationTime) 
@@ -374,6 +376,61 @@ if (nId >= gameData.bots.nTypes [gameStates.app.bD1Mission]) {
 	return -1;
 	}
 return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.models.polyModels [0][ROBOTINFO (nId).nModel].Rad (),CT_AI, MT_PHYSICS, RT_POLYOBJ);
+}
+
+//-----------------------------------------------------------------------------
+
+void AddAllowedPowerup (int nPowerup, int nCount)
+{
+if (MultiPowerupIs4Pack (nPowerup))
+	gameData.multiplayer.maxPowerupsAllowed [nPowerup - 1] += 4 * nCount;
+gameData.multiplayer.maxPowerupsAllowed [nPowerup] += nCount;
+if ((nPowerup == POW_VULCAN) || (nPowerup == POW_GAUSS))
+	gameData.multiplayer.maxPowerupsAllowed [POW_VULCAN_AMMO] += 2 * nCount;
+}
+
+//-----------------------------------------------------------------------------
+
+void RemoveAllowedPowerup (int nPowerup)
+{
+if (MultiPowerupIs4Pack (nPowerup))
+	gameData.multiplayer.maxPowerupsAllowed [nPowerup - 1] -= 4;
+gameData.multiplayer.maxPowerupsAllowed [nPowerup]--;
+if ((nPowerup == POW_VULCAN) || (nPowerup == POW_GAUSS))
+	gameData.multiplayer.maxPowerupsAllowed [POW_VULCAN_AMMO] -= 2;
+}
+
+//-----------------------------------------------------------------------------
+
+void AddPowerupInMine (int nPowerup, bool bIncreaseLimit)
+{
+if (MultiPowerupIs4Pack (nPowerup))
+	gameData.multiplayer.powerupsInMine [nPowerup - 1] += 4;
+gameData.multiplayer.powerupsInMine [nPowerup]++;
+if (bIncreaseLimit)
+	AddAllowedPowerup (nPowerup);
+}
+
+//-----------------------------------------------------------------------------
+
+void RemovePowerupInMine (int nPowerup)
+{
+if (gameData.multiplayer.powerupsInMine [nPowerup] > 0) {
+	gameData.multiplayer.powerupsInMine [nPowerup]--;
+	if (MultiPowerupIs4Pack (nPowerup)) {
+		if (gameData.multiplayer.powerupsInMine [--nPowerup] < 4)
+			gameData.multiplayer.powerupsInMine [nPowerup] = 0;
+		else
+			gameData.multiplayer.powerupsInMine [nPowerup] -= 4;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int MissingPowerups (int nPowerup)
+{
+return gameData.multiplayer.maxPowerupsAllowed [nPowerup] - gameData.multiplayer.powerupsInMine [nPowerup];
 }
 
 //------------------------------------------------------------------------------

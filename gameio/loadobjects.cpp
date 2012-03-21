@@ -150,12 +150,7 @@ if (objP->info.nType == OBJ_POWERUP) {
 		objP->SetSizeFromPowerup ();
 		objP->cType.powerupInfo.xCreationTime = 0;
 		if (IsMultiGame) {
-			if (MultiPowerupIs4Pack (objP->info.nId)) {
-				gameData.multiplayer.powerupsInMine [objP->info.nId-1] += 4;
-	 			gameData.multiplayer.maxPowerupsAllowed [objP->info.nId-1] += 4;
-				}
-			gameData.multiplayer.powerupsInMine [objP->info.nId]++;
-			gameData.multiplayer.maxPowerupsAllowed [objP->info.nId]++;
+			AddPowerupInMine (objP->info.nId, true);
 #if TRACE
 			console.printf (CON_DBG, "PowerupLimiter: ID=%d\n", objP->info.nId);
 			if (objP->info.nId > MAX_POWERUP_TYPES)

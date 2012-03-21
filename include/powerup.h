@@ -175,4 +175,12 @@ return (nId == POW_EXTRA_LIFE) || (nId == POW_ENERGY) || (nId == POW_SHIELD_BOOS
 
 //------------------------------------------------------------------------------
 
+void AddAllowedPowerup (int nPowerup, int nCount = 1);
+void RemoveAllowedPowerup (int nPowerup);
+void AddPowerupInMine (int nPowerup, bool bIncreaseLimit = false);
+void RemovePowerupInMine (int nPowerup);
+int MissingPowerups (int nPowerup);
+
+//------------------------------------------------------------------------------
+
 #endif /* _POWERUP_H */

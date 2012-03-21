@@ -2300,7 +2300,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	nType = (i == SUPER_LASER_INDEX) ? POW_SUPERLASER : int (primaryWeaponToPowerup [i]);
 	if (!LOCALPLAYER.primaryWeaponFlags & (1 << i))
 		continue;
-	h = gameData.multiplayer.maxPowerupsAllowed [nType] - gameData.multiplayer.powerupsInMine [nType];
+	h = MissingPowerups (nType);
 	if (i == LASER_INDEX) {
 		if (LOCALPLAYER.LaserLevel (0) > h)
 			LOCALPLAYER.SetStandardLaser (h);
@@ -2334,7 +2334,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 			continue;
 		}
 	nType = int (secondaryWeaponToPowerup [i]);
-	h = gameData.multiplayer.maxPowerupsAllowed [nType] - gameData.multiplayer.powerupsInMine [nType];
+	h = MissingPowerups (nType);
 	if (LOCALPLAYER.secondaryAmmo [i] > h)
 		LOCALPLAYER.secondaryAmmo [i] = max (h, 0);
 	}
@@ -2346,13 +2346,13 @@ LOCALPLAYER.secondaryAmmo [7] *= 4;
 for (i = 0; i < int (sizeofa (nDeviceFlags)); i++) {
 	if (LOCALPLAYER.flags & nDeviceFlags [i]) {
 		nType = nDevicePowerups [i];
-		if (0 >= gameData.multiplayer.maxPowerupsAllowed [nType] - gameData.multiplayer.powerupsInMine [nType])
+		if (0 >= MissingPowerups (nType))
 			LOCALPLAYER.flags &= (~PLAYER_FLAGS_CLOAKED);
 		}
 	}
 
 if (PlayerHasHeadlight (-1) &&
-	 (0 >= gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT] - gameData.multiplayer.powerupsInMine [POW_HEADLIGHT]))
+	 (0 >= MissingPowerups (POW_HEADLIGHT))
 	LOCALPLAYER.flags &= (~PLAYER_FLAGS_HEADLIGHT);
 
 if (gameData.app.nGameMode & GM_CAPTURE) {
@@ -2361,7 +2361,7 @@ if (gameData.app.nGameMode & GM_CAPTURE) {
 			nFlagType = POW_BLUEFLAG;
 		else
 			nFlagType = POW_REDFLAG;
-		if (gameData.multiplayer.powerupsInMine [nFlagType] + 1 > gameData.multiplayer.maxPowerupsAllowed [nFlagType])
+		if (1 > MissingPowerups (nFlagType))
 			LOCALPLAYER.flags &= (~PLAYER_FLAGS_FLAG);
 		}
 	}
@@ -2384,28 +2384,27 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 		if (IsBuiltinWeapon (LASER_INDEX) || IsBuiltinWeapon (SUPER_LASER_INDEX))	// lasers or superlasers are standard loadout
 			continue;
 		if (gameData.multiplayer.players [nPlayer].laserLevel > MAX_LASER_LEVEL)
-			gameData.multiplayer.maxPowerupsAllowed [POW_SUPERLASER] += gameData.multiplayer.players [nPlayer].laserLevel - MAX_LASER_LEVEL;
-		else
-			gameData.multiplayer.maxPowerupsAllowed [POW_LASER] += gameData.multiplayer.players [nPlayer].laserLevel;
+		AddAllowedPowerup (POW_SUPERLASER, gameData.multiplayer.players [nPlayer].LaserLevel (1));
+		AddAllowedPowerup (POW_LASER, gameData.multiplayer.players [nPlayer].LaserLevel (0));
 		}
 	else if (i != 5) { // super laser
 		if (gameData.multiplayer.players [nPlayer].primaryWeaponFlags & (1 << i)) {
-		    gameData.multiplayer.maxPowerupsAllowed [nType]++;
+		    AddAllowedPowerup (nType);
 			if ((nType == POW_FUSION) && (gameData.multiplayer.weaponStates [nPlayer].bTripleFusion > 0))
-				gameData.multiplayer.maxPowerupsAllowed [primaryWeaponToPowerup [FUSION_INDEX]]++;
+				AddAllowedPowerup (primaryWeaponToPowerup [FUSION_INDEX]);
 			}
 		}
 	}
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 	nType = int (secondaryWeaponToPowerup [i]);
-	gameData.multiplayer.maxPowerupsAllowed [nType] += gameData.multiplayer.players [nPlayer].secondaryAmmo [i];
+	AddAllowedPowerup (nType, gameData.multiplayer.players [nPlayer].secondaryAmmo [i]);
 	}
 
 for (i = 0; i < int (sizeofa (nDeviceFlags)); i++)
 	if ((gameData.multiplayer.players [nPlayer].flags & nDeviceFlags [i]) && !(extraGameInfo [IsMultiGame].loadout.nDevice  & nDeviceFlags [i]))
-		gameData.multiplayer.maxPowerupsAllowed [nDevicePowerups [i]]++;
+		AddAllowedPowerup (nDevicePowerups [i]);
 if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
-	gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT]++;
+	AddAllowedPowerup (POW_HEADLIGHT);
 }
 
 //-----------------------------------------------------------------------------
@@ -2547,16 +2546,7 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	int	id;
 
 if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) && (gameData.app.nGameMode & GM_NETWORK)) {
-	id = OBJECTS [nObject].info.nId;
-	if (gameData.multiplayer.powerupsInMine [id] > 0) {
-		gameData.multiplayer.powerupsInMine [id]--;
-		if (MultiPowerupIs4Pack (id)) {
-			if (gameData.multiplayer.powerupsInMine [--id] < 4)
-				gameData.multiplayer.powerupsInMine [id] = 0;
-			else
-				gameData.multiplayer.powerupsInMine [id] -= 4;
-			}
-		}
+	RemovePowerupInMine (OBJECTS [nObject].info.nId);
 	}
 gameData.multigame.msg.buf [0] = char (MULTI_REMOVE_OBJECT);
 nRemoteObj = ObjnumLocalToRemote (short (nObject), &nObjOwner);
