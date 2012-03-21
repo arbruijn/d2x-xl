@@ -5109,7 +5109,7 @@ void MultiRefillPowerups (void)
 
 if (gameStates.multi.nGameType != UDP_GAME)
 	return;
-if (t0 - t < 1000)
+if (t - t0 < 1000)
 	return;
 t0 = t;
 for (i = 0; i < MAX_POWERUP_TYPES; i++) {
