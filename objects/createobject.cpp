@@ -382,7 +382,13 @@ return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, g
 
 int PowerupsInMine (int nPowerup)
 {
-int nCount = gameData.multiplayer.powerupsInMine [nPowerup];
+int nCount = 0;
+if (gameStates.multi.nGameType == UDP_GAME) {
+	nCount = PowerupsOnShips (nPowerup);
+	if (MultiPowerupIs4Pack (nPowerup))
+		nCount /= 4;
+	}
+nCount += gameData.multiplayer.powerupsInMine [nPowerup];
 if (nPowerup == POW_VULCAN_AMMO) {
 	int nAmmo = 0;
 	CObject* objP;
@@ -392,8 +398,6 @@ if (nPowerup == POW_VULCAN_AMMO) {
 		}
 	nCount += (nAmmo + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CAPACITY;
 	}
-if (gameStates.multi.nGameType == UDP_GAME)
-	nCount += PowerupsOnShips (nPowerup);
 return nCount;
 }
 
