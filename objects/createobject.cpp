@@ -401,7 +401,8 @@ if (nId >= MAX_POWERUP_TYPES) {
 	}
 if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
 #if DBG
-	HUDInitMessage ("%c%c%c%cDiscarding excess %s!", 1, 127 + 128, 64 + 128, 128, pszPowerup [nId]);
+	PrintLog (0, "Deleting excess powerup %d (in mine: %d, on ships: %d)\n", nId, gameData.multiplayer.powerupsInMine [nId], PowerupsOnShips (nId));
+	//HUDInitMessage ("%c%c%c%cDiscarding excess %s!", 1, 127 + 128, 64 + 128, 128, pszPowerup [nId]);
 	TooManyPowerups (nId);
 #endif
 	return -2;
