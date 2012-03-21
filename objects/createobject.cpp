@@ -392,9 +392,9 @@ if (nPowerup == POW_VULCAN_AMMO) {
 		}
 	nCount += (nAmmo + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CAPACITY;
 	}
-else 
 if (gameStates.multi.nGameType == UDP_GAME)
 	nCount += PowerupsOnShips (nPowerup);
+return nCount;
 }
 
 //-----------------------------------------------------------------------------
