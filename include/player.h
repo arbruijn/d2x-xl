@@ -261,7 +261,7 @@ class __pack__ CPlayerData : public CPlayerInfo {
 			UpdateLaserLevel ();
 			return true;
 			}
-		inline bool AddStandardLaser (void) { return AddLaser (0); }
+		inline bool AddStandardLaser (void) { return HasSuperLaser () ? false : AddLaser (0); }
 		inline bool AddSuperLaser (void) { return AddLaser (1); }
 		inline ubyte HasSuperLaser (void) { return ubyte (m_laserLevels [1] > 0); }
 		inline ubyte HasStandardLaser (void) { return ubyte (m_laserLevels [1] == 0); }

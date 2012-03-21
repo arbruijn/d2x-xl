@@ -1627,18 +1627,23 @@ gameStates.app.bBetweenLevels = 0;
 
 void DiedInMineMessage (void)
 {
-	// Tell the player he died in the mine, explain why
-	int old_fmode;
-
 if (gameData.app.nGameMode & GM_MULTI)
 	return;
 paletteManager.DisableEffect ();
-SetScreenMode (SCREEN_MENU);		//go into menu mode
-CCanvas::SetCurrent (NULL);
-old_fmode = gameStates.app.nFunctionMode;
-SetFunctionMode (FMODE_MENU);
+//SetScreenMode (SCREEN_MENU);		//go into menu mode
+//CCanvas::SetCurrent (NULL);
+//int funcMode = gameStates.app.nFunctionMode;
+//SetFunctionMode (FMODE_MENU);
+//gameStates.app.bGameRunning = 0;
+//gameStates.app.bGameRunning = 1;
+//SetFunctionMode (funcMode);
+gameStates.app.bGameRunning = 0;
+backgroundManager.SetShadow (false);
+gameStates.render.bRenderIndirect = -1;
+ogl.ChooseDrawBuffer ();
 MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, TXT_DIED_IN_MINE);
-SetFunctionMode (old_fmode);
+backgroundManager.SetShadow (true);
+gameStates.app.bGameRunning = 1;
 }
 
 //------------------------------------------------------------------------------

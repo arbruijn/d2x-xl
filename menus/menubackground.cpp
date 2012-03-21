@@ -163,8 +163,16 @@ if (!(filename && *filename))
 	return (gameOpts->menus.nStyle && !backgroundManager.IsDefault (backgroundManager.Filename ()))
 			 ? backgroundManager.Background (0)
 			 : backgroundManager.Background (1); //->CreateChild (0, 0, width, height);
-else if (backgroundManager.IsDefault (filename) || !(m_bitmap = backgroundManager.LoadBackground (filename)))
+else if (backgroundManager.IsDefault (filename))
 	return backgroundManager.Background (0);
+else {
+	CBitmap* bmP = backgroundManager.LoadBackground (filename);
+	if (!bmP)
+		return backgroundManager.Background (0);
+	if (m_bitmap)
+		delete m_bitmap;
+	m_bitmap = bmP;
+	}
 return m_bitmap;
 }
 
@@ -193,7 +201,7 @@ m_bTopMenu = (backgroundManager.Depth () == 0) || bTop;
 m_bMenuBox = !gameStates.app.bNostalgia; // && (gameOpts->menus.altBg.bHave > 0);
 if (!(m_bitmap = Load (filename, width, height)))
 	return false;
-m_bFullScreen = (filename != NULL) && (*filename != '\0') && m_bTopMenu;
+m_bFullScreen = (filename != NULL) && (*filename != '\0') && (m_bTopMenu || (gameOpts->menus.nStyle || strcmp (filename, "scoresb.pcx")));
 Setup (x, y, width, height);
 Draw (false);
 return true;
@@ -213,19 +221,15 @@ if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameSta
 		CCanvas::Pop ();
 		}
 	}
-if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) || m_bFullScreen || backgroundManager.IsDefault (GetFilename ()))) {
+if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) /*|| m_bFullScreen*/ || backgroundManager.IsDefault (GetFilename ()))) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (m_canvas [1]);
 	if (m_bMenuBox)
 		backgroundManager.DrawBox (0, 0, m_canvas [1]->Width (), m_canvas [1]->Height (), gameData.menu.nLineWidth, 1.0f, 0);
-	else
+	else if (!m_bFullScreen)
 		DrawArea (0, 0, m_canvas [1]->Width (), m_canvas [1]->Height ());
-		CCanvas::Pop ();
-					//0, 0, CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
-		//CCanvas::Current ()->Left (), CCanvas::Current ()->Top (),
-		//			 CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
+	CCanvas::Pop ();
 	}
-//paletteManager.ResumeEffect ();
 if (bUpdate && !gameStates.app.bGameRunning)
 	GrUpdate (0);
 }
@@ -344,7 +348,6 @@ if (m_nDepth >= 0) {
 		m_bg [m_nDepth--].Destroy ();
 		Redraw (true);
 		}
-	//paletteManager.ResumeEffect (gameStates.app.bGameRunning);
 	}
 }
 
@@ -437,7 +440,9 @@ CBitmap* CBackgroundManager::LoadCustomBackground (char* filename)
 {
 if (gameStates.app.bNostalgia)
 	return NULL;
-if (m_background [0])
+if (!IsDefault (filename))
+	return NULL;
+if (m_background [0] && !strcmp (filename, m_background [0]->Name ()))
 	return m_background [0];
 
 CBitmap* bmP;
@@ -459,11 +464,11 @@ if (bModBg) {
 		}
 	}
 
-if (filename && strcmp (filename, gameOpts->menus.altBg.szName [bModBg]))
-	return NULL;
-if (!tga. Read (gameOpts->menus.altBg.szName [bModBg], gameFolders.szWallpaperDir [bModBg], 
-					 (gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255),
-					 gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale)) {
+//if (filename && strcmp (filename, gameOpts->menus.altBg.szName [bModBg]))
+//	return NULL;
+if (!tga.Read (gameOpts->menus.altBg.szName [bModBg], gameFolders.szWallpaperDir [bModBg], 
+				   (gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255),
+					gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale)) {
 	delete bmP;
 	gameOpts->menus.altBg.bHave = -1;
 	return NULL;
@@ -531,7 +536,7 @@ return true;
 
 typedef struct tBackgroundInfo {
 	int	x, y, w, h;
-	char*	filename;
+	char	filename [FILENAME_LEN];
 } tBackgroundInfo;
 
 void CBackgroundManager::Rebuild (int bGame)
@@ -542,7 +547,10 @@ void CBackgroundManager::Rebuild (int bGame)
 
 for (i = 0; i <= j; i++) {
 	m_bg [i].GetExtent (bgInfo [i].x, bgInfo [i].y, bgInfo [i].w, bgInfo [i].h);
-	bgInfo [i].filename = m_bg [i].GetFilename ();
+	if (m_bg [i].GetFilename ())
+		strcpy (bgInfo [i].filename, m_bg [i].GetFilename ());
+	else
+		*bgInfo [i].filename = '\0';
 	}
 
 Destroy ();
