@@ -1156,8 +1156,8 @@ for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 		continue;
 	if (!playerP->connected)
 		continue;
-	if (nClass == 4)
-		nVulcanAmmo += playerP->primaryAmmo [VULCAN_INDEX] + gameData.multiplayer.weaponStates [i].nAmmoUsed;
+	if (nClass == 4) 
+		nVulcanAmmo += playerP->primaryAmmo [VULCAN_INDEX] + gameData.multiplayer.weaponStates [i].nAmmoUsed % VULCAN_CLIP_CAPACITY;
 	else if (nClass == 3) {	// some device
 		if (!(extraGameInfo [0].loadout.nDevice & nIndex))
 			h += (playerP->flags & nIndex) != 0;
@@ -1181,7 +1181,7 @@ for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 			}
 		}
 	}
-return (nClass == 4) ? (nVulcanAmmo + VULCAN_AMMO_AMOUNT - 1) / VULCAN_AMMO_AMOUNT : h;
+return (nClass == 4) ? (nVulcanAmmo + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CAPACITY : h;
 } 
 
 //------------------------------------------------------------------------------

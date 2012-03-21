@@ -991,9 +991,9 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 		int i;
 
 		gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = 0;
-		if (0 < (i = nVulcanAmmo / VULCAN_AMMO_AMOUNT - 1)) {	// drop ammo in excess of presupplied Vulcan/Gauss ammo as vulcan ammo packs
+		if (0 < (i = nVulcanAmmo / VULCAN_CLIP_CAPACITY - 1)) {	// drop ammo in excess of presupplied Vulcan/Gauss ammo as vulcan ammo packs
 			CallObjectCreateEgg (playerObjP, i, OBJ_POWERUP, POW_VULCAN_AMMO);
-			nVulcanAmmo -= i * VULCAN_AMMO_AMOUNT;
+			nVulcanAmmo -= i * VULCAN_CLIP_CAPACITY;
 			if (nVulcanAmmo < 0)
 				nVulcanAmmo = 0;
 			}

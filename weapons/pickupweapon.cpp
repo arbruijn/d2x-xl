@@ -229,7 +229,7 @@ int PickupVulcanAmmo (CObject *objP, int nPlayer)
 int	pwSave = gameData.weapons.nPrimary;	
 // Ugh, save selected primary weapon around the picking up of the ammo.  
 // I apologize for this code.  Matthew A. Toschlog
-if (PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, VULCAN_AMMO_AMOUNT, NULL, nPlayer)) {
+if (PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, VULCAN_CLIP_CAPACITY, NULL, nPlayer)) {
 	if (ISLOCALPLAYER (nPlayer))
 		PowerupBasic (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO, nPlayer);
 	MultiSendAmmo ();
@@ -338,7 +338,7 @@ int PickupGatlingGun (CObject *objP, int nId, int nPlayer)
 //and remove the powerup.  If multi-CPlayerData take nAmmo in excess of
 //the amount in a powerup, and leave the rest.
 if (!bUsed && IsMultiGame)
-	nAmmo -= VULCAN_AMMO_AMOUNT;	//don't let take all ammo
+	nAmmo -= VULCAN_CLIP_CAPACITY;	//don't let take all ammo
 if (nAmmo > 0) {
 	int nAmmoUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, nAmmo, NULL, nPlayer);
 	objP->cType.powerupInfo.nCount -= nAmmoUsed;
