@@ -147,15 +147,6 @@ void CheckInventory (void);
 int PickupEnergyBoost (CObject *objP, int nPlayer);
 int PickupEquipment (CObject *objP, int nEquipment, const char *pszHave, const char *pszGot, int nPlayer);
 
-#define	PowerupsInMine(_nPowerup) \
-			((gameStates.multi.nGameType == UDP_GAME) ? \
-			 (gameData.multiplayer.powerupsInMine [_nPowerup] + PowerupsOnShips (_nPowerup)) : \
-			 gameData.multiplayer.powerupsInMine [_nPowerup])
-
-#define	TooManyPowerups(_nPowerup) \
-			IsMultiGame && PowerupClass (_nPowerup) && \
-			(PowerupsInMine (_nPowerup) >= gameData.multiplayer.maxPowerupsAllowed [_nPowerup])
-
 extern const char *pszPowerup [MAX_POWERUP_TYPES];
 extern ubyte powerupType [MAX_POWERUP_TYPES];
 extern void * pickupHandler [MAX_POWERUP_TYPES];
@@ -174,6 +165,13 @@ static inline int IsEnergyPowerup (int nId)
 return (nId == POW_EXTRA_LIFE) || (nId == POW_ENERGY) || (nId == POW_SHIELD_BOOST) ||
 		 (nId == POW_HOARD_ORB) || (nId == POW_CLOAK) || (nId == POW_INVUL);
 }
+
+//------------------------------------------------------------------------------
+
+#define PowerupsInMine(_nPowerup) \
+		((gameStates.multi.nGameType == UDP_GAME) \
+		 ? gameData.multiplayer.powerupsInMine [_nPowerup] + PowerupsOnShips (_nPowerup) \
+		 : gameData.multiplayer.powerupsInMine [_nPowerup]) \
 
 //------------------------------------------------------------------------------
 

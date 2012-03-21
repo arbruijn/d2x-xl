@@ -378,6 +378,19 @@ return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, g
 
 //------------------------------------------------------------------------------
 
+static inline int TooManyPowerups (int nPowerup)
+{
+if (!IsMultiGame)
+	return 0;
+if (!PowerupClass (nPowerup))
+	return 0;
+if (PowerupsInMine (nPowerup) < gameData.multiplayer.maxPowerupsAllowed [_nPowerup])
+	return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int CreatePowerup (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, int bIgnoreLimits, bool bForce)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
@@ -387,7 +400,7 @@ if (nId >= MAX_POWERUP_TYPES) {
 	return -1;
 	}
 if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
-#if 0 //DBG
+#if DBG
 	HUDInitMessage ("%c%c%c%cDiscarding excess %s!", 1, 127 + 128, 64 + 128, 128, pszPowerup [nId]);
 	TooManyPowerups (nId);
 #endif
