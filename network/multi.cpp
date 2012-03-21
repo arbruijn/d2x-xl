@@ -1546,7 +1546,6 @@ void MultiDoRemoveObj (char *buf)
 	short nObject; // which CObject to remove
 	short nLocalObj;
 	sbyte nObjOwner; // which remote list is it entered in
-	int	id;
 
 nObject = GET_INTEL_SHORT (buf + 1);
 nObjOwner = buf [3];
@@ -2342,8 +2341,7 @@ for (i = 0; i < int (sizeofa (nDeviceFlags)); i++) {
 		}
 	}
 
-if (PlayerHasHeadlight (-1) &&
-	 (0 >= MissingPowerups (POW_HEADLIGHT))
+if (PlayerHasHeadlight (-1) && (0 >= MissingPowerups (POW_HEADLIGHT)))
 	LOCALPLAYER.flags &= (~PLAYER_FLAGS_HEADLIGHT);
 
 if (gameData.app.nGameMode & GM_CAPTURE) {
@@ -2534,7 +2532,6 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 
 	sbyte nObjOwner;
 	short nRemoteObj;
-	int	id;
 
 if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) && (gameData.app.nGameMode & GM_NETWORK)) {
 	RemovePowerupInMine (OBJECTS [nObject].info.nId);
