@@ -892,12 +892,9 @@ gameData.objs.guidedMissile [nPlayer].objP = NULL;
 //want to autoselect if the bomb isn't actually selected.
 void DoMissileFiring (int bAutoSelect)
 {
-	int		h, i, gunFlag = 0;
-	short		nObject;
-	ubyte		nWeaponId;
-	int		nGun;
-	CObject	*gmObjP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
-	CPlayerData	*playerP = gameData.multiplayer.players + N_LOCALPLAYER;
+	int				i, gunFlag = 0;
+	CObject*			gmObjP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
+	CPlayerData*	playerP = gameData.multiplayer.players + N_LOCALPLAYER;
 
 Assert (gameData.weapons.nSecondary < MAX_SECONDARY_WEAPONS);
 if (gmObjP && (gmObjP->info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature)) {
@@ -910,7 +907,7 @@ if (gmObjP && (gmObjP->info.nSignature == gameData.objs.guidedMissile [N_LOCALPL
 if (gameStates.app.bPlayerIsDead || (playerP->secondaryAmmo [gameData.weapons.nSecondary] <= 0))
 	return;
 
-nWeaponId = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
+ubyte nWeaponId = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 if ((nWeaponId == PROXMINE_ID) && IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) &&
 	 (CountPlayerObjects (N_LOCALPLAYER, OBJ_WEAPON, PROXMINE_ID) >= extraGameInfo [IsMultiGame].nMaxSmokeGrenades))
 	return;
@@ -919,8 +916,8 @@ if (gameStates.app.cheats.bLaserRapidFire != 0xBADA55)
 else
 	gameData.missiles.xNextFireTime = gameData.time.xGame + I2X (1)/25;
 gameData.missiles.xLastFiredTime = gameData.time.xGame;
-nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary];
-h = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 1 : 0;
+int nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary];
+int h = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 1 : 0;
 for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 0); i++) {
 	playerP->secondaryAmmo [gameData.weapons.nSecondary]--;
 	if (IsMultiGame)
@@ -929,7 +926,8 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 		nGun += (gunFlag = (gameData.laser.nMissileGun & 1));
 		gameData.laser.nMissileGun++;
 		}
-	if (0 > (nObject = LaserPlayerFire (gameData.objs.consoleP, nWeaponId, nGun, 1, 0, -1)))
+	int nObject = LaserPlayerFire (gameData.objs.consoleP, nWeaponId, nGun, 1, 0, -1);
+	if (0 > nObject)
 		return;
 	if (gameData.weapons.nSecondary == PROXMINE_INDEX) {
 		if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
