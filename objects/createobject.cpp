@@ -378,6 +378,25 @@ if (nId >= gameData.bots.nTypes [gameStates.app.bD1Mission]) {
 return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.models.polyModels [0][ROBOTINFO (nId).nModel].Rad (),CT_AI, MT_PHYSICS, RT_POLYOBJ);
 }
 
+//------------------------------------------------------------------------------
+
+int PowerupsInMine (int nPowerup)
+{
+int nCount = gameData.multiplayer.powerupsInMine [nPowerup];
+if (nPowerup == POW_VULCAN_AMMO) {
+	int nAmmo = 0;
+	CObject* objP;
+	FORALL_POWERUP_OBJS (objP, i) {
+		if ((objP->Id () == POW_VULCAN) || (objP->Id () == POW_GAUSS))
+			nAmmo += objP->cType.powerupInfo.nCount;
+		}
+	nCount += (nAmmo + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CAPACITY;
+	}
+else 
+if (gameStates.multi.nGameType == UDP_GAME)
+	nCount += PowerupsOnShips (nPowerup);
+}
+
 //-----------------------------------------------------------------------------
 
 void AddAllowedPowerup (int nPowerup, int nCount)
