@@ -469,11 +469,8 @@ if (gameStates.gameplay.bMineMineCheat && !bForce && (CObject::IsEquipment (nId)
 	return -1;
 short nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size,
 										CT_POWERUP, MT_PHYSICS, RT_POWERUP);
-if ((nObject >= 0) && IsMultiGame && PowerupClass (nId)) {
-	gameData.multiplayer.powerupsInMine [(int) nId]++;
-	if (MultiPowerupIs4Pack (nId))
-		gameData.multiplayer.powerupsInMine [(int) nId - 1] += 4;
-	}
+if ((nObject >= 0) && IsMultiGame && PowerupClass (nId)) 
+	AddPowerupInMine ((int) nId);
 return nObject;
 }
 

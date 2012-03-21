@@ -1568,17 +1568,8 @@ if (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_EXPLODING | OF_DESTROYED))
 	return;
 NetworkResetObjSync (nLocalObj);
 if (objP->info.nType == OBJ_POWERUP)
-	if (gameData.app.nGameMode & GM_NETWORK) {
-		id = objP->info.nId;
-		if (gameData.multiplayer.powerupsInMine [id] > 0)
-			gameData.multiplayer.powerupsInMine [id]--;
-		if (MultiPowerupIs4Pack (id)) {
-			if (gameData.multiplayer.powerupsInMine [--id] - 4 < 0)
-				gameData.multiplayer.powerupsInMine [id] = 0;
-			else
-				gameData.multiplayer.powerupsInMine [id] -= 4;
-			}
-		}
+	if (gameData.app.nGameMode & GM_NETWORK) 
+		RemovePowerupInMine (objP->info.nId);
 if (objP->info.nType == OBJ_ROBOT)
 	MultiDestroyRobot (objP);
 else
