@@ -281,7 +281,7 @@ winFuncList [i++] = CV_NONE;
 if (FindEscort())
 	winFuncList [i++] = CV_ESCORT;
 winFuncList [i++] = CV_REAR;
-if ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)) 
+if (IsCoopGame || IsTeamGame) 
 	winFuncList [i++] = CV_COOP;
 if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView)
 	winFuncList [i++] = CV_MARKER;

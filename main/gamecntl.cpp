@@ -286,7 +286,7 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 
 	case CV_COOP:
 		markerManager.SetViewer (nWindow, -1);
-		if ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)) {
+		if (IsCoopGame || IsTeamGame) {
 			gameStates.render.cockpit.n3DView [nWindow] = CV_COOP;
 			while (1) {
 				gameStates.render.cockpit.nCoopPlayerView [nWindow]++;
@@ -294,12 +294,12 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 					gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
 					goto case_marker;
 					}
-				if (gameStates.render.cockpit.nCoopPlayerView [nWindow]==N_LOCALPLAYER)
+				if (gameStates.render.cockpit.nCoopPlayerView [nWindow] == N_LOCALPLAYER)
 					continue;
 
-				if (gameData.app.nGameMode & GM_MULTI_COOP)
+				if (IsCoopGame)
 					break;
-				else if (GetTeam(gameStates.render.cockpit.nCoopPlayerView [nWindow]) == GetTeam(N_LOCALPLAYER))
+				else if (GetTeam (gameStates.render.cockpit.nCoopPlayerView [nWindow]) == GetTeam(N_LOCALPLAYER))
 					break;
 				}
 			break;

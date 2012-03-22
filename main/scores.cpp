@@ -223,7 +223,7 @@ void MaybeAddPlayerScore (int abortFlag)
 	return;
 	#endif
 
-	if ((gameData.app.nGameMode & GM_MULTI) && ! (gameData.app.nGameMode & GM_MULTI_COOP))
+	if (IsMultiGame && !IsCoopGame)
 		return;
   
 	scores_read ();

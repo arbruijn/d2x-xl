@@ -1462,7 +1462,7 @@ for (i = 0; i < nPlayers; i++) {
 	int sh, aw, indent = 0;
 
 	if (i >= nLeft) {
-		x1 = CCanvas::Current ()->Width () - LHX (1) - 6 * faw; // ((gameData.app.nGameMode & GM_MULTI_COOP) ? LHX (27) : LHX (15));
+		x1 = CCanvas::Current ()->Width () - LHX (1) - 6 * faw; // (IsCoopGame ? LHX (27) : LHX (15));
 		x0 = x1 - nameLen;
 		if (gameStates.render.cockpit.bShowPingStats) {
 			x0 -= xo + 6 * faw;

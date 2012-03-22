@@ -17,9 +17,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "carray.h"
 #include "player.h"
 
-#define AM_SHOW_PLAYERS				(!IsMultiGame || (gameData.app.nGameMode & (GM_TEAM | GM_MULTI_COOP)) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
+#define AM_SHOW_PLAYERS				(!IsMultiGame || IsTeamGame || IsCoopGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
 #define AM_SHOW_PLAYER(_i)			(!IsMultiGame || \
-											 (gameData.app.nGameMode & GM_MULTI_COOP) || \
+											 IsCoopGame || \
 											 (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP) || \
 											 (GetTeam (N_LOCALPLAYER) == GetTeam (_i)))
 #define AM_SHOW_ROBOTS				EGI_FLAG (bRobotsOnRadar, 0, 1, 0)

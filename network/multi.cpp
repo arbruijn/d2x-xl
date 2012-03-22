@@ -473,7 +473,7 @@ SetFunctionMode (FMODE_GAME);
 // Restore connect state
 if (gameData.app.nGameMode & GM_NETWORK)
 	CONNECT (N_LOCALPLAYER, oldConnect);
-if (gameData.app.nGameMode & GM_MULTI_COOP) {
+if (IsCoopGame) {
 	for (i = 0; i < gameData.multiplayer.nMaxPlayers; i++) // Reset keys
 		gameData.multiplayer.players [i].flags &= ~(PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY);
 	}
@@ -854,7 +854,7 @@ void MultiSortKillList (void)
 	int i;
 
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-	if (gameData.app.nGameMode & GM_MULTI_COOP)
+	if (IsCoopGame)
 		score [i] = gameData.multiplayer.players [i].score;
 	else if (gameData.multigame.score.bShowList != 2) 
 		score [i] = gameData.multiplayer.players [i].netKillsTotal;
@@ -1028,7 +1028,7 @@ else {
 	if (nKillerPlayer == N_LOCALPLAYER) {
 		HUDInitMessage ("%s %s %s!", TXT_YOU, TXT_KILLED, szKilled);
 		MultiAddLifetimeKills ();
-		if ((gameData.app.nGameMode & GM_MULTI_COOP) &&(LOCALPLAYER.score  >= 1000))
+		if (IsCoopGame && (LOCALPLAYER.score  >= 1000))
 			cockpit->AddPointsToScore (-1000);
 		}
 	else if (nKilledPlayer == N_LOCALPLAYER) {
@@ -2827,7 +2827,7 @@ void MultiSendScore (void)
 	// synced.
 	int count = 0;
 
-if (gameData.app.nGameMode & GM_MULTI_COOP) {
+if (IsCoopGame) {
 	MultiSortKillList ();
 	gameData.multigame.msg.buf [count++] = MULTI_SCORE;
 	gameData.multigame.msg.buf [count++] = N_LOCALPLAYER;
@@ -2975,7 +2975,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 	gameData.multigame.robots.fired [i] = 0;
 	}
 gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
-if (!(gameData.app.nGameMode & GM_MULTI_COOP))
+if (!IsCoopGame)
 	MultiDeleteExtraObjects (); // Removes monsters from level
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 	MultiSetRobotAI (); // Set all Robot AI to types we can cope with

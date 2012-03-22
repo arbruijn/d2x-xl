@@ -1550,8 +1550,7 @@ else
 	// NOTE LINK TO ABOVE
 	DoEndLevelScoreGlitz (0);
 
-if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) &&
-	 !(gameData.app.nGameMode & (GM_MULTI | GM_MULTI_COOP))) {
+if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && !(IsMultiGame || IsCoopGame)) {
 	CCanvas::SetCurrent (NULL);
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	paletteManager.ResetEffect ();
@@ -2309,7 +2308,7 @@ void InitPlayerPosition (int bRandom)
 {
 	int nSpawnPos = 0;
 
-if (!(gameData.app.nGameMode & (GM_MULTI | GM_MULTI_COOP))) // If not deathmatch
+if (!(IsMultiGame || IsCoopGame)) // If not deathmatch
 	nSpawnPos = N_LOCALPLAYER;
 else if (bRandom == 1) {
 	nSpawnPos = GetRandomPlayerPosition ();

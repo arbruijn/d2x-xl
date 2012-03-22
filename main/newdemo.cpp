@@ -1051,7 +1051,7 @@ if (IsMultiGame) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		NDWriteString (gameData.multiplayer.players [i].callsign);
 		NDWriteByte (gameData.multiplayer.players [i].connected);
-		if (gameData.app.nGameMode & GM_MULTI_COOP)
+		if (IsCoopGame)
 			NDWriteInt (gameData.multiplayer.players [i].score);
 		else {
 			NDWriteShort ((short)gameData.multiplayer.players [i].netKilledTotal);
@@ -3333,7 +3333,7 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 		NDWriteString (gameData.multiplayer.players [l].callsign);
 		byteCount += ((int) strlen (gameData.multiplayer.players [l].callsign) + 2);
 		NDWriteByte ((sbyte) gameData.multiplayer.players [l].connected);
-		if (gameData.app.nGameMode & GM_MULTI_COOP) {
+		if (IsCoopGame) {
 			NDWriteInt (gameData.multiplayer.players [l].score);
 			byteCount += 5;
 			}

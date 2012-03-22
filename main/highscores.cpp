@@ -303,7 +303,7 @@ if (xOffs < 0)
 	xOffs = 0;
 if (yOffs < 0)
 	yOffs = 0;
-if (gameData.app.nGameMode & GM_MULTI_COOP) {
+if (IsCoopGame) {
 	RenderCoop ();
 	return;
 	}
