@@ -2951,7 +2951,7 @@ void MultiPrepLevel (void)
 	// at the time this is called.
 
 	int		i, nObject;
-	int		cloakCount, invCount;
+	int		cloakCount, invulCount;
 	CObject	*objP;
 
 Assert (gameData.app.nGameMode & GM_MULTI);
@@ -2983,7 +2983,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	MultiAdjustCapForPlayer (N_LOCALPLAYER);
 	MultiSendPowerupUpdate ();
 	}
-invCount = 0;
+invulCount = 0;
 cloakCount = 0;
 FORALL_STATIC_OBJS (objP, i) {
 	if (objP->info.nType == OBJ_HOSTAGE) {
@@ -3002,45 +3002,30 @@ FORALL_STATIC_OBJS (objP, i) {
 			}
 		}
 	else if (objP->info.nType == OBJ_POWERUP) {
-		if (objP->info.nId == POW_EXTRA_LIFE) {
-			if (!netGame.m_info.DoInvulnerability) {
-				objP->info.nId = POW_SHIELD_BOOST;
-				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-				}
-			else {
-				objP->info.nId = POW_INVUL;
-				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-				}
-			}
-
-		if (!(gameData.app.nGameMode & GM_MULTI_COOP))
-			if ((objP->info.nId  >= POW_KEY_BLUE) &&(objP->info.nId <= POW_KEY_GOLD)) {
-				objP->info.nId = POW_SHIELD_BOOST;
-				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-				}
-		if (objP->info.nId == POW_INVUL) {
-			if (invCount  >= 3 || (!netGame.m_info.DoInvulnerability)) {
-				objP->info.nId = POW_SHIELD_BOOST;
-				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-				}
-			else
-				invCount++;
-			}
-		if (objP->info.nId == POW_CLOAK) {
-			if (cloakCount  >= 3 || (!netGame.m_info.DoCloak)) {
-				objP->info.nId = POW_SHIELD_BOOST;
-				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-				}
-			else
-				cloakCount++;
-			}
-
 		switch (objP->info.nId) {
+			case POW_EXTRA_LIFE:
+				if (netGame.m_info.DoInvulnerability)
+					objP->Bash (POW_INVUL);
+				else
+					objP->BashToShield (true);
+				break;
+			case POW_INVUL:
+				if ((invulCount < 3) && netGame.m_info.DoInvulnerability)
+					invulCount++;
+				else
+					objP->BashToShield (true);
+				break;
+			case POW_CLOAK:
+				if ((cloakCount < 3) && netGame.m_info.DoCloak)
+					cloakCount++;
+				else
+					objP->BashToShield (true);
+				break;
+			case POW_KEY_BLUE:
+			case POW_KEY_RED:
+			case POW_KEY_GOLD:
+				if (!IsCoopGame)
+					objP->BashToShield (true);
 				break;
 			case POW_AFTERBURNER:
 				objP->BashToShield (!netGame.m_info.DoAfterburner);
@@ -3079,7 +3064,7 @@ FORALL_STATIC_OBJS (objP, i) {
 				objP->BashToShield (!netGame.m_info.DoProximity || (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)));
 				break;
 			case POW_SMARTMINE:
-				objP->BashToShield (!netGame.m_info.DoSmartMine || (gameData.app.nGameMode & GM_ENTROPY));
+				objP->BashToShield (!netGame.m_info.DoSmartMine || IsEntropyGame);
 				break;
 			case POW_VULCAN_AMMO:
 				objP->BashToShield (!(netGame.m_info.DoVulcan || netGame.m_info.DoGauss));
