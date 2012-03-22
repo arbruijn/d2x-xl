@@ -919,6 +919,9 @@ powerupClass [POW_HEADLIGHT] = 3;
 
 powerupClass [POW_VULCAN_AMMO] = 4;
 
+powerupClass [POW_BLUEFLAG] = 
+powerupClass [POW_REDFLAG] = 5;
+
 memset (powerupToObject, 0xff, sizeof (powerupToObject));
 powerupToObject [POW_LASER] = LASER_ID;
 powerupToObject [POW_VULCAN] = VULCAN_ID;
@@ -1145,43 +1148,47 @@ short PowerupsOnShips (int nPowerup)
 {
 	CPlayerData*	playerP = gameData.multiplayer.players;
 	int				nClass, nVulcanAmmo = 0;
-	short				h, i, nIndex = PowerupToDevice (nPowerup, &nClass);
+	short				nPowerups = 0, nIndex = PowerupToDevice (nPowerup, &nClass);
 
 if (!nClass || ((nClass < 3) && (nIndex < 0)))
 	return 0;
-for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
+for (short i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if ((i == N_LOCALPLAYER) && (gameStates.app.bPlayerExploded || gameStates.app.bPlayerIsDead))
 		continue;
 	if (playerP->Shield () < 0)
 		continue;
 	if (!playerP->connected)
 		continue;
+	if (nClass == 5) {
+		if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG) && ((nPowerup == POW_REDFLAG) == (GetTeam (i) == TEAM_RED)))
+			nPowerups++;
+		}
 	if (nClass == 4) 
 		nVulcanAmmo += playerP->primaryAmmo [VULCAN_INDEX] + gameData.multiplayer.weaponStates [i].nAmmoUsed % VULCAN_CLIP_CAPACITY;
 	else if (nClass == 3) {	// some device
 		if (!(extraGameInfo [0].loadout.nDevice & nIndex))
-			h += (playerP->flags & nIndex) != 0;
+			nPowerups += (playerP->flags & nIndex) != 0;
 		}
 	else if (nClass == 2)	// missiles
-		h += playerP->secondaryAmmo [nIndex];
+		nPowerups += playerP->secondaryAmmo [nIndex];
 	else {	// guns
 		if (!(extraGameInfo [0].loadout.nGuns & 1)) {
 			if (nIndex == LASER_INDEX) {
 				//if (!(extraGameInfo [0].loadout.nGuns & (1 << 5)))
-					h += playerP->LaserLevel (0);
+					nPowerups += playerP->LaserLevel (0);
 				}
 			else if (nIndex == SUPER_LASER_INDEX) {
-				h += playerP->LaserLevel (1);
+				nPowerups += playerP->LaserLevel (1);
 				}
 			else if (playerP->primaryWeaponFlags & (1 << nIndex)) {
-				h++;
+				nPowerups++;
 				if ((nIndex == FUSION_INDEX) && gameData.multiplayer.weaponStates [i].bTripleFusion)
-					h++;
+					nPowerups++;
 				}
 			}
 		}
 	}
-return (nClass == 4) ? (nVulcanAmmo + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CAPACITY : h;
+return (nClass == 4) ? (nVulcanAmmo + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CAPACITY : nPowerups;
 } 
 
 //------------------------------------------------------------------------------
