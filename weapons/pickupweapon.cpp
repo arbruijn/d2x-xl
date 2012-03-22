@@ -168,12 +168,12 @@ if (ISLOCALPLAYER (nPlayer)) {
 				!(gameData.weapons.nSecondary == PROXMINE_INDEX || gameData.weapons.nSecondary == SMARTMINE_INDEX)) {
 				int cur = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
 				if (SOrderList (nWeaponIndex) < SOrderList (cur))
-					bLastSecondaryWasSuper[PROXMINE_INDEX] = (nWeaponIndex == SMARTMINE_INDEX);
+					bLastSecondaryWasSuper [PROXMINE_INDEX] = (nWeaponIndex == SMARTMINE_INDEX);
 				}
 			}
 		}
 	//note: flash for all but concussion was 7,14,21
-	if (nAmount>1) {
+	if (nAmount > 1) {
 		paletteManager.BumpEffect (15,15,15);
 		HUDInitMessage("%d %s%s", nPickedUp, bSmokeGrens ? TXT_SMOKE_GRENADES : SECONDARY_WEAPON_NAMES (nWeaponIndex), TXT_SX);
 		}
