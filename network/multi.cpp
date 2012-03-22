@@ -5116,6 +5116,8 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	h = gameData.multiplayer.maxPowerupsAllowed [i] - PowerupsInMine (i);
 	if (h < 1)
 		continue;
+	if (MultiPowerupIs4Pack (i))
+		continue;
 #if DBG
 	PowerupsInMine (i);
 #endif
