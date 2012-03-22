@@ -454,9 +454,14 @@ if (choice == -3)
 	return 0;
 if (networkData.nStatus == NETSTAT_PLAYING)  
 	return 0;
-else if (networkData.nStatus == NETSTAT_AUTODL)
-	if (downloadManager.DownloadMission (netGame.m_info.szMissionName))
+else if (networkData.nStatus == NETSTAT_AUTODL) {
+	if (!downloadManager.DownloadMission (netGame.m_info.szMissionName))
+		networkData.nStatus = NETSTAT_MENU;
+	else {
+		networkData.nStatus = NETSTAT_PLAYING;
 		return 1;
+		}
+	}
 #if 1			
 console.printf (CON_DBG, "Aborting join.\n");
 #endif
