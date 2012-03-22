@@ -734,10 +734,10 @@ return 0;
 
 // int Show_segAnd_side = 0;
 
-int CObject::CollideWeaponAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt)
+int CObject::CollideWeaponAndWall (fix xHitSpeed, short nHitSeg, short nHitSide, CFixVector& vHitPt)
 {
 	CSegment*		segP = SEGMENTS + nHitSeg;
-	CSide*			sideP = (nHitWall < 0) ? NULL : segP->m_sides + nHitWall;
+	CSide*			sideP = (nHitSide < 0) ? NULL : segP->m_sides + nHitSide;
 	CWeaponInfo*	weaponInfoP = gameData.weapons.info + info.nId;
 	CObject*			parentObjP = OBJECTS + cType.laserInfo.parent.nObject;
 
@@ -750,7 +750,7 @@ if (info.nId == OMEGA_ID)
 
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (info.nId == GUIDEDMSL_ID) {
-	fix dot = (nHitWall < 0) ? -1 : CFixVector::Dot (info.position.mOrient.m.dir.f, sideP->m_normals [0]);
+	fix dot = (nHitSide < 0) ? -1 : CFixVector::Dot (info.position.mOrient.m.dir.f, sideP->m_normals [0]);
 #if TRACE
 	console.printf (CON_DBG, "Guided missile dot = %7.3f \n", X2F (dot));
 #endif
@@ -786,20 +786,20 @@ if (gameStates.input.keys.pressed [KEY_LAPOSTRO])
 	if (cType.laserInfo.parent.nObject == LOCALPLAYER.nObject) {
 		//	MK: Real pain when you need to know a segP:CSide and you've got quad lasers.
 #if TRACE
-		console.printf (CON_DBG, "Your laser hit at CSegment = %i, CSide = %i \n", nHitSeg, nHitWall);
+		console.printf (CON_DBG, "Your laser hit at CSegment = %i, CSide = %i \n", nHitSeg, nHitSide);
 #endif
-		//HUDInitMessage ("Hit at segment = %i, side = %i", nHitSeg, nHitWall);
+		//HUDInitMessage ("Hit at segment = %i, side = %i", nHitSeg, nHitSide);
 		if (info.nId < 4)
-			SubtractLight (nHitSeg, nHitWall);
+			SubtractLight (nHitSeg, nHitSide);
 		else if (info.nId == FLARE_ID)
-			AddLight (nHitSeg, nHitWall);
+			AddLight (nHitSeg, nHitSide);
 		}
 if (mType.physInfo.velocity.IsZero ()) {
 	Int3 ();	//	Contact Matt: This is impossible.  A this with 0 velocity hit a CWall, which doesn't move.
 	return 1;
 	}
 #endif
-int bBlewUp = (nHitWall < 0) ? 0 : segP->CheckEffectBlowup (nHitWall, vHitPt, this, 0);
+int bBlewUp = (nHitSide < 0) ? 0 : segP->CheckEffectBlowup (nHitSide, vHitPt, this, 0);
 int bEscort = parentObjP->IsGuideBot ();
 if (bEscort) {
 	if (IsMultiGame) {
@@ -813,11 +813,11 @@ else {
 	nPlayer = parentObjP->IsPlayer () ? parentObjP->info.nId : -1;
 	}
 if (bBlewUp) {		//could be a wall switch - only player or guidebot can activate it
-	segP->OperateTrigger (nHitWall, parentObjP, 1);
+	segP->OperateTrigger (nHitSide, parentObjP, 1);
 	}
 if (info.nId == EARTHSHAKER_ID)
 	ShakerRockStuff (&Position ());
-int wallType = (nHitWall < 0) ? WHP_NOT_SPECIAL : segP->ProcessWallHit (nHitWall, info.xShield, nPlayer, this);
+int wallType = (nHitSide < 0) ? WHP_NOT_SPECIAL : segP->ProcessWallHit (nHitSide, info.xShield, nPlayer, this);
 // Wall is volatile if either tmap 1 or 2 is volatile
 if (sideP && ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 	           (sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_VOLATILE)))) {

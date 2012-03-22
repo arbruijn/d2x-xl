@@ -1131,7 +1131,7 @@ if (nSwitchType) {
 	if (!bPermaTrigger && (ecP->nDestEClip != -1) && (gameData.eff.effectP [ecP->nDestEClip].nSegment == -1)) {
 		tEffectClip	*newEcP = gameData.eff.effectP + ecP->nDestEClip;
 		int nNewBm = newEcP->changingWallTexture;
-		if (ChangeTextures (-1, nNewBm)) {
+		if (ChangeTextures (-1, nNewBm, nHitSide)) {
 			newEcP->xTimeLeft = EffectFrameTime (newEcP);
 			newEcP->nCurFrame = 0;
 			newEcP->nSegment = Index ();
@@ -1180,7 +1180,7 @@ audio.CreateSegmentSound (nSound, Index (), nSide, SideCenter (nSide));
 
 //------------------------------------------------------------------------------
 
-CBitmap* CSegment::ChangeTextures (short nBaseTex, short nOvlTex)
+CBitmap* CSegment::ChangeTextures (short nBaseTex, short nOvlTex, short nSide)
 {
 	CBitmap*		bmBot = (nBaseTex < 0) ? NULL : LoadFaceBitmap (nBaseTex, 0, 1);
 	CBitmap*		bmTop = (nOvlTex <= 0) ? NULL : LoadFaceBitmap (nOvlTex, 0, 1);
@@ -1188,13 +1188,15 @@ CBitmap* CSegment::ChangeTextures (short nBaseTex, short nOvlTex)
 	CSegFace*	faceP = segFaceP->faceP;
 
 for (int i = segFaceP->nFaces; i; i--, faceP++) {
-	if (bmBot) {
-		faceP->bmBot = bmBot;
-		faceP->m_info.nBaseTex = nBaseTex;
-		}
-	if (nOvlTex >= 0) {
-		faceP->bmTop = bmTop;
-		faceP->m_info.nOvlTex = nOvlTex;
+	if ((nSide < 0) || (faceP->m_info.nSide == nSide)) {
+		if (bmBot) {
+			faceP->bmBot = bmBot;
+			faceP->m_info.nBaseTex = nBaseTex;
+			}
+		if (nOvlTex >= 0) {
+			faceP->bmTop = bmTop;
+			faceP->m_info.nOvlTex = nOvlTex;
+			}
 		}
 	}
 return bmBot ? bmBot : bmTop;
