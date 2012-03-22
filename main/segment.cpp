@@ -1131,7 +1131,7 @@ if (nSwitchType) {
 	if (!bPermaTrigger && (ecP->nDestEClip != -1) && (gameData.eff.effectP [ecP->nDestEClip].nSegment == -1)) {
 		tEffectClip	*newEcP = gameData.eff.effectP + ecP->nDestEClip;
 		int nNewBm = newEcP->changingWallTexture;
-		if (ChangeTextures (-1, nNewBm, nHitSide)) {
+		if (ChangeTextures (-1, nNewBm, nSide)) {
 			newEcP->xTimeLeft = EffectFrameTime (newEcP);
 			newEcP->nCurFrame = 0;
 			newEcP->nSegment = Index ();
