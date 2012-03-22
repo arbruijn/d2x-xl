@@ -279,8 +279,10 @@ public:
 			}
 		}
 		m_current = NULL;
+#if DBG
 		if (bLogErrors)
 			PrintLog(0, "invalid menu id '%s' queried\n", szId ? szId : "n/a");
+#endif
 		return -1;
 	}
 
