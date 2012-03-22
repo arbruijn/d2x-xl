@@ -114,7 +114,7 @@ if (Index () == nDbgObj)
 if (this == dbgObjP)
 	dbgObjP = dbgObjP;
 #endif
-if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME)) {
+if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && !extraGameInfo [IsMultiGame].nSpawnDelay) {
 	int i = FindDropInfo (Signature ());
 	if (i >= 0)
 		MaybeDropNetPowerup (i, gameData.objs.dropInfo [i].nPowerupType, EXEC_DROP);
