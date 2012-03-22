@@ -426,7 +426,7 @@ switch (nObjType) {
 			lightManager.Headlights ().Add (objP);
 			return HEADLIGHT_SCALE;
 			}
-		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->info.nId].secondaryAmmo [PROXMINE_INDEX]) {
+		 else if ((gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->info.nId].secondaryAmmo [PROXMINE_INDEX]) {
 
 		// If hoard game and CPlayerData, add extra light based on how many orbs you have
 		// Pulse as well.

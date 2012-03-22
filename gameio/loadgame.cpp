@@ -581,7 +581,7 @@ void DoGameOver (void)
 if (missionManager.nCurrentMission == missionManager.nBuiltInMission [0])
 	MaybeAddPlayerScore (0);
 SetFunctionMode (FMODE_MENU);
-gameData.app.nGameMode = GM_GAME_OVER;
+gameData.app.SetGameMode (GM_GAME_OVER);
 longjmp (gameExitPoint, 0);		// Exit out of game loop
 }
 
@@ -1075,15 +1075,15 @@ FixObjectSizes ();
 wayPointManager.Setup (!bRestore);
 /*---*/PrintLog (1, "counting entropy rooms\n");
 nRooms = CountRooms ();
-if (gameData.app.nGameMode & GM_ENTROPY) {
+if (IsEntropyGame) {
 	if (!nRooms) {
 		Warning (TXT_NO_ENTROPY);
 		gameData.app.nGameMode &= ~GM_ENTROPY;
 		gameData.app.nGameMode |= GM_TEAM;
 		}
 	}
-else if ((gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD)) ||
-			((gameData.app.nGameMode & GM_MONSTERBALL) == GM_MONSTERBALL)) {
+else if ((gameData.app.GameMode (GM_CAPTURE | GM_HOARD)) ||
+			((gameData.app.GameMode (GM_MONSTERBALL)) == GM_MONSTERBALL)) {
 /*---*/PrintLog (1, "gathering CTF+ flag goals\n");
 	if (GatherFlagGoals () != 3) {
 		Warning (TXT_NO_CTF);
@@ -1174,7 +1174,7 @@ return 1;
 //starts a new game on the given level
 int StartNewGame (int nLevel)
 {
-gameData.app.nGameMode = GM_NORMAL;
+gameData.app.SetGameMode (GM_NORMAL);
 SetFunctionMode (FMODE_GAME);
 missionManager.SetNextLevel (0);
 missionManager.SetNextLevel (-1, 1);
@@ -1293,7 +1293,7 @@ sprintf (szTitle,
 			TXT_DESTROYED);
 Assert (c <= N_GLITZITEMS);
 paletteManager.DisableEffect ();
-if (network && (gameData.app.nGameMode & GM_NETWORK))
+if (network && IsNetworkGame)
 	m.Menu (NULL, szTitle, NetworkEndLevelPoll2, NULL, BackgroundName (BG_STARS));
 else
 // NOTE LINK TO ABOVE!!!
@@ -1461,7 +1461,7 @@ void PlayerFinishedLevel (int bSecret)
 	Assert (!bSecret);
 
 LOCALPLAYER.hostages.nRescued += LOCALPLAYER.hostages.nOnBoard;
-if (gameData.app.nGameMode & GM_NETWORK)
+if (IsNetworkGame)
 	CONNECT (N_LOCALPLAYER, CONNECT_WAITING); // Finished but did not die
 gameStates.render.cockpit.nLastDrawn [0] =
 gameStates.render.cockpit.nLastDrawn [1] = -1;
@@ -1558,10 +1558,10 @@ if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && !(
 	MaybeAddPlayerScore (0);
 	}
 SetFunctionMode (FMODE_MENU);
-if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))
-	gameData.app.nGameMode |= GM_GAME_OVER;		//preserve modem setting so go back into modem menu
+if (gameData.app.GameMode (GM_SERIAL | GM_MODEM))
+	gameData.app.SetGameMode (gameData.app.GameMode () | GM_GAME_OVER);		//preserve modem setting so go back into modem menu
 else
-	gameData.app.nGameMode = GM_GAME_OVER;
+	gameData.app.SetGameMode (GM_GAME_OVER);
 longjmp (gameExitPoint, 0);		// Exit out of game loop
 }
 
@@ -1626,7 +1626,7 @@ gameStates.app.bBetweenLevels = 0;
 
 void DiedInMineMessage (void)
 {
-if (gameData.app.nGameMode & GM_MULTI)
+if (IsMultiGame)
 	return;
 paletteManager.DisableEffect ();
 //SetScreenMode (SCREEN_MENU);		//go into menu mode
@@ -1653,7 +1653,7 @@ void ReturningToLevelMessage (void)
 
 	int old_fmode;
 
-if (gameData.app.nGameMode & GM_MULTI)
+if (IsMultiGame)
 	return;
 StopTime ();
 paletteManager.DisableEffect ();
@@ -1732,7 +1732,7 @@ if (IsMultiGame) {
 	MultiSendReappear ();
 	}
 PrintLog (0, "keeping network busy\n");
-if (gameData.app.nGameMode & GM_NETWORK)
+if (IsNetworkGame)
 	NetworkDoFrame (1, 1);
 PrintLog (0, "resetting AI paths\n");
 AIResetAllPaths ();
@@ -1829,7 +1829,7 @@ if (gameData.multiplayer.nPlayers > gameData.multiplayer.nPlayerPositions) {
 Assert (gameData.multiplayer.nPlayers <= gameData.multiplayer.nPlayerPositions);
 	//If this assert fails, there's not enough start positions
 
-if (gameData.app.nGameMode & GM_NETWORK) {
+if (IsNetworkGame) {
 	switch (NetworkLevelSync ()) { // After calling this, N_LOCALPLAYER is set
 		case -1:
 			return 0;
@@ -2407,7 +2407,7 @@ paletteManager.ResetEffect ();
 if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
 	LOCALPLAYER.score =
 	(LOCALPLAYER.score * (100 - nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty])) / 100;
-if (gameStates.multi.bPlayerIsTyping [N_LOCALPLAYER] && (gameData.app.nGameMode & GM_MULTI))
+if (gameStates.multi.bPlayerIsTyping [N_LOCALPLAYER] && IsMultiGame)
 	MultiSendMsgQuit ();
 gameStates.entropy.bConquering = 0;
 

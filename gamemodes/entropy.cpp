@@ -160,7 +160,7 @@ int CSegment::ConquerCheck (void)
 	time_t	t;
 
 gameStates.entropy.bConquering = 0;
-if (!(gameData.app.nGameMode & GM_ENTROPY))
+if (!IsEntropyGame)
 	return 0;
 #if 0
 if (gameStates.entropy.nTimeLastMoved < 0) {

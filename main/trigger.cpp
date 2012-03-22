@@ -953,7 +953,7 @@ if (nPlayer != N_LOCALPLAYER)
 	return false;
 if ((LOCALPLAYER.Shield () < 0) || gameStates.app.bPlayerIsDead)
 	return false;
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	HUDInitMessage (TXT_TELEPORT_MULTI);
 	audio.PlaySound (SOUND_BAD_SELECTION);
 	return false;
@@ -1199,7 +1199,7 @@ switch (m_info.nType) {
 		break;
 
 	case TT_MATCEN:
-		if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_ROBOTS))
+		if (!IsMultiGame || gameData.app.GameMode (GM_MULTI_ROBOTS))
 			DoMatCen (nPlayer == N_LOCALPLAYER);
 		break;
 

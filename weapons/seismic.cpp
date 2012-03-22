@@ -125,7 +125,7 @@ if (rval) {
 		gameStates.gameplay.seismic.bSound = 1;
 		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + RandShort () / 2;
 		}
-	if (gameData.app.nGameMode & GM_MULTI)
+	if (IsMultiGame)
 		MultiSendSeismic (gameStates.gameplay.seismic.nStartTime,gameStates.gameplay.seismic.nEndTime);
 	}
 return rval;

@@ -1055,9 +1055,9 @@ if (key == -1)
 	return -1;
 else if (choice == m.IndexOf ("more options")) {
 	if (m [nGameTypes + 3].Value ())
-		gameData.app.nGameMode = GM_MULTI_COOP;
+		gameData.app.SetGameMode (GM_MULTI_COOP);
 	NetworkMoreGameOptions ();
-	gameData.app.nGameMode = 0;
+	gameData.app.SetGameMode (0);
 	if (gameStates.multi.nGameType == UDP_GAME) {
 		sprintf (szIpAddr, "Game Host: %d.%d.%d.%d:%d", 
 					ipx_MyAddress [4], ipx_MyAddress [5], ipx_MyAddress [6], ipx_MyAddress [7], mpParams.udpPorts [0]);

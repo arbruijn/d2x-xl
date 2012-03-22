@@ -234,13 +234,13 @@ if ((info.nType == OBJ_PLAYER) && (N_LOCALPLAYER == info.nId)) {
 	CSegment*		segP = SEGMENTS + info.nSegment;
 	CPlayerData*	playerP = gameData.multiplayer.players + N_LOCALPLAYER;
 
-   if (gameData.app.nGameMode & GM_CAPTURE)
+   if (gameData.app.GameMode (GM_CAPTURE))
 		 segP->CheckForGoal ();
-   else if (gameData.app.nGameMode & GM_HOARD)
+   else if (IsHoardGame)
 		 segP->CheckForHoardGoal ();
 	else if (controls [0].forwardThrustTime || controls [0].verticalThrustTime || controls [0].sidewaysThrustTime) {
 		gameStates.entropy.nTimeLastMoved = -1;
-		if ((gameData.app.nGameMode & GM_ENTROPY) &&
+		if (IsEntropyGame &&
 			 ((segP->m_owner < 0) || (segP->m_owner == GetTeam (N_LOCALPLAYER) + 1))) {
 			StopConquerWarning ();
 			}

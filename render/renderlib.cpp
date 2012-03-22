@@ -149,7 +149,7 @@ if (nSegment < 0)
 //if (!gameStates.render.nLightingMethod)
 //	return 0;
 CSegment* segP = SEGMENTS + nSegment;
-if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0))
+if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0))
 	return (segP->m_owner == 1) ? 2 : 1;
 if (segP->HasWaterProp ())
 	return 3;
@@ -176,7 +176,7 @@ if (!gameStates.render.nLightingMethod)
 	CSegment*	segP = SEGMENTS + nSegment;
 	CSegment*	connSegP = (segP->m_children [nSide] < 0) ? NULL : SEGMENTS + segP->m_children [nSide];
 
-if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0)) {
+if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0)) {
 	if (!connSegP || (connSegP->m_owner != segP->m_owner))
 		return (segP->m_owner == 1) ? 2 : 1;
 	}
@@ -228,7 +228,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 if (nColor > 0)
 	nColor--;
 else {
-	if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0)) {
+	if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0)) {
 		if (connSegP && (connSegP->m_owner == segP->m_owner))
 			return NULL;
 		nColor = (segP->m_owner == 1);

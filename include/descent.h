@@ -2739,6 +2739,10 @@ class CApplicationData {
 
 	public:
 		CApplicationData ();
+		inline int GameMode (int nFlags = 0xFFFFFFFF) { return nGameMode & nFlags; }
+		inline void SetGameMode (int nMode) {
+			nGameMode = nMode;
+			}
 };
 
 //------------------------------------------------------------------------------

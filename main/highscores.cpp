@@ -66,7 +66,7 @@ void CScoreTable::DrawItem (int  i)
 	// Print CPlayerData name.
 
 GrPrintF (NULL, LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)) + xOffs, y, "%s", gameData.multiplayer.players [m_sorted [i]].callsign);
-  if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
+  if (!gameData.app.GameMode (GM_MODEM | GM_SERIAL))
    GrPrintF (NULL, LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)-15),y,"%c",szConditionLetters [gameData.multiplayer.players [m_sorted [i]].connected]);
    
 for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
@@ -133,7 +133,7 @@ if (gameData.score.bNoMovieMessage) {
 	}
 
 for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
-	if (gameData.app.nGameMode & GM_TEAM)
+	if (IsTeamGame)
 		color = GetTeam (m_sorted [j]);
 	else
 		color = m_sorted [j];
@@ -177,11 +177,11 @@ x = LHX (35) + xOffs;
 	   			
 fontManager.SetColorRGBi (RGBA_PAL2 (63,20,0), 1, 0, 0);
 fontManager.Current ()->StringSize ("P-Playing E-Escaped D-Died", sw, sh, aw);
-if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
+if (! (gameData.app.GameMode (GM_MODEM | GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"P-Playing E-Escaped D-Died");
 y+= (sh+5);
 fontManager.Current ()->StringSize ("V-Viewing scores W-Waiting", sw, sh, aw);
-if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
+if (! (gameData.app.GameMode (GM_MODEM | GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
@@ -199,7 +199,7 @@ else {
    sprintf (reinterpret_cast<char*> (&reactor_message), "%s: %d %s  ", TXT_TIME_REMAINING, gameData.reactor.countdown.nSecsLeft, TXT_SECONDS);
    DrawReactor (reinterpret_cast<char*> (&reactor_message));
    }
-if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) 
+if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) 
 	DrawChampion ();
 }
 
@@ -224,11 +224,11 @@ y = LHY (55 + 72 + 35) + yOffs;
 x = LHX (35) + xOffs;
 fontManager.SetColorRGBi (RGBA_PAL2 (63,20,0), 1, 0, 0);
 fontManager.Current ()->StringSize ("P-Playing E-Escaped D-Died", sw, sh, aw);
-if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
+if (! (gameData.app.GameMode (GM_MODEM | GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"P-Playing E-Escaped D-Died");
 y += (sh+5);
 fontManager.Current ()->StringSize ("V-Viewing scores W-Waiting", sw, sh, aw);
-if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
+if (! (gameData.app.GameMode (GM_MODEM | GM_SERIAL)))
    GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
@@ -255,7 +255,7 @@ void CScoreTable::DrawReactor (const char *message)
   static char oldmessage [50]={0};
   int sw, sh, aw;
 
-if ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL))
+if (gameData.app.GameMode (GM_MODEM | GM_SERIAL))
 	return;
 fontManager.SetCurrent (SMALL_FONT);
 if (oldmessage [0]!=0) {
@@ -275,9 +275,9 @@ void CScoreTable::DrawChampion (void)
   int sw, sh, aw;
   char message [80];
 
-if ((gameData.app.nGameMode & GM_HOARD) != 0)
+if (IsHoardGame != 0)
 	return;
-if ((gameData.app.nGameMode & (GM_MODEM | GM_SERIAL)) != 0)
+if ((gameData.app.GameMode (GM_MODEM | GM_SERIAL)) != 0)
 	return;
 if (gameData.score.nChampion == -1)
 	strcpy (message,TXT_NO_RECORD);
@@ -314,7 +314,7 @@ fontManager.SetCurrent (SMALL_FONT);
 MultiGetKillList (m_sorted);
 DrawNames ();
 for (i= 0; i<gameData.multiplayer.nPlayers; i++) {
-	if (gameData.app.nGameMode & GM_TEAM)
+	if (IsTeamGame)
 		color = GetTeam (m_sorted [i]);
 	else
 		color = m_sorted [i];
@@ -408,14 +408,14 @@ int k = KeyInKey ();
 switch (k) {
 	case KEY_ENTER:
 	case KEY_SPACEBAR:
-		if ((gameData.app.nGameMode & (GM_SERIAL | GM_MODEM)) != 0)
+		if ((gameData.app.GameMode (GM_SERIAL | GM_MODEM)) != 0)
 			return 1;
 		if (Exit ())
 			return -1;
 		break;
 
 	case KEY_ESC:
-		if (gameData.app.nGameMode & GM_NETWORK) {
+		if (IsNetworkGame) {
 			gameData.multiplayer.xStartAbortMenuTime = TimerGetApproxSeconds ();
 			int nInMenu = gameStates.menus.nInMenu;
 			gameStates.menus.nInMenu = 0;
@@ -498,7 +498,7 @@ void CScoreTable::Display (void)
 	int	key;
 	int	bRedraw = 0;
 
-m_bNetwork = (gameData.app.nGameMode & GM_NETWORK) != 0;
+m_bNetwork = IsNetworkGame != 0;
 m_nPrevSecsLeft = -1;
 gameStates.menus.nInMenu++;
 gameStates.app.bGameRunning = 0;
@@ -536,7 +536,7 @@ while (true) {
 			Cleanup (1);
 			return;
 			}
-		if ((gameData.app.nGameMode & (GM_SERIAL | GM_MODEM)) != 0) 
+		if ((gameData.app.GameMode (GM_SERIAL | GM_MODEM)) != 0) 
 			break;
 		CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL); // player is idling in score screen for MAX_VIEW_TIMES secs 
 #if 1

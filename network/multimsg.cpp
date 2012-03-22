@@ -52,7 +52,7 @@ void MultiDefineMacro (int key)
 {
 int nMsg = 0;
 #if !DBG
-if (!(gameOpts->multi.bUseMacros && (gameData.app.nGameMode & GM_MULTI)))
+if (!(gameOpts->multi.bUseMacros && IsMultiGame))
 	return;
 #endif
 key &= (~KEY_SHIFTED);
@@ -92,14 +92,14 @@ l = (int) (colon - gameData.multigame.msg.szMsg);
 if (!l || (l > CALLSIGN_LEN))
 	return 0;
 sprintf (szFeedbackResult, "%s ", TXT_MESSAGE_SENT_TO);
-if ((gameData.app.nGameMode & GM_TEAM) && (atoi (gameData.multigame.msg.szMsg) > 0) && 
+if (IsTeamGame && (atoi (gameData.multigame.msg.szMsg) > 0) && 
 	 (atoi (gameData.multigame.msg.szMsg) < 3)) {
 	sprintf (szFeedbackResult+strlen (szFeedbackResult), "%s '%s'", 
 				TXT_TEAM, netGame.m_info.szTeamName [atoi (gameData.multigame.msg.szMsg)-1]);
 	bFound = 1;
 	}
 if (!bFound)
-	if (gameData.app.nGameMode & GM_TEAM) {
+	if (IsTeamGame) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if (!strnicmp (netGame.m_info.szTeamName [i], gameData.multigame.msg.szMsg, l)) {
 				if (bFound)
@@ -140,7 +140,7 @@ return 1;
 
 void MultiSendMacro (int key)
 {
-if (!(gameOpts->multi.bUseMacros && (gameData.app.nGameMode & GM_MULTI)))
+if (!(gameOpts->multi.bUseMacros && IsMultiGame))
 	return;
 switch (key) {
 	case KEY_F9:
@@ -202,7 +202,7 @@ if (gameStates.multi.bPlayerIsTyping [N_LOCALPLAYER]) {
 
 void MultiSendMsgStart (char nMsg)
 {
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	if (nMsg > 0)
 		gameData.multigame.msg.bDefining = nMsg;
 	else
@@ -294,7 +294,7 @@ return 0;
 
 int PingPlayer (int i)
 {
-if (gameData.app.nGameMode & GM_NETWORK) {
+if (IsNetworkGame) {
 	if (i >= 0) {
 		pingStats [i].launchTime = SDL_GetTicks (); //TimerGetFixedSeconds ();
 		NetworkSendPing ((ubyte) i);
@@ -360,7 +360,7 @@ int MovePlayer (void)
 {
 	int	i;
 
-if ((gameData.app.nGameMode & GM_NETWORK) && (gameData.app.nGameMode & GM_TEAM)) {
+if (IsNetworkGame && IsTeamGame) {
 	int name_index = 5;
 	if (strlen (gameData.multigame.msg.szMsg) > 5)
 		while (gameData.multigame.msg.szMsg [name_index] == ' ')
@@ -376,7 +376,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && (gameData.app.nGameMode & GM_TEAM))
 		}
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if ((!strnicmp (gameData.multiplayer.players [i].callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && (gameData.multiplayer.players [i].connected)) {
-			if ((gameData.app.nGameMode & GM_CAPTURE) && (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG)) {
+			if ((gameData.app.GameMode (GM_CAPTURE)) && (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG)) {
 				HUDInitMessage (TXT_MOVE_FLAG);
 				return 1;
 				}
@@ -410,11 +410,11 @@ else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_MOVE, 5)) {
 	if (MovePlayer ())
 		return;
 	}
-else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_KICK, 5) && (gameData.app.nGameMode & GM_NETWORK)) {
+else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_KICK, 5) && IsNetworkGame) {
 	if (KickPlayer (0))
 		return;
 	}
-else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_BAN, 4) && (gameData.app.nGameMode & GM_NETWORK)) {
+else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_BAN, 4) && IsNetworkGame) {
 	if (KickPlayer (1))
 		return;
 	}
@@ -506,7 +506,7 @@ void MultiSendMsgDialog (void)
 	CMenu	m (1);
 	int	choice;
 
-if (!(gameData.app.nGameMode & GM_MULTI))
+if (!IsMultiGame)
 	return;
 gameData.multigame.msg.szMsg [0] = 0;             // Get rid of old contents
 m.AddInput ("", gameData.multigame.msg.szMsg, MAX_MESSAGE_LEN - 1);
@@ -524,7 +524,7 @@ static int IsTeamId (char *bufP, int nLen)
 {
 	int	i;
 
-if (!(gameData.app.nGameMode & GM_TEAM))
+if (!IsTeamGame)
 	return 0;
 i = atoi (bufP);
 if ((i >= 1) && (i <= 2))
@@ -541,7 +541,7 @@ static int IsMyTeamId (char *bufP, int nLen)
 {
 	int	i;
 
-if (!(gameData.app.nGameMode & GM_TEAM))
+if (!IsTeamGame)
 	return 0;
 i = GetTeam (N_LOCALPLAYER);
 if (i == atoi (bufP) - 1)

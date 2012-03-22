@@ -438,7 +438,7 @@ gameData.ai.localInfo [objP->Index ()].mode = AIM_THIEF_RETREAT;
 if (rval) {
 	paletteManager.BumpEffect (30, 15, -20);
 	cockpit->UpdateLaserWeaponInfo ();
-   if (gameData.app.nGameMode & GM_NETWORK)
+   if (IsNetworkGame)
 		MultiSendStolenItems ();
 	}
 return rval;
@@ -450,7 +450,7 @@ void InitThiefForLevel(void)
 {
 gameData.thief.stolenItems.Clear (char (0xff));
 Assert (MAX_STOLEN_ITEMS >= 3*2);	//	Oops!  Loop below will overwrite memory!
-if (!(gameData.app.nGameMode & GM_MULTI))
+if (!IsMultiGame)
 	for (int i = 0; i < 3; i++) {
 		gameData.thief.stolenItems [2 * i] = POW_SHIELD_BOOST;
 		gameData.thief.stolenItems [2 * i + 1] = POW_ENERGY;

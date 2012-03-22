@@ -236,7 +236,6 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 
 void NetworkProcessPData (char *dataP)
 {
-Assert (gameData.app.nGameMode & GM_NETWORK);
 if (netGame.GetShortPackets ())
 	NetworkReadPDataShortPacket (reinterpret_cast<tFrameInfoShort*> (dataP));
 else

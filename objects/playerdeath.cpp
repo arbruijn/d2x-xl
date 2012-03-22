@@ -182,7 +182,7 @@ if (gameStates.app.bPlayerIsDead) {
 				ClearForces ();
 #endif
 			gameStates.app.bPlayerExploded = 1;
-			if (gameData.app.nGameMode & GM_NETWORK) {
+			if (IsNetworkGame) {
 				AdjustMineSpawn ();
 				MultiCapObjects ();
 				}
@@ -206,7 +206,7 @@ if (gameStates.app.bPlayerIsDead) {
 		}
 	else {
 		if (RandShort () < gameData.time.xFrame * 4) {
-			if (gameData.app.nGameMode & GM_MULTI)
+			if (IsMultiGame)
 				MultiSendCreateExplosion (N_LOCALPLAYER);
 			CreateSmallFireballOnObject (gameData.objs.consoleP, I2X (1), 1);
 			}
@@ -215,7 +215,7 @@ if (gameStates.app.bPlayerIsDead) {
 		StopPlayerMovement ();
 		gameStates.app.bEnterGame = 2;
 		if (!gameStates.app.bPlayerEggsDropped) {
-			if (gameData.app.nGameMode & GM_NETWORK) {
+			if (IsNetworkGame) {
 				AdjustMineSpawn ();
 				MultiCapObjects ();
 				}
@@ -256,7 +256,7 @@ else {
 //		If Hoard, increase number of orbs by 1
 //    Only if you haven't killed yourself
 //		This prevents cheating
-	if (gameData.app.nGameMode & GM_HOARD)
+	if (IsHoardGame)
 		if (!bMultiSuicide)
 			if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] < 12)
 				LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]++;

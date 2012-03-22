@@ -251,27 +251,27 @@ void NetworkSetGameMode (int gameMode)
 if (gameMode == NETGAME_ANARCHY)
 	;
 else if (gameMode == NETGAME_TEAM_ANARCHY)
-	gameData.app.nGameMode = GM_TEAM;
+	gameData.app.SetGameMode (GM_TEAM);
 else if (gameMode == NETGAME_ROBOT_ANARCHY)
-	gameData.app.nGameMode = GM_MULTI_ROBOTS;
+	gameData.app.SetGameMode (GM_MULTI_ROBOTS);
 else if (gameMode == NETGAME_COOPERATIVE)
-	gameData.app.nGameMode = GM_MULTI_COOP | GM_MULTI_ROBOTS;
+	gameData.app.SetGameMode (GM_MULTI_COOP | GM_MULTI_ROBOTS);
 else if (gameMode == NETGAME_CAPTURE_FLAG)
-		gameData.app.nGameMode = GM_TEAM | GM_CAPTURE;
+		gameData.app.SetGameMode (GM_TEAM | GM_CAPTURE);
 else if (HoardEquipped ()) {
 	if (gameMode == NETGAME_HOARD)
-		gameData.app.nGameMode = GM_HOARD;
+		gameData.app.SetGameMode (GM_HOARD);
 	else if (gameMode == NETGAME_TEAM_HOARD)
-		gameData.app.nGameMode = GM_HOARD | GM_TEAM;
+		gameData.app.SetGameMode (GM_HOARD | GM_TEAM);
 	else if (gameMode == NETGAME_ENTROPY)
-		gameData.app.nGameMode = GM_ENTROPY | GM_TEAM;
+		gameData.app.SetGameMode (GM_ENTROPY | GM_TEAM);
 	else if (gameMode == NETGAME_MONSTERBALL)
-		gameData.app.nGameMode = GM_MONSTERBALL | GM_TEAM;
+		gameData.app.SetGameMode (GM_MONSTERBALL | GM_TEAM);
 	}
 else
 	Int3 ();
-gameData.app.nGameMode |= GM_NETWORK;
-if (gameData.app.nGameMode & GM_TEAM)
+gameData.app.SetGameMode (gameData.app.GameMode () | GM_NETWORK);
+if (IsTeamGame)
 	gameData.multigame.score.bShowList = 3;
 }
 

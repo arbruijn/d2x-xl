@@ -204,7 +204,7 @@ if (NetworkSelectPlayers (bAutoRun)) {
 	return 1;
 	}
 else {
-	gameData.app.nGameMode = GM_GAME_OVER;
+	gameData.app.SetGameMode (GM_GAME_OVER);
 	PrintLog (-1);
 	return 0;
 	}
@@ -254,7 +254,7 @@ if ((IAmGameHost ())) {
 CONNECT (N_LOCALPLAYER, CONNECT_DISCONNECTED);
 NetworkSendEndLevelPacket ();
 ChangePlayerNumTo (0);
-gameData.app.nGameMode = GM_GAME_OVER;
+gameData.app.SetGameMode (GM_GAME_OVER);
 if (gameStates.multi.nGameType != UDP_GAME)
 	SavePlayerProfile ();
 IpxHandleLeaveGame ();
@@ -314,7 +314,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 	if (!networkData.bActive) 
 		return -1;
 #if 1			
-if (!(gameData.app.nGameMode & GM_NETWORK) && (gameStates.app.nFunctionMode == FMODE_GAME))
+if (!IsNetworkGame && (gameStates.app.nFunctionMode == FMODE_GAME))
 	console.printf (CON_DBG, "Calling NetworkListen () when not in net game.\n");
 #endif
 networkData.bWaitingForPlayerInfo = 1;
@@ -369,7 +369,7 @@ void NetworkDoFrame (int bForce, int bListen)
 	static fix xLastEndlevel = 0;
 	int i;
 
-if (!(gameData.app.nGameMode & GM_NETWORK)) 
+if (!IsNetworkGame) 
 	return;
 if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequence) { // Don't send postion during escape sequence...
 	if (nakedData.nLength) {

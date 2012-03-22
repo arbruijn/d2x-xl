@@ -337,7 +337,7 @@ int nLineSpacing = 5 * GAME_FONT->Height () / 4;
 if (!gameOpts->render.cockpit.bTextGauges) {
 	int h = int (9 * m_info.yGaugeScale), 
 		 w = int (9 * m_info.xGaugeScale), 
-		 y = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
+		 y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
 	if (hudIcons.LoadGaugeIcons () > 0)
 		hudIcons.GaugeIcon (2).RenderScaled (6, y, w = int (9 * m_info.xGaugeScale), h = int (9 * m_info.yGaugeScale));
 	CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);

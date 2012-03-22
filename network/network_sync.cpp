@@ -234,7 +234,7 @@ else if (syncP->nExtras == 2)
 else if (syncP->nExtras == 3)
 	NetworkSendMarkers ();
 else if (syncP->nExtras == 4) {
-	if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+	if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 		MultiSendStolenItems ();
 	}
 else if (syncP->nExtras == 5) {
@@ -328,13 +328,13 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 //	"sneak" Hoard information into this field.  This is better than sending 
 //	another packet that could be lost in transit.
 if (HoardEquipped ()) {
-	if (gameData.app.nGameMode & GM_MONSTERBALL)
+	if (gameData.app.GameMode (GM_MONSTERBALL))
 		netGame.m_info.gameFlags |= NETGAME_FLAG_MONSTERBALL;
-	else if (gameData.app.nGameMode & GM_ENTROPY)
+	else if (IsEntropyGame)
 		netGame.m_info.gameFlags |= NETGAME_FLAG_ENTROPY;
-	else if (gameData.app.nGameMode & GM_HOARD) {
+	else if (IsHoardGame) {
 		netGame.m_info.gameFlags |= NETGAME_FLAG_HOARD;
-		if (gameData.app.nGameMode & GM_TEAM)
+		if (IsTeamGame)
 			netGame.m_info.gameFlags |= NETGAME_FLAG_TEAM_HOARD;
 		}
 	}
@@ -475,7 +475,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 }
 gameData.multiplayer.nPlayers = 0;
 SetFunctionMode (FMODE_MENU);
-gameData.app.nGameMode = GM_GAME_OVER;
+gameData.app.SetGameMode (GM_GAME_OVER);
 return -1;     // they cancelled               
 }
 
@@ -558,7 +558,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 	if (!networkData.bActive) 
 		return 0;
 #if 1			
-if (!(gameData.app.nGameMode & GM_NETWORK) && (gameStates.app.nFunctionMode == FMODE_GAME))
+if (!IsNetworkGame && (gameStates.app.nFunctionMode == FMODE_GAME))
 	console.printf (CON_DBG, "Calling NetworkWaitForPlayerInfo () when not in net game.\n");
 #endif	
 if (networkData.nStatus == NETSTAT_PLAYING) {

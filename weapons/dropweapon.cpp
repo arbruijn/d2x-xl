@@ -81,7 +81,7 @@ switch (objP->info.nId) {
 			objP->info.xLifeLeft /= 2;
 		break;
 	default:
-		//if (gameData.app.nGameMode & GM_MULTI)
+		//if (IsMultiGame)
 		//	objP->info.xLifeLeft = (RandShort () + I2X (3)) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
 		break;
 	}
@@ -184,7 +184,7 @@ if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {
 	return;
 	}
 nPowerup = secondaryWeaponToPowerup[nWeapon];
-bHoardEntropy = (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) != 0;
+bHoardEntropy = (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) != 0;
 bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
 if (!bHoardEntropy && bMine &&
 	  LOCALPLAYER.secondaryAmmo [nWeapon] < 4) {

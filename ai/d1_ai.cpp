@@ -2154,7 +2154,7 @@ if (DoAnyRobotDyingFrame (objP))
 					anger_level = 64;
 				}
 			compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
-			if (gameData.app.nGameMode & (GM_MODEM | GM_SERIAL))
+			if (gameData.app.GameMode (GM_MODEM | GM_SERIAL))
 				if (!player_visibility && (dist_to_player > I2X (70))) {
 					ailP->mode = D1_AIM_STILL;
 					return;

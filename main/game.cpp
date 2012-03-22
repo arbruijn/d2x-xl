@@ -352,7 +352,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 		LOCALPLAYER.flags ^= PLAYER_FLAGS_INVULNERABLE;
 		if (!bFakingInvul) {
 			audio.PlaySound (SOUND_INVULNERABILITY_OFF);
-			if (gameData.app.nGameMode & GM_MULTI) {
+			if (IsMultiGame) {
 				MultiSendPlaySound (SOUND_INVULNERABILITY_OFF, I2X (1));
 				MaybeDropNetPowerup (-1, POW_INVUL, FORCE_DROP);
 				}
@@ -1353,7 +1353,7 @@ if (screen.Width () && screen.Height ()) {
 		MsgBox (TXT_ERROR, NULL, -3, ps, " ", TXT_OK);
 		}
 	gameData.menu.colorOverride = 0;
-	if (!((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME)))
+	if (!(IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME)))
 		StartTime (0);
 	}
 }

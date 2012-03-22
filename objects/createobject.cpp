@@ -90,7 +90,7 @@ SetMovementType (mType);
 SetRenderType (rType);
 SetContainsType (-1);
 SetLifeLeft (
-	 ((gameData.app.nGameMode & GM_ENTROPY) &&  (nType == OBJ_POWERUP) &&  (nId == POW_HOARD_ORB) &&  (extraGameInfo [1].entropy.nVirusLifespan > 0)) ?
+	 (IsEntropyGame &&  (nType == OBJ_POWERUP) &&  (nId == POW_HOARD_ORB) &&  (extraGameInfo [1].entropy.nVirusLifespan > 0)) ?
 		I2X (extraGameInfo [1].entropy.nVirusLifespan) : IMMORTAL_TIME);
 SetAttachedObj (-1);
 SetShield (I2X (20));
@@ -160,7 +160,7 @@ SetMovementType (mType);
 SetRenderType (rType);
 SetContainsType (-1);
 SetLifeLeft (
-	((gameData.app.nGameMode & GM_ENTROPY) && (nType == OBJ_POWERUP) && (nId == POW_HOARD_ORB) && (extraGameInfo [1].entropy.nVirusLifespan > 0)) ?
+	(IsEntropyGame && (nType == OBJ_POWERUP) && (nId == POW_HOARD_ORB) && (extraGameInfo [1].entropy.nVirusLifespan > 0)) ?
 	I2X (extraGameInfo [1].entropy.nVirusLifespan) : IMMORTAL_TIME);
 SetAttachedObj (-1);
 m_xCreationTime = gameData.time.xGame;
@@ -279,7 +279,7 @@ objP->SetOrigin (vPos);
 objP->SetSize (xSize);
 objP->info.nCreator = sbyte (nCreator);
 objP->SetLife (IMMORTAL_TIME);
-if (IsMultiGame && (gameData.app.nGameMode & GM_ENTROPY) && (nType == OBJ_POWERUP) && (nId == POW_ENTROPY_VIRUS)) {
+if (IsMultiGame && IsEntropyGame && (nType == OBJ_POWERUP) && (nId == POW_ENTROPY_VIRUS)) {
 	if ((nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER))
 		objP->info.nCreator = sbyte (GetTeam (OBJECTS [nCreator].info.nId) + 1);
 	if (extraGameInfo [1].entropy.nVirusLifespan > 0)

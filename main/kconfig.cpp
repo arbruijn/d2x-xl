@@ -1044,7 +1044,7 @@ int CControlConfig::ChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrl
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (0x8000, KC_LHY (INFO_Y), pszMsg, NULL);
 {
-	if ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence))
+	if (IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence))
 		MultiMenuPoll ();
 	k = KeyInKey ();
 	if (k == KEY_ESC)
@@ -1764,7 +1764,7 @@ else if (m_version > 0)  {
 
      if (temp_ptr->Reactor_blown)
       {
-       if (gameData.app.nGameMode & GM_MULTI)
+       if (IsMultiGame)
 		    NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 		 else
 			 DoReactorDestroyedStuff (ObjFindFirstOfType (OBJ_REACTOR));

@@ -421,7 +421,7 @@ if (aiP->behavior == AIB_STATION)
 		angerLevel = 64;
 	}
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
-if (gameData.app.nGameMode & (GM_MODEM | GM_SERIAL))
+if (gameData.app.GameMode (GM_MODEM | GM_SERIAL))
 	if (!gameData.ai.nTargetVisibility && (gameData.ai.target.xDist > I2X (70))) {
 		siP->ailP->mode = AIM_IDLING;
 		return 1;

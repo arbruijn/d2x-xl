@@ -260,9 +260,9 @@ LOCALPLAYER.SetEnergy (I2X (200));
 LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield ());
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 LOCALPLAYER.SetSuperLaser (MAX_SUPERLASER_LEVEL - MAX_LASER_LEVEL);
-if (gameData.app.nGameMode & GM_HOARD)
+if (IsHoardGame)
 	LOCALPLAYER.secondaryAmmo[PROXMINE_INDEX] = 12;
-else if (gameData.app.nGameMode & GM_ENTROPY)
+else if (IsEntropyGame)
 	LOCALPLAYER.secondaryAmmo[PROXMINE_INDEX] = 15;
 cockpit->UpdateLaserWeaponInfo ();
 }
@@ -533,7 +533,7 @@ int PickupFlag (CObject *objP, int nThisTeam, int nOtherTeam, const char *pszFla
 {
 if (ISLOCALPLAYER (nPlayer)) {
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
-	if (gameData.app.nGameMode & GM_CAPTURE) {
+	if (gameData.app.GameMode (GM_CAPTURE)) {
 		if (GetTeam ((char) N_LOCALPLAYER) == nOtherTeam) {
 			PowerupBasic (15, 0, 15, 0, nOtherTeam ? "RED FLAG!" : "BLUE FLAG!", nPlayer);
 			playerP->flags |= PLAYER_FLAGS_FLAG;

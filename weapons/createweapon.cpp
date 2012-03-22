@@ -158,7 +158,7 @@ else if (gameStates.app.bD2XLevel &&
 			(SEGMENTS [gameData.objs.consoleP->info.nSegment].HasNoDamageProp ()))
 	return -1;
 #if 1
-if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
+if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameData.app.GameMode (GM_HOARD | GM_ENTROPY))) {
 	nObject = CreatePowerup (POW_HOARD_ORB, -1, nSegment, *vPosition, 0);
 	if (nObject >= 0) {
 		objP = OBJECTS + nObject;

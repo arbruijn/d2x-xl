@@ -1247,7 +1247,7 @@ void CSaveGameManager::LoadMulti (char *pszOrgCallSign, int bMulti)
 if (bMulti)
 	strcpy (pszOrgCallSign, LOCALPLAYER.callsign);
 else {
-	gameData.app.nGameMode = GM_NORMAL;
+	gameData.app.SetGameMode (GM_NORMAL);
 	SetFunctionMode (FMODE_GAME);
 	ChangePlayerNumTo (0);
 	strcpy (pszOrgCallSign, gameData.multiplayer.players [0].callsign);
@@ -2057,7 +2057,7 @@ m_cf.Read (&nNextLevel, sizeof (int), 1);
 m_cf.Read (&gameData.time.xGame, sizeof (fix), 1);
 // Start new game....
 CSaveGameManager::LoadMulti (szOrgCallSign, bMulti);
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
 	strcpy (szServerCallSign, netPlayers [0].m_info.players [0].callsign);

@@ -1842,9 +1842,9 @@ if (IsMultiGame) {
 			gameData.multiplayer.players [i].netKillsTotal = NDReadShort ();
 			}
 		}
-	gameData.app.nGameMode = gameData.demo.nGameMode;
+	gameData.app.SetGameMode (gameData.demo.nGameMode);
 	MultiSortKillList ();
-	gameData.app.nGameMode = GM_NORMAL;
+	gameData.app.SetGameMode (GM_NORMAL);
 	}
 else
 	LOCALPLAYER.score = NDReadInt ();      // Note link to above if!
@@ -2588,9 +2588,9 @@ while (!bDone) {
 				if (IsTeamGame)
 					gameData.multigame.score.nTeam [GetTeam (nPlayer)] += kill;
 				}
-			gameData.app.nGameMode = gameData.demo.nGameMode;
+			gameData.app.SetGameMode (gameData.demo.nGameMode);
 			MultiSortKillList ();
-			gameData.app.nGameMode = GM_NORMAL;
+			gameData.app.SetGameMode (GM_NORMAL);
 			}
 			break;
 
@@ -2665,9 +2665,9 @@ while (!bDone) {
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
 				gameData.multiplayer.players [nPlayer].score += score;
-			gameData.app.nGameMode = gameData.demo.nGameMode;
+			gameData.app.SetGameMode (gameData.demo.nGameMode);
 			MultiSortKillList ();
-			gameData.app.nGameMode = GM_NORMAL;
+			gameData.app.SetGameMode (GM_NORMAL);
 			}
 			break;
 
@@ -3566,7 +3566,7 @@ if (gameOpts->demo.bRevertFormat && ndOutFile.File () && (bRevertFormat < 0)) {
 	ndOutFile.Close ();
 	CFile::Delete (filename2, gameFolders.szDemoDir);
 	}
-gameData.app.nGameMode = GM_NORMAL;
+gameData.app.SetGameMode (GM_NORMAL);
 gameData.demo.nState = ND_STATE_PLAYBACK;
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
 gameData.demo.nOldCockpit = gameStates.render.cockpit.nType;
@@ -3607,7 +3607,7 @@ gameData.demo.nState = ND_STATE_NORMAL;
 ChangePlayerNumTo (0);             //this is reality
 strncpy (LOCALPLAYER.callsign, gameData.demo.callSignSave, CALLSIGN_LEN);
 cockpit->Activate (gameData.demo.nOldCockpit);
-gameData.app.nGameMode = GM_GAME_OVER;
+gameData.app.SetGameMode (GM_GAME_OVER);
 SetFunctionMode (FMODE_MENU);
 SDL_ShowCursor (1);
 longjmp (gameExitPoint, 0);               // Exit game loop

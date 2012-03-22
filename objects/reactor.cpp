@@ -129,7 +129,7 @@ if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {  // get countdown in OEM and
 		 (missionManager.nCurrentLevel == missionManager.nLastLevel)) {
 		if (!IsMultiGame)
 			return;
-		if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+		if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 			return;
 		}
 	}
@@ -209,7 +209,7 @@ void DoReactorDestroyedStuff (CObject *objP)
 	int		i, bFinalCountdown, bReactor = objP && (objP->info.nType == OBJ_REACTOR);
 	CTrigger	*trigP = NULL;
 
-if ((gameData.app.nGameMode & GM_MULTI_ROBOTS) && gameData.reactor.bDestroyed)
+if (gameData.app.GameMode (GM_MULTI_ROBOTS) && gameData.reactor.bDestroyed)
    return; // Don't allow resetting if control center and boss on same level
 // Must toggle walls whether it is a boss or control center.
 if ((!objP || (objP->info.nType == OBJ_ROBOT)) && gameStates.gameplay.bKillBossCheat)
@@ -362,7 +362,7 @@ if ((rStatP->nNextFireTime < 0) &&
 			rStatP->bSeenPlayer = 0;
 			return;
 			}
-		if (gameData.app.nGameMode & GM_MULTI)
+		if (IsMultiGame)
 			MultiSendCtrlcenFire (&vecToGoal, nBestGun, objP->Index ());
 		CreateNewWeaponSimple (&vecToGoal, &rStatP->vGunPos [nBestGun], objP->Index (), CONTROLCEN_WEAPON_NUM, 1);
 		//	some of time, based on level, fire another thing, not directly at player, so it might hit him if he's constantly moving.

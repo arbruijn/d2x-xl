@@ -353,7 +353,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	}
 netGame.m_info.nType = oldType;
 netGame.m_info.gameStatus = oldStatus;
-//	if ((gameData.app.nGameMode & GM_ENTROPY) || extraGameInfo [0].bEnhancedCTF)
+//	if (IsEntropyGame || extraGameInfo [0].bEnhancedCTF)
 //make half-way sure the client gets this data ...
 NetworkSendExtraGameInfo (their);
 MultiSendMonsterball (1, 1);
@@ -433,7 +433,7 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	netGame.m_info.gameStatus = NETSTAT_ENDLEVEL;
 // If hoard mode, make this game look closed even if it isn't
 if (HoardEquipped ()) {
-	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
+	if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) {
 		char oldStatus = netGame.m_info.gameStatus;
 		netGame.m_info.gameStatus = NETSTAT_ENDLEVEL;
 		netGame.m_info.gameMode = NETGAME_CAPTURE_FLAG;
@@ -451,12 +451,12 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	}  
 //  Restore the pre-hoard mode
 if (HoardEquipped ()) {
-	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL)) {
-		if (gameData.app.nGameMode & GM_ENTROPY)
+	if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL)) {
+		if (IsEntropyGame)
  			netGame.m_info.gameMode = NETGAME_ENTROPY;
-		else if (gameData.app.nGameMode & GM_MONSTERBALL)
+		else if (gameData.app.GameMode (GM_MONSTERBALL))
  			netGame.m_info.gameMode = NETGAME_MONSTERBALL;
-		else if (gameData.app.nGameMode & GM_TEAM)
+		else if (IsTeamGame)
  			netGame.m_info.gameMode = NETGAME_TEAM_HOARD;
 		else
  			netGame.m_info.gameMode = NETGAME_HOARD;
@@ -655,7 +655,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 
 void NetworkSendNakedPacket (char *buf, short len, int who)
 {
-if (!(gameData.app.nGameMode & GM_NETWORK)) 
+if (!IsNetworkGame) 
 	return;
 if (nakedData.nLength == 0) {
 	nakedData.buf [0] = PID_NAKED_PDATA;

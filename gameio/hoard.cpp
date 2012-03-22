@@ -139,7 +139,7 @@ void InitHoardData (void)
 	ubyte					*bmDataP;
 
 #if !DBG
-if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL)))
+if (!(gameData.app.GameMode (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL)))
 	return;
 #endif
 if (gameStates.app.bDemoData || gameStates.app.bD1Mission) {

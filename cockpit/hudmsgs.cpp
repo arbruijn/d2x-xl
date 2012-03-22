@@ -325,7 +325,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
       // Automatically exit death after 10 secs
       if (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (10)) {
                SetFunctionMode (FMODE_MENU);
-               gameData.app.nGameMode = GM_GAME_OVER;
+               gameData.app.SetGameMode (GM_GAME_OVER);
                __asm int 3; longjmp (gameExitPoint, 1);        // Exit out of game loop
 	      }
 #endif
@@ -354,7 +354,7 @@ if (gameOpts->render.cockpit.bHUDMsgs &&
 	 !cockpit->Hide () &&
 #endif
 	 (!bNoMsgRedundancy || (nClass & MSGC_NOREDUNDANCY)) &&
-	 (!bMSGPlayerMsgs || !(gameData.app.nGameMode & GM_MULTI) || (nClass & MSGC_PLAYERMESSAGES))) {
+	 (!bMSGPlayerMsgs || !IsMultiGame || (nClass & MSGC_PLAYERMESSAGES))) {
 		va_list vp;
 
 	va_start (vp, format);

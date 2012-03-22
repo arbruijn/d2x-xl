@@ -522,7 +522,7 @@ if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
 #endif
 	//make sound
 	audio.CreateSegmentSound (SOUND_FORCEFIELD_BOUNCE_PLAYER, nHitSeg, 0, vHitPt);
-	if (gameData.app.nGameMode & GM_MULTI)
+	if (IsMultiGame)
 		MultiSendPlaySound (SOUND_FORCEFIELD_BOUNCE_PLAYER, I2X (1));
 	bForceFieldHit = 1;
 	}
@@ -556,7 +556,7 @@ if (damage >= DAMAGE_THRESHOLD) {
 		volume = I2X (1);
 	if (volume > 0 && !bForceFieldHit) {  // uhhhgly hack
 		audio.CreateSegmentSound (SOUND_PLAYER_HIT_WALL, nHitSeg, 0, vHitPt, 0, volume);
-		if (gameData.app.nGameMode & GM_MULTI)
+		if (IsMultiGame)
 			MultiSendPlaySound (SOUND_PLAYER_HIT_WALL, volume);
 		}
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
@@ -899,7 +899,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 			case WHP_NO_KEY:
 				//play special hit door sound (if/when we get it)
 				CreateSound (SOUND_WEAPON_HIT_DOOR);
-			   if (gameData.app.nGameMode & GM_MULTI)
+			   if (IsMultiGame)
 					MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, I2X (1));
 				break;
 
@@ -1298,7 +1298,7 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 	SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
 	}
-if (!(gameData.app.nGameMode & GM_MULTI))
+if (!IsMultiGame)
 	BuddyMessage ("Nice job, %s!", LOCALPLAYER.callsign);
 missionManager.AdvanceLevel ();
 gameStates.gameplay.bFinalBossIsDead = 1;
@@ -1778,7 +1778,7 @@ gameData.multiplayer.bWasHit [info.nId] = -1;
 if (info.nId == N_LOCALPLAYER) {		//is this the local player?
 	// PrintLog (0, "ApplyDamageToPlayer: Processing local player damage %d\n", xDamage);
 	CPlayerData *playerP = gameData.multiplayer.players + info.nId;
-	if ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
+	if (IsEntropyGame && extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
 		double h = (double) playerP->netKillsTotal / (double) (killerP->netKillsTotal + 1);
 		if (h < 0.5)
 			h = 0.5;
@@ -1847,7 +1847,7 @@ if (playerObjP->info.nId == N_LOCALPLAYER) {
 		}
 	else {
 		audio.CreateSegmentSound (SOUND_WEAPON_HIT_DOOR, playerObjP->info.nSegment, 0, vHitPt);
-		if (gameData.app.nGameMode & GM_MULTI)
+		if (IsMultiGame)
 			MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, I2X (1));
 		}
 	}

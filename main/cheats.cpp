@@ -70,7 +70,7 @@ void MultiDoCheatPenalty ()
 DoCheatPenalty ();
 LOCALPLAYER.SetShield (I2X (1));
 LOCALPLAYER.SetEnergy (I2X (1));
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
 	sprintf (gameData.multigame.msg.szMsg, TXT_CRIPPLED, LOCALPLAYER.callsign);
 	}
@@ -790,9 +790,9 @@ else {
 		LOCALPLAYER.secondaryAmmo [MEGA_INDEX] = 0;
 		}
 
-	if (gameData.app.nGameMode & GM_HOARD)
+	if (IsHoardGame)
 		LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 12;
-	else if (gameData.app.nGameMode & GM_ENTROPY) {
+	else if (IsEntropyGame) {
 		LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 5 * h;
 		LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX] = 5 * h;
 		}
@@ -1062,7 +1062,7 @@ void DoCheatMenu ()
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
 		if (m [1].Value ()) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_CLOAKED;
-			if (gameData.app.nGameMode & GM_MULTI)
+			if (IsMultiGame)
 				MultiSendCloak ();
 			AIDoCloakStuff ();
 			LOCALPLAYER.cloakTime = gameData.time.xGame;

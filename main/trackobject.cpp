@@ -336,7 +336,7 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 			if (IsMultiGame) {
 				if (IsCoopGame)
 					rVal = FindAnyHomingTarget (Position (), OBJ_ROBOT, -1, nThread);
-				else if (gameData.app.nGameMode & GM_MULTI_ROBOTS)		//	Not cooperative, if robots, track either robot or player
+				else if (gameData.app.GameMode (GM_MULTI_ROBOTS))		//	Not cooperative, if robots, track either robot or player
 					rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, OBJ_ROBOT, nThread);
 				else		//	Not cooperative and no robots, track only a player
 					rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, -1, nThread);

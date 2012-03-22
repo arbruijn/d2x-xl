@@ -965,10 +965,10 @@ void HandleTestKey(int key)
 			break; // Extra life cheat key.
 
 		case KEYDBGGED + KEY_H:
-//				if (!(gameData.app.nGameMode & GM_MULTI))   {
+//				if (!IsMultiGame)   {
 				LOCALPLAYER.flags ^= PLAYER_FLAGS_CLOAKED;
 				if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
-					if (gameData.app.nGameMode & GM_MULTI)
+					if (IsMultiGame)
 						MultiSendCloak ();
 					AIDoCloakStuff ();
 					LOCALPLAYER.cloakTime = gameData.time.xGame;
@@ -1054,7 +1054,7 @@ void HandleTestKey(int key)
 
 		case KEYDBGGED + KEY_A: {
 			DoMegaWowPowerup(200);
-//								if (gameData.app.nGameMode & GM_MULTI)     {
+//								if (IsMultiGame)     {
 //									MsgBox(NULL, 1, "Damn", "CHEATER!\nYou cannot use the\nmega-thing in network mode.");
 //									gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
 //									sprintf(gameData.multigame.msg.szMsg, "%s cheated!", LOCALPLAYER.callsign);

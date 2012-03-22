@@ -170,7 +170,7 @@ else {
 #endif
 }
 #ifndef SHAREWARE
-r = movieManager.Play (szMovieName, (gameData.app.nGameMode & GM_MULTI) ? 0 : MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+r = movieManager.Play (szMovieName, IsMultiGame ? 0 : MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 #else
 return 0;	// movie not played for shareware
 #endif
@@ -626,7 +626,7 @@ switch (gameStates.app.bEndLevelSequence) {
 			gameStates.app.bEndLevelSequence = EL_PANNING;
 			VmExtractAnglesMatrix (&vCurrentCameraAngles, &gameData.objs.endLevelCamera->info.position.mOrient);
 			timer = I2X (3);
-			if (gameData.app.nGameMode & GM_MULTI) { // try to skip part of the seq if multiplayer
+			if (IsMultiGame) { // try to skip part of the seq if multiplayer
 				StopEndLevelSequence ();
 				return;
 				}

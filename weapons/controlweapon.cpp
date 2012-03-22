@@ -460,7 +460,7 @@ if (bPrintMessage) {
 void ToggleBomb (void)
 {
 int bomb = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
-if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) ||
+if ((gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) ||
 	 !(LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] || LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX])) {
 	audio.PlaySound (SOUND_BAD_SELECTION);
 	HUDInitMessage (TXT_NOBOMBS);
@@ -774,9 +774,9 @@ int ArmedBomb (void)
 	//use the last one selected, unless there aren't any, in which case use
 	//the other if there are any
    // If hoard game, only let the player drop smart mines
-if (gameData.app.nGameMode & GM_ENTROPY)
+if (IsEntropyGame)
    return PROXMINE_INDEX; //allow for dropping orbs
-if (gameData.app.nGameMode & GM_HOARD)
+if (IsHoardGame)
 	return SMARTMINE_INDEX;
 
 bomb = bLastSecondaryWasSuper [PROXMINE_INDEX] ? SMARTMINE_INDEX : PROXMINE_INDEX;
@@ -832,7 +832,7 @@ if (controls [0].dropBombDownCount) {
 		int ssw_save = gameData.weapons.nSecondary;
 		while (controls [0].dropBombDownCount--) {
 			int ssw_save2 = gameData.weapons.nSecondary = ArmedBomb();
-			if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
+			if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY))
 				DropSecondaryWeapon (-1);
 			else
 				DoMissileFiring (gameData.weapons.nSecondary == ssw_save);	//only allow autoselect if bomb is actually selected

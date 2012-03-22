@@ -522,7 +522,7 @@ if (matCenP->xDisableTime > 0) {
 		}
 	}
 //	No robot making in multiplayer mode.
-if (IsMultiGame && (!(gameData.app.nGameMode & GM_MULTI_ROBOTS) || !IAmGameHost ()))
+if (IsMultiGame && (!gameData.app.GameMode (GM_MULTI_ROBOTS) || !IAmGameHost ()))
 	return;
 // Wait until transmorgafier has capacity to make a robot...
 if (matCenP->xCapacity <= 0)
@@ -655,7 +655,7 @@ void FuelcenUpdateAll (void)
 for (i = 0; i < gameData.matCens.nFuelCenters; i++, fuelCenP++) {
 	t = fuelCenP->nType;
 	if (t == SEGMENT_FUNC_ROBOTMAKER) {
-		if (IsMultiGame && (gameData.app.nGameMode & GM_ENTROPY))
+		if (IsMultiGame && IsEntropyGame)
 			VirusGenHandler (gameData.matCens.fuelCenters + i);
 		else if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS))
 			BotGenHandler (gameData.matCens.fuelCenters + i);
@@ -688,7 +688,7 @@ fix CSegment::ShieldDamage (fix xMaxDamage)
 {
 	static fix lastPlayTime = 0;
 
-if (!(m_xDamage [0] || (gameData.app.nGameMode & GM_ENTROPY)))
+if (!(m_xDamage [0] || IsEntropyGame))
 	return 0;
 int bEntropy = !m_xDamage [0];
 if (bEntropy && ((m_owner < 1) || (m_owner == GetTeam (N_LOCALPLAYER) + 1)))
@@ -731,7 +731,7 @@ fix CSegment::Refuel (fix nMaxFuel)
 	static fix lastPlayTime = 0;
 
 gameData.matCens.playerSegP = this;
-if ((gameData.app.nGameMode & GM_ENTROPY) && ((m_owner < 0) ||
+if (IsEntropyGame && ((m_owner < 0) ||
 	 ((m_owner > 0) && (m_owner != GetTeam (N_LOCALPLAYER) + 1))))
 	return 0;
 if (m_function != SEGMENT_FUNC_FUELCEN)
@@ -749,7 +749,7 @@ if (gameData.matCens.fuelCenters [segP->value].xCapacity <= 0) {
 #endif
 if (nMaxFuel <= 0)
 	return 0;
-if (gameData.app.nGameMode & GM_ENTROPY)
+if (IsEntropyGame)
 	amount = FixMul (gameData.time.xFrame, I2X (gameData.matCens.xFuelGiveAmount));
 else
 	amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount);
@@ -779,7 +779,7 @@ fix CSegment::Repair (fix nMaxShield)
 if (gameOpts->legacy.bFuelCens)
 	return 0;
 gameData.matCens.playerSegP = this;
-if ((gameData.app.nGameMode & GM_ENTROPY) && ((m_owner < 0) ||
+if (IsEntropyGame && ((m_owner < 0) ||
 	 ((m_owner > 0) && (m_owner != GetTeam (N_LOCALPLAYER) + 1))))
 	return 0;
 if (m_function != SEGMENT_FUNC_REPAIRCEN)
@@ -940,7 +940,7 @@ return 1;
 
 void CSegment::CheckForGoal (void)
 {
-	Assert (gameData.app.nGameMode & GM_CAPTURE);
+	Assert (gameData.app.GameMode (GM_CAPTURE));
 
 #if 1
 CheckFlagDrop (TEAM_BLUE, POW_REDFLAG, SEGMENT_FUNC_GOAL_BLUE);
@@ -969,7 +969,7 @@ else if (segP->m_function == SEGMENT_FUNC_GOAL_RED) {
 
 void CSegment::CheckForHoardGoal (void)
 {
-Assert (gameData.app.nGameMode & GM_HOARD);
+Assert IsHoardGame;
 if (gameStates.app.bPlayerIsDead)
 	return;
 if ((m_function != SEGMENT_FUNC_GOAL_BLUE) && (m_function != SEGMENT_FUNC_GOAL_RED))

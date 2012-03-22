@@ -407,7 +407,7 @@ if (FindArg ("-NoMatrixCheat")) {
 	}
 if (HoardEquipped ()) {
 // If hoard game, and this guy isn't D2 Christmas (v1.2), dump him
-	if ((gameData.app.nGameMode & GM_HOARD) && ((player->player.versionMinor & 0x0F) < 2)) {
+	if (IsHoardGame && ((player->player.versionMinor & 0x0F) < 2)) {
 		if (gameStates.multi.nGameType >= IPX_GAME)
 			NetworkDumpPlayer (
 				player->player.network.Server (), 

@@ -141,7 +141,7 @@ void MultiStripRobots (int nPlayer)
 	int 		i;
 	CObject	*objP;
 
-if (gameData.app.nGameMode & GM_MULTI_ROBOTS) {
+if (gameData.app.GameMode (GM_MULTI_ROBOTS)) {
 	if (nPlayer == N_LOCALPLAYER)
 		for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 			MultiDeleteControlledRobot (gameData.multigame.robots.controlled [i]);
@@ -161,7 +161,7 @@ if (gameData.app.nGameMode & GM_MULTI_ROBOTS) {
 void MultiDumpRobots (void)
 {
 // Dump robot control info for debug purposes
-if (! (gameData.app.nGameMode & GM_MULTI_ROBOTS))
+if (!gameData.app.GameMode (GM_MULTI_ROBOTS))
 	return;
 }
 
@@ -310,7 +310,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 			gameData.multigame.robots.fired [sending] = 0;
 			MultiSendData (reinterpret_cast<char*> (gameData.multigame.robots.fireBuf [sending]), 18, 1);
 			}
-		if (! (gameData.app.nGameMode & GM_NETWORK))
+		if (! IsNetworkGame)
 			sent += 1;
 		last_sent = sending;
 		rval++;
@@ -356,7 +356,7 @@ void MultiSendRobotPosition (int nObject, int force)
 {
 	int	i;
 
-if (! (gameData.app.nGameMode & GM_MULTI))
+if (! IsMultiGame)
 	return;
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 (); // See rob
@@ -371,7 +371,7 @@ if (OBJECTS [nObject].cType.aiInfo.REMOTE_OWNER != N_LOCALPLAYER)
 i = OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM;
 gameData.multigame.robots.lastSendTime [i] = gameData.time.xGame;
 gameData.multigame.robots.sendPending [i] = 1+force;
-if (force & (gameData.app.nGameMode & GM_NETWORK))
+if (force & IsNetworkGame)
 	networkData.bPacketUrgent = 1;
 return;
 }
@@ -413,7 +413,7 @@ if (OBJECTS [nObject].cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER) {
 		return;
 	memcpy (gameData.multigame.robots.fireBuf [slot], gameData.multigame.msg.buf, bufP);
 	gameData.multigame.robots.fired [slot] = 1;
-	if (gameData.app.nGameMode & GM_NETWORK)
+	if (IsNetworkGame)
 		networkData.bPacketUrgent = 1;
 	}
 else
@@ -1022,7 +1022,7 @@ void MultiRobotRequestChange (CObject *robot, int player_num)
 	int	slot, nRemoteObj;
 	sbyte dummy;
 
-if (!(gameData.app.nGameMode & GM_MULTI_ROBOTS))
+if (!gameData.app.GameMode (GM_MULTI_ROBOTS))
 	return;
 slot = robot->cType.aiInfo.REMOTE_SLOT_NUM;
 if ((slot < 0) || (slot >= MAX_ROBOTS_CONTROLLED)) {

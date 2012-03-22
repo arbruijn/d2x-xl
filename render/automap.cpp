@@ -248,7 +248,7 @@ if (AM_SHOW_PLAYERS) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if ((i != N_LOCALPLAYER) && AM_SHOW_PLAYER (i)) {
 			if (OBJECTS [gameData.multiplayer.players [i].nObject].info.nType == OBJ_PLAYER) {
-				color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
+				color = IsTeamGame ? GetTeam (i) : i;
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
 				if (bTextured)
 					ogl.SetBlending (true);

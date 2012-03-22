@@ -541,7 +541,7 @@ int NetworkVerifyPlayers (void)
 for (j = 0, playerP = gameData.multiplayer.players; j < MAX_PLAYERS; j++, playerP++)
 	nPlayerObjs [j] = playerP->connected ? playerP->nObject : -1;
 #if 0
-if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 #endif
 //	bHaveReactor = 1;	// multiplayer maps do not need a control center ...
 nPlayers = 0;

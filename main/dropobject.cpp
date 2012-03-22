@@ -214,7 +214,7 @@ while (nSegment == -1) {
 		while ((count < gameData.multiplayer.nPlayers) &&	// make sure player is not the local player or on his team
 				 (!gameData.multiplayer.players [nPlayer].connected ||
 				  (nPlayer == N_LOCALPLAYER) ||
-				  ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && (GetTeam (nPlayer) == GetTeam (N_LOCALPLAYER))))) {
+				  ((gameData.app.GameMode (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && (GetTeam (nPlayer) == GetTeam (N_LOCALPLAYER))))) {
 			nPlayer = (nPlayer + 1) % gameData.multiplayer.nPlayers;
 			count++;
 			}
@@ -378,7 +378,7 @@ int MaybeDropNetPowerup (short nObject, int nPowerupType, int nDropState)
 if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	MultiSendWeapons (1);
 #if 0
-	if ((gameData.app.nGameMode & GM_NETWORK) && (nDropState < CHECK_DROP) && (nPowerupType >= 0)) {
+	if (IsNetworkGame && (nDropState < CHECK_DROP) && (nPowerupType >= 0)) {
 		if (gameData.multiplayer.powerupsInMine [nPowerupType] >= gameData.multiplayer.maxPowerupsAllowed [nPowerupType])
 			return 0;
 		}
@@ -579,7 +579,7 @@ if ((delObjP->info.nCreator == BOSS_GATE_MATCEN_NUM) && (delObjP->info.contains.
 	}
 
 // Change multiplayer extra-lives into invulnerability
-if ((gameData.app.nGameMode & GM_MULTI) && (delObjP->info.contains.nId == POW_EXTRA_LIFE))
+if (IsMultiGame && (delObjP->info.contains.nId == POW_EXTRA_LIFE))
 	delObjP->info.contains.nId = POW_INVUL;
 }
 
@@ -605,7 +605,7 @@ switch (nType) {
 			xOldMag = vInitVel.Mag();
 
 			//	We want powerups to move more in network mode.
-			if (IsMultiGame && !(gameData.app.nGameMode & GM_MULTI_ROBOTS)) {
+			if (IsMultiGame && !gameData.app.GameMode (GM_MULTI_ROBOTS)) {
 				nRandScale = 4;
 				//	extra life powerups are converted to invulnerability in multiplayer, for what is an extra life, anyway?
 				if (nId == POW_EXTRA_LIFE)
@@ -627,7 +627,7 @@ switch (nType) {
 				if (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS) {
 					return -1;
 					}
-				if ((gameData.app.nGameMode & GM_NETWORK) && networkData.nStatus == NETSTAT_ENDLEVEL)
+				if (IsNetworkGame && networkData.nStatus == NETSTAT_ENDLEVEL)
 					return -1;
 				}
 			nObject = CreatePowerup (nId, owner, nSegment, vNewPos, 0);
@@ -987,11 +987,11 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 	playerP->nInvuls =
 	playerP->nCloaks = 0;
 	playerP->flags &= ~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED);
-	if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG))
+	if ((gameData.app.GameMode (GM_CAPTURE)) && (playerP->flags & PLAYER_FLAGS_FLAG))
 		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, (GetTeam (nPlayer) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG);
 
 #if !DBG
-	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
+	if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY))
 #endif
 	if (IsHoardGame || (IsEntropyGame && extraGameInfo [1].entropy.nVirusStability)) {
 		// Drop hoard orbs
@@ -1001,7 +1001,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 		console.printf (CON_DBG, "HOARD MODE: Dropping %d orbs \n", playerP->secondaryAmmo [PROXMINE_INDEX]);
 #endif
 		maxCount = playerP->secondaryAmmo [PROXMINE_INDEX];
-		if ((gameData.app.nGameMode & GM_HOARD) && (maxCount > 12))
+		if (IsHoardGame && (maxCount > 12))
 			maxCount = 12;
 		for (i = 0; i < maxCount; i++)
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_HOARD_ORB);
@@ -1049,11 +1049,11 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 			(playerObjP->info.nId == N_LOCALPLAYER) ? gameData.omega.xCharge [IsMultiGame] : DEFAULT_MAX_OMEGA_CHARGE;
 	//	Drop the secondary weapons
 	//	Note, proximity weapon only comes in packets of 4.  So drop n/2, but a max of 3 (handled inside maybe_drop..)  Make sense?
-	if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
+	if (!(gameData.app.GameMode (GM_HOARD | GM_ENTROPY)))
 		MaybeDropSecondaryWeaponEgg (playerObjP, PROXMINE_INDEX, (playerP->secondaryAmmo [PROXMINE_INDEX])/4);
 	MaybeDropSecondaryWeaponEgg (playerObjP, SMART_INDEX, playerP->secondaryAmmo [SMART_INDEX]);
 	MaybeDropSecondaryWeaponEgg (playerObjP, MEGA_INDEX, playerP->secondaryAmmo [MEGA_INDEX]);
-	if (!(gameData.app.nGameMode & GM_ENTROPY))
+	if (!IsEntropyGame)
 		MaybeDropSecondaryWeaponEgg (playerObjP, SMARTMINE_INDEX, (playerP->secondaryAmmo [SMARTMINE_INDEX])/4);
 	MaybeDropSecondaryWeaponEgg (playerObjP, EARTHSHAKER_INDEX, playerP->secondaryAmmo [EARTHSHAKER_INDEX]);
 	//	Drop the player's missiles in packs of 1 and/or 4

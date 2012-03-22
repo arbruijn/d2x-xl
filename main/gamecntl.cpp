@@ -190,11 +190,11 @@ if (gameData.app.bGamePaused) {		//unpause!
 	return KEY_PAUSE;
 	}
 
-if (gameData.app.nGameMode & GM_NETWORK) {
+if (IsNetworkGame) {
 	 DoShowNetGameHelp();
     return (KEY_PAUSE);
 	}
-else if (gameData.app.nGameMode & GM_MULTI) {
+else if (IsMultiGame) {
 	HUDInitMessage (TXT_MODEM_PAUSE);
 	return (KEY_PAUSE);
 	}
@@ -261,14 +261,14 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 
 	case CV_REAR:
 		if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-		    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+		    (!IsMultiGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 			gameStates.render.cockpit.n3DView [nWindow] = CV_RADAR_TOPDOWN;
 			break;
 			}
 
 	case CV_RADAR_TOPDOWN:
 		if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-		    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+		    (!IsMultiGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 			gameStates.render.cockpit.n3DView [nWindow] = CV_RADAR_HEADSUP;
 			break;
 			}

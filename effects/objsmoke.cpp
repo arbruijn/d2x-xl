@@ -366,7 +366,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0)) {
 		DropAfterburnerBlobs (objP, 2, I2X (1), -1, gameData.objs.consoleP, 1); //I2X (1) / 4);
 	}
 #endif
-if ((gameData.app.nGameMode & GM_NETWORK) && !gameData.multiplayer.players [nPlayer].connected)
+if (IsNetworkGame && !gameData.multiplayer.players [nPlayer].connected)
 	nParts = 0;
 else if (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED))
 	nParts = 0;

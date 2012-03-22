@@ -263,7 +263,7 @@ if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {    // no countdown on regist
 		(missionManager.nCurrentLevel == missionManager.nLastLevel)) {
 		if (!IsMultiGame)
 			return;
-		if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+		if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 			return;
 			}
 		}
@@ -564,7 +564,7 @@ if (Hide ())
 if ((gameData.hud.msgs [0].nMessages > 0) && (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
 
-if ((gameData.app.nGameMode & GM_NETWORK) && (timevar = I2X (netGame.GetPlayTimeAllowed () * 5 * 60))) {
+if (IsNetworkGame && (timevar = I2X (netGame.GetPlayTimeAllowed () * 5 * 60))) {
 	i = X2I (timevar - gameStates.app.xThisLevelTime) + 1;
 	sprintf (szScore, "T - %5d", i);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
@@ -578,7 +578,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && (timevar = I2X (netGame.GetPlayTime
 
 void CGenericCockpit::DrawFlag (int x, int y)
 {
-if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
+if ((gameData.app.GameMode (GM_CAPTURE)) && (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 	BitBlt ((GetTeam (N_LOCALPLAYER) == TEAM_BLUE) ? FLAG_ICON_RED : FLAG_ICON_BLUE, x, y, false, false);
 }
 
@@ -591,13 +591,13 @@ if (Hide ())
 
 	static int nIdOrbs = 0, nIdEntropy [2] = {0, 0};
 
-if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
+if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) {
 	CBitmap* bmP = BitBlt (-1, x, y, false, false, I2X (1), 0, &gameData.hoard.icon [gameStates.render.fonts.bHires].bm);
 	//GrUBitmapM (x, y, bmP);
 
 	x += 3 * bmP->Width () / 2;
 	y += gameStates.render.fonts.bHires + 1;
-	if (gameData.app.nGameMode & GM_ENTROPY) {
+	if (IsEntropyGame) {
 		char	szInfo [20];
 		int	w, h, aw;
 		if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] >= extraGameInfo [1].entropy.nCaptureVirusThreshold)
@@ -659,12 +659,12 @@ void CGenericCockpit::DrawBombCount (int x, int y, int bgColor, int bShowAlways)
 
 	static int nIdBombCount = 0;
 
-if (gameData.app.nGameMode & GM_ENTROPY)
+if (IsEntropyGame)
 	return;
 bomb = ArmedBomb ();
 if (!bomb)
 	return;
-if ((gameData.app.nGameMode & GM_HOARD) && (bomb == PROXMINE_INDEX))
+if (IsHoardGame && (bomb == PROXMINE_INDEX))
 	return;
 nBombs = LOCALPLAYER.secondaryAmmo [bomb];
 if (!(bShowAlways || nBombs))		//no bombs, draw nothing on HUD
@@ -1284,7 +1284,7 @@ void CGenericCockpit::DrawPlayerNames (void)
 
 bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || (netGame.m_info.bShowAllNames && gameData.multigame.bShowReticleName));
 bShowTeamNames = (gameData.multigame.bShowReticleName && (IsCoopGame || IsTeamGame));
-bShowFlags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
+bShowFlags = (gameData.app.GameMode (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
 
 nTeam = GetTeam (N_LOCALPLAYER);
 for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check all players
@@ -1366,10 +1366,10 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 					fix dx = FixMul (dy, screen.Aspect ());
 					fix w = dx / 4;
 					fix h = dy / 4;
-					if (gameData.app.nGameMode & (GM_CAPTURE | GM_ENTROPY))
+					if (gameData.app.GameMode (GM_CAPTURE | GM_ENTROPY))
 						CCanvas::Current ()->SetColorRGBi ((GetTeam (nPlayer) == TEAM_BLUE) ? MEDRED_RGBA :  MEDBLUE_RGBA);
-					else if (gameData.app.nGameMode & GM_HOARD) {
-						if (gameData.app.nGameMode & GM_TEAM)
+					else if (IsHoardGame) {
+						if (IsTeamGame)
 							CCanvas::Current ()->SetColorRGBi ((GetTeam (nPlayer) == TEAM_RED) ? MEDRED_RGBA :  MEDBLUE_RGBA);
 						else
 							CCanvas::Current ()->SetColorRGBi (MEDGREEN_RGBA);
@@ -1557,7 +1557,7 @@ for (i = 0; i < nPlayers; i++) {
 															  (double) gameData.multiplayer.players [nPlayer].netKillsTotal) * 100.0));
 		}
 	else if (gameData.multigame.score.bShowList == 3) {
-		if (gameData.app.nGameMode & GM_ENTROPY)
+		if (IsEntropyGame)
 			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d [%d/%d]",
 													 gameData.multigame.score.nTeam [i], gameData.entropy.nTeamRooms [i + 1],
 													 gameData.entropy.nTotalRooms);
@@ -1969,7 +1969,7 @@ else
 
 
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
-	gameData.app.nGameMode = gameData.demo.nGameMode;
+	gameData.app.SetGameMode (gameData.demo.nGameMode);
 
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
@@ -2034,7 +2034,7 @@ if (bExtraInfo) {
 CCanvas::SetCurrent (CurrentGameScreen ());
 
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
-	gameData.app.nGameMode = GM_NORMAL;
+	gameData.app.SetGameMode (GM_NORMAL);
 
 if (gameStates.app.bPlayerIsDead)
 	PlayerDeadMessage ();

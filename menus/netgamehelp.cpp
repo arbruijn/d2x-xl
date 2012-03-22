@@ -104,7 +104,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	eff = (int)((double)((double) networkData.nNetLifeKills / ((double) networkData.nNetLifeKilled + (double) networkData.nNetLifeKills))*100.0);
 	if (eff < 0)
 		eff = 0;
-	if (gameData.app.nGameMode & GM_HOARD) {
+	if (IsHoardGame) {
 		if (gameData.score.nChampion == -1)
 			sprintf (szText, TXT_NO_RECORD2);
 		else

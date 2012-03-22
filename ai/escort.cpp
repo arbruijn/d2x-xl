@@ -322,7 +322,7 @@ void _CDECL_ BuddyMessage (const char * format, ... )
 {
 if (gameData.escort.bMsgsSuppressed)
 	return;
-if (gameData.app.nGameMode & GM_MULTI)
+if (IsMultiGame)
 	return;
 if ((gameData.escort.xLastMsgTime + I2X (1) < gameData.time.xGame) ||
 	 (gameData.escort.xLastMsgTime > gameData.time.xGame)) {
@@ -1115,7 +1115,7 @@ return m.TinyMenu (NULL, "Guide-Bot Commands");
 
 void DoEscortMenu (void)
 {
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	HUDInitMessage (TXT_GB_MULTIPLAYER);
 	return;
 	}

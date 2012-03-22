@@ -930,7 +930,7 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	if (0 > nObject)
 		return;
 	if (gameData.weapons.nSecondary == PROXMINE_INDEX) {
-		if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
+		if (!gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) {
 			if (++gameData.laser.nProximityDropped == 4) {
 				gameData.laser.nProximityDropped = 0;
 				MaybeDropNetPowerup (nObject, POW_PROXMINE, INIT_DROP);
@@ -939,7 +939,7 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 		break; //no dual prox bomb drop
 		}
 	else if (gameData.weapons.nSecondary == SMARTMINE_INDEX) {
-		if (!(gameData.app.nGameMode & GM_ENTROPY)) {
+		if (!IsEntropyGame) {
 			if (++gameData.laser.nSmartMinesDropped == 4) {
 				gameData.laser.nSmartMinesDropped = 0;
 				MaybeDropNetPowerup (nObject, POW_SMARTMINE, INIT_DROP);

@@ -399,13 +399,13 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++)
 
 static inline int BonusScore (void)
 {
-if (gameData.app.nGameMode & GM_ENTROPY)
+if (IsEntropyGame)
 	return 3;
-else if (gameData.app.nGameMode & GM_HOARD)
+else if (IsHoardGame)
 	return 5;
-else if (gameData.app.nGameMode & GM_CAPTURE)
+else if (gameData.app.GameMode (GM_CAPTURE))
 	return 5;
-else if (gameData.app.nGameMode & GM_MONSTERBALL)
+else if (gameData.app.GameMode (GM_MONSTERBALL))
 	return extraGameInfo [1].monsterball.nBonus;
 else
 	return 1;
@@ -460,7 +460,7 @@ void MultiEndLevelScore (void)
 	int oldConnect = 0;
 	int i;
 
-if (gameData.app.nGameMode & GM_NETWORK) {
+if (IsNetworkGame) {
 	oldConnect = LOCALPLAYER.connected;
 	if (LOCALPLAYER.connected != CONNECT_DIED_IN_MINE)
 		CONNECT (N_LOCALPLAYER, CONNECT_END_MENU);
@@ -471,7 +471,7 @@ SetFunctionMode (FMODE_MENU);
 scoreTable.Display ();
 SetFunctionMode (FMODE_GAME);
 // Restore connect state
-if (gameData.app.nGameMode & GM_NETWORK)
+if (IsNetworkGame)
 	CONNECT (N_LOCALPLAYER, oldConnect);
 if (IsCoopGame) {
 	for (i = 0; i < gameData.multiplayer.nMaxPlayers; i++) // Reset keys
@@ -718,7 +718,7 @@ if (gameStates.app.bHaveExtraGameInfo && extraGameInfo [1].bAutoBalanceTeams && 
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (GetTeam (i) != t)
 			continue;
-		if ((gameData.app.nGameMode & GM_CAPTURE) && (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG))
+		if ((gameData.app.GameMode (GM_CAPTURE)) && (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG))
 			continue;
 		SwitchTeam (i, 1);
 		h -= 2; // one team grows and the other shrinks ...
@@ -788,7 +788,7 @@ objP->SetType (OBJ_GHOST);
 objP->info.renderType = RT_NONE;
 objP->info.movementType = MT_NONE;
 MultiResetPlayerObject (objP);
-if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 	MultiStripRobots (nPlayer);
 }
 
@@ -914,7 +914,7 @@ if ((killedType != OBJ_PLAYER) && (killedType != OBJ_GHOST)) {
 killedP = gameData.multiplayer.players + nKilledPlayer;
 gameData.multigame.score.pFlags [nKilledPlayer] = 1;
 Assert ((nKilledPlayer >= 0) && (nKilledPlayer < gameData.multiplayer.nPlayers));
-if (gameData.app.nGameMode & GM_TEAM)
+if (IsTeamGame)
 	sprintf (szKilled, "%s (%s)", killedP->callsign, netGame.m_info.szTeamName [GetTeam (nKilledPlayer)]);
 else
 	sprintf (szKilled, "%s", killedP->callsign);
@@ -955,7 +955,7 @@ else if ((killerType != OBJ_PLAYER) && (killerType != OBJ_GHOST)) {
 	return;
 	}
 killerP = gameData.multiplayer.players + nKillerPlayer;
-if (gameData.app.nGameMode & GM_TEAM)
+if (IsTeamGame)
 	sprintf (szKiller, "%s (%s)", killerP->callsign, netGame.m_info.szTeamName [GetTeam (nKillerPlayer)]);
 else
 	sprintf (szKiller, "%s", killerP->callsign);
@@ -970,7 +970,7 @@ t0 = GetTeam (nKilledPlayer);
 t1 = GetTeam (nKillerPlayer);
 if (nKillerPlayer == nKilledPlayer) {
 	if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY))) {
-		if (gameData.app.nGameMode & GM_TEAM)
+		if (IsTeamGame)
 			gameData.multigame.score.nTeam [GetTeam (nKilledPlayer)]--;
 		gameData.multiplayer.players [nKilledPlayer].netKilledTotal++;
 		gameData.multiplayer.players [nKilledPlayer].netKillsTotal--;
@@ -1054,7 +1054,7 @@ killedP->flags &= (~(PLAYER_FLAGS_HEADLIGHT_ON));  // clear the nKilled guys fla
 
 void MultiSyncMonsterball (void)
 {
-if ((gameData.app.nGameMode & GM_MONSTERBALL) && gameData.hoard.monsterballP && IAmGameHost ()) {
+if ((gameData.app.GameMode (GM_MONSTERBALL)) && gameData.hoard.monsterballP && IAmGameHost ()) {
 	static time_t	t0 = 0;
 
 	if (gameStates.app.nSDLTicks [0] - t0 > 250) {
@@ -1084,7 +1084,7 @@ if ((gameData.app.nGameMode & GM_MONSTERBALL) && gameData.hoard.monsterballP && 
 
 void MultiDoSyncMonsterball (char* buf)
 {
-if ((gameData.app.nGameMode & GM_MONSTERBALL) && !IAmGameHost ()) {
+if ((gameData.app.GameMode (GM_MONSTERBALL)) && !IAmGameHost ()) {
 	CFixVector	vPos;
 	bool			bSync = false;
 	int			i = 1;
@@ -1140,7 +1140,7 @@ if (!IsMultiGame) {
 	return;
 	}
 
-if ((gameData.app.nGameMode & GM_NETWORK) && netGame.GetPlayTimeAllowed () && (lasttime != X2I (gameStates.app.xThisLevelTime))) {
+if (IsNetworkGame && netGame.GetPlayTimeAllowed () && (lasttime != X2I (gameStates.app.xThisLevelTime))) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected) {
 			if (i == N_LOCALPLAYER) {
@@ -1153,7 +1153,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && netGame.GetPlayTimeAllowed () && (l
 MultiSendMessage (); // Send any waiting messages
 if (!gameData.multigame.menu.bInvoked)
 	gameData.multigame.menu.bLeave = 0;
-if (gameData.app.nGameMode & GM_MULTI_ROBOTS) {
+if (gameData.app.GameMode (GM_MULTI_ROBOTS)) {
 	MultiCheckRobotTimeout ();
 	}
 NetworkDoFrame (0, 1);
@@ -1176,9 +1176,9 @@ if (len != MultiMsgLen (int (buf [0])))
 Assert (buf [0] <= MULTI_MAX_TYPE);
 //      Assert (buf [0]  >= 0);
 
-if ((gameData.app.nGameMode & GM_NETWORK) &&(buf [0] < 1))
+if (IsNetworkGame &&(buf [0] < 1))
 	return;
-else if (gameData.app.nGameMode & GM_NETWORK)
+else if (IsNetworkGame)
 	NetworkSendData (reinterpret_cast<ubyte*> (buf), len, bUrgent);
 }
 
@@ -1188,7 +1188,7 @@ void MultiLeaveGame (void)
 {
 if (!IsMultiGame)
 	return;
-if (gameData.app.nGameMode & GM_NETWORK) {
+if (IsNetworkGame) {
 	gameData.multigame.create.nCount = 0;
 	AdjustMineSpawn ();
 	MultiCapObjects ();
@@ -1201,7 +1201,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	MultiSendPlayerExplode (MULTI_PLAYER_DROP);
 	}
 MultiSendQuit (MULTI_QUIT);
-if (gameData.app.nGameMode & GM_NETWORK)
+if (IsNetworkGame)
 	NetworkLeaveGame ();
 gameData.app.nGameMode |= GM_GAME_OVER;
 if (gameStates.app.nFunctionMode != FMODE_EXIT)
@@ -1224,7 +1224,7 @@ gameData.multigame.score.bShowList = 1;
 
 int MultiEndLevel (int *secret)
 {
-return (gameData.app.nGameMode & GM_NETWORK) ? NetworkEndLevel (secret) : 0;
+return IsNetworkGame ? NetworkEndLevel (secret) : 0;
 }
 
 //
@@ -1242,7 +1242,7 @@ int MultiMenuPoll (void)
 
 bWasFuelCenAlive = gameData.reactor.bDestroyed;
 // Special polling function for in-game menus for multiplayer and serial
-if (!((gameData.app.nGameMode & GM_MULTI) &&(gameStates.app.nFunctionMode == FMODE_GAME)))
+if (!(IsMultiGame &&(gameStates.app.nFunctionMode == FMODE_GAME)))
 	return 0;
 if (gameData.multigame.menu.bLeave)
 	return -1;
@@ -1336,7 +1336,7 @@ void MultiDoPosition (char *buf)
 #endif
 int nPlayer = (N_LOCALPLAYER + 1) % 2;
 CObject *objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
-if (gameData.app.nGameMode & GM_NETWORK) {
+if (IsNetworkGame) {
 	Int3 (); // Get Jason, what the hell are we doing here?
 	return;
 	}
@@ -1523,14 +1523,14 @@ audio.PlaySound (SOUND_HUD_MESSAGE);
 audio.DestroyObjectSound (nObject);
 if (buf [2] == 0) {
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [(int) buf [1]].callsign, TXT_HAS_ESCAPED);
-	if (gameData.app.nGameMode & GM_NETWORK)
+	if (IsNetworkGame)
 		CONNECT ((int) buf [1], CONNECT_ESCAPE_TUNNEL);
 	if (!gameData.multigame.bGotoSecret)
 		gameData.multigame.bGotoSecret = 2;
 	}
 else if (buf [2] == 1) {
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [(int) buf [1]].callsign, TXT_HAS_FOUND_SECRET);
-	if (gameData.app.nGameMode & GM_NETWORK)
+	if (IsNetworkGame)
 		CONNECT ((int) buf [1], CONNECT_FOUND_SECRET);
 	if (!gameData.multigame.bGotoSecret)
 		gameData.multigame.bGotoSecret = 1;
@@ -1567,7 +1567,7 @@ if (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_EXPLODING | OF_DESTROYED))
 	return;
 NetworkResetObjSync (nLocalObj);
 if (objP->info.nType == OBJ_POWERUP)
-	if (gameData.app.nGameMode & GM_NETWORK) 
+	if (IsNetworkGame) 
 		RemovePowerupInMine (objP->info.nId);
 if (objP->info.nType == OBJ_ROBOT)
 	MultiDestroyRobot (objP);
@@ -1594,7 +1594,7 @@ else {
 
 void MultiDoQuit (char *buf)
 {
-if (gameData.app.nGameMode & GM_NETWORK) {
+if (IsNetworkGame) {
 	int i, n = 0;
 
 	audio.PlaySound (SOUND_HUD_MESSAGE);
@@ -1620,7 +1620,7 @@ int nPlayer = (int) (buf [1]);
 Assert (nPlayer < gameData.multiplayer.nPlayers);
 gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
 gameData.multiplayer.players [nPlayer].cloakTime = gameData.time.xGame;
-if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 	MultiStripRobots (nPlayer);
 }
 
@@ -1642,7 +1642,7 @@ Assert (nPlayer < gameData.multiplayer.nPlayers);
 gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_CLOAKED;
 gameData.multiplayer.players [nPlayer].cloakTime = gameData.time.xGame;
 AIDoCloakStuff ();
-if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 	MultiStripRobots (nPlayer);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiCloak (nPlayer);
@@ -2192,7 +2192,7 @@ if ((secret) && !gameData.multigame.bGotoSecret)
 else if (!gameData.multigame.bGotoSecret)
 	gameData.multigame.bGotoSecret = 2;
 MultiSendData (gameData.multigame.msg.buf, 3, 1);
-if (gameData.app.nGameMode & GM_NETWORK) {
+if (IsNetworkGame) {
 	CONNECT (N_LOCALPLAYER, CONNECT_ESCAPE_TUNNEL);
 	NetworkSendEndLevelPacket ();
 	}
@@ -2264,7 +2264,7 @@ if (bufI > MultiMsgLen (nType))
 MultiSendData (gameData.multigame.msg.buf, MultiMsgLen (nType), 2);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 	MultiSendDeCloak ();
-if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 	MultiStripRobots (N_LOCALPLAYER);
 gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed = 0;
 }
@@ -2284,7 +2284,7 @@ void MultiCapObjects (void)
 {
 	int	h, i, nType, nFlagType;
 
-if (!(gameData.app.nGameMode & GM_NETWORK))
+if (!IsNetworkGame)
 	return;
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	nType = (i == SUPER_LASER_INDEX) ? POW_SUPERLASER : int (primaryWeaponToPowerup [i]);
@@ -2307,19 +2307,19 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 		}
 	}
 // Don't do the adjustment stuff for Hoard mode
-if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
+if (!(gameData.app.GameMode (GM_HOARD | GM_ENTROPY)))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] /= 4;
-if (gameData.app.nGameMode & GM_ENTROPY)
+if (IsEntropyGame)
 	LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX] = 0;
 else
 	LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX] /= 4;
 
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
-	if (gameData.app.nGameMode & GM_HOARD) {
+	if (IsHoardGame) {
 		if (i == PROXMINE_INDEX)
 			continue;
 		}
-	else if (gameData.app.nGameMode & GM_ENTROPY) {
+	else if (IsEntropyGame) {
 		if ((i == PROXMINE_INDEX) || (i == SMARTMINE_INDEX))
 			continue;
 		}
@@ -2344,7 +2344,7 @@ for (i = 0; i < int (sizeofa (nDeviceFlags)); i++) {
 if (PlayerHasHeadlight (-1) && (0 >= MissingPowerups (POW_HEADLIGHT)))
 	LOCALPLAYER.flags &= (~PLAYER_FLAGS_HEADLIGHT);
 
-if (gameData.app.nGameMode & GM_CAPTURE) {
+if (gameData.app.GameMode (GM_CAPTURE)) {
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG) {
 		if (GetTeam (N_LOCALPLAYER) == TEAM_RED)
 			nFlagType = POW_BLUEFLAG;
@@ -2363,7 +2363,7 @@ void MultiAdjustCapForPlayer (int nPlayer)
 {
 	int	i, nType;
 
-if (!(gameData.app.nGameMode & GM_NETWORK))
+if (!IsNetworkGame)
 	return;
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	nType = int (primaryWeaponToPowerup [i]);
@@ -2426,7 +2426,7 @@ void MultiSendPosition (int nObject)
 #endif
 	int count = 0;
 
-if (gameData.app.nGameMode & GM_NETWORK)
+if (IsNetworkGame)
 	return;
 gameData.multigame.msg.buf [count++] = (char)MULTI_POSITION;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
@@ -2464,7 +2464,7 @@ else {
 	gameData.multigame.msg.buf [4] = (char) -1;
 	}
 MultiSendData (gameData.multigame.msg.buf, 5, 1);
-if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 	MultiStripRobots (N_LOCALPLAYER);
 }
 
@@ -2533,7 +2533,7 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	sbyte nObjOwner;
 	short nRemoteObj;
 
-if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) && (gameData.app.nGameMode & GM_NETWORK)) {
+if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) && IsNetworkGame) {
 	RemovePowerupInMine (OBJECTS [nObject].info.nId);
 	}
 gameData.multigame.msg.buf [0] = char (MULTI_REMOVE_OBJECT);
@@ -2563,7 +2563,7 @@ void MultiSendInvul (void)
 gameData.multigame.msg.buf [0] = MULTI_INVUL;
 gameData.multigame.msg.buf [1] = (char)N_LOCALPLAYER;
 MultiSendData (gameData.multigame.msg.buf, 2, 1);
-if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 	MultiStripRobots (N_LOCALPLAYER);
 }
 
@@ -2585,7 +2585,7 @@ void MultiSendCloak (void)
 gameData.multigame.msg.buf [0] = MULTI_CLOAK;
 gameData.multigame.msg.buf [1] = (char)N_LOCALPLAYER;
 MultiSendData (gameData.multigame.msg.buf, 2, 1);
-if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 	MultiStripRobots (N_LOCALPLAYER);
 }
 
@@ -2618,7 +2618,7 @@ extern void NetworkSendNakedPacket (char *, short, int);
 
 void MultiSendDoorOpenSpecific (int nPlayer, int nSegment, int CSide, ushort flags)
 {
-Assert (gameData.app.nGameMode & GM_NETWORK);
+Assert IsNetworkGame;
 gameData.multigame.msg.buf [0] = MULTI_DOOR_OPEN;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nSegment);
 gameData.multigame.msg.buf [3] = (sbyte)CSide;
@@ -2954,7 +2954,7 @@ void MultiPrepLevel (void)
 	int		cloakCount, invulCount;
 	CObject	*objP;
 
-Assert (gameData.app.nGameMode & GM_MULTI);
+Assert IsMultiGame;
 Assert (gameData.multiplayer.nPlayerPositions > 0);
 gameData.score.nHighscore = 0;
 gameData.score.nChampion = -1;
@@ -2977,9 +2977,9 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
 if (!IsCoopGame)
 	MultiDeleteExtraObjects (); // Removes monsters from level
-if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
+if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 	MultiSetRobotAI (); // Set all Robot AI to types we can cope with
-if (gameData.app.nGameMode & GM_NETWORK) {
+if (IsNetworkGame) {
 	MultiAdjustCapForPlayer (N_LOCALPLAYER);
 	MultiSendPowerupUpdate ();
 	}
@@ -3115,10 +3115,10 @@ FORALL_STATIC_OBJS (objP, i) {
 				objP->BashToShield (!netGame.m_info.DoQuadLasers);
 				break;
 			case POW_BLUEFLAG:
-				objP->BashToShield (!(gameData.app.nGameMode & GM_CAPTURE));
+				objP->BashToShield (!(gameData.app.GameMode (GM_CAPTURE)));
 				break;
 			case POW_REDFLAG:
-				objP->BashToShield (!(gameData.app.nGameMode & GM_CAPTURE));
+				objP->BashToShield (!(gameData.app.GameMode (GM_CAPTURE)));
 			}
 		}
 	}
@@ -3129,7 +3129,7 @@ if (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	FreeHoardData ();
 	InitHoardData ();
 	}
-if (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
+if (gameData.app.GameMode (GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	MultiApplyGoalTextures ();
 ResetMonsterball (IAmGameHost () != 0);	//will simply delete all Monsterballs for non-Monsterball games
 MultiSortKillList ();
@@ -3191,45 +3191,45 @@ int nBlueGoalSegment, nRedGoalSegment;
 
 void CSegment::ChangeTexture (int oldOwner)
 {
-	int		bFullBright = ((gameData.app.nGameMode & GM_HOARD) != 0) || ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bBrightenRooms);
+	int		bFullBright = (IsHoardGame != 0) || (IsEntropyGame && extraGameInfo [1].entropy.bBrightenRooms);
 	static	short texOverrides [3] = {-313, TMI_BLUE_TEAM, TMI_RED_TEAM};
 
 //if (oldOwner < 0)
 //	oldOwner = nOwner;
-if ((gameData.app.nGameMode & GM_ENTROPY) &&(extraGameInfo [1].entropy.nOverrideTextures == 2))
+if (IsEntropyGame &&(extraGameInfo [1].entropy.nOverrideTextures == 2))
 	return;
 switch (m_function) {
 	case SEGMENT_FUNC_GOAL_BLUE:
 		nBlueGoalSegment = Index ();
-		OverrideTextures ((short) ((gameData.app.nGameMode & GM_HOARD) ? TMI_GOAL_HOARD : TMI_GOAL_BLUE), -1, -1, bFullBright, 1);
+		OverrideTextures ((short) (IsHoardGame ? TMI_GOAL_HOARD : TMI_GOAL_BLUE), -1, -1, bFullBright, 1);
 		break;
 
 	case SEGMENT_FUNC_GOAL_RED:
 		nRedGoalSegment = Index ();
 		// Make both textures the same if Hoard mode
-		OverrideTextures ((short) ((gameData.app.nGameMode & GM_HOARD) ? TMI_GOAL_HOARD : TMI_GOAL_RED), -1, -1, bFullBright, 1);
+		OverrideTextures ((short) (IsHoardGame ? TMI_GOAL_HOARD : TMI_GOAL_RED), -1, -1, bFullBright, 1);
 		break;
 
 	case SEGMENT_FUNC_ROBOTMAKER:
-		if ((gameData.app.nGameMode & GM_ENTROPY) &&(m_owner >= 0))
+		if (IsEntropyGame &&(m_owner >= 0))
 			OverrideTextures (texOverrides [(int) m_owner],
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 316, bFullBright, oldOwner < 0);
 		break;
 
 	case SEGMENT_FUNC_REPAIRCEN:
-		if ((gameData.app.nGameMode & GM_ENTROPY) &&(m_owner >= 0))
+		if (IsEntropyGame &&(m_owner >= 0))
 			OverrideTextures (texOverrides [(int) m_owner],
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 315, bFullBright, oldOwner < 0);
 		break;
 
 	case SEGMENT_FUNC_FUELCEN:
-		if ((gameData.app.nGameMode & GM_ENTROPY) &&(m_owner >= 0))
+		if (IsEntropyGame &&(m_owner >= 0))
 			OverrideTextures (texOverrides [(int) m_owner],
 								   (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 314, bFullBright, oldOwner < 0);
 		break;
 
 	default:
-		if ((gameData.app.nGameMode & GM_ENTROPY) &&(m_owner >= 0))
+		if (IsEntropyGame &&(m_owner >= 0))
 			OverrideTextures (texOverrides [(int) m_owner],
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), -1, bFullBright, oldOwner < 0);
 	}
@@ -3241,7 +3241,7 @@ void MultiApplyGoalTextures ()
 {
 	int		i;
 
-if (!(gameData.app.nGameMode & GM_ENTROPY) || (extraGameInfo [1].entropy.nOverrideTextures == 1))
+if (!IsEntropyGame || (extraGameInfo [1].entropy.nOverrideTextures == 1))
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
 		SEGMENTS [i].ChangeTexture (-1);
 }
@@ -3281,7 +3281,7 @@ FORALL_OBJS (objP, i) {
 	nType = objP->info.nType;
 	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST) || (nType == OBJ_CAMBOT) || (nType == OBJ_EFFECT))
 		nnp++;
-	else if ((nType == OBJ_ROBOT) &&(gameData.app.nGameMode & GM_MULTI_ROBOTS))
+	else if ((nType == OBJ_ROBOT) && gameData.app.GameMode (GM_MULTI_ROBOTS))
 		;
 	else if ((nType != OBJ_NONE) &&(nType != OBJ_PLAYER) &&(nType != OBJ_POWERUP) &&
 				(nType != OBJ_MONSTERBALL) &&(nType != OBJ_EXPLOSION) &&(nType != OBJ_REACTOR) &&
@@ -3660,7 +3660,7 @@ void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ushort 
 	// Send wall states a specific rejoining player
 	short count = 0;
 
-Assert (gameData.app.nGameMode & GM_NETWORK);
+Assert IsNetworkGame;
 gameData.multigame.msg.buf [count++] = MULTI_WALL_STATUS;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);
 count += 2;
@@ -3889,7 +3889,7 @@ void MultiSendLightSpecific (int nPlayer, int nSegment, ubyte val)
 {
 	short count = 1, i;
 
-Assert (gameData.app.nGameMode & GM_NETWORK);
+Assert IsNetworkGame;
 gameData.multigame.msg.buf [0] = MULTI_LIGHT;
 PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment);
 count += sizeof (int);
@@ -4087,7 +4087,7 @@ void MultiSendMonsterball (int bForce, int bCreate)
 
 	static int nTimeout = 0;
 
-if (!(gameData.app.nGameMode & GM_MONSTERBALL))
+if (!(gameData.app.GameMode (GM_MONSTERBALL)))
 	return;
 if (!gameData.hoard.monsterballP)
 	return;
@@ -4241,8 +4241,8 @@ else if (nFunction == 3) {
 
 void MultiSendCaptureBonus (char nPlayer)
 {
-	Assert ((gameData.app.nGameMode & (GM_CAPTURE | GM_ENTROPY)) ||
-			  ((gameData.app.nGameMode & GM_MONSTERBALL) == GM_MONSTERBALL));
+	Assert ((gameData.app.GameMode (GM_CAPTURE | GM_ENTROPY)) ||
+			  ((gameData.app.GameMode (GM_MONSTERBALL)) == GM_MONSTERBALL));
 
 gameData.multigame.msg.buf [0] = MULTI_CAPTURE_BONUS;
 gameData.multigame.msg.buf [1] = nPlayer;
@@ -4254,7 +4254,7 @@ MultiDoCaptureBonus (gameData.multigame.msg.buf);
 
 void MultiSendOrbBonus (char nPlayer)
 {
-Assert (gameData.app.nGameMode & GM_HOARD);
+Assert IsHoardGame;
 gameData.multigame.msg.buf [0] = MULTI_ORB_BONUS;
 gameData.multigame.msg.buf [1] = nPlayer;
 gameData.multigame.msg.buf [2] = (char) LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX];
@@ -4340,7 +4340,7 @@ else
 	HUDInitMessage (TXT_SCORED_ORBS2, gameData.multiplayer.players [nPlayer].callsign, buf [2]);
 if (nPlayer == N_LOCALPLAYER)
 	soundQueue.StartSound (SOUND_HUD_YOU_GOT_GOAL, I2X (2));
-else if (gameData.app.nGameMode & GM_TEAM) {
+else if (IsTeamGame) {
 	if (nTeam == TEAM_RED)
 		audio.PlaySound (SOUND_HUD_RED_GOT_GOAL, SOUNDCLASS_GENERIC, I2X (2));
 	else
@@ -4445,7 +4445,7 @@ void MultiDoGotOrb (char *buf)
 	int nPlayer = int (buf [1]);
 
 Assert (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY));
-if (gameData.app.nGameMode & GM_TEAM) {
+if (IsTeamGame) {
 	if (GetTeam (nPlayer) == GetTeam (N_LOCALPLAYER))
 		audio.PlaySound (SOUND_FRIEND_GOT_ORB, SOUNDCLASS_GENERIC, I2X (2));
 	else
@@ -4454,7 +4454,7 @@ if (gameData.app.nGameMode & GM_TEAM) {
 else
 	audio.PlaySound (SOUND_OPPONENT_GOT_ORB, SOUNDCLASS_GENERIC, I2X (2));
 gameData.multiplayer.players [nPlayer].flags|= PLAYER_FLAGS_FLAG;
-if (gameData.app.nGameMode & GM_ENTROPY)
+if (IsEntropyGame)
 	HUDInitMessage (TXT_PICKVIRUS2, gameData.multiplayer.players [nPlayer].callsign);
 else
 	HUDInitMessage (TXT_PICKORB2, gameData.multiplayer.players [nPlayer].callsign);
@@ -4469,13 +4469,13 @@ void DropOrb (void)
 if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)))
 	return; // How did we get here? Get Leighton!
 if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]) {
-	HUDInitMessage ((gameData.app.nGameMode & GM_HOARD) ? TXT_NO_ORBS : TXT_NO_VIRUS);
+	HUDInitMessage (IsHoardGame ? TXT_NO_ORBS : TXT_NO_VIRUS);
 	return;
 	}
 nObject = SpitPowerup (gameData.objs.consoleP, POW_HOARD_ORB);
 if (nObject < 0)
 	return;
-HUDInitMessage ((gameData.app.nGameMode & GM_HOARD) ? TXT_DROP_ORB : TXT_DROP_VIRUS);
+HUDInitMessage (IsHoardGame ? TXT_DROP_ORB : TXT_DROP_VIRUS);
 audio.PlaySound (SOUND_DROP_WEAPON);
 if (nObject > -1)
 	if (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY))
@@ -4491,7 +4491,7 @@ void DropFlag (void)
 {
 	int nObject;
 
-if (!(gameData.app.nGameMode & GM_CAPTURE) && !(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)))
+if (!(gameData.app.GameMode (GM_CAPTURE)) && !(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)))
 	return;
 if (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)) {
 	DropOrb ();
@@ -4506,7 +4506,7 @@ audio.PlaySound (SOUND_DROP_WEAPON);
 nObject = SpitPowerup (gameData.objs.consoleP, (ubyte) ((GetTeam (N_LOCALPLAYER) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG));
 if (nObject < 0)
 	return;
-if ((gameData.app.nGameMode & GM_CAPTURE) && (nObject > -1))
+if ((gameData.app.GameMode (GM_CAPTURE)) && (nObject > -1))
 	MultiSendDropFlag (nObject, RandShort ());
 LOCALPLAYER.flags &= ~ (PLAYER_FLAGS_FLAG);
 }
@@ -4551,7 +4551,7 @@ nObject = SpitPowerup (objP, powerupId, seed);
 MapObjnumLocalToRemote (nObject, nRemoteObj, nPlayer);
 if (nObject!=-1)
 	OBJECTS [nObject].cType.powerupInfo.nCount = ammo;
-if (gameData.app.nGameMode & GM_ENTROPY)
+if (IsEntropyGame)
 	OBJECTS [nObject].info.nCreator = GetTeam (nPlayer) + 1;
 else if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY))) {
 	gameData.multiplayer.players [nPlayer].flags &= ~(PLAYER_FLAGS_FLAG);
@@ -4768,11 +4768,11 @@ switch (id) {
 			return (0);
 		break;
 	case POW_BLUEFLAG:
-		if (!(gameData.app.nGameMode & GM_CAPTURE))
+		if (!(gameData.app.GameMode (GM_CAPTURE)))
 			return (0);
 		break;
 	case POW_REDFLAG:
-		if (!(gameData.app.nGameMode & GM_CAPTURE))
+		if (!(gameData.app.GameMode (GM_CAPTURE)))
 			return (0);
 		break;
 	}
@@ -4825,7 +4825,7 @@ TRIGGERS [(int) ((ubyte) buf [1])].m_info.flags |= TF_DISABLED;
 
 void MultiAddLifetimeKills (void)
 {
-if (!(gameData.app.nGameMode & GM_NETWORK))
+if (!IsNetworkGame)
 	return;
 int oldrank = GetMyNetRanking ();
 ++networkData.nNetLifeKills;
@@ -4848,7 +4848,7 @@ void MultiAddLifetimeKilled (void)
 	// This function adds a "nKilled" to lifetime stats of this player, and possibly
 	// gives a demotion.  If so, it will tell everyone else
 
-if (!(gameData.app.nGameMode & GM_NETWORK))
+if (!IsNetworkGame)
 	return;
 int oldrank = GetMyNetRanking ();
 ++networkData.nNetLifeKilled;
@@ -4947,7 +4947,7 @@ if (reversedSound.data [0].Create (l)) {
 void MultiSendPlayByPlay (int num, int spnum, int dpnum)
 {
 #if 0
-if (!(gameData.app.nGameMode & GM_HOARD))
+if (!IsHoardGame)
 	return;
 gameData.multigame.msg.buf [0] = MULTI_PLAY_BY_PLAY;
 gameData.multigame.msg.buf [1] = (char)num;
@@ -4966,7 +4966,7 @@ void MultiDoPlayByPlay (char *buf)
 	int spnum = buf [2];
 	int dpnum = buf [3];
 
-if (!(gameData.app.nGameMode & GM_HOARD)) {
+if (!IsHoardGame) {
 	Int3 (); // Get Leighton, something bad has happened.
 	return;
 	}

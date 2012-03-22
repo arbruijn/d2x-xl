@@ -1100,7 +1100,7 @@ int LoadLevelData (char * pszFilename, int nLevel)
 /*---*/PrintLog (1, "loading level data\n");
 SetDataVersion (-1);
 gameData.segs.bHaveSlideSegs = 0;
-if (gameData.app.nGameMode & GM_NETWORK) {
+if (IsNetworkGame) {
 	gameData.multiplayer.maxPowerupsAllowed.Clear (0);
 	gameData.multiplayer.powerupsInMine.Clear (0);
 	}
