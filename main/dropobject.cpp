@@ -405,7 +405,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 		}
 	else {
 		if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (nDropState == INIT_DROP) && OBJECTS [nObject].IsMissile ()) {
-			if (!((MultiPowerupIs4Pack (nPowerupType + 1) && (MissingPowerups (nPowerupType + 1))) {
+			if (!(MultiPowerupIs4Pack (nPowerupType + 1) && MissingPowerups (nPowerupType + 1))) {
 				AddDropInfo (nObject, nPowerupType, 0x7FFFFFFF); // respawn missiles only after their destruction
 				return 0;
 				}
