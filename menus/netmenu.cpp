@@ -108,7 +108,7 @@ netGame.m_info.DoMegas = m.Value ("megamsl");
 netGame.m_info.DoFlash = m.Value ("flashmsl");
 netGame.m_info.DoGuided = m.Value ("guidedmsl");
 netGame.m_info.DoSmartMine = m.Value ("smartmine");
-netGame.m_info.DoMercury = m.Value ("mercuymsl");
+netGame.m_info.DoMercury = m.Value ("mercurymsl");
 netGame.m_info.DoEarthShaker = m.Value ("eshakermsl");
 
 netGame.m_info.DoInvulnerability = m.Value ("invul");
