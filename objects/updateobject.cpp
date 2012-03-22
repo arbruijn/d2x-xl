@@ -117,8 +117,9 @@ if (this == dbgObjP)
 if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && !extraGameInfo [IsMultiGame].nSpawnDelay && IsMissile ()) {
 	int i = FindDropInfo (Signature ());
 	if (i >= 0) {
+		short nPowerupType = gameData.objs.dropInfo [i].nPowerupType;
 		DelDropInfo (i);
-		MaybeDropNetPowerup (i, Id (), EXEC_DROP);
+		MaybeDropNetPowerup (i, nPowerupType, EXEC_DROP);
 		}
 	}
 }
