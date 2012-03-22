@@ -913,7 +913,6 @@ if ((killedType != OBJ_PLAYER) && (killedType != OBJ_GHOST)) {
 	}
 killedP = gameData.multiplayer.players + nKilledPlayer;
 gameData.multigame.score.pFlags [nKilledPlayer] = 1;
-Assert ((nKilledPlayer >= 0) && (nKilledPlayer < gameData.multiplayer.nPlayers));
 if (IsTeamGame)
 	sprintf (szKilled, "%s (%s)", killedP->callsign, netGame.m_info.szTeamName [GetTeam (nKilledPlayer)]);
 else
@@ -1173,9 +1172,6 @@ void MultiSendData (char *buf, int len, int bUrgent)
 if (len != MultiMsgLen (int (buf [0])))
 	len = len;
 #endif
-Assert (buf [0] <= MULTI_MAX_TYPE);
-//      Assert (buf [0]  >= 0);
-
 if (IsNetworkGame &&(buf [0] < 1))
 	return;
 else if (IsNetworkGame)
@@ -1293,7 +1289,6 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		gameData.multigame.laser.nObjects [1][i] = GET_INTEL_SHORT (buf + 9 + i * sizeof (short));
 	}
 #endif
-Assert (nPlayer < gameData.multiplayer.nPlayers);
 if (OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.nType == OBJ_GHOST)
 	MultiMakeGhostPlayer (nPlayer);
 if (weapon == FLARE_ADJUST)
@@ -1358,7 +1353,6 @@ void MultiDoReappear (char *buf)
 	short nObject = GET_INTEL_SHORT (buf + 1);
 	CObject *objP = OBJECTS + nObject;
 
-Assert (nObject >= 0);
 MultiMakeGhostPlayer (objP->info.nId);
 objP->CreateAppearanceEffect ();
 gameData.multigame.score.pFlags [objP->info.nId] = 0;
@@ -1380,9 +1374,6 @@ nPlayer = buf [1];
 #if !DBG
 if ((nPlayer < 0) || (nPlayer >= gameData.multiplayer.nPlayers))
 	return;
-#else
-Assert (nPlayer >= 0);
-Assert (nPlayer < gameData.multiplayer.nPlayers);
 #endif
 // If we are in the process of sending OBJECTS to a new player, reset that process
 NetworkResetObjSync (-1);
@@ -1550,7 +1541,6 @@ void MultiDoRemoveObj (char *buf)
 nObject = GET_INTEL_SHORT (buf + 1);
 nObjOwner = buf [3];
 
-Assert (nObject >= 0);
 if (nObject < 1)
 	return;
 nLocalObj = ObjnumRemoteToLocal (nObject, nObjOwner); // translate to local nObject
@@ -1617,7 +1607,6 @@ return;
 void MultiDoInvul (char *buf)
 {
 int nPlayer = (int) (buf [1]);
-Assert (nPlayer < gameData.multiplayer.nPlayers);
 gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
 gameData.multiplayer.players [nPlayer].cloakTime = gameData.time.xGame;
 if (gameData.app.GameMode (GM_MULTI_ROBOTS))
@@ -1629,7 +1618,6 @@ if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 void MultiDoDeInvul (char *buf)
 {
 int nPlayer = (int) (buf [1]);
-Assert (nPlayer < gameData.multiplayer.nPlayers);
 gameData.multiplayer.players [nPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
 }
 
@@ -1638,7 +1626,6 @@ gameData.multiplayer.players [nPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
 void MultiDoCloak (char *buf)
 {
 int nPlayer = (int) (buf [1]);
-Assert (nPlayer < gameData.multiplayer.nPlayers);
 gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_CLOAKED;
 gameData.multiplayer.players [nPlayer].cloakTime = gameData.time.xGame;
 AIDoCloakStuff ();
@@ -2003,7 +1990,6 @@ if ((nPlayer == N_LOCALPLAYER) || (nPlayer == 255)) {
 void MultiDoSendPlayer (char *buf)
 {
 tNetPlayerStats *p = reinterpret_cast<tNetPlayerStats*> (buf);
-Assert (p->nLocalPlayer <= gameData.multiplayer.nPlayers);
 UseNetPlayerStats (gameData.multiplayer.players  + p->nLocalPlayer, p);
 }
 
@@ -2097,7 +2083,6 @@ while (nBytesProcessed < len) {
 	if ((nType < 0) || (nType > MULTI_MAX_TYPE))
 		return;
 	nMsgLen = MultiMsgLen (nType);
-	Assert (nMsgLen > 0);
 	if ((nBytesProcessed + nMsgLen) > len) {
 		Int3 ();
 		return;
@@ -2205,7 +2190,6 @@ void MultiSendPlayerExplode (char nType)
 	int bufI = 0;
 	int i;
 
-Assert ((nType == MULTI_PLAYER_DROP) || (nType == MULTI_PLAYER_EXPLODE));
 MultiSendPosition (LOCALPLAYER.nObject);
 NetworkResetObjSync (-1);
 gameData.multigame.msg.buf [bufI++] = nType;
@@ -2243,7 +2227,6 @@ if (multiMessageLengths [(int) nType][1] > 0) {
 	}
 #endif
 gameData.multigame.msg.buf [bufI++] = gameData.multigame.create.nCount;
-Assert (gameData.multigame.create.nCount <= MAX_NET_CREATE_OBJECTS);
 memset (gameData.multigame.msg.buf + bufI, -1, MAX_NET_CREATE_OBJECTS * sizeof (short));
 for (i = 0; i < gameData.multigame.create.nCount; i++) {
 	if (gameData.multigame.create.nObjNums [i] <= 0) {
@@ -2449,7 +2432,6 @@ void MultiSendKill (int nObject)
 {
 	int nKillerObj;
 
-Assert (OBJECTS [nObject].info.nId == N_LOCALPLAYER);
 nKillerObj = LOCALPLAYER.nKillerObj;
 MultiComputeKill (nKillerObj, nObject);
 gameData.multigame.msg.buf [0] = (char) MULTI_KILL;
@@ -2549,7 +2531,6 @@ NetworkResetObjSync (nObject);
 
 void MultiSendQuit (int why)
 {
-Assert (why == MULTI_QUIT);
 gameData.multigame.msg.buf [0] = (char)why;
 gameData.multigame.msg.buf [1] = N_LOCALPLAYER;
 MultiSendData (gameData.multigame.msg.buf, 2, 1);
@@ -2618,7 +2599,6 @@ extern void NetworkSendNakedPacket (char *, short, int);
 
 void MultiSendDoorOpenSpecific (int nPlayer, int nSegment, int CSide, ushort flags)
 {
-Assert IsNetworkGame;
 gameData.multigame.msg.buf [0] = MULTI_DOOR_OPEN;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nSegment);
 gameData.multigame.msg.buf [3] = (sbyte)CSide;
@@ -2812,8 +2792,6 @@ void MultiSendAudioTaunt (int taunt_num)
 		SOUND_BAD_SELECTION
 		};
 
-	Assert (taunt_num  >= 0);
-	Assert (taunt_num < 4);
 	audio.PlaySound (audio_taunts [taunt_num]);
 	MultiSendPlaySound (audio_taunts [taunt_num], I2X (1));
 #endif
@@ -2927,7 +2905,6 @@ void MultiSendHostageDoorStatus (int wallnum)
 	// should be
 	int count = 0;
 
-Assert (WALLS [wallnum].nType == WALL_BLASTABLE);
 gameData.multigame.msg.buf [count] = MULTI_HOSTAGE_DOOR;
 count += 1;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);
@@ -2954,8 +2931,6 @@ void MultiPrepLevel (void)
 	int		cloakCount, invulCount;
 	CObject	*objP;
 
-Assert IsMultiGame;
-Assert (gameData.multiplayer.nPlayerPositions > 0);
 gameData.score.nHighscore = 0;
 gameData.score.nChampion = -1;
 gameStates.render.bDropAfterburnerBlob = 0;
@@ -3516,7 +3491,6 @@ objP = OBJECTS + nObject;
 ammoCount = objP->cType.powerupInfo.nCount;
 if (objP->info.nId == POW_OMEGA && ammoCount == I2X (1))
 	ammoCount = I2X (1) - 1; //make fit in short
-Assert (ammoCount < I2X (1)); //make sure fits in short
 gameData.multigame.msg.buf [count++] = (char)MULTI_DROP_WEAPON;
 gameData.multigame.msg.buf [count++] = (char)objP->info.nId;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, N_LOCALPLAYER);
@@ -3660,7 +3634,6 @@ void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ushort 
 	// Send wall states a specific rejoining player
 	short count = 0;
 
-Assert IsNetworkGame;
 gameData.multigame.msg.buf [count++] = MULTI_WALL_STATUS;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);
 count += 2;
@@ -3683,7 +3656,6 @@ void MultiDoWallStatus (char *buf)
 	flag = buf [4];
 	state = buf [5];
 
-Assert (wallnum >= 0);
 WALLS [wallnum].nType = nType;
 WALLS [wallnum].flags = flag;
 WALLS [wallnum].state = state;
@@ -3889,7 +3861,6 @@ void MultiSendLightSpecific (int nPlayer, int nSegment, ubyte val)
 {
 	short count = 1, i;
 
-Assert IsNetworkGame;
 gameData.multigame.msg.buf [0] = MULTI_LIGHT;
 PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment);
 count += sizeof (int);
@@ -4241,9 +4212,6 @@ else if (nFunction == 3) {
 
 void MultiSendCaptureBonus (char nPlayer)
 {
-	Assert ((gameData.app.GameMode (GM_CAPTURE | GM_ENTROPY)) ||
-			  ((gameData.app.GameMode (GM_MONSTERBALL)) == GM_MONSTERBALL));
-
 gameData.multigame.msg.buf [0] = MULTI_CAPTURE_BONUS;
 gameData.multigame.msg.buf [1] = nPlayer;
 MultiSendData (gameData.multigame.msg.buf, 2, 1);
@@ -4254,7 +4222,6 @@ MultiDoCaptureBonus (gameData.multigame.msg.buf);
 
 void MultiSendOrbBonus (char nPlayer)
 {
-Assert IsHoardGame;
 gameData.multigame.msg.buf [0] = MULTI_ORB_BONUS;
 gameData.multigame.msg.buf [1] = nPlayer;
 gameData.multigame.msg.buf [2] = (char) LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX];
@@ -4444,7 +4411,6 @@ void MultiDoGotOrb (char *buf)
 {
 	int nPlayer = int (buf [1]);
 
-Assert (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY));
 if (IsTeamGame) {
 	if (GetTeam (nPlayer) == GetTeam (N_LOCALPLAYER))
 		audio.PlaySound (SOUND_FRIEND_GOT_ORB, SOUNDCLASS_GENERIC, I2X (2));

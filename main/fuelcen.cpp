@@ -969,7 +969,7 @@ else if (segP->m_function == SEGMENT_FUNC_GOAL_RED) {
 
 void CSegment::CheckForHoardGoal (void)
 {
-Assert IsHoardGame;
+Assert (IsHoardGame);
 if (gameStates.app.bPlayerIsDead)
 	return;
 if ((m_function != SEGMENT_FUNC_GOAL_BLUE) && (m_function != SEGMENT_FUNC_GOAL_RED))
