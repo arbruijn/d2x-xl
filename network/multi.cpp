@@ -2350,7 +2350,7 @@ if (gameData.app.nGameMode & GM_CAPTURE) {
 			nFlagType = POW_BLUEFLAG;
 		else
 			nFlagType = POW_REDFLAG;
-		if (1 > MissingPowerups (nFlagType))
+		if (MissingPowerups (nFlagType) < 1)
 			LOCALPLAYER.flags &= (~PLAYER_FLAGS_FLAG);
 		}
 	}
@@ -5117,6 +5117,8 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	if (h < 1)
 		continue;
 	if (MultiPowerupIs4Pack (i))
+		continue;
+	if ((i == POW_ENERGY) || (i == POW_SHIELD_BOOST))
 		continue;
 #if DBG
 	PowerupsInMine (i);
