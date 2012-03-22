@@ -34,5 +34,8 @@ void MaybeDropSecondaryWeaponEgg (CObject *playerObjP, int weapon_index, int cou
 void DropPlayerEggs (CObject *playerObjP);
 int ReturnFlagHome (CObject *pObj);
 int PickConnectedSegment (CObject *objP, int nMaxDepth, int *nDepthP);
+int AddDropInfo (short nObject, short nPowerupType, int nDropTime = -1);
+void DelDropInfo (int h);
+int FindDropInfo (int nSignature);
 
 #endif /* _DROPOBJECT_H */

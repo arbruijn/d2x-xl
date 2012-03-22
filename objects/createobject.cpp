@@ -398,6 +398,16 @@ if (nPowerup == POW_VULCAN_AMMO) {
 		}
 	nCount += (nAmmo + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CAPACITY;
 	}
+else if ((nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE)) {
+	int nMines = 0;
+	int nId = (nPowerup == POW_PROXMINE) ? PROXMINE_ID : SMARTMINE_ID;
+	CObject* objP;
+	FORALL_WEAPON_OBJS (objP, i) {
+		if (objP->Id () == nId)
+			nMines++;
+		}
+	nCount += (nId + 3) / 4;
+	}
 return nCount;
 }
 

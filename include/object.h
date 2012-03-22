@@ -1265,6 +1265,7 @@ typedef struct tObjDropInfo {
 	short		nPrevPowerup;
 	short		nNextPowerup;
 	short		nObject;
+	int		nSignature;
 } tObjDropInfo;
 
 class CObjDropInfo {

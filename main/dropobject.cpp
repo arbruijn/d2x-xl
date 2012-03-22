@@ -307,7 +307,7 @@ while (h >= 0) {
 
 //	------------------------------------------------------------------------------------------------------
 
-static int AddDropInfo (void)
+int AddDropInfo (short nObject, short nPowerupType, int nDropTime)
 {
 	int	h;
 
@@ -317,6 +317,10 @@ h = gameData.objs.nFreeDropped;
 gameData.objs.nFreeDropped = gameData.objs.dropInfo [h].nNextPowerup;
 gameData.objs.dropInfo [h].nPrevPowerup = gameData.objs.nLastDropped;
 gameData.objs.dropInfo [h].nNextPowerup = -1;
+gameData.objs.dropInfo [h].nObject = nObject;
+gameData.objs.dropInfo [h].nSignature = OBJECTS [nObject].Signature ();
+gameData.objs.dropInfo [h].nPowerupType = nPowerupType;
+gameData.objs.dropInfo [h].nDropTime = (nDropTime > 0) ? nDropTime : (extraGameInfo [IsMultiGame].nSpawnDelay <= 0) ? -1 : gameStates.app.nSDLTicks [0];
 if (gameData.objs.nLastDropped >= 0)
 	gameData.objs.dropInfo [gameData.objs.nLastDropped].nNextPowerup = h;
 else
@@ -328,7 +332,7 @@ return h;
 
 //	------------------------------------------------------------------------------------------------------
 
-static void DelDropInfo (int h)
+void DelDropInfo (int h)
 {
 	int	i, j;
 
@@ -350,15 +354,26 @@ gameData.objs.nDropped--;
 }
 
 //	------------------------------------------------------------------------------------------------------
+
+int FindDropInfo (int nSignature)
+{
+	short	i = gameData.objs.nFirstDropped;
+
+while (i >= 0) {
+	if (gameData.objs.dropInfo [i].nSignature == nSignature)
+		return i;
+	i = gameData.objs.dropInfo [i].nNextPowerup;
+	}
+return -1;
+}
+
+//	------------------------------------------------------------------------------------------------------
 //	Drop cloak powerup if in a network game.
+// nObject will contain a drop list index if MaybeDropNetPowerup is called with state CHECK_DROP
 
 int MaybeDropNetPowerup (short nObject, int nPowerupType, int nDropState)
 {
 if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
-	short			nSegment;
-	int			h, bFixedPos = 0;
-	CFixVector	vNewPos;
-
 	MultiSendWeapons (1);
 #if 0
 	if ((gameData.app.nGameMode & GM_NETWORK) && (nDropState < CHECK_DROP) && (nPowerupType >= 0)) {
@@ -369,6 +384,8 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (gameData.reactor.bDestroyed || gameStates.app.bEndLevelSequence)
 		return 0;
 	gameData.multigame.create.nCount = 0;
+
+
 	if (IsMultiGame && (extraGameInfo [IsMultiGame].nSpawnDelay != 0)) {
 		if (nDropState == CHECK_DROP) {
 			if ((gameData.objs.dropInfo [nObject].nDropTime < 0) ||
@@ -377,39 +394,49 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 			nDropState = EXEC_DROP;
 			}
 		else if (nDropState == INIT_DROP) {
-			if (0 > (h = AddDropInfo ()))
-				return 0;
-			gameData.objs.dropInfo [h].nObject = nObject;
-			gameData.objs.dropInfo [h].nPowerupType = nPowerupType;
-			gameData.objs.dropInfo [h].nDropTime =
-				 (extraGameInfo [IsMultiGame].nSpawnDelay <= 0) ? -1 : gameStates.app.nSDLTicks [0];
+			AddDropInfo (nObject, (short) nPowerupType);
 			return 0;
 			}
 		if (nDropState == EXEC_DROP) {
 			DelDropInfo (nObject);
 			}
 		}
+	else {
+		if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (nDropState == INIT_DROP) && OBJECTS [nObject].IsMissile ()) {
+			if (nDropState == INIT_DROP) {
+				AddDropInfo (nObject, nPowerupType, 0x7FFFFFFF); // respawn missiles only after their destruction
+				return 0;
+				}
+			}
+		}
+
 	if (0 > (nObject = CallObjectCreateEgg (OBJECTS + LOCALPLAYER.nObject, 1, OBJ_POWERUP, nPowerupType, true)))
 		return 0;
-	if (0 > (nSegment = ChooseDropSegment (OBJECTS + nObject, &bFixedPos, nDropState))) {
-		OBJECTS [nObject].Die ();
+
+	CObject* objP = OBJECTS + nObject;
+	int bFixedPos = 0;
+	short nSegment = ChooseDropSegment (OBJECTS + nObject, &bFixedPos, nDropState);
+	if (0 > nSegment) {
+		objP->Die ();
 		return 0;
 		}
-	OBJECTS [nObject].mType.physInfo.velocity.SetZero ();
+	objP->mType.physInfo.velocity.SetZero ();
+
+	CFixVector vNewPos;
 	if (bFixedPos)
-		vNewPos = OBJECTS [nObject].info.position.vPos;
+		vNewPos = objP->info.position.vPos;
 	else {
 		CFixVector vOffset = SEGMENTS [nSegment].Center () - vNewPos;
 		CFixVector::Normalize (vOffset);
 		vNewPos = SEGMENTS [nSegment].RandomPoint ();
-		vNewPos += vOffset * OBJECTS [nObject].info.xSize;
+		vNewPos += vOffset * objP->info.xSize;
 		}
 	nSegment = FindSegByPos (vNewPos, nSegment, 1, 0);
 	MultiSendCreatePowerup (nPowerupType, nSegment, nObject, &vNewPos);
 	if (!bFixedPos)
-		OBJECTS [nObject].info.position.vPos = vNewPos;
-	OBJECTS [nObject].RelinkToSeg (nSegment);
-	CreateExplosion (&OBJECTS [nObject], nSegment, vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
+		objP->info.position.vPos = vNewPos;
+	objP->RelinkToSeg (nSegment);
+	CreateExplosion (objP, nSegment, vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 	return 1;
 	}
 return 0;
