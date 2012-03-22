@@ -313,6 +313,7 @@ int AddDropInfo (short nObject, short nPowerupType, int nDropTime)
 
 if (gameData.objs.nFreeDropped < 0)
 	return -1;
+AddPowerupInMine (nPowerupType);
 h = gameData.objs.nFreeDropped;
 gameData.objs.nFreeDropped = gameData.objs.dropInfo [h].nNextPowerup;
 gameData.objs.dropInfo [h].nPrevPowerup = gameData.objs.nLastDropped;
@@ -338,6 +339,7 @@ void DelDropInfo (int h)
 
 if (h < 0)
 	return;
+RemovePowerupInMine (gameData.objs.dropInfo [h].nPowerupType);
 i = gameData.objs.dropInfo [h].nPrevPowerup;
 j = gameData.objs.dropInfo [h].nNextPowerup;
 if (i < 0)
