@@ -724,7 +724,7 @@ return nObject;
 // ----------------------------------------------------------------------------
 // Returns created CObject number. If object dropped by player, set flag.
 
-int ObjectCreateEgg (CObject *objP, bool bLocal, bUpdateLimits)
+int ObjectCreateEgg (CObject *objP, bool bLocal, bool bUpdateLimits)
 {
 	int	i, nObject = -1;
 
