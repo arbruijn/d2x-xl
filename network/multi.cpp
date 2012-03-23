@@ -2353,13 +2353,16 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	if (IsBuiltinWeapon (i))	// weapon is standard loadout
 		continue;
 	if (i == 0) {// laser
-		if (IsBuiltinWeapon (LASER_INDEX) || IsBuiltinWeapon (SUPER_LASER_INDEX))	// lasers or superlasers are standard loadout
+		if (IsBuiltinWeapon (SUPER_LASER_INDEX))
 			continue;
+		if (!IsBuiltinWeapon (LASER_INDEX))	// lasers or superlasers are standard loadout
+			AddAllowedPowerup (POW_LASER, gameData.multiplayer.players [nPlayer].LaserLevel (0));
 		if (gameData.multiplayer.players [nPlayer].laserLevel > MAX_LASER_LEVEL)
-		AddAllowedPowerup (POW_SUPERLASER, gameData.multiplayer.players [nPlayer].LaserLevel (1));
-		AddAllowedPowerup (POW_LASER, gameData.multiplayer.players [nPlayer].LaserLevel (0));
+			AddAllowedPowerup (POW_SUPERLASER, gameData.multiplayer.players [nPlayer].LaserLevel (1));
 		}
 	else if (i != 5) { // super laser
+		if (IsBuiltinWeapon (i))
+			continue;
 		if (gameData.multiplayer.players [nPlayer].primaryWeaponFlags & (1 << i)) {
 		    AddAllowedPowerup (nType);
 			if ((nType == POW_FUSION) && (gameData.multiplayer.weaponStates [nPlayer].bTripleFusion > 0))

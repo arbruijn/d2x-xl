@@ -476,7 +476,10 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				ResetPlayerTimeout (i, t);
 				continue;
 				}
-#if 1//!DBG
+#if DBG
+			if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 3000))
+				NetworkTimeoutPlayer (i);
+#else
 			if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 15000))
 				NetworkTimeoutPlayer (i);
 #endif
