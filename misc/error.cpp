@@ -500,7 +500,7 @@ if (fLog) {
 		va_start (arglist, fmt);
 		if (nLogIndent > 0)
 			memset (szLogLine [nLogLine], ' ', nLogIndent);
-		else
+		else if (nLogIndent < 0)
 			nLogIndent = 0;
 		nLogLine &= 3;
 		vsprintf (szLogLine [nLogLine] + nLogIndent, fmt, arglist);
