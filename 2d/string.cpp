@@ -79,13 +79,17 @@ void FreeStringPool (void)
 
 PrintLog (1, "unloading string pool\n");
 for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
-	delete[] ps->pszText;
-	ps->pszText = NULL;
+	if (ps->pszText) {
+		delete[] ps->pszText;
+		ps->pszText = NULL;
+		}
 	if (ps->pId)
 		*ps->pId = 0;
-	ps->bmP->ReleaseTexture ();
-	delete ps->bmP;
-	ps->bmP = NULL;
+	if (ps->bmP) {
+		ps->bmP->ReleaseTexture ();
+		delete ps->bmP;
+		ps->bmP = NULL;
+		}
 	}
 PrintLog (-1);
 PrintLog (1, "initializing string pool\n");
