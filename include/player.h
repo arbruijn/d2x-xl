@@ -226,7 +226,10 @@ class __pack__ CPlayerData : public CPlayerInfo {
 			Setup (); 
 			}
 
-		void Reset (void) { memset (this, 0, sizeof (*this)); }
+		void Reset (void) { 
+			memset (this, 0, sizeof (*this)); 
+			tDeath = 0x7FFFFFFF;
+			}
 
 		void Setup (void) {
 			m_shield.Setup (0, Index (), INITIAL_SHIELD, &shield);
