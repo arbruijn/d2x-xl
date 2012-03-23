@@ -366,16 +366,16 @@ NW_SET_BYTES (data, bufI, old_info.data, old_info.dataSize);
 
 static void NetworkCheckPlayerTimeouts (void)
 {
-if (networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
+if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 	fix t = (fix) SDL_GetTicks ();
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (i == N_LOCALPLAYER)
 			continue;
 		int bConnected = (gameData.multiplayer.players [i].connected == 1) ? 1 : downloadManager.Downloading (i) ? -1 : 0;
 		if (!bConnected) {
 			if (t - gameData.multiplayer.players [i].tDisconnect > 60000) {
-				gameData.multiplayer.players [i].callSign [0] = '\0';
-				memset (gameData.multiplayer.players [i].netAddress, 0);
+				gameData.multiplayer.players [i].callsign [0] = '\0';
+				memset (gameData.multiplayer.players [i].netAddress, 0, sizeof (gameData.multiplayer.players [i].netAddress));
 				}
 			}
 		else {
@@ -402,7 +402,6 @@ void NetworkDoFrame (int bForce, int bListen)
 {
 	tFrameInfoShort shortSyncPack;
 	static fix xLastEndlevel = 0;
-	int i;
 
 if (!IsNetworkGame) 
 	return;

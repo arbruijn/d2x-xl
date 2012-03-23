@@ -1157,7 +1157,7 @@ for (short i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 		continue;
 	if (playerP->Shield () < 0)
 		continue;
-	if (!playerP->connected && (gameStates.app.nSDLTicks - playerP->tDisconnect > 60000))
+	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->tDisconnect > 60000))
 		continue;
 	if (nClass == 5) {
 		if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG) && ((nPowerup == POW_REDFLAG) == (GetTeam (i) == TEAM_RED)))
