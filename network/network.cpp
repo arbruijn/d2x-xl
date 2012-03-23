@@ -387,14 +387,14 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 				ResetPlayerTimeout (i, t);
 				continue;
 				}
-			}
 #if DBG
-		if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 3000))
-			NetworkTimeoutPlayer (i);
+			if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 3000))
+				NetworkTimeoutPlayer (i);
 #else
-		if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 15000))
-			NetworkTimeoutPlayer (i);
+			if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 15000))
+				NetworkTimeoutPlayer (i);
 #endif
+			}
 		}
 	networkData.xLastTimeoutCheck = 0;
 	}
