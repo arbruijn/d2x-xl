@@ -361,9 +361,9 @@ if (LOCALPLAYER.Shield (false) < gameStates.gameplay.InitialEnergy ())
 	LOCALPLAYER.ResetShield (gameStates.gameplay.InitialShield ());
 if (LOCALPLAYER.primaryWeaponFlags & (1 << OMEGA_INDEX))
 	SetMaxOmegaCharge ();
-if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
-	LOCALPLAYER.secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
-gameData.multiplayer.nBuiltinMissiles = 2 + NDL - gameStates.app.nDifficultyLevel;
+if (LOCALPLAYER.secondaryAmmo [0] < BUILTIN_MISSILES)
+	LOCALPLAYER.secondaryAmmo [0] = BUILTIN_MISSILES;
+gameData.multiplayer.nBuiltinMissiles = BUILTIN_MISSILES;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) 
 	gameData.physics.xAfterburnerCharge = I2X (1);
 OBJECTS [N_LOCALPLAYER].ResetDamage ();
@@ -523,8 +523,8 @@ for (i = 1; i < MAX_SECONDARY_WEAPONS; i++) {
 	LOCALPLAYER.secondaryAmmo [i] = 0;
 	bLastSecondaryWasSuper [i] = 0;
 	}
-gameData.multiplayer.nBuiltinMissiles = 2 + NDL - gameStates.app.nDifficultyLevel;
-LOCALPLAYER.secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
+gameData.multiplayer.nBuiltinMissiles = BUILTIN_MISSILES;
+LOCALPLAYER.secondaryAmmo [0] = BUILTIN_MISSILES;
 LOCALPLAYER.primaryWeaponFlags = HAS_LASER_FLAG;
 LOCALPLAYER.secondaryWeaponFlags = HAS_CONCUSSION_FLAG;
 gameData.weapons.nOverridden = 0;

@@ -467,17 +467,19 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		fix t = (fix) SDL_GetTicks ();
 	// Check for player timeouts
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if ((i != N_LOCALPLAYER) && 
-				((gameData.multiplayer.players [i].connected == 1) || downloadManager.Downloading (i))) {
-				if ((networkData.nLastPacketTime [i] == 0) || (networkData.nLastPacketTime [i] + downloadManager.GetTimeoutSecs () * 1000 > t)) {
-					ResetPlayerTimeout (i, t);
-					continue;
-					}
-#if 1//!DBG
-				if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 15000))
-					NetworkTimeoutPlayer (i);
-#endif
+			if (i == N_LOCALPLAYER)
+				continue;
+			int bConnected = (gameData.multiplayer.players [i].connected == 1) ? 1 : downloadManager.Downloading (i) ? -1 : 0;
+			if (!bConnected) 
+				continue;
+			if ((networkData.nLastPacketTime [i] == 0) || ((bConnected < 0) && (networkData.nLastPacketTime [i] + downloadManager.GetTimeoutSecs () * 1000 > t))) {
+				ResetPlayerTimeout (i, t);
+				continue;
 				}
+#if 1//!DBG
+			if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 15000))
+				NetworkTimeoutPlayer (i);
+#endif
 			}
 		networkData.xLastTimeoutCheck = 0;
 		}

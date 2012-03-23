@@ -2497,6 +2497,8 @@ class CWeaponState {
 		CWeaponState () { memset (this, 0, sizeof (*this)); }
 	};
 
+#define BUILTIN_MISSILES	(2 + NDL - gameStates.app.nDifficultyLevel)
+
 class CMultiplayerData {
 	public:
 		int 								nPlayers;				
