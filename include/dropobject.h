@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int ChooseDropSegment (CObject *objP, int *pbFixedPos, int nDropState);
 int ObjectCreateEgg (CObject *objP, bool bLocal = false, bool bUpdateLimits = true);
-int CallObjectCreateEgg (CObject *objP, int count, int nType, int id, bool bLocal = false);
+int CallObjectCreateEgg (CObject *objP, int count, int nType, int id, bool bLocal, bool bUpdateLimits = false);
 int MaybeDropNetPowerup (short nObject, int powerupType, int nDropState);
 void RespawnDestroyedWeapon (short nObject);
 void MaybeReplacePowerupWithEnergy (CObject *del_obj);
