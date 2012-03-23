@@ -2551,7 +2551,13 @@ class CMultiplayerData {
 			}
 
 		inline ushort PrimaryAmmo (short nPlayer, short nWeapon) { return players [nPlayer].primaryAmmo [nWeapon]; }
-		inline ushort SecondaryAmmo (short nPlayer, short nWeapon) { return players [nPlayer].secondaryAmmo [nWeapon]; }
+		inline ushort SecondaryAmmo (short nPlayer, short nWeapon, int bBuiltin = 1) { 
+			ushort nAmmo = players [nPlayer].secondaryAmmo [nWeapon];
+			if (nWeapon || bBuiltin)
+				return nAmmo; 
+			ushort nBuiltin = BuiltinMissiles (nPlayer);
+			return (nAmmo > nBuiltin) ? nAmmo - nBuiltin : 0;
+			}
 		inline ushort BuiltinMissiles (short nPlayer) { return weaponStates [nPlayer].nBuiltinMissiles; }
 		inline bool Flag (short nPlayer, uint nFlag) { return (players [nPlayer].flags & nFlag) != 0; }
 };

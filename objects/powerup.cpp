@@ -1174,9 +1174,7 @@ for (short i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 			nPowerups += (playerP->flags & nIndex) != 0;
 		}
 	else if (nClass == 2) {	// missiles
-		nPowerups += playerP->secondaryAmmo [nIndex];
-		if (!nIndex)
-			nPowerups -= gameData.multiplayer.weaponStates [i].nBuiltinMissiles;
+		nPowerups += gameData.multiplayer.SecondaryAmmo (i, nIndex, 0);
 		}
 	else {	// guns
 		if (!(extraGameInfo [0].loadout.nGuns & 1)) {
