@@ -1172,7 +1172,6 @@ class CApplicationStates {
 		int bGameAborted;
 		int bBetweenLevels;
 		int bPlayerIsDead;
-		int bPlayerExploded;
 		int bPlayerEggsDropped;
 		int bDeathSequenceAborted;
 		int bChangingShip;
@@ -2535,6 +2534,13 @@ class CMultiplayerData {
 			if (nPlayer < MAX_PLAYERS + 4)
 #endif
 			players [nPlayer].Connect (nStatus);
+			}
+
+		bool WaitingForExplosion (void) {
+			for (int i = 0; i < nPlayers; i++)
+				if (players [i].WaitingForExplosion ())
+					return true;
+			return false;
 			}
 };
 

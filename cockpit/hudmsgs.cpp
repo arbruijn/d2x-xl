@@ -305,7 +305,7 @@ return ret;
 
 void PlayerDeadMessage (void)
 {
-if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
+if (gameOpts->render.cockpit.bHUDMsgs && gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded) {
 	CHUDMessage	*pMsgs = gameData.hud.msgs;
 
    if (LOCALPLAYER.lives < 2) {

@@ -217,8 +217,9 @@ class __pack__ CPlayerData : public CPlayerInfo {
 		CShipEnergy	m_shield;
 		CShipEnergy	m_energy;
 		ubyte			m_laserLevels [2];
-		int			tDisconnect;
-		int			tDeath;
+		ubyte			m_bExploded;
+		int			m_tDisconnect;
+		int			m_tDeath;
 
 	public:
 		CPlayerData () { 
@@ -226,15 +227,14 @@ class __pack__ CPlayerData : public CPlayerInfo {
 			Setup (); 
 			}
 
-		void Reset (void) { 
-			memset (this, 0, sizeof (*this)); 
-			tDeath = 0x7FFFFFFF;
-			}
+		void Reset (void) { memset (this, 0, sizeof (*this)); }
 
 		void Setup (void) {
 			m_shield.Setup (0, Index (), INITIAL_SHIELD, &shield);
 			m_energy.Setup (1, Index (), INITIAL_ENERGY, &energy);
 			}
+
+		bool WaitingForExplosion (void);
 
 #if 1
 		inline fix InitialShield (void) { return m_shield.Initial (); }

@@ -201,7 +201,7 @@ if (!gameStates.app.cheats.bRobotsFiring)
 if (objP->info.controlType == CT_MORPH)
 	return;
 //	If player is exploded, stop firing.
-if (gameStates.app.bPlayerExploded)
+if (gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded)
 	return;
 if (objP->cType.aiInfo.xDyingStartTime)
 	return;		//	No firing while in death roll.
@@ -439,7 +439,7 @@ if ((gameData.ai.nTargetVisibility == 2) ||
 		if ((dot >= I2X (7) / 8) || ((dot > I2X (1) / 4) && botInfoP->bossFlag)) {
 			if (nGun < botInfoP->nGuns) {
 				if (botInfoP->attackType == 1) {
-					if ((TARGETOBJ->Type () == OBJ_PLAYER) && gameStates.app.bPlayerExploded)
+					if ((TARGETOBJ->Type () == OBJ_PLAYER) && gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded)
 						return;
 					if (gameData.ai.target.xDist >= objP->info.xSize + TARGETOBJ->info.xSize + I2X (2))
 						return;
@@ -531,7 +531,7 @@ else {	//	---------------------------------------------------------------
 			if (dot >= I2X (7) / 8) {
 				if (aiP->CURRENT_GUN < botInfoP->nGuns) {
 					if (botInfoP->attackType == 1) {
-						if (!gameStates.app.bPlayerExploded && (gameData.ai.target.xDist < objP->info.xSize + TARGETOBJ->info.xSize + I2X (2))) {	
+						if (!gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded && (gameData.ai.target.xDist < objP->info.xSize + TARGETOBJ->info.xSize + I2X (2))) {	
 							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION-2))
 								return;
 							DoAIRobotHitAttack (objP, TARGETOBJ, &objP->info.position.vPos);

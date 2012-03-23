@@ -374,9 +374,9 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 		int bConnected = (gameData.multiplayer.players [i].connected == 1) ? 1 : downloadManager.Downloading (i) ? -1 : 0;
 		if (!bConnected) {
 #if DBG
-			if (t - gameData.multiplayer.players [i].tDisconnect > 600) {
+			if (t - gameData.multiplayer.players [i].m_tDisconnect > 600) {
 #else
-			if (t - gameData.multiplayer.players [i].tDisconnect > 180000) { // drop player when he disconnected for 3 minutes
+			if (t - gameData.multiplayer.players [i].m_tDisconnect > 180000) { // drop player when he disconnected for 3 minutes
 #endif
 				gameData.multiplayer.players [i].callsign [0] = '\0';
 				memset (gameData.multiplayer.players [i].netAddress, 0, sizeof (gameData.multiplayer.players [i].netAddress));

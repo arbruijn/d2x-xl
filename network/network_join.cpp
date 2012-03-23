@@ -159,7 +159,7 @@ if (nPlayer == N_LOCALPLAYER) {
 	return;
 	}
 CONNECT (nPlayer, CONNECT_DISCONNECTED);
-gameData.multiplayer.players [nPlayer].tDisconnect = SDL_GetTicks ();
+gameData.multiplayer.players [nPlayer].m_tDisconnect = SDL_GetTicks ();
 KillPlayerSmoke (nPlayer);
 gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
 gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;

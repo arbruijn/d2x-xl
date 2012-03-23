@@ -312,10 +312,12 @@ return Index () == N_LOCALPLAYER;
 
 fix CPlayerData::SetShield (fix s, bool bScale) 
 { 
-if (s >= 0) 
-	tDeath = 0x7FFFFFFF;
-else if (tDeath == 0x7FFFFFFF)
-	tDeath = gameStates.app.nSDLTicks [0];
+if (s >= 0) {
+	m_tDeath = 0;
+	m_bExploded = 0;
+	}
+else if (!m_tDeath)
+	m_tDeath = gameStates.app.nSDLTicks [0];
 if (m_shield.Set (s, bScale)) {
 	if (OBJECTS.Buffer () && (nObject >= 0) && (IsLocalPlayer () || (nObject != LOCALPLAYER.nObject)))
 		OBJECTS [nObject].SetShield (s); 
@@ -344,6 +346,13 @@ nObject = n;
 CObject* CPlayerData::Object (void)
 {
 return (nObject < 0) ? NULL : OBJECTS + nObject;
+}
+
+//-------------------------------------------------------------------------
+
+bool CPlayerData::WaitingForExplosion (void) 
+{ 
+return m_tDeath && (gameStates.app.nSDLTicks [0] - m_tDeath < 30000) && !m_bExploded && Connected ();  
 }
 
 //-------------------------------------------------------------------------

@@ -780,7 +780,7 @@ gameData.multigame.menu.bInvoked = 0;
 gameData.multigame.menu.bLeave = 0;
 gameData.multigame.bQuitGame = 0;
 GameDisableCheats ();
-gameStates.app.bPlayerExploded = 0;
+gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded = 0;
 gameData.objs.deadPlayerCamera = 0;
 }
 
@@ -1459,6 +1459,7 @@ else
 	objP->CreateAppearanceEffect ();
 playerP->flags &= ~(PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_FLAG);
 playerP->cloakTime = 0;
+playerP->m_bExploded = 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -5067,6 +5068,9 @@ OBJECTS [nObject].CreateAppearanceEffect ();
 
 void MultiRefillPowerups (void)
 {
+if (gameData.multiplayer.WaitingForExplosion ())
+	return;
+
 	int		h, i, j;
 	time_t	t = gameStates.app.nSDLTicks [0];
 	static	time_t	t0 = 0;

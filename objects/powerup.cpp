@@ -1153,14 +1153,14 @@ short PowerupsOnShips (int nPowerup)
 if (!nClass || ((nClass < 3) && (nIndex < 0)))
 	return 0;
 for (short i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
-	//if ((i == N_LOCALPLAYER) && (gameStates.app.bPlayerExploded || gameStates.app.bPlayerIsDead))
+	//if ((i == N_LOCALPLAYER) && (gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded || gameStates.app.bPlayerIsDead))
 	//	continue;
-	if (/*(playerP->Shield () < 0) &&*/ (gameStates.app.nSDLTicks [0] - playerP->tDeath < 60000))
-		continue; // leave a destroyed multiplayer participant enough time for dropping his stuff after the explosion animation 
+	if (playerP->Shield () < 0)
+		continue; 
 #if DBG
-	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->tDisconnect > 600))
+	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->m_tDisconnect > 600))
 #else
-	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->tDisconnect > 180000))
+	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->m_tDisconnect > 180000))
 #endif
 		continue; // wait up to three minutes for a player to reconnect before dropping him and allowing to respawn his stuff
 	if (nClass == 5) {

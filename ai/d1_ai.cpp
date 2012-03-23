@@ -768,7 +768,7 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 		return;
 
 	//	If playerP is exploded, stop firing.
-	if (gameStates.app.bPlayerExploded)
+	if (gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded)
 		return;
 
 	//	If playerP is cloaked, maybe don't fire based on how long cloaked and randomness.
@@ -1232,7 +1232,7 @@ if (!*flag) {
 				aiP->CURRENT_STATE = D1_AIS_FIRE;
 				}
 
-		if (!gameStates.app.bPlayerExploded && (ailP->nPrevVisibility != *player_visibility) && (*player_visibility == 2)) {
+		if (!gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded && (ailP->nPrevVisibility != *player_visibility) && (*player_visibility == 2)) {
 			if (ailP->nPrevVisibility == 0) {
 				if (ailP->timeTargetSeen + I2X (1)/2 < gameData.time.xGame) {
 					audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
@@ -1627,7 +1627,7 @@ if (player_visibility == 2) {
 
 			if (aiP->CURRENT_GUN < gameData.bots.info [1][objP->info.nId].nGuns) {
 				if (botInfoP->attackType == 1) {
-					if (!gameStates.app.bPlayerExploded && (dist_to_player < objP->info.xSize + gameData.objs.consoleP->info.xSize + I2X (2))) {		// botInfoP->circle_distance [gameStates.app.nDifficultyLevel] + gameData.objs.consoleP->info.xSize) {
+					if (!gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded && (dist_to_player < objP->info.xSize + gameData.objs.consoleP->info.xSize + I2X (2))) {		// botInfoP->circle_distance [gameStates.app.nDifficultyLevel] + gameData.objs.consoleP->info.xSize) {
 						if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION-2))
 							return;
 						DoD1AIRobotHitAttack(objP, gameData.objs.consoleP, &objP->info.position.vPos);
