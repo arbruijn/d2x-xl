@@ -724,13 +724,14 @@ return nObject;
 // ----------------------------------------------------------------------------
 // Returns created CObject number. If object dropped by player, set flag.
 
-int ObjectCreateEgg (CObject *objP, bool bLocal)
+int ObjectCreateEgg (CObject *objP, bool bLocal, bUpdateLimits)
 {
 	int	i, nObject = -1;
 
 if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERUP)) {
 	if (IsMultiGame) {
-		; AddAllowedPowerup (objP->info.contains.nId);
+		if (bUpdateLimits)
+			AddAllowedPowerup (objP->info.contains.nId);
 		}
 	else {
 		if (objP->info.contains.nId == POW_SHIELD_BOOST) {
@@ -786,14 +787,14 @@ return nObject;
 //	-------------------------------------------------------------------------------------------------------
 //	Put count OBJECTS of nType nType (eg, powerup), id = id (eg, energy) into *objP, then drop them! Yippee!
 //	Returns created CObject number.
-int CallObjectCreateEgg (CObject *objP, int nCount, int nType, int nId, bool bLocal)
+int CallObjectCreateEgg (CObject *objP, int nCount, int nType, int nId, bool bLocal, bool bUpdateLimits)
 {
 if (nCount <= 0)
 	return -1;
 objP->info.contains.nCount = nCount;
 objP->info.contains.nType = nType;
 objP->info.contains.nId = nId;
-return ObjectCreateEgg (objP, bLocal);
+return ObjectCreateEgg (objP, bLocal, bUpdateLimits);
 }
 
 //------------------------------------------------------------------------------
