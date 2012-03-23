@@ -1298,7 +1298,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 	bShowName = (nState ||
 					 (bShowAllNames && !(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)) ||
 					 (!IsCoopGame && (bShowTeamNames && GetTeam (nPlayer) == nTeam)));
-	bHasFlag = (gameData.multiplayer.players [nPlayer].connected && (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG));
+	bHasFlag = (gameData.multiplayer.players [nPlayer].Connected () && (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG));
 
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
 		nObject = gameData.multiplayer.players [nPlayer].nObject;
@@ -1480,8 +1480,10 @@ for (i = 0; i < nPlayers; i++) {
 		 x1 = int (LHX (43) * fScale - LHX (18));
 #endif
 	nPlayer = (gameData.multigame.score.bShowList == 3) ? i : playerList [i];
+	if (gameData.multiplayer.players [nPlayer].HasLeft ())
+		continue;
 	if ((gameData.multigame.score.bShowList == 1) || (gameData.multigame.score.bShowList == 2)) {
-		if (gameData.multiplayer.players [nPlayer].connected != 1)
+		if (!gameData.multiplayer.players [nPlayer].Connected ()) 
 			fontManager.SetColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
 		else {
 			int color = IsTeamGame ? GetTeam (nPlayer) : nPlayer % MAX_PLAYER_COLORS;
@@ -1860,9 +1862,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 		case CV_COOP: {
 			int nPlayer = gameStates.render.cockpit.nCoopPlayerView [w];
 	      gameStates.render.nRenderingType = 255; // don't handle coop stuff
-			if ((nPlayer != -1) &&
-				 gameData.multiplayer.players [nPlayer].connected &&
-				 (IsCoopGame || (IsTeamGame && (GetTeam (nPlayer) == GetTeam (N_LOCALPLAYER)))))
+			if ((nPlayer != -1) && gameData.multiplayer.players [nPlayer].Connected () && SameTeam (nPlayer, N_LOCALPLAYER))
 				cockpit->RenderWindow (w, &OBJECTS [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
 			else {
 				cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);

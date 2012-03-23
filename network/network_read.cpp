@@ -341,8 +341,9 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	pd->dataSize = INTEL_SHORT (pd->dataSize);
 	}
 #endif
+
 nPlayer = pd->nPlayer;
-theirObjNum = gameData.multiplayer.players [pd->nPlayer].nObject;
+theirObjNum = gameData.multiplayer.players [nPlayer].nObject;
 if (nPlayer < 0) {
 	Int3 (); // This packet is bogus!!
 	return;
@@ -356,13 +357,14 @@ if (!gameData.multigame.bQuitGame && (nPlayer >= gameData.multiplayer.nPlayers))
 		}
 	return;
 	}
+
 if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL)) {
-	int old_Endlevel_sequence = gameStates.app.bEndLevelSequence;
+	int oldEndlevelSequence = gameStates.app.bEndLevelSequence;
 	gameStates.app.bEndLevelSequence = 1;
 	if (pd->dataSize > 0)
 		// pass pd->data to some parser function....
 		MultiProcessBigData (reinterpret_cast<char*> (pd->data), pd->dataSize);
-	gameStates.app.bEndLevelSequence = old_Endlevel_sequence;
+	gameStates.app.bEndLevelSequence = oldEndlevelSequence;
 	return;
 	}
 if ((sbyte)pd->nLevel != missionManager.nCurrentLevel) {
@@ -386,7 +388,7 @@ if (objP->info.movementType == MT_PHYSICS)
 	objP->SetThrustFromVelocity ();
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multiplayer.players [nPlayer].connected) {
-	if (!*gameData.multiplayer.players [nPlayer].callsign)
+	if (gameData.multiplayer.players [nPlayer].HasLeft ())
 		return;
 	CONNECT (nPlayer, CONNECT_PLAYING);
 	if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -458,6 +460,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 	GetShortFrameInfo (reinterpret_cast<ubyte*> (pd), &new_pd);
 else
 	memcpy (&new_pd, reinterpret_cast<ubyte*> (pd), sizeof (tFrameInfoShort));
+
 nPlayer = new_pd.nPlayer;
 nObject = gameData.multiplayer.players [new_pd.nPlayer].nObject;
 if (nPlayer < 0) {
@@ -477,18 +480,18 @@ if ((networkData.sync [0].nPlayer != -1) && (nPlayer == networkData.sync [0].nPl
 	}
 
 if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL)) {
-	int old_Endlevel_sequence = gameStates.app.bEndLevelSequence;
+	int oldEndlevelSequence = gameStates.app.bEndLevelSequence;
 	gameStates.app.bEndLevelSequence = 1;
 	if (new_pd.dataSize > 0) {
 		// pass pd->data to some parser function....
 		MultiProcessBigData (reinterpret_cast<char*> (new_pd.data), new_pd.dataSize);
 		}
-	gameStates.app.bEndLevelSequence = old_Endlevel_sequence;
+	gameStates.app.bEndLevelSequence = oldEndlevelSequence;
 	return;
 	}
 if ((sbyte) new_pd.nLevel != missionManager.nCurrentLevel) {
 #if 1
-	console.printf (CON_DBG, "Got frame packet from CPlayerData %d wrong level %d!\n", new_pd.nPlayer, new_pd.nLevel);
+	console.printf (CON_DBG, "Got frame packet from player %d wrong level %d!\n", new_pd.nPlayer, new_pd.nLevel);
 #endif
 	return;
 	}
@@ -502,6 +505,8 @@ if (objP->info.movementType == MT_PHYSICS)
 	objP->SetThrustFromVelocity ();
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multiplayer.players [nPlayer].connected) {
+	if (gameData.multiplayer.players [nPlayer].HasLeft ())
+		return;
 	CONNECT (nPlayer, CONNECT_PLAYING);
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);

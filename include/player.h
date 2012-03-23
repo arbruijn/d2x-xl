@@ -208,6 +208,8 @@ class CPlayerInfo {
 #endif
 			connected = nStatus;
 			}
+		inline bool Connected (void) { return (connected == 1) && (*callsign != '\0'); }
+		inline bool HasLeft (void) { return (connected == 0) && (*callsign == '\0'); }
 	};
 
 class __pack__ CPlayerData : public CPlayerInfo {

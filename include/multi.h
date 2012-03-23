@@ -224,6 +224,7 @@ void ChoseTeam (int nPlayer, bool bForce = false);
 void AutoBalanceTeams ();
 
 short GetTeam (int nPlayer);
+bool SameTeam (int nPlayer1, int nPlayer2);
 
 // Exported variables
 
@@ -349,6 +350,8 @@ typedef struct tNetPlayerInfo {
 	sbyte   connected;
 	ushort  socket;
 	ubyte   rank;
+
+	int Connected (void) { return *callsign ? connected : 0; }
 } __pack__ tNetPlayerInfo;
 
 

@@ -461,7 +461,7 @@ void MultiEndLevelScore (void)
 	int i;
 
 if (IsNetworkGame) {
-	oldConnect = LOCALPLAYER.connected;
+	oldConnect = LOCALPLAYER.Connected () ? LOCALPLAYER.connected : 0;
 	if (LOCALPLAYER.connected != CONNECT_DIED_IN_MINE)
 		CONNECT (N_LOCALPLAYER, CONNECT_END_MENU);
 	networkData.nStatus = NETSTAT_ENDLEVEL;
@@ -491,6 +491,17 @@ gameData.multiplayer.powerupsInMine.Clear (0);
 short GetTeam (int nPlayer)
 {
 return (netGame.m_info.GetTeamVector () & (1 << nPlayer)) ? 1 : 0;
+}
+
+//-----------------------------------------------------------------------------
+
+bool SameTeam (int nPlayer1, int nPlayer2)
+{
+if (IsCoopGame)
+	return true;
+if (!IsTeamGame)
+	return false;
+return GetTeam (nPlayer1) == GetTeam (nPlayer2);
 }
 
 //-----------------------------------------------------------------------------
@@ -611,7 +622,7 @@ static const char *szTeamColors [2] = {"blue", "red"};
 void SetTeam (int nPlayer, int team)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].connected)
+	if (gameData.multiplayer.players [i].Connected ())
 		MultiSetObjectTextures (OBJECTS + gameData.multiplayer.players [i].nObject);
 
 if (team >= 0) {
@@ -1141,7 +1152,7 @@ if (!IsMultiGame) {
 
 if (IsNetworkGame && netGame.GetPlayTimeAllowed () && (lasttime != X2I (gameStates.app.xThisLevelTime))) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected) {
+		if (gameData.multiplayer.players [i].Connected ()) {
 			if (i == N_LOCALPLAYER) {
 				MultiSendHeartBeat ();
 				lasttime = X2I (gameStates.app.xThisLevelTime);
@@ -1585,15 +1596,17 @@ else {
 void MultiDoQuit (char *buf)
 {
 if (IsNetworkGame) {
-	int i, n = 0;
+	int n = 0;
 
 	audio.PlaySound (SOUND_HUD_MESSAGE);
-	HUDInitMessage ("%s %s", gameData.multiplayer.players [(int)buf [1]].callsign, TXT_HAS_LEFT_THE_GAME);
+	int nPlayer = int (buf [1]);
+	HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_HAS_LEFT_THE_GAME);
 	NetworkDisconnectPlayer (buf [1]);
+	*gameData.multiplayer.players [nPlayer].callsign = '\0';
 	if (gameData.multigame.menu.bInvoked || gameStates.menus.nInMenu)
 		return;
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected)
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
+		if (gameData.multiplayer.players [i].Connected ())
 			n++;
 	if (n == 1)
 		MultiOnlyPlayerMsg (0);
@@ -1818,7 +1831,7 @@ void MultiDoPlaySound (char *buf)
 	short nSound = (int) (buf [2]);
 	fix volume = (int) (buf [3]) << 12;
 
-if (!gameData.multiplayer.players [nPlayer].connected)
+if (!gameData.multiplayer.players [nPlayer].Connected ())
 	return;
 if ((gameData.multiplayer.players [nPlayer].nObject >= 0) &&
 	 (gameData.multiplayer.players [nPlayer].nObject <= gameData.objs.nLastObject [0]))
@@ -2387,7 +2400,7 @@ if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
 void MultiAdjustPowerupCap (void)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].connected && gameData.multiplayer.bAdjustPowerupCap [i]) {
+	if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].Connected () && gameData.multiplayer.bAdjustPowerupCap [i]) {
 		MultiAdjustCapForPlayer (i);
 		gameData.multiplayer.bAdjustPowerupCap [i] = false;
 	}
@@ -3290,7 +3303,7 @@ int MultiAllPlayersAlive (void)
 	int i;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multigame.score.pFlags [i] && gameData.multiplayer.players [i].connected)
+	if (gameData.multigame.score.pFlags [i] && gameData.multiplayer.players [i].Connected ())
 		return 0;
 return 1;
 }
@@ -3799,7 +3812,7 @@ FORALL_PLAYER_OBJS (objP, i) {
 	if (bHaveObject [objP->info.nId] || (objP->info.nId >= gameData.multiplayer.nPlayers))
 		objP->Die ();
 	else {
-		if (!gameData.multiplayer.players [objP->info.nId].connected) {
+		if (!gameData.multiplayer.players [objP->info.nId].Connected ()) {
 			objP->SetType (OBJ_GHOST);
 			objP->info.renderType = RT_NONE;
 			objP->info.movementType = MT_NONE;
@@ -4195,7 +4208,7 @@ MultiSendData (gameData.multigame.msg.buf, 4, 0);
 void MultiDoSoundFunction (char *buf)
 {
 // for afterburner
-if (LOCALPLAYER.connected != 1)
+if (LOCALPLAYER.Connected () != 1)
 	return;
 int nPlayer = int (buf [1]);
 int nFunction = int (buf [2]);

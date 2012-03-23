@@ -320,7 +320,7 @@ void NetworkUpdateNetGame (void)
 
 netGame.m_info.nConnected = 0;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].connected)
+	if (gameData.multiplayer.players [i].Connected ())
 		netGame.m_info.nConnected++;
 
 // This is great: D2 1.0 and 1.1 ignore upper part of the gameFlags field of
@@ -741,7 +741,7 @@ for (;;) {
 		
 		// User confirmed abort
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if ((gameData.multiplayer.players [i].connected != 0) && (i != N_LOCALPLAYER)) {
+			if (gameData.multiplayer.players [i].Connected () && (i != N_LOCALPLAYER)) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
 					NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Server (), netPlayers [0].m_info.players [i].network.Node (), DUMP_ABORTED);
 				}

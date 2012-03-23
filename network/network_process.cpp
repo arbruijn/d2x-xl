@@ -265,10 +265,10 @@ if (!gameData.multigame.bQuitGame && (nPlayer >= gameData.multiplayer.nPlayers))
 	return;
 	}
 if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL)) {
-	int old_Endlevel_sequence = gameStates.app.bEndLevelSequence;
+	int oldEndlevelSequence = gameStates.app.bEndLevelSequence;
 	gameStates.app.bEndLevelSequence = 1;
 	MultiProcessBigData (reinterpret_cast<char*> (dataP + 2), len - 2);
-	gameStates.app.bEndLevelSequence = old_Endlevel_sequence;
+	gameStates.app.bEndLevelSequence = oldEndlevelSequence;
 	return;
 	}
 MultiProcessBigData (reinterpret_cast<char*> (dataP + 2), len - 2);

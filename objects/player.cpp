@@ -106,7 +106,7 @@ void UpdateFiringSounds (void)
 
 bGatlingSound = (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
-	if (!IsMultiGame || gameData.multiplayer.players [i].connected) {
+	if (!IsMultiGame || gameData.multiplayer.players [i].Connected ()) {
 		bGatling = (wsP->nPrimary == VULCAN_INDEX) || (wsP->nPrimary == GAUSS_INDEX);
 		fP = wsP->firing;
 		if (bGatling && bGatlingSound && (fP->bSound == 1)) {

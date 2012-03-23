@@ -289,7 +289,7 @@ OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect 
 audio.PlaySound (SOUND_HUD_MESSAGE);
 HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].connected) 
+	if (gameData.multiplayer.players [i].Connected ()) 
 		n++;
 #if !DBG
 if (n == 1)
@@ -428,7 +428,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	// Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
 	if ((networkData.xLastSendTime > I2X (1) / PacketsPerSec ()) || 
 		(gameData.multigame.laser.bFired) || bForce || networkData.bPacketUrgent) {        
-		if (LOCALPLAYER.connected) {
+		if (LOCALPLAYER.Connected ()) {
 			int nObject = LOCALPLAYER.nObject;
 			networkData.bPacketUrgent = 0;
 			if (bListen) {
@@ -489,7 +489,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 			networkData.bD2XData = 0;
 			if (gameData.reactor.bDestroyed) {
 				if (gameStates.app.bPlayerIsDead)
-					LOCALPLAYER.connected = 3;
+					CONNECT (N_LOCALPLAYER, CONNECT_DIED_IN_MINE);
 				if (TimerGetApproxSeconds () > (xLastEndlevel+ (I2X (1)/2))) {
 					NetworkSendEndLevelPacket ();
 					xLastEndlevel = TimerGetApproxSeconds ();
