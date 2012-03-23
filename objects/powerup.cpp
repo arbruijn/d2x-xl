@@ -1173,8 +1173,11 @@ for (short i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 		if (!(extraGameInfo [0].loadout.nDevice & nIndex))
 			nPowerups += (playerP->flags & nIndex) != 0;
 		}
-	else if (nClass == 2)	// missiles
+	else if (nClass == 2) {	// missiles
 		nPowerups += playerP->secondaryAmmo [nIndex];
+		if (!nIndex)
+			nPowerups -= gameData.multiplayer.weaponStates [i].nBuiltinMissiles;
+		}
 	else {	// guns
 		if (!(extraGameInfo [0].loadout.nGuns & 1)) {
 			if (nIndex == LASER_INDEX) {

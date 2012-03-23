@@ -2542,6 +2542,11 @@ class CMultiplayerData {
 					return true;
 			return false;
 			}
+
+		inline ushort PrimaryAmmo (short nPlayer, short nWeapon) { return players [nPlayer].primaryAmmo [nWeapon]; }
+		inline ushort SeondaryAmmo (short nPlayer, short nWeapon) { return players [nPlayer].secondaryAmmo [nWeapon]; }
+		inline ushort BuiltinMissiles (short nPlayer) { return weaponStates [nPlayer].nBuiltinMissiles; }
+		inline bool Flag (short nPlayer, uint nFlag) { return (players [nPlayer].flags & nFlag) != 0; }
 };
 
 #include "multi.h"

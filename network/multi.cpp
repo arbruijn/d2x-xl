@@ -2385,11 +2385,11 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	}
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 	nType = int (secondaryWeaponToPowerup [i]);
-	AddAllowedPowerup (nType, gameData.multiplayer.players [nPlayer].secondaryAmmo [i]);
+	AddAllowedPowerup (nType, i ? gameData.multiplayer.SecondaryAmmo (nPlayer, i) : gameData.multiplayer.SecondaryAmmo (nPlayer, i) - gameData.multiplayer.BuiltinMissiles (nPlayer));
 	}
 
 for (i = 0; i < int (sizeofa (nDeviceFlags)); i++)
-	if ((gameData.multiplayer.players [nPlayer].flags & nDeviceFlags [i]) && !(extraGameInfo [IsMultiGame].loadout.nDevice  & nDeviceFlags [i]))
+	if (gameData.multiplayer.Flag (nPlayer, nDeviceFlags [i]) && !(extraGameInfo [IsMultiGame].loadout.nDevice & nDeviceFlags [i]))
 		AddAllowedPowerup (nDevicePowerups [i]);
 if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
 	AddAllowedPowerup (POW_HEADLIGHT);
