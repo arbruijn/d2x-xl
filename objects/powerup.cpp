@@ -1156,7 +1156,7 @@ for (short i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if ((i == N_LOCALPLAYER) && (gameStates.app.bPlayerExploded || gameStates.app.bPlayerIsDead))
 		continue;
 	if ((playerP->Shield () < 0) && (gameStates.app.nSDLTicks [0] - playerP->tDeath < 60000))
-		continue;
+		continue; // leave a destroyed multiplayer participant enough time for dropping his stuff after the explosion animation 
 #if DBG
 	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->tDisconnect > 600))
 #else
