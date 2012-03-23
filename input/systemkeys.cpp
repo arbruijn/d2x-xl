@@ -847,8 +847,8 @@ void HandleGameKey(int key)
 			break;
 
 		case KEY_F6 + KEY_SHIFTED:
-	 DropSecondaryWeapon(-1);
-	 break;
+			DropSecondaryWeapon (-1);
+			break;
 
 		case KEY_0 + KEY_ALTED:
 			DropFlag ();

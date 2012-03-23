@@ -175,19 +175,19 @@ extern void DropOrb (void);
 
 void DropSecondaryWeapon (int nWeapon)
 {
-	int nObject, nPowerup, bHoardEntropy, bMine;
-
 if (nWeapon < 0)
 	nWeapon = gameData.weapons.nSecondary;
-if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {
+if ((LOCALPLAYER.secondaryAmmo [nWeapon] == 0) || 
+	 (IsMultiGame && (nWeapon == 0) && (LOCALPLAYER.secondaryAmmo [nWeapon] <= gameData.multiplayer.nBuiltinMissiles))) {
 	HUDInitMessage (TXT_CANT_DROP_SEC);
 	return;
 	}
-nPowerup = secondaryWeaponToPowerup[nWeapon];
-bHoardEntropy = (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) != 0;
-bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
-if (!bHoardEntropy && bMine &&
-	  LOCALPLAYER.secondaryAmmo [nWeapon] < 4) {
+
+int nPowerup = secondaryWeaponToPowerup [nWeapon];
+int bHoardEntropy = (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) != 0;
+int bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
+
+if (!bHoardEntropy && bMine && LOCALPLAYER.secondaryAmmo [nWeapon] < 4) {
 	HUDInitMessage(TXT_DROP_NEED4);
 	return;
 	}
@@ -199,7 +199,9 @@ if (bMine)
 	LOCALPLAYER.secondaryAmmo [nWeapon] -= 4;
 else
 	LOCALPLAYER.secondaryAmmo [nWeapon]--;
-nObject = SpitPowerup (gameData.objs.consoleP, nPowerup);
+
+int nObject = SpitPowerup (gameData.objs.consoleP, nPowerup);
+
 if (nObject == -1) {
 	if (bMine)
 		LOCALPLAYER.secondaryAmmo [nWeapon] += 4;
