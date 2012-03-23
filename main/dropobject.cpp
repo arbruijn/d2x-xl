@@ -730,7 +730,7 @@ int ObjectCreateEgg (CObject *objP, bool bLocal)
 
 if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERUP)) {
 	if (IsMultiGame) {
-		AddAllowedPowerup (objP->info.contains.nId);
+		; AddAllowedPowerup (objP->info.contains.nId);
 		}
 	else {
 		if (objP->info.contains.nId == POW_SHIELD_BOOST) {
