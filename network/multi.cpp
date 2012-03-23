@@ -1596,8 +1596,6 @@ else {
 void MultiDoQuit (char *buf)
 {
 if (IsNetworkGame) {
-	int n = 0;
-
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	int nPlayer = int (buf [1]);
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_HAS_LEFT_THE_GAME);
@@ -1605,14 +1603,13 @@ if (IsNetworkGame) {
 	*gameData.multiplayer.players [nPlayer].callsign = '\0';
 	if (gameData.multigame.menu.bInvoked || gameStates.menus.nInMenu)
 		return;
+	int nPlayers = 0;
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (gameData.multiplayer.players [i].Connected ())
-			n++;
-	if (n == 1)
+			nPlayers++;
+	if (nPlayers == 1)
 		MultiOnlyPlayerMsg (0);
 	}
-
-return;
 }
 
 //-----------------------------------------------------------------------------
