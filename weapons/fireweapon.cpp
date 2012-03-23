@@ -920,8 +920,6 @@ int nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary];
 int h = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 1 : 0;
 for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 0); i++) {
 	playerP->secondaryAmmo [gameData.weapons.nSecondary]--;
-	if (IsMultiGame)
-		MultiSendWeapons (1);
 	if (nGun == 4) {		//alternate left/right
 		nGun += (gunFlag = (gameData.laser.nMissileGun & 1));
 		gameData.laser.nMissileGun++;
@@ -950,8 +948,8 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	else if (gameData.weapons.nSecondary != CONCUSSION_INDEX)
 		MaybeDropNetPowerup (nObject, secondaryWeaponToPowerup [gameData.weapons.nSecondary], INIT_DROP);
 	else {
-		if (gameData.multiplayer.nBuiltinMissiles)
-			gameData.multiplayer.nBuiltinMissiles--;
+		if (gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles)
+			gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles--;
 		else
 			MaybeDropNetPowerup (nObject, secondaryWeaponToPowerup [gameData.weapons.nSecondary], INIT_DROP);
 		}
@@ -968,6 +966,9 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	vForce.v.coord.y = (vForce.v.coord.y >> 4) + SRandShort ();
 	vForce.v.coord.z = (vForce.v.coord.z >> 4) + SRandShort ();
 	gameData.objs.consoleP->ApplyRotForce (vForce);
+
+	if (IsMultiGame)
+		MultiSendWeapons (1);
 	break; //no dual mega/smart missile launch
 	}
 }

@@ -178,7 +178,7 @@ void DropSecondaryWeapon (int nWeapon)
 if (nWeapon < 0)
 	nWeapon = gameData.weapons.nSecondary;
 if ((LOCALPLAYER.secondaryAmmo [nWeapon] == 0) || 
-	 (IsMultiGame && (nWeapon == 0) && (LOCALPLAYER.secondaryAmmo [nWeapon] <= gameData.multiplayer.nBuiltinMissiles))) {
+	 (IsMultiGame && (nWeapon == 0) && (LOCALPLAYER.secondaryAmmo [nWeapon] <= gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles))) {
 	HUDInitMessage (TXT_CANT_DROP_SEC);
 	return;
 	}

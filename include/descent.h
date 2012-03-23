@@ -2489,6 +2489,7 @@ class CWeaponState {
 		char						nLaserLevel;
 		char						bTripleFusion;
 		char						nMslLaunchPos;
+		ubyte						nBuiltinMissiles;
 		ubyte						nThrusters [5];
 		ubyte						nShip;
 
@@ -2504,7 +2505,6 @@ class CMultiplayerData {
 		int								nMaxPlayers;
 		int 								nLocalPlayer;				
 		int								nPlayerPositions;
-		int								nBuiltinMissiles;
 		int								bMoving;
 		CPlayerData						players [MAX_PLAYERS + 4];  
 		tObjPosition					playerInit [MAX_PLAYERS];

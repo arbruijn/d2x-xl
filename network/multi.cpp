@@ -211,13 +211,13 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{6, -1},	 // MULTI_PLAYER_SHIELDS, -1},
 	{2, -1},	 // MULTI_INVUL
 	{2, -1},	 // MULTI_DEINVUL
-	{32, -1}, // MULTI_WEAPONS
+	{33, -1}, // MULTI_WEAPONS
 	{40, -1}, // MULTI_MONSTERBALL
 	{2, -1},  // MULTI_CHEATING
 	{5, -1},  // MULTI_TRIGGER_EXT
 	{16, -1}, // MULTI_SYNC_KILLS
 	{5, -1},	 // MULTI_COUNTDOWN
-	{28, -1}, // MULTI_PLAYER_WEAPONS
+	{29, -1}, // MULTI_PLAYER_WEAPONS
 	{99, -1}, // MULTI_SYNC_MONSTERBALL
 	{31, -1}, // MULTI_DROP_POWERUP
 	{31, -1}, // MULTI_CREATE_WEAPON
@@ -523,13 +523,14 @@ gameData.multigame.msg.buf [15] = (ubyte) wsP->firing [0].bSpeedUp;
 gameData.multigame.msg.buf [16] = wsP->bTripleFusion;
 gameData.multigame.msg.buf [17] = wsP->nMslLaunchPos;
 PUT_INTEL_INT (gameData.multigame.msg.buf + 18, wsP->xMslFireTime);
-gameData.multigame.msg.buf [22] = wsP->nThrusters [0];
-gameData.multigame.msg.buf [23] = wsP->nThrusters [1];
-gameData.multigame.msg.buf [24] = wsP->nThrusters [2];
-gameData.multigame.msg.buf [25] = wsP->nThrusters [3];
-gameData.multigame.msg.buf [26] = wsP->nThrusters [4];
-gameData.multigame.msg.buf [27] = char (gameOpts->gameplay.nShip [0]);
-MultiSendData (gameData.multigame.msg.buf, 28, 0);
+gameData.multigame.msg.buf [22] = wsP->nBuiltinMissiles;
+gameData.multigame.msg.buf [23] = wsP->nThrusters [0];
+gameData.multigame.msg.buf [24] = wsP->nThrusters [1];
+gameData.multigame.msg.buf [25] = wsP->nThrusters [2];
+gameData.multigame.msg.buf [26] = wsP->nThrusters [3];
+gameData.multigame.msg.buf [27] = wsP->nThrusters [4];
+gameData.multigame.msg.buf [28] = char (gameOpts->gameplay.nShip [0]);
+MultiSendData (gameData.multigame.msg.buf, 29, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -563,12 +564,13 @@ wsP->firing [0].bSpeedUp = buf [15];
 wsP->bTripleFusion = buf [16];
 wsP->nMslLaunchPos = buf [17];
 wsP->xMslFireTime = GET_INTEL_INT (gameData.multigame.msg.buf + 18);
-wsP->nThrusters [0] = buf [22];
-wsP->nThrusters [1] = buf [23];
-wsP->nThrusters [2] = buf [24];
-wsP->nThrusters [3] = buf [25];
-wsP->nThrusters [4] = buf [26];
-if (2 < (wsP->nShip = buf [27]))
+wsP->nBuiltinMissiles = buf [22];
+wsP->nThrusters [0] = buf [23];
+wsP->nThrusters [1] = buf [24];
+wsP->nThrusters [2] = buf [25];
+wsP->nThrusters [3] = buf [26];
+wsP->nThrusters [4] = buf [27];
+if (2 < (wsP->nShip = buf [28]))
  wsP->nShip = 1;
 for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
 	if (fP->nDuration) {
@@ -3939,6 +3941,8 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 	}
 gameData.multiplayer.players [nPlayer].SetLaserLevels (gameData.multigame.msg.buf [bufP++], gameData.multigame.msg.buf [bufP++]);
 gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = GET_INTEL_SHORT (buf + bufP);
+bufP += 2;
+gameData.multiplayer.weaponStates [nPlayer].nBuiltinMissiles = buf [bufP];
 }
 
 //-----------------------------------------------------------------------------
@@ -3986,6 +3990,7 @@ if (bForce || (t - nTimeout > 1000)) {
 	gameData.multigame.msg.buf [bufP++] = LOCALPLAYER.LaserLevel (1);
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed);
 	bufP += 2;
+	gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles;
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 	MultiSendShield ();
 	}
