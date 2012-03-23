@@ -376,7 +376,7 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 #if DBG
 			if (t - gameData.multiplayer.players [i].tDisconnect > 600) {
 #else
-			if (t - gameData.multiplayer.players [i].tDisconnect > 60000) {
+			if (t - gameData.multiplayer.players [i].tDisconnect > 180000) { // drop player when he disconnected for 3 minutes
 #endif
 				gameData.multiplayer.players [i].callsign [0] = '\0';
 				memset (gameData.multiplayer.players [i].netAddress, 0, sizeof (gameData.multiplayer.players [i].netAddress));

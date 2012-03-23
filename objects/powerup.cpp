@@ -1162,7 +1162,7 @@ for (short i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 #else
 	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->tDisconnect > 180000))
 #endif
-		continue;
+		continue; // wait up to three minutes for a player to reconnect before dropping him and allowing to respawn his stuff
 	if (nClass == 5) {
 		if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG) && ((nPowerup == POW_REDFLAG) == (GetTeam (i) == TEAM_RED)))
 			nPowerups++;
