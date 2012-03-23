@@ -1155,9 +1155,13 @@ if (!nClass || ((nClass < 3) && (nIndex < 0)))
 for (short i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if ((i == N_LOCALPLAYER) && (gameStates.app.bPlayerExploded || gameStates.app.bPlayerIsDead))
 		continue;
-	if (playerP->Shield () < 0)
+	if ((playerP->Shield () < 0) && (gameStates.app.nSDLTicks [0] - playerP->tDeath < 60000))
 		continue;
-	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->tDisconnect > 60000))
+#if DBG
+	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->tDisconnect > 600))
+#else
+	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->tDisconnect > 180000))
+#endif
 		continue;
 	if (nClass == 5) {
 		if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG) && ((nPowerup == POW_REDFLAG) == (GetTeam (i) == TEAM_RED)))

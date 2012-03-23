@@ -218,6 +218,7 @@ class __pack__ CPlayerData : public CPlayerInfo {
 		CShipEnergy	m_energy;
 		ubyte			m_laserLevels [2];
 		int			tDisconnect;
+		int			tDeath;
 
 	public:
 		CPlayerData () { 

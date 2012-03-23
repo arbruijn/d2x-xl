@@ -312,6 +312,8 @@ return Index () == N_LOCALPLAYER;
 
 fix CPlayerData::SetShield (fix s, bool bScale) 
 { 
+if ((m_shield.Get () > 0) && (s < 0))
+	tDeath = gameStates.app.nSDLTicks [0];
 if (m_shield.Set (s, bScale)) {
 	if (OBJECTS.Buffer () && (nObject >= 0) && (IsLocalPlayer () || (nObject != LOCALPLAYER.nObject)))
 		OBJECTS [nObject].SetShield (s); 
