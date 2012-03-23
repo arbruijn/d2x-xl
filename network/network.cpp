@@ -373,7 +373,11 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 			continue;
 		int bConnected = (gameData.multiplayer.players [i].connected == 1) ? 1 : downloadManager.Downloading (i) ? -1 : 0;
 		if (!bConnected) {
+#if DBG
+			if (t - gameData.multiplayer.players [i].tDisconnect > 600) {
+#else
 			if (t - gameData.multiplayer.players [i].tDisconnect > 60000) {
+#endif
 				gameData.multiplayer.players [i].callsign [0] = '\0';
 				memset (gameData.multiplayer.players [i].netAddress, 0, sizeof (gameData.multiplayer.players [i].netAddress));
 				}
