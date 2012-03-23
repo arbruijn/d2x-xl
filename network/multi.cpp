@@ -5073,7 +5073,7 @@ OBJECTS [nObject].CreateAppearanceEffect ();
 
 void MultiRefillPowerups (void)
 {
-if (gameData.multiplayer.WaitingForExplosion ())
+if (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ())
 	return;
 
 	int		h, i, j;

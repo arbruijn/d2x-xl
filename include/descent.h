@@ -2543,6 +2543,13 @@ class CMultiplayerData {
 			return false;
 			}
 
+		bool WaitingForWeaponInfo (void) {
+			for (int i = 0; i < nPlayers; i++)
+				if (weaponStates [i].nShip == 255)
+					return true;
+			return false;
+			}
+
 		inline ushort PrimaryAmmo (short nPlayer, short nWeapon) { return players [nPlayer].primaryAmmo [nWeapon]; }
 		inline ushort SecondaryAmmo (short nPlayer, short nWeapon) { return players [nPlayer].secondaryAmmo [nWeapon]; }
 		inline ushort BuiltinMissiles (short nPlayer) { return weaponStates [nPlayer].nBuiltinMissiles; }
