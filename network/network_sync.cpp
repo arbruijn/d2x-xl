@@ -344,6 +344,7 @@ netGame.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
 netGame.m_info.gameStatus = networkData.nStatus;
 netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
+	memcpy (netPlayers [0].m_info.players [i].callsign, gameData.multiplayer.players [i].callsign, sizeof (netPlayers [0].m_info.players [i].callsign));
 	netPlayers [0].m_info.players [i].connected = gameData.multiplayer.players [i].connected;
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
 		*netGame.Kills (i, j) = gameData.multigame.score.matrix [i][j];

@@ -500,6 +500,9 @@ if (fLog) {
 		va_start (arglist, fmt);
 		if (nLogIndent > 0)
 			memset (szLogLine [nLogLine], ' ', nLogIndent);
+		else
+			nLogIndent = 0;
+		nLogLine &= 3;
 		vsprintf (szLogLine [nLogLine] + nLogIndent, fmt, arglist);
 		va_end (arglist);
 		if (strcmp (szLogLine [nLogLine], szLogLine [!nLogLine])) {

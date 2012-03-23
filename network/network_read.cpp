@@ -386,6 +386,8 @@ if (objP->info.movementType == MT_PHYSICS)
 	objP->SetThrustFromVelocity ();
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multiplayer.players [nPlayer].connected) {
+	if (!*gameData.multiplayer.players [nPlayer].callsign)
+		return;
 	CONNECT (nPlayer, CONNECT_PLAYING);
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);
