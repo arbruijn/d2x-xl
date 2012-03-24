@@ -246,7 +246,7 @@ else if (syncP->nExtras == 6)
 else if (syncP->nExtras == 7)
 	NetworkSendPlayerFlags ();    
 else if (syncP->nExtras == 8)
-	MultiSendWeapons ();  
+	MultiSendWeapons (1);  
 else if (syncP->nExtras == 9)
 	MultiSendPlayerWeapons ();  
 else if (syncP->nExtras == 10)

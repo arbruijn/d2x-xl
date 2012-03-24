@@ -419,7 +419,7 @@ int nDbgPowerup = -1;
 
 void AddAllowedPowerup (int nPowerup, int nCount)
 {
-if (IAmGameHost () && nCount) {
+if (nCount) {
 #if DBG
 	if (nPowerup == nDbgPowerup)
 		nDbgPowerup = nDbgPowerup;

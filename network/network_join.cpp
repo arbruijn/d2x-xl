@@ -436,6 +436,7 @@ if (0 > (nPlayer = FindNetworkPlayer (player, newAddress))) {
 		DeleteSyncData (short (syncP - networkData.sync));
 		return;
 		}
+	gameData.multiplayer.bAdjustPowerupCap [nPlayer] = true;
 	}
 else {
 	// Player is reconnecting

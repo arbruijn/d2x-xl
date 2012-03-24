@@ -2399,10 +2399,13 @@ if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
 
 void MultiAdjustPowerupCap (void)
 {
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].Connected () && gameData.multiplayer.bAdjustPowerupCap [i]) {
-		MultiAdjustCapForPlayer (i);
-		gameData.multiplayer.bAdjustPowerupCap [i] = false;
+if (IAmGameHost ()) {
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].Connected () && gameData.multiplayer.bAdjustPowerupCap [i]) {
+			MultiAdjustCapForPlayer (i);
+			gameData.multiplayer.bAdjustPowerupCap [i] = false;
+			}
+		}
 	}
 }
 
