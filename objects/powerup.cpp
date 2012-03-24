@@ -1112,9 +1112,9 @@ void SetupPowerupFilter (void)
 memset (powerupFilter, 0, sizeof (powerupFilter));
 ENABLE_FILTER (POW_INVUL, netGame.m_info.DoInvulnerability);
 ENABLE_FILTER (POW_CLOAK, netGame.m_info.DoCloak);
-ENABLE_FILTER (POW_KEY_BLUE, !IsCoopGame);
-ENABLE_FILTER (POW_KEY_RED, !IsCoopGame);
-ENABLE_FILTER (POW_KEY_GOLD, !IsCoopGame);
+ENABLE_FILTER (POW_KEY_BLUE, IsCoopGame);
+ENABLE_FILTER (POW_KEY_RED, IsCoopGame);
+ENABLE_FILTER (POW_KEY_GOLD, IsCoopGame);
 ENABLE_FILTER (POW_AFTERBURNER, netGame.m_info.DoAfterburner);
 ENABLE_FILTER (POW_FUSION, netGame.m_info.DoFusions);
 ENABLE_FILTER (POW_PHOENIX, netGame.m_info.DoPhoenix);
