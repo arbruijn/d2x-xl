@@ -223,7 +223,7 @@ for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPla
 		else
 			memcpy (gameData.multiplayer.players [i].netAddress, playerInfoP->m_info.players [i].network.Node (), 6);
 		}
-	gameData.multiplayer.players [i].nPacketsGot = -1;                             // How many packets we got from them
+	gameData.multiplayer.players [i].nPacketsGot = -1;                            // How many packets we got from them
 	gameData.multiplayer.players [i].nPacketsSent = 0;                            // How many packets we sent to them
 	CONNECT (i, playerP->connected);
 	gameData.multiplayer.players [i].netKillsTotal = *sp->PlayerKills (i);
@@ -692,6 +692,7 @@ networkData.sync [0].objs.nFrame = nFrame;
 			NetworkAbortSync ();
 			return;
 			}
+		NetworkCountPowerupsInMine ();
 		gameData.objs.RebuildEffects ();
 		networkData.sync [0].objs.nFrame = 0;
 		nMode = 0;
