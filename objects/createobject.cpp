@@ -413,13 +413,23 @@ return nCount;
 
 //-----------------------------------------------------------------------------
 
+#if DBG
+int nDbgPowerup = -1;
+#endif
+
 void AddAllowedPowerup (int nPowerup, int nCount)
 {
-if (MultiPowerupIs4Pack (nPowerup))
-	gameData.multiplayer.maxPowerupsAllowed [nPowerup - 1] += 4 * nCount;
-gameData.multiplayer.maxPowerupsAllowed [nPowerup] += nCount;
-if ((nPowerup == POW_VULCAN) || (nPowerup == POW_GAUSS))
-	gameData.multiplayer.maxPowerupsAllowed [POW_VULCAN_AMMO] += 2 * nCount;
+if (nCount) {
+#if DBG
+	if (nPowerup == nDbgPowerup)
+		nDbgPowerup = nDbgPowerup;
+#endif
+	if (MultiPowerupIs4Pack (nPowerup))
+		gameData.multiplayer.maxPowerupsAllowed [nPowerup - 1] += 4 * nCount;
+	gameData.multiplayer.maxPowerupsAllowed [nPowerup] += nCount;
+	if ((nPowerup == POW_VULCAN) || (nPowerup == POW_GAUSS))
+		gameData.multiplayer.maxPowerupsAllowed [POW_VULCAN_AMMO] += 2 * nCount;
+	}
 }
 
 //-----------------------------------------------------------------------------
