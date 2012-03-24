@@ -294,7 +294,7 @@ if ((gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers) &&
 int oldestPlayer = -1;
 fix oldestTime = TimerGetApproxSeconds ();
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (!gameData.multiplayer.players [i].connected && (networkData.nLastPacketTime [i] < oldestTime)) {
+	if (!gameData.multiplayer.players [i].Connected () && (networkData.nLastPacketTime [i] < oldestTime)) {
 		oldestTime = networkData.nLastPacketTime [i];
 		oldestPlayer = i;
 		}
