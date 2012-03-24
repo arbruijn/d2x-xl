@@ -2279,19 +2279,24 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	nType = (i == SUPER_LASER_INDEX) ? POW_SUPERLASER : int (primaryWeaponToPowerup [i]);
 	if (!LOCALPLAYER.primaryWeaponFlags & (1 << i))
 		continue;
-	h = MissingPowerups (nType);
+	if (0 <= (h = MissingPowerups (nType)))
+		continue;
 	if (i == LASER_INDEX) {
+		h = MAX_LASER_LEVEL - h;
+		if (h < 0) 
+			h = 0;
 		if (LOCALPLAYER.LaserLevel (0) > h)
 			LOCALPLAYER.SetStandardLaser (h);
 		}
 	else if (i == SUPER_LASER_INDEX) {
+		h = MAX_SUPERLASER_LEVEL - MAX_LASER_LEVEL - h;
 		if (LOCALPLAYER.LaserLevel (1) > h)
 			LOCALPLAYER.SetSuperLaser (h);
 		}
 	else {
-		if ((i == FUSION_INDEX) && (h < 2))
+		if ((i == FUSION_INDEX) && (h < -1))
 			gameData.multiplayer.weaponStates [N_LOCALPLAYER].bTripleFusion = 0;
-		if (h < 1)
+		if (h < 0)
 			LOCALPLAYER.primaryWeaponFlags &= (~(1 << i));
 		}
 	}
@@ -2313,24 +2318,26 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 			continue;
 		}
 	nType = int (secondaryWeaponToPowerup [i]);
-	h = MissingPowerups (nType);
-	if (LOCALPLAYER.secondaryAmmo [i] > h)
-		LOCALPLAYER.secondaryAmmo [i] = max (h, 0);
+	if (0 <= (h = MissingPowerups (nType)))
+		continue;
+	LOCALPLAYER.secondaryAmmo [i] += h;
+	if (LOCALPLAYER.secondaryAmmo [i] < 0)
+		LOCALPLAYER.secondaryAmmo [i] = 0;
 	}
 
-if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)))
+if (!gameData.app.GameMode (GM_HOARD | GM_ENTROPY))
 	LOCALPLAYER.secondaryAmmo [2] *= 4;
 LOCALPLAYER.secondaryAmmo [7] *= 4;
 
 for (i = 0; i < int (sizeofa (nDeviceFlags)); i++) {
 	if (LOCALPLAYER.flags & nDeviceFlags [i]) {
 		nType = nDevicePowerups [i];
-		if (0 >= MissingPowerups (nType))
+		if (0 > MissingPowerups (nType))
 			LOCALPLAYER.flags &= (~PLAYER_FLAGS_CLOAKED);
 		}
 	}
 
-if (PlayerHasHeadlight (-1) && (0 >= MissingPowerups (POW_HEADLIGHT)))
+if (PlayerHasHeadlight (-1) && (0 > MissingPowerups (POW_HEADLIGHT)))
 	LOCALPLAYER.flags &= (~PLAYER_FLAGS_HEADLIGHT);
 
 if (gameData.app.GameMode (GM_CAPTURE)) {
@@ -2339,7 +2346,7 @@ if (gameData.app.GameMode (GM_CAPTURE)) {
 			nFlagType = POW_BLUEFLAG;
 		else
 			nFlagType = POW_REDFLAG;
-		if (MissingPowerups (nFlagType) < 1)
+		if (MissingPowerups (nFlagType) < 0)
 			LOCALPLAYER.flags &= (~PLAYER_FLAGS_FLAG);
 		}
 	}
@@ -5106,7 +5113,7 @@ if (t - t0 < 1000)
 	return;
 t0 = t;
 for (i = 0; i < MAX_POWERUP_TYPES; i++) {
-	h = gameData.multiplayer.maxPowerupsAllowed [i] - PowerupsInMine (i);
+	h = MissingPowerups (i);
 #if DBG
 	if (i == nDbgPowerup)
 		nDbgPowerup = nDbgPowerup;
@@ -5140,7 +5147,7 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 		PowerupsInMine (i);
 	#endif
 		if (MultiPowerupIs4Pack (i + 1)) {
-			if (gameData.multiplayer.maxPowerupsAllowed [i + 1] - gameData.multiplayer.powerupsInMine [i + 1] > 0) {
+			if (MissingPowerups (i + 1) > 0) {
 				for (j = h / 4; j; j--)
 					MaybeDropNetPowerup (-1, i + 1, FORCE_DROP);
 				h %= 4;

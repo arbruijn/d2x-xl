@@ -473,7 +473,7 @@ if (gameData.multiplayer.powerupsInMine [nPowerup] > 0) {
 
 int MissingPowerups (int nPowerup)
 {
-return gameData.multiplayer.maxPowerupsAllowed [nPowerup] - gameData.multiplayer.powerupsInMine [nPowerup];
+return gameData.multiplayer.maxPowerupsAllowed [nPowerup] - PowerupsInMine (nPowerup);
 }
 
 //------------------------------------------------------------------------------
