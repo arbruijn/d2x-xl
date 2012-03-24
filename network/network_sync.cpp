@@ -246,8 +246,10 @@ else if (syncP->nExtras == 6)
 else if (syncP->nExtras == 7)
 	NetworkSendPlayerFlags ();    
 else if (syncP->nExtras == 8)
-	MultiSendPowerupUpdate ();  
+	MultiSendWeapons ();  
 else if (syncP->nExtras == 9)
+	MultiSendPlayerWeapons ();  
+else if (syncP->nExtras == 10)
 	MultiSendMonsterball (1, 1);  
 else {
 	syncP->nExtras = 0;

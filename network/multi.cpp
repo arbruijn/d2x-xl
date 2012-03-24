@@ -2385,7 +2385,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	}
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 	nType = int (secondaryWeaponToPowerup [i]);
-	AddAllowedPowerup (nType, i ? gameData.multiplayer.SecondaryAmmo (nPlayer, i) : gameData.multiplayer.SecondaryAmmo (nPlayer, i) - gameData.multiplayer.BuiltinMissiles (nPlayer));
+	AddAllowedPowerup (nType, i ? gameData.multiplayer.SecondaryAmmo (nPlayer, i) : gameData.multiplayer.SecondaryAmmo (nPlayer, i, 0));
 	}
 
 for (i = 0; i < int (sizeofa (nDeviceFlags)); i++)
