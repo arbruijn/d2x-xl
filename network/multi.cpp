@@ -139,7 +139,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{3, -1},  // REAPPEAR
 	{8, -1}, //9 + MAX_FIRED_OBJECTS * sizeof (short)},  // FIRE
 	{5, -1},  // KILL
-	{4, -1},  // REMOVE_OBJECT
+	{4, 5},  // REMOVE_OBJECT
 	{97+9, 97+13}, // PLAYER_EXPLODE
 	{37, -1}, // MESSAGE (MAX_MESSAGE_LENGTH = 40)
 	{2, -1},  // QUIT
@@ -1548,16 +1548,14 @@ MultiMakePlayerGhost (buf [1]);
 
 void MultiDoRemoveObj (char *buf)
 {
-	short nObject; // which CObject to remove
-	short nLocalObj;
-	sbyte nObjOwner; // which remote list is it entered in
+if ((gameStates.multi.nGameType == UDP_GAME) && (buf [4] == N_LOCALPLAYER))
+	return;
 
-nObject = GET_INTEL_SHORT (buf + 1);
-nObjOwner = buf [3];
-
+short nObject = GET_INTEL_SHORT (buf + 1);
 if (nObject < 1)
 	return;
-nLocalObj = ObjnumRemoteToLocal (nObject, nObjOwner); // translate to local nObject
+sbyte nObjOwner = buf [3];
+short nLocalObj = ObjnumRemoteToLocal (nObject, nObjOwner); // translate to local nObject
 if (nLocalObj < 0)
 	return;
 CObject* objP = OBJECTS + nLocalObj;
@@ -2541,7 +2539,9 @@ gameData.multigame.msg.buf [0] = char (MULTI_REMOVE_OBJECT);
 nRemoteObj = ObjnumLocalToRemote (short (nObject), &nObjOwner);
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nRemoteObj); // Map to network objnums
 gameData.multigame.msg.buf [3] = nObjOwner;
-MultiSendData (gameData.multigame.msg.buf, 4, 0);
+if (gameStates.multi.nGameType == UDP_GAME)
+	gameData.multigame.msg.buf [4] = N_LOCALPLAYER;
+MultiSendData (gameData.multigame.msg.buf, (gameStates.multi.nGameType == UDP_GAME) ? 5 : 4, 0);
 NetworkResetObjSync (nObject);
 }
 
