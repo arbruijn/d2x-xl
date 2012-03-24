@@ -653,7 +653,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 				networkData.nSecurityFlag = 0;
 				networkData.nSecurityNum = 0;
 				}
-			SetupPowerupFilter (&tempNetInfo);
+			SetupPowerupFilter (&tempNetInfo.m_info);
 			break;
 
 		case PID_EXTRA_GAMEINFO: 
