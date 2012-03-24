@@ -1157,7 +1157,7 @@ for (short i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	//	continue;
 	if (playerP->Shield () < 0)
 		continue; 
-#if DBG
+#if 0 //DBG
 	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->m_tDisconnect > 600))
 #else
 	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->m_tDisconnect > 180000))
