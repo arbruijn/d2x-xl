@@ -5105,21 +5105,23 @@ t0 = t;
 for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	h = gameData.multiplayer.maxPowerupsAllowed [i] - PowerupsInMine (i);
 	if (h < 0) {
+		if (gameData.multiplayer.powerupsInMine [i] > 0) {
 	#if DBG
-		PowerupsInMine (i);
+			PowerupsInMine (i);
 	#endif
-		CObject* objP, * oldestObjP = NULL;
-		int tCreate = 0x7FFFFFFF;
+			CObject* objP, * oldestObjP = NULL;
+			int tCreate = 0x7FFFFFFF;
 
-		FORALL_STATIC_OBJS (objP, i) {
-			if (tCreate > objP->CreationTime ()) {
-				tCreate = objP->CreationTime ();
-				oldestObjP = objP;
+			FORALL_STATIC_OBJS (objP, i) {
+				if ((objP->Id () == i) && (tCreate > objP->CreationTime ())) {
+					tCreate = objP->CreationTime ();
+					oldestObjP = objP;
+					}
 				}
-			}
-		if (oldestObjP) {
-			oldestObjP->Die ();
-			MultiSendRemoveObj (OBJ_IDX (oldestObjP));
+			if (oldestObjP) {
+				oldestObjP->Die ();
+				MultiSendRemoveObj (OBJ_IDX (oldestObjP));
+				}
 			}
 		}
 	else if (h > 0) {
