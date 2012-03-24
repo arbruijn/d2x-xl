@@ -58,6 +58,7 @@ LoadTexture (nIndex, 0);
 CBitmap* bmP = &gameData.pig.tex.bitmaps [0][nIndex];
 bmP->SetTranspType (nTranspType);
 bmP->SetupTexture (1, bLoadTextures);
+return bmP;
 }
 
 //------------------------------------------------------------------------------
