@@ -334,7 +334,7 @@ if (client.cf.File ())
 	client.cf.Close ();
 if (!client.cf.Open (szFile, "", "rb", 0))
 	return 0;
-client.fLen = client.cf.Length ();
+client.fLen = (int) client.cf.Length ();
 sprintf (szFile, "%s%s", netGame.m_info.szMissionName, pszExt);
 PUT_INTEL_INT (client.data + 1, client.fLen);
 memcpy (client.data + 5, szFile, (int) strlen (szFile) + 1);
