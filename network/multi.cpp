@@ -1411,13 +1411,7 @@ playerP->m_bExploded = 1;
 
 void MultiDoPlayerExplode (char *buf)
 {
-	CObject*			objP;
-	CPlayerData*	playerP;
-	int				bufI, nPlayer, i;
-	short				nRemoteObj;
-	char				nRemoteCreated;
-
-nPlayer = buf [1];
+int nPlayer = buf [1];
 #if !DBG
 if ((nPlayer < 0) || (nPlayer >= gameData.multiplayer.nPlayers))
 	return;
@@ -1426,8 +1420,8 @@ if ((nPlayer < 0) || (nPlayer >= gameData.multiplayer.nPlayers))
 NetworkResetObjSync (-1);
 // Stuff the gameData.multiplayer.players structure to prepare for the explosion
 gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = 0;
-playerP = gameData.multiplayer.players + nPlayer;
-bufI = 2;
+CPlayerData* playerP = gameData.multiplayer.players + nPlayer;
+int bufI = 2;
 playerP->primaryWeaponFlags = GET_INTEL_SHORT (buf + bufI);
 bufI += 2;
 playerP->secondaryWeaponFlags = GET_INTEL_SHORT (buf + bufI);
