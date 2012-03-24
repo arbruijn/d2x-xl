@@ -370,32 +370,34 @@ static void NetworkCheckPlayerTimeouts (void)
 if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 	fix t = (fix) SDL_GetTicks ();
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if (i == N_LOCALPLAYER)
-			continue;
-		int bConnected = (gameData.multiplayer.players [i].connected == 1) ? 1 : downloadManager.Downloading (i) ? -1 : 0;
-		if (!bConnected && gameData.multiplayer.players [i].callsign [0]) {
+		if (i != N_LOCALPLAYER) {
+			int bConnected = (gameData.multiplayer.players [i].connected == 1) ? 1 : downloadManager.Downloading (i) ? -1 : 0;
+			if (!bConnected) { 
+				if (gameData.multiplayer.players [i].callsign [0]) {
 #if DBG
-			if (t - gameData.multiplayer.players [i].m_tDisconnect > 3000) {
+					if (t - gameData.multiplayer.players [i].m_tDisconnect > 3000) {
 #else
-			if (t - gameData.multiplayer.players [i].m_tDisconnect > 180000) { // drop player when he disconnected for 3 minutes
+					if (t - gameData.multiplayer.players [i].m_tDisconnect > 180000) { // drop player when he disconnected for 3 minutes
 #endif
-				gameData.multiplayer.players [i].callsign [0] = '\0';
-				memset (gameData.multiplayer.players [i].netAddress, 0, sizeof (gameData.multiplayer.players [i].netAddress));
-				MultiDestroyPlayerShip (i);
+						gameData.multiplayer.players [i].callsign [0] = '\0';
+						memset (gameData.multiplayer.players [i].netAddress, 0, sizeof (gameData.multiplayer.players [i].netAddress));
+						MultiDestroyPlayerShip (i);
+						}
+					}
 				}
-			}
-		else {
-			if ((networkData.nLastPacketTime [i] == 0) || ((bConnected < 0) && (networkData.nLastPacketTime [i] + downloadManager.GetTimeoutSecs () * 1000 > t))) {
-				ResetPlayerTimeout (i, t);
-				continue;
-				}
+			else {
+				if ((networkData.nLastPacketTime [i] == 0) || ((bConnected < 0) && (networkData.nLastPacketTime [i] + downloadManager.GetTimeoutSecs () * 1000 > t))) {
+					ResetPlayerTimeout (i, t);
+					continue;
+					}
 #if DBG
-			if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 3000))
-				NetworkTimeoutPlayer (i);
+				if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 3000))
+					NetworkTimeoutPlayer (i);
 #else
-			if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 15000))
-				NetworkTimeoutPlayer (i);
+				if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 15000))
+					NetworkTimeoutPlayer (i);
 #endif
+				}
 			}
 		}
 	networkData.xLastTimeoutCheck = 0;
