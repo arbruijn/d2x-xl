@@ -406,7 +406,7 @@ else if ((nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE)) {
 		if (objP->Id () == nId)
 			nMines++;
 		}
-	nCount += (nId + 3) / 4;
+	nCount += (nMines + 3) / 4;
 	}
 return nCount;
 }

@@ -5105,6 +5105,9 @@ t0 = t;
 for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	h = gameData.multiplayer.maxPowerupsAllowed [i] - PowerupsInMine (i);
 	if (h < 0) {
+	#if DBG
+		PowerupsInMine (i);
+	#endif
 		CObject* objP, * oldestObjP = NULL;
 		int tCreate = 0x7FFFFFFF;
 
