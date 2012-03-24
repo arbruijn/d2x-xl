@@ -4145,7 +4145,7 @@ void MultiDoPowerupUpdate (char *buf)
 {
 if (!IAmGameHost ()) {
 	for (int i = 0; i < MAX_POWERUP_TYPES; i++)
-		if (buf [i+1] > gameData.multiplayer.maxPowerupsAllowed [i])
+		//if (buf [i+1] > gameData.multiplayer.maxPowerupsAllowed [i])
 			gameData.multiplayer.maxPowerupsAllowed [i] = buf [i+1];
 	}
 }
