@@ -195,6 +195,7 @@ if (hogP->bInitialized)
 	return 1;
 if (name) {
 	strcpy (hogP->szName, name);
+	strcpy (hogP->szFolder, folder ? folder : "");
 	hogP->bInitialized = *name && Setup (hogP->szName, folder, hogP->files, &hogP->nFiles);
 	if (*(hogP->szName))
 		PrintLog (0, "found hog file '%s'\n", hogP->szName);
@@ -202,6 +203,22 @@ if (name) {
 		QuickSort (hogP->files, 0, hogP->nFiles - 1);
 		return 1;
 		}
+	} 
+return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+int CHogFile::Reload (tHogFileList *hogP)
+{
+if (!*hogP->szName)
+	return 0;
+hogP->bInitialized = Setup (hogP->szName, hogP->szFolder, hogP->files, &hogP->nFiles);
+if (*(hogP->szName))
+	PrintLog (0, "found hog file '%s'\n", hogP->szName);
+if (hogP->bInitialized && (hogP->nFiles > 0)) {
+	QuickSort (hogP->files, 0, hogP->nFiles - 1);
+	return 1;
 	} 
 return 0;
 }
@@ -222,6 +239,13 @@ m_files.MsnHogFiles.bInitialized = 0;
 if (!Use (&m_files.MsnHogFiles, name, ""))
 	return 0;
 return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+int CHogFile::ReloadMission (void) 
+{
+return Reload (&m_files.MsnHogFiles);
 }
 
 // ----------------------------------------------------------------------------

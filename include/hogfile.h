@@ -34,6 +34,7 @@ typedef struct tHogFile {
 typedef struct tHogFileList {
 	tHogFile		files [MAX_HOGFILES];
 	char			szName [FILENAME_LEN];
+	char			szFolder [FILENAME_LEN];
 	int			nFiles;
 	int			bInitialized;
 } tHogFileList;
@@ -62,6 +63,7 @@ class CHogFile {
 		int UseD2X (const char *name);
 		int UseExtra (const char *name);
 		int UseMission (const char *name);
+		int ReloadMission (void);
 		int UseD1 (const char *name);
 		void UseAltDir (const char *path);
 		FILE* Find (const char *name, int *length, int bUseD1Hog);
@@ -80,6 +82,7 @@ class CHogFile {
 		void QuickSort (tHogFile *hogFiles, int left, int right);
 		tHogFile *BinSearch (tHogFile *hogFiles, int nFiles, const char *pszFile);
 		int Use (tHogFileList *hogP, const char *name, const char *folder);
+		int Reload (tHogFileList *hogP);
 		int Setup (const char *pszFile, const char *folder, tHogFile *hogFiles, int *nFiles);
 };
 

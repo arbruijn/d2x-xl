@@ -28,6 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "strutil.h"
 #include "ipx.h"
 #include "error.h"
+#include "hogfile.h"
 #include "network.h"
 #include "network_lib.h"
 #include "netmisc.h"
@@ -468,7 +469,7 @@ else if (networkData.nStatus == NETSTAT_AUTODL) {
 		networkData.nStatus = NETSTAT_MENU;
 	else {
 		networkData.nStatus = NETSTAT_PLAYING;
-		hogFileManager.UseMission (""); // force reload of hog file's file info 
+		hogFileManager.ReloadMission (); // reload hog file's file info 
 		return 1;
 		}
 	}
