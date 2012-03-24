@@ -323,11 +323,11 @@ gameData.objs.dropInfo [h].nObject = nObject;
 gameData.objs.dropInfo [h].nSignature = OBJECTS [nObject].Signature ();
 gameData.objs.dropInfo [h].nPowerupType = nPowerupType;
 gameData.objs.dropInfo [h].nDropTime = (nDropTime > 0) ? nDropTime : (extraGameInfo [IsMultiGame].nSpawnDelay <= 0) ? -1 : gameStates.app.nSDLTicks [0];
-if (gameData.objs.nLastDropped >= 0)
+if (gameData.objs.nFirstDropped >= 0)
 	gameData.objs.dropInfo [gameData.objs.nLastDropped].nNextPowerup = h;
 else
-	gameData.objs.nFirstDropped =
-	gameData.objs.nLastDropped = h;
+	gameData.objs.nFirstDropped = h;
+gameData.objs.nLastDropped = h;
 gameData.objs.nDropped++;
 return h;
 }

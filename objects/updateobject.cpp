@@ -131,6 +131,10 @@ if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && IsMissile ()) {
 			}
 #endif
 		}
+#if DBG
+	else
+		FindDropInfo (Signature ());
+#endif
 	}
 }
 
