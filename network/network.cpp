@@ -373,7 +373,7 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 		if (i == N_LOCALPLAYER)
 			continue;
 		int bConnected = (gameData.multiplayer.players [i].connected == 1) ? 1 : downloadManager.Downloading (i) ? -1 : 0;
-		if (!bConnected) {
+		if (!bConnected && gameData.multiplayer.players [i].callsign [0]) {
 #if DBG
 			if (t - gameData.multiplayer.players [i].m_tDisconnect > 3000) {
 #else
