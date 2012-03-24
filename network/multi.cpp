@@ -5104,27 +5104,42 @@ if (t - t0 < 1000)
 t0 = t;
 for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	h = gameData.multiplayer.maxPowerupsAllowed [i] - PowerupsInMine (i);
-	if (h < 1)
-		continue;
-	if (MultiPowerupIs4Pack (i))
-		continue;
-	if ((i == POW_ENERGY) || (i == POW_SHIELD_BOOST))
-		continue;
-#if DBG
-	PowerupsInMine (i);
-#endif
-	if (MultiPowerupIs4Pack (i + 1)) {
-		if ((h = gameData.multiplayer.maxPowerupsAllowed [i + 1] - PowerupsInMine (i + 1))) {
-			for (j = h / 4; j; j--)
-				MaybeDropNetPowerup (-1, i + 1, FORCE_DROP);
-			h %= 4;
+	if (h < 0) {
+		CObject* objP, * oldestObjP = NULL;
+		int tCreate = 0x7FFFFFFF;
+
+		FORALL_STATIC_OBJS (objP, i) {
+			if (tCreate > objP->CreationTime ()) {
+				tCreate = objP->CreationTime ();
+				oldestObjP = objP;
+				}
 			}
-		i++;
+		if (oldestObjP) {
+			oldestObjP->Die ();
+			MultiSendRemoveObj (OBJ_IDX (oldestObjP));
+			}
 		}
-	else 
-		{
-		for (j = h; j; j--)
-			MaybeDropNetPowerup (-1, i, FORCE_DROP);
+	else if (h > 0) {
+		if (MultiPowerupIs4Pack (i))
+			continue;
+		if ((i == POW_ENERGY) || (i == POW_SHIELD_BOOST))
+			continue;
+	#if DBG
+		PowerupsInMine (i);
+	#endif
+		if (MultiPowerupIs4Pack (i + 1)) {
+			if ((h = gameData.multiplayer.maxPowerupsAllowed [i + 1] - PowerupsInMine (i + 1))) {
+				for (j = h / 4; j; j--)
+					MaybeDropNetPowerup (-1, i + 1, FORCE_DROP);
+				h %= 4;
+				}
+			i++;
+			}
+		else 
+			{
+			for (j = h; j; j--)
+				MaybeDropNetPowerup (-1, i, FORCE_DROP);
+			}
 		}
 	}
 }
