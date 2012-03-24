@@ -922,6 +922,10 @@ powerupClass [POW_VULCAN_AMMO] = 4;
 powerupClass [POW_BLUEFLAG] = 
 powerupClass [POW_REDFLAG] = 5;
 
+powerupClass [POW_KEY_BLUE] = 
+powerupClass [POW_KEY_GOLD] = 
+powerupClass [POW_KEY_RED] = 6;
+
 memset (powerupToObject, 0xff, sizeof (powerupToObject));
 powerupToObject [POW_LASER] = LASER_ID;
 powerupToObject [POW_VULCAN] = VULCAN_ID;

@@ -4131,21 +4131,23 @@ DropAfterburnerBlobs (&OBJECTS [gameData.multiplayer.players [int (buf [1])].nOb
 
 void MultiSendPowerupUpdate ()
 {
-gameData.multigame.msg.buf [0] = MULTI_POWERUP_UPDATE;
-for (int i = 0; i < MAX_POWERUP_TYPES; i++)
-	gameData.multigame.msg.buf [i+1] = gameData.multiplayer.maxPowerupsAllowed [i];
-MultiSendData (gameData.multigame.msg.buf, MAX_POWERUP_TYPES + 1, 1);
+if (IAmGameHost ()) {
+	gameData.multigame.msg.buf [0] = MULTI_POWERUP_UPDATE;
+	for (int i = 0; i < MAX_POWERUP_TYPES; i++)
+		gameData.multigame.msg.buf [i+1] = gameData.multiplayer.maxPowerupsAllowed [i];
+	MultiSendData (gameData.multigame.msg.buf, MAX_POWERUP_TYPES + 1, 1);
+	}
 }
 
 //-----------------------------------------------------------------------------
 
 void MultiDoPowerupUpdate (char *buf)
 {
-	int i;
-
-for (i = 0; i < MAX_POWERUP_TYPES; i++)
-	if (buf [i+1] > gameData.multiplayer.maxPowerupsAllowed [i])
-		gameData.multiplayer.maxPowerupsAllowed [i] = buf [i+1];
+if (!IAmGameHost ()) {
+	for (int i = 0; i < MAX_POWERUP_TYPES; i++)
+		if (buf [i+1] > gameData.multiplayer.maxPowerupsAllowed [i])
+			gameData.multiplayer.maxPowerupsAllowed [i] = buf [i+1];
+	}
 }
 
 //-----------------------------------------------------------------------------

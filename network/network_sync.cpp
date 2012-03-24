@@ -272,16 +272,22 @@ syncP->timeout = t + 100 / PacketsPerSec ();
 #endif
 if (syncP->bExtraGameInfo) {
 	NetworkSendExtraGameInfo (&syncP->player [0]);
-	syncP->bExtraGameInfo = 0;
+	syncP->bExtraGameInfo = false;
+	}
+if (syncP->bAllowedPowerups) {
+	MultiSendPowerupUpdate ();
+	syncP->bAllowedPowerups = false;
 	}
 else if (syncP->nState == 1) {
 	syncP->objs.missingFrames.nFrame = 0;
 	NetworkSyncObjects (syncP);
-	syncP->bExtraGameInfo = 0;
+	syncP->bExtraGameInfo = false;
+	syncP->bAllowedPowerups = false;
 	}
 else if (syncP->nState == 2) {
 	NetworkSyncPlayer (syncP);
-	syncP->bExtraGameInfo = 1;
+	syncP->bExtraGameInfo = true;
+	syncP->bAllowedPowerups = true;
 	}
 else if (syncP->nState == 3) {
 	if (syncP->objs.missingFrames.nFrame) {

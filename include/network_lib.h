@@ -70,6 +70,7 @@ typedef struct tNetworkSyncData {
 	short					nState;
 	short					nExtras;
 	bool					bExtraGameInfo;
+	bool					bAllowedPowerups;
 	tSyncObjectsData	objs;
 } __pack__ tNetworkSyncData;
 
