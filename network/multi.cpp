@@ -1372,6 +1372,40 @@ gameData.multigame.score.pFlags [objP->info.nId] = 0;
 }
 
 //-----------------------------------------------------------------------------
+
+void MultiDestroyPlayerShip (int nPlayer, int bExplode, int nRemoteCreated, short* objList)
+{
+CPlayerData* playerP = gameData.multiplayer.players + nPlayer;
+CObject* objP = OBJECTS + playerP->nObject;
+fix shield = playerP->Shield ();
+playerP->SetShield (-1, false);
+DropPlayerEggs (objP);
+playerP->SetShield (shield);
+// Create mapping from remote to local numbering system
+gameData.multigame.create.nCount = 0;
+int i;
+for (i = 0; (i < nRemoteCreated) && (i < gameData.multigame.create.nCount); i++) {
+	short nRemoteObj = GET_INTEL_SHORT (*objList);
+	if (nRemoteObj > 0)
+		MapObjnumLocalToRemote ((short) gameData.multigame.create.nObjNums [i], nRemoteObj, nPlayer);
+	objList--;
+	}
+for (; i < gameData.multigame.create.nCount; i++)
+	OBJECTS [gameData.multigame.create.nObjNums [i]].Die ();
+if (bExplode) {
+	KillPlayerSmoke (nPlayer);
+	objP->ExplodeSplashDamagePlayer ();
+	objP->info.nFlags &= ~OF_SHOULD_BE_DEAD;              //don't really kill player
+	MultiMakePlayerGhost (nPlayer);
+	}
+else
+	objP->CreateAppearanceEffect ();
+playerP->flags &= ~(PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_FLAG);
+playerP->cloakTime = 0;
+playerP->m_bExploded = 1;
+}
+
+//-----------------------------------------------------------------------------
 // Only call this for players, not robots.  nPlayer is player number, not
 // Object number.
 
@@ -1428,40 +1462,7 @@ if (multiMessageLengths [MULTI_PLAYER_EXPLODE][1] > 0) {
 #if 0
 MultiAdjustRemoteCap (nPlayer);
 #endif
-objP = OBJECTS + playerP->nObject;
-nRemoteCreated = buf [bufI++]; // How many did the other guy create?
-gameData.multigame.create.nCount = 0;
-//if (gameStates.multi.nGameType != UDP_GAME) 
-	{
-	fix shield = playerP->Shield ();
-	playerP->SetShield (-1, false);
-#if 0
-	if (multiMessageLengths [1][MULTI_PLAYER_EXPLODE] < 0)
-	if (gameStates.multi.nGameType != UDP_GAME)
-#endif
-	DropPlayerEggs (objP);
-	playerP->SetShield (shield);
-// Create mapping from remote to local numbering system
-	for (i = 0; (i < nRemoteCreated) && (i < gameData.multigame.create.nCount); i++) {
-		nRemoteObj = GET_INTEL_SHORT (buf + bufI);
-		if (nRemoteObj > 0)
-			MapObjnumLocalToRemote ((short) gameData.multigame.create.nObjNums [i], nRemoteObj, nPlayer);
-		bufI += 2;
-		}
-	for (; i < gameData.multigame.create.nCount; i++)
-		OBJECTS [gameData.multigame.create.nObjNums [i]].Die ();
-	}
-if (buf [0] == MULTI_PLAYER_EXPLODE) {
-	KillPlayerSmoke (nPlayer);
-	objP->ExplodeSplashDamagePlayer ();
-	objP->info.nFlags &= ~OF_SHOULD_BE_DEAD;              //don't really kill player
-	MultiMakePlayerGhost (nPlayer);
-	}
-else
-	objP->CreateAppearanceEffect ();
-playerP->flags &= ~(PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_FLAG);
-playerP->cloakTime = 0;
-playerP->m_bExploded = 1;
+MultiDestroyPlayerShip (nPlayer, buf [0] == MULTI_PLAYER_EXPLODE, buf [bufI], (short*) (buf + bufI + 1));
 }
 
 //-----------------------------------------------------------------------------
@@ -5126,7 +5127,7 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 				}
 			if (oldestObjP) {
 				oldestObjP->Die ();
-				MultiSendRemoveObj (OBJ_IDX (oldestObjP));
+				//MultiSendRemoveObj (OBJ_IDX (oldestObjP));
 				}
 			}
 		}

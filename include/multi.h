@@ -628,5 +628,6 @@ void MultiSendSeismic (fix start, fix end);
 void MultiSendDropBlobs (char nPlayer);
 void InitDefaultShipProps (void);
 void SetupPowerupFilter (tNetGameInfo* infoP = NULL);
+void MultiDestroyPlayerShip (int nPlayer, int bExplode = 1, int nRemoteCreated = 0, short* objList = NULL);
 
 #endif /* _MULTI_H */
