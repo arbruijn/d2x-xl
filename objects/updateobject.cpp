@@ -118,8 +118,10 @@ if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && !extraGameInfo [I
 	int i = FindDropInfo (Signature ());
 	if (i >= 0) {
 		short nPowerupType = gameData.objs.dropInfo [i].nPowerupType;
-		DelDropInfo (i);
-		MaybeDropNetPowerup (i, nPowerupType, EXEC_DROP);
+		if (!MultiPowerupIs4Pack (nPowerupType + 1) || (gameData.multiplayer.maxPowerupsAllowed [nPowerupType + 1] - PowerupsInMine (nPowerupType + 1) < 1)) {
+			DelDropInfo (i);
+			MaybeDropNetPowerup (i, nPowerupType, EXEC_DROP);
+			}
 		}
 	}
 }

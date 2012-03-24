@@ -278,13 +278,14 @@ return nSegment;
 
 void DropPowerups (void)
 {
+if (extraGameInfo [IsMultiGame].nSpawnDelay != 0) {
 	short	h = gameData.objs.nFirstDropped, i;
-
-while (h >= 0) {
-	i = h;
-	h = gameData.objs.dropInfo [i].nNextPowerup;
-	if (!MaybeDropNetPowerup (i, gameData.objs.dropInfo [i].nPowerupType, CHECK_DROP))
-		break;
+	while (h >= 0) {
+		i = h;
+		h = gameData.objs.dropInfo [i].nNextPowerup;
+		if ((gameData.objs.dropInfo [i].nDropTime != 0x7FFFFFFF) && !MaybeDropNetPowerup (i, gameData.objs.dropInfo [i].nPowerupType, CHECK_DROP))
+			break;
+		}
 	}
 }
 
@@ -313,7 +314,7 @@ int AddDropInfo (short nObject, short nPowerupType, int nDropTime)
 
 if (gameData.objs.nFreeDropped < 0)
 	return -1;
-AddPowerupInMine (nPowerupType);
+//AddPowerupInMine (nPowerupType);
 h = gameData.objs.nFreeDropped;
 gameData.objs.nFreeDropped = gameData.objs.dropInfo [h].nNextPowerup;
 gameData.objs.dropInfo [h].nPrevPowerup = gameData.objs.nLastDropped;
