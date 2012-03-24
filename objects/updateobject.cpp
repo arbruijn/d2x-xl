@@ -115,14 +115,22 @@ if (this == dbgObjP)
 	dbgObjP = dbgObjP;
 #endif
 if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && !extraGameInfo [IsMultiGame].nSpawnDelay && IsMissile ()) {
+#if 1
+	RemovePowerupInMine (gameData.objs.dropInfo [h].nPowerupType);
+#else
 	int i = FindDropInfo (Signature ());
 	if (i >= 0) {
 		short nPowerupType = gameData.objs.dropInfo [i].nPowerupType;
-		if (!MultiPowerupIs4Pack (nPowerupType + 1) || (gameData.multiplayer.maxPowerupsAllowed [nPowerupType + 1] - PowerupsInMine (nPowerupType + 1) < 1)) {
+		if (!MultiPowerupIs4Pack (nPowerupType + 1) || 
+			 (gameData.multiplayer.maxPowerupsAllowed [nPowerupType + 1] - gameData.multiplayer.powerupsInMine [nPowerupType + 1] < 1)) {
+#if DBG
+			PowerupsInMine (nPowerupType + 1);
+#endif
 			DelDropInfo (i);
 			MaybeDropNetPowerup (i, nPowerupType, EXEC_DROP);
 			}
 		}
+#endif
 	}
 }
 

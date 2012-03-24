@@ -5134,7 +5134,7 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 		PowerupsInMine (i);
 	#endif
 		if (MultiPowerupIs4Pack (i + 1)) {
-			if ((h = gameData.multiplayer.maxPowerupsAllowed [i + 1] - PowerupsInMine (i + 1))) {
+			if (gameData.multiplayer.maxPowerupsAllowed [i + 1] - gameData.multiplayer.powerupsInMine [i + 1] > 0) {
 				for (j = h / 4; j; j--)
 					MaybeDropNetPowerup (-1, i + 1, FORCE_DROP);
 				h %= 4;

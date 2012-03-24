@@ -314,7 +314,7 @@ int AddDropInfo (short nObject, short nPowerupType, int nDropTime)
 
 if (gameData.objs.nFreeDropped < 0)
 	return -1;
-//AddPowerupInMine (nPowerupType);
+AddPowerupInMine (nPowerupType);
 h = gameData.objs.nFreeDropped;
 gameData.objs.nFreeDropped = gameData.objs.dropInfo [h].nNextPowerup;
 gameData.objs.dropInfo [h].nPrevPowerup = gameData.objs.nLastDropped;
