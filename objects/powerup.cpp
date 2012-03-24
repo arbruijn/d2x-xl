@@ -910,7 +910,7 @@ powerupClass [POW_HOMINGMSL_4] = 2;
 
 powerupClass [POW_QUADLASER] = 
 powerupClass [POW_CLOAK] = 
-powerupClass [POW_TURBO] = 
+//powerupClass [POW_TURBO] = 
 powerupClass [POW_INVUL] = 
 powerupClass [POW_FULL_MAP] = 
 powerupClass [POW_CONVERTER] = 
