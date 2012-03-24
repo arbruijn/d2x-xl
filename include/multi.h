@@ -626,7 +626,7 @@ void MultiSendTriggerSpecific (char nPlayer, ubyte trig);
 void MultiSetObjectTextures (CObject *objP);
 void MultiSendSeismic (fix start, fix end);
 void MultiSendDropBlobs (char nPlayer);
-
 void InitDefaultShipProps (void);
+void SetupPowerupFilter (tNetGameInfo* infoP = NULL);
 
 #endif /* _MULTI_H */
