@@ -114,11 +114,11 @@ if (Index () == nDbgObj)
 if (this == dbgObjP)
 	dbgObjP = dbgObjP;
 #endif
-if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && !extraGameInfo [IsMultiGame].nSpawnDelay && IsMissile ()) {
+if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && IsMissile ()) {
 	int i = FindDropInfo (Signature ());
 	if (i >= 0) {
 #if 1
-		RemovePowerupInMine (gameData.objs.dropInfo [i].nPowerupType);
+		DelDropInfo (i);
 #else
 		short nPowerupType = gameData.objs.dropInfo [i].nPowerupType;
 		if (!MultiPowerupIs4Pack (nPowerupType + 1) || 

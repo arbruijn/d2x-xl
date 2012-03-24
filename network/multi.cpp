@@ -5089,6 +5089,8 @@ OBJECTS [nObject].CreateAppearanceEffect ();
 
 //-----------------------------------------------------------------------------
 
+extern int nDbgPowerup;
+
 void MultiAdjustPowerups (void)
 {
 if (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ())
@@ -5105,6 +5107,10 @@ if (t - t0 < 1000)
 t0 = t;
 for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	h = gameData.multiplayer.maxPowerupsAllowed [i] - PowerupsInMine (i);
+#if DBG
+	if (i == nDbgPowerup)
+		nDbgPowerup = nDbgPowerup;
+#endif
 	if (h < 0) {
 		if (gameData.multiplayer.powerupsInMine [i] > 0) {
 	#if DBG

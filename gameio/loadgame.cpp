@@ -2061,6 +2061,12 @@ void CObject::Bash (ubyte nId)
 {
 gameData.multiplayer.powerupsInMine [info.nId] =
 gameData.multiplayer.maxPowerupsAllowed [info.nId] = 0;
+if (MultiPowerupIs4Pack (info.nId))
+	gameData.multiplayer.powerupsInMine [info.nId - 1] =
+	gameData.multiplayer.maxPowerupsAllowed [info.nId - 1] = 0;
+else if (MultiPowerupIs4Pack (info.nId + 1))
+	gameData.multiplayer.powerupsInMine [info.nId + 1] =
+	gameData.multiplayer.maxPowerupsAllowed [info.nId + 1] = 0;
 SetType (OBJ_POWERUP);
 info.nId = nId;
 info.renderType = RT_POWERUP;

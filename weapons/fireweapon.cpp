@@ -950,8 +950,6 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	else {
 		if (gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles)
 			gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles--;
-		else if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
-			AddPowerupInMine (secondaryWeaponToPowerup [gameData.weapons.nSecondary]);
 		else
 			MaybeDropNetPowerup (nObject, secondaryWeaponToPowerup [gameData.weapons.nSecondary], INIT_DROP);
 		}
