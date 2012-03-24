@@ -3020,7 +3020,7 @@ FORALL_STATIC_OBJS (objP, i) {
 				break;
 #if 1
 			default:
-				if (!powerupFilter (objP->info.nId);
+				if (!powerupFilter [objP->info.nId])
 					objP->BashToShield (true);
 #else
 			case POW_KEY_BLUE:
@@ -4638,7 +4638,7 @@ return 0;
 
 //-----------------------------------------------------------------------------
 
-int MultiPowerupIsAllowed (int nIdd)
+int MultiPowerupIsAllowed (int nId)
 {
 #if 1
 return powerupFilter [nId];
