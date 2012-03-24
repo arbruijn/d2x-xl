@@ -52,21 +52,25 @@ if (modelP)
 
 //------------------------------------------------------------------------------
 
+static CBitmap* OglCacheTexture (int nIndex, int nTranspType)
+{
+LoadTexture (nIndex, 0);
+CBitmap* bmP = &gameData.pig.tex.bitmaps [0][nIndex];
+bmP->SetTranspType (nTranspType);
+bmP->SetupTexture (1, bLoadTextures);
+}
+
+//------------------------------------------------------------------------------
+
 static void OglCacheVClipTextures (tVideoClip* vcP, int nTranspType)
 {
-	CBitmap*	bmP;
-	int		h;
-
 for (int i = 0; i < vcP->nFrameCount; i++) {
 #if DBG
-	h = vcP->frames [i].index;
+	int h = vcP->frames [i].index;
 	if ((nDbgTexture >= 0) && (h == nDbgTexture))
 		nDbgTexture = nDbgTexture;
 #endif
-	LoadTexture (h = vcP->frames [i].index, 0);
-	bmP = &gameData.pig.tex.bitmaps [0][h];
-	bmP->SetTranspType (nTranspType);
-	bmP->SetupTexture (1, bLoadTextures);
+	CBitmap* bmP = OglCacheTexture (vcP->frames [i].index, nTranspType);
 	if (!i && bmP->Override ())
 		SetupHiresVClip (vcP, NULL, bmP->Override ());
 	}
@@ -93,7 +97,9 @@ static void OglCacheWeaponTextures (CWeaponInfo* wi)
 OglCacheVClipTextures (wi->nFlashVClip, 1);
 OglCacheVClipTextures (wi->nRobotHitVClip, 1);
 OglCacheVClipTextures (wi->nWallHitVClip, 1);
-if (wi->renderType == WEAPON_RENDER_VCLIP)
+if (wi->renderType == WEAPON_RENDER_BLOB)
+	OglCacheTexture (wi->bitmap.index, 1);
+else if (wi->renderType == WEAPON_RENDER_VCLIP)
 	OglCacheVClipTextures (wi->nVClipIndex, 3);
 else if (wi->renderType == WEAPON_RENDER_POLYMODEL)
 	OglCachePolyModelTextures (wi->nModel);

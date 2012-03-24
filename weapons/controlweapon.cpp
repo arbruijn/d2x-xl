@@ -957,8 +957,10 @@ if (CObject::IsMissile (i))
 	poLenToWidthRatio = I2X (10);
 light = cf.ReadFix ();
 i = int (this - gameData.weapons.info.Buffer ());
-if (i == SPREADFIRE_ID)
+if (i == SPREADFIRE_ID) {
+	//renderType = 3;
 	light = I2X (1);
+	}
 else if (i == HELIX_ID)
 	light = I2X (3) / 2;
 lifetime = cf.ReadFix ();

@@ -116,6 +116,8 @@ void DrawVClipObject (CObject *objP, fix timeToLive, int bLit, int nVClip, CFloa
 	int			iFrame = CurFrame (objP, nVClip, timeToLive, nFrames);
 	int			bThruster = (objP->info.renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
 
+if ((iFrame < 0) || (iFrame >= VCLIP_MAX_FRAMES))
+	return;
 if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
 	if (bThruster) {
 		alpha = THRUSTER_ALPHA;
@@ -341,35 +343,33 @@ return 1;
 
 void DrawWeaponVClip (CObject *objP)
 {
-	int	nVClip;
-	fix	modtime, playTime;
-
-Assert (objP->info.nType == OBJ_WEAPON);
-nVClip = gameData.weapons.info [objP->info.nId].nVClipIndex;
-modtime = objP->info.xLifeLeft;
-playTime = gameData.eff.vClipP [nVClip].xTotalTime;
-//	Special values for modtime were causing enormous slowdown for omega blobs.
-if (modtime == IMMORTAL_TIME)
-	modtime = playTime;
+int nVClip = gameData.weapons.info [objP->info.nId].nVClipIndex;
+fix modTime = objP->info.xLifeLeft;
+fix playTime = gameData.eff.vClipP [nVClip].xTotalTime;
+if (!playTime)
+	return;
+//	Special values for modTime were causing enormous slowdown for omega blobs.
+if (modTime == IMMORTAL_TIME)
+	modTime = playTime;
 //	Should cause Omega blobs (which live for one frame) to not always be the same.
-if (modtime == ONE_FRAME_TIME)
-	modtime = RandShort ();
+if (modTime == ONE_FRAME_TIME)
+	modTime = RandShort ();
 if (objP->info.nId == PROXMINE_ID) {		//make prox bombs spin out of sync
 	int nObject = objP->Index ();
-	modtime += (modtime * (nObject & 7)) / 16;	//add variance to spin rate
-	while (modtime > playTime)
-		modtime -= playTime;
+	modTime += (modTime * (nObject & 7)) / 16;	//add variance to spin rate
+	while (modTime > playTime)
+		modTime -= playTime;
 	if ((nObject & 1) ^ ((nObject >> 1) & 1))			//make some spin other way
-		modtime = playTime - modtime;
+		modTime = playTime - modTime;
 	}
 else {
-	if (modtime > playTime)
-		modtime %= playTime;
+	if (modTime > playTime)
+		modTime %= playTime;
 	}
 if (ConvertVClipToPolymodel (objP))
 	DrawPolygonObject (objP, 0);
 else
-	DrawVClipObject (objP, modtime, 0, nVClip, gameData.weapons.color + objP->info.nId);
+	DrawVClipObject (objP, modTime, 0, nVClip, gameData.weapons.color + objP->info.nId);
 }
 
 //------------------------------------------------------------------------------

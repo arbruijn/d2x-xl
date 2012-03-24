@@ -376,6 +376,21 @@ else {
 #endif
 
 //bmP->SetupTexture (1, 1);
+#if 0 //DBG
+{
+	static int t0 = 0;
+	int t;
+	if (!t0)
+		t0 = SDL_GetTicks ();
+	else {
+		t = SDL_GetTicks ();
+		if (t - t0 > 1000) {
+			t0 = t;
+			gameData.weapons.info [12].nVClipIndex = (gameData.weapons.info [12].nVClipIndex + 1) % gameData.eff.vClips [0].Length ();
+			}
+		}
+	}
+#endif
 if (!bmP || bmP->Bind (1))
 	return;
 #if 0

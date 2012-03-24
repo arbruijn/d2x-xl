@@ -883,7 +883,9 @@ StopTime ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "slowmotion#0"))
+if (nIndex == 262)
+	nIndex = nIndex;
+if (strstr (bmName, "plasblob"))
 	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)
