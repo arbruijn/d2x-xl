@@ -198,6 +198,7 @@ downloadManager.Init ();
 if (NetworkSelectPlayers (bAutoRun)) {
 	missionManager.DeleteLevelStates ();
 	missionManager.SaveLevelStates ();
+	SetupPowerupFilter ();
 	StartNewLevel (netGame.m_info.GetLevel (), true);
 	ResetAllPlayerTimeouts ();
 	PrintLog (-1);
