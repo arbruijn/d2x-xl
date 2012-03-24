@@ -4129,7 +4129,7 @@ DropAfterburnerBlobs (&OBJECTS [gameData.multiplayer.players [int (buf [1])].nOb
 
 //-----------------------------------------------------------------------------
 
-void MultiSendPowerupUpdate ()
+void MultiSendPowerupUpdate (void)
 {
 if (IAmGameHost ()) {
 	gameData.multigame.msg.buf [0] = MULTI_POWERUP_UPDATE;
