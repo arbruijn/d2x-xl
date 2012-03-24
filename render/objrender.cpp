@@ -344,22 +344,6 @@ else {
 	fAlpha = 1.0f;
 	}
 
-#if 0
-if (bmi < 0) {
-	PageInAddonBitmap (bmi);
-	bmP = gameData.pig.tex.addonBitmaps - bmi - 1;
-#if DBG
-	if ((objP->rType.vClipInfo.nCurFrame < 0) || (objP->rType.vClipInfo.nCurFrame >= bmP->FrameCount ())) {
-		objP->rType.vClipInfo.nCurFrame = 0;
-		return;
-		}
-#endif
-	}
-else {
-	LoadTexture (bmi, 0);
-	bmP = gameData.pig.tex.bitmaps [0] + bmi;
-	}
-#else
 if (bmi < 0) {
 	if (-bmi - 1 >= int (gameData.pig.tex.addonBitmaps.Length ()))
 		return;
@@ -373,30 +357,8 @@ else {
 	if ((bmP->Type () == BM_TYPE_STD) && (bmoP = bmP->Override ()))
 		bmP = bmoP->SetCurFrame (iFrame);
 	}
-#endif
-
-//bmP->SetupTexture (1, 1);
-#if 0 //DBG
-{
-	static int t0 = 0;
-	int t;
-	if (!t0)
-		t0 = SDL_GetTicks ();
-	else {
-		t = SDL_GetTicks ();
-		if (t - t0 > 1000) {
-			t0 = t;
-			gameData.weapons.info [12].nVClipIndex = (gameData.weapons.info [12].nVClipIndex + 1) % gameData.eff.vClips [0].Length ();
-			}
-		}
-	}
-#endif
 if (!bmP || bmP->Bind (1))
 	return;
-#if 0
-if (!bmP->Prepared () && bmP->PrepareTexture (1, 0))
-	return;
-#endif
 bool b3DShield = ((nType == OBJ_POWERUP) && ((objP->info.nId == POW_SHIELD_BOOST) || (objP->info.nId == POW_HOARD_ORB)) &&
 					   gameOpts->Use3DPowerups () && gameOpts->render.powerups.b3DShields);
 
@@ -422,30 +384,14 @@ if (b3DShield) {
 	}
 else if (fAlpha < 1) {
 	if (bAdditive) {
-#if 1
 		color.Red () =
 		color.Green () =
 		color.Blue () = 0.5f;
-#else
-		if ((nType == OBJ_FIREBALL) && (fScale > 0)) {
-			fScale = 1.0f - fScale / 6.0f;
-			color.Red () *= fScale;
-			color.Green () *= fScale;
-			color.Blue () *= fScale;
-			}
-#endif
 		}
 	else
 		color.Red () = color.Green () = color.Blue () = 1.0f;
 	color.Alpha () = fAlpha;
 	CFixVector vPos = objP->info.position.vPos;
-#if 0
-	if (!IsMultiGame && (nType == OBJ_WEAPON) && (objP->info.nId == PLASMA_ID) && !gameStates.render.bPlasmaModded) {
-		double angle = X2F ((6 * (gameData.time.xGame - objP->CreationTime ())) % I2X (2)) * Pi;
-		vPos += objP->info.position.mOrient.mat.dir.r * F2X (sin (angle) / 2.0f) + objP->info.position.mOrient.mat.dir.u * F2X (cos (angle) / 2.0f);
-		objP->SetRenderPos (vPos);
-		}
-#endif
 	if (bmP->Width () > bmP->Height ())
 		transparencyRenderer.AddSprite (bmP, vPos, &color, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()),
 												  iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
