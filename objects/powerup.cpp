@@ -101,6 +101,7 @@ char powerupToObject [MAX_POWERUP_TYPES];
 short powerupToModel [MAX_POWERUP_TYPES];
 short weaponToModel [MAX_WEAPON_TYPES];
 ubyte powerupType [MAX_POWERUP_TYPES];
+ubyte powerupFilter [MAX_POWERUP_TYPES];
 void *pickupHandler [MAX_POWERUP_TYPES];
 
 //------------------------------------------------------------------------------
@@ -1100,7 +1101,51 @@ powerupType [POW_SMARTMINE] =
 powerupType [POW_MERCURYMSL_1] = 
 powerupType [POW_MERCURYMSL_4] = 
 powerupType [POW_EARTHSHAKER] = (ubyte) POWERUP_IS_MISSILE;
+}
 
+//-----------------------------------------------------------------------------
+
+#define ENABLE_FILTER(_type,_flag) if (_flag) powerupFilter [_type] = 1;
+
+void SetupPowerupFilter (void)
+{
+memset (powerupFilter, 0, sizeof (powerupFilter));
+ENABLE_FILTER (POW_INVUL, netGame.m_info.DoInvulnerability);
+ENABLE_FILTER (POW_CLOAK, netGame.m_info.DoCloak);
+ENABLE_FILTER (POW_KEY_BLUE, !IsCoopGame);
+ENABLE_FILTER (POW_KEY_RED, !IsCoopGame);
+ENABLE_FILTER (POW_KEY_GOLD, !IsCoopGame);
+ENABLE_FILTER (POW_AFTERBURNER, netGame.m_info.DoAfterburner);
+ENABLE_FILTER (POW_FUSION, netGame.m_info.DoFusions);
+ENABLE_FILTER (POW_PHOENIX, netGame.m_info.DoPhoenix);
+ENABLE_FILTER (POW_HELIX, netGame.m_info.DoHelix);
+ENABLE_FILTER (POW_MEGAMSL, netGame.m_info.DoMegas);
+ENABLE_FILTER (POW_SMARTMSL, netGame.m_info.DoSmarts);
+ENABLE_FILTER (POW_GAUSS, netGame.m_info.DoGauss);
+ENABLE_FILTER (POW_VULCAN, netGame.m_info.DoVulcan);
+ENABLE_FILTER (POW_PLASMA, netGame.m_info.DoPlasma);
+ENABLE_FILTER (POW_OMEGA, netGame.m_info.DoOmega);
+ENABLE_FILTER (POW_SUPERLASER, netGame.m_info.DoSuperLaser);
+ENABLE_FILTER (POW_PROXMINE, netGame.m_info.DoProximity || (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)));
+ENABLE_FILTER (POW_SMARTMINE, netGame.m_info.DoSmartMine || IsEntropyGame);
+ENABLE_FILTER (POW_VULCAN_AMMO, (netGame.m_info.DoVulcan || netGame.m_info.DoGauss));
+ENABLE_FILTER (POW_SPREADFIRE, netGame.m_info.DoSpread);
+ENABLE_FILTER (POW_FLASHMSL_1, netGame.m_info.DoFlash);
+ENABLE_FILTER (POW_FLASHMSL_4, netGame.m_info.DoFlash);
+ENABLE_FILTER (POW_GUIDEDMSL_1, netGame.m_info.DoGuided);
+ENABLE_FILTER (POW_GUIDEDMSL_4, netGame.m_info.DoGuided);
+ENABLE_FILTER (POW_EARTHSHAKER, netGame.m_info.DoEarthShaker);
+ENABLE_FILTER (POW_MERCURYMSL_1, netGame.m_info.DoMercury);
+ENABLE_FILTER (POW_MERCURYMSL_4, netGame.m_info.DoMercury);
+ENABLE_FILTER (POW_CONVERTER, netGame.m_info.DoConverter);
+ENABLE_FILTER (POW_AMMORACK, netGame.m_info.DoAmmoRack);
+ENABLE_FILTER (POW_HEADLIGHT, netGame.m_info.DoHeadlight && (!EGI_FLAG (bDarkness, 0, 0, 0) || EGI_FLAG (headlight.bAvailable, 0, 1, 0)));
+ENABLE_FILTER (POW_LASER, netGame.m_info.DoLaserUpgrade);
+ENABLE_FILTER (POW_HOMINGMSL_1, netGame.m_info.DoHoming);
+ENABLE_FILTER (POW_HOMINGMSL_4, netGame.m_info.DoHoming);
+ENABLE_FILTER (POW_QUADLASER, netGame.m_info.DoQuadLasers);
+ENABLE_FILTER (POW_BLUEFLAG, (gameData.app.GameMode (GM_CAPTURE)));
+ENABLE_FILTER (POW_REDFLAG, (gameData.app.GameMode (GM_CAPTURE)));
 }
 
 //-----------------------------------------------------------------------------

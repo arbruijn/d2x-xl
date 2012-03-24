@@ -2979,6 +2979,7 @@ if (IsNetworkGame) {
 	}
 invulCount = 0;
 cloakCount = 0;
+SetupPowerupFilter ();
 FORALL_STATIC_OBJS (objP, i) {
 	if (objP->info.nType == OBJ_HOSTAGE) {
 		if (!IsCoopGame) {
@@ -3003,23 +3004,29 @@ FORALL_STATIC_OBJS (objP, i) {
 				else
 					objP->BashToShield (true);
 				break;
+
 			case POW_INVUL:
 				if ((invulCount < 3) && netGame.m_info.DoInvulnerability)
 					invulCount++;
 				else
 					objP->BashToShield (true);
 				break;
+
 			case POW_CLOAK:
 				if ((cloakCount < 3) && netGame.m_info.DoCloak)
 					cloakCount++;
 				else
 					objP->BashToShield (true);
 				break;
+#if 1
+			default:
+				if (!powerupFilter (objP->info.nId);
+					objP->BashToShield (true);
+#else
 			case POW_KEY_BLUE:
 			case POW_KEY_RED:
 			case POW_KEY_GOLD:
 				if (!IsCoopGame)
-					objP->BashToShield (true);
 				break;
 			case POW_AFTERBURNER:
 				objP->BashToShield (!netGame.m_info.DoAfterburner);
@@ -3113,6 +3120,7 @@ FORALL_STATIC_OBJS (objP, i) {
 				break;
 			case POW_REDFLAG:
 				objP->BashToShield (!(gameData.app.GameMode (GM_CAPTURE)));
+#endif
 			}
 		}
 	}
@@ -4630,9 +4638,12 @@ return 0;
 
 //-----------------------------------------------------------------------------
 
-int MultiPowerupIsAllowed (int id)
+int MultiPowerupIsAllowed (int nIdd)
 {
-switch (id) {
+#if 1
+return powerupFilter [nId];
+#else
+switch (nId) {
 	case POW_INVUL:
 		if (!netGame.m_info.DoInvulnerability)
 			return (0);
@@ -4766,7 +4777,8 @@ switch (id) {
 			return (0);
 		break;
 	}
-return (1);
+return 1;
+#endif
 }
 
 //-----------------------------------------------------------------------------

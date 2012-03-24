@@ -149,6 +149,7 @@ int PickupEquipment (CObject *objP, int nEquipment, const char *pszHave, const c
 
 extern const char *pszPowerup [MAX_POWERUP_TYPES];
 extern ubyte powerupType [MAX_POWERUP_TYPES];
+extern ubyte powerupFilter [MAX_POWERUP_TYPES];
 extern void * pickupHandler [MAX_POWERUP_TYPES];
 
 #define POWERUP_IS_UNDEFINED	-1
@@ -168,6 +169,7 @@ return (nId == POW_EXTRA_LIFE) || (nId == POW_ENERGY) || (nId == POW_SHIELD_BOOS
 
 //------------------------------------------------------------------------------
 
+void SetupPowerupFilter (void);
 void AddAllowedPowerup (int nPowerup, int nCount = 1);
 void RemoveAllowedPowerup (int nPowerup);
 void AddPowerupInMine (int nPowerup, bool bIncreaseLimit = false);
