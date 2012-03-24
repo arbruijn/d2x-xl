@@ -1035,7 +1035,7 @@ if (IsMultiGame) {
 	MultiSendTyping ();
 	MultiSendWeapons (0);
 	MultiSyncKills ();
-	MultiRefillPowerups ();
+	MultiAdjustPowerups ();
 	tracker.AddServer ();
 	MultiDoFrame ();
 	CheckMonsterballScore ();

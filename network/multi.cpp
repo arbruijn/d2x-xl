@@ -5088,7 +5088,7 @@ OBJECTS [nObject].CreateAppearanceEffect ();
 
 //-----------------------------------------------------------------------------
 
-void MultiRefillPowerups (void)
+void MultiAdjustPowerups (void)
 {
 if (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ())
 	return;

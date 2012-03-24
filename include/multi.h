@@ -612,7 +612,7 @@ void MultiSetFlagPos (void);
 void ResetPlayerPaths (void);
 void SetPlayerPaths (void);
 void MultiSyncKills (void);
-void MultiRefillPowerups (void);
+void MultiAdjustPowerups (void);
 void RemapLocalPlayerObject (int nLocalObj, int nRemoteObj);
 void MultiOnlyPlayerMsg (int bMsgBox);
 
