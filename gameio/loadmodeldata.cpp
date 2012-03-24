@@ -228,11 +228,17 @@ CFile::ChangeFilenameExtension (szFile, szLevel, ".hxm");
 if (!cf.Open (szFile, szFolder ? szFolder : gameFolders.szDataDir [0], "rb", bUseHog ? 0 : -1))		//no robot replacement file
 	return 0;
 t = cf.ReadInt ();			//read id "HXM!"
-if (t!= MAKE_SIG ('!','X','M','H'))
+if (t != MAKE_SIG ('!','X','M','H')) {
 	Warning (TXT_HXM_ID);
+	cf.Close ();
+	return 0;
+	}
 t = cf.ReadInt ();			//read version
-if (t < 1)
+if (t < 1) {
 	Warning (TXT_HXM_VERSION, t);
+	cf.Close ();
+	return 0;
+	}
 t = cf.ReadInt ();			//read number of robots
 for (j = 0; j < t; j++) {
 	i = cf.ReadInt ();		//read robot number
