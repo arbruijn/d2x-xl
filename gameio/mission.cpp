@@ -600,6 +600,8 @@ for (i = (int) strlen (gameFolders.szMsnSubDir) - 2; i >= 0; i--)
 	if (gameFolders.szMsnSubDir [i] == '/')
 		break;
 gameFolders.szMsnSubDir [i + 1] = '\0';
+if (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.szMsnSubDir, "single/"))
+	*gameFolders.szMsnSubDir = '\0';
 }
 
 //------------------------------------------------------------------------------
@@ -1034,8 +1036,7 @@ for (i = 0; i < n; i++)
 	if (!stricmp (szMissionName, m_list [i].filename))
 		return m_list [i].nDescentVersion;
 for (i = 0; i < n; i++)
-	if (!m_list [i].nDescentVersion && 
-			strcmp (m_list [i].szMissionName, "[..]")) {
+	if (!m_list [i].nDescentVersion && strcmp (m_list [i].szMissionName, "[..]")) {
 		if ((j = FindByName (szMissionName, i)))
 			return j;
 		MoveFolderUp ();
