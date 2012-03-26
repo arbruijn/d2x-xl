@@ -243,11 +243,13 @@ class __pack__ CPlayerData : public CPlayerInfo {
 		inline fix Energy (bool bScale = true) { return m_energy.Get (bScale); }
 		fix SetShield (fix s, bool bScale = true);
 		fix SetEnergy (fix e, bool bScale = true);
+		inline void UpdateDeathTime (void);
 		inline fix ResetShield (fix s) { return m_shield.Reset (s); }
 		inline fix ResetEnergy (fix e) { return m_energy.Reset (e); }
 		inline fix UpdateShield (fix delta) { 
 			fix shield = m_shield.Update (delta); 
 			MultiSendShield ();
+			UpdateDeathTime ();
 			return shield;
 			}
 		inline fix UpdateEnergy (fix delta) { return m_energy.Update (delta); }

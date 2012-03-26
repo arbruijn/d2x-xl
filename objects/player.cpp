@@ -310,19 +310,26 @@ return Index () == N_LOCALPLAYER;
 
 //-------------------------------------------------------------------------
 
-fix CPlayerData::SetShield (fix s, bool bScale) 
-{ 
-if (s >= 0) {
+void CPlayerData::UpdateDeathTime (void) 
+{
+if (m_shield.Get () >= 0) {
 	m_tDeath = 0;
 	m_bExploded = 0;
 	}
 else if (!m_tDeath)
 	m_tDeath = gameStates.app.nSDLTicks [0];
+}
+
+//-------------------------------------------------------------------------
+
+fix CPlayerData::SetShield (fix s, bool bScale) 
+{ 
 if (m_shield.Set (s, bScale)) {
 	if (OBJECTS.Buffer () && (nObject >= 0) && (IsLocalPlayer () || (nObject != LOCALPLAYER.nObject)))
 		OBJECTS [nObject].SetShield (s); 
 	MultiSendShield ();
 	}
+UpdateDeathTime ();
 return shield;
 }
 

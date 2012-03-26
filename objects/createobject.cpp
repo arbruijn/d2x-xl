@@ -447,6 +447,10 @@ if ((nPowerup == POW_VULCAN) || (nPowerup == POW_GAUSS))
 
 void AddPowerupInMine (int nPowerup, bool bIncreaseLimit)
 {
+#if DBG
+if (nPowerup == nDbgPowerup)
+	nDbgPowerup = nDbgPowerup;
+#endif
 if (MultiPowerupIs4Pack (nPowerup))
 	gameData.multiplayer.powerupsInMine [nPowerup - 1] += 4;
 gameData.multiplayer.powerupsInMine [nPowerup]++;
