@@ -57,8 +57,8 @@ if (OBJ_IDX (this) == nDbgObj)
 #endif
 info.nType = cf.ReadByte ();
 #if DBG
-if (info.nType == 9)
-	info.nType = 9;
+if (info.nType == nDbgObjType)
+	nDbgObjType = nDbgObjType;
 #endif
 info.nId = cf.ReadByte ();
 #if DBG

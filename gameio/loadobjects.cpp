@@ -129,12 +129,14 @@ else if (objP->info.nType == OBJ_EFFECT) {
 	gameData.objs.nEffects++;
 	}
 else {		//Robots taken care of above
-	if (objP->info.renderType == RT_POLYOBJ) {
+	if ((objP->info.renderType == RT_POLYOBJ) && (nSavePOFNames > 0)) {
 		char *name = szSavePOFNames [objP->ModelId ()];
-		for (int i = 0; i < gameData.models.nPolyModels; i++)
-			if (!stricmp (pofNames [i], name)) {		//found it!
-				objP->rType.polyObjInfo.nModel = i;
-				break;
+		if (*name) {
+			for (int i = 0; (i < gameData.models.nPolyModels) && (i < nSavePOFNames); i++)
+				if (*name && !stricmp (pofNames [i], name)) {		//found it!
+					objP->rType.polyObjInfo.nModel = i;
+					break;
+					}
 				}
 		}
 	}
