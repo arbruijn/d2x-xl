@@ -1231,7 +1231,7 @@ for (short i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 		nPowerups += gameData.multiplayer.SecondaryAmmo (i, nIndex, 0);
 		}
 	else {	// guns
-		if (!(extraGameInfo [0].loadout.nGuns & (1 << nIndex))) {
+		if (!(extraGameInfo [IsMultiGame].loadout.nGuns & (1 << nIndex))) {
 			if (nIndex == LASER_INDEX) {
 				//if (!(extraGameInfo [0].loadout.nGuns & (1 << 5)))
 					nPowerups += playerP->LaserLevel (0);
