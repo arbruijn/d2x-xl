@@ -894,12 +894,14 @@ if (bOk) {
 			break;
 		}
 	}
+cf.Close ();
 if (bOk) {
 	Realloc (ldh.nBuffers);
+#if 0
 	if (gameOpts->render.color.nLevel < 2)
 		ToGrayScale ();
+#endif
 	}
-cf.Close ();
 return bOk;
 }
 

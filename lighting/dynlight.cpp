@@ -79,7 +79,7 @@ else if (gameStates.app.bNostalgia) {
 else {
 	lightP->info.color.Red () =
 	lightP->info.color.Green () =
-	lightP->info.color.Blue () = (red + green + blue) / 3.0f;
+	lightP->info.color.Blue () = red * 0.30f + green * 0.584f + blue * 0.116f; //(red + green + blue) / 3.0f;
 	}
 lightP->info.color.Alpha () = 1.0;
 lightP->info.fBrightness = fBrightness;
