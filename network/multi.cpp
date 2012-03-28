@@ -1456,7 +1456,7 @@ if (multiMessageLengths [MULTI_PLAYER_EXPLODE][1] > 0) {
 #if 0
 MultiAdjustRemoteCap (nPlayer);
 #endif
-playerP->m_tWeaponInfo = 0;
+playerP->m_tWeaponInfo = 0; // keep the PSALM from kicking in before updated player weapon info is available
 MultiDestroyPlayerShip (nPlayer, buf [0] == MULTI_PLAYER_EXPLODE, buf [bufI], (short*) (buf + bufI + 1));
 }
 
