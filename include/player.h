@@ -220,6 +220,7 @@ class __pack__ CPlayerData : public CPlayerInfo {
 		ubyte			m_bExploded;
 		int			m_tDisconnect;
 		int			m_tDeath;
+		int			m_tWeaponInfo;
 
 	public:
 		CPlayerData () { 
@@ -235,6 +236,7 @@ class __pack__ CPlayerData : public CPlayerInfo {
 			}
 
 		bool WaitingForExplosion (void);
+		bool WaitingForWeaponInfo (void);
 
 #if 1
 		inline fix InitialShield (void) { return m_shield.Initial (); }

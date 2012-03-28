@@ -3957,6 +3957,7 @@ bufP += 2;
 gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 gameData.multiplayer.weaponStates [nPlayer].nBuiltinMissiles = buf [bufP];
+gameData.multiplayer.players [nPlayer].m_tWeaponInfo = gameStates.app.nSDLTicks [0];
 }
 
 //-----------------------------------------------------------------------------

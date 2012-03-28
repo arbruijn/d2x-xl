@@ -363,6 +363,13 @@ return m_tDeath && (gameStates.app.nSDLTicks [0] - m_tDeath < 30000) && !m_bExpl
 }
 
 //-------------------------------------------------------------------------
+
+bool CPlayerData::WaitingForWeaponInfo (void) 
+{ 
+return !m_tWeaponInfo || ((gameStates.app.nSDLTicks [0] - m_tWeaponInfo > 15000)) && (gameStates.app.nSDLTicks [0] - m_tWeaponInfo < 180000)) && !m_bExploded && Connected ();  
+}
+
+//-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 

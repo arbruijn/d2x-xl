@@ -101,39 +101,22 @@ if (OBJECTS.Buffer () && !(gameData.objs.speedBoost.Buffer () && gameData.objs.s
 void CObject::Die (void)
 {
 info.nFlags |= OF_SHOULD_BE_DEAD;
-#if 0
-if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME)) {
-	MultiSendRemoveObj (Index ());
-	MultiSendRemoveObj (Index ());
-	MultiSendRemoveObj (Index ());
-	}
-#endif
 #if DBG
 if (Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 if (this == dbgObjP)
 	dbgObjP = dbgObjP;
 #endif
-if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && IsMissile ()) {
-	int i = FindDropInfo (Signature ());
-	if (i >= 0) {
-#if 1
-		DelDropInfo (i);
-#else
-		short nPowerupType = gameData.objs.dropInfo [i].nPowerupType;
-		if (!MultiPowerupIs4Pack (nPowerupType + 1) || 
-			 (gameData.multiplayer.maxPowerupsAllowed [nPowerupType + 1] - gameData.multiplayer.powerupsInMine [nPowerupType + 1] < 1)) {
-#if DBG
-			PowerupsInMine (nPowerupType + 1);
-#endif
+if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (Type () == OBJ_POWERUP)) {
+	if (!IsMissile ()) 
+		RemovePowerupInMine (Id ());
+	else {
+		int i = FindDropInfo (Signature ());
+		if (i >= 0)
 			DelDropInfo (i);
-			MaybeDropNetPowerup (i, nPowerupType, EXEC_DROP);
-			}
-#endif
-		}
 #if DBG
-	else
-		FindDropInfo (Signature ());
+		else
+			FindDropInfo (Signature ());
 #endif
 	}
 }

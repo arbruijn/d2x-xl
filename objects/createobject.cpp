@@ -462,6 +462,10 @@ if (bIncreaseLimit)
 
 void RemovePowerupInMine (int nPowerup)
 {
+#if DBG
+if (nPowerup == nDbgPowerup)
+	nDbgPowerup = nDbgPowerup;
+#endif
 if (gameData.multiplayer.powerupsInMine [nPowerup] > 0) {
 	gameData.multiplayer.powerupsInMine [nPowerup]--;
 	if (MultiPowerupIs4Pack (nPowerup)) {
