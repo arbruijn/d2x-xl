@@ -806,6 +806,17 @@ if (m_list.nBuffers > nBuffers) {
 
 //------------------------------------------------------------------------------
 
+void CLightmapManager::ToGrayScale (void)
+{
+for (int i = 0; i < m_list.nBuffers; i++) {
+	CRGBColor* colorP = &m_list.buffers [i].bmP [0][0];
+	for (int j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, colorP++)
+		colorP->ToGrayScale (1);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int CLightmapManager::Save (int nLevel)
 {
 	CFile				cf;
@@ -883,8 +894,11 @@ if (bOk) {
 			break;
 		}
 	}
-if (bOk)
+if (bOk) {
 	Realloc (ldh.nBuffers);
+	if (gameOpts->render.color.nLevel < 2)
+		ToGrayScale ();
+	}
 cf.Close ();
 return bOk;
 }

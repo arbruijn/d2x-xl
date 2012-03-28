@@ -103,6 +103,7 @@ class CLightmapManager {
 		void Realloc (int nBuffers);
 		int Save (int nLevel);
 		int Load (int nLevel);
+		void ToGrayScale (void);
 		char* Filename (char *pszFilename, int nLevel);
 		void Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest, int direction);
 		void Blur (CSegFace* faceP, CLightmapFaceData& source);

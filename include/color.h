@@ -28,7 +28,12 @@ class CRGBColor {
 	inline void Set (ubyte red, ubyte green, ubyte blue) {
 		r = red, g = green, b = blue;
 		}
-
+	inline void ToGrayScale (int bWeighted = 0) {
+		if (bWeighted)
+			r = g = b = ubyte (((float) r + (float) g + (float) b) / 3.0f + 0.5f);
+		else
+			r = g = b = ubyte ((float) r * 0.59f + (float) g * 0.30f + (float) b * 0.11f + 0.5f);
+		}
 	inline void Assign (CRGBColor& other) { r = other.r, g = other.g, b = other.b;	}
 	};
 
