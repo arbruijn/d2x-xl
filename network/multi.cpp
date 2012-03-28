@@ -1563,13 +1563,12 @@ else if ((objP->info.nType != OBJ_POWERUP) && (objP->info.nType != OBJ_HOSTAGE))
 if (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_EXPLODING | OF_DESTROYED))
 	return;
 NetworkResetObjSync (nLocalObj);
-if (objP->info.nType == OBJ_POWERUP)
-	if (IsNetworkGame) 
-		RemovePowerupInMine (objP->info.nId);
+//if ((objP->info.nType == OBJ_POWERUP) && IsNetworkGame) 
+//	RemovePowerupInMine (objP->info.nId);
 if (objP->info.nType == OBJ_ROBOT)
 	MultiDestroyRobot (objP);
 else
-	objP->MultiDie (); // quick and painless
+	objP->Die (); // quick and painless
 }
 
 //-----------------------------------------------------------------------------
@@ -2534,9 +2533,8 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	sbyte nObjOwner;
 	short nRemoteObj;
 
-if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) && IsNetworkGame) {
-	RemovePowerupInMine (OBJECTS [nObject].info.nId);
-	}
+//if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) && IsNetworkGame)
+//	RemovePowerupInMine (OBJECTS [nObject].info.nId);
 gameData.multigame.msg.buf [0] = char (MULTI_REMOVE_OBJECT);
 nRemoteObj = ObjnumLocalToRemote (short (nObject), &nObjOwner);
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nRemoteObj); // Map to network objnums
