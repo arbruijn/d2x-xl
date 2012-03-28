@@ -1456,6 +1456,7 @@ if (multiMessageLengths [MULTI_PLAYER_EXPLODE][1] > 0) {
 #if 0
 MultiAdjustRemoteCap (nPlayer);
 #endif
+playerP->m_tWeaponInfo = 0;
 MultiDestroyPlayerShip (nPlayer, buf [0] == MULTI_PLAYER_EXPLODE, buf [bufI], (short*) (buf + bufI + 1));
 }
 
