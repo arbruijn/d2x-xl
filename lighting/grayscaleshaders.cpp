@@ -51,7 +51,7 @@ const char *grayScaleFS [2][3] = {{
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"vec4 decalColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor.b * 0.11) / 4.0;\r\n" \
+	"float l = (texColor.r * 0.3 + texColor.g * 0.584 + texColor.b * 0.116) / 4.0;\r\n" \
 	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
 	},
  {
@@ -64,7 +64,7 @@ const char *grayScaleFS [2][3] = {{
 	"uniform sampler2D baseTex;\r\n" \
 	"void main(void){" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor.b * 0.11) / 4.0;\r\n" \
+	"float l = (texColor.r * 0.3 + texColor.g * 0.584 + texColor.b * 0.116) / 4.0;\r\n" \
 	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
 	,
 	"uniform sampler2D baseTex, decalTex;\r\n" \
@@ -72,7 +72,7 @@ const char *grayScaleFS [2][3] = {{
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"vec4 decalColor = texture2D (baseTex, gl_TexCoord [2].xy);\r\n" \
 	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor.b * 0.11) / 4.0;\r\n" \
+	"float l = (texColor.r * 0.3 + texColor.g * 0.584 + texColor.b * 0.116) / 4.0;\r\n" \
 	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
 	}};
 

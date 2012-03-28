@@ -32,7 +32,7 @@ class CRGBColor {
 		if (bWeighted)
 			r = g = b = ubyte (((float) r + (float) g + (float) b) / 3.0f + 0.5f);
 		else
-			r = g = b = ubyte ((float) r * 0.30f + (float) g * 0.59f + (float) b * 0.11f + 0.5f);
+			r = g = b = ubyte ((float) r * 0.30f + (float) g * 0.584f + (float) b * 0.116f + 0.5f);
 		}
 	inline void Assign (CRGBColor& other) { r = other.r, g = other.g, b = other.b;	}
 	};
