@@ -5096,6 +5096,9 @@ OBJECTS [nObject].CreateAppearanceEffect ();
 }
 
 //-----------------------------------------------------------------------------
+// PSALM - Powerup Spam And Loss Minimizer
+// Compare allowed number of each powerup type with number of powerups of that type in the mine and on ships
+// Add/remove missing/excess powerups
 
 extern int nDbgPowerup;
 
