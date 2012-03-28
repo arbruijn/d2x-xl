@@ -109,7 +109,7 @@ int COmegaLightning::Update (CObject* parentObjP, CObject* targetObjP, CFixVecto
 	int							h, i, nHandle, nLightning;
 	short							nSegment;
 
-if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bOmega && !gameStates.render.bOmegaModded))
+if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bOmega && !gameStates.render.bOmegaModded))
 	return -1;
 if (m_nHandles < 1)
 	return 0;
@@ -229,7 +229,7 @@ int COmegaLightning::Create (CFixVector *vTargetPos, CObject* parentObjP, CObjec
 	tOmegaLightningHandles*	handleP;
 	int							nObject;
 
-if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bOmega && !gameStates.render.bOmegaModded))
+if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bOmega && !gameStates.render.bOmegaModded))
 	return 0;
 if ((parentObjP->info.nType == OBJ_ROBOT) && (!gameOpts->render.lightning.bRobotOmega || gameStates.app.bHaveMod))
 	return 0;

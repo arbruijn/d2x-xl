@@ -142,7 +142,6 @@ CObject* CreateExplosion (CObject* parentP, short nSegment, CFixVector& vPos, fi
 	int			flash = parentP ? static_cast<int> (gameData.weapons.info [parentP->info.nId].flash) : 0;
 
 nObject = CreateFireball (nVClip, nSegment, vPos, xSize, RT_FIREBALL);
-
 if (nObject < 0)
 	return NULL;
 
@@ -298,6 +297,16 @@ FORALL_OBJS (objP, i) {
 		if (objP->info.xShield >= 0)
 			objP->ApplyDamageToPlayer (killerP, damage);
 		}
+	}
+
+if (SHOW_LIGHTNING (2)) {
+	if (nVClip == VCLIP_PLAYER_APPEARANCE)
+		lightningManager.CreateForPlayerTeleport (explObjP);
+	else if (nVClip == VCLIP_MORPHING_ROBOT)
+		lightningManager.CreateForRobotTeleport (explObjP);
+	else if (nVClip != VCLIP_POWERUP_DISAPPEARANCE)
+		lightningManager.CreateForPowerupTeleport (explObjP);
+	explObjP->Die ();
 	}
 return explObjP;
 }

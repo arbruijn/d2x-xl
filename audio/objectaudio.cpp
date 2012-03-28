@@ -786,7 +786,7 @@ while (i) {
 				}
 			else if ((objP->info.nType == OBJ_EFFECT) && 
 						(((objP->info.nId == SOUND_ID) && !objP->rType.soundInfo.bEnabled) || 
-						 ((objP->info.nId == LIGHTNING_ID) && !(SHOW_LIGHTNING && objP->rType.lightningInfo.bEnabled)))) {
+						 ((objP->info.nId == LIGHTNING_ID) && !(SHOW_LIGHTNING (1) && objP->rType.lightningInfo.bEnabled)))) {
 				soundObjP->Stop ();
 				continue;
 				}

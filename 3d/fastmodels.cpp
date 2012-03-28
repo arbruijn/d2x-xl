@@ -782,7 +782,7 @@ ogl.ResetTransform (1);
 void G3RenderDamageLightning (CObject *objP, short nModel, short nSubModel,
 										CAngleVector *animAnglesP, CFixVector *vOffsetP, int bHires)
 {
-if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bDamage))
+if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage))
 	return;
 
 	RenderModel::CModel*		modelP;

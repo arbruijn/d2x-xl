@@ -93,7 +93,7 @@ int CLightningManager::Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, C
 										 short nSmoothe, char bClamp, char bGlow, char bSound, char bLight,
 										 char nStyle, float nWidth, CFloatVector *colorP)
 {
-if (!(SHOW_LIGHTNING && colorP))
+if (!(SHOW_LIGHTNING (1) && colorP))
 	return -1;
 if (!nBolts)
 	return -1;
@@ -586,7 +586,7 @@ else {
 
 void CLightningManager::ResetLights (int bForce)
 {
-if ((SHOW_LIGHTNING || bForce) && m_lights.Buffer ()) {
+if ((SHOW_LIGHTNING (1) || bForce) && m_lights.Buffer ()) {
 		tLightningLight	*llP;
 		int					i;
 
@@ -684,7 +684,7 @@ if (SHOW_LIGHTNING) {
 
 void CLightningManager::CreateForExplosion (CObject* objP, CFloatVector *colorP, int nRods, int nRad, int nTTL)
 {
-if (SHOW_LIGHTNING && gameOpts->render.lightning.bExplosions) {
+if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
 	//m_objects [objP->Index ()] =
 		Create (
 			nRods, &objP->info.position.vPos, NULL, NULL, objP->Index (), nTTL, 0,
@@ -750,6 +750,39 @@ CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 
 
 //------------------------------------------------------------------------------
 
+void CLightningManager::CreateForPlayerTeleport (CObject* objP)
+{
+static CFloatVector color = {0.0f, 0.5f, 1.0f, 0.2f};
+
+int h = X2I (objP->info.xSize) * 2;
+
+CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 350);
+}
+
+//------------------------------------------------------------------------------
+
+void CLightningManager::CreateForRobotTeleport (CObject* objP)
+{
+static CFloatVector color = {1.0f, 0.0f, 0.5f, 0.2f};
+
+int h = X2I (objP->info.xSize) * 2;
+
+CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 350);
+}
+
+//------------------------------------------------------------------------------
+
+void CLightningManager::CreateForPowerupTeleport (CObject* objP)
+{
+static CFloatVector color = {0.5f, 1.0f, 0.5f, 0.2f};
+
+int h = X2I (objP->info.xSize) * 2;
+
+CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 350);
+}
+
+//------------------------------------------------------------------------------
+
 static tLightningInfo robotLightningInfo = {
 	-5000, // nLife
 	0, // nDelay
@@ -779,7 +812,7 @@ static tLightningInfo robotLightningInfo = {
 
 void CLightningManager::CreateForRobot (CObject* objP, CFloatVector *colorP)
 {
-if (SHOW_LIGHTNING && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)) {
+if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)) {
 		int nObject = objP->Index ();
 
 	if (0 <= m_objects [nObject])
@@ -797,7 +830,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)
 
 void CLightningManager::CreateForPlayer (CObject* objP, CFloatVector *colorP)
 {
-if (SHOW_LIGHTNING && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP)) {
+if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP)) {
 	int h, nObject = objP->Index ();
 
 	if (0 <= m_objects [nObject])
@@ -817,7 +850,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP
 
 void CLightningManager::CreateForDamage (CObject* objP, CFloatVector *colorP)
 {
-if (SHOW_LIGHTNING && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (objP)) {
+if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (objP)) {
 	int i = objP->Index ();
 	int n = X2IR (RobotDefaultShield (objP));
 	if (0 >= n)
@@ -873,7 +906,7 @@ int CLightningManager::RenderForDamage (CObject* objP, CRenderPoint **pointList,
 
 	static CFloatVector color = {0.2f, 0.2f, 1.0f, 1.0f};
 
-if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bDamage))
+if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage))
 	return -1;
 if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_PLAYER))
 	return -1;

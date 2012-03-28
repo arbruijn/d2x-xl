@@ -399,7 +399,7 @@ if (gameStates.app.bNostalgia)
 	bLightning = 0;
 else {
 	bGetThrusterPos = !objP || (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->IsWeapon () && !objP->IsMissile ());
-	bLightning = SHOW_LIGHTNING && gameOpts->render.lightning.bDamage && objP && (objP->Damage () < 0.5f);
+	bLightning = SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage && objP && (objP->Damage () < 0.5f);
 	}
 #if DBG_SHADOWS
 if (bShadowTest)

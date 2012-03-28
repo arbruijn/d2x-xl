@@ -257,6 +257,9 @@ class CLightningManager : public tLightningData {
 		void CreateForRobot (CObject *objP, CFloatVector *colorP);
 		void CreateForPlayer (CObject *objP, CFloatVector *colorP);
 		void CreateForExplosion (CObject *objP, CFloatVector *colorP, int nRods, int nRad, int nTTL);
+		void CreateForPlayerTeleport (CObject *objP);
+		void CreateForRobotTeleport (CObject *objP);
+		void CreateForPowerupTeleport (CObject *objP);
 		void DestroyForObject (CObject *objP);
 		void DestroyForAllObjects (int nType, int nId);
 		void DestroyForPlayers (void);
@@ -316,8 +319,8 @@ extern COmegaLightning	omegaLightning;
 
 //------------------------------------------------------------------------------
 
-#define	SHOW_LIGHTNING \
-			(gameOpts->render.effects.bEnabled && !(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bUseLightning, 1, 1, 0))
+#define	SHOW_LIGHTNING(_nQuality) \
+			(gameOpts->render.effects.bEnabled && !(gameStates.app.bNostalgia || COMPETITION) && (EGI_FLAG (bUseLightning, 1, 1, 0) >= (_nQuality)))
 
 //------------------------------------------------------------------------------
 
