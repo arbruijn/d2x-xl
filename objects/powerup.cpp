@@ -1224,7 +1224,7 @@ for (short i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if (nClass == 4) 
 		nVulcanAmmo += playerP->primaryAmmo [VULCAN_INDEX] + gameData.multiplayer.weaponStates [i].nAmmoUsed % VULCAN_CLIP_CAPACITY;
 	else if (nClass == 3) {	// some device
-		if (!(extraGameInfo [0].loadout.nDevice & nIndex))
+		if (!(extraGameInfo [IsMultiGame].loadout.nDevice & nIndex))
 			nPowerups += (playerP->flags & nIndex) != 0;
 		}
 	else if (nClass == 2) {	// missiles
