@@ -118,6 +118,7 @@ if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (Type () == OBJ_P
 		else
 			FindDropInfo (Signature ());
 #endif
+		}
 	}
 }
 
