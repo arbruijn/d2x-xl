@@ -211,7 +211,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{6, -1},	 // MULTI_PLAYER_SHIELDS, -1},
 	{2, -1},	 // MULTI_INVUL
 	{2, -1},	 // MULTI_DEINVUL
-	{33, -1}, // MULTI_WEAPONS
+	{37, -1}, // MULTI_WEAPONS
 	{40, -1}, // MULTI_MONSTERBALL
 	{2, -1},  // MULTI_CHEATING
 	{5, -1},  // MULTI_TRIGGER_EXT
@@ -3946,6 +3946,8 @@ void MultiDoWeapons (char *buf)
 
 gameData.multiplayer.players [nPlayer].SetShield (GET_INTEL_INT (buf + bufP));
 bufP += 4;
+gameData.multiplayer.players [nPlayer].flags = int (GET_INTEL_INT (buf + bufP));
+bufP += 4;
 gameData.multiplayer.players [nPlayer].primaryWeaponFlags = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
@@ -3994,6 +3996,8 @@ if (bForce || (t - nTimeout > 1000)) {
 	gameData.multigame.msg.buf [bufP++] = (char) MULTI_WEAPONS;
 	gameData.multigame.msg.buf [bufP++] = (char) N_LOCALPLAYER;
 	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.Shield ());
+	bufP += 4;
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.flags);
 	bufP += 4;
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.primaryWeaponFlags);
 	bufP += 2;
