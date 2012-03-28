@@ -2544,11 +2544,12 @@ class CMultiplayerData {
 			}
 
 		bool WaitingForWeaponInfo (void) {
-			for (int i = 0; i < nPlayers; i++)
+			for (int i = 0; i < nPlayers; i++) {
 				if (weaponStates [i].nShip == 255)
 					return true;
-			if (players [i].WaitingForWeaponInfo ())
-				return true;
+				if ((i != nLocalPlayer) && players [i].WaitingForWeaponInfo ())
+					return true;
+				}
 			return false;
 			}
 
