@@ -3952,7 +3952,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 	gameData.multiplayer.players [nPlayer].secondaryAmmo [i] = GET_INTEL_SHORT (buf + bufP);
 	bufP += 2;
 	}
-gameData.multiplayer.players [nPlayer].SetLaserLevels (gameData.multigame.msg.buf [bufP], gameData.multigame.msg.buf [bufP + 1]);
+gameData.multiplayer.players [nPlayer].SetLaserLevels (buf [bufP], buf [bufP + 1]);
 bufP += 2;
 gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
