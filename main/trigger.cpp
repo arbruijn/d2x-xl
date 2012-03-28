@@ -498,6 +498,12 @@ int CTrigger::DoChangeWalls (void)
 	bool			bForceField;
 
 for (int i = 0; i < m_nLinks; i++) {
+	if ((m_segments [i] < 0) || (m_segments [i] >= gameData.segs.nSegments)) {
+		PrintLog (0, "%s trigger %d has invalid target segment\n", 
+					 gameData.trigs.triggers.IsElement (this) ? "Standard" : "Object", 
+					 gameData.trigs.triggers.IsElement (this) ? gameData.trigs.triggers.Index (this) : gameData.trigs.objTriggers.Index (this));
+		continue;
+		}
 	segP = SEGMENTS + m_segments [i];
 	nSide = m_sides [i];
 
