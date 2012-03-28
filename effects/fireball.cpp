@@ -162,6 +162,16 @@ explObjP->cType.explInfo.nDeleteTime = -1;
 if ((parentP && (nVClip == VCLIP_POWERUP_DISAPPEARANCE)) || (nVClip == VCLIP_MORPHING_ROBOT))
 	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), explObjP->LifeLeft () / 2, explObjP->info.xSize, 1, explObjP->Position ()));
 
+if (parentP && SHOW_LIGHTNING (2)) {
+	if (nVClip == VCLIP_PLAYER_APPEARANCE)
+		lightningManager.CreateForPlayerTeleport (explObjP);
+	else if (nVClip == VCLIP_MORPHING_ROBOT)
+		lightningManager.CreateForRobotTeleport (explObjP);
+	else if (nVClip != VCLIP_POWERUP_DISAPPEARANCE)
+		lightningManager.CreateForPowerupTeleport (explObjP);
+	explObjP->Die ();
+	}
+
 if (xMaxDamage <= 0)
 	return explObjP;
 // -- now legal for xSplashDamage explosions on a CWall. Assert (this != NULL);
@@ -297,16 +307,6 @@ FORALL_OBJS (objP, i) {
 		if (objP->info.xShield >= 0)
 			objP->ApplyDamageToPlayer (killerP, damage);
 		}
-	}
-
-if (SHOW_LIGHTNING (2)) {
-	if (nVClip == VCLIP_PLAYER_APPEARANCE)
-		lightningManager.CreateForPlayerTeleport (explObjP);
-	else if (nVClip == VCLIP_MORPHING_ROBOT)
-		lightningManager.CreateForRobotTeleport (explObjP);
-	else if (nVClip != VCLIP_POWERUP_DISAPPEARANCE)
-		lightningManager.CreateForPowerupTeleport (explObjP);
-	explObjP->Die ();
 	}
 return explObjP;
 }

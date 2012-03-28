@@ -247,7 +247,7 @@ if (nSegment < 0)
 	return;
 if (!m_lightning.Buffer ())
 	return;
-if (SHOW_LIGHTNING) {
+if (SHOW_LIGHTNING (1)) {
 	for (int i = 0; i < m_nBolts; i++)
 		m_lightning [i].Move (vNewPos, nSegment, nThread);
 	}
@@ -263,7 +263,7 @@ if (nSegment < 0)
 	return;
 if (!m_lightning.Buffer ())
 	return;
-if (SHOW_LIGHTNING) {
+if (SHOW_LIGHTNING (1)) {
 	for (int i = 0; i < m_nBolts; i++)
 		m_lightning [i].Move (vNewPos, vNewEnd, nSegment, nThread);
 	}

@@ -207,7 +207,7 @@ void CLightningManager::Move (int i, CFixVector vNewPos, CFixVector vNewEnd, sho
 {
 if (nSegment < 0)
 	return;
-if (SHOW_LIGHTNING)
+if (SHOW_LIGHTNING (1))
 	m_emitters [i].Move (vNewPos, vNewEnd, nSegment, 0);
 }
 
@@ -217,7 +217,7 @@ void CLightningManager::Move (int i, CFixVector vNewPos, short nSegment)
 {
 if (nSegment < 0)
 	return;
-if (SHOW_LIGHTNING)
+if (SHOW_LIGHTNING (1))
 	m_emitters [i].Move (vNewPos, nSegment, 0);
 }
 
@@ -263,7 +263,7 @@ return NULL;
 
 void CLightningManager::Update (void)
 {
-if (SHOW_LIGHTNING) {
+if (SHOW_LIGHTNING (1)) {
 
 		CObject	*objP;
 		ubyte		h;
@@ -430,7 +430,7 @@ DestroyForAllObjects (OBJ_EFFECT, LIGHTNING_ID);
 
 void CLightningManager::Render (void)
 {
-if (SHOW_LIGHTNING) {
+if (SHOW_LIGHTNING (1)) {
 		int bStencil = ogl.StencilOff ();
 
 	int nCurrent = -1;
@@ -466,7 +466,7 @@ if (SHOW_LIGHTNING) {
 
 void CLightningManager::Mute (void)
 {
-if (SHOW_LIGHTNING) {
+if (SHOW_LIGHTNING (1)) {
 	int nCurrent = -1;
 	for (CLightningEmitter* emitterP = m_emitters.GetFirst (nCurrent); emitterP; emitterP = m_emitters.GetNext (nCurrent))
 		emitterP->Mute ();
@@ -506,7 +506,7 @@ void CLightningManager::StaticFrame (void)
 	CObject*				objP;
 	CFixVector*			vEnd, * vDelta, v;
 
-if (!SHOW_LIGHTNING)
+if (!SHOW_LIGHTNING (1))
 	return;
 if (!gameOpts->render.lightning.bStatic)
 	return;
@@ -618,7 +618,7 @@ void CLightningManager::SetLights (void)
 	int nLights = 0;
 
 ResetLights (0);
-if (SHOW_LIGHTNING) {
+if (SHOW_LIGHTNING (1)) {
 		tLightningLight	*llP = NULL;
 		int					i, n, bDynLighting = gameStates.render.nLightingMethod;
 
@@ -750,13 +750,25 @@ CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 
 
 //------------------------------------------------------------------------------
 
+void CLightningManager::CreateForTeleport (CObject* objP, CFloatVector *colorP, int nRods, int nRad, int nTTL)
+{
+if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
+	//m_objects [objP->Index ()] =
+		Create (
+			nRods, &objP->info.position.vPos, NULL, NULL, -1, nTTL, 0,
+			nRad, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 0, 0, 1, -1, 3.0f, colorP);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void CLightningManager::CreateForPlayerTeleport (CObject* objP)
 {
 static CFloatVector color = {0.0f, 0.5f, 1.0f, 0.2f};
 
 int h = X2I (objP->info.xSize) * 2;
 
-CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 350);
+CreateForTeleport (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), objP->LifeLeft ());
 }
 
 //------------------------------------------------------------------------------
@@ -767,18 +779,18 @@ static CFloatVector color = {1.0f, 0.0f, 0.5f, 0.2f};
 
 int h = X2I (objP->info.xSize) * 2;
 
-CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 350);
+CreateForTeleport (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), objP->LifeLeft ());
 }
 
 //------------------------------------------------------------------------------
 
 void CLightningManager::CreateForPowerupTeleport (CObject* objP)
 {
-static CFloatVector color = {0.5f, 1.0f, 0.5f, 0.2f};
+static CFloatVector color = {0.0f, 1.0f, 0.5f, 0.2f};
 
 int h = X2I (objP->info.xSize) * 2;
 
-CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 350);
+CreateForTeleport (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), objP->LifeLeft ());
 }
 
 //------------------------------------------------------------------------------
