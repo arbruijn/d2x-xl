@@ -1651,7 +1651,8 @@ else {
 			if (gameStates.input.nPlrFileVersion < 161)
 				cf.Seek (12 + (gameStates.input.nPlrFileVersion >= 19), SEEK_CUR);
 			nHighestLevels = cf.ReadShort ();
-			Assert (nHighestLevels <= MAX_MISSIONS);
+			if (nHighestLevels > MAX_MISSIONS)
+				nHighestLevels = MAX_MISSIONS;
 			if (cf.Read (highestLevels, sizeof (hli), nHighestLevels) != (size_t) nHighestLevels) {
 				PrintLog (0, "Player profile '%s' is damaged\r\n", filename);
 				nHighestLevels = 0;

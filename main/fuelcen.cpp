@@ -347,12 +347,9 @@ int	FrameCount_last_msg = 0;
 
 void CreateMatCenEffect (tFuelCenInfo *matCenP, ubyte nVideoClip)
 {
-	CFixVector	vPos;
-	CObject		*objP;
-
-vPos = SEGMENTS [matCenP->nSegment].Center ();
+CFixVector vPos = SEGMENTS [matCenP->nSegment].Center ();
 // HACK!!!The 10 under here should be something equal to the 1/2 the size of the CSegment.
-objP = CreateExplosion ((short) matCenP->nSegment, vPos, I2X (10), nVideoClip);
+CObject* objP = CreateExplosion ((short) matCenP->nSegment, vPos, I2X (10), nVideoClip);
 if (objP) {
 	ExtractOrientFromSegment (&objP->info.position.mOrient, SEGMENTS + matCenP->nSegment);
 	if (gameData.eff.vClips [0][nVideoClip].nSound > -1)

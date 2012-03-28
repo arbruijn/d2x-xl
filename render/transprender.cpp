@@ -33,6 +33,18 @@
 #define RENDER_TRANSPARENCY 1
 #define RENDER_TRANSP_DECALS 1
 
+#define TRANSP_POLYS 1
+#define TRANSP_FACES 1
+#define TRANSP_OBJECTS 1
+#define TRANSP_SPRITES 1
+#define TRANSP_SPARKS 0
+#define TRANSP_BULLETS 0
+#define TRANSP_PARTICLES 0
+#define TRANSP_SPHERES 0
+#define TRANSP_LIGHTNING 0
+#define TRANSP_LIGHTTRAILS 0
+#define TRANSP_THRUSTER 0
+
 #define TI_POLY_OFFSET 0
 #define TI_POLY_CENTER 1
 
@@ -113,6 +125,7 @@ return *this;
 
 void CTranspPoly::Render (void)
 {
+#if TRANSP_POLYS
 if (faceP || triP)
 	RenderFace ();
 else {
@@ -158,12 +171,14 @@ else {
 	#endif
 	PROF_END(ptRenderFaces)
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspPoly::RenderFace (void)
 {
+#if TRANSP_FACES
 PROF_START
 	//CSegFace*		faceP = this->faceP;
 	//tFaceTriangle*	triP = this->triP;
@@ -351,25 +366,28 @@ if (faceP->m_info.nSegColor) {
 	}
 #endif
 PROF_END(ptRenderFaces)
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspObject::Render (void)
 {
+#if TRANSP_OBJECTS
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
 gameData.models.vScale = vScale;
 DrawPolygonObject (objP, 1);
 gameData.models.vScale.SetZero ();
 transparencyRenderer.ResetBitmaps ();
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspSprite::Render (void)
 {
-#if 1
+#if TRANSP_SPRITES
 	int bSoftBlend = (fSoftRad > 0) && transparencyRenderer.SoftBlend (SOFT_BLEND_SPRITES);
 	int bGlow = 0;
 
@@ -417,6 +435,7 @@ if (bGlow)
 
 void CTranspSpark::Render (void)
 {
+#if TRANSP_SPARKS
 	float	nCol = (float) (nFrame / 8);
 	float	nRow = (float) (nFrame % 8);
 
@@ -483,12 +502,14 @@ else {
 	vertexP->texCoord.v.v = nRow* 0.125f;
 	}
 sparkBuffer.nSparks++;
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspSphere::Render (void)
 {
+#if TRANSP_SPHERES
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1, true);
 if (nType == riSphereShield) {
@@ -502,12 +523,14 @@ else if (nType == riMonsterball) {
 //shaderManager.Deploy (-1);
 ogl.SetDepthWrite (false);
 transparencyRenderer.ResetBitmaps ();
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspParticle::RenderBullet (CParticle *bullet)
 {
+#if TRANSP_BULLETS
 	CObject	o;
 
 memset (&o, 0, sizeof (o));
@@ -523,36 +546,42 @@ if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, bullet->m_nSegme
 	gameData.models.vScale.SetZero ();
 	transparencyRenderer.ResetBitmaps ();
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspParticle::Render (void)
 {
+#if TRANSP_PARTICLES
 if (particle->m_nType == BULLET_PARTICLES)
 	RenderBullet (particle);
 else {
 	if (particle->Render (fBrightness) < 0)
 		transparencyRenderer.ResetBitmaps ();
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspLightning::Render (void)
 {
+#if TRANSP_LIGHTNING
 if (transparencyRenderer.Data ().nPrevType != transparencyRenderer.Data ().nCurType) {
 	ogl.ResetClientStates ();
 	shaderManager.Deploy (-1, true);
 	}
 lightning->Render (nDepth, 0);
 transparencyRenderer.ResetBitmaps ();
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspLightTrail::Render (void)
 {
+#if TRANSP_LIGHTTRAILS
 if (transparencyRenderer.Data ().nPrevType != transparencyRenderer.Data ().nCurType) {
 	ogl.ResetClientStates (1);
 	transparencyRenderer.Data ().bmP [1] = transparencyRenderer.Data ().bmP [2] = NULL;
@@ -575,17 +604,20 @@ if (transparencyRenderer.LoadTexture (bmP, 0, 0, 0, GL_CLAMP)) {
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	}
 glowRenderer.Done (GLOW_LIGHTTRAILS);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspThruster::Render (void)
 {
+#if TRANSP_THRUSTER
 shaderManager.Deploy (-1, true);
 ogl.ResetClientStates ();
 thrusterFlames.Render (objP, &info, nThruster);
 gameData.models.vScale.SetZero ();
 transparencyRenderer.ResetBitmaps ();
+#endif
 }
 
 //------------------------------------------------------------------------------
