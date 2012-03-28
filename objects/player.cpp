@@ -234,7 +234,7 @@ if (wsP->xMslFireTime != gameData.missiles.xNextFireTime) {
 	bUpdate = 1;
 	}
 if (bUpdate)
-	MultiSendPlayerWeapons ();	
+	MultiSendWeaponStates ();	
 UpdateFiringSounds ();
 }
 

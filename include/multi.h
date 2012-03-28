@@ -154,7 +154,7 @@ void MultiShowPlayerList (void);
 void MultiDoFrame (void);
 void MultiCapObjects (void);
 
-void MultiSendPlayerWeapons (void);
+void MultiSendWeaponStates (void);
 void MultiSendPlayerThrust (void);
 void MultiSendFlags (char);
 void MultiSendWeapons (int bForce);

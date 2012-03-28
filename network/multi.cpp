@@ -506,7 +506,7 @@ return GetTeam (nPlayer1) == GetTeam (nPlayer2);
 
 //-----------------------------------------------------------------------------
 
-void MultiSendPlayerWeapons (void)
+void MultiSendWeaponStates (void)
 {
 	CWeaponState	*wsP = gameData.multiplayer.weaponStates + N_LOCALPLAYER;
 
@@ -547,7 +547,7 @@ MultiSendData (gameData.multigame.msg.buf, 2 + sizeof (wsP->nThrusters), 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoPlayerWeapons (char *buf)
+void MultiDoWeaponStates (char *buf)
 {
 	CWeaponState	*wsP = gameData.multiplayer.weaponStates + int (buf [1]);
 	tFiringData		*fP;
@@ -5255,7 +5255,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoTrigger, 1},
 	{MultiDoSyncKills, 1},
 	{MultiDoCountdown, 1},
-	{MultiDoPlayerWeapons, 1},
+	{MultiDoWeaponStates, 1},
 	{MultiDoSyncMonsterball, 1},
 	{MultiDoDropPowerup, 1},
 	{MultiDoCreateWeapon, 1},
@@ -5592,7 +5592,7 @@ switch (nType) {
 		break;
 	case MULTI_PLAYER_WEAPONS:
 		if (!gameStates.app.bEndLevelSequence)
-			MultiDoPlayerWeapons (buf);
+			MultiDoWeaponStates (buf);
 		break;
 	case MULTI_SYNC_MONSTERBALL:
 		if (!gameStates.app.bEndLevelSequence)

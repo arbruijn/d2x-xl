@@ -249,7 +249,7 @@ else if (syncP->nExtras == 7)
 else if (syncP->nExtras == 8)
 	MultiSendWeapons (1);  
 else if (syncP->nExtras == 9)
-	MultiSendPlayerWeapons ();  
+	MultiSendWeaponStates ();  
 else if (syncP->nExtras == 10)
 	MultiSendMonsterball (1, 1);  
 else {
