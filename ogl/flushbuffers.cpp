@@ -152,7 +152,7 @@ void COGL::FlushEffects (int nEffects)
 if (nEffects & 5) {
 	postProcessManager.Setup ();
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	ogl.BindTexture (DrawBuffer ((nEffects & 2) ? 2 : 0)->ColorBuffer ());
+	ogl.BindTexture (DrawBuffer ((nEffects & 2) ? 1 : 0)->ColorBuffer ());
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
 	if ((nEffects & 4) == 0)
