@@ -228,10 +228,10 @@
       <ShowProgress>true</ShowProgress>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>SDL_net.lib;SDL_image.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;SDL_net.lib;SDL_image.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>d:\programs\d2\bin\win32-std\debug\d2x-xl-dbg.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>\projects\libraries\SDL_image-1.2.7\VC10\Debug\Win32;\projects\libraries\SDL_net-1.2.7\VC10\Debug;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>"\projects\libraries\zlib-1.2.5\VC10\dll debug\win32";\projects\libraries\SDL_image-1.2.7\VC10\Debug\Win32;\projects\libraries\SDL_net-1.2.7\VC10\Debug;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -289,7 +289,7 @@
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>\programs\d2\bin\x64-omp\debug\d2x-xl-x64-dbg.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>\projects\OpenAL 1.1 SDK\libs\Win32;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug;\projects\sdl-1.2.13\debug;\projects\SDL_mixer-1.2.8\VisualC\Debug;\projects\irrlicht-1.4\lib\win32-visualstudio;c:\programme\visual leak detector\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>\projects\OpenAL 1.1 SDK\libs\Win32;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug;\projects\sdl-1.2.13\debug;\projects\SDL_mixer-1.2.8\VC10\Debug\Win32;\projects\irrlicht-1.4\lib\win32-visualstudio;c:\programme\visual leak detector\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -2360,7 +2360,7 @@
       <Project>{cc8d236e-af28-441d-9be0-3b165f790796}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\SDL_net-1.2.7\VisualC\SDL_net.vcxproj">
+    <ProjectReference Include="..\..\..\Libraries\SDL_net-1.2.7\VC10\SDL_net.vcxproj">
       <Project>{8ab3504f-5e58-4910-afe8-7a1e595ac3f4}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
