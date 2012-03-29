@@ -154,7 +154,7 @@ if ((nStartSeg >= 0) && (PointInSeg (SEGMENTS + nStartSeg, vPos)))
 	return nStartSeg;
 
 	int			i;
-	short*		segListP;
+	short*		segListP = NULL;
 	CSegment*	segP;
 
 if (gameData.segs.HaveGrid (bSkyBox)) {

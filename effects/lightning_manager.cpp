@@ -764,33 +764,33 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
 
 void CLightningManager::CreateForPlayerTeleport (CObject* objP)
 {
-static CFloatVector color = {0.0f, 0.5f, 1.0f, 0.2f};
+static CFloatVector color = {0.0f, 0.125f, 0.25f, 0.2f};
 
 int h = X2I (objP->info.xSize) * 2;
 
-CreateForTeleport (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), objP->LifeLeft ());
+CreateForTeleport (objP, &color, h / 2 + rand () % h, objP->info.xSize, int (500 * X2F (objP->LifeLeft ())));
 }
 
 //------------------------------------------------------------------------------
 
 void CLightningManager::CreateForRobotTeleport (CObject* objP)
 {
-static CFloatVector color = {1.0f, 0.0f, 0.5f, 0.2f};
+static CFloatVector color = {0.25f, 0.0f, 0.125f, 0.2f};
 
 int h = X2I (objP->info.xSize) * 2;
 
-CreateForTeleport (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), objP->LifeLeft ());
+CreateForTeleport (objP, &color, h / 2 + rand () % h, objP->info.xSize, int (500 * X2F (objP->LifeLeft ())));
 }
 
 //------------------------------------------------------------------------------
 
 void CLightningManager::CreateForPowerupTeleport (CObject* objP)
 {
-static CFloatVector color = {0.0f, 1.0f, 0.5f, 0.2f};
+static CFloatVector color = {0.0f, 0.25f, 0.125f, 0.2f};
 
 int h = X2I (objP->info.xSize) * 2;
 
-CreateForTeleport (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), objP->LifeLeft ());
+CreateForTeleport (objP, &color, h / 2 + rand () % h, objP->info.xSize, int (500 * X2F (objP->LifeLeft ())));
 }
 
 //------------------------------------------------------------------------------

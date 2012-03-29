@@ -52,7 +52,7 @@ if (nObject >= 0)
 	m_nSegment [1] = -1;
 else {
 	m_nSegment [0] = FindSegByPos (*vPos, -1, 1, 0);
-	m_nSegment [1] = FindSegByPos (*vEnd, -1, 1, 0);
+	m_nSegment [1] = vEnd ? FindSegByPos (*vEnd, -1, 1, 0) : -1;
 	}
 m_bForcefield = !nDelay && (vEnd || (nAngle <= 0));
 if (!m_lightning.Create (nBolts))

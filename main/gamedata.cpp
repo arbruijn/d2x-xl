@@ -877,8 +877,10 @@ vPos -= m_vMin;
 vPos /= I2X (m_nGridSize);
 ToInt (Floor (vPos));
 int i = GRID_INDEX (vPos.v.coord.x, vPos.v.coord.y, vPos.v.coord.z);
-if ((i < 0) || (i >= int (m_index.Length ())))
+if ((i < 0) || (i >= int (m_index.Length ()))) {
+	listP = NULL;
 	return 0;
+	}
 listP = &m_segments [m_index [i].nIndex];
 return m_index [i].nSegments;
 }
