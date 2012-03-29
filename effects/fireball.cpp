@@ -160,7 +160,7 @@ explObjP->cType.explInfo.nDeleteObj = -1;
 explObjP->cType.explInfo.nDeleteTime = -1;
 
 if ((parentP && (nVClip == VCLIP_POWERUP_DISAPPEARANCE)) || (nVClip == VCLIP_MORPHING_ROBOT))
-	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), explObjP->LifeLeft () / 2, explObjP->info.xSize, 1, explObjP->Position ()));
+	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), explObjP->LifeLeft () / 4, explObjP->info.xSize, 1, explObjP->Position ()));
 
 if (SHOW_LIGHTNING (2)) {
 	if (nVClip == VCLIP_PLAYER_APPEARANCE)

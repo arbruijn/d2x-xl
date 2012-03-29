@@ -750,13 +750,14 @@ CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::CreateForTeleport (CObject* objP, CFloatVector *colorP, int nRods, int nRad, int nTTL)
+void CLightningManager::CreateForTeleport (CObject* objP, CFloatVector *colorP)
 {
 if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
-	//m_objects [objP->Index ()] =
-		Create (
-			nRods, &objP->info.position.vPos, NULL, NULL, -1, nTTL, 0,
-			nRad, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 0, 0, 1, -1, 3.0f, colorP);
+	int h = X2I (objP->info.xSize) * 2;
+
+	Create (
+		h + rand () % h, &objP->info.position.vPos, NULL, NULL, -1, int (500 * X2F (objP->LifeLeft ())), 0,
+		objP->info.xSize, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 0, 0, 1, -1, 3.0f, colorP);
 	}
 }
 
@@ -766,9 +767,7 @@ void CLightningManager::CreateForPlayerTeleport (CObject* objP)
 {
 static CFloatVector color = {0.0f, 0.125f, 0.25f, 0.2f};
 
-int h = X2I (objP->info.xSize) * 2;
-
-CreateForTeleport (objP, &color, h / 2 + rand () % h, objP->info.xSize, int (500 * X2F (objP->LifeLeft ())));
+CreateForTeleport (objP, &color);
 }
 
 //------------------------------------------------------------------------------
@@ -776,10 +775,7 @@ CreateForTeleport (objP, &color, h / 2 + rand () % h, objP->info.xSize, int (500
 void CLightningManager::CreateForRobotTeleport (CObject* objP)
 {
 static CFloatVector color = {0.25f, 0.0f, 0.125f, 0.2f};
-
-int h = X2I (objP->info.xSize) * 2;
-
-CreateForTeleport (objP, &color, h / 2 + rand () % h, objP->info.xSize, int (500 * X2F (objP->LifeLeft ())));
+CreateForTeleport (objP, &color);
 }
 
 //------------------------------------------------------------------------------
@@ -787,10 +783,7 @@ CreateForTeleport (objP, &color, h / 2 + rand () % h, objP->info.xSize, int (500
 void CLightningManager::CreateForPowerupTeleport (CObject* objP)
 {
 static CFloatVector color = {0.0f, 0.25f, 0.125f, 0.2f};
-
-int h = X2I (objP->info.xSize) * 2;
-
-CreateForTeleport (objP, &color, h / 2 + rand () % h, objP->info.xSize, int (500 * X2F (objP->LifeLeft ())));
+CreateForTeleport (objP, &color);
 }
 
 //------------------------------------------------------------------------------
