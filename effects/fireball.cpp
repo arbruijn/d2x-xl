@@ -167,7 +167,7 @@ if (SHOW_LIGHTNING (2)) {
 		lightningManager.CreateForPlayerTeleport (explObjP);
 	else if (nVClip == VCLIP_MORPHING_ROBOT)
 		lightningManager.CreateForRobotTeleport (explObjP);
-	else if (nVClip != VCLIP_POWERUP_DISAPPEARANCE)
+	else if (nVClip == VCLIP_POWERUP_DISAPPEARANCE)
 		lightningManager.CreateForPowerupTeleport (explObjP);
 	explObjP->Die ();
 	}
