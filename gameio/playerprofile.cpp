@@ -859,7 +859,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].bRotateLevels", "0"},
 	 {"extraGameInfo[0].bSafeUDP", "0"},
 	 {"extraGameInfo[0].bShadows", "1"},
-	 {"extraGameInfo[0].bSmartWeaponSwitch", "1"},
+	 {"extraGameInfo[0].bSmartWeaponSwitch", "0"},
 	 {"extraGameInfo[0].bSmokeGrenades", "0"},
 	 {"extraGameInfo[0].bThrusterFlames", "1"},
 	 {"extraGameInfo[0].bTracers", "1"},
