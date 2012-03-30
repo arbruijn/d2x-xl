@@ -5112,10 +5112,12 @@ void MultiAdjustPowerups (void)
 	static	time_t	t0 = 0;
 	time_t	t = gameStates.app.nSDLTicks [0];
 
-if ((t - t0 < 180000) && (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ())) // enforce after 3 minutes inactivity
-	return;
+if (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ()) { // don't act if player ship status pending
+	if (t - t0 < 180000) 		// enforce after 3 minutes of inactivity though
+		return;
+	}
 
-	int		h, i, j;
+	int h, i, j;
 
 if (gameStates.multi.nGameType != UDP_GAME)
 	return;
