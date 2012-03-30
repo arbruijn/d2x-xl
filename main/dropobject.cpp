@@ -874,7 +874,7 @@ void DropMissile1or4 (CObject *playerObjP, int nMissileIndex)
 if ((nMissiles = gameData.multiplayer.players [playerObjP->info.nId].secondaryAmmo [nMissileIndex])) {
 	nPowerupId = secondaryWeaponToPowerup [nMissileIndex];
 	if (!IsMultiGame && (nMissileIndex == CONCUSSION_INDEX))
-		nMissiles -= 4;	//player gets 4 concs anyway when respawning, so avoid them building up
+		nMissiles -= gameData.multiplayer.weaponStates [playerObjP->Id ()].nBuiltinMissiles;	//player gets 4 concs anyway when respawning, so avoid them building up
 	if (!(IsMultiGame || EGI_FLAG (bDropAllMissiles, 0, 0, 0)) && (nMissiles > 10))
 		nMissiles = 10;
 	if (nMissiles > 0) {
