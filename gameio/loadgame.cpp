@@ -133,7 +133,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "findpath.h"
 #include "waypoint.h"
 
-#if defined (TACTILE)
+#if defined (FORCE_FEEDBACK)
  #include "tactile.h"
 #endif
 
@@ -452,7 +452,7 @@ else {
 	controls [0].afterburnerState = 0;
 	gameStates.gameplay.bLastAfterburnerState = 0;
 	audio.DestroyObjectSound (playerP->nObject);
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 	if (TactileStick)
 		tactile_set_button_jolt ();
 #endif
@@ -493,45 +493,44 @@ void ResetShipData (bool bRestore)
 {
 	int	i;
 
+if (nPlayer < 0)
+	nPlayer = N_LOCALPLAYER;
+
+CPlayerData& player = gameData.multiplayer.players [nPlayer];
+
 gameStates.app.bChangingShip = 0;
 if (gameData.demo.nState == ND_STATE_RECORDING) {
-	NDRecordLaserLevel (LOCALPLAYER.LaserLevel (), 0);
+	NDRecordLaserLevel (player.LaserLevel (), 0);
 	NDRecordPlayerWeapon (0, 0);
 	NDRecordPlayerWeapon (1, 0);
 	}
 
-if (gameOpts->gameplay.nShip [1] < 0)
-	gameOpts->gameplay.nShip [1] = (missionConfig.m_playerShip < 0) ? missionConfig.SelectShip (gameOpts->gameplay.nShip [0]) : missionConfig.SelectShip (missionConfig.m_playerShip);
-if (gameOpts->gameplay.nShip [1] > -1) {
-	gameOpts->gameplay.nShip [0] = missionConfig.SelectShip (gameOpts->gameplay.nShip [1]);
-	gameOpts->gameplay.nShip [1] = -1;
-	}
-gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip = gameOpts->gameplay.nShip [0];
+gameData.multiplayer.weaponStates [nPlayer].nShip = gameOpts->gameplay.nShip [0];
 
-LOCALPLAYER.Setup ();
-LOCALPLAYER.SetEnergy (gameStates.gameplay.InitialEnergy ());
-LOCALPLAYER.SetShield (gameStates.gameplay.InitialShield ());
-LOCALPLAYER.SetLaserLevels (0, 0);
-LOCALPLAYER.nKillerObj = -1;
-LOCALPLAYER.hostages.nOnBoard = 0;
+player.Setup ();
+player.SetEnergy (gameStates.gameplay.InitialEnergy ());
+player.SetShield (gameStates.gameplay.InitialShield ());
+player.SetLaserLevels (0, 0);
+player.nKillerObj = -1;
+player.hostages.nOnBoard = 0;
 
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
-	LOCALPLAYER.primaryAmmo [i] = 0;
+	player.primaryAmmo [i] = 0;
 	bLastPrimaryWasSuper [i] = 0;
 	}
 for (i = 1; i < MAX_SECONDARY_WEAPONS; i++) {
-	LOCALPLAYER.secondaryAmmo [i] = 0;
+	player.secondaryAmmo [i] = 0;
 	bLastSecondaryWasSuper [i] = 0;
 	}
-gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles = BUILTIN_MISSILES;
-LOCALPLAYER.secondaryAmmo [0] = BUILTIN_MISSILES;
-LOCALPLAYER.primaryWeaponFlags = HAS_LASER_FLAG;
-LOCALPLAYER.secondaryWeaponFlags = HAS_CONCUSSION_FLAG;
+gameData.multiplayer.weaponStates [nPlayer].nBuiltinMissiles = BUILTIN_MISSILES;
+player.secondaryAmmo [0] = BUILTIN_MISSILES;
+player.primaryWeaponFlags = HAS_LASER_FLAG;
+player.secondaryWeaponFlags = HAS_CONCUSSION_FLAG;
 gameData.weapons.nOverridden = 0;
 gameData.weapons.nPrimary = 0;
 gameData.weapons.nSecondary = 0;
-gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed = 0;
-LOCALPLAYER.flags &= ~
+gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = 0;
+player.flags &= ~
 	(PLAYER_FLAGS_QUAD_LASERS |
 	 PLAYER_FLAGS_AFTERBURNER |
 	 PLAYER_FLAGS_CLOAKED |
@@ -542,26 +541,29 @@ LOCALPLAYER.flags &= ~
 	 PLAYER_FLAGS_HEADLIGHT |
 	 PLAYER_FLAGS_HEADLIGHT_ON |
 	 PLAYER_FLAGS_FLAG);
-gameData.physics.xAfterburnerCharge = (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) ? I2X (1) : 0;
-LOCALPLAYER.cloakTime = 0;
-LOCALPLAYER.invulnerableTime = 0;
-gameStates.app.bPlayerIsDead = 0;		//player no longer dead
-LOCALPLAYER.homingObjectDist = -I2X (1); // Added by RH
-controls [0].afterburnerState = 0;
-gameStates.gameplay.bLastAfterburnerState = 0;
-audio.DestroyObjectSound (N_LOCALPLAYER);
-gameData.objs.missileViewerP = NULL;		///reset missile camera if out there
-#ifdef TACTILE
-	if (TactileStick)
- {
-	tactile_set_button_jolt ();
+player.cloakTime = 0;
+player.invulnerableTime = 0;
+player.homingObjectDist = -I2X (1); // Added by RH
+
+if (nPlayer == N_LOCALPLAYER) {
+	gameData.physics.xAfterburnerCharge = (player.flags & PLAYER_FLAGS_AFTERBURNER) ? I2X (1) : 0;
+	gameStates.app.bPlayerIsDead = 0;		//player no longer dead
+	gameStates.gameplay.bLastAfterburnerState = 0;
+	gameData.objs.missileViewerP = NULL;		///reset missile camera if out there
+	controls [0].afterburnerState = 0;
+	if (gameOpts->gameplay.nShip [1] < 0)
+		gameOpts->gameplay.nShip [1] = (missionConfig.m_playerShip < 0) ? missionConfig.SelectShip (gameOpts->gameplay.nShip [0]) : missionConfig.SelectShip (missionConfig.m_playerShip);
+	if (gameOpts->gameplay.nShip [1] > -1) {
+		gameOpts->gameplay.nShip [0] = missionConfig.SelectShip (gameOpts->gameplay.nShip [1]);
+		gameOpts->gameplay.nShip [1] = -1;
+		}
 	}
-#endif
+audio.DestroyObjectSound (nPlayer);
 // When the ship got blown up, its root submodel had been converted to a debris object.
 // Make it a player object again.
-CObject* objP = OBJECTS.Buffer () ? OBJECTS + LOCALPLAYER.nObject : NULL;
+CObject* objP = OBJECTS.Buffer () ? OBJECTS + player.nObject : NULL;
 if (objP) {
-	OBJECTS [N_LOCALPLAYER].ResetDamage ();
+	OBJECTS [nPlayer].ResetDamage ();
 	AddPlayerLoadout (bRestore);
 	objP->info.nType = OBJ_PLAYER;
 	objP->SetLife (IMMORTAL_TIME);
@@ -1221,12 +1223,7 @@ audio.StopAllChannels ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 if (gameStates.app.bHaveExtraData)
 
-#ifdef TACTILE
-if (TactileStick)
-	ClearForces ();
-#endif
-
-	//	Compute level player is on, deal with secret levels (negative numbers)
+//	Compute level player is on, deal with secret levels (negative numbers)
 nMineLevel = LOCALPLAYER.level;
 if (nMineLevel < 0)
 	nMineLevel *= -(missionManager.nLastLevel / missionManager.nSecretLevels);

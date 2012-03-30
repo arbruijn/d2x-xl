@@ -42,10 +42,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "lightcluster.h"
 #include "visibility.h"
 
-#ifdef TACTILE
-#include "tactile.h"
-#endif
-
 void NDRecordGuidedStart (void);
 
 //---------------------------------------------------------------------------------

@@ -43,9 +43,6 @@
 #include "multi.h"
 #include "savegame.h"
 #include "strutil.h"
-#ifdef TACTILE
-#	include "tactile.h"
-#endif
 
 //------------------------------------------------------------------------------
 

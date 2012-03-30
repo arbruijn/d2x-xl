@@ -55,7 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "multi.h"
 #include "playerdeath.h"
 #include "cockpit.h"
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 #	include "tactile.h"
 #endif
 
@@ -177,7 +177,7 @@ if (gameStates.app.bPlayerIsDead) {
 			else
 				HUDInitMessage (TXT_SHIP_DESTROYED_0);
 
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 			if (TactileStick)
 				ClearForces ();
 #endif
@@ -263,7 +263,7 @@ else {
 	}
 paletteManager.SetRedEffect (40);
 gameStates.app.bPlayerIsDead = 1;
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
    if (TactileStick)
 	Buffeting (70);
 #endif

@@ -54,9 +54,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "loadgame.h"
 #include "objeffects.h"
 #include "multi.h"
-#ifdef TACTILE
-#	include "tactile.h"
-#endif
 
 #define LIMIT_PHYSICS_FPS	0
 

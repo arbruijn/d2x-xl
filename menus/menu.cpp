@@ -72,6 +72,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "renderframe.h"
 #include "console.h"
+#if defined (FORCE_FEEDBACK)
+#	include "tactile.h"
+#endif
+
 
 //------------------------------------------------------------------------------ 
 
@@ -1378,7 +1382,7 @@ gameStates.input.keys.bRepeat = bKeyRepeat;
 GameFlushInputs ();
 if (bTimeStopped) {
 	StartTime (0);
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 		if (TactileStick)
 			EnableForces ();
 #endif

@@ -30,7 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "input.h"
 #include "headlight.h"
 
-#if defined (TACTILE)
+#if defined (FORCE_FEEDBACK)
 #include "tactile.h"
 #endif
 
@@ -415,9 +415,9 @@ if (!bSecondary) {
 	gameData.weapons.nPrimary = (!bSecondary && (nWeaponNum == SUPER_LASER_INDEX)) ? LASER_INDEX : nWeaponNum;
 	StopPrimaryFire ();
 	szWeaponName = PRIMARY_WEAPON_NAMES (nWeaponNum);
-   #if defined (TACTILE)
+#if defined (FORCE_FEEDBACK)
  	TactileSetButtonJolt();
-	#endif
+#endif
 	//save flag for whether was super version
 	bLastPrimaryWasSuper [nWeaponNum % SUPER_WEAPON] = (nWeaponNum >= SUPER_WEAPON);
 	}
@@ -598,7 +598,7 @@ if (!nWeaponType) {
 						SelectWeapon (gameData.weapons.nPrimary, 0, 0, 1);
 					else {
 						HUDInitMessage (TXT_NO_PRIMARY);
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 						if (TactileStick)
 						ButtonReflexClear(0);
 #endif
@@ -626,7 +626,7 @@ if (!nWeaponType) {
 					SelectWeapon (gameData.weapons.nPrimary, 0, 0, 1);
 				else {
 					HUDInitMessage (TXT_NO_PRIMARY);
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 					if (TactileStick)
 					ButtonReflexClear (0);
 #endif
@@ -851,7 +851,7 @@ int tactile_fire_repeat []={260,90,160,160,160,210,110,191,291,111};
 
 void TactileSetButtonJolt ()
  {
-  #ifdef TACTILE
+  #ifdef FORCE_FEEDBACK
 
   FILE *infile;
   int t,i;

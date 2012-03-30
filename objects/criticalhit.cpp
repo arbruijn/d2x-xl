@@ -41,9 +41,6 @@
 #include "loadgame.h"
 #include "objeffects.h"
 #include "multi.h"
-#ifdef TACTILE
-#	include "tactile.h"
-#endif
 
 #define REPAIR_DELAY	1500
 

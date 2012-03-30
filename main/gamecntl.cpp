@@ -63,7 +63,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "systemkeys.h"
 #include "songs.h"
 
-#if defined (TACTILE)
+#if defined (FORCE_FEEDBACK)
 #	include "tactile.h"
 #endif
 
@@ -147,7 +147,7 @@ if (!gameData.app.bGamePaused) {
 	StopTime ();
 	paletteManager.DisableEffect ();
 	GameFlushInputs ();
-#if defined (TACTILE)
+#if defined (FORCE_FEEDBACK)
 	if (TactileStick)
 		DisableForces();
 #endif
@@ -183,7 +183,7 @@ int DoGamePause (void)
 if (gameData.app.bGamePaused) {		//unpause!
 	gameData.app.bGamePaused = 0;
 	gameStates.app.bEnterGame = 1;
-#if defined (TACTILE)
+#if defined (FORCE_FEEDBACK)
 	if (TactileStick)
 		EnableForces();
 #endif

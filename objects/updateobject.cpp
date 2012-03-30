@@ -55,9 +55,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "multi.h"
 #include "playerdeath.h"
 #include "renderthreads.h"
-#ifdef TACTILE
-#	include "tactile.h"
-#endif
 #ifndef fabsf
 #	define fabsf(_f)	(float) fabs (_f)
 #endif

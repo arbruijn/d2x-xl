@@ -25,9 +25,6 @@
 #include "dynlight.h"
 #include "ogl_lib.h"
 #include "automap.h"
-#ifdef TACTILE
-#	include "tactile.h"
-#endif
 
 #if NOISE_TYPE
 CSimplexNoise noiseX [MAX_THREADS], noiseY [MAX_THREADS];

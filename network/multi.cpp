@@ -1598,6 +1598,7 @@ if (IsNetworkGame) {
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_HAS_LEFT_THE_GAME);
 	NetworkDisconnectPlayer (buf [1]);
 	*gameData.multiplayer.players [nPlayer].callsign = '\0';
+	ResetShipData (false, nPlayer);
 	if (gameData.multigame.menu.bInvoked || gameStates.menus.nInMenu)
 		return;
 	int nPlayers = 0;

@@ -43,10 +43,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "visibility.h"
 #include "postprocessing.h"
 
-#ifdef TACTILE
-#include "tactile.h"
-#endif
-
 void BlastNearbyGlass (CObject *objP, fix damage);
 void NDRecordGuidedEnd (void);
 

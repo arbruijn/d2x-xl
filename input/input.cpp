@@ -40,9 +40,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "input.h"
 #include "gamecntl.h"
-#if defined (TACTILE)
-#	include "tactile.h"
-#endif
 
 class CControlsManager controls;
 

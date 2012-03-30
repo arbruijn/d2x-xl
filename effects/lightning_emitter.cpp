@@ -23,9 +23,6 @@
 #include "dynlight.h"
 #include "ogl_lib.h"
 #include "automap.h"
-#ifdef TACTILE
-#	include "tactile.h"
-#endif
 
 //------------------------------------------------------------------------------
 

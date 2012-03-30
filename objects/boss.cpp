@@ -53,9 +53,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hiresmodels.h"
 #include "loadgame.h"
 #include "multi.h"
-#ifdef TACTILE
-#	include "tactile.h"
-#endif
 
 //------------------------------------------------------------------------------
 

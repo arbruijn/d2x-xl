@@ -64,9 +64,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "songs.h"
 #include "hudicons.h"
 
-#if defined (TACTILE)
-#	include "tactile.h"
-#endif
 
 // Global Variables -----------------------------------------------------------
 

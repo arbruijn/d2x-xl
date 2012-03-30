@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segmath.h"
 #include "kconfig.h"
 #include "automap.h"
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 #	include "tactile.h"
 #endif
 
@@ -1140,7 +1140,7 @@ if (info.movementType != MT_PHYSICS)
 	return;
 if ((automap.Display () && (this == gameData.objs.consoleP)) || SPECTATOR (this))
 	return;
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
   if (TactileStick && (obj == OBJECTS + LOCALPLAYER.nObject))
 	Tactile_apply_force (vForce, &info.position.mOrient);
 #endif
@@ -1765,7 +1765,7 @@ retryMove:
 			}
 		}
 	else if (simData.hitResult.nType == HIT_NONE) {
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 		if (TactileStick && (this == gameData.objs.consoleP) && !(FrameCount & 15))
 			Tactile_Xvibrate_clear ();
 #endif

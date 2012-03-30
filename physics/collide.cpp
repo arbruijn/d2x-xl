@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "monsterball.h"
 #include "marker.h"
 
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 #include "tactile.h"
 #endif
 
@@ -516,7 +516,7 @@ if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
 	vForce.v.coord.y = 40 * SRandShort ();
 	vForce.v.coord.z = 40 * SRandShort ();
 	ApplyRotForce (vForce);
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 	if (TactileStick)
 		Tactile_apply_force (&vForce, &info.position.mOrient);
 #endif
@@ -527,7 +527,7 @@ if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
 	bForceFieldHit = 1;
 	}
 else {
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 	CFixVector vForce;
 	if (TactileStick) {
 		vForce.dir.coord.x = -mType.physInfo.velocity.dir.coord.x;
@@ -592,7 +592,7 @@ if (info.nId == N_LOCALPLAYER) {
 		if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 			ApplyDamageToPlayer (this, xDamage);
 
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 		if (TactileStick)
 			Tactile_Xvibrate (50, 25);
 #endif
@@ -631,7 +631,7 @@ if (xDamage > 0) {
 		ApplyDamageToRobot (info.xShield + 1, OBJ_IDX (this));
 		}
 
-#ifdef TACTILE
+#ifdef FORCE_FEEDBACK
 	if (TactileStick)
 		Tactile_Xvibrate (50, 25);
 #endif

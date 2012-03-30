@@ -40,9 +40,6 @@
 #include "hiresmodels.h"
 #include "loadgame.h"
 #include "multi.h"
-#ifdef TACTILE
-#	include "tactile.h"
-#endif
 
 //------------------------------------------------------------------------------
 

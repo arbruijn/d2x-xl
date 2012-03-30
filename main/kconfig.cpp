@@ -48,9 +48,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "renderframe.h"
 #include "console.h"
 
-#if defined (TACTILE)
-#	include "tactile.h"
-#endif
 #ifdef USE_LINUX_JOY
 #	include "joystick.h"
 #endif
