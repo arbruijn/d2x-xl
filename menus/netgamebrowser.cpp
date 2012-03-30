@@ -400,6 +400,9 @@ networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 	goto doMenu;
 	}
 // Choice is valid, prepare to join in
+for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
+	ResetPlayerData (true, false, false, i);
+
 netGame = activeNetGames [choice];
 netPlayers [0] = activeNetPlayers [choice];
 gameStates.app.nDifficultyLevel = netGame.m_info.difficulty;
