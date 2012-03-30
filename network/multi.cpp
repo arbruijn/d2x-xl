@@ -5138,17 +5138,17 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	#if DBG
 			PowerupsInMine (i);
 	#endif
-			CObject* objP, * oldestObjP = NULL;
-			int tCreate = 0x7FFFFFFF;
+			CObject* objP, * delObjP = NULL;
+			int tCreate = -0x7FFFFFFF;
 
 			FORALL_STATIC_OBJS (objP, i) {
-				if ((objP->Id () == i) && (tCreate > objP->CreationTime ())) {
+				if ((objP->Id () == i) && (tCreate < objP->CreationTime ())) {
 					tCreate = objP->CreationTime ();
-					oldestObjP = objP;
+					delObjP = objP;
 					}
 				}
-			if (oldestObjP) {
-				oldestObjP->Die ();
+			if (delObjP) {
+				delObjP->Die ();
 				//MultiSendRemoveObj (OBJ_IDX (oldestObjP));
 				}
 			}
