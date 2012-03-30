@@ -940,6 +940,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 	short				nObject;
 	int				nVulcanAmmo = 0;
 	CPlayerData*	playerP = gameData.multiplayer.players + nPlayer;
+	int				bResetLasers = !IsMultiGame || (nPlayer != N_LOCALPLAYER);
 
 	// Seed the Random number generator so in net play the eggs will always
 	// drop the same way
@@ -959,13 +960,15 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 		if (!IsBuiltinWeapon (SUPER_LASER_INDEX)) {
 			CallObjectCreateEgg (playerObjP, playerP->LaserLevel (1), OBJ_POWERUP, POW_SUPERLASER);
 			CallObjectCreateEgg (playerObjP, MAX_LASER_LEVEL, OBJ_POWERUP, POW_LASER);
-			playerP->SetSuperLaser (0);
+			if (bResetLasers)
+				playerP->SetSuperLaser (0);
 			}
 		}
 	if (playerP->LaserLevel (0) > 0) {
 		if (!(IsBuiltinWeapon (LASER_INDEX) || IsBuiltinWeapon (SUPER_LASER_INDEX))) {
 			CallObjectCreateEgg (playerObjP, playerP->LaserLevel (0), OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
-			playerP->SetStandardLaser (0);
+			if (bResetLasers)
+				playerP->SetStandardLaser (0);
 			}
 		}
 

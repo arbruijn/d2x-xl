@@ -2253,6 +2253,7 @@ if (bufI > MultiMsgLen (nType))
 	Warning ("MultiSendPlayerExplode:\nMax. message length exceeded!"); // See Rob
 #endif
 MultiSendData (gameData.multigame.msg.buf, MultiMsgLen (nType), 2);
+LOCALPLAYER.SetLaserLevels (0, 0);
 MultiSendWeapons (1);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 	MultiSendDeCloak ();
