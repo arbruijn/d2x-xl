@@ -959,11 +959,14 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 		if (!IsBuiltinWeapon (SUPER_LASER_INDEX)) {
 			CallObjectCreateEgg (playerObjP, playerP->LaserLevel (1), OBJ_POWERUP, POW_SUPERLASER);
 			CallObjectCreateEgg (playerObjP, MAX_LASER_LEVEL, OBJ_POWERUP, POW_LASER);
+			playerP->SetSuperLaser (0);
 			}
 		}
 	if (playerP->LaserLevel (0) > 0) {
-		if (!(IsBuiltinWeapon (LASER_INDEX) || IsBuiltinWeapon (SUPER_LASER_INDEX)))
+		if (!(IsBuiltinWeapon (LASER_INDEX) || IsBuiltinWeapon (SUPER_LASER_INDEX))) {
 			CallObjectCreateEgg (playerObjP, playerP->LaserLevel (0), OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
+			playerP->SetStandardLaser (0);
+			}
 		}
 
 	//	Drop quad laser if appropos
