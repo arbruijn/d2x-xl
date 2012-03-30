@@ -489,7 +489,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 //------------------------------------------------------------------------------
 
 // Setup player for a brand-new ship
-void ResetShipData (bool bRestore)
+void ResetShipData (bool bRestore, int nPlayer)
 {
 	int	i;
 
