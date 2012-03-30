@@ -1210,6 +1210,7 @@ if (IsNetworkGame) {
 	MultiSendPlayerExplode (MULTI_PLAYER_DROP);
 	}
 MultiSendQuit (MULTI_QUIT);
+ResetPlayerData (true, false, false, -1);
 if (IsNetworkGame)
 	NetworkLeaveGame ();
 gameData.app.nGameMode |= GM_GAME_OVER;

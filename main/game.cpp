@@ -604,7 +604,6 @@ transparencyRenderer.ResetBuffers ();
 CGenericCockpit::Rewind (false);
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 StopPlayerMovement ();
-ResetPlayerData (true, false, false, -1);
 GameDisableCheats ();
 UnloadCamBot ();
 #ifdef APPLE_DEMO
