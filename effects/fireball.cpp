@@ -163,13 +163,17 @@ if ((parentP && (nVClip == VCLIP_POWERUP_DISAPPEARANCE)) || (nVClip == VCLIP_MOR
 	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), explObjP->LifeLeft () / 4, explObjP->info.xSize, 1, explObjP->Position ()));
 
 if (SHOW_LIGHTNING (2)) {
+	bool bDie = false;
 	if (nVClip == VCLIP_PLAYER_APPEARANCE)
 		lightningManager.CreateForPlayerTeleport (explObjP);
 	else if (nVClip == VCLIP_MORPHING_ROBOT)
 		lightningManager.CreateForRobotTeleport (explObjP);
 	else if (nVClip == VCLIP_POWERUP_DISAPPEARANCE)
 		lightningManager.CreateForPowerupTeleport (explObjP);
-	explObjP->Die ();
+	else
+		bDie = false;
+	if (bDie)
+		explObjP->Die ();
 	}
 
 if (xMaxDamage <= 0)
