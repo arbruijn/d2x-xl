@@ -5148,7 +5148,7 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	#if DBG
 		if (j == nDbgPowerup)
 			nDbgPowerup = nDbgPowerup;
-		PowerupsInMine (j);
+		MissingPowerups (i, 1);
 #endif
 		CObject* objP, * delObjP = NULL;
 		int tCreate = -0x7FFFFFFF;
@@ -5170,7 +5170,7 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	#if DBG
 		if (i == nDbgPowerup)
 			nDbgPowerup = nDbgPowerup;
-		PowerupsInMine (i);
+		MissingPowerups (i, 1);
 	#endif
 		if (MultiPowerupIs4Pack (i + 1)) {
 			if (MissingPowerups (i + 1) > 0) {
