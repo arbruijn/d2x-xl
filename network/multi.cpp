@@ -5138,6 +5138,8 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	if (h < 0) {
 		if (gameData.multiplayer.powerupsInMine [i] > 0) {
 	#if DBG
+			if (i == nDbgPowerup)
+				nDbgPowerup = nDbgPowerup;
 			PowerupsInMine (i);
 	#endif
 			CObject* objP, * delObjP = NULL;
@@ -5161,6 +5163,8 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 		if ((i == POW_ENERGY) || (i == POW_SHIELD_BOOST))
 			continue;
 	#if DBG
+		if (i == nDbgPowerup)
+			nDbgPowerup = nDbgPowerup;
 		PowerupsInMine (i);
 	#endif
 		if (MultiPowerupIs4Pack (i + 1)) {
