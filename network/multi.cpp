@@ -5109,12 +5109,13 @@ extern int nDbgPowerup;
 
 void MultiAdjustPowerups (void)
 {
-if (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ())
+	static	time_t	t0 = 0;
+	time_t	t = gameStates.app.nSDLTicks [0];
+
+if ((t - t0 < 180000) && (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ())) // enforce after 3 minutes inactivity
 	return;
 
 	int		h, i, j;
-	time_t	t = gameStates.app.nSDLTicks [0];
-	static	time_t	t0 = 0;
 
 if (gameStates.multi.nGameType != UDP_GAME)
 	return;
