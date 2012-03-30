@@ -174,7 +174,7 @@ void RemoveAllowedPowerup (int nPowerup);
 void AddPowerupInMine (int nPowerup, bool bIncreaseLimit = false);
 void RemovePowerupInMine (int nPowerup);
 int PowerupsInMine (int nPowerup);
-int MissingPowerups (int nPowerup);
+int MissingPowerups (int nPowerup, int bBreakDown = 0);
 
 //------------------------------------------------------------------------------
 

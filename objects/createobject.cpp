@@ -476,9 +476,12 @@ if (gameData.multiplayer.powerupsInMine [nPowerup] > 0) {
 
 //------------------------------------------------------------------------------
 
-int MissingPowerups (int nPowerup)
+int MissingPowerups (int nPowerup, int bBreakDown)
 {
-return gameData.multiplayer.maxPowerupsAllowed [nPowerup] - PowerupsInMine (nPowerup);
+return bBreakDown && MultiPowerupIs4Pack (nPowerup + 1)
+		 ? gameData.multiplayer.maxPowerupsAllowed [nPowerup]  - gameData.multiplayer.powerupsInMine [nPowerup] +
+			(gameData.multiplayer.maxPowerupsAllowed [nPowerup + 1] - gameData.multiplayer.powerupsInMine [nPowerup + 1]) * 4 - PowerupsOnShips (nPowerup)
+		 : gameData.multiplayer.maxPowerupsAllowed [nPowerup] - PowerupsInMine (nPowerup);
 }
 
 //------------------------------------------------------------------------------

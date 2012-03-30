@@ -5130,36 +5130,41 @@ if (t - t0 < 1000)
 	return;
 t0 = t;
 for (i = 0; i < MAX_POWERUP_TYPES; i++) {
-	h = MissingPowerups (i);
+	if (MultiPowerupIs4Pack (i))
+		continue;
+	h = MissingPowerups (i, 1);
 #if DBG
 	if (i == nDbgPowerup)
 		nDbgPowerup = nDbgPowerup;
 #endif
 	if (h < 0) {
-		if (gameData.multiplayer.powerupsInMine [i] > 0) {
+		if (gameData.multiplayer.powerupsInMine [i] > 0) 
+			j = i;
+		else {
+			j = i + 1;
+			if ((gameData.multiplayer.powerupsInMine [j] <= 0) || (h > -4) || !MultiPowerupIs4Pack (j))
+				continue;
+			}
 	#if DBG
-			if (i == nDbgPowerup)
-				nDbgPowerup = nDbgPowerup;
-			PowerupsInMine (i);
-	#endif
-			CObject* objP, * delObjP = NULL;
-			int tCreate = -0x7FFFFFFF;
+		if (j == nDbgPowerup)
+			nDbgPowerup = nDbgPowerup;
+		PowerupsInMine (j);
+#endif
+		CObject* objP, * delObjP = NULL;
+		int tCreate = -0x7FFFFFFF;
 
-			FORALL_STATIC_OBJS (objP, i) {
-				if ((objP->Id () == i) && (tCreate < objP->CreationTime ())) {
-					tCreate = objP->CreationTime ();
-					delObjP = objP;
-					}
+		FORALL_STATIC_OBJS (objP, i) {
+			if ((objP->Id () == j) && (tCreate < objP->CreationTime ())) {
+				tCreate = objP->CreationTime ();
+				delObjP = objP;
 				}
-			if (delObjP) {
-				delObjP->Die ();
-				//MultiSendRemoveObj (OBJ_IDX (oldestObjP));
-				}
+			}
+		if (delObjP) {
+			delObjP->Die ();
+			//MultiSendRemoveObj (OBJ_IDX (oldestObjP));
 			}
 		}
 	else if (h > 0) {
-		if (MultiPowerupIs4Pack (i))
-			continue;
 		if ((i == POW_ENERGY) || (i == POW_SHIELD_BOOST))
 			continue;
 	#if DBG
