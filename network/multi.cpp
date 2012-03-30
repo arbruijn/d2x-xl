@@ -5115,6 +5115,9 @@ void MultiAdjustPowerups (void)
 if (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ()) { // don't act if player ship status pending
 	if (t - t0 < 180000) 		// enforce after 3 minutes of inactivity though
 		return;
+#if DBG
+	t0 = t;
+#endif
 	}
 
 	int h, i, j;
