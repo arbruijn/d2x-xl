@@ -1246,18 +1246,16 @@ return IsNetworkGame ? NetworkEndLevel (secret) : 0;
 
 int MultiMenuPoll (void)
 {
-	fix xOldShield;
-	int bWasFuelCenAlive;
-	int bPlayerWasDead;
-
-bWasFuelCenAlive = gameData.reactor.bDestroyed;
 // Special polling function for in-game menus for multiplayer and serial
 if (!(IsMultiGame &&(gameStates.app.nFunctionMode == FMODE_GAME)))
 	return 0;
 if (gameData.multigame.menu.bLeave)
 	return -1;
-xOldShield = LOCALPLAYER.Shield ();
-bPlayerWasDead = gameStates.app.bPlayerIsDead;
+
+	int bWasFuelCenAlive = gameData.reactor.bDestroyed;
+	int bPlayerWasDead = gameStates.app.bPlayerIsDead;
+	fix xOldShield = (N_LOCALPLAYER < 0) ? -1 : LOCALPLAYER.Shield ();
+
 if (!gameOpts->menus.nStyle && gameStates.app.bGameRunning) {
 	gameData.multigame.menu.bInvoked++; // Track level of menu nesting
 	GameFrame (0, -1, 40);
@@ -1267,7 +1265,7 @@ if (!gameOpts->menus.nStyle && gameStates.app.bGameRunning) {
 if (gameStates.app.bEndLevelSequence ||
 	 (gameData.reactor.bDestroyed && !bWasFuelCenAlive) ||
 	 (gameStates.app.bPlayerIsDead != bPlayerWasDead) ||
-	 (LOCALPLAYER.Shield () < xOldShield)) {
+	 ((N_LOCALPLAYER >= 0) && (LOCALPLAYER.Shield () < xOldShield))) {
 	gameData.multigame.menu.bLeave = 1;
 	return -1;
 	}
@@ -3946,23 +3944,24 @@ void MultiDoWeapons (char *buf)
 {
 	int	i, bufP = 1;
 	int	nPlayer = int (buf [bufP++]);
+	CPlayerData& player = gameData.multiplayer.players [nPlayer];
 
-gameData.multiplayer.players [nPlayer].SetShield (GET_INTEL_INT (buf + bufP));
+player.SetShield (GET_INTEL_INT (buf + bufP));
 bufP += 4;
-gameData.multiplayer.players [nPlayer].flags = int (GET_INTEL_INT (buf + bufP));
+player.flags = int (GET_INTEL_INT (buf + bufP));
 bufP += 4;
-gameData.multiplayer.players [nPlayer].primaryWeaponFlags = GET_INTEL_SHORT (buf + bufP);
+player.primaryWeaponFlags = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
-	gameData.multiplayer.players [nPlayer].secondaryAmmo [i] = GET_INTEL_SHORT (buf + bufP);
+	player.secondaryAmmo [i] = GET_INTEL_SHORT (buf + bufP);
 	bufP += 2;
 	}
-gameData.multiplayer.players [nPlayer].SetLaserLevels (buf [bufP], buf [bufP + 1]);
+player.SetLaserLevels (buf [bufP], buf [bufP + 1]);
 bufP += 2;
 gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 gameData.multiplayer.weaponStates [nPlayer].nBuiltinMissiles = buf [bufP];
-gameData.multiplayer.players [nPlayer].m_tWeaponInfo = gameStates.app.nSDLTicks [0];
+player.m_tWeaponInfo = gameStates.app.nSDLTicks [0];
 }
 
 //-----------------------------------------------------------------------------
