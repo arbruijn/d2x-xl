@@ -1982,7 +1982,8 @@ if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBA
 	InitAllMatCens ();
 	ResetSpecialEffects ();
 	StartSecretLevel ();
-	LOCALPLAYER.flags &= ~PLAYER_FLAGS_ALL_KEYS;
+	if (gameStates.app.bD1Mission)
+		LOCALPLAYER.flags &= ~PLAYER_FLAGS_ALL_KEYS;
 	}
 else {
 	if (CFile::Exist (SECRETC_FILENAME, gameFolders.szSaveDir, 0)) {
