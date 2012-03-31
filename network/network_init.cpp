@@ -133,8 +133,8 @@ int NetworkCreateMonitorVector (void)
 	int      h, i, j, k;
 	int      tm, ec;
 
-for (i = 0; i < gameData.eff.nEffects [gameStates.app.bD1Data]; i++) {
-	if ((h = gameData.eff.effectP [i].nDestBm) > 0) {
+for (i = 0; i < gameData.effects.nEffects [gameStates.app.bD1Data]; i++) {
+	if ((h = gameData.effects.effectP [i].nDestBm) > 0) {
 		for (j = 0; j < nBlownBitmaps; j++)
 			if (blownBitmaps [j] == h)
 				break;
@@ -149,7 +149,7 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 	for (j = 0, sideP = segP->m_sides; j < 6; j++, sideP++) {
 		if ((tm = sideP->m_nOvlTex) != 0) {
 			if (((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) &&
-					(gameData.eff.effectP[ec].nDestBm != -1)) {
+					(gameData.effects.effectP[ec].nDestBm != -1)) {
 				nMonitor++;
 				//Assert (nMonitor < 32);
 				}

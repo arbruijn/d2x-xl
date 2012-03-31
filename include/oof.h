@@ -101,7 +101,7 @@ class CFace {
 			int				nTexId;
 			CRGBColor		color;
 			} m_texProps;
-		CFaceVert*			m_verts;
+		CFaceVert*			m_vertices;
 		float					m_fBoundingLength;
 		float					m_fBoundingWidth;
 		CFloatVector		m_vMin;
@@ -120,7 +120,7 @@ class CFaceList {
 	public:
 		int					m_nFaces;
 		CArray<CFace>		m_list;
-		CArray<CFaceVert>	m_verts;
+		CArray<CFaceVert>	m_vertices;
 
 	public:
 		CFaceList () { Init (); }
@@ -322,7 +322,7 @@ class CSubModel {
 		int							m_nFSLists;
 		CArray<int>					m_fsLists;
 		int							m_nVerts;
-		CArray<CFloatVector>		m_verts;
+		CArray<CFloatVector>		m_vertices;
 		CArray<CFloatVector>		m_rotVerts;
 		CArray<CFloatVector>		m_normals;
 		CArray<CFaceColor>		m_vertColors;

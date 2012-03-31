@@ -782,8 +782,8 @@ vObjPos = SEGMENTS [robotGenP->nSegment].Center ();
 objP = CreateExplosion ((short) robotGenP->nSegment, vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
 if (objP)
 	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotGenP->nSegment]);
-if (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound > -1)
-	audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, (short) robotGenP->nSegment, 0, vObjPos, 0, I2X (1));
+if (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].nSound > -1)
+	audio.CreateSegmentSound (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].nSound, (short) robotGenP->nSegment, 0, vObjPos, 0, I2X (1));
 // Set robot center flags, in case we become the master for the next one
 robotGenP->bFlag = 0;
 robotGenP->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
@@ -856,7 +856,7 @@ switch (action)  {
 		vBossDir = OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.position.vPos - bossObjP->info.position.vPos;
 		bossObjP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 
-		audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, bossObjP->info.position.vPos, 0, I2X (1));
+		audio.CreateSegmentSound (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, bossObjP->info.position.vPos, 0, I2X (1));
 		audio.DestroyObjectSound (OBJ_IDX (bossObjP));
 		audio.CreateObjectSound (SOUND_BOSS_SHARE_SEE, SOUNDCLASS_ROBOT, OBJ_IDX (bossObjP), 1, I2X (1), I2X (512));	//	I2X (5)12 means play twice as loud
 		gameData.ai.localInfo [OBJ_IDX (bossObjP)].nextPrimaryFire = 0;

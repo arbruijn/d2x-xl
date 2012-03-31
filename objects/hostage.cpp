@@ -37,7 +37,7 @@ int nHostageVClips [MAX_HOSTAGE_TYPES] = {33};	// tVideoClip num for each tpye o
 
 void DrawHostage (CObject *objP)
 {
-DrawObjectRodTexPoly (objP, gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames [objP->rType.vClipInfo.nCurFrame], 
+DrawObjectRodTexPoly (objP, gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].frames [objP->rType.vClipInfo.nCurFrame], 
 							 1, objP->rType.vClipInfo.nCurFrame);
 gameData.render.nTotalSprites++;
 }

@@ -244,7 +244,7 @@ matCenP->xDisableTime = MATCEN_LIFE;
 
 //	Create a bright CObject in the CSegment.
 pos = matCenP->vCenter;
-delta = gameData.segs.vertices[SEGMENTS [nSegment].m_verts [0]] - matCenP->vCenter;
+delta = gameData.segs.vertices[SEGMENTS [nSegment].m_vertices [0]] - matCenP->vCenter;
 pos += delta * (I2X (1)/2);
 nObject = CreateLight (SINGLE_LIGHT_ID, nSegment, pos);
 if (nObject != -1) {
@@ -352,8 +352,8 @@ CFixVector vPos = SEGMENTS [matCenP->nSegment].Center ();
 CObject* objP = CreateExplosion ((short) matCenP->nSegment, vPos, I2X (10), nVideoClip);
 if (objP) {
 	ExtractOrientFromSegment (&objP->info.position.mOrient, SEGMENTS + matCenP->nSegment);
-	if (gameData.eff.vClips [0][nVideoClip].nSound > -1)
-		audio.CreateSegmentSound (gameData.eff.vClips [0][nVideoClip].nSound, (short) matCenP->nSegment, 0, vPos, 0, I2X (1));
+	if (gameData.effects.vClips [0][nVideoClip].nSound > -1)
+		audio.CreateSegmentSound (gameData.effects.vClips [0][nVideoClip].nSound, (short) matCenP->nSegment, 0, vPos, 0, I2X (1));
 	matCenP->bFlag	= 1;
 	matCenP->xTimer = 0;
 	}
@@ -394,7 +394,7 @@ if (!matCenP->bFlag) {
 	CreateMatCenEffect (matCenP, VCLIP_MORPHING_ROBOT);
 	}
 else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
-	if (matCenP->xTimer < (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].xTotalTime / 2))
+	if (matCenP->xTimer < (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].xTotalTime / 2))
 		return;
 	matCenP->bFlag = 0;
 	matCenP->xTimer = 0;
@@ -412,7 +412,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 		gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 		}
 	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
+	objP->rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 	objP->rType.vClipInfo.nCurFrame = 0;
 	objP->info.nCreator = SEGMENTS [matCenP->nSegment].m_owner;
 	objP->SetLife (IMMORTAL_TIME);
@@ -458,7 +458,7 @@ if (!matCenP->bFlag) {
 	CreateMatCenEffect (matCenP, VCLIP_POWERUP_DISAPPEARANCE);
 	}
 else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
-	if (matCenP->xTimer < (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].xTotalTime / 2))
+	if (matCenP->xTimer < (gameData.effects.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].xTotalTime / 2))
 		return;
 	matCenP->bFlag = 0;
 	matCenP->xTimer = 0;
@@ -470,7 +470,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 		objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-		objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
+		objP->rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 		objP->rType.vClipInfo.nCurFrame = 0;
 		objP->info.nCreator = SEGMENTS [matCenP->nSegment].m_owner;
 		objP->SetLife (IMMORTAL_TIME);
@@ -606,7 +606,7 @@ if (!matCenP->bFlag) {
 	CreateMatCenEffect (matCenP, VCLIP_MORPHING_ROBOT);
 	}
 else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
-	if (matCenP->xTimer <= (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].xTotalTime / 2))
+	if (matCenP->xTimer <= (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].xTotalTime / 2))
 		return;
 	matCenP->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
 	matCenP->bFlag = 0;

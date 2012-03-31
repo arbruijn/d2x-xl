@@ -58,9 +58,9 @@ int InitMonsterball (int nBitmap)
 	int					i;
 
 memcpy (&gameData.hoard.monsterball, &gameData.hoard.orb, sizeof (tHoardItem));
-gameData.hoard.monsterball.nClip = gameData.eff.nClips [0]++;
-memcpy (&gameData.eff.vClips [0][gameData.hoard.monsterball.nClip], 
-		  &gameData.eff.vClips [0][gameData.hoard.orb.nClip],
+gameData.hoard.monsterball.nClip = gameData.effects.nClips [0]++;
+memcpy (&gameData.effects.vClips [0][gameData.hoard.monsterball.nClip], 
+		  &gameData.effects.vClips [0][gameData.hoard.orb.nClip],
 		  sizeof (tVideoClip));
 gameData.hoard.monsterball.bm.Init ();
 
@@ -71,7 +71,7 @@ if (!tga.Read ("monsterball.tga", gameFolders.szTextureDir [0], -1, 1.0, 0)) {
 	if (altBmP && 
 		(tga.Read ("mballgold#0.tga", gameFolders.szTextureDir [0], -1, 1.0, 0) ||
 		 tga.Read ("mballred#0.tga", gameFolders.szTextureDir [0], -1, 1.0, 0))) {
-		vcP = &gameData.eff.vClips [0][gameData.hoard.monsterball.nClip];
+		vcP = &gameData.effects.vClips [0][gameData.hoard.monsterball.nClip];
 		for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
 			Assert (nBitmap < MAX_BITMAP_FILES);
 			vcP->frames [i].index = nBitmap;
@@ -170,9 +170,9 @@ if (!gameData.hoard.bInitialized) {
 	nBitmap = gameData.pig.tex.nBitmaps [0];
 	
 	//Create orb animation clip
-	gameData.hoard.orb.nClip = gameData.eff.nClips [0]++;
-	Assert (gameData.eff.nClips [0] <= MAX_VCLIPS);
-	vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
+	gameData.hoard.orb.nClip = gameData.effects.nClips [0]++;
+	Assert (gameData.effects.nClips [0] <= MAX_VCLIPS);
+	vcP = &gameData.effects.vClips [0][gameData.hoard.orb.nClip];
 	vcP->xTotalTime = I2X (1)/2;
 	vcP->nFrameCount = gameData.hoard.orb.nFrames;
 	vcP->xFrameTime = vcP->xTotalTime / vcP->nFrameCount;
@@ -203,10 +203,10 @@ if (!gameData.hoard.bInitialized) {
 	ptP->light = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].light;
 	
 	//Create orb goal wall effect
-	gameData.hoard.goal.nClip = gameData.eff.nEffects [0]++;
-	Assert (gameData.eff.nEffects [0] < MAX_EFFECTS);
-	if ((ecP = gameData.eff.effects [0] + gameData.hoard.goal.nClip)) {
-		*ecP = gameData.eff.effects [0][94];        //copy from blue goal
+	gameData.hoard.goal.nClip = gameData.effects.nEffects [0]++;
+	Assert (gameData.effects.nEffects [0] < MAX_EFFECTS);
+	if ((ecP = gameData.effects.effects [0] + gameData.hoard.goal.nClip)) {
+		*ecP = gameData.effects.effects [0][94];        //copy from blue goal
 		ecP->changingWallTexture = gameData.pig.tex.nTextures [0];
 		ecP->vClipInfo.nFrameCount = gameData.hoard.goal.nFrames;
 		ecP->flags &= ~EF_INITIALIZED;
@@ -236,17 +236,17 @@ if (!gameData.hoard.bInitialized) {
 	nBitmap = InitMonsterball (nBitmap);
 	}
 else {
-	ecP = gameData.eff.effects [0] + gameData.hoard.goal.nClip;
+	ecP = gameData.effects.effects [0] + gameData.hoard.goal.nClip;
 	}
 
 //Load and remap bitmap data for orb
 #if 1
-SetupHoardBitmapFrames (cf, gameData.hoard.orb.bm, gameData.eff.vClips [0][gameData.hoard.orb.nClip].frames, gameData.hoard.orb.palette, BM_FLAG_TRANSPARENT);
+SetupHoardBitmapFrames (cf, gameData.hoard.orb.bm, gameData.effects.vClips [0][gameData.hoard.orb.nClip].frames, gameData.hoard.orb.palette, BM_FLAG_TRANSPARENT);
 #else
 paletteManager.Game ();
 palette.Read (cf);
 gameData.hoard.orb.palette = paletteManager.Add (palette);
-vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
+vcP = &gameData.effects.vClips [0][gameData.hoard.orb.nClip];
 gameData.hoard.orb.bm.Read (cf);
 bmDataP = gameData.hoard.orb.bm.Buffer ();
 for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
@@ -363,10 +363,10 @@ for (i = 0; i < 2; i++)
 for (i = 1; i <= 4; i++) {
 	gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] - i].data [0].Destroy ();
 	}
-gameData.eff.vClips [0][gameData.hoard.monsterball.nClip].nFrameCount = 
-gameData.eff.vClips [0][gameData.hoard.orb.nClip].nFrameCount = 0;
-gameData.eff.nClips [0] = gameData.hoard.orb.nClip;
-gameData.eff.nEffects [0] = gameData.hoard.goal.nClip;
+gameData.effects.vClips [0][gameData.hoard.monsterball.nClip].nFrameCount = 
+gameData.effects.vClips [0][gameData.hoard.orb.nClip].nFrameCount = 0;
+gameData.effects.nClips [0] = gameData.hoard.orb.nClip;
+gameData.effects.nEffects [0] = gameData.hoard.goal.nClip;
 gameData.pig.tex.nTextures [0] = gameData.hoard.nTextures;
 gameData.hoard.bInitialized = 0;
 }

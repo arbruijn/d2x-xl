@@ -207,7 +207,7 @@ if (pvNormal) {
 else
 #endif
  {
-	short	v [4], vSorted [4];
+	ushort v [4], vSorted [4];
 
 	v [0] = pointList [0]->Index ();
 	v [1] = pointList [1]->Index ();
@@ -217,7 +217,7 @@ else
 		glNormal3f ((GLfloat) X2F (vNormal.v.coord.x), (GLfloat) X2F (vNormal.v.coord.y), (GLfloat) X2F (vNormal.v.coord.z));
 		}
 	else {
-		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted);
+		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 0xFFFF, vSorted);
 		vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
 												gameData.segs.vertices [vSorted [1]],
 												gameData.segs.vertices [vSorted [2]]);
@@ -239,7 +239,7 @@ void G3CalcNormal (CRenderPoint **pointList, CFloatVector *pvNormal)
 if (gameStates.render.nState == 1)	// an object polymodel
 	vNormal = CFixVector::Normal (pointList [0]->ViewPos (), pointList [1]->ViewPos (), pointList [2]->ViewPos ());
 else {
-	short	v [4], vSorted [4];
+	ushort v [4], vSorted [4];
 
 	v [0] = pointList [0]->Index ();
 	v [1] = pointList [1]->Index ();
@@ -248,7 +248,7 @@ else {
 		vNormal = CFixVector::Normal (pointList [0]->ViewPos (), pointList [1]->ViewPos (), pointList [2]->ViewPos ());
 		}
 	else {
-		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted);
+		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 0xFFFF, vSorted);
 		vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
 												gameData.segs.vertices [vSorted [1]],
 												gameData.segs.vertices [vSorted [2]]);

@@ -203,7 +203,7 @@ m_vOffset.SetZero ();
 void CSubModel::Destroy (void)
 {
 m_faces.Destroy ();
-m_verts.Destroy ();
+m_vertices.Destroy ();
 m_texCoord.Destroy ();
 Init ();
 }
@@ -241,17 +241,17 @@ while ((pszToken = ReadLine (cf))) {
 		if (m_bBillboard) {
 			m_vOffset /= m_nVerts;
 			for (i = 0; i < m_nVerts; i++)
-				m_verts [i].m_vertex -= m_vOffset;
+				m_vertices [i].m_vertex -= m_vOffset;
 			}
 		return 1;
 		}
 	if (!strcmp (pszToken, "*MESH_VERTEX")) {
-		if (!m_verts)
+		if (!m_vertices)
 			return CModel::Error ("no vertices found");
 		i = IntTok (" \t");
 		if ((i < 0) || (i >= m_nVerts))
 			return CModel::Error ("invalid vertex number");
-		pv = m_verts + i;
+		pv = m_vertices + i;
 		ReadVector (cf, &pv->m_vertex);
 		if (m_bBillboard)
 			m_vOffset += pv->m_vertex;
@@ -375,12 +375,12 @@ while ((pszToken = ReadLine (cf))) {
 		ReadVector (cf, &pf->m_vNormal);
 		}
 	else if (!strcmp (pszToken, "*MESH_VERTEXNORMAL")) {
-		if (!m_verts)
+		if (!m_vertices)
 			return CModel::Error ("no vertices found");
 		i = IntTok (" \t");
 		if ((i < 0) || (i >= m_nVerts))
 			return CModel::Error ("invalid vertex number");
-		pv = m_verts + i;
+		pv = m_vertices + i;
 		ReadVector (cf, &pv->m_normal);
 		}
 	}
@@ -397,15 +397,15 @@ while ((pszToken = ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_NUMVERTEX")) {
-		if (m_verts.Buffer ())
+		if (m_vertices.Buffer ())
 			return CModel::Error ("duplicate vertex list");
 		m_nVerts = IntTok (" \t");
 		if (!m_nVerts)
 			return CModel::Error ("no vertices found");
 		nVerts += m_nVerts;
-		if (!(m_verts.Create (m_nVerts)))
+		if (!(m_vertices.Create (m_nVerts)))
 			return CModel::Error ("out of memory");
-		m_verts.Clear ();
+		m_vertices.Clear ();
 		}
 	else if (!strcmp (pszToken, "*MESH_NUMTVERTEX")) {
 		if (m_texCoord.Buffer ())
@@ -869,7 +869,7 @@ cf.WriteByte (m_nBullets);
 cf.WriteByte (m_bBarrel);
 cf.WriteVector (m_vOffset);
 m_faces.Write (cf);
-m_verts.Write (cf);
+m_vertices.Write (cf);
 m_texCoord.Write (cf);
 return 1;
 }
@@ -958,11 +958,11 @@ cf.ReadVector (m_vOffset);
 if ((m_nFaces > 100000) || (m_nVerts > 100000) || (m_nTexCoord > 100000))	//probably invalid
 	return 0;
 if ((m_nFaces && !m_faces.Create (m_nFaces)) ||
-	 (m_nVerts && !m_verts.Create (m_nVerts)) ||
+	 (m_nVerts && !m_vertices.Create (m_nVerts)) ||
 	(m_nTexCoord && !m_texCoord.Create (m_nTexCoord)))
 	return 0;
 m_faces.Read (cf);
-m_verts.Read (cf);
+m_vertices.Read (cf);
 m_texCoord.Read (cf);
 return 1;
 }

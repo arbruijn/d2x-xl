@@ -222,8 +222,8 @@ return 1;
 void CFace::CalcNormal (CModel* po)
 {
 if (bTriangularize) {
-	CFixVector	*pv = po->m_verts.Buffer ();
-	ushort		*pfv = m_verts;
+	CFixVector	*pv = po->m_vertices.Buffer ();
+	ushort		*pfv = m_vertices;
 
 	m_vNorm = CFixVector::Normal (pv [pfv [0]], pv [pfv [1]], pv [pfv [2]]);
 	}
@@ -236,7 +236,7 @@ else
 CFloatVector CFace::CalcCenterf (CModel* po)
 {
 	CFloatVector	*pv = po->m_vertsf.Buffer ();
-	ushort			*pfv = m_verts;
+	ushort			*pfv = m_vertices;
 	int				i;
 
 	CFloatVector	c;
@@ -266,7 +266,7 @@ inline void CModel::AddTriangle (CFace* pf, ushort v0, ushort v1, ushort v2)
 {
 	ushort *pfv = m_faceVerts + m_iFaceVert;
 
-pf->m_verts = pfv;
+pf->m_vertices = pfv;
 pf->m_nVerts = 3;
 pfv [0] = v0;
 pfv [1] = v1;
@@ -287,7 +287,7 @@ for (h = pf->m_nVerts, i = po->m_iFace, pfh = po->m_faces; i; i--, pfh++)
 	if (pfh->nVerts == h) {
 		for (k = h, j = 0; j < h; j++)
 			for (l = 0; l < h; l++)
-				if (pf->m_verts [j] == pfh->verts [l]) {
+				if (pf->m_vertices [j] == pfh->verts [l]) {
 					k--;
 					break;
 					}
@@ -309,7 +309,7 @@ int CModel::FindFace (ushort *p, int nVerts)
 for (i = m_iFace, pf = m_faces.Buffer (); i; i--, pf++) {
 	if (pf->m_nVerts != nVerts)
 		continue;
-	pfv = pf->m_verts;
+	pfv = pf->m_vertices;
 	for (j = 0, h = *p; j < nVerts; j++) {
 		if (h == pfv [j]) {
 			h = j;
@@ -340,7 +340,7 @@ return 0;
 CFace* CModel::AddFace (CSubModel* pso, CFace* pf, CFixVector *pn, ubyte *p, int bShadowData)
 {
 	ushort		nVerts = WORDVAL (p+2);
-	CFixVector	*pv = m_verts.Buffer (), v;
+	CFixVector	*pv = m_vertices.Buffer (), v;
 	ushort		*pfv;
 	ushort		i, v0;
 
@@ -402,15 +402,15 @@ if (bShadowData) {
 			}
 		}
 	else { //if (nVerts < 5) {
-		pfv = pf->m_verts = m_faceVerts + m_iFaceVert;
+		pfv = pf->m_vertices = m_faceVerts + m_iFaceVert;
 		pf->m_nVerts = nVerts;
 		memcpy (pfv, WORDPTR (p+30), nVerts * sizeof (ushort));
 		pf->m_bGlow = (nGlow >= 0);
 		pf->CalcNormal (this);
 #if 0
-		if (memcmp (&pf->m_vCenter, m_verts + *pv, sizeof (CFixVector))) //make sure we have a vertex from the face
-			pf->m_vCenter = m_verts [*pv];
-		VmVecNormal (&n, m_verts + pv [0], m_verts + pv [1], m_verts + pv [2]); //check the precomputed Normal
+		if (memcmp (&pf->m_vCenter, m_vertices + *pv, sizeof (CFixVector))) //make sure we have a vertex from the face
+			pf->m_vCenter = m_vertices [*pv];
+		VmVecNormal (&n, m_vertices + pv [0], m_vertices + pv [1], m_vertices + pv [2]); //check the precomputed Normal
 		if (memcmp (&pf->m_vNorm, &n, sizeof (CFixVector)))
 			pf->m_vNorm = n;
 #endif
@@ -427,7 +427,7 @@ if (bShadowData) {
 #if 0
 	else {
 		ushort h = (nVerts + 1) / 2;
-		pfv = pf->m_verts = m_faceVerts + m_iFaceVert;
+		pfv = pf->m_vertices = m_faceVerts + m_iFaceVert;
 		pf->m_nVerts = h;
 		memcpy (pfv, WORDPTR (p+30), h * sizeof (ushort));
 		pf->m_bGlow = (nGlow >= 0);
@@ -437,7 +437,7 @@ if (bShadowData) {
 		pf++;
 		m_iFace++;
 		pso->m_nFaces++;
-		pfv = pf->m_verts = m_faceVerts + m_iFaceVert;
+		pfv = pf->m_vertices = m_faceVerts + m_iFaceVert;
 		pf->m_nVerts = h;
 		memcpy (pfv, WORDPTR (p + 30) + nVerts / 2, h * sizeof (ushort));
 		pf->m_bGlow = (nGlow >= 0);
@@ -483,7 +483,7 @@ for (i = m_nFaces, pf = m_faces; i; i--, pf++) {
 CFloatVector* CModel::VertsToFloat (void)
 {
 for (int i = 0; i < m_nVerts; i++)
-	m_vertsf [i].Assign (m_verts [i]);
+	m_vertsf [i].Assign (m_vertices [i]);
 return m_vertsf.Buffer ();
 }
 
@@ -499,7 +499,7 @@ int CSubModel::FindEdge (CFace* pf0, int v0, int v1)
 
 for (i = m_nFaces, pf1 = m_faces; i; i--, pf1++) {
 	if (pf1 != pf0) {
-		for (j = 0, n = pf1->m_nVerts, pfv = pf1->m_verts; j < n; j++) {
+		for (j = 0, n = pf1->m_nVerts, pfv = pf1->m_vertices; j < n; j++) {
 			h = (j + 1) % n;
 			if (((pfv [j] == v0) && (pfv [h] == v1)) || ((pfv [j] == v1) && (pfv [h] == v0)))
 				return (int) (pf1 - m_faces);
@@ -524,7 +524,7 @@ for (i = m_nSubModels; i; i--, pso++) {
 	pso->m_adjFaces = m_adjFaces + m_nAdjFaces;
 	for (j = pso->m_nFaces, pf = pso->m_faces; j; j--, pf++) {
 		pf->m_nAdjFaces = m_nAdjFaces;
-		for (h = 0, n = pf->m_nVerts, pfv = pf->m_verts; h < n; h++)
+		for (h = 0, n = pf->m_nVerts, pfv = pf->m_vertices; h < n; h++)
 			m_adjFaces [m_nAdjFaces++] = pso->FindEdge (pf, pfv [h], pfv [(h + 1) % n]);
 		}
 	}
@@ -601,9 +601,9 @@ for (;;)
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
 			if (bInitModel)
-				memcpy (m_verts.Buffer (), VECPTR (p+4), n * sizeof (CFixVector));
+				memcpy (m_vertices.Buffer (), VECPTR (p+4), n * sizeof (CFixVector));
 			else
-				RotatePointListToVec (m_verts.Buffer (), VECPTR (p+4), n);
+				RotatePointListToVec (m_vertices.Buffer (), VECPTR (p+4), n);
 			//m_nVerts += n;
 			p += n * sizeof (CFixVector) + 4;
 			break;
@@ -613,9 +613,9 @@ for (;;)
 			int n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
 			if (bInitModel)
-				memcpy (m_verts + s, VECPTR (p+8), n * sizeof (CFixVector));
+				memcpy (m_vertices + s, VECPTR (p+8), n * sizeof (CFixVector));
 			else
-				RotatePointListToVec (m_verts + s, VECPTR (p+8), n);
+				RotatePointListToVec (m_vertices + s, VECPTR (p+8), n);
 			p += n * sizeof (CFixVector) + 8;
 			break;
 			}
@@ -699,7 +699,7 @@ if (!(m_subModels.Create (h))) {
 	}
 m_subModels.Clear ();
 h = m_nVerts;
-if (!(m_verts.Create (h))) {
+if (!(m_vertices.Create (h))) {
 	Destroy ();
 	return 0;
 	}
@@ -905,7 +905,7 @@ SetCullAndStencil (bCullFront, bZPass);
 	for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 		pf = *ppf;
 		paf = po->m_adjFaces + pf->m_nAdjFaces;
-		for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++) {
+		for (j = 0, n = pf->m_nVerts, pfv = pf->m_vertices; j < n; j++) {
 			h = *paf++;
 			if ((h >= m_nFaces) || !m_faces [h].m_bFacingLight)
 				nVerts += 4;
@@ -922,7 +922,7 @@ SetCullAndStencil (bCullFront, bZPass);
 		paf = po->m_adjFaces + pf->m_nAdjFaces;
 		// walk through all edges of the current lit face and check whether the adjacent face does not face the light source
 		// if so, that edge is a contour edge: Use it to render a shadow volume face ("side wall" of the shadow volume)
-		for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++) {
+		for (j = 0, n = pf->m_nVerts, pfv = pf->m_vertices; j < n; j++) {
 			h = *paf++;
 			if ((h >= m_nFaces) || !m_faces [h].m_bFacingLight) {
 				v [1] = pvf [pfv [j]] + vShadowOffset;
@@ -1162,7 +1162,7 @@ pv = po->m_vertsf.Buffer ();
 pfc = po->m_fClipDist.Buffer ();
 for (m = m_nLitFaces, ppf = m_litFaces + i; i < m; i += incr, ppf += incr) {
 	pf = *ppf;
-	for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++, pfv++) {
+	for (j = 0, n = pf->m_nVerts, pfv = pf->m_vertices; j < n; j++, pfv++) {
 		h = *pfv;
 		if (!(fClipDist = pfc [h])) {
 			v.Assign (pv [h]);
@@ -1262,7 +1262,7 @@ nVertFlag++;
 pvf = po->m_vertFlags.Buffer ();
 for (i = pso->m_nLitFaces, ppf = pso->m_litFaces; i; i--, ppf++) {
 	pf = *ppf;
-	for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--, pfv++)
+	for (j = pf->m_nVerts, pfv = pf->m_vertices; j; j--, pfv++)
 		pvf [*pfv] = nVertFlag;
 	}
 }
@@ -1337,10 +1337,10 @@ for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 		return 0;
 	nVerts = 0;
 #if 1
-	for (pfv = pf->m_verts + j; j; j--) {
+	for (pfv = pf->m_vertices + j; j; j--) {
 		v0 = pvf [*--pfv] + vShadowOffset;
 #else
-	for (pfv = pf->m_verts; j; j--) {
+	for (pfv = pf->m_vertices; j; j--) {
 		v0 = pvf [*pfv++] + vShadowOffset;
 #endif
 		v1 = v0 - vLightPosf; // project the current shadow cap vertex to a distance of fClipDist from it's current position as seen from the light
@@ -1359,7 +1359,7 @@ for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 	if (!ogl.SizeVertexBuffer (j))
 		return 0;
 	nVerts = 0;
-	for (pfv = pf->m_verts; j; j--)
+	for (pfv = pf->m_vertices; j; j--)
 		ogl.VertexBuffer () [nVerts++] = pvf [*pfv++] + vShadowOffset;
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 	}
@@ -1415,7 +1415,7 @@ if (po->m_nState == 1) {
 	if (bShadowData) {
 		CFixVector vCenter;
 		vCenter.SetZero ();
-		for (j = po->m_nVerts, pv = po->m_verts.Buffer (), pvf = po->m_vertsf.Buffer (); j; j--, pv++, pvf++) 
+		for (j = po->m_nVerts, pv = po->m_vertices.Buffer (), pvf = po->m_vertsf.Buffer (); j; j--, pv++, pvf++) 
 			vCenter += *pv;
 		float fScale = (static_cast<float>(po->m_nVerts) * 65536.0f);
 		vCenterf.Assign (vCenter);

@@ -54,7 +54,7 @@ CSegment *segP = SEGMENTS + nSegment;
 CSide *sideP = segP->m_sides + nSide;
 CFixVector v;
 if (sideP->m_nType == SIDE_IS_QUAD) {
-	v = gameData.render.mine.viewer.vPos - segP->SideCenter (nSide); //gameData.segs.vertices + segP->m_verts [sideVertIndex [nSide][0]]);
+	v = gameData.render.mine.viewer.vPos - segP->SideCenter (nSide); //gameData.segs.vertices + segP->m_vertices [sideVertIndex [nSide][0]]);
 	return CFixVector::Dot (sideP->m_normals [0], v) >= 0;
 	}
 v = gameData.render.mine.viewer.vPos - VERTICES [sideP->m_vertices [(sideP->m_nType == SIDE_IS_TRI_02) ? 0 : 3]];
@@ -648,7 +648,7 @@ return &p;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined
 //by the vertices passed relative to the viewer
 
-tRenderCodes RotateVertexList (int nVertices, short* vertexIndexP)
+tRenderCodes RotateVertexList (int nVertices, ushort* vertexIndexP)
 {
 	tRenderCodes cc = {0, 0xff};
 
@@ -674,7 +674,7 @@ for (int i = 0; i < nVertices; i++) {
 
 //------------------------------------------------------------------------------
 
-ubyte ProjectRenderPoint (short nVertex)
+ubyte ProjectRenderPoint (int nVertex)
 {
 #if DBG
 if (nVertex == nDbgVertex)

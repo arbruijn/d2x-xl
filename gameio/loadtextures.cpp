@@ -303,12 +303,12 @@ tEffectClip *FindEffect (tEffectClip *ecP, int tNum)
 	tBitmapIndex	*frameP;
 
 if (ecP)
-	i = (int) (++ecP - gameData.eff.effectP);
+	i = (int) (++ecP - gameData.effects.effectP);
 else {
-	ecP = gameData.eff.effectP.Buffer ();
+	ecP = gameData.effects.effectP.Buffer ();
 	i = 0;
 	}
-for (h = gameData.eff.nEffects [gameStates.app.bD1Data]; i < h; i++, ecP++) {
+for (h = gameData.effects.nEffects [gameStates.app.bD1Data]; i < h; i++, ecP++) {
 	for (j = ecP->vClipInfo.nFrameCount, frameP = ecP->vClipInfo.frames; j > 0; j--, frameP++)
 		if (frameP->index == tNum) {
 #if 0
@@ -327,9 +327,9 @@ return NULL;
 tVideoClip *FindVClip (int tNum)
 {
 	int	h, i, j;
-	tVideoClip *vcP = gameData.eff.vClips [0].Buffer ();
+	tVideoClip *vcP = gameData.effects.vClips [0].Buffer ();
 
-for (i = gameData.eff.nClips [0]; i; i--, vcP++) {
+for (i = gameData.effects.nClips [0]; i; i--, vcP++) {
 	for (h = vcP->nFrameCount, j = 0; j < h; j++)
 		if (vcP->frames [j].index == tNum) {
 			return vcP;
@@ -427,7 +427,7 @@ pf = gameData.pig.flags + i;
 pf->bmi.index = nIndex;
 pf->vcP = FindVClip (nIndex);
 pf->vci.nClipIndex = gameData.objs.pwrUp.info [46 + i].nClipIndex;	//46 is the blue flag powerup
-pf->vci.xFrameTime = gameData.eff.vClips [0][pf->vci.nClipIndex].xFrameTime;
+pf->vci.xFrameTime = gameData.effects.vClips [0][pf->vci.nClipIndex].xFrameTime;
 pf->vci.nCurFrame = 0;
 }
 

@@ -208,8 +208,8 @@ for (i = 1, --j; i < j; i++) {
 	if (e.Mag () < I2X (1)/2)
 		Int3 ();
 #endif
-	xSegSize = CFixVector::Dist (gameData.segs.vertices [SEGMENTS [nSegment].m_verts [0]], 
-										  gameData.segs.vertices [SEGMENTS [nSegment].m_verts [6]]);
+	xSegSize = CFixVector::Dist (gameData.segs.vertices [SEGMENTS [nSegment].m_vertices [0]], 
+										  gameData.segs.vertices [SEGMENTS [nSegment].m_vertices [6]]);
 	if (xSegSize > I2X (40))
 		xSegSize = I2X (40);
 	vGoalPos = ptSegs [i].point + e * (xSegSize/4);

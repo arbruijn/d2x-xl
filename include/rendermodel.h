@@ -149,7 +149,7 @@ class CModel {
 		short										m_nModel;
 		CArray<CBitmap>						m_textures;
 		int										m_teamTextures [8];
-		CArray<CFloatVector3>				m_verts;
+		CArray<CFloatVector3>				m_vertices;
 		CArray<CFloatVector3>				m_vertNorms;
 		CArray<CFaceColor>					m_color;
 		CArray<CVertex>						m_faceVerts;

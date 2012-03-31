@@ -119,7 +119,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Note that -1 means no connection, -2 means a connection to the outside world.
 #define IS_CHILD(nSegment) (nSegment > -1)
 
-extern short sideVertIndex [MAX_SIDES_PER_SEGMENT][4];
+extern ushort sideVertIndex [MAX_SIDES_PER_SEGMENT][4];
 extern char sideOpposite [MAX_SIDES_PER_SEGMENT];
 
 //------------------------------------------------------------------------------
@@ -194,10 +194,10 @@ class CSide {
 		CFixVector		m_rotNorms [2];
 		CFixVector		m_vCenter;
 		fix				m_rads [2];
-		short				m_vertices [6];
-		short				m_faceVerts [6]; // vertex indices of the side's two triangles
-		short				m_corners [4];
-		short				m_nMinVertex [2];
+		ushort			m_vertices [6];
+		ushort			m_faceVerts [6]; // vertex indices of the side's two triangles
+		ushort			m_corners [4];
+		ushort			m_nMinVertex [2];
 		short				m_nSegment;
 		ubyte				m_nFaces;
 
@@ -233,16 +233,16 @@ class CSide {
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }
 
-		void Setup (short nSegment, short* verts, short* index, bool bSolid);
+		void Setup (short nSegment, ushort* verts, ushort* index, bool bSolid);
 
 		void SetTextures (int nBaseTex, int nOvlTex);
 
-		inline ubyte GetVertices (short*& vertices) { 
+		inline ubyte GetVertices (ushort*& vertices) { 
 			vertices = m_vertices;
 			return m_nFaces;
 			}
 		CFixVector* GetCorners (CFixVector* vertices);
-		inline short* Corners (void) { return m_corners; }
+		inline ushort* Corners (void) { return m_corners; }
 		CFixVector& Vertex (int nVertex);
 		CFixVector& MinVertex (void);
 		CFixVector& Normal (int nFace);
@@ -264,11 +264,11 @@ class CSide {
 		inline int IsWater (void) { return IsWaterTexture (m_nBaseTex) || (m_nOvlTex && (IsWaterTexture (m_nOvlTex))); }
 
 	private:
-		void SetupCorners (short* verts, short* index);
-		void SetupVertexList (short* verts, short* index);
+		void SetupCorners (ushort* verts, ushort* index);
+		void SetupVertexList (ushort* verts, ushort* index);
 		void SetupFaceVertIndex (void);
-		void SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, short* verts, short* index);
-		void SetupAsTriangles (bool bSolid, short* verts, short* index);
+		void SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index);
+		void SetupAsTriangles (bool bSolid, ushort* verts, ushort* index);
 	};
 
 //------------------------------------------------------------------------------
@@ -278,7 +278,7 @@ class CSegment {
 		CSide			m_sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
 		short			m_children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
 		fix			m_childDists [2][MAX_SIDES_PER_SEGMENT];
-		short			m_verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
+		ushort		m_vertices [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
 		int			m_objects;    // pointer to objects in this tSegment
 
 		ubyte			m_function;
@@ -370,7 +370,7 @@ class CSegment {
 		void GetNormals (int nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
-		inline short* Corners (int nSide) { return m_sides [nSide].Corners (); }
+		inline ushort* Corners (int nSide) { return m_sides [nSide].Corners (); }
 		inline CFixVector* GetCorners (int nSide, CFixVector* vertices) { return m_sides [nSide].GetCorners (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int ConnectedSide (CSegment* other);
@@ -547,7 +547,7 @@ typedef struct tSegFaces {
 //--repair-- } lsegment;
 
 // Globals from mglobal.c
-extern short sideVertIndex [MAX_SIDES_PER_SEGMENT][4];       // sideVertIndex[my_side] is list of vertices forming CSide my_side.
+extern ushort sideVertIndex [MAX_SIDES_PER_SEGMENT][4];       // sideVertIndex[my_side] is list of vertices forming CSide my_side.
 extern char sideOpposite [];                                // sideOpposite [my_side] returns CSide opposite cube from my_side.
 
 // New stuff, 10/14/95: For shooting out lights and monitors.

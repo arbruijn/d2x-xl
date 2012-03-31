@@ -108,7 +108,7 @@ return -1;
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupCorners (short* verts, short* index)
+void CSide::SetupCorners (ushort* verts, ushort* index)
 {
 m_corners [0] = verts [index [0]];
 m_corners [1] = verts [index [1]];
@@ -118,7 +118,7 @@ m_corners [3] = verts [index [3]];
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupVertexList (short* verts, short* index)
+void CSide::SetupVertexList (ushort* verts, ushort* index)
 {
 m_nFaces = -1;
 if (m_nType == SIDE_IS_QUAD) {
@@ -200,7 +200,7 @@ else if (m_nType == SIDE_IS_TRI_13) {
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, short* verts, short* index)
+void CSide::SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index)
 {
 m_nType = SIDE_IS_QUAD;
 m_normals [0] = 
@@ -212,7 +212,7 @@ SetupVertexList (verts, index);
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupAsTriangles (bool bSolid, short* verts, short* index)
+void CSide::SetupAsTriangles (bool bSolid, ushort* verts, ushort* index)
 {
 	CFixVector		vNormal;
 	fix				dot;
@@ -251,34 +251,34 @@ if (bSolid) {
 		}
 	}
 else {
-	short	vSorted [4];
-	int	bFlip;
+	ushort	vSorted [4];
+	int		bFlip;
 
 	bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
 	if ((vSorted [0] == m_corners [0]) || (vSorted [0] == m_corners [2])) {
 		m_nType = SIDE_IS_TRI_02;
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
-		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 32767, vSorted);
+		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 0xFFFF, vSorted);
 		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		m_fNormals [0] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [0].Neg ();
-		bFlip = GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 32767, vSorted);
+		bFlip = GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 0xFFFF, vSorted);
 		m_normals [1] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		m_fNormals [1] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [1].Neg ();
-		GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 32767, vSorted);
+		GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 0xFFFF, vSorted);
 		}
 	else {
 		m_nType = SIDE_IS_TRI_13;
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
-		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [3], 32767, vSorted);
+		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [3], 0xFFFF, vSorted);
 		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		m_fNormals [0] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [0].Neg ();
-		bFlip = GetVertsForNormal (m_corners [1], m_corners [2], m_corners [3], 32767, vSorted);
+		bFlip = GetVertsForNormal (m_corners [1], m_corners [2], m_corners [3], 0xFFFF, vSorted);
 		m_normals [1] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		m_fNormals [1] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 		if (bFlip)
@@ -301,9 +301,9 @@ return 0;
 
 // -------------------------------------------------------------------------------
 
-void CSide::Setup (short nSegment, short* verts, short* index, bool bSolid)
+void CSide::Setup (short nSegment, ushort* verts, ushort* index, bool bSolid)
 {
-	short				vSorted [4], bFlip;
+	ushort			vSorted [4], bFlip;
 	CFixVector		vNormal;
 	CFloatVector	vNormalf;
 	fix				xDistToPlane;

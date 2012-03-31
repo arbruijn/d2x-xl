@@ -76,7 +76,7 @@ m_vboIndexHandle = 0;
 
 bool CModel::Create (void)
 {
-m_verts.Create (m_nVerts);
+m_vertices.Create (m_nVerts);
 m_color.Create (m_nVerts);
 m_vertBuf [0].Create (m_nFaceVerts);
 m_faceVerts.Create (m_nFaceVerts);
@@ -86,7 +86,7 @@ m_faces.Create (m_nFaces);
 m_index [0].Create (m_nFaceVerts);
 m_sortedVerts.Create (m_nFaceVerts);
 
-m_verts.Clear (0);
+m_vertices.Clear (0);
 m_color.Clear (0xff);
 m_vertBuf [0].Clear (0);
 m_faceVerts.Clear (0);
@@ -164,7 +164,7 @@ m_faceVerts.Destroy ();
 m_vertBuf [0].Destroy ();
 m_vertBuf [1].SetBuffer (0);	//avoid trying to delete memory allocated by the graphics driver
 m_color.Destroy ();
-m_verts.Destroy ();
+m_vertices.Destroy ();
 
 Init ();
 }

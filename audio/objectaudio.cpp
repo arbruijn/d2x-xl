@@ -1047,7 +1047,7 @@ if (nEffect < 0)
 	nEffect = gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].nEffectClip;
 if (nEffect < 0)
 	return -1;
-int nSound = gameData.eff.effectP [nEffect].nSound;
+int nSound = gameData.effects.effectP [nEffect].nSound;
 if (nSound == -1)
 	return -1;
 short nConnSeg = segP->m_children [nSide];

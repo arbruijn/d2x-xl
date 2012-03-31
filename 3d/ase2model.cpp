@@ -104,12 +104,12 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 				bmP->GetAvgColor (&pmv->m_baseColor);
 			pmv->m_baseColor.Alpha () = 1;
 			pmv->m_renderColor = pmv->m_baseColor;
-			pmv->m_normal = psa->m_verts [h].m_normal;
-			pmv->m_vertex = psa->m_verts [h].m_vertex * fScale;
+			pmv->m_normal = psa->m_vertices [h].m_normal;
+			pmv->m_vertex = psa->m_vertices [h].m_vertex * fScale;
 			if (psa->m_texCoord.Buffer ())
 				pmv->m_texCoord = psa->m_texCoord [pfa->m_nTexCoord [i]];
 			h += nVerts;
-			m_verts [h] = pmv->m_vertex;
+			m_vertices [h] = pmv->m_vertex;
 			m_vertNorms [h] = pmv->m_normal;
 			pmv->m_nIndex = h;
 			psm->SetMinMax (&pmv->m_vertex);

@@ -1435,7 +1435,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 		default_behavior = D1_AIB_RUN_FROM;
 	InitAIObject (objP->Index (), default_behavior, -1 );		//	Note, -1 = CSegment this robotP goes to to hide, should probably be something useful
 	CreateExplosion (nSegment, vObjPos, I2X(10), VCLIP_MORPHING_ROBOT);
-	audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0, I2X (1));
+	audio.CreateSegmentSound (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0, I2X (1));
 	objP->MorphStart ();
 
 	gameData.bosses [0].m_nLastGateTime = gameData.time.xGame;
@@ -1474,7 +1474,7 @@ for (posnum=0; posnum<9; posnum++) {
 		CFixVector	vertex_pos;
 
 		Assert((posnum-1 >= 0) && (posnum-1 < 8));
-		vertex_pos = gameData.segs.vertices [SEGMENTS [nSegment].m_verts [posnum-1]];
+		vertex_pos = gameData.segs.vertices [SEGMENTS [nSegment].m_vertices [posnum-1]];
 		bossObjP->info.position.vPos = CFixVector::Avg(vertex_pos, vCenter);
 	} else
 		bossObjP->info.position.vPos = vCenter;

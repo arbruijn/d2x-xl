@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 inline int CurFrame (CObject *objP, int nClip, fix timeToLive, int nFrames = -1)
 {
-tVideoClip	*vcP = gameData.eff.vClips [0] + nClip;
+tVideoClip	*vcP = gameData.effects.vClips [0] + nClip;
 if (nFrames < 0)
 	nFrames = vcP->nFrameCount;
 //	iFrame = (nFrames - X2I (FixDiv ((nFrames - 1) * timeToLive, vcP->xTotalTime))) - 1;
@@ -62,7 +62,7 @@ CRGBColor *VClipColor (CObject *objP)
 	CBitmap			*bmP;
 
 if (nVClip) {
-	tVideoClip *vcP = gameData.eff.vClips [0] + nVClip;
+	tVideoClip *vcP = gameData.effects.vClips [0] + nVClip;
 	bmi = vcP->frames [0];
 	}
 else
@@ -111,7 +111,7 @@ return nFrames;
 void DrawVClipObject (CObject *objP, fix timeToLive, int bLit, int nVClip, CFloatVector *color)
 {
 	double		ta = 0, alpha = 0;
-	tVideoClip*	vcP = gameData.eff.vClips [0] + nVClip;
+	tVideoClip*	vcP = gameData.effects.vClips [0] + nVClip;
 	int			nFrames = SetupHiresVClip (vcP, &objP->rType.vClipInfo);
 	int			iFrame = CurFrame (objP, nVClip, timeToLive, nFrames);
 	int			bThruster = (objP->info.renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
@@ -270,7 +270,7 @@ transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoord, &color, NU
 void ConvertPowerupToVClip (CObject *objP)
 {
 objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.xFrameTime = gameData.effects.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 objP->rType.vClipInfo.nCurFrame = 0;
 objP->SetSizeFromPowerup ();
 objP->info.controlType = CT_POWERUP;
@@ -284,7 +284,7 @@ objP->mType.physInfo.drag = 512;
 void ConvertWeaponToVClip (CObject *objP)
 {
 objP->rType.vClipInfo.nClipIndex = gameData.weapons.info [objP->info.nId].nVClipIndex;
-objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.xFrameTime = gameData.effects.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 objP->rType.vClipInfo.nCurFrame = 0;
 objP->info.controlType = CT_WEAPON;
 objP->info.renderType = RT_WEAPON_VCLIP;
@@ -345,7 +345,7 @@ void DrawWeaponVClip (CObject *objP)
 {
 int nVClip = gameData.weapons.info [objP->info.nId].nVClipIndex;
 fix modTime = objP->info.xLifeLeft;
-fix playTime = gameData.eff.vClipP [nVClip].xTotalTime;
+fix playTime = gameData.effects.vClipP [nVClip].xTotalTime;
 if (!playTime)
 	return;
 //	Special values for modTime were causing enormous slowdown for omega blobs.

@@ -41,7 +41,7 @@ m_nVertFlag = 0;
 void CModel::Destroy (void) 
 {
 m_subModels.Destroy ();
-m_verts.Destroy ();
+m_vertices.Destroy ();
 m_vertsf.Destroy ();
 m_fClipDist.Destroy ();
 m_vertFlags.Destroy ();

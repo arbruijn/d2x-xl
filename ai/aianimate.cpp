@@ -44,7 +44,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 		CFixVector	*vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [objP->Index ()];
 
 	for (i = 0; i < 8; i++) {
-		vVertex = gameData.segs.vertices + segP->m_verts [i];
+		vVertex = gameData.segs.vertices + segP->m_vertices [i];
 		if ((vGoal.v.coord.x == (*vVertex).v.coord.x) && (vGoal.v.coord.y == (*vVertex).v.coord.y) && (vGoal.v.coord.z == (*vVertex).v.coord.z))
 			break;
 		}
@@ -66,7 +66,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 		if ((j == i) || (rand () % 3 == 0))
 			vGoal = SEGMENTS [objP->info.nSegment].Center ();
 		else
-			vGoal = gameData.segs.vertices [segP->m_verts [j]];
+			vGoal = gameData.segs.vertices [segP->m_vertices [j]];
 		gameData.objs.vRobotGoals [objP->Index ()] = vGoal;
 		DoSillyAnimation (objP);
 		}

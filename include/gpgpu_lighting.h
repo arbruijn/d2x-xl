@@ -46,7 +46,7 @@ class CGPGPULighting {
 		void Begin (void);
 		void End (void);
 		void InitShader (void);
-		int Compute (short nVertex, int nState, CFaceColor *colorP);
+		int Compute (int nVertex, int nState, CFaceColor *colorP);
 
 	private:
 		GLuint CreateBuffer (int i);

@@ -152,7 +152,7 @@ int CGPGPULighting::Render (void)
 	CFloatVector	vertColor;
 	CFloatVector*	colorP;
 	int				i, j;
-	short				nVertex, nLights;
+	int				nVertex, nLights;
 	GLuint			hBuffer [GPGPU_LIGHT_BUFFERS] = {0,0,0,0};
 
 #if !GPGPU_LIGHT_DRAWARRAYS
@@ -241,7 +241,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CGPGPULighting::Compute (short nVertex, int nState, CFaceColor *colorP)
+int CGPGPULighting::Compute (int nVertex, int nState, CFaceColor *colorP)
 {
 	int	nLights, h, i, j;
 

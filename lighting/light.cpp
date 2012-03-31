@@ -278,7 +278,7 @@ if (xObjIntensity) {
 	// for pretty dim sources, only process vertices in CObject's own CSegment.
 	//	12/04/95, MK, markers only cast light in own CSegment.
 	if (objP && ((abs (obji_64) <= I2X (8)) || (nObjType == OBJ_MARKER))) {
-		short *vp = SEGMENTS [nObjSeg].m_verts;
+		ushort *vp = SEGMENTS [nObjSeg].m_vertices;
 		for (iVertex = 0; iVertex < MAX_VERTICES_PER_SEGMENT; iVertex++) {
 			nVertex = vp [iVertex];
 #if DBG
@@ -452,7 +452,7 @@ switch (nObjType) {
 		if ((objP->info.renderType == RT_THRUSTER) || (objP->info.renderType == RT_EXPLBLAST) || (objP->info.renderType == RT_SHOCKWAVE) || (objP->info.renderType == RT_SHRAPNELS))
 			return 0;
 		else {
-			tVideoClip *vcP = gameData.eff.vClips [0] + objP->info.nId;
+			tVideoClip *vcP = gameData.effects.vClips [0] + objP->info.nId;
 			fix		xLight = vcP->lightValue;
 			int		i, j;
 			CBitmap	*bmoP, *bmP; // = gameData.pig.tex.bitmapP [vcP->frames [0].index].Override (-1);
@@ -505,7 +505,7 @@ switch (nObjType) {
 				colorP->Blue () /= maxColor;
 				}
 			if (objP->info.xLifeLeft < I2X (4))
-				return FixMul (FixDiv (objP->info.xLifeLeft, gameData.eff.vClips [0][objP->info.nId].xTotalTime), xLight);
+				return FixMul (FixDiv (objP->info.xLifeLeft, gameData.effects.vClips [0][objP->info.nId].xTotalTime), xLight);
 			else
 				return xLight;
 			}
@@ -604,7 +604,7 @@ if (!gameStates.render.nLightingMethod) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs [0]; iRenderSeg++) {
 		nSegment = gameData.render.mine.segRenderList [0][iRenderSeg];
 		if (nSegment != -1) {
-			short* vp = SEGMENTS [nSegment].m_verts;
+			ushort* vp = SEGMENTS [nSegment].m_vertices;
 			for (v = 0; v < MAX_VERTICES_PER_SEGMENT; v++) {
 				nv = vp [v];
 				if ((nv < 0) || (nv > gameData.segs.nLastVertex)) {
@@ -698,7 +698,7 @@ if (!bKeepDynColoring)
 
 fix ComputeSegDynamicLight (int nSegment)
 {
-short *verts = SEGMENTS [nSegment].m_verts;
+short *verts = SEGMENTS [nSegment].m_vertices;
 fix sum = gameData.render.lights.dynamicLight [*verts++];
 sum += gameData.render.lights.dynamicLight [*verts++];
 sum += gameData.render.lights.dynamicLight [*verts++];

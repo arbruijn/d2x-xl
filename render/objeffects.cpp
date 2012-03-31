@@ -109,8 +109,8 @@ if (this == gameData.objs.viewerP)
 CObject* effectObjP = CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
 if (effectObjP) {
 	effectObjP->info.position.mOrient = info.position.mOrient;
-	if (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
-		audio.CreateObjectSound (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
+	if (gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
+		audio.CreateObjectSound (gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
 	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP->LifeLeft (), info.xSize, 1, OBJPOS (this)->vPos));
 	}
 }

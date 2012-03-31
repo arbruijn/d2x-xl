@@ -47,7 +47,7 @@ class CSubModel {
 		char						m_bBarrel;
 		CFloatVector3			m_vOffset;
 		CArray<CFace>			m_faces;
-		CArray<CVertex>		m_verts;
+		CArray<CVertex>		m_vertices;
 		CArray<tTexCoord2f>	m_texCoord;
 
 	public:

@@ -64,7 +64,7 @@ void CreateShortPos (tShortPos *spp, CObject *objP, int swap_bytes)
 *segP++ = ConvertToByte(orient.m.dir.u.v.coord.z);
 *segP++ = ConvertToByte(orient.m.dir.f.v.coord.z);
 
-pv = gameData.segs.vertices + SEGMENTS [objP->info.nSegment].m_verts [0];
+pv = gameData.segs.vertices + SEGMENTS [objP->info.nSegment].m_vertices [0];
 spp->pos [0] = (short) ((objP->info.position.vPos.v.coord.x - pv->v.coord.x) >> RELPOS_PRECISION);
 spp->pos [1] = (short) ((objP->info.position.vPos.v.coord.y - pv->v.coord.y) >> RELPOS_PRECISION);
 spp->pos [2] = (short) ((objP->info.position.vPos.v.coord.z - pv->v.coord.z) >> RELPOS_PRECISION);
@@ -122,7 +122,7 @@ void ExtractShortPos (CObject *objP, tShortPos *spp, int swap_bytes)
 
 	Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 
-	pv = gameData.segs.vertices + SEGMENTS [nSegment].m_verts [0];
+	pv = gameData.segs.vertices + SEGMENTS [nSegment].m_vertices [0];
 	objP->info.position.vPos.v.coord.x = (spp->pos [0] << RELPOS_PRECISION) + pv->v.coord.x;
 	objP->info.position.vPos.v.coord.y = (spp->pos [1] << RELPOS_PRECISION) + pv->v.coord.y;
 	objP->info.position.vPos.v.coord.z = (spp->pos [2] << RELPOS_PRECISION) + pv->v.coord.z;
@@ -145,8 +145,8 @@ void ExtractVectorFromSegment (CSegment *segP, CFixVector *vp, int start, int en
 vs.SetZero ();
 ve.SetZero ();
 for (int i = 0; i < 4; i++) {
-	vs += gameData.segs.vertices [segP->m_verts [sideVertIndex [start][i]]];
-	ve += gameData.segs.vertices [segP->m_verts [sideVertIndex [end][i]]];
+	vs += gameData.segs.vertices [segP->m_vertices [sideVertIndex [start][i]]];
+	ve += gameData.segs.vertices [segP->m_vertices [sideVertIndex [end][i]]];
 	}
 *vp = ve - vs;
 *vp *= (I2X (1) / 4);
@@ -154,12 +154,12 @@ for (int i = 0; i < 4; i++) {
 
 // -------------------------------------------------------------------------------
 //create a matrix that describes the orientation of the given CSegment
-void ExtractOrientFromSegment (CFixMatrix *m, CSegment *seg)
+void ExtractOrientFromSegment (CFixMatrix *m, CSegment *segP)
 {
 	CFixVector fVec, uVec;
 
-	ExtractVectorFromSegment (seg, &fVec, WFRONT, WBACK);
-	ExtractVectorFromSegment (seg, &uVec, WBOTTOM, WTOP);
+	ExtractVectorFromSegment (segP, &fVec, WFRONT, WBACK);
+	ExtractVectorFromSegment (segP, &uVec, WBOTTOM, WTOP);
 
 	//vector to matrix does normalizations and orthogonalizations
 	*m = CFixMatrix::CreateFU(fVec, uVec);
@@ -170,7 +170,7 @@ void ExtractOrientFromSegment (CFixMatrix *m, CSegment *seg)
 //	Return v0, v1, v2 = 3 vertices with smallest numbers.  If *bFlip set, then negate Normal after computation.
 //	Note, pos.v.c.yu cannot just compute the Normal by treating the points in the opposite direction as this introduces
 //	small differences between normals which should merely be opposites of each other.
-short GetVertsForNormal (short v0, short v1, short v2, short v3, short* vSorted)
+ushort GetVertsForNormal (ushort v0, ushort v1, ushort v2, ushort v3, ushort* vSorted)
 {
 	int		i, j;
 	ushort	index [4] = {0, 1, 2, 3};

@@ -80,8 +80,8 @@ return OOF_FacingPoint (modelVertP, pn, &vrLightPos);
 
 CFloatVector *OOF_CalcFacePerp (CSubModel *pso, CFace *faceP)
 {
-	CFloatVector*	modelVertP = pso->m_verts.Buffer ();
-	CFaceVert*		faceVertP = faceP->m_verts;
+	CFloatVector*	modelVertP = pso->m_vertices.Buffer ();
+	CFaceVert*		faceVertP = faceP->m_vertices;
 
 CFloatVector::Normalize (CFloatVector::Perp (faceP->m_vRotNormal, modelVertP [faceVertP [0].m_nIndex], modelVertP [faceVertP [1].m_nIndex], modelVertP [faceVertP [2].m_nIndex]));
 return &faceP->m_vRotNormal;
@@ -96,7 +96,7 @@ return faceP->m_bFacingLight =
 #if 1
 	OOF_FacingLight (&faceP->m_vRotCenter, &faceP->m_vRotNormal); 
 #else
-	OOF_FacingLight (pso->m_rotVerts + faceP->m_verts->m_nIndex, &faceP->m_vRotNormal); //OOF_CalcFacePerp (pso, faceP)); 
+	OOF_FacingLight (pso->m_rotVerts + faceP->m_vertices->m_nIndex, &faceP->m_vRotNormal); //OOF_CalcFacePerp (pso, faceP)); 
 #endif
 }
 
@@ -107,7 +107,7 @@ int OOF_FrontFace (CSubModel *pso, CFace *faceP)
 #if 0
 return OOF_FacingViewer (&faceP->m_vRotCenter, &faceP->m_vRotNormal);
 #else
-return OOF_FacingViewer (pso->m_rotVerts + faceP->m_verts->m_nIndex, &faceP->m_vRotNormal);	//OOF_CalcFacePerp (pso, faceP));
+return OOF_FacingViewer (pso->m_rotVerts + faceP->m_vertices->m_nIndex, &faceP->m_vRotNormal);	//OOF_CalcFacePerp (pso, faceP));
 #endif
 }
 
@@ -289,7 +289,7 @@ for (i = pso->m_faces.m_nFaces, faceP = pso->m_faces.m_list.Buffer (); i; i--, f
 				if (!ogl.Buffers ().SizeVertices (j))
 					return 1;
 				nVerts = 0;
-				for (faceVertP = faceP->m_verts; j; j--, faceVertP++) {
+				for (faceVertP = faceP->m_vertices; j; j--, faceVertP++) {
 					v0 = modelVertP [faceVertP->m_nIndex];
 					v1 = v0 - vrLightPos;
 #if NORM_INF
@@ -320,7 +320,7 @@ for (i = pso->m_faces.m_nFaces, faceP = pso->m_faces.m_list.Buffer (); i; i--, f
 				if (!ogl.Buffers ().SizeVertices (j))
 					return 1;
 				nVerts = 0;
-				for (faceVertP = faceP->m_verts; j; j--, faceVertP++)
+				for (faceVertP = faceP->m_vertices; j; j--, faceVertP++)
 					ogl.VertexBuffer () [nVerts++] = modelVertP [faceVertP->m_nIndex];
 				}
 			ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts);
@@ -425,7 +425,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 				}
 			nFaceVerts = faceP->m_nVerts;
 			}
-		faceVertP = faceP->m_verts;
+		faceVertP = faceP->m_vertices;
 		if (faceP->m_bTextured) {
 			//if (bTextured == 0) {
 			//	ogl.FlushBuffers ((nFaceVerts == 3) ? GL_TRIANGLES : /*(nFaceVerts == 4) ? GL_QUADS :*/ GL_TRIANGLE_FAN, nVerts, 3, 0, 0);
@@ -562,7 +562,7 @@ void CSubModel::Transform (CFloatVector vo)
 	CFace				*faceP;
 	int				i;
 
-for (i = m_nVerts, modelVertP = m_verts.Buffer (), prv = m_rotVerts.Buffer (); i; i--, modelVertP++, prv++)
+for (i = m_nVerts, modelVertP = m_vertices.Buffer (), prv = m_rotVerts.Buffer (); i; i--, modelVertP++, prv++)
 	TransformVertex (prv, modelVertP, &vo);
 for (i = m_faces.m_nFaces, faceP = m_faces.m_list.Buffer (); i; i--, faceP++) {
 #if OOF_TEST_CUBE

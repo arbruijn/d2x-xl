@@ -294,17 +294,17 @@ cf.Read (Sounds [0], sizeof (ubyte), t);
 cf.Read (AltSounds [0], sizeof (ubyte), t);
 PrintLog (-1);
 
-gameData.eff.nClips [0] = cf.ReadInt ();
-/*---*/PrintLog (1, "Loading %d animation clips\n", gameData.eff.nClips [0]);
-ReadVideoClips (gameData.eff.vClips [0], gameData.eff.nClips [0], cf);
+gameData.effects.nClips [0] = cf.ReadInt ();
+/*---*/PrintLog (1, "Loading %d animation clips\n", gameData.effects.nClips [0]);
+ReadVideoClips (gameData.effects.vClips [0], gameData.effects.nClips [0], cf);
 PrintLog (-1);
 
-gameData.eff.nEffects [0] = cf.ReadInt ();
-/*---*/PrintLog (1, "Loading %d animation descriptions\n", gameData.eff.nEffects [0]);
-ReadEffectClips (gameData.eff.effects [0], gameData.eff.nEffects [0], cf);
+gameData.effects.nEffects [0] = cf.ReadInt ();
+/*---*/PrintLog (1, "Loading %d animation descriptions\n", gameData.effects.nEffects [0]);
+ReadEffectClips (gameData.effects.effects [0], gameData.effects.nEffects [0], cf);
 // red glow texture animates way too fast
-gameData.eff.effects [0][32].vClipInfo.xTotalTime *= 10;
-gameData.eff.effects [0][32].vClipInfo.xFrameTime *= 10;
+gameData.effects.effects [0][32].vClipInfo.xTotalTime *= 10;
+gameData.effects.effects [0][32].vClipInfo.xFrameTime *= 10;
 gameData.walls.nAnims [0] = cf.ReadInt ();
 PrintLog (-1);
 /*---*/PrintLog (1, "Loading %d CWall animations\n", gameData.walls.nAnims [0]);
@@ -584,14 +584,14 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	}
 PrintLog (-1);
 
-gameData.eff.nClips [1] = cf.ReadInt ();
-/*---*/PrintLog (1, "Loading %d animation clips\n", gameData.eff.nClips [1]);
-ReadVideoClips (gameData.eff.vClips [1], D1_VCLIP_MAXNUM, cf);
+gameData.effects.nClips [1] = cf.ReadInt ();
+/*---*/PrintLog (1, "Loading %d animation clips\n", gameData.effects.nClips [1]);
+ReadVideoClips (gameData.effects.vClips [1], D1_VCLIP_MAXNUM, cf);
 PrintLog (-1);
 
-gameData.eff.nEffects [1] = cf.ReadInt ();
-/*---*/PrintLog (1, "Loading %d animation descriptions\n", gameData.eff.nClips [1]);
-ReadEffectClips (gameData.eff.effects [1], D1_MAX_EFFECTS, cf);
+gameData.effects.nEffects [1] = cf.ReadInt ();
+/*---*/PrintLog (1, "Loading %d animation descriptions\n", gameData.effects.nClips [1]);
+ReadEffectClips (gameData.effects.effects [1], D1_MAX_EFFECTS, cf);
 PrintLog (-1);
 
 gameData.walls.nAnims [1] = cf.ReadInt ();

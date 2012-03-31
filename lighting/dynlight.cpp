@@ -283,7 +283,7 @@ if (!nTexture)
 if (IsMultiGame && netGame.m_info.bIndestructibleLights)
 	return 0;
 short nClip = gameData.pig.tex.tMapInfoP [nTexture].nEffectClip;
-tEffectClip	*ecP = (nClip < 0) ? NULL : gameData.eff.effectP + nClip;
+tEffectClip	*ecP = (nClip < 0) ? NULL : gameData.effects.effectP + nClip;
 short	nDestBM = ecP ? ecP->nDestBm : -1;
 ubyte	bOneShot = ecP ? (ecP->flags & EF_ONE_SHOT) != 0 : 0;
 if (nClip == -1)
@@ -966,7 +966,7 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 	pf = gameData.render.color.ambient.Buffer ();
 	for (i = 0, segP = SEGMENTS.Buffer (); i < gameData.segs.nSegments; i++, segP++) {
 		if (segP->m_function == SEGMENT_FUNC_SKYBOX) {
-			short* sv = segP->m_verts;
+			ushort* sv = segP->m_vertices;
 			for (j = 8; j; j--, sv++)
 				pf [*sv].Set (1.0f, 1.0f, 1.0f, 1.0f);
 			}

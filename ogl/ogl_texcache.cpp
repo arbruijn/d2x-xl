@@ -87,7 +87,7 @@ if ((i >= 0) && !bVClipLoaded [i]) {
 	if (i == 19)
 		i = i;
 #endif
-	OglCacheVClipTextures (&gameData.eff.vClips [0][i], nTransp);
+	OglCacheVClipTextures (&gameData.effects.vClips [0][i], nTransp);
 	}
 }
 
@@ -245,14 +245,14 @@ TexMergeInit (-1);
 
 PrintLog (1, "caching effect textures\n");
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
-	for (i = 0, ecP = gameData.eff.effects [bD1].Buffer (); i < gameData.eff.nEffects [bD1]; i++, ecP++) {
+	for (i = 0, ecP = gameData.effects.effects [bD1].Buffer (); i < gameData.effects.nEffects [bD1]; i++, ecP++) {
 		if ((ecP->changingWallTexture == -1) && (ecP->changingObjectTexture == -1))
 			continue;
 		if (ecP->vClipInfo.nFrameCount > max_efx)
 			max_efx = ecP->vClipInfo.nFrameCount;
 		}
 	for (ef = 0; ef < max_efx; ef++)
-		for (i = 0, ecP = gameData.eff.effects [bD1].Buffer (); i < gameData.eff.nEffects [bD1]; i++, ecP++) {
+		for (i = 0, ecP = gameData.effects.effects [bD1].Buffer (); i < gameData.effects.nEffects [bD1]; i++, ecP++) {
 			if ((ecP->changingWallTexture == -1) && (ecP->changingObjectTexture == -1))
 				continue;
 			ecP->xTimeLeft = -1;
@@ -327,7 +327,7 @@ PrintLog (-1);
 PrintLog (1, "caching effect textures\n");
 CacheObjectEffects ();
 bLoadTextures = (ogl.m_states.nPreloadTextures > 2);
-for (i = 0; i < gameData.eff.nClips [0]; i++)
+for (i = 0; i < gameData.effects.nClips [0]; i++)
 	OglCacheVClipTextures (i, 1);
 PrintLog (-1);
 

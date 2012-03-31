@@ -170,7 +170,7 @@ Assert (m_iFaceVert + nVerts <= int (m_vertNorms.Length ()));
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
 	Assert (pmv - m_faceVerts < m_nFaceVerts);
-	pmv->m_vertex = m_verts [j];
+	pmv->m_vertex = m_vertices [j];
 	pmv->m_texCoord.v.u = X2F (uvl->u);
 	pmv->m_texCoord.v.v = X2F (uvl->v);
 	pmv->m_renderColor =
@@ -220,8 +220,8 @@ for (;;) {
 
 		case OP_DEFPOINTS: {
 			int i, n = WORDVAL (p+2);
-			Assert (n <= int (m_verts.Length ()));
-			CFloatVector3 *pfv = m_verts.Buffer ();
+			Assert (n <= int (m_vertices.Length ()));
+			CFloatVector3 *pfv = m_vertices.Buffer ();
 			CFixVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
 				pfv->Assign (*pv);
@@ -234,8 +234,8 @@ for (;;) {
 		case OP_DEFP_START: {
 			int i, n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
-			Assert (s + n <= int (m_verts.Length ()));
-			CFloatVector3 *pfv = m_verts + s;
+			Assert (s + n <= int (m_vertices.Length ()));
+			CFloatVector3 *pfv = m_vertices + s;
 			CFixVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
 				pfv->Assign (*pv);

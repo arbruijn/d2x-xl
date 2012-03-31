@@ -94,12 +94,12 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 			pmf->m_nBitmap = pof->m_texProps.nTexId;
 		else
 			pmf->m_nBitmap = -1;
-		pfv = pof->m_verts;
+		pfv = pof->m_vertices;
 		h = pfv->m_nIndex;
 		if (nModel > 200) {
-			vNormal = CFloatVector3::Normal (*pso->m_verts [pfv [0].m_nIndex].XYZ (), 
-														*pso->m_verts [pfv [1].m_nIndex].XYZ (), 
-														*pso->m_verts [pfv [2].m_nIndex].XYZ ());
+			vNormal = CFloatVector3::Normal (*pso->m_vertices [pfv [0].m_nIndex].XYZ (), 
+														*pso->m_vertices [pfv [1].m_nIndex].XYZ (), 
+														*pso->m_vertices [pfv [2].m_nIndex].XYZ ());
 			}
 		else
 			vNormal.Assign (pof->m_vNormal);
@@ -107,15 +107,15 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 			h = pfv->m_nIndex;
 			pmv->m_nIndex = h;
 #if DBG
-			if (h >= int (m_verts.Length ()))
+			if (h >= int (m_vertices.Length ()))
 				continue;
 #endif
 			pmv->m_texCoord.v.u = pfv->m_fu;
 			pmv->m_texCoord.v.v = pfv->m_fv;
 			pmv->m_normal = vNormal;
-			m_verts [h].Assign (pso->m_verts [h]);
-			m_verts [h] *= fScale;
-			pmv->m_vertex = m_verts [h];
+			m_vertices [h].Assign (pso->m_vertices [h]);
+			m_vertices [h] *= fScale;
+			pmv->m_vertex = m_vertices [h];
 			psm->SetMinMax (&pmv->m_vertex);
 			*pvn = vNormal;
 			if ((pmv->m_bTextured = pof->m_bTextured))

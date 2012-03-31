@@ -88,7 +88,7 @@ int SegmentIsVisible (CSegment *segP)
 if (automap.Display ())
 	return 1;
 #if 0
-return RotateVertexList (8, segP->m_verts).ccAnd == 0;
+return RotateVertexList (8, segP->m_vertices).ccAnd == 0;
 #else
 ubyte code = 0xFF;
 
@@ -98,9 +98,9 @@ if (segP->Index () == nDbgSeg)
 #endif
 for (int i = 0; i < 8; i++) {
 #if 0 //DBG
-	gameData.segs.points [segP->m_verts [i]].m_flags = 0;
+	gameData.segs.points [segP->m_vertices [i]].m_flags = 0;
 #endif
-	code &= ProjectRenderPoint (segP->m_verts [i]);
+	code &= ProjectRenderPoint (segP->m_vertices [i]);
 	if (!code)
 		return 1;
 	}
@@ -189,7 +189,7 @@ PROF_START
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
-	short				nVertex, nSegment, nSide;
+	int				nVertex, nSegment, nSide;
 	float				fAlpha;
 	int				h, i, nColor, nLights = 0;
 	//int				bVertexLight = gameStates.render.bPerPixelLighting != 2;
@@ -339,7 +339,7 @@ PROF_START
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
-	short			nVertex, nSegment, nSide;
+	int			nVertex, nSegment, nSide;
 	float			fAlpha;
 	int			h, i, j, nColor, nLights = 0,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
@@ -459,7 +459,7 @@ PROF_START
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
-	short			nVertex, nSegment, nSide;
+	int			nVertex, nSegment, nSide;
 	float			fAlpha;
 	int			h, i, j, k, nIndex, nColor, nLights = 0;
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
@@ -592,7 +592,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 #if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
-	short			nVertex, nSegment, nSide;
+	int			nVertex, nSegment, nSide;
 	fix			xLight;
 	float			fAlpha;
 	tUVL			*uvlP;

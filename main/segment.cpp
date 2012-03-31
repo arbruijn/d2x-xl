@@ -18,7 +18,7 @@
 char	sideOpposite [MAX_SIDES_PER_SEGMENT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRONT, WBACK};
 
 //	Note, this MUST be the same as sideVertIndex, it is an int for speed reasons.
-short sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
+ushort sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
 		 {7,6,2,3},			// left
 		 {0,4,7,3},			// top
 		 {0,1,5,4},			// right
@@ -33,12 +33,12 @@ extern bool bNewFileFormat;
 // Fill in array with four absolute point numbers for a given CSide
 void CSegment::GetCornerIndex (int nSide, ushort* vertIndex)
 {
-	short* s2v = sideVertIndex [nSide];
+	ushort* s2v = sideVertIndex [nSide];
 
-vertIndex [0] = m_verts [s2v [0]];
-vertIndex [1] = m_verts [s2v [1]];
-vertIndex [2] = m_verts [s2v [2]];
-vertIndex [3] = m_verts [s2v [3]];
+vertIndex [0] = m_vertices [s2v [0]];
+vertIndex [1] = m_vertices [s2v [1]];
+vertIndex [2] = m_vertices [s2v [2]];
+vertIndex [3] = m_vertices [s2v [3]];
 }
 
 //------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ else {
 void CSegment::ReadVerts (CFile& cf)
 {
 for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
-	m_verts [i] = cf.ReadShort ();
+	m_vertices [i] = cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------
@@ -237,14 +237,14 @@ void CSegment::ComputeCenter (void)
 if (Index () == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-CFloatVector vCenter = FVERTICES [m_verts [0]];
-vCenter += FVERTICES [m_verts [1]];
-vCenter += FVERTICES [m_verts [2]];
-vCenter += FVERTICES [m_verts [3]];
-vCenter += FVERTICES [m_verts [4]];
-vCenter += FVERTICES [m_verts [5]];
-vCenter += FVERTICES [m_verts [6]];
-vCenter += FVERTICES [m_verts [7]];
+CFloatVector vCenter = FVERTICES [m_vertices [0]];
+vCenter += FVERTICES [m_vertices [1]];
+vCenter += FVERTICES [m_vertices [2]];
+vCenter += FVERTICES [m_vertices [3]];
+vCenter += FVERTICES [m_vertices [4]];
+vCenter += FVERTICES [m_vertices [5]];
+vCenter += FVERTICES [m_vertices [6]];
+vCenter += FVERTICES [m_vertices [7]];
 vCenter /= 8;
 m_vCenter.Assign (vCenter);
 }
@@ -292,7 +292,7 @@ m_rads [1] = 0;
 vMin.v.coord.x = vMin.v.coord.y = vMin.v.coord.z = 0x7FFFFFFF;
 vMax.v.coord.x = vMax.v.coord.y = vMax.v.coord.z = -0x7FFFFFFF;
 for (int i = 0; i < 8; i++) {
-	v = gameData.segs.vertices [m_verts [i]];
+	v = gameData.segs.vertices [m_vertices [i]];
 	if (vMin.v.coord.x > v.v.coord.x)
 		vMin.v.coord.x = v.v.coord.x;
 	if (vMin.v.coord.y > v.v.coord.y)
@@ -373,7 +373,7 @@ for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (i == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	m_sides [i].Setup (Index (), m_verts, sideVertIndex [i], m_children [i] < 0);
+	m_sides [i].Setup (Index (), m_vertices, sideVertIndex [i], m_children [i] < 0);
 	}
 }
 
@@ -383,7 +383,7 @@ for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 CFixVector CSegment::RandomPoint (void)
 {
 int nVertex = RandShort () % MAX_VERTICES_PER_SEGMENT;
-CFixVector v = gameData.segs.vertices [m_verts [nVertex]] - m_vCenter;
+CFixVector v = gameData.segs.vertices [m_vertices [nVertex]] - m_vCenter;
 v *= (RandShort ());
 return v + m_vCenter;
 }
@@ -486,7 +486,7 @@ return wallP->IsDoorWay (objP, bIgnoreDoors);
 bool CSegment::IsVertex (int nVertex)
 {
 for (int i = 0; i < 8; i++)
-	if (nVertex == m_verts [i])
+	if (nVertex == m_vertices [i])
 		return true;
 return false;
 }
@@ -1084,7 +1084,7 @@ if (ec < 0) {
 	nSwitchType = 0;
 	}
 else {
-	ecP = gameData.eff.effectP + ec;
+	ecP = gameData.effects.effectP + ec;
 	if (ecP->flags & EF_ONE_SHOT)
 		return 0;
 	nBitmap = ecP->nDestBm;
@@ -1124,12 +1124,12 @@ else {
 	}
 CreateExplosion (short (Index ()), vHit, xDestSize, vc);
 if (nSwitchType) {
-	if ((nSound = gameData.eff.vClipP [vc].nSound) != -1)
+	if ((nSound = gameData.effects.vClipP [vc].nSound) != -1)
 		audio.CreateSegmentSound (nSound, Index (), 0, vHit);
 	if ((nSound = ecP->nSound) != -1)		//kill sound
 		audio.DestroySegmentSound (Index (), nSide, nSound);
-	if (!bPermaTrigger && (ecP->nDestEClip != -1) && (gameData.eff.effectP [ecP->nDestEClip].nSegment == -1)) {
-		tEffectClip	*newEcP = gameData.eff.effectP + ecP->nDestEClip;
+	if (!bPermaTrigger && (ecP->nDestEClip != -1) && (gameData.effects.effectP [ecP->nDestEClip].nSegment == -1)) {
+		tEffectClip	*newEcP = gameData.effects.effectP + ecP->nDestEClip;
 		int nNewBm = newEcP->changingWallTexture;
 		if (ChangeTextures (-1, nNewBm, nSide)) {
 			newEcP->xTimeLeft = EffectFrameTime (newEcP);
@@ -1260,12 +1260,12 @@ gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 
 float CSegment::FaceSize (ubyte nSide)
 {
-	short*	s2v = sideVertIndex [nSide];
+	ushort*	s2v = sideVertIndex [nSide];
 
-	short		v0 = m_verts [s2v [0]];
-	short		v1 = m_verts [s2v [1]];
-	short		v2 = m_verts [s2v [2]];
-	short		v3 = m_verts [s2v [3]];
+	short		v0 = m_vertices [s2v [0]];
+	short		v1 = m_vertices [s2v [1]];
+	short		v2 = m_vertices [s2v [2]];
+	short		v3 = m_vertices [s2v [3]];
 
 return TriangleSize (gameData.segs.vertices [v0], gameData.segs.vertices [v1], gameData.segs.vertices [v2]) +
 		 TriangleSize (gameData.segs.vertices [v0], gameData.segs.vertices [v2], gameData.segs.vertices [v3]);

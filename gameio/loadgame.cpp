@@ -2070,7 +2070,7 @@ info.renderType = RT_POWERUP;
 info.controlType = CT_POWERUP;
 SetSizeFromPowerup ();
 rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [nId].nClipIndex;
-rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][rType.vClipInfo.nClipIndex].xFrameTime;
+rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][rType.vClipInfo.nClipIndex].xFrameTime;
 }
 
 //------------------------------------------------------------------------------

@@ -668,8 +668,8 @@ return 1;
 
 inline CFloatVector* CFace::CalcCenter (CSubModel *pso)
 {
-	CFaceVert		*pfv = m_verts;
-	CFloatVector	*pv = pso->m_verts.Buffer ();
+	CFaceVert		*pfv = m_vertices;
+	CFloatVector	*pv = pso->m_vertices.Buffer ();
 	int				i;
 
 m_vCenter.SetZero ();
@@ -684,7 +684,7 @@ return &m_vCenter;
 inline CFloatVector* CFace::CalcNormal (CSubModel *pso)
 {
 	CFloatVector	*pv = pso->m_rotVerts.Buffer ();
-	CFaceVert		*pfv = m_verts;
+	CFaceVert		*pfv = m_vertices;
 
 m_vRotNormal = CFloatVector::Normal (pv [pfv [0].m_nIndex], pv [pfv [1].m_nIndex], pv [pfv [2].m_nIndex]);
 return &m_vRotNormal;
@@ -725,9 +725,9 @@ else {
 	}
 #if OOF_MEM_OPT
 if (pfv) {
-	m_verts = pfv;
+	m_vertices = pfv;
 #else
-	if (!(m_verts= new CFaceVert [m_nVerts])) {
+	if (!(m_vertices= new CFaceVert [m_nVerts])) {
 		nIndent -= 2;
 		return OOF_FreeFace (&f);
 		}
@@ -735,14 +735,14 @@ if (pfv) {
 	OOF_InitMinMax (&m_vMin, &m_vMax);
 	e.m_v1 [0] = -1;
 	for (i = 0; i < m_nVerts; i++)
-		if (!m_verts [i].Read (cf, bFlipV)) {
+		if (!m_vertices [i].Read (cf, bFlipV)) {
 			nIndent -= 2;
 			return 0;
 			}
 		else {
 			e.m_v0 [0] = e.m_v1 [0];
-			e.m_v1 [0] = m_verts [i].m_nIndex;
-			OOF_GetMinMax (pso->m_verts + e.m_v1 [0], &m_vMin, &m_vMax);
+			e.m_v1 [0] = m_vertices [i].m_nIndex;
+			OOF_GetMinMax (pso->m_vertices + e.m_v1 [0], &m_vMin, &m_vMax);
 			if (i)
 				pso->AddEdge (this, e.m_v0 [0], e.m_v1 [0]);
 			else
@@ -775,7 +775,7 @@ m_nFaces = 0;
 void CFaceList::Destroy (void)
 {
 m_list.Destroy ();
-m_verts.Destroy ();
+m_vertices.Destroy ();
 Init ();
 }
 
@@ -846,7 +846,7 @@ delete[] m_pszName;
 m_pszName = NULL;
 delete[] m_pszProps;
 m_pszProps = NULL;
-m_verts.Destroy ();
+m_vertices.Destroy ();
 m_rotVerts.Destroy ();
 m_vertColors.Destroy ();
 m_normals.Destroy ();
@@ -864,7 +864,7 @@ int CSubModel::FindVertex (int i)
 	CFloatVector	v, *pv;
 	int				j;
 
-pv = m_verts.Buffer ();
+pv = m_vertices.Buffer ();
 v = pv [i];
 for (j = 0; j < i; j++, pv++)
 	if ((v.v.coord.x == (*pv).v.coord.x) && (v.v.coord.y == (*pv).v.coord.y) && (v.v.coord.z == (*pv).v.coord.z))
@@ -889,12 +889,12 @@ for (i = 0; i < m_edges.m_nEdges; i++) {
 	if (((h.m_v0 [0] == i0) && (h.m_v1 [0] == i1)) || ((h.m_v0 [0] == i1) && (h.m_v1 [0] == i0)))
 		return i;
 	}
-v0 = m_verts [i0]; 
-v1 = m_verts [i1]; 
+v0 = m_vertices [i0]; 
+v1 = m_vertices [i1]; 
 for (i = 0; i < m_edges.m_nEdges; i++) {
 	h = m_edges.m_list [i];
-	hv0 = m_verts [h.m_v0 [0]]; 
-	hv1 = m_verts [h.m_v1 [0]]; 
+	hv0 = m_vertices [h.m_v0 [0]]; 
+	hv1 = m_vertices [h.m_v1 [0]]; 
 	if ((hv0.v.coord.x == v0.v.coord.x) && (hv0.v.coord.y == v0.v.coord.y) && (hv0.v.coord.z == v0.v.coord.z) &&
 		 (hv1.v.coord.x == v1.v.coord.x) && (hv1.v.coord.y == v1.v.coord.y) && (hv1.v.coord.z == v1.v.coord.z))
 		return i;
@@ -904,12 +904,12 @@ for (i = 0; i < m_edges.m_nEdges; i++) {
 	}
 for (i = 0; i < m_edges.m_nEdges; i++) {
 	h = m_edges.m_list [i];
-	hv0 = m_verts [h.m_v0 [0]] - v0;
-	hv1 = m_verts [h.m_v1 [0]] - v1;
+	hv0 = m_vertices [h.m_v0 [0]] - v0;
+	hv1 = m_vertices [h.m_v1 [0]] - v1;
 	if ((hv0.Mag () < MAXGAP) && (hv1.Mag () < MAXGAP))
 		return i;
-	hv0 = m_verts [h.m_v0 [0]] - v1;
-	hv1 = m_verts [h.m_v1 [0]] - v0;
+	hv0 = m_vertices [h.m_v0 [0]] - v1;
+	hv1 = m_vertices [h.m_v1 [0]] - v0;
 	if ((hv0.Mag () < MAXGAP) && (hv1.Mag () < MAXGAP))
 		return i;
 	}
@@ -1170,7 +1170,7 @@ if ((m_nFSLists = OOF_ReadInt (cf, "nFSLists")))
 	cf.Seek (m_nFSLists * sizeof (int), SEEK_CUR);
 m_nVerts = OOF_ReadInt (cf, "nVerts");
 if (m_nVerts) {
-	if (!OOF_ReadVertList (cf, m_verts, m_nVerts, &m_vMin, &m_vMax)) {
+	if (!OOF_ReadVertList (cf, m_vertices, m_nVerts, &m_vMin, &m_vMax)) {
 		Destroy ();
 		nIndent -= 2;
 		return 0;
@@ -1220,7 +1220,7 @@ m_edges.m_nEdges = 0;
 for (bReadData = 0; bReadData < 2; bReadData++) {
 	cf.Seek (nPos, SEEK_SET);
 	if (bReadData) {
-		if (!m_faces.m_verts.Create (nFaceVerts)) {
+		if (!m_faces.m_vertices.Create (nFaceVerts)) {
 			Destroy ();
 			nIndent -= 2;
 			return 0;
@@ -1234,7 +1234,7 @@ for (bReadData = 0; bReadData < 2; bReadData++) {
 		m_edges.m_nEdges = 0;
 		}
 	for (i = 0, nFaceVerts = 0; i < m_faces.m_nFaces; i++) {
-		if (!(h = m_faces.m_list [i].Read (cf, this, bReadData ? m_faces.m_verts + nFaceVerts : NULL, bFlipV))) {
+		if (!(h = m_faces.m_list [i].Read (cf, this, bReadData ? m_faces.m_vertices + nFaceVerts : NULL, bFlipV))) {
 			Destroy ();
 			nIndent -= 2;
 			return 0;
@@ -1497,7 +1497,7 @@ for (i = m_nSubModels, pso = m_subModels.Buffer (); i; i--, pso++) {
 		CFace	*pf = pso->m_faces.m_list.Buffer ();
 
 		for (j = 0; j < pf->m_nVerts; j++)
-			v [j] = pso->m_verts [pf->m_verts [j].m_nIndex];
+			v [j] = pso->m_vertices [pf->m_vertices [j].m_nIndex];
 	
 		pso->m_fRadius = (float) (sqrt (OOF_Centroid (&avg, v, pf->m_nVerts)) / 2);
 		m_nFlags |= OOF_PMF_FACING;
@@ -1509,7 +1509,7 @@ for (i = m_nSubModels, pso = m_subModels.Buffer (); i; i--, pso++) {
 		CFace	*pf = pso->m_faces.m_list.Buffer ();
 
 		for (j = 0; j < pf->m_nVerts; j++)
-			v [j] = pso->m_verts [pf->m_verts [j].m_nIndex];
+			v [j] = pso->m_vertices [pf->m_vertices [j].m_nIndex];
 		pso->m_glowInfo.m_vNormal = CFloatVector::Normal (v [0], v [1], v [2]);
 		m_nFlags |= OOF_PMF_FACING;	// Set this so we know when to draw
 		}

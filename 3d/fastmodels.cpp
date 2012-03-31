@@ -66,7 +66,7 @@ void G3DynLightModel (CObject *objP, RenderModel::CModel *modelP, ushort iVerts,
 
 if (!gameStates.render.bBrightObject) {
 	vPos.Assign (objP->info.position.vPos);
-	for (i = iVerts, pv = modelP->m_verts + iVerts, pn = modelP->m_vertNorms + iVerts, colorP = modelP->m_color + iVerts;
+	for (i = iVerts, pv = modelP->m_vertices + iVerts, pn = modelP->m_vertNorms + iVerts, colorP = modelP->m_color + iVerts;
 		  i < nVerts;
 		  i++, pv++, pn++, colorP++) {
 		colorP->index = 0;
@@ -191,13 +191,13 @@ else
 if (modelP->m_fScale == fScale)
 	return;
 fScale /= modelP->m_fScale;
-for (i = modelP->m_nVerts, pv = modelP->m_verts; i; i--, pv++) {
+for (i = modelP->m_nVerts, pv = modelP->m_vertices; i; i--, pv++) {
 	pv->p.x *= fScale;
 	pv->p.y *= fScale;
 	pv->p.z *= fScale;
 	}
 for (i = modelP->m_nFaceVerts, pmv = modelP->m_faceVerts; i; i--, pmv++)
-	pmv->m_vertex = modelP->m_verts [pmv->m_nIndex];
+	pmv->m_vertex = modelP->m_vertices [pmv->m_nIndex];
 modelP->m_fScale *= fScale;
 }
 

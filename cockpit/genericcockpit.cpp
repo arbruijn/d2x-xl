@@ -970,7 +970,7 @@ fix staticTime [2];
 
 void CGenericCockpit::DrawStatic (int nWindow, int nIndex)
 {
-	tVideoClip *vc = gameData.eff.vClips [0] + VCLIP_MONITOR_STATIC;
+	tVideoClip *vc = gameData.effects.vClips [0] + VCLIP_MONITOR_STATIC;
 	CBitmap *bmp;
 	int framenum;
 	int boxofs = (gameStates.render.cockpit.nType == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;

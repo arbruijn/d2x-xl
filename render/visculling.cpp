@@ -233,8 +233,8 @@ int FindAdjacentSideNorms (CSegment *segP, short s0, short s1, tSideNormData *s)
 Assert(s0 != -1 && s1 != -1);
 seg0 = SEGMENTS + segP->m_children [s0];
 seg1 = SEGMENTS + segP->m_children [s1];
-edgeVerts [0] = segP->m_verts [edgeBetweenTwoSides [s0][s1][0]];
-edgeVerts [1] = segP->m_verts [edgeBetweenTwoSides [s0][s1][1]];
+edgeVerts [0] = segP->m_vertices [edgeBetweenTwoSides [s0][s1][0]];
+edgeVerts [1] = segP->m_vertices [edgeBetweenTwoSides [s0][s1][1]];
 Assert(edgeVerts [0] != -1 && edgeVerts [1] != -1);
 oppSide0 = segP->ConnectedSide (seg0);
 Assert (oppSide0 != -1);
@@ -246,8 +246,8 @@ side0 = seg0->m_sides + otherSide0;
 side1 = seg1->m_sides + otherSide1;
 memcpy (s [0].n, side0->m_normals, 2 * sizeof (CFixVector));
 memcpy (s [1].n, side1->m_normals, 2 * sizeof (CFixVector));
-s [0].facePortal = gameData.segs.vertices + seg0->m_verts [sideVertIndex [otherSide0][(s [0].t = side0->m_nType) == 3]];
-s [1].facePortal = gameData.segs.vertices + seg1->m_verts [sideVertIndex [otherSide1][(s [1].t = side1->m_nType) == 3]];
+s [0].facePortal = gameData.segs.vertices + seg0->m_vertices [sideVertIndex [otherSide0][(s [0].t = side0->m_nType) == 3]];
+s [1].facePortal = gameData.segs.vertices + seg1->m_vertices [sideVertIndex [otherSide1][(s [1].t = side1->m_nType) == 3]];
 return 1;
 }
 
@@ -785,7 +785,7 @@ for (l = 0; l < nRenderDepth; l++) {
 				nChildSeg = nChildSeg;
 #endif
 			if (!bRotated) {
-				short* sv = segP->m_verts;
+				ushort* sv = segP->m_vertices;
 				for (int i = 0; i < 8; i++) {
 #if DBG
 					if (sv [i] == nDbgVertex)
@@ -797,7 +797,7 @@ for (l = 0; l < nRenderDepth; l++) {
 				}
 
 			if (bCullIfBehind) {
-				short* s2v = segP->Side (nChild)->m_corners;;
+				ushort* s2v = segP->Side (nChild)->m_corners;
 				if (gameData.segs.points [s2v [0]].Codes () &
 					 gameData.segs.points [s2v [1]].Codes () &
 					 gameData.segs.points [s2v [2]].Codes () &
@@ -820,10 +820,10 @@ for (l = 0; l < nRenderDepth; l++) {
 			tPortal facePortal = {32767, -32767, 32767, -32767};
 			int bProjected = 1;	//0 when at least one point wasn't projected
 			CSide* sideP = segP->Side (nSide);
-			short* s2v = sideP->m_corners;
+			ushort* s2v = sideP->m_corners;
 			ubyte offScreenFlags = 0xff;
 			for (int nCorner = 0; nCorner < 4; nCorner++) {
-				short nVertex = s2v [nCorner];
+				ushort nVertex = s2v [nCorner];
 				CRenderPoint& point = gameData.segs.points [nVertex];
 #if DBG
 				point.SetFlags ();
@@ -972,7 +972,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
 	if (gameData.segs.SegVis (nStartSeg, nSegment)) {
 		gameData.render.mine.bVisible [nSegment] = gameData.render.mine.nVisible;
 		gameData.render.mine.segRenderList [0][gameData.render.mine.nRenderSegs [0]++] = nSegment;
-		RotateVertexList (8, SEGMENTS [nSegment].m_verts);
+		RotateVertexList (8, SEGMENTS [nSegment].m_vertices);
 		}
 	}
 HUDMessage (0, "%d", gameData.render.mine.nRenderSegs [0]);

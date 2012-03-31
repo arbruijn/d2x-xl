@@ -15,7 +15,7 @@ class CModel;
 class CFace {
 	public:
 		ushort				m_nVerts;
-		ushort*				m_verts;
+		ushort*				m_vertices;
 		CFixVector			m_vCenter;
 		CFixVector			m_vNorm;
 		CFixVector			m_vRotNorm;
@@ -89,7 +89,7 @@ class CModel {
 		ushort					m_nFaceVerts;
 		ushort					m_nLitFaces;
 		ushort					m_nAdjFaces;
-		CArray<CFixVector>	m_verts;
+		CArray<CFixVector>	m_vertices;
 		CArray<CFloatVector>	m_vertsf;
 		CArray<float>			m_fClipDist;
 		CArray<ubyte>			m_vertFlags;

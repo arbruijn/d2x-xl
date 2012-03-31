@@ -1767,8 +1767,8 @@ gameData.pig.tex.bmIndex [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.
 gameData.pig.tex.bitmapFiles [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.bitmapFileP);
 gameData.pig.tex.tMapInfo [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.tMapInfoP);
 gameData.pig.sound.sounds [gameStates.app.bD1Data].ShareBuffer (gameData.pig.sound.soundP);
-gameData.eff.effects [gameStates.app.bD1Data].ShareBuffer (gameData.eff.effectP);
-gameData.eff.vClips [gameStates.app.bD1Data].ShareBuffer (gameData.eff.vClipP);
+gameData.effects.effects [gameStates.app.bD1Data].ShareBuffer (gameData.effects.effectP);
+gameData.effects.vClips [gameStates.app.bD1Data].ShareBuffer (gameData.effects.vClipP);
 gameData.walls.anims [gameStates.app.bD1Data].ShareBuffer (gameData.walls.animP);
 gameData.bots.info [gameStates.app.bD1Data].ShareBuffer (gameData.bots.infoP);
 }

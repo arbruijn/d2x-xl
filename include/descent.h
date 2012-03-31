@@ -2289,7 +2289,7 @@ class CShipData {
 typedef struct tFlagData {
 	tBitmapIndex		bmi;
 	tVideoClip*			vcP;
-	tVideoClipInfo			vci;
+	tVideoClipInfo		vci;
 	CFlightPath			path;
 } tFlagData;
 
@@ -3396,7 +3396,7 @@ class CGameData {
 		CObjectData			objs;
 		CRobotData			bots;
 		CRenderData			render;
-		CEffectData			eff;
+		CEffectData			effects;
 		CPigData				pig;
 		CModelData			models;
 		CMultiplayerData	multiplayer;

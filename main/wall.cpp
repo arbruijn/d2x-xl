@@ -1009,7 +1009,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		tEffectClip*	ecP;
 
 		ec=gameData.pig.tex.tMapInfoP [tm].nEffectClip;
-		ecP = (ec < 0) ? NULL : gameData.eff.effectP + ec;
+		ecP = (ec < 0) ? NULL : gameData.effects.effectP + ec;
 		db = ecP ? ecP->nDestBm : -1;
 
 		if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
@@ -1442,7 +1442,7 @@ for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 	//n = newCount - oldCount;
 	//now create all the next explosions
 	for (e = oldCount; e < newCount; e++) {
-		short*		corners;
+		ushort*		corners;
 		CFixVector	*v0, *v1, *v2;
 		CFixVector	vv0, vv1, vPos;
 		fix			size;

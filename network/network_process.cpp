@@ -47,7 +47,7 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 	for (j = 0, sideP = segP->m_sides; j < 6; j++, sideP++) {
 		if (((tm = sideP->m_nOvlTex) != 0) &&
 				((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) &&
-				((bm = gameData.eff.effectP [ec].nDestBm) != -1)) {
+				((bm = gameData.effects.effectP [ec].nDestBm) != -1)) {
 			if (vector & (1 << count))
 				sideP->m_nOvlTex = bm;
 			count++;

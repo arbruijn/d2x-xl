@@ -201,7 +201,7 @@ objP->info.position.mOrient.m.dir.u.v.coord.z = *sp++ << MATRIX_PRECISION;
 objP->info.position.mOrient.m.dir.f.v.coord.z = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
 objP->info.nSegment = nSegment;
-const CFixVector& v = gameData.segs.vertices [SEGMENTS [nSegment].m_verts [0]];
+const CFixVector& v = gameData.segs.vertices [SEGMENTS [nSegment].m_vertices [0]];
 objP->info.position.vPos.v.coord.x = (spp->pos [0] << RELPOS_PRECISION) + v.v.coord.x;
 objP->info.position.vPos.v.coord.y = (spp->pos [1] << RELPOS_PRECISION) + v.v.coord.y;
 objP->info.position.vPos.v.coord.z = (spp->pos [2] << RELPOS_PRECISION) + v.v.coord.z;
@@ -815,7 +815,7 @@ void NDSetPowerupClip (CObject *objP)
 //if (gameStates.app.tick40fps.bTick) 
 tVideoClipInfo	*vciP = &objP->rType.vClipInfo;
 if (vciP->nClipIndex >= 0) {
-	tVideoClip	*vcP = gameData.eff.vClips [0] + vciP->nClipIndex;
+	tVideoClip	*vcP = gameData.effects.vClips [0] + vciP->nClipIndex;
 	vciP->nCurFrame = vcP->xFrameTime ? ((gameData.time.xGame - gameData.demo.xStartTime) / vcP->xFrameTime) % vcP->nFrameCount : 0;
 	}
 }
