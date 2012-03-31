@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_EDGES 65536 // Determined by loading all the levels by John & Mike, Feb 9, 1995
 
 typedef struct tEdgeInfo {
-	short		verts [2];     // 4 bytes
+	ushort	verts [2];     // 4 bytes
 	ubyte		sides [4];     // 4 bytes
 	short		nSegment [4];  // 8 bytes  // This might not need to be stored... If you can access the normals of a CSide.
 	uint		color;			// 4 bytes

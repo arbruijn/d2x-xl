@@ -411,7 +411,7 @@ return dMin;
 
 //	-----------------------------------------------------------------------------
 
-int FindLineTriangleIntersection (CFixVector& intersection, short* triangleVerts, CFixVector* triangleNormal, CFixVector* p0, CFixVector* p1)
+int FindLineTriangleIntersection (CFixVector& intersection, ushort* triangleVerts, CFixVector* triangleNormal, CFixVector* p0, CFixVector* p1)
 {
 	CFixVector	vHit;
 
@@ -431,7 +431,7 @@ return 0;
 // Simple intersection check by checking whether any of the edges of plane p1
 // penetrate p2. Returns average of all penetration points.
 
-int FindTriangleQuadIntersection (CFixVector& intersection, short* triangleVerts, CFixVector* triangleNormal, CFixVector* vQuad, CFixVector* vRef, fix& dMin)
+int FindTriangleQuadIntersection (CFixVector& intersection, ushort* triangleVerts, CFixVector* triangleNormal, CFixVector* vQuad, CFixVector* vRef, fix& dMin)
 {
 	int			i, nHits = 0;
 	CFixVector	vHit;

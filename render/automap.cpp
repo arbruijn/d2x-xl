@@ -1111,7 +1111,7 @@ else {
 
 void CAutomap::DrawEdges (void)
 {
-	tRenderCodes			cc;
+	tRenderCodes	cc;
 	int				i, j, nbright = 0;
 	ubyte				nfacing, nnfacing;
 	tEdgeInfo*		edgeP;
