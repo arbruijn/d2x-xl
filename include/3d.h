@@ -98,7 +98,7 @@ class CRenderPoint {
 		tScreenPos		m_screen;		//screen x&y
 		ubyte				m_codes;			//clipping codes
 		ubyte				m_flags;			//projected?
-		short				m_key;
+		ushort			m_key;
 		int				m_index;			//keep structure longword aligned
 		CRenderNormal	m_normal;
 

@@ -566,7 +566,8 @@ return m_data.index [0][0].nActive;
 CFaceColor* CLightManager::AvgSgmColor (int nSegment, CFixVector *vPosP, int nThread)
 {
 	CFaceColor	c, *vertColorP, *segColorP = gameData.render.color.segments + nSegment;
-	short			i, *pv;
+	ushort		*pv;
+	int			i;
 	CFixVector	vCenter, vVertex;
 	float			d, ds;
 

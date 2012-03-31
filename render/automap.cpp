@@ -1349,7 +1349,7 @@ void CAutomap::AddSegmentEdges (CSegment *segP)
 	ubyte		nSide;
 	short		nSegment = segP->Index ();
 	int		bHidden;
-	short*	corners;
+	ushort*	corners;
 
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	bHidden = 0;
@@ -1483,7 +1483,7 @@ void CAutomap::AddUnknownSegmentEdges (CSegment* segP)
 for (int nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	// Only add edges that have no children
 	if (segP->m_children [nSide] == -1) {
-		short* corners = segP->Corners (nSide);
+		ushort* corners = segP->Corners (nSide);
 		AddUnknownEdge (corners [0], corners [1]);
 		AddUnknownEdge (corners [1], corners [2]);
 		AddUnknownEdge (corners [2], corners [3]);

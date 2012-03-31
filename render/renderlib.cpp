@@ -663,7 +663,7 @@ return cc;
 
 // -----------------------------------------------------------------------------------
 //Given a lit of point numbers, project any that haven't been projected
-void ProjectVertexList (int nVertices, short *vertexIndexP)
+void ProjectVertexList (int nVertices, ushort *vertexIndexP)
 {
 for (int i = 0; i < nVertices; i++) {
 	int j = vertexIndexP [i];

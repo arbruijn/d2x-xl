@@ -139,7 +139,7 @@ else {
 
 // -----------------------------------------------------------------------------------
 
-int CGlareRenderer::CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, short* corners)
+int CGlareRenderer::CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* corners)
 {
 	fix		d, d1, d2, dMax = -1;
 	int		i, j;
@@ -284,7 +284,7 @@ return nTexture;
 float CGlareRenderer::ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nSegment, short nSide)
 {
 	CSide*			sideP = SEGMENTS [nSegment].m_sides + nSide;
-	short*			corners;
+	ushort*			corners;
 	int				i;
 	float				fLight = 0;
 	CFloatVector	v;

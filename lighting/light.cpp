@@ -698,7 +698,7 @@ if (!bKeepDynColoring)
 
 fix ComputeSegDynamicLight (int nSegment)
 {
-short *verts = SEGMENTS [nSegment].m_vertices;
+ushort *verts = SEGMENTS [nSegment].m_vertices;
 fix sum = gameData.render.lights.dynamicLight [*verts++];
 sum += gameData.render.lights.dynamicLight [*verts++];
 sum += gameData.render.lights.dynamicLight [*verts++];
