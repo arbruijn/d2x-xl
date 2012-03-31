@@ -47,7 +47,7 @@ tRenderCodes RotateVertexList (int nVerts, ushort* vertexIndexP);
 void RotateSideNorms (void);
 // Given a list of point numbers, project any that haven't been projected
 void ProjectVertexList (int nv, ushort *pointIndex);
-ubyte ProjectRenderPoint (short nVertex);
+ubyte ProjectRenderPoint (int nVertex);
 
 void TransformSideCenters (void);
 #if USE_SEGRADS

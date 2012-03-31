@@ -606,7 +606,7 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	CalcCheckSum (reinterpret_cast<ubyte*> (&j), 2, sum1, sum2);
 	}
 for (i = 0; i < MAX_VERTICES_PER_SEGMENT; i++) {
-	j = INTEL_SHORT (m_verts [i]);
+	j = INTEL_SHORT (m_vertices [i]);
 	CalcCheckSum (reinterpret_cast<ubyte*> (&j), 2, sum1, sum2);
 	}
 i = INTEL_INT (m_objects);
