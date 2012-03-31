@@ -67,7 +67,7 @@ return int (u < 0) + (int (v < 0) << 1) + (int (u + v > I2X (1)) << 2);
 //	-----------------------------------------------------------------------------
 //see if a point (refP) is inside a triangle using barycentric method
 
-ubyte PointIsOutsideFace (CFixVector* refP, CFixVector vNormal, short* nVertIndex, short nVerts)
+ubyte PointIsOutsideFace (CFixVector* refP, CFixVector vNormal, ushort* nVertIndex, short nVerts)
 {
 CFixVector v0 = VERTICES [nVertIndex [2]] - VERTICES [nVertIndex [0]];
 CFixVector v1 = VERTICES [nVertIndex [1]] - VERTICES [nVertIndex [0]];
@@ -87,7 +87,7 @@ return int (u < -PLANE_DIST_TOLERANCE) + (int (v < -PLANE_DIST_TOLERANCE) << 1) 
 //	-----------------------------------------------------------------------------
 //see if a point (refP) is inside a triangle using barycentric method
 
-ubyte PointIsOutsideFace (CFloatVector* vRef, CFloatVector vNormal, short* nVertIndex, short nVerts)
+ubyte PointIsOutsideFace (CFloatVector* vRef, CFloatVector vNormal, ushort* nVertIndex, short nVerts)
 {
 #if 1
 CFloatVector v0 = FVERTICES [nVertIndex [2]] - FVERTICES [nVertIndex [0]];
@@ -165,7 +165,7 @@ float DistToFace (CFloatVector3 vRef, short nSegment, ubyte nSide, CFloatVector3
 {
 	CSide*			sideP = SEGMENTS [nSegment].Side (nSide);
 	CFloatVector	h, r;
-	short*			nVerts = sideP->m_vertices;
+	ushort*			nVerts = sideP->m_vertices;
 	int				i, j;
 
 r.Assign (vRef);

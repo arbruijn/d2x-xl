@@ -452,7 +452,7 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-int FindTriangleHitboxIntersection (CFixVector& intersection, CFixVector& normal, short* triangleVerts, CFixVector* triangleNormal, tBox *phb, CFixVector* vRef, fix& dMin)
+int FindTriangleHitboxIntersection (CFixVector& intersection, CFixVector& normal, ushort* triangleVerts, CFixVector* triangleNormal, tBox *phb, CFixVector* vRef, fix& dMin)
 {
 	int			i, h, nHits = 0;
 	tQuad*		pf;
