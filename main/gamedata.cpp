@@ -376,7 +376,7 @@ return true;
 
 bool CVisibilityData::Resize (int nLength)
 {
-return points.Resize ((nLengh < 0) ? LEVEL_VERTICES : nLength) != NULL;
+return points.Resize ((nLength < 0) ? LEVEL_VERTICES : nLength) != NULL;
 }
 
 //------------------------------------------------------------------------------

@@ -782,14 +782,17 @@ if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "r
 	return 0;
 bOk = (cf.Read (&ldh, sizeof (ldh), 1) == 1);
 if (bOk)
-	bOk = (ldh.nVersion == LIGHT_DATA_VERSION) &&
-			(ldh.nCheckSum == CalcSegmentCheckSum ()) &&
-			(ldh.nSegments == gameData.segs.nSegments) &&
-			(ldh.nVertices == gameData.segs.nVertices) &&
-			(ldh.nLights == lightManager.LightCount (0)) &&
-			(ldh.nMaxLightRange == MAX_LIGHT_RANGE) &&
-			(ldh.nMethod = LightingMethod () &&
-			((ldh.bPerPixelLighting != 0) == (gameStates.render.bPerPixelLighting != 0)));
+	bOk = (ldh.nVersion == LIGHT_DATA_VERSION)
+			&& (ldh.nCheckSum == CalcSegmentCheckSum ())
+			&& (ldh.nSegments == gameData.segs.nSegments)
+			&& (ldh.nVertices == gameData.segs.nVertices)
+			&& (ldh.nLights == lightManager.LightCount (0))
+			&& (ldh.nMaxLightRange == MAX_LIGHT_RANGE)
+#if 0
+			&& (ldh.nMethod = LightingMethod () &&
+			&& ((ldh.bPerPixelLighting != 0) == (gameStates.render.bPerPixelLighting != 0)))
+#endif
+			;
 if (bOk)
 	bOk = (gameData.segs.bSegVis [0].Read (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
 			(gameData.segs.bSegVis [1].Read (cf, gameData.segs.LightVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
