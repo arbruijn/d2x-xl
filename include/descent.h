@@ -1581,7 +1581,7 @@ class CVisibilityData {
 		CVisibilityData ();
 		~CVisibilityData () { Destroy (); }
 		bool Create (void);
-		bool Resize (void);
+		bool Resize (int nLength = -1);
 		void Destroy (void);
 
 		inline bool Visible (short nSegment) { return bVisible [nSegment] == nVisible; }
@@ -1625,7 +1625,7 @@ class CMineRenderData {
 		CMineRenderData ();
 		~CMineRenderData () { Destroy (); }
 		bool Create (void);
-		bool Resize (void);
+		bool Resize (int nLength = -1);
 		void Destroy (void);
 		bool Visible (short nSegment, int nThread = 0) { return visibility [nThread].Visible (nSegment); }
 		bool Visited (short nSegment, int nThread = 0) { return visibility [nThread].Visited (nSegment); }
@@ -1876,7 +1876,6 @@ class CSegmentData {
 		CArray<CSegment>			segments;
 		CArray<tSegFaces>			segFaces;
 		CArray<fix>					segDists;
-		CArray<CRenderPoint>		points;
 		CSkyBox						skybox;
 		CSegmentGrid				grids [2];
 #if CALC_SEGRADS
@@ -3668,7 +3667,7 @@ extern fix nDebrisLife [];
 #define TRIGGERS			gameData.trigs.triggers
 #define OBJTRIGGERS		gameData.trigs.objTriggers
 #define FACES				gameData.segs.faces
-#define RENDERPOINTS		gameData.segs.points
+#define RENDERPOINTS		gameData.render.mine.visibility [0].points
 #define TRIANGLES			FACES.tris
 
 #define SPECTATOR(_objP)	((gameStates.render.bFreeCam > 0) && OBJECTS.IsElement (_objP) && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))

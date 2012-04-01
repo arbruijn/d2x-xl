@@ -284,7 +284,7 @@ short nId = 0;
 #if 0
 if (gameStates.render.nMeshQuality) {
 	i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris / 2 : gameData.segs.nFaces) << (abs (gameStates.render.nMeshQuality)));
-	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && RENDERPOINTS.Resize (i)))
+	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.render.mine.Resize (i)))
 		return 0;
 	}
 #endif
@@ -425,7 +425,7 @@ memcpy (verts, edgeP->verts, sizeof (verts));
 int i = gameData.segs.fVertices.Length ();
 if (gameData.segs.nVertices >= i) {
 	i *= 2;
-	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && RENDERPOINTS.Resize (i)))
+	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.render.mine.Resize (i)))
 		return 0;
 	}
 gameData.segs.fVertices [gameData.segs.nVertices] = 
@@ -537,10 +537,10 @@ if (left < r)
 void CTriMeshBuilder::SetupVertexNormals (void)
 {
 	tFaceTriangle*	triP;
-	CRenderPoint*		pointP;
+	CRenderPoint*	pointP = RENDERPOINTS.Buffer ();
 	int				h, i, nVertex;
 
-for (i = gameData.segs.nVertices, pointP = RENDERPOINTS.Buffer (); i; i--, pointP++) {
+for (i = gameData.segs.nVertices; i; i--, pointP++) {
 /*
 	(*pointP->m_normal.vNormal.XYZ ()).v.c.x =
 	(*pointP->m_normal.vNormal.XYZ ()).v.c.y =
@@ -862,7 +862,7 @@ if (bOk) {
 	bufP += nSize;
 	FACES.faceVerts.Create (mdh.nFaceVerts);
 	memcpy (FACES.faceVerts.Buffer (), bufP, nSize = sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts);
-	RENDERPOINTS.Resize (mdh.nVertices);
+	gameData.render.mine.Resize (mdh.nVertices);
 	}
 if (ioBuffer) {
 	delete[] ioBuffer;
@@ -1483,7 +1483,7 @@ gameData.segs.nTris = 0;
 // the mesh builder can theoretically add one vertex per segment, so resize the vertex buffers
 gameData.segs.vertices.Resize (LEVEL_VERTICES + LEVEL_SIDES);
 gameData.segs.fVertices.Resize (LEVEL_VERTICES + LEVEL_SIDES);
-RENDERPOINTS.Resize (LEVEL_VERTICES + LEVEL_SIDES);
+gameData.render.mine.Resize (LEVEL_VERTICES + LEVEL_SIDES);
 
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
 	bool bColoredSeg = IsColoredSeg (nSegment) != 0;

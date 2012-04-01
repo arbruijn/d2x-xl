@@ -374,9 +374,9 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool CVisibilityData::Resize (void)
+bool CVisibilityData::Resize (int nLength)
 {
-return points.Resize (LEVEL_VERTICES) != NULL;
+return points.Resize ((nLengh < 0) ? LEVEL_VERTICES : nLength) != NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -405,7 +405,7 @@ CMineRenderData::CMineRenderData ()
 
 bool CMineRenderData::Create (void)
 {
-for (int i = 0; i < gameStates.app.nThreads; i++)
+for (int i = 0, j = gameStates.app.nThreads ? gameStates.app.nThreads : 1; i < j; i++)
 	visibility [i].Create ();
 CREATE (objRenderSegList, gameData.segs.nSegments, 0);
 CREATE (renderFaceListP, gameData.segs.nFaces, 0);
@@ -421,10 +421,10 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool CMineRenderData::Resize (void)
+bool CMineRenderData::Resize (int nLength)
 {
-for (int i = 0; i < gameStates.app.nThreads; i++)
-	if (!visibility [i].Resize ())
+for (int i = 0, j = gameStates.app.nThreads ? gameStates.app.nThreads : 1; i < j; i++)
+	if (!visibility [i].Resize (nLength))
 		return false;
 return true;
 }
@@ -433,7 +433,7 @@ return true;
 
 void CMineRenderData::Destroy (void)
 {
-for (int i = 0; i < gameStates.app.nThreads; i++)
+for (int i = 0, j = gameStates.app.nThreads ? gameStates.app.nThreads : 1; i < j; i++)
 	visibility [i].Destroy ();
 DESTROY (objRenderSegList);
 DESTROY (renderFaceListP);
@@ -659,7 +659,6 @@ this->nSegments = nSegments;
 this->nVertices = nVertices;
 CREATE (vertices, LEVEL_VERTICES, 0);
 CREATE (fVertices, LEVEL_VERTICES, 0);
-CREATE (points, LEVEL_VERTICES, 0);
 CREATE (segments, LEVEL_SEGMENTS, 0);
 #if CALC_SEGRADS
 CREATE (segRads [0], LEVEL_SEGMENTS, 0);
@@ -697,8 +696,7 @@ bool CSegmentData::Resize (void)
 {
 return gameData.render.mine.Resize () &&
 		 gameData.segs.vertices.Resize (LEVEL_VERTICES) &&
-		 gameData.segs.fVertices.Resize (LEVEL_VERTICES) &&
-		 RENDERPOINTS.Resize (LEVEL_VERTICES);
+		 gameData.segs.fVertices.Resize (LEVEL_VERTICES);
 }
 
 // ----------------------------------------------------------------------------
@@ -708,7 +706,6 @@ void CSegmentData::Destroy (void)
 DESTROY (gameData.segs.vertices);
 DESTROY (gameData.segs.fVertices);
 DESTROY (SEGMENTS);
-DESTROY (RENDERPOINTS);
 #if CALC_SEGRADS
 DESTROY (gameData.segs.segRads [0]);
 DESTROY (gameData.segs.segRads [1]);
