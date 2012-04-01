@@ -671,22 +671,15 @@ switch (nType) {
 
 	case OBJ_ROBOT:
 		for (i = 0; i < nCount; i++) {
-			int nRandScale;
 			vNewVel = vInitVel;
 			xOldMag = vInitVel.Mag();
 			CFixVector::Normalize (vNewVel);
-			//	We want powerups to move more in network mode.
-			nRandScale = 2;
 			vNewVel.v.coord.x += SRandShort () * 2;
 			vNewVel.v.coord.y += SRandShort () * 2;
 			vNewVel.v.coord.z += SRandShort () * 2;
 			CFixVector::Normalize (vNewVel);
-			vNewVel *= ((I2X (32) + xOldMag) * nRandScale);
+			vNewVel *= ((I2X (32) + xOldMag) * 2);
 			vNewPos = vPos;
-			//	This is dangerous, could be outside mine.
-//				vNewPos.x += SRandShort () * 8;
-//				vNewPos.y += SRandShort () * 7;
-//				vNewPos.z += SRandShort () * 6;
 			if (0 > (nObject = CreateRobot (nId, nSegment, vNewPos)))
 				return nObject;
 			if (IsMultiGame)
@@ -710,8 +703,7 @@ switch (nType) {
 			if (ROBOTINFO (nId).bossFlag)
 				gameData.bosses.Add (nObject);
 			}
-		// At JasenW's request, robots which contain robots
-		// sometimes drop shield.
+		// At JasenW's request, robots which contain robots sometimes drop shield.
 		if (RandShort () > 16384)
 			DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 1, vInitVel, vPos, nSegment);
 		break;
