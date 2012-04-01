@@ -1584,8 +1584,8 @@ class CVisibilityData {
 		bool Resize (void);
 		void Destroy (void);
 
-		inline int Visible (short nSegment) { return bVisible [nSegment] == nVisible; }
-		inline int Visited (short nSegment) { return bVisited [nSegment] == nVisited; }
+		inline bool Visible (short nSegment) { return bVisible [nSegment] == nVisible; }
+		inline bool Visited (short nSegment) { return bVisited [nSegment] == nVisited; }
 		inline void Visit (short nSegment) { bVisited [nSegment] = nVisited; }
 		ubyte BumpVisitedFlag (void);
 		ubyte BumpProcessedFlag (void);
@@ -1627,7 +1627,8 @@ class CMineRenderData {
 		bool Create (void);
 		bool Resize (void);
 		void Destroy (void);
-		int Visible (short nSegment, int nThread = 0) { return visibility [nThread].Visible (nSegment); }
+		bool Visible (short nSegment, int nThread = 0) { return visibility [nThread].Visible (nSegment); }
+		CByteArray& Visited (int nThread = 0) { return visibility [nThread].bVisited; }
 };
 
 //------------------------------------------------------------------------------

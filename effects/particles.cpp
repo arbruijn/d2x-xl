@@ -724,15 +724,15 @@ return 1;
 bool CParticle::IsVisible (int nThread) 
 {
 #if 0
-	return gameData.render.mine.bVisible [m_nSegment] == gameData.render.mine.nVisible;
+	return gameData.render.mine.Visible (m_nSegment);
 #else
 if ((m_nSegment < 0) || (m_nSegment >= gameData.segs.nSegments))
 	return false;
-if (gameData.render.mine.bVisible [m_nSegment] == gameData.render.mine.nVisible)
+if (gameData.render.mine.Visible (m_nSegment))
 	return true;
 short* childP = SEGMENTS [m_nSegment].m_children;
 for (int i = 6; i; i--, childP++) {
-	if ((*childP >= 0) && (gameData.render.mine.bVisible [*childP] == gameData.render.mine.nVisible))
+	if ((*childP >= 0) && (gameData.render.mine.Visible (*childP)))
 		return true;
 	}
 #if 1
@@ -743,7 +743,7 @@ int nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 0, nThread);
 if (nSegment < 0)
 	return false;
 m_nSegment = nSegment;
-return gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible;
+return gameData.render.mine.Visible (nSegment);
 #endif
 }
 

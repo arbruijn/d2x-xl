@@ -512,7 +512,7 @@ ogl.SetTransform (0);
 
 //------------------------------------------------------------------------------
 
-#if 0
+#if 1
 static void ComputeSegmentVisibility (int startI)
 {
 	int i, endI;

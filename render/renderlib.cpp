@@ -620,7 +620,6 @@ p.TransformAndEncode (gameData.segs.vertices [i]);
 if (!ogl.m_states.bUseTransform) 
 	gameData.segs.fVertices [i].Assign (p.ViewPos ());
 p.SetIndex (i);
-gameData.render.mine.nRotatedLast [i] = gameStates.render.nFrameCount;
 return &p;
 }
 

@@ -98,7 +98,7 @@ tail = 0;
 queue [0] = nBossHomeSeg;
 bossSegs [nSegments++] = nBossHomeSeg;
 nMaxSegments = min (MAX_BOSS_TELEPORT_SEGS, LEVEL_SEGMENTS);
-gameData.render.mine.bVisited.Clear ();
+gameData.render.mine.visibility [0].BumpVisitedFlag ();
 
 while (tail != head) {
 	segP = SEGMENTS + queue [tail++];
@@ -114,11 +114,11 @@ while (tail != head) {
 			continue;
 		if (bOneWallHack)
 			bOneWallHack--;
-		if (gameData.render.mine.bVisited [childSeg])
+		if (gameData.render.mine.Visited (childSeg))
 			continue;
 		if (nGroup != SEGMENTS [childSeg].m_group)
 			continue;
-		gameData.render.mine.bVisited [childSeg] = 1;
+		gameData.render.mine.Visit (childSeg);
 		if (bSizeCheck && !BossFitsInSeg (bossObjP, childSeg))
 			continue;
 		queue [head++] = childSeg;

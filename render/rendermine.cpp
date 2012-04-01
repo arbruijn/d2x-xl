@@ -548,7 +548,7 @@ if (gameStates.render.nShadowMap == 0)
 #else
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
 #endif
-	BumpVisitedFlag ();
+	gameData.render.mine.visibility [0].BumpVisitedFlag ();
 	RenderFaceList (nType);
 	ogl.ClearError (0);
 	}
