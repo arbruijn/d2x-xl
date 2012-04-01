@@ -695,21 +695,21 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 															 nVClip, I2X (xSplashDamage), I2X (4) * xSplashDamage, I2X (35) * xSplashDamage, -1);
 	else
 		explObjP = CreateExplosion (delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);
-	if (!IsMultiGame) { // Multiplayer handled outside of this code!!
+	if (!(IsMultiGame  || (delObjP->info.nFlags & OF_ARMAGEDDON))) { // Multiplayer handled outside of this code!!
 		if (delObjP->info.contains.nCount > 0) {
 			//	If dropping a weapon that the player has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
 			if (delObjP->info.contains.nType == OBJ_POWERUP)
 				MaybeReplacePowerupWithEnergy (delObjP);
-			if ((delObjP->info.contains.nType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))
+			if (delObjP->info.contains.nType != OBJ_ROBOT)
 				ObjectCreateEgg (delObjP);
 			}
 		if (delObjP->info.nType == OBJ_ROBOT) {
-			tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->info.nId);
-			if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))) {
-				if (RandShort () % 16 + 1 < botInfoP->containsProb) {
-					delObjP->info.contains.nCount = (RandShort () % botInfoP->containsCount) + 1;
-					delObjP->info.contains.nType = botInfoP->containsType;
-					delObjP->info.contains.nId = botInfoP->containsId;
+			tRobotInfo& botInfo = ROBOTINFO (delObjP->info.nId);
+			if (botInfo.containsCount && (botInfo.containsType != OBJ_ROBOT)) {
+				if (RandShort () % 16 + 1 < botInfo.containsProb) {
+					delObjP->info.contains.nCount = (RandShort () % botInfo.containsCount) + 1;
+					delObjP->info.contains.nType = botInfo.containsType;
+					delObjP->info.contains.nId = botInfo.containsId;
 					MaybeReplacePowerupWithEnergy (delObjP);
 					ObjectCreateEgg (delObjP);
 					}
