@@ -540,7 +540,7 @@ for (int i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i <
 // This function checks whether segment nDestSeg has a chance to receive diffuse (direct)
 // light from the light source at (nLightSeg,nSide).
 
-static void CheckLightVisibility (short nLightSeg, short nSide, short nDestSeg, fix xMaxDist, float fRange)
+static void CheckLightVisibility (short nLightSeg, short nSide, short nDestSeg, fix xMaxDist, float fRange, int nThread)
 {
 #if 0
 	int bVisible = gameData.segs.LightVis (nLightSeg, nDestSeg);
@@ -636,7 +636,7 @@ for (i = 4; i >= -4; i--) {
 		if (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg))) {
 #else
 #	if FAST_POINTVIS
-		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, 0)) {
+		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, nThread)) {
 #	else
 		int nHitType = FindHitpoint (&hitQuery, &hitResult);
 		if (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg))) {
@@ -704,7 +704,7 @@ if ((lightP->info.nSegment >= 0) && (lightP->info.nSide >= 0)) {
 #if 1
 	fix xLightRange = fix (MAX_LIGHT_RANGE * lightP->info.fRange);
 	for (int i = 0; i < gameData.segs.nSegments; i++)
-		CheckLightVisibility (lightP->info.nSegment, lightP->info.nSide, i, xLightRange, lightP->info.fRange);
+		CheckLightVisibility (lightP->info.nSegment, lightP->info.nSide, i, xLightRange, lightP->info.fRange, nThread);
 #endif
 	}
 }
