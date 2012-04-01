@@ -714,7 +714,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 					ObjectCreateEgg (delObjP);
 					}
 				}
-			if (botInfoP->thief)
+			if (botInfo.thief)
 				DropStolenItems (delObjP);
 #if !DBG
 			if (botInfoP->companion)
