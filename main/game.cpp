@@ -1127,10 +1127,6 @@ CheckInventory ();
 OmegaChargeFrame ();
 SlideTextures ();
 FlickerLights ();
-
-if (bFrameTime)
-	CalcFrameTime ();
-
 return 1;
 }
 
