@@ -375,7 +375,7 @@ static void ComputeSingleSegmentVisibility (int nThread, short nStartSeg, short 
 	CObject				viewer;
 	CTransformation	transformation;
 
-G3_SLEEP (0);
+//G3_SLEEP (0);
 ogl.SetTransform (1);
 #if DBG
 if (nStartSeg == nDbgSeg)
@@ -971,7 +971,7 @@ if (loadOp == 0) {
 		loadOp = 1;
 		}
 	}
-if (loadOp == 1) {
+else if (loadOp == 1) {
 	if (loadIdx == 0)
 		PrintLog (0, "computing segment distances \n");
 	ComputeSegmentDistance (loadIdx, 0);
@@ -981,7 +981,7 @@ if (loadOp == 1) {
 		loadOp = 2;
 		}
 	}
-if (loadOp == 2) {
+else if (loadOp == 2) {
 	if (loadIdx == 0)
 		PrintLog (0, "computing light visibility\n");
 	ComputeLightVisibilityST (loadIdx);
@@ -1046,12 +1046,12 @@ if (loadOp == 0) {
 	StartLightPrecalcThreads (SegVisThread);
 	loadOp = 1;
 	}
-if (loadOp == 1) {
+else if (loadOp == 1) {
 	PrintLog (0, "computing segment distances \n");
 	StartLightPrecalcThreads (SegDistThread);
 	loadOp = 2;
 	}
-if (loadOp == 2) {
+else if (loadOp == 2) {
 	PrintLog (1, "Computing light visibility\n");
 	StartLightPrecalcThreads (LightVisThread);
 	loadOp = 3;
