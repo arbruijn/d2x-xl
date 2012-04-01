@@ -22,19 +22,6 @@ COPYRIGHT 1993-1998PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "transprender.h"
 
 // -----------------------------------------------------------------------------------
-
-int nFreePoints=0;
-
-CRenderPoint temp_points [MAX_POINTS_IN_POLY];
-CRenderPoint *free_points [MAX_POINTS_IN_POLY];
-
-void InitFreePoints (void)
-{
-for (int i = 0; i < MAX_POINTS_IN_POLY; i++)
-	free_points [i] = temp_points + i;
-}
-
-// -----------------------------------------------------------------------------------
 //checks for overflow & divides if ok, fillig in r
 //returns true if div is ok, else false
 #ifdef _WIN32

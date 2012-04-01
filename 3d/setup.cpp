@@ -29,15 +29,9 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //start the frame
 void G3StartFrame (CTransformation& transformation, int bFlat, int bResetColorBuf, fix xStereoSeparation)
 {
-//set int w,h & fixed-point w,h/2
-//CCanvas::fCanvW2 = (float) CCanvas::Current ()->Width () * 0.5f;
-//CCanvas::fCanvH2 = (float) CCanvas::Current ()->Height () * 0.5f;
-//CCanvas::xCanvW2 = I2X (CCanvas::Current ()->Width ()) / 2;
-//CCanvas::xCanvH2 = I2X (CCanvas::Current ()->Height ()) / 2;
 CCanvas::Current ()->SetWidth ();
 CCanvas::Current ()->SetHeight ();
 transformation.ComputeAspect ();
-InitFreePoints ();
 ogl.StartFrame (bFlat, bResetColorBuf, xStereoSeparation);
 gameStates.render.bHeadlightOn = 1;
 gameStates.render.bDepthSort = 1;

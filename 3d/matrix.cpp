@@ -41,7 +41,7 @@ ScaleTransformation (transformation, 1);
 
 #define ZSCREEN 10.0
 
-void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation)
+void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation, bool bSetupRenderer)
 {
 transformation.m_info.zoom = xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
@@ -64,7 +64,8 @@ else
 transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
 ScaleTransformation (transformation, bOglScale);
 CFixMatrix::Transpose (transformation.m_info.viewf [2], transformation.m_info.view [0]);
-ogl.SetupProjection ();
+if (bSetupRenderer)
+	ogl.SetupProjection ();
 }
 
 //------------------------------------------------------------------------------

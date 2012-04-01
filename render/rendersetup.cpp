@@ -146,7 +146,7 @@ else {
 		VmMatMul (&mView, &gameData.objs.viewerP->info.position.mOrient, &mHead);
 #endif
 		SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView,  //gameStates.render.xZoom, bOglScale);
-							  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
+									FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
 		}
 	else if ((bPlayer) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
 		if (!(gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect)))
@@ -163,16 +163,16 @@ else {
 			if (xStereoSeparation)
 				gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
 			SetupTransformation (transformation, gameData.render.mine.viewer.vPos,
-								  externalView.GetPos () ? externalView.GetPos ()->mOrient : gameData.objs.viewerP->info.position.mOrient,
-								  gameStates.render.xZoom, bOglScale, xStereoSeparation);
+										externalView.GetPos () ? externalView.GetPos ()->mOrient : gameData.objs.viewerP->info.position.mOrient,
+										gameStates.render.xZoom, bOglScale, xStereoSeparation);
 			}
 		else
 			SetupTransformation (transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
-								  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
+										FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
 		}
 	else
 		SetupTransformation (transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
-							  gameStates.render.xZoom, bOglScale, xStereoSeparation);
+									gameStates.render.xZoom, bOglScale, xStereoSeparation);
 	if (!nStartSegP)
 		nStartSeg = gameStates.render.nStartSeg;
 	else if (0 > (nStartSeg = FindSegByPos (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.nSegment, 1, 0)))

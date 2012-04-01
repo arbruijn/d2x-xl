@@ -175,7 +175,7 @@ void G3StartFrame (CTransformation& transformation, int bFlat, int bResetColorBu
 void SetupViewAngles (const CFixVector& vPos, const CAngleVector& vOrient, fix zoom);
 
 //set view from x,y,z, viewer matrix, and zoom.  Must call one of g3_setView_* ()
-void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation = 0);
+void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation = 0, bool bSetupRenderer = true);
 
 //end the frame
 void G3EndFrame (CTransformation& transformation, int nWindow);
