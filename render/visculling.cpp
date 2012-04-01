@@ -672,22 +672,24 @@ else {
 
 void CVisibilityData::BuildSegList (short nStartSeg, int nWindow, bool bIgnoreDoors)
 {
-	int			nCurrent, nHead, nTail, nStart, nSide;
-	int			l, i;
-	short			nChild;
-	short			nChildSeg;
-	int			nSegment;
-	short			childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
-	int			nChildren, bCullIfBehind;					//how many sides in childList
-	CFixVector	viewDir, viewPos;
+	int				nCurrent, nHead, nTail, nStart, nSide;
+	int				l, i;
+	short				nChild;
+	short				nChildSeg;
+	int				nSegment;
+	short				childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
+	int				nChildren, bCullIfBehind;					//how many sides in childList
+	CFixVector		viewDir, viewPos;
 #if DBG
-	CShortArray& renderSegList = segments;
-	CShortArray& renderPos = position;
-	CShortArray& renderDepth = nDepth;
+	CShortArray&	renderSegList = segments;
+	CShortArray&	renderPos = position;
+	CShortArray&	renderDepth = nDepth;
+	CArray<CRenderPoint>& renderPoints = points;
 #else
-	short*		renderSegList = segments.Buffer ();
-	short*		renderPos = position.Buffer ();
-	short*		renderDepth = nDepth.Buffer ();
+	short*			renderSegList = segments.Buffer ();
+	short*			renderPos = position.Buffer ();
+	short*			renderDepth = nDepth.Buffer ();
+	CRenderPoint*	renderPoints = points.Buffer ();
 #endif
 
 viewDir = transformation.m_info.view [0].m.dir.f;
@@ -706,9 +708,9 @@ if (automap.Display () && gameOpts->render.automap.bTextured && !automap.Radar (
 	int bSkyBox = gameOpts->render.automap.bSkybox;
 
 	for (i = nSegments = 0; i < gameData.segs.nSegments; i++)
-		if ((automap.Visible (i)) &&
-			 (bSkyBox || (SEGMENTS [i].m_function != SEGMENT_FUNC_SKYBOX)) &&
-			 (bUnlimited || (automap.m_visible [i] <= nSegmentLimit))) {
+		if (automap.Visible (i)
+			 && (bSkyBox || (SEGMENTS [i].m_function != SEGMENT_FUNC_SKYBOX)) 
+			 && (bUnlimited || (automap.m_visible [i] <= nSegmentLimit))) {
 			renderSegList [nSegments++] = i;
 			bVisible [i] = nVisible;
 			Visit (i);
@@ -729,7 +731,7 @@ portals [0].top = 0;
 portals [0].right = CCanvas::Current ()->Width () - 1;
 portals [0].bot = CCanvas::Current ()->Height () - 1;
 
-CRenderPoint* pointP = &gameData.segs.points [0];
+CRenderPoint* pointP = &renderPoints [0];
 for (i = gameData.segs.nVertices; i; i--, pointP++) {
 	pointP->SetFlags ();
 	//pointP->m_codes = 0;
@@ -793,10 +795,10 @@ for (l = 0; l < nRenderDepth; l++) {
 
 			if (bCullIfBehind) {
 				ushort* s2v = segP->Side (nChild)->m_corners;
-				if (gameData.segs.points [s2v [0]].Codes () &
-					 gameData.segs.points [s2v [1]].Codes () &
-					 gameData.segs.points [s2v [2]].Codes () &
-					 gameData.segs.points [s2v [3]].Codes () & CC_BEHIND)
+				if (renderPoints [s2v [0]].Codes () &
+					 renderPoints [s2v [1]].Codes () &
+					 renderPoints [s2v [2]].Codes () &
+					 renderPoints [s2v [3]].Codes () & CC_BEHIND)
 					continue; // all face vertices behind the viewer => face invisible to the viewer
 				}
 			childList [nChildren++] = nChild;
@@ -819,7 +821,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			ubyte offScreenFlags = 0xff;
 			for (int nCorner = 0; nCorner < 4; nCorner++) {
 				ushort nVertex = s2v [nCorner];
-				CRenderPoint& point = gameData.segs.points [nVertex];
+				CRenderPoint& point = renderPoints [nVertex];
 #if DBG
 				point.SetFlags ();
 				point.SetCodes ();

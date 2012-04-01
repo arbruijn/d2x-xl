@@ -1114,7 +1114,7 @@ for (h = faceP->m_info.nTris; h; h--, triP++) {
 		if (automap.Display ())
 			transformation.Transform (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
 		else
-			vertices [i].Assign (gameData.segs.points [triP->index [i]].m_vertex [1]);
+			vertices [i].Assign (RENDERPOINTS [triP->index [i]].m_vertex [1]);
 #endif
 		}
 	if (!AddPoly (faceP, triP, bmP, vertices, 3, FACES.texCoord + triP->nIndex,
@@ -1150,7 +1150,7 @@ for (i = 0, j = faceP->m_info.nIndex; i < 4; i++, j++) {
 	if (automap.Display ())
 		transformation.Transform(vertices [i], gameData.segs.fVertices [faceP->m_info.index [i]], 0);
 	else
-		vertices [i].Assign (gameData.segs.points [faceP->m_info.index [i]].m_vertex [1]);
+		vertices [i].Assign (RENDERPOINTS [faceP->m_info.index [i]].m_vertex [1]);
 #endif
 	}
 return AddPoly (faceP, NULL, bmP,

@@ -27,7 +27,7 @@ void RenderFaceShadow (tFaceProps *propsP)
 	CFloatVector	v [9];
 
 for (i = 0; i < nVertices; i++) {
-	p = gameData.segs.points + propsP->vp [i];
+	p = RENDERPOINTS + propsP->vp [i];
 	if (p->Index () < 0)
 		v [i].Assign (p->ViewPos ());
 	else

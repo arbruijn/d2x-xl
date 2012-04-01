@@ -364,7 +364,8 @@ CREATE (nDepth, gameData.segs.nSegments, 0);
 for (int i = 0; i < 2; i++)
 	CREATE (zRef [i], gameData.segs.nSegments, 0);
 CREATE (portals, gameData.segs.nSegments, 0);
-CREATE (renderPos, gameData.segs.nSegments, 0);
+CREATE (position, gameData.segs.nSegments, 0);
+CREATE (points, gameData.segs.nSegments, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -379,7 +380,8 @@ DESTROY (nDepth, gameData.segs.nSegments);
 for (int i = 0; i < 2; i++)
 	DESTROY (zRef [i], gameData.segs.nSegments);
 DESTROY (portals);
-DESTROY (renderPos);
+DESTROY (position);
+DESTROY (points);
 }
 
 //------------------------------------------------------------------------------
@@ -675,7 +677,7 @@ bool CSegmentData::Resize (void)
 {
 return gameData.segs.vertices.Resize (LEVEL_VERTICES) &&
 		 gameData.segs.fVertices.Resize (LEVEL_VERTICES) &&
-		 gameData.segs.points.Resize (LEVEL_VERTICES);
+		 RENDERPOINTS.Resize (LEVEL_VERTICES);
 }
 
 // ----------------------------------------------------------------------------
@@ -685,7 +687,7 @@ void CSegmentData::Destroy (void)
 DESTROY (gameData.segs.vertices);
 DESTROY (gameData.segs.fVertices);
 DESTROY (SEGMENTS);
-DESTROY (gameData.segs.points);
+DESTROY (RENDERPOINTS);
 #if CALC_SEGRADS
 DESTROY (gameData.segs.segRads [0]);
 DESTROY (gameData.segs.segRads [1]);

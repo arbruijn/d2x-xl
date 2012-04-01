@@ -397,7 +397,7 @@ bool CFrustum::Contains (CSide* sideP)
 	CFixVector intersection;
 
 for (j = 0; j < 4; j++) {
-	points [j] = &gameData.segs.points [sideP->m_corners [j]];
+	points [j] = &RENDERPOINTS [sideP->m_corners [j]];
 	if (!(points [j]->Projected ()))
 		points [j]->Transform (sideP->m_corners [j]);
 	}
@@ -429,7 +429,7 @@ for (j = 0; j < 4; j++)
 		return true; // some vertex inside frustum
 
 if (sideP->m_nFaces == 2) {
-	points [1] = &gameData.segs.points [sideP->m_vertices [3]];
+	points [1] = &RENDERPOINTS [sideP->m_vertices [3]];
 	if (!points [1]->Projected ())
 		points [1]->Transform (sideP->m_vertices [1]);
 	}

@@ -284,7 +284,7 @@ short nId = 0;
 #if 0
 if (gameStates.render.nMeshQuality) {
 	i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris / 2 : gameData.segs.nFaces) << (abs (gameStates.render.nMeshQuality)));
-	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.segs.points.Resize (i)))
+	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && RENDERPOINTS.Resize (i)))
 		return 0;
 	}
 #endif
@@ -425,7 +425,7 @@ memcpy (verts, edgeP->verts, sizeof (verts));
 int i = gameData.segs.fVertices.Length ();
 if (gameData.segs.nVertices >= i) {
 	i *= 2;
-	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.segs.points.Resize (i)))
+	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && RENDERPOINTS.Resize (i)))
 		return 0;
 	}
 gameData.segs.fVertices [gameData.segs.nVertices] = 
@@ -540,7 +540,7 @@ void CTriMeshBuilder::SetupVertexNormals (void)
 	CRenderPoint*		pointP;
 	int				h, i, nVertex;
 
-for (i = gameData.segs.nVertices, pointP = gameData.segs.points.Buffer (); i; i--, pointP++) {
+for (i = gameData.segs.nVertices, pointP = RENDERPOINTS.Buffer (); i; i--, pointP++) {
 /*
 	(*pointP->m_normal.vNormal.XYZ ()).v.c.x =
 	(*pointP->m_normal.vNormal.XYZ ()).v.c.y =
@@ -555,7 +555,7 @@ for (h = 0, triP = FACES.tris.Buffer (); h < gameData.segs.nTris; h++, triP++) {
 		if (nVertex == nDbgVertex)
 			nVertex = nVertex;
 #endif
-		gameData.segs.points [nVertex].Normal () += FACES.normals [3 * h];
+		RENDERPOINTS [nVertex].Normal () += FACES.normals [3 * h];
 		}
 	}
 ComputeVertexNormals ();
@@ -862,7 +862,7 @@ if (bOk) {
 	bufP += nSize;
 	FACES.faceVerts.Create (mdh.nFaceVerts);
 	memcpy (FACES.faceVerts.Buffer (), bufP, nSize = sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts);
-	gameData.segs.points.Resize (mdh.nVertices);
+	RENDERPOINTS.Resize (mdh.nVertices);
 	}
 if (ioBuffer) {
 	delete[] ioBuffer;
@@ -1483,7 +1483,7 @@ gameData.segs.nTris = 0;
 // the mesh builder can theoretically add one vertex per segment, so resize the vertex buffers
 gameData.segs.vertices.Resize (LEVEL_VERTICES + LEVEL_SIDES);
 gameData.segs.fVertices.Resize (LEVEL_VERTICES + LEVEL_SIDES);
-gameData.segs.points.Resize (LEVEL_VERTICES + LEVEL_SIDES);
+RENDERPOINTS.Resize (LEVEL_VERTICES + LEVEL_SIDES);
 
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
 	bool bColoredSeg = IsColoredSeg (nSegment) != 0;

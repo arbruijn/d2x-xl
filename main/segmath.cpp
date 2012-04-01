@@ -197,7 +197,7 @@ return (((index [0] + 3) % 4) == index [1]) || (((index [1] + 3) % 4) == index [
 
 void AddToVertexNormal (int nVertex, CFixVector& vNormal)
 {
-	CRenderNormal& n = gameData.segs.points [nVertex].Normal ();
+	CRenderNormal& n = RENDERPOINTS [nVertex].Normal ();
 
 #if DBG
 if (nVertex == nDbgVertex)
@@ -211,7 +211,7 @@ n++;
 
 void ComputeVertexNormals (void)
 {
-	CRenderPoint* pp = gameData.segs.points.Buffer ();
+	CRenderPoint* pp = RENDERPOINTS.Buffer ();
 
 for (int i = gameData.segs.nVertices; i; i--, pp++)
 	pp->Normal ().Normalize ();
@@ -221,7 +221,7 @@ for (int i = gameData.segs.nVertices; i; i--, pp++)
 
 void ResetVertexNormals (void)
 {
-	CRenderPoint* pp = gameData.segs.points.Buffer ();
+	CRenderPoint* pp = RENDERPOINTS.Buffer ();
 
 for (int i = gameData.segs.nVertices; i; i--, pp++)
 	pp->Normal ().Reset ();

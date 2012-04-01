@@ -614,7 +614,7 @@ colorP->Alpha () = 1.0f;
 
 CRenderPoint *RotateVertex (int i)
 {
-CRenderPoint& p = gameData.segs.points [i];
+CRenderPoint& p = RENDERPOINTS [i];
 #if !DBG
 if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) 
 #endif
@@ -667,8 +667,8 @@ void ProjectVertexList (int nVertices, ushort *vertexIndexP)
 {
 for (int i = 0; i < nVertices; i++) {
 	int j = vertexIndexP [i];
-	if (!gameData.segs.points [j].Projected ())
-		gameData.segs.points [j].Project ();
+	if (!RENDERPOINTS [j].Projected ())
+		RENDERPOINTS [j].Project ();
 	}
 }
 
@@ -680,7 +680,7 @@ ubyte ProjectRenderPoint (int nVertex)
 if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
-CRenderPoint& point = gameData.segs.points [nVertex];
+CRenderPoint& point = RENDERPOINTS [nVertex];
 #if 0 //DBG
 point.m_flags = 0;
 #else

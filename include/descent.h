@@ -1575,6 +1575,7 @@ class CVisibilityData {
 		CArray<tSegZRef>		zRef [2]; // segment indexes sorted by distance from viewer
 		CArray<tPortal>		portals;
 		CShortArray				position; //[MAX_SEGMENTS_D2X];
+		CArray<CRenderPoint>	points;
 
 	public:
 		CVisibilityData ();

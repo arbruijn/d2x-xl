@@ -1249,7 +1249,7 @@ PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;
 PLANE_DIST_TOLERANCE = (xPlaneDistTolerance < 0) ? DEFAULT_PLANE_DIST_TOLERANCE : xPlaneDistTolerance;
 #endif
 gameOpts->render.nMathFormat = 0;
-gameData.segs.points.Clear ();
+RENDERPOINTS.Clear ();
 for (int i = 0; i <= gameData.segs.nLastSegment; i++)
 	SEGMENTS [i].Setup ();
 ComputeVertexNormals ();

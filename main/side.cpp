@@ -357,7 +357,7 @@ else {
 
 CFixVector& CSide::Vertex (int nVertex)
 {
-return gameStates.render.bRendering ? gameData.segs.points [nVertex].ViewPos () : VERTICES [nVertex];
+return gameStates.render.bRendering ? RENDERPOINTS [nVertex].ViewPos () : VERTICES [nVertex];
 }
 
 // -------------------------------------------------------------------------------
@@ -671,8 +671,8 @@ nVerts = 5 - m_nFaces;
 h = nFace * 3;
 for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
 	if (gameStates.render.bRendering) {
-		v0 = &gameData.segs.points [m_vertices [h + nEdge]].ViewPos ();
-		v1 = &gameData.segs.points [m_vertices [h + ((nEdge + 1) % nVerts)]].ViewPos ();
+		v0 = &RENDERPOINTS [m_vertices [h + nEdge]].ViewPos ();
+		v1 = &RENDERPOINTS [m_vertices [h + ((nEdge + 1) % nVerts)]].ViewPos ();
 		}
 	else {
 		v0 = VERTICES + m_vertices [h + nEdge];
@@ -716,11 +716,11 @@ vRef.x = intersection.v.vec [i];
 vRef.y = intersection.v.vec [j];
 nVerts = 5 - m_nFaces;
 h = nFace * 3;
-v1 = gameStates.render.bRendering ? &gameData.segs.points [m_vertices [h]].ViewPos () : VERTICES + m_vertices [h];
+v1 = gameStates.render.bRendering ? &RENDERPOINTS [m_vertices [h]].ViewPos () : VERTICES + m_vertices [h];
 for (nEdge = 1, nEdgeMask = 0; nEdge <= nVerts; nEdge++) {
 	v0 = v1;
 	v1 = gameStates.render.bRendering 
-		  ? &gameData.segs.points [m_vertices [h + nEdge % nVerts]].ViewPos ()
+		  ? &RENDERPOINTS [m_vertices [h + nEdge % nVerts]].ViewPos ()
 		  : VERTICES + m_vertices [h + nEdge % nVerts];
 	vEdge.x = v1->v.vec [i] - v0->v.vec [i];
 	vEdge.y = v1->v.vec [j] - v0->v.vec [j];
@@ -757,8 +757,8 @@ for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
 nVerts = 5 - m_nFaces;
 iFace *= 3;
 if (gameStates.render.bRendering) {
-	v0 = &gameData.segs.points [m_vertices [iFace + nEdge]].ViewPos ();
-	v1 = &gameData.segs.points [m_vertices [iFace + ((nEdge + 1) % nVerts)]].ViewPos ();
+	v0 = &RENDERPOINTS [m_vertices [iFace + nEdge]].ViewPos ();
+	v1 = &RENDERPOINTS [m_vertices [iFace + ((nEdge + 1) % nVerts)]].ViewPos ();
 	}
 else {
 	v0 = VERTICES + m_vertices [iFace + nEdge];
@@ -836,7 +836,7 @@ if (m_nFaces == 1) {
 	if (nVertex > m_vertices [3])
 		nVertex = m_vertices [3];
 	}
-if (!(pli = FindPlaneLineIntersection (intersection, gameStates.render.bRendering ? &gameData.segs.points [nVertex].ViewPos () : VERTICES + nVertex, &vNormal, p0, p1, rad)))
+if (!(pli = FindPlaneLineIntersection (intersection, gameStates.render.bRendering ? &RENDERPOINTS [nVertex].ViewPos () : VERTICES + nVertex, &vNormal, p0, p1, rad)))
 	return IT_NONE;
 CFixVector vHit = intersection;
 //if rad != 0, project the refP down onto the plane of the polygon

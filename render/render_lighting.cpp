@@ -98,7 +98,7 @@ if (segP->Index () == nDbgSeg)
 #endif
 for (int i = 0; i < 8; i++) {
 #if 0 //DBG
-	gameData.segs.points [segP->m_vertices [i]].m_flags = 0;
+	RENDERPOINTS [segP->m_vertices [i]].m_flags = 0;
 #endif
 	code &= ProjectRenderPoint (segP->m_vertices [i]);
 	if (!code)

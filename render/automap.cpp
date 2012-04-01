@@ -1092,16 +1092,16 @@ if ((bFade != m_bFade) || (nColor != m_nColor) || (fScale != m_fScale)) {
 void CAutomap::DrawLine (short v0, short v1)
 {
 if (!m_bDrawBuffers)
-	G3DrawLine (gameData.segs.points + v0, gameData.segs.points + v1);
+	G3DrawLine (RENDERPOINTS + v0, RENDERPOINTS + v1);
 else {
 	if (m_nVerts > 998) {
 		ogl.FlushBuffers (GL_LINES, m_nVerts, 3, 0, 1);
 		m_nVerts = 0;
 		}
-	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v0].ViewPos ());
+	ogl.VertexBuffer () [m_nVerts].Assign (RENDERPOINTS [v0].ViewPos ());
 	ogl.ColorBuffer () [m_nVerts] = m_color;
 	m_nVerts++;
-	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v1].ViewPos ());
+	ogl.VertexBuffer () [m_nVerts].Assign (RENDERPOINTS [v1].ViewPos ());
 	ogl.ColorBuffer () [m_nVerts] = m_color;
 	m_nVerts++;
 	}
@@ -1145,7 +1145,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 		}
 
 	cc = RotateVertexList (2, edgeP->verts);
-	distance = gameData.segs.points [edgeP->verts [1]].ViewPos ().v.coord.z;
+	distance = RENDERPOINTS [edgeP->verts [1]].ViewPos ().v.coord.z;
 	if (minDistance > distance)
 		minDistance = distance;
 	if (!cc.ccAnd)  {	//all off screen?
@@ -1197,7 +1197,7 @@ while (incr > 0) {
 			v1 = m_brightEdges [j]->verts [0];
 			v2 = m_brightEdges [j + incr]->verts [0];
 
-			if (gameData.segs.points [v1].ViewPos ().v.coord.z < gameData.segs.points [v2].ViewPos ().v.coord.z) {
+			if (RENDERPOINTS [v1].ViewPos ().v.coord.z < RENDERPOINTS [v2].ViewPos ().v.coord.z) {
 				// If not in correct order, them swap 'em
 				Swap (m_brightEdges [j + incr], m_brightEdges [j]);
 				j -= incr;
@@ -1213,8 +1213,8 @@ while (incr > 0) {
 // Draw the bright ones
 for (i = 0; i < nbright; i++) {
 	edgeP = m_brightEdges [i];
-	p1 = gameData.segs.points + edgeP->verts [0];
-	p2 = gameData.segs.points + edgeP->verts [1];
+	p1 = RENDERPOINTS + edgeP->verts [0];
+	p2 = RENDERPOINTS + edgeP->verts [1];
 	fix xDist = p1->ViewPos ().v.coord.z - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
 	if (xDist < 0)
