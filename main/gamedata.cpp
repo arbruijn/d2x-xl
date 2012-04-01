@@ -356,29 +356,40 @@ CMineRenderData::CMineRenderData ()
 
 bool CVisibilityData::Create (void)
 {
-CREATE (segments, gameData.segs.nSegments, 0);
-CREATE (bVisited, gameData.segs.nSegments, 0);
-CREATE (bVisible, gameData.segs.nSegments, 0);
-CREATE (bProcessed, gameData.segs.nSegments, 0);
-CREATE (nDepth, gameData.segs.nSegments, 0);
+nVisited = 255;
+nProcessed = 255;
+nVisible = 255;
+CREATE (segments, LEVEL_SEGMENTS, 0);
+CREATE (bVisited, LEVEL_SEGMENTS, 0);
+CREATE (bVisible, LEVEL_SEGMENTS, 0);
+CREATE (bProcessed, LEVEL_SEGMENTS, 0);
+CREATE (nDepth, LEVEL_SEGMENTS, 0);
 for (int i = 0; i < 2; i++)
-	CREATE (zRef [i], gameData.segs.nSegments, 0);
-CREATE (portals, gameData.segs.nSegments, 0);
-CREATE (position, gameData.segs.nSegments, 0);
-CREATE (points, gameData.segs.nSegments, 0);
+	CREATE (zRef [i], LEVEL_SEGMENTS, 0);
+CREATE (portals, LEVEL_SEGMENTS, 0);
+CREATE (position, LEVEL_SEGMENTS, 0);
+CREATE (points, LEVEL_VERTICES, 0);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool CVisibilityData::Resize (void)
+{
+return points.Resize (LEVEL_VERTICES);
 }
 
 //------------------------------------------------------------------------------
 
 bool CVisibilityData::Destroy (void)
 {
-DESTROY (segments, gameData.segs.nSegments);
-DESTROY (bVisited, gameData.segs.nSegments);
-DESTROY (bVisible, gameData.segs.nSegments);
-DESTROY (bProcessed, gameData.segs.nSegments);
-DESTROY (nDepth, gameData.segs.nSegments);
+DESTROY (segments);
+DESTROY (bVisited);
+DESTROY (bVisible);
+DESTROY (bProcessed);
+DESTROY (nDepth);
 for (int i = 0; i < 2; i++)
-	DESTROY (zRef [i], gameData.segs.nSegments);
+	DESTROY (zRef [i]);
 DESTROY (portals);
 DESTROY (position);
 DESTROY (points);
@@ -388,9 +399,6 @@ DESTROY (points);
 
 bool CMineRenderData::Create (void)
 {
-nVisited = 255;
-nProcessed = 255;
-nVisible = 255;
 for (int i = 0; i < gameStates.app.nThreads; i++)
 	visibility [i].Create ();
 CREATE (objRenderSegList, gameData.segs.nSegments, 0);
@@ -404,6 +412,16 @@ CREATE (bCalcVertexColor, gameData.segs.nVertices, 0);
 CREATE (bAutomapVisited, gameData.segs.nSegments, 0);
 CREATE (bAutomapVisible, gameData.segs.nSegments, 0);
 CREATE (bRadarVisited, gameData.segs.nSegments, 0);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool CMineRenderData::Resize (void)
+{
+for (int i = 0; i < gameStates.app.nThreads; i++)
+	if (!visibility [i].Resize ())
+		return false;
 return true;
 }
 
@@ -675,7 +693,8 @@ return faces.Create ();
 
 bool CSegmentData::Resize (void)
 {
-return gameData.segs.vertices.Resize (LEVEL_VERTICES) &&
+return gameData.render.mine.Resize () &&
+		 gameData.segs.vertices.Resize (LEVEL_VERTICES) &&
 		 gameData.segs.fVertices.Resize (LEVEL_VERTICES) &&
 		 RENDERPOINTS.Resize (LEVEL_VERTICES);
 }

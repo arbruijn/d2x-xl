@@ -1581,6 +1581,7 @@ class CVisibilityData {
 		CVisibilityData ();
 		~CVisibilityData () { Destroy (); }
 		bool Create (void);
+		bool Resize (void);
 		void Destroy (void);
 
 		inline int Visible (short nSegment) { return bVisible [nSegment] == nVisible; }
@@ -1625,6 +1626,7 @@ class CMineRenderData {
 		CMineRenderData ();
 		~CMineRenderData () { Destroy (); }
 		bool Create (void);
+		bool Resize (void);
 		void Destroy (void);
 		int Visible (short nSegment, int nThread = 0) { return visibility [nThread].Visible (nSegment); }
 };
