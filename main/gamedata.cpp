@@ -348,7 +348,7 @@ tPulse = 0;
 
 //------------------------------------------------------------------------------
 
-CMineRenderData::CMineRenderData ()
+CVisibilityData::CVisibilityData ()
 {
 }
 
@@ -393,6 +393,12 @@ for (int i = 0; i < 2; i++)
 DESTROY (portals);
 DESTROY (position);
 DESTROY (points);
+}
+
+//------------------------------------------------------------------------------
+
+CMineRenderData::CMineRenderData ()
+{
 }
 
 //------------------------------------------------------------------------------

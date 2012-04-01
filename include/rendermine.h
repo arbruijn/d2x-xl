@@ -80,10 +80,7 @@ void RenderMineSegment (int nn);
 void RenderEffects (int nWindow);
 void RenderSkyBox (int nWindow);
 
-void InitSegZRef (int i, int j, int nThread);
-void QSortSegZRef (short left, short right);
-
-void BuildRenderObjLists (int nSegCount);
+void BuildRenderObjLists (int nSegCount, int nThread = 0);
 void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors = false, int nThread = 0);
 
 void ResetFaceList (void);

@@ -128,11 +128,11 @@ do {
 		}
 	if (tiRender.nTask == rtSortSegZRef) {
 		ComputeThreadRange (nId, gameData.render.mine.visibility [0].nSegments, nStart, nEnd);
-		QSortSegZRef (nStart, nEnd);
+		gameData.render.mine.visibility [nId].QSortZRef (nStart, nEnd);
 		}
 	else if (tiRender.nTask == rtInitSegZRef) {
 		ComputeThreadRange (nId, gameData.render.mine.visibility [0].nSegments, nStart, nEnd);
-		InitSegZRef (nStart, nEnd, nId);
+		gameData.render.mine.visibility [nId].InitZRef (nStart, nEnd, nId);
 		}
 	else if (tiRender.nTask == rtStaticVertLight) {
 		ComputeThreadRange (nId, gameData.segs.nVertices, nStart, nEnd);

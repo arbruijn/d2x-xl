@@ -567,9 +567,9 @@ do {
 	}
 while (l < r);
 if (l < right)
-	QSortSegZRef (l, right);
+	QSortZRef (l, right);
 if (left < r)
-	QSortSegZRef (left, r);
+	QSortZRef (left, r);
 }
 
 //------------------------------------------------------------------------------
@@ -642,10 +642,10 @@ if (nSegments < 2)
 	int h, i, j;
 
 if (gameStates.app.nThreads < 2) {
-	InitSegZRef (0, nSegments, 0);
+	InitZRef (0, nSegments, 0);
 	gameData.render.zMin = tiRender.zMin [0];
 	gameData.render.zMax = tiRender.zMax [0];
-	QSortSegZRef (0, nSegments - 1);
+	QSortZRef (0, nSegments - 1);
 	}
 else
 #pragma omp parallel
@@ -661,7 +661,7 @@ GetMaxDepth ();
 if (RunRenderThreads (rtInitSegZRef)) 
 	GetMaxDepth ();
 else {
-	InitSegZRef (0, gameData.render.mine.visibility [0].nSegments, 0);
+	InitZRef (0, gameData.render.mine.visibility [0].nSegments, 0);
 	gameData.render.zMin = tiRender.zMin [0];
 	gameData.render.zMax = tiRender.zMax [0];
 	}

@@ -1592,13 +1592,13 @@ class CVisibilityData {
 		ubyte BumpVisibleFlag (void);
 		int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist);
 		void BuildSegList (CTransformation& transformation, short nStartSeg, int nWindow, bool bIgnoreDoors = false);
+		void InitZRef (int i, int j, int nThread);
+		void QSortZRef (short left, short right);
 
 	private:
 		int BuildAutomapSegList (void);
 		void Sort (void);
-		void InitZRef (int i, int j, int nThread);
 		void MergeZRef (void);
-		void QSortZRef (short left, short right);
 
 	};
 
