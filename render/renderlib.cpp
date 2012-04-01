@@ -612,7 +612,7 @@ colorP->Alpha () = 1.0f;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined
 //by the vertices passed relative to the viewer
 
-CRenderPoint *RotateVertex (int i)
+static inline CRenderPoint* TransformVertex (int i)
 {
 CRenderPoint& p = RENDERPOINTS [i];
 #if !DBG
@@ -648,35 +648,17 @@ return &p;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined
 //by the vertices passed relative to the viewer
 
-tRenderCodes RotateVertexList (int nVertices, ushort* vertexIndexP)
+tRenderCodes TransformVertexList (int nVertices, ushort* vertexIndexP)
 {
 	tRenderCodes cc = {0, 0xff};
 
 for (int i = 0; i < nVertices; i++) {
-	CRenderPoint* p = RotateVertex (vertexIndexP [i]);
+	CRenderPoint* p = TransformVertex (vertexIndexP [i]);
 	ubyte c = p->Codes ();
 	cc.ccAnd &= c;
 	cc.ccOr |= c;
 	}
 return cc;
-}
-
-// -----------------------------------------------------------------------------------
-//Given a lit of point numbers, project any that haven't been projected
-void ProjectVertexList (int nVertices, ushort *vertexIndexP)
-{
-for (int i = 0; i < nVertices; i++) {
-	int j = vertexIndexP [i];
-	if (!RENDERPOINTS [j].Projected ())
-		RENDERPOINTS [j].Project ();
-	}
-}
-
-//------------------------------------------------------------------------------
-
-ubyte ProjectRenderPoint (CTransformation& transformation, int nVertex)
-{
-return RENDERPOINTS [nVertex].ProjectAndEncode (transformation, nVertex);
 }
 
 //------------------------------------------------------------------------------

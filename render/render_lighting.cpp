@@ -87,9 +87,6 @@ int SegmentIsVisible (CSegment *segP)
 {
 if (automap.Display ())
 	return 1;
-#if 0
-return RotateVertexList (8, segP->m_vertices).ccAnd == 0;
-#else
 ubyte code = 0xFF;
 
 #if DBG
@@ -100,12 +97,11 @@ for (int i = 0; i < 8; i++) {
 #if 0 //DBG
 	RENDERPOINTS [segP->m_vertices [i]].m_flags = 0;
 #endif
-	code &= ProjectRenderPoint (segP->m_vertices [i]);
+	code &= RENDERPOINTS [nVertex].ProjectAndEncode (transformation, segP->m_vertices [i]);
 	if (!code)
 		return 1;
 	}
 return 0;
-#endif
 }
 
 //------------------------------------------------------------------------------

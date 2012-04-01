@@ -64,7 +64,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 //increment counter for checking if points bTransformed
-//This must be called at the start of the frame if RotateVertexList() will be used
+
 void RenderStartFrame (void)
 {
 if (!++gameStates.render.nFrameCount) {		//wrap!

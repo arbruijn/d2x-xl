@@ -69,7 +69,6 @@ extern CAngleVector Player_head_angles;
 // Routines for conditionally rotating & projecting points
 //
 
-// This must be called at the start of the frame if RotateVertexList() will be used
 void RenderStartFrame (void);
 void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale);
 

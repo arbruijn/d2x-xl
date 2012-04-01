@@ -42,12 +42,9 @@ typedef struct tFaceListEntry {
 
 // Given a list of point numbers, rotate any that haven't been rotated
 // this frame
-CRenderPoint *RotateVertex (int i);
-tRenderCodes RotateVertexList (int nVerts, ushort* vertexIndexP);
+tRenderCodes TransformVertexList (int nVerts, ushort* vertexIndexP);
 void RotateSideNorms (void);
 // Given a list of point numbers, project any that haven't been projected
-void ProjectVertexList (int nv, ushort *pointIndex);
-ubyte ProjectRenderPoint (int nVertex);
 
 void TransformSideCenters (void);
 #if USE_SEGRADS

@@ -1144,7 +1144,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 			continue;		// If a line isn't secret and is Normal color, then don't draw it
 		}
 
-	cc = RotateVertexList (2, edgeP->verts);
+	cc = TransformVertexList (2, edgeP->verts);
 	distance = RENDERPOINTS [edgeP->verts [1]].ViewPos ().v.coord.z;
 	if (minDistance > distance)
 		minDistance = distance;
