@@ -837,7 +837,7 @@ for (l = 0; l < nRenderDepth; l++) {
 #else
 				if (!(point.Projected ()))
 #endif
-					ProjectRenderPoint (nVertex);
+					point.ProjectAndEncode (transformation, nVertex);
 				if (point.Behind ()) {
 					bProjected = 0;
 #if 0
