@@ -1628,7 +1628,10 @@ class CMineRenderData {
 		bool Resize (void);
 		void Destroy (void);
 		bool Visible (short nSegment, int nThread = 0) { return visibility [nThread].Visible (nSegment); }
-		CByteArray& Visited (int nThread = 0) { return visibility [nThread].bVisited; }
+		bool Visited (short nSegment, int nThread = 0) { return visibility [nThread].Visited (nSegment); }
+		void Visit (short nSegment, int nThread = 0) { return visibility [nThread].Visit (nSegment); }
+		CByteArray& VisibleFlags (int nThread = 0) { return visibility [nThread].bVisible; }
+		CByteArray& VisitedFlags (int nThread = 0) { return visibility [nThread].bVisited; }
 };
 
 //------------------------------------------------------------------------------
