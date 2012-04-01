@@ -468,9 +468,9 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	CCanvas::Current ()->SetWidth (1024);
 	CCanvas::Current ()->SetHeight (1024);
 	transformation.ComputeAspect ();
-	gameStates.render.bRenderIndirect = -1;
-	gameStates.render.nShadowMap = -1;
-	G3StartFrame (transformation, 0, 0, 0);
+	//gameStates.render.bRenderIndirect = -1;
+	//gameStates.render.nShadowMap = -1;
+	//G3StartFrame (transformation, 0, 0, 0);
 	//RenderStartFrame ();
 	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1, 0, false);
 
@@ -1042,44 +1042,48 @@ if (nState)
 
 //paletteManager.ResumeEffect ();
 if (loadOp == 0) {
-	PrintLog (0, "computing segment visibility\n");
-	StartLightPrecalcThreads (SegVisThread);
 	loadOp = 1;
+	menu [0].Rebuild ();
+	key = 0;
+	return nCurItem;
 	}
 else if (loadOp == 1) {
-	PrintLog (0, "computing segment distances \n");
-	StartLightPrecalcThreads (SegDistThread);
+	PrintLog (0, "computing segment visibility\n");
+	StartLightPrecalcThreads (SegVisThread);
 	loadOp = 2;
 	}
 else if (loadOp == 2) {
-	PrintLog (1, "Computing light visibility\n");
-	StartLightPrecalcThreads (LightVisThread);
+	PrintLog (0, "computing segment distances \n");
+	StartLightPrecalcThreads (SegDistThread);
 	loadOp = 3;
 	}
 else if (loadOp == 3) {
-	PrintLog (1, "Starting segment light calculation threads\n");
-	StartLightPrecalcThreads (SegLightsThread);
+	PrintLog (1, "Computing light visibility\n");
+	StartLightPrecalcThreads (LightVisThread);
 	loadOp = 4;
 	}
 else if (loadOp == 4) {
-	PrintLog (1, "Starting vertex light calculation threads\n");
-	StartLightPrecalcThreads (VertLightsThread);
+	PrintLog (1, "Starting segment light calculation threads\n");
+	StartLightPrecalcThreads (SegLightsThread);
 	loadOp = 5;
 	}
 else if (loadOp == 5) {
-	PrintLog (1, "Computing vertices visible to lights\n");
-	ComputeLightsVisibleVertices (-1);
+	PrintLog (1, "Starting vertex light calculation threads\n");
+	StartLightPrecalcThreads (VertLightsThread);
 	loadOp = 6;
 	}
-if (loadOp == 6) {
+else if (loadOp == 6) {
+	PrintLog (1, "Computing vertices visible to lights\n");
+	ComputeLightsVisibleVertices (-1);
+	loadOp = 7;
+	}
+if (loadOp == 7) {
 	key = -2;
-	//paletteManager.ResumeEffect ();
 	return nCurItem;
 	}
 menu [0].Value ()++;
 menu [0].Rebuild ();
 key = 0;
-//paletteManager.ResumeEffect ();
 return nCurItem;
 }
 
