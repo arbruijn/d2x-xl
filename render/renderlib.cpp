@@ -615,28 +615,10 @@ colorP->Alpha () = 1.0f;
 static inline CRenderPoint* TransformVertex (int i)
 {
 CRenderPoint& p = RENDERPOINTS [i];
-#if !DBG
-if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) 
-#endif
-	{
-#if DBG
-	if (i == nDbgVertex)
-		nDbgVertex = nDbgVertex;
-#endif
+if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) {
 	p.TransformAndEncode (gameData.segs.vertices [i]);
-#if TRANSP_DEPTH_HASH
-	fix d = p.ViewPos ().Mag ();
-	if (gameData.render.zMin > d)
-		gameData.render.zMin = d;
-	if (gameData.render.zMax < d)
-		gameData.render.zMax = d;
-#else
-	if (gameData.render.zMax < p->m_vertex [1].dir.coord.z)
-		gameData.render.zMax = p->m_vertex [1].dir.coord.z;
-#endif
-	if (!ogl.m_states.bUseTransform) {
+	if (!ogl.m_states.bUseTransform) 
 		gameData.segs.fVertices [i].Assign (p.ViewPos ());
-		}
 	p.SetIndex (i);
 	gameData.render.mine.nRotatedLast [i] = gameStates.render.nFrameCount;
 	}
