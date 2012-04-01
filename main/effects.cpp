@@ -214,15 +214,6 @@ xEffectTime += gameData.time.xFrame;
 		int				i, t, nFrames;
 
 	for (i = 0, ecP = gameData.effects.effectP.Buffer (); i < gameData.effects.nEffects [gameStates.app.bD1Data]; i++, ecP++) {
-#if DBG
-		if (i == 39)
-			i = i;
-		for (int j = 0; j < VCLIP_MAX_FRAMES; j++)
-			if ((nDbgTexture >= 0) && (ecP->vClipInfo.frames [j].index == nDbgTexture)) {
-				nDbgTexture = nDbgTexture;
-				break;
-				}
-#endif
 		if ((t = ecP->changingWallTexture) == -1)
 			continue;
 #if DBG
@@ -248,10 +239,6 @@ xEffectTime += gameData.time.xFrame;
 				bmP = SetupHiresAnim (reinterpret_cast<short*> (ecP->vClipInfo.frames), nFrames, t, 0, 0, &nFrames);
 				if (!bmP)
 					ecP->flags &= ~EF_ALTFMT;
-#if 0
-				else if (!gameOpts->ogl.bGlTexMerge)
-					ecP->flags &= ~EF_ALTFMT;
-#endif
 				else
 					ecP->flags |= EF_INITIALIZED;
 				}
@@ -339,11 +326,11 @@ xEffectTime += gameData.time.xFrame;
 			ecP->nCurFrame++;
 			if (ecP->nCurFrame >= nFrames) {
 				if (ecP->flags & EF_ONE_SHOT) {
-	#if DBG
+#if DBG
 					Assert(ecP->nSegment != -1);
 					Assert((ecP->nSide >= 0) && (ecP->nSide < 6));
 					Assert(ecP->nDestBm !=0 && SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].m_nOvlTex);
-	#endif
+#endif
 					SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].m_nOvlTex = ecP->nDestBm;		//replace with destoyed
 					ecP->flags &= ~EF_ONE_SHOT;
 					ecP->nSegment = -1;		//done with this

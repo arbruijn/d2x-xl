@@ -1054,9 +1054,8 @@ else if (bReadControls < 0)
 	controls.Reset ();
 
 DeadPlayerFrame ();
-if (gameData.demo.nState != ND_STATE_PLAYBACK) {
+if (gameData.demo.nState != ND_STATE_PLAYBACK) 
 	DoReactorDeadFrame ();
-	}
 ProcessSmartMinesFrame ();
 DoSeismicStuff ();
 #if PHYSICS_FPS < 0
@@ -1065,9 +1064,8 @@ DoEffectsFrame ();
 DoAmbientSounds ();
 DropPowerups ();
 gameData.time.xGame += gameData.time.xFrame;
-if ((gameData.time.xGame < 0) || (gameData.time.xGame > I2X (0x7fff - 600))) {
+if ((gameData.time.xGame < 0) || (gameData.time.xGame > I2X (0x7fff - 600))) 
 	gameData.time.xGame = gameData.time.xFrame;	//wrap when goes negative, or gets within 10 minutes
-	}
 if (IsMultiGame && netGame.GetPlayTimeAllowed ())
 	gameStates.app.xThisLevelTime += gameData.time.xFrame;
 audio.SyncSounds ();
@@ -1077,17 +1075,15 @@ if (gameStates.app.bEndLevelSequence) {
 	DoSpecialEffects ();
 	return 1;					//skip everything else
 	}
-if (gameData.demo.nState != ND_STATE_PLAYBACK) {
+if (gameData.demo.nState != ND_STATE_PLAYBACK) 
 	DoExplodingWallFrame ();
-	}
 if ((gameData.demo.nState != ND_STATE_PLAYBACK) || (gameData.demo.nVcrState != ND_STATE_PAUSED)) {
 	DoSpecialEffects ();
 	WallFrameProcess ();
 	TriggersFrameProcess ();
 	}
-if (gameData.reactor.bDestroyed && (gameData.demo.nState == ND_STATE_RECORDING)) {
+if (gameData.reactor.bDestroyed && (gameData.demo.nState == ND_STATE_RECORDING)) 
 	NDRecordControlCenterDestroyed ();
-	}
 UpdateFlagClips ();
 MultiSetFlagPos ();
 SetPlayerPaths ();
@@ -1106,9 +1102,8 @@ else { // Note the link to above!
 		return 1;
 	FuelcenUpdateAll ();
 	DoAIFrameAll ();
-	if (AllowedToFireGun ()) {
+	if (AllowedToFireGun ()) 
 		FireGun ();				// Fire Laser!
-		}
 	if (!FusionBump ())
 		return 1;
 	if (gameData.laser.nGlobalFiringCount)
