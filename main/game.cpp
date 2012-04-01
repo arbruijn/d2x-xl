@@ -1010,6 +1010,7 @@ int GameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
 gameStates.app.bGameRunning = 1;
 //gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
+
 if (gameStates.gameplay.bMineMineCheat) {
 	DoWowieCheat (0, 0);
 	GasolineCheat (0);
@@ -1126,6 +1127,10 @@ CheckInventory ();
 OmegaChargeFrame ();
 SlideTextures ();
 FlickerLights ();
+
+if (bFrameTime)
+	CalcFrameTime ();
+
 return 1;
 }
 
