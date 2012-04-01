@@ -524,7 +524,7 @@ else
 if (startI < 0)
 	startI = 0;
 for (i = startI; i < endI; i++)
-	ComputeSingleSegmentVisibility (i);
+	ComputeSingleSegmentVisibility (i, 0);
 }
 #endif
 
