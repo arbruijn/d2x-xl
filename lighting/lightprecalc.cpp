@@ -33,7 +33,7 @@
 //static SDL_mutex* semaphore;
 #endif
 
-int SegmentIsVisible (CSegment *segP);
+int SegmentIsVisible (CSegment *segP, CTransformation& transformation, int nThread);
 
 //------------------------------------------------------------------------------
 
@@ -470,7 +470,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	gameStates.render.bRenderIndirect = -1;
 	gameStates.render.nShadowMap = -1;
 	G3StartFrame (transformation, 0, 0, 0);
-	RenderStartFrame ();
+	//RenderStartFrame ();
 	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
 
 #if DBG
@@ -479,8 +479,8 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 	gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
 	gameData.render.mine.visibility [nThread].BuildSegList (transformation, nStartSeg, 0, true);
-	for (i = 0; i < gameData.render.mine.visibility [0].nSegments; i++) {
-		if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
+	for (i = 0; i < gameData.render.mine.visibility [nThread].nSegments; i++) {
+		if (0 > (nSegment = gameData.render.mine.visibility [nThread].segments [i]))
 			continue;
 #if DBG
 		if (nSegment == nDbgSeg)
@@ -493,7 +493,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		if (bLights && !gameData.segs.SegVis (nStartSeg, nSegment))
 			continue;
 #	endif
-		if (!SegmentIsVisible (SEGMENTS + nSegment))
+		if (!SegmentIsVisible (SEGMENTS + nSegment, transformation, nThread))
 			continue;
 		if (bLights && (gameData.segs.SegDist (nStartSeg, nSegment) < 0))
 			continue;

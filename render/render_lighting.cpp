@@ -105,6 +105,28 @@ for (int i = 0; i < 8; i++) {
 return 0;
 }
 
+// -----------------------------------------------------------------------------------
+
+int SegmentIsVisible (CSegment *segP, CTransformation& transformation, int nThread)
+{
+ubyte code = 0xFF;
+
+#if DBG
+if (segP->Index () == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
+ushort* vertices = segP->m_vertices;
+for (int i = 0; i < 8; i++) {
+#if 0 //DBG
+	RENDERPOINTS [vertices [i]].m_flags = 0;
+#endif
+	code &= gameData.render.mine.visibility [nThread].points [vertices [i]].ProjectAndEncode (transformation, vertices [i]);
+	if (!code)
+		return 1;
+	}
+return 0;
+}
+
 //------------------------------------------------------------------------------
 
 static int FaceIsVisible (CSegFace* faceP)
