@@ -22,8 +22,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_POINTS_IN_POLY 100
 
-extern int nFreePoints;
-
 //vertex buffers for polygon drawing and clipping
 //list of 2d coords
 extern fix polyVertList[];

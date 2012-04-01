@@ -45,7 +45,6 @@ ogl.EndFrame (nWindow);
 CCanvas::Current ()->SetWidth ();
 CCanvas::Current ()->SetHeight ();
 transformation.ComputeAspect ();
-nFreePoints = 0;
 }
 
 //------------------------------------------------------------------------------
