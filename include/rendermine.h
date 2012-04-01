@@ -86,7 +86,6 @@ void QSortSegZRef (short left, short right);
 
 void BuildRenderObjLists (int nSegCount);
 void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors = false, int nThread = 0);
-void BuildRenderSegListFast (short nStartSeg, int nWindow);
 
 void ResetFaceList (void);
 int AddFaceListItem (CSegFace *faceP, int nThread);

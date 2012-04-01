@@ -245,7 +245,7 @@ PROF_START
 
 nDbgListPos = nListPos;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
-for (i = 0, j = SortObjList (gameData.render.mine.segRenderList [1][nListPos]); i < j; i++)
+for (i = 0, j = SortObjList (gameData.render.mine.objRenderSegList [nListPos]); i < j; i++)
 	DoRenderObject (objRenderList [i].nObject, nWindow);	// note link to above else
 gameStates.render.detail.nMaxLinearDepth = saveLinDepth;
 PROF_END(ptRenderObjects)
@@ -285,8 +285,8 @@ void RenderObjectsST (void)
 {
 	short nSegment;
 
-for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
-	nSegment = gameData.render.mine.segRenderList [1][i];
+for (int i = 0; i < gameData.render.mine.nObjRenderSegs; i++) {
+	nSegment = gameData.render.mine.objRenderSegList [i];
 #if DBG
 	if (nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
@@ -337,8 +337,8 @@ for (;;) {
 	while (bSemaphore [nThread] < 0)
 		G3_SLEEP (1);
 #endif
-	for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.app.nThreads - 1) {
-		nSegment = gameData.render.mine.segRenderList [1][i];
+	for (int i = nThread; i < gameData.render.mine.nObjRenderSegs; i += gameStates.app.nThreads - 1) {
+		nSegment = gameData.render.mine.objRenderSegList [i];
 		if (gameStates.render.bApplyDynLight) {
 			lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
 			lightManager.SetNearestStatic (nSegment, 1, nThread);
@@ -401,8 +401,8 @@ while (nThreads > 0) {
 
 static inline int VerifyObjectRenderSegment (short nSegment)
 {
-for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++)
-	if (gameData.render.mine.segRenderList [1][i] == nSegment)
+for (int i = 0; i < gameData.render.mine.nObjRenderSegs; i++)
+	if (gameData.render.mine.objRenderSegList [i] == nSegment)
 		return -1;
 return nSegment;
 }
@@ -420,7 +420,7 @@ static inline int ObjectRenderSegment (int i)
 {
 if (i >= gameData.render.mine.nRenderSegs [0])
 	return -1;
-short nSegment = gameData.render.mine.segRenderList [0][i];
+short nSegment = gameData.render.mine.visibility [0].segments [i];
 if (nSegment < 0) {
 	if (nSegment == -0x7fff)
 		return -1;
@@ -473,10 +473,10 @@ gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->o
 	int	i;
 	short nSegment;
 
-gameData.render.mine.nRenderSegs [1] = 0;
+gameData.render.mine.nObjRenderSegs = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
-		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
+		gameData.render.mine.objRenderSegList [gameData.render.mine.nObjRenderSegs++] = nSegment;
 
 #if 0
 
@@ -485,7 +485,7 @@ RenderObjectsST ();
 #else
 
 
-if (!gameStates.app.bMultiThreaded || (gameStates.render.nShadowPass == 2) || (gameStates.app.nThreads < 3) || (gameData.render.mine.nRenderSegs [1] < 2 * (gameStates.app.nThreads - 1)))
+if (!gameStates.app.bMultiThreaded || (gameStates.render.nShadowPass == 2) || (gameStates.app.nThreads < 3) || (gameData.render.mine.nObjRenderSegs < 2 * (gameStates.app.nThreads - 1)))
 	RenderObjectsST ();
 else {
 #if USE_OPENMP // > 1

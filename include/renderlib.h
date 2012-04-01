@@ -18,8 +18,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define VISITED(_ch)	(gameData.render.mine.bVisited [_ch] == gameData.render.mine.nVisited)
-#define VISIT(_ch) (gameData.render.mine.bVisited [_ch] = gameData.render.mine.nVisited)
+#define VISITED(_nThread,_nSegment)	(gameData.render.mine.visibility [nThread].bVisited [_nSegment] == gameData.render.mine.visibility [nThread].nVisited)
+#define VISIT(_nThread,_nSegment) (gameData.render.mine.visibility [_nThread].bVisited [_nSegment] = gameData.render.mine.visibility [nThread].nVisited)
 
 //------------------------------------------------------------------------------
 
@@ -75,9 +75,6 @@ int ToggleShowOnlyCurSide (void);
 void RotateTexCoord2f (tTexCoord2f& dest, tTexCoord2f& src, ubyte nOrient);
 int FaceIsVisible (short nSegment, short nSide);
 int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist, int nThread = 0);
-ubyte BumpVisitedFlag (void);
-ubyte BumpProcessedFlag (void);
-ubyte BumpVisibleFlag (void);
 void SetupMineRenderer (void);
 void ComputeMineLighting (short nStartSeg, fix xStereoSeparation, int nWindow);
 

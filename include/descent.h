@@ -1549,24 +1549,66 @@ class CObjRenderList {
 		int						nUsed;
 	};
 
-class CMineRenderData {
+
+typedef struct tSegZRef {
+	fix	z;
+	short	nSegment;
+} tSegZRef;
+
+typedef struct tPortal {
+	fix	left, right, top, bot;
+	char  bProjected;
+	ubyte bVisible;
+} tPortal;
+
+class CVisibilityData {
 	public:
-		//CFixVector				viewer.vPos;
-		tObjTransformation	viewer;
-		CShortArray				segRenderList [2]; //[MAX_SEGMENTS_D2X];
-		CShortArray				renderPos; //[MAX_SEGMENTS_D2X];
-		CArray< CSegFace* >	renderFaceListP; //[MAX_SEGMENTS_D2X * 6];
-		CObjRenderList			objRenderList;
-		int						nRenderSegs [2];
+		int						nSegments;
+		CShortArray				segments; //[MAX_SEGMENTS_D2X];
 		CByteArray				bVisited; //[MAX_SEGMENTS_D2X];
 		CByteArray				bVisible; //[MAX_SEGMENTS_D2X];
 		CByteArray				bProcessed; //[MAX_SEGMENTS_D2X];		//whether each entry has been nProcessed
 		ubyte 					nVisited;
 		ubyte						nProcessed;
 		ubyte						nVisible;
-		CShortArray				nSegDepth; //[MAX_SEGMENTS_D2X];		//depth for each seg in nRenderList
-		int						lCntSave;
-		int						sCntSave;
+		CShortArray				nDepth; //[MAX_SEGMENTS_D2X];		//depth for each seg in nRenderList
+		CArray<tSegZRef>		zRef [2]; // segment indexes sorted by distance from viewer
+		CArray<tPortal>		portals;
+		CShortArray				position; //[MAX_SEGMENTS_D2X];
+
+	public:
+		CVisibilityData ();
+		~CVisibilityData () { Destroy (); }
+		bool Create (void);
+		void Destroy (void);
+
+		inline int Visible (short nSegment) { return bVisible [nSegment] == nVisible; }
+		inline int Visited (short nSegment) { return bVisited [nSegment] == nVisited; }
+		inline void Visit (short nSegment) { bVisited [nSegment] = nVisited; }
+		ubyte BumpVisitedFlag (void);
+		ubyte BumpProcessedFlag (void);
+		ubyte BumpVisibleFlag (void);
+		int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist);
+		void BuildSegList (short nStartSeg, int nWindow, bool bIgnoreDoors = false);
+
+	private:
+		void Sort (void);
+		void InitZRef (int i, int j, int nThread);
+		void MergeZRef (void);
+		void QSortZRef (short left, short right);
+
+	};
+
+class CMineRenderData {
+	public:
+		//CFixVector				viewer.vPos;
+		tObjTransformation	viewer;
+		CVisibilityData		visibility [MAX_THREADS];
+		CShortArray				renderSegList [MAX_THREADS]; //[MAX_SEGMENTS_D2X];
+		CShortArray				objRenderSegList;
+		CObjRenderList			objRenderList;
+		CArray< CSegFace* >	renderFaceListP; //[MAX_SEGMENTS_D2X * 6];
+		int						nRenderSegs [MAX_THREADS];
 		CIntArray				bObjectRendered; //[MAX_OBJECTS_D2X];
 		CByteArray				bRenderSegment; //[MAX_SEGMENTS_D2X];
 		CShortArray				nRenderObjList; //[MAX_SEGMENTS_D2X+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
@@ -1582,6 +1624,7 @@ class CMineRenderData {
 		~CMineRenderData () { Destroy (); }
 		bool Create (void);
 		void Destroy (void);
+		int Visible (short nSegment, int nThread = 0) { return visibility [nThread].Visible (nSegment); }
 };
 
 //------------------------------------------------------------------------------
@@ -1664,7 +1707,6 @@ class CRenderData {
 		fix							zMax;
 		double						dAspect;
 		CFBO							glareBuffer;
-		int							nFirstTerminalSeg;
 		int							nTotalFaces;
 		int							nTotalObjects;
 		int							nTotalSprites;

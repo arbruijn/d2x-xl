@@ -477,7 +477,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
 	BuildRenderSegList (nStartSeg, 0, true);
 	for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
-		if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
+		if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 			continue;
 #if DBG
 		if (nSegment == nDbgSeg)

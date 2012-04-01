@@ -354,19 +354,46 @@ CMineRenderData::CMineRenderData ()
 
 //------------------------------------------------------------------------------
 
+bool CVisibilityData::Create (void)
+{
+CREATE (segments, gameData.segs.nSegments, 0);
+CREATE (bVisited, gameData.segs.nSegments, 0);
+CREATE (bVisible, gameData.segs.nSegments, 0);
+CREATE (bProcessed, gameData.segs.nSegments, 0);
+CREATE (nDepth, gameData.segs.nSegments, 0);
+for (int i = 0; i < 2; i++)
+	CREATE (zRef [i], gameData.segs.nSegments, 0);
+CREATE (portals, gameData.segs.nSegments, 0);
+CREATE (renderPos, gameData.segs.nSegments, 0);
+}
+
+//------------------------------------------------------------------------------
+
+bool CVisibilityData::Destroy (void)
+{
+DESTROY (segments, gameData.segs.nSegments);
+DESTROY (bVisited, gameData.segs.nSegments);
+DESTROY (bVisible, gameData.segs.nSegments);
+DESTROY (bProcessed, gameData.segs.nSegments);
+DESTROY (nDepth, gameData.segs.nSegments);
+for (int i = 0; i < 2; i++)
+	DESTROY (zRef [i], gameData.segs.nSegments);
+DESTROY (portals);
+DESTROY (renderPos);
+}
+
+//------------------------------------------------------------------------------
+
 bool CMineRenderData::Create (void)
 {
 nVisited = 255;
 nProcessed = 255;
 nVisible = 255;
-CREATE (segRenderList [0], gameData.segs.nSegments, 0);
-CREATE (segRenderList [1], gameData.segs.nSegments, 0);
+for (int i = 0; i < gameStates.app.nThreads; i++)
+	visibility [i].Create ();
+CREATE (objRenderSegList, gameData.segs.nSegments, 0);
 CREATE (renderPos, gameData.segs.nSegments, 0);
 CREATE (renderFaceListP, gameData.segs.nFaces, 0);
-CREATE (bVisited, gameData.segs.nSegments, 0);
-CREATE (bVisible, gameData.segs.nSegments, 0);
-CREATE (bProcessed, gameData.segs.nSegments, 0);
-CREATE (nSegDepth, gameData.segs.nSegments, 0);
 CREATE (bObjectRendered, gameData.objs.nMaxObjects, 0);
 CREATE (bRenderSegment, gameData.segs.nSegments, 0);
 CREATE (nRenderObjList, gameData.objs.nMaxObjects, 0);
@@ -382,14 +409,11 @@ return true;
 
 void CMineRenderData::Destroy (void)
 {
-DESTROY (segRenderList [0]);
-DESTROY (segRenderList [1]);
+for (int i = 0; i < gameStates.app.nThreads; i++)
+	visibility [i].Destroy ();
+DESTROY (objRenderSegList);
 DESTROY (renderPos);
 DESTROY (renderFaceListP);
-DESTROY (bVisited);
-DESTROY (bVisible);
-DESTROY (bProcessed);
-DESTROY (nSegDepth);
 DESTROY (bObjectRendered);
 DESTROY (bRenderSegment);
 DESTROY (nRenderObjList);

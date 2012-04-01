@@ -356,12 +356,12 @@ if (ogl.m_states.bVertexLighting)
 	ogl.m_states.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
 for (i = nStart; i < nEnd; i++) {
-	if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
+	if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
 	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
-		gameData.render.mine.segRenderList [0][i] = -gameData.render.mine.segRenderList [0][i];
+		gameData.render.mine.visibility [0].segments [i] = -gameData.render.mine.visibility [0].segments [i];
 		continue;
 		}
 #if DBG
@@ -475,12 +475,12 @@ if (ogl.m_states.bVertexLighting)
 	ogl.m_states.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
 for (i = nStart; i < nEnd; i++) {
-	if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
+	if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
 	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
-		gameData.render.mine.segRenderList [0][i] = -gameData.render.mine.segRenderList [0][i] - 1;
+		gameData.render.mine.visibility [0].segments [i] = -gameData.render.mine.visibility [0].segments [i] - 1;
 		continue;
 		}
 #if DBG
@@ -605,12 +605,12 @@ for (i = 0; i < 3; i++)
 ogl.SetTransform (1);
 gameStates.render.nState = 0;
 for (i = nStart; i < nEnd; i++) {
-	if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
+	if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
 	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
-		gameData.render.mine.segRenderList [0][i] = -gameData.render.mine.segRenderList [0][i] - 1;
+		gameData.render.mine.visibility [0].segments [i] = -gameData.render.mine.visibility [0].segments [i] - 1;
 		continue;
 		}
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
@@ -662,18 +662,18 @@ int CountRenderFaces (void)
 
 ogl.m_states.bUseTransform = 1; // prevent vertex transformation from setting FVERTICES!
 for (i = nSegments = nFaces = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
-	segP = SEGMENTS + gameData.render.mine.segRenderList [0][i];
+	segP = SEGMENTS + gameData.render.mine.visibility [0].segments [i];
 	if (SegmentIsVisible (segP)) {
 		nSegments++;
 		nFaces += SEGFACES [i].nFaces;
 		}
 	else
-		gameData.render.mine.segRenderList [0][i] = -gameData.render.mine.segRenderList [0][i] - 1;
+		gameData.render.mine.visibility [0].segments [i] = -gameData.render.mine.visibility [0].segments [i] - 1;
 	}
 tiRender.nMiddle = 0;
 if (nFaces) {
 	for (h = nFaces / 2, i = j = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
-		if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
+		if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 			continue;
 		j += SEGFACES [nSegment].nFaces;
 		if (j > h) {

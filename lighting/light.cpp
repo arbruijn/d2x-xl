@@ -602,7 +602,7 @@ lightClusterManager.Reset ();
 nRenderVertices = 0;
 if (!gameStates.render.nLightingMethod) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs [0]; iRenderSeg++) {
-		nSegment = gameData.render.mine.segRenderList [0][iRenderSeg];
+		nSegment = gameData.render.mine.visibility [0].segments [iRenderSeg];
 		if (nSegment != -1) {
 			ushort* vp = SEGMENTS [nSegment].m_vertices;
 			for (v = 0; v < MAX_VERTICES_PER_SEGMENT; v++) {
@@ -637,7 +637,7 @@ gameData.render.lights.newObjects.Clear ();
 if (EGI_FLAG (bUseLightning, 0, 0, 1) && !gameStates.render.nLightingMethod) {
 	tLightningLight	*pll;
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs [0]; iRenderSeg++) {
-		nSegment = gameData.render.mine.segRenderList [0][iRenderSeg];
+		nSegment = gameData.render.mine.visibility [0].segments [iRenderSeg];
 		pll = lightningManager.GetLight (nSegment);
 		if (pll->nFrame == gameData.app.nFrameCount)
 			ApplyLight (pll->nBrightness, nSegment, &pll->vPos, nRenderVertices, gameData.render.lights.vertices, -1, &pll->color);

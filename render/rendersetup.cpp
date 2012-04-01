@@ -221,7 +221,7 @@ if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)
 	}
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	ogl.SetTransform (1);
-	BuildRenderSegList (nStartSeg, nWindow);		//fills in gameData.render.mine.segRenderList & gameData.render.mine.nRenderSegs [0]
+	BuildRenderSegList (nStartSeg, nWindow);		//fills in gameData.render.mine.renderSegList & gameData.render.mine.nRenderSegs [0]
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 		BuildRenderObjLists (gameData.render.mine.nRenderSegs [0]);
 		if (xStereoSeparation <= 0)	// Do for left eye or zero.

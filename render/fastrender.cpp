@@ -273,7 +273,7 @@ int SortFaces (void)
 	short			nSegment;
 
 for (h = i = 0, ph = faceRef [0]; i < gameData.render.mine.nRenderSegs [0]; i++) {
-	if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
+	if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 		continue;
 	segFaceP = SEGFACES + nSegment;
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++, h++, ph++) {
@@ -687,7 +687,7 @@ if (!(gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse))
 	return 0;
 gameData.render.lights.nCoronas = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
-	if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
+	if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 		continue;
 	if ((SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX) ||
 		 (SEGMENTS [nSegment].HasOutdoorsProp ()))
@@ -762,7 +762,7 @@ if (nType == RENDER_TYPE_CORONAS) {
 				nFaces++;
 		}
 	else {
-		short* segListP = gameData.render.mine.segRenderList [0].Buffer ();
+		short* segListP = gameData.render.mine.visibility [0].segments .Buffer ();
 		for (i = gameData.render.mine.nRenderSegs [0]; i; )
 			nFaces += RenderSegmentFaces (nType, segListP [--i], bAutomap, bHeadlight);
 		}

@@ -750,88 +750,91 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 
 //------------------------------------------------------------------------------
 
-ubyte BumpVisitedFlag (void)
+ubyte CVisibilityData::BumpVisitedFlag (void)
 {
 #if USE_OPENMP // > 1
 #	pragma omp critical
 #endif
 	{
-	if (!++gameData.render.mine.nVisited) {
-		gameData.render.mine.bVisited.Clear (0);
-		gameData.render.mine.nVisited = 1;
+	if (!++nVisited) {
+		bVisited.Clear (0);
+		nVisited = 1;
 		}
 	}
-return gameData.render.mine.nVisited;
+return nVisited;
 }
 
 //------------------------------------------------------------------------------
 
-ubyte BumpProcessedFlag (void)
+ubyte CVisibilityData::BumpProcessedFlag (void)
 {
 #if USE_OPENMP // > 1
 #	pragma omp critical
 #endif
 	{
-	if (!++gameData.render.mine.nProcessed) {
-		gameData.render.mine.bProcessed.Clear (0);
-		gameData.render.mine.nProcessed = 1;
+	if (!++nProcessed) {
+		bProcessed.Clear (0);
+		nProcessed = 1;
 		}
 	}
-return gameData.render.mine.nProcessed;
+return nProcessed;
 }
 
 //------------------------------------------------------------------------------
 
-ubyte BumpVisibleFlag (void)
+ubyte CVisibilityData::BumpVisibleFlag (void)
 {
 #if USE_OPENMP // > 1
 #	pragma omp critical
 #endif
 	{
-	if (!++gameData.render.mine.nVisible) {
-		gameData.render.mine.bVisible.Clear (0);
-		gameData.render.mine.nVisible = 1;
+	if (!++nVisible) {
+		bVisible.Clear (0);
+		nVisible = 1;
 		}
 	}
-return gameData.render.mine.nVisible;
+return nVisible;
 }
 
 // ----------------------------------------------------------------------------
 
-int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist, int nThread)
+int CVisibilityData::SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist)
 {
 if (gameData.render.mine.bVisible [nStartSeg] == gameData.render.mine.nVisible)
 	return 1;
 
-	CSegment*	segP;
-	int			nSegment, nChildSeg, nChild, h, i, j;
-	ubyte			bVisited [MAX_THREADS][MAX_SEGMENTS_D2X];
-	ubyte*		visitedP = bVisited [nThread];
-	short*		segListP = gameData.render.mine.segRenderList [0].Buffer ();
+	ubyte*		visitedP = bVisited.Buffer ();
+	short*		segListP = segments.Buffer ();
 
 segListP [0] = nStartSeg;
-gameData.render.mine.bProcessed [nStartSeg] = BumpProcessedFlag ();
+bProcessed [nStartSeg] = BumpProcessedFlag ();
+bVisited [nStartSeg] = BumpVisitedFlag ();
 if (nMaxDist < 0)
 	nMaxDist = nRadius * I2X (20);
-memset (visitedP, 0, gameData.segs.nSegments);
-visitedP [nStartSeg] = 1;
-for (i = 0, j = 1; nRadius; nRadius--) {
-	for (h = i, i = j; h < i; h++) {
-		nSegment = segListP [h];
-		if ((gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) &&
+for (int i = 0, j = 1; nRadius; nRadius--) {
+	for (int h = i, i = j; h < i; h++) {
+		int nSegment = segListP [h];
+		if ((bVisible [nSegment] == nVisible) &&
 			 (!nMaxDist || (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nSegment].Center ()) <= nMaxDist)))
 			return 1;
-		segP = SEGMENTS + nSegment;
-		for (nChild = 0; nChild < 6; nChild++) {
-			nChildSeg = segP->m_children [nChild];
-			if ((nChildSeg >= 0) && !visitedP [nChildSeg] && (segP->IsDoorWay (nChild, NULL) & WID_TRANSPARENT_FLAG)) {
+		CSegment* segP = SEGMENTS + nSegment;
+		for (int nChild = 0; nChild < 6; nChild++) {
+			int nChildSeg = segP->m_children [nChild];
+			if ((nChildSeg >= 0) && (visitedP [nChildSeg] != nVisited) && (segP->IsDoorWay (nChild, NULL) & WID_TRANSPARENT_FLAG)) {
 				segListP [j++] = nChildSeg;
-				visitedP [nChildSeg] = 1;
+				visitedP [nChildSeg] = nVisited;
 				}
 			}
 		}
 	}
 return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist, int nThread = 0)
+{
+return gameData.render.mine.visibility [nThread].SegmentMayBeVisible (nStartSeg, nRadius, nMaxDist);
 }
 
 //------------------------------------------------------------------------------

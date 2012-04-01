@@ -23,7 +23,7 @@
 void RenderFaceShadow (tFaceProps *propsP)
 {
 	int				i, nVertices = propsP->nVertices;
-	CRenderPoint			*p;
+	CRenderPoint*	p;
 	CFloatVector	v [9];
 
 for (i = 0; i < nVertices; i++) {
@@ -293,7 +293,7 @@ FORALL_ACTOR_OBJS (objP, i)
 	else if ((objP->info.nType == OBJ_PLAYER) || 
 				(gameOpts->render.shadows.bRobots && (objP->info.nType == OBJ_ROBOT))) {
 		for (j = gameData.render.mine.nRenderSegs [0]; j--;) {
-			fakePlayerPos.info.nSegment = gameData.render.mine.segRenderList [0][j];
+			fakePlayerPos.info.nSegment = gameData.render.mine.visibility [0].segments [j];
 			fakePlayerPos.info.position.vPos = SEGMENTS [fakePlayerPos.info.nSegment].Center ();
 			bSee = ObjectToObjectVisibility (objP, &fakePlayerPos, FQ_TRANSWALL);
 			if (bSee) {
