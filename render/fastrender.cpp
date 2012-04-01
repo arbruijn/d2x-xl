@@ -504,9 +504,9 @@ if (bAutomap) {
 		automap.m_visited [nSegment] = gameData.render.mine.bSetAutomapVisited;
 		}
 	}
-if (VISITED (nSegment))
+if (VISITED (nSegment, 0))
 	return 0;
-VISIT (nSegment);
+VISIT (nSegment, 0);
 return 1;
 }
 
@@ -812,7 +812,7 @@ return SortFaces ();
 void RenderFaceList (int nType)
 {
 BeginRenderFaces (nType);
-gameData.render.mine.nVisited++;
+gameData.render.mine.visibility [0].BumpVisitedFlag ();
 RenderSegments (nType, 0);
 if (nType == RENDER_TYPE_GEOMETRY)
 	RenderHeadlights (nType);

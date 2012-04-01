@@ -67,10 +67,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void RenderStartFrame (void)
 {
-if (!++gameStates.render.nFrameCount) {		//wrap!
-	gameData.render.mine.nRotatedLast.Clear (0);		//clear all to zero
-	gameStates.render.nFrameCount = 1;											//and set this frame to 1
-	}
+if (!++gameStates.render.nFrameCount)		//wrap!
+	gameStates.render.nFrameCount = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -119,7 +117,7 @@ if (xStereoSeparation && bPlayer)
 externalView.SetPos (NULL);
 if (gameStates.render.cameras.bActive) {
 	nStartSeg = gameData.objs.viewerP->info.nSegment;
-	SetupTransformation (&transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale, xStereoSeparation);
+	SetupTransformation (transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale, xStereoSeparation);
 	if (gameStates.render.nShadowMap > 0)
 		ComputeShadowTransformation (gameStates.render.nShadowMap - 1);
 	}
@@ -129,7 +127,7 @@ else {
 	if ((bPlayer) && transformation.m_info.bUsePlayerHeadAngles) {
 		CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
 		CFixMatrix mView = gameData.objs.viewerP->info.position.mOrient * mHead;
-		SetupTransformation (&transformation, gameData.render.mine.viewer.vPos, mView, gameStates.render.xZoom, bOglScale, xStereoSeparation);
+		SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView, gameStates.render.xZoom, bOglScale, xStereoSeparation);
 		}
 	else if (gameStates.render.bRearView && (bPlayer)) {
 #if 1
@@ -147,7 +145,7 @@ else {
 		VmAngles2Matrix (&mHead, &transformation.m_info.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewerP->info.position.mOrient, &mHead);
 #endif
-		SetupTransformation (&transformation, gameData.render.mine.viewer.vPos, mView,  //gameStates.render.xZoom, bOglScale);
+		SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView,  //gameStates.render.xZoom, bOglScale);
 							  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
 		}
 	else if ((bPlayer) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
@@ -164,16 +162,16 @@ else {
 			externalView.GetViewPoint ();
 			if (xStereoSeparation)
 				gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
-			SetupTransformation (&transformation, gameData.render.mine.viewer.vPos,
+			SetupTransformation (transformation, gameData.render.mine.viewer.vPos,
 								  externalView.GetPos () ? externalView.GetPos ()->mOrient : gameData.objs.viewerP->info.position.mOrient,
 								  gameStates.render.xZoom, bOglScale, xStereoSeparation);
 			}
 		else
-			SetupTransformation (&transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
+			SetupTransformation (transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
 								  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
 		}
 	else
-		SetupTransformation (&transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
+		SetupTransformation (transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
 							  gameStates.render.xZoom, bOglScale, xStereoSeparation);
 	if (!nStartSegP)
 		nStartSeg = gameStates.render.nStartSeg;

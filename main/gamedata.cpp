@@ -376,12 +376,12 @@ return true;
 
 bool CVisibilityData::Resize (void)
 {
-return points.Resize (LEVEL_VERTICES);
+return points.Resize (LEVEL_VERTICES) != NULL;
 }
 
 //------------------------------------------------------------------------------
 
-bool CVisibilityData::Destroy (void)
+void CVisibilityData::Destroy (void)
 {
 DESTROY (segments);
 DESTROY (bVisited);
@@ -402,12 +402,10 @@ bool CMineRenderData::Create (void)
 for (int i = 0; i < gameStates.app.nThreads; i++)
 	visibility [i].Create ();
 CREATE (objRenderSegList, gameData.segs.nSegments, 0);
-CREATE (renderPos, gameData.segs.nSegments, 0);
 CREATE (renderFaceListP, gameData.segs.nFaces, 0);
 CREATE (bObjectRendered, gameData.objs.nMaxObjects, 0);
 CREATE (bRenderSegment, gameData.segs.nSegments, 0);
 CREATE (nRenderObjList, gameData.objs.nMaxObjects, 0);
-CREATE (nRotatedLast, gameData.segs.nVertices, 0);
 CREATE (bCalcVertexColor, gameData.segs.nVertices, 0);
 CREATE (bAutomapVisited, gameData.segs.nSegments, 0);
 CREATE (bAutomapVisible, gameData.segs.nSegments, 0);
@@ -432,12 +430,10 @@ void CMineRenderData::Destroy (void)
 for (int i = 0; i < gameStates.app.nThreads; i++)
 	visibility [i].Destroy ();
 DESTROY (objRenderSegList);
-DESTROY (renderPos);
 DESTROY (renderFaceListP);
 DESTROY (bObjectRendered);
 DESTROY (bRenderSegment);
 DESTROY (nRenderObjList);
-DESTROY (nRotatedLast);
 DESTROY (bCalcVertexColor);
 DESTROY (bAutomapVisited);
 DESTROY (bAutomapVisible);

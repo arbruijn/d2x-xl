@@ -93,11 +93,12 @@ ubyte code = 0xFF;
 if (segP->Index () == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
+ushort* vertices = segP->m_vertices;
 for (int i = 0; i < 8; i++) {
 #if 0 //DBG
-	RENDERPOINTS [segP->m_vertices [i]].m_flags = 0;
+	RENDERPOINTS [vertices [i]].m_flags = 0;
 #endif
-	code &= RENDERPOINTS [nVertex].ProjectAndEncode (transformation, segP->m_vertices [i]);
+	code &= RENDERPOINTS [vertices [i]].ProjectAndEncode (transformation, vertices [i]);
 	if (!code)
 		return 1;
 	}

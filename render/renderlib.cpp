@@ -615,13 +615,12 @@ colorP->Alpha () = 1.0f;
 static inline CRenderPoint* TransformVertex (int i)
 {
 CRenderPoint& p = RENDERPOINTS [i];
-if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) {
-	p.TransformAndEncode (gameData.segs.vertices [i]);
-	if (!ogl.m_states.bUseTransform) 
-		gameData.segs.fVertices [i].Assign (p.ViewPos ());
-	p.SetIndex (i);
-	gameData.render.mine.nRotatedLast [i] = gameStates.render.nFrameCount;
-	}
+p.SetFlags (0);
+p.TransformAndEncode (gameData.segs.vertices [i]);
+if (!ogl.m_states.bUseTransform) 
+	gameData.segs.fVertices [i].Assign (p.ViewPos ());
+p.SetIndex (i);
+gameData.render.mine.nRotatedLast [i] = gameStates.render.nFrameCount;
 return &p;
 }
 
@@ -723,7 +722,7 @@ return nVisible;
 
 int CVisibilityData::SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist)
 {
-if (gameData.render.mine.bVisible [nStartSeg] == gameData.render.mine.nVisible)
+if (gameData.render.mine.Visible (nStartSeg))
 	return 1;
 
 	ubyte*		visitedP = bVisited.Buffer ();
@@ -755,7 +754,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist, int nThread = 0)
+int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist, int nThread)
 {
 return gameData.render.mine.visibility [nThread].SegmentMayBeVisible (nStartSeg, nRadius, nMaxDist);
 }

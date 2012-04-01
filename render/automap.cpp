@@ -470,7 +470,7 @@ if (bAutomapFrame)
 RenderStartFrame ();
 if (m_bRadar == 2) {
 	m_data.viewer.vPos = m_data.viewTarget + mRadar.m.dir.f * (-m_data.nViewDist);
-	SetupTransformation (&transformation, m_data.viewer.vPos, mRadar, m_data.nZoom * 2, 1);
+	SetupTransformation (transformation, m_data.viewer.vPos, mRadar, m_data.nZoom * 2, 1);
 	}
 else {
 	m_data.viewer.vPos = m_data.viewTarget + m_data.viewer.mOrient.m.dir.f * -m_data.nViewDist;
@@ -478,7 +478,7 @@ else {
 		//glClear (GL_COLOR_BUFFER_BIT);
 		m_data.viewer.vPos += m_data.viewer.mOrient.m.dir.r * xStereoSeparation;
 		}
-	SetupTransformation (&transformation, m_data.viewer.vPos, m_data.viewer.mOrient, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
+	SetupTransformation (transformation, m_data.viewer.vPos, m_data.viewer.mOrient, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
 	}
 UpdateSlidingFaces ();
 if (!m_bRadar && (gameStates.app.bNostalgia < 2) && (gameOpts->render.automap.bTextured & 1)) {

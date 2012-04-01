@@ -1609,13 +1609,12 @@ class CMineRenderData {
 		CVisibilityData		visibility [MAX_THREADS];
 		CShortArray				renderSegList [MAX_THREADS]; //[MAX_SEGMENTS_D2X];
 		CShortArray				objRenderSegList;
+		int						nObjRenderSegs;
 		CObjRenderList			objRenderList;
 		CArray< CSegFace* >	renderFaceListP; //[MAX_SEGMENTS_D2X * 6];
-		int						nRenderSegs [MAX_THREADS];
 		CIntArray				bObjectRendered; //[MAX_OBJECTS_D2X];
 		CByteArray				bRenderSegment; //[MAX_SEGMENTS_D2X];
 		CShortArray				nRenderObjList; //[MAX_SEGMENTS_D2X+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
-		CIntArray				nRotatedLast; //[MAX_VERTICES_D2X];
 		CByteArray				bCalcVertexColor; //[MAX_VERTICES_D2X];
 		CUShortArray			bAutomapVisited; //[MAX_SEGMENTS_D2X];
 		CUShortArray			bAutomapVisible; //[MAX_SEGMENTS_D2X];

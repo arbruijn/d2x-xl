@@ -18,8 +18,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define VISITED(_nThread,_nSegment)	(gameData.render.mine.visibility [nThread].bVisited [_nSegment] == gameData.render.mine.visibility [nThread].nVisited)
-#define VISIT(_nThread,_nSegment) (gameData.render.mine.visibility [_nThread].bVisited [_nSegment] = gameData.render.mine.visibility [nThread].nVisited)
+#define VISITED(_nSegment,_nThread)	(gameData.render.mine.visibility [nThread].bVisited [_nSegment] == gameData.render.mine.visibility [nThread].nVisited)
+#define VISIT(_nSegment,_nThread) (gameData.render.mine.visibility [_nThread].bVisited [_nSegment] = gameData.render.mine.visibility [nThread].nVisited)
 
 //------------------------------------------------------------------------------
 
