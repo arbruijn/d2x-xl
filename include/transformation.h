@@ -173,7 +173,7 @@ class CTransformation {
 
 		inline COGLMatrix& SystemMatrix (int i) { return m_sysMats [i + 3]; }
 
-		void ComputeAspect (void);
+		void ComputeAspect (int nWidth = -1, int nHeight = -1);
 
 		void SetupProjection (float aspectRatio);
 

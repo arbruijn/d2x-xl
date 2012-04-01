@@ -463,16 +463,12 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 		viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
 #endif
 
-	fix w = CCanvas::Current ()->Width ();
-	fix h = CCanvas::Current ()->Height ();
-	CCanvas::Current ()->SetWidth (1024);
-	CCanvas::Current ()->SetHeight (1024);
-	transformation.ComputeAspect ();
+	transformation.ComputeAspect (1024, 1024);
 	//gameStates.render.bRenderIndirect = -1;
 	//gameStates.render.nShadowMap = -1;
 	//G3StartFrame (transformation, 0, 0, 0);
 	//RenderStartFrame ();
-	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1, 0, false);
+	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, -1, 0, false);
 
 #if DBG
 if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -502,8 +498,6 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		SetSegAndVertVis (nStartSeg, nSegment, bLights);
 		}
 	gameStates.render.nShadowPass = 0;
-	CCanvas::Current ()->SetWidth (w);
-	CCanvas::Current ()->SetHeight (h);
 	//G3EndFrame (transformation, 0);
 	gameStates.render.nShadowMap = 0;
 	}

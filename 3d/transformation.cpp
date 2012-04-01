@@ -172,9 +172,9 @@ return dest;
 
 //------------------------------------------------------------------------------
 //compute aspect ratio for this canvas
-void CTransformation::ComputeAspect (void)
+void CTransformation::ComputeAspect (int nWidth, int nHeight)
 {
-fix s = FixMulDiv (screen.Aspect (), CCanvas::Current ()->Height (), CCanvas::Current ()->Width ());
+fix s = FixMulDiv (screen.Aspect (), (nWidth > 0) ? nWidth : CCanvas::Current ()->Height (), (nHeight > 0) ? nHeight : CCanvas::Current ()->Width ());
 if (s <= I2X (1)) {	   //scale x
 	m_info.aspect.v.coord.x = s;
 	m_info.aspect.v.coord.y = I2X (1);

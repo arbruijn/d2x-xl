@@ -87,7 +87,7 @@ else {			//xZoom out by scaling x&y
 transformation.m_info.scalef.Assign (transformation.m_info.scale);
 //transformation.m_info.scale.v.c.x = transformation.m_info.scale.v.c.y = transformation.m_info.scale.v.c.z = I2X (1);
 //now scale matrix elements
-if (bOglScale) {
+if (bOglScale > 0) {
 #if 0
 	glScalef (transformation.m_info.scalef.dir.coord.x, transformation.m_info.scalef.dir.coord.y, -transformation.m_info.scalef.dir.coord.z);
 #else
@@ -99,7 +99,8 @@ else {
 	transformation.m_info.view [0].m.dir.u *= (transformation.m_info.scale.v.coord.y);
 	transformation.m_info.view [0].m.dir.f *= (transformation.m_info.scale.v.coord.z);
 	transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
-	glScalef (1, 1, -1);
+	if (!bOglScale)
+		glScalef (1, 1, -1);
 	}
 }
 
