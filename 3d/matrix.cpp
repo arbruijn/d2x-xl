@@ -22,18 +22,18 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_lib.h"
 #include "oof.h"
 
-void ScaleMatrix (int bOglScale);
+void ScaleTransformation (CTransformation& transformation, int bOglScale);
 
 //------------------------------------------------------------------------------
 //set view from x,y,z & p,b,h, xZoom.  Must call one of g3_setView_*()
-void G3SetViewAngles (CFixVector *vPos, CAngleVector *mOrient, fix xZoom)
+void SetupViewAngles (CFixVector *vPos, CAngleVector *mOrient, fix xZoom)
 {
 transformation.m_info.zoom = xZoom;
 transformation.m_info.pos = *vPos;
 transformation.m_info.view [0] = CFixMatrix::Create (*mOrient);
 transformation.m_info.posf [0].Assign (transformation.m_info.pos);
 transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
-ScaleMatrix (1);
+ScaleTransformation (transformation, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ ScaleMatrix (1);
 
 #define ZSCREEN 10.0
 
-void G3SetViewMatrix (const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation)
+void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation)
 {
 transformation.m_info.zoom = xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
@@ -62,14 +62,14 @@ if (xStereoSeparation && (gameOpts->render.stereo.nMethod == STEREO_TOE_IN)) {
 else
 	transformation.m_info.view [0] = mOrient;
 transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
-ScaleMatrix (bOglScale);
+ScaleTransformation (transformation, bOglScale);
 CFixMatrix::Transpose (transformation.m_info.viewf [2], transformation.m_info.view [0]);
 ogl.SetupProjection ();
 }
 
 //------------------------------------------------------------------------------
 //performs aspect scaling on global view matrix
-void ScaleMatrix (int bOglScale)
+void ScaleTransformation (CTransformation& transformation, int bOglScale)
 {
 	transformation.m_info.view [1] = transformation.m_info.view [0];		//so we can use unscaled if we want
 	transformation.m_info.viewf [1] = transformation.m_info.viewf [0];		//so we can use unscaled if we want

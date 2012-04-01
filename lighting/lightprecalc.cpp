@@ -304,14 +304,16 @@ return 1;
 
 inline int SetVertVis (short nSegment, short nVertex, ubyte b)
 {
-	static int bSemaphore = 0;
-
-if (bSemaphore)
-	return 0;
-bSemaphore = 1;
-if (gameData.segs.bVertVis.Buffer ())
+if (gameData.segs.bVertVis.Buffer ()) {
+#ifdef _OPENMP
+	ubyte* flagP = gameData.segs.bVertVis.Buffer (nSegment * VERTVIS_FLAGS + (nVertex >> 3));
+	ubyte flag = 1 << (nVertex & 7);
+#	pragma omp atomic
+	*flagP |= flag;
+#else
 	gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 3)] |= (1 << (nVertex & 7));
-bSemaphore = 0;
+#endif
+	}
 return 1;
 }
 
@@ -364,13 +366,14 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide
 // Do this for each side of the current segment, using the side Normal (s) as forward vector
 // of the viewer
 
-static void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, short nLastSide = 5, int bLights = 0)
+static void ComputeSingleSegmentVisibility (short nStartSeg, int nThread, short nFirstSide = 0, short nLastSide = 5, int bLights = 0)
 {
-	CSegment*		startSegP;
-	CSide*			sideP;
-	short				nSegment, nSide,i;
-	CFixVector		fVec, uVec, rVec;
-	CObject			viewer;
+	CSegment*			startSegP;
+	CSide*				sideP;
+	short					nSegment, nSide,i;
+	CFixVector			fVec, uVec, rVec;
+	CObject				viewer;
+	CTransformation	transformation;
 
 G3_SLEEP (0);
 ogl.SetTransform (1);
@@ -468,15 +471,15 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	gameStates.render.nShadowMap = -1;
 	G3StartFrame (0, 0, 0);
 	RenderStartFrame ();
-	G3SetViewMatrix (viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
+	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
 
 #if DBG
 if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 	gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
-	BuildRenderSegList (nStartSeg, 0, true);
-	for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
+	gameData.render.mine.visibility [nThread].BuildSegList (transformation, nStartSeg, 0, true);
+	for (i = 0; i < gameData.render.mine.visibility [0].nSegments; i++) {
 		if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 			continue;
 #if DBG
@@ -509,6 +512,7 @@ ogl.SetTransform (0);
 
 //------------------------------------------------------------------------------
 
+#if 0
 static void ComputeSegmentVisibility (int startI)
 {
 	int i, endI;
@@ -521,6 +525,17 @@ if (startI < 0)
 	startI = 0;
 for (i = startI; i < endI; i++)
 	ComputeSingleSegmentVisibility (i);
+}
+#endif
+
+//------------------------------------------------------------------------------
+
+void ComputeSegmentVisibility (int startI, int nThread)
+{
+	int endI;
+
+for (int i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i < endI; i++)
+	ComputeSingleSegmentVisibility (i, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -873,6 +888,13 @@ return bOk;
 #if MULTI_THREADED_PRECALC //---------------------------------------------------
 #ifdef _OPENMP //---------------------------------------------------------------
 
+void _CDECL_ SegVisThread (int nId)
+{
+ComputeSegmentVisibility (nId * (gameData.segs.nSegments + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
+}
+
+//------------------------------------------------------------------------------
+
 void _CDECL_ SegDistThread (int nId)
 {
 ComputeSegmentDistance (nId * (gameData.segs.nSegments + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
@@ -992,7 +1014,7 @@ PrintLog (-1);
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
 	PrintLog (1, "Computing segment visibility\n");
-	ComputeSegmentVisibility (-1);
+	StartLightThreads (SegVisThread);
 	PrintLog (-1);
 	PrintLog (1, "Computing segment distances\n");
 	StartLightThreads (SegDistThread);
@@ -1021,7 +1043,7 @@ else {
 						 LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize () + SegDistGaugeSize (), SortLightsPoll);
 	else {
 		PrintLog (1, "Computing segment visibility\n");
-		ComputeSegmentVisibility (-1);
+		ComputeSegmentVisibility (-1, 0);
 		PrintLog (-1);
 		PrintLog (1, "Computing segment distances\n");
 		ComputeSegmentDistance (-1, 0);

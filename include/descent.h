@@ -1590,9 +1590,10 @@ class CVisibilityData {
 		ubyte BumpProcessedFlag (void);
 		ubyte BumpVisibleFlag (void);
 		int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist);
-		void BuildSegList (short nStartSeg, int nWindow, bool bIgnoreDoors = false);
+		void BuildSegList (CTransformation& transformation, short nStartSeg, int nWindow, bool bIgnoreDoors = false);
 
 	private:
+		int BuildAutomapSegList (void);
 		void Sort (void);
 		void InitZRef (int i, int j, int nThread);
 		void MergeZRef (void);
@@ -1944,10 +1945,16 @@ class CSegmentData {
 		inline int SetSegVis (short nSrcSeg, short nDestSeg, int bLights)	{
 			if (bLights) {
 				int i = LightVisIdx (nSrcSeg, nDestSeg);
+#ifdef _OPENMP
+#	pragma omp atomic
+#endif
 				bSegVis [1][i >> 2] |= 2 << ((i & 3) << 1);
 				}
 			else {
 				int i = SegVisIdx (nSrcSeg, nDestSeg);
+#ifdef _OPENMP
+#	pragma omp atomic
+#endif
 				bSegVis [0][i >> 3] |= 1 << (i & 7);
 				}
 			return 1;

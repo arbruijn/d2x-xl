@@ -760,7 +760,7 @@ void RenderExternalScene (fix xEyeOffset)
 gameData.render.mine.viewer.vPos = gameData.objs.viewerP->info.position.vPos;
 if (xEyeOffset)
 	gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * (xEyeOffset);
-G3SetViewMatrix (gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
+SetupTransformation (&transformation, gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 CCanvas::Current ()->Clear (BLACK_RGBA);
 transformation.Begin (CFixVector::ZERO, mSurfaceOrient);
 DrawStars ();
@@ -856,10 +856,10 @@ if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 	CAngleVector angles = CAngleVector::Create(0, 0, 0x7fff);
 	headm = CFixMatrix::Create (angles);
 	viewm = gameData.objs.viewerP->info.position.mOrient * headm;
-	G3SetViewMatrix (gameData.render.mine.viewer.vPos, viewm, gameStates.render.xZoom, 1);
+	SetupTransformation (&transformation, gameData.render.mine.viewer.vPos, viewm, gameStates.render.xZoom, 1);
 	}
 else
-	G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
+	SetupTransformation (&transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 RenderMine (nStartSeg, xEyeOffset, nWindowNum);
 transparencyRenderer.Render (0);
 }

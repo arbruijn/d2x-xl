@@ -661,7 +661,7 @@ int CountRenderFaces (void)
 	int			h, i, j, nFaces, nSegments;
 
 ogl.m_states.bUseTransform = 1; // prevent vertex transformation from setting FVERTICES!
-for (i = nSegments = nFaces = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
+for (i = nSegments = nFaces = 0; i < gameData.render.mine.visibility [0].nSegments; i++) {
 	segP = SEGMENTS + gameData.render.mine.visibility [0].segments [i];
 	if (SegmentIsVisible (segP)) {
 		nSegments++;
@@ -672,7 +672,7 @@ for (i = nSegments = nFaces = 0; i < gameData.render.mine.nRenderSegs [0]; i++) 
 	}
 tiRender.nMiddle = 0;
 if (nFaces) {
-	for (h = nFaces / 2, i = j = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
+	for (h = nFaces / 2, i = j = 0; i < gameData.render.mine.visibility [0].nSegments; i++) {
 		if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 			continue;
 		j += SEGFACES [nSegment].nFaces;

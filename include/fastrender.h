@@ -28,7 +28,7 @@ static inline void ComputeFaceLight (int nStart, int nEnd, int nThread)
 if (gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE)) {
 	if (gameStates.render.bTriangleMesh)
 		ComputeDynamicTriangleLight (nStart, nEnd, nThread);
-	else if (gameData.render.mine.nRenderSegs [0] < gameData.segs.nSegments)
+	else if (gameData.render.mine.visibility [0].nSegments < gameData.segs.nSegments)
 		ComputeDynamicQuadLight (nStart, nEnd, nThread);
 	else
 		ComputeDynamicFaceLight (nStart, nEnd, nThread);

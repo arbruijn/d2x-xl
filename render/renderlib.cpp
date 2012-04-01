@@ -674,50 +674,9 @@ for (int i = 0; i < nVertices; i++) {
 
 //------------------------------------------------------------------------------
 
-ubyte ProjectRenderPoint (int nVertex)
+ubyte ProjectRenderPoint (CTransformation& transformation, int nVertex)
 {
-#if DBG
-if (nVertex == nDbgVertex)
-	nDbgVertex = nDbgVertex;
-#endif
-CRenderPoint& point = RENDERPOINTS [nVertex];
-#if 0 //DBG
-point.m_flags = 0;
-#else
-if (!point.Projected ()) 
-#endif
-	{
-#if 0
-	point.Transform (point.m_vertex [1], point.m_vertex [0] = gameData.segs.vertices [nVertex]);
-	G3ProjectPoint (&point);
-	point.m_codes = (point.m_vertex [1].v.coord.z < 0) ? CC_BEHIND : 0;
-#else
-	CFloatVector3 v;
-	point.AddFlags (PF_PROJECTED);
-#if 0
-	transformation.Transform (point.m_vertex [1], point.m_vertex [0] = gameData.segs.vertices [nVertex]);
-	v.Assign (point.m_vertex [1]);
-#else
-	point.WorldPos () = gameData.segs.vertices [nVertex];
-	transformation.Transform (v, *((CFloatVector3*) &gameData.segs.fVertices [nVertex]));
-	point.ViewPos ().Assign (v);
-#endif
-	point.SetCodes ((v.v.coord.z < 0.0f) ? CC_BEHIND : 0);
-	ProjectPoint (v, point.Screen ());
-#endif
-	point.Encode ();
-#if TRANSP_DEPTH_HASH
-	fix d = point.ViewPos ().Mag ();
-	if (gameData.render.zMin > d)
-		gameData.render.zMin = d;
-	if (gameData.render.zMax < d)
-		gameData.render.zMax = d;
-#else
-	if (gameData.render.zMax < point.m_vertex [1].dir.coord.z)
-		gameData.render.zMax = point.m_vertex [1].dir.coord.z;
-#endif
-	}
-return point.Codes ();
+return RENDERPOINTS [nVertex].ProjectAndEncode (transformation, nVertex);
 }
 
 //------------------------------------------------------------------------------

@@ -119,7 +119,7 @@ if (xStereoSeparation && bPlayer)
 externalView.SetPos (NULL);
 if (gameStates.render.cameras.bActive) {
 	nStartSeg = gameData.objs.viewerP->info.nSegment;
-	G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale, xStereoSeparation);
+	SetupTransformation (&transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale, xStereoSeparation);
 	if (gameStates.render.nShadowMap > 0)
 		ComputeShadowTransformation (gameStates.render.nShadowMap - 1);
 	}
@@ -129,7 +129,7 @@ else {
 	if ((bPlayer) && transformation.m_info.bUsePlayerHeadAngles) {
 		CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
 		CFixMatrix mView = gameData.objs.viewerP->info.position.mOrient * mHead;
-		G3SetViewMatrix (gameData.render.mine.viewer.vPos, mView, gameStates.render.xZoom, bOglScale, xStereoSeparation);
+		SetupTransformation (&transformation, gameData.render.mine.viewer.vPos, mView, gameStates.render.xZoom, bOglScale, xStereoSeparation);
 		}
 	else if (gameStates.render.bRearView && (bPlayer)) {
 #if 1
@@ -147,7 +147,7 @@ else {
 		VmAngles2Matrix (&mHead, &transformation.m_info.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewerP->info.position.mOrient, &mHead);
 #endif
-		G3SetViewMatrix (gameData.render.mine.viewer.vPos, mView,  //gameStates.render.xZoom, bOglScale);
+		SetupTransformation (&transformation, gameData.render.mine.viewer.vPos, mView,  //gameStates.render.xZoom, bOglScale);
 							  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
 		}
 	else if ((bPlayer) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
@@ -164,16 +164,16 @@ else {
 			externalView.GetViewPoint ();
 			if (xStereoSeparation)
 				gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
-			G3SetViewMatrix (gameData.render.mine.viewer.vPos,
+			SetupTransformation (&transformation, gameData.render.mine.viewer.vPos,
 								  externalView.GetPos () ? externalView.GetPos ()->mOrient : gameData.objs.viewerP->info.position.mOrient,
 								  gameStates.render.xZoom, bOglScale, xStereoSeparation);
 			}
 		else
-			G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
+			SetupTransformation (&transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
 								  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
 		}
 	else
-		G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
+		SetupTransformation (&transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
 							  gameStates.render.xZoom, bOglScale, xStereoSeparation);
 	if (!nStartSegP)
 		nStartSeg = gameStates.render.nStartSeg;
@@ -221,9 +221,9 @@ if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)
 	}
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	ogl.SetTransform (1);
-	BuildRenderSegList (nStartSeg, nWindow);		//fills in gameData.render.mine.renderSegList & gameData.render.mine.nRenderSegs [0]
+	BuildRenderSegList (nStartSeg, nWindow);		//fills in gameData.render.mine.renderSegList & gameData.render.mine.visibility [0].nSegments
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
-		BuildRenderObjLists (gameData.render.mine.nRenderSegs [0]);
+		BuildRenderObjLists (gameData.render.mine.visibility [0].nSegments);
 		if (xStereoSeparation <= 0)	// Do for left eye or zero.
 			SetDynamicLight ();
 		}
@@ -317,8 +317,8 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			)
 			{
 			gameStates.render.nThreads = 1;
-			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs [0] < gameData.segs.nSegments))
-				ComputeFaceLight (0, gameData.render.mine.nRenderSegs [0], 0);
+			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.visibility [0].nSegments < gameData.segs.nSegments))
+				ComputeFaceLight (0, gameData.render.mine.visibility [0].nSegments, 0);
 			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
 				ComputeFaceLight (0, gameData.segs.nFaces, 0);
 			else
@@ -328,8 +328,8 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		else {
 				int	nStart, nEnd, nMax;
 
-			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs [0] < gameData.segs.nSegments))
-				nMax = gameData.render.mine.nRenderSegs [0];
+			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.visibility [0].nSegments < gameData.segs.nSegments))
+				nMax = gameData.render.mine.visibility [0].nSegments;
 			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
 				nMax = gameData.segs.nFaces;
 			else

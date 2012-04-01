@@ -546,7 +546,7 @@ if (*m_info.szBitmapName) {
 
 	GLint	depthFunc;
 	G3StartFrame (1, 0, 0);
-	G3SetViewMatrix (p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
+	SetupTransformation (&transformation, p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
 	p.v.coord.z = 2 * I2X (w);
 	depthFunc = ogl.GetDepthMode ();
 	ogl.SetDepthMode (GL_ALWAYS);

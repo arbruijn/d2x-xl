@@ -418,7 +418,7 @@ return nSegment;
 
 static inline int ObjectRenderSegment (int i)
 {
-if (i >= gameData.render.mine.nRenderSegs [0])
+if (i >= gameData.render.mine.visibility [0].nSegments)
 	return -1;
 short nSegment = gameData.render.mine.visibility [0].segments [i];
 if (nSegment < 0) {
@@ -474,7 +474,7 @@ gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->o
 	short nSegment;
 
 gameData.render.mine.nObjRenderSegs = 0;
-for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
+for (i = 0; i < gameData.render.mine.visibility [0].nSegments; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
 		gameData.render.mine.objRenderSegList [gameData.render.mine.nObjRenderSegs++] = nSegment;
 

@@ -539,7 +539,7 @@ for (int i = 0; i < gameStates.app.nThreads; i++) {
 
 //------------------------------------------------------------------------------
 //build a list of segments to be rendered
-//fills in gameData.render.mine.renderSegList & gameData.render.mine.nRenderSegs [0]
+//fills in gameData.render.mine.renderSegList & gameData.render.mine.visibility [0].nSegments
 
 //static tSegZRef zRef [2][MAX_SEGMENTS_D2X];
 
@@ -661,7 +661,7 @@ GetMaxDepth ();
 if (RunRenderThreads (rtInitSegZRef)) 
 	GetMaxDepth ();
 else {
-	InitSegZRef (0, gameData.render.mine.nRenderSegs [0], 0);
+	InitSegZRef (0, gameData.render.mine.visibility [0].nSegments, 0);
 	gameData.render.zMin = tiRender.zMin [0];
 	gameData.render.zMax = tiRender.zMax [0];
 	}
@@ -670,7 +670,30 @@ else {
 
 //------------------------------------------------------------------------------
 
-void CVisibilityData::BuildSegList (short nStartSeg, int nWindow, bool bIgnoreDoors)
+int CVisibilityData::BuildAutomapSegList (void)
+{
+if (!(automap.Display () && gameOpts->render.automap.bTextured && !automap.Radar ()))
+	return 0;
+
+	int nSegmentLimit = automap.SegmentLimit ();
+	int bUnlimited = nSegmentLimit == automap.MaxSegsAway ();
+	int bSkyBox = gameOpts->render.automap.bSkybox;
+
+for (int i = nSegments = 0; i < gameData.segs.nSegments; i++)
+	if (automap.Visible (i)
+		 && (bSkyBox || (SEGMENTS [i].m_function != SEGMENT_FUNC_SKYBOX)) 
+		 && (bUnlimited || (automap.m_visible [i] <= nSegmentLimit))) {
+		segments [nSegments++] = i;
+		bVisible [i] = nVisible;
+		Visit (i);
+		}
+Sort ();
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CVisibilityData::BuildSegList (CTransformation& transformation, short nStartSeg, int nWindow, bool bIgnoreDoors)
 {
 	int				nCurrent, nHead, nTail, nStart, nSide;
 	int				l, i;
@@ -702,22 +725,8 @@ BumpVisitedFlag ();
 BumpProcessedFlag ();
 BumpVisibleFlag ();
 
-if (automap.Display () && gameOpts->render.automap.bTextured && !automap.Radar ()) {
-	int nSegmentLimit = automap.SegmentLimit ();
-	int bUnlimited = nSegmentLimit == automap.MaxSegsAway ();
-	int bSkyBox = gameOpts->render.automap.bSkybox;
-
-	for (i = nSegments = 0; i < gameData.segs.nSegments; i++)
-		if (automap.Visible (i)
-			 && (bSkyBox || (SEGMENTS [i].m_function != SEGMENT_FUNC_SKYBOX)) 
-			 && (bUnlimited || (automap.m_visible [i] <= nSegmentLimit))) {
-			renderSegList [nSegments++] = i;
-			bVisible [i] = nVisible;
-			Visit (i);
-			}
-	Sort ();
+if (BuildAutomapSegList ())
 	return;
-	}
 
 renderSegList [0] = nStartSeg;
 renderDepth [0] = 0;
@@ -788,7 +797,7 @@ for (l = 0; l < nRenderDepth; l++) {
 					if (sv [i] == nDbgVertex)
 						nDbgVertex = nDbgVertex;
 #endif
-					ProjectRenderPoint (sv [i]);
+					renderPoints [sv [i]].ProjectAndEncode (transformation, sv [i]);
 					}
 				bRotated = 1;
 				}
@@ -960,7 +969,7 @@ if (gameStates.render.nShadowMap) {
 
 void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors, int nThread)
 {
-return gameData.render.mine.visibility [nThread].BuildSegList (nStartSeg, nWindow, bIgnoreDoors);
+return gameData.render.mine.visibility [nThread].BuildSegList (transformation, nStartSeg, nWindow, bIgnoreDoors);
 }
 
 //------------------------------------------------------------------------------

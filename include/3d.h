@@ -107,6 +107,10 @@ class CRenderPoint {
 
 		void Project (void);
 
+		ubyte Project (CTransformation& transformation, CFloatVector3& viewPos);
+
+		ubyte ProjectAndEncode (CTransformation& transformation, int nVertex);
+
 		ubyte Add (CRenderPoint& other, CFixVector& vDelta);
 
 		ubyte Encode (void);
@@ -168,10 +172,10 @@ typedef line_drawer_func *line_drawer_fp;
 void G3StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation);
 
 //set view from x,y,z & p,b,h, zoom.  Must call one of g3_setView_* ()
-void G3SetViewAngles (const CFixVector& vPos, const CAngleVector& vOrient, fix zoom);
+void SetupViewAngles (const CFixVector& vPos, const CAngleVector& vOrient, fix zoom);
 
 //set view from x,y,z, viewer matrix, and zoom.  Must call one of g3_setView_* ()
-void G3SetViewMatrix (const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation = 0);
+void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation = 0);
 
 //end the frame
 void G3EndFrame (int nWindow);

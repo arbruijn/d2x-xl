@@ -19,6 +19,7 @@ COPYRIGHT 1993-1998PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "3d.h"
 #include "globvars.h"
 #include "canvas.h"
+#include "transprender.h"
 
 // -----------------------------------------------------------------------------------
 
@@ -149,9 +150,56 @@ transformation.Transform (m_vertex [1], m_vertex [0]);
 
 // -----------------------------------------------------------------------------------
 
+ubyte CRenderPoint::Project (CTransformation& transformation, CFloatVector3& viewPos)
+{
+if ((m_flags & PF_PROJECTED) || (m_codes & CC_BEHIND))
+	return m_flags;
+CFloatVector3 v = transformation.m_info.projection * viewPos;
+float z = fabs (viewPos.v.coord.z);
+m_screen.x = fix (CCanvas::fCanvW2 * (1.0f + v.v.coord.x / z));
+m_screen.y = fix (CCanvas::fCanvH2 * (1.0f + v.v.coord.y / z));
+m_flags |= PF_PROJECTED;
+return m_flags;
+}
+
+// -----------------------------------------------------------------------------------
+
 void CRenderPoint::Project (void)
 {
-m_flags = ProjectPoint (m_vertex [1], m_screen, m_flags, m_codes);
+CFloatVector3 viewPosf;
+viewPosf.Assign (ViewPos ());
+m_flags = Project (transformation, viewPosf);
+}
+
+// -----------------------------------------------------------------------------------
+
+ubyte CRenderPoint::ProjectAndEncode (CTransformation& transformation, int nVertex)
+{
+#if DBG
+if (nVertex == nDbgVertex)
+	nDbgVertex = nDbgVertex;
+#endif
+if (!Projected ()) {
+	WorldPos () = VERTICES [nVertex];
+	CFloatVector3 viewPosf;
+	transformation.Transform (viewPosf, *FVERTICES [nVertex].XYZ ());
+	ViewPos ().Assign (viewPosf);
+	Project (transformation, viewPosf);
+	Encode ();
+	AddFlags (PF_PROJECTED);
+	SetCodes ((viewPosf.v.coord.z < 0.0f) ? CC_BEHIND : 0);
+#if TRANSP_DEPTH_HASH
+	fix d = ViewPos ().Mag ();
+	if (gameData.render.zMin > d)
+		gameData.render.zMin = d;
+	if (gameData.render.zMax < d)
+		gameData.render.zMax = d;
+#else
+	if (gameData.render.zMax < point.m_vertex [1].dir.coord.z)
+		gameData.render.zMax = point.m_vertex [1].dir.coord.z;
+#endif
+	}
+return Codes ();
 }
 
 // -----------------------------------------------------------------------------------

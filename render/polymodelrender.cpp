@@ -266,7 +266,7 @@ void DrawModelPicture (int nModel, CAngleVector *orientAngles)
 Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));
 G3StartFrame (0, 0, 0);
 ogl.SetBlending (false);
-G3SetViewMatrix (p, o, gameStates.render.xZoom, 1);
+SetupTransformation (&transformation, p, o, gameStates.render.xZoom, 1);
 if (gameData.models.polyModels [0][nModel].Rad ())
 	p.v.coord.z = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [0][nModel].Rad (), BASE_MODEL_SIZE);
 else
