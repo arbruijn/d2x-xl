@@ -708,11 +708,13 @@ void CVisibilityData::BuildSegList (CTransformation& transformation, short nStar
 	CShortArray&	renderPos = position;
 	CShortArray&	renderDepth = nDepth;
 	CArray<CRenderPoint>& renderPoints = points;
+	CByteArray&		processed = bProcessed;
 #else
 	short*			renderSegList = segments.Buffer ();
 	short*			renderPos = position.Buffer ();
 	short*			renderDepth = nDepth.Buffer ();
 	CRenderPoint*	renderPoints = points.Buffer ();
+	byte*				processed = bProcessed.Buffer ();
 #endif
 
 viewDir = transformation.m_info.view [0].m.dir.f;
@@ -760,9 +762,9 @@ int nRenderDepth = min (4 * (int (gameStates.render.detail.nRenderDepth) + 1), g
 
 for (l = 0; l < nRenderDepth; l++) {
 	for (nHead = nStart, nTail = nCurrent; nHead < nTail; nHead++) {
-		if (bProcessed [nHead] == nProcessed)
+		if (processed [nHead] == nProcessed)
 			continue;
-		bProcessed [nHead] = nProcessed;
+		processed [nHead] = nProcessed;
 		nSegment = renderSegList [nHead];
 		tPortal& curPortal = portals [nHead];
 		if (nSegment == -1)
@@ -930,7 +932,7 @@ for (l = 0; l < nRenderDepth; l++) {
 					if (nCurrent < gameData.segs.nSegments)
 						renderSegList [nCurrent] = -0x7fff;
 					oldPortal = newPortal;		//get updated tPortal
-					bProcessed [nPos] = nProcessed - 1;		//force reprocess
+					processed [nPos] = nProcessed - 1;		//force reprocess
 #if 0
 					if (!nStart || (nStart > nPos))
 						nStart = nPos;
