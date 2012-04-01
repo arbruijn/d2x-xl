@@ -488,7 +488,7 @@ if (!nWindow)
 
 {
 PROF_START
-G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
+G3StartFrame (transformation, 0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
 transformation.ComputeFrustum ();
 #if MAX_SHADOWMAPS
@@ -510,14 +510,14 @@ PROF_END(ptAux)
 
 #if 0 //DBG
 if (gameStates.render.nShadowMap) {
-	G3EndFrame (nWindow);
+	G3EndFrame (transformation, nWindow);
 	gameStates.render.xStereoSeparation = nEyeOffsetSave;
 	return;
 	}
 #endif
 
 if (0 > (gameStates.render.nStartSeg = nStartSeg)) {
-	G3EndFrame (nWindow);
+	G3EndFrame (transformation, nWindow);
 	gameStates.render.xStereoSeparation = nEyeOffsetSave;
 	return;
 	}
@@ -591,7 +591,7 @@ if (transformation.m_info.bUsePlayerHeadAngles)
 	Draw3DReticle (xStereoSeparation);
 #endif
 gameStates.render.nShadowPass = 0;
-G3EndFrame (nWindow);
+G3EndFrame (transformation, nWindow);
 if (nWindow)
 	ogl.SetStereoSeparation (gameStates.render.xStereoSeparation = nEyeOffsetSave);
 if (!ShowGameMessage (gameData.messages, -1, -1))

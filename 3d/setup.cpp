@@ -27,7 +27,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 //start the frame
-void G3StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
+void G3StartFrame (CTransformation& transformation, int bFlat, int bResetColorBuf, fix xStereoSeparation)
 {
 //set int w,h & fixed-point w,h/2
 //CCanvas::fCanvW2 = (float) CCanvas::Current ()->Width () * 0.5f;
@@ -45,11 +45,12 @@ gameStates.render.bDepthSort = 1;
 
 //------------------------------------------------------------------------------
 //this doesn't do anything, but is here for completeness
-void G3EndFrame (int nWindow)
+void G3EndFrame (CTransformation& transformation, int nWindow)
 {
 ogl.EndFrame (nWindow);
 CCanvas::Current ()->SetWidth ();
 CCanvas::Current ()->SetHeight ();
+transformation.ComputeAspect ();
 nFreePoints = 0;
 }
 

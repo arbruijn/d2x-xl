@@ -264,7 +264,7 @@ void DrawModelPicture (int nModel, CAngleVector *orientAngles)
 	CFixMatrix	o = CFixMatrix::IDENTITY;
 
 Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));
-G3StartFrame (0, 0, 0);
+G3StartFrame (transformation, 0, 0, 0);
 ogl.SetBlending (false);
 SetupTransformation (transformation, p, o, gameStates.render.xZoom, 1);
 if (gameData.models.polyModels [0][nModel].Rad ())
@@ -273,7 +273,7 @@ else
 	p.v.coord.z = DEFAULT_VIEW_DIST;
 o = CFixMatrix::Create (*orientAngles);
 DrawPolyModel (NULL, &p, &o, NULL, nModel, 0, I2X (1), NULL, NULL, NULL);
-G3EndFrame (0);
+G3EndFrame (transformation, 0);
 if (ogl.m_states.nDrawBuffer != GL_BACK)
 	GrUpdate (0);
 }

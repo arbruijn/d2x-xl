@@ -469,7 +469,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	CCanvas::Current ()->SetHeight (1024);
 	gameStates.render.bRenderIndirect = -1;
 	gameStates.render.nShadowMap = -1;
-	G3StartFrame (0, 0, 0);
+	G3StartFrame (transformation, 0, 0, 0);
 	RenderStartFrame ();
 	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
 
@@ -503,8 +503,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	gameStates.render.nShadowPass = 0;
 	CCanvas::Current ()->SetWidth (w);
 	CCanvas::Current ()->SetHeight (h);
-	transformation.ComputeAspect ();
-	G3EndFrame (0);
+	G3EndFrame (transformation, 0);
 	gameStates.render.nShadowMap = 0;
 	}
 ogl.SetTransform (0);

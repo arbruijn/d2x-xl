@@ -545,14 +545,14 @@ if (*m_info.szBitmapName) {
 	bmP->SetStatic (1);
 
 	GLint	depthFunc;
-	G3StartFrame (1, 0, 0);
+	G3StartFrame (transformation, 1, 0, 0);
 	SetupTransformation (transformation, p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
 	p.v.coord.z = 2 * I2X (w);
 	depthFunc = ogl.GetDepthMode ();
 	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.RenderBitmap (bmP, p, I2X (w), I2X (h), NULL, 1.0, 0);
 	ogl.SetDepthMode (depthFunc);
-	G3EndFrame (0);
+	G3EndFrame (transformation, 0);
 	//paletteManager.ResumeEffect ();
 	CCanvas::SetCurrent (curCanvSave);
 	delete bitmapCanv;

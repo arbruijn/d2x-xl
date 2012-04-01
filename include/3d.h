@@ -169,7 +169,7 @@ typedef line_drawer_func *line_drawer_fp;
 //Frame setup functions:
 
 //start the frame
-void G3StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation);
+void G3StartFrame (CTransformation& transformation, int bFlat, int bResetColorBuf, fix xStereoSeparation);
 
 //set view from x,y,z & p,b,h, zoom.  Must call one of g3_setView_* ()
 void SetupViewAngles (const CFixVector& vPos, const CAngleVector& vOrient, fix zoom);
@@ -178,7 +178,7 @@ void SetupViewAngles (const CFixVector& vPos, const CAngleVector& vOrient, fix z
 void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation = 0);
 
 //end the frame
-void G3EndFrame (int nWindow);
+void G3EndFrame (CTransformation& transformation, int nWindow);
 
 //Instancing
 

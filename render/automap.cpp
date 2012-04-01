@@ -461,7 +461,7 @@ if (bAutomapFrame) {
 #endif
 if (!gameOpts->render.automap.bTextured || gameStates.app.bNostalgia)
 	gameOpts->render.automap.bTextured = 1;
-G3StartFrame (m_bRadar /*|| !(gameOpts->render.automap.bTextured & 1)*/, !m_bRadar, xStereoSeparation);
+G3StartFrame (transformation, m_bRadar /*|| !(gameOpts->render.automap.bTextured & 1)*/, !m_bRadar, xStereoSeparation);
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 
@@ -490,7 +490,7 @@ if (m_bRadar || (gameOpts->render.automap.bTextured & 2)) {
 	DrawEdges ();
 	DrawObjects ();
 	}
-G3EndFrame (0);
+G3EndFrame (transformation, 0);
 
 if (m_bRadar) {
 	ogl.m_states.bEnableScissor = 0;
