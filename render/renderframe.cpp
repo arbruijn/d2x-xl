@@ -527,12 +527,12 @@ if (bShowOnlyCurSide)
 	CCanvas::Current ()->Clear (nClearWindowColor);
 #endif
 
-#ifdef _OPENMP
+#if 0 //def _OPENMP
 #	pragma omp parallel sections 
 {
 #endif
 
-#ifdef _OPENMP
+#if 0 //def _OPENMP
 #	pragma omp section
 {
 #endif
@@ -590,19 +590,19 @@ else {
 ogl.StencilOff ();
 #endif
 RenderSkyBox (nWindow);
-#ifdef _OPENMP
+#if 0 //def _OPENMP
 }
 #	pragma omp section
 {
 #endif
-UpdateEffects ();
-RenderEffects (nWindow);
-#ifdef _OPENMP
+//UpdateEffects ();
+#if 0 //def _OPENMP
 }
 }
 #endif
 
-//transparencyRenderer.Render (nWindow);
+RenderEffects (nWindow);
+transparencyRenderer.Render (nWindow);
 
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
 	radar.Render ();
