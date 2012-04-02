@@ -820,6 +820,7 @@ if (!m_data.bAllowAdd)
 if ((bTransformed > 0) && (m_data.bAllowAdd < 0))	// already added and still in buffer
 	return 0;
 #endif
+
 #if RENDER_TRANSPARENCY
 
 int nDepth = Depth (vPos, bTransformed > 0);
@@ -856,54 +857,43 @@ int nThread = 0;
 
 CTranspItemBuffers& buffer = m_data.buffers [nThread];
 
-if (nOffset < (int) buffer.depthBuffer.Length ()) {
-//#if USE_OPENMP > 1
-//#	pragma omp critical (transpRender)
-//#elif !USE_OPENMP
-//if (gameStates.app.bMultiThreaded)
-//	SDL_mutexP (tiRender.semaphore);
-//#endif
-	{ // begin critical section
-	CTranspItem* ph = buffer.AllocItem (item->Type (), item->Size ());
-	if (ph) {
-		memcpy (ph, item, item->Size ());
-		ph->nItem = buffer.nItems [0]++;
-		ph->bRendered = 0;
-		ph->bTransformed = bTransformed;
-		ph->z = nDepth;
-		ph->bValid = 1;
-		CTranspItem** pd = buffer.depthBuffer + nOffset;
+if (nOffset >= (int) buffer.depthBuffer.Length ()) 
+	return 0;
+CTranspItem* ph = buffer.AllocItem (item->Type (), item->Size ());
+if (!ph) 
+	return 0;
+
+memcpy (ph, item, item->Size ());
+ph->nItem = buffer.nItems [0]++;
+ph->bRendered = 0;
+ph->bTransformed = bTransformed;
+ph->z = nDepth;
+ph->bValid = 1;
+CTranspItem** pd = buffer.depthBuffer + nOffset;
 #if 0 // sort by depth
-		CTranspItem* pi;
-		for (pi = pd->head; pi; pi = pi->nextItemP) {
-			if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
-				break;
-			}
-		if (pi) {
-			ph->nextItemP = pi->nextItemP;
-			pi->nextItemP = ph;
-			}
-		else 
-#endif
-			{
-			ph->nextItemP = *pd;
-			*pd = ph;
-			}
-		if (buffer.nMinOffs > nOffset)
-			buffer.nMinOffs = nOffset;
-		if (buffer.nMaxOffs < nOffset)
-			buffer.nMaxOffs = nOffset;
-			}
-		} // end critical section
+CTranspItem* pi;
+for (pi = pd->head; pi; pi = pi->nextItemP) {
+	if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
+		break;
 	}
-//#if !USE_OPENMP
-//if (gameStates.app.bMultiThreaded)
-//	SDL_mutexV (tiRender.semaphore);
-//#endif
-return 1;
-#else
-return 0;
+if (pi) {
+	ph->nextItemP = pi->nextItemP;
+	pi->nextItemP = ph;
+	}
+else 
 #endif
+	{
+	ph->nextItemP = *pd;
+	*pd = ph;
+	}
+if (buffer.nMinOffs > nOffset)
+	buffer.nMinOffs = nOffset;
+if (buffer.nMaxOffs < nOffset)
+	buffer.nMaxOffs = nOffset;
+return 1;
+#else // RENDER_TRANSPARENCY
+return 0;
+#endif // RENDER_TRANSPARENCY
 }
 
 //------------------------------------------------------------------------------
