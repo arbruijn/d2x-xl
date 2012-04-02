@@ -727,12 +727,9 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 		Build (m_data.faceP, -1);
 	else {
 #if USE_OPENMP
-#	pragma omp parallel
-			{
-		#pragma omp for
-			for (int i = 0; i < gameStates.app.nThreads; i++)
-				Build (m_data.faceP, i);
-			}
+#	pragma omp parallel for
+		for (int i = 0; i < gameStates.app.nThreads; i++)
+			Build (m_data.faceP, i);
 #else
 		if (!RunRenderThreads (rtLightmap, gameStates.app.nThreads))
 			Build (m_data.faceP, -1);

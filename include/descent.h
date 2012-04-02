@@ -1034,6 +1034,7 @@ class CRenderStates {
 		int nState;	//0: render geometry, 1: render objects
 		int nType;
 		int nFrameCount;
+		int bUpdateEffects;
 		int nLightingMethod;
 		int bPerPixelLighting;
 		int nMaxLightsPerPass;

@@ -983,14 +983,15 @@ if (((RandShort () << 3) < gameData.time.xFrame))	//play the nSound
 
 void DoEffectsFrame (void)
 {
-#if UNIFY_THREADS
-if (!(WaitForRenderThreads () && RunRenderThreads (rtEffects, 1)))
-#else
-if (WaitForEffectsThread ())
-	tiEffects.bExec = 1;
-else
-#endif
-	{
+gameStates.render.bUpdateEffects = true;
+}
+
+//-----------------------------------------------------------------------------
+
+void UpdateEffects (void) 
+{
+if (gameStates.render.bUpdateEffects) {
+	gameStates.render.bUpdateEffects = 0;
 	wayPointManager.Update ();
 	lightningManager.DoFrame ();
 	sparkManager.DoFrame ();
@@ -1045,6 +1046,9 @@ if (IsMultiGame) {
 	MultiRemoveGhostShips ();
 	}
 
+#if PHYSICS_FPS < 0
+DoEffectsFrame ();
+#endif
 if (bRenderFrame)
 	DoRenderFrame ();
 if (bFrameTime)
@@ -1059,9 +1063,6 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK)
 	DoReactorDeadFrame ();
 ProcessSmartMinesFrame ();
 DoSeismicStuff ();
-#if PHYSICS_FPS < 0
-DoEffectsFrame ();
-#endif
 DoAmbientSounds ();
 DropPowerups ();
 gameData.time.xGame += gameData.time.xFrame;

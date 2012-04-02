@@ -333,29 +333,23 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			else
 				nMax = gameData.segs.nSegments;
 			if (gameStates.app.nThreads & 1) {
-#			pragma omp parallel
-				{
-#				pragma omp for private (nStart, nEnd)
-					for (int i = 0; i < gameStates.app.nThreads; i++) {
-						ComputeThreadRange (i, nMax, nStart, nEnd);
-						ComputeFaceLight (nStart, nEnd, i);
-						}
+#			pragma omp parallel for private (nStart, nEnd)
+				for (int i = 0; i < gameStates.app.nThreads; i++) {
+					ComputeThreadRange (i, nMax, nStart, nEnd);
+					ComputeFaceLight (nStart, nEnd, i);
 					}
 				}
 			else {
 				int	nPivot = gameStates.app.nThreads / 2;
-#				pragma omp parallel
-					{
-#				pragma omp for private (nStart, nEnd)
-					for (int i = 0; i < gameStates.app.nThreads; i++) {
-						if (i < nPivot) {
-							ComputeThreadRange (i, tiRender.nMiddle, nStart, nEnd, nPivot);
-							ComputeFaceLight (nStart, nEnd, i);
-							}
-						else {
-							ComputeThreadRange (i - nPivot, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
-							ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, i);
-							}
+#				pragma omp parallel for private (nStart, nEnd)
+				for (int i = 0; i < gameStates.app.nThreads; i++) {
+					if (i < nPivot) {
+						ComputeThreadRange (i, tiRender.nMiddle, nStart, nEnd, nPivot);
+						ComputeFaceLight (nStart, nEnd, i);
+						}
+					else {
+						ComputeThreadRange (i - nPivot, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
+						ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, i);
 						}
 					}
 				}

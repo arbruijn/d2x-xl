@@ -143,13 +143,9 @@ void CSparks::Render (void)
 {
 m_bUpdate = 1;
 //if (!automap.Display () || automap.m_bFull || automap.m_visible [m_nSegment])
-if (gameData.render.mine.Visible (m_nSegment))
+if (gameData.render.mine.Visible (m_nSegment)) {
 //#if USE_OPENMP > 1
-//#	pragma omp parallel
-//#endif
-	{
-//#if USE_OPENMP > 1
-//#		pragma omp for
+//#	pragma omp parallel for
 //#endif
 	for (int i = 0; i < m_nMaxSparks; i++)
 		m_sparks [i].Render ();
@@ -162,15 +158,10 @@ void CSparks::Update (void)
 {
 if (m_bUpdate) {
 #if USE_OPENMP //> 1
-#	pragma omp parallel
+#	pragma omp parallel for
 #endif
-		{
-#if USE_OPENMP //> 1
-#		pragma omp for
-#endif
-		for (int i = 0; i < m_nMaxSparks; i++)
-			m_sparks [i].Update ();
-		}
+	for (int i = 0; i < m_nMaxSparks; i++)
+		m_sparks [i].Update ();
 	Create ();
 	m_bUpdate = 0;
 	}

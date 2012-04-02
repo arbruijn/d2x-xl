@@ -527,14 +527,21 @@ if (bShowOnlyCurSide)
 	CCanvas::Current ()->Clear (nClearWindowColor);
 #endif
 
+#ifdef _OPENMP
+#	pragma omp parallel sections 
+{
+#endif
+
+#ifdef _OPENMP
+#	pragma omp section
+#endif
 #if MAX_SHADOWMAPS
 RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #else
 if (!ogl.m_features.bStencilBuffer.Available ())
 	extraGameInfo [0].bShadows =
 	extraGameInfo [1].bShadows = 0;
-if (SHOW_SHADOWS &&
-	 !(nWindow || gameStates.render.cameras.bActive || automap.Display ())) {
+if (SHOW_SHADOWS && !(nWindow || gameStates.render.cameras.bActive || automap.Display ())) {
 	if (!gameStates.render.nShadowMap) {
 		gameStates.render.nShadowPass = 1;
 #if SOFT_SHADOWS
@@ -582,7 +589,18 @@ else {
 ogl.StencilOff ();
 #endif
 RenderSkyBox (nWindow);
+
+#ifdef _OPENMP
+#	pragma omp section
+#endif
+UpdateEffects ();
 RenderEffects (nWindow);
+#ifdef _OPENMP
+}
+#endif
+
+transparencyRenderer.Render (nWindow);
+
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
 	radar.Render ();
 	}

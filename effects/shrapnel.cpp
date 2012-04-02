@@ -129,15 +129,10 @@ uint CShrapnelCloud::Update (void)
 	int i;
 
 #if USE_OPENMP //> 1
-#	pragma omp parallel
-#endif
-	{
-#if USE_OPENMP //> 1
-#	pragma omp for 
+#	pragma omp parallel for 
 #endif
 	for (i = 0; i < int (m_tos); i++)
 		m_data.buffer [i].Update ();
-	}
 
 for (i = int (m_tos) - 1; i >= 0; i--)
 	if (m_data.buffer [i].TTL () < 0)
@@ -155,15 +150,10 @@ void CShrapnelCloud::Draw (void)
 {
 if (explBlast.Load ())
 #if USE_OPENMP //> 1
-#	pragma omp parallel
-#endif
-	{
-#if USE_OPENMP //> 1
-#	pragma omp for
+#	pragma omp parallel for
 #endif
 	for (int i = 0; i < int (m_tos); i++)
 		m_data.buffer [i].Draw ();
-	}
 }
 
 // -----------------------------------------------------------------------------
@@ -189,16 +179,10 @@ if (!Grow (h))
 	return 0;
 fScale = 7.0f / fScale;
 #if USE_OPENMP //> 1
-#	pragma omp parallel
+#	pragma omp parallel for 
 #endif
-	{
-#if USE_OPENMP //> 1
-#	pragma omp for 
-#endif
-	for (i = 0; i < h; i++) {
-		m_data.buffer [i].Create (parentObjP, objP, 3.0f);
-		}
-	}
+for (i = 0; i < h; i++) 
+	m_data.buffer [i].Create (parentObjP, objP, 3.0f);
 objP->info.xLifeLeft *= 2;
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
@@ -211,15 +195,10 @@ return 1;
 void CShrapnelCloud::Destroy (void)
 {
 #if USE_OPENMP //> 1
-#	pragma omp parallel
+#	pragma omp parallel for 
 #endif
-	{
-#if USE_OPENMP //> 1
-#	pragma omp for 
-#endif
-	for (int i = 0; i < int (m_tos); i++)
-		m_data.buffer [i].Destroy ();
-	}
+for (int i = 0; i < int (m_tos); i++)
+	m_data.buffer [i].Destroy ();
 CStack<CShrapnel>::Destroy ();
 }
 

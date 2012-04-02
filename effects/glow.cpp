@@ -356,13 +356,9 @@ if ((GLOW_FLAGS & nType) == 0)
 //	return true;
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
-//#pragma omp parallel 
-{
-//#	pragma omp for
-for (int i = 0; i < nVerts; i++) {
+//#pragma omp parallel for
+for (int i = 0; i < nVerts; i++)
 	SetExtent (vertexP [i]);
-	}
-}
 #endif
 return Visible ();
 }
@@ -376,17 +372,11 @@ if (!Available (nType))
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
 #if USE_VIEWPORT
-//if (gameStates.render.cameras.bActive)
-//	return true;
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
-//#pragma omp parallel 
-{
-//#	pragma omp for
-for (int i = 0; i < nVerts; i++) {
+//#pragma omp parallel for
+for (int i = 0; i < nVerts; i++) 
 	SetExtent (*(vertexP [i].XYZ ()));
-	}
-}
 #endif
 return Visible ();
 }

@@ -647,10 +647,8 @@ if (gameStates.app.nThreads < 2) {
 	gameData.render.zMax = tiRender.zMax [0];
 	QSortZRef (0, nSegments - 1);
 	}
-else
-#pragma omp parallel
-	{
-	#pragma omp for private (i, j)
+else {
+#pragma omp parallel for private (i, j)
 	for (h = 0; h < gameStates.app.nThreads; h++) {
 		ComputeThreadRange (h, nSegments, i, j);
 		InitZRef (i, j, h);

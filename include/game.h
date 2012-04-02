@@ -185,6 +185,7 @@ void ShowInGameWarning (const char *s);
 int MarkPathToExit ();
 
 void DoEffectsFrame (void);
+void UpdateEffects (void);
 
 void GameDisableCheats ();
 void TurnCheatsOff ();

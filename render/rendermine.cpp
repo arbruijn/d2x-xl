@@ -566,57 +566,34 @@ return 1;
 
 void RenderEffects (int nWindow)
 {
-#if 1
-	bool	bCreate = !gameOpts->render.stereo.nGlasses || (ogl.StereoSeparation () < 0) || nWindow || gameStates.render.cameras.bActive;
-#else
-	bool	bCreate = true; 
-#endif
+if (!gameOpts->render.stereo.nGlasses || (ogl.StereoSeparation () < 0) || nWindow || gameStates.render.cameras.bActive) {
 	int bLightning, bParticles, bSparks;
-	PROF_START
 
-#if UNIFY_THREADS
-WaitForRenderThreads ();
-#else
-WaitForEffectsThread ();
-#endif
-if (automap.Display ()) {
-	bLightning = gameOpts->render.automap.bLightning;
-	bParticles = gameOpts->render.automap.bParticles;
-	bSparks = gameOpts->render.automap.bSparks;
-	}
-else {
-	bSparks = (gameOptions [0].render.nQuality > 0);
-	bLightning = (!nWindow || gameOpts->render.lightning.bAuxViews) && 
-					  (!gameStates.render.cameras.bActive || gameOpts->render.lightning.bMonitors);
-	bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
-					 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
-	}
-if (bCreate) {
-	if (bSparks) {
-		SEM_ENTER (SEM_SPARKS)
-		sparkManager.Render ();
+PROF_START
+
+	if (automap.Display ()) {
+		bLightning = gameOpts->render.automap.bLightning;
+		bParticles = gameOpts->render.automap.bParticles;
+		bSparks = gameOpts->render.automap.bSparks;
 		}
+	else {
+		bSparks = (gameOptions [0].render.nQuality > 0);
+		bLightning = (!nWindow || gameOpts->render.lightning.bAuxViews) && 
+						  (!gameStates.render.cameras.bActive || gameOpts->render.lightning.bMonitors);
+		bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
+						 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
+		}
+
+	if (bSparks) 
+		sparkManager.Render ();
 	if (bParticles) {
-		SEM_ENTER (SEM_SMOKE)
 		particleManager.Cleanup ();
 		particleManager.Render ();
 		}
-	if (bLightning) {
-		SEM_ENTER (SEM_LIGHTNING)
+	if (bLightning) 
 		lightningManager.Render ();
-		}
-	if (bLightning)
-		SEM_LEAVE (SEM_LIGHTNING)
 	}
 
-transparencyRenderer.Render (nWindow);
-
-if (bCreate) {
-	if (bParticles)
-		SEM_LEAVE (SEM_SMOKE)
-	if (bSparks)
-		SEM_LEAVE (SEM_SPARKS)
-	}
 PROF_END(ptEffects)
 }
 
