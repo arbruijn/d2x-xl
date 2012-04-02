@@ -780,7 +780,7 @@ Assert (nVertices <= MAX_VERTICES);
 console.printf (CON_DBG, "   %d vertices\n", gameData.segs.nVertices);
 #endif
 nSegments = bNewFileFormat ? cf.ReadShort () : cf.ReadInt ();
-if (nSegments >= MAX_SEGMENTS) {
+if (nSegments > MAX_SEGMENTS) {
 	Warning (TXT_LEVEL_TOO_LARGE);
 	return -1;
 	}
