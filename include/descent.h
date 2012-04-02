@@ -1892,7 +1892,7 @@ class CSegmentData {
 		CArray<CFixVector>		sideCenters;
 		CArray<ubyte>				bSegVis [2];
 		CArray<ubyte>				bVertVis;
-		CArray<ushort>				segDist;
+		CArray<CArray<ushort> >	segDist;
 		CArray<ubyte>				segDistScale;
 		CArray<short>				vertexSegments; // all segments using this vertex
 		int							nVertices;
@@ -1977,14 +1977,14 @@ class CSegmentData {
 			}
 
 		inline int SegDist (int i, int j) {
-			ushort dist = segDist [SegDistIdx (i, j)];
+			ushort dist = segDist [i][j];
 			if (dist == 0xFFFF)
 				return -1;
 			return (fix) dist << (fix) segDistScale [i];
 			}
 
 		inline void SetSegDist (int i, int j, fix xDistance, fix xRound) {
-			segDist [SegDistIdx (i, j)] = (xDistance < 0) ? 0xFFFF : (ushort) (xDistance >> (fix) segDistScale [i]);
+			segDist [i][j] = (xDistance < 0) ? 0xFFFF : (ushort) (xDistance >> (fix) segDistScale [i]);
 			}
 
 		inline bool BuildGrid (int nSize, int bSkyBox) { return grids [bSkyBox].Create (nSize, bSkyBox); }
