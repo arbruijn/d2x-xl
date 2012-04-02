@@ -527,15 +527,8 @@ if (bShowOnlyCurSide)
 	CCanvas::Current ()->Clear (nClearWindowColor);
 #endif
 
-#if 0 //def _OPENMP
-#	pragma omp parallel sections 
-{
-#endif
+StartEffectsThread (nWindow);
 
-#if 0 //def _OPENMP
-#	pragma omp section
-{
-#endif
 #if MAX_SHADOWMAPS
 RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #else
@@ -590,18 +583,10 @@ else {
 ogl.StencilOff ();
 #endif
 RenderSkyBox (nWindow);
-#if 0 //def _OPENMP
-}
-#	pragma omp section
-{
-#endif
-//UpdateEffects ();
-#if 0 //def _OPENMP
-}
-}
-#endif
-
-RenderEffects (nWindow);
+if (gameStates.app.bMultiThreaded > 1)
+	WaitForEffectsThread ();
+else
+	RenderEffects (nWindow);
 transparencyRenderer.Render (nWindow);
 
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {

@@ -650,9 +650,9 @@ void UnloadLevelData (int bRestore, bool bQuit)
 {
 paletteManager.EnableEffect (true);
 if (bQuit)
-	EndRenderThreads ();
+	DestroyRenderThreads ();
 else {
-	EndEffectsThread ();
+	DestroyEffectsThread ();
 	}
 ResetModFolders ();
 textureManager.Destroy ();
@@ -891,7 +891,7 @@ return nLoadRes;
 static void CleanupBeforeGame (int nLevel, int bRestore)
 {
 /*---*/PrintLog (1, "cleaning up...\n");
-EndRenderThreads ();
+DestroyRenderThreads ();
 transparencyRenderer.ResetBuffers ();
 gameData.Destroy ();
 srand (SDL_GetTicks ());
@@ -1163,8 +1163,8 @@ PrintLog (-1);
 audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32768) / 8, 1);
 audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
 PrintLog (-1);
-ControlEffectsThread ();
-ControlSoundThread ();
+CreateEffectsThread ();
+CreateSoundThread ();
 gameStates.render.bDepthSort = 1;
 gameStates.app.bBetweenLevels = 0;
 PrintLog (-1);

@@ -884,7 +884,7 @@ for (int i = 0; i < gameStates.app.nThreads; i++)
 
 #else // _OPENMP ---------------------------------------------------------------
 
-static tThreadInfo	ti [MAX_THREADS];
+static CThreadInfo	ti [MAX_THREADS];
 
 
 int _CDECL_ SegDistThread (void *pThreadId)

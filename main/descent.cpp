@@ -1024,7 +1024,7 @@ if (Initialize (argc, argv))
 //	to write certain data.
 /*---*/PrintLog (1, "Loading player profile\n");
 DoSelectPlayer ();
-StartSoundThread (); //needs to be repeated here due to dependency on data read in DoSelectPlayer()
+CreateSoundThread (); //needs to be repeated here due to dependency on data read in DoSelectPlayer()
 paletteManager.DisableEffect ();
 // handle automatic launch of a demo playback
 if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {

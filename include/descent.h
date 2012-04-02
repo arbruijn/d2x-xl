@@ -154,16 +154,17 @@ typedef int _CDECL_ tThreadFunc (void *);
 
 typedef tThreadFunc *pThreadFunc;
 
-typedef struct tThreadInfo {
-	SDL_Thread		*pThread;
-	SDL_sem			*done;
-	SDL_sem			*exec;
-	int				nId;
-	int				bExec;
-	int				bDone;
-	int				bBlock;
-	int				bQuit;
-	} tThreadInfo;
+class CThreadInfo {
+	public:
+		SDL_Thread*	pThread;
+		SDL_sem*		done;
+		SDL_sem*		exec;
+		int			nId;
+		int			bExec;
+		int			bDone;
+		int			bBlock;
+		int			bQuit;
+	};
 
 //------------------------------------------------------------------------------
 
@@ -3279,31 +3280,34 @@ class CHUDData {
 
 //------------------------------------------------------------------------------
 
-typedef struct tVertColorThreadData {
+class CVertColorThreadData {
+	public:
 #if MULTI_THREADED_LIGHTS
-	tThreadInfo		info [2];
+		CThreadInfo		info [2];
 #endif
-	CVertColorData	data;
-	} tVertColorThreadData;
+		CVertColorData	data;
+	};
 
-typedef struct tClipDistData {
-	CObject*				objP;
-	POF::CModel*		po;
-	POF::CSubModel*	pso;
-	float					fClipDist [2];
-	} tClipDistData;
+class CClipDistData {
+	public:
+		CObject*				objP;
+		POF::CModel*		po;
+		POF::CSubModel*	pso;
+		float					fClipDist [2];
+	};
 
-typedef struct tClipDistThreadData {
+class CClipDistThreadData {
+	public:
 #if MULTI_THREADED_SHADOWS
-	tThreadInfo		info [2];
+		CThreadInfo		info [2];
 #endif
-	tClipDistData	data;
-	} tClipDistThreadData;
+		CClipDistData	data;
+	};
 
 class CThreadData {
 	public:
-		tVertColorThreadData		vertColor;
-		tClipDistThreadData		clipDist;
+		CVertColorThreadData		vertColor;
+		CClipDistThreadData		clipDist;
 	};
 
 //------------------------------------------------------------------------------

@@ -21,8 +21,8 @@
 #define KILL_RENDER_THREADS	0
 #define TRANSPRENDER_THREADS	0
 
-tRenderThreadInfo tiRender;
-tThreadInfo tiEffects;
+CRenderThreadInfo tiRender;
+CEffectThreadInfo tiEffects;
 
 int _CDECL_ LightObjectsThread (void* nThreadP);
 
@@ -185,7 +185,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void StartRenderThreads (void)
+void CreateRenderThreads (void)
 {
 if (!gameStates.app.bMultiThreaded)
 	return;
@@ -214,13 +214,13 @@ for (int i = 0; i < gameStates.app.nThreads; i++) {
 void ControlRenderThreads (void)
 {
 #if !USE_OPENMP
-StartRenderThreads ();
+CreateRenderThreads ();
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-void EndRenderThreads (void)
+void DestroyRenderThreads (void)
 {
 if (!gameStates.app.bMultiThreaded)
 	return;
@@ -237,7 +237,7 @@ for (int i = 0; i < gameStates.app.nThreads; i++) {
 SDL_DestroyMutex (tiRender.semaphore);
 tiRender.semaphore = NULL;
 #endif
-EndEffectsThread ();
+DestroyEffectsThread ();
 }
 
 //------------------------------------------------------------------------------
@@ -252,9 +252,8 @@ do {
 			return 0;
 			}
 		}
-	DoParticleFrame ();
-	lightningManager.DoFrame ();
-	sparkManager.DoFrame ();
+	UpdateEffects ();
+	RenderEffects (tiEffects.nWindow);
 	tiEffects.bExec = 0;
 	} while (!tiEffects.bDone);
 tiEffects.bDone = 0;
@@ -263,25 +262,27 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void StartEffectsThread (void)
+void CreateEffectsThread (void)
 {
-static bool bInitialized = false;
+if (gameStates.app.bMultiThreaded > 1) {
+	static bool bInitialized = false;
 
-if (!bInitialized) {
-	memset (&tiEffects, 0, sizeof (tiEffects));
-	bInitialized = true;
+	if (!bInitialized) {
+		memset (&tiEffects, 0, sizeof (tiEffects));
+		bInitialized = true;
+		}
+	#if 1 //!USE_OPENMP
+	tiEffects.bDone = 0;
+	tiEffects.bExec = 0;
+	if	(!(tiEffects.pThread || (tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL))))
+		gameData.app.bUseMultiThreading [rtEffects] = 0;
+	#endif
 	}
-#if 0 //!USE_OPENMP
-tiEffects.bDone = 0;
-tiEffects.bExec = 0;
-if	(!(tiEffects.pThread || (tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL))))
-	gameData.app.bUseMultiThreading [rtEffects] = 0;
-#endif
 }
 
 //------------------------------------------------------------------------------
 
-void EndEffectsThread (void)
+void DestroyEffectsThread (void)
 {
 if (!tiEffects.pThread)
 	return;
@@ -293,11 +294,15 @@ tiEffects.pThread = NULL;
 
 //------------------------------------------------------------------------------
 
-void ControlEffectsThread (void)
+void StartEffectsThread (int nWindow)
 {
-#if !USE_OPENMP
-if (gameStates.app.bMultiThreaded > 1)
-	StartEffectsThread ();
+#if 1 //!USE_OPENMP
+if ((gameStates.app.bMultiThreaded > 1) && tiExec.pThread) {
+	while (WaitForEffectsThread ())
+		;
+	tiEffects.nWindow = nWindow;
+	tiEffects.bExec = 1;
+	}
 #endif
 }
 
@@ -305,7 +310,7 @@ if (gameStates.app.bMultiThreaded > 1)
 
 bool WaitForEffectsThread (void)
 {
-#if !USE_OPENMP
+#if 1 //!USE_OPENMP
 if ((gameStates.app.bMultiThreaded > 1) && tiEffects.pThread) {
 	while (tiEffects.bExec)
 		G3_SLEEP (0);

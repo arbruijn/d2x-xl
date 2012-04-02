@@ -10,32 +10,39 @@
 
 #define UNIFY_THREADS	0
 
-typedef struct tRenderThreadInfo {
-	tRenderTask	nTask;
-	int						nMiddle;
-	int						nFaces;
-	int						zMin [MAX_THREADS];
-	int						zMax [MAX_THREADS];
-	tLightning*				lightningP;
-	int						nLightnings;
-	CObject*					objP;
-	RenderModel::CModel*	modelP;
-	tParticleEmitter*		particleEmitters [MAX_THREADS];
-	int						nCurTime [MAX_THREADS];
-	tThreadInfo				ti [MAX_THREADS];
-	SDL_mutex*				semaphore;
-	} tRenderThreadInfo;
+class CRenderThreadInfo {
+	public:
+		tRenderTask	nTask;
+		int						nMiddle;
+		int						nFaces;
+		int						zMin [MAX_THREADS];
+		int						zMax [MAX_THREADS];
+		tLightning*				lightningP;
+		int						nLightnings;
+		CObject*					objP;
+		RenderModel::CModel*	modelP;
+		tParticleEmitter*		particleEmitters [MAX_THREADS];
+		int						nCurTime [MAX_THREADS];
+		CThreadInfo				ti [MAX_THREADS];
+		SDL_mutex*				semaphore;
+	};
 
-extern tRenderThreadInfo tiRender;
+extern CRenderThreadInfo tiRender;
 
-extern tThreadInfo tiEffects;
+class CEffectThreadInfo : public CThreadInfo {
+	public:
+		int nWindow;
+};
+
+extern CEffectThreadInfo tiEffects;
 
 int RunRenderThreads (int nTask, int nThreads = -1);
-void StartRenderThreads (void);
-void EndRenderThreads (void);
+void CreateRenderThreads (void);
+void DestroyRenderThreads (void);
 bool WaitForRenderThreads (void);
+void CreateEffectsThread (void);
 void StartEffectsThread (void);
-void EndEffectsThread (void);
+void DestroyEffectsThread (void);
 void ControlEffectsThread (void);
 bool WaitForEffectsThread (void);
 void ControlRenderThreads (void);

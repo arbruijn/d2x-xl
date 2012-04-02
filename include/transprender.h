@@ -274,8 +274,8 @@ class CTransparencyRenderer {
 		int AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, CFloatVector *colorP);
 		int AddThruster (CObject* objP, tThrusterInfo* infoP, int nThruster);
 		void Render (int nWindow);
-		void StartRenderThreads (void);
-		void EndRenderThreads (void);
+		void CreateRenderThreads (void);
+		void DestroyRenderThreads (void);
 		void Free (void);
 
 		inline int Depth (CFixVector vPos, int bTransformed) {

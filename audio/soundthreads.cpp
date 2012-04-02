@@ -12,7 +12,7 @@
 #include "timeout.h"
 #include "config.h"
 
-tSoundThreadInfo tiSound;
+CSoundThreadInfo tiSound;
 
 //------------------------------------------------------------------------------
 
@@ -74,7 +74,7 @@ return tiSound.ti.pThread != NULL;
 
 //------------------------------------------------------------------------------
 
-void StartSoundThread (void)
+void CreateSoundThread (void)
 {
 if (!tiSound.ti.pThread) {
 	memset (&tiSound, 0, sizeof (tiSound));
@@ -85,7 +85,7 @@ if (!tiSound.ti.pThread) {
 
 //------------------------------------------------------------------------------
 
-void EndSoundThread (void)
+void DestroySoundThread (void)
 {
 if (tiSound.ti.pThread) {
 	WaitForSoundThread (1000);
@@ -102,23 +102,7 @@ if (tiSound.ti.pThread) {
 
 //------------------------------------------------------------------------------
 
-void ControlSoundThread (void)
-{
-#if 1
-StartSoundThread ();
-#else
-if (gameStates.app.bMultiThreaded) {
-	if (gameData.app.bUseMultiThreading [rtSound])
-		StartSoundThread ();
-	else
-		EndSoundThread ();
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-int RunSoundThread (tSoundTask nTask)
+int StartSoundThread (tSoundTask nTask)
 {
 #if 1
 if (tiSound.ti.pThread) {

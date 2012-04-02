@@ -584,6 +584,7 @@ void CleanupAfterGame (bool bHaveLevel)
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
 #endif
+DestroyEffectsThread ();
 gameData.time.xGameTotal = (SDL_GetTicks () - gameData.time.xGameStart) / 1000;
 gameStates.render.bRenderIndirect = 0;
 G3EndFrame (transformation, 0);
@@ -839,14 +840,14 @@ if (bGameClosed)
 	return;
 bGameClosed = 1;
 if (gameStates.app.bMultiThreaded) {
-	EndRenderThreads ();
+	DestroyRenderThreads ();
 	}
 GrClose ();
 PrintLog (1, "unloading addon sounds\n");
 FreeAddonSounds ();
-if (!RunSoundThread (stCloseAudio))
+if (!StartSoundThread (stCloseAudio))
 	audio.Shutdown ();
-EndSoundThread ();
+DestroySoundThread ();
 PrintLog (-1);
 RLECacheClose ();
 FreeObjExtensionBitmaps ();
@@ -983,7 +984,7 @@ if (((RandShort () << 3) < gameData.time.xFrame))	//play the nSound
 
 void DoEffectsFrame (void)
 {
-#if 0
+#if 1
 gameStates.render.bUpdateEffects = true;
 #else
 wayPointManager.Update ();

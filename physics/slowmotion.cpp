@@ -191,7 +191,7 @@ if (!gameOpts->gameplay.nSlowMotionSpeedup)
 	gameOpts->gameplay.nSlowMotionSpeedup = 6;
 if (HaveSoundThread ()) {
 	tiSound.fSlowDown = 1.0f;
-	RunSoundThread (stReconfigureAudio);
+	StartSoundThread (stReconfigureAudio);
 	}
 else {
 	audio.Shutdown ();
@@ -212,7 +212,7 @@ void SlowdownSound (void)
 {
 if (HaveSoundThread ()) {
 	tiSound.fSlowDown = float (gameOpts->gameplay.nSlowMotionSpeedup) / 2;
-	RunSoundThread (stReconfigureAudio);
+	StartSoundThread (stReconfigureAudio);
 	}
 else {
 	audio.Shutdown ();

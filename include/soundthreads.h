@@ -24,20 +24,19 @@ typedef enum tSoundTask {
 	stReconfigureAudio
 	} tSoundTask;
 
-typedef struct tSoundThreadInfo {
-	tSoundTask		nTask;
-	float				fSlowDown;
-	tThreadInfo		ti;
-} tSoundThreadInfo;
+class CSoundThreadInfo : public CThreadInfo {
+	public:
+		tSoundTask	nTask;
+		float			fSlowDown;
+};
 
-void StartSoundThread (void);
-void EndSoundThread (void);
-void ControlSoundThread (void);
+void CreateSoundThread (void);
+void DestroySoundThread (void);
 void WaitForSoundThread (time_t nTimeout = -1);
-int RunSoundThread (tSoundTask nTask);
+int StartSoundThread (tSoundTask nTask);
 bool HaveSoundThread (void);
 
-extern tSoundThreadInfo tiSound;
+extern CSoundThreadInfo tiSound;
 
 //------------------------------------------------------------------------------
 
