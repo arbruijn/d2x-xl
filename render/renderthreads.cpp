@@ -299,8 +299,7 @@ bool StartEffectsThread (int nWindow)
 #if 1 //!USE_OPENMP
 if ((gameStates.app.nThreads < 2) || !tiEffects.pThread) 
 	return false;
-while (WaitForEffectsThread ())
-	;
+WaitForEffectsThread ();
 tiEffects.nWindow = nWindow;
 tiEffects.bExec = 1;
 return true;
