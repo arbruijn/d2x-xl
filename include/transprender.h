@@ -200,7 +200,7 @@ class CTranspItemBuffers {
 
 class CTranspRenderData {
 	public:
-		CTranspItemBuffers buffers [MAX_THREADS];
+		CTranspItemBuffers buffers [MAX_THREADS + 1];
 		int					nCurType;
 		int					nPrevType;
 		int					zMin;

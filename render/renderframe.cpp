@@ -587,7 +587,7 @@ ogl.StencilOff ();
 RenderSkyBox (nWindow);
 if (bEffectsThread)
 	WaitForEffectsThread ();
-//else
+else
 	RenderEffects (nWindow);
 transparencyRenderer.Render (nWindow);
 
