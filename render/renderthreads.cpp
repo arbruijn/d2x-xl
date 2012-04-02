@@ -312,7 +312,7 @@ return true;
 bool WaitForEffectsThread (void)
 {
 #if 1 //!USE_OPENMP
-if ((gameStates.app.bMultiThreaded > 1) && tiEffects.pThread) {
+if ((gameStates.app.nThreads > 1) && tiEffects.pThread) {
 	while (tiEffects.bExec)
 		G3_SLEEP (0);
 	return true;
