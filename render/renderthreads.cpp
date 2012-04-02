@@ -297,7 +297,7 @@ tiEffects.pThread = NULL;
 void StartEffectsThread (int nWindow)
 {
 #if 1 //!USE_OPENMP
-if ((gameStates.app.bMultiThreaded > 1) && tiExec.pThread) {
+if ((gameStates.app.bMultiThreaded > 1) && tiEffects.pThread) {
 	while (WaitForEffectsThread ())
 		;
 	tiEffects.nWindow = nWindow;
