@@ -882,6 +882,60 @@ for (int i = 0; i < gameStates.app.nThreads; i++)
 	threadFunc (i);
 }
 
+//------------------------------------------------------------------------------
+
+static int PrecalcLightPollMT (CMenu& menu, int& key, int nCurItem, int nState)
+{
+if (nState)
+	return nCurItem;
+
+//paletteManager.ResumeEffect ();
+if (loadOp == 0) {
+	loadOp = 1;
+	menu [0].Rebuild ();
+	key = 0;
+	return nCurItem;
+	}
+else if (loadOp == 1) {
+	PrintLog (0, "computing segment visibility\n");
+	StartLightPrecalcThreads (SegVisThread);
+	loadOp = 2;
+	}
+else if (loadOp == 2) {
+	PrintLog (0, "computing segment distances \n");
+	StartLightPrecalcThreads (SegDistThread);
+	loadOp = 3;
+	}
+else if (loadOp == 3) {
+	PrintLog (1, "Computing light visibility\n");
+	StartLightPrecalcThreads (LightVisThread);
+	loadOp = 4;
+	}
+else if (loadOp == 4) {
+	PrintLog (1, "Starting segment light calculation threads\n");
+	StartLightPrecalcThreads (SegLightsThread);
+	loadOp = 5;
+	}
+else if (loadOp == 5) {
+	PrintLog (1, "Starting vertex light calculation threads\n");
+	StartLightPrecalcThreads (VertLightsThread);
+	loadOp = 6;
+	}
+else if (loadOp == 6) {
+	PrintLog (1, "Computing vertices visible to lights\n");
+	ComputeLightsVisibleVertices (-1);
+	loadOp = 7;
+	}
+if (loadOp == 7) {
+	key = -2;
+	return nCurItem;
+	}
+menu [0].Value ()++;
+menu [0].Rebuild ();
+key = 0;
+return nCurItem;
+}
+
 #else // _OPENMP ---------------------------------------------------------------
 
 static CThreadInfo	ti [MAX_THREADS];
@@ -1029,60 +1083,6 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-static int PrecalcLightPollMT (CMenu& menu, int& key, int nCurItem, int nState)
-{
-if (nState)
-	return nCurItem;
-
-//paletteManager.ResumeEffect ();
-if (loadOp == 0) {
-	loadOp = 1;
-	menu [0].Rebuild ();
-	key = 0;
-	return nCurItem;
-	}
-else if (loadOp == 1) {
-	PrintLog (0, "computing segment visibility\n");
-	StartLightPrecalcThreads (SegVisThread);
-	loadOp = 2;
-	}
-else if (loadOp == 2) {
-	PrintLog (0, "computing segment distances \n");
-	StartLightPrecalcThreads (SegDistThread);
-	loadOp = 3;
-	}
-else if (loadOp == 3) {
-	PrintLog (1, "Computing light visibility\n");
-	StartLightPrecalcThreads (LightVisThread);
-	loadOp = 4;
-	}
-else if (loadOp == 4) {
-	PrintLog (1, "Starting segment light calculation threads\n");
-	StartLightPrecalcThreads (SegLightsThread);
-	loadOp = 5;
-	}
-else if (loadOp == 5) {
-	PrintLog (1, "Starting vertex light calculation threads\n");
-	StartLightPrecalcThreads (VertLightsThread);
-	loadOp = 6;
-	}
-else if (loadOp == 6) {
-	PrintLog (1, "Computing vertices visible to lights\n");
-	ComputeLightsVisibleVertices (-1);
-	loadOp = 7;
-	}
-if (loadOp == 7) {
-	key = -2;
-	return nCurItem;
-	}
-menu [0].Value ()++;
-menu [0].Rebuild ();
-key = 0;
-return nCurItem;
-}
-
-//------------------------------------------------------------------------------
-
 void ComputeNearestLights (int nLevel)
 {
 //if (gameStates.app.bNostalgia)
@@ -1102,7 +1102,7 @@ PrintLog (-1);
 
 if (!InitLightVisibility ())
 	throw (EX_OUT_OF_MEMORY);
-#if MULTI_THREADED_PRECALC != 0
+#ifdef _OPENMP
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
@@ -1129,10 +1129,11 @@ if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 		}
 	gameData.physics.side.bCache = 1;
 	}
-else {
+else 
+#endif
+	{
 	int bMultiThreaded = gameStates.app.bMultiThreaded;
 	gameStates.app.bMultiThreaded = 0;
-#endif
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 		ProgressBar (TXT_LOADING,
 						 LoadMineGaugeSize () + PagingGaugeSize (),
