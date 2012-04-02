@@ -227,6 +227,8 @@ class CTranspRenderData {
 		CBitmap*				bmP [3];
 		CFixVector			vViewer [2];
 		CFloatVector		vViewerf [2];
+
+	CTranspRenderData () { memset (this, 0, sizeof (*this)); }
 	};
 
 class CTranspItemData : public CTranspItem {
