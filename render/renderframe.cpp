@@ -534,6 +534,7 @@ if (bShowOnlyCurSide)
 
 #ifdef _OPENMP
 #	pragma omp section
+{
 #endif
 #if MAX_SHADOWMAPS
 RenderMine (nStartSeg, xStereoSeparation, nWindow);
@@ -589,13 +590,15 @@ else {
 ogl.StencilOff ();
 #endif
 RenderSkyBox (nWindow);
-
 #ifdef _OPENMP
+}
 #	pragma omp section
+{
 #endif
 UpdateEffects ();
 RenderEffects (nWindow);
 #ifdef _OPENMP
+}
 }
 #endif
 

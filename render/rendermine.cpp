@@ -592,9 +592,10 @@ PROF_START
 		}
 	if (bLightning) 
 		lightningManager.Render ();
-	}
 
 PROF_END(ptEffects)
+
+	}
 }
 
 //------------------------------------------------------------------------------
