@@ -19,10 +19,10 @@ CSoundThreadInfo tiSound;
 int _CDECL_ SoundThread (void *pThreadId)
 {
 do {
-	while (!tiSound.ti.bExec) {
+	while (!tiSound.bExec) {
 		G3_SLEEP (1);
-		if (tiSound.ti.bDone) {
-			tiSound.ti.bDone = 0;
+		if (tiSound.bDone) {
+			tiSound.bDone = 0;
 			return 0;
 			}
 		}
@@ -50,9 +50,9 @@ do {
 			}
 		songManager.PlayLevelSong (missionManager.nCurrentLevel, 1, false);
 		}
-	tiSound.ti.bExec = 0;
-	} while (!tiSound.ti.bDone);
-tiSound.ti.bDone = 0;
+	tiSound.bExec = 0;
+	} while (!tiSound.bDone);
+tiSound.bDone = 0;
 return 0;
 }
 
@@ -61,7 +61,7 @@ return 0;
 void WaitForSoundThread (time_t nTimeout)
 {
 time_t t0 = (nTimeout < 0) ? 0 : (time_t) SDL_GetTicks ();
-while (tiSound.ti.pThread && tiSound.ti.bExec && ((nTimeout < 0) || ((time_t) SDL_GetTicks () - t0 < nTimeout)))
+while (tiSound.pThread && tiSound.bExec && ((nTimeout < 0) || ((time_t) SDL_GetTicks () - t0 < nTimeout)))
 	G3_SLEEP (1);
 }
 
@@ -69,17 +69,17 @@ while (tiSound.ti.pThread && tiSound.ti.bExec && ((nTimeout < 0) || ((time_t) SD
 
 bool HaveSoundThread (void)
 {
-return tiSound.ti.pThread != NULL;
+return tiSound.pThread != NULL;
 }
 
 //------------------------------------------------------------------------------
 
 void CreateSoundThread (void)
 {
-if (!tiSound.ti.pThread) {
+if (!tiSound.pThread) {
 	memset (&tiSound, 0, sizeof (tiSound));
-	tiSound.ti.nId = 0;
-	tiSound.ti.pThread = SDL_CreateThread (SoundThread, &tiSound.ti.nId);
+	tiSound.nId = 0;
+	tiSound.pThread = SDL_CreateThread (SoundThread, &tiSound.nId);
 	}
 }
 
@@ -87,16 +87,16 @@ if (!tiSound.ti.pThread) {
 
 void DestroySoundThread (void)
 {
-if (tiSound.ti.pThread) {
+if (tiSound.pThread) {
 	WaitForSoundThread (1000);
-	tiSound.ti.bDone = 1;
+	tiSound.bDone = 1;
 	CTimeout to (1000);
 	do {
 		G3_SLEEP (1);
-		} while (tiSound.ti.bDone && !to.Expired ());
-	if (tiSound.ti.bDone)
-		SDL_KillThread (tiSound.ti.pThread);
-	tiSound.ti.pThread = NULL;
+		} while (tiSound.bDone && !to.Expired ());
+	if (tiSound.bDone)
+		SDL_KillThread (tiSound.pThread);
+	tiSound.pThread = NULL;
 	}	
 }
 
@@ -105,13 +105,13 @@ if (tiSound.ti.pThread) {
 int StartSoundThread (tSoundTask nTask)
 {
 #if 1
-if (tiSound.ti.pThread) {
+if (tiSound.pThread) {
 #else
-if (tiSound.ti.pThread && gameData.app.bUseMultiThreading [rtSound]) {
+if (tiSound.pThread && gameData.app.bUseMultiThreading [rtSound]) {
 #endif
 	WaitForSoundThread ();
 	tiSound.nTask = nTask;
-	tiSound.ti.bExec = 1;
+	tiSound.bExec = 1;
 #if 0
 	PrintLog (0, "running render threads (task: %d)\n", nTask);
 #endif
