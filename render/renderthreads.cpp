@@ -264,7 +264,7 @@ return 0;
 
 void CreateEffectsThread (void)
 {
-if (gameStates.app.bMultiThreaded > 1) {
+if (gameStates.app.nThreads > 1) {
 	static bool bInitialized = false;
 
 	if (!bInitialized) {
@@ -294,15 +294,16 @@ tiEffects.pThread = NULL;
 
 //------------------------------------------------------------------------------
 
-void StartEffectsThread (int nWindow)
+bool StartEffectsThread (int nWindow)
 {
 #if 1 //!USE_OPENMP
-if ((gameStates.app.bMultiThreaded > 1) && tiEffects.pThread) {
-	while (WaitForEffectsThread ())
-		;
-	tiEffects.nWindow = nWindow;
-	tiEffects.bExec = 1;
-	}
+if ((gameStates.app.nThreads < 2) || !tiEffects.pThread) 
+	return false;
+while (WaitForEffectsThread ())
+	;
+tiEffects.nWindow = nWindow;
+tiEffects.bExec = 1;
+return true;
 #endif
 }
 

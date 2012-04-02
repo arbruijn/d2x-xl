@@ -49,6 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "addon_bitmaps.h"
 #include "createmesh.h"
+#include "renderthreads.h"
 
 #define bSavingMovieFrames 0
 
@@ -527,7 +528,7 @@ if (bShowOnlyCurSide)
 	CCanvas::Current ()->Clear (nClearWindowColor);
 #endif
 
-StartEffectsThread (nWindow);
+bool bEffectsThread = StartEffectsThread (nWindow);
 
 #if MAX_SHADOWMAPS
 RenderMine (nStartSeg, xStereoSeparation, nWindow);
@@ -583,7 +584,7 @@ else {
 ogl.StencilOff ();
 #endif
 RenderSkyBox (nWindow);
-if (gameStates.app.bMultiThreaded > 1)
+if (bEffectsThread)
 	WaitForEffectsThread ();
 else
 	RenderEffects (nWindow);

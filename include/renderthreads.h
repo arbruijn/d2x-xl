@@ -41,7 +41,7 @@ void CreateRenderThreads (void);
 void DestroyRenderThreads (void);
 bool WaitForRenderThreads (void);
 void CreateEffectsThread (void);
-void StartEffectsThread (int nWindow);
+bool StartEffectsThread (int nWindow);
 void DestroyEffectsThread (void);
 void ControlEffectsThread (void);
 bool WaitForEffectsThread (void);
