@@ -602,7 +602,7 @@ RenderEffects (nWindow);
 }
 #endif
 
-transparencyRenderer.Render (nWindow);
+//transparencyRenderer.Render (nWindow);
 
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
 	radar.Render ();

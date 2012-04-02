@@ -945,15 +945,13 @@ FORALL_EFFECT_OBJS (objP, i) {
 
 void DoParticleFrame (void)
 {
-if (gameStates.render.nShadowPass > 1)
-	return;
-SEM_ENTER (SEM_SMOKE)
+//if (gameStates.render.nShadowPass > 1)
+//	return;
 PlayerBulletFrame ();
 ObjectParticleFrame ();
 //StaticParticlesFrame ();
 shrapnelManager.DoFrame ();
 particleManager.Update ();
-SEM_LEAVE (SEM_SMOKE)
 }
 
 //------------------------------------------------------------------------------

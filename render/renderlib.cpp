@@ -755,7 +755,7 @@ return 0;
 
 int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist, int nThread)
 {
-return gameData.render.mine.visibility [nThread].SegmentMayBeVisible (nStartSeg, nRadius, nMaxDist);
+return gameData.render.mine.visibility [nThread + 2].SegmentMayBeVisible (nStartSeg, nRadius, nMaxDist);
 }
 
 //------------------------------------------------------------------------------

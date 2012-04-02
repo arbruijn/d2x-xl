@@ -1607,8 +1607,8 @@ class CMineRenderData {
 	public:
 		//CFixVector				viewer.vPos;
 		tObjTransformation	viewer;
-		CVisibilityData		visibility [MAX_THREADS];
-		CShortArray				renderSegList [MAX_THREADS]; //[MAX_SEGMENTS_D2X];
+		CVisibilityData		visibility [MAX_THREADS + 2];
+		//CShortArray				renderSegList [MAX_THREADS]; //[MAX_SEGMENTS_D2X];
 		CShortArray				objRenderSegList;
 		int						nObjRenderSegs;
 		CObjRenderList			objRenderList;

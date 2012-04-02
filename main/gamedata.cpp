@@ -409,7 +409,7 @@ CMineRenderData::CMineRenderData ()
 
 bool CMineRenderData::Create (int nState)
 {
-for (int i = 0, j = gameStates.app.nThreads ? gameStates.app.nThreads : 1; i < j; i++)
+for (int i = 0, j = gameStates.app.nThreads + 2; i < j; i++)
 	visibility [i].Create (nState);
 if (nState == 1) {
 	CREATE (objRenderSegList, LEVEL_SEGMENTS, 0);
@@ -429,7 +429,7 @@ return true;
 
 bool CMineRenderData::Resize (int nLength)
 {
-for (int i = 0, j = gameStates.app.nThreads ? gameStates.app.nThreads : 1; i < j; i++)
+for (int i = 0, j = gameStates.app.nThreads + 2; i < j; i++)
 	if (!visibility [i].Resize (nLength))
 		return false;
 return true;
@@ -439,7 +439,7 @@ return true;
 
 void CMineRenderData::Destroy (void)
 {
-for (int i = 0, j = gameStates.app.nThreads ? gameStates.app.nThreads : 1; i < j; i++)
+for (int i = 0, j = gameStates.app.nThreads + 2; i < j; i++)
 	visibility [i].Destroy ();
 DESTROY (objRenderSegList);
 DESTROY (renderFaceListP);

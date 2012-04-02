@@ -274,7 +274,7 @@ if (gameStates.app.bMultiThreaded && m_systemList.Buffer ()) {
 		return;
 	if (h == 1)
 		m_systemList [0]->Render (0);
-	else
+	else 
 #	pragma omp parallel
 		{
 		int nThread = omp_get_thread_num();
