@@ -651,9 +651,6 @@ void UnloadLevelData (int bRestore, bool bQuit)
 paletteManager.EnableEffect (true);
 if (bQuit)
 	DestroyRenderThreads ();
-else {
-	DestroyEffectsThread ();
-	}
 ResetModFolders ();
 textureManager.Destroy ();
 gameStates.render.bOmegaModded = 0;
@@ -1163,7 +1160,6 @@ PrintLog (-1);
 audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32768) / 8, 1);
 audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
 PrintLog (-1);
-CreateEffectsThread ();
 CreateSoundThread ();
 gameStates.render.bDepthSort = 1;
 gameStates.app.bBetweenLevels = 0;

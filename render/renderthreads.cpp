@@ -286,12 +286,14 @@ if (gameStates.app.nThreads > 1) {
 
 void DestroyEffectsThread (void)
 {
+#if 0
 if (!tiEffects.pThread)
 	return;
 tiEffects.bDone = 1;
 while (tiEffects.bDone)
 	G3_SLEEP (0);
 tiEffects.pThread = NULL;
+#endif
 }
 
 //------------------------------------------------------------------------------

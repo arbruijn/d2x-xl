@@ -529,10 +529,6 @@ if (bShowOnlyCurSide)
 	CCanvas::Current ()->Clear (nClearWindowColor);
 #endif
 
-#if 0
-bool bEffectsThread = StartEffectsThread (nWindow);
-#endif
-
 #if MAX_SHADOWMAPS
 RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #else
@@ -587,15 +583,7 @@ else {
 ogl.StencilOff ();
 #endif
 RenderSkyBox (nWindow);
-#if 0
-if (bEffectsThread)
-	WaitForEffectsThread ();
-else 
-#endif
-	{
-	//UpdateEffects ();
-	RenderEffects (nWindow);
-	}
+RenderEffects (nWindow);
 transparencyRenderer.Render (nWindow);
 
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
