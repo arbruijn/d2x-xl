@@ -1580,7 +1580,7 @@ class CVisibilityData {
 	public:
 		CVisibilityData ();
 		~CVisibilityData () { Destroy (); }
-		bool Create (void);
+		bool Create (int nState);
 		bool Resize (int nLength = -1);
 		void Destroy (void);
 
@@ -1624,7 +1624,7 @@ class CMineRenderData {
 	public:
 		CMineRenderData ();
 		~CMineRenderData () { Destroy (); }
-		bool Create (void);
+		bool Create (int nState);
 		bool Resize (int nLength = -1);
 		void Destroy (void);
 		bool Visible (short nSegment, int nThread = 0) { return visibility [nThread].Visible (nSegment); }

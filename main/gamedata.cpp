@@ -354,21 +354,25 @@ CVisibilityData::CVisibilityData ()
 
 //------------------------------------------------------------------------------
 
-bool CVisibilityData::Create (void)
+bool CVisibilityData::Create (int nState)
 {
-nVisited = 255;
-nProcessed = 255;
-nVisible = 255;
-CREATE (segments, LEVEL_SEGMENTS, 0);
-CREATE (bVisited, LEVEL_SEGMENTS, 0);
-CREATE (bVisible, LEVEL_SEGMENTS, 0);
-CREATE (bProcessed, LEVEL_SEGMENTS, 0);
-CREATE (nDepth, LEVEL_SEGMENTS, 0);
-for (int i = 0; i < 2; i++)
-	CREATE (zRef [i], LEVEL_SEGMENTS, 0);
-CREATE (portals, LEVEL_SEGMENTS, 0);
-CREATE (position, LEVEL_SEGMENTS, 0);
-CREATE (points, LEVEL_VERTICES, 0);
+if (nState == 0) {
+	CREATE (points, LEVEL_VERTICES, 0);
+	}
+else {
+	nVisited = 255;
+	nProcessed = 255;
+	nVisible = 255;
+	CREATE (segments, LEVEL_SEGMENTS, 0);
+	CREATE (bVisited, LEVEL_SEGMENTS, 0);
+	CREATE (bVisible, LEVEL_SEGMENTS, 0);
+	CREATE (bProcessed, LEVEL_SEGMENTS, 0);
+	CREATE (nDepth, LEVEL_SEGMENTS, 0);
+	for (int i = 0; i < 2; i++)
+		CREATE (zRef [i], LEVEL_SEGMENTS, 0);
+	CREATE (portals, LEVEL_SEGMENTS, 0);
+	CREATE (position, LEVEL_SEGMENTS, 0);
+	}
 return true;
 }
 
@@ -403,19 +407,21 @@ CMineRenderData::CMineRenderData ()
 
 //------------------------------------------------------------------------------
 
-bool CMineRenderData::Create (void)
+bool CMineRenderData::Create (int nState)
 {
 for (int i = 0, j = gameStates.app.nThreads ? gameStates.app.nThreads : 1; i < j; i++)
-	visibility [i].Create ();
-CREATE (objRenderSegList, gameData.segs.nSegments, 0);
-CREATE (renderFaceListP, gameData.segs.nFaces, 0);
-CREATE (bObjectRendered, gameData.objs.nMaxObjects, 0);
-CREATE (bRenderSegment, gameData.segs.nSegments, 0);
-CREATE (nRenderObjList, gameData.objs.nMaxObjects, 0);
-CREATE (bCalcVertexColor, gameData.segs.nVertices, 0);
-CREATE (bAutomapVisited, gameData.segs.nSegments, 0);
-CREATE (bAutomapVisible, gameData.segs.nSegments, 0);
-CREATE (bRadarVisited, gameData.segs.nSegments, 0);
+	visibility [i].Create (nState);
+if (nState == 1) {
+	CREATE (objRenderSegList, LEVEL_SEGMENTS, 0);
+	CREATE (renderFaceListP, gameData.segs.nFaces, 0);
+	CREATE (bObjectRendered, gameData.objs.nMaxObjects, 0);
+	CREATE (bRenderSegment, LEVEL_SEGMENTS, 0);
+	CREATE (nRenderObjList, gameData.objs.nMaxObjects, 0);
+	CREATE (bCalcVertexColor, LEVEL_VERTICES, 0);
+	CREATE (bAutomapVisited, LEVEL_SEGMENTS, 0);
+	CREATE (bAutomapVisible, LEVEL_SEGMENTS, 0);
+	CREATE (bRadarVisited, LEVEL_SEGMENTS, 0);
+	}
 return true;
 }
 
@@ -1326,7 +1332,7 @@ CREATE (gameData.objs.viewData, LEVEL_OBJECTS, (char) 0xFF);
 CREATE (gameData.objs.bWantEffect, LEVEL_OBJECTS, (char) 0);
 InitFreeList ();
 memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
-return lightClusterManager.Init () && shrapnelManager.Init ();
+return gameData.render.mine.Create (0) && lightClusterManager.Init () && shrapnelManager.Init ();
 }
 
 // ----------------------------------------------------------------------------

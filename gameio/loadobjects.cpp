@@ -1214,7 +1214,7 @@ for (;;) {
 	}
 gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
 	/*---*/PrintLog (1, "allocating render buffers\n");
-if (!gameData.render.mine.Create ()) {
+if (!gameData.render.mine.Create (1)) {
 	PrintLog (-1);
 	return 4;
 	}
