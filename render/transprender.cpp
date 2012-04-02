@@ -697,7 +697,7 @@ int CTransparencyRenderer::ItemCount (int i)
 { 
 	int nCount = 0;
 
-for (int j = 0; j <= gameStates.app.nThreads; j++)
+for (int j = 0; j < gameStates.app.nThreads; j++)
 	nCount += m_data.buffers [j].nItems [i];
 return nCount;
 }
@@ -708,7 +708,7 @@ inline int CTransparencyRenderer::HeapSize (void)
 {
 	int nHeapSize = 0;
 
-for (int i = 0; i <= gameStates.app.nThreads; i++) 
+for (int i = 0; i < gameStates.app.nThreads; i++) 
 	nHeapSize += m_data.buffers [i].nHeapSize;
 return nHeapSize;
 }
@@ -717,7 +717,7 @@ return nHeapSize;
 
 inline int CTransparencyRenderer::DepthBuffer (void)
 {
-for (int i = 0; i <= gameStates.app.nThreads; i++) 
+for (int i = 0; i < gameStates.app.nThreads; i++) 
 	if (m_data.buffers [i].depthBuffer.Buffer ())
 		return i;
 return -1;
@@ -727,7 +727,7 @@ return -1;
 
 int CTransparencyRenderer::AllocBuffers (void)
 {
-for (int i = 0; i <= gameStates.app.nThreads; i++) 
+for (int i = 0; i < gameStates.app.nThreads; i++) 
 	if (!m_data.buffers [i].Create ())
 		return 0;
 return 1;
@@ -737,7 +737,7 @@ return 1;
 
 void CTransparencyRenderer::FreeBuffers (void)
 {
-for (int i = 0; i <= gameStates.app.nThreads; i++) 
+for (int i = 0; i < gameStates.app.nThreads; i++) 
 	m_data.buffers [i].Destroy ();
 }
 
@@ -745,7 +745,7 @@ for (int i = 0; i <= gameStates.app.nThreads; i++)
 
 void CTransparencyRenderer::ResetBuffers (void)
 {
-for (int i = 0; i <= gameStates.app.nThreads; i++) 
+for (int i = 0; i < gameStates.app.nThreads; i++) 
 	m_data.buffers [i].Clear ();
 }
 
@@ -753,7 +753,7 @@ for (int i = 0; i <= gameStates.app.nThreads; i++)
 
 void CTransparencyRenderer::ResetFreeList (void)
 {
-for (int i = 0; i <= gameStates.app.nThreads; i++) 
+for (int i = 0; i < gameStates.app.nThreads; i++) 
 	m_data.buffers [i].ResetFreeList ();
 }
 
@@ -761,7 +761,7 @@ for (int i = 0; i <= gameStates.app.nThreads; i++)
 
 void CTransparencyRenderer::Reset (void)
 {
-for (int i = 0; i <= gameStates.app.nThreads; i++) 
+for (int i = 0; i < gameStates.app.nThreads; i++) 
 	m_data.buffers [i].Reset ();
 }
 
@@ -843,10 +843,13 @@ nOffset = int (double (nDepth) * m_data.zScale);
 
 #if USE_OPENMP > 1
 #	if DBG
-if ((omp_get_thread_num () > 0) && (item->Type () > tiLightning))
-	return 0;
+if (omp_get_thread_num () > 0) {
+	nDbgSeg = nDbgSeg;
+	if (item->Type () > tiLightning)
+		return 0;
+	}
 #	endif
-int nThread = (item->Type () > tiLightning) ? gameStates.app.nThreads : omp_get_thread_num ();
+int nThread = /*(item->Type () > tiLightning) ? gameStates.app.nThreads :*/ omp_get_thread_num ();
 #else
 int nThread = 0;
 #endif
@@ -1540,8 +1543,6 @@ return m_data.bHaveDepthBuffer && !gameStates.render.cameras.bActive && (gameOpt
 void CTransparencyRenderer::RenderBuffer (CTranspItemBuffers& buffer, bool bCleanup)
 {
 CTranspItem* currentP = *buffer.bufP, * nextP, * prevP;
-if (bCleanup)
-	*buffer.bufP = NULL;
 prevP = NULL;
 do {
 #if DBG
@@ -1567,6 +1568,8 @@ do {
 		prevP = currentP;
 	currentP = nextP;
 	} while (currentP);
+if (bCleanup)
+	*buffer.bufP = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -1620,7 +1623,7 @@ m_data.nCurType = -1;
 
 int nBuffers = 0;
 
-for (int i = 0; i <= gameStates.app.nThreads; i++)
+for (int i = 0; i < gameStates.app.nThreads; i++)
 	if (m_data.buffers [i].nItems [0])
 		nBuffers++;
 
@@ -1636,7 +1639,7 @@ else {
 	CTranspItemBuffers* buffers [MAX_THREADS + 1];
 	
 	nBuffers = 0;
-	for (int i = 0; i <= gameStates.app.nThreads; i++)
+	for (int i = 0; i < gameStates.app.nThreads; i++)
 		if (m_data.buffers [i].nItems [0]) {
 			buffers [nBuffers] = &m_data.buffers [i];
 			buffers [nBuffers]->bufP = &buffers [nBuffers]->depthBuffer [buffers [nBuffers]->nMaxOffs];
@@ -1676,7 +1679,7 @@ ogl.StencilOn (bStencil);
 
 if (bCleanup) {
 	ResetFreeList ();
-	for (int i = 0; i <= gameStates.app.nThreads; i++) {
+	for (int i = 0; i < gameStates.app.nThreads; i++) {
 		m_data.buffers [i].nItems [0] = 0;
 		m_data.buffers [i].nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 		m_data.buffers [i].nMaxOffs = 0;

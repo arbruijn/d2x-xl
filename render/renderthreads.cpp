@@ -253,7 +253,7 @@ do {
 			}
 		}
 	UpdateEffects ();
-	RenderEffects (tiEffects.nWindow);
+	//RenderEffects (tiEffects.nWindow);
 	tiEffects.bExec = 0;
 	} while (!tiEffects.bDone);
 tiEffects.bDone = 0;
