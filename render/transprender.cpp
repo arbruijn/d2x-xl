@@ -842,6 +842,10 @@ else if (nDepth > m_data.zMax) {
 nOffset = int (double (nDepth) * m_data.zScale);
 
 #if USE_OPENMP > 1
+#	if DBG
+if ((omp_get_thread_num () > 0) && (item->Type () > tiLightning))
+	return 0;
+#	endif
 int nThread = (item->Type () > tiLightning) ? gameStates.app.nThreads : omp_get_thread_num ();
 #else
 int nThread = 0;
