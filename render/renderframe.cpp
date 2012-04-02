@@ -467,6 +467,7 @@ void RenderFrame (fix xStereoSeparation, int nWindow)
 	short nStartSeg;
 	fix	nEyeOffsetSave = gameStates.render.xStereoSeparation;
 
+gameStates.render.nType = -1;
 gameStates.render.nWindow = nWindow;
 gameStates.render.xStereoSeparation = xStereoSeparation;
 if (gameStates.app.bEndLevelSequence) {

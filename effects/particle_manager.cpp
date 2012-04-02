@@ -155,7 +155,6 @@ return i;
 
 void CParticleManager::Cleanup (void)
 {
-WaitForEffectsThread ();
 int nCurrent = -1;
 for (CParticleSystem* systemP = GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
 	nextP = GetNext (nCurrent);

@@ -627,7 +627,6 @@ gameData.laser.xUpdateTime += gameData.time.xFrame;
 // Move all OBJECTS
 gameStates.entropy.bConquering = 0;
 UpdatePlayerOrient ();
-//WaitForEffectsThread ();
 #if USE_OPENMP //> 1
 gameData.objs.update.Reset ();
 #endif
