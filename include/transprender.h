@@ -224,6 +224,7 @@ class CTranspRenderData {
 		char					bHaveDepthBuffer;
 		char					bRenderGlow;
 		char					bSoftBlend;
+		char					bReady;
 		CBitmap*				bmP [3];
 		CFixVector			vViewer [2];
 		CFloatVector		vViewerf [2];
@@ -309,6 +310,8 @@ class CTransparencyRenderer {
 		void ResetBitmaps (void);
 
 		inline CTranspRenderData& Data (void) { return m_data; }
+
+		inline char Ready (void) { return m_data.bReady; }
 
 	private:
 		inline int HeapSize (void);

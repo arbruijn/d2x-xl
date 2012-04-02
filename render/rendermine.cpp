@@ -571,6 +571,10 @@ if (!gameOpts->render.stereo.nGlasses || (ogl.StereoSeparation () < 0) || nWindo
 
 PROF_START
 
+	if (gameStates.app.nThreads > 1) {
+		while (!transparencyRenderer.Ready ())
+			G3_SLEEP (0);
+		}
 	if (automap.Display ()) {
 		bLightning = gameOpts->render.automap.bLightning;
 		bParticles = gameOpts->render.automap.bParticles;
@@ -587,7 +591,7 @@ PROF_START
 	if (bSparks) 
 		sparkManager.Render ();
 	if (bParticles) {
-		particleManager.Cleanup ();
+		//particleManager.Cleanup ();
 		particleManager.Render ();
 		}
 	if (bLightning) 

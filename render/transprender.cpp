@@ -806,13 +806,16 @@ if (m_data.bAllowAdd > 0)
 	}
 m_data.bRenderGlow =
 m_data.bSoftBlend = 0;
+m_data.bReady = 1;
 }
 
 //------------------------------------------------------------------------------
 
 int CTransparencyRenderer::Add (CTranspItem* item, CFixVector vPos, int nOffset, bool bClamp, int bTransformed)
 {
-if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
+//if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
+//	return 0;
+if (!Ready ())
 	return 0;
 #if LAZY_RESET
 if (!m_data.bAllowAdd)
@@ -1586,6 +1589,7 @@ gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
 shaderManager.Deploy (-1);
 bStencil = ogl.StencilOff ();
 ResetBitmaps ();
+m_data.bReady = 0;
 m_data.bTextured = -1;
 m_data.bUseLightmaps = 0;
 m_data.bDecal = 0;
