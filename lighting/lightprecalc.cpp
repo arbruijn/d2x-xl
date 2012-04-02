@@ -726,7 +726,7 @@ void ComputeLightVisibilityMT (int startI, int nThread)
 {
 	int endI;
 
-for (int i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i < endI; i++)
+for (int i = GetLoopLimits (startI, endI, lightManager.LightCount (0), nThread); i < endI; i++)
 	ComputeSingleLightVisibility (i, nThread);
 }
 
