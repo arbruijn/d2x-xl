@@ -985,6 +985,7 @@ if (((RandShort () << 3) < gameData.time.xFrame))	//play the nSound
 void DoEffectsFrame (void)
 {
 gameStates.render.bUpdateEffects = true;
+UpdateEffects ();
 }
 
 //-----------------------------------------------------------------------------
@@ -997,7 +998,7 @@ if (gameStates.render.bUpdateEffects) {
 	lightningManager.DoFrame ();
 	sparkManager.DoFrame ();
 	DoParticleFrame ();
-	particleManager.Cleanup ();
+	//particleManager.Cleanup ();
 	}
 }
 

@@ -529,7 +529,9 @@ if (bShowOnlyCurSide)
 	CCanvas::Current ()->Clear (nClearWindowColor);
 #endif
 
+#if 0
 bool bEffectsThread = StartEffectsThread (nWindow);
+#endif
 
 #if MAX_SHADOWMAPS
 RenderMine (nStartSeg, xStereoSeparation, nWindow);
@@ -585,10 +587,13 @@ else {
 ogl.StencilOff ();
 #endif
 RenderSkyBox (nWindow);
+#if 0
 if (bEffectsThread)
 	WaitForEffectsThread ();
-else {
-	UpdateEffects ();
+else 
+#endif
+	{
+	//UpdateEffects ();
 	RenderEffects (nWindow);
 	}
 transparencyRenderer.Render (nWindow);

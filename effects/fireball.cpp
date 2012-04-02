@@ -706,7 +706,12 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 		if ((delObjP->info.nType == OBJ_ROBOT) && (!delObjP->info.contains.nCount || gameStates.app.bD2XLevel)) {
 			tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->info.nId);
 			if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))) {
+#if DBG
+				int nProb = RandShort () % 16;
+				if (nProb < botInfoP->containsProb) {
+#else
 				if (RandShort () % 16 + 1 < botInfoP->containsProb) {
+#endif
 					delObjP->info.contains.nCount = (RandShort () % botInfoP->containsCount) + 1;
 					delObjP->info.contains.nType = botInfoP->containsType;
 					delObjP->info.contains.nId = botInfoP->containsId;

@@ -846,7 +846,7 @@ else if (nDepth > m_data.zMax) {
 nOffset = int (double (nDepth) * m_data.zScale);
 
 #if USE_OPENMP > 1
-#	if DBG
+#	if 0 //DBG
 if (omp_get_thread_num () > 0) {
 	nDbgSeg = nDbgSeg;
 	if (item->Type () > tiLightning)
@@ -1681,7 +1681,7 @@ if (bCleanup) {
 		}
 	}
 else {
-	for (int i = 0; i < gameStates.app.nThreads; i++)
+	for (int i = 0; i <= gameStates.app.nThreads; i++)
 		m_data.buffers [i].nItems [0] = m_data.buffers [i].nItems [1];
 	}
 

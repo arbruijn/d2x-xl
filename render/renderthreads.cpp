@@ -264,6 +264,7 @@ return 0;
 
 void CreateEffectsThread (void)
 {
+#if 0
 if (gameStates.app.nThreads > 1) {
 	static bool bInitialized = false;
 
@@ -278,6 +279,7 @@ if (gameStates.app.nThreads > 1) {
 		gameData.app.bUseMultiThreading [rtEffects] = 0;
 	#endif
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------

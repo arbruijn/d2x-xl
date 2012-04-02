@@ -370,7 +370,7 @@ else {
 	CREATE (nDepth, LEVEL_SEGMENTS, 0);
 	for (int i = 0; i < 2; i++)
 		CREATE (zRef [i], LEVEL_SEGMENTS, 0);
-	CREATE (portals, LEVEL_SEGMENTS, 0);
+	CREATE (portals, LEVEL_SEGMENTS * 6, 0);
 	CREATE (position, LEVEL_SEGMENTS, 0);
 	}
 return true;
