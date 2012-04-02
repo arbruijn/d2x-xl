@@ -856,7 +856,7 @@ int nThread = 0;
 
 CTranspItemBuffers& buffer = m_data.buffers [nThread];
 
-if (nOffset < ITEM_DEPTHBUFFER_SIZE) {
+if (nOffset < (int) buffer.depthBuffer.Length ()) {
 //#if USE_OPENMP > 1
 //#	pragma omp critical (transpRender)
 //#elif !USE_OPENMP
