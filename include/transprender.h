@@ -12,13 +12,13 @@
 #define TRANSP_DEPTH_HASH		1
 
 typedef enum tTranspItemType {
-	tiSprite,
 	tiSpark,
-	tiSphere,
 	tiParticle,
 	tiLightning,
+	tiSprite,
 	tiLightTrail,
 	tiObject,
+	tiSphere,
 	tiThruster,
 	tiFace,
 	tiPoly
@@ -200,7 +200,7 @@ class CTranspItemBuffers {
 
 class CTranspRenderData {
 	public:
-		CTranspItemBuffers buffers [MAX_THREADS];
+		CTranspItemBuffers buffers [MAX_THREADS + 1];
 		int					nCurType;
 		int					nPrevType;
 		int					zMin;
