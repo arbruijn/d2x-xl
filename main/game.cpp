@@ -985,9 +985,6 @@ if (((RandShort () << 3) < gameData.time.xFrame))	//play the nSound
 void DoEffectsFrame (void)
 {
 gameStates.render.bUpdateEffects = true;
-#if 0
-UpdateEffects ();
-#endif
 }
 
 //-----------------------------------------------------------------------------

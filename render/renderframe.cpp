@@ -587,8 +587,10 @@ ogl.StencilOff ();
 RenderSkyBox (nWindow);
 if (bEffectsThread)
 	WaitForEffectsThread ();
-else
+else {
+	UpdateEffects ();
 	RenderEffects (nWindow);
+	}
 transparencyRenderer.Render (nWindow);
 
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
