@@ -91,7 +91,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib  urlmon.lib"
-				OutputFile="d:\programs\d2\bin\win32-std\debug\d2x-xl-dbg.exe"
+				OutputFile="d:\programs\d2\debug\d2x-xl-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projects\sdl-1.2.14\debug&quot;;&quot;\projects\SDL_mixer-1.2.11\VisualC\Debug&quot;;&quot;c:\programme\visual leak detector\lib&quot;"
@@ -567,7 +567,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release-OMP|x64"
-			OutputDirectory="\programs\d2\bin\x64-omp\"
+			OutputDirectory="\programs\d2\x64"
 			IntermediateDirectory="$(ConfigurationName)\$(PlatformName)\"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -640,7 +640,7 @@
 				Name="VCLinkerTool"
 				UseLibraryDependencyInputs="true"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib urlmon.lib"
-				OutputFile="\programs\d2\bin\x64-omp\d2x-xl-x64.exe"
+				OutputFile="\programs\d2\x64\d2x-xl-x64.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
