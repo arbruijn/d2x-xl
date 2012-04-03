@@ -1913,7 +1913,13 @@ class CSegDistList : public CSegDistHeader {
 		}
 
 	inline bool Read (CFile& cf, int bCompressed) {
-		return CSegDistHeader::Read (cf) && dist.Read (cf, length, 0, bCompressed);
+		if (!CSegDistHeader::Read (cf))
+			return false;
+		if (!length)
+			return true;
+		if (!(dist.Resize (length, false)))
+			return false;
+		return (dist.Read (cf, length, 0, bCompressed) > 0);
 		}
 
 	inline bool Write (CFile& cf, int bCompressed) {
