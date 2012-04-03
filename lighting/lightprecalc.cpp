@@ -37,7 +37,7 @@ int SegmentIsVisible (CSegment *segP, CTransformation& transformation, int nThre
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 28
+#define LIGHT_DATA_VERSION 29
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis.Buffer () ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
@@ -769,6 +769,16 @@ return GameDataFilename (pszFilename, "light", nLevel, -1);
 
 //------------------------------------------------------------------------------
 
+static int LoadSegDistData (CFile& cf, tLightDataHeader& ldh)
+{
+for (int i = 0; i < ldh.nSegments; i++)
+	if (!gameData.segs.segDist [i].Read (cf, ldh.nSegments * sizeof (ushort), 0, ldh.bCompressed) == size_t (ldh.nSegments * sizeof (ushort)))
+		return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int LoadLightData (int nLevel)
 {
 	CFile					cf;
@@ -797,11 +807,21 @@ if (bOk)
 	bOk = (gameData.segs.bSegVis [0].Read (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
 			(gameData.segs.bSegVis [1].Read (cf, gameData.segs.LightVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
 			(gameData.segs.segDistScale.Read (cf, LEVEL_SEGMENTS, 0, ldh.bCompressed) == size_t (LEVEL_SEGMENTS)) &&
-			(gameData.segs.segDist.Read (cf, gameData.segs.SegDistSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegDistSize (ldh.nSegments))) &&
+			LoadSegDistData (cf, ldh) &&
 			(lightManager.NearestSegLights  ().Read (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 			(lightManager.NearestVertLights ().Read (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
 cf.Close ();
 return bOk;
+}
+
+//------------------------------------------------------------------------------
+
+static int SaveSegDistData (CFile& cf, tLightDataHeader& ldh)
+{
+for (int i = 0; i < ldh.nSegments; i++)
+	if (!gameData.segs.segDist [i].Write (cf, ldh.nSegments * sizeof (ushort), 0, ldh.bCompressed) == size_t (ldh.nSegments * sizeof (ushort)))
+		return 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -830,7 +850,7 @@ bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
 		(gameData.segs.bSegVis [0].Write (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
 		(gameData.segs.bSegVis [1].Write (cf, gameData.segs.LightVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
 		(gameData.segs.segDistScale.Write (cf, LEVEL_SEGMENTS, 0, ldh.bCompressed) == size_t (LEVEL_SEGMENTS)) &&
-		(gameData.segs.segDist.Write (cf, gameData.segs.SegDistSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegDistSize (ldh.nSegments))) &&
+		SaveSegDistData (cf, ldh) &&
 		(lightManager.NearestSegLights  ().Write (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 		(lightManager.NearestVertLights ().Write (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
 cf.Close ();
