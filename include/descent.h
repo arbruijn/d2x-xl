@@ -1920,7 +1920,7 @@ class CSegDistList : public CSegDistHeader {
 		return CSegDistHeader::Write (cf) && dist.Write (cf, length, 0, bCompressed);
 		}
 
-	inline bool Create (void) { return dist.Create (length) != NULL; }
+	inline bool Create (void) { return (length > 0) && (dist.Create (length) != NULL); }
 
 	inline void Destroy (void) { dist.Destroy (); }
 
