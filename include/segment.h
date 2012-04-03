@@ -284,7 +284,7 @@ class CSegment {
 		ubyte			m_function;
 		ubyte			m_flags;
 		ubyte			m_props;
-		sbyte			m_value;
+		short			m_value;
 		sbyte			m_nMatCen;
 		fix			m_xDamage [2];
 		fix			m_xAvgSegLight;
