@@ -18,8 +18,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define VISITED(_nSegment,_nThread)	(gameData.render.mine.visibility [nThread].bVisited [_nSegment] == gameData.render.mine.visibility [nThread].nVisited)
-#define VISIT(_nSegment,_nThread) (gameData.render.mine.visibility [_nThread].bVisited [_nSegment] = gameData.render.mine.visibility [nThread].nVisited)
+#define VISITED(_nSegment,_nThread)	(gameData.render.mine.visibility [_nThread].bVisited [_nSegment] == gameData.render.mine.visibility [_nThread].nVisited)
+#define VISIT(_nSegment,_nThread) (gameData.render.mine.visibility [_nThread].bVisited [_nSegment] = gameData.render.mine.visibility [_nThread].nVisited)
 
 //------------------------------------------------------------------------------
 
@@ -71,7 +71,7 @@ int ToggleOutlineMode (void);
 int ToggleShowOnlyCurSide (void);
 void RotateTexCoord2f (tTexCoord2f& dest, tTexCoord2f& src, ubyte nOrient);
 int FaceIsVisible (short nSegment, short nSide);
-int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist, int nThread = 0);
+int SegmentMayBeVisible (short nStartSeg, int nRadius, int nMaxDist, int nThread = 0);
 void SetupMineRenderer (void);
 void ComputeMineLighting (short nStartSeg, fix xStereoSeparation, int nWindow);
 

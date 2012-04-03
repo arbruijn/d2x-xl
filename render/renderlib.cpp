@@ -719,7 +719,7 @@ return nVisible;
 
 // ----------------------------------------------------------------------------
 
-int CVisibilityData::SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist)
+int CVisibilityData::SegmentMayBeVisible (short nStartSeg, int nRadius, int nMaxDist)
 {
 if (gameData.render.mine.Visible (nStartSeg))
 	return 1;
@@ -753,7 +753,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist, int nThread)
+int SegmentMayBeVisible (short nStartSeg, int nRadius, int nMaxDist, int nThread)
 {
 return gameData.render.mine.visibility [nThread + 2].SegmentMayBeVisible (nStartSeg, nRadius, nMaxDist);
 }
