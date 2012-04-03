@@ -116,10 +116,6 @@ while (xMaxDist & 0xFFFF0000) {
 #endif
 
 CSegDistList& segDist = gameData.segs.segDistTable [nSegment];
-#if 0 //DBG
-nMinSeg = 0;
-nMaxSeg = LEVEL_SEGMENTS - 1;
-#endif
 segDist.offset = nMinSeg;
 segDist.length = nMaxSeg - nMinSeg + 1;
 segDist.scale = scale;
@@ -1141,6 +1137,7 @@ PrintLog (-1);
 
 if (!InitLightVisibility ())
 	throw (EX_OUT_OF_MEMORY);
+
 #ifdef _OPENMP
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
