@@ -613,7 +613,7 @@ Move (vNewPos, m_vEnd + (vNewPos - m_vPos), nSegment, nThread);
 inline int CLightning::MayBeVisible (int nThread)
 {
 if (m_nSegment >= 0)
-	return SegmentMayBeVisible (m_nSegment, m_nLength / 20, 3 * m_nLength / 2, nThread);
+	return SegmentMayBeVisible (m_nSegment, m_nLength / I2X (20), 3 * m_nLength / 2, nThread);
 if (m_nObject >= 0)
 	return (gameData.render.mine.bObjectRendered [m_nObject] == gameStates.render.nFrameFlipFlop);
 return 1;
