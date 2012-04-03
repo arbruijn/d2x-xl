@@ -642,7 +642,8 @@ else if (nNewLevel <= 0)
 #endif
 DoCheatPenalty ();
 gameStates.app.cheats.bEnabled |= 2;
-StartNewLevel (nNewLevel, 0);
+if (!StartNewLevel (nNewLevel, 0))
+	longjmp (gameExitPoint, 0);		// Exit out of game loop
 }
 
 //------------------------------------------------------------------------------

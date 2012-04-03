@@ -1182,8 +1182,10 @@ for (;;) {
 	//NOTE LINK TO ABOVE!!
 	cf.Seek (nGameDataOffset, SEEK_SET);
 	nError = LoadMineDataCompiled (cf, 1);
-	cf.Seek (nMineDataOffset, SEEK_SET);
-	nError = LoadMineSegmentsCompiled (cf);
+	if (!nError) {
+		cf.Seek (nMineDataOffset, SEEK_SET);
+		nError = LoadMineSegmentsCompiled (cf);
+		}
 	if (nError == -1) {   //error!!
 		cf.Close ();
 		PrintLog (-1);
