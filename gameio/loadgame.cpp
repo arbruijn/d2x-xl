@@ -1382,7 +1382,8 @@ else { // File doesn't exist, so can't return to base level.  Advance to next on
 		if (!gameStates.app.bD1Mission)
 			AdvancingToLevelMessage ();
 		DoEndLevelScoreGlitz (0);
-		StartNewLevel (missionManager.nEntryLevel + 1, false);
+		if (!StartNewLevel (missionManager.nEntryLevel + 1, false))
+			longjmp (gameExitPoint, 0);
 		}
 	}
 }
@@ -1609,8 +1610,10 @@ else {
 		}
 	if (!IsMultiGame)
 		DoEndlevelMenu (); // Let user save their game
-	if (!ReenterLevel ())
-		StartNewLevel (missionManager.NextLevel (), false);
+	if (!ReenterLevel ()) {
+		if (!StartNewLevel (missionManager.NextLevel (), false))
+			longjmp (gameExitPoint, 0);
+		}
 	}
 gameStates.app.bBetweenLevels = 0;
 }
