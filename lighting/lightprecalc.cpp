@@ -116,9 +116,9 @@ while (xMaxDist & 0xFFFF0000) {
 #endif
 
 CSegDistList& segDist = gameData.segs.segDistTable [nSegment];
-#if DBG
+#if 0 //DBG
 nMinSeg = 0;
-nMaxSeg = LEVEL_SEGMENTS;
+nMaxSeg = LEVEL_SEGMENTS - 1;
 #endif
 segDist.offset = nMinSeg;
 segDist.length = nMaxSeg - nMinSeg + 1;
@@ -571,6 +571,8 @@ if (!bVisible)
 #endif
 
 #if DBG
+if (nLightSeg == nDbgSeg)
+	nDbgSeg = nDbgSeg;
 if (nDestSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
@@ -886,7 +888,7 @@ ComputeSegmentVisibilityMT (nId * (gameData.segs.nSegments + gameStates.app.nThr
 
 void _CDECL_ LightVisThread (int nId)
 {
-ComputeLightVisibilityMT (nId * (gameData.segs.nSegments + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
+ComputeLightVisibilityMT (nId * (lightManager.LightCount (0) + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
 }
 
 //------------------------------------------------------------------------------
