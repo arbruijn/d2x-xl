@@ -1870,6 +1870,57 @@ class CSegmentGrid {
 		inline bool Available (void) { return (m_segments.Buffer () != NULL); }
 };
 
+
+class CSegDistHeader {
+	public:
+		ushort	offset;
+		ushort	length;
+		byte		scale;
+
+	inline bool Read (CFile& cf) {
+		return (cf.Read (&offset, sizeof (offset), 1, 0) == 1) &&
+			    (cf.Read (&length, sizeof (length), 1, 0) == 1) &&
+			    (cf.Read (&scale, sizeof (scale), 1, 0) == 1);
+		}
+
+	inline bool Write (CFile& cf) {
+		return (cf.Write (&offset, sizeof (offset), 1, 0) == 1) &&
+			    (cf.Write (&length, sizeof (length), 1, 0) == 1) &&
+			    (cf.Write (&scale, sizeof (scale), 1, 0) == 1);
+		}
+
+	};
+
+
+class CSegDistList : public CSegDistHeader {
+	public:
+		CArray<ushort> dist;
+
+	inline void Set (ushort nSegment, fix xDistance) {
+		dist [nSegment] = (xDistance < 0) ? 0xFFFF : (ushort) (xDistance >> (fix) scale);
+		}
+
+	inline int Get (ushort nSegment) {
+		nSegment -= offset;
+		if (nSegment >= length)
+			return -1;
+		ushort d = dist [nSegment];
+		if (d == 0xFFFF)
+			return -1;
+		return (fix) d << (fix) scale;
+		}
+
+	inline bool Read (CFile& cf, int bCompressed) {
+		return CSegDistHeader::Read (cf) && dist.Read (cf, length, 0, bCompressed);
+		}
+
+	inline bool Write (CFile& cf, int bCompressed) {
+		return CSegDistHeader::Write (cf) && dist.Write (cf, length, 0, bCompressed);
+		}
+
+	};
+
+
 class CSegmentData {
 	public:
 		int							nMaxSegments;
@@ -1892,8 +1943,7 @@ class CSegmentData {
 		CArray<CFixVector>		sideCenters;
 		CArray<ubyte>				bSegVis [2];
 		CArray<ubyte>				bVertVis;
-		CArray<CArray<ushort> >	segDist;
-		CArray<ubyte>				segDistScale;
+		CArray<CSegDistList>		segDistTable;
 		CArray<short>				vertexSegments; // all segments using this vertex
 		int							nVertices;
 		int							nFaceVerts;
@@ -1976,15 +2026,12 @@ class CSegmentData {
 			return QUADMATIDX (i, j, nSegments);
 			}
 
-		inline int SegDist (int i, int j) {
-			ushort dist = segDist [i][j];
-			if (dist == 0xFFFF)
-				return -1;
-			return (fix) dist << (fix) segDistScale [i];
+		inline int SegDist (ushort i, ushort j) {
+			return segDistTable [i].Get (j);
 			}
 
-		inline void SetSegDist (int i, int j, fix xDistance, fix xRound) {
-			segDist [i][j] = (xDistance < 0) ? 0xFFFF : (ushort) (xDistance >> (fix) segDistScale [i]);
+		inline void SetSegDist (ushort i, ushort j, fix xDistance) {
+			segDistTable [i].Set (j, xDistance);
 			}
 
 		inline bool BuildGrid (int nSize, int bSkyBox) { return grids [bSkyBox].Create (nSize, bSkyBox); }

@@ -85,7 +85,6 @@ void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
 	fix xMaxDist = 0;
 	ubyte scale = 0;
-	fix round = 0;
 
 G3_SLEEP (0);
 #if DBG
@@ -103,12 +102,24 @@ while (xMaxDist & 0xFFFF0000) {
 	xMaxDist >>= 1;
 	++scale;
 	}
-round = (1 << scale) / 2;
-gameData.segs.segDistScale [nSegment] = scale;
-gameData.segs.SetSegDist (nSegment, nSegment, 0, 0);
+
+CSegDistList& segDist = gameData.segs.segDistTable [nSegment];
+segDist.scale = scale;
+segDist.Set (nSegment, 0);
 short nMinSeg = -1, nMaxSeg = -1;
-for (int i = 0; i < gameData.segs.nSegments; i++)
-	gameData.segs.SetSegDist (nSegment, i, uniDacsRouter [nThread].Distance (i), round);
+for (int i = 0; i < gameData.segs.nSegments; i++) {
+	fix xDistance = uniDacsRouter [nThread].Distance (i);
+	if (xDistance >= 0) {
+		if (nMinSeg < 0)
+			nMinSeg = i;
+		nMaxSeg = i;
+		}
+	segDist.Set ((ushort) i, xDistance);
+	}
+segDist.offset = nMinSeg;
+segDist.length = nMaxSeg - nMinSeg + 1;
+if (segDist.offset > 0)
+	memcpy (&segDist.dist [0], &segDist.dist [nMinSeg], segDist.length * sizeof (segDist.dist [0]));
 }
 
 //------------------------------------------------------------------------------
@@ -772,7 +783,7 @@ return GameDataFilename (pszFilename, "light", nLevel, -1);
 static int LoadSegDistData (CFile& cf, tLightDataHeader& ldh)
 {
 for (int i = 0; i < ldh.nSegments; i++)
-	if (!gameData.segs.segDist [i].Read (cf, ldh.nSegments * sizeof (ushort), 0, ldh.bCompressed) == size_t (ldh.nSegments * sizeof (ushort)))
+	if (!gameData.segs.segDistTable [i].Read (cf, ldh.nSegments * sizeof (ushort), 0, ldh.bCompressed) == size_t (ldh.nSegments * sizeof (ushort)))
 		return 0;
 return 1;
 }
@@ -819,7 +830,7 @@ return bOk;
 static int SaveSegDistData (CFile& cf, tLightDataHeader& ldh)
 {
 for (int i = 0; i < ldh.nSegments; i++)
-	if (!gameData.segs.segDist [i].Write (cf, ldh.nSegments * sizeof (ushort), 0, ldh.bCompressed) == size_t (ldh.nSegments * sizeof (ushort)))
+	if (!gameData.segs.segDistTable [i].Write (cf, ldh.nSegments * sizeof (ushort), 0, ldh.bCompressed) == size_t (ldh.nSegments * sizeof (ushort)))
 		return 0;
 return 1;
 }
