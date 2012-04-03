@@ -591,7 +591,7 @@ PROF_START
 	if (bSparks) 
 		sparkManager.Render ();
 	if (bParticles) {
-		particleManager.Cleanup ();
+		//particleManager.Cleanup ();
 		particleManager.Render ();
 		}
 	if (bLightning) 

@@ -998,7 +998,7 @@ if (gameStates.render.bUpdateEffects) {
 	lightningManager.DoFrame ();
 	sparkManager.DoFrame ();
 	DoParticleFrame ();
-	//particleManager.Cleanup ();
+	particleManager.Cleanup ();
 	}
 }
 
