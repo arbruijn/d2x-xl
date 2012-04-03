@@ -1875,7 +1875,7 @@ class CSegDistHeader {
 	public:
 		ushort	offset;
 		ushort	length;
-		byte		scale;
+		float		scale;
 
 	inline bool Read (CFile& cf) {
 		return (cf.Read (&offset, sizeof (offset), 1, 0) == 1) &&
@@ -1899,7 +1899,7 @@ class CSegDistList : public CSegDistHeader {
 	inline void Set (ushort nSegment, fix xDistance) {
 		nSegment -= offset;
 		if (nSegment < length)
-			dist [nSegment] = (xDistance < 0) ? 0xFFFF : (ushort) (xDistance >> (fix) scale);
+			dist [nSegment] = (xDistance < 0) ? 0xFFFF : (ushort) ((float) xDistance / scale);
 		}
 
 	inline int Get (ushort nSegment) {
@@ -1909,7 +1909,7 @@ class CSegDistList : public CSegDistHeader {
 		ushort d = dist [nSegment];
 		if (d == 0xFFFF)
 			return -1;
-		return (fix) d << (fix) scale;
+		return (fix) ((float) d * scale);
 		}
 
 	inline bool Read (CFile& cf, int bCompressed) {

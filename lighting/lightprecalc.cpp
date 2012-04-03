@@ -84,44 +84,50 @@ return (nStart < 0) ? 0 : nStart;
 void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
 	fix xMaxDist = 0;
-	ubyte scale = 0;
+	float scale = 1.0f;
+	short nMinSeg = -1, nMaxSeg = -1;
+	CDACSUniDirRouter& router = uniDacsRouter [nThread];
 
 G3_SLEEP (0);
 #if DBG
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-uniDacsRouter [nThread].PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, I2X (1024), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
+router.PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, I2X (1024), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
 for (int i = 0; i < gameData.segs.nSegments; i++) {
-	fix xDist = uniDacsRouter [nThread].Distance (i);
-	if (xMaxDist < xDist)
-		xMaxDist = xDist;
+	fix xDistance = router.Distance (i);
+	if (xDistance < 0) 
+		continue;
+	if (xMaxDist < xDistance)
+		xMaxDist = xDistance;
+	if (nMinSeg < 0)
+		nMinSeg = i;
+	nMaxSeg = i;
 	}
 // find constant factor to scale all distances from current segment down to 16 bits
+#if 1
+if (xMaxDist > 0xFFFE) // 0xFFFF is reserved and means "not reachable"
+	scale = (float) xMaxDist / (float) 0xFFFE;
+#else
 while (xMaxDist & 0xFFFF0000) {
 	xMaxDist >>= 1;
 	++scale;
 	}
-
-short nMinSeg = -1, nMaxSeg = -1;
-for (int i = 0; i < gameData.segs.nSegments; i++) {
-	fix xDistance = uniDacsRouter [nThread].Distance (i);
-	if (xDistance >= 0) {
-		if (nMinSeg < 0)
-			nMinSeg = i;
-		nMaxSeg = i;
-		}
-	}
+#endif
 
 CSegDistList& segDist = gameData.segs.segDistTable [nSegment];
+#if DBG
+nMinSeg = 0;
+nMaxSeg = LEVEL_SEGMENTS;
+#endif
 segDist.offset = nMinSeg;
 segDist.length = nMaxSeg - nMinSeg + 1;
 segDist.scale = scale;
 if (!segDist.Create ())
 	return;
 segDist.Set (nSegment, 0);
-for (int i = 0; i < gameData.segs.nSegments; i++) 
-	segDist.Set ((ushort) i, uniDacsRouter [nThread].Distance (i));
+for (int i = nMinSeg; i <= nMaxSeg; i++) 
+	segDist.Set ((ushort) i, router.Distance (i));
 }
 
 //------------------------------------------------------------------------------
