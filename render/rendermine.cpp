@@ -566,10 +566,10 @@ return 1;
 
 void RenderEffects (int nWindow)
 {
+PROF_START
+
 if (!gameOpts->render.stereo.nGlasses || (ogl.StereoSeparation () < 0) || nWindow || gameStates.render.cameras.bActive) {
 	int bLightning, bParticles, bSparks;
-
-PROF_START
 
 	if (gameStates.app.nThreads > 1) {
 		while (!transparencyRenderer.Ready ())
@@ -596,10 +596,10 @@ PROF_START
 		}
 	if (bLightning) 
 		lightningManager.Render ();
+	}
+transparencyRenderer.Render (nWindow);
 
 PROF_END(ptEffects)
-
-	}
 }
 
 //------------------------------------------------------------------------------

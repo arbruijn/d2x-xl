@@ -584,7 +584,6 @@ ogl.StencilOff ();
 #endif
 RenderSkyBox (nWindow);
 RenderEffects (nWindow);
-transparencyRenderer.Render (nWindow);
 
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
 	radar.Render ();
