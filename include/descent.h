@@ -1897,7 +1897,9 @@ class CSegDistList : public CSegDistHeader {
 		CArray<ushort> dist;
 
 	inline void Set (ushort nSegment, fix xDistance) {
-		dist [nSegment] = (xDistance < 0) ? 0xFFFF : (ushort) (xDistance >> (fix) scale);
+		nSegment -= offset;
+		if (nSegment < length)
+			dist [nSegment] = (xDistance < 0) ? 0xFFFF : (ushort) (xDistance >> (fix) scale);
 		}
 
 	inline int Get (ushort nSegment) {
@@ -1917,6 +1919,10 @@ class CSegDistList : public CSegDistHeader {
 	inline bool Write (CFile& cf, int bCompressed) {
 		return CSegDistHeader::Write (cf) && dist.Write (cf, length, 0, bCompressed);
 		}
+
+	inline bool Create (void) { return dist.Create (length) != NULL; }
+
+	inline void Destroy (void) { dist.Destroy (); }
 
 	};
 

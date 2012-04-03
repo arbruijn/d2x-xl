@@ -37,7 +37,7 @@ int SegmentIsVisible (CSegment *segP, CTransformation& transformation, int nThre
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 29
+#define LIGHT_DATA_VERSION 30
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis.Buffer () ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
@@ -103,9 +103,6 @@ while (xMaxDist & 0xFFFF0000) {
 	++scale;
 	}
 
-CSegDistList& segDist = gameData.segs.segDistTable [nSegment];
-segDist.scale = scale;
-segDist.Set (nSegment, 0);
 short nMinSeg = -1, nMaxSeg = -1;
 for (int i = 0; i < gameData.segs.nSegments; i++) {
 	fix xDistance = uniDacsRouter [nThread].Distance (i);
@@ -114,12 +111,17 @@ for (int i = 0; i < gameData.segs.nSegments; i++) {
 			nMinSeg = i;
 		nMaxSeg = i;
 		}
-	segDist.Set ((ushort) i, xDistance);
 	}
+
+CSegDistList& segDist = gameData.segs.segDistTable [nSegment];
 segDist.offset = nMinSeg;
 segDist.length = nMaxSeg - nMinSeg + 1;
-if (segDist.offset > 0)
-	memcpy (&segDist.dist [0], &segDist.dist [nMinSeg], segDist.length * sizeof (segDist.dist [0]));
+segDist.scale = scale;
+if (!segDist.Create ())
+	return;
+segDist.Set (nSegment, 0);
+for (int i = 0; i < gameData.segs.nSegments; i++) 
+	segDist.Set ((ushort) i, uniDacsRouter [nThread].Distance (i));
 }
 
 //------------------------------------------------------------------------------
@@ -783,7 +785,7 @@ return GameDataFilename (pszFilename, "light", nLevel, -1);
 static int LoadSegDistData (CFile& cf, tLightDataHeader& ldh)
 {
 for (int i = 0; i < ldh.nSegments; i++)
-	if (!gameData.segs.segDistTable [i].Read (cf, ldh.nSegments * sizeof (ushort), 0, ldh.bCompressed) == size_t (ldh.nSegments * sizeof (ushort)))
+	if (!gameData.segs.segDistTable [i].Read (cf, ldh.bCompressed))
 		return 0;
 return 1;
 }
@@ -817,7 +819,6 @@ if (bOk)
 if (bOk)
 	bOk = (gameData.segs.bSegVis [0].Read (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
 			(gameData.segs.bSegVis [1].Read (cf, gameData.segs.LightVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
-			(gameData.segs.segDistScale.Read (cf, LEVEL_SEGMENTS, 0, ldh.bCompressed) == size_t (LEVEL_SEGMENTS)) &&
 			LoadSegDistData (cf, ldh) &&
 			(lightManager.NearestSegLights  ().Read (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 			(lightManager.NearestVertLights ().Read (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
@@ -830,7 +831,7 @@ return bOk;
 static int SaveSegDistData (CFile& cf, tLightDataHeader& ldh)
 {
 for (int i = 0; i < ldh.nSegments; i++)
-	if (!gameData.segs.segDistTable [i].Write (cf, ldh.nSegments * sizeof (ushort), 0, ldh.bCompressed) == size_t (ldh.nSegments * sizeof (ushort)))
+	if (!gameData.segs.segDistTable [i].Write (cf, ldh.bCompressed))
 		return 0;
 return 1;
 }
@@ -860,7 +861,6 @@ if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "w
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
 		(gameData.segs.bSegVis [0].Write (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
 		(gameData.segs.bSegVis [1].Write (cf, gameData.segs.LightVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
-		(gameData.segs.segDistScale.Write (cf, LEVEL_SEGMENTS, 0, ldh.bCompressed) == size_t (LEVEL_SEGMENTS)) &&
 		SaveSegDistData (cf, ldh) &&
 		(lightManager.NearestSegLights  ().Write (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 		(lightManager.NearestVertLights ().Write (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
