@@ -411,7 +411,7 @@ do {
 
 	for (i = 0; i < 2; i++)
 		gameStates.render.cockpit.n3DView [i] = winFuncList [winFunc [i]];
-	GET_VAL (gameOpts->render.cockpit.bReticle, "reticle");
+	GET_VAL (gameOpts->render.cockpit.bReticle, "show reticle");
 	GET_VAL (gameOpts->render.cockpit.bHUD, "show hud");
 	GET_VAL (gameOpts->render.cockpit.bMissileView, "missile view");
 	GET_VAL (gameOpts->render.cockpit.bObjectTally, "object tally");
