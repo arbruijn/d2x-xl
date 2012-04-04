@@ -81,8 +81,10 @@ return (nStart < 0) ? 0 : nStart;
 
 //------------------------------------------------------------------------------
 
+#if DBG
 static int nDistCount = 0;
 static int nSavedCount = 0;
+#endif
 
 void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
@@ -101,7 +103,9 @@ for (int i = 0; i < gameData.segs.nSegments; i++) {
 	fix xDistance = router.Distance (i);
 	if (xDistance < 0) 
 		continue;
+#if DBG
 	nDistCount++;
+#endif
 	if (xMaxDist < xDistance)
 		xMaxDist = xDistance;
 	if (nMinSeg < 0)
@@ -128,7 +132,9 @@ if (!segDist.Create ())
 segDist.Set (nSegment, 0);
 for (int i = nMinSeg; i <= nMaxSeg; i++) 
 	segDist.Set ((ushort) i, router.Distance (i));
+#if DBG
 nSavedCount += gameData.segs.nSegments - segDist.length;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1143,8 +1149,10 @@ PrintLog (-1);
 if (!InitLightVisibility ())
 	throw (EX_OUT_OF_MEMORY);
 
+#if DBG
 nDistCount = 0;
 nSavedCount = 0;
+#endif
 
 #ifdef _OPENMP
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
@@ -1195,7 +1203,10 @@ else
 
 gameData.segs.bVertVis.Destroy ();
 PrintLog (1, "Saving precompiled light data\n");
-PrintLog (0, "Distance table usage = %1.2f %%\n", 100.0f * float (nDistCount) / (float (gameData.segs.nSegments) * float (gameData.segs.nSegments) - float (nSavedCount)));
+#if DBG
+PrintLog (0, "Distance table usage = %1.2f %%\n", 
+			 100.0f * float (nDistCount) / (float (gameData.segs.nSegments) * float (gameData.segs.nSegments) - float (nSavedCount)));
+#endif
 SaveLightData (nLevel);
 PrintLog (-1);
 }
