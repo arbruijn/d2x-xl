@@ -129,7 +129,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="$(ConfigurationName)\$(PlatformName)\"
+			OutputDirectory="\programs\d2\x64\debug\"
 			IntermediateDirectory="$(ConfigurationName)\$(PlatformName)\"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -167,8 +167,8 @@
 				OmitFramePointers="false"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;..\..\..\libraries\SDL-1.2.14\include&quot;;&quot;..\..\..\libraries\SDL_mixer-1.2.8&quot;;&quot;..\..\..\libraries\SDL_image-1.2.7&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;c:\programme\visual leak detector\include"
-				PreprocessorDefinitions="DBG=1;_DEBUG;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE"
+				AdditionalIncludeDirectories="&quot;..\..\..\libraries\zlib-1.2.5&quot;;&quot;..\..\..\libraries\SDL_net-1.2.7&quot;;&quot;..\..\..\libraries\SDL-1.2.14\include&quot;;&quot;..\..\..\libraries\SDL_mixer-1.2.11&quot;;&quot;..\..\..\libraries\SDL_image-1.2.7&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects"
+				PreprocessorDefinitions="_DEBUG;USE_OPENMP=2;DBG=1;ZLIB_DLL;_WINNT_WIN32=0x0700;OPENMP;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC"
 				StringPooling="true"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
@@ -177,6 +177,7 @@
 				BufferSecurityCheck="true"
 				EnableFunctionLevelLinking="true"
 				EnableEnhancedInstructionSet="0"
+				OpenMP="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
@@ -200,7 +201,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib  urlmon.lib"
-				OutputFile="\programs\d2\bin\x64-omp\debug\d2x-xl-x64-dbg.exe"
+				OutputFile="\programs\d2\x64\debug\d2x-xl-x64-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;\projects\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projects\sdl-1.2.13\debug&quot;;&quot;\projects\SDL_mixer-1.2.8\VisualC\Debug&quot;;&quot;\projects\irrlicht-1.4\lib\win32-visualstudio&quot;;&quot;c:\programme\visual leak detector\lib&quot;"
