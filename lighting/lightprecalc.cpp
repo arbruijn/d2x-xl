@@ -81,6 +81,9 @@ return (nStart < 0) ? 0 : nStart;
 
 //------------------------------------------------------------------------------
 
+static int nDistCount = 0;
+static int nSavedCount = 0;
+
 void ComputeSingleSegmentDistance (int nSegment, int nThread)
 {
 	fix xMaxDist = 0;
@@ -98,6 +101,7 @@ for (int i = 0; i < gameData.segs.nSegments; i++) {
 	fix xDistance = router.Distance (i);
 	if (xDistance < 0) 
 		continue;
+	nDistCount++;
 	if (xMaxDist < xDistance)
 		xMaxDist = xDistance;
 	if (nMinSeg < 0)
@@ -124,6 +128,7 @@ if (!segDist.Create ())
 segDist.Set (nSegment, 0);
 for (int i = nMinSeg; i <= nMaxSeg; i++) 
 	segDist.Set ((ushort) i, router.Distance (i));
+nSavedCount += gameData.segs.nSegments - segDist.length;
 }
 
 //------------------------------------------------------------------------------
@@ -1138,30 +1143,27 @@ PrintLog (-1);
 if (!InitLightVisibility ())
 	throw (EX_OUT_OF_MEMORY);
 
+nDistCount = 0;
+nSavedCount = 0;
+
 #ifdef _OPENMP
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 		ProgressBar (TXT_LOADING, 0, 6, PrecalcLightPollMT);
 	else {
-		PrintLog (1, "Computing segment visibility\n");
+		PrintLog (0, "Computing segment visibility\n");
 		StartLightPrecalcThreads (SegVisThread);
-		PrintLog (-1);
-		PrintLog (1, "Computing segment distances\n");
+		PrintLog (0, "Computing segment distances\n");
 		StartLightPrecalcThreads (SegDistThread);
-		PrintLog (-1);
-		PrintLog (1, "Computing light visibility\n");
+		PrintLog (0, "Computing light visibility\n");
 		StartLightPrecalcThreads (LightVisThread);
-		PrintLog (-1);
-		PrintLog (1, "Starting segment light calculation threads\n");
+		PrintLog (0, "Starting segment light calculation threads\n");
 		StartLightPrecalcThreads (SegLightsThread);
-		PrintLog (-1);
-		PrintLog (1, "Starting vertex light calculation threads\n");
+		PrintLog (0, "Starting vertex light calculation threads\n");
 		StartLightPrecalcThreads (VertLightsThread);
-		PrintLog (-1);
-		PrintLog (1, "Computing vertices visible to lights\n");
+		PrintLog (0, "Computing vertices visible to lights\n");
 		ComputeLightsVisibleVertices (-1);
-		PrintLog (-1);
 		}
 	gameData.physics.side.bCache = 1;
 	}
@@ -1175,30 +1177,25 @@ else
 						 LoadMineGaugeSize () + PagingGaugeSize (),
 						 LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize () + SegDistGaugeSize (), PrecalcLightPollST);
 	else {
-		PrintLog (1, "Computing segment visibility\n");
+		PrintLog (0, "Computing segment visibility\n");
 		ComputeSegmentVisibilityST (-1);
-		PrintLog (-1);
-		PrintLog (1, "Computing segment distances\n");
+		PrintLog (0, "Computing segment distances\n");
 		ComputeSegmentDistance (-1, 0);
-		PrintLog (-1);
-		PrintLog (1, "Computing light visibility\n");
+		PrintLog (0, "Computing light visibility\n");
 		ComputeLightVisibilityST (-1);
-		PrintLog (-1);
-		PrintLog (1, "Computing segment lights\n");
+		PrintLog (0, "Computing segment lights\n");
 		ComputeNearestSegmentLights (-1, 0);
-		PrintLog (-1);
-		PrintLog (1, "Computing vertex lights\n");
+		PrintLog (0, "Computing vertex lights\n");
 		ComputeNearestVertexLights (-1, 0);
-		PrintLog (-1);
-		PrintLog (1, "Computing vertices visible to lights\n");
+		PrintLog (0, "Computing vertices visible to lights\n");
 		ComputeLightsVisibleVertices (-1);
-		PrintLog (-1);
 		}
 	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}
 
 gameData.segs.bVertVis.Destroy ();
 PrintLog (1, "Saving precompiled light data\n");
+PrintLog (0, "Distance table usage = %1.2f %%\n", 100.0f * float (nDistCount) / (float (gameData.segs.nSegments) * float (gameData.segs.nSegments) - float (nSavedCount)));
 SaveLightData (nLevel);
 PrintLog (-1);
 }
