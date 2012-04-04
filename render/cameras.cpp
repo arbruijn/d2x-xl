@@ -540,7 +540,7 @@ if (!m_cameras.Create (MAX_CAMERAS)) {
 	PrintLog (-1);
 	return 0;
 	}
-if (!m_faceCameras.Create (LEVEL_FACES)) {
+if (!m_faceCameras.Create (gameData.segs.nSegments * 6)) {
 	PrintLog (-1);
 	return 0;
 	}
