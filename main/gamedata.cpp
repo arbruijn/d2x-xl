@@ -536,7 +536,6 @@ vboDataHandle = 0;
 vboIndexHandle = 0;
 vertexP = NULL;
 indexP = NULL;
-nFaces = 0;
 nTriangles = 0;
 nVertices = 0;
 iVertices = 0;
