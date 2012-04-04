@@ -508,7 +508,7 @@ return i / elSize;
 
 size_t CFile::ReadCompressed (const void* buf, uint bufLen) 
 {
-PrintLog (0, "ReadCompressed: %d bytes @ %d\n", bufLen, (int) m_cf.rawPosition);
+//PrintLog (0, "ReadCompressed: %d bytes @ %d\n", bufLen, (int) m_cf.rawPosition);
 uLongf nSize, nCompressedSize;
 size_t h = Read (&nSize, 1, sizeof (nSize), -1);
 h += Read (&nCompressedSize, 1, sizeof (nCompressedSize), -1);
