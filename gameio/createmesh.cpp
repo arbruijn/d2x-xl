@@ -935,13 +935,12 @@ if ((gameStates.render.bTriangleMesh > 0) && !SplitTriangles ()) {
 	return 0;
 	}
 
-if (!(gameData.segs.faces.Realloc ()) {
+if ((m_nTriangles > (LEVEL_FACES << gameStates.render.nMeshQuality)) && !gameData.segs.faces.Resize ()) {
 	gameData.segs.faces.Destroy ();
 	gameData.render.Destroy ();
 	PrintLog (-1, "Not enough memory to create mesh data in requested quality\n");
 	return 0;
 	}
-
 
 if (!InsertTriangles ()) {
 	gameData.segs.nVertices = m_nVertices;
