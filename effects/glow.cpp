@@ -686,7 +686,7 @@ else
 	ogl.SetDepthMode (nDepthMode);
 	ogl.SetStencilTest (false);
 	}
-return Reset (1);
+return Reset (gameOpts->render.effects.bGlow);
 }
 
 //------------------------------------------------------------------------------
