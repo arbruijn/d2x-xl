@@ -1456,10 +1456,8 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++) {
 			m_nWallType = IS_WALL (m_nWall) ? WALLS [m_nWall].IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
 			if (m_nWallType)
 				FACES.nFaces++;
-			else {
-				CSegment* childSegP = (m_segP->m_children [nSide] < 0) ? NULL : SEGMENTS + m_segP->m_children [nSide];
+			else if (IsColoredSeg (m_segP->m_children [nSide]) != 0)
 				FACES.nFaces++;
-				}
 			}
 		}
 	}

@@ -561,7 +561,7 @@ CREATE (normals, LEVEL_TRIANGLES * 3 * 2, 0);
 CREATE (color, LEVEL_TRIANGLES * 3, 0);
 CREATE (texCoord, LEVEL_TRIANGLES * 2 * 2, 0);
 CREATE (ovlTexCoord, LEVEL_TRIANGLES * 2 * 2, 0);
-CREATE (lMapTexCoord, gameData.segs.nFaces * 4, 0);
+CREATE (lMapTexCoord, gameData.segs.nFaces * 3 * 2, 0);
 Init ();
 return true;
 }
