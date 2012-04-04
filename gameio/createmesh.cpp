@@ -60,7 +60,7 @@ void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP);
 
 #define	MAX_EDGE_LEN(nMeshQuality)	fMaxEdgeLen [nMeshQuality]
 
-#define MESH_DATA_VERSION 13
+#define MESH_DATA_VERSION 14
 
 //------------------------------------------------------------------------------
 
@@ -737,7 +737,7 @@ bool CTriMeshBuilder::Load (int nLevel, bool bForce)
 {
 	CFile					cf;
 	tMeshDataHeader	mdh;
-	int					nSize;
+	int					nSize, nExpectedSize;
 	bool					bOk;
 	char					szFilename [FILENAME_LEN];
 	char					*ioBuffer = NULL, *bufP;
@@ -771,25 +771,15 @@ if (bOk)
 
 
 if (bOk) {
-	nSize = 0;
+	nExpectedSize = 0;
 	for (int i = 0; i < sizeofa (nSizes); i++)
-		nSize += abs (nSizes [i]);
-	if (nSize != 
-		(sizeof (gameData.segs.vertices [0]) + sizeof (gameData.segs.fVertices [0])) * mdh.nVertices +
-		 sizeof (CSegFaceInfo) * mdh.nFaces +
-		 sizeof (FACES.tris [0]) * mdh.nTris +
-		(sizeof (FACES.vertices [0]) + sizeof (FACES.normals [0]) + sizeof (FACES.texCoord [0]) + 
-		 sizeof (FACES.ovlTexCoord [0]) + sizeof (FACES.color [0]) + sizeof (FACES.lMapTexCoord [0])) * nTriVerts +
-		 sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts) {
-		 PrintLog (0, "Mesh builder: invalid mesh size\n");
-		bOk = false;
-		}
+		nExpectedSize += abs (nSizes [i]);
 	}
 if (bOk)
-	bOk = ((ioBuffer = new char [nSize]) != NULL);
+	bOk = ((ioBuffer = new char [nExpectedSize]) != NULL);
 if (bOk) {
 	if (!gameStates.app.bCompressData)
-		bOk = cf.Read (ioBuffer, nSize, 1) == 1;
+		bOk = cf.Read (ioBuffer, nExpectedSize, 1) == 1;
 	else {
 		nSize = 0;
 		int i;
@@ -816,14 +806,8 @@ if (bOk) {
 				}
 			nSize += nSizes [i];
 			}
-		if (bOk && (nSize != 
-			(sizeof (gameData.segs.vertices [0]) + sizeof (gameData.segs.fVertices [0])) * mdh.nVertices +
-			 sizeof (CSegFaceInfo) * mdh.nFaces +
-			 sizeof (FACES.tris [0]) * mdh.nTris +
-			(sizeof (FACES.vertices [0]) + sizeof (FACES.normals [0]) + sizeof (FACES.texCoord [0]) + 
-			 sizeof (FACES.ovlTexCoord [0]) + sizeof (FACES.color [0]) + sizeof (FACES.lMapTexCoord [0])) * nTriVerts +
-			 sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts)) {
-			 PrintLog (0, "Mesh builder: invalid mesh size\n");
+		if (bOk && (nSize != nExpectedSize)) {
+			PrintLog (0, "Mesh builder: invalid mesh size\n");
 			bOk = false;
 			}
 		}
@@ -924,7 +908,7 @@ if (bOk)
 			(FACES.texCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.ovlTexCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.color.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
-			(FACES.lMapTexCoord.Write (cf, gameData.segs.nFaces * 4, 0, mdh.bCompressed) == nTriVerts) &&
+			(FACES.lMapTexCoord.Write (cf, gameData.segs.nFaces * 4, 0, mdh.bCompressed) == gameData.segs.nFaces * 4) &&
 			(FACES.faceVerts.Write (cf, mdh.nFaceVerts, 0, mdh.bCompressed) == uint (mdh.nFaceVerts));
 cf.Close ();
 return bOk;
