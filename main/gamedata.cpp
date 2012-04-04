@@ -507,6 +507,7 @@ bPlayerMessage = 1;
 
 bool CRenderData::Create (void)
 {
+Destroy ();
 CREATE (gameData.render.faceList, LEVEL_FACES, 0);
 Init ();
 return true;
@@ -548,6 +549,8 @@ iLMapTexCoord = 0;
 
 bool CFaceData::Create (void)
 {
+Destroy ();
+
 	int nScale = 1 << gameStates.render.nMeshQuality;
 
 CREATE (faces, LEVEL_FACES, 0);
@@ -562,6 +565,28 @@ CREATE (color, LEVEL_TRIANGLES * 3, 0);
 CREATE (texCoord, LEVEL_TRIANGLES * 2 * 2, 0);
 CREATE (ovlTexCoord, LEVEL_TRIANGLES * 2 * 2, 0);
 CREATE (lMapTexCoord, gameData.segs.nFaces * 3 * 2, 0);
+Init ();
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
+bool CFaceData::Resize (void)
+{
+	int nScale = 1 << gameStates.render.nMeshQuality;
+
+RESIZE (faces, LEVEL_FACES);
+RESIZE (tris, LEVEL_TRIANGLES);
+RESIZE (vertices, LEVEL_TRIANGLES * 3);
+#if USE_RANGE_ELEMENTS
+RESIZE (vertIndex, LEVEL_TRIANGLES * 3);
+#endif
+RESIZE (faceVerts, LEVEL_FACES * 2 * nScale);
+RESIZE (normals, LEVEL_TRIANGLES * 3 * 2);
+RESIZE (color, LEVEL_TRIANGLES * 3);
+RESIZE (texCoord, LEVEL_TRIANGLES * 2 * 2);
+RESIZE (ovlTexCoord, LEVEL_TRIANGLES * 2 * 2);
+RESIZE (lMapTexCoord, gameData.segs.nFaces * 3 * 2);
 Init ();
 return true;
 }

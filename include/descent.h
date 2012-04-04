@@ -1765,7 +1765,7 @@ typedef struct tSlideSegs {
 typedef struct tFaceRenderVertex {
 	CFloatVector3		vertex;
 	CFloatVector3		normal;
-	CFloatVector			color;
+	CFloatVector		color;
 	tTexCoord2f			texCoord;
 	tTexCoord2f			ovlTexCoord;
 	tTexCoord2f			lMapTexCoord;
@@ -1791,6 +1791,7 @@ class CFaceData {
 		ubyte*						vertexP;
 		ushort*						indexP;
 		int							nFaces;
+		int							nTriangles;
 		int							nVertices;
 		int							iVertices;
 		int							iNormals;
@@ -1802,6 +1803,7 @@ class CFaceData {
 		CFaceData ();
 		void Init (void);
 		bool Create (void);
+		bool Resize (void);
 		void Destroy (void);
 };
 
@@ -1838,7 +1840,7 @@ class CSkyBox : public CStack< short > {
 #define LEVEL_POINT_SEGS		(gameData.segs.nSegments * 4)
 #define LEVEL_SIDES				(LEVEL_SEGMENTS * 6)
 #define LEVEL_FACES				(FACES.nFaces * 2)
-#define LEVEL_TRIANGLES			(LEVEL_FACES << gameStates.render.nMeshQuality)
+#define LEVEL_TRIANGLES			(FACES.nTriangles ? FACES.nTriangles : LEVEL_FACES << gameStates.render.nMeshQuality)
 #define LEVEL_DL_INDICES		(LEVEL_SEGMENTS / 2)
 #define LEVEL_DELTA_LIGHTS		(LEVEL_SEGMENTS * 10)
 #define LEVEL_SEGVIS_FLAGS		((LEVEL_SEGMENTS + 7) >> 3)
@@ -1965,7 +1967,6 @@ class CSegmentData {
 		int							nLastSegment;
 		int							nFaces;
 		int							nFaceKeys;
-		int							nTris;
 		int							nLevelVersion;
 		char							szLevelFilename [FILENAME_LEN];
 		CSecretData					secret;

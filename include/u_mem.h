@@ -62,6 +62,7 @@ char *MemStrDup (const char * str);
 extern uint nCurAllocd, nMaxAllocd;
 
 #define CREATE(_p,_s,_f)	if ((_p).Create (_s)) (_p).Clear (_f); else return false
+#define RESIZE(_p,_s)		if (!(_p).Resize (_s)) return false
 #define DESTROY(_p)			(_p).Destroy ()
 
 void *GetMem (size_t size, char filler);
