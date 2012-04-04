@@ -52,7 +52,7 @@ if (faceP->m_info.nFrame == gameData.app.nMineRenderCount)
 	return 0;
 #endif
 #if DBG
-if (faceP - FACES.faces >= gameData.segs.nFaces)
+if (faceP - FACES.faces >= FACES.nFaces)
 	return 0;
 #endif
 
@@ -757,7 +757,7 @@ if (nType == RENDER_TYPE_CORONAS) {
 	// render mine segment by segment
 	if (gameData.render.mine.visibility [0].nSegments == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
-		for (i = gameData.segs.nFaces; i; i--, faceP++)
+		for (i = FACES.nFaces; i; i--, faceP++)
 			if (RenderMineFace (SEGMENTS + faceP->m_info.nSegment, faceP, nType))
 				nFaces++;
 		}

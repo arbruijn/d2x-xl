@@ -318,7 +318,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.visibility [0].nSegments < gameData.segs.nSegments))
 				ComputeFaceLight (0, gameData.render.mine.visibility [0].nSegments, 0);
 			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
-				ComputeFaceLight (0, gameData.segs.nFaces, 0);
+				ComputeFaceLight (0, FACES.nFaces, 0);
 			else
 				ComputeFaceLight (0, gameData.segs.nSegments, 0);
 			}
@@ -329,7 +329,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.visibility [0].nSegments < gameData.segs.nSegments))
 				nMax = gameData.render.mine.visibility [0].nSegments;
 			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
-				nMax = gameData.segs.nFaces;
+				nMax = FACES.nFaces;
 			else
 				nMax = gameData.segs.nSegments;
 			if (gameStates.app.nThreads & 1) {

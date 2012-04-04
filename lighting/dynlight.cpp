@@ -849,7 +849,7 @@ m_headlights.Init ();
 if (gameStates.render.nLightingMethod)
 	gameData.render.color.vertices.Clear ();
 m_data.Init ();
-for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--, faceP++) {
+for (nFace = FACES.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--, faceP++) {
 	nSegment = faceP->m_info.nSegment;
 	if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX)
 		continue;

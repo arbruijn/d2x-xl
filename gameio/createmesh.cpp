@@ -105,8 +105,8 @@ if (m_nMaxTriangles && m_nMaxEdges) {
 	m_nMaxEdges *= 2;
 	}
 else {
-	m_nMaxTriangles = gameData.segs.nFaces * 4;
-	m_nMaxEdges = gameData.segs.nFaces * 4;
+	m_nMaxTriangles = FACES.nFaces * 4;
+	m_nMaxEdges = FACES.nFaces * 4;
 	if (!m_edges.Create (m_nMaxEdges)) {
 		PrintLog (0, "Not enough memory for building the triangle mesh (%d edges).\n", m_nMaxEdges);
 		return 0;
@@ -283,7 +283,7 @@ short nId = 0;
 
 #if 0
 if (gameStates.render.nMeshQuality) {
-	i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris / 2 : gameData.segs.nFaces) << (abs (gameStates.render.nMeshQuality)));
+	i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris / 2 : FACES.nFaces) << (abs (gameStates.render.nMeshQuality)));
 	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.render.mine.Resize (i)))
 		return 0;
 	}
@@ -609,6 +609,8 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	vNormal.Assign (FACES.normals [nIndex]);
 	for (i = 1; i < 3; i++)
 		FACES.normals [nIndex + i] = FACES.normals [nIndex];
+	if ((nIndex >= FACES.texCoord.Length ()) || (nIndex >= FACES.ovlTexCoord.Length ()) || (nIndex >= FACES.color.Length ()))
+		return 0;
 	memcpy (FACES.texCoord + nIndex, triP->texCoord, sizeof (triP->texCoord));
 	memcpy (FACES.ovlTexCoord + nIndex, triP->ovlTexCoord, sizeof (triP->ovlTexCoord));
 	memcpy (FACES.color + nIndex, triP->color, sizeof (triP->color));
@@ -682,7 +684,7 @@ void CTriMeshBuilder::CreateFaceVertLists (void)
 //count the vertices of each face
 memset (bTags, 0xFF, gameData.segs.nVertices * sizeof (bTags [0]));
 gameData.segs.nFaceVerts = 0;
-for (i = gameData.segs.nFaces, faceP = FACES.faces.Buffer (), nFace = 0; i; i--, faceP++, nFace++) {
+for (i = FACES.nFaces, faceP = FACES.faces.Buffer (), nFace = 0; i; i--, faceP++, nFace++) {
 	faceP->m_info.nVerts = 0;
 	for (j = faceP->m_info.nTris, triP = TRIANGLES + faceP->m_info.nTriIndex; j; j--, triP++) {
 		for (k = 0; k < 3; k++) {
@@ -698,7 +700,7 @@ for (i = gameData.segs.nFaces, faceP = FACES.faces.Buffer (), nFace = 0; i; i--,
 //insert each face's vertices' indices in the vertex index buffer
 memset (bTags, 0xFF, gameData.segs.nVertices * sizeof (bTags [0]));
 gameData.segs.nFaceVerts = 0;
-for (i = gameData.segs.nFaces, faceP = FACES.faces.Buffer (), nFace = 0; i; i--, faceP++, nFace++) {
+for (i = FACES.nFaces, faceP = FACES.faces.Buffer (), nFace = 0; i; i--, faceP++, nFace++) {
 	faceP->triIndex = FACES.faceVerts + gameData.segs.nFaceVerts;
 #if DBG
 	if (faceP->m_info.nSegment == nDbgSeg)
@@ -716,7 +718,7 @@ for (i = gameData.segs.nFaces, faceP = FACES.faces.Buffer (), nFace = 0; i; i--,
 	}
 #if 1
 //sort each face's vertex index list
-for (i = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++)
+for (i = FACES.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++)
 	SortFaceVertList (faceP->triIndex, 0, faceP->m_info.nVerts - 1);
 #endif
 }
@@ -749,7 +751,7 @@ if (bOk)
 	bOk = (mdh.nVersion == MESH_DATA_VERSION) &&
 			(mdh.nCheckSum == CalcSegmentCheckSum ()) &&
 			(mdh.nSegments == gameData.segs.nSegments) &&
-			(mdh.nFaces == gameData.segs.nFaces);
+			(mdh.nFaces == FACES.nFaces);
 
 	uint	nTriVerts = mdh.nTris * 3;
 	int nSizes [] = {
@@ -762,7 +764,7 @@ if (bOk)
 		(int) sizeof (FACES.texCoord [0]) * nTriVerts,
 		(int) sizeof (FACES.ovlTexCoord [0]) * nTriVerts,
 		(int) sizeof (FACES.color [0]) * nTriVerts,
-		(int) sizeof (FACES.lMapTexCoord [0]) * nTriVerts,
+		(int) sizeof (FACES.lMapTexCoord [0]) * gameData.segs.nFaces * 4,
 		(int) sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts,
 		0
 		};
@@ -890,7 +892,7 @@ bool CTriMeshBuilder::Save (int nLevel)
 								  gameData.segs.nSegments,
 								  gameData.segs.nVertices,
 								  gameData.segs.nFaceVerts,
-								  gameData.segs.nFaces,
+								  FACES.nFaces,
 								  gameData.segs.nTris,
 								  gameStates.app.bCompressData
 								};
@@ -922,7 +924,7 @@ if (bOk)
 			(FACES.texCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.ovlTexCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.color.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
-			(FACES.lMapTexCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
+			(FACES.lMapTexCoord.Write (cf, gameData.segs.nFaces * 4, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.faceVerts.Write (cf, mdh.nFaceVerts, 0, mdh.bCompressed) == uint (mdh.nFaceVerts));
 cf.Close ();
 return bOk;
@@ -1208,8 +1210,8 @@ void CQuadMeshBuilder::ComputeFaceKeys (void)
 	CSegFace	*faceP = FACES.faces.Buffer ();
 	CArray<CSegFace*>	keyFaceRef;
 
-keyFaceRef.Create (gameData.segs.nFaces);
-for (int i = 0; i < gameData.segs.nFaces; i++, faceP++) {
+keyFaceRef.Create (FACES.nFaces);
+for (int i = 0; i < FACES.nFaces; i++, faceP++) {
 	keyFaceRef [i] = faceP;
 	if (faceP->m_info.nBaseTex < 0)
 		faceP->m_info.nKey = 0x7FFFFFFF;
@@ -1225,12 +1227,12 @@ for (int i = 0; i < gameData.segs.nFaces; i++, faceP++) {
 	}
 
 CQuickSort<CSegFace*> qs;
-qs.SortAscending (keyFaceRef.Buffer (), 0, gameData.segs.nFaces - 1, reinterpret_cast<CQuickSort<CSegFace*>::comparator> (CQuadMeshBuilder::CompareFaceKeys));
+qs.SortAscending (keyFaceRef.Buffer (), 0, FACES.nFaces - 1, reinterpret_cast<CQuickSort<CSegFace*>::comparator> (CQuadMeshBuilder::CompareFaceKeys));
 
 int i, nKey = -1;
 gameData.segs.nFaceKeys = -1;
 
-for (i = 0; i < gameData.segs.nFaces; i++, faceP++) {
+for (i = 0; i < FACES.nFaces; i++, faceP++) {
 	faceP = keyFaceRef [i];
 	if (nKey != faceP->m_info.nKey) {
 		nKey = faceP->m_info.nKey;
@@ -1249,7 +1251,7 @@ void CQuadMeshBuilder::BuildSlidingFaceList (void)
 	CSegFace	*faceP = FACES.faces.Buffer ();
 
 FACES.slidingFaces = NULL;
-for (int i = gameData.segs.nFaces; i; i--, faceP++)
+for (int i = FACES.nFaces; i; i--, faceP++)
 	if (faceP->m_info.bSlide) {
 		faceP->nextSlidingFace = FACES.slidingFaces;
 		FACES.slidingFaces = faceP;
@@ -1268,7 +1270,7 @@ void CQuadMeshBuilder::RebuildLightmapTexCoord (void)
 
 m_faceP = FACES.faces.Buffer ();
 m_lMapTexCoordP = FACES.lMapTexCoord.Buffer ();
-for (nFace = gameData.segs.nFaces; nFace; nFace--, m_faceP++) {
+for (nFace = FACES.nFaces; nFace; nFace--, m_faceP++) {
 	SetupLMapTexCoord (lMapTexCoord);
 	h = (SEGMENTS [m_faceP->m_info.nSegment].Type (m_faceP->m_info.nSide) == SIDE_IS_TRI_13);
 	for (i = 0; i < 2; i++, m_triP++) {
@@ -1373,7 +1375,7 @@ if ((i = glGetError ())) {
 	ogl.m_features.bVertexBufferObjects = 0;
 	return false;
 	}
-FACES.nVertices = gameStates.render.bTriangleMesh ? gameData.segs.nTris * 3 : gameData.segs.nFaces * 4;
+FACES.nVertices = gameStates.render.bTriangleMesh ? gameData.segs.nTris * 3 : FACES.nFaces * 4;
 glBufferDataARB (GL_ARRAY_BUFFER, FACES.nVertices * sizeof (tFaceRenderVertex), NULL, GL_STATIC_DRAW_ARB));
 FACES.vertexP = reinterpret_cast<ubyte*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB));
 FACES.vboIndexHandle = 0;
@@ -1459,24 +1461,26 @@ if (gameStates.render.nLightingMethod) {
 else
 	gameStates.render.bTriangleMesh = 0;
 
-gameData.segs.nFaces = 0;
-for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
+FACES.nFaces = 0;
+m_segP = SEGMENTS.Buffer ();
+for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++) {
 	if (IsColoredSeg (nSegment) != 0)
-		gameData.segs.nFaces += 6;
+		FACES.nFaces += 6;
 	else {
 		for (nSide = 0, m_sideP = m_segP->m_sides; nSide < 6; nSide++, m_sideP++) {
 			m_nWall = m_segP->WallNum (nSide);
 			m_nWallType = IS_WALL (m_nWall) ? WALLS [m_nWall].IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
 			if (m_nWallType)
-				gameData.segs.nFaces++;
+				FACES.nFaces++;
 			else {
 				CSegment* childSegP = (m_segP->m_children [nSide] < 0) ? NULL : SEGMENTS + m_segP->m_children [nSide];
-				gameData.segs.nFaces++;
+				FACES.nFaces++;
 				}
 			}
 		}
 	}
 
+gameData.segs.nFaces = FACES.nFaces;
 if (!(gameData.segs.faces.Create () && gameData.render.Create ())) {
 	gameData.segs.faces.Destroy ();
 	gameData.render.Destroy ();
@@ -1503,14 +1507,13 @@ if (gameStates.render.bSplitPolys)
 if (gameStates.render.bTriangleMesh)
 	cameraManager.Create ();
 PrintLog (1, "Creating face list\n");
-gameData.segs.nFaces = 0;
-gameData.segs.nTris = 0;
-
 // the mesh builder can theoretically add one vertex per side, so resize the vertex buffers
-gameData.segs.vertices.Resize (3 * gameData.segs.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
-gameData.segs.fVertices.Resize (3 * gameData.segs.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
-gameData.render.mine.Resize (3 * gameData.segs.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
+gameData.segs.vertices.Resize (3 * FACES.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
+gameData.segs.fVertices.Resize (3 * FACES.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
+gameData.render.mine.Resize (3 * FACES.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
 
+FACES.nFaces = 0;
+gameData.segs.nTris = 0;
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
 	bool bColoredSeg = IsColoredSeg (nSegment) != 0;
 #if DBG
@@ -1567,7 +1570,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 			if (!m_segFaceP->nFaces++)
 				m_segFaceP->faceP = m_faceP;
 			m_faceP++;
-			gameData.segs.nFaces++;
+			FACES.nFaces++;
 			}
 		else {
 			m_colorP += FACE_VERTS;

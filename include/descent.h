@@ -1790,6 +1790,7 @@ class CFaceData {
 		GLuint						vboIndexHandle;
 		ubyte*						vertexP;
 		ushort*						indexP;
+		int							nFaces;
 		int							nVertices;
 		int							iVertices;
 		int							iNormals;
@@ -1836,8 +1837,8 @@ class CSkyBox : public CStack< short > {
 #define LEVEL_VERTICES			(gameData.segs.nVertices)
 #define LEVEL_POINT_SEGS		(gameData.segs.nSegments * 4)
 #define LEVEL_SIDES				(LEVEL_SEGMENTS * 6)
-#define LEVEL_FACES				(gameData.segs.nFaces * 2)
-#define LEVEL_TRIANGLES			(LEVEL_FACES * (1 << gameStates.render.nMeshQuality))
+#define LEVEL_FACES				(FACES.nFaces * 2)
+#define LEVEL_TRIANGLES			(LEVEL_FACES << gameStates.render.nMeshQuality)
 #define LEVEL_DL_INDICES		(LEVEL_SEGMENTS / 2)
 #define LEVEL_DELTA_LIGHTS		(LEVEL_SEGMENTS * 10)
 #define LEVEL_SEGVIS_FLAGS		((LEVEL_SEGMENTS + 7) >> 3)

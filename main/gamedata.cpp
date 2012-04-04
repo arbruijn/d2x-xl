@@ -413,7 +413,7 @@ for (int i = 0, j = gameStates.app.nThreads + 2; i < j; i++)
 	visibility [i].Create (nState);
 if (nState == 1) {
 	CREATE (objRenderSegList, LEVEL_SEGMENTS, 0);
-	CREATE (renderFaceListP, gameData.segs.nFaces, 0);
+	CREATE (renderFaceListP, FACES.nFaces, 0);
 	CREATE (bObjectRendered, gameData.objs.nMaxObjects, 0);
 	CREATE (bRenderSegment, LEVEL_SEGMENTS, 0);
 	CREATE (nRenderObjList, gameData.objs.nMaxObjects, 0);
@@ -561,7 +561,7 @@ CREATE (normals, LEVEL_TRIANGLES * 3 * 2, 0);
 CREATE (color, LEVEL_TRIANGLES * 3, 0);
 CREATE (texCoord, LEVEL_TRIANGLES * 2 * 2, 0);
 CREATE (ovlTexCoord, LEVEL_TRIANGLES * 2 * 2, 0);
-CREATE (lMapTexCoord, LEVEL_TRIANGLES * 2, 0);
+CREATE (lMapTexCoord, gameData.segs.nFaces * 4, 0);
 Init ();
 return true;
 }

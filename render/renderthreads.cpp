@@ -161,7 +161,7 @@ do {
 			}
 		else {
 			if (gameStates.app.bEndLevelSequence < EL_OUTSIDE) 
-				ComputeThreadRange (nId, gameData.segs.nFaces, nStart, nEnd);
+				ComputeThreadRange (nId, FACES.nFaces, nStart, nEnd);
 			else 
 				ComputeThreadRange (nId, gameData.segs.nSegments, nStart, nEnd);
 			ComputeFaceLight (nStart, nEnd, nId);

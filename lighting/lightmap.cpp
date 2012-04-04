@@ -262,7 +262,7 @@ if (!m_list.info.Create (m_list.nLights)) {
 	m_list.nLights = 0; 
 	return -1;
 	}
-m_list.nBuffers = (gameData.segs.nFaces + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
+m_list.nBuffers = (FACES.nFaces + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
 if (!m_list.buffers.Create (m_list.nBuffers)) {
 	m_list.info.Destroy ();
 	m_list.nLights = 0; 
@@ -704,7 +704,7 @@ void CLightmapManager::BuildAll (int nFace)
 {
 	int	nLastFace; 
 
-INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
+INIT_PROGRESS_LOOP (nFace, nLastFace, FACES.nFaces);
 if (nFace <= 0) {
 	CreateSpecial (m_data.m_texColor, 0, 0);
 	CreateSpecial (m_data.m_texColor, 1, 255);
@@ -765,7 +765,7 @@ if (nState)
 	return nCurItem;
 
 //paletteManager.ResumeEffect ();
-if (nFace < gameData.segs.nFaces) {
+if (nFace < FACES.nFaces) {
 	lightmapManager.BuildAll (nFace);
 	nFace += PROGRESS_INCR;
 	}
@@ -821,7 +821,7 @@ int CLightmapManager::Save (int nLevel)
 										CalcSegmentCheckSum (),
 										gameData.segs.nSegments, 
 										gameData.segs.nVertices, 
-										gameData.segs.nFaces, 
+										FACES.nFaces, 
 										m_list.nLights, 
 										MAX_LIGHT_RANGE,
 										m_list.nBuffers,
@@ -837,7 +837,7 @@ if (!cf.Open (Filename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1);
 if (bOk) {
-	for (i = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++) {
+	for (i = FACES.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++) {
 		bOk = cf.Write (&faceP->m_info.nLightmap, sizeof (faceP->m_info.nLightmap), 1) == 1;
 		if (!bOk)
 			break;
@@ -874,7 +874,7 @@ if (bOk)
 			(ldh.nCheckSum == CalcSegmentCheckSum ()) &&
 			(ldh.nSegments == gameData.segs.nSegments) && 
 			(ldh.nVertices == gameData.segs.nVertices) && 
-			(ldh.nFaces == gameData.segs.nFaces) && 
+			(ldh.nFaces == FACES.nFaces) && 
 			(ldh.nLights == m_list.nLights) && 
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
 if (bOk) {
@@ -932,7 +932,7 @@ if (nLights < 0)
 	return 0;
 if (Load (nLevel))
 	return 1;
-if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
+if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 	if (nLights) {
 		lightManager.Transform (1, 0);
 		int nSaturation = gameOpts->render.color.nSaturation;
@@ -952,7 +952,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		//SetupSegments (); // set all faces up as triangles
 		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 			nFace = 0;
-			ProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreatePoll);
+			ProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (FACES.nFaces), CreatePoll);
 			}
 		else {
 			messageBox.Show (TXT_CALC_LIGHTMAPS);
@@ -971,7 +971,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	else {
 		CreateSpecial (m_data.m_texColor, 0, 0);
 		m_list.nLightmaps = 1;
-		for (int i = 0; i < gameData.segs.nFaces; i++)
+		for (int i = 0; i < FACES.nFaces; i++)
 			FACES.faces [i].m_info.nLightmap = 0;
 		}
 	BindAll ();
