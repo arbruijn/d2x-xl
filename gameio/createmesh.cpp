@@ -764,7 +764,7 @@ if (bOk)
 		(int) sizeof (FACES.texCoord [0]) * nTriVerts,
 		(int) sizeof (FACES.ovlTexCoord [0]) * nTriVerts,
 		(int) sizeof (FACES.color [0]) * nTriVerts,
-		(int) sizeof (FACES.lMapTexCoord [0]) * gameData.segs.nFaces * 4,
+		(int) sizeof (FACES.lMapTexCoord [0]) * FACES.lMapTexCoord.Length (),
 		(int) sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts,
 		0
 		};
@@ -843,8 +843,8 @@ if (bOk) {
 	FACES.color.Create (nTriVerts);
 	memcpy (FACES.color.Buffer (), bufP, nSize = sizeof (FACES.color [0]) * nTriVerts);
 	bufP += nSize;
-	FACES.lMapTexCoord.Create (nTriVerts);
-	memcpy (FACES.lMapTexCoord.Buffer (), bufP, nSize = sizeof (FACES.lMapTexCoord [0]) * nTriVerts);
+	FACES.lMapTexCoord.Create (gameData.segs.nFaces * 3 * 2);
+	memcpy (FACES.lMapTexCoord.Buffer (), bufP, nSize = sizeof (FACES.lMapTexCoord [0]) * FACES.lMapTexCoord.Length ());
 	bufP += nSize;
 	FACES.faceVerts.Create (mdh.nFaceVerts);
 	memcpy (FACES.faceVerts.Buffer (), bufP, nSize = sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts);
@@ -908,7 +908,7 @@ if (bOk)
 			(FACES.texCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.ovlTexCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.color.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
-			(FACES.lMapTexCoord.Write (cf, gameData.segs.nFaces * 4, 0, mdh.bCompressed) == gameData.segs.nFaces * 4) &&
+			(FACES.lMapTexCoord.Write (cf, FACES.lMapTexCoord.Length (), 0, mdh.bCompressed) == FACES.lMapTexCoord.Length ()) &&
 			(FACES.faceVerts.Write (cf, mdh.nFaceVerts, 0, mdh.bCompressed) == uint (mdh.nFaceVerts));
 cf.Close ();
 return bOk;
