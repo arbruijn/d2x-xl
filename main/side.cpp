@@ -1069,7 +1069,7 @@ return IS_WALL (m_nWall);
 
 short ConvertD1Texture (short nD1Texture, int bForce);
 
-void CSide::Read (CFile& cf, ushort* sideVerts, bool bSolid)
+int CSide::Read (CFile& cf, ushort* sideVerts, bool bSolid)
 {
 	int nType = bSolid ? 1 : IS_WALL (m_nWall) ? 2 : 0;
 
@@ -1114,6 +1114,7 @@ else {
 			gameData.render.color.vertBright [sideVerts [i]] = fBrightness;
 		}
 	}
+return nType;
 }
 
 //------------------------------------------------------------------------------

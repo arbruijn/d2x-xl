@@ -1440,19 +1440,6 @@ if (FACES.vboIndexHandle) {
 
 int CQuadMeshBuilder::Build (int nLevel, bool bRebuild)
 {
-m_faceP = FACES.faces.Buffer ();
-m_triP = TRIANGLES.Buffer ();
-m_vertexP = FACES.vertices.Buffer ();
-m_normalP = FACES.normals.Buffer ();
-m_texCoordP = FACES.texCoord.Buffer ();
-m_ovlTexCoordP = FACES.ovlTexCoord.Buffer ();
-m_lMapTexCoordP = FACES.lMapTexCoord.Buffer ();
-m_faceColorP = FACES.color.Buffer ();
-m_colorP = gameData.render.color.ambient.Buffer ();
-m_segP = SEGMENTS.Buffer ();
-m_segFaceP = SEGFACES.Buffer ();
-FACES.slidingFaces = NULL;
-
 	short			nSegment, i;
 	ubyte			nSide;
 
@@ -1471,6 +1458,45 @@ if (gameStates.render.nLightingMethod) {
 	}
 else
 	gameStates.render.bTriangleMesh = 0;
+
+gameData.segs.nFaces = 0;
+for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
+	if (IsColoredSeg (nSegment) != 0)
+		gameData.segs.nFaces += 6;
+	else {
+		for (nSide = 0, m_sideP = m_segP->m_sides; nSide < 6; nSide++, m_sideP++) {
+			m_nWall = m_segP->WallNum (nSide);
+			m_nWallType = IS_WALL (m_nWall) ? WALLS [m_nWall].IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
+			if (m_nWallType)
+				gameData.segs.nFaces++;
+			else {
+				CSegment* childSegP = (m_segP->m_children [nSide] < 0) ? NULL : SEGMENTS + m_segP->m_children [nSide];
+				gameData.segs.nFaces++;
+				}
+			}
+		}
+	}
+
+if (!(gameData.segs.faces.Create () && gameData.render.Create ())) {
+	gameData.segs.faces.Destroy ();
+	gameData.render.Destroy ();
+	PrintLog (-1, "Not enough memory for mesh data\n");
+	return 0;
+	}
+
+m_faceP = FACES.faces.Buffer ();
+m_triP = TRIANGLES.Buffer ();
+m_vertexP = FACES.vertices.Buffer ();
+m_normalP = FACES.normals.Buffer ();
+m_texCoordP = FACES.texCoord.Buffer ();
+m_ovlTexCoordP = FACES.ovlTexCoord.Buffer ();
+m_lMapTexCoordP = FACES.lMapTexCoord.Buffer ();
+m_faceColorP = FACES.color.Buffer ();
+m_colorP = gameData.render.color.ambient.Buffer ();
+m_segP = SEGMENTS.Buffer ();
+m_segFaceP = SEGFACES.Buffer ();
+FACES.slidingFaces = NULL;
+
 gameStates.render.nFacePrimitive = gameStates.render.bTriangleMesh ? GL_TRIANGLES : GL_TRIANGLE_FAN;
 if (gameStates.render.bSplitPolys)
 	gameStates.render.bSplitPolys = (gameStates.render.bPerPixelLighting || !gameStates.render.nMeshQuality) ? 1 : -1;
@@ -1480,16 +1506,13 @@ PrintLog (1, "Creating face list\n");
 gameData.segs.nFaces = 0;
 gameData.segs.nTris = 0;
 
-// the mesh builder can theoretically add one vertex per segment, so resize the vertex buffers
-gameData.segs.vertices.Resize (LEVEL_VERTICES + LEVEL_SIDES);
-gameData.segs.fVertices.Resize (LEVEL_VERTICES + LEVEL_SIDES);
-gameData.render.mine.Resize (LEVEL_VERTICES + LEVEL_SIDES);
+// the mesh builder can theoretically add one vertex per side, so resize the vertex buffers
+gameData.segs.vertices.Resize (3 * gameData.segs.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
+gameData.segs.fVertices.Resize (3 * gameData.segs.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
+gameData.render.mine.Resize (3 * gameData.segs.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
 
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
 	bool bColoredSeg = IsColoredSeg (nSegment) != 0;
-						 //((m_segP->m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA)) ||
-						 // ((m_segP->m_function >= SEGMENT_FUNC_TEAM_BLUE) && (m_segP->m_function <= SEGMENT_FUNC_TEAM_RED))) ||
-					  //   (m_segP->m_group >= 0);
 #if DBG
 	if (nSegment == nDbgSeg)
 		m_faceP = m_faceP;
@@ -1501,8 +1524,6 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 		PrintLog (-1);
 		return 0;
 		}
-//	if (nSegment == nDbgSeg)
-//		FACES.Destroy ();
 #endif
 	m_faceP->m_info.nSegment = nSegment;
 	m_nOvlTexCount = 0;

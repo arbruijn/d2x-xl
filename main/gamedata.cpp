@@ -548,13 +548,15 @@ iLMapTexCoord = 0;
 
 bool CFaceData::Create (void)
 {
+	int nScale = 1 << gameStates.render.nMeshQuality;
+
 CREATE (faces, LEVEL_FACES, 0);
-CREATE ( tris, LEVEL_TRIANGLES, 0);
+CREATE (tris, LEVEL_TRIANGLES, 0);
 CREATE (vertices, LEVEL_TRIANGLES * 3, 0);
 #if USE_RANGE_ELEMENTS
 CREATE (vertIndex, LEVEL_TRIANGLES * 3, 0);
 #endif
-CREATE (faceVerts, LEVEL_FACES * 16, 0);
+CREATE (faceVerts, LEVEL_FACES * 2 * nScale, 0);
 CREATE (normals, LEVEL_TRIANGLES * 3 * 2, 0);
 CREATE (color, LEVEL_TRIANGLES * 3, 0);
 CREATE (texCoord, LEVEL_TRIANGLES * 2 * 2, 0);
@@ -694,7 +696,7 @@ dialHeaps [1].Create (gameData.segs.nSegments);
 dialHeap.Create (gameData.segs.nSegments);
 #	endif
 #endif
-return faces.Create ();
+return true; //faces.Create ();
 }
 
 // ----------------------------------------------------------------------------
@@ -1757,7 +1759,7 @@ if (!(gameData.segs.Create (nSegments, nVertices) &&
 		gameData.render.color.Create () &&
 		gameData.render.lights.Create () &&
 		gameData.render.shadows.Create () &&
-		gameData.render.Create () &&
+		//gameData.render.Create () &&
 		gameData.weapons.Create () &&
 		gameData.physics.Create () &&
 		gameData.ai.Create () &&

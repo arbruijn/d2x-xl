@@ -751,24 +751,12 @@ int LoadMineSegmentsCompiled (CFile& cf)
 	CFixVector	v;
 
 gameData.segs.vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
-/*	.v.c.x =
-gameData.segs.vMin.v.c.y =
-gameData.segs.vMin.v.c.y = 0x7fffffff;*/
 gameData.segs.vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
-/*.v.c.x =
-gameData.segs.vMax.v.c.x =
-gameData.segs.vMax.v.c.y =
-gameData.segs.vMax.v.c.y = -0x7fffffff;*/
 gameStates.render.bColored = 0;
 bD1PigPresent = CFile::Exist (D1_PIGFILE, gameFolders.szDataDir [0], 0);
 psz = strchr (gameData.segs.szLevelFilename, '.');
 bNewFileFormat = !psz || strcmp (psz, ".sdl");
-//	For compiled levels, textures map to themselves, prevent nTexOverride always being gray,
-//	bug which Matt and John refused to acknowledge, so here is Mike, fixing it.
-
-//=============================== Reading part ==============================
 nCompiledVersion = cf.ReadByte ();
-//Assert ( nCompiledVersion==COMPILED_MINE_VERSION );
 #if TRACE
 if (nCompiledVersion != COMPILED_MINE_VERSION)
 	console.printf (CON_DBG, "compiled mine version=%i\n", nCompiledVersion); //many levels have "wrong" versions.  Theres no point in aborting because of it, I think.
@@ -833,7 +821,7 @@ else {
 	}
 gameData.segs.BuildGrid (40, 0);
 gameData.segs.BuildGrid (80, 1);
-gameData.segs.fRad = X2F (CFixVector::Dist(gameData.segs.vMax, gameData.segs.vMin));
+gameData.segs.fRad = X2F (CFixVector::Dist (gameData.segs.vMax, gameData.segs.vMin));
 ResetObjects (1);		//one CObject, the player
 return 0;
 }

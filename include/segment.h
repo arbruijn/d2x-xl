@@ -203,7 +203,7 @@ class CSide {
 
 	public:
 		inline void Init (void) { memset (this, 0, sizeof (*this)); }
-		void Read (CFile& cf, ushort* sideVerts, bool bSolid);
+		int Read (CFile& cf, ushort* sideVerts, bool bSolid);
 		void ReadWallNum (CFile& cf, bool bWall);
 		void SaveState (CFile& cf);
 		void LoadState (CFile& cf);
@@ -285,7 +285,7 @@ class CSegment {
 		ubyte			m_flags;
 		ubyte			m_props;
 		short			m_value;
-		sbyte			m_nMatCen;
+		short			m_nMatCen;
 		fix			m_xDamage [2];
 		fix			m_xAvgSegLight;
 
@@ -461,7 +461,7 @@ class CSegFaceInfo {
 		int					nVerts;
 		int					nTris;
 		int					nFrame;
-		CFloatVector			color;
+		CFloatVector		color;
 		float					fRads [2];
 		short					nWall;
 		short					nBaseTex;

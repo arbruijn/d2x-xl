@@ -615,7 +615,6 @@
 				StructMemberAlignment="1"
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
-				EnableEnhancedInstructionSet="0"
 				OpenMP="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
