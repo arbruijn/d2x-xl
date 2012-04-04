@@ -536,6 +536,8 @@ vboDataHandle = 0;
 vboIndexHandle = 0;
 vertexP = NULL;
 indexP = NULL;
+nFaces = 0;
+nTriangles = 0;
 nVertices = 0;
 iVertices = 0;
 iNormals = 0;
@@ -587,7 +589,6 @@ RESIZE (color, LEVEL_TRIANGLES * 3);
 RESIZE (texCoord, LEVEL_TRIANGLES * 2 * 2);
 RESIZE (ovlTexCoord, LEVEL_TRIANGLES * 2 * 2);
 RESIZE (lMapTexCoord, gameData.segs.nFaces * 3 * 2);
-Init ();
 return true;
 }
 
@@ -679,7 +680,6 @@ nFaceVerts = 0;
 nLastVertex = 0;
 nLastSegment = 0;
 nFaces = 0;
-nTris = 0;
 bHaveSlideSegs = 0;
 nSlideSegs = 0;
 }
