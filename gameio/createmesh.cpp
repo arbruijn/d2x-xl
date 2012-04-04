@@ -502,6 +502,7 @@ do {
 	nPass++;
 	PrintLog (-1);
 	} while (bSplit && (nPass < nMaxPasses));
+FACES.nTriangles = m_nTriangles;
 return 1;
 }
 
@@ -621,7 +622,6 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	nIndex += 3;
 #endif
 	}
-FACES.nTriangles = m_nTriangles;
 SetupVertexNormals ();
 FreeData ();
 PrintLog (-1, "created %d new triangles and %d new vertices\n",
