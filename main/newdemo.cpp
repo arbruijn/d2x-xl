@@ -406,7 +406,7 @@ return nRead;
 static inline ubyte NDReadByte (void)
 {
 if (bRevertFormat > 0) {
-	ubyte	h = ndInFile.ReadByte ();
+	ubyte	h = (int) ndInFile.ReadByte ();
 	NDWriteByte (h);
 	return h;
 	}
@@ -418,7 +418,7 @@ return ndInFile.ReadByte ();
 static inline short NDReadShort (void)
 {
 if (bRevertFormat > 0) {
-	short	h = ndInFile.ReadShort ();
+	short	h = (int) ndInFile.ReadShort ();
 	NDWriteShort (h);
 	return h;
 	}
@@ -430,7 +430,7 @@ return ndInFile.ReadShort ();
 static inline int NDReadInt ()
 {
 if (bRevertFormat > 0) {
-	int h = ndInFile.ReadInt ();
+	int h = (int) ndInFile.ReadInt ();
 	NDWriteInt (h);
 	return h;
 	}
@@ -453,7 +453,7 @@ return str;
 static inline fix NDReadFix (void)
 {
 if (bRevertFormat > 0) {
-	fix h = ndInFile.ReadFix ();
+	fix h = (int) ndInFile.ReadFix ();
 	NDWriteFix (h);
 	return h;
 	}
@@ -465,7 +465,7 @@ return ndInFile.ReadFix ();
 static inline fixang NDReadFixAng (void)
 {
 if (bRevertFormat > 0) {
-	fixang h = ndInFile.ReadFixAng ();
+	fixang h = (int) ndInFile.ReadFixAng ();
 	NDWriteFixAng (h);
 	return h;
 	}
@@ -3628,7 +3628,7 @@ void NDStripFrames (char *outname, int bytes_to_strip)
 	short	nPrevFrameLength;
 
 bytes_done = 0;
-nTotalSize = ndInFile.Length ();
+nTotalSize = (int) ndInFile.Length ();
 if (!ndOutFile.Open (outname, "", "wb", 0)) {
 	NDErrorMsg ("Can't open output file", NULL, NULL);
 	NDStopPlayback ();
@@ -3641,22 +3641,22 @@ if (!(buf = new char [BUF_SIZE])) {
 	return;
 	}
 NDGotoEnd ();
-trailer_start = ndInFile.Tell ();
+trailer_start = (int) ndInFile.Tell ();
 ndInFile.Seek (11, SEEK_CUR);
 bytes_back = 0;
 while (bytes_back < bytes_to_strip) {
-	loc1 = ndInFile.Tell ();
+	loc1 = (int) ndInFile.Tell ();
 	//ndInFile.Seek (-10, SEEK_CUR);
 	//NDReadShort (&nPrevFrameLength);
 	//ndInFile.Seek (8 - nPrevFrameLength, SEEK_CUR);
 	NDBackFrames (1);
-	loc2 = ndInFile.Tell ();
+	loc2 = (int) ndInFile.Tell ();
 	bytes_back += (loc1 - loc2);
 	}
 ndInFile.Seek (-10, SEEK_CUR);
 nPrevFrameLength = NDReadShort ();
 ndInFile.Seek (-3, SEEK_CUR);
-stop_loc = ndInFile.Tell ();
+stop_loc = (int) ndInFile.Tell ();
 ndInFile.Seek (0, SEEK_SET);
 while (stop_loc > 0) {
 	if (stop_loc < BUF_SIZE)
@@ -3667,7 +3667,7 @@ while (stop_loc > 0) {
 	ndOutFile.Write (buf, 1, read_elems);
 	stop_loc -= read_elems;
 	}
-stop_loc = ndOutFile.Tell ();
+stop_loc = (int) ndOutFile.Tell ();
 ndInFile.Seek (trailer_start, SEEK_SET);
 while ((read_elems = (int) ndInFile.Read (buf, 1, BUF_SIZE)))
 	ndOutFile.Write (buf, 1, read_elems);
