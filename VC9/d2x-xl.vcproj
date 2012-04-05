@@ -901,7 +901,7 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath="..\d2x-xl.rc"
+				RelativePath=".\d2x-xl.rc"
 				>
 			</File>
 			<Filter

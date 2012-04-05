@@ -170,14 +170,14 @@ void TestXMLInfoRequest (ubyte* serverAddress)
 {
 #if 0 //DBG
 gameStates.multi.bTrackerCall = 2;
-IPXSendInternetPacketData((ubyte *) "FDescent Game Info Request", strlen ("FDescent Game Info Request") + 1, 
-								  serverAddress, serverAddress + 4);
+IPXSendInternetPacketData ((ubyte *) "FDescent Game Info Request", (int) strlen ("FDescent Game Info Request") + 1, 
+								   serverAddress, serverAddress + 4);
 gameStates.multi.bTrackerCall = 0;
 #endif
 #if 1 //DBG
 gameStates.multi.bTrackerCall = 2;
-IPXSendInternetPacketData((ubyte *) "GDescent Game Status Request", strlen ("GDescent Game Status Request") + 1, 
-								  serverAddress, serverAddress + 4);
+IPXSendInternetPacketData ((ubyte *) "GDescent Game Status Request", (int) strlen ("GDescent Game Status Request") + 1, 
+								   serverAddress, serverAddress + 4);
 gameStates.multi.bTrackerCall = 0;
 #endif
 }
