@@ -71,7 +71,7 @@ if (!gameStates.render.bBrightObject) {
 		  i++, pv++, pn++, colorP++) {
 		colorP->index = 0;
 		vVertex = vPos + *reinterpret_cast<CFloatVector*> (pv);
-		G3VertexColor (-1, -1, i, reinterpret_cast<CFloatVector3*> (pn), vVertex.XYZ (), colorP, NULL, 1, 0, 0);
+		GetVertexColor (-1, -1, i, reinterpret_cast<CFloatVector3*> (pn), vVertex.XYZ (), colorP, NULL, 1, 0, 0);
 		}
 	}
 for (i = iFaceVerts, h = iFaceVerts, pmv = modelP->m_faceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {

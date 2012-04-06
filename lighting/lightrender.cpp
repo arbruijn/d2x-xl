@@ -495,7 +495,7 @@ if (gameStates.render.nLightingMethod) {
 			break;
 		if (lightP->info.bVariable)
 			continue;
-		if (bLight && lightP->info.bAmbient && ((lightP->info.nSegment != nSegment) || (lightP->info.nSide != nSide)))
+		if (bLight && !lightP->Illuminate (nSegment, nSide))
 			continue;
 #if DBG
 		if ((nDbgSeg >= 0) && (nDbgSeg == lightP->info.nSegment))
@@ -604,7 +604,7 @@ else if (gameStates.render.bPerPixelLighting) {
 			}
 		vcd.vertPosP = &vcd.vertPos;
 		vcd.fMatShininess = 4;
-		G3AccumVertColor (-1, reinterpret_cast<CFloatVector3*> (segColorP), &vcd, 0);
+		ComputeVertexColor (nSegment, -1, -1, reinterpret_cast<CFloatVector3*> (segColorP), &vcd, 0);
 		}
 #if DBG
 	if (segColorP->Red () + segColorP->Green () + segColorP->Blue () == 0)
@@ -643,44 +643,6 @@ else {
 #endif
 	c *= 0.125f; // => / 8.0f
 	segColorP->Assign (c);
-#if 0
-	if (lightManager.SetNearestToSegment (nSegment, 1)) {
-		CDynLight*		lightP;
-		float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightfRange];
-		float				fLightDist, fAttenuation;
-		CFloatVector	vPosf;
-		if (vPosP)
-			vPosf.Assign (vPosP);
-		for (i = 0; i < m_data.nActiveLights; i++) {
-			lightP = m_data.active [i];
-#if 1
-			if (vPosP) {
-				vVertex = gameData.segs.vertices [*pv];
-				//transformation.Transform (&vVertex, &vVertex);
-				fLightDist = VmVecDist (lightP->render.vPosf, &vPosf) / fLightRange;
-				fAttenuation = fLightDist / lightP->info.fBrightness;
-				VmVecScaleAdd (reinterpret_cast<CFloatVector*> (&coord.color), reinterpret_cast<CFloatVector*> (&coord.color, reinterpret_cast<CFloatVector*> (&lightP->render.color, 1.0f / fAttenuation);
-				}
-			else
-#endif
-			 {
-				VmVecInc (reinterpret_cast<CFloatVector*> (&segColorP->color), reinterpret_cast<CFloatVector*> (&lightP->render.color);
-				}
-			}
-		}
-#endif
-#if 0
-	d = segColorP->Red ();
-	if (d < segColorP->Green ())
-		d = segColorP->Green ();
-	if (d < segColorP->Blue ())
-		d = segColorP->Blue ();
-	if (d > 1.0f) {
-		segColorP->Red () /= d;
-		segColorP->Green () /= d;
-		segColorP->Blue () /= d;
-		}
-#endif
 	}
 segColorP->index = (char) (gameData.app.nFrameCount & 0xff);
 return segColorP;

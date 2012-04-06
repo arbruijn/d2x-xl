@@ -449,13 +449,15 @@ void CLightmapManager::Build (CSegFace* faceP, int nThread)
 	CRGBColor		*texColorP;
 	CFloatVector3	color;
 	int				w, h, x, y, yMin, yMax;
+	short				nSegment = faceP->m_info.nSegment;
+	short				nSide = faceP->m_info.nSide;
 	bool				bBlack, bWhite;
 
 	CVertColorData	vcd = m_data.m_vcd; // need a local copy for each thread!
 
 
 #if 0// DBG
-if ((faceP->m_info.nSegment != nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide != nDbgSide))) {
+if ((nSegment != nDbgSeg) && ((nDbgSide < 0) || (nSide != nDbgSide))) {
 	m_data.m_nColor |= 1;
 	return;
 	}
@@ -478,7 +480,7 @@ else {
 	}
 
 #if DBG
-if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 
@@ -577,7 +579,7 @@ v1 += vo;
 v2 -= vo;
 #endif
 
-CSide* sideP = SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide);
+CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 float dot = 1.0f - CFloatVector::Dot (sideP->m_fNormals [0], sideP->m_fNormals [1]);
 if ((dot >= -0.001f) && (dot <= 0.001f)) { // ~planar
 	for (y = yMin; y < yMax; y++) {
@@ -626,12 +628,12 @@ bBlack = bWhite = true;
 pixelPosP = m_data.m_pixelPos + yMin * w;
 for (y = yMin; y < yMax; y++) {
 #if DBG
-	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
 	for (x = 0; x < w; x++, pixelPosP++) { 
 #if DBG
-		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide))) {
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nDbgSeg = nDbgSeg;
 			if (((x == 0) || (x == w - 1)) || ((y == 0) || (y == w - 1)))
 				nDbgSeg = nDbgSeg;
@@ -646,11 +648,11 @@ for (y = yMin; y < yMax; y++) {
 			}
 		fix dist = x ? CFixVector::Dist (*pixelPosP, *(pixelPosP - 1)) : 0;
 #endif
-		if (0 < lightManager.SetNearestToPixel (faceP->m_info.nSegment, faceP->m_info.nSide, &m_data.m_vNormal, 
+		if (0 < lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, 
 															 pixelPosP, faceP->m_info.fRads [1] / 10.0f, nThread)) {
 			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
-			G3AccumVertColor (-1, &color, &vcd, nThread);
+			ComputeVertexColor (-1, -1, -1, &color, &vcd, nThread);
 			if ((color.Red () >= 1.0f / 255.0f) || (color.Green () >= 1.0f / 255.0f) || (color.Blue () >= 1.0f / 255.0f)) {
 					bBlack = false;
 				if (color.Red () >= 254.0f / 255.0f)
@@ -683,7 +685,7 @@ else
 	m_data.m_nColor |= 4;
 }
 #if DBG
-if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 }

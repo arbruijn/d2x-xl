@@ -474,7 +474,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 				phv = modelVertP + (h = faceVertP->m_nIndex);
 				if (bDynLighting) {
 					if (vertColorP [h].index != gameStates.render.nFrameFlipFlop + 1)
-						G3VertexColor (-1, -1, -1, reinterpret_cast<CFloatVector3*> (modelNormalP + h), reinterpret_cast<CFloatVector3*> (phv), vertColorP + h, NULL, 1, 0, 0);
+						GetVertexColor (-1, -1, -1, reinterpret_cast<CFloatVector3*> (modelNormalP + h), reinterpret_cast<CFloatVector3*> (phv), vertColorP + h, NULL, 1, 0, 0);
 					
 					vertColor.Red () = (float) sqrt (vertColorP [h].Red ());
 					vertColor.Green () = (float) sqrt (vertColorP [h].Green ());

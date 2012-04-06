@@ -274,7 +274,7 @@ for (i = nStart; i < nEnd; i++) {
 					if (nVertex == nDbgVertex)
 						nDbgVertex = nDbgVertex;
 #endif
-					G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &gameData.render.color.ambient [nVertex], 1, 0, nThread);
+					GetVertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &gameData.render.color.ambient [nVertex], 1, 0, nThread);
 					lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 					lightManager.ResetNearestToVertex (nVertex, nThread);
 					}
@@ -435,7 +435,7 @@ for (i = nStart; i < nEnd; i++) {
 						if (nVertex == nDbgVertex)
 							nDbgVertex = nDbgVertex;
 #endif
-						G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &gameData.render.color.ambient [nVertex], 1, 0, nThread);
+						GetVertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &gameData.render.color.ambient [nVertex], 1, 0, nThread);
 						lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 						lightManager.ResetNearestToVertex (nVertex, nThread);
 						}
@@ -482,7 +482,11 @@ PROF_START
 	float			fAlpha;
 	int			h, i, j, k, nIndex, nColor, nLights = 0;
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
-
+#if DBG
+	CShortArray& visibleSegs = gameData.render.mine.visibility [0].segments;
+#else
+	short*		visibleSegs = gameData.render.mine.visibility [0].segments.Buffer ();
+#endif
 	static		CStaticFaceColor<1,1,1,1> brightColor;
 
 for (i = 0; i < 3; i++)
@@ -494,12 +498,12 @@ if (ogl.m_states.bVertexLighting)
 	ogl.m_states.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
 for (i = nStart; i < nEnd; i++) {
-	if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
+	if (0 > (nSegment = visibleSegs [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
 	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
-		gameData.render.mine.visibility [0].segments [i] = -gameData.render.mine.visibility [0].segments [i] - 1;
+		visibleSegs [i] = -visibleSegs [i] - 1;
 		continue;
 		}
 #if DBG
@@ -565,9 +569,9 @@ for (i = nStart; i < nEnd; i++) {
 								}
 							else {
 #if LIGHTING_QUALITY == 1
-								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
+								GetVertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, &c, 1, 0, nThread);
 #else
-								G3VertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FACES.vertices + nIndex, NULL, NULL, 1, 0, nThread);
+								GetVertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FACES.vertices + nIndex, NULL, NULL, 1, 0, nThread);
 #endif
 								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
@@ -576,7 +580,7 @@ for (i = nStart; i < nEnd; i++) {
 							if (nVertex == nDbgVertex) {
 								nVertex = nVertex;
 								vertColorP->index = -1;
-								G3VertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, NULL, 1, 0, nThread);
+								GetVertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, NULL, 1, 0, nThread);
 								}
 #	endif
 							}

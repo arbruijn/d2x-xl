@@ -105,6 +105,9 @@ class CDynLight {
 		int LightPathLength (const short nLightSeg, const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int bFastRoute, int nThread);
 		int Contribute (const short nDestSeg, const short nDestSide, const short nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
 							 fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread);
+		inline bool Illuminate (short nSegment, short nSide) { 
+			return !info.bAmbient || (nSegment < 0) || ((info.nSegment == nSegment) && ((nSide < 0) || (info.nSide == nSide))); 
+			}
 		int ComputeVisibleVertices (int nThread);
 		int Compare (CDynLight& other);
 		inline bool operator< (CDynLight& other)

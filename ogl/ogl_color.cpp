@@ -350,7 +350,7 @@ return 0;
 
 float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
-int G3AccumVertColor (int nVertex, CFloatVector3 *colorSumP, CVertColorData *colorDataP, int nThread)
+int ComputeVertexColor (int nSegment, int nSide, int nVertex, CFloatVector3 *colorSumP, CVertColorData *colorDataP, int nThread)
 {
 	CDynLight*			lightP;
 	CDynLightIndex*	sliP = &lightManager.Index (0, nThread);
@@ -417,6 +417,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 #endif
 	if (lightP->info.bVariable && gameData.render.vertColor.bDarkness)
+		continue;
+	if (!lightP->Illuminate (nSegment, nSide))
 		continue;
 	memcpy (&lightColor.v.color, &lightP->info.color, sizeof (lightColor.v.color));
 	if (lightColor.IsZero ())
@@ -647,7 +649,7 @@ else {
 extern int nDbgVertex;
 
 
-void G3VertexColor (int nSegment, int nSide, int nVertex,
+void GetVertexColor (int nSegment, int nSide, int nVertex,
 						  CFloatVector3* vVertNormP, CFloatVector3* vVertPosP, 
 						  CFaceColor* vertColorP, CFaceColor* baseColorP,
 						  float fScale, int bSetColor, int nThread)
@@ -747,7 +749,7 @@ else {
 		if (!gameStates.render.nState && (nVertex == nDbgVertex))
 			nVertex = nVertex;
 #endif
-		G3AccumVertColor (nVertex, &colorSum, &colorData, nThread);
+		ComputeVertexColor (nSegment, nSide, nVertex, &colorSum, &colorData, nThread);
 		}
 	if ((nVertex >= 0) && !(gameStates.render.nState || gameData.render.vertColor.bDarkness)) {
 		colorSum += *gameData.render.color.ambient [nVertex].XYZ () * fScale;
