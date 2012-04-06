@@ -65,7 +65,7 @@ transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
 ScaleTransformation (transformation, bOglScale);
 CFixMatrix::Transpose (transformation.m_info.viewf [2], transformation.m_info.view [0]);
 if (bSetupRenderer)
-	ogl.SetupProjection ();
+	ogl.SetupProjection (transformation);
 }
 
 //------------------------------------------------------------------------------

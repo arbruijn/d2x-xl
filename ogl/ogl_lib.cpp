@@ -427,7 +427,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void COGL::SetupProjection (void)
+void COGL::SetupProjection (CTransformation& transformation)
 {
 gameStates.render.glAspect = m_states.bUseTransform ? CCanvas::Current ()->AspectRatio () : 1.0;
 glMatrixMode (GL_PROJECTION);

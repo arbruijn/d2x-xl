@@ -403,7 +403,7 @@ for (j = 0; j < 4; j++) {
 	}
 
 // check whether all vertices of the face are at the back side of at least one frustum plane,
-// or if at least one is at at least one frustum plane's front side
+// or if at least one is at at least on one frustum plane's front side
 for (i = 0; i < 6; i++) {
 	int nPtInside = 4;
 	int bPtInside = 1;

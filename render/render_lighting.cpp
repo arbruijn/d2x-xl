@@ -109,7 +109,12 @@ return 0;
 
 int SegmentIsVisible (CSegment *segP, CTransformation& transformation, int nThread)
 {
-ubyte code = 0xFF;
+#if DBG
+	CArray<CRenderPoint>& points = gameData.render.mine.visibility [nThread].points;
+#else
+	CRenderPoint* points = gameData.render.mine.visibility [nThread].points.Buffer ();
+#endif
+	ubyte code = 0xFF;
 
 #if DBG
 if (segP->Index () == nDbgSeg)
@@ -120,7 +125,7 @@ for (int i = 0; i < 8; i++) {
 #if 0 //DBG
 	RENDERPOINTS [vertices [i]].m_flags = 0;
 #endif
-	code &= gameData.render.mine.visibility [nThread].points [vertices [i]].ProjectAndEncode (transformation, vertices [i]);
+	code &= points [vertices [i]].ProjectAndEncode (transformation, vertices [i]);
 	if (!code)
 		return 1;
 	}

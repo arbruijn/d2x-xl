@@ -402,6 +402,7 @@ static void ComputeSingleSegmentVisibility (int nThread, short nStartSeg, short 
 	CObject				viewer;
 	CTransformation	transformation;
 	CVisibilityData&	visibility = gameData.render.mine.visibility [nThread];
+	CCanvas				screen;
 
 ogl.SetTransform (1);
 #if DBG
@@ -421,6 +422,12 @@ sideP = startSegP->m_sides + nFirstSide;
 	
 viewer.info.nSegment = nStartSeg;
 gameData.objs.viewerP = &viewer;
+
+screen.Setup (1024, 1024);
+CCanvas::Push ();
+CCanvas::SetCurrent (&screen);
+ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+transformation.ComputeAspect (1024, 1024);
 
 for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #if DBG
@@ -456,13 +463,11 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			}
 		}
 
-		CFixVector::Cross (uVec, fVec, rVec); // create uVec perpendicular to fVec and rVec
-		CFixVector::Cross (rVec, fVec, uVec); // adjust rVec to be perpendicular to fVec and uVec (eliminate rounding errors)
-		CFixVector::Cross (uVec, fVec, rVec); // adjust uVec to be perpendicular to fVec and rVec (eliminate rounding errors)
-		viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
-
-	transformation.ComputeAspect (1024, 1024);
-	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, -1, 0, false);
+	CFixVector::Cross (uVec, fVec, rVec); // create uVec perpendicular to fVec and rVec
+	CFixVector::Cross (rVec, fVec, uVec); // adjust rVec to be perpendicular to fVec and uVec (eliminate rounding errors)
+	CFixVector::Cross (uVec, fVec, rVec); // adjust uVec to be perpendicular to fVec and rVec (eliminate rounding errors)
+	viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
+	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, -1, 0, true);
 
 #if DBG
 if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -470,6 +475,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 	gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
 	visibility.BuildSegList (transformation, nStartSeg, 0, true);
+	ogl.EndFrame (0);
 	for (i = 0; i < visibility.nSegments; i++) {
 		if (0 > (nSegment = visibility.segments [i]))
 			continue;
@@ -493,6 +499,8 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	gameStates.render.nShadowMap = 0;
 	}
 ogl.SetTransform (0);
+CCanvas::Pop ();
+ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 }
 
 //------------------------------------------------------------------------------

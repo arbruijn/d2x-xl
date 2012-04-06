@@ -124,13 +124,13 @@ ubyte CodePortal (tPortal& facePortal, tPortal& curPortal)
 {
 	ubyte code = 0;
 
-if (facePortal.right <= curPortal.left)
+if (facePortal.right < curPortal.left)
 	code |= 1;
-else if (facePortal.left >= curPortal.right)
+else if (facePortal.left > curPortal.right)
 	code |= 2;
-if (facePortal.bot <= curPortal.top)
+if (facePortal.bot < curPortal.top)
 	code |= 4;
-else if (facePortal.top >= curPortal.bot)
+else if (facePortal.top > curPortal.bot)
 	code |= 8;
 return code;
 }
@@ -748,6 +748,8 @@ for (i = 0; i < gameData.segs.nVertices; i++)
 	renderPoints [i].Reset ();
 
 #if DBG
+if (nStartSeg == nDbgSeg)
+	nDbgSeg = nDbgSeg;
 int nIterations = 0;
 #endif
 int nRenderDepth = min (4 * (int (gameStates.render.detail.nRenderDepth) + 1), gameData.segs.nSegments);
@@ -813,7 +815,6 @@ for (l = 0; l < nRenderDepth; l++) {
 				}
 			childList [nChildren++] = nChild;
 			}
-		// now order the sides in some magical way
 		// looking from segment nSegment through side nSide at segment nChildSeg
 		for (nChild = 0; nChild < nChildren; nChild++) {
 			nSide = childList [nChild];
@@ -833,8 +834,7 @@ for (l = 0; l < nRenderDepth; l++) {
 				ushort nVertex = s2v [nCorner];
 				CRenderPoint& point = renderPoints [nVertex];
 #if DBG
-				//point.SetFlags ();
-				//point.SetCodes ();
+				point.Reset ();
 #else
 				if (!(point.Projected ()))
 #endif
