@@ -357,7 +357,7 @@ int ComputeVertexColor (int nSegment, int nSide, int nVertex, CFloatVector3 *col
 	CActiveDynLight*	activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
 	CVertColorData		colorData = *colorDataP;
 	int					i, j, nType, nLights, 
-							bAmbient, nAmbient,
+							bSelf, nSelf,
 							bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
 							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform,
 							nSaturation = gameOpts->render.color.nSaturation;
@@ -385,7 +385,7 @@ i = sliP->nLast - sliP->nFirst + 1;
 if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
 	nDbgVertex = nDbgVertex;
 #endif
-nAmbient = 0;
+nSelf = 0;
 for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if 1
 	if (!(lightP = activeLightsP->lightP))
@@ -425,10 +425,11 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (lightColor.IsZero ())
 		continue;
 
-	if (lightP->info.nSegment < 0)
-		bAmbient = 0;
-	else if ((bAmbient = !lightP->Illuminate (nSegment, nSide)))
-		nAmbient++;
+	if ((bSelf = lightP->info.bAmbient)) {
+		if (!SEGMENTS [lightP->Segment ()].Side (lightP->Side ())->HasVertex (nVertex))
+			continue;
+		nSelf++;
+		}
 
 	if (bTransform) 
 		transformation.Transform (lightDir, *lightP->info.vDirf.XYZ (), 1);
@@ -572,7 +573,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	vertColor /= fAttenuation;
 
 #if 1
-	colorSum [bAmbient] += vertColor;
+	colorSum [bSelf] += vertColor;
 #else
 	if ((nSaturation < 2) || gameStates.render.bHaveLightmaps)//sum up color components
 		colorSum += vertColor;
@@ -601,8 +602,8 @@ if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
 #endif
 	
 if (j) {
-	if (nAmbient)
-		colorSum [0] += colorSum [1] / float (nAmbient);
+	if (nSelf)
+		colorSum [0] += colorSum [1] / float (nSelf);
 	//if ((nSaturation == 1) || gameStates.render.bHaveLightmaps) 
 		{ //if a color component is > 1, cap color components using highest component value
 		float	maxColor = colorSum [0].Max ();
