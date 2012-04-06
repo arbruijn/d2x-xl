@@ -1038,8 +1038,6 @@ gameData.render.fBrightness = 1.0f;
 messageBox.Show (TXT_PREPARING);
 lightManager.AddGeometryLights ();
 m_data.nGeometryLights = m_data.nLights [0];
-if (!gameData.segs.bLightVis.Create ((m_data.nGeometryLights * LEVEL_SEGMENTS + 3) / 4))
-	return 0;
 ComputeNearestLights (nLevel);
 lightmapManager.Setup (nLevel);
 messageBox.Clear ();
