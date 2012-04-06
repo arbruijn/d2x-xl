@@ -366,7 +366,7 @@ if (m_data.nLights [0] >= MAX_OGL_LIGHTS) {
 	return -1;	//too many lights
 	}
 i = m_data.nLights [0]; //LastEnabledDynLight () + 1;
-CDynLight& light = m_data.lights + i;
+CDynLight& light = m_data.lights [i];
 light.info.nIndex = i;
 light.info.faceP = faceP;
 light.info.nSegment = nSegment;
