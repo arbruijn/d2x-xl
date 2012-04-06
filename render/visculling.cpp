@@ -741,10 +741,11 @@ portals [0].right = CCanvas::Current ()->Width () - 1;
 portals [0].bot = CCanvas::Current ()->Height () - 1;
 
 CRenderPoint* pointP = &renderPoints [0];
-for (i = gameData.segs.nVertices; i; i--, pointP++) {
-	pointP->SetFlags ();
-	//pointP->m_codes = 0;
-	}
+#ifdef _OPENMP
+#	pragma omp parallel for
+#endif
+for (i = 0; i < gameData.segs.nVertices; i++) 
+	renderPoints [i].Reset ();
 
 #if DBG
 int nIterations = 0;
@@ -832,8 +833,8 @@ for (l = 0; l < nRenderDepth; l++) {
 				ushort nVertex = s2v [nCorner];
 				CRenderPoint& point = renderPoints [nVertex];
 #if DBG
-				point.SetFlags ();
-				point.SetCodes ();
+				//point.SetFlags ();
+				//point.SetCodes ();
 #else
 				if (!(point.Projected ()))
 #endif

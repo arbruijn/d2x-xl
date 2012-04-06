@@ -130,6 +130,7 @@ class CRenderPoint {
 		inline ubyte Flags (void) { return m_flags; }
 		inline void SetFlags (ubyte flags = 0) { m_flags = flags; }
 		inline void AddFlags (ubyte flags) { m_flags |= flags; }
+		inline void Reset (void) { m_flags = m_codes = 0; }
 		inline ubyte Behind (void) { return m_codes & CC_BEHIND; }
 		inline bool Visible (void) { return m_codes == 0; }
 		inline ubyte Projected (void) { return m_flags & PF_PROJECTED; }
