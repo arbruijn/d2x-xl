@@ -426,6 +426,8 @@ gameData.objs.viewerP = &viewer;
 screen.Setup (1024, 1024);
 CCanvas::Push ();
 CCanvas::SetCurrent (&screen);
+screen.SetWidth ();
+screen.SetHeight ();
 ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 transformation.ComputeAspect (1024, 1024);
 
