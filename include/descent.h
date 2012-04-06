@@ -1999,7 +1999,7 @@ class CSegmentData {
 			}
 
 		inline int SetSegVis (short nSrcSeg, short nDestSeg) {
-			int i = LightVisIdx (nSrcSeg, nDestSeg);
+			int i = SegVisIdx (nSrcSeg, nDestSeg);
 			ubyte* flagP = &bSegVis [i >> 3];
 			ubyte flag = 1 << (i & 7);
 #ifdef _OPENMP

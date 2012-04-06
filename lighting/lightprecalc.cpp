@@ -401,6 +401,10 @@ ogl.SetTransform (1);
 if (nStartSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
+#if DBG
+	if (gameData.segs.segDistTable [5].dist.Buffer ())
+		nDbgSeg = nDbgSeg;
+#endif
 if (!bLights) 
 	SetSegVis (nStartSeg, nStartSeg);
 else {
@@ -411,6 +415,10 @@ else {
 startSegP = SEGMENTS + nStartSeg;
 sideP = startSegP->m_sides + nFirstSide;
 	
+#if DBG
+	if (gameData.segs.segDistTable [5].dist.Buffer ())
+		nDbgSeg = nDbgSeg;
+#endif
 viewer.info.nSegment = nStartSeg;
 gameData.objs.viewerP = &viewer;
 
@@ -461,7 +469,15 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 	gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
+#if DBG
+	if (gameData.segs.segDistTable [5].dist.Buffer ())
+		nDbgSeg = nDbgSeg;
+#endif
 	visibility.BuildSegList (transformation, nStartSeg, 0, true);
+#if DBG
+	if (gameData.segs.segDistTable [5].dist.Buffer ())
+		nDbgSeg = nDbgSeg;
+#endif
 	for (i = 0; i < visibility.nSegments; i++) {
 		if (0 > (nSegment = visibility.segments [i]))
 			continue;
@@ -473,12 +489,17 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 		if (!SegmentIsVisible (SEGMENTS + nSegment, transformation, nThread))
 			continue;
-		if (bLights && (gameData.segs.SegDist (nStartSeg, nSegment) < 0))
-			continue;
-		if (bLights)
+		if (!bLights)
+			SetSegVis (nStartSeg, nSegment);
+		else {
+			if (gameData.segs.SegDist (nStartSeg, nSegment) < 0)
+				continue;
 			SetLightVis (nLight, nSegment);
-		else
-			SetSegVis (nStartSeg, nStartSeg);
+			}
+#if DBG
+	if (gameData.segs.segDistTable [5].dist.Buffer ())
+		nDbgSeg = nDbgSeg;
+#endif
 		}
 	gameStates.render.nShadowPass = 0;
 	gameStates.render.nShadowMap = 0;

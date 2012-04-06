@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by d2x.w32.rc
+// Microsoft Visual C++ generated include file.
+// Used by d2x-xl.rc
 //
 #define IDI_D2XW32                      101
 #define IDI_DESCENT2                    102
