@@ -357,6 +357,7 @@ int ComputeVertexColor (int nSegment, int nSide, int nVertex, CFloatVector3 *col
 	CActiveDynLight*	activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
 	CVertColorData		colorData = *colorDataP;
 	int					i, j, nType, nLights, 
+							bAmbient, nAmbient,
 							bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
 							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform,
 							nSaturation = gameOpts->render.color.nSaturation;
@@ -364,7 +365,7 @@ int ComputeVertexColor (int nSegment, int nSide, int nVertex, CFloatVector3 *col
 	int					bDiffuse, bSpecular = gameStates.render.bSpecularColor && (colorData.fMatShininess > 0.0f);
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
 	CFloatVector3		lightDir, lightRayDir, lightPos, vertPos, vReflect;
-	CFloatVector3		lightColor, colorSum, vertColor;
+	CFloatVector3		lightColor, colorSum [2], vertColor;
 	
 #if DBG
 if (nThread == 0)
@@ -372,7 +373,8 @@ if (nThread == 0)
 if (nThread == 1)
 	nThread = nThread;
 #endif
-colorSum = *colorSumP;
+colorSum [0] = *colorSumP;
+colorSum [1].SetZero ();
 vertPos = *transformation.m_info.posf [1].XYZ () - *colorData.vertPosP;
 CFloatVector3::Normalize (vertPos);
 nLights = sliP->nActive;
@@ -383,6 +385,7 @@ i = sliP->nLast - sliP->nFirst + 1;
 if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
 	nDbgVertex = nDbgVertex;
 #endif
+nAmbient = 0;
 for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if 1
 	if (!(lightP = activeLightsP->lightP))
@@ -421,6 +424,11 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	memcpy (&lightColor.v.color, &lightP->info.color, sizeof (lightColor.v.color));
 	if (lightColor.IsZero ())
 		continue;
+
+	if (lightP->info.nSegment < 0)
+		bAmbient = 0;
+	else if ((bAmbient = !lightP->Illuminate (nSegment, nSide)))
+		nAmbient++;
 
 	if (bTransform) 
 		transformation.Transform (lightDir, *lightP->info.vDirf.XYZ (), 1);
@@ -563,8 +571,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	vertColor *= lightColor;
 	vertColor /= fAttenuation;
 
-#if 0
-	colorSum += vertColor;
+#if 1
+	colorSum [bAmbient] += vertColor;
 #else
 	if ((nSaturation < 2) || gameStates.render.bHaveLightmaps)//sum up color components
 		colorSum += vertColor;
@@ -593,15 +601,18 @@ if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
 #endif
 	
 if (j) {
-	if ((nSaturation == 1) || gameStates.render.bHaveLightmaps) { //if a color component is > 1, cap color components using highest component value
-		float	maxColor = colorSum.Max ();
+	if (nAmbient)
+		colorSum [0] += colorSum [1] / float (nAmbient);
+	//if ((nSaturation == 1) || gameStates.render.bHaveLightmaps) 
+		{ //if a color component is > 1, cap color components using highest component value
+		float	maxColor = colorSum [0].Max ();
 		if (maxColor > 1.0f) {
-			colorSum.Red () /= maxColor;
-			colorSum.Green () /= maxColor;
-			colorSum.Blue () /= maxColor;
+			colorSum [0].Red () /= maxColor;
+			colorSum [0].Green () /= maxColor;
+			colorSum [0].Blue () /= maxColor;
 			}
 		}
-	*colorSumP = colorSum;
+	*colorSumP = colorSum [0];
 	}
 #if DBG
 if (nLights)

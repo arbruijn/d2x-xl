@@ -455,14 +455,6 @@ void CLightmapManager::Build (CSegFace* faceP, int nThread)
 
 	CVertColorData	vcd = m_data.m_vcd; // need a local copy for each thread!
 
-
-#if 0// DBG
-if ((nSegment != nDbgSeg) && ((nDbgSide < 0) || (nSide != nDbgSide))) {
-	m_data.m_nColor |= 1;
-	return;
-	}
-#endif
-
 h = LM_H;
 w = LM_W;
 
@@ -486,8 +478,6 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
-
-#if 1
 
 CFixVector v0 = VERTICES [m_data.m_sideVerts [0]];
 CFixVector v1 = VERTICES [m_data.m_sideVerts [1]];
@@ -547,83 +537,6 @@ else {
 		}
 	}
 
-#else
-
-CFloatVector	v0, v1, v2, v3;
-
-v0.Assign (VERTICES [m_data.m_sideVerts [0]]);
-v1.Assign (VERTICES [m_data.m_sideVerts [1]]);
-v2.Assign (VERTICES [m_data.m_sideVerts [2]]);
-v3.Assign (VERTICES [m_data.m_sideVerts [3]]);
-
-CFloatVector l0 = v1 - v0;
-CFloatVector l1 = v2 - v3;
-CFloatVector va, vb, vc, vo;
-
-// move the corner vertices a little inward in order to make all lightmap pixel coordinates lie inside the lightmap
-#if 0
-float scale = 0.5f / float (w);
-vo = l0 * scale;
-v0 += vo;
-v1 -= vo;
-l0 -= vo * 2.0f;
-vo = l1 * scale;
-v3 += vo;
-v2 -= vo;
-l1 -= vo * 2.0f;
-vo = (v3 - v0) * scale;
-v0 += vo;
-v3 -= vo;
-vo = (v2 - v1) * scale;
-v1 += vo;
-v2 -= vo;
-#endif
-
-CSide* sideP = SEGMENTS [nSegment].Side (nSide);
-float dot = 1.0f - CFloatVector::Dot (sideP->m_fNormals [0], sideP->m_fNormals [1]);
-if ((dot >= -0.001f) && (dot <= 0.001f)) { // ~planar
-	for (y = yMin; y < yMax; y++) {
-		va = v0 + l0 * m_data.nOffset [y];
-		vb = v3 + l1 * m_data.nOffset [y];
-		vo = (vb - va) / float (w - 1);
-		for (x = 0; x < w; x++, pixelPosP++) {
-			pixelPosP->Assign (va);
-			va += vo;
-			}
-		}
-	}
-else {
-	CFloatVector vh = (m_data.m_nType == SIDE_IS_TRI_13) ? v3 : v0;
-	CFloatVector l2 = ((m_data.m_nType == SIDE_IS_TRI_13) ? v1 : v2) - vh;
-	for (y = yMin; y < yMax; y++, pixelPosP += w) {
-		va = v0 + l0 * m_data.nOffset [y];
-		vb = v3 + l1 * m_data.nOffset [y];
-		vc = vh + l2 * m_data.nOffset [y];
-		float la = CFloatVector::Dist (va, vc);
-		float lb = CFloatVector::Dist (vb, vc);
-		float l = la + lb;
-		float step = l / float (w - 1);
-		float scale = la / step;
-		int pivot = int (scale);
-		if (pivot) {
-			vo = (vc - va) / scale;
-			for (x = 0; x < pivot; x++) {
-				pixelPosP [x].Assign (va);
-				va += vo;
-				}
-			}
-		if (pivot < w) {
-			vo = (vc - vb) / lb * step;
-			for (x = w; x > pivot; ) {
-				pixelPosP [--x].Assign (vb);
-				vb += vo;
-				}
-			}
-		}
-	}
-
-#endif
-
 bBlack = bWhite = true;
 pixelPosP = m_data.m_pixelPos + yMin * w;
 for (y = yMin; y < yMax; y++) {
@@ -648,8 +561,7 @@ for (y = yMin; y < yMax; y++) {
 			}
 		fix dist = x ? CFixVector::Dist (*pixelPosP, *(pixelPosP - 1)) : 0;
 #endif
-		if (0 < lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, 
-															 pixelPosP, faceP->m_info.fRads [1] / 10.0f, nThread)) {
+		if (0 < lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, pixelPosP, faceP->m_info.fRads [1] / 10.0f, nThread)) {
 			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
 			ComputeVertexColor (-1, -1, -1, &color, &vcd, nThread);
