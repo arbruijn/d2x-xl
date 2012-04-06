@@ -386,6 +386,7 @@ if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
 	nDbgVertex = nDbgVertex;
 #endif
 nSelf = 0;
+bSelf = 0;
 for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if 1
 	if (!(lightP = activeLightsP->lightP))
@@ -425,7 +426,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (lightColor.IsZero ())
 		continue;
 
-	if ((bSelf = lightP->info.bAmbient)) {
+	if (!gameStates.render.bHaveLightmaps && (bSelf = lightP->info.bAmbient)) {
 		if (!SEGMENTS [lightP->Segment ()].Side (lightP->Side ())->HasVertex (nVertex))
 			continue;
 		nSelf++;
