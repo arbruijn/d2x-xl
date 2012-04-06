@@ -571,6 +571,10 @@ if (nDestSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 i = gameData.segs.LightVisIdx (nLight, nDestSeg);
+#if DBG
+if (i / 4 >= int (gameData.segs.bLightVis.Length ()))
+	return;
+#endif
 ubyte* flagP = &lightVis [i >> 2];
 ubyte flag = 3 << ((i & 3) << 1);
 
@@ -620,7 +624,7 @@ for (i = 4; i >= -4; i--) {
 	}
 if (dMin > xMaxDist)
 	return;
-gameData.segs.SetLightVis (nLightSeg, nDestSeg, 1);
+gameData.segs.SetLightVis (nLight, nDestSeg, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -655,7 +659,7 @@ if ((lightP->info.nSegment >= 0) && (lightP->info.nSide >= 0)) {
 #if 1
 	fix xLightRange = fix (MAX_LIGHT_RANGE * lightP->info.fRange);
 	for (int i = 0; i < gameData.segs.nSegments; i++)
-		CheckLightVisibility (lightP->info.nSegment, lightP->info.nSide, i, xLightRange, lightP->info.fRange, nThread);
+		CheckLightVisibility (lightP->Index (), lightP->info.nSide, i, xLightRange, lightP->info.fRange, nThread);
 #endif
 	}
 }
