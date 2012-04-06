@@ -704,8 +704,7 @@ CREATE (segCenters [1], LEVEL_SEGMENTS, 0);
 CREATE (sideCenters, LEVEL_SEGMENTS * 6, 0);
 // the following two arrays are bit arrays; (X + 7) / 8 ensures enough bytes are allocated for all bits
 // bSegVis [0] is a triangular matrix, x <= y always
-CREATE (bSegVis [0], SegVisSize (), 0);
-CREATE (bSegVis [1], LightVisSize (), 0);
+CREATE (bSegVis, SegVisSize (), 0);
 CREATE (segDistTable, LEVEL_SEGMENTS, 0);
 CREATE (slideSegs, LEVEL_SEGMENTS, 0);
 CREATE (segFaces, LEVEL_SEGMENTS, 0);
@@ -747,8 +746,8 @@ DESTROY (gameData.segs.extent);
 DESTROY (gameData.segs.segCenters [0]);
 DESTROY (gameData.segs.segCenters [1]);
 DESTROY (gameData.segs.sideCenters);
-DESTROY (gameData.segs.bSegVis [0]);
-DESTROY (gameData.segs.bSegVis [1]);
+DESTROY (gameData.segs.bSegVis);
+DESTROY (gameData.segs.bLightVis);
 for (int i = 0; i < LEVEL_SEGMENTS; i++)
 	gameData.segs.segDistTable [i].Destroy ();
 DESTROY (gameData.segs.segDistTable);

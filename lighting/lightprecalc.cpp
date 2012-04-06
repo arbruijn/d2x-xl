@@ -200,7 +200,7 @@ int ComputeNearestSegmentLights (int i, int nThread)
 {
 	CSegment*			segP;
 	CDynLight*			lightP;
-	int					h, j, k, l, m, n, nMaxLights;
+	int					h, j, k, l, n, nMaxLights;
 	CFixVector			center;
 	struct tLightDist	*pDists;
 

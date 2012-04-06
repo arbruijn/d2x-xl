@@ -1061,7 +1061,10 @@ if (LoadModData (pszLevelName, bLoadTextures, 1) < 0) {
 	return -1;
 	}
 #endif
-lightManager.Setup (nLevel); 
+if (!lightManager.Setup (nLevel)) {
+	PrintLog (-1, "Not enough memory for light data\n");
+	return -1;
+	}
 /*---*/PrintLog (1, "loading endlevel data\n");
 LoadEndLevelData (nLevel);
 PrintLog (-1);
