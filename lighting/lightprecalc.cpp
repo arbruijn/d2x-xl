@@ -546,6 +546,11 @@ for (int i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i <
 
 static void CheckLightVisibility (short nLight, short nSide, short nDestSeg, fix xMaxDist, float fRange, int nThread)
 {
+#if DBG
+if ((lightManager.Lights (nLight)->info.nSegment == nDbgSeg) && (lightManager.Lights (nLight)->info.nSide == nDbgSide))
+	nDbgSeg = nDbgSeg;
+#endif
+
 	short nLightSeg = lightManager.Lights (nLight)->info.nSegment;
 
 #if DBG
@@ -565,9 +570,9 @@ if (nLightSeg == nDbgSeg)
 if (nDestSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);
+i = gameData.segs.LightVisIdx (nLight, nDestSeg);
 ubyte* flagP = &lightVis [i >> 2];
-ubyte flag = ~(3 << ((i & 3) << 1));
+ubyte flag = 3 << ((i & 3) << 1);
 
 if ((0 < dPath) || // path from light to dest blocked
 	 (SEGMENTS [nLightSeg].HasOutdoorsProp () && (nLightSeg != nDestSeg)) || // light only illuminates its own face
@@ -576,7 +581,7 @@ if ((0 < dPath) || // path from light to dest blocked
 #ifdef _OPENMP
 #	pragma omp atomic
 #endif
-	*flagP &= flag;
+	*flagP &= ~flag;
 	return;
 	}
 if (*flagP & flag) // face visible 
