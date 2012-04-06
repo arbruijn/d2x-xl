@@ -262,6 +262,7 @@ class CLightManager {
 		inline CDynLight* RenderLights (uint i) { return m_data.renderLights [i]; }
 		inline CDynLight** RenderLights (void) { return m_data.renderLights.Buffer (); }
 		inline short LightCount (uint i) { return m_data.nLights [i]; }
+		inline short GeometryLightCount (void) { return m_data.nGeometryLights; }
 		inline void SetLightCount (short nCount, uint i) { m_data.nLights [i] = nCount; }
 		inline CActiveDynLight* Active (uint i) { return m_data.active [ThreadId (i)].Buffer (); }
 		inline CDynLightIndex& Index (uint i, int nThread) { return m_data.index [0][ThreadId (nThread)]; }

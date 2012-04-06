@@ -632,7 +632,7 @@ int i = sizeof (gameData.segs.bVertVis [0]) * gameData.segs.nVertices * VERTVIS_
 if (!gameData.segs.bVertVis.Create (i)) 
 	return false;
 gameData.segs.bVertVis.Clear ();
-if (!gameData.segs.bLightVis.Create ((lightManager.m_data.nGeometryLights * LEVEL_SEGMENTS + 3) / 4))
+if (!gameData.segs.bLightVis.Create ((lightManager.GeometryLightCount () * LEVEL_SEGMENTS + 3) / 4))
 	return 0;
 gameData.segs.bLightVis.Clear ();
 return true;
