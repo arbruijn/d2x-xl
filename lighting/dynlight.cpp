@@ -378,6 +378,7 @@ light.info.bSpot = 0;
 light.info.fBoost = 0;
 light.info.bPowerup = 0;
 light.info.bAmbient = bAmbient;
+light.info.bSelf = 0;
 //0: static light
 //2: object/lightning
 //3: headlight
@@ -432,6 +433,7 @@ else if (nSegment >= 0) {
 			nDbgSeg = nDbgSeg;
 #endif
 		light.info.nType = 0;
+		light.info.bSelf = SEGMENTS [nSegment].HasOutdoorsProp ();
 		light.info.fRad = faceP ? faceP->m_info.fRads [1] / 2.0f : 0;
 		//RegisterLight (NULL, nSegment, nSide);
 		light.info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || SEGMENTS [nSegment].Side (nSide)->IsVolatile ();

@@ -544,14 +544,15 @@ for (int i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i <
 // This function checks whether segment nDestSeg has a chance to receive diffuse (direct)
 // light from the light source at (nLightSeg,nSide).
 
-static void CheckLightVisibility (short nLight, short nSide, short nDestSeg, fix xMaxDist, float fRange, int nThread)
+static void CheckLightVisibility (short nLight, short nDestSeg, fix xMaxDist, float fRange, int nThread)
 {
 #if DBG
 if ((lightManager.Lights (nLight)->info.nSegment == nDbgSeg) && (lightManager.Lights (nLight)->info.nSide == nDbgSide))
 	nDbgSeg = nDbgSeg;
 #endif
 
-	short nLightSeg = lightManager.Lights (nLight)->info.nSegment;
+	CDynLight* lightP = lightManager.Lights (nLight);
+	short nLightSeg = lightP->info.nSegment;
 
 #if DBG
 	CArray<ubyte>& lightVis = gameData.segs.bLightVis;
@@ -579,7 +580,7 @@ ubyte* flagP = &lightVis [i >> 2];
 ubyte flag = 3 << ((i & 3) << 1);
 
 if ((0 < dPath) || // path from light to dest blocked
-	 (SEGMENTS [nLightSeg].HasOutdoorsProp () && (nLightSeg != nDestSeg)) || // light only illuminates its own face
+	 (lightP->info.bSelf && (nLightSeg != nDestSeg)) || // light only illuminates its own face
 	 (CFixVector::Dist (SEGMENTS [nLightSeg].Center (), SEGMENTS [nDestSeg].Center ()) - SEGMENTS [nLightSeg].MaxRad () - SEGMENTS [nDestSeg].MaxRad () >= xMaxDist)) { // distance to great
 
 #ifdef _OPENMP
@@ -659,7 +660,7 @@ if ((lightP->info.nSegment >= 0) && (lightP->info.nSide >= 0)) {
 #if 1
 	fix xLightRange = fix (MAX_LIGHT_RANGE * lightP->info.fRange);
 	for (int i = 0; i < gameData.segs.nSegments; i++)
-		CheckLightVisibility (lightP->Index (), lightP->info.nSide, i, xLightRange, lightP->info.fRange, nThread);
+		CheckLightVisibility (lightP->Index (), i, xLightRange, lightP->info.fRange, nThread);
 #endif
 	}
 }

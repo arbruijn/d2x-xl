@@ -495,10 +495,8 @@ if (gameStates.render.nLightingMethod) {
 			break;
 		if (lightP->info.bVariable)
 			continue;
-#if 0
 		if (bLight && !lightP->Illuminate (nSegment, nSide))
 			continue;
-#endif
 #if DBG
 		if ((nDbgSeg >= 0) && (nDbgSeg == lightP->info.nSegment))
 			nDbgSeg = nDbgSeg;

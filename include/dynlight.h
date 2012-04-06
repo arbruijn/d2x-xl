@@ -76,6 +76,7 @@ class CDynLightInfo {
 		ubyte				bVariable;
 		ubyte				bPowerup;
 		ubyte				bAmbient;
+		ubyte				bSelf; // only illuminates segment face it is located at
 		sbyte				bDiffuse [MAX_THREADS];
 		CByteArray*		visibleVertices;
 	public:
@@ -102,13 +103,15 @@ class CDynLight {
 		CObject* Object (void);
 		int LightSeg (void);
 		inline short Index (void) { return info.nIndex; }
+		inline short Segment (void) { return info.nSegment; }
+		inline short Side (void) { return info.nSide; }
 		int SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const int nLevel, int nThread);
 		int SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const int nLevel, int nThread);
 		int LightPathLength (const short nLightSeg, const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int bFastRoute, int nThread);
 		int Contribute (const short nDestSeg, const short nDestSide, const short nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
 							 fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread);
 		inline int Illuminate (short nSegment, short nSide) { 
-			return !info.bAmbient || (nSegment < 0) || ((info.nSegment == nSegment) && ((nSide < 0) || (info.nSide == nSide))); 
+			return !info.bSelf || (nSegment < 0) || ((info.nSegment == nSegment) && ((nSide < 0) || (info.nSide == nSide))); 
 			}
 		int ComputeVisibleVertices (int nThread);
 		int Compare (CDynLight& other);
