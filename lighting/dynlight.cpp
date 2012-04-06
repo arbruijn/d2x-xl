@@ -1034,18 +1034,17 @@ return gameStates.render.bPerPixelLighting;
 int CLightManager::Setup (int nLevel)
 {
 SetMethod ();
-//if (!gameStates.app.bNostalgia) 
-	{
-	gameData.render.fBrightness = 1.0f;
-	messageBox.Show (TXT_PREPARING);
-	lightManager.AddGeometryLights ();
-	ComputeNearestLights (nLevel);
-	lightmapManager.Setup (nLevel);
-	messageBox.Clear ();
-	}
-GatherStaticLights (nLevel);
+gameData.render.fBrightness = 1.0f;
+messageBox.Show (TXT_PREPARING);
+lightManager.AddGeometryLights ();
 m_data.nGeometryLights = m_data.nLights [0];
-return gameData.segs.bLightVis.Create ((m_data.nGeometryLights * LEVEL_SEGMENTS + 3) / 4) != NULL;
+if (!gameData.segs.bLightVis.Create ((m_data.nGeometryLights * LEVEL_SEGMENTS + 3) / 4))
+	return 0;
+ComputeNearestLights (nLevel);
+lightmapManager.Setup (nLevel);
+messageBox.Clear ();
+GatherStaticLights (nLevel);
+return 1;
 }
 
 // ----------------------------------------------------------------------------------------------
