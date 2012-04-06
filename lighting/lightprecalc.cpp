@@ -37,7 +37,7 @@ int SegmentIsVisible (CSegment *segP, CTransformation& transformation, int nThre
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 30
+#define LIGHT_DATA_VERSION 31
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis.Buffer () ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
@@ -219,8 +219,7 @@ for (segP = SEGMENTS + i; i < j; i++, segP++) {
 	center = segP->Center ();
 	lightP = lightManager.Lights ();
 	for (l = n = 0; l < lightManager.LightCount (0); l++, lightP++) {
-		m = (lightP->info.nSegment < 0) ? OBJECTS [lightP->info.nObject].info.nSegment : lightP->info.nSegment;
-		if (!gameData.segs.LightVis (m, i))
+		if (!((lightP->info.nSegment < 0) ? gameData.segs.SegVis (OBJECTS [lightP->info.nObject].info.nSegment, i) : gameData.segs.LightVis (lightP->Index (), i)))
 			continue;
 		h = int (CFixVector::Dist (center, lightP->info.vPos) - F2X (lightP->info.fRad));
 		if (h < 0)
@@ -331,37 +330,32 @@ return 1;
 inline int SetVertVis (short nSegment, short nVertex, ubyte b)
 {
 if (gameData.segs.bVertVis.Buffer ()) {
-#ifdef _OPENMP
 	ubyte* flagP = gameData.segs.bVertVis.Buffer (nSegment * VERTVIS_FLAGS + (nVertex >> 3));
 	ubyte flag = 1 << (nVertex & 7);
+#ifdef _OPENMP
 #	pragma omp atomic
-	*flagP |= flag;
-#else
-	gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 3)] |= (1 << (nVertex & 7));
 #endif
+	*flagP |= flag;
 	}
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-static void SetSegAndVertVis (short nStartSeg, short nSegment, int bLights)
+static void SetSegVis (short nStartSeg, short nSegment)
 {
-#if FAST_LIGHTVIS
-if (!bLights && gameData.segs.SegVis (nStartSeg, nSegment))
+if (gameData.segs.SegVis (nStartSeg, nSegment))
 	return;
-while (!gameData.segs.SetSegVis (nStartSeg, nSegment, bLights))
+while (!gameData.segs.SetSegVis (nStartSeg, nSegment))
 	;
-if (!bLights)
-	return;
-#else
-if (!bLights) {
-	if (!gameData.segs.SegVis (nStartSeg, nSegment))
-		while (!gameData.segs.SetSegVis (nStartSeg, nSegment, bLights))
-			;
-	return;
-	}
-#endif
+}
+
+//------------------------------------------------------------------------------
+
+static void SetLightVis (short nLight, short nSegment)
+{
+while (!gameData.segs.SetLightVis (nLight, nSegment))
+	;
 
 	tSegFaces*		segFaceP = SEGFACES + nSegment;
 	CSegFace*		faceP;
@@ -376,12 +370,12 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide
 	if (gameStates.render.bTriangleMesh) {
 		for (nTris = faceP->m_info.nTris, triP = FACES.tris + faceP->m_info.nTriIndex; nTris; nTris--, triP++)
 			for (i = 0; i < 3; i++)
-				while (!SetVertVis (nStartSeg, triP->index [i], 1))
+				while (!SetVertVis (nLight, triP->index [i], 1))
 					;
 		}
 	else {
 		for (i = 0; i < 4; i++)
-			while (!SetVertVis (nStartSeg, faceP->m_info.index [i], 1))
+			while (!SetVertVis (nLight, faceP->m_info.index [i], 1))
 				;
 		}
 	}
@@ -392,22 +386,28 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide
 // Do this for each side of the current segment, using the side Normal (s) as forward vector
 // of the viewer
 
-static void ComputeSingleSegmentVisibility (int nThread, short nStartSeg, short nFirstSide = 0, short nLastSide = 5, int bLights = 0)
+static void ComputeSingleSegmentVisibility (int nThread, short nStartSeg, short nFirstSide, short nLastSide, int bLights)
 {
 	CSegment*			startSegP;
 	CSide*				sideP;
-	short					nSegment, nSide,i;
+	short					nSegment, nSide, nLight, i;
 	CFixVector			fVec, uVec, rVec;
 	CObject				viewer;
 	CTransformation	transformation;
+	CVisibilityData&	visibility = gameData.render.mine.visibility [nThread];
 
-//G3_SLEEP (0);
 ogl.SetTransform (1);
 #if DBG
 if (nStartSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-SetSegAndVertVis (nStartSeg, nStartSeg, bLights);
+if (!bLights) 
+	SetSegVis (nStartSeg, nStartSeg);
+else {
+	nLight = nStartSeg;
+	nStartSeg = lightManager.Lights (nLight)->Index ();
+	SetLightVis (nLight, nStartSeg);
+	}
 startSegP = SEGMENTS + nStartSeg;
 sideP = startSegP->m_sides + nFirstSide;
 	
@@ -420,27 +420,10 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #endif
 	fVec = sideP->m_normals [2];
 	if (!bLights) {
-#if 0
-		viewer.info.position.vPos = sideP->Center () + fVec;
-#else
 		viewer.info.position.vPos = SEGMENTS [nStartSeg].Center ();// + fVec;
-#endif
 		fVec.Neg (); // point from segment center outwards
 		rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
 		CFixVector::Normalize (rVec);
-#if 0 //DBG
-		int i;
-		do {
-			for (i = 0; i < 4; i++) {
-				CFixVector v = VERTICES [sideP->m_corners [i]] - viewer.info.position.vPos;
-				CFixVector::Normalize (v);
-				if (CFixVector::Dot (v, fVec) < 46341) { // I2X * cos (90 / 2), where 90 is the view angle
-					viewer.info.position.vPos -= fVec;
-					break;
-					}
-				}
-			} while (i < 4);
-#endif
 		}
 	else { // point from side center across the segment
 		if (bLights == 5) { // from side center, pointing to normal
@@ -463,37 +446,14 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			rVec = CFixVector::Avg (rVec, h);
 			CFixVector::Normalize (rVec);
 			}
-#if 0
-		if (gameStates.render.bPerPixelLighting) {
-			int nChildSeg = startSegP->m_children [nSide];
-			if (0 <= nChildSeg) {
-				gameData.segs.SetSegVis (nStartSeg, nChildSeg, bLights);
-				CSegment* childP = SEGMENTS + nChildSeg;
-				for (int nChildSide = 0; nChildSide < 6; nChildSide++) {
-					if (0 <= (nSegment = childP->m_children [nSide])) {
-						while (!gameData.segs.SetSegVis (nChildSeg, nSegment, bLights))
-							;
-						}
-					}
-				}
-			}
-#endif
 		}
 
-#if 0 //DBG
-		viewer.info.position.mOrient = CFixMatrix::Create (&fVec, 0);
-#else
 		CFixVector::Cross (uVec, fVec, rVec); // create uVec perpendicular to fVec and rVec
 		CFixVector::Cross (rVec, fVec, uVec); // adjust rVec to be perpendicular to fVec and uVec (eliminate rounding errors)
 		CFixVector::Cross (uVec, fVec, rVec); // adjust uVec to be perpendicular to fVec and rVec (eliminate rounding errors)
 		viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
-#endif
 
 	transformation.ComputeAspect (1024, 1024);
-	//gameStates.render.bRenderIndirect = -1;
-	//gameStates.render.nShadowMap = -1;
-	//G3StartFrame (transformation, 0, 0, 0);
-	//RenderStartFrame ();
 	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, -1, 0, false);
 
 #if DBG
@@ -501,9 +461,9 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 	gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
-	gameData.render.mine.visibility [nThread].BuildSegList (transformation, nStartSeg, 0, true);
-	for (i = 0; i < gameData.render.mine.visibility [nThread].nSegments; i++) {
-		if (0 > (nSegment = gameData.render.mine.visibility [nThread].segments [i]))
+	visibility.BuildSegList (transformation, nStartSeg, 0, true);
+	for (i = 0; i < visibility.nSegments; i++) {
+		if (0 > (nSegment = visibility.segments [i]))
 			continue;
 #if DBG
 		if (nSegment == nDbgSeg)
@@ -511,20 +471,16 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		if (nSegment >= gameData.segs.nSegments)
 			continue;
 #endif
-#if 1
-#	if 0
-		if (bLights && !gameData.segs.SegVis (nStartSeg, nSegment))
-			continue;
-#	endif
 		if (!SegmentIsVisible (SEGMENTS + nSegment, transformation, nThread))
 			continue;
 		if (bLights && (gameData.segs.SegDist (nStartSeg, nSegment) < 0))
 			continue;
-#endif
-		SetSegAndVertVis (nStartSeg, nSegment, bLights);
+		if (bLights)
+			SetLightVis (nLight, nSegment);
+		else
+			SetSegVis (nStartSeg, nStartSeg);
 		}
 	gameStates.render.nShadowPass = 0;
-	//G3EndFrame (transformation, 0);
 	gameStates.render.nShadowMap = 0;
 	}
 ogl.SetTransform (0);
@@ -543,7 +499,7 @@ else
 if (startI < 0)
 	startI = 0;
 for (i = startI; i < endI; i++)
-	ComputeSingleSegmentVisibility (0, i);
+	ComputeSingleSegmentVisibility (0, i, 0, 5, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -553,7 +509,7 @@ void ComputeSegmentVisibilityMT (int startI, int nThread)
 	int endI;
 
 for (int i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i < endI; i++)
-	ComputeSingleSegmentVisibility (nThread, i);
+	ComputeSingleSegmentVisibility (nThread, i, 0, 5, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -562,20 +518,16 @@ for (int i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i <
 
 static void CheckLightVisibility (short nLightSeg, short nSide, short nDestSeg, fix xMaxDist, float fRange, int nThread)
 {
-#if 0
-	int bVisible = gameData.segs.LightVis (nLightSeg, nDestSeg);
-if (!bVisible)
-	return;
+#if DBG
+	CArray<ubyte>& lightVis = gameData.segs.bLightVis;
 #else
-	int bVisible = gameData.segs.SegVis (nLightSeg, nDestSeg);
+	ubyte*			lightVis = gameData.segs.bLightVis.Buffer ();
 #endif
+
+	int bVisible = gameData.segs.SegVis (nLightSeg, nDestSeg);
 	int i;
 
-#if FAST_LIGHTVIS == 2
-	fix dPath = gameData.segs.SegDist (nLightSeg, nDestSeg);
-#else
 	fix dPath = 0;
-#endif
 
 #if DBG
 if (nLightSeg == nDbgSeg)
@@ -584,94 +536,54 @@ if (nDestSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);
+ubyte* flagP = &lightVis [i >> 2];
+ubyte flag = ~(3 << ((i & 3) << 1));
+
 if ((0 < dPath) || // path from light to dest blocked
 	 (SEGMENTS [nLightSeg].HasOutdoorsProp () && (nLightSeg != nDestSeg)) || // light only illuminates its own face
 	 (CFixVector::Dist (SEGMENTS [nLightSeg].Center (), SEGMENTS [nDestSeg].Center ()) - SEGMENTS [nLightSeg].MaxRad () - SEGMENTS [nDestSeg].MaxRad () >= xMaxDist)) { // distance to great
-#if FAST_LIGHTVIS // segVis is initialized to zero
-#	ifdef _OPENMP
-	ubyte* flagP = &gameData.segs.bSegVis [1][i >> 2];
-	ubyte flag = ~(3 << ((i & 3) << 1));
-#		pragma omp atomic
+
+#ifdef _OPENMP
+#	pragma omp atomic
+#endif
 	*flagP &= flag;
-#	else
-	gameData.segs.bSegVis [1][i >> 2] &= ~(3 << ((i & 3) << 1)); // no light contribution
-#	endif
 	return;
-#endif
 	}
-#if FAST_LIGHTVIS
-if (gameData.segs.bSegVis [1][i >> 2] & (3 << ((i & 3) << 1))) // face visible 
+if (*flagP & flag) // face visible 
 	return;
-#endif
 
 	CHitQuery		hitQuery (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nLightSeg, -1, 1, 0);
 	CHitResult		hitResult;
-#if !FAST_POINTVIS
-	CFixVector		p0;
-#endif
 	CFloatVector	v0, v1;
 	CSegment*		segP = SEGMENTS + nLightSeg;
 	CSide*			sideP = segP->m_sides;
 	fix				d, dMin = 0x7FFFFFFF;
 
-// cast rays from light segment to target segment and see if at least one of them isn't blocked by geometry
+// cast rays from light segment (corners and center) to target segment and see if at least one of them isn't blocked by geometry
 segP = SEGMENTS + nDestSeg;
 for (i = 4; i >= -4; i--) {
-#if FAST_POINTVIS
 	if (i == 4) 
 		v0.Assign (sideP->Center ());
 	else if (i >= 0) 
 		v0 = FVERTICES [sideP->m_corners [i]];
 	else 
 		v0 = CFloatVector::Avg (FVERTICES [sideP->m_corners [4 + i]], FVERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
-#else
-	if (i == 4) 
-		hitQuery.p0 = &sideP->Center ();
-	else if (i >= 0) {
-		hitQuery.p0 = &VERTICES [sideP->m_corners [i]];
-		}
-	else {
-		p0 = CFixVector::Avg (VERTICES [sideP->m_corners [4 + i]], VERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
-		hitQuery.p0 = &p0;
-		}
-#endif
 	for (int j = 8; j >= 0; j--) {
-#	if FAST_POINTVIS
 		if (j == 8)
 			v1.Assign (*hitQuery.p1);
 		else
 			v1 = FVERTICES [segP->m_vertices [j]];
-#else
-		hitQuery.p1 = (j == 8) ? &segP->Center () : &VERTICES [segP->m_vertices [j]];
-#endif
 		if ((d = CFixVector::Dist (*hitQuery.p0, *hitQuery.p1)) > xMaxDist)
 			continue;
 		if (dMin > d)
 			dMin = d;
-#if 0
-		int canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, 0);
-		int nHitType = FindHitpoint (&hitQuery, &hitResult);
-		if (canSee != (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg)))) {
-			canSee = PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, 0);
-			nHitType = FindHitpoint (&hitQuery, &hitResult);
-			}
-		if (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg))) {
-#else
-#	if FAST_POINTVIS
 		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, nThread)) {
-#	else
-		int nHitType = FindHitpoint (&hitQuery, &hitResult);
-		if (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg))) {
-#	endif
-#endif
 			i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);
+			flagP = &lightVis [i >> 2];
+			flag = (2 << ((i & 3) << 1));
 #ifdef _OPENMP
-ubyte* flagP = &gameData.segs.bSegVis [1][i >> 2];
-ubyte flag = (2 << ((i & 3) << 1));
 #	pragma omp atomic
-*flagP |= flag;
-#else
-			gameData.segs.bSegVis [1][i >> 2] |= (2 << ((i & 3) << 1)); // diffuse + ambient
+			*flagP |= flag;
 #endif
 			return;
 			}
@@ -680,21 +592,14 @@ ubyte flag = (2 << ((i & 3) << 1));
 
 if (dMin > xMaxDist)
 	return;
-#if FAST_LIGHTVIS == 2
-dMin = (dMin + dPath) / 2;
-if (dMin > xMaxDist)
-	return;
-#endif
 
 i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);
+flagP = &lightVis [i >> 2];
+flag = (1 << ((i & 3) << 1));
 #ifdef _OPENMP
-ubyte* flagP = &gameData.segs.bSegVis [1][i >> 2];
-ubyte flag = (1 << ((i & 3) << 1));
 #	pragma omp atomic
-*flagP |= flag;
-#else
-gameData.segs.bSegVis [1][i >> 2] |= (1 << ((i & 3) << 1)); // diffuse
 #endif
+*flagP |= flag;
 }
 
 //------------------------------------------------------------------------------
@@ -744,8 +649,8 @@ else
 if (startI < 0)
 	startI = 0;
 // every segment can see itself and its neighbours
-for (int i = endI - startI, j = 0; j < i; j++)
-	ComputeSingleLightVisibility (j, 0);
+for (int i = startI; i < endI; i++)
+	ComputeSingleLightVisibility (i, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -832,8 +737,8 @@ if (bOk)
 #endif
 			;
 if (bOk)
-	bOk = (gameData.segs.bSegVis [0].Read (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
-			(gameData.segs.bSegVis [1].Read (cf, gameData.segs.LightVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
+	bOk = (gameData.segs.bSegVis.Read (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
+			(gameData.segs.bLightVis.Read (cf, size_t ((ldh.nLights * ldh.nSegments + 3) / 4), 0, ldh.bCompressed) == size_t ((ldh.nLights * ldh.nSegments + 3) / 4)) &&
 			LoadSegDistData (cf, ldh) &&
 			(lightManager.NearestSegLights  ().Read (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 			(lightManager.NearestVertLights ().Read (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
@@ -874,8 +779,8 @@ if (!gameStates.app.bCacheLights)
 if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
-		(gameData.segs.bSegVis [0].Write (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
-		(gameData.segs.bSegVis [1].Write (cf, gameData.segs.LightVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
+		(gameData.segs.bSegVis.Write (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
+		(gameData.segs.bLightVis.Write (cf, size_t ((ldh.nLights * ldh.nSegments + 3) / 4), 0, ldh.bCompressed) == size_t ((ldh.nLights * ldh.nSegments + 3) / 4)) &&
 		SaveSegDistData (cf, ldh) &&
 		(lightManager.NearestSegLights  ().Write (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 		(lightManager.NearestVertLights ().Write (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0, ldh.bCompressed) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));

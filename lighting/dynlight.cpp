@@ -318,7 +318,6 @@ return j ? i / j : 1;
 int CLightManager::Add (CSegFace* faceP, CFloatVector *colorP, fix xBrightness, short nSegment,
 							   short nSide, short nObject, short nTexture, CFixVector *vPos, ubyte bAmbient)
 {
-	CDynLight*	lightP;
 	short			h, i;
 	float			fBrightness = X2F (xBrightness);
 #if USE_OGL_LIGHTS
@@ -367,46 +366,48 @@ if (m_data.nLights [0] >= MAX_OGL_LIGHTS) {
 	return -1;	//too many lights
 	}
 i = m_data.nLights [0]; //LastEnabledDynLight () + 1;
-lightP = m_data.lights + i;
-lightP->info.faceP = faceP;
-lightP->info.nSegment = nSegment;
-lightP->info.nSide = nSide;
-lightP->info.nObject = nObject;
-lightP->info.nPlayer = -1;
-lightP->info.bState = 1;
-lightP->info.bSpot = 0;
-lightP->info.fBoost = 0;
-lightP->info.bPowerup = 0;
-lightP->info.bAmbient = bAmbient;
+CDynLight& light = m_data.lights + i;
+light.info.nIndex = i;
+light.info.faceP = faceP;
+light.info.nSegment = nSegment;
+light.info.nSide = nSide;
+light.info.nObject = nObject;
+light.info.nPlayer = -1;
+light.info.bState = 1;
+light.info.bSpot = 0;
+light.info.fBoost = 0;
+light.info.bPowerup = 0;
+light.info.bAmbient = bAmbient;
 //0: static light
 //2: object/lightning
 //3: headlight
 if (nObject >= 0) {
 	CObject *objP = OBJECTS + nObject;
 	//HUDMessage (0, "Adding object light %d, type %d", m_data.nLights [0], objP->info.nType);
-	lightP->info.nType = 2;
+	light.info.nType = 2;
+	light.info.bVariable = 1;
 	if (objP->info.nType == OBJ_POWERUP) {
 		int id = objP->info.nId;
 		if ((id == POW_EXTRA_LIFE) || (id == POW_ENERGY) || (id == POW_SHIELD_BOOST) ||
 			 (id == POW_HOARD_ORB) || (id == POW_MONSTERBALL) || (id == POW_INVUL))
-			lightP->info.bPowerup = 1;
+			light.info.bPowerup = 1;
 		else
-			lightP->info.bPowerup = 2;
+			light.info.bPowerup = 2;
 #if 0
-		if (lightP->info.bPowerup > gameData.render.nPowerupFilter)
+		if (light.info.bPowerup > gameData.render.nPowerupFilter)
 			return -1;
 #endif
 		}
-	lightP->info.vPos = objP->info.position.vPos;
-	lightP->info.fRad = 0; //X2F (OBJECTS [nObject].size) / 2;
+	light.info.vPos = objP->info.position.vPos;
+	light.info.fRad = 0; //X2F (OBJECTS [nObject].size) / 2;
 	if (fBrightness > 1) {
 		if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
-			lightP->info.fBoost = 1;
-			lightP->info.fRad = fBrightness;
+			light.info.fBoost = 1;
+			light.info.fRad = fBrightness;
 			}
 		else if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID)) {
-			lightP->info.fBoost = 1;
-			lightP->info.fRad = 2 * fBrightness;
+			light.info.fBoost = 1;
+			light.info.fRad = 2 * fBrightness;
 			}
 		}
 	m_data.owners [nObject] = m_data.nLights [0];
@@ -417,43 +418,43 @@ else if (nSegment >= 0) {
 	CSide			*sideP = SEGMENTS [nSegment].m_sides + nSide;
 #endif
 	if (nSide < 0) {
-		lightP->info.nType = 2;
-		lightP->info.bVariable = 1;
-		lightP->info.fRad = 0;
+		light.info.nType = 2;
+		light.info.bVariable = 1;
+		light.info.fRad = 0;
 		if (vPos)
-			lightP->info.vPos = *vPos;
+			light.info.vPos = *vPos;
 		else
-			lightP->info.vPos = SEGMENTS [nSegment].Center ();
+			light.info.vPos = SEGMENTS [nSegment].Center ();
 		}
 	else {
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
-		lightP->info.nType = 0;
-		lightP->info.fRad = faceP ? faceP->m_info.fRads [1] / 2.0f : 0;
+		light.info.nType = 0;
+		light.info.fRad = faceP ? faceP->m_info.fRads [1] / 2.0f : 0;
 		//RegisterLight (NULL, nSegment, nSide);
-		lightP->info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || SEGMENTS [nSegment].Side (nSide)->IsVolatile ();
-		m_data.nVariable += lightP->info.bVariable;
+		light.info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || SEGMENTS [nSegment].Side (nSide)->IsVolatile ();
+		m_data.nVariable += light.info.bVariable;
 		CSide* sideP = SEGMENTS [nSegment].m_sides + nSide;
-		lightP->info.vPos = sideP->Center ();
+		light.info.vPos = sideP->Center ();
 		CFixVector vOffs = sideP->m_normals [2];
-		lightP->info.vDirf.Assign (vOffs);
-		CFloatVector::Normalize (lightP->info.vDirf);
+		light.info.vDirf.Assign (vOffs);
+		CFloatVector::Normalize (light.info.vDirf);
 #if 0
 		if (gameStates.render.bPerPixelLighting) {
 			vOffs *= I2X (1) / 64;
-			lightP->info.vPos += vOffs;
+			light.info.vPos += vOffs;
 			}
 #endif
 		}
 	}
 else {
-	lightP->info.nType = 3;
-	lightP->info.bVariable = 0;
+	light.info.nType = 3;
+	light.info.bVariable = 0;
 	}
-lightP->info.bOn = 1;
-lightP->bTransform = 1;
+light.info.bOn = 1;
+light.bTransform = 1;
 SetColor (m_data.nLights [0], colorP->Red (), colorP->Green (), colorP->Blue (), fBrightness);
 return m_data.nLights [0]++;
 }
@@ -726,7 +727,7 @@ if ((nLightSeg >= 0) && (nDestSeg >= 0)) {
 				return 0;
 			info.bDiffuse [nThread] = 1;
 			}
-		else if (0 > (info.bDiffuse [nThread] = gameData.segs.LightVis (nLightSeg, nDestSeg)))
+		else if (0 > (info.bDiffuse [nThread] = gameData.segs.LightVis (Index (), nDestSeg)))
 			return 0;
 		}
 	}
@@ -823,8 +824,25 @@ return 1;
 
 void CLightManager::Sort (void)
 {
+#if DBG
+for (int i = 0; i < m_data.nLights [0]; i++) {
+	if ((m_data.lights [i].info.nSegment == nDbgSeg) && (m_data.lights [i].info.nSide == nDbgSide)) {
+		nDbgSeg = nDbgSeg;
+		break;
+		}
+	}
+#endif
 CQuickSort<CDynLight> qs;
 qs.SortAscending (m_data.lights.Buffer (), 0, m_data.nLights [0] - 1);
+#if DBG
+for (int i = 0; i < m_data.nLights [0]; i++) {
+	m_data.lights [i].info.nIndex = i;
+	if ((m_data.lights [i].info.nSegment == nDbgSeg) && (m_data.lights [i].info.nSide == nDbgSide)) {
+		nDbgSeg = nDbgSeg;
+		break;
+		}
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1013,7 +1031,7 @@ return gameStates.render.bPerPixelLighting;
 
 // ----------------------------------------------------------------------------------------------
 
-void CLightManager::Setup (int nLevel)
+int CLightManager::Setup (int nLevel)
 {
 SetMethod ();
 //if (!gameStates.app.bNostalgia) 
@@ -1026,6 +1044,8 @@ SetMethod ();
 	messageBox.Clear ();
 	}
 GatherStaticLights (nLevel);
+m_data.nGeometryLights = m_data.nLights [0];
+return gameData.segs.bLightVis.Create ((m_data.nGeometryLights * LEVEL_SEGMENTS + 3) / 4) != NULL;
 }
 
 // ----------------------------------------------------------------------------------------------

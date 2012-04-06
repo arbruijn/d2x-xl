@@ -252,7 +252,7 @@ if (nVertex == nDbgVertex)
 #else
 		CFixVector vLightToVertex = vVertex - lightP->info.vPos;
 		fix xLightDist = CFixVector::Normalize (vLightToVertex.Mag ());
-		if ((lightP->info.bDiffuse [nThread] = gameData.segs.LightVis (lightP->info.nSegment, nSegment) && lightP->SeesPoint (vNormal, &vLightToVertex)) || (nSegment < 0))
+		if ((lightP->info.bDiffuse [nThread] = gameData.segs.LightVis (lightP->Index (), nSegment) && lightP->SeesPoint (vNormal, &vLightToVertex)) || (nSegment < 0))
 			lightP->render.xDistance [nThread] = fix (xLightDist / lightP->info.fRange);
 		else if (nSegment >= 0) {
 			lightP->render.xDistance [nThread] = lightP->LightPathLength (nSegment, vVertex);
@@ -423,7 +423,7 @@ if (gameStates.render.nLightingMethod) {
 		short nLightSeg = lightP->info.nSegment;
 		if (nLightSeg >= 0) 
 			lightP->info.bDiffuse [nThread] = (lightP->info.nSide >= 0) 
-													 ? gameData.segs.LightVis (lightP->info.nSegment, nSegment) 
+													 ? gameData.segs.LightVis (lightP->Index (), nSegment) 
 													 : gameData.segs.SegVis (lightP->info.nSegment, nSegment);
 		else if ((lightP->info.nObject >= 0) && ((lightP->info.nSegment = OBJECTS [lightP->info.nObject].info.nSegment) >= 0))
 			lightP->info.bDiffuse [nThread] = gameData.segs.SegVis (lightP->info.nSegment, nSegment);
@@ -495,8 +495,10 @@ if (gameStates.render.nLightingMethod) {
 			break;
 		if (lightP->info.bVariable)
 			continue;
+#if 0
 		if (bLight && !lightP->Illuminate (nSegment, nSide))
 			continue;
+#endif
 #if DBG
 		if ((nDbgSeg >= 0) && (nDbgSeg == lightP->info.nSegment))
 			nDbgSeg = nDbgSeg;
@@ -512,7 +514,7 @@ if (gameStates.render.nLightingMethod) {
 			continue;
 #else
 		else {
-			lightP->info.bDiffuse [nThread] = gameData.segs.LightVis (lightP->info.nSegment, nSegment);
+			lightP->info.bDiffuse [nThread] = gameData.segs.LightVis (lightP->Index (), nSegment);
 			CFixVector vLightToPixel = *vPixelPos - lightP->info.vPos;
 			fix xLightDist = CFixVector::Normalize (vLightToPixel);
 			lightP->render.xDistance [nThread] = (fix) (float (xLightDist) / lightP->info.fRange);

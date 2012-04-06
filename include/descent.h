@@ -1956,8 +1956,9 @@ class CSegmentData {
 		float							fRad;
 		CArray<CFixVector>		segCenters [2];
 		CArray<CFixVector>		sideCenters;
-		CArray<ubyte>				bSegVis [2];
+		CArray<ubyte>				bSegVis;
 		CArray<ubyte>				bVertVis;
+		CArray<ubyte>				bLightVis;
 		CArray<CSegDistList>		segDistTable;
 		CArray<short>				vertexSegments; // all segments using this vertex
 		int							nVertices;
@@ -1994,39 +1995,17 @@ class CSegmentData {
 
 		inline int SegVis (int i, int j) {
 			i = SegVisIdx (i, j);	// index in triangular matrix, enforce j <= i
-			return (i >= 0) && (bSegVis [0][i >> 3] & (1 << (i & 7))) != 0;
+			return (i >= 0) && (bSegVis [i >> 3] & (1 << (i & 7))) != 0;
 			}
 
-		inline int LightVisSize (int nElements = 0) {
-			if (!nElements)
-				nElements = nSegments;
-			return (QUADMATSIZE (nSegments) + 3) / 4;
-			}
-
-		inline int LightVisIdx (int i, int j) {
-			return QUADMATIDX (i, j, nSegments);
-			}
-
-		inline sbyte LightVis (int i, int j) {
-			i = LightVisIdx (i, j);
-			return sbyte (((bSegVis [1][i >> 2] >> ((i & 3) << 1)) & 3) - 1);
-			}
-
-		inline int SetSegVis (short nSrcSeg, short nDestSeg, int bLights)	{
-			if (bLights) {
-				int i = LightVisIdx (nSrcSeg, nDestSeg);
+		inline int SetSegVis (short nSrcSeg, short nDestSeg) {
+			int i = LightVisIdx (nSrcSeg, nDestSeg);
+			ubyte* flagP = &bSegVis [i >> 3];
+			ubyte flag = 1 << (i & 7);
 #ifdef _OPENMP
 #	pragma omp atomic
 #endif
-				bSegVis [1][i >> 2] |= 2 << ((i & 3) << 1);
-				}
-			else {
-				int i = SegVisIdx (nSrcSeg, nDestSeg);
-#ifdef _OPENMP
-#	pragma omp atomic
-#endif
-				bSegVis [0][i >> 3] |= 1 << (i & 7);
-				}
+			*flagP |= flag;
 			return 1;
 			}
 
@@ -2046,6 +2025,28 @@ class CSegmentData {
 
 		inline void SetSegDist (ushort i, ushort j, fix xDistance) {
 			segDistTable [i].Set (j, xDistance);
+			}
+
+		inline int LightVisIdx (int i, int j) {
+			return QUADMATIDX (i, j, nSegments);
+			}
+
+		inline sbyte LightVis (int nLight, int nSegment) {
+			int i = LightVisIdx (nLight, nSegment);
+			if ((i >> 2) >= (int) bLightVis.Length ())
+				return 0;
+			return sbyte (((bLightVis [i >> 2] >> ((i & 3) << 1)) & 3) - 1);
+			}
+
+		inline int SetLightVis (int nLight, int nSegment) {
+			int i = LightVisIdx (nLight, nSegment);
+			ubyte* flagP = &bLightVis [i >> 2];
+			ubyte flag = 2 << ((i & 3) << 1);
+#ifdef _OPENMP
+#	pragma omp atomic
+#endif
+			*flagP |= flag;
+			return 1;
 			}
 
 		inline bool BuildGrid (int nSize, int bSkyBox) { return grids [bSkyBox].Create (nSize, bSkyBox); }

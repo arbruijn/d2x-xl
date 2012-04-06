@@ -64,6 +64,7 @@ class CDynLightInfo {
 		float				fRad;
 		float				fSpotAngle;
 		float				fSpotExponent;
+		short				nIndex;
 		short				nSegment;
 		short				nSide;
 		short				nObject;
@@ -100,12 +101,13 @@ class CDynLight {
 		void Destroy (void);
 		CObject* Object (void);
 		int LightSeg (void);
+		inline short Index (void) { return info.nIndex; }
 		int SeesPoint (const short nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const int nLevel, int nThread);
 		int SeesPoint (const short nSegment, const short nSide, CFixVector* vPoint, const int nLevel, int nThread);
 		int LightPathLength (const short nLightSeg, const short nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int bFastRoute, int nThread);
 		int Contribute (const short nDestSeg, const short nDestSide, const short nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
 							 fix xMaxLightRange, float fRangeMod, fix xDistMod, int nThread);
-		inline bool Illuminate (short nSegment, short nSide) { 
+		inline int Illuminate (short nSegment, short nSide) { 
 			return !info.bAmbient || (nSegment < 0) || ((info.nSegment == nSegment) && ((nSide < 0) || (info.nSide == nSide))); 
 			}
 		int ComputeVisibleVertices (int nThread);
@@ -180,6 +182,7 @@ class CDynLightData {
 		COglMaterial		material;
 		CFBO					fbo;
 		short					nLights [3];
+		short					nGeometryLights;
 		short					nVariable;
 		short					nDynLights;
 		short					nVertLights;
@@ -213,7 +216,7 @@ class CLightManager {
 		void Init (void);
 		void Destroy (void);
 		bool Create (void);
-		void Setup (int nLevel);
+		int Setup (int nLevel);
 
 		void SetColor (short nLight, float red, float green, float blue, float fBrightness);
 		void SetPos (short nObject);
@@ -271,7 +274,6 @@ class CLightManager {
 		inline void ResetIndex (void) { m_data.ResetIndex (); }
 		//inline void SetShadowSource (CDynLight& source, int i) { m_data.shadowSources [i] = source; }
 		//inline CDynLight& GetShadowSource (int i) { return m_data.shadowSources [i]; }
-
 	private:
 		static int IsTriggered (short nSegment, short nSide, bool bOppSide = false);
 		static int IsFlickering (short nSegment, short nSide);

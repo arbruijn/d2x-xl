@@ -356,16 +356,16 @@ int ComputeVertexColor (int nSegment, int nSide, int nVertex, CFloatVector3 *col
 	CDynLightIndex*	sliP = &lightManager.Index (0, nThread);
 	CActiveDynLight*	activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
 	CVertColorData		colorData = *colorDataP;
-	int					i, j, nLights, nType,
+	int					i, j, nType, nLights, 
 							bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
 							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform,
 							nSaturation = gameOpts->render.color.nSaturation;
-	int					nBrightness, nMaxBrightness = 0;
+	int					nMaxBrightness = 0;
 	int					bDiffuse, bSpecular = gameStates.render.bSpecularColor && (colorData.fMatShininess > 0.0f);
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
 	CFloatVector3		lightDir, lightRayDir, lightPos, vertPos, vReflect;
-	CFloatVector3		lightColor, colorSum, vertColor = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
-
+	CFloatVector3		lightColor, colorSum, vertColor;
+	
 #if DBG
 if (nThread == 0)
 	nThread = nThread;
@@ -417,8 +417,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 #endif
 	if (lightP->info.bVariable && gameData.render.vertColor.bDarkness)
-		continue;
-	if (!lightP->Illuminate (nSegment, nSide))
 		continue;
 	memcpy (&lightColor.v.color, &lightP->info.color, sizeof (lightColor.v.color));
 	if (lightColor.IsZero ())
@@ -565,11 +563,13 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	vertColor *= lightColor;
 	vertColor /= fAttenuation;
 
-	if ((nSaturation < 2) || gameStates.render.bHaveLightmaps) {//sum up color components
+#if 0
+	colorSum += vertColor;
+#else
+	if ((nSaturation < 2) || gameStates.render.bHaveLightmaps)//sum up color components
 		colorSum += vertColor;
-		}
 	else {	//use max. color components
-		nBrightness = sqri ((int) (vertColor.Red () * 1000)) + sqri ((int) (vertColor.Green () * 1000)) + sqri ((int) (vertColor.Blue () * 1000));
+		int nBrightness = sqri ((int) (vertColor.Red () * 1000)) + sqri ((int) (vertColor.Green () * 1000)) + sqri ((int) (vertColor.Blue () * 1000));
 		if (nMaxBrightness < nBrightness) {
 			nMaxBrightness = nBrightness;
 			colorSum = vertColor;
@@ -583,8 +583,15 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 				colorSum.Blue () = vertColor.Blue ();
 			}
 		}
+#endif
 	j++;
 	}
+
+#if DBG
+if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
+	nDbgVertex = nDbgVertex;
+#endif
+	
 if (j) {
 	if ((nSaturation == 1) || gameStates.render.bHaveLightmaps) { //if a color component is > 1, cap color components using highest component value
 		float	maxColor = colorSum.Max ();
