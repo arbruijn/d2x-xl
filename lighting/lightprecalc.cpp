@@ -354,13 +354,20 @@ while (!gameData.segs.SetSegVis (nStartSeg, nSegment))
 
 static void SetLightVis (short nLight, short nSegment)
 {
-while (!gameData.segs.SetLightVis (nLight, nSegment))
+#if DBG
+if ((lightManager.Lights (nLight)->info.nSegment == nDbgSeg) && (lightManager.Lights (nLight)->info.nSide == nDbgSide))
+	nDbgSeg = nDbgSeg;
+if (gameData.segs.LightVisIdx (nLight, nSegment) / 4 >= int (gameData.segs.bLightVis.Length ()))
+	return;
+#endif
+while (!gameData.segs.SetLightVis (nLight, nSegment, 2))
 	;
 
 	tSegFaces*		segFaceP = SEGFACES + nSegment;
 	CSegFace*		faceP;
 	tFaceTriangle*	triP;
 	int				i, nFaces, nTris;
+	short				nStartSeg = lightManager.Lights (nLight)->info.nSegment;
 
 for (nFaces = segFaceP->nFaces, faceP = segFaceP->faceP; nFaces; nFaces--, faceP++) {
 #if DBG
@@ -370,12 +377,12 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide
 	if (gameStates.render.bTriangleMesh) {
 		for (nTris = faceP->m_info.nTris, triP = FACES.tris + faceP->m_info.nTriIndex; nTris; nTris--, triP++)
 			for (i = 0; i < 3; i++)
-				while (!SetVertVis (nLight, triP->index [i], 1))
+				while (!SetVertVis (nStartSeg, triP->index [i], 1))
 					;
 		}
 	else {
 		for (i = 0; i < 4; i++)
-			while (!SetVertVis (nLight, faceP->m_info.index [i], 1))
+			while (!SetVertVis (nStartSeg, faceP->m_info.index [i], 1))
 				;
 		}
 	}
@@ -409,7 +416,7 @@ if (!bLights)
 	SetSegVis (nStartSeg, nStartSeg);
 else {
 	nLight = nStartSeg;
-	nStartSeg = lightManager.Lights (nLight)->Index ();
+	nStartSeg = lightManager.Lights (nLight)->info.nSegment;
 	SetLightVis (nLight, nStartSeg);
 	}
 startSegP = SEGMENTS + nStartSeg;
@@ -537,8 +544,10 @@ for (int i = GetLoopLimits (startI, endI, gameData.segs.nSegments, nThread); i <
 // This function checks whether segment nDestSeg has a chance to receive diffuse (direct)
 // light from the light source at (nLightSeg,nSide).
 
-static void CheckLightVisibility (short nLightSeg, short nSide, short nDestSeg, fix xMaxDist, float fRange, int nThread)
+static void CheckLightVisibility (short nLight, short nSide, short nDestSeg, fix xMaxDist, float fRange, int nThread)
 {
+	short nLightSeg = lightManager.Lights (nLight)->info.nSegment;
+
 #if DBG
 	CArray<ubyte>& lightVis = gameData.segs.bLightVis;
 #else
@@ -599,28 +608,14 @@ for (i = 4; i >= -4; i--) {
 		if (dMin > d)
 			dMin = d;
 		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, nThread)) {
-			i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);
-			flagP = &lightVis [i >> 2];
-			flag = (2 << ((i & 3) << 1));
-#ifdef _OPENMP
-#	pragma omp atomic
-			*flagP |= flag;
-#endif
+			gameData.segs.SetLightVis (nLight, nDestSeg, 2);
 			return;
 			}
 		}
 	}
-
 if (dMin > xMaxDist)
 	return;
-
-i = gameData.segs.LightVisIdx (nLightSeg, nDestSeg);
-flagP = &lightVis [i >> 2];
-flag = (1 << ((i & 3) << 1));
-#ifdef _OPENMP
-#	pragma omp atomic
-#endif
-*flagP |= flag;
+gameData.segs.SetLightVis (nLightSeg, nDestSeg, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -650,7 +645,7 @@ if ((lightP->info.nSegment >= 0) && (lightP->info.nSide >= 0)) {
 #endif
 #if FAST_LIGHTVIS
 	for (int i = 1; i <= 5; i++)
-		ComputeSingleSegmentVisibility (nThread, lightP->info.nSegment, lightP->info.nSide, lightP->info.nSide, i);
+		ComputeSingleSegmentVisibility (nThread, lightP->Index (), lightP->info.nSide, lightP->info.nSide, i);
 #endif
 #if 1
 	fix xLightRange = fix (MAX_LIGHT_RANGE * lightP->info.fRange);

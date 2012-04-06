@@ -2038,10 +2038,10 @@ class CSegmentData {
 			return sbyte (((bLightVis [i >> 2] >> ((i & 3) << 1)) & 3) - 1);
 			}
 
-		inline int SetLightVis (int nLight, int nSegment) {
+		inline int SetLightVis (int nLight, int nSegment, ubyte flag) {
 			int i = LightVisIdx (nLight, nSegment);
 			ubyte* flagP = &bLightVis [i >> 2];
-			ubyte flag = 2 << ((i & 3) << 1);
+			flag <<= ((i & 3) << 1);
 #ifdef _OPENMP
 #	pragma omp atomic
 #endif
