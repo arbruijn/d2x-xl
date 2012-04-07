@@ -862,6 +862,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
+#if 1
 			if ((facePortal.right < 0) || (facePortal.bot < 0) || (facePortal.left >= screen.Width ()) || (facePortal.top >= screen.Height ()))
 				continue;
 			if (facePortal.left < 0)
@@ -874,6 +875,7 @@ for (l = 0; l < nRenderDepth; l++) {
 				facePortal.bot = screen.Height () - 1;
 			if (offScreenFlags)
 				continue;
+#endif
 			if (bProjected) {
 				 if (CodePortal (facePortal, curPortal))
 					 continue;
