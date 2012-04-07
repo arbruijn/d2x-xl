@@ -502,10 +502,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-//#pragma omp critical
-	{
 	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, -1, 0, false);
-	}
 
 #if DBG
 if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
