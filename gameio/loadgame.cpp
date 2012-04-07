@@ -374,84 +374,85 @@ OBJECTS [N_LOCALPLAYER].ResetDamage ();
 // Setup player for new game
 void ResetPlayerData (bool bNewGame, bool bSecret, bool bRestore, int nPlayer)
 {
-CPlayerData* playerP = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
+CPlayerData& player = gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer];
 
-playerP->numKillsLevel = 0;
-playerP->numRobotsLevel = CountRobotsInLevel ();
-playerP->Setup ();
+player.numKillsLevel = 0;
+player.numRobotsLevel = CountRobotsInLevel ();
+//player.Setup ();
 if (bNewGame) {
-	playerP->score = 0;
-	playerP->lastScore = 0;
-	playerP->lives = gameStates.gameplay.nInitialLives;
-	playerP->level = 1;
-	playerP->timeTotal = 0;
-	playerP->hoursLevel = 0;
-	playerP->hoursTotal = 0;
-	playerP->SetEnergy (gameStates.gameplay.InitialEnergy ());
-	playerP->SetShield (gameStates.gameplay.InitialShield ());
-	playerP->nKillerObj = -1;
-	playerP->netKilledTotal = 0;
-	playerP->netKillsTotal = 0;
-	playerP->numKillsLevel = 0;
-	playerP->numKillsTotal = 0;
-	playerP->numRobotsTotal = 0;
-	playerP->nScoreGoalCount = 0;
-	playerP->hostages.nRescued = 0;
-	playerP->numRobotsTotal = playerP->numRobotsLevel;
-	playerP->hostages.nLevel = CountHostagesInLevel ();
-	playerP->hostages.nTotal += playerP->hostages.nLevel;
-	playerP->hostages.nOnBoard = 0;
-	playerP->SetLaserLevels (0, 0);
-	playerP->flags = 0;
-	playerP->nCloaks =
-	playerP->nInvuls = 0;
+	player.score = 0;
+	player.lastScore = 0;
+	player.lives = gameStates.gameplay.nInitialLives;
+	player.level = 1;
+	player.timeTotal = 0;
+	player.hoursLevel = 0;
+	player.hoursTotal = 0;
+	player.SetEnergy (gameStates.gameplay.InitialEnergy ());
+	player.SetShield (gameStates.gameplay.InitialShield ());
+	player.nKillerObj = -1;
+	player.netKilledTotal = 0;
+	player.netKillsTotal = 0;
+	player.numKillsLevel = 0;
+	player.numKillsTotal = 0;
+	player.numRobotsTotal = 0;
+	player.nScoreGoalCount = 0;
+	player.hostages.nRescued = 0;
+	player.numRobotsTotal = player.numRobotsLevel;
+	player.hostages.nLevel = CountHostagesInLevel ();
+	player.hostages.nTotal += player.hostages.nLevel;
+	player.hostages.nOnBoard = 0;
+	player.SetLaserLevels (0, 0);
+	player.flags = 0;
+	player.nCloaks =
+	player.nInvuls = 0;
 	if (nPlayer == N_LOCALPLAYER)
 		ResetShipData (bRestore);
 	if (IsMultiGame && !IsCoopGame) {
 		if (IsTeamGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
-			playerP->flags |= KEY_GOLD | TEAMKEY (N_LOCALPLAYER);
+			player.flags |= KEY_GOLD | TEAMKEY (N_LOCALPLAYER);
 		else
-			playerP->flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
+			player.flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
 		}
 	else
-		playerP->timeLevel = 0;
+		player.timeLevel = 0;
 	if ((nPlayer = N_LOCALPLAYER))
 		gameStates.app.bFirstSecretVisit = 1;
 	}
 else {
-	playerP->lastScore = playerP->score;
-	playerP->level = missionManager.nCurrentLevel;
+	player.lastScore = player.score;
+	player.level = missionManager.nCurrentLevel;
 	if (!networkData.nJoinState) {
-		playerP->timeLevel = 0;
-		playerP->hoursLevel = 0;
+		player.timeLevel = 0;
+		player.hoursLevel = 0;
 		}
-	playerP->nKillerObj = -1;
-	playerP->hostages.nOnBoard = 0;
+	player.nKillerObj = -1;
+	player.hostages.nOnBoard = 0;
 	if (!bSecret) {
-		InitAmmoAndEnergy ();
-		playerP->flags &=	~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | KEY_BLUE | KEY_RED | KEY_GOLD);
+		if (nPlayer == N_LOCALPLAYER)
+			InitAmmoAndEnergy ();
+		player.flags &=	~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | KEY_BLUE | KEY_RED | KEY_GOLD);
 		if (!(extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_FULLMAP))
-			playerP->flags &=	~PLAYER_FLAGS_FULLMAP;
-		playerP->cloakTime = 0;
-		playerP->invulnerableTime = 0;
+			player.flags &=	~PLAYER_FLAGS_FULLMAP;
+		player.cloakTime = 0;
+		player.invulnerableTime = 0;
 		if (IsMultiGame && !IsCoopGame) {
 			if (IsTeamGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
-				playerP->flags |= KEY_GOLD | TEAMKEY (N_LOCALPLAYER);
+				player.flags |= KEY_GOLD | TEAMKEY (N_LOCALPLAYER);
 			else
-				playerP->flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
+				player.flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
 			}
 		}
 	else if (gameStates.app.bD1Mission)
 		InitAmmoAndEnergy ();
 	gameStates.app.bPlayerIsDead = 0; // Added by RH
-	playerP->homingObjectDist = -I2X (1); // Added by RH
+	player.homingObjectDist = -I2X (1); // Added by RH
 	gameData.laser.xLastFiredTime =
 	gameData.laser.xNextFireTime =
 	gameData.missiles.xLastFiredTime =
 	gameData.missiles.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
 	controls [0].afterburnerState = 0;
 	gameStates.gameplay.bLastAfterburnerState = 0;
-	audio.DestroyObjectSound (playerP->nObject);
+	audio.DestroyObjectSound (player.nObject);
 #ifdef FORCE_FEEDBACK
 	if (TactileStick)
 		tactile_set_button_jolt ();
