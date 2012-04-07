@@ -826,25 +826,10 @@ return 1;
 
 void CLightManager::Sort (void)
 {
-#if DBG
-for (int i = 0; i < m_data.nLights [0]; i++) {
-	if ((m_data.lights [i].info.nSegment == nDbgSeg) && (m_data.lights [i].info.nSide == nDbgSide)) {
-		nDbgSeg = nDbgSeg;
-		break;
-		}
-	}
-#endif
 CQuickSort<CDynLight> qs;
 qs.SortAscending (m_data.lights.Buffer (), 0, m_data.nLights [0] - 1);
-#if DBG
-for (int i = 0; i < m_data.nLights [0]; i++) {
+for (int i = 0; i < m_data.nLights [0]; i++)
 	m_data.lights [i].info.nIndex = i;
-	if ((m_data.lights [i].info.nSegment == nDbgSeg) && (m_data.lights [i].info.nSide == nDbgSide)) {
-		nDbgSeg = nDbgSeg;
-		break;
-		}
-	}
-#endif
 }
 
 //------------------------------------------------------------------------------
