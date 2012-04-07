@@ -389,6 +389,10 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide
 }
 
 //------------------------------------------------------------------------------
+// This function must be called ahead of computing segment to segment visibility
+// when multi-threading is used because only thread 0 has a valid OpenGL context!
+
+static CTransformation projection;
 
 static void SetupSegVisRenderer (CCanvas& canvas)
 {
@@ -402,6 +406,7 @@ screen.SetHeight (1024);
 ogl.SetTransform (1);
 ogl.Viewport (0, 0, 1024, 1024);
 gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
+SetupTransformation (projection, CFixVector::ZERO, CFixMatrix::IDENTITY, gameStates.render.xZoom, -1, 0, true);
 }
 
 //------------------------------------------------------------------------------
@@ -429,7 +434,7 @@ static void ComputeSingleSegmentVisibility (int nThread, short nStartSeg, short 
 	short					nSegment, nSide, nLight, i;
 	CFixVector			fVec, uVec, rVec;
 	CObject				viewer;
-	CTransformation	transformation;
+	CTransformation	transformation = projection;
 	CVisibilityData&	visibility = gameData.render.mine.visibility [nThread];
 
 #if DBG
@@ -497,9 +502,9 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-#pragma omp critical
+//#pragma omp critical
 	{
-	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, -1, 0, true);
+	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, -1, 0, false);
 	}
 
 #if DBG
