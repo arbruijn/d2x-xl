@@ -493,7 +493,14 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	CFixVector::Normalize (uVec);
 	CFixVector::Normalize (fVec);
 	viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
+#if DBG
+	if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
+#pragma omp critical
+	{
 	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, -1, 0, true);
+	}
 
 #if DBG
 if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
