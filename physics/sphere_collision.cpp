@@ -1231,7 +1231,7 @@ for (;;) {
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (PointIsOutsideFace (&intersection, sideP->m_fNormals [nFace], *vertices, 5 - nFaceCount))
+			if (PointIsOutsideFace (&intersection, sideP->m_fNormals [nFace], vertices, 5 - nFaceCount))
 				continue;
 			if (l1 >= 0.001f) 
 				break;
