@@ -3714,7 +3714,7 @@ return 1.0f - float (alpha) / float (FADE_LEVELS);
 
 #define G3_INFINITY			fInfinity [gameOpts->render.shadows.nReach]
 
-#define MAX_LIGHT_RANGE	I2X (220)
+#define MAX_LIGHT_RANGE	I2X (222) // light cast by the brightest possible light will have faded to black past this distance
 
 //	-----------------------------------------------------------------------------------------------------------
 

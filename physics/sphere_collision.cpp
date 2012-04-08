@@ -1211,10 +1211,11 @@ for (;;) {
 			if (bVisited [nChildSeg] == bFlag)
 				continue;
 			}
+		ushort* vertices = sideP->m_vertices;
 		nFaceCount = sideP->m_nFaces;
-		for (nFace = 0; nFace < nFaceCount; nFace++) {
+		for (nFace = 0; nFace < nFaceCount; nFace++, vertices += 3) {
 			CFloatVector* n = sideP->m_fNormals + nFace;
-			if (!FindPlaneLineIntersection (intersection, &FVERTICES [sideP->m_vertices [nFace * 3]], n, p0, p1))
+			if (!FindPlaneLineIntersection (intersection, &FVERTICES [*vertices], n, p0, p1))
 				continue;
 			v0 = *p0 - intersection;
 			v1 = *p1 - intersection;
@@ -1230,10 +1231,12 @@ for (;;) {
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (PointIsOutsideFace (&intersection, sideP->m_fNormals [nFace], sideP->m_vertices + nFace * 3, 5 - nFaceCount))
+			if (PointIsOutsideFace (&intersection, sideP->m_fNormals [nFace], *vertices, 5 - nFaceCount))
 				continue;
 			if (l1 >= 0.001f) 
 				break;
+			if (l1 < 1.0e-10f)
+				return 1;
 			// end point lies in this face
 			if (nDestSeg < 0)
 				return 1; // any segment acceptable

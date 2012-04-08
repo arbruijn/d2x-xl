@@ -85,13 +85,15 @@ void CLightmapFaceData::Setup (CSegFace* faceP)
 CSide* sideP = SEGMENTS [faceP->m_info.nSegment].m_sides + faceP->m_info.nSide;
 m_nType = sideP->m_nType;
 m_vNormal = sideP->m_normals [2];
+m_vCenter = sideP->Center ();
 CFixVector::Normalize (m_vNormal);
 m_vcd.vertNorm.Assign (m_vNormal);
 CFloatVector3::Normalize (m_vcd.vertNorm);
 InitVertColorData (m_vcd);
 m_vcd.vertPosP = &m_vcd.vertPos;
 m_vcd.fMatShininess = 4;
-memcpy (m_sideVerts, faceP->m_info.index, sizeof (m_sideVerts));
+memcpy (m_sideVerts, sideP->m_corners, sizeof (m_sideVerts));
+//memcpy (m_sideVerts, faceP->m_info.index, sizeof (m_sideVerts));
 m_nColor = 0;
 memset (m_texColor, 0, LM_W * LM_H * sizeof (CRGBColor));
 }
@@ -484,6 +486,35 @@ CFixVector v1 = VERTICES [m_data.m_sideVerts [1]];
 CFixVector v2 = VERTICES [m_data.m_sideVerts [2]];
 CFixVector v3 = VERTICES [m_data.m_sideVerts [3]];
 
+CFixVector o0 = v0;
+o0 -= v1;
+CFixVector::Normalize (o0);
+o0 *= 0.001f;
+
+CFixVector o1 = v1;
+o1 -= v2;
+CFixVector::Normalize (o1);
+o1 *= 0.001f;
+
+CFixVector o2 = v2;
+o2 -= v3;
+CFixVector::Normalize (o2);
+o2 *= 0.001f;
+
+CFixVector o3 = v3;
+o3 -= v0;
+CFixVector::Normalize (o3);
+o3 *= 0.001f;
+
+v0 += o3;
+v0 -= o0;
+v1 += o0;
+v1 -= o1;
+v2 += o1;
+v2 -= o2;
+v3 += o2;
+v3 -= o3;
+
 CFixVector a, b;
 
 if (m_data.m_nType != SIDE_IS_TRI_13) {
@@ -561,7 +592,12 @@ for (y = yMin; y < yMax; y++) {
 			}
 		fix dist = x ? CFixVector::Dist (*pixelPosP, *(pixelPosP - 1)) : 0;
 #endif
+#if DBG
+		int nLights = lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, pixelPosP, faceP->m_info.fRads [1] / 10.0f, nThread);
+		if (0 < nLights) {
+#else
 		if (0 < lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, pixelPosP, faceP->m_info.fRads [1] / 10.0f, nThread)) {
+#endif
 			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
 			ComputeVertexColor (-1, -1, -1, &color, &vcd, nThread);

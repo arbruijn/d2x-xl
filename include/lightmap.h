@@ -53,6 +53,7 @@ class CLightmapFaceData {
 		int						m_nType;
 		int						m_nColor;
 		CFixVector				m_vNormal;
+		CFixVector				m_vCenter;
 		ushort					m_sideVerts [4]; 
 		CVertColorData			m_vcd;
 		CRGBColor				m_texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
