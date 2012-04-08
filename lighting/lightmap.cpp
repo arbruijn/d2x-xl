@@ -481,39 +481,59 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
 
+#if 1
+
+CFloatVector corners [4] = {
+	FVERTICES [m_data.m_sideVerts [0]],
+	FVERTICES [m_data.m_sideVerts [1]],
+	FVERTICES [m_data.m_sideVerts [2]],
+	FVERTICES [m_data.m_sideVerts [3]],
+	};
+
+CFloatVector o0 = corners [0];
+o0 -= corners [1];
+CFloatVector::Normalize (o0);
+o0 *= 0.0015f;
+
+CFloatVector o1 = corners [1];
+o1 -= corners [2];
+CFloatVector::Normalize (o1);
+o1 *= 0.0015f;
+
+CFloatVector o2 = corners [2];
+o2 -= corners [3];
+CFloatVector::Normalize (o2);
+o2 *= 0.0015f;
+
+CFloatVector o3 = corners [3];
+o3 -= corners [0];
+CFloatVector::Normalize (o3);
+o3 *= 0.0015f;
+
+corners [0] += o3;
+corners [0] -= o0;
+corners [1] += o0;
+corners [1] -= o1;
+corners [2] += o1;
+corners [2] -= o2;
+corners [3] += o2;
+corners [3] -= o3;
+
+CFixVector v0, v1, v2, v3;
+
+v0.Assign (corners [0]);
+v1.Assign (corners [1]);
+v2.Assign (corners [2]);
+v3.Assign (corners [3]);
+
+#else
+
 CFixVector v0 = VERTICES [m_data.m_sideVerts [0]];
 CFixVector v1 = VERTICES [m_data.m_sideVerts [1]];
 CFixVector v2 = VERTICES [m_data.m_sideVerts [2]];
 CFixVector v3 = VERTICES [m_data.m_sideVerts [3]];
 
-CFixVector o0 = v0;
-o0 -= v1;
-CFixVector::Normalize (o0);
-o0 *= 0.001f;
-
-CFixVector o1 = v1;
-o1 -= v2;
-CFixVector::Normalize (o1);
-o1 *= 0.001f;
-
-CFixVector o2 = v2;
-o2 -= v3;
-CFixVector::Normalize (o2);
-o2 *= 0.001f;
-
-CFixVector o3 = v3;
-o3 -= v0;
-CFixVector::Normalize (o3);
-o3 *= 0.001f;
-
-v0 += o3;
-v0 -= o0;
-v1 += o0;
-v1 -= o1;
-v2 += o1;
-v2 -= o2;
-v3 += o2;
-v3 -= o3;
+#endif
 
 CFixVector a, b;
 
