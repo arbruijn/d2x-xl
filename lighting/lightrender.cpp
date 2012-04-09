@@ -477,7 +477,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 #endif
 if (gameStates.render.nLightingMethod) {
 	short						i, n = m_data.nLights [1];
-	fix						xMaxLightRange = F2X (fLightRad) + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ 2 * MAX_LIGHT_RANGE);
+	fix						xMaxLightRange = F2X (fLightRad) + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
 	CDynLight*				lightP;
 	CActiveDynLight*		activeLightsP = m_data.active [nThread].Buffer ();
 	bool						bForce, bLight = Find (nSegment, nSide, -1) >= 0;
