@@ -172,7 +172,7 @@ r.Assign (vRef);
 
 // compute intersection of vector perpendicular to the plane through vRef with the face's plane(s)
 for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
-	if (!(i && sideP->IsQuad ()) {
+	if (!(i && sideP->IsQuad ())) {
 		CFloatVector& n = sideP->m_fNormals [i];
 		h = r - FVERTICES [nVerts [j]];
 		float d = CFloatVector::Dot (h, n);
@@ -1215,7 +1215,7 @@ for (;;) {
 		ushort* vertices = sideP->m_vertices;
 		nFaceCount = sideP->m_nFaces;
 		for (nFace = 0; nFace < nFaceCount; nFace++, vertices += 3) {
-			if (!(nFace && sideP->IsQuad ()) {
+			if (!(nFace && sideP->IsQuad ())) {
 				if (!FindPlaneLineIntersection (intersection, &FVERTICES [*vertices], sideP->m_fNormals + nFace, p0, p1))
 					continue;
 				v0 = *p0 - intersection;
