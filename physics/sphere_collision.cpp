@@ -167,6 +167,7 @@ float DistToFace (CFloatVector3 vRef, short nSegment, ubyte nSide, CFloatVector3
 	CFloatVector	h, r;
 	ushort*			vertices = sideP->m_vertices;
 	int				i, j;
+	float				d = 0.0f;
 
 r.Assign (vRef);
 
@@ -174,8 +175,8 @@ r.Assign (vRef);
 for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 	if (!(i && sideP->IsQuad ())) {
 		CFloatVector& n = sideP->m_fNormals [i];
-		h = r - FVERTICES [nVerts [j]];
-		float d = CFloatVector::Dot (h, n);
+		h = r - FVERTICES [vertices [j]];
+		d = CFloatVector::Dot (h, n);
 		h = n;
 		h *= -d;
 		h += r;
@@ -194,14 +195,14 @@ for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 
 vertices = sideP->m_corners;
 
-	CFloatVector	* v0, * v1 = &FVERTICES [nVerts [0]];
+	CFloatVector	* v0, * v1 = &FVERTICES [vertices [0]];
 	float				minDist = 1e10f;
 
 for (i = 1; i <= 4; i++) {
 	v0 = v1;
 	v1 = &FVERTICES [vertices [i % 4]];
 	FindPointLineIntersection (h, *v0, *v1, r, 1);
-	float d = CFloatVector::Dist (h, r);
+	d = CFloatVector::Dist (h, r);
 	if (minDist > d) {
 		minDist = d;
 		if (vHit)
@@ -1216,7 +1217,8 @@ for (;;) {
 		nFaceCount = sideP->m_nFaces;
 		for (nFace = 0; nFace < nFaceCount; nFace++, vertices += 3) {
 			if (!(nFace && sideP->IsQuad ())) {
-				if (!FindPlaneLineIntersection (intersection, &FVERTICES [*vertices], sideP->m_fNormals + nFace, p0, p1))
+				CFloatVector* n = sideP->m_fNormals + nFace;
+				if (!FindPlaneLineIntersection (intersection, &FVERTICES [*vertices], n, p0, p1))
 					continue;
 				v0 = *p0 - intersection;
 				v1 = *p1 - intersection;
