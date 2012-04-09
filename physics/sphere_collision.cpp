@@ -49,7 +49,7 @@ int ijTable [3][2] = {
 // see if a point (refP) is inside a triangle using barycentric method
 // return 0 if point inside triangle, otherwise sides point is behind as bit code
 
-ubyte PointIsOutsideFace (CFixVector* refP, CFixVector vNormal, CFixVector* vertices, short nVerts)
+ubyte PointIsOutsideFace (CFixVector* refP, CFixVector* vertices, short nVerts)
 {
 CFixVector v0 = vertices [2] - vertices [0];
 CFixVector v1 = vertices [1] - vertices [0];
@@ -67,7 +67,7 @@ return int (u < 0) + (int (v < 0) << 1) + (int (u + v > I2X (1)) << 2);
 //	-----------------------------------------------------------------------------
 //see if a point (refP) is inside a triangle using barycentric method
 
-ubyte PointIsOutsideFace (CFixVector* refP, CFixVector vNormal, ushort* nVertIndex, short nVerts)
+ubyte PointIsOutsideFace (CFixVector* refP, ushort* nVertIndex, short nVerts)
 {
 CFixVector v0 = VERTICES [nVertIndex [2]] - VERTICES [nVertIndex [0]];
 CFixVector v1 = VERTICES [nVertIndex [1]] - VERTICES [nVertIndex [0]];
@@ -87,7 +87,7 @@ return int (u < -PLANE_DIST_TOLERANCE) + (int (v < -PLANE_DIST_TOLERANCE) << 1) 
 //	-----------------------------------------------------------------------------
 //see if a point (refP) is inside a triangle using barycentric method
 
-ubyte PointIsOutsideFace (CFloatVector* vRef, CFloatVector vNormal, ushort* nVertIndex, short nVerts)
+ubyte PointIsOutsideFace (CFloatVector* vRef, ushort* nVertIndex, short nVerts)
 {
 #if 1
 CFloatVector v0 = FVERTICES [nVertIndex [2]] - FVERTICES [nVertIndex [0]];
@@ -165,21 +165,22 @@ float DistToFace (CFloatVector3 vRef, short nSegment, ubyte nSide, CFloatVector3
 {
 	CSide*			sideP = SEGMENTS [nSegment].Side (nSide);
 	CFloatVector	h, r;
-	ushort*			nVerts = sideP->m_vertices;
+	ushort*			vertices = sideP->m_vertices;
 	int				i, j;
 
 r.Assign (vRef);
 
 // compute intersection of vector perpendicular to the plane through vRef with the face's plane(s)
 for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
-	CFloatVector& n = sideP->m_fNormals [i];
-	h = r - FVERTICES [nVerts [j]];
-	float d = CFloatVector::Dot (h, n);
-	//h = r - n * dist;
-	h = n;
-	h *= -d;
-	h += r;
-	if (!PointIsOutsideFace (&h, n, nVerts + j, 5 - sideP->m_nFaces)) {
+	if (!(i && sideP->IsQuad ()) {
+		CFloatVector& n = sideP->m_fNormals [i];
+		h = r - FVERTICES [nVerts [j]];
+		float d = CFloatVector::Dot (h, n);
+		h = n;
+		h *= -d;
+		h += r;
+		}
+	if (!PointIsOutsideFace (&h, vertices + j, 5 - sideP->m_nFaces)) {
 		d = float (fabs (d));
 		if (!vHit)
 			return d;
@@ -191,14 +192,14 @@ for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 		}
 	}
 
-nVerts = sideP->m_corners;
+vertices = sideP->m_corners;
 
 	CFloatVector	* v0, * v1 = &FVERTICES [nVerts [0]];
 	float				minDist = 1e10f;
 
 for (i = 1; i <= 4; i++) {
 	v0 = v1;
-	v1 = &FVERTICES [nVerts [i % 4]];
+	v1 = &FVERTICES [vertices [i % 4]];
 	FindPointLineIntersection (h, *v0, *v1, r, 1);
 	float d = CFloatVector::Dist (h, r);
 	if (minDist > d) {
@@ -1214,24 +1215,25 @@ for (;;) {
 		ushort* vertices = sideP->m_vertices;
 		nFaceCount = sideP->m_nFaces;
 		for (nFace = 0; nFace < nFaceCount; nFace++, vertices += 3) {
-			CFloatVector* n = sideP->m_fNormals + nFace;
-			if (!FindPlaneLineIntersection (intersection, &FVERTICES [*vertices], n, p0, p1))
-				continue;
-			v0 = *p0 - intersection;
-			v1 = *p1 - intersection;
-			l0 = v0.Mag ();
-			l1 = v1.Mag ();
-			if ((l0 >= 0.001f) && (l1 >= 0.001f)) {
-				v0 /= l0;
-				v1 /= l1;
-				if (CFloatVector::Dot (v0, *n) == CFloatVector::Dot (v1, *n))
+			if (!(nFace && sideP->IsQuad ()) {
+				if (!FindPlaneLineIntersection (intersection, &FVERTICES [*vertices], sideP->m_fNormals + nFace, p0, p1))
 					continue;
+				v0 = *p0 - intersection;
+				v1 = *p1 - intersection;
+				l0 = v0.Mag ();
+				l1 = v1.Mag ();
+				if ((l0 >= 0.001f) && (l1 >= 0.001f)) {
+					v0 /= l0;
+					v1 /= l1;
+					if (CFloatVector::Dot (v0, *n) == CFloatVector::Dot (v1, *n))
+						continue;
+					}
 				}
 #if DBG
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (PointIsOutsideFace (&intersection, sideP->m_fNormals [nFace], vertices, 5 - nFaceCount))
+			if (PointIsOutsideFace (&intersection, vertices, 5 - nFaceCount))
 				continue;
 			if (l1 >= 0.001f) 
 				break;

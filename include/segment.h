@@ -215,6 +215,7 @@ class CSide {
 		CWall* Wall (void);
 		CTrigger* Trigger (void);
 		bool IsVolatile (void);
+		inline bool IsQuad (void) { return m_nType == SIDE_IS_QUAD; }
 		int FaceCount (void);
 		void CheckSum (uint& sum1, uint& sum2);
 

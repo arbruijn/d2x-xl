@@ -229,11 +229,11 @@ fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject 
 
 fix CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, short nSegment, short nSide, CFixVector* p0, CFixVector* p1, CObject *objP);
 
-ubyte PointIsOutsideFace (CFixVector* refP, CFixVector vNormal, CFixVector* vertices, short nVerts);
+ubyte PointIsOutsideFace (CFixVector* refP, CFixVector* vertices, short nVerts);
 
-ubyte PointIsOutsideFace (CFixVector* refP, CFixVector vNormal, ushort* nVertIndex, short nVerts);
+ubyte PointIsOutsideFace (CFixVector* refP, ushort* nVertIndex, short nVerts);
 
-ubyte PointIsOutsideFace (CFloatVector* refP, CFloatVector vNormal, ushort* nVertIndex, short nVerts);
+ubyte PointIsOutsideFace (CFloatVector* refP, ushort* nVertIndex, short nVerts);
 
 uint PointToFaceRelation (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal);
 
