@@ -40,7 +40,7 @@ CLightmapManager lightmapManager;
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 41
+#define LIGHTMAP_DATA_VERSION 42
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
 
@@ -535,7 +535,7 @@ CFixVector v3 = VERTICES [m_data.m_sideVerts [3]];
 
 #endif
 
-CFixVector a, b;
+CFixVector dx, dy;
 
 if (m_data.m_nType != SIDE_IS_TRI_13) {
 	CFixVector l0 = v2 - v1;
@@ -543,20 +543,22 @@ if (m_data.m_nType != SIDE_IS_TRI_13) {
 	CFixVector l2 = v3 - v0;
 	CFixVector l3 = v2 - v3;
 	for (y = yMin; y < yMax; y++) {
+		if (y == 7) 
+			y = y;
 		for (x = 0; x < w; x++, pixelPosP++) {
 			if (y >= x) {
-				a = l0;
-				b = l1;
+				dx = l0;
+				dy = l1;
 				}
 			else {
-				a = l2; 
-				b = l3; 
+				dx = l2; 
+				dy = l3; 
 				}
-			a *= m_data.nOffset [x];
-			b *= m_data.nOffset [y];
+			dx *= m_data.nOffset [x];
+			dy *= m_data.nOffset [y];
 			*pixelPosP = v0;
-			*pixelPosP += a; 
-			*pixelPosP += b; 
+			*pixelPosP += dx; 
+			*pixelPosP += dy; 
 			}
 		}
 	}
@@ -569,21 +571,21 @@ else {
 	for (y = yMin; y < yMax; y++) {
 		for (x = 0; x < w; x++, pixelPosP++) {
 			if (h - y >= x) {
-				a = l0;
-				a *= m_data.nOffset [x];
-				b = l1;
-				b *= m_data.nOffset [y];  
+				dx = l0;
+				dx *= m_data.nOffset [x];
+				dy = l1;
+				dy *= m_data.nOffset [y];  
 				*pixelPosP = v0;
 				}
 			else {
-				a = l2;
-				a *= m_data.nOffset [h - x];  
-				b = l3;
-				b *= m_data.nOffset [h - y]; 
+				dx = l2;
+				dx *= m_data.nOffset [h - x];  
+				dy = l3;
+				dy *= m_data.nOffset [h - y]; 
 				*pixelPosP = v2; 
 				}
-			*pixelPosP += a; 
-			*pixelPosP += b; 
+			*pixelPosP += dx; 
+			*pixelPosP += dy; 
 			}
 		}
 	}

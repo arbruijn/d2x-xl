@@ -754,9 +754,10 @@ if ((nLightSeg < 0) || (nDestSeg < 0) || (info.nSide < 0)) {
 		return 1;
 	}
 else {
-	CFloatVector3 v;
+	CFloatVector3 v, vHit;
 	v.Assign (vDestPos);
-	float distance = DistToFace (v, nLightSeg, ubyte (info.nSide)) / (info.fRange * fRangeMod) + X2F (xDistMod);
+	DistToFace (v, nLightSeg, ubyte (info.nSide), &vHit);
+	float distance = CFloatVector3::Dist (v, vHit) / (info.fRange * fRangeMod) + X2F (xDistMod);
 	if (distance > X2F (xMaxLightRange))
 		return 0;
 	xDistance = F2X (distance);

@@ -437,15 +437,12 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	else
 		lightDir = *lightP->info.vDirf.XYZ ();
 
-	if (nType < 2) {
-		fLightDist = DistToFace (*colorData.vertPosP, lightP->info.nSegment, ubyte (lightP->info.nSide), &lightPos);
-		lightRayDir = lightPos - *colorData.vertPosP;
-		}
-	else {
+	if (nType < 2)
+		DistToFace (*colorData.vertPosP, lightP->info.nSegment, ubyte (lightP->info.nSide), &lightPos); // returns 0 if a plane normal through the vertex position goes through the face
+	else 
 		lightPos = *lightP->render.vPosf [bTransform].XYZ ();
-		lightRayDir = lightPos - *colorData.vertPosP;
-		fLightDist = lightRayDir.Mag ();
-		}
+	lightRayDir = lightPos - *colorData.vertPosP;
+	fLightDist = lightRayDir.Mag ();
 
 #if DBG
 	CFloatVector3 hDir = *lightP->render.vPosf [bTransform].XYZ () - *colorData.vertPosP;
