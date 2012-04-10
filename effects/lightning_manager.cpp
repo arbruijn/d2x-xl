@@ -680,7 +680,7 @@ void CLightningManager::CreateForExplosion (CObject* objP, CFloatVector *colorP,
 if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
 	//m_objects [objP->Index ()] =
 		Create (
-			nRods, &objP->info.position.vPos, NULL, NULL, objP->Index (), nTTL, 0,
+			nRods, &objP->info.position.vPos, NULL, NULL, /*objP->Index ()*/-1, nTTL, 0,
 			nRad, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 0, 0, 1, -1, 3.0f, colorP);
 	}
 }
@@ -725,6 +725,7 @@ if (objP->IsMissile ()) {
 		CreateForMega (objP);
 	else
 		return 0;
+	gameData.objs.bWantEffect [objP->Index ()] &= ~DESTROY_LIGHTNING;
 	return 1;
 	}
 return 0;
