@@ -318,7 +318,7 @@ typedef struct tNetworkObjInfo {
 	ubyte	nId;
 } __pack__ tNetworkObjInfo;
 
-extern tExtraGameInfo extraGameInfo [2];
+extern tExtraGameInfo extraGameInfo [3];
 
 //	-----------------------------------------------------------------------------
 
