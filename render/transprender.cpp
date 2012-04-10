@@ -862,8 +862,9 @@ CTranspItemBuffers& buffer = m_data.buffers [nThread];
 if (nOffset >= (int) buffer.depthBuffer.Length ()) 
 	return 0;
 CTranspItem* ph = buffer.AllocItem (item->Type (), item->Size ());
-if (!ph) 
+if (!ph) {
 	return 0;
+	}
 
 memcpy (ph, item, item->Size ());
 ph->nItem = buffer.nItems [0]++;
@@ -1614,16 +1615,19 @@ m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 
-int nBuffers = 0;
+int h = -1, nBuffers = 0;
 
 for (int i = 0; i < gameStates.app.nThreads; i++)
-	if (m_data.buffers [i].nItems [0])
+	if (m_data.buffers [i].nItems [0]) {
+		if (h < 0)
+			h = i;
 		nBuffers++;
+		}
 
 if (nBuffers < 2) {
-	CTranspItemBuffers& buffer = m_data.buffers [0];
+	CTranspItemBuffers& buffer = m_data.buffers [h];
 
-	m_data.buffers [0].nItems [1] = m_data.buffers [0].nItems [0];
+	m_data.buffers [h].nItems [1] = m_data.buffers [h].nItems [0];
 	for (buffer.bufP = &buffer.depthBuffer [buffer.nMaxOffs]; buffer.nItems [0] && (buffer.bufP >= buffer.depthBuffer.Buffer ()); buffer.bufP--)
 		if (*buffer.bufP)
 			RenderBuffer (buffer, bCleanup);
@@ -1672,7 +1676,14 @@ ogl.StencilOn (bStencil);
 
 if (bCleanup) {
 	ResetFreeList ();
+#if 0
 	for (int i = 0; i < gameStates.app.nThreads; i++) {
+		for (int j = 0, l = int (m_data.buffers [i].depthBuffer.Length ()); j < l; j++) {
+			if (m_data.buffers [i].depthBuffer [j]) {
+				m_data.buffers [i].depthBuffer [j] = NULL;
+				}
+			}
+#endif
 		m_data.buffers [i].nItems [0] = 0;
 		m_data.buffers [i].nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 		m_data.buffers [i].nMaxOffs = 0;
