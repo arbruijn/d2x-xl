@@ -438,13 +438,18 @@ if (SHOW_LIGHTNING (1)) {
 		for (emitterP = m_emitters.GetFirst (nCurrent); emitterP; emitterP = m_emitters.GetNext (nCurrent))
 			if (!(emitterP->m_nKey [0] | emitterP->m_nKey [1]))
 				m_emitterList [nSystems++] = emitterP;
+		if (nSystems) {
+			if (nSystems < 2)
+				m_emitterList [0]->Render (0, m_emitterList [0]->m_nBolts, 0);
+			else
 #	pragma omp parallel
-			{
-			int nThread = omp_get_thread_num ();
+				{
+				int nThread = omp_get_thread_num ();
 #		pragma omp for private(emitterP)
-			for (int i = 0; i < nSystems; i++) {
-				emitterP = m_emitterList [i];
-				emitterP->Render (0, emitterP->m_nBolts, nThread);
+				for (int i = 0; i < nSystems; i++) {
+					emitterP = m_emitterList [i];
+					emitterP->Render (0, emitterP->m_nBolts, nThread);
+					}
 				}
 			}
 		}
@@ -680,7 +685,7 @@ void CLightningManager::CreateForExplosion (CObject* objP, CFloatVector *colorP,
 if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
 	//m_objects [objP->Index ()] =
 		Create (
-			nRods, &objP->info.position.vPos, NULL, NULL, /*objP->Index ()*/-1, nTTL, 0,
+			nRods, &objP->Position (), NULL, NULL, -objP->Segment () - 1/*objP->Index ()*/, nTTL, 0,
 			nRad, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 0, 0, 1, -1, 3.0f, colorP);
 	}
 }
