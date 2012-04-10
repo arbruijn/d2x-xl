@@ -781,7 +781,7 @@ while (MsnGetS (buf, 80, cf)) {
 				PrintLog (0, "'%s'\n", buf);
 				MsnTrimComment (buf);
 				MsnAddStrTerm (buf);
-				if (strlen (buf) > (nEnhancedMission ? 255 : 12)) {
+				if ((int) strlen (buf) > (nEnhancedMission ? 255 : 12)) {
 					PrintLog (-1, "mission file: invalid level name\n");
 					return 0;
 					}
