@@ -170,7 +170,7 @@ void MultiSendPosition (int nObject);
 void MultiSendReappear ();
 void MultiSendKill (int nObject);
 void MultiSendRemoveObj (int nObject);
-void MultiSendQuit (int why);
+void MultiSendQuit (int nReason);
 void MultiSendDoorOpen (int nSegment, int nSide, ushort flags);
 void MultiSendCreateExplosion (int nPlayer);
 void MultiSendCtrlcenFire (CFixVector *to_target, int nGun, int nObject);

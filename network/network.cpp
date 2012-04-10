@@ -101,7 +101,7 @@ CAllNetPlayersInfo *playerInfoP, netPlayers [2];
 
 int nCoopPenalties [10] = {0, 1, 2, 3, 5, 10, 25, 50, 75, 90};
 
-tExtraGameInfo extraGameInfo [2];
+tExtraGameInfo extraGameInfo [3];
 
 tMpParams mpParams = {
  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
@@ -260,6 +260,7 @@ if (gameStates.multi.nGameType != UDP_GAME)
 	SavePlayerProfile ();
 IpxHandleLeaveGame ();
 NetworkFlush ();
+memcpy (extraGameInfo, extraGameInfo + 2, sizeof (extraGameInfo [0]));
 }
 
 //------------------------------------------------------------------------------

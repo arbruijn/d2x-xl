@@ -2551,9 +2551,9 @@ NetworkResetObjSync (nObject);
 //-----------------------------------------------------------------------------
 // I am quitting the game, tell the other guy the bad news.
 
-void MultiSendQuit (int why)
+void MultiSendQuit (int nReason)
 {
-gameData.multigame.msg.buf [0] = (char)why;
+gameData.multigame.msg.buf [0] = (char) nReason;
 gameData.multigame.msg.buf [1] = N_LOCALPLAYER;
 MultiSendData (gameData.multigame.msg.buf, 2, 1);
 }

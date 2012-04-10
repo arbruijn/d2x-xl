@@ -165,6 +165,7 @@ if (actGameP->m_info.nNumPlayers == 0)
 int NetworkProcessExtraGameInfo (ubyte *dataP)
 {
 ReceiveExtraGameInfoPacket (dataP, extraGameInfo + 1);
+memcpy (extraGameInfo, extraGameInfo + 1, sizeof (extraGameInfo [0]));
 if (extraGameInfo [1].nVersion != EGI_DATA_VERSION) {
 	MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_D2X_VERSION_MISMATCH);
 	networkData.nStatus = NETSTAT_MENU;
