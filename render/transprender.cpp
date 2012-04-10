@@ -1676,8 +1676,8 @@ ogl.StencilOn (bStencil);
 
 if (bCleanup) {
 	ResetFreeList ();
-#if 0
 	for (int i = 0; i < gameStates.app.nThreads; i++) {
+#if 0
 		for (int j = 0, l = int (m_data.buffers [i].depthBuffer.Length ()); j < l; j++) {
 			if (m_data.buffers [i].depthBuffer [j]) {
 				m_data.buffers [i].depthBuffer [j] = NULL;
