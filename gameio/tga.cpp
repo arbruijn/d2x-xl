@@ -642,7 +642,6 @@ int CTGA::Read (const char *pszFile, const char *pszFolder, int alpha, double br
 
 #if USE_SDL_IMAGE
 
-PrintLog (0, "loading '%s'\n", pszFile);
 if (ReadImage (pszFile, pszFolder, alpha, brightness, bGrayScale))
 	r = 1;
 else
