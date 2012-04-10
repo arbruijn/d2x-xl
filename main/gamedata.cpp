@@ -482,8 +482,8 @@ nPowerupFilter = 0;
 fAttScale [0] = 0.05f;
 fAttScale [1] = 0.005f;
 #else
-fAttScale [0] = 0.0f;
-fAttScale [1] = 0.003333f;
+fAttScale [0] = 0.625f;
+fAttScale [1] = 0.0625f;
 #endif
 faceList.Clear ();
 }
