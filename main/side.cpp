@@ -317,6 +317,7 @@ xDistToPlane = abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSort
 if (bFlip)
 	vNormal.Neg ();
 
+m_bIsQuad = (m_normals [0] == m_normals [1]);
 if (PLANE_DIST_TOLERANCE < DEFAULT_PLANE_DIST_TOLERANCE) {
 	SetupAsTriangles (bSolid, verts, index);
 #if 0

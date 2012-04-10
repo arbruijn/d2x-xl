@@ -200,6 +200,7 @@ class CSide {
 		ushort			m_nMinVertex [2];
 		short				m_nSegment;
 		ubyte				m_nFaces;
+		ubyte				m_bIsQuad;
 
 	public:
 		inline void Init (void) { memset (this, 0, sizeof (*this)); }
@@ -215,7 +216,7 @@ class CSide {
 		CWall* Wall (void);
 		CTrigger* Trigger (void);
 		bool IsVolatile (void);
-		inline bool IsQuad (void) { return m_nType == SIDE_IS_QUAD; }
+		inline ubyte IsQuad (void) { return m_bIsQuad; }
 		int FaceCount (void);
 		void CheckSum (uint& sum1, uint& sum2);
 
