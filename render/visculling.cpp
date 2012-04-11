@@ -816,7 +816,7 @@ for (l = 0; l < nRenderDepth; l++) {
 					if (!(renderPoints [s2v [i]].Codes () & CC_BEHIND))
 						break;
 					}
-				if (i < 4)
+				if (i == 4)
 					continue; // all face vertices behind the viewer => face invisible to the viewer
 				}
 			childList [nChildren++] = nChild;
