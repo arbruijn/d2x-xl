@@ -745,7 +745,7 @@ if (nWindow == 0) {
 		ogl.CopyDepthTexture (1);
 	}
 
-if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
+if ((nWindow >= 0) && !(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
 	if (gameStates.render.bRenderIndirect > 0)
 		SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect > 0);

@@ -394,8 +394,12 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide
 
 static CTransformation projection;
 
-static void SetupSegVisRenderer (CCanvas& canvas)
+static void SetupProjection (void)
 {
+	CCanvas canvas;
+	int w = screen.Width (),
+		 h = screen.Height ();
+
 canvas.Setup (1024, 1024);
 CCanvas::Push ();
 CCanvas::SetCurrent (&canvas);
@@ -407,18 +411,12 @@ ogl.SetTransform (1);
 ogl.Viewport (0, 0, 1024, 1024);
 gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
 SetupTransformation (projection, CFixVector::ZERO, CFixMatrix::IDENTITY, gameStates.render.xZoom, -1, 0, true);
-}
-
-//------------------------------------------------------------------------------
-
-static void ResetSegVisRenderer (CCanvas& canvas)
-{
 gameStates.render.nShadowPass = 0;
 gameStates.render.nShadowMap = 0;
 ogl.SetTransform (0);
 CCanvas::Pop ();
-screen.SetWidth (CCanvas::Current ()->Width ());
-screen.SetHeight (CCanvas::Current ()->Height ());
+screen.SetWidth (w);
+screen.SetHeight (h);
 ogl.EndFrame (-1);
 }
 
@@ -701,11 +699,8 @@ if (startI < 0)
 	startI = 0;
 // every segment can see itself and its neighbours
 
-CCanvas canvas;
-SetupSegVisRenderer (canvas);
 for (int i = startI; i < endI; i++)
 	ComputeSingleLightVisibility (i, 0);
-ResetSegVisRenderer (canvas);
 }
 
 //------------------------------------------------------------------------------
@@ -922,10 +917,7 @@ if (loadOp == 0) {
 	}
 else if (loadOp == 1) {
 	PrintLog (0, "computing segment visibility\n");
-	CCanvas canvas;
-	SetupSegVisRenderer (canvas);
 	StartLightPrecalcThreads (SegVisThread);
-	ResetSegVisRenderer (canvas);
 	loadOp = 2;
 	}
 else if (loadOp == 2) {
@@ -935,10 +927,7 @@ else if (loadOp == 2) {
 	}
 else if (loadOp == 3) {
 	PrintLog (1, "Computing light visibility\n");
-	CCanvas canvas;
-	SetupSegVisRenderer (canvas);
 	StartLightPrecalcThreads (LightVisThread);
-	ResetSegVisRenderer (canvas);
 	loadOp = 4;
 	}
 else if (loadOp == 4) {
@@ -1136,6 +1125,7 @@ PrintLog (-1);
 
 if (!InitLightVisibility (1))
 	throw (EX_OUT_OF_MEMORY);
+SetupProjection ();
 
 #if DBG
 nDistCount = 0;
@@ -1148,8 +1138,6 @@ if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 		ProgressBar (TXT_LOADING, 0, 6, PrecalcLightPollMT);
 	else {
-		CCanvas canvas;
-		SetupSegVisRenderer (canvas);
 		PrintLog (0, "Computing segment visibility\n");
 		StartLightPrecalcThreads (SegVisThread);
 		PrintLog (0, "Computing segment distances\n");
@@ -1162,7 +1150,6 @@ if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 		StartLightPrecalcThreads (VertLightsThread);
 		PrintLog (0, "Computing vertices visible to lights\n");
 		ComputeLightsVisibleVertices (-1);
-		ResetSegVisRenderer (canvas);
 		}
 	gameData.physics.side.bCache = 1;
 	}
@@ -1176,8 +1163,6 @@ else
 						 LoadMineGaugeSize () + PagingGaugeSize (),
 						 LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize () + SegDistGaugeSize (), PrecalcLightPollST);
 	else {
-		CCanvas canvas;
-		SetupSegVisRenderer (canvas);
 		PrintLog (0, "Computing segment visibility\n");
 		ComputeSegmentVisibilityST (-1);
 		PrintLog (0, "Computing segment distances\n");
@@ -1190,7 +1175,6 @@ else
 		ComputeNearestVertexLights (-1, 0);
 		PrintLog (0, "Computing vertices visible to lights\n");
 		ComputeLightsVisibleVertices (-1);
-		ResetSegVisRenderer (canvas);
 		}
 	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}

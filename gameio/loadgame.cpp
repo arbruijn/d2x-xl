@@ -2202,13 +2202,22 @@ int StartNewLevel (int nLevel, bool bNewGame)
 	gameStates.app.xThisLevelTime = 0;
 
 gameData.reactor.bDestroyed = 0;
+ogl.SetDrawBuffer (GL_BACK, 0);
 MakeModFolders (hogFileManager.MissionName (), nLevel);
-if (nLevel < 0)
-	return PrepareSecretLevel (nLevel, false);
-MaybeSetFirstSecretVisit (nLevel);
-if (!gameStates.app.bAutoRunMission)
-	ShowLevelIntro (nLevel);
-return PrepareLevel (nLevel, 1, false, false, bNewGame);
+if (nLevel < 0) {
+	if (!PrepareSecretLevel (nLevel, false))
+		return 0;
+	}
+else {
+	MaybeSetFirstSecretVisit (nLevel);
+	if (!gameStates.app.bAutoRunMission)
+		ShowLevelIntro (nLevel);
+	if (!PrepareLevel (nLevel, 1, false, false, bNewGame))
+		return 0;
+	}
+if (!bNewGame)
+	ogl.ChooseDrawBuffer ();
+return 1;
 }
 
 //------------------------------------------------------------------------------
