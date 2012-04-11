@@ -1462,25 +1462,26 @@ return CreateGatedRobot (nSegment, type);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-int boss_fits_in_seg(CObject *bossObjP, int nSegment)
+
+int boss_fits_in_seg (CObject *bossObjP, int nSegment)
 {
 	CFixVector	vCenter;
 	int			nBossObj = bossObjP - OBJECTS;
-	int			posnum;
+	CSegment*	segP = SEGMENTS + nSegment;
 
 vCenter = SEGMENTS [nSegment].Center ();
-for (posnum=0; posnum<9; posnum++) {
-	if (posnum > 0) {
-		CFixVector	vertex_pos;
-
-		Assert((posnum-1 >= 0) && (posnum-1 < 8));
-		vertex_pos = gameData.segs.vertices [SEGMENTS [nSegment].m_vertices [posnum-1]];
-		bossObjP->info.position.vPos = CFixVector::Avg(vertex_pos, vCenter);
-	} else
+for (int nPos = 0; nPos < 9; nPos++) {
+	if (!nPos) 
 		bossObjP->info.position.vPos = vCenter;
-
-	OBJECTS [nBossObj].RelinkToSeg(nSegment);
-	if (!ObjectIntersectsWall(bossObjP))
+	else if (segP->m_vertices [nPos - 1] == 0xFFFF)
+		continue;
+	else {
+		CFixVector	vPos;
+		vPos = gameData.segs.vertices [segP->m_vertices [nPos - 1]];
+		bossObjP->info.position.vPos = CFixVector::Avg(vPos, vCenter);
+		}
+	OBJECTS [nBossObj].RelinkToSeg (nSegment);
+	if (!ObjectIntersectsWall (bossObjP))
 		return 1;
 	}
 return 0;

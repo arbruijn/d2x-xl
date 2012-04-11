@@ -245,15 +245,16 @@ void CSegment::ComputeCenter (void)
 if (Index () == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-CFloatVector vCenter = FVERTICES [m_vertices [0]];
-vCenter += FVERTICES [m_vertices [1]];
-vCenter += FVERTICES [m_vertices [2]];
-vCenter += FVERTICES [m_vertices [3]];
-vCenter += FVERTICES [m_vertices [4]];
-vCenter += FVERTICES [m_vertices [5]];
-vCenter += FVERTICES [m_vertices [6]];
-vCenter += FVERTICES [m_vertices [7]];
-vCenter /= 8;
+CFloatVector vCenter;
+vCenter.SetZero ();
+int nVertices = 0;
+for (int i = 0; i < 8; i++) {
+	if (m_vertices [i] != 0xFFFF) {
+		vCenter += FVERTICES [m_vertices [i]];
+		nVertices++;
+		}
+	}
+vCenter /= nVertices;
 m_vCenter.Assign (vCenter);
 }
 
@@ -300,22 +301,24 @@ m_rads [1] = 0;
 vMin.v.coord.x = vMin.v.coord.y = vMin.v.coord.z = 0x7FFFFFFF;
 vMax.v.coord.x = vMax.v.coord.y = vMax.v.coord.z = -0x7FFFFFFF;
 for (int i = 0; i < 8; i++) {
-	v = gameData.segs.vertices [m_vertices [i]];
-	if (vMin.v.coord.x > v.v.coord.x)
-		vMin.v.coord.x = v.v.coord.x;
-	if (vMin.v.coord.y > v.v.coord.y)
-		vMin.v.coord.y = v.v.coord.y;
-	if (vMin.v.coord.z > v.v.coord.z)
-		vMin.v.coord.z = v.v.coord.z;
-	if (vMax.v.coord.x < v.v.coord.x)
-		vMax.v.coord.x = v.v.coord.x;
-	if (vMax.v.coord.y < v.v.coord.y)
-		vMax.v.coord.y = v.v.coord.y;
-	if (vMax.v.coord.z < v.v.coord.z)
-		vMax.v.coord.z = v.v.coord.z;
-	xDist = CFixVector::Dist (v, m_vCenter);
-	if (m_rads [1] < xDist)
-		m_rads [1] = xDist;
+	if (m_vertices [i] != 0xFFFF) {
+		v = gameData.segs.vertices [m_vertices [i]];
+		if (vMin.v.coord.x > v.v.coord.x)
+			vMin.v.coord.x = v.v.coord.x;
+		if (vMin.v.coord.y > v.v.coord.y)
+			vMin.v.coord.y = v.v.coord.y;
+		if (vMin.v.coord.z > v.v.coord.z)
+			vMin.v.coord.z = v.v.coord.z;
+		if (vMax.v.coord.x < v.v.coord.x)
+			vMax.v.coord.x = v.v.coord.x;
+		if (vMax.v.coord.y < v.v.coord.y)
+			vMax.v.coord.y = v.v.coord.y;
+		if (vMax.v.coord.z < v.v.coord.z)
+			vMax.v.coord.z = v.v.coord.z;
+		xDist = CFixVector::Dist (v, m_vCenter);
+		if (m_rads [1] < xDist)
+			m_rads [1] = xDist;
+		}
 	}
 ComputeSideRads ();
 m_extents [0] = vMin;
@@ -390,7 +393,9 @@ for (int i = 0; i < m_nSides; i++) {
 //		From center, go up to 50% of way towards any of the 8 vertices.
 CFixVector CSegment::RandomPoint (void)
 {
-int nVertex = RandShort () % MAX_VERTICES_PER_SEGMENT;
+do {
+	int nVertex = RandShort () % MAX_VERTICES_PER_SEGMENT;
+} while (m_vertices [nVertex] == 0xFFFF);
 CFixVector v = gameData.segs.vertices [m_vertices [nVertex]] - m_vCenter;
 v *= (RandShort ());
 return v + m_vCenter;
@@ -1269,14 +1274,18 @@ gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 float CSegment::FaceSize (ubyte nSide)
 {
 	ushort*	s2v = sideVertIndex [nSide];
+	int		nVertices = 0;
+	short		v [4];
 
-	short		v0 = m_vertices [s2v [0]];
-	short		v1 = m_vertices [s2v [1]];
-	short		v2 = m_vertices [s2v [2]];
-	short		v3 = m_vertices [s2v [3]];
-
-return TriangleSize (gameData.segs.vertices [v0], gameData.segs.vertices [v1], gameData.segs.vertices [v2]) +
-		 TriangleSize (gameData.segs.vertices [v0], gameData.segs.vertices [v2], gameData.segs.vertices [v3]);
+for (int i = 0; i < 4; i++) {
+	ushort h = m_vertices [s2v [0]];
+	if (h != 0xFFFF) 
+		v [nVertices++] = h;
+	}
+float nSize = TriangleSize (gameData.segs.vertices [v [0]], gameData.segs.vertices [v [1]], gameData.segs.vertices [v [2]]);
+if (nVertices == 4)
+nSize += TriangleSize (gameData.segs.vertices [v [0]], gameData.segs.vertices [v [2]], gameData.segs.vertices [v [3]]);
+return nSize;
 }
 
 //------------------------------------------------------------------------------

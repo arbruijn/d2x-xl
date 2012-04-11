@@ -281,6 +281,8 @@ if (xObjIntensity) {
 		ushort *vp = SEGMENTS [nObjSeg].m_vertices;
 		for (iVertex = 0; iVertex < MAX_VERTICES_PER_SEGMENT; iVertex++) {
 			nVertex = vp [iVertex];
+			if (nVertex == 0xFFFF)
+				continue;
 #if DBG
 			if (nVertex == nDbgVertex)
 				nDbgVertex = nDbgVertex;
@@ -607,10 +609,8 @@ if (!gameStates.render.nLightingMethod) {
 			ushort* vp = SEGMENTS [nSegment].m_vertices;
 			for (v = 0; v < MAX_VERTICES_PER_SEGMENT; v++) {
 				nv = vp [v];
-				if ((nv < 0) || (nv > gameData.segs.nLastVertex)) {
-					Int3 ();		//invalid vertex number
+				if (nv == 0xFFFF)
 					continue;	//ignore it, and go on to next one
-					}
 				if (!gameData.render.lights.vertexFlags [nv]) {
 					Assert (nRenderVertices < LEVEL_VERTICES);
 					gameData.render.lights.vertexFlags [nv] = 1;
@@ -698,15 +698,11 @@ if (!bKeepDynColoring)
 
 fix ComputeSegDynamicLight (int nSegment)
 {
+fix sum = 0;
 ushort *verts = SEGMENTS [nSegment].m_vertices;
-fix sum = gameData.render.lights.dynamicLight [*verts++];
-sum += gameData.render.lights.dynamicLight [*verts++];
-sum += gameData.render.lights.dynamicLight [*verts++];
-sum += gameData.render.lights.dynamicLight [*verts++];
-sum += gameData.render.lights.dynamicLight [*verts++];
-sum += gameData.render.lights.dynamicLight [*verts++];
-sum += gameData.render.lights.dynamicLight [*verts++];
-sum += gameData.render.lights.dynamicLight [*verts];
+for (int i = 8; i; i--, verts++)
+	if (*verts != 0xFFFF)
+		sum += gameData.render.lights.dynamicLight [*verts];
 return sum >> 3;
 }
 // ----------------------------------------------------------------------------------------------

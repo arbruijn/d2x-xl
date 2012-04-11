@@ -971,7 +971,8 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 		if (segP->m_function == SEGMENT_FUNC_SKYBOX) {
 			ushort* sv = segP->m_vertices;
 			for (j = 8; j; j--, sv++)
-				pf [*sv].Set (1.0f, 1.0f, 1.0f, 1.0f);
+				if (*sv != 0xFFFF)
+					pf [*sv].Set (1.0f, 1.0f, 1.0f, 1.0f);
 			}
 		}
 	}

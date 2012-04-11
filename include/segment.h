@@ -236,6 +236,7 @@ class CSide {
 		CFixVector& Center (void) { return m_vCenter; }
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }
+		fix AvgRad (void) { return (m_rads [0] + m_rads [1]) / 2; }
 
 		void Setup (short nSegment, ushort* verts, ushort* index, bool bSolid);
 

@@ -44,9 +44,11 @@ if (gameOpts->gameplay.bIdleAnims) {
 		CFixVector	*vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [objP->Index ()];
 
 	for (i = 0; i < 8; i++) {
-		vVertex = gameData.segs.vertices + segP->m_vertices [i];
-		if ((vGoal.v.coord.x == (*vVertex).v.coord.x) && (vGoal.v.coord.y == (*vVertex).v.coord.y) && (vGoal.v.coord.z == (*vVertex).v.coord.z))
-			break;
+		if (segP->m_vertices [i] != 0xFFFF) {
+			vVertex = gameData.segs.vertices + segP->m_vertices [i];
+			if ((vGoal.v.coord.x == (*vVertex).v.coord.x) && (vGoal.v.coord.y == (*vVertex).v.coord.y) && (vGoal.v.coord.z == (*vVertex).v.coord.z))
+				break;
+			}
 		}
 	vVecToGoal = vGoal - objP->info.position.vPos; CFixVector::Normalize (vVecToGoal);
 	if (i == 8)
@@ -63,7 +65,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 		h = 1;
 	if (h && (rand () % 25 == 0)) {
 		j = rand () % 8;
-		if ((j == i) || (rand () % 3 == 0))
+		if ((segP->m_vertices [j] == 0xFFFF) || (j == i) || (rand () % 3 == 0))
 			vGoal = SEGMENTS [objP->info.nSegment].Center ();
 		else
 			vGoal = gameData.segs.vertices [segP->m_vertices [j]];

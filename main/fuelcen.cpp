@@ -244,7 +244,7 @@ matCenP->xDisableTime = MATCEN_LIFE;
 
 //	Create a bright CObject in the CSegment.
 pos = matCenP->vCenter;
-delta = gameData.segs.vertices[SEGMENTS [nSegment].m_vertices [0]] - matCenP->vCenter;
+delta = gameData.segs.vertices [SEGMENTS [nSegment].m_vertices [0]] - matCenP->vCenter;
 pos += delta * (I2X (1)/2);
 nObject = CreateLight (SINGLE_LIGHT_ID, nSegment, pos);
 if (nObject != -1) {

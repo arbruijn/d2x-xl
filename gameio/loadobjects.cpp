@@ -1071,9 +1071,12 @@ void CreateVertexSegmentList (void)
 CArray<short> segCount;
 segCount.Create (gameData.segs.nVertices);
 segCount.Clear ();
-for (int i = 0; i < gameData.segs.nSegments; i++) {
+
+CSegment* segP = SEGMENTS.Buffer ();
+for (int i = gameData.segs.nSegments; i; i--, segP++) {
 	for (int j = 0; j < 8; j++)
-		segCount [SEGMENTS [i].m_vertices [j]]++;
+		if (segP->m_vertices [j] != 0xFFFF)
+			segCount [segP->m_vertices [j]]++;
 	}
 
 CArray<CVertSegRef> vertSegIndex;
@@ -1086,10 +1089,14 @@ for (int h = 0, i = 0; i < gameData.segs.nSegments; i++) {
 	vertSegIndex [i].nIndex = h;
 	h += segCount [i];
 	}
-for (int i = 0; i < gameData.segs.nSegments; i++) {
+
+segP = SEGMENTS.Buffer ();
+for (int i = gameData.segs.nSegments; i; i--, segP++) {
 	for (int j = 0; j < 8; j++) {
-		CVertSegRef* refP = &vertSegIndex [SEGMENTS [i].m_vertices [j]];
-		vertSegs [refP->nIndex + refP->nSegments++] = i;
+		if (segP->m_vertices [j] != 0xFFFF) {
+			CVertSegRef* refP = &vertSegIndex [segP->m_vertices [j]];
+			vertSegs [refP->nIndex + refP->nSegments++] = i;
+			}
 		}
 	}
 }

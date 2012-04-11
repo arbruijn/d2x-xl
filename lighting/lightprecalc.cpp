@@ -627,6 +627,8 @@ for (i = 4; i >= -4; i--) {
 	for (int j = 8; j >= 0; j--) {
 		if (j == 8)
 			v1.Assign (*hitQuery.p1);
+		else if (segP->m_vertices [j] == 0xFFFF)
+			continue;
 		else
 			v1 = FVERTICES [segP->m_vertices [j]];
 		if ((d = CFixVector::Dist (*hitQuery.p0, *hitQuery.p1)) > xMaxDist)

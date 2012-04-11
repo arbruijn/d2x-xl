@@ -208,11 +208,10 @@ for (i = 1, --j; i < j; i++) {
 	if (e.Mag () < I2X (1)/2)
 		Int3 ();
 #endif
-	xSegSize = CFixVector::Dist (gameData.segs.vertices [SEGMENTS [nSegment].m_vertices [0]], 
-										  gameData.segs.vertices [SEGMENTS [nSegment].m_vertices [6]]);
+	xSegSize = SEGMENTS [nSegment].AvgRad ();
 	if (xSegSize > I2X (40))
 		xSegSize = I2X (40);
-	vGoalPos = ptSegs [i].point + e * (xSegSize/4);
+	vGoalPos = ptSegs [i].point + e * (xSegSize / 4);
 	count = 3;
 	while (count) {
 		CHitQuery hitQuery (0, &ptSegs [i].point, &vGoalPos, ptSegs [i].nSegment, objP->Index (), objP->info.xSize, objP->info.xSize);

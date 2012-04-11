@@ -220,15 +220,18 @@ int BossFitsInSeg (CObject *bossObjP, int nSegment)
 	int			nObject = OBJ_IDX (bossObjP);
 	int			nPos;
 	CFixVector	vSegCenter, vVertPos;
+	CSegment*	segP = SEGMENTS + nSegment;
 
 gameData.collisions.nSegsVisited = 0;
-vSegCenter = SEGMENTS [nSegment].Center ();
+vSegCenter = segP->Center ();
 for (nPos = 0; nPos < 9; nPos++) {
 	if (!nPos)
 		bossObjP->info.position.vPos = vSegCenter;
+	else if (segP->m_vertices [nPos - 1] == 0xFFFF)
+		continue;
 	else {
-		vVertPos = gameData.segs.vertices [SEGMENTS [nSegment].m_vertices [nPos-1]];
-		bossObjP->info.position.vPos = CFixVector::Avg(vVertPos, vSegCenter);
+		vVertPos = gameData.segs.vertices [segP->m_vertices [nPos - 1]];
+		bossObjP->info.position.vPos = CFixVector::Avg (vVertPos, vSegCenter);
 		}
 	OBJECTS [nObject].RelinkToSeg (nSegment);
 	if (!ObjectIntersectsWall (bossObjP))
