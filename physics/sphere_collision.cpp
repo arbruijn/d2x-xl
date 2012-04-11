@@ -166,7 +166,7 @@ float DistToFace (CFloatVector3 vRef, short nSegment, ubyte nSide, CFloatVector3
 	CSide*			sideP = SEGMENTS [nSegment].Side (nSide);
 	CFloatVector	h, r;
 	ushort*			vertices = sideP->m_vertices;
-	int				i, j, nCorners = sideP->m_corners;
+	int				i, j, nCorners = sideP->m_nCorners;
 	float				d = 0.0f;
 
 r.Assign (vRef);

@@ -1138,7 +1138,7 @@ void CQuadMeshBuilder::SplitIn1or2Tris (void)
 {
 	static short	n2TriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
 
-	int			h, i, j, k, v;
+	int			h, i, j, k, v, nType;
 	short			*triVertP;
 	tTexCoord2f	lMapTexCoord [4];
 
@@ -1147,13 +1147,14 @@ if ((m_faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_faceP->m_info
 	nDbgSeg = nDbgSeg;
 #endif
 SetupLMapTexCoord (lMapTexCoord);
-h = (m_sideP->m_nType == SIDE_IS_TRI_13);
-for (i = 0; i <= (m_sideP->m_nType != SIDE_IS_TRIANGLE); i++, m_triP++) {
+nType = (m_sideP->m_nType == SIDE_IS_TRI_13);
+h = (m_sideP->m_nType == SIDE_IS_TRIANGLE) ? 1 : 2;
+for (i = 0; i < h; i++, m_triP++) {
 	FACES.nTriangles++;
 	m_faceP->m_info.nTris++;
 	m_triP->nFace = m_faceP - FACES.faces;
 	m_triP->nIndex = m_vertexP - FACES.vertices;
-	triVertP = n2TriVerts [h][i];
+	triVertP = n2TriVerts [nType][i];
 	for (j = 0; j < 3; j++) {
 		k = triVertP [j];
 		v = m_sideVerts [k];

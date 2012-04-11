@@ -97,7 +97,7 @@ class CQuadMeshBuilder {
 		void SetupFace (void);
 		void InitTexturedFace (void);
 		void InitColoredFace (short nSegment);
-		void SplitIn2Tris (void);
+		void SplitIn1or2Tris (void);
 		void SplitIn4Tris (void);
 		void BuildSlidingFaceList (void);
 		int IsBigFace (ushort* sideVerts);

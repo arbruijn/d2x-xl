@@ -896,11 +896,13 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 if (gameTopFileInfo.fileinfoVersion < 17) {
 	CSegment* segP = SEGMENTS.Buffer ();
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++, segP++) {
-		for (nSide = 0; nSide < segP->m_nSides; nSide++)
+		for (nSide = 0; nSide < segP->m_nSides; nSide++) {
 			if ((wallP = segP->Wall (nSide))) {
 				wallP->nSegment = nSegment;
 				wallP->nSide = nSide;
 				}
+			}
+		}
 	}
 }
 

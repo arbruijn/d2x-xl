@@ -450,7 +450,6 @@ void BuildRenderObjLists (int nSegCount, int nThread)
 {
 PROF_START
 	CObject*		objP;
-	CSegment*	segP;
 	CSegMasks	mask;
 	short			nSegment, nNewSeg, nChild, nSide, sideFlag;
 	int			nListPos;

@@ -452,7 +452,7 @@ void CLightmapManager::Build (CSegFace* faceP, int nThread)
 	CRGBColor		*texColorP;
 	CFloatVector3	color;
 	int				w, h, x, y, yMin, yMax;
-	ubyte				nTriangles = faceP->nTriangles - 1;
+	ubyte				nTriangles = faceP->m_info.nTriangles - 1;
 	short				nSegment = faceP->m_info.nSegment;
 	short				nSide = faceP->m_info.nSide;
 	bool				bBlack, bWhite;

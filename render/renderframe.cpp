@@ -848,7 +848,7 @@ StartTime (0);
 void UpdateSlidingFaces (void)
 {
 	CSegFace*		faceP;
-	short				h, k, nOffset;
+	short				nOffset;
 	tTexCoord2f*	texCoordP, *ovlTexCoordP;
 	tUVL*				uvlP;
 
@@ -863,17 +863,17 @@ for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 	nOffset = faceP->m_info.nType == SIDE_IS_TRI_13;
 	if (gameStates.render.bTriangleMesh) {
 		static short nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
-		int j = faceP->nTriangles * 3;
+		int j = faceP->m_info.nTriangles * 3;
 		for (int i = 0; i < j; i++) {
-			k = nTriVerts [nOffset][i];
+			short k = nTriVerts [nOffset][i];
 			texCoordP [i].v.u = X2F (uvlP [k].u);
 			texCoordP [i].v.v = X2F (uvlP [k].v);
 			RotateTexCoord2f (ovlTexCoordP [i], texCoordP [i], faceP->m_info.nOvlOrient);
 			}
 		}
 	else {
-		int j = 2 * faceP->nTriangles;
-		for (i = 0; i < j; i++) {
+		int j = 2 * faceP->m_info.nTriangles;
+		for (int i = 0; i < j; i++) {
 			texCoordP [i].v.u = X2F (uvlP [(i + nOffset) % 4].u);
 			texCoordP [i].v.v = X2F (uvlP [(i + nOffset) % 4].v);
 			RotateTexCoord2f (ovlTexCoordP [i], texCoordP [i], faceP->m_info.nOvlOrient);

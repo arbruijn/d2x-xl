@@ -258,7 +258,7 @@ markedSegs [nSegment] = 1;
 CSegment* segP = SEGMENTS + nSegment;
 for (i = 0; i < segP->m_nSides; i++) {
 	child = segP->m_children [i];
-	if (IS_CHILD (child) && (seGP->IsDoorWay (i, NULL) & WID_TRANSPARENT_FLAG) && !markedSegs [child])
+	if (IS_CHILD (child) && (segP->IsDoorWay (i, NULL) & WID_TRANSPARENT_FLAG) && !markedSegs [child])
 		AmbientMarkBfs (child, markedSegs, nDepth - 1);
 	}
 }
