@@ -443,8 +443,7 @@ return xDistToGoal;
 bool MoveObjectToLegalSpot (CObject *objP, int bMoveToCenter)
 {
 	CFixVector	vSegCenter, vOrigPos = objP->info.position.vPos;
-	int			i;
-	CSegment		*segP = SEGMENTS + objP->info.nSegment;
+	CSegment*	segP = SEGMENTS + objP->info.nSegment;
 
 #if DBG
 if (objP - OBJECTS == nDbgObj)
@@ -456,7 +455,7 @@ if (bMoveToCenter) {
 	return !ObjectIntersectsWall (objP);
 	}
 else {
-	for (i = 0; i segP->m_nSides; i++) {
+	for (int i = 0; i < segP->m_nSides; i++) {
 		if (segP->IsDoorWay ((short) i, objP) & WID_PASSABLE_FLAG) {
 			vSegCenter = SEGMENTS [segP->m_children [i]].Center ();
 			objP->info.position.vPos = vSegCenter;

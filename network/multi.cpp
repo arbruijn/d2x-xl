@@ -3178,7 +3178,7 @@ if (nTexture >- 1) {
 				 (sideP->m_nOvlTex > 0) &&(nTexture2 > 0))
 				sideP->m_nOvlTex = nTexture2;
 			if ((extraGameInfo [1].entropy.nOverrideTextures == 1) && bFullBright)
-				for (int v = 0; v < sideP->m_corners; v++)
+				for (int v = 0; v < sideP->m_nCorners; v++)
 					sideP->m_uvls [v].l = I2X (100);		//max out
 			}
 		}

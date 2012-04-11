@@ -276,7 +276,7 @@ for (int i = 0; i < m_nSides; i++) {
 // scaled distances from the segment's center to each adjacent segment's center
 // scaled with 0xFFFF / max (child distance) of all child distances
 // this is needed for the DACS router to make sure no edge is longer than 0xFFFF units
-for (int i = 0; i < segP->m_nSides; i++) {
+for (int i = 0; i < m_nSides; i++) {
 	fix& dist = m_childDists [1][i];
 	if (0 > m_children [i])
 		dist = 0xFFFF;
