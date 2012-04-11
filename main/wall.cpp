@@ -727,7 +727,8 @@ else if (SHOW_DYN_LIGHT || (cloakWallP->time > CLOAKING_WALL_TIME / 2)) {
 		if (backWallP)
 			backWallP->nType = WALL_CLOAKED;
 		if (!SHOW_DYN_LIGHT) {
-			for (int i = 0; i < 4; i++) {
+			ubyte nCorners = SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_nCorners;
+			for (int i = 0; i < nCorners; i++) {
 				SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = cloakWallP->front_ls [i];
 				if (backWallP)
 					SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = cloakWallP->back_ls [i];
@@ -737,7 +738,8 @@ else if (SHOW_DYN_LIGHT || (cloakWallP->time > CLOAKING_WALL_TIME / 2)) {
 	}
 else {		//fading out
 	fix xLightScale = FixDiv (CLOAKING_WALL_TIME / 2 - cloakWallP->time, CLOAKING_WALL_TIME / 2);
-	for (int i = 0; i < 4; i++) {
+	ubyte nCorners = SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_nCorners;
+	for (int i = 0; i < nCorners; i++) {
 		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = FixMul (cloakWallP->front_ls [i], xLightScale);
 		if (backWallP)
 			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = FixMul (cloakWallP->back_ls [i], xLightScale);
