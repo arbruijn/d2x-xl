@@ -95,6 +95,8 @@ if (segP->Index () == nDbgSeg)
 #endif
 ushort* vertices = segP->m_vertices;
 for (int i = 0; i < 8; i++) {
+	if (vertices [i] == 0xFFFF) 
+		continue;
 #if 0 //DBG
 	RENDERPOINTS [vertices [i]].m_flags = 0;
 #endif
@@ -122,6 +124,8 @@ if (segP->Index () == nDbgSeg)
 #endif
 ushort* vertices = segP->m_vertices;
 for (int i = 0; i < 8; i++) {
+	if (vertices [i] == 0xFFFF) 
+		continue;
 #if 0 //DBG
 	RENDERPOINTS [vertices [i]].m_flags = 0;
 #endif

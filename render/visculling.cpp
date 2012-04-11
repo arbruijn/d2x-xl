@@ -800,17 +800,23 @@ for (l = 0; l < nRenderDepth; l++) {
 					if (sv [i] == nDbgVertex)
 						nDbgVertex = nDbgVertex;
 #endif
-					renderPoints [sv [i]].ProjectAndEncode (transformation, sv [i]);
+					if (sv [i] != 0xFFFF)
+						renderPoints [sv [i]].ProjectAndEncode (transformation, sv [i]);
 					}
 				bRotated = 1;
 				}
 
 			if (bCullIfBehind) {
 				ushort* s2v = segP->Side (nChild)->m_corners;
-				if (renderPoints [s2v [0]].Codes () &
-					 renderPoints [s2v [1]].Codes () &
-					 renderPoints [s2v [2]].Codes () &
-					 renderPoints [s2v [3]].Codes () & CC_BEHIND)
+				ubyte code = CC_BEHIND;
+				int i;
+				for (i = 0; i < 4; i++) {
+					if (s2v [i] == 0xFFFF)
+						continue;
+					if (!renderPoints [s2v [i]].Codes () & CC_BEHIND)
+						break;
+					}
+				if (i < 4)
 					continue; // all face vertices behind the viewer => face invisible to the viewer
 				}
 			childList [nChildren++] = nChild;

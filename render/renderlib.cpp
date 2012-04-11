@@ -57,7 +57,7 @@ if (sideP->m_nType == SIDE_IS_QUAD) {
 	v = gameData.render.mine.viewer.vPos - segP->SideCenter (nSide); //gameData.segs.vertices + segP->m_vertices [sideVertIndex [nSide][0]]);
 	return CFixVector::Dot (sideP->m_normals [0], v) >= 0;
 	}
-v = gameData.render.mine.viewer.vPos - VERTICES [sideP->m_vertices [(sideP->m_nType == SIDE_IS_TRI_02) ? 0 : 3]];
+v = gameData.render.mine.viewer.vPos - VERTICES [sideP->m_vertices [(sideP->m_nType == SIDE_IS_TRI_13) ? 3 : 0]];
 return (CFixVector::Dot (sideP->m_normals [0], v) >= 0) || (CFixVector::Dot (sideP->m_normals [1], v) >= 0);
 #else
 return 1;

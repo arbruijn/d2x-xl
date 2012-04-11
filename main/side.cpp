@@ -78,14 +78,11 @@ else {
 
 void CSide::ComputeRads (void)
 {
-	fix 			d;
-	CFixVector	v;
-
 m_rads [0] = 0x7fffffff;
 m_rads [1] = 0;
 for (int i = 0; i < m_nCorners; i++) {
-	v = CFixVector::Avg (VERTICES [m_vertices [i]], VERTICES [m_vertices [(i + 1) % m_nCorners]]);
-	d = CFixVector::Dist (v, m_vCenter);
+	CFixVector v = CFixVector::Avg (VERTICES [m_vertices [i]], VERTICES [m_vertices [(i + 1) % m_nCorners]]);
+	fix d = CFixVector::Dist (v, m_vCenter);
 	if (m_rads [0] > d)
 		m_rads [0] = d;
 	d = CFixVector::Dist (m_vCenter, VERTICES [m_vertices [i]]);
@@ -843,15 +840,21 @@ if (*p1 == *p0) {
 #endif
 	}
 #endif
+#if 1
+nVertex = m_nMinVertex [0];
+#else
 nVertex = m_vertices [0];
 if (nVertex > m_vertices [2])
 	nVertex = m_vertices [2];
-if ((m_nFaces == 1) && (m_nCorners == 4)) {
+if (m_nFaces == 1) {
 	if (nVertex > m_vertices [1])
 		nVertex = m_vertices [1];
-	if (nVertex > m_vertices [3])
-		nVertex = m_vertices [3];
+	if (m_nCorners == 4) {
+		if (nVertex > m_vertices [3])
+			nVertex = m_vertices [3];
+		}
 	}
+#endif
 if (!(pli = FindPlaneLineIntersection (intersection, gameStates.render.bRendering ? &RENDERPOINTS [nVertex].ViewPos () : VERTICES + nVertex, &vNormal, p0, p1, rad)))
 	return IT_NONE;
 CFixVector vHit = intersection;
