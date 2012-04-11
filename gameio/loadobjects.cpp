@@ -860,9 +860,11 @@ for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 // Make sure non-transparent doors are set correctly.
 static void CheckAndFixDoors (void)
 {
-for (int i = 0; i < gameData.segs.nSegments; i++) {
-	CSide* sideP = SEGMENTS [i].m_sides;
-	for (int j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
+	CSegment* segP = SEGMENTS.Buffer ();
+
+for (int i = 0; i < gameData.segs.nSegments; i++, segP++) {
+	CSide* sideP = segP->m_sides;
+	for (int j = 0; j < segP->m_nSides; j++, sideP++) {
 		CWall* wallP = sideP->Wall ();
 		if (!wallP || (wallP->nType != WALL_DOOR))
 			continue;
@@ -892,9 +894,10 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 		WALLS [i].nTrigger = NO_TRIGGER;	//kill CTrigger
 		}
 if (gameTopFileInfo.fileinfoVersion < 17) {
-	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
-		for (nSide = 0; nSide < 6; nSide++)
-			if ((wallP = SEGMENTS [nSegment].Wall (nSide))) {
+	CSegment* segP = SEGMENTS.Buffer ();
+	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++, segP++) {
+		for (nSide = 0; nSide < segP->m_nSides; nSide++)
+			if ((wallP = segP->Wall (nSide))) {
 				wallP->nSegment = nSegment;
 				wallP->nSide = nSide;
 				}

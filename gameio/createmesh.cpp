@@ -999,11 +999,13 @@ memcpy (m_faceP->m_info.index, m_sideVerts, sizeof (m_faceP->m_info.index));
 m_faceP->m_info.nType = gameStates.render.bTriangleMesh ? m_sideP->m_nType : -1;
 m_faceP->m_info.nSegment = nSegment;
 m_faceP->m_info.nSide = nSide;
+CSide* sideP = SEGMENTS [nSegment].Side (nSide);
+m_faceP->m_info.nTriangles = sideP->m_nCorners - 2;
 m_faceP->m_info.nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWall : (ushort) -1;
 m_faceP->m_info.bAnimation = IsAnimatedTexture (m_faceP->m_info.nBaseTex) || IsAnimatedTexture (m_faceP->m_info.nOvlTex);
 m_faceP->m_info.bHasColor = 0;
-m_faceP->m_info.fRads [0] = X2F (SEGMENTS [nSegment].Side (nSide)->m_rads [0]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
-m_faceP->m_info.fRads [1] = X2F (SEGMENTS [nSegment].Side (nSide)->m_rads [1]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
+m_faceP->m_info.fRads [0] = X2F (sideP->m_rads [0]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
+m_faceP->m_info.fRads [1] = X2F (sideP->m_rads [1]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
 }
 
 //------------------------------------------------------------------------------
@@ -1132,7 +1134,7 @@ m_lMapTexCoordP += 4;
 
 //------------------------------------------------------------------------------
 
-void CQuadMeshBuilder::SplitIn2Tris (void)
+void CQuadMeshBuilder::SplitIn1or2Tris (void)
 {
 	static short	n2TriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
 
@@ -1146,7 +1148,7 @@ if ((m_faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_faceP->m_info
 #endif
 SetupLMapTexCoord (lMapTexCoord);
 h = (m_sideP->m_nType == SIDE_IS_TRI_13);
-for (i = 0; i < 2; i++, m_triP++) {
+for (i = 0; i <= (m_sideP->m_nType != SIDE_IS_TRIANGLE); i++, m_triP++) {
 	FACES.nTriangles++;
 	m_faceP->m_info.nTris++;
 	m_triP->nFace = m_faceP - FACES.faces;
@@ -1460,7 +1462,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++) {
 	if (IsColoredSeg (nSegment) != 0)
 		FACES.nFaces += 6;
 	else {
-		for (nSide = 0, m_sideP = m_segP->m_sides; nSide < 6; nSide++, m_sideP++) {
+		for (nSide = 0, m_sideP = m_segP->m_sides; nSide < m_segP->m_nSides; nSide++, m_sideP++) {
 			m_nWall = m_segP->WallNum (nSide);
 			m_nWallType = IS_WALL (m_nWall) ? WALLS [m_nWall].IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
 			if (m_nWallType)
@@ -1521,7 +1523,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 	m_faceP->m_info.nSegment = nSegment;
 	m_nOvlTexCount = 0;
 	m_segFaceP->nFaces = 0;
-	for (nSide = 0, m_sideP = m_segP->m_sides; nSide < 6; nSide++, m_sideP++) {
+	for (nSide = 0, m_sideP = m_segP->m_sides; nSide < m_segP->m_nSides; nSide++, m_sideP++) {
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
@@ -1548,8 +1550,8 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 				if (!gameStates.render.bPerPixelLighting && (m_sideP->m_nType == SIDE_IS_QUAD) &&
 					 !m_faceP->m_info.bSlide && (m_faceP->m_info.nCamera < 0) && IsBigFace (m_sideVerts))
 					SplitIn4Tris ();
-				else // split in two triangles, regarding any non-planarity
-					SplitIn2Tris ();
+				else
+					SplitIn1or2Tris ();
 				}
 			else
 				SetupFace ();

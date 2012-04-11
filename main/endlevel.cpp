@@ -134,7 +134,7 @@ int ELFindConnectedSide (int seg0, int seg1)
 	CSegment *segP = SEGMENTS + seg0;
 	int		i;
 
-for (i = MAX_SIDES_PER_SEGMENT;i--; )
+for (i = segP->m_nSegments ; i--; )
 	if (segP->m_children [i] == seg1)
 		return i;
 return -1;
@@ -709,7 +709,7 @@ int FindExitSide (CObject *objP)
 CFixVector::NormalizedDir (vPreferred, objP->info.position.vPos, objP->info.vLastPos);
 vSegCenter = segP->Center ();
 nBestSide = -1;
-for (i = MAX_SIDES_PER_SEGMENT; --i >= 0;) {
+for (i = segP->m_nSides; --i >= 0;) {
 	if (segP->m_children [i] != -1) {
 		vSide = segP->SideCenter (i);
 		CFixVector::NormalizedDir (vSide, vSide, vSegCenter);
@@ -958,7 +958,8 @@ if (UpdateObjectSeg (objP, false)) {
 			nExitSide = FindExitSide (objP);
 		if ((nExitSide >= 0) && (segP->m_children [nExitSide] >= 0)) {
 			fix d, dLargest = -I2X (1);
-			for (int i = 0; i < 6; i++) {
+			short nSides = segP->m_nSides;
+			for (int i = 0; i < nSides; i++) {
 				d = CFixVector::Dot (segP->m_sides [i].m_normals [0], exitFlightDataP->objP->info.position.mOrient.m.dir.u);
 				if (d > dLargest) {
 					dLargest = d; 
@@ -974,7 +975,7 @@ if (UpdateObjectSeg (objP, false)) {
 				CFixVector s0p, s1p;
 				fix dist;
 
-				for (i = 0; i < 6; i++)
+				for (i = 0; i < nSides; i++)
 					if (i != nEntrySide && i != nExitSide && i != nUpSide && i != sideOpposite [nUpSide]) {
 						if (s0 == -1)
 							s0 = i;
@@ -1253,11 +1254,12 @@ Assert (var == NUM_VARS);
 // OK, now the data is loaded.  Initialize everything
 //find the exit sequence by searching all segments for a CSide with
 //children == -2
+CSegment* segP = SEGMENTS.Buffer ();
 for (nSegment = 0, gameData.endLevel.exit.nSegNum = -1;
 	  (gameData.endLevel.exit.nSegNum == -1) && (nSegment <= gameData.segs.nLastSegment);
-	  nSegment++)
-	for (nSide = 0; nSide < 6; nSide++)
-		if (SEGMENTS [nSegment].m_children [nSide] == -2) {
+	  nSegment++, segP++)
+	for (nSide = 0; nSide < segP->m_nSides; nSide++)
+		if (segP->m_children [nSide] == -2) {
 			gameData.endLevel.exit.nSegNum = nSegment;
 			nExitSide = nSide;
 			break;

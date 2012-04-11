@@ -76,17 +76,18 @@ return 0;
 void DoPhysicsAlignObject (CObject * objP)
 {
 	CFixVector	desiredUpVec;
-	fixang		delta_ang, roll_ang;
+	fixang		deltaAngle, rollAngle;
 	//CFixVector forvec = {0, 0, I2X (1)};
-	CFixMatrix	temp_matrix;
+	CFixMatrix	m;
 	fix			dot, maxDot = -I2X (1);
 	int			i, nBestSide;
+	CSegment*	segP = SEGMENTS + objP->Segment ();
 
 nBestSide = 0;
 // bank CPlayerData according to CSegment orientation
 //find CSide of CSegment that CPlayerData is most aligned with
-for (i = 0; i < 6; i++) {
-	dot = CFixVector::Dot (SEGMENTS [objP->info.nSegment].m_sides [i].m_normals [0], objP->info.position.mOrient.m.dir.u);
+for (i = 0; i < segP->m_nSides; i++) {
+	dot = CFixVector::Dot (segP->m_sides [i].m_normals [0], objP->info.position.mOrient.m.dir.u);
 	if (maxDot < dot) {
 		maxDot = dot; 
 		nBestSide = i;
@@ -108,24 +109,24 @@ else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
 else
 	return;
 if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.m.dir.f)) < I2X (1)/2) {
-	fixang save_delta_ang;
+	fixang deltaAngleSave;
 	CAngleVector turnAngles;
 
-	temp_matrix = CFixMatrix::CreateFU(objP->info.position.mOrient.m.dir.f, desiredUpVec);
-//	temp_matrix = CFixMatrix::CreateFU(objP->info.position.mOrient.m.v.f, &desiredUpVec, NULL);
-	save_delta_ang =
-	delta_ang = CFixVector::DeltaAngle(objP->info.position.mOrient.m.dir.u, temp_matrix.m.dir.u, &objP->info.position.mOrient.m.dir.f);
-	delta_ang += objP->mType.physInfo.turnRoll;
-	if (abs (delta_ang) > DAMP_ANG) {
+	m = CFixMatrix::CreateFU(objP->info.position.mOrient.m.dir.f, desiredUpVec);
+//	m = CFixMatrix::CreateFU(objP->info.position.mOrient.m.v.f, &desiredUpVec, NULL);
+	deltaAngleSave =
+	deltaAngle = CFixVector::DeltaAngle(objP->info.position.mOrient.m.dir.u, m.m.dir.u, &objP->info.position.mOrient.m.dir.f);
+	deltaAngle += objP->mType.physInfo.turnRoll;
+	if (abs (deltaAngle) > DAMP_ANG) {
 		CFixMatrix mRotate, new_pm;
 
-		roll_ang = (fixang) FixMul (gameData.physics.xTime, ROLL_RATE);
-		if (abs (delta_ang) < roll_ang)
-			roll_ang = delta_ang;
-		else if (delta_ang < 0)
-			roll_ang = -roll_ang;
+		rollAngle = (fixang) FixMul (gameData.physics.xTime, ROLL_RATE);
+		if (abs (deltaAngle) < rollAngle)
+			rollAngle = deltaAngle;
+		else if (deltaAngle < 0)
+			rollAngle = -rollAngle;
 		turnAngles.v.coord.p = turnAngles.v.coord.h = 0;
-		turnAngles.v.coord.b = roll_ang;
+		turnAngles.v.coord.b = rollAngle;
 		mRotate = CFixMatrix::Create(turnAngles);
 		new_pm = objP->info.position.mOrient * mRotate;
 		objP->info.position.mOrient = new_pm;
@@ -145,13 +146,13 @@ void CObject::SetTurnRoll (void)
 {
 	fixang desired_bank = (fixang) -FixMul (mType.physInfo.rotVel.v.coord.y, TURNROLL_SCALE);
 	if (mType.physInfo.turnRoll != desired_bank) {
-		fixang delta_ang, max_roll;
+		fixang deltaAngle, max_roll;
 		max_roll = (fixang) FixMul (ROLL_RATE, gameData.physics.xTime);
-		delta_ang = desired_bank - mType.physInfo.turnRoll;
-		if (labs (delta_ang) < max_roll)
-			max_roll = delta_ang;
+		deltaAngle = desired_bank - mType.physInfo.turnRoll;
+		if (labs (deltaAngle) < max_roll)
+			max_roll = deltaAngle;
 		else
-			if (delta_ang < 0)
+			if (deltaAngle < 0)
 				max_roll = -max_roll;
 		mType.physInfo.turnRoll += max_roll;
 		}

@@ -166,7 +166,7 @@ float DistToFace (CFloatVector3 vRef, short nSegment, ubyte nSide, CFloatVector3
 	CSide*			sideP = SEGMENTS [nSegment].Side (nSide);
 	CFloatVector	h, r;
 	ushort*			vertices = sideP->m_vertices;
-	int				i, j;
+	int				i, j, nCorners = sideP->m_corners;
 	float				d = 0.0f;
 
 r.Assign (vRef);
@@ -181,7 +181,7 @@ for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 		h *= -d;
 		h += r;
 		}
-	if (!PointIsOutsideFace (&h, vertices + j, 5 - sideP->m_nFaces)) {
+	if (!PointIsOutsideFace (&h, vertices + j, nCorners + 1 - sideP->m_nFaces)) {
 		d = float (fabs (d));
 		if (!vHit)
 			return d;
@@ -198,9 +198,9 @@ vertices = sideP->m_corners;
 	CFloatVector	* v0, * v1 = &FVERTICES [vertices [0]];
 	float				minDist = 1e10f;
 
-for (i = 1; i <= 4; i++) {
+for (i = 1; i <= nCorners; i++) {
 	v0 = v1;
-	v1 = &FVERTICES [vertices [i % 4]];
+	v1 = &FVERTICES [vertices [i % nCorners]];
 	FindPointLineIntersection (h, *v0, *v1, r, 1);
 	d = CFloatVector::Dist (h, r);
 	if (minDist > d) {
@@ -693,7 +693,7 @@ if (hitQuery.nSegment == nDbgSeg)
 #	endif
 #if 1
 CSegment* segP = SEGMENTS + hitQuery.nSegment;
-for (int nSide = 0; nSide < 6; nSide++) {
+for (int nSide = 0; nSide < segP->m_nSides; nSide++) {
 	short nSegment = segP->m_children [nSide];
 	if (0 > nSegment)
 		continue;
@@ -1203,7 +1203,7 @@ for (;;) {
 	segP = &SEGMENTS [nStartSeg];
 	sideP = segP->Side (0);
 	// check all sides of current segment whether they are penetrated by the vector p0,p1.
-	for (nSide = 0; nSide < 6; nSide++, sideP++) {
+	for (nSide = 0; nSide < segP->m_nSides; nSide++, sideP++) {
 		nChildSeg = segP->m_children [nSide];
 		if (nChildSeg < 0) {
 			if ((nDestSeg >= 0) && (nStartSeg != nDestSeg))

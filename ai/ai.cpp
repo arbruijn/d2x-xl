@@ -91,10 +91,11 @@ void pae_aux (int nSegment, int nType, int level)
 if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
 	if (newAwareness [nSegment] < nType)
 		newAwareness [nSegment] = nType;
-	for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
-		if (IS_CHILD (SEGMENTS [nSegment].m_children [i])) {
+	CSegment* segP = SEGMENTS + nSegment;
+	for (int i = 0; i < segP->m_nSides; i++) {
+		if (IS_CHILD (segP->m_children [i])) {
 			if (level <= 3) {
-				pae_aux (SEGMENTS [nSegment].m_children [i], (nType == 4) ? nType - 1 : nType, level + 1);
+				pae_aux (segP->m_children [i], (nType == 4) ? nType - 1 : nType, level + 1);
 				}
 			}
 		}

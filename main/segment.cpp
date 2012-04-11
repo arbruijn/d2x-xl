@@ -57,10 +57,12 @@ if (flags & (1 << MAX_SIDES_PER_SEGMENT)) {
 	if (gameData.segs.nLevelVersion < 24) {
 		m_nMatCen = cf.ReadByte ();
 		m_value = char (cf.ReadByte ());
+		m_nSides = 6;
 		}
 	else {
 		m_nMatCen = cf.ReadShort ();
 		m_value = cf.ReadShort ();
+		m_nSides = (gameData.segs.nLevelVersion < 25) ? 6 : cf.ReadByte ();
 		}
 	cf.ReadByte (); // skip
 	}
@@ -83,7 +85,7 @@ for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
 
 void CSegment::ReadChildren (CFile& cf, ubyte flags)
 {
-for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+for (int i = 0; i < m_nSides; i++)
 	m_children [i] = (flags & (1 << i)) ? cf.ReadShort () : -1;
 }
 
@@ -198,12 +200,12 @@ unsigned char wallFlags = bNewFileFormat ? cf.ReadByte () : 0x3f;
 
 int i;
 
-for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+for (i = 0; i < m_nSides; i++)
 	m_sides [i].ReadWallNum (cf, (wallFlags & (1 << i)) != 0);
 
 ushort sideVerts [4];
 
-for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+for (i = 0; i < m_nSides; i++) {
 	GetCornerIndex (i, sideVerts);
 	m_sides [i].Read (cf, sideVerts, m_children [i] == -1);
 	}
@@ -214,7 +216,7 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 
 void CSegment::SaveState (CFile& cf)
 {
-for (int i = 0; i < 6; i++)
+for (int i = 0; i < m_nSides; i++)
 	m_sides [i].SaveState (cf);
 }
 
@@ -223,7 +225,7 @@ for (int i = 0; i < 6; i++)
 
 void CSegment::LoadState (CFile& cf)
 {
-for (int i = 0; i < 6; i++)
+for (int i = 0; i < m_nSides; i++)
 	m_sides [i].LoadState (cf);
 }
 
@@ -231,7 +233,7 @@ for (int i = 0; i < 6; i++)
 
 void CSegment::ComputeSideRads (void)
 {
-for (int i = 0; i < 6; i++)
+for (int i = 0; i < m_nSides; i++)
 	m_sides [i].ComputeRads ();
 }
 
@@ -260,7 +262,7 @@ m_vCenter.Assign (vCenter);
 void CSegment::ComputeChildDists (void)
 {
 // unscaled distances from the segment's center to each adjacent segment's center
-for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+for (int i = 0; i < m_nSides; i++) {
 	fix& dist = m_childDists [0][i];
 	if (0 > m_children [i])
 		dist = -1;
@@ -274,7 +276,7 @@ for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 // scaled distances from the segment's center to each adjacent segment's center
 // scaled with 0xFFFF / max (child distance) of all child distances
 // this is needed for the DACS router to make sure no edge is longer than 0xFFFF units
-for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+for (int i = 0; i < segP->m_nSides; i++) {
 	fix& dist = m_childDists [1][i];
 	if (0 > m_children [i])
 		dist = 0xFFFF;
@@ -353,7 +355,7 @@ CSegMasks CSegment::Masks (const CFixVector& refP, fix xRad)
 
 //check refPoint against each CSide of CSegment. return bitmask
 masks.m_valid = 1;
-for (nSide = 0, faceBit = 1; nSide < 6; nSide++)
+for (nSide = 0, faceBit = 1; nSide < m_nSides; nSide++)
 	masks |= m_sides [nSide].Masks (refP, xRad, 1 << nSide, faceBit);
 return masks;
 }
@@ -374,7 +376,7 @@ return m_sides [nSide].Masks (refP, xRad, 1, faceBit, bCheckPoke);
 //		create new vector normals
 void CSegment::Setup (void)
 {
-for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+for (int i = 0; i < m_nSides; i++) {
 #if DBG
 	if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (i == nDbgSide)))
 		nDbgSeg = nDbgSeg;
@@ -398,7 +400,7 @@ return v + m_vCenter;
 
 int CSegment::HasOpenableDoor (void)
 {
-for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+for (int i = 0; i < m_nSides; i++)
 	if (m_sides [i].IsOpenableDoor ())
 		return i;
 return -1;
@@ -1171,7 +1173,7 @@ int CSegment::TexturedSides (void)
 {
 	int nSides = 0;
 
-for (int i = 0; i < 6; i++)
+for (int i = 0; i < m_nSides; i++)
 	if ((m_children [i] < 0) || m_sides [i].IsTextured ())
 		nSides++;
 return nSides;
@@ -1212,7 +1214,7 @@ return bmBot ? bmBot : bmTop;
 
 int CSegment::ChildIndex (int nChild)
 {
-for (int i = 0; i < 6; i++)
+for (int i = 0; i < m_nSides; i++)
 	if (m_children [i] == nChild)
 		return i;
 return -1;

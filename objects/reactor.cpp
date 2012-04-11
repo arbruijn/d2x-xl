@@ -305,7 +305,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 
 		//	Hack for special control centers which are isolated and not reachable because the
 		//	real control center is inside the boss.
-		for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+		for (i = 0; i < segP->m_nSides; i++)
 			if (IS_CHILD (segP->m_children [i]))
 				break;
 		if (i == MAX_SIDES_PER_SEGMENT)

@@ -998,19 +998,16 @@ if (depth > MAX_BLAST_GLASS_DEPTH)
 
 depth++;
 
-for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+for (nSide = 0; nSide < segP->m_nSides; nSide++) {
 	int			tm;
 	fix			dist;
 	CFixVector	pnt;
 
 	//	Process only walls which have glass.
 	if ((tm = segP->m_sides [nSide].m_nOvlTex)) {
-		int				ec, db;
-		tEffectClip*	ecP;
-
-		ec=gameData.pig.tex.tMapInfoP [tm].nEffectClip;
-		ecP = (ec < 0) ? NULL : gameData.effects.effectP + ec;
-		db = ecP ? ecP->nDestBm : -1;
+		int ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip;
+		tEffectClip* ecP = (ec < 0) ? NULL : gameData.effects.effectP + ec;
+		int db = ecP ? ecP->nDestBm : -1;
 
 		if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
 		 	 ((ec == -1) && (gameData.pig.tex.tMapInfoP [tm].destroyed != -1))) {
@@ -1026,7 +1023,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		}
 	}
 
-for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+for (i = 0; i < segP->m_nSides; i++) {
 	short nSegment = segP->m_children [i];
 
 	if ((nSegment != -1) && !visited [nSegment] && (segP->IsDoorWay (i, NULL) & WID_PASSABLE_FLAG)) {

@@ -120,7 +120,7 @@ while ((head != tail) && (head < nMaxSegs)) {
 	short nSegment = segList [tail++];
 	CSegment	*segP = SEGMENTS + nSegment;
 
-	for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+	for (int i = 0; i < segP->m_nSides; i++) {
 		int nConnSeg = segP->m_children [i];
 		if (!IS_CHILD (nConnSeg))
 			continue;
@@ -165,7 +165,7 @@ if ((OBJECTS [gameData.escort.nObjNum].info.nType == OBJ_ROBOT) &&
 	gameData.escort.nObjNum = objP->Index ();
 	}
 segP = SEGMENTS + OBJECTS [gameData.escort.nObjNum].info.nSegment;
-for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+for (i = 0; i < segP->m_nSides; i++) {
 	CWall* wallP = segP->Wall (i);
 	if (wallP && (wallP->nType == WALL_BLASTABLE) && !(wallP->flags & WALL_BLASTED))
 		return 0;
@@ -552,9 +552,11 @@ return -1;
 //	Return true if it happened, else return false.
 int FindExitSegment (void)
 {
-for (int i = 0; i <= gameData.segs.nLastSegment; i++)
-	for (int j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
-		if (SEGMENTS [i].m_children [j] == -2) {
+	CSegment* segP = SEGMENTS.Buffer ();
+
+for (int i = 0; i <= gameData.segs.nSegments; i++, segP++)
+	for (int j = 0; j < segP->m_nSides; j++)
+		if (segP->m_children [j] == -2) {
 			return i;
 		}
 return -1;

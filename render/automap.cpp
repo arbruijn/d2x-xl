@@ -1350,8 +1350,9 @@ void CAutomap::AddSegmentEdges (CSegment *segP)
 	short		nSegment = segP->Index ();
 	int		bHidden;
 	ushort*	corners;
+	byte		nCorners;
 
-for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+for (nSide = 0; nSide < segP->m_nSides; nSide++) {
 	bHidden = 0;
 	bIsGrate = 0;
 	bNoFade = 0;
@@ -1461,13 +1462,10 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 
 addEdge:
 
-		corners = SEGMENTS [nSegment].Corners (nSide);
-		AddEdge (corners [0], corners [1], color, nSide, nSegment, bHidden, 0, bNoFade);
-		AddEdge (corners [1], corners [2], color, nSide, nSegment, bHidden, 0, bNoFade);
-		AddEdge (corners [2], corners [3], color, nSide, nSegment, bHidden, 0, bNoFade);
-		AddEdge (corners [3], corners [0], color, nSide, nSegment, bHidden, 0, bNoFade);
-
-		if (bIsGrate) {
+		corners = SEGMENTS [nSegment].Corners (nSide, &nCorners);
+		for (int i = 0; i <= nCorners; i++)
+			AddEdge (corners [i], corners [(i + 1) % nCorners], color, nSide, nSegment, bHidden, 0, bNoFade);
+		if (bIsGrate && (nCorners > 3)) {
 			AddEdge (corners [0], corners [2], color, nSide, nSegment, bHidden, 1, bNoFade);
 			AddEdge (corners [1], corners [3], color, nSide, nSegment, bHidden, 1, bNoFade);
 			}
@@ -1480,14 +1478,13 @@ addEdge:
 
 void CAutomap::AddUnknownSegmentEdges (CSegment* segP)
 {
-for (int nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+for (int nSide = 0; nSide < segP->m_nSides; nSide++) {
 	// Only add edges that have no children
 	if (segP->m_children [nSide] == -1) {
-		ushort* corners = segP->Corners (nSide);
-		AddUnknownEdge (corners [0], corners [1]);
-		AddUnknownEdge (corners [1], corners [2]);
-		AddUnknownEdge (corners [2], corners [3]);
-		AddUnknownEdge (corners [3], corners [0]);
+		byte nCorners;
+		ushort* corners = segP->Corners (nSide, &nCorners);
+		for (int i = 0; i <= nCorners; i++)
+			AddUnknownEdge (corners [i], corners [(i + 1) % nCorners]);
 		}
 	}
 }

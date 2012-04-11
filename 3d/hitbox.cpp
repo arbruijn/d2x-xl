@@ -184,7 +184,7 @@ for (i = 0; i < 8; i++) {
 	pv [i].v.coord.y = (hitBoxOffsets [i].v.coord.y ? vMin.v.coord.y : vMax.v.coord.y) + vOffset.v.coord.y;
 	pv [i].v.coord.z = (hitBoxOffsets [i].v.coord.z ? vMin.v.coord.z : vMax.v.coord.z) + vOffset.v.coord.z;
 	}
-for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
+for (i = 0, pf = phb->box.faces; i < m_nSides; i++, pf++) {
 	*pf->n = CFixVector::Normal (pv [hitboxFaceVerts [i][0]], pv [hitboxFaceVerts [i][1]], pv [hitboxFaceVerts [i][2]]);
 	}
 }
@@ -220,7 +220,7 @@ transformation.Begin (vPos ? vPos : &objP->info.position.vPos, &objP->info.posit
 for (; iModel <= nModels; iModel++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++)
 		transformation.Transform (rotVerts + i, pmhb->box.vertices + i, 0);
-	for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
+	for (i = 0, pf = phb->faces; i < m_nSides; i++, pf++) {
 		for (j = 0; j < 4; j++)
 			pf->dir [j] = rotVerts [hitboxFaceVerts [i][j]];
 		VmVecNormal (pf->n + 1, pf->dir, pf->dir + 1, pf->dir + 2);
@@ -261,7 +261,7 @@ for (; iBox <= nBoxes; iBox++) {
 		rotVerts [i] = *viewP * hb [iBox].box.vertices [i];
 		rotVerts [i] += *vPos;
 		}
-	for (i = 0, pf = hb [iBox].box.faces; i < 6; i++, pf++) {
+	for (i = 0, pf = hb [iBox].box.faces; i < m_nSides; i++, pf++) {
 		for (j = 0; j < 4; j++)
 			pf->v [j] = rotVerts [hitboxFaceVerts [i][j]];
 		pf->n [1] = CFixVector::Normal (pf->v [0], pf->v [1], pf->v [2]);

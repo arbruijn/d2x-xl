@@ -37,7 +37,7 @@ ubyte CSegment::GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehi
 {
 	ubyte		mask = 0;
 
-for (int nSide = 0; nSide < 6; nSide++)
+for (int nSide = 0; nSide < m_nSides; nSide++)
 	mask |= m_sides [nSide].Dist (refP, xSideDists [nSide], bBehind, 1 << nSide);
 return mask;
 }
@@ -48,7 +48,7 @@ ubyte CSegment::GetSideDistsf (const CFloatVector& refP, float* fSideDists, int 
 {
 	ubyte		mask = 0;
 
-for (int nSide = 0; nSide < 6; nSide++)
+for (int nSide = 0; nSide < m_nSides; nSide++)
 	mask |= m_sides [nSide].Distf (refP, fSideDists [nSide], bBehind, 1 << nSide);
 return mask;
 }
@@ -75,7 +75,7 @@ if (!(centerMask = segP->GetSideDists (vPos, xSideDists, 1)))		//we're in the ol
 for (;;) {
 	nMaxSide = -1;
 	xMaxDist = 0; // find only sides we're behind as seen from inside the current segment
-	for (nSide = 0, bit = 1; nSide < 6; nSide ++, bit <<= 1)
+	for (nSide = 0, bit = 1; nSide < segP->m_nSides; nSide++, bit <<= 1)
 		if ((centerMask & bit) && (xTolerance || (segP->m_children [nSide] > -1)) && (xSideDists [nSide] < xMaxDist)) {
 			if (xTolerance && (xTolerance >= -xSideDists [nSide]) && (xTolerance >= segP->Side (nSide)->DistToPoint (vPos))) 
 				return nCurSeg;
@@ -112,7 +112,7 @@ if (!(centerMask = segP->GetSideDistsf (vPos, fSideDists, 1)))		//we're in the o
 for (;;) {
 	nMaxSide = -1;
 	fMaxDist = 0; // find only sides we're behind as seen from inside the current segment
-	for (nSide = 0, bit = 1; nSide < 6; nSide ++, bit <<= 1)
+	for (nSide = 0, bit = 1; nSide < segP->m_nSides; nSide++, bit <<= 1)
 		if ((centerMask & bit) && (fSideDists [nSide] < fMaxDist)) {
 			if ((fTolerance >= -fSideDists [nSide])  && (fTolerance >= segP->Side (nSide)->DistToPointf (vPos))) {
 #if DBG
@@ -255,9 +255,10 @@ void AmbientMarkBfs (short nSegment, sbyte* markedSegs, int nDepth)
 if (nDepth < 0)
 	return;
 markedSegs [nSegment] = 1;
-for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
-	child = SEGMENTS [nSegment].m_children [i];
-	if (IS_CHILD (child) && (SEGMENTS [nSegment].IsDoorWay (i, NULL) & WID_TRANSPARENT_FLAG) && !markedSegs [child])
+CSegment* segP = SEGMENTS + nSegment;
+for (i = 0; i < segP->m_nSides; i++) {
+	child = segP->m_children [i];
+	if (IS_CHILD (child) && (seGP->IsDoorWay (i, NULL) & WID_TRANSPARENT_FLAG) && !markedSegs [child])
 		AmbientMarkBfs (child, markedSegs, nDepth - 1);
 	}
 }
@@ -282,7 +283,7 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++) {
 CSegment	*segP = SEGMENTS.Buffer ();
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 	CSide	*sideP = segP->m_sides;
-	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
+	for (j = 0; j < segP->m_nSides; j++, sideP++) {
 		if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & tmi_bit) ||
 			 (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & tmi_bit)) {
 			if (!IS_CHILD (segP->m_children [j]) || IS_WALL (sideP->m_nWall)) {

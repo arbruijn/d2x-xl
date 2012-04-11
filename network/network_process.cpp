@@ -44,7 +44,7 @@ void NetworkProcessMonitorVector (int vector)
 	CSide		*sideP;
 
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
-	for (j = 0, sideP = segP->m_sides; j < 6; j++, sideP++) {
+	for (j = 0, sideP = segP->m_sides; j < segP->m_nSides; j++, sideP++) {
 		if (((tm = sideP->m_nOvlTex) != 0) &&
 				((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) &&
 				((bm = gameData.effects.effectP [ec].nDestBm) != -1)) {

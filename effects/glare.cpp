@@ -139,15 +139,15 @@ else {
 
 // -----------------------------------------------------------------------------------
 
-int CGlareRenderer::CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* corners)
+int CGlareRenderer::CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* corners, ubyte nCorners)
 {
 	fix		d, d1, d2, dMax = -1;
 	int		i, j;
 
 if (!corners) {
-	corners = SEGMENTS [nSegment].Corners (nSide);
+	corners = SEGMENTS [nSegment].Corners (nSide, &nCorners);
 	}
-for (i = j = 0; j < 4; j++) {
+for (i = j = 0; j < nCorners; j++) {
 	d = CFixVector::Dist (gameData.segs.vertices [corners [j]], gameData.segs.vertices [corners [(j + 1) % 4]]);
 	if (dMax < d) {
 		dMax = d;
@@ -162,13 +162,12 @@ j = i + 1;
 d1 = VmLinePointDist (gameData.segs.vertices [corners [i]],
                       gameData.segs.vertices [corners [j]],
                       gameData.segs.vertices [corners [(j + 1) % 4]]);
-d = CFixVector::Dist (gameData.segs.vertices [corners [i]], gameData.segs.vertices [corners [(j + 1) % 4]]);
-d = CFixVector::Dist (gameData.segs.vertices [corners [j]], gameData.segs.vertices [corners [(j + 1) % 4]]);
-d2 = VmLinePointDist (gameData.segs.vertices [corners [i]],
-                      gameData.segs.vertices [corners [j]],
-                      gameData.segs.vertices [corners [(j + 2) % 4]]);
-d = CFixVector::Dist (gameData.segs.vertices [corners [i]], gameData.segs.vertices [corners [(j + 2) % 4]]);
-d = CFixVector::Dist (gameData.segs.vertices [corners [j]], gameData.segs.vertices [corners [(j + 2) % 4]]);
+if (nCorners < 4)
+	return d2 = d1;
+else
+	d2 = VmLinePointDist (gameData.segs.vertices [corners [i]],
+	                      gameData.segs.vertices [corners [j]],
+		                   gameData.segs.vertices [corners [(j + 2) % 4]]);
 if (h)
 	*h = d1 > d2 ? d1 : d2;
 return i;
@@ -281,7 +280,7 @@ return nTexture;
 
 // -----------------------------------------------------------------------------------
 
-float CGlareRenderer::ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nSegment, short nSide)
+float CGlareRenderer::ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nSegment, short nSide, ubyte& nVertices)
 {
 	CSide*			sideP = SEGMENTS [nSegment].m_sides + nSide;
 	ushort*			corners;
@@ -289,8 +288,8 @@ float CGlareRenderer::ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *v
 	float				fLight = 0;
 	CFloatVector	v;
 
-corners = SEGMENTS [nSegment].Corners (nSide);
-for (i = 0; i < 4; i++) {
+corners = SEGMENTS [nSegment].Corners (nSide, &nVertices);
+for (i = 0; i < nVertices; i++) {
 	fLight += X2F (sideP->m_uvls [i].l);
 	transformation.Transform (sprite [i], gameData.segs.fVertices [corners [i]], 0);
 	}
@@ -514,7 +513,7 @@ return float (sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nInten
 
 // -----------------------------------------------------------------------------------
 
-void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCenter, int nTexture, float fIntensity, int bAdditive, int bColored)
+void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, ubyte nVertices, CFloatVector *vCenter, int nTexture, float fIntensity, int bAdditive, int bColored)
 {
 	CFloatVector color;
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
@@ -535,7 +534,10 @@ else
 bmP->Bind (1);
 OglTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), sprite);
-OglDrawArrays (GL_QUADS, 0, 4);
+if (nVertices == 3)
+	OglDrawArrays (GL_TRIANGLES, 0, 3);
+else
+	OglDrawArrays (GL_QUADS, 0, 4);
 RenderCoronaOutline (sprite, vCenter);
 }
 
@@ -551,6 +553,7 @@ if (fIntensity < 0.01f)
 	CFloatVector	sprite [4], vCenter = CFloatVector::ZERO, vEye = CFloatVector::ZERO;
 	int				nTexture, bAdditive;
 	float				fLight;
+	ubyte				nVertices;
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -559,10 +562,10 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
-fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
+fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide, nVertices);
 fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 //shaderManager.Set ("dMax"), 20.0f);
-RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
+RenderSoftGlare (sprite, nVertices, &vCenter, nTexture, fIntensity, bAdditive,
 					  !automap.Display () || automap.m_visited [nSegment] || !gameOpts->render.automap.bGrayOut);
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))

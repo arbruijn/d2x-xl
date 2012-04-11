@@ -451,6 +451,7 @@ void CLightmapManager::Build (CSegFace* faceP, int nThread)
 	CRGBColor		*texColorP;
 	CFloatVector3	color;
 	int				w, h, x, y, yMin, yMax;
+	ubyte				nTriangles = faceP->nTriangles - 1;
 	short				nSegment = faceP->m_info.nSegment;
 	short				nSide = faceP->m_info.nSide;
 	bool				bBlack, bWhite;
@@ -487,7 +488,7 @@ CFloatVector corners [4] = {
 	FVERTICES [m_data.m_sideVerts [0]],
 	FVERTICES [m_data.m_sideVerts [1]],
 	FVERTICES [m_data.m_sideVerts [2]],
-	FVERTICES [m_data.m_sideVerts [3]],
+	FVERTICES [m_data.m_sideVerts [nTriangles ? 3 : 0]],
 	};
 
 CFloatVector o0 = corners [0];
@@ -501,23 +502,34 @@ CFloatVector::Normalize (o1);
 o1 *= 0.0015f;
 
 CFloatVector o2 = corners [2];
-o2 -= corners [3];
+o2 -= corners [nTriangles ? 3 : 0];
 CFloatVector::Normalize (o2);
 o2 *= 0.0015f;
 
-CFloatVector o3 = corners [3];
-o3 -= corners [0];
-CFloatVector::Normalize (o3);
-o3 *= 0.0015f;
+if (!nTriangles) {
+	corners [0] += o2;
+	corners [0] -= o0;
+	corners [1] += o0;
+	corners [1] -= o1;
+	corners [2] += o1;
+	corners [2] -= o2;
+	}
+else {
+	CFloatVector o3 = corners [3];
+	o3	-= corners [0];
+	CFloatVector::Normalize (o3);
+	o3 *= 0.0015f;
 
-corners [0] += o3;
-corners [0] -= o0;
-corners [1] += o0;
-corners [1] -= o1;
-corners [2] += o1;
-corners [2] -= o2;
-corners [3] += o2;
-corners [3] -= o3;
+	corners [0] += o3;
+	corners [0] -= o0;
+	corners [1] += o0;
+	corners [1] -= o1;
+	corners [2] += o1;
+	corners [2] -= o2;
+	corners [3] += o2;
+	corners [3] -= o3;
+	}
+
 
 CFixVector v0, v1, v2, v3;
 
@@ -537,20 +549,20 @@ CFixVector v3 = VERTICES [m_data.m_sideVerts [3]];
 
 CFixVector dx, dy;
 
-if (m_data.m_nType != SIDE_IS_TRI_13) {
+if (!nTriangles || (m_data.m_nType != SIDE_IS_TRI_13)) {
 	CFixVector l0 = v2 - v1;
 	CFixVector l1 = v1 - v0;
 	CFixVector l2 = v3 - v0;
 	CFixVector l3 = v2 - v3;
 	for (y = yMin; y < yMax; y++) {
-		if (y == 7) 
-			y = y;
 		for (x = 0; x < w; x++, pixelPosP++) {
-			if (y >= x) {
+			if (x <= y) {
 				dx = l0;
 				dy = l1;
 				}
 			else {
+				if (!nTriangles)
+					continue;
 				dx = l2; 
 				dy = l3; 
 				}
@@ -598,6 +610,8 @@ for (y = yMin; y < yMax; y++) {
 		nDbgSeg = nDbgSeg;
 #endif
 	for (x = 0; x < w; x++, pixelPosP++) { 
+		if (!nTriangles && (x > y))
+			continue;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nDbgSeg = nDbgSeg;

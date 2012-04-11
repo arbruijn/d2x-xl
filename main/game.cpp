@@ -1139,15 +1139,15 @@ return 1;
 
 void ComputeSlideSegs (void)
 {
-	int	nSegment, nSide, bIsSlideSeg, nTexture;
+	int			nSegment, nSide, bIsSlideSeg, nTexture;
+	CSegment*	segP = SEGMENTS.Buffer ();
 
 gameData.segs.nSlideSegs = 0;
-for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
+for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++, segP++) {
 	bIsSlideSeg = 0;
-	for (nSide = 0; nSide < 6; nSide++) {
-		nTexture = SEGMENTS [nSegment].m_sides [nSide].m_nBaseTex;
-		if (gameData.pig.tex.tMapInfoP [nTexture].slide_u  ||
-			 gameData.pig.tex.tMapInfoP [nTexture].slide_v) {
+	for (nSide = 0; nSide < segP->m_nSides; nSide++) {
+		nTexture = segP->m_sides [nSide].m_nBaseTex;
+		if (gameData.pig.tex.tMapInfoP [nTexture].slide_u  || gameData.pig.tex.tMapInfoP [nTexture].slide_v) {
 			if (!bIsSlideSeg) {
 				bIsSlideSeg = 1;
 				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSegment = nSegment;
@@ -1166,18 +1166,20 @@ gameData.segs.bHaveSlideSegs = 1;
 
 void SlideTextures (void)
 {
-	int	nSegment, nSide, h, i, j, tmn;
-	ubyte	sides;
-	CSide	*sideP;
-	tUVL	*uvlP;
-	fix	slideU, slideV, xDelta;
+	int			nSegment, nSide, h, i, j, tmn;
+	ubyte			sides;
+	CSegment*	segP;
+	CSide*		sideP;
+	tUVL*			uvlP;
+	fix			slideU, slideV, xDelta;
 
 if (!gameData.segs.bHaveSlideSegs)
 	ComputeSlideSegs ();
 for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 	nSegment = gameData.segs.slideSegs [h].nSegment;
+	segP = SEGMENTS + nSegment;
 	sides = gameData.segs.slideSegs [h].nSides;
-	for (nSide = 0, sideP = SEGMENTS [nSegment].m_sides; nSide < 6; nSide++, sideP++) {
+	for (nSide = 0, sideP = segP->m_sides; nSide < segP->m_nSides; nSide++, sideP++) {
 		if (!(sides & (1 << nSide)))
 			continue;
 		tmn = sideP->m_nBaseTex;
@@ -1189,7 +1191,7 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nSegment = nSegment;
 #endif
-		i = (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX) ? 3 : 8;
+		i = (segP->m_function == SEGMENT_FUNC_SKYBOX) ? 3 : 8;
 		slideU = FixMul (gameData.time.xFrame, slideU << i);
 		slideV = FixMul (gameData.time.xFrame, slideV << i);
 		for (i = 0, uvlP = sideP->m_uvls; i < 4; i++) {
@@ -1320,10 +1322,11 @@ return 1;
 //	Return true if it happened, else return false.
 int MarkPathToExit (void)
 {
-for (int i = 0; i <= gameData.segs.nLastSegment; i++)
-	for (int j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
+for (int i = 0; i <= gameData.segs.nLastSegment; i++) {
+	for (int j = 0, h = SEGMENTS [i].m_nSides; j < h; j++)
 		if (SEGMENTS [i].m_children [j] == -2)
 			return MarkPlayerPathToSegment (i);
+	}
 return 0;
 }
 

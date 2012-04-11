@@ -1037,7 +1037,7 @@ for (;;) {
 	bVisited [nSegment] = nVisited;
 	nHitSide = -1;
 #if USE_SEGRADS
-	for (nSide = 0; nSide < 6; nSide++) {
+	for (nSide = 0; nSide < m_nSides; nSide++) {
 		nChild = segP->m_children [nSide];
 		if ((nChild < 0) || (bVisited [nChild] == nVisited))
 			continue;
@@ -1050,7 +1050,7 @@ for (;;) {
 	if (nHitSide < 0)
 #endif
 	 {
-		for (nSide = 0; nSide < 6; nSide++) {
+		for (nSide = 0; nSide < m_nSides; nSide++) {
 			nChild = segP->m_children [nSide];
 			if ((nChild >= 0) && (bVisited [nChild] == nVisited))
 				continue;

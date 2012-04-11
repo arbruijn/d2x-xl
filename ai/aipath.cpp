@@ -56,7 +56,7 @@ void CreateRandomXlate (sbyte *xt)
 
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 	xt [i] = i;
-for (i = 0; i<MAX_SIDES_PER_SEGMENT; i++) {
+for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	j = (RandShort () * MAX_SIDES_PER_SEGMENT) / (SHORT_RAND_MAX + 1);
 	Assert ((j >= 0) && (j < MAX_SIDES_PER_SEGMENT));
 	h = xt [j];
@@ -317,7 +317,7 @@ while (nCurSeg != nEndSeg) {
 	if (bRandom && (RandShort () < 8192))	//create a different xlate at random time intervals
 		CreateRandomXlate (randomXlate);
 
-	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+	for (nSide = 0; nSide < segP->m_nSides; nSide++) {
 		hSide = bRandom ? randomXlate [nSide] : nSide;
 		if (!IS_CHILD (segP->m_children [hSide]))
 			continue;

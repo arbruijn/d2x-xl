@@ -762,8 +762,8 @@ return (d * 10 + h) / 10;
 
 int nPartSeg [MAX_THREADS] = { -1, -1, -1, -1 }; //, -1, -1, -1, -1};
 
-static int nFaceCount [MAX_THREADS] [6];
-static int bSidePokesOut [MAX_THREADS] [6];
+static int nFaceCount [MAX_THREADS][6];
+static int bSidePokesOut [MAX_THREADS][6];
 //static int nVert [6];
 static CFixVector* wallNorm [MAX_THREADS];
 
@@ -782,12 +782,12 @@ if (m_nSegment < 0)
 segP = SEGMENTS + m_nSegment;
 if ((bInit = (m_nSegment != nPartSeg [nThread])))
 	nPartSeg [nThread] = m_nSegment;
-for (nSide = 0, sideP = segP->m_sides; nSide < 6; nSide++, sideP++) {
+for (nSide = 0, sideP = segP->m_sides; nSide < segP->m_nSides; nSide++, sideP++) {
 	if (bInit) {
-		bSidePokesOut [nThread] [nSide] = !sideP->IsPlanar ();
-		nFaceCount [nThread] [nSide] = sideP->m_nFaces;
+		bSidePokesOut [nThread][nSide] = !sideP->IsPlanar ();
+		nFaceCount [nThread][nSide] = sideP->m_nFaces;
 		}
-	nFaces = nFaceCount [nThread] [nSide];
+	nFaces = nFaceCount [nThread][nSide];
 	for (nFace = nInFront = 0; nFace < nFaces; nFace++) {
 		nDist = m_vPos.DistToPlane (sideP->m_normals [nFace],	gameData.segs.vertices [sideP->m_nMinVertex [0]]);
 		if (nDist > -PLANE_DIST_TOLERANCE)
@@ -795,7 +795,7 @@ for (nSide = 0, sideP = segP->m_sides; nSide < 6; nSide++, sideP++) {
 		else
 			wallNorm [nThread] = sideP->m_normals + nFace;
 		}
-	if (!nInFront || (bSidePokesOut [nThread] [nSide] && (nFaces == 2) && (nInFront < 2))) {
+	if (!nInFront || (bSidePokesOut [nThread][nSide] && (nFaces == 2) && (nInFront < 2))) {
 		if (0 > (nChild = segP->m_children [nSide]))
 			return 1;
 		m_nSegment = nChild;

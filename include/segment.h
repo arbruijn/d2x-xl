@@ -27,9 +27,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Version 1 - Initial version
 // Version 2 - Mike changed some shorts to bytes in segments, so incompatible!
 
-#define SIDE_IS_QUAD    1   // render CSide as quadrilateral
-#define SIDE_IS_TRI_02  2   // render CSide as two triangles, triangulated along edge from 0 to 2
-#define SIDE_IS_TRI_13  3   // render CSide as two triangles, triangulated along edge from 1 to 3
+#define SIDE_IS_QUAD			1   // render CSide as quadrilateral
+#define SIDE_IS_TRI_02		2   // render CSide as two triangles, triangulated along edge from 0 to 2
+#define SIDE_IS_TRI_13		3   // render CSide as two triangles, triangulated along edge from 1 to 3
+#define SIDE_IS_TRIANGLE	4
 
 //------------------------------------------------------------------------------
 // Set maximum values for tSegment and face data structures.
@@ -200,6 +201,7 @@ class CSide {
 		ushort			m_nMinVertex [2];
 		short				m_nSegment;
 		ubyte				m_nFaces;
+		ubyte				m_nCorners;
 		ubyte				m_bIsQuad;
 
 	public:
@@ -244,7 +246,11 @@ class CSide {
 			return m_nFaces;
 			}
 		CFixVector* GetCorners (CFixVector* vertices);
-		inline ushort* Corners (void) { return m_corners; }
+		inline ushort* Corners (byte* nCorners = NULL) { 
+			if (nCorners)
+				*nCorners = m_nCorners;
+			return m_corners; 
+			}
 		inline int HasVertex (ushort nVertex) { 
 			for (int i = 0; i < 4; i++)
 				if (m_corners [i] == nVertex)
@@ -275,7 +281,7 @@ class CSide {
 		void SetupCorners (ushort* verts, ushort* index);
 		void SetupVertexList (ushort* verts, ushort* index);
 		void SetupFaceVertIndex (void);
-		void SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index);
+		void SetupAsQuadOrTriangle (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index);
 		void SetupAsTriangles (bool bSolid, ushort* verts, ushort* index);
 	};
 
@@ -289,6 +295,7 @@ class CSegment {
 		ushort		m_vertices [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
 		int			m_objects;    // pointer to objects in this tSegment
 
+		ubyte			m_nSides;
 		ubyte			m_function;
 		ubyte			m_flags;
 		ubyte			m_props;
@@ -378,7 +385,7 @@ class CSegment {
 		void GetNormals (int nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
-		inline ushort* Corners (int nSide) { return m_sides [nSide].Corners (); }
+		inline ushort* Corners (int nSide, byte* nCorners = NULL) { return m_sides [nSide].Corners (nCorners); }
 		inline CFixVector* GetCorners (int nSide, CFixVector* vertices) { return m_sides [nSide].GetCorners (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int ConnectedSide (CSegment* other);
@@ -485,14 +492,15 @@ class CSegFaceInfo {
 		ubyte					bSplit :1;
 		ubyte					bTransparent :1;
 		ubyte					bIsLight :1;
+		ubyte					bAdditive :2;
 		ubyte					bHaveCameraBg :1;
 		ubyte					bAnimation :1;
 		ubyte					bTeleport :1;
 		ubyte					bSlide :1;
 		ubyte					bSolid :1;
-		ubyte					bAdditive :2;
 		ubyte					bSparks :1;
-		ubyte					nRenderType : 2;
+		ubyte					nRenderType :2;
+		ubyte					nTriangles :2;
 		ubyte					bColored :1;
 		ubyte					bCloaked :1;
 		ubyte					bHasColor :1;
@@ -555,7 +563,7 @@ typedef struct tSegFaces {
 //--repair-- } lsegment;
 
 // Globals from mglobal.c
-extern ushort sideVertIndex [MAX_SIDES_PER_SEGMENT][4];       // sideVertIndex[my_side] is list of vertices forming CSide my_side.
+extern ushort sideVertIndex [MAX_SIDES_PER_SEGMENT][4];       // sideVertIndex[my_side] is list of vertices forming side my_side.
 extern char sideOpposite [];                                // sideOpposite [my_side] returns CSide opposite cube from my_side.
 
 // New stuff, 10/14/95: For shooting out lights and monitors.

@@ -83,8 +83,8 @@ void CSide::ComputeRads (void)
 
 m_rads [0] = 0x7fffffff;
 m_rads [1] = 0;
-for (int i = 0; i < 4; i++) {
-	v = CFixVector::Avg (VERTICES [m_vertices [i]], VERTICES [m_vertices [(i + 1) % 4]]);
+for (int i = 0; i < m_nCorners; i++) {
+	v = CFixVector::Avg (VERTICES [m_vertices [i]], VERTICES [m_vertices [(i + 1) % m_nCorners]]);
 	d = CFixVector::Dist (v, m_vCenter);
 	if (m_rads [0] > d)
 		m_rads [0] = d;
@@ -113,7 +113,7 @@ void CSide::SetupCorners (ushort* verts, ushort* index)
 m_corners [0] = verts [index [0]];
 m_corners [1] = verts [index [1]];
 m_corners [2] = verts [index [2]];
-m_corners [3] = verts [index [3]];
+m_corners [3] = verts [index [3 % m_nCorners]];
 }
 
 // -------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ if (m_nType == SIDE_IS_QUAD) {
 	m_vertices [0] = verts [index [0]];
 	m_vertices [1] = verts [index [1]];
 	m_vertices [2] = verts [index [2]];
-	m_vertices [3] = verts [index [3]];
+	m_vertices [3] = verts [index [3 % m_nCorners]];
 	m_nFaces = 1;
 	}
 else if (m_nType == SIDE_IS_TRI_02) {
@@ -196,11 +196,17 @@ else if (m_nType == SIDE_IS_TRI_13) {
 	m_faceVerts [3] = 1;
 	m_faceVerts [4] = 2;
 	}
+else if (m_nType == SIDE_IS_TRIANGLE) {
+	m_faceVerts [0] = 0;
+	m_faceVerts [1] = 1;
+	m_faceVerts [2] = 2;
+	m_faceVerts [3] = 0;
+	}
 }
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index)
+void CSide::SetupAsQuadOrTriangle (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index)
 {
 m_nType = SIDE_IS_QUAD;
 m_normals [0] = 
@@ -310,7 +316,11 @@ void CSide::Setup (short nSegment, ushort* verts, ushort* index, bool bSolid)
 
 m_nSegment = nSegment;
 SetupCorners (verts, index);
-bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
+if (m_nCorners == 3)
+	bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 0xFFFF, vSorted);
+	}
+else 
+	bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
 vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 xDistToPlane = abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSorted [0]]));
@@ -318,16 +328,14 @@ if (bFlip)
 	vNormal.Neg ();
 
 m_bIsQuad = (m_normals [0] == m_normals [1]);
+if (m_nCorners == 3)
+	SetupAsQuadOrTriangle (vNormal, vNormalf, verts, index);
 if (PLANE_DIST_TOLERANCE < DEFAULT_PLANE_DIST_TOLERANCE) {
 	SetupAsTriangles (bSolid, verts, index);
-#if 0
-	if (m_normals [0] == m_normals [1])
-		SetupAsQuad (vNormal, vNormalf, verts, index);
-#endif
 	}
 else {
 	if (xDistToPlane <= PLANE_DIST_TOLERANCE)
-		SetupAsQuad (vNormal, vNormalf, verts, index);
+		SetupAsQuadOrTriangle (vNormal, vNormalf, verts, index);
 	else {
 		SetupAsTriangles (bSolid, verts, index);
 		//this code checks to see if we really should be triangulated, and
@@ -338,7 +346,7 @@ else {
 		int s0 = sign (dist0);
 		int s1 = sign (dist1);
 		if (s0 == 0 || s1 == 0 || s0 != s1)
-			SetupAsQuad (vNormal, vNormalf, verts, index);
+			SetupAsQuadOrTriangle (vNormal, vNormalf, verts, index);
 		}
 	}
 
@@ -346,6 +354,10 @@ m_normals [2] = CFixVector::Avg (m_normals [0], m_normals [1]);
 m_fNormals [2] = CFloatVector::Avg (m_fNormals [0], m_fNormals [1]);
 if (m_nType == SIDE_IS_QUAD) {
 	for (int i = 0; i < 4; i++)
+		AddToVertexNormal (m_vertices [i], vNormal);
+	}
+else if (m_nType == SIDE_IS_TRIANGLE) {
+	for (int i = 0; i < 3; i++)
 		AddToVertexNormal (m_vertices [i], vNormal);
 	}
 else {
@@ -1115,6 +1127,7 @@ else {
 			gameData.render.color.vertBright [sideVerts [i]] = fBrightness;
 		}
 	}
+m_nCorners = (gameData.segs.nLevelVersion < 25) ? 4 : cf.ReadByte ();
 return nType;
 }
 

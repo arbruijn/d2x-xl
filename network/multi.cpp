@@ -3167,22 +3167,22 @@ return -1;
 
 void CSegment::OverrideTextures (short nTexture, short nOldTexture, short nTexture2, int bFullBright, int bForce)
 {
-	int j, v;
-
 nTexture = (nTexture < 0) ? -nTexture : MultiFindGoalTexture (nTexture);
 nOldTexture = (nOldTexture < 0) ? -nOldTexture : MultiFindGoalTexture (nOldTexture);
-if (nTexture >- 1)
-	for (j = 0; j < 6; j++) {
+if (nTexture >- 1) {
+	CSide* sideP = m_sides;
+	for (int j = 0; j < m_nSides; j++, sideP++) {
 		if (bForce || (m_sides [j].m_nBaseTex == nOldTexture)) {
-			m_sides [j].m_nBaseTex = nTexture;
+			sideP->m_nBaseTex = nTexture;
 			if ((extraGameInfo [1].entropy.nOverrideTextures == 1) &&
-				 (m_sides [j].m_nOvlTex > 0) &&(nTexture2 > 0))
-				m_sides [j].m_nOvlTex = nTexture2;
+				 (sideP->m_nOvlTex > 0) &&(nTexture2 > 0))
+				sideP->m_nOvlTex = nTexture2;
 			if ((extraGameInfo [1].entropy.nOverrideTextures == 1) && bFullBright)
-				for (v = 0; v < 4; v++)
-					m_sides [j].m_uvls [v].l = I2X (100);		//max out
+				for (int v = 0; v < sideP->m_corners; v++)
+					sideP->m_uvls [v].l = I2X (100);		//max out
 			}
 		}
+	}
 if (bFullBright)
 	m_xAvgSegLight = I2X (100);	//make static light bright
 }
@@ -3880,8 +3880,9 @@ gameData.multigame.msg.buf [0] = MULTI_LIGHT;
 PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment);
 count += sizeof (int);
 gameData.multigame.msg.buf [count++] = val;
-for (i = 0; i < 6; i++,  count += 2)
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, SEGMENTS [nSegment].m_sides [i].m_nOvlTex);
+CSegment* segP = SEGMENTS + nSegment;
+for (i = 0; i < 6; i++, count += 2)
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, (i < segP->m_nSides) ? segP->m_sides [i].m_nOvlTex : 0);
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 }
 
@@ -3895,8 +3896,9 @@ gameData.multigame.msg.buf [0] = MULTI_LIGHT;
 PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment);
 count += sizeof (int);
 gameData.multigame.msg.buf [count++] = val;
+CSegment* segP = SEGMENTS + nSegment;
 for (i = 0; i < 6; i++, count += 2)
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, SEGMENTS [nSegment].m_sides [i].m_nOvlTex);
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, (i < segP->m_nSides) ? segP->m_sides [i].m_nOvlTex : 0);
 NetworkSendNakedPacket (gameData.multigame.msg.buf, count, nPlayer);
 }
 
@@ -3905,13 +3907,14 @@ NetworkSendNakedPacket (gameData.multigame.msg.buf, count, nPlayer);
 void MultiDoLight (char *buf)
 {
 	ubyte sides = buf [5];
-	short i, seg = GET_INTEL_INT (buf + 1);
+	short i, nSegment = GET_INTEL_INT (buf + 1);
 
+CSegment* segP = SEGMENTS + nSegment;
 buf += 6;
-for (i = 0; i < 6; i++, buf += 2) {
-	if ((sides &(1 << i))) {
-		SubtractLight (seg, i);
-		SEGMENTS [seg].m_sides [i].m_nOvlTex = GET_INTEL_SHORT (buf);
+for (i = 0; i < segP->m_nSides; i++, buf += 2) {
+	if ((sides & (1 << i))) {
+		SubtractLight (nSegment, i);
+		segP->m_sides [i].m_nOvlTex = GET_INTEL_SHORT (buf);
 		}
 	}
 }

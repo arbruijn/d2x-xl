@@ -20,15 +20,15 @@ class CGlareRenderer {
 	private:
 		GLuint CopyDepthTexture (void);
 		void CalcSpriteCoords (CFloatVector *vSprite, CFloatVector *vCenter, CFloatVector *vEye, float dx, float dy, CFloatMatrix *r);
-		int CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* corners);
-		float ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nSegment, short nSide);
+		int CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* corners, ubyte nCorners);
+		float ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nSegment, short nSide, ubyte& nVertices);
 		void ComputeSpriteZRange (CFloatVector *sprite, tIntervalf *zRangeP);
 		float MoveSpriteIn (CFloatVector *sprite, CFloatVector *vCenter, tIntervalf *zRangeP, float fIntensity);
 		void ComputeHardGlare (CFloatVector *sprite, CFloatVector *vCenter, CFloatVector *vNormal);
 		void RenderHardGlare (CFloatVector *sprite, CFloatVector *vCenter, int nTexture, float fLight,
 									 float fIntensity, tIntervalf *zRangeP, int bAdditive, int bColored);
 		float ComputeSoftGlare (CFloatVector *sprite, CFloatVector *vLight, CFloatVector *vEye);
-		void RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCenter, int nTexture, float fIntensity, int bAdditive, int bColored);
+		void RenderSoftGlare (CFloatVector *sprite, ubyte nVertices, CFloatVector *vCenter, int nTexture, float fIntensity, int bAdditive, int bColored);
 	
 };
 

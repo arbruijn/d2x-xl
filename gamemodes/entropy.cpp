@@ -61,7 +61,7 @@ void ConquerRoom (int newOwner, int oldOwner, int roomId)
 gameData.entropy.nTeamRooms [oldOwner]--;
 gameData.entropy.nTeamRooms [newOwner]++;
 for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (); 
-	  i <= gameData.segs.nSegments; 
+	  i < gameData.segs.nSegments; 
 	  i++, segP++) {
 	if ((segP->m_group == roomId) && (segP->m_owner == oldOwner)) {
 		segP->m_owner = newOwner;

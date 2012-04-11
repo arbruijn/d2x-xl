@@ -177,16 +177,17 @@ if (m_bRotate && EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.
 
 int CObject::CheckWallPhysics (void)
 {
-	int	nType = 0, sideMask, nSoundObj;
+	int	nType = 0;
 	short nObject = OBJ_IDX (this);
 
 if (info.nType != OBJ_PLAYER)
 	return 0;
-sideMask = SEGMENTS [info.nSegment].Masks (info.position.vPos, info.xSize).m_side;
+CSegment* segP = SEGMENTS + info.nSegment;
+int sideMask = segP->Masks (info.position.vPos, info.xSize).m_side;
 if (sideMask) {
 	short		nSide;
 	int		bit;
-	for (nSide = 0, bit = 1; nSide < 6; bit <<= 1, nSide++)
+	for (nSide = 0, bit = 1; nSide < segP->m_nSides; bit <<= 1, nSide++)
 		if ((sideMask & bit) && (nType = ApplyWallPhysics (info.nSegment, nSide)))
 			break;
 	}
@@ -196,6 +197,8 @@ if (!nType)
 // type 2,3: sound caused by ship touching a wall
 // type & 1: lava
 // type & 2: water
+int nSoundObj;
+
 if (nType) {
 	short nSound;
 

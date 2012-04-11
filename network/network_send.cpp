@@ -615,16 +615,14 @@ if (bUrgent)
 }
 
 //------------------------------------------------------------------------------
+// send the lights that have been blown out
 
 void NetworkSendSmashedLights (int nPlayer) 
- {
-  // send the lights that have been blown out
-  int i;
-
-for (i = 0;i <= gameData.segs.nLastSegment; i++)
-   if (gameData.render.lights.subtracted [i])
+{
+for (int i = 0; i <= gameData.segs.nLastSegment; i++)
+	if (gameData.render.lights.subtracted [i])
 		MultiSendLightSpecific (nPlayer, i, gameData.render.lights.subtracted [i]);
- }
+}
 
 //------------------------------------------------------------------------------
 
