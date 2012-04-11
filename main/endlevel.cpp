@@ -131,10 +131,9 @@ return (abs (delta0 = a - b) < abs (delta1 = b - a)) ? delta0 : delta1;
 //return though which CSide of seg0 is seg1
 int ELFindConnectedSide (int seg0, int seg1)
 {
-	CSegment *segP = SEGMENTS + seg0;
-	int		i;
+CSegment *segP = SEGMENTS + seg0;
 
-for (i = segP->m_nSegments ; i--; )
+for (int i = 0; i < segP->m_nSides; i++)
 	if (segP->m_children [i] == seg1)
 		return i;
 return -1;

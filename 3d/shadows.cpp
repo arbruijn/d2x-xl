@@ -1050,7 +1050,7 @@ for (;;) {
 	if (nHitSide < 0)
 #endif
 	 {
-		for (nSide = 0; nSide < m_nSides; nSide++) {
+		for (nSide = 0; nSide < segP->m_nSides; nSide++) {
 			nChild = segP->m_children [nSide];
 			if ((nChild >= 0) && (bVisited [nChild] == nVisited))
 				continue;
