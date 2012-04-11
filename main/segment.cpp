@@ -254,7 +254,7 @@ for (int i = 0; i < 8; i++) {
 		nVertices++;
 		}
 	}
-vCenter /= nVertices;
+vCenter /= float (nVertices);
 m_vCenter.Assign (vCenter);
 }
 
@@ -393,8 +393,9 @@ for (int i = 0; i < m_nSides; i++) {
 //		From center, go up to 50% of way towards any of the 8 vertices.
 CFixVector CSegment::RandomPoint (void)
 {
+int nVertex;
 do {
-	int nVertex = RandShort () % MAX_VERTICES_PER_SEGMENT;
+	nVertex = RandShort () % MAX_VERTICES_PER_SEGMENT;
 } while (m_vertices [nVertex] == 0xFFFF);
 CFixVector v = gameData.segs.vertices [m_vertices [nVertex]] - m_vCenter;
 v *= (RandShort ());

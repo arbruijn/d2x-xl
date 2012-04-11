@@ -813,7 +813,7 @@ for (l = 0; l < nRenderDepth; l++) {
 				for (i = 0; i < 4; i++) {
 					if (s2v [i] == 0xFFFF)
 						continue;
-					if (!renderPoints [s2v [i]].Codes () & CC_BEHIND)
+					if (!(renderPoints [s2v [i]].Codes () & CC_BEHIND))
 						break;
 					}
 				if (i < 4)
