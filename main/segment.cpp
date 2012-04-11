@@ -54,8 +54,14 @@ void CSegment::ReadFunction (CFile& cf, ubyte flags)
 {
 if (flags & (1 << MAX_SIDES_PER_SEGMENT)) {
 	m_function = cf.ReadByte ();
-	m_nMatCen = cf.ReadByte ();
-	m_value = char (cf.ReadByte ());
+	if (gameData.segs.nLevelVersion < 24) {
+		m_nMatCen = cf.ReadByte ();
+		m_value = char (cf.ReadByte ());
+		}
+	else {
+		m_nMatCen = cf.ReadShort ();
+		m_value = cf.ReadShort ();
+		}
 	cf.ReadByte (); // skip
 	}
 else {
