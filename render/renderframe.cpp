@@ -333,7 +333,7 @@ return 0;
 
 void FlashMine (void)
 {
-if (gameOpts->app.bEpilepticFriendly || (gameStates.render.nFlashScale && (gameStates.render.nFlashScale != I2X (1))))
+if (gameOpts->app.bEpilepticFriendly || !gameStates.render.nFlashScale)
 	return;
 
 #if 0
@@ -341,14 +341,15 @@ ogl.SetBlendMode (OGL_BLEND_ALPHA);
 glColor4f (0, 0, 0, /*1.0f -*/ X2F (gameStates.render.nFlashScale) * 0.75f);
 #else
 ogl.SetBlendMode (OGL_BLEND_MULTIPLY);
-float color = 1.0f - X2F (gameStates.render.nFlashScale) * 0.75f;
+float color = 1.0f - X2F (gameStates.render.nFlashScale) * 0.8f;
 glColor4f (color, color, color, 1.0f);
 #endif
+ogl.ResetClientStates (1);
 ogl.SetTexturing (false);
 ogl.SetDepthTest (false);
-ogl.ResetClientStates (1);
 ogl.RenderScreenQuad ();
 ogl.SetDepthTest (true);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 }
 
 //------------------------------------------------------------------------------
@@ -367,9 +368,8 @@ if (gameStates.app.bGameRunning && !automap.Display ()) {
 	PROF_END(ptCockpit)
 	}
 paletteManager.RenderEffect ();
-console.Draw ();
 FlashMine ();
-gameStates.app.bSaveScreenShot = gameData.reactor.bDestroyed;
+console.Draw ();
 if (gameStates.app.bShowVersionInfo || gameStates.app.bSaveScreenShot || (gameData.demo.nState == ND_STATE_PLAYBACK))
 	PrintVersionInfo ();
 ogl.SetStereoSeparation (xStereoSeparation);

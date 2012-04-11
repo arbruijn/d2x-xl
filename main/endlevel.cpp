@@ -322,7 +322,7 @@ gameData.endLevel.xCurFlightSpeed = gameData.endLevel.xDesiredFlightSpeed = FLY_
 StartEndLevelFlyThrough (0, gameData.objs.consoleP, gameData.endLevel.xCurFlightSpeed);		//initialize
 HUDInitMessage (TXT_EXIT_SEQUENCE);
 gameStates.render.bOutsideMine = gameStates.render.bExtExplPlaying = 0;
-gameStates.render.nFlashScale = I2X (1);
+gameStates.render.nFlashScale = 0;
 gameStates.gameplay.bMineDestroyed = 0;
 }
 
@@ -472,7 +472,7 @@ if (!gameStates.render.bOutsideMine) {
 			if (objP) {
 				externalExplosion = *objP;
 				objP->Die ();
-				gameStates.render.nFlashScale = 0;	//kill lights in mine
+				gameStates.render.nFlashScale = I2X (1);	//kill lights in mine
 				ext_expl_halflife = objP->info.xLifeLeft;
 				gameStates.render.bExtExplPlaying = 1;
 				}

@@ -100,7 +100,7 @@ void FlashFrame (void)
 if (automap.Display ())
 	return;
 if (!(gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)) {
-	gameStates.render.nFlashScale = I2X (1);
+	gameStates.render.nFlashScale = 0;
 	return;
 	}
 if (gameStates.app.bEndLevelSequence)
@@ -114,14 +114,14 @@ if (gameStates.gameplay.seismic.nMagnitude) {
 		xAddedFlash *= 16;
 	flashAngle += (fixang) FixMul (gameStates.render.nFlashRate, FixMul(gameData.time.xFrame, xAddedFlash+I2X (1)));
 	FixFastSinCos (flashAngle, &gameStates.render.nFlashScale, NULL);
-	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + I2X (3))/4;	//	gets in range 0.5 to 1.0
+	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + I2X (3)) / 4;	//	gets in range 0.5 to 1.0
 	}
 else {
 	flashAngle += (fixang) FixMul (gameStates.render.nFlashRate, gameData.time.xFrame);
 	FixFastSinCos (flashAngle, &gameStates.render.nFlashScale, NULL);
-	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + I2X (1))/2;
+	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + I2X (1)) / 2;
 	if (gameStates.app.nDifficultyLevel == 0)
-		gameStates.render.nFlashScale = (gameStates.render.nFlashScale+I2X (3))/4;
+		gameStates.render.nFlashScale = (gameStates.render.nFlashScale+I2X (3)) / 4;
 	}
 }
 
