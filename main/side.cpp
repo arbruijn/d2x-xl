@@ -107,10 +107,10 @@ return -1;
 
 void CSide::SetupCorners (ushort* verts, ushort* index)
 {
-m_corners [0] = verts [index [0]];
-m_corners [1] = verts [index [1]];
-m_corners [2] = verts [index [2]];
-m_corners [3] = verts [index [3 % m_nCorners]];
+m_nCorners = 0;
+for (int i = 0; i < 4; i++)
+	if (verts [index [i]])
+		m_corners [m_nCorners++] = verts [index [i]]
 }
 
 // -------------------------------------------------------------------------------
@@ -210,7 +210,7 @@ else if (m_nType == SIDE_IS_TRIANGLE) {
 
 void CSide::SetupAsQuadOrTriangle (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index)
 {
-m_nType = SIDE_IS_QUAD;
+m_nType = (m_nCorners == 3) ? SIDE_IS_TRIANGLE : SIDE_IS_QUAD;
 m_normals [0] = 
 m_normals [1] = vNormal;
 m_fNormals [0] = 
@@ -1135,7 +1135,7 @@ else {
 			gameData.render.color.vertBright [sideVerts [i]] = fBrightness;
 		}
 	}
-m_nCorners = (gameData.segs.nLevelVersion < 25) ? 4 : cf.ReadByte ();
+m_nCorners = 4;
 return nType;
 }
 
