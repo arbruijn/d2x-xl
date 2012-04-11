@@ -46,11 +46,11 @@ return gameStates.render.bRendering ? m_rotNorms [nFace] : m_normals [nFace];
 //	The center point is defined to be the average of the 4 points defining the CSide.
 void CSide::ComputeCenter (void)
 {
-CFloatVector vCenter = FVERTICES [m_vertices [0]];
-vCenter += FVERTICES [m_vertices [1]];
-vCenter += FVERTICES [m_vertices [2]];
-vCenter += FVERTICES [m_vertices [3]];
-vCenter /= 4;
+CFloatVector vCenter;
+vCenter.SetZero ();
+for (int i = 0; i < m_nCorners; i++)
+	vCenter += FVERTICES [m_vertices [i]];
+vCenter /= m_nCorners;
 m_vCenter.Assign (vCenter);
 // make sure side center is inside segment
 CFixVector v0 = m_vCenter + m_normals [2];
@@ -121,7 +121,7 @@ m_corners [3] = verts [index [3 % m_nCorners]];
 void CSide::SetupVertexList (ushort* verts, ushort* index)
 {
 m_nFaces = -1;
-if (m_nType == SIDE_IS_QUAD) {
+if ((m_nType == SIDE_IS_QUAD) || (m_nType == SIDE_IS_TRIANGLE)) {
 	m_vertices [0] = verts [index [0]];
 	m_vertices [1] = verts [index [1]];
 	m_vertices [2] = verts [index [2]];
@@ -157,6 +157,11 @@ if (m_nType == SIDE_IS_QUAD) {
 		m_nMinVertex [0] = m_vertices [1];
 	if (m_nMinVertex [0] > m_vertices [3])
 		m_nMinVertex [0] = m_vertices [3];
+	m_nMinVertex [1] = m_nMinVertex [0];
+	}
+else if (m_nType == SIDE_IS_TRIANGLE) {
+	if (m_nMinVertex [0] > m_vertices [1])
+		m_nMinVertex [0] = m_vertices [1];
 	m_nMinVertex [1] = m_nMinVertex [0];
 	}
 else
@@ -725,7 +730,7 @@ else {
 //now do the 2d problem in the i, j plane
 vRef.x = intersection.v.vec [i];
 vRef.y = intersection.v.vec [j];
-nVerts = 5 - m_nFaces;
+nVerts = (m_nCorners == 3) ? 3 : 5 - m_nFaces;
 h = nFace * 3;
 v1 = gameStates.render.bRendering ? &RENDERPOINTS [m_vertices [h]].ViewPos () : VERTICES + m_vertices [h];
 for (nEdge = 1, nEdgeMask = 0; nEdge <= nVerts; nEdge++) {
@@ -765,7 +770,7 @@ if (nEdgeMask == 0)
 //get verts for edge we're behind
 for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
 	;
-nVerts = 5 - m_nFaces;
+nVerts = (m_nCorners == 3) ? 3 : 5 - m_nFaces;
 iFace *= 3;
 if (gameStates.render.bRendering) {
 	v0 = &RENDERPOINTS [m_vertices [iFace + nEdge]].ViewPos ();
@@ -841,7 +846,7 @@ if (*p1 == *p0) {
 nVertex = m_vertices [0];
 if (nVertex > m_vertices [2])
 	nVertex = m_vertices [2];
-if (m_nFaces == 1) {
+if ((m_nFaces == 1) && (m_nCorners == 4)) {
 	if (nVertex > m_vertices [1])
 		nVertex = m_vertices [1];
 	if (nVertex > m_vertices [3])
@@ -859,10 +864,10 @@ if (bCheckRad) {
 	int			i, d;
 	CFixVector	*a, *b;
 
-	b = VERTICES + m_vertices [0];
-	for (i = 1; i <= 4; i++) {
+	b = VERTICES + m_corners [0];
+	for (i = 1; i <= m_nCorners; i++) {
 		a = b;
-		b = VERTICES + m_vertices [i % 4];
+		b = VERTICES + m_corners [i % m_nCorners];
 		d = VmLinePointDist (*a, *b, *p0);
 		if (d < bCheckRad)
 			return IT_POINT;
@@ -891,7 +896,7 @@ if (!(nEdgeMask = PointToFaceRelation (*p0, iFace, vNormal)))
 	return CheckLineToFaceRegular (intersection, p0, p1, rad, iFace, vNormal);
 for (nEdge = 0; !(nEdgeMask & 1); nEdgeMask >>= 1, nEdge++)
 	;
-nVerts = 5 - m_nFaces;
+nVerts = (m_nCorners == 3) ? 3 : 5 - m_nFaces;
 edge_v0 = VERTICES + m_vertices [iFace * 3 + nEdge];
 edge_v1 = VERTICES + m_vertices [iFace * 3 + ((nEdge + 1) % nVerts)];
 vEdge = *edge_v1 - *edge_v0;
