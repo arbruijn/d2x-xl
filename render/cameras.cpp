@@ -141,23 +141,10 @@ else {
 	else
 		a = SEGMENTS [srcSeg].m_sides [srcSide].m_normals [0].ToAnglesVec ();
 	m_data.obj.info.position.mOrient = CFixMatrix::Create(a);
-#if 1
 	if (bTeleport)
 		m_data.obj.info.position.vPos = SEGMENTS [srcSeg].Center ();
 	else
 		m_data.obj.info.position.vPos = SEGMENTS [srcSeg].SideCenter (srcSide);
-#else
-	corners = SEGMENTS [srcSeg].Corners (srcSide);
-	for (i = 0; i < 4; i++) {
-		pv = gameData.segs.vertices + corners [i];
-		m_data.obj.info.position.p.vPos.x += pv->x;
-		m_data.obj.info.position.p.vPos.y += pv->y;
-		m_data.obj.info.position.p.vPos.z += pv->z;
-		}
-	m_data.obj.info.position.p.vPos.x /= 4;
-	m_data.obj.info.position.p.vPos.y /= 4;
-	m_data.obj.info.position.p.vPos.z /= 4;
-#endif
 	m_data.obj.info.nSegment = srcSeg;
 	m_data.bMirror = (tgtSeg == srcSeg) && (tgtSide == srcSide);
 	}

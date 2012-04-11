@@ -316,11 +316,9 @@ void CSide::Setup (short nSegment, ushort* verts, ushort* index, bool bSolid)
 
 m_nSegment = nSegment;
 SetupCorners (verts, index);
-if (m_nCorners == 3)
-	bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 0xFFFF, vSorted);
-	}
-else 
-	bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
+bFlip = (m_nCorners == 3)
+		  ? GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 0xFFFF, vSorted)
+		  : bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
 vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 xDistToPlane = abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSorted [0]]));
@@ -559,8 +557,8 @@ for (i = j = 0; i < m_nFaces; i++, j += 3) {
 	}
 if (minDist < 0x7fffffff)
 	return 0;
-for (i = 0; i < 4; i++) {
-	FindPointLineIntersection (h, VERTICES [m_corners [i]], VERTICES [m_corners [(i + 1) % 4]], v, 1);
+for (i = 0; i < m_nCorners; i++) {
+	FindPointLineIntersection (h, VERTICES [m_corners [i]], VERTICES [m_corners [(i + 1) % m_nCorners]], v, 1);
 	dist = CFixVector::Dist (h, v);
 	if (minDist > dist)
 		minDist = dist;
@@ -590,8 +588,8 @@ for (i = j = 0; i < m_nFaces; i++, j += 3) {
 	}
 if (minDist < 1e30f)
 	return 0;
-for (i = 0; i < 4; i++) {
-	FindPointLineIntersection (h, FVERTICES [m_corners [i]], FVERTICES [m_corners [(i + 1) % 4]], v, 1);
+for (i = 0; i < m_nCorners; i++) {
+	FindPointLineIntersection (h, FVERTICES [m_corners [i]], FVERTICES [m_corners [(i + 1) % m_nCorners]], v, 1);
 	dist = CFloatVector::Dist (h, v);
 	if (minDist > dist)
 		minDist = dist;
@@ -628,12 +626,12 @@ else {
 j = j = nLevels [nLevel];
 
 for (; i >= j; i--) {
-	if (i == 4)
+	if (i == m_nCorners)
 		v0.Assign (Center ());
 	else if (i >= 0)
 		v0 = FVERTICES [m_corners [i]];
 	else
-		v0 = CFloatVector::Avg (FVERTICES [m_corners [4 + i]], FVERTICES [m_corners [(5 + i) & 3]]); // center of face's edges
+		v0 = CFloatVector::Avg (FVERTICES [m_corners [m_nCorners + i]], FVERTICES [m_corners [(m_nCorners + 1 + i) % m_nCorners]]); // center of face's edges
 	if (PointSeesPoint (&v0, &v1, m_nSegment, nDestSeg, 0, nThread))
 		return 1;
 	}
@@ -991,10 +989,12 @@ return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
 
 //------------------------------------------------------------------------------
 
-CFixVector* CSide::GetCorners (CFixVector* vertices) 
+CFixVector* CSide::GetCorners (CFixVector* vertices, ubyte* nCorners) 
 { 
-for (int i = 0; i < 4; i++)
+for (int i = 0; i < m_nCorners; i++)
 	vertices [i] = VERTICES [m_corners [i]];
+if (nCorners)
+	*nCorners = m_nCorners;
 return vertices;
 }
 

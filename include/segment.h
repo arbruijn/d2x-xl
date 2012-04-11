@@ -245,14 +245,14 @@ class CSide {
 			vertices = m_vertices;
 			return m_nFaces;
 			}
-		CFixVector* GetCorners (CFixVector* vertices);
+		CFixVector* GetCorners (CFixVector* vertices, ubyte* nCorners = NULL);
 		inline ushort* Corners (byte* nCorners = NULL) { 
 			if (nCorners)
 				*nCorners = m_nCorners;
 			return m_corners; 
 			}
 		inline int HasVertex (ushort nVertex) { 
-			for (int i = 0; i < 4; i++)
+			for (int i = 0; i < m_nCorners; i++)
 				if (m_corners [i] == nVertex)
 					return 1;
 			return 0;
@@ -386,7 +386,7 @@ class CSegment {
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
 		inline ushort* Corners (int nSide, byte* nCorners = NULL) { return m_sides [nSide].Corners (nCorners); }
-		inline CFixVector* GetCorners (int nSide, CFixVector* vertices) { return m_sides [nSide].GetCorners (vertices); }
+		inline CFixVector* GetCorners (int nSide, CFixVector* vertices, ubyte* nCorners = NULL) { return m_sides [nSide].GetCorners (vertices, nCorners); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int ConnectedSide (CSegment* other);
 		inline CFixVector& Normal (int nSide, int nFace) { return m_sides [nSide].Normal (nFace); }

@@ -209,16 +209,17 @@ return nLights;
 
 double CLightmapManager::SideRad (int nSegment, int nSide)
 {
+	ubyte			nCorners;
 	int			i;
 	double		h, xMin, xMax, yMin, yMax, zMin, zMax;
 	double		dx, dy, dz;
 	ushort*		sideVerts;
 	CFixVector	*v;
 
-sideVerts = SEGMENTS [nSegment].Corners (nSide);
+sideVerts = SEGMENTS [nSegment].Corners (nSide, &nCorners);
 xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
-for (i = 0; i < 4; i++) {
+for (i = 0; i < nCorners; i++) {
 	v = gameData.segs.vertices +sideVerts [i];
 	h = (*v).v.coord.x;
 	if (xMin > h)
