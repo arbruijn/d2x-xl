@@ -54,16 +54,8 @@ void CSegment::ReadFunction (CFile& cf, ubyte flags)
 {
 if (flags & (1 << MAX_SIDES_PER_SEGMENT)) {
 	m_function = cf.ReadByte ();
-	if (gameData.segs.nLevelVersion < 24) {
-		m_nMatCen = cf.ReadByte ();
-		m_value = char (cf.ReadByte ());
-		m_nSides = 6;
-		}
-	else {
-		m_nMatCen = cf.ReadShort ();
-		m_value = cf.ReadShort ();
-		m_nSides = (gameData.segs.nLevelVersion < 25) ? 6 : cf.ReadByte ();
-		}
+	m_nMatCen = cf.ReadByte ();
+	m_value = char (cf.ReadByte ());
 	cf.ReadByte (); // skip
 	}
 else {
@@ -144,8 +136,14 @@ m_xDamage [1] = 0;
 void CSegment::ReadExtras (CFile& cf)
 {
 m_function = cf.ReadByte ();
-m_nMatCen = cf.ReadByte ();
-m_value = cf.ReadByte ();
+if (gameData.segs.nLevelVersion < 24) {
+	m_nMatCen = cf.ReadByte ();
+	m_value = cf.ReadByte ();
+	}
+else {
+	m_nMatCen = cf.ReadShort ();
+	m_value = cf.ReadShort ();
+	}
 m_flags = cf.ReadByte ();
 if (gameData.segs.nLevelVersion <= 20)
 	Upgrade ();
@@ -163,6 +161,7 @@ if (!gameStates.app.bD2XLevel && (m_function == 2))
 
 void CSegment::Read (CFile& cf)
 {
+m_nSides = (gameData.segs.nLevelVersion < 25) ? 6 : cf.ReadByte ();
 #if DBG
 if (Index () == nDbgSeg)
 	nDbgSeg = nDbgSeg;
