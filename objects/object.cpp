@@ -1721,8 +1721,8 @@ int CPositionTracker::Check (int nId)
 
 for (int i = m_nCurPos, j = 0; j < m_nPosCount; j++, i = (i + 1) % POSTRACK_MAXFRAMES) {
 	if (!j) {
-		v0 = m_positions [i].vPos;
-		t0 = m_positions [i].xTime;
+		v1 = m_positions [i].vPos;
+		t1 = m_positions [i].xTime;
 		}
 	else {
 		v0 = v1;
@@ -1731,7 +1731,7 @@ for (int i = m_nCurPos, j = 0; j < m_nPosCount; j++, i = (i + 1) % POSTRACK_MAXF
 		t1 = m_positions [i].xTime;
 		float t = float (t1 - t0);
 		float speed = X2F (CFixVector::Dist (v0, v1) / float (t1 - t0));
-		if (speed > maxSpeed * 1.2f)
+		if (speed > maxSpeed * 2.0f)
 			return 0; // too fast
 		}
 	}

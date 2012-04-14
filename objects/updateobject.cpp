@@ -643,6 +643,7 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 #if DBG
 	if (objP->IsRobot ()) 
 		objP->CheckSpeed ();
+#endif
 	}
 
 #if USE_OPENMP //> 1
