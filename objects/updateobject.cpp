@@ -640,6 +640,9 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 		return 0;
 		PROF_END(ptUpdateObjects)
 		}
+#if DBG
+	if (objP->IsRobot ()) 
+		objP->CheckSpeed ();
 	}
 
 #if USE_OPENMP //> 1

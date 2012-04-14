@@ -217,7 +217,7 @@ else
 		glNormal3f ((GLfloat) X2F (vNormal.v.coord.x), (GLfloat) X2F (vNormal.v.coord.y), (GLfloat) X2F (vNormal.v.coord.z));
 		}
 	else {
-		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 0xFFFF, vSorted);
+		int bFlip = SortVertsForNormal (v [0], v [1], v [2], 0xFFFF, vSorted);
 		vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
 												gameData.segs.vertices [vSorted [1]],
 												gameData.segs.vertices [vSorted [2]]);
@@ -248,7 +248,7 @@ else {
 		vNormal = CFixVector::Normal (pointList [0]->ViewPos (), pointList [1]->ViewPos (), pointList [2]->ViewPos ());
 		}
 	else {
-		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 0xFFFF, vSorted);
+		int bFlip = SortVertsForNormal (v [0], v [1], v [2], 0xFFFF, vSorted);
 		vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
 												gameData.segs.vertices [vSorted [1]],
 												gameData.segs.vertices [vSorted [2]]);

@@ -771,6 +771,31 @@ class CObjDamageInfo {
 
 #include "collision_math.h"
 
+#if DBG
+
+// track object position over up to 120 frames to find out why robots are occasionally jumping!
+
+class CPositionSnapshot {
+	public:
+		fix			xTime;
+		CFixVector	vPos;
+};
+
+#define POSTRACK_MAXFRAMES 120
+
+class CPositionTracker {
+	public:
+		int					m_nCurPos;
+		int					m_nPosCount;
+		CPositionSnapshot m_positions [POSTRACK_MAXFRAMES];
+
+		CPositionTracker () : m_nCurPos (0), m_nPosCount (0) {}
+		void Update (CFixVector& vPos);
+		int Check (int nId);
+};
+
+#endif
+
 class CObject : public CObjectInfo {
 	private:
 		static CArray<ushort>	m_weaponInfo;
@@ -819,10 +844,20 @@ class CObject : public CObjectInfo {
 		bool				m_bSynchronize;
 		int				m_nFrame;
 		int				m_bIgnore [2]; // ignore this object (physics: type = 0, pickup powerup: type = 1)
+#if DBG
+		CPositionTracker	m_posTracker;
+#endif
 
 	public:
 		CObject ();
 		~CObject ();
+
+#if DBG
+		inline int CheckSpeed (void) {
+			m_posTracker.Update (Position ());
+			return m_posTracker.Check (Id ());
+			}
+#endif
 		// initialize a new CObject.  adds to the list for the given CSegment
 		// returns the CObject number
 		int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos,
@@ -1069,9 +1104,6 @@ class CObject : public CObjectInfo {
 		void BashToShield (bool bBash);
 		void BashToEnergy (bool bBash);
 
-		inline bool IsPlayer (void) { return (info.nType == OBJ_PLAYER); }
-		bool IsGuideBot (void);
-		bool IsThief (void);
 
 		inline void Rotate (bool bRotate) { m_bRotate = bRotate; }
 		inline bool Rotation (void) { return m_bRotate; }
@@ -1087,6 +1119,10 @@ class CObject : public CObjectInfo {
 
 		short Visible (void);
 
+		bool IsGuideBot (void);
+		bool IsThief (void);
+		inline bool IsPlayer (void) { return (Type () == OBJ_PLAYER); }
+		inline bool IsRobot (void) { return (Type () == OBJ_ROBOT); }
 		inline bool IsPowerup (void) { return (Type () == OBJ_POWERUP); }
 		inline bool IsWeapon (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsWeapon (Id ()); }
 		inline bool IsEnergyWeapon (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsEnergyWeapon (Id ()); }

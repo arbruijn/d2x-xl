@@ -41,7 +41,7 @@ short FindClosestSeg (CFixVector& vPos);
 //create a matrix that describes the orientation of the given CSegment
 void ExtractOrientFromSegment (CFixMatrix *m,CSegment *seg);
 
-ushort GetVertsForNormal (ushort v0, ushort v1, ushort v2, ushort v3, ushort* vSorted);
+ushort SortVertsForNormal (ushort v0, ushort v1, ushort v2, ushort v3, ushort* vSorted);
 void AddToVertexNormal (int nVertex, CFixVector& vNormal);
 void ComputeVertexNormals (void);
 void ResetVertexNormals (void);

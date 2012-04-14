@@ -1699,4 +1699,47 @@ if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
 }
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CPositionTracker::Update (CFixVector& vPos)
+{
+m_positions [m_nCurPos].vPos = vPos;
+m_positions [m_nCurPos].xTime = gameStates.app.nSDLTicks [0];
+m_nCurPos = (m_nCurPos + 1) % POSTRACK_MAXFRAMES;
+if (m_nPosCount < POSTRACK_MAXFRAMES) 
+	m_nPosCount++;
+}
+
+//------------------------------------------------------------------------------
+
+int CPositionTracker::Check (int nId)
+{
+	CFixVector	v0, v1;
+	fix			t0, t1;
+	float			maxSpeed = X2F (ROBOTINFO (nId).xMaxSpeed [gameStates.app.nDifficultyLevel]);
+
+for (int i = m_nCurPos, j = 0; j < m_nPosCount; j++, i = (i + 1) % POSTRACK_MAXFRAMES) {
+	if (!j) {
+		v0 = m_positions [i].vPos;
+		t0 = m_positions [i].xTime;
+		}
+	else {
+		v0 = v1;
+		t0 = t1;
+		v1 = m_positions [i].vPos;
+		t1 = m_positions [i].xTime;
+		float t = float (t1 - t0);
+		float speed = X2F (CFixVector::Dist (v0, v1) / float (t1 - t0));
+		if (speed > maxSpeed * 1.2f)
+			return 0; // too fast
+		}
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 //eof

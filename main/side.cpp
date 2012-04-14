@@ -110,7 +110,7 @@ void CSide::SetupCorners (ushort* verts, ushort* index)
 m_nCorners = 0;
 for (int i = 0; i < 4; i++)
 	if (verts [index [i]])
-		m_corners [m_nCorners++] = verts [index [i]]
+		m_corners [m_nCorners++] = verts [index [i]];
 }
 
 // -------------------------------------------------------------------------------
@@ -262,31 +262,31 @@ else {
 	ushort	vSorted [4];
 	int		bFlip;
 
-	bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
+	bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
 	if ((vSorted [0] == m_corners [0]) || (vSorted [0] == m_corners [2])) {
 		m_nType = SIDE_IS_TRI_02;
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
-		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 0xFFFF, vSorted);
+		bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 0xFFFF, vSorted);
 		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		m_fNormals [0] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [0].Neg ();
-		bFlip = GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 0xFFFF, vSorted);
+		bFlip = SortVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 0xFFFF, vSorted);
 		m_normals [1] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		m_fNormals [1] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [1].Neg ();
-		GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 0xFFFF, vSorted);
+		SortVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 0xFFFF, vSorted);
 		}
 	else {
 		m_nType = SIDE_IS_TRI_13;
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
-		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [3], 0xFFFF, vSorted);
+		bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [3], 0xFFFF, vSorted);
 		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		m_fNormals [0] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [0].Neg ();
-		bFlip = GetVertsForNormal (m_corners [1], m_corners [2], m_corners [3], 0xFFFF, vSorted);
+		bFlip = SortVertsForNormal (m_corners [1], m_corners [2], m_corners [3], 0xFFFF, vSorted);
 		m_normals [1] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		m_fNormals [1] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 		if (bFlip)
@@ -319,8 +319,8 @@ void CSide::Setup (short nSegment, ushort* verts, ushort* index, bool bSolid)
 m_nSegment = nSegment;
 SetupCorners (verts, index);
 bFlip = (m_nCorners == 3)
-		  ? GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 0xFFFF, vSorted)
-		  : bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
+		  ? SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 0xFFFF, vSorted)
+		  : bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
 vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 xDistToPlane = abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSorted [0]]));

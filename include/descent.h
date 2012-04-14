@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef _OPENMP
 #	include "omp.h"
 #	ifndef _WIN32
-#		define USE_OPENMP		2
+#		define USE_OPENMP	2
 #	endif
 #elif !defined(USE_OPENMP)
 #	define USE_OPENMP		0

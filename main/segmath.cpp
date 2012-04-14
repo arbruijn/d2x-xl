@@ -179,7 +179,7 @@ void ExtractOrientFromSegment (CFixMatrix *m, CSegment *segP)
 //	Return v0, v1, v2 = 3 vertices with smallest numbers.  If *bFlip set, then negate Normal after computation.
 //	Note, pos.v.c.yu cannot just compute the Normal by treating the points in the opposite direction as this introduces
 //	small differences between normals which should merely be opposites of each other.
-ushort GetVertsForNormal (ushort v0, ushort v1, ushort v2, ushort v3, ushort* vSorted)
+ushort SortVertsForNormal (ushort v0, ushort v1, ushort v2, ushort v3, ushort* vSorted)
 {
 	int		i, j;
 	ushort	index [4] = {0, 1, 2, 3};
