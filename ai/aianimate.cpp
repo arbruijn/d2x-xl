@@ -59,8 +59,12 @@ if (gameOpts->gameplay.bIdleAnims) {
 		else
 			h = 0;
 		}
-	else if (MoveTowardsPoint (objP, &vGoal, objP->info.xSize * 3 / 2))
+	else if (MoveTowardsPoint (objP, &vGoal, objP->info.xSize * 3 / 2)) {
+#if DBG
+		objP->CheckSpeed (1);
+#endif
 		h = rand () % 8 == 0;
+		}
 	else
 		h = 1;
 	if (h && (rand () % 25 == 0)) {

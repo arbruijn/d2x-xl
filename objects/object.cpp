@@ -1702,8 +1702,9 @@ if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CPositionTracker::Update (CFixVector& vPos)
+void CPositionTracker::Update (CFixVector& vPos, byte bIdleAnimation)
 {
+m_positions [m_nCurPos].bIdleAnimation = bIdleAnimation; 
 m_positions [m_nCurPos].vPos = vPos;
 m_positions [m_nCurPos].xTime = gameStates.app.nSDLTicks [0];
 m_nCurPos = (m_nCurPos + 1) % POSTRACK_MAXFRAMES;

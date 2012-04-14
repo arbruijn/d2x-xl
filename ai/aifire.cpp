@@ -526,7 +526,7 @@ else {	//	---------------------------------------------------------------
 	if (RandShort ()/2 < FixMul (gameData.time.xFrame, (gameStates.app.nDifficultyLevel << 12) + 0x4000)) {
 		if ((!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailP)) &&
 			 (gameData.ai.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
-			CFixVector::NormalizedDir(vLastPos, gameData.ai.target.vBelievedPos, objP->info.position.vPos);
+			CFixVector::NormalizedDir (vLastPos, gameData.ai.target.vBelievedPos, objP->info.position.vPos);
 			dot = CFixVector::Dot (objP->info.position.mOrient.m.dir.f, vLastPos);
 			if (dot >= I2X (7) / 8) {
 				if (aiP->CURRENT_GUN < botInfoP->nGuns) {
