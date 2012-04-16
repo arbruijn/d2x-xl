@@ -217,8 +217,6 @@ if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 
 //------------------------------------------------------------------------------
 
-GLhandleARB	genShaderProg = 0;
-
 int CShaderManager::Create (int nShader)
 {
 if ((nShader < 0) || (nShader >= int (m_shaders.ToS ())))

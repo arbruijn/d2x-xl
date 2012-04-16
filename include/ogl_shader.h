@@ -12,10 +12,6 @@
 #include "oglmatrix.h"
 
 
-extern GLhandleARB	genShaderProg;
-
-void OglInitShaders (void);
-
 typedef struct tShaderData {
 	GLhandleARB		shaders [2];
 	GLhandleARB		program;
