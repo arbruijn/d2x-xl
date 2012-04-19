@@ -1731,9 +1731,11 @@ for (int i = m_nCurPos, j = 0; j < m_nPosCount; j++, i = (i + 1) % POSTRACK_MAXF
 		v1 = m_positions [i].vPos;
 		t1 = m_positions [i].xTime;
 		float t = float (t1 - t0);
-		float speed = X2F (CFixVector::Dist (v0, v1) / float (t1 - t0));
-		if (speed > maxSpeed * 2.0f)
-			return 0; // too fast
+		if (t > 0.0) {
+			float speed = X2F (CFixVector::Dist (v0, v1) / t;
+			if (speed > maxSpeed * 2.0f)
+				return 0; // too fast
+			}
 		}
 	}
 return 1;

@@ -207,7 +207,7 @@ for (;;) {
 				FixSwap (&uvl_val->v);
 			}
 			UShortSwap (WORDPTR (dataP + 28));
-			for (i=0;i<n;i++)
+			for (i = 0; i < n; i++)
 				UShortSwap (WORDPTR (dataP + 30 + (i * 2)));
 			dataP += 30 + ((n & ~1) + 1) * 2 + n * 12;
 			break;
@@ -443,7 +443,6 @@ for (;;) {
 		if (G3CheckNormalFacing (*VECPTR (p+4), *VECPTR (p+16)) > 0)
 #endif
 		 {
-			int i;
 			//fix l = X2I (32 * xModelLight);
 			CCanvas::Current ()->SetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * gameStates.render.grAlpha));
 			CCanvas::Current ()->FadeColorRGB (1.0);
@@ -453,7 +452,7 @@ for (;;) {
 				colorP->Blue () = (float) CCanvas::Current ()->Color ().Blue () / 255.0f;
 				}
 			p += 30;
-			for (i = 0; i < nVerts; i++)
+			for (int i = 0; i < nVerts; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 			G3DrawPoly (nVerts, pointList);
 			}
@@ -486,13 +485,12 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			uvlList = reinterpret_cast<tUVL*> (p + 30 + (nVerts | 1) * 2);
-			for (i = 0; i < nVerts; i++)
-				uvlList [i].l = l;
-
 			if (colorP)
 				paletteManager.Game ()->ToRgbaf (modelBitmaps [WORDVAL (p+28)]->AvgColor (), *colorP);
 			p += 30;
+			uvlList = reinterpret_cast<tUVL*> (p + (nVerts | 1) * 2);
+			for (i = 0; i < nVerts; i++)
+				uvlList [i].l = l;
 			for (i = 0; i < nVerts; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 			tMapColor = gameData.objs.color;
