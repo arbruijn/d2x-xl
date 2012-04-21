@@ -591,7 +591,7 @@ for (i = nSegment * 6, segP = SEGMENTS + nSegment; nSegment < j; nSegment++, seg
 	segP->GetSideDists (segP->m_vCenter, xSideDists, 0);
 	xMinDist = 0x7fffffff;
 #endif
-	for (nSide = 0, sideP = segP->m_sides; nSide < segP->m_nSides; nSide++, i++) {
+	for (nSide = 0, sideP = segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, i++) {
 		segP->ComputeSideCenter (nSide);
 #if CALC_SEGRADS
 		if (xMinDist > xSideDists [nSide])

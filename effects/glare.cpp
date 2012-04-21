@@ -139,15 +139,15 @@ else {
 
 // -----------------------------------------------------------------------------------
 
-int CGlareRenderer::CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* corners, ubyte nCorners)
+int CGlareRenderer::CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* corners)
 {
 	fix		d, d1, d2, dMax = -1;
 	int		i, j;
 
 if (!corners) {
-	corners = SEGMENTS [nSegment].Corners (nSide, &nCorners);
+	corners = SEGMENTS [nSegment].Corners (nSide);
 	}
-for (i = j = 0; j < nCorners; j++) {
+for (i = j = 0; j < 4; j++) {
 	d = CFixVector::Dist (gameData.segs.vertices [corners [j]], gameData.segs.vertices [corners [(j + 1) % 4]]);
 	if (dMax < d) {
 		dMax = d;
@@ -288,8 +288,8 @@ float CGlareRenderer::ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *v
 	float				fLight = 0;
 	CFloatVector	v;
 
-corners = SEGMENTS [nSegment].Corners (nSide, &nVertices);
-for (i = 0; i < nVertices; i++) {
+corners = SEGMENTS [nSegment].Corners (nSide);
+for (i = 0; i < 4; i++) {
 	fLight += X2F (sideP->m_uvls [i].l);
 	transformation.Transform (sprite [i], gameData.segs.fVertices [corners [i]], 0);
 	}

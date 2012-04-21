@@ -1145,7 +1145,7 @@ void ComputeSlideSegs (void)
 gameData.segs.nSlideSegs = 0;
 for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++, segP++) {
 	bIsSlideSeg = 0;
-	for (nSide = 0; nSide < segP->m_nSides; nSide++) {
+	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		nTexture = segP->m_sides [nSide].m_nBaseTex;
 		if (gameData.pig.tex.tMapInfoP [nTexture].slide_u  || gameData.pig.tex.tMapInfoP [nTexture].slide_v) {
 			if (!bIsSlideSeg) {
@@ -1179,7 +1179,7 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 	nSegment = gameData.segs.slideSegs [h].nSegment;
 	segP = SEGMENTS + nSegment;
 	sides = gameData.segs.slideSegs [h].nSides;
-	for (nSide = 0, sideP = segP->m_sides; nSide < segP->m_nSides; nSide++, sideP++) {
+	for (nSide = 0, sideP = segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
 		if (!(sides & (1 << nSide)))
 			continue;
 		tmn = sideP->m_nBaseTex;
@@ -1323,7 +1323,7 @@ return 1;
 int MarkPathToExit (void)
 {
 for (int i = 0; i <= gameData.segs.nLastSegment; i++) {
-	for (int j = 0, h = SEGMENTS [i].m_nSides; j < h; j++)
+	for (int j = 0, h = MAX_SIDES_PER_SEGMENT; j < h; j++)
 		if (SEGMENTS [i].m_children [j] == -2)
 			return MarkPlayerPathToSegment (i);
 	}

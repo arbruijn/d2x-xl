@@ -301,7 +301,7 @@ if (Index () == nDbgSeg)
 #endif
 if (m_function == SEGMENT_FUNC_ROBOTMAKER)
 	LoadBotGenTextures ();
-for (nSide = 0; nSide < m_nSides; nSide++) 
+for (nSide = 0; MAX_SIDES_PER_SEGMENT; nSide++) 
 	m_sides [nSide].LoadTextures ();
 for (nObject = m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 	OBJECTS [nObject].LoadTextures ();

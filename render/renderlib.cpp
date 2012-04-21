@@ -739,7 +739,7 @@ for (int i = 0, j = 1; nRadius; nRadius--) {
 			 (!nMaxDist || (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nSegment].Center ()) <= nMaxDist)))
 			return 1;
 		CSegment* segP = SEGMENTS + nSegment;
-		for (int nChild = 0; nChild < segP->m_nSides; nChild++) {
+		for (int nChild = 0; nChild < MAX_SIDES_PER_SEGMENT; nChild++) {
 			int nChildSeg = segP->m_children [nChild];
 			if ((nChildSeg >= 0) && (visitedP [nChildSeg] != nVisited) && (segP->IsDoorWay (nChild, NULL) & WID_TRANSPARENT_FLAG)) {
 				segListP [j++] = nChildSeg;

@@ -1086,7 +1086,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	for (nSide = 0, nSegSoundSources = 0; nSide < segP->m_nSides; nSide++) {
+	for (nSide = 0, nSegSoundSources = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 #if DBG
 		if (nDbgSeg >= 0) {
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -1100,7 +1100,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 		if (0 <= (nSideSounds [nSide] = SideIsSoundSource (nSegment, nSide)))
 			nSegSoundSources++;
 		}
-	for (nSide = 0; nSide < segP->m_nSides; nSide++) 
+	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
 		if (nSideSounds [nSide] >= 0)
 			audio.CreateSegmentSound (nSideSounds [nSide], nSegment, nSide, segP->SideCenter (nSide), 1, I2X (1) / (2 * nSegSoundSources));
 	}

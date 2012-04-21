@@ -1000,7 +1000,7 @@ m_faceP->m_info.nType = gameStates.render.bTriangleMesh ? m_sideP->m_nType : -1;
 m_faceP->m_info.nSegment = nSegment;
 m_faceP->m_info.nSide = nSide;
 CSide* sideP = SEGMENTS [nSegment].Side (nSide);
-m_faceP->m_info.nTriangles = sideP->m_nCorners - 2;
+m_faceP->m_info.nTriangles = sideP->Corners ();
 m_faceP->m_info.nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWall : (ushort) -1;
 m_faceP->m_info.bAnimation = IsAnimatedTexture (m_faceP->m_info.nBaseTex) || IsAnimatedTexture (m_faceP->m_info.nOvlTex);
 m_faceP->m_info.bHasColor = 0;
@@ -1148,7 +1148,7 @@ if ((m_faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_faceP->m_info
 #endif
 SetupLMapTexCoord (lMapTexCoord);
 nType = (m_sideP->m_nType == SIDE_IS_TRI_13);
-h = (m_sideP->m_nType == SIDE_IS_TRIANGLE) ? 1 : 2;
+h = m_sideP->FaceCount ();
 for (i = 0; i < h; i++, m_triP++) {
 	FACES.nTriangles++;
 	m_faceP->m_info.nTris++;
@@ -1463,7 +1463,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++) {
 	if (IsColoredSeg (nSegment) != 0)
 		FACES.nFaces += 6;
 	else {
-		for (nSide = 0, m_sideP = m_segP->m_sides; nSide < m_segP->m_nSides; nSide++, m_sideP++) {
+		for (nSide = 0, m_sideP = m_segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, m_sideP++) {
 			m_nWall = m_segP->WallNum (nSide);
 			m_nWallType = IS_WALL (m_nWall) ? WALLS [m_nWall].IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
 			if (m_nWallType)
@@ -1524,7 +1524,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 	m_faceP->m_info.nSegment = nSegment;
 	m_nOvlTexCount = 0;
 	m_segFaceP->nFaces = 0;
-	for (nSide = 0, m_sideP = m_segP->m_sides; nSide < m_segP->m_nSides; nSide++, m_sideP++) {
+	for (nSide = 0, m_sideP = m_segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, m_sideP++) {
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;

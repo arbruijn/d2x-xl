@@ -92,7 +92,7 @@ if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
 	if (newAwareness [nSegment] < nType)
 		newAwareness [nSegment] = nType;
 	CSegment* segP = SEGMENTS + nSegment;
-	for (int i = 0; i < segP->m_nSides; i++) {
+	for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 		if (IS_CHILD (segP->m_children [i])) {
 			if (level <= 3) {
 				pae_aux (segP->m_children [i], (nType == 4) ? nType - 1 : nType, level + 1);

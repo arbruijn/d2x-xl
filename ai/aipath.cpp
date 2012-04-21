@@ -316,7 +316,7 @@ while (nCurSeg != nEndSeg) {
 	if (bRandom && (RandShort () < 8192))	//create a different xlate at random time intervals
 		CreateRandomXlate (randomXlate);
 
-	for (nSide = 0; nSide < segP->m_nSides; nSide++) {
+	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		hSide = bRandom ? randomXlate [nSide] : nSide;
 		if (!IS_CHILD (segP->m_children [hSide]))
 			continue;

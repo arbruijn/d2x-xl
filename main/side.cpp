@@ -48,9 +48,9 @@ void CSide::ComputeCenter (void)
 {
 CFloatVector vCenter;
 vCenter.SetZero ();
-for (int i = 0; i < m_nCorners; i++)
+for (int i = 0; i < 4; i++)
 	vCenter += FVERTICES [m_vertices [i]];
-vCenter /= m_nCorners;
+vCenter /= 4;
 m_vCenter.Assign (vCenter);
 // make sure side center is inside segment
 CFixVector v0 = m_vCenter + m_normals [2];
@@ -80,8 +80,8 @@ void CSide::ComputeRads (void)
 {
 m_rads [0] = 0x7fffffff;
 m_rads [1] = 0;
-for (int i = 0; i < m_nCorners; i++) {
-	CFixVector v = CFixVector::Avg (VERTICES [m_vertices [i]], VERTICES [m_vertices [(i + 1) % m_nCorners]]);
+for (int i = 0; i < 4; i++) {
+	CFixVector v = CFixVector::Avg (VERTICES [m_vertices [i]], VERTICES [m_vertices [(i + 1) % 4]]);
 	fix d = CFixVector::Dist (v, m_vCenter);
 	if (m_rads [0] > d)
 		m_rads [0] = d;
@@ -95,11 +95,14 @@ for (int i = 0; i < m_nCorners; i++) {
 //	Given a CSide, return the number of faces
 int CSide::FaceCount (void)
 {
-if (m_nType == SIDE_IS_QUAD)
-	return 1;
-if ((m_nType == SIDE_IS_TRI_02) || (m_nType == SIDE_IS_TRI_13))
-	return 2;
-Error ("Illegal side type = %i\n", m_nType);
+if (m_nShape == SIDE_SHAPE_RECTANGLE) {
+	if (m_nType == SIDE_IS_QUAD)
+		return 1;
+	if ((m_nType == SIDE_IS_TRI_02) || (m_nType == SIDE_IS_TRI_13))
+		return 2;
+	}
+else 
+	return (m_nShape == SIDE_SHAPE_TRIANGLE) ? 1 : 0; 
 return -1;
 }
 
@@ -107,10 +110,8 @@ return -1;
 
 void CSide::SetupCorners (ushort* verts, ushort* index)
 {
-m_nCorners = 0;
 for (int i = 0; i < 4; i++)
-	if (verts [index [i]])
-		m_corners [m_nCorners++] = verts [index [i]];
+	m_corners [i] = verts [index [i]];
 }
 
 // -------------------------------------------------------------------------------
@@ -118,11 +119,11 @@ for (int i = 0; i < 4; i++)
 void CSide::SetupVertexList (ushort* verts, ushort* index)
 {
 m_nFaces = -1;
-if ((m_nType == SIDE_IS_QUAD) || (m_nType == SIDE_IS_TRIANGLE)) {
+if (m_nType == SIDE_IS_QUAD) {
 	m_vertices [0] = verts [index [0]];
 	m_vertices [1] = verts [index [1]];
 	m_vertices [2] = verts [index [2]];
-	m_vertices [3] = verts [index [3 % m_nCorners]];
+	m_vertices [3] = verts [index [3]];
 	m_nFaces = 1;
 	}
 else if (m_nType == SIDE_IS_TRI_02) {
@@ -154,11 +155,6 @@ if (m_nType == SIDE_IS_QUAD) {
 		m_nMinVertex [0] = m_vertices [1];
 	if (m_nMinVertex [0] > m_vertices [3])
 		m_nMinVertex [0] = m_vertices [3];
-	m_nMinVertex [1] = m_nMinVertex [0];
-	}
-else if (m_nType == SIDE_IS_TRIANGLE) {
-	if (m_nMinVertex [0] > m_vertices [1])
-		m_nMinVertex [0] = m_vertices [1];
 	m_nMinVertex [1] = m_nMinVertex [0];
 	}
 else
@@ -198,19 +194,13 @@ else if (m_nType == SIDE_IS_TRI_13) {
 	m_faceVerts [3] = 1;
 	m_faceVerts [4] = 2;
 	}
-else if (m_nType == SIDE_IS_TRIANGLE) {
-	m_faceVerts [0] = 0;
-	m_faceVerts [1] = 1;
-	m_faceVerts [2] = 2;
-	m_faceVerts [3] = 0;
-	}
 }
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupAsQuadOrTriangle (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index)
+void CSide::SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index)
 {
-m_nType = (m_nCorners == 3) ? SIDE_IS_TRIANGLE : SIDE_IS_QUAD;
+m_nType = SIDE_IS_QUAD;
 m_normals [0] = 
 m_normals [1] = vNormal;
 m_fNormals [0] = 
@@ -318,9 +308,7 @@ void CSide::Setup (short nSegment, ushort* verts, ushort* index, bool bSolid)
 
 m_nSegment = nSegment;
 SetupCorners (verts, index);
-bFlip = (m_nCorners == 3)
-		  ? SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 0xFFFF, vSorted)
-		  : bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
+bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
 vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 xDistToPlane = abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSorted [0]]));
@@ -328,14 +316,14 @@ if (bFlip)
 	vNormal.Neg ();
 
 m_bIsQuad = (m_normals [0] == m_normals [1]);
-if (m_nCorners == 3)
-	SetupAsQuadOrTriangle (vNormal, vNormalf, verts, index);
+if (m_nShape)
+	SetupAsQuad (vNormal, vNormalf, verts, index);
 if (PLANE_DIST_TOLERANCE < DEFAULT_PLANE_DIST_TOLERANCE) {
 	SetupAsTriangles (bSolid, verts, index);
 	}
 else {
 	if (xDistToPlane <= PLANE_DIST_TOLERANCE)
-		SetupAsQuadOrTriangle (vNormal, vNormalf, verts, index);
+		SetupAsQuad (vNormal, vNormalf, verts, index);
 	else {
 		SetupAsTriangles (bSolid, verts, index);
 		//this code checks to see if we really should be triangulated, and
@@ -346,7 +334,7 @@ else {
 		int s0 = sign (dist0);
 		int s1 = sign (dist1);
 		if (s0 == 0 || s1 == 0 || s0 != s1)
-			SetupAsQuadOrTriangle (vNormal, vNormalf, verts, index);
+			SetupAsQuad (vNormal, vNormalf, verts, index);
 		}
 	}
 
@@ -354,10 +342,6 @@ m_normals [2] = CFixVector::Avg (m_normals [0], m_normals [1]);
 m_fNormals [2] = CFloatVector::Avg (m_fNormals [0], m_fNormals [1]);
 if (m_nType == SIDE_IS_QUAD) {
 	for (int i = 0; i < 4; i++)
-		AddToVertexNormal (m_vertices [i], vNormal);
-	}
-else if (m_nType == SIDE_IS_TRIANGLE) {
-	for (int i = 0; i < 3; i++)
 		AddToVertexNormal (m_vertices [i], vNormal);
 	}
 else {
@@ -559,8 +543,8 @@ for (i = j = 0; i < m_nFaces; i++, j += 3) {
 	}
 if (minDist < 0x7fffffff)
 	return 0;
-for (i = 0; i < m_nCorners; i++) {
-	FindPointLineIntersection (h, VERTICES [m_corners [i]], VERTICES [m_corners [(i + 1) % m_nCorners]], v, 1);
+for (i = 0; i < 4; i++) {
+	FindPointLineIntersection (h, VERTICES [m_corners [i]], VERTICES [m_corners [(i + 1) % 4]], v, 1);
 	dist = CFixVector::Dist (h, v);
 	if (minDist > dist)
 		minDist = dist;
@@ -590,8 +574,8 @@ for (i = j = 0; i < m_nFaces; i++, j += 3) {
 	}
 if (minDist < 1e30f)
 	return 0;
-for (i = 0; i < m_nCorners; i++) {
-	FindPointLineIntersection (h, FVERTICES [m_corners [i]], FVERTICES [m_corners [(i + 1) % m_nCorners]], v, 1);
+for (i = 0; i < 4; i++) {
+	FindPointLineIntersection (h, FVERTICES [m_corners [i]], FVERTICES [m_corners [(i + 1) % 4]], v, 1);
 	dist = CFloatVector::Dist (h, v);
 	if (minDist > dist)
 		minDist = dist;
@@ -628,12 +612,12 @@ else {
 j = j = nLevels [nLevel];
 
 for (; i >= j; i--) {
-	if (i == m_nCorners)
+	if (i == 4)
 		v0.Assign (Center ());
 	else if (i >= 0)
 		v0 = FVERTICES [m_corners [i]];
 	else
-		v0 = CFloatVector::Avg (FVERTICES [m_corners [m_nCorners + i]], FVERTICES [m_corners [(m_nCorners + 1 + i) % m_nCorners]]); // center of face's edges
+		v0 = CFloatVector::Avg (FVERTICES [m_corners [4 + i]], FVERTICES [m_corners [(5 + i) % 4]]); // center of face's edges
 	if (PointSeesPoint (&v0, &v1, m_nSegment, nDestSeg, 0, nThread))
 		return 1;
 	}
@@ -727,7 +711,7 @@ else {
 //now do the 2d problem in the i, j plane
 vRef.x = intersection.v.vec [i];
 vRef.y = intersection.v.vec [j];
-nVerts = (m_nCorners == 3) ? 3 : 5 - m_nFaces;
+nVerts = 5 - m_nFaces;
 h = nFace * 3;
 v1 = gameStates.render.bRendering ? &RENDERPOINTS [m_vertices [h]].ViewPos () : VERTICES + m_vertices [h];
 for (nEdge = 1, nEdgeMask = 0; nEdge <= nVerts; nEdge++) {
@@ -767,7 +751,7 @@ if (nEdgeMask == 0)
 //get verts for edge we're behind
 for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
 	;
-nVerts = (m_nCorners == 3) ? 3 : 5 - m_nFaces;
+nVerts = 5 - m_nFaces;
 iFace *= 3;
 if (gameStates.render.bRendering) {
 	v0 = &RENDERPOINTS [m_vertices [iFace + nEdge]].ViewPos ();
@@ -840,21 +824,7 @@ if (*p1 == *p0) {
 #endif
 	}
 #endif
-#if 1
 nVertex = m_nMinVertex [0];
-#else
-nVertex = m_vertices [0];
-if (nVertex > m_vertices [2])
-	nVertex = m_vertices [2];
-if (m_nFaces == 1) {
-	if (nVertex > m_vertices [1])
-		nVertex = m_vertices [1];
-	if (m_nCorners == 4) {
-		if (nVertex > m_vertices [3])
-			nVertex = m_vertices [3];
-		}
-	}
-#endif
 if (!(pli = FindPlaneLineIntersection (intersection, gameStates.render.bRendering ? &RENDERPOINTS [nVertex].ViewPos () : VERTICES + nVertex, &vNormal, p0, p1, rad)))
 	return IT_NONE;
 CFixVector vHit = intersection;
@@ -868,9 +838,9 @@ if (bCheckRad) {
 	CFixVector	*a, *b;
 
 	b = VERTICES + m_corners [0];
-	for (i = 1; i <= m_nCorners; i++) {
+	for (i = 1; i <= 4; i++) {
 		a = b;
-		b = VERTICES + m_corners [i % m_nCorners];
+		b = VERTICES + m_corners [i % 4];
 		d = VmLinePointDist (*a, *b, *p0);
 		if (d < bCheckRad)
 			return IT_POINT;
@@ -899,7 +869,7 @@ if (!(nEdgeMask = PointToFaceRelation (*p0, iFace, vNormal)))
 	return CheckLineToFaceRegular (intersection, p0, p1, rad, iFace, vNormal);
 for (nEdge = 0; !(nEdgeMask & 1); nEdgeMask >>= 1, nEdge++)
 	;
-nVerts = (m_nCorners == 3) ? 3 : 5 - m_nFaces;
+nVerts = 5 - m_nFaces;
 edge_v0 = VERTICES + m_vertices [iFace * 3 + nEdge];
 edge_v1 = VERTICES + m_vertices [iFace * 3 + ((nEdge + 1) % nVerts)];
 vEdge = *edge_v1 - *edge_v0;
@@ -997,12 +967,10 @@ return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
 
 //------------------------------------------------------------------------------
 
-CFixVector* CSide::GetCorners (CFixVector* vertices, ubyte* nCorners) 
+CFixVector* CSide::GetCorners (CFixVector* vertices) 
 { 
-for (int i = 0; i < m_nCorners; i++)
+for (int i = 0; i < 4; i++)
 	vertices [i] = VERTICES [m_corners [i]];
-if (nCorners)
-	*nCorners = m_nCorners;
 return vertices;
 }
 
@@ -1135,7 +1103,7 @@ else {
 			gameData.render.color.vertBright [sideVerts [i]] = fBrightness;
 		}
 	}
-m_nCorners = 4;
+m_nShape = (gameData.segs.nLevelVersion < 25) ? 0 : cf.ReadByte ();
 return nType;
 }
 

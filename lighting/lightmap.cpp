@@ -216,10 +216,10 @@ double CLightmapManager::SideRad (int nSegment, int nSide)
 	ushort*		sideVerts;
 	CFixVector	*v;
 
-sideVerts = SEGMENTS [nSegment].Corners (nSide, &nCorners);
+sideVerts = SEGMENTS [nSegment].Corners (nSide);
 xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
-for (i = 0; i < nCorners; i++) {
+for (i = 0; i < 4; i++) {
 	v = gameData.segs.vertices +sideVerts [i];
 	h = (*v).v.coord.x;
 	if (xMin > h)

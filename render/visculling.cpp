@@ -402,7 +402,7 @@ memset (bVisited, 0, sizeof (bVisited [0]) * gameData.segs.nSegments);
 segList [tail++] = Segment ();
 while (head != tail) {
 	CSegment* segP = &SEGMENTS [segList [head++]];
-	for (int i = 0; i < segP->m_nSides; i++) {
+	for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 		short nSegment = segP->m_children [i];
 		if (nSegment < 0)
 			continue;
@@ -480,7 +480,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 			CSegment* newSegP = SEGMENTS + nNewSeg;
 			mask = newSegP->Masks (OBJPOS (objP)->vPos, objP->info.xSize);
 			if (mask.m_side) {
-				for (nSide = 0, sideFlag = 1; nSide < newSegP->m_nSides; nSide++, sideFlag <<= 1) {
+				for (nSide = 0, sideFlag = 1; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideFlag <<= 1) {
 					if (!(mask.m_side & sideFlag))
 						continue;
 					if (newSegP->IsDoorWay (nSide, NULL) & WID_PASSABLE_FLAG) {	//can explosion migrate through
@@ -782,7 +782,7 @@ for (l = 0; l < nRenderDepth; l++) {
 		int bRotated = 0;
 		//look at all sides of this segment.
 		//tricky code to look at sides in correct order follows
-		int nSides = segP->m_nSides;
+		int nSides = MAX_SIDES_PER_SEGMENT;
 		for (nChild = nChildren = 0; nChild < nSides; nChild++) {		//build list of sides
 			nChildSeg = segP->m_children [nChild];
 			if (nChildSeg < 0)

@@ -133,7 +133,7 @@ int ELFindConnectedSide (int seg0, int seg1)
 {
 CSegment *segP = SEGMENTS + seg0;
 
-for (int i = 0; i < segP->m_nSides; i++)
+for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 	if (segP->m_children [i] == seg1)
 		return i;
 return -1;
@@ -708,7 +708,7 @@ int FindExitSide (CObject *objP)
 CFixVector::NormalizedDir (vPreferred, objP->info.position.vPos, objP->info.vLastPos);
 vSegCenter = segP->Center ();
 nBestSide = -1;
-for (i = segP->m_nSides; --i >= 0;) {
+for (i = MAX_SIDES_PER_SEGMENT; --i >= 0;) {
 	if (segP->m_children [i] != -1) {
 		vSide = segP->SideCenter (i);
 		CFixVector::NormalizedDir (vSide, vSide, vSegCenter);
@@ -957,7 +957,7 @@ if (UpdateObjectSeg (objP, false)) {
 			nExitSide = FindExitSide (objP);
 		if ((nExitSide >= 0) && (segP->m_children [nExitSide] >= 0)) {
 			fix d, dLargest = -I2X (1);
-			short nSides = segP->m_nSides;
+			short nSides = MAX_SIDES_PER_SEGMENT;
 			for (int i = 0; i < nSides; i++) {
 				d = CFixVector::Dot (segP->m_sides [i].m_normals [0], exitFlightDataP->objP->info.position.mOrient.m.dir.u);
 				if (d > dLargest) {
@@ -1257,7 +1257,7 @@ CSegment* segP = SEGMENTS.Buffer ();
 for (nSegment = 0, gameData.endLevel.exit.nSegNum = -1;
 	  (gameData.endLevel.exit.nSegNum == -1) && (nSegment <= gameData.segs.nLastSegment);
 	  nSegment++, segP++)
-	for (nSide = 0; nSide < segP->m_nSides; nSide++)
+	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
 		if (segP->m_children [nSide] == -2) {
 			gameData.endLevel.exit.nSegNum = nSegment;
 			nExitSide = nSide;

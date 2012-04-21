@@ -187,7 +187,7 @@ int sideMask = segP->Masks (info.position.vPos, info.xSize).m_side;
 if (sideMask) {
 	short		nSide;
 	int		bit;
-	for (nSide = 0, bit = 1; nSide < segP->m_nSides; bit <<= 1, nSide++)
+	for (nSide = 0, bit = 1; nSide < MAX_SIDES_PER_SEGMENT; bit <<= 1, nSide++)
 		if ((sideMask & bit) && (nType = ApplyWallPhysics (info.nSegment, nSide)))
 			break;
 	}

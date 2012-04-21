@@ -27,10 +27,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Version 1 - Initial version
 // Version 2 - Mike changed some shorts to bytes in segments, so incompatible!
 
-#define SIDE_IS_QUAD			1   // render CSide as quadrilateral
-#define SIDE_IS_TRI_02		2   // render CSide as two triangles, triangulated along edge from 0 to 2
-#define SIDE_IS_TRI_13		3   // render CSide as two triangles, triangulated along edge from 1 to 3
-#define SIDE_IS_TRIANGLE	4
+#define SIDE_IS_QUAD				1   // render CSide as quadrilateral
+#define SIDE_IS_TRI_02			2   // render CSide as two triangles, triangulated along edge from 0 to 2
+#define SIDE_IS_TRI_13			3   // render CSide as two triangles, triangulated along edge from 1 to 3
+
+#define SEGMENT_SHAPE_CUBE    0
+#define SEGMENT_SHAPE_WEDGE   1
+#define SEGMENT_SHAPE_PYRAMID 2
+
+#define SIDE_SHAPE_RECTANGLE  0
+#define SIDE_SHAPE_TRIANGLE   1
+#define SIDE_SHAPE_LINE       2
+#define SIDE_SHAPE_POINT      3
 
 //------------------------------------------------------------------------------
 // Set maximum values for tSegment and face data structures.
@@ -201,7 +209,7 @@ class CSide {
 		ushort			m_nMinVertex [2];
 		short				m_nSegment;
 		ubyte				m_nFaces;
-		ubyte				m_nCorners;
+		ubyte				m_nShape;
 		ubyte				m_bIsQuad;
 
 	public:
@@ -246,14 +254,10 @@ class CSide {
 			vertices = m_vertices;
 			return m_nFaces;
 			}
-		CFixVector* GetCorners (CFixVector* vertices, ubyte* nCorners = NULL);
-		inline ushort* Corners (byte* nCorners = NULL) { 
-			if (nCorners)
-				*nCorners = m_nCorners;
-			return m_corners; 
-			}
+		CFixVector* GetCorners (CFixVector* vertices);
+		inline ushort* Corners (void) { return m_corners; }
 		inline int HasVertex (ushort nVertex) { 
-			for (int i = 0; i < m_nCorners; i++)
+			for (int i = 0; i < 4; i++)
 				if (m_corners [i] == nVertex)
 					return 1;
 			return 0;
@@ -282,7 +286,7 @@ class CSide {
 		void SetupCorners (ushort* verts, ushort* index);
 		void SetupVertexList (ushort* verts, ushort* index);
 		void SetupFaceVertIndex (void);
-		void SetupAsQuadOrTriangle (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index);
+		void SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index);
 		void SetupAsTriangles (bool bSolid, ushort* verts, ushort* index);
 	};
 
@@ -296,7 +300,7 @@ class CSegment {
 		ushort		m_vertices [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
 		int			m_objects;    // pointer to objects in this tSegment
 
-		ubyte			m_nSides;
+		ubyte			m_nShape;
 		ubyte			m_function;
 		ubyte			m_flags;
 		ubyte			m_props;
@@ -386,7 +390,7 @@ class CSegment {
 		void GetNormals (int nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
-		inline ushort* Corners (int nSide, byte* nCorners = NULL) { return m_sides [nSide].Corners (nCorners); }
+		inline ushort* Corners (int nSide) { return m_sides [nSide].Corners (); }
 		inline CFixVector* GetCorners (int nSide, CFixVector* vertices, ubyte* nCorners = NULL) { return m_sides [nSide].GetCorners (vertices, nCorners); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int ConnectedSide (CSegment* other);

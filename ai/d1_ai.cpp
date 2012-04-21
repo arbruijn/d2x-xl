@@ -1267,7 +1267,7 @@ void move_object_to_legal_spot(CObject *objP)
 	int			i;
 	CSegment*	segP = SEGMENTS + objP->info.nSegment;
 
-	for (i = 0; i < segP->m_nSides; i++) {
+	for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 		if (segP->IsDoorWay (i, objP) & WID_PASSABLE_FLAG) {
 			CFixVector	vSegCenter, goal_dir;
 			fix			dist_to_center;

@@ -782,7 +782,7 @@ if (m_nSegment < 0)
 segP = SEGMENTS + m_nSegment;
 if ((bInit = (m_nSegment != nPartSeg [nThread])))
 	nPartSeg [nThread] = m_nSegment;
-for (nSide = 0, sideP = segP->m_sides; nSide < segP->m_nSides; nSide++, sideP++) {
+for (nSide = 0, sideP = segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
 	if (bInit) {
 		bSidePokesOut [nThread][nSide] = !sideP->IsPlanar ();
 		nFaceCount [nThread][nSide] = sideP->m_nFaces;

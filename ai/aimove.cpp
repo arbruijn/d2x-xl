@@ -455,7 +455,7 @@ if (bMoveToCenter) {
 	return !ObjectIntersectsWall (objP);
 	}
 else {
-	for (int i = 0; i < segP->m_nSides; i++) {
+	for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 		if (segP->IsDoorWay ((short) i, objP) & WID_PASSABLE_FLAG) {
 			vSegCenter = SEGMENTS [segP->m_children [i]].Center ();
 			objP->info.position.vPos = vSegCenter;

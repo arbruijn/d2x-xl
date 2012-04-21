@@ -138,9 +138,9 @@ while (nTail != nHead) {
 	segP = SEGMENTS + segQueue [nTail++];
 
 	//	select sides randomly
-	for (i = 0; i < segP->m_nSides; i++)
+	for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 		sideList [i] = i;
-	for (i = segP->m_nSides; i; ) {
+	for (i = MAX_SIDES_PER_SEGMENT; i; ) {
 		j = RandShort () % i;
 		nSide = sideList [j];
 		if (j < --i)
@@ -244,7 +244,7 @@ while (nSegment == -1) {
 		 (nSegFunc == SEGMENT_FUNC_TEAM_RED))
 		nSegment = -1;
 	else {	//don't drop in any children of control centers
-		for (int i = 0; i < segP->m_nSides; i++) {
+		for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 			int nChild = segP->m_children [i];
 			if (IS_CHILD (nChild) && (SEGMENTS [nChild].m_function == SEGMENT_FUNC_CONTROLCEN)) {
 				nSegment = -1;
@@ -472,7 +472,7 @@ if (depth == 0)
 if (SegmentContainsObject (objectType, object_id, nSegment))
 	return 1;
 CSegment* segP = SEGMENTS + nSegment;
-for (i = 0; i < segP->m_nSides; i++) {
+for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	seg2 = segP->m_children [i];
 	if (seg2 != -1)
 		if (ObjectNearbyAux (seg2, objectType, object_id, depth-1))
