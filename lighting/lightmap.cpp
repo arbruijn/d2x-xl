@@ -209,7 +209,6 @@ return nLights;
 
 double CLightmapManager::SideRad (int nSegment, int nSide)
 {
-	ubyte			nCorners;
 	int			i;
 	double		h, xMin, xMax, yMin, yMax, zMin, zMax;
 	double		dx, dy, dz;

@@ -228,6 +228,7 @@ class CSide {
 		bool IsVolatile (void);
 		inline ubyte IsQuad (void) { return m_bIsQuad; }
 		int FaceCount (void);
+		int TriangleCount (void);
 		void CheckSum (uint& sum1, uint& sum2);
 
 		int CheckTransparency (void);
@@ -391,7 +392,7 @@ class CSegment {
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
 		inline ushort* Corners (int nSide) { return m_sides [nSide].Corners (); }
-		inline CFixVector* GetCorners (int nSide, CFixVector* vertices, ubyte* nCorners = NULL) { return m_sides [nSide].GetCorners (vertices, nCorners); }
+		inline CFixVector* GetCorners (int nSide, CFixVector* vertices) { return m_sides [nSide].GetCorners (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int ConnectedSide (CSegment* other);
 		inline CFixVector& Normal (int nSide, int nFace) { return m_sides [nSide].Normal (nFace); }

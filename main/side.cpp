@@ -98,12 +98,17 @@ int CSide::FaceCount (void)
 if (m_nShape == SIDE_SHAPE_RECTANGLE) {
 	if (m_nType == SIDE_IS_QUAD)
 		return 1;
-	if ((m_nType == SIDE_IS_TRI_02) || (m_nType == SIDE_IS_TRI_13))
+//	if ((m_nType == SIDE_IS_TRI_02) || (m_nType == SIDE_IS_TRI_13))
 		return 2;
 	}
-else 
-	return (m_nShape == SIDE_SHAPE_TRIANGLE) ? 1 : 0; 
-return -1;
+return (m_nShape == SIDE_SHAPE_TRIANGLE) ? 1 : 0; 
+}
+
+// -----------------------------------------------------------------------------------
+//	Given a CSide, return the number of faces
+int CSide::TriangleCount (void)
+{
+return (m_nShape == SIDE_SHAPE_RECTANGLE) ? 2 : (m_nShape == SIDE_SHAPE_TRIANGLE) ? 1 : 0; 
 }
 
 // -------------------------------------------------------------------------------

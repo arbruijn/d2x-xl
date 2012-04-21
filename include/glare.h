@@ -20,7 +20,7 @@ class CGlareRenderer {
 	private:
 		GLuint CopyDepthTexture (void);
 		void CalcSpriteCoords (CFloatVector *vSprite, CFloatVector *vCenter, CFloatVector *vEye, float dx, float dy, CFloatMatrix *r);
-		int CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* corners, ubyte nCorners);
+		int CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* corners);
 		float ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nSegment, short nSide, ubyte& nVertices);
 		void ComputeSpriteZRange (CFloatVector *sprite, tIntervalf *zRangeP);
 		float MoveSpriteIn (CFloatVector *sprite, CFloatVector *vCenter, tIntervalf *zRangeP, float fIntensity);
