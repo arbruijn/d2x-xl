@@ -162,12 +162,9 @@ j = i + 1;
 d1 = VmLinePointDist (gameData.segs.vertices [corners [i]],
                       gameData.segs.vertices [corners [j]],
                       gameData.segs.vertices [corners [(j + 1) % 4]]);
-if (nCorners < 4)
-	return d2 = d1;
-else
-	d2 = VmLinePointDist (gameData.segs.vertices [corners [i]],
-	                      gameData.segs.vertices [corners [j]],
-		                   gameData.segs.vertices [corners [(j + 2) % 4]]);
+d2 = VmLinePointDist (gameData.segs.vertices [corners [i]],
+                      gameData.segs.vertices [corners [j]],
+	                   gameData.segs.vertices [corners [(j + 2) % 4]]);
 if (h)
 	*h = d1 > d2 ? d1 : d2;
 return i;
