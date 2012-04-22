@@ -286,7 +286,7 @@ if (gameTopFileInfo.fileinfoVersion >= 29) {
 	gameFileInfo.lightDeltaIndices.Read (cf);
 	gameFileInfo.lightDeltas.Read (cf);
 	}
-if (gameData.segs.nLevelVersion >= 17)
+if (gameStates.app.bD2XLevel && (gameData.segs.nLevelVersion > 15))
 	gameFileInfo.equipGen.Read (cf);
 return 0;
 }
