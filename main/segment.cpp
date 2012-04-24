@@ -145,6 +145,7 @@ else {
 	m_value = cf.ReadShort ();
 	}
 m_flags = cf.ReadByte ();
+m_nShape = (gameStates.app.bD2XLevel && (gameData.segs.nLevelVersion > 24)) ? cf.ReadByte () : 0;
 if (gameData.segs.nLevelVersion <= 20)
 	Upgrade ();
 else {
@@ -161,7 +162,6 @@ if (!gameStates.app.bD2XLevel && (m_function == 2))
 
 void CSegment::Read (CFile& cf)
 {
-m_nShape = (gameData.segs.nLevelVersion < 25) ? 0 : cf.ReadByte ();
 #if DBG
 if (Index () == nDbgSeg)
 	nDbgSeg = nDbgSeg;

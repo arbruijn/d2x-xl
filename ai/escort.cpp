@@ -174,7 +174,7 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 		int		j;
 		CSegment	*connSegP = SEGMENTS + segP->m_children [i];
 
-		for (j = 0; j<MAX_SIDES_PER_SEGMENT; j++) {
+		for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
 			CWall* otherWallP = connSegP->Wall (j);
 			if (otherWallP && (otherWallP->nType == WALL_BLASTABLE) && !(otherWallP->flags & WALL_BLASTED))
 				return 0;

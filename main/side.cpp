@@ -1034,7 +1034,7 @@ if (m_nOvlTex) {
 bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nBaseTex].index].Override (-1);
 if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
-if ((gameStates.app.bD2XLevel) && IS_WALL (m_nWall)) {
+if (gameStates.app.bD2XLevel && IS_WALL (m_nWall)) {
 	short c = WALLS [m_nWall].cloakValue;
 	if (c && (c < FADE_LEVELS))
 		return 1;
@@ -1108,7 +1108,7 @@ else {
 			gameData.render.color.vertBright [sideVerts [i]] = fBrightness;
 		}
 	}
-m_nShape = (gameData.segs.nLevelVersion < 25) ? 0 : cf.ReadByte ();
+m_nShape = (gameStates.app.bD2XLevel && (gameData.segs.nLevelVersion > 24)) ? cf.ReadByte () : 0;
 return nType;
 }
 

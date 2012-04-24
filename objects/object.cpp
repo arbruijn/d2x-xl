@@ -52,6 +52,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hiresmodels.h"
 #include "loadgame.h"
+#include "object.h"
 #include "objeffects.h"
 #include "multi.h"
 
@@ -1702,6 +1703,8 @@ if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+#if DBG
+
 void CPositionTracker::Update (CFixVector& vPos, byte bIdleAnimation)
 {
 m_positions [m_nCurPos].bIdleAnimation = bIdleAnimation; 
@@ -1740,6 +1743,8 @@ for (int i = m_nCurPos, j = 0; j < m_nPosCount; j++, i = (i + 1) % POSTRACK_MAXF
 	}
 return 1;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
