@@ -1069,6 +1069,7 @@ int CSide::Read (CFile& cf, ushort* sideVerts, bool bSolid)
 
 m_nFrame = 0;
 m_nShape = 0;
+m_nCorners = 4;
 if (!nType)
 	m_nBaseTex =
 	m_nOvlTex = 0;
@@ -1109,10 +1110,12 @@ else {
 			gameData.render.color.vertBright [sideVerts [i]] = fBrightness;
 		}
 	}
-if (gameData.segs.nLevelVersion > 24)
+if (gameData.segs.nLevelVersion > 24) {
 	for (int i = 0; i < 4; i++) {
 		if (0xff == (m_corners [i] = cf.ReadByte ()))
 			m_nShape++;
+	m_nCorners = 4 - m_nShape;
+	}
 		
 return nType;
 }

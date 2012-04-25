@@ -210,6 +210,7 @@ class CSide {
 		short				m_nSegment;
 		ubyte				m_nFaces;
 		ubyte				m_nShape;
+		ubyte				m_nCorners;
 		ubyte				m_bIsQuad;
 
 	public:
@@ -299,6 +300,7 @@ class CSegment {
 		short			m_children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
 		fix			m_childDists [2][MAX_SIDES_PER_SEGMENT];
 		ushort		m_vertices [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
+		short			m_nVertices;
 		int			m_objects;    // pointer to objects in this tSegment
 
 		ubyte			m_nShape;
