@@ -1111,7 +1111,7 @@ else {
 		}
 	}
 if (gameData.segs.nLevelVersion > 24) {
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) 
 		if (0xff == (m_corners [i] = cf.ReadByte ()))
 			m_nShape++;
 	m_nCorners = 4 - m_nShape;
