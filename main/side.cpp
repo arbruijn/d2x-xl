@@ -115,8 +115,9 @@ return (m_nShape == SIDE_SHAPE_RECTANGLE) ? 2 : (m_nShape == SIDE_SHAPE_TRIANGLE
 
 void CSide::SetupCorners (ushort* verts, ushort* index)
 {
-for (int i = 0; i < 4; i++)
-	m_corners [i] = verts [index [i]];
+if (gameData.segs.nLevelVersion < 25)
+	for (int i = 0; i < 4; i++)
+		m_corners [i] = verts [index [i]];
 }
 
 // -------------------------------------------------------------------------------

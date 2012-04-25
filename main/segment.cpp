@@ -69,8 +69,12 @@ else {
 
 void CSegment::ReadVerts (CFile& cf)
 {
+m_nShape = 0;
+m_nVertices = 8;
 for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
-	m_vertices [i] = cf.ReadShort ();
+	if (0xFFFF == (m_vertices [i] = cf.ReadShort ()))
+		m_nShape++;
+m_nVertices = 8 - m_nShape;
 }
 
 //------------------------------------------------------------------------------
@@ -171,8 +175,6 @@ void CSegment::Read (CFile& cf)
 if (Index () == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-m_nShape = 0;
-m_nVertices = 8;
 if (gameStates.app.bD2XLevel) {
 	m_owner = cf.ReadByte ();
 	m_group = cf.ReadByte ();
