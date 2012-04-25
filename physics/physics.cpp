@@ -82,21 +82,24 @@ void DoPhysicsAlignObject (CObject * objP)
 	fix			dot, maxDot = -I2X (1);
 	int			i, nBestSide;
 	CSegment*	segP = SEGMENTS + objP->Segment ();
+	CSide*		sideP = segP->Side (0);
 
 nBestSide = 0;
 // bank CPlayerData according to CSegment orientation
 //find CSide of CSegment that CPlayerData is most aligned with
-for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
-	dot = CFixVector::Dot (segP->m_sides [i].m_normals [0], objP->info.position.mOrient.m.dir.u);
+for (i = MAX_SIDES_PER_SEGMENT; i; i--, sideP++) {
+	if (!sideP->FaceCount ())
+		continue;
+	dot = CFixVector::Dot (sideP->m_normals [0], objP->info.position.mOrient.m.dir.u);
 	if (maxDot < dot) {
 		maxDot = dot; 
 		nBestSide = i;
 		}
 	}
 if (gameOpts->gameplay.nAutoLeveling == 1)	// old way: used floor's Normal as upvec
-	desiredUpVec = SEGMENTS [objP->info.nSegment].m_sides [3].m_normals [0];
+	desiredUpVec = segP->m_sides [3].FaceCount () ? segP->m_sides [3].m_normals [0] : segP->m_sides [nBestSide].m_normals [0];
 else if (gameOpts->gameplay.nAutoLeveling == 2) {	 // new CPlayerData leveling code: use Normal of CSide closest to our up vec
-	CSide* sideP = SEGMENTS [objP->info.nSegment].m_sides + nBestSide;
+	CSide* sideP = segP->m_sides + nBestSide;
 	if (sideP->FaceCount () == 2) {
 		desiredUpVec = sideP->m_normals [2];
 		CFixVector::Normalize (desiredUpVec);

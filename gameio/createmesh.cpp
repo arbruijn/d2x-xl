@@ -1104,8 +1104,12 @@ void CQuadMeshBuilder::SetupFace (void)
 vNormal = m_sideP->m_normals [2];
 vNormalf.Assign (vNormal);
 for (i = 0; i < 4; i++) {
-	j = m_sideVerts [i];
-	*m_vertexP++ = *gameData.segs.fVertices [j].XYZ ();
+	ubyte h = m_sideVerts [i];
+	if (h = 0xff)
+		m_vertexP->SetZero ();
+	else
+		*m_vertexP = *gameData.segs.fVertices [j].XYZ ();
+	m_vertexP++;
 	*m_normalP++ = vNormalf;
 	m_texCoordP->v.u = X2F (m_sideP->m_uvls [i].u);
 	m_texCoordP->v.v = X2F (m_sideP->m_uvls [i].v);
@@ -1148,7 +1152,8 @@ if ((m_faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_faceP->m_info
 #endif
 SetupLMapTexCoord (lMapTexCoord);
 nType = (m_sideP->m_nType == SIDE_IS_TRI_13);
-h = m_sideP->FaceCount ();
+if (!(h = m_sideP->FaceCount ()))
+	return;
 for (i = 0; i < h; i++, m_triP++) {
 	FACES.nTriangles++;
 	m_faceP->m_info.nTris++;

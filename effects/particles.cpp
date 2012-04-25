@@ -106,7 +106,7 @@ return vPos;
 CFixVector* RandomPointOnQuad (CFixVector *quad, CFixVector *vPos) 
 {
 for (int i = 0; i < 4; i++)
-	if (quad [i].IsZero ())
+	if ((quad [i].v.coord.x == 0x7fffffff) && (quad [i].v.coord.y == 0x7fffffff) && (quad [i].v.coord.z == 0x7fffffff))
 		break;
 if (i < 3)
 	return null;

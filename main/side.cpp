@@ -48,9 +48,9 @@ void CSide::ComputeCenter (void)
 {
 CFloatVector vCenter;
 vCenter.SetZero ();
-for (int i = 0; i < 4; i++)
+for (int i = 0; i < m_nCorners; i++)
 	vCenter += FVERTICES [m_vertices [i]];
-vCenter /= 4;
+vCenter /= m_nCorners;
 m_vCenter.Assign (vCenter);
 // make sure side center is inside segment
 CFixVector v0 = m_vCenter + m_normals [2];
@@ -80,8 +80,8 @@ void CSide::ComputeRads (void)
 {
 m_rads [0] = 0x7fffffff;
 m_rads [1] = 0;
-for (int i = 0; i < 4; i++) {
-	CFixVector v = CFixVector::Avg (VERTICES [m_vertices [i]], VERTICES [m_vertices [(i + 1) % 4]]);
+for (int i = 0; i < m_nCorners; i++) {
+	CFixVector v = CFixVector::Avg (VERTICES [m_vertices [i]], VERTICES [m_vertices [(i + 1) % m_nCorners]]);
 	fix d = CFixVector::Dist (v, m_vCenter);
 	if (m_rads [0] > d)
 		m_rads [0] = d;
@@ -95,9 +95,8 @@ for (int i = 0; i < 4; i++) {
 
 void CSide::SetupCorners (ushort* verts, ushort* index)
 {
-if (gameData.segs.nLevelVersion < 25)
-	for (int i = 0; i < 4; i++)
-		m_corners [i] = verts [index [i]];
+for (int i = 0; i < 4; i++)
+	m_corners [i] = (index [i] == 0xff) ? 0xFFFF : verts [index [i]];
 }
 
 // -------------------------------------------------------------------------------
@@ -296,7 +295,7 @@ if (m_nShape > SIDE_IS_TRIANGLE)
 	fix				xDistToPlane;
 
 m_nSegment = nSegment;
-SetupCorners (verts, index);
+SetupCorners (verts, (gameData.segs.nLevelVersion < 25) ? index : m_corners);
 bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_nShape ? 0xFFFF : m_corners [3], vSorted);
 vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
@@ -544,8 +543,8 @@ for (i = j = 0; i < m_nFaces; i++, j += 3) {
 	}
 if (minDist < 0x7fffffff)
 	return 0;
-for (i = 0; i < 4; i++) {
-	FindPointLineIntersection (h, VERTICES [m_corners [i]], VERTICES [m_corners [(i + 1) % 4]], v, 1);
+for (i = 0; i < m_nCorners; i++) {
+	FindPointLineIntersection (h, VERTICES [m_corners [i]], VERTICES [m_corners [(i + 1) % m_nCorners]], v, 1);
 	dist = CFixVector::Dist (h, v);
 	if (minDist > dist)
 		minDist = dist;
@@ -575,8 +574,8 @@ for (i = j = 0; i < m_nFaces; i++, j += 3) {
 	}
 if (minDist < 1e30f)
 	return 0;
-for (i = 0; i < 4; i++) {
-	FindPointLineIntersection (h, FVERTICES [m_corners [i]], FVERTICES [m_corners [(i + 1) % 4]], v, 1);
+for (i = 0; i < m_nCorners; i++) {
+	FindPointLineIntersection (h, FVERTICES [m_corners [i]], FVERTICES [m_corners [(i + 1) % m_nCorners]], v, 1);
 	dist = CFloatVector::Dist (h, v);
 	if (minDist > dist)
 		minDist = dist;
@@ -972,7 +971,7 @@ CFixVector* CSide::GetCorners (CFixVector* vertices)
 for (int i = 0; i < m_nVertices; i++)
 	vertices [i] = VERTICES [m_corners [i]];
 for (; i < m_nVertices; i++)
-	vertices [i].SetZero ();
+	vertices [i].Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 return vertices;
 }
 
