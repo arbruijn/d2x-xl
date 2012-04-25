@@ -226,7 +226,7 @@ if (mType.physInfo.turnRoll) {
 	mRotate = CFixMatrix::Create (turnAngles);
 	mOrient = info.position.mOrient * mRotate;
 	info.position.mOrient = mOrient;
-}
+	}
 turnAngles.v.coord.p = fixang (FixMul (mType.physInfo.rotVel.v.coord.x, gameData.physics.xTime));
 turnAngles.v.coord.h = fixang (FixMul (mType.physInfo.rotVel.v.coord.y, gameData.physics.xTime));
 turnAngles.v.coord.b = fixang (FixMul (mType.physInfo.rotVel.v.coord.z, gameData.physics.xTime));

@@ -1068,6 +1068,7 @@ int CSide::Read (CFile& cf, ushort* sideVerts, bool bSolid)
 	int nType = bSolid ? 1 : IS_WALL (m_nWall) ? 2 : 0;
 
 m_nFrame = 0;
+m_nShape = 0;
 if (!nType)
 	m_nBaseTex =
 	m_nOvlTex = 0;
@@ -1108,7 +1109,11 @@ else {
 			gameData.render.color.vertBright [sideVerts [i]] = fBrightness;
 		}
 	}
-m_nShape = (gameStates.app.bD2XLevel && (gameData.segs.nLevelVersion > 24)) ? cf.ReadByte () : 0;
+if (gameData.segs.nLevelVersion > 24)
+	for (int i = 0; i < 4; i++) {
+		if (0xff == (m_corners [i] = cf.ReadByte ()))
+			m_nShape++;
+		
 return nType;
 }
 

@@ -175,12 +175,12 @@ nObject = CreateGatedRobot (nSegment, (ubyte) objType, vPos);
 //	Make spewed robot come tumbling out as if blasted by a flash missile.
 if (nObject != -1) {
 	CObject	*newObjP = OBJECTS + nObject;
-	int		force_val = I2X (1) / (gameData.time.xFrame ? gameData.time.xFrame : 1);
-	if (force_val) {
-		newObjP->cType.aiInfo.SKIP_AI_COUNT += force_val;
-		newObjP->mType.physInfo.rotThrust.v.coord.x = (SRandShort () * force_val)/16;
-		newObjP->mType.physInfo.rotThrust.v.coord.y = (SRandShort () * force_val)/16;
-		newObjP->mType.physInfo.rotThrust.v.coord.z = (SRandShort () * force_val)/16;
+	int		xForce = I2X (1) / (gameData.time.xFrame ? gameData.time.xFrame : 1);
+	if (xForce) {
+		newObjP->cType.aiInfo.SKIP_AI_COUNT += xForce;
+		newObjP->mType.physInfo.rotThrust.v.coord.x = (SRandShort () * xForce) / 16;
+		newObjP->mType.physInfo.rotThrust.v.coord.y = (SRandShort () * xForce) / 16;
+		newObjP->mType.physInfo.rotThrust.v.coord.z = (SRandShort () * xForce) / 16;
 		newObjP->mType.physInfo.flags |= PF_USES_THRUST;
 
 		//	Now, give a big initial velocity to get moving away from boss.
