@@ -86,20 +86,36 @@ return colorP ? (colorP->Red () * 3 + colorP->Green () * 5 + colorP->Blue () * 2
 
 //------------------------------------------------------------------------------
 
-CFixVector *RandomPointOnQuad (CFixVector *quad, CFixVector *vPos) 
+CFixVector* RandomPointOnTriangle (CFixVector *triangle, CFixVector *vPos) 
 {
-int i = rand () % 2;
-CFixVector vOffs = quad [i + 1] - quad [i];
-vOffs *= (2 * RandShort ());
-vOffs += quad [i];
-i += 2;
-*vPos = quad [(i + 1) % 4] - quad [i];
-*vPos *= (2 * RandShort ());
-*vPos += quad [i];
-*vPos -= vOffs;
-*vPos *= (2 * RandShort ());
-*vPos += vOffs;
+fix a = 2 * RandShort ();
+fix b = 2 * RandShort ();
+if (a + b > I2X (1)) {
+	a = I2X (1) - a;
+	b = I2X (1) - b;
+	}
+fix c = I2X (1) - a - b;
+*vPos = triangle [0] * a;
+*vPos += triangle [1] * b;
+*vPos += triangle [2] * c;
 return vPos;
+}
+
+//------------------------------------------------------------------------------
+
+CFixVector* RandomPointOnQuad (CFixVector *quad, CFixVector *vPos) 
+{
+for (int i = 0; i < 4; i++)
+	if (quad [i].IsZero ())
+		break;
+if (i < 3)
+	return null;
+if (i == 3)
+	return RandomPointOnTriangle (quad, vPos);
+if (rand () % 2)
+	return RandomPointOnTriangle (quad, vPos);
+quad [1] = quad [0];
+return RandomPointOnTriangle (quad + 1, vPos);
 }
 
 //------------------------------------------------------------------------------
@@ -293,6 +309,7 @@ else {
 	m_vPos = *vPos + v + (*mOrient).m.dir.f * (I2X (1) / 2 - RandN (I2X (1)));
 	}
 m_vStartPos = m_vPos;
+return m_vPos != null;
 }
 
 //------------------------------------------------------------------------------
@@ -441,7 +458,8 @@ m_nRenderType = RenderType ();
 InitColor (colorP, fBrightness, nParticleSystemType);
 if (!InitDrift (vDir, nSpeed))
 	return 0;
-InitPosition (vPos, vEmittingFace, mOrient); // needs InitDrift() to be executed first!
+if (!InitPosition (vPos, vEmittingFace, mOrient)) // needs InitDrift() to be executed first!
+	return 0;
 InitSize (nScale, mOrient);
 InitAnimation ();
 
@@ -605,6 +623,8 @@ else {
 	CFixVector v = CFixVector::Avg ((*mOrient).m.dir.r * (nSpeed - RandN (2 * nSpeed)), (*mOrient).m.dir.u * (nSpeed - RandN (2 * nSpeed)));
 	m_vPos = *vPos + v + (*mOrient).m.dir.f * (I2X (1) / 2 - RandN (I2X (1)));
 	}
+if (!m_vPos)
+	return 0;
 m_vStartPos = m_vPos;
 
 // init size

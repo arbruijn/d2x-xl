@@ -91,26 +91,6 @@ for (int i = 0; i < 4; i++) {
 	}
 }
 
-// -----------------------------------------------------------------------------------
-//	Given a CSide, return the number of faces
-int CSide::FaceCount (void)
-{
-if (m_nShape == SIDE_SHAPE_RECTANGLE) {
-	if (m_nType == SIDE_IS_QUAD)
-		return 1;
-//	if ((m_nType == SIDE_IS_TRI_02) || (m_nType == SIDE_IS_TRI_13))
-		return 2;
-	}
-return (m_nShape == SIDE_SHAPE_TRIANGLE) ? 1 : 0; 
-}
-
-// -----------------------------------------------------------------------------------
-//	Given a CSide, return the number of faces
-int CSide::TriangleCount (void)
-{
-return (m_nShape == SIDE_SHAPE_RECTANGLE) ? 2 : (m_nShape == SIDE_SHAPE_TRIANGLE) ? 1 : 0; 
-}
-
 // -------------------------------------------------------------------------------
 
 void CSide::SetupCorners (ushort* verts, ushort* index)
@@ -307,6 +287,9 @@ return 0;
 
 void CSide::Setup (short nSegment, ushort* verts, ushort* index, bool bSolid)
 {
+if (m_nShape > SIDE_IS_TRIANGLE)
+	return;
+
 	ushort			vSorted [4], bFlip;
 	CFixVector		vNormal;
 	CFloatVector	vNormalf;
@@ -314,15 +297,28 @@ void CSide::Setup (short nSegment, ushort* verts, ushort* index, bool bSolid)
 
 m_nSegment = nSegment;
 SetupCorners (verts, index);
-bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
+bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_nShape ? 0xFFFF : m_corners [3], vSorted);
 vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
-xDistToPlane = abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSorted [0]]));
+xDistToPlane = m_nShape ? 0 : abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSorted [0]]));
 if (bFlip)
 	vNormal.Neg ();
 
-m_bIsQuad = (m_normals [0] == m_normals [1]);
-if (m_nShape)
+m_bIsQuad = !m_nShape && (m_normals [0] == m_normals [1]);
+#if 1
+if (m_nShape) {
+	m_nType = SIDE_IS_TRI_02;
+	m_normals [2] = vNormal;
+	m_fNormals [2] = vNormalf;
+	}
+else {
+	SetupAsTriangles (bSolid, verts, index);
+	m_nFaceCount = 2;
+	m_normals [2] = CFixVector::Avg (m_normals [0], m_normals [1]);
+	m_fNormals [2] = CFloatVector::Avg (m_fNormals [0], m_fNormals [1]);
+	}
+#else
+if (!m_nShape)
 	SetupAsQuad (vNormal, vNormalf, verts, index);
 if (PLANE_DIST_TOLERANCE < DEFAULT_PLANE_DIST_TOLERANCE) {
 	SetupAsTriangles (bSolid, verts, index);
@@ -343,9 +339,8 @@ else {
 			SetupAsQuad (vNormal, vNormalf, verts, index);
 		}
 	}
+#endif
 
-m_normals [2] = CFixVector::Avg (m_normals [0], m_normals [1]);
-m_fNormals [2] = CFloatVector::Avg (m_fNormals [0], m_fNormals [1]);
 if (m_nType == SIDE_IS_QUAD) {
 	for (int i = 0; i < 4; i++)
 		AddToVertexNormal (m_vertices [i], vNormal);
@@ -844,9 +839,9 @@ if (bCheckRad) {
 	CFixVector	*a, *b;
 
 	b = VERTICES + m_corners [0];
-	for (i = 1; i <= 4; i++) {
+	for (i = 1; i <= m_nVertices; i++) {
 		a = b;
-		b = VERTICES + m_corners [i % 4];
+		b = VERTICES + m_corners [i % m_nVertices];
 		d = VmLinePointDist (*a, *b, *p0);
 		if (d < bCheckRad)
 			return IT_POINT;
@@ -875,9 +870,8 @@ if (!(nEdgeMask = PointToFaceRelation (*p0, iFace, vNormal)))
 	return CheckLineToFaceRegular (intersection, p0, p1, rad, iFace, vNormal);
 for (nEdge = 0; !(nEdgeMask & 1); nEdgeMask >>= 1, nEdge++)
 	;
-nVerts = 5 - m_nFaces;
 edge_v0 = VERTICES + m_vertices [iFace * 3 + nEdge];
-edge_v1 = VERTICES + m_vertices [iFace * 3 + ((nEdge + 1) % nVerts)];
+edge_v1 = VERTICES + m_vertices [iFace * 3 + ((nEdge + 1) % 3)];
 vEdge = *edge_v1 - *edge_v0;
 //is the start refP already touching the edge?
 //first, find refP of closest approach of vec & edge
@@ -975,8 +969,10 @@ return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
 
 CFixVector* CSide::GetCorners (CFixVector* vertices) 
 { 
-for (int i = 0; i < 4; i++)
+for (int i = 0; i < m_nVertices; i++)
 	vertices [i] = VERTICES [m_corners [i]];
+for (; i < m_nVertices; i++)
+	vertices [i].SetZero ();
 return vertices;
 }
 

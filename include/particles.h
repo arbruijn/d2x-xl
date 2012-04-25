@@ -219,7 +219,7 @@ class CParticle : public tParticle {
 #ifdef _WIN32
 		inline void InitColor (CFloatVector* colorP, float fBrightness, char nParticleSystemType);
 		inline int InitDrift (CFixVector* vDir, int nSpeed);
-		inline void InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient);
+		inline bool InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient);
 		inline void InitSize (float nScale, CFixMatrix *mOrient);
 		inline void InitAnimation (void);
 #else

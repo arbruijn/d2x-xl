@@ -228,8 +228,6 @@ class CSide {
 		CTrigger* Trigger (void);
 		bool IsVolatile (void);
 		inline ubyte IsQuad (void) { return m_bIsQuad; }
-		int FaceCount (void);
-		int TriangleCount (void);
 		void CheckSum (uint& sum1, uint& sum2);
 
 		int CheckTransparency (void);
@@ -283,6 +281,9 @@ class CSide {
 
 		inline int IsLava (void) { return IsLavaTexture (m_nBaseTex) || (m_nOvlTex && (IsLavaTexture (m_nOvlTex))); }
 		inline int IsWater (void) { return IsWaterTexture (m_nBaseTex) || (m_nOvlTex && (IsWaterTexture (m_nOvlTex))); }
+
+		inline ubyte Shape (void) { return m_nShape; }
+		inline ubyte FaceCount (void) { return m_nFaces; }
 
 	private:
 		void SetupCorners (ushort* verts, ushort* index);

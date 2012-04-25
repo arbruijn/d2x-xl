@@ -972,11 +972,10 @@ return 1;
 
 int LineHitsFace (CFixVector *pHit, CFixVector *p0, CFixVector *p1, short nSegment, short nSide)
 {
-	ushort		i, nFaces, nVerts;
+	ushort		i, nFaces;
 	CSegment*	segP = SEGMENTS + nSegment;
 
 nFaces = segP->Side (nSide)->FaceCount ();
-nVerts = 5 - nFaces;
 for (i = 0; i < nFaces; i++)
 	if (segP->CheckLineToFaceRegular (*pHit, p0, p1, 0, nSide, i))
 		return nSide;
