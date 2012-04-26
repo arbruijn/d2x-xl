@@ -966,9 +966,9 @@ return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
 
 //------------------------------------------------------------------------------
 
-CFixVector* CSide::GetCorners (CFixVector* vertices) 
+CFixVector* CSide::GetCornerVertices (CFixVector* vertices) 
 { 
-for (int i = 0; i < m_nVertices; i++)
+for (int i = 0; i < m_nCorners; i++)
 	vertices [i] = VERTICES [m_corners [i]];
 for (; i < m_nVertices; i++)
 	vertices [i].Set (0x7fffffff, 0x7fffffff, 0x7fffffff);

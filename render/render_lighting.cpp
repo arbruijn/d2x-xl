@@ -662,7 +662,7 @@ for (i = nStart; i < nEnd; i++) {
 		colorP = FACES.color + faceP->m_info.nIndex;
 		sideP = segP->Side (nSide);
 		uvlP = sideP->m_uvls;
-		for (h = 0, uvi = 0 /*(segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13)*/; h < sideP->m_nCorners; h++, colorP++, uvi++) {
+		for (h = 0, uvi = 0 /*(segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13)*/; h < sideP->CornerCount (); h++, colorP++, uvi++) {
 			if (gameStates.render.bFullBright)
 				*colorP = nColor ? faceColor [nColor] : brightColor;
 			else {
@@ -673,7 +673,7 @@ for (i = nStart; i < nEnd; i++) {
 					nDbgVertex = nDbgVertex;
 #endif
 				SetVertexColor (nVertex, &c, nColor ? faceP->m_info.bTextured ? 2 : 1 : 0);
-				xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % sideP->m_nCorners].l);
+				xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % sideP->CornerCount ()].l);
 				AdjustVertexColor (NULL, &c, xLight);
 				}
 			*colorP = c;

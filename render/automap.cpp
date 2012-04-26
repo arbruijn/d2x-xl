@@ -1118,7 +1118,7 @@ void CAutomap::DrawEdges (void)
 	CFixVector		*tv1;
 	fix				distance;
 	fix				minDistance = 0x7fffffff;
-	CRenderPoint			*p1, *p2;
+	CRenderPoint	*p1, *p2;
 	int				bUseTransform = ogl.UseTransform ();
 	
 m_bDrawBuffers = ogl.SizeBuffers (1000);
@@ -1256,14 +1256,15 @@ ret = -1;
 while (ret == -1) {
 	ev0 = (int) (m_edges [hash].verts [0]);
 	ev1 = (int) (m_edges [hash].verts [1]);
-	evv = (ev1<<16)+ev0;
-	if (m_edges [hash].nFaces == 0) ret=0;
+	evv = (ev1 << 16) + ev0;
+	if (m_edges [hash].nFaces == 0) 
+		ret = 0;
 	else if (evv == vv)
-		ret=1;
+		ret = 1;
 	else {
-		if (++hash==MAX_EDGES)
-			hash=0;
-		if (hash==oldhash)
+		if (++hash == MAX_EDGES)
+			hash = 0;
+		if (hash == oldhash)
 			Error ("Edge list full!");
 		}
 	}
@@ -1356,8 +1357,11 @@ void CAutomap::AddSegmentEdges (CSegment *segP)
 	short		nSegment = segP->Index ();
 	int		bHidden;
 	ushort*	corners;
+	CSide*	sideP = segP->Side (0);
 
-for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
+for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
+	if (!sideP->FaceCount ())
+		continue;
 	bHidden = 0;
 	bIsGrate = 0;
 	bNoFade = 0;
@@ -1394,7 +1398,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 		CTrigger* triggerP = wallP->Trigger ();
 		if (triggerP && (triggerP->m_info.nType == TT_SECRET_EXIT)) {
 	 		color = RGBA_PAL2 (29, 0, 31);
-			bNoFade=1;
+			bNoFade = 1;
 			goto addEdge;
 			}
 		switch (wallP->nType) {
@@ -1468,8 +1472,8 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 addEdge:
 
 		corners = SEGMENTS [nSegment].Corners (nSide);
-		for (int i = 0; i <= 4; i++)
-			AddEdge (corners [i], corners [(i + 1) % 4], color, nSide, nSegment, bHidden, 0, bNoFade);
+		for (int i = 0, j = sideP->CornerCount (); i <= j; i++)
+			AddEdge (corners [i], corners [(i + 1) % j], color, nSide, nSegment, bHidden, 0, bNoFade);
 		if (bIsGrate) {
 			AddEdge (corners [0], corners [2], color, nSide, nSegment, bHidden, 1, bNoFade);
 			AddEdge (corners [1], corners [3], color, nSide, nSegment, bHidden, 1, bNoFade);
@@ -1489,8 +1493,8 @@ for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 		continue;
 	if (segP->m_children [nSide] == -1) {
 		ushort* corners = segP->Corners (nSide);
-		for (int i = 0; i <= 4; i++)
-			AddUnknownEdge (corners [i], corners [(i + 1) % 4]);
+		for (int i = 0, j = segP->Side (nSide)->CornerCount (); i <= j; i++)
+			AddUnknownEdge (corners [i], corners [(i + 1) % j]);
 		}
 	}
 }

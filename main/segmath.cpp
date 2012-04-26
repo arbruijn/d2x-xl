@@ -146,16 +146,16 @@ vs.SetZero ();
 ve.SetZero ();
 int nVertices = 0;
 CSide* sideP = segP->Side (start);
-for (int i = 0, j = sideP->m_nCorners; i < j; i++) {
-	ushort n = sideP->m_nCorners [i];
+for (int i = 0, j = sideP->CornerCount (); i < j; i++) {
+	ushort n = sideP->m_corners [i];
 	if (n != 0xFFFF) {
 		vs += gameData.segs.vertices [n];
 		nVertices++;
 		}
 	}
 sideP = segP->Side (end);
-for (int i = 0, j = sideP->m_nCorners; i < j; i++) {
-	ushort n = sideP->m_nCorners [i];
+for (int i = 0, j = sideP->CornerCount (); i < j; i++) {
+	ushort n = sideP->m_corners [i];
 	n = segP->m_vertices [sideVertIndex [end][i]];
 	if (n != 0xFFFF) {
 		ve += gameData.segs.vertices [n];

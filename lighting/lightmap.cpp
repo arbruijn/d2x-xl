@@ -218,7 +218,7 @@ double CLightmapManager::SideRad (int nSegment, int nSide)
 
 xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
-for (i = 0; i < sideP->m_nCorners; i++) {
+for (i = 0; i < sideP->CornerCount (); i++) {
 	v = gameData.segs.vertices +sideVerts [i];
 	h = (*v).v.coord.x;
 	if (xMin > h)

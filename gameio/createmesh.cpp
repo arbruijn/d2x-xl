@@ -991,7 +991,7 @@ else
 	memset (m_faceP, 0, sizeof (*m_faceP));
 CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 m_faceP->m_info.nSegment = nSegment;
-m_faceP->m_info.nVerts = sideP->m_nCorners;
+m_faceP->m_info.nVerts = sideP->CornerCount ();
 m_faceP->m_info.nFrame = -1;
 m_faceP->m_info.nIndex = m_vertexP - FACES.vertices;
 if (gameStates.render.bTriangleMesh)

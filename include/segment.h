@@ -228,6 +228,7 @@ class CSide {
 		CTrigger* Trigger (void);
 		bool IsVolatile (void);
 		inline ubyte IsQuad (void) { return m_bIsQuad; }
+		inline ubyte CornerCount (void) { return m_nCorners; }
 		void CheckSum (uint& sum1, uint& sum2);
 
 		int CheckTransparency (void);
@@ -254,7 +255,7 @@ class CSide {
 			vertices = m_vertices;
 			return m_nFaces;
 			}
-		CFixVector* GetCorners (CFixVector* vertices);
+		CFixVector* GetCornerVertices (CFixVector* vertices);
 		inline ushort* Corners (void) { return m_corners; }
 		inline int HasVertex (ushort nVertex) { 
 			for (int i = 0; i < m_nCorners; i++)
@@ -395,7 +396,8 @@ class CSegment {
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
 		inline ushort* Corners (int nSide) { return m_sides [nSide].Corners (); }
-		inline CFixVector* GetCorners (int nSide, CFixVector* vertices) { return m_sides [nSide].GetCorners (vertices); }
+		inline ubyte CornerCount (int nSide) { return m_sides [nSide].CornerCount (); }
+		inline CFixVector* GetCornerVertices (int nSide, CFixVector* vertices) { return m_sides [nSide].GetCornerVertices (vertices); }
 		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
 		int ConnectedSide (CSegment* other);
 		inline CFixVector& Normal (int nSide, int nFace) { return m_sides [nSide].Normal (nFace); }
