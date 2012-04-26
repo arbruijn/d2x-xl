@@ -78,7 +78,7 @@ for (;;) {
 	nMaxSide = -1;
 	xMaxDist = 0; // find only sides we're behind as seen from inside the current segment
 	for (nSide = 0, bit = 1; nSide < SEGMENT_SIDE_COUNT; nSide++, bit <<= 1)
-		if (segP->Side nSide)->FaceCount () && (centerMask & bit) && (xTolerance || (segP->m_children [nSide] > -1)) && (xSideDists [nSide] < xMaxDist)) {
+		if (segP->Side (nSide)->FaceCount () && (centerMask & bit) && (xTolerance || (segP->m_children [nSide] > -1)) && (xSideDists [nSide] < xMaxDist)) {
 			if (xTolerance && (xTolerance >= -xSideDists [nSide]) && (xTolerance >= segP->Side (nSide)->DistToPoint (vPos))) 
 				return nCurSeg;
 			if (segP->m_children [nSide] >= 0) {

@@ -8,7 +8,7 @@ class CGlareRenderer {
 		CFloatVector	m_sprite [4];
 		int				m_nVertices;
 		CFloatVector	m_vCenter;
-		CFloatVector	m_vExe;
+		CFloatVector	m_vEye;
 		tIntervalf		m_zRange;
 
 	public:

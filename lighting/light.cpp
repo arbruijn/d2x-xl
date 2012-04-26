@@ -824,7 +824,7 @@ for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
 			gameData.pig.tex.brightness [sideP->m_nOvlTex]))
 		continue;
 	if (!flP->m_delay)
-		flP->m_timer == (fix) 0x80000000;		//disabled
+		flP->m_timer = (fix) 0x80000000;		//disabled
 	if (flP->m_timer == (fix) 0x80000000)		//disabled
 		continue;
 	if ((flP->m_timer -= gameData.time.xFrame) < 0) {

@@ -288,7 +288,7 @@ return 0;
 
 void CSide::Setup (short nSegment, ushort* verts, ushort* index, bool bSolid)
 {
-if (m_nShape > SIDE_IS_TRIANGLE)
+if (m_nShape > SIDE_SHAPE_TRIANGLE)
 	return;
 
 	ushort			vSorted [4], bFlip;
@@ -314,7 +314,7 @@ if (m_nShape) {
 	}
 else {
 	SetupAsTriangles (bSolid, verts, index);
-	m_nFaceCount = 2;
+	m_nFaces = 2;
 	m_normals [2] = CFixVector::Avg (m_normals [0], m_normals [1]);
 	m_fNormals [2] = CFloatVector::Avg (m_fNormals [0], m_fNormals [1]);
 	}
@@ -838,9 +838,9 @@ if (bCheckRad) {
 	CFixVector	*a, *b;
 
 	b = VERTICES + m_corners [0];
-	for (i = 1; i <= m_nVertices; i++) {
+	for (i = 1; i <= m_nCorners; i++) {
 		a = b;
-		b = VERTICES + m_corners [i % m_nVertices];
+		b = VERTICES + m_corners [i % m_nCorners];
 		d = VmLinePointDist (*a, *b, *p0);
 		if (d < bCheckRad)
 			return IT_POINT;
@@ -968,9 +968,11 @@ return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
 
 CFixVector* CSide::GetCornerVertices (CFixVector* vertices) 
 { 
-for (int i = 0; i < m_nCorners; i++)
+	int i;
+
+for (i = 0; i < m_nCorners; i++)
 	vertices [i] = VERTICES [m_corners [i]];
-for (; i < m_nVertices; i++)
+for (; i < m_nCorners; i++)
 	vertices [i].Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 return vertices;
 }

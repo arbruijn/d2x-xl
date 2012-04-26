@@ -67,11 +67,11 @@ if (i > 2)
 j = i + 1;
 d1 = VmLinePointDist (gameData.segs.vertices [corners [i]],
                       gameData.segs.vertices [corners [j]],
-                      gameData.segs.vertices [corners [(j + 1) % nCorners]]);
+                      gameData.segs.vertices [corners [(j + 1) % m_nVertices]]);
 if (m_nVertices == 4)
 	d2 = VmLinePointDist (gameData.segs.vertices [corners [i]],
 								 gameData.segs.vertices [corners [j]],
-								 gameData.segs.vertices [corners [(j + 2) % nCorners]]);
+								 gameData.segs.vertices [corners [(j + 2) % m_nVertices]]);
 if (h)
 	*h = (m_nVertices < 3) ? d1 : (d1 > d2) ? d1 : d2;
 return i;
@@ -290,7 +290,7 @@ v = m_sprite [0] + m_sprite [1];
 v -= m_sprite [2];
 v -= m_sprite [3];
 v = v * 0.25f;
-e = m_vEye - *vLight;
+e = m_vEye - m_vCenter;
 CFloatVector::Normalize (e);
 n = CFloatVector::Cross (v, u);
 CFloatVector::Normalize (n);
@@ -303,7 +303,7 @@ s = s + e * CFloatVector::Dot (e, s);
 t = t + e * CFloatVector::Dot (e, t);
 s = s * 1.8f;
 t = t * 1.8f;
-v = *vLight;
+v = m_vCenter;
 for (i = 0; i < 3; i++) {
 	m_sprite [0].v.vec [i] = v.v.vec [i] + s.v.vec [i] + t.v.vec [i];
 	m_sprite [1].v.vec [i] = v.v.vec [i] + s.v.vec [i] - t.v.vec [i];
@@ -355,7 +355,6 @@ if (fIntensity < 0.01f)
 
 	int				nTexture, bAdditive;
 	float				fLight;
-	ubyte				nVertices;
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))

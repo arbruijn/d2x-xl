@@ -105,11 +105,13 @@ return vPos;
 
 CFixVector* RandomPointOnQuad (CFixVector *quad, CFixVector *vPos) 
 {
-for (int i = 0; i < 4; i++)
+	int i;
+
+for (i = 0; i < 4; i++)
 	if ((quad [i].v.coord.x == 0x7fffffff) && (quad [i].v.coord.y == 0x7fffffff) && (quad [i].v.coord.z == 0x7fffffff))
 		break;
 if (i < 3)
-	return null;
+	return NULL;
 if (i == 3)
 	return RandomPointOnTriangle (quad, vPos);
 if (rand () % 2)
@@ -296,7 +298,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CParticle::InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient)
+bool CParticle::InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient)
 {
 if (vEmittingFace)
 	m_vPos = *RandomPointOnQuad (vEmittingFace, vPos);
@@ -309,7 +311,7 @@ else {
 	m_vPos = *vPos + v + (*mOrient).m.dir.f * (I2X (1) / 2 - RandN (I2X (1)));
 	}
 m_vStartPos = m_vPos;
-return m_vPos != null;
+return true;
 }
 
 //------------------------------------------------------------------------------
@@ -623,8 +625,6 @@ else {
 	CFixVector v = CFixVector::Avg ((*mOrient).m.dir.r * (nSpeed - RandN (2 * nSpeed)), (*mOrient).m.dir.u * (nSpeed - RandN (2 * nSpeed)));
 	m_vPos = *vPos + v + (*mOrient).m.dir.f * (I2X (1) / 2 - RandN (I2X (1)));
 	}
-if (!m_vPos)
-	return 0;
 m_vStartPos = m_vPos;
 
 // init size

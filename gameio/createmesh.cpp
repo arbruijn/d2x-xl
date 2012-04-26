@@ -1104,8 +1104,8 @@ void CQuadMeshBuilder::SetupFace (void)
 vNormal = m_sideP->m_normals [2];
 vNormalf.Assign (vNormal);
 for (i = 0; i < 4; i++) {
-	ubyte h = m_sideVerts [i];
-	if (h != 0xff)
+	ushort h = m_sideVerts [i];
+	if (h != 0xffff)
 		*m_vertexP++ = *gameData.segs.fVertices [j].XYZ ();
 	*m_normalP++ = vNormalf;
 	m_texCoordP->v.u = X2F (m_sideP->m_uvls [i].u);
@@ -1466,7 +1466,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++) {
 		FACES.nFaces += 6;
 	else {
 		for (nSide = 0, m_sideP = m_segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, m_sideP++) {
-			if (!sideP->FaceCount ())
+			if (!m_sideP->FaceCount ())
 				continue;
 			m_nWall = m_segP->WallNum (nSide);
 			m_nWallType = IS_WALL (m_nWall) ? WALLS [m_nWall].IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
@@ -1533,7 +1533,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
-		if (!sideP->FaceCount ())
+		if (!m_sideP->FaceCount ())
 			continue;
 		m_nWall = m_segP->WallNum (nSide);
 		m_nWallType = IS_WALL (m_nWall) ? WALLS [m_nWall].IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;

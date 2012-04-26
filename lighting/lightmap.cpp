@@ -214,7 +214,7 @@ double CLightmapManager::SideRad (int nSegment, int nSide)
 	double		dx, dy, dz;
 	CFixVector	*v;
 	CSide*		sideP = SEGMENTS [nSegment].Side (nSide);
-	ushort*		sideVerts = sideP->Corners (nSide);
+	ushort*		sideVerts = sideP->Corners ();
 
 xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
@@ -451,7 +451,7 @@ void CLightmapManager::Build (CSegFace* faceP, int nThread)
 	CRGBColor		*texColorP;
 	CFloatVector3	color;
 	int				w, h, x, y, yMin, yMax;
-	ubyte				nTriangles = faceP->FaceCount () - 1;
+	ubyte				nTriangles = faceP->m_info.nTriangles - 1;
 	short				nSegment = faceP->m_info.nSegment;
 	short				nSide = faceP->m_info.nSide;
 	bool				bBlack, bWhite;

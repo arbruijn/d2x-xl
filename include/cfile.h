@@ -55,7 +55,7 @@ typedef struct CFILE {
 
 class CFile {
 	private:
-		CFILE	m_cf;
+		CFILE	m_info;
 #ifdef _WIN32
 		inline // g++ can be such a PITA
 #endif
@@ -76,7 +76,7 @@ class CFile {
 		int EoF (void);
 		int Error (void);
 		size_t Write (const void *buf, int elsize, int nelem, int bCompressed = 0);
-		inline int GetC (void) { return (FillBuffer () == EOF) ? EOF : m_cf.buffer [m_cf.bufPos++]; }
+		inline int GetC (void) { return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.bufPos++]; }
 
 		size_t ReadCompressed (const void* buf, uint bufLen);
 		size_t WriteCompressed (const void* buf, uint bufLen);
@@ -84,7 +84,7 @@ class CFile {
 		int PutC (int c);
 		int PutS (const char *str);
 
-		inline size_t Size (void) { return m_cf.size; }
+		inline size_t Size (void) { return m_info.size; }
 
 		// prototypes for reading basic types from fp
 		int ReadInt (void);
@@ -129,8 +129,8 @@ class CFile {
 		static void SplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt);
 		static void ChangeFilenameExtension (char *dest, const char *src, const char *new_ext);
 
-		inline FILE*& File () { return m_cf.file; }
-		inline char* Name () { return m_cf.filename; }
+		inline FILE*& File () { return m_info.file; }
+		inline char* Name () { return m_info.filename; }
 		int LineCount (const char* filename, const char* folder, char* delims);
 	};
 
