@@ -15,7 +15,7 @@
 
 // Number of vertices in current mine (ie, gameData.segs.vertices, pointed to by Vp)
 //	Translate table to get opposite CSide of a face on a CSegment.
-char	sideOpposite [SEGMENT_SIDE_COUNT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRONT, WBACK};
+char	oppSideTable [SEGMENT_SIDE_COUNT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRONT, WBACK};
 
 //	Note, this MUST be the same as sideVertIndex, it is an int for speed reasons.
 ushort sideVertIndex [SEGMENT_SIDE_COUNT][4] = {
@@ -71,7 +71,7 @@ void CSegment::ReadVerts (CFile& cf)
 {
 m_nShape = 0;
 m_nVertices = 8;
-for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
+for (int i = 0; i < SEGMENT_VERTEX_COUNT; i++)
 	if (0xFFFF == (m_vertices [i] = cf.ReadShort ()))
 		m_nShape++;
 m_nVertices = 8 - m_nShape;
@@ -367,7 +367,8 @@ CSegMasks CSegment::Masks (const CFixVector& refP, fix xRad)
 //check refPoint against each CSide of CSegment. return bitmask
 masks.m_valid = 1;
 for (nSide = 0, faceBit = 1; nSide < SEGMENT_SIDE_COUNT; nSide++)
-	masks |= m_sides [nSide].Masks (refP, xRad, 1 << nSide, faceBit);
+	if (m_sides [nSide].m_nCorners)
+		masks |= m_sides [nSide].Masks (refP, xRad, 1 << nSide, faceBit);
 return masks;
 }
 
@@ -393,6 +394,11 @@ for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		nDbgSeg = nDbgSeg;
 #endif
 	m_sides [i].Setup (Index (), m_vertices, sideVertIndex [i], m_children [i] < 0);
+	if (!m_sides [i].m_nCorners && (m_children [i] >= 0)) {
+		PrintLog (0, "Segment %d, side %d is collapsed, but has child %d!\n", SEG_IDX (this), i, m_children [i]);
+		SEGMENTS [m_children [i]].m_children [oppSideTable [i]] = -1;
+		m_children [i] = -1;
+		}
 	}
 }
 
@@ -403,7 +409,7 @@ CFixVector CSegment::RandomPoint (void)
 {
 int nVertex;
 do {
-	nVertex = RandShort () % MAX_VERTICES_PER_SEGMENT;
+	nVertex = RandShort () % m_nVertices;
 } while (m_vertices [nVertex] == 0xFFFF);
 CFixVector v = gameData.segs.vertices [m_vertices [nVertex]] - m_vCenter;
 v *= (RandShort ());
@@ -415,7 +421,7 @@ return v + m_vCenter;
 int CSegment::HasOpenableDoor (void)
 {
 for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
-	if (m_sides [i].IsOpenableDoor ())
+	if (m_sides [i].m_nCorners && m_sides [i].IsOpenableDoor ())
 		return i;
 return -1;
 }
@@ -431,6 +437,8 @@ if (nChildSeg == -1)
 	return WID_VISIBLE_FLAG;
 if (nChildSeg == -2)
 	return WID_EXTERNAL_FLAG;
+if (!m_sides [nSide].m_nCorners)
+	return 0;
 
 CWall* wallP = m_sides [nSide].Wall ();
 
@@ -1188,7 +1196,7 @@ int CSegment::TexturedSides (void)
 	int nSides = 0;
 
 for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
-	if ((m_children [i] < 0) || m_sides [i].IsTextured ())
+	if (m_sides [i].m_corners && (m_children [i] < 0) || m_sides [i].IsTextured ()))
 		nSides++;
 return nSides;
 }
@@ -1229,7 +1237,7 @@ return bmBot ? bmBot : bmTop;
 int CSegment::ChildIndex (int nChild)
 {
 for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
-	if (m_children [i] == nChild)
+	if (m_sides [i].m_nCorners && (m_children [i] == nChild))
 		return i;
 return -1;
 }

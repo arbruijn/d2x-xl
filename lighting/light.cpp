@@ -279,7 +279,7 @@ if (xObjIntensity) {
 	//	12/04/95, MK, markers only cast light in own CSegment.
 	if (objP && ((abs (obji_64) <= I2X (8)) || (nObjType == OBJ_MARKER))) {
 		ushort *vp = SEGMENTS [nObjSeg].m_vertices;
-		for (iVertex = 0; iVertex < MAX_VERTICES_PER_SEGMENT; iVertex++) {
+		for (iVertex = 0; iVertex < SEGMENT_VERTEX_COUNT; iVertex++) {
 			nVertex = vp [iVertex];
 			if (nVertex == 0xFFFF)
 				continue;
@@ -607,7 +607,7 @@ if (!gameStates.render.nLightingMethod) {
 		nSegment = gameData.render.mine.visibility [0].segments [iRenderSeg];
 		if (nSegment != -1) {
 			ushort* vp = SEGMENTS [nSegment].m_vertices;
-			for (v = 0; v < MAX_VERTICES_PER_SEGMENT; v++) {
+			for (v = 0; v < SEGMENT_VERTEX_COUNT; v++) {
 				nv = vp [v];
 				if (nv == 0xFFFF)
 					continue;	//ignore it, and go on to next one

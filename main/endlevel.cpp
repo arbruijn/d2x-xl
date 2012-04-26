@@ -282,7 +282,7 @@ nSegment = SEGMENTS [nOldSeg].m_children [nExitSide];
 nTunnelLength = 0;
 do {
 	nEntrySide = ELFindConnectedSide (nSegment, nOldSeg);
-	nExitSide = sideOpposite [nEntrySide];
+	nExitSide = oppSideTable [nEntrySide];
 	nOldSeg = nSegment;
 	nSegment = SEGMENTS [nSegment].m_children [nExitSide];
 	nTunnelLength++;
@@ -299,7 +299,7 @@ nSegment = SEGMENTS [nOldSeg].m_children [nExitSide];
 i = nTunnelLength / 3;
 while (i--) {
 	nEntrySide = ELFindConnectedSide (nSegment, nOldSeg);
-	nExitSide = sideOpposite [nEntrySide];
+	nExitSide = oppSideTable [nEntrySide];
 	nOldSeg = nSegment;
 	nSegment = SEGMENTS [nSegment].m_children [nExitSide];
 	}
@@ -951,7 +951,7 @@ if (UpdateObjectSeg (objP, false)) {
 		//find new exit CSide
 		if (!exitFlightDataP->firstTime) {
 			nEntrySide = ELFindConnectedSide (objP->info.nSegment, nOldPlayerSeg);
-			nExitSide = sideOpposite [nEntrySide];
+			nExitSide = oppSideTable [nEntrySide];
 			}
 		if (exitFlightDataP->firstTime || (nEntrySide == -1) || (segP->m_children [nExitSide] == -1))
 			nExitSide = FindExitSide (objP);
@@ -975,7 +975,7 @@ if (UpdateObjectSeg (objP, false)) {
 				fix dist;
 
 				for (i = 0; i < nSides; i++)
-					if (i != nEntrySide && i != nExitSide && i != nUpSide && i != sideOpposite [nUpSide]) {
+					if (i != nEntrySide && i != nExitSide && i != nUpSide && i != oppSideTable [nUpSide]) {
 						if (s0 == -1)
 							s0 = i;
 						else

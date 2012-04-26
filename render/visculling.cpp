@@ -252,7 +252,7 @@ static int CompareChildren (CSegment *segP, short c0, short c1)
 	CFixVector		temp;
 	fix				d0, d1;
 
-if (sideOpposite [c0] == c1)
+if (oppSideTable [c0] == c1)
 	return 0;
 //find normals of adjoining sides
 FindAdjacentSideNorms (segP, c0, c1, s);

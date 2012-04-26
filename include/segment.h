@@ -42,8 +42,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 // Set maximum values for tSegment and face data structures.
-#define MAX_VERTICES_PER_SEGMENT    8
-#define SEGMENT_SIDE_COUNT       6
+#define SEGMENT_VERTEX_COUNT			8
+#define SEGMENT_SIDE_COUNT				6
 #define MAX_VERTICES_PER_POLY       4
 #define WLEFT                       0
 #define WTOP                        1
@@ -129,7 +129,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define IS_CHILD(nSegment) (nSegment > -1)
 
 extern ushort sideVertIndex [SEGMENT_SIDE_COUNT][4];
-extern char sideOpposite [SEGMENT_SIDE_COUNT];
+extern char oppSideTable [SEGMENT_SIDE_COUNT];
 
 //------------------------------------------------------------------------------
 
@@ -300,7 +300,7 @@ class CSegment {
 		CSide			m_sides [SEGMENT_SIDE_COUNT];       // 6 sides
 		short			m_children [SEGMENT_SIDE_COUNT];    // indices of 6 children segments, front, left, top, right, bottom, back
 		fix			m_childDists [2][SEGMENT_SIDE_COUNT];
-		ushort		m_vertices [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
+		ushort		m_vertices [SEGMENT_VERTEX_COUNT];    // vertex ids of 4 front and 4 back vertices
 		short			m_nVertices;
 		int			m_objects;    // pointer to objects in this tSegment
 
@@ -573,7 +573,7 @@ typedef struct tSegFaces {
 
 // Globals from mglobal.c
 extern ushort sideVertIndex [SEGMENT_SIDE_COUNT][4];       // sideVertIndex[my_side] is list of vertices forming side my_side.
-extern char sideOpposite [];                                // sideOpposite [my_side] returns CSide opposite cube from my_side.
+extern char oppSideTable [];                                // oppSideTable [my_side] returns CSide opposite cube from my_side.
 
 // New stuff, 10/14/95: For shooting out lights and monitors.
 // Light cast upon vertLight vertices in nSegment:nSide by some light

@@ -1533,6 +1533,8 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
+		if (!sideP->FaceCount ())
+			continue;
 		m_nWall = m_segP->WallNum (nSide);
 		m_nWallType = IS_WALL (m_nWall) ? WALLS [m_nWall].IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
 		CSegment* childSegP = (m_segP->m_children [nSide] < 0) ? NULL : SEGMENTS + m_segP->m_children [nSide];

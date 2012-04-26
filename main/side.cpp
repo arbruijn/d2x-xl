@@ -46,6 +46,8 @@ return gameStates.render.bRendering ? m_rotNorms [nFace] : m_normals [nFace];
 //	The center point is defined to be the average of the 4 points defining the CSide.
 void CSide::ComputeCenter (void)
 {
+if (!FaceCount ())
+	return;
 CFloatVector vCenter;
 vCenter.SetZero ();
 for (int i = 0; i < m_nCorners; i++)
@@ -587,7 +589,7 @@ return minDist;
 
 CWall* CSide::Wall (void) 
 { 
-return IS_WALL (m_nWall) ? WALLS + m_nWall : NULL; 
+return (m_nCorners && IS_WALL (m_nWall)) ? WALLS + m_nWall : NULL; 
 }
 
 //	-----------------------------------------------------------------------------
