@@ -145,12 +145,17 @@ void ExtractVectorFromSegment (CSegment *segP, CFixVector *vp, int start, int en
 vs.SetZero ();
 ve.SetZero ();
 int nVertices = 0;
-for (int i = 0; i < 4; i++) {
-	ushort n = segP->m_vertices [sideVertIndex [start][i]];
+CSide* sideP = segP->Side (start);
+for (int i = 0, j = sideP->m_nCorners; i < j; i++) {
+	ushort n = sideP->m_nCorners [i];
 	if (n != 0xFFFF) {
 		vs += gameData.segs.vertices [n];
 		nVertices++;
 		}
+	}
+sideP = segP->Side (end);
+for (int i = 0, j = sideP->m_nCorners; i < j; i++) {
+	ushort n = sideP->m_nCorners [i];
 	n = segP->m_vertices [sideVertIndex [end][i]];
 	if (n != 0xFFFF) {
 		ve += gameData.segs.vertices [n];
@@ -158,7 +163,7 @@ for (int i = 0; i < 4; i++) {
 		}
 	}
 *vp = ve - vs;
-*vp *= nVertices * I2X (1) / 4;
+*vp *= nVertices * I2X (2) / nVertices;
 }
 
 // -------------------------------------------------------------------------------

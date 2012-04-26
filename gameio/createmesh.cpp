@@ -989,8 +989,9 @@ if (bRebuild)
 	m_faceP->m_info.nTris = 0;
 else
 	memset (m_faceP, 0, sizeof (*m_faceP));
+CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 m_faceP->m_info.nSegment = nSegment;
-m_faceP->m_info.nVerts = 4;
+m_faceP->m_info.nVerts = sideP->m_nCorners;
 m_faceP->m_info.nFrame = -1;
 m_faceP->m_info.nIndex = m_vertexP - FACES.vertices;
 if (gameStates.render.bTriangleMesh)
@@ -999,7 +1000,6 @@ memcpy (m_faceP->m_info.index, m_sideVerts, sizeof (m_faceP->m_info.index));
 m_faceP->m_info.nType = gameStates.render.bTriangleMesh ? m_sideP->m_nType : -1;
 m_faceP->m_info.nSegment = nSegment;
 m_faceP->m_info.nSide = nSide;
-CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 m_faceP->m_info.nTriangles = sideP->FaceCount ();
 m_faceP->m_info.nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWall : (ushort) -1;
 m_faceP->m_info.bAnimation = IsAnimatedTexture (m_faceP->m_info.nBaseTex) || IsAnimatedTexture (m_faceP->m_info.nOvlTex);
@@ -1105,11 +1105,8 @@ vNormal = m_sideP->m_normals [2];
 vNormalf.Assign (vNormal);
 for (i = 0; i < 4; i++) {
 	ubyte h = m_sideVerts [i];
-	if (h = 0xff)
-		m_vertexP->SetZero ();
-	else
-		*m_vertexP = *gameData.segs.fVertices [j].XYZ ();
-	m_vertexP++;
+	if (h != 0xff)
+		*m_vertexP++ = *gameData.segs.fVertices [j].XYZ ();
 	*m_normalP++ = vNormalf;
 	m_texCoordP->v.u = X2F (m_sideP->m_uvls [i].u);
 	m_texCoordP->v.v = X2F (m_sideP->m_uvls [i].v);

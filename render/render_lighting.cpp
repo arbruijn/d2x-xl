@@ -263,7 +263,7 @@ for (i = nStart; i < nEnd; i++) {
 	if (gameStates.render.bPerPixelLighting)
 		nColor = 0;
 	colorP = FACES.color + faceP->m_info.nIndex;
-	for (h = 0; h < 4; h++, colorP++) {
+	for (h = 0; h < faceP->m_info.nVerts; h++, colorP++) {
 		if (gameStates.render.bFullBright)
 			*colorP = nColor ? faceColor [nColor] : brightColor;
 		else {
@@ -420,7 +420,7 @@ for (i = nStart; i < nEnd; i++) {
 			nColor = -1;
 //			SetDynLightMaterial (nSegment, faceP->m_info.nSide, -1);
 		colorP = FACES.color + faceP->m_info.nIndex;
-		for (h = 0; h < 4; h++, colorP++) {
+		for (h = 0; h < faceP->m_info.nVerts; h++, colorP++) {
 			if (gameStates.render.bFullBright)
 				colorP->Assign (nColor ? faceColor [nColor] : brightColor);
 			else {
@@ -617,6 +617,7 @@ ogl.SetTransform (0);
 void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 {
 	CSegment*		segP;
+	CSide*			sideP;
 	tSegFaces*		segFaceP;
 	CSegFace*		faceP;
 	CFloatVector*	colorP;
@@ -659,8 +660,9 @@ for (i = nStart; i < nEnd; i++) {
 			continue;
 		faceP->m_info.color.Assign (faceColor [nColor]);
 		colorP = FACES.color + faceP->m_info.nIndex;
-		uvlP = segP->m_sides [nSide].m_uvls;
-		for (h = 0, uvi = 0 /*(segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13)*/; h < 4; h++, colorP++, uvi++) {
+		sideP = segP->Side (nSide);
+		uvlP = sideP->m_uvls;
+		for (h = 0, uvi = 0 /*(segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13)*/; h < sideP->m_nCorners; h++, colorP++, uvi++) {
 			if (gameStates.render.bFullBright)
 				*colorP = nColor ? faceColor [nColor] : brightColor;
 			else {
@@ -671,7 +673,7 @@ for (i = nStart; i < nEnd; i++) {
 					nDbgVertex = nDbgVertex;
 #endif
 				SetVertexColor (nVertex, &c, nColor ? faceP->m_info.bTextured ? 2 : 1 : 0);
-				xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % 4].l);
+				xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % sideP->m_nCorners].l);
 				AdjustVertexColor (NULL, &c, xLight);
 				}
 			*colorP = c;
