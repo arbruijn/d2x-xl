@@ -206,7 +206,7 @@ class CSide {
 		ushort			m_vertices [6];
 		ushort			m_faceVerts [6]; // vertex indices of the side's two triangles
 		ushort			m_nMinVertex [2];
-		ubyte				m_corners [4];
+		ushort			m_corners [4];
 		ubyte				m_nFaces;
 		ubyte				m_nShape;
 		ubyte				m_nCorners;
