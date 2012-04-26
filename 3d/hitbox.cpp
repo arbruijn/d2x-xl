@@ -220,7 +220,7 @@ transformation.Begin (vPos ? vPos : &objP->info.position.vPos, &objP->info.posit
 for (; iModel <= nModels; iModel++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++)
 		transformation.Transform (rotVerts + i, pmhb->box.vertices + i, 0);
-	for (i = 0, pf = phb->faces; i < MAX_SIDES_PER_SEGMENT; i++, pf++) {
+	for (i = 0, pf = phb->faces; i < SEGMENT_SIDE_COUNT; i++, pf++) {
 		for (j = 0; j < 4; j++)
 			pf->dir [j] = rotVerts [hitboxFaceVerts [i][j]];
 		VmVecNormal (pf->n + 1, pf->dir, pf->dir + 1, pf->dir + 2);

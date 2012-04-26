@@ -102,7 +102,7 @@ gameData.render.mine.visibility [0].BumpVisitedFlag ();
 
 while (tail != head) {
 	segP = SEGMENTS + queue [tail++];
-	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 		childSeg = segP->m_children [nSide];
 		if (!bOneWallHack) {
 			w = segP->IsDoorWay (nSide, NULL);

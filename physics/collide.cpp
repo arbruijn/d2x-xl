@@ -1888,7 +1888,7 @@ CreateExplosion (info.nSegment, info.position.vPos, I2X (10) / 2, VCLIP_PLAYER_H
 if (info.nId != N_LOCALPLAYER)
 	return 1;
 CSegment* segP = SEGMENTS + info.nSegment;
-for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
+for (short nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
 	if (segP->IsDoorWay (nSide, this) & WID_PASSABLE_FLAG) {
 		vExitDir = segP->SideCenter (nSide) - info.position.vPos;
 		CFixVector::Normalize (vExitDir);
@@ -1916,7 +1916,7 @@ CreateSound (SOUND_ROBOT_HIT);
 if (ROBOTINFO (info.nId).nExp1VClip > -1)
 	CreateExplosion ((short) info.nSegment, info.position.vPos, (info.xSize/2*3)/4, (ubyte) ROBOTINFO (info.nId).nExp1VClip);
 vExitDir.SetZero ();
-for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
+for (short nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
 	if (segP->IsDoorWay (nSide, NULL) & WID_PASSABLE_FLAG) {
 		vExitDir = segP->SideCenter (nSide) - info.position.vPos;
 		CFixVector::Normalize (vExitDir);

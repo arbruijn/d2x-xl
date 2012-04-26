@@ -345,7 +345,7 @@ void SpeedtestFrame(void)
 {
 	CFixVector	view_dir, center_point;
 
-	gameData.speedtest.nSide=gameData.speedtest.nSegment % MAX_SIDES_PER_SEGMENT;
+	gameData.speedtest.nSide=gameData.speedtest.nSegment % SEGMENT_SIDE_COUNT;
 
 	gameData.objs.viewerP->info.position.vPos = SEGMENTS [gameData.speedtest.nSegment].Center ();
 	gameData.objs.viewerP->info.position.vPos.v.coord.x += 0x10;	

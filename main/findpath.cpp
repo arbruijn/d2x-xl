@@ -150,7 +150,7 @@ if (m_nDepth > scanInfo.m_maxDist)
 	return m_nLinkSeg = scanInfo.Scanning (m_nDir) ? 0 : -1;
 
 CSegment* segP = SEGMENTS + nPredSeg;
-for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+for (short nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	short nSuccSeg = segP->m_children [nSide];
 	if (nSuccSeg < 0)
 		continue;
@@ -514,7 +514,7 @@ for (;;) {
 	if (nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
-	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 		if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag)) {
 #if DBG
 			if (segP->m_children [nSide] == nDbgSeg)
@@ -558,7 +558,7 @@ if ((nSegment < 0) || (nSegment == m_nDestSeg))
 if (m_heap [!nDir].Popped (nSegment))
 	return nSegment;
 CSegment* segP = SEGMENTS + nSegment;
-for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+for (short nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag)) {
 		uint nNewDist = nDist + ushort (segP->m_childDists [1][nSide]);
 		if (nNewDist < uint (m_maxDist))

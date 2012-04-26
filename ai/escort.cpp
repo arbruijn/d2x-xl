@@ -120,7 +120,7 @@ while ((head != tail) && (head < nMaxSegs)) {
 	short nSegment = segList [tail++];
 	CSegment	*segP = SEGMENTS + nSegment;
 
-	for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+	for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		int nConnSeg = segP->m_children [i];
 		if (!IS_CHILD (nConnSeg))
 			continue;
@@ -165,7 +165,7 @@ if ((OBJECTS [gameData.escort.nObjNum].info.nType == OBJ_ROBOT) &&
 	gameData.escort.nObjNum = objP->Index ();
 	}
 segP = SEGMENTS + OBJECTS [gameData.escort.nObjNum].info.nSegment;
-for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	CWall* wallP = segP->Wall (i);
 	if (wallP && (wallP->nType == WALL_BLASTABLE) && !(wallP->flags & WALL_BLASTED))
 		return 0;
@@ -174,7 +174,7 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 		int		j;
 		CSegment	*connSegP = SEGMENTS + segP->m_children [i];
 
-		for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
+		for (j = 0; j < SEGMENT_SIDE_COUNT; j++) {
 			CWall* otherWallP = connSegP->Wall (j);
 			if (otherWallP && (otherWallP->nType == WALL_BLASTABLE) && !(otherWallP->flags & WALL_BLASTED))
 				return 0;
@@ -237,14 +237,14 @@ if (gameData.escort.nSpecialGoal != -1) {
 		else if ((index >= 0) && (index <= gameData.segs.nLastSegment) &&
 					(gameData.escort.nGoalIndex >= 0) && (gameData.escort.nGoalIndex <= gameData.segs.nLastSegment)) {
 			childI = SEGMENTS [index].m_children;
-			for (i = MAX_SIDES_PER_SEGMENT; i; i--, childI++) {
+			for (i = SEGMENT_SIDE_COUNT; i; i--, childI++) {
 				if (*childI == gameData.escort.nGoalIndex) {
 					bDetected = 1;
 					goto dega_ok;
 					}
 				else {
 					childJ = SEGMENTS [*childI].m_children;
-					for (j = MAX_SIDES_PER_SEGMENT; j; j--, childJ++) {
+					for (j = SEGMENT_SIDE_COUNT; j; j--, childJ++) {
 						if (*childJ == gameData.escort.nGoalIndex) {
 							bDetected = 1;
 							goto dega_ok;
@@ -555,7 +555,7 @@ int FindExitSegment (void)
 	CSegment* segP = SEGMENTS.Buffer ();
 
 for (int i = 0; i <= gameData.segs.nSegments; i++, segP++)
-	for (int j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
+	for (int j = 0; j < SEGMENT_SIDE_COUNT; j++)
 		if (segP->m_children [j] == -2) {
 			return i;
 		}

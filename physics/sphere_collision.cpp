@@ -1203,7 +1203,7 @@ for (;;) {
 	segP = &SEGMENTS [nStartSeg];
 	sideP = segP->Side (0);
 	// check all sides of current segment whether they are penetrated by the vector p0,p1.
-	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
+	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 		nChildSeg = segP->m_children [nSide];
 		if (nChildSeg < 0) {
 			if ((nDestSeg >= 0) && (nStartSeg != nDestSeg))

@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 // Set maximum values for tSegment and face data structures.
 #define MAX_VERTICES_PER_SEGMENT    8
-#define MAX_SIDES_PER_SEGMENT       6
+#define SEGMENT_SIDE_COUNT       6
 #define MAX_VERTICES_PER_POLY       4
 #define WLEFT                       0
 #define WTOP                        1
@@ -128,8 +128,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Note that -1 means no connection, -2 means a connection to the outside world.
 #define IS_CHILD(nSegment) (nSegment > -1)
 
-extern ushort sideVertIndex [MAX_SIDES_PER_SEGMENT][4];
-extern char sideOpposite [MAX_SIDES_PER_SEGMENT];
+extern ushort sideVertIndex [SEGMENT_SIDE_COUNT][4];
+extern char sideOpposite [SEGMENT_SIDE_COUNT];
 
 //------------------------------------------------------------------------------
 
@@ -297,9 +297,9 @@ class CSide {
 
 class CSegment {
 	public:
-		CSide			m_sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
-		short			m_children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
-		fix			m_childDists [2][MAX_SIDES_PER_SEGMENT];
+		CSide			m_sides [SEGMENT_SIDE_COUNT];       // 6 sides
+		short			m_children [SEGMENT_SIDE_COUNT];    // indices of 6 children segments, front, left, top, right, bottom, back
+		fix			m_childDists [2][SEGMENT_SIDE_COUNT];
 		ushort		m_vertices [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
 		short			m_nVertices;
 		int			m_objects;    // pointer to objects in this tSegment
@@ -572,7 +572,7 @@ typedef struct tSegFaces {
 //--repair-- } lsegment;
 
 // Globals from mglobal.c
-extern ushort sideVertIndex [MAX_SIDES_PER_SEGMENT][4];       // sideVertIndex[my_side] is list of vertices forming side my_side.
+extern ushort sideVertIndex [SEGMENT_SIDE_COUNT][4];       // sideVertIndex[my_side] is list of vertices forming side my_side.
 extern char sideOpposite [];                                // sideOpposite [my_side] returns CSide opposite cube from my_side.
 
 // New stuff, 10/14/95: For shooting out lights and monitors.

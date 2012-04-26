@@ -864,7 +864,7 @@ static void CheckAndFixDoors (void)
 
 for (int i = 0; i < gameData.segs.nSegments; i++, segP++) {
 	CSide* sideP = segP->m_sides;
-	for (int j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
+	for (int j = 0; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
 		CWall* wallP = sideP->Wall ();
 		if (!wallP || (wallP->nType != WALL_DOOR))
 			continue;
@@ -896,7 +896,7 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 if (gameTopFileInfo.fileinfoVersion < 17) {
 	CSegment* segP = SEGMENTS.Buffer ();
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++, segP++) {
-		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+		for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 			if ((wallP = segP->Wall (nSide))) {
 				wallP->nSegment = nSegment;
 				wallP->nSide = nSide;

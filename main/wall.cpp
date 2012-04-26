@@ -998,7 +998,7 @@ if (depth > MAX_BLAST_GLASS_DEPTH)
 
 depth++;
 
-for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	int			tm;
 	fix			dist;
 	CFixVector	pnt;
@@ -1023,7 +1023,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		}
 	}
 
-for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	short nSegment = segP->m_children [i];
 
 	if ((nSegment != -1) && !visited [nSegment] && (segP->IsDoorWay (i, NULL) & WID_PASSABLE_FLAG)) {

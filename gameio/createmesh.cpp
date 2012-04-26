@@ -1465,7 +1465,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++) {
 	if (IsColoredSeg (nSegment) != 0)
 		FACES.nFaces += 6;
 	else {
-		for (nSide = 0, m_sideP = m_segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, m_sideP++) {
+		for (nSide = 0, m_sideP = m_segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, m_sideP++) {
 			if (!sideP->FaceCount ())
 				continue;
 			m_nWall = m_segP->WallNum (nSide);
@@ -1528,7 +1528,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 	m_faceP->m_info.nSegment = nSegment;
 	m_nOvlTexCount = 0;
 	m_segFaceP->nFaces = 0;
-	for (nSide = 0, m_sideP = m_segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, m_sideP++) {
+	for (nSide = 0, m_sideP = m_segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, m_sideP++) {
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;

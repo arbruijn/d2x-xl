@@ -589,7 +589,7 @@ while (head < tail) {
 #endif
 	nParentDepth = depthBufP [nSegment];
 	childP = SEGMENTS [nSegment].m_children;
-	for (nSide = MAX_SIDES_PER_SEGMENT; nSide; nSide--, childP++) {
+	for (nSide = SEGMENT_SIDE_COUNT; nSide; nSide--, childP++) {
 		if (0 > (nChild = *childP))
 			continue;
 #if DBG
@@ -1357,7 +1357,7 @@ void CAutomap::AddSegmentEdges (CSegment *segP)
 	int		bHidden;
 	ushort*	corners;
 
-for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	bHidden = 0;
 	bIsGrate = 0;
 	bNoFade = 0;
@@ -1483,7 +1483,7 @@ addEdge:
 
 void CAutomap::AddUnknownSegmentEdges (CSegment* segP)
 {
-for (int nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	// Only add edges that have no children
 	if (segP->m_children [nSide] == -1) {
 		ushort* corners = segP->Corners (nSide);

@@ -87,7 +87,7 @@ void DoPhysicsAlignObject (CObject * objP)
 nBestSide = 0;
 // bank CPlayerData according to CSegment orientation
 //find CSide of CSegment that CPlayerData is most aligned with
-for (i = MAX_SIDES_PER_SEGMENT; i; i--, sideP++) {
+for (i = SEGMENT_SIDE_COUNT; i; i--, sideP++) {
 	if (!sideP->FaceCount ())
 		continue;
 	dot = CFixVector::Dot (sideP->m_normals [0], objP->info.position.mOrient.m.dir.u);

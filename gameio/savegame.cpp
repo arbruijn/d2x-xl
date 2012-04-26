@@ -2160,7 +2160,7 @@ if (!m_bBetweenLevels) {
 	CSide* sideP;
 	for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 		sideP = segP->m_sides;
-		for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
+		for (j = 0; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
 			sideP->m_nWall = m_cf.ReadShort ();
 			sideP->m_nBaseTex = m_cf.ReadShort ();
 			nTexture = m_cf.ReadShort ();

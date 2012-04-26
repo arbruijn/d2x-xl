@@ -54,11 +54,11 @@ void CreateRandomXlate (sbyte *xt)
 	int	i, j;
 	sbyte h;
 
-for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+for (i = 0; i < SEGMENT_SIDE_COUNT; i++)
 	xt [i] = i;
-for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
-	j = (RandShort () * MAX_SIDES_PER_SEGMENT) / (SHORT_RAND_MAX + 1);
-	Assert ((j >= 0) && (j < MAX_SIDES_PER_SEGMENT));
+for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
+	j = (RandShort () * SEGMENT_SIDE_COUNT) / (SHORT_RAND_MAX + 1);
+	Assert ((j >= 0) && (j < SEGMENT_SIDE_COUNT));
 	h = xt [j];
 	xt [j] = xt [i];
 	xt [i] = h;
@@ -266,7 +266,7 @@ int CreatePathPoints (CObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	segQueueEntry		segmentQ [MAX_SEGMENTS_D2X];
 	short					depth [MAX_SEGMENTS_D2X];
 	int					nCurDepth;
-	sbyte					randomXlate [MAX_SIDES_PER_SEGMENT];
+	sbyte					randomXlate [SEGMENT_SIDE_COUNT];
 	tPointSeg*			origPointSegs = pointSegP;
 	int					lNumPoints;
 	CSegment*			segP;
@@ -316,7 +316,7 @@ while (nCurSeg != nEndSeg) {
 	if (bRandom && (RandShort () < 8192))	//create a different xlate at random time intervals
 		CreateRandomXlate (randomXlate);
 
-	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 		hSide = bRandom ? randomXlate [nSide] : nSide;
 		if (!IS_CHILD (segP->m_children [hSide]))
 			continue;
@@ -514,10 +514,10 @@ for (i = 1; i < numPoints; i++) {
 		return 0;
 		}
 	if (nCurSeg != nNextSeg) {
-		for (nSide=0; nSide<MAX_SIDES_PER_SEGMENT; nSide++)
+		for (nSide=0; nSide<SEGMENT_SIDE_COUNT; nSide++)
 			if (SEGMENTS [nCurSeg].m_children [nSide] == nNextSeg)
 				break;
-		if (nSide == MAX_SIDES_PER_SEGMENT) {
+		if (nSide == SEGMENT_SIDE_COUNT) {
 #if TRACE
 			console.printf (CON_DBG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.routeSegs, numPoints);
 #endif
