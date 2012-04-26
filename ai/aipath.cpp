@@ -514,7 +514,7 @@ for (i = 1; i < numPoints; i++) {
 		return 0;
 		}
 	if (nCurSeg != nNextSeg) {
-		for (nSide = 0; nSide<SEGMENT_SIDE_COUNT; nSide++)
+		for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
 			if (SEGMENTS [nCurSeg].m_sides [nSide].m_nCorners && (SEGMENTS [nCurSeg].m_children [nSide] == nNextSeg))
 				break;
 		if (nSide == SEGMENT_SIDE_COUNT) {

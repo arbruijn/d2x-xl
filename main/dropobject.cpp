@@ -114,7 +114,7 @@ int PickConnectedSegment (CObject *objP, int nMaxDepth, int *nDepthP)
 	int			nCurDepth;
 	int			nStartSeg;
 	int			nHead, nTail;
-	short			i, j, nSide, nChild, sideList [6];
+	short			i, j, nSideCount, nSide, nChild, sideList [6];
 	CSegment*	segP;
 	CWall*		wallP;
 	ubyte			bVisited [MAX_SEGMENTS_D2X];
@@ -138,9 +138,10 @@ while (nTail != nHead) {
 	segP = SEGMENTS + segQueue [nTail++];
 
 	//	select sides randomly
-	for (i = 0; i < SEGMENT_SIDE_COUNT; i++)
-		sideList [i] = i;
-	for (i = SEGMENT_SIDE_COUNT; i; ) {
+	for (i = 0, nSideCount = 0; i < SEGMENT_SIDE_COUNT; i++)
+		if (segP->Side (i)->FaceCount ())
+			sideList [nSideCount++] = i;
+	for (i = sideCount; i; ) {
 		j = RandShort () % i;
 		nSide = sideList [j];
 		if (j < --i)
@@ -465,20 +466,17 @@ return 0;
 
 int ObjectNearbyAux (int nSegment, int objectType, int object_id, int depth)
 {
-	int	i, seg2;
-
 if (depth == 0)
 	return 0;
 if (SegmentContainsObject (objectType, object_id, nSegment))
 	return 1;
 CSegment* segP = SEGMENTS + nSegment;
-for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-	seg2 = segP->m_children [i];
-	if (seg2 != -1)
-		if (ObjectNearbyAux (seg2, objectType, object_id, depth-1))
-			return 1;
-		}
-	return 0;
+for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
+	short nChildSeg = segP->m_children [i];
+	if ((nChildSeg != -1) && ObjectNearbyAux (nChildSeg, objectType, object_id, depth-1))
+		return 1;
+	}
+return 0;
 }
 
 

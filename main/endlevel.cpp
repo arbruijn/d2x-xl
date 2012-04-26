@@ -129,12 +129,12 @@ return (abs (delta0 = a - b) < abs (delta1 = b - a)) ? delta0 : delta1;
 
 //------------------------------------------------------------------------------
 //return though which CSide of seg0 is seg1
-int ELFindConnectedSide (int seg0, int seg1)
+int ELFindConnectedSide (int nSegment, int nChildSeg)
 {
-CSegment *segP = SEGMENTS + seg0;
+CSegment *segP = SEGMENTS + nSegment;
 
 for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
-	if (segP->m_children [i] == seg1)
+	if (segP->m_children [i] == nChildSeg)
 		return i;
 return -1;
 }
@@ -957,12 +957,14 @@ if (UpdateObjectSeg (objP, false)) {
 			nExitSide = FindExitSide (objP);
 		if ((nExitSide >= 0) && (segP->m_children [nExitSide] >= 0)) {
 			fix d, dLargest = -I2X (1);
-			short nSides = SEGMENT_SIDE_COUNT;
-			for (int i = 0; i < nSides; i++) {
-				d = CFixVector::Dot (segP->m_sides [i].m_normals [0], exitFlightDataP->objP->info.position.mOrient.m.dir.u);
-				if (d > dLargest) {
-					dLargest = d; 
-					nUpSide = i;
+			CSide* sideP = segP->m_sides;
+			for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
+				if (sideP->FaceCount ()) {
+					d = CFixVector::Dot (sideP->m_normals [0], exitFlightDataP->objP->info.position.mOrient.m.dir.u);
+					if (d > dLargest) {
+						dLargest = d; 
+						nUpSide = i;
+						}
 					}
 				}
 			//update target point & angles

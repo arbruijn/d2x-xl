@@ -235,6 +235,8 @@ void CSide::LoadTextures (void)
 if (m_nBaseTex == nDbgTexture)
 	nDbgTexture = nDbgTexture;
 #endif
+if (!FaceCount ())
+	return;
 LoadWallEffectTextures (m_nBaseTex);
 if (m_nOvlTex) {
 	LoadTexture (gameData.pig.tex.bmIndexP [m_nOvlTex].index, gameStates.app.bD1Data);
