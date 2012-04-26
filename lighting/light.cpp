@@ -1027,9 +1027,10 @@ if ((!gameStates.render.nLightingMethod || gameStates.app.bNostalgia) && gameDat
 				if (dlP->nSegment == nDbgSeg)
 					nDbgSeg = nDbgSeg;
 #endif
-				uvlP = SEGMENTS [dlP->nSegment].m_sides [dlP->nSide].m_uvls;
+				CSide* sideP = SEGMENTS [dlP->nSegment].Side (dlP->nSide);
+				uvlP = sideP->m_uvls;
 				segLightDeltaP = gameData.render.lights.segDeltas + dlP->nSegment * 6 + dlP->nSide;
-				for (k = 0; k < 4; k++, uvlP++) {
+				for (k = 0; k < sideP->m_nCorners; k++, uvlP++) {
 					dl = dir * dlP->vertLight [k] * DL_SCALE;
 					uvlP->l += dl;
 					if (uvlP->l < 0)
@@ -1118,7 +1119,7 @@ for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, seg
 	for (h = j = 0, sideP = segP->m_sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
 		if ((segP->m_children [j] < 0) || sideP->IsWall ()) {
 			h++;
-			for (k = 0; k < 4; k++)
+			for (k = 0; k < sideP->m_nCorners; k++)
 				xTotal += sideP->m_uvls [k].l;
 			}
 		}

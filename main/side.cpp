@@ -688,7 +688,7 @@ return nEdgeMask;
 #else
 
 	CFixVector		t;
-	int 				h, i, j, nEdge, nVerts, projPlane;
+	int 				h, i, j, nEdge, projPlane;
 	uint 				nEdgeMask;
 	CFixVector*		v0, * v1;
 	CFixVector2		vEdge, vCheck, vRef;
@@ -711,14 +711,13 @@ else {
 //now do the 2d problem in the i, j plane
 vRef.x = intersection.v.vec [i];
 vRef.y = intersection.v.vec [j];
-nVerts = 5 - m_nFaces;
 h = nFace * 3;
 v1 = gameStates.render.bRendering ? &RENDERPOINTS [m_vertices [h]].ViewPos () : VERTICES + m_vertices [h];
-for (nEdge = 1, nEdgeMask = 0; nEdge <= nVerts; nEdge++) {
+for (nEdge = 1, nEdgeMask = 0; nEdge <= 3; nEdge++) {
 	v0 = v1;
 	v1 = gameStates.render.bRendering 
-		  ? &RENDERPOINTS [m_vertices [h + nEdge % nVerts]].ViewPos ()
-		  : VERTICES + m_vertices [h + nEdge % nVerts];
+		  ? &RENDERPOINTS [m_vertices [h + nEdge % 3]].ViewPos ()
+		  : VERTICES + m_vertices [h + nEdge % 3];
 	vEdge.x = v1->v.vec [i] - v0->v.vec [i];
 	vEdge.y = v1->v.vec [j] - v0->v.vec [j];
 	vCheck.x = vRef.x - v0->v.vec [i];
@@ -740,7 +739,7 @@ int CSide::SphereToFaceRelation (CFixVector& intersection, fix rad, short iFace,
 	fix			xEdgeLen, d, dist;
 	CFixVector	*v0, *v1;
 	int			iType;
-	int			nEdge, nVerts;
+	int			nEdge;
 	uint			nEdgeMask;
 
 //now do 2d check to see if refP is in side
@@ -751,15 +750,14 @@ if (nEdgeMask == 0)
 //get verts for edge we're behind
 for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
 	;
-nVerts = 5 - m_nFaces;
 iFace *= 3;
 if (gameStates.render.bRendering) {
 	v0 = &RENDERPOINTS [m_vertices [iFace + nEdge]].ViewPos ();
-	v1 = &RENDERPOINTS [m_vertices [iFace + ((nEdge + 1) % nVerts)]].ViewPos ();
+	v1 = &RENDERPOINTS [m_vertices [iFace + ((nEdge + 1) % 3)]].ViewPos ();
 	}
 else {
 	v0 = VERTICES + m_vertices [iFace + nEdge];
-	v1 = VERTICES + m_vertices [iFace + ((nEdge + 1) % nVerts)];
+	v1 = VERTICES + m_vertices [iFace + ((nEdge + 1) % 3)];
 	}
 //check if we are touching an edge or refP
 vCheck = intersection - *v0;
@@ -858,7 +856,7 @@ int CSide::CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFi
 	CFixVector	vMove;
 	fix			edge_t, move_t, edge_t2, move_t2, closestDist;
 	fix			edge_len, move_len;
-	int			nEdge, nVerts;
+	int			nEdge;
 	uint			nEdgeMask;
 	CFixVector	*edge_v0, *edge_v1, vEdge;
 	CFixVector	vClosestEdgePoint, vClosestMovePoint;

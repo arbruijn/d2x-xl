@@ -212,13 +212,13 @@ double CLightmapManager::SideRad (int nSegment, int nSide)
 	int			i;
 	double		h, xMin, xMax, yMin, yMax, zMin, zMax;
 	double		dx, dy, dz;
-	ushort*		sideVerts;
 	CFixVector	*v;
+	CSide*		sideP = SEGMENTS [nSegment].Side (nSide);
+	ushort*		sideVerts = sideP->Corners (nSide);
 
-sideVerts = SEGMENTS [nSegment].Corners (nSide);
 xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
-for (i = 0; i < 4; i++) {
+for (i = 0; i < sideP->m_nCorners; i++) {
 	v = gameData.segs.vertices +sideVerts [i];
 	h = (*v).v.coord.x;
 	if (xMin > h)
@@ -239,7 +239,7 @@ for (i = 0; i < 4; i++) {
 dx = xMax - xMin;
 dy = yMax - yMin;
 dz = zMax - zMin;
-return sqrt (dx * dx + dy * dy + dz * dz) / (2 * (double) I2X (1));
+return sqrt (dx * dx + dy * dy + dz * dz) / (double) I2X (2);
 }
 
 //------------------------------------------------------------------------------
@@ -441,7 +441,7 @@ Copy (texColorP, nLightmap);
 }
 
 //------------------------------------------------------------------------------
-// build one entire lightmap in single threaded mode or the upper and lower halves when multi threaded
+// build one entire lightmap in single threaded mode or in horizontal stripes when multi threaded
 
 ubyte PointIsInTriangle (CFixVector* vRef, CFixVector* vNormal, short* triangleVerts);
 
@@ -451,7 +451,7 @@ void CLightmapManager::Build (CSegFace* faceP, int nThread)
 	CRGBColor		*texColorP;
 	CFloatVector3	color;
 	int				w, h, x, y, yMin, yMax;
-	ubyte				nTriangles = faceP->m_info.nTriangles - 1;
+	ubyte				nTriangles = faceP->FaceCount () - 1;
 	short				nSegment = faceP->m_info.nSegment;
 	short				nSide = faceP->m_info.nSide;
 	bool				bBlack, bWhite;
