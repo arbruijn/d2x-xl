@@ -601,11 +601,11 @@ for (i = 0; i < 6; i++) {
 	s1 = sum1;
 	s2 = sum2;
 	}
-for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	j = INTEL_SHORT (m_children [i]);
 	CalcCheckSum (reinterpret_cast<ubyte*> (&j), 2, sum1, sum2);
 	}
-for (i = 0; i < MAX_VERTICES_PER_SEGMENT; i++) {
+for (i = 0; i < SEGMENT_VERTEX_COUNT; i++) {
 	j = INTEL_SHORT (m_vertices [i]);
 	CalcCheckSum (reinterpret_cast<ubyte*> (&j), 2, sum1, sum2);
 	}
