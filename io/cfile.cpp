@@ -202,9 +202,9 @@ size_t CFile::Size (const char *hogname, const char *folder, int bUseD1Hog)
 if (!Open (hogname, gameFolders.szDataDir [0], "rb", bUseD1Hog))
 	return -1;
 #ifdef _WIN32
-fstat (_fileno (m_cf.file), &statbuf);
+fstat (_fileno (m_info.file), &statbuf);
 #else
-fstat (fileno (m_cf.file), &statbuf);
+fstat (fileno (m_info.file), &statbuf);
 #endif
 Close ();
 return statbuf.st_size;
@@ -214,7 +214,7 @@ return statbuf.st_size;
 //sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", hogname);
 if (!Open (hogname, gameFolders.szDataDir [0], "rb", bUseD1Hog))
 	return -1;
-size = m_cf.size;
+size = m_info.size;
 Close ();
 return size;
 #endif
@@ -230,17 +230,17 @@ return size;
 int CFile::EoF (void)
 {
 #if DBG
-if (!m_cf.file)
+if (!m_info.file)
 	return 1;
 #endif
-return (m_cf.rawPosition >= m_cf.size) && (m_cf.bufPos >= m_cf.bufLen);
+return (m_info.rawPosition >= m_info.size) && (m_info.bufPos >= m_info.bufLen);
 }
 
 // ----------------------------------------------------------------------------
 
 int CFile::Error (void)
 {
-if ((nCFileError = ferror (m_cf.file)))
+if ((nCFileError = ferror (m_info.file)))
 	PrintLog (0, "error %d during file operation\n", nCFileError);
 return nCFileError;
 }
@@ -324,7 +324,7 @@ if ((*mode == 'w') && gameStates.app.bReadOnly)
 	FILE	*fp = NULL;
 	const char	*pszHogExt, *pszFileExt;
 
-m_cf.file = NULL;
+m_info.file = NULL;
 if (*filename != '\x01') {
 	fp = GetFileHandle (filename, folder, mode);		// Check for non-hogP file first...
 	if (!fp && 
@@ -346,12 +346,12 @@ if (!fp && (nHogType >= 0) && (fp = hogFileManager.Find (filename, &length, nHog
 	}
 if (!fp) 
 	return 0;
-m_cf.file = fp;
-m_cf.rawPosition = 0;
-m_cf.size = (length < 0) ? ffilelength (fp) : length;
-m_cf.libOffset = (length < 0) ? 0 : ftell (fp);
-m_cf.filename = const_cast<char*> (filename);
-m_cf.bufPos = m_cf.bufLen = 0;
+m_info.file = fp;
+m_info.rawPosition = 0;
+m_info.size = (length < 0) ? ffilelength (fp) : length;
+m_info.libOffset = (length < 0) ? 0 : ftell (fp);
+m_info.filename = const_cast<char*> (filename);
+m_info.bufPos = m_info.bufLen = 0;
 return 1;
 }
 
@@ -359,15 +359,15 @@ return 1;
 
 void CFile::Init (void) 
 {
-memset (&m_cf, 0, sizeof (m_cf)); 
-m_cf.rawPosition = -1; 
+memset (&m_info, 0, sizeof (m_info)); 
+m_info.rawPosition = -1; 
 }
 
 // ----------------------------------------------------------------------------
 
 size_t CFile::Length (void) 
 {
-return m_cf.size;
+return m_info.size;
 }
 
 // ----------------------------------------------------------------------------
@@ -378,7 +378,7 @@ return m_cf.size;
 //
 size_t CFile::Write (const void *buf, int nElemSize, int nElemCount, int bCompressed)
 {
-if (!m_cf.file)
+if (!m_info.file)
 	return 0;
 if (!(nElemSize * nElemCount))
 	return 0;
@@ -389,9 +389,9 @@ if (bCompressed > 0) {
 	}
 
 //if (bCompressed < 0)
-//	PrintLog (0, "Write: %d bytes @ %d\n", nElemSize * nElemCount, (int) m_cf.rawPosition);
-int nWritten = (int) fwrite (buf, nElemSize, nElemCount, m_cf.file);
-m_cf.rawPosition = ftell (m_cf.file);
+//	PrintLog (0, "Write: %d bytes @ %d\n", nElemSize * nElemCount, (int) m_info.rawPosition);
+int nWritten = (int) fwrite (buf, nElemSize, nElemCount, m_info.file);
+m_info.rawPosition = ftell (m_info.file);
 if (Error ()) {
 	PrintLog (0, "file write error!\n");
 	return 0;
@@ -409,8 +409,8 @@ int CFile::PutC (int c)
 {
 	int char_written;
 
-char_written = fputc (c, m_cf.file);
-m_cf.rawPosition = ftell (m_cf.file);
+char_written = fputc (c, m_info.file);
+m_info.rawPosition = ftell (m_info.file);
 return char_written;
 }
 
@@ -421,26 +421,26 @@ inline
 #endif
 int CFile::FillBuffer (void)
 {
-if (m_cf.bufPos >= m_cf.bufLen) {
-	if (m_cf.rawPosition >= m_cf.size) 
+if (m_info.bufPos >= m_info.bufLen) {
+	if (m_info.rawPosition >= m_info.size) 
 		return EOF;
-	size_t h = m_cf.size - m_cf.rawPosition;
-	if (h > sizeof (m_cf.buffer))
-		h = sizeof (m_cf.buffer);
-	m_cf.bufPos = 0;
-	m_cf.bufLen = int (Read (m_cf.buffer, 1, h));
-	m_cf.rawPosition = ftell (m_cf.file) - m_cf.libOffset;
-	if (m_cf.bufLen < (int) h)
-		m_cf.size = m_cf.rawPosition;
+	size_t h = m_info.size - m_info.rawPosition;
+	if (h > sizeof (m_info.buffer))
+		h = sizeof (m_info.buffer);
+	m_info.bufPos = 0;
+	m_info.bufLen = int (Read (m_info.buffer, 1, h));
+	m_info.rawPosition = ftell (m_info.file) - m_info.libOffset;
+	if (m_info.bufLen < (int) h)
+		m_info.size = m_info.rawPosition;
 	}
-return m_cf.bufPos;
+return m_info.bufPos;
 }
 
 // ----------------------------------------------------------------------------
 
 //int CFile::GetC (void) 
 //{
-//return (FillBuffer () == EOF) ? EOF : m_cf.buffer [m_cf.bufPos++];
+//return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.bufPos++];
 //}
 
 // ----------------------------------------------------------------------------
@@ -453,8 +453,8 @@ int CFile::PutS (const char *str)
 {
 	int ret;
 
-ret = fputs (str, m_cf.file);
-m_cf.rawPosition = ftell (m_cf.file);
+ret = fputs (str, m_info.file);
+m_info.rawPosition = ftell (m_info.file);
 return ret;
 }
 
@@ -489,7 +489,7 @@ size_t CFile::Read (void *buf, size_t elSize, size_t nElems, int bCompressed)
 {
 size_t i, size = elSize * nElems;
 
-if (!m_cf.file || (m_cf.size < 1) || !size) 
+if (!m_info.file || (m_info.size < 1) || !size) 
 	return 0;
 
 if (bCompressed > 0) {
@@ -498,9 +498,9 @@ if (bCompressed > 0) {
 	}
 
 //if (bCompressed < 0)
-//	PrintLog (0, "Read: %d bytes @ %d\n", (int) size, (int) m_cf.rawPosition);
-i = fread (buf, 1, size, m_cf.file);
-m_cf.rawPosition += i;
+//	PrintLog (0, "Read: %d bytes @ %d\n", (int) size, (int) m_info.rawPosition);
+i = fread (buf, 1, size, m_info.file);
+m_info.rawPosition += i;
 return i / elSize;
 }
 
@@ -508,7 +508,7 @@ return i / elSize;
 
 size_t CFile::ReadCompressed (const void* buf, uint bufLen) 
 {
-//PrintLog (0, "ReadCompressed: %d bytes @ %d\n", bufLen, (int) m_cf.rawPosition);
+//PrintLog (0, "ReadCompressed: %d bytes @ %d\n", bufLen, (int) m_info.rawPosition);
 uLongf nSize, nCompressedSize;
 size_t h = Read (&nSize, 1, sizeof (nSize), -1);
 h += Read (&nCompressedSize, 1, sizeof (nCompressedSize), -1);
@@ -541,7 +541,7 @@ return (size_t) nSize;
 
 size_t CFile::WriteCompressed (const void* buf, uint bufLen) 
 {
-//PrintLog (0, "WriteCompressed: %d bytes @ %d\n", bufLen, (int) m_cf.rawPosition);
+//PrintLog (0, "WriteCompressed: %d bytes @ %d\n", bufLen, (int) m_info.rawPosition);
 uLongf nCompressedSize = compressBound (bufLen);
 CByteArray compressedBuffer;
 if (compressedBuffer.Create (nCompressedSize) && (compress (compressedBuffer.Buffer (), &nCompressedSize, (ubyte*) buf, bufLen) == Z_OK)) {
@@ -557,14 +557,14 @@ return -1;
 
 size_t CFile::Tell (void) 
 {
-return m_cf.rawPosition;
+return m_info.rawPosition;
 }
 
 // ----------------------------------------------------------------------------
 
 size_t CFile::Seek (long offset, int whence) 
 {
-if (!m_cf.size)
+if (!m_info.size)
 	return -1;
 
 	size_t destPos;
@@ -574,16 +574,16 @@ switch (whence) {
 		destPos = offset;
 		break;
 	case SEEK_CUR:
-		destPos = m_cf.rawPosition + offset;
+		destPos = m_info.rawPosition + offset;
 		break;
 	case SEEK_END:
-		destPos = m_cf.size + offset;
+		destPos = m_info.size + offset;
 		break;
 	default:
 		return 1;
 	}
-size_t c = fseek (m_cf.file, long (m_cf.libOffset + destPos), SEEK_SET);
-m_cf.rawPosition = ftell (m_cf.file) - m_cf.libOffset;
+size_t c = fseek (m_info.file, long (m_info.libOffset + destPos), SEEK_SET);
+m_info.rawPosition = ftell (m_info.file) - m_info.libOffset;
 return c;
 }
 
@@ -593,12 +593,12 @@ int CFile::Close (void)
 {
 	int result;
 
-if (!m_cf.file)
+if (!m_info.file)
 	return 0;
-result = fclose (m_cf.file);
-m_cf.file = NULL;
-m_cf.size = 0;
-m_cf.rawPosition = -1;
+result = fclose (m_info.file);
+m_info.file = NULL;
+m_info.size = 0;
+m_info.rawPosition = -1;
 return result;
 }
 
@@ -900,7 +900,7 @@ if (! (fp = fopen (szDest, "wb"))) {
 	Close ();
 	return 0;
 	}
-for (h = sizeof (buf), l = m_cf.size; l; l -= h) {
+for (h = sizeof (buf), l = m_info.size; l; l -= h) {
 	if (h > l)
 		h = l;
 	Read (buf, h, 1);
@@ -1010,9 +1010,9 @@ time_t CFile::Date (const char *filename, const char *folder, int bUseD1Hog)
 if (!Open (filename, folder, "rb", bUseD1Hog))
 	return -1;
 #ifdef _WIN32
-fstat (_fileno (m_cf.file), &statbuf);
+fstat (_fileno (m_info.file), &statbuf);
 #else
-fstat (fileno (m_cf.file), &statbuf);
+fstat (fileno (m_info.file), &statbuf);
 #endif
 Close ();
 return statbuf.st_mtime;
@@ -1027,12 +1027,12 @@ if (!Open (filename, folder, "rb", 0))
 
 bool bNewl = true;
 char buf [16384];
-size_t h = m_cf.size - m_cf.rawPosition, i = h + 1;
+size_t h = m_info.size - m_info.rawPosition, i = h + 1;
 int lineC = 0;
 
 while (!EoF () || (i < h)) {
 	if (i >= h) {
-		h = m_cf.size - m_cf.rawPosition;
+		h = m_info.size - m_info.rawPosition;
 		if (h > sizeof (buf))
 			h = sizeof (buf);
 		Read (buf, h, 1);
