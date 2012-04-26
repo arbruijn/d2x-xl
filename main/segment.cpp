@@ -367,7 +367,7 @@ CSegMasks CSegment::Masks (const CFixVector& refP, fix xRad)
 //check refPoint against each CSide of CSegment. return bitmask
 masks.m_valid = 1;
 for (nSide = 0, faceBit = 1; nSide < SEGMENT_SIDE_COUNT; nSide++)
-	if (m_sides [nSide].m_nCorners)
+	if (m_sides [nSide].FaceCount ())
 		masks |= m_sides [nSide].Masks (refP, xRad, 1 << nSide, faceBit);
 return masks;
 }
@@ -394,7 +394,7 @@ for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		nDbgSeg = nDbgSeg;
 #endif
 	m_sides [i].Setup (Index (), m_vertices, sideVertIndex [i], m_children [i] < 0);
-	if (!m_sides [i].m_nCorners && (m_children [i] >= 0)) {
+	if (!m_sides [i].FaceCount () && (m_children [i] >= 0)) {
 		PrintLog (0, "Segment %d, side %d is collapsed, but has child %d!\n", SEG_IDX (this), i, m_children [i]);
 		SEGMENTS [m_children [i]].m_children [oppSideTable [i]] = -1;
 		m_children [i] = -1;
@@ -421,7 +421,7 @@ return v + m_vCenter;
 int CSegment::HasOpenableDoor (void)
 {
 for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
-	if (m_sides [i].m_nCorners && m_sides [i].IsOpenableDoor ())
+	if (m_sides [i].FaceCount () && m_sides [i].IsOpenableDoor ())
 		return i;
 return -1;
 }
@@ -437,7 +437,7 @@ if (nChildSeg == -1)
 	return WID_VISIBLE_FLAG;
 if (nChildSeg == -2)
 	return WID_EXTERNAL_FLAG;
-if (!m_sides [nSide].m_nCorners)
+if (!m_sides [nSide].FaceCount ())
 	return 0;
 
 CWall* wallP = m_sides [nSide].Wall ();
@@ -1237,7 +1237,7 @@ return bmBot ? bmBot : bmTop;
 int CSegment::ChildIndex (int nChild)
 {
 for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
-	if (m_sides [i].m_nCorners && (m_children [i] == nChild))
+	if (m_sides [i].FaceCount () && (m_children [i] == nChild))
 		return i;
 return -1;
 }

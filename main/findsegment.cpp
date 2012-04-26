@@ -38,7 +38,8 @@ ubyte CSegment::GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehi
 	ubyte		mask = 0;
 
 for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
-	mask |= m_sides [nSide].Dist (refP, xSideDists [nSide], bBehind, 1 << nSide);
+	if (m_sides [nSide].FaceCount ())
+		mask |= m_sides [nSide].Dist (refP, xSideDists [nSide], bBehind, 1 << nSide);
 return mask;
 }
 
@@ -49,7 +50,8 @@ ubyte CSegment::GetSideDistsf (const CFloatVector& refP, float* fSideDists, int 
 	ubyte		mask = 0;
 
 for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
-	mask |= m_sides [nSide].Distf (refP, fSideDists [nSide], bBehind, 1 << nSide);
+	if (m_sides [nSide].FaceCount ())
+		mask |= m_sides [nSide].Distf (refP, fSideDists [nSide], bBehind, 1 << nSide);
 return mask;
 }
 
@@ -76,7 +78,7 @@ for (;;) {
 	nMaxSide = -1;
 	xMaxDist = 0; // find only sides we're behind as seen from inside the current segment
 	for (nSide = 0, bit = 1; nSide < SEGMENT_SIDE_COUNT; nSide++, bit <<= 1)
-		if ((centerMask & bit) && (xTolerance || (segP->m_children [nSide] > -1)) && (xSideDists [nSide] < xMaxDist)) {
+		if (segP->Side nSide)->FaceCount () && (centerMask & bit) && (xTolerance || (segP->m_children [nSide] > -1)) && (xSideDists [nSide] < xMaxDist)) {
 			if (xTolerance && (xTolerance >= -xSideDists [nSide]) && (xTolerance >= segP->Side (nSide)->DistToPoint (vPos))) 
 				return nCurSeg;
 			if (segP->m_children [nSide] >= 0) {
@@ -113,7 +115,7 @@ for (;;) {
 	nMaxSide = -1;
 	fMaxDist = 0; // find only sides we're behind as seen from inside the current segment
 	for (nSide = 0, bit = 1; nSide < SEGMENT_SIDE_COUNT; nSide++, bit <<= 1)
-		if ((centerMask & bit) && (fSideDists [nSide] < fMaxDist)) {
+		if (segP->Side (nSide)->FaceCount () && (centerMask & bit) && (fSideDists [nSide] < fMaxDist)) {
 			if ((fTolerance >= -fSideDists [nSide])  && (fTolerance >= segP->Side (nSide)->DistToPointf (vPos))) {
 #if DBG
 				SEGMENTS [nCurSeg].GetSideDistsf (vPos, fSideDists, 1);
@@ -284,6 +286,8 @@ CSegment	*segP = SEGMENTS.Buffer ();
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 	CSide	*sideP = segP->m_sides;
 	for (j = 0; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
+		if (!sideP->FaceCount ())
+			continue;
 		if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & tmi_bit) ||
 			 (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & tmi_bit)) {
 			if (!IS_CHILD (segP->m_children [j]) || IS_WALL (sideP->m_nWall)) {

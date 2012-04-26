@@ -1146,6 +1146,8 @@ gameData.segs.nSlideSegs = 0;
 for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++, segP++) {
 	bIsSlideSeg = 0;
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
+		if (!segP->Side (nSide)->FaceCount ())
+			continue;
 		nTexture = segP->m_sides [nSide].m_nBaseTex;
 		if (gameData.pig.tex.tMapInfoP [nTexture].slide_u  || gameData.pig.tex.tMapInfoP [nTexture].slide_v) {
 			if (!bIsSlideSeg) {
@@ -1180,7 +1182,7 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 	segP = SEGMENTS + nSegment;
 	sides = gameData.segs.slideSegs [h].nSides;
 	for (nSide = 0, sideP = segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
-		if (!(sides & (1 << nSide)))
+		if (!(segP->Side (nSide)->FaceCount () && (sides & (1 << nSide))))
 			continue;
 		tmn = sideP->m_nBaseTex;
 		slideU = (fix) gameData.pig.tex.tMapInfoP [tmn].slide_u;

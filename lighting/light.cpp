@@ -1087,7 +1087,7 @@ void ApplyAllChangedLight (void)
 for (i = 0; i < gameData.segs.nSegments; i++, segP++) {
 	h = gameData.render.lights.subtracted [i];
 	for (j = 0; j < SEGMENT_SIDE_COUNT; j++)
-		if (h & (1 << j))
+		if (segP->Side (j)->FaceCount () && (h & (1 << j)))
 			ChangeLight (i, j, -1);
 	}
 }
@@ -1117,7 +1117,7 @@ void ComputeAllStaticLight (void)
 for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++) {
 	xTotal = 0;
 	for (h = j = 0, sideP = segP->m_sides; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
-		if ((segP->m_children [j] < 0) || sideP->IsWall ()) {
+		if (sideP->FaceCount () && ((segP->m_children [j] < 0) || sideP->IsWall ())) {
 			h++;
 			for (k = 0; k < sideP->m_nCorners; k++)
 				xTotal += sideP->m_uvls [k].l;

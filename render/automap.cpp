@@ -1485,6 +1485,8 @@ void CAutomap::AddUnknownSegmentEdges (CSegment* segP)
 {
 for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	// Only add edges that have no children
+	if (!segP->Side (nSide)->FaceCount ())
+		continue;
 	if (segP->m_children [nSide] == -1) {
 		ushort* corners = segP->Corners (nSide);
 		for (int i = 0; i <= 4; i++)

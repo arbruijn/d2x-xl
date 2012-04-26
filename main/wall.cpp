@@ -999,9 +999,12 @@ if (depth > MAX_BLAST_GLASS_DEPTH)
 depth++;
 
 for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
-	int			tm;
-	fix			dist;
-	CFixVector	pnt;
+	if (!segP->Side (nSide)->FaceCount ())
+		continue;
+		
+		int			tm;
+		fix			dist;
+		CFixVector	pnt;
 
 	//	Process only walls which have glass.
 	if ((tm = segP->m_sides [nSide].m_nOvlTex)) {

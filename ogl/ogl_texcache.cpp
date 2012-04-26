@@ -151,6 +151,8 @@ static void CacheSideTextures (int nSegment)
 
 for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	sideP = segP->m_sides + nSide;
+	if (!sideP->FaceCount ())
+		continue;
 	tMap1 = sideP->m_nBaseTex;
 	if ((tMap1 < 0) || (tMap1 >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 		continue;
@@ -265,6 +267,8 @@ PrintLog (1, "caching geometry textures\n");
 bLoadTextures = (ogl.m_states.nPreloadTextures > 0);
 for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 	for (nSide = 0, sideP = segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
+		if (!sideP->FaceCount ())
+			continue;
 		nBaseTex = sideP->m_nBaseTex;
 		if ((nBaseTex < 0) || (nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 			continue;
