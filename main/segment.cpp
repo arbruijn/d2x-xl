@@ -214,9 +214,12 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++)
 ushort sideVerts [4];
 
 for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-	GetCornerIndex (i, sideVerts);
+	if (gameData.segs.nLevelVersion < 25)
+		GetCornerIndex (i, sideVerts);
 	m_sides [i].Read (cf, sideVerts, m_children [i] == -1);
 	}
+if (gameData.segs.nLevelVersion > 24)
+	RemapVertices ();
 }
 
 //------------------------------------------------------------------------------
@@ -1196,7 +1199,7 @@ int CSegment::TexturedSides (void)
 	int nSides = 0;
 
 for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
-	if (m_sides [i].m_corners && (m_children [i] < 0) || m_sides [i].IsTextured ()))
+	if (m_sides [i].FaceCount () && ((m_children [i] < 0) || m_sides [i].IsTextured ()))
 		nSides++;
 return nSides;
 }
@@ -1284,6 +1287,28 @@ for (int i = 0; i <= gameData.segs.nLastSegment; i++)
 	SEGMENTS [i].Setup ();
 ComputeVertexNormals ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
+}
+
+// -------------------------------------------------------------------------------
+// move all deleted vertex ids (>= 0xfff8) up to the end of the vertex list
+// and adjust all sides' vertex id indices accordingly
+// This is required for level formats supporting triangular segment sides
+
+void CSegment::RemapVertices (void)
+{
+	byte	map [8];
+	byte	i, j;
+
+for (i = 0, j = 0; i < 8; i++)
+	if (m_vertices [i] < 0xfff8)
+		m_vertices [j++] = m_vertices [i];
+	map [i] = j;
+	}
+m_nVertices = j;
+for (; j < 8; j++)
+	m_vertices [j] = 0xffff;
+for (int nSide = 0; nSide < 6; nSide++)
+	m_sides [nSide].RemapVertices (map);
 }
 
 // -------------------------------------------------------------------------------

@@ -285,6 +285,7 @@ class CSide {
 
 		inline ubyte Shape (void) { return m_nShape; }
 		inline ubyte FaceCount (void) { return m_nFaces; }
+		void RemapVertices (ushort* map);
 
 	private:
 		void SetupCorners (ushort* verts, ushort* index);
@@ -462,6 +463,7 @@ class CSegment {
 		inline int IsLava (ubyte nSide) { return HasTexture (nSide) && m_sides [nSide].IsLava (); }
 		inline int IsWater (ubyte nSide) { return HasTexture (nSide) && m_sides [nSide].IsWater (); }
 
+		void RemapVertices (void);
 
 	private:
 		inline int PokesThrough (int nObject, int nSide);

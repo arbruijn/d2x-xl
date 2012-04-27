@@ -1097,7 +1097,7 @@ texCoordP [3].v.v = (y + 1) * step - border;
 
 void CQuadMeshBuilder::SetupFace (void)
 {
-	int				i, j;
+	int				i;
 	CFixVector		vNormal;
 	CFloatVector3	vNormalf;
 
@@ -1106,7 +1106,7 @@ vNormalf.Assign (vNormal);
 for (i = 0; i < 4; i++) {
 	ushort h = m_sideVerts [i];
 	if (h != 0xffff)
-		*m_vertexP++ = *gameData.segs.fVertices [j].XYZ ();
+		*m_vertexP++ = *gameData.segs.fVertices [h].XYZ ();
 	*m_normalP++ = vNormalf;
 	m_texCoordP->v.u = X2F (m_sideP->m_uvls [i].u);
 	m_texCoordP->v.v = X2F (m_sideP->m_uvls [i].v);
@@ -1120,7 +1120,7 @@ for (i = 0; i < 4; i++) {
 	m_texCoordP++;
 	m_ovlTexCoordP++;
 	if (!gameStates.app.bNostalgia)
-		*m_faceColorP = gameData.render.color.ambient [j];
+		*m_faceColorP = gameData.render.color.ambient [h];
 	else {
 		m_faceColorP->Red () = 
 		m_faceColorP->Green () = 

@@ -141,7 +141,7 @@ while (nTail != nHead) {
 	for (i = 0, nSideCount = 0; i < SEGMENT_SIDE_COUNT; i++)
 		if (segP->Side (i)->FaceCount ())
 			sideList [nSideCount++] = i;
-	for (i = sideCount; i; ) {
+	for (i = nSideCount; i; ) {
 		j = RandShort () % i;
 		nSide = sideList [j];
 		if (j < --i)

@@ -976,8 +976,8 @@ if (UpdateObjectSeg (objP, false)) {
 				CFixVector s0p, s1p;
 				fix dist;
 
-				for (i = 0; i < nSides; i++)
-					if (i != nEntrySide && i != nExitSide && i != nUpSide && i != oppSideTable [nUpSide]) {
+				for (i = 0; i < SEGMENT_SIDE_COUNT; i++)
+					if ((i != nEntrySide) && (i != nExitSide) && (i != nUpSide) && (i != oppSideTable [nUpSide])) {
 						if (s0 == -1)
 							s0 = i;
 						else
