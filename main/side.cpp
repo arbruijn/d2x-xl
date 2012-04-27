@@ -326,7 +326,6 @@ m_bIsQuad = !m_nShape && (m_normals [0] == m_normals [1]);
 #if 1
 if (m_nShape) {
 	m_nType = SIDE_IS_TRI_02;
-	m_nFaces = 1;
 	SetupVertexList (verts, index);
 	m_normals [2] = vNormal;
 	m_fNormals [2] = vNormalf;
@@ -608,7 +607,7 @@ return minDist;
 
 CWall* CSide::Wall (void) 
 { 
-return (m_nCorners && IS_WALL (m_nWall)) ? WALLS + m_nWall : NULL; 
+return (m_nFaces && IS_WALL (m_nWall)) ? WALLS + m_nWall : NULL; 
 }
 
 //	-----------------------------------------------------------------------------
