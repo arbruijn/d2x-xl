@@ -1091,6 +1091,8 @@ if ((bFade != m_bFade) || (nColor != m_nColor) || (fScale != m_fScale)) {
 
 void CAutomap::DrawLine (short v0, short v1)
 {
+if ((v0 < 0) || (v1 < 0))
+	return;
 if (!m_bDrawBuffers)
 	G3DrawLine (RENDERPOINTS + v0, RENDERPOINTS + v1);
 else {

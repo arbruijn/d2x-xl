@@ -140,11 +140,13 @@ return nMatchSeg;		//we haven't found a segment
 
 static inline int PointInSeg (CSegment* segP, CFixVector vPos)
 {
-fix d = CFixVector::Dist (vPos, segP->Center ());
-if (d <= segP->m_rads [0])
-	return 1;
-if (d > segP->m_rads [1])
-	return 0;
+if (!segP->m_nShape) {
+	fix d = CFixVector::Dist (vPos, segP->Center ());
+	if (d <= segP->m_rads [0])
+		return 1;
+	if (d > segP->m_rads [1])
+		return 0;
+	}
 return (segP->Masks (vPos, 0).m_center == 0);
 }
 

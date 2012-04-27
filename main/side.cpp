@@ -145,6 +145,10 @@ else {
 	}
 
 m_nMinVertex [0] = min (m_vertices [0], m_vertices [2]);
+if (m_nFaces == 1) {
+	if (m_nMinVertex [0] > m_vertices [1])
+		m_nMinVertex [0] = m_vertices [1];
+	}
 if (m_nType == SIDE_IS_QUAD) {
 	if (m_nMinVertex [0] > m_vertices [1])
 		m_nMinVertex [0] = m_vertices [1];
@@ -220,7 +224,7 @@ void CSide::SetupAsTriangles (bool bSolid, ushort* verts, ushort* index)
 
 	//	Choose how to triangulate.
 	//	If a wall, then
-	//		Always triangulate so CSegment is convex.
+	//		Always triangulate so segment is convex.
 	//		Use Matt's formula: Na . AD > 0, where ABCD are vertices on side, a is face formed by A, B, C, Na is Normal from face a.
 	//	If not a wall, then triangulate so whatever is on the other CSide is triangulated the same (ie, between the same absolute vertices)
 if (bSolid) {
@@ -323,16 +327,18 @@ bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_nShap
 vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
 xDistToPlane = m_nShape ? 0 : abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSorted [0]]));
-if (bFlip)
+if (bFlip) {
 	vNormal.Neg ();
+	vNormalf.Neg ();
+	}
 
 m_bIsQuad = !m_nShape && (m_normals [0] == m_normals [1]);
 #if 1
 if (m_nShape) {
 	m_nType = SIDE_IS_TRI_02;
 	SetupVertexList (verts, index);
-	m_normals [2] = vNormal;
-	m_fNormals [2] = vNormalf;
+	m_normals [0] = m_normals [1] = m_normals [2] = vNormal;
+	m_fNormals [0] = m_fNormals [1] = m_fNormals [2] = vNormalf;
 	}
 else {
 	SetupAsTriangles (bSolid, verts, index);
@@ -440,6 +446,11 @@ if (m_nFaces == 2) {
 		}
 	}
 else {	
+#if DBG
+	fix vDist [3];
+	for (int i = 0;  i < m_nCorners; i++)
+		vDist [i] = CFixVector::Dist (refPoint, VERTICES [m_corners [i]]);
+#endif
 	xDist = refPoint.DistToPlane (Normal (0), MinVertex ());
 	if (xDist < -PLANE_DIST_TOLERANCE)
 		masks.m_center |= sideBit;
@@ -1099,6 +1110,13 @@ int CSide::Read (CFile& cf, ushort* sideVerts, bool bSolid)
 m_nFrame = 0;
 m_nShape = 0;
 m_nCorners = 4;
+if (gameData.segs.nLevelVersion > 24) {
+	for (int i = 0; i < 4; i++) 
+		if (0xff == (m_corners [i] = cf.ReadUByte ()))
+			m_nShape++;
+	m_nCorners = 4 - m_nShape;
+	sideVerts = m_nCorners;
+	}
 if (!nType)
 	m_nBaseTex =
 	m_nOvlTex = 0;
@@ -1138,12 +1156,6 @@ else {
 		if (gameData.render.color.vertBright [sideVerts [i]] < fBrightness)
 			gameData.render.color.vertBright [sideVerts [i]] = fBrightness;
 		}
-	}
-if (gameData.segs.nLevelVersion > 24) {
-	for (int i = 0; i < 4; i++) 
-		if (0xff == (m_corners [i] = cf.ReadUByte ()))
-			m_nShape++;
-	m_nCorners = 4 - m_nShape;
 	}
 		
 return nType;
