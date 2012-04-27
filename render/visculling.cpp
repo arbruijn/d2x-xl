@@ -795,7 +795,8 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 			if (!bRotated) {
 				ushort* sv = segP->m_vertices;
-				for (int i = 0; i < 8; i++) {
+				int j = segP->m_nVertices;
+				for (int i = 0; i < j; i++) {
 #if DBG
 					if (sv [i] == nDbgVertex)
 						nDbgVertex = nDbgVertex;
@@ -809,14 +810,14 @@ for (l = 0; l < nRenderDepth; l++) {
 			if (bCullIfBehind) {
 				ushort* s2v = segP->Side (nChild)->m_corners;
 				ubyte code = CC_BEHIND;
-				int i;
-				for (i = 0; i < 4; i++) {
+				int i, j = segP->Side (nChild)->m_nCorners;
+				for (i = 0; i < j; i++) {
 					if (s2v [i] == 0xFFFF)
 						continue;
 					if (!(renderPoints [s2v [i]].Codes () & CC_BEHIND))
 						break;
 					}
-				if (i == 4)
+				if (i == j)
 					continue; // all face vertices behind the viewer => face invisible to the viewer
 				}
 			childList [nChildren++] = nChild;
@@ -836,7 +837,8 @@ for (l = 0; l < nRenderDepth; l++) {
 			CSide* sideP = segP->Side (nSide);
 			ushort* s2v = sideP->m_corners;
 			ubyte offScreenFlags = 0xff;
-			for (int nCorner = 0; nCorner < 4; nCorner++) {
+			int nCorners = sideP->m_nCorners;
+			for (int nCorner = 0; nCorner < nCorners; nCorner++) {
 				ushort nVertex = s2v [nCorner];
 				CRenderPoint& point = renderPoints [nVertex];
 #if DBG

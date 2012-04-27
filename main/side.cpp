@@ -311,6 +311,10 @@ if (m_nShape > SIDE_SHAPE_TRIANGLE)
 	CFloatVector	vNormalf;
 	fix				xDistToPlane;
 
+#if DBG
+if (nSegment == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
 m_nSegment = nSegment;
 if (gameData.segs.nLevelVersion > 24) 
 	index = m_corners;

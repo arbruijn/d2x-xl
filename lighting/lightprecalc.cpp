@@ -651,7 +651,8 @@ gameData.segs.SetLightVis (nLight, nDestSeg, 1);
 static bool InitLightVisibility (int nStage)
 {
 if (nStage) {
-	SetupSegments (fix (I2X (1) * 0.001f));
+	// Why does this get called here? I don't remember, but it seems to be unnecessary. [DM]
+	//SetupSegments (fix (I2X (1) * 0.001f)); 
 	int i = sizeof (gameData.segs.bVertVis [0]) * gameData.segs.nVertices * VERTVIS_FLAGS;
 	if (!gameData.segs.bVertVis.Create (i)) 
 		return false;
