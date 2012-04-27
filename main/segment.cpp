@@ -152,12 +152,6 @@ m_flags = cf.ReadByte ();
 if (gameData.segs.nLevelVersion <= 20)
 	Upgrade ();
 else {
-	if (gameData.segs.nLevelVersion > 24) {
-		for (int i = 0; i < 8; i++)
-			if (0xffff == (m_vertices [i] = cf.ReadUShort ()))
-				m_nShape++;
-		m_nVertices = 8 - m_nShape;
-		}
 	m_props = cf.ReadByte ();
 	m_xDamage [0] = I2X (cf.ReadShort ());
 	m_xDamage [1] = I2X (cf.ReadShort ());
