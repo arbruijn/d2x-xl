@@ -72,7 +72,7 @@ void CSegment::ReadVerts (CFile& cf)
 m_nShape = 0;
 m_nVertices = 8;
 for (int i = 0; i < SEGMENT_VERTEX_COUNT; i++)
-	if (0xFFFF == (m_vertices [i] = cf.ReadShort ()))
+	if (0xFFF8 <= (m_vertices [i] = cf.ReadShort ()))
 		m_nShape++;
 m_nVertices = 8 - m_nShape;
 }
@@ -218,7 +218,7 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		GetCornerIndex (i, sideVerts);
 	m_sides [i].Read (cf, sideVerts, m_children [i] == -1);
 	}
-if (gameData.segs.nLevelVersion > 24)
+if (gameData.segs.nLevelVersion > 24) 
 	RemapVertices ();
 }
 
@@ -1300,9 +1300,9 @@ void CSegment::RemapVertices (void)
 	byte	i, j;
 
 for (i = 0, j = 0; i < 8; i++) {
+	map [i] = j;
 	if (m_vertices [i] < 0xfff8)
 		m_vertices [j++] = m_vertices [i];
-	map [i] = j;
 	}
 m_nVertices = j;
 for (; j < 8; j++)

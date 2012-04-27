@@ -107,29 +107,29 @@ void CSide::SetupVertexList (ushort* verts, ushort* index)
 {
 m_nFaces = -1;
 if (m_nType == SIDE_IS_QUAD) {
-	m_vertices [0] = verts [index [0]];
-	m_vertices [1] = verts [index [1]];
-	m_vertices [2] = verts [index [2]];
-	m_vertices [3] = verts [index [3]];
+	m_vertices [0] = m_corners [0];
+	m_vertices [1] = m_corners [1];
+	m_vertices [2] = m_corners [2];
+	m_vertices [3] = m_corners [3];
 	m_nFaces = 1;
 	}
 else if (m_nType == SIDE_IS_TRI_02) {
 	m_vertices [0] =
-	m_vertices [5] = verts [index [0]];
-	m_vertices [1] = verts [index [1]];
+	m_vertices [5] = m_corners [0];
+	m_vertices [1] = m_corners [1];
 	m_vertices [2] =
-	m_vertices [3] = verts [index [2]];
-	m_vertices [4] = verts [index [3]];
+	m_vertices [3] = m_corners [2];
+	m_vertices [4] = m_corners [3];
 	m_nMinVertex [1] = min (m_vertices [1], m_vertices [4]);
 	m_nFaces = 2;
 	}
 else if (m_nType == SIDE_IS_TRI_13) {
 	m_vertices [0] =
-	m_vertices [5] = verts [index [3]];
-	m_vertices [1] = verts [index [0]];
+	m_vertices [5] = m_corners [3];
+	m_vertices [1] = m_corners [0];
 	m_vertices [2] =
-	m_vertices [3] = verts [index [1]];
-	m_vertices [4] = verts [index [2]];
+	m_vertices [3] = m_corners [1];
+	m_vertices [4] = m_corners [2];
 	m_nFaces = 2;
 	}
 else {
@@ -166,12 +166,19 @@ if (m_nType == SIDE_IS_QUAD) {
 	m_faceVerts [3] = 3;
 	}
 else if (m_nType == SIDE_IS_TRI_02) {
-	m_faceVerts [0] =
-	m_faceVerts [5] = 0;
-	m_faceVerts [1] = 1;
-	m_faceVerts [2] =
-	m_faceVerts [3] = 2;
-	m_faceVerts [4] = 3;
+	if (m_nFaces == 1) {
+		m_faceVerts [0] = 0;
+		m_faceVerts [5] = 1;
+		m_faceVerts [1] = 2;
+		}
+	else {
+		m_faceVerts [0] =
+		m_faceVerts [5] = 0;
+		m_faceVerts [1] = 1;
+		m_faceVerts [2] =
+		m_faceVerts [3] = 2;
+		m_faceVerts [4] = 3;
+		}
 	}
 else if (m_nType == SIDE_IS_TRI_13) {
 	m_faceVerts [0] =
@@ -297,7 +304,9 @@ if (m_nShape > SIDE_SHAPE_TRIANGLE)
 	fix				xDistToPlane;
 
 m_nSegment = nSegment;
-SetupCorners (verts, (gameData.segs.nLevelVersion < 25) ? index : m_corners);
+if (gameData.segs.nLevelVersion > 24) 
+	index = m_corners;
+SetupCorners (verts, index);
 bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_nShape ? 0xFFFF : m_corners [3], vSorted);
 vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
@@ -309,6 +318,7 @@ m_bIsQuad = !m_nShape && (m_normals [0] == m_normals [1]);
 #if 1
 if (m_nShape) {
 	m_nType = SIDE_IS_TRI_02;
+	SetupVertexList (verts, index);
 	m_normals [2] = vNormal;
 	m_fNormals [2] = vNormalf;
 	}
@@ -983,7 +993,7 @@ return vertices;
 void CSide::RemapVertices (byte* map)
 {
 for (int i = 0; i < m_nCorners; i++)
-	m_corners [i] = m_corners [map [i]];
+	m_corners [i] = map [m_corners [i]];
 }
 
 //------------------------------------------------------------------------------
@@ -1119,7 +1129,7 @@ else {
 	}
 if (gameData.segs.nLevelVersion > 24) {
 	for (int i = 0; i < 4; i++) 
-		if (0xff == (m_corners [i] = cf.ReadByte ()))
+		if (0xff == (m_corners [i] = cf.ReadUByte ()))
 			m_nShape++;
 	m_nCorners = 4 - m_nShape;
 	}
