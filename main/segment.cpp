@@ -1299,7 +1299,7 @@ void CSegment::RemapVertices (void)
 	byte	map [8];
 	byte	i, j;
 
-for (i = 0, j = 0; i < 8; i++)
+for (i = 0, j = 0; i < 8; i++) {
 	if (m_vertices [i] < 0xfff8)
 		m_vertices [j++] = m_vertices [i];
 	map [i] = j;
