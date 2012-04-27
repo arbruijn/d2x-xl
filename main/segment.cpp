@@ -363,7 +363,7 @@ CSegMasks CSegment::Masks (const CFixVector& refP, fix xRad)
 
 //check refPoint against each CSide of CSegment. return bitmask
 masks.m_valid = 1;
-for (nSide = 0, faceBit = 1; nSide < SEGMENT_SIDE_COUNT; nSide++)
+for (nSide = 0, faceBit = 1; nSide < SEGMENT_SIDE_COUNT; nSide++, faceBit <<= 2)
 	if (m_sides [nSide].FaceCount ())
 		masks |= m_sides [nSide].Masks (refP, xRad, 1 << nSide, faceBit);
 return masks;

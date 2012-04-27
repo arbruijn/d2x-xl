@@ -412,7 +412,7 @@ return (m_nFaces < 2) || (Height () <= PLANE_DIST_TOLERANCE);
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
 //this CSegment.  See CSegMasks structure for info on fields
-CSegMasks CSide::Masks (const CFixVector& refPoint, fix xRad, short sideBit, short& faceBit, bool bCheckPoke)
+CSegMasks CSide::Masks (const CFixVector& refPoint, fix xRad, short sideBit, short faceBit, bool bCheckPoke)
 {
 	CSegMasks	masks;
 	fix			xDist;
@@ -458,7 +458,6 @@ else {
 		masks.m_face |= faceBit;
 		masks.m_side |= sideBit;
 		}
-	faceBit <<= 2;
 	}
 masks.m_valid = 1;
 return masks;
@@ -1115,7 +1114,7 @@ if (gameData.segs.nLevelVersion > 24) {
 		if (0xff == (m_corners [i] = cf.ReadUByte ()))
 			m_nShape++;
 	m_nCorners = 4 - m_nShape;
-	sideVerts = m_nCorners;
+	sideVerts = m_corners;
 	}
 if (!nType)
 	m_nBaseTex =
@@ -1153,7 +1152,7 @@ else {
 		m_uvls [i].v = fix (cf.ReadShort ()) << 5;
 		m_uvls [i].l = fix (cf.ReadUShort ()) << 1;
 		float fBrightness = X2F (m_uvls [i].l);
-		if (gameData.render.color.vertBright [sideVerts [i]] < fBrightness)
+		if ((i < m_nCorners) && (gameData.render.color.vertBright [sideVerts [i]] < fBrightness))
 			gameData.render.color.vertBright [sideVerts [i]] = fBrightness;
 		}
 	}

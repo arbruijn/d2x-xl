@@ -197,10 +197,11 @@ vertices = sideP->m_corners;
 
 	CFloatVector	* v0, * v1 = &FVERTICES [vertices [0]];
 	float				minDist = 1e10f;
+	int				nVertices = sideP->m_nCorners;
 
-for (i = 1; i <= 4; i++) {
+for (i = 1; i <= nVertices; i++) {
 	v0 = v1;
-	v1 = &FVERTICES [vertices [i % 4]];
+	v1 = &FVERTICES [vertices [i % nVertices]];
 	FindPointLineIntersection (h, *v0, *v1, r, 1);
 	d = CFloatVector::Dist (h, r);
 	if (minDist > d) {
