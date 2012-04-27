@@ -1280,6 +1280,10 @@ void CAutomap::AddEdge (int va, int vb, uint color, ubyte nSide, short nSegment,
 {
 if (va == vb)
 	return;
+if ((va < 0) || (vb < 0))
+	return;
+if ((va == 0xFFFF) || (vb == 0xFFFF))
+	return;
 
 	int			found;
 	tEdgeInfo*	edgeP;
@@ -1475,9 +1479,9 @@ addEdge:
 
 		corners = SEGMENTS [nSegment].Corners (nSide);
 		int nCorners = sideP->CornerCount ();
-		for (int i = 0; i <= nCorners; i++)
-			AddEdge (corners [i], corners [(i + 1) % nCorners], color, nSide, nSegment, bHidden, 0, bNoFade);
-		if (bIsGrate) {
+		for (int i = 0; i < nCorners; i++)
+			AddEdge (corners [i % nCorners], corners [(i + 1) % nCorners], color, nSide, nSegment, bHidden, 0, bNoFade);
+		if ((nCorners > 2) && bIsGrate) {
 			AddEdge (corners [0], corners [2], color, nSide, nSegment, bHidden, 1, bNoFade);
 			if (nCorners > 3)
 				AddEdge (corners [1], corners [3], color, nSide, nSegment, bHidden, 1, bNoFade);
