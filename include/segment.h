@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SIDE_SHAPE_RECTANGLE  0
 #define SIDE_SHAPE_TRIANGLE   1
-#define SIDE_SHAPE_LINE       2
+#define SIDE_SHAPE_EDGE       2
 #define SIDE_SHAPE_POINT      3
 
 //------------------------------------------------------------------------------

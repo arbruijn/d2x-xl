@@ -1194,7 +1194,7 @@ incr = nbright / 2;
 while (incr > 0) {
 	for (i = incr; i < nbright; i++) {
 		j = i - incr;
-		while (j>=0) {
+		while (j >= 0) {
 			// compare element j and j + incr
 			v1 = m_brightEdges [j]->verts [0];
 			v2 = m_brightEdges [j + incr]->verts [0];
@@ -1362,7 +1362,7 @@ void CAutomap::AddSegmentEdges (CSegment *segP)
 	CSide*	sideP = segP->Side (0);
 
 for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
-	if (!sideP->FaceCount ())
+	if (sideP->m_nShape > SIDE_SHAPE_EDGE)
 		continue;
 	bHidden = 0;
 	bIsGrate = 0;
@@ -1474,11 +1474,13 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 addEdge:
 
 		corners = SEGMENTS [nSegment].Corners (nSide);
-		for (int i = 0, j = sideP->CornerCount (); i <= j; i++)
-			AddEdge (corners [i], corners [(i + 1) % j], color, nSide, nSegment, bHidden, 0, bNoFade);
+		int nCorners = sideP->CornerCount ();
+		for (int i = 0; i <= nCorners; i++)
+			AddEdge (corners [i], corners [(i + 1) % nCorners], color, nSide, nSegment, bHidden, 0, bNoFade);
 		if (bIsGrate) {
 			AddEdge (corners [0], corners [2], color, nSide, nSegment, bHidden, 1, bNoFade);
-			AddEdge (corners [1], corners [3], color, nSide, nSegment, bHidden, 1, bNoFade);
+			if (nCorners > 3)
+				AddEdge (corners [1], corners [3], color, nSide, nSegment, bHidden, 1, bNoFade);
 			}
 		}
 	}
@@ -1491,12 +1493,13 @@ void CAutomap::AddUnknownSegmentEdges (CSegment* segP)
 {
 for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	// Only add edges that have no children
-	if (!segP->Side (nSide)->FaceCount ())
+	if (segP->Side (nSide)->m_nShape > SIDE_SHAPE_EDGE)
 		continue;
 	if (segP->m_children [nSide] == -1) {
-		ushort* corners = segP->Corners (nSide);
-		for (int i = 0, j = segP->Side (nSide)->CornerCount (); i <= j; i++)
-			AddUnknownEdge (corners [i], corners [(i + 1) % j]);
+		ushort* vertices = segP->m_vertices;
+		int nVertices = segP->m_nVertices;
+		for (int i = 0; i <= nVertices; i++)
+			AddUnknownEdge (vertices [i], vertices [(i + 1) % nVertices]);
 		}
 	}
 }
@@ -1505,7 +1508,7 @@ for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 
 void CAutomap::BuildEdgeList (void)
 {
-	int	h = 0, i, e1, e2, s;
+	int	h = 0, i, e1, e2, nSegment;
 	tEdgeInfo * e;
 
 m_data.bCheat = 0;
@@ -1522,19 +1525,19 @@ m_nLastEdge = -1;
 
 if (m_data.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP)) {
 	// Cheating, add all edges as visited
-	for (s = 0; s <= gameData.segs.nLastSegment; s++)
-		AddSegmentEdges (&SEGMENTS [s]);
+	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
+		AddSegmentEdges (&SEGMENTS [nSegment]);
 	}
 else {
 	// Not cheating, add visited edges, and then unvisited edges
-	for (s = 0; s <= gameData.segs.nLastSegment; s++)
-		if (m_visited [s]) {
+	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++)
+		if (m_visited [nSegment]) {
 			h++;
-			AddSegmentEdges (&SEGMENTS [s]);
+			AddSegmentEdges (&SEGMENTS [nSegment]);
 			}
-		for (s = 0; s <= gameData.segs.nLastSegment; s++)
-			if (!m_visited [s]) {
-				AddUnknownSegmentEdges (&SEGMENTS [s]);
+		for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
+			if (!m_visited [nSegment]) {
+				AddUnknownSegmentEdges (&SEGMENTS [nSegment]);
 				}
 		}
 	// Find unnecessary lines (These are lines that don't have to be drawn because they have small curvature)
