@@ -106,7 +106,15 @@ for (int i = 0; i < 4; i++)
 void CSide::SetupVertexList (ushort* verts, ushort* index)
 {
 m_nFaces = -1;
-if (m_nType == SIDE_IS_QUAD) {
+if (m_nShape) {
+	m_nFaces = (m_nShape == SIDE_SHAPE_TRIANGLE) ? 1 : 0;
+	if (m_nFaces) {
+		m_vertices [0] = m_corners [0];
+		m_vertices [1] = m_corners [1];
+		m_vertices [2] = m_corners [2];
+		}
+	}
+else if (m_nType == SIDE_IS_QUAD) {
 	m_vertices [0] = m_corners [0];
 	m_vertices [1] = m_corners [1];
 	m_vertices [2] = m_corners [2];
@@ -318,6 +326,7 @@ m_bIsQuad = !m_nShape && (m_normals [0] == m_normals [1]);
 #if 1
 if (m_nShape) {
 	m_nType = SIDE_IS_TRI_02;
+	m_nFaces = 1;
 	SetupVertexList (verts, index);
 	m_normals [2] = vNormal;
 	m_fNormals [2] = vNormalf;
