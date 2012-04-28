@@ -285,7 +285,7 @@ class CSide {
 
 		inline ubyte Shape (void) { return m_nShape; }
 		inline ubyte FaceCount (void) { return m_nFaces; }
-		void RemapVertices (byte* map);
+		void RemapVertices (ubyte* map);
 
 	private:
 		void SetupCorners (ushort* verts, ushort* index);

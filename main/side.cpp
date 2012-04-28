@@ -1012,7 +1012,7 @@ return vertices;
 //------------------------------------------------------------------------------
 // Move all vertex id indices > nDeletedIndex down one step
 
-void CSide::RemapVertices (byte* map)
+void CSide::RemapVertices (ubyte* map)
 {
 for (int i = 0; i < m_nCorners; i++)
 	m_corners [i] = map [m_corners [i]];
