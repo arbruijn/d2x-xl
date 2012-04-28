@@ -1290,8 +1290,8 @@ gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 
 void CSegment::RemapVertices (void)
 {
-	byte	map [8];
-	byte	i, j;
+	ubyte	map [8];
+	ubyte	i, j;
 
 for (i = 0, j = 0; i < 8; i++) {
 	map [i] = j;
