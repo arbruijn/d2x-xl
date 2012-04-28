@@ -1705,7 +1705,7 @@ if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
 
 #if DBG
 
-void CPositionTracker::Update (CFixVector& vPos, byte bIdleAnimation)
+void CPositionTracker::Update (CFixVector& vPos, ubyte bIdleAnimation)
 {
 m_positions [m_nCurPos].bIdleAnimation = bIdleAnimation; 
 m_positions [m_nCurPos].vPos = vPos;

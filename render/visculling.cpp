@@ -711,7 +711,7 @@ void CVisibilityData::BuildSegList (CTransformation& transformation, short nStar
 	short*			renderPos = position.Buffer ();
 	short*			renderDepth = nDepth.Buffer ();
 	CRenderPoint*	renderPoints = points.Buffer ();
-	byte*				processed = bProcessed.Buffer ();
+	ubyte*			processed = bProcessed.Buffer ();
 #endif
 
 viewDir = transformation.m_info.view [0].m.dir.f;

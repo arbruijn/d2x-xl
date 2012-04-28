@@ -160,14 +160,14 @@ return SWAPSHORT (i);
 
 typedef union usSwap {
 	ushort	s;
-	byte		b [2];
+	ubyte		b [2];
 } usSwap;
 
 #define USSWAP(_s)	(reinterpret_cast<usSwap *> (&(_s)))
 
 static inline short SWAPUSHORT (ushort i)
 {
-byte h;
+ubyte h;
 SWAP (h, USSWAP (i)->b [0], USSWAP (i)->b [1]);
 return USSWAP (i)->s;
 }

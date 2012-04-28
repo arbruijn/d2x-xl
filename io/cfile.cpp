@@ -525,12 +525,12 @@ if (!compressedBuffer.Create (nCompressedSize)) {
 	// PrintLog (0, "ReadCompressed: couldn't create decompression buffer\n");
 	return -1;
 	}
-if (Read (compressedBuffer.Buffer (), sizeof (byte), nCompressedSize, -1) != nCompressedSize) {
+if (Read (compressedBuffer.Buffer (), sizeof (ubyte), nCompressedSize, -1) != nCompressedSize) {
 	// PrintLog (0, "ReadCompressed: error reading data\n");
 	return -1;
 	}
 int i;
-if ((i = uncompress ((byte*) buf, &nSize, compressedBuffer.Buffer (), nCompressedSize)) != Z_OK) {
+if ((i = uncompress ((ubyte*) buf, &nSize, compressedBuffer.Buffer (), nCompressedSize)) != Z_OK) {
 	// PrintLog (0, "ReadCompressed: decompression error #%d\n", i);
 	return -1;
 	}

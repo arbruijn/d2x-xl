@@ -117,10 +117,10 @@ typedef struct  {
 	BASE_GADGET
 	char 				 *text;
 	short 		    width, height;
-	byte            flag;
-	byte            pressed;
-	byte            position;
-	byte            oldposition;
+	ubyte           flag;
+	ubyte           pressed;
+	ubyte           position;
+	ubyte           oldposition;
 	int             trap_key;
 	int          	(*user_function)(void);
 } UI_GADGET_ICON;
