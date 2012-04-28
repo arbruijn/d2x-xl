@@ -502,7 +502,7 @@ CFloatVector::Normalize (o1);
 o1 *= 0.0015f;
 
 CFloatVector o2 = corners [2];
-o2 -= corners [nTriangles ? 3 : 0];
+o2 -= corners [3];
 CFloatVector::Normalize (o2);
 o2 *= 0.0015f;
 
@@ -549,7 +549,22 @@ CFixVector v3 = VERTICES [m_data.m_sideVerts [3]];
 
 CFixVector dx, dy;
 
-if (!nTriangles || (m_data.m_nType != SIDE_IS_TRI_13)) {
+if (!nTriangles) {
+	CFixVector l0 = v2 - v1;
+	CFixVector l1 = v1 - v0;
+	for (y = yMin; y < yMax; y++) {
+		for (x = 0; x <= y; x++, pixelPosP++) {
+			dx = l0;
+			dy = l1;
+			dx *= m_data.nOffset [x];
+			dy *= m_data.nOffset [y];
+			*pixelPosP = v0;
+			*pixelPosP += dx; 
+			*pixelPosP += dy; 
+			}
+		}
+	}
+else if (m_data.m_nType != SIDE_IS_TRI_13) {
 	CFixVector l0 = v2 - v1;
 	CFixVector l1 = v1 - v0;
 	CFixVector l2 = v3 - v0;
@@ -561,8 +576,6 @@ if (!nTriangles || (m_data.m_nType != SIDE_IS_TRI_13)) {
 				dy = l1;
 				}
 			else {
-				if (!nTriangles)
-					continue;
 				dx = l2; 
 				dy = l3; 
 				}
@@ -609,9 +622,8 @@ for (y = yMin; y < yMax; y++) {
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	for (x = 0; x < w; x++, pixelPosP++) { 
-		if (!nTriangles && (x > y))
-			continue;
+	int h = nTriangles ? w : y + 1;
+	for (x = 0; x < h; x++, pixelPosP++) { 
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nDbgSeg = nDbgSeg;

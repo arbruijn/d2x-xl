@@ -370,14 +370,8 @@ else {
 	}
 #endif
 
-if (m_nType == SIDE_IS_QUAD) {
-	for (int i = 0; i < 4; i++)
-		AddToVertexNormal (m_vertices [i], vNormal);
-	}
-else {
-	for (int i = 0; i < 3; i++)
-		AddToVertexNormal (m_vertices [i], m_normals [2]);
-	}
+for (int i = 0; i < m_nCorners; i++)
+	AddToVertexNormal (m_corners [i], m_normals [2]);
 }
 
 // -------------------------------------------------------------------------------
