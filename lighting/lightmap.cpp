@@ -616,13 +616,13 @@ else {
 	}
 
 bBlack = bWhite = true;
-pixelPosP = m_data.m_pixelPos + yMin * w;
 for (y = yMin; y < yMax; y++) {
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
 	int h = nTriangles ? w : y + 1;
+	pixelPosP = m_data.m_pixelPos + y * w;
 	for (x = 0; x < h; x++, pixelPosP++) { 
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
@@ -721,7 +721,7 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 	if (FaceIsInvisible (m_data.faceP))
 		continue;
 	m_data.Setup (m_data.faceP);
-	if (!gameStates.app.bMultiThreaded)
+	if (gameStates.app.nThreads < 2)
 		Build (m_data.faceP, -1);
 	else {
 #if USE_OPENMP

@@ -181,7 +181,7 @@ for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 		h *= -d;
 		h += r;
 		}
-	if (!PointIsOutsideFace (&h, vertices + j, 4 + 1 - sideP->m_nFaces)) {
+	if (!PointIsOutsideFace (&h, vertices + j, 3)) {
 		d = float (fabs (d));
 		if (!vHit)
 			return d;
