@@ -1270,7 +1270,7 @@ m_lMapTexCoordP = FACES.lMapTexCoord.Buffer ();
 for (nFace = FACES.nFaces; nFace; nFace--, m_faceP++) {
 	SetupLMapTexCoord (lMapTexCoord);
 	h = (SEGMENTS [m_faceP->m_info.nSegment].Type (m_faceP->m_info.nSide) == SIDE_IS_TRI_13);
-	for (i = 0; i < 2; i++, m_triP++) {
+	for (i = 0; i < m_faceP->m_info.nTriangles; i++, m_triP++) {
 		triVertP = n2TriVerts [h][i];
 		for (j = 0; j < 3; j++) {
 			k = triVertP [j];

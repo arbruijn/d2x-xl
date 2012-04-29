@@ -334,6 +334,10 @@ for (i = 512; i; i--, brightmap++)
 
 bool CLightmapManager::FaceIsInvisible (CSegFace* faceP)
 {
+#if DBG
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 if (SEGMENTS [faceP->m_info.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
 	faceP->m_info.nLightmap = 1;
 	return true;
