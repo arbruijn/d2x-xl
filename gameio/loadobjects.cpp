@@ -1068,6 +1068,7 @@ public:
 
 void CreateVertexSegmentList (void)
 {
+#if 0
 CArray<short> segCount;
 segCount.Create (gameData.segs.nVertices);
 segCount.Clear ();
@@ -1099,6 +1100,7 @@ for (int i = gameData.segs.nSegments; i; i--, segP++) {
 			}
 		}
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------

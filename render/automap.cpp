@@ -1287,7 +1287,6 @@ if ((va == 0xFFFF) || (vb == 0xFFFF))
 
 	int			found;
 	tEdgeInfo*	edgeP;
-	int			tmp;
 
 	if (m_nEdges >= MAX_EDGES) {
 		// GET JOHN!(And tell him that his
@@ -1300,11 +1299,14 @@ if ((va == 0xFFFF) || (vb == 0xFFFF))
 		return;
 	}
 
-if (va > vb) {
-	tmp = va;
-	va = vb;
-	vb = tmp;
-	}
+if (va > vb)
+	Swap (va, vb);
+
+#if DBG
+if ((va == 1) && (vb == 3))
+	va = va;
+#endif
+
 found = FindEdge (va, vb, edgeP);
 
 if (found == -1) {
@@ -1366,7 +1368,7 @@ void CAutomap::AddSegmentEdges (CSegment *segP)
 	CSide*	sideP = segP->Side (0);
 
 for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
-	if (sideP->m_nShape > SIDE_SHAPE_EDGE)
+	if (sideP->m_nShape > SIDE_SHAPE_TRIANGLE)
 		continue;
 	bHidden = 0;
 	bIsGrate = 0;
@@ -1481,10 +1483,9 @@ addEdge:
 		int nCorners = sideP->CornerCount ();
 		for (int i = 0; i < nCorners; i++)
 			AddEdge (corners [i % nCorners], corners [(i + 1) % nCorners], color, nSide, nSegment, bHidden, 0, bNoFade);
-		if ((nCorners > 2) && bIsGrate) {
+		if (bIsGrate && (nCorners == 4)) {
 			AddEdge (corners [0], corners [2], color, nSide, nSegment, bHidden, 1, bNoFade);
-			if (nCorners > 3)
-				AddEdge (corners [1], corners [3], color, nSide, nSegment, bHidden, 1, bNoFade);
+			AddEdge (corners [1], corners [3], color, nSide, nSegment, bHidden, 1, bNoFade);
 			}
 		}
 	}
@@ -1497,7 +1498,7 @@ void CAutomap::AddUnknownSegmentEdges (CSegment* segP)
 {
 for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	// Only add edges that have no children
-	if (segP->Side (nSide)->m_nShape > SIDE_SHAPE_EDGE)
+	if (segP->Side (nSide)->m_nShape > SIDE_SHAPE_TRIANGLE)
 		continue;
 	if (segP->m_children [nSide] == -1) {
 		ushort* vertices = segP->m_vertices;
@@ -1512,7 +1513,7 @@ for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 
 void CAutomap::BuildEdgeList (void)
 {
-	int	h = 0, i, e1, e2, nSegment;
+	int	i, e1, e2, nSegment;
 	tEdgeInfo * e;
 
 m_data.bCheat = 0;
@@ -1520,7 +1521,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP_CHEAT)
 	m_data.bCheat = 1;		// Damn cheaters...
 
 	// clear edge list
-for (i=0; i < MAX_EDGES; i++) {
+for (i = 0; i < MAX_EDGES; i++) {
 	m_edges [i].nFaces = 0;
 	m_edges [i].flags = 0;
 	}
@@ -1534,29 +1535,37 @@ if (m_data.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP)) {
 	}
 else {
 	// Not cheating, add visited edges, and then unvisited edges
-	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++)
-		if (m_visited [nSegment]) {
-			h++;
+	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
+#if DBG
+		if (nSegment == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+#endif
+		if (m_visited [nSegment]) 
 			AddSegmentEdges (&SEGMENTS [nSegment]);
-			}
-		for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
-			if (!m_visited [nSegment]) {
-				AddUnknownSegmentEdges (&SEGMENTS [nSegment]);
-				}
 		}
-	// Find unnecessary lines (These are lines that don't have to be drawn because they have small curvature)
-	for (i = 0; i <= m_nLastEdge; i++) {
-		e = m_edges + i;
-		if (!(e->flags & EF_USED))
-			continue;
+	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
+#if DBG
+		if (nSegment == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+#endif
+		if (!m_visited [nSegment]) 
+			AddUnknownSegmentEdges (&SEGMENTS [nSegment]);
+		}
+	}	
 
-		for (e1 = 0; e1 < e->nFaces; e1++) {
-			for (e2 = 1; e2 < e->nFaces; e2++) {
-				if ((e1 != e2) && (e->nSegment [e1] != e->nSegment [e2])) {
-					if (CFixVector::Dot (SEGMENTS [e->nSegment [e1]].m_sides [e->sides [e1]].m_normals [0],
-												SEGMENTS [e->nSegment [e2]].m_sides [e->sides [e2]].m_normals [0]) > (I2X (1)- (I2X (1)/10))) {
-						e->flags &= (~EF_DEFINING);
-						break;
+// Find unnecessary lines (These are lines that don't have to be drawn because they have small curvature)
+for (i = 0; i <= m_nLastEdge; i++) {
+	e = m_edges + i;
+	if (!(e->flags & EF_USED))
+		continue;
+
+	for (e1 = 0; e1 < e->nFaces; e1++) {
+		for (e2 = 1; e2 < e->nFaces; e2++) {
+			if ((e1 != e2) && (e->nSegment [e1] != e->nSegment [e2])) {
+				if (CFixVector::Dot (SEGMENTS [e->nSegment [e1]].m_sides [e->sides [e1]].m_normals [0],
+											SEGMENTS [e->nSegment [e2]].m_sides [e->sides [e2]].m_normals [0]) > (I2X (1)- (I2X (1)/10))) {
+					e->flags &= (~EF_DEFINING);
+					break;
 					}
 				}
 			}
