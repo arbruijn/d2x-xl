@@ -1160,7 +1160,7 @@ for (;;) {
 			}
 		}
 	if ((gameData.segs.nLevelVersion <= 1) || (szCurrentLevelPalette [0] == 0)) // descent 1 level
-		strcpy (szCurrentLevelPalette, DEFAULT_LEVEL_PALETTE); //D1_PALETTE
+		strcpy (szCurrentLevelPalette, /*gameStates.app.bD1Mission ? D1_PALETTE :*/ DEFAULT_LEVEL_PALETTE); //D1_PALETTE looks off in D2X-XL
 
 	if (gameData.segs.nLevelVersion >= 3)
 		gameStates.app.nBaseCtrlCenExplTime = cf.ReadInt ();

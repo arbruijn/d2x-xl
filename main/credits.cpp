@@ -375,6 +375,8 @@ if (!Open (creditsFilename))
 CCanvas::Push ();
 memset (m_buffer, 0, sizeof (m_buffer));
 
+gameStates.render.bRenderIndirect = -1;
+ogl.ChooseDrawBuffer ();
 SetScreenMode (SCREEN_MENU);
 m_xOffs = (CCanvas::Current ()->Width () - 640) / 2;
 m_yOffs = (CCanvas::Current ()->Height () - 480) / 2;
