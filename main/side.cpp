@@ -332,7 +332,6 @@ if (bFlip) {
 	vNormalf.Neg ();
 	}
 
-m_bIsQuad = !m_nShape && (m_normals [0] == m_normals [1]);
 #if 1
 if (m_nShape) {
 	m_nType = SIDE_IS_TRI_02;
@@ -370,6 +369,7 @@ else {
 	}
 #endif
 
+m_bIsQuad = !m_nShape && (m_normals [0] == m_normals [1]);
 for (int i = 0; i < m_nCorners; i++)
 	AddToVertexNormal (m_corners [i], m_normals [2]);
 }
