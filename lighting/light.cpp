@@ -814,19 +814,25 @@ if (!(flP = gameData.render.lights.flicker.Buffer ()))
 	short				nSegment, nSide;
 
 for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
+	if (flP->m_timer == (fix) 0x80000000)		//disabled
+		continue;
 	//make sure this is actually a light
 	nSegment = flP->m_nSegment;
 	nSide = flP->m_nSide;
-	if (!(SEGMENTS [nSegment].IsDoorWay (nSide, NULL) & WID_VISIBLE_FLAG))
+	if (!(SEGMENTS [nSegment].IsDoorWay (nSide, NULL) & WID_VISIBLE_FLAG)) {
+		flP->m_timer = (fix) 0x80000000;		//disabled
 		continue;
+		}
 	sideP = SEGMENTS [nSegment].m_sides + nSide;
 	if (!(gameData.pig.tex.brightness [sideP->m_nBaseTex] ||
-			gameData.pig.tex.brightness [sideP->m_nOvlTex]))
-		continue;
-	if (!flP->m_delay)
+			gameData.pig.tex.brightness [sideP->m_nOvlTex])) {
 		flP->m_timer = (fix) 0x80000000;		//disabled
-	if (flP->m_timer == (fix) 0x80000000)		//disabled
 		continue;
+		}
+	if (!flP->m_delay) {
+		flP->m_timer = (fix) 0x80000000;		//disabled
+		continue;
+		}
 	if ((flP->m_timer -= gameData.time.xFrame) < 0) {
 		while (flP->m_timer < 0)
 			flP->m_timer += flP->m_delay;
