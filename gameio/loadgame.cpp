@@ -1657,6 +1657,9 @@ if (IsMultiGame)
 	return;
 StopTime ();
 paletteManager.DisableEffect ();
+gameStates.render.nFlashScale = 0;
+gameStates.render.bRenderIndirect = -1;
+ogl.ChooseDrawBuffer ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
