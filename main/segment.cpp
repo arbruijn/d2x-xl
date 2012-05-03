@@ -210,7 +210,7 @@ ushort sideVerts [4];
 for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	if (gameData.segs.nLevelVersion < 25)
 		GetCornerIndex (i, sideVerts);
-	m_sides [i].Read (cf, sideVerts, m_children [i] == -1);
+	m_sides [i].Read (cf, m_vertices, sideVerts, m_children [i] == -1);
 	}
 if (gameData.segs.nLevelVersion > 24) 
 	RemapVertices ();

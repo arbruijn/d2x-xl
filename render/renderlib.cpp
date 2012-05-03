@@ -368,6 +368,10 @@ if (nVertex == nDbgVertex)
 #endif
 if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	if (gameData.render.lights.bGotDynColor [nVertex]) {
+#if DBG
+		if (nVertex == nDbgVertex)
+			nVertex = nVertex;
+#endif
 		dynColor.Assign (gameData.render.lights.dynamicColor [nVertex]);
 		if (gameOpts->render.color.bMix) {
 			if (gameOpts->render.color.nLevel) {

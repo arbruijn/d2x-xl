@@ -337,36 +337,30 @@ if (xObjIntensity) {
 #if FLICKERFIX == 0
 			if ((nVertex ^ gameData.app.nFrameCount) & 1)
 #endif
-		 {
+				{
 				vVertPos = gameData.segs.vertices + nVertex;
 				dist = CFixVector::Dist (*vObjPos, *vVertPos);
 				bApplyLight = 0;
 				if ((dist >> headlightShift) < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;
-#if 0
-					bApplyLight = 1;
-					if (bApplyLight)
-#endif
-				 {
-						if (bUseColor)
-							SetDynColor (color, NULL, nVertex, NULL, bForceColor);
-						if (!headlightShift)
-							gameData.render.lights.dynamicLight [nVertex] += FixDiv (xObjIntensity, dist);
-						else {
-								fix	dot, maxDot;
-								int	spotSize = gameData.render.vertColor.bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
+					if (bUseColor)
+						SetDynColor (color, NULL, nVertex, NULL, bForceColor);
+					if (!headlightShift)
+						gameData.render.lights.dynamicLight [nVertex] += FixDiv (xObjIntensity, dist);
+					else {
+							fix	dot, maxDot;
+							int	spotSize = gameData.render.vertColor.bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
 
-							CFixVector	vecToPoint;
-							vecToPoint = *vVertPos - *vObjPos;
-							CFixVector::Normalize (vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
-							dot = CFixVector::Dot (vecToPoint, objP->info.position.mOrient.m.dir.f);
-							maxDot = I2X (1) / (gameData.render.vertColor.bDarkness ? spotSize : 2);
-							if (dot < maxDot)
-								gameData.render.lights.dynamicLight [nVertex] += FixDiv (xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
-							else if (!IsMultiGame || (dist < maxHeadlightDist))
-								gameData.render.lights.dynamicLight [nVertex] += FixMul (FixMul (dot, dot), xOrigIntensity) / 8;//(8 * spotSize);
-							}
+						CFixVector	vecToPoint;
+						vecToPoint = *vVertPos - *vObjPos;
+						CFixVector::Normalize (vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
+						dot = CFixVector::Dot (vecToPoint, objP->info.position.mOrient.m.dir.f);
+						maxDot = I2X (1) / (gameData.render.vertColor.bDarkness ? spotSize : 2);
+						if (dot < maxDot)
+							gameData.render.lights.dynamicLight [nVertex] += FixDiv (xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
+						else if (!IsMultiGame || (dist < maxHeadlightDist))
+							gameData.render.lights.dynamicLight [nVertex] += FixMul (FixMul (dot, dot), xOrigIntensity) / 8;//(8 * spotSize);
 						}
 					}
 				}
@@ -657,6 +651,10 @@ FORALL_OBJS (objP, nObject) {
 	xObjIntensity = ComputeLightIntensity (nObject, &color, &bGotColor);
 	if (bGotColor)
 		bKeepDynColoring = 1;
+#if DBG
+	if (objP->IsWeapon ())
+		nDbgObj = nDbgObj;
+#endif
 	if (xObjIntensity) {
 		ApplyLight (xObjIntensity, objP->info.nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, nObject, bGotColor ? &color : NULL);
 		gameData.render.lights.newObjects [nObject] = 1;

@@ -34,6 +34,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern bool bNewFileFormat;
 
+short ConvertD1Texture (short nD1Texture, int bForce);
+
 // ------------------------------------------------------------------------------------------
 
 CFixVector& CSide::Normal (int nFace)
@@ -1094,9 +1096,7 @@ return IS_WALL (m_nWall);
 
 //------------------------------------------------------------------------------
 
-short ConvertD1Texture (short nD1Texture, int bForce);
-
-int CSide::Read (CFile& cf, ushort* sideVerts, bool bSolid)
+int CSide::Read (CFile& cf, ushort* segVerts, ushort* sideVerts, bool bSolid)
 {
 	int nType = bSolid ? 1 : IS_WALL (m_nWall) ? 2 : 0;
 
@@ -1108,7 +1108,8 @@ if (gameData.segs.nLevelVersion > 24) {
 		if (0xff == (m_corners [i] = cf.ReadUByte ()))
 			m_nShape++;
 	m_nCorners = 4 - m_nShape;
-	sideVerts = m_corners;
+	for (int i = 0; i < m_nCorners; i++)
+		sideVerts [i] = segVerts [m_corners [i]];
 	}
 if (!nType)
 	m_nBaseTex =
@@ -1144,7 +1145,8 @@ else {
 	for (int i = 0; i < 4; i++) {
 		m_uvls [i].u = fix (cf.ReadShort ()) << 5;
 		m_uvls [i].v = fix (cf.ReadShort ()) << 5;
-		m_uvls [i].l = fix (cf.ReadUShort ()) << 1;
+		ushort l = cf.ReadUShort ();
+		m_uvls [i].l = fix (l) << 1;
 		float fBrightness = X2F (m_uvls [i].l);
 		if ((i < m_nCorners) && (gameData.render.color.vertBright [sideVerts [i]] < fBrightness))
 			gameData.render.color.vertBright [sideVerts [i]] = fBrightness;

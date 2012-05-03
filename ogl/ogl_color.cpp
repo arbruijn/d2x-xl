@@ -670,9 +670,9 @@ extern int nDbgVertex;
 
 
 void GetVertexColor (int nSegment, int nSide, int nVertex,
-						  CFloatVector3* vVertNormP, CFloatVector3* vVertPosP, 
-						  CFaceColor* vertColorP, CFaceColor* baseColorP,
-						  float fScale, int bSetColor, int nThread)
+						   CFloatVector3* vVertNormP, CFloatVector3* vVertPosP, 
+						   CFaceColor* vertColorP, CFaceColor* baseColorP,
+						   float fScale, int bSetColor, int nThread)
 {
 PROF_START
 	CFloatVector3	colorSum = CFloatVector3::Create (0.0f, 0.0f, 0.0f);

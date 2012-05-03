@@ -215,7 +215,7 @@ class CSide {
 
 	public:
 		inline void Init (void) { memset (this, 0, sizeof (*this)); }
-		int Read (CFile& cf, ushort* sideVerts, bool bSolid);
+		int Read (CFile& cf, ushort* segVerts, ushort* sideVerts, bool bSolid);
 		void ReadWallNum (CFile& cf, bool bWall);
 		void SaveState (CFile& cf);
 		void LoadState (CFile& cf);
