@@ -343,6 +343,7 @@ void ScoresView (int nCurItem)
 
 ReshowScores:
 
+gameStates.render.nFlashScale = 0;
 scores_read ();
 SetScreenMode (SCREEN_MENU);
 CCanvas::SetCurrent (NULL);

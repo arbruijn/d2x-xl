@@ -121,7 +121,7 @@ else {
 	FixFastSinCos (flashAngle, &gameStates.render.nFlashScale, NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + I2X (1)) / 2;
 	if (gameStates.app.nDifficultyLevel == 0)
-		gameStates.render.nFlashScale = (gameStates.render.nFlashScale+I2X (3)) / 4;
+		gameStates.render.nFlashScale = (gameStates.render.nFlashScale + I2X (3)) / 4;
 	}
 }
 

@@ -1595,6 +1595,7 @@ void CBriefing::Run (const char* filename, int nLevel)
 	char	fnBriefing [FILENAME_LEN];
 
 PrintLog (1, "Starting the briefing\n");
+gameStates.render.nFlashScale = 0;
 gameStates.render.bBriefing = 1;
 if (gameOpts->gameplay.bSkipBriefingScreens) {
 	console.printf (CON_DBG, "Skipping all briefing screens.\n");
