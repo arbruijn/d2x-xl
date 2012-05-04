@@ -48,13 +48,13 @@ va_end (args);
 
 szMsg [0] = char (1);
 szMsg [1] = char (127 + 128);
-szMsg [2] = char (0 + 128);
-szMsg [3] = char (0 + 128);
-memcpy (szMsg + 4, "THIEF: ", 6);
+szMsg [2] = char (128);
+szMsg [3] = char (128);
+memcpy (szMsg + 4, "THIEF: ", 7);
 szMsg [11] = char (1);
-szMsg [12] = char (0 + 128);
+szMsg [12] = char (128);
 szMsg [13] = char (63 + 128);
-szMsg [14] = char (0 + 128);
+szMsg [14] = char (128);
 HUDInitMessage (szMsg);
 }
 
@@ -103,7 +103,7 @@ gameData.thief.xReInitTime = gameData.time.xGame + I2X (10);		//	In 10 seconds, 
 void DoThiefFrame (CObject *objP)
 {
 	int				nObject = objP->Index ();
-	tAILocalInfo*	ailp = gameData.ai.localInfo + nObject;
+	tAILocalInfo*	ailP = gameData.ai.localInfo + nObject;
 	fix				connectedDistance;
 
 if ((missionManager.nCurrentLevel < 0) && (gameData.thief.xReInitTime < gameData.time.xGame)) {
@@ -112,72 +112,68 @@ if ((missionManager.nCurrentLevel < 0) && (gameData.thief.xReInitTime < gameData
 	gameData.thief.xReInitTime = 0x3f000000;
 	}
 
-if ((gameData.ai.target.xDist > I2X (500)) && (ailp->nextActionTime > 0))
+if ((gameData.ai.target.xDist > I2X (500)) && (ailP->nextActionTime > 0))
 	return;
 
 gameData.ai.target.objP = gameData.objs.consoleP;
 if (gameStates.app.bPlayerIsDead)
-	ailp->mode = AIM_THIEF_RETREAT;
+	ailP->mode = AIM_THIEF_RETREAT;
 
-switch (ailp->mode) {
+switch (ailP->mode) {
 	case AIM_THIEF_WAIT:
-		if (ailp->targetAwarenessType >= PA_PLAYER_COLLISION) {
-			ailp->targetAwarenessType = 0;
+		if (ailP->targetAwarenessType >= PA_PLAYER_COLLISION) {
+			ailP->targetAwarenessType = 0;
 			CreatePathToTarget (objP, 30, 1);
-			ailp->mode = AIM_THIEF_ATTACK;
-			ailp->nextActionTime = THIEF_ATTACK_TIME/2;
+			ailP->mode = AIM_THIEF_ATTACK;
+			ailP->nextActionTime = THIEF_ATTACK_TIME/2;
 			return;
 			}
-		else if (gameData.ai.nTargetVisibility) {
+		if (gameData.ai.nTargetVisibility) {
 			CreateNSegmentPath (objP, 15, gameData.objs.consoleP->info.nSegment);
-			ailp->mode = AIM_THIEF_RETREAT;
+			ailP->mode = AIM_THIEF_RETREAT;
 			return;
 			}
-
-		if ((gameData.ai.target.xDist > I2X (50)) && (ailp->nextActionTime > 0))
+		if ((gameData.ai.target.xDist > I2X (50)) && (ailP->nextActionTime > 0))
 			return;
-
-		ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
-
+		ailP->nextActionTime = gameData.thief.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
 		connectedDistance = simpleRouter [0].PathLength (objP->info.position.vPos, objP->info.nSegment, 
 																		 gameData.ai.target.vBelievedPos, gameData.ai.target.nBelievedSeg, 
 																		 30, WID_PASSABLE_FLAG, 1);
 		if (connectedDistance < I2X (500)) {
 			CreatePathToTarget (objP, 30, 1);
-			ailp->mode = AIM_THIEF_ATTACK;
-			ailp->nextActionTime = THIEF_ATTACK_TIME;	//	have up to 10 seconds to find player.
+			ailP->mode = AIM_THIEF_ATTACK;
+			ailP->nextActionTime = THIEF_ATTACK_TIME;	//	have up to 10 seconds to find player.
 		}
-
 		break;
 
 	case AIM_THIEF_RETREAT:
-		if (ailp->nextActionTime < 0) {
-			ailp->mode = AIM_THIEF_WAIT;
-			ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel];
-		} else if ((gameData.ai.target.xDist < I2X (100)) || gameData.ai.nTargetVisibility || (ailp->targetAwarenessType >= PA_PLAYER_COLLISION)) {
+		if (ailP->nextActionTime < 0) {
+			ailP->mode = AIM_THIEF_WAIT;
+			ailP->nextActionTime = gameData.thief.xWaitTimes [gameStates.app.nDifficultyLevel];
+			}
+		else if ((gameData.ai.target.xDist < I2X (100)) || gameData.ai.nTargetVisibility || (ailP->targetAwarenessType >= PA_PLAYER_COLLISION)) {
 			AIFollowPath (objP, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.target.vDir);
-			if ((gameData.ai.target.xDist < I2X (100)) || (ailp->targetAwarenessType >= PA_PLAYER_COLLISION)) {
-				tAIStaticInfo	*aip = &objP->cType.aiInfo;
-				if (((aip->nCurPathIndex <=1) && (aip->PATH_DIR == -1)) || ((aip->nCurPathIndex >= aip->nPathLength-1) && (aip->PATH_DIR == 1))) {
-					ailp->targetAwarenessType = 0;
+			if ((gameData.ai.target.xDist < I2X (100)) || (ailP->targetAwarenessType >= PA_PLAYER_COLLISION)) {
+				tAIStaticInfo* aiP = &objP->cType.aiInfo;
+				if (((aiP->nCurPathIndex <= 1) && (aiP->PATH_DIR == -1)) || ((aiP->nCurPathIndex >= aiP->nPathLength-1) && (aiP->PATH_DIR == 1))) {
+					ailP->targetAwarenessType = 0;
 					CreateNSegmentPath (objP, 10, gameData.objs.consoleP->info.nSegment);
 
 					//	If path is real short, try again, allowing to go through player's CSegment
-					if (aip->nPathLength < 4) {
+					if (aiP->nPathLength < 4) {
 						CreateNSegmentPath (objP, 10, -1);
 						}
 					else if (objP->info.xShield * 4 < ROBOTINFO (objP->info.nId).strength) {
 						//	If robot really low on hits, will run through player with even longer path
-						if (aip->nPathLength < 8) {
+						if (aiP->nPathLength < 8) {
 							CreateNSegmentPath (objP, 10, -1);
 						}
 					}
-
-					ailp->mode = AIM_THIEF_RETREAT;
+				ailP->mode = AIM_THIEF_RETREAT;
 				}
-			} else
-				ailp->mode = AIM_THIEF_RETREAT;
-
+			} 
+		else
+			ailP->mode = AIM_THIEF_RETREAT;
 		}
 
 		break;
@@ -186,19 +182,21 @@ switch (ailp->mode) {
 	//	Note: When thief successfully steals something, his action time is forced negative and his mode is changed
 	//			to retreat to get him out of attack mode.
 	case AIM_THIEF_ATTACK:
-		if (ailp->targetAwarenessType >= PA_PLAYER_COLLISION) {
-			ailp->targetAwarenessType = 0;
+		if (ailP->targetAwarenessType >= PA_PLAYER_COLLISION) {
+			ailP->targetAwarenessType = 0;
 			if (RandShort () > 8192) {
 				CreateNSegmentPath (objP, 10, gameData.objs.consoleP->info.nSegment);
-				gameData.ai.localInfo [objP->Index ()].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
+				gameData.ai.localInfo [objP->Index ()].nextActionTime = gameData.thief.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
 				gameData.ai.localInfo [objP->Index ()].mode = AIM_THIEF_RETREAT;
-			}
-		} else if (ailp->nextActionTime < 0) {
+				}
+			} 
+		else if (ailP->nextActionTime < 0) {
 			//	This forces him to create a new path every second.
-			ailp->nextActionTime = I2X (1);
+			ailP->nextActionTime = I2X (1);
 			CreatePathToTarget(objP, 100, 0);
-			ailp->mode = AIM_THIEF_ATTACK;
-		} else {
+			ailP->mode = AIM_THIEF_ATTACK;
+			}
+		else {
 			if (gameData.ai.nTargetVisibility && (gameData.ai.target.xDist < I2X (100))) {
 				//	If the player is close to looking at the thief, thief shall run away.
 				//	No more stupid thief trying to sneak up on you when you're looking right at him!
@@ -206,30 +204,31 @@ switch (ailp->mode) {
 					fix dot = CFixVector::Dot (gameData.ai.target.vDir, OBJPOS (gameData.objs.consoleP)->mOrient.m.dir.f);
 					if (dot < -I2X (1)/2) {	//	Looking at least towards thief, so thief will run!
 						CreateNSegmentPath (objP, 10, gameData.objs.consoleP->info.nSegment);
-						gameData.ai.localInfo [objP->Index ()].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
+						gameData.ai.localInfo [objP->Index ()].nextActionTime = gameData.thief.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
 						gameData.ai.localInfo [objP->Index ()].mode = AIM_THIEF_RETREAT;
+						}
 					}
-				}
 				AITurnTowardsVector (&gameData.ai.target.vDir, objP, I2X (1)/4);
 				MoveTowardsPlayer (objP, &gameData.ai.target.vDir);
-			} else {
-				tAIStaticInfo	*aip = &objP->cType.aiInfo;
+				}
+			else {
+				tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 				//	If path length == 0, then he will keep trying to create path, but he is probably stuck in his closet.
-				if ((aip->nPathLength > 1) || ((gameData.app.nFrameCount & 0x0f) == 0)) {
+				if ((aiP->nPathLength > 1) || ((gameData.app.nFrameCount & 0x0f) == 0)) {
 					AIFollowPath (objP, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.target.vDir);
-					ailp->mode = AIM_THIEF_ATTACK;
+					ailP->mode = AIM_THIEF_ATTACK;
+					}
 				}
 			}
-		}
 		break;
 
 	default:
 #if TRACE
-		console.printf (CON_DBG,"Thief mode (broken) = %d\n",ailp->mode);
+		console.printf (CON_DBG,"Thief mode (broken) = %d\n",ailP->mode);
 #endif
 		// -- Int3();	//	Oops, illegal mode for thief behavior.
-		ailp->mode = AIM_THIEF_ATTACK;
-		ailp->nextActionTime = I2X (1);
+		ailP->mode = AIM_THIEF_ATTACK;
+		ailP->nextActionTime = I2X (1);
 		break;
 	}
 

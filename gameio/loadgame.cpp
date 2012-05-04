@@ -1463,6 +1463,9 @@ if (IsNetworkGame)
 	CONNECT (N_LOCALPLAYER, CONNECT_WAITING); // Finished but did not die
 gameStates.render.cockpit.nLastDrawn [0] =
 gameStates.render.cockpit.nLastDrawn [1] = -1;
+gameStates.render.nFlashScale = 0;
+gameStates.render.bRenderIndirect = -1;
+ogl.ChooseDrawBuffer ();
 if (missionManager.nCurrentLevel < 0)
 	ExitSecretLevel ();
 else
