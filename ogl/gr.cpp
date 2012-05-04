@@ -522,6 +522,10 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 	gameStates.video.nScreenMode = sm;
 	switch (gameStates.video.nScreenMode) {
 		case SCREEN_MENU:
+			paletteManager.DisableEffect ();
+			gameStates.render.nFlashScale = 0;
+			gameStates.render.bRenderIndirect = -1;
+			ogl.ChooseDrawBuffer ();
 			SetMenuScreenMode (sm);
 			break;
 

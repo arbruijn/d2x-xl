@@ -638,9 +638,7 @@ while ((c = KeyInKey ()))
 	if (c == KEY_ESC)
 		return MOVIE_ABORTED;
 // Stop all digital sounds currently playing.
-gameStates.render.nFlashScale = 0;
-gameStates.render.bRenderIndirect = -1;
-ogl.ChooseDrawBuffer ();
+SetScreenMode (SCREEN_MENU);
 audio.Shutdown ();
 // Start sound
 MVE_sndInit (gameStates.app.bUseSound ? 1 : -1);

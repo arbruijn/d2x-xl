@@ -1296,8 +1296,6 @@ else
 // NOTE LINK TO ABOVE!!!
 gameStates.app.bGameRunning = 0;
 backgroundManager.SetShadow (false);
-gameStates.render.bRenderIndirect = -1;
-ogl.ChooseDrawBuffer ();
 m.Menu (NULL, szTitle, NULL, NULL, BackgroundName (BG_STARS));
 backgroundManager.SetShadow (true);
 }
@@ -1463,9 +1461,7 @@ if (IsNetworkGame)
 	CONNECT (N_LOCALPLAYER, CONNECT_WAITING); // Finished but did not die
 gameStates.render.cockpit.nLastDrawn [0] =
 gameStates.render.cockpit.nLastDrawn [1] = -1;
-gameStates.render.nFlashScale = 0;
-gameStates.render.bRenderIndirect = -1;
-ogl.ChooseDrawBuffer ();
+SetScreenMode (SCREEN_MENU);
 if (missionManager.nCurrentLevel < 0)
 	ExitSecretLevel ();
 else
@@ -1631,18 +1627,9 @@ void DiedInMineMessage (void)
 {
 if (IsMultiGame)
 	return;
-paletteManager.DisableEffect ();
-//SetScreenMode (SCREEN_MENU);		//go into menu mode
-//CCanvas::SetCurrent (NULL);
-//int funcMode = gameStates.app.nFunctionMode;
-//SetFunctionMode (FMODE_MENU);
-//gameStates.app.bGameRunning = 0;
-//gameStates.app.bGameRunning = 1;
-//SetFunctionMode (funcMode);
 gameStates.app.bGameRunning = 0;
+SetScreenMode (SCREEN_MENU);		//go into menu mode
 backgroundManager.SetShadow (false);
-gameStates.render.bRenderIndirect = -1;
-ogl.ChooseDrawBuffer ();
 MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, TXT_DIED_IN_MINE);
 backgroundManager.SetShadow (true);
 gameStates.app.bGameRunning = 1;
@@ -1654,25 +1641,19 @@ void ReturningToLevelMessage (void)
 {
 	char	msg [128];
 
-	int old_fmode;
-
 if (IsMultiGame)
 	return;
 StopTime ();
-paletteManager.DisableEffect ();
-gameStates.render.nFlashScale = 0;
-gameStates.render.bRenderIndirect = -1;
-ogl.ChooseDrawBuffer ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
-old_fmode = gameStates.app.nFunctionMode;
+int nFunctionMode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 if (missionManager.nEntryLevel < 0)
 	sprintf (msg, TXT_SECRET_LEVEL_RETURN);
 else
 	sprintf (msg, TXT_RETURN_LVL, missionManager.nEntryLevel);
 MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
-SetFunctionMode (old_fmode);
+SetFunctionMode (nFunctionMode);
 StartTime (0);
 }
 
@@ -1694,6 +1675,7 @@ CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", missionManager.nEntryLevel + 1);
+backgroundManager.SetShadow (false);
 MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 }
