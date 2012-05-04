@@ -1643,7 +1643,7 @@ void ReturningToLevelMessage (void)
 
 if (IsMultiGame)
 	return;
-StopTime ();
+//StopTime ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
 int nFunctionMode = gameStates.app.nFunctionMode;
@@ -1654,7 +1654,7 @@ else
 	sprintf (msg, TXT_RETURN_LVL, missionManager.nEntryLevel);
 MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
 SetFunctionMode (nFunctionMode);
-StartTime (0);
+//StartTime (0);
 }
 
 //------------------------------------------------------------------------------
@@ -1663,21 +1663,20 @@ void AdvancingToLevelMessage (void)
 {
 	char	msg [128];
 
-	int old_fmode;
-
 	//	Only supposed to come here from a secret level.
 Assert (missionManager.nCurrentLevel < 0);
 if (IsMultiGame)
 	return;
-paletteManager.DisableEffect ();
+StopTime ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
-old_fmode = gameStates.app.nFunctionMode;
+int nFunctionMode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", missionManager.nEntryLevel + 1);
 backgroundManager.SetShadow (false);
 MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
-SetFunctionMode (old_fmode);
+SetFunctionMode (nFunctionMode);
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------------
