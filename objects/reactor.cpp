@@ -116,7 +116,7 @@ void DoCountdownFrame (void)
 
 	static fix cdtFrameTime;
 
-if (!gameData.reactor.bDestroyed) {
+if (!gameData.reactor.bDestroyed || gameStates.app.bPlayerIsDead) {
 	cdtFrameTime = 0;
 	return;
 	}

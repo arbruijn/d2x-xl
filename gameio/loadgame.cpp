@@ -1383,9 +1383,13 @@ else { // File doesn't exist, so can't return to base level.  Advance to next on
 	else {
 		if (!gameStates.app.bD1Mission)
 			AdvancingToLevelMessage ();
-		DoEndLevelScoreGlitz (0);
-		if (!StartNewLevel (missionManager.nEntryLevel + 1, false))
-			longjmp (gameExitPoint, 0);
+		if (gameStates.app.bPlayerIsDead)
+			DoPlayerDead ();
+		else {
+			DoEndLevelScoreGlitz (0);
+			if (!StartNewLevel (missionManager.nEntryLevel + 1, false))
+				longjmp (gameExitPoint, 0);
+			}
 		}
 	}
 }
@@ -1643,7 +1647,7 @@ void ReturningToLevelMessage (void)
 
 if (IsMultiGame)
 	return;
-//StopTime ();
+StopTime ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
 int nFunctionMode = gameStates.app.nFunctionMode;
@@ -1654,7 +1658,7 @@ else
 	sprintf (msg, TXT_RETURN_LVL, missionManager.nEntryLevel);
 MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
 SetFunctionMode (nFunctionMode);
-//StartTime (0);
+StartTime (0);
 }
 
 //------------------------------------------------------------------------------
@@ -2400,7 +2404,10 @@ FORALL_ROBOT_OBJS (objP, i)
 
 void DoPlayerDead (void)
 {
-	int bSecret = (missionManager.nCurrentLevel < 0);
+if (gameStates.menus.nInMenu)
+	return;
+
+int bSecret = (missionManager.nCurrentLevel < 0);
 
 gameStates.app.bGameRunning = 0;
 StopTriggeredSounds ();
