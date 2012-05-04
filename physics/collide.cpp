@@ -472,9 +472,9 @@ else {
 		return 0;
 #endif
 	vForce *= impulse;
-	otherP->Bump (thisP, vForce, 0);
+	otherP->Bump (thisP, vForce, bDamage);
 	vForce.Neg ();
-	thisP->Bump (otherP, vForce, 0);
+	thisP->Bump (otherP, vForce, bDamage);
 	}
 
 return 1;
