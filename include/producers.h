@@ -21,17 +21,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 CObject *CreateMorphRobot (CSegment *segp, CFixVector *object_pos, ubyte object_id);
 
 int GatherFlagGoals (void);
-// Called to repair an CObject
-//--repair-- int refuel_do_repair_effect( CObject * obj, int firstTime, int repair_seg );
-
-//--repair-- //do the repair center for this frame
-//--repair-- void do_repair_sequence(CObject *obj);
-//--repair--
-//--repair-- //see if we should start the repair center
-//--repair-- void check_start_repair_center(CObject *obj);
-//--repair--
-//--repair-- //if repairing, cut it short
-//--repair-- abort_repair_center();
 
 // An array of pointers to segments with fuel centers.
 typedef struct tProducerInfo {
@@ -78,20 +67,11 @@ void InitAllObjectProducers (void);
 void OperateRobotMaker (CObject *objP, short nSegment);
 void SetEquipGenStates (void);
 
-#if 0
-#define OldReadObjectProducerInfo(mi, fp) CFRead(mi, sizeof(old_tObjProducerInfo), 1, fp)
-#define ReadObjectProducerInfo(mi, fp) CFRead(mi, sizeof(tObjectProducerInfo), 1, fp)
-#else
-/*
- * reads an old_tObjProducerInfo structure from a CFILE
- */
 void OldReadObjectProducerInfo(old_tObjProducerInfo *mi, CFile& cf);
-
-/*
- * reads a tObjectProducerInfo structure from a CFILE
- */
 void ReadObjectProducerInfo (tObjectProducerInfo *ps, CFile& cf, bool bOldFormat);
-#endif
+
+void ResetGenerators (void);
+void UpdateAllProducers (void);
 
 #define PRODUCER_IDX(_producerP)	((short) ((_producerP) - gameData.producers.producers.Buffer ()))
 #define OBJECT_PRODUCER_IDX(_producerP)	((short) ((_objProducerP) - gameData.producers.producers.Buffer ()))
