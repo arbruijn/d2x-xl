@@ -54,13 +54,13 @@ void CSegment::ReadFunction (CFile& cf, ubyte flags)
 {
 if (flags & (1 << SEGMENT_SIDE_COUNT)) {
 	m_function = cf.ReadByte ();
-	m_nMatCen = cf.ReadByte ();
+	m_nObjProducer = cf.ReadByte ();
 	m_value = char (cf.ReadByte ());
 	cf.ReadByte (); // skip
 	}
 else {
 	m_function = 0;
-	m_nMatCen = -1;
+	m_nObjProducer = -1;
 	m_value = 0;
 	}
 }
@@ -89,9 +89,9 @@ for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
 
 static ubyte segFuncFromType [] = {
 	SEGMENT_FUNC_NONE,
-	SEGMENT_FUNC_FUELCEN,
-	SEGMENT_FUNC_REPAIRCEN,
-	SEGMENT_FUNC_CONTROLCEN,
+	SEGMENT_FUNC_PRODUCERTER,
+	SEGMENT_FUNC_REPAIRCENTER,
+	SEGMENT_FUNC_REACTOR,
 	SEGMENT_FUNC_ROBOTMAKER,
 	SEGMENT_FUNC_GOAL_BLUE,
 	SEGMENT_FUNC_GOAL_RED,
@@ -141,11 +141,11 @@ void CSegment::ReadExtras (CFile& cf)
 {
 m_function = cf.ReadByte ();
 if (gameData.segs.nLevelVersion < 24) {
-	m_nMatCen = cf.ReadByte ();
+	m_nObjProducer = cf.ReadByte ();
 	m_value = cf.ReadByte ();
 	}
 else {
-	m_nMatCen = cf.ReadShort ();
+	m_nObjProducer = cf.ReadShort ();
 	m_value = cf.ReadShort ();
 	}
 m_flags = cf.ReadByte ();

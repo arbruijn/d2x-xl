@@ -1377,16 +1377,16 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 	if (segP->m_children [nSide] == -1)
 		color = m_colors.walls.nNormal;
 	switch (segP->m_function) {
-		case SEGMENT_FUNC_FUELCEN:
+		case SEGMENT_FUNC_PRODUCERTER:
 			color = GOLD_RGBA;
 			break;
 		case SEGMENT_FUNC_SPEEDBOOST:
 			color = ORANGE_RGBA;
 			break;
-		case SEGMENT_FUNC_REPAIRCEN:
+		case SEGMENT_FUNC_REPAIRCENTER:
 			color = RGBA_PAL2 (0, 15, 31);
 			break;
-		case SEGMENT_FUNC_CONTROLCEN:
+		case SEGMENT_FUNC_REACTOR:
 			if (gameData.reactor.bPresent)
 				color = RGBA_PAL2 (29, 0, 0);
 			break;

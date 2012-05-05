@@ -624,7 +624,7 @@ typedef struct tObjectInfo {
 	fix     					xShield;      // Starts at maximum, when <0, CObject dies..
 	CFixVector 				vLastPos;		// where CObject was last frame
 	tObjContainerInfo		contains;
-	sbyte   					nCreator;		// Materialization center that created this CObject, high bit set if matcen-created
+	sbyte   					nCreator;		// Materialization center that created this CObject, high bit set if producer-created
 	fix     					xLifeLeft;     // how long until goes away, or 7fff if immortal
 } __pack__ tObjectInfo;
 
@@ -1016,8 +1016,8 @@ class CObject : public CObjectInfo {
 
 		int CollideActorAndClutter (CObject* clutter, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 
-		int CollideRobotAndMatCen (void);
-		int CollidePlayerAndMatCen (void);
+		int CollideRobotAndObjProducer (void);
+		int CollidePlayerAndObjProducer (void);
 
 		inline void RequestEffects (ubyte nEffects);
 		CObject* CreateExplBlast (void);

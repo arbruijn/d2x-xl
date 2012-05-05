@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "loadgamedata.h"
 #include "menu.h"
 #include "trigger.h"
-#include "fuelcen.h"
+#include "producers.h"
 #include "reactor.h"
 #include "powerup.h"
 #include "weapon.h"
@@ -240,10 +240,10 @@ gameFileInfo.control.count		=	0;
 gameFileInfo.control.size		=	sizeof (CTriggerTargets);
 gameFileInfo.botGen.offset		=	-1;
 gameFileInfo.botGen.count		=	0;
-gameFileInfo.botGen.size		=	sizeof (tMatCenInfo);
+gameFileInfo.botGen.size		=	sizeof (tObjectProducerInfo);
 gameFileInfo.equipGen.offset	=	-1;
 gameFileInfo.equipGen.count	=	0;
-gameFileInfo.equipGen.size		=	sizeof (tMatCenInfo);
+gameFileInfo.equipGen.size		=	sizeof (tObjectProducerInfo);
 gameFileInfo.lightDeltaIndices.offset = -1;
 gameFileInfo.lightDeltaIndices.count =	0;
 gameFileInfo.lightDeltaIndices.size =	sizeof (CLightDeltaIndex);
@@ -635,39 +635,26 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int AssignMatCen (tMatCenInfo& matCen, int nFunction, sbyte bFlag)
+static int AssignProducer (tObjectProducerInfo& objProducer, int nFunction, sbyte bFlag)
 {
-CSegment* segP;
-#if 1
-if (matCen.nFuelCen < 0) 
+if (objProducer.nProducer < 0) 
 	return -1;
 
-int nFuelCen = gameData.matCens.botGens [matCen.nFuelCen].nFuelCen;
-tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [gameData.matCens.botGens [matCen.nFuelCen].nFuelCen];
-if (fuelCen.nSegment < 0)
+int nProducer = (nFunction == SEGMENT_FUNC_ROBOTMAKER)
+					? gameData.producers.robotMakers [objProducer.nProducer].nProducer
+					: gameData.producers.equipmentMakers [objProducer.nProducer].nProducer;
+tProducerInfo& producer = gameData.producers.producers [nProducer];
+if (producer.nSegment < 0)
 	return -1;
-segP = &SEGMENTS [fuelCen.nSegment];
-if (segP->m_value != nFuelCen)
+CSegment* segP = &SEGMENTS [producer.nSegment];
+if (segP->m_value != nProducer)
 	return -1;
-	if (segP->m_function != nFunction) // this matcen has an invalid segment
-		return -1;
-if (!(fuelCen.bFlag & bFlag)) // this segment already has a matcen assigned
+if (segP->m_function != nFunction) // this object producer has an invalid segment
 	return -1;
-fuelCen.bFlag = 0;
-
-#else
-if (matCen.nSegment < 0)
-	return false;
-segP = &SEGMENTS [matCen.nSegment];
-if (segP->m_function != nFunction) // this matcen has an invalid segment
-	return false;
-tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [segP->m_value];
-if (!(fuelCen.bFlag & 1)) // this segment already has a matcen assigned
-	return false;
-fuelCen.bFlag = 0;
-matCen.nFuelCen = segP->m_value;
-#endif
-return segP->m_nMatCen;
+if (!(producer.bFlag & bFlag)) // this segment already has an object producer assigned
+	return -1;
+producer.bFlag = 0;
+return segP->m_nObjProducer;
 }
 
 // -----------------------------------------------------------------------------
@@ -679,19 +666,19 @@ if (gameFileInfo.botGen.offset > -1) {
 		Error ("Error seeking to robot generator data\n(file damaged or invalid)");
 		return -1;
 		}
-	tMatCenInfo m;
+	tObjectProducerInfo m;
 	m.objFlags [2] = gameData.objs.nVertigoBotFlags;
 	for (int h, i = 0; i < gameFileInfo.botGen.count; ) {
-		MatCenInfoRead (&m, cf, gameTopFileInfo.fileinfoVersion < 27);
-		if (0 <= (h = AssignMatCen (m, SEGMENT_FUNC_ROBOTMAKER, 1))) {
-			gameData.matCens.botGens [h] = m;
+		ReadObjectProducerInfo (&m, cf, gameTopFileInfo.fileinfoVersion < 27);
+		if (0 <= (h = AssignProducer (m, SEGMENT_FUNC_ROBOTMAKER, 1))) {
+			gameData.producers.robotMakers [h] = m;
 			++i;
 			}
 		else {
 #if DBG
 			PrintLog (0, "Invalid robot generator data found\n");
 #endif
-			--gameData.matCens.nBotCenters;
+			--gameData.producers.nBotCenters;
 			--gameFileInfo.botGen.count;
 			}
 		}
@@ -709,19 +696,19 @@ if (gameFileInfo.equipGen.offset > -1) {
 		Error ("Error seeking to equipment generator data\n(file damaged or invalid)");
 		return -1;
 		}
-	tMatCenInfo m;
+	tObjectProducerInfo m;
 	m.objFlags [2] = 0;
 	for (int h, i = 0; i < gameFileInfo.equipGen.count;) {
-		MatCenInfoRead (&m, cf, false);
-		if (0 <= (h = AssignMatCen (m, SEGMENT_FUNC_EQUIPMAKER, 2))) {
-			gameData.matCens.equipGens [h] = m;
+		ReadObjectProducerInfo (&m, cf, false);
+		if (0 <= (h = AssignProducer (m, SEGMENT_FUNC_EQUIPMAKER, 2))) {
+			gameData.producers.equipmentMakers [h] = m;
 			++i;
 			}
 		else {
 #if DBG
 			PrintLog (0, "Invalid equipment generator data found\n");
 #endif
-			--gameData.matCens.nEquipCenters;
+			--gameData.producers.nEquipCenters;
 			--gameFileInfo.equipGen.count;
 			}
 		}
@@ -731,14 +718,14 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-void CleanupMatCenInfo (void)
+void CleanupProducerInfo (void)
 {
 CSegment* segP = SEGMENTS.Buffer ();
 for (int i = gameData.segs.nSegments; i; i--, segP++) {
 	if (segP->m_function == SEGMENT_FUNC_ROBOTMAKER) {
-		tFuelCenInfo& fuelCen = gameData.matCens.fuelCenters [segP->m_value];
-		if (fuelCen.bFlag) {
-			fuelCen.bFlag = 0;
+		tProducerInfo& producer = gameData.producers.producers [segP->m_value];
+		if (producer.bFlag) {
+			producer.bFlag = 0;
 			segP->m_function = SEGMENT_FUNC_NONE;
 			}
 		}
@@ -936,7 +923,7 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
 			nWall = SEGMENTS [nSegment].WallNum (nSide);
 			//check to see that if a CTrigger requires a CWall that it has one,
 			//and if it requires a botGen that it has one
-			if (trigP->m_info.nType == TT_MATCEN) {
+			if (trigP->m_info.nType == TT_OBJECT_PRODUCER) {
 				if ((SEGMENTS [nSegment].m_function != SEGMENT_FUNC_ROBOTMAKER) && (SEGMENTS [nSegment].m_function != SEGMENT_FUNC_EQUIPMAKER)) {
 					if (j < --h) {
 						trigP->m_segments [j] = trigP->m_segments [h];
@@ -969,7 +956,7 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
 
 void CreateGenerators (void)
 {
-gameData.matCens.nRepairCenters = 0;
+gameData.producers.nRepairCenters = 0;
 for (int i = 0; i < gameData.segs.nSegments; i++) {
 	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_function);
 	}
@@ -1013,7 +1000,7 @@ if (ReadBotGenInfo (cf))
 	return -1;
 if (ReadEquipGenInfo (cf))
 	return -1;
-CleanupMatCenInfo ();
+CleanupProducerInfo ();
 if (ReadLightDeltaIndexInfo (cf))
 	return -1;
 if (ReadLightDeltaInfo (cf))
@@ -1029,7 +1016,7 @@ gameData.trigs.m_nTriggers = gameFileInfo.triggers.count;
 gameData.walls.nWalls = gameFileInfo.walls.count;
 CheckAndFixWalls ();
 CheckAndFixTriggers ();
-gameData.matCens.nBotCenters = gameFileInfo.botGen.count;
+gameData.producers.nBotCenters = gameFileInfo.botGen.count;
 FixObjectSegs ();
 if ((gameTopFileInfo.fileinfoVersion < GAME_VERSION) && 
 	 ((gameTopFileInfo.fileinfoVersion != 25) || (GAME_VERSION != 26)))

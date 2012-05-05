@@ -1878,7 +1878,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollidePlayerAndMatCen (void)
+int CObject::CollidePlayerAndObjProducer (void)
 {
 	CFixVector vExitDir;
 
@@ -1900,13 +1900,13 @@ for (short nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
 		CFixVector::Normalize (vExitDir);
 		}
 Bump (vExitDir, I2X (64));
-ApplyDamageToPlayer (this, I2X (4));	//	Changed, MK, 2/19/96, make killer the player, so if you die in matcen, will say you killed yourself
+ApplyDamageToPlayer (this, I2X (4));	
 return 1;
 }
 
 //	-----------------------------------------------------------------------------
 
-int CObject::CollideRobotAndMatCen (void)
+int CObject::CollideRobotAndObjProducer (void)
 {
 	CFixVector	vExitDir;
 	CSegment*	segP = SEGMENTS + info.nSegment;

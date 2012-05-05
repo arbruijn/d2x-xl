@@ -22,7 +22,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 #define	MAX_PATH_LENGTH						30			//	Maximum length of path in ai path following.
 #define	MAX_DEPTH_TO_SEARCH_FOR_PLAYER	10
-#define	BOSS_GATE_MATCEN_NUM					-1
+#define	BOSS_GATE_PRODUCER_NUM					-1
 #define	BOSS_ECLIP_NUM							53
 
 #define	ROBOT_BRAIN	7

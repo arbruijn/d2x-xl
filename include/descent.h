@@ -172,7 +172,7 @@ class CThreadInfo {
 class CLegacyOptions {
 	public:
 		int bInput;
-		int bFuelCens;
+		int bProducers;
 		int bMouse;
 		int bHomers;
 		int bRender;
@@ -3183,17 +3183,17 @@ class CMenuData {
 #define MAX_ROBOT_CENTERS   100
 #define MAX_EQUIP_CENTERS   100
 
-#include "fuelcen.h"
+#include "producers.h"
 
-class CMatCenData {
+class CProducerData {
 	public:
 		fix				xFuelRefillSpeed;
 		fix				xFuelGiveAmount;
 		fix				xFuelMaxAmount;
-		CStaticArray< tFuelCenInfo, MAX_FUEL_CENTERS >	fuelCenters; //[MAX_FUEL_CENTERS];
-		CStaticArray< tMatCenInfo, MAX_ROBOT_CENTERS >	botGens; //[MAX_ROBOT_CENTERS];
-		CStaticArray< tMatCenInfo, MAX_EQUIP_CENTERS >	equipGens; //[MAX_EQUIP_CENTERS];
-		int				nFuelCenters;
+		CStaticArray< tProducerInfo, MAX_FUEL_CENTERS >	producers; //[MAX_FUEL_CENTERS];
+		CStaticArray< tObjectProducerInfo, MAX_ROBOT_CENTERS >	robotMakers; //[MAX_ROBOT_CENTERS];
+		CStaticArray< tObjectProducerInfo, MAX_EQUIP_CENTERS >	equipmentMakers; //[MAX_EQUIP_CENTERS];
+		int				nProducers;
 		int				nBotCenters;
 		int				nEquipCenters;
 		int				nRepairCenters;
@@ -3202,7 +3202,7 @@ class CMatCenData {
 		CSegment*		playerSegP;
 
 	public:
-		CMatCenData ();
+		CProducerData ();
 };
 
 //------------------------------------------------------------------------------
@@ -3531,7 +3531,7 @@ class CGameData {
 		CAIData				ai;
 		CEndLevelData		endLevel;
 		CMenuData			menu;
-		CMatCenData			matCens;
+		CProducerData		producers;
 		CDemoData			demo;
 		CEscortData			escort;
 		CThiefData			thief;

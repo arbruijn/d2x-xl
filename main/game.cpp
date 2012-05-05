@@ -1105,7 +1105,7 @@ else { // Note the link to above!
 	PowerupGrabCheatAll ();
 	if (gameStates.app.bEndLevelSequence)	//might have been started during move
 		return 1;
-	FuelcenUpdateAll ();
+	UpdateAllProducers ();
 	DoAIFrameAll ();
 	if (AllowedToFireGun ()) 
 		FireGun ();				// Fire Laser!

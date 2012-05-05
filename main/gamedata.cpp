@@ -1113,13 +1113,13 @@ player = &only;
 
 //------------------------------------------------------------------------------
 
-CMatCenData::CMatCenData ()
+CProducerData::CProducerData ()
 {
 xFuelRefillSpeed = I2X (1);
 xFuelGiveAmount = I2X (25);
 xFuelMaxAmount = I2X (100);
 xEnergyToCreateOneRobot = I2X (1);
-nFuelCenters = 0;
+nProducers = 0;
 nBotCenters = 0;
 nEquipCenters = 0;
 nRepairCenters = 0;

@@ -441,7 +441,7 @@ bSubTitles = 1;
 void CLegacyOptions::Init (int i)
 {
 bInput = 0;
-bFuelCens = 0;
+bProducers = 0;
 bMouse = 0;
 bHomers = 0;
 bRender = 0;

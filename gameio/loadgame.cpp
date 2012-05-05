@@ -58,7 +58,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segmath.h"
 #include "wall.h"
 #include "ai.h"
-#include "fuelcen.h"
+#include "producers.h"
 #include "trigger.h"
 #include "audio.h"
 #include "loadobjects.h"
@@ -1711,7 +1711,7 @@ InitPlayerPosition (bRandom);
 gameData.objs.consoleP->info.controlType = CT_FLYING;
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;
 MultiSendShield ();
-DisableMatCens ();
+DisableObjectProducers ();
 PrintLog (0, "clearing transient objects\n");
 ClearTransientObjects (0);		//0 means leave proximity bombs
 // gameData.objs.consoleP->CreateAppearanceEffect ();
@@ -1861,7 +1861,7 @@ audio.SetupRouter ();
 InitRobotsForLevel ();
 InitShakerDetonates ();
 MorphInit ();
-InitAllMatCens ();
+InitAllObjectProducers ();
 InitThiefForLevel ();
 InitStuckObjects ();
 GameFlushInputs ();		// clear out the keyboard
@@ -1911,7 +1911,7 @@ InitPlayerPosition (0);
 VerifyConsoleObject ();
 gameData.objs.consoleP->info.controlType = CT_FLYING;
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;
-// -- WHY? -- DisableMatCens ();
+// -- WHY? -- DisableObjectProducers ();
 ClearTransientObjects (0);		//0 means leave proximity bombs
 // gameData.objs.consoleP->CreateAppearanceEffect ();
 gameStates.render.bDoAppearanceEffect = 1;
@@ -1973,7 +1973,7 @@ if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBA
 	InitAIObjects ();
 	InitShakerDetonates ();
 	MorphInit ();
-	InitAllMatCens ();
+	InitAllObjectProducers ();
 	ResetSpecialEffects ();
 	StartSecretLevel ();
 	if (gameStates.app.bD1Mission)

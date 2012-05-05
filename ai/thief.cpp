@@ -70,7 +70,7 @@ while (nSegment == -1) {
 	nSegment = PickConnectedSegment (OBJECTS + LOCALPLAYER.nObject, nDepth, &nDropDepth);
 	if (nDropDepth < THIEF_DEPTH / 2)
 		return (RandShort () * gameData.segs.nLastSegment) >> 15;
-	if ((nSegment >= 0) && (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_CONTROLCEN))
+	if ((nSegment >= 0) && (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_REACTOR))
 		nSegment = -1;
 	nDepth--;
 	}

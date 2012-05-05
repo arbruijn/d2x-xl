@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PLAYER_AWARENESS_INITIAL_TIME   (I2X (3))
 #define MAX_PATH_LENGTH                 30          // Maximum length of path in ai path following.
 #define MAX_DEPTH_TO_SEARCH_FOR_PLAYER  10
-#define BOSS_GATE_MATCEN_NUM            -1
+#define BOSS_GATE_PRODUCER_NUM            -1
 #define BOSS_ECLIP_NUM                  53
 
 #define ROBOT_BRAIN 7
@@ -170,7 +170,7 @@ typedef struct tAwarenessEvent {
 #define MAX_ESCORT_DISTANCE     I2X (80)
 #define MIN_ESCORT_DISTANCE     I2X (40)
 
-#define FUELCEN_CHECK           1000
+#define PRODUCER_CHECK           1000
 
 extern fix Escort_last_path_created;
 extern int Escort_goalObject, Escort_special_goal, Escort_goal_index;

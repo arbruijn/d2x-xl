@@ -758,7 +758,7 @@ static pAIHandler aisHandler1 [] = {
 
 int AIBrainHandler (CObject *objP, tAIStateInfo *siP)
 {
-// Robots function nicely if behavior is gameData.matCens.fuelCenters.  This
+// Robots function nicely if behavior is gameData.producers.producers.  This
 // means they won't move until they can see the player, at
 // which time they will start wandering about opening doors.
 if (objP->info.nId != ROBOT_BRAIN)
@@ -1009,11 +1009,11 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AIMatCenHandler (CObject *objP, tAIStateInfo *siP)
+int AIProducerHandler (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->bMultiGame || (SEGMENTS [objP->info.nSegment].m_function != SEGMENT_FUNC_ROBOTMAKER))
 	return 0;
-if (!gameData.matCens.fuelCenters [SEGMENTS [objP->info.nSegment].m_value].bEnabled)
+if (!gameData.producers.producers [SEGMENTS [objP->info.nSegment].m_value].bEnabled)
 	return 0;
 AIFollowPath (objP, 1, 1, NULL);    // 1 = player is visible, which might be a lie, but it works.
 return 1;
@@ -1396,7 +1396,7 @@ if (AIApproachHandler (objP, &si))
 if (AIRetryHandler (objP, &si))
 	return;
 // If in materialization center, exit
-if (AIMatCenHandler (objP, &si))
+if (AIProducerHandler (objP, &si))
 	return;
 if (AIAwarenessHandler (objP, &si))
 	return;

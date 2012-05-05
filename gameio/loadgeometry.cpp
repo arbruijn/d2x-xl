@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 
 #include "cfile.h"
-#include "fuelcen.h"
+#include "producers.h"
 
 #include "hash.h"
 #include "key.h"
@@ -79,7 +79,7 @@ struct me mine_editor;
 typedef struct v16_segment {
 	short   objects;            // pointer to OBJECTS in this CSegment
 	ubyte   special;            // what nType of center this is
-	sbyte   nMatCen;         // which center CSegment is associated with.
+	sbyte   nObjProducer;         // which center CSegment is associated with.
 	short   value;
 	fix     xAvgSegLight;       // average static light in CSegment
 	short   pad;                // make structure longword aligned
@@ -467,7 +467,7 @@ for (; nSegment < nLastSeg; nSegment++) {
 
 void LoadExtSegmentsCompiled (CFile& cf)
 {
-gameData.matCens.nRepairCenters = 0;
+gameData.producers.nRepairCenters = 0;
 for (int i = 0; i < gameData.segs.nSegments; i++) {
 	if (gameData.segs.nLevelVersion > 5)
 		SEGMENTS [i].ReadExtras (cf);
@@ -476,7 +476,7 @@ for (int i = 0; i < gameData.segs.nSegments; i++) {
 		nDbgSeg = nDbgSeg;
 #endif
 	}
-// can only process matcens after knowing all segment's type matcen information!
+// can only process producers after knowing all segment's type producer information!
 for (int i = 0; i < gameData.segs.nSegments; i++) {
 #if DBG
 	if (i == nDbgSeg)

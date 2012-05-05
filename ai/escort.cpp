@@ -515,10 +515,10 @@ int ExistsInMine (int nStartSeg, int objType, int objId, int special)
 	int	nObject;
 
 CreateBfsList (nStartSeg, bfsList, &length, LEVEL_SEGMENTS);
-if (objType == FUELCEN_CHECK) {
+if (objType == PRODUCER_CHECK) {
 	for (nSegIdx = 0; nSegIdx < length; nSegIdx++) {
 		nSegment = bfsList [nSegIdx];
-		if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_FUELCEN)
+		if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_PRODUCERTER)
 			return nSegment;
 		}
 	}
@@ -533,9 +533,9 @@ else {
 //	Couldn't find what we're looking for by looking at connectivity.
 //	See if it's in the mine.  It could be hidden behind a trigger or switch
 //	which the buddybot doesn't understand.
-if (objType == FUELCEN_CHECK) {
+if (objType == PRODUCER_CHECK) {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
-		if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_FUELCEN)
+		if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_PRODUCERTER)
 			return -2;
 	}
 else {
@@ -648,7 +648,7 @@ static tEscortGoal escortGoals [MAX_ESCORT_GOALS] = {
 	{-1, -1, -1},
 	{OBJ_POWERUP, POW_ENERGY, -1},
 	{-1, -1, -1},
-	{FUELCEN_CHECK, -1, -1},
+	{PRODUCER_CHECK, -1, -1},
 	{OBJ_POWERUP, POW_SHIELD_BOOST, -1},
 	{OBJ_POWERUP, -1, -1},
 	{OBJ_ROBOT, -1, -1},
@@ -714,7 +714,7 @@ else {
 				nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].info.nSegment;
 			break;
 		case ESCORT_GOAL_ENERGYCEN:
-			nGoalSeg = ExistsInMine (objP->info.nSegment, FUELCEN_CHECK, -1, -1);
+			nGoalSeg = ExistsInMine (objP->info.nSegment, PRODUCER_CHECK, -1, -1);
 			gameData.escort.nGoalIndex = nGoalSeg;
 			break;
 		case ESCORT_GOAL_SHIELD:

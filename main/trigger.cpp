@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int oppTrigTypes  [] = {
 	TT_CLOSE_DOOR,
 	TT_OPEN_DOOR,
-	TT_MATCEN,
+	TT_OBJECT_PRODUCER,
 	TT_EXIT,
 	TT_SECRET_EXIT,
 	TT_ILLUSION_ON,
@@ -205,7 +205,7 @@ return 1;
 
 void CTrigger::DoSpawnBots (CObject* objP)
 {
-OperateBotGen (objP, m_nLinks ? m_segments [0] : -1);
+OperateRobotMaker (objP, m_nLinks ? m_segments [0] : -1);
 }
 
 //------------------------------------------------------------------------------
@@ -611,12 +611,12 @@ if (!gameStates.app.bD1Mission && ((nPlayer < 0) || (nPlayer == N_LOCALPLAYER)))
 
 //------------------------------------------------------------------------------
 
-void CTrigger::DoMatCen (int bMessage)
+void CTrigger::DoObjectProducer (int bMessage)
 {
 	int i, h [3] = {0,0,0};
 
 for (i = 0; i < m_nLinks; i++)
-	h [StartMatCen (m_segments [i])]++;
+	h [StartObjectProducer (m_segments [i])]++;
 if (bMessage) {
 	if (h [1])
 		HUDInitMessage (TXT_EQUIPGENS_ON, (h [1] == 1) ? "" : "s");
@@ -1015,7 +1015,7 @@ tXlatTriggers xlatTriggers [] = {
 	{TRIGGER_SHIELD_DAMAGE, TT_SHIELD_DAMAGE},
 	{TRIGGER_ENERGY_DRAIN, TT_ENERGY_DRAIN},
 	{TRIGGER_EXIT, TT_EXIT},
-	{TRIGGER_MATCEN, TT_MATCEN},
+	{TRIGGER_OBJECT_PRODUCER, TT_OBJECT_PRODUCER},
 	{TRIGGER_ILLUSION_OFF, TT_ILLUSION_OFF},
 	{TRIGGER_ILLUSION_ON, TT_ILLUSION_ON},
 	{TRIGGER_SECRET_EXIT, TT_SECRET_EXIT},
@@ -1204,9 +1204,9 @@ switch (m_info.nType) {
 		PrintMessage (nPlayer, bShot, "Creating Illusion!");
 		break;
 
-	case TT_MATCEN:
+	case TT_OBJECT_PRODUCER:
 		if (!IsMultiGame || gameData.app.GameMode (GM_MULTI_ROBOTS))
-			DoMatCen (nPlayer == N_LOCALPLAYER);
+			DoObjectProducer (nPlayer == N_LOCALPLAYER);
 		break;
 
 	case TT_ILLUSION_ON:
@@ -1685,7 +1685,7 @@ return 0;
 		TT_EXIT,
 		-1,
 		-1,
-		TT_MATCEN,
+		TT_OBJECT_PRODUCER,
 		TT_ILLUSION_OFF,
 		TT_ILLUSION_ON,
 		TT_SECRET_EXIT

@@ -32,7 +32,7 @@
 #include "createmesh.h"
 
 #include "cfile.h"
-#include "fuelcen.h"
+#include "producers.h"
 
 #include "hash.h"
 #include "key.h"

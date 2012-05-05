@@ -761,22 +761,22 @@ if (rval && (nKiller == LOCALPLAYER.nObject))
 void MultiDoCreateRobot (char *buf)
 {
 
-	int		nFuelCen = buf [2];
+	int		nProducer = buf [2];
 	int		nPlayer = buf [1];
 	short		nObject;
 	ubyte		nType = buf [5];
 
-	tFuelCenInfo*	robotGenP;
+	tProducerInfo*	robotGenP;
 	CFixVector		vObjPos, direction;
 	CObject*			objP;
 
 nObject = GET_INTEL_SHORT (buf + 3);
-if ((nPlayer < 0) || (nObject < 0) || (nFuelCen < 0) || 
-	 (nFuelCen >= gameData.matCens.nFuelCenters) || (nPlayer >= gameData.multiplayer.nPlayers)) {
+if ((nPlayer < 0) || (nObject < 0) || (nProducer < 0) || 
+	 (nProducer >= gameData.producers.nProducers) || (nPlayer >= gameData.multiplayer.nPlayers)) {
 	Int3 (); // Bogus data
 	return;
 	}
-robotGenP = gameData.matCens.fuelCenters + nFuelCen;
+robotGenP = gameData.producers.producers + nProducer;
 // Play effect and sound
 vObjPos = SEGMENTS [robotGenP->nSegment].Center ();
 objP = CreateExplosion ((short) robotGenP->nSegment, vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
@@ -786,11 +786,11 @@ if (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].nSound > -1)
 	audio.CreateSegmentSound (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].nSound, (short) robotGenP->nSegment, 0, vObjPos, 0, I2X (1));
 // Set robot center flags, in case we become the master for the next one
 robotGenP->bFlag = 0;
-robotGenP->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
+robotGenP->xCapacity -= gameData.producers.xEnergyToCreateOneRobot;
 robotGenP->xTimer = 0;
 if (! (objP = CreateMorphRobot (SEGMENTS + robotGenP->nSegment, &vObjPos, nType)))
 	return; // Cannot create CObject!
-objP->info.nCreator = ((short) (robotGenP - gameData.matCens.fuelCenters.Buffer ())) | 0x80;
+objP->info.nCreator = ((short) (robotGenP - gameData.producers.producers.Buffer ())) | 0x80;
 //	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENTS [robotGenP->nSegment]);
 direction = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
 objP->info.position.mOrient = CFixMatrix::CreateFU(direction, objP->info.position.mOrient.m.dir.u);

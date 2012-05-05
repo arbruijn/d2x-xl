@@ -47,7 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "reactor.h"
 #include "cockpit.h"
 #include "powerup.h"
-#include "fuelcen.h"
+#include "producers.h"
 #include "mission.h"
 #include "menu.h"
 #include "menu.h"
@@ -269,11 +269,11 @@ void CSegment::LoadBotGenTextures (void)
 if (m_function != SEGMENT_FUNC_ROBOTMAKER)
 	return;
 LoadVClipTextures (&gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT], 0);
-if (!gameData.matCens.botGens [m_nMatCen].objFlags)
+if (!gameData.producers.robotMakers [m_nObjProducer].objFlags)
 	return;
 for (i = 0; i < 2; i++, robotIndex += 32) {
 	robotIndex = i * 32;
-	for (flags = gameData.matCens.botGens [m_nMatCen].objFlags [i]; flags; flags >>= 1, robotIndex++)
+	for (flags = gameData.producers.robotMakers [m_nObjProducer].objFlags [i]; flags; flags >>= 1, robotIndex++)
 		if (flags & 1)
 			LoadRobotTextures (robotIndex);
 	}

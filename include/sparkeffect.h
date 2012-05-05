@@ -67,13 +67,13 @@ class CSparkManager {
 		inline bool HaveSparks (void) { return m_nSegments > 0; }
 
 	private:
-		inline int Type (short nMatCen);
-		inline CSparks& Sparks (short nMatCen);
+		inline int Type (short nObjProducer);
+		inline CSparks& Sparks (short nObjProducer);
 		int BuildSegList (void);
-		void SetupSparks (short nMatCen);
-		void UpdateSparks (short nMatCen);
-		void RenderSparks (short nMatCen);
-		void DestroySparks (short nMatCen);
+		void SetupSparks (short nObjProducer);
+		void UpdateSparks (short nObjProducer);
+		void RenderSparks (short nObjProducer);
+		void DestroySparks (short nObjProducer);
 	};
 
 extern CSparkManager sparkManager;

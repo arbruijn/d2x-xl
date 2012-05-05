@@ -9,10 +9,10 @@
 
 //	------------------------------------------------------------------------------------------------------
 
-int FindFuelCen (int nSegment)
+int FindProducer (int nSegment)
 {
-for (int i = 0; i < gameData.matCens.nFuelCenters; i++)
-	if (gameData.matCens.fuelCenters [i].nSegment == nSegment)
+for (int i = 0; i < gameData.producers.nProducers; i++)
+	if (gameData.producers.producers [i].nSegment == nSegment)
 		return i;
 return -1;
 }
@@ -45,7 +45,7 @@ void ConquerRoom (int newOwner, int oldOwner, int roomId)
 	int				f, h, i, j, jj, k, kk, nObject;
 	CSegment*		segP;
 	CObject*			objP;
-	tFuelCenInfo*	fuelP;
+	tProducerInfo*	fuelP;
 	short				virusGens [MAX_FUEL_CENTERS];
 
 // this loop with
@@ -68,8 +68,8 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer ();
 		segP->ChangeTexture (oldOwner);
 		if (segP->m_function == SEGMENT_FUNC_VIRUSMAKER) {
 			--k;
-			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
-				 (gameData.matCens.origStationTypes [f] != SEGMENT_FUNC_NONE))
+			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindProducer (i))) &&
+				 (gameData.producers.origStationTypes [f] != SEGMENT_FUNC_NONE))
 				virusGens [--kk] = f;
 			for (nObject = segP->m_objects; nObject >= 0; nObject = objP->info.nNextInSeg) {
 				objP = OBJECTS + nObject;
@@ -81,8 +81,8 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer ();
 	else {
 		if ((segP->m_owner == newOwner) && (segP->m_function == SEGMENT_FUNC_VIRUSMAKER)) {
 			j++;
-			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
-				 (gameData.matCens.origStationTypes [f] != SEGMENT_FUNC_NONE))
+			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindProducer (i))) &&
+				 (gameData.producers.origStationTypes [f] != SEGMENT_FUNC_NONE))
 				virusGens [jj++] = f;
 			}
 		}
@@ -95,10 +95,10 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 		memcpy (virusGens + jj, virusGens + kk, (MAX_FUEL_CENTERS - kk) * sizeof (short));
 		jj += (MAX_FUEL_CENTERS - kk);
 		for (j = 0; j < jj; j++) {
-			fuelP = gameData.matCens.fuelCenters + virusGens [j];
+			fuelP = gameData.producers.producers + virusGens [j];
 			h = fuelP->nSegment;
-			SEGMENTS [h].m_function = gameData.matCens.origStationTypes [uint (fuelP - gameData.matCens.fuelCenters.Buffer ())];
-			SEGMENTS [h].CreateFuelCen (SEGMENTS [h].m_function);
+			SEGMENTS [h].m_function = gameData.producers.origStationTypes [uint (fuelP - gameData.producers.producers.Buffer ())];
+			SEGMENTS [h].CreateProducer (SEGMENTS [h].m_function);
 			SEGMENTS [h].ChangeTexture (newOwner);
 			}
 		}
@@ -112,19 +112,19 @@ for (i = 0, h = -1, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; 
 		switch (SEGMENTS [i].m_function) {
 			case SEGMENT_FUNC_VIRUSMAKER:
 				return;
-			case SEGMENT_FUNC_FUELCEN:
+			case SEGMENT_FUNC_PRODUCERTER:
 				if (h < 0)
 					h = i;
 				break;
-			case SEGMENT_FUNC_REPAIRCEN:
-				if ((h < 0) || (SEGMENTS [h].m_function == SEGMENT_FUNC_FUELCEN))
+			case SEGMENT_FUNC_REPAIRCENTER:
+				if ((h < 0) || (SEGMENTS [h].m_function == SEGMENT_FUNC_PRODUCERTER))
 					h = i;
 			}
 if (h < 0)
 	return;
 i = SEGMENTS [h].m_function;
 SEGMENTS [h].m_function = SEGMENT_FUNC_VIRUSMAKER;
-SEGMENTS [h].CreateBotGen (i);
+SEGMENTS [h].CreateRobotMaker (i);
 SEGMENTS [h].ChangeTexture (newOwner);
 }
 

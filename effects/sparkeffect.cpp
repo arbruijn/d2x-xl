@@ -171,44 +171,44 @@ if (m_bUpdate) {
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
-inline int CSparkManager::Type (short nMatCen)
+inline int CSparkManager::Type (short nObjProducer)
 {
-return SEGMENTS [m_segments [nMatCen]].m_function == SEGMENT_FUNC_FUELCEN;
+return SEGMENTS [m_segments [nObjProducer]].m_function == SEGMENT_FUNC_PRODUCERTER;
 }
 
 //-----------------------------------------------------------------------------
 
-inline CSparks& CSparkManager::Sparks (short nMatCen)
+inline CSparks& CSparkManager::Sparks (short nObjProducer)
 {
-return m_sparks [nMatCen];
+return m_sparks [nObjProducer];
 }
 
 //-----------------------------------------------------------------------------
 
-void CSparkManager::SetupSparks (short nMatCen)
+void CSparkManager::SetupSparks (short nObjProducer)
 {
-m_sparks [nMatCen].Setup (m_segments [nMatCen], Type (nMatCen));
+m_sparks [nObjProducer].Setup (m_segments [nObjProducer], Type (nObjProducer));
 }
 
 //-----------------------------------------------------------------------------
 
-void CSparkManager::UpdateSparks (short nMatCen)
+void CSparkManager::UpdateSparks (short nObjProducer)
 {
-m_sparks [nMatCen].Update ();
+m_sparks [nObjProducer].Update ();
 }
 
 //-----------------------------------------------------------------------------
 
-void CSparkManager::RenderSparks (short nMatCen)
+void CSparkManager::RenderSparks (short nObjProducer)
 {
-m_sparks [nMatCen].Render ();
+m_sparks [nObjProducer].Render ();
 }
 
 //-----------------------------------------------------------------------------
 
-void CSparkManager::DestroySparks (short nMatCen)
+void CSparkManager::DestroySparks (short nObjProducer)
 {
-m_sparks [nMatCen].Destroy ();
+m_sparks [nObjProducer].Destroy ();
 }
 
 //-----------------------------------------------------------------------------
@@ -220,7 +220,7 @@ int CSparkManager::BuildSegList (void)
 
 m_nSegments = 0;
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++)
-	if ((segP->m_function == SEGMENT_FUNC_FUELCEN) || (segP->m_function == SEGMENT_FUNC_REPAIRCEN))
+	if ((segP->m_function == SEGMENT_FUNC_PRODUCERTER) || (segP->m_function == SEGMENT_FUNC_REPAIRCENTER))
 		m_segments [m_nSegments++] = nSegment;
 return m_nSegments;
 }

@@ -34,7 +34,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "weapon.h"
 #include "physics.h"
 #include "collide.h"
-#include "fuelcen.h"
+#include "producers.h"
 #include "player.h"
 #include "wall.h"
 #include "vclip.h"
@@ -1401,7 +1401,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 	int			default_behavior;
 
 	FORALL_ROBOT_OBJS (objP, i) {
-		if (objP->info.nCreator == BOSS_GATE_MATCEN_NUM)
+		if (objP->info.nCreator == BOSS_GATE_PRODUCER_NUM)
 			count++;
 		}
 	if (count > 2 * gameStates.app.nDifficultyLevel + 3) {
@@ -1429,7 +1429,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 	objP->mType.physInfo.drag = botInfoP->drag;
 	objP->mType.physInfo.flags |= (PF_LEVELLING);
 	objP->SetShield (botInfoP->strength);
-	objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robotP as having been created by the boss.
+	objP->info.nCreator = BOSS_GATE_PRODUCER_NUM;	//	flag this robotP as having been created by the boss.
 	default_behavior = D1_AIB_NORMAL;
 	if (nObjId == 10)						//	This is a toaster guy!
 		default_behavior = D1_AIB_RUN_FROM;

@@ -272,11 +272,11 @@ CSegment* segP = &SEGMENTS [info.nSegment];
 vCenter = segP->Center ();
 //don't bump CPlayerData towards center of reactor CSegment
 CFixVector::NormalizedDir (vBump, vCenter, info.position.vPos);
-if (segP->m_function == SEGMENT_FUNC_CONTROLCEN)
+if (segP->m_function == SEGMENT_FUNC_REACTOR)
 	vBump.Neg ();
 info.position.vPos += vBump * (info.xSize / 5);
 //if moving away from seg, might move out of seg, so update
-if (segP->m_function == SEGMENT_FUNC_CONTROLCEN)
+if (segP->m_function == SEGMENT_FUNC_REACTOR)
 	UpdateObjectSeg (this);
 }
 

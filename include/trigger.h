@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define TT_OPEN_DOOR        0   // Open a door
 #define TT_CLOSE_DOOR       1   // Close a door
-#define TT_MATCEN           2   // Activate a matcen
+#define TT_OBJECT_PRODUCER  2   // Activate an object producer
 #define TT_EXIT             3   // End the level
 #define TT_SECRET_EXIT      4   // Go to secret level
 #define TT_ILLUSION_OFF     5   // Turn an illusion off
@@ -105,7 +105,7 @@ typedef struct tTriggerV30 {
 #define TRIGGER_EXIT               8    // End of level Trigger
 #define TRIGGER_ON                16    // Whether Trigger is active
 #define TRIGGER_ONE_SHOT          32    // If Trigger can only be triggered once
-#define TRIGGER_MATCEN            64    // Trigger for materialization centers
+#define TRIGGER_OBJECT_PRODUCER   64    // Trigger for materialization centers
 #define TRIGGER_ILLUSION_OFF     128    // Switch Illusion OFF CTrigger
 #define TRIGGER_SECRET_EXIT      256    // Exit to secret level
 #define TRIGGER_ILLUSION_ON      512    // Switch Illusion ON CTrigger
@@ -189,7 +189,7 @@ class CTrigger : public CTriggerTargets {
 		int DoShowMessage (void);
 		int DoPlaySound (short nObject);
 		int DoChangeWalls (void);
-		void DoMatCen (int bMessage);
+		void DoObjectProducer (int bMessage);
 		void DoIllusionOn (void);
 		void DoIllusionOff (void);
 		void DoSpeedBoost (short nObject);

@@ -238,7 +238,7 @@ while (nSegment == -1) {
 	CSegment* segP = SEGMENTS + nSegment;
 	int nSegFunc = segP->m_function;
 	if (segP->HasBlockedProp () ||
-		 (nSegFunc == SEGMENT_FUNC_CONTROLCEN) ||
+		 (nSegFunc == SEGMENT_FUNC_REACTOR) ||
 		 (nSegFunc == SEGMENT_FUNC_GOAL_BLUE) ||
 		 (nSegFunc == SEGMENT_FUNC_GOAL_RED) ||
 		 (nSegFunc == SEGMENT_FUNC_TEAM_BLUE) ||
@@ -247,7 +247,7 @@ while (nSegment == -1) {
 	else {	//don't drop in any children of control centers
 		for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 			int nChild = segP->m_children [i];
-			if (IS_CHILD (nChild) && (SEGMENTS [nChild].m_function == SEGMENT_FUNC_CONTROLCEN)) {
+			if (IS_CHILD (nChild) && (SEGMENTS [nChild].m_function == SEGMENT_FUNC_REACTOR)) {
 				nSegment = -1;
 				break;
 				}
@@ -571,7 +571,7 @@ else if (delObjP->info.contains.nId == POW_QUADLASER)
 
 //	If this robot was gated in by the boss and it now contains energy, make it contain nothing,
 //	else the room gets full of energy.
-if ((delObjP->info.nCreator == BOSS_GATE_MATCEN_NUM) && (delObjP->info.contains.nId == POW_ENERGY) && (delObjP->info.contains.nType == OBJ_POWERUP)) {
+if ((delObjP->info.nCreator == BOSS_GATE_PRODUCER_NUM) && (delObjP->info.contains.nId == POW_ENERGY) && (delObjP->info.contains.nType == OBJ_POWERUP)) {
 #if TRACE
 	console.printf (CON_DBG, "Converting energy powerup to nothing because robot %i gated in by boss.\n", OBJ_IDX (delObjP));
 #endif

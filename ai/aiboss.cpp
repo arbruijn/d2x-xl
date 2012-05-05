@@ -86,7 +86,7 @@ if (nBoss < 0)
 if (gameData.time.xGame - gameData.bosses [nBoss].m_nLastGateTime < gameData.bosses [nBoss].m_nGateInterval)
 	return -1;
 FORALL_ROBOT_OBJS (objP, i)
-	if (objP->info.nCreator == BOSS_GATE_MATCEN_NUM)
+	if (objP->info.nCreator == BOSS_GATE_PRODUCER_NUM)
 		count++;
 if (count > 2 * gameStates.app.nDifficultyLevel + 6) {
 	gameData.bosses [nBoss].m_nLastGateTime = gameData.time.xGame - 3 * gameData.bosses [nBoss].m_nGateInterval / 4;
@@ -127,7 +127,7 @@ objP->mType.physInfo.mass = botInfoP->mass;
 objP->mType.physInfo.drag = botInfoP->drag;
 objP->mType.physInfo.flags |= (PF_LEVELLING);
 objP->SetShield (botInfoP->strength);
-objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
+objP->info.nCreator = BOSS_GATE_PRODUCER_NUM;	//	flag this robot as having been created by the boss.
 default_behavior = ROBOTINFO (objP->info.nId).behavior;
 InitAIObject (objP->Index (), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
 CreateExplosion (nSegment, vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);

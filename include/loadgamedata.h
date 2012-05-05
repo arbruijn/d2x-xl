@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TMI_GOAL_BLUE   8   //this is used to remap the blue goal
 #define TMI_GOAL_RED    16  //this is used to remap the red goal
 #define TMI_GOAL_HOARD  32  //this is used to remap the goals
-#define TMI_FUELCEN     64  //this is used to remap the goals
+#define TMI_PRODUCER     64  //this is used to remap the goals
 
 typedef struct {
 	ubyte   flags;     //values defined above

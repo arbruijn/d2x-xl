@@ -1252,7 +1252,7 @@ if (!(IsMultiGame &&(gameStates.app.nFunctionMode == FMODE_GAME)))
 if (gameData.multigame.menu.bLeave)
 	return -1;
 
-	int bWasFuelCenAlive = gameData.reactor.bDestroyed;
+	int bReactorWasAlive = gameData.reactor.bDestroyed;
 	int bPlayerWasDead = gameStates.app.bPlayerIsDead;
 	fix xOldShield = (N_LOCALPLAYER < 0) ? -1 : LOCALPLAYER.Shield ();
 
@@ -1263,7 +1263,7 @@ if (!gameOpts->menus.nStyle && gameStates.app.bGameRunning) {
 	G3_SLEEP (100);   // delay 100 milliseconds
 	}
 if (gameStates.app.bEndLevelSequence ||
-	 (gameData.reactor.bDestroyed && !bWasFuelCenAlive) ||
+	 (gameData.reactor.bDestroyed && !bReactorWasAlive) ||
 	 (gameStates.app.bPlayerIsDead != bPlayerWasDead) ||
 	 ((N_LOCALPLAYER >= 0) && (LOCALPLAYER.Shield () < xOldShield))) {
 	gameData.multigame.menu.bLeave = 1;
@@ -3149,7 +3149,7 @@ int MultiFindGoalTexture (short t)
 {
 	int i;
 
-if (t == TMI_FUELCEN)
+if (t == TMI_PRODUCER)
 	return 333;
 for (i = 0; i < gameData.pig.tex.nTextures [gameStates.app.bD1Data]; i++)
 	if (gameData.pig.tex.tMapInfoP [i].flags & t)
@@ -3223,13 +3223,13 @@ switch (m_function) {
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 316, bFullBright, oldOwner < 0);
 		break;
 
-	case SEGMENT_FUNC_REPAIRCEN:
+	case SEGMENT_FUNC_REPAIRCENTER:
 		if (IsEntropyGame &&(m_owner >= 0))
 			OverrideTextures (texOverrides [(int) m_owner],
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 315, bFullBright, oldOwner < 0);
 		break;
 
-	case SEGMENT_FUNC_FUELCEN:
+	case SEGMENT_FUNC_PRODUCERTER:
 		if (IsEntropyGame &&(m_owner >= 0))
 			OverrideTextures (texOverrides [(int) m_owner],
 								   (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 314, bFullBright, oldOwner < 0);

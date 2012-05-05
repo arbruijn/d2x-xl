@@ -74,7 +74,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 //values for function field
 #define SEGMENT_TYPE_NONE				0
-#define SEGMENT_TYPE_FUELCEN			1
+#define SEGMENT_TYPE_PRODUCER			1
 #define SEGMENT_TYPE_REPAIRCEN		2
 #define SEGMENT_TYPE_CONTROLCEN		3
 #define SEGMENT_TYPE_ROBOTMAKER		4
@@ -93,9 +93,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_SEGMENT_TYPES				17
 
 #define SEGMENT_FUNC_NONE				0
-#define SEGMENT_FUNC_FUELCEN			1
-#define SEGMENT_FUNC_REPAIRCEN		2
-#define SEGMENT_FUNC_CONTROLCEN		3
+#define SEGMENT_FUNC_PRODUCERTER			1
+#define SEGMENT_FUNC_REPAIRCENTER		2
+#define SEGMENT_FUNC_REACTOR		3
 #define SEGMENT_FUNC_ROBOTMAKER		4
 #define SEGMENT_FUNC_VIRUSMAKER		SEGMENT_FUNC_ROBOTMAKER
 #define SEGMENT_FUNC_GOAL_BLUE		5
@@ -311,7 +311,7 @@ class CSegment {
 		ubyte			m_flags;
 		ubyte			m_props;
 		short			m_value;
-		short			m_nMatCen;
+		short			m_nObjProducer;
 		fix			m_xDamage [2];
 		fix			m_xAvgSegLight;
 
@@ -370,10 +370,10 @@ class CSegment {
 		void OverrideTextures (short nTexture, short nOldTexture, short nTexture2, int bFullBright, int bForce);
 
 		bool CreateGenerator (int nType);
-		bool CreateEquipGen (int nOldFunction);
-		bool CreateBotGen (int nOldFunction);
-		bool CreateFuelCen (int nOldFunction);
-		bool CreateMatCen (int nOldFunction, int nMaxCount);
+		bool CreateEquipmentMaker (int nOldFunction);
+		bool CreateRobotMaker (int nOldFunction);
+		bool CreateProducer (int nOldFunction);
+		bool CreateObjectProducer (int nOldFunction, int nMaxCount);
 
 		void ComputeCenter (void);
 		void ComputeRads (fix xMinDist);

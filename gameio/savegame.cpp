@@ -52,7 +52,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 #include "gamepal.h"
 #include "cfile.h"
-#include "fuelcen.h"
+#include "producers.h"
 #include "hash.h"
 #include "key.h"
 #include "piggy.h"
@@ -736,32 +736,32 @@ m_cf.WriteShort (refP->nObject);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::SaveMatCen (tMatCenInfo *matcenP)
+void CSaveGameManager::SaveObjectProducer (tObjectProducerInfo *objProducerP)
 {
 	int	i;
 
 for (i = 0; i < 2; i++)
-	m_cf.WriteInt (matcenP->objFlags [i]);
-m_cf.WriteFix (matcenP->xHitPoints);
-m_cf.WriteFix (matcenP->xInterval);
-m_cf.WriteShort (matcenP->nSegment);
-m_cf.WriteShort (matcenP->nFuelCen);
+	m_cf.WriteInt (objProducerP->objFlags [i]);
+m_cf.WriteFix (objProducerP->xHitPoints);
+m_cf.WriteFix (objProducerP->xInterval);
+m_cf.WriteShort (objProducerP->nSegment);
+m_cf.WriteShort (objProducerP->nProducer);
 }
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::SaveFuelCen (tFuelCenInfo *fuelcenP)
+void CSaveGameManager::SaveProducer (tProducerInfo *producerP)
 {
-m_cf.WriteInt (fuelcenP->nType);
-m_cf.WriteInt (fuelcenP->nSegment);
-m_cf.WriteByte (fuelcenP->bFlag);
-m_cf.WriteByte (fuelcenP->bEnabled);
-m_cf.WriteByte (fuelcenP->nLives);
-m_cf.WriteFix (fuelcenP->xCapacity);
-m_cf.WriteFix (fuelcenP->xMaxCapacity);
-m_cf.WriteFix (fuelcenP->xTimer);
-m_cf.WriteFix (fuelcenP->xDisableTime);
-m_cf.WriteVector(fuelcenP->vCenter);
+m_cf.WriteInt (producerP->nType);
+m_cf.WriteInt (producerP->nSegment);
+m_cf.WriteByte (producerP->bFlag);
+m_cf.WriteByte (producerP->bEnabled);
+m_cf.WriteByte (producerP->nLives);
+m_cf.WriteFix (producerP->xCapacity);
+m_cf.WriteFix (producerP->xMaxCapacity);
+m_cf.WriteFix (producerP->xTimer);
+m_cf.WriteFix (producerP->xDisableTime);
+m_cf.WriteVector(producerP->vCenter);
 }
 
 //------------------------------------------------------------------------------
@@ -922,19 +922,19 @@ if (!m_bBetweenLevels) {
 //Save tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
 		SEGMENTS [i].SaveState (m_cf);
-// Save the fuelcen info
+// Save the producer info
 	m_cf.WriteInt (gameData.reactor.bDestroyed);
 	m_cf.WriteFix (gameData.reactor.countdown.nTimer);
-	m_cf.WriteInt (gameData.matCens.nBotCenters);
-	for (i = 0; i < gameData.matCens.nBotCenters; i++)
-		SaveMatCen (gameData.matCens.botGens + i);
-	m_cf.WriteInt (gameData.matCens.nEquipCenters);
-	for (i = 0; i < gameData.matCens.nEquipCenters; i++)
-		SaveMatCen (gameData.matCens.equipGens + i);
+	m_cf.WriteInt (gameData.producers.nBotCenters);
+	for (i = 0; i < gameData.producers.nBotCenters; i++)
+		SaveObjectProducer (gameData.producers.robotMakers + i);
+	m_cf.WriteInt (gameData.producers.nEquipCenters);
+	for (i = 0; i < gameData.producers.nEquipCenters; i++)
+		SaveObjectProducer (gameData.producers.equipmentMakers + i);
 	SaveReactorTrigger (&gameData.reactor.triggers);
-	m_cf.WriteInt (gameData.matCens.nFuelCenters);
-	for (i = 0; i < gameData.matCens.nFuelCenters; i++)
-		SaveFuelCen (gameData.matCens.fuelCenters + i);
+	m_cf.WriteInt (gameData.producers.nProducers);
+	for (i = 0; i < gameData.producers.nProducers; i++)
+		SaveProducer (gameData.producers.producers + i);
 // Save the control cen info
 	m_cf.WriteInt (gameData.reactor.bPresent);
 	for (i = 0; i < MAX_BOSS_COUNT; i++)
@@ -1569,32 +1569,32 @@ m_cf.ReadShort ();
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::LoadMatCen (tMatCenInfo *matcenP)
+void CSaveGameManager::LoadObjectProducer (tObjectProducerInfo *objProducerP)
 {
 	int	i;
 
 for (i = 0; i < 2; i++)
-	matcenP->objFlags [i] = m_cf.ReadInt ();
-matcenP->xHitPoints = m_cf.ReadFix ();
-matcenP->xInterval = m_cf.ReadFix ();
-matcenP->nSegment = m_cf.ReadShort ();
-matcenP->nFuelCen = m_cf.ReadShort ();
+	objProducerP->objFlags [i] = m_cf.ReadInt ();
+objProducerP->xHitPoints = m_cf.ReadFix ();
+objProducerP->xInterval = m_cf.ReadFix ();
+objProducerP->nSegment = m_cf.ReadShort ();
+objProducerP->nProducer = m_cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::LoadFuelCen (tFuelCenInfo *fuelcenP)
+void CSaveGameManager::LoadProducer (tProducerInfo *producerP)
 {
-fuelcenP->nType = m_cf.ReadInt ();
-fuelcenP->nSegment = m_cf.ReadInt ();
-fuelcenP->bFlag = m_cf.ReadByte ();
-fuelcenP->bEnabled = m_cf.ReadByte ();
-fuelcenP->nLives = m_cf.ReadByte ();
-fuelcenP->xCapacity = m_cf.ReadFix ();
-fuelcenP->xMaxCapacity = m_cf.ReadFix ();
-fuelcenP->xTimer = m_cf.ReadFix ();
-fuelcenP->xDisableTime = m_cf.ReadFix ();
-m_cf.ReadVector (fuelcenP->vCenter);
+producerP->nType = m_cf.ReadInt ();
+producerP->nSegment = m_cf.ReadInt ();
+producerP->bFlag = m_cf.ReadByte ();
+producerP->bEnabled = m_cf.ReadByte ();
+producerP->nLives = m_cf.ReadByte ();
+producerP->xCapacity = m_cf.ReadFix ();
+producerP->xMaxCapacity = m_cf.ReadFix ();
+producerP->xTimer = m_cf.ReadFix ();
+producerP->xDisableTime = m_cf.ReadFix ();
+m_cf.ReadVector (producerP->vCenter);
 }
 
 //------------------------------------------------------------------------------
@@ -1857,30 +1857,30 @@ if (!m_bBetweenLevels) {
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
 		SEGMENTS [i].LoadState (m_cf);
-	//Restore the fuelcen info
+	//Restore the producer info
 	audio.Prepare ();
 	SetupWalls ();
 	gameData.reactor.bDestroyed = m_cf.ReadInt ();
 	gameData.reactor.countdown.nTimer = m_cf.ReadFix ();
-	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.matCens.nBotCenters))
+	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.producers.nBotCenters))
 		return 0;
-	for (i = 0; i < gameData.matCens.nBotCenters; i++)
-		LoadMatCen (gameData.matCens.botGens + i);
+	for (i = 0; i < gameData.producers.nBotCenters; i++)
+		LoadObjectProducer (gameData.producers.robotMakers + i);
 	if (m_nVersion >= 30) {
-		if (ReadBoundedInt (MAX_EQUIP_CENTERS, &gameData.matCens.nEquipCenters))
+		if (ReadBoundedInt (MAX_EQUIP_CENTERS, &gameData.producers.nEquipCenters))
 			return 0;
-		for (i = 0; i < gameData.matCens.nEquipCenters; i++)
-			LoadMatCen (gameData.matCens.equipGens + i);
+		for (i = 0; i < gameData.producers.nEquipCenters; i++)
+			LoadObjectProducer (gameData.producers.equipmentMakers + i);
 		}
 	else {
-		gameData.matCens.nBotCenters = 0;
-		gameData.matCens.botGens.Clear (0);
+		gameData.producers.nBotCenters = 0;
+		gameData.producers.robotMakers.Clear (0);
 		}
 	LoadReactorTrigger (&gameData.reactor.triggers);
-	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters))
+	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.producers.nProducers))
 		return 0;
-	for (i = 0; i < gameData.matCens.nFuelCenters; i++)
-		LoadFuelCen (gameData.matCens.fuelCenters + i);
+	for (i = 0; i < gameData.producers.nProducers; i++)
+		LoadProducer (gameData.producers.producers + i);
 	// Restore the control cen info
 	if (m_nVersion < 31) {
 		gameData.reactor.states [0].bHit = m_cf.ReadInt ();
@@ -2168,20 +2168,20 @@ if (!m_bBetweenLevels) {
 			sideP->m_nOvlOrient = (nTexture >> 14) & 3;
 			}
 		}
-//Restore the fuelcen info
+//Restore the producer info
 	gameData.reactor.bDestroyed = m_cf.ReadInt ();
 	gameData.reactor.countdown.nTimer = m_cf.ReadFix ();
-	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.matCens.nBotCenters))
+	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.producers.nBotCenters))
 		return 0;
-	for (i = 0; i < gameData.matCens.nBotCenters; i++) {
-		m_cf.Read (gameData.matCens.botGens [i].objFlags, sizeof (int), 2);
-		m_cf.Read (&gameData.matCens.botGens [i].xHitPoints, 
-						sizeof (tMatCenInfo) - (reinterpret_cast<char*> (&gameData.matCens.botGens [i].xHitPoints) - reinterpret_cast<char*> (&gameData.matCens.botGens [i])), 1);
+	for (i = 0; i < gameData.producers.nBotCenters; i++) {
+		m_cf.Read (gameData.producers.robotMakers [i].objFlags, sizeof (int), 2);
+		m_cf.Read (&gameData.producers.robotMakers [i].xHitPoints, 
+						sizeof (tObjectProducerInfo) - (reinterpret_cast<char*> (&gameData.producers.robotMakers [i].xHitPoints) - reinterpret_cast<char*> (&gameData.producers.robotMakers [i])), 1);
 		}
 	m_cf.Read (&gameData.reactor.triggers, sizeof (CTriggerTargets), 1);
-	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters))
+	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.producers.nProducers))
 		return 0;
-	gameData.matCens.fuelCenters.Read (m_cf, gameData.matCens.nFuelCenters);
+	gameData.producers.producers.Read (m_cf, gameData.producers.nProducers);
 
 	// Restore the control cen info
 	gameData.reactor.states [0].bHit = m_cf.ReadInt ();

@@ -64,8 +64,8 @@ class CSaveGameManager {
 		void SaveSpawnPoint (int i);
 		void SaveReactorTrigger (CTriggerTargets *triggerP);
 		void SaveReactorState (tReactorStates *stateP);
-		void SaveFuelCen (tFuelCenInfo *fuelcenP);
-		void SaveMatCen (tMatCenInfo *matcenP);
+		void SaveProducer (tProducerInfo *producerP);
+		void SaveObjectProducer (tObjectProducerInfo *objProducerP);
 #if 0
 		void SaveObjTriggerRef (tObjTriggerRef *refP);
 #endif
@@ -85,8 +85,8 @@ class CSaveGameManager {
 		void LoadNetPlayers (void);
 		void LoadPlayer (CPlayerData *playerP);
 		void LoadObjTriggerRef (tObjTriggerRef *refP);
-		void LoadMatCen (tMatCenInfo *matcenP);
-		void LoadFuelCen (tFuelCenInfo *fuelcenP);
+		void LoadObjectProducer (tObjectProducerInfo *objProducerP);
+		void LoadProducer (tProducerInfo *producerP);
 		void LoadReactorTrigger (CTriggerTargets *triggerP);
 		void LoadReactorState (tReactorStates *stateP);
 		int LoadSpawnPoint (int i);
