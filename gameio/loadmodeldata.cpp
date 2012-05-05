@@ -363,9 +363,7 @@ for (j = 0; j < t; j++) {
 t = cf.ReadInt ();			//read number of objbitmaps
 for (j = 0; j < t; j++) {
 	i = cf.ReadInt ();		//read objbitmap number
-	if (bAddBots) {
-		}
-	else if ((i < 0) || (i >= MAX_OBJ_BITMAPS)) {
+	if (!bAddBots && ((i < 0) || (i >= MAX_OBJ_BITMAPS))) {
 		Warning ("%s: Object bitmap number (%d) out of range (valid range = 0 - %d).",
 					szLevel, i, MAX_OBJ_BITMAPS - 1);
 		gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;

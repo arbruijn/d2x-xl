@@ -56,20 +56,6 @@ gameData.matCens.nEquipCenters = 0;
 gameData.matCens.nRepairCenters = 0;
 }
 
-#if DBG		//this is sometimes called by people from the debugger
-void reset_allRobot_centers ()
-{
-	int i;
-
-	// Remove all materialization centers
-for (i = 0; i < gameData.segs.nSegments; i++)
-	if ((SEGMENTS [i].m_function == SEGMENT_FUNC_ROBOTMAKER) || (SEGMENTS [i].m_function == SEGMENT_FUNC_EQUIPMAKER)) {
-		SEGMENTS [i].m_function = SEGMENT_FUNC_NONE;
-		SEGMENTS [i].m_nMatCen = -1;
-		}
-}
-#endif
-
 //------------------------------------------------------------
 // Turns a CSegment into a fully charged up fuel center...
 bool CSegment::CreateFuelCen (int nOldFunction)
@@ -173,9 +159,7 @@ return true;
 
 void SetEquipGenStates (void)
 {
-	int	i;
-
-for (i = 0; i < gameData.matCens.nEquipCenters; i++)
+for (int i = 0; i < gameData.matCens.nEquipCenters; i++)
 	gameData.matCens.fuelCenters [gameData.matCens.equipGens [i].nFuelCen].bEnabled =
 		FindTriggerTarget (gameData.matCens.fuelCenters [i].nSegment, -1) == 0;
 }
@@ -802,9 +786,7 @@ return amount;
 
 void DisableMatCens (void)
 {
-	int	i;
-
-for (i = 0; i < gameData.matCens.nBotCenters; i++) {
+for (int i = 0; i < gameData.matCens.nBotCenters; i++) {
 	if (gameData.matCens.fuelCenters [i].nType != SEGMENT_FUNC_EQUIPMAKER) {
 		gameData.matCens.fuelCenters [i].bEnabled = 0;
 		gameData.matCens.fuelCenters [i].xDisableTime = 0;
@@ -817,9 +799,7 @@ for (i = 0; i < gameData.matCens.nBotCenters; i++) {
 //	Give them all the right number of lives.
 void InitAllMatCens (void)
 {
-	int	i;
-
-for (i = 0; i < gameData.matCens.nFuelCenters; i++)
+for (int i = 0; i < gameData.matCens.nFuelCenters; i++)
 	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_FUNC_ROBOTMAKER) {
 		 gameData.matCens.fuelCenters [i].nLives = 3;
 		 gameData.matCens.fuelCenters [i].bEnabled = 0;

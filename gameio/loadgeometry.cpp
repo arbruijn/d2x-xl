@@ -475,6 +475,13 @@ for (int i = 0; i < gameData.segs.nSegments; i++) {
 	if (i == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
+	}
+// can only process matcens after knowing all segment's type matcen information!
+for (int i = 0; i < gameData.segs.nSegments; i++) {
+#if DBG
+	if (i == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
 	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_function);
 	}
 }
