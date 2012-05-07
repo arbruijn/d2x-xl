@@ -1120,8 +1120,8 @@ xFuelGiveAmount = I2X (25);
 xFuelMaxAmount = I2X (100);
 xEnergyToCreateOneRobot = I2X (1);
 nProducers = 0;
-nBotCenters = 0;
-nEquipCenters = 0;
+nRobotMakers = 0;
+nEquipmentMakers = 0;
 nRepairCenters = 0;
 }
 

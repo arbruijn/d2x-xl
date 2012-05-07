@@ -3194,8 +3194,8 @@ class CProducerData {
 		CStaticArray< tObjectProducerInfo, MAX_ROBOT_CENTERS >	robotMakers; //[MAX_ROBOT_CENTERS];
 		CStaticArray< tObjectProducerInfo, MAX_EQUIP_CENTERS >	equipmentMakers; //[MAX_EQUIP_CENTERS];
 		int				nProducers;
-		int				nBotCenters;
-		int				nEquipCenters;
+		int				nRobotMakers;
+		int				nEquipmentMakers;
 		int				nRepairCenters;
 		fix				xEnergyToCreateOneRobot;
 		CStaticArray< int, MAX_FUEL_CENTERS >				origStationTypes; // [MAX_FUEL_CENTERS];

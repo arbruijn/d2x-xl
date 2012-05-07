@@ -925,11 +925,11 @@ if (!m_bBetweenLevels) {
 // Save the producer info
 	m_cf.WriteInt (gameData.reactor.bDestroyed);
 	m_cf.WriteFix (gameData.reactor.countdown.nTimer);
-	m_cf.WriteInt (gameData.producers.nBotCenters);
-	for (i = 0; i < gameData.producers.nBotCenters; i++)
+	m_cf.WriteInt (gameData.producers.nRobotMakers);
+	for (i = 0; i < gameData.producers.nRobotMakers; i++)
 		SaveObjectProducer (gameData.producers.robotMakers + i);
-	m_cf.WriteInt (gameData.producers.nEquipCenters);
-	for (i = 0; i < gameData.producers.nEquipCenters; i++)
+	m_cf.WriteInt (gameData.producers.nEquipmentMakers);
+	for (i = 0; i < gameData.producers.nEquipmentMakers; i++)
 		SaveObjectProducer (gameData.producers.equipmentMakers + i);
 	SaveReactorTrigger (&gameData.reactor.triggers);
 	m_cf.WriteInt (gameData.producers.nProducers);
@@ -1862,18 +1862,18 @@ if (!m_bBetweenLevels) {
 	SetupWalls ();
 	gameData.reactor.bDestroyed = m_cf.ReadInt ();
 	gameData.reactor.countdown.nTimer = m_cf.ReadFix ();
-	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.producers.nBotCenters))
+	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.producers.nRobotMakers))
 		return 0;
-	for (i = 0; i < gameData.producers.nBotCenters; i++)
+	for (i = 0; i < gameData.producers.nRobotMakers; i++)
 		LoadObjectProducer (gameData.producers.robotMakers + i);
 	if (m_nVersion >= 30) {
-		if (ReadBoundedInt (MAX_EQUIP_CENTERS, &gameData.producers.nEquipCenters))
+		if (ReadBoundedInt (MAX_EQUIP_CENTERS, &gameData.producers.nEquipmentMakers))
 			return 0;
-		for (i = 0; i < gameData.producers.nEquipCenters; i++)
+		for (i = 0; i < gameData.producers.nEquipmentMakers; i++)
 			LoadObjectProducer (gameData.producers.equipmentMakers + i);
 		}
 	else {
-		gameData.producers.nBotCenters = 0;
+		gameData.producers.nRobotMakers = 0;
 		gameData.producers.robotMakers.Clear (0);
 		}
 	LoadReactorTrigger (&gameData.reactor.triggers);
@@ -2171,9 +2171,9 @@ if (!m_bBetweenLevels) {
 //Restore the producer info
 	gameData.reactor.bDestroyed = m_cf.ReadInt ();
 	gameData.reactor.countdown.nTimer = m_cf.ReadFix ();
-	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.producers.nBotCenters))
+	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.producers.nRobotMakers))
 		return 0;
-	for (i = 0; i < gameData.producers.nBotCenters; i++) {
+	for (i = 0; i < gameData.producers.nRobotMakers; i++) {
 		m_cf.Read (gameData.producers.robotMakers [i].objFlags, sizeof (int), 2);
 		m_cf.Read (&gameData.producers.robotMakers [i].xHitPoints, 
 						sizeof (tObjectProducerInfo) - (reinterpret_cast<char*> (&gameData.producers.robotMakers [i].xHitPoints) - reinterpret_cast<char*> (&gameData.producers.robotMakers [i])), 1);
@@ -2350,7 +2350,7 @@ InitReactorForLevel (1);
 InitAIObjects ();
 AddPlayerLoadout (true);
 SetMaxOmegaCharge ();
-SetEquipGenStates ();
+SetEquipmentMakerStates ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 else {

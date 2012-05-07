@@ -37,6 +37,7 @@ typedef struct tProducerInfo {
 	//CObject  *last_created_obj;
 	//int     last_created_sig;
 	CFixVector vCenter;
+	bool	  bAssigned;
 } __pack__ tProducerInfo;
 
 // The max number of robot centers per mine.
@@ -55,6 +56,7 @@ typedef struct tObjectProducerInfo {
 	fix     xInterval;       	// Interval between materializations
 	short   nSegment;         	// Segment this is attached to.
 	short   nProducer;    		// Index in producer array.
+	bool	  bAssigned;
 } __pack__ tObjectProducerInfo;
 
 //--repair-- extern CObject *RepairObj;  // which CObject getting repaired, or NULL
@@ -65,7 +67,7 @@ int StartObjectProducer (short nSegment);
 void DisableObjectProducers (void);
 void InitAllObjectProducers (void);
 void OperateRobotMaker (CObject *objP, short nSegment);
-void SetEquipGenStates (void);
+void SetEquipmentMakerStates (void);
 
 void OldReadObjectProducerInfo(old_tObjProducerInfo *mi, CFile& cf);
 void ReadObjectProducerInfo (tObjectProducerInfo *ps, CFile& cf, bool bOldFormat);

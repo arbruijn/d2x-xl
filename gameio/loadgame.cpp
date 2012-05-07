@@ -1139,7 +1139,7 @@ if (!bRestore) {
 	gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
 	SetMaxOmegaCharge ();
 	ConvertObjects ();
-	SetEquipGenStates ();
+	SetEquipmentMakerStates ();
 	SetupWalls ();
 	SetupEffects ();
 //	lightManager.Setup (nLevel);

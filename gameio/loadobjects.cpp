@@ -1,4 +1,4 @@
-/*
+	/*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
 END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
@@ -635,14 +635,19 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int AssignProducer (tObjectProducerInfo& objProducer, int nFunction, sbyte bFlag)
+static int AssignProducer (tObjectProducerInfo& producerInfo, int nFunction, sbyte bFlag)
 {
-if (objProducer.nProducer < 0) 
+if (producerInfo.nProducer < 0) 
+	return -1;
+if (producerInfo.nProducer >= ((nFunction == SEGMENT_FUNC_ROBOTMAKER) ? gameData.producers.nRobotMakers : gameData.producers.nEquipmentMakers))
 	return -1;
 
-int nProducer = (nFunction == SEGMENT_FUNC_ROBOTMAKER)
-					? gameData.producers.robotMakers [objProducer.nProducer].nProducer
-					: gameData.producers.equipmentMakers [objProducer.nProducer].nProducer;
+tObjectProducerInfo& objProducer = (nFunction == SEGMENT_FUNC_ROBOTMAKER) 
+											  ? gameData.producers.robotMakers [producerInfo.nProducer] 
+											  : gameData.producers.equipmentMakers [producerInfo.nProducer];
+if (objProducer.bAssigned)
+	return -1;
+int nProducer = objProducer.nProducer;
 tProducerInfo& producer = gameData.producers.producers [nProducer];
 if (producer.nSegment < 0)
 	return -1;
@@ -653,8 +658,10 @@ if (segP->m_function != nFunction) // this object producer has an invalid segmen
 	return -1;
 if (!(producer.bFlag & bFlag)) // this segment already has an object producer assigned
 	return -1;
+memcpy (objProducer.objFlags, producerInfo.objFlags, sizeof (objProducer.objFlags));
+objProducer.bAssigned = true;
 producer.bFlag = 0;
-return segP->m_nObjProducer;
+return segP->m_nObjProducer = producerInfo.nProducer;
 }
 
 // -----------------------------------------------------------------------------
@@ -671,14 +678,14 @@ if (gameFileInfo.botGen.offset > -1) {
 	for (int h, i = 0; i < gameFileInfo.botGen.count; ) {
 		ReadObjectProducerInfo (&m, cf, gameTopFileInfo.fileinfoVersion < 27);
 		if (0 <= (h = AssignProducer (m, SEGMENT_FUNC_ROBOTMAKER, 1))) {
-			gameData.producers.robotMakers [h] = m;
+			//gameData.producers.robotMakers [h] = m;
 			++i;
 			}
 		else {
 #if DBG
 			PrintLog (0, "Invalid robot generator data found\n");
 #endif
-			--gameData.producers.nBotCenters;
+			--gameData.producers.nRobotMakers;
 			--gameFileInfo.botGen.count;
 			}
 		}
@@ -708,7 +715,7 @@ if (gameFileInfo.equipGen.offset > -1) {
 #if DBG
 			PrintLog (0, "Invalid equipment generator data found\n");
 #endif
-			--gameData.producers.nEquipCenters;
+			--gameData.producers.nEquipmentMakers;
 			--gameFileInfo.equipGen.count;
 			}
 		}
@@ -1016,7 +1023,7 @@ gameData.trigs.m_nTriggers = gameFileInfo.triggers.count;
 gameData.walls.nWalls = gameFileInfo.walls.count;
 CheckAndFixWalls ();
 CheckAndFixTriggers ();
-gameData.producers.nBotCenters = gameFileInfo.botGen.count;
+gameData.producers.nRobotMakers = gameFileInfo.botGen.count;
 FixObjectSegs ();
 if ((gameTopFileInfo.fileinfoVersion < GAME_VERSION) && 
 	 ((gameTopFileInfo.fileinfoVersion != 25) || (GAME_VERSION != 26)))

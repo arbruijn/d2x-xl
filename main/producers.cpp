@@ -51,8 +51,8 @@ void ResetGenerators (void)
 for (i = 0; i < LEVEL_SEGMENTS; i++)
 	SEGMENTS [i].m_function = SEGMENT_FUNC_NONE;
 gameData.producers.nProducers = 0;
-gameData.producers.nBotCenters = 0;
-gameData.producers.nEquipCenters = 0;
+gameData.producers.nRobotMakers = 0;
+gameData.producers.nEquipmentMakers = 0;
 gameData.producers.nRepairCenters = 0;
 }
 
@@ -74,17 +74,17 @@ if (!CreateObjectProducer (nOldFunction, MAX_FUEL_CENTERS))
 
 if (nOldFunction == SEGMENT_FUNC_EQUIPMAKER) {
 	gameData.producers.origStationTypes [m_value] = SEGMENT_FUNC_NONE;
-	if (m_nObjProducer < --gameData.producers.nEquipCenters) {
-		gameData.producers.equipmentMakers [m_nObjProducer] = gameData.producers.equipmentMakers [gameData.producers.nEquipCenters];
-		SEGMENTS [gameData.producers.equipmentMakers [gameData.producers.nEquipCenters].nSegment].m_nObjProducer = m_nObjProducer;
+	if (m_nObjProducer < --gameData.producers.nEquipmentMakers) {
+		gameData.producers.equipmentMakers [m_nObjProducer] = gameData.producers.equipmentMakers [gameData.producers.nEquipmentMakers];
+		SEGMENTS [gameData.producers.equipmentMakers [gameData.producers.nEquipmentMakers].nSegment].m_nObjProducer = m_nObjProducer;
 		m_nObjProducer = -1;
 		}
 	}
 else if (nOldFunction == SEGMENT_FUNC_ROBOTMAKER) {
 	gameData.producers.origStationTypes [m_value] = SEGMENT_FUNC_NONE;
-	if (m_nObjProducer < --gameData.producers.nBotCenters) {
-		gameData.producers.robotMakers [m_nObjProducer] = gameData.producers.robotMakers [gameData.producers.nBotCenters];
-		SEGMENTS [gameData.producers.robotMakers [gameData.producers.nBotCenters].nSegment].m_nObjProducer = m_nObjProducer;
+	if (m_nObjProducer < --gameData.producers.nRobotMakers) {
+		gameData.producers.robotMakers [m_nObjProducer] = gameData.producers.robotMakers [gameData.producers.nRobotMakers];
+		SEGMENTS [gameData.producers.robotMakers [gameData.producers.nRobotMakers].nSegment].m_nObjProducer = m_nObjProducer;
 		m_nObjProducer = -1;
 		}
 	}
@@ -127,14 +127,16 @@ return true;
 // This function is separate from other producers because we don't want values reset.
 bool CSegment::CreateRobotMaker (int nOldFunction)
 {
-m_nObjProducer = gameData.producers.nBotCenters;
+m_nObjProducer = gameData.producers.nRobotMakers;
 if (!CreateObjectProducer (nOldFunction, gameFileInfo.botGen.count))
 	return false;
-++gameData.producers.nBotCenters;
-gameData.producers.robotMakers [m_nObjProducer].xHitPoints = OBJ_PRODUCER_HP_DEFAULT;
-gameData.producers.robotMakers [m_nObjProducer].xInterval = OBJ_PRODUCER_INTERVAL_DEFAULT;
-gameData.producers.robotMakers [m_nObjProducer].nSegment = Index ();
-gameData.producers.robotMakers [m_nObjProducer].nProducer = m_value;
+++gameData.producers.nRobotMakers;
+tObjectProducerInfo& producer = gameData.producers.robotMakers [m_nObjProducer];
+producer.xHitPoints = OBJ_PRODUCER_HP_DEFAULT;
+producer.xInterval = OBJ_PRODUCER_INTERVAL_DEFAULT;
+producer.nSegment = Index ();
+producer.nProducer = m_value;
+producer.bAssigned = false;
 return true;
 }
 
@@ -144,22 +146,24 @@ return true;
 // This function is separate from other producers because we don't want values reset.
 bool CSegment::CreateEquipmentMaker (int nOldFunction)
 {
-m_nObjProducer = gameData.producers.nEquipCenters;
+m_nObjProducer = gameData.producers.nEquipmentMakers;
 if (!CreateObjectProducer (nOldFunction, gameFileInfo.equipGen.count))
 	return false;
-++gameData.producers.nEquipCenters;
-gameData.producers.equipmentMakers [m_nObjProducer].xHitPoints = OBJ_PRODUCER_HP_DEFAULT;
-gameData.producers.equipmentMakers [m_nObjProducer].xInterval = OBJ_PRODUCER_INTERVAL_DEFAULT;
-gameData.producers.equipmentMakers [m_nObjProducer].nSegment = Index ();
-gameData.producers.equipmentMakers [m_nObjProducer].nProducer = m_value;
+++gameData.producers.nEquipmentMakers;
+tObjectProducerInfo& producer = gameData.producers.equipmentMakers [m_nObjProducer];
+producer.xHitPoints = OBJ_PRODUCER_HP_DEFAULT;
+producer.xInterval = OBJ_PRODUCER_INTERVAL_DEFAULT;
+producer.nSegment = Index ();
+producer.nProducer = m_value;
+producer.bAssigned = false;
 return true;
 }
 
 //------------------------------------------------------------
 
-void SetEquipGenStates (void)
+void SetEquipmentMakerStates (void)
 {
-for (int i = 0; i < gameData.producers.nEquipCenters; i++)
+for (int i = 0; i < gameData.producers.nEquipmentMakers; i++)
 	gameData.producers.producers [gameData.producers.equipmentMakers [i].nProducer].bEnabled =
 		FindTriggerTarget (gameData.producers.producers [i].nSegment, -1) == 0;
 }
@@ -201,12 +205,12 @@ int StartObjectProducer (short nSegment)
 if (segP->m_nObjProducer < 0)
 	return 0;
 if (segP->m_function == SEGMENT_FUNC_EQUIPMAKER) {	// toggle it on or off
-	if (segP->m_nObjProducer >= gameData.producers.nEquipCenters)
+	if (segP->m_nObjProducer >= gameData.producers.nEquipmentMakers)
 		return 0;
 	objProducerP = gameData.producers.producers + gameData.producers.equipmentMakers [segP->m_nObjProducer].nProducer;
 	return (objProducerP->bEnabled = !objProducerP->bEnabled) ? 1 : 2;
 	}
-if (segP->m_nObjProducer >= gameData.producers.nBotCenters)
+if (segP->m_nObjProducer >= gameData.producers.nRobotMakers)
 	return 0;
 objProducerP = gameData.producers.producers + gameData.producers.robotMakers [segP->m_nObjProducer].nProducer;
 if (objProducerP->bEnabled)
@@ -771,7 +775,7 @@ return amount;
 
 void DisableObjectProducers (void)
 {
-for (int i = 0; i < gameData.producers.nBotCenters; i++) {
+for (int i = 0; i < gameData.producers.nRobotMakers; i++) {
 	if (gameData.producers.producers [i].nType != SEGMENT_FUNC_EQUIPMAKER) {
 		gameData.producers.producers [i].bEnabled = 0;
 		gameData.producers.producers [i].xDisableTime = 0;
