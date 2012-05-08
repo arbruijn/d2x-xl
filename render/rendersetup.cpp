@@ -196,7 +196,14 @@ int BeginRenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
 PROF_START
 #if DBG
-gameStates.render.bFullBright = (bDbgFullBright < 0) ? gameStates.app.bEndLevelSequence || (automap.Display () && gameOpts->render.automap.bBright) : bDbgFullBright;
+if (bDbgFullBright >= 0)
+	gameStates.render.bFullBright = bDbgFullBright;
+else if ((gameStates.app.bEndLevelSequence == EL_FLYTHROUGH) || (gameStates.app.bEndLevelSequence == EL_LOOKBACK))
+	gameStates.render.bFullBright = 2;
+else if (automap.Display () && gameOpts->render.automap.bBright) 
+	gameStates.render.bFullBright = 1;
+else
+	gameStates.render.bFullBright = 0;
 #else
 gameStates.render.bFullBright = (automap.Display () && gameOpts->render.automap.bBright)
 #if MAX_SHADOWMAPS

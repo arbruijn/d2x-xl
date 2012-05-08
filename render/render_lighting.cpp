@@ -372,7 +372,9 @@ PROF_START
 	int			h, i, j, nColor, nLights = 0,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
 					bLightmaps = lightmapManager.HaveLightmaps ();
-	static		CStaticFaceColor<1,1,1,1> brightColor;
+	static		CStaticFaceColor<255,255,255,255> brightColor1;
+	static		CStaticFaceColor<127,127,127,127> brightColor2;
+	static		CFaceColor* brightColors [2] = {&brightColor, &brightColor2};
 
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 for (i = 0; i < 3; i++)
@@ -422,7 +424,7 @@ for (i = nStart; i < nEnd; i++) {
 		colorP = FACES.color + faceP->m_info.nIndex;
 		for (h = 0; h < faceP->m_info.nVerts; h++, colorP++) {
 			if (gameStates.render.bFullBright)
-				colorP->Assign (nColor ? faceColor [nColor] : brightColor);
+				colorP->Assign (nColor ? faceColor [nColor] : *brightColors [gameStates.render.bFullBright - 1]);
 			else {
 				nVertex = faceP->m_info.index [h];
 #if DBG
@@ -496,7 +498,9 @@ PROF_START
 #else
 	short*		visibleSegs = gameData.render.mine.visibility [0].segments.Buffer ();
 #endif
-	static		CStaticFaceColor<1,1,1,1> brightColor;
+	static		CStaticFaceColor<255,255,255,255> brightColor1;
+	static		CStaticFaceColor<127,127,127,127> brightColor2;
+	static		CFaceColor* brightColors [2] = {&brightColor, &brightColor2};
 
 for (i = 0; i < 3; i++)
 	faceColor [i].Set (1.0f, 1.0f, 1.0f, 1.0f);
@@ -551,7 +555,7 @@ for (i = nStart; i < nEnd; i++) {
 			colorP = FACES.color + nIndex;
 			for (h = 0; h < 3; h++, colorP++, nIndex++) {
 				if (gameStates.render.bFullBright)
-					*colorP = nColor ? faceColor [nColor] : brightColor;
+					*colorP = nColor ? faceColor [nColor] : *brightColors [gameStates.render.bFullBright - 1];
 				else {
 					if (gameStates.render.bPerPixelLighting == 2)
 						*colorP = brightColor; //gameData.render.color.ambient [nVertex];
@@ -631,7 +635,9 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 	tUVL			*uvlP;
 	int			h, i, j, uvi, nColor;
 
-	static		CStaticFaceColor<1,1,1,1> brightColor;
+	static		CStaticFaceColor<255,255,255,255> brightColor1;
+	static		CStaticFaceColor<127,127,127,127> brightColor2;
+	static		CFaceColor* brightColors [2] = {&brightColor, &brightColor2};
 
 for (i = 0; i < 3; i++)
 	faceColor [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
@@ -664,7 +670,7 @@ for (i = nStart; i < nEnd; i++) {
 		uvlP = sideP->m_uvls;
 		for (h = 0, uvi = 0 /*(segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13)*/; h < sideP->CornerCount (); h++, colorP++, uvi++) {
 			if (gameStates.render.bFullBright)
-				*colorP = nColor ? faceColor [nColor] : brightColor;
+				*colorP = nColor ? faceColor [nColor] : *brightColors [gameStates.render.bFullBright - 1];
 			else {
 				c = faceColor [nColor];
 				nVertex = faceP->m_info.index [h];

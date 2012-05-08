@@ -146,20 +146,20 @@ else {
 	return;
 	}
 
-m_nMinVertex [0] = min (m_corners [0], m_corners [2]);
+m_nMinVertex [0] = min (m_vertices [0], m_vertices [2]);
 if (m_nFaces == 1) {
-	if (m_nMinVertex [0] > m_corners [1])
-		m_nMinVertex [0] = m_corners [1];
+	if (m_nMinVertex [0] > m_vertices [1])
+		m_nMinVertex [0] = m_vertices [1];
 	}
 if (m_nType == SIDE_IS_QUAD) {
-	if (m_nMinVertex [0] > m_corners [1])
-		m_nMinVertex [0] = m_corners [1];
-	if (m_nMinVertex [0] > m_corners [3])
-		m_nMinVertex [0] = m_corners [3];
+	if (m_nMinVertex [0] > m_vertices [1])
+		m_nMinVertex [0] = m_vertices [1];
+	if (m_nMinVertex [0] > m_vertices [3])
+		m_nMinVertex [0] = m_vertices [3];
 	m_nMinVertex [1] = m_nMinVertex [0];
 	}
 else
-	m_nMinVertex [1] = min (m_corners [1], m_corners [4]);
+	m_nMinVertex [1] = min (m_vertices [1], m_vertices [4]);
 
 SetupFaceVertIndex ();
 }
