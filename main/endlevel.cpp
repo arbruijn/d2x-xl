@@ -55,15 +55,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 typedef struct tExitFlightData {
-	CObject		*objP;
+	CObject*			objP;
 	CAngleVector	angles;			//orientation in angles
-	CFixVector	step;				//how far in a second
-	CFixVector	angstep;			//rotation per second
-	fix			speed;			//how fast CObject is moving
-	CFixVector 	headvec;			//where we want to be pointing
-	int			firstTime;		//flag for if first time through
-	fix			offset_frac;	//how far off-center as portion of way
-	fix			offsetDist;	//how far currently off-center
+	CFixVector		vDest;
+	CFixVector		vStep;			//how far in a second
+	CFixVector		aStep;			//rotation per second
+	fix				speed;			//how fast CObject is moving
+	CFixVector 		vHeading;		//where we want to be pointing
+	int				bStart;		//flag for if first time through
+	fix				lateralOffset;	//how far off-center as portion of way
+	fix				offsetDist;		//how far currently off-center
 } tExitFlightData;
 
 //endlevel sequence states
@@ -102,7 +103,8 @@ char movieTable [2][30] = {
 //static tUVL satUVL [4] = {{0,0,I2X (1)},{I2X (1),0,I2X (1)},{I2X (1),I2X (1),I2X (1)},{0,I2X (1),I2X (1)}};
 static tUVL satUVL [4] = {{0,0,I2X (1)},{I2X (1),0,I2X (1)},{I2X (1),I2X (1),I2X (1)},{0,I2X (1),I2X (1)}};
 
-extern int ELFindConnectedSide (int seg0, int seg1);
+int ELFindConnectedSide (int seg0, int seg1);
+int PointInSeg (CSegment* segP, CFixVector vPos);
 
 //------------------------------------------------------------------------------
 
@@ -547,7 +549,7 @@ switch (gameStates.app.bEndLevelSequence) {
 				exitFlightObjects [1] = exitFlightObjects [0];
 				exitFlightObjects [1].objP = gameData.objs.endLevelCamera;
 				exitFlightObjects [1].speed = (5 * gameData.endLevel.xCurFlightSpeed) / 4;
-				exitFlightObjects [1].offset_frac = 0x4000;
+				exitFlightObjects [1].lateralOffset = I2X (1) / 0x4000;
 				gameData.objs.endLevelCamera->info.position.vPos += gameData.objs.endLevelCamera->info.position.mOrient.m.dir.f * (I2X (7));
 				timer = 0x20000;
 				}
@@ -563,15 +565,19 @@ switch (gameStates.app.bEndLevelSequence) {
 			if (timer < 0)		//reduce speed
 				exitFlightObjects [1].speed = exitFlightObjects [0].speed;
 			}
-		if (gameData.objs.endLevelCamera->info.nSegment == gameData.endLevel.exit.nSegNum) {
-			CAngleVector cam_angles, exit_seg_angles;
+		if ((gameData.objs.endLevelCamera->Segment () == gameData.endLevel.exit.nSegNum) || 
+			 (OBJECTS [LOCALPLAYER.nObject].Segment () == gameData.endLevel.exit.nSegNum)) {
 			gameStates.app.bEndLevelSequence = EL_OUTSIDE;
 			timer = I2X (2);
+			if (gameData.objs.endLevelCamera->Segment () != gameData.endLevel.exit.nSegNum) {
+				gameData.objs.endLevelCamera->Position () = OBJECTS [LOCALPLAYER.nObject].Position ();
+				gameData.objs.endLevelCamera->Orientation () = OBJECTS [LOCALPLAYER.nObject].Orientation ();
+				}
 			gameData.objs.endLevelCamera->info.position.mOrient.m.dir.f = -gameData.objs.endLevelCamera->info.position.mOrient.m.dir.f;
 			gameData.objs.endLevelCamera->info.position.mOrient.m.dir.r = -gameData.objs.endLevelCamera->info.position.mOrient.m.dir.r;
-			cam_angles = gameData.objs.endLevelCamera->info.position.mOrient.ExtractAnglesVec ();
-			exit_seg_angles = gameData.endLevel.exit.mOrient.ExtractAnglesVec ();
-			bank_rate = (-exit_seg_angles.v.coord.b - cam_angles.v.coord.b)/2;
+			CAngleVector camAngles = gameData.objs.endLevelCamera->info.position.mOrient.ExtractAnglesVec ();
+			CAngleVector exitAngles = gameData.endLevel.exit.mOrient.ExtractAnglesVec ();
+			fix bankRate = (-exitAngles.v.coord.b - camAngles.v.coord.b) / 2;
 			gameData.objs.consoleP->info.controlType = gameData.objs.endLevelCamera->info.controlType = CT_NONE;
 #ifdef SLEW_ON
 			slewObjP = gameData.objs.endLevelCamera;
@@ -891,9 +897,9 @@ void StartEndLevelFlyThrough (int nObject, CObject *objP, fix speed)
 {
 tExitFlightData& exitFlightData = exitFlightObjects [nObject];
 exitFlightData.objP = objP;
-exitFlightData.firstTime = 1;
+exitFlightData.bStart = 1;
 exitFlightData.speed = speed ? speed : DEFAULT_SPEED;
-exitFlightData.offset_frac = 0;
+exitFlightData.lateralOffset = 0;
 songManager.Play (SONG_INTER, 0);
 }
 
@@ -915,48 +921,59 @@ return dest;
 
 void DoEndLevelFlyThrough (int nObject)
 {
-	CObject *objP;
-	CSegment *segP;
-	int nOldPlayerSeg;
-
 tExitFlightData& exitFlightData = exitFlightObjects [nObject];
-objP = exitFlightData.objP;
-nOldPlayerSeg = objP->info.nSegment;
+CObject* objP = exitFlightData.objP;
+int nPrevSegment = objP->info.nSegment;
 
 //move the CPlayerData for this frame
 
-if (!exitFlightData.firstTime) {
-	objP->info.position.vPos += exitFlightData.step * gameData.time.xFrame;
-	angvec_add2_scale (&exitFlightData.angles, &exitFlightData.angstep, gameData.time.xFrame);
+if (!exitFlightData.bStart) {
+	CFixVector v1 = exitFlightData.vStep;
+	CFixVector::Normalize (v1);
+	CFixVector v2 = exitFlightData.vDest - objP->info.position.vPos;
+	CFixVector::Normalize (v2);
+	PrintLog (0, "object %d: dest dist %1.2f, path dot %1.2f\n", OBJ_IDX (objP), 
+				 X2F (CFixVector::Dist (objP->info.position.vPos, exitFlightData.vDest)),
+				 X2F (CFixVector::Dot (v1, v2)));
+	objP->info.position.vPos += exitFlightData.vStep * gameData.time.xFrame;
+	angvec_add2_scale (&exitFlightData.angles, &exitFlightData.aStep, gameData.time.xFrame);
 	objP->info.position.mOrient = CFixMatrix::Create (exitFlightData.angles);
+	if (UpdateObjectSeg (objP, false) < 0)
+		objP->info.nSegment = nPrevSegment;
+	else
+		objP->info.nSegment = nPrevSegment;
 	}
 //check new CPlayerData seg
-if (exitFlightData.firstTime || (UpdateObjectSeg (objP, false) > 0)) {
-	segP = SEGMENTS + objP->info.nSegment;
-	CFixVector curcenter, nextcenter;
-	fix xStepSize, xSegTime;
-	short nEntrySide, nExitSide = -1;//what sides we entry and leave through
-	CFixVector vDest;		//where we are heading (center of nExitSide)
-	CAngleVector aDest;		//where we want to be pointing
-	CFixMatrix mDest;
-	int nUpSide = 0;
+if (objP->info.nSegment < 0)
+	return;
+if (exitFlightData.bStart || (UpdateObjectSeg (objP, false) > 0)) {
+	if (objP->info.nSegment < 0)
+		return;
+	CSegment*		segP = SEGMENTS + objP->info.nSegment;
+	fix				xStepSize, xSegTime;
+	short				nEntrySide, nExitSide = -1, nUpSide = 0;	//what sides we entry and leave through
+	CFixVector		vDest;												//where we are heading (center of nExitSide)
+	CAngleVector	aDest;												//where we want to be pointing
+	CFixMatrix		mDest;
 
 #if DBG
 	if (nObject && objP->info.nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
 	nEntrySide = 0;
-	//find new exit CSide
-	if (!exitFlightData.firstTime) {
-		nEntrySide = ELFindConnectedSide (objP->info.nSegment, nOldPlayerSeg);
+	//find new exit side
+	if (!exitFlightData.bStart) {
+		nEntrySide = ELFindConnectedSide (objP->info.nSegment, nPrevSegment);
 		nExitSide = oppSideTable [nEntrySide];
 		}
-	if (exitFlightData.firstTime || (nEntrySide == -1) || (segP->m_children [nExitSide] == -1))
+	if (exitFlightData.bStart || (nEntrySide == -1) || (segP->m_children [nExitSide] == -1))
 		nExitSide = FindExitSide (objP);
-	if ((nExitSide >= 0) && (segP->m_children [nExitSide] >= 0)) {
-		fix d, dLargest = -I2X (1);
-		for (int i = 0; i < 6; i++) {
-			d = CFixVector::Dot (segP->m_sides [i].m_normals [2], exitFlightData.objP->info.position.mOrient.m.dir.u);
+	if ((nExitSide < 0) || (segP->m_children [nExitSide] < 0)) 
+		PrintLog (0, "Exit sequence failure!\n");
+	else {
+		fix dLargest = -I2X (1);
+		for (short i = 0; i < 6; i++) {
+			fix d = CFixVector::Dot (segP->m_sides [i].m_normals [2], exitFlightData.objP->info.position.mOrient.m.dir.u);
 			if (d > dLargest) {
 				dLargest = d; 
 				nUpSide = i;
@@ -967,46 +984,57 @@ if (exitFlightData.firstTime || (UpdateObjectSeg (objP, false) > 0)) {
 		vDest = segP->SideCenter (nExitSide);
 		//update target point and movement points
 		//offset CObject sideways
-		if (exitFlightData.offset_frac) {
-			int s0 = 0;
+		if (exitFlightData.lateralOffset) {
+			short s0 = 0;
 			for (; s0 < 6; s0++)
 				if ((s0 != nEntrySide) && (s0 != nExitSide) && (s0 != nUpSide) && (s0 != oppSideTable [nUpSide])) 
 					break;
 			if (s0 < 6) {
 				int s1 = oppSideTable [s0];
-				CFixVector s0p = segP->SideCenter (s0);
-				CFixVector s1p = segP->SideCenter (s1);
-				fix dist = FixMul (CFixVector::Dist (s0p, s1p), exitFlightData.offset_frac);
+				CFixVector s0Center = segP->SideCenter (s0);
+				CFixVector s1Center = segP->SideCenter (s1);
+				fix dist = CFixVector::Dist (s0Center, s1Center);
+				PrintLog (0, "object %d: width (%d, %d) %1.2f\n", OBJ_IDX (objP), s0, s1, X2F (dist));
+#if 1
+				dist /= exitFlightData.lateralOffset;
+#else
+				dist = FixMul (dist, exitFlightData.lateralOffset);
+#endif
 				if (dist - exitFlightData.offsetDist > MAX_SLIDE_PER_SEGMENT)
 					dist = exitFlightData.offsetDist + MAX_SLIDE_PER_SEGMENT;
+				PrintLog (0, "object %d: offset %1.2f\n", OBJ_IDX (objP), X2F (dist));
 				exitFlightData.offsetDist = dist;
-				vDest += objP->info.position.mOrient.m.dir.r * dist;
-				PrintLog (0, "offset: s0 %d, s1 %d, dist %1.2f\n", s0, s1, dist);
+				CFixVector v;
+				do {
+					v = vDest + objP->info.position.mOrient.m.dir.r * dist;
+					dist = 9 * dist / 10;
+					} while (dist && !PointInSeg (segP, v));
+				vDest = v;
 				}	
 			}
-		exitFlightData.step = vDest - objP->info.position.vPos;
-		xStepSize = CFixVector::Normalize (exitFlightData.step);
-		exitFlightData.step *= exitFlightData.speed;
-		curcenter = segP->Center ();
-		nextcenter = SEGMENTS [segP->m_children [nExitSide]].Center ();
-		exitFlightData.headvec = nextcenter - curcenter;
-		mDest = CFixMatrix::CreateFU (exitFlightData.headvec, segP->m_sides [nUpSide].m_normals [2]);
+		exitFlightData.vDest = vDest;
+		exitFlightData.vStep = vDest - objP->info.position.vPos;
+		xStepSize = CFixVector::Normalize (exitFlightData.vStep);
+		exitFlightData.vStep *= exitFlightData.speed;
+		exitFlightData.vHeading = SEGMENTS [segP->m_children [nExitSide]].Center ();
+		exitFlightData.vHeading -= segP->Center ();
+		mDest = CFixMatrix::CreateFU (exitFlightData.vHeading, segP->m_sides [nUpSide].m_normals [2]);
 		aDest = mDest.ExtractAnglesVec ();
-		if (exitFlightData.firstTime)
+		if (exitFlightData.bStart)
 			exitFlightData.angles = objP->info.position.mOrient.ExtractAnglesVec ();
 		xSegTime = FixDiv (xStepSize, exitFlightData.speed);	//how long through seg
 		if (xSegTime) {
-			exitFlightData.angstep.v.coord.x = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightData.angles.v.coord.p, aDest.v.coord.p), xSegTime)));
-			exitFlightData.angstep.v.coord.z = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightData.angles.v.coord.b, aDest.v.coord.b), xSegTime)));
-			exitFlightData.angstep.v.coord.y = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightData.angles.v.coord.h, aDest.v.coord.h), xSegTime)));
+			exitFlightData.aStep.v.coord.x = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightData.angles.v.coord.p, aDest.v.coord.p), xSegTime)));
+			exitFlightData.aStep.v.coord.z = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightData.angles.v.coord.b, aDest.v.coord.b), xSegTime)));
+			exitFlightData.aStep.v.coord.y = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightData.angles.v.coord.h, aDest.v.coord.h), xSegTime)));
 			}
 		else {
 			exitFlightData.angles = aDest;
-			exitFlightData.angstep.SetZero ();
+			exitFlightData.aStep.SetZero ();
 			}
 		}
 	}
-exitFlightData.firstTime = 0;
+exitFlightData.bStart = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1335,12 +1363,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct tExitFlightData {
 	CObject		*objP;
 	CAngleVector	angles;			//orientation in angles
-	CFixVector	step;				//how far in a second
-	CFixVector	angstep;			//rotation per second
+	CFixVector	vStep;				//how far in a second
+	CFixVector	aStep;			//rotation per second
 	fix			speed;			//how fast CObject is moving
-	CFixVector 	headvec;			//where we want to be pointing
-	int			firstTime;		//flag for if first time through
-	fix			offset_frac;	//how far off-center as portion of way
+	CFixVector 	vHeading;			//where we want to be pointing
+	int			bStart;		//flag for if first time through
+	fix			lateralOffset;	//how far off-center as portion of way
 	fix			offsetDist;	//how far currently off-center
 } tExitFlightData;
 
@@ -1828,7 +1856,7 @@ switch (gameStates.app.bEndLevelSequence) {
 				exitFlightObjects [1] = exitFlightObjects [0];
 				exitFlightObjects [1].objP = gameData.objs.endLevelCamera;
 				exitFlightObjects [1].speed = (5 * gameData.endLevel.xCurFlightSpeed) / 4;
-				exitFlightObjects [1].offset_frac = 0x4000;
+				exitFlightObjects [1].lateralOffset = 0x4000;
 				gameData.objs.endLevelCamera->info.position.vPos += gameData.objs.endLevelCamera->info.position.mOrient.m.dir.f * (I2X (7));
 				timer=0x20000;
 				}
@@ -2172,9 +2200,9 @@ void StartEndLevelFlyThrough (int n, CObject *objP, fix speed)
 {
 exitFlightDataP = exitFlightObjects + n;
 exitFlightDataP->objP = objP;
-exitFlightDataP->firstTime = 1;
+exitFlightDataP->bStart = 1;
 exitFlightDataP->speed = speed ? speed : DEFAULT_SPEED;
-exitFlightDataP->offset_frac = 0;
+exitFlightDataP->lateralOffset = 0;
 songManager.Play (SONG_INTER, 0);
 }
 
@@ -2206,15 +2234,15 @@ nOldPlayerSeg = objP->info.nSegment;
 
 //move the player for this frame
 
-if (!exitFlightDataP->firstTime) {
-	objP->info.position.vPos += exitFlightDataP->step * gameData.time.xFrame;
-	angvec_add2_scale (&exitFlightDataP->angles, &exitFlightDataP->angstep, gameData.time.xFrame);
+if (!exitFlightDataP->bStart) {
+	objP->info.position.vPos += exitFlightDataP->vStep * gameData.time.xFrame;
+	angvec_add2_scale (&exitFlightDataP->angles, &exitFlightDataP->aStep, gameData.time.xFrame);
 	objP->info.position.mOrient = CFixMatrix::Create (exitFlightDataP->angles);
 	}
 //check new player seg
 if (UpdateObjectSeg (objP, false)) {
 	segP = SEGMENTS + objP->info.nSegment;
-	if (exitFlightDataP->firstTime || (objP->info.nSegment != nOldPlayerSeg)) {		//moved into new seg
+	if (exitFlightDataP->bStart || (objP->info.nSegment != nOldPlayerSeg)) {		//moved into new seg
 		CFixVector curcenter, nextcenter;
 		fix xStepSize, xSegTime;
 		short nEntrySide, nExitSide = -1;//what sides we entry and leave through
@@ -2229,11 +2257,11 @@ if (UpdateObjectSeg (objP, false)) {
 	#endif
 		nEntrySide = 0;
 		//find new exit CSide
-		if (!exitFlightDataP->firstTime) {
+		if (!exitFlightDataP->bStart) {
 			nEntrySide = ELFindConnectedSide (objP->info.nSegment, nOldPlayerSeg);
 			nExitSide = oppSideTable [nEntrySide];
 			}
-		if (exitFlightDataP->firstTime || (nEntrySide == -1) || (segP->m_children [nExitSide] == -1))
+		if (exitFlightDataP->bStart || (nEntrySide == -1) || (segP->m_children [nExitSide] == -1))
 			nExitSide = FindExitSide (objP);
 		if ((nExitSide >= 0) && (segP->m_children [nExitSide] >= 0)) {
 			fix d, dLargest = -I2X (1);
@@ -2251,7 +2279,7 @@ if (UpdateObjectSeg (objP, false)) {
 			vDest = segP->SideCenter (nExitSide);
 			//update target point and movement points
 			//offset CObject sideways
-			if (exitFlightDataP->offset_frac) {
+			if (exitFlightDataP->lateralOffset) {
 				int s0 = -1, s1 = 0, i;
 				CFixVector s0p, s1p;
 				fix dist;
@@ -2265,36 +2293,36 @@ if (UpdateObjectSeg (objP, false)) {
 						}
 				s0p = segP->SideCenter (s0);
 				s1p = segP->SideCenter (s1);
-				dist = FixMul (CFixVector::Dist (s0p, s1p), exitFlightDataP->offset_frac);
+				dist = FixMul (CFixVector::Dist (s0p, s1p), exitFlightDataP->lateralOffset);
 				if (dist-exitFlightDataP->offsetDist > MAX_SLIDE_PER_SEGMENT)
 					dist = exitFlightDataP->offsetDist + MAX_SLIDE_PER_SEGMENT;
 				exitFlightDataP->offsetDist = dist;
 				vDest += objP->info.position.mOrient.m.dir.r * dist;
 				}
-			exitFlightDataP->step = vDest - objP->info.position.vPos;
-			xStepSize = CFixVector::Normalize (exitFlightDataP->step);
-			exitFlightDataP->step *= exitFlightDataP->speed;
+			exitFlightDataP->vStep = vDest - objP->info.position.vPos;
+			xStepSize = CFixVector::Normalize (exitFlightDataP->vStep);
+			exitFlightDataP->vStep *= exitFlightDataP->speed;
 			curcenter = segP->Center ();
 			nextcenter = SEGMENTS [segP->m_children [nExitSide]].Center ();
-			exitFlightDataP->headvec = nextcenter - curcenter;
-			mDest = CFixMatrix::CreateFU (exitFlightDataP->headvec, segP->m_sides [nUpSide].m_normals [0]);
+			exitFlightDataP->vHeading = nextcenter - curcenter;
+			mDest = CFixMatrix::CreateFU (exitFlightDataP->vHeading, segP->m_sides [nUpSide].m_normals [0]);
 			aDest = mDest.ExtractAnglesVec ();
-			if (exitFlightDataP->firstTime)
+			if (exitFlightDataP->bStart)
 				exitFlightDataP->angles = objP->info.position.mOrient.ExtractAnglesVec ();
 			xSegTime = FixDiv (xStepSize, exitFlightDataP->speed);	//how long through seg
 			if (xSegTime) {
-				exitFlightDataP->angstep.v.coord.x = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.coord.p, aDest.v.coord.p), xSegTime)));
-				exitFlightDataP->angstep.v.coord.z = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.coord.b, aDest.v.coord.b), xSegTime)));
-				exitFlightDataP->angstep.v.coord.y = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.coord.h, aDest.v.coord.h), xSegTime)));
+				exitFlightDataP->aStep.v.coord.x = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.coord.p, aDest.v.coord.p), xSegTime)));
+				exitFlightDataP->aStep.v.coord.z = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.coord.b, aDest.v.coord.b), xSegTime)));
+				exitFlightDataP->aStep.v.coord.y = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.coord.h, aDest.v.coord.h), xSegTime)));
 				}
 			else {
 				exitFlightDataP->angles = aDest;
-				exitFlightDataP->angstep.SetZero ();
+				exitFlightDataP->aStep.SetZero ();
 				}
 			}
 		}
 	}
-exitFlightDataP->firstTime = 0;
+exitFlightDataP->bStart = 0;
 }
 
 //------------------------------------------------------------------------------

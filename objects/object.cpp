@@ -1215,8 +1215,6 @@ if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 int nNewSeg = objP->FindSegment ();
-if (nNewSeg == objP->info.nSegment)
-	return 0;
 if (0 > nNewSeg) {
 	if (!bMove) {
 #if DBG
@@ -1231,6 +1229,8 @@ if (0 > nNewSeg) {
 	CFixVector::Normalize (vOffset);
 	objP->info.position.vPos = segP->Center () + vOffset * segP->MinRad ();
 	}
+if (nNewSeg == objP->info.nSegment)
+	return 0;
 objP->RelinkToSeg (nNewSeg);
 return 1;
 }

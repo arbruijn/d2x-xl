@@ -138,7 +138,7 @@ return nMatchSeg;		//we haven't found a segment
 
 // -------------------------------------------------------------------------------
 
-static inline int PointInSeg (CSegment* segP, CFixVector vPos)
+int PointInSeg (CSegment* segP, CFixVector vPos)
 {
 if (!segP->m_nShape) {
 	fix d = CFixVector::Dist (vPos, segP->Center ());
