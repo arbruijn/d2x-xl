@@ -60,11 +60,11 @@ m_vCenter.Assign (vCenter);
 CFixVector v0 = m_vCenter + m_normals [2];
 CFixVector v1 = m_vCenter - m_normals [2];
 #if 1
-FindPlaneLineIntersection (m_vCenter, &VERTICES [m_vertices [0]], &m_normals [0], &v0, &v1, 0, false);
+FindPlaneLineIntersection (m_vCenter, &VERTICES [m_corners [0]], &m_normals [0], &v0, &v1, 0, false);
 #else
 CFixVector c0, c1;
-FindPlaneLineIntersection (c0, &VERTICES [m_vertices [0]], &m_normals [0], &v0, &v1, 0, false);
-FindPlaneLineIntersection (c1, &VERTICES [m_vertices [3]], &m_normals [1], &v0, &v1, 0, false);
+FindPlaneLineIntersection (c0, &VERTICES [m_corners [0]], &m_normals [0], &v0, &v1, 0, false);
+FindPlaneLineIntersection (c1, &VERTICES [m_corners [3]], &m_normals [1], &v0, &v1, 0, false);
 if (c0 == c1) 
 	m_vCenter = c0;
 else {
@@ -85,11 +85,11 @@ void CSide::ComputeRads (void)
 m_rads [0] = 0x7fffffff;
 m_rads [1] = 0;
 for (int i = 0; i < m_nCorners; i++) {
-	CFixVector v = CFixVector::Avg (VERTICES [m_vertices [i]], VERTICES [m_vertices [(i + 1) % m_nCorners]]);
+	CFixVector v = CFixVector::Avg (VERTICES [m_corners [i]], VERTICES [m_corners [(i + 1) % m_nCorners]]);
 	fix d = CFixVector::Dist (v, m_vCenter);
 	if (m_rads [0] > d)
 		m_rads [0] = d;
-	d = CFixVector::Dist (m_vCenter, VERTICES [m_vertices [i]]);
+	d = CFixVector::Dist (m_vCenter, VERTICES [m_corners [i]]);
 	if (m_rads [1] < d)
 		m_rads [1] = d;
 	}
@@ -146,20 +146,20 @@ else {
 	return;
 	}
 
-m_nMinVertex [0] = min (m_vertices [0], m_vertices [2]);
+m_nMinVertex [0] = min (m_corners [0], m_corners [2]);
 if (m_nFaces == 1) {
-	if (m_nMinVertex [0] > m_vertices [1])
-		m_nMinVertex [0] = m_vertices [1];
+	if (m_nMinVertex [0] > m_corners [1])
+		m_nMinVertex [0] = m_corners [1];
 	}
 if (m_nType == SIDE_IS_QUAD) {
-	if (m_nMinVertex [0] > m_vertices [1])
-		m_nMinVertex [0] = m_vertices [1];
-	if (m_nMinVertex [0] > m_vertices [3])
-		m_nMinVertex [0] = m_vertices [3];
+	if (m_nMinVertex [0] > m_corners [1])
+		m_nMinVertex [0] = m_corners [1];
+	if (m_nMinVertex [0] > m_corners [3])
+		m_nMinVertex [0] = m_corners [3];
 	m_nMinVertex [1] = m_nMinVertex [0];
 	}
 else
-	m_nMinVertex [1] = min (m_vertices [1], m_vertices [4]);
+	m_nMinVertex [1] = min (m_corners [1], m_corners [4]);
 
 SetupFaceVertIndex ();
 }
