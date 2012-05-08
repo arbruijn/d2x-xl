@@ -940,17 +940,13 @@ if (!bStart) {
 	PrintLog (0, "object %d: dest dist %1.2f, path dot %1.2f\n", OBJ_IDX (objP), X2F (exitFlightData.destDist), X2F (exitFlightData.pathDot));
 	angvec_add2_scale (&exitFlightData.angles, &exitFlightData.aStep, gameData.time.xFrame);
 	objP->info.position.mOrient = CFixMatrix::Create (exitFlightData.angles);
-	if (UpdateObjectSeg (objP, false) < 0)
-		objP->RelinkToSeg (nPrevSegment);
-	else if (objP->Segment () != nPrevSegment)
-		objP->RelinkToSeg (nPrevSegment);
 	}
 //check new CPlayerData seg
-if (exitFlightData.pathDot < 0)
+if (exitFlightData.pathDot <= 0)
 	nDbgSeg = nDbgSeg;
 if (objP->info.nSegment < 0)
 	return 0;
-if (bStart || (exitFlightData.pathDot < 0)) {
+if (bStart || (exitFlightData.pathDot <= 0)) {
 	if (objP->info.nSegment < 0)
 		return 0;
 	CSegment*		segP = SEGMENTS + objP->info.nSegment;
@@ -965,11 +961,14 @@ if (bStart || (exitFlightData.pathDot < 0)) {
 		nDbgSeg = nDbgSeg;
 #endif
 	if (!bStart) {
-		if (segP->m_children [exitFlightData.exitSide] < 0) {
+		short nNewSeg = segP->m_children [exitFlightData.exitSide];
+		if (nNewSeg < 0) {
 			PrintLog (0, "Exit sequence failure!\n");
 			return 0;
 			}
-		exitFlightData.entrySide = ELFindConnectedSide (segP->m_children [exitFlightData.exitSide], objP->info.nSegment);
+		exitFlightData.entrySide = ELFindConnectedSide (nNewSeg, objP->info.nSegment);
+		objP->RelinkToSeg (nNewSeg);
+		segP = SEGMENTS + nNewSeg;
 		}
 	exitFlightData.exitSide = oppSideTable [exitFlightData.entrySide];
 	fix dLargest = -I2X (1);
@@ -1009,14 +1008,14 @@ if (bStart || (exitFlightData.pathDot < 0)) {
 			do {
 				v = vDest + objP->info.position.mOrient.m.dir.r * dist;
 				dist = 9 * dist / 10;
-				} while (dist && !PointInSeg (segP, v));
+				} while (dist && (segP->Masks (v, 0).m_center != 0));
 			vDest = v;
 			}	
 		}
 	exitFlightData.vDest = vDest;
 	exitFlightData.vStep = vDest - objP->info.position.vPos;
 	xStepSize = CFixVector::Normalize (exitFlightData.vStep);
-	if (exitFlightData.pathDot < 0) 
+	if (exitFlightData.pathDot <= 0) 
 		objP->info.position.vPos += exitFlightData.vStep * exitFlightData.destDist;
 	exitFlightData.vStep *= exitFlightData.speed;
 	exitFlightData.vHeading = SEGMENTS [segP->m_children [exitFlightData.exitSide]].Center ();
