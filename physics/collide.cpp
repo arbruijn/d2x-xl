@@ -383,6 +383,7 @@ if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL
 
 #if 1
 	f0.Compute (vDist, vNormal, otherP);
+	vDist.Neg ();
 	f1.Compute (vDist, vNormal, otherP);
 #else
 	CFixVector	vDistNorm, vVelNorm, f0.m_vForce, f1.m_vForce, f0.m_vRotForce, f1.m_vRotForce;
@@ -467,7 +468,7 @@ else {
 #else
 	float mass0 = X2F (thisP->mType.physInfo.mass);
 	float mass1 = X2F (otherP->mType.physInfo.mass);
-	float impulse = (mass0 * mass1) / (mass0 + mass1);
+	float impulse = 2.0f * (mass0 * mass1) / (mass0 + mass1);
 	if (impulse == 0.0f)
 		return 0;
 #endif
