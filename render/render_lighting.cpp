@@ -374,7 +374,7 @@ PROF_START
 					bLightmaps = lightmapManager.HaveLightmaps ();
 	static		CStaticFaceColor<255,255,255,255> brightColor1;
 	static		CStaticFaceColor<127,127,127,127> brightColor2;
-	static		CFaceColor* brightColors [2] = {&brightColor, &brightColor2};
+	static		CFaceColor* brightColors [2] = {&brightColor1, &brightColor2};
 
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 for (i = 0; i < 3; i++)
@@ -500,7 +500,7 @@ PROF_START
 #endif
 	static		CStaticFaceColor<255,255,255,255> brightColor1;
 	static		CStaticFaceColor<127,127,127,127> brightColor2;
-	static		CFaceColor* brightColors [2] = {&brightColor, &brightColor2};
+	static		CFaceColor* brightColors [2] = {&brightColor1, &brightColor2};
 
 for (i = 0; i < 3; i++)
 	faceColor [i].Set (1.0f, 1.0f, 1.0f, 1.0f);
@@ -558,7 +558,7 @@ for (i = nStart; i < nEnd; i++) {
 					*colorP = nColor ? faceColor [nColor] : *brightColors [gameStates.render.bFullBright - 1];
 				else {
 					if (gameStates.render.bPerPixelLighting == 2)
-						*colorP = brightColor; //gameData.render.color.ambient [nVertex];
+						*colorP = *brightColors [gameStates.render.bFullBright - 1]; //gameData.render.color.ambient [nVertex];
 					else {
 						nVertex = triP->index [h];
 #if DBG
@@ -637,7 +637,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 
 	static		CStaticFaceColor<255,255,255,255> brightColor1;
 	static		CStaticFaceColor<127,127,127,127> brightColor2;
-	static		CFaceColor* brightColors [2] = {&brightColor, &brightColor2};
+	static		CFaceColor* brightColors [2] = {&brightColor1, &brightColor2};
 
 for (i = 0; i < 3; i++)
 	faceColor [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
