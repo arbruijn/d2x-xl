@@ -281,6 +281,7 @@ void StartRenderedEndLevelSequence (void)
 //count segments in exit tunnel
 nOldSeg = gameData.objs.consoleP->info.nSegment;
 nExitSide = FindExitSide (gameData.objs.consoleP);
+exitFlightObjects [0].entrySide = oppSideTable [nExitSide];
 nSegment = SEGMENTS [nOldSeg].m_children [nExitSide];
 nTunnelLength = 0;
 do {
@@ -728,7 +729,6 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 			}
 		}
 	}
-Assert (nBestSide!=-1);
 return nBestSide;
 }
 
@@ -955,9 +955,9 @@ if (bStart || (exitFlightData.pathDot < 0)) {
 		return 0;
 	CSegment*		segP = SEGMENTS + objP->info.nSegment;
 	fix				xStepSize, xSegTime;
-	short				nEntrySide, nExitSide = -1, nUpSide = 0;	//what sides we entry and leave through
-	CFixVector		vDest;												//where we are heading (center of nExitSide)
-	CAngleVector	aDest;												//where we want to be pointing
+	short				nUpSide = 0;	//what sides we entry and leave through
+	CFixVector		vDest;			//where we are heading (center of exitFlightData.exitSide)
+	CAngleVector	aDest;			//where we want to be pointing
 	CFixMatrix		mDest;
 
 #if DBG
@@ -965,7 +965,7 @@ if (bStart || (exitFlightData.pathDot < 0)) {
 		nDbgSeg = nDbgSeg;
 #endif
 	if (!bStart) {
-		if (segP->m_children [nExitSide] < 0) {
+		if (segP->m_children [exitFlightData.exitSide] < 0) {
 			PrintLog (0, "Exit sequence failure!\n");
 			return 0;
 			}
@@ -980,15 +980,15 @@ if (bStart || (exitFlightData.pathDot < 0)) {
 			nUpSide = i;
 			}
 		}
-	PrintLog (0, "object %d: exit seg %d, exit side %d, up side %d\n", OBJ_IDX (objP), objP->info.nSegment, nExitSide, nUpSide);
+	PrintLog (0, "object %d: exit seg %d, exit side %d, up side %d\n", OBJ_IDX (objP), objP->info.nSegment, exitFlightData.exitSide, nUpSide);
 	//update target point & angles
-	vDest = segP->SideCenter (nExitSide);
+	vDest = segP->SideCenter (exitFlightData.exitSide);
 	//update target point and movement points
 	//offset CObject sideways
 	if (exitFlightData.lateralOffset) {
 		short s0 = 0;
 		for (; s0 < 6; s0++)
-			if ((s0 != nEntrySide) && (s0 != nExitSide) && (s0 != nUpSide) && (s0 != oppSideTable [nUpSide])) 
+			if ((s0 != exitFlightData.entrySide) && (s0 != exitFlightData.exitSide) && (s0 != nUpSide) && (s0 != oppSideTable [nUpSide])) 
 				break;
 		if (s0 < 6) {
 			int s1 = oppSideTable [s0];
@@ -1019,7 +1019,7 @@ if (bStart || (exitFlightData.pathDot < 0)) {
 	if (exitFlightData.pathDot < 0) 
 		objP->info.position.vPos += exitFlightData.vStep * exitFlightData.destDist;
 	exitFlightData.vStep *= exitFlightData.speed;
-	exitFlightData.vHeading = SEGMENTS [segP->m_children [nExitSide]].Center ();
+	exitFlightData.vHeading = SEGMENTS [segP->m_children [exitFlightData.exitSide]].Center ();
 	exitFlightData.vHeading -= segP->Center ();
 	mDest = CFixMatrix::CreateFU (exitFlightData.vHeading, segP->m_sides [nUpSide].m_normals [2]);
 	aDest = mDest.ExtractAnglesVec ();
@@ -1036,6 +1036,7 @@ if (bStart || (exitFlightData.pathDot < 0)) {
 		exitFlightData.aStep.SetZero ();
 		}
 	}
+return 1;
 }
 
 //------------------------------------------------------------------------------
