@@ -63,7 +63,7 @@ template <ubyte red, ubyte green, ubyte blue, ubyte alpha>
 class CStaticCanvasColor : public CCanvasColor {
 	public:
 		explicit CStaticCanvasColor () { 
-			Set (float (red) / 255.0f, float (green) / 255.0f, float (blue) / 255.0f, float (alpha) / 255.0f); 
+			Set (red, green, blue, alpha); 
 			index = -1;
 			rgb = 1;
 			}
