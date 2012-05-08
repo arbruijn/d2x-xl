@@ -1092,8 +1092,10 @@ if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments)) {
 	}
 SetSegment (nSegment);
 #if DBG
-if (IsLinkedToSeg (nSegment))
+if (IsLinkedToSeg (nSegment)) {
 	UnlinkFromSeg ();
+	SetSegment (nSegment);
+	}
 #else
 if (SEGMENTS [nSegment].m_objects == Index ())
 	return;

@@ -65,6 +65,8 @@ typedef struct tExitFlightData {
 	int				bStart;		//flag for if first time through
 	fix				lateralOffset;	//how far off-center as portion of way
 	fix				offsetDist;		//how far currently off-center
+	fix				destDist;
+	fix				pathDot;
 } tExitFlightData;
 
 //endlevel sequence states
@@ -915,6 +917,8 @@ return dest;
 
 //-----------------------------------------------------------------------------
 
+static int nSteps = 0;
+
 #define MAX_ANGSTEP	0x4000		//max turn per second
 
 #define MAX_SLIDE_PER_SEGMENT 0x10000
@@ -926,26 +930,31 @@ CObject* objP = exitFlightData.objP;
 int nPrevSegment = objP->info.nSegment;
 
 //move the CPlayerData for this frame
-
+nSteps++;
 if (!exitFlightData.bStart) {
+	CFixVector vNewPos = objP->info.position.vPos + exitFlightData.vStep * gameData.time.xFrame;
 	CFixVector v1 = exitFlightData.vStep;
 	CFixVector::Normalize (v1);
-	CFixVector v2 = exitFlightData.vDest - objP->info.position.vPos;
+	CFixVector v2 = exitFlightData.vDest - vNewPos;
 	CFixVector::Normalize (v2);
-	PrintLog (0, "object %d: dest dist %1.2f, path dot %1.2f\n", OBJ_IDX (objP), 
-				 X2F (CFixVector::Dist (objP->info.position.vPos, exitFlightData.vDest)),
-				 X2F (CFixVector::Dot (v1, v2)));
-	objP->info.position.vPos += exitFlightData.vStep * gameData.time.xFrame;
+	exitFlightData.destDist = CFixVector::Dist (objP->info.position.vPos, exitFlightData.vDest);
+	exitFlightData.pathDot = CFixVector::Dot (v1, v2);
+	objP->info.position.vPos = (exitFlightData.pathDot < 0) ? exitFlightData.vDest : vNewPos;
+	PrintLog (0, "object %d: dest dist %1.2f, path dot %1.2f\n", OBJ_IDX (objP), X2F (exitFlightData.destDist), X2F (exitFlightData.pathDot));
 	angvec_add2_scale (&exitFlightData.angles, &exitFlightData.aStep, gameData.time.xFrame);
 	objP->info.position.mOrient = CFixMatrix::Create (exitFlightData.angles);
 	if (UpdateObjectSeg (objP, false) < 0)
-		objP->info.nSegment = nPrevSegment;
-	else
-		objP->info.nSegment = nPrevSegment;
+		objP->RelinkToSeg (nPrevSegment);
+	else if (objP->Segment () != nPrevSegment)
+		objP->RelinkToSeg (nPrevSegment);
 	}
 //check new CPlayerData seg
+if (exitFlightData.pathDot < 0)
+	nDbgSeg = nDbgSeg;
 if (objP->info.nSegment < 0)
 	return;
+if (nSteps == 14)
+	nSteps = nSteps;
 if (exitFlightData.bStart || (UpdateObjectSeg (objP, false) > 0)) {
 	if (objP->info.nSegment < 0)
 		return;
@@ -1015,6 +1024,8 @@ if (exitFlightData.bStart || (UpdateObjectSeg (objP, false) > 0)) {
 		exitFlightData.vDest = vDest;
 		exitFlightData.vStep = vDest - objP->info.position.vPos;
 		xStepSize = CFixVector::Normalize (exitFlightData.vStep);
+		if (exitFlightData.pathDot < 0) 
+			objP->info.position.vPos += exitFlightData.vStep * exitFlightData.destDist;
 		exitFlightData.vStep *= exitFlightData.speed;
 		exitFlightData.vHeading = SEGMENTS [segP->m_children [nExitSide]].Center ();
 		exitFlightData.vHeading -= segP->Center ();
