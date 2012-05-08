@@ -53,13 +53,13 @@ if (!FaceCount ())
 CFloatVector vCenter;
 vCenter.SetZero ();
 for (int i = 0; i < m_nCorners; i++)
-	vCenter += FVERTICES [m_vertices [i]];
+	vCenter += FVERTICES [m_corners [i]];
 vCenter /= float (m_nCorners);
 m_vCenter.Assign (vCenter);
 // make sure side center is inside segment
 CFixVector v0 = m_vCenter + m_normals [2];
 CFixVector v1 = m_vCenter - m_normals [2];
-#if 0
+#if 1
 FindPlaneLineIntersection (m_vCenter, &VERTICES [m_vertices [0]], &m_normals [0], &v0, &v1, 0, false);
 #else
 CFixVector c0, c1;
