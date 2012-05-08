@@ -392,7 +392,7 @@ if (!m_info.bPlaying) {		//not playing redbook, so play midi
 	midi.PlaySong (m_info.data [nSong].filename,
 						m_info.data [nSong].melodicBankFile,
 						m_info.data [nSong].drumBankFile,
-						bLoop, m_info.nSongs [1] && (nSong >= m_info.nSongs [0]));
+						bLoop, gameStates.app.bD1Mission || (m_info.nSongs [1] && (nSong >= m_info.nSongs [0])));
 	}
 }
 

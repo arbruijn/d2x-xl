@@ -1210,23 +1210,23 @@ return FindSegByPos (info.position.vPos, info.nSegment, 1, 0);
 //callers should generally use FindHitpoint ()
 int UpdateObjectSeg (CObject * objP, bool bMove)
 {
-	int nNewSeg;
-
 #if DBG
 if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
-if (0 > (nNewSeg = objP->FindSegment ())) {
+int nNewSeg = objP->FindSegment ();
+if (nNewSeg == objP->info.nSegment)
+	return 0;
+if (0 > nNewSeg) {
 	if (!bMove)
-		return 0;
+		return -1;
 	nNewSeg = FindClosestSeg (objP->info.position.vPos);
 	CSegment* segP = SEGMENTS + nNewSeg;
 	CFixVector vOffset = objP->info.position.vPos - segP->Center ();
 	CFixVector::Normalize (vOffset);
 	objP->info.position.vPos = segP->Center () + vOffset * segP->MinRad ();
 	}
-if (nNewSeg != objP->info.nSegment)
-	objP->RelinkToSeg (nNewSeg);
+objP->RelinkToSeg (nNewSeg);
 return 1;
 }
 
@@ -1240,7 +1240,7 @@ void FixObjectSegs (void)
 FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_NONE) || (objP->info.nType == OBJ_CAMBOT) || (objP->info.nType == OBJ_EFFECT))
 		continue;
-	if (UpdateObjectSeg (objP))
+	if (!UpdateObjectSeg (objP))
 		continue;
 	CSegment* segP = SEGMENTS + objP->info.nSegment;
 	fix xScale = segP->MinRad () - objP->info.xSize;
