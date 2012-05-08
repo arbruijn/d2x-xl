@@ -427,8 +427,10 @@ else
 		OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	}
-if (gameStates.render.bFullBright)
-	glColor3f (1,1,1);
+if (gameStates.render.bFullBright) {
+	float l = 1.0f / float (gameStates.render.bFullBright);
+	glColor3f (l,l,l);
+	}
 ogl.SetBlendMode (OGL_BLEND_REPLACE);
 ogl.ClearError (0);
 return 1;

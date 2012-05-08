@@ -467,7 +467,8 @@ else {
 			SetupTexMergeShader (bColorKey, bColored, gameStates.render.history.nType);
 		else 
 			shaderManager.Deploy (-1);
-		glColor3f (1,1,1);
+		float l = 1.0f / float (gameStates.render.bFullBright);
+		glColor3f (l,l,l);
 		DrawFace (faceP);
 		}
 	else if (gameStates.render.bPerPixelLighting == 1) {
