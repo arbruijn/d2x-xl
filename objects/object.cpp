@@ -1218,8 +1218,13 @@ int nNewSeg = objP->FindSegment ();
 if (nNewSeg == objP->info.nSegment)
 	return 0;
 if (0 > nNewSeg) {
-	if (!bMove)
+	if (!bMove) {
+#if DBG
+		if (OBJ_IDX (objP) == 0)
+			objP = objP;
+#endif
 		return -1;
+		}
 	nNewSeg = FindClosestSeg (objP->info.position.vPos);
 	CSegment* segP = SEGMENTS + nNewSeg;
 	CFixVector vOffset = objP->info.position.vPos - segP->Center ();

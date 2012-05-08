@@ -54,7 +54,7 @@ CFloatVector vCenter;
 vCenter.SetZero ();
 for (int i = 0; i < m_nCorners; i++)
 	vCenter += FVERTICES [m_vertices [i]];
-vCenter /= m_nCorners;
+vCenter /= float (m_nCorners);
 m_vCenter.Assign (vCenter);
 // make sure side center is inside segment
 CFixVector v0 = m_vCenter + m_normals [2];

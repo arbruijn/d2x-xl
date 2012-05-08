@@ -962,6 +962,7 @@ if (exitFlightData.firstTime || (UpdateObjectSeg (objP, false) > 0)) {
 				nUpSide = i;
 				}
 			}
+		PrintLog (0, "object %d: exit seg %d, exit side %d, up side %d\n", OBJ_IDX (objP), objP->info.nSegment, nExitSide, nUpSide);
 		//update target point & angles
 		vDest = segP->SideCenter (nExitSide);
 		//update target point and movement points
@@ -980,6 +981,7 @@ if (exitFlightData.firstTime || (UpdateObjectSeg (objP, false) > 0)) {
 					dist = exitFlightData.offsetDist + MAX_SLIDE_PER_SEGMENT;
 				exitFlightData.offsetDist = dist;
 				vDest += objP->info.position.mOrient.m.dir.r * dist;
+				PrintLog (0, "offset: s0 %d, s1 %d, dist %1.2f\n", s0, s1, dist);
 				}	
 			}
 		exitFlightData.step = vDest - objP->info.position.vPos;
@@ -988,7 +990,7 @@ if (exitFlightData.firstTime || (UpdateObjectSeg (objP, false) > 0)) {
 		curcenter = segP->Center ();
 		nextcenter = SEGMENTS [segP->m_children [nExitSide]].Center ();
 		exitFlightData.headvec = nextcenter - curcenter;
-		mDest = CFixMatrix::CreateFU (exitFlightData.headvec, segP->m_sides [nUpSide].m_normals [0]);
+		mDest = CFixMatrix::CreateFU (exitFlightData.headvec, segP->m_sides [nUpSide].m_normals [2]);
 		aDest = mDest.ExtractAnglesVec ();
 		if (exitFlightData.firstTime)
 			exitFlightData.angles = objP->info.position.mOrient.ExtractAnglesVec ();
