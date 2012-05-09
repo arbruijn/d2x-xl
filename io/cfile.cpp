@@ -547,7 +547,7 @@ CByteArray compressedBuffer;
 if (compressedBuffer.Create (nCompressedSize) && (compress (compressedBuffer.Buffer (), &nCompressedSize, (ubyte*) buf, bufLen) == Z_OK)) {
 	size_t h = Write (&bufLen, 1, sizeof (bufLen), -1);
 	h += Write (&nCompressedSize, 1, sizeof (nCompressedSize), -1);
-	h += Write (compressedBuffer.Buffer (), sizeof (byte), nCompressedSize, -1);
+	h += Write (compressedBuffer.Buffer (), sizeof (ubyte), nCompressedSize, -1);
 	return (h == sizeof (bufLen) + sizeof (nCompressedSize) + nCompressedSize) ? bufLen : -1;
 	}
 return -1;

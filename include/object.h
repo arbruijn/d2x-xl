@@ -777,7 +777,7 @@ class CObjDamageInfo {
 
 class CPositionSnapshot {
 	public:
-		byte			bIdleAnimation;
+		ubyte			bIdleAnimation;
 		fix			xTime;
 		CFixVector	vPos;
 };
@@ -791,7 +791,7 @@ class CPositionTracker {
 		CPositionSnapshot m_positions [POSTRACK_MAXFRAMES];
 
 		CPositionTracker () : m_nCurPos (0), m_nPosCount (0) {}
-		void Update (CFixVector& vPos, byte bIdleAnimation = 0);
+		void Update (CFixVector& vPos, ubyte bIdleAnimation = 0);
 		int Check (int nId);
 };
 
@@ -854,7 +854,7 @@ class CObject : public CObjectInfo {
 		~CObject ();
 
 #if DBG
-		inline int CheckSpeed (byte bIdleAnimation = 0) {
+		inline int CheckSpeed (ubyte bIdleAnimation = 0) {
 			m_posTracker.Update (Position (), bIdleAnimation);
 			return m_posTracker.Check (Id ());
 			}
