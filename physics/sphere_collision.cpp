@@ -49,11 +49,21 @@ int ijTable [3][2] = {
 // see if a point (refP) is inside a triangle using barycentric method
 // return 0 if point inside triangle, otherwise sides point is behind as bit code
 
-ubyte PointIsOutsideFace (CFixVector* refP, CFixVector* vertices, short nVerts)
+ubyte PointIsOutsideFace (CFixVector* vRef, CFixVector* vertices, short nVerts)
 {
+#if 1
+CFixVector n1 = CFixVector::Normal (vertices [0], vertices [1], *vRef);
+CFixVector n2 = CFixVector::Normal (vertices [1], vertices [2], *vRef);
+if (CFixVector::Dot (n1, n2) < PLANE_DIST_TOLERANCE)
+	return true;
+CFixVector n3 = CFixVector::Normal (vertices [2], vertices [0], *vRef);
+if (CFixVector::Dot (n2, n3) < PLANE_DIST_TOLERANCE)
+	return true;
+return false;
+#else
 CFixVector v0 = vertices [2] - vertices [0];
 CFixVector v1 = vertices [1] - vertices [0];
-CFixVector v2 = *refP - vertices [0];
+CFixVector v2 = *vRef - vertices [0];
 fix dot01 = CFixVector::Dot (v0, v1);
 fix dot02 = CFixVector::Dot (v0, v2);
 fix dot12 = CFixVector::Dot (v1, v2);
@@ -62,16 +72,27 @@ fix u = FixMul (dot02 - FixMul (dot01, dot12), invDenom);
 fix v = FixMul (dot12 - FixMul (dot01, dot02), invDenom);
 // Check if point is in triangle
 return int (u < 0) + (int (v < 0) << 1) + (int (u + v > I2X (1)) << 2);
+#endif
 }
 
 //	-----------------------------------------------------------------------------
 //see if a point (refP) is inside a triangle using barycentric method
 
-ubyte PointIsOutsideFace (CFixVector* refP, ushort* nVertIndex, short nVerts)
+ubyte PointIsOutsideFace (CFixVector* vRef, ushort* nVertIndex, short nVerts)
 {
+#if 1
+CFixVector n1 = CFixVector::Normal (VERTICES [nVertIndex [0]], VERTICES [nVertIndex [1]], *vRef);
+CFixVector n2 = CFixVector::Normal (VERTICES [nVertIndex [1]], VERTICES [nVertIndex [2]], *vRef);
+if (CFixVector::Dot (n1, n2) < PLANE_DIST_TOLERANCE)
+	return true;
+CFixVector n3 = CFixVector::Normal (VERTICES [nVertIndex [2]], VERTICES [nVertIndex [0]], *vRef);
+if (CFixVector::Dot (n2, n3) < PLANE_DIST_TOLERANCE)
+	return true;
+return false;
+#else
 CFixVector v0 = VERTICES [nVertIndex [2]] - VERTICES [nVertIndex [0]];
 CFixVector v1 = VERTICES [nVertIndex [1]] - VERTICES [nVertIndex [0]];
-CFixVector v2 = *refP - FVERTICES [nVertIndex [0]];
+CFixVector v2 = *vRef - FVERTICES [nVertIndex [0]];
 fix dot00 = CFixVector::Dot (v0, v0);
 fix dot11 = CFixVector::Dot (v1, v1);
 fix dot01 = CFixVector::Dot (v0, v1);
@@ -82,6 +103,7 @@ fix u = FixMul (FixMul (dot11, dot02) - FixMul (dot01, dot12), invDenom);
 fix v = FixMul (FixMul (dot00, dot12) - FixMul (dot01, dot02), invDenom);
 // Check if point is in triangle
 return int (u < -PLANE_DIST_TOLERANCE) + (int (v < -PLANE_DIST_TOLERANCE) << 1) + (int (u + v > I2X (1) + PLANE_DIST_TOLERANCE) << 2); // compensate for numerical errors
+#endif
 }
 
 //	-----------------------------------------------------------------------------
@@ -90,13 +112,23 @@ return int (u < -PLANE_DIST_TOLERANCE) + (int (v < -PLANE_DIST_TOLERANCE) << 1) 
 ubyte PointIsOutsideFace (CFloatVector* vRef, ushort* nVertIndex, short nVerts)
 {
 #if 1
+#	if 1
+CFloatVector n1 = CFloatVector::Normal (FVERTICES [nVertIndex [0]], FVERTICES [nVertIndex [1]], *vRef);
+CFloatVector n2 = CFloatVector::Normal (FVERTICES [nVertIndex [1]], FVERTICES [nVertIndex [2]], *vRef);
+if (CFloatVector::Dot (n1, n2) < 0.999999)
+	return true;
+CFloatVector n3 = CFloatVector::Normal (FVERTICES [nVertIndex [2]], FVERTICES [nVertIndex [0]], *vRef);
+if (CFloatVector::Dot (n2, n3) < 0.999999)
+	return true;
+return false;
+#	else
 CFloatVector v0 = FVERTICES [nVertIndex [2]] - FVERTICES [nVertIndex [0]];
 CFloatVector v1 = FVERTICES [nVertIndex [1]] - FVERTICES [nVertIndex [0]];
 CFloatVector v2 = *vRef - FVERTICES [nVertIndex [0]];
 float dot00 = CFloatVector::Dot (v0, v0);
-float dot11 = CFloatVector::Dot (v1, v1);
 float dot01 = CFloatVector::Dot (v0, v1);
 float dot02 = CFloatVector::Dot (v0, v2);
+float dot11 = CFloatVector::Dot (v1, v1);
 float dot12 = CFloatVector::Dot (v1, v2);
 float invDenom = 1.0f / (dot00 * dot11 - dot01 * dot01);
 float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
@@ -110,6 +142,7 @@ p -= *vRef;
 float l = p.Mag ();
 #endif
 return (int (u < -0.001f)) + ((int (v < -0.001f)) << 1) + ((int (u + v > 1.001f)) << 2); // compensate for numerical errors
+#	endif
 #else
 	CFloatVector	t, *v0, *v1;
 	int 				i, j, nEdge, biggest;
