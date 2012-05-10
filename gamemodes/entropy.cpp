@@ -112,12 +112,12 @@ for (i = 0, h = -1, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; 
 		switch (SEGMENTS [i].m_function) {
 			case SEGMENT_FUNC_VIRUSMAKER:
 				return;
-			case SEGMENT_FUNC_PRODUCERTER:
+			case SEGMENT_FUNC_FUELCENTER:
 				if (h < 0)
 					h = i;
 				break;
 			case SEGMENT_FUNC_REPAIRCENTER:
-				if ((h < 0) || (SEGMENTS [h].m_function == SEGMENT_FUNC_PRODUCERTER))
+				if ((h < 0) || (SEGMENTS [h].m_function == SEGMENT_FUNC_FUELCENTER))
 					h = i;
 			}
 if (h < 0)

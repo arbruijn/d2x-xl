@@ -3229,7 +3229,7 @@ switch (m_function) {
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 315, bFullBright, oldOwner < 0);
 		break;
 
-	case SEGMENT_FUNC_PRODUCERTER:
+	case SEGMENT_FUNC_FUELCENTER:
 		if (IsEntropyGame &&(m_owner >= 0))
 			OverrideTextures (texOverrides [(int) m_owner],
 								   (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 314, bFullBright, oldOwner < 0);

@@ -60,7 +60,7 @@ gameData.producers.nRepairCenters = 0;
 // Turns a CSegment into a fully charged up fuel center...
 bool CSegment::CreateProducer (int nOldFunction)
 {
-if ((m_function != SEGMENT_FUNC_PRODUCERTER) &&
+if ((m_function != SEGMENT_FUNC_FUELCENTER) &&
 	 (m_function != SEGMENT_FUNC_REPAIRCENTER) &&
 	 (m_function != SEGMENT_FUNC_REACTOR) &&
 	 (m_function != SEGMENT_FUNC_ROBOTMAKER) &&
@@ -101,7 +101,7 @@ if ((nMaxCount > 0) && (m_nObjProducer >= nMaxCount)) {
 	return false;
 	}
 
-if ((nOldFunction != SEGMENT_FUNC_PRODUCERTER) && 
+if ((nOldFunction != SEGMENT_FUNC_FUELCENTER) && 
 	 (nOldFunction != SEGMENT_FUNC_REPAIRCENTER) && 
 	 (nOldFunction != SEGMENT_FUNC_ROBOTMAKER) && 
 	 (nOldFunction != SEGMENT_FUNC_EQUIPMAKER)) {
@@ -177,7 +177,7 @@ if (m_function == SEGMENT_FUNC_ROBOTMAKER)
 	return CreateRobotMaker (SEGMENT_FUNC_NONE);
 else if (m_function == SEGMENT_FUNC_EQUIPMAKER)
 	return CreateEquipmentMaker (SEGMENT_FUNC_NONE);
-else if ((m_function == SEGMENT_FUNC_PRODUCERTER) || (m_function == SEGMENT_FUNC_REPAIRCENTER)) {
+else if ((m_function == SEGMENT_FUNC_FUELCENTER) || (m_function == SEGMENT_FUNC_REPAIRCENTER)) {
 	if (!CreateProducer (SEGMENT_FUNC_NONE))
 		return false;
 	if (m_function == SEGMENT_FUNC_REPAIRCENTER)
@@ -715,7 +715,7 @@ gameData.producers.playerSegP = this;
 if (IsEntropyGame && ((m_owner < 0) ||
 	 ((m_owner > 0) && (m_owner != GetTeam (N_LOCALPLAYER) + 1))))
 	return 0;
-if (m_function != SEGMENT_FUNC_PRODUCERTER)
+if (m_function != SEGMENT_FUNC_FUELCENTER)
 	return 0;
 DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through producer.
 if (nMaxFuel <= 0)

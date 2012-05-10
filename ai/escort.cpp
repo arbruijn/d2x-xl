@@ -518,7 +518,7 @@ CreateBfsList (nStartSeg, bfsList, &length, LEVEL_SEGMENTS);
 if (objType == PRODUCER_CHECK) {
 	for (nSegIdx = 0; nSegIdx < length; nSegIdx++) {
 		nSegment = bfsList [nSegIdx];
-		if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_PRODUCERTER)
+		if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_FUELCENTER)
 			return nSegment;
 		}
 	}
@@ -535,7 +535,7 @@ else {
 //	which the buddybot doesn't understand.
 if (objType == PRODUCER_CHECK) {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
-		if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_PRODUCERTER)
+		if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_FUELCENTER)
 			return -2;
 	}
 else {

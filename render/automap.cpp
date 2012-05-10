@@ -1377,7 +1377,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 	if (segP->m_children [nSide] == -1)
 		color = m_colors.walls.nNormal;
 	switch (segP->m_function) {
-		case SEGMENT_FUNC_PRODUCERTER:
+		case SEGMENT_FUNC_FUELCENTER:
 			color = GOLD_RGBA;
 			break;
 		case SEGMENT_FUNC_SPEEDBOOST:

@@ -173,7 +173,7 @@ if (m_bUpdate) {
 
 inline int CSparkManager::Type (short nObjProducer)
 {
-return SEGMENTS [m_segments [nObjProducer]].m_function == SEGMENT_FUNC_PRODUCERTER;
+return SEGMENTS [m_segments [nObjProducer]].m_function == SEGMENT_FUNC_FUELCENTER;
 }
 
 //-----------------------------------------------------------------------------
@@ -220,7 +220,7 @@ int CSparkManager::BuildSegList (void)
 
 m_nSegments = 0;
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++)
-	if ((segP->m_function == SEGMENT_FUNC_PRODUCERTER) || (segP->m_function == SEGMENT_FUNC_REPAIRCENTER))
+	if ((segP->m_function == SEGMENT_FUNC_FUELCENTER) || (segP->m_function == SEGMENT_FUNC_REPAIRCENTER))
 		m_segments [m_nSegments++] = nSegment;
 return m_nSegments;
 }

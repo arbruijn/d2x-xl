@@ -527,7 +527,7 @@ else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	int nType = SEGMENTS [OBJSEG (this)].m_function;
 	if (gameData.FusionCharge (info.nId) > I2X (2))
 		bNeedEffect = true;
-	else if (nType == SEGMENT_FUNC_PRODUCERTER)
+	else if (nType == SEGMENT_FUNC_FUELCENTER)
 #if DBG
 		bNeedEffect = true;
 #else

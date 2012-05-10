@@ -244,7 +244,7 @@ else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers
 		return &color;
 		}
 	int f = SEGMENTS [objP->info.nSegment].m_function;
-	if (f == SEGMENT_FUNC_PRODUCERTER) {
+	if (f == SEGMENT_FUNC_FUELCENTER) {
 		static CFloatVector color = {1.0f, 0.8f, 0.3f, 0.2f};
 		return &color;
 		}
