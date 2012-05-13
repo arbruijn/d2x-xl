@@ -1118,7 +1118,7 @@ void AIPathSetOrientAndVel (CObject *objP, CFixVector *vGoalPoint, int nTargetVi
 //	If evading CPlayerData, use highest difficulty level speed, plus something based on diff level
 xMaxSpeed = FixMul (botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel], 2 * objP->DriveDamage ());
 if ((gameData.ai.localInfo [objP->Index ()].mode == AIM_RUN_FROM_OBJECT) || (objP->cType.aiInfo.behavior == AIB_SNIPE))
-	xMaxSpeed = xMaxSpeed*3/2;
+	xMaxSpeed = 3 * xMaxSpeed / 2;
 vNormToGoal = *vGoalPoint - vCurPos;
 CFixVector::Normalize (vNormToGoal);
 vNormCurVel = vCurVel;
