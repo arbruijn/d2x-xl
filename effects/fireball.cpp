@@ -710,7 +710,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 				int nProb = RandShort () % 16;
 				if (nProb < botInfoP->containsProb) {
 #else
-				if (RandShort () % 16 + 1 < botInfoP->containsProb) {
+				if (RandShort () % 16 < botInfoP->containsProb) {
 #endif
 					delObjP->info.contains.nCount = (RandShort () % botInfoP->containsCount) + 1;
 					delObjP->info.contains.nType = botInfoP->containsType;
