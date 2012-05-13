@@ -499,7 +499,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		AddObjectToSegList (nObject, nNewSeg);
 		}
 	}
-if (CollisionModel ())
+//if (CollisionModel ())
 	GatherLeftoutVisibleObjects ();
 PROF_END(ptBuildObjList)
 }

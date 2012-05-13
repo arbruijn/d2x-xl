@@ -1690,7 +1690,7 @@ if (info.renderType != RT_POLYOBJ)
 int nId = ModelId ();
 if (nId < 0)
 	return info.xSize;
-gameData.models.polyModels [0][nId].Rad (i);
+return gameData.models.polyModels [0][nId].Rad (i);
 }
 
 //------------------------------------------------------------------------------
