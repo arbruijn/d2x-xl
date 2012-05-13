@@ -637,6 +637,28 @@ return 0;
 
 static int AssignProducer (tObjectProducerInfo& producerInfo, int nFunction, sbyte bFlag)
 {
+#if 1
+
+CSegment* segP = &SEGMENTS [producerInfo.nSegment];
+if (segP->m_function != nFunction)
+	return -1;
+producerInfo.nProducer = segP->m_nObjProducer;
+tObjectProducerInfo& objProducer = (nFunction == SEGMENT_FUNC_ROBOTMAKER) 
+											  ? gameData.producers.robotMakers [producerInfo.nProducer] 
+											  : gameData.producers.equipmentMakers [producerInfo.nProducer];
+if (objProducer.bAssigned)
+	return -1;
+int nProducer = objProducer.nProducer;
+tProducerInfo& producer = gameData.producers.producers [nProducer];
+if (!(producer.bFlag & bFlag)) // this segment already has an object producer assigned
+	return -1;
+memcpy (objProducer.objFlags, producerInfo.objFlags, sizeof (objProducer.objFlags));
+objProducer.bAssigned = true;
+producer.bFlag = 0;
+return segP->m_nObjProducer = producerInfo.nProducer;
+
+#else
+
 if (producerInfo.nProducer < 0) 
 	return -1;
 if (producerInfo.nProducer >= ((nFunction == SEGMENT_FUNC_ROBOTMAKER) ? gameData.producers.nRobotMakers : gameData.producers.nEquipmentMakers))
@@ -662,6 +684,8 @@ memcpy (objProducer.objFlags, producerInfo.objFlags, sizeof (objProducer.objFlag
 objProducer.bAssigned = true;
 producer.bFlag = 0;
 return segP->m_nObjProducer = producerInfo.nProducer;
+
+#endif
 }
 
 // -----------------------------------------------------------------------------
