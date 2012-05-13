@@ -171,7 +171,9 @@ if (gameStates.app.nSDLTicks [0] - gameData.models.hitboxes [objP->ModelId ()].t
 	o.info.position.vPos = gameData.models.hitboxes [objP->ModelId ()].vHit;
 	o.info.position.mOrient = objP->info.position.mOrient;
 	o.SetSize (I2X (2));
+	int nModel = objP->rType.polyObjInfo.nModel;
 	objP->rType.polyObjInfo.nModel = -1;
+	objP->rType.polyObjInfo.nModel = nModel;
 	//SetRenderView (0, NULL);
 	DrawShieldSphere (&o, 1, 0, 0, 0.33f, 1);
 	}

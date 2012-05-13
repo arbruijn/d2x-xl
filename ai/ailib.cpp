@@ -131,6 +131,7 @@ gameData.ai.nHitType = FindHitpoint (hitQuery, gameData.ai.hitResult);
 if (gameData.ai.nHitType == 0)
 	FindHitpoint (hitQuery, gameData.ai.hitResult);
 #endif
+objP->rType.polyObjInfo.nModel = nModel;
 gameData.ai.vHitPos = gameData.ai.hitResult.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitResult.nSegment;
 objP->rType.polyObjInfo.nModel = nModel;

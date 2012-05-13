@@ -1372,10 +1372,11 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 		continue;
 	bHidden = 0;
 	bIsGrate = 0;
-	bNoFade = 0;
+	bNoFade = 1;
 	color = WHITE_RGBA;
 	if (segP->m_children [nSide] == -1)
 		color = m_colors.walls.nNormal;
+
 	switch (segP->m_function) {
 		case SEGMENT_FUNC_FUELCENTER:
 			color = GOLD_RGBA;
@@ -1398,6 +1399,8 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 		case SEGMENT_FUNC_NONE:
 			if (segP->HasBlockedProp ())
 				color = RGBA_PAL2 (13, 13, 13);
+		default:
+			bNoFade = 0;
 			break;
 		}
 
