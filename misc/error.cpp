@@ -473,6 +473,7 @@ return nOldIndent;
 void OpenLogFile (void)
 {
 if (gameStates.app.nLogLevel > 0) {
+	static int nLogId = 0;
    char fnErr [FILENAME_LEN];
 #ifdef _WIN32
 	sprintf (fnErr, "%s/d2x.log", gameFolders.szGameDir);
