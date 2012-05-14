@@ -620,7 +620,6 @@ return (nParentDepth + 1) * gameStates.render.bViewDist;
 int CAutomap::Setup (int bPauseGame, fix& xEntryTime)
 {
 	int		i;
-	fix		t1;
 	CObject	*playerP;
 
 if (m_bDisplay < 0) {
@@ -674,7 +673,7 @@ if (m_bDisplay < 0) {
 	m_vTAngles.v.coord.b = 0;
 
 	m_data.viewTarget = playerP->info.position.vPos;
-	t1 = xEntryTime = TimerGetFixedSeconds ();
+	xEntryTime = TimerGetFixedSeconds ();
 	}
 BuildEdgeList ();
 

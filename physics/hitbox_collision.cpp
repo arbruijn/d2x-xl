@@ -473,12 +473,12 @@ fix CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, shor
 {
 	int					iModel, nModels, nHits = 0;
 	fix					dMin = 0x7fffffff;
-	CModelHitboxList*	pmhb = gameData.models.hitboxes + objP->ModelId ();
 
 #if 1 // always only use the primary hitbox (containing the entire object) here
 iModel =
 nModels = 1;
 #else
+CModelHitboxList*	pmhb = gameData.models.hitboxes + objP->ModelId ();
 if (CollisionModel () == 1) {
 	iModel =
 	nModels = 1;

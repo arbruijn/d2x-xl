@@ -318,18 +318,13 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 			if (botInfoP) {
 				int i;
 				CFixVector gun_dir;
-				ubyte gun_used [MAX_GUNS];
 				botInfoP->nGuns = POF_ReadInt (modelBuf);
 				if (botInfoP->nGuns)
 					animFlag++;
 				Assert (botInfoP->nGuns <= MAX_GUNS);
-				for (i = 0; i < botInfoP->nGuns; i++)
-					gun_used [i] = 0;
 				for (i = 0; i < botInfoP->nGuns; i++) {
 					int id = POF_ReadShort (modelBuf);
 					Assert (id < botInfoP->nGuns);
-					Assert (gun_used [id] == 0);
-					gun_used [id] = 1;
 					botInfoP->gunSubModels [id] = (char) POF_ReadShort (modelBuf);
 					Assert (botInfoP->gunSubModels [id] != 0xff);
 					POF_ReadVecs (&botInfoP->gunPoints [id], 1, modelBuf);

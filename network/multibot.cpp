@@ -638,14 +638,13 @@ ExtractShortPos (&OBJECTS [nRobot], &sp, 1);
 void MultiDoRobotFire (char *buf)
 {
 	// Send robot vFire event
-	int			bufP = 1;
+	int			bufP = 2;
 	short			nRobot;
 	short			nRemoteBot;
-	int			nPlayer, nGun;
+	int			nGun;
 	CFixVector	vFire, vGunPoint;
 	tRobotInfo	*robotP;
 
-nPlayer = buf [bufP++];											
 nRemoteBot = GET_INTEL_SHORT (buf + bufP);
 nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [bufP+2]); 
 bufP += 3;
@@ -739,10 +738,9 @@ void MultiDoRobotExplode (char *buf)
 {
 	// Explode robot controlled by other player
 
-	int	nPlayer, nRobot, rval, bufP = 1;
+	int	nRobot, rval, bufP = 2;
 	short nRemoteBot, nKiller, nRemoteKiller;
 
-nPlayer = buf [bufP++]; 
 nRemoteKiller = GET_INTEL_SHORT (buf + bufP);
 nKiller = ObjnumRemoteToLocal (nRemoteKiller, int (buf [bufP+2])); 
 bufP += 3;

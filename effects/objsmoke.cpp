@@ -664,7 +664,7 @@ void DoStaticParticles (CObject *objP)
 					nType, nFadeType;
 	CFixVector	pos, offs, dir;
 
-	static CFloatVector defaultColors [7] = {{{{0.5f, 0.5f, 0.5f, 0.0f}}}, {0.8f, 0.9f, 1.0f, 1.0f}}}, {1.0f, 1.0f, 1.0f, 1.0f}}},
+	static CFloatVector defaultColors [7] = {{{{0.5f, 0.5f, 0.5f, 0.0f}}}, {{{0.8f, 0.9f, 1.0f, 1.0f}}}, {{{1.0f, 1.0f, 1.0f, 1.0f}}},
 														 {{{1.0f, 1.0f, 1.0f, 1.0f}}}, {{{1.0f, 1.0f, 1.0f, 1.0f}}}, {{{1.0f, 1.0f, 1.0f, 1.0f}}},
 														 {{{1.0f, 1.0f, 1.0f, 1.0f}}}};
 	static int particleTypes [7] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES, WATERFALL_PARTICLES, SIMPLE_SMOKE_PARTICLES, RAIN_PARTICLES, SNOW_PARTICLES};

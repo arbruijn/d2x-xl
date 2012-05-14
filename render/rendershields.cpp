@@ -192,7 +192,7 @@ void RenderPlayerShield (CObject *objP)
 	float			alpha, scale = 1;
 	tCloakInfo	ci;
 
-	static CFloatVector shieldColors [3] = {{0, 0.5f, 1, 1}, {1, 0.5f, 0, 1}, {1, 0.8f, 0.6f, 1}};
+	static CFloatVector shieldColors [3] = {{{{0, 0.5f, 1, 1}}}, {{{1, 0.5f, 0, 1}}}, {{{1, 0.8f, 0.6f, 1}}}};
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -257,7 +257,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 
 void RenderRobotShield (CObject *objP)
 {
-	static CFloatVector shieldColors [3] = {{0.75f, 0, 0.75f, 1}, {0, 0.5f, 1},{1, 0.1f, 0.25f, 1}};
+	static CFloatVector shieldColors [3] = {{{{0.75f, 0, 0.75f, 1}}}, {{{0, 0.5f, 1}}},{{{1, 0.1f, 0.25f, 1}}}};
 
 #if RENDER_HITBOX
 RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);

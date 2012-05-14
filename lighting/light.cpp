@@ -400,7 +400,7 @@ fix ComputeLightIntensity (int nObject, CFloatVector *colorP, char *pbGotColor)
 	int		nObjType = objP->info.nType;
    fix		s;
 	static CFloatVector powerupColors [9] = {
-	 {{{0,1,0,1}}},{{{1,0.8f,0,1}}},{{{0,0,1,1}}},{{{1,1,1,1}}},{{{0,0,1,1}}},{{{1,0,0,1}}},{{{1,0.8f,0,1}},{{{0,1,0,1}}},{{{1,0.8f,0,1}}}
+	 {{{0,1,0,1}}},{{{1,0.8f,0,1}}},{{{0,0,1,1}}},{{{1,1,1,1}}},{{{0,0,1,1}}},{{{1,0,0,1}}},{{{1,0.8f,0,1}}},{{{0,1,0,1}}},{{{1,0.8f,0,1}}}
 	};
 	static CFloatVector missileColor = {{{1,0.3f,0,1}}};
 

@@ -36,7 +36,7 @@
 void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, float blue, float alpha, int bCorona)
 {
 if ((gameOpts->render.coronas.bShots && (bCorona ? corona.Load () : halo.Load ()))) {
-	CFloatVector	c = {red, green, blue, alpha};
+	CFloatVector	c = {{{red, green, blue, alpha}}};
 	ogl.SetDepthWrite (false);
 	CBitmap* bmP = bCorona ? corona.Bitmap () : halo.Bitmap ();
 	bmP->SetColor (&c);
@@ -51,9 +51,9 @@ void RenderPowerupCorona (CObject *objP, float red, float green, float blue, flo
 {
 if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gameOpts->render.coronas.bWeapons) && glare.Load ()) {
 	static CFloatVector keyColors [3] = {
-	 {0.2f, 0.2f, 0.9f, 0.2f},
-	 {0.9f, 0.2f, 0.2f, 0.2f},
-	 {0.9f, 0.8f, 0.2f, 0.2f}
+	 {{{0.2f, 0.2f, 0.9f, 0.2f}}},
+	 {{{0.9f, 0.2f, 0.2f, 0.2f}}},
+	 {{{0.9f, 0.8f, 0.2f, 0.2f}}}
 		};
 
 	CFloatVector color;
@@ -212,7 +212,7 @@ if (objP->HasLightTrail () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
 
 			static CFloatVector vEye = CFloatVector::ZERO;
 
-			static CFloatVector	trailColor = {0,0,0,0.33f};
+			static CFloatVector	trailColor = {{{0,0,0,0.33f}}};
 			static tTexCoord2f	tcTrail [8] = {
 				{{0.0f,0.0f}},{{1.0f,0.0f}},{{1.0f,0.5f}},{{0.0f,0.5f}},
 				{{0.0f,0.5f}},{{1.0f,0.5f}},{{1.0f,1.0f}},{{0.0f,1.0f}}
@@ -273,8 +273,8 @@ else
 
 void DrawDebrisCorona (CObject *objP)
 {
-	static	CFloatVector	debrisGlow = {0.66f, 0, 0, 1};
-	static	CFloatVector	markerGlow = {0, 0.66f, 0, 1};
+	static	CFloatVector	debrisGlow = {{{0.66f, 0, 0, 1}}};
+	static	CFloatVector	markerGlow = {{{0, 0.66f, 0, 1}}};
 	static	time_t t0 = 0;
 
 if (objP->info.nType == OBJ_MARKER)

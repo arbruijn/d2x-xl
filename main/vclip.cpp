@@ -229,7 +229,7 @@ if (!bmP)
 	CFloatVector	v, vertices [4];
 
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
-	static CFloatVector color = {1.0f, 1.0f, 1.0f, 1.0f};
+	static CFloatVector color = {{{1.0f, 1.0f, 1.0f, 1.0f}}};
 
 if (objP->info.xLifeLeft <= 0)
 	return;

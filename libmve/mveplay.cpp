@@ -321,7 +321,7 @@ if (audiobuf_created)
 audiobuf_created = 1;
 flags = get_ushort (data + 2);
 sample_rate = get_ushort (data + 4);
-desired_buffer = get_int (data + 6);
+get_int (data + 6);
 stereo = (flags & MVE_AUDIO_FLAGS_STEREO) ? 1 : 0;
 bitsize = (flags & MVE_AUDIO_FLAGS_16BIT) ? 1 : 0;
 compressed = (minor > 0) ? (flags & MVE_AUDIO_FLAGS_COMPRESSED ? 1 : 0) : 0;

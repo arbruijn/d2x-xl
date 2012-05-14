@@ -110,7 +110,7 @@ void DrawOutline (int nVertices, CRenderPoint **pointList)
 
 #if 1 //!DBG
 if (gameStates.render.bQueryOcclusion) {
-	CFloatVector outlineColor = {1, 1, 0, -1};
+	CFloatVector outlineColor = {{{1, 1, 0, -1}}};
 	G3DrawPolyAlpha (nVertices, pointList, &outlineColor, 1, -1);
 	return;
 	}
@@ -207,10 +207,10 @@ return (segP->m_function == SEGMENT_FUNC_TEAM_BLUE) ||
 // ----------------------------------------------------------------------------
 
 CFloatVector segmentColors [4] = {
-	 {0.5f, 0, 0, 0.333f},
-	 {0, 0, 0.5f, 0.333f},
-	 {0, 1.0f / 16.0f, 0.5f, 0.333f},
-	 {0.5f, 0, 0, 0.333f}};
+	 {{{0.5f, 0, 0, 0.333f}}},
+	 {{{0, 0, 0.5f, 0.333f}}},
+	 {{{0, 1.0f / 16.0f, 0.5f, 0.333f}}},
+	 {{{0.5f, 0, 0, 0.333f}}}};
 
 CFloatVector *ColoredSegmentColor (int nSegment, int nSide, char nColor)
 {
@@ -462,7 +462,7 @@ return !gameStates.app.bD1Mission &&
 float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, ubyte bAdditive,
 					  CFloatVector *colorP, int& nColor, ubyte& bTextured, ubyte& bCloaked, ubyte& bTransparent)
 {
-	static CFloatVector cloakColor = {0.0f, 0.0f, 0.0f, 0};
+	static CFloatVector cloakColor = {{{0.0f, 0.0f, 0.0f, 0}}};
 
 	CWall	*wallP;
 	float fAlpha, fMaxColor;

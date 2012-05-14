@@ -236,7 +236,9 @@ if (Update (parentObjP, targetObjP, vTargetPos)) {
 		return 0;
 	}
 else {
+#if OMEGA_PLASMA
 	static CFloatVector	color = {{{0.9f, 0.6f, 0.6f, 0.3f}}};
+#endif
 	CFixVector	vMuzzle, *vTarget;
 
 	Destroy (nObject);

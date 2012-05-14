@@ -781,7 +781,7 @@ CreateForTeleport (objP, &color, 0.5f);
 
 void CLightningManager::CreateForPowerupTeleport (CObject* objP)
 {
-static CFloatVector color = {0.0f, 0.25f, 0.125f, 0.2f};
+static CFloatVector color = {{{0.0f, 0.25f, 0.125f, 0.2f}}};
 CreateForTeleport (objP, &color);
 }
 

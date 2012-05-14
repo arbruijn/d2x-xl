@@ -308,7 +308,6 @@ if ((nType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 #endif
 	int			bAdditive = 0, bEnergy = 0;
 	fix			xSize;
-	float			fScale;
 
 if ((nType == OBJ_WEAPON) && (objP->info.nId == OMEGA_ID) && omegaLightning.Exist ())
 	return;
@@ -362,7 +361,7 @@ if (!bmP || bmP->Bind (1))
 bool b3DShield = ((nType == OBJ_POWERUP) && ((objP->info.nId == POW_SHIELD_BOOST) || (objP->info.nId == POW_HOARD_ORB)) &&
 					   gameOpts->Use3DPowerups () && gameOpts->render.powerups.b3DShields);
 
-fScale = ObjectBlobColor (objP, bmP, &color, b3DShield);
+ObjectBlobColor (objP, bmP, &color, b3DShield);
 if (colorP /*&& (bmi >= 0)*/)
 	*colorP = color;
 	//memcpy (colorP, gameData.pig.tex.bitmapColors + bmi, sizeof (CFloatVector));

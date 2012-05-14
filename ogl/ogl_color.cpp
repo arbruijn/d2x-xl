@@ -55,8 +55,8 @@ CFaceColor lightColor;
 CFaceColor tMapColor;
 CFaceColor vertColors [8];
 
-CFloatVector shadowColor [2] = {{1.0f, 0.0f, 0.0f, 0.8f}, {0.0f, 0.0f, 1.0f, 0.8f}};
-CFloatVector modelColor [2] = {{0.0f, 0.5f, 1.0f, 0.5f}, {0.0f, 1.0f, 0.5f, 0.5f}};
+CFloatVector shadowColor [2] = {{{{1.0f, 0.0f, 0.0f, 0.8f}}}, {{{0.0f, 0.0f, 1.0f, 0.8f}}}};
+CFloatVector modelColor [2] = {{{{0.0f, 0.5f, 1.0f, 0.5f}}}, {{{0.0f, 1.0f, 0.5f, 0.5f}}}};
 
 //------------------------------------------------------------------------------
 
@@ -139,16 +139,16 @@ CFloatVector GetCanvasColor (CCanvasColor *colorP)
 {
 
 if (!colorP) {
-	CFloatVector	color = {1, 1, 1, gameStates.render.grAlpha};
+	CFloatVector	color = {{{1, 1, 1, gameStates.render.grAlpha}}};
 	return color;
 	}
 else if (colorP->rgb) {
-	CFloatVector color = {
+	CFloatVector color = {{{
 		float (colorP->Red ()) / 255.0f,
 		float (colorP->Green ()) / 255.0f,
 		float (colorP->Blue ()) / 255.0f,
 		float (colorP->Alpha ()) / 255.0f * gameStates.render.grAlpha
-		};
+		}}};
 	if (colorP->Alpha () < 1.0f) {
 		ogl.SetBlending (true);
 		ogl.SetBlendMode (ogl.m_data.nSrcBlendMode, ogl.m_data.nDestBlendMode);
