@@ -16,36 +16,37 @@
 
 // -----------------------------------------------------------------------------------
 
+#if 1
 static CFloatVector lineColors [3] = {
-	{0.5f, 0.0f, 1.0f, 0.5f},
-	{1.0f, 0.5f, 0.0f, 0.5f},
-	{0.0f, 0.5f, 1.0f, 0.5f}
+	{{{0.5f, 0.0f, 1.0f, 0.5f}}},
+	{{{1.0f, 0.5f, 0.0f, 0.5f}}},
+	{{{0.0f, 0.5f, 1.0f, 0.5f}}}
 	};
 
 static CFloatVector planeColors [3] = {
-	{0.0f, 0.5f, 0.0f, 0.25f},
-	{0.6f, 0.6f, 0.0f, 0.25f},
-	{0.0f, 0.4f, 0.6f, 0.25f}
+	{{{0.0f, 0.5f, 0.0f, 0.25f}}},
+	{{{0.6f, 0.6f, 0.0f, 0.25f}}},
+	{{{0.0f, 0.4f, 0.6f, 0.25f}}}
 	};
 
 static CFloatVector radarColors [3][3] = {
 	{
-	{0.0f, 0.6f, 0.0f, 0.5f},
-	{0.0f, 0.8f, 0.0f, 0.5f},
-	{0.0f, 1.0f, 0.0f, 0.5f}
+	{{{0.0f, 0.6f, 0.0f, 0.5f}}},
+	{{{0.0f, 0.8f, 0.0f, 0.5f}}},
+	{{{0.0f, 1.0f, 0.0f, 0.5f}}}
 	},
 	{
-	{0.4f, 0.4f, 0.0f, 0.5f},
-	{0.6f, 0.6f, 0.0f, 0.5f},
-	{0.8f, 0.8f, 0.0f, 0.5f}
+	{{{0.4f, 0.4f, 0.0f, 0.5f}}},
+	{{{0.6f, 0.6f, 0.0f, 0.5f}}},
+	{{{0.8f, 0.8f, 0.0f, 0.5f}}}
 	},
 	{
-	{0.0f, 0.2f, 0.4f, 0.5f},
-	{0.0f, 0.4f, 0.6f, 0.5f},
-	{0.0f, 0.6f, 0.8f, 0.5f}
+	{{{0.0f, 0.2f, 0.4f, 0.5f}}},
+	{{{0.0f, 0.4f, 0.6f, 0.5f}}},
+	{{{0.0f, 0.6f, 0.8f, 0.5f}}}
 	},
 };
-
+#endif
 CRadar radar;
 
 // -----------------------------------------------------------------------------------
@@ -61,10 +62,10 @@ tSinCosf			CRadar::sinCosRadar [RADAR_SLICES];
 tSinCosf			CRadar::sinCosBlip [BLIP_SLICES];
 
 CFloatVector3		CRadar::shipColors [8];
-CFloatVector3		CRadar::guidebotColor = {0, 0.75f / 4, 0.25f};
-CFloatVector3		CRadar::robotColor = {0.75f / 4, 0, 0.25f};
-CFloatVector3		CRadar::powerupColor = {0.25f, 0.5f / 4, 0};
-CFloatVector3		CRadar::radarColor [2] = {{1, 1, 1}, {0, 0, 0}};
+CFloatVector3		CRadar::guidebotColor = {{{0, 0.75f / 4, 0.25f}}};
+CFloatVector3		CRadar::robotColor = {{{0.75f / 4, 0, 0.25f}}};
+CFloatVector3		CRadar::powerupColor = {{{0.25f, 0.5f / 4, 0}}};
+CFloatVector3		CRadar::radarColor [2] = {{{{1, 1, 1}}}, {{{0, 0, 0}}}};
 
 #define RADAR_RANGE	radarRanges [gameOpts->render.cockpit.nRadarRange]
 
