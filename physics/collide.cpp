@@ -384,7 +384,7 @@ if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL
 #if 1
 	f0.Compute (vDist, vNormal, otherP);
 	vDist.Neg ();
-	f1.Compute (vDist, vNormal, otherP);
+	f1.Compute (vDist, vNormal, thisP);
 #else
 	CFixVector	vDistNorm, vVelNorm, f0.m_vForce, f1.m_vForce, f0.m_vRotForce, f1.m_vRotForce;
 

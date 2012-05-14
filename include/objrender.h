@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------
 
 #if DBG
-#	define	RENDER_HITBOX	0
+#	define	RENDER_HITBOX	1
 #else
 #	define	RENDER_HITBOX	0
 #endif
