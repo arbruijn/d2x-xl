@@ -594,7 +594,7 @@ fix CModel::Size (CObject *objP, int bHires)
 	tHitbox*			phb = &gameData.models.hitboxes [m_nModel].hitboxes [0];
 	CFixVector		hv;
 	CFloatVector3	vOffset;
-	double			dx, dy, dz, r;
+	double			dx, dy, dz;
 
 #if DBG
 if (m_nModel == nDbgModel)
@@ -636,7 +636,6 @@ do {
 			dx = (phb [j].vMax.v.coord.x - phb [j].vMin.v.coord.x) / 2;
 			dy = (phb [j].vMax.v.coord.y - phb [j].vMin.v.coord.y) / 2;
 			dz = (phb [j].vMax.v.coord.z - phb [j].vMin.v.coord.z) / 2;
-			r = sqrt (dx * dx + dy * dy + dz * dz) / 2;
 			phb [j].vSize.v.coord.x = (fix) dx;
 			phb [j].vSize.v.coord.y = (fix) dy;
 			phb [j].vSize.v.coord.z = (fix) dz;

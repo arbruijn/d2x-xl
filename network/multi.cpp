@@ -678,9 +678,9 @@ if (gameStates.app.bHaveExtraGameInfo [1] &&(!extraGameInfo [1].bAutoBalanceTeam
 void ChoseTeam (int nPlayer, bool bForce)
 {
 if (gameStates.app.bHaveExtraGameInfo && (bForce || extraGameInfo [1].bAutoBalanceTeams) && IsTeamGame && IAmGameHost ()) {
-	int	h, i, t, teamScore [2] = {0, 0}, teamSize [2] = {0, 0};
+	int	i, t, teamScore [2] = {0, 0}, teamSize [2] = {0, 0};
 
-	for (h = i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		t = GetTeam (i);
 		teamSize [t]++;
 		teamScore [t] += gameData.multiplayer.players [i].score;
@@ -4950,7 +4950,7 @@ pingStats [0].launchTime = 0;
 
 void MultiQuickSoundHack (int nSound)
 {
-	int			l, i, j;
+	int			l, i;
 	CSoundSample	*soundP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound;
 	ubyte			*dataP;
 
@@ -4959,7 +4959,7 @@ l = soundP->nLength [soundP->bCustom];
 if (reversedSound.data [0].Create (l)) {
 	reversedSound.nLength [0] = l;
 	dataP = soundP->data [soundP->bCustom] + l;
-	for (i = 0, j = l; i < l; i++)
+	for (i = 0; i < l; i++)
 		reversedSound.data [0][i] = *(--dataP);
 	bSoundHacked = 1;
 	}

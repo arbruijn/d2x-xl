@@ -356,7 +356,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-static int nGameTypes = -1, nGameItem = -1, nEntropy = -1, nMonsterball = -1;
+static int nGameTypes = -1, nGameItem = -1;
 
 int NetworkGameParamPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
@@ -1406,7 +1406,6 @@ int NetworkGetIpAddr (bool bServer, bool bUDP)
 {
 	CMenu	m (9);
 	int	h, i, j, choice = 0;
-	int	nServer = -1, optCheckPort, nPort [2] = {-1, -1};
 	bool	bError;
 	char	szId [100];
 
@@ -1428,7 +1427,7 @@ if (bUDP && !tracker.m_bUse) {
 			}
 		}
 	m.AddText (TXT_HOST_IP, 0);
-	nServer = m.AddInput ("ip address", mpParams.szServerIpAddr, sizeof (mpParams.szServerIpAddr) - 1, HTX_GETIP_SERVER);
+	m.AddInput ("ip address", mpParams.szServerIpAddr, sizeof (mpParams.szServerIpAddr) - 1, HTX_GETIP_SERVER);
 	j = 0;
 	h = bServer ? 1 : 2;
 	}
@@ -1446,13 +1445,13 @@ for (i = j; i < h; i++) {
 	sprintf (szPort [i], "%u", mpParams.udpPorts [i]);
 	m.AddText ("", GT (1100 + i));
 	sprintf (szId, "client addr %d", i);
-	nPort [i] = m.AddInput (szId, szPort [i], sizeof (szPort [i]) - 1, HTX_GETIP_CLIENT);
+	m.AddInput (szId, szPort [i], sizeof (szPort [i]) - 1, HTX_GETIP_CLIENT);
 	}
 
 m.AddText ("", TXT_PORT_HELP1, 0);
 m.AddText ("", TXT_PORT_HELP2, 0);
 m.AddText ("", "");
-optCheckPort = m.AddCheck ("check ports", TXT_CHECK_PORT, extraGameInfo [0].bCheckUDPPort, KEY_P, HTX_MULTI2_CHECKPORT);
+m.AddCheck ("check ports", TXT_CHECK_PORT, extraGameInfo [0].bCheckUDPPort, KEY_P, HTX_MULTI2_CHECKPORT);
 for (;;) {
 	i = m.Menu (NULL, tracker.m_bUse ? TXT_NETWORK_ADDRESSES : TXT_IP_HEADER, &IpAddrMenuCallBack, &choice);
 	if (i < 0)

@@ -1644,7 +1644,6 @@ else {
 			nBuffers++;
 			}
 
-	int h = nBuffers;
 	while (nBuffers > 0) {
 		for (int i = 0; i < nBuffers; i++) {
 			if (buffers [i]->bufP) {

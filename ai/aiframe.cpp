@@ -964,7 +964,6 @@ int AIBossHandler (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->botInfoP->bossFlag) {
 		int	pv;
-		fix	dtp = gameData.ai.target.xDist / 4;
 
 	if (siP->aiP->GOAL_STATE == AIS_FLINCH)
 		siP->aiP->GOAL_STATE = AIS_FIRE;
@@ -973,10 +972,8 @@ if (siP->botInfoP->bossFlag) {
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
 	pv = gameData.ai.nTargetVisibility;
 	// If player cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
-	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
+	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 		pv = 0;
-		dtp = CFixVector::Dist(OBJPOS (TARGETOBJ)->vPos, objP->info.position.vPos) / 4;
-		}
 	DoBossStuff (objP, pv);
 	}
 return 0;

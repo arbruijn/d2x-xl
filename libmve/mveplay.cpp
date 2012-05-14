@@ -528,21 +528,15 @@ return 1;
 
 static int video_data_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
-	short nFrameHot, nFrameCold;
-	short nXoffset, nYoffset;
-	short nXsize, nYsize;
-	ushort nFlags;
-	ubyte *temp;
-
-nFrameHot  = get_short (data);
-nFrameCold = get_short (data+2);
-nXoffset   = get_short (data+4);
-nYoffset   = get_short (data+6);
-nXsize     = get_short (data+8);
-nYsize     = get_short (data+10);
-nFlags     = get_ushort (data+12);
+short nFrameHot  = get_short (data);
+short nFrameCold = get_short (data+2);
+short nXoffset   = get_short (data+4);
+short nYoffset   = get_short (data+6);
+short nXsize     = get_short (data+8);
+short nYsize     = get_short (data+10);
+ushort nFlags     = get_ushort (data+12);
 if (nFlags & 1) {
-	temp = reinterpret_cast<ubyte*> (g_vBackBuf1);
+	ubyte* temp = reinterpret_cast<ubyte*> (g_vBackBuf1);
 	g_vBackBuf1 = g_vBackBuf2;
 	g_vBackBuf2 = temp;
 	}

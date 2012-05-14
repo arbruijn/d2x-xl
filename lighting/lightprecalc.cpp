@@ -429,7 +429,7 @@ static void ComputeSingleSegmentVisibility (int nThread, short nStartSeg, short 
 {
 	CSegment*			startSegP;
 	CSide*				sideP;
-	short					nSegment, nSide, nLight, i;
+	short					nSegment, nSide, nLight = -1, i;
 	CFixVector			fVec, uVec, rVec;
 	CObject				viewer;
 	CTransformation	transformation = projection;
@@ -576,7 +576,6 @@ if ((lightManager.Lights (nLight)->info.nSegment == nDbgSeg) && (lightManager.Li
 	ubyte*			lightVis = gameData.segs.bLightVis.Buffer ();
 #endif
 
-	int bVisible = gameData.segs.SegVis (nLightSeg, nDestSeg);
 	int i;
 
 	fix dPath = 0;
@@ -777,7 +776,7 @@ int LoadLightData (int nLevel)
 {
 	CFile					cf;
 	tLightDataHeader	ldh;
-	int					bOk, nDistances;
+	int					bOk, nDistances = 0;
 	char					szFilename [FILENAME_LEN];
 
 if (!gameStates.app.bCacheLights)
@@ -841,7 +840,7 @@ int SaveLightData (int nLevel)
 									gameStates.render.bPerPixelLighting,
 									gameStates.app.bCompressData
 									};
-	int				bOk, nDistances;
+	int				bOk, nDistances = 0;
 	char				szFilename [FILENAME_LEN];
 
 if (!gameStates.app.bCacheLights)

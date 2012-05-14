@@ -337,10 +337,9 @@ if (m_nNodes > 0)
 void CLightning::Bump (void)
 {
 	CLightningNode	*nodeP;
-	int			h, i, nFrames, nDist, nAmplitude, nMaxDist = 0;
+	int			h, i, nDist, nAmplitude, nMaxDist = 0;
 	CFixVector	vBase [2];
 
-nFrames = m_nFrames;
 nAmplitude = m_nAmplitude;
 vBase [0] = m_vPos;
 vBase [1] = m_nodes [m_nNodes - 1].m_vPos;
@@ -433,7 +432,6 @@ plh->m_vNewPos = plh->m_vPos;
 plh->m_vOffs.SetZero ();
 if ((nDepth > 1) || m_bRandom) {
 	if (nStyle == 2) {
-		double h = double (m_nNodes - 1);
 		noiseX [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		noiseY [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		for (i = 0; i < m_nNodes; i++)
@@ -461,7 +459,6 @@ else {
 	plh->m_vNewPos = plh->m_vPos;
 	plh->m_vOffs.SetZero ();
 	if (nStyle == 2) {
-		double h = double (m_nNodes - 1);
 		noiseX [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		noiseY [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++)

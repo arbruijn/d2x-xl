@@ -80,7 +80,6 @@ bool CBossInfo::SetupSegments (CShortArray& segments, int bSizeCheck, int bOneWa
 	int			head, tail, w, childSeg;
 	int			nGroup, nSide;
 	CIntArray	queue;
-	int			nQueueSize = QUEUE_SIZE;
 	fix			xBossSizeSave;
 
 	static short bossSegs [MAX_BOSS_TELEPORT_SEGS];

@@ -51,12 +51,6 @@ static struct {
 	int	nLinearSens;
 } joyOpts;
 
-static struct {
-	int	nCustomize;
-	int	nRamp;
-	int	nRampValues;
-} kbdOpts;
-
 int nCustomizeAboveOpt;
 
 int nJoyDeadzones [] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 40, 50};
@@ -235,7 +229,6 @@ void MouseConfigMenu (void)
 {
 	CMenu	m;
 	int	i, j;
-	int	nCustMouseOpt, nMouseTypeOpt;
 	char	szMouseSens [3][50];
 	char	szMouseDeadzone [50];
 
@@ -252,7 +245,6 @@ do {
 		m.Destroy ();
 		m.Create (20);
 
-		nCustMouseOpt = nMouseTypeOpt = -1;
 		controls.SetType ();
 		mouseOpts.nUse = m.AddCheck ("use device", TXT_USE_MOUSE, gameOpts->input.mouse.bUse, KEY_M, HTX_CONF_USEMOUSE);
 		mouseOpts.nDeadzone = -1;
@@ -311,7 +303,7 @@ if (nState)
 	return nCurItem;
 
 	CMenuItem * m;
-	int h, i, j, v;
+	int h, i, v;
 	int ocType = gameConfig.nControlType;
 	char szId [100];
 
@@ -370,7 +362,6 @@ if (gameOpts->app.bExpertMode && (m = menu ["sync axis"])) {
 	}
 
 h = gameOpts->input.joystick.bSyncAxis ? 1 : UNIQUE_JOY_AXES;
-j = menu.IndexOf ("sensitivity");
 for (i = 0; i < h; i++) {
 	sprintf (szId, "axis %d:sensitivity", i + 1);
 	gameOpts->input.joystick.sensitivity [i] = menu.Value (szId);

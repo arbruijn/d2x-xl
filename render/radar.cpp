@@ -320,8 +320,6 @@ void CRadar::RenderObjects (int bAbove)
 {
 	CObject*			objP;
 	CFloatVector3*	colorP = radarColor + gameOpts->render.automap.nColor;
-	CFixVector		vPos = CFixVector::ZERO;
-	CFixMatrix		mOrient = CFixMatrix::IDENTITY;
 
 // glPushMatrix ();
 glLineWidth (GLfloat (2 + gameOpts->render.cockpit.nRadarSize));

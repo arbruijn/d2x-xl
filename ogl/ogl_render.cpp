@@ -474,7 +474,6 @@ int G3DrawTexPolyMulti (
 	int				bLight = 1,
 						bDynLight = gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE),
 						bDepthSort,
-						bResetColor = 0,
 						bOverlay = 0;
 	CFaceColor*		colorP;
 	CBitmap*			bmP = NULL, *mask = NULL;
@@ -657,7 +656,6 @@ if (bDynLight) {
 	}
 else if (bLight) {
 	if (bShaderMerge) {
-		bResetColor = (bOverlay != 1);
 		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
 			if (gameStates.render.nState)
 				SetTMapColor (uvlList + i, i, bmBot, 1, ogl.ColorBuffer () + i);
@@ -784,8 +782,7 @@ int G3DrawTexPolyLightmap (
 	int			bBlend,
 	short			nSegment)
 {
-	int				i, nFrame, bShaderMerge;
-	CBitmap*			bmP = NULL;
+	int				i, bShaderMerge;
 	CRenderPoint**	pointPP;
 
 if (gameStates.render.nShadowBlurPass == 1) {
@@ -812,12 +809,8 @@ else {
 ogl.SetDepthMode (GL_LEQUAL);
 bmBot = bmBot->Override (-1);
 if (bmTop && (bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
-	nFrame = (int) (bmTop->CurFrame () - bmTop->Frames ());
-	bmP = bmTop;
 	bmTop = bmTop->CurFrame ();
 	}
-else
-	nFrame = -1;
 if (!lightmap) //lightmapping enabled
 	return G3DrawTexPolyMulti (nVertices, pointList, uvlList, uvlLMap, bmBot, bmTop, lightmap, vNormalP, orient, bBlend, 0, nSegment);
 // chose shaders depending on whether overlay bitmap present or not

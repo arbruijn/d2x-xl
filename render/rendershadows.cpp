@@ -164,8 +164,6 @@ static int	bHaveShadowBuf = 0;
 
 void CreateShadowTexture (void)
 {
-	GLint	i;
-
 if (!bHaveShadowBuf) {
 	memset (&shadowBuf, 0, sizeof (shadowBuf));
 	shadowBuf.SetWidth (STB_SIZE_X);
@@ -183,7 +181,6 @@ glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, 0,
 #else
 glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, 128, 128);
 #endif
-i = glGetError ();
 }
 
 //------------------------------------------------------------------------------

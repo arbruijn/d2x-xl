@@ -612,7 +612,6 @@ if (!ShowGameMessage (gameData.messages, -1, -1))
 void RenderMonoFrame (fix xStereoSeparation = 0)
 {
 	CCanvas		frameWindow;
-	int			bExtraInfo = 1;
 
 #if MAX_SHADOWMAPS
 RenderShadowMaps (xStereoSeparation);
@@ -668,7 +667,6 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, 3, msg);
 	//DrawGuidedCrosshair (xStereoSeparation);
 	HUDRenderMessageFrame ();
-	bExtraInfo = 0;
 	}
 else {
 	if (gameStates.render.cockpit.bBigWindowSwitch) {

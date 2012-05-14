@@ -55,22 +55,6 @@
 
 //------------------------------------------------------------------------------
 
-static struct {
-	int	nSpeedboost;
-	int	nFusionRamp;
-	int	nOmegaRamp;
-	int	nMslTurnSpeed;
-	int	nMslStartSpeed;
-	int	nSlomoSpeedup;
-	int	nDrag;
-	int	nAutoLevel;
-	int	nHitDetection;
-	int	nCollHandling;
-	int	nDamageModel;
-} physOpts;
-
-//------------------------------------------------------------------------------
-
 static const char *pszMslTurnSpeeds [3];
 static const char *pszMslStartSpeeds [4];
 static const char *pszAutoLevel [4];
@@ -246,7 +230,6 @@ void PhysicsOptionsMenu (void)
 
 	CMenu	m;
 	int	i;
-	int	optWiggle = -1;
 	char	szSlider [50];
 
 InitStrings ();

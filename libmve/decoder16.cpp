@@ -14,12 +14,10 @@ static void genLoopkupTable();
 
 void decodeFrame16(ubyte *pFrame, ubyte *pMap, int mapRemain, ubyte *pData, int dataRemain)
 {
-    ubyte *pOrig;
-    ubyte *pOffData, *pEnd;
+    ubyte *pOffData;
     ushort offset;
     ushort *FramePtr = reinterpret_cast<ushort*> (pFrame);
     ubyte op;
-    int length;
     int i, j;
     int xb, yb;
 
@@ -36,12 +34,7 @@ void decodeFrame16(ubyte *pFrame, ubyte *pMap, int mapRemain, ubyte *pData, int 
     offset = pData[0]|(pData[1]<<8);
 
     pOffData = pData + offset;
-    pEnd = pData + offset;
-
     pData += 2;
-
-    pOrig = pData;
-    length = offset - 2; /*dataRemain-2;*/
 
     for (j=0; j<yb; j++)
     {

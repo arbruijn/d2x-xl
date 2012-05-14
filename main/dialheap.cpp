@@ -35,8 +35,6 @@ m_route.Destroy ();
 
 //-----------------------------------------------------------------------------
 
-static int bFastReset = 1;
-
 void CDialHeap::Reset (void)
 {
 #if SPARSE_RESET

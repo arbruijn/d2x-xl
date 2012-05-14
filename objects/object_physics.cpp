@@ -92,7 +92,6 @@ void CObject::ApplyFlightControls (void)
 {
 	fix		forwardThrustTime;
 	CObject*	gmObjP;
-	int		bMulti;
 
 if (gameData.time.xFrame <= 0)
 	return;
@@ -177,7 +176,6 @@ mType.physInfo.thrust += info.position.mOrient.m.dir.u * fix (controls [0].verti
 mType.physInfo.thrust *= 2 * DriveDamage ();
 if (!gameStates.input.bSkipControls)
 	memcpy (&gameData.physics.playerThrust, &mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
-bMulti = IsMultiGame;
 if ((mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [Index ()].bBoosted)
 	Wiggle ();
 

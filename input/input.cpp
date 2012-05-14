@@ -253,20 +253,17 @@ return bUseJoystick;
 
 void CControlsManager::SetFCSButton (int btn, int button)
 {
-	int state, timeDown, upCount, downCount;
-	state = timeDown = upCount = downCount = 0;
+	int timeDown, upCount, downCount;
+	timeDown = upCount = downCount = 0;
 
 if (JoyGetButtonState (btn)) {
-	if (btn == button) {
-		state = 1;
+	if (btn == button)
 		timeDown = gameData.time.xFrame;
-		}
 	else
 		upCount=1;
 	}
 else {
 	if (btn == button) {
-		state = 1;
 		timeDown = gameData.time.xFrame;
 		downCount = 1;
 		}
@@ -1243,7 +1240,6 @@ int CControlsManager::Read (void)
 {
 	int	i;
 	int	bSlideOn, bBankOn;
-	int	nBankSensMod;
 	fix	pitchTime, headingTime;
 	fix	mouseAxis [3];
 	int	nMouseButtons;
@@ -1256,7 +1252,6 @@ if (CapSampleRate ())
 gameStates.input.bControlsSkipFrame = 0;
 Reset ();
 gameStates.input.bKeepSlackTime = 1;
-nBankSensMod = m_frameCount;
 nMouseButtons = 0;
 bUseMouse = 0;
 bSlideOn = 0;

@@ -183,8 +183,7 @@ int CFileSelector::FileSelector (const char* pszTitle, const char* filespec, cha
 {
 	int					i;
 	FFS					ffs;
-	int					done, m_nOldChoice;
-	int					nPrevItem;
+	int					done;
 	int					bKeyRepeat = gameStates.input.keys.bRepeat;
 	int					bInitialized = 0;
 	int					exitValue = 0;
@@ -359,8 +358,6 @@ SDL_ShowCursor (1);
 
 SDL_EnableKeyRepeat (60, 30);
 while (!done) {
-	m_nOldChoice = m_nChoice;
-	nPrevItem = m_nFirstItem;
 	nOldMouseState = nMouseState;
 	omouse2State = mouse2State;
 	nMouseState = MouseButtonState (0);

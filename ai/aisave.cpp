@@ -246,7 +246,7 @@ m_cf.ReadVector (ciP->vLastPos);
 
 int CSaveGameManager::LoadAIUniFormat (void)
 {
-	int	h, i, j, fPos, nRouteSegs;
+	int	h, i, j, fPos;
 
 gameData.ai.bInitialized = m_cf.ReadInt ();
 gameData.ai.nOverallAgitation = m_cf.ReadInt ();
@@ -261,7 +261,6 @@ if (i < h)
 	m_cf.Seek ((h - i) * ((int) m_cf.Tell () - fPos) / i, SEEK_CUR);
 
 h = (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
-nRouteSegs = h;
 fPos = (int) m_cf.Tell ();
 gameData.ai.routeSegs.Clear ();
 j = min (h, int (gameData.ai.routeSegs.Length ()));

@@ -93,7 +93,6 @@ void CStatusBar::DrawScore (void)
 	int 	x, y;
 	int	w, h, aw;
 
-	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
 	static int nIdLabel = 0, nIdScore = 0;
 
 CCanvas::Push ();
@@ -109,14 +108,8 @@ sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTota
 fontManager.Current ()->StringSize (szScore, w, h, aw);
 x = ScaleX (SB_SCORE_RIGHT) - w - LHY (2);
 y = SB_SCORE_Y;
-#if 0
-//erase old score
-CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
-Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage], y, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
-#endif
 fontManager.SetColorRGBi ((IsMultiGame && !IsCoopGame) ? MEDGREEN_RGBA : GREEN_RGBA, 1, 0, 0);
 nIdScore = PrintF (&nIdScore, -x, y, szScore);
-lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
 fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
@@ -136,7 +129,6 @@ if (!(nScore = cockpit->AddedScore (gameStates.render.vr.nCurrentPage)))
 	int	x, w, h, aw, color;
 	char	szScore [32];
 
-	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
 	static int nIdTotalScore = 0;
 
 cockpit->SetScoreTime (nTime = cockpit->ScoreTime () - gameData.time.xFrame);
@@ -160,13 +152,10 @@ if (nTime > 0) {
 	nIdTotalScore = PrintF (&nIdTotalScore, x, SB_SCORE_ADDED_Y, szScore);
 	fontManager.SetScale (1.0f);
 	CCanvas::Pop ();
-	lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
 	} 
 #if 1
 else {
 	//erase old score
-	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
-	//OglDrawFilledRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->Height ());
 	cockpit->SetScoreTime (0);
 	cockpit->SetAddedScore (gameStates.render.vr.nCurrentPage, 0);
 	}

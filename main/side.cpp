@@ -315,7 +315,6 @@ if (m_nShape > SIDE_SHAPE_TRIANGLE)
 	ushort			vSorted [4], bFlip;
 	CFixVector		vNormal;
 	CFloatVector	vNormalf;
-	fix				xDistToPlane;
 
 #if DBG
 if (nSegment == nDbgSeg)
@@ -328,7 +327,6 @@ SetupCorners (verts, index);
 bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_nShape ? 0xFFFF : m_corners [3], vSorted);
 vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
-xDistToPlane = m_nShape ? 0 : abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSorted [0]]));
 if (bFlip) {
 	vNormal.Neg ();
 	vNormalf.Neg ();
@@ -348,6 +346,7 @@ else {
 	m_fNormals [2] = CFloatVector::Avg (m_fNormals [0], m_fNormals [1]);
 	}
 #else
+fix xDistToPlane = m_nShape ? 0 : abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSorted [0]]));
 if (!m_nShape)
 	SetupAsQuad (vNormal, vNormalf, verts, index);
 if (PLANE_DIST_TOLERANCE < DEFAULT_PLANE_DIST_TOLERANCE) {
@@ -639,7 +638,7 @@ else {
 	i = 3;
 	nLevel = -nLevel - 1;
 	}
-j = j = nLevels [nLevel];
+j = nLevels [nLevel];
 
 for (; i >= j; i--) {
 	if (i == 4)

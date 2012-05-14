@@ -688,14 +688,11 @@ fontManager.SetScale (1.0f);
 
 void CGenericCockpit::DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary)
 {
-	int	w;
 	char	szAmmo [16];
 
 	static int nIdAmmo [2] = {0, 0};
 
-w = (m_info.fontWidth * (bPrimary ? 7 : 5)) / 2;
 CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
-//OglDrawFilledRect (ScaleX (x), ScaleY (y), ScaleX (x+w), ScaleY (y + m_info.fontHeight));
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 sprintf (szAmmo, "%03d", ammoCount);
 Convert1s (szAmmo);
@@ -1267,7 +1264,7 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) :
 //show names of teammates & players carrying flags
 void CGenericCockpit::DrawPlayerNames (void)
 {
-	int			bHasFlag, bShowName, bShowTeamNames, bShowAllNames, bShowFlags, nObject, nTeam;
+	int			bHasFlag, bShowName, bShowTeamNames, bShowAllNames, nObject, nTeam;
 	int			nPlayer, nState;
 	CRGBColor*	colorP;
 
@@ -1284,7 +1281,6 @@ void CGenericCockpit::DrawPlayerNames (void)
 
 bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || (netGame.m_info.bShowAllNames && gameData.multigame.bShowReticleName));
 bShowTeamNames = (gameData.multigame.bShowReticleName && (IsCoopGame || IsTeamGame));
-bShowFlags = (gameData.app.GameMode (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
 
 nTeam = GetTeam (N_LOCALPLAYER);
 for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check all players

@@ -133,11 +133,9 @@ return pso->m_faces.m_nFaces;
 int OOF_GetSilhouette (CSubModel *pso)
 {
 	CEdge		*pe;
-	CFloatVector		*modelVertP;
 	int				h, i, j;
 
 OOF_GetLitFaces (pso);
-modelVertP = pso->m_rotVerts.Buffer ();
 for (h = j = 0, i = pso->m_edges.m_nEdges, pe = pso->m_edges.m_list.Buffer (); i; i--, pe++) {
 	if (pe->m_faces [0] && pe->m_faces [1]) {
 		if ((pe->m_bContour = (pe->m_faces [0]->m_bFacingLight != pe->m_faces [1]->m_bFacingLight)))

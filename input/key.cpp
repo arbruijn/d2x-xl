@@ -496,15 +496,15 @@ return keyCode | flags;
 void KeyHandler (SDL_KeyboardEvent *event)
 {
 	ubyte			state;
-	int			keyCode, keyState, nKeyboard = gameOpts->input.keyboard.nType;
-	SDLKey		keySym;
-	wchar_t		unicode;
+	int			keyCode,
+				keyState = (event->state == SDL_PRESSED),
+				nKeyboard = gameOpts->input.keyboard.nType;
+	SDLKey		keySym = event->keysym.sym;
+#if UNICODE_KEYS
+	wchar_t		unicode = event->keysym.unicode;
+#endif
 	tKeyInfo*	keyP;
 	ubyte			temp;
-
-keySym = event->keysym.sym;
-unicode = event->keysym.unicode;
-keyState = (event->state == SDL_PRESSED); //  !(wInfo & KF_UP);
 
 //=====================================================
 //Here a translation from win keycodes to mac keycodes!

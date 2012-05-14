@@ -94,8 +94,8 @@ return 1;
 
 int AICanFireAtTarget (CObject *objP, CFixVector *vGun, CFixVector *vTarget)
 {
-	fix			nSize, h;
-	short			nModel, ignoreObjs [2] = {OBJ_IDX (TARGETOBJ), -1};
+	fix			nSize;
+	short			nModel;
 
 //	Assume that robot's gun tip is in same CSegment as robot's center.
 if (vGun->IsZero ())
@@ -107,9 +107,7 @@ objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_VISIBILITY,
 						  vGun, vTarget, -1, objP->Index (), I2X (1), I2X (1), ++gameData.physics.bIgnoreObjFlag);
 
-if (((*vGun).v.coord.x == objP->info.position.vPos.v.coord.x) &&
-	 ((*vGun).v.coord.y == objP->info.position.vPos.v.coord.y) &&
-	 ((*vGun).v.coord.z == objP->info.position.vPos.v.coord.z))
+if (*vGun == objP->Position ())
 	hitQuery.nSegment	= objP->info.nSegment;
 else {
 	short nSegment = FindSegByPos (*vGun, objP->info.nSegment, 1, 0);
@@ -119,8 +117,6 @@ else {
 		objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
 	hitQuery.nSegment = nSegment;
 	}
-h = CFixVector::Dist (*vGun, objP->info.position.vPos);
-h = CFixVector::Dist (*vGun, *vTarget);
 nModel = objP->rType.polyObjInfo.nModel;
 nSize = objP->info.xSize;
 objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested

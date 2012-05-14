@@ -527,7 +527,7 @@ typedef struct tD1SoundHeader {
 
 void BMReadGameDataD1 (CFile& cf)
 {
-	int				h, i, j, v10DataOffset;
+	int				h, i, j;
 #if 1
 	D1_tmap_info	t;
 	//D1Robot_info	r;
@@ -538,7 +538,7 @@ void BMReadGameDataD1 (CFile& cf)
 	CPolyModel		model;
 	ubyte				tmpSounds [D1_MAX_SOUNDS];
 
-v10DataOffset = cf.ReadInt ();
+cf.ReadInt ();
 cf.Read (&gameData.pig.tex.nTextures [1], sizeof (int), 1);
 j = (gameData.pig.tex.nTextures [1] == 70) ? 70 : D1_MAX_TEXTURES;
 /*---*/PrintLog (1, "Loading %d texture indices\n", j);
@@ -715,18 +715,6 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 		pr->clawSound = i;
 	}
 PrintLog (-1);
-
-#if 0
-cf.Seek (v10DataOffset, SEEK_SET);
-i = cf.ReadInt ();
-j = cf.ReadInt ();
-cf.Seek (i * sizeof (tD1TextureHeader), SEEK_CUR);
-gameStates.app.bD1Mission = 1;
-for (i = 0; i < j; i++) {
-	cf.Read (&gameData.pig.sound.sounds [1][i].szName, sizeof (gameData.pig.sound.sounds [1][i].szName), 1);
-	cf.Seek (sizeof (tD1SoundHeader) - sizeof (gameData.pig.sound.sounds [1][i].szName), SEEK_CUR);
-	}
-#endif
 }
 
 //------------------------------------------------------------------------------

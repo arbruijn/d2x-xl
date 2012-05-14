@@ -34,7 +34,7 @@
 
 static inline CFloatVector3 *ObjectFrameColor (CObject *objP, CFloatVector3 *pc)
 {
-	static CFloatVector3	defaultColor = {0, 1.0f, 0};
+	static CFloatVector3	defaultColor = {{0, 1.0f, 0}};
 	static CFloatVector3	botDefColor = {1.0f, 0, 0};
 	static CFloatVector3	reactorDefColor = {0.5f, 0, 0.5f};
 	static CFloatVector3	playerDefColors [] = {{0,1.0f,0},{0,0,1.0f},{1.0f,0,0}};
@@ -58,7 +58,9 @@ return &defaultColor;
 }
 
 // -----------------------------------------------------------------------------
+// Normalized Device Coordinates
 
+#if 0
 
 static float NDC (float d)
 {
@@ -78,6 +80,8 @@ static float NDC (float d)
 //z = ((C / d - A) / B + 1.0) * 0.5f
 return ((_C / d - _A) / _B + 1.0f) * 0.5f;
 }
+
+#endif
 
 // -----------------------------------------------------------------------------
 // Scale the distance between target and viewer with the view range and stretch

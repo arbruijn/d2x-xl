@@ -163,7 +163,7 @@ return m.ToS ();
 int MainMenu (void) 
 {
 	CMenu	m;
-	int	i, nChoice = 0, nOptions = 0;
+	int	i, nChoice = 0;
 
 IpxClose ();
 //paletteManager.Load (MENU_PALETTE, NULL, 0, 1, 0);		//get correct palette
@@ -180,7 +180,7 @@ if (gameData.multiplayer.autoNG.bValid > 0) {
 
 PrintLog (1, "launching main menu\n");
 do {
-	nOptions = SetupMainMenu (m); // may have to change, eg, maybe selected pilot and no save games.
+	SetupMainMenu (m); // may have to change, eg, maybe selected pilot and no save games.
 	gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds ();                // .. 20 seconds from now!
 	if (nChoice < 0)
 		nChoice = 0;
@@ -355,14 +355,14 @@ return 1;
 int QuitSaveLoadMenu (void)
 {
 	CMenu m (5);
-	int	i, optQuit, optOptions, optLoad, optSave;
+	int	i;
 
 	int choice = 0;
 
-optQuit = m.AddMenu ("quit", TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
-optOptions = m.AddMenu ("settings", TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
-optLoad = m.AddMenu ("load game", TXT_LOAD_GAME2, KEY_L, HTX_LOAD_GAME);
-optSave = m.AddMenu ("save game", TXT_SAVE_GAME2, KEY_S, HTX_SAVE_GAME);
+m.AddMenu ("quit", TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
+m.AddMenu ("settings", TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
+m.AddMenu ("load game", TXT_LOAD_GAME2, KEY_L, HTX_LOAD_GAME);
+m.AddMenu ("save game", TXT_SAVE_GAME2, KEY_S, HTX_SAVE_GAME);
 i = m.Menu (NULL, TXT_ABORT_GAME, NULL, &choice);
 if (i == m.IndexOf ("quit"))
 	return 0;

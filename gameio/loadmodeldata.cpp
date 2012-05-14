@@ -110,7 +110,7 @@ int LoadRobotExtensions (const char *fname, char *folder, int nType)
 {
 	CFile cf;
 	int t,i,j;
-	int version, bVertigoData;
+	int bVertigoData;
 
 	//strlwr (fname);
 bVertigoData = !strcmp (fname, "d2x.ham");
@@ -126,10 +126,8 @@ if (nType > 1) {
 	sig = cf.ReadInt ();
 	if (sig != MAKE_SIG ('X','H','A','M'))
 		return 0;
-	version = cf.ReadInt ();
+	cf.ReadInt ();
 }
-else
-	version = 0;
 
 //read extra weapons
 

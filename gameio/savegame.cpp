@@ -465,23 +465,15 @@ if (!m_override) {
 void CSaveGameManager::PushSecretSave (int nSaveSlot)
 {
 if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
-	int	rval;
-	char	tempname [32], fc;
+	char	tempname [32];
 	CFile m_cf;
 
-	if (nSaveSlot >= 10)
-		fc = (nSaveSlot-10) + 'a';
-	else
-		fc = '0' + nSaveSlot;
+	char fc = (nSaveSlot >= 10) ? (nSaveSlot-10) + 'a' : '0' + nSaveSlot;
 	sprintf (tempname, "%csecret.sgc", fc);
-	if (m_cf.Exist (tempname, gameFolders.szSaveDir, 0)) {
-		rval = m_cf.Delete (tempname, gameFolders.szSaveDir);
-		Assert (rval == 0);	//	Oops, error deleting file in tempname.
-		}
-	if (m_cf.Exist (SECRETC_FILENAME, gameFolders.szSaveDir, 0)) {
-		rval = m_cf.Copy (SECRETC_FILENAME, tempname);
-		Assert (rval == 0);	//	Oops, error copying tempname to secret.sgc!
-		}
+	if (m_cf.Exist (tempname, gameFolders.szSaveDir, 0))
+		m_cf.Delete (tempname, gameFolders.szSaveDir);
+	if (m_cf.Exist (SECRETC_FILENAME, gameFolders.szSaveDir, 0))
+		m_cf.Copy (SECRETC_FILENAME, tempname);
 	}
 }
 
@@ -1095,18 +1087,12 @@ if ((nSaveSlot != (NUM_SAVES + 1)) && m_bInGame) {
 void CSaveGameManager::PopSecretSave (int nSaveSlot)
 {
 if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
-	int	rval;
-	char	tempname [32], fc;
+	char	tempname [32];
 
-	if (nSaveSlot >= 10)
-		fc = (nSaveSlot-10) + 'a';
-	else
-		fc = '0' + nSaveSlot;
+	char fc = (nSaveSlot >= 10) ? (nSaveSlot-10) + 'a' : '0' + nSaveSlot;
 	sprintf (tempname, "%csecret.sgc", fc);
-	if (m_cf.Exist (tempname, gameFolders.szSaveDir, 0)) {
-		rval = m_cf.Copy (tempname, SECRETC_FILENAME);
-		Assert (rval == 0);	//	Oops, error copying tempname to secret.sgc!
-		}
+	if (m_cf.Exist (tempname, gameFolders.szSaveDir, 0))
+		m_cf.Copy (tempname, SECRETC_FILENAME);
 	else
 		m_cf.Delete (SECRETC_FILENAME, gameFolders.szSaveDir);
 	}
@@ -1638,7 +1624,7 @@ int CSaveGameManager::LoadUniFormat (int bMulti, fix xOldGameTime, int *nLevel)
 {
 	CPlayerData	restoredPlayers [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
-	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
+	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1;
 	int		nCurrentLevel, nNextLevel;
 	CWall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
@@ -1676,7 +1662,6 @@ if (IsMultiGame) {
 	CSaveGameManager::LoadNetGame ();
 	CSaveGameManager::LoadNetPlayers ();
 	nPlayers = m_cf.ReadInt ();
-	nSavedLocalPlayer = N_LOCALPLAYER;
 	N_LOCALPLAYER = m_cf.ReadInt ();
 	for (i = 0; i < nPlayers; i++) {
 		CSaveGameManager::LoadPlayer (restoredPlayers + i);
@@ -1995,7 +1980,7 @@ int CSaveGameManager::LoadBinFormat (int bMulti, fix xOldGameTime, int *nLevel)
 {
 	CPlayerData	restoredPlayers [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
-	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
+	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1;
 	int		nCurrentLevel, nNextLevel;
 	CWall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
@@ -2023,7 +2008,6 @@ if (IsMultiGame) {
 	m_cf.Read (&netPlayers [0], netPlayers [0].Size (), 1);
 	m_cf.Read (&nPlayers, sizeof (gameData.multiplayer.nPlayers), 1);
 	m_cf.Read (&N_LOCALPLAYER, sizeof (N_LOCALPLAYER), 1);
-	nSavedLocalPlayer = N_LOCALPLAYER;
 	for (i = 0; i < nPlayers; i++)
 		m_cf.Read (restoredPlayers + i, sizeof (CPlayerData), 1);
 	nServerPlayer = SetServerPlayer (restoredPlayers, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);

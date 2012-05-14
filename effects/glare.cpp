@@ -47,14 +47,14 @@ return (ogl.m_features.bDepthBlending > 0) && gameOpts->render.coronas.bUse && g
 
 int CGlareRenderer::CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* corners)
 {
-	fix		d, d1, d2, dMax = -1;
+	fix		d1, d2, dMax = -1;
 	int		i, j;
 
 if (!corners) 
 	corners = SEGMENTS [nSegment].Corners (nSide);
 m_nVertices = SEGMENTS [nSegment].Side (nSide)->CornerCount ();
 for (i = j = 0; j < m_nVertices; j++) {
-	d = CFixVector::Dist (gameData.segs.vertices [corners [j]], gameData.segs.vertices [corners [(j + 1) % m_nVertices]]);
+	fix d = CFixVector::Dist (gameData.segs.vertices [corners [j]], gameData.segs.vertices [corners [(j + 1) % m_nVertices]]);
 	if (dMax < d) {
 		dMax = d;
 		i = j;
@@ -81,7 +81,6 @@ return i;
 
 int CGlareRenderer::FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *fIntensityP)
 {
-	ushort		nWall;
 	CSide			*sideP;
 	char			*pszName;
 	int			i, bAdditive, nTexture, nBrightness;
@@ -94,7 +93,6 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 sideP = SEGMENTS [nSegment].m_sides + nSide;
 CWall* wallP = sideP->Wall ();
-nWall = sideP->m_nWall;
 if (wallP) {
 	ubyte nType = wallP->nType;
 
@@ -354,7 +352,6 @@ if (fIntensity < 0.01f)
 	return;
 
 	int				nTexture, bAdditive;
-	float				fLight;
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -363,11 +360,10 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
-fLight = ComputeCoronaSprite (nSegment, nSide);
+ComputeCoronaSprite (nSegment, nSide);
 fIntensity *= ComputeSoftGlare ();
 //shaderManager.Set ("dMax"), 20.0f);
-RenderSoftGlare (nTexture, fIntensity, bAdditive,
-					  !automap.Display () || automap.m_visited [nSegment] || !gameOpts->render.automap.bGrayOut);
+RenderSoftGlare (nTexture, fIntensity, bAdditive, !automap.Display () || automap.m_visited [nSegment] || !gameOpts->render.automap.bGrayOut);
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;

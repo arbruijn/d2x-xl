@@ -80,7 +80,7 @@
 //	int			nTgtInd;
 //} cockpitOpts;
 
-static int nWindowPos, nWindowAlign, nTgtInd, bHideTgtInd;
+static int nWindowPos, nWindowAlign, nTgtInd;
 
 #if WEAPON_ICONS
 static int	optWeaponIcons, bShowWeaponIcons, optIconAlpha;

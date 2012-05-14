@@ -459,7 +459,7 @@ for (int i = 0, j; i < h; i = j) {
 	nStartSeg = route [i].nNode;
 	if ((nStartSeg < 0) || (nStartSeg >= gameData.segs.nSegments))
 		return -2;
-	/*fq.*/p0 = &SEGMENTS [nStartSeg].Center ();
+	/*fq.*/p0 = p1 = &SEGMENTS [nStartSeg].Center ();
 	for (j = i + 1; j < h; j++) { 
 		nDestSeg = route [j].nNode;
 #if 1

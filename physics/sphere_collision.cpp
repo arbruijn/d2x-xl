@@ -883,12 +883,6 @@ int ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, short* segList, sho
 	short			nHitNoneSegs = 0;
 	int			nCurNestLevel = gameData.collisions.hitResult.nNestCount;
 	bool			bCheckVisibility = ((hitQuery.flags & FQ_VISIBILITY) != 0);
-	CObject*		objP = (hitQuery.nObject < 0) ? NULL : OBJECTS + hitQuery.nObject;
-#if DBG
-	bool			bUseHitbox = objP && (objP->info.nType == OBJ_PLAYER) && CollisionModel () && UseHitbox (objP);
-#else
-	bool			bUseHitbox = false;
-#endif
 
 bestHit.vPoint.SetZero ();
 //PrintLog (1, "Entry ComputeHitpoint\n");
@@ -1059,8 +1053,6 @@ return bestHit.nType;
 //Returns the hitResult->nHitType
 int FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult)
 {
-	int			nNewHitType;
-	short			nAltHitSegment;
 	CHitData		curHit, newHit;
 	int			i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes; // save value
 
@@ -1103,7 +1095,6 @@ if (masks.m_center) {
 gameData.collisions.segsVisited [0] = hitQuery.nSegment;
 gameData.collisions.nSegsVisited = 1;
 gameData.collisions.hitResult.nNestCount = 0;
-nAltHitSegment = gameData.collisions.hitResult.nAltSegment = -1;
 if (hitQuery.flags & FQ_VISIBILITY)
 	extraGameInfo [IsMultiGame].nHitboxes = 0;
 ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2);
@@ -1126,7 +1117,7 @@ if (curHit.nSegment == -1) {
 	//problems, try using zero radius and see if we hit a wall
 	if (hitQuery.flags & FQ_VISIBILITY)
 		extraGameInfo [IsMultiGame].nHitboxes = 0;
-	nNewHitType = ComputeHitpoint (altHit, altQuery, hitResult.segList, &hitResult.nSegments, -2);
+	ComputeHitpoint (altHit, altQuery, hitResult.segList, &hitResult.nSegments, -2);
 	extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 	if (altHit.nSegment != -1)
 		curHit = altHit;
@@ -1216,8 +1207,8 @@ int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short n
 	CSide*			sideP;
 	CWall*			wallP;
 	CFloatVector	intersection, v0, v1;
-	float				l0, l1;
-	short				nSide, nFace, nFaceCount, nChildSeg, nPredSeg = 0x7FFF;
+	float				l0, l1 = 0.0f;
+	short				nSide, nFace, nFaceCount, nChildSeg;
 	uint*				bVisited = segVisList [nThread];
 
 if (!nDepth) {

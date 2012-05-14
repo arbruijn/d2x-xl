@@ -248,8 +248,7 @@ int CLightmapManager::Init (int bVariable)
 {
 	CDynLight*		lightP;
 	CSegFace*		faceP = NULL;
-	int				bIsLight, nIndex, i; 
-	short				t; 
+	int				nIndex, i;
 	tLightmapInfo*	lightmapInfoP;  //temporary place to put light data.
 	double			sideRad;
 
@@ -281,8 +280,6 @@ for (lightP = lightManager.Lights (), i = lightManager.LightCount (0); i; i--, l
 	if (faceP == lightP->info.faceP)
 		continue;
 	faceP = lightP->info.faceP;
-	bIsLight = 0; 
-	t = IsLight (faceP->m_info.nBaseTex) ? faceP->m_info.nBaseTex : faceP->m_info.nOvlTex;
 	sideRad = (double) faceP->m_info.fRads [1] / 10.0;
 	nIndex = faceP->m_info.nSegment * 6 + faceP->m_info.nSide;
 	//Process found light.
@@ -363,7 +360,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-static float offset [2] = {1.3846153846f, 3.2307692308f};
+//static float offset [2] = {1.3846153846f, 3.2307692308f};
 //static float weight [3] = {0.2270270270f, 0.3162162162f, 0.0702702703f};
 static float weight [5] = {0.2270270270f, 0.1945945946f, 0.1216216216f, 0.0540540541f, 0.0162162162f};
 

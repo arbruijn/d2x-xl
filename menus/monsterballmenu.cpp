@@ -38,8 +38,6 @@
 
 //------------------------------------------------------------------------------
 
-static int nBonusOpt, nSizeModOpt, nPyroForceOpt;
-
 static const char *szWeaponIds [] = {
 	"Laser 1", 
 	"Laser 2", 

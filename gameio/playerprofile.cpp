@@ -1536,7 +1536,6 @@ for (i = sizeofa (defaultParams), pv = defaultParams; i; i--, pv++) {
 
 int NewPlayerConfig (void)
 {
-	int	nitems;
 	int	i, j;
 	CMenu	m (8);
    int	mct = CONTROL_MAX_TYPES;
@@ -1550,7 +1549,6 @@ RetrySelection:
 
 for (i = 0; i < mct; i++ )
 	m.AddMenu ("new player", const_cast<char*> (CONTROL_TEXT(i)), -1);
-nitems = i;
 m [0].SetText (const_cast<char*> (TXT_CONTROL_KEYBOARD));
 choice = gameConfig.nControlType;				// Assume keyboard
 #ifndef APPLE_DEMO

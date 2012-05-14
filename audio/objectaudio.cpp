@@ -141,8 +141,10 @@ return (nSound < 0) ? -1 : CAudio::UnXlatSound (nSound);
 
 int CAudio::Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound)
 {
+#if 0 //DBG
 	static float fCorrFactor = 1.0f;
 	static uint  nRouteCount = 1;
+#endif
 
 if (nDecay)
 	maxDistance *= 2;
@@ -498,7 +500,6 @@ void CAudio::Cleanup (void)
 {
 	int				h, i;
 	CAudioChannel* channelP;
-	CSoundObject*	soundObjP;
 
 h = int (m_objects.ToS ());
 
@@ -508,7 +509,6 @@ for (i = int (m_usedChannels.ToS ()); i; ) {
 		channelP->Stop ();
 	}
 
-soundObjP = m_objects.Buffer () + h;
 while (h) {
 	i = m_objects [--h].m_channel;
 	if ((i >= 0) && (m_channels [i].SoundObject () != h))
@@ -762,8 +762,6 @@ while (i) {
 			continue;		// Go on to next sound...
 			}
 		if (soundObjP->m_flags & SOF_LINK_TO_POS) {
-			int nVolume = soundObjP->m_volume;
-			int nPan = soundObjP->m_pan;
 #if DBG
 			if (soundObjP->m_linkType.pos.nSegment == nDbgSeg)
 				nDbgSeg = nDbgSeg;

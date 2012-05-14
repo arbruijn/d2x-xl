@@ -48,36 +48,21 @@ void NDRecordGuidedStart (void);
 //creates a weapon CObject
 int CreateWeaponObject (ubyte nWeaponType, short nSegment, CFixVector *vPosition, short nParent)
 {
-	int		rType = -1;
-	fix		xLaserRadius = -1;
 	int		nObject;
 	CObject	*objP;
 
 switch (gameData.weapons.info [nWeaponType].renderType) {
 	case WEAPON_RENDER_BLOB:
-		rType = RT_LASER;	// Render as a laser even if blob (see render code above for explanation)
-		xLaserRadius = gameData.weapons.info [nWeaponType].blob_size;
-		break;
 	case WEAPON_RENDER_POLYMODEL:
-		xLaserRadius = 0;	//	Filled in below.
-		rType = RT_POLYOBJ;
-		break;
 	case WEAPON_RENDER_LASER:	// Not supported anymore
 	case WEAPON_RENDER_NONE:
-		rType = RT_NONE;
-		xLaserRadius = I2X (1);
-		break;
 	case WEAPON_RENDER_VCLIP:
-		rType = RT_WEAPON_VCLIP;
-		xLaserRadius = gameData.weapons.info [nWeaponType].blob_size;
 		break;
 	default:
 		Error ("Invalid weapon render nType in CreateNewWeapon\n");
 		return -1;
 	}
 
-Assert (xLaserRadius != -1);
-Assert (rType != -1);
 nObject = CreateWeapon (nWeaponType, nParent, nSegment, *vPosition, 0, 255);
 if (nObject < 0)
 	return -1;

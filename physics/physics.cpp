@@ -112,12 +112,10 @@ else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
 else
 	return;
 if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.m.dir.f)) < I2X (1)/2) {
-	fixang deltaAngleSave;
 	CAngleVector turnAngles;
 
 	m = CFixMatrix::CreateFU(objP->info.position.mOrient.m.dir.f, desiredUpVec);
 //	m = CFixMatrix::CreateFU(objP->info.position.mOrient.m.v.f, &desiredUpVec, NULL);
-	deltaAngleSave =
 	deltaAngle = CFixVector::DeltaAngle(objP->info.position.mOrient.m.dir.u, m.m.dir.u, &objP->info.position.mOrient.m.dir.f);
 	deltaAngle += objP->mType.physInfo.turnRoll;
 	if (abs (deltaAngle) > DAMP_ANG) {
@@ -889,10 +887,7 @@ if (info.controlType == CT_AI) {
 	// stored when entering this function, it has been stopped forcefully by something, so bounce it back to
 	// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
 	if (((simData.hitResult.nType == HIT_WALL) || (simData.hitResult.nType == HIT_BAD_P0)) && !(simData.bSpeedBoost || simData.bStopped || simData.bBounced)) {	//Set velocity from actual movement
-		fix s = FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), simData.xTimeScale, 100);
-
 		simData.vMoved = info.position.vPos - simData.vStartPos;
-		s = simData.vMoved.Mag ();
 		simData.vMoved *= (FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), simData.xTimeScale, 100));
 		if (!simData.bSpeedBoost)
 			Velocity () /*simData.velocity*/ = simData.vMoved;
@@ -1042,8 +1037,6 @@ if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
 simData.nTries = 0;
 ++gameData.physics.bIgnoreObjFlag;
 
-bool bUnstick = false;
-
 int bRetry;
 
 for (;;) {	//Move the object
@@ -1108,7 +1101,6 @@ for (;;) {	//Move the object
 		break;
 	if (simData.hitResult.nType == HIT_WALL) {
 		bRetry = ProcessWallCollision (simData);
-		bUnstick = true;
 		}
 	else if (simData.hitResult.nType == HIT_OBJECT) 
 		bRetry = ProcessObjectCollision (simData);
@@ -1124,10 +1116,6 @@ FixPosition (simData);
 FinishPhysicsSim (simData);
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
-#if 0 //UNSTICK_OBJS
-if (bUnstick)
-	Unstick ();
-#endif
 }
 
 //	----------------------------------------------------------------

@@ -358,7 +358,7 @@ void PiggyInitPigFile (char *filename)
 	CFile					*cfP = cfPiggy;
 	char					szName [16];
 	char					szNameRead [16];
-	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, i;
+	int					nHeaderSize, nBitmapNum, nDataStart, i;
 	//int					bD1 = gameStates.app.bD1Data;
 	bool					bRegister = filename != NULL;
 	bool					bReload = true;
@@ -400,7 +400,6 @@ strncpy (szCurrentPigFile [0], szPigName, sizeof (szCurrentPigFile [0]));
 nBitmapNum = cfP->ReadInt ();
 nHeaderSize = nBitmapNum * sizeof (tPIGBitmapHeader);
 nDataStart = nHeaderSize + (int) cfP->Tell ();
-nDataSize = (int) cfP->Length () - nDataStart;
 gameData.pig.tex.nBitmaps [0] = 1;
 SetDataVersion (0);
 for (i = 0; i < nBitmapNum; i++) {

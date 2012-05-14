@@ -359,9 +359,7 @@ int ComputeVertexColor (int nSegment, int nSide, int nVertex, CFloatVector3 *col
 	int					i, j, nType, nLights, 
 							bSelf, nSelf,
 							bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
-							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform,
-							nSaturation = gameOpts->render.color.nSaturation;
-	int					nMaxBrightness = 0;
+							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform;
 	int					bDiffuse, bSpecular = gameStates.render.bSpecularColor && (colorData.fMatShininess > 0.0f);
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
 	CFloatVector3		lightDir, lightRayDir, lightPos, vertPos, vReflect;
@@ -454,13 +452,14 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 
 	if (fLightDist == 0.0f) {
+		fLightAngle = 1.0f;
 		NdotL = 1.0f;
 		bDiffuse = 1;
 		lightRayDir = colorData.vertNorm;
 		}
 	else {
 		lightRayDir /= fLightDist; // normalize
-		if (bDiffuse = lightP->info.bDiffuse [nThread]) {
+		if ((bDiffuse = lightP->info.bDiffuse [nThread])) {
 			if (colorData.vertNorm.IsZero ())
 				NdotL = 1.0f;
 			else {

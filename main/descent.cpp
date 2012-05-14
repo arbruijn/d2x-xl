@@ -640,7 +640,6 @@ return gameStates.input.bHaveTrackIR = 0;
 
 int InitGraphics (bool bFull = true)
 {
-	u_int32_t	nScreenSize;
 	int			t;
 
 /*---*/PrintLog (1, "Initializing graphics\n");
@@ -649,7 +648,6 @@ if ((t = GrInit ())) {		//doesn't do much
 	Error (TXT_CANT_INIT_GFX, t);
 	return 0;
 	}
-nScreenSize = displayModeInfo [gameStates.gfx.nStartScrMode].dim;
 /*---*/PrintLog (1, "Initializing render buffers\n");
 if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode

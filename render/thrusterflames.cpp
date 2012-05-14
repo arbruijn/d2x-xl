@@ -418,7 +418,6 @@ if (m_nStyle == 1) {	//2D
 		return;
 
 		static CFloatVector	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
-		static CFloatVector	vEye = CFloatVector::ZERO;
 
 	//m_ti.fLength *= 4 * m_ti.fSize;
 	for (int i = 0; i < m_nThrusters; i++) {

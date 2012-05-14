@@ -351,7 +351,7 @@ cf.GetS (lineBuf, sizeof (lineBuf));
 if ((p = strchr (lineBuf, ';')))
 	*p = '\0';
 key = Trim (strtok (lineBuf, "="));
-if (!key || stricmp (key, "name") && stricmp (key, "xname") && stricmp (key, "zname") && stricmp (key, "d2x-name")) {
+if (!key || (stricmp (key, "name") && stricmp (key, "xname") && stricmp (key, "zname") && stricmp (key, "d2x-name"))) {
 	cf.Close ();
 	return 0;
 	}
@@ -616,7 +616,6 @@ gameFolders.szMsnSubDir [strlen (gameFolders.szMsnSubDir) - 1] = '/';
 
 int CMissionManager::BuildList (int bAnarchy, int nSubFolder)
 {
-	static int nMissionCount = -1;
 	int nTopPlace, bSubFolder, bHaveSubFolders;
 
 m_nCount = 0;
@@ -689,7 +688,6 @@ if (m_nCount > nTopPlace)
 	qsort (m_list + nTopPlace, m_nCount - nTopPlace, sizeof (*m_list), (int (_CDECL_ *)(const void *, const void *)) MLSortFunc);
 //if (m_nCount > nTopPlace)
 //	qsort(m_list + nTopPlace, m_nCount - nTopPlace, sizeof (*m_list), (int (_CDECL_ *) (const void *, const void * )) MLSortFunc);
-nMissionCount = m_nCount;
 return m_nCount;
 }
 

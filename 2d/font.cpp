@@ -480,7 +480,7 @@ m_info.kernDataOffs = cf.ReadInt ();
 
 void CFont::StringSize (const char *s, int& stringWidth, int& stringHeight, int& averageWidth)
 {
-	int i = 0, longestWidth = 0, nTab = 0;
+	int i = 0, longestWidth = 0;
 	int width, spacing;
 	float fScale = fontManager.Scale ();
 
@@ -495,7 +495,6 @@ if (s && *s) {
 			s++;
 			stringHeight += m_info.height + 2;
 			stringWidth = 0;
-			nTab = 0;
 			}
 
 		if (*s == 0) 

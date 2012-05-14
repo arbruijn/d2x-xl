@@ -1950,11 +1950,10 @@ int NDReadFrameInfo (void)
 {
 	int bDone, nSegment, nTexture, nSide, nObject, soundno, angle, volume, i, bShot;
 	CObject *objP;
-	ubyte nTag, nPrevTag, WhichWindow;
+	ubyte nTag, WhichWindow;
 	static sbyte saved_letter_cockpit;
 	static sbyte saved_rearview_cockpit;
 	CObject extraobj;
-	static char LastReadValue = 101;
 	CSegment *segP;
 
 bDone = 0;
@@ -1975,17 +1974,14 @@ cameraManager.Create ();
 LOCALPLAYER.homingObjectDist = -I2X (1);
 prevObjP = NULL;
 while (!bDone) {
-	nPrevTag = nTag;
 	nTag = NDReadByte ();
 	CATCH_BAD_READ
 	switch (nTag) {
 		case ND_EVENT_START_FRAME: {        // Followed by an integer frame number, then a fix gameData.time.xFrame
-			short nPrevFrameLength;
-
 			bDone = 1;
 			if (bRevertFormat > 0)
 				bRevertFormat = 0;
-			nPrevFrameLength = NDReadShort ();
+			NDReadShort ();
 			if (!bRevertFormat) {
 				NDWriteShort (gameData.demo.nFrameBytesWritten - 1);
 				bRevertFormat = 1;
@@ -2856,7 +2852,6 @@ while (!bDone) {
 			break;
 		}
 	}
-LastReadValue = nTag;
 if (bNDBadRead)
 	NDErrorMsg (TXT_DEMO_ERR_READING, TXT_DEMO_OLD_CORRUPT, NULL);
 else
@@ -2884,10 +2879,10 @@ gameData.demo.bEof = 0;
 
 void NDGotoEnd ()
 {
-	short nFrameLength, byteCount, bshort;
-	sbyte level, bbyte, laserLevel;
+	short nFrameLength, byteCount;
+	sbyte level, laserLevel;
 	ubyte energy, shield, c;
-	int i, loc, bint;
+	int i, loc;
 
 ndInFile.Seek (-2, SEEK_END);
 level = NDReadByte ();
@@ -2907,10 +2902,10 @@ loc = (int) ndInFile.Tell ();
 if (gameData.demo.nGameMode & GM_MULTI)
 	gameData.demo.bPlayersCloaked = NDReadByte ();
 else
-	bbyte = NDReadByte ();
-bbyte = NDReadByte ();
-bshort = NDReadShort ();
-bint = NDReadInt ();
+	 NDReadByte ();
+NDReadByte ();
+NDReadShort ();
+NDReadInt ();
 energy = NDReadByte ();
 shield = NDReadByte ();
 LOCALPLAYER.SetEnergy (I2X (energy));
@@ -3011,7 +3006,7 @@ void NDInterpolateFrame (fix d_play, fix d_recorded)
 	fix         mag1;
 	fix			delta_x, delta_y, delta_z;
 	ubyte			renderType;
-	CObject		*curObjP, *objP, *i, *j;
+	CObject		*curObjP, *objP, *i;
 
 	static CObject curObjs [MAX_OBJECTS_D2X];
 
@@ -3031,7 +3026,6 @@ if (NDReadFrameInfo () == -1) {
 	return;
 	}
 for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
-	j = OBJECTS + gameData.objs.nLastObject [0];
 	int h;
 	FORALL_OBJSi (objP, h) {
 		if (curObjP->info.nSignature == objP->info.nSignature) {

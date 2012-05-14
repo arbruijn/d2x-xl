@@ -118,10 +118,9 @@ GrUpdate (0);
 int CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem, int bAllowAbort, pListBoxCallback callback)
 {
 	int	i;
-	int	done, nOldChoice, nPrevItem, m_bRedraw;
+	int	done;
 	int	bKeyRepeat = gameStates.input.keys.bRepeat;
 	int	nOffsetSize;
-	int	nTotalWidth, nTotalHeight;
 	int	mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
 	int	xClose, yClose, bWheelUp, bWheelDown;
 	char	szPattern [40];
@@ -164,9 +163,6 @@ m_yOffset = (CCanvas::Current ()->Height () - (m_nHeight + m_nTitleHeight)) / 2 
 if (m_yOffset < m_nTitleHeight)
 	m_yOffset = m_nTitleHeight;
 
-nTotalWidth = m_nWidth + 2 * nOffsetSize;
-nTotalHeight = m_nHeight + 2 * nOffsetSize + m_nTitleHeight;
-
 CCanvas::Push ();
 backgroundManager.Setup (NULL, m_xOffset - nOffsetSize, m_yOffset - m_nTitleHeight - nOffsetSize, 
 								 m_nWidth + nOffsetSize * 2, m_nHeight + m_nTitleHeight + nOffsetSize * 2);
@@ -188,8 +184,6 @@ SDL_ShowCursor (1);
 
 SDL_EnableKeyRepeat(60, 30);
 while (!done) {
-	nOldChoice = m_nChoice;
-	nPrevItem = m_nFirstItem;
 	nOldMouseState = nMouseState;
 	nMouseState = MouseButtonState (0);
 	bWheelUp = MouseButtonState (3);

@@ -930,16 +930,8 @@ return 1;
 int PiggyBitmapPageIn (int bmi, int bD1, bool bHires)
 {
 	CBitmap*	bmP, * bmoP;
-	int		i, bmiSave;
+	int		i;
 
-	//bD1 = gameStates.app.bD1Mission;
-bmiSave = 0;
-#if 0
-Assert (bmi >= 0);
-Assert (bmi < MAX_BITMAP_FILES);
-Assert (bmi < gameData.pig.tex.nBitmaps [bD1]);
-Assert (bitmapCacheSize > 0);
-#endif
 if (bmi < 1)
 	return 0;
 if (bmi >= MAX_BITMAP_FILES)
@@ -988,7 +980,7 @@ PrintLog (1, "loading replacement textures\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".pog");
 if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 	int					id, version, nBitmapNum, bHaveTGA;
-	int					bmDataSize, bmDataOffset, bmOffset;
+	int					bmDataOffset, bmOffset;
 	ushort				*indices;
 	tPIGBitmapHeader	*bmh;
 
@@ -1012,7 +1004,6 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 		PIGBitmapHeaderRead (bmh + i, cf);
 #endif
 	bmDataOffset = (int) cf.Tell ();
-	bmDataSize = (int) cf.Length () - bmDataOffset;
 
 	for (i = 0; i < nBitmapNum; i++) {
 		bmOffset = bmh [i].offset;

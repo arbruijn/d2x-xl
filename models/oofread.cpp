@@ -1009,11 +1009,9 @@ if (!strnicmp (command,"$frontface",10)) { // this subobject is a door front
 if (!stricmp (command,"$glow=")) {
 	float r,g,b;
 	float size;
-	int nValues;
 
 	Assert (!(m_nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)));
-	nValues = sscanf (data, " %f, %f, %f, %f", &r, &g, &b, &size);
-	Assert (nValues == 4);
+	sscanf (data, " %f, %f, %f, %f", &r, &g, &b, &size);
 	m_nFlags |= OOF_SOF_GLOW;
 	//m_glowInfo = new CGlowInfo;
 	m_glowInfo.m_color.Red () = r;
@@ -1026,11 +1024,9 @@ if (!stricmp (command,"$glow=")) {
 if (!stricmp (command,"$thruster=")) {
 	float r,g,b;
 	float size;
-	int nValues;
 
 	Assert (!(m_nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)));
-	nValues = sscanf(data, " %f, %f, %f, %f", &r,&g,&b,&size);
-	Assert(nValues == 4);
+	sscanf(data, " %f, %f, %f, %f", &r,&g,&b,&size);
 	m_nFlags |= OOF_SOF_THRUSTER;
 	//m_glowInfo = new CGlowInfo;
 	m_glowInfo.m_color.Red () = r;
@@ -1044,10 +1040,8 @@ if (!stricmp (command,"$fov=")) {
 	float fov_angle;
 	float turret_spr;
 	float reactionTime;
-	int nValues;
 
-	nValues = sscanf(data, " %f, %f, %f", &fov_angle, &turret_spr, &reactionTime);
-	Assert(nValues == 3);
+	sscanf(data, " %f, %f, %f", &fov_angle, &turret_spr, &reactionTime);
 	if (fov_angle < 0.0f || fov_angle > 360.0f) { // Bad data
 		Assert(0);
 		fov_angle = 1.0;

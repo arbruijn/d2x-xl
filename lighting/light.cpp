@@ -216,12 +216,10 @@ void ApplyLight (fix xObjIntensity, int nObjSeg, CFixVector *vObjPos, int nRende
 {
 	int				iVertex, bUseColor, bForceColor;
 	int				nVertex;
-	int				bApplyLight;
-	short				nLightObj;
 	ubyte				nObjType;
 	CFixVector		*vVertPos;
 	fix				dist, xOrigIntensity = xObjIntensity;
-	CObject*			lightObjP, *objP = (nObject < 0) ? NULL : OBJECTS + nObject;
+	CObject*		objP = (nObject < 0) ? NULL : OBJECTS + nObject;
 	CPlayerData*	playerP = objP ? gameData.multiplayer.players + objP->info.nId : NULL;
 
 nObjType = objP ? objP->info.nType : OBJ_NONE;
@@ -255,10 +253,6 @@ if (objP && SHOW_DYN_LIGHT) {
 	if (nObject == nDbgObj)
 		nDbgObj = nDbgObj;
 #endif
-	if (0 > (nLightObj = lightClusterManager.Object (nObject).nObject))
-		lightObjP = NULL;
-	else
-		lightObjP = OBJECTS + nLightObj;
 	if (!lightClusterManager.Add (nObject, color, xObjIntensity))
 		lightManager.Add (NULL, color, xObjIntensity, -1, -1, nObject, -1, NULL);
 	return;
@@ -340,7 +334,6 @@ if (xObjIntensity) {
 				{
 				vVertPos = gameData.segs.vertices + nVertex;
 				dist = CFixVector::Dist (*vObjPos, *vVertPos);
-				bApplyLight = 0;
 				if ((dist >> headlightShift) < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;

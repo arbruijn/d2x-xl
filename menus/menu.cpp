@@ -583,7 +583,7 @@ if (gameOpts->menus.nFade && !gameStates.app.bNostalgia) {
 
 //------------------------------------------------------------------------------ 
 
-#define REDRAW_ALL	for (i = 0; i < int (ToS ()); i++) Item (i).m_bRedraw = 1; bRedrawAll = 1
+#define REDRAW_ALL	for (i = 0; i < int (ToS ()); i++) Item (i).m_bRedraw = 1;
 
 int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback, 
 					  int* nCurItemP, char* filename, int width, int height, int bTinyMode)
@@ -592,7 +592,6 @@ int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback ca
 	int			oldChoice, i;
 	int			bSoundStopped = 0, bTimeStopped = 0;
 	int			topChoice;// Is this a scrolling box? Set to 0 at init
-	int			bRedrawAll = 0;
 	CCanvas*		gameCanvasP;
 	int			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick = 0;
 	int			mx = 0, my = 0, x1 = 0, x2, y1, y2;

@@ -439,7 +439,7 @@ m_save.Create (10);
 CPalette *CPaletteManager::Load (const char *pszFile, const char *pszLevel)
 {
 	CFile		cf;
-	int		i = 0, fsize;
+	int		i = 0;
 	CPalette	palette;
 #ifdef SWAP_0_255
 	ubyte		coord;
@@ -463,8 +463,6 @@ if (!i) {
 	Error(TXT_PAL_FILES, pszFile, DEFAULT_LEVEL_PALETTE);
 	return NULL;
 	}
-fsize	= (int) cf.Length ();
-Assert (fsize == 9472);
 palette.Read (cf);
 cf.Read (m_data.fadeTable, sizeof (m_data.fadeTable), 1);
 cf.Close ();

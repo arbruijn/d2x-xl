@@ -221,7 +221,6 @@ PROF_START
 	float				fAlpha;
 	int				h, i, nColor, nLights = 0;
 	//int				bVertexLight = gameStates.render.bPerPixelLighting != 2;
-	int				bLightmaps = lightmapManager.HaveLightmaps ();
 	bool				bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 	static			CFaceColor brightColor;
 
@@ -370,8 +369,7 @@ PROF_START
 	int			nVertex, nSegment, nSide;
 	float			fAlpha;
 	int			h, i, j, nColor, nLights = 0,
-					bVertexLight = gameStates.render.bPerPixelLighting != 2,
-					bLightmaps = lightmapManager.HaveLightmaps ();
+					bVertexLight = gameStates.render.bPerPixelLighting != 2;
 	static		CStaticFaceColor<255,255,255,255> brightColor1;
 	static		CStaticFaceColor<127,127,127,127> brightColor2;
 	static		CFaceColor* brightColors [2] = {&brightColor1, &brightColor2};
@@ -558,7 +556,7 @@ for (i = nStart; i < nEnd; i++) {
 					*colorP = nColor ? faceColor [nColor] : *brightColors [gameStates.render.bFullBright - 1];
 				else {
 					if (gameStates.render.bPerPixelLighting == 2)
-						*colorP = *brightColors [gameStates.render.bFullBright - 1]; //gameData.render.color.ambient [nVertex];
+						*colorP = *brightColors [0]; //gameData.render.color.ambient [nVertex];
 					else {
 						nVertex = triP->index [h];
 #if DBG

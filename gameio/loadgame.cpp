@@ -132,6 +132,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "findpath.h"
 #include "waypoint.h"
+#include "transprender.h"
 
 #if defined (FORCE_FEEDBACK)
  #include "tactile.h"
@@ -2021,7 +2022,6 @@ return 1;
 //	Do a savegame.
 void EnterSecretLevel (void)
 {
-	fix	xOldGameTime;
 	int	i;
 
 Assert (!IsMultiGame);
@@ -2042,7 +2042,6 @@ for (i = 0; i < -missionManager.nLastSecretLevel; i++)
 		}
 if (i >= -missionManager.nLastSecretLevel)		//didn't find level, so must be last
 	missionManager.SetNextLevel (missionManager.LastSecretLevel ());
-xOldGameTime = gameData.time.xGame;
 PrepareSecretLevel (missionManager.NextLevel (), true);
 // do_cloak_invul_stuff ();
 }
@@ -2114,7 +2113,7 @@ void ShowLevelIntro (int nLevel)
 {
 //if shareware, show a briefing?
 if (!IsMultiGame) {
-	uint i, bPlayed = 0;
+	uint i;
 
 	PlayLevelIntroMovie (nLevel);
 	if (!gameStates.app.bD1Mission && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0])) {
@@ -2136,7 +2135,6 @@ if (!IsMultiGame) {
 				if (szIntroMovies [i].nLevel == nLevel) {
 					gameStates.video.nScreenMode = -1;
 					movieManager.Play (szIntroMovies [i].szMovieName, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
-					bPlayed=1;
 					break;
 					}
 				}

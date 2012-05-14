@@ -531,8 +531,6 @@ else //GLASSES_SHUTTER or NONE
 
 void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 {
-	GLint nError = glGetError ();
-
 m_data.xStereoSeparation = xStereoSeparation;
 ChooseDrawBuffer ();
 ogl.SetPolyOffsetFill (false);
@@ -732,7 +730,6 @@ else
 	SetBlendMode (OGL_BLEND_ALPHA);
 	SetStencilTest (false);
 	}
-nError = glGetError ();
 }
 
 //------------------------------------------------------------------------------

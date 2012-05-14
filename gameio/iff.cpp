@@ -799,9 +799,9 @@ for (y=bitmap_header->h;y--;) {
 	p+=bitmap_header->row_size;	//bitmap_header->w;
 	}
 if (bCompression) {		//write actual data length
-	Assert(fseek(fp, save_pos, SEEK_SET)==0);
+	fseek(fp, save_pos, SEEK_SET);
 	PutLong(total_len, fp);
-	Assert(fseek(fp, total_len, SEEK_CUR)==0);
+	fseek(fp, total_len, SEEK_CUR);
 	if (total_len&1) fputc(0, fp);		//pad to even
 	}
 delete[] new_span;
@@ -816,12 +816,11 @@ int CIFF::WritePbm (FILE *fp, tIFFBitmapHeader *bitmap_header, int bCompression)
 	int ret;
 	int raw_size = EVEN(bitmap_header->w) * bitmap_header->h;
 	int body_size, tiny_size, pbm_size = 4 + BMHD_SIZE + 8 + EVEN(raw_size) + sizeof (tPalEntry) * int (1 << bitmap_header->nplanes) + 8;
-	int save_pos;
 
 ////printf("write_pbm\n");
 
 PutSig(form_sig, fp);
-save_pos = ftell(fp);
+int save_pos = ftell(fp);
 PutLong(pbm_size+8, fp);
 PutSig(pbm_sig, fp);
 ret = WriteHeader (fp, bitmap_header);
@@ -833,9 +832,9 @@ if (ret != IFF_NO_ERROR)
 tiny_size = 0;
 body_size = WriteBody(fp, bitmap_header, bCompression);
 pbm_size = 4 + BMHD_SIZE + body_size + tiny_size + sizeof (tPalEntry) * int (1 << bitmap_header->nplanes) + 8;
-Assert(fseek(fp, save_pos, SEEK_SET)==0);
+fseek(fp, save_pos, SEEK_SET);
 PutLong(pbm_size+8, fp);
-Assert(fseek(fp, pbm_size+8, SEEK_CUR)==0);
+fseek(fp, pbm_size+8, SEEK_CUR);
 return ret;
 }
 
@@ -889,7 +888,6 @@ return ret;
 int CIFF::ReadAnimBrush (const char *cfname, CBitmap **bm_list, int max_bitmaps, int *n_bitmaps)
 {
 	int					ret;			//return code
-	tIFFBitmapHeader	bmHeader;
 	int					sig, formLen;
 	int					formType;
 
@@ -897,7 +895,6 @@ int CIFF::ReadAnimBrush (const char *cfname, CBitmap **bm_list, int max_bitmaps,
 ret = Open (cfname);		//read in entire file
 if (ret != IFF_NO_ERROR) 
 	goto done;
-bmHeader.raw_data = NULL;
 sig=GetSig();
 formLen = GetLong();
 if (sig != form_sig) {

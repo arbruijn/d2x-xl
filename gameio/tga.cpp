@@ -505,7 +505,7 @@ return 1;
 
 int CTGA::WriteData (void)
 {
-	int				i, j, n, nFrames;
+	int				i, j;
 	int				h = m_bmP->Height ();
 	int				w = m_bmP->Width ();
 
@@ -543,9 +543,7 @@ else {
 	tBGRA	c;
 	CRGBAColor *p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ()) + w * (m_bmP->Height () - 1);
 	int bShaderMerge = gameOpts->ogl.bGlTexMerge;
-	nFrames = h / w - 1;
 	for (i = 0; i < h; i++) {
-		n = nFrames - i / w;
 		for (j = w; j; j--, p++) {
 			if (bShaderMerge && !(p->Red () || p->Green () || p->Blue ()) && (p->Alpha () == 1)) {
 				c.r = 120;

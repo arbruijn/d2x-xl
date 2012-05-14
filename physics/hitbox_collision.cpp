@@ -321,9 +321,6 @@ return nHits;
 
 int DropMarkerObject (CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyte nMarker);
 
-static int nMarker = -1;
-static int tMarker = -1;
-
 fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, short& nModel)
 {
 	CFixVector		vRef = OBJPOS (objP2)->vPos;

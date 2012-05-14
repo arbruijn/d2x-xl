@@ -167,7 +167,6 @@ if (strncmp (sig, "DHF", 3) && strncmp (sig, "D2X", 3)) {
 	}
 
 CLevelHeader lh;
-int nameLen = lh.NameSize () - 1;
 
 for (;;) {
 	if (*nFiles >= MAX_HOGFILES) {

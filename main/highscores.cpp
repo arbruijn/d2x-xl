@@ -167,12 +167,11 @@ GrPrintF (NULL, CENTERSCREEN+LHX (50), LHY (40), "DEATHS");
 
 void CScoreTable::DrawDeaths (void)
 {
-	int	y,x;
+	int	y;
 	int	sw, sh, aw;
 	char	reactor_message [50];
 
 y = LHY (55 + 72 + 35) + yOffs;
-x = LHX (35) + xOffs;
          
 	   			
 fontManager.SetColorRGBi (RGBA_PAL2 (63,20,0), 1, 0, 0);

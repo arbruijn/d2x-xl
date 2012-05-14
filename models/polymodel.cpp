@@ -607,15 +607,14 @@ if (m_info.nId == nDbgModel)
 #endif
 if (bHMEL) {
 	char	szId [4];
-	int	nElement, nBlocks;
 
 	cf.Read (szId, sizeof (szId), 1);
 	if (strnicmp (szId, "HMEL", 4))
 		return 0;
 	if (cf.ReadInt () != 1)
 		return 0;
-	nElement = cf.ReadInt ();
-	nBlocks = cf.ReadInt ();
+	cf.ReadInt ();
+	cf.ReadInt ();
 	m_info.nModels = 1;
 	}
 else

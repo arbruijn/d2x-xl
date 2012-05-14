@@ -61,18 +61,6 @@ void DefaultGameplaySettings (void);
 
 //------------------------------------------------------------------------------
 
-static struct {
-	int	nDifficulty;
-	int	nSpawnDelay;
-	int	nSmokeGrens;
-	int	nMaxSmokeGrens;
-	int	nAIAggressivity;
-	int	nHeadlightAvailable;
-	int	nWeaponSwitch;
-} gplayOpts;
-
-//------------------------------------------------------------------------------
-
 static const char *pszGuns [] = {"Laser", "Vulcan", "Spreadfire", "Plasma", "Fusion", "Super Laser", "Gauss", "Helix", "Phoenix", "Omega"};
 static const char *pszDevices [] = {"Full Map", "Ammo Rack", "Converter", "Quad Lasers", "Afterburner", "Headlight", "Slow Motion", "Bullet Time"};
 static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS,

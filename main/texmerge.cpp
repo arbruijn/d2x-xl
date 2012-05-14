@@ -302,7 +302,7 @@ return TexScale (y * w + x, s);
 void MergeTextures (int nType, CBitmap* bmBot, CBitmap* bmTop, CBitmap *bmDest, int bSuperTransp)
 {
 	tRGBA*	colorP;
-	int		i, x, y, bw, bh, tw, th, dw, dh;
+	int		i, x, y, bw, tw, th, dw, dh;
 	int		bTopBPP, bBtmBPP, bST = 0;
 	frac		topScale, btmScale;
 	tRGBA		*destDataP = reinterpret_cast<tRGBA*> (bmDest->Buffer ());
@@ -326,7 +326,6 @@ btmDataP = bmBot->Buffer ();
 topPalette = bmTop->Palette ()->Raw ();
 btmPalette = bmBot->Palette ()->Raw ();
 
-bh =
 bw = bmBot->Width ();
 //h = bmBot->Height ();
 th =

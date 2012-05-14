@@ -1126,7 +1126,6 @@ if (gameStates.app.bD1Mission)
 	return;
 
 	int		i;
-	int		paused;
 	int		next_goal;
 	char		szGoal [32], tstr [32];
 	CObject	*objP;
@@ -1160,7 +1159,6 @@ if (!gameOpts->menus.nStyle)
 
 //paletteManager.SuspendEffect ();
 GameFlushInputs ();
-paused = 1;
 SetPopupScreenMode ();
 //paletteManager.ResumeEffect ();
 
@@ -1226,12 +1224,10 @@ if (i < 11) {
 	gameData.escort.nLastKey = -1;
 	EscortSetSpecialGoal (i ? KEY_1 + i - 1 : KEY_0);
 	gameData.escort.nLastKey = -1;
-	paused = 0;
 	}
 else if (i == 11) {
 	BuddyMessage (gameData.escort.bMsgsSuppressed ? TXT_GB_MSGS_ON : TXT_GB_MSGS_OFF);
 	gameData.escort.bMsgsSuppressed = !gameData.escort.bMsgsSuppressed;
-	paused = 0;
 	}
 GameFlushInputs ();
 //paletteManager.ResumeEffect ();

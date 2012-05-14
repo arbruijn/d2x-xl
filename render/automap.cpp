@@ -620,7 +620,7 @@ return (nParentDepth + 1) * gameStates.render.bViewDist;
 int CAutomap::Setup (int bPauseGame, fix& xEntryTime)
 {
 	int		i;
-	fix		t1, t2;
+	fix		t1;
 	CObject	*playerP;
 
 if (m_bDisplay < 0) {
@@ -675,7 +675,6 @@ if (m_bDisplay < 0) {
 
 	m_data.viewTarget = playerP->info.position.vPos;
 	t1 = xEntryTime = TimerGetFixedSeconds ();
-	t2 = t1;
 	}
 BuildEdgeList ();
 
@@ -976,7 +975,6 @@ void CAutomap::DoFrame (int nKeyCode, int bRadar)
 	int				bPauseGame = (gameOpts->menus.nStyle == 0);		// Set to 1 if everything is paused during automap...No pause during net.
 	fix				t1 = 0, t2 = 0;
 	int				nContrast = ogl.m_states.nContrast;
-	int				bRedrawScreen = 0;
 
 	//static ubyte	automapPal [256*3];
 
@@ -984,7 +982,6 @@ m_nMaxSegsAway = 0;
 m_nSegmentLimit = 1;
 m_bRadar = bRadar;
 bPauseGame = Setup (bPauseGame, xEntryTime);
-bRedrawScreen = 0;
 if (bRadar) {
 	int bRenderToTexture = ogl.m_features.bRenderToTexture.Apply ();
 	ogl.m_features.bRenderToTexture = 0;
@@ -1120,7 +1117,7 @@ void CAutomap::DrawEdges (void)
 	CFixVector		*tv1;
 	fix				distance;
 	fix				minDistance = 0x7fffffff;
-	CRenderPoint	*p1, *p2;
+	CRenderPoint	*p1;
 	int				bUseTransform = ogl.UseTransform ();
 	
 m_bDrawBuffers = ogl.SizeBuffers (1000);
@@ -1216,7 +1213,6 @@ while (incr > 0) {
 for (i = 0; i < nbright; i++) {
 	edgeP = m_brightEdges [i];
 	p1 = RENDERPOINTS + edgeP->verts [0];
-	p2 = RENDERPOINTS + edgeP->verts [1];
 	fix xDist = p1->ViewPos ().v.coord.z - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
 	if (xDist < 0)

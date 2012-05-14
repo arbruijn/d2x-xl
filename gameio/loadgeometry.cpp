@@ -585,7 +585,6 @@ void ComputeSegSideCenters (int nSegment)
 {
 	int			i, j, nSide;
 	CSegment*	segP;
-	CSide*		sideP;
 #if CALC_SEGRADS
 	fix			xSideDists [6], xMinDist;
 #endif
@@ -598,7 +597,7 @@ for (i = nSegment * 6, segP = SEGMENTS + nSegment; nSegment < j; nSegment++, seg
 	segP->GetSideDists (segP->m_vCenter, xSideDists, 0);
 	xMinDist = 0x7fffffff;
 #endif
-	for (nSide = 0, sideP = segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, i++) {
+	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, i++) {
 		segP->ComputeSideCenter (nSide);
 #if CALC_SEGRADS
 		if (xMinDist > xSideDists [nSide])
@@ -637,12 +636,6 @@ static int LoadSegmentsPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
-
-	int	bLightmaps = 0, bShadows = 0;
-
-if (gameStates.app.bD2XLevel && gameStates.render.bLightmapsOk)
-	bLightmaps = 1;
-bShadows = 1;
 
 //paletteManager.ResumeEffect ();
 if (loadOp == 0) {
@@ -688,8 +681,7 @@ else if (loadOp == 5) {
 else if (loadOp == 6) {
 	LoadSideLightsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= (gameStates.app.bD2XLevel ?
-						 gameData.segs.nSegments * 6 : bShadows ? gameData.segs.nSegments : 1)) {
+	if (loadIdx >= (gameStates.app.bD2XLevel ? gameData.segs.nSegments * 6 : gameData.segs.nSegments)) {
 		loadIdx = 0;
 		loadOp++;
 		}
@@ -719,21 +711,13 @@ return nCurItem;
 int LoadMineGaugeSize (void)
 {
 	int	i = 3 * PROGRESS_STEPS (gameData.segs.nSegments) + 3;
-	int	bLightmaps = 0, bShadows = 0;
 
-	if (gameStates.render.bLightmapsOk)
-		bLightmaps = 1;
-	bShadows = 1;
 if (gameStates.app.bD2XLevel) {
 	i += PROGRESS_STEPS (gameData.segs.nVertices) + PROGRESS_STEPS (MAX_WALL_TEXTURES);
 	i += PROGRESS_STEPS (gameData.segs.nSegments * 6);
 	}
 else {
-	i++;
-	if (bShadows)
-		i += PROGRESS_STEPS (gameData.segs.nSegments);
-	else
-		i++;
+	i += PROGRESS_STEPS (gameData.segs.nSegments) + 1;
 	}
 return i;
 }
@@ -753,7 +737,6 @@ ProgressBar (TXT_LOADING, 0, LoadMineGaugeSize () + PagingGaugeSize () + SortLig
 int LoadMineSegmentsCompiled (CFile& cf)
 {
 	int			i, nSegments, nVertices;
-	ubyte			nCompiledVersion;
 	char*			psz;
 	CFixVector	v;
 
@@ -763,11 +746,13 @@ gameStates.render.bColored = 0;
 bD1PigPresent = CFile::Exist (D1_PIGFILE, gameFolders.szDataDir [0], 0);
 psz = strchr (gameData.segs.szLevelFilename, '.');
 bNewFileFormat = !psz || strcmp (psz, ".sdl");
-nCompiledVersion = cf.ReadByte ();
 #if TRACE
+ubyte nCompiledVersion = cf.ReadByte ();
 if (nCompiledVersion != COMPILED_MINE_VERSION)
 	console.printf (CON_DBG, "compiled mine version=%i\n", nCompiledVersion); //many levels have "wrong" versions.  Theres no point in aborting because of it, I think.
 console.printf (CON_DBG, "   compiled mine version = %d\n", nCompiledVersion);
+#else
+cf.ReadByte ();
 #endif
 nVertices = bNewFileFormat ? cf.ReadShort () : cf.ReadInt ();
 Assert (nVertices <= MAX_VERTICES);

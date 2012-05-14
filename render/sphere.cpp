@@ -865,10 +865,7 @@ if (!CreateShieldSphere ())
 if (gameData.render.shield.nFaces > 0)
 #endif
  {
-	float	fScale;
-	if (nSize)
-		fScale = 0.5f;
-	else {
+	if (!nSize) {
 #if 0 //DBG
 		nSize = objP->info.xSize;
 #else
@@ -878,22 +875,13 @@ if (gameData.render.shield.nFaces > 0)
 			CPolyModel* modelP = GetPolyModel (objP, NULL, objP->ModelId (), 0);
 			nSize = modelP ? modelP->Rad () : objP->info.xSize;
 			}
-		fScale = gameData.render.shield.Pulse ()->fScale;
 #endif
 		}
 	float r = X2F (nSize);
 	if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
 		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, shield.Bitmap (), 1, bAdditive);
-	else if (transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, bAdditive, nSize)) {
-#if 0
-		// full and not just partial sphere rendered
-		if (!(ogl.m_features.bShaders.Available () && ogl.m_features.bPerPixelLighting.Available ()) ||
-			 ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_ROBOT))) {
-			CFixVector vPos;
-			RenderObjectHalo (PolyObjPos (objP, &vPos), 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
-			}
-#endif
-		}
+	else
+		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, bAdditive, nSize);
 	}
 }
 

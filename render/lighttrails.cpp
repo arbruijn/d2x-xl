@@ -93,8 +93,6 @@ if (gameOpts->render.coronas.bShots && glare.Load ()) {
 	float				fLength = X2F (phb->vMax.v.coord.z - phb->vMin.v.coord.z) / 2;
 	CFloatVector	color;
 
-	static CFloatVector	vEye = CFloatVector::ZERO;
-
 	float fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2;
 	color = *colorP;
 	colorP = &color;

@@ -991,7 +991,7 @@ float NearestShadowedWallDist (short nObject, short nSegment, CFixVector *vPos, 
 #if 1
 	CFixVector	vHit, v, vh;
 	CSegment		*segP;
-	int			nSide, nHitSide, nParent, nChild, nWID, bHit = 0;
+	int			nSide, nHitSide, nChild, nWID, bHit = 0;
 	float			fDist;
 #if USE_SEGRADS
 	fix			xDist;
@@ -1029,7 +1029,6 @@ if (bPrintLine) {
 	}
 #endif
 
-nParent = 0x7fffffff;
 vHit = *vPos;
 for (;;) {
 	segP = SEGMENTS + nSegment;
@@ -1077,7 +1076,6 @@ for (;;) {
 		}
 	if (fDist >= G3_INFINITY)
 		break;
-	nParent = nSegment;
 	nSegment = nChild;
 	}
 if (bHit)

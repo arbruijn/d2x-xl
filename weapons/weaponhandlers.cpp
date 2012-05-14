@@ -83,12 +83,10 @@ int VulcanHandler (CObject *objP, int nLevel, int& nFlags, int nRoundsPerShot)
 {
 #	define VULCAN_SPREAD	(SRandShort () / 8)
 
-	int			bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
-										 (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling;
 	tFiringData *fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
 	short			nFired = 0;
 
-if (/*bGatlingSound &&*/ (fP->nDuration <= GATLING_DELAY))
+if (fP->nDuration <= GATLING_DELAY)
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
 if (0 <= LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 1, 0, -1))
@@ -220,12 +218,10 @@ int GaussHandler (CObject *objP, int nLevel, int& nFlags, int nRoundsPerShot)
 {
 #	define GAUSS_SPREAD		(VULCAN_SPREAD / 5)
 
-	int			bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
-										 (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling;
 	tFiringData *fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
 	short			nFired = 0;
 
-if (/*bGatlingSound &&*/ (fP->nDuration <= GATLING_DELAY))
+if (fP->nDuration <= GATLING_DELAY)
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
 if (0 <= LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD,

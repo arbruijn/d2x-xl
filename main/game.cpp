@@ -421,7 +421,6 @@ gameStates.gameplay.xLastAfterburnerCharge = gameData.physics.xAfterburnerCharge
 
 void ShowHelp (void)
 {
-	int	nitems, opt = 0;
 	CMenu	m (40);
 #ifdef MACINTOSH
 	char command_help[64], pixel_double_help[64], save_help[64], restore_help[64];
@@ -479,7 +478,6 @@ mat.AddText ("");
 sprintf (command_help, " (Use %c-# for F#. i.e. %c-1 for F1)", 133, 133);
 mat.AddText (command_help);
 #endif
-nitems = opt;
 //paletteManager.SuspendEffect ();
 m.TinyMenu (NULL, TXT_KEYS);
 //paletteManager.ResumeEffect ();

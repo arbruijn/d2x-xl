@@ -139,7 +139,7 @@ if (!gameOpts->sound.bLinkVolumes && (m = menu ["ambient volume"])) {
 if ((m = menu ["link volumes"])) {
 	v = m->Value ();
 	if (gameOpts->sound.bLinkVolumes != v) {
-		if (gameOpts->sound.bLinkVolumes = v) {
+		if ((gameOpts->sound.bLinkVolumes = v)) {
 			gameConfig.nAudioVolume [1] = gameConfig.nAudioVolume [0];
 			audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32767) / 8, 1);
 			}

@@ -1571,7 +1571,7 @@ if (!bSecret)
 
 void StartRenderedEndLevelSequence (void)
 {
-	int nLastSeg, nExitSide, nTunnelLength;
+	int nExitSide, nTunnelLength;
 	int nSegment, nOldSeg, nEntrySide, i;
 
 //count segments in exit tunnel
@@ -1590,7 +1590,6 @@ if (nSegment != -2) {
 	PlayerFinishedLevel (0);		//don't do special sequence
 	return;
 	}
-nLastSeg = nOldSeg;
 //now pick transition nSegment 1/3 of the way in
 nOldSeg = gameData.objs.consoleP->info.nSegment;
 nExitSide = FindExitSide (gameData.objs.consoleP);
@@ -1608,7 +1607,6 @@ if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
 	NetworkDoFrame (1, 1);
 	}
-Assert (nLastSeg == gameData.endLevel.exit.nSegNum);
 if (missionManager [missionManager.nCurrentMission].nDescentVersion == 1)
 	songManager.Play (SONG_ENDLEVEL, 0);
 gameStates.app.bEndLevelSequence = EL_FLYTHROUGH;

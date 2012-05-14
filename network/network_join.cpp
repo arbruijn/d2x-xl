@@ -181,13 +181,11 @@ MultiStripRobots (nPlayer);
 
 void NetworkNewPlayer (tSequencePacket *their)
 {
-	int	nObject;
 	int	nPlayer;
 
 nPlayer = their->player.connected;
 Assert (nPlayer >= 0);
 Assert (nPlayer < gameData.multiplayer.nMaxPlayers);        
-nObject = gameData.multiplayer.players [nPlayer].nObject;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiConnect (nPlayer, nPlayer == gameData.multiplayer.nPlayers, their->player.callsign);
 memcpy (gameData.multiplayer.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN + 1);

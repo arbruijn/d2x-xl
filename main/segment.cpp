@@ -987,7 +987,6 @@ if (!wallP)
 	return;
 
 	CSegment *connSegP;
-	short		nConnSide;
 
 wallP->flags |= WALL_ILLUSION_OFF;
 KillStuckObjects (wallP - WALLS);
@@ -996,11 +995,9 @@ if (m_children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
 		Warning (TXT_ILLUS_SINGLE,	this - SEGMENTS, nSide);
 	connSegP = NULL;
-	nConnSide = -1;
 	}
 else {
 	connSegP = SEGMENTS + m_children [nSide];
-	nConnSide = ConnectedSide (connSegP);
 	if ((wallP = connSegP->Wall (nSide))) {
 		wallP->flags |= WALL_ILLUSION_OFF;
 		KillStuckObjects (wallP - WALLS);
@@ -1085,7 +1082,6 @@ int CSegment::CheckEffectBlowup (int nSide, CFixVector& vHit, CObject* blowerP, 
 	fix				u, v;
 	fix				xDestSize;
 	tEffectClip*	ecP = NULL;
-	CBitmap*			bmP;
 	CWall*			wallP;
 	CTrigger*		trigP;
 	CObject*			parentP = (!blowerP || (blowerP->cType.laserInfo.parent.nObject < 0)) ? NULL : OBJECTS + blowerP->cType.laserInfo.parent.nObject;
@@ -1120,7 +1116,6 @@ else {
 	nSwitchType = 1;
 	}
 //check if it's an animation (monitor) or casts light
-bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [tm].index;
 LoadTexture (gameData.pig.tex.bmIndexP [tm].index, gameStates.app.bD1Data);
 //this can be blown up...did we hit it?
 if (!bForceBlowup) {

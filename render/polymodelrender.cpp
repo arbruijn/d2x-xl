@@ -154,7 +154,7 @@ int DrawPolyModel (
 	CFloatVector*	colorP)
 {
 	CPolyModel*	modelP;
-	int			nTextures, bHires = 0, bCustomModel = 0;
+	int			bHires = 0, bCustomModel = 0;
 
 #if 0 //DBG
 if (!gameStates.render.bBuildModels) {
@@ -194,7 +194,8 @@ if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
 
-nTextures = bHires ? 0 : modelP->LoadTextures (altTextures);
+if (!bHires)
+	modelP->LoadTextures (altTextures);
 G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
 gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
 ogl.SetTransform (1);

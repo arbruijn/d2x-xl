@@ -113,11 +113,7 @@ else {
 				bgrP->b = rgbP->b;
 				}
 			}
-		int r = (int) fwrite (outBuf, imgSize, 1, f);
-#if TRACE
-		if (r <= 0)
-			console.printf (CON_DBG,"screenshot error, couldn't write to %s (err %i)\n",szSaveName,errno);
-#endif
+		fwrite (outBuf, imgSize, 1, f);
 		}
 	fclose (f);
 	}

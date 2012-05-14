@@ -466,8 +466,6 @@ return nOldIndent;
 
 //------------------------------------------------------------------------------
 
-static int nLogId = 0;
-
 #ifdef _WIN32
 #	include "share.h"
 #endif
@@ -494,7 +492,7 @@ void _CDECL_ PrintLog (const int nIndent, const char *fmt, ...)
 if (fLog) {
 	if (fmt && *fmt) {
 		va_list arglist;
-			static char	szLogLine [2][100000] = {'\0', '\0'};
+			static char	szLogLine [2][100000] = {{'\0'}, {'\0'}};
 			static int nLogLine = 0;
 
 		va_start (arglist, fmt);

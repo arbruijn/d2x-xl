@@ -609,7 +609,6 @@ int bHave3DCockpit = -1;
 void RenderCockpitModel (void)
 {
 	static int bCockpit = 1;
-	static float xOffset = 0.0f;
 	static float yOffset = 5.0f;
 
 if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)) {

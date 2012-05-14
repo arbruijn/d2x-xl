@@ -138,16 +138,13 @@ if (rsinit)
 	// This function is now called by all people entering the netgame.
 if (sp != &netGame) {
 	char *p = reinterpret_cast<char*> (sp);
-	ushort h;
 	int i, j = (int) netGame.Size () - 1, s;
-	for (i = 0, h = -1; i < j; i++, p++) {
+	for (i = 0; i < j; i++, p++) {
 		s = *reinterpret_cast<ushort*> (p);
 		if (s == networkData.nSegmentCheckSum) {
-			h = i;
 			break;
 			}
 		else if (((s / 256) + (s % 256) * 256) == networkData.nSegmentCheckSum) {
-			h = i;
 			break;
 			}
 		}

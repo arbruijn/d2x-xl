@@ -403,10 +403,10 @@ if (!(p && m_info.palette))
 if (m_info.avgColorIndex) 
 	return m_info.avgColorIndex;
 
-	int			c, h, i, j = 0, r = 0, g = 0, b = 0;
+	int			c, i, j = 0, r = 0, g = 0, b = 0;
 	CRGBColor	*palette = m_info.palette->Color ();
 
-for (h = i = m_info.props.w * m_info.props.h; i; i--, p++) {
+for (i = m_info.props.w * m_info.props.h; i; i--, p++) {
 	if ((c = *p) && (c != TRANSPARENCY_COLOR) && (c != SUPER_TRANSP_COLOR)) {
 		r += palette [c].Red ();
 		g += palette [c].Green ();

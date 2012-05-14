@@ -739,7 +739,6 @@ portals [0].top = 0;
 portals [0].right = CCanvas::Current ()->Width () - 1;
 portals [0].bot = CCanvas::Current ()->Height () - 1;
 
-CRenderPoint* pointP = &renderPoints [0];
 #ifdef _OPENMP
 #	pragma omp parallel for
 #endif
@@ -809,7 +808,6 @@ for (l = 0; l < nRenderDepth; l++) {
 
 			if (bCullIfBehind) {
 				ushort* s2v = segP->Side (nChild)->m_corners;
-				ubyte code = CC_BEHIND;
 				int i, j = segP->Side (nChild)->m_nCorners;
 				for (i = 0; i < j; i++) {
 					if (s2v [i] == 0xFFFF)
