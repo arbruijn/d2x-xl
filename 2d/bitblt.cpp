@@ -112,19 +112,14 @@ static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, uint num_pixel
 
 	if (!destPalette)
 		destPalette = srcPalette;
-	ubyte* fade_base = paletteManager.FadeTable () + ushort (fadeValue) * 256;
 	for (i=num_pixels; i != 0; i--) {
 		c= (short) *src;
 		if ((ubyte) c != (ubyte) TRANSPARENCY_COLOR) {
-#if 1
 			c *= 3;
 			c = destPalette->ClosestColor ((ubyte) (srcPalette->Raw () [c] * fade + 0.5), 
 												    (ubyte) (srcPalette->Raw () [c + 1] * fade + 0.5), 
 													 (ubyte) (srcPalette->Raw () [c + 2] * fade + 0.5));
 			*dest = (ubyte) c;
-#else
-			*dest = fade_base [coord];
-#endif
 			}
 		dest++;
 		src++;

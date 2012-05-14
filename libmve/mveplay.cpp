@@ -309,7 +309,6 @@ static int create_audiobuf_handler (ubyte major, ubyte minor, ubyte *data, int l
 #ifdef AUDIO
 	int flags;
 	int sample_rate;
-	int desired_buffer;
 	int stereo;
 	int bitsize;
 	int compressed;
@@ -445,14 +444,15 @@ static int g_truecolor;
 static int create_videobuf_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
 	short w, h;
-	short count, truecolor;
+	short truecolor;
 
 if (videobuf_created)
 	return 1;
 videobuf_created = 1;
 w = get_short (data);
 h = get_short (data+2);
-count = (minor > 0) ? get_short (data+4) : 1;
+if (minor > 0)
+	get_short (data+4);
 truecolor = (minor > 1) ? get_short (data+6) : 0;
 g_width = w << 3;
 g_height = h << 3;
@@ -463,11 +463,6 @@ if (truecolor)
 else
 	g_vBackBuf2 = reinterpret_cast<ubyte*> (g_vBackBuf1) + (g_width * g_height);
 memset (g_vBackBuf1, 0, g_width * g_height * 4);
-#ifdef DEBUG
-# ifndef _WIN32
-fprintf (stderr, "DEBUG: w,h=%d,%d count=%d, tc=%d\n", w, h, count, truecolor);
-# endif
-#endif
 g_truecolor = truecolor;
 return 1;
 }

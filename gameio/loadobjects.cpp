@@ -1122,7 +1122,7 @@ int LoadLevelData (char * pszFilename, int nLevel)
 {
 	CFile cf;
 	char	filename [128];
-	int	sig, nMineDataOffset, nGameDataOffset;
+	int	nMineDataOffset, nGameDataOffset;
 	int	nError;
 
 /*---*/PrintLog (1, "loading level data\n");
@@ -1143,7 +1143,7 @@ for (;;) {
 
 	strcpy(gameData.segs.szLevelFilename, filename);
 
-	sig = cf.ReadInt ();
+	cf.ReadInt ();
 	gameData.segs.nLevelVersion = cf.ReadInt ();
 	gameStates.app.bD2XLevel = (gameData.segs.nLevelVersion >= 10);
 	#if TRACE
@@ -1152,7 +1152,6 @@ for (;;) {
 	nMineDataOffset = cf.ReadInt ();
 	nGameDataOffset = cf.ReadInt ();
 
-	Assert(sig == MAKE_SIG('P','L','V','L'));
 	if (gameData.segs.nLevelVersion >= 8) {    //read dummy data
 		cf.ReadInt ();
 		cf.ReadShort ();

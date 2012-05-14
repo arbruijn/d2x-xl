@@ -1068,9 +1068,9 @@ PROF_START
 	float					fBrightness;
 	CFloatVector			ambient, diffuse;
 #if 0
-	CFloatVector			black = {0,0,0,0};
+	CFloatVector			black = {{{0,0,0,0}}};
 #endif
-	CFloatVector			specular = {0.5f,0.5f,0.5f,0.5f};
+	CFloatVector			specular = {{{0.5f,0.5f,0.5f,0.5f}}};
 	//CFloatVector			vPos = CFloatVector::Create(0,0,0,1);
 	GLenum				hLight;
 	CActiveDynLight*	activeLightsP;

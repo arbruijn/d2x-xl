@@ -234,22 +234,22 @@ CFloatVector *CLightningManager::LightningColor (CObject* objP)
 {
 if (objP->info.nType == OBJ_ROBOT) {
 	if (ROBOTINFO (objP->info.nId).energyDrain) {
-		static CFloatVector color = {1.0f, 0.8f, 0.3f, 0.2f};
+		static CFloatVector color = {{{1.0f, 0.8f, 0.3f, 0.2f}}};
 		return &color;
 		}
 	}
 else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	if (gameData.FusionCharge (objP->info.nId) > I2X (2)) {
-		static CFloatVector color = {0.666f, 0.0f, 0.75f, 0.2f};
+		static CFloatVector color = {{{0.666f, 0.0f, 0.75f, 0.2f}}};
 		return &color;
 		}
 	int f = SEGMENTS [objP->info.nSegment].m_function;
 	if (f == SEGMENT_FUNC_FUELCENTER) {
-		static CFloatVector color = {1.0f, 0.8f, 0.3f, 0.2f};
+		static CFloatVector color = {{{1.0f, 0.8f, 0.3f, 0.2f}}};
 		return &color;
 		}
 	if (f == SEGMENT_FUNC_REPAIRCENTER) {
-		static CFloatVector color = {0.1f, 0.3f, 1.0f, 0.2f};
+		static CFloatVector color = {{{0.1f, 0.3f, 1.0f, 0.2f}}};
 		return &color;
 		}
 	}
@@ -694,7 +694,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
 
 void CLightningManager::CreateForShaker (CObject* objP)
 {
-static CFloatVector color = {0.1f, 0.1f, 0.8f, 0.2f};
+static CFloatVector color = {{{0.1f, 0.1f, 0.8f, 0.2f}}};
 
 CreateForExplosion (objP, &color, 30, I2X (20), 750);
 }
@@ -703,7 +703,7 @@ CreateForExplosion (objP, &color, 30, I2X (20), 750);
 
 void CLightningManager::CreateForShakerMega (CObject* objP)
 {
-static CFloatVector color = {0.1f, 0.1f, 0.6f, 0.2f};
+static CFloatVector color = {{{0.1f, 0.1f, 0.6f, 0.2f}}};
 
 CreateForExplosion (objP, &color, 20, I2X (15), 750);
 }
@@ -712,7 +712,7 @@ CreateForExplosion (objP, &color, 20, I2X (15), 750);
 
 void CLightningManager::CreateForMega (CObject* objP)
 {
-static CFloatVector color = {0.8f, 0.1f, 0.1f, 0.2f};
+static CFloatVector color = {{{0.8f, 0.1f, 0.1f, 0.2f}}};
 
 CreateForExplosion (objP, &color, 30, I2X (15), 750);
 }
@@ -740,7 +740,7 @@ return 0;
 
 void CLightningManager::CreateForBlowup (CObject* objP)
 {
-static CFloatVector color = {0.1f, 0.1f, 0.8f, 0.2f};
+static CFloatVector color = {{{0.1f, 0.1f, 0.8f, 0.2f}}};
 
 int h = X2I (objP->info.xSize) * 2;
 
@@ -764,7 +764,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
 
 void CLightningManager::CreateForPlayerTeleport (CObject* objP)
 {
-static CFloatVector color = {0.0f, 0.125f, 0.25f, 0.2f};
+static CFloatVector color = {{{0.0f, 0.125f, 0.25f, 0.2f}}};
 
 CreateForTeleport (objP, &color);
 }
@@ -773,7 +773,7 @@ CreateForTeleport (objP, &color);
 
 void CLightningManager::CreateForRobotTeleport (CObject* objP)
 {
-static CFloatVector color = {0.25f, 0.0f, 0.125f, 0.2f};
+static CFloatVector color = {{{0.25f, 0.0f, 0.125f, 0.2f}}};
 CreateForTeleport (objP, &color, 0.5f);
 }
 
@@ -908,7 +908,7 @@ int CLightningManager::RenderForDamage (CObject* objP, CRenderPoint **pointList,
 	static float	fDamage;
 	static int		nFrameFlipFlop = -1;
 
-	static CFloatVector color = {0.2f, 0.2f, 1.0f, 1.0f};
+	static CFloatVector color = {{{0.2f, 0.2f, 1.0f, 1.0f}}};
 
 if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage))
 	return -1;

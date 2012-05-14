@@ -236,7 +236,7 @@ if (Update (parentObjP, targetObjP, vTargetPos)) {
 		return 0;
 	}
 else {
-	static CFloatVector	color = {0.9f, 0.6f, 0.6f, 0.3f};
+	static CFloatVector	color = {{{0.9f, 0.6f, 0.6f, 0.3f}}};
 	CFixVector	vMuzzle, *vTarget;
 
 	Destroy (nObject);

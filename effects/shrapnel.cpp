@@ -34,7 +34,7 @@ static float fShrapnelScale [5] = {0, 5.0f, 10.0f, 15.0f, 20.0f};
 
 void CShrapnel::Create (CObject* parentObjP, CObject* objP, float fScale)
 {
-	static CFloatVector color = {0.95f, 0.95f, 0.95f, 2.0f};
+	static CFloatVector color = {{{0.95f, 0.95f, 0.95f, 2.0f}}};
 
 m_info.vDir = CFixVector::Random ();
 m_info.vPos = objP->info.position.vPos + m_info.vDir * (parentObjP->info.xSize / 4 + rand () % (parentObjP->info.xSize / 2));

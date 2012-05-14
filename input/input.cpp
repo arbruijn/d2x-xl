@@ -253,23 +253,7 @@ return bUseJoystick;
 
 void CControlsManager::SetFCSButton (int btn, int button)
 {
-	int timeDown, upCount, downCount;
-	timeDown = upCount = downCount = 0;
-
-if (JoyGetButtonState (btn)) {
-	if (btn == button)
-		timeDown = gameData.time.xFrame;
-	else
-		upCount=1;
-	}
-else {
-	if (btn == button) {
-		timeDown = gameData.time.xFrame;
-		downCount = 1;
-		}
-	else
-		upCount=1;
-	}
+JoyGetButtonState (btn);
 }
 
 //------------------------------------------------------------------------------

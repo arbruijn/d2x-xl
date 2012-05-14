@@ -140,7 +140,7 @@ int CHeadlightManager::Add (CObject *objP)
 objects [objP->info.nId] = objP;
 if (gameStates.render.nLightingMethod) {
 	if (lightIds [objP->info.nId] < 0) {
-			static CFloatVector c = {1.0f, 1.0f, 1.0f, 1.0f};
+			static CFloatVector c = {{{1.0f, 1.0f, 1.0f, 1.0f}}};
 			int nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
 
 		if (0 <= nLight) {

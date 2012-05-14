@@ -24,11 +24,11 @@
 #include "renderthreads.h"
 
 static CFloatVector smokeColors [] = {
-	 {0.5f, 0.5f, 0.5f, 2.0f},	// alpha == 2.0 means that the particles are red in the beginning
-	 {0.75f, 0.75f, 0.75f, 2.0f},
-	 {1.0f, 1.0f, 1.0f, 2.0f},
-	 {1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, -0.25f},
-	 {1.0f, 1.0f, 1.0f, -0.1f}
+	 {{{0.5f, 0.5f, 0.5f, 2.0f}}},	// alpha == 2.0 means that the particles are red in the beginning
+	 {{{0.75f, 0.75f, 0.75f, 2.0f}}},
+	 {{{1.0f, 1.0f, 1.0f, 2.0f}}},
+	 {{{1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, -0.25f}}},
+	 {{{1.0f, 1.0f, 1.0f, -0.1f}}}
 	};
 
 #define SHIP_MAX_PARTS				50
@@ -664,9 +664,9 @@ void DoStaticParticles (CObject *objP)
 					nType, nFadeType;
 	CFixVector	pos, offs, dir;
 
-	static CFloatVector defaultColors [7] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 
-														 {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 
-														 {1.0f, 1.0f, 1.0f, 1.0f}};
+	static CFloatVector defaultColors [7] = {{{{0.5f, 0.5f, 0.5f, 0.0f}}}, {0.8f, 0.9f, 1.0f, 1.0f}}}, {1.0f, 1.0f, 1.0f, 1.0f}}},
+														 {{{1.0f, 1.0f, 1.0f, 1.0f}}}, {{{1.0f, 1.0f, 1.0f, 1.0f}}}, {{{1.0f, 1.0f, 1.0f, 1.0f}}},
+														 {{{1.0f, 1.0f, 1.0f, 1.0f}}}};
 	static int particleTypes [7] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES, WATERFALL_PARTICLES, SIMPLE_SMOKE_PARTICLES, RAIN_PARTICLES, SNOW_PARTICLES};
 
 nObject = (int) objP->Index ();

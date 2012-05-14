@@ -318,8 +318,6 @@ return m_data.index [0][0].nActive;
 
 void CLightManager::SetNearestStatic (int nSegment, int bStatic, int nThread)
 {
-	static short nActiveLights [4] = {-1, -1, -1, -1};
-
 if (gameStates.render.nLightingMethod) {
 	short*				nearestLightP = m_data.nearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	short					i, j;
@@ -351,7 +349,6 @@ if (gameStates.render.nLightingMethod) {
 		SetActive (activeLightsP, lightP, 3, nThread);
 		}
 	}
-nActiveLights [nThread] = m_data.index [0][nThread].nActive;
 }
 
 //------------------------------------------------------------------------------

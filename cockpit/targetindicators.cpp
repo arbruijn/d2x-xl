@@ -34,10 +34,10 @@
 
 static inline CFloatVector3 *ObjectFrameColor (CObject *objP, CFloatVector3 *pc)
 {
-	static CFloatVector3	defaultColor = {{0, 1.0f, 0}};
-	static CFloatVector3	botDefColor = {1.0f, 0, 0};
-	static CFloatVector3	reactorDefColor = {0.5f, 0, 0.5f};
-	static CFloatVector3	playerDefColors [] = {{0,1.0f,0},{0,0,1.0f},{1.0f,0,0}};
+	static CFloatVector3	defaultColor = {{{0, 1.0f, 0}}}};
+	static CFloatVector3	botDefColor = {{{1.0f, 0, 0}}};
+	static CFloatVector3	reactorDefColor = {{{0.5f, 0, 0.5f}}};
+	static CFloatVector3	playerDefColors [] = {{{{0,1.0f,0}}},{{{0,0,1.0f}}},{{{1.0f,0,0}}}};
 
 if (pc)
 	return pc;
@@ -153,7 +153,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) && (extraGameInfo [IsMultiGame].bTarge
 
 // -----------------------------------------------------------------------------
 
-static CFloatVector	trackGoalColor [2] = {{1, 0.5f, 0, 0.8f}, {1, 0.5f, 0, 0.8f}};
+static CFloatVector	trackGoalColor [2] = {{{{1, 0.5f, 0, 0.8f}}}, {{{1, 0.5f, 0, 0.8f}}}};
 static int				nMslLockColor [2] = {0, 0};
 static int				nMslLockColorIncr [2] = {-1, -1};
 static float			fMslLockGreen [2] = {0.65f, 0.0f};

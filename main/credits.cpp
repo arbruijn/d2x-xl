@@ -281,7 +281,7 @@ return true;
 
 void CCreditsManager::Render (void)
 {
-	CFloatVector		colors [4] = {{1,1,1,1},{1,1,1,1},{1,1,1,1},{1,1,1,1}};
+	CFloatVector		colors [4] = {{{{1,1,1,1}}},{{{1,1,1,1}}},{{{1,1,1,1}}},{{{1,1,1,1}}}};
 
 for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 	RenderBackdrop ();

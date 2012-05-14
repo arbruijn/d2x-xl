@@ -44,7 +44,7 @@
 
 //------------------------------------------------------------------------------
 
-CFloatVector defaultParticleColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+CFloatVector defaultParticleColor = {{{ 1.0f, 1.0f, 1.0f, 1.0f }}};
 
 CFloatVector CParticle::vRot [PARTICLE_POSITIONS];
 CFixMatrix CParticle::mRot [2][PARTICLE_POSITIONS];
