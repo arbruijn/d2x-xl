@@ -35,7 +35,7 @@ class CTranspItem {
 
 		virtual int Size (void) = 0;
 		virtual void Render (void) = 0;
-		virtual inline tTranspItemType Type (void) = 0;
+		virtual /*inline*/ tTranspItemType Type (void) = 0;
 		inline CTranspItem& operator= (CTranspItem& other) { 
 			memcpy (this, &other, Size ());
 			return *this;
@@ -61,7 +61,7 @@ class CTranspPoly : public CTranspItem {
 
 		virtual int Size (void) { return sizeof (*this); }
 		virtual void Render (void);
-		virtual inline tTranspItemType Type (void) { return tiPoly; }
+		virtual /*inline*/ tTranspItemType Type (void) { return tiPoly; }
 
 	private:
 		void RenderFace (void);
@@ -74,7 +74,7 @@ class CTranspObject : public CTranspItem {
 
 	virtual int Size (void) { return sizeof (*this); }
 	virtual void Render (void);
-	virtual inline tTranspItemType Type (void) { return tiObject; }
+	virtual /*inline*/ tTranspItemType Type (void) { return tiObject; }
 	};
 
 class CTranspSprite : public CTranspItem {
@@ -92,7 +92,7 @@ class CTranspSprite : public CTranspItem {
 
 		virtual int Size (void) { return sizeof (*this); }
 		virtual void Render (void);
-		virtual inline tTranspItemType Type (void) { return tiSprite; }
+		virtual /*inline*/ tTranspItemType Type (void) { return tiSprite; }
 	};
 
 class CTranspSpark : public CTranspItem {
@@ -106,7 +106,7 @@ class CTranspSpark : public CTranspItem {
 
 		virtual int Size (void) { return sizeof (*this); }
 		virtual void Render (void);
-		virtual inline tTranspItemType Type (void) { return tiSpark; }
+		virtual /*inline*/ tTranspItemType Type (void) { return tiSpark; }
 	};
 
 class	CTranspParticle : public CTranspItem {
@@ -116,7 +116,7 @@ class	CTranspParticle : public CTranspItem {
 
 		virtual int Size (void) { return sizeof (*this); }
 		virtual void Render (void);
-		virtual inline tTranspItemType Type (void) { return tiParticle; }
+		virtual /*inline*/ tTranspItemType Type (void) { return tiParticle; }
 
 	private:
 		void RenderBullet (CParticle *bullet);
@@ -138,7 +138,7 @@ class CTranspSphere : public CTranspItem {
 
 		virtual int Size (void) { return sizeof (*this); }
 		virtual void Render (void);
-		virtual inline tTranspItemType Type (void) { return tiSphere; }
+		virtual /*inline*/ tTranspItemType Type (void) { return tiSphere; }
 	};
 
 class CTranspLightning : public CTranspItem {
@@ -148,7 +148,7 @@ class CTranspLightning : public CTranspItem {
 
 		virtual int Size (void) { return sizeof (*this); }
 		virtual void Render (void);
-		virtual inline tTranspItemType Type (void) { return tiLightning; }
+		virtual /*inline*/ tTranspItemType Type (void) { return tiLightning; }
 	};
 
 class CTranspLightTrail : public CTranspItem {
@@ -161,7 +161,7 @@ class CTranspLightTrail : public CTranspItem {
 
 		virtual int Size (void) { return sizeof (*this); }
 		virtual void Render (void);
-		virtual inline tTranspItemType Type (void) { return tiLightTrail; }
+		virtual /*inline*/ tTranspItemType Type (void) { return tiLightTrail; }
 	};
 
 class CTranspThruster : public CTranspItem {
@@ -172,7 +172,7 @@ class CTranspThruster : public CTranspItem {
 
 		virtual int Size (void) { return sizeof (*this); }
 		virtual void Render (void);
-		virtual inline tTranspItemType Type (void) { return tiThruster; }
+		virtual /*inline*/ tTranspItemType Type (void) { return tiThruster; }
 	};
 
 //------------------------------------------------------------------------------
