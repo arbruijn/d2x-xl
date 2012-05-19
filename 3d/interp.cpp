@@ -202,14 +202,14 @@ for (;;) {
 			VmsVectorSwap (*VECPTR (dataP + 4));
 			VmsVectorSwap (*VECPTR (dataP + 16));
 			for (i = 0; i < n; i++) {
-				uvl_val = reinterpret_cast<tUVL*> (((dataP + 30 + ((n & ~1) + 1) * 2))) + i;
+				uvl_val = reinterpret_cast<tUVL*> (((dataP + 30 + (n | 1) * 2))) + i;
 				FixSwap (&uvl_val->u);
 				FixSwap (&uvl_val->v);
 			}
 			UShortSwap (WORDPTR (dataP + 28));
 			for (i = 0; i < n; i++)
 				UShortSwap (WORDPTR (dataP + 30 + (i * 2)));
-			dataP += 30 + ((n & ~1) + 1) * 2 + n * 12;
+			dataP += 30 + (n | 1) * 2 + n * 12;
 			break;
 
 		case OP_SORTNORM:
@@ -284,11 +284,11 @@ for (;;) {
 			break;
 		case OP_FLATPOLY:
 			n = (WORDVAL (dataP + 2));
-			dataP += 30 + ((n & ~1) + 1) * 2;
+			dataP += 30 + (n | 1) * 2;
 			break;
 		case OP_TMAPPOLY:
 			n = (WORDVAL (dataP + 2));
-			dataP += 30 + ((n & ~1) + 1) * 2 + n * 12;
+			dataP += 30 + (n | 1) * 2 + n * 12;
 			break;
 		case OP_SORTNORM:
 			G3PolyModelVerify (dataP + WORDVAL (dataP + 28));
@@ -489,10 +489,10 @@ for (;;) {
 				paletteManager.Game ()->ToRgbaf (modelBitmaps [WORDVAL (p+28)]->AvgColor (), *colorP);
 			p += 30;
 			uvlList = reinterpret_cast<tUVL*> (p + (nVerts | 1) * 2);
-			for (i = 0; i < nVerts; i++)
+			for (i = 0; i < nVerts; i++) {
 				uvlList [i].l = l;
-			for (i = 0; i < nVerts; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
+				}
 			tMapColor = gameData.objs.color;
 			if (gameStates.render.bCloaked)
 				G3DrawTexPolyFlat (nVerts, pointList, uvlList, NULL, modelBitmaps [WORDVAL (p-2)], NULL, NULL, VECPTR (p+16), 0, 1, 0, -1);

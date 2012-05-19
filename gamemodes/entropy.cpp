@@ -69,7 +69,7 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer ();
 		if (segP->m_function == SEGMENT_FUNC_VIRUSMAKER) {
 			--k;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindProducer (i))) &&
-				 (gameData.producers.origStationTypes [f] != SEGMENT_FUNC_NONE))
+				 (gameData.producers.origProducerTypes [f] != SEGMENT_FUNC_NONE))
 				virusGens [--kk] = f;
 			for (nObject = segP->m_objects; nObject >= 0; nObject = objP->info.nNextInSeg) {
 				objP = OBJECTS + nObject;
@@ -82,7 +82,7 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer ();
 		if ((segP->m_owner == newOwner) && (segP->m_function == SEGMENT_FUNC_VIRUSMAKER)) {
 			j++;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindProducer (i))) &&
-				 (gameData.producers.origStationTypes [f] != SEGMENT_FUNC_NONE))
+				 (gameData.producers.origProducerTypes [f] != SEGMENT_FUNC_NONE))
 				virusGens [jj++] = f;
 			}
 		}
@@ -97,7 +97,7 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 		for (j = 0; j < jj; j++) {
 			fuelP = gameData.producers.producers + virusGens [j];
 			h = fuelP->nSegment;
-			SEGMENTS [h].m_function = gameData.producers.origStationTypes [uint (fuelP - gameData.producers.producers.Buffer ())];
+			SEGMENTS [h].m_function = gameData.producers.origProducerTypes [uint (fuelP - gameData.producers.producers.Buffer ())];
 			SEGMENTS [h].CreateProducer (SEGMENTS [h].m_function);
 			SEGMENTS [h].ChangeTexture (newOwner);
 			}

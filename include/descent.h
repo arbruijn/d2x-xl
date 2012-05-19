@@ -3198,7 +3198,7 @@ class CProducerData {
 		int				nEquipmentMakers;
 		int				nRepairCenters;
 		fix				xEnergyToCreateOneRobot;
-		CStaticArray< int, MAX_FUEL_CENTERS >				origStationTypes; // [MAX_FUEL_CENTERS];
+		CStaticArray< int, MAX_FUEL_CENTERS >				origProducerTypes; // [MAX_FUEL_CENTERS];
 		CSegment*		playerSegP;
 
 	public:

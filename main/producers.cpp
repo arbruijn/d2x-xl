@@ -73,7 +73,7 @@ if (!CreateObjectProducer (nOldFunction, MAX_FUEL_CENTERS))
 	return false;
 
 if (nOldFunction == SEGMENT_FUNC_EQUIPMAKER) {
-	gameData.producers.origStationTypes [m_value] = SEGMENT_FUNC_NONE;
+	gameData.producers.origProducerTypes [m_value] = SEGMENT_FUNC_NONE;
 	if (m_nObjProducer < --gameData.producers.nEquipmentMakers) {
 		gameData.producers.equipmentMakers [m_nObjProducer] = gameData.producers.equipmentMakers [gameData.producers.nEquipmentMakers];
 		SEGMENTS [gameData.producers.equipmentMakers [gameData.producers.nEquipmentMakers].nSegment].m_nObjProducer = m_nObjProducer;
@@ -81,7 +81,7 @@ if (nOldFunction == SEGMENT_FUNC_EQUIPMAKER) {
 		}
 	}
 else if (nOldFunction == SEGMENT_FUNC_ROBOTMAKER) {
-	gameData.producers.origStationTypes [m_value] = SEGMENT_FUNC_NONE;
+	gameData.producers.origProducerTypes [m_value] = SEGMENT_FUNC_NONE;
 	if (m_nObjProducer < --gameData.producers.nRobotMakers) {
 		gameData.producers.robotMakers [m_nObjProducer] = gameData.producers.robotMakers [gameData.producers.nRobotMakers];
 		SEGMENTS [gameData.producers.robotMakers [gameData.producers.nRobotMakers].nSegment].m_nObjProducer = m_nObjProducer;
@@ -110,7 +110,7 @@ if ((nOldFunction != SEGMENT_FUNC_FUELCENTER) &&
 	m_value = gameData.producers.nProducers++; // hasn't already been a producer, so allocate a new one
 	}
 
-gameData.producers.origStationTypes [m_value] = (nOldFunction == m_function) ? SEGMENT_FUNC_NONE : nOldFunction;
+gameData.producers.origProducerTypes [m_value] = (nOldFunction == m_function) ? SEGMENT_FUNC_NONE : nOldFunction;
 tProducerInfo& producer = gameData.producers.producers [m_value];
 producer.nType = m_function;
 producer.xMaxCapacity = 
