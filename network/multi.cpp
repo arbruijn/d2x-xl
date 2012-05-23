@@ -140,7 +140,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{8, -1}, //9 + MAX_FIRED_OBJECTS * sizeof (short)},  // FIRE
 	{5, -1},  // KILL
 	{4, 5},  // REMOVE_OBJECT
-	{97+9, 97+13}, // PLAYER_EXPLODE
+	{97+9, 97+15}, // PLAYER_EXPLODE
 	{37, -1}, // MESSAGE (MAX_MESSAGE_LENGTH = 40)
 	{2, -1},  // QUIT
 	{4, -1},  // PLAY_SOUND
@@ -166,7 +166,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{6, -1},  // CREATE_ROBOT
 	{3, -1},  // TRIGGER
 	{10, -1}, // BOSS_ACTIONS
-	{27, 29}, // ROBOT_POWERUPS
+	{27, 31}, // CREATE_ROBOT_POWERUPS
 	{7, -1},  // HOSTAGE_DOOR
 	{2+24, -1}, // SAVE_GAME      (ubyte slot, -1}, uint id, -1}, char name [20])
 	{2+4, -1},  // RESTORE_GAME   (ubyte slot, -1}, uint id)
@@ -1201,7 +1201,7 @@ if (IsNetworkGame) {
 	gameData.multigame.create.nCount = 0;
 	AdjustMineSpawn ();
 	MultiCapObjects ();
-	d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
+	d_srand (gameStates.app.nRandSeed = SDL_GetTicks ());
 	fix shield = LOCALPLAYER.Shield ();
 	LOCALPLAYER.SetShield (-1);
 	DropPlayerEggs (gameData.objs.consoleP);
@@ -1447,8 +1447,8 @@ if (multiMessageLengths [MULTI_PLAYER_EXPLODE][1] > 0) {
 	if (gameStates.multi.nGameType == UDP_GAME) {
 		playerP->SetLaserLevels (buf [bufI], buf [bufI+ 1]);
 		bufI += 2;
-		gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufI);
-		bufI += 2;
+		gameStates.app.nRandSeed = (uint) GET_INTEL_INT (buf + bufI);
+		bufI += 4;
 		}
 	}
 #endif
@@ -2227,8 +2227,8 @@ if (multiMessageLengths [(int) nType][1] > 0) {
 	if (gameStates.multi.nGameType == UDP_GAME) {
 		gameData.multigame.msg.buf [bufI++] = char (LOCALPLAYER.m_laserLevels [0]);
 		gameData.multigame.msg.buf [bufI++] = char (LOCALPLAYER.m_laserLevels [1]);
-		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameStates.app.nRandSeed);
-		bufI += 2;
+		PUT_INTEL_INT (gameData.multigame.msg.buf + bufI, gameStates.app.nRandSeed);
+		bufI += 4;
 		}
 	}
 #endif

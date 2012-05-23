@@ -53,7 +53,7 @@ szMsg [3] = char (128);
 memcpy (szMsg + 4, "THIEF: ", 7);
 szMsg [11] = char (1);
 szMsg [12] = char (128);
-szMsg [13] = char (63 + 128);
+szMsg [13] = char (127 + 128);
 szMsg [14] = char (128);
 HUDInitMessage (szMsg);
 }
@@ -240,46 +240,46 @@ int MaybeStealFlagItem (int nPlayer, int flagval)
 {
 if (gameData.multiplayer.players[nPlayer].flags & flagval) {
 	if (RandShort () < THIEF_PROBABILITY) {
-		int	powerup_index=-1;
+		int nPowerup = -1;
 		gameData.multiplayer.players[nPlayer].flags &= (~flagval);
 		switch (flagval) {
 			case PLAYER_FLAGS_INVULNERABLE:
-				powerup_index = POW_INVUL;
+				nPowerup = POW_INVUL;
 				ThiefMessage ("Invulnerability stolen!");
 				break;
 			case PLAYER_FLAGS_CLOAKED:
-				powerup_index = POW_CLOAK;
+				nPowerup = POW_CLOAK;
 				ThiefMessage ("Cloak stolen!");
 				break;
 			case PLAYER_FLAGS_FULLMAP:
-				powerup_index = POW_FULL_MAP;
+				nPowerup = POW_FULL_MAP;
 				ThiefMessage ("Full map stolen!");
 				break;
 			case PLAYER_FLAGS_QUAD_LASERS:
-				powerup_index = POW_QUADLASER;
+				nPowerup = POW_QUADLASER;
 				ThiefMessage ("Quad lasers stolen!");
 				break;
 			case PLAYER_FLAGS_AFTERBURNER:
-				powerup_index = POW_AFTERBURNER;
+				nPowerup = POW_AFTERBURNER;
 				ThiefMessage ("Afterburner stolen!");
 				break;
 // --				case PLAYER_FLAGS_AMMO_RACK:
-// --					powerup_index = POW_AMMORACK;
+// --					nPowerup = POW_AMMORACK;
 // --					ThiefMessage ("Ammo Rack stolen!");
 // --					break;
 			case PLAYER_FLAGS_CONVERTER:
-				powerup_index = POW_CONVERTER;
+				nPowerup = POW_CONVERTER;
 				ThiefMessage ("Converter stolen!");
 				break;
 			case PLAYER_FLAGS_HEADLIGHT:
-				powerup_index = POW_HEADLIGHT;
+				nPowerup = POW_HEADLIGHT;
 				ThiefMessage ("Headlight stolen!");
 				if (!EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
 			   	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 				break;
 			}
-		Assert(powerup_index != -1);
-		gameData.thief.stolenItems[gameData.thief.nStolenItem] = powerup_index;
+		Assert(nPowerup != -1);
+		gameData.thief.stolenItems[gameData.thief.nStolenItem] = nPowerup;
 		audio.PlaySound (SOUND_WEAPON_STOLEN);
 		return 1;
 		}
@@ -290,7 +290,7 @@ return 0;
 //	----------------------------------------------------------------------------
 int MaybeStealSecondaryWeapon (int nPlayer, int nWeapon)
 {
-if ((gameData.multiplayer.players[nPlayer].secondaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players[nPlayer].secondaryAmmo[nWeapon])
+if ((gameData.multiplayer.players [nPlayer].secondaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players[nPlayer].secondaryAmmo [nWeapon])
 	if (RandShort () < THIEF_PROBABILITY) {
 		if (nWeapon == PROXMINE_INDEX)
 			if (RandShort () > 8192)		//	Come in groups of 4, only add 1/4 of time.
@@ -321,7 +321,7 @@ if ((gameData.multiplayer.players[nPlayer].primaryWeaponFlags & HAS_FLAG(nWeapon
 					gameData.thief.stolenItems[gameData.thief.nStolenItem] = POW_SUPERLASER;
 				} 
 				else {
-					gameData.thief.stolenItems[gameData.thief.nStolenItem] = primaryWeaponToPowerup[nWeapon];
+					gameData.thief.stolenItems[gameData.thief.nStolenItem] = primaryWeaponToPowerup [nWeapon];
 					}
 				ThiefMessage (TXT_LVL_DECREASED, baseGameTexts [104+nWeapon][0]);		//	Danger! Danger! Use of literal!  Danger!
 				gameData.multiplayer.players[nPlayer].laserLevel--;

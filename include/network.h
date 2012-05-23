@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 #include "loadgame.h"
 
-#define EGI_DATA_VERSION				5
+#define EGI_DATA_VERSION				6
 
 #define NETWORK_OEM						0x10
 

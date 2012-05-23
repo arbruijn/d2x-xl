@@ -205,7 +205,7 @@ vPlayerPos = &OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
 nPlayerSeg = OBJECTS [LOCALPLAYER.nObject].info.nSegment;
 
 if (gameStates.multi.nGameType != UDP_GAME)
-	d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
+	d_srand (gameStates.app.nRandSeed = SDL_GetTicks ());
 while (nSegment == -1) {
 	if (!IsMultiGame)
 		nPlayer = N_LOCALPLAYER;

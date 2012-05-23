@@ -531,8 +531,8 @@ memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (CFixVector));
 #endif
 bufP += sizeof (CFixVector);
 if (gameStates.multi.nGameType == UDP_GAME) {
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameStates.app.nRandSeed);
-	bufP += 2;
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameStates.app.nRandSeed);
+	bufP += 4;
 	}
 gameData.multigame.create.nCount = 0;
 for (nContained = delObjP->info.contains.nCount; nContained; nContained -= h) {
@@ -924,8 +924,8 @@ delObjP.info.position.vPos.v.coord.z = (fix) INTEL_INT ((int) delObjP.info.posit
 if (gameStates.multi.nGameType != UDP_GAME)
 	gameStates.app.nRandSeed = 8321L;
 else {
-	gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufP);
-	bufP += 2;
+	gameStates.app.nRandSeed = (uint) GET_INTEL_INT (buf + bufP);
+	bufP += 4;
 	}
 d_srand (gameStates.app.nRandSeed);
 Assert ((nPlayer >= 0) && (nPlayer < gameData.multiplayer.nPlayers));
@@ -967,7 +967,7 @@ if (delObjP->info.nType != OBJ_ROBOT) {
 botInfoP = &ROBOTINFO (delObjP->info.nId);
 gameData.multigame.create.nCount = 0;
 if (gameStates.multi.nGameType == UDP_GAME)
-	d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
+	d_srand (gameStates.app.nRandSeed = SDL_GetTicks ());
 
 if (delObjP->info.contains.nCount > 0) { 
 	//	If dropping a weapon that the player has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
@@ -990,7 +990,7 @@ else if (delObjP->cType.aiInfo.REMOTE_OWNER == -1) // No Random goodies for robo
 	return;
 else if (botInfoP->containsCount) {
 	if (gameStates.multi.nGameType != UDP_GAME)
-		d_srand (TimerGetApproxSeconds ());
+		d_srand (gameStates.app.nRandSeed = SDL_GetTicks ());
 	if (((RandShort () * 16) >> 15) < botInfoP->containsProb) {
 		delObjP->info.contains.nCount = ((RandShort () * botInfoP->containsCount) >> 15) + 1;
 		delObjP->info.contains.nType = botInfoP->containsType;

@@ -893,7 +893,7 @@ static void CleanupBeforeGame (int nLevel, int bRestore)
 DestroyRenderThreads ();
 transparencyRenderer.ResetBuffers ();
 gameData.Destroy ();
-srand (SDL_GetTicks ());
+srand (gameStates.app.nRandSeed = SDL_GetTicks ());
 gameData.time.tLast = 0;
 gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
 gameStates.app.bBetweenLevels = 1;
@@ -2255,7 +2255,7 @@ int GetRandomPlayerPosition (void)
 	fix			xDist;
 
 // find the smallest distance between each spawn point and any player in the mine
-d_srand (gameStates.app.nRandSeed = short (clock ()));
+d_srand (gameStates.app.nRandSeed = SDL_GetTicks ());
 for (int h = 0; h < 100; h++)
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	spawnMap [i].i = i;

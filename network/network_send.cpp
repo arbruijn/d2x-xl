@@ -530,7 +530,7 @@ void NetworkSendSync (void)
 {
 	int i;
 
-d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
+d_srand (gameStates.app.nRandSeed = SDL_GetTicks ());
 	// Randomize their starting locations...
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
 	if (gameData.multiplayer.players [i].Connected ())

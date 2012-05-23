@@ -1230,7 +1230,7 @@ class CApplicationStates {
 		char *szCurrentMissionFile;
 		tObjTransformation playerPos;
 		short nPlayerSegment;
-		short nRandSeed;
+		uint nRandSeed;
 		CCheatStates cheats;
 	};
 
