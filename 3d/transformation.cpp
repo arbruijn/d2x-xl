@@ -403,7 +403,7 @@ for (j = 0; j < 4; j++) {
 	}
 
 // check whether all vertices of the face are at the back side of at least one frustum plane,
-// or if at least one is at at least on one frustum plane's front side
+// or if at least one is at at least on one frustum plane's front sides
 for (i = 0; i < 6; i++) {
 	int nPtInside = 4;
 	int bPtInside = 1;
@@ -431,7 +431,7 @@ for (j = 0; j < 4; j++)
 if (sideP->m_nFaces == 2) {
 	points [1] = &RENDERPOINTS [sideP->m_vertices [3]];
 	if (!points [1]->Projected ())
-		points [1]->Transform (sideP->m_vertices [1]);
+		points [1]->Transform (sideP->m_vertices [3]);
 	}
 
 // check whether the frustum intersects with the face

@@ -1058,9 +1058,8 @@ int FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult)
 
 gameData.collisions.hitResult.vNormal.SetZero ();
 gameData.collisions.hitResult.nNormals = 0;
-Assert((hitQuery.nSegment <= gameData.segs.nLastSegment) && (hitQuery.nSegment >= 0));
 if ((hitQuery.nSegment > gameData.segs.nLastSegment) || (hitQuery.nSegment < 0)) {
-	hitQuery.nSegment = FindSegByPos (*hitQuery.p0, -1, 0, 0);
+	hitQuery.nSegment = FindSegByPos (*hitQuery.p0, -1, 1, 0);
 	if (hitQuery.nSegment < 0) {
 		hitResult.nType = HIT_BAD_P0;
 		hitResult.vPoint = *hitQuery.p0;
@@ -1083,14 +1082,17 @@ gameData.collisions.hitResult.nObject = -1;
 // gameData.objs.viewerP is not in CSegment as claimed, so say there is no hit.
 CSegMasks masks = SEGMENTS [hitQuery.nSegment].Masks (*hitQuery.p0, 0);
 if (masks.m_center) {
-	hitResult.nType = HIT_BAD_P0;
-	hitResult.vPoint = *hitQuery.p0;
-	hitResult.nSegment = hitQuery.nSegment;
-	hitResult.nSide = 0;
-	hitResult.nObject = 0;
-	hitResult.nSideSegment = -1;
-	hitResult.nSegments = 0;
-	return hitResult.nType;
+	hitQuery.nSegment = FindSegByPos (*hitQuery.p0, -1, 1, 0);
+	if (hitQuery.nSegment < 0) {
+		hitResult.nType = HIT_BAD_P0;
+		hitResult.vPoint = *hitQuery.p0;
+		hitResult.nSegment = hitQuery.nSegment;
+		hitResult.nSide = 0;
+		hitResult.nObject = 0;
+		hitResult.nSideSegment = -1;
+		hitResult.nSegments = 0;
+		return hitResult.nType;
+		}
 	}
 gameData.collisions.segsVisited [0] = hitQuery.nSegment;
 gameData.collisions.nSegsVisited = 1;
