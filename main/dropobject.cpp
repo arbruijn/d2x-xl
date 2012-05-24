@@ -978,7 +978,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_SLOWMOTION, POW_SLOWMOTION);
 		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_BULLETTIME, POW_BULLETTIME);
 		}	
-	if (PlayerHasHeadlight (nPlayer) && !(extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_HEADLIGHT)) &&
+	if (PlayerHasHeadlight (nPlayer) && !(extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_HEADLIGHT) &&
 		 !(gameStates.app.bHaveExtraGameInfo [1] && IsMultiGame && extraGameInfo [1].bDarkness))
 		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_HEADLIGHT, POW_HEADLIGHT);
 	// drop the other enemies flag if you have it
@@ -1090,7 +1090,7 @@ if (nExcess > 0) {
 	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= nClips * VULCAN_CLIP_CAPACITY;
 	if (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] < 0)
 		LOCALPLAYER.primaryAmmo [VULCAN_INDEX] = 0;
-	CallObjectCreateEgg (OBJECTS [LOCALPLAYER.nObject], nClips, OBJ_POWERUP, POW_VULCAN_AMMO);
+	CallObjectCreateEgg (&OBJECTS [LOCALPLAYER.nObject], nClips, OBJ_POWERUP, POW_VULCAN_AMMO);
 	}
 }
 
