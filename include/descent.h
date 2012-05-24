@@ -1232,6 +1232,15 @@ class CApplicationStates {
 		short nPlayerSegment;
 		uint nRandSeed;
 		CCheatStates cheats;
+
+		inline void SRand (uint seed = 0xffffffff) {
+			if (seed == 0xffffffff) {
+				seed = SDL_GetTicks ();
+				seed *= seed;
+				seed ^= (uint) time (NULL);
+				}
+			srand (nRandSeed = seed);
+			}
 	};
 
 //------------------------------------------------------------------------------

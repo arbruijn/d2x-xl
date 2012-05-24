@@ -1201,7 +1201,7 @@ if (IsNetworkGame) {
 	gameData.multigame.create.nCount = 0;
 	AdjustMineSpawn ();
 	MultiCapObjects ();
-	d_srand (gameStates.app.nRandSeed = SDL_GetTicks ());
+	gameStates.app.SRand ();
 	fix shield = LOCALPLAYER.Shield ();
 	LOCALPLAYER.SetShield (-1);
 	DropPlayerEggs (gameData.objs.consoleP);

@@ -93,7 +93,7 @@ void RecreateThief (CObject *objP)
 
 nSegment = ChooseThiefRecreationSegment ();
 vCenter = SEGMENTS [nSegment].Center ();
-newObjP = CreateMorphRobot( &SEGMENTS[nSegment], &vCenter, objP->info.nId);
+newObjP = CreateMorphRobot( &SEGMENTS [nSegment], &vCenter, objP->info.nId);
 InitAIObject (OBJ_IDX (newObjP), AIB_SNIPE, -1);
 gameData.thief.xReInitTime = gameData.time.xGame + I2X (10);		//	In 10 seconds, re-initialize thief.
 }
@@ -235,13 +235,13 @@ switch (ailP->mode) {
 }
 
 //	----------------------------------------------------------------------------
-//	Return true if this item (whose presence is indicated by gameData.multiplayer.players[nPlayer].flags) gets stolen.
+//	Return true if this item (whose presence is indicated by gameData.multiplayer.players [nPlayer].flags) gets stolen.
 int MaybeStealFlagItem (int nPlayer, int flagval)
 {
-if (gameData.multiplayer.players[nPlayer].flags & flagval) {
+if (gameData.multiplayer.players [nPlayer].flags & flagval) {
 	if (RandShort () < THIEF_PROBABILITY) {
 		int nPowerup = -1;
-		gameData.multiplayer.players[nPlayer].flags &= (~flagval);
+		gameData.multiplayer.players [nPlayer].flags &= (~flagval);
 		switch (flagval) {
 			case PLAYER_FLAGS_INVULNERABLE:
 				nPowerup = POW_INVUL;
@@ -279,7 +279,7 @@ if (gameData.multiplayer.players[nPlayer].flags & flagval) {
 				break;
 			}
 		Assert(nPowerup != -1);
-		gameData.thief.stolenItems[gameData.thief.nStolenItem] = nPowerup;
+		gameData.thief.stolenItems [gameData.thief.nStolenItem] = nPowerup;
 		audio.PlaySound (SOUND_WEAPON_STOLEN);
 		return 1;
 		}
@@ -290,18 +290,18 @@ return 0;
 //	----------------------------------------------------------------------------
 int MaybeStealSecondaryWeapon (int nPlayer, int nWeapon)
 {
-if ((gameData.multiplayer.players [nPlayer].secondaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players[nPlayer].secondaryAmmo [nWeapon])
+if ((gameData.multiplayer.players [nPlayer].secondaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players [nPlayer].secondaryAmmo [nWeapon])
 	if (RandShort () < THIEF_PROBABILITY) {
 		if (nWeapon == PROXMINE_INDEX)
 			if (RandShort () > 8192)		//	Come in groups of 4, only add 1/4 of time.
 				return 0;
-		gameData.multiplayer.players[nPlayer].secondaryAmmo[nWeapon]--;
+		gameData.multiplayer.players [nPlayer].secondaryAmmo [nWeapon]--;
 		//	Smart mines and proxbombs don't get dropped because they only come in 4 packs.
 		if ((nWeapon != PROXMINE_INDEX) && (nWeapon != SMARTMINE_INDEX)) {
-			gameData.thief.stolenItems[gameData.thief.nStolenItem] = secondaryWeaponToPowerup[nWeapon];
+			gameData.thief.stolenItems [gameData.thief.nStolenItem] = secondaryWeaponToPowerup [nWeapon];
 			}
 		ThiefMessage (TXT_WPN_STOLEN, baseGameTexts [114+nWeapon][0]);		//	Danger! Danger! Use of literal!  Danger!
-		if (LOCALPLAYER.secondaryAmmo[nWeapon] == 0)
+		if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0)
 			AutoSelectWeapon (1, 0);
 		// -- compress_stolen_items();
 		audio.PlaySound (SOUND_WEAPON_STOLEN);
@@ -313,25 +313,25 @@ return 0;
 //	----------------------------------------------------------------------------
 int MaybeStealPrimaryWeapon (int nPlayer, int nWeapon)
 {
-if ((gameData.multiplayer.players[nPlayer].primaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players[nPlayer].primaryAmmo[nWeapon]) {
+if ((gameData.multiplayer.players [nPlayer].primaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players [nPlayer].primaryAmmo [nWeapon]) {
 	if (RandShort () < THIEF_PROBABILITY) {
 		if (nWeapon == 0) {
-			if (gameData.multiplayer.players[nPlayer].laserLevel > 0) {
-				if (gameData.multiplayer.players[nPlayer].laserLevel > 3) {
-					gameData.thief.stolenItems[gameData.thief.nStolenItem] = POW_SUPERLASER;
+			if (gameData.multiplayer.players [nPlayer].laserLevel > 0) {
+				if (gameData.multiplayer.players [nPlayer].laserLevel > 3) {
+					gameData.thief.stolenItems [gameData.thief.nStolenItem] = POW_SUPERLASER;
 				} 
 				else {
-					gameData.thief.stolenItems[gameData.thief.nStolenItem] = primaryWeaponToPowerup [nWeapon];
+					gameData.thief.stolenItems [gameData.thief.nStolenItem] = primaryWeaponToPowerup [nWeapon];
 					}
 				ThiefMessage (TXT_LVL_DECREASED, baseGameTexts [104+nWeapon][0]);		//	Danger! Danger! Use of literal!  Danger!
-				gameData.multiplayer.players[nPlayer].laserLevel--;
+				gameData.multiplayer.players [nPlayer].laserLevel--;
 				audio.PlaySound(SOUND_WEAPON_STOLEN);
 				return 1;
 				}
 			} 
-		else if (gameData.multiplayer.players[nPlayer].primaryWeaponFlags & (1 << nWeapon)) {
-			gameData.multiplayer.players[nPlayer].primaryWeaponFlags &= ~(1 << nWeapon);
-			gameData.thief.stolenItems[gameData.thief.nStolenItem] = primaryWeaponToPowerup[nWeapon];
+		else if (gameData.multiplayer.players [nPlayer].primaryWeaponFlags & (1 << nWeapon)) {
+			gameData.multiplayer.players [nPlayer].primaryWeaponFlags &= ~(1 << nWeapon);
+			gameData.thief.stolenItems [gameData.thief.nStolenItem] = primaryWeaponToPowerup [nWeapon];
 			ThiefMessage (TXT_WPN_STOLEN, baseGameTexts [104+nWeapon][0]);		//	Danger! Danger! Use of literal!  Danger!
 			AutoSelectWeapon (0, 0);
 			audio.PlaySound(SOUND_WEAPON_STOLEN);
@@ -351,7 +351,7 @@ int AttemptToStealItem3(CObject *objP, int nPlayer)
 {
 	int	i;
 
-if (gameData.ai.localInfo[objP->Index ()].mode != AIM_THIEF_ATTACK)
+if (gameData.ai.localInfo [objP->Index ()].mode != AIM_THIEF_ATTACK)
 	return 0;
 //	First, try to steal equipped items.
 if (MaybeStealFlagItem (nPlayer, PLAYER_FLAGS_INVULNERABLE))
@@ -397,17 +397,13 @@ return 0;
 //	----------------------------------------------------------------------------
 int AttemptToStealItem2(CObject *objP, int nPlayer)
 {
-	int	rval;
-
-	rval = AttemptToStealItem3(objP, nPlayer);
-
-	if (rval) {
+int rval = AttemptToStealItem3(objP, nPlayer);
+if (rval) {
+	gameData.thief.nStolenItem = (gameData.thief.nStolenItem+1) % MAX_STOLEN_ITEMS;
+	if (RandShort () > 20000)	//	Occasionally, boost the value again
 		gameData.thief.nStolenItem = (gameData.thief.nStolenItem+1) % MAX_STOLEN_ITEMS;
-		if (RandShort () > 20000)	//	Occasionally, boost the value again
-			gameData.thief.nStolenItem = (gameData.thief.nStolenItem+1) % MAX_STOLEN_ITEMS;
 	}
-
-	return rval;
+return rval;
 }
 
 //	----------------------------------------------------------------------------
@@ -422,9 +418,7 @@ int AttemptToStealItem (CObject *objP, int nPlayer)
 
 if (objP->cType.aiInfo.xDyingStartTime)
 	return 0;
-
 rval += AttemptToStealItem2 (objP, nPlayer);
-
 for (i = 0; i < 3; i++) {
 	if (rval && (RandShort () >= 11000)) 
 		break;

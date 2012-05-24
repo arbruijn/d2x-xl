@@ -205,7 +205,7 @@ vPlayerPos = &OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
 nPlayerSeg = OBJECTS [LOCALPLAYER.nObject].info.nSegment;
 
 if (gameStates.multi.nGameType != UDP_GAME)
-	d_srand (gameStates.app.nRandSeed = SDL_GetTicks ());
+	gameStates.app.SRand ();
 while (nSegment == -1) {
 	if (!IsMultiGame)
 		nPlayer = N_LOCALPLAYER;
@@ -940,7 +940,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 		gameData.multigame.create.nCount = 0;
 		if (gameStates.multi.nGameType != UDP_GAME)
 			gameStates.app.nRandSeed = 5483L;
-		d_srand (gameStates.app.nRandSeed);
+		gameStates.app.SRand (gameStates.app.nRandSeed);
 		}
 	MaybeArmMines (playerObjP, playerP, SMARTMINE_INDEX, SMARTMINE_ID);
 	if (IsMultiGame && !(IsHoardGame || IsEntropyGame))

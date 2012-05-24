@@ -115,13 +115,6 @@ fixang FixAtan2 (fix cos, fix sin);
 fix FixISqrt (fix a);
 
 //-----------------------------------------------------------------------------
-
-static inline void d_srand (uint seed)
-{
-srand(seed);
-}
-
-//-----------------------------------------------------------------------------
 // return a random integer in the range [0 .. SHORT_RAND_MAX]
 
 #define SHORT_RAND_MAX 0x7fff

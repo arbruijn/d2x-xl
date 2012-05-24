@@ -927,7 +927,7 @@ else {
 	gameStates.app.nRandSeed = (uint) GET_INTEL_INT (buf + bufP);
 	bufP += 4;
 	}
-d_srand (gameStates.app.nRandSeed);
+gameStates.app.SRand (gameStates.app.nRandSeed);
 Assert ((nPlayer >= 0) && (nPlayer < gameData.multiplayer.nPlayers));
 Assert (nPlayer != N_LOCALPLAYER); // What? How'd we send ourselves this?
 gameData.multigame.create.nCount = 0;
@@ -967,7 +967,7 @@ if (delObjP->info.nType != OBJ_ROBOT) {
 botInfoP = &ROBOTINFO (delObjP->info.nId);
 gameData.multigame.create.nCount = 0;
 if (gameStates.multi.nGameType == UDP_GAME)
-	d_srand (gameStates.app.nRandSeed = SDL_GetTicks ());
+	gameStates.app.SRand ();
 
 if (delObjP->info.contains.nCount > 0) { 
 	//	If dropping a weapon that the player has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
@@ -982,7 +982,7 @@ if (delObjP->info.contains.nCount > 0) {
 			}
 		}
 	if (gameStates.multi.nGameType != UDP_GAME)
-		d_srand (gameStates.app.nRandSeed = 1245L);
+		gameStates.app.SRand (1245L);
 	if (delObjP->info.contains.nCount > 0)
 		nEggObj = ObjectCreateEgg (delObjP);
 	}
@@ -990,7 +990,7 @@ else if (delObjP->cType.aiInfo.REMOTE_OWNER == -1) // No Random goodies for robo
 	return;
 else if (botInfoP->containsCount) {
 	if (gameStates.multi.nGameType != UDP_GAME)
-		d_srand (gameStates.app.nRandSeed = SDL_GetTicks ());
+		gameStates.app.SRand ();
 	if (((RandShort () * 16) >> 15) < botInfoP->containsProb) {
 		delObjP->info.contains.nCount = ((RandShort () * botInfoP->containsCount) >> 15) + 1;
 		delObjP->info.contains.nType = botInfoP->containsType;
@@ -1001,7 +1001,7 @@ else if (botInfoP->containsCount) {
 				delObjP->info.contains.nId = POW_SHIELD_BOOST;
 			 }
 		if (gameStates.multi.nGameType != UDP_GAME)
-			d_srand (gameStates.app.nRandSeed = 1245L);
+			gameStates.app.SRand (1245L);
 		if (delObjP->info.contains.nCount > 0)
 			nEggObj = ObjectCreateEgg (delObjP);
 		}

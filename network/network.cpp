@@ -192,7 +192,7 @@ networkData.nStatus = NETSTAT_STARTING;
 // IpxHandleNetGameAuxData.
 IpxInitNetGameAuxData (netGame.AuxData ());
 NetworkSetGameMode (netGame.m_info.gameMode);
-d_srand (gameStates.app.nRandSeed = SDL_GetTicks ());
+gameStates.app.SRand ();
 netGame.m_info.nSecurity = RandShort ();  // For syncing NetGames with player packets
 downloadManager.Init ();
 if (NetworkSelectPlayers (bAutoRun)) {

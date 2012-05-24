@@ -814,7 +814,7 @@ int		i, nObject;
 CObject	*curObjP;
 
 if (IsMultiGame)
-	d_srand (gameStates.app.nRandSeed = 8321L);
+	gameStates.app.SRand (8321L);
 FORALL_OBJS (curObjP, nObject) {
 	nObject = OBJ_IDX (curObjP);
 	if (curObjP->info.nType == OBJ_PLAYER) {

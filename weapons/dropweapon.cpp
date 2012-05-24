@@ -41,7 +41,10 @@ int SpitPowerup (CObject *spitterP, ubyte id, int seed)
 	CFixVector	newVelocity, newPos;
 	tObjTransformation	*posP = OBJPOS (spitterP);
 
-d_srand (gameStates.app.nRandSeed = (seed < 0) ? rand () : seed);
+if (seed < 0)
+	gameStates.app.SRand ();
+else
+	gameStates.app.SRand (seed);
 newVelocity = spitterP->mType.physInfo.velocity + spitterP->info.position.mOrient.m.dir.f * I2X (SPIT_SPEED);
 newVelocity.v.coord.x += (SRandShort ()) * SPIT_SPEED * 2;
 newVelocity.v.coord.y += (SRandShort ()) * SPIT_SPEED * 2;
