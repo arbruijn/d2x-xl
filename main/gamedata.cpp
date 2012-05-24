@@ -1710,6 +1710,7 @@ memset (this, 0, sizeof (*this));
 gameData.time.xMaxOnline = 180000;
 gameData.time.xGameStart = -gameData.time.xMaxOnline;
 xFrame = 0x1000;
+xLastThiefHitTime = 0;
 }
 
 // ----------------------------------------------------------------------------

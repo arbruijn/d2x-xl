@@ -2852,6 +2852,7 @@ class CTimeData {
 		fix					xSlack;
 		fix					xStarted;
 		fix					xStopped;
+		fix					xLastThiefHitTime;
 		int					nPaused;
 		int					nStarts;
 		int					nStops;

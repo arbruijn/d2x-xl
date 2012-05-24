@@ -1013,8 +1013,6 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-fix xLastThiefHitTime;
-
 int CObject::CollideRobotAndPlayer (CObject* playerObjP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (!IsStatic ()) {
@@ -1040,15 +1038,15 @@ if (!IsStatic ()) {
 			}
 		if (ROBOTINFO (info.nId).thief) {
 			if (gameData.ai.localInfo [OBJ_IDX (this)].mode == AIM_THIEF_ATTACK) {
-				xLastThiefHitTime = gameData.time.xGame;
+				gameData.time.xLastThiefHitTime = gameData.time.xGame;
 				AttemptToStealItem (this, playerObjP->info.nId);
 				bTheftAttempt = 1;
 				}
-			else if (gameData.time.xGame - xLastThiefHitTime < I2X (2))
+			else if (gameData.time.xGame - gameData.time.xLastThiefHitTime < I2X (2))
 				return 1;	//	ZOUNDS! BRILLIANT! Thief not Collide with player if not stealing!
 								// NO! VERY DUMB! makes thief look very stupid if player hits him while cloaked!-AP
 			else
-				xLastThiefHitTime = gameData.time.xGame;
+				gameData.time.xLastThiefHitTime = gameData.time.xGame;
 			}
 		CreateAwarenessEvent (playerObjP, PA_PLAYER_COLLISION);			// CObject this can attract attention to player
 		if (USE_D1_AI) {
