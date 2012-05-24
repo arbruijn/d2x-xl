@@ -236,13 +236,16 @@ switch (ailP->mode) {
 
 //	----------------------------------------------------------------------------
 //	Return true if this item (whose presence is indicated by gameData.multiplayer.players [nPlayer].flags) gets stolen.
-int MaybeStealFlagItem (int nPlayer, int flagval)
+int MaybeStealFlagItem (int nPlayer, int deviceFlag)
 {
-if (gameData.multiplayer.players [nPlayer].flags & flagval) {
+if (extraGameInfo [IsMultiGame].loadout.nDevice & deviceFlag)
+	return 0;
+
+if (gameData.multiplayer.players [nPlayer].flags & deviceFlag) {
 	if (RandShort () < THIEF_PROBABILITY) {
 		int nPowerup = -1;
-		gameData.multiplayer.players [nPlayer].flags &= (~flagval);
-		switch (flagval) {
+		gameData.multiplayer.players [nPlayer].flags &= (~deviceFlag);
+		switch (deviceFlag) {
 			case PLAYER_FLAGS_INVULNERABLE:
 				nPowerup = POW_INVUL;
 				ThiefMessage ("Invulnerability stolen!");
@@ -376,11 +379,9 @@ if (MaybeStealSecondaryWeapon (nPlayer, gameData.weapons.nSecondary))
 //	Try best things first.
 
 for (i = 0; nDevices [i] > 0; i++) {
-	if (extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_FULLMAP)
+	if ((nDevices [i] == PLAYER_FLAGS_HEADLIGHT) && EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
 		continue;
-	if ((nDevice [i] == PLAYER_FLAGS_HEADLIGHT) && EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
-		continue;
-	if (MaybeStealFlagItem (nPlayer, nDevice [i]))
+	if (MaybeStealFlagItem (nPlayer, nDevices [i]))
 		return 1;
 	}
 // --	if (MaybeStealFlagItem (nPlayer, PLAYER_FLAGS_AMMO_RACK))	//	Can't steal because what if have too many items, say 15 homing missiles?
@@ -398,7 +399,7 @@ return 0;
 //	----------------------------------------------------------------------------
 int AttemptToStealItem2(CObject *objP, int nPlayer)
 {
-int rval = AttemptToStealItem3(objP, nPlayer);
+int rval = AttemptToStealItem3 (objP, nPlayer);
 if (rval) {
 	gameData.thief.nStolenItem = (gameData.thief.nStolenItem+1) % MAX_STOLEN_ITEMS;
 	if (RandShort () > 20000)	//	Occasionally, boost the value again
