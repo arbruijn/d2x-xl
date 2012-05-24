@@ -2262,8 +2262,8 @@ gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed = 0;
 
 //-----------------------------------------------------------------------------
 
-extern ubyte secondaryWeaponToPowerup [2][];
-extern ubyte primaryWeaponToPowerup [];
+//extern ubyte secondaryWeaponToPowerup [2][];
+//extern ubyte primaryWeaponToPowerup [];
 
 static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER};
 static int nDevicePowerups [] = {POW_FULL_MAP, POW_AMMORACK, POW_CONVERTER, POW_QUADLASER, POW_AFTERBURNER};
