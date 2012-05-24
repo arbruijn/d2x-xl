@@ -433,7 +433,7 @@ else {
 			InitAmmoAndEnergy ();
 		player.flags &=	~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | KEY_BLUE | KEY_RED | KEY_GOLD);
 		if (!(extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_FULLMAP))
-			player.flags &=	~PLAYER_FLAGS_FULLMAP;
+			player.flags &= ~PLAYER_FLAGS_FULLMAP;
 		player.cloakTime = 0;
 		player.invulnerableTime = 0;
 		if (IsMultiGame && !IsCoopGame) {

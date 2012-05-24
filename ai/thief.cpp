@@ -288,6 +288,7 @@ return 0;
 }
 
 //	----------------------------------------------------------------------------
+
 int MaybeStealSecondaryWeapon (int nPlayer, int nWeapon)
 {
 if ((gameData.multiplayer.players [nPlayer].secondaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players [nPlayer].secondaryAmmo [nWeapon])
@@ -311,9 +312,12 @@ return 0;
 }
 
 //	----------------------------------------------------------------------------
+
 int MaybeStealPrimaryWeapon (int nPlayer, int nWeapon)
 {
-if ((gameData.multiplayer.players [nPlayer].primaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players [nPlayer].primaryAmmo [nWeapon]) {
+if ((gameData.multiplayer.players [nPlayer].primaryWeaponFlags & HAS_FLAG (nWeapon)) && 
+	 gameData.multiplayer.players [nPlayer].primaryAmmo [nWeapon] &&
+	 !(extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (nWeapon))) {
 	if (RandShort () < THIEF_PROBABILITY) {
 		if (nWeapon == 0) {
 			if (gameData.multiplayer.players [nPlayer].laserLevel > 0) {
@@ -350,6 +354,8 @@ return 0;
 int AttemptToStealItem3(CObject *objP, int nPlayer)
 {
 	int	i;
+	static int nDevices [] = {PLAYER_FLAGS_INVULNERABLE, PLAYER_FLAGS_CLOAKED, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER, 
+									  PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_HEADLIGHT, PLAYER_FLAGS_FULLMAP, -1};
 
 if (gameData.ai.localInfo [objP->Index ()].mode != AIM_THIEF_ATTACK)
 	return 0;
@@ -368,22 +374,17 @@ if (MaybeStealSecondaryWeapon (nPlayer, gameData.weapons.nSecondary))
 	return 1;
 //	See what the player has and try to snag something.
 //	Try best things first.
-if (MaybeStealFlagItem (nPlayer, PLAYER_FLAGS_INVULNERABLE))
-	return 1;
-if (MaybeStealFlagItem (nPlayer, PLAYER_FLAGS_CLOAKED))
-	return 1;
-if (MaybeStealFlagItem (nPlayer, PLAYER_FLAGS_QUAD_LASERS))
-	return 1;
-if (MaybeStealFlagItem (nPlayer, PLAYER_FLAGS_AFTERBURNER))
-	return 1;
-if (MaybeStealFlagItem (nPlayer, PLAYER_FLAGS_CONVERTER))
-	return 1;
+
+for (i = 0; nDevices [i] > 0; i++) {
+	if (extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_FULLMAP)
+		continue;
+	if ((nDevice [i] == PLAYER_FLAGS_HEADLIGHT) && EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
+		continue;
+	if (MaybeStealFlagItem (nPlayer, nDevice [i]))
+		return 1;
+	}
 // --	if (MaybeStealFlagItem (nPlayer, PLAYER_FLAGS_AMMO_RACK))	//	Can't steal because what if have too many items, say 15 homing missiles?
 // --		return 1;
-if (MaybeStealFlagItem (nPlayer, PLAYER_FLAGS_HEADLIGHT))
-	return 1;
-if (MaybeStealFlagItem (nPlayer, PLAYER_FLAGS_FULLMAP))
-	return 1;
 
 for (i = MAX_SECONDARY_WEAPONS - 1; i >= 0; i--) {
 	if (MaybeStealPrimaryWeapon (nPlayer, i))
