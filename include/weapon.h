@@ -258,7 +258,7 @@ extern ubyte secondaryWeaponToGunNum [MAX_SECONDARY_WEAPONS];
 extern ubyte primaryWeaponToPowerup [MAX_SECONDARY_WEAPONS];
 
 //for each Secondary weapon, what kind of powerup gives weapon
-extern ubyte secondaryWeaponToPowerup [MAX_SECONDARY_WEAPONS];
+extern ubyte secondaryWeaponToPowerup [2][MAX_SECONDARY_WEAPONS];
 
 //flags whether the last time we use this weapon, it was the 'super' version
 extern ubyte bLastWeaponWasSuper [2][MAX_PRIMARY_WEAPONS];
@@ -290,6 +290,9 @@ int PlayerHasWeapon (int nWeapon, int secondaryFlag, int nPlayer, int bAll);
 //called when one of these weapons is picked up
 //when you pick up a secondary, you always get the weapon & ammo for it
 int PickupSecondary (CObject *objP, int nWeaponIndex, int nAmount, int nPlayer);
+
+// max. amount of ammo of type 'nWeapon' player can carry depending on equipment (ammo rack) and game settings
+int MaxSecondaryAmmo (int nWeapon);
 
 //called when a primary weapon is picked up
 //returns true if actually picked up
@@ -336,7 +339,7 @@ int AllowedToFireFlare (void);
 int AllowedToFireMissile (int nPlayer, int bCheckSegment);
 
 void DropCurrentWeapon (void);
-void DropSecondaryWeapon (int nWeapon);
+void DropSecondaryWeapon (int nWeapon, int nAmount = 1, int bSilent = 0);
 
 void ValidatePrios (ubyte *order, ubyte *defaultOrder, int n);
 void SetLastSuperWeaponStates (void);

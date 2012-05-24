@@ -837,7 +837,7 @@ return CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, primaryWeaponToPowerup [
 void MaybeDropSecondaryWeaponEgg (CObject *playerObjP, int nWeapon, int count)
 {
 	int nWeaponFlag = HAS_FLAG (nWeapon);
-	int nPowerup = secondaryWeaponToPowerup [nWeapon];
+	int nPowerup = secondaryWeaponToPowerup [0][nWeapon];
 
 if (gameData.multiplayer.players [playerObjP->info.nId].secondaryWeaponFlags & nWeaponFlag) {
 	int i, maxCount = ((EGI_FLAG (bDropAllMissiles, 0, 0, 0)) ? count : min(count, 3));
@@ -863,7 +863,7 @@ void DropMissile1or4 (CObject *playerObjP, int nMissileIndex)
 	int nMissiles, nPowerupId;
 
 if ((nMissiles = gameData.multiplayer.players [playerObjP->info.nId].secondaryAmmo [nMissileIndex])) {
-	nPowerupId = secondaryWeaponToPowerup [nMissileIndex];
+	nPowerupId = secondaryWeaponToPowerup [0][nMissileIndex];
 	if ((nMissileIndex == CONCUSSION_INDEX) && (playerObjP->Id () == N_LOCALPLAYER))
 		nMissiles -= gameData.multiplayer.weaponStates [playerObjP->Id ()].nBuiltinMissiles;	//player gets 4 concs anyway when respawning, so avoid them building up
 	if (!(IsMultiGame || EGI_FLAG (bDropAllMissiles, 0, 0, 0)) && (nMissiles > 10))
@@ -1068,6 +1068,29 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_ENERGY);
 		}
 	PrintLog (-1);
+	}
+}
+
+//	----------------------------------------------------------------------------
+// Drop excess ammo when the ammo rack is stolen from the player
+
+void DropExcessAmmo (void)
+{
+for (int nWeapon = CONCUSSION_INDEX; nWeapon <= EARTHSHAKER_INDEX; nWeapon++) {
+	int nExcess = MaxSecondaryAmmo (nWeapon) - LOCALPLAYER.secondaryAmmo [nWeapon];
+	if (nExcess > 0) {
+		if (nExcess >= 4)
+			DropSecondaryWeapon (nWeapon, nExcess / 4, 1);
+		DropSecondaryWeapon (nWeapon, nExcess % 4, 1);
+		}
+	}
+int nExcess = LOCALPLAYER.primaryAmmo [VULCAN_INDEX] - nMaxPrimaryAmmo [VULCAN_INDEX];
+if (nExcess > 0) {
+	int nClips = (nExcess + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CAPACITY;
+	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= nClips * VULCAN_CLIP_CAPACITY;
+	if (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] < 0)
+		LOCALPLAYER.primaryAmmo [VULCAN_INDEX] = 0;
+	CallObjectCreateEgg (OBJECTS [LOCALPLAYER.nObject], nClips, OBJ_POWERUP, POW_VULCAN_AMMO);
 	}
 }
 

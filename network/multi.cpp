@@ -90,7 +90,8 @@ void MultiAdjustPowerupCap (void);
 
 // LOCALIZE ME!!
 
-void DropPlayerEggs (CObject *player); // from collide.c
+void DropPlayerEggs (CObject* player); // from collide.c
+void DropExcessAmmo (void);
 
 //
 // Global variaszPlayers
@@ -2262,7 +2263,7 @@ gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed = 0;
 
 //-----------------------------------------------------------------------------
 
-extern ubyte secondaryWeaponToPowerup [];
+extern ubyte secondaryWeaponToPowerup [2][];
 extern ubyte primaryWeaponToPowerup [];
 
 static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER};
@@ -2319,7 +2320,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 		if ((i == PROXMINE_INDEX) || (i == SMARTMINE_INDEX))
 			continue;
 		}
-	nType = int (secondaryWeaponToPowerup [i]);
+	nType = int (secondaryWeaponToPowerup [0][i]);
 	if (0 <= (h = MissingPowerups (nType)))
 		continue;
 	LOCALPLAYER.secondaryAmmo [i] += h;
@@ -2386,7 +2387,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 		}
 	}
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
-	nType = int (secondaryWeaponToPowerup [i]);
+	nType = int (secondaryWeaponToPowerup [0][i]);
 	AddAllowedPowerup (nType, i ? gameData.multiplayer.SecondaryAmmo (nPlayer, i) : gameData.multiplayer.SecondaryAmmo (nPlayer, i, 0));
 	}
 

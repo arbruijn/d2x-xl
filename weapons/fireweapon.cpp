@@ -942,12 +942,12 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 		break; //no dual smartmine drop
 		}
 	else if (gameData.weapons.nSecondary != CONCUSSION_INDEX)
-		MaybeDropNetPowerup (nObject, secondaryWeaponToPowerup [gameData.weapons.nSecondary], INIT_DROP);
+		MaybeDropNetPowerup (nObject, secondaryWeaponToPowerup [0][gameData.weapons.nSecondary], INIT_DROP);
 	else {
 		if (gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles)
 			gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles--;
 		else
-			MaybeDropNetPowerup (nObject, secondaryWeaponToPowerup [gameData.weapons.nSecondary], INIT_DROP);
+			MaybeDropNetPowerup (nObject, secondaryWeaponToPowerup [0][gameData.weapons.nSecondary], INIT_DROP);
 		}
 	if ((gameData.weapons.nSecondary == GUIDED_INDEX) || (gameData.weapons.nSecondary == SMART_INDEX))
 		break;

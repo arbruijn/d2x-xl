@@ -176,17 +176,18 @@ if (gameData.weapons.nPrimary) //if selected weapon was not the laser
 
 extern void DropOrb (void);
 
-void DropSecondaryWeapon (int nWeapon)
+void DropSecondaryWeapon (int nWeapon, int nAmount, int bSilent)
 {
 if (nWeapon < 0)
 	nWeapon = gameData.weapons.nSecondary;
 if ((LOCALPLAYER.secondaryAmmo [nWeapon] == 0) || 
 	 (IsMultiGame && (nWeapon == 0) && (LOCALPLAYER.secondaryAmmo [nWeapon] <= gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles))) {
-	HUDInitMessage (TXT_CANT_DROP_SEC);
+	if (!bSilent)
+		HUDInitMessage (TXT_CANT_DROP_SEC);
 	return;
 	}
 
-int nPowerup = secondaryWeaponToPowerup [nWeapon];
+int nPowerup = secondaryWeaponToPowerup [0][nWeapon];
 int bHoardEntropy = (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) != 0;
 int bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
 
@@ -198,29 +199,39 @@ if (bHoardEntropy) {
 	DropOrb ();
 	return;
 	}
+
+int nItems = nAmount;
 if (bMine)
 	LOCALPLAYER.secondaryAmmo [nWeapon] -= 4;
-else
-	LOCALPLAYER.secondaryAmmo [nWeapon]--;
-
-int nObject = SpitPowerup (gameData.objs.consoleP, nPowerup);
-
-if (nObject == -1) {
-	if (bMine)
-		LOCALPLAYER.secondaryAmmo [nWeapon] += 4;
-	else
-		LOCALPLAYER.secondaryAmmo [nWeapon]++;
-	return;
+else {
+	LOCALPLAYER.secondaryAmmo [nWeapon] -= nAmount;
+	if ((nAmount % 4 == 0) && (secondaryWeaponToPowerup [1][nWeapon] > -1)) { // amount is multiple of four and four pack of this powerup available
+		nPowerup = secondaryWeaponToPowerup [1][nWeapon];
+		nItems /= 4;
+		}
 	}
-HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weapons.nSecondary));
-audio.PlaySound (SOUND_DROP_WEAPON);
-if (IsMultiGame) {
-	MultiSendDropWeapon (nObject);
-	MultiSendWeapons (1);
-	}
-if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {
-	LOCALPLAYER.secondaryWeaponFlags &= (~(1<<gameData.weapons.nSecondary));
-	AutoSelectWeapon (1, 0);
+
+for (int i = 0; i < nItems; i++) {
+	int nObject = SpitPowerup (gameData.objs.consoleP, nPowerup);
+	if (nObject == -1) { // can't put any more objects in the mine
+		if (bMine)
+			LOCALPLAYER.secondaryAmmo [nWeapon] += 4;
+		else
+			LOCALPLAYER.secondaryAmmo [nWeapon] += nAmount;
+		return;
+		}
+	if (!bSilent) {
+		HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weapons.nSecondary));
+		audio.PlaySound (SOUND_DROP_WEAPON);
+		}
+	if (IsMultiGame) {
+		MultiSendDropWeapon (nObject);
+		MultiSendWeapons (1);
+		}
+	if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {
+		LOCALPLAYER.secondaryWeaponFlags &= (~(1 << gameData.weapons.nSecondary));
+		AutoSelectWeapon (1, 0);
+		}
 	}
 }
 

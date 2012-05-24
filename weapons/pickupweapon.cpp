@@ -93,6 +93,31 @@ return 1;
 }
 
 //	---------------------------------------------------------------------
+
+int MaxSecondaryAmmo (int nWeapon)
+{
+int nMaxAmount = nMaxSecondaryAmmo [nWeapon];
+if (gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip == 1) {
+	if (nWeapon == EARTHSHAKER_INDEX)
+		nMaxAmount /= 2;
+	else
+		nMaxAmount = 4 * nMaxAmount / 5;
+	}
+else if (gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip == 2) 
+	nMaxAmount *= 2;
+else {
+	if (LOCALPLAYER.flags & PLAYER_FLAGS_AMMO_RACK) {
+		if (gameStates.app.bNostalgia)
+			nMaxAmount *= 2;
+		else
+			nMaxAmount = 3 * nMaxAmount / 2;
+		}
+	}
+if (IsMultiGame && !IsCoopGame && gameStates.app.bHaveExtraGameInfo [1] && (nMaxAmount > extraGameInfo [1].loadout.nMissiles [nWeapon]))
+	nMaxAmount = extraGameInfo [1].loadout.nMissiles [nWeapon];
+}
+
+//	---------------------------------------------------------------------
 //called when one of these weapons is picked up
 //when you pick up a secondary, you always get the weapon & ammo for it
 //	Returns true if powerup picked up, else returns false.
@@ -109,25 +134,7 @@ if ((nWeaponIndex == PROXMINE_INDEX) && IsMultiGame && !COMPETITION && EGI_FLAG 
 	}
 else {
 	bSmokeGrens = 0;
-	nMaxAmount = nMaxSecondaryAmmo [nWeaponIndex];
-	if (gameData.multiplayer.weaponStates [nPlayer].nShip == 1) {
-		if (nWeaponIndex == EARTHSHAKER_INDEX)
-			nMaxAmount /= 2;
-		else
-			nMaxAmount = 4 * nMaxAmount / 5;
-		}
-	else if (gameData.multiplayer.weaponStates [nPlayer].nShip == 2) 
-		nMaxAmount *= 2;
-	else {
-		if (playerP->flags & PLAYER_FLAGS_AMMO_RACK) {
-			if (gameStates.app.bNostalgia)
-				nMaxAmount *= 2;
-			else
-				nMaxAmount = 3 * nMaxAmount / 2;
-			}
-		}
-	if (IsMultiGame && !IsCoopGame && gameStates.app.bHaveExtraGameInfo [1] && (nMaxAmount > extraGameInfo [1].loadout.nMissiles [nWeaponIndex]))
-		nMaxAmount = extraGameInfo [1].loadout.nMissiles [nWeaponIndex];
+	nMaxAmount = MaxSecondaryAmmo (nWeaponIndex);
 	}
 if (playerP->secondaryAmmo [nWeaponIndex] >= nMaxAmount) {
 	if (ISLOCALPLAYER (nPlayer))
@@ -146,7 +153,7 @@ if (playerP->secondaryAmmo [nWeaponIndex] > nMaxAmount) {
 	if ((nPickedUp < nAmount) && (nWeaponIndex != PROXMINE_INDEX) && (nWeaponIndex != SMARTMINE_INDEX)) {
 		short nObject = objP->Index ();
 		gameData.multiplayer.leftoverPowerups [nObject].nCount = nAmount - nPickedUp;
-		gameData.multiplayer.leftoverPowerups [nObject].nType = secondaryWeaponToPowerup [nWeaponIndex];
+		gameData.multiplayer.leftoverPowerups [nObject].nType = secondaryWeaponToPowerup [0][nWeaponIndex];
 		gameData.multiplayer.leftoverPowerups [nObject].spitterP = OBJECTS + playerP->nObject;
 		}
 	}
