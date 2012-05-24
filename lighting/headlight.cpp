@@ -874,8 +874,9 @@ return headlightShaderProgs [bLightmaps][nType];
 
 int PlayerHasHeadlight (int nPlayer)
 {
-return EGI_FLAG (headlight.bAvailable, 0, 0, 0) && (extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_HEADLIGHT)) ||
-		  ((gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT) != 0));
+return EGI_FLAG (headlight.bAvailable, 0, 0, 0) && 
+		 ((extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_HEADLIGHT) ||
+		 ((gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT) != 0));
 }
 
 //-----------------------------------------------------------------------------
