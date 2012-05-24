@@ -115,6 +115,7 @@ else {
 	}
 if (IsMultiGame && !IsCoopGame && gameStates.app.bHaveExtraGameInfo [1] && (nMaxAmount > extraGameInfo [1].loadout.nMissiles [nWeapon]))
 	nMaxAmount = extraGameInfo [1].loadout.nMissiles [nWeapon];
+return nMaxAmount;
 }
 
 //	---------------------------------------------------------------------
