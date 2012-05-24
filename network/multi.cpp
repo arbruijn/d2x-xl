@@ -2393,7 +2393,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 for (i = 0; i < int (sizeofa (nDeviceFlags)); i++)
 	if (gameData.multiplayer.Flag (nPlayer, nDeviceFlags [i]) && !(extraGameInfo [IsMultiGame].loadout.nDevice & nDeviceFlags [i]))
 		AddAllowedPowerup (nDevicePowerups [i]);
-if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
+if (PlayerHasHeadlight (nPlayer) && !(extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_HEADLIGHT))
 	AddAllowedPowerup (POW_HEADLIGHT);
 }
 

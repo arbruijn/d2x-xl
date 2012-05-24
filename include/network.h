@@ -179,7 +179,6 @@ typedef struct tMonsterballInfo {
 typedef struct tHeadlightInfo {
 	char	bAvailable;
 	char	bDrainPower;
-	char	bBuiltIn;
 }  tHeadlightInfo;
 
 typedef struct tLoadoutInfo {

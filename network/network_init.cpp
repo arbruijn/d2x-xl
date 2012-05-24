@@ -342,7 +342,6 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].nSpotStrength = 2 - i;
 	extraGameInfo [i].nLightRange = 0;
 	extraGameInfo [i].headlight.bAvailable = 1;
-	extraGameInfo [i].headlight.bBuiltIn = 0;
 	extraGameInfo [i].headlight.bDrainPower = 1;
 	InitEntropySettings (i);
 	InitMonsterballSettings (&extraGameInfo [i].monsterball);
@@ -507,7 +506,6 @@ else {
 	PrintLog (0, "bBrightenRooms: %d\n", extraGameInfo [1].entropy.bBrightenRooms);
 	PrintLog (0, "bPlayerHandicap: %d\n", extraGameInfo [1].entropy.bPlayerHandicap);
 	PrintLog (0, "headlight.bAvailable: %d\n", extraGameInfo [1].headlight.bAvailable);
-	PrintLog (0, "headlight.bBuiltIn: %d\n", extraGameInfo [1].headlight.bBuiltIn);
 	PrintLog (0, "headlight.bDrainPower: %d\n", extraGameInfo [1].headlight.bDrainPower);
 	PrintLog (-1);
 	}

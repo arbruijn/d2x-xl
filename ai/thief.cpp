@@ -236,7 +236,7 @@ switch (ailP->mode) {
 
 //	----------------------------------------------------------------------------
 //	Return true if this item (whose presence is indicated by gameData.multiplayer.players [nPlayer].flags) gets stolen.
-int MaybeSteaDevice (int nPlayer, int deviceFlag)
+int MaybeStealDevice (int nPlayer, int deviceFlag)
 {
 if (extraGameInfo [IsMultiGame].loadout.nDevice & deviceFlag)
 	return 0;
@@ -277,8 +277,7 @@ if (gameData.multiplayer.players [nPlayer].flags & deviceFlag) {
 			case PLAYER_FLAGS_HEADLIGHT:
 				nPowerup = POW_HEADLIGHT;
 				ThiefMessage ("Headlight stolen!");
-				if (!EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
-			   	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+		   	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 				break;
 			}
 		gameData.thief.stolenItems [gameData.thief.nStolenItem] = nPowerup;
@@ -362,11 +361,11 @@ int AttemptToStealItem3(CObject *objP, int nPlayer)
 if (gameData.ai.localInfo [objP->Index ()].mode != AIM_THIEF_ATTACK)
 	return 0;
 //	First, try to steal equipped items.
-if (MaybeSteaDevice (nPlayer, PLAYER_FLAGS_INVULNERABLE))
+if (MaybeStealDevice (nPlayer, PLAYER_FLAGS_INVULNERABLE))
 	return 1;
 //	If primary weapon = laser, first try to rip away those nasty quad lasers!
 if (gameData.weapons.nPrimary == 0)
-	if (MaybeSteaDevice (nPlayer, PLAYER_FLAGS_QUAD_LASERS))
+	if (MaybeStealDevice (nPlayer, PLAYER_FLAGS_QUAD_LASERS))
 		return 1;
 //	Makes it more likely to steal primary than secondary.
 for (i = 0; i < 2; i++)
@@ -378,21 +377,17 @@ if (MaybeStealSecondaryWeapon (nPlayer, gameData.weapons.nSecondary))
 //	Try best things first.
 
 for (i = 0; nDevices [i] > 0; i++) {
-	if (nDevices [i] == PLAYER_FLAGS_HEADLIGHT) {
-		if (EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
-			continue;
-		}
-	else if (nDevices [i] == PLAYER_FLAGS_AMMO_RACK) {
+	if (nDevices [i] == PLAYER_FLAGS_AMMO_RACK) {
 		if (!gameStates.app.bD2XLevel || (gameOpts->gameplay.nShip [0] == 2)) // Wolf, has the ammo rack built in
 			continue;
 		}
-	if (MaybeSteaDevice (nPlayer, nDevices [i])) {
+	if (MaybeStealDevice (nPlayer, nDevices [i])) {
 		if (nDevices [i] == PLAYER_FLAGS_AMMO_RACK) 
 			DropExcessAmmo ();
 		return 1;
 		}
 	}
-// --	if (MaybeSteaDevice (nPlayer, PLAYER_FLAGS_AMMO_RACK))	//	Can't steal because what if have too many items, say 15 homing missiles?
+// --	if (MaybeStealDevice (nPlayer, PLAYER_FLAGS_AMMO_RACK))	//	Can't steal because what if have too many items, say 15 homing missiles?
 // --		return 1;
 
 for (i = MAX_SECONDARY_WEAPONS - 1; i >= 0; i--) {

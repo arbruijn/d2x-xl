@@ -334,7 +334,6 @@ do {
 
 	m.AddText ("", "");
 	m.AddCheck ("smart weapon switch", TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_M, HTX_GPLAY_SMARTSWITCH);
-	m.AddCheck ("built-in headlight", TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_H, HTX_HEADLIGHT_BUILTIN);
 	m.AddCheck ("headlight drains power", TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_O, HTX_HEADLIGHT_POWERDRAIN);
 	m.AddCheck ("suppress thief", TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
 	m.AddCheck ("use inventory", TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_U, HTX_GPLAY_INVENTORY);
@@ -376,7 +375,6 @@ extraGameInfo [0].bSmartWeaponSwitch = m.Value ("smart weapon switch");
 GET_VAL (gameOpts->gameplay.bInventory, "use inventory");
 GET_VAL (gameOpts->gameplay.bNoThief, "suppress thief");
 GET_VAL (extraGameInfo [0].headlight.bDrainPower, "headlight drains power");
-GET_VAL (extraGameInfo [0].headlight.bBuiltIn, "built-in headlight");
 GET_VAL (extraGameInfo [0].bGatlingSpeedUp, "spinup gatling");
 if (!gameStates.app.bGameRunning) {
 	GET_VAL (extraGameInfo [0].bAllowCustomWeapons, "allow custom weapons");

@@ -430,7 +430,6 @@ for (i = 0; i < 2; i++) {
 
 		RP (extraGameInfo [i].headlight.bAvailable, i, 0);
 		RP (extraGameInfo [i].headlight.bDrainPower, 0, 0);
-		RP (extraGameInfo [i].headlight.bBuiltIn, 0, 0);
 
 		RP (extraGameInfo [i].monsterball.nBonus, 0, 0);
 		RP (extraGameInfo [i].monsterball.nSizeMod, 0, 0);
@@ -893,7 +892,6 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].entropy.bPlayerHandicap", "0"},
 	 {"extraGameInfo[0].headlight.bAvailable", "1"},
 	 {"extraGameInfo[0].headlight.bDrainPower", "1"},
-	 {"extraGameInfo[0].headlight.bBuiltIn", "0"},
 	 {"extraGameInfo[0].monsterball.nBonus", "1"},
 	 {"extraGameInfo[0].monsterball.nSizeMod", "7"},
 	 {"extraGameInfo[0].monsterball.forces[0].nWeaponId", "0"},
@@ -947,7 +945,6 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].monsterball.forces[24].nWeaponId", "-1"},
 	 {"extraGameInfo[0].monsterball.forces[24].nForce", "4"},
 	 {"extraGameInfo[0].headlight.bDrainPower", "1"},
-	 {"extraGameInfo[0].headlight.bBuiltIn", "0"},
 	 {"extraGameInfo[0].loadout.nGuns", "0"},
 	 {"extraGameInfo[0].loadout.nDevice", "0"},
 	 {"extraGameInfo[0].loadout.nMissiles[0]", "-1"},
