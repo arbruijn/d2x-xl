@@ -383,7 +383,7 @@ for (i = 0; nDevices [i] > 0; i++) {
 			continue;
 		}
 	else if (nDevices [i] == PLAYER_FLAGS_AMMO_RACK) {
-		if (gameOpts->gameplay.nShip [0] == 2) // Wolf, has the ammo rack built in
+		if (!gameStates.app.bD2XLevel || (gameOpts->gameplay.nShip [0] == 2)) // Wolf, has the ammo rack built in
 			continue;
 		}
 	if (MaybeSteaDevice (nPlayer, nDevices [i])) {

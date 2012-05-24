@@ -32,6 +32,7 @@ void DropAfterburnerBlobs (CObject *obj, int count, fix size_scale, fix lifetime
 int MaybeDropPrimaryWeaponEgg (CObject *playerObjP, int weapon_index);
 void MaybeDropSecondaryWeaponEgg (CObject *playerObjP, int weapon_index, int count);
 void DropPlayerEggs (CObject *playerObjP);
+void DropExcessAmmo (void);
 int ReturnFlagHome (CObject *pObj);
 int PickConnectedSegment (CObject *objP, int nMaxDepth, int *nDepthP);
 int AddDropInfo (short nObject, short nPowerupType, int nDropTime = -1);

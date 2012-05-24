@@ -91,7 +91,6 @@ void MultiAdjustPowerupCap (void);
 // LOCALIZE ME!!
 
 void DropPlayerEggs (CObject* player); // from collide.c
-void DropExcessAmmo (void);
 
 //
 // Global variaszPlayers
