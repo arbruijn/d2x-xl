@@ -634,10 +634,32 @@ return 0;
 }
 
 // -----------------------------------------------------------------------------
+// Because the dumb amateurs from Parallax have been incapable of creating a consistent
+// and simple robot center to segment relationship, the following function assigns
+// object producers to segments in the sequence the producers are stored on disk regardless 
+// of what (in Parallax levels usually inconsistent and partially wrong) segment numbers
+// have been stored in them.
 
-static int AssignProducer (tObjectProducerInfo& producerInfo, int nFunction, sbyte bFlag)
+static int AssignProducer (tObjectProducerInfo& producerInfo, int nObjProducer, int nFunction, sbyte bFlag)
 {
 #if 1
+
+	CSegment* segP = &SEGMENTS [0];
+
+for (int i = 0, j = gameData.segs.nSegments; i < j; i++, segP++) {
+	if ((segP->Function () == nFunction) && segP->m_nObjProducer == nObjProducer)) {
+		tObjectProducerInfo& objProducer = (nFunction == SEGMENT_FUNC_ROBOTMAKER) 
+													  ? gameData.producers.robotMakers [nObjProducer] 
+													  : gameData.producers.equipmentMakers [nObjProducer];
+		objProducer.nSegment = i;
+		objProducer.nProducer = segP->m_value;
+		memcpy (objProducer.objFlags, producerInfo.objFlags, sizeof (objProducer.objFlags));
+		return segP->m_nObjProducer = producerInfo.nProducer;
+		}
+	}
+return -1;
+
+#elif 0
 
 CSegment* segP = &SEGMENTS [producerInfo.nSegment];
 if (segP->m_function != nFunction)
@@ -701,10 +723,9 @@ if (gameFileInfo.botGen.offset > -1) {
 	m.objFlags [2] = gameData.objs.nVertigoBotFlags;
 	for (int h, i = 0; i < gameFileInfo.botGen.count; ) {
 		ReadObjectProducerInfo (&m, cf, gameTopFileInfo.fileinfoVersion < 27);
-		if (0 <= (h = AssignProducer (m, SEGMENT_FUNC_ROBOTMAKER, 1))) {
-			//gameData.producers.robotMakers [h] = m;
+		int h = AssignProducer (m, i, SEGMENT_FUNC_ROBOTMAKER, 1);
+		if (0 <= h)
 			++i;
-			}
 		else {
 #if DBG
 			PrintLog (0, "Invalid robot generator data found\n");
@@ -731,10 +752,9 @@ if (gameFileInfo.equipGen.offset > -1) {
 	m.objFlags [2] = 0;
 	for (int h, i = 0; i < gameFileInfo.equipGen.count;) {
 		ReadObjectProducerInfo (&m, cf, false);
-		if (0 <= (h = AssignProducer (m, SEGMENT_FUNC_EQUIPMAKER, 2))) {
-			gameData.producers.equipmentMakers [h] = m;
+		int h = AssignProducer (m, i, SEGMENT_FUNC_EQUIPMAKER, 2);
+		if (0 <= h)
 			++i;
-			}
 		else {
 #if DBG
 			PrintLog (0, "Invalid equipment generator data found\n");
