@@ -647,14 +647,16 @@ static int AssignProducer (tObjectProducerInfo& producerInfo, int nObjProducer, 
 	CSegment* segP = &SEGMENTS [0];
 
 for (int i = 0, j = gameData.segs.nSegments; i < j; i++, segP++) {
-	if ((segP->Function () == nFunction) && segP->m_nObjProducer == nObjProducer)) {
+	if ((segP->Function () == nFunction) && (segP->m_nObjProducer == nObjProducer)) {
 		tObjectProducerInfo& objProducer = (nFunction == SEGMENT_FUNC_ROBOTMAKER) 
 													  ? gameData.producers.robotMakers [nObjProducer] 
 													  : gameData.producers.equipmentMakers [nObjProducer];
 		objProducer.nSegment = i;
 		objProducer.nProducer = segP->m_value;
 		memcpy (objProducer.objFlags, producerInfo.objFlags, sizeof (objProducer.objFlags));
-		return segP->m_nObjProducer = producerInfo.nProducer;
+		tProducerInfo& producer = gameData.producers.producers [segP->m_value];
+		producer.bFlag &= (segP->Function () == SEGMENT_FUNC_ROBOTMAKER) ? ~1 : (segP->Function () == SEGMENT_FUNC_EQUIPMAKER) ? ~2 : ~0;
+		return segP->m_nObjProducer;
 		}
 	}
 return -1;
@@ -721,7 +723,7 @@ if (gameFileInfo.botGen.offset > -1) {
 		}
 	tObjectProducerInfo m;
 	m.objFlags [2] = gameData.objs.nVertigoBotFlags;
-	for (int h, i = 0; i < gameFileInfo.botGen.count; ) {
+	for (int i = 0; i < gameFileInfo.botGen.count; ) {
 		ReadObjectProducerInfo (&m, cf, gameTopFileInfo.fileinfoVersion < 27);
 		int h = AssignProducer (m, i, SEGMENT_FUNC_ROBOTMAKER, 1);
 		if (0 <= h)
@@ -750,7 +752,7 @@ if (gameFileInfo.equipGen.offset > -1) {
 		}
 	tObjectProducerInfo m;
 	m.objFlags [2] = 0;
-	for (int h, i = 0; i < gameFileInfo.equipGen.count;) {
+	for (int i = 0; i < gameFileInfo.equipGen.count;) {
 		ReadObjectProducerInfo (&m, cf, false);
 		int h = AssignProducer (m, i, SEGMENT_FUNC_EQUIPMAKER, 2);
 		if (0 <= h)
