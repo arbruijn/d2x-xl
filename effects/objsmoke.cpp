@@ -949,7 +949,7 @@ void DoParticleFrame (void)
 //	return;
 PlayerBulletFrame ();
 ObjectParticleFrame ();
-//StaticParticlesFrame ();
+StaticParticlesFrame ();
 shrapnelManager.DoFrame ();
 particleManager.Update ();
 }

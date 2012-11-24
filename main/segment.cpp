@@ -1309,7 +1309,7 @@ float CSegment::FaceSize (ubyte nSide)
 	short		v [4];
 
 for (int i = 0; i < 4; i++) {
-	ushort h = m_vertices [s2v [0]];
+	ushort h = m_vertices [s2v [i]];
 	if (h != 0xFFFF) 
 		v [nVertices++] = h;
 	}
