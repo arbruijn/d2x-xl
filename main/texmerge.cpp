@@ -463,7 +463,7 @@ const char *texMergeFS [6] = {
 	"void main(void){" \
 	"fMask = bMask ? texture2D(maskTex,gl_TexCoord [2].xy).r : 1.0;\r\n" \
 	"decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
-	"texColor=texture2D(baseTex,gl_TexCoord [1].xy);\r\n" \
+	"texColor=texture2D(baseTex,gl_TexCoord [0].xy);\r\n" \
 	"gl_FragColor = fMask * vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a)))*gl_Color;\r\n" \
 	"}"
 ,
