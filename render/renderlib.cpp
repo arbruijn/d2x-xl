@@ -151,6 +151,8 @@ if (nSegment < 0)
 CSegment* segP = SEGMENTS + nSegment;
 if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0))
 	return (segP->m_owner == 1) ? 2 : 1;
+if (!missionConfig.m_bColoredSegments)
+	return 0;
 if (segP->HasWaterProp ())
 	return 3;
 if (segP->HasLavaProp ())
@@ -172,7 +174,6 @@ char IsColoredSegFace (short nSegment, short nSide)
 if (!gameStates.render.nLightingMethod)
 	return 0;
 #endif
-
 	CSegment*	segP = SEGMENTS + nSegment;
 	CSegment*	connSegP = (segP->m_children [nSide] < 0) ? NULL : SEGMENTS + segP->m_children [nSide];
 
@@ -180,6 +181,9 @@ if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP
 	if (!connSegP || (connSegP->m_owner != segP->m_owner))
 		return (segP->m_owner == 1) ? 2 : 1;
 	}
+
+if (!missionConfig.m_bColoredSegments)
+	return 0;
 
 if (!connSegP) {
 	if (segP->HasWaterProp ())
@@ -233,9 +237,9 @@ else {
 			return NULL;
 		nColor = (segP->m_owner == 1);
 		}
-	if (segP->HasWaterProp ())
+	if (missionConfig.m_bColoredSegments && segP->HasWaterProp ())
 		nColor = 2;
-	else if (segP->HasLavaProp ())
+	else if (missionConfig.m_bColoredSegments && segP->HasLavaProp ())
 		nColor = 3;
 	else
 		return NULL;

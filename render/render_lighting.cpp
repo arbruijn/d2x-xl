@@ -186,7 +186,8 @@ fAlpha = bWall
 faceP->m_info.bTextured = bTextured;
 faceP->m_info.bCloaked = bCloaked;
 faceP->m_info.bTransparent |= bTransparent;
-if (missionConfig.m_bColoredSegments && faceP->m_info.bSegColor) {
+faceP->m_info.nSegColor = 0;
+if (faceP->m_info.bSegColor) {
 	if ((faceP->m_info.nSegColor = IsColoredSegFace (nSegment, nSide))) {
 		faceP->m_info.color = *ColoredSegmentColor (nSegment, nSide, faceP->m_info.nSegColor);
 		faceColors [2].Assign (faceP->m_info.color);
