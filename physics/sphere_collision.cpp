@@ -1031,9 +1031,10 @@ if (bestHit.nType == HIT_NONE) {     //didn't hit anything, return end refP
 else {
 	hitData = bestHit;
 	if (hitData.nSegment == -1)
-		hitData.nSegment = (gameData.collisions.hitResult.nAltSegment != -1) 
+		hitData.nSegment = 
+			(gameData.collisions.hitResult.nAltSegment != -1) 
 			? gameData.collisions.hitResult.nAltSegment
-			: hitData.nSegment = nHitNoneSegment;
+			: nHitNoneSegment;
 	}
 return bestHit.nType;
 }
