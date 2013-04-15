@@ -310,7 +310,7 @@ info.contains.nId = cf.ReadByte ();
 info.contains.nCount = cf.ReadByte ();
 info.nCreator = cf.ReadByte ();
 SetLife (cf.ReadFix ());
-if ((info.nType == OBJ_ROBOT && (saveGameManager.Version () > 56)) {
+if (info.nType == OBJ_ROBOT && (saveGameManager.Version () > 56)) {
 	m_bDisarmed = cf.ReadUByte () != 0;
 	m_bAttackRobots = cf.ReadUByte () != 0;
 	}

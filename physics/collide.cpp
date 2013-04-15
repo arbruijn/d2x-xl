@@ -1568,7 +1568,7 @@ if (robotP->IsGeometry ())
 	CObject		*parentP = ((cType.laserInfo.parent.nType != OBJ_ROBOT) || (cType.laserInfo.parent.nObject < 0)) ? NULL : OBJECTS + cType.laserInfo.parent.nObject;
 	tRobotInfo	*botInfoP = &ROBOTINFO (robotP->info.nId);
 	CWeaponInfo *wInfoP = gameData.weapons.info + info.nId;
-	bool			bAttackRobots = parentP ? parentP->AttacksRobots () || (EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && gameStates.app.cheats.bRobotsKillRobots);
+	bool			bAttackRobots = parentP ? parentP->AttacksRobots () || (EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && gameStates.app.cheats.bRobotsKillRobots) : NULL;
 
 #if DBG
 if (OBJ_IDX (this) == nDbgObj)
@@ -1634,7 +1634,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 		else		//Normal splash damage explosion
 			ExplodeSplashDamageWeapon (vHitPt);
 		}
-	if ((cType.laserInfo.parent.nType == OBJ_PLAYER) || bAttackRobots) && !(robotP->info.nFlags & OF_EXPLODING)) {
+	if (((cType.laserInfo.parent.nType == OBJ_PLAYER) || bAttackRobots) && !(robotP->info.nFlags & OF_EXPLODING)) {
 		CObject* explObjP = NULL;
 		if (cType.laserInfo.parent.nObject == LOCALPLAYER.nObject) {
 			CreateAwarenessEvent (this, WEAPON_ROBOT_COLLISION);			// object "this" can attract attention to tPlayer

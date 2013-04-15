@@ -197,9 +197,9 @@ class CTrigger : public CTriggerTargets {
 		void DoIllusionOff (void);
 		void DoSpeedBoost (short nObject);
 		void StopSpeedBoost (short nObject);
-		void DoDisarmRobot (void);
-		void DoReprogramRobot (void);
-		void DoShakeMine (void);
+		int DoDisarmRobots (void);
+		int DoReprogramRobots (void);
+		int DoShakeMine (void);
 		bool TargetsWall (int nWall);
 		inline int Index (void);
 		inline int HasTarget (short nSegment, short nSide);

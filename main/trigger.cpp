@@ -462,8 +462,6 @@ return 1;
 
 int CTrigger::DoDisarmRobots (void)
 {
-	CTrigger*	trigP;
-
 for (int i = 0; i < m_nLinks; i++) {
 	if (m_sides [i] < 0) {
 		CObject*	objP = OBJECTS + m_segments [i];
@@ -479,8 +477,6 @@ return 1;
 
 int CTrigger::DoReprogramRobots (void)
 {
-	CTrigger*	trigP;
-
 for (int i = 0; i < m_nLinks; i++) {
 	if (m_sides [i] < 0) {
 		CObject*	objP = OBJECTS + m_segments [i];
