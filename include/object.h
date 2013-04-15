@@ -822,7 +822,7 @@ class CObject : public CObjectInfo {
 		bool AttacksRobots (void);
 		inline void Disarm (void) { m_bDisarmed = !m_bDisarmed; }
 		inline bool Disarmed (void) { return m_bDisarmed; }
-		inline void Reprogram (void) { m_bAttackRobots = !m_bAttackRobots; }
+		inline void Reprogram (void) { m_bDisarmed = m_bAttackRobots = !m_bAttackRobots; }
 		inline bool Reprogrammed (void) { return m_bAttackRobots; }
 
 	private:
