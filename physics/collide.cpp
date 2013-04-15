@@ -1329,7 +1329,7 @@ if (Indestructible ()) // indestructible static object
 	return 0; 
 if (gameData.time.xGame - CreationTime () < I2X (1))
 	return 0;
-if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
+if (!(AttacksRobots () || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
 	// guidebot may kill other bots
 	if (killerObjP && (killerObjP->info.nType == OBJ_ROBOT) && !ROBOTINFO (killerObjP->info.nId).companion)
 		return 0;
@@ -1565,8 +1565,10 @@ if (robotP->IsGeometry ())
 	int			bDamage = 1;
 	int			bInvulBoss = 0;
 	fix			nStrength = WI_strength (info.nId, gameStates.app.nDifficultyLevel);
+	CObject		*parentP = ((cType.laserInfo.parent.nType != OBJ_ROBOT) || (cType.laserInfo.parent.nObject < 0)) ? NULL : OBJECTS + cType.laserInfo.parent.nObject;
 	tRobotInfo	*botInfoP = &ROBOTINFO (robotP->info.nId);
 	CWeaponInfo *wInfoP = gameData.weapons.info + info.nId;
+	bool			bAttackRobots = parentP ? parentP->AttacksRobots () || (EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && gameStates.app.cheats.bRobotsKillRobots);
 
 #if DBG
 if (OBJ_IDX (this) == nDbgObj)
@@ -1592,7 +1594,7 @@ if (botInfoP->bossFlag) {
 
 //	Put in at request of Jasen (and Adam) because the Buddy-Bot gets in their way.
 //	MK has so much fun whacking his butt around the mine he never cared...
-if ((cType.laserInfo.parent.nType == OBJ_ROBOT) && !gameStates.app.cheats.bRobotsKillRobots)
+if ((cType.laserInfo.parent.nType == OBJ_ROBOT) && !bAttackRobots)
 	return 1;
 if (botInfoP->companion && (cType.laserInfo.parent.nType != OBJ_ROBOT))
 	return 1;
@@ -1632,10 +1634,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 		else		//Normal splash damage explosion
 			ExplodeSplashDamageWeapon (vHitPt);
 		}
-	if (((cType.laserInfo.parent.nType == OBJ_PLAYER) ||
-		 ((cType.laserInfo.parent.nType == OBJ_ROBOT) &&
-		  (gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0)))) &&
-		 !(robotP->info.nFlags & OF_EXPLODING)) {
+	if ((cType.laserInfo.parent.nType == OBJ_PLAYER) || bAttackRobots) && !(robotP->info.nFlags & OF_EXPLODING)) {
 		CObject* explObjP = NULL;
 		if (cType.laserInfo.parent.nObject == LOCALPLAYER.nObject) {
 			CreateAwarenessEvent (this, WEAPON_ROBOT_COLLISION);			// object "this" can attract attention to tPlayer

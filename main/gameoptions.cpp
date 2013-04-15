@@ -653,7 +653,7 @@ gameplay.Init (i);
 
 bool CGameOptions::Use3DPowerups (void)
 {
-return !gameStates.app.bNostalgia && (gameStates.app.bStandalone || gameOpts->render.powerups.b3D);
+return !gameStates.app.bNostalgia && missionConfig.m_b3DPowerups && (gameStates.app.bStandalone || gameOpts->render.powerups.b3D);
 }
 
 int CGameOptions::UseHiresSound (void)
@@ -674,6 +674,7 @@ for (int i = 0; i < MAX_SHIP_TYPES; i++)
 m_playerShip = -1;
 m_bTeleport = 1;
 m_bColoredSegments = 1;
+m_b3DPowerups = 1;
 m_bSecretSave = 1;
 }
 
@@ -706,7 +707,8 @@ if (args.Parse (&cf)) {
 	m_playerShip = args.Value ("-player_ship", bLocal ? m_playerShip : -1);
 	m_bTeleport = args.Value ("-teleport", bLocal ? m_bTeleport : 1);
 	m_bSecretSave = args.Value ("-secret_save", bLocal ? m_bSecretSave : 1);
-	m_bColoredSegments = args.Value ("-colored_segments", bLocal ? m_bColoredSegments : 1);
+	m_bColoredSegments = args.Value ("-3d_powerups", bLocal ? m_b3DPowerups : 1);
+	m_b3DPowerups = args.Value ("-colored_segments", bLocal ? m_bColoredSegments : 1);
 	m_nCollisionModel = args.Value ("-collision_model", bLocal ? m_nCollisionModel : 1);
 	}
 cf.Close ();

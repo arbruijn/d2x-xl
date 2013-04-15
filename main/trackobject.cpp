@@ -353,7 +353,7 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 			}
 		} 
 	else {
-		if (gameStates.app.cheats.bRobotsKillRobots || (Parent () && (Parent ()->Target ()->Type () == OBJ_ROBOT)))
+		if (AttacksRobots () || (Parent () && (Parent ()->Target ()->Type () == OBJ_ROBOT)))
 			targetType2 = OBJ_ROBOT;
 		if (nTarget == -1)
 			rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, targetType2, nThread);

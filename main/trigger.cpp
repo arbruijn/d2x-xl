@@ -77,7 +77,10 @@ int oppTrigTypes  [] = {
 	TT_SOUND,
 	TT_MASTER,
 	TT_DISABLE_TRIGGER,
-	TT_ENABLE_TRIGGER
+	TT_ENABLE_TRIGGER,
+	TT_DISARM_ROBOT,
+	TT_REPROGRAM_ROBOT,
+	TT_SHAKE_MINE
 	};
 
 //link Links [MAX_WALL_LINKS];
@@ -457,9 +460,52 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+int CTrigger::DoDisarmRobots (void)
+{
+	CTrigger*	trigP;
+
+for (int i = 0; i < m_nLinks; i++) {
+	if (m_sides [i] < 0) {
+		CObject*	objP = OBJECTS + m_segments [i];
+		if (!objP || (objP->info.nType != OBJ_ROBOT))
+			return 0;
+		objP->Disarm ();
+		}
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CTrigger::DoReprogramRobots (void)
+{
+	CTrigger*	trigP;
+
+for (int i = 0; i < m_nLinks; i++) {
+	if (m_sides [i] < 0) {
+		CObject*	objP = OBJECTS + m_segments [i];
+		if (!objP || (objP->info.nType != OBJ_ROBOT))
+			return 0;
+		objP->Reprogram ();
+		}
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int CTrigger::DoShowMessage (void)
 {
 ShowGameMessage (gameData.messages, X2I (m_info.value), m_info.time [0]);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CTrigger::DoShakeMine (void)
+{
+gameStates.gameplay.seismic.nStartTime = gameData.time.xGame;
+gameStates.gameplay.seismic.nEndTime = gameData.time.xGame + I2X (m_info.time [0]);
 return 1;
 }
 
@@ -1332,6 +1378,18 @@ switch (m_info.nType) {
 #if DBG
 		PrintMessage (nPlayer, 2, "Triggers have been disabled!");
 #endif
+		break;
+
+	case TT_DISARM_ROBOT:
+		DoDisarmRobots ();
+		break;
+
+	case TT_REPROGRAM_ROBOT:
+		DoReprogramRobots ();
+		break;
+
+	case TT_SHAKE_MINE:
+		DoShakeMine ();
 		break;
 
 	case TT_DESCENT1:

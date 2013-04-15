@@ -1067,14 +1067,14 @@ if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileC
 	gameData.ai.target.vBelievedPos = OBJPOS (OBJECTS + gameData.ai.nLastMissileCamera)->vPos;
 	return 0;
 	}
-if (gameStates.app.cheats.bRobotsKillRobots || (!siP->botInfoP->thief && (RandShort () > 2 * objP->AimDamage ()))) {
+if (objP->AttacksRobots () || (!siP->botInfoP->thief && (RandShort () > 2 * objP->AimDamage ()))) {
 	siP->vVisPos = objP->info.position.vPos;
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
 	if (gameData.ai.nTargetVisibility) {
 		int			j, nMinObj = -1;
 		fix			curDist, minDist = MAX_WAKEUP_DIST;
 		CObject*		robotP;
-		CFixVector	vPos = gameStates.app.cheats.bRobotsKillRobots
+		CFixVector	vPos = objP->AttacksRobots ()
 								 ? objP->info.position.vPos	// find robot closest to this robot
 								 : OBJPOS (OBJECTS + N_LOCALPLAYER)->vPos;	// find robot closest to player
 

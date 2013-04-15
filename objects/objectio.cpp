@@ -310,8 +310,14 @@ info.contains.nId = cf.ReadByte ();
 info.contains.nCount = cf.ReadByte ();
 info.nCreator = cf.ReadByte ();
 SetLife (cf.ReadFix ());
+if ((info.nType == OBJ_ROBOT && (saveGameManager.Version () > 56)) {
+	m_bDisarmed = cf.ReadUByte () != 0;
+	m_bAttackRobots = cf.ReadUByte () != 0;
+	}
+
 if (info.nType == OBJ_PLAYER)
 	SetLife (IMMORTAL_TIME);
+
 if (info.movementType == MT_PHYSICS) {
 	cf.ReadVector (mType.physInfo.velocity);   
 	cf.ReadVector (mType.physInfo.thrust);     
@@ -326,6 +332,7 @@ if (info.movementType == MT_PHYSICS) {
 else if (info.movementType == MT_SPINNING) {
 	cf.ReadVector (mType.spinRate);  
 	}
+
 switch (info.controlType) {
 	case CT_WEAPON:
 		cType.laserInfo.parent.nType = cf.ReadShort ();
@@ -451,6 +458,9 @@ cf.WriteByte (info.contains.nId);
 cf.WriteByte (info.contains.nCount);
 cf.WriteByte (info.nCreator);
 cf.WriteFix (info.xLifeLeft);   
+cf.WriteByte (m_bDisarmed ? 1 : 0);
+cf.WriteByte (m_bAttackRobots ? 1 : 0);
+
 if (info.movementType == MT_PHYSICS) {
 	cf.WriteVector (mType.physInfo.velocity);   
 	cf.WriteVector (mType.physInfo.thrust);     

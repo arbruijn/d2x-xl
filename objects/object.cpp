@@ -1629,6 +1629,13 @@ return (IsWeapon () || IsMissile ()) && ((mType.physInfo.flags & PF_BOUNCE) != 0
 
 //------------------------------------------------------------------------------
 
+bool CObject::AttacksRobots (void)
+{
+return EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && ((gameStates.app.cheats.bRobotsKillRobots != 0) || Reprogrammed ());
+}
+
+//------------------------------------------------------------------------------
+
 bool CObject::IsSplashDamageWeapon (void) 
 { 
 return ((m_weaponInfo [Id ()] & OBJ_IS_SPLASHDMG_WEAPON) != 0);

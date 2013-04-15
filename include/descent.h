@@ -1298,6 +1298,7 @@ class CMissionConfig {
 		int	m_bTeleport;
 		int	m_bSecretSave;
 		int	m_bColoredSegments;
+		int	m_b3DPowerups;
 		int	m_nCollisionModel;
 
 	public:

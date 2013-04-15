@@ -92,7 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hogfile.h"
 
-#define STATE_VERSION				56
+#define STATE_VERSION				57
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
