@@ -1329,7 +1329,7 @@ if (Indestructible ()) // indestructible static object
 	return 0; 
 if (gameData.time.xGame - CreationTime () < I2X (1))
 	return 0;
-if (!(AttacksRobots () || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
+if (!AttacksRobots ()) {
 	// guidebot may kill other bots
 	if (killerObjP && (killerObjP->info.nType == OBJ_ROBOT) && !ROBOTINFO (killerObjP->info.nId).companion)
 		return 0;

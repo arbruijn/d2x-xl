@@ -132,7 +132,8 @@ gameData.ai.vHitPos = gameData.ai.hitResult.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitResult.nSegment;
 objP->rType.polyObjInfo.nModel = nModel;
 objP->SetSize (nSize);
-return (gameData.ai.nHitType == HIT_NONE);
+return (gameData.ai.nHitType == HIT_NONE) || 
+		 ((gameData.ai.nHitType == HIT_OBJECT) && objP->Target () && (objP->Target ()->Index () == gameData.ai.hitResult.nObject));
 }
 
 // --------------------------------------------------------------------------------------------------------------------

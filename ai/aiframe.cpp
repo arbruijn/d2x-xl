@@ -1083,7 +1083,7 @@ if (objP->AttacksRobots () || (!siP->botInfoP->thief && (RandShort () > 2 * objP
 			if (j == siP->nObject)
 				continue;
 			curDist = CFixVector::Dist (vPos, OBJECTS [j].info.position.vPos);
-			if ((curDist < MAX_WAKEUP_DIST / 2) && (curDist < minDist) &&
+			if ((curDist < MAX_WAKEUP_DIST /*/ 2*/) && (curDist < minDist) &&
 				 ObjectToObjectVisibility (objP, robotP, FQ_TRANSWALL)) {
 				nMinObj = j;
 				minDist = curDist;
@@ -1097,6 +1097,8 @@ if (objP->AttacksRobots () || (!siP->botInfoP->thief && (RandShort () > 2 * objP
 			return 0;
 			}
 		}
+	if (objP->AttacksRobots ())
+		return 1;
 	}
 siP->bVisAndVecComputed = 0;
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || (RandShort () > objP->AimDamage ()))

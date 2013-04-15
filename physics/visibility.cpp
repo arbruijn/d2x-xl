@@ -165,7 +165,7 @@ int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType)
 	int			fate, nTries = 0, bSpectate = SPECTATOR (objP1);
 
 do {
-	hitQuery.flags = transType;
+	hitQuery.flags = transType | FQ_CHECK_OBJS;
 	hitQuery.p0 = bSpectate ? &gameStates.app.playerPos.vPos : &objP1->info.position.vPos;
 	hitQuery.p1 = SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->info.position.vPos;
 	hitQuery.radP0 =

@@ -1000,8 +1000,8 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
 						}
 					}
 				}
-			j++;
 			}
+		j++;
 		}
 	trigP->m_nLinks = h;
 	}

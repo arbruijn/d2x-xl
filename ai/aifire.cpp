@@ -196,7 +196,7 @@ Assert (nObject >= 0);
 //	If this robot is only awake because a camera woke it up, don't fire.
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE)
 	return;
-if (!objP->AttacksPlayer ())
+if (TARGETOBJ->IsPlayer () && !objP->AttacksPlayer ())
 	return;
 if (objP->info.controlType == CT_MORPH)
 	return;
