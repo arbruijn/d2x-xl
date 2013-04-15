@@ -75,7 +75,7 @@ void DoAIRobotHitAttack (CObject *robotP, CObject *targetP, CFixVector *vCollisi
 	tAILocalInfo	*ailP = gameData.ai.localInfo + OBJ_IDX (robotP);
 	tRobotInfo		*botInfoP = &ROBOTINFO (robotP->info.nId);
 
-if (!gameStates.app.cheats.bRobotsFiring)
+if (!robotP->AttacksPlayer ())
 	return;
 if (robotP->IsStatic ())
 	return;
@@ -196,7 +196,7 @@ Assert (nObject >= 0);
 //	If this robot is only awake because a camera woke it up, don't fire.
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE)
 	return;
-if (!gameStates.app.cheats.bRobotsFiring)
+if (!objP->AttacksPlayer ())
 	return;
 if (objP->info.controlType == CT_MORPH)
 	return;

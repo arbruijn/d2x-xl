@@ -1637,6 +1637,13 @@ return EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && ((gameStates.app.cheats.bRobotsKi
 
 //------------------------------------------------------------------------------
 
+bool CObject::AttacksPlayer (void)
+{
+return (gameStates.app.cheats.bRobotsFiring != 0) && !(Disarmed () || Reprogrammed ());
+}
+
+//------------------------------------------------------------------------------
+
 bool CObject::IsSplashDamageWeapon (void) 
 { 
 return ((m_weaponInfo [Id ()] & OBJ_IS_SPLASHDMG_WEAPON) != 0);

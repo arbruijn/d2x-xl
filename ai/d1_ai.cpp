@@ -707,29 +707,29 @@ else {
 // ----------------------------------------------------------------------------------
 //	When some robots collide with the playerP, they attack.
 //	If playerP is cloaked, then robotP probably didn't actually collide, deal with that here.
-void DoD1AIRobotHitAttack(CObject *robotP, CObject *playerP, CFixVector *vCollision)
+void DoD1AIRobotHitAttack (CObject *robotP, CObject *playerP, CFixVector *vCollision)
 {
 	tAILocalInfo	*ailP = &gameData.ai.localInfo [OBJECTS.Index (robotP)];
 	tRobotInfo		*botInfoP = &gameData.bots.info [1][robotP->info.nId];
 
 //#if DBG
-	if (!gameStates.app.cheats.bRobotsFiring)
-		return;
+if (!gameStates.app.cheats.bRobotsFiring)
+	return;
 //#endif
 
-	//	If playerP is dead, stop firing.
-	if (OBJECTS [LOCALPLAYER.nObject].info.nType == OBJ_GHOST)
-		return;
+//	If playerP is dead, stop firing.
+if (OBJECTS [LOCALPLAYER.nObject].info.nType == OBJ_GHOST)
+	return;
 
-	if (botInfoP->attackType == 1) {
-		if (ailP->nextPrimaryFire <= 0) {
-			if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-				if (CFixVector::Dist (OBJPOS (gameData.objs.consoleP)->vPos, robotP->info.position.vPos) <
-					 robotP->info.xSize + gameData.objs.consoleP->info.xSize + I2X (2))
-					playerP->CollidePlayerAndNastyRobot (robotP, *vCollision);
+if (botInfoP->attackType == 1) {
+	if (ailP->nextPrimaryFire <= 0) {
+		if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
+			if (CFixVector::Dist (OBJPOS (gameData.objs.consoleP)->vPos, robotP->info.position.vPos) <
+				 robotP->info.xSize + gameData.objs.consoleP->info.xSize + I2X (2))
+				playerP->CollidePlayerAndNastyRobot (robotP, *vCollision);
 
-			robotP->cType.aiInfo.GOAL_STATE = D1_AIS_RECO;
-			SetNextPrimaryFireTime (ailP, botInfoP);
+		robotP->cType.aiInfo.GOAL_STATE = D1_AIS_RECO;
+		SetNextPrimaryFireTime (ailP, botInfoP);
 		}
 	}
 

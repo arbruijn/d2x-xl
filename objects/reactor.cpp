@@ -278,10 +278,10 @@ if (i < 0)
 	return;
 rStatP = gameData.reactor.states + i;
 #if DBG
-if (!gameStates.app.cheats.bRobotsFiring || (gameStates.app.bGameSuspended & SUSP_ROBOTS))
+if (!objP->AttackPlayer () || (gameStates.app.bGameSuspended & SUSP_ROBOTS))
 	return;
 #else
-if (!gameStates.app.cheats.bRobotsFiring)
+if (!objP->AttackPlayers ())
 	return;
 #endif
 

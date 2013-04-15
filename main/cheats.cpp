@@ -347,7 +347,7 @@ if (gameStates.gameplay.bAfterburnerCheat) {
 
 //------------------------------------------------------------------------------
 
-void AhimsaCheat (int bVerbose)
+void DisarmRobotsCheat (int bVerbose)
 {
 gameStates.app.cheats.bRobotsFiring = !gameStates.app.cheats.bRobotsFiring;
 if (gameStates.app.cheats.bRobotsFiring) {
@@ -916,7 +916,7 @@ return 1;
 char szAccessoryCheat [9]			= "dWdz[kCK";		// al-ifalafel
 char szAcidCheat [9]					= "qPmwxz\"S";		// bit-tersweet
 char szAfterburnerCheat [9]		= "emontree";		// L-emontree ("The World's Fastest Indian" anybody? ;)
-char szAhimsaCheat [9]				= "!Uscq_yc";		// New for 1.1 / im-agespace 
+char szDisarmRobotsCheat [9]				= "!Uscq_yc";		// New for 1.1 / im-agespace 
 char szAllKeysCheat [9]				= "%v%MrgbU";		//only Matt knows / or-algroove
 char szBlueOrbCheat [8]				= "blueorb";
 char szBouncyCheat [9]				= "bGbiChQJ";		//only Matt knows / duddaboo
@@ -953,7 +953,7 @@ tCheat cheats [] = {
  {szAccessoryCheat, AccessoryCheat, 1, 1, 0}, 
  {szAcidCheat, AcidCheat, 0, 1, 0}, 
  {szAfterburnerCheat, AfterburnerCheat, 1, 0, 0}, 
- {szAhimsaCheat, AhimsaCheat, -1, 1, 0}, 
+ {szDisarmRobotsCheat, DisarmRobotsCheat, -1, 1, 0}, 
  {szAllKeysCheat, AllKeysCheat, 1, 1, 0}, 
  {szBlueOrbCheat, BlueOrbCheat, 1, 0, 0}, 
  {szBouncyCheat, BouncyCheat, 1, 1, 0}, 
@@ -985,7 +985,7 @@ tCheat cheats [] = {
  {szSuperWowieCheat, SuperWowieCheat, 1, 0, 0}, 
  {szWowieCheat, WowieCheat, 1, 1, 0}, 
 	// Descent 1
- {"ahimsa", AhimsaCheat, 1, 0, 1}, 
+ {"ahimsa", DisarmRobotsCheat, 1, 0, 1}, 
  {"armerjoe", LevelWarpCheat, 1, 0, 1}, 
  {"astral", PhysicsCheat, 1, 0, 1}, 
  {"bigred", WowieCheat, 1, 0, 1}, 
@@ -994,7 +994,7 @@ tCheat cheats [] = {
  {"flash", ExitPathCheat, 1, 0, 1}, 
  {"gabbahey", EnableD1Cheats, 0, 0, -1}, 
  {"guile", CloakCheat, 0, 0, -1}, 
- {"lunacy", AhimsaCheat, 1, 0, 1}, 
+ {"lunacy", DisarmRobotsCheat, 1, 0, 1}, 
  {"mitzi", AllKeysCheat, 1, 0, 1}, 
  {"opsytoys", FinishLevelCheat, 1, 0, 1}, 
  {"pletch", NULL, 1, 0, 1}, 

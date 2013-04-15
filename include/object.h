@@ -820,6 +820,7 @@ class CObject : public CObjectInfo {
 		bool IsSplashDamageWeapon (void);
 		bool Bounces (void);
 		bool AttacksRobots (void);
+		bool AttacksPlayer (void);
 		inline void Disarm (void) { m_nAttackRobots = 0; }
 		inline bool Disarmed (void) { return (m_nAttackRobots >= 0); }
 		inline void Reprogram (void) { m_nAttackRobots = 1; }
