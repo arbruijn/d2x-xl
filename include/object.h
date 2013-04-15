@@ -820,10 +820,10 @@ class CObject : public CObjectInfo {
 		bool IsSplashDamageWeapon (void);
 		bool Bounces (void);
 		bool AttacksRobots (void);
-		inline void Disarm (void) { m_bDisarmed = !m_bDisarmed; }
-		inline bool Disarmed (void) { return m_bDisarmed; }
-		inline void Reprogram (void) { m_bDisarmed = m_bAttackRobots = !m_bAttackRobots; }
-		inline bool Reprogrammed (void) { return m_bAttackRobots; }
+		inline void Disarm (void) { m_nAttackRobots = 0; }
+		inline bool Disarmed (void) { return (m_nAttackRobots >= 0); }
+		inline void Reprogram (void) { m_nAttackRobots = 1; }
+		inline bool Reprogrammed (void) { return (m_nAttackRobots > 0); }
 
 	private:
 		short				m_nKey;
@@ -839,14 +839,13 @@ class CObject : public CObjectInfo {
 		fix				m_xTimeLastHit;
 		fix				m_xTimeLastEffect;
 		fix				m_xTimeEnergyDrain;
+		int				m_nAttackRobots;
 		tShotInfo		m_shots;
 		CFixVector		m_vStartVel;
 		CFixVector		m_vOrigin;
 		CFixVector		m_vRenderPos;
 		CObjHitInfo		m_hitInfo;
 		CObjDamageInfo	m_damage;
-		bool				m_bDisarmed;
-		bool				m_bAttackRobots;
 		bool				m_bMultiplayer;
 		bool				m_bRotate;
 		bool				m_bSynchronize;

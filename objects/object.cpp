@@ -604,6 +604,7 @@ CObject::CObject ()
 {
 SetPrev (NULL);
 SetNext (NULL);
+m_nAttackRobots = -1;
 }
 
 //------------------------------------------------------------------------------

@@ -310,10 +310,8 @@ info.contains.nId = cf.ReadByte ();
 info.contains.nCount = cf.ReadByte ();
 info.nCreator = cf.ReadByte ();
 SetLife (cf.ReadFix ());
-if (info.nType == OBJ_ROBOT && (saveGameManager.Version () > 56)) {
-	m_bDisarmed = cf.ReadUByte () != 0;
-	m_bAttackRobots = cf.ReadUByte () != 0;
-	}
+if (info.nType == OBJ_ROBOT && (saveGameManager.Version () > 56))
+	m_nAttacksRobots = cf.ReadInt ();
 
 if (info.nType == OBJ_PLAYER)
 	SetLife (IMMORTAL_TIME);
@@ -458,8 +456,7 @@ cf.WriteByte (info.contains.nId);
 cf.WriteByte (info.contains.nCount);
 cf.WriteByte (info.nCreator);
 cf.WriteFix (info.xLifeLeft);   
-cf.WriteByte (m_bDisarmed ? 1 : 0);
-cf.WriteByte (m_bAttackRobots ? 1 : 0);
+cf.WriteInt (m_nAttackRobots);
 
 if (info.movementType == MT_PHYSICS) {
 	cf.WriteVector (mType.physInfo.velocity);   
