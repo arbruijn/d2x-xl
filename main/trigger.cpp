@@ -104,10 +104,20 @@ if (m_nLinks > MAX_TRIGGER_TARGETS) {
 	PrintLog (0, "Invalid trigger target count (trigger #%d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer ());
 	}
 for (i = j = 0; i < m_nLinks; i++) {
-	if ((m_segments [i] < 0) || (m_segments [i] >= gameData.segs.nSegments) || (m_sides [i] < 0) || (m_sides [i] > 5)) {
-		PrintLog (0, "Invalid trigger target (trigger #%d, target %d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer (), i);
-		continue;
+	if (m_sides [i] > 0) {
+		if ((m_segments [i] < 0) || (m_segments [i] >= gameData.segs.nSegments) || (m_sides [i] < 0) || (m_sides [i] > 5)) {
+			PrintLog (0, "Invalid trigger target (trigger #%d, target %d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer (), i);
+			continue;
+			}
 		}
+#if 0 // object info not yet read
+	else {
+		if ((m_segments [i] < 0) || (m_segments [i] >= gameData.objs.nObjects)) {
+			PrintLog (0, "Invalid trigger target (trigger #%d, target %d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer (), i);
+			continue;
+			}
+		}
+#endif
 	if (j < i) {
 		m_segments [j] = m_segments [i];
 		m_sides [j] = m_sides [i];
