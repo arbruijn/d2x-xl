@@ -283,6 +283,7 @@ switch (info.renderType) {
 	}
 ResetDamage ();
 SetTarget (NULL);
+m_nAttackRobots = -1;
 }
 
 //------------------------------------------------------------------------------
