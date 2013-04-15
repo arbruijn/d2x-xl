@@ -809,10 +809,6 @@ class CObject : public CObjectInfo {
 		static inline bool HasLightTrail (short nId) { return (m_weaponInfo [nId] & OBJ_HAS_LIGHT_TRAIL) != 0; }
 		static inline bool IsMissile (short nId) { return (m_weaponInfo [nId] & OBJ_IS_MISSILE) != 0; }
 		static inline ubyte IsEquipment (short nId) { return m_bIsEquipment [nId]; }
-		static inline void Disarm (void) { m_bDisarmed = !m_bDisarmed; }
-		static inline bool Disarmed (void) { return m_bDisarmed; }
-		static inline void Reprogram (void) { m_bAttackRobots = !m_bAttackRobots; }
-		static inline bool Reprogrammed (void) { return m_bAttackRobots; }
 		static bool IsPlayerMine (short nId);
 		static bool IsRobotMine (short nId);
 		static bool IsMine (short nId);
@@ -824,6 +820,10 @@ class CObject : public CObjectInfo {
 		bool IsSplashDamageWeapon (void);
 		bool Bounces (void);
 		bool AttacksRobots (void);
+		inline void Disarm (void) { m_bDisarmed = !m_bDisarmed; }
+		inline bool Disarmed (void) { return m_bDisarmed; }
+		inline void Reprogram (void) { m_bAttackRobots = !m_bAttackRobots; }
+		inline bool Reprogrammed (void) { return m_bAttackRobots; }
 
 	private:
 		short				m_nKey;
