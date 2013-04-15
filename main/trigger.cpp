@@ -510,8 +510,8 @@ return 1;
 
 int CTrigger::DoShakeMine (void)
 {
-gameStates.gameplay.seismic.nStartTime = gameData.time.xGame;
-gameStates.gameplay.seismic.nEndTime = gameData.time.xGame + I2X (m_info.time [0]);
+gameStates.gameplay.seismic.nShakeFrequency = (m_info.value < 0) ? 0 : m_info.value;
+gameStates.gameplay.seismic.nShakeDuration = I2X ((m_info.time [0] < 0) ? 10 : m_info.time [0]);
 return 1;
 }
 

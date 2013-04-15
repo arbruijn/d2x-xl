@@ -42,6 +42,32 @@ memset (eshakerDetonateScales, 0, sizeof (eshakerDetonateScales));
 
 //	-----------------------------------------------------------------------------
 
+static void RockPlayerShip (int fc, float fScaleMod = 1.0f)
+{
+if (fc > 16)
+	fc = 16;
+else if (fc == 0)
+	fc = 1;
+gameStates.gameplay.seismic.nVolume += fc;
+float fScale = X2F (I2X (3) / 16 + (I2X (16 - fc)) / 32);
+if (fScaleMod > 0.0f)
+	fScale *= fScaleMod;
+//HUDMessage (0, "shaker rock scale %d: %1.2f", i, fScale);
+int rx = fix (SRandShort () * fScale + 0.5f);
+int rz = fix (SRandShort () * fScale + 0.5f);
+gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
+gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
+//	Shake the buddy!
+if (gameData.escort.nObjNum != -1) {
+	OBJECTS [gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.x += rx * 4;
+	OBJECTS [gameData.escort.nObjNum].mType.physInfo.rotVel.v.coord.z += rz * 4;
+	}
+//	Shake a guided missile!
+gameStates.gameplay.seismic.nMagnitude += rx;
+} 
+
+//	-----------------------------------------------------------------------------
+
 //	If a smega missile been detonated, rock the mine!
 //	This should be called every frame.
 //	Maybe this should affect all robots, being called when they get their physics done.
@@ -60,6 +86,9 @@ for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			eshakerDetonateScales [i] = 0.0f;
 			}
 		else {
+#if 1
+			RockPlayerShip ((ESHAKER_SHAKE_TIME - deltaTime) / (ESHAKER_SHAKE_TIME / 16), eshakerDetonateScales [i]);
+#else
 			//	Control center destroyed, rock the player's ship.
 			int	fc, rx, rz;
 			// -- fc = abs(deltaTime - ESHAKER_SHAKE_TIME/2);
@@ -85,6 +114,7 @@ for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 				}
 			//	Shake a guided missile!
 			gameStates.gameplay.seismic.nMagnitude += rx;
+#endif
 			} 
 		}
 	}
@@ -112,23 +142,25 @@ gameStates.gameplay.seismic.nEndTime = 0;
 //	Return true if time to start a seismic disturbance.
 int StartSeismicDisturbance (void)
 {
-	int	rval;
-
 if (gameStates.gameplay.seismic.nShakeDuration < 1)
 	return 0;
-rval = (2 * FixMul (RandShort (), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.time.xFrame;
-if (rval) {
+#if 0
+int rval = (2 * FixMul (RandShort (), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.time.xFrame;
+if (rval) 
+#endif
+	{
 	gameStates.gameplay.seismic.nStartTime = gameData.time.xGame;
 	gameStates.gameplay.seismic.nEndTime = gameData.time.xGame + gameStates.gameplay.seismic.nShakeDuration;
+	gameStates.gameplay.seismic.nShakeDuration = 0;
 	if (!gameStates.gameplay.seismic.bSound) {
 		audio.PlayLoopingSound ((short) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
 		gameStates.gameplay.seismic.bSound = 1;
 		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + RandShort () / 2;
 		}
 	if (IsMultiGame)
-		MultiSendSeismic (gameStates.gameplay.seismic.nStartTime,gameStates.gameplay.seismic.nEndTime);
+		MultiSendSeismic (gameStates.gameplay.seismic.nStartTime, gameStates.gameplay.seismic.nEndTime);
 	}
-return rval;
+return 1/*rval*/;
 }
 
 //	-----------------------------------------------------------------------------
@@ -138,6 +170,9 @@ void SeismicDisturbanceFrame (void)
 if (gameStates.gameplay.seismic.nShakeFrequency) {
 	if (((gameStates.gameplay.seismic.nStartTime < gameData.time.xGame) && (gameStates.gameplay.seismic.nEndTime > gameData.time.xGame)) || StartSeismicDisturbance ()) {
 		fix	deltaTime = gameData.time.xGame - gameStates.gameplay.seismic.nStartTime;
+#if 1
+		RockPlayerShip (abs (deltaTime - (gameStates.gameplay.seismic.nEndTime - gameStates.gameplay.seismic.nStartTime) / 2), X2F (gameStates.gameplay.seismic.nShakeFrequency));
+#else
 		int	fc, rx, rz;
 		fix	h;
 
@@ -160,6 +195,7 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 			}
 		//	Shake a guided missile!
 		gameStates.gameplay.seismic.nMagnitude += rx;
+#endif
 		}
 	}
 }
