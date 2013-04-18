@@ -475,9 +475,8 @@ int CTrigger::DoDisarmRobots (void)
 for (int i = 0; i < m_nLinks; i++) {
 	if (m_sides [i] < 0) {
 		CObject*	objP = OBJECTS + m_segments [i];
-		if (!objP || (objP->info.nType != OBJ_ROBOT))
-			return 0;
-		objP->Disarm ();
+		if (objP && (objP->info.nType == OBJ_ROBOT))
+			objP->Disarm ();
 		}
 	}
 return 1;
@@ -490,9 +489,8 @@ int CTrigger::DoReprogramRobots (void)
 for (int i = 0; i < m_nLinks; i++) {
 	if (m_sides [i] < 0) {
 		CObject*	objP = OBJECTS + m_segments [i];
-		if (!objP || (objP->info.nType != OBJ_ROBOT))
-			return 0;
-		objP->Reprogram ();
+		if (objP && (objP->info.nType == OBJ_ROBOT))
+			objP->Reprogram ();
 		}
 	}
 return 1;

@@ -575,7 +575,7 @@ FORALL_OBJS (objP, i) {
 	if (nPlayers > gameData.multiplayer.nMaxPlayers)
 		return 1;
 	}
-return !bHaveReactor;
+return 0; //!bHaveReactor;
 }
 
 //------------------------------------------------------------------------------

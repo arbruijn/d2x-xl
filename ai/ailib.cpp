@@ -45,7 +45,7 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 int AICanSeeTarget (CObject *objP, CFixVector *vPos, fix fieldOfView, CFixVector *vVecToTarget)
 {
 	fix			dot;
-	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER | FQ_VISIBILITY,
+	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_VISIBILITY | (objP->AttacksRobots () ? FQ_ANY_OBJECT : FQ_CHECK_PLAYER),
 								 vPos, &gameData.ai.target.vBelievedPos, -1, objP->Index (), I2X (1) / 4, I2X (1) / 4, ++gameData.physics.bIgnoreObjFlag);
 
 //	Assume that robot's gun tip is in same CSegment as robot's center.

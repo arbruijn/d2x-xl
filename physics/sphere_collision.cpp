@@ -1138,7 +1138,8 @@ if ((curHit.nSegment != -1) && (hitQuery.flags & FQ_GET_SEGLIST))
 		}
 *((CHitInfo *) &hitResult) = gameData.collisions.hitResult;
 *((CHitData *) &hitResult) = curHit;
-Assert ((curHit.nType != HIT_OBJECT) || (gameData.collisions.hitResult.nObject != -1));
+if ((curHit.nType == HIT_OBJECT) && (gameData.collisions.hitResult.nObject == -1))
+	curHit.nType = HIT_NONE;
 return curHit.nType;
 }
 

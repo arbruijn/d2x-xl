@@ -2251,7 +2251,6 @@ if (bufI > MultiMsgLen (nType))
 	Warning ("MultiSendPlayerExplode:\nMax. message length exceeded!"); // See Rob
 #endif
 MultiSendData (gameData.multigame.msg.buf, MultiMsgLen (nType), 2);
-LOCALPLAYER.SetLaserLevels (0, 0);
 MultiSendWeapons (1);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 	MultiSendDeCloak ();
@@ -5119,7 +5118,7 @@ void MultiAdjustPowerups (void)
 	static	time_t	t0 = 0;
 	time_t	t = gameStates.app.nSDLTicks [0];
 
-if (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ()) { // don't act if player ship status pending
+ if (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ()) { // don't act if player ship status pending
 	if (t - t0 < 180000) 		// enforce after 3 minutes of inactivity though
 		return;
 #if DBG

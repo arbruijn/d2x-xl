@@ -172,6 +172,10 @@ for (short nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 		PrintLog (0, "internal error in simple router!\n");
 		return -1;
 		}
+	if ((nSuccSeg < 0) || (nSuccSeg >= gameData.segs.nSegments)) {
+		PrintLog (0, "invalid successor in CSimpleHeap::Expand\n");
+		return -1;
+		}
 #endif
 	CPathNode& pathNode = m_path [nSuccSeg];
 	if (pathNode.m_bVisited == scanInfo.m_bFlag)

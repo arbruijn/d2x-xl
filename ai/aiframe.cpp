@@ -1060,9 +1060,48 @@ return 1;
 
 // --------------------------------------------------------------------------------------------------------------------
 
+static CObject *NearestRobot (CObject* objP, tAIStateInfo *siP)
+{
+	int			j, nMinObj = -1;
+	fix			curDist, minDist = MAX_WAKEUP_DIST, bestAngle = -1;
+	CObject*		robotP, *targetP = NULL;
+	CFixVector	vPos = objP->AttacksRobots ()
+							 ? OBJPOS (objP)->vPos	// find robot closest to this robot
+							 : OBJPOS (OBJECTS + N_LOCALPLAYER)->vPos;	// find robot closest to player
+	CFixVector	vViewDir = objP->info.position.mOrient.m.dir.f;
+
+FORALL_ROBOT_OBJS (robotP, j) {
+	if (robotP->Index () == siP->nObject)
+		continue;
+	CFixVector vDir = OBJPOS (robotP)->vPos - vPos;
+	curDist = vDir.Mag ();
+	if ((curDist < MAX_WAKEUP_DIST /*/ 2*/) && (curDist < minDist) && ObjectToObjectVisibility (objP, robotP, FQ_TRANSWALL)) {
+		vDir /= curDist;
+		fix angle = CFixVector::Dot (vViewDir, vDir);
+		if (angle > bestAngle) {
+			bestAngle = angle;
+			targetP = robotP;
+			minDist = curDist;
+			}
+		}
+	}
+if (targetP) {
+	objP->SetTarget (gameData.ai.target.objP = targetP);
+	gameData.ai.target.vBelievedPos = OBJPOS (TARGETOBJ)->vPos;
+	gameData.ai.target.nBelievedSeg = OBJSEG (TARGETOBJ);
+	CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, objP->info.position.vPos);
+	return TARGETOBJ;
+	}
+return gameData.objs.consoleP;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
 int AITargetPosHandler (CObject *objP, tAIStateInfo *siP)
 {
-objP->SetTarget (gameData.ai.target.objP = gameData.objs.consoleP);
+	CObject* targetP = objP->AttacksRobots () ? NearestRobot (objP, siP) : gameData.objs.consoleP;
+
+objP->SetTarget (targetP);
 if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileCamera != -1)) {
 	gameData.ai.target.vBelievedPos = OBJPOS (OBJECTS + gameData.ai.nLastMissileCamera)->vPos;
 	return 0;
@@ -1070,38 +1109,13 @@ if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileC
 if (objP->AttacksRobots () || (!siP->botInfoP->thief && (RandShort () > 2 * objP->AimDamage ()))) {
 	siP->vVisPos = objP->info.position.vPos;
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
-	if (gameData.ai.nTargetVisibility) {
-		int			j, nMinObj = -1;
-		fix			curDist, minDist = MAX_WAKEUP_DIST;
-		CObject*		robotP;
-		CFixVector	vPos = objP->AttacksRobots ()
-								 ? objP->info.position.vPos	// find robot closest to this robot
-								 : OBJPOS (OBJECTS + N_LOCALPLAYER)->vPos;	// find robot closest to player
-
-		FORALL_ROBOT_OBJS (robotP, j) {
-			j = robotP->Index ();
-			if (j == siP->nObject)
-				continue;
-			curDist = CFixVector::Dist (vPos, OBJECTS [j].info.position.vPos);
-			if ((curDist < MAX_WAKEUP_DIST /*/ 2*/) && (curDist < minDist) &&
-				 ObjectToObjectVisibility (objP, robotP, FQ_TRANSWALL)) {
-				nMinObj = j;
-				minDist = curDist;
-				}
-			}
-		if (nMinObj >= 0) {
-			objP->SetTarget (gameData.ai.target.objP = OBJECTS + nMinObj);
-			gameData.ai.target.vBelievedPos = OBJPOS (TARGETOBJ)->vPos;
-			gameData.ai.target.nBelievedSeg = OBJSEG (TARGETOBJ);
-			CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, objP->info.position.vPos);
-			return 0;
-			}
-		}
-	if (objP->AttacksRobots ())
-		return 1;
+	if (gameData.ai.nTargetVisibility)
+		return 0;
 	}
 siP->bVisAndVecComputed = 0;
-if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || (RandShort () > objP->AimDamage ()))
+if (objP->AttacksRobots ())
+	gameData.ai.target.vBelievedPos = objP->FrontPosition ();
+else if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || (RandShort () > objP->AimDamage ()))
 	gameData.ai.target.vBelievedPos = gameData.ai.cloakInfo [siP->nObject & (MAX_AI_CLOAK_INFO - 1)].vLastPos;
 else
 	gameData.ai.target.vBelievedPos = OBJPOS (gameData.objs.consoleP)->vPos;
@@ -1340,7 +1354,7 @@ si.bVisAndVecComputed = 0;
 si.botInfoP = &ROBOTINFO (objP->info.nId);
 si.bMultiGame = !IsRobotGame;
 
-#if DBG
+#if 0 //DBG
 gameData.ai.target.objP = NULL;
 if (si.aiP->behavior == AIB_STILL)
 	si.aiP = si.aiP;
