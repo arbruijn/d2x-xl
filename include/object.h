@@ -1131,6 +1131,7 @@ class CObject : public CObjectInfo {
 		bool IsThief (void);
 		inline bool IsPlayer (void) { return (Type () == OBJ_PLAYER); }
 		inline bool IsRobot (void) { return (Type () == OBJ_ROBOT); }
+		inline bool IsReactor (void) { return (Type () == OBJ_REACTOR); }
 		inline bool IsPowerup (void) { return (Type () == OBJ_POWERUP); }
 		inline bool IsWeapon (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsWeapon (Id ()); }
 		inline bool IsEnergyWeapon (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsEnergyWeapon (Id ()); }

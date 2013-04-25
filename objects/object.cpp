@@ -1632,14 +1632,14 @@ return (IsWeapon () || IsMissile ()) && ((mType.physInfo.flags & PF_BOUNCE) != 0
 
 bool CObject::AttacksRobots (void)
 {
-return IsRobot () && EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && ((gameStates.app.cheats.bRobotsKillRobots != 0) || Reprogrammed ());
+return (IsRobot () || IsReactor ()) && EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && ((gameStates.app.cheats.bRobotsKillRobots != 0) || Reprogrammed ());
 }
 
 //------------------------------------------------------------------------------
 
 bool CObject::AttacksPlayer (void)
 {
-return IsRobot () && (gameStates.app.cheats.bRobotsFiring != 0) && !(Disarmed () || Reprogrammed ());
+return (IsRobot () || IsReactor ()) && (gameStates.app.cheats.bRobotsFiring != 0) && !(Disarmed () || Reprogrammed ());
 }
 
 //------------------------------------------------------------------------------
