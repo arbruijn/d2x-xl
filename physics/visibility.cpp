@@ -185,7 +185,7 @@ do {
 	fate = gameData.segs.SegVis (hitQuery.nSegment, objP2->Segment ()) ? FindHitpoint (hitQuery, hitResult) : HIT_WALL;
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));
-return (fate == HIT_NONE) || (fate == HIT_BAD_P0);
+return (fate == HIT_NONE) || (fate == HIT_BAD_P0) || ((fate == HIT_OBJECT) && (hitResult.nObject == objP2->Index ()));
 }
 
 //	-----------------------------------------------------------------------------

@@ -331,7 +331,7 @@ if (ObjectIsTrackable (nTarget, dot)) {
 
 if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 	//	If player fired missile, then search for an CObject, if not, then give up.
-	if ((cType.laserInfo.parent.nObject >= 0) && OBJECTS [cType.laserInfo.parent.nObject].Type () == OBJ_PLAYER) {
+	if ((cType.laserInfo.parent.nObject >= 0) && OBJECTS [cType.laserInfo.parent.nObject].IsPlayer ()) {
 		if (nTarget == -1) {
 			if (IsMultiGame) {
 				if (IsCoopGame)

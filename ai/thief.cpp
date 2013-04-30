@@ -114,6 +114,8 @@ if ((missionManager.nCurrentLevel < 0) && (gameData.thief.xReInitTime < gameData
 
 if ((gameData.ai.target.xDist > I2X (500)) && (ailP->nextActionTime > 0))
 	return;
+if (objP->Disarmed () || objP->Reprogrammed ())
+	return;
 
 gameData.ai.target.objP = gameData.objs.consoleP;
 if (gameStates.app.bPlayerIsDead)

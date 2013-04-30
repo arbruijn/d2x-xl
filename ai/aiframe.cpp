@@ -1101,7 +1101,7 @@ int AITargetPosHandler (CObject *objP, tAIStateInfo *siP)
 {
 	CObject* targetP = objP->AttacksRobots () ? NearestRobot (objP, siP) : gameData.objs.consoleP;
 
-objP->SetTarget (targetP);
+objP->SetTarget (gameData.ai.target.objP = targetP);
 if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileCamera != -1)) {
 	gameData.ai.target.vBelievedPos = OBJPOS (OBJECTS + gameData.ai.nLastMissileCamera)->vPos;
 	return 0;
