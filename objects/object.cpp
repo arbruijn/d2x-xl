@@ -1644,6 +1644,13 @@ return (IsRobot () || IsReactor ()) && (gameStates.app.cheats.bRobotsFiring != 0
 
 //------------------------------------------------------------------------------
 
+bool CObject::AttacksObject (CObject* targetP)
+{
+return targetP->IsPlayer () ? AttacksPlayer () : AttacksRobots ();
+}
+		
+//------------------------------------------------------------------------------
+
 bool CObject::IsSplashDamageWeapon (void) 
 { 
 return ((m_weaponInfo [Id ()] & OBJ_IS_SPLASHDMG_WEAPON) != 0);

@@ -75,7 +75,7 @@ void DoAIRobotHitAttack (CObject *robotP, CObject *targetP, CFixVector *vCollisi
 	tAILocalInfo	*ailP = gameData.ai.localInfo + OBJ_IDX (robotP);
 	tRobotInfo		*botInfoP = &ROBOTINFO (robotP->info.nId);
 
-if (!robotP->AttacksPlayer ())
+if (!robotP->AttacksObject (targetP))
 	return;
 if (robotP->IsStatic ())
 	return;
