@@ -92,7 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hogfile.h"
 
-#define STATE_VERSION				57
+#define STATE_VERSION				58
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -958,6 +958,9 @@ gameData.render.lights.subtracted.Write (m_cf, LEVEL_SEGMENTS);
 m_cf.WriteInt (gameStates.app.bFirstSecretVisit);
 m_cf.WriteFix (gameData.omega.xCharge [0]);
 m_cf.WriteShort (missionManager.nEntryLevel);
+m_cf.WriteInt (gameStates.gameplay.seismic.nShakeFrequency);
+m_cf.WriteInt (gameStates.gameplay.seismic.nShakeDuration);
+
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	SaveSpawnPoint (i);
 m_cf.WriteInt (gameOpts->gameplay.nShip [0]);
@@ -1965,6 +1968,10 @@ if (m_nVersion >= 54) {
 	gameOpts->gameplay.nShip [0] = m_cf.ReadInt ();
 	gameOpts->gameplay.nShip [1] = -1;
 	gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip = ubyte (gameOpts->gameplay.nShip [0]);
+	}
+if (m_nVersion >= 57) {
+	gameStates.gameplay.seismic.nShakeFrequency = m_cf.ReadInt ();
+	gameStates.gameplay.seismic.nShakeDuration = m_cf.ReadInt ();
 	}
 if (LOCALPLAYER.numRobotsLevel > LOCALPLAYER.numKillsLevel + CountRobotsInLevel ()) // fix for a bug affecting savegames
 	LOCALPLAYER.numRobotsLevel = LOCALPLAYER.numKillsLevel + CountRobotsInLevel ();

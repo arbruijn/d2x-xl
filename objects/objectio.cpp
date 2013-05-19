@@ -311,7 +311,7 @@ info.contains.nId = cf.ReadByte ();
 info.contains.nCount = cf.ReadByte ();
 info.nCreator = cf.ReadByte ();
 SetLife (cf.ReadFix ());
-if (info.nType == OBJ_ROBOT && (saveGameManager.Version () > 56))
+if (saveGameManager.Version () > 56)
 	m_nAttackRobots = cf.ReadInt ();
 
 if (info.nType == OBJ_PLAYER)
