@@ -313,6 +313,8 @@ info.nCreator = cf.ReadByte ();
 SetLife (cf.ReadFix ());
 if (saveGameManager.Version () > 56)
 	m_nAttackRobots = cf.ReadInt ();
+else
+	SetAttackMode (ROBOT_IS_HOSTILE);
 
 if (info.nType == OBJ_PLAYER)
 	SetLife (IMMORTAL_TIME);

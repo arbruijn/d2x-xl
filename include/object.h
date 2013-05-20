@@ -150,6 +150,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define IMMORTAL_TIME   0x3fffffff  // Time assigned to immortal objects, about 32768 seconds, or about 9 hours.
 #define ONE_FRAME_TIME  0x3ffffffe  // Objects with this lifeleft will live for exactly one frame
 
+#define ROBOT_IS_HOSTILE	-1
+#define ROBOT_IS_NEUTRAL	0
+#define ROBOT_IS_FRIENDLY	1
+
 #define MAX_VELOCITY I2X(50)
 
 #define PF_SPAT_BY_PLAYER   1 //this powerup was spat by the player
@@ -822,11 +826,12 @@ class CObject : public CObjectInfo {
 		bool AttacksRobots (void);
 		bool AttacksPlayer (void);
 		bool AttacksObject (CObject* targetP);
-		inline void Arm (void) { m_nAttackRobots = -1; }
-		inline void Disarm (void) { m_nAttackRobots = 0; }
-		inline bool Disarmed (void) { return (m_nAttackRobots >= 0); }
-		inline void Reprogram (void) { m_nAttackRobots = 1; }
-		inline bool Reprogrammed (void) { return (m_nAttackRobots > 0); }
+		inline void SetAttackMode (int nMode) { m_nAttackRobots = nMode; }
+		inline void Arm (void) { m_nAttackRobots = ROBOT_IS_HOSTILE; }
+		inline void Disarm (void) { m_nAttackRobots = ROBOT_IS_NEUTRAL; }
+		inline bool Disarmed (void) { return (m_nAttackRobots >= ROBOT_IS_NEUTRAL); }
+		inline void Reprogram (void) { m_nAttackRobots = ROBOT_IS_FRIENDLY; }
+		inline bool Reprogrammed (void) { return (m_nAttackRobots >= ROBOT_IS_FRIENDLY); }
 
 	private:
 		short				m_nKey;
