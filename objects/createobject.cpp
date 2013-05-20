@@ -314,6 +314,8 @@ else if (objP->info.controlType == CT_EXPLOSION)
 	objP->cType.explInfo.attached.nPrev =
 	objP->cType.explInfo.attached.nParent = -1;
 
+objP->Arm ();
+
 objP->Link ();
 objP->LinkToSeg (nSegment);
 objP->StopSync ();

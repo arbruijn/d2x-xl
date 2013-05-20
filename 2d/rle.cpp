@@ -657,13 +657,13 @@ delete[] temp;
 
 int CBitmap::RLERemap (ubyte *colorMap, int maxLen)
 {
-	int				h, i, j, len, bBigRLE;
+	int				h, i, j, len, bWideRLE;
 	ubyte	*pSrc, *destP, *remapBuf, *start;
 	ushort nLineSize;
 
-bBigRLE = m_info.props.flags & BM_FLAG_RLE_BIG;
+bWideRLE = m_info.props.flags & BM_FLAG_RLE_BIG;
 remapBuf = new ubyte [MAX_BMP_SIZE (m_info.props.w, m_info.props.h) + 30000];
-if (bBigRLE) {                  // set ptrs to first lines
+if (bWideRLE) {                  // set ptrs to first lines
 	pSrc = Buffer () + 4 + 2 * m_info.props.h;
 	destP = remapBuf + 4 + 2 * m_info.props.h;
 	}
@@ -673,7 +673,7 @@ else {
 	}
 for (i = 0; i < m_info.props.h; i++) {
 	start = destP;
-	if (bBigRLE)
+	if (bWideRLE)
 		nLineSize = INTEL_SHORT (*reinterpret_cast<ushort*> (Buffer (4 + 2 * i)));
 	else
 		nLineSize = Buffer () [4 + i];
@@ -691,7 +691,7 @@ for (i = 0; i < m_info.props.h; i++) {
 			*destP++ = colorMap [pSrc [++j]]; // translate
 			}
 		}
-	if (bBigRLE)                // set line size
+	if (bWideRLE)                // set line size
 		*(reinterpret_cast<ushort*> (remapBuf + 4 + 2 * i)) = INTEL_SHORT ((short) (destP - start));
 	else
 		remapBuf [4 + i] = (ubyte) (destP - start);
@@ -711,19 +711,17 @@ int CBitmap::RLEExpand (ubyte *colorMap, int bSwap0255)
 {
 	ubyte		*pSrc, *destP;
 	ubyte		c, h;
-	int		i, j, l, n, bBigRLE;
+	int		i, j, l, n, bWideRLE;
 	ushort	nLineSize;
 
 	static int	rleBufSize = 0;
 
 if (!(m_info.props.flags & BM_FLAG_RLE))
 	return m_info.props.h * m_info.props.rowSize;
-bBigRLE = (m_info.props.flags & BM_FLAG_RLE_BIG) != 0;
-if (bBigRLE)
-	pSrc = Buffer () + 4 + 2 * m_info.props.h;
-else
-	pSrc = Buffer () + 4 + m_info.props.h;
-i = 2 * (bBigRLE + 1) * m_info.props.h * m_info.props.rowSize;
+bWideRLE = (m_info.props.flags & BM_FLAG_RLE_BIG) != 0;
+i = (bWideRLE + 1) * m_info.props.h;
+pSrc = Buffer () + 4 + i;
+i *= 2 * m_info.props.rowSize;
 if (!gameData.pig.tex.rleBuffer || (rleBufSize < i)) {
 	gameData.pig.tex.rleBuffer.Resize (rleBufSize = i);
 	}
@@ -732,7 +730,7 @@ if (!gameData.pig.tex.rleBuffer) {
 	}
 destP = gameData.pig.tex.rleBuffer.Buffer ();
 for (i = 0; i < m_info.props.h; i++, pSrc += nLineSize) {
-	if (bBigRLE)
+	if (bWideRLE)
 		nLineSize = INTEL_SHORT (*(reinterpret_cast<ushort*> (Buffer () + 4 + 2 * i)));
 	else
 		nLineSize = Buffer () [4 + i];

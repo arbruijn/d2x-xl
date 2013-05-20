@@ -822,6 +822,7 @@ class CObject : public CObjectInfo {
 		bool AttacksRobots (void);
 		bool AttacksPlayer (void);
 		bool AttacksObject (CObject* targetP);
+		inline void Arm (void) { m_nAttackRobots = -1; }
 		inline void Disarm (void) { m_nAttackRobots = 0; }
 		inline bool Disarmed (void) { return (m_nAttackRobots >= 0); }
 		inline void Reprogram (void) { m_nAttackRobots = 1; }
