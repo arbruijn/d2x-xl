@@ -3,7 +3,7 @@
 
 //#ifndef HAVE_CONFIG_H
 #	ifndef VERSION
-#		define VERSION		"1.16.24"
+#		define VERSION		"1.16.25"
 #	endif
 //#endif
 
@@ -16,7 +16,7 @@
 #	define D2X_MINOR	16
 #endif
 #ifndef D2X_MICRO
-#	define D2X_MICRO	24
+#	define D2X_MICRO	25
 #endif
 
 #define VERSION_TYPE		"Full Version"

@@ -374,7 +374,11 @@ menuRes = m.Menu (NULL, TXT_SAVE_GAME_MENU, NULL, &choice);
 
 if (menuRes >= 0) {
 	strcpy (m_filename, filename [choice]);
-	strcpy (m_description, saveGameInfo [choice].Label());
+	strcpy (m_description, saveGameInfo [choice].Label ());
+	if (!*m_description) {
+		strncpy (m_description, missionManager.szCurrentLevel, sizeof (m_description) - 1);
+		m_description [sizeof (m_description) - 1] = '\0';
+		}
 	}
 for (i = 0; i < NUM_SAVES; i++)
 	saveGameInfo [i].Destroy ();
@@ -1954,6 +1958,10 @@ else
 if (m_nVersion > 27)
 	missionManager.nEntryLevel = m_cf.ReadShort ();
 *nLevel = nCurrentLevel;
+if (m_nVersion >= 57) {
+	gameStates.gameplay.seismic.nShakeFrequency = m_cf.ReadInt ();
+	gameStates.gameplay.seismic.nShakeDuration = m_cf.ReadInt ();
+	}
 if (m_nVersion >= 37) {
 	tObjPosition playerInitSave [MAX_PLAYERS];
 
@@ -1968,10 +1976,6 @@ if (m_nVersion >= 54) {
 	gameOpts->gameplay.nShip [0] = m_cf.ReadInt ();
 	gameOpts->gameplay.nShip [1] = -1;
 	gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip = ubyte (gameOpts->gameplay.nShip [0]);
-	}
-if (m_nVersion >= 57) {
-	gameStates.gameplay.seismic.nShakeFrequency = m_cf.ReadInt ();
-	gameStates.gameplay.seismic.nShakeDuration = m_cf.ReadInt ();
 	}
 if (LOCALPLAYER.numRobotsLevel > LOCALPLAYER.numKillsLevel + CountRobotsInLevel ()) // fix for a bug affecting savegames
 	LOCALPLAYER.numRobotsLevel = LOCALPLAYER.numKillsLevel + CountRobotsInLevel ();

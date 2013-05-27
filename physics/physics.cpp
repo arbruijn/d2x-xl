@@ -1023,6 +1023,8 @@ if (Index () == nDbgObj) {
 	nDbgObj = nDbgObj;
 	if (!Velocity () /*simData.velocity*/.IsZero ())
 		nDbgObj = nDbgObj;
+	else
+		return;
 	HUDMessage (0, "%1.2f", X2F (Velocity ().Mag ()));
 	}
 #endif
