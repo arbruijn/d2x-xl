@@ -216,6 +216,7 @@ class CWall {
 		int IsTriggerTarget (int i = 0);
 		bool IsVolatile (void);
 		bool IsInvisible (void);
+		bool IsSolid (void);
 		CActiveDoor* OpenDoor (void);
 		CActiveDoor* CloseDoor (bool bForce = false);
 		CCloakingWall* StartCloak (void);

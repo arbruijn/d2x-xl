@@ -1258,6 +1258,18 @@ CSegment* CSegFace::Segment (void)
 return &SEGMENTS [m_info.nSegment]; 
 }
 
+//------------------------------------------------------------------------------
+
+bool CSegment::IsSolid (int nSide)
+{
+CSide* sideP = Side (nSide);
+if (sideP->Shape () > SIDE_SHAPE_TRIANGLE)
+	return false;
+if (m_children [nSide] < 0)
+	return true;
+return sideP->IsWall () && sideP->Wall ()->IsSolid ();
+}
+
 // -------------------------------------------------------------------------------
 //	Set up all segments.
 //	gameData.segs.nLastSegment must be set.

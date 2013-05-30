@@ -73,39 +73,66 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-void DoPhysicsAlignObject (CObject * objP)
+static int FindBestAlignedSide (short nSegment, CFloatVector3& vPos, CFixVector& vDir, float& maxDot, int nDepth)
 {
-	CFixVector	desiredUpVec;
-	fixang		deltaAngle, rollAngle;
-	//CFixVector forvec = {0, 0, I2X (1)};
-	CFixMatrix	m;
-	fix			dot, maxDot = -I2X (1);
-	int			i, nBestSide;
-	CSegment*	segP = SEGMENTS + objP->Segment ();
-	CSide*		sideP = segP->Side (0);
+if (nSegment < 0)
+	return -1;
+if (nDepth > 2)
+	return -1;
 
-nBestSide = 0;
+	CSegment*		segP = SEGMENTS + nSegment;
+	CSide*			sideP = segP->Side (0);
+	int				nBestSide = -1;
 // bank CPlayerData according to CSegment orientation
 //find CSide of CSegment that CPlayerData is most aligned with
-for (i = SEGMENT_SIDE_COUNT; i; i--, sideP++) {
+for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 	if (!sideP->FaceCount ())
 		continue;
-	dot = CFixVector::Dot (sideP->m_normals [0], objP->info.position.mOrient.m.dir.u);
-	if (maxDot < dot) {
-		maxDot = dot; 
-		nBestSide = i;
+	if (sideP->Shape () > SIDE_SHAPE_TRIANGLE)
+		continue;
+	float dist = DistToFace (vPos, nSegment, nSide);
+	if (dist > 60.0f)
+		continue;
+	if (segP->IsSolid (nSide)) {
+		float dot = (float) CFixVector::Dot (sideP->m_normals [2], vDir) / dist;
+		if (maxDot < dot) {
+			maxDot = dot; 
+			nBestSide = (nSegment << 3) | nSide;
+			}
+		}
+	else {
+		int h = FindBestAlignedSide (segP->ChildId (nSide), vPos, vDir, maxDot, nDepth + 1);
+		if (h >= 0)
+			nBestSide = h;
 		}
 	}
+return nBestSide;
+}
+
+//	-----------------------------------------------------------------------------
+
+void DoPhysicsAlignObject (CObject * objP)
+{
+if (!objP->mType.physInfo.rotThrust.IsZero ())
+	return;
+
+	CFixVector		desiredUpVec;
+	float				maxDot = -1.0f;
+	CFloatVector3	vPos;
+
+vPos.Assign (objP->info.position.vPos);
+int nBestSide = FindBestAlignedSide (objP->Segment (), vPos, objP->info.position.mOrient.m.dir.u, maxDot, 0);
+if (nBestSide < 0)
+	return;
+CSegment* segP = SEGMENTS + (nBestSide >> 3);
+nBestSide &= 7;
+// bank CPlayerData according to CSegment orientation
+//find CSide of CSegment that CPlayerData is most aligned with
 if (gameOpts->gameplay.nAutoLeveling == 1)	// old way: used floor's Normal as upvec
-	desiredUpVec = segP->m_sides [3].FaceCount () ? segP->m_sides [3].m_normals [0] : segP->m_sides [nBestSide].m_normals [0];
+	desiredUpVec = segP->m_sides [3].FaceCount () ? segP->m_sides [3].m_normals [2] : segP->m_sides [nBestSide].m_normals [2];
 else if (gameOpts->gameplay.nAutoLeveling == 2) {	 // new CPlayerData leveling code: use Normal of CSide closest to our up vec
 	CSide* sideP = segP->m_sides + nBestSide;
-	if (sideP->FaceCount () == 2) {
-		desiredUpVec = sideP->m_normals [2];
-		CFixVector::Normalize (desiredUpVec);
-		}
-	else
-		desiredUpVec = SEGMENTS [objP->info.nSegment].m_sides [nBestSide].m_normals [0];
+	desiredUpVec = sideP->m_normals [2];
 	}
 else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
 	desiredUpVec = (*PlayerSpawnOrient (N_LOCALPLAYER)).m.dir.u;
@@ -114,14 +141,14 @@ else
 if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.m.dir.f)) < I2X (1)/2) {
 	CAngleVector turnAngles;
 
-	m = CFixMatrix::CreateFU(objP->info.position.mOrient.m.dir.f, desiredUpVec);
+	CFixMatrix m = CFixMatrix::CreateFU(objP->info.position.mOrient.m.dir.f, desiredUpVec);
 //	m = CFixMatrix::CreateFU(objP->info.position.mOrient.m.v.f, &desiredUpVec, NULL);
-	deltaAngle = CFixVector::DeltaAngle(objP->info.position.mOrient.m.dir.u, m.m.dir.u, &objP->info.position.mOrient.m.dir.f);
+	fixang deltaAngle = CFixVector::DeltaAngle(objP->info.position.mOrient.m.dir.u, m.m.dir.u, &objP->info.position.mOrient.m.dir.f);
 	deltaAngle += objP->mType.physInfo.turnRoll;
-	if (abs (deltaAngle) > DAMP_ANG) {
+	if (abs (deltaAngle) > /*DAMP_ANG*/1) {
 		CFixMatrix mRotate, new_pm;
 
-		rollAngle = (fixang) FixMul (gameData.physics.xTime, ROLL_RATE);
+		fixang rollAngle = (fixang) FixMul (gameData.physics.xTime, ROLL_RATE);
 		if (abs (deltaAngle) < rollAngle)
 			rollAngle = deltaAngle;
 		else if (deltaAngle < 0)

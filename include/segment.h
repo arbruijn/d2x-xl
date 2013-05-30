@@ -229,6 +229,8 @@ class CSide {
 		bool IsVolatile (void);
 		inline ubyte IsQuad (void) { return m_bIsQuad; }
 		inline ubyte CornerCount (void) { return m_nCorners; }
+		bool IsSolid (void);
+
 		void CheckSum (uint& sum1, uint& sum2);
 
 		int CheckTransparency (void);
@@ -379,6 +381,7 @@ class CSegment {
 		void ComputeRads (fix xMinDist);
 		void ComputeChildDists (void);
 		inline void ComputeSideCenter (int nSide) { m_sides [nSide].ComputeCenter (); }
+		inline short ChildId (int nSide) { return m_children [nSide]; }
 		inline CSide* Side (int nSide) { return m_sides + nSide; }
 		int ChildIndex (int nChild);
 		CSide* AdjacentSide (int nSegment);
@@ -419,7 +422,7 @@ class CSegment {
 		ubyte GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind);
 		ubyte GetSideDistsf (const CFloatVector& refP, float* fSideDists, int bBehind);
 		void HitPointUV (int nSide, fix *u, fix *v, fix *l, CFixVector& intersection, int iFace)
-		 { m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
+			{ m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
 
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }
@@ -462,6 +465,7 @@ class CSegment {
 
 		inline int IsLava (ubyte nSide) { return HasTexture (nSide) && m_sides [nSide].IsLava (); }
 		inline int IsWater (ubyte nSide) { return HasTexture (nSide) && m_sides [nSide].IsWater (); }
+		bool IsSolid (int nSide);
 
 		void RemapVertices (void);
 

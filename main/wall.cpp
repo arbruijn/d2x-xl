@@ -234,6 +234,13 @@ return WID_SOLID_WALL; // There are children behind the door.
 
 //------------------------------------------------------------------------------
 
+bool CWall::IsSolid (void)
+{
+return (IsDoorWay (NULL, false) & (WID_TRANSPARENT_WALL | WID_SOLID_WALL)) != 0;
+}
+
+//------------------------------------------------------------------------------
+
 CActiveDoor* CWall::OpenDoor (void)
 {
 	CActiveDoor* doorP = NULL;

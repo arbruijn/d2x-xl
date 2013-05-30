@@ -1034,6 +1034,14 @@ bool CSide::IsVolatile (void)
 return IsWall () && WALLS [m_nWall].IsVolatile ();
 }
 
+
+//------------------------------------------------------------------------------
+
+bool CSide::IsSolid (void)
+{
+return IsWall () && Wall ()->IsSolid ();
+}
+
 //------------------------------------------------------------------------------
 
 int CSide::Physics (fix& damage, bool bSolid)
