@@ -658,9 +658,11 @@ if (nStage) {
 	}
 else {
 	gameData.segs.bVertVis.Clear ();
-	if (!gameData.segs.bLightVis.Create ((lightManager.GeometryLightCount () * LEVEL_SEGMENTS + 3) / 4))
-		return false;
-	gameData.segs.bLightVis.Clear ();
+	if (lightManager.GeometryLightCount ()) {
+		if (!gameData.segs.bLightVis.Create ((lightManager.GeometryLightCount () * LEVEL_SEGMENTS + 3) / 4))
+			return false;
+		gameData.segs.bLightVis.Clear ();
+		}
 	}
 return true;
 }

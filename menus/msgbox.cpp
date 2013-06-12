@@ -121,7 +121,7 @@ for (i = l = 0; i < nChoices; i++) {
 	if (l + h > MSGBOX_TEXT_SIZE)
 		break;
 	l += h;
-	if (!bTiny || i) 
+	if (!(bTiny || i))
 		mm.AddMenu ("msgbox", s, - 1);
 	else {
 		mm.AddText ("", s);
