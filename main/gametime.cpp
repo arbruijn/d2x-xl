@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // limit framerate to 30 while recording demo and to 40 when in automap and framerate display is disabled
 #define MAXFPS		((gameData.demo.nState == ND_STATE_RECORDING) ? 30 : \
                    (automap.Display () && !(automap.Radar () || (gameStates.render.bShowFrameRate == 1))) ? 40 : \
-						 ((gameOpts->render.stereo.nGlasses == 5) && (gameOpts->render.nMaxFPS < 120)) ? 2 * gameOpts->render.nMaxFPS : gameOpts->render.nMaxFPS)
+						 ((gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER) && (gameOpts->render.nMaxFPS < 120)) ? 2 * gameOpts->render.nMaxFPS : gameOpts->render.nMaxFPS)
 
 #define EXACT_FRAME_TIME	1
 

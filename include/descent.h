@@ -391,7 +391,8 @@ typedef struct tDebugRenderOptions {
 #define GLASSES_AMBER_BLUE		1
 #define GLASSES_RED_CYAN		2
 #define GLASSES_GREEN_MAGENTA	3
-#define GLASSES_SHUTTER			4
+#define GLASSES_OCULUS_RIFT	4
+#define GLASSES_SHUTTER			5
 
 #define STEREO_PARALLEL			0
 #define STEREO_TOE_IN			1

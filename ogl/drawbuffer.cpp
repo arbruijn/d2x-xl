@@ -201,28 +201,24 @@ else if (gameStates.render.cameras.bActive) {
 	gameStates.render.bRenderIndirect = 0;
 	}
 else {
-	int i = Enhance3D ();
-	if (i < 0) {
+	gameStates.render.bRenderIndirect = 
+#if 1
+		!gameStates.app.bNostalgia && m_features.bShaders && (m_features.bRenderToTexture > 0); 
+#else
+		(postProcessManager.Effects () != NULL) 
+		|| (m_data.xStereoSeparation && (i > 0)) 
+		|| (glowRenderer.Available (BLUR_SHADOW) && (EGI_FLAG (bShadows, 0, 1, 0) != 0));
+#endif
+	if (gameStates.render.bRenderIndirect <= 0) {
+		gameOpts->render.stereo.nGlasses = 0;
+		m_data.xStereoSeparation = 0;
+		SetDrawBuffer (GL_BACK, 0);
+		}
+	else {
 		ogl.ClearError (0);
-		SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
+		SelectDrawBuffer ((Enhance3D () > 0) && (m_data.xStereoSeparation > 0));
 		if (ogl.ClearError (0))
 			gameOpts->render.stereo.nGlasses = 0;
-		}	
-	else {
-		gameStates.render.bRenderIndirect = 
-#if 1
-			!gameStates.app.bNostalgia && m_features.bShaders && (m_features.bRenderToTexture > 0); 
-#else
-			(postProcessManager.Effects () != NULL) 
-			|| (m_data.xStereoSeparation && (i > 0)) 
-			|| (glowRenderer.Available (BLUR_SHADOW) && (EGI_FLAG (bShadows, 0, 1, 0) != 0));
-#endif
-		if (gameStates.render.bRenderIndirect > 0) 
-			SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
-		else {
-			m_data.xStereoSeparation = 0;
-			SetDrawBuffer (GL_BACK, 0);
-			}
 		}
 	}
 }

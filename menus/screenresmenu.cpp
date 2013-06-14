@@ -52,6 +52,7 @@
 #include "renderthreads.h"
 #include "soundthreads.h"
 #include "menubackground.h"
+#include "gr.h"
 
 #if VR_NONE
 #   undef VR_NONE			//undef if != 0
@@ -206,7 +207,7 @@ do {
 		nCustH = m.ToInt ("custom height");
 		if ((0 < nCustW) && (0 < nCustH)) {
 			i = CUSTOM_DISPLAY_MODE;
-			if (SetCustomDisplayMode (nCustW, nCustH))
+			if (SetCustomDisplayMode (nCustW, nCustH, 1))
 				key = 0;
 			else
 				MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_ERROR_SCRMODE);

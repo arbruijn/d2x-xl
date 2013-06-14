@@ -76,7 +76,7 @@ static const char *pszRendQual [4];
 static const char *pszMeshQual [5];
 static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
-static const char *psz3DGlasses [5];
+static const char *psz3DGlasses [6];
 static const char *pszEnhance3D [4];
 static const char *pszDeghost [5];
 static const char *psz3DMethod [2];
@@ -402,6 +402,7 @@ psz3DGlasses [1] = TXT_AMBER_BLUE;
 psz3DGlasses [2] = TXT_RED_CYAN;
 psz3DGlasses [3] = TXT_GREEN_MAGENTA;
 psz3DGlasses [4] = TXT_SHUTTER;
+psz3DGlasses [5] = TXT_OCULUS_RIFT;
 
 pszDeghost [0] = TXT_OFF;
 pszDeghost [1] = TXT_LOW;

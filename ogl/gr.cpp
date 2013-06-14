@@ -219,8 +219,23 @@ SDL_Rect defaultDisplayModes [] = {
 	};
 
 
+//------------------------------------------------------------------------------
 
-void CreateDisplayModeInfo (void)
+void CreateDisplayModeInfo (int i, int w, int h, int bFullScreen)
+{
+displayModeInfo [i].w = w;
+displayModeInfo [i].h = h;
+displayModeInfo [i].dim = SM (displayModeInfo [i].w, displayModeInfo [i].h);
+displayModeInfo [i].renderMethod = VR_NONE;
+displayModeInfo [i].flags = VRF_COMPATIBLE_MENUS + VRF_ALLOW_COCKPIT;
+displayModeInfo [i].bWideScreen = float (displayModeInfo [i].w) / float (displayModeInfo [i].h) >= 1.5f;
+displayModeInfo [i].bFullScreen = bFullScreen;
+displayModeInfo [i].bAvailable = 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CreateDisplayModeInfoTable (void)
 {
 	SDL_Rect**	displayModes, * displayModeP;
 	int			h, i;
@@ -240,14 +255,7 @@ else {
 displayModeInfo.Create (h + 1);
 displayModeInfo.Clear ();
 for (i = 0; i < h; i++) {
-	displayModeInfo [i].w = displayModeP [i].w;
-	displayModeInfo [i].h = displayModeP [i].h;
-	displayModeInfo [i].dim = SM (displayModeInfo [i].w, displayModeInfo [i].h);
-	displayModeInfo [i].renderMethod = VR_NONE;
-	displayModeInfo [i].flags = VRF_COMPATIBLE_MENUS + VRF_ALLOW_COCKPIT;
-	displayModeInfo [i].bWideScreen = float (displayModeInfo [i].w) / float (displayModeInfo [i].h) >= 1.5f;
-	displayModeInfo [i].bFullScreen = 1;
-	displayModeInfo [i].bAvailable = 1;
+	CreateDisplayModeInfo (i, displayModeP [i].w, displayModeP [i].h, 1);
 	}
 if (displayModes != (SDL_Rect**) -1)
 	delete displayModeP;
@@ -289,7 +297,7 @@ textureManager.Init ();
 /***/PrintLog (0, "allocating screen buffer\n");
 screen.Canvas ()->SetBuffer (NULL);
 
-CreateDisplayModeInfo ();
+CreateDisplayModeInfoTable ();
 // Set the mode.
 for (i = 0; i < NUM_DISPLAY_MODES - 1; i++)
 	if (FindArg (ScrSizeArg (displayModeInfo [i].w, displayModeInfo [i].h))) {
@@ -346,26 +354,10 @@ return szScrMode;
 
 //------------------------------------------------------------------------------
 
-int SetCustomDisplayMode (int w, int h)
+int SetCustomDisplayMode (int w, int h, int bFullScreen)
 {
-if (w && h) {
-		int i = CUSTOM_DISPLAY_MODE;
-
-	displayModeInfo [i].dim = SM (w, h);
-	displayModeInfo [i].w = w;
-	displayModeInfo [i].h = h;
-	if (!(displayModeInfo [i].bAvailable = GrVideoModeOK (displayModeInfo [i].dim))) {
-		displayModeInfo [i].dim = 0;
-		displayModeInfo [i].w = 0;
-		displayModeInfo [i].h = 0;
-		return 0;
-		}
-	displayModeInfo [i].renderMethod = VR_NONE;
-	displayModeInfo [i].flags = VRF_COMPATIBLE_MENUS + VRF_ALLOW_COCKPIT;
-	displayModeInfo [i].bWideScreen = float (displayModeInfo [i].w) / float (displayModeInfo [i].h) >= 1.5f;
-	displayModeInfo [i].bFullScreen = 1;
-	displayModeInfo [i].bAvailable = 1;
-	}
+if (w && h)
+	CreateDisplayModeInfo (CUSTOM_DISPLAY_MODE, w, h, bFullScreen);
 return 1;
 }
 
@@ -391,12 +383,12 @@ return -1;
 #endif
 
 
-void SetDisplayMode (int nMode, int bOverride)
+int SetDisplayMode (int nMode, int bOverride)
 {
 	CDisplayModeInfo *dmiP;
 
 if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE))	//special VR nMode
-	return;	//...don't change
+	return 0;	//...don't change
 if (!bOverride)
 	gameStates.gfx.bOverride = 0;
 else if (gameStates.gfx.bOverride)
@@ -414,10 +406,19 @@ if (gameStates.video.nDisplayMode != -1) {
 	gameStates.video.nDefaultDisplayMode = gameStates.video.nDisplayMode;
 	}
 gameStates.video.nScreenMode = -1;		//force screen reset
+return nMode;
 }
 
 //------------------------------------------------------------------------------
 
+int SetOculusRiftDisplayMode (void)
+{
+ogl.SetFullScreen (0);
+SetCustomDisplayMode (800, 600, 0);
+return SetDisplayMode (CUSTOM_DISPLAY_MODE, 0);
+}
+
+//------------------------------------------------------------------------------
 //called to get the screen in a mode compatible with popup menus.
 //if we can't have popups over the game screen, switch to menu mode.
 

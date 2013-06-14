@@ -521,7 +521,7 @@ else if (gameOpts->render.stereo.nGlasses == GLASSES_GREEN_MAGENTA) {	//blue/red
 	else
 		glColorMask (bRed, GL_FALSE, bBlue, bAlpha);
 	}
-else //GLASSES_SHUTTER or NONE
+else //GLASSES_SHUTTER, GLASSES_OCULUS_RIFT or NONE
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 }
 

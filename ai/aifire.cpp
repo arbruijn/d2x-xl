@@ -310,7 +310,7 @@ if (0 > (nShot = CreateNewWeaponSimple (&vFire, vFirePoint, objP->Index (), (uby
 if ((nWeaponType == FUSION_ID) && (gameStates.app.nSDLTicks [0] - objP->TimeLastEffect () > 1000)) {
 	objP->SetTimeLastEffect (gameStates.app.nSDLTicks [0]);
 	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 3, objP->info.xSize, 1, 
-									OBJPOS (objP)->vPos + OBJPOS (objP)->mOrient.m.dir.f * objP->info.xSize, objP->Index ()));
+																	  OBJPOS (objP)->vPos + OBJPOS (objP)->mOrient.m.dir.f * objP->info.xSize, objP->Index ()));
 	}
 
 lightClusterManager.AddForAI (objP, nObject, nShot);

@@ -77,7 +77,9 @@ void GameInitRenderBuffers(int screen_mode, int render_max_w, int render_max_h, 
 void GameInitRenderSubBuffers(int x, int y, int w, int h);
 
 int GetDisplayMode (int mode);
-void SetDisplayMode (int mode, int bOverride);
+int SetDisplayMode (int mode, int bOverride);
+int SetOculusRiftDisplayMode (void);
+
 extern int nDefaultDisplayMode;		// cannot be -1
 // values are:
 // -1: some special VR mode.

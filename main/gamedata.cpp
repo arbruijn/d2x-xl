@@ -2076,6 +2076,8 @@ gameOptions [0].render.weaponIcons.nSort = 1;
 gameOptions [0].render.weaponIcons.bShowAmmo = 1;
 gameOptions [0].render.weaponIcons.alpha = 4;
 
+if ((gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT) && !SetOculusRiftDisplayMode ())
+	gameOpts->render.stereo.nGlasses = 0;
 if (!gameOpts->app.bExpertMode) {
 	gameOpts->render.nLightmapPrecision = 1;
 	if (gameOpts->render.stereo.nGlasses) {

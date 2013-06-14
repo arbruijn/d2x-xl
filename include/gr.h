@@ -196,8 +196,6 @@ void AutoScreenshot (void);
 
 void ResetTextures (int bReload, int bGame);
 
-int GrToggleFullScreenMenu (void);//returns state after toggling (ie, same as if you had called check_fullscreen immediatly after)
-
 typedef struct tScrSize {
 	int	x, y, c;
 } __pack__ tScrSize;
@@ -250,5 +248,6 @@ extern CArray<CDisplayModeInfo> displayModeInfo;
 #define MAX_DISPLAY_MODE		(NUM_DISPLAY_MODES - 2)
 
 int FindDisplayMode (int nScrSize);
+int SetCustomDisplayMode (int w, int h, int bFullScreen);
 
 #endif /* def _GR_H */

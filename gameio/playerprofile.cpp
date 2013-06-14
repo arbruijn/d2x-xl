@@ -1676,7 +1676,7 @@ else if (gameStates.video.nDefaultDisplayMode < 0) {
 	}
 else 
 	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.render.window.w, gameData.render.window.h);
-SetCustomDisplayMode (customDisplayMode.w, customDisplayMode.h);
+SetCustomDisplayMode (customDisplayMode.w, customDisplayMode.h, 1);
 
 if (nStage < 2)
 	return funcRes;

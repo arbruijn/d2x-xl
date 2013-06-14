@@ -75,36 +75,48 @@ extern float quadVerts [4][2];
 
 void COGL::FlushStereoBuffers (int nEffects)
 {
-if (m_data.xStereoSeparation > 0) {
-	static float gain [4] = {1.0, 4.0, 2.0, 1.0};
-	int h = gameOpts->render.stereo.bDeghost;
-	int i = (gameOpts->render.stereo.bColorGain > 0);
-	int j = Enhance3D () - 1;
-	if (nEffects & 5)
-		SelectGlowBuffer (); // use as temporary render buffer
-	else
-		SetDrawBuffer (GL_BACK, 0);
-	if ((j >= 0) && (j <= 2) && ((h < 4) || (j == 1))) {
-		GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][j]));
-		if (shaderProg) {
-			shaderManager.Rebuild (shaderProg);
-			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
-			ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
-			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
-			OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
+int j = Enhance3D ();
 
-			glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.stereo.bFlipFrames);
-			glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.stereo.bFlipFrames);
-			if (h < 4) {
-				if (h)
-					glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.stereo.bDeghost]));
-				if (i)
-					glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.stereo.bColorGain]);
-				}
-			ClearError (0);
-			}
-		}
+if (j == -2) {
+	// todo: add barrel distortion shader
+	SetDrawBuffer (GL_BACK, 0);
 	OglDrawArrays (GL_QUADS, 0, 4);
+	}
+else if (j == -1) {
+	SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
+	OglDrawArrays (GL_QUADS, 0, 4);
+	}
+else { // merge left and right anaglyph buffers
+	if (m_data.xStereoSeparation > 0) {
+		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
+		int h = gameOpts->render.stereo.bDeghost;
+		int i = (gameOpts->render.stereo.bColorGain > 0);
+		if (nEffects & 1) // additional effect and/or shadow map rendering
+			SelectDrawBuffer (2); // use as temporary render buffer
+		else
+			SetDrawBuffer (GL_BACK, 0);
+		if ((j > 0) && (j <= 3) && ((h < 4) || (j == 2))) {
+			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][--j]));
+			if (shaderProg) {
+				shaderManager.Rebuild (shaderProg);
+				ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
+				ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
+				OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
+				OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
+
+				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.stereo.bFlipFrames);
+				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.stereo.bFlipFrames);
+				if (h < 4) {
+					if (h)
+						glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.stereo.bDeghost]));
+					if (i)
+						glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.stereo.bColorGain]);
+					}
+				ClearError (0);
+				}
+			}
+		OglDrawArrays (GL_QUADS, 0, 4);
+		}
 	}	
 }
 

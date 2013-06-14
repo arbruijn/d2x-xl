@@ -567,9 +567,11 @@ class COGL {
 								? 2 
 								 : (gameOpts->render.stereo.nGlasses == GLASSES_GREEN_MAGENTA) 
 									? 3 
-									 : ((gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER) && m_states.nStereo)
-										? -1
-										: 0; 
+									 : (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT)
+										? -2
+										 : ((gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER) && m_states.nStereo)
+											? -1
+											: 0; 
 			}
 
 		inline void BindTexture (GLuint handle) { 

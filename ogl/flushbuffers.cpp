@@ -145,23 +145,28 @@ if (!gameStates.menus.nInMenu || bForce) {
 }
 
 //------------------------------------------------------------------------------
+// render post processed effects
+// if no or hardware (shutter glasses / Oculus Rift) based stereo rendering,
+// use render buffer 0 as source, otherwise (anaglyph stereo) use render buffer 2 as source
+// if hardware (shutter glasses / Oculus Rift) based stereo rendering,
+// use render buffer 1 as destination, otherwise use hardware draw buffer as destination
 
 void COGL::FlushEffects (int nEffects)
 {
 //ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
-if (nEffects & 5) {
+if (nEffects & 1) {
 	postProcessManager.Setup ();
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	ogl.BindTexture (DrawBuffer ((nEffects & 2) ? 1 : 0)->ColorBuffer ());
+	ogl.BindTexture (DrawBuffer ((nEffects & 2) ? 2 : 0)->ColorBuffer ());
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
-	if ((nEffects & 4) == 0)
+	if (nEffects & 4) // shutter glasses or Oculus Rift
+		SelectDrawBuffer (1); // render effects to texture 1
+	else
 		SetDrawBuffer (GL_BACK, 0);
-	else {
-		SelectDrawBuffer (1);
-		//SetDrawBuffer (GL_BACK, 1);
-		}
 	postProcessManager.Render ();
+	if (nEffects & 4) // shutter glasses or Oculus Rift
+		ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
 	}
 }
 
@@ -172,8 +177,9 @@ void COGL::FlushDrawBuffer (bool bAdditive)
 if (HaveDrawBuffer ()) {
 	int nEffects = postProcessManager.HaveEffects () 
 						+ (int (m_data.xStereoSeparation > 0) << 1)
+						+ (int (Enhance3D () < 0) << 2)
 #if MAX_SHADOWMAPS
-						+ (int (EGI_FLAG (bShadows, 0, 1, 0) != 0) << 2)
+						+ (int (EGI_FLAG (bShadows, 0, 1, 0) != 0) << 3)
 #endif
 						;
 
@@ -182,9 +188,13 @@ if (HaveDrawBuffer ()) {
 	EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
-	BindTexture (DrawBuffer (0)->ColorBuffer ());
+	BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
 
-	if (nEffects) {
+	if (nEffects & 5) {
+		FlushEffects (nEffects);
+		FlushStereoBuffers (nEffects);
+		}
+	else if (nEffects & 3) {
 		FlushStereoBuffers (nEffects);
 		FlushEffects (nEffects);
 #if MAX_SHADOWMAPS
