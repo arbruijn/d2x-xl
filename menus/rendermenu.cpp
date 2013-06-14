@@ -401,8 +401,8 @@ psz3DGlasses [0] = TXT_NONE;
 psz3DGlasses [1] = TXT_AMBER_BLUE;
 psz3DGlasses [2] = TXT_RED_CYAN;
 psz3DGlasses [3] = TXT_GREEN_MAGENTA;
-psz3DGlasses [4] = TXT_SHUTTER;
-psz3DGlasses [5] = TXT_OCULUS_RIFT;
+psz3DGlasses [4] = TXT_OCULUS_RIFT;
+psz3DGlasses [5] = TXT_SHUTTER;
 
 pszDeghost [0] = TXT_OFF;
 pszDeghost [1] = TXT_LOW;
