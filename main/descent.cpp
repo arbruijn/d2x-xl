@@ -231,7 +231,7 @@ if (gameStates.menus.bHires) {
 	if (gameOpts->menus.altBg.bHave > 0)
 		y = 8; //102
 	else {
-		y = (88 * (gameStates.render.vr.nScreenSize % 65536)) / 480;
+		y = 88 * gameStates.render.vr.m_screenSize.Height () / 480;
 		if (y < 88)
 			y = 88;
 		}

@@ -268,7 +268,7 @@ void GameInitRenderBuffers (int nScreenSize, int render_w, int render_h, int ren
 //	if (vga_check_mode (nScreenSize) != 0)
 //		Error ("Cannot set requested video mode");
 
-gameStates.render.vr.nScreenSize = nScreenSize;
+gameStates.render.vr.m_screenSize.Set (nScreenSize);
 gameStates.render.vr.nScreenFlags = flags;
 //NEWVR
 VRResetParams ();

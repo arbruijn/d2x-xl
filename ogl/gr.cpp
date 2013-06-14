@@ -414,7 +414,7 @@ return nMode;
 int SetOculusRiftDisplayMode (void)
 {
 ogl.SetFullScreen (0);
-SetCustomDisplayMode (800, 600, 0);
+SetCustomDisplayMode (600, 800, 0);
 return SetDisplayMode (CUSTOM_DISPLAY_MODE, 0);
 }
 
@@ -438,8 +438,8 @@ gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we 
 nMenuMode = gameStates.gfx.bOverride 
 		? gameStates.gfx.nStartScrSize
 		: gameStates.menus.bHires 
-			? (gameStates.render.vr.nScreenSize >= SM (640, 480)) 
-				? gameStates.render.vr.nScreenSize
+			? (gameStates.render.vr.m_screenSize.Area () >= 640 * 480) 
+				? gameStates.render.vr.m_screenSize.Scalar ()
 				: SM (800, 600)
 			: SM (320, 200);
 gameStates.video.nLastScreenMode = -1;
@@ -451,12 +451,8 @@ if (nCurrentVGAMode != nMenuMode) {
 	ogl.RebuildContext (gameStates.app.bGameRunning);
 	}
 
-screen.Canvas ()->SetupPane (
-	gameStates.render.vr.buffers.screenPages, 0, 0, 
-	screen.Width (), screen.Height ());
-screen.Canvas ()->SetupPane (
-	gameStates.render.vr.buffers.screenPages + 1, 0, 0, 
-	screen.Width (), screen.Height ());
+screen.Canvas ()->SetupPane (gameStates.render.vr.buffers.screenPages, 0, 0, screen.Width (), screen.Height ());
+screen.Canvas ()->SetupPane (gameStates.render.vr.buffers.screenPages + 1, 0, 0, screen.Width (), screen.Height ());
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 return 1;
 }
@@ -465,8 +461,8 @@ return 1;
 
 int SetGameScreenMode (u_int32_t sm)
 {
-if (nCurrentVGAMode != gameStates.render.vr.nScreenSize) {
-	if (GrSetMode (gameStates.render.vr.nScreenSize)) {
+if (nCurrentVGAMode != gameStates.render.vr.m_screenSize.Scalar ()) {
+	if (GrSetMode (gameStates.render.vr.m_screenSize.Scalar ())) {
 		Error ("Cannot set desired screen mode for game!");
 		//we probably should do something else here, like select a standard mode
 		}
@@ -514,8 +510,8 @@ int SetScreenMode (u_int32_t sm)
 #if 0
 	GLint nError = glGetError ();
 #endif
-if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.render.vr.nScreenSize) && 
-		(screen.Mode () == gameStates.render.vr.nScreenSize)) {
+if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.render.vr.m_screenSize.Scalar ()) && 
+		(screen.Mode () == gameStates.render.vr.m_screenSize.Scalar ())) {
 	CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 	ogl.SetScreenMode ();
 	return 1;

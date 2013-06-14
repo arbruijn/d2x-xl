@@ -884,6 +884,18 @@ class CCockpitStates {
 
 //------------------------------------------------------------------------------
 
+class CScreenSize {
+	public:
+		uint			m_w, m_h;
+
+		inline uint Scalar (void) { return (((uint) m_w) << 16) + (((uint) m_h) & 0xFFFF); }
+		inline uint Area (void) { return (uint) m_w * (uint) m_h; }
+		void Set (uint w, uint h) { m_w = w, m_h = h; }
+		void Set (uint scalar) { m_w = scalar >> 16, m_h = scalar & 0xFFFF; }
+		inline uint Width (void) { return m_w; }
+		inline uint Height (void) { return m_h; }
+	};
+
 class CVRBuffers {
 	public:
 		CCanvas		*offscreen;			// The offscreen data buffer
@@ -895,7 +907,7 @@ class CVRBuffers {
 
 class CVRStates {
 	public:
-		u_int32_t	nScreenSize;
+		CScreenSize	m_screenSize;
 		ubyte			nScreenFlags;	//see values in screens.h
 		ubyte			nCurrentPage;
 		fix			xEyeWidth;
