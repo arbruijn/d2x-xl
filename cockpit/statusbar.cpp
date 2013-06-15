@@ -543,9 +543,9 @@ if (gameStates.app.bDemoData)
 	h *= 2;
 if (screen.Height () > 480)
 	h = (int) ((double) h * (double) screen.Height () / 480.0);
+gameData.render.viewport.SetLeft (0);
 gameData.render.viewport.SetWidth (gameData.render.frame.Width ());
 gameData.render.viewport.SetHeight (gameData.render.frame.Height () - h);
-gameData.render.viewport.SetLeft ((gameData.render.frame.Width () - gameData.render.frame.Width ()) / 2);
 gameData.render.viewport.SetTop ((gameData.render.frame.Height () - gameData.render.frame.Height ()) / 2);
 //GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 return true;

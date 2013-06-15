@@ -615,12 +615,12 @@ void RenderMonoFrame (fix xStereoSeparation = 0)
 RenderShadowMaps (xStereoSeparation);
 #endif
 if (ogl.StereoDevice () == -2)
-	gameData.render.screen.SetupPane (&gameData.render.frame, 0, 0, screen.Width () / 2, screen.Height ());
+	gameData.render.screen.SetupPane (&gameData.render.frame, (xStereoSeparation < 0) ? 0 : screen.Width () / 2, 0, screen.Width () / 2, screen.Height ());
 else
 	gameData.render.screen.SetupPane (&gameData.render.frame, gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
-gameData.render.viewport = gameData.render.frame;
-CCanvas::SetCurrent (&gameData.render.viewport);
 ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+gameData.render.frame.SetupPane (&gameData.render.viewport, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+CCanvas::SetCurrent (&gameData.render.viewport);
 
 if (xStereoSeparation <= 0) {
 	PROF_START
