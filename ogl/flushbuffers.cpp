@@ -115,7 +115,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 		paletteManager.RenderEffect ();
 #endif
 	glowRenderer.End ();
-	if ((gameStates.render.bRenderIndirect > 0) && !gameStates.menus.nInMenu) {
+	if ((gameStates.render.bRenderIndirect > 0) && (!gameStates.menus.nInMenu || Enhance3D () == -2)) {
 		FlushDrawBuffer ();
 		//SelectDrawBuffer (0);
 		gameStates.render.bRenderIndirect = 0;

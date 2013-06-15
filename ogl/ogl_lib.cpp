@@ -664,10 +664,10 @@ else
 			screen.Canvas ()->Height () - CCanvas::Current ()->Top () - CCanvas::Current ()->Height (),
 			CCanvas::Current ()->Width (),
 			CCanvas::Current ()->Height ());
-		ogl.SetScissorTest (true);
+		SetScissorTest (true);
 		}
 	else
-		ogl.SetScissorTest (false);
+		SetScissorTest (false);
 	if (gameStates.render.nRenderPass < 0) {
 		ogl.SetDepthWrite (true);
 		glClearDepth (1.0);

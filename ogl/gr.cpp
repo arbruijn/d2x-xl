@@ -411,8 +411,12 @@ return nMode;
 
 int SetOculusRiftDisplayMode (void)
 {
+#if DBG
 ogl.SetFullScreen (0);
-SetCustomDisplayMode (600, 800, 0);
+#else
+ogl.SetFullScreen (1);
+#endif
+SetCustomDisplayMode (1280, 800, 0);
 return SetDisplayMode (CUSTOM_DISPLAY_MODE, 0);
 }
 

@@ -1666,6 +1666,7 @@ class CGameScreenData {
 class CGameWindowData : public CCanvas {
 	public:
 		void Set (short l, short t, short w, short h) { SetLeft (l), SetTop (t), SetWidth (w), SetHeight (h); }
+		CCanvas viewport;
 };
 
 //------------------------------------------------------------------------------

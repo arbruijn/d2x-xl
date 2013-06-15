@@ -356,7 +356,7 @@ ogl.SetBlendMode (OGL_BLEND_ALPHA);
 
 void Draw2DFrameElements (void)
 {
-//if (gameStates.render.bRenderIndirect > 0)
+if (ogl.Enhance3D () >= 0)
 	ogl.SetDrawBuffer (GL_BACK, 0);
 fix xStereoSeparation = ogl.StereoSeparation ();
 ogl.SetStereoSeparation (0);
@@ -497,7 +497,7 @@ if (!nWindow)
 
 {
 PROF_START
-G3StartFrame (transformation, 0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
+G3StartFrame (transformation, 0, !(nWindow || gameStates.render.cameras.bActive || ((ogl.Enhance3D () == -2) && (xStereoSeparation > 0))), xStereoSeparation);
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
 transformation.ComputeFrustum ();
 #if MAX_SHADOWMAPS
@@ -611,13 +611,15 @@ if (!ShowGameMessage (gameData.messages, -1, -1))
 
 void RenderMonoFrame (fix xStereoSeparation = 0)
 {
-	CCanvas		frameWindow;
-
 #if MAX_SHADOWMAPS
 RenderShadowMaps (xStereoSeparation);
 #endif
-gameData.render.window.SetupPane (&frameWindow, gameData.render.window.Left (), gameData.render.window.Top (), gameData.render.window.Width (), gameData.render.window.Height ());
-CCanvas::SetCurrent (&gameData.render.window);
+if (ogl.Enhance3D () >= -1)
+	gameData.render.window.SetupPane (&gameData.render.window.viewport, gameData.render.window.Left (), gameData.render.window.Top (), gameData.render.window.Width (), gameData.render.window.Height ());
+else
+	gameData.render.window.SetupPane (&gameData.render.window.viewport, (xStereoSeparation < 0) ? 0 : screen.Width () / 2, 0, screen.Width () / 2, screen.Height ());
+CCanvas::SetCurrent (&gameData.render.window.viewport);
+ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 
 if (xStereoSeparation <= 0) {
 	PROF_START
@@ -674,8 +676,9 @@ else {
 		CCanvas::SetCurrent (&gameData.render.window);
 	RenderFrame (xStereoSeparation, 0);
 	}
-CCanvas::SetCurrent (&gameData.render.window);
+CCanvas::SetCurrent (&gameData.render.window.viewport);
 FlushFrame (xStereoSeparation);
+CCanvas::SetCurrent (&gameData.render.window);
 }
 
 //------------------------------------------------------------------------------
