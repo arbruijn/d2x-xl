@@ -572,7 +572,7 @@ CGenericCockpit::DrawCockpit (m_info.nCockpit, 0, bAlphaTest);
 void CCockpit::SetupWindow (int nWindow, CCanvas* canvP)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + COCKPIT_PRIMARY_BOX + nWindow;
-gameData.render.window.SetupPane (
+gameData.render.frame.SetupPane (
 	canvP,
 	ScaleX (hudAreaP->left),
 	ScaleY (hudAreaP->top),
@@ -589,11 +589,11 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bRebuild))
 	return false;
-gameData.render.window.SetHeight (2 * screen.Height () / 3);
-gameData.render.window.SetWidth (screen.Width ());
-gameData.render.window.SetLeft ((screen.Width () - gameData.render.window.Width ()) / 2);
-gameData.render.window.SetTop (0); //(screen.Height () - gameData.render.window.Height ()) / 2);
-//GameInitRenderSubBuffers (gameData.render.window.Left (), gameData.render.window.Top (), gameData.render.window.Width (), gameData.render.window.Height ());
+gameData.render.viewport.SetHeight (2 * gameData.render.frame.Height () / 3);
+gameData.render.viewport.SetWidth (gameData.render.frame.Width ());
+gameData.render.viewport.SetLeft (0);
+gameData.render.viewport.SetTop ((gameData.render.frame.Height () - gameData.render.viewport.Height ()) / 2);
+//GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 return true;
 }
 
@@ -614,11 +614,11 @@ if (bRebuild && !m_info.bRebuild)
 	return true;
 if (!CGenericCockpit::Setup ())
 	return false;
-gameData.render.window.SetHeight (2 * screen.Height () / 3);
-gameData.render.window.SetWidth (screen.Width ());
-gameData.render.window.SetLeft ((screen.Width () - gameData.render.window.Width ()) / 2);
-gameData.render.window.SetTop ((screen.Height () - gameData.render.window.Height ()) / 2);
-//GameInitRenderSubBuffers (gameData.render.window.Left (), gameData.render.window.Top (), gameData.render.window.Width (), gameData.render.window.Height ());
+gameData.render.frame.SetHeight (2 * screen.Height () / 3);
+gameData.render.frame.SetWidth (screen.Width ());
+gameData.render.frame.SetLeft ((screen.Width () - gameData.render.frame.Width ()) / 2);
+gameData.render.frame.SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
+//GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 return true;
 }
 

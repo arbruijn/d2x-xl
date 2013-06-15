@@ -524,9 +524,9 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 void CStatusBar::DrawCockpit (bool bAlphaTest)
 {
-CGenericCockpit::DrawCockpit (CM_STATUS_BAR + m_info.nCockpit, gameData.render.window.Height (), bAlphaTest);
-//gameData.render.window.SetLeft ((screen.Width () - gameData.render.window.Width ()) / 2);
-//gameData.render.window.SetTop ((screen.Height () - gameData.render.window.Height ()) / 2);
+CGenericCockpit::DrawCockpit (CM_STATUS_BAR + m_info.nCockpit, gameData.render.frame.Height (), bAlphaTest);
+//gameData.render.frame.SetLeft ((screen.Width () - gameData.render.frame.Width ()) / 2);
+//gameData.render.frame.SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
 }
 
 //	-----------------------------------------------------------------------------
@@ -543,11 +543,11 @@ if (gameStates.app.bDemoData)
 	h *= 2;
 if (screen.Height () > 480)
 	h = (int) ((double) h * (double) screen.Height () / 480.0);
-gameData.render.window.SetWidth (screen.Width ());
-gameData.render.window.SetHeight (screen.Height () - h);
-gameData.render.window.SetLeft ((screen.Width () - gameData.render.window.Width ()) / 2);
-gameData.render.window.SetTop (0); //(screen.Height () - gameData.render.window.Height ()) / 2);
-//GameInitRenderSubBuffers (gameData.render.window.Left (), gameData.render.window.Top (), gameData.render.window.Width (), gameData.render.window.Height ());
+gameData.render.viewport.SetWidth (gameData.render.frame.Width ());
+gameData.render.viewport.SetHeight (gameData.render.frame.Height () - h);
+gameData.render.viewport.SetLeft ((gameData.render.frame.Width () - gameData.render.frame.Width ()) / 2);
+gameData.render.viewport.SetTop ((gameData.render.frame.Height () - gameData.render.frame.Height ()) / 2);
+//GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 return true;
 }
 
@@ -556,7 +556,7 @@ return true;
 void CStatusBar::SetupWindow (int nWindow, CCanvas* canvP)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
-gameData.render.window.SetupPane (
+gameData.render.frame.SetupPane (
 	canvP,
 	ScaleX (hudAreaP->left),
 	ScaleY (hudAreaP->top),

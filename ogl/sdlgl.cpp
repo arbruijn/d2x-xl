@@ -198,7 +198,7 @@ ogl.m_states.nCurWidth = w;
 ogl.m_states.nCurHeight = h;
 ogl.m_states.bCurFullScreen = ogl.m_states.bFullScreen;
 if (ogl.m_states.bInitialized && bRebuild) {
-	ogl.Viewport (0, 0, w, h);
+	ogl.SetViewport (0, 0, w, h);
 	if (gameStates.app.bGameRunning) {
 		//paletteManager.ResumeEffect ();
 		ogl.RebuildContext (1);

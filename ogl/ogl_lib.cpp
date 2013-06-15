@@ -479,7 +479,7 @@ m_states.viewport [0].Apply ();
 
 //------------------------------------------------------------------------------
 
-void COGL::Viewport (int x, int y, int w, int h)
+void COGL::SetViewport (int x, int y, int w, int h)
 {
 if (!gameOpts->render.cameras.bHires) {
 	x >>= gameStates.render.cameras.bActive;
@@ -657,7 +657,7 @@ else
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
-	Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+	SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	if (m_states.bEnableScissor) {
 		glScissor (
 			CCanvas::Current ()->Left (),
@@ -759,7 +759,7 @@ ogl.BindTexture (0);
 DisableClientStates (1, 1, 1, GL_TEXTURE0);
 ogl.BindTexture (0);
 SetBlendMode (OGL_BLEND_ALPHA);
-Viewport (0, 0, screen.Width (), screen.Height ());
+SetViewport (0, 0, screen.Width (), screen.Height ());
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);

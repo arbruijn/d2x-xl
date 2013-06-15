@@ -115,7 +115,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 		paletteManager.RenderEffect ();
 #endif
 	glowRenderer.End ();
-	if ((gameStates.render.bRenderIndirect > 0) && (!gameStates.menus.nInMenu || Enhance3D () == -2)) {
+	if ((gameStates.render.bRenderIndirect > 0) && (!gameStates.menus.nInMenu || StereoDevice () == -2)) {
 		FlushDrawBuffer ();
 		//SelectDrawBuffer (0);
 		gameStates.render.bRenderIndirect = 0;
@@ -177,7 +177,7 @@ void COGL::FlushDrawBuffer (bool bAdditive)
 if (HaveDrawBuffer ()) {
 	int nEffects = postProcessManager.HaveEffects () 
 						+ (int (m_data.xStereoSeparation > 0) << 1)
-						+ (int (Enhance3D () < 0) << 2)
+						+ (int (StereoDevice () < 0) << 2)
 #if MAX_SHADOWMAPS
 						+ (int (EGI_FLAG (bShadows, 0, 1, 0) != 0) << 3)
 #endif

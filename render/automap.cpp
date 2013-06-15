@@ -466,7 +466,7 @@ ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 
 if (bAutomapFrame)
-	ogl.Viewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
+	ogl.SetViewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
 RenderStartFrame ();
 if (m_bRadar == 2) {
 	m_data.viewer.vPos = m_data.viewTarget + mRadar.m.dir.f * (-m_data.nViewDist);

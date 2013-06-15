@@ -45,7 +45,7 @@ int nModexHUDMsgs;
 void ClearBackgroundMessages (void)
 {
 if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && 
-	  (nLastMsgYCrd != -1) && (gameData.render.window.Top () >= 6)) {
+	  (nLastMsgYCrd != -1) && (gameData.render.viewport.Top () >= 6)) {
 	CCanvas::Push ();
 
 	CCanvas::SetCurrent (CurrentGameScreen ());
@@ -116,7 +116,7 @@ if (pMsgs->nMessages > 0) {
 	if (pMsgs->nColor == (uint) -1)
 		pMsgs->nColor = GREEN_RGBA;
 
-	if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && (gameData.render.window.Top () >= (screen.Height () / 8))) {
+	if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && (gameData.render.viewport.Top () >= (screen.Height () / 8))) {
 		// Only display the most recent pszMsg in this mode
 		nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
 		pszMsg = pMsgs->szMsgs [nMsg];
@@ -144,10 +144,7 @@ if (pMsgs->nMessages > 0) {
 		fontManager.SetCurrent (SMALL_FONT);
 		if ((gameStates.render.cockpit.nType == CM_FULL_SCREEN) || 
 			 (gameStates.render.cockpit.nType == CM_LETTERBOX)) {
-			if (gameData.render.window.Width () == screen.Width ())
-				yStart = SMALL_FONT->Height () / 2;
-			else
-				yStart = SMALL_FONT->Height () * 2;
+			yStart = SMALL_FONT->Height () / 2;
 			}
 		else
 			yStart = SMALL_FONT->Height () / 2;

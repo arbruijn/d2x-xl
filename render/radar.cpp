@@ -416,7 +416,7 @@ if (ogl.m_features.bRenderToTexture.Available ()) {
 	// glPushMatrix ();
 	glLoadIdentity ();//clear matrix
 	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-	ogl.Viewport (0, 0, screen.Width (), screen.Height ());
+	ogl.SetViewport (0, 0, screen.Width (), screen.Height ());
 
 	ogl.ChooseDrawBuffer ();
 #if 0

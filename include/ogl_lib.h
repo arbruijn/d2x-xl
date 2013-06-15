@@ -162,6 +162,11 @@ class CViewport {
 		inline const bool operator!= (CViewport const other) {
 			return (m_x != other.m_x) || (m_y != other.m_y) || (m_w != other.m_w) || (m_h != other.m_h) || (m_t != other.m_t);
 			}
+
+		inline int Left (void) { return m_x; }
+		inline int Top (void) { return m_y; }
+		inline int Width (void) { return m_w - m_x; }
+		inline int Height (void) { return m_h - m_y; }
 	};
 
 
@@ -340,7 +345,8 @@ class COGL {
 		void EnableLighting (int bSpecular);
 		void DisableLighting (void);
 		void SetRenderQuality (int nQuality = -1);
-		void Viewport (int x, int y, int w, int h);
+		CViewport& Viewport (void) { return m_states.viewport [0]; }
+		void SetViewport (int x, int y, int w, int h);
 		void SaveViewport (void);
 		void RestoreViewport (void);
 		void SwapBuffers (int bForce, int bClear);
@@ -556,7 +562,7 @@ class COGL {
 		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
-		inline int Enhance3D (int bForce = 0) { 
+		inline int StereoDevice (int bForce = 0) { 
 			return !m_features.bShaders
 					 ? 0
 					 : !(bForce || gameOpts->render.stereo.bEnhance)

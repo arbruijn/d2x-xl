@@ -1651,23 +1651,13 @@ class CMineRenderData {
 
 //------------------------------------------------------------------------------
 
-class CGameScreenData {
-	public:
-		uint			m_width, m_height;
-
-		inline uint Scalar (void) { return (((uint) m_width) << 16) + (((uint) m_height) & 0xFFFF); }
-		inline uint Area (void) { return (uint) m_width * (uint) m_height; }
-		void Set (uint w, uint h) { m_width = w, m_height = h; }
-		void Set (uint scalar) { m_width = scalar >> 16, m_height = scalar & 0xFFFF; }
-		inline uint Width (void) { return m_width; }
-		inline uint Height (void) { return m_height; }
-	};
-
-class CGameWindowData : public CCanvas {
+class CGameScreenData : public CCanvas {
 	public:
 		void Set (short l, short t, short w, short h) { SetLeft (l), SetTop (t), SetWidth (w), SetHeight (h); }
-		CCanvas viewport;
-};
+		inline uint Scalar (void) { return (((uint) Width ()) << 16) + (((uint) Height ()) & 0xFFFF); }
+		inline uint Area (void) { return (uint) Width () * (uint) Height (); }
+		void Set (uint scalar) { SetWidth ((short) (scalar >> 16)), SetHeight ((short) (scalar & 0xFFFF)); }
+	};
 
 //------------------------------------------------------------------------------
 
@@ -1734,7 +1724,8 @@ class CRenderData {
 		CThrusterData				thrusters [MAX_PLAYERS];
 		CMineRenderData			mine;
 		CGameScreenData			screen;
-		CGameWindowData			window;
+		CGameScreenData			frame;
+		CGameScreenData			viewport;
 		fix							zMin;
 		fix							zMax;
 		double						dAspect;

@@ -408,7 +408,7 @@ canvas.SetHeight ();
 screen.SetWidth (1024);
 screen.SetHeight (1024);
 ogl.SetTransform (1);
-ogl.Viewport (0, 0, 1024, 1024);
+ogl.SetViewport (0, 0, 1024, 1024);
 gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
 SetupTransformation (projection, CFixVector::ZERO, CFixMatrix::IDENTITY, gameStates.render.xZoom, -1, 0, true);
 gameStates.render.nShadowPass = 0;
@@ -527,7 +527,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			}
 		}
 	}
-//ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+//ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 }
 
 //------------------------------------------------------------------------------

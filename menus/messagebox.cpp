@@ -75,7 +75,7 @@ void CMessageBox::Render (const char* pszTitle, const char* pszSubTitle, CCanvas
 if (!(BeginRenderMenu () && MenuRenderTimeout (t0, -1)))
 	return;
 
-CCanvas::SetCurrent (&gameData.render.window);
+CCanvas::SetCurrent (&gameData.render.frame);
 #if 0
 if (!gameStates.app.bGameRunning)
 	ogl.SetDrawBuffer (GL_FRONT, 0);

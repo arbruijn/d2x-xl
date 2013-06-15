@@ -245,10 +245,10 @@ return true;
 
 void GameInitRenderSubBuffers (int x, int y, int w, int h)
 {
-gameData.render.window.SetLeft (x);
-gameData.render.window.SetTop (y);
-gameData.render.window.SetWidth (w);
-gameData.render.window.SetHeight (h);
+gameData.render.frame.SetLeft (x);
+gameData.render.frame.SetTop (y);
+gameData.render.frame.SetWidth (w);
+gameData.render.frame.SetHeight (h);
 }
 
 //------------------------------------------------------------------------------
@@ -257,10 +257,10 @@ gameData.render.window.SetHeight (h);
 void GameInitRenderBuffers (int nScreenSize, int render_w, int render_h, int render_method, int flags)
 {
 gameData.render.screen.Set (nScreenSize);
-gameData.render.window.SetLeft (0);
-gameData.render.window.SetTop (0);
-gameData.render.window.SetWidth (render_w);
-gameData.render.window.SetHeight (render_h);
+gameData.render.frame.SetLeft (0);
+gameData.render.frame.SetTop (0);
+gameData.render.frame.SetWidth (render_w);
+gameData.render.frame.SetHeight (render_h);
 }
 
 //------------------------------------------------------------------------------
@@ -729,16 +729,16 @@ if (!setjmp (gameExitPoint)) {
 			//paletteManager.ResumeEffect (!IsMultiGame);
 			}
 		if (automap.Display ()) {
-			int	save_w = gameData.render.window.Width (),
-					save_h = gameData.render.window.Height ();
+			int	save_w = gameData.render.frame.Width (),
+					save_h = gameData.render.frame.Height ();
 			automap.DoFrame (0, 0);
 			gameStates.app.bEnterGame = 1;
 			//	FlushInput ();
 			//	StopPlayerMovement ();
 			gameStates.video.nScreenMode = -1;
 			SetScreenMode (SCREEN_GAME);
-			gameData.render.window.SetWidth (save_w);
-			gameData.render.window.SetHeight (save_h);
+			gameData.render.frame.SetWidth (save_w);
+			gameData.render.frame.SetHeight (save_h);
 			cockpit->Init ();
 			}
 		if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
@@ -890,7 +890,7 @@ if (fLog) {
 
 CCanvas* CurrentGameScreen (void)
 {
-return &gameData.render.window;
+return &gameData.render.frame;
 }
 
 //-----------------------------------------------------------------------------

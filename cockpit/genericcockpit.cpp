@@ -1962,7 +1962,7 @@ else
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.SetGameMode (gameData.demo.nGameMode);
 
-CCanvas::SetCurrent (&gameData.render.window);
+CCanvas::SetCurrent (&gameData.render.viewport);
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
@@ -2182,7 +2182,7 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 
 	//if the window only partially overlaps the big 3d window, copy
 	//the extra part to the visible screen
-	bigWindowBottom = gameData.render.window.Top () + gameData.render.window.Height () - 1;
+	bigWindowBottom = gameData.render.viewport.Top () + gameData.render.viewport.Height () - 1;
 	if (x > bigWindowBottom) {
 		//the small window is completely outside the big 3d window, so
 		//copy it to the visible screen

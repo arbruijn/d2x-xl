@@ -75,7 +75,7 @@ extern float quadVerts [4][2];
 
 void COGL::FlushStereoBuffers (int nEffects)
 {
-int j = Enhance3D ();
+int j = StereoDevice ();
 
 if (j == -2) {
 	// todo: add barrel distortion shader
