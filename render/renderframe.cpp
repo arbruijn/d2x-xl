@@ -399,8 +399,10 @@ else {
 			else
 #endif
 			Draw2DFrameElements ();
-			if (xStereoSeparation > 0)
+			if (xStereoSeparation > 0) {
+				ogl.SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
 				ogl.SwapBuffers (0, 0);
+				}
 			}
 		}
 	else {
@@ -494,16 +496,16 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
 
 StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
 ogl.m_states.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
+
+{
+PROF_START
+G3StartFrame (transformation, 0, !(nWindow || gameStates.render.cameras.bActive || ((ogl.StereoDevice () == -2) && (xStereoSeparation > 0))), xStereoSeparation);
 if (!nWindow) {
 	cockpit->Setup ();
 	CCanvas::SetCurrent (&gameData.render.scene);
 	fontManager.SetCurrent (GAME_FONT);
 	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
 	}
-
-{
-PROF_START
-G3StartFrame (transformation, 0, !(nWindow || gameStates.render.cameras.bActive || ((ogl.StereoDevice () == -2) && (xStereoSeparation > 0))), xStereoSeparation);
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
 transformation.ComputeFrustum ();
 #if MAX_SHADOWMAPS

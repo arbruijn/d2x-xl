@@ -1915,6 +1915,7 @@ if (!cockpit->Setup (false))
 if (!cockpit->Setup (true))
 	return;
 #endif
+ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.ColorMask (1,1,1,1,0);
