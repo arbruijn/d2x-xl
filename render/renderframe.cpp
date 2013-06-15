@@ -388,10 +388,8 @@ if (!(gameOpts->render.stereo.nGlasses && xStereoSeparation)) {	//no stereo or s
 	}
 else {
 	int i = ogl.StereoDevice ();
-	if (i < 0)
-		Draw2DFrameElements ();
 	if (i) {
-		if (xStereoSeparation > 0) {
+		if ((i < 0) || (xStereoSeparation > 0)) {
 #if 0
 			if (gameStates.menus.nInMenu) {
 				gameStates.render.bRenderIndirect = 0;
@@ -400,6 +398,8 @@ else {
 				}
 			else
 #endif
+			Draw2DFrameElements ();
+			if (xStereoSeparation > 0)
 				ogl.SwapBuffers (0, 0);
 			}
 		}
