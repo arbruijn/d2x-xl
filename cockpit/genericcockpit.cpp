@@ -1689,6 +1689,7 @@ else {
 
 void CGenericCockpit::DrawCockpit (int nCockpit, int y, bool bAlphaTest)
 {
+#if 1
 if ((gameOpts->render.cockpit.bHUD) || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) {
 	int i = gameData.pig.tex.cockpitBmIndex [nCockpit].index;
 	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + i;
@@ -1706,6 +1707,7 @@ if ((gameOpts->render.cockpit.bHUD) || (gameStates.render.cockpit.nType != CM_FU
 	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 	CCanvas::Pop ();
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------

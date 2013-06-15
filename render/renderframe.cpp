@@ -494,12 +494,15 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
 
 StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
 ogl.m_states.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
-if (!nWindow)
+if (!nWindow) {
+	cockpit->Setup ();
+	CCanvas::SetCurrent (&gameData.render.scene);
+	fontManager.SetCurrent (GAME_FONT);
 	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
+	}
 
 {
 PROF_START
-CCanvas::SetCurrent (&gameData.render.scene);
 G3StartFrame (transformation, 0, !(nWindow || gameStates.render.cameras.bActive || ((ogl.StereoDevice () == -2) && (xStereoSeparation > 0))), xStereoSeparation);
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
 transformation.ComputeFrustum ();
@@ -623,7 +626,6 @@ else
 	gameData.render.frame.Set (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 gameData.render.viewport.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
 gameData.render.scene.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
-gameData.render.frame.Info () = gameData.render.viewport.Info () = gameData.render.scene.Info () = gameData.render.screen.Info ();
 CCanvas::SetCurrent (&gameData.render.frame);
 
 if (xStereoSeparation <= 0) {

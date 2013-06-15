@@ -429,13 +429,8 @@ int CFont::DrawString (int left, int top, const char *s)
 	CBitmap*			bmf;
 	CCanvasColor*	colorP = (m_info.flags & FT_COLOR) ? NULL : &CCanvas::Current ()->FontColor (0);
 	
-if (CCanvas::Current ()->Mode () != BM_OGL)
-	return -1;
-
 nextRowP = s;
 y = top;
-if (screen.Canvas ()->Mode () != BM_OGL)
-	Error ("carp.\n");
 while (nextRowP != NULL) {
 	text_ptr1 = nextRowP;
 	nextRowP = NULL;
