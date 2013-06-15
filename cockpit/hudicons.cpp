@@ -259,8 +259,8 @@ if (nWeaponIcons < 3) {
 #if 0
 	if (gameStates.render.cockpit.nType != CM_FULL_COCKPIT) {
 #endif
-		dy = (screen.Height () - gameData.render.scene.Height ());
-		y = nIconPos ? screen.Height () - dy - oy : oy + hIcon + 12;
+		dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
+		y = nIconPos ? gameData.render.frame.Height () - dy - oy : oy + hIcon + 12;
 #if 0
 		}
 	else {
@@ -291,10 +291,10 @@ for (i = 0; i < 2; i++) {
 			}
 #endif
 		y = (gameData.render.scene.Height () - h - n * (hIcon + oy)) / 2 + hIcon;
-		x = i ? screen.Width () - wIcon - ox : ox;
+		x = i ? gameData.render.frame.Width () - wIcon - ox : ox;
 		}
 	else {
-		x = screen.Width () / 2;
+		x = gameData.render.frame.Width () / 2;
 		if (i)
 			x += dx + nDmgIconWidth;
 		else
@@ -392,14 +392,14 @@ for (i = 0; i < 2; i++) {
 		if (bHave) {
 			if (bAvailable)
 				if (nHiliteColor)
-					gameData.render.scene.SetColorRGB (0, 192, 255, ubyte (alpha * 16));
+					gameData.render.viewport.SetColorRGB (0, 192, 255, ubyte (alpha * 16));
 				else
-					gameData.render.scene.SetColorRGB (255, 192, 0, ubyte (alpha * 16));
+					gameData.render.viewport.SetColorRGB (255, 192, 0, ubyte (alpha * 16));
 			else
-				gameData.render.scene.SetColorRGB (128, 0, 0, ubyte (alpha * 16));
+				gameData.render.viewport.SetColorRGB (128, 0, 0, ubyte (alpha * 16));
 			}
 		else {
-			gameData.render.scene.SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
+			gameData.render.viewport.SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 			}
 		OglDrawFilledRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 		if (i) {
@@ -419,18 +419,18 @@ for (i = 0; i < 2; i++) {
 		if (bActive)
 			if (bAvailable)
 				if (nHiliteColor)
-					gameData.render.scene.SetColorRGB (0, 192, 255, 255);
+					gameData.render.viewport.SetColorRGB (0, 192, 255, 255);
 				else
-					gameData.render.scene.SetColorRGB (255, 192, 0, 255);
+					gameData.render.viewport.SetColorRGB (255, 192, 0, 255);
 			else
-				gameData.render.scene.SetColorRGB (160, 0, 0, 255);
+				gameData.render.viewport.SetColorRGB (160, 0, 0, 255);
 		else if (bHave)
 			if (bAvailable)
-				gameData.render.scene.SetColorRGB (0, 160, 0, 255);
+				gameData.render.viewport.SetColorRGB (0, 160, 0, 255);
 			else
-				gameData.render.scene.SetColorRGB (96, 0, 0, 255);
+				gameData.render.viewport.SetColorRGB (96, 0, 0, 255);
 		else
-			gameData.render.scene.SetColorRGB (64, 64, 64, 255);
+			gameData.render.viewport.SetColorRGB (64, 64, 64, 255);
 		glLineWidth ((bActive && bAvailable && gameOpts->render.weaponIcons.bBoldHighlight) ? fLineWidth + 2 : fLineWidth);
 		OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 //		if (bActive && bAvailable)
@@ -561,18 +561,18 @@ void CHUDIcons::DrawInventory (void)
 	static int nEnergyType [NUM_INV_ITEMS] = {I2X (1), I2X (100), 0, I2X (1), 0, I2X (1), 0, 0, I2X (1), I2X (1)};
 	static int nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-dy = (screen.Height () - gameData.render.scene.Height ());
+dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
 #if 1
-	y = nIconPos ? screen.Height () - dy - oy : oy + hIcon + 12;
+	y = nIconPos ? gameData.render.frame.Height () - dy - oy : oy + hIcon + 12;
 #else
 if (gameStates.render.cockpit.nType != CM_STATUS_BAR) //(!cockpit->Always ())
-	y = nIconPos ? screen.Height () - dy - oy : oy + hIcon + 12;
+	y = nIconPos ? gameData.render.frame.Height () - dy - oy : oy + hIcon + 12;
 else
 	y = oy + hIcon + 12;
 #endif
 n = (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) ? NUM_INV_ITEMS : NUM_INV_ITEMS - 2;
 firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
-x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox - nDmgIconWidth) / 2;
+x = (gameData.render.frame.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox - nDmgIconWidth) / 2;
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons & 1))
 	y -= cockpit->LHX (10);
 for (j = firstItem; j < n; j++) {
@@ -605,31 +605,31 @@ for (j = firstItem; j < n; j++) {
 		if (bAvailable)
 			if (bActive)
 				if (nHiliteColor)
-					gameData.render.scene.SetColorRGB (0, 192, 255, ubyte (alpha * 16));
+					gameData.render.viewport.SetColorRGB (0, 192, 255, ubyte (alpha * 16));
 				else
-					gameData.render.scene.SetColorRGB (255, 192, 0, ubyte (alpha * 16));
+					gameData.render.viewport.SetColorRGB (255, 192, 0, ubyte (alpha * 16));
 			else
-				gameData.render.scene.SetColorRGB (128, 128, 0, ubyte (alpha * 16));
+				gameData.render.viewport.SetColorRGB (128, 128, 0, ubyte (alpha * 16));
 		else
-			gameData.render.scene.SetColorRGB (128, 0, 0, ubyte (alpha * 16));
+			gameData.render.viewport.SetColorRGB (128, 0, 0, ubyte (alpha * 16));
 		}
 	else {
-		gameData.render.scene.SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
+		gameData.render.viewport.SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 		}
 	OglDrawFilledRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (bHave)
 		if (bAvailable)
 			if (bActive)
 				if (nHiliteColor)
-					gameData.render.scene.SetColorRGB (0, 192, 255, 255);
+					gameData.render.viewport.SetColorRGB (0, 192, 255, 255);
 				else
-					gameData.render.scene.SetColorRGB (255, 192, 0, 255);
+					gameData.render.viewport.SetColorRGB (255, 192, 0, 255);
 			else
-				gameData.render.scene.SetColorRGB (0, 160, 0, 255);
+				gameData.render.viewport.SetColorRGB (0, 160, 0, 255);
 		else
-			gameData.render.scene.SetColorRGB (96, 0, 0, 255);
+			gameData.render.viewport.SetColorRGB (96, 0, 0, 255);
 	else
-		gameData.render.scene.SetColorRGB (64, 64, 64, 255);
+		gameData.render.viewport.SetColorRGB (64, 64, 64, 255);
 	glLineWidth ((bActive && gameOpts->render.weaponIcons.bBoldHighlight) ? 3 : fLineWidth);
 	OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (*szCount) {
