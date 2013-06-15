@@ -619,7 +619,7 @@ if (ogl.StereoDevice () == -2)
 else
 	gameData.render.frame.Set (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 gameData.render.viewport.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
-CCanvas::SetCurrent (&gameData.render.frame);
+CCanvas::SetCurrent (&gameData.render.viewport);
 
 if (xStereoSeparation <= 0) {
 	PROF_START
@@ -676,7 +676,7 @@ else {
 		ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	RenderFrame (xStereoSeparation, 0);
 	}
-ogl.SetViewport (gameData.render.viewport.Left (), gameData.render.viewport.Top (), gameData.render.viewport.Width (), gameData.render.viewport.Height ());
+ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 FlushFrame (xStereoSeparation);
 CCanvas::SetCurrent (&gameData.render.frame);
 }

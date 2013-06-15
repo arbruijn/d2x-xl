@@ -693,7 +693,7 @@ m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
 //screen.Height () = screen.Height ();
-gameData.render.viewport.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+gameData.render.scene.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
 //GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 return true;
 }
@@ -761,10 +761,10 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
-gameData.render.frame.SetLeft (0);
-gameData.render.frame.SetWidth (screen.Width ());		//VR_render_width;
-gameData.render.frame.SetHeight ((int) ((screen.Height () * 7) / 10 / ((double) screen.Height () / (double) screen.Width () / 0.75)));
-gameData.render.frame.SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
+gameData.render.scene.SetLeft (0);
+gameData.render.scene.SetWidth (gameData.render.frame.Width ());		//VR_render_width;
+gameData.render.scene.SetHeight ((int) ((gameData.render.frame.Height () * 7) / 10 / ((double) screen.Height () / (double) screen.Width () / 0.75)));
+gameData.render.scene.SetTop ((gameData.render.frame.Height () - gameData.render.scene.Height ()) / 2);
 //GameInitRenderSubBuffers (x, y, w, h);
 return true;
 }

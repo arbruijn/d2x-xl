@@ -800,10 +800,6 @@ m_info.nColor = RGBA (255, 255, 255, int (float (nCloakFadeValue) / float (FADE_
 BitBlt (GAUGE_SHIPS + (IsTeamGame ? GetTeam (N_LOCALPLAYER) : N_LOCALPLAYER % MAX_PLAYER_COLORS), x, y);
 m_info.nColor = WHITE_RGBA;
 gameStates.render.grAlpha = 1.0f;
-#if 0
-if (gameStates.render.cockpit.nType != CM_FULL_COCKPIT)
-	CCanvas::SetCurrent (CurrentGameScreen ());
-#endif
 }
 
 //	-----------------------------------------------------------------------------
@@ -981,7 +977,6 @@ h = boxofs + nWindow;
 for (x = hudWindowAreas [h].left; x < hudWindowAreas [h].right; x += bmp->Width ())
 	for (y = hudWindowAreas [h].top; y < hudWindowAreas [h].bot; y += bmp->Height ())
 		BitBlt (-1, x, y, true, true, I2X (1), 0, bmp);
-//CCanvas::SetCurrent (CurrentGameScreen ());
 }
 
 //	-----------------------------------------------------------------------------
@@ -1705,7 +1700,7 @@ if ((gameOpts->render.cockpit.bHUD) || (gameStates.render.cockpit.nType != CM_FU
 	bmP->SetupTexture (0, 1);
 	ogl.m_states.nTransparencyLimit = 0;
 	CCanvas::Push ();
-   CCanvas::SetCurrent (screen.Canvas ());
+   CCanvas::SetCurrent (&gameData.render.viewport);
 	CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
 	bmP->RenderScaled (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &CCanvas::Current ()->Color ());
 	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
@@ -1921,7 +1916,6 @@ if (!cockpit->Setup (true))
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.ColorMask (1,1,1,1,0);
-CCanvas::SetCurrent (CurrentGameScreen ());
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 cockpit->SetColor (WHITE_RGBA);
@@ -1962,7 +1956,6 @@ else
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.SetGameMode (gameData.demo.nGameMode);
 
-CCanvas::SetCurrent (&gameData.render.viewport);
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
@@ -2021,8 +2014,6 @@ if (bExtraInfo) {
 	DrawCountdown ();
 	DrawRecording ();
 	}
-
-CCanvas::SetCurrent (CurrentGameScreen ());
 
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.SetGameMode (GM_NORMAL);
@@ -2242,7 +2233,8 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordCockpitChange (gameStates.render.cockpit.nType);
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nType = CM_FULL_SCREEN;
-CCanvas::SetCurrent (NULL);
+gameData.render.scene.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ()); // OpenGL viewport must be properly set here
+CCanvas::SetCurrent (&gameData.render.viewport);
 fontManager.SetCurrent (GAME_FONT);
 if (bRebuild)
 	gameStates.render.cockpit.nShieldFlash = 0;

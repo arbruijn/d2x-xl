@@ -589,10 +589,10 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bRebuild))
 	return false;
-gameData.render.viewport.SetWidth (gameData.render.frame.Width ());
-gameData.render.viewport.SetLeft (0);
-gameData.render.viewport.SetHeight (2 * gameData.render.frame.Height () / 3);
-gameData.render.viewport.SetTop ((gameData.render.frame.Height () - gameData.render.viewport.Height ()) / 2);
+gameData.render.scene.SetWidth (gameData.render.frame.Width ());
+gameData.render.scene.SetLeft (0);
+gameData.render.scene.SetHeight (2 * gameData.render.frame.Height () / 3);
+gameData.render.scene.SetTop ((gameData.render.frame.Height () - gameData.render.viewport.Height ()) / 2);
 //GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 return true;
 }

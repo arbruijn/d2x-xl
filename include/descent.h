@@ -1725,7 +1725,8 @@ class CRenderData {
 		CMineRenderData			mine;
 		CGameScreenData			screen; // entire screen
 		CGameScreenData			frame;  // current part of the screen being rendered too (usually entire screen or left and right halves of it)
-		CGameScreenData			viewport; // current part of the current frame being rendered to
+		CGameScreenData			viewport; // current part of the current frame being rendered to without offsets (relative to frame)
+		CGameScreenData			scene; // "viewport" inside the viewport for scene rendering with the various HUDs (where parts of the scene are omitted)
 		fix							zMin;
 		fix							zMax;
 		double						dAspect;
