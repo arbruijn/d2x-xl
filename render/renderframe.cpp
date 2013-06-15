@@ -356,10 +356,12 @@ ogl.SetBlendMode (OGL_BLEND_ALPHA);
 
 void Draw2DFrameElements (void)
 {
-if (ogl.StereoDevice () >= 0)
+	fix xStereoSeparation = ogl.StereoSeparation ();
+
+if (ogl.StereoDevice () >= 0) {
 	ogl.SetDrawBuffer (GL_BACK, 0);
-fix xStereoSeparation = ogl.StereoSeparation ();
-ogl.SetStereoSeparation (0);
+	ogl.SetStereoSeparation (0);
+	}
 ogl.ColorMask (1,1,1,1,0);
 //SetBlendMode (OGL_BLEND_ALPHA);
 if (gameStates.app.bGameRunning && !automap.Display ()) {
@@ -497,6 +499,7 @@ if (!nWindow)
 
 {
 PROF_START
+CCanvas::SetCurrent (&gameData.render.scene);
 G3StartFrame (transformation, 0, !(nWindow || gameStates.render.cameras.bActive || ((ogl.StereoDevice () == -2) && (xStereoSeparation > 0))), xStereoSeparation);
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
 transformation.ComputeFrustum ();
@@ -619,7 +622,9 @@ if (ogl.StereoDevice () == -2)
 else
 	gameData.render.frame.Set (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 gameData.render.viewport.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
-CCanvas::SetCurrent (&gameData.render.viewport);
+gameData.render.scene.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+gameData.render.frame.Info () = gameData.render.viewport.Info () = gameData.render.scene.Info () = gameData.render.screen.Info ();
+CCanvas::SetCurrent (&gameData.render.frame);
 
 if (xStereoSeparation <= 0) {
 	PROF_START
@@ -676,7 +681,6 @@ else {
 		ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	RenderFrame (xStereoSeparation, 0);
 	}
-ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 FlushFrame (xStereoSeparation);
 CCanvas::SetCurrent (&gameData.render.frame);
 }

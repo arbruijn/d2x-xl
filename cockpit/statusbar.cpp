@@ -524,7 +524,7 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 void CStatusBar::DrawCockpit (bool bAlphaTest)
 {
-CGenericCockpit::DrawCockpit (CM_STATUS_BAR + m_info.nCockpit, gameData.render.frame.Height (), bAlphaTest);
+CGenericCockpit::DrawCockpit (CM_STATUS_BAR + m_info.nCockpit, gameData.render.scene.Height (), bAlphaTest);
 //gameData.render.frame.SetLeft ((screen.Width () - gameData.render.frame.Width ()) / 2);
 //gameData.render.frame.SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
 }

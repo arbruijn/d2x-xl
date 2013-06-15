@@ -74,6 +74,7 @@ class CCanvas : public CBitmap {
 		void DestroyPane (void);
 		void Clear (void);
 
+		inline tCanvas& Info (void) { return m_info; }
 		inline CCanvasColor& Color (void) { return m_info.color; }
 		inline CCanvasColor& FontColor (int i) { return m_info.fontColors [i]; }
 		inline CFont* Font (void) { return m_info.font; }

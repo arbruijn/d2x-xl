@@ -2097,7 +2097,7 @@ if (gameStates.app.bEndLevelSequence >= EL_LOOKBACK)
 if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor))
 	return;
 
-	CCanvas windowCanv, * cockpitCanv;
+	CCanvas * cockpitCanv;
 	static CCanvas overlapCanv;
 
 	CObject*	viewerSave = gameData.objs.viewerP;
@@ -2123,10 +2123,10 @@ UpdateRenderedData (nWindow + 1, viewerP, bRearView, nUser);
 m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
 gameData.objs.viewerP = viewerP;
 gameStates.render.bRearView = -bRearView;
-SetupWindow (nWindow, &windowCanv);
+SetupWindow (nWindow, &gameData.render.scene);
 cockpitCanv = CCanvas::Current ();
 CCanvas::Push ();
-CCanvas::SetCurrent (&windowCanv);
+CCanvas::SetCurrent (&gameData.render.scene);
 fontManager.SetCurrent (GAME_FONT);
 transformation.Push ();
 nZoomSave = gameStates.zoom.nFactor;
@@ -2177,13 +2177,13 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	if (x > bigWindowBottom) {
 		//the small window is completely outside the big 3d window, so
 		//copy it to the visible screen
-		windowCanv.BlitClipped (y, x);
+		gameData.render.scene.BlitClipped (y, x);
 		bOverlapDirty [nWindow] = 1;
 		}
 	else {
-		smallWindowBottom = x + windowCanv.Height () - 1;
+		smallWindowBottom = x + gameData.render.scene.Height () - 1;
 		if (0 < (extraPartHeight = smallWindowBottom - bigWindowBottom)) {
-			windowCanv.SetupPane (&overlapCanv, 0, windowCanv.Height ()-extraPartHeight, windowCanv.Width (), extraPartHeight);
+			gameData.render.scene.SetupPane (&overlapCanv, 0, gameData.render.scene.Height ()-extraPartHeight, gameData.render.scene.Width (), extraPartHeight);
 			overlapCanv.BlitClipped (y, bigWindowBottom + 1);
 			bOverlapDirty [nWindow] = 1;
 			}
@@ -2200,10 +2200,10 @@ CCanvas::Pop ();
 #if 0
 // draw a thicker frame with rounded edges around the cockpit displays
 if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN)) {
-	int x0 = windowCanv.Left ();
-	int y0 = windowCanv.Top () - CCanvas::Current ()->Top ();
-	int x1 = windowCanv.Right () - 1;
-	int y1 = windowCanv.Bottom () - CCanvas::Current ()->Top ();
+	int x0 = gameData.render.scene.Left ();
+	int y0 = gameData.render.scene.Top () - CCanvas::Current ()->Top ();
+	int x1 = gameData.render.scene.Right () - 1;
+	int y1 = gameData.render.scene.Bottom () - CCanvas::Current ()->Top ();
 	CCanvas::Current ()->SetColorRGBi (RGB_PAL (47, 31, 0));
 	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
 	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (60, 60, 60));
