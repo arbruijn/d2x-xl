@@ -231,7 +231,7 @@ if (gameStates.menus.bHires) {
 	if (gameOpts->menus.altBg.bHave > 0)
 		y = 8; //102
 	else {
-		y = 88 * gameStates.render.vr.m_screenSize.Height () / 480;
+		y = 88 * gameData.render.screen.Height () / 480;
 		if (y < 88)
 			y = 88;
 		}
@@ -649,8 +649,6 @@ if ((t = GrInit ())) {		//doesn't do much
 	return 0;
 	}
 /*---*/PrintLog (1, "Initializing render buffers\n");
-if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
-	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
 PrintLog (-1);
 if (bFull) {
 	/*---*/PrintLog (1, "Loading default palette\n");

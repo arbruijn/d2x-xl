@@ -663,91 +663,6 @@ return bScreenChanged;
 
 //------------------------------------------------------------------------------
 
-void HandleVRKey(int key)
-{
-	switch (key)   {
-
-		case KEY_ALTED + KEY_F5:
-			if (gameStates.render.vr.nRenderMode != VR_NONE) {
-				VRResetParams ();
-				HUDInitMessage(TXT_VR_RESET);
-				HUDInitMessage(TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth));
-				HUDInitMessage(TXT_VR_BALANCE, (double)gameStates.render.vr.xStereoSeparation/30.0);
-			}
-			break;
-
-		case KEY_ALTED + KEY_F6:
-			if (gameStates.render.vr.nRenderMode != VR_NONE) {
-				gameStates.render.vr.nLowRes++;
-				if (gameStates.render.vr.nLowRes > 3) gameStates.render.vr.nLowRes = 0;
-				switch(gameStates.render.vr.nLowRes)    {
-					case 0: HUDInitMessage(TXT_VR_NORMRES); break;
-					case 1: HUDInitMessage(TXT_VR_LOWVRES); break;
-					case 2: HUDInitMessage(TXT_VR_LOWHRES); break;
-					case 3: HUDInitMessage(TXT_VR_LOWRES); break;
-				}
-			}
-			break;
-
-		case KEY_ALTED + KEY_F7:
-			if (gameStates.render.vr.nRenderMode != VR_NONE) {
-				gameStates.render.vr.nEyeSwitch = !gameStates.render.vr.nEyeSwitch;
-				HUDInitMessage(TXT_VR_TOGGLE);
-				if (gameStates.render.vr.nEyeSwitch)
-					HUDInitMessage(TXT_VR_RLEYE);
-				else
-					HUDInitMessage(TXT_VR_LREYE);
-			}
-			break;
-
-		case KEY_ALTED + KEY_F8:
-			if (gameStates.render.vr.nRenderMode != VR_NONE) {
-			gameStates.render.vr.nSensitivity++;
-			if (gameStates.render.vr.nSensitivity > 2)
-				gameStates.render.vr.nSensitivity = 0;
-			HUDInitMessage(TXT_VR_SENSITIVITY, gameStates.render.vr.nSensitivity);
-		 }
-			break;
-		case KEY_ALTED + KEY_F9:
-			if (gameStates.render.vr.nRenderMode != VR_NONE) {
-				gameStates.render.vr.xEyeWidth -= I2X (1)/10;
-				if (gameStates.render.vr.xEyeWidth < 0) gameStates.render.vr.xEyeWidth = 0;
-				HUDInitMessage(TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth));
-				HUDInitMessage(TXT_VR_DEFAULT, X2F(VR_SEPARATION));
-			}
-			break;
-		case KEY_ALTED + KEY_F10:
-			if (gameStates.render.vr.nRenderMode != VR_NONE) {
-				gameStates.render.vr.xEyeWidth += I2X (1)/10;
-				if (gameStates.render.vr.xEyeWidth > I2X (4))    gameStates.render.vr.xEyeWidth = I2X (4);
-				HUDInitMessage(TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth));
-				HUDInitMessage(TXT_VR_DEFAULT, X2F(VR_SEPARATION));
-			}
-			break;
-
-		case KEY_ALTED + KEY_F11:
-			if (gameStates.render.vr.nRenderMode != VR_NONE) {
-				gameStates.render.vr.xStereoSeparation--;
-				if (gameStates.render.vr.xStereoSeparation < -30)	gameStates.render.vr.xStereoSeparation = -30;
-				HUDInitMessage(TXT_VR_BALANCE, (double)gameStates.render.vr.xStereoSeparation/30.0);
-				HUDInitMessage(TXT_VR_DEFAULT, (double)VR_PIXEL_SHIFT/30.0);
-				gameStates.render.vr.bEyeOffsetChanged = 2;
-			}
-			break;
-		case KEY_ALTED + KEY_F12:
-			if (gameStates.render.vr.nRenderMode != VR_NONE) {
-				gameStates.render.vr.xStereoSeparation++;
-				if (gameStates.render.vr.xStereoSeparation > 30)	 gameStates.render.vr.xStereoSeparation = 30;
-				HUDInitMessage(TXT_VR_BALANCE, (double)gameStates.render.vr.xStereoSeparation/30.0);
-				HUDInitMessage(TXT_VR_DEFAULT, (double)VR_PIXEL_SHIFT/30.0);
-				gameStates.render.vr.bEyeOffsetChanged = 2;
-			}
-			break;
-	}
-}
-
-//------------------------------------------------------------------------------
-
 extern void DropFlag ();
 
 extern int gr_renderstats;
@@ -1195,7 +1110,6 @@ while ((key = KeyInKeyTime (&keyTime)) != 0) {
 	else {
 		FinalCheats (key);
 		HandleSystemKey (key);
-		HandleVRKey (key);
 		HandleGameKey (key);
 #if DBG
 		HandleTestKey (key);

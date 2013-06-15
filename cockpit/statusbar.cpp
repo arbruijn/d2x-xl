@@ -123,7 +123,7 @@ if (IsMultiGame && !IsCoopGame)
 
 	int	nScore, nTime;
 
-if (!(nScore = cockpit->AddedScore (gameStates.render.vr.nCurrentPage)))
+if (!(nScore = cockpit->AddedScore (0)))
 	return;
 
 	int	x, w, h, aw, color;
@@ -157,7 +157,7 @@ if (nTime > 0) {
 else {
 	//erase old score
 	cockpit->SetScoreTime (0);
-	cockpit->SetAddedScore (gameStates.render.vr.nCurrentPage, 0);
+	cockpit->SetAddedScore (0, 0);
 	}
 #endif
 }
@@ -230,12 +230,12 @@ if (IsMultiGame) {
 	sprintf (szKilled, "%5d", LOCALPLAYER.netKilledTotal);
 	fontManager.Current ()->StringSize (szKilled, w, h, aw);
 	CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
-	Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage], 
+	Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + 0], 
 			y + 1, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	x = SB_SCORE_RIGHT - w - 2;	
 	nIdKilled = PrintF (&nIdKilled, x, y + 1, szKilled);
-	lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
+	lastX [(gameStates.video.nDisplayMode ? 2 : 0) + 0] = x;
 	}
 else if (LOCALPLAYER.lives > 1) {
 	int y = -ScaleY (SB_LIVES_Y + HeightPad ());
@@ -415,7 +415,7 @@ void CStatusBar::DrawPlayerShip (void)
 {
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
-CGenericCockpit::DrawPlayerShip (m_info.bCloak, m_history [gameStates.render.vr.nCurrentPage].bCloak, SB_SHIP_GAUGE_X, SB_SHIP_GAUGE_Y);
+CGenericCockpit::DrawPlayerShip (m_info.bCloak, m_history [0].bCloak, SB_SHIP_GAUGE_X, SB_SHIP_GAUGE_Y);
 CCanvas::Pop ();
 }
 
@@ -524,9 +524,9 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 void CStatusBar::DrawCockpit (bool bAlphaTest)
 {
-CGenericCockpit::DrawCockpit (CM_STATUS_BAR + m_info.nCockpit, gameData.render.window.hMax, bAlphaTest);
-gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
-gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
+CGenericCockpit::DrawCockpit (CM_STATUS_BAR + m_info.nCockpit, gameData.render.window.Height (), bAlphaTest);
+//gameData.render.window.SetLeft ((screen.Width () - gameData.render.window.Width ()) / 2);
+//gameData.render.window.SetTop ((screen.Height () - gameData.render.window.Height ()) / 2);
 }
 
 //	-----------------------------------------------------------------------------
@@ -543,12 +543,11 @@ if (gameStates.app.bDemoData)
 	h *= 2;
 if (screen.Height () > 480)
 	h = (int) ((double) h * (double) screen.Height () / 480.0);
-gameData.render.window.hMax = screen.Height () - h;
-gameData.render.window.h = gameData.render.window.hMax;
-gameData.render.window.w = gameData.render.window.wMax;
-gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
-gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
-GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
+gameData.render.window.SetWidth (screen.Width ());
+gameData.render.window.SetHeight (screen.Height () - h);
+gameData.render.window.SetLeft ((screen.Width () - gameData.render.window.Width ()) / 2);
+gameData.render.window.SetTop (0); //(screen.Height () - gameData.render.window.Height ()) / 2);
+//GameInitRenderSubBuffers (gameData.render.window.Left (), gameData.render.window.Top (), gameData.render.window.Width (), gameData.render.window.Height ());
 return true;
 }
 
@@ -557,7 +556,7 @@ return true;
 void CStatusBar::SetupWindow (int nWindow, CCanvas* canvP)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
-gameStates.render.vr.buffers.render->SetupPane (
+gameData.render.window.SetupPane (
 	canvP,
 	ScaleX (hudAreaP->left),
 	ScaleY (hudAreaP->top),

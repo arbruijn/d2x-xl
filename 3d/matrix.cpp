@@ -78,7 +78,7 @@ void ScaleTransformation (CTransformation& transformation, int bOglScale)
 transformation.m_info.scale = transformation.m_info.aspect;
 if (transformation.m_info.zoom <= I2X (1)) 		//xZoom in by scaling z
 	transformation.m_info.scale.v.coord.z = FixMul (transformation.m_info.scale.v.coord.z, transformation.m_info.zoom);
-else {			//xZoom out by scaling x&y
+else {			//zoom out by scaling x&y
 	fix s = FixDiv (I2X (1), transformation.m_info.zoom);
 
 	transformation.m_info.scale.v.coord.x = FixMul (transformation.m_info.scale.v.coord.x, s);

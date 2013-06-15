@@ -233,7 +233,6 @@ while (gameData.app.bGamePaused) {
 		HandleTestKey(key);
 #endif
 		bScreenChanged = HandleSystemKey (key);
-		HandleVRKey (key);
 		if (bScreenChanged) {
 			GameRenderFrame ();
 			messageBox.Render ();

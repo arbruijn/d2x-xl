@@ -136,8 +136,8 @@ CGenericCockpit::DrawFlag (4 * m_info.fontWidth, 2 * m_info.nLineSpacing);
 
 void CCockpit::DrawHomingWarning (void)
 {
-m_info.bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] = (LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000);
-BitBlt (m_info.bLastHomingWarningDrawn [gameStates.render.vr.nCurrentPage] ? GAUGE_HOMING_WARNING_ON : GAUGE_HOMING_WARNING_OFF, 
+m_info.bLastHomingWarningDrawn [0] = (LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000);
+BitBlt (m_info.bLastHomingWarningDrawn [0] ? GAUGE_HOMING_WARNING_ON : GAUGE_HOMING_WARNING_OFF, 
 		  HOMING_WARNING_X, HOMING_WARNING_Y);
 }
 
@@ -538,7 +538,7 @@ CGenericCockpit::DrawStatic (nWindow, COCKPIT_PRIMARY_BOX);
 
 void CCockpit::DrawPlayerShip (void)
 {
-CGenericCockpit::DrawPlayerShip (m_info.bCloak, m_history [gameStates.render.vr.nCurrentPage].bCloak, SHIP_GAUGE_X, SHIP_GAUGE_Y);
+CGenericCockpit::DrawPlayerShip (m_info.bCloak, m_history [0].bCloak, SHIP_GAUGE_X, SHIP_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------
@@ -572,7 +572,7 @@ CGenericCockpit::DrawCockpit (m_info.nCockpit, 0, bAlphaTest);
 void CCockpit::SetupWindow (int nWindow, CCanvas* canvP)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + COCKPIT_PRIMARY_BOX + nWindow;
-gameStates.render.vr.buffers.render->SetupPane (
+gameData.render.window.SetupPane (
 	canvP,
 	ScaleX (hudAreaP->left),
 	ScaleY (hudAreaP->top),
@@ -589,14 +589,11 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bRebuild))
 	return false;
-gameData.render.window.hMax = (screen.Height () * 2) / 3;
-if (gameData.render.window.h > gameData.render.window.hMax)
-	gameData.render.window.h = gameData.render.window.hMax;
-if (gameData.render.window.w > gameData.render.window.wMax)
-	gameData.render.window.w = gameData.render.window.wMax;
-gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
-gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
-GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
+gameData.render.window.SetHeight (2 * screen.Height () / 3);
+gameData.render.window.SetWidth (screen.Width ());
+gameData.render.window.SetLeft ((screen.Width () - gameData.render.window.Width ()) / 2);
+gameData.render.window.SetTop (0); //(screen.Height () - gameData.render.window.Height ()) / 2);
+//GameInitRenderSubBuffers (gameData.render.window.Left (), gameData.render.window.Top (), gameData.render.window.Width (), gameData.render.window.Height ());
 return true;
 }
 
@@ -617,14 +614,11 @@ if (bRebuild && !m_info.bRebuild)
 	return true;
 if (!CGenericCockpit::Setup ())
 	return false;
-gameData.render.window.hMax = (screen.Height () * 2) / 3;
-if (gameData.render.window.h > gameData.render.window.hMax)
-	gameData.render.window.h = gameData.render.window.hMax;
-if (gameData.render.window.w > gameData.render.window.wMax)
-	gameData.render.window.w = gameData.render.window.wMax;
-gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
-gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
-GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
+gameData.render.window.SetHeight (2 * screen.Height () / 3);
+gameData.render.window.SetWidth (screen.Width ());
+gameData.render.window.SetLeft ((screen.Width () - gameData.render.window.Width ()) / 2);
+gameData.render.window.SetTop ((screen.Height () - gameData.render.window.Height ()) / 2);
+//GameInitRenderSubBuffers (gameData.render.window.Left (), gameData.render.window.Top (), gameData.render.window.Width (), gameData.render.window.Height ());
 return true;
 }
 

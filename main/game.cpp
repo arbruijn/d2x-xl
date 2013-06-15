@@ -164,15 +164,6 @@ tDetailData	detailData = {
 
 //------------------------------------------------------------------------------
 
-void VRResetParams (void)
-{
-gameStates.render.vr.xEyeWidth = VR_SEPARATION;
-gameStates.render.vr.xStereoSeparation = VR_PIXEL_SHIFT;
-gameStates.render.vr.bEyeOffsetChanged = 2;
-}
-
-//------------------------------------------------------------------------------
-
 void GameFlushInputs (void)
 {
 	int dx, dy;
@@ -254,10 +245,10 @@ return true;
 
 void GameInitRenderSubBuffers (int x, int y, int w, int h)
 {
-if (!bScanlineDouble) {
-	gameStates.render.vr.buffers.render [0].SetupPane (&gameStates.render.vr.buffers.subRender [0], x, y, w, h);
-	gameStates.render.vr.buffers.render [1].SetupPane (&gameStates.render.vr.buffers.subRender [1], x, y, w, h);
-	}
+gameData.render.window.SetLeft (x);
+gameData.render.window.SetTop (y);
+gameData.render.window.SetWidth (w);
+gameData.render.window.SetHeight (h);
 }
 
 //------------------------------------------------------------------------------
@@ -265,42 +256,11 @@ if (!bScanlineDouble) {
 // Sets up the canvases we will be rendering to (NORMAL VERSION)
 void GameInitRenderBuffers (int nScreenSize, int render_w, int render_h, int render_method, int flags)
 {
-//	if (vga_check_mode (nScreenSize) != 0)
-//		Error ("Cannot set requested video mode");
-
-gameStates.render.vr.m_screenSize.Set (nScreenSize);
-gameStates.render.vr.nScreenFlags = flags;
-//NEWVR
-VRResetParams ();
-gameStates.render.vr.nRenderMode = render_method;
-gameData.render.window.w = render_w;
-gameData.render.window.h = render_h;
-if (gameStates.render.vr.buffers.offscreen) {
-	gameStates.render.vr.buffers.offscreen->Destroy ();
-	}
-
-if ((gameStates.render.vr.nRenderMode == VR_AREA_DET) || (gameStates.render.vr.nRenderMode==VR_INTERLACED)) {
-	if (render_h*2 < 200) {
-		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, 200);
-		}
-	else {
-		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, render_h*2);
-		}
-	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[0], 0, 0, render_w, render_h);
-	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[1], 0, render_h, render_w, render_h);
-	}
-else {
-	if (render_h < 200) {
-		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, 200);
-		}
-	else {
-		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, render_h);
-      }
-	gameStates.render.vr.buffers.offscreen->SetMode (BM_OGL);
-	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[0], 0, 0, render_w, render_h);
-	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[1], 0, 0, render_w, render_h);
-	}
-GameInitRenderSubBuffers (0, 0, render_w, render_h);
+gameData.render.screen.Set (nScreenSize);
+gameData.render.window.SetLeft (0);
+gameData.render.window.SetTop (0);
+gameData.render.window.SetWidth (render_w);
+gameData.render.window.SetHeight (render_h);
 }
 
 //------------------------------------------------------------------------------
@@ -308,13 +268,12 @@ GameInitRenderSubBuffers (0, 0, render_w, render_h);
 //initialize flying
 void FlyInit (CObject *objP)
 {
-	objP->info.controlType = CT_FLYING;
-	objP->info.movementType = MT_PHYSICS;
-
-	objP->mType.physInfo.velocity.SetZero ();
-	objP->mType.physInfo.thrust.SetZero ();
-	objP->mType.physInfo.rotVel.SetZero ();
-	objP->mType.physInfo.rotThrust.SetZero ();
+objP->info.controlType = CT_FLYING;
+objP->info.movementType = MT_PHYSICS;
+objP->mType.physInfo.velocity.SetZero ();
+objP->mType.physInfo.thrust.SetZero ();
+objP->mType.physInfo.rotVel.SetZero ();
+objP->mType.physInfo.rotThrust.SetZero ();
 }
 
 //void morph_test (), morph_step ();
@@ -770,16 +729,16 @@ if (!setjmp (gameExitPoint)) {
 			//paletteManager.ResumeEffect (!IsMultiGame);
 			}
 		if (automap.Display ()) {
-			int	save_w = gameData.render.window.w,
-					save_h = gameData.render.window.h;
+			int	save_w = gameData.render.window.Width (),
+					save_h = gameData.render.window.Height ();
 			automap.DoFrame (0, 0);
 			gameStates.app.bEnterGame = 1;
 			//	FlushInput ();
 			//	StopPlayerMovement ();
 			gameStates.video.nScreenMode = -1;
 			SetScreenMode (SCREEN_GAME);
-			gameData.render.window.w = save_w;
-			gameData.render.window.h = save_h;
+			gameData.render.window.SetWidth (save_w);
+			gameData.render.window.SetHeight (save_h);
 			cockpit->Init ();
 			}
 		if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
@@ -898,10 +857,6 @@ PrintLog (-1);
 #if GPGPU_VERTEX_LIGHTING
 gpgpuLighting.End ();
 #endif
-if (gameStates.render.vr.buffers.offscreen) {
-	gameStates.render.vr.buffers.offscreen->Destroy ();
-	gameStates.render.vr.buffers.offscreen = NULL;
-}
 PrintLog (1, "restoring effect bitmaps\n");
 RestoreEffectBitmapIcons ();
 PrintLog (-1);
@@ -935,7 +890,7 @@ if (fLog) {
 
 CCanvas* CurrentGameScreen (void)
 {
-return gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage;
+return &gameData.render.window;
 }
 
 //-----------------------------------------------------------------------------

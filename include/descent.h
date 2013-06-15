@@ -884,18 +884,7 @@ class CCockpitStates {
 
 //------------------------------------------------------------------------------
 
-class CScreenSize {
-	public:
-		uint			m_w, m_h;
-
-		inline uint Scalar (void) { return (((uint) m_w) << 16) + (((uint) m_h) & 0xFFFF); }
-		inline uint Area (void) { return (uint) m_w * (uint) m_h; }
-		void Set (uint w, uint h) { m_w = w, m_h = h; }
-		void Set (uint scalar) { m_w = scalar >> 16, m_h = scalar & 0xFFFF; }
-		inline uint Width (void) { return m_w; }
-		inline uint Height (void) { return m_h; }
-	};
-
+#if 0
 class CVRBuffers {
 	public:
 		CCanvas		*offscreen;			// The offscreen data buffer
@@ -921,6 +910,7 @@ class CVRStates {
 		int			bUseRegCode;
 		CVRBuffers	buffers;
 	};
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -1065,7 +1055,7 @@ class CRenderStates {
 		fix nFlashRate;
 		CCameraStates cameras;
 		CCockpitStates cockpit;
-		CVRStates vr;
+		//CVRStates vr;
 		CFontStates fonts;
 		CTextureStates textures;
 		int bDetriangulation;
@@ -1661,13 +1651,21 @@ class CMineRenderData {
 
 //------------------------------------------------------------------------------
 
-class CGameWindowData {
+class CGameScreenData {
 	public:
-		int	x, y;
-		int	w, h;
-		int	wMax, hMax;
+		uint			m_width, m_height;
+
+		inline uint Scalar (void) { return (((uint) m_width) << 16) + (((uint) m_height) & 0xFFFF); }
+		inline uint Area (void) { return (uint) m_width * (uint) m_height; }
+		void Set (uint w, uint h) { m_width = w, m_height = h; }
+		void Set (uint scalar) { m_width = scalar >> 16, m_height = scalar & 0xFFFF; }
+		inline uint Width (void) { return m_width; }
+		inline uint Height (void) { return m_height; }
+	};
+
+class CGameWindowData : public CCanvas {
 	public:
-		CGameWindowData () { memset (this, 0, sizeof (*this)); }
+		void Set (short l, short t, short w, short h) { SetLeft (l), SetTop (t), SetWidth (w), SetHeight (h); }
 };
 
 //------------------------------------------------------------------------------
@@ -1734,6 +1732,7 @@ class CRenderData {
 		CTerrainRenderData		terrain;
 		CThrusterData				thrusters [MAX_PLAYERS];
 		CMineRenderData			mine;
+		CGameScreenData			screen;
 		CGameWindowData			window;
 		fix							zMin;
 		fix							zMax;

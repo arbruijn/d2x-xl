@@ -154,7 +154,7 @@ if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 		y -= LHY (20);
 	if ((m_info.weaponBoxUser [0] != WBU_WEAPON) || (m_info.weaponBoxUser [1] != WBU_WEAPON)) {
 		int wy = (m_info.weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
-		y = min (y, (wy - LineSpacing () - gameData.render.window.y));
+		y = min (y, (wy - LineSpacing () - gameData.render.window.Top ()));
 		}
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdLock = GrPrintF (&nIdLock, x, y, TXT_LOCK);
@@ -241,9 +241,9 @@ if (gameOpts->render.cockpit.bTextGauges) {
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	int energy = X2IR (LOCALPLAYER.Energy ());
 
-	if (energy != m_history [gameStates.render.vr.nCurrentPage].energy) {
-		NDRecordPlayerEnergy (m_history [gameStates.render.vr.nCurrentPage].energy, energy);
-		m_history [gameStates.render.vr.nCurrentPage].energy = energy;
+	if (energy != m_history [0].energy) {
+		NDRecordPlayerEnergy (m_history [0].energy, energy);
+		m_history [0].energy = energy;
 	 	}
 	}
 }
@@ -351,9 +351,9 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 	OglDrawFilledRect (x, y, x + (int) (nLevel * m_info.xGaugeScale / 2.0f), y + h);
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
-	if (gameData.physics.xAfterburnerCharge != m_history [gameStates.render.vr.nCurrentPage].afterburner) {
-		NDRecordPlayerAfterburner (m_history [gameStates.render.vr.nCurrentPage].afterburner, gameData.physics.xAfterburnerCharge);
-		m_history [gameStates.render.vr.nCurrentPage].afterburner = gameData.physics.xAfterburnerCharge;
+	if (gameData.physics.xAfterburnerCharge != m_history [0].afterburner) {
+		NDRecordPlayerAfterburner (m_history [0].afterburner, gameData.physics.xAfterburnerCharge);
+		m_history [0].afterburner = gameData.physics.xAfterburnerCharge;
 	 	}
 	}
 }
@@ -425,7 +425,7 @@ if (cockpit->Hide ())
 
 	static int nIdWeapons [2] = {0, 0};
 
-//	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
+//	CCanvas::SetCurrent (&gameData.render.window);	//render off-screen
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 y = CCanvas::Current ()->Height ();
 if (IsMultiGame)
@@ -472,18 +472,18 @@ fontManager.Current ()->StringSize (szWeapon, w, h, aw);
 nIdWeapons [0] = GrPrintF (nIdWeapons + 0, CCanvas::Current ()->Width () - 5 - w, y - 2 * LineSpacing (), szWeapon);
 
 if (gameData.weapons.nPrimary == VULCAN_INDEX) {
-	if (LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] != m_history [gameStates.render.vr.nCurrentPage].ammo [0]) {
+	if (LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] != m_history [0].ammo [0]) {
 		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordPrimaryAmmo (m_history [gameStates.render.vr.nCurrentPage].ammo [0], LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary]);
-		m_history [gameStates.render.vr.nCurrentPage].ammo [0] = LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary];
+			NDRecordPrimaryAmmo (m_history [0].ammo [0], LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary]);
+		m_history [0].ammo [0] = LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary];
 		}
 	}
 
 if (gameData.weapons.nPrimary == OMEGA_INDEX) {
-	if (gameData.omega.xCharge [IsMultiGame] != m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge) {
+	if (gameData.omega.xCharge [IsMultiGame] != m_history [0].xOmegaCharge) {
 		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordPrimaryAmmo (m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge, gameData.omega.xCharge [IsMultiGame]);
-		m_history [gameStates.render.vr.nCurrentPage].xOmegaCharge = gameData.omega.xCharge [IsMultiGame];
+			NDRecordPrimaryAmmo (m_history [0].xOmegaCharge, gameData.omega.xCharge [IsMultiGame]);
+		m_history [0].xOmegaCharge = gameData.omega.xCharge [IsMultiGame];
 		}
 	}
 
@@ -492,10 +492,10 @@ sprintf (szWeapon, "%s %d", pszWeapon, LOCALPLAYER.secondaryAmmo [gameData.weapo
 fontManager.Current ()->StringSize (szWeapon, w, h, aw);
 nIdWeapons [1] = GrPrintF (nIdWeapons + 1, CCanvas::Current ()->Width () - 5 - w, y - LineSpacing (), szWeapon);
 
-if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [gameStates.render.vr.nCurrentPage].ammo [1]) {
+if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [0].ammo [1]) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordSecondaryAmmo (m_history [gameStates.render.vr.nCurrentPage].ammo [1], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
-	m_history [gameStates.render.vr.nCurrentPage].ammo [1] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
+		NDRecordSecondaryAmmo (m_history [0].ammo [1], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
+	m_history [0].ammo [1] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 	}
 }
 
@@ -557,7 +557,7 @@ if (cockpit->Hide ())
 
 	static int nIdShield = 0;
 
-//	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
+//	CCanvas::SetCurrent (&gameData.render.window);	//render off-screen
 if (gameOpts->render.cockpit.bTextGauges) {
 	int y = CCanvas::Current ()->Height () - (IsMultiGame ? 6 : 2) * LineSpacing ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -579,7 +579,7 @@ if (cockpit->Hide ())
 	time_t			t = gameStates.app.nSDLTicks [0];
 	int				bLastFlash = gameStates.render.cockpit.nShieldFlash;
 
-//	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
+//	CCanvas::SetCurrent (&gameData.render.window);	//render off-screen
 if (!gameOpts->render.cockpit.bTextGauges) {
 
 	int nLevel = m_info.nShield;
@@ -679,8 +679,8 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 void CHUD::DrawCockpit (bool bAlphaTest)
 {
-gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
-gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
+gameData.render.window.SetLeft ((screen.Width () - gameData.render.window.Width ()) / 2);
+gameData.render.window.SetTop ((screen.Height () - gameData.render.window.Height ()) / 2);
 }
 
 //	-----------------------------------------------------------------------------
@@ -692,12 +692,12 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
-gameData.render.window.hMax = screen.Height ();
-gameData.render.window.h = gameData.render.window.hMax;
-gameData.render.window.w = gameData.render.window.wMax;
-gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
-gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
-GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
+//screen.Height () = screen.Height ();
+gameData.render.window.SetWidth (screen.Width ());
+gameData.render.window.SetHeight (screen.Height ());
+gameData.render.window.SetLeft ((screen.Width () - gameData.render.window.Width ()) / 2);
+gameData.render.window.SetTop ((screen.Height () - gameData.render.window.Height ()) / 2);
+//GameInitRenderSubBuffers (gameData.render.window.Left (), gameData.render.window.Top (), gameData.render.window.Width (), gameData.render.window.Height ());
 return true;
 }
 
@@ -709,7 +709,7 @@ void CHUD::SetupWindow (int nWindow, CCanvas* canvP)
 
 	int x, y, nWindowPos;
 
-int w = (int) (gameStates.render.vr.buffers.render [0].Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
+int w = (int) (gameData.render.window.Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
 int h = I2X (w) / screen.Aspect ();
 if (!gameStates.app.bNostalgia) //(gameOpts->render.cockpit.bWideDisplays)
 	w = int (float (w) * float (screen.Width ()) / float (screen.Height ()) * 0.75f);
@@ -719,19 +719,19 @@ if ((nWindowPos == 2) && gameStates.render.cockpit.n3DView [0] && gameStates.ren
 	nWindowPos = 1;
 if (nWindowPos == 0)	// near corners
 	x = nWindow
-		 ? gameStates.render.vr.buffers.render [0].Width () - w - h / 10
+		 ? gameData.render.window.Width () - w - h / 10
 		 : h / 10;
 else if (nWindowPos == 1)	// near middle
 	x = nWindow
-		 ? gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3
-		 : gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
+		 ? gameData.render.window.Width () / 3 * 2 - w / 3
+		 : gameData.render.window.Width () / 3 - 2 * w / 3;
 else 	// middle
-	x = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
+	x = gameData.render.window.Width () / 2 - w / 2;
 
 if (gameOpts->render.cockpit.nWindowPos > 2) 
 	y = h / 10;
 else {
-	y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
+	y = gameData.render.window.Height () - h - h / 10;
 	if (extraGameInfo [0].nWeaponIcons &&
 		 (extraGameInfo [0].nWeaponIcons - gameOpts->render.weaponIcons.bEquipment < 3))
 		y -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
@@ -743,7 +743,7 @@ SW_y [nWindow] = y;
 SW_w [nWindow] = w;
 SW_h [nWindow] = h;
 if (canvP)
-	gameStates.render.vr.buffers.render [0].SetupPane (canvP, x, y, w, h);
+	gameData.render.window.SetupPane (canvP, x, y, w, h);
 }
 
 //	-----------------------------------------------------------------------------
@@ -764,11 +764,11 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
-int x = 0;
-int w = gameStates.render.vr.buffers.render[0].Width ();		//VR_render_width;
-int h = (int) ((gameStates.render.vr.buffers.render [0].Height () * 7) / 10 / ((double) screen.Height () / (double) screen.Width () / 0.75));
-int y = (gameStates.render.vr.buffers.render [0].Height () - h) / 2;
-GameInitRenderSubBuffers (x, y, w, h);
+gameData.render.window.SetLeft (0);
+gameData.render.window.SetWidth (screen.Width ());		//VR_render_width;
+gameData.render.window.SetHeight ((int) ((screen.Height () * 7) / 10 / ((double) screen.Height () / (double) screen.Width () / 0.75)));
+gameData.render.window.SetTop ((screen.Height () - gameData.render.window.Height ()) / 2);
+//GameInitRenderSubBuffers (x, y, w, h);
 return true;
 }
 
@@ -791,10 +791,10 @@ CGenericCockpit::Activate (CM_FULL_COCKPIT, true);
 void CWideHUD::SetupWindow (int nWindow, CCanvas* canvP)
 {
 CHUD::SetupWindow (nWindow, NULL);
-SW_y [nWindow] += gameStates.render.vr.buffers.subRender [0].Top ();
-if (SW_y [nWindow] + SW_h [nWindow] > gameStates.render.vr.buffers.subRender [0].Bottom ())
-	SW_y [nWindow] -= (gameStates.render.vr.buffers.render [0].Height () - gameStates.render.vr.buffers.subRender [0].Height ());
-gameStates.render.vr.buffers.render [0].SetupPane (canvP, SW_x [nWindow], SW_y [nWindow], SW_w [nWindow], SW_h [nWindow]);
+SW_y [nWindow] += gameData.render.window.Top ();
+if (SW_y [nWindow] + SW_h [nWindow] > gameData.render.window.Bottom ())
+	SW_y [nWindow] -= (screen.Height () - gameData.render.window.Height ());
+gameData.render.window.SetupPane (canvP, SW_x [nWindow], SW_y [nWindow], SW_w [nWindow], SW_h [nWindow]);
 }
 
 //	-----------------------------------------------------------------------------

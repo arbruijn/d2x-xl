@@ -311,8 +311,8 @@ for (i = 0; i < 2; i++) {
 	if (i) {	// i == 1: nostalgia/pure D2 mode
 		}
 	else {
-		RP (gameData.render.window.w, 0, 0);
-		RP (gameData.render.window.h, 0, 0);
+		RP (gameData.render.window.CBitmap::m_info.props.w, 0, 0);
+		RP (gameData.render.window.CBitmap::m_info.props.h, 0, 0);
 		RP (gameStates.app.iDownloadTimeout, 0, 0);
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);
@@ -800,8 +800,8 @@ typedef struct tParamValue {
 	} tParamValue;
 
 tParamValue defaultParams [] = {
-	 {"gameData.render.window.w", "640"},
-	 {"gameData.render.window.h", "480"},
+	 {"gameData.render.window.Width ()", "640"},
+	 {"gameData.render.window.Height ()", "480"},
 	 {"gameStates.app.iDownloadTimeout", "5"},
 	 {"gameStates.render.cockpit.nType", "3"},
 	 {"gameStates.render.bShowFrameRate", "0"},
@@ -1617,8 +1617,8 @@ if (profile.Busy ())
 	int		bRewriteIt = 0;
 	uint		i;
 
-	short gameWindowW = gameData.render.window.w;
-	short	gameWindowH = gameData.render.window.h;
+	short gameWindowW = gameData.render.window.Width ();
+	short	gameWindowH = gameData.render.window.Height ();
 	ubyte nDisplayMode = gameStates.video.nDefaultDisplayMode;
 
 	char		filename [FILENAME_LEN];
@@ -1668,14 +1668,14 @@ if (!profile.Load (nStage < 2))
 
 if (gameStates.gfx.bOverride) {
 	gameStates.video.nDefaultDisplayMode = nDisplayMode;
-	gameData.render.window.w = gameWindowW;
-	gameData.render.window.h = gameWindowH;
+	gameData.render.window.SetWidth (gameWindowW);
+	gameData.render.window.SetHeight (gameWindowH);
 	}
 else if (gameStates.video.nDefaultDisplayMode < 0) {
 	gameStates.video.nDefaultDisplayMode = CUSTOM_DISPLAY_MODE;
 	}
 else 
-	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.render.window.w, gameData.render.window.h);
+	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.render.window.Width (), gameData.render.window.Height ());
 SetCustomDisplayMode (customDisplayMode.w, customDisplayMode.h, 1);
 
 if (nStage < 2)

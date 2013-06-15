@@ -129,7 +129,7 @@ else {
 		CFixMatrix mView = gameData.objs.viewerP->info.position.mOrient * mHead;
 		SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView, gameStates.render.xZoom, bOglScale, xStereoSeparation);
 		}
-	else if (gameStates.render.bRearView && (bPlayer)) {
+	else if (gameStates.render.bRearView && bPlayer) {
 #if 1
 		CFixMatrix mView;
 

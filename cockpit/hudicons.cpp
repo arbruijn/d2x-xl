@@ -654,7 +654,7 @@ if (gameStates.app.bEndLevelSequence)
 	return;
 if (gameStates.render.bRearView)
 	return;
-if (gameData.render.window.x || gameData.render.window.y)
+if (gameData.render.window.Left () || gameData.render.window.Top ())
 	return;	// render window has been shrunk
 if ((gameOpts->render.cockpit.bHUD) || cockpit->ShowAlways ()) {
 	nLineSpacing = cockpit->LineSpacing ();

@@ -1271,7 +1271,7 @@ void ShowEscortMenu (char *msg)
 	memset (&bg, 0, sizeof (bg));
 	bg.bIgnoreBg = 1;
 
-	CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [0]);
+	CCanvas::SetCurrent (&gameData.render.window);
 	fontManager.SetCurrent ( GAME_FONT );
 	fontManager.Current ()->StringSize (msg,&w,&h,&aw);
 	x = (screen.Width ()-w)/2;

@@ -415,8 +415,6 @@ if (nSaves < 1) {
 	MsgBox (NULL, NULL, 1, "Ok", TXT_NO_SAVEGAMES);
 	return 0;
 	}
-if (gameStates.video.nDisplayMode == 1)	//restore menu won't fit on 640x400
-	gameStates.render.vr.nScreenFlags ^= VRF_COMPATIBLE_MENUS;
 m_nLastSlot = -1;
 bRestoringMenu = 1;
 choice = m_nDefaultSlot + NM_IMG_SPACE;

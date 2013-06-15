@@ -138,7 +138,7 @@ class CBitmapRenderData {
 //-----------------------------------------------------------------------------
 
 class CBitmap : public CArray< ubyte > {
-	private:
+	public:
 		CBitmapInfo			m_info;
 		CBitmapRenderData	m_render;
 

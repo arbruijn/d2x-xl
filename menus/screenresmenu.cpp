@@ -149,7 +149,7 @@ void ScreenResMenu (void)
 	char		szMode [40];
 	char		cShortCut, szCustX [7], szCustY [7];
 
-if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE)) {				//special VR mode
+if (gameStates.video.nDisplayMode == -1) {				//special VR mode
 	MsgBox (TXT_SORRY, NULL, 1, TXT_OK, "You may not change screen\nresolution when VR modes enabled.");
 	return;
 	}

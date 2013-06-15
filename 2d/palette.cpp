@@ -264,10 +264,7 @@ m_data.nPalettes = 0;
 
 void CPaletteManager::SetEffect (bool bForce)
 {
-if (gameStates.render.vr.bUseRegCode)
-	;//GrPaletteStepUpVR (r, g, b, VR_WHITE_INDEX, VR_BLACK_INDEX);
-else
-	SetEffect (m_data.effect.Red (), m_data.effect.Green (), m_data.effect.Blue (), bForce);
+SetEffect (m_data.effect.Red (), m_data.effect.Green (), m_data.effect.Blue (), bForce);
 }
 
 //	------------------------------------------------------------------------------------

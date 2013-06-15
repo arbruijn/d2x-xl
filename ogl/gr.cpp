@@ -387,8 +387,6 @@ int SetDisplayMode (int nMode, int bOverride)
 {
 	CDisplayModeInfo *dmiP;
 
-if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE))	//special VR nMode
-	return 0;	//...don't change
 if (!bOverride)
 	gameStates.gfx.bOverride = 0;
 else if (gameStates.gfx.bOverride)
@@ -438,8 +436,8 @@ gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we 
 nMenuMode = gameStates.gfx.bOverride 
 		? gameStates.gfx.nStartScrSize
 		: gameStates.menus.bHires 
-			? (gameStates.render.vr.m_screenSize.Area () >= 640 * 480) 
-				? gameStates.render.vr.m_screenSize.Scalar ()
+			? (gameData.render.screen.Area () >= 640 * 480) 
+				? gameData.render.screen.Scalar ()
 				: SM (800, 600)
 			: SM (320, 200);
 gameStates.video.nLastScreenMode = -1;
@@ -451,8 +449,7 @@ if (nCurrentVGAMode != nMenuMode) {
 	ogl.RebuildContext (gameStates.app.bGameRunning);
 	}
 
-screen.Canvas ()->SetupPane (gameStates.render.vr.buffers.screenPages, 0, 0, screen.Width (), screen.Height ());
-screen.Canvas ()->SetupPane (gameStates.render.vr.buffers.screenPages + 1, 0, 0, screen.Width (), screen.Height ());
+screen.Canvas ()->SetupPane (&gameData.render.window, 0, 0, screen.Width (), screen.Height ());
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 return 1;
 }
@@ -461,8 +458,8 @@ return 1;
 
 int SetGameScreenMode (u_int32_t sm)
 {
-if (nCurrentVGAMode != gameStates.render.vr.m_screenSize.Scalar ()) {
-	if (GrSetMode (gameStates.render.vr.m_screenSize.Scalar ())) {
+if (nCurrentVGAMode != gameData.render.screen.Scalar ()) {
+	if (GrSetMode (gameData.render.screen.Scalar ())) {
 		Error ("Cannot set desired screen mode for game!");
 		//we probably should do something else here, like select a standard mode
 		}
@@ -471,32 +468,16 @@ if (nCurrentVGAMode != gameStates.render.vr.m_screenSize.Scalar ()) {
 		JoyDefsCalibrate ();
 #endif
 	}
-gameData.render.window.wMax = screen.Width ();
-gameData.render.window.hMax = screen.Height ();
-if (!gameData.render.window.h || (gameData.render.window.h > gameData.render.window.hMax) || 
-	 !gameData.render.window.w || (gameData.render.window.w > gameData.render.window.wMax)) {
-	gameData.render.window.w = gameData.render.window.wMax;
-	gameData.render.window.h = gameData.render.window.hMax;
+if (!gameData.render.window.Height () || (gameData.render.window.Height () > screen.Height ()) || 
+	 !gameData.render.window.Width () || (gameData.render.window.Width () > screen.Width ())) {
+	gameData.render.window.SetWidth (screen.Width ());
+	gameData.render.window.SetHeight (screen.Height ());
 	}
 //	Define screen pages for game mode
 // If we designate through screenFlags to use paging, then do so.
-screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[0], 
-										0, 0, screen.Width (), screen.Height ());
+screen.Canvas ()->SetupPane (&gameData.render.window, 0, 0, screen.Width (), screen.Height ());
 
-if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING) {
-	screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[1], 0, screen.Height (), screen.Width (), screen.Height ());
-	}
-else {
-	screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[1], 0, 0, screen.Width (), screen.Height ());
-	}
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.menus.bHires = (gameStates.video.nDisplayMode > 1));
-if (gameStates.render.vr.nRenderMode != VR_NONE) {
-	// for 640x480 or higher, use hires font.
-	if (gameStates.render.fonts.bHiresAvailable && (screen.Height () > 400))
-		gameStates.render.fonts.bHires = 1;
-	else
-		gameStates.render.fonts.bHires = 0;
-	}
 console.Resize (0, 0, screen.Width (), screen.Height () / 2);
 return 1;
 }
@@ -510,9 +491,9 @@ int SetScreenMode (u_int32_t sm)
 #if 0
 	GLint nError = glGetError ();
 #endif
-if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.render.vr.m_screenSize.Scalar ()) && 
-		(screen.Mode () == gameStates.render.vr.m_screenSize.Scalar ())) {
-	CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
+if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameData.render.screen.Scalar ()) && 
+		(screen.Mode () == gameData.render.screen.Scalar ())) {
+	CCanvas::SetCurrent (&gameData.render.window);
 	ogl.SetScreenMode ();
 	return 1;
 	}
@@ -534,8 +515,7 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 	default:
 		Error ("Invalid screen mode %d",sm);
 	}
-gameStates.render.vr.nCurrentPage = 0;
-CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
+CCanvas::SetCurrent (&gameData.render.window);
 ogl.SetScreenMode ();
 return 1;
 }
