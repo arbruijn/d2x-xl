@@ -693,7 +693,7 @@ m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
 //screen.Height () = screen.Height ();
-gameData.render.frame.SetupPane (&gameData.render.viewport, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+gameData.render.viewport.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
 //GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 return true;
 }

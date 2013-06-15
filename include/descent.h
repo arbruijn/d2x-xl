@@ -1723,9 +1723,9 @@ class CRenderData {
 		CTerrainRenderData		terrain;
 		CThrusterData				thrusters [MAX_PLAYERS];
 		CMineRenderData			mine;
-		CGameScreenData			screen;
-		CGameScreenData			frame;
-		CGameScreenData			viewport;
+		CGameScreenData			screen; // entire screen
+		CGameScreenData			frame;  // current part of the screen being rendered too (usually entire screen or left and right halves of it)
+		CGameScreenData			viewport; // current part of the current frame being rendered to
 		fix							zMin;
 		fix							zMax;
 		double						dAspect;

@@ -657,7 +657,7 @@ else
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
-	SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+	SetViewport (gameData.render.viewport.Left (), gameData.render.viewport.Top (), gameData.render.viewport.Width (), gameData.render.viewport.Height ());
 	if (m_states.bEnableScissor) {
 		glScissor (
 			CCanvas::Current ()->Left (),

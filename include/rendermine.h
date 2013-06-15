@@ -72,7 +72,7 @@ extern CAngleVector Player_head_angles;
 void RenderStartFrame (void);
 void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale);
 
-void RenderMine (short nStartSeg, fix xExeOffset, int nWindow);
+void RenderMine (short nStartSeg, fix xStereoSeparation, int nWindow);
 void RenderShadowQuad (void);
 void UpdateRenderedData (int window_num, CObject *viewer, int rearViewFlag, int user);
 void RenderObjList (int nListPos, int nWindow);

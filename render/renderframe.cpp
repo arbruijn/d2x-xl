@@ -615,12 +615,11 @@ void RenderMonoFrame (fix xStereoSeparation = 0)
 RenderShadowMaps (xStereoSeparation);
 #endif
 if (ogl.StereoDevice () == -2)
-	gameData.render.screen.SetupPane (&gameData.render.frame, (xStereoSeparation < 0) ? 0 : screen.Width () / 2, 0, screen.Width () / 2, screen.Height ());
+	gameData.render.frame.Set ((xStereoSeparation < 0) ? 0 : screen.Width () / 2, 0, screen.Width () / 2, screen.Height ());
 else
-	gameData.render.screen.SetupPane (&gameData.render.frame, gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
-ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
-gameData.render.frame.SetupPane (&gameData.render.viewport, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
-CCanvas::SetCurrent (&gameData.render.viewport);
+	gameData.render.frame.Set (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
+gameData.render.viewport.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+CCanvas::SetCurrent (&gameData.render.frame);
 
 if (xStereoSeparation <= 0) {
 	PROF_START
@@ -652,10 +651,8 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 		}
   	gameData.objs.viewerP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
 	UpdateRenderedData (0, gameData.objs.viewerP, 0, 0);
-	if ((xStereoSeparation <= 0) && cameraManager.Render ()) {
-		CCanvas::SetCurrent (&gameData.render.viewport);
+	if ((xStereoSeparation <= 0) && cameraManager.Render ())
 		ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
-		}
 	RenderFrame (xStereoSeparation, 0);
 	if (xStereoSeparation <= 0)
   		WakeupRenderedObjects (gameData.objs.viewerP, 0);
@@ -675,14 +672,11 @@ else {
 		return;
 		}
 	UpdateRenderedData (0, gameData.objs.viewerP, gameStates.render.bRearView, 0);
-	if ((xStereoSeparation <= 0) && cameraManager.Render ()) {
-		CCanvas::SetCurrent (&gameData.render.viewport);
+	if ((xStereoSeparation <= 0) && cameraManager.Render ())
 		ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
-		}
 	RenderFrame (xStereoSeparation, 0);
 	}
-CCanvas::SetCurrent (&gameData.render.frame);
-ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+ogl.SetViewport (gameData.render.viewport.Left (), gameData.render.viewport.Top (), gameData.render.viewport.Width (), gameData.render.viewport.Height ());
 FlushFrame (xStereoSeparation);
 CCanvas::SetCurrent (&gameData.render.frame);
 }
