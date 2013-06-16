@@ -431,7 +431,6 @@ private:
 public:
 	int FileSelector (const char *pszTitle, const char *filespec, char *filename, int bAllowAbort);
 	int DeleteFile (void);
-	virtual void Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP = NULL);
 	virtual void Render (void);
 };
 
@@ -452,7 +451,6 @@ class CListBox: public CMenu {
 
 public:
 	int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem = 0, int bAllowAbort = 1, pListBoxCallback callback = NULL);
-	virtual void Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP = NULL);
 	virtual void Render (void);
 };
 
@@ -468,7 +466,6 @@ public:
 	}
 	void Show (const char *pszMsg, bool bFade = true);
 	void Clear (void);
-	virtual void Render (const char* pszTitle, const char* pszSubTitle , CCanvas* gameCanvasP = NULL);
 	virtual void Render (void);
 };
 

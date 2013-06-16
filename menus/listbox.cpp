@@ -356,7 +356,7 @@ while (!done) {
 				done = 1;
 			}
 		}
-	Render (pszTitle);
+	CMenu::Render (pszTitle, NULL);
 	}
 FadeOut ();
 gameStates.input.keys.bRepeat = bKeyRepeat;

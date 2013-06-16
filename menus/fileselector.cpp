@@ -546,7 +546,7 @@ while (!done) {
 			done = 1;
 			}
 		}
-	Render (pszTitle);
+	CMenu::Render (pszTitle, NULL);
 	}
 FadeOut ();
 //exitFileMenuEarly:
