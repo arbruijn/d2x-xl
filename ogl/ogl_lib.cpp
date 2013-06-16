@@ -828,7 +828,7 @@ if (!m_states.nTransformCalls && (m_states.bUseTransform || bForce)) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();
-	glScalef (1, (StereoDevice () != -2) ? 1 : (float) gameData.render.frame.Width () / (float) gameData.render.frame.Height (), -1);
+	glScalef (1, /*(StereoDevice () != -2) ? 1 : (float) gameData.render.frame.Width () / (float) gameData.render.frame.Height ()*/1, -1);
 	glMultMatrixf (reinterpret_cast<GLfloat*> (transformation.m_info.viewf [2].m.vec));
 	glTranslatef (-transformation.m_info.posf [1].v.coord.x, -transformation.m_info.posf [1].v.coord.y, -transformation.m_info.posf [1].v.coord.z);
 	++m_states.nTransformCalls;

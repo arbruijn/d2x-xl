@@ -69,7 +69,8 @@ float quadVerts [4][2] = {{0,0},{1,0},{1,1},{0,1}};
 
 void COGL::SwapBuffers (int bForce, int bClear)
 {
-if (!gameStates.menus.nInMenu || bForce) {
+//if (!gameStates.menus.nInMenu || bForce)
+	{
 #	if PROFILING
 	if (gameStates.render.bShowProfiler && gameStates.app.bGameRunning && !gameStates.menus.nInMenu && fontManager.Current () && SMALL_FONT) {
 		static time_t t0 = -1000;
@@ -115,7 +116,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 		paletteManager.RenderEffect ();
 #endif
 	glowRenderer.End ();
-	if ((gameStates.render.bRenderIndirect > 0) && (!gameStates.menus.nInMenu || StereoDevice () == -2)) {
+	if ((gameStates.render.bRenderIndirect > 0) /*&& (!gameStates.menus.nInMenu || StereoDevice () == -2)*/) {
 		FlushDrawBuffer ();
 		//SelectDrawBuffer (0);
 		gameStates.render.bRenderIndirect = 0;

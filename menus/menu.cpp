@@ -292,13 +292,13 @@ for (uint i = 0; i < ToS (); i++) {
 
 int CMenu::InitProps (const char* pszTitle, const char* pszSubTitle)
 {
-if ((m_props.scWidth == screen.Width ()) && (m_props.scHeight == screen.Height ()))
+if ((m_props.scWidth == gameData.render.frame.Width ()) && (m_props.scHeight == gameData.render.frame.Height ()))
 	return 0;
 
 	int	i, gap, haveTitle;
 
-m_props.scWidth = screen.Width ();
-m_props.scHeight = screen.Height ();
+m_props.scWidth = gameData.render.frame.Width ();
+m_props.scHeight = gameData.render.frame.Height ();
 m_props.nDisplayMode = gameStates.video.nDisplayMode;
 GetTitleSize (pszTitle, TITLE_FONT, m_props.tw, m_props.th);
 GetTitleSize (pszSubTitle, SUBTITLE_FONT, m_props.tw, m_props.th);
@@ -721,7 +721,7 @@ while (!done) {
 		m_nKey = KeyInKey ();
 	if (mouseData.bDoubleClick)
 		m_nKey = KEY_ENTER;
-	if ((m_props.scWidth != screen.Width ()) || (m_props.scHeight != screen.Height ())) {
+	if ((m_props.scWidth != gameData.render.frame.Width ()) || (m_props.scHeight != gameData.render.frame.Height ())) {
 		memset (&m_props, 0, sizeof (m_props));
 		m_props.width = width;
 		m_props.height = height;

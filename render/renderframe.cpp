@@ -502,7 +502,7 @@ G3StartFrame (transformation, 0, !(nWindow || gameStates.render.cameras.bActive 
 if (!nWindow) {
 	CCanvas::SetCurrent (&gameData.render.scene);
 	fontManager.SetCurrent (GAME_FONT);
-	transformation.ComputeAspect (gameData.render.frame.Width (), gameData.render.frame.Height ());
+	//transformation.ComputeAspect (gameData.render.frame.Width (), gameData.render.frame.Height ());
 	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
 	}
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
