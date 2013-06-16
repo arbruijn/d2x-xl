@@ -107,11 +107,12 @@ void CParticleBuffer::Reset (void)
 ogl.ResetClientStates (1);
 ogl.SetDepthTest (true);
 ogl.SetAlphaTest (true);
-ogl.SetBlendMode (m_bEmissive);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 m_iBuffer = 0;
 m_nType = -1;
 m_bEmissive = false;
 m_dMax = 0.0f;
+shaderManager.Deploy (-1);
 CEffectArea::Reset ();
 }
 
@@ -269,7 +270,7 @@ if (ogl.m_features.bShaders) {
 	//if (gameStates.render.cameras.bActive /*|| !gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)*/)
 	//	shaderManager.Deploy (-1);
 	//else 
-#if HAVE_PARTICLE_SHADER
+#if 0 //HAVE_PARTICLE_SHADER
 	if (0 <= (nShader = UseParticleShader ())) {
 		if (!particleManager.LoadShader (nShader, dMax))
 			shaderManager.Deploy (-1);

@@ -386,8 +386,8 @@ void FlushFrame (fix xStereoSeparation)
 	int i = ogl.StereoDevice ();
 
 if (!(i && xStereoSeparation)) {	//no stereo or shutter glasses or Oculus Rift
-	if (gameStates.render.bRenderIndirect <= 0)
-		Draw2DFrameElements ();
+	//if (gameStates.render.bRenderIndirect <= 0)
+	//	Draw2DFrameElements ();
 	ogl.SwapBuffers (0, 0);
 	}
 else {

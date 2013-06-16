@@ -116,15 +116,12 @@ void COGL::SwapBuffers (int bForce, int bClear)
 		paletteManager.RenderEffect ();
 #endif
 	glowRenderer.End ();
-	if ((gameStates.render.bRenderIndirect > 0) /*&& (!gameStates.menus.nInMenu || StereoDevice () == -2)*/) {
+	if (gameStates.render.bRenderIndirect > 0) 
 		FlushDrawBuffer ();
-		//SelectDrawBuffer (0);
-		if (StereoDevice () > 0) {
-			gameStates.render.bRenderIndirect = 0;
-			Draw2DFrameElements ();
-			gameStates.render.bRenderIndirect = 1;
-			}
-		//SetDrawBuffer (GL_BACK, 1);
+	if (StereoDevice () >= 0) {
+		gameStates.render.bRenderIndirect = 0;
+		Draw2DFrameElements ();
+		gameStates.render.bRenderIndirect = 1;
 		}
 #if 0
 	if (!gameStates.menus.nInMenu && gameStates.app.bGameRunning) {
