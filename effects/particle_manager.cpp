@@ -116,19 +116,19 @@ for (i = 0; i < MAX_PARTICLE_BUFFERS; i++)
 tSinCosf sinCosPart [PARTICLE_POSITIONS];
 ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
 CFloatMatrix mat;
-mat.mat.dir.r.dir.coord.z =
-mat.mat.dir.u.dir.coord.z =
-mat.mat.dir.f.dir.coord.x =
-mat.mat.dir.f.dir.coord.y = 0;
-mat.mat.dir.f.dir.coord.z = 1;
+mat.m.dir.r.v.coord.z =
+mat.m.dir.u.v.coord.z =
+mat.m.dir.f.v.coord.x =
+mat.m.dir.f.v.coord.y = 0;
+mat.m.dir.f.v.coord.z = 1;
 CFloatVector dir;
 dir.Set (1.0f, 1.0f, 0.0f, 1.0f);
 for (int i = 0; i < PARTICLE_POSITIONS; i++) {
-	mat.mat.dir.r.dir.coord.x =
-	mat.mat.dir.u.dir.coord.y = sinCosPart [i].fCos;
-	mat.mat.dir.u.dir.coord.x = sinCosPart [i].fSin;
-	mat.mat.dir.r.dir.coord.y = -mat.mat.dir.u.dir.coord.x;
-	vRot [i] = mat * dir;
+	mat.m.dir.r.v.coord.x =
+	mat.m.dir.u.v.coord.y = sinCosPart [i].fCos;
+	mat.m.dir.u.v.coord.x = sinCosPart [i].fSin;
+	mat.m.dir.r.v.coord.y = -mat.m.dir.u.v.coord.x;
+	CParticle::vRot [i] = mat * dir;
 	}
 
 #else

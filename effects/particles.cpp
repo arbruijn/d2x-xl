@@ -1280,7 +1280,7 @@ return 0;
 
 #if TRANSFORM_PARTICLE_VERTICES
 
-void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
+void CParticle::Setup (bool alphaControl, float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread) 
 {
 	CFloatVector3 vCenter, vOffset;
 
@@ -1303,25 +1303,25 @@ if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
 							? (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.3333333f))
 							: 1.0f / float (pow (m_decay, 0.3333333f));
 #endif
-	vOffset.dir.coord.x = m_nWidth * fFade;
-	vOffset.dir.coord.y = m_nHeight * fFade;
+	vOffset.v.coord.x = m_nWidth * fFade;
+	vOffset.v.coord.y = m_nHeight * fFade;
 	}
 else {
-	vOffset.dir.coord.x = m_nWidth * m_decay;
-	vOffset.dir.coord.y = m_nHeight * m_decay;
+	vOffset.v.coord.x = m_nWidth * m_decay;
+	vOffset.v.coord.y = m_nHeight * m_decay;
 	}
-vOffset.dir.coord.z = 0;
+vOffset.v.coord.z = 0;
 
 float h = ParticleImageInfo (m_nType).xBorder;
-pb [m_nOrient].texCoord.dir.u =
-pb [(m_nOrient + 3) % 4].texCoord.dir.u = m_texCoord.dir.u + h;
-pb [(m_nOrient + 1) % 4].texCoord.dir.u =
-pb [(m_nOrient + 2) % 4].texCoord.dir.u = m_texCoord.dir.u + m_deltaUV - h;
+pb [m_nOrient].texCoord.v.u =
+pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + h;
+pb [(m_nOrient + 1) % 4].texCoord.v.u =
+pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - h;
 h = ParticleImageInfo (m_nType).yBorder;
-pb [m_nOrient].texCoord.dir.dir =
-pb [(m_nOrient + 1) % 4].texCoord.dir.dir = m_texCoord.dir.dir + h;
-pb [(m_nOrient + 2) % 4].texCoord.dir.dir =
-pb [(m_nOrient + 3) % 4].texCoord.dir.dir = m_texCoord.dir.dir + m_deltaUV - h;
+pb [m_nOrient].texCoord.v.v =
+pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + h;
+pb [(m_nOrient + 2) % 4].texCoord.v.v =
+pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - h;
 
 pb [0].color =
 pb [1].color =
@@ -1329,45 +1329,52 @@ pb [2].color =
 pb [3].color = m_renderColor;
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
-vCenter.dir.coord.x += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
+vCenter.v.coord.x += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 if (m_bRotate && gameOpts->render.particles.bRotate) {
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-	vOffset.dir.coord.x *= vRot [i].dir.coord.x;
-	vOffset.dir.coord.y *= vRot [i].dir.coord.y;
+	vOffset.v.coord.x *= vRot [i].v.coord.x;
+	vOffset.v.coord.y *= vRot [i].v.coord.y;
 
-	pb [0].vertex.dir.coord.x = vCenter.dir.coord.x - vOffset.dir.coord.x;
-	pb [0].vertex.dir.coord.y = vCenter.dir.coord.y + vOffset.dir.coord.y;
-	pb [1].vertex.dir.coord.x = vCenter.dir.coord.x + vOffset.dir.coord.y;
-	pb [1].vertex.dir.coord.y = vCenter.dir.coord.y + vOffset.dir.coord.x;
-	pb [2].vertex.dir.coord.x = vCenter.dir.coord.x + vOffset.dir.coord.x;
-	pb [2].vertex.dir.coord.y = vCenter.dir.coord.y - vOffset.dir.coord.y;
-	pb [3].vertex.dir.coord.x = vCenter.dir.coord.x - vOffset.dir.coord.y;
-	pb [3].vertex.dir.coord.y = vCenter.dir.coord.y - vOffset.dir.coord.x;
+	pb [0].vertex.v.coord.x = vCenter.v.coord.x - vOffset.v.coord.x;
+	pb [0].vertex.v.coord.y = vCenter.v.coord.y + vOffset.v.coord.y;
+	pb [1].vertex.v.coord.x = vCenter.v.coord.x + vOffset.v.coord.y;
+	pb [1].vertex.v.coord.y = vCenter.v.coord.y + vOffset.v.coord.x;
+	pb [2].vertex.v.coord.x = vCenter.v.coord.x + vOffset.v.coord.x;
+	pb [2].vertex.v.coord.y = vCenter.v.coord.y - vOffset.v.coord.y;
+	pb [3].vertex.v.coord.x = vCenter.v.coord.x - vOffset.v.coord.y;
+	pb [3].vertex.v.coord.y = vCenter.v.coord.y - vOffset.v.coord.x;
 	}
 else {
-	pb [0].vertex.dir.coord.x =
-	pb [3].vertex.dir.coord.x = vCenter.dir.coord.x - vOffset.dir.coord.x;
-	pb [1].vertex.dir.coord.x =
-	pb [2].vertex.dir.coord.x = vCenter.dir.coord.x + vOffset.dir.coord.x;
-	pb [0].vertex.dir.coord.y =
-	pb [1].vertex.dir.coord.y = vCenter.dir.coord.y + vOffset.dir.coord.y;
-	pb [2].vertex.dir.coord.y =
-	pb [3].vertex.dir.coord.y = vCenter.dir.coord.y - vOffset.dir.coord.y;
+	pb [0].vertex.v.coord.x =
+	pb [3].vertex.v.coord.x = vCenter.v.coord.x - vOffset.v.coord.x;
+	pb [1].vertex.v.coord.x =
+	pb [2].vertex.v.coord.x = vCenter.v.coord.x + vOffset.v.coord.x;
+	pb [0].vertex.v.coord.y =
+	pb [1].vertex.v.coord.y = vCenter.v.coord.y + vOffset.v.coord.y;
+	pb [2].vertex.v.coord.y =
+	pb [3].vertex.v.coord.y = vCenter.v.coord.y - vOffset.v.coord.y;
 	}
-pb [0].vertex.dir.coord.z =
-pb [1].vertex.dir.coord.z =
-pb [2].vertex.dir.coord.z =
-pb [3].vertex.dir.coord.z = vCenter.dir.coord.z;
+pb [0].vertex.v.coord.z =
+pb [1].vertex.v.coord.z =
+pb [2].vertex.v.coord.z =
+pb [3].vertex.v.coord.z = vCenter.v.coord.z;
 }
 
 #else // -----------------------------------------------------------------------
 
 void CParticle::Setup (bool alphaControl, float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread) 
 {
-	CFloatVector3 vCenter, uVec, rVec;
+	CFloatVector3 vCenter, uVec, rVec, fVec;
 	float fScale;
 
+#if 0
+vCenter.Assign (gameData.objs.consoleP->Orientation ().m.dir.f); //m_vPos);
+vCenter *= 10.0;
+fVec.Assign (gameData.objs.consoleP->Position ()); 
+vCenter += fVec;
+#else
 vCenter.Assign (m_vPos);
+#endif
 
 if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
 #if DBG
