@@ -383,36 +383,24 @@ ogl.SetStereoSeparation (xStereoSeparation);
 
 void FlushFrame (fix xStereoSeparation)
 {
-if (!(gameOpts->render.stereo.nGlasses && xStereoSeparation)) {	//no stereo or shutter glasses or Oculus Rift
+	int i = ogl.StereoDevice ();
+
+if (!(i && xStereoSeparation)) {	//no stereo or shutter glasses or Oculus Rift
 	if (gameStates.render.bRenderIndirect <= 0)
 		Draw2DFrameElements ();
 	ogl.SwapBuffers (0, 0);
 	}
 else {
-	int i = ogl.StereoDevice ();
-	if (i) {
-		if ((i < 0) || (xStereoSeparation > 0)) {
-			if (i < 0)
-				Draw2DFrameElements ();
-			if (xStereoSeparation > 0) {
-				ogl.SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
-				ogl.SwapBuffers (0, 0);
-				}
-			if (i > 0)
-				Draw2DFrameElements ();
+	if ((i < 0) || (xStereoSeparation > 0)) {
+		if (i < 0)
+			Draw2DFrameElements ();
+		if (xStereoSeparation > 0) {
+			ogl.SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
+			ogl.SwapBuffers (0, 0);
 			}
 		}
 	else {
-		if (xStereoSeparation < 0) {
-			//glFlush ();
-			ogl.ColorMask (1,1,1,1,0);
-			}
-		else {
-			//glFlush ();
-			ogl.ColorMask (1,1,1,1,0);
-			Draw2DFrameElements ();
-			ogl.SwapBuffers (0, 0);
-			}
+		ogl.ColorMask (1,1,1,1,0);
 		}
 	}
 }
