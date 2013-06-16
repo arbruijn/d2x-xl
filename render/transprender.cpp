@@ -1608,6 +1608,7 @@ ogl.DisableLighting ();
 ogl.ResetClientStates ();
 m_data.bHaveParticles = particleImageManager.LoadAll ();
 ogl.ChooseDrawBuffer ();
+ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
