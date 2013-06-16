@@ -61,36 +61,21 @@ backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_B
 gameStates.app.bClearMessage = 1;
 if (bFade)
 	do {
-		Render ();
+		Render (NULL, NULL);
 //		G3_SLEEP (33);
 	} while (SDL_GetTicks () - m_tEnter < gameOpts->menus.nFade);
 }
 
 //------------------------------------------------------------------------------
 
-void CMessageBox::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
+void CMessageBox::Render (void)
 {
-	static	int t0 = 0;
-
-if (!(BeginRenderMenu () && MenuRenderTimeout (t0, -1)))
-	return;
-
-CCanvas::SetCurrent (&gameData.render.frame);
-#if 0
-if (!gameStates.app.bGameRunning)
-	ogl.SetDrawBuffer (GL_FRONT, 0);
-#endif
 CCanvas::SetCurrent (backgroundManager.Canvas (1));
 FadeIn ();
 backgroundManager.Redraw ();
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 fontManager.SetCurrent (MEDIUM1_FONT);
 GrPrintF (NULL, 0x8000, BOX_BORDER / 2, m_pszMsg); //(h / 2 + BOX_BORDER) / 2
-GrUpdate (0);
-if (gameStates.app.bGameRunning)
-	ogl.ChooseDrawBuffer ();
-else
-	ogl.SetDrawBuffer (m_nDrawBuffer, 0);
 gameStates.render.grAlpha = 1.0f;
 }
 

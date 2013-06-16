@@ -90,7 +90,7 @@ for (i = 0; i < 10; i++) {
 
 //------------------------------------------------------------------------------ 
 
-void CFileSelector::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
+void CFileSelector::Render (void)
 {
 	static	int t0 = 0;
 
@@ -100,7 +100,7 @@ if (!MenuRenderTimeout (t0, -1))
 backgroundManager.Redraw ();
 fontManager.SetCurrent (NORMAL_FONT);
 FadeIn ();
-GrString (0x8000, m_yOffset + 10, pszTitle, NULL);
+GrString (0x8000, m_yOffset + 10, m_props.pszTitle, NULL);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 	int w, h, aw, y;
@@ -131,7 +131,6 @@ for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 	}	 
 gameStates.render.grAlpha = 1.0f;
 SDL_ShowCursor (1);
-GrUpdate (0);
 }
 
 //------------------------------------------------------------------------------ 
@@ -357,6 +356,9 @@ CMenu::DrawCloseBox (m_xOffset, m_yOffset);
 SDL_ShowCursor (1);
 
 SDL_EnableKeyRepeat (60, 30);
+
+Register ();
+
 while (!done) {
 	nOldMouseState = nMouseState;
 	omouse2State = mouse2State;
@@ -563,6 +565,7 @@ if (bInitialized) {
 	}
 
 SDL_EnableKeyRepeat(0, 0);
+Unregister ();
 return exitValue;
 }
 

@@ -471,6 +471,8 @@ else {
 	console.Draw ();
 	CalcFrameTime ();
 	Render ();
+	if (!gameStates.app.bGameRunning || m_bRedraw)
+		GrUpdate (0);
 	}
 }
 
@@ -542,11 +544,6 @@ void CMenu::Render (void)
 	if (m_bCloseBox) {
 		DrawCloseBox (m_props.x, m_props.y);
 		m_bCloseBox = 1;
-		}
-	if (!gameStates.app.bGameRunning || m_bRedraw) {
-		GrUpdate (0);
-		//if (gameStates.app.bGameRunning)
-		//	ogl.ChooseDrawBuffer ();
 		}
 	}
 m_bRedraw = 1;
@@ -669,6 +666,9 @@ else {
 paletteManager.DisableEffect ();
 done = 0;
 topChoice = 0;
+
+Register ();
+
 while (Item (topChoice).m_nType == NM_TYPE_TEXT) {
 	topChoice++;
 	if (topChoice >= int (ToS ()))
@@ -1413,6 +1413,7 @@ for (i = 0; i < int (ToS ()); i++)
 
 if (exception)
 	throw (exception);
+Unregister ();
 return m_nChoice;
 }
 

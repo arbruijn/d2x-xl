@@ -214,7 +214,6 @@ typedef int (*pMenuCallback) (CMenu& mat, int& lastKey, int nItem, int nState);
 
 class CMenu: public CStack<CMenuItem> {
 private:
-	tMenuProps		m_props;
 	int				m_nGroup;
 	CTimeout			m_to;
 	CMenu				* m_parent;
@@ -234,6 +233,7 @@ protected:
 	pMenuCallback	m_callback;
 	CMenuItem		m_null;
 	CMenuItem		* m_current;
+	tMenuProps		m_props;
 
 public:
 	CMenu () {
@@ -243,11 +243,14 @@ public:
 	explicit CMenu (uint nLength) {
 		Init ();
 		Create (nLength);
+		}
+
+	inline void Register (void) {
 		m_parent = m_active;
 		m_active = this;
-	}
+		}
 
-	~CMenu () {
+	inline void Unregister (void) {
 		m_active = m_parent;
 		}
 
@@ -383,7 +386,7 @@ public:
 		m_to.Setup (t);
 	}
 
-	virtual void Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP = NULL);
+	void Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP = NULL);
 	virtual void Render (void);
 
 	static CMenu * Active (void) { return m_active; }
@@ -426,11 +429,10 @@ private:
 	CArray<CFilename> m_filenames;
 
 public:
-	int FileSelector (const char *pszTitle, const char *filespec,
-			char *filename, int bAllowAbort);
+	int FileSelector (const char *pszTitle, const char *filespec, char *filename, int bAllowAbort);
 	int DeleteFile (void);
-	virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle =
-			NULL, CCanvas* gameCanvasP = NULL);
+	virtual void Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP = NULL);
+	virtual void Render (void);
 };
 
 //------------------------------------------------------------------------------
@@ -449,10 +451,9 @@ class CListBox: public CMenu {
 	CStack<char*>* m_items;
 
 public:
-	int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem =
-			0, int bAllowAbort = 1, pListBoxCallback callback = NULL);
-	virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle =
-			NULL, CCanvas* gameCanvasP = NULL);
+	int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem = 0, int bAllowAbort = 1, pListBoxCallback callback = NULL);
+	virtual void Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP = NULL);
+	virtual void Render (void);
 };
 
 //------------------------------------------------------------------------------
@@ -467,8 +468,8 @@ public:
 	}
 	void Show (const char *pszMsg, bool bFade = true);
 	void Clear (void);
-	virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle =
-			NULL, CCanvas* gameCanvasP = NULL);
+	virtual void Render (const char* pszTitle, const char* pszSubTitle , CCanvas* gameCanvasP = NULL);
+	virtual void Render (void);
 };
 
 extern CMessageBox messageBox;

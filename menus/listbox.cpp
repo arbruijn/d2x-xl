@@ -79,17 +79,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------ 
 
-void CListBox::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
+void CListBox::Render (void)
 {
-	static	int t0 = 0;
-
-if (!MenuRenderTimeout (t0, -1))
-	return;
-
 backgroundManager.Redraw ();
 FadeIn ();
 fontManager.SetCurrent (NORMAL_FONT);
-GrString (0x8000, m_yOffset - m_nTitleHeight, pszTitle, NULL);
+GrString (0x8000, m_yOffset - m_nTitleHeight, m_props.pszTitle, NULL);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
 	int w, h, aw, y;
@@ -110,7 +105,6 @@ for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
 	}	
 gameStates.render.grAlpha = 1.0f;
 SDL_ShowCursor (1);
-GrUpdate (0);
 }
 
 //------------------------------------------------------------------------------ 
