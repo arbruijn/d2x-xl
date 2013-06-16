@@ -87,6 +87,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 char bPauseableMenu = 0;
 char bAlreadyShowingInfo = 0;
 
+CMenu* CMenu::m_active = NULL;
+
 //------------------------------------------------------------------------------
 
 bool MenuRenderTimeout (int& t0, int tFade)
@@ -432,7 +434,7 @@ else {
 
 bool BeginRenderMenu (void)
 {
-if (gameStates.app.bGameRunning && ogl.StereoDevice () && (ogl.StereoSeparation () <= 0)) 
+if (gameStates.app.bGameRunning && (ogl.StereoDevice () > 0) && (ogl.StereoSeparation () <= 0)) 
 	return false;
 if (gameStates.app.bGameRunning && (gameStates.render.bRenderIndirect > 0)) {
 	ogl.FlushDrawBuffer ();
@@ -457,6 +459,9 @@ if (!MenuRenderTimeout (t0, m_tEnter))
 
 m_bRedraw = 0;
 
+m_props.pszTitle = pszTitle;
+m_props.pszSubTitle = pszSubTitle;
+m_props.gameCanvasP = gameCanvasP;
 if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_STATE_NORMAL)*/) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (gameCanvasP);
@@ -467,15 +472,22 @@ if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_
 else {
 	console.Draw ();
 	CalcFrameTime ();
+	Render ();
 	}
+}
 
-if (BeginRenderMenu ()) {
+//------------------------------------------------------------------------------ 
+
+void CMenu::Render (void)
+{
+//if (BeginRenderMenu ()) 
+	{
 	ogl.SetDepthTest (false);
 	FadeIn ();
 	ogl.ColorMask (1,1,1,1,0);
 	backgroundManager.Redraw ();
-	int i = DrawTitle (pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
-	DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
+	int i = DrawTitle (m_props.pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
+	DrawTitle (m_props.pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
 	if (!m_bRedraw)
 		m_props.ty = i;
 
@@ -531,10 +543,10 @@ if (BeginRenderMenu ()) {
 		DrawCloseBox (m_props.x, m_props.y);
 		m_bCloseBox = 1;
 		}
-	if (gameStates.app.bGameRunning || m_bRedraw) {
+	if (!gameStates.app.bGameRunning || m_bRedraw) {
 		GrUpdate (0);
-		if (gameStates.app.bGameRunning)
-			ogl.ChooseDrawBuffer ();
+		//if (gameStates.app.bGameRunning)
+		//	ogl.ChooseDrawBuffer ();
 		}
 	}
 m_bRedraw = 1;

@@ -736,6 +736,7 @@ else
 
 void COGL::EndFrame (int nWindow)
 {
+SetViewport (0, 0, screen.Width (), screen.Height ());
 if (nWindow == 0) {
 	postProcessManager.Update ();
 	if (postProcessManager.Effects ())
@@ -759,7 +760,6 @@ ogl.BindTexture (0);
 DisableClientStates (1, 1, 1, GL_TEXTURE0);
 ogl.BindTexture (0);
 SetBlendMode (OGL_BLEND_ALPHA);
-SetViewport (0, 0, screen.Width (), screen.Height ());
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);

@@ -374,6 +374,8 @@ FlashMine ();
 console.Draw ();
 if (gameStates.app.bShowVersionInfo || gameStates.app.bSaveScreenShot || (gameData.demo.nState == ND_STATE_PLAYBACK))
 	PrintVersionInfo ();
+if (CMenu::Active ())
+	CMenu::Active ()->Render ();
 ogl.SetStereoSeparation (xStereoSeparation);
 }
 
@@ -390,14 +392,6 @@ else {
 	int i = ogl.StereoDevice ();
 	if (i) {
 		if ((i < 0) || (xStereoSeparation > 0)) {
-#if 0
-			if (gameStates.menus.nInMenu) {
-				gameStates.render.bRenderIndirect = 0;
-				Draw2DFrameElements ();
-				gameStates.render.bRenderIndirect = 1;
-				}
-			else
-#endif
 			Draw2DFrameElements ();
 			if (xStereoSeparation > 0) {
 				ogl.SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
