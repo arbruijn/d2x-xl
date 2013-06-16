@@ -505,7 +505,7 @@ const char *glareFS =
 	"if (bSuspended != 0)\r\n" \
 	"   gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"else {\r\n" \
-	"   float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dMax);\r\n" \
+	"   float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, (gl_FragCoord.xy * windowScale).r), 0.0, dMax);\r\n" \
 	"   dz = (dMax - dz) / dMax;\r\n" \
 	"   vec4 glareColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
 	"   if (blendMode > 0) //additive\r\n" \

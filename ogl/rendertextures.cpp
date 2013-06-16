@@ -131,16 +131,17 @@ if (ogl.m_features.bDepthBlending < 0) // too slow on the current hardware
 int t = (nSamples >= 5) ? -1 : SDL_GetTicks ();
 SelectTMU (nTMU);
 SetTexturing (true);
-if (!m_states.hDepthBuffer [nId])
-	m_states.bDepthBuffer [nId] = 0;
 if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTexture (-1, nId, nId))) {
 	BindTexture (m_states.hDepthBuffer [nId]);
 	if (!m_states.bDepthBuffer [nId]) {
-		if (ogl.StereoDevice () < 0)
+		if (ogl.StereoDevice () == -1)
 			ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 		else
 			ogl.SetReadBuffer (GL_BACK, (gameStates.render.bRenderIndirect > 0) || gameStates.render.cameras.bActive);
+		SaveViewport ();
+		SetViewport (0, 0, screen.Width (), screen.Height ());
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
+		RestoreViewport ();
 		if ((nError = glGetError ())) {
 			DestroyDepthTexture (nId);
 			return m_states.hDepthBuffer [nId] = 0;

@@ -270,7 +270,7 @@ if (ogl.m_features.bShaders) {
 	//if (gameStates.render.cameras.bActive /*|| !gameOpts->SoftBlend (SOFT_BLEND_PARTICLES)*/)
 	//	shaderManager.Deploy (-1);
 	//else 
-#if 0 //HAVE_PARTICLE_SHADER
+#if HAVE_PARTICLE_SHADER
 	if (0 <= (nShader = UseParticleShader ())) {
 		if (!particleManager.LoadShader (nShader, dMax))
 			shaderManager.Deploy (-1);
@@ -299,6 +299,7 @@ if (ogl.m_features.bShaders) {
 		shaderManager.Deploy (-1);
 	}
 
+		shaderManager.Deploy (-1);
 if (!bHaveTexture) {
 	CBitmap* bmP = ParticleImageInfo (m_nType % PARTICLE_TYPES).bmP;
 	if (!bmP) {

@@ -1612,7 +1612,7 @@ ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
 ogl.SetFaceCulling (true);
 ogl.SetViewport (gameData.render.screen.Left (), gameData.render.screen.Top (), gameData.render.screen.Width (), gameData.render.screen.Height ());
-m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
+m_data.bHaveDepthBuffer = /*NeedDepthBuffer () &&*/ ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
 ogl.ChooseDrawBuffer ();
 ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());

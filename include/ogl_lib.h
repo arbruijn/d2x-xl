@@ -347,6 +347,7 @@ class COGL {
 		void SetRenderQuality (int nQuality = -1);
 		CViewport& Viewport (void) { return m_states.viewport [0]; }
 		void SetViewport (int x, int y, int w, int h);
+		void GetViewport (vec4& viewport);
 		void SaveViewport (void);
 		void RestoreViewport (void);
 		void SwapBuffers (int bForce, int bClear);
