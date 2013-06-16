@@ -112,7 +112,7 @@ m_iBuffer = 0;
 m_nType = -1;
 m_bEmissive = false;
 m_dMax = 0.0f;
-shaderManager.Deploy (-1);
+//shaderManager.Deploy (-1);
 CEffectArea::Reset ();
 }
 
@@ -299,7 +299,6 @@ if (ogl.m_features.bShaders) {
 		shaderManager.Deploy (-1);
 	}
 
-		shaderManager.Deploy (-1);
 if (!bHaveTexture) {
 	CBitmap* bmP = ParticleImageInfo (m_nType % PARTICLE_TYPES).bmP;
 	if (!bmP) {
