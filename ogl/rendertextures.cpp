@@ -131,6 +131,8 @@ if (ogl.m_features.bDepthBlending < 0) // too slow on the current hardware
 int t = (nSamples >= 5) ? -1 : SDL_GetTicks ();
 SelectTMU (nTMU);
 SetTexturing (true);
+if (!m_states.hDepthBuffer [nId])
+	m_states.bDepthBuffer [nId] = 0;
 if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTexture (-1, nId, nId))) {
 	BindTexture (m_states.hDepthBuffer [nId]);
 	if (!m_states.bDepthBuffer [nId]) {
