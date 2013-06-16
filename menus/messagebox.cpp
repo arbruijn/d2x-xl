@@ -61,7 +61,7 @@ backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_B
 gameStates.app.bClearMessage = 1;
 if (bFade)
 	do {
-		Render (NULL, NULL);
+		CMenu::Render (NULL, NULL);
 //		G3_SLEEP (33);
 	} while (SDL_GetTicks () - m_tEnter < gameOpts->menus.nFade);
 }
