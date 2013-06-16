@@ -452,8 +452,6 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 {
 	static	int t0 = 0;
 
-	int y = 0;
-
 if (!MenuRenderTimeout (t0, m_tEnter))
 	return;
 
@@ -480,6 +478,8 @@ else {
 
 void CMenu::Render (void)
 {
+	int y = 0;
+
 //if (BeginRenderMenu ()) 
 	{
 	ogl.SetDepthTest (false);

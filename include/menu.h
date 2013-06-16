@@ -383,7 +383,7 @@ public:
 		m_to.Setup (t);
 	}
 
-	virtual void Render (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
+	virtual void Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP = NULL);
 	virtual void Render (void);
 
 	static CMenu * Active (void) { return m_active; }
