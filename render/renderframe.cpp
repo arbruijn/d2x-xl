@@ -627,11 +627,11 @@ void RenderMonoFrame (fix xStereoSeparation = 0)
 RenderShadowMaps (xStereoSeparation);
 #endif
 if (ogl.StereoDevice () == -2)
-	gameData.render.frame.Set ((xStereoSeparation < 0) ? 0 : screen.Width () / 2, 0, screen.Width () / 2, screen.Height ());
+	screen.Canvas ()->SetupPane (&gameData.render.frame, (xStereoSeparation < 0) ? 0 : screen.Width () / 2, 0, screen.Width () / 2, screen.Height ());
 else
-	gameData.render.frame.Set (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
-gameData.render.viewport.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
-gameData.render.scene.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+	screen.Canvas ()->SetupPane (&gameData.render.frame, gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
+screen.Canvas ()->SetupPane (&gameData.render.viewport, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+screen.Canvas ()->SetupPane (&gameData.render.scene, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
 CCanvas::SetCurrent (&gameData.render.frame);
 
 if (xStereoSeparation <= 0) {
