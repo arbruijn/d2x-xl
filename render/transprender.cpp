@@ -1607,6 +1607,7 @@ sparkBuffer.nSparks = 0;
 ogl.DisableLighting ();
 ogl.ResetClientStates ();
 m_data.bHaveParticles = particleImageManager.LoadAll ();
+ogl.ChooseDrawBuffer ();
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);

@@ -392,11 +392,14 @@ else {
 	int i = ogl.StereoDevice ();
 	if (i) {
 		if ((i < 0) || (xStereoSeparation > 0)) {
-			Draw2DFrameElements ();
+			if (i < 0)
+				Draw2DFrameElements ();
 			if (xStereoSeparation > 0) {
 				ogl.SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
 				ogl.SwapBuffers (0, 0);
 				}
+			if (i > 0)
+				Draw2DFrameElements ();
 			}
 		}
 	else {
@@ -501,6 +504,10 @@ PROF_START
 G3StartFrame (transformation, 0, !(nWindow || gameStates.render.cameras.bActive || ((ogl.StereoDevice () == -2) && (xStereoSeparation > 0))), xStereoSeparation);
 if (!nWindow) {
 	CCanvas::SetCurrent (&gameData.render.scene);
+	ogl.SetViewport (gameData.render.frame.Left () + gameData.render.scene.Left (), 
+						  gameData.render.frame.Top () + gameData.render.scene.Top (), 
+						  gameData.render.scene.Width (), 
+						  gameData.render.scene.Height ());
 	fontManager.SetCurrent (GAME_FONT);
 	//transformation.ComputeAspect (gameData.render.frame.Width (), gameData.render.frame.Height ());
 	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
