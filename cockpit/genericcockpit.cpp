@@ -1916,6 +1916,7 @@ if (!cockpit->Setup (true))
 	return;
 #endif
 ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
+CCanvas::SetCurrent (&gameData.render.viewport);
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.ColorMask (1,1,1,1,0);
@@ -1926,8 +1927,8 @@ cockpit->SetLineSpacing (m_info.nLineSpacing);
 m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
 m_info.fontHeight = CCanvas::Current ()->Font ()->Height ();
 m_info.xStereoSeparation = xStereoSeparation;
-m_info.xScale = screen.Scale (0);
-m_info.yScale = screen.Scale (1);
+m_info.xScale = gameData.render.viewport.XScale ();
+m_info.yScale = gameData.render.viewport.YScale ();
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 m_info.nLineSpacing = int (GAME_FONT->Height () + GAME_FONT->Height () * fontManager.Scale () / 4);
 fontManager.SetScale (1.0f);
@@ -2237,7 +2238,6 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nType = CM_FULL_SCREEN;
 gameData.render.scene.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ()); // OpenGL viewport must be properly set here
-CCanvas::SetCurrent (&gameData.render.viewport);
 fontManager.SetCurrent (GAME_FONT);
 if (bRebuild)
 	gameStates.render.cockpit.nShieldFlash = 0;

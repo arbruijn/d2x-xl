@@ -497,11 +497,15 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
 StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
 ogl.m_states.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 
+if (nWindow)
+	CCanvas::SetCurrent (&gameData.render.scene);
+else
+	cockpit->Setup ();
+
 {
 PROF_START
 G3StartFrame (transformation, 0, !(nWindow || gameStates.render.cameras.bActive || ((ogl.StereoDevice () == -2) && (xStereoSeparation > 0))), xStereoSeparation);
 if (!nWindow) {
-	cockpit->Setup ();
 	CCanvas::SetCurrent (&gameData.render.scene);
 	fontManager.SetCurrent (GAME_FONT);
 	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
