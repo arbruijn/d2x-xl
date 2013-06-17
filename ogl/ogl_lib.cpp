@@ -459,7 +459,7 @@ gameStates.render.glFOV = 180.0;
 if (StereoSeparation () && (gameOpts->render.stereo.nMethod == STEREO_PARALLEL))
 	SetupFrustum ();
 else {
-	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), /*CCanvas::Current ()->*/gameData.render.frame.AspectRatio (), ZNEAR, ZFAR);
+	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), /*CCanvas::Current ()->*/gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
 	}
 if (gameStates.render.bRearView < 0)
 	glScalef (-1.0f, 1.0f, 1.0f);
@@ -869,7 +869,7 @@ if (!m_states.nTransformCalls && (m_states.bUseTransform || bForce)) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();
-	glScalef (1, /*(StereoDevice () != -2) ? 1 : (float) gameData.render.frame.Width () / (float) gameData.render.frame.Height ()*/1, -1);
+	glScalef (1, 1, -1);
 	glMultMatrixf (reinterpret_cast<GLfloat*> (transformation.m_info.viewf [2].m.vec));
 	glTranslatef (-transformation.m_info.posf [1].v.coord.x, -transformation.m_info.posf [1].v.coord.y, -transformation.m_info.posf [1].v.coord.z);
 	++m_states.nTransformCalls;

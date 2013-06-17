@@ -1961,7 +1961,7 @@ fontManager.SetCurrent (GAME_FONT);
 bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
 
 //if (!(transformation.m_info.bUsePlayerHeadAngles || gameOpts->render.stereo.nGlasses))
-	DrawReticle (0);
+	DrawReticle (ogl.StereoDevice () < 0);
 
 if (!bLimited) {
 	DrawPlayerNames ();
