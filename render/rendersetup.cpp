@@ -269,7 +269,7 @@ else {
 	}
 #endif
 
-//ogl.SetDepthWrite (true);
+ogl.SetDepthWrite (true);
 ogl.m_states.bDepthBuffer [0] =
 ogl.m_states.bDepthBuffer [1] = 0;
 gameData.render.nUsedFaces =
@@ -364,8 +364,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 #endif //_OPENMP
 		if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
 			meshBuilder.BuildVBOs ();
-		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && 
-												  !(gameStates.render.bFullBright || automap.Display ());
+		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && !(gameStates.render.bFullBright || automap.Display ());
 		}
 	transparencyRenderer.InitBuffer (gameData.render.zMin, gameData.render.zMax, nWindow);
 	}

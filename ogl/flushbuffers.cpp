@@ -215,9 +215,9 @@ if (HaveDrawBuffer ()) {
 	glColor3f (1,1,1);
 
 	EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
-	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+	//BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+	//OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	//OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 
 	if (nEffects & 5) {
 		FlushEffects (nEffects);

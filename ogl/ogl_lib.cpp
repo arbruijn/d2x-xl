@@ -702,11 +702,12 @@ else
 			//	CCanvas::Current ()->Height ());
 			//SetScissorTest (true);
 			//m_states.bEnableScissor = 1;
-			if (bResetColorBuf >= 0) {
+			//if (bResetColorBuf >= 0) 
+				{
 				SetViewport (0, 0, screen.Width (), screen.Height ());
 				if (!bResetColorBuf)
 					glClear (GL_DEPTH_BUFFER_BIT);
-				else if ((bResetColorBuf > 0) && (automap.Display () || (gameStates.render.bRenderIndirect > 0))) {
+				else if (automap.Display () || (gameStates.render.bRenderIndirect > 0)) {
 					glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 					glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 					}

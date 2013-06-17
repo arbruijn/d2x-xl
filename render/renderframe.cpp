@@ -362,6 +362,8 @@ if (ogl.StereoDevice () >= 0) {
 	ogl.SetDrawBuffer (GL_BACK, 0);
 	ogl.SetStereoSeparation (0);
 	}
+else	
+	ogl.ChooseDrawBuffer ();
 ogl.ColorMask (1,1,1,1,0);
 //SetBlendMode (OGL_BLEND_ALPHA);
 if (gameStates.app.bGameRunning && !automap.Display ()) {
@@ -623,7 +625,7 @@ void RenderMonoFrame (fix xStereoSeparation = 0)
 RenderShadowMaps (xStereoSeparation);
 #endif
 if (ogl.StereoDevice () == -2)
-	screen.Canvas ()->SetupPane (&gameData.render.frame, (xStereoSeparation < 0) ? 0 : screen.Width () / 2, 0, screen.Width () / 2, screen.Height ());
+	screen.Canvas ()->SetupPane (&gameData.render.frame, /*(xStereoSeparation < 0) ? 0 : screen.Width () / 2*/0, 0, screen.Width () / 2, screen.Height ());
 else
 	screen.Canvas ()->SetupPane (&gameData.render.frame, gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 screen.Canvas ()->SetupPane (&gameData.render.viewport, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
@@ -912,14 +914,13 @@ else {
 	if (gameOpts->render.stereo.xSeparation == 0)
 		gameOpts->render.stereo.xSeparation = 3 * I2X (1) / 4;
 	fix xStereoSeparation = automap.Display () ? 2 * gameOpts->render.stereo.xSeparation : gameOpts->render.stereo.xSeparation;
-	if (gameStates.menus.nInMenu && ogl.StereoDevice ()) {
-		RenderMonoFrame ((gameData.app.nFrameCount & 1) ? xStereoSeparation : -xStereoSeparation);
-		}
-	else {
+	//if (gameStates.menus.nInMenu && ogl.StereoDevice ()) {
+	//	RenderMonoFrame ((gameData.app.nFrameCount & 1) ? xStereoSeparation : -xStereoSeparation);
+	//	}
+	//else 
+		{
 		RenderMonoFrame (-xStereoSeparation);
-		//RenderMonoFrame (xStereoSeparation);
-		FlushFrame (xStereoSeparation);
-		CCanvas::SetCurrent (&gameData.render.frame);
+		RenderMonoFrame (xStereoSeparation);
 		}
 	}
 //StopTime ();

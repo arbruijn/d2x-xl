@@ -80,8 +80,14 @@ int j = StereoDevice ();
 if (j == -2) {
 	// todo: add barrel distortion shader
 	SetDrawBuffer (GL_BACK, 0);
-	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+	EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [1]);
+	BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+	OglDrawArrays (GL_QUADS, 0, 4);
+	EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [2]);
+	BindTexture (DrawBuffer (1)->ColorBuffer ()); // set source for subsequent rendering step
 	OglDrawArrays (GL_QUADS, 0, 4);
 	}
 else if (j == -1) {

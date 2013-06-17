@@ -216,7 +216,7 @@ else {
 		}
 	else {
 		ogl.ClearError (0);
-		SelectDrawBuffer ((StereoDevice () > 0) && (m_data.xStereoSeparation > 0));
+		SelectDrawBuffer (/*(StereoDevice () > 0) &&*/ (m_data.xStereoSeparation > 0));
 		if (ogl.ClearError (0))
 			gameOpts->render.stereo.nGlasses = 0;
 		}
