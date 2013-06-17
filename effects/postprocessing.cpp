@@ -83,7 +83,7 @@ const char* shockwaveFS =
 	"uniform sampler2D sceneTex;\r\n" \
 	"uniform sampler2D depthTex;\r\n" \
 	"uniform int nShockwaves;\r\n" \
-	"uniform vec4 viewport;\r\n" \
+	"uniform vec2 screenSize;\r\n" \
 	"uniform vec3 effectStrength;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
@@ -94,25 +94,25 @@ const char* shockwaveFS =
 	"#define D(z) (NDC (z) * B)\r\n" \
 	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
 	"void main() {\r\n" \
-	"vec2 tcSrc = gl_TexCoord [0].xy * viewport.zw;\r\n" \
+	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
 	"vec2 tcDest = tcSrc; //vec2 (0.0, 0.0);\r\n" \
-	"//int i;\r\n" \
-	"//for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
-	"//  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
-	"//  float r = gl_LightSource [i].constantAttenuation;\r\n" \
-	"//  float d = length (v);\r\n" \
-	"//  float offset = d - r;\r\n" \
-	"//  if (abs (offset) <= effectStrength.z) {\r\n" \
-	"//    r += effectStrength.z;\r\n" \
-	"//    float z = sqrt (r * r - d * d) / r * gl_LightSource [i].linearAttenuation;\r\n" \
-	"//    if (gl_LightSource [i].position.z - z <= ZEYE (texture2D (depthTex, gl_TexCoord [0].xy).r)) {\r\n" \
-	"//      offset /= screenSize.x;\r\n" \
-	"//      offset *= (1.0 - pow (abs (offset) * effectStrength.x, effectStrength.y));\r\n" \
-	"//      tcDest -= v * (gl_LightSource [i].quadraticAttenuation * offset / d * viewport.zw);\r\n" \
-	"//      }\r\n" \
-	"//    }\r\n" \
-	"//  }\r\n" \
-	"gl_FragColor = texture2D (sceneTex, tcDest / viewport.zw);\r\n" \
+	"int i;\r\n" \
+	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
+	"  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
+	"  float r = gl_LightSource [i].constantAttenuation;\r\n" \
+	"  float d = length (v);\r\n" \
+	"  float offset = d - r;\r\n" \
+	"  if (abs (offset) <= effectStrength.z) {\r\n" \
+	"    r += effectStrength.z;\r\n" \
+	"    float z = sqrt (r * r - d * d) / r * gl_LightSource [i].linearAttenuation;\r\n" \
+	"    if (gl_LightSource [i].position.z - z <= ZEYE (texture2D (depthTex, gl_TexCoord [0].xy).r)) {\r\n" \
+	"      offset /= screenSize.x;\r\n" \
+	"      offset *= (1.0 - pow (abs (offset) * effectStrength.x, effectStrength.y));\r\n" \
+	"      tcDest -= v * (gl_LightSource [i].quadraticAttenuation * offset / d * screenSize);\r\n" \
+	"      }\r\n" \
+	"    }\r\n" \
+	"  }\r\n" \
+	"gl_FragColor = texture2D (sceneTex, tcDest / screenSize);\r\n" \
 	"}\r\n";
 
 #endif
@@ -163,12 +163,17 @@ shaderManager.Set ("sceneTex", 0);
 shaderManager.Set ("depthTex", 1);
 shaderManager.Set ("effectStrength", effectStrength);
 float viewport [4] = {
+#if 1
+	0, 0, screen.Width (), screen.Height ()
+#else
 	gameData.render.frame.Left () + gameData.render.scene.Left (), 
 	gameData.render.frame.Top () + gameData.render.scene.Top (), 
 	gameData.render.scene.Width (), 
 	gameData.render.scene.Height () 
+#endif
 	};
-shaderManager.Set ("viewport", viewport);
+float screenSize [2] = { screen.Width (), screen.Height () };
+shaderManager.Set ("screenSize", screenSize);
 ogl.SetLighting (true);
 return true;
 }
@@ -277,9 +282,11 @@ if (!SetupShader ())
 	return false;
 
 glEnable (GL_LIGHT0 + m_nShockwaves);
-glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&m_renderPos));
-glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, m_screenRad);
-glLightf (GL_LIGHT0 + m_nShockwaves, GL_LINEAR_ATTENUATION, m_rad);
+CFloatVector3 v = m_renderPos;
+v.v.coord.x += gameData.render.frame.Left ();
+glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&v));
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, m_screenRad); 
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_LINEAR_ATTENUATION, m_rad); // Wellenfront
 #if SHOCKWAVE_STYLE
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, (float) pow (0.5f - (float) cos (2.0 * Pi * (1.0f - m_ttl)) * 0.5f, 0.25f) * m_nBias); 
 #else

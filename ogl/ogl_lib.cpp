@@ -119,6 +119,21 @@ tRenderQuality renderQualities [] = {
 	};
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CViewport::Apply (int t) 
+{ 
+if (t >= 0)
+	m_t = t;
+glViewport ((GLint) m_x, (GLint) (m_t - m_y - m_h), (GLsizei) m_w, (GLsizei) m_h); 
+glScissor (m_x, m_t - m_y - m_h, m_w, m_h);
+ogl.SetScissorTest (ogl.m_states.bEnableScissor != 0);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 double COGL::ZScreen (void)
 {
@@ -244,6 +259,7 @@ else {
 	v [0] = pointList [0]->Index ();
 	v [1] = pointList [1]->Index ();
 	v [2] = pointList [2]->Index ();
+
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
 		vNormal = CFixVector::Normal (pointList [0]->ViewPos (), pointList [1]->ViewPos (), pointList [2]->ViewPos ());
 		}
@@ -487,7 +503,7 @@ if (!gameOpts->render.cameras.bHires) {
 	w >>= gameStates.render.cameras.bActive;
 	h >>= gameStates.render.cameras.bActive;
 	}
-int t = screen.Canvas ()->Height ();
+int t = screen.Height ();
 if (!gameOpts->render.cameras.bHires)
 	t >>= gameStates.render.cameras.bActive;
 if (m_states.viewport [0] != CViewport (x, y, w, h, t)) {
@@ -667,17 +683,6 @@ else
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
-	SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
-	if (m_states.bEnableScissor) {
-		glScissor (
-			CCanvas::Current ()->Left (),
-			screen.Canvas ()->Height () - CCanvas::Current ()->Top () - CCanvas::Current ()->Height (),
-			CCanvas::Current ()->Width (),
-			CCanvas::Current ()->Height ());
-		SetScissorTest (true);
-		}
-	else
-		SetScissorTest (false);
 	if (gameStates.render.nRenderPass < 0) {
 		ogl.SetDepthWrite (true);
 		glClearDepth (1.0);
@@ -690,12 +695,24 @@ else
 #endif
 			{
 			ColorMask (1, 1, 1, 1, 1);
-			if (bResetColorBuf && (automap.Display () || (gameStates.render.bRenderIndirect > 0))) {
-				glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-				glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			//glScissor (
+			//	CCanvas::Current ()->Left (),
+			//	screen.Canvas ()->Height () - CCanvas::Current ()->Top () - CCanvas::Current ()->Height (),
+			//	CCanvas::Current ()->Width (),
+			//	CCanvas::Current ()->Height ());
+			//SetScissorTest (true);
+			//m_states.bEnableScissor = 1;
+			if (bResetColorBuf >= 0) {
+				SetViewport (0, 0, screen.Width (), screen.Height ());
+				if (!bResetColorBuf)
+					glClear (GL_DEPTH_BUFFER_BIT);
+				else if ((bResetColorBuf > 0) && (automap.Display () || (gameStates.render.bRenderIndirect > 0))) {
+					glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+					glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+					}
 				}
-			else
-				glClear (GL_DEPTH_BUFFER_BIT);
+			//if (!m_states.bEnableScissor) 
+			//	SetScissorTest (false);
 			}
 		}
 	else if (gameStates.render.nRenderPass) {
@@ -739,6 +756,19 @@ else
 	SetBlending (true);
 	SetBlendMode (OGL_BLEND_ALPHA);
 	SetStencilTest (false);
+	SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+#if 0
+	if (m_states.bEnableScissor) {
+		glScissor (
+			CCanvas::Current ()->Left (),
+			screen.Canvas ()->Height () - CCanvas::Current ()->Top () - CCanvas::Current ()->Height (),
+			CCanvas::Current ()->Width (),
+			CCanvas::Current ()->Height ());
+		SetScissorTest (true);
+		}
+	else
+		SetScissorTest (false);
+#endif
 	}
 }
 

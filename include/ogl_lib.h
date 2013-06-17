@@ -144,11 +144,7 @@ class CViewport {
 
 		CViewport (int x = 0, int y = 0, int w = 0, int h = 0, int t = 0) : m_x (x), m_y (y), m_w (w), m_h (h), m_t (t) {}
 
-		void Apply (int t = -1) { 
-			if (t >= 0)
-				m_t = t;
-			glViewport ((GLint) m_x, (GLint) (m_t - m_y - m_h), (GLsizei) m_w, (GLsizei) m_h); 
-			}
+		void Apply (int t = -1);
 
 		inline const CViewport& operator= (CViewport const other) {
 			m_x = other.m_x;

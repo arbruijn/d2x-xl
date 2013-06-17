@@ -663,8 +663,8 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 void CHUD::DrawCockpit (bool bAlphaTest)
 {
-gameData.render.frame.SetLeft ((screen.Width () - gameData.render.frame.Width ()) / 2);
-gameData.render.frame.SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
+//gameData.render.frame.SetLeft ((screen.Width () - gameData.render.frame.Width ()) / 2);
+//gameData.render.frame.SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
 }
 
 //	-----------------------------------------------------------------------------

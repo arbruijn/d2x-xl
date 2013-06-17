@@ -495,7 +495,7 @@ else
 
 {
 PROF_START
-G3StartFrame (transformation, 0, !(nWindow || gameStates.render.cameras.bActive || ((ogl.StereoDevice () == -2) && (xStereoSeparation > 0))), xStereoSeparation);
+G3StartFrame (transformation, 0, ((ogl.StereoDevice () == -2) && (xStereoSeparation > 0)) ? -1 : (nWindow || gameStates.render.cameras.bActive) ? 0 : 1, xStereoSeparation);
 if (!nWindow) {
 	CCanvas::SetCurrent (&gameData.render.scene);
 	ogl.SetViewport (gameData.render.frame.Left () + gameData.render.scene.Left (), 
@@ -917,7 +917,9 @@ else {
 		}
 	else {
 		RenderMonoFrame (-xStereoSeparation);
-		RenderMonoFrame (xStereoSeparation);
+		//RenderMonoFrame (xStereoSeparation);
+		FlushFrame (xStereoSeparation);
+		CCanvas::SetCurrent (&gameData.render.frame);
 		}
 	}
 //StopTime ();
