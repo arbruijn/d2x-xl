@@ -180,8 +180,7 @@ if (nEffects & 5) {
 			ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
 		}
 	else {
-		SelectDrawBuffer (2); 
-		SetDrawBuffer (GL_BACK, 0);
+		SelectBlurBuffer (0); 
 		for (int i = 0; i < 2; i++) {
 			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
@@ -194,7 +193,6 @@ if (nEffects & 5) {
 			else
 				OglDrawArrays (GL_QUADS, 0, 4);
 			}
-		ogl.BindTexture (DrawBuffer (2)->ColorBuffer ());
 		}
 	}
 }
@@ -221,7 +219,7 @@ if (HaveDrawBuffer ()) {
 
 	if (nEffects & 5) {
 		FlushEffects (nEffects);
-		//FlushStereoBuffers (nEffects);
+		FlushStereoBuffers (nEffects);
 		}
 	else if (nEffects & 3) {
 		FlushStereoBuffers (nEffects);
