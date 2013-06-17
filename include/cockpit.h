@@ -95,36 +95,37 @@ class CCockpitHistory {
 
 class CCockpitInfo {
 	public:
-		int	nCloakFadeState;
-		int	bLastHomingWarningDrawn [2];
-		int	addedScore [2];
-		fix	scoreTime;
-		fix	lastWarningBeepTime [2];
-		int	bHaveGaugeCanvases;
-		int	nInvulnerableFrame;
-		int	weaponBoxStates [2];
-		fix	weaponBoxFadeValues [2];
-		int	weaponBoxUser [2];
-		int	nLineSpacing;
-		int	nType;
-		int	nColor;
-		float	xScale;
-		float	yScale;
-		float	xGaugeScale;
-		float	yGaugeScale;
-		float	fontScale;
-		int	fontWidth;
-		int	fontHeight;
-		uint	fontColor;
-		int	heightPad;
-		int	nCockpit;
-		int	nShield;
-		int	nEnergy;
-		int	bCloak;
-		int	nDamage [3];
-		fix	tInvul;
-		fix	xStereoSeparation;
-		bool	bRebuild;
+		int		nCloakFadeState;
+		int		bLastHomingWarningDrawn [2];
+		int		addedScore [2];
+		fix		scoreTime;
+		fix		lastWarningBeepTime [2];
+		int		bHaveGaugeCanvases;
+		int		nInvulnerableFrame;
+		int		weaponBoxStates [2];
+		fix		weaponBoxFadeValues [2];
+		int		weaponBoxUser [2];
+		int		nLineSpacing;
+		int		nType;
+		int		nColor;
+		float		xScale;
+		float		yScale;
+		float		xGaugeScale;
+		float		yGaugeScale;
+		float		fontScale;
+		int		fontWidth;
+		int		fontHeight;
+		uint		fontColor;
+		int		heightPad;
+		int		nCockpit;
+		int		nShield;
+		int		nEnergy;
+		int		bCloak;
+		int		nDamage [3];
+		fix		tInvul;
+		fix		xStereoSeparation;
+		CCanvas	*canvas;
+		bool		bRebuild;
 
 	public:
 		void Init (void);
@@ -156,6 +157,8 @@ class CGenericCockpit {
 		inline void SetFontScale (float fontScale) { m_info.fontScale = fontScale; }
 		inline uint FontColor (void) { return m_info.fontColor; }
 		inline void SetFontColor (uint fontColor) { m_info.fontColor = fontColor; }
+		inline CCanvas * Canvas (void) { return m_info.canvas; }
+		inline void SetCanvas (CCanvas * canvas) { m_info.canvas = canvas; }
 		inline void PageInGauge (int nGauge) { LoadTexture (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0); }
 		inline ushort GaugeIndex (int nGauge) { return gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index; }
 		CBitmap* BitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL, CBitmap* bmoP = NULL);

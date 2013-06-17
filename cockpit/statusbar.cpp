@@ -201,6 +201,7 @@ void CStatusBar::DrawLives (void)
 
 SetFontScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 SetFontColor (MEDGREEN_RGBA);
+SetCanvas (gameData.render.frame);
 strcpy (szLives, IsMultiGame ? TXT_DEATHS : TXT_LIVES);
 fontManager.Current ()->StringSize (szLives, w, h, aw);
 nIdLives [0] = DrawHUDText (&nIdLives [0], -(ScaleX (SB_LIVES_LABEL_X + int (w / fontManager.Scale ())) - w), -ScaleY (SB_LIVES_LABEL_Y + HeightPad ()), szLives);
@@ -428,6 +429,7 @@ CGenericCockpit::DrawBombCount (SB_BOMB_COUNT_X, SB_BOMB_COUNT_Y, BLACK_RGBA, 1)
 int CStatusBar::DrawBombCount (int& nIdBombCount, int x, int y, int nColor, char* pszBombCount)
 {
 SetFontColor (nColor);
+SetCanvas (gameData.render.frame);
 int nId = DrawHUDText (&nIdBombCount, x, y, pszBombCount, nIdBombCount);
 return nId;
 }

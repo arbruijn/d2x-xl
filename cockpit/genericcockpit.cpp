@@ -227,7 +227,8 @@ int _CDECL_ CGenericCockpit::DrawHUDText (int *idP, int x, int y, const char * f
 va_start (args, format);
 vsprintf (buffer, format, args);
 CCanvas::Push ();
-CCanvas::SetCurrent (&gameData.render.scene);
+CCanvas::SetCurrent (Canvas () ? Canvas () : &gameData.render.scene);
+CCanvasColor fontColor = CCanvas::Current ()->FontColor (0);
 fontManager.SetScale (FontScale ());
 fontManager.SetColorRGBi (FontColor (), 1, 0, 0);
 if (x < 0)
@@ -236,7 +237,9 @@ if (y < 0)
 	y = CCanvas::Current ()->Height () + y;
 int nId = GrString (x, y, buffer, idP);
 fontManager.SetScale (1.0f);
+CCanvas::Current ()->FontColor (0) = fontColor;
 CCanvas::Pop ();
+SetCanvas (NULL);
 return nId;
 }
 
@@ -2235,6 +2238,7 @@ if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 gameData.render.scene.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ()); // OpenGL viewport must be properly set here
 fontManager.SetCurrent (GAME_FONT);
 SetFontScale (1.0f);
+SetCanvas (NULL);
 SetFontColor (GREEN_RGBA);
 if (bRebuild)
 	gameStates.render.cockpit.nShieldFlash = 0;
