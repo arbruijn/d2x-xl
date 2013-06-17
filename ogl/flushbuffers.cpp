@@ -163,11 +163,11 @@ void COGL::SwapBuffers (int bForce, int bClear)
 void COGL::FlushEffects (int nEffects)
 {
 //ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
-if (nEffects & 1) {
-	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+if (nEffects & 5) {
 	if (StereoDevice () != -2) {
+		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 		if (nEffects & 4) // shutter glasses or Oculus Rift
 			SelectDrawBuffer (1); // render effects to texture 1
 		else
@@ -180,21 +180,21 @@ if (nEffects & 1) {
 			ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
 		}
 	else {
-		short	xOffset [2] = {0, 640 };
-
-		SetViewport (0, 0, screen.Width (), screen.Height ());
+		SelectDrawBuffer (2); 
+		SetDrawBuffer (GL_BACK, 0);
 		for (int i = 0; i < 2; i++) {
-			SelectDrawBuffer (!i); 
+			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
+			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [i + 1]);
 			ogl.BindTexture (DrawBuffer (i)->ColorBuffer ());
-#if 0
-			OglDrawArrays (GL_QUADS, 0, 4);
-#else
-			gameData.render.frame.SetLeft (xOffset [i]);
-			postProcessManager.Setup ();
-			postProcessManager.Render ();
-#endif
+			if (nEffects & 1) {
+				postProcessManager.Setup ();
+				postProcessManager.Render ();
+				}
+			else
+				OglDrawArrays (GL_QUADS, 0, 4);
 			}
-		ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
+		ogl.BindTexture (DrawBuffer (2)->ColorBuffer ());
 		}
 	}
 }
@@ -215,13 +215,13 @@ if (HaveDrawBuffer ()) {
 	glColor3f (1,1,1);
 
 	EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	//BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
-	//OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-	//OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+	BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 
 	if (nEffects & 5) {
 		FlushEffects (nEffects);
-		FlushStereoBuffers (nEffects);
+		//FlushStereoBuffers (nEffects);
 		}
 	else if (nEffects & 3) {
 		FlushStereoBuffers (nEffects);
