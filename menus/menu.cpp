@@ -88,6 +88,7 @@ char bPauseableMenu = 0;
 char bAlreadyShowingInfo = 0;
 
 CMenu* CMenu::m_active = NULL;
+int CMenu::m_level = 0;
 
 //------------------------------------------------------------------------------
 
@@ -480,72 +481,73 @@ else {
 
 void CMenu::Render (void)
 {
+if (m_bDone)
+	return;
+
 	int y = 0;
 
-//if (BeginRenderMenu ()) 
-	{
-	ogl.SetDepthTest (false);
-	FadeIn ();
-	ogl.ColorMask (1,1,1,1,0);
-	backgroundManager.Redraw ();
-	int i = DrawTitle (m_props.pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
-	DrawTitle (m_props.pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
-	if (!m_bRedraw)
-		m_props.ty = i;
+ogl.SetDepthTest (false);
+FadeIn ();
+ogl.ColorMask (1,1,1,1,0);
+backgroundManager.Redraw ();
+int i = DrawTitle (m_props.pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
+DrawTitle (m_props.pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
+if (!m_bRedraw)
+	m_props.ty = i;
 
-	if (m_callback && (gameStates.render.grAlpha == 1.0f))
-		m_nChoice = (*m_callback) (*this, m_nKey, m_nChoice, 1);
+if (m_callback && (gameStates.render.grAlpha == 1.0f))
+	m_nChoice = (*m_callback) (*this, m_nKey, m_nChoice, 1);
 
-	fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
-	for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
-		if ((i >= m_props.nMaxNoScroll) && (i < m_props.nScrollOffset))
-			continue;
-		if ((Item (i).m_nType == NM_TYPE_TEXT) && !*Item (i).m_text)
-			continue;	// skip empty lines
-		m_bRedraw = 1;
-		if (Item (i).m_bRebuild && Item (i).m_bCentered)
-			Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
-		if (i >= m_props.nScrollOffset) {
-			y = Item (i).m_y;
-			Item (i).m_y = Item (i - m_props.nScrollOffset + m_props.nMaxNoScroll).m_y;
-			}
-		Item (i).Draw ((i == m_nChoice) && !m_bAllText, m_props.bTinyMode);
-		Item (i).m_bRedraw = 0;
-		if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING)
-			SDL_ShowCursor (1);
-		if (i >= m_props.nScrollOffset)
-			Item (i).m_y = y;
-		if ((i == m_nChoice) && 
-			 ((Item (i).m_nType == NM_TYPE_INPUT) || 
-			 ((Item (i).m_nType == NM_TYPE_INPUT_MENU) && Item (i).m_group)))
-			Item (i).UpdateCursor ();
+fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
+for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
+	if ((i >= m_props.nMaxNoScroll) && (i < m_props.nScrollOffset))
+		continue;
+	if ((Item (i).m_nType == NM_TYPE_TEXT) && !*Item (i).m_text)
+		continue;	// skip empty lines
+	m_bRedraw = 1;
+	if (Item (i).m_bRebuild && Item (i).m_bCentered)
+		Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
+	if (i >= m_props.nScrollOffset) {
+		y = Item (i).m_y;
+		Item (i).m_y = Item (i - m_props.nScrollOffset + m_props.nMaxNoScroll).m_y;
 		}
+	Item (i).Draw ((i == m_nChoice) && !m_bAllText, m_props.bTinyMode);
+	Item (i).m_bRedraw = 0;
+	if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING)
+		SDL_ShowCursor (1);
+	if (i >= m_props.nScrollOffset)
+		Item (i).m_y = y;
+	if ((i == m_nChoice) && 
+		 ((Item (i).m_nType == NM_TYPE_INPUT) || 
+		 ((Item (i).m_nType == NM_TYPE_INPUT_MENU) && Item (i).m_group)))
+		Item (i).UpdateCursor ();
+	}
 
-	if (m_props.bIsScrollBox) {
-	//fontManager.SetCurrent (NORMAL_FONT);
-		if (m_bRedraw || (m_nLastScrollCheck != m_props.nScrollOffset)) {
-			m_nLastScrollCheck = m_props.nScrollOffset;
-			fontManager.SetCurrent (SELECTED_FONT);
-			int sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
-			int sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
-			if (m_props.nScrollOffset > m_props.nMaxNoScroll)
-				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
-			else
-				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
-			i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll - 1;
-			sy = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
-			sx = Item (i).m_x - (gameStates.menus.bHires ? 24 : 12);
-			if (m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll < int (ToS ()))
-				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
-			else
-				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
-			}
-		}
-	if (m_bCloseBox) {
-		DrawCloseBox (m_props.x, m_props.y);
-		m_bCloseBox = 1;
+if (m_props.bIsScrollBox) {
+//fontManager.SetCurrent (NORMAL_FONT);
+	if (m_bRedraw || (m_nLastScrollCheck != m_props.nScrollOffset)) {
+		m_nLastScrollCheck = m_props.nScrollOffset;
+		fontManager.SetCurrent (SELECTED_FONT);
+		int sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+		int sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
+		if (m_props.nScrollOffset > m_props.nMaxNoScroll)
+			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
+		else
+			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
+		i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll - 1;
+		sy = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+		sx = Item (i).m_x - (gameStates.menus.bHires ? 24 : 12);
+		if (m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll < int (ToS ()))
+			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
+		else
+			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
 		}
 	}
+if (m_bCloseBox) {
+	DrawCloseBox (m_props.x, m_props.y);
+	m_bCloseBox = 1;
+	}
+
 m_bRedraw = 1;
 m_bStart = 0;
 #if 0
@@ -597,7 +599,7 @@ if (gameOpts->menus.nFade && !gameStates.app.bNostalgia) {
 int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback, 
 					  int* nCurItemP, char* filename, int width, int height, int bTinyMode)
 {
-	int			bKeyRepeat, done, nItem = nCurItemP ? *nCurItemP : 0;
+	int			bKeyRepeat, nItem = nCurItemP ? *nCurItemP : 0;
 	int			oldChoice, i;
 	int			bSoundStopped = 0, bTimeStopped = 0;
 	int			topChoice;// Is this a scrolling box? Set to 0 at init
@@ -664,7 +666,7 @@ else {
 	} 
 
 paletteManager.DisableEffect ();
-done = 0;
+m_bDone = 0;
 topChoice = 0;
 
 Register ();
@@ -689,7 +691,7 @@ if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING) {
 	SDL_ShowCursor (1);
 	}
 GrabMouse (0, 0);
-while (!done) {
+while (!m_bDone) {
 	if (m_bThrottle)
 		m_to.Throttle ();	// give the CPU some time to breathe
 
@@ -752,7 +754,7 @@ while (!done) {
 			}
 		catch (int e) {
 			exception = e;
-			done = 1;
+			m_bDone = 1;
 			break;
 			}
 
@@ -771,7 +773,7 @@ while (!done) {
 			*nCurItemP = m_nChoice;
 			}
 		m_nKey = -1;
-		done = 1;
+		m_bDone = 1;
 		}
 	oldChoice = m_nChoice;
 	if (m_nKey && (console.Events (m_nKey) || bWheelUp || bWheelDown))
@@ -786,7 +788,7 @@ while (!done) {
 		 if (gameStates.multi.bSurfingNet && !bAlreadyShowingInfo)
 			 ShowNetGameInfo (m_nChoice - 2 - tracker.m_bUse);
 		 if (gameStates.multi.bSurfingNet && bAlreadyShowingInfo) {
-			 done = 1;
+			 m_bDone = 1;
 			 m_nChoice = -1;
 			}
 		 break;
@@ -795,7 +797,7 @@ while (!done) {
 		 if (gameStates.multi.bSurfingNet && !bAlreadyShowingInfo)
 			 NetworkRequestPlayerNames (m_nChoice - 2 - tracker.m_bUse);
 		 if (gameStates.multi.bSurfingNet && bAlreadyShowingInfo) {
-			 done = 1;
+			 m_bDone = 1;
 			 m_nChoice = - 1;
 			}
 		 break;
@@ -818,7 +820,7 @@ while (!done) {
 		case KEY_PAUSE:
 			if (bPauseableMenu) {
 				bPauseableMenu = 0;
-				done = 1;
+				m_bDone = 1;
 				m_nChoice = - 1;
 				}
 			else
@@ -1002,7 +1004,7 @@ launchOption:
 			else {
 				if (nCurItemP)
 					*nCurItemP = m_nChoice;
-				done = 1;
+				m_bDone = 1;
 				}
 			break;
 
@@ -1014,7 +1016,7 @@ launchOption:
 				Item (m_nChoice).Value () = -1;
 				}
 			else {
-				done = 1;
+				m_bDone = 1;
 				if (nCurItemP)
 					*nCurItemP = m_nChoice;
 				m_nChoice = -1;
@@ -1042,7 +1044,7 @@ launchOption:
 			break;
 		}
 
-		if (!done && nMouseState && !nOldMouseState && !m_bAllText) {
+		if (!m_bDone && nMouseState && !nOldMouseState && !m_bAllText) {
 			MouseGetPos (&mx, &my);
 			for (i = 0; i < int (ToS ()); i++) {
 				if (!Item (i).Selectable ())
@@ -1086,10 +1088,10 @@ launchOption:
 		if (nMouseState && m_bAllText) {
 			if (nCurItemP)
 				*nCurItemP = m_nChoice;
-			done = 1;
+			m_bDone = 1;
 			}
 	
-		if (!done && nMouseState && !m_bAllText) {
+		if (!m_bDone && nMouseState && !m_bAllText) {
 			MouseGetPos (&mx, &my);
 		
 			// check possible scrollbar stuff first
@@ -1199,7 +1201,7 @@ launchOption:
 			}
 		}
 	
-		if (!done && !nMouseState && nOldMouseState && !m_bAllText && (m_nChoice != -1) && (Item (m_nChoice).m_nType == NM_TYPE_MENU)) {
+		if (!m_bDone && !nMouseState && nOldMouseState && !m_bAllText && (m_nChoice != -1) && (Item (m_nChoice).m_nType == NM_TYPE_MENU)) {
 			MouseGetPos (&mx, &my);
 			x1 = CCanvas::Current ()->Left () + Item (m_nChoice).m_x;
 			x2 = x1 + Item (m_nChoice).m_w;
@@ -1212,20 +1214,20 @@ launchOption:
 					if (bDblClick) {
 						if (nCurItemP)
 							*nCurItemP = m_nChoice;
-						done = 1;
+						m_bDone = 1;
 						}
 					else 
 						bDblClick = 1;
 				}
 				else {
-					done = 1;
+					m_bDone = 1;
 					if (nCurItemP)
 						*nCurItemP = m_nChoice;
 				}
 			}
 		}
 	
-		if (!done && !nMouseState && nOldMouseState && (m_nChoice > - 1) && 
+		if (!m_bDone && !nMouseState && nOldMouseState && (m_nChoice > - 1) && 
 			 (Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU) && (Item (m_nChoice).m_group == 0)) {
 			Item (m_nChoice).m_group = 1;
 			Item (m_nChoice).m_bRedraw = 1;
@@ -1237,7 +1239,7 @@ launchOption:
 			}
 		}
 	
-		if (!done && !nMouseState && nOldMouseState && m_bCloseBox) {
+		if (!m_bDone && !nMouseState && nOldMouseState && m_bCloseBox) {
 			MouseGetPos (&mx, &my);
 			x1 = m_props.x + MENU_CLOSE_X;
 			x2 = x1 + MENU_CLOSE_SIZE;
@@ -1247,7 +1249,7 @@ launchOption:
 				if (nCurItemP)
 					*nCurItemP = m_nChoice;
 				m_nChoice = -1;
-				done = 1;
+				m_bDone = 1;
 				}
 			}
 
@@ -1381,8 +1383,6 @@ launchOption:
 		}
 	// Redraw everything...
 	Render (pszTitle, pszSubTitle, gameCanvasP);
-	if (gameStates.app.bGameRunning && ogl.StereoDevice ())
-		Render (pszTitle, pszSubTitle, gameCanvasP);
 	}
 FadeOut (pszTitle, pszSubTitle, gameCanvasP);
 SDL_ShowCursor (0);

@@ -165,7 +165,7 @@ if (!IsMultiGame || IsCoopGame) {
 	x0 = gameData.render.scene.Width ();
 	if ((extraGameInfo [0].nWeaponIcons >= 3) && (gameData.render.scene.Height () < 670))
 		x0 -= HUD_LHX (20);
-	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+	cockpit->SetFontColor (GREEN_RGBA);
 	t = gameStates.app.nSDLTicks [0];
 	if (t - t0 > 333) {	//update 3 times per second
 		t0 = t;
@@ -181,7 +181,7 @@ if (!IsMultiGame || IsCoopGame) {
 			sprintf (szInfo, "%d", objCounts [i]);
 			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			x -= w + HUD_LHY (2);
-			nIdTally [i] = GrPrintF (nIdTally + i, x, y + (bmH - h) / 2, szInfo);
+			nIdTally [i] = cockpit->DrawHUDText (nIdTally + i, x, y + (bmH - h) / 2, szInfo);
 			y += bmH;
 			}
 		}
@@ -190,7 +190,7 @@ if (!IsMultiGame || IsCoopGame) {
 		for (i = 0; i < 2; i++) {
 			sprintf (szInfo, "%s: %5d", i ? "Powerups" : "Robots", objCounts [i]);
 			fontManager.Current ()->StringSize (szInfo, w, h, aw);
-			nIdTally [i] = GrPrintF (nIdTally + i, x0 - w - HUD_LHX (2), y, szInfo);
+			nIdTally [i] = cockpit->DrawHUDText (nIdTally + i, x0 - w - HUD_LHX (2), y, szInfo);
 			y += nLineSpacing;
 			}
 		}
@@ -269,8 +269,13 @@ if (nWeaponIcons < 3) {
 		}
 #endif
 	}
-if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons == 2))
-	y -= cockpit->LHX (10);
+if (extraGameInfo [0].nWeaponIcons == 1)
+	y += gameData.render.scene.Top ();
+else if (extraGameInfo [0].nWeaponIcons == 2) {
+	y += gameData.render.scene.Top ();
+	if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
+		y -= cockpit->LHX (10);
+	}
 for (i = 0; i < 2; i++) {
 	n = (gameStates.app.bD1Mission) ? 5 : 10;
 	nMaxAutoSelect = 255;
@@ -292,6 +297,7 @@ for (i = 0; i < 2; i++) {
 #endif
 		y = (gameData.render.scene.Height () - h - n * (hIcon + oy)) / 2 + hIcon;
 		x = i ? gameData.render.frame.Width () - wIcon - ox : ox;
+		y += gameData.render.scene.Top ();
 		}
 	else {
 		x = gameData.render.frame.Width () / 2;
@@ -575,6 +581,7 @@ firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
 x = (gameData.render.frame.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox - nDmgIconWidth) / 2;
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons & 1))
 	y -= cockpit->LHX (10);
+y += gameData.render.scene.Top ();
 for (j = firstItem; j < n; j++) {
 	int bHave, bAvailable, bActive = EquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;

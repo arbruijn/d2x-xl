@@ -374,8 +374,14 @@ FlashMine ();
 console.Draw ();
 if (gameStates.app.bShowVersionInfo || gameStates.app.bSaveScreenShot || (gameData.demo.nState == ND_STATE_PLAYBACK))
 	PrintVersionInfo ();
-if (CMenu::Active ())
-	CMenu::Active ()->Render ();
+if (CMenu::Active ()) {
+#if DBG
+	if (!gameStates.menus.nInMenu)
+		PrintLog (0, "invalid menu handle in renderer\n");
+	else
+#endif
+		CMenu::Active ()->Render ();
+	}
 ogl.SetStereoSeparation (xStereoSeparation);
 }
 

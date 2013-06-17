@@ -62,8 +62,17 @@
 
 //#define _WIN32_WINNT		0x0600
 
-tTexCoord2f quadTexCoord [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
-float quadVerts [4][2] = {{0,0},{1,0},{1,1},{0,1}};
+tTexCoord2f quadTexCoord [3][4] = {
+	{{{0,0}},{{1,0}},{{1,1}},{{0,1}}},
+	{{{0,0}},{{0.5f,0}},{{0.5f,1}},{{0,1}}},
+	{{{0.5f,0}},{{1,0}},{{1,1}},{{0.5f,1}}}
+	};
+
+float quadVerts [3][4][2] = {
+	{{0,0},{1,0},{1,1},{0,1}},
+	{{0,0},{0.5f,0},{0.5f,1},{0,1}},
+	{{0.5f,0},{1,0},{1,1},{0.5f,1}}
+	};
 
 //------------------------------------------------------------------------------
 
@@ -155,18 +164,46 @@ void COGL::FlushEffects (int nEffects)
 {
 //ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
 if (nEffects & 1) {
-	postProcessManager.Setup ();
-	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	ogl.BindTexture (DrawBuffer ((nEffects & 2) ? 2 : 0)->ColorBuffer ());
-	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
-	OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
 	if (nEffects & 4) // shutter glasses or Oculus Rift
 		SelectDrawBuffer (1); // render effects to texture 1
 	else
 		SetDrawBuffer (GL_BACK, 0);
-	postProcessManager.Render ();
-	if (nEffects & 4) // shutter glasses or Oculus Rift
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	ogl.BindTexture (DrawBuffer ((nEffects & 2) ? 2 : 0)->ColorBuffer ());
+	if (StereoDevice () != -2) {
+		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+		postProcessManager.Setup ();
+		postProcessManager.Render ();
+		}
+	else {
+		SetViewport (0, 0, screen.Width (), screen.Height ());
+#if 1
+		//SetViewport (0, 0, 640, 800);
+		//gameData.render.frame.SetLeft (0);
+		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
+		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [1]);
+		OglDrawArrays (GL_QUADS, 0, 4);
+		//postProcessManager.Setup ();
+		//postProcessManager.Render ();
+#endif
+#if 1
+		//SetViewport (640, 0, 640, 800);
+		//gameData.render.frame.SetLeft (640);
+		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [2]);
+		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [2]);
+		OglDrawArrays (GL_QUADS, 0, 4);
+		//postProcessManager.Setup ();
+		//postProcessManager.Render ();
+#endif
+		SetViewport (0, 0, screen.Width (), screen.Height ());
+		}
+	if (nEffects & 4) { // shutter glasses or Oculus Rift
+		SetDrawBuffer (GL_BACK, 0);
 		ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
+		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+		}
 	}
 }
 
@@ -176,7 +213,7 @@ void COGL::FlushDrawBuffer (bool bAdditive)
 {
 if (HaveDrawBuffer ()) {
 	int nEffects = postProcessManager.HaveEffects () 
-						+ (int (m_data.xStereoSeparation > 0) << 1)
+						+ (int (StereoDevice () > 0) << 1)
 						+ (int (StereoDevice () < 0) << 2)
 #if MAX_SHADOWMAPS
 						+ (int (EGI_FLAG (bShadows, 0, 1, 0) != 0) << 3)
@@ -186,9 +223,9 @@ if (HaveDrawBuffer ()) {
 	glColor3f (1,1,1);
 
 	EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
-	OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
 	BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 
 	if (nEffects & 5) {
 		FlushEffects (nEffects);

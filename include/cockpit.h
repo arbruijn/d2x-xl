@@ -112,8 +112,10 @@ class CCockpitInfo {
 		float	yScale;
 		float	xGaugeScale;
 		float	yGaugeScale;
+		float	fontScale;
 		int	fontWidth;
 		int	fontHeight;
+		uint	fontColor;
 		int	heightPad;
 		int	nCockpit;
 		int	nShield;
@@ -150,6 +152,10 @@ class CGenericCockpit {
 		inline int ScaleY (int v) { return int (float (v) * m_info.yScale + 0.5f); }
 		inline int LHX (int x) { return x << gameStates.render.fonts.bHires; }
 		inline int LHY (int y) { return gameStates.render.fonts.bHires ? 24 * y / 10 : y; }
+		inline float FontScale (void) { return m_info.fontScale; }
+		inline void SetFontScale (float fontScale) { m_info.fontScale = fontScale; }
+		inline uint FontColor (void) { return m_info.fontColor; }
+		inline void SetFontColor (uint fontColor) { m_info.fontColor = fontColor; }
 		inline void PageInGauge (int nGauge) { LoadTexture (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0); }
 		inline ushort GaugeIndex (int nGauge) { return gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index; }
 		CBitmap* BitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL, CBitmap* bmoP = NULL);
@@ -263,6 +269,9 @@ class CGenericCockpit {
 		inline void SetAddedScore (int i, int nScore) { m_info.addedScore [i] = nScore; }
 		inline void SetLineSpacing (int nLineSpacing) { m_info.nLineSpacing = nLineSpacing; }
 		inline void SetColor (int nColor) { m_info.nColor = nColor; }
+
+		int _CDECL_ DrawHUDText (int *idP, int x, int y, const char * format, ...);
+
 	};
 
 //	-----------------------------------------------------------------------------

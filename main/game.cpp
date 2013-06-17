@@ -890,7 +890,7 @@ if (fLog) {
 
 CCanvas* CurrentGameScreen (void)
 {
-return &gameData.render.viewport;
+return &gameData.render.scene;
 }
 
 //-----------------------------------------------------------------------------

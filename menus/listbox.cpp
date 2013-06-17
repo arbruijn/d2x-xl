@@ -81,6 +81,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void CListBox::Render (void)
 {
+if (m_bDone)
+	return;
 backgroundManager.Redraw ();
 FadeIn ();
 fontManager.SetCurrent (NORMAL_FONT);
@@ -112,7 +114,6 @@ SDL_ShowCursor (1);
 int CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem, int bAllowAbort, pListBoxCallback callback)
 {
 	int	i;
-	int	done;
 	int	bKeyRepeat = gameStates.input.keys.bRepeat;
 	int	nOffsetSize;
 	int	mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
@@ -161,7 +162,7 @@ CCanvas::Push ();
 backgroundManager.Setup (NULL, m_xOffset - nOffsetSize, m_yOffset - m_nTitleHeight - nOffsetSize, 
 								 m_nWidth + nOffsetSize * 2, m_nHeight + m_nTitleHeight + nOffsetSize * 2);
 CCanvas::Pop ();
-done = 0;
+m_bDone = 0;
 m_nChoice = nDefaultItem;
 if (m_nChoice < 0) 
 	m_nChoice = 0;
@@ -177,7 +178,7 @@ CMenu::DrawCloseBox (xClose, yClose);
 SDL_ShowCursor (1);
 
 SDL_EnableKeyRepeat(60, 30);
-while (!done) {
+while (!m_bDone) {
 	nOldMouseState = nMouseState;
 	nMouseState = MouseButtonState (0);
 	bWheelUp = MouseButtonState (3);
@@ -197,7 +198,7 @@ while (!done) {
 	if (m_nKey < -1) {
 		m_nChoice = m_nKey;
 		m_nKey = -1;
-		done = 1;
+		m_bDone = 1;
 		}
 
 	switch (m_nKey) {
@@ -245,12 +246,12 @@ while (!done) {
 		case KEY_ESC:
 			if (bAllowAbort) {
 				m_nChoice = -1;
-				done = 1;
+				m_bDone = 1;
 			}
 			break;
 		case KEY_ENTER:
 		case KEY_PADENTER:
-			done = 1;
+			m_bDone = 1;
 			break;
 
 		case KEY_BACKSPACE:
@@ -303,7 +304,7 @@ while (!done) {
 				}
 			}
 		}
-		if (done) break;
+		if (m_bDone) break;
 
 		if (m_nChoice < 0)
 			m_nChoice = int (items.ToS ()) - 1;
@@ -338,7 +339,7 @@ while (!done) {
 					//}
 					//bDblClick = 0;
 					m_nChoice = i;
-					done = 1;
+					m_bDone = 1;
 					break;
 				}
 			}
@@ -353,7 +354,7 @@ while (!done) {
 			y2 = y1 + MENU_CLOSE_SIZE - 2;
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				m_nChoice = -1;
-				done = 1;
+				m_bDone = 1;
 			}
 		}
 	CMenu::Render (pszTitle, NULL);

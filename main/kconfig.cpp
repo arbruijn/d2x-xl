@@ -825,10 +825,11 @@ DrawItem (m_items + m_nCurItem, 1, 0);
 
 void CControlConfig::Render (void)
 {
-if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
-	RenderMenuGameFrame ();
-
-if (BeginRenderMenu ()) {
+//if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
+//	RenderMenuGameFrame ()
+//
+//if (BeginRenderMenu ()) 
+	{
 	CCanvas::SetCurrent (backgroundManager.Canvas ());
 	backgroundManager.Redraw ();
 	CCanvas::SetCurrent (NULL);
@@ -836,7 +837,7 @@ if (BeginRenderMenu ()) {
 	m_closeX = m_closeY = gameStates.menus.bHires ? 15 : 7;
 	m_closeX += m_xOffs;
 	m_closeY += m_yOffs;
-	m_closeSize = gameStates.menus.bHires?10:5;
+	m_closeSize = gameStates.menus.bHires ? 10 : 5;
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 	OglDrawFilledRect (m_closeX, m_closeY, m_closeX + m_closeSize, m_closeY + m_closeSize);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
@@ -873,6 +874,7 @@ if (ogl.m_states.nDrawBuffer != GL_BACK)
 
 void CControlConfig::Quit (void)
 {
+Unregister ();
 CCanvas::Pop ();
 //bg->menu_canvas = NULL;
 GameFlushInputs ();
@@ -1237,7 +1239,7 @@ int CControlConfig::HandleControl (void)
 {
 m_nPrevChangeMode = m_nChangeMode;
 do {
-	Render ();
+	CMenu::Render (NULL, NULL, CCanvas::Current ());
 
 	switch (m_nChangeMode) {
 		case BT_KEY:
@@ -1265,12 +1267,7 @@ do {
 		}
 	m_nPrevChangeMode = m_nChangeMode;
 	SDL_ShowCursor (1);
-	if (m_bRedraw) {
-		GrUpdate (1);
-		if (gameStates.app.bGameRunning)
-			ogl.ChooseDrawBuffer ();
-		m_bRedraw = 0;
-		}
+	m_bRedraw = 0;
 	} while (m_nChangeMode != BT_NONE);
 return m_nChangeMode;
 }
@@ -1461,6 +1458,7 @@ else
 if (i >= 0)
 	LinkTableEntries (1 << i);
 
+Register ();
 for (;;) {
 	m_nChangeMode = HandleControl ();
 	redbook.CheckRepeat ();

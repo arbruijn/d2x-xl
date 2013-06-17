@@ -218,9 +218,11 @@ private:
 	CTimeout			m_to;
 	CMenu				* m_parent;
 	static CMenu	*m_active;
+	static int		m_level;
 
 protected:
 	int				m_bStart;
+	int				m_bDone;
 	int				m_nLastScrollCheck;
 	int				m_bRedraw;
 	int				m_bCloseBox;
@@ -248,10 +250,12 @@ public:
 	inline void Register (void) {
 		m_parent = m_active;
 		m_active = this;
+		++m_level;
 		}
 
 	inline void Unregister (void) {
 		m_active = m_parent;
+		--m_level;
 		}
 
 	inline void Init (void) {

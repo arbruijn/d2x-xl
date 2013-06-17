@@ -279,7 +279,7 @@ int KcHotkeySize (void);
 
 #include "joy.h"
 
-class CControlConfig {
+class CControlConfig : public CMenu {
 	public:
 		void Run (int nType, const char* pszTitle);
 
@@ -298,7 +298,6 @@ class CControlConfig {
 		int			m_nChangeMode, m_nPrevChangeMode;
 		int			m_nMouseState, m_nPrevMouseState;
 		int			m_bTimeStopped;
-		int			m_bRedraw;
 		int			m_xOffs, m_yOffs;
 		int			m_closeX, m_closeY, m_closeSize;
 		const char*	m_pszTitle;
@@ -321,7 +320,6 @@ class CControlConfig {
 		void DrawTitle (void);
 		void DrawHeader (void);
 		void DrawTable (void);
-		void Render (void);
 		void DrawQuestion (kcItem *item);
 		void DrawItem (kcItem* item, int bIsCurrent, int bRedraw);
 		inline void DrawItem (kcItem *item, int bIsCurrent) { DrawItem (item, bIsCurrent, 1); }
@@ -356,6 +354,9 @@ class CControlConfig {
 		void LinkMouseEntries (void);
 		void LinkHotkeyEntries (void);
 		void LinkTableEntries (int tableFlags);
+
+	public:
+		virtual void Render (void);
 };
 
 extern CControlConfig controlConfig;

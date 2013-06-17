@@ -92,6 +92,9 @@ for (i = 0; i < 10; i++) {
 
 void CFileSelector::Render (void)
 {
+if (m_bDone)
+	return;
+
 	static	int t0 = 0;
 
 if (!MenuRenderTimeout (t0, -1))
@@ -182,7 +185,6 @@ int CFileSelector::FileSelector (const char* pszTitle, const char* filespec, cha
 {
 	int					i;
 	FFS					ffs;
-	int					done;
 	int					bKeyRepeat = gameStates.input.keys.bRepeat;
 	int					bInitialized = 0;
 	int					exitValue = 0;
@@ -217,7 +219,7 @@ else
 
 ReadFileNames:
 
-done = 0;
+m_bDone = 0;
 m_nFileCount = 0;
 
 #if !defined (APPLE_DEMO)		// no new pilots for special apple oem version
@@ -359,7 +361,7 @@ SDL_EnableKeyRepeat (60, 30);
 
 Register ();
 
-while (!done) {
+while (!m_bDone) {
 	nOldMouseState = nMouseState;
 	omouse2State = mouse2State;
 	nMouseState = MouseButtonState (0);
@@ -427,12 +429,12 @@ while (!done) {
 		case KEY_ESC:
 			if (bAllowAbort) {
 				m_nChoice = -1;
-				done = 1;
+				m_bDone = 1;
 			}
 			break;
 		case KEY_ENTER:
 		case KEY_PADENTER:
-			done = 1;
+			m_bDone = 1;
 			break;
 
 		case KEY_BACKSPACE:
@@ -478,7 +480,7 @@ while (!done) {
 				}
 		}
 
-	if (done) 
+	if (m_bDone) 
 		break;
 
 	if (m_nChoice < 0)
@@ -529,7 +531,7 @@ while (!done) {
 		y2 = y1 + h + 1;
 		if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 			if (bDblClick) 
-				done = 1;
+				m_bDone = 1;
 			else 
 				bDblClick = 1;
 			}
@@ -543,7 +545,7 @@ while (!done) {
 		y2 = y1 + MENU_CLOSE_SIZE - 2;
 		if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 			m_nChoice = -1;
-			done = 1;
+			m_bDone = 1;
 			}
 		}
 	CMenu::Render (pszTitle, NULL);

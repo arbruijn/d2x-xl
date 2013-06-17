@@ -68,8 +68,8 @@ int duboisShaderProg = -1;
 int nScreenDists [10] = {1, 2, 5, 10, 15, 20, 30, 50, 70, 100};
 float nDeghostThresholds [4][2] = {{1.0f, 1.0f}, {0.8f, 0.8f}, {0.7f, 0.7f}, {0.6f, 0.6f}};
 
-extern tTexCoord2f quadTexCoord [4];
-extern float quadVerts [4][2];
+extern tTexCoord2f quadTexCoord [3][4];
+extern float quadVerts [3][4][2];
 
 //-----------------------------------------------------------------------------------
 
@@ -80,6 +80,8 @@ int j = StereoDevice ();
 if (j == -2) {
 	// todo: add barrel distortion shader
 	SetDrawBuffer (GL_BACK, 0);
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 	OglDrawArrays (GL_QUADS, 0, 4);
 	}
 else if (j == -1) {
@@ -101,8 +103,8 @@ else { // merge left and right anaglyph buffers
 				shaderManager.Rebuild (shaderProg);
 				ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
 				ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
-				OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
-				OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
+				OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+				OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 
 				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.stereo.bFlipFrames);
 				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.stereo.bFlipFrames);
