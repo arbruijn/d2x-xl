@@ -91,7 +91,7 @@ CGenericCockpit::DrawCruise (3, CCanvas::Current ()->Height () - m_info.nLineSpa
 void CCockpit::DrawLives (void)
 {
 CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
+CCanvas::SetCurrent (&gameData.render.frame);
 hudCockpit.SetColor (WHITE_RGBA);
 hudCockpit.DrawLives ();
 CCanvas::Pop ();
@@ -102,7 +102,7 @@ CCanvas::Pop ();
 void CCockpit::DrawScore (void)
 {
 CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
+CCanvas::SetCurrent (&gameData.render.frame);
 hudCockpit.DrawScore ();
 CCanvas::Pop ();
 }
@@ -112,7 +112,7 @@ CCanvas::Pop ();
 void CCockpit::DrawAddedScore (void)
 {
 CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
+CCanvas::SetCurrent (&gameData.render.frame);
 hudCockpit.SetLineSpacing (m_info.nLineSpacing);
 hudCockpit.DrawAddedScore ();
 CCanvas::Pop ();
@@ -159,7 +159,7 @@ CGenericCockpit::DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
 int CCockpit::DrawBombCount (int& nIdBombCount, int x, int y, int nColor, char* pszBombCount)
 {
 CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
+CCanvas::SetCurrent (&gameData.render.frame);
 fontManager.SetColorRGBi (nColor, 1, 0, 1);
 int i = PrintF (&nIdBombCount, -(ScaleX (x) + WidthPad (pszBombCount)), -(ScaleY (y) + HeightPad ()), pszBombCount, nIdBombCount);
 CCanvas::Pop ();
@@ -170,20 +170,16 @@ return i;
 
 void CCockpit::DrawPrimaryAmmoInfo (int ammoCount)
 {
-CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
-DrawAmmoInfo (PRIMARY_AMMO_X, PRIMARY_AMMO_Y, ammoCount, 1);
-CCanvas::Pop ();
+SetCanvas (&gameData.render.frame);
+DrawAmmoInfo (ScaleX (PRIMARY_AMMO_X), ScaleY (PRIMARY_AMMO_Y), ammoCount, 1);
 }
 
 //	-----------------------------------------------------------------------------
 
 void CCockpit::DrawSecondaryAmmoInfo (int ammoCount)
 {
-CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
-DrawAmmoInfo (SECONDARY_AMMO_X, SECONDARY_AMMO_Y, ammoCount, 0);
-CCanvas::Pop ();
+SetCanvas (&gameData.render.frame);
+DrawAmmoInfo (ScaleX (SECONDARY_AMMO_X), ScaleY (SECONDARY_AMMO_Y), ammoCount, 0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -211,7 +207,7 @@ PageInGauge (GAUGE_NUMERICAL);
 CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 #endif
 CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
+CCanvas::SetCurrent (&gameData.render.frame);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 sprintf (szShield, "%d", int (m_info.nShield * LOCALPLAYER.ShieldScale () + 0.5f));
 int w, h, aw;
@@ -238,7 +234,7 @@ PageInGauge (GAUGE_NUMERICAL);
 CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 #endif
 CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
+CCanvas::SetCurrent (&gameData.render.frame);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 sprintf (szEnergy, "%d", int (m_info.nEnergy * LOCALPLAYER.EnergyScale () + 0.5f));
 int w, h, aw;
@@ -498,7 +494,7 @@ void CCockpit::DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel)
 	int nIndex;
 
 CCanvas::Push ();
-CCanvas::SetCurrent (CurrentGameScreen ());
+CCanvas::SetCurrent (&gameData.render.frame);
 if (nWeaponType == 0) {
 	nIndex = primaryWeaponToWeaponInfo [nWeaponId];
 	if (nIndex == LASER_ID && laserLevel > MAX_LASER_LEVEL)

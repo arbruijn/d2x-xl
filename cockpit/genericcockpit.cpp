@@ -821,7 +821,7 @@ m_info.nColor = RGBA (color, color, color, 255);
 BitBlt (-1, xPic, yPic, true, true, (gameStates.render.cockpit.nType == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient, bmP);
 m_info.nColor = WHITE_RGBA;
 CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
-SetFontColor (GREEN_RGBA);
+fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 if ((p = const_cast<char*> (strchr (pszName, '\n')))) {
 	memcpy (szName, pszName, i = int (p - pszName));
 	szName [i] = '\0';
