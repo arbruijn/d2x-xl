@@ -429,7 +429,7 @@ if (gameStates.render.bShowFrameRate) {
 		x = 19;
 		}
 	if (automap.Display ())
-		y = 2;
+		y = 3;
 	else if (IsMultiGame)
 		y = 7;
 	else
@@ -1189,7 +1189,7 @@ if (gameStates.render.bChaseCam && (!IsMultiGame || (EGI_FLAG (bEnableCheats, 0,
 	return;
 m_info.xScale *= float (HUD_ASPECT);
 bHiresReticle = 1; //(gameStates.render.fonts.bHires != 0) && !gameStates.app.bDemoData;
-bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= screen.Width () * 2);
+bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.render.frame.Width () * 2);
 ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ()) 
 				 ? BM_ADDON_RETICLE_RED 

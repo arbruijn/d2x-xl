@@ -1915,7 +1915,7 @@ const char *defaultGameTexts [][2] = {
  {"gelb/blau", "amber/blue"},
  {"rot/tuerkis", "red/cyan"},
  {"gruen/magenta", "green/magenta"},
- {"shutter", "shutter"},
+ {"NVidia-Shutterbrille", "NVidia shutter glasses"},
  {"farb~Verbesserung: %s", "color ~Gain: %s"},
  {"3~D Effekt verstaerken", "enhance 3-~D effect"},
  {"~Frames tauschen", "~Flip frames"},
@@ -1957,7 +1957,9 @@ const char *defaultGameTexts [][2] = {
  {"Spiel~Geschwindigkeit: x %d.%d", "game ~Speed: x %d.%d"},
  {"Deine Version von D2X-XL\npasst nicht zu der Version,\ndie fuer dieses Spiel verwendet wird.", "Your version of D2X-XL\ndoes not match the version\nin use for that game."},
  {"\nerlaubte Schiffe:", "\nships allowed:"},
- {"Oculus Rift", "Oculus Rift"},
+ {"Oculus Rift (720p)", "Oculus Rift (720p)"},
+ {"Oculus Rift (1080p)", "Oculus Rift (1080p)"},
+ {"TV-Shutterbrille", "TV Shutter Glasses"},
  
 #if 0
  {"", ""},

@@ -110,7 +110,7 @@ delete this;
 
 void CCanvas::SetCurrent (CCanvas *canvP)
 {
-m_current = canvP ? canvP : screen.Canvas ();
+m_current = canvP ? canvP : &gameData.render.frame;
 fontManager.SetCurrent (m_current->Font ());
 }
 

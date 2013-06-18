@@ -91,7 +91,7 @@ if (bOglScale > 0) {
 #if 0
 	glScalef (transformation.m_info.scalef.dir.coord.x, transformation.m_info.scalef.dir.coord.y, -transformation.m_info.scalef.dir.coord.z);
 #else
-	glScalef (1, /*(ogl.StereoDevice () != -2) ? 1 : (float) gameData.render.frame.Width () / (float) gameData.render.frame.Height ()*/1, -1);
+	glScalef (1, 1, -1);
 #endif
 	}
 else {

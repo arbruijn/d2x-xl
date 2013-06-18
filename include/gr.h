@@ -184,7 +184,6 @@ void GrMergeTextures1(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, 
 void GrMergeTextures2(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
 void GrMergeTextures3(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
 
-void GrUpdate (int bClear);
 void SaveScreenShot (ubyte *buf, int automapFlag);
 void AutoScreenshot (void);
 

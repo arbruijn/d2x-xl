@@ -75,9 +75,9 @@ extern float quadVerts [3][4][2];
 
 void COGL::FlushStereoBuffers (int nEffects)
 {
-int j = StereoDevice ();
+int nDevice = StereoDevice ();
 
-if (j == -2) {
+if (IsSideBySideDevice (nDevice)) {
 	// todo: add barrel distortion shader
 	SetDrawBuffer (GL_BACK, 0);
 	EnableClientStates (1, 0, 0, GL_TEXTURE0);
@@ -86,7 +86,7 @@ if (j == -2) {
 	BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
 	OglDrawArrays (GL_QUADS, 0, 4);
 	}
-else if (j == -1) {
+else if (nDevice == -GLASSES_SHUTTER_NVIDIA) {
 	SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 	OglDrawArrays (GL_QUADS, 0, 4);
 	}
@@ -99,8 +99,8 @@ else { // merge left and right anaglyph buffers
 			SelectDrawBuffer (2); // use as temporary render buffer
 		else
 			SetDrawBuffer (GL_BACK, 0);
-		if ((j > 0) && (j <= 3) && ((h < 4) || (j == 2))) {
-			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][--j]));
+		if ((nDevice > 0) && (nDevice <= 3) && ((h < 4) || (nDevice == 2))) {
+			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][--nDevice]));
 			if (shaderProg) {
 				shaderManager.Rebuild (shaderProg);
 				ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);

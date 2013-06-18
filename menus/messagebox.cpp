@@ -55,8 +55,8 @@ m_callback = NULL;
 Clear ();
 fontManager.SetCurrent (MEDIUM1_FONT);
 fontManager.Current ()->StringSize (m_pszMsg, w, h, aw);
-x = (screen.Width () - w) / 2;
-y = (screen.Height () - h) / 2;
+x = (gameData.render.frame.Width () - w) / 2;
+y = (gameData.render.frame.Height () - h) / 2;
 backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
 gameStates.app.bClearMessage = 1;
 if (bFade)

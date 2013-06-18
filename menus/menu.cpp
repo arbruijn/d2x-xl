@@ -90,6 +90,8 @@ char bAlreadyShowingInfo = 0;
 CMenu* CMenu::m_active = NULL;
 int CMenu::m_level = 0;
 
+void SetupCanvasses (void);
+
 //------------------------------------------------------------------------------
 
 bool MenuRenderTimeout (int& t0, int tFade)
@@ -435,7 +437,7 @@ else {
 
 bool BeginRenderMenu (void)
 {
-if (gameStates.app.bGameRunning && (ogl.StereoDevice () > 0) && (ogl.StereoSeparation () <= 0)) 
+if (gameStates.app.bGameRunning && ogl.IsAnaglyphDevice () && (ogl.StereoSeparation () <= 0)) 
 	return false;
 if (gameStates.app.bGameRunning && (gameStates.render.bRenderIndirect > 0)) {
 	ogl.FlushDrawBuffer ();
@@ -461,20 +463,29 @@ m_bRedraw = 0;
 m_props.pszTitle = pszTitle;
 m_props.pszSubTitle = pszSubTitle;
 m_props.gameCanvasP = gameCanvasP;
-if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_STATE_NORMAL)*/) {
-	CCanvas::Push ();
+CCanvas::Push ();
+if (gameStates.app.bGameRunning && gameCanvasP) {
 	CCanvas::SetCurrent (gameCanvasP);
 	if (!gameStates.app.bShowError)
 		RenderMenuGameFrame ();
-	CCanvas::Pop ();
 	}
 else {
+	SetupCanvasses ();
 	console.Draw ();
 	CalcFrameTime ();
-	Render ();
+	if (!ogl.IsSideBySideDevice ())
+		Render ();
+	else {
+		for (int i = 0; i < 2; i++) {
+			ogl.SetStereoSeparation (i ? gameOpts->render.stereo.xSeparation : -gameOpts->render.stereo.xSeparation);
+			ogl.ChooseDrawBuffer ();
+			Render ();
+			}
+		}
 	if (!gameStates.app.bGameRunning || m_bRedraw)
-		GrUpdate (0);
+		ogl.Update (0);
 	}
+CCanvas::Pop ();
 }
 
 //------------------------------------------------------------------------------ 
@@ -642,6 +653,8 @@ if (gameStates.app.bGameRunning && IsMultiGame)
 
 SetPopupScreenMode ();
 SaveScreen (&gameCanvasP);
+SetupCanvasses ();
+
 bKeyRepeat = gameStates.input.keys.bRepeat;
 gameStates.input.keys.bRepeat = 1;
 if (nItem == -1)
@@ -681,7 +694,7 @@ while (Item (topChoice).m_nType == NM_TYPE_TEXT) {
 		}
 	}
 
-//GrUpdate (0);
+//ogl.Update (0);
 // Clear mouse, joystick to clear button presses.
 GameFlushInputs ();
 nMouseState = nOldMouseState = 0;

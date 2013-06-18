@@ -126,7 +126,8 @@ do {
 
 	if (gameStates.app.bNostalgia)
 		m.AddMenu ("performance options", TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL);
-	m.AddMenu ("screen res options", TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
+	if (!ogl.IsSideBySideDevice ())
+		m.AddMenu ("screen res options", TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
 	m.AddText ("", "");
 	if (gameStates.app.bNostalgia) {
 		m.AddMenu ("reorder guns", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);

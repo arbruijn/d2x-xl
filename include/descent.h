@@ -387,15 +387,20 @@ typedef struct tDebugRenderOptions {
 
 //------------------------------------------------------------------------------
 
-#define GLASSES_NONE				0
-#define GLASSES_AMBER_BLUE		1
-#define GLASSES_RED_CYAN		2
-#define GLASSES_GREEN_MAGENTA	3
-#define GLASSES_OCULUS_RIFT	4
-#define GLASSES_SHUTTER			5
+#define GLASSES_NONE						0
+#define GLASSES_AMBER_BLUE				1
+#define GLASSES_RED_CYAN				2
+#define GLASSES_GREEN_MAGENTA			3
+#define DEVICE_STEREO_PHYSICAL		4
+#define DEVICE_STEREO_SIDEBYSIDE		4
+#define GLASSES_OCULUS_RIFT_720p		4
+#define GLASSES_OCULUS_RIFT_1080p	5
+#define GLASSES_SHUTTER_HDMI			6
+#define DEVICE_STEREO_DOUBLE_BUFFER	7
+#define GLASSES_SHUTTER_NVIDIA		7
 
-#define STEREO_PARALLEL			0
-#define STEREO_TOE_IN			1
+#define STEREO_PARALLEL					0
+#define STEREO_TOE_IN					1
 
 typedef struct tStereoRenderOptions {
 	int nGlasses;

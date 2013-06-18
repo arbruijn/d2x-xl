@@ -987,14 +987,14 @@ if (thumbCanv) {
 		}
 	else
 		RenderFrame (0, 0);
-	bm.SetWidth ((screen.Width () / THUMBNAIL_LW) * THUMBNAIL_LW);
+	bm.SetWidth ((gameData.render.frame.Width () / THUMBNAIL_LW) * THUMBNAIL_LW);
 	bm.SetHeight (bm.Width () * 3 / 5);	//force 5:3 aspect ratio
-	if (bm.Height () > screen.Height ()) {
-		bm.SetHeight ((screen.Height () / THUMBNAIL_LH) * THUMBNAIL_LH);
+	if (bm.Height () > gameData.render.frame.Height ()) {
+		bm.SetHeight ((gameData.render.frame.Height () / THUMBNAIL_LH) * THUMBNAIL_LH);
 		bm.SetWidth (bm.Height () * 5 / 3);
 		}
-	x = (screen.Width () - bm.Width ()) / 2;
-	y = (screen.Height () - bm.Height ()) / 2;
+	x = (gameData.render.frame.Width () - bm.Width ()) / 2;
+	y = (gameData.render.frame.Height () - bm.Height ()) / 2;
 	bm.SetBPP (3);
 	bm.CreateBuffer ();
 	//ogl.SetTexturing (false);

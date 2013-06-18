@@ -347,6 +347,7 @@ class COGL {
 		void SaveViewport (void);
 		void RestoreViewport (void);
 		void SwapBuffers (int bForce, int bClear);
+		void Update (int bClear);
 		void SetupTransform (int bForce);
 		void ResetTransform (int bForce);
 		void SetScreenMode (void);
@@ -394,9 +395,15 @@ class COGL {
 		inline int FullScreen (void) { return m_states.bFullScreen; }
 
 		inline void SetFullScreen (int bFullScreen) {
-			m_states.bFullScreen = bFullScreen;
-			if (m_states.bInitialized)
-				SdlGlDoFullScreenInternal (0);
+#if !DBG
+			if (bFullScreen || !IsSideBySideDevice ()) {
+#endif
+				m_states.bFullScreen = bFullScreen;
+				if (m_states.bInitialized)
+					SdlGlDoFullScreenInternal (0);
+#if !DBG
+				}
+#endif
 			}
 
 		int ToggleFullScreen (void) {
@@ -560,21 +567,21 @@ class COGL {
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
 		inline int StereoDevice (int bForce = 0) { 
-			return !m_features.bShaders
-					 ? 0
-					 : !(bForce || gameOpts->render.stereo.bEnhance)
-						 ? 0
-						 : (gameOpts->render.stereo.nGlasses == GLASSES_AMBER_BLUE) 
-							 ? 1 
-							 : (gameOpts->render.stereo.nGlasses == GLASSES_RED_CYAN) 
-								? 2 
-								 : (gameOpts->render.stereo.nGlasses == GLASSES_GREEN_MAGENTA) 
-									? 3 
-									 : (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT)
-										? -2
-										 : ((gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER) && m_states.nStereo)
-											? -1
-											: 0; 
+			if (!m_features.bShaders)
+				return 0;
+			if (!(bForce || gameOpts->render.stereo.bEnhance))
+				return 0;
+			if ((gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_NVIDIA) && !m_states.nStereo)
+				return 0;
+			return (gameOpts->render.stereo.nGlasses < DEVICE_STEREO_PHYSICAL) ? gameOpts->render.stereo.nGlasses : -gameOpts->render.stereo.nGlasses;
+			}
+
+		inline int IsAnaglyphDevice (void) { return StereoDevice () > 0; }
+
+		inline int IsSideBySideDevice (int nDevice = 0x7fffffff) {
+			if (nDevice == 0x7fffffff)
+				nDevice = StereoDevice ();
+			return (nDevice <= -DEVICE_STEREO_SIDEBYSIDE) && (nDevice > -DEVICE_STEREO_DOUBLE_BUFFER);
 			}
 
 		inline void BindTexture (GLuint handle) { 

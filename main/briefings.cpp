@@ -772,7 +772,7 @@ else
 	fontManager.SetColorRGB (&eraseColorRgb, NULL);
 GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, "_");
 if (ogl.m_states.nDrawBuffer == GL_FRONT)
-	GrUpdate (0);
+	ogl.Update (0);
 }
 
 //-----------------------------------------------------------------------------
@@ -835,7 +835,7 @@ do {		//	Wait for a key
 	keypress = InKey ();
 	if (ogl.m_states.nDrawBuffer == GL_BACK)
 		break;
-	GrUpdate (0);
+	ogl.Update (0);
 	} while (!keypress);
 return keypress;
 }
@@ -1309,7 +1309,7 @@ if (m_info.bOnlyRobots) {
 m_info.pi = m_info.message;
 if (ogl.m_states.nDrawBuffer == GL_FRONT) {
 	LoadImage (m_info.nScreen);
-	GrUpdate (0);
+	ogl.Update (0);
 	}
 m_info.briefingTextX = m_info.bsP->textLeft;
 m_info.briefingTextY = m_info.bsP->textTop;
@@ -1359,7 +1359,7 @@ redrawPage:
 
 for (;;) {
 	m_info.pj = m_info.message;
-	GrUpdate (0);
+	ogl.Update (0);
 	if (ogl.m_states.nDrawBuffer == GL_FRONT)
 		m_info.pi = m_info.message;
 	else {
@@ -1537,7 +1537,7 @@ if (gameStates.app.bD1Mission) {
 		Int3 ();
 		return 0;
 		}
-	GrUpdate (0);
+	ogl.Update (0);
 	}
 if (!ShowText (nScreen, nLevel))
 	return 0;

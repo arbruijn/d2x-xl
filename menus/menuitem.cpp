@@ -254,7 +254,7 @@ else {
 		if (i) {
 			GrString (x, y, s, NULL);
 	#if DBG
-			//GrUpdate (0);
+			//ogl.Update (0);
 	#endif
 			}
 		if (i < l) {	// print the hotkey
@@ -265,7 +265,7 @@ else {
 			SetColor (1, bTiny);
 			GrString (x, y, s + i - 1, NULL);
 	#if DBG
-			//GrUpdate (0);
+			//ogl.Update (0);
 	#endif
 			SetColor (0, bTiny);
 			if (i < l) { // print text following the hotkey

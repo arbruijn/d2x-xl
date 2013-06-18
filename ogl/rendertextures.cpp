@@ -136,7 +136,7 @@ if (!m_states.hDepthBuffer [nId])
 if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTexture (-1, nId, nId))) {
 	BindTexture (m_states.hDepthBuffer [nId]);
 	if (!m_states.bDepthBuffer [nId]) {
-		if (ogl.StereoDevice () == -1)
+		if (ogl.StereoDevice () == -GLASSES_SHUTTER_NVIDIA)
 			ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 		else
 			ogl.SetReadBuffer (GL_BACK, (gameStates.render.bRenderIndirect > 0) || gameStates.render.cameras.bActive);

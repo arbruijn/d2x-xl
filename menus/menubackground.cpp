@@ -61,6 +61,8 @@ CBackgroundManager backgroundManager;
 
 int bHiresBackground;
 
+void SetupCanvasses (void);
+
 //------------------------------------------------------------------------------
 
 #if DBG
@@ -179,7 +181,7 @@ void CBackground::Setup (int x, int y, int width, int height)
 if (m_canvas [1])
 	m_canvas [1]->Destroy ();
 m_canvas [1] = screen.Canvas ()->CreatePane (x, y, width, height);
-m_canvas [0] = screen.Canvas ()->CreatePane (0, 0, screen.Width (), screen.Height ());
+m_canvas [0] = screen.Canvas ()->CreatePane (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
 }
 
 //------------------------------------------------------------------------------
@@ -227,7 +229,7 @@ if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) /*|| m_bFullScreen*/
 	CCanvas::Pop ();
 	}
 if (bUpdate && !gameStates.app.bGameRunning)
-	GrUpdate (0);
+	ogl.Update (0);
 }
 
 //------------------------------------------------------------------------------
@@ -394,15 +396,15 @@ if (left <= 0)
 	left = 1;
 if (top <= 0)
 	top = 1;
-if (right >= screen.Width ())
-	right = screen.Width () - 1;
-if (bottom >= screen.Height ())
-	bottom = screen.Height () - 1;
+if (right >= gameData.render.frame.Width ())
+	right = gameData.render.frame.Width () - 1;
+if (bottom >= gameData.render.frame.Height ())
+	bottom = gameData.render.frame.Height () - 1;
 CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
 ogl.SetTexturing (false);
 OglDrawFilledRect (left, top, right, bottom);
 CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
-glLineWidth (GLfloat (nLineWidth) * sqrt (GLfloat (screen.Width ()) / 640.0f));
+glLineWidth (GLfloat (nLineWidth) * sqrt (GLfloat (gameData.render.frame.Width ()) / 640.0f));
 OglDrawEmptyRect (left, top, right, bottom);
 glLineWidth (1);
 }
@@ -416,10 +418,12 @@ if (m_nDepth < 0)
 if (gameStates.app.bGameRunning)
 	Draw (true);
 else {
+	if (m_nDepth > 2)
+		m_nDepth = 2;
 	for (int i = 0; i <= m_nDepth; i++)
 		m_bg [i].Draw (i == m_nDepth);
 	if (bUpdate)
-		GrUpdate (1);
+		ogl.Update (1);
 	}
 }
 
@@ -520,9 +524,9 @@ if (!m_bValid) {
 bool CBackgroundManager::Setup (char *filename, int x, int y, int width, int height, bool bTop)
 {
 Create ();
-if (++m_nDepth > 2)
+if (m_nDepth > 1)
 	return false;
-if (!m_bg [m_nDepth].Create (filename, x, y, width, height, bTop))
+if (!m_bg [++m_nDepth].Create (filename, x, y, width, height, bTop))
 	return false;
 Redraw ();
 return true;
@@ -550,15 +554,16 @@ for (i = 0; i <= j; i++) {
 	}
 
 Destroy ();
+SetupCanvasses ();
 if (j < 0)
-	Setup (BackgroundName (BG_MENU), 0, 0, screen.Width (), screen.Height ());
+	Setup (BackgroundName (BG_MENU), 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
 else {
 	for (i = 0; i <= j; i++) 
-		Setup (bgInfo [i].filename, bgInfo [i].x, bgInfo [i].y, bgInfo [i].w, bgInfo [i].h);
+		Setup (bgInfo [i].filename, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
 	m_nDepth = nDepth;
 	}
 if (!bGame)
-	GrUpdate (0);
+	ogl.Update (0);
 }
 
 //------------------------------------------------------------------------------

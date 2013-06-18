@@ -76,54 +76,68 @@ float quadVerts [3][4][2] = {
 
 //------------------------------------------------------------------------------
 
+static void PrintStatistics (void)
+{
+#if PROFILING
+if (gameStates.render.bShowProfiler && !gameStates.menus.nInMenu && fontManager.Current () && SMALL_FONT) {
+	static time_t t0 = -1000;
+	time_t t1 = clock ();
+	static tProfilerData p;
+	static float nFrameCount = 1;
+	if (t1 - t0 >= 1000) {
+		memcpy (&p, &gameData.profiler, sizeof (p));
+		nFrameCount = float (gameData.app.nFrameCount);
+		t0 = t1;
+		}
+	int h = SMALL_FONT->Height () + 3, i = 3;
+	fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
+	float t, s = 0;
+	GrPrintF (NULL, 5, h * i++, "frame: %1.2f", float (p.t [ptFrame]) / nFrameCount);
+	if (p.t [ptRenderFrame]) {
+		GrPrintF (NULL, 5, h * i++, "  scene: %1.2f %c (%1.2f)", 100.0f * float (p.t [ptRenderFrame]) / float (p.t [ptFrame]), '%', float (p.t [ptRenderFrame]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "    mine: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderMine]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderMine]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "    light: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptLighting]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptLighting]) / nFrameCount);
+		s += t;
+		GrPrintF (NULL, 5, h * i++, "    render: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderPass]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderPass]) / nFrameCount);
+		s += t;
+		GrPrintF (NULL, 5, h * i++, "      face list: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptFaceList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptFaceList]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      faces: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderFaces]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderFaces]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      objects: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptRenderObjects]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderObjects]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      transparency: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptTranspPolys]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptTranspPolys]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      effects: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptEffects]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptEffects]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "        particles: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptParticles]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptParticles]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      cockpit: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptCockpit]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptCockpit]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      states: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderStates]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderStates]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      shaders: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptShaderStates]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptShaderStates]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "    other: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptAux]) / float (p.t [ptRenderFrame]), '%');
+		s += t;
+		GrPrintF (NULL, 5, h * i++, "      transform: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptTransform]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptTransform]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      seg list: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptBuildSegList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptBuildSegList]) / nFrameCount);
+		GrPrintF (NULL, 5, h * i++, "      obj list: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptBuildObjList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptBuildObjList]) / nFrameCount);
+		}
+	GrPrintF (NULL, 5, h * i++, "  total: %1.2f %c", s, '%');
+	}
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::Update (int bClear)
+{
+if (m_states.bInitialized) {
+	if (m_states.nDrawBuffer == GL_FRONT)
+		glFlush ();
+	else
+		SwapBuffers (1, bClear);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void COGL::SwapBuffers (int bForce, int bClear)
 {
-//if (!gameStates.menus.nInMenu || bForce)
-	{
-#	if PROFILING
-	if (gameStates.render.bShowProfiler && gameStates.app.bGameRunning && !gameStates.menus.nInMenu && fontManager.Current () && SMALL_FONT) {
-		static time_t t0 = -1000;
-		time_t t1 = clock ();
-		static tProfilerData p;
-		static float nFrameCount = 1;
-		if (t1 - t0 >= 1000) {
-			memcpy (&p, &gameData.profiler, sizeof (p));
-			nFrameCount = float (gameData.app.nFrameCount);
-			t0 = t1;
-			}
-		int h = SMALL_FONT->Height () + 3, i = 3;
-		fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
-		float t, s = 0;
-		GrPrintF (NULL, 5, h * i++, "frame: %1.2f", float (p.t [ptFrame]) / nFrameCount);
-		if (p.t [ptRenderFrame]) {
-			GrPrintF (NULL, 5, h * i++, "  scene: %1.2f %c (%1.2f)", 100.0f * float (p.t [ptRenderFrame]) / float (p.t [ptFrame]), '%', float (p.t [ptRenderFrame]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "    mine: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderMine]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderMine]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "    light: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptLighting]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptLighting]) / nFrameCount);
-			s += t;
-			GrPrintF (NULL, 5, h * i++, "    render: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderPass]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderPass]) / nFrameCount);
-			s += t;
-			GrPrintF (NULL, 5, h * i++, "      face list: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptFaceList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptFaceList]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "      faces: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderFaces]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderFaces]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "      objects: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptRenderObjects]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderObjects]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "      transparency: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptTranspPolys]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptTranspPolys]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "      effects: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptEffects]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptEffects]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "        particles: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptParticles]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptParticles]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "      cockpit: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptCockpit]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptCockpit]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "      states: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptRenderStates]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptRenderStates]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "      shaders: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptShaderStates]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptShaderStates]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "    other: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptAux]) / float (p.t [ptRenderFrame]), '%');
-			s += t;
-			GrPrintF (NULL, 5, h * i++, "      transform: %1.2f %c (%1.2f) ", t = 100.0f * float (p.t [ptTransform]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptTransform]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "      seg list: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptBuildSegList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptBuildSegList]) / nFrameCount);
-			GrPrintF (NULL, 5, h * i++, "      obj list: %1.2f %c (%1.2f)", t = 100.0f * float (p.t [ptBuildObjList]) / float (p.t [ptRenderFrame]), '%', float (p.t [ptBuildObjList]) / nFrameCount);
-			}
-		GrPrintF (NULL, 5, h * i++, "  total: %1.2f %c", s, '%');
-		}
-#endif
-#if 0
-	if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
-		paletteManager.RenderEffect ();
-#endif
+if (gameStates.app.bGameRunning)	{
+	PrintStatistics ();
 	glowRenderer.End ();
 	if (gameStates.render.bRenderIndirect > 0) 
 		FlushDrawBuffer ();
@@ -132,25 +146,17 @@ void COGL::SwapBuffers (int bForce, int bClear)
 		Draw2DFrameElements ();
 		gameStates.render.bRenderIndirect = 1;
 		}
-#if 0
-	if (!gameStates.menus.nInMenu && gameStates.app.bGameRunning) {
-		EnableClientStates (1, 0, 0, GL_TEXTURE0);
-		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord);
-		OglVertexPointer (2, GL_FLOAT, 0, quadVerts);
-		BindTexture (m_states.hDepthBuffer [0]);
-		SetDrawBuffer (GL_BACK, 0);
-		OglDrawArrays (GL_QUADS, 0, 4);
-		}
-#endif
-	SDL_GL_SwapBuffers ();
-	if (gameStates.app.bSaveScreenShot)
-		SaveScreenShot (NULL, 0);
-	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect > 0);
-#if 1
-	if (gameStates.menus.nInMenu || bClear)
-		glClear (GL_COLOR_BUFFER_BIT);
-#endif
 	}
+else if (IsSideBySideDevice ())
+	FlushDrawBuffer ();
+SDL_GL_SwapBuffers ();
+if (gameStates.app.bSaveScreenShot)
+	SaveScreenShot (NULL, 0);
+SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect > 0);
+#if 1
+if (gameStates.menus.nInMenu || bClear)
+	glClear (GL_COLOR_BUFFER_BIT);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -164,7 +170,7 @@ void COGL::FlushEffects (int nEffects)
 {
 //ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
 if (nEffects & 5) {
-	if (StereoDevice () != -2) {
+	if (StereoDevice () > -DEVICE_STEREO_SIDEBYSIDE) {
 		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
 		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);

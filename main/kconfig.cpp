@@ -867,7 +867,7 @@ fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+m_xOffs;
 GrString (x, KC_LHY (item->y), "?", NULL);
 if (ogl.m_states.nDrawBuffer != GL_BACK)
-	GrUpdate (1);
+	ogl.Update (1);
 }
 
 //------------------------------------------------------------------------------

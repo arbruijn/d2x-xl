@@ -55,7 +55,7 @@ extern int			VR_sensitivity;
 extern u_int32_t  bScreenModeOverride;
 
 extern CCanvas	*VR_offscreen_buffer;		// The offscreen data buffer
-extern CCanvas	VR_render_buffer[2];		// Two offscreen buffers for left/right eyes.
+extern CCanvas	VR_render_buffer[2];			// Two offscreen buffers for left/right eyes.
 extern CCanvas	VR_render_sub_buffer[2];	// Two sub buffers for left/right eyes.
 extern CCanvas	VR_screen_pages[2];			// Two pages of VRAM if paging is available
 extern CCanvas	VR_screen_sub_pages[2];		// Two sub pages of VRAM if paging is available
@@ -78,7 +78,7 @@ void GameInitRenderSubBuffers(int x, int y, int w, int h);
 
 int GetDisplayMode (int mode);
 int SetDisplayMode (int mode, int bOverride);
-int SetOculusRiftDisplayMode (void);
+int SetSideBySideDisplayMode (void);
 
 extern int nDefaultDisplayMode;		// cannot be -1
 // values are:

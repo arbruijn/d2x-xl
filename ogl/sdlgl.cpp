@@ -139,8 +139,8 @@ int SdlGlInitWindow (int w, int h, int bForce)
 if (ogl.m_states.bInitialized) {
 	if (!bForce && (w == ogl.m_states.nCurWidth) && (h == ogl.m_states.nCurHeight) && (ogl.m_states.bCurFullScreen == ogl.m_states.bFullScreen))
 		return -1;
-	GrUpdate (1); // blank screen/window
-	GrUpdate (1);
+	ogl.Update (1); // blank screen/window
+	ogl.Update (1);
 	if ((w != ogl.m_states.nCurWidth) || (h != ogl.m_states.nCurHeight) ||
 		 (ogl.m_states.bCurFullScreen != ogl.m_states.bFullScreen)) {
 		textureManager.Destroy ();//if we are or were fullscreen, changing vid mode will invalidate current textures

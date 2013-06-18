@@ -50,21 +50,11 @@ void ResetHoardData (void);
 
 extern int screenShotIntervals [];
 
+void SetupCanvasses (void);
+
 //------------------------------------------------------------------------------
 
 CArray<CDisplayModeInfo> displayModeInfo;
-
-//------------------------------------------------------------------------------
-
-void GrUpdate (int bClear)
-{
-if (ogl.m_states.bInitialized) {
-	if (ogl.m_states.nDrawBuffer == GL_FRONT)
-		glFlush ();
-	else
-		ogl.SwapBuffers (1, bClear);
-	}
-}
 
 //------------------------------------------------------------------------------
 
@@ -90,6 +80,7 @@ screen.Init ();
 screen.SetMode (mode);
 screen.SetWidth (w);
 screen.SetHeight (h);
+gameData.render.screen.Set (0, 0, w, h);
 //screen.Aspect () = FixDiv(screen.Width ()*3,screen.Height ()*4);
 screen.SetAspect (FixDiv (screen.Width (), (fix) (screen.Height () * ((double) w / (double) h))));
 screen.Canvas ()->CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
@@ -110,7 +101,7 @@ PrintLog (-1);
 /***/PrintLog (1, "initializing OpenGL screen mode\n");
 ogl.SetScreenMode ();
 ogl.GetVerInfo ();
-GrUpdate (0);
+ogl.Update (0);
 PrintLog (-1);
 return 0;
 }
@@ -409,14 +400,21 @@ return nMode;
 
 //------------------------------------------------------------------------------
 
-int SetOculusRiftDisplayMode (void)
+int SetSideBySideDisplayMode (void)
 {
 #if DBG
 ogl.SetFullScreen (0);
 #else
 ogl.SetFullScreen (1);
 #endif
-SetCustomDisplayMode (1280, 800, 0);
+if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT_720p)
+	SetCustomDisplayMode (1280, 800, 0);
+else if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT_1080p)
+	SetCustomDisplayMode (1920, 1080, 0);
+else if (gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_HDMI)
+	SetCustomDisplayMode (1920, 1080, 0);
+else
+	return true;
 return SetDisplayMode (CUSTOM_DISPLAY_MODE, 0);
 }
 
@@ -453,7 +451,7 @@ if (nCurrentVGAMode != nMenuMode) {
 	ogl.RebuildContext (gameStates.app.bGameRunning);
 	}
 
-screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width (), screen.Height ());
+SetupCanvasses ();
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 return 1;
 }

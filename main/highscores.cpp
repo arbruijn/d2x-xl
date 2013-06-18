@@ -324,7 +324,7 @@ for (i= 0; i<gameData.multiplayer.nPlayers; i++) {
 	DrawItem (i);
 	}
 DrawDeaths ();
-GrUpdate (1);
+ogl.Update (1);
 //paletteManager.ResumeEffect ();
 }
 
@@ -351,7 +351,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 DrawDeaths ();
 CCanvas::SetCurrent (NULL);
 //paletteManager.ResumeEffect ();
-GrUpdate (1);
+ogl.Update (1);
 }
 
 //-----------------------------------------------------------------------------

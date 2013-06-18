@@ -1364,7 +1364,7 @@ pb [3].vertex.v.coord.z = vCenter.v.coord.z;
 
 void CParticle::Setup (bool alphaControl, float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread) 
 {
-	CFloatVector3 vCenter, uVec, rVec, fVec;
+	CFloatVector3 vCenter, uVec, rVec;
 	float fScale;
 
 #if 0

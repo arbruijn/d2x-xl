@@ -76,13 +76,14 @@ static const char *pszRendQual [4];
 static const char *pszMeshQual [5];
 static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
-static const char *psz3DGlasses [6];
+static const char *pszStereoDevice [8];
 static const char *pszEnhance3D [4];
 static const char *pszDeghost [5];
 static const char *psz3DMethod [2];
 static const char *pszStereoSeparation [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
 
 static int xStereoSeparation = 0;
+static int nStereoDevice = 0;
 
 //------------------------------------------------------------------------------
 
@@ -207,10 +208,10 @@ if ((m = menu ["mesh quality"])) {
 
 if ((m = menu ["3D glasses"])) {
 	v = m->Value ();
-	if ((h = gameOpts->render.stereo.nGlasses) != v) {
+	if ((h = nStereoDevice) != v) {
 		transparencyRenderer.ResetBuffers ();
-		gameOpts->render.stereo.nGlasses = v;
-		sprintf (m->Text (), TXT_STEREO_VIEW, psz3DGlasses [v]);
+		nStereoDevice = v;
+		sprintf (m->Text (), TXT_STEREO_VIEW, pszStereoDevice [v]);
 		m->m_bRebuild = -1;
 		key = -2;
 		return nCurItem;
@@ -397,12 +398,14 @@ pszColorLevel [0] = TXT_OFF;
 pszColorLevel [1] = TXT_WEAPONS;
 pszColorLevel [2] = TXT_FULL;
 
-psz3DGlasses [0] = TXT_NONE;
-psz3DGlasses [1] = TXT_AMBER_BLUE;
-psz3DGlasses [2] = TXT_RED_CYAN;
-psz3DGlasses [3] = TXT_GREEN_MAGENTA;
-psz3DGlasses [4] = TXT_OCULUS_RIFT;
-psz3DGlasses [5] = TXT_SHUTTER;
+pszStereoDevice [0] = TXT_NONE;
+pszStereoDevice [1] = TXT_AMBER_BLUE;
+pszStereoDevice [2] = TXT_RED_CYAN;
+pszStereoDevice [3] = TXT_GREEN_MAGENTA;
+pszStereoDevice [4] = TXT_OCULUS_RIFT_720p;
+pszStereoDevice [5] = TXT_OCULUS_RIFT_1080p;
+pszStereoDevice [6] = TXT_SHUTTER_HDMI;
+pszStereoDevice [7] = TXT_SHUTTER_NVIDIA;
 
 pszDeghost [0] = TXT_OFF;
 pszDeghost [1] = TXT_LOW;
@@ -441,6 +444,7 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 					: (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps) + 1;
 nPowerups = gameOpts->Use3DPowerups () ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
 nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 : 1 : 0;
+nStereoDevice = gameOpts->render.stereo.nGlasses;
 xStereoSeparation = gameOpts->render.stereo.xSeparation / (STEREO_SEPARATION_STEP) - 1;
 if (xStereoSeparation < 0)
 	xStereoSeparation = 0;
@@ -521,13 +525,13 @@ do {
 	*szSlider = *(TXT_POWERUPS - 1);
 	m.AddSlider ("powerup quality", szSlider + 1, nPowerups, 0, 2, KEY_O, HTX_POWERUPS);
 
-	if (EXPERTMODE && gameOpts->render.stereo.nGlasses)
+	if (EXPERTMODE && nStereoDevice)
 		m.AddText ("", "");
-	sprintf (szSlider + 1, TXT_STEREO_VIEW, psz3DGlasses [gameOpts->render.stereo.nGlasses]);
+	sprintf (szSlider + 1, TXT_STEREO_VIEW, pszStereoDevice [nStereoDevice]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
-	m.AddSlider ("3D glasses", szSlider + 1, gameOpts->render.stereo.nGlasses, 0, sizeofa (psz3DGlasses) - 2 + ogl.m_features.bStereoBuffers, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
+	m.AddSlider ("3D glasses", szSlider + 1, nStereoDevice, 0, sizeofa (pszStereoDevice) - 2 + ogl.m_features.bStereoBuffers, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
 
-	if (EXPERTMODE && gameOpts->render.stereo.nGlasses) {
+	if (EXPERTMODE && nStereoDevice) {
 		sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.stereo.nMethod]);
 		*szSlider = *(TXT_3D_METHOD - 1);
 		m.AddSlider ("3D method", szSlider + 1, gameOpts->render.stereo.nMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);
@@ -612,6 +616,7 @@ do {
 #endif
 	} while (i == -2);
 
+gameOpts->render.stereo.nGlasses = nStereoDevice;
 lightManager.SetMethod ();
 DefaultRenderSettings ();
 }

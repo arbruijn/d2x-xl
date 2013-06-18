@@ -128,6 +128,7 @@ int CheckAndFixSetup (void);
 #define CheckAndFixSetup()
 #endif
 void InitGameStates (void);
+void SetupCanvasses (void);
 
 char szAutoMission [255];
 char szAutoHogFile [255];
@@ -226,6 +227,7 @@ else
 	int y, w, ws, h, hs, aw;
 	float grAlpha = gameStates.render.grAlpha;
 
+SetupCanvasses ();
 gameStates.render.grAlpha = 1.0f;
 if (gameStates.menus.bHires) {
 	if (gameOpts->menus.altBg.bHave > 0)
@@ -248,7 +250,7 @@ if (!nInfoType) {
 	fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
 	h += 2;
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - h, "visit www.descent2.de");
-	fontManager.SetColorRGBi (RGB_PAL (51, 34, 0), 1, 0, 0);
+	//fontManager.SetColorRGBi (RGB_PAL (51, 34, 0), 1, 0, 0);
 	fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 3 * h - 6, "Press F1 for help in menus");
 	fontManager.SetColorRGBi (RGB_PAL (31, 31, 31), 1, 0, 0);
@@ -461,7 +463,7 @@ else {
 	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 	backgroundManager.Init ();
 	backgroundManager.Setup (filename, 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
-	GrUpdate (0);
+	ogl.Update (0);
 	}
 }
 
@@ -1098,7 +1100,7 @@ if (! CFile::Exist (szExitScreen, gameFolders.szDataDir [0], 0))
 
 int pcxResult = PcxReadFullScrImage (szExitScreen, 0);
 if (pcxResult == PCX_ERROR_NONE) {
-	GrUpdate (0);
+	ogl.Update (0);
 	while (!(KeyInKey () || MouseButtonState (0)))
 		;
 	}

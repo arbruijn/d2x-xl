@@ -1617,8 +1617,8 @@ if (profile.Busy ())
 	int		bRewriteIt = 0;
 	uint		i;
 
-	short gameWindowW = gameData.render.screen.Width ();
-	short	gameWindowH = gameData.render.screen.Height ();
+	short gameWindowW = screen.Width ();
+	short	gameWindowH = screen.Height ();
 	ubyte nDisplayMode = gameStates.video.nDefaultDisplayMode;
 
 	char		filename [FILENAME_LEN];
@@ -1675,8 +1675,9 @@ else if (gameStates.video.nDefaultDisplayMode < 0) {
 	gameStates.video.nDefaultDisplayMode = CUSTOM_DISPLAY_MODE;
 	}
 else 
-	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.render.screen.Width (), gameData.render.screen.Height ());
+	gameStates.video.nDefaultDisplayMode = FindDisplayMode (screen.Width (), screen.Height ());
 SetCustomDisplayMode (customDisplayMode.w, customDisplayMode.h, 1);
+SetSideBySideDisplayMode ();
 
 if (nStage < 2)
 	return funcRes;

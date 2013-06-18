@@ -118,6 +118,9 @@ return nCurItem;
 
 int SwitchDisplayMode (int dir)
 {
+if (ogl.IsSideBySideDevice ())
+	return 0;
+
 	int	i, h = NUM_DISPLAY_MODES;
 
 for (i = 0; i < h; i++)

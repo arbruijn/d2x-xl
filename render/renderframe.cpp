@@ -84,7 +84,7 @@ if (xStereoSeparation) {
 	x -= int (float (x / 32) * X2F (xStereoSeparation));
 	}
 int y = CCanvas::Current ()->Height () / 2;
-glLineWidth (float (screen.Width ()) / 640.0f);
+glLineWidth (float (gameData.render.frame.Width ()) / 640.0f);
 #if 1
 	w /= 2;
 	h /= 2;
@@ -366,10 +366,14 @@ else
 	ogl.ChooseDrawBuffer ();
 ogl.ColorMask (1,1,1,1,0);
 //SetBlendMode (OGL_BLEND_ALPHA);
-if (gameStates.app.bGameRunning && !automap.Display ()) {
-	PROF_START
-	cockpit->Render (!(gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()), 0);
-	PROF_END(ptCockpit)
+if (gameStates.app.bGameRunning) {
+	if (automap.Display ()) 
+		automap.RenderInfo ();
+	else {
+		PROF_START
+		cockpit->Render (!(gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()), 0);
+		PROF_END(ptCockpit)
+		}
 	}
 paletteManager.RenderEffect ();
 FlashMine ();
@@ -497,15 +501,14 @@ else
 
 {
 PROF_START
-G3StartFrame (transformation, 0, ((ogl.StereoDevice () == -2) && (xStereoSeparation > 0)) ? -1 : (nWindow || gameStates.render.cameras.bActive) ? 0 : 1, xStereoSeparation);
+G3StartFrame (transformation, 0, (nWindow || gameStates.render.cameras.bActive) ? 0 : 1, xStereoSeparation);
 if (!nWindow) {
 	CCanvas::SetCurrent (&gameData.render.scene);
-	ogl.SetViewport (gameData.render.frame.Left () + gameData.render.scene.Left (), 
-						  gameData.render.frame.Top () + gameData.render.scene.Top (), 
+	ogl.SetViewport (gameData.render.screen.Left () + gameData.render.scene.Left (), 
+						  gameData.render.screen.Top () + gameData.render.scene.Top (), 
 						  gameData.render.scene.Width (), 
 						  gameData.render.scene.Height ());
 	fontManager.SetCurrent (GAME_FONT);
-	//transformation.ComputeAspect (gameData.render.frame.Width (), gameData.render.frame.Height ());
 	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
 	}
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
@@ -617,6 +620,21 @@ if (!ShowGameMessage (gameData.messages, -1, -1))
 	ShowGameMessage (gameData.messages + 1, -1, -1);
 }
 
+
+//------------------------------------------------------------------------------
+
+void SetupCanvasses (void)
+{
+screen.Canvas ()->SetupPane (&gameData.render.screen, 0, 0, screen.Width (), screen.Height ());
+if (ogl.IsSideBySideDevice ())
+	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width () / 2, screen.Height ());
+else
+	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width (), screen.Height ());
+screen.Canvas ()->SetupPane (&gameData.render.viewport, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+screen.Canvas ()->SetupPane (&gameData.render.scene, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+CCanvas::SetCurrent (&gameData.render.frame);
+}
+
 //------------------------------------------------------------------------------
 
 void RenderMonoFrame (fix xStereoSeparation = 0)
@@ -624,14 +642,7 @@ void RenderMonoFrame (fix xStereoSeparation = 0)
 #if MAX_SHADOWMAPS
 RenderShadowMaps (xStereoSeparation);
 #endif
-if (ogl.StereoDevice () == -2)
-	screen.Canvas ()->SetupPane (&gameData.render.frame, /*(xStereoSeparation < 0) ? 0 : screen.Width () / 2*/0, 0, screen.Width () / 2, screen.Height ());
-else
-	screen.Canvas ()->SetupPane (&gameData.render.frame, gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
-screen.Canvas ()->SetupPane (&gameData.render.viewport, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
-screen.Canvas ()->SetupPane (&gameData.render.scene, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
-CCanvas::SetCurrent (&gameData.render.frame);
-
+SetupCanvasses ();
 if (xStereoSeparation <= 0) {
 	PROF_START
 	SEM_ENTER (SEM_LIGHTNING)
@@ -688,24 +699,24 @@ else {
 	RenderFrame (xStereoSeparation, 0);
 	}
 FlushFrame (xStereoSeparation);
-CCanvas::SetCurrent (&gameData.render.frame);
+CCanvas::SetCurrent (&gameData.render.screen);
 }
 
 //------------------------------------------------------------------------------
 
-#define WINDOW_W_DELTA	 ((screen.Width () / 16) & ~1)	//24	//20
-#define WINDOW_H_DELTA	 ((screen.Height () / 16) & ~1)	//12	//10
+#define WINDOW_W_DELTA	 ((gameData.render.frame.Width () / 16) & ~1)	//24	//20
+#define WINDOW_H_DELTA	 ((gameData.render.frame.Height () / 16) & ~1)	//12	//10
 
-#define WINDOW_MIN_W		 ((screen.Width () * 10) / 22)	//160
-#define WINDOW_MIN_H		 ((screen.Height () * 10) / 22)
+#define WINDOW_MIN_W		 ((gameData.render.frame.Width () * 10) / 22)	//160
+#define WINDOW_MIN_H		 ((gameData.render.frame.Height () * 10) / 22)
 
 void GrowWindow (void)
 {
 #if 0
 StopTime ();
 if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
-	gameData.render.frame.SetHeight (screen.Height ());
-	gameData.render.frame.SetWidth (screen.Width ());
+	gameData.render.screen.SetHeight (screen.Height ());
+	gameData.render.screen.SetWidth (screen.Width ());
 	cockpit->Toggle ();
 	HUDInitMessage (TXT_COCKPIT_F3);
 	StartTime (0);
@@ -717,22 +728,22 @@ if (gameStates.render.cockpit.nType != CM_STATUS_BAR) {
 	return;
 	}
 
-if ((gameData.render.frame.Height () >= screen.Height ()) || (gameData.render.frame.Width () >= screen.Width ())) {
-	//gameData.render.frame.Width () = screen.Width ();
-	//gameData.render.frame[HA] = screen.Height ();
+if ((gameData.render.screen.Height () >= screen.Height ()) || (gameData.render.screen.Width () >= screen.Width ())) {
+	//gameData.render.screen.Width () = screen.Width ();
+	//gameData.render.screen[HA] = screen.Height ();
 	cockpit->Activate (CM_FULL_SCREEN);
 	}
 else {
 	//int x, y;
-	gameData.render.frame.SetWidth (gameData.render.frame.Width () + WINDOW_W_DELTA);
-	gameData.render.frame.SetHeight (gameData.render.frame.Height () + WINDOW_H_DELTA);
-	if (gameData.render.frame.Height () > screen.Height ())
-		gameData.render.frame.SetHeight (screen.Height ());
-	if (gameData.render.frame.Width () > screen.Width ())
-		gameData.render.frame.SetWidth (screen.Width ());
-	gameData.render.frame.SetLeft ((screen.Width () - gameData.render.frame.Width ()) / 2);
-	gameData.render.frame.SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
-	//GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
+	gameData.render.screen.SetWidth (gameData.render.screen.Width () + WINDOW_W_DELTA);
+	gameData.render.screen.SetHeight (gameData.render.screen.Height () + WINDOW_H_DELTA);
+	if (gameData.render.screen.Height () > screen.Height ())
+		gameData.render.screen.SetHeight (screen.Height ());
+	if (gameData.render.screen.Width () > screen.Width ())
+		gameData.render.screen.SetWidth (screen.Width ());
+	gameData.render.screen.SetLeft ((screen.Width () - gameData.render.screen.Width ()) / 2);
+	gameData.render.screen.SetTop ((screen.Height () - gameData.render.screen.Height ()) / 2);
+	//GameInitRenderSubBuffers (gameData.render.screen.Left (), gameData.render.screen.Top (), gameData.render.screen.Width (), gameData.render.screen.Height ());
 	}
 HUDClearMessages ();	//	@mk, 11/11/94
 SavePlayerProfile ();
@@ -782,7 +793,7 @@ for (y = tileTop;y <= tileBot; y++) {
 void FillBackground (void)
 {
 #if 0
-if (gameData.render.frame.Left () || gameData.render.frame.Top ()) {
+if (gameData.render.screen.Left () || gameData.render.screen.Top ()) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (CurrentGameScreen ());
 	CViewport viewport = ogl.m_states.viewport [0];
@@ -803,8 +814,8 @@ void ShrinkWindow (void)
 #if 0
 StopTime ();
 if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
-	gameData.render.frame.SetHeight (screen.Height ());
-	gameData.render.frame.SetWidth (screen.Width ());
+	gameData.render.screen.SetHeight (screen.Height ());
+	gameData.render.screen.SetWidth (screen.Width ());
 	//!!ToggleCockpit ();
 	gameStates.render.cockpit.nNextType = CM_FULL_COCKPIT;
 	cockpit->Activate (CM_STATUS_BAR);
@@ -817,8 +828,8 @@ if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
 	}
 
 if (gameStates.render.cockpit.nType == CM_FULL_SCREEN) {
-	//gameData.render.frame.Width () = screen.Width ();
-	//gameData.render.frame[HA] = screen.Height ();
+	//gameData.render.screen.Width () = screen.Width ();
+	//gameData.render.screen[HA] = screen.Height ();
 	cockpit->Activate (CM_STATUS_BAR);
 	SavePlayerProfile ();
 	StartTime (0);
@@ -833,20 +844,20 @@ if (gameStates.render.cockpit.nType != CM_STATUS_BAR) {
 #if TRACE
 console.printf (CON_DBG, "Cockpit mode=%d\n", gameStates.render.cockpit.nType);
 #endif
-if (gameData.render.frame.Width () > WINDOW_MIN_W) {
+if (gameData.render.screen.Width () > WINDOW_MIN_W) {
 	//int x, y;
-   gameData.render.frame.SetWidth (gameData.render.frame.Width () - WINDOW_W_DELTA);
-	gameData.render.frame.SetHeight (gameData.render.frame.Height () - WINDOW_H_DELTA);
+   gameData.render.screen.SetWidth (gameData.render.screen.Width () - WINDOW_W_DELTA);
+	gameData.render.screen.SetHeight (gameData.render.screen.Height () - WINDOW_H_DELTA);
 #if TRACE
-  console.printf (CON_DBG, "NewW=%d NewH=%d VW=%d maxH=%d\n", gameData.render.frame.Width (), gameData.render.frame.Height (), screen.Width (), screen.Height ());
+  console.printf (CON_DBG, "NewW=%d NewH=%d VW=%d maxH=%d\n", gameData.render.screen.Width (), gameData.render.screen.Height (), screen.Width (), screen.Height ());
 #endif
-	if (gameData.render.frame.Width () < WINDOW_MIN_W)
-		gameData.render.frame.SetWidth (WINDOW_MIN_W);
-	if (gameData.render.frame.Height () < WINDOW_MIN_H)
-		gameData.render.frame.SetHeight (WINDOW_MIN_H);
-	gameData.render.frame.SetLeft ((screen.Width () - gameData.render.frame.Width ()) / 2);
-	gameData.render.frame.SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
-	//GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
+	if (gameData.render.screen.Width () < WINDOW_MIN_W)
+		gameData.render.screen.SetWidth (WINDOW_MIN_W);
+	if (gameData.render.screen.Height () < WINDOW_MIN_H)
+		gameData.render.screen.SetHeight (WINDOW_MIN_H);
+	gameData.render.screen.SetLeft ((screen.Width () - gameData.render.screen.Width ()) / 2);
+	gameData.render.screen.SetTop ((screen.Height () - gameData.render.screen.Height ()) / 2);
+	//GameInitRenderSubBuffers (gameData.render.screen.Left (), gameData.render.screen.Top (), gameData.render.screen.Width (), gameData.render.screen.Height ());
 	HUDClearMessages ();
 	SavePlayerProfile ();
 	}
@@ -914,14 +925,8 @@ else {
 	if (gameOpts->render.stereo.xSeparation == 0)
 		gameOpts->render.stereo.xSeparation = 3 * I2X (1) / 4;
 	fix xStereoSeparation = automap.Display () ? 2 * gameOpts->render.stereo.xSeparation : gameOpts->render.stereo.xSeparation;
-	//if (gameStates.menus.nInMenu && ogl.StereoDevice ()) {
-	//	RenderMonoFrame ((gameData.app.nFrameCount & 1) ? xStereoSeparation : -xStereoSeparation);
-	//	}
-	//else 
-		{
-		RenderMonoFrame (-xStereoSeparation);
-		RenderMonoFrame (xStereoSeparation);
-		}
+	RenderMonoFrame (-xStereoSeparation);
+	RenderMonoFrame (xStereoSeparation);
 	}
 //StopTime ();
 //if (!gameStates.menus.nInMenu)

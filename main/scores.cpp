@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "strutil.h"
 #include "menubackground.h"
 #include "songs.h"
+#include "ogl_lib.h"
 
 #define VERSION_NUMBER 		1
 #define SCORES_FILENAME 	"descent.hi"
@@ -385,7 +386,7 @@ while (!done) {
 	paletteManager.EnableEffect ();
 
 	if (nCurItem < 0)
-		GrUpdate (1);
+		ogl.Update (1);
 
 	if (nCurItem > -1) {
 		t1	= SDL_GetTicks ();
@@ -399,7 +400,7 @@ while (!done) {
 				scores_draw_item (MAX_HIGH_SCORES, &Last_game);
 			else
 				scores_draw_item (nCurItem, Scores.stats + nCurItem);
-			GrUpdate (1);
+			ogl.Update (1);
 			}
 		}
 

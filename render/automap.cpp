@@ -456,7 +456,7 @@ if (bAutomapFrame) {
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (426), TXT_TURN_SHIP);
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (443), TXT_SLIDE_UPDOWN);
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (460), TXT_VIEWING_DISTANCE);
-	//GrUpdate (0);
+	//ogl.Update (0);
 	}
 #endif
 if (!gameOpts->render.automap.bTextured || gameStates.app.bNostalgia)
@@ -497,6 +497,21 @@ if (m_bRadar) {
 	return;
 	}
 gameData.app.nFrameCount++;
+PROF_END(ptRenderFrame)
+#endif
+FlushFrame (xStereoSeparation);
+if (gameStates.app.bSaveScreenShot)
+	SaveScreenShot (NULL, 1);
+}
+
+//------------------------------------------------------------------------------
+
+void CAutomap::RenderInfo (void)
+{
+PROF_START
+	int	bAutomapFrame = !m_bRadar &&
+								 (gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
+								 (gameStates.render.cockpit.nType != CM_LETTERBOX);
 if (bAutomapFrame) {
 	if (InitBackground ()) {
 		m_background.SetTranspType (2);
@@ -511,14 +526,9 @@ if (bAutomapFrame) {
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (426), TXT_TURN_SHIP);
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (443), TXT_SLIDE_UPDOWN);
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (460), TXT_VIEWING_DISTANCE);
-	//GrUpdate (0);
+	//ogl.Update (0);
 	}
 DrawLevelId ();
-PROF_END(ptRenderFrame)
-#endif
-FlushFrame (xStereoSeparation);
-if (gameStates.app.bSaveScreenShot)
-	SaveScreenShot (NULL, 1);
 }
 
 //------------------------------------------------------------------------------

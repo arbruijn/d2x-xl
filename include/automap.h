@@ -118,6 +118,7 @@ class CAutomap {
 		int Setup (int bPauseGame, fix& xEntryTime);
 		int Update (void);
 		void Render (fix xStereoSeparation = 0);
+		void RenderInfo (void);
 		void DoFrame (int nKeyCode, int bRadar);
 		void ClearVisited (void);
 		int ReadControls (int nLeaveMode, int bDone, int& bPauseGame);

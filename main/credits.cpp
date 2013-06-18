@@ -330,7 +330,7 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 
 		if (gameOpts->menus.nStyle) 
 			CCanvas::SetCurrent (NULL);
-	GrUpdate (0);
+	ogl.Update (0);
 	}
 }
 

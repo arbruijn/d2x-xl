@@ -342,7 +342,7 @@ CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1);
 fontManager.SetColor (255, -1);
 GrUString (0x8000, y, msg);
-GrUpdate (0);
+ogl.Update (0);
 }
 
 //-----------------------------------------------------------------------
@@ -688,7 +688,7 @@ ogl.SetRenderQuality (gameOpts->movies.nQuality ? 5 : 0);
 while ((result = MVE_rmStepMovie ()) == 0) {
 	subTitles.Draw (nFrame);
 	//paletteManager.ResumeEffect (); // moved this here because of flashing
-	GrUpdate (1);
+	ogl.Update (1);
 	key = KeyInKey ();
 	// If ESCAPE pressed, then quit movie.
 	if (key == KEY_ESC) {

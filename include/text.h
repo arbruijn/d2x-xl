@@ -1951,7 +1951,7 @@ void LoadGameTexts(void);
 #define TXT_AMBER_BLUE					GT(1167)
 #define TXT_RED_CYAN						GT(1168)
 #define TXT_GREEN_MAGENTA				GT(1169)
-#define TXT_SHUTTER						GT(1170)
+#define TXT_SHUTTER_NVIDIA				GT(1170)
 #define TXT_COLORGAIN					GT(1171)
 #define TXT_ENHANCE_3D					GT(1172)
 #define TXT_FLIPFRAMES					GT(1173)
@@ -1992,7 +1992,9 @@ void LoadGameTexts(void);
 #define TXT_GAME_SPEED					GT(1208)
 #define TXT_D2X_VERSION_MISMATCH		GT(1209)
 #define TXT_SHIPS_ALLOWED				GT(1210)
-#define TXT_OCULUS_RIFT					GT(1211)
+#define TXT_OCULUS_RIFT_720p			GT(1211)
+#define TXT_OCULUS_RIFT_1080p			GT(1212)
+#define TXT_SHUTTER_HDMI				GT(1213)
 
 #if 0
 

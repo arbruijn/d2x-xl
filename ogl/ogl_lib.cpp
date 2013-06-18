@@ -445,13 +445,12 @@ else
 
 void COGL::SetupProjection (CTransformation& transformation)
 {
-gameStates.render.glAspect = m_states.bUseTransform ? /*CCanvas::Current ()->*/gameData.render.frame.AspectRatio () : 1.0;
+gameStates.render.glAspect = m_states.bUseTransform ? gameData.render.frame.AspectRatio () : 1.0;
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
-float aspectRatio = 1.0f; //(float (screen.Width ()) / float (screen.Height ())) / (float (CCanvas::Current ()->Width ()) / float (CCanvas::Current ()->Height ())); // ratio of current aspect to 4:3
+float aspectRatio = 1.0f; 
 #if 1
-gameStates.render.glFOV = gameStates.render.nShadowMap ? 90.0 : 105.0; // scale with ratio of current aspect to 4:3;
-//gameStates.render.glFOV *= (float (CCanvas::Current ()->Width ()) / float (CCanvas::Current ()->Height ())) * 0.75;
+gameStates.render.glFOV = gameStates.render.nShadowMap ? 90.0 : 105.0; 
 ZFAR = gameStates.render.nShadowMap ? 400.0f : 5000.0f;
 #else
 gameStates.render.glFOV = 180.0;
@@ -547,7 +546,7 @@ else if (gameOpts->render.stereo.nGlasses == GLASSES_GREEN_MAGENTA) {	//blue/red
 	else
 		glColorMask (bRed, GL_FALSE, bBlue, bAlpha);
 	}
-else //GLASSES_SHUTTER, GLASSES_OCULUS_RIFT or NONE
+else //GLASSES_SHUTTER_NVIDIA, GLASSES_OCULUS_RIFT or NONE
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 }
 
