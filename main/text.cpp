@@ -1959,7 +1959,7 @@ const char *defaultGameTexts [][2] = {
  {"\nerlaubte Schiffe:", "\nships allowed:"},
  {"Oculus Rift (720p)", "Oculus Rift (720p)"},
  {"Oculus Rift (1080p)", "Oculus Rift (1080p)"},
- {"TV-Shutterbrille", "TV Shutter Glasses"},
+ {"3D TV (1080p)", "3D TV (1080p)"},
  
 #if 0
  {"", ""},
