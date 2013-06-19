@@ -531,7 +531,7 @@ do {
 	*szSlider = *(TXT_STEREO_VIEW - 1);
 	m.AddSlider ("3D glasses", szSlider + 1, nStereoDevice, 0, sizeofa (pszStereoDevice) - 2 + ogl.m_features.bStereoBuffers, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
 
-	if (EXPERTMODE && nStereoDevice) {
+	if (EXPERTMODE && nStereoDevice && (nStereoDevice != GLASSES_OCULUS_RIFT_720p) && (nStereoDevice != GLASSES_OCULUS_RIFT_1080p)) {
 		sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.stereo.nMethod]);
 		*szSlider = *(TXT_3D_METHOD - 1);
 		m.AddSlider ("3D method", szSlider + 1, gameOpts->render.stereo.nMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);
