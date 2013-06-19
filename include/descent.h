@@ -868,6 +868,7 @@ class CTextureStates {
 		int bHaveMaskShader;
 		int bHaveGrayScaleShader;
 		int bHaveEnhanced3DShader;
+		int bHaveRiftWarpShader;
 		int bHaveShadowMapShader;
 	};
 

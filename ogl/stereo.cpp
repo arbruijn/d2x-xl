@@ -65,6 +65,8 @@
 int enhance3DShaderProg [2][2][3] = {{{-1,-1,-1},{-1,-1,-1}},{{-1,-1,-1},{-1,-1,-1}}};
 int duboisShaderProg = -1;
 
+int riftWarpShaderProg = -1;
+
 int nScreenDists [10] = {1, 2, 5, 10, 15, 20, 30, 50, 70, 100};
 float nDeghostThresholds [4][2] = {{1.0f, 1.0f}, {0.8f, 0.8f}, {0.7f, 0.7f}, {0.6f, 0.6f}};
 
@@ -338,6 +340,34 @@ const char* enhance3DVS =
 	"gl_FrontColor=gl_Color;}"
 	;
 
+
+static const char* riftWarpFS =
+	"uniform vec2 LensCenter;\n"
+	"uniform vec2 ScreenCenter;\n"
+	"uniform vec2 Scale;\n"
+	"uniform vec2 ScaleIn;\n"
+	"uniform vec4 HmdWarpParam;\n"
+	"uniform sampler2D Texture0;\n"
+	"varying vec2 oTexCoord;\n"
+	"\n"
+	"vec2 HmdWarp(vec2 in01)\n"
+	"{\n"
+	"   vec2  theta = (in01 - LensCenter) * ScaleIn;\n" // Scales to [-1,1]
+	"   float rSq = theta.x * theta.x + theta.y * theta.y;\n"
+	"   vec2  theta1 = theta * (HmdWarpParam.x + HmdWarpParam.y * rSq + "
+	"                           HmdWarpParam.z * rSq * rSq +	HmdWarpParam.w	* rSq * rSq * rSq);\n"
+	"   return LensCenter + Scale * theta1;\n"
+	"}\n"
+
+	"void main()\n"
+	"{\n"
+	"   vec2 tc = HmdWarp(oTexCoord);\n"
+	"   if (!all(equal(clamp(tc, ScreenCenter-vec2(0.25,0.5), ScreenCenter+vec2(0.25,0.5)), tc)))\n"
+	"       gl_FragColor = vec4(0);\n"
+	"   else\n"
+	"       gl_FragColor = texture2D(Texture0, tc);\n"
+	"}\n";
+
 //------------------------------------------------------------------------------
 
 void COGL::InitEnhanced3DShader (void)
@@ -350,6 +380,10 @@ if (gameOpts->render.bUseShaders && m_features.bShaders.Available ()) {
 		gameOpts->render.stereo.nGlasses = GLASSES_NONE;
 		return;
 		}
+
+	PrintLog (0, "building Oculus Rift warp shader program\n");
+	gameStates.render.textures.bHaveRiftWarpShader = (0 <= shaderManager.Build (riftWarpShaderProg, riftWarpFS, enhance3DVS));
+
 	PrintLog (0, "building enhanced 3D shader programs\n");
 	for (int h = 0; h < 2; h++) {
 		for (int i = 0; i < 2; i++) {
@@ -372,6 +406,7 @@ void COGL::DeleteEnhanced3DShader (void)
 {
 if (duboisShaderProg >= 0) {
 	shaderManager.Delete (duboisShaderProg);
+	shaderManager.Delete (riftWarpShaderProg);
 	for (int h = 0; h < 2; h++) {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 3; j++) {
