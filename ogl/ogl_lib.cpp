@@ -450,16 +450,21 @@ glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 float aspectRatio = 1.0f; 
 #if 1
-gameStates.render.glFOV = gameStates.render.nShadowMap ? 90.0 : 105.0; 
+gameStates.render.glFOV = IsOculusRift () ? : gameStates.render.nShadowMap ? 90.0 : 105.0; 
 ZFAR = gameStates.render.nShadowMap ? 400.0f : 5000.0f;
 #else
 gameStates.render.glFOV = 180.0;
 #endif
-if (StereoSeparation () && (gameOpts->render.stereo.nMethod == STEREO_PARALLEL))
-	SetupFrustum ();
-else {
-	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), /*CCanvas::Current ()->*/gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
+if (!StereoSeparation ())
+	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
+else if (IsOculusRift ()) {
+	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
+	//TODO: Replace gluPerspective call with computing the proper projection matrix and passing it to OpenGL
 	}
+else if (gameOpts->render.stereo.nMethod == STEREO_PARALLEL)
+	SetupFrustum ();
+else
+	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
 if (gameStates.render.bRearView < 0)
 	glScalef (-1.0f, 1.0f, 1.0f);
 m_data.depthScale.v.coord.x = float (ZFAR / (ZFAR - ZNEAR));

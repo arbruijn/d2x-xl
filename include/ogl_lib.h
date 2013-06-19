@@ -578,6 +578,12 @@ class COGL {
 
 		inline int IsAnaglyphDevice (void) { return StereoDevice () > 0; }
 
+		inline int IsOculusRift (int nDevice = 0x7fffffff) {
+			if (nDevice == 0x7fffffff)
+				nDevice = StereoDevice ();
+			return (nDevice == -GLASSES_OCULUS_RIFT_720p) || (nDevice == -GLASSES_OCULUS_RIFT_1080p);
+			}
+
 		inline int IsSideBySideDevice (int nDevice = 0x7fffffff) {
 			if (nDevice == 0x7fffffff)
 				nDevice = StereoDevice ();

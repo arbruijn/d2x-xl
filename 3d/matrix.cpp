@@ -48,7 +48,13 @@ transformation.m_info.zoomf = (float) xZoom / 65536.0f;
 transformation.m_info.pos = vPos;
 transformation.m_info.posf [0].Assign (transformation.m_info.pos);
 transformation.m_info.posf [1].Assign (transformation.m_info.pos);
-if (xStereoSeparation && (gameOpts->render.stereo.nMethod == STEREO_TOE_IN)) {
+if (!StereoSeparation ()) 
+	transformation.m_info.view [0] = mOrient;
+else if (IsOculusRift ()) {
+	//TODO: Adjust the orientation (view) matrix properly for left/right eye coordinate transformation
+	transformation.m_info.view [0] = mOrient;
+	}
+else if (gameOpts->render.stereo.nMethod == STEREO_TOE_IN) {
 	fix zScreen = F2X (ogl.ZScreen () * 10.0);
 	CFixVector o = CFixVector::Create (fix (xStereoSeparation / 2), 0, 0);
 	CFixVector h = CFixVector::Create (fix (xStereoSeparation / 2), 0, zScreen);
