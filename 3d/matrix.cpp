@@ -48,9 +48,9 @@ transformation.m_info.zoomf = (float) xZoom / 65536.0f;
 transformation.m_info.pos = vPos;
 transformation.m_info.posf [0].Assign (transformation.m_info.pos);
 transformation.m_info.posf [1].Assign (transformation.m_info.pos);
-if (!StereoSeparation ()) 
+if (!ogl.StereoSeparation ()) 
 	transformation.m_info.view [0] = mOrient;
-else if (IsOculusRift ()) {
+else if (ogl.IsOculusRift ()) {
 	//TODO: Adjust the orientation (view) matrix properly for left/right eye coordinate transformation
 	transformation.m_info.view [0] = mOrient;
 	}
