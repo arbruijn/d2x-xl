@@ -815,9 +815,6 @@
     <ClInclude Include="..\libmve\mvelib.h">
       <Filter>Source Files\libmve\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\wglext.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\byteswap.h">
       <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
@@ -907,6 +904,9 @@
     </ClInclude>
     <ClInclude Include="..\include\producers.h">
       <Filter>Source Files\main\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\wglext.h">
+      <Filter>Source Files\ogl\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1856,6 +1856,18 @@
     </None>
     <None Include="ClassDiagram1.cd" />
     <None Include="..\d2x-xl-icon-64x64.png" />
+    <None Include="..\d2x-w32.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\d2x-xl-2.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\descent.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\icon5.ico">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="..\main\dialheap.h">

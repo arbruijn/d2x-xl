@@ -2199,6 +2199,8 @@
     <ClCompile Include="..\libmve\mveplay.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\d2x-w32.ico" />
+    <None Include="..\d2x-xl-2.ico" />
     <None Include="..\d2x-xl.ico" />
     <CustomBuildStep Include="..\configure.ac">
       <FileType>Document</FileType>
@@ -2337,6 +2339,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </CustomBuildStep>
+    <None Include="..\descent.ico" />
+    <None Include="..\icon5.ico" />
     <None Include="ClassDiagram1.cd" />
     <None Include="..\d2x-xl-icon-64x64.png" />
   </ItemGroup>

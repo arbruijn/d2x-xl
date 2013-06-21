@@ -88,7 +88,7 @@ END
 // PNG
 //
 
-IDB_PNG1                PNG                     "D:\\projects\\d2x-xl\\trunk\\d2x-xl-icon-64x64.png"
+IDB_ICON_64x64          PNG                     "D:\\projects\\d2x-xl\\trunk\\d2x-xl-icon-64x64.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //
