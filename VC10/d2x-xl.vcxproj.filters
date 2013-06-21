@@ -314,9 +314,6 @@
     <ClInclude Include="..\include\flightpath.h">
       <Filter>Source Files\main\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\fuelcen.h">
-      <Filter>Source Files\main\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\game.h">
       <Filter>Source Files\main\Header Files</Filter>
     </ClInclude>
@@ -908,6 +905,9 @@
     <ClInclude Include="..\include\vesa.h">
       <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\producers.h">
+      <Filter>Source Files\main\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3d\ase2model.cpp">
@@ -1013,9 +1013,6 @@
       <Filter>Source Files\main\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\main\flightpath.cpp">
-      <Filter>Source Files\main\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\main\fuelcen.cpp">
       <Filter>Source Files\main\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\main\game.cpp">
@@ -1845,6 +1842,9 @@
     </ClCompile>
     <ClCompile Include="..\libmve\mveplay.cpp">
       <Filter>Source Files\libmve\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\main\producers.cpp">
+      <Filter>Source Files\main\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
