@@ -644,9 +644,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\d2x-xl.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\include\3d.h" />
     <ClInclude Include="..\3d\buildmodel.h" />
     <ClInclude Include="..\3d\globvars.h" />
@@ -2202,9 +2199,6 @@
     <ClCompile Include="..\libmve\mveplay.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\d2x-w32.ico" />
-    <None Include="..\d2x-xl-2.ico" />
-    <None Include="..\d2x-xl.ico" />
     <CustomBuildStep Include="..\configure.ac">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -2342,10 +2336,18 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </CustomBuildStep>
-    <None Include="..\descent.ico" />
-    <None Include="..\icon5.ico" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="..\d2x-xl-icon-64x64.png" />
+    <None Include="..\resources\d2x-w32.ico" />
+    <None Include="..\resources\d2x-xl-2.ico" />
+    <None Include="..\resources\d2x-xl-banner.bmp" />
+    <None Include="..\resources\d2x-xl-banner.jpg" />
+    <None Include="..\resources\d2x-xl-ico-32x32.gif" />
+    <None Include="..\resources\d2x-xl-ico-64x64.gif" />
+    <None Include="..\resources\d2x-xl-icon-64x64.bmp" />
+    <None Include="..\resources\d2x-xl-icon-64x64.png" />
+    <None Include="..\resources\d2x-xl-icon-64x64x4.bmp" />
+    <None Include="..\resources\d2x-xl.ico" />
+    <None Include="..\resources\descent.ico" />
+    <None Include="..\resources\icon5.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\SDL-1.2.14\VC10\SDLmain\SDLmain.vcxproj">
@@ -2364,6 +2366,9 @@
       <Project>{8ab3504f-5e58-4910-afe8-7a1e595ac3f4}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\resources\d2x-xl.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

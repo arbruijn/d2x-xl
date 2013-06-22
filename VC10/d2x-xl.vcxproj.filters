@@ -225,11 +225,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\d2x-xl.rc">
-      <Filter>Source Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\include\3d.h">
       <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
@@ -1848,24 +1843,43 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\d2x-xl.ico">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\..\..\Websites\Descent\d2x-faq.html">
       <Filter>Documents</Filter>
     </None>
-    <None Include="ClassDiagram1.cd" />
-    <None Include="..\d2x-xl-icon-64x64.png" />
-    <None Include="..\d2x-w32.ico">
+    <None Include="..\resources\d2x-w32.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\d2x-xl-2.ico">
+    <None Include="..\resources\d2x-xl.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\descent.ico">
+    <None Include="..\resources\d2x-xl-2.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\icon5.ico">
+    <None Include="..\resources\d2x-xl-banner.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\resources\d2x-xl-banner.jpg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\resources\d2x-xl-ico-32x32.gif">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\resources\d2x-xl-ico-64x64.gif">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\resources\d2x-xl-icon-64x64.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\resources\d2x-xl-icon-64x64.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\resources\d2x-xl-icon-64x64x4.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\resources\descent.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\resources\icon5.ico">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
@@ -1927,5 +1941,10 @@
     <CustomBuildStep Include="..\..\..\Websites\Descent\scripts\worklog-data.js">
       <Filter>Documents</Filter>
     </CustomBuildStep>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\resources\d2x-xl.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
