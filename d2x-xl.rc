@@ -88,7 +88,7 @@ END
 // PNG
 //
 
-IDB_ICON_64x64          PNG                     "D:\\projects\\d2x-xl\\trunk\\d2x-xl-icon-64x64.png"
+IDB_ICON_64x64          PNG                     ".\\d2x-xl-icon-64x64.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -97,11 +97,11 @@ IDB_ICON_64x64          PNG                     "D:\\projects\\d2x-xl\\trunk\\d2
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON                    "D:\\projects\\d2x-xl\\trunk\\d2x-w32.ico"
-IDI_ICON2               ICON                    "D:\\projects\\d2x-xl\\trunk\\d2x-xl.ico"
-IDI_ICON3               ICON                    "D:\\projects\\d2x-xl\\trunk\\d2x-xl-2.ico"
-IDI_ICON4               ICON                    "D:\\projects\\d2x-xl\\trunk\\descent.ico"
-IDI_ICON5               ICON                    "d:\\projects\\d2x-xl\\trunk\\icon5.ico"
+IDI_ICON1               ICON                    ".\\d2x-w32.ico"
+IDI_ICON2               ICON                    ".\\d2x-xl.ico"
+IDI_ICON3               ICON                    ".\\d2x-xl-2.ico"
+IDI_ICON4               ICON                    ".\\descent.ico"
+IDI_ICON5               ICON                    ".\\icon5.ico"
 #endif    // German (Germany) resources
 /////////////////////////////////////////////////////////////////////////////
 
