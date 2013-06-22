@@ -131,7 +131,7 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">\programs\d2\debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">\programs\d2\x64\debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Configuration)\$(Platform)\</IntDir>
@@ -223,6 +223,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CallingConvention>Cdecl</CallingConvention>
       <CompileAs>Default</CompileAs>
+      <PreprocessToFile>true</PreprocessToFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -282,6 +283,7 @@
       <CallingConvention>Cdecl</CallingConvention>
       <CompileAs>Default</CompileAs>
       <OpenMPSupport>true</OpenMPSupport>
+      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
