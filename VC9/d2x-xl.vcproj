@@ -900,10 +900,6 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
-			<File
-				RelativePath=".\d2x-xl.rc"
-				>
-			</File>
 			<Filter
 				Name="3d"
 				>
@@ -2404,11 +2400,11 @@
 						>
 					</File>
 					<File
-						RelativePath="..\resource.h"
+						RelativePath=".\resource.h"
 						>
 					</File>
 					<File
-						RelativePath=".\resource.h"
+						RelativePath="..\resource.h"
 						>
 					</File>
 					<File
@@ -10407,35 +10403,6 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Resource Files"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-			>
-			<File
-				RelativePath="..\d2x-w32.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\d2x-xl-2.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\d2x-xl.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\descent.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\icon5.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\include\wglext.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="Configure"
 			>
 			<File
@@ -11390,15 +11357,72 @@
 				RelativePath="..\include\vesa.h"
 				>
 			</File>
+			<File
+				RelativePath="..\include\wglext.h"
+				>
+			</File>
 		</Filter>
-		<File
-			RelativePath=".\ClassDiagram1.cd"
+		<Filter
+			Name="Resource Files"
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
-		</File>
-		<File
-			RelativePath="..\d2x-xl-icon-64x64.png"
-			>
-		</File>
+			<File
+				RelativePath="..\resources\d2x-w32.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\d2x-xl-2.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\d2x-xl-banner.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\d2x-xl-banner.jpg"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\d2x-xl-ico-32x32.gif"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\d2x-xl-ico-64x64.gif"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\d2x-xl-icon-64x64.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\d2x-xl-icon-64x64.png"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\d2x-xl-icon-64x64x4.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\d2x-xl.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\d2x-xl.rc"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\descent.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\icon5.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\resource.h"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
