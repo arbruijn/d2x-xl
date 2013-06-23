@@ -145,7 +145,7 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</LinkIncremental>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</EmbedManifest>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">\programs\d2\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">$(Configuration)\$(Platform)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">true</LinkIncremental>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">true</EmbedManifest>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">\programs\d2\x64\</OutDir>
@@ -234,7 +234,7 @@
       <AdditionalDependencies>zlib.lib;SDL_net.lib;SDL_image.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>"\projects\libraries\zlib-1.2.5\VC10\dll debug\win32";\projects\libraries\SDL_image-1.2.7\VC10\Debug\Win32;\projects\libraries\SDL_net-1.2.7\VC10\Debug;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\libraries\zlib-1.2.5\VC10\\Win32\DLL Debug;..\..\..\libraries\SDL_image-1.2.7\VC10\Win32\Debug;..\..\..\libraries\SDL_net-1.2.7\VC10\Win32\Debug;..\..\..\libraries\glew-1.5.3\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -294,7 +294,7 @@
       <AdditionalDependencies>SDL_image.lib;zlib.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>d:\projects\Libraries\SDL_image-1.2.7\VC10\Debug\x64\;\projects\Libraries\zlib-1.2.5\VC10\x64\DLL Release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>"..\..\..\libraries\zlib-1.2.5\VC10\x64\DLL Debug";..\..\..\libraries\SDL_image-1.2.7\VC10\x64\Debug;..\..\..\libraries\SDL_net-1.2.7\VC10\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -352,7 +352,7 @@
       <AdditionalDependencies>zlib.lib;SDL_net.lib;SDL_image.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>\projects\libraries\zlib-1.2.5\VC10\DLL Release\Win32;\projects\libraries\SDL_image-1.2.7\VC10\Release\Win32;\projects\libraries\SDL_net-1.2.7\VC10\Release\Win32;..\..\..\libraries\glew-1.5.3\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\libraries\zlib-1.2.5\VC10\\Win32\DLL Release;..\..\..\libraries\SDL_image-1.2.7\VC10\Win32\Release;..\..\..\libraries\SDL_net-1.2.7\VC10\Win32\Release;..\..\..\libraries\glew-1.5.3\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
@@ -464,7 +464,7 @@
       <AdditionalDependencies>SDL_net.lib;SDL_image.lib;zlib.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>\projects\libraries\zlib-1.2.5\VC10\DLL Release\Win32;\projects\libraries\SDL_image-1.2.7\VC10\Release\Win32;\projects\libraries\SDL_net-1.2.7\VC10\Release\Win32;..\..\..\libraries\glew-1.5.3\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\libraries\zlib-1.2.5\VC10\\Win32\DLL Release;..\..\..\libraries\SDL_image-1.2.7\VC10\Win32\Release;..\..\..\libraries\SDL_net-1.2.7\VC10\Win32\Release;..\..\..\libraries\glew-1.5.3\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
@@ -522,7 +522,7 @@
       <AdditionalDependencies>zlib.lib;SDL_net.lib;SDL_image.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>"\projects\libraries\zlib-1.2.5\VC10\DLL Release\x64";\projects\libraries\SDL_image-1.2.7\VC10\Release\X64;\projects\libraries\SDL_net-1.2.7\VC10\release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>"..\..\..\libraries\zlib-1.2.5\VC10\x64\DLL Release";..\..\..\libraries\SDL_image-1.2.7\VC10\x64\Release;..\..\..\libraries\SDL_net-1.2.7\VC10\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
