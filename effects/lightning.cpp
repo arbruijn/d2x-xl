@@ -81,7 +81,7 @@ do {
 vr = CFixVector::Normal (CFixVector::ZERO, vd, vr);
 fix dot = nMinDot + (RandShort () % ((nMaxDot - nMinDot + 1) / 2)) * 2;
 double a = acos (X2D (dot));
-if (fabs (a - Pi * 0.5) > 1e-6) {
+if (fabs (a - PI * 0.5) > 1e-6) {
 	vr *= F2X (tan (a));
 	vr += vd;
 	CFixVector::Normalize (vr);

@@ -43,8 +43,8 @@ const char* shockwaveFS =
 	"uniform vec3 effectStrength;\r\n" \
 	"//#define LinearDepth(_z) 10000.0 / (5001.0 - (_z) * 4999.0)\r\n" \
 	"//#define LinearDepth(_z) (5000.0 / 4999.0) / ((5000.0 / 4999.0) - (_z))\r\n" \
-	"#define Pi 3.141592653589793240\r\n" \
-	"//const float Pi = 2.0 * asin (1.0);\r\n" \
+	"#define PI 3.141592653589793240\r\n" \
+	"//const float PI = 2.0 * asin (1.0);\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
@@ -67,7 +67,7 @@ const char* shockwaveFS =
 	"       r += effectStrength.z;\r\n" \
 	"       float z = sqrt (r * r - d * d) / r * gl_LightSource [i].linearAttenuation;\r\n" \
 	"       if (gl_LightSource [i].position.z - z <= ZEYE (texture2D (depthTex, gl_TexCoord [0].xy).r)) {\r\n" \
-	"         offset = sign (offset) * (0.33 - cos (2.0 * Pi * offset / effectStrength.z) * 0.33);\r\n" \
+	"         offset = sign (offset) * (0.33 - cos (2.0 * PI * offset / effectStrength.z) * 0.33);\r\n" \
 	"         v *= effectStrength.z / d;\r\n" \
 	"         tcDest += v * (offset * gl_LightSource [i].quadraticAttenuation);\r\n" \
 	"         }\r\n" \
@@ -288,7 +288,7 @@ glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, m_screenRad); 
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_LINEAR_ATTENUATION, m_rad); // Wellenfront
 #if SHOCKWAVE_STYLE
-glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, (float) pow (0.5f - (float) cos (2.0 * Pi * (1.0f - m_ttl)) * 0.5f, 0.25f) * m_nBias); 
+glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, (float) pow (0.5f - (float) cos (2.0 * PI * (1.0f - m_ttl)) * 0.5f, 0.25f) * m_nBias); 
 #else
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_QUADRATIC_ATTENUATION, (float) pow (1.0 - m_ttl, 0.25) * m_nBias);
 #endif

@@ -97,6 +97,21 @@ class CShaderManager {
 			return true;
 			}
 
+		inline bool Set (const char* name, float x, float y) { 
+			vec2 v = {x, y};
+			return Set (name, v);
+			}
+
+		inline bool Set (const char* name, float x, float y, float z) { 
+			vec3 v = {x, y, z};
+			return Set (name, v);
+			}
+
+		inline bool Set (const char* name, float x, float y, float z, float w) { 
+			vec4 v = {x, y, z, w};
+			return Set (name, v);
+			}
+
 		inline bool Set (const char* name, CFloatVector3& var) { 
 			GLint addr = Addr (name);
 			if (addr < 0)

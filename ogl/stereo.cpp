@@ -60,6 +60,10 @@
 #include "gpgpu_lighting.h"
 #include "postprocessing.h"
 
+//using namespace OVR;
+//using namespace OVR::Util;
+//using namespace OVR::Util::Render;
+
 //#define _WIN32_WINNT		0x0600
 
 int enhance3DShaderProg [2][2][3] = {{{-1,-1,-1},{-1,-1,-1}},{{-1,-1,-1},{-1,-1,-1}}};
@@ -75,6 +79,86 @@ extern float quadVerts [3][4][2];
 
 //-----------------------------------------------------------------------------------
 
+static bool RiftWarpFrame (const OVR::Util::Render::StereoEyeParams stereoParams)
+{
+	OVR::Util::Render::DistortionConfig distortion;
+
+if (stereoParams.pDistortion) {
+	distortion = *stereoParams.pDistortion;
+	if (stereoParams.Eye == OVR::Util::Render::StereoEye_Left)
+		distortion.XCenterOffset = -distortion.XCenterOffset;
+	}
+
+float w = float (gameData.render.viewport.Width ()) / float(gameData.render.screen.Width ()),
+      h = float (gameData.render.viewport.Height ()) / float(gameData.render.screen.Height ()),
+      x = float (gameData.render.viewport.Left ()) / float(gameData.render.screen.Width ()),
+      y = float (gameData.render.viewport.Top ()) / float(gameData.render.screen.Height ());
+
+float as = float (gameData.render.viewport.Width ()) / float(gameData.render.viewport.Height ());
+
+GLhandleARB warpProg = GLhandleARB (shaderManager.Deploy (riftWarpShaderProg));
+if (!warpProg)
+	return false;
+if (shaderManager.Rebuild (warpProg))
+	;
+// We are using 1/4 of DistortionCenter offset value here, since it is
+// relative to [-1,1] range that gets mapped to [0, 0.5].
+shaderManager.Set ("LensCenter", x + (w + distortion.XCenterOffset * 0.5f)*0.5f, y + h*0.5f);
+shaderManager.Set ("ScreenCenter", x + w*0.5f, y + h*0.5f);
+
+// MA: This is more correct but we would need higher-res texture vertically; we should adopt this
+// once we have asymmetric input texture scale.
+float scaleFactor = 1.0f / distortion.Scale;
+shaderManager.Set ("Scale", (w/2) * scaleFactor, (h/2) * scaleFactor * as);
+shaderManager.Set ("ScaleIn", 2.0f / w, 2.0f / h / as);
+shaderManager.Set ("HmdWarpParam", distortion.K [0], distortion.K [1], distortion.K [2], distortion.K [3]);
+shaderManager.Set ("ChromAbParam",
+                   distortion.ChromaticAberration [0], 
+                   distortion.ChromaticAberration [1],
+                   distortion.ChromaticAberration [2],
+                   distortion.ChromaticAberration [3]);
+
+COGLMatrix m;
+double mTex [16] = {w, 0, 0, x,
+						  0, h, 0, y,
+						  0, 0, 0, 0,
+						  0, 0, 0, 1};
+double mView [16] = {2, 0, 0, -1,
+							0, 2, 0, -1,
+							0, 0, 0, 0,
+							0, 0, 0, 1};
+m = mTex;
+shaderManager.Set ("Texm", m);
+m = mView;
+shaderManager.Set ("View", m);
+glUniform1i (glGetUniformLocation (warpProg, "Texture0"), 0);
+OglDrawArrays (GL_QUADS, 0, 4);
+return true;
+}
+
+//-----------------------------------------------------------------------------------
+
+static bool RiftWarpScene (void)
+{
+if (!gameData.render.rift.Available ())
+	return false;
+if (!ogl.IsOculusRift ())
+	return false;
+if (!gameStates.render.textures.bHaveRiftWarpShader)
+	return false;
+OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
+OglVertexPointer (2, GL_FLOAT, 0, quadVerts [1]);
+if (!RiftWarpFrame (gameData.render.rift.m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Left)))
+	return false;
+OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [2]);
+OglVertexPointer (2, GL_FLOAT, 0, quadVerts [2]);
+if (!RiftWarpFrame (gameData.render.rift.m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right)))
+	return false;
+return true;
+}
+
+//-----------------------------------------------------------------------------------
+
 void COGL::FlushStereoBuffers (int nEffects)
 {
 int nDevice = StereoDevice ();
@@ -83,10 +167,13 @@ if (IsSideBySideDevice (nDevice)) {
 	// todo: add barrel distortion shader
 	SetDrawBuffer (GL_BACK, 0);
 	EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 	BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
-	OglDrawArrays (GL_QUADS, 0, 4);
+	if (!RiftWarpScene ()) {
+		shaderManager.Deploy (-1);
+		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+		OglDrawArrays (GL_QUADS, 0, 4);
+		}
 	}
 else if (nDevice == -GLASSES_SHUTTER_NVIDIA) {
 	SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
@@ -341,6 +428,19 @@ const char* enhance3DVS =
 	;
 
 
+static const char* riftWarpVS =
+    "uniform mat4 View;\n"
+    "uniform mat4 Texm;\n"
+    "attribute vec4 Position;\n"
+    "attribute vec2 TexCoord;\n"
+    "varying  vec2 oTexCoord;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = View * Position;\n"
+    "   oTexCoord = vec2(Texm * vec4(TexCoord,0,1));\n"
+    "   oTexCoord.y = 1.0-oTexCoord.y;\n"
+    "}\n";
+
 static const char* riftWarpFS =
 	"uniform vec2 LensCenter;\n"
 	"uniform vec2 ScreenCenter;\n"
@@ -382,7 +482,7 @@ if (gameOpts->render.bUseShaders && m_features.bShaders.Available ()) {
 		}
 
 	PrintLog (0, "building Oculus Rift warp shader program\n");
-	gameStates.render.textures.bHaveRiftWarpShader = (0 <= shaderManager.Build (riftWarpShaderProg, riftWarpFS, enhance3DVS));
+	gameStates.render.textures.bHaveRiftWarpShader = (0 <= shaderManager.Build (riftWarpShaderProg, riftWarpFS, riftWarpVS));
 
 	PrintLog (0, "building enhanced 3D shader programs\n");
 	for (int h = 0; h < 2; h++) {

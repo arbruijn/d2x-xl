@@ -26,7 +26,7 @@ return a * (1.0 - x) + b * x;
 
 double CPerlinNoise::CosineInterpolate (double a, double b, double x)
 {
-double f = (1.0 - cos (x * Pi)) * 0.5;
+double f = (1.0 - cos (x * PI)) * 0.5;
 return  a * (1.0 - f) + b * f;
 }
 

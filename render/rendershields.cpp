@@ -233,7 +233,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 	else
 		nColor = 0;
 	if (gameData.multiplayer.bWasHit [i]) {
-		alpha = (gameOpts->render.effects.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / float (SHIELD_EFFECT_TIME)) * Pi / 2) : 1);
+		alpha = (gameOpts->render.effects.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / float (SHIELD_EFFECT_TIME)) * PI / 2) : 1);
 		scale *= alpha;
 		}
 	else if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
@@ -278,7 +278,7 @@ if ((objP->info.nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
 	}
 dt = gameStates.app.nSDLTicks [0] - objP->TimeLastHit ();
 if (dt < SHIELD_EFFECT_TIME) {
-	scale *= gameOpts->render.effects.bOnlyShieldHits ? float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)) : 1;
+	scale *= gameOpts->render.effects.bOnlyShieldHits ? float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * PI / 2)) : 1;
 	DrawShieldSphere (objP, shieldColors [2].Red () * scale, shieldColors [2].Green () * scale, shieldColors [2].Blue () * scale, 0.5f * scale, 1);
 	}
 else if (!gameOpts->render.effects.bOnlyShieldHits) {

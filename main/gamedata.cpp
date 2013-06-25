@@ -505,6 +505,64 @@ bPlayerMessage = 1;
 
 // ----------------------------------------------------------------------------
 
+bool CRiftData::Create (void)
+{
+gameData.render.rift.m_bAvailable = false;
+m_managerP = *OVR::DeviceManager::Create();
+//m_managerP->SetMessageHandler(this);
+
+// Release Sensor/HMD in case this is a retry.
+m_sensorP.Clear ();
+m_hmdP.Clear ();
+// RenderParams.MonitorName.Clear();
+m_hmdP = *m_managerP->EnumerateDevices<OVR::HMDDevice> ().CreateDevice ();
+if (m_hmdP) {
+	m_sensorP = *m_hmdP->GetSensor ();
+
+	// This will initialize m_hmdInfo with information about configured IPD,
+	// screen size and other variables needed for correct projection.
+	// We pass HMD DisplayDeviceName into the renderer to select the
+	// correct monitor in full-screen mode.
+	if (m_hmdP->GetDeviceInfo (&m_hmdInfo))	{            
+		// RenderParams.MonitorName = m_hmdInfo.DisplayDeviceName;
+		// RenderParams.DisplayId = m_hmdInfo.DisplayId;
+		m_stereoConfig.SetHMDInfo (m_hmdInfo);
+		}
+	}
+else {            
+	// If we didn't detect an HMD, try to create the sensor directly.
+	// This is useful for debugging sensor interaction; it is not needed in
+	// a shipping app.
+	m_sensorP = *m_managerP->EnumerateDevices<OVR::SensorDevice> ().CreateDevice ();
+	}
+
+// If there was a problem detecting the Rift, display appropriate message.
+const char* detectionMessage;
+if (!m_hmdP && !m_sensorP)
+	detectionMessage = "Oculus Rift not detected.";
+else if (!m_hmdP)
+	detectionMessage = "Oculus Sensor detected; HMD Display not detected.\n";
+else if (!m_sensorP)
+	detectionMessage = "Oculus HMD Display detected; Sensor not detected.\n";
+else if (m_hmdInfo.DisplayDeviceName [0] == '\0')
+	detectionMessage = "Oculus Sensor detected; HMD display EDID not detected.\n";
+else {
+	detectionMessage = 0;
+	gameData.render.rift.m_bAvailable = true;
+	}
+if (detectionMessage) 
+	PrintLog (0, detectionMessage);
+return gameData.render.rift.m_bAvailable;
+}
+
+// ----------------------------------------------------------------------------
+
+void CRiftData::Destroy (void)
+{
+}
+
+// ----------------------------------------------------------------------------
+
 bool CRenderData::Create (void)
 {
 Destroy ();

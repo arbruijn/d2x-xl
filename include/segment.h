@@ -431,7 +431,7 @@ class CSegment {
 
 		inline fix AvgRad (void) {return (m_rads [0] + m_rads [1]) / 2;}
 		inline float AvgRadf (void) {return X2F (m_rads [0] + m_rads [1]) / 2;}
-		inline fix Volume (void) {return (fix) (1.25 * Pi * pow (AvgRadf (), 3) + 0.5);}
+		inline fix Volume (void) {return (fix) (1.25 * PI * pow (AvgRadf (), 3) + 0.5);}
 
 		CFixVector RandomPoint (void);
 

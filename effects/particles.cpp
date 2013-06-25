@@ -1042,13 +1042,13 @@ if ((m_nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == 
 	m_decay = 1.0f;
 else if (m_nType == FIRE_PARTICLES) {
 #if 1
-	m_decay = float (sin (double (m_nLife) / double (m_nTTL) * Pi));
+	m_decay = float (sin (double (m_nLife) / double (m_nTTL) * PI));
 #else
 	m_decay = float (m_nLife) / float (m_nTTL);
 	if (m_decay < 0.4)
-	m_decay = float (sin (double (m_decay) * Pi * 1.25));
+	m_decay = float (sin (double (m_decay) * PI * 1.25));
 	else if (m_decay > 0.15)
-	m_decay = float (sin (double (1.0 - m_decay) * Pi * 0.5 / 0.15));
+	m_decay = float (sin (double (1.0 - m_decay) * PI * 0.5 / 0.15));
 	else
 	m_decay = 1.0f;
 #endif
@@ -1220,12 +1220,12 @@ if (m_nFadeType == 0) { // default (start fully visible, fade out)
 #if 1 
 	m_renderColor.Alpha () *= m_decay; // * 0.6f;
 #else
-	m_renderColor.Alpha () *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
+	m_renderColor.Alpha () *= float (cos (double (sqr (1.0f - m_decay)) * PI) * 0.5 + 0.5) * 0.6f;
 #endif
 	}
 else if (m_nFadeType == 1) { // quickly fade in, then gently fade out
 	m_renderColor.Alpha () *= float (
-			sin (double (sqr (1.0f - m_decay)) * Pi * 1.5) * 0.5 + 0.5);
+			sin (double (sqr (1.0f - m_decay)) * PI * 1.5) * 0.5 + 0.5);
 	if (m_decay >= 0.666f)
 		return 1;
 } else if (m_nFadeType == 2) { // fade in, then gently fade out
@@ -1329,7 +1329,7 @@ pb [2].color =
 pb [3].color = m_renderColor;
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
-vCenter.v.coord.x += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
+vCenter.v.coord.x += (float) sin (nFrame / 4.0f * PI) / (10 + rand () % 6);
 if (m_bRotate && gameOpts->render.particles.bRotate) {
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
 	vOffset.v.coord.x *= vRot [i].v.coord.x;
@@ -1445,7 +1445,7 @@ if (m_nType == RAIN_PARTICLES) {
 	}
 else {
 	if ((m_nType == SNOW_PARTICLES) || ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles))
-		vCenter.v.coord.x += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
+		vCenter.v.coord.x += (float) sin (nFrame / 4.0f * PI) / (10 + rand () % 6);
 	if (m_bRotate && gameOpts->render.particles.bRotate) {
 		CFixMatrix& mOrient = mRot [1][(m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame];
 		uVec.Assign (mOrient.m.dir.u);

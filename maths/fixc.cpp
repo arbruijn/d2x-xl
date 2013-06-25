@@ -303,7 +303,7 @@ return ((fix) LongSqrt (a)) << 8;
 void FixSinCos (fix a, fix *s, fix *c)
 {
 if (gameOpts->render.nMathFormat == 2) {
-	double d = (double) (a * 2.0 * Pi) / I2X (1);
+	double d = (double) (a * 2.0 * PI) / I2X (1);
 	if (s)
 		*s = (fix) F2X (sin (d));
 	if (c)

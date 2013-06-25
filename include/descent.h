@@ -1003,6 +1003,7 @@ class CRenderStates {
 		int nMaxTextureQuality;
 		int bTransparency;
 		int bSplitPolys;
+		int bHaveOculusRift;
 		int bHaveDynLights;
 		int bHaveSparks;
 		int bUsePerPixelLighting;
@@ -1708,9 +1709,28 @@ class CFaceListIndex {
 	};
 
 #include "sphere.h"
+#include "OVR.h"
+
+class CRiftData {
+	public:
+		OVR::Ptr<OVR::DeviceManager>		m_managerP;
+		OVR::Ptr<OVR::HMDDevice>			m_hmdP;
+		OVR::Ptr<OVR::SensorDevice>		m_sensorP;
+		OVR::HMDInfo							m_hmdInfo;
+		OVR::Util::Render::StereoConfig	m_stereoConfig;
+
+		bool m_bAvailable;
+
+		CRiftData () : m_bAvailable (false) {}
+		bool Create (void);
+		void Destroy (void);
+		inline bool Available (void) { return m_bAvailable; }
+	};
+
 
 class CRenderData {
 	public:
+		CRiftData					rift;
 		CColorData					color;
 		int							transpColor;
 		CFaceListIndex				faceIndex;

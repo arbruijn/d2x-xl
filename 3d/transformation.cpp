@@ -262,7 +262,7 @@ void CFrustum::Compute (void)
 // Note: WNEARHALF = ZNEAR * tan(LIGHTFOV * (PI / 180.0) / 2.0);
 //       WFARHALF = ZFAR * tan(LIGHTFOV * (PI / 180.0) / 2.0);
 
-float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * Pi / 360.0));
+float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * PI / 360.0));
 float wNearHalf = float (ZNEAR) * h;
 float wFarHalf = float (ZFAR) * h;
 
@@ -319,7 +319,7 @@ m_corners [7].Assign (fbr);
 
 // compute the frustum. ZNEAR is 0.0 here!
 
-float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * Pi / 360.0));
+float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * PI / 360.0));
 float w = float (h * CCanvas::Current ()->AspectRatio ());
 float n = float (ZNEAR);
 float f = float (ZFAR);

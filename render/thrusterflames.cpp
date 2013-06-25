@@ -64,7 +64,7 @@ if (!m_bHaveFlame [m_bPlayer]) {
 
 	// first part with increasing diameter
 	pv = &m_vFlame [0][0];
-	for (i = 0, phi = 0; i < 5; i++, phi += Pi / 10, z -= fStep [0]) {
+	for (i = 0, phi = 0; i < 5; i++, phi += PI / 10, z -= fStep [0]) {
 		sinPhi = (1 + sin (phi) / 2) * fScale;
 		for (j = 0; j < RING_SEGS; j++, pv++) {
 			*pv = vRingVerts [j] * float (sinPhi);
@@ -73,7 +73,7 @@ if (!m_bHaveFlame [m_bPlayer]) {
 		}
 	// second part with decreasing diameter
 	m = n = THRUSTER_SEGS - i + 1;
-	for (phi = Pi / 2; i < THRUSTER_SEGS; i++, phi += Pi / 12, z -= fStep [1], m--) {
+	for (phi = PI / 2; i < THRUSTER_SEGS; i++, phi += PI / 12, z -= fStep [1], m--) {
 		sinPhi = (1 + sin (phi) / 2) * fScale /** m / n*/;
 		for (j = 0; j < RING_SEGS; j++, pv++) {
 			*pv = vRingVerts [j] * float (sinPhi);

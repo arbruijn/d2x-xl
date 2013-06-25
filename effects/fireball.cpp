@@ -397,7 +397,7 @@ double ObjectVolume (CObject *objP)
 	double		size;
 
 if (objP->info.renderType != RT_POLYOBJ)
-	size = 4 * Pi * pow (X2F (objP->info.xSize), 3) / 3;
+	size = 4 * PI * pow (X2F (objP->info.xSize), 3) / 3;
 else {
 	size = 0;
 	modelP = gameData.models.polyModels [0] + objP->ModelId ();

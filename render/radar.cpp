@@ -85,7 +85,7 @@ for (i = 0; i < 8; i++) {
 	}
 
 for (i = 0; i < RADAR_SLICES; i++) {
-	double a = 2.0 * Pi * float (i) / float (RADAR_SLICES);
+	double a = 2.0 * PI * float (i) / float (RADAR_SLICES);
 	m_vertices [i].Set (float (cos (a)), float (sin (a)), 0.0f);
 	}
 
@@ -117,7 +117,7 @@ memcpy (ogl.VertexBuffer ().Buffer (), m_vertices, sizeof (m_vertices));
 #else
 CFloatVector* pv = &ogl.VertexBuffer () [0];
 for (int i = 0; i < RADAR_SLICES; i++, pv++) {
-	double ang = 2.0 * Pi * i / RADAR_SLICES;
+	double ang = 2.0 * PI * i / RADAR_SLICES;
 	pv->v.coord.x = float (cos (ang));
 	pv->v.coord.y = float (sin (ang));
 	pv->v.coord.z = 0.0f;

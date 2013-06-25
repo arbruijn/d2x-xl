@@ -181,7 +181,7 @@ void ComputeSinCosTable (int nSides, tSinCosf *sinCosP)
 	double	ang;
 
 for (int i = 0; i < nSides; i++, sinCosP++) {
-	ang = 2.0 * Pi * i / nSides;
+	ang = 2.0 * PI * i / nSides;
 	sinCosP->fSin = (float) sin (ang);
 	sinCosP->fCos = (float) cos (ang);
 	}
@@ -426,7 +426,7 @@ if (m_features.bAntiAliasing/*.Apply ()*/)
 
 inline double DegToRad (double d)
 {
-return d * (Pi / 180.0);
+return d * (PI / 180.0);
 }
 
 

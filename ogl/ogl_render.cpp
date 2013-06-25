@@ -155,11 +155,11 @@ if (nType == GL_LINES) {	// implies a dashed circle
 			}
 		else {
 			for (i = 0; i < nSides; i++) {
-				ang = 2.0 * Pi * i / nSides;
+				ang = 2.0 * PI * i / nSides;
 				ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
 				ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
 				i++;
-				ang = 2.0 * Pi * i / nSides;
+				ang = 2.0 * PI * i / nSides;
 				ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
 				ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
 				}
@@ -177,7 +177,7 @@ else {
 	else {
 		if (ogl.SizeVertexBuffer (nSides)) {
 			for (i = 0; i < nSides; i++) {
-				ang = 2.0 * Pi * i / nSides;
+				ang = 2.0 * PI * i / nSides;
 				ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
 				ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
 				}
@@ -198,7 +198,7 @@ void OglDrawCircle (int nSides, int nType)
 
 if (ogl.SizeVertexBuffer (nSides)) {
 	for (i = 0; i < nSides; i++) {
-		ang = 2.0 * Pi * i / nSides;
+		ang = 2.0 * PI * i / nSides;
 		ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
 		ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
 		}
@@ -260,7 +260,7 @@ if (ogl.SizeVertexBuffer (nSides + 1)) {
 	r = X2F (rad);
 	v.v.coord.z = z;
 	for (i = 0; i <= nSides; i++) {
-		ang = 2.0f * float (Pi * (i % nSides) / nSides);
+		ang = 2.0f * float (PI * (i % nSides) / nSides);
 		v.v.coord.x = x + float (cos (ang) * r);
 		v.v.coord.y = y + float (sin (ang) * r);
 		ogl.VertexBuffer () [i] = v;
@@ -291,7 +291,7 @@ if (ogl.SizeVertexBuffer (2 * (nSides + 1))) {
 	r = X2F (rad);
 	for (i = 0; i <= nSides; i++) {
 		for (j = i; j <= i + 1; j++) {
-			ang = 2.0f * (float) Pi * (j % nSides) / nSides;
+			ang = 2.0f * (float) PI * (j % nSides) / nSides;
 			v.v.coord.x = x + (float) cos (ang) * r;
 			v.v.coord.y = y + (float) sin (ang) * r;
 			ogl.VertexBuffer () [i] = v;

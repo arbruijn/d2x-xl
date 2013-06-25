@@ -152,7 +152,7 @@ else {
 for (int i = 0; i < 3; i++) {
 	int dt = gameStates.app.nSDLTicks [0] - int (hitInfo.t [i]);
 	if (dt < SHIELD_EFFECT_TIME) {
-		float h = (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)));
+		float h = (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * PI / 2)));
 		if (h > 1.0f / 1e6f) {
 			fScale [i] = 1.0f / h;
 			vHitf [i].v.coord.w = 0.0f;
@@ -538,10 +538,10 @@ m_nRings = nRings;
 m_nTiles = nTiles;
 m_nVertices = h;
 h = nRings / 2;
-a = float (2 * Pi / nRings);
+a = float (2 * PI / nRings);
 svP = m_vertices.Buffer ();
 for (j = 0; j < h; j++) {
-	t1 = float (j * a - Pi / 2);
+	t1 = float (j * a - PI / 2);
 	t2 = t1 + a;
 	sint1 = float (sin (t1));
 	cost1 = float (cos (t1));

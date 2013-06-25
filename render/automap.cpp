@@ -55,8 +55,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_shader.h"
 #include "fastrender.h"
 
-#ifndef Pi
-#	define Pi 3.141592653589793240
+#ifndef PI
+#	define PI 3.141592653589793240
 #endif
 
 //------------------------------------------------------------------------------
