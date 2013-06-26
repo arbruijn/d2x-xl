@@ -1251,7 +1251,6 @@ return (nClass == 4) ? (nVulcanAmmo + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CA
 } 
 
 //------------------------------------------------------------------------------
-#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
  * reads n tPowerupTypeInfo structs from a CFile
  */
@@ -1267,7 +1266,6 @@ for (i = 0; i < n; i++) {
 	}
 return i;
 }
-#endif
 
 //------------------------------------------------------------------------------
 //eof

@@ -44,10 +44,8 @@ void MouseFlush (void);	// clears all mice events...
 // Shutdowns mouse system.
 void MouseGetPos (int *x, int *y);
 void MouseGetDelta (int *dx, int *dy);
-#ifdef SDL_INPUT
 void MouseGetPosZ (int *x, int *y, int *z);
 void MouseGetDeltaZ (int *dx, int *dy, int *dz);
-#endif
 int MouseGetButtons (void);
 void MouseGetCybermanPos (int *x, int *y);
 

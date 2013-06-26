@@ -26,8 +26,6 @@ void event_poll(unsigned long mask);
 void init_gii_xwin(Display *disp,Window win);
 #endif
 
-#ifdef FAST_EVENTPOLL
 extern int bLegacyInput;
-#endif
 
 #endif

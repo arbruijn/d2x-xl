@@ -776,10 +776,6 @@ fix KeyDownTime (int scanCode)
 	static fix lastTime = -1;
 	fix timeDown, time, slack = 0;
 
-#ifndef FAST_EVENTPOLL
-if (!bFastPoll)
-event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
-#endif 
 if ((scanCode < 0) || (scanCode > 255))
 	return 0;
 
@@ -822,10 +818,6 @@ uint KeyDownCount (int scanCode)
 {
 	int n;
 
-#ifndef FAST_EVENTPOLL
-if (!bFastPoll)
-event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
-#endif
 if ((scanCode<0)|| (scanCode>255)) return 0;
 
 n = keyData.keys [scanCode].downCount;
@@ -838,10 +830,6 @@ return n;
 
 ubyte KeyFlags (int scanCode)
 {
-#ifndef FAST_EVENTPOLL
-if (!bFastPoll)
-	event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
-#endif
 if ((scanCode < 0)|| (scanCode > 255)) 
 	return 0;
 return keyData.keys [scanCode].flags;
@@ -852,10 +840,7 @@ return keyData.keys [scanCode].flags;
 uint KeyUpCount (int scanCode)
 {
 	int n;
-#ifndef FAST_EVENTPOLL
-if (!bFastPoll)
-event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
-#endif
+
 if ((scanCode < 0)|| (scanCode > 255)) 
 	return 0;
 n = keyData.keys [scanCode].upCount;

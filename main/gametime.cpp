@@ -282,10 +282,6 @@ if (bReset)
 	gameData.time.nPaused = 1;
 if (!--gameData.time.nPaused) {
 	fix xTime = TimerGetFixedSeconds ();
-#if defined (TIMER_TEST) && defined (_DEBUG)
-	if (gameData.time.xLast < 0)
-		Int3 ();		//get Matt!!!!
-#endif
 	gameData.time.xLast = xTime - gameData.time.xSlack;
 	gameData.physics.fLastTick += float (SDL_GetTicks () - gameData.time.xStopped);
 	}
@@ -431,9 +427,6 @@ if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
 	gameData.time.SetTime (xLastFrameTime);	//d:\temp\dm_test.then use time from last frame
 #if Arcade_mode
 gameData.time.xFrame /= 2;
-#endif
-#if defined (TIMER_TEST) && defined (_DEBUG)
-gameData.time.xStops = gameData.time.xStarts = 0;
 #endif
 //	Set value to determine whether homing missile can see target.
 //	The lower frametime is, the more likely that it can see its target.

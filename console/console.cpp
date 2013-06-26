@@ -1126,9 +1126,9 @@ if (priority <= ((int) m_threshold->Value ())) {
 	   fprintf(fLog, buffer);
 	   fflush(fLog);
 		}
-#ifdef CONSOLE
+
 	Out (buffer);
-#endif
+
 	/* Produce a sanitised version and send it to the console */
 		char *p1, *p2;
 

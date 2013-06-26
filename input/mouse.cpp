@@ -138,10 +138,6 @@ SDL_GetMouseState (&mouseData.x, &mouseData.y); // necessary because polling onl
 
 void MouseGetPos (int *x, int *y)
 {
-#ifndef FAST_EVENTPOLL
-if (!bFastPoll)
-   event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#endif
 #ifdef WIN32_WCE // needed here only for touchpens?
 # ifdef LANDSCAPE
 	SDL_GetMouseState (&mouseData.y, &mouseData.x);
@@ -157,13 +153,8 @@ if (!bFastPoll)
 
 void MouseGetDelta (int *dx, int *dy)
 {
-#ifdef FAST_EVENTPOLL
 if (gameOpts->legacy.bInput)
    event_poll (SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#else
-if (!bFastPoll)
-   event_poll (SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#endif
 *dx = mouseData.dx;
 *dy = mouseData.dy;
 mouseData.dx = 0;
@@ -174,47 +165,34 @@ mouseData.dy = 0;
 
 void MouseGetPosZ (int *x, int *y, int *z)
 {
-#ifndef FAST_EVENTPOLL
-if (!bFastPoll)
-   event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#endif
-	*x=mouseData.x;
-	*y=mouseData.y;
-	*z=mouseData.z;
+*x = mouseData.x;
+*y = mouseData.y;
+*z = mouseData.z;
 }
 
 //------------------------------------------------------------------------------
 
 void MouseGetDeltaZ (int *dx, int *dy, int *dz)
 {
-#ifndef FAST_EVENTPOLL
-if (!bFastPoll)
-   event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#endif
-	*dx = mouseData.dx;
-	*dy = mouseData.dy;
-	*dz = mouseData.dz;
-	mouseData.dx = 0;
-	mouseData.dy = 0;
-	mouseData.dz = 0;
+*dx = mouseData.dx;
+*dy = mouseData.dy;
+*dz = mouseData.dz;
+mouseData.dx = 0;
+mouseData.dy = 0;
+mouseData.dz = 0;
 }
 
 //------------------------------------------------------------------------------
 
 int MouseGetButtons (void)
 {
-	int i;
 	uint flag = 1;
 	int status = 0;
 
-#ifndef FAST_EVENTPOLL
-if (!bFastPoll)
-   event_poll (SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#endif
-	for (i = 0; i < MOUSE_MAX_BUTTONS; i++) {
-		if (mouseData.buttons [i].pressed || mouseData.buttons [i].rotated)
-			status |= flag;
-		flag <<= 1;
+for (int i = 0; i < MOUSE_MAX_BUTTONS; i++) {
+	if (mouseData.buttons [i].pressed || mouseData.buttons [i].rotated)
+		status |= flag;
+	flag <<= 1;
 	}
 return status;
 }
@@ -231,10 +209,6 @@ int MouseButtonDownCount (int button)
 {
 	int count;
 
-#ifndef FAST_EVENTPOLL
-if (!bFastPoll)
-   event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#endif
 count = mouseData.buttons [button].numDowns;
 mouseData.buttons [button].numDowns = 0;
 return count;
@@ -246,20 +220,16 @@ fix MouseButtonDownTime (int button)
 {
 	fix timeDown, time;
 
-#ifndef FAST_EVENTPOLL
-if (!bFastPoll)
-   event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#endif
-	if (!mouseData.buttons [button].pressed) {
-		timeDown = mouseData.buttons [button].xTimeHeldDown;
-		if (!timeDown && mouseData.buttons [button].rotated)
-			timeDown = (fix) (MouseButtonDownCount (button) * controls.PollTime ());
-		mouseData.buttons [button].xTimeHeldDown = 0;
-		}
-	else {
-		time = TimerGetFixedSeconds();
-		timeDown = time - mouseData.buttons [button].xTimeHeldDown;
-		mouseData.buttons [button].xTimeHeldDown = time;
+if (!mouseData.buttons [button].pressed) {
+	timeDown = mouseData.buttons [button].xTimeHeldDown;
+	if (!timeDown && mouseData.buttons [button].rotated)
+		timeDown = (fix) (MouseButtonDownCount (button) * controls.PollTime ());
+	mouseData.buttons [button].xTimeHeldDown = 0;
+	}
+else {
+	time = TimerGetFixedSeconds();
+	timeDown = time - mouseData.buttons [button].xTimeHeldDown;
+	mouseData.buttons [button].xTimeHeldDown = time;
 	}
 return timeDown;
 }
@@ -268,16 +238,9 @@ return timeDown;
 // Returns 1 if this button is currently down
 int MouseButtonState (int button)
 {
-	int h;
-
-#ifndef FAST_EVENTPOLL
-if (!bFastPoll)
-   event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#else
 if (gameOpts->legacy.bInput)
    event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#endif
-h = mouseData.buttons [button].rotated;
+int h = mouseData.buttons [button].rotated;
 mouseData.buttons [button].rotated = 0;
 return mouseData.buttons [button].pressed || h;
 }

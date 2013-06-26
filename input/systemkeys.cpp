@@ -1093,10 +1093,10 @@ while ((key = KeyInKeyTime (&keyTime)) != 0) {
 		sprintf(gameData.multigame.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
 		}
 #endif
-#ifdef CONSOLE
+
 	if (!console.Events (key))
 		continue;
-#endif
+
 	if (gameStates.app.bPlayerIsDead)
 		HandleDeathKey (key);
 	if (gameStates.app.bEndLevelSequence)

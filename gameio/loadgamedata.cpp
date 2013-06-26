@@ -150,9 +150,6 @@ ubyte AltSounds [2][MAX_SOUNDS];
 
 //---------------- Variables for CObject textures ----------------
 
-#if 0 //def FAST_FILE_IO /*disabled for a reason!*/
-#define ReadTMapInfoN(ti, n, fp) cf.Read (ti, sizeof (tTexMapInfo), n, fp)
-#else
 /*
  * reads n tTexMapInfo structs from a CFile
  */
@@ -174,7 +171,6 @@ for (i = 0;i < n;i++) {
 	}
 return i;
 }
-#endif
 
 //------------------------------------------------------------------------------
 

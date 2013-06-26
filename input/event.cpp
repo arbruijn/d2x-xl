@@ -12,12 +12,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef FAST_EVENTPOLL
 # define TO_EVENT_POLL	11 //ms
 # if TO_EVENT_POLL
 #  include <time.h>
 # endif
-#endif
 
 #ifdef __macosx__
 # include <SDL/SDL.h>

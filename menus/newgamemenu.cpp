@@ -513,10 +513,8 @@ do {
 		m [m.IndexOf ("ipx game") + NMCLAMP (gameStates.multi.nConnection, 0, nConnections - m.IndexOf ("ipx game"))].Value () = 1;
 		}
 	else {
-#ifdef NATIVE_IPX
 		m.AddMenu ("start ipx game", TXT_START_IPX_NET_GAME,  -1, HTX_NETWORK_IPX);
 		m.AddMenu ("join ipx game", TXT_JOIN_IPX_NET_GAME, -1, HTX_NETWORK_IPX);
-#endif //NATIVE_IPX
 		m.AddMenu ("start mcast4 game", TXT_MULTICAST_START, KEY_M, HTX_NETWORK_MCAST);
 		m.AddMenu ("join mcast4 game", TXT_MULTICAST_JOIN, KEY_N, HTX_NETWORK_MCAST);
 #ifdef KALINIX

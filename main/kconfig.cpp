@@ -1010,27 +1010,19 @@ return code;
 ubyte CControlConfig::MouseAxisCtrlFunc (void)
 {
 	int dx, dy;
-#ifdef SDL_INPUT
 	int dz;
-#endif
 	ubyte code = 255;
 
-#ifdef SDL_INPUT
 MouseGetDeltaZ (&dx, &dy, &dz);
-#else
-MouseGetDelta (&dx, &dy);
-#endif
 console.printf (CON_VERBOSE, "mouse: %3d %3d\n", dx, dy);
 dx = abs (dx);
 dy = abs (dy);
 if (max (dx, dy) > 20) {
 	code = dy > dx;
 	}
-#ifdef SDL_INPUT
 dz = abs (dz);
 if ((dz > 20) && (dz > code ? dy : dx))
 	code = 2;
-#endif
 return code;
 }
 

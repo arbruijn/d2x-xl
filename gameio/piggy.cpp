@@ -903,7 +903,6 @@ return bmi;
 
 //------------------------------------------------------------------------------
 
-#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
  * reads a tBitmapIndex structure from a CFile
  */
@@ -924,8 +923,6 @@ for (i = 0; i < n; i++)
 	bi [i + o].index = cf.ReadShort ();
 return i;
 }
-
-#endif // FAST_FILE_IO
 
 //------------------------------------------------------------------------------
 

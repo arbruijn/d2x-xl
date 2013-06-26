@@ -913,7 +913,6 @@ LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]=0;
 }
 
 //--------------------------------------------------------------------
-#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
  * reads an old_tObjProducerInfo structure from a CFile
  */
@@ -929,6 +928,5 @@ opi->xInterval = cf.ReadFix ();
 opi->nSegment = cf.ReadShort ();
 opi->nProducer = cf.ReadShort ();
 }
-#endif
 
 //--------------------------------------------------------------------

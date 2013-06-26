@@ -234,10 +234,6 @@ int JoyGetButtonDownCnt (int nButton)
 
 if (!gameStates.input.nJoysticks)
 	return 0;
-#ifndef FAST_EVENTPOLL
-if (gameOpts->legacy.bInput)
-   event_poll (SDL_JOYEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#endif
 numDowns = joyInfo.buttons [nButton].numDowns;
 joyInfo.buttons [nButton].numDowns = 0;
 return numDowns;
@@ -251,10 +247,6 @@ fix JoyGetButtonDownTime(int nButton)
 
 if (!gameStates.input.nJoysticks)
 	return 0;
-#ifndef FAST_EVENTPOLL
-if (gameOpts->legacy.bInput)
-   event_poll(SDL_JOYEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#endif
 switch (joyInfo.buttons [nButton].state) {
 	case SDL_PRESSED:
 		time = TimerGetFixedSeconds() - joyInfo.buttons [nButton].xTimeWentDown;
@@ -276,10 +268,6 @@ uint JoyReadRawAxis (uint mask, int * axis)
 
 if (!gameStates.input.nJoysticks)
 	return 0;
-#ifndef FAST_EVENTPOLL
-if (gameOpts->legacy.bInput)
-   event_poll(SDL_JOYEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#endif
 for (i = 0; i < JOY_MAX_AXES; i++)
 	if ((axis [i] = joyInfo.axes [i].nValue)) {
 		channel_masks |= (1 << i);
@@ -309,10 +297,6 @@ if (!gameStates.input.nJoysticks)
 	return 0;
 if (nButton >= JOY_MAX_BUTTONS)
 	return 0;
-#ifndef FAST_EVENTPOLL
-if (gameOpts->legacy.bInput)
-   event_poll(SDL_JOYEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
-#endif
 return joyInfo.buttons [nButton].state;
 }
 

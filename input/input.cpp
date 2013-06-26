@@ -115,19 +115,12 @@ return 1;
 int CControlsManager::ReadMouse (int *mouseAxis, int *nMouseButtons)
 {
 	int	dx, dy;
-#ifdef SDL_INPUT
 	int	dz;
-#endif
-#ifdef SDL_INPUT
+
 MouseGetDeltaZ (&dx, &dy, &dz);
-#else
-MouseGetDelta (&dx, &dy);
-#endif
 mouseAxis [0] = (int) ((dx * m_pollTime) / 35);
 mouseAxis [1] = (int) ((dy * m_pollTime) / 25);
-#ifdef SDL_INPUT
 mouseAxis [2] = (int) (dz * m_pollTime);
-#endif
 *nMouseButtons = MouseGetButtons ();
 return 1;
 }
@@ -211,18 +204,10 @@ if (gameStates.limitFPS.bJoystick) {
 		LastReadTime = ctime;
 		if	((channelMasks = JoyReadRawAxis (JOY_ALL_AXIS, rawJoyAxis))) {
 			for (i = 0; i < JOY_MAX_AXES; i++) {
-#ifndef SDL_INPUT
-				if (channelMasks & (1 << i)) {
-#endif
-					if ((i == 3) && (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS))
-						ReadFCS (rawJoyAxis [i]);
-					else
-						joyAxis [i] = ReadJoyAxis (i, rawJoyAxis);
-#ifndef SDL_INPUT
-					}
-					else
-						joyAxis [i] = 0;
-#endif
+				if ((i == 3) && (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS))
+					ReadFCS (rawJoyAxis [i]);
+				else
+					joyAxis [i] = ReadJoyAxis (i, rawJoyAxis);
 				}
 			}
 		bUseJoystick = 1;
@@ -1240,10 +1225,9 @@ nMouseButtons = 0;
 bUseMouse = 0;
 bSlideOn = 0;
 bBankOn = 0;
-#ifdef FAST_EVENTPOLL
+
 if (!gameOpts->legacy.bInput)
 	event_poll (SDL_ALLEVENTS);	//why poll 2 dozen times in the following code when input polling calls all necessary input handlers anyway?
-#endif
 
 SetType ();
 bUseJoystick = gameOpts->input.joystick.bUse && ReadJoystick (reinterpret_cast<int*> (&joyAxis [0]));
