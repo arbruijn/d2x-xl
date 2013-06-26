@@ -402,11 +402,6 @@ return nMode;
 
 int SetSideBySideDisplayMode (void)
 {
-#if DBG
-ogl.SetFullScreen (0);
-#else
-ogl.SetFullScreen (1);
-#endif
 if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT_720p)
 	SetCustomDisplayMode (1280, 800, 0);
 else if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT_1080p)
@@ -417,6 +412,11 @@ else
 	return true;
 if (!SetDisplayMode (CUSTOM_DISPLAY_MODE, 0))
 	return false;
+#if DBG
+ogl.SetFullScreen (0);
+#else
+ogl.SetFullScreen (1);
+#endif
 SetScreenMode (SCREEN_MENU);
 SetupCanvasses ();
 return true;

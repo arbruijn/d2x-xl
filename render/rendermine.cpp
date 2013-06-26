@@ -536,9 +536,10 @@ gameStates.render.nState = 0;
 
 //------------------------------------------------------------------------------
 
-inline int RenderSegmentList (int nType)
+int RenderSegmentList (int nType)
 {
 PROF_START
+
 gameStates.render.nType = nType;
 #if MAX_SHADOWMAPS
 #	if MAX_SHADOWMAPS > 0

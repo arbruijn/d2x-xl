@@ -138,7 +138,7 @@ do {
 		m.AddMenu ("cockpit options", TXT_COCKPIT_OPTS2, KEY_C, HTX_OPTIONS_COCKPIT);
 		m.AddMenu ("render options", TXT_RENDER_OPTS2, KEY_R, HTX_OPTIONS_RENDER);
 		m.AddMenu ("effect options", TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
-#ifndef DBG
+#if DBG == 0
 		if (!(gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame))
 #endif
 			{
