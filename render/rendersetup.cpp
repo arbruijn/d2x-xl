@@ -241,7 +241,7 @@ return !gameStates.render.cameras.bActive && (gameData.objs.viewerP->info.nType 
 
 //------------------------------------------------------------------------------
 
-void SetupMineRenderer (void)
+void SetupMineRenderer (int nWindow)
 {
 #if DBG
 if (gameStates.app.bNostalgia) {
@@ -271,7 +271,7 @@ else {
 
 ogl.SetDepthWrite (true);
 ogl.m_states.bDepthBuffer [0] =
-ogl.m_states.bDepthBuffer [1] = 0;
+ogl.m_states.bDepthBuffer [1] = (nWindow == 0) && (gameStates.render.nShadowPass <= 1);
 gameData.render.nUsedFaces =
 gameData.render.nTotalFaces =
 gameData.render.nTotalObjects =

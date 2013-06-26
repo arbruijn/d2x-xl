@@ -72,7 +72,7 @@ int ToggleShowOnlyCurSide (void);
 void RotateTexCoord2f (tTexCoord2f& dest, tTexCoord2f& src, ubyte nOrient);
 int FaceIsVisible (short nSegment, short nSide);
 int SegmentMayBeVisible (short nStartSeg, int nRadius, int nMaxDist, int nThread = 0);
-void SetupMineRenderer (void);
+void SetupMineRenderer (int nWindow);
 void ComputeMineLighting (short nStartSeg, fix xStereoSeparation, int nWindow);
 
 #if DBG

@@ -636,7 +636,7 @@ extern int bLog;
 void RenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
 PROF_START
-SetupMineRenderer ();
+SetupMineRenderer (nWindow);
 PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 #if 0
