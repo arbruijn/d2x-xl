@@ -60,10 +60,6 @@
 #include "gpgpu_lighting.h"
 #include "postprocessing.h"
 
-//using namespace OVR;
-//using namespace OVR::Util;
-//using namespace OVR::Util::Render;
-
 //#define _WIN32_WINNT		0x0600
 
 int enhance3DShaderProg [2][2][3] = {{{-1,-1,-1},{-1,-1,-1}},{{-1,-1,-1},{-1,-1,-1}}};
@@ -78,6 +74,8 @@ extern tTexCoord2f quadTexCoord [3][4];
 extern float quadVerts [3][4][2];
 
 //-----------------------------------------------------------------------------------
+
+#if OCULUS_RIFT
 
 static bool RiftWarpFrame (const OVR::Util::Render::StereoEyeParams stereoParams)
 {
@@ -134,6 +132,7 @@ shaderManager.Set ("View", m);
 glUniform1i (glGetUniformLocation (warpProg, "Texture0"), 0);
 OglDrawArrays (GL_QUADS, 0, 4);
 return true;
+#endif
 }
 
 //-----------------------------------------------------------------------------------
@@ -142,6 +141,7 @@ static bool RiftWarpScene (void)
 {
 if (!gameData.render.rift.Available ())
 	return false;
+#if OCULUS_RIFT
 if (!ogl.IsOculusRift ())
 	return false;
 if (!gameStates.render.textures.bHaveRiftWarpShader)
@@ -155,6 +155,7 @@ OglVertexPointer (2, GL_FLOAT, 0, quadVerts [2]);
 if (!RiftWarpFrame (gameData.render.rift.m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right)))
 	return false;
 return true;
+#endif
 }
 
 //-----------------------------------------------------------------------------------

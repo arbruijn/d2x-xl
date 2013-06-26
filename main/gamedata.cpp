@@ -507,6 +507,7 @@ bPlayerMessage = 1;
 
 bool CRiftData::Create (void)
 {
+#if OCULUS_RIFT
 gameData.render.rift.m_bAvailable = false;
 m_managerP = *OVR::DeviceManager::Create();
 //m_managerP->SetMessageHandler(this);
@@ -552,6 +553,7 @@ else {
 	}
 if (detectionMessage) 
 	PrintLog (0, detectionMessage);
+#endif
 return gameData.render.rift.m_bAvailable;
 }
 

@@ -40,6 +40,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define USE_SDL_IMAGE	1
 #endif
 
+#ifndef OCULUS_RIFT
+#	ifdef _WIN32
+#		define OCULUS_RIFT 1
+#	else
+#		define OCULUS_RIFT 0
+#	endif
+#endif
+
 #ifdef _OPENMP
 #	include "omp.h"
 #	ifndef _WIN32
@@ -1709,15 +1717,20 @@ class CFaceListIndex {
 	};
 
 #include "sphere.h"
-#include "OVR.h"
+
+#if OCULUS_RIFT
+#	include "OVR.h"
+#endif
 
 class CRiftData {
 	public:
+#if OCULUS_RIFT
 		OVR::Ptr<OVR::DeviceManager>		m_managerP;
 		OVR::Ptr<OVR::HMDDevice>			m_hmdP;
 		OVR::Ptr<OVR::SensorDevice>		m_sensorP;
 		OVR::HMDInfo							m_hmdInfo;
 		OVR::Util::Render::StereoConfig	m_stereoConfig;
+#endif
 
 		bool m_bAvailable;
 
