@@ -577,6 +577,7 @@ missionConfig.Init ();
 PiggyCloseFile ();
 SavePlayerProfile ();
 ResetModFolders ();
+gameStates.app.bGameRunning = 0;
 backgroundManager.Rebuild ();
 SetFunctionMode (FMODE_MENU);	
 }
