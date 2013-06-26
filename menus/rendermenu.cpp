@@ -619,6 +619,7 @@ do {
 gameOpts->render.stereo.nGlasses = nStereoDevice;
 lightManager.SetMethod ();
 DefaultRenderSettings ();
+backgroundManager.Rebuild ();
 }
 
 //------------------------------------------------------------------------------

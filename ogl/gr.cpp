@@ -415,7 +415,11 @@ else if (gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_HDMI)
 	SetCustomDisplayMode (1920, 1080, 0);
 else
 	return true;
-return SetDisplayMode (CUSTOM_DISPLAY_MODE, 0);
+if (!SetDisplayMode (CUSTOM_DISPLAY_MODE, 0))
+	return false;
+SetScreenMode (SCREEN_MENU);
+SetupCanvasses ();
+return true;
 }
 
 //------------------------------------------------------------------------------

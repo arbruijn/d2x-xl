@@ -228,6 +228,8 @@ va_start (args, format);
 vsprintf (buffer, format, args);
 CCanvas::Push ();
 CCanvas::SetCurrent (Canvas () ? Canvas () : &gameData.render.scene);
+if (!CCanvas::Current ()->Font ())
+	CCanvas::Current ()->SetFont (GAME_FONT);
 CCanvasColor fontColor = CCanvas::Current ()->FontColor (0);
 fontManager.SetScale (FontScale ());
 fontManager.SetColorRGBi (FontColor (), 1, 0, 0);

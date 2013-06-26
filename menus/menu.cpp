@@ -473,8 +473,10 @@ else {
 	SetupCanvasses ();
 	console.Draw ();
 	CalcFrameTime ();
-	if (!ogl.IsSideBySideDevice ())
+	if (!ogl.IsSideBySideDevice ()) {
+		ogl.SetDrawBuffer (GL_BACK, 0);
 		Render ();
+		}
 	else {
 		for (int i = 0; i < 2; i++) {
 			ogl.SetStereoSeparation (i ? gameOpts->render.stereo.xSeparation : -gameOpts->render.stereo.xSeparation);
