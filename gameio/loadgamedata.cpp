@@ -344,9 +344,9 @@ PrintLog (-1);
 
 /*---*/PrintLog (1, "Loading poly model data\n");
 for (i = 0; i < gameData.models.nPolyModels; i++) {
-	gameData.models.polyModels [0][i].SetBuffer (NULL);
+	gameData.models.polyModels [0][i].ResetBuffer ();
 	if (bDefault)
-		gameData.models.polyModels [1][i].SetBuffer (NULL);
+		gameData.models.polyModels [1][i].ResetBuffer ();
 	gameData.models.polyModels [0][i].SetCustom (!bDefault);
 	gameData.models.polyModels [0][i].ReadData (bDefault ? gameData.models.polyModels [1] + i : NULL, cf);
 	}

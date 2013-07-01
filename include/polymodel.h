@@ -112,6 +112,14 @@ class CPolyModel : public CByteArray {
 		inline void SetFirstTexture (ushort nFirstTexture) { m_info.nFirstTexture = nFirstTexture; }
 		inline ubyte TextureCount (void) { return m_info.nTextures; }
 		inline tPolyModelInfo& Info (void) { return m_info; }
+		inline void ResetBuffer (void) {
+			SetBuffer (NULL);
+			m_info.nDataSize = 0;
+			}
+		inline void Destroy (void) {
+			CByteArray::Destroy ();
+			ResetBuffer ();
+			}
 #if 0
 		inline CPolyModel& operator= (CPolyModel& other) { 
 			m_info.data = other.m_info.data; 

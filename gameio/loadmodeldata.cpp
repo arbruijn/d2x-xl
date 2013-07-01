@@ -179,8 +179,8 @@ if (bVertigoData) {
 	memcpy (gameData.models.polyModels [1] + j, gameData.models.polyModels [0] + j, sizeof (CPolyModel) * t);
 	}
 for (i = j; i < gameData.models.nPolyModels; i++) {
-	gameData.models.polyModels [1][i].SetBuffer (NULL);
-	gameData.models.polyModels [0][i].SetBuffer (NULL);
+	gameData.models.polyModels [1][i].ResetBuffer ();
+	gameData.models.polyModels [0][i].Destroy ();
 	gameData.models.polyModels [0][i].ReadData (bVertigoData ? gameData.models.polyModels [1] + i : NULL, cf);
 	}
 for (i = j; i < gameData.models.nPolyModels; i++)
@@ -339,18 +339,12 @@ for (j = 0; j < t; j++) {
 	modelP->SetRad (modelP->Size ());
 	modelP->SetCustom (bCustom);
 	if (bAltModels) {
-#if 0
-		ubyte	*p = gameData.models.polyModels [1][i].modelData;
-		gameData.models.polyModels [1][i] = gameData.models.polyModels [0][i];
-		gameData.models.polyModels [1][i].modelData = p;
-#else
 #	if DBG
 		if (i == nDbgModel)
 			nDbgModel = nDbgModel;
 #endif
 		cf.ReadInt ();
 		cf.ReadInt ();
-#endif
 		}
 	else {
 		gameData.models.nDyingModels [i] = cf.ReadInt ();

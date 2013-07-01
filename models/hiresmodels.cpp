@@ -233,6 +233,10 @@ if (!(replacementModels [i].pszLores &&
 	   cf.Open (szModel, gameFolders.szDataDir [0], "rb", 0))))
 	return ++i;
 nModel = replacementModels [i].nModel;
+#if DBG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 modelP = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.polyModels [2] : gameData.models.polyModels [0]) + nModel;
 modelP->Destroy ();
 if (!modelP->Read (1, cf)) {
