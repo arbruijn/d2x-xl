@@ -114,7 +114,7 @@ class CPolyModel : public CByteArray {
 		inline tPolyModelInfo& Info (void) { return m_info; }
 		inline void ResetBuffer (void) {
 			SetBuffer (NULL);
-			m_info.nDataSize = 0;
+			//m_info.nDataSize = 0;
 			}
 		inline void Destroy (void) {
 			CByteArray::Destroy ();
