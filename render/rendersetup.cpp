@@ -269,10 +269,11 @@ else {
 	}
 #endif
 
-ogl.SetDepthWrite (true);
-if ((nWindow == 0) && (gameStates.render.nShadowPass < 2))
+if ((nWindow == 0) && (gameStates.render.nShadowPass < 2)) {
 	ogl.m_states.bDepthBuffer [0] =
 	ogl.m_states.bDepthBuffer [1] = 0;
+	ogl.SetDepthWrite (true);
+	}
 gameData.render.nUsedFaces =
 gameData.render.nTotalFaces =
 gameData.render.nTotalObjects =

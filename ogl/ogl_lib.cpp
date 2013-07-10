@@ -566,9 +566,6 @@ ChooseDrawBuffer ();
 ogl.SetPolyOffsetFill (false);
 #if !MAX_SHADOWMAPS
 if (gameStates.render.nShadowPass) {
-#if GL_INFINITY
-	float	infProj [4][4];	//projection to infinity
-#endif
 
 	SetDepthMode (GL_LESS);
 	SetDepthWrite (true);
@@ -576,6 +573,7 @@ if (gameStates.render.nShadowPass) {
 		if (!gameStates.render.nShadowMap) {
 #if GL_INFINITY
 			glMatrixMode (GL_PROJECTION);
+			float	infProj [4][4];	//projection to infinity
 			memset (infProj, 0, sizeof (infProj));
 			infProj [1][1] = 1.0f / (float) tan (gameStates.render.glFOV);
 			infProj [0][0] = infProj [1][1] / (float) gameStates.render.glAspect;
@@ -583,10 +581,6 @@ if (gameStates.render.nShadowPass) {
 			infProj [2][2] =
 			infProj [2][3] = -1.0f;
 			glLoadMatrixf (reinterpret_cast<float*> (infProj));
-#endif
-#if 0
-			glMatrixMode (GL_MODELVIEW);
-			glLoadIdentity ();
 #endif
 			SetDepthTest (true);
 			SetStencilTest (false);
@@ -615,22 +609,13 @@ if (gameStates.render.nShadowPass) {
 			 {
 				ColorMask (0,0,0,0,0);
 				SetDepthWrite (false);
-#if 0
-				SetStencilTest (true);
-				if (!glIsEnabled (GL_STENCIL_TEST)) {
-					SetStencilTest (false);
-					extraGameInfo [0].bShadows =
-					extraGameInfo [1].bShadows = 0;
-					}
-#endif
 				glClearStencil (0);
 				glClear (GL_STENCIL_BUFFER_BIT);
 					bSingleStencil = 1;
 #	if DBG_SHADOWS
-				if (bSingleStencil || bShadowTest) {
-#	else
-				if (bSingleStencil) {
+				if (bShadowTest)
 #	endif
+					{
 					glStencilMask (~0);
 					glStencilFunc (GL_ALWAYS, 0, ~0);
 					}
@@ -652,11 +637,7 @@ if (gameStates.render.nShadowPass) {
 			else
 			 {
 				glStencilFunc (GL_EQUAL, 0, ~0);
-#if 0
-				glStencilOp (GL_KEEP, GL_KEEP, GL_INCR);	//problem: layered texturing fails
-#else
 				glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
-#endif
 				}
 			OglCullFace (0);
 			ogl.SetDepthMode (GL_LESS);
@@ -699,25 +680,13 @@ else
 #endif
 			{
 			ColorMask (1, 1, 1, 1, 1);
-			//glScissor (
-			//	CCanvas::Current ()->Left (),
-			//	screen.Canvas ()->Height () - CCanvas::Current ()->Top () - CCanvas::Current ()->Height (),
-			//	CCanvas::Current ()->Width (),
-			//	CCanvas::Current ()->Height ());
-			//SetScissorTest (true);
-			//m_states.bEnableScissor = 1;
-			//if (bResetColorBuf >= 0) 
-				{
-				SetViewport (0, 0, screen.Width (), screen.Height ());
-				if (!bResetColorBuf)
-					glClear (GL_DEPTH_BUFFER_BIT);
-				else if (automap.Display () || (gameStates.render.bRenderIndirect > 0)) {
-					glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-					glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-					}
+			SetViewport (0, 0, screen.Width (), screen.Height ());
+			if (!bResetColorBuf)
+				glClear (GL_DEPTH_BUFFER_BIT);
+			else if (automap.Display () || (gameStates.render.bRenderIndirect > 0)) {
+				glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+				glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				}
-			//if (!m_states.bEnableScissor) 
-			//	SetScissorTest (false);
 			}
 		}
 	else if (gameStates.render.nRenderPass) {
@@ -762,7 +731,7 @@ else
 	SetBlendMode (OGL_BLEND_ALPHA);
 	SetStencilTest (false);
 	SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
-#if 0
+#if 1
 	if (m_states.bEnableScissor) {
 		glScissor (
 			CCanvas::Current ()->Left (),
@@ -772,8 +741,8 @@ else
 		SetScissorTest (true);
 		}
 	else
-		SetScissorTest (false);
 #endif
+		SetScissorTest (false);
 	}
 }
 
