@@ -179,7 +179,7 @@ typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CSegFace *faceP);
 typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP);
 #endif
 
-static pRenderHandler renderHandlers [] = {RenderGeometryFace, RenderGeometryFace, RenderCoronaFace, RenderSkyBoxFace};
+static pRenderHandler renderHandlers [] = {RenderGeometryFace, RenderGeometryFace, RenderCoronaFace, RenderSkyBoxFace, RenderGeometryFace, RenderGeometryFace};
 
 
 static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int nType)
@@ -397,7 +397,11 @@ if (bVBO) {
 	}	
 else 
 #endif
-	{
+	if (nType == RENDER_TYPE_OUTLINE) {
+		ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
+		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
+		}
+	else {
 	if (bLightmaps) {
 		ogl.EnableClientStates (1, !gameStates.render.bFullBright, 1, GL_TEXTURE1);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));

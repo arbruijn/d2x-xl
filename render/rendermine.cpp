@@ -630,6 +630,20 @@ if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_CO
 }
 
 //------------------------------------------------------------------------------
+
+void RenderSegmentOutline (void)
+{
+ogl.SetCullMode ((gameStates.render.bRearView < 0) ? GL_BACK : GL_FRONT);
+glPolygonMode (GL_BACK, GL_LINE);       // Draw Backfacing Polygons As Wireframes
+glLineWidth (4.0);         // Set The Line Width
+ogl.SetDepthMode (GL_LEQUAL);            // Change The Depth Mode
+glColor3f (0, 0, 0);   
+RenderSegmentList (RENDER_TYPE_OUTLINE);
+ogl.SetCullMode ((gameStates.render.bRearView < 0) ? GL_FRONT : GL_BACK);
+glPolygonMode (GL_BACK, GL_FILL);       // Draw Backfacing Polygons As Wireframes
+}
+
+//------------------------------------------------------------------------------
 //renders onto current canvas
 
 extern int bLog;
@@ -649,7 +663,8 @@ RenderSegmentList (RENDER_TYPE_ZCULL);	// render depth only
 RenderCockpitModel ();
 #endif
 RenderSkyBoxObjects ();
-RenderSegmentList (RENDER_TYPE_GEOMETRY);	// render opaque geometry
+RenderSegmentList (RENDER_TYPE_GEOMETRY);
+RenderSegmentOutline ();
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 	if (!gameStates.app.bNostalgia &&
 		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) 
