@@ -570,6 +570,7 @@ bool CRenderData::Create (void)
 Destroy ();
 CREATE (gameData.render.faceList, LEVEL_FACES, 0);
 Init ();
+rift.Create ();
 return true;
 }
 
@@ -577,6 +578,7 @@ return true;
 
 void CRenderData::Destroy (void)
 {
+rift.Destroy ();
 DESTROY (gameData.render.faceList);
 faceIndex.Destroy ();
 }
