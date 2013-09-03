@@ -508,37 +508,41 @@ bPlayerMessage = 1;
 bool CRiftData::Create (void)
 {
 #if OCULUS_RIFT
+OVR::System::Init (OVR::Log::ConfigureDefaultLog (OVR::LogMask_All));
 gameData.render.rift.m_bAvailable = false;
 m_managerP = *OVR::DeviceManager::Create();
-//m_managerP->SetMessageHandler(this);
+if (m_managerP) {
+	//m_managerP->SetMessageHandler(this);
 
-// Release Sensor/HMD in case this is a retry.
-m_sensorP.Clear ();
-m_hmdP.Clear ();
-// RenderParams.MonitorName.Clear();
-m_hmdP = *m_managerP->EnumerateDevices<OVR::HMDDevice> ().CreateDevice ();
-if (m_hmdP) {
-	m_sensorP = *m_hmdP->GetSensor ();
+	// Release Sensor/HMD in case this is a retry.
+	m_sensorP.Clear ();
+	m_hmdP.Clear ();
+	// RenderParams.MonitorName.Clear();
+	m_hmdP = *m_managerP->EnumerateDevices<OVR::HMDDevice> ().CreateDevice ();
+	if (m_hmdP) {
+		m_sensorP = *m_hmdP->GetSensor ();
 
-	// This will initialize m_hmdInfo with information about configured IPD,
-	// screen size and other variables needed for correct projection.
-	// We pass HMD DisplayDeviceName into the renderer to select the
-	// correct monitor in full-screen mode.
-	if (m_hmdP->GetDeviceInfo (&m_hmdInfo))	{            
-		// RenderParams.MonitorName = m_hmdInfo.DisplayDeviceName;
-		// RenderParams.DisplayId = m_hmdInfo.DisplayId;
-		m_stereoConfig.SetHMDInfo (m_hmdInfo);
+		// This will initialize m_hmdInfo with information about configured IPD,
+		// screen size and other variables needed for correct projection.
+		// We pass HMD DisplayDeviceName into the renderer to select the
+		// correct monitor in full-screen mode.
+		if (m_hmdP->GetDeviceInfo (&m_hmdInfo))	{            
+			// RenderParams.MonitorName = m_hmdInfo.DisplayDeviceName;
+			// RenderParams.DisplayId = m_hmdInfo.DisplayId;
+			m_stereoConfig.SetHMDInfo (m_hmdInfo);
+			}
+		}
+	else {            
+		// If we didn't detect an HMD, try to create the sensor directly.
+		// This is useful for debugging sensor interaction; it is not needed in
+		// a shipping app.
+		m_sensorP = *m_managerP->EnumerateDevices<OVR::SensorDevice> ().CreateDevice ();
 		}
 	}
-else {            
-	// If we didn't detect an HMD, try to create the sensor directly.
-	// This is useful for debugging sensor interaction; it is not needed in
-	// a shipping app.
-	m_sensorP = *m_managerP->EnumerateDevices<OVR::SensorDevice> ().CreateDevice ();
-	}
-
 // If there was a problem detecting the Rift, display appropriate message.
 const char* detectionMessage;
+if (!m_managerP)
+	detectionMessage = "Cannot initialize Oculus Rift system.";
 if (!m_hmdP && !m_sensorP)
 	detectionMessage = "Oculus Rift not detected.";
 else if (!m_hmdP)
