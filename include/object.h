@@ -708,6 +708,7 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 		inline void SetPrevInSeg ( short nPrevInSeg) { info.nPrevInSeg = nPrevInSeg; }
 		inline void SetCreator (sbyte nCreator) { info.nCreator = nCreator; }
 		inline void SetType (ubyte nType) { info.nType = nType; }
+		inline void SetId (ubyte nId) { info.nId = nId; }
 		inline void SetControlType (ubyte controlType) { info.controlType = controlType; }
 		inline void SetMovementType (ubyte movementType) { info.movementType = movementType; }
 		inline void SetRenderType (ubyte renderType) { info.renderType = renderType; }
@@ -1156,6 +1157,9 @@ class CObject : public CObjectInfo {
 			fix size = ModelRadius (i);
 			SetSize (scale ? FixDiv (size, scale) : size); 
 			}
+
+		void Verify (void);
+		void VerifyPosition (void);
 		inline void SetSizeFromPowerup (void) { SetSize (PowerupSize ()); }
 		fix ModelRadius (int i);
 		fix PowerupSize (void);

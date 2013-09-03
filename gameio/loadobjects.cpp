@@ -96,111 +96,127 @@ char szSavePOFNames [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void VerifyObject (CObject * objP)
+void CObject::Verify (void)
 {
-objP->SetLife (IMMORTAL_TIME);		//all loaded CObject are immortal, for now
-if (objP->info.nType == OBJ_ROBOT) {
+SetLife (IMMORTAL_TIME);		//all loaded CObject are immortal, for now
+if (Type () == OBJ_ROBOT) {
 	++gameData.objs.nInitialRobots;
 	// Make sure valid id...
-	if (objP->info.nId >= gameData.bots.nTypes [gameStates.app.bD1Data])
-		objP->info.nId %= gameData.bots.nTypes [0];
+	if (Id () >= gameData.bots.nTypes [gameStates.app.bD1Data])
+		SetId (Id () % gameData.bots.nTypes [0]);
 	// Make sure model number & size are correct...
-	if (objP->info.renderType == RT_POLYOBJ) {
-		Assert(ROBOTINFO (objP->info.nId).nModel != -1);
+	if (info.renderType == RT_POLYOBJ) {
+		Assert(ROBOTINFO (Id ()).nModel != -1);
 			//if you fail this assert, it means that a robot in this level
 			//hasn't been loaded, possibly because he's marked as
-			//non-shareware.  To see what robot number, print objP->info.nId.
-		Assert(ROBOTINFO (objP->info.nId).always_0xabcd == 0xabcd);
+			//non-shareware.  To see what robot number, print Id ().
+		Assert(ROBOTINFO (Id ()).always_0xabcd == 0xabcd);
 			//if you fail this assert, it means that the robot_ai for
 			//a robot in this level hasn't been loaded, possibly because
 			//it's marked as non-shareware.  To see what robot number,
-			//print objP->info.nId.
-		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
-		objP->SetSizeFromModel ();
+			//print Id ().
+		rType.polyObjInfo.nModel = ROBOTINFO (Id ()).nModel;
+		SetSizeFromModel ();
 		}
-	if (objP->info.nId == 65)						//special "reactor" robots
-		objP->info.movementType = MT_NONE;
-	if (objP->info.movementType == MT_PHYSICS) {
-		objP->mType.physInfo.mass = ROBOTINFO (objP->info.nId).mass;
-		objP->mType.physInfo.drag = ROBOTINFO (objP->info.nId).drag;
+	if (Id () == 65)						//special "reactor" robots
+		info.movementType = MT_NONE;
+	if (info.movementType == MT_PHYSICS) {
+		mType.physInfo.mass = ROBOTINFO (Id ()).mass;
+		mType.physInfo.drag = ROBOTINFO (Id ()).drag;
 		}
 	}
-else if (objP->info.nType == OBJ_EFFECT) {
+else if (Type () == OBJ_EFFECT) {
 	gameData.objs.nEffects++;
 	}
 else {		//Robots taken care of above
-	if ((objP->info.renderType == RT_POLYOBJ) && (nSavePOFNames > 0)) {
-		char *name = szSavePOFNames [objP->ModelId ()];
+	if ((info.renderType == RT_POLYOBJ) && (nSavePOFNames > 0)) {
+		char *name = szSavePOFNames [ModelId ()];
 		if (*name) {
 			for (int i = 0; (i < gameData.models.nPolyModels) && (i < nSavePOFNames); i++)
 				if (*name && !stricmp (pofNames [i], name)) {		//found it!
-					objP->rType.polyObjInfo.nModel = i;
+					rType.polyObjInfo.nModel = i;
 					break;
 					}
 				}
 		}
 	}
-if (objP->info.nType == OBJ_POWERUP) {
-	if (objP->info.nId >= gameData.objs.pwrUp.nTypes + POWERUP_ADDON_COUNT) {
-		objP->info.nId = 0;
-		Assert(objP->info.renderType != RT_POLYOBJ);
+if (Type () == OBJ_POWERUP) {
+	if (Id () >= gameData.objs.pwrUp.nTypes + POWERUP_ADDON_COUNT) {
+		SetId (0);
+		Assert(info.renderType != RT_POLYOBJ);
 		}
-	objP->info.controlType = CT_POWERUP;
-	if (objP->info.nId >= MAX_POWERUP_TYPES_D2)
-		InitAddonPowerup (objP);
+	info.controlType = CT_POWERUP;
+	if (Id () >= MAX_POWERUP_TYPES_D2)
+		InitAddonPowerup (this);
 	else {
-		objP->SetSizeFromPowerup ();
-		objP->cType.powerupInfo.xCreationTime = 0;
+		SetSizeFromPowerup ();
+		cType.powerupInfo.xCreationTime = 0;
 		if (IsMultiGame) {
-			AddPowerupInMine (objP->info.nId, true);
+			AddPowerupInMine (Id (), true);
 #if TRACE
-			console.printf (CON_DBG, "PowerupLimiter: ID=%d\n", objP->info.nId);
-			if (objP->info.nId > MAX_POWERUP_TYPES)
+			console.printf (CON_DBG, "PowerupLimiter: ID=%d\n", Id ());
+			if (Id () > MAX_POWERUP_TYPES)
 				console.printf (1,"POWERUP: Overwriting array bounds!\n");
 #endif
 			}
 		}
 	}
-else if (objP->info.nType == OBJ_WEAPON) {
-	if (objP->info.nId >= gameData.weapons.nTypes [0]) {
-		objP->info.nId = 0;
-		Assert(objP->info.renderType != RT_POLYOBJ);
+else if (Type () == OBJ_WEAPON) {
+	if (Id () >= gameData.weapons.nTypes [0]) {
+		SetId (0);
+		Assert(info.renderType != RT_POLYOBJ);
 		}
-	if (objP->info.nId == SMALLMINE_ID) {		//make sure pmines have correct values
-		objP->mType.physInfo.mass = gameData.weapons.info [objP->info.nId].mass;
-		objP->mType.physInfo.drag = gameData.weapons.info [objP->info.nId].drag;
-		objP->mType.physInfo.flags |= PF_FREE_SPINNING;
+	if (Id () == SMALLMINE_ID) {		//make sure pmines have correct values
+		mType.physInfo.mass = gameData.weapons.info [Id ()].mass;
+		mType.physInfo.drag = gameData.weapons.info [Id ()].drag;
+		mType.physInfo.flags |= PF_FREE_SPINNING;
 		// Make sure model number & size are correct...	
-		Assert(objP->info.renderType == RT_POLYOBJ);
-		objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel;
-		objP->SetSizeFromModel ();
+		Assert(info.renderType == RT_POLYOBJ);
+		rType.polyObjInfo.nModel = gameData.weapons.info [Id ()].nModel;
+		SetSizeFromModel ();
 		}
 	}
-else if (objP->info.nType == OBJ_REACTOR) {
-	objP->info.renderType = RT_POLYOBJ;
-	objP->info.controlType = CT_CNTRLCEN;
+else if (Type () == OBJ_REACTOR) {
+	info.renderType = RT_POLYOBJ;
+	info.controlType = CT_CNTRLCEN;
 	if (gameData.segs.nLevelVersion <= 1) { // descent 1 reactor
-		objP->info.nId = 0;                         // used to be only one kind of reactor
-		objP->rType.polyObjInfo.nModel = gameData.reactor.props [0].nModel;// descent 1 reactor
+		SetId (0);                         // used to be only one kind of reactor
+		rType.polyObjInfo.nModel = gameData.reactor.props [0].nModel;// descent 1 reactor
 		}
 	}
-else if (objP->info.nType == OBJ_PLAYER) {
-	if (objP == gameData.objs.consoleP)	
+else if (Type () == OBJ_PLAYER) {
+	if (this == gameData.objs.consoleP)	
 		InitPlayerObject ();
 	else
-		if (objP->info.renderType == RT_POLYOBJ)	//recover from Matt's pof file matchup bug
-			objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
+		if (info.renderType == RT_POLYOBJ)	//recover from Matt's pof file matchup bug
+			rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
 	//Make sure orient matrix is orthogonal
 	gameOpts->render.nMathFormat = 0;
-	objP->info.position.mOrient.CheckAndFix();
+	info.position.mOrient.CheckAndFix();
 	gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
-	objP->info.nId = nGameSavePlayers++;
+	SetId (nGameSavePlayers++);
 	}
-else if (objP->info.nType == OBJ_HOSTAGE) {
-	objP->info.renderType = RT_HOSTAGE;
-	objP->info.controlType = CT_POWERUP;
+else if (Type () == OBJ_HOSTAGE) {
+	info.renderType = RT_HOSTAGE;
+	info.controlType = CT_POWERUP;
 	}
-objP->Link ();
+VerifyPosition ();
+Link ();
+}
+
+//------------------------------------------------------------------------------
+
+void CObject::VerifyPosition (void)
+{
+if (Type () != OBJ_EFFECT) {
+	int nSegment = FindSegByPos (Position (), Segment (), 1, 0);
+	if (nSegment != Segment ()) {
+		if (nSegment < 0) {
+			nSegment = FindClosestSeg (Position ());
+			SetPos (&SEGMENTS [nSegment].Center ());
+		SetSegment (nSegment);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -878,10 +894,10 @@ static void CheckAndLinkObjects (void)
 
 for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 	objP->info.nNextInSeg = objP->info.nPrevInSeg = -1;
-	if (objP->info.nType != OBJ_NONE) {
+	if (objP->Type () != OBJ_NONE) {
 		nObjSeg = objP->info.nSegment;
 		if ((nObjSeg < 0) || (nObjSeg > gameData.segs.nLastSegment))	
-			objP->info.nType = OBJ_NONE;
+			objP->Type () = OBJ_NONE;
 		else {
 			objP->info.nSegment = -1;	
 			OBJECTS [i].LinkToSeg (nObjSeg);
