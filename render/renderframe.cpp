@@ -570,9 +570,8 @@ if (SHOW_SHADOWS && !(nWindow || gameStates.render.cameras.bActive || automap.Di
 		PROF_START
 		if (FAST_SHADOWS)
 			RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
-		else {
+		else 
 			RenderNeatShadows (xStereoSeparation, nWindow, nStartSeg);
-			}
 #if SOFT_SHADOWS
 		if (gameOpts->render.shadows.bSoft) {
 			PROF_START

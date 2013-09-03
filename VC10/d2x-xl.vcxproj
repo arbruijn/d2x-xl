@@ -290,10 +290,10 @@
       <ShowProgress>true</ShowProgress>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>setupapi.lib;Rift.lib;SDL_image.lib;zlib.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>setupapi.lib;Rift.lib;SDL.lib;SDL_image.lib;zlib.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\Libraries\Rift\VC10\x64\Debug\;"..\..\..\libraries\zlib-1.2.5\VC10\x64\DLL Debug";..\..\..\libraries\SDL_image-1.2.7\VC10\x64\Debug;..\..\..\libraries\SDL_net-1.2.7\VC10\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\Libraries\Rift\VC10\x64\Debug\;"..\..\..\libraries\zlib-1.2.5\VC10\x64\DLL Debug";..\..\..\libraries\SDL-1.2.14\VC10\SDL\x64\Debug;..\..\..\libraries\SDL_image-1.2.7\VC10\x64\Debug;..\..\..\libraries\SDL_net-1.2.7\VC10\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>

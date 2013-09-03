@@ -91,7 +91,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib  urlmon.lib"
-				OutputFile="d:\programs\d2\debug\d2x-xl-dbg.exe"
+				OutputFile="d:\programs\d2\debug\d2x-xl-1.16.27.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projects\sdl-1.2.14\debug&quot;;&quot;\projects\SDL_mixer-1.2.11\VisualC\Debug&quot;;&quot;c:\programme\visual leak detector\lib&quot;"
@@ -2400,11 +2400,11 @@
 						>
 					</File>
 					<File
-						RelativePath="..\resource.h"
+						RelativePath=".\resource.h"
 						>
 					</File>
 					<File
-						RelativePath=".\resource.h"
+						RelativePath="..\resource.h"
 						>
 					</File>
 					<File
