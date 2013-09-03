@@ -214,6 +214,7 @@ if (Type () != OBJ_EFFECT) {
 		if (nSegment < 0) {
 			nSegment = FindClosestSeg (Position ());
 			SetPos (&SEGMENTS [nSegment].Center ());
+			}
 		SetSegment (nSegment);
 		}
 	}
@@ -368,7 +369,7 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 				dbgObjInstances++;
 				}
 #endif
-			VerifyObject (objP);
+			objP->Verify ();
 			gameData.objs.init [i] = *objP;
 			i++, objP++;
 			}
@@ -897,7 +898,7 @@ for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 	if (objP->Type () != OBJ_NONE) {
 		nObjSeg = objP->info.nSegment;
 		if ((nObjSeg < 0) || (nObjSeg > gameData.segs.nLastSegment))	
-			objP->Type () = OBJ_NONE;
+			objP->SetType (OBJ_NONE);
 		else {
 			objP->info.nSegment = -1;	
 			OBJECTS [i].LinkToSeg (nObjSeg);
