@@ -115,7 +115,7 @@ shaderManager.Set ("ChromAbParam",
                    distortion.ChromaticAberration [1],
                    distortion.ChromaticAberration [2],
                    distortion.ChromaticAberration [3]);
-
+#if 0
 COGLMatrix m;
 #if 0 // zeilenweise
 double mTex [16] = {w, 0, 0, x,
@@ -140,6 +140,7 @@ m = mTex;
 shaderManager.Set ("Texm", m);
 m = mView;
 shaderManager.Set ("View", m);
+#endif
 glUniform1i (glGetUniformLocation (warpProg, "SceneTex"), 0);
 OglDrawArrays (GL_QUADS, 0, 4);
 return true;
@@ -165,18 +166,20 @@ if (!ogl.IsOculusRift ())
 	return false;
 if (!gameStates.render.textures.bHaveRiftWarpShader)
 	return false;
-//OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-//OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+#if 0
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [1]);
 if (!RiftWarpFrame (gameData.render.rift.m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Left)))
 	return false;
+#endif
+#if 1
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [2]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [2]);
 if (!RiftWarpFrame (gameData.render.rift.m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right)))
 	return false;
+#endif
 return true;
 #endif
 }
@@ -452,16 +455,10 @@ const char* enhance3DVS =
 
 
 static const char* riftWarpVS =
-    "uniform mat4 View;\n"
-    "uniform mat4 Texm;\n"
-    "attribute vec4 Position;\n"
-    "attribute vec2 TexCoord;\n"
-    "varying  vec2 oTexCoord;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = View * Position;\n"
-    "   oTexCoord = vec2(Texm * vec4(TexCoord,0,1));\n"
-    "   oTexCoord.y = 1.0-oTexCoord.y;\n"
+	 "gl_Position = ftransform ();\n"
+	 "gl_TexCoord [0]=gl_MultiTexCoord0;"
     "}\n";
 
 static const char* riftWarpFS =
@@ -471,7 +468,6 @@ static const char* riftWarpFS =
 	"uniform vec2 ScaleIn;\n"
 	"uniform vec4 HmdWarpParam;\n"
 	"uniform sampler2D SceneTex;\n"
-	"varying vec2 oTexCoord;\n"
 	"\n"
 	"vec2 HmdWarp(vec2 in01)\n"
 	"{\n"
@@ -484,11 +480,11 @@ static const char* riftWarpFS =
 
 	"void main()\n"
 	"{\n"
-	"   vec2 tc = HmdWarp(oTexCoord);\n"
-	"   if (!all(equal(clamp(tc, ScreenCenter-vec2(0.25,0.5), ScreenCenter+vec2(0.25,0.5)), tc)))\n"
-	"       gl_FragColor = vec4(0);\n"
-	"   else\n"
-	"       gl_FragColor = texture2D(SceneTex, tc);\n"
+	"vec2 tc = HmdWarp(gl_TexCoord [0]);\n"
+	"gl_FragColor =\n"
+	"(clamp(tc, ScreenCenter-vec2(0.25,0.5), ScreenCenter+vec2(0.25,0.5)) == tc)\n"
+	"? gl_FragColor = texture2D(SceneTex, tc);\n"
+	": vec4(0.0, 0.0, 0.0, 1.0);\n"
 	"}\n";
 
 //------------------------------------------------------------------------------
