@@ -531,36 +531,38 @@ do {
 	*szSlider = *(TXT_STEREO_VIEW - 1);
 	m.AddSlider ("3D glasses", szSlider + 1, nStereoDevice, 0, sizeofa (pszStereoDevice) - 2 + ogl.m_features.bStereoBuffers, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
 
-	if (EXPERTMODE && nStereoDevice && (nStereoDevice != GLASSES_OCULUS_RIFT_720p) && (nStereoDevice != GLASSES_OCULUS_RIFT_1080p)) {
-		sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.stereo.nMethod]);
-		*szSlider = *(TXT_3D_METHOD - 1);
-		m.AddSlider ("3D method", szSlider + 1, gameOpts->render.stereo.nMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);
-
+	if (EXPERTMODE && nStereoDevice) {
 		sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
 		*szSlider = *(TXT_STEREO_SEPARATION - 1);
 		m.AddSlider ("stereo separation", szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
 
-		sprintf (szSlider + 1, TXT_3D_SCREEN_DIST, nScreenDists [gameOpts->render.stereo.nScreenDist]);
-		*szSlider = *(TXT_3D_SCREEN_DIST - 1);
-		m.AddSlider ("screen distance", szSlider + 1, gameOpts->render.stereo.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_S, HTX_3D_SCREEN_DIST);
+		if ((nStereoDevice != GLASSES_OCULUS_RIFT_720p) && (nStereoDevice != GLASSES_OCULUS_RIFT_1080p)) {
+			sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.stereo.nMethod]);
+			*szSlider = *(TXT_3D_METHOD - 1);
+			m.AddSlider ("3D method", szSlider + 1, gameOpts->render.stereo.nMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);
 
-		if (ogl.StereoDevice () > 0) {
-			sprintf (szSlider + 1, TXT_3D_DEGHOST, pszDeghost [gameOpts->render.stereo.bDeghost]);
-			*szSlider = *(TXT_3D_DEGHOST - 1);
-			m.AddSlider ("deghosting", szSlider + 1, gameOpts->render.stereo.bDeghost, 0, sizeofa (pszDeghost) - 2 + (ogl.StereoDevice (1) == 2), KEY_H, HTX_3D_DEGHOST);
-			if (gameOpts->render.stereo.bDeghost < 4) {
-				sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.stereo.bColorGain]);
-				*szSlider = *(TXT_COLORGAIN - 1);
-				m.AddSlider ("color gain", szSlider + 1, gameOpts->render.stereo.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_G, HTX_COLORGAIN);
+			sprintf (szSlider + 1, TXT_3D_SCREEN_DIST, nScreenDists [gameOpts->render.stereo.nScreenDist]);
+			*szSlider = *(TXT_3D_SCREEN_DIST - 1);
+			m.AddSlider ("screen distance", szSlider + 1, gameOpts->render.stereo.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_S, HTX_3D_SCREEN_DIST);
+
+			if (ogl.StereoDevice () > 0) {
+				sprintf (szSlider + 1, TXT_3D_DEGHOST, pszDeghost [gameOpts->render.stereo.bDeghost]);
+				*szSlider = *(TXT_3D_DEGHOST - 1);
+				m.AddSlider ("deghosting", szSlider + 1, gameOpts->render.stereo.bDeghost, 0, sizeofa (pszDeghost) - 2 + (ogl.StereoDevice (1) == 2), KEY_H, HTX_3D_DEGHOST);
+				if (gameOpts->render.stereo.bDeghost < 4) {
+					sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.stereo.bColorGain]);
+					*szSlider = *(TXT_COLORGAIN - 1);
+					m.AddSlider ("color gain", szSlider + 1, gameOpts->render.stereo.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_G, HTX_COLORGAIN);
+					}
 				}
-			}
-		m.AddText ("", "");
-		m.AddCheck ("brighten scene", TXT_BUMP_BRIGHTNESS, gameOpts->render.stereo.bBrighten, KEY_T, HTX_BUMP_BRIGHTNESS);
-		if (ogl.StereoDevice (1) > 0)
-			m.AddCheck ("enhance 3D", TXT_ENHANCE_3D, gameOpts->render.stereo.bEnhance, KEY_D, HTX_ENHANCE_3D);
+			m.AddText ("", "");
+			m.AddCheck ("brighten scene", TXT_BUMP_BRIGHTNESS, gameOpts->render.stereo.bBrighten, KEY_T, HTX_BUMP_BRIGHTNESS);
+			if (ogl.StereoDevice (1) > 0)
+				m.AddCheck ("enhance 3D", TXT_ENHANCE_3D, gameOpts->render.stereo.bEnhance, KEY_D, HTX_ENHANCE_3D);
 #if 0
-		m.AddCheck ("flip frames", TXT_FLIPFRAMES, gameOpts->render.stereo.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
+			m.AddCheck ("flip frames", TXT_FLIPFRAMES, gameOpts->render.stereo.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
 #endif
+			}
 		}
 	m.AddText ("", "");
 	m.AddCheck ("movie subtitles", TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_V, HTX_RENDER_SUBTTL);
