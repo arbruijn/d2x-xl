@@ -166,7 +166,7 @@ if (!ogl.IsOculusRift ())
 	return false;
 if (!gameStates.render.textures.bHaveRiftWarpShader)
 	return false;
-#if 0
+#if 1
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [1]);
@@ -174,6 +174,7 @@ if (!RiftWarpFrame (gameData.render.rift.m_stereoConfig.GetEyeRenderParams (OVR:
 	return false;
 #endif
 #if 1
+gameData.render.viewport.SetLeft (gameData.render.screen.Width () / 2);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [2]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [2]);
@@ -200,6 +201,7 @@ if (IsSideBySideDevice (nDevice)) {
 		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 		OglDrawArrays (GL_QUADS, 0, 4);
 		}
+	gameData.render.viewport.SetLeft (0);
 	}
 else if (nDevice == -GLASSES_SHUTTER_NVIDIA) {
 	SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
