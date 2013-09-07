@@ -483,7 +483,7 @@ static const char* riftWarpFS =
 	"vec2 tc = HmdWarp(gl_TexCoord [0]);\n"
 	"gl_FragColor =\n"
 	"(clamp(tc, ScreenCenter-vec2(0.25,0.5), ScreenCenter+vec2(0.25,0.5)) == tc)\n"
-	"? gl_FragColor = texture2D(SceneTex, tc);\n"
+	"? texture2D(SceneTex, tc)\n"
 	": vec4(0.0, 0.0, 0.0, 1.0);\n"
 	"}\n";
 
