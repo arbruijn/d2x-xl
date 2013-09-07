@@ -650,6 +650,7 @@ if ((t = GrInit ())) {		//doesn't do much
 	Error (TXT_CANT_INIT_GFX, t);
 	return 0;
 	}
+gameData.render.rift.Create ();
 /*---*/PrintLog (1, "Initializing render buffers\n");
 PrintLog (-1);
 if (bFull) {

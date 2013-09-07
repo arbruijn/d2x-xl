@@ -87,10 +87,10 @@ if (stereoParams.pDistortion) {
 		distortion.XCenterOffset = -distortion.XCenterOffset;
 	}
 
-float w = float (gameData.render.viewport.Width ()) / float(gameData.render.screen.Width ()),
-      h = float (gameData.render.viewport.Height ()) / float(gameData.render.screen.Height ()),
-      x = float (gameData.render.viewport.Left ()) / float(gameData.render.screen.Width ()),
-      y = float (gameData.render.viewport.Top ()) / float(gameData.render.screen.Height ());
+float w = float (gameData.render.viewport.Width ()) / float (gameData.render.screen.Width ()),
+      h = float (gameData.render.viewport.Height ()) / float (gameData.render.screen.Height ()),
+      x = float (gameData.render.viewport.Left ()) / float (gameData.render.screen.Width ()),
+      y = float (gameData.render.viewport.Top ()) / float (gameData.render.screen.Height ());
 
 float as = float (gameData.render.viewport.Width ()) / float(gameData.render.viewport.Height ());
 
@@ -101,13 +101,13 @@ if (shaderManager.Rebuild (warpProg))
 	;
 // We are using 1/4 of DistortionCenter offset value here, since it is
 // relative to [-1,1] range that gets mapped to [0, 0.5].
-shaderManager.Set ("LensCenter", x + (w + distortion.XCenterOffset * 0.5f)*0.5f, y + h*0.5f);
-shaderManager.Set ("ScreenCenter", x + w*0.5f, y + h*0.5f);
+shaderManager.Set ("LensCenter", x + (w + distortion.XCenterOffset * 0.5f) * 0.5f, y + h * 0.5f);
+shaderManager.Set ("ScreenCenter", x + w * 0.5f, y + h * 0.5f);
 
 // MA: This is more correct but we would need higher-res texture vertically; we should adopt this
 // once we have asymmetric input texture scale.
 float scaleFactor = 1.0f / distortion.Scale;
-shaderManager.Set ("Scale", (w/2) * scaleFactor, (h/2) * scaleFactor * as);
+shaderManager.Set ("Scale", (w / 2) * scaleFactor, (h / 2) * scaleFactor * as);
 shaderManager.Set ("ScaleIn", 2.0f / w, 2.0f / h / as);
 shaderManager.Set ("HmdWarpParam", distortion.K [0], distortion.K [1], distortion.K [2], distortion.K [3]);
 shaderManager.Set ("ChromAbParam",
@@ -117,6 +117,7 @@ shaderManager.Set ("ChromAbParam",
                    distortion.ChromaticAberration [3]);
 
 COGLMatrix m;
+#if 0 // zeilenweise
 double mTex [16] = {w, 0, 0, x,
 						  0, h, 0, y,
 						  0, 0, 0, 0,
@@ -125,11 +126,21 @@ double mView [16] = {2, 0, 0, -1,
 							0, 2, 0, -1,
 							0, 0, 0, 0,
 							0, 0, 0, 1};
+#else // spaltenweise
+double mTex [16] = {w, 0, 0, 0,
+						  0, h, 0, 0,
+						  0, 0, 0, 0,
+						  x, y, 0, 1};
+double mView [16] = {2, 0, 0, 0,
+							0, 2, 0, 0,
+							0, 0, 0, 0,
+							-1, -1, 0, 1};
+#endif
 m = mTex;
 shaderManager.Set ("Texm", m);
 m = mView;
 shaderManager.Set ("View", m);
-glUniform1i (glGetUniformLocation (warpProg, "Texture0"), 0);
+glUniform1i (glGetUniformLocation (warpProg, "SceneTex"), 0);
 OglDrawArrays (GL_QUADS, 0, 4);
 return true;
 #endif
@@ -137,19 +148,31 @@ return true;
 
 //-----------------------------------------------------------------------------------
 
+#if DBG
+static bool bWarpFrame = true;
+#endif
+
 static bool RiftWarpScene (void)
 {
 if (!gameData.render.rift.Available ())
 	return false;
+#if DBG
+if (!gameStates.app.bGameRunning)
+	return false;
+#endif
 #if OCULUS_RIFT
 if (!ogl.IsOculusRift ())
 	return false;
 if (!gameStates.render.textures.bHaveRiftWarpShader)
 	return false;
+//OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+//OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [1]);
 if (!RiftWarpFrame (gameData.render.rift.m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Left)))
 	return false;
+ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [2]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [2]);
 if (!RiftWarpFrame (gameData.render.rift.m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right)))
@@ -165,12 +188,11 @@ void COGL::FlushStereoBuffers (int nEffects)
 int nDevice = StereoDevice ();
 
 if (IsSideBySideDevice (nDevice)) {
-	// todo: add barrel distortion shader
 	SetDrawBuffer (GL_BACK, 0);
-	EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
 	if (!RiftWarpScene ()) {
 		shaderManager.Deploy (-1);
+		EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
 		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 		OglDrawArrays (GL_QUADS, 0, 4);
@@ -448,7 +470,7 @@ static const char* riftWarpFS =
 	"uniform vec2 Scale;\n"
 	"uniform vec2 ScaleIn;\n"
 	"uniform vec4 HmdWarpParam;\n"
-	"uniform sampler2D Texture0;\n"
+	"uniform sampler2D SceneTex;\n"
 	"varying vec2 oTexCoord;\n"
 	"\n"
 	"vec2 HmdWarp(vec2 in01)\n"
@@ -466,7 +488,7 @@ static const char* riftWarpFS =
 	"   if (!all(equal(clamp(tc, ScreenCenter-vec2(0.25,0.5), ScreenCenter+vec2(0.25,0.5)), tc)))\n"
 	"       gl_FragColor = vec4(0);\n"
 	"   else\n"
-	"       gl_FragColor = texture2D(Texture0, tc);\n"
+	"       gl_FragColor = texture2D(SceneTex, tc);\n"
 	"}\n";
 
 //------------------------------------------------------------------------------

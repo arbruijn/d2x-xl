@@ -1848,7 +1848,6 @@ if (!(gameData.segs.Create (nSegments, nVertices) &&
 		gameData.render.color.Create () &&
 		gameData.render.lights.Create () &&
 		gameData.render.shadows.Create () &&
-		gameData.render.rift.Create () &&
 		gameData.weapons.Create () &&
 		gameData.physics.Create () &&
 		gameData.ai.Create () &&
