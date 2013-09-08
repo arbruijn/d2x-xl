@@ -153,7 +153,7 @@ SDL_GL_SwapBuffers ();
 if (gameStates.app.bSaveScreenShot)
 	SaveScreenShot (NULL, 0);
 SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect > 0);
-#if 1
+#if 0
 if (gameStates.menus.nInMenu || bClear)
 	glClear (GL_COLOR_BUFFER_BIT);
 #endif
@@ -192,6 +192,7 @@ if (nEffects & 5) {
 			SetDrawBuffer (GL_BACK, 0);
 			shaderManager.Deploy (-1);
 			}
+		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		SetBlendMode (OGL_BLEND_REPLACE);
 		SetDepthMode (GL_ALWAYS);
 		SetDepthTest (false);

@@ -665,7 +665,7 @@ RenderCockpitModel ();
 #if 1
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
-RenderSegmentOutline ();
+//RenderSegmentOutline ();
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 	if (!gameStates.app.bNostalgia &&
 		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) 

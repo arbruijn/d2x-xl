@@ -785,7 +785,7 @@ else if (gameOpts->render.stereo.nGlasses && (ogl.StereoSeparation () >= 0))
 	m_data.bAllowAdd = -1;
 else
 	m_data.bAllowAdd = 1;
-if (m_data.bAllowAdd > 0) 
+if (/*m_data.bAllowAdd > 0*/1) 
 #endif
 	{
 	m_data.zMin = 0;
