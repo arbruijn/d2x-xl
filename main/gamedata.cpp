@@ -83,6 +83,7 @@ void DefaultKeyboardSettings (bool bSetup = false);
 void DefaultMiscSettings (bool bSetup = false);
 void DefaultPhysicsSettings (bool bSetup = false);
 void DefaultRenderSettings (bool bSetup = false);
+void DefaultSmokeSettings (bool bSetup = false);
 
 // ----------------------------------------------------------------------------
 
@@ -2168,7 +2169,7 @@ if (bSetup || !gameOpts->app.bExpertMode) {
 DefaultPowerupSettings ();
 DefaultShipSettings ();
 DefaultMovieSettings ();
-DefaultEffectSettings ();
+DefaultEffectSettings (bSetup);
 DefaultLightSettings ();
 DefaultCameraSettings ();
 DefaultAutomapSettings ();
