@@ -216,6 +216,8 @@ else {
 		}
 	else {
 		ogl.ClearError (0);
+		if (m_data.drawBufferP)
+			m_data.drawBufferP->Disable ();
 		SelectDrawBuffer (m_data.xStereoSeparation > 0);
 		if (ogl.ClearError (0))
 			gameOpts->render.stereo.nGlasses = 0;
