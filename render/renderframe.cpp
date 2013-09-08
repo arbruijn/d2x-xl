@@ -905,7 +905,9 @@ for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 
 //------------------------------------------------------------------------------
 
-static bool bFixSBSBug = true;
+#if DBG
+static bool bFixSBSBug = false;
+#endif
 
 void GameRenderFrame (void)
 {
@@ -926,8 +928,10 @@ else {
 	if (gameOpts->render.stereo.xSeparation == 0)
 		gameOpts->render.stereo.xSeparation = 3 * I2X (1) / 4;
 	fix xStereoSeparation = automap.Display () ? 2 * gameOpts->render.stereo.xSeparation : gameOpts->render.stereo.xSeparation;
+#if DBG
 	if (ogl.IsSideBySideDevice () && bFixSBSBug)
 		RenderMonoFrame (-xStereoSeparation);
+#endif
 	RenderMonoFrame (-xStereoSeparation);
 	RenderMonoFrame (xStereoSeparation);
 	}
