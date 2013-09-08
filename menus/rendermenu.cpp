@@ -234,7 +234,7 @@ if ((m = menu ["3D glasses"])) {
 		if (xFOV != v) {
 			xFOV = v;
 			gameOpts->render.stereo.nFOV = EXPERTMODE ? STEREO_MIN_FOV + xFOV * STEREO_FOV_STEP : STEREO_DEFAULT_FOV;
-			sprintf (m->Text (), TXT_STEREO_FOV, pszFOV [v]);
+			sprintf (m->Text (), TXT_STEREO_FOV, STEREO_MIN_FOV + xFOV * STEREO_FOV_STEP);
 			m->m_bRebuild = -1;
 			}
 		}
@@ -552,7 +552,7 @@ do {
 		m.AddSlider ("stereo separation", szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
 
 		if ((nStereoDevice == GLASSES_OCULUS_RIFT_720p) || (nStereoDevice == GLASSES_OCULUS_RIFT_1080p)) {
-			sprintf (szSlider + 1, TXT_STEREO_FOV, pszFOV [xFOV]);
+			sprintf (szSlider + 1, TXT_STEREO_FOV, STEREO_MIN_FOV + xFOV * STEREO_FOV_STEP);
 			*szSlider = *(TXT_STEREO_FOV - 1);
 			m.AddSlider ("FOV", szSlider + 1, xFOV, 0, sizeofa (pszFOV) - 1, KEY_F, HTX_STEREO_FOV);
 			}
