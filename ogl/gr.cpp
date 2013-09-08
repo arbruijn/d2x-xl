@@ -42,6 +42,7 @@
 #include "menu.h"
 #include "menubackground.h"
 #include "addon_bitmaps.h"
+#include "cockpit.h"
 
 #define DECLARE_VARS
 
@@ -412,6 +413,9 @@ else
 	return true;
 if (!SetDisplayMode (CUSTOM_DISPLAY_MODE, 0))
 	return false;
+if (ogl.IsOculusRift ())
+	cockpit->Activate (CM_FULL_SCREEN, true);
+
 #if DBG
 ogl.SetFullScreen (0);
 #else

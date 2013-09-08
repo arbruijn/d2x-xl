@@ -2151,6 +2151,7 @@ if (!gameOpts->app.bExpertMode) {
 		gameOpts->render.stereo.bDeghost = 1;
 		gameOpts->render.stereo.bEnhance = (gameOpts->render.bUseShaders && ogl.m_features.bShaders);
 		gameOpts->render.stereo.bFlipFrames = 0;
+		gameOpts->render.stereo.nFOV = 90;
 		}
 	}
 

@@ -217,6 +217,12 @@ if (i) {
 	automap.bBright = 1;
 	automap.bCoronas = 0;
 	automap.nColor = 0;
+	stereo.nMethod = 1;
+	stereo.nScreenDist = 5;
+	stereo.bColorGain = 1;
+	stereo.bDeghost = 1;
+	stereo.xSeparation = 32768;
+	stereo.nFOV = 90;
 	}
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
