@@ -458,8 +458,8 @@ gameStates.render.glFOV = 180.0;
 if (!StereoSeparation ())
 	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
 else if (IsOculusRift ()) {
-	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
-	//TODO: Replace gluPerspective call with computing the proper projection matrix and passing it to OpenGL
+	SetupFrustum ();
+	//gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
 	}
 else if (gameOpts->render.stereo.nMethod == STEREO_PARALLEL)
 	SetupFrustum ();
