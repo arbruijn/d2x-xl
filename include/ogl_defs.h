@@ -46,6 +46,11 @@
 #define DEFAULT_FOV				105.0
 #define FISHEYE_FOV				135.0
 
+#define STEREO_MIN_FOV			60
+#define STEREO_MAX_FOV			145
+#define STEREO_DEFAULT_FOV		90
+#define STEREO_FOV_STEP			5
+
 extern double glFOV, glAspect;
 
 void OglSetFOV (double fov);
