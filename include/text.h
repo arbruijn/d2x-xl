@@ -2636,10 +2636,10 @@ void LoadGameTexts(void);
 #define HTX_HIDE_TGTIND					HT(429)
 #define HTX_ALLOW_CUSTOM_WEAPONS		HT(430)
 #define HTX_GAME_SPEED					HT(431)
+#define HTX_STEREO_FOV					HT(432)
 
 #if 0
 
-#define HTX_						HT(432)
 #define HTX_						HT(433)
 #define HTX_						HT(434)
 #define HTX_						HT(435)

@@ -548,7 +548,12 @@ do {
 		*szSlider = *(TXT_STEREO_SEPARATION - 1);
 		m.AddSlider ("stereo separation", szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
 
-		if ((nStereoDevice != GLASSES_OCULUS_RIFT_720p) && (nStereoDevice != GLASSES_OCULUS_RIFT_1080p)) {
+		if ((nStereoDevice == GLASSES_OCULUS_RIFT_720p) || (nStereoDevice == GLASSES_OCULUS_RIFT_1080p)) {
+			sprintf (szSlider + 1, TXT_STEREO_FOV, pszStereoSeparation [xStereoSeparation]);
+			*szSlider = *(TXT_STEREO_FOV - 1);
+			m.AddSlider ("FOV", szSlider + 1, xFOV, 0, sizeofa (pszFOV) - 1, KEY_F, HTX_STEREO_FOV);
+			}
+		else {
 			sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.stereo.nMethod]);
 			*szSlider = *(TXT_3D_METHOD - 1);
 			m.AddSlider ("3D method", szSlider + 1, gameOpts->render.stereo.nMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);
