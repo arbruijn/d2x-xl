@@ -37,6 +37,7 @@
 
 void CPaletteManager::RenderEffect (void)
 {
+#if 1
 if (m_data.nSuspended)
 	return;
 if (!m_data.bDoEffect)
@@ -44,11 +45,13 @@ if (!m_data.bDoEffect)
 ogl.SetBlending (true);
 ogl.SetBlendMode (OGL_BLEND_ADD);
 glColor3fv (reinterpret_cast<GLfloat*> (&m_data.flash));
+bool bDepthTest = ogl.GetDepthTest ();
 ogl.SetDepthTest (false);
 ogl.SetTexturing (false);
 ogl.RenderScreenQuad ();
-ogl.SetDepthTest (true);
+ogl.SetDepthTest (bDepthTest);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
+#endif
 }
 
 //------------------------------------------------------------------------------

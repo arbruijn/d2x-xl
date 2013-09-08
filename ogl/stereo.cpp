@@ -193,6 +193,7 @@ int nDevice = StereoDevice ();
 
 if (IsSideBySideDevice (nDevice)) {
 	SetDrawBuffer (GL_BACK, 0);
+	ogl.SetTexturing (true);
 	BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
 	if (!RiftWarpScene ()) {
 		shaderManager.Deploy (-1);
