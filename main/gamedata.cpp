@@ -76,6 +76,16 @@
 
 // ----------------------------------------------------------------------------
 
+void DefaultApplicationSettings (bool bSetup = false);
+void DefaultCockpitSettings (bool bSetup = false);
+void DefaultGameplaySettings (bool bSetup = false);
+void DefaultKeyboardSettings (bool bSetup = false);
+void DefaultMiscSettings (bool bSetup = false);
+void DefaultPhysicsSettings (bool bSetup = false);
+void DefaultRenderSettings (bool bSetup = false);
+
+// ----------------------------------------------------------------------------
+
 void CGameData::Init (void)
 {
 #if USE_IRRLICHT
@@ -1989,11 +1999,11 @@ gameOptions [0].render.coronas.nObjIntensity = 1;
 
 // ----------------------------------------------------------------------------
 
-void DefaultSmokeSettings (void)
+void DefaultSmokeSettings (bool bSetup)
 {
 gameOptions [0].render.particles.bWiggleBubbles = 1;
 gameOptions [0].render.particles.bWobbleBubbles = 1;
-if (!gameOpts->app.bExpertMode) {
+if (bSetup || !gameOpts->app.bExpertMode) {
 	gameOptions [0].render.particles.bPlayers = (gameOpts->render.particles.nQuality > 1);
 	gameOptions [0].render.particles.bRobots = 1;
 	gameOptions [0].render.particles.bMissiles = 1;
@@ -2097,7 +2107,7 @@ gameOptions [0].render.automap.bSkybox = 0;
 
 // ----------------------------------------------------------------------------
 
-void DefaultEffectSettings (void)
+void DefaultEffectSettings (bool bSetup)
 {
 gameOptions [0].render.effects.bAutoTransparency = 1;
 gameOptions [0].render.effects.bTransparent = 1;
@@ -2112,7 +2122,7 @@ gameOptions [0].render.effects.bOnlyShieldHits = 1;
 extraGameInfo [0].bTracers = 1;
 extraGameInfo [0].bShockwaves = 0; 
 extraGameInfo [0].bDamageExplosions = 0;
-if (!gameOpts->app.bExpertMode)
+if (bSetup || !gameOpts->app.bExpertMode)
 	gameOptions [0].render.effects.bSoftParticles = (gameOptions [0].render.nQuality == 3) ? 7 : 0;
 else if (gameOptions [0].render.nQuality < 3)
 	gameOptions [0].render.effects.bSoftParticles = 0;
@@ -2127,7 +2137,7 @@ DefaultLightningSettings ();
 
 // ----------------------------------------------------------------------------
 
-void DefaultRenderSettings (void)
+void DefaultRenderSettings (bool bSetup)
 {
 extraGameInfo [0].grWallTransparency = (5 * FADE_LEVELS + 5) / 10;
 gameOptions [0].render.color.bWalls = 1;
@@ -2142,7 +2152,7 @@ gameOptions [0].render.weaponIcons.alpha = 4;
 
 if (!SetSideBySideDisplayMode ())
 	gameOpts->render.stereo.nGlasses = 0;
-if (!gameOpts->app.bExpertMode) {
+if (bSetup || !gameOpts->app.bExpertMode) {
 	gameOpts->render.nLightmapPrecision = 1;
 	if (gameOpts->render.stereo.nGlasses) {
 		gameOpts->render.stereo.nMethod = 1;
@@ -2166,14 +2176,14 @@ DefaultAutomapSettings ();
 
 // ----------------------------------------------------------------------------
 
-void DefaultPhysicsSettings (void)
+void DefaultPhysicsSettings (bool bSetup)
 {
 extraGameInfo [0].nSpeedBoost = 10;
 extraGameInfo [0].bRobotsHitRobots = 1;
 extraGameInfo [0].bKillMissiles = 1;
 extraGameInfo [0].bFluidPhysics = 1;
 gameOpts->render.nDebrisLife = 0;
-if (gameOpts->app.bExpertMode != SUPERUSER) {
+if (bSetup || (gameOpts->app.bExpertMode != SUPERUSER)) {
 	extraGameInfo [0].bWiggle = 1;
 	extraGameInfo [0].nOmegaRamp = (IsMultiGame && !IsCoopGame) ? 1 : 3;
 	extraGameInfo [0].nMslTurnSpeed = 2;
@@ -2185,7 +2195,7 @@ if (gameOpts->app.bExpertMode != SUPERUSER) {
 
 // ----------------------------------------------------------------------------
 
-void DefaultGameplaySettings (void)
+void DefaultGameplaySettings (bool bSetup)
 {
 extraGameInfo [0].headlight.bAvailable = 1;
 gameOptions [0].gameplay.bHeadlightOnWhenPickedUp = 0;
@@ -2216,7 +2226,7 @@ void DefaultSettings (void)
 
 // ----------------------------------------------------------------------------
 
-void DefaultMiscSettings (void)
+void DefaultMiscSettings (bool bSetup)
 {
 gameOptions [0].gameplay.bEscortHotKeys = 1;
 gameOptions [0].multi.bUseMacros = 1;
@@ -2228,7 +2238,7 @@ gameOptions [0].demo.bOldFormat = gameStates.app.bNostalgia != 0;
 
 // ----------------------------------------------------------------------------
 
-void DefaultCockpitSettings (void)
+void DefaultCockpitSettings (bool bSetup)
 {
 //gameOptions [0].render.cockpit.bReticle = 1;
 //gameOptions [0].render.cockpit.bMissileView = 1;
@@ -2255,14 +2265,14 @@ extraGameInfo [0].nRadar = (gameOpts->render.cockpit.nRadarRange > 0);
 
 // ----------------------------------------------------------------------------
 
-void DefaultKeyboardSettings (void)
+void DefaultKeyboardSettings (bool bSetup)
 {
 gameOptions [0].input.bUseHotKeys = 1;
 }
 
 // ----------------------------------------------------------------------------
 
-void DefaultApplicationSettings (void)
+void DefaultApplicationSettings (bool bSetup)
 {
 gameOptions [0].app.nVersionFilter = 3;
 }
@@ -2271,13 +2281,13 @@ gameOptions [0].app.nVersionFilter = 3;
 
 void DefaultAllSettings (void)
 {
-DefaultApplicationSettings ();
-DefaultCockpitSettings ();
-DefaultGameplaySettings ();
-DefaultKeyboardSettings ();
-DefaultMiscSettings ();
-DefaultPhysicsSettings ();
-DefaultRenderSettings ();
+DefaultApplicationSettings (true);
+DefaultCockpitSettings (true);
+DefaultGameplaySettings (true);
+DefaultKeyboardSettings (true);
+DefaultMiscSettings (true);
+DefaultPhysicsSettings (true);
+DefaultRenderSettings (true);
 //DefaultSettings ();
 }
 

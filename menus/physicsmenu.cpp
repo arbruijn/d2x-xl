@@ -221,7 +221,7 @@ pszDrag [3] = TXT_STANDARD;
 
 //------------------------------------------------------------------------------
 
-void DefaultPhysicsSettings (void);
+void DefaultPhysicsSettings (bool bSetup = false);
 
 void PhysicsOptionsMenu (void)
 {

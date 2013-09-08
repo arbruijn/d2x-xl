@@ -139,7 +139,7 @@ pszExpertMode [2] = TXT_FULL;
 
 //------------------------------------------------------------------------------
 
-void DefaultMiscSettings (void);
+void DefaultMiscSettings (bool bSetup = false);
 
 void MiscellaneousMenu (void)
 {

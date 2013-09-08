@@ -633,7 +633,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-void DefaultKeyboardSettings (void);
+void DefaultKeyboardSettings (bool bSetup = false);
 
 void KeyboardConfigMenu (void)
 {

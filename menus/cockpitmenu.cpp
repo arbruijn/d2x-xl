@@ -298,7 +298,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-void DefaultCockpitSettings (void);
+void DefaultCockpitSettings (bool bSetup = false);
 
 void CockpitOptionsMenu (void)
 {

@@ -1738,6 +1738,8 @@ gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
 gameStates.render.bAmbientColor = /*gameStates.render.bPerPixelLighting ||*/ (gameOpts->render.color.nLevel == 2);
 gameOpts->sound.xCustomSoundVolume = fix (float (gameConfig.nAudioVolume [0]) * 10.0f / 8.0f + 0.5f);
+if ((gameOpts->render.stereo.nFOV < 75) || (gameOpts->render.stereo.nFOV > 120))
+	gameOpts->render.stereo.nFOV = 90;
 extraGameInfo [0].bFlickerLights = gameOpts->app.bEpilepticFriendly;
 if ((extraGameInfo [0].bFastPitch < 1) || (extraGameInfo [0].bFastPitch > 2))
 	extraGameInfo [0].bFastPitch = 2;

@@ -54,7 +54,7 @@
 #include "soundthreads.h"
 #include "menubackground.h"
 
-void DefaultEffectSettings (void);
+void DefaultEffectSettings (bool bSetup = false);
 void SmokeDetailsMenu (void);
 
 //------------------------------------------------------------------------------

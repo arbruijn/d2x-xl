@@ -57,7 +57,7 @@
 static const char *pszAggressivities [6];
 static const char *pszWeaponSwitch [3];
 
-void DefaultGameplaySettings (void);
+void DefaultGameplaySettings (bool bSetup = false);
 
 //------------------------------------------------------------------------------
 

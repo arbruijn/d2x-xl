@@ -56,7 +56,7 @@
 
 //------------------------------------------------------------------------------
 
-void DefaultRenderSettings (void);
+void DefaultRenderSettings (bool bSetup = false);
 
 #define EXPERTMODE	gameOpts->app.bExpertMode
 
