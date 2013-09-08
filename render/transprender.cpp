@@ -785,7 +785,7 @@ else if (ogl.StereoDevice () && (ogl.StereoSeparation () >= 0))
 	m_data.bAllowAdd = -1;
 else
 	m_data.bAllowAdd = 1;
-if (/*m_data.bAllowAdd > 0*/1) 
+if (m_data.bAllowAdd > 0) 
 #endif
 	{
 	m_data.zMin = 0;
@@ -795,16 +795,16 @@ if (/*m_data.bAllowAdd > 0*/1)
 		zMax = zMax;
 #endif
 	m_data.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (m_data.zMax * sqrt (double (gameStates.app.nThreads)));
-	if (m_data.zScale < 0)
-		m_data.zScale = 1;
-	else if (m_data.zScale > 1)
-		m_data.zScale = 1;
+	if (m_data.zScale < 0.0)
+		m_data.zScale = 1.0;
+	else if (m_data.zScale > 1.0)
+		m_data.zScale = 1.0;
 	m_data.vViewer [0] = gameData.render.mine.viewer.vPos;
 	transformation.Transform (m_data.vViewer [1], m_data.vViewer [0]);
 	m_data.vViewerf [0].Assign (m_data.vViewer [0]);
 	m_data.vViewerf [1].Assign (m_data.vViewer [1]);
 	}
-if (ogl.m_data.xStereoSeparation <= 0)
+if (ogl.StereoSeparation () <= 0)
 	m_data.bRenderGlow =
 	m_data.bSoftBlend = 0;
 m_data.bReady = 1;
@@ -1616,11 +1616,10 @@ ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
 ogl.SetFaceCulling (true);
-ogl.SetViewport (gameData.render.screen.Left (), gameData.render.screen.Top (), gameData.render.screen.Width (), gameData.render.screen.Height ());
 m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
 //ogl.ChooseDrawBuffer ();
-ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
+//ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 m_data.nCurType = -1;
 
 int h = -1, nBuffers = 0;
@@ -1681,6 +1680,7 @@ ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
 ogl.StencilOn (bStencil);
+//ogl.SetViewport (gameData.render.screen.Left (), gameData.render.screen.Top (), gameData.render.screen.Width (), gameData.render.screen.Height ());
 
 if (bCleanup) {
 	ResetFreeList ();
