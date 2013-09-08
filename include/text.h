@@ -1995,11 +1995,10 @@ void LoadGameTexts(void);
 #define TXT_OCULUS_RIFT_720p			GT(1211)
 #define TXT_OCULUS_RIFT_1080p			GT(1212)
 #define TXT_SHUTTER_HDMI				GT(1213)
+#define TXT_STEREO_FOV					GT(1214)
 
 #if 0
 
-#define TXT_					GT(1212)
-#define TXT_					GT(1213)
 #define TXT_					GT(1214)
 #define TXT_					GT(1215)
 #define TXT_					GT(1216)

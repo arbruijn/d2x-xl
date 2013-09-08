@@ -1911,7 +1911,7 @@ const char *defaultGameTexts [][2] = {
  {"Links: %s", "Left: %s"},
  {"Rechts: %s", "Right: %s"},
  {"3D-~Brille: %s", "3D ~Glasses: %s"},
- {"st~Ereo-Trennung: %s", "st~Ereo Separation: %s"},
+ {"st~Ereo-Trennung (IPD): %s", "st~Ereo Separation (IPD): %s"},
  {"gelb/blau", "amber/blue"},
  {"rot/tuerkis", "red/cyan"},
  {"gruen/magenta", "green/magenta"},
@@ -1960,6 +1960,7 @@ const char *defaultGameTexts [][2] = {
  {"Oculus Rift (720p)", "Oculus Rift (720p)"},
  {"Oculus Rift (1080p)", "Oculus Rift (1080p)"},
  {"3D TV (1080p)", "3D TV (1080p)"},
+ {"FOV", "FOV"},
  
 #if 0
  {"", ""},
@@ -2687,6 +2688,7 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, werden Zielmarkierungen von Hindernissen\nverborgen, die sich vor Ihnen befinden.", "If checked, target indicators are hidden behind obstacles\nin front of them"},
  {"Wenn angekreuzt, werden von Levelautoren modifizierte Waffen\nverwendet; andernfalls kommen die Standardwaffen zum Einsatz.", 
   "If checked, weapon modifications made by level authors are\nused;otherwise standard weapons are deployed."},
+ {"Hier kann die Breite des Sichtfelds eingestellt werden.", "Adjust the width of your periphal vision here."},
 #if 0
  {"", ""},
 #endif

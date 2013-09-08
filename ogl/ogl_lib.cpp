@@ -450,7 +450,7 @@ glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 float aspectRatio = 1.0f; 
 #if 1
-gameStates.render.glFOV = IsOculusRift () ? 90.0 : gameStates.render.nShadowMap ? 90.0 : 105.0; 
+gameStates.render.glFOV = IsOculusRift () ? double (gameOpts->render.stereo.nFOV) : gameStates.render.nShadowMap ? 90.0 : 105.0; 
 ZFAR = gameStates.render.nShadowMap ? 400.0f : 5000.0f;
 #else
 gameStates.render.glFOV = 180.0;

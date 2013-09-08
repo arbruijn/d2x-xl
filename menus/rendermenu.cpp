@@ -81,8 +81,10 @@ static const char *pszEnhance3D [4];
 static const char *pszDeghost [5];
 static const char *psz3DMethod [2];
 static const char *pszStereoSeparation [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0", "3.25", "3.5", "3.75", "4.0", "4.25", "4.5", "4.75", "5.0"};
+static const char *pszFOV [] = {"75", "80", "85", "90", "95", "100", "105", "110", "115", "120"};
 
 static int xStereoSeparation = 0;
+static int xFOV = 3;
 static int nStereoDevice = 0;
 
 //------------------------------------------------------------------------------
@@ -223,6 +225,16 @@ if ((m = menu ["3D glasses"])) {
 			xStereoSeparation = v;
 			gameOpts->render.stereo.xSeparation = (EXPERTMODE ? (xStereoSeparation + 1) : 3) * (STEREO_SEPARATION_STEP);
 			sprintf (m->Text (), TXT_STEREO_SEPARATION, pszStereoSeparation [v]);
+			m->m_bRebuild = -1;
+			}
+		}
+
+	if ((m = menu ["FOV"])) {
+		v = m->Value ();
+		if (xFOV != v) {
+			xFOV = v;
+			gameOpts->render.stereo.nFOV = (EXPERTMODE ? 75 + xFOV * 5 : 90;
+			sprintf (m->Text (), TXT_STEREO_FOV, pszFOV [v]);
 			m->m_bRebuild = -1;
 			}
 		}
