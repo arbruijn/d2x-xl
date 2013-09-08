@@ -662,6 +662,7 @@ RenderSegmentList (RENDER_TYPE_ZCULL);	// render depth only
 #if 0 //DBG
 RenderCockpitModel ();
 #endif
+#if 1
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
 RenderSegmentOutline ();
@@ -671,6 +672,7 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 		if (!nWindow && SetupCoronas ())
 			RenderSegmentList (RENDER_TYPE_CORONAS);
 	}
+#endif
 gameData.app.nMineRenderCount++;
 PROF_END(ptRenderMine);
 }

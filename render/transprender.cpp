@@ -30,7 +30,7 @@
 #include "renderthreads.h"
 #include "addon_bitmaps.h"
 
-#define RENDER_TRANSPARENCY 1
+#define RENDER_TRANSPARENCY  1
 #define RENDER_TRANSP_DECALS 1
 
 #define TRANSP_POLYS			1
@@ -1612,9 +1612,10 @@ ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
 ogl.SetFaceCulling (true);
 ogl.SetViewport (gameData.render.screen.Left (), gameData.render.screen.Top (), gameData.render.screen.Width (), gameData.render.screen.Height ());
+ogl.ChooseDrawBuffer ();
 m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
-ogl.ChooseDrawBuffer ();
+//ogl.ChooseDrawBuffer ();
 ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 m_data.nCurType = -1;
 
