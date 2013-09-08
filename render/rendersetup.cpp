@@ -283,7 +283,7 @@ gameData.render.nMaxLights =
 gameData.render.nStateChanges =
 gameData.render.nShaderChanges = 0;
 gameData.render.fBrightness = paletteManager.Brightness ();
-if ((gameOpts->render.stereo.nGlasses > 0) && (!gameOpts->app.bExpertMode || gameOpts->render.stereo.bBrighten))
+if (ogl.IsAnaglyphDevice () && (!gameOpts->app.bExpertMode || gameOpts->render.stereo.bBrighten))
 	gameData.render.fBrightness *= 1.25f;
 
 SetFaceDrawer (-1);

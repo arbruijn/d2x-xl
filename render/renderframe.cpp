@@ -918,7 +918,7 @@ if (!ogl.StereoDevice () || !(gameData.app.nFrameCount & 1)) {
 	FillBackground ();
 	transparencyRenderer.Reset ();
 	}
-if (!gameOpts->render.stereo.nGlasses)
+if (!ogl.StereoDevice ())
 	RenderMonoFrame ();
 else {
 	if (gameOpts->render.stereo.xSeparation == 0)

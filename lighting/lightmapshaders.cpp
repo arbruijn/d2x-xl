@@ -181,7 +181,7 @@ if (shaderManager.Rebuild (shaderProg))
 	{
 	ogl.ClearError (0);
 	glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"), 
-					 ((gameOpts->render.stereo.nGlasses > 0) && (!gameOpts->app.bExpertMode || gameOpts->render.stereo.bBrighten)) 
+					 (ogl.StereoDevice () && (!gameOpts->app.bExpertMode || gameOpts->render.stereo.bBrighten)) 
 					 ? 2.0f 
 					 : paletteManager.Brightness ());
 	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);

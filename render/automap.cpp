@@ -190,6 +190,7 @@ G3DrawSphere (&spherePoint, m_bRadar ? objP->info.xSize * 2 : objP->info.xSize, 
 if (m_bRadar && (objP->Index () != LOCALPLAYER.nObject))
 	return;
 if (ogl.SizeVertexBuffer (3)) {
+	ogl.SetBlending (true);
 	headPoint.SetIndex (-1);
 	arrowPoint.SetIndex (-1);
 	ogl.VertexBuffer () [1].Assign (spherePoint.ViewPos ());
@@ -258,14 +259,14 @@ if (AM_SHOW_PLAYERS) {
 		}
 	}
 
-if (bTextured)
-	ogl.SetBlending (true);
 
 CObject* objP = OBJECTS.Buffer ();
 CRenderPoint	spherePoint;
 
 FORALL_OBJS (objP, i) {
 	int size = objP->info.xSize;
+	if (bTextured)
+		ogl.SetBlending (true);
 	switch (objP->info.nType) {
 		case OBJ_HOSTAGE:
 			CCanvas::Current ()->SetColorRGBi (m_colors.nHostage);
@@ -1018,7 +1019,7 @@ do {
 	redbook.CheckRepeat ();
 	bDone = gameStates.menus.nInMenu || ReadControls (nLeaveMode, bDone, bPauseGame);
 	Update ();
-	if (!gameOpts->render.stereo.nGlasses)
+	if (!ogl.StereoDevice ())
 		Render ();
 	else {
 		Render (-gameOpts->render.stereo.xSeparation);

@@ -781,7 +781,7 @@ if (nWindow)
 	m_data.bAllowAdd = 1;
 else if (gameStates.render.cameras.bActive)
 	m_data.bAllowAdd = 1;
-else if (gameOpts->render.stereo.nGlasses && (ogl.StereoSeparation () >= 0))
+else if (ogl.StereoDevice () && (ogl.StereoSeparation () >= 0))
 	m_data.bAllowAdd = -1;
 else
 	m_data.bAllowAdd = 1;

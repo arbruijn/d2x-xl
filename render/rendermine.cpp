@@ -569,7 +569,7 @@ void RenderEffects (int nWindow)
 {
 PROF_START
 
-if (!gameOpts->render.stereo.nGlasses || (ogl.StereoSeparation () < 0) || nWindow || gameStates.render.cameras.bActive) {
+if (!ogl.StereoDevice () || (ogl.StereoSeparation () < 0) || nWindow || gameStates.render.cameras.bActive) {
 	int bLightning, bParticles, bSparks;
 
 	if (gameStates.app.nThreads > 1) {

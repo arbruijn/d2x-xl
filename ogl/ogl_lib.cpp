@@ -531,7 +531,7 @@ viewport [3] = (float) m_states.viewport [0].m_h / (float) gameData.render.scree
 
 void COGL::ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset) 
 {
-if (!bEyeOffset || !gameOpts->render.stereo.nGlasses || gameOpts->render.stereo.bEnhance || gameStates.render.nWindow)
+if (!bEyeOffset || !ogl.IsAnaglyphDevice () || gameOpts->render.stereo.bEnhance || gameStates.render.nWindow)
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 else if (gameOpts->render.stereo.nGlasses == GLASSES_AMBER_BLUE) {	//colorcode 3-d (amber/blue)
 	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.stereo.bFlipFrames)
