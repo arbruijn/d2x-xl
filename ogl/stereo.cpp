@@ -193,9 +193,12 @@ int nDevice = StereoDevice ();
 
 if (IsSideBySideDevice (nDevice)) {
 	SetDrawBuffer (GL_BACK, 0);
+	SetBlendMode (OGL_BLEND_REPLACE);
+	SetDepthMode (GL_ALWAYS);
+	SetDepthTest (false);
 	ogl.SetTexturing (true);
 	BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
-	if (!RiftWarpScene ()) {
+	if (!RiftWarpScene () && (nEffects & 1)) {
 		shaderManager.Deploy (-1);
 		EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);

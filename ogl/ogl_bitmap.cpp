@@ -120,14 +120,14 @@ m_render.v2 = float (Bottom ()) / h;
 
 CTexture* CBitmap::OglBeginRender (bool bBlend, int bMipMaps, int nTransp)
 {
+m_render.bBlendState = ogl.GetBlendUsage ();
+m_render.depthFunc = ogl.GetDepthMode ();
+
 ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetTexturing (true);
 if (Bind (bMipMaps))
 	return NULL;
 m_info.texP->Wrap (GL_REPEAT);
-
-m_render.bBlendState = ogl.GetBlendUsage ();
-m_render.depthFunc = ogl.GetDepthMode ();
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 return &m_info.texture;

@@ -804,8 +804,9 @@ if (m_data.bAllowAdd > 0)
 	m_data.vViewerf [0].Assign (m_data.vViewer [0]);
 	m_data.vViewerf [1].Assign (m_data.vViewer [1]);
 	}
-m_data.bRenderGlow =
-m_data.bSoftBlend = 0;
+if (ogl.m_data.xStereoSeparation <= 0)
+	m_data.bRenderGlow =
+	m_data.bSoftBlend = 0;
 m_data.bReady = 1;
 }
 
@@ -1072,7 +1073,7 @@ else
 #endif
 	{
 	if (faceP)
-		return Add (&item, SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->Center (), 0, true, false);
+		return Add (&item, SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->Center (), 0, true, -1);
 	CFloatVector v = item.vertices [0];
 	for (i = 1; i < item.nVertices; i++) 
 		v += item.vertices [i];
@@ -1546,7 +1547,7 @@ do {
 #endif
 	buffer.nItems [0]--;
 #if 0
-	if (ogl.m_data.xStereoSeparation < 0)
+	if ((ogl.m_data.xStereoSeparation < 0) /*|| (currentP->Type () != tiPoly)*/)
 #endif
 	RenderItem (currentP);
 
@@ -1589,6 +1590,7 @@ if (gameStates.render.cameras.bActive)
 PROF_START
 gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
 ogl.ChooseDrawBuffer ();
+
 shaderManager.Deploy (-1);
 bStencil = ogl.StencilOff ();
 ResetBitmaps ();

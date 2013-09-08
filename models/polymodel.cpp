@@ -837,7 +837,8 @@ for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 		o.info.nType = OBJ_POWERUP;
 	}
 PrintLog (-1);
-gameStates.render.bBuildModels = 0;
+gameStates.render.nShadowPass = 0;
+	gameStates.render.bBuildModels = 0;
 PrintLog (1, "saving optimized polygon model data\n", h);
 SaveModelData ();
 PrintLog (-1);

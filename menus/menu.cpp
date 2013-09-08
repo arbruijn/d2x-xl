@@ -535,7 +535,7 @@ for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNo
 		 ((Item (i).m_nType == NM_TYPE_INPUT_MENU) && Item (i).m_group)))
 		Item (i).UpdateCursor ();
 	}
-
+#if 0
 if (m_props.bIsScrollBox) {
 //fontManager.SetCurrent (NORMAL_FONT);
 	if (m_bRedraw || (m_nLastScrollCheck != m_props.nScrollOffset)) {
@@ -560,7 +560,7 @@ if (m_bCloseBox) {
 	DrawCloseBox (m_props.x, m_props.y);
 	m_bCloseBox = 1;
 	}
-
+#endif
 m_bRedraw = 1;
 m_bStart = 0;
 #if 0

@@ -186,7 +186,16 @@ if (nEffects & 5) {
 			ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
 		}
 	else {
-		SelectBlurBuffer (0); 
+		if (nEffects & 1)
+			SelectBlurBuffer (0); 
+		else {
+			SetDrawBuffer (GL_BACK, 0);
+			shaderManager.Deploy (-1);
+			}
+		SetBlendMode (OGL_BLEND_REPLACE);
+		SetDepthMode (GL_ALWAYS);
+		SetDepthTest (false);
+		SetTexturing (true);
 		for (int i = 0; i < 2; i++) {
 			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
