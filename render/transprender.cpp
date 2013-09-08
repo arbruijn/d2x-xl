@@ -1545,6 +1545,9 @@ do {
 		nDbgItem = nDbgItem;
 #endif
 	buffer.nItems [0]--;
+#if 0
+	if (ogl.m_data.xStereoSeparation < 0)
+#endif
 	RenderItem (currentP);
 
 	nextP = currentP->nextItemP;
@@ -1579,13 +1582,13 @@ if (!AllocBuffers ())
 	return;
 if (!HeapSize ())
 	return;
-#if DBG
 if (gameStates.render.cameras.bActive)
 	nWindow = nWindow;
 //HUDMessage (0, "transp. render heap size: %d.%03d.%03d", HeapSize () / 1000000, (HeapSize () % 1000000) / 1000, HeapSize () % 1000);
-#endif
+
 PROF_START
 gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
+ogl.ChooseDrawBuffer ();
 shaderManager.Deploy (-1);
 bStencil = ogl.StencilOff ();
 ResetBitmaps ();
@@ -1612,7 +1615,6 @@ ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
 ogl.SetFaceCulling (true);
 ogl.SetViewport (gameData.render.screen.Left (), gameData.render.screen.Top (), gameData.render.screen.Width (), gameData.render.screen.Height ());
-ogl.ChooseDrawBuffer ();
 m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
 //ogl.ChooseDrawBuffer ();
@@ -1661,6 +1663,7 @@ else {
 			}
 		}
 	}
+
 
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetDepthWrite (false);
