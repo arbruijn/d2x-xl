@@ -520,7 +520,7 @@ bool CRiftData::Create (void)
 {
 #if OCULUS_RIFT
 OVR::System::Init (OVR::Log::ConfigureDefaultLog (OVR::LogMask_All));
-gameData.render.rift.m_bAvailable = false;
+gameData.render.rift.m_bAvailable = 0;
 m_managerP = *OVR::DeviceManager::Create();
 if (m_managerP) {
 	//m_managerP->SetMessageHandler(this);
@@ -551,21 +551,23 @@ if (m_managerP) {
 		}
 	}
 // If there was a problem detecting the Rift, display appropriate message.
-const char* detectionMessage;
+
+const char* detectionMessage = NULL;
+
 if (!m_managerP)
 	detectionMessage = "Cannot initialize Oculus Rift system.";
 if (!m_hmdP && !m_sensorP)
 	detectionMessage = "Oculus Rift not detected.";
 else if (!m_hmdP)
 	detectionMessage = "Oculus Sensor detected; HMD Display not detected.\n";
-else if (!m_sensorP)
-	detectionMessage = "Oculus HMD Display detected; Sensor not detected.\n";
 else if (m_hmdInfo.DisplayDeviceName [0] == '\0')
 	detectionMessage = "Oculus Sensor detected; HMD display EDID not detected.\n";
-else {
-	detectionMessage = 0;
-	gameData.render.rift.m_bAvailable = true;
+else if (!m_sensorP) {
+	gameData.render.rift.m_bAvailable = 1;
+	detectionMessage = "Oculus HMD Display detected; Sensor not detected.\n";
 	}
+else 
+	gameData.render.rift.m_bAvailable = 2;
 if (detectionMessage) 
 	PrintLog (0, detectionMessage);
 #endif

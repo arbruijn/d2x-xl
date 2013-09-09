@@ -1734,12 +1734,12 @@ class CRiftData {
 		OVR::Util::Render::StereoConfig	m_stereoConfig;
 #endif
 
-		bool m_bAvailable;
+		int m_bAvailable;
 
 		CRiftData () : m_bAvailable (false) {}
 		bool Create (void);
 		void Destroy (void);
-		inline bool Available (void) { return m_bAvailable; }
+		inline int Available (void) { return m_bAvailable; }
 	};
 
 
