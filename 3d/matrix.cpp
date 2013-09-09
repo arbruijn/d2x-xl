@@ -43,7 +43,7 @@ ScaleTransformation (transformation, 1);
 
 void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation, bool bSetupRenderer)
 {
-transformation.m_info.zoom = xZoom;
+transformation.m_info.zoom = ogl.IsOculusRift () ? 3 * xZoom / 2 : xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
 transformation.m_info.pos = vPos;
 transformation.m_info.posf [0].Assign (transformation.m_info.pos);
