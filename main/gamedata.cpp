@@ -496,6 +496,7 @@ fAttScale [1] = 0.005f;
 fAttScale [0] = 0.625f;
 fAttScale [1] = 0.0625f;
 #endif
+fScreenScale = 1.0f;
 faceList.Clear ();
 }
 

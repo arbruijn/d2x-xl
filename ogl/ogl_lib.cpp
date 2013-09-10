@@ -567,6 +567,7 @@ else //GLASSES_SHUTTER_NVIDIA, GLASSES_OCULUS_RIFT or NONE
 void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 {
 m_data.xStereoSeparation = xStereoSeparation;
+gameData.render.fScreenScale = IsOculusRift () ? 2.0f : 1.0f;
 ChooseDrawBuffer ();
 ogl.SetPolyOffsetFill (false);
 #if !MAX_SHADOWMAPS
@@ -755,6 +756,7 @@ else
 
 void COGL::EndFrame (int nWindow)
 {
+gameData.render.fScreenScale = 1.0f;
 screen.SetScale (1.0f);
 SetViewport (0, 0, screen.Width (), screen.Height ());
 if (nWindow == 0) {

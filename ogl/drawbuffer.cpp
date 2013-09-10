@@ -73,8 +73,8 @@ if ((gameStates.render.bRenderIndirect <= 0) && (nType >= 0))
 if (DrawBuffer ()->Handle ())
 	return;
 PrintLog (1, "creating draw buffer\n");
-DrawBuffer ()->Create (int (m_states.nCurWidth * (IsOculusRift () ? 2 : 1)), 
-							  int (m_states.nCurHeight * (IsOculusRift () ? 2 : 1)), 
+DrawBuffer ()->Create (int (m_states.nCurWidth * gameData.render.rift.m_screenScale), 
+							  int (m_states.nCurHeight * gameData.render.rift.m_screenScale), 
 							  nType, (nType != 1) ? 1 : 1 + m_features.bMultipleRenderTargets);
 PrintLog (-1);
 }

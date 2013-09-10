@@ -1786,6 +1786,7 @@ class CRenderData {
 		int							nUsedFaces;
 		float							fAttScale [2];
 		float							fBrightness;
+		float							fScreenScale;
 		ubyte							nPowerupFilter;
 
 	public:
