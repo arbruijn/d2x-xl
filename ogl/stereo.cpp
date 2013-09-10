@@ -169,16 +169,18 @@ if (!gameStates.render.textures.bHaveRiftWarpShader)
 #if 1
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
-OglVertexPointer (2, GL_FLOAT, 0, quadVerts [1]);
+OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+ogl.SetViewport (0, 0, screen.Width (false) / 2, screen.Height (false));
 OglDrawArrays (GL_QUADS, 0, 4);
 //if (!RiftWarpFrame (gameData.render.rift.m_eyes [0]))
 //	return false;
 #endif
 #if 1
 gameData.render.viewport.SetLeft (gameData.render.screen.Width () / 2);
+ogl.SetViewport (screen.Width (false) / 2, 0, screen.Width (false), screen.Height (false));
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [2]);
-OglVertexPointer (2, GL_FLOAT, 0, quadVerts [2]);
+OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 OglDrawArrays (GL_QUADS, 0, 4);
 //if (!RiftWarpFrame (gameData.render.rift.m_eyes [1]))
 //	return false;
@@ -203,6 +205,7 @@ if (IsSideBySideDevice (nDevice)) {
 		EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
 		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+		ogl.SetViewport (0, 0, screen.Width (false), screen.Height (false));
 		OglDrawArrays (GL_QUADS, 0, 4);
 		}
 	gameData.render.viewport.SetLeft (0);

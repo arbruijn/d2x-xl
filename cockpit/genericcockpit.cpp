@@ -2237,7 +2237,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordCockpitChange (gameStates.render.cockpit.nType);
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nType = CM_FULL_SCREEN;
-gameData.render.scene.Set (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ()); // OpenGL viewport must be properly set here
+gameData.render.scene.Set (0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false)); // OpenGL viewport must be properly set here
 fontManager.SetCurrent (GAME_FONT);
 SetFontScale (1.0f);
 SetCanvas (NULL);

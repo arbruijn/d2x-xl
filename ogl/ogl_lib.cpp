@@ -755,8 +755,6 @@ else
 
 void COGL::EndFrame (int nWindow)
 {
-gameData.render.fScreenScale = 1.0f;
-screen.SetScale (1.0f);
 SetViewport (0, 0, screen.Width (), screen.Height ());
 if (nWindow == 0) {
 	postProcessManager.Update ();
