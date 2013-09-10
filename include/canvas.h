@@ -47,7 +47,6 @@ typedef struct tCanvas {
 	CFont				*font;				// the currently selected font
 	CCanvasColor	fontColors [2];   // current font background color (-1==Invisible)
 	short				nDrawMode;			// fill, XOR, etc.
-	 float			scale;
 } tCanvas;
 
 class CCanvas : public CBitmap {
@@ -127,19 +126,9 @@ class CCanvas : public CBitmap {
 		inline float XScale (void) { return (Width () > 640) ? float (Width ()) / 640.0f : 1.0f; }
 		inline float YScale (void) { return (Height () > 480) ? float (Height ()) / 480.0f : 1.0f; }
 
-		inline void SetScale (float scale) { m_info.scale = scale; }
-		inline float GetScale (void) { return m_info.scale; }
-
 		inline bool Clip (int x, int y) { return this->CBitmap::Clip (x, y); }
 
 		inline double AspectRatio (void) { return double (Width ()) / double (Height ()); }
-
-		inline short Width (bool bScale = true) { return bScale ? short (CBitmap::Width () * m_info.scale + 0.5f) : CBitmap::Width (); }
-		inline short Height (bool bScale = true) { return bScale ? short (CBitmap::Height () * m_info.scale + 0.5f) : CBitmap::Height (); }
-		inline short Left (void) { return short (CBitmap::Left () * m_info.scale + 0.5f); }
-		inline short Top (void) { return short (CBitmap::Top () * m_info.scale + 0.5f); }
-		inline short Right (void) { return Left () + Width (); }
-		inline short Bottom (void) { return Top () + Height (); }
 
 		void FadeColorRGB (double dFade);
 };

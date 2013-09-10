@@ -169,7 +169,7 @@ if (!gameStates.render.textures.bHaveRiftWarpShader)
 #if 1
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
-OglVertexPointer (2, GL_FLOAT, 0, quadVerts [3]);
+OglVertexPointer (2, GL_FLOAT, 0, quadVerts [1]);
 OglDrawArrays (GL_QUADS, 0, 4);
 //if (!RiftWarpFrame (gameData.render.rift.m_eyes [0]))
 //	return false;
@@ -178,7 +178,7 @@ OglDrawArrays (GL_QUADS, 0, 4);
 gameData.render.viewport.SetLeft (gameData.render.screen.Width () / 2);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [2]);
-OglVertexPointer (2, GL_FLOAT, 0, quadVerts [4]);
+OglVertexPointer (2, GL_FLOAT, 0, quadVerts [2]);
 OglDrawArrays (GL_QUADS, 0, 4);
 //if (!RiftWarpFrame (gameData.render.rift.m_eyes [1]))
 //	return false;
