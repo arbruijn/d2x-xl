@@ -624,6 +624,7 @@ if (!ShowGameMessage (gameData.messages, -1, -1))
 
 void SetupCanvasses (void)
 {
+screen.SetScale (ogl.IsOculusRift () ? 2.0f : 1.0f);
 screen.Canvas ()->SetupPane (&gameData.render.screen, 0, 0, screen.Width (), screen.Height ());
 if (ogl.IsSideBySideDevice ())
 	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width () / 2, screen.Height ());

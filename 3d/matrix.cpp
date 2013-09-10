@@ -53,6 +53,9 @@ if (!ogl.StereoSeparation ())
 else if (ogl.IsOculusRift ()) {
 	//TODO: Adjust the orientation (view) matrix properly for left/right eye coordinate transformation
 	transformation.m_info.view [0] = mOrient;
+#if 1
+	transformation.m_info.pos += mOrient.m.dir.r * (ogl.StereoSeparation () * 2);
+#endif
 	}
 else if (gameOpts->render.stereo.nMethod == STEREO_TOE_IN) {
 	fix zScreen = F2X (ogl.ZScreen () * 10.0);

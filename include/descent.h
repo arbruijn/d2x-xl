@@ -1736,9 +1736,10 @@ class CRiftData {
 #endif
 
 		float	m_renderScale;
+		float m_fov;
 		int	m_bAvailable;
 
-		CRiftData () : m_renderScale (1.0f), m_bAvailable (false) {}
+		CRiftData () : m_renderScale (1.0f), m_fov (135.0f), m_bAvailable (false) {}
 		bool Create (void);
 		void Destroy (void);
 		inline int Available (void) { return m_bAvailable; }

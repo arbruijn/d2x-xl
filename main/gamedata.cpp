@@ -545,6 +545,7 @@ if (m_managerP) {
 			m_renderScale = m_stereoConfig.GetDistortionScale (); 
 			m_eyes [0] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Left);
 			m_eyes [1] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right);
+			m_fov = m_stereoConfig.GetYFOVDegrees ();
 			}
 		}
 	else {            

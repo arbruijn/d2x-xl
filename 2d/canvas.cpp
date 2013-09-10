@@ -53,6 +53,7 @@ return canvP;
 void CCanvas::Init (void)
 {
 memset (&m_info, 0, sizeof (m_info));
+m_scale = 1.0;
 if (!m_save.Buffer ())
 	m_save.Create (10);
 }
@@ -91,6 +92,7 @@ void CCanvas::SetupPane (CCanvas *paneP, int x, int y, int w, int h)
 {
 paneP->SetColor (m_info.color);
 paneP->SetDrawMode (m_info.nDrawMode);
+paneP->SetScale (m_scale);
 paneP->SetFont (m_info.font ? m_info.font : GAME_FONT);
 paneP->SetFontColor (m_info.fontColors [0], 0);
 paneP->SetFontColor (m_info.fontColors [1], 1);
