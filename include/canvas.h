@@ -168,8 +168,8 @@ class CScreen {
 
 		inline CCanvas* Canvas (void) { return &m_info.canvas; }
 		inline u_int32_t Mode (void) { return m_info.mode; }
-		inline short Width (void) { return short (m_info.width * m_info.scale [2] + 0.5f); }
-		inline short Height (void) { return short (m_info.height * m_info.scale [2] + 0.5f); }
+		inline short Width (bool bScale = true) { return bScale ? short (m_info.width * m_info.scale [2] + 0.5f) : m_info.width; }
+		inline short Height (bool bScale = true) { return bScale ? short (m_info.height * m_info.scale [2] + 0.5f) : m_info.height; }
 		inline fix Aspect (void) { return m_info.aspect; }
 
 		inline void SetCanvas (CCanvas* canvas) { 

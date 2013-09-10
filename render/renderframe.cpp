@@ -627,13 +627,13 @@ if (!ShowGameMessage (gameData.messages, -1, -1))
 void SetupCanvasses (void)
 {
 screen.SetScale (gameData.render.fScreenScale);
-screen.Canvas ()->SetupPane (&gameData.render.screen, 0, 0, screen.Width (), screen.Height ());
+screen.Canvas ()->SetupPane (&gameData.render.screen, 0, 0, screen.Width (false), screen.Height (false));
 if (ogl.IsSideBySideDevice ())
-	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width () / 2, screen.Height ());
+	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width (false) / 2, screen.Height (false));
 else
-	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width (), screen.Height ());
-screen.Canvas ()->SetupPane (&gameData.render.viewport, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
-screen.Canvas ()->SetupPane (&gameData.render.scene, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width (false), screen.Height (false));
+screen.Canvas ()->SetupPane (&gameData.render.viewport, 0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false));
+screen.Canvas ()->SetupPane (&gameData.render.scene, 0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false));
 CCanvas::SetCurrent (&gameData.render.frame);
 }
 
