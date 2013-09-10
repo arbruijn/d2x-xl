@@ -68,10 +68,12 @@ tTexCoord2f quadTexCoord [3][4] = {
 	{{{0.5f,0}},{{1,0}},{{1,1}},{{0.5f,1}}}
 	};
 
-float quadVerts [3][4][2] = {
+float quadVerts [5][4][2] = {
 	{{0,0},{1,0},{1,1},{0,1}},
 	{{0,0},{0.5f,0},{0.5f,1},{0,1}},
-	{{0.5f,0},{1,0},{1,1},{0.5f,1}}
+	{{0.5f,0},{1,0},{1,1},{0.5f,1}},
+	{{0,0},{0.25f,0},{0.25f,0.5f},{0,0.5f}},
+	{{0.25f,0},{0.5f,0},{0.5f,0.5f},{0.25f,0.5f}}
 	};
 
 //------------------------------------------------------------------------------
@@ -182,7 +184,7 @@ if (nEffects & 5) {
 		gameData.render.frame.SetLeft (0);
 		postProcessManager.Setup ();
 		postProcessManager.Render ();
-		if (nEffects & 4) // shutter glasses or Oculus Rift
+		if (nEffects & 4) // shutter glasses
 			ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
 		}
 	else {
