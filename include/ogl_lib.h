@@ -366,6 +366,8 @@ class COGL {
 		void DestroyDrawBuffers (void);
 		void SetDrawBuffer (int nBuffer, int bFBO);
 		void SetReadBuffer (int nBuffer, int bFBO);
+		int DrawBufferWidth (void);
+		int DrawBufferHeight (void);
 		void FlushStereoBuffers (int nEffects);
 		void FlushEffects (int nEffects);
 #if MAX_SHADOWMAPS

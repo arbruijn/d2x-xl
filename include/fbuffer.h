@@ -53,6 +53,7 @@ class CFBO {
 		inline int Active (void) { return m_info.bActive; }
 		inline GLuint* BufferIds (void) { return m_info.bufferIds + m_info.nFirstBuffer; }
 		inline GLuint BufferCount (void) { return m_info.nBufferCount; }
+		inline bool Resize (int nWidth, int nHeight) { return (nWidth != GetWidth ()) || (nHeight != GetHeight ()); }
 
 		inline void SelectColorBuffers (int nBuffer = 0) { 
 			if ((m_info.nBufferCount == 1) || (nBuffer >= m_info.nBufferCount)) 

@@ -64,18 +64,28 @@
 
 //------------------------------------------------------------------------------
 
+int COGL::DrawBufferWidth (void)
+{
+return int (m_states.nCurWidth * gameData.render.fScreenScale);
+}
+
+int COGL::DrawBufferHeight (void)
+{
+return int (m_states.nCurHeight * gameData.render.fScreenScale);
+}
+
+//------------------------------------------------------------------------------
+
 void COGL::CreateDrawBuffer (int nType)
 {
 if (!m_features.bRenderToTexture)
 	return;
 if ((gameStates.render.bRenderIndirect <= 0) && (nType >= 0))
 	return;
-if (DrawBuffer ()->Handle ())
+if (DrawBuffer ()->Handle () && !DrawBuffer ()->Resize (DrawBufferWidth (), DrawBufferHeight ()))
 	return;
 PrintLog (1, "creating draw buffer\n");
-DrawBuffer ()->Create (int (m_states.nCurWidth * gameData.render.fScreenScale), 
-							  int (m_states.nCurHeight * gameData.render.fScreenScale), 
-							  nType, (nType != 1) ? 1 : 1 + m_features.bMultipleRenderTargets);
+DrawBuffer ()->Create (DrawBufferWidth (), DrawBufferHeight (), nType, (nType != 1) ? 1 : 1 + m_features.bMultipleRenderTargets);
 PrintLog (-1);
 }
 
@@ -168,7 +178,7 @@ int COGL::SelectDrawBuffer (int nBuffer, int nColorBuffers)
 //	nBuffer = gameStates.render.nShadowMap + 5;
 int nPrevBuffer = (m_states.nCamera < 0) 
 						? m_states.nCamera 
-						: (m_data.drawBufferP && m_data.drawBufferP->Active ()) 
+						: (m_data.drawBufferP && m_data.drawBufferP->Active () && !m_data.drawBufferP->Resize (DrawBufferWidth (), DrawBufferHeight ())) 
 							? int (m_data.drawBufferP - m_data.drawBuffers.Buffer ()) 
 							: 0x7FFFFFFF;
 

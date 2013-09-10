@@ -468,6 +468,7 @@ DESTROY (bRadarVisited);
 CRenderData::CRenderData ()
 {
 transpColor = DEFAULT_TRANSPARENCY_COLOR; //transparency color bitmap index
+fScreenScale = 1.0f;
 }
 
 //------------------------------------------------------------------------------
