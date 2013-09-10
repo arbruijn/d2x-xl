@@ -170,7 +170,7 @@ class CScreen {
 			m_info.width = 0;
 			m_info.height = 0;
 			m_info.aspect = 0;
-			m_info.scale [0] = 1.0f;
+			m_info.scale [2] = 1.0f;
 			if (!m_current)
 				m_current = this;
 			CCanvas::SetCurrent ();
@@ -200,7 +200,7 @@ class CScreen {
 			}
 		inline void SetAspect (fix aspect) { m_info.aspect = aspect; }
 		inline float SetScale (float scale) { m_info.canvas.SetScale (m_info.scale [2] = scale); }
-		inline float Scale (uint i = 0) { return m_info.scale [i]; }
+		inline float Scale (uint i = 0) { return m_info.scale [i] ? m_info.scale [i] : 1.0f; }
 
 		static CScreen* Current (void) { return m_current; }
 };
