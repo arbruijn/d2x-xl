@@ -134,8 +134,8 @@ class CCanvas : public CBitmap {
 
 		inline double AspectRatio (void) { return double (Width ()) / double (Height ()); }
 
-		inline short Width (void) { return short (CBitmap::Width () * m_info.scale + 0.5f); }
-		inline short Height (void) { return short (CBitmap::Height () * m_info.scale + 0.5f); }
+		inline short Width (bool bScale = true) { return bScale ? short (CBitmap::Width () * m_info.scale + 0.5f) : CBitmap::Width (); }
+		inline short Height (bool bScale = true) { return bScale ? short (CBitmap::Height () * m_info.scale + 0.5f) : CBitmap::Height (); }
 		inline short Left (void) { return short (CBitmap::Left () * m_info.scale + 0.5f); }
 		inline short Top (void) { return short (CBitmap::Top () * m_info.scale + 0.5f); }
 		inline short Right (void) { return Left () + Width (); }
