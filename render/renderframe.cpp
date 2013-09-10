@@ -927,7 +927,7 @@ if (!ogl.StereoDevice ())
 else {
 	if (gameOpts->render.stereo.xSeparation == 0)
 		gameOpts->render.stereo.xSeparation = 3 * I2X (1) / 4;
-	fix xStereoSeparation = automap.Display () ? 2 * gameOpts->render.stereo.xSeparation : gameOpts->render.stereo.xSeparation;
+	fix xStereoSeparation = (automap.Display () && !ogl.IsSideBySideDevice ()) ? 2 * gameOpts->render.stereo.xSeparation : gameOpts->render.stereo.xSeparation;
 #if DBG
 	if (ogl.IsSideBySideDevice () && bFixSBSBug)
 		RenderMonoFrame (-xStereoSeparation);

@@ -541,6 +541,10 @@ if (m_managerP) {
 			// RenderParams.MonitorName = m_hmdInfo.DisplayDeviceName;
 			// RenderParams.DisplayId = m_hmdInfo.DisplayId;
 			m_stereoConfig.SetHMDInfo (m_hmdInfo);
+			m_stereoConfig.SetDistortionFitPointVP (-1, 0);
+			m_renderScale = m_stereoConfig.GetDistortionScale (); 
+			m_eyes [0] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Left);
+			m_eyes [1] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right);
 			}
 		}
 	else {            

@@ -329,7 +329,7 @@ class COGL {
 		void InitShaders (void);
 
 		void SetupProjection (CTransformation& transformation);
-		void SetupFrustum (void);
+		void SetupFrustum (fix xStereoSeparation);
 		void SelectTMU (int nTMU, bool bClient = true);
 		int EnableClientState (GLuint nState, int nTMU = -1);
 		int DisableClientState (GLuint nState, int nTMU = -1);

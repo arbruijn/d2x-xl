@@ -1727,16 +1727,18 @@ class CFaceListIndex {
 class CRiftData {
 	public:
 #if OCULUS_RIFT
-		OVR::Ptr<OVR::DeviceManager>		m_managerP;
-		OVR::Ptr<OVR::HMDDevice>			m_hmdP;
-		OVR::Ptr<OVR::SensorDevice>		m_sensorP;
-		OVR::HMDInfo							m_hmdInfo;
-		OVR::Util::Render::StereoConfig	m_stereoConfig;
+		OVR::Ptr<OVR::DeviceManager>			m_managerP;
+		OVR::Ptr<OVR::HMDDevice>				m_hmdP;
+		OVR::Ptr<OVR::SensorDevice>			m_sensorP;
+		OVR::HMDInfo								m_hmdInfo;
+		OVR::Util::Render::StereoConfig		m_stereoConfig;
+		OVR::Util::Render::StereoEyeParams	m_eyes [2];
 #endif
 
-		int m_bAvailable;
+		float	m_renderScale;
+		int	m_bAvailable;
 
-		CRiftData () : m_bAvailable (false) {}
+		CRiftData () : m_renderScale (1.0f), m_bAvailable (false) {}
 		bool Create (void);
 		void Destroy (void);
 		inline int Available (void) { return m_bAvailable; }

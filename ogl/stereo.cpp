@@ -170,7 +170,7 @@ if (!gameStates.render.textures.bHaveRiftWarpShader)
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [1]);
-if (!RiftWarpFrame (gameData.render.rift.m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Left)))
+if (!RiftWarpFrame (gameData.render.rift.m_eyes [0]))
 	return false;
 #endif
 #if 1
@@ -178,7 +178,7 @@ gameData.render.viewport.SetLeft (gameData.render.screen.Width () / 2);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [2]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [2]);
-if (!RiftWarpFrame (gameData.render.rift.m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right)))
+if (!RiftWarpFrame (gameData.render.rift.m_eyes [1]))
 	return false;
 #endif
 return true;
@@ -465,6 +465,30 @@ static const char* riftWarpVS =
 	 "gl_TexCoord [0]=gl_MultiTexCoord0;"
     "}\n";
 
+#if 1
+
+static const char* riftWarpFS =
+	"uniform vec2 LensCenter;\n"
+	"uniform vec2 ScreenCenter;\n"
+	"uniform vec2 Scale;\n"
+	"uniform vec2 ScaleIn;\n"
+	"uniform vec4 HmdWarpParam;\n"
+	"uniform sampler2D SceneTex;\n"
+	"\n"
+	"void main()\n"
+	"{\n"
+	"vec2 theta = (gl_TexCoord [0].xy - LensCenter) * ScaleIn;\n" // Scales to [-1,1]
+	"float rSq = theta.x * theta.x + theta.y * theta.y;\n"
+	"theta *= (HmdWarpParam.x + HmdWarpParam.y * rSq + HmdWarpParam.z * rSq * rSq +	HmdWarpParam.w	* rSq * rSq * rSq);\n"
+	"vec2 tc = LensCenter + Scale * theta;\n"
+	"gl_FragColor =\n"
+	"(clamp(tc, ScreenCenter-vec2(0.25,0.5), ScreenCenter+vec2(0.25,0.5)) == tc)\n"
+	"? texture2D(SceneTex, tc)\n"
+	": vec4(0.0, 0.0, 0.0, 1.0);\n"
+	"}\n";
+
+#else
+
 static const char* riftWarpFS =
 	"uniform vec2 LensCenter;\n"
 	"uniform vec2 ScreenCenter;\n"
@@ -476,22 +500,20 @@ static const char* riftWarpFS =
 	"\n"
 	"void main()\n"
 	"{\n"
-	"vec2  theta = (gl_TexCoord [0] - LensCenter) * ScaleIn;\n" // Scales to [-1,1]
-	"float rSq = rSq0 = theta.x * theta.x + theta.y * theta.y;\n"
-	"//theta *= Scale * (HmdWarpParam.x + HmdWarpParam.y * rSq + HmdWarpParam.z * rSq * rSq + HmdWarpParam.w * rSq * rSq * rSq);\n"
-	"theta = HmdWarpParam.x + HmdWarpParam.y * rSq;\n"
-	"rSq *= rSq0;\n"
-	"theta += HmdWarpParam.z * rSq;\n"
-	"rSq *= rSq0;\n"
-	"theta += HmdWarpParam.w * rSq;\n"
-	"vec2 tcBlue = LensCenter + theta * (ChromAbParam.z + ChromAbParam.w * rSq0);\n"
+	"vec2 theta = (gl_TexCoord [0].xy - LensCenter) * ScaleIn;\n" // Scales to [-1,1]
+	"float rSq = theta.x * theta.x + theta.y * theta.y;\n"
+	"theta *= Scale * (HmdWarpParam.x + HmdWarpParam.y * rSq + HmdWarpParam.z * rSq * rSq + HmdWarpParam.w * rSq * rSq * rSq);\n"
+	"vec2 tcBlue = LensCenter + theta * (ChromAbParam.z + ChromAbParam.w * rSq);\n"
 	"gl_FragColor =\n"
 	"   (clamp (tcBlue, ScreenCenter - vec2 (0.25, 0.5), ScreenCenter + vec2 (0.25, 0.5)) == tcBlue)\n"
-	"   ? gl_FragColor = vec4 (texture2D (SceneTex, LensCenter + theta * (ChromAbParam.x + ChromAbParam.y * rSq0)).r,\n"
+	"   ? gl_FragColor = vec4 (texture2D (SceneTex, LensCenter + theta * (ChromAbParam.x + ChromAbParam.y * rSq)).r,\n"
 	"                          texture2D (SceneTex, LensCenter + theta).g,\n"
-	"                          texture2D (SceneTex, tcBlue).b)\n"
+	"                          texture2D (SceneTex, tcBlue).b,\n"
+	"                          1.0)\n"
 	"   : vec4 (0.0, 0.0, 0.0, 1.0);\n"
 	"}\n";
+
+#endif
 
 //------------------------------------------------------------------------------
 
