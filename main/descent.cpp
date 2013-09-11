@@ -128,7 +128,6 @@ int CheckAndFixSetup (void);
 #define CheckAndFixSetup()
 #endif
 void InitGameStates (void);
-void SetupCanvasses (void);
 
 char szAutoMission [255];
 char szAutoHogFile [255];

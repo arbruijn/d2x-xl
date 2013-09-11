@@ -131,6 +131,16 @@ class CCanvas : public CBitmap {
 		inline double AspectRatio (void) { return double (Width ()) / double (Height ()); }
 
 		void FadeColorRGB (double dFade);
+
+		inline float GetScale (void);
+
+		inline short Width (bool bScale = true) { return bScale ? short (CBitmap::Width () * GetScale () + 0.5f) : CBitmap::Width (); }
+		inline short Height (bool bScale = true) { return bScale ? short (CBitmap::Height () * GetScale () + 0.5f) : CBitmap::Height (); }
+		inline short Left (void) { return short (CBitmap::Left () * GetScale () + 0.5f); }
+		inline short Top (void) { return short (CBitmap::Top () * GetScale () + 0.5f); }
+		inline short Right (void) { return Left () + Width (); }
+		inline short Bottom (void) { return Top () + Height (); }
+
 };
 
 //===========================================================================
@@ -140,7 +150,7 @@ typedef struct tScreen {		// This is a video screen
 	u_int32_t	mode;				// Video mode number
 	short   		width, height; // Actual Width and Height
 	fix     		aspect;			//aspect ratio (w/h) for this screen
-	float			scale [3];		//size ratio compared to 640x480
+	float			scale [2];		//size ratio compared to 640x480
 } tScreen;
 
 
@@ -149,6 +159,7 @@ class CScreen {
 		tScreen	m_info;
 
 		static CScreen* m_current;
+		static float m_fScale;
 
 	public:
 		CScreen () { Init (); }
@@ -168,14 +179,14 @@ class CScreen {
 
 		inline CCanvas* Canvas (void) { return &m_info.canvas; }
 		inline u_int32_t Mode (void) { return m_info.mode; }
-		inline short Width (bool bScale = true) { return bScale ? short (m_info.width * m_info.scale [2] + 0.5f) : m_info.width; }
-		inline short Height (bool bScale = true) { return bScale ? short (m_info.height * m_info.scale [2] + 0.5f) : m_info.height; }
+
+		inline short Width (bool bScale = true) { return bScale ? short (m_info.width * GetScale () + 0.5f) : m_info.width; }
+		inline short Height (bool bScale = true) { return bScale ? short (m_info.height * GetScale () + 0.5f) : m_info.height; }
 		inline fix Aspect (void) { return m_info.aspect; }
 
 		inline void SetCanvas (CCanvas* canvas) { 
 			if (canvas) {
 				m_info.canvas = *canvas;
-				m_info.canvas.SetScale (Scale (2));
 				}
 			}
 		inline void SetMode (u_int32_t mode) { m_info.mode = mode; }
@@ -188,13 +199,18 @@ class CScreen {
 			m_info.scale [1] = (height > 480) ? float (height) / 480.0f : 1.0f;
 			}
 		inline void SetAspect (fix aspect) { m_info.aspect = aspect; }
-		inline float SetScale (float scale) { m_info.canvas.SetScale (m_info.scale [2] = scale); }
 		inline float Scale (uint i = 0) { return m_info.scale [i] ? m_info.scale [i] : 1.0f; }
 
 		static CScreen* Current (void) { return m_current; }
+		static float GetScale (void) { return m_fScale; }
+		static void SetScale (float scale) { m_fScale = scale; }
 };
 
 extern CScreen screen;
+
+inline float CCanvas::GetScale (void) { return CScreen::GetScale (); }
+
+void SetupCanvasses (float scale = 1.0f);
 
 //===========================================================================
 

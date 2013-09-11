@@ -515,9 +515,10 @@ if (!gameOpts->render.cameras.bHires) {
 int t = screen.Height ();
 if (!gameOpts->render.cameras.bHires)
 	t >>= gameStates.render.cameras.bActive;
-if (m_states.viewport [0] != CViewport (x, y, w, h, t)) {
+CViewport vp = CViewport (x, y, w, h, t);
+if (m_states.viewport [0] != vp) {
 	m_states.viewport [1] = m_states.viewport [0];
-	m_states.viewport [0] = CViewport (x, y, w, h, t);
+	m_states.viewport [0] = vp;
 	m_states.viewport [0].Apply ();
 	}
 }
@@ -567,6 +568,7 @@ else //GLASSES_SHUTTER_NVIDIA, GLASSES_OCULUS_RIFT or NONE
 void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 {
 m_data.xStereoSeparation = xStereoSeparation;
+m_states.bEnableScissor = 1;
 ChooseDrawBuffer ();
 ogl.SetPolyOffsetFill (false);
 #if !MAX_SHADOWMAPS

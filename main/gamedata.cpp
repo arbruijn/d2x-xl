@@ -468,7 +468,6 @@ DESTROY (bRadarVisited);
 CRenderData::CRenderData ()
 {
 transpColor = DEFAULT_TRANSPARENCY_COLOR; //transparency color bitmap index
-fScreenScale = 1.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -497,7 +496,6 @@ fAttScale [1] = 0.005f;
 fAttScale [0] = 0.625f;
 fAttScale [1] = 0.0625f;
 #endif
-fScreenScale = 1.0f;
 faceList.Clear ();
 }
 
@@ -548,6 +546,7 @@ if (m_managerP) {
 			m_eyes [0] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Left);
 			m_eyes [1] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right);
 			m_fov = m_stereoConfig.GetYFOVDegrees ();
+			m_nResolution = m_hmdInfo.HResolution > 1280;
 			}
 		}
 	else {            

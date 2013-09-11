@@ -614,9 +614,9 @@ if (m_info.bInitAnimate) {
 gameStates.render.bFullBright	= 1;
 
 CCanvas::Current ()->Clear (m_info.nEraseColor);
-ogl.m_states.bEnableScissor = 1;
+//ogl.m_states.bEnableScissor = 1;
 DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
-ogl.m_states.bEnableScissor = 0;
+//ogl.m_states.bEnableScissor = 0;
 gameStates.render.bFullBright = 0;
 CCanvas::Pop ();
 m_info.vRobotAngles.v.coord.h += 15 * (t - m_info.tAnimate);

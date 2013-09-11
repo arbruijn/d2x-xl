@@ -401,11 +401,10 @@ typedef struct tDebugRenderOptions {
 #define GLASSES_GREEN_MAGENTA			3
 #define DEVICE_STEREO_PHYSICAL		4
 #define DEVICE_STEREO_SIDEBYSIDE		4
-#define GLASSES_OCULUS_RIFT_720p		4
-#define GLASSES_OCULUS_RIFT_1080p	5
-#define GLASSES_SHUTTER_HDMI			6
-#define DEVICE_STEREO_DOUBLE_BUFFER	7
-#define GLASSES_SHUTTER_NVIDIA		7
+#define GLASSES_OCULUS_RIFT			4
+#define GLASSES_SHUTTER_HDMI			5
+#define DEVICE_STEREO_DOUBLE_BUFFER	6
+#define GLASSES_SHUTTER_NVIDIA		6
 
 #define STEREO_PARALLEL					0
 #define STEREO_TOE_IN					1
@@ -1737,12 +1736,14 @@ class CRiftData {
 
 		float	m_renderScale;
 		float m_fov;
+		int	m_nResolution;
 		int	m_bAvailable;
 
-		CRiftData () : m_renderScale (1.0f), m_fov (135.0f), m_bAvailable (false) {}
+		CRiftData () : m_renderScale (1.0f), m_fov (135.0f), m_nResolution (0), m_bAvailable (false) {}
 		bool Create (void);
 		void Destroy (void);
 		inline int Available (void) { return m_bAvailable; }
+		inline int Resolution (void) { return m_nResolution; }
 	};
 
 
@@ -1786,7 +1787,6 @@ class CRenderData {
 		int							nUsedFaces;
 		float							fAttScale [2];
 		float							fBrightness;
-		float							fScreenScale;
 		ubyte							nPowerupFilter;
 
 	public:

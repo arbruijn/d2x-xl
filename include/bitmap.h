@@ -124,7 +124,6 @@ class CBitmapInfo {
 		tTexCoord2f*		texCoordP;
 		CFloatVector*		colorP;
 		int					nColors;
-		float					fScale;
 	};
 
 class CBitmapRenderData {
@@ -247,13 +246,10 @@ class CBitmap : public CArray< ubyte > {
 			return m_info.frames.currentP;
 			}
 
-		inline void SetScale (float scale) { m_info.fScale = scale; }
-		inline float GetScale (void) { return m_info.fScale ? m_info.fScale : 1.0f; }
-
-		inline short Width (bool bScale = true) { return bScale ? short (m_info.props.w * GetScale () + 0.5f) : m_info.props.w; }
-		inline short Height (bool bScale = true) { return bScale ? short (m_info.props.h * GetScale () + 0.5f) : m_info.props.h; }
-		inline short Left (void) { return short (m_info.props.x * GetScale () + 0.5f); }
-		inline short Top (void) { return short (m_info.props.y * GetScale () + 0.5f); }
+		inline short Width (void) { return m_info.props.w; }
+		inline short Height (void) { return m_info.props.h; }
+		inline short Left (void) { return m_info.props.x; }
+		inline short Top (void) { return m_info.props.y; }
 		inline short Right (void) { return Left () + Width (); }
 		inline short Bottom (void) { return Top () + Height (); }
 
@@ -307,8 +303,8 @@ class CBitmap : public CArray< ubyte > {
 		inline void GetExtent (int& x, int& y, int& w, int& h) {
 			x = Left ();
 			y = Top ();
-			w = Width (false);
-			h = Height (false);
+			w = Width ();
+			h = Height ();
 			}
 
 		CBitmap *CreateMask (void);
@@ -352,7 +348,7 @@ class CBitmap : public CArray< ubyte > {
 						int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0,
 						float fAlpha = 1.0f, CFloatVector* colorP = NULL);
 		inline void Render (CBitmap* dest, int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, float fAlpha = 1.0f)
-		 { Render (dest, 0, 0, dest->Width (false), dest->Height (false), 0, 0, Width (false), Height (false), bTransp, bMipMaps, bSmoothe, fAlpha); }
+		 { Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, bSmoothe, fAlpha); }
 		void RenderStretched (CBitmap* dest = NULL, int x = 0, int y = 0);
 		void RenderFixed (CBitmap* dest = NULL, int x = 0, int y = 0, int w = 0, int h = 0);
 
@@ -371,7 +367,7 @@ class CBitmap : public CArray< ubyte > {
 		void OglEndRender (void);
 		int RenderScaled (int x, int y, int w = 0, int h = 0, int scale = I2X (1), int orient = 0, CCanvasColor *colorP = NULL, int bSmoothe = 1);
 
-		inline bool Clip (int x, int y) { return (x < 0) || (y < 0) || (x >= Width (false)) || (y >= Width (false)); }
+		inline bool Clip (int x, int y) { return (x < 0) || (y < 0) || (x >= Width ()) || (y >= Width ()); }
 		void DrawPixel (int x, int y, ubyte color);
 		ubyte GetPixel (int x, int y);
 

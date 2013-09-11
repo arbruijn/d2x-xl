@@ -1957,8 +1957,7 @@ const char *defaultGameTexts [][2] = {
  {"Spiel~Geschwindigkeit: x %d.%d", "game ~Speed: x %d.%d"},
  {"Deine Version von D2X-XL\npasst nicht zu der Version,\ndie fuer dieses Spiel verwendet wird.", "Your version of D2X-XL\ndoes not match the version\nin use for that game."},
  {"\nerlaubte Schiffe:", "\nships allowed:"},
- {"Oculus Rift (720p)", "Oculus Rift (720p)"},
- {"Oculus Rift (1080p)", "Oculus Rift (1080p)"},
+ {"Oculus Rift", "Oculus Rift"},
  {"3D TV (1080p)", "3D TV (1080p)"},
  {"~FOV: %d°", "~FOV: %d°"},
  

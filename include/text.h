@@ -1210,7 +1210,7 @@ void LoadGameTexts(void);
 #define TXT_PROX_BOMBS					GT(428)
 #define TXT_MINEKILL						GT(429)
 #define TXT_MINEKILL2					GT(430)
-#define TXT_REACH_SCOREGOAL				GT(431)
+#define TXT_REACH_SCOREGOAL			GT(431)
 #define TXT_REACH_SCOREGOAL2			GT(432)
 #define TXT_CTRLCEN_DEAD				GT(433)
 #define TXT_KICK_RIGHTS					GT(434)
@@ -1992,10 +1992,9 @@ void LoadGameTexts(void);
 #define TXT_GAME_SPEED					GT(1208)
 #define TXT_D2X_VERSION_MISMATCH		GT(1209)
 #define TXT_SHIPS_ALLOWED				GT(1210)
-#define TXT_OCULUS_RIFT_720p			GT(1211)
-#define TXT_OCULUS_RIFT_1080p			GT(1212)
-#define TXT_SHUTTER_HDMI				GT(1213)
-#define TXT_STEREO_FOV					GT(1214)
+#define TXT_OCULUS_RIFT					GT(1211)
+#define TXT_SHUTTER_HDMI				GT(1212)
+#define TXT_STEREO_FOV					GT(1213)
 
 #if 0
 

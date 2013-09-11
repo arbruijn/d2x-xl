@@ -90,8 +90,6 @@ char bAlreadyShowingInfo = 0;
 CMenu* CMenu::m_active = NULL;
 int CMenu::m_level = 0;
 
-void SetupCanvasses (void);
-
 //------------------------------------------------------------------------------
 
 bool MenuRenderTimeout (int& t0, int tFade)

@@ -156,8 +156,10 @@ static bool bWarpFrame = true;
 static bool RiftWarpScene (void)
 {
 return false;
+#if !DBG
 if (!gameData.render.rift.Available ())
 	return false;
+#endif
 #if DBG
 if (!gameStates.app.bGameRunning)
 	return false;
@@ -168,7 +170,7 @@ if (!ogl.IsOculusRift ())
 if (!gameStates.render.textures.bHaveRiftWarpShader)
 	return false;
 #if 1
-ogl.SetViewport (0, 0, screen.Width (false) / 2, screen.Height (false));
+ogl.SetViewport (0, 0, screen.Width () / 2, screen.Height ());
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
@@ -178,7 +180,7 @@ OglDrawArrays (GL_QUADS, 0, 4);
 #endif
 #if 1
 gameData.render.viewport.SetLeft (gameData.render.screen.Width () / 2);
-ogl.SetViewport (screen.Width (false) / 2, 0, screen.Width (false), screen.Height (false));
+ogl.SetViewport (screen.Width () / 2, 0, screen.Width (), screen.Height ());
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [2]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
@@ -200,9 +202,10 @@ if (IsSideBySideDevice (nDevice)) {
 	SetDrawBuffer (GL_BACK, 0);
 	SetBlendMode (OGL_BLEND_REPLACE);
 	SetDepthMode (GL_ALWAYS);
+	screen.SetScale (1.0f);
 	BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
 	if (!RiftWarpScene () && (nEffects & 1)) {
-		ogl.SetViewport (0, 0, screen.Width (false), screen.Height (false));
+		ogl.SetViewport (0, 0, screen.Width (), screen.Height ());
 		shaderManager.Deploy (-1);
 		EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);

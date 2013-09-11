@@ -47,8 +47,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "input.h"
 #include "menubackground.h"
 
-#define LHX(x)      (gameStates.menus.bHires? 2 * (x) : x)
-#define LHY(y)      (gameStates.menus.bHires? (24 * (y)) / 10 : y)
+#define LHX(x)      (gameStates.menus.bHires ? 2 * (x) : x)
+#define LHY(y)      (gameStates.menus.bHires ? (24 * (y)) / 10 : y)
 
 CPalette* menuPalette;
 
@@ -60,8 +60,6 @@ CBackgroundManager backgroundManager;
 #define MENU_PCX_MAC_SHARE	menuBgNames [3][!gameStates.app.bDemoData && gameStates.menus.bHires]
 
 int bHiresBackground;
-
-void SetupCanvasses (void);
 
 //------------------------------------------------------------------------------
 

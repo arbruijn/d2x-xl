@@ -191,12 +191,13 @@ if (nEffects & 5) {
 #if 1
 		if (!(nEffects & 1)) {
 			SetDrawBuffer (GL_BACK, 0);
-			ogl.SetViewport (0, 0, screen.Width (false), screen.Height (false));
+			screen.SetScale (1.0f);
 			shaderManager.Deploy (-1);
 			}
 		else 
 #endif
 			SelectBlurBuffer (0); 
+		ogl.SetViewport (0, 0, screen.Width (), screen.Height ());
 		SetBlendMode (OGL_BLEND_REPLACE);
 		SetDepthMode (GL_ALWAYS);
 		for (int i = 0; i < 2; i++) {

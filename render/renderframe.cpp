@@ -413,7 +413,6 @@ else {
 		if (xStereoSeparation > 0) {
 			ogl.SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
 			ogl.SwapBuffers (0, 0);
-			gameData.render.fScreenScale = 1.0f;
 			}
 		}
 	else {
@@ -497,7 +496,7 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
 	}
 
 StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
-ogl.m_states.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
+//ogl.m_states.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 
 if (nWindow)
 	CCanvas::SetCurrent (&gameData.render.scene);
@@ -624,21 +623,6 @@ if (!ShowGameMessage (gameData.messages, -1, -1))
 	ShowGameMessage (gameData.messages + 1, -1, -1);
 }
 
-
-//------------------------------------------------------------------------------
-
-void SetupCanvasses (void)
-{
-screen.SetScale (gameData.render.fScreenScale);
-screen.Canvas ()->SetupPane (&gameData.render.screen, 0, 0, screen.Width (false), screen.Height (false));
-if (ogl.IsSideBySideDevice ())
-	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width (false) / 2, screen.Height (false));
-else
-	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width (false), screen.Height (false));
-screen.Canvas ()->SetupPane (&gameData.render.viewport, 0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false));
-screen.Canvas ()->SetupPane (&gameData.render.scene, 0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false));
-CCanvas::SetCurrent (&gameData.render.frame);
-}
 
 //------------------------------------------------------------------------------
 
@@ -934,16 +918,17 @@ else {
 	if (gameOpts->render.stereo.xSeparation == 0)
 		gameOpts->render.stereo.xSeparation = 3 * I2X (1) / 4;
 	fix xStereoSeparation = (automap.Display () && !ogl.IsSideBySideDevice ()) ? 2 * gameOpts->render.stereo.xSeparation : gameOpts->render.stereo.xSeparation;
-	gameData.render.fScreenScale = ogl.IsOculusRift () ? 2.0f : 1.0f;
 #if DBG
-	if (ogl.IsSideBySideDevice () && bFixSBSBug)
-		RenderMonoFrame (-xStereoSeparation);
+	screen.SetScale (/*ogl.IsOculusRift () ? 2.0f :*/ 2.0f);
+	SetupCanvasses (2.0f);
+	//if (ogl.IsSideBySideDevice () && bFixSBSBug)
+	//	RenderMonoFrame (-xStereoSeparation);
+#else
+	screen.SetScale (ogl.IsOculusRift () ? 2.0f : 1.0f);
 #endif
 	RenderMonoFrame (-xStereoSeparation);
 	RenderMonoFrame (xStereoSeparation);
-	gameData.render.fScreenScale = 1.0f;
-	screen.SetScale (1.0f);
-	SetupCanvasses ();
+	SetupCanvasses (1.0f);
 	}
 //StopTime ();
 //if (!gameStates.menus.nInMenu)

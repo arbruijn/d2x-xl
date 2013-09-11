@@ -33,6 +33,7 @@ float CCanvas::fCanvH2;
 
 CStack<CCanvas*> CCanvas::m_save;
 CScreen* CScreen::m_current = NULL;
+float CScreen::m_fScale = 1.0f;
 
 
 CScreen screen;
@@ -91,7 +92,6 @@ void CCanvas::SetupPane (CCanvas *paneP, int x, int y, int w, int h)
 {
 paneP->SetColor (m_info.color);
 paneP->SetDrawMode (m_info.nDrawMode);
-paneP->SetScale (GetScale ());
 paneP->SetFont (m_info.font ? m_info.font : GAME_FONT);
 paneP->SetFontColor (m_info.fontColors [0], 0);
 paneP->SetFontColor (m_info.fontColors [1], 1);
@@ -163,6 +163,22 @@ if (dFade && m_info.color.rgb) {
 	m_info.color.Blue () = (ubyte) (m_info.color.Blue () * dFade);
 	//m_info.color.Alpha () = (ubyte) ((float) gameStates.render.grAlpha / (float) FADE_LEVELS * 255.0f);
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void SetupCanvasses (float scale)
+{
+screen.SetScale (scale);
+screen.Canvas ()->SetupPane (&gameData.render.screen, 0, 0, screen.Width (false), screen.Height (false));
+if (ogl.IsSideBySideDevice ())
+	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width (false) / 2, screen.Height (false));
+else
+	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width (false), screen.Height (false));
+screen.Canvas ()->SetupPane (&gameData.render.viewport, 0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false));
+screen.Canvas ()->SetupPane (&gameData.render.scene, 0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false));
+CCanvas::SetCurrent (&gameData.render.frame);
+screen.SetScale (1.0f);
 }
 
 //	-----------------------------------------------------------------------------

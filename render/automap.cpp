@@ -494,7 +494,7 @@ if (m_bRadar || (gameOpts->render.automap.bTextured & 2)) {
 G3EndFrame (transformation, 0);
 
 if (m_bRadar) {
-	ogl.m_states.bEnableScissor = 0;
+	//ogl.m_states.bEnableScissor = 0;
 	return;
 	}
 gameData.app.nFrameCount++;

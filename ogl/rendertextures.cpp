@@ -180,7 +180,7 @@ if (glGetError ())
 	return hBuffer = 0;
 BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, m_states.nCurWidth, m_states.nCurHeight, 0, GL_RGB, GL_UNSIGNED_SHORT, NULL);
+glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, DrawBufferWidth (), DrawBufferHeight (), 0, GL_RGB, GL_UNSIGNED_SHORT, NULL);
 if (glGetError ()) {
 	DeleteTextures (1, &hBuffer);
 	return hBuffer = 0;
@@ -258,7 +258,7 @@ if (glGetError ())
 	return hDepthBuffer = 0;
 ogl.BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, m_states.nCurWidth, m_states.nCurHeight,
+glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, DrawBufferWidth (), DrawBufferHeight (),
 				  0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);

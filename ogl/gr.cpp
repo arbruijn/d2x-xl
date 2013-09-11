@@ -51,8 +51,6 @@ void ResetHoardData (void);
 
 extern int screenShotIntervals [];
 
-void SetupCanvasses (void);
-
 //------------------------------------------------------------------------------
 
 CArray<CDisplayModeInfo> displayModeInfo;
@@ -403,10 +401,12 @@ return nMode;
 
 int SetSideBySideDisplayMode (void)
 {
-if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT_720p)
-	SetCustomDisplayMode (1280, 800, 0);
-else if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT_1080p)
-	SetCustomDisplayMode (1920, 1080, 0);
+if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT) {
+	if (gameData.render.rift.Resolution ())
+		SetCustomDisplayMode (1920, 1080, 0);
+	else
+		SetCustomDisplayMode (1280, 800, 0);
+	}
 else if (gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_HDMI)
 	SetCustomDisplayMode (1920, 1080, 0);
 else

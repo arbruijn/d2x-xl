@@ -76,7 +76,7 @@ static const char *pszRendQual [4];
 static const char *pszMeshQual [5];
 static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
-static const char *pszStereoDevice [8];
+static const char *pszStereoDevice [7];
 static const char *pszEnhance3D [4];
 static const char *pszDeghost [5];
 static const char *psz3DMethod [2];
@@ -414,10 +414,9 @@ pszStereoDevice [0] = TXT_NONE;
 pszStereoDevice [1] = TXT_AMBER_BLUE;
 pszStereoDevice [2] = TXT_RED_CYAN;
 pszStereoDevice [3] = TXT_GREEN_MAGENTA;
-pszStereoDevice [4] = TXT_OCULUS_RIFT_720p;
-pszStereoDevice [5] = TXT_OCULUS_RIFT_1080p;
-pszStereoDevice [6] = TXT_SHUTTER_HDMI;
-pszStereoDevice [7] = TXT_SHUTTER_NVIDIA;
+pszStereoDevice [4] = TXT_OCULUS_RIFT;
+pszStereoDevice [5] = TXT_SHUTTER_HDMI;
+pszStereoDevice [6] = TXT_SHUTTER_NVIDIA;
 
 pszDeghost [0] = TXT_OFF;
 pszDeghost [1] = TXT_LOW;
@@ -551,7 +550,7 @@ do {
 		*szSlider = *(TXT_STEREO_SEPARATION - 1);
 		m.AddSlider ("stereo separation", szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
 
-		if ((nStereoDevice == GLASSES_OCULUS_RIFT_720p) || (nStereoDevice == GLASSES_OCULUS_RIFT_1080p)) {
+		if (nStereoDevice == GLASSES_OCULUS_RIFT) {
 #if 0
 			sprintf (szSlider + 1, TXT_STEREO_FOV, STEREO_MIN_FOV + xFOV * STEREO_FOV_STEP);
 			*szSlider = *(TXT_STEREO_FOV - 1);
