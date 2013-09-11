@@ -188,7 +188,7 @@ if (nEffects & 5) {
 			ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
 		}
 	else {
-#if 1
+#if 0
 		if (!(nEffects & 1)) {
 			SetDrawBuffer (GL_BACK, 0);
 			screen.SetScale (1.0f);
