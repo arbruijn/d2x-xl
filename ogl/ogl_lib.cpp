@@ -434,7 +434,7 @@ void COGL::SetupFrustum (fix xStereoSeparation)
 {
 double h = ZNEAR * tan (DegToRad (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * 0.5));
 double w = h * CCanvas::Current ()->AspectRatio ();
-double shift = X2D (StereoSeparation ()) / 2.0 * ZNEAR / ZScreen ();
+double shift = X2D (xStereoSeparation) / 2.0 * ZNEAR / ZScreen ();
 if (shift < 0)
 	glFrustum (-w - shift, w - shift, -h, h, ZNEAR, ZFAR);
 else 
@@ -461,7 +461,7 @@ else if (IsOculusRift ()) {
 #if 0
 	glLoadMatrixf ((GLfloat*) gameData.render.rift.m_eyes [StereoSeparation () > 0].Projection.M);
 #elif 0
-	SetupFrustum (-2 * StereoSeparation ());
+	SetupFrustum (2 * StereoSeparation ());
 #else
 	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
 #endif

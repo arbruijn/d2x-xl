@@ -419,6 +419,7 @@ typedef struct tStereoRenderOptions {
 	int bFlipFrames;
 	int bBrighten;
 	int nFOV;
+	int nIPD; // Rift IPD
 	fix xSeparation;
 } tStereoRenderOptions;
 

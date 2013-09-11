@@ -1960,7 +1960,7 @@ const char *defaultGameTexts [][2] = {
  {"Oculus Rift", "Oculus Rift"},
  {"3D TV (1080p)", "3D TV (1080p)"},
  {"~FOV: %d°", "~FOV: %d°"},
- {"~Pupillenabstand: %d mm", "Inter~Pupillary Distance: %d mm"},
+ {"~Pupillenabstand: %d mm", "I~PD: %d mm"},
  
 #if 0
  {"", ""},

@@ -508,6 +508,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.stereo.bColorGain, i, 0);
 		RP (gameOptions [i].render.stereo.bDeghost, i, 0);
 		RP (gameOptions [i].render.stereo.bBrighten, i, 0);
+		RP (gameOptions [i].render.stereo.nIPD, i, 0);
 		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
@@ -1008,6 +1009,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.stereo.nMethod", "0"},
 	 {"gameOptions[0].render.stereo.nScreenDist", "3"},
 	 {"gameOptions[0].render.stereo.xSeparation", "32768"},
+	 {"gameOptions[0].render.stereo.nIPD", "64"},
 	 {"gameOptions[0].render.stereo.nFOV", "90"},
 	 {"gameOptions[0].render.stereo.bEnhance", "0"},
 	 {"gameOptions[0].render.stereo.bColorGain", "0"},
