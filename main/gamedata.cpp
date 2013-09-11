@@ -547,6 +547,15 @@ if (m_managerP) {
 			m_eyes [1] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right);
 			m_fov = m_stereoConfig.GetYFOVDegrees ();
 			m_nResolution = m_hmdInfo.HResolution > 1280;
+// for different screen sizes and then rescale to viewport coordinates.
+			float viewCenter = m_hmdInfo.HScreenSize * 0.25f;
+			float eyeProjectionShift = viewCenter - m_hmdInfo.LensSeparationDistance * 0.5f;
+			m_projectionCenterOffset = 4.0f * eyeProjectionShift / m_hmdInfo.HScreenSize;
+// Projection matrix for the "center eye", which the left/right matrices are based on.
+Matrix4f projCenter = Matrix4f::PerspectiveRH(yfov, aspect, 0.3f, 1000.0f);
+Matrix4f projLeft = Matrix4f::Translation(projectionCenterOffset, 0, 0)
+*
+projCe
 			}
 		}
 	else {            

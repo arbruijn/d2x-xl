@@ -1737,6 +1737,7 @@ class CRiftData {
 
 		float	m_renderScale;
 		float m_fov;
+		float	m_projectionCenterOffset;
 		int	m_ipd;
 		int	m_nResolution;
 		int	m_bAvailable;
