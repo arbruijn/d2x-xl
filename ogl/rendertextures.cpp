@@ -88,10 +88,10 @@ glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY); 	
 //glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
 if (nType == 1) // depth + stencil
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8_EXT, (nWidth > 0) ? nWidth : m_states.nCurWidth, (nHeight > 0) ? nHeight : m_states.nCurHeight, 
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8_EXT, (nWidth > 0) ? nWidth : DrawBufferWidth (), (nHeight > 0) ? nHeight : DrawBufferHeight (), 
 					  0, GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, NULL);
 else
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, (nWidth > 0) ? nWidth : m_states.nCurWidth, (nHeight > 0) ? nHeight : m_states.nCurHeight, 
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, (nWidth > 0) ? nWidth : DrawBufferWidth (), (nHeight > 0) ? nHeight : DrawBufferHeight (), 
 					  0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 if (glGetError ()) {
 	DeleteTextures (1, &hBuffer);
