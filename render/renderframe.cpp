@@ -404,7 +404,10 @@ if (!(i && xStereoSeparation)) {	//no stereo or shutter glasses or Oculus Rift
 	}
 else {
 	if ((i < 0) || (xStereoSeparation > 0)) {
-		//gameData.render.fScreenScale = ogl.IsOculusRift () ? 2.0f : 1.0f;
+		ogl.SetViewport (gameData.render.screen.Left () + gameData.render.scene.Left (), 
+							  gameData.render.screen.Top () + gameData.render.scene.Top (), 
+							  gameData.render.scene.Width (), 
+							  gameData.render.scene.Height ());
 		if (i < 0)
 			Draw2DFrameElements ();
 		if (xStereoSeparation > 0) {
@@ -940,6 +943,7 @@ else {
 	RenderMonoFrame (xStereoSeparation);
 	gameData.render.fScreenScale = 1.0f;
 	screen.SetScale (1.0f);
+	SetupCanvasses ();
 	}
 //StopTime ();
 //if (!gameStates.menus.nInMenu)

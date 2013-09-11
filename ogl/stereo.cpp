@@ -155,6 +155,7 @@ static bool bWarpFrame = true;
 
 static bool RiftWarpScene (void)
 {
+return false;
 if (!gameData.render.rift.Available ())
 	return false;
 #if DBG
@@ -167,10 +168,10 @@ if (!ogl.IsOculusRift ())
 if (!gameStates.render.textures.bHaveRiftWarpShader)
 	return false;
 #if 1
+ogl.SetViewport (0, 0, screen.Width (false) / 2, screen.Height (false));
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
-ogl.SetViewport (0, 0, screen.Width (false) / 2, screen.Height (false));
 OglDrawArrays (GL_QUADS, 0, 4);
 //if (!RiftWarpFrame (gameData.render.rift.m_eyes [0]))
 //	return false;
@@ -201,11 +202,11 @@ if (IsSideBySideDevice (nDevice)) {
 	SetDepthMode (GL_ALWAYS);
 	BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
 	if (!RiftWarpScene ()/* && (nEffects & 1)*/) {
+		ogl.SetViewport (0, 0, screen.Width (false), screen.Height (false));
 		shaderManager.Deploy (-1);
 		EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
 		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
-		ogl.SetViewport (0, 0, screen.Width (false), screen.Height (false));
 		OglDrawArrays (GL_QUADS, 0, 4);
 		}
 	gameData.render.viewport.SetLeft (0);
