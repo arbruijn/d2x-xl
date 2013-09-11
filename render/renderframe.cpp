@@ -934,7 +934,7 @@ else {
 	if (gameOpts->render.stereo.xSeparation == 0)
 		gameOpts->render.stereo.xSeparation = 3 * I2X (1) / 4;
 	fix xStereoSeparation = (automap.Display () && !ogl.IsSideBySideDevice ()) ? 2 * gameOpts->render.stereo.xSeparation : gameOpts->render.stereo.xSeparation;
-	gameData.render.fScreenScale = /*ogl.IsOculusRift () ? 2.0f :*/ 1.0f;
+	gameData.render.fScreenScale = ogl.IsOculusRift () ? 2.0f : 1.0f;
 #if DBG
 	if (ogl.IsSideBySideDevice () && bFixSBSBug)
 		RenderMonoFrame (-xStereoSeparation);

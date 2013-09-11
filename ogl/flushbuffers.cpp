@@ -188,9 +188,10 @@ if (nEffects & 5) {
 			ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
 		}
 	else {
-#if 0
+#if 1
 		if (!(nEffects & 1)) {
 			SetDrawBuffer (GL_BACK, 0);
+			ogl.SetViewport (0, 0, screen.Width (false), screen.Height (false));
 			shaderManager.Deploy (-1);
 			}
 		else 
