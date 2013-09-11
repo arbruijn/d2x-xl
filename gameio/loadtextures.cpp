@@ -1007,7 +1007,8 @@ if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
 
 	for (i = 0; i < nBitmapNum; i++) {
 		bmOffset = bmh [i].offset;
-		memset (&bm, 0, sizeof (CBitmap));
+		//memset (&bm, 0, sizeof (CBitmap));
+		bm.Init ();
 		bm.AddFlags (bmh [i].flags & (BM_FLAGS_TO_COPY | BM_FLAG_TGA));
 		bm.SetWidth (bmh [i].width + ((short) (bmh [i].wh_extra & 0x0f) << 8));
 		bm.SetRowSize (bm.Width ());

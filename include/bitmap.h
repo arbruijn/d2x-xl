@@ -250,10 +250,10 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetScale (float scale) { m_info.fScale = scale; }
 		inline float GetScale (void) { return m_info.fScale ? m_info.fScale : 1.0f; }
 
-		inline short Width (bool bScale = true) { return bScale ? short (m_info.props.w * m_info.fScale + 0.5f) : m_info.props.w; }
-		inline short Height (bool bScale = true) { return bScale ? short (m_info.props.h * m_info.fScale + 0.5f) : m_info.props.h; }
-		inline short Left (void) { return short (m_info.props.x * m_info.fScale + 0.5f); }
-		inline short Top (void) { return short (m_info.props.y * m_info.fScale + 0.5f); }
+		inline short Width (bool bScale = true) { return bScale ? short (m_info.props.w * GetScale () + 0.5f) : m_info.props.w; }
+		inline short Height (bool bScale = true) { return bScale ? short (m_info.props.h * GetScale () + 0.5f) : m_info.props.h; }
+		inline short Left (void) { return short (m_info.props.x * GetScale () + 0.5f); }
+		inline short Top (void) { return short (m_info.props.y * GetScale () + 0.5f); }
 		inline short Right (void) { return Left () + Width (); }
 		inline short Bottom (void) { return Top () + Height (); }
 
