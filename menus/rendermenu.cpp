@@ -62,7 +62,8 @@ void DefaultRenderSettings (bool bSetup = false);
 
 #define MIN_LIGHTS_PER_PASS 5
 
-#define STEREO_SEPARATION_STEP (I2X (1) / 8)
+#define STEREO_SEPARATION_STEP	(I2X (1) / 8)
+#define RIFT_IPD_STEP				(I2X (1) / 16)
 
 //------------------------------------------------------------------------------
 
@@ -86,6 +87,7 @@ static const char *pszFOV [] = {"105", "110", "115", "120", "125", "130", "135",
 static int xStereoSeparation = 0;
 static int xFOV = (STEREO_DEFAULT_FOV - STEREO_MIN_FOV) / STEREO_FOV_STEP;
 static int nStereoDevice = 0;
+static int nIPD = RIFT_DEFAULT_IPD - RIFT_MIN_IPD;
 
 //------------------------------------------------------------------------------
 
@@ -223,8 +225,19 @@ if ((m = menu ["3D glasses"])) {
 		v = m->Value ();
 		if (xStereoSeparation != v) {
 			xStereoSeparation = v;
-			gameOpts->render.stereo.xSeparation = (EXPERTMODE ? (xStereoSeparation + 1) : 3) * (STEREO_SEPARATION_STEP);
+			gameOpts->render.stereo.xSeparation = (xStereoSeparation + 1) * STEREO_SEPARATION_STEP;
 			sprintf (m->Text (), TXT_STEREO_SEPARATION, pszStereoSeparation [v]);
+			m->m_bRebuild = -1;
+			}
+		}
+
+	if ((m = menu ["IPD"])) {
+		v = m->Value ();
+		if (nIPD != v) {
+			nIPD = v;
+			gameData.render.rift.m_ipd = nIPD + RIFT_MIN_IPD;
+			gameOpts->render.stereo.xSeparation = I2X (1) + v * RIFT_IPD_STEP;
+			sprintf (m->Text (), TXT_RIFT_IPD, gameData.render.rift.m_ipd);
 			m->m_bRebuild = -1;
 			}
 		}
@@ -461,6 +474,7 @@ if (xStereoSeparation < 0)
 	xStereoSeparation = 0;
 else if (xStereoSeparation >= (int) sizeofa (pszStereoSeparation))
 	xStereoSeparation = sizeofa (pszStereoSeparation) - 1;
+nIPD = gameData.render.rift.m_ipd - RIFT_MIN_IPD;
 xFOV = (gameOpts->render.stereo.nFOV - STEREO_MIN_FOV) / STEREO_FOV_STEP;
 if (xFOV < 0)
 	xFOV = (STEREO_DEFAULT_FOV - STEREO_MIN_FOV) / STEREO_FOV_STEP;
@@ -544,12 +558,13 @@ do {
 	sprintf (szSlider + 1, TXT_STEREO_VIEW, pszStereoDevice [nStereoDevice]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
 	m.AddSlider ("3D glasses", szSlider + 1, nStereoDevice, 0, sizeofa (pszStereoDevice) - 2 + ogl.m_features.bStereoBuffers, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
+	if (nStereoDevice == GLASSES_OCULUS_RIFT) {
+		sprintf (szSlider + 1, TXT_RIFT_IPD, gameData.render.rift.m_ipd);
+		*szSlider = *(TXT_RIFT_IPD - 1);
+		m.AddSlider ("IPD", szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
+		}
 
 	if (EXPERTMODE && nStereoDevice) {
-		sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
-		*szSlider = *(TXT_STEREO_SEPARATION - 1);
-		m.AddSlider ("stereo separation", szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
-
 		if (nStereoDevice == GLASSES_OCULUS_RIFT) {
 #if 0
 			sprintf (szSlider + 1, TXT_STEREO_FOV, STEREO_MIN_FOV + xFOV * STEREO_FOV_STEP);
@@ -558,6 +573,10 @@ do {
 #endif
 			}
 		else {
+			sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
+			*szSlider = *(TXT_STEREO_SEPARATION - 1);
+			m.AddSlider ("stereo separation", szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
+
 			sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.stereo.nMethod]);
 			*szSlider = *(TXT_3D_METHOD - 1);
 			m.AddSlider ("3D method", szSlider + 1, gameOpts->render.stereo.nMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);

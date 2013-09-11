@@ -51,6 +51,10 @@
 #define STEREO_DEFAULT_FOV		135
 #define STEREO_FOV_STEP			5
 
+#define RIFT_MIN_IPD				54
+#define RIFT_DEFAULT_IPD		64
+#define RIFT_MAX_IPD				72
+
 extern double glFOV, glAspect;
 
 void OglSetFOV (double fov);

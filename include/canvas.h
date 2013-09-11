@@ -212,7 +212,7 @@ extern CScreen screen;
 
 inline float CCanvas::GetScale (void) { return CScreen::GetScale (); }
 
-inline short Scale (int v) { return short CScreen::Scale (v); }
+inline short CCanvas::Scale (short v) { return short (CScreen::Scale (v)); }
 
 void SetupCanvasses (float scale = 1.0f);
 
