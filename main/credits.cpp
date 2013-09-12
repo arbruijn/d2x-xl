@@ -253,12 +253,12 @@ if ((k == KEY_PRINT_SCREEN) || (k == KEY_COMMAND + KEY_SHIFTED + KEY_P)) {
 	SaveScreenShot (NULL, 0);
 	}
 else if (k == KEY_PADPLUS)
-	m_xDelay /= 2;
+	if (m_xDelay > 1)
 else if (k == KEY_PADMINUS) {
-	if (m_xDelay)
-		m_xDelay *= 2;
-	else
+	if (!m_xDelay)
 		m_xDelay = 1;
+	else if (m_xDelay < 1000)
+		m_xDelay *= 2;
 	}
 else if ((k == KEY_ESC) || (m_bDone > uint (NUM_LINES))) {
 	Destroy ();
@@ -312,7 +312,7 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 					colors [0].Alpha () = colors [1].Alpha () = dy / float (FADE_DIST);
 					dy = float ((y + h < FADE_DIST) ? y + h : (480 - y - 2 * h < FADE_DIST) ? 480 - y - 2 * h : FADE_DIST);
 					colors [2].Alpha () = colors [3].Alpha () = dy / float (FADE_DIST);
-					bmP->Render (CCanvas::Current (), (screen.Width () - w) / 2, m_yOffs + y, w, h, 0, 0, w, h, 1, 0, 0, 1, colors);
+					bmP->Render (CCanvas::Current (), (CCanvas::Current ()->Width () - w) / 2 - CMenu::StereoOffset (), m_yOffs + y, w, h, 0, 0, w, h, 1, 0, 0, 1, colors);
 					delete bmP;
 					}
 				}
@@ -322,15 +322,6 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 		else
 			y += ROW_SPACING;
 		}
-
-		int t = m_xTimeout - SDL_GetTicks ();
-		if (t > 0)
-			G3_SLEEP (t);
-		m_xTimeout = SDL_GetTicks () + m_xDelay;
-
-		if (gameOpts->menus.nStyle) 
-			CCanvas::SetCurrent (NULL);
-	ogl.Update (0);
 	}
 }
 
@@ -403,9 +394,31 @@ m_xTimeout = SDL_GetTicks () + m_xDelay;
 ogl.SetBlending (true);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 gameStates.menus.nInMenu = 1;
+int nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
 for (;;) {
 	Read ();
-	Render ();
+
+	CCanvas::SetCurrent (&gameData.render.scene);
+	ogl.SetViewport (gameData.render.screen.Left () + gameData.render.scene.Left (), 
+						  gameData.render.screen.Top () + gameData.render.scene.Top (), 
+						  gameData.render.scene.Width (), 
+						  gameData.render.scene.Height ());
+
+	for (int i = 0; i < nFrames; i++) {
+		ogl.SetStereoSeparation (gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] * (i ? 1 : -1));
+		ogl.ChooseDrawBuffer ();
+		SetupCanvasses ();
+		Render ();
+		}
+	ogl.Update (0);
+	if (gameOpts->menus.nStyle) 
+		CCanvas::SetCurrent (NULL);
+
+	int t = m_xTimeout - SDL_GetTicks ();
+	if (t > 0)
+		G3_SLEEP (t);
+	m_xTimeout = SDL_GetTicks () + m_xDelay;
+
 	redbook.CheckRepeat();
 	if (!HandleInput ())
 		break;

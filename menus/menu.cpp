@@ -210,9 +210,9 @@ void CMenu::DrawCloseBox (int x, int y)
 {
 x -= CMenu::StereoOffset ();
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-OglDrawFilledRect (x + MENU_CLOSE_X, y + MENU_CLOSE_Y, x + MENU_CLOSE_X + MENU_CLOSE_SIZE, y + MENU_CLOSE_Y + MENU_CLOSE_SIZE);
+OglDrawFilledRect (x + MENU_CLOSE_X, y + MENU_CLOSE_Y, x + MENU_CLOSE_X + Scale (MENU_CLOSE_SIZE), y + MENU_CLOSE_Y + Scale (MENU_CLOSE_SIZE));
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
-OglDrawFilledRect (x + MENU_CLOSE_X + LHX (1), y + MENU_CLOSE_Y + LHX (1), x + MENU_CLOSE_X + MENU_CLOSE_SIZE - LHX (1), y + MENU_CLOSE_Y + MENU_CLOSE_SIZE - LHX (1));
+OglDrawFilledRect (x + MENU_CLOSE_X + LHX (1), y + MENU_CLOSE_Y + LHX (1), x + MENU_CLOSE_X + Scale (MENU_CLOSE_SIZE - LHX (1)), y + MENU_CLOSE_Y + Scale (MENU_CLOSE_SIZE - LHX (1)));
 }
 
 //------------------------------------------------------------------------------ 
@@ -325,7 +325,7 @@ gap = haveTitle ? Scale (LHY (8)) : 0;
 m_props.th += gap;		//put some space between pszTitles & body
 fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 
-m_props.h = m_props.th;
+m_props.h = int (ceil (double (m_props.th) / GetScale ())); // will be scaled in GetSize()
 m_props.nMenus = m_props.nOthers = 0;
 m_props.nStringHeight = Scale (GetSize (m_props.w, m_props.h, m_props.aw, m_props.nMenus, m_props.nOthers) + m_props.bTinyMode * 2);
 m_props.nMaxOnMenu = ((((m_props.scHeight > 480)) ? m_props.scHeight * 4 / 5 : 480) - m_props.th - Scale (LHY (8))) / m_props.nStringHeight - 2;
@@ -370,10 +370,11 @@ if (m_props.w > m_props.scWidth)
 if (m_props.h > m_props.scHeight)
 	m_props.h = m_props.scHeight;
 
-m_props.xOffs = Scale (gameStates.menus.bHires ? 30 : 15);
+m_props.xOffs = (gameStates.menus.bHires ? 30 : 15);
 i = (m_props.scWidth - m_props.w) / 2;
 if (i < m_props.xOffs)
 	m_props.xOffs = i / 2;
+m_props.xOffs = Scale (m_props.xOffs);
 m_props.yOffs = Scale (gameStates.menus.bHires ? 30 : 15);
 if (m_props.scHeight - m_props.h < 2 * m_props.yOffs)
 	m_props.h = m_props.scHeight - 2 * m_props.yOffs;
@@ -573,16 +574,16 @@ if (m_props.bIsScrollBox) {
 		int sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 		int sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
 		if (m_props.nScrollOffset > m_props.nMaxNoScroll)
-			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
+			DrawRightStringWXY (Scale (gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
 		else
-			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
+			DrawRightStringWXY (Scale (gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
 		i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll - 1;
 		sy = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 		sx = Item (i).m_x - (gameStates.menus.bHires ? 24 : 12);
 		if (m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll < int (ToS ()))
-			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
+			DrawRightStringWXY (Scale (gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
 		else
-			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
+			DrawRightStringWXY (Scale (gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
 		}
 	}
 if (m_bCloseBox) {

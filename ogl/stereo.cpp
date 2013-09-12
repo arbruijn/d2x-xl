@@ -159,7 +159,7 @@ static bool RiftWarpScene (void)
 if (!gameData.render.rift.Available ())
 	return false;
 #endif
-#if DBG
+#if 0 //DBG
 if (!gameStates.app.bGameRunning)
 	return false;
 #endif
