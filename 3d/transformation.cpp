@@ -200,7 +200,7 @@ if (ogl.IsOculusRift () && gameData.render.rift.Available ()) {
 	double riftXlatProj [16] = { 1.0, 0.0, 0.0, 0.0,
 										  0.0, 1.0, 0.0, 0.0, 
 										  0.0, 0.0, 1.0, 0.0, 
-										  (ogl.StereoSeparation () < 0) ? -gameData.render.rift.m_projectionCenterOffset : gameData.render.rift.m_projectionCenterOffset, 0.0, 0.0, 1.0 };
+										  (ogl.StereoSeparation () < 0) ? gameData.render.rift.m_projectionCenterOffset : -gameData.render.rift.m_projectionCenterOffset, 0.0, 0.0, 1.0 };
 
 	glMatrixMode (GL_PROJECTION);
 	glMultMatrixd ((GLdouble*) riftXlatProj);
