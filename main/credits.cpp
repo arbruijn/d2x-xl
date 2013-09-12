@@ -253,7 +253,7 @@ if ((k == KEY_PRINT_SCREEN) || (k == KEY_COMMAND + KEY_SHIFTED + KEY_P)) {
 	SaveScreenShot (NULL, 0);
 	}
 else if (k == KEY_PADPLUS)
-	if (m_xDelay > 1)
+	m_xDelay /= 2;
 else if (k == KEY_PADMINUS) {
 	if (!m_xDelay)
 		m_xDelay = 1;

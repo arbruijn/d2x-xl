@@ -632,8 +632,8 @@ return h;
 //------------------------------------------------------------------------------
 
 #define kc_gr_pixel(_x,_y)		DrawPixelClipped ((_x), (_y))
-#define KC_LHX(_x) 				(LHX (_x)+m_xOffs)
-#define KC_LHY(_y) 				(LHY (_y)+m_yOffs)
+#define KC_LHX(_x) 				(LHX (_x) + m_xOffs)
+#define KC_LHY(_y) 				(LHY (_y) + m_yOffs)
 
 void CControlConfig::DrawTitle (void)
 {
@@ -749,6 +749,7 @@ void CControlConfig::DrawHeader (void)
 {
 fontManager.SetCurrent (GAME_FONT);
 fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
+//fontManager.SetScale (fontManager.Scale () * GetScale ());
 
 GrString (0x8000, KC_LHY (20), TXT_KCONFIG_STRING_1, NULL);
 fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
@@ -808,6 +809,7 @@ else if (m_items == kcHotkeys) {
 	GrString (KC_LHX (94), KC_LHY (40), "KB", NULL);
 	GrString (KC_LHX (121), KC_LHY (40), "JOY", NULL);
 	}
+//fontManager.SetScale (fontManager.Scale () / GetScale ());
 }
 
 //------------------------------------------------------------------------------
@@ -834,6 +836,9 @@ void CControlConfig::Render (void)
 	backgroundManager.Redraw ();
 	CCanvas::SetCurrent (NULL);
 	DrawTitle ();
+#if 1
+	DrawCloseBox (Scale (gameStates.menus.bHires ? 15 : 7), Scale (gameStates.menus.bHires ? 15 : 7));
+#else
 	m_closeX = m_closeY = gameStates.menus.bHires ? 15 : 7;
 	m_closeX += m_xOffs;
 	m_closeY += m_yOffs;
@@ -842,6 +847,7 @@ void CControlConfig::Render (void)
 	OglDrawFilledRect (m_closeX, m_closeY, m_closeX + m_closeSize, m_closeY + m_closeSize);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
 	OglDrawFilledRect (m_closeX + LHX (1), m_closeY + LHX (1), m_closeX + m_closeSize - LHX (1), m_closeY + m_closeSize - LHX (1));
+#endif
 	DrawHeader ();
 	DrawTable ();
 	SDL_ShowCursor (0);
