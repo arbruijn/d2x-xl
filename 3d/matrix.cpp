@@ -52,7 +52,7 @@ if (!ogl.StereoSeparation ())
 	transformation.m_info.view [0] = mOrient;
 #if 1
 else if (ogl.IsOculusRift ()) {
-#	if 1
+#	if 0
 	CFixVector o = mOrient.m.dir.f * F2X (ZFAR);
 	CFixVector h = o - transformation.m_info.pos;
 	CFixVector::Normalize (o);
@@ -99,9 +99,9 @@ void ScaleTransformation (CTransformation& transformation, int bOglScale)
 	transformation.m_info.viewf [1] = transformation.m_info.viewf [0];		//so we can use unscaled if we want
 
 transformation.m_info.scale = transformation.m_info.aspect;
-if (transformation.m_info.zoom <= I2X (1)) 		//xZoom in by scaling z
+if (transformation.m_info.zoom < I2X (1)) 		//xZoom in by scaling z
 	transformation.m_info.scale.v.coord.z = FixMul (transformation.m_info.scale.v.coord.z, transformation.m_info.zoom);
-else {			//zoom out by scaling x&y
+else if (transformation.m_info.zoom > I2X (1)) {			//zoom out by scaling x&y
 	fix s = FixDiv (I2X (1), transformation.m_info.zoom);
 
 	transformation.m_info.scale.v.coord.x = FixMul (transformation.m_info.scale.v.coord.x, s);

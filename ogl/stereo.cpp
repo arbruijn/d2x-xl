@@ -85,7 +85,7 @@ static bool RiftWarpFrame (const OVR::Util::Render::StereoEyeParams stereoParams
 
 if (stereoParams.pDistortion) {
 	distortion = *stereoParams.pDistortion;
-	if (stereoParams.Eye == OVR::Util::Render::StereoEye_Left)
+	if (stereoParams.Eye == OVR::Util::Render::StereoEye_Right)
 		distortion.XCenterOffset = -distortion.XCenterOffset;
 	}
 

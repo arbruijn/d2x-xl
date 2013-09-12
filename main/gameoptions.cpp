@@ -357,7 +357,8 @@ else {
 	stereo.nScreenDist = 5;
 	stereo.bColorGain = 1;
 	stereo.bDeghost = 1;
-	stereo.xSeparation = 32768;
+	stereo.xSeparation [0] = 
+	stereo.xSeparation [1] = 65536;
 	stereo.nFOV = 90;
 	}
 }

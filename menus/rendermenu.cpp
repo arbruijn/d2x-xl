@@ -63,7 +63,7 @@ void DefaultRenderSettings (bool bSetup = false);
 #define MIN_LIGHTS_PER_PASS 5
 
 #define STEREO_SEPARATION_STEP	(I2X (1) / 8)
-#define RIFT_IPD_STEP				(I2X (1) / 8)
+#define RIFT_IPD_STEP				(I2X (1) / 1)
 
 //------------------------------------------------------------------------------
 
@@ -473,7 +473,7 @@ if (xStereoSeparation < 0)
 	xStereoSeparation = 0;
 else if (xStereoSeparation >= (int) sizeofa (pszStereoSeparation))
 	xStereoSeparation = sizeofa (pszStereoSeparation) - 1;
-nIPD = gameOpts->render.stereo.xSeparation [1] / RIFT_IPD_STEP - RIFT_MIN_IPD;
+nIPD = gameOpts->render.stereo.xSeparation [1] / RIFT_IPD_STEP;
 xFOV = (gameOpts->render.stereo.nFOV - STEREO_MIN_FOV) / STEREO_FOV_STEP;
 if (xFOV < 0)
 	xFOV = (STEREO_DEFAULT_FOV - STEREO_MIN_FOV) / STEREO_FOV_STEP;
