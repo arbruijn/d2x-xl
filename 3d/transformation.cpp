@@ -191,6 +191,7 @@ m_info.aspect.v.coord.z = I2X (1);		//always 1
 void CTransformation::SetupProjection (float aspectRatio)
 {
 
+m_info.oglProjection.Get (GL_PROJECTION_MATRIX);
 if (ogl.IsOculusRift () && gameData.render.rift.Available ()) {
 	//double riftXlatProj [16] = { 1.0, 0.0, 0.0, (ogl.StereoSeparation () < 0) ? -gameData.render.rift.m_projectionCenterOffset : gameData.render.rift.m_projectionCenterOffset,
 	//									  0.0, 1.0, 0.0, 0.0, 
@@ -203,7 +204,9 @@ if (ogl.IsOculusRift () && gameData.render.rift.Available ()) {
 										  (ogl.StereoSeparation () < 0) ? gameData.render.rift.m_projectionCenterOffset : -gameData.render.rift.m_projectionCenterOffset, 0.0, 0.0, 1.0 };
 
 	glMatrixMode (GL_PROJECTION);
-	glMultMatrixd ((GLdouble*) riftXlatProj);
+	glLoadMatrixd ((GLdouble*) riftXlatProj);
+	m_info.oglProjection.Mul ();
+	//glMultMatrixd ((GLdouble*) riftXlatProj);
 	}
 m_info.oglProjection.Get (GL_PROJECTION_MATRIX);
 glMatrixMode (GL_MODELVIEW);

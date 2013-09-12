@@ -503,7 +503,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.stereo.nMethod, i, 0);
 		RP (gameOptions [i].render.stereo.nScreenDist, i, 0);
 		RP (gameOptions [i].render.stereo.xSeparation [0], i, 0);
-		RP (gameOptions [i].render.stereo.xSeparation [1], i, 0);
+		RP (gameOptions [i].render.stereo.xSeparation [1], i, 1);
 		RP (gameOptions [i].render.stereo.nFOV, i, 0);
 		RP (gameOptions [i].render.stereo.bEnhance, i, 0);
 		RP (gameOptions [i].render.stereo.bColorGain, i, 0);
@@ -980,19 +980,19 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.particles.bStatic", "1"},
 	 {"gameOptions[0].input.joystick.deadzones[0]", "1"},
 	 {"gameOptions[0].input.joystick.sensitivity[0]", "7"},
-	 {"gameOptions[0].input.trackIR.bMove [0]", "1"},
+	 {"gameOptions[0].input.trackIR.bMove[0]", "1"},
 	 {"gameOptions[0].input.joystick.deadzones[1]", "1"},
 	 {"gameOptions[0].input.joystick.sensitivity[1]", "7"},
-	 {"gameOptions[0].input.trackIR.bMove [1]", "1"},
+	 {"gameOptions[0].input.trackIR.bMove[1]", "1"},
 	 {"gameOptions[0].input.joystick.deadzones[2]", "1"},
 	 {"gameOptions[0].input.joystick.sensitivity[2]", "7"},
-	 {"gameOptions[0].input.trackIR.bMove [2]", "1"},
+	 {"gameOptions[0].input.trackIR.bMove[2]", "1"},
 	 {"gameOptions[0].input.joystick.deadzones[3]", "1"},
 	 {"gameOptions[0].input.joystick.sensitivity[3]", "7"},
-	 {"gameOptions[0].input.trackIR.bMove [3]", "0"},
+	 {"gameOptions[0].input.trackIR.bMove[3]", "0"},
 	 {"gameOptions[0].input.joystick.deadzones[4]", "1"},
 	 {"gameOptions[0].input.joystick.sensitivity[4]", "7"},
-	 {"gameOptions[0].input.trackIR.bMove [4]", "1"},
+	 {"gameOptions[0].input.trackIR.bMove[4]", "1"},
 	 {"gameOptions[0].input.mouse.bJoystick", "0"},
 	 {"gameOptions[0].input.mouse.bSyncAxis", "1"},
 	 {"gameOptions[0].input.mouse.nDeadzone", "2"},

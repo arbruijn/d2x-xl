@@ -81,8 +81,6 @@ static bool RiftWarpFrame (const OVR::Util::Render::StereoEyeParams stereoParams
 {
 	OVR::Util::Render::DistortionConfig distortion;
 
-	static float shiftDir = -1.0f;
-
 if (stereoParams.pDistortion) {
 	distortion = *stereoParams.pDistortion;
 	if (stereoParams.Eye == OVR::Util::Render::StereoEye_Right)
@@ -103,7 +101,7 @@ if (shaderManager.Rebuild (warpProg))
 	;
 // We are using 1/4 of DistortionCenter offset value here, since it is
 // relative to [-1,1] range that gets mapped to [0, 0.5].
-shaderManager.Set ("LensCenter", x + (w + shiftDir * distortion.XCenterOffset * 0.5f) * 0.5f, y + h * 0.5f);
+shaderManager.Set ("LensCenter", x + (w + distortion.XCenterOffset * 0.5f) * 0.5f, y + h * 0.5f);
 shaderManager.Set ("ScreenCenter", x + w * 0.5f, y + h * 0.5f);
 
 // MA: This is more correct but we would need higher-res texture vertically; we should adopt this
