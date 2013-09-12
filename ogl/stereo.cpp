@@ -81,7 +81,7 @@ static bool RiftWarpFrame (const OVR::Util::Render::StereoEyeParams stereoParams
 {
 	OVR::Util::Render::DistortionConfig distortion;
 
-	static float shiftDir = 1.0f;
+	static float shiftDir = -1.0f;
 
 if (stereoParams.pDistortion) {
 	distortion = *stereoParams.pDistortion;

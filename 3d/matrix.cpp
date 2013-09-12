@@ -48,8 +48,6 @@ void SetupTransformation (CTransformation& transformation, const CFixVector& vPo
 transformation.m_info.zoom = ogl.IsOculusRift () ? 3 * xZoom / 2 : xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
 transformation.m_info.pos = vPos;
-transformation.m_info.posf [0].Assign (transformation.m_info.pos);
-transformation.m_info.posf [1].Assign (transformation.m_info.pos);
 if (!ogl.StereoSeparation ()) 
 	transformation.m_info.view [0] = mOrient;
 #if 1
@@ -64,7 +62,7 @@ else if (ogl.IsOculusRift ()) {
 	transformation.m_info.view [0] = const_cast<CFixMatrix&> (mOrient) * r;
 #else
 	transformation.m_info.view [0] = mOrient;
-#	if 1
+#	if 0
 	transformation.m_info.pos += mOrient.m.dir.r * (ogl.StereoSeparation () * ipdScale);
 #	endif
 #endif
@@ -84,6 +82,8 @@ else if (gameOpts->render.stereo.nMethod == STEREO_TOE_IN) {
 else
 	transformation.m_info.view [0] = mOrient;
 transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
+transformation.m_info.posf [0].Assign (transformation.m_info.pos);
+transformation.m_info.posf [1].Assign (transformation.m_info.pos);
 ScaleTransformation (transformation, bOglScale);
 CFixMatrix::Transpose (transformation.m_info.viewf [2], transformation.m_info.view [0]);
 if (bSetupRenderer)

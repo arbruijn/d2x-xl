@@ -111,8 +111,12 @@ void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale)
 	bool	bPlayer = (gameData.objs.viewerP == &OBJECTS [LOCALPLAYER.nObject]);
 
 gameData.render.mine.viewer = gameData.objs.viewerP->info.position;
-if (xStereoSeparation && bPlayer)
-	gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
+if (xStereoSeparation && bPlayer) {
+	if (ogl.IsOculusRift ())
+		gameData.render.mine.viewer.vPos -= gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
+	else
+		gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
+	}
 
 externalView.SetPos (NULL);
 if (gameStates.render.cameras.bActive) {
