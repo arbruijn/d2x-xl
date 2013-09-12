@@ -64,7 +64,7 @@ void DefaultRenderSettings (bool bSetup = false);
 
 #define STEREO_SEPARATION_STEP	(I2X (1) / 8)
 #define RIFT_IPD_STEP				(I2X (1) / 64)
-#define MM								16 // one millimeter in world units (65536 ~ 1 unit)
+#define MM_SCALE						32 // one millimeter in world units (1 unit ~2m ~ 65536 in fix point resolution)
 
 //------------------------------------------------------------------------------
 
@@ -236,7 +236,7 @@ if ((m = menu ["3D glasses"])) {
 		v = m->Value ();
 		if (nIPD != v) {
 			nIPD = v;
-			gameOpts->render.stereo.xSeparation [1] = (nIPD + RIFT_MIN_IPD) * MM; ///*I2X (1) + */(nIPD + 1) * RIFT_IPD_STEP;
+			gameOpts->render.stereo.xSeparation [1] = (nIPD + RIFT_MIN_IPD) * MM_SCALE; ///*I2X (1) + */(nIPD + 1) * RIFT_IPD_STEP;
 			sprintf (m->Text (), TXT_RIFT_IPD, nIPD + RIFT_MIN_IPD);
 			m->m_bRebuild = -1;
 			}
@@ -474,7 +474,7 @@ if (xStereoSeparation < 0)
 	xStereoSeparation = 0;
 else if (xStereoSeparation >= (int) sizeofa (pszStereoSeparation))
 	xStereoSeparation = sizeofa (pszStereoSeparation) - 1;
-nIPD = gameOpts->render.stereo.xSeparation [1] / MM - RIFT_MIN_IPD; //RIFT_IPD_STEP - 1;
+nIPD = gameOpts->render.stereo.xSeparation [1] / MM_SCALE - RIFT_MIN_IPD; //RIFT_IPD_STEP - 1;
 xFOV = (gameOpts->render.stereo.nFOV - STEREO_MIN_FOV) / STEREO_FOV_STEP;
 if (xFOV < 0)
 	xFOV = (STEREO_DEFAULT_FOV - STEREO_MIN_FOV) / STEREO_FOV_STEP;

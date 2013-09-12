@@ -231,8 +231,7 @@ inline int ScreenScale (void)
 return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? 1 : 2;
 }
 
-#if 1
-
+#if 0
 
 inline int ScreenWidth (void)
 {
@@ -297,10 +296,17 @@ m_bViewport = 1;
 
 //------------------------------------------------------------------------------
 
+bool CGlowRenderer::UseViewport (void)
+{
+return !ogl.IsSideBySideDevice () && (gameOpts->render.effects.bGlow == 1);
+}
+
+//------------------------------------------------------------------------------
+
 bool CGlowRenderer::Visible (void)
 {
 #if USE_VIEWPORT
-if (gameOpts->render.effects.bGlow != 1)
+if (!UseViewport ())
 	return true;
 #if 0
 if (m_bViewport != 1)
@@ -332,7 +338,7 @@ return true;
 
 void CGlowRenderer::InitViewport (void)
 {
-if (gameOpts->render.effects.bGlow != 1) {
+if (!UseViewport ()) {
 	m_screenMin.x = m_screenMin.y = 0;
 	m_screenMax.x = ScreenWidth ();
 	m_screenMax.y = ScreenHeight ();
@@ -373,7 +379,7 @@ if (!Available (nType))
 if ((GLOW_FLAGS & nType) == 0)
 	return false;
 #if USE_VIEWPORT
-if (gameOpts->render.effects.bGlow != 1)
+if (!UseViewport ())
 	return true;
 //#pragma omp parallel for
 for (int i = 0; i < nVerts; i++) 
@@ -393,7 +399,7 @@ if ((GLOW_FLAGS & nType) == 0)
 #if USE_VIEWPORT
 //if (gameStates.render.cameras.bActive)
 //	return true;
-if (gameOpts->render.effects.bGlow != 1)
+if (!UseViewport ())
 	return true;
 if (!bTransformed)
 	transformation.Transform (v, v);
@@ -416,7 +422,7 @@ if ((GLOW_FLAGS & nType) == 0)
 #if USE_VIEWPORT
 //if (gameStates.render.cameras.bActive)
 //	return true;
-if (gameOpts->render.effects.bGlow != 1)
+if (!UseViewport ())
 	return true;
 CFloatVector3 v;
 v.Assign (pos);
@@ -467,7 +473,7 @@ if ((gameOptions [0].render.nQuality < 3) && automap.Display ())
 if (nType != m_nType) {
 #else
 if ((m_bReplace == bReplace) && (m_nStrength == nStrength) && (m_brightness == brightness) && ((nType == GLOW_LIGHTNING) == (m_nType == GLOW_LIGHTNING))) 
-	gameOpts->render.effects.bGlow = ogl.SelectGlowBuffer ();
+	gameOpts->render.effects.bGlow *= ogl.SelectGlowBuffer ();
 else {
 #endif
 	End ();
@@ -477,7 +483,7 @@ else {
 	m_brightness = brightness;
 	m_bViewport = 0;
 	InitViewport ();
-	gameOpts->render.effects.bGlow = Activate ();
+	gameOpts->render.effects.bGlow *= Activate ();
 	}
 if (gameOpts->render.effects.bGlow)
 	return true;
