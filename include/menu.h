@@ -393,6 +393,9 @@ public:
 	void Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP = NULL);
 	virtual void Render (void);
 
+	static float GetScale (void);
+	static inline int Scale (int v) { return int (ceil (float (v) * GetScale ())); }
+
 	static CMenu * Active (void) { return m_active; }
 
 private:

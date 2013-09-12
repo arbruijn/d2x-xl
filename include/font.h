@@ -105,9 +105,11 @@ class CFont {
 		inline int Range (void) { return m_info.maxChar - m_info.minChar + 1; }
 
 		void GetCharWidth (ubyte c, ubyte c2, int& width, int& spacing);
-		int GetLineWidth (const char *s);
-		int GetCenteredX (const char *s);
-		int TotalWidth (void);
+		int GetLineWidth (const char *s, float scale = 1.0f);
+		int GetCenteredX (const char *s, float scale = 1.0f);
+		int TotalWidth (float scale = 1.0f);
+
+		inline int Scale (int v, float scale) { return int (ceil (float (v) * scale)); }
 
 		int DrawString (int x, int y, const char *s);
 

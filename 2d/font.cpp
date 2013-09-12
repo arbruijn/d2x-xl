@@ -146,7 +146,7 @@ if (fontManager.Scale () != 1.0f)
 
 //------------------------------------------------------------------------------
 
-int CFont::GetLineWidth (const char *s)
+int CFont::GetLineWidth (const char *s, float scale)
 {
 	int w, w2, s2;
 
@@ -161,21 +161,21 @@ for (w = 0; *s && (*s != '\n'); s++) {
 	GetCharWidth (s[0], s[1], w2, s2);
 	w += s2;
 	}
-return w;
+return Scale (w, scale);
 }
 
 //------------------------------------------------------------------------------
 
-int CFont::GetCenteredX (const char *s)
+int CFont::GetCenteredX (const char *s, float scale)
 {
-return ((CCanvas::Current ()->Width () - GetLineWidth (s)) / 2);
+return ((CCanvas::Current ()->Width () - GetLineWidth (s, scale)) / 2);
 }
 
 //------------------------------------------------------------------------------
 
-int CFont::TotalWidth (void)
+int CFont::TotalWidth (float scale)
 {
-if (m_info.flags & FT_PROPORTIONAL){
+if (m_info.flags & FT_PROPORTIONAL) {
 	int i, w = 0, c = m_info.minChar;
 	for (i = 0; c <= m_info.maxChar; i++, c++) {
 		if (m_info.widths [i] < 0)
@@ -184,7 +184,7 @@ if (m_info.flags & FT_PROPORTIONAL){
 		}
 	return w;
 	}
-return m_info.width * Range ();
+return Scale (m_info.width * Range (), scale);
 }
 
 //------------------------------------------------------------------------------
