@@ -272,14 +272,14 @@ if (nState) { // render
 	if (!image)
 		return nCurItem;
 	if (gameStates.menus.bHires) {
-		x = (CCanvas::Current ()->Width () - image->Width ()) / 2;
+		x = (CCanvas::Current ()->Width () - image->Width ()) / 2 - CMenu::StereoOffset ();
 		y = menu [0].m_y - 16;
 		//paletteManager.ResumeEffect (gameStates.app.bGameRunning);
 		//BlitClipped (x, y, image);
 		image->RenderFixed (NULL, x, y);
 		if (gameOpts->menus.nStyle) {
 			CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
-			OglDrawEmptyRect (x - 1, y - 1, x + image->Width () + 1, y + image->Height () + 1);
+			OglDrawEmptyRect (x - 1, y - 1, CMenu::Scale (x + image->Width () + 1), CMenu::Scale (y + image->Height () + 1));
 			}
 		}
 	else {

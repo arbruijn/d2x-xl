@@ -90,6 +90,14 @@ char bAlreadyShowingInfo = 0;
 CMenu* CMenu::m_active = NULL;
 int CMenu::m_level = 0;
 
+
+//------------------------------------------------------------------------------
+
+int CMenu::StereoOffset (void)
+{
+return ogl.IsSideBySideDevice () ? int (ceil (X2D (ogl.StereoSeparation ()) * gameData.render.frame.Width () * 2.75)) : 0;
+}
+
 //------------------------------------------------------------------------------
 
 bool MenuRenderTimeout (int& t0, int tFade)
@@ -200,8 +208,7 @@ ubyte bHackDblClickMenuMode = 0;
 
 void CMenu::DrawCloseBox (int x, int y)
 {
-if (ogl.IsSideBySideDevice ())
-	x -= int (ceil (X2D (ogl.StereoSeparation ()) * gameData.render.frame.Width () * 2.75));
+x -= CMenu::StereoOffset ();
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (x + MENU_CLOSE_X, y + MENU_CLOSE_Y, x + MENU_CLOSE_X + MENU_CLOSE_SIZE, y + MENU_CLOSE_Y + MENU_CLOSE_SIZE);
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
@@ -219,7 +226,7 @@ if (pszTitle && *pszTitle) {
 	fontManager.SetColorRGBi (color, 1, 0, 0);
 	fontManager.Current ()->StringSize (pszTitle, w, h, aw);
 	if (ogl.IsSideBySideDevice ()) 
-		x = (m_props.scWidth - w) / 2 - int (ceil (X2D (ogl.StereoSeparation ()) * gameData.render.frame.Width () * 2.75));
+		x = (m_props.scWidth - w) / 2 - StereoOffset ();
 	GrPrintF (NULL, x, ty, pszTitle);
 	ty += h;
 	}
@@ -544,8 +551,7 @@ for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNo
 		Item (i).m_y = Item (i - m_props.nScrollOffset + m_props.nMaxNoScroll).m_y;
 		}
 	x = Item (i).m_x;
-	if (ogl.IsSideBySideDevice ())
-		Item (i).m_x -= int (ceil (X2D (ogl.StereoSeparation ()) * gameData.render.frame.Width () * 2.75));
+	Item (i).m_x -= StereoOffset ();
 	Item (i).Draw ((i == m_nChoice) && !m_bAllText, m_props.bTinyMode);
 	Item (i).m_bRedraw = 0;
 	Item (i).m_x = x;
