@@ -419,8 +419,7 @@ typedef struct tStereoRenderOptions {
 	int bFlipFrames;
 	int bBrighten;
 	int nFOV;
-	int nIPD; // Rift IPD
-	fix xSeparation;
+	fix xSeparation [2];
 } tStereoRenderOptions;
 
 class CRenderOptions {
@@ -1742,7 +1741,7 @@ class CRiftData {
 		int	m_nResolution;
 		int	m_bAvailable;
 
-		CRiftData () : m_renderScale (1.0f), m_fov (135.0f), m_nResolution (0), m_bAvailable (false) {}
+		CRiftData () : m_renderScale (1.0f), m_fov (125.0f), m_nResolution (0), m_bAvailable (false) {}
 		bool Create (void);
 		void Destroy (void);
 		inline int Available (void) { return m_bAvailable; }

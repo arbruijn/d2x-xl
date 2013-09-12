@@ -477,7 +477,7 @@ else {
 		}
 	else {
 		for (int i = 0; i < 2; i++) {
-			ogl.SetStereoSeparation (i ? gameOpts->render.stereo.xSeparation : -gameOpts->render.stereo.xSeparation);
+			ogl.SetStereoSeparation (i ? gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] : -gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()]);
 			ogl.ChooseDrawBuffer ();
 			Render ();
 			}

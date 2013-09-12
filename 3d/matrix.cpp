@@ -45,29 +45,30 @@ void SetupTransformation (CTransformation& transformation, const CFixVector& vPo
 {
 	static int ipdScale = 2;
 
-transformation.m_info.zoom = ogl.IsOculusRift () ? 3 * xZoom / 2 : xZoom;
+transformation.m_info.zoom = ogl.IsOculusRift () ? /*3 * xZoom / 2*/ I2X (1) : xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
 transformation.m_info.pos = vPos;
 if (!ogl.StereoSeparation ()) 
 	transformation.m_info.view [0] = mOrient;
 #if 1
 else if (ogl.IsOculusRift ()) {
-#if 0
-	transformation.m_info.pos += mOrient.m.dir.r * (ogl.StereoSeparation () * ipdScale);
+#	if 1
 	CFixVector o = mOrient.m.dir.f * F2X (ZFAR);
 	CFixVector h = o - transformation.m_info.pos;
+	CFixVector::Normalize (o);
+	CFixVector::Normalize (h);
 	fix d = CFixVector::Dot (h, o);
-	CAngleVector a = CAngleVector::Create (0, 0, (xStereoSeparation < 0) ? d : -d);
+	CAngleVector a = CAngleVector::Create (0, 0, (xStereoSeparation < 0) ? -d : d);
 	CFixMatrix r = CFixMatrix::Create (a);
 	transformation.m_info.view [0] = const_cast<CFixMatrix&> (mOrient) * r;
-#else
+#	else
 	transformation.m_info.view [0] = mOrient;
+#	endif
 #	if 0
 	transformation.m_info.pos += mOrient.m.dir.r * (ogl.StereoSeparation () * ipdScale);
 #	endif
 #endif
 	}
-#endif
 else if (gameOpts->render.stereo.nMethod == STEREO_TOE_IN) {
 	fix zScreen = F2X (ogl.ZScreen () * 10.0);
 	CFixVector o = CFixVector::Create (fix (xStereoSeparation / 2), 0, 0);

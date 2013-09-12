@@ -915,9 +915,11 @@ if (!ogl.StereoDevice () || !(gameData.app.nFrameCount & 1)) {
 if (!ogl.StereoDevice ())
 	RenderMonoFrame ();
 else {
-	if (gameOpts->render.stereo.xSeparation == 0)
-		gameOpts->render.stereo.xSeparation = 3 * I2X (1) / 4;
-	fix xStereoSeparation = (automap.Display () && !ogl.IsSideBySideDevice ()) ? 2 * gameOpts->render.stereo.xSeparation : gameOpts->render.stereo.xSeparation;
+	if (gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] == 0)
+		gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] = I2X (1);
+	fix xStereoSeparation = (automap.Display () && !ogl.IsSideBySideDevice ()) 
+									? 2 * gameOpts->render.stereo.xSeparation [0] 
+									: gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()];
 #if DBG
 	screen.SetScale (/*ogl.IsOculusRift () ? 2.0f :*/ 2.0f);
 	SetupCanvasses (2.0f);
