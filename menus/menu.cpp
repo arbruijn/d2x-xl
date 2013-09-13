@@ -219,7 +219,7 @@ if (pszTitle && *pszTitle) {
 	fontManager.SetColorRGBi (color, 1, 0, 0);
 	fontManager.Current ()->StringSize (pszTitle, w, h, aw);
 	if (ogl.IsSideBySideDevice ()) 
-		x = (m_props.scWidth - w) / 2 - StereoOffset ();
+		x = (m_props.scWidth - w) / 2 - gameData.StereoOffset2D ();
 	GrPrintF (NULL, x, ty, pszTitle);
 	ty += h;
 	}
@@ -545,7 +545,7 @@ for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNo
 		Item (i).m_y = Item (i - m_props.nScrollOffset + m_props.nMaxNoScroll).m_y;
 		}
 	x = Item (i).m_x;
-	Item (i).m_x -= StereoOffset ();
+	Item (i).m_x -= gameData.StereoOffset2D ();
 	Item (i).Draw ((i == m_nChoice) && !m_bAllText, m_props.bTinyMode);
 	Item (i).m_bRedraw = 0;
 	Item (i).m_x = x;
