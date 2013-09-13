@@ -398,8 +398,8 @@ if (right >= gameData.render.frame.Width ())
 	right = gameData.render.frame.Width () - 1;
 if (bottom >= gameData.render.frame.Height ())
 	bottom = gameData.render.frame.Height () - 1;
-left -= CMenu::StereoOffset ();
-right -= CMenu::StereoOffset ();
+left -= gameData.StereoOffset2D ();
+right -= gameData.StereoOffset2D ();
 CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
 ogl.SetTexturing (false);
 OglDrawFilledRect (left, top, right, bottom);

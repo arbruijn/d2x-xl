@@ -272,7 +272,7 @@ if (nState) { // render
 	if (!image)
 		return nCurItem;
 	if (gameStates.menus.bHires) {
-		x = (CCanvas::Current ()->Width () - image->Width ()) / 2 - CMenu::StereoOffset ();
+		x = (CCanvas::Current ()->Width () - image->Width ()) / 2 - gameData.StereoOffset2D ();
 		y = menu [0].m_y - CMenu::Scale (16);
 		//paletteManager.ResumeEffect (gameStates.app.bGameRunning);
 		//BlitClipped (x, y, image);

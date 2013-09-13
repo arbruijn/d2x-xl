@@ -1673,6 +1673,8 @@ class CGameScreenData : public CCanvas {
 		inline uint Scalar (void) { return (((uint) Width (false)) << 16) + (((uint) Height (false)) & 0xFFFF); }
 		inline uint Area (void) { return (uint) Width (false) * (uint) Height (false); }
 		void Set (uint scalar) { SetWidth ((short) (scalar >> 16)), SetHeight ((short) (scalar & 0xFFFF)); }
+
+		static int StereoOffset (void);
 	};
 
 //------------------------------------------------------------------------------
@@ -3631,6 +3633,8 @@ class CGameData {
 		void SetFusionCharge (fix xCharge, bool bLocal = false);
 		fix FusionCharge (int nId = -1);
 		fix FusionDamage (fix xBaseDamage);
+		int StereoOffset2D (void);
+
 };
 
 extern CGameData gameData;

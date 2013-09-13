@@ -395,7 +395,6 @@ public:
 
 	static float GetScale (void);
 	static inline int Scale (int v) { return int (ceil (float (v) * GetScale ())); }
-	static int StereoOffset (void);
 
 	static CMenu * Active (void) { return m_active; }
 

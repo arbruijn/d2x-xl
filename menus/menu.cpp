@@ -93,13 +93,6 @@ int CMenu::m_level = 0;
 
 //------------------------------------------------------------------------------
 
-int CMenu::StereoOffset (void)
-{
-return ogl.IsSideBySideDevice () ? int (ceil (X2D (ogl.StereoSeparation ()) * gameData.render.frame.Width () * 2.75)) : 0;
-}
-
-//------------------------------------------------------------------------------
-
 bool MenuRenderTimeout (int& t0, int tFade)
 {
 int i = SDL_GetTicks ();
@@ -208,7 +201,7 @@ ubyte bHackDblClickMenuMode = 0;
 
 void CMenu::DrawCloseBox (int x, int y)
 {
-x -= CMenu::StereoOffset ();
+x -= gameData.StereoOffset2D ();
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (x + MENU_CLOSE_X, y + MENU_CLOSE_Y, x + MENU_CLOSE_X + Scale (MENU_CLOSE_SIZE), y + MENU_CLOSE_Y + Scale (MENU_CLOSE_SIZE));
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));

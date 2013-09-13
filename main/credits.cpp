@@ -312,7 +312,7 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 					colors [0].Alpha () = colors [1].Alpha () = dy / float (FADE_DIST);
 					dy = float ((y + h < FADE_DIST) ? y + h : (480 - y - 2 * h < FADE_DIST) ? 480 - y - 2 * h : FADE_DIST);
 					colors [2].Alpha () = colors [3].Alpha () = dy / float (FADE_DIST);
-					bmP->Render (CCanvas::Current (), (CCanvas::Current ()->Width () - w) / 2 - CMenu::StereoOffset (), m_yOffs + y, w, h, 0, 0, w, h, 1, 0, 0, 1, colors);
+					bmP->Render (CCanvas::Current (), (CCanvas::Current ()->Width () - w) / 2 - gameData.StereoOffset2D (), m_yOffs + y, w, h, 0, 0, w, h, 1, 0, 0, 1, colors);
 					delete bmP;
 					}
 				}

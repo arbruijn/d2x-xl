@@ -97,6 +97,14 @@ InitStringPool ();
 SetDataVersion (-1);
 }
 
+
+//------------------------------------------------------------------------------
+
+int CGameData::StereoOffset2D (void)
+{
+return ogl.IsSideBySideDevice () ? int (ceil (X2D (ogl.StereoSeparation ()) * render.frame.Width () * 2.75)) : 0;
+}
+
 // ----------------------------------------------------------------------------
 
 CDynLight::CDynLight ()

@@ -25,6 +25,8 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
    int32_t high;
 } __pack__ tQuadInt;
 
+#define WORLDSCALE	1000	// one world unit (65536 in fixed point arithmetic) corresponds to 1000 mm (1 m) of the real world
+
 //Convert an int to a fix
 #define I2X(i) ((static_cast<fix> (i)) * 65536)
 
@@ -38,6 +40,9 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 #define X2F(_f) (float (_f) / 65536.0f)
 #define X2D(_f) (double (_f) / 65536.0)
 #define F2X(_f) (fix ((_f) * 65536))
+
+#define MM2X(_mm) (((_mm) * I2X (1)) / WORLDSCALE)	// mm to world units
+#define X2MM(_i)	(int (X2F (_i) * WORLDSCALE + 0.5f))
 
 //Some handy constants
 //#define F0_1	0x199a
