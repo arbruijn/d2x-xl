@@ -842,7 +842,7 @@ while (!m_bDone) {
 		 break;
 
 		case KEY_CTRLED + KEY_F1:
-			SwitchDisplayMode ( - 1);
+			SwitchDisplayMode (-1);
 			break;
 
 		case KEY_CTRLED + KEY_F2:

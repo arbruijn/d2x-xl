@@ -466,6 +466,7 @@ public:
 class CMessageBox: public CMenu {
 	int m_nDrawBuffer;
 	const char* m_pszMsg;
+	int m_x;
 
 public:
 	~CMessageBox () {

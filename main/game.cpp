@@ -385,51 +385,51 @@ void ShowHelp (void)
 	char command_help[64], pixel_double_help[64], save_help[64], restore_help[64];
 #endif
 
-m.AddText ("", TXT_HELP_ESC);
-#ifndef MACINTOSH
-m.AddText ("", TXT_HELP_ALT_F2);
-m.AddText ("", TXT_HELP_ALT_F3);
-#else
-sprintf (save_help, TXT_HLP_SAVE, 133);
-sprintf (restore_help, TXT_HLP_LOAD, 133);
-mat.AddText (save_help);
-mat.AddText (restore_help);
-#endif
-m.AddText ("", TXT_HELP_QUICKSAVE);
-m.AddText ("", TXT_HELP_QUICKLOAD);
-m.AddText ("", TXT_HELP_F2);
-m.AddText ("", TXT_HELP_F3);
-m.AddText ("", TXT_HELP_F4);
-m.AddText ("", TXT_HELP_F5);
-#ifndef MACINTOSH
-m.AddText ("", TXT_HELP_PAUSE_D2X);
-#else
-mat.AddText (TXT_HLP_PAUSE);
-#endif
-m.AddText ("", TXT_HELP_MINUSPLUS);
-#ifndef MACINTOSH
-m.AddText ("", TXT_HELP_PRTSCN_D2X);
-#else
-mat.AddText (TXT_HLP_SCREENIE);
-#endif
-m.AddText ("", TXT_HELP_1TO5);
-m.AddText ("", TXT_HELP_6TO10);
-m.AddText ("", TXT_HLP_CYCLE_LEFT_WIN);
-m.AddText ("", TXT_HLP_CYCLE_RIGHT_WIN);
+//m.AddText ("", TXT_HELP_ESC);
+//#ifndef MACINTOSH
+//m.AddText ("", TXT_HELP_ALT_F2);
+//m.AddText ("", TXT_HELP_ALT_F3);
+//#else
+//sprintf (save_help, TXT_HLP_SAVE, 133);
+//sprintf (restore_help, TXT_HLP_LOAD, 133);
+//mat.AddText (save_help);
+//mat.AddText (restore_help);
+//#endif
+//m.AddText ("", TXT_HELP_QUICKSAVE);
+//m.AddText ("", TXT_HELP_QUICKLOAD);
+//m.AddText ("", TXT_HELP_F2);
+//m.AddText ("", TXT_HELP_F3);
+//m.AddText ("", TXT_HELP_F4);
+//m.AddText ("", TXT_HELP_F5);
+//#ifndef MACINTOSH
+//m.AddText ("", TXT_HELP_PAUSE_D2X);
+//#else
+//mat.AddText (TXT_HLP_PAUSE);
+//#endif
+//m.AddText ("", TXT_HELP_MINUSPLUS);
+//#ifndef MACINTOSH
+//m.AddText ("", TXT_HELP_PRTSCN_D2X);
+//#else
+//mat.AddText (TXT_HLP_SCREENIE);
+//#endif
+//m.AddText ("", TXT_HELP_1TO5);
+//m.AddText ("", TXT_HELP_6TO10);
+//m.AddText ("", TXT_HLP_CYCLE_LEFT_WIN);
+//m.AddText ("", TXT_HLP_CYCLE_RIGHT_WIN);
 if (!gameStates.app.bNostalgia) {
-	m.AddText ("", TXT_HLP_RESIZE_WIN);
-	m.AddText ("", TXT_HLP_REPOS_WIN);
+	//m.AddText ("", TXT_HLP_RESIZE_WIN);
+	//m.AddText ("", TXT_HLP_REPOS_WIN);
 	m.AddText ("", TXT_HLP_ZOOM_WIN);
 	}
-m.AddText ("", TXT_HLP_GUIDEBOT);
-m.AddText ("", TXT_HLP_RENAMEGB);
-m.AddText ("", TXT_HLP_DROP_PRIM);
-m.AddText ("", TXT_HLP_DROP_SEC);
-if (!gameStates.app.bNostalgia) {
-	m.AddText ("", TXT_HLP_CHASECAM);
-	m.AddText ("", TXT_HLP_RADAR);
-	}
-m.AddText ("", TXT_HLP_GBCMDS);
+//m.AddText ("", TXT_HLP_GUIDEBOT);
+//m.AddText ("", TXT_HLP_RENAMEGB);
+//m.AddText ("", TXT_HLP_DROP_PRIM);
+//m.AddText ("", TXT_HLP_DROP_SEC);
+//if (!gameStates.app.bNostalgia) {
+//	m.AddText ("", TXT_HLP_CHASECAM);
+//	m.AddText ("", TXT_HLP_RADAR);
+//	}
+//m.AddText ("", TXT_HLP_GBCMDS);
 #ifdef MACINTOSH
 sprintf (pixel_double_help, "%c-D\t  Toggle Pixel Double Mode", 133);
 mat.AddText (pixel_double_help);
@@ -570,6 +570,7 @@ SetFunctionMode (FMODE_EXIT);		// get out of game in Apple OEM version
 if (pfnTIRStop)
 	pfnTIRStop ();
 shaderManager.Destroy (true);
+ogl.InitEnhanced3DShader (); // always need the stereo rendering shaders 
 meshBuilder.DestroyVBOs ();
 UnloadLevelData ();
 gameData.Destroy ();

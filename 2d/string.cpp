@@ -103,6 +103,8 @@ grsString *CreatePoolString (const char *s, int *idP)
 {
 if (!fontManager.Current ())
 	return NULL;
+if (fontManager.Scale () != 1.0f)
+	return NULL;
 
 	grsString*	ps;
 	int			l, w, h, aw;
@@ -462,12 +464,23 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-CBitmap *CreateStringBitmap (
-	const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce)
+static inline int Pow2ize (int v)
 {
+	int i = 1;
+
+while (i < v)
+	i <<= 2;
+return i;
+}
+
+//------------------------------------------------------------------------------
+
+static bool FillStringBitmap (CBitmap* bmP, const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce, int& w, int& h)
+{
+
 	int			origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
-	int			i, x, y, hx, hy, w, h, aw, cw, spacing, nTab, nChars, bHotKey;
-	CBitmap		*bmP, *bmfP;
+	int			i, x, y, hx, hy, aw, cw, spacing, nTab, nChars, bHotKey;
+	CBitmap		*bmfP;
 	CRGBAColor	hc, kc, *pc;
 	ubyte			*pf;
 	CPalette		*palP = NULL;
@@ -476,38 +489,7 @@ CBitmap *CreateStringBitmap (
 	const char	*textP, *text_ptr1, *nextRowP;
 	int			letter;
 	CFont*		fontP = fontManager.Current ();
-	float			fScale = fontManager.Scale ();
 
-#if 0
-if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
-	return NULL;
-#endif
-fontManager.SetScale (1.0f / (gameStates.app.bDemoData + 1));
-fontP->StringSizeTabbed (s, w, h, aw, nTabs, nMaxWidth);
-if (!(w && h)) {
-	fontManager.SetScale (fScale / (gameStates.app.bDemoData + 1));
-	return NULL;
-	}
-if (bForce >= 0) {
-	for (i = 1; i < w; i <<= 2)
-		;
-	w = i;
-	for (i = 1; i < h; i <<= 2)
-		;
-	h = i;
-	}
-if (!(bmP = CBitmap::Create (0, w, h, 4))) {
-	fontManager.SetScale (fScale / (gameStates.app.bDemoData + 1));
-	return NULL;
-	}
-if (!bmP->Buffer ()) {
-	fontManager.SetScale (fScale / (gameStates.app.bDemoData + 1));
-	delete bmP;
-	return NULL;
-	}
-bmP->SetName ("String Bitmap");
-bmP->Clear ();
-bmP->AddFlags (BM_FLAG_TRANSPARENT);
 nextRowP = s;
 y = 0;
 nTab = 0;
@@ -538,18 +520,16 @@ x = 0;
 		if (c == '\t') {
 			textP++;
 			if (nTabs && (nTab < 6)) {
-				int	w, h, aw;
+				int	aw;
 
 				fontManager.Current ()->StringSize (textP, w, h, aw);
 				x = LHX (nTabs [nTab++]);
 				if (!gameStates.multi.bSurfingNet)
 					x += nMaxWidth - w;
-				for (i = 1; i < w; i <<= 2)
-					;
-				w = i;
-				for (i = 1; i < h; i <<= 2)
-					;
-				h = i;
+				w = Pow2ize (w);
+				h = Pow2ize (h);
+				if ((w > bmP->Width ()) || (h > bmP->Height ()))
+					return false;
 				}
 			continue;
 			}
@@ -579,7 +559,11 @@ x = 0;
 			for (hy = 0; hy < bmfP->Height (); hy++) {
 				pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
 				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
-				for (hx = bmfP->Width (); hx; hx--, pc++, pf++)
+				for (hx = bmfP->Width (); hx; hx--, pc++, pf++) {
+#if DBG
+					if ((pc - reinterpret_cast<CRGBAColor*> (bmP->Buffer ())) >= bmP->Width () * bmP->Height ())
+						continue;
+#endif
 					if ((c = *pf) != transparencyColor) {
 						colorP = palP->Color () + c;
 						pc->Red () = colorP->Red () * 4;
@@ -587,10 +571,7 @@ x = 0;
 						pc->Blue () = colorP->Blue () * 4;
 						pc->Alpha () = 255;
 						}
-#if DBG
-					else
-						c = c;
-#endif
+					}
 				}
 			}
 		else {
@@ -611,9 +592,14 @@ x = 0;
 			for (hy = 0; hy < bmfP->Height (); hy++) {
 				pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
 				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
-				for (hx = bmfP->Width (); hx; hx--, pc++, pf++)
+				for (hx = bmfP->Width (); hx; hx--, pc++, pf++) {
+#if DBG
+					if ((pc - reinterpret_cast<CRGBAColor*> (bmP->Buffer ())) >= bmP->Width () * bmP->Height ())
+						continue;
+#endif
 					if (*pf != transparencyColor)
 						*pc = bHotKey ? kc : hc;
+					}
 				}
 			}
 		x += spacing;
@@ -621,8 +607,65 @@ x = 0;
 		}
 	}
 bmP->SetPalette (palP);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+CBitmap *CreateStringBitmap (const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce)
+{
+	CFont*		fontP = fontManager.Current ();
+	float			fScale = fontManager.Scale ();
+	CBitmap*		bmP;
+	int			w, h, aw;
+
+#if 0
+if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
+	return NULL;
+#endif
+fontManager.SetScale (1.0f / (gameStates.app.bDemoData + 1));
+fontP->StringSizeTabbed (s, w, h, aw, nTabs, nMaxWidth);
+if (!(w && h)) {
+	fontManager.SetScale (fScale);
+	return NULL;
+	}
+if (bForce >= 0) {
+	w = Pow2ize (w);
+	h = Pow2ize (h);
+	}
+
+for (;;) {
+	if (!(bmP = CBitmap::Create (0, w, h, 4))) {
+		fontManager.SetScale (fScale);
+		return NULL;
+		}
+	if (!bmP->Buffer ()) {
+		fontManager.SetScale (fScale);
+		delete bmP;
+		return NULL;
+		}
+	bmP->SetName ("String Bitmap");
+	bmP->Clear ();
+	bmP->AddFlags (BM_FLAG_TRANSPARENT);
+	if (FillStringBitmap (bmP, s, nKey, nKeyColor, nTabs, bCentered, nMaxWidth, bForce, w, h))
+		break;
+	bmP->Destroy ();
+	}
+#if DBG
+bmP->Destroy ();
+if (!(bmP = CBitmap::Create (0, w, h, 4))) {
+	fontManager.SetScale (fScale);
+	return NULL;
+	}
+if (!bmP->Buffer ()) {
+	fontManager.SetScale (fScale);
+	delete bmP;
+	return NULL;
+	}
+FillStringBitmap (bmP, s, nKey, nKeyColor, nTabs, bCentered, nMaxWidth, bForce, w, h);
+#endif
 bmP->SetTranspType (-1);
-fontManager.SetScale (fScale / (gameStates.app.bDemoData + 1));
+fontManager.SetScale (fScale);
 return bmP;
 }
 

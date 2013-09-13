@@ -46,7 +46,7 @@ CMessageBox messageBox;
 void CMessageBox::Show (const char *pszMsg, bool bFade)
 {
 	int w, h, aw;
-	int x, y;
+	int y;
 	
 m_tEnter = -1;
 m_nDrawBuffer = ogl.m_states.nDrawBuffer;
@@ -54,16 +54,18 @@ m_pszMsg = pszMsg;
 m_callback = NULL;
 Clear ();
 fontManager.SetCurrent (MEDIUM1_FONT);
+fontManager.SetScale (fontManager.Scale () * CMenu::GetScale ());
 fontManager.Current ()->StringSize (m_pszMsg, w, h, aw);
-x = (gameData.render.frame.Width () - w) / 2;
+m_x = (gameData.render.frame.Width () - w) / 2;
 y = (gameData.render.frame.Height () - h) / 2;
-backgroundManager.Setup (NULL, x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
+backgroundManager.Setup (NULL, m_x - BOX_BORDER / 2, y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
 gameStates.app.bClearMessage = 1;
 if (bFade)
 	do {
 		CMenu::Render (NULL, NULL);
 //		G3_SLEEP (33);
 	} while (SDL_GetTicks () - m_tEnter < gameOpts->menus.nFade);
+fontManager.SetScale (fontManager.Scale () / CMenu::GetScale ());
 }
 
 //------------------------------------------------------------------------------
@@ -75,7 +77,7 @@ FadeIn ();
 backgroundManager.Redraw ();
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 fontManager.SetCurrent (MEDIUM1_FONT);
-GrPrintF (NULL, 0x8000, BOX_BORDER / 2, m_pszMsg); //(h / 2 + BOX_BORDER) / 2
+GrPrintF (NULL, m_x - gameData.StereoOffset2D (), BOX_BORDER / 2, m_pszMsg); //(h / 2 + BOX_BORDER) / 2
 gameStates.render.grAlpha = 1.0f;
 }
 

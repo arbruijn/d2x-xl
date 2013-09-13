@@ -141,7 +141,7 @@ else {
 #if DBG
 if (fontManager.Scale () != 1.0f)
 #endif
-	spacing = int (spacing * fontManager.Scale ());
+	spacing = int (spacing * fontManager.Scale () + 0.5f);
 }
 
 //------------------------------------------------------------------------------
