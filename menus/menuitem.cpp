@@ -356,7 +356,7 @@ if (RETRO_STYLE)
 DrawHotKeyString (bIsCurrent, bTiny, 1, 0);
 if (p) {
 	fontManager.Current ()->StringSize (s1, w, h, aw);
-	int x = m_x + m_w - w;
+	int x = m_x + CMenu::Scale (m_w) - w;
 	if (RETRO_STYLE) {
 		backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x, y, w, 1, x, y);
 		backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x, y + h - 1, w, 1, x, y);
@@ -547,17 +547,17 @@ switch (m_nType) {
 
 	case NM_TYPE_INPUT_MENU:
 		if (m_group)
-			DrawInputBox (m_w, m_x, m_y, m_text, bIsCurrent, bTiny);
+			DrawInputBox (CMenu::Scale (m_w), m_x, m_y, m_text, bIsCurrent, bTiny);
 		else
 			DrawString (bIsCurrent, bTiny);
 		break;
 
 	case NM_TYPE_INPUT:
-		DrawInputBox (m_w, m_x, m_y, m_text, bIsCurrent, bTiny);
+		DrawInputBox (CMenu::Scale (m_w), m_x, m_y, m_text, bIsCurrent, bTiny);
 		break;
 
 	case NM_TYPE_GAUGE:
-		DrawGauge (m_w, m_x, m_y, m_value, m_maxValue, bIsCurrent);
+		DrawGauge (CMenu::Scale (m_w), m_x, m_y, m_value, m_maxValue, bIsCurrent);
 		break;
 
 	case NM_TYPE_CHECK:

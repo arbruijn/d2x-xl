@@ -920,6 +920,10 @@ if (bGame) {
 	InitSpheres ();
 	cockpit->Rebuild ();
 	}
+else {
+	shaderManager.Destroy (true);
+	ogl.InitEnhanced3DShader ();
+	}
 //gameData.models.Prepare ();
 if (!gameStates.app.bGameRunning)
 	messageBox.Clear ();
@@ -955,6 +959,8 @@ else {
 		SetDepthTest (false);
 		}
 	}
+if (gameStates.video.nScreenMode != 0xffffffff)
+	RebuildContext (gameStates.video.nScreenMode == SCREEN_GAME);
 gameStates.video.nLastScreenMode = gameStates.video.nScreenMode;
 m_states.bLastFullScreen = m_states.bFullScreen;
 }

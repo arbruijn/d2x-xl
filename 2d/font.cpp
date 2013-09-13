@@ -545,7 +545,7 @@ for (pi = hs; ; pi = pj + 1) {
 		*pj = '\0';
 	fontManager.Current ()->StringSize (pi, w, stringHeight, averageWidth);
 	stringWidth += w;
-	if (nTab && nTabs) {
+	if (/*nTab &&*/ nTabs) {
 		if (!gameStates.multi.bSurfingNet && nMaxWidth) {
 			if (pj) {
 				stringWidth = nMaxWidth;

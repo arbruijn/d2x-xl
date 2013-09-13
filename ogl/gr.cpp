@@ -499,30 +499,32 @@ int SetScreenMode (u_int32_t sm)
 #if 0
 	GLint nError = glGetError ();
 #endif
-if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameData.render.screen.Scalar ()) && 
-		(screen.Mode () == gameData.render.screen.Scalar ())) {
+if ((gameStates.video.nScreenMode == sm) && 
+	 (nCurrentVGAMode == gameData.render.screen.Scalar ()) && 
+	 (screen.Mode () == gameData.render.screen.Scalar ())) {
 	CCanvas::SetCurrent (&gameData.render.frame);
 	ogl.SetScreenMode ();
 	return 1;
 	}
-	gameStates.video.nScreenMode = sm;
-	switch (gameStates.video.nScreenMode) {
-		case SCREEN_MENU:
-			paletteManager.DisableEffect ();
-			gameStates.render.nFlashScale = 0;
-			gameStates.render.bRenderIndirect = -1;
-			ogl.ChooseDrawBuffer ();
-			SetMenuScreenMode (sm);
-			break;
+
+gameStates.video.nScreenMode = sm;
+switch (gameStates.video.nScreenMode) {
+	case SCREEN_MENU:
+		paletteManager.DisableEffect ();
+		gameStates.render.nFlashScale = 0;
+		gameStates.render.bRenderIndirect = -1;
+		ogl.ChooseDrawBuffer ();
+		SetMenuScreenMode (sm);
+		break;
 
 	case SCREEN_GAME:
 		SetGameScreenMode (sm);
 		break;
 
-
 	default:
 		Error ("Invalid screen mode %d",sm);
 	}
+
 CCanvas::SetCurrent (&gameData.render.frame);
 ogl.SetScreenMode ();
 return 1;
