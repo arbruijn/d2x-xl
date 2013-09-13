@@ -198,8 +198,8 @@ public:
 //------------------------------------------------------------------------------
 
 typedef struct tMenuProps {
-	int				scWidth, scHeight, x, y, xOffs, yOffs, width, height, w, h, aw, tw, th,
-						ty, twidth, rightOffset, nStringHeight, bTinyMode, nMenus, nOthers,
+	int				screenWidth, screenHeight, x, y, xOffs, yOffs, userWidth, userHeight, width, height, aw, titleWidth, titleHeight,
+						ty, titlePos, rightOffset, nStringHeight, bTinyMode, nMenus, nOthers,
 						nMaxNoScroll, nMaxOnMenu, nMaxDisplayable, nScrollOffset,
 						bIsScrollBox, nDisplayMode, bValid;
 	const char		* pszTitle, * pszSubTitle;
@@ -394,7 +394,8 @@ public:
 	virtual void Render (void);
 
 	static float GetScale (void);
-	static inline int Scale (int v) { return int (ceil (float (v) * GetScale ())); }
+	static inline int Scale (int v) { return int ((float (v) * GetScale () + 0.5)); }
+	static inline int Unscale (int v) { return int ((float (v) / GetScale () + 0.5)); }
 
 	static CMenu * Active (void) { return m_active; }
 

@@ -604,7 +604,7 @@ if (m_nKey) {
 	}
 m_bRedraw = 1;
 m_y = h;
-fontManager.Current ()->StringSize (m_text, nStringWidth, nStringHeight, nAverageWidth);
+fontManager.Current ()->StringSizeTabbed (m_text, nStringWidth, nStringHeight, nAverageWidth, nTabs);
 nStringHeight += 2 * bTiny;
 m_rightOffset = 0;
 

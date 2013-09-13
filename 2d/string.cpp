@@ -479,10 +479,9 @@ static bool FillStringBitmap (CBitmap* bmP, const char *s, int nKey, uint nKeyCo
 {
 
 	int			origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
-	int			i, x, y, hx, hy, aw, cw, spacing, nTab, nChars, bHotKey;
+	int			i, x, y, cw, spacing, nTab, nChars, bHotKey;
 	CBitmap		*bmfP;
-	CRGBAColor	hc, kc, *pc;
-	ubyte			*pf;
+	CRGBAColor	hc, kc;
 	CPalette		*palP = NULL;
 	CRGBColor	*colorP;
 	ubyte			c;
@@ -520,16 +519,14 @@ x = 0;
 		if (c == '\t') {
 			textP++;
 			if (nTabs && (nTab < 6)) {
-				int	aw;
+				int	sw, sh, aw;
 
-				fontManager.Current ()->StringSize (textP, w, h, aw);
-				x = LHX (nTabs [nTab++]);
+				fontManager.Current ()->StringSize (textP, sw, sh, aw);
+				int tx = LHX (nTabs [nTab++]);
 				if (!gameStates.multi.bSurfingNet)
-					x += nMaxWidth - w;
-				w = Pow2ize (w);
-				h = Pow2ize (h);
-				if ((w > bmP->Width ()) || (h > bmP->Height ()))
-					return false;
+					x = nMaxWidth - sw;
+				else if (x < tx) 
+					x = tx;
 				}
 			continue;
 			}
@@ -556,10 +553,10 @@ x = 0;
 		kc.Blue () = RGBA_BLUE (nKeyColor);
 		kc.Alpha () = 255;
 		if (fontP->Flags () & FT_COLOR) {
-			for (hy = 0; hy < bmfP->Height (); hy++) {
-				pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
-				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
-				for (hx = bmfP->Width (); hx; hx--, pc++, pf++) {
+			for (int hy = 0; hy < bmfP->Height (); hy++) {
+				CRGBAColor* pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
+				ubyte* pf = bmfP->Buffer () + hy * bmfP->RowSize ();
+				for (int hx = bmfP->Width (); hx; hx--, pc++, pf++) {
 #if DBG
 					if ((pc - reinterpret_cast<CRGBAColor*> (bmP->Buffer ())) >= bmP->Width () * bmP->Height ())
 						continue;
@@ -578,9 +575,8 @@ x = 0;
 			if (CCanvas::Current ()->FontColor (0).index < 0)
 				memset (&hc, 0xff, sizeof (hc));
 			else {
-				if (CCanvas::Current ()->FontColor (0).rgb) {
+				if (CCanvas::Current ()->FontColor (0).rgb)
 					hc = CCanvas::Current ()->FontColor (0);
-					}
 				else {
 					colorP = palP->Color () + CCanvas::Current ()->FontColor (0).index;
 					hc.Red () = colorP->Red () * 4;
@@ -589,10 +585,10 @@ x = 0;
 					}
 				hc.Alpha () = 255;
 				}
-			for (hy = 0; hy < bmfP->Height (); hy++) {
-				pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
-				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
-				for (hx = bmfP->Width (); hx; hx--, pc++, pf++) {
+			for (int hy = 0; hy < bmfP->Height (); hy++) {
+				CRGBAColor* pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
+				ubyte* pf = bmfP->Buffer () + hy * bmfP->RowSize ();
+				for (int hx = bmfP->Width (); hx; hx--, pc++, pf++) {
 #if DBG
 					if ((pc - reinterpret_cast<CRGBAColor*> (bmP->Buffer ())) >= bmP->Width () * bmP->Height ())
 						continue;
@@ -629,13 +625,9 @@ if (!(w && h)) {
 	fontManager.SetScale (fScale);
 	return NULL;
 	}
-if (bForce >= 0) {
-	w = Pow2ize (w);
-	h = Pow2ize (h);
-	}
 
 for (;;) {
-	if (!(bmP = CBitmap::Create (0, w, h, 4))) {
+	if (!(bmP = CBitmap::Create (0, bForce ? Pow2ize (w) : w, bForce ? Pow2ize (h) : h, 4))) {
 		fontManager.SetScale (fScale);
 		return NULL;
 		}
@@ -653,7 +645,7 @@ for (;;) {
 	}
 #if DBG
 bmP->Destroy ();
-if (!(bmP = CBitmap::Create (0, w, h, 4))) {
+if (!(bmP = CBitmap::Create (0, bForce ? Pow2ize (w) : w, bForce ? Pow2ize (h) : h, 4))) {
 	fontManager.SetScale (fScale);
 	return NULL;
 	}

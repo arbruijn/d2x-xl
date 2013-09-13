@@ -536,30 +536,38 @@ if (!(s && *s))
 	return;
 
 	char	*pi, *pj;
-	int	w = 0, nTab = 0;
+	int	w, nTab = 0;
 	static char	hs [10000];
 
 strncpy (hs, s, sizeof (hs));
-pi = hs;
-do {
-	pj = strchr (pi, '\t');
-	if (pj)
+for (pi = hs; ; pi = pj + 1) {
+	if ((pj = strchr (pi, '\t')))
 		*pj = '\0';
 	fontManager.Current ()->StringSize (pi, w, stringHeight, averageWidth);
+	stringWidth += w;
 	if (nTab && nTabs) {
-		stringWidth = LHX (int (nTabs [nTab - 1] * fScale));
-		if (gameStates.multi.bSurfingNet)
-			stringWidth += w;
-		else
-			stringWidth += nMaxWidth;
+		if (!gameStates.multi.bSurfingNet && nMaxWidth) {
+			if (pj) {
+				stringWidth = nMaxWidth;
+				return;
+				}
+			}
+		else {
+			int xTab = LHX (int (nTabs [nTab - 1] * fScale));
+			if (xTab > stringWidth) {
+				if (nMaxWidth && (xTab < nMaxWidth))
+					stringWidth = xTab;
+				else {
+					stringWidth = nMaxWidth;
+					return;
+					}
+				}
+			}
 		}
-	else
-		stringWidth += w;
-	if (pj) {
-		nTab++;
-		pi = pj + 1;
-		}
-	} while (pj);
+	if (!pj)
+		break;
+	nTab++;
+	} 
 }
 
 //------------------------------------------------------------------------------

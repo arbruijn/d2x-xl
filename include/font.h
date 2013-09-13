@@ -68,7 +68,7 @@ class CFont {
 		ubyte* Load (const char *fontname, ubyte* fontData = NULL);
 		void Read (CFile& cf);
 		void StringSize (const char *s, int& stringWidth, int& stringHeight, int& averageWidth);
-		void StringSizeTabbed (const char *s, int& stringWidth, int& stringHeight, int& averageWidth, int *nTabs, int nMaxWidth);
+		void StringSizeTabbed (const char *s, int& stringWidth, int& stringHeight, int& averageWidth, int *nTabs, int nMaxWidth = 0);
 
 		short Width (void);
 		short Height (void);

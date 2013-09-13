@@ -219,7 +219,7 @@ if (pszTitle && *pszTitle) {
 	fontManager.SetColorRGBi (color, 1, 0, 0);
 	fontManager.Current ()->StringSize (pszTitle, w, h, aw);
 	if (ogl.IsSideBySideDevice ()) 
-		x = (m_props.scWidth - w) / 2 - gameData.StereoOffset2D ();
+		x = (m_props.screenWidth - w) / 2 - gameData.StereoOffset2D ();
 	GrPrintF (NULL, x, ty, pszTitle);
 	ty += h;
 	}
@@ -302,41 +302,41 @@ for (uint i = 0; i < ToS (); i++) {
 
 int CMenu::InitProps (const char* pszTitle, const char* pszSubTitle)
 {
-if ((m_props.scWidth == gameData.render.frame.Width ()) && (m_props.scHeight == gameData.render.frame.Height ()))
+if ((m_props.screenWidth == gameData.render.frame.Width ()) && (m_props.screenHeight == gameData.render.frame.Height ()))
 	return 0;
 
 	int	i, gap, haveTitle;
 
-m_props.scWidth = gameData.render.frame.Width ();
-m_props.scHeight = gameData.render.frame.Height ();
+m_props.screenWidth = gameData.render.frame.Width ();
+m_props.screenHeight = gameData.render.frame.Height ();
 m_props.nDisplayMode = gameStates.video.nDisplayMode;
-GetTitleSize (pszTitle, TITLE_FONT, m_props.tw, m_props.th);
-GetTitleSize (pszSubTitle, SUBTITLE_FONT, m_props.tw, m_props.th);
+GetTitleSize (pszTitle, TITLE_FONT, m_props.titleWidth, m_props.titleHeight);
+GetTitleSize (pszSubTitle, SUBTITLE_FONT, m_props.titleWidth, m_props.titleHeight);
 
 haveTitle = ((pszTitle && *pszTitle) || (pszSubTitle && *pszSubTitle));
 gap = haveTitle ? Scale (LHY (8)) : 0;
-m_props.th += gap;		//put some space between pszTitles & body
+m_props.titleHeight += gap;		//put some space between pszTitles & body
 fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 
-m_props.h = int (ceil (double (m_props.th) / GetScale ())); // will be scaled in GetSize()
+m_props.height = int (ceil (double (m_props.titleHeight) / GetScale ())); // will be scaled in GetSize()
 m_props.nMenus = m_props.nOthers = 0;
-m_props.nStringHeight = Scale (GetSize (m_props.w, m_props.h, m_props.aw, m_props.nMenus, m_props.nOthers) + m_props.bTinyMode * 2);
-m_props.nMaxOnMenu = ((((m_props.scHeight > 480)) ? m_props.scHeight * 4 / 5 : 480) - m_props.th - Scale (LHY (8))) / m_props.nStringHeight - 2;
-if (/*!m_props.bTinyMode && */ (m_props.h > (m_props.nMaxOnMenu * (m_props.nStringHeight + 1)) + gap)) {
+m_props.nStringHeight = Scale (GetSize (m_props.width, m_props.height, m_props.aw, m_props.nMenus, m_props.nOthers) + m_props.bTinyMode * 2);
+m_props.nMaxOnMenu = ((((m_props.screenHeight > 480)) ? m_props.screenHeight * 4 / 5 : 480) - m_props.titleHeight - Scale (LHY (8))) / m_props.nStringHeight - 2;
+if (/*!m_props.bTinyMode && */ (m_props.height > (m_props.nMaxOnMenu * (m_props.nStringHeight + 1)) + gap)) {
  m_props.bIsScrollBox = 1;
- m_props.h = (m_props.nMaxOnMenu * (m_props.nStringHeight + haveTitle) + haveTitle * Scale (LHY (m_props.bTinyMode ? 12 : 8)));
+ m_props.height = (m_props.nMaxOnMenu * (m_props.nStringHeight + haveTitle) + haveTitle * Scale (LHY (m_props.bTinyMode ? 12 : 8)));
  }
 else
 	m_props.bIsScrollBox = 0;
 m_props.nMaxDisplayable = (m_props.nMaxOnMenu < int (ToS ())) ? m_props.nMaxOnMenu : int (ToS ());
 m_props.rightOffset = 0;
-if (m_props.width > - 1)
-	m_props.w = m_props.width;
-if (m_props.height > - 1)
-	m_props.h = m_props.height;
+if (m_props.userWidth > - 1)
+	m_props.width = Scale (m_props.userWidth);
+if (m_props.userHeight > - 1)
+	m_props.height = Scale (m_props.userHeight);
 
 for (i = 0; i < int (ToS ()); i++) {
-	Item (i).m_w = m_props.w;
+	Item (i).m_w = Unscale (m_props.width);
 	if (Scale (Item (i).m_rightOffset) > m_props.rightOffset)
 		m_props.rightOffset = Scale (Item (i).m_rightOffset);
 	if (Item (i).m_bNoScroll && (i == m_props.nMaxNoScroll))
@@ -346,39 +346,39 @@ m_props.nScrollOffset = m_props.nMaxNoScroll;
 if (m_props.rightOffset > 0)
 	m_props.rightOffset += 3;
 
-m_props.w += m_props.rightOffset;
-m_props.twidth = 0;
-if (m_props.tw > m_props.w) {
-	m_props.twidth = (m_props.tw - m_props.w) / 2;
-	m_props.w = m_props.tw;
+m_props.width += m_props.rightOffset;
+m_props.titlePos = 0;
+if (m_props.titleWidth > m_props.width) {
+	m_props.titlePos = (m_props.titleWidth - m_props.width) / 2;
+	m_props.width = m_props.titleWidth;
 }
 
 if (bRestoringMenu) { 
 	m_props.rightOffset = 0; 
-	m_props.twidth = 0;
+	m_props.titlePos = 0;
 	}
 
-if (m_props.w > m_props.scWidth)
-	m_props.w = m_props.scWidth;
-if (m_props.h > m_props.scHeight)
-	m_props.h = m_props.scHeight;
+if (m_props.width > m_props.screenWidth)
+	m_props.width = m_props.screenWidth;
+if (m_props.height > m_props.screenHeight)
+	m_props.height = m_props.screenHeight;
 
 m_props.xOffs = (gameStates.menus.bHires ? 30 : 15);
-i = (m_props.scWidth - m_props.w) / 2;
+i = (m_props.screenWidth - m_props.width) / 2;
 if (i < m_props.xOffs)
 	m_props.xOffs = i / 2;
 m_props.xOffs = Scale (m_props.xOffs);
 m_props.yOffs = Scale (gameStates.menus.bHires ? 30 : 15);
-if (m_props.scHeight - m_props.h < 2 * m_props.yOffs)
-	m_props.h = m_props.scHeight - 2 * m_props.yOffs;
-m_props.w += 2 * m_props.xOffs;
-m_props.h += 2 * m_props.yOffs;
-m_props.x = (m_props.scWidth - m_props.w) / 2;
-m_props.y = (m_props.scHeight - m_props.h) / 2;
+if (m_props.screenHeight - m_props.height < 2 * m_props.yOffs)
+	m_props.height = m_props.screenHeight - 2 * m_props.yOffs;
+m_props.width += 2 * m_props.xOffs;
+m_props.height += 2 * m_props.yOffs;
+m_props.x = (m_props.screenWidth - m_props.width) / 2;
+m_props.y = (m_props.screenHeight - m_props.height) / 2;
 m_props.xOffs += m_props.x;
 m_props.yOffs += m_props.y;
 m_props.bValid = 1;
-SetItemPos (m_props.twidth, m_props.xOffs, m_props.yOffs, m_props.rightOffset);
+SetItemPos (m_props.titlePos, m_props.xOffs, m_props.yOffs, m_props.rightOffset);
 return 1;
 }
 
@@ -661,8 +661,8 @@ m_callback = callback;
 
 messageBox.Clear ();
 memset (&m_props, 0, sizeof (m_props));
-m_props.width = Scale (width);
-m_props.height = Scale (height);
+m_props.userWidth = Scale (width);
+m_props.userHeight = Scale (height);
 m_props.bTinyMode = bTinyMode;
 controls.FlushInput ();
 
@@ -762,10 +762,10 @@ while (!m_bDone) {
 		m_nKey = KeyInKey ();
 	if (mouseData.bDoubleClick)
 		m_nKey = KEY_ENTER;
-	if ((m_props.scWidth != gameData.render.frame.Width ()) || (m_props.scHeight != gameData.render.frame.Height ())) {
+	if ((m_props.screenWidth != gameData.render.frame.Width ()) || (m_props.screenHeight != gameData.render.frame.Height ())) {
 		memset (&m_props, 0, sizeof (m_props));
-		m_props.width = width;
-		m_props.height = height;
+		m_props.userWidth = width;
+		m_props.userHeight = height;
 		m_props.bTinyMode = bTinyMode;
 		}
 #if 1
@@ -774,13 +774,13 @@ while (!m_bDone) {
 		SetScreenMode (SCREEN_MENU);
 		SaveScreen (&gameCanvasP);
 		memset (&m_props, 0, sizeof (m_props));
-		m_props.width = width;
-		m_props.height = height;
+		m_props.userWidth = width;
+		m_props.userHeight = height;
 		m_props.bTinyMode = bTinyMode;
 		}
 #endif
 	if (InitProps (pszTitle, pszSubTitle)) {
-		backgroundManager.Setup (filename, m_props.x, m_props.y, m_props.w, m_props.h, pszSubTitle == NULL);
+		backgroundManager.Setup (filename, m_props.x, m_props.y, m_props.width, m_props.height, pszSubTitle == NULL);
 		m_bRedraw = 0;
 		m_props.ty = m_props.yOffs;
 		if (m_nChoice > m_props.nScrollOffset + m_props.nMaxOnMenu - 1)
@@ -1020,8 +1020,8 @@ radioOption:
 			SetScreenMode (SCREEN_MENU);
 			SaveScreen (&gameCanvasP);
 			memset (&m_props, 0, sizeof (m_props));
-			m_props.width = width;
-			m_props.height = height;
+			m_props.userWidth = width;
+			m_props.userHeight = height;
 			m_props.bTinyMode = bTinyMode;
 			continue;
 			}
