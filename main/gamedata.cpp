@@ -103,9 +103,9 @@ SetDataVersion (-1);
 int CGameData::StereoOffset2D (void)
 {
 return ogl.IsOculusRift ()
-		 ? int (X2D (ogl.StereoSeparation ()) * render.frame.Width () * 1.25 + 0.5) 
+		 ? int (X2D (ogl.StereoSeparation ()) * render.frame.Width () * double (WORLDSCALE) * 0.00125 + 0.5) 
 		 : ogl.IsSideBySideDevice () 
-			? int (X2D (ogl.StereoSeparation ()) * render.frame.Width () * 0.0625 + 0.5) 
+			? int (X2D (ogl.StereoSeparation ()) * render.frame.Width () * 0.025 + 0.5) 
 			: 0;
 }
 
