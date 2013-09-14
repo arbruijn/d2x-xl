@@ -361,18 +361,28 @@ void Draw2DFrameElements (void)
 {
 	fix xStereoSeparation = ogl.StereoSeparation ();
 
-if (ogl.IsSideBySideDevice ()) {
-	ogl.SelectBlurBuffer (0);
-	glClearColor (0, 0, 0, 0);
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}
-else if (ogl.StereoDevice () >= 0) {
+ogl.ColorMask (1,1,1,1,0);
+if (ogl.StereoDevice () >= 0) {
 	ogl.SetDrawBuffer (GL_BACK, 0);
 	ogl.SetStereoSeparation (0);
 	}
-else	
+else {
+#if 0
 	ogl.ChooseDrawBuffer ();
-ogl.ColorMask (1,1,1,1,0);
+#else
+	ogl.SelectBlurBuffer (0);
+	glClearColor (0, 0, 0, 0);
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	ogl.SetBlendMode (OGL_BLEND_REPLACE);
+	ogl.SetDepthMode (GL_ALWAYS);
+	ogl.SetViewport (gameData.render.screen.Left () + gameData.render.scene.Left (), 
+						  gameData.render.screen.Top () + gameData.render.scene.Top (), 
+						  gameData.render.scene.Width (), 
+						  gameData.render.scene.Height ());
+#endif
+	}
+
+#if 1
 //SetBlendMode (OGL_BLEND_ALPHA);
 if (gameStates.app.bGameRunning) {
 	if (automap.Display ()) 
@@ -385,6 +395,8 @@ if (gameStates.app.bGameRunning) {
 	}
 paletteManager.RenderEffect ();
 FlashMine ();
+#endif
+
 console.Draw ();
 if (gameStates.app.bShowVersionInfo || gameStates.app.bSaveScreenShot || (gameData.demo.nState == ND_STATE_PLAYBACK))
 	PrintVersionInfo ();
@@ -398,26 +410,45 @@ if (CMenu::Active ()) {
 	}
 ogl.SetStereoSeparation (xStereoSeparation);
 if (ogl.IsSideBySideDevice ()) {
-	ogl.StartFrame (0, 0, xStereoSeparation);
+	SetupCanvasses ();
+	//ogl.StartFrame (0, 0, xStereoSeparation);
+	ogl.ChooseDrawBuffer ();
 	SetRenderView (xStereoSeparation, NULL, 1);
-	ogl.BindTexture (ogl.BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
-	ogl.SetBlending (true);
-	ogl.SetBlendMode (OGL_BLEND_ALPHA);
+	transformation.ComputeFrustum ();
+
+	CFloatMatrix	view;
+	view.Assign (*gameData.objs.viewerP->View ());
+	CFloatVector3	vPos;
+	vPos.Assign (gameData.objs.viewerP->Position ());
 
 	CFloatVector3 quadVerts [4];
 
 	for (int i = 0; i < 4; i++) {
-		quadVerts [i].Assign (transformation.Frustum ().m_corners [i + 4]);
-		quadVerts [i].v.coord.x *= 0.9f / ZFAR;
-		quadVerts [i].v.coord.y *= 0.9f / ZFAR;
-		quadVerts [i].v.coord.z /= -ZFAR;
+		CFloatVector3 v;
+		v.Assign (transformation.Frustum ().m_corners [7 - i]);
+		v.v.coord.x *= 7.0f / ZFAR;
+		v.v.coord.y *= 7.0f / ZFAR;
+		v.v.coord.z *= 10.0f / ZFAR;
+		quadVerts [(i + 1) % 4] = view * v;
+		quadVerts [(i + 1) % 4] += vPos;
 		}
 
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	ogl.BindTexture (ogl.BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
 	OglVertexPointer (3, GL_FLOAT, 0, quadVerts);
 	ogl.SetupTransform (1);
+	ogl.SetBlending (true);
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
+	//ogl.SetDepthMode (GL_ALWAYS); 
+	ogl.SetDepthTest (false);
+	ogl.SetFaceCulling (false);
+	ogl.SetAlphaTest (true);
+	glAlphaFunc (GL_GEQUAL, (float) 0.005);
+	//ogl.SetTexturing (false);
+	//glColor4f (0.0f, 0.5f, 1.0f, 0.5f);
 	OglDrawArrays (GL_QUADS, 0, 4);
+	ogl.SetFaceCulling (true);
 	ogl.ResetTransform (1);
 	ogl.EndFrame (0);
 	}
@@ -648,6 +679,7 @@ if (transformation.m_info.bUsePlayerHeadAngles)
 	Draw3DReticle (xStereoSeparation);
 #endif
 gameStates.render.nShadowPass = 0;
+
 G3EndFrame (transformation, nWindow);
 if (nWindow)
 	ogl.SetStereoSeparation (gameStates.render.xStereoSeparation = nEyeOffsetSave);
