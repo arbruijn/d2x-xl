@@ -367,7 +367,7 @@ if (ogl.StereoDevice () >= 0) {
 	ogl.SetStereoSeparation (0);
 	}
 else {
-#if 0
+#if 1
 	ogl.ChooseDrawBuffer ();
 #else
 	ogl.SelectBlurBuffer (0);
@@ -409,6 +409,8 @@ if (CMenu::Active ()) {
 		CMenu::Active ()->Render ();
 	}
 ogl.SetStereoSeparation (xStereoSeparation);
+
+#if 0
 if (ogl.IsSideBySideDevice ()) {
 	SetupCanvasses ();
 	//ogl.StartFrame (0, 0, xStereoSeparation);
@@ -452,6 +454,7 @@ if (ogl.IsSideBySideDevice ()) {
 	ogl.ResetTransform (1);
 	ogl.EndFrame (0);
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------

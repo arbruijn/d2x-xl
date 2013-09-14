@@ -102,7 +102,7 @@ SetDataVersion (-1);
 
 int CGameData::StereoOffset2D (void)
 {
-#if 1
+#if 0
 return 1;
 #else
 return ogl.IsOculusRift ()
