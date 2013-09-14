@@ -57,6 +57,9 @@ void StartLightingFrame (CObject *viewer);
 
 uint	nClearWindowColor = 0;
 
+extern tTexCoord2f quadTexCoord [3][4];
+extern float quadVerts [3][4][2];
+
 //------------------------------------------------------------------------------
 
 static inline bool GuidedMissileActive (void)
@@ -358,7 +361,12 @@ void Draw2DFrameElements (void)
 {
 	fix xStereoSeparation = ogl.StereoSeparation ();
 
-if (ogl.StereoDevice () >= 0) {
+if (ogl.IsSideBySideDevice ()) {
+	ogl.SelectBlurBuffer (0);
+	glClearColor (0, 0, 0, 0);
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+else if (ogl.StereoDevice () >= 0) {
 	ogl.SetDrawBuffer (GL_BACK, 0);
 	ogl.SetStereoSeparation (0);
 	}
@@ -389,6 +397,30 @@ if (CMenu::Active ()) {
 		CMenu::Active ()->Render ();
 	}
 ogl.SetStereoSeparation (xStereoSeparation);
+if (ogl.IsSideBySideDevice ()) {
+	ogl.StartFrame (0, 0, xStereoSeparation);
+	SetRenderView (xStereoSeparation, NULL, 1);
+	ogl.BindTexture (ogl.BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+	ogl.SetBlending (true);
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
+
+	CFloatVector3 quadVerts [4];
+
+	for (int i = 0; i < 4; i++) {
+		quadVerts [i].Assign (transformation.Frustum ().m_corners [i + 4]);
+		quadVerts [i].v.coord.x *= 0.9f / ZFAR;
+		quadVerts [i].v.coord.y *= 0.9f / ZFAR;
+		quadVerts [i].v.coord.z /= -ZFAR;
+		}
+
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	OglVertexPointer (3, GL_FLOAT, 0, quadVerts);
+	ogl.SetupTransform (1);
+	OglDrawArrays (GL_QUADS, 0, 4);
+	ogl.ResetTransform (1);
+	ogl.EndFrame (0);
+	}
 }
 
 //------------------------------------------------------------------------------
