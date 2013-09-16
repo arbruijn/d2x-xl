@@ -242,9 +242,11 @@ fontManager.SetScale (FontScale ());
 fontManager.SetColorRGBi (FontColor (), 1, 0, 0);
 if (x < 0)
 	x = CCanvas::Current ()->Width () + x;
+else if (x == 0x8000)
+	x = StringCenterPos (buffer);
 if (y < 0)
 	y = CCanvas::Current ()->Height () + y;
-int nId = GrString (x, y, buffer, idP);
+int nId = GrString (X (x), y, buffer, idP);
 fontManager.SetScale (1.0f);
 CCanvas::Current ()->FontColor (0) = fontColor;
 CCanvas::Pop ();
@@ -263,7 +265,7 @@ void CGenericCockpit::DrawMarkerMessage (void)
 if (markerManager.DefiningMsg ()) {
 	SetFontColor (GREEN_RGBA);
    sprintf (szTemp, TXT_DEF_MARKER, markerManager.Input ());
-	DrawCenteredText (CCanvas::Current ()->Height () / 2 - 16, szTemp);
+	GrString (X (StringCenterPos (szTemp)), CCanvas::Current ()->Height () / 2 - 16, szTemp, NULL);
    }
 }
 
@@ -276,12 +278,12 @@ void CGenericCockpit::DrawMultiMessage (void)
 if (IsMultiGame && (gameData.multigame.msg.bSending)) {
 	SetFontColor (GREEN_RGBA);
 	sprintf (szMessage, "%s: %s_", TXT_MESSAGE, gameData.multigame.msg.szMsg);
-	DrawCenteredText (CCanvas::Current ()->Height () / 2 - 16, szMessage);
+	GrString (X (StringCenterPos (szMessage)), CCanvas::Current ()->Height () / 2 - 16, szMessage);
 	}
 if (IsMultiGame && gameData.multigame.msg.bDefining) {
 	SetFontColor (GREEN_RGBA);
 	sprintf (szMessage, "%s #%d: %s_", TXT_MACRO, gameData.multigame.msg.bDefining, gameData.multigame.msg.szMsg);
-	DrawCenteredText (CCanvas::Current ()->Height () / 2 - 16, szMessage);
+	GrString (X (StringCenterPos (szMessage)), CCanvas::Current ()->Height () / 2 - 16, szMessage);
 	}
 }
 

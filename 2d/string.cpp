@@ -958,10 +958,19 @@ int StringWidth (char * s, int n)
 	int w, h, aw;
 	char p = s [n];
 
-s [n] = 0;
+if (n)
+	s [n] = 0;
 fontManager.Current ()->StringSize (s, w, h, aw);
-s [n] = p;
+if (n)
+	s [n] = p;
 return w;
+}
+
+//------------------------------------------------------------------------------
+
+int StringCenterPos (char* s)
+{
+return CCanvas::Current ()->Width () - StringWidth (s);
 }
 
 //------------------------------------------------------------------------------

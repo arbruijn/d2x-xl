@@ -195,7 +195,7 @@ int CCockpit::DrawBombCount (int& nIdBombCount, int x, int y, int nColor, char* 
 CCanvas::Push ();
 CCanvas::SetCurrent (&gameData.render.frame);
 fontManager.SetColorRGBi (nColor, 1, 0, 1);
-int i = PrintF (&nIdBombCount, -(ScaleX (x) + WidthPad (pszBombCount)), -(ScaleY (y) + HeightPad ()), pszBombCount, nIdBombCount);
+int i = PrintF (&nIdBombCount, X (-(ScaleX (x) + WidthPad (pszBombCount))), -(ScaleY (y) + HeightPad ()), pszBombCount, nIdBombCount);
 CCanvas::Pop ();
 return i;
 }
@@ -247,7 +247,7 @@ sprintf (szShield, "%d", int (m_info.nShield * LOCALPLAYER.ShieldScale () + 0.5f
 int w, h, aw;
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 fontManager.Current ()->StringSize (szShield, w, h, aw);
-nIdShield = PrintF (&nIdShield, -(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2), 
+nIdShield = PrintF (&nIdShield, X (-(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2)), 
 						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16) + HeightPad (), szShield);
 fontManager.SetScale (1.0f);
 CCanvas::Pop ();
@@ -274,7 +274,7 @@ sprintf (szEnergy, "%d", int (m_info.nEnergy * LOCALPLAYER.EnergyScale () + 0.5f
 int w, h, aw;
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
-nIdEnergy = PrintF (&nIdEnergy, -(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2), 
+nIdEnergy = PrintF (&nIdEnergy, X (-(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2)), 
 						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 5 : 2), szEnergy);
 fontManager.SetScale (1.0f);
 CCanvas::Pop ();
