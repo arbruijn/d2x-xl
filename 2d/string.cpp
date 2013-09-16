@@ -654,6 +654,10 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
+static inline int X (int x) { return x - gameData.FloatingStereoOffset2D (x); }
+
+//------------------------------------------------------------------------------
+
 int GrString (int x, int y, const char *s, int *idP)
 {
 #if STRINGPOOL
@@ -662,46 +666,34 @@ int GrString (int x, int y, const char *s, int *idP)
 if ((MODE == BM_OGL) && (ps = GetPoolString (s, idP))) {
 	CBitmap* bmP = ps->bmP;
 	float		fScale = fontManager.Scale ();
+	int		w = int (bmP->Width () * fScale);
+	int		xs = X (x);
 
-	ps->bmP->RenderScaled (x, y, int (bmP->Width () * fScale), int (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0), !gameStates.app.bDemoData);
+	ps->bmP->RenderScaled (xs, y, X (x + w) - xs, int (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0), !gameStates.app.bDemoData);
 	return (int) (ps - stringPool) + 1;
 	}
 #endif
 	int		w, h, aw, clipped = 0;
 
 Assert (fontManager.Current () != NULL);
-if (x == 0x8000) {
-	if (y < 0)
-		clipped |= 1;
-	fontManager.Current ()->StringSize (s, w, h, aw);
-	// for x, since this will be centered, only look at
-	// width.
-	if (w > CCanvas::Current ()->Width ())
-		clipped |= 1;
-	if (y > CCanvas::Current ()->Height ())
-		clipped |= 3;
-	else if ((y + h) > CCanvas::Current ()->Height ())
-		clipped |= 1;
-	else if ((y + h) < 0)
-		clipped |= 2;
-	}
-else {
-	if ((x < 0) || (y < 0))
-		clipped |= 1;
-	fontManager.Current ()->StringSize (s, w, h, aw);
-	if (x > CCanvas::Current ()->Width ())
-		clipped |= 3;
-	else if ((x + w) > CCanvas::Current ()->Width ())
-		clipped |= 1;
-	else if ((x + w) < 0)
-		clipped |= 2;
-	if (y > CCanvas::Current ()->Height ())
-		clipped |= 3;
-	else if ((y + h) > CCanvas::Current ()->Height ())
-		clipped |= 1;
-	else if ((y + h) < 0)
-		clipped |= 2;
-	}
+fontManager.Current ()->StringSize (s, w, h, aw);
+if (x == 0x8000)
+	x = CCanvas::Current ()->Width () - w;
+x = X (x);
+if ((x < 0) || (y < 0))
+	clipped |= 1;
+if (x > CCanvas::Current ()->Width ())
+	clipped |= 3;
+else if ((x + w) > CCanvas::Current ()->Width ())
+	clipped |= 1;
+else if ((x + w) < 0)
+	clipped |= 2;
+if (y > CCanvas::Current ()->Height ())
+	clipped |= 3;
+else if ((y + h) > CCanvas::Current ()->Height ())
+	clipped |= 1;
+else if ((y + h) < 0)
+	clipped |= 2;
 if (!clipped)
 	return fontManager.Current ()->DrawString (x, y, s);
 if (clipped & 2) {
@@ -717,8 +709,8 @@ if (MODE == BM_OGL)
 if (fontManager.Current ()->Flags () & FT_COLOR)
 	return fontManager.Current ()->DrawString (x, y, s);
 if (CCanvas::Current ()->FontColor (1).index == -1)
-	return GrInternalStringClippedM (x, y, s);
-return GrInternalStringClipped (x, y, s);
+	return GrInternalStringClippedM (X (x), y, s);
+return GrInternalStringClipped (X (x), y, s);
 }
 
 //------------------------------------------------------------------------------
@@ -968,7 +960,7 @@ return w;
 
 //------------------------------------------------------------------------------
 
-int StringCenterPos (char* s)
+int CenteredStringPos (const char* s)
 {
 return CCanvas::Current ()->Width () - StringWidth (s);
 }

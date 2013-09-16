@@ -273,7 +273,6 @@ class CGenericCockpit {
 		inline void SetLineSpacing (int nLineSpacing) { m_info.nLineSpacing = nLineSpacing; }
 		inline void SetColor (int nColor) { m_info.nColor = nColor; }
 
-		int StereoOffset2D (int x);
 		int X (int x);
 
 		int _CDECL_ DrawHUDText (int *idP, int x, int y, const char * format, ...);

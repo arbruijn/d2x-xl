@@ -115,6 +115,29 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
+int CGameData::FloatingStereoOffset2D (int x)
+{
+#if 0
+return 1;
+#else
+	float scale [2];
+	float w = (float) gameData.render.frame.Width ();
+	float s = X2F (ogl.StereoSeparation ());
+
+if (ogl.IsOculusRift ()) 
+	scale [1] = s * w * float (WORLDSCALE) * 0.00125f;
+if (ogl.IsSideBySideDevice ())
+	scale [1] = s * w * 0.025f;
+else
+	return 0;
+	
+scale [0] = (s < 0) ? float (w - x) / w : float (x) / w;
+return int ((3.0f * scale [0] - 1.0f) * scale [1] + 0.5f);
+#endif
+}
+
+// ----------------------------------------------------------------------------
+
 CDynLight::CDynLight ()
 {
 info.visibleVertices = NULL;

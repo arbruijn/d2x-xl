@@ -3634,6 +3634,7 @@ class CGameData {
 		fix FusionCharge (int nId = -1);
 		fix FusionDamage (fix xBaseDamage);
 		int StereoOffset2D (void);
+		int FloatingStereoOffset2D (int x);
 
 };
 

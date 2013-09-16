@@ -170,7 +170,7 @@ int _CDECL_ GrUPrintf (int x, int y, const char * format, ...);
 CBitmap *CreateStringBitmap (const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce);
 void DrawCenteredText (int y, char * s);
 int StringWidth (char * s, int n = 0);
-int StringCenterPos (char* s);
+int CenteredStringPos (const char* s);
 
 //-----------------------------------------------------------------------------
 // Global variables
