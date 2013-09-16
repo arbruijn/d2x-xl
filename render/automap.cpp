@@ -241,7 +241,7 @@ if (!m_bRadar) {
 					markerManager.Message (N_LOCALPLAYER * 2 + markerManager.Highlight ()));
 		CCanvas::Current ()->SetColorRGB (196, 0, 0, 255);
 		fontManager.SetCurrent (SMALL_FONT);
-		GrString (5, 20, msg, NULL);
+		GrString (5, 20, msg);
 		}
 	}
 // Draw player(s)...

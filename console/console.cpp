@@ -319,12 +319,12 @@ for (loop = 0; loop < Screenlines-1 && loop < m_LineBuffer - m_ConsoleScrollBack
 		for (loop2 = 0; loop2 < (m_VChars / 5) + 1; loop2++) {
 			GrString (CON_CHAR_BORDER + (loop2*5*m_surface->Font ()->Width ()),
 						 (Screenlines - loop - 2) * (CON_LINE_SPACE + m_surface->Font ()->Height ()),
-						 CON_SCROLL_INDICATOR, NULL);
+						 CON_SCROLL_INDICATOR);
 			}
 	else {
 		GrString (CON_CHAR_BORDER,
 					 (Screenlines - loop - 2) * (CON_LINE_SPACE + m_surface->Font ()->Height ()),
-					 m_ConsoleLines [m_ConsoleScrollBack + loop].Buffer (), NULL);
+					 m_ConsoleLines [m_ConsoleScrollBack + loop].Buffer ());
 		}
 	}
 CCanvas::Current ()->FontColor (0) = orig_color;
@@ -683,7 +683,7 @@ if (!gameOpts->menus.nStyle) {
 orig_color = CCanvas::Current ()->FontColor (0);
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
-GrString (CON_CHAR_BORDER, m_surface->Height () - m_surface->Font ()->Height (), m_VCommand, NULL);
+GrString (CON_CHAR_BORDER, m_surface->Height () - m_surface->Font ()->Height (), m_VCommand);
 
 //at last add the cursor
 //check if the blink period is over
@@ -711,9 +711,9 @@ if (bBlink) {
 	x = CON_CHAR_BORDER + m_surface->Font ()->Width () * (m_CursorPos - m_Offset + (int) strlen (m_Prompt));
 #endif
 	if (m_InsMode)
-		GrString (x, m_surface->Height () - m_surface->Font ()->Height (), CON_INS_CURSOR, NULL);
+		GrString (x, m_surface->Height () - m_surface->Font ()->Height (), CON_INS_CURSOR);
 	else
-		GrString (x, m_surface->Height () - m_surface->Font ()->Height (), CON_OVR_CURSOR, NULL);
+		GrString (x, m_surface->Height () - m_surface->Font ()->Height (), CON_OVR_CURSOR);
 	}
 CCanvas::Current ()->FontColor (0) = orig_color;
 

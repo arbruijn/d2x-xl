@@ -86,7 +86,7 @@ if (m_bDone)
 backgroundManager.Redraw ();
 FadeIn ();
 fontManager.SetCurrent (NORMAL_FONT);
-GrString (0x8000, m_yOffset - m_nTitleHeight, m_props.pszTitle, NULL);
+GrString (0x8000, m_yOffset - m_nTitleHeight, m_props.pszTitle);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
 	int w, h, aw, y;
@@ -102,7 +102,7 @@ for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
 			fontManager.SetCurrent (NORMAL_FONT);
 		fontManager.Current ()->StringSize ((*m_items) [i], w, h, aw);
 		OglDrawFilledRect (m_xOffset, y - 1, m_xOffset + m_nWidth - 1, y + h + 1);
-		GrString (m_xOffset + 5, y, (*m_items) [i], NULL);
+		GrString (m_xOffset + 5, y, (*m_items) [i]);
 		}
 	}	
 gameStates.render.grAlpha = 1.0f;

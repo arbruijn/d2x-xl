@@ -170,7 +170,7 @@ if (pMsgs->nMessages > 0) {
 			if (nType)
 				y += ((2 * HUD_MAX_MSGS - 1) * (h + 1)) / 2;
 #if 1
-			GrString ((CCanvas::Current ()->Width ()-w)/2, y, pMsgs->szMsgs [n], NULL);
+			GrString ((CCanvas::Current ()->Width ()-w)/2, y, pMsgs->szMsgs [n]);
 #else
 			pMsgs->nMsgIds [n] = GrString ((CCanvas::Current ()->Width ()-w)/2, y, pMsgs->szMsgs [n], pMsgs->nMsgIds + n);
 #endif
@@ -316,7 +316,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameData.multiplayer.players [N_LOCALPL
       CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
       OglDrawFilledRect (x, y, x + w, y + h);
       gameStates.render.grAlpha = 1.0f;
-      GrString (0x8000, (CCanvas::Current ()->Height () - CCanvas::Current ()->Font ()->Height ()) / 2 + h / 8, TXT_GAME_OVER, NULL);
+      GrString (0x8000, (CCanvas::Current ()->Height () - CCanvas::Current ()->Font ()->Height ()) / 2 + h / 8, TXT_GAME_OVER);
 #if 0
       // Automatically exit death after 10 secs
       if (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (10)) {
@@ -330,7 +330,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameData.multiplayer.players [N_LOCALPL
    if (pMsgs->nColor == (uint) -1)
       pMsgs->nColor = RGBA_PAL2 (0, 28, 0);
 	fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
-   GrString (0x8000, CCanvas::Current ()->Height ()- (CCanvas::Current ()->Font ()->Height () + 3), TXT_PRESS_ANY_KEY, NULL);
+   GrString (0x8000, CCanvas::Current ()->Height ()- (CCanvas::Current ()->Font ()->Height () + 3), TXT_PRESS_ANY_KEY);
 	}
 }
 

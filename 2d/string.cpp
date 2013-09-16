@@ -982,7 +982,7 @@ void DrawCenteredText (int y, char * s)
 	int	i, l = (int) strlen (s);
 
 if (StringWidth (s, l) < CCanvas::Current ()->Width ()) {
-	GrString (0x8000, y, s, NULL);
+	GrString (0x8000, y, s);
 	return;
 	}
 int w = CCanvas::Current ()->Width () - 16;
@@ -991,9 +991,9 @@ for (i = 0; i < l; i++) {
 	if (StringWidth (s, i) > w) {
 		p = s [i];
 		s [i] = 0;
-		GrString (0x8000, y, s, NULL);
+		GrString (0x8000, y, s);
 		s [i] = p;
-		GrString (0x8000, y + h, &s [i], NULL);
+		GrString (0x8000, y + h, &s [i]);
 		return;
 		}
 	}

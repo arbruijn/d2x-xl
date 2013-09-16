@@ -103,7 +103,7 @@ if (!MenuRenderTimeout (t0, -1))
 backgroundManager.Redraw ();
 fontManager.SetCurrent (NORMAL_FONT);
 FadeIn ();
-GrString (0x8000, m_yOffset + 10, m_props.pszTitle, NULL);
+GrString (0x8000, m_yOffset + 10, m_props.pszTitle);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 	int w, h, aw, y;
@@ -129,7 +129,7 @@ for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 		OglDrawFilledRect (m_nLeft - 1, y - 1, m_nLeft - 1, y + h + 1);
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 		OglDrawFilledRect (m_nLeft, y - 1, m_nLeft + m_nWidth - 1, y + h + 1);
-		GrString (m_nLeft + 5, y, reinterpret_cast<char*> (&m_filenames [i]) + (((m_nMode == 1) && (m_filenames [i][0] == '$')) ? 1 : 0), NULL);
+		GrString (m_nLeft + 5, y, reinterpret_cast<char*> (&m_filenames [i]) + (((m_nMode == 1) && (m_filenames [i][0] == '$')) ? 1 : 0));
 		}
 	}	 
 gameStates.render.grAlpha = 1.0f;
@@ -336,7 +336,7 @@ if (!bInitialized) {
 	CCanvas::Push ();
 	backgroundManager.Setup (NULL, m_xOffset, m_yOffset, w_w, w_h);
 	CCanvas::Pop ();
-	GrString (0x8000, m_yOffset + 10, pszTitle, NULL);
+	GrString (0x8000, m_yOffset + 10, pszTitle);
 	bInitialized = 1;
 	}
 

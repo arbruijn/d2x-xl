@@ -121,7 +121,7 @@ if (w1 == 0)
 	w1 = w;
 if (RETRO_STYLE)
 	backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x - w1, y, w1, h, x - w1, y);
-GrString (x - w, y, s, NULL);
+GrString (x - w, y, s);
 }
 
 //------------------------------------------------------------------------------ 

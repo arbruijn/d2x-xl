@@ -163,7 +163,7 @@ extern CFontManager fontManager;
 
 //-----------------------------------------------------------------------------
 
-int GrString (int x, int y, const char *s, int *idP);
+int GrString (int x, int y, const char *s, int *idP = NULL);
 int GrUString (int x, int y, const char *s);
 int _CDECL_ GrPrintF (int *idP, int x, int y, const char * format, ...);
 int _CDECL_ GrUPrintf (int x, int y, const char * format, ...);

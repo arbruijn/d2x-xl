@@ -217,7 +217,7 @@ if (bMustErase) {
 //now draw the current subtitles
 for (t = 0; t < nActiveSubTitles; t++)
 	if (activeSubTitleList [t] != -1) {
-		GrString (0x8000, y, m_captions [activeSubTitleList [t]].msg, NULL);
+		GrString (0x8000, y, m_captions [activeSubTitleList [t]].msg);
 		y += nLineSpacing + 1;
 	}
 }

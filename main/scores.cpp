@@ -281,18 +281,16 @@ void _CDECL_ scores_rprintf (int x, int y, const char * format, ...)
 	int w, h, aw;
 	char *p;
 
-	va_start (args, format);
-	vsprintf (buffer,format,args);
-	va_end (args);
+va_start (args, format);
+vsprintf (buffer,format,args);
+va_end (args);
 
-	//replace the digit '1' with special wider 1
-	for (p=buffer;*p;p++)
-		if (*p=='1') 
-			*p= (char)132;
-
-	fontManager.Current ()->StringSize (buffer, w, h, aw);
-
-	GrString (LHX (x)-w+xOffs, LHY (y)+yOffs, buffer, NULL);
+//replace the digit '1' with special wider 1
+for (p = buffer; *p; p++)
+	if (*p == '1') 
+		*p = (char) 132;
+fontManager.Current ()->StringSize (buffer, w, h, aw);
+GrString (LHX (x) - w + xOffs, LHY (y) + yOffs, buffer);
 }
 
 //------------------------------------------------------------------------------
@@ -366,16 +364,16 @@ while (!done) {
 	backgroundManager.Redraw ();
 	fontManager.SetCurrent (MEDIUM3_FONT);
 
-	GrString (0x8000, yOffs + LHY (15), TXT_HIGH_SCORES, NULL);
+	GrString (0x8000, yOffs + LHY (15), TXT_HIGH_SCORES);
 	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,26,5), 1, 0, 0);
-	GrString (xOffs + LHX (31+33+XX), yOffs + LHY (46+7+YY), TXT_NAME, NULL);
-	GrString (xOffs + LHX (82+33+XX), yOffs + LHY (46+7+YY), TXT_SCORE, NULL);
-	GrString (xOffs + LHX (127+33+XX), yOffs + LHY (46+7+YY), TXT_SKILL, NULL);
-	GrString (xOffs + LHX (170+33+XX), yOffs + LHY (46+7+YY), TXT_LEVELS, NULL);
-	GrString (xOffs + LHX (288-42+XX), yOffs + LHY (46+7+YY), TXT_TIME, NULL);
+	GrString (xOffs + LHX (31+33+XX), yOffs + LHY (46+7+YY), TXT_NAME);
+	GrString (xOffs + LHX (82+33+XX), yOffs + LHY (46+7+YY), TXT_SCORE);
+	GrString (xOffs + LHX (127+33+XX), yOffs + LHY (46+7+YY), TXT_SKILL);
+	GrString (xOffs + LHX (170+33+XX), yOffs + LHY (46+7+YY), TXT_LEVELS);
+	GrString (xOffs + LHX (288-42+XX), yOffs + LHY (46+7+YY), TXT_TIME);
 	if (nCurItem < 0)
-		GrString (0x8000, yOffs + LHY (175), TXT_PRESS_CTRL_R, NULL);
+		GrString (0x8000, yOffs + LHY (175), TXT_PRESS_CTRL_R);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	for (i = 0; i < MAX_HIGH_SCORES; i++) {
 		c = 28 - i * 2;

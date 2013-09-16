@@ -649,7 +649,7 @@ if (p) {
 	p = szTitle;
 	}
 fontManager.SetCurrent (MEDIUM3_FONT);
-GrString (0x8000, KC_LHY (8), p, NULL);
+GrString (0x8000, KC_LHY (8), p);
 }
 
 //------------------------------------------------------------------------------
@@ -669,7 +669,7 @@ if (is_current)
 	fontManager.SetColorRGBi (RGBA_PAL2 (20,20,29), 1, 0, 0);
 else
 	fontManager.SetColorRGBi (RGBA_PAL2 (15,15,24), 1, 0, 0);
-GrString (KC_LHX (item->x), KC_LHY (item->y), item->textId ? GT (item->textId) : item->text, NULL);
+GrString (KC_LHX (item->x), KC_LHY (item->y), item->textId ? GT (item->textId) : item->text);
 
 *szText = '\0';
 if (item->value != 255) {
@@ -739,7 +739,7 @@ if (item->w1) {
 				KC_LHX (item->x + item->w1 + item->w2), KC_LHY (item->y) + h);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 	x = LHX (item->w1 + item->x) + ((LHX (item->w2) - w) / 2) + m_xOffs;
-	GrString (x, KC_LHY (item->y), szText, NULL);
+	GrString (x, KC_LHY (item->y), szText);
 	}
 }
 
@@ -751,7 +751,7 @@ fontManager.SetCurrent (GAME_FONT);
 fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 //fontManager.SetScale (fontManager.Scale () * GetScale ());
 
-GrString (0x8000, KC_LHY (20), TXT_KCONFIG_STRING_1, NULL);
+GrString (0x8000, KC_LHY (20), TXT_KCONFIG_STRING_1);
 fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 if (m_items == kcKeyboard) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31, 27, 6), 1, 0, 0);
@@ -763,7 +763,7 @@ if (m_items == kcKeyboard) {
 	kc_gr_pixel (KC_LHX (128), KC_LHY (43));
 	kc_gr_pixel (KC_LHX (128), KC_LHY (44));
 
-	GrString (KC_LHX (109), KC_LHY (40), "OR", NULL);
+	GrString (KC_LHX (109), KC_LHY (40), "OR");
 
 	OglDrawLine (KC_LHX (253), KC_LHY (42), KC_LHX (261), KC_LHY (42));
 	OglDrawLine (KC_LHX (274), KC_LHY (42), KC_LHX (283), KC_LHY (42));
@@ -772,7 +772,7 @@ if (m_items == kcKeyboard) {
 	kc_gr_pixel (KC_LHX (283), KC_LHY (43));
 	kc_gr_pixel (KC_LHX (283), KC_LHY (44));
 
-	GrString (KC_LHX (264), KC_LHY (40), "OR", NULL);
+	GrString (KC_LHX (264), KC_LHY (40), "OR");
 	}
 else if (m_items == kcJoystick) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
@@ -781,13 +781,13 @@ else if (m_items == kcJoystick) {
 	OglDrawLine (KC_LHX (200), KC_LHY (37), KC_LHX (294), KC_LHY (37));
 	OglDrawLine (KC_LHX (18), KC_LHY (127+18), KC_LHX (144), KC_LHY (127+18));
 	OglDrawLine (KC_LHX (174), KC_LHY (127+18), KC_LHX (294), KC_LHY (127+18));
-	GrString (0x8000, KC_LHY (35), TXT_BUTTONS_HATS, NULL);
-	GrString (0x8000,KC_LHY (125+18), TXT_AXES, NULL);
+	GrString (0x8000, KC_LHY (35), TXT_BUTTONS_HATS);
+	GrString (0x8000,KC_LHY (125+18), TXT_AXES);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
-	GrString (KC_LHX (85), KC_LHY (145+8), TXT_AXIS, NULL);
-	GrString (KC_LHX (120), KC_LHY (145+8), TXT_INVERT, NULL);
-	GrString (KC_LHX (235), KC_LHY (145+8), TXT_AXIS, NULL);
-	GrString (KC_LHX (270), KC_LHY (145+8), TXT_INVERT, NULL);
+	GrString (KC_LHX (85), KC_LHY (145+8), TXT_AXIS);
+	GrString (KC_LHX (120), KC_LHY (145+8), TXT_INVERT);
+	GrString (KC_LHX (235), KC_LHY (145+8), TXT_AXIS);
+	GrString (KC_LHX (270), KC_LHY (145+8), TXT_INVERT);
 	}
 else if (m_items == kcMouse) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
@@ -796,18 +796,18 @@ else if (m_items == kcMouse) {
 	OglDrawLine (KC_LHX (181), KC_LHY (37), KC_LHX (294), KC_LHY (37));
 	OglDrawLine (KC_LHX (18), KC_LHY (127+5), KC_LHX (144), KC_LHY (127+5));
 	OglDrawLine (KC_LHX (174), KC_LHY (127+5), KC_LHX (294), KC_LHY (127+5));
-	GrString (0x8000, KC_LHY (35), TXT_BUTTONS, NULL);
-	GrString (0x8000,KC_LHY (125+5), TXT_AXES, NULL);
+	GrString (0x8000, KC_LHY (35), TXT_BUTTONS);
+	GrString (0x8000,KC_LHY (125+5), TXT_AXES);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
-	GrString (KC_LHX (169), KC_LHY (137), TXT_AXIS, NULL);
-	GrString (KC_LHX (199), KC_LHY (137), TXT_INVERT, NULL);
+	GrString (KC_LHX (169), KC_LHY (137), TXT_AXIS);
+	GrString (KC_LHX (199), KC_LHY (137), TXT_INVERT);
 	}
 else if (m_items == kcHotkeys) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 
-	GrString (KC_LHX (94), KC_LHY (40), "KB", NULL);
-	GrString (KC_LHX (121), KC_LHY (40), "JOY", NULL);
+	GrString (KC_LHX (94), KC_LHY (40), "KB");
+	GrString (KC_LHX (121), KC_LHY (40), "JOY");
 	}
 //fontManager.SetScale (fontManager.Scale () / GetScale ());
 }
@@ -871,7 +871,7 @@ OglDrawFilledRect (KC_LHX (item->w1 + item->x), KC_LHY (item->y - 1),
 						 KC_LHX (item->w1 + item->x + item->w2), KC_LHY (item->y) + h);
 fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+m_xOffs;
-GrString (x, KC_LHY (item->y), "?", NULL);
+GrString (x, KC_LHY (item->y), "?");
 if (ogl.m_states.nDrawBuffer != GL_BACK)
 	ogl.Update (1);
 }
@@ -1039,7 +1039,7 @@ int CControlConfig::ChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrl
 	int k = 255;
 
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
-	GrString (0x8000, KC_LHY (INFO_Y), pszMsg, NULL);
+	GrString (0x8000, KC_LHY (INFO_Y), pszMsg);
 {
 	if (IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence))
 		MultiMenuPoll ();

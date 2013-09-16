@@ -308,7 +308,7 @@ if (IsCoopGame) {
 	}
 MultiSortKillList ();
 fontManager.SetCurrent (MEDIUM3_FONT);
-GrString (0x8000, LHY (10), TXT_KILL_MATRIX_TITLE, NULL);
+GrString (0x8000, LHY (10), TXT_KILL_MATRIX_TITLE);
 fontManager.SetCurrent (SMALL_FONT);
 MultiGetKillList (m_sorted);
 DrawNames ();
@@ -336,7 +336,7 @@ void CScoreTable::RenderCoop (void)
 
 MultiSortKillList ();
 fontManager.SetCurrent (MEDIUM3_FONT);
-GrString (0x8000, LHY (10), "COOPERATIVE SUMMARY", NULL);
+GrString (0x8000, LHY (10), "COOPERATIVE SUMMARY");
 fontManager.SetCurrent (SMALL_FONT);
 MultiGetKillList (m_sorted);
 DrawCoopNames ();

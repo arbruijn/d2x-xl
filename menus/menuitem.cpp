@@ -252,7 +252,7 @@ else {
 			}
 		//m_x = x + w;
 		if (i) {
-			GrString (x, y, s, NULL);
+			GrString (x, y, s);
 	#if DBG
 			//ogl.Update (0);
 	#endif
@@ -263,7 +263,7 @@ else {
 			ch2 = s [++i];
 			s [i] = '\0';
 			SetColor (1, bTiny);
-			GrString (x, y, s + i - 1, NULL);
+			GrString (x, y, s + i - 1);
 	#if DBG
 			//ogl.Update (0);
 	#endif
@@ -272,7 +272,7 @@ else {
 				fontManager.Current ()->StringSize (s + i - 1, w, h, aw);
 				x += w;
 				s [i] = ch2;
-				GrString (x, y, s + i, NULL);
+				GrString (x, y, s + i);
 				}
 			}
 		}
@@ -320,7 +320,7 @@ if (0 && gameStates.multi.bSurfingNet) {
 			}
 		measure [0] = s2 [i];
 		fontManager.Current ()->StringSize (measure, tx, h, aw);
-		GrString (x, y, measure, NULL);
+		GrString (x, y, measure);
 		x += tx;
 		}
 	}
@@ -331,7 +331,7 @@ else {
 
 if (!gameStates.multi.bSurfingNet && p && (w1 > 0)) {
 	fontManager.Current ()->StringSize (s1, w, h, aw);
-	GrString (x + w1 - w, y, s1, NULL);
+	GrString (x + w1 - w, y, s1);
 	*p = '\t';
 	}
 }
@@ -361,7 +361,7 @@ if (p) {
 		backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x, y, w, 1, x, y);
 		backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x, y + h - 1, w, 1, x, y);
 		}
-	GrString (x, y, s1, NULL);
+	GrString (x, y, s1);
 	*p = '\t';
 	}
 }
@@ -412,7 +412,7 @@ OglDrawFilledRect (x, y + h, x + w1, y + h);
 OglDrawFilledRect (x + w1, y - 1, x + w1, y + h);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (x, y, x + w1 - 1, y + h - 1);
-GrString (x + 1, y + 1, s, NULL);
+GrString (x + 1, y + 1, s);
 }
 
 //------------------------------------------------------------------------------ 
@@ -432,7 +432,7 @@ if (!*text)
 	w1 = 0;
 DrawBlackBox (w, x, y, text, bTiny);
 if (current)	
-	GrString (x + w1 + 1, y, CURSOR_STRING, NULL);
+	GrString (x + w1 + 1, y, CURSOR_STRING);
 }
 
 //------------------------------------------------------------------------------ 
@@ -502,7 +502,7 @@ if (!*text)
 x = m_x + w; 
 y = m_y;
 if (time & 0x8000)
-	GrString (x, y, CURSOR_STRING, NULL);
+	GrString (x, y, CURSOR_STRING);
 else {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 	OglDrawFilledRect (x, y, x + CCanvas::Current ()->Font ()->Width () - 1, y + CCanvas::Current ()->Font ()->Height () - 1);

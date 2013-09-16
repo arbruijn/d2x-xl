@@ -265,7 +265,7 @@ void CGenericCockpit::DrawMarkerMessage (void)
 if (markerManager.DefiningMsg ()) {
 	SetFontColor (GREEN_RGBA);
    sprintf (szTemp, TXT_DEF_MARKER, markerManager.Input ());
-	GrString (X (StringCenterPos (szTemp)), CCanvas::Current ()->Height () / 2 - 16, szTemp, NULL);
+	GrString (X (StringCenterPos (szTemp)), CCanvas::Current ()->Height () / 2 - 16, szTemp);
    }
 }
 
