@@ -177,7 +177,7 @@ if (!IsMultiGame || IsCoopGame) {
 			bmH = bmObjTally [i].Width () / 2;
 			bmW = bmObjTally [i].Height () / 2;
 			x = x0 - bmW - HUD_LHX (2);
-			bmObjTally [i].RenderScaled (x, y, bmW, bmH, I2X (1), 0, NULL);
+			bmObjTally [i].RenderScaled (cockpit->X (x), y, bmW, bmH, I2X (1), 0, NULL);
 			sprintf (szInfo, "%d", objCounts [i]);
 			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			x -= w + HUD_LHY (2);
@@ -442,7 +442,7 @@ for (i = 0; i < 2; i++) {
 //		if (bActive && bAvailable)
 			if (*szAmmo) {
 				fontManager.SetColorRGBi (nAmmoColor, 1, 0, 0);
-				nIdIcons [i][j] = GrString (cockpit->X (x + wIcon + 2 - fw), y - fh, szAmmo, nIdIcons [i] + j);
+				nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);
 				fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 				}
 		gameStates.render.grAlpha = 1.0f;
@@ -642,7 +642,7 @@ for (j = firstItem; j < n; j++) {
 	if (*szCount) {
 		fontManager.Current ()->StringSize (szCount, fw, fh, faw);
 		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-		nIdItems [j] = GrString (cockpit->X (x + wIcon + 2 - fw), y - fh, szCount, nIdItems + j);
+		nIdItems [j] = GrString (x + wIcon + 2 - fw, y - fh, szCount, nIdItems + j);
 		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		}
 #endif
