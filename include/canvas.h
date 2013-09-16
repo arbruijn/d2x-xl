@@ -133,12 +133,12 @@ class CCanvas : public CBitmap {
 		void FadeColorRGB (double dFade);
 
 		inline float GetScale (void);
-		inline short Scale (short v);
+		inline short Scaled (short v);
 
-		inline short Width (bool bScale = true) { return bScale ? Scale (CBitmap::Width ()) : CBitmap::Width (); }
-		inline short Height (bool bScale = true) { return bScale ? Scale (CBitmap::Height ()) : CBitmap::Height (); }
-		inline short Left (void) { return Scale (CBitmap::Left ()); }
-		inline short Top (void) { return Scale (CBitmap::Top ()); }
+		inline short Width (bool bScale = true) { return bScale ? Scaled (CBitmap::Width ()) : CBitmap::Width (); }
+		inline short Height (bool bScale = true) { return bScale ? Scaled (CBitmap::Height ()) : CBitmap::Height (); }
+		inline short Left (void) { return Scaled (CBitmap::Left ()); }
+		inline short Top (void) { return Scaled (CBitmap::Top ()); }
 		inline short Right (void) { return Left () + Width (); }
 		inline short Bottom (void) { return Top () + Height (); }
 
@@ -205,14 +205,14 @@ class CScreen {
 		static CScreen* Current (void) { return m_current; }
 		static float GetScale (void) { return m_fScale; }
 		static void SetScale (float scale) { m_fScale = scale; }
-		static int Scale (int v) { return int (ceil (v * GetScale ())); }
+		static int Scaled (int v) { return int (ceil (v * GetScale ())); }
 };
 
 extern CScreen screen;
 
 inline float CCanvas::GetScale (void) { return CScreen::GetScale (); }
 
-inline short CCanvas::Scale (short v) { return short (CScreen::Scale (v)); }
+inline short CCanvas::Scaled (short v) { return short (CScreen::Scaled (v)); }
 
 void SetupCanvasses (float scale = 1.0f);
 

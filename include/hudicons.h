@@ -5,9 +5,9 @@ extern int bHaveInvBms;
 
 class CHUDIcons {
 	private:
-		float	xScale;
-		float	yScale;
-		int	nLineSpacing;
+		float	m_xScale;
+		float	m_yScale;
+		int	m_nLineSpacing;
 
 	public:
 		int EquipmentActive (int bFlag);

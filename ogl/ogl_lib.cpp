@@ -959,7 +959,7 @@ else {
 		SetDepthTest (false);
 		}
 	}
-if (gameStates.video.nScreenMode != 0xffffffff)
+if (gameStates.app.bInitialized)
 	RebuildContext (gameStates.video.nScreenMode == SCREEN_GAME);
 gameStates.video.nLastScreenMode = gameStates.video.nScreenMode;
 m_states.bLastFullScreen = m_states.bFullScreen;

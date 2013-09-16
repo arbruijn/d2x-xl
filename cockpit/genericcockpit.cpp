@@ -170,6 +170,9 @@ if (bmP) {
 		w = ScaleX (w);
 		h = ScaleY (h);
 		}
+	w = X (x + w);
+	x = X (x);
+	w -= x;
 	CCanvas::Current ()->SetColorRGBi (m_info.nColor);
 	bmP->RenderScaled (x, y, w * (gameStates.app.bDemoData + 1), h * (gameStates.app.bDemoData + 1), scale, orient, &CCanvas::Current ()->Color ());
 	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);

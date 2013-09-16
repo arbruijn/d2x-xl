@@ -1742,6 +1742,8 @@ gameStates.render.bAmbientColor = /*gameStates.render.bPerPixelLighting ||*/ (ga
 gameOpts->sound.xCustomSoundVolume = fix (float (gameConfig.nAudioVolume [0]) * 10.0f / 8.0f + 0.5f);
 if ((gameOpts->render.stereo.nFOV < STEREO_MIN_FOV) || (gameOpts->render.stereo.nFOV > STEREO_MAX_FOV))
 	gameOpts->render.stereo.nFOV = STEREO_DEFAULT_FOV;
+if ((gameOpts->render.stereo.xSeparation [1] < MM2X (RIFT_MIN_IPD)) || (gameOpts->render.stereo.xSeparation [1] > MM2X (RIFT_MAX_IPD)))
+	gameOpts->render.stereo.xSeparation [1] = MM2X (RIFT_DEFAULT_IPD);
 extraGameInfo [0].bFlickerLights = gameOpts->app.bEpilepticFriendly;
 if ((extraGameInfo [0].bFastPitch < 1) || (extraGameInfo [0].bFastPitch > 2))
 	extraGameInfo [0].bFastPitch = 2;

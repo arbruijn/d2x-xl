@@ -243,8 +243,8 @@ class CGenericCockpit {
 		inline CCockpitInfo& Info (void) { return m_info; }
 		inline int Type (void) { return m_info.nType; }
 		inline int LineSpacing (void) { return m_info.nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4; }
-		inline float XScale (void) { return m_info.xScale = (float) screen.Scale (0); }
-		inline float YScale (void) { return m_info.yScale = (float) screen.Scale (1); }
+		inline float XScale (void) { return m_info.xScale = CCanvas::Current ()->XScale (); }
+		inline float YScale (void) { return m_info.yScale = CCanvas::Current ()->YScale (); }
 		inline void SetScales (float xScale, float yScale) { m_info.xScale = xScale, m_info.yScale = yScale; }
 		inline void Rebuild (void) { m_info.bRebuild = true; }
 
@@ -272,6 +272,9 @@ class CGenericCockpit {
 		inline void SetAddedScore (int i, int nScore) { m_info.addedScore [i] = nScore; }
 		inline void SetLineSpacing (int nLineSpacing) { m_info.nLineSpacing = nLineSpacing; }
 		inline void SetColor (int nColor) { m_info.nColor = nColor; }
+
+		int StereoOffset2D (int x);
+		int X (int x);
 
 		int _CDECL_ DrawHUDText (int *idP, int x, int y, const char * format, ...);
 

@@ -151,16 +151,16 @@ if (!IsMultiGame || IsCoopGame) {
 	char	szInfo [20];
 
 	if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
-		y = 3 * nLineSpacing;
+		y = 3 * m_nLineSpacing;
 	else if (gameStates.render.cockpit.nType == CM_STATUS_BAR)
-		y = 2 * nLineSpacing;
+		y = 2 * m_nLineSpacing;
 	else {//if (!cockpit->Always ()) {
-		y = 2 * nLineSpacing;
+		y = 2 * m_nLineSpacing;
 		if (gameStates.render.fonts.bHires)
-			y += nLineSpacing;
+			y += m_nLineSpacing;
 		}
 	if (gameOpts->render.cockpit.bPlayerStats)
-		y += 2 * nLineSpacing;
+		y += 2 * m_nLineSpacing;
 
 	x0 = gameData.render.scene.Width ();
 	if ((extraGameInfo [0].nWeaponIcons >= 3) && (gameData.render.scene.Height () < 670))
@@ -186,12 +186,12 @@ if (!IsMultiGame || IsCoopGame) {
 			}
 		}
 	else {
-		//y = 6 + 3 * nLineSpacing;
+		//y = 6 + 3 * m_nLineSpacing;
 		for (i = 0; i < 2; i++) {
 			sprintf (szInfo, "%s: %5d", i ? "Powerups" : "Robots", objCounts [i]);
 			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			nIdTally [i] = cockpit->DrawHUDText (nIdTally + i, x0 - w - HUD_LHX (2), y, szInfo);
-			y += nLineSpacing;
+			y += m_nLineSpacing;
 			}
 		}
 	}
@@ -254,7 +254,7 @@ if (gameOpts->render.weaponIcons.bShowAmmo) {
 	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	}
-dx = (int) (10 * xScale);
+dx = (int) (10 * m_xScale);
 if (nWeaponIcons < 3) {
 #if 0
 	if (gameStates.render.cockpit.nType != CM_FULL_COCKPIT) {
@@ -333,8 +333,8 @@ for (i = 0; i < 2; i++) {
 			w = bmP->Width ();
 		if (h < bmP->Height ())
 			h = bmP->Height ();
-		wIcon = (int) ((w + nIconScale - 1) / nIconScale * xScale);
-		hIcon = (int) ((h + nIconScale - 1) / nIconScale * yScale);
+		wIcon = (int) ((w + nIconScale - 1) / nIconScale * m_xScale);
+		hIcon = (int) ((h + nIconScale - 1) / nIconScale * m_yScale);
 		if (bInitIcons)
 			continue;
 		if (i)
@@ -407,7 +407,7 @@ for (i = 0; i < 2; i++) {
 		else {
 			gameData.render.viewport.SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 			}
-		OglDrawFilledRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
+		OglDrawFilledRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
 		if (i) {
 			if (j < 8)
 				bActive = (l == gameData.weapons.nSecondary);
@@ -438,11 +438,11 @@ for (i = 0; i < 2; i++) {
 		else
 			gameData.render.viewport.SetColorRGB (64, 64, 64, 255);
 		glLineWidth ((bActive && bAvailable && gameOpts->render.weaponIcons.bBoldHighlight) ? fLineWidth + 2 : fLineWidth);
-		OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
+		OglDrawEmptyRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
 //		if (bActive && bAvailable)
 			if (*szAmmo) {
 				fontManager.SetColorRGBi (nAmmoColor, 1, 0, 0);
-				nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);
+				nIdIcons [i][j] = GrString (cockpit->X (x + wIcon + 2 - fw), y - fh, szAmmo, nIdIcons [i] + j);
 				fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 				}
 		gameStates.render.grAlpha = 1.0f;
@@ -541,8 +541,8 @@ void CHUDIcons::DrawInventory (void)
 				x, y, dy;
 	int		w = bmpInventory->Width (), 
 				h = bmpInventory->Width ();
-	int		wIcon = (int) ((w + nIconScale - 1) / nIconScale * xScale), 
-				hIcon = (int) ((h + nIconScale - 1) / nIconScale * yScale);
+	int		wIcon = (int) ((w + nIconScale - 1) / nIconScale * m_xScale), 
+				hIcon = (int) ((h + nIconScale - 1) / nIconScale * m_yScale);
 	int		nDmgIconWidth = 0;
 #if 0
 									(nIconPos
@@ -623,7 +623,7 @@ for (j = firstItem; j < n; j++) {
 	else {
 		gameData.render.viewport.SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 		}
-	OglDrawFilledRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
+	OglDrawFilledRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
 	if (bHave)
 		if (bAvailable)
 			if (bActive)
@@ -638,11 +638,11 @@ for (j = firstItem; j < n; j++) {
 	else
 		gameData.render.viewport.SetColorRGB (64, 64, 64, 255);
 	glLineWidth ((bActive && gameOpts->render.weaponIcons.bBoldHighlight) ? 3 : fLineWidth);
-	OglDrawEmptyRect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
+	OglDrawEmptyRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
 	if (*szCount) {
 		fontManager.Current ()->StringSize (szCount, fw, fh, faw);
 		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-		nIdItems [j] = GrString (x + wIcon + 2 - fw, y - fh, szCount, nIdItems + j);
+		nIdItems [j] = GrString (cockpit->X (x + wIcon + 2 - fw), y - fh, szCount, nIdItems + j);
 		fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		}
 #endif
@@ -666,13 +666,13 @@ if (gameData.render.frame.Left () || gameData.render.frame.Top ())
 	return;	// render window has been shrunk
 #endif
 if ((gameOpts->render.cockpit.bHUD) || cockpit->ShowAlways ()) {
-	nLineSpacing = cockpit->LineSpacing ();
+	m_nLineSpacing = cockpit->LineSpacing ();
 	if (!(gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0)))
 		DrawTally ();
 	if (!gameStates.app.bDemoData && EGI_FLAG (nWeaponIcons, 1, 1, 0)) {
-		xScale = cockpit->XScale () * HUD_ASPECT;
-		yScale = cockpit->YScale ();
-		cockpit->SetScales (xScale, yScale);
+		m_xScale = cockpit->XScale () * HUD_ASPECT;
+		m_yScale = cockpit->YScale ();
+		cockpit->SetScales (m_xScale, m_yScale);
 		DrawWeapons ();
 		if (gameOpts->render.weaponIcons.bEquipment) {
 			if (bHaveInvBms < 0)
@@ -680,8 +680,8 @@ if ((gameOpts->render.cockpit.bHUD) || cockpit->ShowAlways ()) {
 			if (bHaveInvBms > 0)
 				DrawInventory ();
 			}
-		xScale /= HUD_ASPECT;
-		cockpit->SetScales (xScale, yScale);
+		m_xScale /= HUD_ASPECT;
+		cockpit->SetScales (m_xScale, m_yScale);
 		glLineWidth (1);
 		}
 	}

@@ -627,7 +627,11 @@ if (!(w && h)) {
 	}
 
 for (;;) {
-	if (!(bmP = CBitmap::Create (0, bForce ? Pow2ize (w) : w, bForce ? Pow2ize (h) : h, 4))) {
+	if (bForce) {
+		w = Pow2ize (w);
+		h = Pow2ize (h);	
+		}
+	if (!(bmP = CBitmap::Create (0, w, h, 4))) {
 		fontManager.SetScale (fScale);
 		return NULL;
 		}
@@ -643,19 +647,6 @@ for (;;) {
 		break;
 	bmP->Destroy ();
 	}
-#if DBG
-bmP->Destroy ();
-if (!(bmP = CBitmap::Create (0, bForce ? Pow2ize (w) : w, bForce ? Pow2ize (h) : h, 4))) {
-	fontManager.SetScale (fScale);
-	return NULL;
-	}
-if (!bmP->Buffer ()) {
-	fontManager.SetScale (fScale);
-	delete bmP;
-	return NULL;
-	}
-FillStringBitmap (bmP, s, nKey, nKeyColor, nTabs, bCentered, nMaxWidth, bForce, w, h);
-#endif
 bmP->SetTranspType (-1);
 fontManager.SetScale (fScale);
 return bmP;

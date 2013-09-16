@@ -66,12 +66,12 @@
 
 int COGL::DrawBufferWidth (void)
 {
-return int (screen.Scale (m_states.nCurWidth));
+return int (screen.Scaled (m_states.nCurWidth));
 }
 
 int COGL::DrawBufferHeight (void)
 {
-return int (screen.Scale (m_states.nCurHeight));
+return int (screen.Scaled (m_states.nCurHeight));
 }
 
 //------------------------------------------------------------------------------

@@ -503,9 +503,9 @@ CCanvas::Pop ();
 float CMenu::GetScale (void)
 {
 #if DBG
-return /*ogl.IsOculusRift () ? 0.5f :*/ 1.0f;
+return ogl.IsSideBySideDevice () ? 0.5f : 1.0f;
 #else
-return (ogl.IsOculusRift () && gameStates.app.bGameRunning) ? 0.5f : 1.0f;
+return (ogl.IsOculusRift () /*&& gameStates.app.bGameRunning*/) ? 0.5f : 1.0f;
 #endif
 }
 

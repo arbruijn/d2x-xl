@@ -357,8 +357,8 @@ else {
 	stereo.nScreenDist = 5;
 	stereo.bColorGain = 1;
 	stereo.bDeghost = 1;
-	stereo.xSeparation [0] = 
-	stereo.xSeparation [1] = 65536;
+	stereo.xSeparation [0] = 65536;
+	stereo.xSeparation [1] = MM2X (RIFT_DEFAULT_IPD);
 	stereo.nFOV = 90;
 	}
 }
