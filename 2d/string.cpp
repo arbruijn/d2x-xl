@@ -945,7 +945,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 // Returns the length of the first 'n' characters of a string.
-int StringWidth (const char * s, int n)
+int StringWidth (char * s, int n)
 {
 	int w, h, aw;
 	char p = s [n];
@@ -960,7 +960,7 @@ return w;
 
 //------------------------------------------------------------------------------
 
-int CenteredStringPos (const char* s)
+int CenteredStringPos (char* s)
 {
 return CCanvas::Current ()->Width () - StringWidth (s);
 }
