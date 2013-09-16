@@ -160,19 +160,23 @@ if (bmP) {
 	if (bmoP)
 		bmP = bmoP;
 #endif
+	int w = bmP->Width ();
+	int h = bmP->Height ();
 	if (bScalePos) {
 		x = ScaleX (x);
 		y = ScaleY (y);
 		}
-	int w = bmP->Width ();
-	int h = bmP->Height ();
 	if (bScaleSize) {
 		w = ScaleX (w);
 		h = ScaleY (h);
 		}
-	w = X (x + w);
-	x = X (x);
-	w -= x;
+	if (ogl.IsSideBySideDevice ()) {
+		x = int (float (x) / X2F (scale)); // unscale
+		w = X (x + w); // reposition left and right coordinates
+		x = X (x);
+		w -= x;
+		x = int (float (x) * X2F (scale)); // rescale
+		}
 	CCanvas::Current ()->SetColorRGBi (m_info.nColor);
 	bmP->RenderScaled (x, y, w * (gameStates.app.bDemoData + 1), h * (gameStates.app.bDemoData + 1), scale, orient, &CCanvas::Current ()->Color ());
 	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);

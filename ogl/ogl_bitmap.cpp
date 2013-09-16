@@ -170,7 +170,7 @@ ogl.SetTexturing (false);
 
 int CBitmap::RenderScaled (int x, int y, int w, int h, int scale, int orient, CCanvasColor* colorP, int bSmoothe)
 {
-	CBitmap*		bmoP;
+	CBitmap*			bmoP;
 	CFloatVector	color;
 
 if ((bmoP = HasOverride ()))
