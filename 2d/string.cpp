@@ -678,7 +678,7 @@ if ((MODE == BM_OGL) && (ps = GetPoolString (s, idP))) {
 Assert (fontManager.Current () != NULL);
 fontManager.Current ()->StringSize (s, w, h, aw);
 if (x == 0x8000)
-	x = CCanvas::Current ()->Width () - w;
+	x = (CCanvas::Current ()->Width () - w) / 2;
 x = X (x);
 if ((x < 0) || (y < 0))
 	clipped |= 1;
@@ -962,7 +962,7 @@ return w;
 
 int CenteredStringPos (char* s)
 {
-return CCanvas::Current ()->Width () - StringWidth (s);
+return (CCanvas::Current ()->Width () - StringWidth (s)) / 2;
 }
 
 //------------------------------------------------------------------------------
