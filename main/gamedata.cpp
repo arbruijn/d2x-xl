@@ -533,7 +533,7 @@ nColoredFaces = 0;
 nStateChanges = 0;
 nShaderChanges = 0;
 nPowerupFilter = 0;
-bFloatingOffset = false;
+bFloatingOffset = true;
 #if 1
 fAttScale [0] = 0.05f;
 fAttScale [1] = 0.005f;
