@@ -62,7 +62,7 @@ int CGenericCockpit::X (int x, bool bForce)
 #if 0
 return 1;
 #else
-return x - gameData.FloatingStereoOffset2D (x, bForce);
+return x - (gameData.render.bFloatingOffset ? gameData.FloatingStereoOffset2D (x, bForce) : gameData.StereoOffset2D ());
 #endif
 }
 

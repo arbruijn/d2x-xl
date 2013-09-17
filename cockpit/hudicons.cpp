@@ -661,6 +661,8 @@ if (gameStates.app.bEndLevelSequence)
 	return;
 if (gameStates.render.bRearView)
 	return;
+if (ogl.IsOculusRift ())
+	return;
 #if 0
 if (gameData.render.frame.Left () || gameData.render.frame.Top ())
 	return;	// render window has been shrunk

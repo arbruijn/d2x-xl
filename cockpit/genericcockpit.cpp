@@ -1199,6 +1199,10 @@ if (gameStates.render.bChaseCam && (!IsMultiGame || (EGI_FLAG (bEnableCheats, 0,
 #endif
 	return;
 m_info.xScale *= float (HUD_ASPECT);
+if (ogl.IsOculusRift ()) {
+	m_info.xScale *= 0.5f;
+	m_info.yScale *= 0.5f;
+	}
 bHiresReticle = 1; //(gameStates.render.fonts.bHires != 0) && !gameStates.app.bDemoData;
 bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.render.frame.Width () * 2);
 ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
@@ -1208,21 +1212,25 @@ nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ())
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 glColor3i (1,1,1);
 
-fix xScale = ogl.IsOculusRift () ? I2X (1) / 2 : I2X (1);
-
+gameData.render.bFloatingOffset = false;
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-		  X (x + ScaleX (crossOffsets [ofs].x - 1), true), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
-		  xScale, 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
+		  x + ScaleX (crossOffsets [ofs].x - 1), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
+		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
 BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-		  X (x + ScaleX (primaryOffsets [ofs].x - 1), true), (y + ScaleY (primaryOffsets [ofs].y - 1)), false, true,
-		  xScale, 0, NULL, BM_ADDON (nBmReticle + 2 + nPrimaryBm));
+		  x + ScaleX (primaryOffsets [ofs].x - 1), (y + ScaleY (primaryOffsets [ofs].y - 1)), false, true,
+		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 2 + nPrimaryBm));
 BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-		  X (x + ScaleX (secondaryOffsets [ofs].x - 1), true), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true,
-		  xScale, 0, NULL, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
+		  x + ScaleX (secondaryOffsets [ofs].x - 1), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true,
+		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
+gameData.render.bFloatingOffset = true;
 
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 m_info.xScale /= float (HUD_ASPECT);
+if (ogl.IsOculusRift ()) {
+	m_info.xScale *= 2.0f;
+	m_info.yScale *= 2.0f;
+	}
 #if 0
 if (m_info.xStereoSeparation) {
 	ogl.ColorMask (1,1,1,1,0);
@@ -1801,6 +1809,9 @@ if (showViewTextTimer > 0) {
 
 void CGenericCockpit::RenderWindows (void)
 {
+if (ogl.IsOculusRift ())
+	return;
+
 	int		bDidMissileView = 0;
 	int		saveNewDemoState = gameData.demo.nState;
 	int		w;
